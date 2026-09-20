@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { collectAitoolsFyi, collectFuturepedia, collectFuturetools } = require('./collectors/aitools');
+const { collectLayer3Labs, collectBitDegree, collectAitoolsDirectoryNet, collectZapierFreeAI } = require('./collectors/new_sources');
 
 const DEALS_FILE = path.join(__dirname, '..', 'deals.json');
 const MAX_DEALS = 100;
@@ -9,7 +10,7 @@ function normalize(name) {
   return name.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
 }
 
-const sourcePriority = { 'aitools.fyi': 3, 'Futurepedia': 2, 'Futuretools': 1 };
+const sourcePriority = { 'aitools.fyi': 4, 'Futurepedia': 3, 'Futuretools': 2, 'Layer3Labs': 1, 'BitDegree': 1, 'AitoolsDirectory': 1, 'Zapier': 1 };
 
 /**
  * Deduplicate by normalized name: keep the entry with richer data (description, higher source priority)
@@ -38,7 +39,11 @@ async function collectAll() {
   const collectors = [
     { name: 'aitools.fyi', fn: collectAitoolsFyi },
     { name: 'Futurepedia', fn: collectFuturepedia },
-    { name: 'Futuretools', fn: collectFuturetools }
+    { name: 'Futuretools', fn: collectFuturetools },
+    { name: 'Layer3Labs', fn: collectLayer3Labs },
+    { name: 'BitDegree', fn: collectBitDegree },
+    { name: 'AitoolsDirectory', fn: collectAitoolsDirectoryNet },
+    { name: 'Zapier', fn: collectZapierFreeAI }
   ];
 
   const allDeals = [];
