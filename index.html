@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 优惠聚合器</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      color: #1a1a2e;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color: #16213e;
+      margin-bottom: 0.25rem;
+    }
+
+    header p {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .controls input,
+    .controls select {
+      padding: 0.6rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background: #fff;
+    }
+
+    .controls input { flex: 1; min-width: 200px; }
+    .controls select { min-width: 150px; }
+
+    .controls input:focus,
+    .controls select:focus {
+      outline: none;
+      border-color: #4361ee;
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.15);
+    }
+
+    .stats {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 1rem;
+    }
+
+    .deals-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .deal-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      transition: transform 0.15s, box-shadow 0.15s;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+    }
+
+    .deal-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    .deal-card.expired {
+      opacity: 0.5;
+      background: #f9f9f9;
+    }
+
+    .deal-card.expired:hover {
+      transform: none;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .deal-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #16213e;
+      text-decoration: none;
+      grid-column: 1 / -1;
+    }
+
+    .deal-title:hover { color: #4361ee; }
+
+    .deal-meta {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #666;
+      grid-column: 1 / -1;
+    }
+
+    .deal-source {
+      background: #e8ecf4;
+      padding: 0.15rem 0.6rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .deal-category {
+      background: #fef3c7;
+      padding: 0.15rem 0.6rem;
+      border-radius: 4px;
+      color: #92400e;
+    }
+
+    .deal-discount {
+      color: #059669;
+      font-weight: 600;
+    }
+
+    .deal-date { color: #999; }
+
+    .deal-description {
+      grid-column: 1 / -1;
+      color: #555;
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+
+    .deal-link {
+      color: #4361ee;
+      text-decoration: none;
+      font-weight: 500;
+      white-space: nowrap;
+      align-self: center;
+    }
+
+    .deal-link:hover { text-decoration: underline; }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #888;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 2rem;
+      color: #888;
+      grid-column: 1 / -1;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 1rem;
+      color: #999;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 640px) {
+      header h1 { font-size: 1.5rem; }
+      .controls { flex-direction: column; }
+      .controls input, .controls select { min-width: auto; width: 100%; }
+      .deal-card { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AI 优惠聚合器</h1>
+      <p>每日自动抓取 AI 产品折扣和福利信息</p>
+    </header>
+
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="搜索优惠...">
+      <select id="categoryFilter">
+        <option value="">全部分类</option>
+      </select>
+      <select id="sourceFilter">
+        <option value="">全部来源</option>
+      </select>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="deals-list" id="dealsList">
+      <div class="loading">加载数据中...</div>
+    </div>
+
+    <footer>
+      <p>数据每天自动更新 | 最后更新: <span id="lastUpdated">--</span></p>
+    </footer>
+  </div>
+
+  <script>
+    let allDeals = [];
+    const dealsList = document.getElementById('dealsList');
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const sourceFilter = document.getElementById('sourceFilter');
+    const stats = document.getElementById('stats');
+    const lastUpdated = document.getElementById('lastUpdated');
+
+    async function loadDeals() {
+      try {
+        const response = await fetch('deals.json');
+        allDeals = await response.json();
+        populateFilters();
+        renderDeals();
+        lastUpdated.textContent = new Date().toLocaleString('zh-CN');
+      } catch (error) {
+        dealsList.innerHTML = '<div class="no-results">数据加载失败，请稍后重试</div>';
+        console.error('Failed to load deals:', error);
+      }
+    }
+
+    function populateFilters() {
+      const categories = [...new Set(allDeals.map(d => d.category).filter(Boolean))].sort();
+      const sources = [...new Set(allDeals.map(d => d.source).filter(Boolean))].sort();
+
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        categoryFilter.appendChild(opt);
+      });
+
+      sources.forEach(src => {
+        const opt = document.createElement('option');
+        opt.value = src;
+        opt.textContent = src;
+        sourceFilter.appendChild(opt);
+      });
+    }
+
+    function isExpired(deal) {
+      if (!deal.endDate) return false;
+      return new Date(deal.endDate) < new Date();
+    }
+
+    function getFilteredDeals() {
+      const search = searchInput.value.toLowerCase().trim();
+      const category = categoryFilter.value;
+      const source = sourceFilter.value;
+
+      return allDeals.filter(deal => {
+        if (category && deal.category !== category) return false;
+        if (source && deal.source !== source) return false;
+        if (search) {
+          const text = `${deal.title} ${deal.description} ${deal.discount} ${deal.category}`.toLowerCase();
+          if (!text.includes(search)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderDeals() {
+      const filtered = getFilteredDeals();
+      const expiredCount = allDeals.filter(isExpired).length;
+
+      stats.textContent = `共 ${allDeals.length} 条优惠，当前显示 ${filtered.length} 条` +
+        (expiredCount > 0 ? `（${expiredCount} 条已过期）` : '');
+
+      if (filtered.length === 0) {
+        dealsList.innerHTML = '<div class="no-results">没有找到匹配的优惠</div>';
+        return;
+      }
+
+      dealsList.innerHTML = filtered.map(deal => {
+        const expired = isExpired(deal);
+        return `
+          <div class="deal-card ${expired ? 'expired' : ''}">
+            <a class="deal-title" href="${escapeHtml(deal.url)}" target="_blank" rel="noopener">
+              ${escapeHtml(deal.title)}
+            </a>
+            ${deal.description ? `<div class="deal-description">${escapeHtml(deal.description)}</div>` : ''}
+            <div class="deal-meta">
+              <span class="deal-source">${escapeHtml(deal.source)}</span>
+              ${deal.category ? `<span class="deal-category">${escapeHtml(deal.category)}</span>` : ''}
+              ${deal.discount ? `<span class="deal-discount">${escapeHtml(deal.discount)}</span>` : ''}
+              <span class="deal-date">${escapeHtml(deal.date)}</span>
+              ${deal.endDate ? `<span class="deal-date">截止: ${escapeHtml(deal.endDate)}</span>` : ''}
+              ${expired ? '<span style="color:#dc2626">已过期</span>' : ''}
+            </div>
+            <a class="deal-link" href="${escapeHtml(deal.url)}" target="_blank" rel="noopener">查看 &rarr;</a>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    searchInput.addEventListener('input', renderDeals);
+    categoryFilter.addEventListener('change', renderDeals);
+    sourceFilter.addEventListener('change', renderDeals);
+
+    loadDeals();
+  </script>
+</body>
+</html>

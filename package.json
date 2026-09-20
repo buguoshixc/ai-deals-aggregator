@@ -1,0 +1,13 @@
+{
+  "name": "ai-deals-aggregator",
+  "version": "1.0.0",
+  "description": "AI deals aggregator - daily scrape and display of AI product discounts",
+  "main": "scripts/collect.js",
+  "scripts": {
+    "collect": "node scripts/collect.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "cheerio": "^1.0.0"
+  }
+}

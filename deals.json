@@ -1,0 +1,552 @@
+[
+  {
+    "title": "Sorank",
+    "url": "https://www.sorank.com/",
+    "source": "aitools.fyi",
+    "discount": "付费",
+    "description": "Sorank 是一个围绕单一连接站点构建的自动驾驶 SEO 和 GEO 平台。您可以连接 WordPress、Shopify、Webflow、Wix 或自定义 webhook，它会持续发布优化文章，放置上下文反向链接，并监控 ChatGPT 或 Perplexity 等模型何时引用您的品牌。它适合希望获得 ...",
+    "category": "Marketing",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "GPT Image 2.5",
+    "url": "https://gptimage-2-5.com/",
+    "source": "aitools.fyi",
+    "discount": "免费增值",
+    "description": "GPT Image 2.5 在浏览器中运行，将书面提示或参考照片转换为可下载的图像。可选择文本生成图像或图像生成图像，设置最高达4K的纵横比和分辨率，并从单一工作区导出。免费账户附带入门积分，月度计划的积分池从550扩展到2,500。\n\n大多数用户通过 ChatGPT 或 API 访问 OpenAI 的图像...",
+    "category": "Image Generation",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Verla",
+    "url": "https://verla.io/",
+    "source": "aitools.fyi",
+    "discount": "付费",
+    "description": "Verla 是一款为大学生设计的作业助手，帮助他们在提交前起草、检查和润色学术作品。您可以上传评分标准、讲义和课程文件，然后生成写作任务、幻灯片或编码任务，运行类似 Turnitin 的 AI 检测，并在同一工作区内对被标记的文本进行人性化处理。\n\n大多数学生写作工具仅限于生成或检测。Verla 将上传评分...",
+    "category": "Homework",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Labrynth",
+    "url": "https://www.labrynth.ai/",
+    "source": "aitools.fyi",
+    "discount": "付费",
+    "description": "Labrynth 对许可和合规文件进行审查，依据特定司法管辖区的要求，标记提交前发现的缺陷，并监控八个受监管行业的规则变更。企业和政府机构利用该平台缩短建筑、核能、医疗、薪资及其他高风险监管环境中的审批周期。\n\n大多数合规工具跟踪申请状态和截止日期。Labrynth 侧重于文件本身，将每项要求与包内证据对应...",
+    "category": "Legal",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "NexusAi",
+    "url": "https://www.nexusai-tech.com/",
+    "source": "aitools.fyi",
+    "discount": "免费增值",
+    "description": "NexusAi 让您可以从一个目录中浏览、比较和筛选 AI 软件。该网站列出了 500 多款精选产品以及 1000 多条按工作流程组织的提示，从营销自动化到开发者任务。创始人、运营者和好奇的买家在需要发现和实用模板时使用它，无需管理书签文件夹和论坛帖子。\n\n大多数目录仅停留在列表页面。NexusAi 增加了...",
+    "category": "Directories",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Anyvids",
+    "url": "https://anyvids.ai/",
+    "source": "aitools.fyi",
+    "discount": "免费增值",
+    "description": "Anyvids 是一个基于浏览器的视频和图像工作室，集成了 Veo 3.1、Kling 3.0、Seedance 2.5、GPT Image 2 以及众多其他生成器，统一登录和信用余额管理。您可以从文本提示或产品照片直接生成成品视频、编辑图像或会说话的头像，无需为每个模型供应商打开不同的应用程序。\n\n大多数...",
+    "category": "All In One",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Dubly.AI",
+    "url": "https://dubly.ai/",
+    "source": "aitools.fyi",
+    "discount": "付费",
+    "description": "Dubly.AI 是一个视频翻译和配音平台，能够将口语视频转换成新的语言，支持克隆声音、可选的唇形同步和定时字幕。上传 mp4 或 mov 文件，选择 40 多种目标语言，即可通过一个工作流程获得 MP4 视频、MP3 音频轨道和 SRT 字幕。该产品面向大规模本地化培训、营销和内部视频的企业，而非一次性创...",
+    "category": "Translation",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Getsolved",
+    "url": "https://getsolved.ai",
+    "source": "aitools.fyi",
+    "discount": "免费增值",
+    "description": "Getsolved 将写作、检测和研究工具整合到一个浏览器工作区，面向学生、营销人员和专业人士。该平台涵盖文本改进、抄袭检测、AI 检测、改写、语法检查、事实核查、摘要以及可读取 PDF、文档和网站的 GPT-4 聊天功能。\n\n无需为单独的改写工具、检测工具和聊天应用付费，Getsolved 将检测和重写整...",
+    "category": "All In One",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Getsolved AI Detector",
+    "url": "https://getsolved.ai/ai-detector",
+    "source": "aitools.fyi",
+    "discount": "免费增值",
+    "description": "Getsolved AI Detector 扫描粘贴的文本或上传的文档，并返回 AI 概率得分以及句子级别的反馈，指出哪些段落可能是机器生成的。您可以在浏览器内检查来自 ChatGPT、Claude、Gemini 及其他模型的草稿，该工具面向需要在提交作品给客户前获得超过单一百分比结果的作家和编辑。\n\n许多...",
+    "category": "AI Detection",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Landscape Design AI",
+    "url": "https://landscape-design.ai/",
+    "source": "aitools.fyi",
+    "discount": "免费",
+    "description": "Landscape Design AI 能在几秒钟内将您院子、露台或花园的照片转化为逼真的户外重新设计效果图。上传一张快照，选择一种风格，您即可获得前后对比的景观可视化效果，无需使用 CAD 软件或聘请设计师制作初稿。\n\n大多数房间可视化工具仅限于室内。Landscape Design AI 专注于户外空间...",
+    "category": "Design",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Libra",
+    "url": "https://trylibra.ai/",
+    "source": "aitools.fyi",
+    "discount": "免费增值",
+    "description": "Libra 集成了 Slack、Gmail、Notion、HubSpot 以及您团队已使用的 250 多种工具。它可以整理邮件，在会议前提供简报，根据简单的英文指令启动自主代理，并根据实时公司数据制作幻灯片。其核心理念是在您的应用之间构建一个共享的大脑，而不是另一个会忘记昨天内容的聊天窗口。\n\n大多数助手将...",
+    "category": "Agents",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "ReelMuse.ai",
+    "url": "https://www.reelmuse.ai/",
+    "source": "aitools.fyi",
+    "discount": "免费增值",
+    "description": "ReelMuse.ai 将照片和文本提示转换为适合 TikTok、Reels 和 Shorts 的短视频、图像和音频片段。上传手机照片或输入提示，选择一键效果或生成模式，跳过大多数桌面视频工具所需的时间线编辑。\n\n大多数 AI 视频应用仅限于一种模型或一种工作流程，而 ReelMuse 集成了病毒式社交效果...",
+    "category": "Image Generation",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "more.graphics",
+    "url": "https://more.graphics/",
+    "source": "aitools.fyi",
+    "discount": "免费增值",
+    "description": "more.graphics 计划让您从一个标记源构建图形、社交媒体帖子和更广泛的数字内容，而无需为每种格式处理单独的设计文件。公共主页标注为即将推出，因此该产品尚未开放注册或日常使用。\n\n该网站表示其运行基于 htmg，并推介一种单一标记工作流程，以实现快速、一致的数字创作。这一重点不同于画布编辑器，每个导...",
+    "category": "Design",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Ontosight.ai",
+    "url": "https://ontosight.ai/",
+    "source": "aitools.fyi",
+    "discount": "免费增值",
+    "description": "科学家和临床医生使用 Ontosight.ai 以自然语言提出研究问题，并从生物医学知识图谱中获取有引用的答案。该聊天机器人在一个对话界面中搜索超过 75M 条科学记录、超过 1M 条临床试验和超过 12M 条专利。该平台表示每天处理超过 25,000 个研究问题，受到全球 825,000 多名科学家的信赖...",
+    "category": "Chat Bot",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Hylark",
+    "url": "https://hylark.com/",
+    "source": "aitools.fyi",
+    "discount": "付费",
+    "description": "Hylark 让专家、教练和顾问围绕特定主题在一个在线俱乐部中聚集成员。您可以获得帖子和投票的动态，带有角色和位置的成员资料，以及用于持续讨论的聊天频道。注册通过 app.hylark.com 进行，订阅开始前有14天免费试用期。\n\n大多数社区建设者依赖自动化入门和 AI 聊天机器人提供支持。Hylark ...",
+    "category": "Project Management",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "ChatGPT",
+    "url": "https://chatgpt.com/?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+    "source": "Futurepedia",
+    "discount": "Freemium, $20/mo",
+    "description": "Research, create, and automate tasks with the leader in AI.",
+    "category": "AI Tools",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Claude",
+    "url": "https://claude.ai/?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+    "source": "Futurepedia",
+    "discount": "Freemium, $20/mo",
+    "description": "Create, analyze, and debug content and code faster.",
+    "category": "AI Tools",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "HubSpot AEO Sensor",
+    "url": "https://www.hubspot.com/aeo-sensor?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+    "source": "Futurepedia",
+    "discount": "Free",
+    "description": "Tracks how AI answer engines shift your website’s visibility.",
+    "category": "AI Tools",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Perplexity",
+    "url": "https://www.perplexity.ai/?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+    "source": "Futurepedia",
+    "discount": "Freemium",
+    "description": "Find and summarize trusted web information instantly.",
+    "category": "AI Tools",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Google Gemini",
+    "url": "https://gemini.google.com/?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+    "source": "Futurepedia",
+    "discount": "Freemium, $19.99/mo",
+    "description": "Multimodal reasoning across text, images, audio, and video.",
+    "category": "AI Tools",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Midjourney",
+    "url": "https://www.midjourney.com/home/?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+    "source": "Futurepedia",
+    "discount": "Paid, $10/mo",
+    "description": "Unlock true digital artistry.",
+    "category": "AI Tools",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Grok",
+    "url": "https://x.ai/grok?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+    "source": "Futurepedia",
+    "discount": "Freemium, $30/mo",
+    "description": "Chat with data, images, code, and real-time search.",
+    "category": "AI Tools",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Ankon AI",
+    "url": "https://ankonai.com/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "Turns topics, scripts, or PDFs into narrated whiteboard videos.",
+    "category": "Generative Video",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Cliphi",
+    "url": "https://www.cliphi.com/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool to convert long videos into short clips.",
+    "category": "Social Media",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Star By Face",
+    "url": "https://starbyface.com/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool to find celebrity look-alike suggestions based on your photo.",
+    "category": "AI Detection",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Jason AI",
+    "url": "https://jasonai.tech/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool for automating B2B conversations and bookings.",
+    "category": "Marketing",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Klarent",
+    "url": "https://klarent.ai/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "AI-powered, no-code QA test automation platform for web and mobile.",
+    "category": "Automation & Agents · Generative Code",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Genmo Mochi-1",
+    "url": "https://genmo.ai/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "Create videos from text with AI",
+    "category": "Generative Video",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Google AI Studio",
+    "url": "https://aistudio.google.com/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool for AI development with diverse tools and models.",
+    "category": "Chat · Generative Art",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Tenki Cloud",
+    "url": "https://www.tenki.cloud/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool for self-hosted GitHub Actions runners with automatic scaling capabilities.",
+    "category": "Productivity",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Sync.so",
+    "url": "https://sync.so/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool to sync lips and clone voices in videos",
+    "category": "Generative Video",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Humva",
+    "url": "https://www.humva.com/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool to create videos from text or voice using digital avatars.",
+    "category": "Avatar",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Flora AI",
+    "url": "https://www.florafauna.ai/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A platform to integrate multiple AI models for generating images, videos, and character designs.",
+    "category": "Generative Art",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Emergent.sh",
+    "url": "https://emergent.sh/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "An IDE for code migration from legacy to modern frameworks through coding agents.",
+    "category": "Generative Code",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Copilot 3D",
+    "url": "https://copilot.microsoft.com/labs/experiments/3d-generations",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool to convert 2D images into 3D models",
+    "category": "Generative Art",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "TickClip",
+    "url": "https://www.tickclip.ai/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "AI tool that checks price, reviews, and seller trust before you buy.",
+    "category": "Research · Productivity",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "HiClip",
+    "url": "https://app.hiclip.ai/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool that creates short, highlight clips from long-form videos.",
+    "category": "Social Media",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Kreado AI",
+    "url": "https://www.kreadoai.com/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool to create multilingual language videos.",
+    "category": "Avatar",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Qlip.ai",
+    "url": "https://www.qlip.ai/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool for creating clips from long-form videos.",
+    "category": "Social Media",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Motionleap",
+    "url": "https://apps.apple.com/us/app/motionleap-by-lightricks/id1381206010",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "An App to animate still images with effects.",
+    "category": "Image Improvement",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "NotebookLM",
+    "url": "https://notebooklm.google.com/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "Chat with your documents and websites",
+    "category": "Productivity · Chat",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Granola",
+    "url": "https://www.granola.ai/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "An AI notepad that transcribes meetings using your computer audio and automatically generates notes, action items, and follow-ups.",
+    "category": "Productivity · Automation & Agents",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Wispr Flow",
+    "url": "https://www.flowvoice.ai/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool to convert speech to formatted text instantly.",
+    "category": "Speech-To-Text",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Perplexity AI",
+    "url": "https://www.perplexity.ai/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool to search with AI and image uploads.",
+    "category": "Chat · Research",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Hermes 3",
+    "url": "https://nousresearch.com/hermes3/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool to perform complex creative and analytical tasks with long-term context.",
+    "category": "Chat",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Reflect",
+    "url": "https://reflect.app/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "The Ultimate Note-Taking Tool",
+    "category": "Productivity",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Eleven Labs",
+    "url": "https://www.elevenlabs.io/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "Create natural sounding voices for creators and publishers",
+    "category": "Text-To-Speech",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Runway",
+    "url": "https://runwayml.com/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "Video editing tool with AI background remover and more",
+    "category": "Generative Video · Video Editing",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "N8N",
+    "url": "https://n8n.io/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A platform to connect and automate tasks across multiple applications and services.",
+    "category": "Productivity · Automation & Agents",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Cursor v2",
+    "url": "https://www.cursor.sh/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "Cursor is an AI-powered code editor that helps engineers build software faster.",
+    "category": "Generative Code",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Leonardo AI",
+    "url": "https://leonardo.ai/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "Create unique production-ready game assets",
+    "category": "Generative Art · Generative Video",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Recraft",
+    "url": "https://www.recraft.ai/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool for transforming images into vector art, illustrations, and 3D images.",
+    "category": "Generative Art",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "Ideogram",
+    "url": "https://ideogram.ai/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A tool to generate customized graphics and animations.",
+    "category": "Generative Art",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "KREA",
+    "url": "https://www.krea.ai/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "A design tool to generate images and videos.",
+    "category": "Generative Art",
+    "date": "2026-09-20",
+    "endDate": null
+  },
+  {
+    "title": "BuseyBench",
+    "url": "https://www.buseybench.com/",
+    "source": "Futuretools",
+    "discount": "查看",
+    "description": "An AI benchmark that tests how well language models generate Gary Busey portraits as SVG output.",
+    "category": "Generative Art · Research",
+    "date": "2026-09-20",
+    "endDate": null
+  }
+]
