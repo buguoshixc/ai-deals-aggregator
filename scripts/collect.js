@@ -5,6 +5,7 @@
  * 用法：
  *   node scripts/collect.js                     # 全量采集并写盘
  *   node scripts/collect.js --dry-run           # 只采集并打印报告，不写盘
+ *   node scripts/collect.js --headless          # 额外启用无头浏览器来源（抓 JS 渲染的公开页）
  *   node scripts/collect.js --only=cn_docs      # 只跑指定来源
  *   node scripts/collect.js --list              # 列出已注册来源
  *   node scripts/collect.js --force             # 即使零产出也写盘（默认零产出跳过写盘）
@@ -72,18 +73,22 @@ async function collectFrom(collector, report) {
 }
 
 async function main() {
+  const headless = flag('headless');
+
   if (flag('list')) {
-    console.log('已注册采集器：');
-    for (const c of registry.list()) {
-      console.log(`  ${c.id.padEnd(16)} ${c.region === 'cn' ? '国内' : '国外'}  ${c.name}`);
+    console.log(`已注册采集器${headless ? '（含无头浏览器来源）' : ''}：`);
+    for (const c of registry.list({ headless })) {
+      const tag = c.headless ? '无头' : (c.region === 'cn' ? '国内' : '国外');
+      console.log(`  ${c.id.padEnd(18)} ${tag}  ${c.name}`);
     }
+    if (!headless) console.log('\n（加 --headless 可看到无头浏览器来源）');
     return;
   }
 
   const dryRun = flag('dry-run');
   const only = option('only');
   const ids = only ? only.split(',').map(s => s.trim()).filter(Boolean) : [];
-  const { picked, missing } = registry.select(ids);
+  const { picked, missing } = registry.select(ids, { headless });
 
   if (missing.length) {
     console.error(`未知采集器 id: ${missing.join(', ')}（用 --list 查看）`);
@@ -91,7 +96,7 @@ async function main() {
   }
 
   const today = todayCN();
-  console.log(`开始采集（${today}）：${picked.length} 个来源${dryRun ? '，dry-run 模式' : ''}`);
+  console.log(`开始采集（${today}）：${picked.length} 个来源${dryRun ? '，dry-run 模式' : ''}${headless ? '，含无头浏览器来源' : ''}`);
 
   const report = createReport();
   const fresh = [];

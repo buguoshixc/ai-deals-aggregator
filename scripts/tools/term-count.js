@@ -4,24 +4,34 @@
  * 用于判断页面正文是否真的包含目标信息（而非被 JS 渲染的空壳）。
  *
  * 用法：node scripts/tools/term-count.js <url> 关键词1 关键词2 ...
+ *       node scripts/tools/term-count.js <url> 关键词 --render   # SPA 页面：先用无头浏览器渲染
  */
 
 const cheerio = require('cheerio');
 const { getText } = require('../lib/http');
 
+async function loadHtml(url, useRender) {
+  if (!useRender) return getText(url, { timeout: 25000 });
+  const { withPage, render } = require('../lib/browser');
+  return withPage(page => render(page, url).then(result => result.html));
+}
+
 async function main() {
-  const [url, ...terms] = process.argv.slice(2);
+  const args = process.argv.slice(2);
+  const useRender = args.includes('--render');
+  const [url, ...terms] = args.filter(a => a !== '--render');
   if (!url || !terms.length) {
-    console.error('用法: node scripts/tools/term-count.js <url> 关键词...');
+    console.error('用法: node scripts/tools/term-count.js <url> 关键词... [--render]');
     process.exit(1);
   }
 
-  const html = await getText(url, { timeout: 25000 });
+  const html = await loadHtml(url, useRender);
   const $ = cheerio.load(html);
   $('script,style,noscript,svg').remove();
   const text = $('body').text().replace(/\s+/g, ' ').trim();
 
   console.log(`URL      : ${url}`);
+  console.log(`模式     : ${useRender ? '无头浏览器渲染' : '静态 fetch'}`);
   console.log(`HTML     : ${html.length} 字节`);
   console.log(`正文     : ${text.length} 字符`);
   console.log(`正文字数/HTML = ${(text.length / html.length * 100).toFixed(1)}%（过低说明是 JS 空壳）\n`);

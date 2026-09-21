@@ -13,6 +13,7 @@
 2. **落地页指向官方**。聚合站（Layer3Labs 等）作为 `sourceUrl` 署名，卡片主链接给到厂商官方页。
 3. **零产出的采集器不上线**。注册表里只保留实测有产出的来源，避免"代码在跑但没数据"。
 4. **坏数据不发布**。`scripts/validate.js` 是部署门禁，校验不过就不部署。
+5. **不抓登录态**。只抓公开页；需要登录才可见的内容不进自动采集链路。
 
 ## 快速开始
 
@@ -25,6 +26,14 @@ npm run test:strict     # 额外校验内容质量指标
 npm run serve           # 本地预览 http://127.0.0.1:8080
 ```
 
+抓 JS 渲染的公开页（可选能力，需要本机装有 Edge 或 Chrome）：
+
+```bash
+npm run collect:headless:dry   # 静态来源 + 无头来源，dry-run
+npm run collect:headless       # 静态来源 + 无头来源，写盘
+npm run collect:headless:list  # 查看含无头来源在内的注册表
+```
+
 常用排查命令：
 
 ```bash
@@ -33,6 +42,8 @@ node scripts/collect.js --only=cn_qianfan --dry-run  # 只跑某个来源
 node scripts/tools/inspect-source.js <url> --rows    # 查看页面表格结构（写采集器用）
 node scripts/tools/find-offers.js <url>              # 探测页面是否含优惠内容
 node scripts/tools/term-count.js <url> 免费 额度      # 判断页面是否 JS 空壳
+node scripts/tools/term-count.js <url> 免费 额度 --render  # 渲染后再探测（SPA 页面）
+node scripts/tools/render-source.js <url> --rows     # 渲染公开页并看表格/优惠信号
 ```
 
 ## 数据契约（deals.json v2）
@@ -87,6 +98,7 @@ scripts/
     classify.js               地区判定、有效期抽取
     official.js               聚合站条目 → 官方页解析
     http.js                   UA / 超时 / 重试 / 并发限流 / robots.txt
+    browser.js                无头浏览器渲染（可选能力，仅 --headless 时加载）
     report.js                 采集报告表格
     curated.js                人工策展数据加载
   collectors/
@@ -94,12 +106,13 @@ scripts/
     cn_docs.js                国内：百度千帆免费额度表 / 阿里云百炼 / 智谱免费模型
     global_deals.js           国外真实优惠：Layer3Labs 折扣表
     global_directories.js     国外目录站：aitools.fyi / Futurepedia / Futuretools
+    headless.js               无头浏览器来源：智谱活动页 / 火山方舟免费额度与活动
   data/
     curated_cn.json           国内人工策展（可核验的官方优惠）
     curated_global.json       国外人工策展
     aliases.json              产品别名表（跨源去重）
     official_urls.json        聚合站条目 → 官方页映射
-  tools/                      采集器调试工具（探测页面结构、优惠信号、词频）
+  tools/                      采集器调试工具（探测页面结构、优惠信号、词频、渲染态）
 ```
 
 ## 采集来源策略
@@ -108,14 +121,38 @@ scripts/
 |---|---|---|
 | 百度千帆 | 国内 | 官方文档「新用户免费额度」表：服务名称 / 赠送 Tokens / 有效期 |
 | 阿里云百炼 | 国内 | 官方帮助文档「新人免费额度」 |
-| 智谱AI | 国内 | 官方文档标注的免费大模型（GLM-4-Flash） |
+| 智谱AI | 国内 | 官方文档标注的免费大模型（GLM-4.7-Flash 等） |
+| 智谱AI活动页 | 国内（无头） | 官方价格页营销位：新用户 2000 万 Tokens、邀请返 Tokens、限时五折、缓存限时免费 |
+| 火山方舟 | 国内（无头） | 官方产品页「免费额度」表（文本/图像/语音/向量/联网插件）+ 最新活动 |
 | Layer3Labs | 国外 | 折扣表，每行自带官方链接 |
 | aitools.fyi / Futurepedia / Futuretools | 国外 | 工具目录，主要产出 `type: "tool"` |
 
 **已实测淘汰**（零产出或纯垃圾）：Zapier、BitDegree、AitoolsDirectory、AppSumo（客户端渲染，0 产出）、
-火山引擎文档（JS 空壳）、各家控制台（需登录）。
+火山引擎文档（旧路径 JS 空壳）、各家控制台（需登录）、
+DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信号——定价页只有"赠送余额"这一计费说明，
+不是可领取的公开额度，故不注册采集器）。
 
 抓不到但真实存在的优惠，走 `scripts/data/curated_*.json` 人工策展——**内容准确性优先于自动化率**。
+
+## 无头浏览器采集（可选，不参与 CI）
+
+国内厂商的活动页/产品页多是 SPA，静态 `fetch` 只能拿到几百字节空壳（`cheerio` 解析出 0 条），
+这类来源此前只能靠人工策展。`scripts/lib/browser.js` 用本机已装浏览器内核把页面渲染完再取 DOM，
+把它们重新纳入自动采集。
+
+设计约束：
+
+1. **只抓公开页，不做登录态抓取**：不加载用户 profile、不注入 cookie、不传凭据。
+2. **默认不加载**：只有 `collect.js --headless` 才 `require` 无头来源，因此 CI 的常规采集链路
+   完全不依赖 `playwright-core`；`validate.js` 依旧是零依赖。
+3. **规则驱动、失败安全**：每条产出都对应官网上的一句原文正则，页面改版导致正则不命中时产出为 0，
+   **绝不猜测、不拼接**。新增一条优惠 = 在 `collectors/headless.js` 加一条带原文正则的规则。
+4. **宁可漏采也不发坏数据**：免费额度表结构不匹配（分项对不上）时整行跳过。
+
+> ⚠️ 无头来源目前**只在本地/手动跑**刷新，CI 的 `collect.yml` 未启用。原因是 GitHub Actions 的
+> 机房 IP 大概率被国内厂商风控拒之门外，且要在 CI 里装浏览器内核会显著拖慢流水线。
+> 若要让线上也自动刷新这两个来源，需要先确认 CI 出口 IP 能正常访问，再改 `collect.yml`
+> （`npx playwright install --with-deps chromium` + `npm run collect:headless`）。
 
 ## 自动化与部署
 
@@ -133,7 +170,8 @@ scripts/
 
 | 内容 | 更新方式 | 频率 |
 |---|---|---|
-| 采集到的优惠 / 工具条目 | 自动（GitHub Actions 定时） | 每天 2 次（北京 08:00 / 20:00）；数据无变化则不提交 |
+| 采集到的优惠 / 工具条目（静态来源） | 自动（GitHub Actions 定时） | 每天 2 次（北京 08:00 / 20:00）；数据无变化则不提交 |
+| 无头来源（智谱活动页 / 火山方舟） | **手动**（本地 `npm run collect:headless`） | 由人触发，无自动更新 |
 | 线上页面 | 自动（提交后经 `workflow_run` 触发部署） | 跟随采集，或任意一次 `push` |
 | 过期优惠下架 | 自动（每次采集时修剪） | 过期超过 14 天的优惠被移除 |
 | 人工策展优惠（`scripts/data/curated_*.json`） | **人工** | 由人修改并推送，无自动更新 |
@@ -146,5 +184,6 @@ scripts/
 ## 已知边界
 
 - 需登录的页面（各家控制台）不采集，不做登录态抓取。
-- JS 渲染的定价页（火山引擎等）不采集，改由人工策展维护。
+- JS 渲染的公开页已可用无头浏览器采集（见上文），但该能力**只在本地启用**，CI 未跑；
+  渲染后的页面若仍无优惠表述（如 DeepSeek 官网）就不注册采集器，改由人工策展维护。
 - 促销信息时效性强，`expiresAt` 或 `validity` 字段标注时间信息；发现过期信息欢迎提 issue 修正。

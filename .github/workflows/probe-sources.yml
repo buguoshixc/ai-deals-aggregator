@@ -1,0 +1,66 @@
+name: Probe Headless Sources
+
+# 目的：一次性验证 GitHub Actions 的出口 IP 能否访问智谱活动页与火山方舟。
+# 国内厂商常见风控会拦截机房 IP，若这里跑不通，就不要把无头来源接进 collect.yml。
+#
+# 用法：Actions → Probe Headless Sources → Run workflow → 看日志三个小节。
+#   ① 出口 IP 与直连可达性（不渲染，最快能看到是否被拦）
+#   ② 安装浏览器内核（失败不阻断，后面可能还有系统自带 Chrome 兜底）
+#   ③ 实跑两个无头来源（dry-run，不写盘、不提交）
+#
+# 本工作流只读，不写仓库、不发布。
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: 1) 出口 IP 与直连可达性（不渲染）
+        run: |
+          echo "出口 IP: $(curl -s --max-time 15 https://api.ipify.org || echo unknown)"
+          echo
+          UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
+          for url in "https://bigmodel.cn/pricing" "https://www.volcengine.com/product/ark"; do
+            out=/tmp/page.html
+            code=$(curl -s -o "$out" -w '%{http_code}' -A "$UA" -L --max-time 30 "$url" || echo "curl-failed")
+            size=$(wc -c < "$out" 2>/dev/null || echo 0)
+            echo "── $url"
+            echo "   HTTP $code / ${size} bytes"
+            # 空壳（几 KB）是正常的 SPA 表现；被风控拦截通常表现为 403 / 验证页 / 极小响应
+            if grep -qiE 'captcha|人机验证|访问被拒绝|forbidden|安全验证' "$out" 2>/dev/null; then
+              echo "   ⚠️ 响应疑似风控/验证页"
+            fi
+            echo
+          done
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: 2) 安装浏览器内核（失败不阻断）
+        continue-on-error: true
+        run: |
+          PW_VERSION=$(node -p "require('playwright-core/package.json').version")
+          echo "playwright-core 版本: $PW_VERSION"
+          npx --yes "playwright@$PW_VERSION" install --with-deps chromium
+          echo "已安装的内核："
+          ls -d "$HOME/.cache/ms-playwright"/* 2>/dev/null || echo "(无)"
+
+      - name: 3) 实跑无头来源（dry-run，不写盘）
+        run: node scripts/collect.js --headless --only=cn_zhipu_pricing,cn_volc_ark --dry-run

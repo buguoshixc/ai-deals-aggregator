@@ -57,6 +57,8 @@ const SOURCE_PRIORITY = {
   'Curated-CN': 100,
   Layer3Labs: 50,
   '智谱AI': 40,
+  '智谱AI活动页': 40,
+  '火山方舟': 40,
   '深度求索': 40,
   '阿里云百炼': 40,
   '月之暗面': 40,
