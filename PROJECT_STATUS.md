@@ -21,7 +21,7 @@
 | 默认视图 | 全部条目混在一起 | 只显示真实优惠，「全部工具」独立 Tab |
 | 落地页 | 26 条指向聚合站同一页 | 优惠条目 100% 指向厂商官方页，聚合站降级为署名 |
 | 自动化 | 采集与部署互相耦合，构建期抓取 | 采集 / 发布职责分离，发布不再依赖网络抓取 |
-| JS 渲染的公开页 | 一律放弃，只能人工策展 | 无头浏览器采集（本地可选链路），火山方舟/智谱活动页已自动化 |
+| JS 渲染的公开页 | 一律放弃，只能人工策展 | 无头浏览器采集，火山方舟/智谱活动页已自动化（CI 每天 2 次） |
 | 质量门禁 | 无 | `npm test`（零依赖）+ strict 内容指标，部署前强制 |
 
 ---
@@ -136,8 +136,8 @@ Collect AI Deals   7754087  schedule  2026-09-21T03:28Z   → 提交了 76ee1e5
 关键约束（都写进了代码注释）：
 
 - **只抓公开页，不做登录态抓取**：不加载 profile、不注入 cookie、不传凭据。
-- **默认不加载**：只有 `collect.js --headless` 才 require 无头来源，CI 的常规链路不依赖 `playwright-core`，
-  `validate.js` 依旧零依赖。
+- **默认不加载**：只有 `collect.js --headless` 才 require 无头来源；`validate.js` 依旧零依赖，
+  不带 `--headless` 的调用完全不依赖 `playwright-core`。
 - **规则驱动、失败安全**：每条产出对应官网一句原文正则；页面改版导致不命中时产出为 0，不猜测、不拼接。
 - **宁可漏采也不发坏数据**：免费额度表的分项按下标配对，对不上且模型非单个时整行跳过。
 
@@ -161,17 +161,34 @@ Collect AI Deals   7754087  schedule  2026-09-21T03:28Z   → 提交了 76ee1e5
 | `bigmodel.cn/pricing` 直连 | HTTP 200 / 4301 bytes（正常 SPA 空壳，**无风控特征**） |
 | `volcengine.com/product/ark` 直连 | HTTP 200 / 168969 bytes，**无风控特征** |
 | 火山方舟在 CI 的产出 | 12 条（与本地一致） |
-| 智谱AI活动页在 CI 的产出 | 0 条 → 定位为上面的坑 4，已修复待复测 |
+| 智谱AI活动页在 CI 的产出 | 首轮 0 条 → 定位为上面的坑 4，已修复；复测运行 [#35612557532](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35612557532) 全绿，两来源总耗时从 49.7s 降到 18s |
 
 结论：**机房 IP 没有被拦**，把无头来源接进 `collect.yml` 在可达性上没有障碍。
 
-**边界**：无头来源目前**只在本地手动跑**刷新，`collect.yml` 未启用。线上要自动刷新需先复测探针，
-再把 `npx playwright install --with-deps chromium` 与 `npm run collect:headless` 加进去
-（runner 建议钉 `ubuntu-24.04`，避免 `ubuntu-latest` 迁移到 Ubuntu 26 后系统库变化）。
+**边界**：无头来源最初只在本地手动跑，现已**接入 `collect.yml`**（见 2.8），与静态来源在同一次采集里
+每天自动跑 2 次；内核安装步骤是 `continue-on-error`，装不上时该来源产出 0 条而不拖垮静态链路。
+每次运行的 Summary 会打印各来源产出，零产出能立刻被发现。
 
 **DeepSeek 的结论**：官网（`www.deepseek.com`）与 API 文档（`api-docs.deepseek.com`）用无头浏览器渲染后
 **依然是 0 条优惠信号**——定价页只有"扣减…将从充值余额或赠送余额中扣减"这类计费说明，不是可领取的公开额度。
 按"零产出的采集器不上线"原则**不注册采集器**，如需收录只能人工策展。
+
+---
+
+### 2.8 无头来源接入 CI
+
+探针实测确认机房 IP 可达后，`collect.yml` 改成：
+
+1. runner 钉 `ubuntu-24.04`（避免 `ubuntu-latest` 迁到 Ubuntu 26 后浏览器系统库变化）
+2. `actions/checkout@v5` / `actions/setup-node@v5` + `node-version: '24'`（消除 Node 20 弃用警告）
+3. 新增 `Install browser for JS-rendered sources`：按 `playwright-core` 的版本号安装自带 chromium，
+   **`continue-on-error: true`**——装不上时无头来源各自报错、产出 0 条，静态来源照常跑，不会拖垮主链路
+4. 采集步骤改为 `node scripts/collect.js --headless`，并加 `set -o pipefail` 与 `tee`，
+   保证采集失败不会被管道掩盖
+5. 新增 `Publish run summary`（`if: always()`）：把各来源产出、零产出告警、熔断告警写进运行 Summary，
+   某天某个来源零产出时不用翻日志就能看见
+
+`deploy.yml` 未改动（纯发布路径保持原样）。
 
 ---
 
@@ -224,8 +241,9 @@ Layer3Labs 9 · 人工策展（国内）9 · 智谱AI 7 · 智谱AI活动页 5 �
 **边界**
 
 - 需登录的页面（各家控制台）不采集，不做登录态抓取。
-- JS 渲染的公开页已可用无头浏览器采集（见 2.7），但该链路**只在本地启用**，CI 未跑；
-  渲染后仍无优惠表述的来源（如 DeepSeek 官网）不注册采集器，改由人工策展补。
+- JS 渲染的公开页已用无头浏览器采集并接入 CI（见 2.7 / 2.8）；渲染后仍无优惠表述的来源
+  （如 DeepSeek 官网）不注册采集器，改由人工策展补。厂商改版会让某个来源产出 0 条——
+  这是刻意设计的失败安全，届时用 `scripts/tools/render-source.js` 重新校准规则。
 - 部分优惠的实际有效期写在控制台里（如"自开通起 3 个月"），无法从公开页拿到绝对截止日期，
   用 `validity` 字段如实描述，不编造 `expiresAt`。
 - **关于 strict 门槛**：原先设想"总条数 ≥ 120"，实测后调整为 **≥ 100**。原因是实测可稳定采集的
@@ -239,13 +257,14 @@ Layer3Labs 9 · 人工策展（国内）9 · 智谱AI 7 · 智谱AI活动页 5 �
    的新用户额度与免费模型；国外 AppSumo 的 lifetime deal、各大云的 AI startup credit 计划。
    这是提升"优惠条数"最有效的路径——比再写十个脆弱采集器更靠谱。
    （火山引擎与智谱的活动页已改由无头采集器覆盖，见 2.7。）
-2. **把无头链路接进 CI**：先验证 GitHub Actions 出口 IP 能正常访问火山引擎 / 智谱，
-   再在 `collect.yml` 加 `npx playwright install --with-deps chromium` 与 `npm run collect:headless`，
-   让这两个来源也每天自动刷新。
+2. **给无头来源加健康度监控**：现在只有 Summary 里的零产出提示（人工看）。可做"连续 N 次零产出
+   就在 Actions 里失败/开 issue"，让改版导致的失配自动浮出来。
 3. **过期信息的自动降级**：`expiresAt` 到期后自动从默认视图移除（已实现），可再加"最近过期"归档页。
 4. **来源健康度监控**：采集报告落库，某个源连续 N 天零产出就报警。
 5. **自定义域名**：目前用 `buguoshixc.github.io/ai-deals-aggregator/`，如需绑域名需另行配置 CNAME。
 6. **用户反馈入口**：卡片上加"信息有误"链接，跳 GitHub Issue 模板。
+7. **`deploy.yml` 同步收尾**：把它的 `checkout@v4` / `setup-node@v4` 也升到 `@v5`、runner 钉版本，
+   与 `collect.yml` 保持一致（纯清理，不影响发布逻辑）。
 
 ---
 
@@ -253,7 +272,7 @@ Layer3Labs 9 · 人工策展（国内）9 · 智谱AI 7 · 智谱AI活动页 5 �
 
 - **前端**：原生 HTML + CSS + JavaScript（单文件，零构建）
 - **采集**：Node.js 20+ / axios / cheerio，自建 http 封装（UA、超时、重试、并发限流、robots.txt）
-- **无头采集**（可选，仅本地）：playwright-core + 本机 Edge/Chrome，不下载浏览器内核
+- **无头采集**：playwright-core + 本机 Edge/Chrome（本地）/ playwright 自带 chromium（CI），不下载多余内核
 - **校验**：自建零依赖校验脚本（`scripts/validate.js`）
 - **部署**：GitHub Actions → GitHub Pages
 - **存储**：静态 `deals.json`（v2 契约）

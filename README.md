@@ -135,32 +135,36 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 
 抓不到但真实存在的优惠，走 `scripts/data/curated_*.json` 人工策展——**内容准确性优先于自动化率**。
 
-## 无头浏览器采集（可选，不参与 CI）
+## 无头浏览器采集（JS 渲染的公开页）
 
 国内厂商的活动页/产品页多是 SPA，静态 `fetch` 只能拿到几百字节空壳（`cheerio` 解析出 0 条），
-这类来源此前只能靠人工策展。`scripts/lib/browser.js` 用本机已装浏览器内核把页面渲染完再取 DOM，
+这类来源此前只能靠人工策展。`scripts/lib/browser.js` 用浏览器内核把页面渲染完再取 DOM，
 把它们重新纳入自动采集。
 
 设计约束：
 
 1. **只抓公开页，不做登录态抓取**：不加载用户 profile、不注入 cookie、不传凭据。
-2. **默认不加载**：只有 `collect.js --headless` 才 `require` 无头来源，因此 CI 的常规采集链路
-   完全不依赖 `playwright-core`；`validate.js` 依旧是零依赖。
+2. **默认不加载**：只有 `collect.js --headless` 才 `require` 无头来源，所以 `validate.js` 依旧是
+   零依赖，不带 `--headless` 的调用完全不依赖 `playwright-core`（CI 的采集步骤显式带 `--headless`）。
 3. **规则驱动、失败安全**：每条产出都对应官网上的一句原文正则，页面改版导致正则不命中时产出为 0，
    **绝不猜测、不拼接**。新增一条优惠 = 在 `collectors/headless.js` 加一条带原文正则的规则。
 4. **宁可漏采也不发坏数据**：免费额度表结构不匹配（分项对不上）时整行跳过。
 5. **等内容，不等网络空闲**：`goto` 只用 `domcontentloaded`，之后显式等待目标文案出现
    （`--wait` / `waitForText`）。`networkidle` 在有长轮询/埋点请求的 SPA 上永远不触发，
    超时后重载页面反而会抓到空壳（CI 上实测过：同一个来源本地 5 条、CI 0 条）。
+6. **装不上内核也不拖垮主链路**：CI 里内核安装步骤是 `continue-on-error`，失败时无头来源各自报错、
+   产出 0 条，静态来源照常采集，报告与运行 Summary 里都能看到。
 
-> ⚠️ 无头来源目前**只在本地/手动跑**刷新，CI 的 `collect.yml` 未启用。原因是 GitHub Actions 的
-> 机房 IP 大概率被国内厂商风控拒之门外，且要在 CI 里装浏览器内核会显著拖慢流水线。
-> 若要让线上也自动刷新这两个来源，需要先确认 CI 出口 IP 能正常访问，再改 `collect.yml`
-> （`npx playwright install --with-deps chromium` + `npm run collect:headless`）。
+浏览器内核优先用本机已装的 Edge / Chrome；CI（Ubuntu）上由工作流安装 playwright 自带 chromium。
+出口 IP 已实测可达（`bigmodel.cn` 与 `volcengine.com` 均返回 HTTP 200，无风控特征）。
 
 ## 自动化与部署
 
 - `.github/workflows/collect.yml`：每天北京时间 08:00 / 20:00 采集 → 校验（含 strict 门禁）→ 有变化才提交 `deals.json`。
+  采集步骤为 `node scripts/collect.js --headless`（静态来源 + 无头来源），前面会安装 playwright 自带
+  chromium（失败不阻断），运行结果汇总到该次运行的 **Summary** 标签页。
+- `.github/workflows/probe-sources.yml`：**手动触发**的只读探针，验证 Actions 出口 IP 能否访问/渲染
+  智谱活动页与火山方舟（厂商风控或镜像变更后用它复检）。
 - `.github/workflows/deploy.yml`：`push` 到 master 时**纯发布**（不再在构建期采集），组装 `dist/` 后部署到 Pages。
 - 采集与发布分离，保证线上产物可复现；`validate.js` 零依赖，发布前无需 `npm install`。
 
@@ -175,7 +179,7 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 | 内容 | 更新方式 | 频率 |
 |---|---|---|
 | 采集到的优惠 / 工具条目（静态来源） | 自动（GitHub Actions 定时） | 每天 2 次（北京 08:00 / 20:00）；数据无变化则不提交 |
-| 无头来源（智谱活动页 / 火山方舟） | **手动**（本地 `npm run collect:headless`） | 由人触发，无自动更新 |
+| 无头来源（智谱活动页 / 火山方舟） | 自动（同上，跑在同一次采集里） | 每天 2 次；内核装不上或页面改版时该来源产出 0 条，不会写坏数据 |
 | 线上页面 | 自动（提交后经 `workflow_run` 触发部署） | 跟随采集，或任意一次 `push` |
 | 过期优惠下架 | 自动（每次采集时修剪） | 过期超过 14 天的优惠被移除 |
 | 人工策展优惠（`scripts/data/curated_*.json`） | **人工** | 由人修改并推送，无自动更新 |
@@ -188,6 +192,7 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 ## 已知边界
 
 - 需登录的页面（各家控制台）不采集，不做登录态抓取。
-- JS 渲染的公开页已可用无头浏览器采集（见上文），但该能力**只在本地启用**，CI 未跑；
-  渲染后的页面若仍无优惠表述（如 DeepSeek 官网）就不注册采集器，改由人工策展维护。
+- JS 渲染的公开页已用无头浏览器采集（见上文，已在 CI 里每天跑）；渲染后仍无优惠表述的来源
+  （如 DeepSeek 官网）不注册采集器，改由人工策展维护。厂商改版会让某个来源产出 0 条——
+  这是刻意设计的失败安全，届时用 `scripts/tools/render-source.js` 重新校准规则即可。
 - 促销信息时效性强，`expiresAt` 或 `validity` 字段标注时间信息；发现过期信息欢迎提 issue 修正。
