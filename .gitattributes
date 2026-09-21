@@ -1,0 +1,11 @@
+# 统一换行符：避免 core.autocrlf 把 shell 脚本改成 CRLF 导致 CI 无法执行
+* text=auto
+*.sh text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.svg text eol=lf
+*.txt text eol=lf
+*.xml text eol=lf

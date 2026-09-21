@@ -2,16 +2,23 @@ name: Collect AI Deals
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # UTC 00:00 = Beijing 08:00
-    - cron: '0 12 * * *'  # UTC 12:00 = Beijing 20:00
-  workflow_dispatch:      # Manual trigger
+    - cron: '0 0 * * *'   # UTC 00:00 = 北京时间 08:00
+    - cron: '0 12 * * *'  # UTC 12:00 = 北京时间 20:00
+  workflow_dispatch:      # 手动触发
 
 permissions:
   contents: write
 
+# 防止两次采集重叠写 deals.json
+concurrency:
+  group: collect-deals
+  cancel-in-progress: false
+
 jobs:
   collect:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
 
     steps:
       - name: Checkout
@@ -23,21 +30,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Run collector
+      - name: Validate current data (before)
+        run: node scripts/validate.js
+
+      - name: Run collectors
         run: node scripts/collect.js
 
-      - name: Commit and push changes
+      - name: Validate new data (strict gate)
+        run: node scripts/validate.js --strict
+
+      - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add deals.json
           if git diff --cached --quiet; then
-            echo "No changes to commit"
+            echo "数据无变化，跳过提交"
           else
-            git commit -m "chore: update deals $(date '+%Y-%m-%d %H:%M UTC')"
+            git commit -m "chore(data): 更新优惠数据 $(date '+%Y-%m-%d %H:%M %Z')"
             git push
           fi

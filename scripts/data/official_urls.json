@@ -1,0 +1,13 @@
+{
+  "_comment": "聚合站条目缺官方落地页时的官方页映射。key 为 lib/dedup.js 的 aliasKey(title)。所有 URL 都经 scripts/tools/check-links.js 实测可访问。",
+  "chatgpt": "https://openai.com/chatgpt/pricing/",
+  "claude": "https://www.anthropic.com/pricing",
+  "githubcopilot": "https://github.com/features/copilot/plans",
+  "microsoftcopilot": "https://www.microsoft.com/en-us/store/b/education",
+  "canva": "https://www.canva.com/canva-for-nonprofits/",
+  "notion": "https://www.notion.com/product/notion-for-education",
+  "cursor": "https://cursor.com/pricing",
+  "replit": "https://replit.com/pricing",
+  "zapier": "https://zapier.com/pricing",
+  "make": "https://www.make.com/en/pricing"
+}

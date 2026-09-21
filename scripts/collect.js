@@ -1,92 +1,164 @@
-const fs = require('fs');
-const path = require('path');
-const { collectAitoolsFyi, collectFuturepedia, collectFuturetools } = require('./collectors/aitools');
-const { collectLayer3Labs, collectBitDegree, collectAitoolsDirectoryNet, collectZapierFreeAI } = require('./collectors/new_sources');
-
-const DEALS_FILE = path.join(__dirname, '..', 'deals.json');
-const MAX_DEALS = 100;
-
-function normalize(name) {
-  return name.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
-}
-
-const sourcePriority = { 'aitools.fyi': 4, 'Futurepedia': 3, 'Futuretools': 2, 'Layer3Labs': 1, 'BitDegree': 1, 'AitoolsDirectory': 1, 'Zapier': 1 };
-
+#!/usr/bin/env node
 /**
- * Deduplicate by normalized name: keep the entry with richer data (description, higher source priority)
+ * 采集编排器：注册表 → 采集 → 归一（makeDeal）→ 去重合并 → 熔断 → 写盘 → 报告。
+ *
+ * 用法：
+ *   node scripts/collect.js                     # 全量采集并写盘
+ *   node scripts/collect.js --dry-run           # 只采集并打印报告，不写盘
+ *   node scripts/collect.js --only=cn_docs      # 只跑指定来源
+ *   node scripts/collect.js --list              # 列出已注册来源
+ *   node scripts/collect.js --force             # 即使零产出也写盘（默认零产出跳过写盘）
  */
-function dedup(entries) {
-  const best = new Map();
-  for (const deal of entries) {
-    const key = normalize(deal.title);
-    const existing = best.get(key);
-    if (!existing) {
-      best.set(key, deal);
-      continue;
-    }
-    const existingScore = (existing.description ? 2 : 0) + (sourcePriority[existing.source] || 0);
-    const dealScore = (deal.description ? 2 : 0) + (sourcePriority[deal.source] || 0);
-    if (dealScore > existingScore) {
-      best.set(key, deal);
-    }
-  }
-  return [...best.values()];
+
+const { makeDeal, todayCN } = require('./lib/schema');
+const { loadStore, loadDeals, writeDeals, mergeAll, assertAllValid } = require('./lib/store');
+const { loadCurated } = require('./lib/curated');
+const { createReport, printReport } = require('./lib/report');
+const { describeError } = require('./lib/http');
+const registry = require('./collectors');
+
+const args = process.argv.slice(2);
+
+function flag(name) {
+  return args.includes(`--${name}`);
 }
 
-async function collectAll() {
-  console.log('Starting deals collection...');
+function option(name, fallback = null) {
+  const prefix = `--${name}=`;
+  const found = args.find(a => a.startsWith(prefix));
+  return found ? found.slice(prefix.length) : fallback;
+}
 
-  const collectors = [
-    { name: 'aitools.fyi', fn: collectAitoolsFyi },
-    { name: 'Futurepedia', fn: collectFuturepedia },
-    { name: 'Futuretools', fn: collectFuturetools },
-    { name: 'Layer3Labs', fn: collectLayer3Labs },
-    { name: 'BitDegree', fn: collectBitDegree },
-    { name: 'AitoolsDirectory', fn: collectAitoolsDirectoryNet },
-    { name: 'Zapier', fn: collectZapierFreeAI }
-  ];
+async function collectFrom(collector, report) {
+  report.start(collector.id, collector.name, collector.region);
+  const items = [];
 
-  const allDeals = [];
-
-  for (const collector of collectors) {
-    try {
-      console.log(`Collecting from ${collector.name}...`);
-      const deals = await collector.fn();
-      console.log(`  Got ${deals.length} deals from ${collector.name}`);
-      allDeals.push(...deals);
-    } catch (error) {
-      console.error(`  Failed to collect from ${collector.name}: ${error.message}`);
-    }
-  }
-
-  // Load existing deals
-  let existingDeals = [];
   try {
-    existingDeals = JSON.parse(fs.readFileSync(DEALS_FILE, 'utf8'));
+    const raw = await collector.collect();
+    let valid = 0;
+    let deals = 0;
+    let droppedGarbage = 0;
+    let droppedInvalid = 0;
+
+    for (const entry of raw || []) {
+      const deal = makeDeal(entry, {
+        source: collector.name,
+        region: collector.region,
+        sourceUrl: entry.sourceUrl
+      });
+      if (!deal) {
+        droppedGarbage++;
+        continue;
+      }
+      if (deal.sourceUrl === null && entry.sourceUrl) droppedInvalid++;
+      if (deal.type === 'deal') deals++;
+      valid++;
+      items.push(deal);
+    }
+
+    report.finish(collector.id, {
+      produced: (raw || []).length,
+      valid,
+      deals,
+      droppedGarbage,
+      droppedInvalid
+    });
   } catch (error) {
-    console.log('No existing deals file found, creating new one');
+    report.finish(collector.id, { error: describeError(error) });
+    console.error(`  ✗ ${collector.name}: ${describeError(error)}`);
   }
 
-  // Merge fresh + existing, dedup by name, keep richest, sort by date
-  const merged = dedup([...allDeals, ...existingDeals])
-    .slice(0, MAX_DEALS)
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  return items;
+}
 
-  const newCount = merged.filter(m => !existingDeals.some(e =>
-    normalize(m.title) === normalize(e.title)
-  )).length;
-
-  // Only write if there are changes
-  if (JSON.stringify(merged) === JSON.stringify(existingDeals)) {
-    console.log('No new deals found, skipping write');
+async function main() {
+  if (flag('list')) {
+    console.log('已注册采集器：');
+    for (const c of registry.list()) {
+      console.log(`  ${c.id.padEnd(16)} ${c.region === 'cn' ? '国内' : '国外'}  ${c.name}`);
+    }
     return;
   }
 
-  fs.writeFileSync(DEALS_FILE, JSON.stringify(merged, null, 2));
-  console.log(`\nWrote ${merged.length} deals to deals.json (${newCount} new)`);
+  const dryRun = flag('dry-run');
+  const only = option('only');
+  const ids = only ? only.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const { picked, missing } = registry.select(ids);
+
+  if (missing.length) {
+    console.error(`未知采集器 id: ${missing.join(', ')}（用 --list 查看）`);
+    process.exit(1);
+  }
+
+  const today = todayCN();
+  console.log(`开始采集（${today}）：${picked.length} 个来源${dryRun ? '，dry-run 模式' : ''}`);
+
+  const report = createReport();
+  const fresh = [];
+  for (const collector of picked) {
+    console.log(`→ ${collector.name}`);
+    const items = await collectFrom(collector, report);
+    fresh.push(...items);
+  }
+
+  printReport(report, { title: dryRun ? '采集报告（dry-run）' : '采集报告' });
+
+  const curated = loadCurated();
+  for (const row of curated.report) {
+    if (row.missing) continue;
+    console.log(`策展 ${row.file}: ${row.ok}/${row.total} 条可用`);
+    row.dropped.forEach(d => console.warn(`  ⚠️  策展丢弃 [${d.reason}] ${d.title}`));
+  }
+
+  const store = loadStore();
+  const existing = Array.isArray(store.deals) ? store.deals : [];
+  console.log(`\n既有 deals.json: ${existing.length} 条${store.legacy ? '（v1 格式，将在写入时升级为 v2）' : ''}`);
+
+  const { deals, stats } = mergeAll({ fresh, existing, curated: curated.deals, today });
+
+  if (stats.degraded) {
+    console.warn(
+      `⚠️  熔断告警：本次仅采到 ${stats.fresh} 条，低于既有 ${stats.existing} 条的 ` +
+      `${Math.round(stats.circuitBreakerRatio * 100)}%。已保留既有数据（合并不删除）。`
+    );
+  }
+
+  console.log(`合并结果: 新采 ${stats.fresh} + 既有 ${stats.existing} + 策展 ${stats.curated} ` +
+    `→ 去重合并 ${stats.mergedDuplicates} → 修剪前 ${stats.beforePrune} → 最终 ${stats.afterPrune}`);
+  if (stats.removedGarbage) {
+    console.log(`退役垃圾/无效旧条目 ${stats.removedGarbage} 条：${stats.retiredTitles.join('、')}`);
+  }
+  if (stats.reclassified) {
+    console.log(`按当前规则重分类 ${stats.reclassified} 条（deal → tool）：${stats.reclassifiedTitles.join('、')}`);
+  }
+  const dealCount = deals.filter(d => d.type === 'deal').length;
+  const cnCount = deals.filter(d => d.region === 'cn').length;
+  console.log(`其中：优惠 ${dealCount} 条，国内 ${cnCount} 条，含截止时间 ${deals.filter(d => d.expiresAt).length} 条`);
+
+  if (dryRun) {
+    console.log('\n(dry-run，未写盘)');
+    console.log('\n新增/变更预览（前 15 条优惠）：');
+    deals.filter(d => d.type === 'deal').slice(0, 15).forEach(d => {
+      console.log(`  · [${d.region}] ${d.title} — ${(d.discountInfo || '').slice(0, 70)}`);
+      console.log(`      ${d.url}`);
+    });
+    return;
+  }
+
+  if (fresh.length === 0 && !flag('force')) {
+    console.log('\n本次零产出，跳过写盘（避免误报"数据已更新"）。如需强制写入请加 --force');
+    return;
+  }
+
+  assertAllValid(deals);
+  const payload = writeDeals(deals);
+  console.log(`\n✅ 已写入 deals.json：${payload.count} 条，updatedAt=${payload.updatedAt}`);
 }
 
-collectAll().catch(error => {
-  console.error('Collection failed:', error);
+main().catch(error => {
+  console.error('\n❌ 采集失败:', error.message);
+  if (error.validationErrors) {
+    error.validationErrors.slice(0, 10).forEach(e => console.error(`   - ${e}`));
+  }
   process.exit(1);
 });

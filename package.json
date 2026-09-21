@@ -1,10 +1,22 @@
 {
   "name": "ai-deals-aggregator",
-  "version": "1.0.0",
-  "description": "AI deals aggregator - daily scrape and display of AI product discounts",
+  "version": "2.0.0",
+  "description": "AI 优惠聚合器 —— 每日自动采集国内外 AI 大模型的真实优惠与福利（新用户免费额度、学生/教育/非营利折扣）",
   "main": "scripts/collect.js",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "collect": "node scripts/collect.js"
+    "collect": "node scripts/collect.js",
+    "collect:dry": "node scripts/collect.js --dry-run",
+    "collect:list": "node scripts/collect.js --list",
+    "migrate": "node scripts/migrate.js",
+    "validate": "node scripts/validate.js",
+    "test": "node scripts/validate.js",
+    "test:strict": "node scripts/validate.js --strict",
+    "build": "node scripts/tools/build-local.js",
+    "serve": "node scripts/serve.js"
   },
   "dependencies": {
     "axios": "^1.7.0",

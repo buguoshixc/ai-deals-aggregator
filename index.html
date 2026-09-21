@@ -3,324 +3,491 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI 优惠聚合器</title>
+  <title>AI 优惠聚合器 — 国内外大模型折扣与免费福利</title>
+  <meta name="description" content="聚合国内外 AI 大模型的真实优惠：新用户免费额度、学生/教师/非营利折扣、限时促销，数据每日自动更新。">
+  <meta name="keywords" content="AI优惠,大模型免费额度,API折扣,AI打折,学生优惠,免费试用">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AI 优惠聚合器 — 国内外大模型折扣与免费福利">
+  <meta property="og:description" content="聚合国内外 AI 大模型的真实优惠：新用户免费额度、学生/教师/非营利折扣、限时促销。">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    :root {
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --ink: #16213e;
+      --ink-soft: #555c6b;
+      --muted: #8a93a6;
+      --line: #e5e9f0;
+      --brand: #4361ee;
+      --deal: #e11d48;
+      --deal-bg: #fff1f2;
+      --soon: #ea580c;
+      --cn: #0f766e;
+      --cn-bg: #ecfdf5;
+      --global: #1d4ed8;
+      --global-bg: #eff6ff;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f5f7fa;
-      color: #1a1a2e;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
       line-height: 1.6;
     }
 
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 2rem 1rem;
-    }
+    .container { max-width: 1040px; margin: 0 auto; padding: 2rem 1rem 3rem; }
 
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
+    header { text-align: center; margin-bottom: 1.75rem; }
+    header h1 { font-size: 2rem; letter-spacing: -0.5px; }
+    header h1 span { color: var(--deal); }
+    header p { color: var(--ink-soft); font-size: 0.95rem; margin-top: 0.35rem; }
 
-    header h1 {
-      font-size: 2rem;
-      color: #16213e;
-      margin-bottom: 0.25rem;
-    }
-
-    header p {
-      color: #666;
-      font-size: 0.95rem;
-    }
-
-    .controls {
+    .tabs {
       display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 1.25rem;
     }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--ink-soft);
+      padding: 0.55rem 1.25rem;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+
+    .tab:hover { border-color: var(--brand); color: var(--brand); }
+    .tab.active { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 600; }
+    .tab .count { opacity: 0.75; font-size: 0.85em; margin-left: 0.3rem; }
+
+    .controls { display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
 
     .controls input,
     .controls select {
-      padding: 0.6rem 1rem;
-      border: 1px solid #ddd;
+      padding: 0.6rem 0.9rem;
+      border: 1px solid var(--line);
       border-radius: 8px;
       font-size: 0.95rem;
-      background: #fff;
+      background: var(--card);
+      color: var(--ink);
+      font-family: inherit;
     }
 
     .controls input { flex: 1; min-width: 200px; }
-    .controls select { min-width: 150px; }
-
+    .controls select { min-width: 140px; }
     .controls input:focus,
     .controls select:focus {
       outline: none;
-      border-color: #4361ee;
+      border-color: var(--brand);
       box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.15);
     }
 
-    .stats {
-      font-size: 0.85rem;
-      color: #888;
-      margin-bottom: 1rem;
-    }
+    .stats { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+    .stats strong { color: var(--deal); }
 
-    .deals-list {
-      display: grid;
-      gap: 1rem;
-    }
+    .deals-list { display: grid; gap: 0.85rem; }
 
     .deal-card {
-      background: #fff;
+      background: var(--card);
       border-radius: 12px;
-      padding: 1.25rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border: 1px solid var(--line);
+      padding: 1.1rem 1.25rem;
       transition: transform 0.15s, box-shadow 0.15s;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 0.5rem;
     }
 
-    .deal-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    }
+    .deal-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(22, 33, 62, 0.09); }
+    .deal-card.tool { background: #fcfcfe; }
+    .deal-card.expired { opacity: 0.55; }
+    .deal-card.expired:hover { transform: none; box-shadow: none; }
 
-    .deal-card.expired {
-      opacity: 0.5;
-      background: #f9f9f9;
-    }
-
-    .deal-card.expired:hover {
-      transform: none;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    }
+    .card-head { display: flex; gap: 0.75rem; align-items: baseline; flex-wrap: wrap; }
 
     .deal-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #16213e;
+      font-size: 1.05rem;
+      font-weight: 650;
+      color: var(--ink);
       text-decoration: none;
-      grid-column: 1 / -1;
     }
+    .deal-title:hover { color: var(--brand); }
 
-    .deal-title:hover { color: #4361ee; }
+    .badges { display: flex; gap: 0.35rem; flex-wrap: wrap; align-items: center; }
 
-    .deal-meta {
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-      align-items: center;
-      font-size: 0.85rem;
-      color: #666;
-      grid-column: 1 / -1;
-    }
-
-    .deal-source {
-      background: #e8ecf4;
-      padding: 0.15rem 0.6rem;
+    .badge {
+      font-size: 0.72rem;
+      padding: 0.1rem 0.45rem;
       border-radius: 4px;
-      font-weight: 500;
-    }
-
-    .deal-category {
-      background: #fef3c7;
-      padding: 0.15rem 0.6rem;
-      border-radius: 4px;
-      color: #92400e;
-    }
-
-    .deal-discount {
-      color: #059669;
-      font-weight: 600;
-    }
-
-    .deal-date { color: #999; }
-
-    .deal-description {
-      grid-column: 1 / -1;
-      color: #555;
-      font-size: 0.9rem;
-      margin-top: 0.25rem;
-    }
-
-    .deal-link {
-      color: #4361ee;
-      text-decoration: none;
       font-weight: 500;
       white-space: nowrap;
-      align-self: center;
     }
 
-    .deal-link:hover { text-decoration: underline; }
+    .badge.region-cn { background: var(--cn-bg); color: var(--cn); }
+    .badge.region-global { background: var(--global-bg); color: var(--global); }
+    .badge.category { background: #f1f4f9; color: #475069; }
+    .badge.pricing { background: #f6f7f9; color: var(--muted); }
 
-    .loading {
+    .discount {
+      display: inline-block;
+      margin-top: 0.6rem;
+      background: var(--deal-bg);
+      color: var(--deal);
+      border-left: 3px solid var(--deal);
+      padding: 0.45rem 0.7rem;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.92rem;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .deal-description {
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+      margin-top: 0.55rem;
+    }
+
+    .card-foot {
+      display: flex;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 0.7rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .card-foot a { color: var(--brand); text-decoration: none; }
+    .card-foot a:hover { text-decoration: underline; }
+    .vendor { color: #475069; font-weight: 500; }
+
+    .expiry { color: var(--muted); }
+    .expiry.soon { color: var(--soon); font-weight: 600; }
+    .expiry.past { color: #b91c1c; }
+
+    .empty {
       text-align: center;
-      padding: 3rem;
-      color: #888;
+      padding: 3rem 1rem;
+      color: var(--muted);
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px dashed var(--line);
     }
 
-    .no-results {
-      text-align: center;
-      padding: 2rem;
-      color: #888;
-      grid-column: 1 / -1;
-    }
+    .loading { text-align: center; padding: 3rem; color: var(--muted); }
 
     footer {
       text-align: center;
-      margin-top: 3rem;
-      padding: 1rem;
-      color: #999;
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
       font-size: 0.8rem;
+      line-height: 1.8;
     }
 
     @media (max-width: 640px) {
       header h1 { font-size: 1.5rem; }
       .controls { flex-direction: column; }
-      .controls input, .controls select { min-width: auto; width: 100%; }
-      .deal-card { grid-template-columns: 1fr; }
+      .controls input, .controls select { width: 100%; min-width: auto; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>AI 优惠聚合器</h1>
-      <p>每日自动抓取 AI 产品折扣和福利信息</p>
+      <h1>AI <span>优惠</span>聚合器</h1>
+      <p>国内外大模型的真实优惠：新用户免费额度 · 学生/教师/非营利折扣 · 限时促销</p>
     </header>
 
+    <div class="tabs" role="tablist">
+      <button class="tab active" id="tabDeals" role="tab" aria-selected="true">优惠<span class="count" id="countDeals"></span></button>
+      <button class="tab" id="tabTools" role="tab" aria-selected="false">全部工具<span class="count" id="countTools"></span></button>
+    </div>
+
     <div class="controls">
-      <input type="text" id="searchInput" placeholder="搜索优惠...">
-      <select id="categoryFilter">
+      <input type="search" id="searchInput" placeholder="搜索模型、厂商或优惠…" aria-label="搜索">
+      <select id="regionFilter" aria-label="地区">
+        <option value="">全部地区</option>
+        <option value="cn">国内</option>
+        <option value="global">国外</option>
+      </select>
+      <select id="categoryFilter" aria-label="分类">
         <option value="">全部分类</option>
       </select>
-      <select id="sourceFilter">
-        <option value="">全部来源</option>
+      <select id="sortSelect" aria-label="排序">
+        <option value="expiry">即将截止优先</option>
+        <option value="updated">最近更新</option>
+        <option value="title">名称</option>
       </select>
     </div>
 
-    <div class="stats" id="stats"></div>
+    <div class="stats" id="stats" role="status" aria-live="polite"></div>
 
     <div class="deals-list" id="dealsList">
-      <div class="loading">加载数据中...</div>
+      <div class="loading">加载数据中…</div>
     </div>
 
     <footer>
-      <p>数据每天自动更新 | 最后更新: <span id="lastUpdated">--</span></p>
+      <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span></p>
+      <p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p>
     </footer>
   </div>
 
   <script>
-    let allDeals = [];
-    const dealsList = document.getElementById('dealsList');
-    const searchInput = document.getElementById('searchInput');
-    const categoryFilter = document.getElementById('categoryFilter');
-    const sourceFilter = document.getElementById('sourceFilter');
-    const stats = document.getElementById('stats');
-    const lastUpdated = document.getElementById('lastUpdated');
+    const PRICING_LABELS = {
+      free: '免费',
+      freemium: '免费增值',
+      paid: '付费',
+      trial: '免费试用',
+      credits: '赠送额度'
+    };
+    const REGION_LABELS = { cn: '国内', global: '国外' };
+    const SOON_DAYS = 7;
 
-    async function loadDeals() {
-      try {
-        const response = await fetch('deals.json');
-        allDeals = await response.json();
-        populateFilters();
-        renderDeals();
-        lastUpdated.textContent = new Date().toLocaleString('zh-CN');
-      } catch (error) {
-        dealsList.innerHTML = '<div class="no-results">数据加载失败，请稍后重试</div>';
-        console.error('Failed to load deals:', error);
-      }
+    const state = { tab: 'deals', deals: [], updatedAt: null };
+
+    const els = {
+      list: document.getElementById('dealsList'),
+      search: document.getElementById('searchInput'),
+      region: document.getElementById('regionFilter'),
+      category: document.getElementById('categoryFilter'),
+      sort: document.getElementById('sortSelect'),
+      stats: document.getElementById('stats'),
+      lastUpdated: document.getElementById('lastUpdated'),
+      tabDeals: document.getElementById('tabDeals'),
+      tabTools: document.getElementById('tabTools'),
+      countDeals: document.getElementById('countDeals'),
+      countTools: document.getElementById('countTools')
+    };
+
+    /** 北京时间当天（YYYY-MM-DD） */
+    function todayCN() {
+      return new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
     }
 
-    function populateFilters() {
-      const categories = [...new Set(allDeals.map(d => d.category).filter(Boolean))].sort();
-      const sources = [...new Set(allDeals.map(d => d.source).filter(Boolean))].sort();
-
-      categories.forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat;
-        opt.textContent = cat;
-        categoryFilter.appendChild(opt);
-      });
-
-      sources.forEach(src => {
-        const opt = document.createElement('option');
-        opt.value = src;
-        opt.textContent = src;
-        sourceFilter.appendChild(opt);
-      });
+    function daysUntil(dateStr) {
+      if (!dateStr) return null;
+      const diff = new Date(dateStr + 'T00:00:00Z').getTime() - new Date(todayCN() + 'T00:00:00Z').getTime();
+      return Math.round(diff / 86400000);
     }
 
     function isExpired(deal) {
-      if (!deal.endDate) return false;
-      return new Date(deal.endDate) < new Date();
+      const days = daysUntil(deal.expiresAt);
+      return days !== null && days < 0;
     }
 
-    function getFilteredDeals() {
-      const search = searchInput.value.toLowerCase().trim();
-      const category = categoryFilter.value;
-      const source = sourceFilter.value;
-
-      return allDeals.filter(deal => {
-        if (category && deal.category !== category) return false;
-        if (source && deal.source !== source) return false;
-        if (search) {
-          const text = `${deal.title} ${deal.description} ${deal.discount} ${deal.category}`.toLowerCase();
-          if (!text.includes(search)) return false;
-        }
-        return true;
-      });
+    /** 仅允许 http/https，避免 javascript: 之类的属性注入 */
+    function safeUrl(url) {
+      if (typeof url !== 'string') return null;
+      const trimmed = url.trim();
+      return /^https?:\/\//i.test(trimmed) ? trimmed : null;
     }
 
-    function renderDeals() {
-      const filtered = getFilteredDeals();
-      const expiredCount = allDeals.filter(isExpired).length;
-
-      stats.textContent = `共 ${allDeals.length} 条优惠，当前显示 ${filtered.length} 条` +
-        (expiredCount > 0 ? `（${expiredCount} 条已过期）` : '');
-
-      if (filtered.length === 0) {
-        dealsList.innerHTML = '<div class="no-results">没有找到匹配的优惠</div>';
-        return;
-      }
-
-      dealsList.innerHTML = filtered.map(deal => {
-        const expired = isExpired(deal);
-        return `
-          <div class="deal-card ${expired ? 'expired' : ''}">
-            <a class="deal-title" href="${escapeHtml(deal.url)}" target="_blank" rel="noopener">
-              ${escapeHtml(deal.title)}
-            </a>
-            ${deal.description ? `<div class="deal-description">${escapeHtml(deal.description)}</div>` : ''}
-            <div class="deal-meta">
-              <span class="deal-source">${escapeHtml(deal.source)}</span>
-              ${deal.category ? `<span class="deal-category">${escapeHtml(deal.category)}</span>` : ''}
-              ${deal.discount ? `<span class="deal-discount">${escapeHtml(deal.discount)}</span>` : ''}
-              <span class="deal-date">${escapeHtml(deal.date)}</span>
-              ${deal.endDate ? `<span class="deal-date">截止: ${escapeHtml(deal.endDate)}</span>` : ''}
-              ${expired ? '<span style="color:#dc2626">已过期</span>' : ''}
-            </div>
-            <a class="deal-link" href="${escapeHtml(deal.url)}" target="_blank" rel="noopener">查看 &rarr;</a>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function escapeHtml(text) {
+    function escapeHtml(value) {
       const div = document.createElement('div');
-      div.textContent = text;
+      div.textContent = value === null || value === undefined ? '' : String(value);
       return div.innerHTML;
     }
 
-    searchInput.addEventListener('input', renderDeals);
-    categoryFilter.addEventListener('change', renderDeals);
-    sourceFilter.addEventListener('change', renderDeals);
+    /** 属性上下文需要额外转义引号（textContent 不处理引号） */
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
 
-    loadDeals();
+    function dealCount() {
+      return state.deals.filter(d => d.type === 'deal' && !isExpired(d)).length;
+    }
+
+    function toolCount() {
+      return state.deals.filter(d => d.type !== 'deal').length;
+    }
+
+    function loadDeals() {
+      return fetch('deals.json', { cache: 'no-cache' })
+        .then(response => {
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          return response.json();
+        })
+        .then(payload => {
+          // v2：{ schemaVersion, updatedAt, count, deals: [] }；兼容旧的裸数组
+          state.deals = Array.isArray(payload) ? payload : (payload.deals || []);
+          state.updatedAt = Array.isArray(payload) ? null : payload.updatedAt;
+        });
+    }
+
+    function populateCategories() {
+      const categories = [...new Set(state.deals.map(d => d.category).filter(Boolean))].sort();
+      categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        els.category.appendChild(option);
+      });
+    }
+
+    function visibleDeals() {
+      const search = els.search.value.trim().toLowerCase();
+      const region = els.region.value;
+      const category = els.category.value;
+
+      let list = state.deals.filter(deal => {
+        if (state.tab === 'deals') {
+          if (deal.type !== 'deal') return false;
+          if (isExpired(deal)) return false;
+        } else if (deal.type === 'deal' && isExpired(deal)) {
+          return false;
+        }
+        if (region && deal.region !== region) return false;
+        if (category && deal.category !== category) return false;
+        if (search) {
+          const haystack = [deal.title, deal.vendor, deal.discountInfo, deal.description, deal.category, deal.source]
+            .filter(Boolean).join(' ').toLowerCase();
+          if (!haystack.includes(search)) return false;
+        }
+        return true;
+      });
+
+      const order = els.sort.value;
+      list.sort((a, b) => {
+        if (order === 'title') return String(a.title).localeCompare(String(b.title), 'zh-Hans-CN');
+        if (order === 'updated') return String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
+        const da = daysUntil(a.expiresAt);
+        const db = daysUntil(b.expiresAt);
+        if (da === null && db === null) return String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
+        if (da === null) return 1;
+        if (db === null) return -1;
+        return da - db;
+      });
+
+      return list;
+    }
+
+    function expiryHtml(deal) {
+      const days = daysUntil(deal.expiresAt);
+      if (days === null) return '';
+      const label = days < 0 ? `已过期（${deal.expiresAt}）`
+        : days === 0 ? `今天截止`
+        : `截止 ${deal.expiresAt}（剩 ${days} 天）`;
+      const cls = days < 0 ? 'expiry past' : (days <= SOON_DAYS ? 'expiry soon' : 'expiry');
+      return `<span class="${cls}">${escapeHtml(label)}</span>`;
+    }
+
+    function cardHtml(deal) {
+      const url = safeUrl(deal.url);
+      const title = escapeHtml(deal.title);
+      const titleHtml = url
+        ? `<a class="deal-title" href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${title}</a>`
+        : `<span class="deal-title">${title}</span>`;
+
+      const badges = [];
+      if (deal.region) {
+        badges.push(`<span class="badge region-${escapeAttr(deal.region)}">${escapeHtml(REGION_LABELS[deal.region] || deal.region)}</span>`);
+      }
+      if (deal.category) badges.push(`<span class="badge category">${escapeHtml(deal.category)}</span>`);
+      if (deal.pricingModel) {
+        const label = PRICING_LABELS[deal.pricingModel] || deal.pricingModel;
+        badges.push(`<span class="badge pricing">${escapeHtml(label)}</span>`);
+      }
+
+      const discount = deal.discountInfo
+        ? `<div class="discount">${escapeHtml(deal.discountInfo)}</div>`
+        : '';
+
+      const description = deal.description
+        ? `<div class="deal-description">${escapeHtml(deal.description)}</div>`
+        : '';
+
+      const foot = [];
+      if (deal.vendor) foot.push(`<span class="vendor">${escapeHtml(deal.vendor)}</span>`);
+      if (deal.eligibility) foot.push(`<span>适用：${escapeHtml(deal.eligibility)}</span>`);
+      const validity = deal.validity ? `<span class="expiry">有效期：${escapeHtml(deal.validity)}</span>` : '';
+      if (validity) foot.push(validity);
+      const expiry = expiryHtml(deal);
+      if (expiry) foot.push(expiry);
+      if (deal.source) {
+        const sourceUrl = safeUrl(deal.sourceUrl);
+        foot.push(sourceUrl
+          ? `<span>来源：<a href="${escapeAttr(sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(deal.source)}</a></span>`
+          : `<span>来源：${escapeHtml(deal.source)}</span>`);
+      }
+      if (deal.verified) foot.push('<span title="已人工核验">✓ 已核验</span>');
+      if (url) {
+        foot.push(`<a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">查看官方页面 &rarr;</a>`);
+      }
+
+      const classes = ['deal-card'];
+      if (deal.type !== 'deal') classes.push('tool');
+      if (isExpired(deal)) classes.push('expired');
+
+      return `
+        <article class="${classes.join(' ')}">
+          <div class="card-head">
+            ${titleHtml}
+            <div class="badges">${badges.join('')}</div>
+          </div>
+          ${discount}
+          ${description}
+          <div class="card-foot">${foot.join('')}</div>
+        </article>
+      `;
+    }
+
+    function render() {
+      const list = visibleDeals();
+
+      els.countDeals.textContent = ` ${dealCount()}`;
+      els.countTools.textContent = ` ${toolCount()}`;
+
+      const scope = state.tab === 'deals' ? '条优惠' : '条工具';
+      els.stats.innerHTML = `共 <strong>${list.length}</strong> ${scope} · ` +
+        `国内 ${state.deals.filter(d => d.region === 'cn' && d.type === 'deal' && !isExpired(d)).length} 条优惠 · ` +
+        `国外 ${state.deals.filter(d => d.region === 'global' && d.type === 'deal' && !isExpired(d)).length} 条优惠`;
+
+      if (!list.length) {
+        els.list.innerHTML = `<div class="empty">没有匹配的${state.tab === 'deals' ? '优惠' : '工具'}，试试清空筛选条件。</div>`;
+        return;
+      }
+
+      els.list.innerHTML = list.map(cardHtml).join('');
+    }
+
+    function bindEvents() {
+      els.search.addEventListener('input', render);
+      els.region.addEventListener('change', render);
+      els.category.addEventListener('change', render);
+      els.sort.addEventListener('change', render);
+
+      els.tabDeals.addEventListener('click', () => switchTab('deals'));
+      els.tabTools.addEventListener('click', () => switchTab('tools'));
+    }
+
+    function switchTab(tab) {
+      state.tab = tab;
+      els.tabDeals.classList.toggle('active', tab === 'deals');
+      els.tabTools.classList.toggle('active', tab === 'tools');
+      els.tabDeals.setAttribute('aria-selected', tab === 'deals');
+      els.tabTools.setAttribute('aria-selected', tab === 'tools');
+      render();
+    }
+
+    loadDeals()
+      .then(() => {
+        populateCategories();
+        bindEvents();
+        els.lastUpdated.textContent = state.updatedAt
+          ? new Date(state.updatedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
+          : '未知（数据未标注更新时间）';
+        render();
+      })
+      .catch(error => {
+        els.list.innerHTML = '<div class="empty">数据加载失败，请稍后刷新重试。</div>';
+        console.error('加载 deals.json 失败：', error);
+      });
   </script>
 </body>
 </html>
