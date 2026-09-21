@@ -1,8 +1,17 @@
 name: Deploy to GitHub Pages
 
 # 纯发布流程：不做采集（采集由 collect.yml 负责），保证线上产物可复现。
+#
+# ⚠️ 这里必须同时监听 workflow_run：
+#    GitHub 规定「用仓库自带 GITHUB_TOKEN 推送所产生的事件不会再触发其它 workflow」，
+#    因此 collect.yml 里机器人提交 deals.json 后，push 事件不会唤醒本 workflow，
+#    线上站点不会自动更新。监听「Collect AI Deals 跑完」才能补上这条链路。
 on:
   push:
+    branches: [ master ]
+  workflow_run:
+    workflows: ["Collect AI Deals"]
+    types: [ completed ]
     branches: [ master ]
   workflow_dispatch:
 
@@ -17,6 +26,8 @@ concurrency:
 
 jobs:
   build:
+    # 采集任务失败时（例如 strict 门禁没过）不发布，保留线上上一份好数据
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     env:
       TZ: Asia/Shanghai

@@ -119,9 +119,25 @@ scripts/
 
 ## 自动化与部署
 
-- `.github/workflows/collect.yml`：每天北京时间 08:00 / 20:00 采集 → 校验（含 strict 门禁）→ 提交 `deals.json`。
+- `.github/workflows/collect.yml`：每天北京时间 08:00 / 20:00 采集 → 校验（含 strict 门禁）→ 有变化才提交 `deals.json`。
 - `.github/workflows/deploy.yml`：`push` 到 master 时**纯发布**（不再在构建期采集），组装 `dist/` 后部署到 Pages。
 - 采集与发布分离，保证线上产物可复现；`validate.js` 零依赖，发布前无需 `npm install`。
+
+> ⚠️ **为什么部署还要监听 `workflow_run`**
+> GitHub 规定：用仓库自带的 `GITHUB_TOKEN` 推送所产生的事件**不会**再触发其它 workflow。
+> 所以 collect.yml 里机器人提交 `deals.json` 后，`push` 事件唤不醒 deploy.yml，线上不会更新。
+> 因此 deploy.yml 额外监听 `workflow_run: Collect AI Deals completed` 把这条链路补上；
+> 采集任务失败时（例如 strict 门禁没过）跳过发布，线上保留上一份好数据。
+
+### 更新频率一览
+
+| 内容 | 更新方式 | 频率 |
+|---|---|---|
+| 采集到的优惠 / 工具条目 | 自动（GitHub Actions 定时） | 每天 2 次（北京 08:00 / 20:00）；数据无变化则不提交 |
+| 线上页面 | 自动（提交后经 `workflow_run` 触发部署） | 跟随采集，或任意一次 `push` |
+| 过期优惠下架 | 自动（每次采集时修剪） | 过期超过 14 天的优惠被移除 |
+| 人工策展优惠（`scripts/data/curated_*.json`） | **人工** | 由人修改并推送，无自动更新 |
+| 采集器选择器 / 别名表 | **人工** | 对方站点改版导致零产出时需要人修 |
 
 ## 隐私声明
 

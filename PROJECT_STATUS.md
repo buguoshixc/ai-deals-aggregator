@@ -102,6 +102,21 @@ AppSumo（客户端渲染，0 产出）、Product Hunt deals（403）。
   （只有 6 个公开文件，约 80 KB），零依赖、不联网抓取。
 - 本地 `npm run build` 与 CI 走**同一个脚本**，避免"本地通过、线上失败"。
 
+### 2.6 修复：机器人提交无法触发部署（上线后发现）
+
+GitHub 规定——**用仓库自带的 `GITHUB_TOKEN` 推送产生的事件不会再触发其它 workflow**。
+原来的链路是「collect.yml 提交 → push 事件 → deploy.yml 部署」，实际跑下来这条链路是断的：
+
+```
+Collect AI Deals   7754087  schedule  2026-09-21T03:28Z   → 提交了 76ee1e5
+                    ↑ 76ee1e5 之后没有任何 Deploy 运行
+```
+
+也就是说**自动采集能把数据写进仓库，但线上站点不会更新**，只有人工推送才会更新网站。
+
+修复：`deploy.yml` 额外监听 `workflow_run: Collect AI Deals completed`（该事件由 workflow 完成触发，
+不受 `GITHUB_TOKEN` 限制），并在采集任务失败时跳过发布，线上保留上一份好数据。
+
 ---
 
 ## 三、命令速查
