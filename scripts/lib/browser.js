@@ -16,11 +16,15 @@
 const { chromium } = require('playwright-core');
 const cheerio = require('cheerio');
 const { isAllowedByRobots, DEFAULT_UA } = require('./http');
+const { cleanText } = require('./schema');
 
 /** 优先 Edge（Windows 自带）→ Chrome → playwright 自带 chromium（Linux/CI 场景） */
 const CHANNELS = ['msedge', 'chrome', 'bundled'];
 const DEFAULT_TIMEOUT = 30000;
-const DEFAULT_EXTRA_WAIT = 1500;
+/** 等目标文案出现的最长时间（CI 慢，给足余量） */
+const DEFAULT_CONTENT_TIMEOUT = 25000;
+/** 文案出现后的可视化稳定期：只给样式/字体留时间，不做内容等待 */
+const DEFAULT_SETTLE_WAIT = 600;
 
 let cachedChannel;
 
@@ -78,29 +82,75 @@ async function withPage(fn, options = {}) {
   }
 }
 
-/** 渲染单个公开页面，返回 { html, text, domText, title, url }
+/**
+ * 渲染单个公开页面，返回 { html, text, domText, title, url, notes, matchedNeedle, ... }
+ *
  *  text    = innerText：用户在页面上看得到的文本（用于探测"可见正文"）
  *  domText = 整个 DOM 的文本，含 display:none 的横幅与未激活面板（用于规则匹配）
+ *
+ * 等待策略（踩坑后重写，勿改回 networkidle 主策略）：
+ *  1. goto 只用 `domcontentloaded` —— `networkidle` 在有长轮询/埋点请求的 SPA 上永远不触发，
+ *     超时后如果**再次 goto**，等于把页面重新加载一遍，SPA 反而来不及渲染（CI 上实测：
+ *     火山方舟正常、智谱产出 0，耗时 49.7s）。
+ *  2. 之后用 `waitForText` 显式等待目标文案出现在 DOM 文本里，等到就立刻继续，不用盲等。
+ *  3. 最后只留一个很短的可视化稳定期（settleWait），给样式计算留时间。
  */
 async function render(page, url, options = {}) {
   const {
     timeout = DEFAULT_TIMEOUT,
-    extraWait = DEFAULT_EXTRA_WAIT,
+    waitForText = null,
+    waitForTextTimeout = DEFAULT_CONTENT_TIMEOUT,
+    settleWait = DEFAULT_SETTLE_WAIT,
     allow = true,
-    screenshot = null
+    screenshot = null,
+    diagnostics = false
   } = options;
 
   if (allow && !(await isAllowedByRobots(url))) {
     throw new Error(`robots.txt 不允许抓取: ${url}`);
   }
 
-  try {
-    await page.goto(url, { waitUntil: 'networkidle', timeout });
-  } catch (error) {
-    // 长轮询/广告请求会让 networkidle 永不触发：退一步用 domcontentloaded
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout });
+  const notes = [];
+  const consoleErrors = [];
+  const failedRequests = [];
+  if (diagnostics) {
+    page.on('console', message => {
+      if (message.type() === 'error') consoleErrors.push(cleanText(message.text(), 200));
+    });
+    page.on('requestfailed', request => {
+      const reason = (request.failure() && request.failure().errorText) || 'failed';
+      failedRequests.push(`${reason} ${request.url()}`);
+    });
   }
-  if (extraWait) await page.waitForTimeout(extraWait);
+
+  try {
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout });
+  } catch (error) {
+    notes.push(`goto 失败: ${String(error.message).split('\n')[0]}`);
+  }
+
+  const needles = normalizeNeedles(waitForText);
+  let matchedNeedle = null;
+  if (needles.length) {
+    const started = Date.now();
+    try {
+      const handle = await page.waitForFunction(
+        list => {
+          const text = document.body ? document.body.textContent || '' : '';
+          return list.find(needle => text.includes(needle)) || false;
+        },
+        needles,
+        { timeout: waitForTextTimeout }
+      );
+      matchedNeedle = await handle.jsonValue();
+    } catch (error) {
+      notes.push(
+        `等待目标文案超时（${Math.round((Date.now() - started) / 1000)}s，期望其一：${needles.join(' / ')}）`
+      );
+    }
+  }
+
+  if (settleWait) await page.waitForTimeout(settleWait);
 
   const html = await page.content();
   const text = await page.evaluate(() =>
@@ -114,7 +164,17 @@ async function render(page, url, options = {}) {
   const title = await page.title();
   if (screenshot) await page.screenshot({ path: screenshot, fullPage: true });
 
-  return { html, text, domText, title, url: page.url() };
+  return {
+    html,
+    text,
+    domText,
+    title,
+    url: page.url(),
+    notes,
+    matchedNeedle,
+    consoleErrors,
+    failedRequests
+  };
 }
 
 /** 一次性渲染多个 URL（共用一个内核），单个失败不影响其余 */
@@ -125,13 +185,31 @@ async function renderAll(urls, options = {}) {
       try {
         results.push(await render(page, url, options));
       } catch (error) {
-        results.push({ url, error: error.message, html: '', text: '', domText: '', title: '' });
+        results.push({
+          url, error: error.message, html: '', text: '', domText: '', title: '',
+          notes: [], matchedNeedle: null, consoleErrors: [], failedRequests: []
+        });
       }
     }
     return results;
   }, options);
 }
 
+/** 把 waitForText 归一为数组 */
+function normalizeNeedles(waitForText) {
+  if (!waitForText) return [];
+  const list = Array.isArray(waitForText) ? waitForText : [waitForText];
+  return list.map(item => String(item)).filter(Boolean);
+}
+
 const available = async () => Boolean(await detectChannel());
 
-module.exports = { detectChannel, launch, withPage, render, renderAll, available };
+module.exports = {
+  detectChannel,
+  launch,
+  withPage,
+  render,
+  renderAll,
+  normalizeNeedles,
+  available
+};

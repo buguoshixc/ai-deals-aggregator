@@ -21,12 +21,35 @@ const cheerio = require('cheerio');
 const { withPage, render } = require('../lib/browser');
 const { cleanText } = require('../lib/schema');
 
+/**
+ * 零产出时打印足够定位问题的诊断（会出现在采集报告/CI 日志里）。
+ * 排第一的问题通常是"页面根本没渲染出来"，所以先看 DOM 文本长度。
+ */
+function warnZeroProduction(label, result, hint = '') {
+  const domText = result.domText || '';
+  console.warn(`  ⚠️ ${label} 零产出诊断：`);
+  console.warn(`     页面标题   : ${result.title || '(空)'}`);
+  console.warn(`     DOM 文本   : ${domText.length} 字符${domText.length < 200 ? '（疑似页面没渲染出来）' : ''}`);
+  console.warn(`     等待文案   : ${result.matchedNeedle ? `命中「${result.matchedNeedle}」` : '未命中任何等待项'}`);
+  for (const note of result.notes || []) console.warn(`     备注       : ${note}`);
+  for (const error of (result.consoleErrors || []).slice(0, 3)) console.warn(`     控制台错误 : ${error}`);
+  for (const request of (result.failedRequests || []).slice(0, 3)) console.warn(`     请求失败   : ${request}`);
+  if (hint) console.warn(`     提示       : ${hint}`);
+  console.warn(`     DOM 前 200 字: ${domText.slice(0, 200) || '(空)'}`);
+}
+
 /* ------------------------------------------------------------------ */
 /* 智谱 AI：官方价格页的营销位与活动文案                                */
 /*   URL: https://bigmodel.cn/pricing （SPA，必须渲染）                 */
 /* ------------------------------------------------------------------ */
 
 const ZHIPU_URL = 'https://bigmodel.cn/pricing';
+
+/**
+ * 渲染完成的判据：这些文案任一出现即说明 SPA 已挂载。
+ * （CI 上踩过坑：只靠固定等待时间会在慢机器上抓到空壳，所以改成显式等内容。）
+ */
+const ZHIPU_WAIT_FOR = ['新用户注册专享', '限时五折', 'Batch API', '缓存存储'];
 
 /**
  * 规则驱动：每条规则对应官网上一句可核验的原文。
@@ -89,7 +112,10 @@ const ZHIPU_RULES = [
 
 async function collectZhipuPricing() {
   // 用 domText 而非 innerText：活动横幅在部分视口下是 display:none，innerText 看不到
-  const { domText, url } = await withPage(page => render(page, ZHIPU_URL));
+  const result = await withPage(page =>
+    render(page, ZHIPU_URL, { waitForText: ZHIPU_WAIT_FOR, diagnostics: true })
+  );
+  const { domText, url } = result;
 
   const items = [];
   for (const rule of ZHIPU_RULES) {
@@ -104,6 +130,9 @@ async function collectZhipuPricing() {
       description: '来源：智谱开放平台官方价格页营销位与活动说明（无头浏览器渲染后提取）。'
     });
   }
+  if (!items.length) {
+    warnZeroProduction('智谱AI活动页', result, '官网可能改版，或该页对当前网络/UA 返回了不同内容');
+  }
   return items;
 }
 
@@ -113,6 +142,9 @@ async function collectZhipuPricing() {
 /* ------------------------------------------------------------------ */
 
 const VOLC_ARK_URL = 'https://www.volcengine.com/product/ark';
+
+/** 渲染完成的判据：出现「免费额度」即说明产品页已挂载 */
+const VOLC_ARK_WAIT_FOR = ['免费额度'];
 
 /** 表格里的模态名 → 分类枚举（让站点的分类筛选对得上） */
 const MODALITY_CATEGORY = [
@@ -245,7 +277,10 @@ const VOLC_ARK_RULES = [
 ];
 
 async function collectVolcArk() {
-  const { html, domText, url } = await withPage(page => render(page, VOLC_ARK_URL));
+  const result = await withPage(page =>
+    render(page, VOLC_ARK_URL, { waitForText: VOLC_ARK_WAIT_FOR, diagnostics: true })
+  );
+  const { html, domText, url } = result;
   const $ = cheerio.load(html);
 
   const items = [];
@@ -277,6 +312,9 @@ async function collectVolcArk() {
     });
   }
 
+  if (!items.length) {
+    warnZeroProduction('火山方舟', result, '官网可能改版，或「免费额度」表结构变了');
+  }
   return items;
 }
 

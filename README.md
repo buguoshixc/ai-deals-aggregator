@@ -44,6 +44,7 @@ node scripts/tools/find-offers.js <url>              # 探测页面是否含优�
 node scripts/tools/term-count.js <url> 免费 额度      # 判断页面是否 JS 空壳
 node scripts/tools/term-count.js <url> 免费 额度 --render  # 渲染后再探测（SPA 页面）
 node scripts/tools/render-source.js <url> --rows     # 渲染公开页并看表格/优惠信号
+node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲染诊断（零产出时用）
 ```
 
 ## 数据契约（deals.json v2）
@@ -148,6 +149,9 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 3. **规则驱动、失败安全**：每条产出都对应官网上的一句原文正则，页面改版导致正则不命中时产出为 0，
    **绝不猜测、不拼接**。新增一条优惠 = 在 `collectors/headless.js` 加一条带原文正则的规则。
 4. **宁可漏采也不发坏数据**：免费额度表结构不匹配（分项对不上）时整行跳过。
+5. **等内容，不等网络空闲**：`goto` 只用 `domcontentloaded`，之后显式等待目标文案出现
+   （`--wait` / `waitForText`）。`networkidle` 在有长轮询/埋点请求的 SPA 上永远不触发，
+   超时后重载页面反而会抓到空壳（CI 上实测过：同一个来源本地 5 条、CI 0 条）。
 
 > ⚠️ 无头来源目前**只在本地/手动跑**刷新，CI 的 `collect.yml` 未启用。原因是 GitHub Actions 的
 > 机房 IP 大概率被国内厂商风控拒之门外，且要在 CI 里装浏览器内核会显著拖慢流水线。

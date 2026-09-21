@@ -141,7 +141,7 @@ Collect AI Deals   7754087  schedule  2026-09-21T03:28Z   → 提交了 76ee1e5
 - **规则驱动、失败安全**：每条产出对应官网一句原文正则；页面改版导致不命中时产出为 0，不猜测、不拼接。
 - **宁可漏采也不发坏数据**：免费额度表的分项按下标配对，对不上且模型非单个时整行跳过。
 
-**踩到的三个坑**（都已修）：
+**踩到的四个坑**（都已修）：
 
 1. `innerText` 取不到 `display:none` 的活动横幅 ⇒ 新增 `domText`（整个 DOM 的文本）专门用于规则匹配，
    `text`（innerText）仍用于"用户可见正文"探测。
@@ -149,9 +149,25 @@ Collect AI Deals   7754087  schedule  2026-09-21T03:28Z   → 提交了 76ee1e5
    漏掉 3 条语音额度。
 3. 额度单元格里是多个分项（如"5000字符"+"10复刻声音"）⇒ 模型 1 个、额度 N 段时合并描述，
    模型 N 个、额度 N 段时按下标配对。
+4. **`networkidle` 不能当主等待策略** ⇒ 有长轮询/埋点请求的 SPA 永远等不到 idle，超时后代码又调了一次
+   `page.goto`，等于把页面重新加载一遍，只等 1.5s 就抓 DOM ⇒ 拿到空壳。改为 `domcontentloaded`
+   + 显式等待目标文案（`waitForText`），不但修好了，耗时也从 28–50s 降到 4–8s。
 
-**边界**：无头来源目前**只在本地手动跑**刷新，`collect.yml` 未启用（GitHub Actions 机房 IP 大概率被国内厂商
-风控拦截，且在 CI 装浏览器内核会显著拖慢流水线）。线上要自动刷新需先验证 CI 出口 IP 可达。
+**CI 可达性实测**（`.github/workflows/probe-sources.yml`，只读、手动触发）：
+
+| 项 | 结果 |
+|---|---|
+| Actions 出口 IP | `135.232.201.85` |
+| `bigmodel.cn/pricing` 直连 | HTTP 200 / 4301 bytes（正常 SPA 空壳，**无风控特征**） |
+| `volcengine.com/product/ark` 直连 | HTTP 200 / 168969 bytes，**无风控特征** |
+| 火山方舟在 CI 的产出 | 12 条（与本地一致） |
+| 智谱AI活动页在 CI 的产出 | 0 条 → 定位为上面的坑 4，已修复待复测 |
+
+结论：**机房 IP 没有被拦**，把无头来源接进 `collect.yml` 在可达性上没有障碍。
+
+**边界**：无头来源目前**只在本地手动跑**刷新，`collect.yml` 未启用。线上要自动刷新需先复测探针，
+再把 `npx playwright install --with-deps chromium` 与 `npm run collect:headless` 加进去
+（runner 建议钉 `ubuntu-24.04`，避免 `ubuntu-latest` 迁移到 Ubuntu 26 后系统库变化）。
 
 **DeepSeek 的结论**：官网（`www.deepseek.com`）与 API 文档（`api-docs.deepseek.com`）用无头浏览器渲染后
 **依然是 0 条优惠信号**——定价页只有"扣减…将从充值余额或赠送余额中扣减"这类计费说明，不是可领取的公开额度。

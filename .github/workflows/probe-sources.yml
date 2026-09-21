@@ -1,14 +1,12 @@
 name: Probe Headless Sources
 
-# 目的：一次性验证 GitHub Actions 的出口 IP 能否访问智谱活动页与火山方舟。
-# 国内厂商常见风控会拦截机房 IP，若这里跑不通，就不要把无头来源接进 collect.yml。
+# 目的：验证 GitHub Actions 能否访问并渲染智谱活动页、火山方舟。
+# 国内厂商常见风控会拦截机房 IP；若这里跑不通，就不要把无头来源接进 collect.yml。
 #
-# 用法：Actions → Probe Headless Sources → Run workflow → 看日志三个小节。
-#   ① 出口 IP 与直连可达性（不渲染，最快能看到是否被拦）
-#   ② 安装浏览器内核（失败不阻断，后面可能还有系统自带 Chrome 兜底）
-#   ③ 实跑两个无头来源（dry-run，不写盘、不提交）
+# 用法：Actions → Probe Headless Sources → Run workflow。
+# 结果会汇总到运行的 **Summary** 标签页（不用翻日志），日志里另有完整细节。
 #
-# 本工作流只读，不写仓库、不发布。
+# 本工作流只读：不写仓库、不提交、不发布。
 
 on:
   workflow_dispatch:
@@ -18,36 +16,47 @@ permissions:
 
 jobs:
   probe:
-    runs-on: ubuntu-latest
+    # 钉死版本而不是 ubuntu-latest：无头浏览器依赖系统库，镜像换代容易踩坑
+    runs-on: ubuntu-24.04
     env:
       TZ: Asia/Shanghai
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24'
           cache: npm
 
       - name: 1) 出口 IP 与直连可达性（不渲染）
         run: |
-          echo "出口 IP: $(curl -s --max-time 15 https://api.ipify.org || echo unknown)"
-          echo
+          echo "### 1) 出口 IP 与直连可达性" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| URL | HTTP | 大小 | 风控特征 |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|---|---|" >> "$GITHUB_STEP_SUMMARY"
+
           UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
+          IP=$(curl -s --max-time 15 https://api.ipify.org || echo unknown)
+          echo "出口 IP: $IP"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 出口 IP：\`$IP\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
           for url in "https://bigmodel.cn/pricing" "https://www.volcengine.com/product/ark"; do
             out=/tmp/page.html
             code=$(curl -s -o "$out" -w '%{http_code}' -A "$UA" -L --max-time 30 "$url" || echo "curl-failed")
             size=$(wc -c < "$out" 2>/dev/null || echo 0)
-            echo "── $url"
-            echo "   HTTP $code / ${size} bytes"
-            # 空壳（几 KB）是正常的 SPA 表现；被风控拦截通常表现为 403 / 验证页 / 极小响应
+            flag="否"
             if grep -qiE 'captcha|人机验证|访问被拒绝|forbidden|安全验证' "$out" 2>/dev/null; then
-              echo "   ⚠️ 响应疑似风控/验证页"
+              flag="**疑似风控/验证页**"
             fi
-            echo
+            echo "── $url"
+            echo "   HTTP $code / ${size} bytes / 风控特征: $flag"
+            echo "| $url | $code | ${size} bytes | $flag |" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
           done
 
       - name: Install dependencies
@@ -62,5 +71,27 @@ jobs:
           echo "已安装的内核："
           ls -d "$HOME/.cache/ms-playwright"/* 2>/dev/null || echo "(无)"
 
-      - name: 3) 实跑无头来源（dry-run，不写盘）
-        run: node scripts/collect.js --headless --only=cn_zhipu_pricing,cn_volc_ark --dry-run
+      # 渲染诊断放在采集之前：如果采集是 0 条，这里就能看出页面到底渲染出来没有
+      - name: 3) 渲染诊断（智谱价格页，SPA）
+        continue-on-error: true
+        run: |
+          echo "### 2) 渲染诊断：bigmodel.cn/pricing" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node scripts/tools/render-source.js "https://bigmodel.cn/pricing" \
+            --grep=免费 --diag --wait="新用户注册专享|限时五折|Batch API|缓存存储" \
+            2>&1 | tee /tmp/render.log
+          tail -20 /tmp/render.log >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 4) 实跑无头来源（dry-run，不写盘）
+        run: |
+          node scripts/collect.js --headless --only=cn_zhipu_pricing,cn_volc_ark --dry-run 2>&1 | tee /tmp/collect.log
+          {
+            echo ""
+            echo "### 3) 无头来源产出"
+            echo '```'
+            grep -E "火山方舟|智谱AI活动页|合计|零产出" /tmp/collect.log || true
+            echo '```'
+            echo ""
+            echo "_本地基线：火山方舟 12 条、智谱AI活动页 5 条。_"
+          } >> "$GITHUB_STEP_SUMMARY"

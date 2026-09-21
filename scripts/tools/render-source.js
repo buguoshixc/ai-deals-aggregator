@@ -76,13 +76,16 @@ async function main() {
   const urls = args.filter(a => !a.startsWith('--'));
   const showRows = args.includes('--rows');
   const showHtml = args.includes('--html');
+  const showDiag = args.includes('--diag');
   const showText = args.includes('--text');
   const shot = args.find(a => a.startsWith('--screenshot='));
   const patternArg = args.find(a => a.startsWith('--pattern='));
   const grepArg = args.find(a => a.startsWith('--grep='));
+  const waitArg = args.find(a => a.startsWith('--wait='));
+  const waitForText = waitArg ? waitArg.slice('--wait='.length).split('|').filter(Boolean) : null;
 
   if (!urls.length) {
-    console.error('用法: node scripts/tools/render-source.js <url> [url2 ...] [--rows] [--grep=文本] [--text]');
+    console.error('用法: node scripts/tools/render-source.js <url> [url2 ...] [--rows] [--html] [--diag] [--text] [--grep=文本] [--wait=文案1|文案2]');
     process.exit(1);
   }
 
@@ -94,7 +97,9 @@ async function main() {
   console.log(`浏览器内核: ${channel}\n`);
 
   const results = await renderAll(urls, {
-    screenshot: shot ? shot.slice('--screenshot='.length) : null
+    screenshot: shot ? shot.slice('--screenshot='.length) : null,
+    diagnostics: true,
+    waitForText
   });
   const pattern = patternArg ? patternArg.slice('--pattern='.length) : DEFAULT_PATTERN;
 
@@ -119,6 +124,16 @@ async function main() {
       console.log(`  [${index}] (${hit.where}) ${hit.text}`);
     });
     if (hits.length > 25) console.log(`  ...（其余 ${hits.length - 25} 条省略）`);
+
+    // 渲染诊断：零产出时主要看这里
+    if (result.matchedNeedle) console.log(`等待文案: 命中「${result.matchedNeedle}」`);
+    for (const note of result.notes || []) console.log(`备注    : ${note}`);
+    if (showDiag) {
+      console.log(`DOM 文本: ${(result.domText || '').length} 字符`);
+      for (const error of (result.consoleErrors || []).slice(0, 5)) console.log(`控制台错误: ${error}`);
+      for (const request of (result.failedRequests || []).slice(0, 5)) console.log(`请求失败  : ${request}`);
+      console.log(`DOM 前 400 字: ${(result.domText || '').slice(0, 400)}`);
+    }
 
     if (showRows) printRows($, grepArg ? new RegExp(grepArg.slice('--grep='.length)) : null);
     if (showHtml) printHtml($, grepArg ? new RegExp(grepArg.slice('--grep='.length)) : null, 2500);
