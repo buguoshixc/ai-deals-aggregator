@@ -678,6 +678,115 @@ npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/
 
 ---
 
+### 2.17 新增：参考站研究（20 站拆解 → 差距矩阵 → 三套方案）
+
+**起因**：想「向优秀网页学习」，但凭印象改的东西没法复核——三个月后没人说得清某条规则是从哪来的。
+所以这一轮先把**证据**做出来：20 个参考站拆成结构化数据，再用**同一把尺子**量我们自己。
+
+**方法**（`scripts/tools/study-site.js`，本轮新写）：一条命令把一个站拆成四份证据——
+
+| 产出 | 内容 |
+|---|---|
+| `metrics.json` | 页面高度/屏数、主列表组件签名与尺寸、**首屏完整可见条目数**（与 `verify-site.js` 同口径）、同源链接与 URL 形态聚类、canonical/hreflang/JSON-LD、外部域名与请求数、静态正文长度、**对比度抽样** |
+| `tokens.json` | 色值/字阶/行高/字重/圆角/阴影/间距/动效的**频次分布**（频次才是设计系统的证据） |
+| `dom-outline.txt` | 语义骨架 + class 命名频次；层级不足 25 行时附「按渲染面积排序的最大 40 个元素」兜底 |
+| `shots/*.png` | 桌面首屏/整页 + 手机首屏（不入库，45 MB，可随时重跑） |
+
+跑的过程中修掉两个**工具自身**的缺陷（都是被证据的荒谬值暴露的）：
+
+1. 页头容器超过 10 个子节点时骨架只剩 10 行（ai-bot.cn）→ 改为「打印子节点数 + 只往下走有结构的子节点」。
+2. **单字符文本节点被对比度抽样整类跳过** —— 档位角标「1」这种最容易出问题的元素反而没人管 →
+   阈值从「≥2 字符」改为「≥1 字符」，并在注释里写明原因。
+
+**样本**：12 个同类垂直站（ai-bot.cn / aitools.fyi / appsumo / artificialanalysis / devtk.ai / free-for-dev /
+futurepedia / futuretools / llm-prices / openrouter / theresanaiforthat / toolify）+ 8 个设计标杆
+（linear / vercel / stripe / raycast / framer / superhuman / notion / thebrowser.company）。
+逐站报告在 `research/vertical/`、`research/benchmark/`（共 20 份，每份九节或八节，只引证据、不描述截图）。
+
+**关键发现（只列有数字支撑的）**
+
+| 发现 | 证据 |
+|---|---|
+| 「每条一个独立页」是同类站的默认结构，**只有我们没有** | futuretools `/tools/:slug ×40`、toolify `/tool/:slug ×27`、artificialanalysis `/models/:slug ×49`、TAAFT `/:slug/:slug ×2795`；我们内链 **1 条**、URL 形态 **0 种**（llm-prices 也没有，但它是工具页不需要） |
+| 密度差在**行高**，不在信息量 | llm-prices 行高 45px → 首屏 **16 行**；openrouter 47px → **15 行**；我们卡片 192px → **9 张** |
+| 对比度不达标是行业常态，但**能做好** | 做得最好的四家 0 条不达标（openrouter 5.79 / llm-prices 5.13 / superhuman 4.85 / aitools.fyi 4.79）；差的是 toolify 204/387、free-for-dev 189/400；我们改前 100/400 |
+| 动效时长集中在 100–300ms、曲线集中在两条；**没有一家用 `transition: all`** | Tailwind 默认 `150ms cubic-bezier(.4,0,.2,1)` 跨站最多；linear `100ms`；raycast `cubic-bezier(.23,1,.32,1)`；反面样本是 ai-bot.cn `all .3s ease` ×373 |
+| 暗色分两派：默认暗色（产品本身是暗色 UI）vs 显式双主题 | **vercel 是唯一声明 `<meta name="color-scheme" content="dark light">` 的**；notion 是唯一跟随系统的 |
+| 结构化数据不是同类站的强项，我们**已领先但缺一个节点** | 12 个同类站里 7 个为 0–1 类；openrouter 最全 5 类；我们 4 类，**缺 `WebSite`**（devtk.ai 只有 2 类就包含它） |
+
+**产出**（都在 `research/`）：
+
+- `EVIDENCE.md`：21 站原始数字总表（机械汇总，不解释）
+- `README.md`：样本表、方法、剔除与受限清单、跨站共性、已知限制
+- `GAP-MATRIX.md`：**该做 18 条**（每条带优先级/成本/是否触红线/预期收益）+ **明确不学 9 条**
+- `DESIGN-TOKENS.md`：现有 token ↔ 标杆数值 ↔ 建议值（含暗色两套与对比度推导）
+- `mockups/v3/`：三套方案的可点开 demo + 各自 `PLAN.md`
+
+**三套方案**（A 保守 / B 均衡 / C 进取，逐项包含关系）与验证：
+
+| | 可索引 URL | 首屏完整可见 | 手机屏数 | 对比度不达标 | 持续成本 |
+|---|---|---|---|---|---|
+| 现状 | 1 | 9 | 15 | 100/400 | — |
+| A | 1（不变） | 9（不变） | 15（不变） | **≤20（目标）** | 无 |
+| B | **81** | **16+** | ≤12 | ≤20 | 无 |
+| C | 81 + `/en/` | 16+ | ≤12 | ≤20 | **英文需逐条人工译** |
+
+**demo 的自我验证**（不是嘴上说）：9 个页面用同一把尺子量过——
+亮/暗两种偏好下对比度 **0 条低于要求**（亮 min 4.51 / 暗 min 5.98）、**外部请求 0**、**断链 0**。
+
+> 断链那条是被**结构检查**抓出来的，不是对比度检查：顶层对比页的样式表路径按「子目录」写死，
+> 结果 404、页面退化成浏览器默认样式——而默认黑字白底对比度 21:1，对比度检查照样是绿的。
+> 教训：**门禁不能只有一个角度**。
+
+**已知限制（如实记录）**
+
+1. **视觉评述缺失**：原计划把截图交给视觉模型独立复核，但该模型所在 provider 返回 **HTTP 402（余额不足）**，
+   5 个视觉审阅任务全部失败。补偿：所有结论以 DOM/样式/度量与对比度计算为准；截图保留供人看。
+2. 对比度是**纯色背景近似值**（复杂背景样本跳过；raycast 跳过 219 条、linear 95 条，跨站比较以「不达标条数」为主）。
+3. 所有数字是**某次抓取的快照**，站点改版即失效；重跑同一条命令即可刷新。
+4. 样本是**人工挑选**的（搜索引擎不可用，同一 provider 402），不声称覆盖全部同类站。
+
+**同批入库**：`scripts/tools/study-site.js`（拆解器）、`verify-site.js` 的 `--json` / `--compare`
+（机器可读指标 + 回归比对，含负向演练）、`docs/DESIGN-RULES.md`（9 节可执行规范 + 9 条不采纳清单）。
+
+---
+
+### 2.18 方案 A 的范围已实现（**在分支上，master 未动**）
+
+**为什么先做 A**：三套方案是逐项包含关系（A ⊂ B ⊂ C），A 的范围在任何一套里都必须先做；
+而且它修的是一个**客观缺陷**——线上 400 个文本节点里 100 条对比度不达标（最低 2.84:1）。
+
+**分支**：`feat/visual-token-layer`（提交 `ab37e8b`、`874cd6b`）。**没有合并、没有推送**，等你点单。
+
+| 类别 | 内容 |
+|---|---|
+| 对比度 | `--mut` #8c94a6 → #6b7280（2.84:1 → 4.50:1）；档位角标改「自带底色 + 逐档 on 色」（9px 白字压 #0e9f6e 只有 3.38:1、压 #94a3b8 只有 2.57:1）；档位色当文字用时另立 `--t1-ink/--t2-ink` |
+| 暗色 | 底/面/发丝环三件套；`color-scheme` + 两段 `theme-color`；跟随系统 + 手动三态；**首屏前决定主题**（无闪回）；无 JS 时不渲染切换器；12 处硬编码亮色面板改 token |
+| 排版 | 6 级字阶、正文 13.5 → 14px；**假字重 354 处清零**（550/650/680/750/800 → 500/600/700） |
+| 动效 | 3 档时长 + 2 条曲线；`transition: all` 归零；新增 `prefers-reduced-motion` 降级 |
+| 层级 | hover 的 18px 扩散投影 → 发丝环 + 微投影 |
+| 语义/状态 | `header`/`nav`/`main` 落地；筛选按钮 11/11 带 `aria-pressed`；加载失败改为不覆盖内容的提示条 + 重试 |
+
+**改前 / 改后（同一把尺子，各 400 个文本节点）**
+
+| | 改前 | 改后（亮） | 改后（暗） |
+|---|---|---|---|
+| 对比度低于要求 | **100 / 400**（最低 2.84） | **0 / 400**（最低 4.51，中位 5.7） | **0 / 400**（最低 5.98，中位 8.62） |
+| 页高 / 密度 | 5334px · 5.9 屏 · 首屏 9 张 | 不变 | 不变 |
+
+**门禁**：`verify` 断言 **55 → 69 项 0 失败**（计划里的目标是 ≥60）；回归比对五项全过
+（卡片 62→62、首屏 9→9、页高 5334→5334px、外部请求 0→0、JS 错误 0）；连续两次构建 SHA256 一致；
+`check:zh` 与 `selftest:zh`（7 项）全绿。
+
+> 新增断言第一次运行就抓出两个真问题：**档位角标在两种主题下都是 1:1**（它压在兄弟节点上，
+> 只看元素自身背景的审计工具看不到），以及**暗色下 203 条不达标**（12 处硬编码亮色面板）。
+> 都不是读代码看出来的——是门禁逼出来的。
+
+**尚未做**（属于 B/C 的可选部分）：独立详情页、紧凑行视图、feed、纠错入口、收藏对比、
+首页一级入口、英文覆盖、`WebSite` 节点、同页锚点导航。
+
+---
+
 ## 三、命令速查
 
 
@@ -690,15 +799,25 @@ npm run collect:headless      # 额外启用无头来源并写盘（需本机 Ed
 npm test                # 数据 + 前端校验（零依赖）
 npm run test:strict     # 附加内容质量指标
 npm run build           # 本地复现发布产物（含预渲染 + logo 资产）并自检
-npm run verify          # 真浏览器验收（55 项断言；需 playwright-core + 本机 Edge）
+npm run verify          # 真浏览器验收（分支 2.18 落地后 69 项断言；需 playwright-core + 本机 Edge）
 npm run verify:shots    # 同上，并把截图写到 mockups/.preview/
+npm run verify:baseline # 把当前指标（卡片数/首屏密度/页高/请求数）写成回归基线
+npm run verify:regress  # 与基线比回归：密度不得降、页高/请求不得涨（5 项断言）
 npm run report:tier     # 分档分布 + 每张卡命中的判据 + 判据读到的原文
 npm run report:vendor   # 厂商归一报告（多少种脏写法归到了同一家）
 npm run todo:zh         # 中文翻译待办（--json / --scaffold 盖原文指纹 / --orphans）
+npm run check:zh        # 译文漂移门禁：非零退出 = 有译文对不上 id / 原文已变 / 还有条目没译
 npm run selftest:zh     # 中文译文门禁演练（自恢复，验证坏译文真的会被拦下）
 npm run fetch:logos     # 从厂商官网抓品牌图标，补进 assets/logos/
 npm run serve                          # 本地预览源码目录 http://127.0.0.1:8080
 node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 index.html）
+
+# 参考站拆解（2.17 新增）：一条命令把一个站拆成四份可复核证据
+node scripts/tools/study-site.js <url> --out=research/_raw/<slug>
+node scripts/tools/study-site.js <url> --out=... --scheme=dark    # 强制深色偏好，验暗色
+node scripts/tools/study-site.js <url> --out=... --proxy=http://127.0.0.1:7890
+node scripts/tools/study-site.js <url> --out=... --wait=必然出现的文案   # SPA 显式等文案
+node mockups/v3/_tools/build.js        # 重新生成 mockups/v3 的三套方案 demo（读 dist/）
 
 node scripts/collect.js --list                       # 已注册来源
 node scripts/collect.js --only=cn_qianfan --dry-run  # 单源调试
