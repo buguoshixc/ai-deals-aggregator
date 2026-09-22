@@ -56,68 +56,85 @@ manifest 里每条 logo 的 `kind` 只有两种：
 | 标注 | `title` 与 `aria-label` 都写明「名称缩写，未取得官方品牌图形」，鼠标悬停即可看到 |
 | 不复用 | 缩写块没有 `data-logo` 属性，不走 `logos.css`，也不会被误当成登记过的图形 |
 
-当前覆盖情况（`npm run report:vendor` 可复核）：**官方品牌图形 30 家 / 名称缩写兜底 42 家 / 共 72 家**。
-42 个缩写块里有 1 组重名（`Labrynth` 与 `Leonardo AI` 都是 `LA`）——这不成问题，
+当前覆盖情况（`npm run report:vendor` 可复核）：**官方品牌图形 35 家 / 名称缩写兜底 37 家 / 共 72 家**。
+缩写块里有 1 组重名（`Labrynth` 与 `Leonardo AI` 都是 `LA`）——这不成问题，
 因为卡片上紧挨着就写着厂商全名，缩写块只是视觉锚点，不承担唯一标识。
 
-## 缺口（明确记录，不用近似图凑数）
+## 直连取不到时：走本机代理 + 真浏览器
 
-以下 5 家**数据里有条目、但拿不到官方图形**，现在卡片上显示的是名称缩写兜底块：
+**这是本项目实际踩过的坑，记下来免得下次重走一遍。**
 
-| 厂商 | 数据里 | 情况 |
+症状：`x.ai` / `mistral.ai` / `ideogram.ai` / `leonardo.ai` / `krea.ai` / `www.midjourney.com`
+在本机**直连**下全部超时。三段探针（`DNS → TCP:443 → HTTPS`）显示一批互不相关的域名
+把 AAAA 解析到同一段 `2a03:2880:…:face:b00c`（Meta 的地址段），A 记录也是杂拼的：
+
+```
+x.ai          DNS ✓ 2a03:2880:f126:83:face:b00c(v6),  208.31.254.33(v4)  TCP ✗ ETIMEDOUT
+mistral.ai    DNS ✓ 2a03:2880:f111:83:face:b00c(v6),   31.13.73.169(v4)  TCP ✗ ETIMEDOUT
+ideogram.ai   DNS ✓ 2a03:2880:f11c:8083:face:b00c(v6), 23.101.24.70(v4)  TCP ✗ ETIMEDOUT
+leonardo.ai   DNS ✓ 2a03:2880:f117:83:face:b00c(v6),   65.49.26.98(v4)   TCP ✗ ETIMEDOUT
+krea.ai       DNS ✓ 2a03:2880:f127:283:face:b00c(v6), 199.59.148.246(v4)  TCP ✗ ETIMEDOUT
+```
+
+**强制 IPv4 没用，真浏览器（Edge，Happy Eyeballs）也没用——不是站点拒绝我们，是本地出口
+对这些域名的解析/路由有问题。** 结论：换出口，即把本机代理打开。
+
+代理打开后按情况分三条路，从简到繁：
+
+```bash
+# ① 站点不挡爬虫：两个环境变量就够，Node 内置 fetch 会自己走代理（Node 24+）
+#    set NODE_USE_ENV_PROXY=1 & set HTTPS_PROXY=http://127.0.0.1:7890   (Windows)
+export NODE_USE_ENV_PROXY=1 HTTPS_PROXY=http://127.0.0.1:7890
+npm run fetch:logos -- --only=canva
+
+# ② 站点挡 curl/node（Cloudflare 403）：用真浏览器 + 代理访问首页，再在页面上下文里取图
+#    关键点是 fetch(url, { credentials: 'include' })——它带 cookie 与 Referer，
+#    等同页面自己加载那张图；用 Playwright 的 ctx.request 取会一路 403。
+#    参考实现见 git 历史里的 mockups/_tools/_proxy-logos*.js（一次性脚本，未入库）
+
+# ③ 站点的图标路径本身 403：退一步找 og:image / 页面内 <img> 里的 logo
+#    注意 og:image 常是社交预览大图（Hugging Face 那次拿到的是 1200×648 横幅），
+#    必须用画布校验 + 长宽比过滤，别把横幅当 logo
+```
+
+**每一步都要过画布校验**（不透明像素占比 + 平均色）。这条规矩抓出过两个真问题：
+Midjourney 页面内联 favicon 是**整张透明**的占位图（不透明像素 0%），
+Ideogram 站内 `new-logo.svg` 是 **5:1 长条字标**（方形格位不合适）。
+
+## 图形尺寸偏小、但已采用的
+
+| 厂商 | 尺寸 | 说明 |
 |---|---|---|
-| Midjourney | 1 条 | 官网对抓取返回 403；页面里的内联 favicon 是 32×32，画布校验**不透明像素 0%**——整张透明的占位图，不是 logo，已丢弃 |
-| xAI（Grok） | 1 条 | 官网 `x.ai` 不可达 |
-| Ideogram | 1 条 | 官网 `ideogram.ai` 不可达 |
-| Leonardo AI | 1 条 | 官网 `leonardo.ai` 不可达 |
-| KREA | 1 条 | 官网 `krea.ai` 不可达（注意：`/krea/i` 会误命中「Kreado AI」另一家，规则必须带边界） |
+| 科大讯飞 | 32×32 | 官网只有这个 favicon 可用 |
+| Ideogram | 48×48 | 官网方形图标最大 48×48（24px 格位的 2 倍）；站内字标是 5:1，不适合方块位 |
+| KREA | 64×64 | 站点尺寸表里最大就是 64×64 |
+| 商汤科技 | 120×184 | 方形图标只有这么大；站内 `logo-frame10.png` 是 3.5:1 长条词标 |
 
-「不可达」的判定依据（`DNS → TCP:443 → HTTPS` 三段探针）：
-
-```
-x.ai          DNS ✓ 2a03:2880:f126:83:face:b00c:0:25de(v6), 208.31.254.33(v4)  TCP ✗ ETIMEDOUT
-mistral.ai    DNS ✓ 2a03:2880:f111:83:face:b00c:0:25de(v6),  31.13.73.169(v4)  TCP ✗ ETIMEDOUT
-ideogram.ai   DNS ✓ 2a03:2880:f11c:8083:face:b00c:0:25de(v6), 23.101.24.70(v4)  TCP ✗ ETIMEDOUT
-leonardo.ai   DNS ✓ 2a03:2880:f117:83:face:b00c:0:25de(v6),  65.49.26.98(v4)   TCP ✗ ETIMEDOUT
-krea.ai       DNS ✓ 2a03:2880:f127:283:face:b00c:0:25de(v6),199.59.148.246(v4)  TCP ✗ ETIMEDOUT
-```
-
-一批互不相关的域名解析到同一段 `2a03:2880:…:face:b00c`（Meta 的地址段），A 记录也是杂拼的，
-且**强制 IPv4 后仍全部超时**，真浏览器（Edge，Happy Eyeballs）也一样——
-所以这不是「站点拒绝我们」，是本机网络出口对这些域名的解析/路由有问题。
-这类情况本地无解，需要在能正常解析的网络里取。
-
-另有 2 家**图形尺寸偏小**，可用但建议向品牌方要矢量素材：
-
-| 厂商 | 情况 |
-|---|---|
-| 科大讯飞 | 官网只有 32×32 favicon 可用 |
-| 商汤科技 | 方形图标只有 120×184；站内 `logo-frame10.png` 是 3.5:1 长条词标，不适合方块位 |
+建议有条件时向品牌方索取矢量素材，替换后 `quality` 字段同步改掉。
 
 ## 已登记但暂未被引用
 
-这三家的官方品牌图形已登记，**但数据里目前还没有它们的条目**，所以卡片上暂时用不到。
+这几家的官方图形已登记，**但数据里目前还没有它们的条目**，所以卡片上暂时用不到。
 留着是为了等采集器抓到它们时开箱即用——`logos.css` 只有 8 KB（图形是独立文件、按需请求），
 未被引用的图形不会产生任何请求：
 
 | key | 来源 |
 |---|---|
-| `huggingface` | simple-icons 官方品牌路径（`huggingface.co` 本机不可达）#FFD21E |
-| `mistral` | simple-icons 官方品牌路径（`mistral.ai` 本机不可达）#FA520F |
-| `together` | 官网 CDN 的 touch icon 256×256（`www.together.ai` 直连很飘，常超时） |
-
-`dify` / `githubcopilot` / `ollama` / `openrouter` 同理：图形已登记，等有对应条目时自动生效。
+| `huggingface` | 官网官方 logo SVG `front/assets/huggingface_logo-noborder.svg`（经代理取得） |
+| `mistral` | 官网官方 `favicon.svg` 183×183（经代理取得） |
+| `together` | 官网 CDN 的 touch icon 256×256 |
+| `dify` / `githubcopilot` / `ollama` / `openrouter` | 品牌图形库的品牌路径 |
 
 补的方法：
 
 ```bash
 npm run fetch:logos                      # 探测内置候选清单，命中就写入 assets/logos/
 npm run fetch:logos -- --only=canva      # 只试某几家
-# 也可以手工把文件放进 assets/logos/，然后
+# 也可以手工把文件放进 assets/logos/
 ```
 
 在 `manifest.json` 里登记一条，再把 key 填回 `index.html` 的 `VENDOR_RULES`
-（`logo key` 为 `null` 的条目就是「只做厂商归一、不挂图形」）。
+（`logo key` 为 `null` 的条目就是「只做厂商归一、不挂官方图形，走名称缩写兜底」）。
 
 ## 版权
 

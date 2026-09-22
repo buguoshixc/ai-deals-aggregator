@@ -472,7 +472,60 @@ npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/
 
 ---
 
+### 2.13 收尾：最后 5 家厂商的真图形全部拿到
+
+**起因**：2.12 之后还剩 5 家（Midjourney / xAI / Ideogram / Leonardo AI / KREA）只有名称缩写兜底块。
+2.12 的结论是「官网在本机网络下不可达，本地无解」——**这个结论对了一半**。
+
+**真正的分界线是出口，不是站点**
+
+2.12 的三段探针是在**代理关闭**状态下直连做的，结论「不可达」只对直连成立：
+
+| 路径 | 结果 |
+|---|---|
+| 直连（强制 IPv4 / 真浏览器 Happy Eyeballs） | 全部 ETIMEDOUT |
+| 经本机代理 `127.0.0.1:7890` | `mistral.ai` / `huggingface.co` **200** |
+
+直连时一批互不相关的域名把 AAAA 解析到同一段 `2a03:2880:…:face:b00c`（Meta 的地址段），
+是本地出口的解析问题；代理走远端解析，这些域名就正常了。
+**教训：诊断网络问题时必须先确认代理状态，别把「本机出口」的结论说成「站点不可达」。**
+
+**三条取图路径（从简到繁，都记进了 `assets/logos/README.md`）**
+
+1. 站点不挡爬虫：`NODE_USE_ENV_PROXY=1 HTTPS_PROXY=http://127.0.0.1:7890 npm run fetch:logos`
+   —— Node 24 内置 fetch 自己走代理，**内置工具零改动就能用**；
+2. 站点挡住 curl/node（Cloudflare 403）：真浏览器 + 代理打开首页，再**在页面上下文里**
+   `fetch(url, { credentials: 'include' })`。关键点：Playwright 的 `ctx.request` 不带放行 cookie，
+   子资源一律 403；页面内 fetch 带 cookie 与 Referer，等同页面自己加载那张图；
+3. 图标路径本身 403：退一步找 `og:image` 与页面内 `<img>`。
+
+**画布校验又抓出两个坑**
+
+- **Midjourney**：站内内联 favicon 是**整张全透明**的占位图（不透明像素 0%），不是 logo——丢弃。
+  真图形在 `/public/apple-touch-icon.png`（180×180），用路径 ② 才取到。
+- **Hugging Face**：`og:image` 是 **1200×648 的社交预览横幅**，不是 logo。加了长宽比过滤后
+  改用官网官方 logo SVG `front/assets/huggingface_logo-noborder.svg`（95×88，平均色 #F4B61A）。
+- **Ideogram**：站内 `new-logo.svg` 是 **5:1 长条字标**，方形格位不合适；改用 48×48 的方形 favicon。
+
+**结果**
+
+| | 之前（2.12） | 现在 |
+|---|---|---|
+| 官方品牌图形 | 30 家 | **35 家** |
+| 名称缩写兜底 | 42 家 | **37 家** |
+| `assets/logos/` 登记数 | 41 个 | **46 个**（品牌矢量 19 / 官网文件 27） |
+
+5 家全部换成官网真图形；`huggingface` 与 `mistral` 也从「品牌图形库退而求其次」换成官网文件。
+默认视图 53 张卡片本来就全部有真图形，变化集中在「全部工具」Tab（官方图形 64 → 69，缩写块 42 → 37）。
+`npm run verify` 42 项全过。
+
+**顺带修好的**：`git push` 一度失败（`Failed to connect to 127.0.0.1 port 7890`）——
+代理没开时 git 配的代理不可用。用 `git -c http.proxy= push` 直连推送，**没有改动 git 配置**。
+
+---
+
 ## 三、命令速查
+
 
 ```bash
 npm ci                  # 安装依赖
@@ -586,12 +639,11 @@ Layer3Labs 9 · 人工策展（国内）9 · 智谱AI 7 · 智谱AI活动页 5 �
     （目前 71 条优惠里仍有一部分为空）。
 14. **智谱免费模型的厂商级合并**：那 7 条「XX 免费模型」`url` 各不相同，不属于「同一张表」，
     2.10 刻意没有合并。要合并需另写一条厂商级策略（与「同源折叠」是两回事，不要混在一个函数里）。
-15. **还有 5 家厂商只有名称缩写兜底块、没有官方图形**（数据里有条目）：Midjourney（官网 403，
-    页面内联 favicon 经画布校验是整张透明的占位图）、xAI / Ideogram / Leonardo / KREA（官网域名
-    解析异常，强制 IPv4 与真浏览器均超时）。**这 5 家的官网在本机网络下不可达，本地无解**，
-    需要在能正常解析的网络里取；判定依据与探针输出见 `assets/logos/README.md`。
-    Hugging Face / Mistral / Together 的官方品牌图形已经拿到并登记，但数据里还没有这三家的条目。
-    另外科大讯飞只有 32px favicon、商汤方形图标只有 120×184，需要向品牌方要矢量素材。
+15. **名称缩写兜底还剩 37 家**：都是有官方图形就该换掉的（口径是「拿得到就一定用真图形」）。
+    其中数据里的 5 家（Midjourney / xAI / Ideogram / Leonardo / KREA）已在 2.13 换成官网真图形；
+    剩下的是目录站抓来的长尾工具，多数连官网都不确定。
+    另有一批**图形尺寸偏小**、可用但不理想：科大讯飞 32×32、Ideogram 48×48、KREA 64×64、
+    商汤 120×184，有条件时向品牌方索取矢量素材替换。
 16. **`deals.json` 的体积**：`dist/index.html` 155 KB（预渲染 53 张卡 + 内联脚本）。
     GitHub Pages 会 gzip，实际传输约 30 KB；如果继续增长，可把内联脚本拆成外部文件换取缓存命中。
 
