@@ -195,38 +195,6 @@ Collect AI Deals   7754087  schedule  2026-09-21T03:28Z   → 提交了 76ee1e5
 
 ---
 
-## 三、命令速查
-
-```bash
-npm ci                  # 安装依赖
-npm run collect:dry     # 采集但不写盘，看每源产出报告
-npm run collect         # 全量采集并写入 deals.json
-npm run collect:headless:dry  # 额外启用无头来源（智谱活动页 / 火山方舟），不写盘
-npm run collect:headless      # 额外启用无头来源并写盘（需本机 Edge/Chrome）
-npm test                # 数据 + 前端校验（零依赖）
-npm run test:strict     # 附加内容质量指标
-npm run build           # 本地复现发布产物（含预渲染）并自检
-npm run serve                          # 本地预览源码目录 http://127.0.0.1:8080
-node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 index.html）
-
-node scripts/collect.js --list                       # 已注册来源
-node scripts/collect.js --only=cn_qianfan --dry-run  # 单源调试
-node scripts/tools/inspect-source.js <url> --rows    # 看页面表格结构
-node scripts/tools/find-offers.js <url>              # 探测页面有无优惠内容
-node scripts/tools/term-count.js <url> 免费 额度      # 判断是否 JS 空壳
-
-node scripts/lib/og-image.js --out=dist/og-image.png # 单独重新生成 OG 分享图（带像素自检）
-node scripts/data/backfill-cards.js --check          # 核对策展条目的卡片字段是否齐备
-```
-
-> 新增策展条目时：先编辑 `scripts/data/curated_*.json`（含 `features`/`priceLine`/`verifiedAt`）
-> → `npm run collect` 把新字段合并进 `deals.json` → `npm run build` 重新预渲染。
-> 顺序不能颠倒：预渲染读的是 `deals.json`，不是策展文件（见 2.9）。
-
----
-
----
-
 ### 2.9 新增：卡片信息架构 + SEO/GEO 静态骨架
 
 **背景**：与同类站点（devtk.ai 的优惠页）逐项对比后确认，我们的**数据侧明显更强**（优惠 71 条 vs 18 条、
@@ -376,6 +344,36 @@ ASCII，所以分享图只排品牌标记与站点名，不做中文排版——
 
 **改动范围**：`index.html`（+181 行）与 `scripts/tools/build-local.js`（+96/−36）。
 `deals.json` / 采集器 / `schema.js` / `validate.js` / `.github/workflows` 零改动。
+
+---
+
+## 三、命令速查
+
+```bash
+npm ci                  # 安装依赖
+npm run collect:dry     # 采集但不写盘，看每源产出报告
+npm run collect         # 全量采集并写入 deals.json
+npm run collect:headless:dry  # 额外启用无头来源（智谱活动页 / 火山方舟），不写盘
+npm run collect:headless      # 额外启用无头来源并写盘（需本机 Edge/Chrome）
+npm test                # 数据 + 前端校验（零依赖）
+npm run test:strict     # 附加内容质量指标
+npm run build           # 本地复现发布产物（含预渲染）并自检
+npm run serve                          # 本地预览源码目录 http://127.0.0.1:8080
+node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 index.html）
+
+node scripts/collect.js --list                       # 已注册来源
+node scripts/collect.js --only=cn_qianfan --dry-run  # 单源调试
+node scripts/tools/inspect-source.js <url> --rows    # 看页面表格结构
+node scripts/tools/find-offers.js <url>              # 探测页面有无优惠内容
+node scripts/tools/term-count.js <url> 免费 额度      # 判断是否 JS 空壳
+
+node scripts/lib/og-image.js --out=dist/og-image.png # 单独重新生成 OG 分享图（带像素自检）
+node scripts/data/backfill-cards.js --check          # 核对策展条目的卡片字段是否齐备
+```
+
+> 新增策展条目时：先编辑 `scripts/data/curated_*.json`（含 `features`/`priceLine`/`verifiedAt`）
+> → `npm run collect` 把新字段合并进 `deals.json` → `npm run build` 重新预渲染。
+> 顺序不能颠倒：预渲染读的是 `deals.json`，不是策展文件（见 2.9 / 2.10）。
 
 ---
 
