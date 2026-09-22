@@ -422,7 +422,8 @@
     .meta .hint { display: none; color: var(--mut); }
     body.js .meta .hint { display: inline; }
     body.js .g { cursor: pointer; }
-    body.js .g:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    body.js .r { cursor: pointer; }
+    body.js .g:focus-visible, body.js .r:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
     /* 卡片提示：这条数据的详情页里附了中文翻译。
        放在 .meta 行而不是标题旁——.meta 是 nowrap + overflow:hidden 的横排，
@@ -477,6 +478,47 @@
     .faq p { color: var(--ink2); font-size: 13px; margin-top: .55rem; }
 
     footer { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); color: var(--mut); font-size: 12px; line-height: 1.9; text-align: center; }
+
+    /* ---------- 紧凑行视图（可选，偏好记 localStorage） ---------- */
+    .rows { display: flex; flex-direction: column; gap: 6px; margin-top: var(--s2); }
+    .r {
+      display: grid;
+      grid-template-columns: 20px 24px minmax(140px, 1.5fr) minmax(180px, 2.4fr) minmax(80px, .9fr) 104px 72px;
+      align-items: center; gap: var(--s3); height: 46px; padding: 0 var(--s3);
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--r-sm);
+      font-size: var(--fs-md);
+      transition: border-color var(--t-fast) var(--e-std), box-shadow var(--t-fast) var(--e-std);
+    }
+    .r:hover { border-color: transparent; box-shadow: var(--elev-hover); }
+    /* 行里只留一个 logo tile：整簇塞不下，也没必要 */
+    .r .logos .lg:nth-child(n+2) { display: none; }
+    .r .rnum {
+      width: 18px; height: 18px; border-radius: 5px; display: grid; place-items: center;
+      font-size: 10px; font-weight: 700; font-family: ui-monospace, monospace;
+    }
+    .r[data-tier="1"] .rnum { background: var(--t1); color: var(--on-t1); }
+    .r[data-tier="2"] .rnum { background: var(--t2); color: var(--on-t2); }
+    .r[data-tier="3"] .rnum { background: var(--t3); color: var(--on-t3); }
+    .r[data-tier="4"] .rnum { background: var(--t4); color: var(--on-t4); }
+    .r[data-tier="5"] .rnum { background: var(--t5); color: var(--on-t5); }
+    .r .rt { min-width: 0; }
+    .r .rt a {
+      display: block; color: inherit; text-decoration: none; font-weight: 600;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .r .rt a:hover { color: var(--brand); }
+    .r .rv { display: block; font-size: var(--fs-xs); color: var(--mut); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .r .ro { color: var(--ink2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .r .rf { font-size: var(--fs-sm); color: var(--mut); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .r .rm { font-size: var(--fs-xs); color: var(--mut); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .r .ra { text-align: right; }
+    .r .ra .go { color: var(--brand); font-weight: 600; text-decoration: none; font-size: var(--fs-sm); white-space: nowrap; }
+    .r .ra .go:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      /* 窄屏保留「档位 + logo + 标题/厂商 + CTA」，其余列隐去——触控目标仍 ≥44px */
+      .r { grid-template-columns: 20px 24px minmax(0, 1fr) 64px; height: auto; min-height: 46px; padding: var(--s2) var(--s3); }
+      .r .ro, .r .rf, .r .rm { display: none; }
+    }
 
     /* ---------- 独立详情页（构建期生成 deal/<id>/index.html）---------- */
     .jumpback {
@@ -590,6 +632,11 @@
       .g { height: auto; min-height: 168px; }
       .tierhead { position: static; }
       .rbar { margin-top: 12px; }
+      /* 结果条右侧现在有三个控件（分类 / 排序 / 视图），窄屏必须允许换行，
+         否则整页会横向溢出（实测 390px 下溢出 45px） */
+      .rright { flex-wrap: wrap; justify-content: flex-end; gap: var(--s2); width: 100%; }
+      .sortbox button { padding: 6px 9px; }
+      .seg button { padding: 5px 8px; }
       .dbody { padding: 22px 20px 20px; }
       .dgrid { grid-template-columns: 1fr; }
     }
@@ -634,6 +681,10 @@
           <button type="button" data-sort="tier">优惠力度优先</button>
           <button type="button" data-sort="expiry">即将截止</button>
           <button type="button" data-sort="updated">最近更新</button>
+        </div>
+        <div class="seg" id="viewSeg" role="group" aria-label="视图">
+          <button type="button" data-view="cards" aria-pressed="true">卡片</button>
+          <button type="button" data-view="rows" aria-pressed="false">列表</button>
         </div>
       </div>
     </div>
@@ -1713,6 +1764,49 @@
     }
 
     /** 详情弹层内容：全部字段原样展示，不加工 */
+    /**
+     * 紧凑行：把「一屏能扫读多少条」从 9 提到 16+（行高 46px）。
+     * 依据：llm-prices 用 45px 表格行做到首屏 16 行、openrouter 用 47px 做到 15 行，
+     * 两家都在 45–47px —— 再矮就要砍掉厂商 logo（24px）或触屏最小点击区（44px）。
+     * 行的字段与卡片完全同源（同一个 offerOf / featsOf / stampOf / logoHtml），只是换了排布。
+     */
+    function rowHtml(deal) {
+      const url = safeUrl(deal.url);
+      const tier = tierOf(deal);
+      const vendor = vendorOf(deal);
+      const internal = detailHref(deal);
+      const offer = deal.type === 'deal'
+        ? offerOf(deal)
+        : (deal.description ? { lead: '', rest: deal.description } : null);
+      const offerText = offer ? [offer.lead, offer.rest].filter(Boolean).join(' · ') : '';
+      const feats = featsOf(deal);
+      const stamp = stampOf(deal);
+      const title = escapeHtml(deal.title);
+      return '<div class="r" data-tier="' + tier.n + '">' +
+        '<span class="rnum" aria-hidden="true">' + tier.n + '</span>' +
+        logoHtml(deal) +
+        '<div class="rt">' +
+          (internal ? '<a href="' + escapeAttr(internal) + '">' + title + '</a>' : title) +
+          '<span class="rv">' + escapeHtml([vendor.name, deal.category].filter(Boolean).join(' · ')) + '</span>' +
+        '</div>' +
+        '<div class="ro">' + escapeHtml(offerText) + '</div>' +
+        '<div class="rf">' + escapeHtml(feats[0] || '') + '</div>' +
+        '<div class="rm">' + (stamp ? (stamp.verified ? '✓ ' : '') + escapeHtml(stamp.label) : '') + '</div>' +
+        '<div class="ra">' + (url
+          ? '<a class="go" href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">' +
+            (deal.type === 'deal' ? '获取' : '查看') + ' →</a>'
+          : '') + '</div>' +
+        '</div>';
+    }
+
+    /** 行视图：刻意不分带——这一视图存在的理由就是密度 */
+    function rowsHtml(cards) {
+      if (!cards.length) {
+        return '<div class="empty">没有匹配的条目，试试清空筛选条件。</div>';
+      }
+      return cards.map(rowHtml).join('');
+    }
+
     function detailHtml(deal) {
       const url = safeUrl(deal.url);
       const tier = tierOf(deal);
@@ -1827,7 +1921,34 @@
       setZhOpen(true);
     }
 
-    const state = { deals: [], updatedAt: null, filters: defaultFilters(), cards: [] };
+    const state = { deals: [], updatedAt: null, filters: defaultFilters(), cards: [], view: 'cards' };
+
+    /* ---------- 视图：卡片 / 列表 ----------
+       默认卡片（与预渲染完全一致）；「列表」是可选的高密度视图，偏好记 localStorage。
+       没有 JS 时切换器根本不显示（`.seg` 由 body.js 控制），页面仍是卡片视图——
+       不会出现「切了没反应」的死控件。 */
+    const VIEW_KEY = 'dsh.view';
+    try {
+      const savedView = localStorage.getItem(VIEW_KEY);
+      if (savedView === 'rows' || savedView === 'cards') state.view = savedView;
+    } catch (error) { /* 隐私模式：退回卡片视图 */ }
+
+    function renderViewSeg() {
+      const seg = els.viewSeg;
+      if (!seg) return;
+      seg.querySelectorAll('[data-view]').forEach(button => {
+        const on = button.dataset.view === state.view;
+        button.classList.toggle('on', on);
+        button.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+
+    function applyView(value) {
+      if (value !== 'rows' && value !== 'cards') return;
+      state.view = value;
+      try { localStorage.setItem(VIEW_KEY, value); } catch (error) { /* 记不住不影响本次会话 */ }
+      render();
+    }
 
     const els = {
       list: document.getElementById('dealsList'),
@@ -1837,6 +1958,7 @@
       search: document.getElementById('searchInput'),
       category: document.getElementById('categoryFilter'),
       sortBox: document.getElementById('sortBox'),
+      viewSeg: document.getElementById('viewSeg'),
       lastUpdated: document.getElementById('lastUpdated'),
       detail: document.getElementById('detail'),
       detailBody: document.getElementById('detailBody')
@@ -1866,13 +1988,16 @@
     function render() {
       const cards = cardsFor(state.deals, state.filters);
       state.cards = cards;
-      els.list.innerHTML = gridHtml(cards, state.filters);
+      const rowsView = state.view === 'rows';
+      els.list.className = rowsView ? 'rows' : 'grid';
+      els.list.innerHTML = rowsView ? rowsHtml(cards) : gridHtml(cards, state.filters);
       els.stats.innerHTML = statsHtml(state.deals, state.filters);
       renderFacets();
       renderSortBox();
-      // 锚点只在「力度优先」排序下有效（其它排序不分带），所以这时候才显示，避免死锚点
+      renderViewSeg();
+      // 锚点只在「力度优先 + 卡片视图」下有效（列表视图不分带），避免死锚点
       const jump = document.getElementById('jumpNav');
-      if (jump) jump.hidden = (state.filters.sort || 'tier') !== 'tier';
+      if (jump) jump.hidden = rowsView || (state.filters.sort || 'tier') !== 'tier';
     }
 
     function openDetail(card) {
@@ -1916,11 +2041,20 @@
         render();
       });
 
+      // 视图切换（卡片 / 列表）
+      if (els.viewSeg) {
+        els.viewSeg.addEventListener('click', event => {
+          const button = event.target.closest('[data-view]');
+          if (button) applyView(button.dataset.view);
+        });
+      }
+
       els.list.addEventListener('click', event => {
         if (event.target.closest('a')) return;
-        const node = event.target.closest('.g');
+        // 列表视图的整行也可点开详情（与卡片一致）
+        const node = event.target.closest('.g') || event.target.closest('.r');
         if (!node) return;
-        const nodes = [...els.list.querySelectorAll('.g')];
+        const nodes = [...els.list.querySelectorAll('.g, .r')];
         const card = state.cards[nodes.indexOf(node)];
         if (card) openDetail(card);
       });

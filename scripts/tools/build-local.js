@@ -704,12 +704,15 @@ function selfCheck(built) {
 
   // 分档分带：默认按力度排序，五档里有卡片的档必须都有带
   const tierHeads = [...markup.matchAll(/<div class="tierhead t(\d)"[^>]*>/g)].map(m => Number(m[1]));
-  const tierDots = [...markup.matchAll(/data-tier="(\d)"/g)].map(m => Number(m[1]));
+  // 只在**卡片本体**里数 data-tier：早先是在整份 markup 里数，于是 CSS 里
+  // `[data-tier="1"] .rnum { … }` 这类选择器会被算成「档位角标」，一加样式就假失败。
+  const cardChunks = markup.split('<article class="g ').slice(1).map(chunk => chunk.split('</article>')[0]);
+  const tierDots = cardChunks.filter(chunk => /data-tier="\d"/.test(chunk)).length;
   if (built) {
     const expected = new Set(built.cards.map(card => card.tier));
     const missingTier = [...expected].filter(tier => !tierHeads.includes(tier));
     if (missingTier.length) fail(`档位 ${missingTier.join(', ')} 有卡片但缺少分带标题`);
-    else if (tierDots.length !== cardCount) fail(`档位角标 ${tierDots.length} 个 ≠ 卡片 ${cardCount} 条`);
+    else if (tierDots !== cardCount) fail(`带档位角标的卡片 ${tierDots} 张 ≠ 卡片 ${cardCount} 条`);
     else console.log(`  ✓ 力度分带: ${tierHeads.length} 档（${built.dist}）`);
   }
 
