@@ -1,0 +1,1159 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "framer.com",
+  "target": "https://www.framer.com/",
+  "fetchedAt": "2026-09-22T16:26:36.352Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 20244,
+      "hydration": {
+        "textBefore": 5870,
+        "textAfter": 5870
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 17917,
+      "hydration": {
+        "textBefore": 2506,
+        "textAfter": 2506
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    }
+  ],
+  "desktop": {
+    "url": "https://www.framer.com/",
+    "title": "Framer: AI design agent",
+    "lang": "en",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 10741,
+    "scrollScreens": 11.9,
+    "meta": {
+      "description": "Go from idea to launch with an agent that designs and builds on the canvas. Keep each change editable, with hosting, security, analytics, CMS, and SEO built in.",
+      "ogImage": "https://framerusercontent.com/images/vt65Mbfi3w8ymfTyRfbmgM4Tyo.png",
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width"
+    },
+    "canonical": "https://www.framer.com/",
+    "hreflang": [],
+    "jsonLdTypes": [
+      "Organization"
+    ],
+    "landmarks": {
+      "header": 7,
+      "nav": 4,
+      "main": 1,
+      "section": 6,
+      "article": 0,
+      "aside": 0,
+      "footer": 3,
+      "form": 1,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "Framer is the design agent for every step from idea to launch"
+      },
+      {
+        "level": 2,
+        "text": "Agents that work alongside you, not instead of you"
+      },
+      {
+        "level": 3,
+        "text": "Design with an agent"
+      },
+      {
+        "level": 3,
+        "text": "Design with an agent"
+      },
+      {
+        "level": 3,
+        "text": "Run your CMS with an agent"
+      },
+      {
+        "level": 3,
+        "text": "Run your CMS with an agent"
+      },
+      {
+        "level": 3,
+        "text": "Code with an agent"
+      },
+      {
+        "level": 3,
+        "text": "Code with an agent"
+      },
+      {
+        "level": 3,
+        "text": "Connect to any AI"
+      },
+      {
+        "level": 2,
+        "text": "Not just vibes, a full platform"
+      },
+      {
+        "level": 3,
+        "text": "Performance"
+      },
+      {
+        "level": 3,
+        "text": "CMS"
+      },
+      {
+        "level": 3,
+        "text": "SEO"
+      },
+      {
+        "level": 3,
+        "text": "Collaboration"
+      },
+      {
+        "level": 3,
+        "text": "Localization"
+      },
+      {
+        "level": 3,
+        "text": "Hosting"
+      },
+      {
+        "level": 3,
+        "text": "Security"
+      },
+      {
+        "level": 3,
+        "text": "Analytics"
+      },
+      {
+        "level": 3,
+        "text": "A/B Testing"
+      },
+      {
+        "level": 2,
+        "text": "Shipped with Framer"
+      },
+      {
+        "level": 2,
+        "text": "Trusted by teams shipping big sites"
+      },
+      {
+        "level": 2,
+        "text": "Built on a community that isn’t going anywhere"
+      },
+      {
+        "level": 2,
+        "text": "Your next idea starts here"
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug/:slug",
+        "count": 177,
+        "samples": [
+          "https://www.framer.com/developers/comparison",
+          "https://www.framer.com/developers/plugins-introduction",
+          "https://www.framer.com/developers/plugins-quick-start"
+        ]
+      },
+      {
+        "shape": "/:slug",
+        "count": 122,
+        "samples": [
+          "https://www.framer.com/enterprise/",
+          "https://www.framer.com/brand",
+          "https://www.framer.com/developers/"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug/:slug",
+        "count": 13,
+        "samples": [
+          "https://www.framer.com/academy/lessons/localization",
+          "https://www.framer.com/community/marketplace/templates/",
+          "https://www.framer.com/community/marketplace/components/"
+        ]
+      },
+      {
+        "shape": "/legal/:slug",
+        "count": 7,
+        "samples": [
+          "https://www.framer.com/legal/security",
+          "https://www.framer.com/legal/community-terms"
+        ]
+      },
+      {
+        "shape": "/signup",
+        "count": 6,
+        "samples": [
+          "https://www.framer.com/signup/"
+        ]
+      },
+      {
+        "shape": "/pricing",
+        "count": 4,
+        "samples": [
+          "https://www.framer.com/pricing"
+        ]
+      },
+      {
+        "shape": "/blog",
+        "count": 3,
+        "samples": [
+          "https://www.framer.com/blog/"
+        ]
+      },
+      {
+        "shape": "/help",
+        "count": 3,
+        "samples": [
+          "https://www.framer.com/help/"
+        ]
+      },
+      {
+        "shape": "/contact",
+        "count": 3,
+        "samples": [
+          "https://www.framer.com/contact/"
+        ]
+      },
+      {
+        "shape": "/careers",
+        "count": 3,
+        "samples": [
+          "https://www.framer.com/careers/"
+        ]
+      },
+      {
+        "shape": "/:slug/signup",
+        "count": 2,
+        "samples": [
+          "https://www.framer.com/r/signup/"
+        ]
+      },
+      {
+        "shape": "/:slug/faq",
+        "count": 2,
+        "samples": [
+          "https://www.framer.com/developers/faq"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 374,
+    "repeatedComponents": [
+      {
+        "signature": "li.ticker-item",
+        "count": 9,
+        "parents": 2,
+        "width": 360,
+        "height": {
+          "min": 460,
+          "max": 1486,
+          "median": 460
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "primaryList": {
+      "signature": "li.ticker-item",
+      "count": 9,
+      "parents": 2,
+      "width": 360,
+      "height": {
+        "min": 460,
+        "max": 1486,
+        "median": 460
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 1668
+        },
+        {
+          "value": "rgb(0, 0, 238)",
+          "count": 471
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 163
+        },
+        {
+          "value": "rgb(153, 153, 153)",
+          "count": 125
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.6)",
+          "count": 95
+        },
+        {
+          "value": "rgb(102, 102, 102)",
+          "count": 20
+        },
+        {
+          "value": "rgb(0, 187, 136)",
+          "count": 10
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.4)",
+          "count": 9
+        },
+        {
+          "value": "rgb(0, 153, 255)",
+          "count": 8
+        },
+        {
+          "value": "rgb(214, 122, 92)",
+          "count": 5
+        },
+        {
+          "value": "rgb(203, 203, 203)",
+          "count": 3
+        },
+        {
+          "value": "rgb(204, 204, 204)",
+          "count": 3
+        },
+        {
+          "value": "rgb(5, 5, 5)",
+          "count": 3
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.5)",
+          "count": 2
+        },
+        {
+          "value": "rgb(136, 86, 255)",
+          "count": 1
+        },
+        {
+          "value": "rgb(152, 105, 253)",
+          "count": 1
+        },
+        {
+          "value": "rgb(76, 217, 99)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 45
+        },
+        {
+          "value": "rgb(36, 36, 36)",
+          "count": 33
+        },
+        {
+          "value": "rgb(0, 153, 255)",
+          "count": 23
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 19
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.1)",
+          "count": 19
+        },
+        {
+          "value": "rgb(30, 30, 30)",
+          "count": 16
+        },
+        {
+          "value": "rgb(17, 17, 17)",
+          "count": 15
+        },
+        {
+          "value": "rgba(0, 187, 136, 0.1)",
+          "count": 10
+        },
+        {
+          "value": "rgb(153, 153, 153)",
+          "count": 6
+        },
+        {
+          "value": "rgb(31, 31, 31)",
+          "count": 6
+        },
+        {
+          "value": "rgb(102, 102, 102)",
+          "count": 5
+        },
+        {
+          "value": "rgb(23, 23, 23)",
+          "count": 4
+        },
+        {
+          "value": "rgba(0, 153, 255, 0.1)",
+          "count": 4
+        },
+        {
+          "value": "rgba(0, 153, 255, 0.22)",
+          "count": 4
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.08)",
+          "count": 4
+        },
+        {
+          "value": "rgb(135, 135, 135)",
+          "count": 3
+        },
+        {
+          "value": "rgb(48, 48, 48)",
+          "count": 3
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.2)",
+          "count": 3
+        },
+        {
+          "value": "rgba(34, 34, 34, 0.8)",
+          "count": 3
+        },
+        {
+          "value": "rgb(152, 105, 253)",
+          "count": 2
+        },
+        {
+          "value": "rgb(18, 18, 18)",
+          "count": 2
+        },
+        {
+          "value": "rgb(51, 51, 51)",
+          "count": 2
+        },
+        {
+          "value": "rgb(58, 146, 253)",
+          "count": 2
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.5)",
+          "count": 2
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "12px",
+          "count": 2315
+        },
+        {
+          "value": "14px",
+          "count": 116
+        },
+        {
+          "value": "13px",
+          "count": 68
+        },
+        {
+          "value": "18px",
+          "count": 28
+        },
+        {
+          "value": "10px",
+          "count": 17
+        },
+        {
+          "value": "15px",
+          "count": 11
+        },
+        {
+          "value": "0px",
+          "count": 9
+        },
+        {
+          "value": "20px",
+          "count": 5
+        },
+        {
+          "value": "44px",
+          "count": 5
+        },
+        {
+          "value": "54px",
+          "count": 5
+        },
+        {
+          "value": "16px",
+          "count": 4
+        },
+        {
+          "value": "9px",
+          "count": 3
+        },
+        {
+          "value": "22px",
+          "count": 1
+        },
+        {
+          "value": "6px",
+          "count": 1
+        },
+        {
+          "value": "7px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "19.6px",
+          "count": 105
+        },
+        {
+          "value": "14.4px",
+          "count": 86
+        },
+        {
+          "value": "20.8px",
+          "count": 45
+        },
+        {
+          "value": "16px",
+          "count": 37
+        },
+        {
+          "value": "15.6px",
+          "count": 32
+        },
+        {
+          "value": "12px",
+          "count": 30
+        },
+        {
+          "value": "24.3px",
+          "count": 27
+        },
+        {
+          "value": "19.5px",
+          "count": 22
+        },
+        {
+          "value": "16.8px",
+          "count": 14
+        },
+        {
+          "value": "20.25px",
+          "count": 11
+        },
+        {
+          "value": "14px",
+          "count": 10
+        },
+        {
+          "value": "0px",
+          "count": 6
+        },
+        {
+          "value": "24px",
+          "count": 5
+        },
+        {
+          "value": "48.4px",
+          "count": 5
+        },
+        {
+          "value": "10.8px",
+          "count": 3
+        },
+        {
+          "value": "1px",
+          "count": 3
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 2337
+        },
+        {
+          "value": "500",
+          "count": 214
+        },
+        {
+          "value": "600",
+          "count": 28
+        },
+        {
+          "value": "700",
+          "count": 10
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "sans-serif",
+          "count": 2137
+        },
+        {
+          "value": "Inter",
+          "count": 233
+        },
+        {
+          "value": "Inter Variable",
+          "count": 170
+        },
+        {
+          "value": "Input Mono Regular",
+          "count": 28
+        },
+        {
+          "value": "GT Walsheim Medium",
+          "count": 10
+        },
+        {
+          "value": "Input Mono Bold",
+          "count": 6
+        },
+        {
+          "value": "Inter Medium",
+          "count": 3
+        },
+        {
+          "value": "JetBrains Mono",
+          "count": 2
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 2114
+        },
+        {
+          "value": "8px",
+          "count": 230
+        },
+        {
+          "value": "15px",
+          "count": 71
+        },
+        {
+          "value": "6px",
+          "count": 34
+        },
+        {
+          "value": "20px",
+          "count": 24
+        },
+        {
+          "value": "4px",
+          "count": 23
+        },
+        {
+          "value": "50%",
+          "count": 17
+        },
+        {
+          "value": "100px",
+          "count": 15
+        },
+        {
+          "value": "18px",
+          "count": 12
+        },
+        {
+          "value": "10px",
+          "count": 10
+        },
+        {
+          "value": "5px",
+          "count": 10
+        },
+        {
+          "value": "25px",
+          "count": 9
+        },
+        {
+          "value": "3px",
+          "count": 4
+        },
+        {
+          "value": "50px",
+          "count": 3
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(0, 0, 0, 0.1) 0px 1px 2px 0px",
+          "count": 3
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.2) 0px 2px 6px 0px",
+          "count": 3
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.2) 0px 16.1005px 25.7608px 0px",
+          "count": 2
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.2) 0px 26px 41.6px 0px",
+          "count": 2
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.2) 0px 35.8995px 57.4392px 0px",
+          "count": 2
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.1) 0px 0px 0px 1px",
+          "count": 2
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.2) 0px 12px 19.2px 0px",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.2) 0px 40px 64px 0px",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.25) 0px 2px 4px 0px",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 153, 255, 0.15) 0px 1px 2px 0px, rgba(0, 153, 255, 0.2) 0px 2px 4px 0px",
+          "count": 1
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.08) 0px 0px 0px 1px",
+          "count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "value": "10px",
+          "count": 235
+        },
+        {
+          "value": "5px",
+          "count": 160
+        },
+        {
+          "value": "0px",
+          "count": 150
+        },
+        {
+          "value": "15px",
+          "count": 67
+        },
+        {
+          "value": "6px",
+          "count": 55
+        },
+        {
+          "value": "8px",
+          "count": 44
+        },
+        {
+          "value": "20px",
+          "count": 15
+        },
+        {
+          "value": "30px",
+          "count": 11
+        },
+        {
+          "value": "25px",
+          "count": 10
+        },
+        {
+          "value": "4px",
+          "count": 10
+        },
+        {
+          "value": "7px",
+          "count": 8
+        },
+        {
+          "value": "40px",
+          "count": 7
+        },
+        {
+          "value": "11px",
+          "count": 5
+        },
+        {
+          "value": "60px",
+          "count": 4
+        },
+        {
+          "value": "2px",
+          "count": 3
+        },
+        {
+          "value": "3px",
+          "count": 3
+        }
+      ],
+      "paddings": [
+        {
+          "value": "10px 10px",
+          "count": 34
+        },
+        {
+          "value": "0px 1px",
+          "count": 27
+        },
+        {
+          "value": "1px 0px",
+          "count": 22
+        },
+        {
+          "value": "25px 25px",
+          "count": 11
+        },
+        {
+          "value": "20px 20px",
+          "count": 9
+        },
+        {
+          "value": "40px 40px",
+          "count": 8
+        },
+        {
+          "value": "5px 5px",
+          "count": 8
+        },
+        {
+          "value": "0px 15px",
+          "count": 7
+        },
+        {
+          "value": "15px 0px",
+          "count": 7
+        },
+        {
+          "value": "1px 1px",
+          "count": 5
+        },
+        {
+          "value": "4px 0px",
+          "count": 5
+        },
+        {
+          "value": "0px 8px",
+          "count": 4
+        },
+        {
+          "value": "15px 15px",
+          "count": 4
+        },
+        {
+          "value": "25px 0px",
+          "count": 4
+        },
+        {
+          "value": "2px 2px",
+          "count": 4
+        },
+        {
+          "value": "3px 3px",
+          "count": 4
+        }
+      ],
+      "transitions": [
+        {
+          "value": "all 0s ease",
+          "count": 16
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1200px",
+          "count": 15
+        },
+        {
+          "value": "1240px",
+          "count": 2
+        },
+        {
+          "value": "660px",
+          "count": 1
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "1 tracks",
+          "count": 1
+        },
+        {
+          "value": "3 tracks",
+          "count": 1
+        },
+        {
+          "value": "4 tracks",
+          "count": 1
+        },
+        {
+          "value": "6 tracks",
+          "count": 1
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 1,
+      "fixedElements": 1,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": true,
+      "images": 83,
+      "lazyImages": 82,
+      "searchInputs": 0,
+      "selects": 0,
+      "buttons": 8,
+      "tabs": 0,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "framerusercontent.com",
+        "count": 24
+      },
+      {
+        "value": "api.framer.com",
+        "count": 5
+      },
+      {
+        "value": "events.framer.com",
+        "count": 3
+      },
+      {
+        "value": "frmrspply.myshopify.com",
+        "count": 3
+      },
+      {
+        "value": "accounts.google.com",
+        "count": 2
+      },
+      {
+        "value": "app.framerstatic.com",
+        "count": 2
+      },
+      {
+        "value": "www.googletagmanager.com",
+        "count": 2
+      },
+      {
+        "value": "ad.doubleclick.net",
+        "count": 1
+      },
+      {
+        "value": "bzrcdn.openai.com",
+        "count": 1
+      },
+      {
+        "value": "cdn.debugbear.com",
+        "count": 1
+      },
+      {
+        "value": "d34r8q7sht0t9k.cloudfront.net",
+        "count": 1
+      },
+      {
+        "value": "ingest.promptwatch.com",
+        "count": 1
+      },
+      {
+        "value": "static.ads-twitter.com",
+        "count": 1
+      },
+      {
+        "value": "www.dubcdn.com",
+        "count": 1
+      },
+      {
+        "value": "www.google.com",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "img",
+        "count": 14
+      },
+      {
+        "value": "css",
+        "count": 10
+      },
+      {
+        "value": "script",
+        "count": 10
+      },
+      {
+        "value": "fetch",
+        "count": 6
+      },
+      {
+        "value": "xmlhttprequest",
+        "count": 6
+      },
+      {
+        "value": "link",
+        "count": 2
+      },
+      {
+        "value": "video",
+        "count": 1
+      }
+    ],
+    "requestCount": 49,
+    "textLength": 5870,
+    "contrast": {
+      "sampled": 400,
+      "skippedForComplexBackground": 2,
+      "min": 1,
+      "p10": 5.79,
+      "median": 7.37,
+      "belowRequirement": 25,
+      "worst": [
+        {
+          "selector": "p.text-shimmer-Rllmd8qtkn6l5dp",
+          "text": "Thinking...",
+          "fontSize": 12,
+          "ratio": 1,
+          "required": 4.5
+        },
+        {
+          "selector": "p.framer-text",
+          "text": "2s",
+          "fontSize": 12,
+          "ratio": 2.7,
+          "required": 4.5
+        },
+        {
+          "selector": "p.framer-text",
+          "text": "Publish",
+          "fontSize": 12,
+          "ratio": 3,
+          "required": 4.5
+        },
+        {
+          "selector": "p.framer-text",
+          "text": "Post",
+          "fontSize": 12,
+          "ratio": 3,
+          "required": 4.5
+        },
+        {
+          "selector": "p.framer-text",
+          "text": "256",
+          "fontSize": 10,
+          "ratio": 3.29,
+          "required": 4.5
+        },
+        {
+          "selector": "p.framer-text",
+          "text": "18",
+          "fontSize": 10,
+          "ratio": 3.29,
+          "required": 4.5
+        },
+        {
+          "selector": "p.framer-text",
+          "text": "Title",
+          "fontSize": 13,
+          "ratio": 3.29,
+          "required": 4.5
+        },
+        {
+          "selector": "p.framer-text",
+          "text": "Status",
+          "fontSize": 13,
+          "ratio": 3.29,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 10817,
+    "scrollScreens": 12.8,
+    "primaryList": {
+      "signature": "li.ticker-item",
+      "count": 8,
+      "parents": 1,
+      "width": 250,
+      "height": {
+        "min": 319,
+        "max": 319,
+        "median": 319
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "repeatedComponents": [
+      {
+        "signature": "li.ticker-item",
+        "count": 8,
+        "parents": 1,
+        "width": 250,
+        "height": {
+          "min": 319,
+          "max": 319,
+          "median": 319
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "12px",
+          "count": 524
+        },
+        {
+          "value": "18px",
+          "count": 20
+        },
+        {
+          "value": "15px",
+          "count": 11
+        },
+        {
+          "value": "14px",
+          "count": 8
+        },
+        {
+          "value": "13px",
+          "count": 6
+        },
+        {
+          "value": "28px",
+          "count": 5
+        },
+        {
+          "value": "10px",
+          "count": 3
+        },
+        {
+          "value": "54px",
+          "count": 3
+        }
+      ]
+    },
+    "textLength": 2506
+  }
+}

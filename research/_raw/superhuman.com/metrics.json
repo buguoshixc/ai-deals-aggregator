@@ -1,0 +1,982 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "superhuman.com",
+  "target": "https://www.superhuman.com/",
+  "fetchedAt": "2026-09-22T16:27:51.178Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 34525,
+      "hydration": {
+        "textBefore": 3290,
+        "textAfter": 3294
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 29858,
+      "hydration": {
+        "textBefore": 3093,
+        "textAfter": 3183
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    }
+  ],
+  "desktop": {
+    "url": "https://superhuman.com/",
+    "title": "Superhuman: Docs, Mail, and AI That Work Everywhere",
+    "lang": "en",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 7375,
+    "scrollScreens": 8.2,
+    "meta": {
+      "description": "Superhuman is the AI productivity suite that gives you superpowers everywhere you work. So you can be more creative, strategic, and impactful.",
+      "ogImage": "https://superhumanstatic.com/vwfkeyj6n9ac/70d5WBekIRRrA200BtyOob/7ecef93df6ed744b4e7df600140732e1/HP-Meta-Image-8-12-2026__1_.gif",
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width"
+    },
+    "canonical": "https://superhuman.com/",
+    "hreflang": [],
+    "jsonLdTypes": [],
+    "landmarks": {
+      "header": 2,
+      "nav": 3,
+      "main": 1,
+      "section": 13,
+      "article": 0,
+      "aside": 6,
+      "footer": 2,
+      "form": 0,
+      "dialog": 1
+    },
+    "headings": [
+      {
+        "level": 2,
+        "text": "Bring AI inside every app and tab with Superhuman Go"
+      },
+      {
+        "level": 2,
+        "text": "Bring AI inside every app and tab with Superhuman Go"
+      },
+      {
+        "level": 2,
+        "text": "Get help from agents right where you work"
+      },
+      {
+        "level": 3,
+        "text": "Perfect your writing with Grammarly"
+      },
+      {
+        "level": 3,
+        "text": "Put your inbox on autopilot with Email Assistant"
+      },
+      {
+        "level": 3,
+        "text": "Start every day fully briefed with Daily Briefs"
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": "“Go helps me stay in one tab and actually finish things. Before, I was"
+      },
+      {
+        "level": 2,
+        "text": "Save 4+ hours every week on email and scheduling"
+      },
+      {
+        "level": 3,
+        "text": "Emails write themselves. Get automatic drafts based on context from yo"
+      },
+      {
+        "level": 3,
+        "text": "Avoid double booking and back-and-forth. Booking links always stay up-"
+      },
+      {
+        "level": 3,
+        "text": "Focus on what matters most. Your inbox surfaces important messages and"
+      },
+      {
+        "level": 2,
+        "text": "Align your team with collaborative AI documents"
+      },
+      {
+        "level": 2,
+        "text": "Designed for humans, built for enterprise"
+      },
+      {
+        "level": 2,
+        "text": "Make it your best workday yet"
+      },
+      {
+        "level": 3,
+        "text": "Builders of Superhuman Platform apps"
+      },
+      {
+        "level": 3,
+        "text": "Products"
+      },
+      {
+        "level": 3,
+        "text": "Company"
+      },
+      {
+        "level": 3,
+        "text": "Legal"
+      },
+      {
+        "level": 3,
+        "text": "Connect"
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug",
+        "count": 27,
+        "samples": [
+          "https://superhuman.com/go",
+          "https://superhuman.com/agents",
+          "https://superhuman.com/mail"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug",
+        "count": 17,
+        "samples": [
+          "https://superhuman.com/products/testimonials",
+          "https://superhuman.com/mail/calendar",
+          "https://superhuman.com/teams/marketing"
+        ]
+      },
+      {
+        "shape": "/docs/:slug/:slug",
+        "count": 4,
+        "samples": [
+          "https://superhuman.com/docs/use-cases/project-management",
+          "https://superhuman.com/docs/use-cases/knowledge-hubs",
+          "https://superhuman.com/docs/use-cases/collaborative-docs"
+        ]
+      },
+      {
+        "shape": "/legal/:slug",
+        "count": 4,
+        "samples": [
+          "https://superhuman.com/legal/trust",
+          "https://superhuman.com/legal/privacy-policy",
+          "https://superhuman.com/legal/notices"
+        ]
+      },
+      {
+        "shape": "/docs",
+        "count": 3,
+        "samples": [
+          "https://superhuman.com/docs"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug/:slug",
+        "count": 2,
+        "samples": [
+          "https://superhuman.com/go/use-cases/ai-study-assistant",
+          "https://superhuman.com/mail/features/email-mcp"
+        ]
+      },
+      {
+        "shape": "/:slug/signup",
+        "count": 2,
+        "samples": [
+          "https://superhuman.com/mail/signup",
+          "https://superhuman.com/auth/signup?screen_hint=signup"
+        ]
+      },
+      {
+        "shape": "/:slug/docs",
+        "count": 1,
+        "samples": [
+          "https://superhuman.com/plans/docs"
+        ]
+      },
+      {
+        "shape": "/contact",
+        "count": 1,
+        "samples": [
+          "https://superhuman.com/contact"
+        ]
+      },
+      {
+        "shape": "/:slug/about",
+        "count": 1,
+        "samples": [
+          "https://superhuman.com/company/about"
+        ]
+      },
+      {
+        "shape": "/:slug/careers",
+        "count": 1,
+        "samples": [
+          "https://superhuman.com/company/careers"
+        ]
+      },
+      {
+        "shape": "/legal/terms",
+        "count": 1,
+        "samples": [
+          "https://superhuman.com/legal/terms"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 67,
+    "repeatedComponents": [
+      {
+        "signature": "li",
+        "count": 32,
+        "parents": 4,
+        "width": 170,
+        "height": {
+          "min": 24,
+          "max": 48,
+          "median": 24
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "section.section_section___xslj",
+        "count": 6,
+        "parents": 3,
+        "width": 1440,
+        "height": {
+          "min": 466,
+          "max": 1249,
+          "median": 553
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "primaryList": {
+      "signature": "li",
+      "count": 32,
+      "parents": 4,
+      "width": 170,
+      "height": {
+        "min": 24,
+        "max": 48,
+        "median": 24
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(41, 40, 39)",
+          "count": 262
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 97
+        },
+        {
+          "value": "color(srgb 1 1 1 / 0.8)",
+          "count": 56
+        },
+        {
+          "value": "color(srgb 0.0784314 0.0784314 0.0745098 / 0.65)",
+          "count": 32
+        },
+        {
+          "value": "rgb(113, 76, 182)",
+          "count": 16
+        },
+        {
+          "value": "color(srgb 1 1 1 / 0.05)",
+          "count": 11
+        },
+        {
+          "value": "rgb(212, 199, 255)",
+          "count": 10
+        },
+        {
+          "value": "color(srgb 1 1 1 / 0.65)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(247, 245, 242)",
+          "count": 9
+        },
+        {
+          "value": "rgba(255, 255, 255, 0)",
+          "count": 5
+        },
+        {
+          "value": "rgb(113, 76, 182)",
+          "count": 4
+        },
+        {
+          "value": "rgb(222, 219, 213)",
+          "count": 3
+        },
+        {
+          "value": "rgb(232, 224, 255)",
+          "count": 3
+        },
+        {
+          "value": "rgb(242, 240, 235)",
+          "count": 3
+        },
+        {
+          "value": "rgb(40, 22, 71)",
+          "count": 3
+        },
+        {
+          "value": "rgb(66, 29, 36)",
+          "count": 3
+        },
+        {
+          "value": "rgb(212, 199, 255)",
+          "count": 2
+        },
+        {
+          "value": "color(srgb 0.988235 0.980392 0.968627 / 0.2)",
+          "count": 1
+        },
+        {
+          "value": "rgb(12, 66, 67)",
+          "count": 1
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 413
+        },
+        {
+          "value": "14px",
+          "count": 26
+        },
+        {
+          "value": "25px",
+          "count": 16
+        },
+        {
+          "value": "18px",
+          "count": 13
+        },
+        {
+          "value": "49px",
+          "count": 9
+        },
+        {
+          "value": "18.72px",
+          "count": 4
+        },
+        {
+          "value": "39px",
+          "count": 2
+        },
+        {
+          "value": "20px",
+          "count": 1
+        },
+        {
+          "value": "28px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "19.2px",
+          "count": 274
+        },
+        {
+          "value": "24px",
+          "count": 109
+        },
+        {
+          "value": "16px",
+          "count": 30
+        },
+        {
+          "value": "30px",
+          "count": 17
+        },
+        {
+          "value": "16.8px",
+          "count": 16
+        },
+        {
+          "value": "27px",
+          "count": 13
+        },
+        {
+          "value": "18px",
+          "count": 10
+        },
+        {
+          "value": "58.8px",
+          "count": 9
+        },
+        {
+          "value": "28.08px",
+          "count": 4
+        },
+        {
+          "value": "46.8px",
+          "count": 2
+        },
+        {
+          "value": "32px",
+          "count": 1
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "460",
+          "count": 401
+        },
+        {
+          "value": "600",
+          "count": 40
+        },
+        {
+          "value": "540",
+          "count": 35
+        },
+        {
+          "value": "700",
+          "count": 9
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "Super Sans VF",
+          "count": 485
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 456
+        },
+        {
+          "value": "12px",
+          "count": 21
+        },
+        {
+          "value": "8px",
+          "count": 8
+        }
+      ],
+      "shadows": [
+        {
+          "value": "color(srgb 0.278431 0.270588 0.262745 / 0.04) 0px 0px 0px 1px, color(srgb 0.278431 0.270588 0.262745 / 0.06) 0px 4px 8px -2px, color(srgb 0.278431 0.270588 0.262745 / 0.04) 0px 2px 4px 0px, color(srgb 0.278431 0.270588 0.262745 / 0.04) 0px 1px 2px 0px, color(srgb 0.870588 0.858824 0.835294 / 0.2) 0px 0px 0px 1px",
+          "count": 3
+        },
+        {
+          "value": "color(srgb 0.45098 0.443137 0.427451 / 0.2) 0px 0px 0px 1px inset",
+          "count": 1
+        },
+        {
+          "value": "rgb(212, 199, 255) 0px 0px 0px 1px inset",
+          "count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "value": "4px",
+          "count": 57
+        },
+        {
+          "value": "16px",
+          "count": 17
+        },
+        {
+          "value": "32px",
+          "count": 16
+        },
+        {
+          "value": "12px",
+          "count": 9
+        },
+        {
+          "value": "24px",
+          "count": 9
+        },
+        {
+          "value": "8px",
+          "count": 7
+        },
+        {
+          "value": "0px",
+          "count": 6
+        },
+        {
+          "value": "128px",
+          "count": 1
+        },
+        {
+          "value": "24px normal",
+          "count": 1
+        },
+        {
+          "value": "40px",
+          "count": 1
+        },
+        {
+          "value": "40px 0px",
+          "count": 1
+        },
+        {
+          "value": "5px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "6px 6px",
+          "count": 13
+        },
+        {
+          "value": "32px 32px",
+          "count": 12
+        },
+        {
+          "value": "16px 16px",
+          "count": 9
+        },
+        {
+          "value": "96px 96px",
+          "count": 5
+        },
+        {
+          "value": "0px 32px",
+          "count": 3
+        },
+        {
+          "value": "0px 80px",
+          "count": 3
+        },
+        {
+          "value": "0px 96px",
+          "count": 2
+        },
+        {
+          "value": "96px 32px",
+          "count": 2
+        },
+        {
+          "value": "40px 0px",
+          "count": 1
+        },
+        {
+          "value": "64px 0px",
+          "count": 1
+        },
+        {
+          "value": "64px 48px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "color 0.2s ease",
+          "count": 36
+        },
+        {
+          "value": "background-color 0.2s ease-in-out",
+          "count": 11
+        },
+        {
+          "value": "all 0s ease",
+          "count": 9
+        },
+        {
+          "value": "rotate 0.3s ease",
+          "count": 6
+        },
+        {
+          "value": "box-shadow 0.2s ease-in-out",
+          "count": 2
+        },
+        {
+          "value": "translate 0.3s ease-in-out",
+          "count": 1
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "900px",
+          "count": 69
+        },
+        {
+          "value": "768px",
+          "count": 2
+        },
+        {
+          "value": "1280px",
+          "count": 1
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "1 tracks",
+          "count": 6
+        },
+        {
+          "value": "4 tracks",
+          "count": 5
+        },
+        {
+          "value": "2 tracks",
+          "count": 2
+        },
+        {
+          "value": "3 tracks",
+          "count": 1
+        },
+        {
+          "value": "6 tracks",
+          "count": 1
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 1,
+      "fixedElements": 0,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": false,
+      "images": 52,
+      "lazyImages": 26,
+      "searchInputs": 0,
+      "selects": 0,
+      "buttons": 24,
+      "tabs": 8,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "superhumanstatic.com",
+        "count": 72
+      },
+      {
+        "value": "gnar.grammarly.com",
+        "count": 5
+      },
+      {
+        "value": "www.knotch-cdn.com",
+        "count": 4
+      },
+      {
+        "value": "pagead2.googlesyndication.com",
+        "count": 3
+      },
+      {
+        "value": "transcend-cdn.com",
+        "count": 3
+      },
+      {
+        "value": "www.googletagmanager.com",
+        "count": 3
+      },
+      {
+        "value": "bzrcdn.openai.com",
+        "count": 2
+      },
+      {
+        "value": "frontdoor.knotch.it",
+        "count": 2
+      },
+      {
+        "value": "www.google-analytics.com",
+        "count": 2
+      },
+      {
+        "value": "arttrk.com",
+        "count": 1
+      },
+      {
+        "value": "bzr.openai.com",
+        "count": 1
+      },
+      {
+        "value": "carddealer.knotch.com",
+        "count": 1
+      },
+      {
+        "value": "configs.knotch.com",
+        "count": 1
+      },
+      {
+        "value": "static-web.grammarly.com",
+        "count": 1
+      },
+      {
+        "value": "tracking-api.g2.com",
+        "count": 1
+      },
+      {
+        "value": "tracking.g2crowd.com",
+        "count": 1
+      },
+      {
+        "value": "website.femetrics.grammarly.io",
+        "count": 1
+      },
+      {
+        "value": "www.dubcdn.com",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "script",
+        "count": 39
+      },
+      {
+        "value": "img",
+        "count": 28
+      },
+      {
+        "value": "link",
+        "count": 17
+      },
+      {
+        "value": "fetch",
+        "count": 11
+      },
+      {
+        "value": "beacon",
+        "count": 8
+      },
+      {
+        "value": "video",
+        "count": 2
+      },
+      {
+        "value": "xmlhttprequest",
+        "count": 1
+      }
+    ],
+    "requestCount": 106,
+    "textLength": 3294,
+    "contrast": {
+      "sampled": 50,
+      "skippedForComplexBackground": 6,
+      "min": 4.85,
+      "p10": 6.16,
+      "median": 12.92,
+      "belowRequirement": 0,
+      "worst": [
+        {
+          "selector": "span.text_text__RO8_0",
+          "text": "View all customer stories",
+          "fontSize": 16,
+          "ratio": 4.85,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text_text__RO8_0",
+          "text": "Learn more",
+          "fontSize": 16,
+          "ratio": 5.66,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text_text__RO8_0",
+          "text": "Learn more",
+          "fontSize": 16,
+          "ratio": 5.66,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text_text__RO8_0",
+          "text": "Learn more",
+          "fontSize": 16,
+          "ratio": 5.66,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text_text__RO8_0",
+          "text": "Try Go",
+          "fontSize": 16,
+          "ratio": 6.16,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text_text__RO8_0",
+          "text": "Get Mail",
+          "fontSize": 16,
+          "ratio": 6.16,
+          "required": 4.5
+        },
+        {
+          "selector": "h3.text_text__RO8_0",
+          "text": "Emails write themselves. Get automatic d",
+          "fontSize": 25,
+          "ratio": 6.16,
+          "required": 3
+        },
+        {
+          "selector": "span.text_text__RO8_0",
+          "text": "Try Docs",
+          "fontSize": 16,
+          "ratio": 6.16,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 10230,
+    "scrollScreens": 12.1,
+    "primaryList": {
+      "signature": "li",
+      "count": 32,
+      "parents": 4,
+      "width": 358,
+      "height": {
+        "min": 24,
+        "max": 24,
+        "median": 24
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "repeatedComponents": [
+      {
+        "signature": "li",
+        "count": 32,
+        "parents": 4,
+        "width": 358,
+        "height": {
+          "min": 24,
+          "max": 24,
+          "median": 24
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "section.section_section___xslj",
+        "count": 6,
+        "parents": 3,
+        "width": 390,
+        "height": {
+          "min": 409,
+          "max": 1598,
+          "median": 683
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 371
+        },
+        {
+          "value": "14px",
+          "count": 25
+        },
+        {
+          "value": "20px",
+          "count": 16
+        },
+        {
+          "value": "18px",
+          "count": 15
+        },
+        {
+          "value": "32px",
+          "count": 9
+        },
+        {
+          "value": "18.72px",
+          "count": 4
+        },
+        {
+          "value": "28px",
+          "count": 2
+        }
+      ]
+    },
+    "textLength": 3096
+  }
+}

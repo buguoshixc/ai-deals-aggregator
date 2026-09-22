@@ -1,0 +1,1011 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "futuretools.io",
+  "target": "https://futuretools.io/",
+  "fetchedAt": "2026-09-22T16:21:56.927Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 15918,
+      "hydration": {
+        "textBefore": 9537,
+        "textAfter": 9537
+      },
+      "notes": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 9617,
+      "hydration": {
+        "textBefore": 9237,
+        "textAfter": 9414
+      },
+      "notes": []
+    }
+  ],
+  "desktop": {
+    "url": "https://futuretools.io/",
+    "title": "Future Tools - The Pulse of AI",
+    "lang": "en",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 4077,
+    "scrollScreens": 4.5,
+    "meta": {
+      "description": "Stay ahead on AI. The latest AI news, expert commentary, top tools, and exclusive interviews — curated by Matt Wolfe. Join 250,000+ newsletter readers.",
+      "ogImage": "https://futuretools.io/logo@2x.png",
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width, initial-scale=1"
+    },
+    "canonical": "https://futuretools.io",
+    "hreflang": [],
+    "jsonLdTypes": [],
+    "landmarks": {
+      "header": 1,
+      "nav": 1,
+      "main": 1,
+      "section": 5,
+      "article": 0,
+      "aside": 1,
+      "footer": 1,
+      "form": 3,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "Stay ahead on AI. All in ONE place."
+      },
+      {
+        "level": 2,
+        "text": "AI News"
+      },
+      {
+        "level": 3,
+        "text": "Meta's AI App Muse Surpasses ChatGPT's Early Mobile Downloads With 1.8"
+      },
+      {
+        "level": 3,
+        "text": "OpenAI Calls for US-Led Global AI Standards to Govern Autonomous AI Re"
+      },
+      {
+        "level": 3,
+        "text": "OpenAI Academy Expands With New AI Learning Paths for Developers, Lead"
+      },
+      {
+        "level": 3,
+        "text": "SpaceXAI Launches Grok 4.7: Faster Coding Model at $2/M Tokens, Half R"
+      },
+      {
+        "level": 3,
+        "text": "Alibaba's Qwen-Image-2.1 Unifies Image Generation, Editing & Transpare"
+      },
+      {
+        "level": 3,
+        "text": "ElevenLabs Studio 4.0 Adds AI Video, Voice & Music Generation Inside I"
+      },
+      {
+        "level": 3,
+        "text": "Amazon Blocks Meta's Muse AI Agent From Shopping on Amazon.com Over Se"
+      },
+      {
+        "level": 3,
+        "text": "Trump Creates \"AI Force\" Modeled on Space Force, Plans to Name New AI "
+      },
+      {
+        "level": 3,
+        "text": "Google's Gemini AI Autonomously Hacked 3 Companies During Cybersecurit"
+      },
+      {
+        "level": 3,
+        "text": "Anthropic's Claude Code Now Supports OpenAI's AGENTS.md Standard, Easi"
+      },
+      {
+        "level": 2,
+        "text": "Top 20 AI Tools"
+      },
+      {
+        "level": 2,
+        "text": "AI News with Matt"
+      },
+      {
+        "level": 2,
+        "text": "Commentary & Analysis"
+      },
+      {
+        "level": 3,
+        "text": "What We Should Keep Human"
+      },
+      {
+        "level": 3,
+        "text": "Why Everyone Should Have a Local AI Model (Even If You Love ChatGPT)"
+      },
+      {
+        "level": 3,
+        "text": "AI Agents, 6G, and the Future of Computing"
+      },
+      {
+        "level": 3,
+        "text": "Agents, Humanist Superintelligence, and Healthcare"
+      },
+      {
+        "level": 2,
+        "text": "Get the AI Income Database, free when you join"
+      },
+      {
+        "level": 3,
+        "text": "Site"
+      },
+      {
+        "level": 3,
+        "text": "Social"
+      },
+      {
+        "level": 3,
+        "text": "Legal"
+      },
+      {
+        "level": 3,
+        "text": "More from Matt"
+      },
+      {
+        "level": 2,
+        "text": "Don't miss what matters in AI"
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/tools/:slug",
+        "count": 40,
+        "samples": [
+          "https://futuretools.io/tools/ankon-ai-kos341",
+          "https://futuretools.io/tools/cliphi-w0gfbv",
+          "https://futuretools.io/tools/star-by-face"
+        ]
+      },
+      {
+        "shape": "/:slug",
+        "count": 13,
+        "samples": [
+          "https://futuretools.io/newsletter",
+          "https://futuretools.io/best-ai-tools",
+          "https://futuretools.io/newly-added"
+        ]
+      },
+      {
+        "shape": "/news",
+        "count": 4,
+        "samples": [
+          "https://futuretools.io/news"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug",
+        "count": 4,
+        "samples": [
+          "https://futuretools.io/newsletter/archive",
+          "https://futuretools.io/insights/qualcomm-ceo-cristiano-amon-ai-agents-6g-future-computing",
+          "https://futuretools.io/insights/microsoft-ai-ceo-mustafa-suleyman-agents-humanist-superintelligence-healthcare"
+        ]
+      },
+      {
+        "shape": "/tools",
+        "count": 3,
+        "samples": [
+          "https://futuretools.io/tools"
+        ]
+      },
+      {
+        "shape": "/blog",
+        "count": 3,
+        "samples": [
+          "https://futuretools.io/blog"
+        ]
+      },
+      {
+        "shape": "/about",
+        "count": 2,
+        "samples": [
+          "https://futuretools.io/about"
+        ]
+      },
+      {
+        "shape": "/faq",
+        "count": 2,
+        "samples": [
+          "https://futuretools.io/faq"
+        ]
+      },
+      {
+        "shape": "/news/:slug",
+        "count": 2,
+        "samples": [
+          "https://futuretools.io/news/what-we-should-keep-human",
+          "https://futuretools.io/news/why-everyone-should-have-a-local-ai-model-even-if-you-love-chatgpt"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug/:slug",
+        "count": 1,
+        "samples": [
+          "https://futuretools.io/go/p/f656e61d-f8e2-44bc-acb6-f97a626ed282"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 75,
+    "repeatedComponents": [
+      {
+        "signature": "a.flex.gap-3.group.hover:bg-secondary/60.items-center.px-3.py-2.5.rounded-lg.transition-colors",
+        "count": 20,
+        "parents": 1,
+        "width": 298,
+        "height": {
+          "min": 56,
+          "max": 56,
+          "median": 56
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "li",
+        "count": 16,
+        "parents": 3,
+        "width": 132,
+        "height": {
+          "min": 24,
+          "max": 24,
+          "median": 24
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "a.bg-card/60.border.border-border/40.flex.gap-4.group.hover:bg-card.hover:border-primary/40.p-4.rounded-xl.sm:gap-5.sm:p-5.transition-all",
+        "count": 10,
+        "parents": 1,
+        "width": 836,
+        "height": {
+          "min": 122,
+          "max": 122,
+          "median": 122
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 1
+      }
+    ],
+    "primaryList": {
+      "signature": "a.flex.gap-3.group.hover:bg-secondary/60.items-center.px-3.py-2.5.rounded-lg.transition-colors",
+      "count": 20,
+      "parents": 1,
+      "width": 298,
+      "height": {
+        "min": 56,
+        "max": 56,
+        "median": 56
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(240, 238, 245)",
+          "count": 608
+        },
+        {
+          "value": "rgb(168, 163, 184)",
+          "count": 129
+        },
+        {
+          "value": "rgb(139, 92, 246)",
+          "count": 41
+        },
+        {
+          "value": "oklab(0 0 0 / 0)",
+          "count": 40
+        },
+        {
+          "value": "oklab(0.726388 0.013664 -0.0272822 / 0.7)",
+          "count": 21
+        },
+        {
+          "value": "lab(56.101 79.4328 31.4532)",
+          "count": 16
+        },
+        {
+          "value": "oklab(0.726388 0.013664 -0.0272822 / 0.4)",
+          "count": 13
+        },
+        {
+          "value": "lab(66.9756 -58.27 19.5419)",
+          "count": 12
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 11
+        },
+        {
+          "value": "oklab(0.726388 0.013664 -0.0272822 / 0.6)",
+          "count": 10
+        },
+        {
+          "value": "oklab(0.952653 0.00470385 -0.00830704 / 0.9)",
+          "count": 3
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(30, 30, 46)",
+          "count": 39
+        },
+        {
+          "value": "oklab(0.1885 0.00580624 -0.0235468 / 0.6)",
+          "count": 19
+        },
+        {
+          "value": "oklab(0.1885 0.00580624 -0.0235468 / 0.5)",
+          "count": 14
+        },
+        {
+          "value": "rgb(18, 18, 30)",
+          "count": 7
+        },
+        {
+          "value": "oklab(0.605616 0.0845671 -0.201916 / 0.1)",
+          "count": 6
+        },
+        {
+          "value": "rgb(139, 92, 246)",
+          "count": 5
+        },
+        {
+          "value": "oklab(0 0 0 / 0.65)",
+          "count": 2
+        },
+        {
+          "value": "oklab(0.14914 0.00419165 -0.0166224 / 0.6)",
+          "count": 1
+        },
+        {
+          "value": "oklab(0.14914 0.00419165 -0.0166224 / 0.8)",
+          "count": 1
+        },
+        {
+          "value": "oklab(0.14914 0.00419165 -0.0166224 / 0.95)",
+          "count": 1
+        },
+        {
+          "value": "oklab(0.605616 0.0845671 -0.201916 / 0.05)",
+          "count": 1
+        },
+        {
+          "value": "oklab(0.605616 0.0845671 -0.201916 / 0.06)",
+          "count": 1
+        },
+        {
+          "value": "rgb(14, 14, 24)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 624
+        },
+        {
+          "value": "14px",
+          "count": 160
+        },
+        {
+          "value": "11px",
+          "count": 45
+        },
+        {
+          "value": "12px",
+          "count": 36
+        },
+        {
+          "value": "10px",
+          "count": 28
+        },
+        {
+          "value": "18px",
+          "count": 14
+        },
+        {
+          "value": "9px",
+          "count": 14
+        },
+        {
+          "value": "30px",
+          "count": 3
+        },
+        {
+          "value": "44px",
+          "count": 2
+        },
+        {
+          "value": "60px",
+          "count": 2
+        },
+        {
+          "value": "24px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "24px",
+          "count": 624
+        },
+        {
+          "value": "20px",
+          "count": 109
+        },
+        {
+          "value": "16.5px",
+          "count": 44
+        },
+        {
+          "value": "16px",
+          "count": 36
+        },
+        {
+          "value": "10px",
+          "count": 28
+        },
+        {
+          "value": "14px",
+          "count": 20
+        },
+        {
+          "value": "21px",
+          "count": 13
+        },
+        {
+          "value": "9px",
+          "count": 13
+        },
+        {
+          "value": "22.75px",
+          "count": 10
+        },
+        {
+          "value": "24.75px",
+          "count": 10
+        },
+        {
+          "value": "19.25px",
+          "count": 8
+        },
+        {
+          "value": "28px",
+          "count": 3
+        },
+        {
+          "value": "36px",
+          "count": 3
+        },
+        {
+          "value": "48.4px",
+          "count": 2
+        },
+        {
+          "value": "63px",
+          "count": 2
+        },
+        {
+          "value": "13.5px",
+          "count": 1
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 725
+        },
+        {
+          "value": "600",
+          "count": 112
+        },
+        {
+          "value": "700",
+          "count": 76
+        },
+        {
+          "value": "500",
+          "count": 16
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "Plus Jakarta Sans",
+          "count": 864
+        },
+        {
+          "value": "Syne",
+          "count": 65
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 801
+        },
+        {
+          "value": "8px",
+          "count": 62
+        },
+        {
+          "value": "6px",
+          "count": 24
+        },
+        {
+          "value": "12px",
+          "count": 23
+        },
+        {
+          "value": "3px",
+          "count": 13
+        },
+        {
+          "value": "3.35544e+07px",
+          "count": 4
+        },
+        {
+          "value": "16px",
+          "count": 2
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px",
+          "count": 5
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.1) 0px 8px 10px -6px",
+          "count": 3
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.25) 0px 25px 50px -12px",
+          "count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "value": "12px",
+          "count": 29
+        },
+        {
+          "value": "8px",
+          "count": 24
+        },
+        {
+          "value": "2px",
+          "count": 20
+        },
+        {
+          "value": "16px",
+          "count": 10
+        },
+        {
+          "value": "20px",
+          "count": 10
+        },
+        {
+          "value": "4px 8px",
+          "count": 10
+        },
+        {
+          "value": "1px",
+          "count": 7
+        },
+        {
+          "value": "4px",
+          "count": 4
+        },
+        {
+          "value": "10px",
+          "count": 3
+        },
+        {
+          "value": "6px",
+          "count": 3
+        },
+        {
+          "value": "10px 16px",
+          "count": 2
+        },
+        {
+          "value": "32px",
+          "count": 2
+        },
+        {
+          "value": "40px",
+          "count": 2
+        },
+        {
+          "value": "normal 2px",
+          "count": 1
+        },
+        {
+          "value": "normal 8px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "10px 10px",
+          "count": 22
+        },
+        {
+          "value": "6px 6px",
+          "count": 17
+        },
+        {
+          "value": "20px 20px",
+          "count": 11
+        },
+        {
+          "value": "12px 12px",
+          "count": 9
+        },
+        {
+          "value": "8px 8px",
+          "count": 7
+        },
+        {
+          "value": "16px 16px",
+          "count": 5
+        },
+        {
+          "value": "64px 64px",
+          "count": 4
+        },
+        {
+          "value": "4px 4px",
+          "count": 2
+        },
+        {
+          "value": "2px 2px",
+          "count": 1
+        },
+        {
+          "value": "32px 0px",
+          "count": 1
+        },
+        {
+          "value": "32px 24px",
+          "count": 1
+        },
+        {
+          "value": "48px 48px",
+          "count": 1
+        },
+        {
+          "value": "4px 0px",
+          "count": 1
+        },
+        {
+          "value": "80px 80px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 115
+        },
+        {
+          "value": "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 40
+        },
+        {
+          "value": "transform, translate, scale, rotate 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 14
+        },
+        {
+          "value": "transform, translate, scale, rotate 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 6
+        },
+        {
+          "value": "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 4
+        },
+        {
+          "value": "transform, translate, scale, rotate 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 4
+        },
+        {
+          "value": "all 0s ease",
+          "count": 3
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1280px",
+          "count": 7
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "2 tracks",
+          "count": 6
+        },
+        {
+          "value": "4 tracks",
+          "count": 2
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 1,
+      "fixedElements": 1,
+      "prefersColorSchemeRules": 1,
+      "bodyBgIsDark": true,
+      "images": 55,
+      "lazyImages": 54,
+      "searchInputs": 0,
+      "selects": 0,
+      "buttons": 15,
+      "tabs": 2,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "dxukomxvxegiferomewe.supabase.co",
+        "count": 4
+      },
+      {
+        "value": "i.ytimg.com",
+        "count": 4
+      },
+      {
+        "value": "images.ctfassets.net",
+        "count": 2
+      },
+      {
+        "value": "cdn.geekwire.com",
+        "count": 1
+      },
+      {
+        "value": "eleven-public-cdn.elevenlabs.io",
+        "count": 1
+      },
+      {
+        "value": "image.theregister.com",
+        "count": 1
+      },
+      {
+        "value": "images.axios.com",
+        "count": 1
+      },
+      {
+        "value": "images.wsj.net",
+        "count": 1
+      },
+      {
+        "value": "plausible.io",
+        "count": 1
+      },
+      {
+        "value": "techcrunch.com",
+        "count": 1
+      },
+      {
+        "value": "x.ai",
+        "count": 1
+      },
+      {
+        "value": "yqintl.alicdn.com",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "img",
+        "count": 50
+      },
+      {
+        "value": "script",
+        "count": 13
+      },
+      {
+        "value": "fetch",
+        "count": 11
+      },
+      {
+        "value": "link",
+        "count": 6
+      },
+      {
+        "value": "beacon",
+        "count": 4
+      },
+      {
+        "value": "other",
+        "count": 1
+      }
+    ],
+    "requestCount": 85,
+    "textLength": 9714,
+    "contrast": {
+      "sampled": 179,
+      "skippedForComplexBackground": 2,
+      "min": 4.23,
+      "p10": 4.66,
+      "median": 8.07,
+      "belowRequirement": 5,
+      "worst": [
+        {
+          "selector": "button.inline-flex",
+          "text": "Subscribe",
+          "fontSize": 12,
+          "ratio": 4.23,
+          "required": 4.5
+        },
+        {
+          "selector": "button.inline-flex",
+          "text": "Subscribe to Newsletter",
+          "fontSize": 16,
+          "ratio": 4.23,
+          "required": 4.5
+        },
+        {
+          "selector": "button.flex-1",
+          "text": "Community Picks",
+          "fontSize": 12,
+          "ratio": 4.23,
+          "required": 4.5
+        },
+        {
+          "selector": "button.inline-flex",
+          "text": "Get the database free",
+          "fontSize": 16,
+          "ratio": 4.23,
+          "required": 4.5
+        },
+        {
+          "selector": "button.inline-flex",
+          "text": "Subscribe now",
+          "fontSize": 16,
+          "ratio": 4.23,
+          "required": 4.5
+        },
+        {
+          "selector": "a.group",
+          "text": "View all news",
+          "fontSize": 14,
+          "ratio": 4.66,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text-primary",
+          "text": "TOOLS & PRODUCTS",
+          "fontSize": 11,
+          "ratio": 4.66,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text-primary",
+          "text": "POLICY & GOVERNANCE",
+          "fontSize": 11,
+          "ratio": 4.66,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 7817,
+    "scrollScreens": 9.3,
+    "primaryList": {
+      "signature": "a.flex.gap-3.group.hover:bg-secondary/60.items-center.px-3.py-2.5.rounded-lg.transition-colors",
+      "count": 20,
+      "parents": 1,
+      "width": 316,
+      "height": {
+        "min": 56,
+        "max": 56,
+        "median": 56
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "repeatedComponents": [
+      {
+        "signature": "a.flex.gap-3.group.hover:bg-secondary/60.items-center.px-3.py-2.5.rounded-lg.transition-colors",
+        "count": 20,
+        "parents": 1,
+        "width": 316,
+        "height": {
+          "min": 56,
+          "max": 56,
+          "median": 56
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "li",
+        "count": 16,
+        "parents": 3,
+        "width": 171,
+        "height": {
+          "min": 24,
+          "max": 24,
+          "median": 24
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "a.bg-card/60.border.border-border/40.flex.gap-4.group.hover:bg-card.hover:border-primary/40.p-4.rounded-xl.sm:gap-5.sm:p-5.transition-all",
+        "count": 10,
+        "parents": 1,
+        "width": 358,
+        "height": {
+          "min": 150,
+          "max": 172,
+          "median": 172
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 380
+        },
+        {
+          "value": "14px",
+          "count": 146
+        },
+        {
+          "value": "11px",
+          "count": 45
+        },
+        {
+          "value": "12px",
+          "count": 31
+        },
+        {
+          "value": "10px",
+          "count": 28
+        },
+        {
+          "value": "9px",
+          "count": 14
+        },
+        {
+          "value": "18px",
+          "count": 4
+        },
+        {
+          "value": "24px",
+          "count": 4
+        }
+      ]
+    },
+    "textLength": 9414
+  }
+}

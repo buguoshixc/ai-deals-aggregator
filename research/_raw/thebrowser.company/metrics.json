@@ -1,0 +1,373 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "thebrowser.company",
+  "target": "https://thebrowser.company/",
+  "fetchedAt": "2026-09-22T16:29:11.715Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 10166,
+      "hydration": {
+        "textBefore": 261,
+        "textAfter": 261
+      },
+      "notes": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 6107,
+      "hydration": {
+        "textBefore": 220,
+        "textAfter": 220
+      },
+      "notes": []
+    }
+  ],
+  "desktop": {
+    "url": "https://www.thebrowser.company/",
+    "title": "The Browser Company",
+    "lang": "en",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 900,
+    "scrollScreens": 1,
+    "meta": {
+      "description": "We’re building a better way to use the internet, starting with your browser.",
+      "ogImage": "?auto=format&q=100&w=1200&format=png",
+      "colorScheme": null,
+      "themeColor": "#EEEEE7",
+      "viewport": "width=device-width"
+    },
+    "canonical": "https://www.thebrowser.company",
+    "hreflang": [],
+    "jsonLdTypes": [],
+    "landmarks": {
+      "header": 1,
+      "nav": 3,
+      "main": 0,
+      "section": 1,
+      "article": 0,
+      "aside": 0,
+      "footer": 1,
+      "form": 0,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "We're building better ways to use the internet with Dia and Arc."
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug",
+        "count": 2,
+        "samples": [
+          "https://www.thebrowser.company/values"
+        ]
+      },
+      {
+        "shape": "/careers",
+        "count": 2,
+        "samples": [
+          "https://www.thebrowser.company/careers"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 6,
+    "repeatedComponents": [],
+    "primaryList": null,
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgba(0, 0, 0, 0.85)",
+          "count": 517
+        },
+        {
+          "value": "rgb(238, 238, 231)",
+          "count": 130
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(12, 80, 255)",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.85)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "12px",
+          "count": 565
+        },
+        {
+          "value": "8px",
+          "count": 53
+        },
+        {
+          "value": "14px",
+          "count": 25
+        },
+        {
+          "value": "28px",
+          "count": 4
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "18px",
+          "count": 565
+        },
+        {
+          "value": "12px",
+          "count": 53
+        },
+        {
+          "value": "33.6px",
+          "count": 4
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 647
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "IvarText",
+          "count": 565
+        },
+        {
+          "value": "ABC Diatype Mono Trial",
+          "count": 53
+        },
+        {
+          "value": "ABCDiatypeMono",
+          "count": 25
+        },
+        {
+          "value": "EB Garamond",
+          "count": 4
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 647
+        }
+      ],
+      "shadows": [],
+      "gaps": [
+        {
+          "value": "12px",
+          "count": 3
+        },
+        {
+          "value": "14px",
+          "count": 2
+        },
+        {
+          "value": "10px 15px",
+          "count": 1
+        },
+        {
+          "value": "20px 40px",
+          "count": 1
+        },
+        {
+          "value": "20px normal",
+          "count": 1
+        },
+        {
+          "value": "40px",
+          "count": 1
+        },
+        {
+          "value": "40px normal",
+          "count": 1
+        },
+        {
+          "value": "50px 40px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "0px 20px",
+          "count": 1
+        },
+        {
+          "value": "24px 40px",
+          "count": 1
+        },
+        {
+          "value": "75px 0px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "border 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 2
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "700px",
+          "count": 1
+        },
+        {
+          "value": "720px",
+          "count": 1
+        }
+      ],
+      "gridTemplates": []
+    },
+    "behavior": {
+      "stickyElements": 0,
+      "fixedElements": 5,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": false,
+      "images": 0,
+      "lazyImages": 0,
+      "searchInputs": 0,
+      "selects": 0,
+      "buttons": 1,
+      "tabs": 0,
+      "relNext": 0
+    },
+    "externalDomains": [],
+    "resourceTypes": [
+      {
+        "value": "script",
+        "count": 15
+      },
+      {
+        "value": "link",
+        "count": 6
+      },
+      {
+        "value": "fetch",
+        "count": 2
+      },
+      {
+        "value": "css",
+        "count": 1
+      },
+      {
+        "value": "other",
+        "count": 1
+      }
+    ],
+    "requestCount": 25,
+    "textLength": 261,
+    "contrast": {
+      "sampled": 18,
+      "skippedForComplexBackground": 0,
+      "min": 5,
+      "p10": 5,
+      "median": 13.38,
+      "belowRequirement": 0,
+      "worst": [
+        {
+          "selector": "a.mono-link",
+          "text": "HOME",
+          "fontSize": 14,
+          "ratio": 5,
+          "required": 4.5
+        },
+        {
+          "selector": "a.mono-link",
+          "text": "COMPANY VALUES",
+          "fontSize": 14,
+          "ratio": 5,
+          "required": 4.5
+        },
+        {
+          "selector": "a.mono-link",
+          "text": "JOBS",
+          "fontSize": 14,
+          "ratio": 5,
+          "required": 4.5
+        },
+        {
+          "selector": "a.mono-link",
+          "text": "NEWSLETTER",
+          "fontSize": 14,
+          "ratio": 5,
+          "required": 4.5
+        },
+        {
+          "selector": "a.mono-link",
+          "text": "@BROWSERCOMPANY",
+          "fontSize": 14,
+          "ratio": 5,
+          "required": 4.5
+        },
+        {
+          "selector": "a.h-40",
+          "text": "MEET DIA BROWSER",
+          "fontSize": 14,
+          "ratio": 5,
+          "required": 4.5
+        },
+        {
+          "selector": "a.h-40",
+          "text": "GET ARC BROWSER",
+          "fontSize": 14,
+          "ratio": 5,
+          "required": 4.5
+        },
+        {
+          "selector": "button.800:ml-22",
+          "text": "THEME",
+          "fontSize": 14,
+          "ratio": 13.38,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 844,
+    "scrollScreens": 1,
+    "primaryList": null,
+    "repeatedComponents": [],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "12px",
+          "count": 540
+        },
+        {
+          "value": "14px",
+          "count": 23
+        },
+        {
+          "value": "28px",
+          "count": 4
+        }
+      ]
+    },
+    "textLength": 220
+  }
+}

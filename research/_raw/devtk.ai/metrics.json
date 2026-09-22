@@ -1,0 +1,786 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "devtk.ai",
+  "target": "https://devtk.ai/",
+  "fetchedAt": "2026-09-22T16:29:24.295Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 7798,
+      "hydration": {
+        "textBefore": 3506,
+        "textAfter": 3506
+      },
+      "notes": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 4486,
+      "hydration": {
+        "textBefore": 3469,
+        "textAfter": 3469
+      },
+      "notes": []
+    }
+  ],
+  "desktop": {
+    "url": "https://devtk.ai/en/",
+    "title": "DevTk.AI - Models, Pricing, MCP, and Structured Output Tools",
+    "lang": "en",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 2814,
+    "scrollScreens": 3.1,
+    "meta": {
+      "description": "Compare AI model pricing, design structured outputs, and ship MCP workflows faster with focused browser-based developer tools.",
+      "ogImage": "https://devtk.ai/og-image.png",
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width, initial-scale=1"
+    },
+    "canonical": "https://devtk.ai/en/",
+    "hreflang": [
+      {
+        "hreflang": "en",
+        "href": "https://devtk.ai/en/"
+      },
+      {
+        "hreflang": "zh-CN",
+        "href": "https://devtk.ai/zh/"
+      },
+      {
+        "hreflang": "x-default",
+        "href": "https://devtk.ai/en/"
+      }
+    ],
+    "jsonLdTypes": [
+      "WebSite",
+      "Organization"
+    ],
+    "landmarks": {
+      "header": 1,
+      "nav": 2,
+      "main": 1,
+      "section": 5,
+      "article": 0,
+      "aside": 0,
+      "footer": 1,
+      "form": 0,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "Plan AI model spend and API throughput."
+      },
+      {
+        "level": 2,
+        "text": "Lead with workflows, not a wall of tools."
+      },
+      {
+        "level": 3,
+        "text": "Model Economics"
+      },
+      {
+        "level": 3,
+        "text": "Throughput & Limits"
+      },
+      {
+        "level": 3,
+        "text": "Structured Output"
+      },
+      {
+        "level": 2,
+        "text": "Core tools"
+      },
+      {
+        "level": 3,
+        "text": "AI Model Pricing Calculator"
+      },
+      {
+        "level": 3,
+        "text": "AI API Throughput Planner & Cost Estimator"
+      },
+      {
+        "level": 3,
+        "text": "AI Token Counter"
+      },
+      {
+        "level": 3,
+        "text": "Free LLM VRAM Calculator — GPU Memory Check"
+      },
+      {
+        "level": 3,
+        "text": "JSON Schema Builder"
+      },
+      {
+        "level": 3,
+        "text": "Prompt Diff & Version Compare"
+      },
+      {
+        "level": 2,
+        "text": "High-intent guides"
+      },
+      {
+        "level": 3,
+        "text": "AI API Pricing Comparison 2026"
+      },
+      {
+        "level": 3,
+        "text": "OpenAI API Pricing Guide"
+      },
+      {
+        "level": 3,
+        "text": "Claude API Pricing Guide"
+      },
+      {
+        "level": 3,
+        "text": "AI Coding Agent Cost"
+      },
+      {
+        "level": 2,
+        "text": "Resources that stay, without owning the homepage"
+      },
+      {
+        "level": 3,
+        "text": "All tools"
+      },
+      {
+        "level": 3,
+        "text": "Models directory"
+      },
+      {
+        "level": 3,
+        "text": "AI credits & deals"
+      },
+      {
+        "level": 3,
+        "text": "Guides"
+      },
+      {
+        "level": 3,
+        "text": "Core Workflows"
+      },
+      {
+        "level": 3,
+        "text": "Resources"
+      },
+      {
+        "level": 3,
+        "text": "Site"
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug/tools/:slug",
+        "count": 17,
+        "samples": [
+          "https://devtk.ai/en/tools/pricing-calculator/",
+          "https://devtk.ai/en/tools/api-throughput-planner/",
+          "https://devtk.ai/en/tools/json-schema-builder/"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug/:slug",
+        "count": 9,
+        "samples": [
+          "https://devtk.ai/en/directory/mcp-servers/",
+          "https://devtk.ai/en/directory/ai-tools/",
+          "https://devtk.ai/en/directory/datasets/"
+        ]
+      },
+      {
+        "shape": "/:slug/blog/:slug",
+        "count": 7,
+        "samples": [
+          "https://devtk.ai/en/blog/ai-api-rate-limits-comparison-2026/",
+          "https://devtk.ai/en/blog/how-to-reduce-ai-api-costs/",
+          "https://devtk.ai/en/blog/ai-structured-output-guide-2026/"
+        ]
+      },
+      {
+        "shape": "/:slug/models",
+        "count": 6,
+        "samples": [
+          "https://devtk.ai/en/models/"
+        ]
+      },
+      {
+        "shape": "/:slug/tools",
+        "count": 5,
+        "samples": [
+          "https://devtk.ai/en/tools/"
+        ]
+      },
+      {
+        "shape": "/:slug/blog",
+        "count": 5,
+        "samples": [
+          "https://devtk.ai/en/blog/"
+        ]
+      },
+      {
+        "shape": "/:slug/deals",
+        "count": 4,
+        "samples": [
+          "https://devtk.ai/en/deals/"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug",
+        "count": 4,
+        "samples": [
+          "https://devtk.ai/en/reading-list/",
+          "https://devtk.ai/en/feedback/"
+        ]
+      },
+      {
+        "shape": "/:slug/news",
+        "count": 3,
+        "samples": [
+          "https://devtk.ai/en/news/"
+        ]
+      },
+      {
+        "shape": "/:slug",
+        "count": 2,
+        "samples": [
+          "https://devtk.ai/en/",
+          "https://devtk.ai/zh/"
+        ]
+      },
+      {
+        "shape": "/:slug/about",
+        "count": 1,
+        "samples": [
+          "https://devtk.ai/en/about/"
+        ]
+      },
+      {
+        "shape": "/:slug/privacy",
+        "count": 1,
+        "samples": [
+          "https://devtk.ai/en/privacy/"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 65,
+    "repeatedComponents": [
+      {
+        "signature": "a.border.flex.hover:bg-accent.items-center.justify-between.px-3.py-2.rounded-lg.text-sm.transition-colors",
+        "count": 9,
+        "parents": 3,
+        "width": 355,
+        "height": {
+          "min": 38,
+          "max": 38,
+          "median": 38
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "a.border.hover:bg-accent.p-5.rounded-2xl.transition-colors",
+        "count": 8,
+        "parents": 2,
+        "width": 300,
+        "height": {
+          "min": 146,
+          "max": 146,
+          "median": 146
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "a.bg-card.border.flex.flex-col.group.hover:border-primary/50.hover:shadow-md.p-6.relative.rounded-xl.shadow-sm.transition-all",
+        "count": 6,
+        "parents": 1,
+        "width": 300,
+        "height": {
+          "min": 238,
+          "max": 238,
+          "median": 238
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "primaryList": {
+      "signature": "a.border.flex.hover:bg-accent.items-center.justify-between.px-3.py-2.rounded-lg.text-sm.transition-colors",
+      "count": 9,
+      "parents": 3,
+      "width": 355,
+      "height": {
+        "min": 38,
+        "max": 38,
+        "median": 38
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(2, 8, 23)",
+          "count": 114
+        },
+        {
+          "value": "rgb(100, 116, 139)",
+          "count": 93
+        },
+        {
+          "value": "rgb(37, 99, 235)",
+          "count": 60
+        },
+        {
+          "value": "rgba(2, 8, 23, 0.6)",
+          "count": 9
+        },
+        {
+          "value": "rgb(248, 250, 252)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 10
+        },
+        {
+          "value": "rgba(37, 99, 235, 0.1)",
+          "count": 7
+        },
+        {
+          "value": "rgb(241, 245, 249)",
+          "count": 6
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.7)",
+          "count": 3
+        },
+        {
+          "value": "rgb(37, 99, 235)",
+          "count": 1
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.6)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "14px",
+          "count": 142
+        },
+        {
+          "value": "16px",
+          "count": 114
+        },
+        {
+          "value": "12px",
+          "count": 7
+        },
+        {
+          "value": "24px",
+          "count": 7
+        },
+        {
+          "value": "18px",
+          "count": 6
+        },
+        {
+          "value": "48px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "20px",
+          "count": 131
+        },
+        {
+          "value": "24px",
+          "count": 125
+        },
+        {
+          "value": "32px",
+          "count": 8
+        },
+        {
+          "value": "16px",
+          "count": 7
+        },
+        {
+          "value": "28px",
+          "count": 5
+        },
+        {
+          "value": "48px",
+          "count": 1
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 224
+        },
+        {
+          "value": "600",
+          "count": 21
+        },
+        {
+          "value": "500",
+          "count": 20
+        },
+        {
+          "value": "700",
+          "count": 12
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "ui-sans-serif",
+          "count": 277
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 232
+        },
+        {
+          "value": "8px",
+          "count": 15
+        },
+        {
+          "value": "16px",
+          "count": 14
+        },
+        {
+          "value": "9999px",
+          "count": 7
+        },
+        {
+          "value": "12px",
+          "count": 6
+        },
+        {
+          "value": "6px",
+          "count": 3
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "count": 12
+        }
+      ],
+      "gaps": [
+        {
+          "value": "16px",
+          "count": 8
+        },
+        {
+          "value": "12px",
+          "count": 2
+        },
+        {
+          "value": "32px",
+          "count": 1
+        },
+        {
+          "value": "4px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "20px 20px",
+          "count": 11
+        },
+        {
+          "value": "24px 24px",
+          "count": 9
+        },
+        {
+          "value": "8px 8px",
+          "count": 9
+        },
+        {
+          "value": "2px 2px",
+          "count": 6
+        },
+        {
+          "value": "40px 40px",
+          "count": 4
+        },
+        {
+          "value": "10px 10px",
+          "count": 2
+        },
+        {
+          "value": "32px 0px",
+          "count": 2
+        },
+        {
+          "value": "48px 48px",
+          "count": 2
+        },
+        {
+          "value": "4px 4px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "color, background-color, border-color, text-decoration-color, fill, stroke 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 52
+        },
+        {
+          "value": "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 6
+        },
+        {
+          "value": "opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 6
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1280px",
+          "count": 2
+        },
+        {
+          "value": "1536px",
+          "count": 2
+        },
+        {
+          "value": "672px",
+          "count": 2
+        },
+        {
+          "value": "768px",
+          "count": 2
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "4 tracks",
+          "count": 4
+        },
+        {
+          "value": "3 tracks",
+          "count": 2
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 1,
+      "fixedElements": 0,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": false,
+      "images": 0,
+      "lazyImages": 0,
+      "searchInputs": 0,
+      "selects": 0,
+      "buttons": 3,
+      "tabs": 0,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "static.cloudflareinsights.com",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "script",
+        "count": 6
+      },
+      {
+        "value": "link",
+        "count": 2
+      },
+      {
+        "value": "other",
+        "count": 1
+      },
+      {
+        "value": "xmlhttprequest",
+        "count": 1
+      }
+    ],
+    "requestCount": 10,
+    "textLength": 3506,
+    "contrast": {
+      "sampled": 101,
+      "skippedForComplexBackground": 9,
+      "min": 4.34,
+      "p10": 4.76,
+      "median": 5.17,
+      "belowRequirement": 6,
+      "worst": [
+        {
+          "selector": "span.text-xs",
+          "text": "Tokens & Pricing",
+          "fontSize": 12,
+          "ratio": 4.34,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text-xs",
+          "text": "Tokens & Pricing",
+          "fontSize": 12,
+          "ratio": 4.34,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text-xs",
+          "text": "Tokens & Pricing",
+          "fontSize": 12,
+          "ratio": 4.34,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text-xs",
+          "text": "Tokens & Pricing",
+          "fontSize": 12,
+          "ratio": 4.34,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text-xs",
+          "text": "Schemas & Specs",
+          "fontSize": 12,
+          "ratio": 4.34,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text-xs",
+          "text": "Prompt Engineering",
+          "fontSize": 12,
+          "ratio": 4.34,
+          "required": 4.5
+        },
+        {
+          "selector": "p.mt-2",
+          "text": "The homepage now prioritizes model econo",
+          "fontSize": 16,
+          "ratio": 4.76,
+          "required": 4.5
+        },
+        {
+          "selector": "p.mt-2",
+          "text": "Check pricing, context windows, and cost",
+          "fontSize": 14,
+          "ratio": 4.76,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 6342,
+    "scrollScreens": 7.5,
+    "primaryList": {
+      "signature": "a.border.flex.hover:bg-accent.items-center.justify-between.px-3.py-2.rounded-lg.text-sm.transition-colors",
+      "count": 9,
+      "parents": 3,
+      "width": 308,
+      "height": {
+        "min": 38,
+        "max": 38,
+        "median": 38
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "repeatedComponents": [
+      {
+        "signature": "a.border.flex.hover:bg-accent.items-center.justify-between.px-3.py-2.rounded-lg.text-sm.transition-colors",
+        "count": 9,
+        "parents": 3,
+        "width": 308,
+        "height": {
+          "min": 38,
+          "max": 38,
+          "median": 38
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "a.border.hover:bg-accent.p-5.rounded-2xl.transition-colors",
+        "count": 8,
+        "parents": 2,
+        "width": 358,
+        "height": {
+          "min": 122,
+          "max": 122,
+          "median": 122
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "a.bg-card.border.flex.flex-col.group.hover:border-primary/50.hover:shadow-md.p-6.relative.rounded-xl.shadow-sm.transition-all",
+        "count": 6,
+        "parents": 1,
+        "width": 358,
+        "height": {
+          "min": 214,
+          "max": 238,
+          "median": 214
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "14px",
+          "count": 132
+        },
+        {
+          "value": "16px",
+          "count": 116
+        },
+        {
+          "value": "12px",
+          "count": 7
+        },
+        {
+          "value": "24px",
+          "count": 7
+        },
+        {
+          "value": "18px",
+          "count": 6
+        },
+        {
+          "value": "36px",
+          "count": 1
+        }
+      ]
+    },
+    "textLength": 3469
+  }
+}

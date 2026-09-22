@@ -1,0 +1,22 @@
+# https://llm-prices.com/
+# 抓取时间 2026-09-22T16:23:58.277Z
+
+## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
+<h1> 300x28 — LLM pricing calculator
+<h2> 600x28 — Model prices (per million tokens)
+<table.preset-table> 600x7197
+  … 157 children (tbody)
+
+## class 命名频次（前 45）
+    6  input-group
+    3  cost-input-group
+    3  sort-icon
+    1  container
+    1  flex-container
+    1  calculator
+    1  result
+    1  presets
+    1  search-filter
+    1  hidden
+    1  preset-table
+    1  disclaimer

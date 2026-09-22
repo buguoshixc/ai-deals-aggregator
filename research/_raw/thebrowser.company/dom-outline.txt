@@ -1,0 +1,71 @@
+# https://thebrowser.company/
+# 抓取时间 2026-09-22T16:29:11.715Z
+
+## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
+<nav.fixed.z-9.inset-0> 1440x900
+  … 14 children (g)
+  … 17 children (g)
+  <ul.flex.flex-col.items-center> 158x250
+  <ul.flex.flex-col.gap-y-20> 250x100
+<header> 100x100
+  <nav.relative.z-10.flex> 100x100
+    … 14 children (g)
+    … 14 children (g)
+    … 17 children (g)
+    … 14 children (g)
+    … 17 children (g)
+<section.800:max-w-700.mx-auto.pt-50> 376x236
+  <h1.heading.italic.rich-text> 376x71 — We're building better ways to use the internet with Dia and 
+  <ul.mt-50.800:mt-75.list-none> 376x15
+<footer.mt-50.flex.flex-col> 572x14
+  <nav.order-1.800:order-2.w-full> 572x14
+… 38 children (g)
+… 52 children (g)
+… 14 children (g)
+
+## class 命名频次（前 45）
+   14  flex
+   11  items-center
+   10  mono-link
+    9  flex-col
+    8  w-full
+    8  object-contain
+    7  justify-center
+    6  mx-auto
+    5  relative
+    5  aspect-square
+    5  w-100
+    5  h-24
+    4  h-full
+    4  hidden
+    4  mt-50
+    3  fixed
+    3  inset-0
+    3  pointer-events-none
+    3  absolute
+    3  h-100
+    3  800:block
+    3  800:hidden
+    2  items-start
+    2  block
+    2  justify-between
+    2  gap-y-20
+    2  h-40
+    2  border-dotted
+    2  border-2
+    2  gap-14
+    2  mono
+    2  min-w-250
+    2  h-auto
+    2  heading-link
+    2  800:flex-row
+    2  button-link
+    2  800:items-start
+    1  antialiased
+    1  bg-background
+    1  text-primary
+    1  no-scroll
+    1  z-[1000]
+    1  top-20
+    1  left-20
+    1  z-8

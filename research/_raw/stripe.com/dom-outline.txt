@@ -1,0 +1,132 @@
+# https://stripe.com/
+# 抓取时间 2026-09-22T16:25:08.414Z
+
+## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
+<header.hds-color-mode.navigation.section> 1440x76
+  <nav.hds-navigation-menu.navigation-menu.navigation-menu--homepage> 1262x64
+    <ul.hds-navigation-menu__list.navigation-menu-list.hds-navigation-menu__list--horizontal> 484x40
+    <section.navigation-menu-footer> 0x0
+    <section.navigation-menu-header> 0x0
+    <ul.navigation-buttons> 298x44
+<main> 1440x14284
+  <section.hds-color-mode.hero-section-container.section> 1440x685
+    … 15 children (span)
+    … 15 children (span)
+    <h1.hds-heading.hero-section__title.hero-section__title--background> 988x152 — 事業成長を支える金融インフラ。 決済から組込み型金融、エージェンティックコマースまで、企業の収益最大化を支援。
+    <h1.hds-heading.hero-section__title.hero-section__title--foreground> 988x152 — 事業成長を支える金融インフラ。 決済から組込み型金融、エージェンティックコマースまで、企業の収益最大化を支援。
+    <ul.hero-logo-wall-section__grid> 1264x217
+  <section.hds-color-mode.section.section--white> 1440x1765
+    <h2.hds-heading.hds-heading--lg.hds-heading--inline> 781x40 — ビジネスの形態を問わない、柔軟なプラットフォーム。
+    <h3.hds-heading.modular-solutions-bento-card__title.hds-heading--md> 541x29 — オンライン決済・対面決済をグローバルに展開
+    <h3.hds-heading.modular-solutions-bento-card__title.hds-heading--md> 284x58 — あらゆるサブスク・課金モデルに対応
+    … 31 children (div)
+    <h3.hds-heading.modular-solutions-bento-card__title.hds-heading--md> 284x58 — プラットフォームに決済機能を統合
+    <h3.hds-heading.modular-solutions-bento-card__title.hds-heading--md> 284x58 — エージェンティックコマースを導入
+    <h3.hds-heading.modular-solutions-bento-card__title.hds-heading--md> 284x58 — ステーブルコインと暗号資産で越境決済に対応
+  <section.hds-color-mode.section.section--white> 1440x560
+    <h3.hds-heading.hds-heading--md.hds-heading--inline> 283x33 — 安心の日本語サポート。
+  <section.hds-color-mode.section.hds-mode--light> 1440x1392
+    <h3.hds-heading.hds-heading--md> 229x29 — シンプルな料金体系
+    <h2.hds-text.pricing-table__list-header-title.hds-text--xl> 1182x28 — Payments
+    <ul.hds-list> 1182x83
+    … 16 children (svg)
+    … 18 children (svg)
+    <h3.hds-heading.hds-heading--sm.hds-heading--inline> 221x28 — 営業チームにご相談。
+  <section.hds-color-mode.section.section--white> 1440x649
+    <section.section-row.section-row-gap> 1232x457
+      <header> 1232x58
+        <h2.hds-heading.hds-heading--md.hds-heading--inline> 263x33 — 利用開始までの流れ。
+      <h3.hds-heading.hds-heading--sm> 356x24 — アカウント登録
+      <h3.hds-heading.hds-heading--sm> 356x24 — アカウント審査
+      <h3.hds-heading.hds-heading--sm> 357x24 — Stripe が利用可能に
+  <section.hds-color-mode.stats-section.stats-section--dark> 1440x977
+    <h2.hds-heading.stats-section__title.hds-heading--xxl> 559x115 — グローバルなコマースを 支える基盤
+  <section.hds-color-mode.business-sizes-section.section> 1440x4607
+    <h2.hds-heading.business-sizes__title.hds-heading--lg> 381x40 — あらゆるビジネスに対応。
+    <section.section-row.section-row-gap> 1232x1422
+      <header.section-header.section-header--title-span-5> 1232x130
+        <h3.hds-heading.section-header__title.hds-heading--md> 504x58 — 機動力のある金融インフラで、大企業の基盤を刷新
+      <h3.hds-heading.customer-stories__customer-summary-description.hds-heading--sm> 1017x24 — トヨタは Stripe Connect を活用してサステナビリティ・マーケットプレイスを構築しています。
+      <h3.hds-heading.customer-stories__customer-summary-description.hds-heading--sm> 1120x24 — DeNA は Stripe を利用して決済のオーソリ成功率を 10% 向上させました。
+      <h3.hds-heading.customer-stories__customer-summary-description.hds-heading--sm> 1120x24 — 日本経済新聞は Stripe を活用して 1,000 万件のデジタル会員基盤を支えています
+      <h3.hds-heading.customer-stories__customer-summary-description.hds-heading--sm> 1120x24 — 東急は Stripe を利用してサブスクのコンバージョンを 20% 向上させました
+    <section.section-row.section-row-gap> 1232x1059
+      <header.section-header.section-header--title-span-5> 1232x130
+        <h3.hds-heading.section-header__title.hds-heading--md> 504x58 — 強固なビジネス基盤で、スタートアップの成長を加速
+      <section.startups-carousel> 1232x651
+        <ul.carousel__scroller.case-study-carousel__scroller> 1264x579
+          … 15 children (svg)
+          … 12 children (svg)
+    <section.section-row.section-row-gap> 1232x1463
+      <header.section-header.section-header--title-span-5> 1232x130
+        <h3.hds-heading.section-header__title.hds-heading--md> 504x58 — SaaS プラットフォームを「金融オペレーティングシステム」へ
+  <section.hds-color-mode.section.hds-mode--dark> 1440x2346
+    <h2.hds-heading.hds-heading--lg.hds-heading--inline> 633x40 — あらゆる技術スタックに、信頼と拡張性を。
+    <h3.hds-heading.hds-heading--md.hds-heading--inline> 287x33 — 既存のシステムと接続。
+    <h3.hds-heading.hds-heading--md.hds-heading--inline> 288x33 — 事業規模を確実に拡大。
+    <h3.hds-heading.hds-heading--md.hds-heading--inline> 417x33 — インテグレーションの方法を選択。
+  <section.hds-color-mode.section.section--white> 1440x918
+    <section.section-row.section-row-gap> 1232x726
+      <header.events-carousel__header> 1232x102
+        <h2.hds-heading.events-carousel__header-title.hds-heading--lg> 621x35 — Stripe の最前線
+      <h3.hds-heading.hds-heading--sm.hds-heading--inline> 553x28 — Stripe を利用するビジネスが 2025 年に生み出す$1.9兆。
+      <h3.hds-heading.hds-heading--sm.hds-heading--inline> 455x28 — 15万以上のユーザーが過去最高の 1 日を達成。
+      <h3.hds-heading.hds-heading--sm.hds-heading--inline> 698x28 — Tidemark によるバーティカル / 中小企業 SaaS ベンチマークレポート。
+      <h3.hds-heading.hds-heading--sm.hds-heading--inline> 804x53 — Shopify CEO のトビ・リュトケ氏と、Stripe 共同創業者兼 CEO のジョン・コリソンが対談。
+      <h3.hds-heading.hds-heading--sm.hds-heading--inline> 396x28 — アプリストア外決済のための新ツール。
+      <h3.hds-heading.hds-heading--sm.hds-heading--inline> 487x28 — Crypto.com × Stripe: 暗号資産決済をより身近に。
+      <h3.hds-heading.hds-heading--sm.hds-heading--inline> 486x28 — AI プラットフォームを通じた商品購入を可能に。
+      <h3.hds-heading.hds-heading--sm.hds-heading--inline> 570x28 — 大手小売業者が顧客体験を統合し、成長を促進する方法。
+      <ul.carousel__scroller.mobile-carousel__scroller> 0x0
+  <section.hds-color-mode.section.hds-mode--light> 1440x385
+<footer.hds-color-mode.footer.section> 1440x1078
+  … 33 children (div)
+  … 24 children (div)
+  … 13 children (div)
+
+## class 命名频次（前 45）
+  114  hds-text
+  101  hds-nowrap-svg
+   98  hds-text--md
+   84  hds-heading
+   66  hds-link
+   52  hds-button
+   51  hds-heading--inline
+   46  hds-text--inline
+   44  tabular-nums--tight
+   37  hds-text--emphasized
+   36  hds-heading--md
+   34  hds-text--soft
+   33  hds-link--callout
+   27  hds-heading--subdued
+   25  hds-heading--sm
+   24  hds-button--secondary
+   23  section-row
+   23  section-row-gap
+   17  footer-links-block__item
+   16  payments-graphic__checkout-payment-table-row-label
+   15  hero-logo-wall-section__cell
+   15  hero-logo-wall-section__logo
+   15  carousel__item
+   15  carousel__inner
+   14  hds-button--primary
+   13  section-container
+   13  payments-graphic__terminal-transaction-details-row
+   13  payments-graphic__terminal-transaction-details-label
+   13  payments-graphic__terminal-transaction-details-value
+   13  payments-graphic__checkout-payment-table-row-value
+   13  hds-text--subdued
+   12  hds-color-mode
+   12  section
+   12  customer-stories__customer-data-stat
+   11  feature-detail
+   11  feature-detail__content
+   11  feature-detail__footer
+   10  hds-mode--light
+   10  hds-heading--lg
+   10  lazy-animation
+    9  section-title
+    9  payments-graphic__checkout-payment-methods-item
+    9  payments-graphic__checkout-payment-methods-item-checkbox
+    9  payments-graphic__checkout-payment-methods-item-icon
+    9  payments-graphic__checkout-payment-methods-item-label

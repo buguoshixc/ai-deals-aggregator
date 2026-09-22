@@ -1,0 +1,1045 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "notion.com",
+  "target": "https://www.notion.com/",
+  "fetchedAt": "2026-09-22T16:28:45.019Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 19460,
+      "hydration": {
+        "textBefore": 2112,
+        "textAfter": 2109
+      },
+      "notes": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 24987,
+      "hydration": {
+        "textBefore": 1985,
+        "textAfter": 1983
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    }
+  ],
+  "desktop": {
+    "url": "https://www.notion.com/",
+    "title": "The AI workspace that works for you. | Notion",
+    "lang": "en-us",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 4551,
+    "scrollScreens": 5.1,
+    "meta": {
+      "description": "Build Custom Agents, search across all your apps, and automate busywork. The AI workspace where teams get more done, faster.",
+      "ogImage": "https://www.notion.com/front-static/meta/teams-and-agents.jpg",
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width, initial-scale=1"
+    },
+    "canonical": "https://www.notion.com/",
+    "hreflang": [
+      {
+        "hreflang": "en",
+        "href": "https://www.notion.com/"
+      },
+      {
+        "hreflang": "ko",
+        "href": "https://www.notion.com/ko"
+      },
+      {
+        "hreflang": "ja",
+        "href": "https://www.notion.com/ja"
+      },
+      {
+        "hreflang": "fr",
+        "href": "https://www.notion.com/fr"
+      },
+      {
+        "hreflang": "de",
+        "href": "https://www.notion.com/de"
+      },
+      {
+        "hreflang": "es-es",
+        "href": "https://www.notion.com/es-es"
+      },
+      {
+        "hreflang": "es",
+        "href": "https://www.notion.com/es"
+      },
+      {
+        "hreflang": "pt",
+        "href": "https://www.notion.com/pt"
+      },
+      {
+        "hreflang": "fi",
+        "href": "https://www.notion.com/fi"
+      },
+      {
+        "hreflang": "da",
+        "href": "https://www.notion.com/da"
+      },
+      {
+        "hreflang": "nl",
+        "href": "https://www.notion.com/nl"
+      },
+      {
+        "hreflang": "nb",
+        "href": "https://www.notion.com/nb"
+      },
+      {
+        "hreflang": "sv",
+        "href": "https://www.notion.com/sv"
+      },
+      {
+        "hreflang": "zh",
+        "href": "https://www.notion.com/zh-cn"
+      },
+      {
+        "hreflang": "zh-tw",
+        "href": "https://www.notion.com/zh-tw"
+      },
+      {
+        "hreflang": "en-gb",
+        "href": "https://www.notion.com/en-gb"
+      },
+      {
+        "hreflang": "id",
+        "href": "https://www.notion.com/id"
+      },
+      {
+        "hreflang": "vi",
+        "href": "https://www.notion.com/vi"
+      },
+      {
+        "hreflang": "th",
+        "href": "https://www.notion.com/th"
+      },
+      {
+        "hreflang": "he",
+        "href": "https://www.notion.com/he"
+      },
+      {
+        "hreflang": "ar",
+        "href": "https://www.notion.com/ar"
+      },
+      {
+        "hreflang": "it",
+        "href": "https://www.notion.com/it"
+      }
+    ],
+    "jsonLdTypes": [],
+    "landmarks": {
+      "header": 4,
+      "nav": 2,
+      "main": 1,
+      "section": 3,
+      "article": 3,
+      "aside": 0,
+      "footer": 1,
+      "form": 0,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 1,
+        "text": "Where teams and agents Scale together."
+      },
+      {
+        "level": 2,
+        "text": "AI where your team works."
+      },
+      {
+        "level": 2,
+        "text": "Bring everything into one system of record."
+      },
+      {
+        "level": 2,
+        "text": "Get answers, instantly—with citations."
+      },
+      {
+        "level": 2,
+        "text": "Keep work moving 24/7 with agents."
+      },
+      {
+        "level": 3,
+        "text": "See what Notion can do"
+      },
+      {
+        "level": 3,
+        "text": "Triage product feedback→"
+      },
+      {
+        "level": 3,
+        "text": "Resolve support tickets in Slack→"
+      },
+      {
+        "level": 3,
+        "text": "Respond to security alerts faster→"
+      },
+      {
+        "level": 3,
+        "text": "Automate weekly reporting→"
+      },
+      {
+        "level": 3,
+        "text": "Create your own developer tools→"
+      },
+      {
+        "level": 2,
+        "text": "Trusted by teams that ship."
+      },
+      {
+        "level": 2,
+        "text": "Get started today."
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug",
+        "count": 49,
+        "samples": [
+          "https://www.notion.com/zh-cn",
+          "https://www.notion.com/product",
+          "https://www.notion.com/releases"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug",
+        "count": 25,
+        "samples": [
+          "https://www.notion.com/product/features",
+          "https://www.notion.com/product/features#capture",
+          "https://www.notion.com/product/features#find"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug/:slug/:slug",
+        "count": 4,
+        "samples": [
+          "https://www.notion.com/product/ai/use-cases/triage-product-feedback",
+          "https://www.notion.com/product/ai/use-cases/resolve-support-tickets-in-slack",
+          "https://www.notion.com/product/ai/use-cases/respond-to-security-alerts-faster"
+        ]
+      },
+      {
+        "shape": "/signup",
+        "count": 3,
+        "samples": [
+          "https://www.notion.com/signup?from=marketing&pathname=%2F&tid=f9718909593b4c1d87081449d8416819"
+        ]
+      },
+      {
+        "shape": "/help",
+        "count": 2,
+        "samples": [
+          "https://www.notion.com/help"
+        ]
+      },
+      {
+        "shape": "/pricing",
+        "count": 2,
+        "samples": [
+          "https://www.notion.com/pricing"
+        ]
+      },
+      {
+        "shape": "/explore",
+        "count": 2,
+        "samples": [
+          "https://www.notion.com/explore"
+        ]
+      },
+      {
+        "shape": "/login",
+        "count": 1,
+        "samples": [
+          "https://www.notion.com/login?from=marketing&pathname=%2F&tid=f9718909593b4c1d87081449d8416819"
+        ]
+      },
+      {
+        "shape": "/about",
+        "count": 1,
+        "samples": [
+          "https://www.notion.com/about"
+        ]
+      },
+      {
+        "shape": "/careers",
+        "count": 1,
+        "samples": [
+          "https://www.notion.com/careers"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 90,
+    "repeatedComponents": [],
+    "primaryList": null,
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgba(0, 0, 0, 0.898)",
+          "count": 194
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.75)",
+          "count": 69
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.95)",
+          "count": 61
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 46
+        },
+        {
+          "value": "rgb(163, 158, 152)",
+          "count": 45
+        },
+        {
+          "value": "rgb(97, 93, 89)",
+          "count": 15
+        },
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 13
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.54)",
+          "count": 10
+        },
+        {
+          "value": "rgb(9, 127, 232)",
+          "count": 9
+        },
+        {
+          "value": "rgb(0, 117, 222)",
+          "count": 3
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.59)",
+          "count": 2
+        },
+        {
+          "value": "rgb(0, 91, 171)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgba(0, 0, 0, 0.75)",
+          "count": 23
+        },
+        {
+          "value": "rgba(255, 255, 255, 0)",
+          "count": 23
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 18
+        },
+        {
+          "value": "rgb(249, 249, 248)",
+          "count": 6
+        },
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 3
+        },
+        {
+          "value": "rgb(0, 117, 222)",
+          "count": 3
+        },
+        {
+          "value": "rgb(246, 245, 244)",
+          "count": 2
+        },
+        {
+          "value": "rgb(246, 73, 50)",
+          "count": 2
+        },
+        {
+          "value": "rgb(255, 177, 16)",
+          "count": 2
+        },
+        {
+          "value": "rgb(9, 127, 232)",
+          "count": 2
+        },
+        {
+          "value": "rgb(0, 91, 171)",
+          "count": 1
+        },
+        {
+          "value": "rgb(189, 230, 228)",
+          "count": 1
+        },
+        {
+          "value": "rgb(19, 19, 186)",
+          "count": 1
+        },
+        {
+          "value": "rgb(227, 45, 20)",
+          "count": 1
+        },
+        {
+          "value": "rgb(230, 243, 254)",
+          "count": 1
+        },
+        {
+          "value": "rgb(232, 157, 1)",
+          "count": 1
+        },
+        {
+          "value": "rgb(26, 174, 57)",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.05)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 331
+        },
+        {
+          "value": "14px",
+          "count": 78
+        },
+        {
+          "value": "24px",
+          "count": 45
+        },
+        {
+          "value": "40px",
+          "count": 10
+        },
+        {
+          "value": "12px",
+          "count": 4
+        },
+        {
+          "value": "20px",
+          "count": 4
+        },
+        {
+          "value": "0px",
+          "count": 3
+        },
+        {
+          "value": "18px",
+          "count": 3
+        },
+        {
+          "value": "22px",
+          "count": 3
+        },
+        {
+          "value": "72px",
+          "count": 3
+        },
+        {
+          "value": "54px",
+          "count": 2
+        },
+        {
+          "value": "42px",
+          "count": 1
+        },
+        {
+          "value": "96px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "24px",
+          "count": 259
+        },
+        {
+          "value": "20px",
+          "count": 126
+        },
+        {
+          "value": "0px",
+          "count": 72
+        },
+        {
+          "value": "28px",
+          "count": 10
+        },
+        {
+          "value": "60px",
+          "count": 10
+        },
+        {
+          "value": "16px",
+          "count": 4
+        },
+        {
+          "value": "87.12px",
+          "count": 3
+        },
+        {
+          "value": "56px",
+          "count": 2
+        },
+        {
+          "value": "100px",
+          "count": 1
+        },
+        {
+          "value": "48px",
+          "count": 1
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 265
+        },
+        {
+          "value": "500",
+          "count": 203
+        },
+        {
+          "value": "700",
+          "count": 16
+        },
+        {
+          "value": "600",
+          "count": 4
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "NotionInter",
+          "count": 484
+        },
+        {
+          "value": "Lyon Text",
+          "count": 4
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 383
+        },
+        {
+          "value": "8px",
+          "count": 52
+        },
+        {
+          "value": "4px",
+          "count": 21
+        },
+        {
+          "value": "12px",
+          "count": 17
+        },
+        {
+          "value": "9999.01px",
+          "count": 7
+        },
+        {
+          "value": "100%",
+          "count": 3
+        },
+        {
+          "value": "12px 0px 0px",
+          "count": 2
+        },
+        {
+          "value": "12px 12px 0px 0px",
+          "count": 2
+        },
+        {
+          "value": "50%",
+          "count": 1
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(0, 0, 0, 0.01) 0px 0.175px 1.041px 0px, rgba(0, 0, 0, 0.02) 0px 0.8px 2.925px 0px, rgba(0, 0, 0, 0.027) 0px 2.025px 7.847px 0px, rgba(0, 0, 0, 0.04) 0px 4px 18px 0px",
+          "count": 4
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.008) 0px 0.667px 3.502px 0px, rgba(0, 0, 0, 0.016) 0px 2.933px 7.252px 0px, rgba(0, 0, 0, 0.02) 0px 7.2px 14.462px 0px, rgba(0, 0, 0, 0.024) 0px 13.867px 28.348px 0px, rgba(0, 0, 0, 0.03) 0px 23.333px 52.123px 0px, rgba(0, 0, 0, 0.04) 0px 36px 89px 0px",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 1px 0px 0px",
+          "count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "value": "8px",
+          "count": 44
+        },
+        {
+          "value": "0px 8px",
+          "count": 23
+        },
+        {
+          "value": "12px",
+          "count": 23
+        },
+        {
+          "value": "16px",
+          "count": 12
+        },
+        {
+          "value": "0px",
+          "count": 4
+        },
+        {
+          "value": "24px",
+          "count": 4
+        },
+        {
+          "value": "8px normal",
+          "count": 3
+        },
+        {
+          "value": "32px",
+          "count": 2
+        },
+        {
+          "value": "4px",
+          "count": 2
+        },
+        {
+          "value": "16px normal",
+          "count": 1
+        },
+        {
+          "value": "20px",
+          "count": 1
+        },
+        {
+          "value": "36px",
+          "count": 1
+        },
+        {
+          "value": "40px 24px",
+          "count": 1
+        },
+        {
+          "value": "64px",
+          "count": 1
+        },
+        {
+          "value": "80px 24px",
+          "count": 1
+        },
+        {
+          "value": "normal 16px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "6px 6px",
+          "count": 27
+        },
+        {
+          "value": "3px 3px",
+          "count": 23
+        },
+        {
+          "value": "24px 24px",
+          "count": 11
+        },
+        {
+          "value": "5px 5px",
+          "count": 5
+        },
+        {
+          "value": "0px 8px",
+          "count": 4
+        },
+        {
+          "value": "4px 4px",
+          "count": 3
+        },
+        {
+          "value": "24px 0px",
+          "count": 2
+        },
+        {
+          "value": "8px 8px",
+          "count": 2
+        },
+        {
+          "value": "96px 96px",
+          "count": 2
+        },
+        {
+          "value": "9px 0px",
+          "count": 2
+        },
+        {
+          "value": "0px 16px",
+          "count": 1
+        },
+        {
+          "value": "12px 12px",
+          "count": 1
+        },
+        {
+          "value": "14px 14px",
+          "count": 1
+        },
+        {
+          "value": "64px 64px",
+          "count": 1
+        },
+        {
+          "value": "80px 24px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "background-color, color 0.2s cubic-bezier(0.42, 0, 1, 1)",
+          "count": 27
+        },
+        {
+          "value": "text-decoration-color 0.2s cubic-bezier(0.42, 0, 1, 1)",
+          "count": 23
+        },
+        {
+          "value": "outline-color 0.2s cubic-bezier(0.42, 0, 1, 1)",
+          "count": 8
+        },
+        {
+          "value": "background-color 0.15s ease",
+          "count": 5
+        },
+        {
+          "value": "background-color 0.2s cubic-bezier(0.42, 0, 1, 1)",
+          "count": 5
+        },
+        {
+          "value": "box-shadow 0.2s cubic-bezier(0.645, 0.045, 0.355, 1)",
+          "count": 3
+        },
+        {
+          "value": "transform 0.2s cubic-bezier(0.645, 0.045, 0.355, 1)",
+          "count": 3
+        },
+        {
+          "value": "all 0.2s ease",
+          "count": 1
+        },
+        {
+          "value": "all 0s ease",
+          "count": 1
+        },
+        {
+          "value": "background-color, border-color 0.2s cubic-bezier(0.42, 0, 1, 1)",
+          "count": 1
+        },
+        {
+          "value": "box-shadow 0.2s cubic-bezier(0.42, 0, 1, 1)",
+          "count": 1
+        },
+        {
+          "value": "inline-size 0.3s cubic-bezier(0.86, 0, 0.07, 1)",
+          "count": 1
+        },
+        {
+          "value": "opacity 0.3s ease",
+          "count": 1
+        },
+        {
+          "value": "transform 0.3s cubic-bezier(0.86, 0, 0.07, 1)",
+          "count": 1
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1184px",
+          "count": 2
+        },
+        {
+          "value": "1252px",
+          "count": 2
+        },
+        {
+          "value": "891.92px",
+          "count": 2
+        },
+        {
+          "value": "1380px",
+          "count": 1
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "1 tracks",
+          "count": 89
+        },
+        {
+          "value": "2 tracks",
+          "count": 2
+        },
+        {
+          "value": "3 tracks",
+          "count": 2
+        },
+        {
+          "value": "12 tracks",
+          "count": 1
+        },
+        {
+          "value": "21 tracks",
+          "count": 1
+        },
+        {
+          "value": "4 tracks",
+          "count": 1
+        },
+        {
+          "value": "7 tracks",
+          "count": 1
+        },
+        {
+          "value": "9 tracks",
+          "count": 1
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 2,
+      "fixedElements": 0,
+      "prefersColorSchemeRules": 1,
+      "bodyBgIsDark": false,
+      "images": 55,
+      "lazyImages": 20,
+      "searchInputs": 1,
+      "selects": 0,
+      "buttons": 6,
+      "tabs": 0,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "images.ctfassets.net",
+        "count": 46
+      },
+      {
+        "value": "www.googletagmanager.com",
+        "count": 4
+      },
+      {
+        "value": "exp.notion.com",
+        "count": 3
+      },
+      {
+        "value": "transcend-cdn.com",
+        "count": 3
+      },
+      {
+        "value": "accounts.google.com",
+        "count": 2
+      },
+      {
+        "value": "app.notion.com",
+        "count": 2
+      },
+      {
+        "value": "http-inputs-notion.splunkcloud.com",
+        "count": 1
+      },
+      {
+        "value": "o324374.ingest.sentry.io",
+        "count": 1
+      },
+      {
+        "value": "videos.ctfassets.net",
+        "count": 1
+      },
+      {
+        "value": "www.google.com",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "script",
+        "count": 80
+      },
+      {
+        "value": "link",
+        "count": 66
+      },
+      {
+        "value": "css",
+        "count": 25
+      },
+      {
+        "value": "fetch",
+        "count": 12
+      },
+      {
+        "value": "img",
+        "count": 10
+      },
+      {
+        "value": "other",
+        "count": 1
+      },
+      {
+        "value": "video",
+        "count": 1
+      }
+    ],
+    "requestCount": 195,
+    "textLength": 2111,
+    "contrast": {
+      "sampled": 88,
+      "skippedForComplexBackground": 0,
+      "min": 1,
+      "p10": 1,
+      "median": 16.62,
+      "belowRequirement": 12,
+      "worst": [
+        {
+          "selector": "span.HeroMedia-module-scss-module__t-AqdW__visuallyHidden",
+          "text": "Pause",
+          "fontSize": 16,
+          "ratio": 1,
+          "required": 4.5
+        },
+        {
+          "selector": "blockquote.semanticTypography-module-scss-module__Db2fhq__semanticTypography",
+          "text": "Using the most AI-native tools like Noti",
+          "fontSize": 18,
+          "ratio": 1,
+          "required": 4.5
+        },
+        {
+          "selector": "span.accreditation-module-scss-module__rJjRWG__infoName",
+          "text": "Michael Truell",
+          "fontSize": 14,
+          "ratio": 1,
+          "required": 4.5
+        },
+        {
+          "selector": "span.accreditation-module-scss-module__rJjRWG__infoMeta",
+          "text": "Co-founder & CEO",
+          "fontSize": 14,
+          "ratio": 1,
+          "required": 4.5
+        },
+        {
+          "selector": "blockquote.semanticTypography-module-scss-module__Db2fhq__semanticTypography",
+          "text": "Notion’s thoughtful design speeds up col",
+          "fontSize": 18,
+          "ratio": 1,
+          "required": 4.5
+        },
+        {
+          "selector": "span.accreditation-module-scss-module__rJjRWG__infoName",
+          "text": "Renee Solorzano",
+          "fontSize": 14,
+          "ratio": 1,
+          "required": 4.5
+        },
+        {
+          "selector": "span.accreditation-module-scss-module__rJjRWG__infoMeta",
+          "text": "Sr. Director of Product Design",
+          "fontSize": 14,
+          "ratio": 1,
+          "required": 4.5
+        },
+        {
+          "selector": "blockquote.semanticTypography-module-scss-module__Db2fhq__semanticTypography",
+          "text": "Notion Custom Agents help our team go be",
+          "fontSize": 18,
+          "ratio": 1,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 4091,
+    "scrollScreens": 4.8,
+    "primaryList": null,
+    "repeatedComponents": [],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 311
+        },
+        {
+          "value": "14px",
+          "count": 72
+        },
+        {
+          "value": "24px",
+          "count": 45
+        },
+        {
+          "value": "28px",
+          "count": 10
+        },
+        {
+          "value": "12px",
+          "count": 4
+        },
+        {
+          "value": "0px",
+          "count": 3
+        },
+        {
+          "value": "18px",
+          "count": 3
+        },
+        {
+          "value": "20px",
+          "count": 3
+        }
+      ]
+    },
+    "textLength": 1985
+  }
+}

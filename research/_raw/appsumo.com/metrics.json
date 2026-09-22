@@ -1,0 +1,877 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "appsumo.com",
+  "target": "https://appsumo.com/",
+  "fetchedAt": "2026-09-22T16:29:01.604Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 21582,
+      "hydration": {
+        "textBefore": 2786,
+        "textAfter": 2786
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 23146,
+      "hydration": {
+        "textBefore": 2733,
+        "textAfter": 2733
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    }
+  ],
+  "desktop": {
+    "url": "https://appsumo.com/",
+    "title": "AppSumo - Discover products. Stay weird. | AppSumo",
+    "lang": "en",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 1968,
+    "scrollScreens": 2.2,
+    "meta": {
+      "description": "Top software deals for entrepreneurs at incredible prices. Discover the latest productivity, marketing, and content tools for your business with no monthly fees.",
+      "ogImage": "https://appsumo2-cdn.appsumo.com/static/images/meta/appsumo-logo-meta.png",
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width"
+    },
+    "canonical": "https://appsumo.com/",
+    "hreflang": [],
+    "jsonLdTypes": [
+      "Organization"
+    ],
+    "landmarks": {
+      "header": 1,
+      "nav": 1,
+      "main": 0,
+      "section": 0,
+      "article": 0,
+      "aside": 0,
+      "footer": 1,
+      "form": 1,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 2,
+        "text": "Great software for your business. Insanely low prices."
+      },
+      {
+        "level": 2,
+        "text": "Top 9 deals"
+      },
+      {
+        "level": 3,
+        "text": "Friday Code"
+      },
+      {
+        "level": 3,
+        "text": "Flow AI"
+      },
+      {
+        "level": 3,
+        "text": "AIWriteBook"
+      },
+      {
+        "level": 3,
+        "text": "DigiParser"
+      },
+      {
+        "level": 3,
+        "text": "SocialBu"
+      },
+      {
+        "level": 3,
+        "text": "WarmySender"
+      },
+      {
+        "level": 3,
+        "text": "AdaptlyPost"
+      },
+      {
+        "level": 3,
+        "text": "PlugThis AI"
+      },
+      {
+        "level": 3,
+        "text": "Nuwtonic SEO"
+      },
+      {
+        "level": 2,
+        "text": "Just launched"
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug/:slug",
+        "count": 69,
+        "samples": [
+          "https://appsumo.com/collections/new/",
+          "https://appsumo.com/collections/ending-soon/",
+          "https://appsumo.com/a/radar/"
+        ]
+      },
+      {
+        "shape": "/:slug",
+        "count": 5,
+        "samples": [
+          "https://appsumo.com/cart/",
+          "https://appsumo.com/plus/",
+          "https://appsumo.com/terms-of-use/"
+        ]
+      },
+      {
+        "shape": "/browse",
+        "count": 1,
+        "samples": [
+          "https://appsumo.com/browse/"
+        ]
+      },
+      {
+        "shape": "/:slug/login",
+        "count": 1,
+        "samples": [
+          "https://appsumo.com/accounts/login/"
+        ]
+      },
+      {
+        "shape": "/account/:slug",
+        "count": 1,
+        "samples": [
+          "https://appsumo.com/account/profile/"
+        ]
+      },
+      {
+        "shape": "/privacy",
+        "count": 1,
+        "samples": [
+          "https://appsumo.com/privacy/"
+        ]
+      },
+      {
+        "shape": "/about",
+        "count": 1,
+        "samples": [
+          "https://appsumo.com/about"
+        ]
+      },
+      {
+        "shape": "/blog",
+        "count": 1,
+        "samples": [
+          "https://appsumo.com/blog/"
+        ]
+      },
+      {
+        "shape": "/careers",
+        "count": 1,
+        "samples": [
+          "https://appsumo.com/careers"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 83,
+    "repeatedComponents": [
+      {
+        "signature": "div.flex.gap-4.items-start",
+        "count": 9,
+        "parents": 1,
+        "width": 437,
+        "height": {
+          "min": 164,
+          "max": 164,
+          "median": 164
+        },
+        "fullyVisibleFirstScreen": 3,
+        "touchedFirstScreen": 3
+      },
+      {
+        "signature": "div",
+        "count": 6,
+        "parents": 3,
+        "width": 1440,
+        "height": {
+          "min": 184,
+          "max": 1968,
+          "median": 184
+        },
+        "fullyVisibleFirstScreen": 1,
+        "touchedFirstScreen": 2
+      }
+    ],
+    "primaryList": {
+      "signature": "div.flex.gap-4.items-start",
+      "count": 9,
+      "parents": 1,
+      "width": 437,
+      "height": {
+        "min": 164,
+        "max": 164,
+        "median": 164
+      },
+      "fullyVisibleFirstScreen": 3,
+      "touchedFirstScreen": 3
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 185
+        },
+        {
+          "value": "rgb(27, 27, 27)",
+          "count": 163
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 74
+        },
+        {
+          "value": "rgb(2, 20, 20)",
+          "count": 37
+        },
+        {
+          "value": "rgb(37, 99, 235)",
+          "count": 24
+        },
+        {
+          "value": "rgb(67, 77, 89)",
+          "count": 13
+        },
+        {
+          "value": "rgb(234, 234, 240)",
+          "count": 9
+        },
+        {
+          "value": "rgb(155, 38, 12)",
+          "count": 5
+        },
+        {
+          "value": "rgb(42, 48, 56)",
+          "count": 5
+        },
+        {
+          "value": "rgb(14, 110, 244)",
+          "count": 2
+        },
+        {
+          "value": "rgb(90, 104, 121)",
+          "count": 2
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 17
+        },
+        {
+          "value": "rgb(255, 235, 231)",
+          "count": 5
+        },
+        {
+          "value": "rgb(65, 130, 255)",
+          "count": 4
+        },
+        {
+          "value": "rgb(2, 20, 20)",
+          "count": 1
+        },
+        {
+          "value": "rgb(220, 53, 17)",
+          "count": 1
+        },
+        {
+          "value": "rgb(233, 242, 255)",
+          "count": 1
+        },
+        {
+          "value": "rgb(234, 234, 240)",
+          "count": 1
+        },
+        {
+          "value": "rgb(255, 188, 0)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 401
+        },
+        {
+          "value": "14px",
+          "count": 93
+        },
+        {
+          "value": "18px",
+          "count": 22
+        },
+        {
+          "value": "20px",
+          "count": 17
+        },
+        {
+          "value": "88px",
+          "count": 9
+        },
+        {
+          "value": "12px",
+          "count": 5
+        },
+        {
+          "value": "24px",
+          "count": 2
+        },
+        {
+          "value": "30px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "24px",
+          "count": 401
+        },
+        {
+          "value": "20px",
+          "count": 88
+        },
+        {
+          "value": "28px",
+          "count": 39
+        },
+        {
+          "value": "88px",
+          "count": 9
+        },
+        {
+          "value": "16px",
+          "count": 5
+        },
+        {
+          "value": "22.75px",
+          "count": 5
+        },
+        {
+          "value": "32px",
+          "count": 2
+        },
+        {
+          "value": "36px",
+          "count": 1
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 474
+        },
+        {
+          "value": "700",
+          "count": 60
+        },
+        {
+          "value": "900",
+          "count": 9
+        },
+        {
+          "value": "600",
+          "count": 7
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "__Roboto_3e4138",
+          "count": 534
+        },
+        {
+          "value": "__Barlow_f0b089",
+          "count": 16
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 506
+        },
+        {
+          "value": "8px",
+          "count": 21
+        },
+        {
+          "value": "4px",
+          "count": 12
+        },
+        {
+          "value": "16px",
+          "count": 6
+        },
+        {
+          "value": "0px 0px 8px 8px",
+          "count": 2
+        },
+        {
+          "value": "12px",
+          "count": 1
+        },
+        {
+          "value": "32px",
+          "count": 1
+        },
+        {
+          "value": "9999px",
+          "count": 1
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(241, 246, 255) 0px 10px 30px 0px",
+          "count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "value": "16px",
+          "count": 19
+        },
+        {
+          "value": "12px",
+          "count": 18
+        },
+        {
+          "value": "8px",
+          "count": 13
+        },
+        {
+          "value": "4px",
+          "count": 10
+        },
+        {
+          "value": "24px",
+          "count": 4
+        },
+        {
+          "value": "12px 32px",
+          "count": 1
+        },
+        {
+          "value": "20px normal",
+          "count": 1
+        },
+        {
+          "value": "32px",
+          "count": 1
+        },
+        {
+          "value": "8px normal",
+          "count": 1
+        },
+        {
+          "value": "normal 20px",
+          "count": 1
+        },
+        {
+          "value": "normal 32px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "8px 8px",
+          "count": 9
+        },
+        {
+          "value": "16px 16px",
+          "count": 7
+        },
+        {
+          "value": "4px 4px",
+          "count": 3
+        },
+        {
+          "value": "56px 0px",
+          "count": 2
+        },
+        {
+          "value": "6px 6px",
+          "count": 2
+        },
+        {
+          "value": "0px 16px",
+          "count": 1
+        },
+        {
+          "value": "10px 10px",
+          "count": 1
+        },
+        {
+          "value": "12px 12px",
+          "count": 1
+        },
+        {
+          "value": "1px 1px",
+          "count": 1
+        },
+        {
+          "value": "32px 0px",
+          "count": 1
+        },
+        {
+          "value": "40px 40px",
+          "count": 1
+        },
+        {
+          "value": "56px 56px",
+          "count": 1
+        },
+        {
+          "value": "80px 0px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "color, background-color, border-color, text-decoration-color, fill, stroke 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 3
+        },
+        {
+          "value": "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        },
+        {
+          "value": "all 0s ease",
+          "count": 1
+        },
+        {
+          "value": "color, background-color, border-color, text-decoration-color, fill, stroke 0.15s cubic-bezier(0, 0, 0.2, 1)",
+          "count": 1
+        },
+        {
+          "value": "transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        },
+        {
+          "value": "transform 0.4s ease-in-out",
+          "count": 1
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1600px",
+          "count": 5
+        },
+        {
+          "value": "1440px",
+          "count": 1
+        },
+        {
+          "value": "816px",
+          "count": 1
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "1 tracks",
+          "count": 4
+        },
+        {
+          "value": "4 tracks",
+          "count": 2
+        },
+        {
+          "value": "3 tracks",
+          "count": 1
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 0,
+      "fixedElements": 2,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": false,
+      "images": 55,
+      "lazyImages": 23,
+      "searchInputs": 1,
+      "selects": 0,
+      "buttons": 8,
+      "tabs": 0,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "appsumo2next-cdn.appsumo.com",
+        "count": 36
+      },
+      {
+        "value": "appsumo2-cdn.appsumo.com",
+        "count": 23
+      },
+      {
+        "value": "www.google.com",
+        "count": 9
+      },
+      {
+        "value": "metrics.appsumo.com",
+        "count": 6
+      },
+      {
+        "value": "www.googletagmanager.com",
+        "count": 5
+      },
+      {
+        "value": "analytics.google.com",
+        "count": 4
+      },
+      {
+        "value": "cdn-cookieyes.com",
+        "count": 4
+      },
+      {
+        "value": "analytics.twitter.com",
+        "count": 3
+      },
+      {
+        "value": "t.co",
+        "count": 3
+      },
+      {
+        "value": "www.google.com.tw",
+        "count": 2
+      },
+      {
+        "value": "ad.doubleclick.net",
+        "count": 1
+      },
+      {
+        "value": "alb.reddit.com",
+        "count": 1
+      },
+      {
+        "value": "analytics.tiktok.com",
+        "count": 1
+      },
+      {
+        "value": "api.privy.com",
+        "count": 1
+      },
+      {
+        "value": "bat.bing.com",
+        "count": 1
+      },
+      {
+        "value": "directory.cookieyes.com",
+        "count": 1
+      },
+      {
+        "value": "log.cookieyes.com",
+        "count": 1
+      },
+      {
+        "value": "o93004.ingest.sentry.io",
+        "count": 1
+      },
+      {
+        "value": "pixel-config.reddit.com",
+        "count": 1
+      },
+      {
+        "value": "scripts.clarity.ms",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "fetch",
+        "count": 45
+      },
+      {
+        "value": "script",
+        "count": 34
+      },
+      {
+        "value": "img",
+        "count": 33
+      },
+      {
+        "value": "link",
+        "count": 19
+      },
+      {
+        "value": "xmlhttprequest",
+        "count": 2
+      },
+      {
+        "value": "beacon",
+        "count": 1
+      }
+    ],
+    "requestCount": 134,
+    "textLength": 2786,
+    "contrast": {
+      "sampled": 140,
+      "skippedForComplexBackground": 0,
+      "min": 3.58,
+      "p10": 5.17,
+      "median": 17.22,
+      "belowRequirement": 5,
+      "worst": [
+        {
+          "selector": "button.!border",
+          "text": "View deal",
+          "fontSize": 16,
+          "ratio": 3.58,
+          "required": 4.5
+        },
+        {
+          "selector": "button.!border",
+          "text": "View deal",
+          "fontSize": 16,
+          "ratio": 3.58,
+          "required": 4.5
+        },
+        {
+          "selector": "button.!border",
+          "text": "View deal",
+          "fontSize": 16,
+          "ratio": 3.58,
+          "required": 4.5
+        },
+        {
+          "selector": "button.!border",
+          "text": "View deal",
+          "fontSize": 16,
+          "ratio": 3.58,
+          "required": 4.5
+        },
+        {
+          "selector": "span.ml-1.5",
+          "text": "NEW",
+          "fontSize": 12,
+          "ratio": 4.09,
+          "required": 4.5
+        },
+        {
+          "selector": "a.text-bolt",
+          "text": "be the first!",
+          "fontSize": 14,
+          "ratio": 4.61,
+          "required": 4.5
+        },
+        {
+          "selector": "span",
+          "text": "15 reviews",
+          "fontSize": 14,
+          "ratio": 5.17,
+          "required": 4.5
+        },
+        {
+          "selector": "span",
+          "text": "82 reviews",
+          "fontSize": 14,
+          "ratio": 5.17,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 4039,
+    "scrollScreens": 4.8,
+    "primaryList": {
+      "signature": "div",
+      "count": 6,
+      "parents": 3,
+      "width": 390,
+      "height": {
+        "min": 188,
+        "max": 4039,
+        "median": 224
+      },
+      "fullyVisibleFirstScreen": 1,
+      "touchedFirstScreen": 2
+    },
+    "repeatedComponents": [
+      {
+        "signature": "div.flex.gap-4.items-start",
+        "count": 9,
+        "parents": 1,
+        "width": 358,
+        "height": {
+          "min": 164,
+          "max": 188,
+          "median": 164
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 1
+      },
+      {
+        "signature": "div",
+        "count": 6,
+        "parents": 3,
+        "width": 390,
+        "height": {
+          "min": 188,
+          "max": 4039,
+          "median": 224
+        },
+        "fullyVisibleFirstScreen": 1,
+        "touchedFirstScreen": 2
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 313
+        },
+        {
+          "value": "14px",
+          "count": 159
+        },
+        {
+          "value": "18px",
+          "count": 18
+        },
+        {
+          "value": "20px",
+          "count": 13
+        },
+        {
+          "value": "88px",
+          "count": 9
+        },
+        {
+          "value": "12px",
+          "count": 4
+        },
+        {
+          "value": "24px",
+          "count": 3
+        }
+      ]
+    },
+    "textLength": 2733
+  }
+}

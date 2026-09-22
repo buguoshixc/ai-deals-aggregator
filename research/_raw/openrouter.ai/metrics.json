@@ -1,0 +1,910 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "openrouter.ai",
+  "target": "https://openrouter.ai/models",
+  "fetchedAt": "2026-09-22T16:23:05.372Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 12340,
+      "hydration": {
+        "textBefore": 9681,
+        "textAfter": 8067
+      },
+      "notes": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 14241,
+      "hydration": {
+        "textBefore": 6597,
+        "textAfter": 6597
+      },
+      "notes": []
+    }
+  ],
+  "desktop": {
+    "url": "https://openrouter.ai/models",
+    "title": "Compare AI Models: Pricing, Context & Benchmarks | OpenRouter",
+    "lang": "en-US",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 101376,
+    "scrollScreens": 112.6,
+    "meta": {
+      "description": "Compare 500+ LLMs from OpenAI, Anthropic, Google, Meta and more — pricing, context length, and benchmarks side by side, all through one API.",
+      "ogImage": "https://openrouter.ai/dynamic-og?pathname=models&title=Compare+AI+Models%3A+Pricing%2C+Context+%26+Benchmarks&description=Compare+500%2B+LLMs+from+OpenAI%2C+Anthropic%2C+Google%2C+Meta+and+more+%E2%80%94+pricing%2C+context+length%2C+and+benchmarks+side+by+side%2C+all+through+one+API.&v=2",
+      "colorScheme": null,
+      "themeColor": "rgb(255, 255, 255)",
+      "viewport": "width=device-width, initial-scale=1, minimum-scale=1"
+    },
+    "canonical": "https://openrouter.ai/models",
+    "hreflang": [],
+    "jsonLdTypes": [
+      "Organization",
+      "WebSite",
+      "CollectionPage",
+      "BreadcrumbList",
+      "ItemList"
+    ],
+    "landmarks": {
+      "header": 0,
+      "nav": 4,
+      "main": 1,
+      "section": 1,
+      "article": 0,
+      "aside": 0,
+      "footer": 1,
+      "form": 0,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 3,
+        "text": "Input modalities"
+      },
+      {
+        "level": 3,
+        "text": "Discounted"
+      },
+      {
+        "level": 3,
+        "text": "Context length"
+      },
+      {
+        "level": 3,
+        "text": "Prompt pricing"
+      },
+      {
+        "level": 3,
+        "text": "Series"
+      },
+      {
+        "level": 3,
+        "text": "Categories"
+      },
+      {
+        "level": 3,
+        "text": "Supported parameters"
+      },
+      {
+        "level": 3,
+        "text": "Distillable"
+      },
+      {
+        "level": 3,
+        "text": "Zero data retention"
+      },
+      {
+        "level": 3,
+        "text": "In-region routing"
+      },
+      {
+        "level": 3,
+        "text": "Output pricing"
+      },
+      {
+        "level": 3,
+        "text": "Model age"
+      },
+      {
+        "level": 3,
+        "text": "Tool calling"
+      },
+      {
+        "level": 3,
+        "text": "Inactive models"
+      },
+      {
+        "level": 3,
+        "text": "Artificial Analysis"
+      },
+      {
+        "level": 3,
+        "text": "Design Arena"
+      },
+      {
+        "level": 3,
+        "text": "Providers"
+      },
+      {
+        "level": 3,
+        "text": "Model authors"
+      },
+      {
+        "level": 1,
+        "text": "Models"
+      },
+      {
+        "level": 3,
+        "text": "Product"
+      },
+      {
+        "level": 3,
+        "text": "Company"
+      },
+      {
+        "level": 3,
+        "text": "Developer"
+      },
+      {
+        "level": 3,
+        "text": "Connect"
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug",
+        "count": 57,
+        "samples": [
+          "https://openrouter.ai/workspaces",
+          "https://openrouter.ai/benchmarks",
+          "https://openrouter.ai/chat"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug",
+        "count": 45,
+        "samples": [
+          "https://openrouter.ai/assemblyai/universal-3-5-pro",
+          "https://openrouter.ai/xiaomi/mimo-v2.6-pro-ultraspeed",
+          "https://openrouter.ai/xiaomi/mimo-v2.6-flash"
+        ]
+      },
+      {
+        "shape": "/models",
+        "count": 4,
+        "samples": [
+          "https://openrouter.ai/models#skip",
+          "https://openrouter.ai/models"
+        ]
+      },
+      {
+        "shape": "/pricing",
+        "count": 3,
+        "samples": [
+          "https://openrouter.ai/pricing"
+        ]
+      },
+      {
+        "shape": "/apps",
+        "count": 2,
+        "samples": [
+          "https://openrouter.ai/apps"
+        ]
+      },
+      {
+        "shape": "/docs/:slug",
+        "count": 2,
+        "samples": [
+          "https://openrouter.ai/docs/quickstart"
+        ]
+      },
+      {
+        "shape": "/about",
+        "count": 1,
+        "samples": [
+          "https://openrouter.ai/about"
+        ]
+      },
+      {
+        "shape": "/blog",
+        "count": 1,
+        "samples": [
+          "https://openrouter.ai/blog"
+        ]
+      },
+      {
+        "shape": "/careers",
+        "count": 1,
+        "samples": [
+          "https://openrouter.ai/careers"
+        ]
+      },
+      {
+        "shape": "/privacy",
+        "count": 1,
+        "samples": [
+          "https://openrouter.ai/privacy"
+        ]
+      },
+      {
+        "shape": "/terms",
+        "count": 1,
+        "samples": [
+          "https://openrouter.ai/terms"
+        ]
+      },
+      {
+        "shape": "/support",
+        "count": 1,
+        "samples": [
+          "https://openrouter.ai/support"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 123,
+    "repeatedComponents": [
+      {
+        "signature": "div",
+        "count": 21,
+        "parents": 4,
+        "width": 1425,
+        "height": {
+          "min": 36,
+          "max": 101320,
+          "median": 47
+        },
+        "fullyVisibleFirstScreen": 15,
+        "touchedFirstScreen": 17
+      },
+      {
+        "signature": "li.absolute.flex.flex-col.group.justify-center.left-0.px-0.5.py-1.top-0.w-full",
+        "count": 15,
+        "parents": 1,
+        "width": 1113,
+        "height": {
+          "min": 152,
+          "max": 184,
+          "median": 152
+        },
+        "fullyVisibleFirstScreen": 4,
+        "touchedFirstScreen": 5
+      }
+    ],
+    "primaryList": {
+      "signature": "div",
+      "count": 21,
+      "parents": 4,
+      "width": 1425,
+      "height": {
+        "min": 36,
+        "max": 101320,
+        "median": 47
+      },
+      "fullyVisibleFirstScreen": 15,
+      "touchedFirstScreen": 17
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgba(3, 8, 10, 0.69)",
+          "count": 758
+        },
+        {
+          "value": "rgb(3, 8, 10)",
+          "count": 619
+        },
+        {
+          "value": "rgb(252, 252, 254)",
+          "count": 35
+        },
+        {
+          "value": "rgb(0, 117, 68)",
+          "count": 33
+        },
+        {
+          "value": "rgb(0, 136, 254)",
+          "count": 22
+        },
+        {
+          "value": "rgb(107, 142, 35)",
+          "count": 20
+        },
+        {
+          "value": "rgb(64, 224, 208)",
+          "count": 6
+        },
+        {
+          "value": "rgb(118, 36, 244)",
+          "count": 5
+        },
+        {
+          "value": "oklab(0.12716 -0.00976589 -0.00767095 / 0.483)",
+          "count": 1
+        },
+        {
+          "value": "rgb(138, 96, 0)",
+          "count": 1
+        },
+        {
+          "value": "rgb(3, 82, 201)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(252, 252, 254)",
+          "count": 26
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 20
+        },
+        {
+          "value": "oklab(0.631347 -0.055476 -0.192722 / 0.12)",
+          "count": 11
+        },
+        {
+          "value": "rgba(3, 8, 10, 0.03)",
+          "count": 8
+        },
+        {
+          "value": "oklab(0.706977 -0.157823 0.0725984 / 0.12)",
+          "count": 3
+        },
+        {
+          "value": "rgb(3, 8, 10)",
+          "count": 3
+        },
+        {
+          "value": "oklab(0.599482 -0.0813457 0.110695 / 0.12)",
+          "count": 2
+        },
+        {
+          "value": "oklab(0.822324 -0.130191 -0.0115834 / 0.12)",
+          "count": 2
+        },
+        {
+          "value": "rgb(118, 36, 244)",
+          "count": 2
+        },
+        {
+          "value": "oklab(0.512065 -0.0347985 -0.211117 / 0.12)",
+          "count": 1
+        },
+        {
+          "value": "oklab(0.753392 0.0333853 0.153612 / 0.12)",
+          "count": 1
+        },
+        {
+          "value": "rgb(70, 130, 180)",
+          "count": 1
+        },
+        {
+          "value": "rgba(3, 8, 10, 0.08)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "14px",
+          "count": 1369
+        },
+        {
+          "value": "12px",
+          "count": 73
+        },
+        {
+          "value": "16px",
+          "count": 57
+        },
+        {
+          "value": "20px",
+          "count": 2
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "22.75px",
+          "count": 1292
+        },
+        {
+          "value": "18.9px",
+          "count": 77
+        },
+        {
+          "value": "19.5px",
+          "count": 71
+        },
+        {
+          "value": "21.6px",
+          "count": 57
+        },
+        {
+          "value": "12px",
+          "count": 2
+        },
+        {
+          "value": "24px",
+          "count": 2
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "450",
+          "count": 1150
+        },
+        {
+          "value": "500",
+          "count": 319
+        },
+        {
+          "value": "600",
+          "count": 32
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "Plus Jakarta Sans",
+          "count": 1497
+        },
+        {
+          "value": "geistMono",
+          "count": 2
+        },
+        {
+          "value": "gordita",
+          "count": 2
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 1379
+        },
+        {
+          "value": "4px",
+          "count": 55
+        },
+        {
+          "value": "6px",
+          "count": 37
+        },
+        {
+          "value": "8px",
+          "count": 15
+        },
+        {
+          "value": "9999px",
+          "count": 15
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0.12716 -0.00976589 -0.00767095 / 0.0468) 0px 0px 0px 1px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "count": 15
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(252, 252, 254) 0px 0px 0px 1px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "count": 3
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "count": 3
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px",
+          "count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "value": "8px",
+          "count": 139
+        },
+        {
+          "value": "6px",
+          "count": 40
+        },
+        {
+          "value": "4px",
+          "count": 36
+        },
+        {
+          "value": "12px",
+          "count": 19
+        },
+        {
+          "value": "16px",
+          "count": 3
+        },
+        {
+          "value": "0px",
+          "count": 1
+        },
+        {
+          "value": "2px",
+          "count": 1
+        },
+        {
+          "value": "32px",
+          "count": 1
+        },
+        {
+          "value": "normal 4px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "12px 12px",
+          "count": 18
+        },
+        {
+          "value": "4px 4px",
+          "count": 17
+        },
+        {
+          "value": "1px 1px",
+          "count": 16
+        },
+        {
+          "value": "16px 16px",
+          "count": 15
+        },
+        {
+          "value": "8px 8px",
+          "count": 15
+        },
+        {
+          "value": "2px 2px",
+          "count": 3
+        },
+        {
+          "value": "0px 12px",
+          "count": 1
+        },
+        {
+          "value": "0px 16px",
+          "count": 1
+        },
+        {
+          "value": "12px 0px",
+          "count": 1
+        },
+        {
+          "value": "12px 8px",
+          "count": 1
+        },
+        {
+          "value": "56px 0px",
+          "count": 1
+        },
+        {
+          "value": "64px 64px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 174
+        },
+        {
+          "value": "opacity, translate, filter 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 60
+        },
+        {
+          "value": "color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to 0.25s cubic-bezier(0.22, 1, 0.36, 1)",
+          "count": 18
+        },
+        {
+          "value": "transform, translate, scale, rotate 0.25s cubic-bezier(0.22, 1, 0.36, 1)",
+          "count": 18
+        },
+        {
+          "value": "opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 15
+        },
+        {
+          "value": "opacity, color 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 15
+        },
+        {
+          "value": "stroke-dashoffset 0.15s cubic-bezier(0.22, 1, 0.36, 1)",
+          "count": 10
+        },
+        {
+          "value": "color 0.15s ease",
+          "count": 8
+        },
+        {
+          "value": "background-color, border-color 0.15s cubic-bezier(0.22, 1, 0.36, 1)",
+          "count": 5
+        },
+        {
+          "value": "color, background-color, border-color, box-shadow, scale 0.15s cubic-bezier(0.22, 1, 0.36, 1)",
+          "count": 4
+        },
+        {
+          "value": "color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to 0.15s cubic-bezier(0.22, 1, 0.36, 1)",
+          "count": 3
+        },
+        {
+          "value": "color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 3
+        },
+        {
+          "value": "translate, width 0.25s cubic-bezier(0.77, 0, 0.175, 1)",
+          "count": 2
+        },
+        {
+          "value": "all 0.1s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1280px",
+          "count": 1
+        },
+        {
+          "value": "2048px",
+          "count": 1
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "1 tracks",
+          "count": 40
+        },
+        {
+          "value": "5 tracks",
+          "count": 1
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 2,
+      "fixedElements": 8,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": false,
+      "images": 21,
+      "lazyImages": 17,
+      "searchInputs": 3,
+      "selects": 0,
+      "buttons": 127,
+      "tabs": 50,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "clerk.openrouter.ai",
+        "count": 8
+      },
+      {
+        "value": "t0.gstatic.com",
+        "count": 8
+      },
+      {
+        "value": "1-hnytstwt7fhyleqzrmu7afbzrm-mbyn5moj7fwbaoun4pkbvw5jvi-p.client.protect.clerk.com",
+        "count": 5
+      },
+      {
+        "value": "www.googletagmanager.com",
+        "count": 2
+      },
+      {
+        "value": "1-hnytstwt7fhyleqzrmu7afbzrm-mbyn5moj7fwbaoun4pkbvw5jvi-l.client.protect.clerk.com",
+        "count": 1
+      },
+      {
+        "value": "1-hnytstwt7fhyleqzrmu7afbzrm-mbyn5moj7fwbaoun4pkbvw5jvi-p.client.protect.clerk.com:18443",
+        "count": 1
+      },
+      {
+        "value": "1-hnytstwt7fhyleqzrmu7afbzrm-mbyn5moj7fwbaoun4pkbvw5jvi-p.client.protect.clerk.com:2082",
+        "count": 1
+      },
+      {
+        "value": "1-hnytstwt7fhyleqzrmu7afbzrm-mbyn5moj7fwbaoun4pkbvw5jvi-p.client.protect.clerk.com:8443",
+        "count": 1
+      },
+      {
+        "value": "1-hnytstwt7fhyleqzrmu7afbzrm-mbyn5moj7fwbaoun4pkbvw5jvi-p.client.protect.clerk.com:992",
+        "count": 1
+      },
+      {
+        "value": "analytics.google.com",
+        "count": 1
+      },
+      {
+        "value": "cdn.protect.clerk.com",
+        "count": 1
+      },
+      {
+        "value": "static.cloudflareinsights.com",
+        "count": 1
+      },
+      {
+        "value": "stats.g.doubleclick.net",
+        "count": 1
+      },
+      {
+        "value": "www.google.co.jp",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "script",
+        "count": 86
+      },
+      {
+        "value": "fetch",
+        "count": 19
+      },
+      {
+        "value": "img",
+        "count": 15
+      },
+      {
+        "value": "link",
+        "count": 12
+      },
+      {
+        "value": "beacon",
+        "count": 2
+      },
+      {
+        "value": "css",
+        "count": 1
+      },
+      {
+        "value": "other",
+        "count": 1
+      },
+      {
+        "value": "xmlhttprequest",
+        "count": 1
+      }
+    ],
+    "requestCount": 137,
+    "textLength": 8067,
+    "contrast": {
+      "sampled": 254,
+      "skippedForComplexBackground": 0,
+      "min": 5.59,
+      "p10": 7.5,
+      "median": 7.58,
+      "belowRequirement": 0,
+      "worst": [
+        {
+          "selector": "div.inline-flex",
+          "text": "18+",
+          "fontSize": 12,
+          "ratio": 5.59,
+          "required": 4.5
+        },
+        {
+          "selector": "div.inline-flex",
+          "text": "50% off",
+          "fontSize": 12,
+          "ratio": 5.79,
+          "required": 4.5
+        },
+        {
+          "selector": "div.inline-flex",
+          "text": "57% off",
+          "fontSize": 12,
+          "ratio": 5.79,
+          "required": 4.5
+        },
+        {
+          "selector": "div.inline-flex",
+          "text": "60% off",
+          "fontSize": 12,
+          "ratio": 5.79,
+          "required": 4.5
+        },
+        {
+          "selector": "a.sr-only",
+          "text": "Skip to content",
+          "fontSize": 14,
+          "ratio": 6.16,
+          "required": 4.5
+        },
+        {
+          "selector": "button.inline-flex",
+          "text": "Sign Up",
+          "fontSize": 14,
+          "ratio": 6.16,
+          "required": 4.5
+        },
+        {
+          "selector": "span.hidden",
+          "text": "List",
+          "fontSize": 14,
+          "ratio": 6.16,
+          "required": 4.5
+        },
+        {
+          "selector": "button.shrink-0",
+          "text": "All",
+          "fontSize": 14,
+          "ratio": 6.16,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 102168,
+    "scrollScreens": 121.1,
+    "primaryList": {
+      "signature": "li.absolute.flex.flex-col.group.justify-center.left-0.px-0.5.py-1.top-0.w-full",
+      "count": 14,
+      "parents": 1,
+      "width": 358,
+      "height": {
+        "min": 162,
+        "max": 194,
+        "median": 162
+      },
+      "fullyVisibleFirstScreen": 3,
+      "touchedFirstScreen": 4
+    },
+    "repeatedComponents": [
+      {
+        "signature": "li.absolute.flex.flex-col.group.justify-center.left-0.px-0.5.py-1.top-0.w-full",
+        "count": 14,
+        "parents": 1,
+        "width": 358,
+        "height": {
+          "min": 162,
+          "max": 194,
+          "median": 162
+        },
+        "fullyVisibleFirstScreen": 3,
+        "touchedFirstScreen": 4
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "14px",
+          "count": 763
+        },
+        {
+          "value": "16px",
+          "count": 29
+        },
+        {
+          "value": "12px",
+          "count": 7
+        },
+        {
+          "value": "20px",
+          "count": 1
+        }
+      ]
+    },
+    "textLength": 6597
+  }
+}

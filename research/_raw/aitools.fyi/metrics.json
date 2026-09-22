@@ -1,0 +1,664 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "aitools.fyi",
+  "target": "https://aitools.fyi/",
+  "fetchedAt": "2026-09-22T16:25:39.206Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 15577,
+      "hydration": {
+        "textBefore": 3578,
+        "textAfter": 3578
+      },
+      "notes": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 19748,
+      "hydration": {
+        "textBefore": 3525,
+        "textAfter": 3525
+      },
+      "notes": []
+    }
+  ],
+  "desktop": {
+    "url": "https://aitools.fyi/",
+    "title": "aitools.fyi - Find Best AI Tools That Make Your Life Easy!",
+    "lang": "en",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 2987,
+    "scrollScreens": 3.3,
+    "meta": {
+      "description": "Find the best AI tools to help you build your next awesome project faster and easier. We have curated the best AI tools for you to use in your next project.",
+      "ogImage": "https://aitools.fyi/aitools.fyi-og.png",
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width, initial-scale=1"
+    },
+    "canonical": "https://aitools.fyi/",
+    "hreflang": [],
+    "jsonLdTypes": [],
+    "landmarks": {
+      "header": 0,
+      "nav": 1,
+      "main": 1,
+      "section": 0,
+      "article": 0,
+      "aside": 0,
+      "footer": 1,
+      "form": 1,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "Find Best AI Tools That Make Your Life Easy!"
+      },
+      {
+        "level": 2,
+        "text": "Invoice Mama"
+      },
+      {
+        "level": 2,
+        "text": "Sorank"
+      },
+      {
+        "level": 2,
+        "text": "GPT Image 2.5"
+      },
+      {
+        "level": 2,
+        "text": "Verla"
+      },
+      {
+        "level": 2,
+        "text": "Labrynth"
+      },
+      {
+        "level": 2,
+        "text": "NexusAi"
+      },
+      {
+        "level": 2,
+        "text": "Anyvids"
+      },
+      {
+        "level": 2,
+        "text": "Dubly.AI"
+      },
+      {
+        "level": 2,
+        "text": "Getsolved"
+      },
+      {
+        "level": 2,
+        "text": "Getsolved AI Detector"
+      },
+      {
+        "level": 2,
+        "text": "Landscape Design AI"
+      },
+      {
+        "level": 2,
+        "text": "Libra"
+      },
+      {
+        "level": 2,
+        "text": "ReelMuse.ai"
+      },
+      {
+        "level": 2,
+        "text": "more.graphics"
+      },
+      {
+        "level": 2,
+        "text": "Ontosight.ai"
+      },
+      {
+        "level": 2,
+        "text": "Hylark"
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug",
+        "count": 54,
+        "samples": [
+          "https://aitools.fyi/advertise",
+          "https://aitools.fyi/sorank",
+          "https://aitools.fyi/gpt-image-25"
+        ]
+      },
+      {
+        "shape": "/category/:slug",
+        "count": 22,
+        "samples": [
+          "https://aitools.fyi/category/ai-productivity",
+          "https://aitools.fyi/category/ai-image-generation",
+          "https://aitools.fyi/category/ai-web-apps"
+        ]
+      },
+      {
+        "shape": "/deals",
+        "count": 3,
+        "samples": [
+          "https://aitools.fyi/deals"
+        ]
+      },
+      {
+        "shape": "/blog",
+        "count": 3,
+        "samples": [
+          "https://aitools.fyi/blog"
+        ]
+      },
+      {
+        "shape": "/category",
+        "count": 1,
+        "samples": [
+          "https://aitools.fyi/category"
+        ]
+      },
+      {
+        "shape": "/tag",
+        "count": 1,
+        "samples": [
+          "https://aitools.fyi/tag"
+        ]
+      },
+      {
+        "shape": "/submit",
+        "count": 1,
+        "samples": [
+          "https://aitools.fyi/submit"
+        ]
+      },
+      {
+        "shape": "/contact",
+        "count": 1,
+        "samples": [
+          "https://aitools.fyi/contact"
+        ]
+      },
+      {
+        "shape": "/terms",
+        "count": 1,
+        "samples": [
+          "https://aitools.fyi/terms"
+        ]
+      },
+      {
+        "shape": "/privacy",
+        "count": 1,
+        "samples": [
+          "https://aitools.fyi/privacy"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 91,
+    "repeatedComponents": [
+      {
+        "signature": "div.bg-indigo-50/30.bg-white.border.flex.hover:shadow-indigo-300.hover:shadow-lg.rounded.shadow-md.text-start",
+        "count": 15,
+        "parents": 1,
+        "width": 304,
+        "height": {
+          "min": 363,
+          "max": 379,
+          "median": 363
+        },
+        "fullyVisibleFirstScreen": 2,
+        "touchedFirstScreen": 5
+      }
+    ],
+    "primaryList": {
+      "signature": "div.bg-indigo-50/30.bg-white.border.flex.hover:shadow-indigo-300.hover:shadow-lg.rounded.shadow-md.text-start",
+      "count": 15,
+      "parents": 1,
+      "width": 304,
+      "height": {
+        "min": 363,
+        "max": 379,
+        "median": 363
+      },
+      "fullyVisibleFirstScreen": 2,
+      "touchedFirstScreen": 5
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(14, 19, 52)",
+          "count": 300
+        },
+        {
+          "value": "rgb(100, 77, 255)",
+          "count": 135
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 53
+        },
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 3
+        },
+        {
+          "value": "rgb(2, 8, 23)",
+          "count": 2
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 18
+        },
+        {
+          "value": "rgb(209, 213, 219)",
+          "count": 15
+        },
+        {
+          "value": "rgb(100, 77, 255)",
+          "count": 12
+        },
+        {
+          "value": "rgb(243, 246, 251)",
+          "count": 2
+        },
+        {
+          "value": "rgb(252, 211, 77)",
+          "count": 2
+        },
+        {
+          "value": "rgb(14, 19, 52)",
+          "count": 1
+        },
+        {
+          "value": "rgb(220, 38, 38)",
+          "count": 1
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.8)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 425
+        },
+        {
+          "value": "14px",
+          "count": 68
+        },
+        {
+          "value": "20px",
+          "count": 16
+        },
+        {
+          "value": "30px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "24px",
+          "count": 424
+        },
+        {
+          "value": "20px",
+          "count": 68
+        },
+        {
+          "value": "28px",
+          "count": 16
+        },
+        {
+          "value": "36px",
+          "count": 1
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "450",
+          "count": 409
+        },
+        {
+          "value": "500",
+          "count": 62
+        },
+        {
+          "value": "600",
+          "count": 23
+        },
+        {
+          "value": "700",
+          "count": 16
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "Satoshi-Variable",
+          "count": 510
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 407
+        },
+        {
+          "value": "4px",
+          "count": 79
+        },
+        {
+          "value": "4px 4px 0px 0px",
+          "count": 16
+        },
+        {
+          "value": "9999px",
+          "count": 3
+        },
+        {
+          "value": "0px 0px 4px 4px",
+          "count": 1
+        },
+        {
+          "value": "0px 4px 4px 0px",
+          "count": 1
+        },
+        {
+          "value": "4px 0px 0px",
+          "count": 1
+        },
+        {
+          "value": "4px 0px 0px 4px",
+          "count": 1
+        },
+        {
+          "value": "6px",
+          "count": 1
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px",
+          "count": 33
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+          "count": 15
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "value": "12px",
+          "count": 18
+        },
+        {
+          "value": "8px",
+          "count": 18
+        },
+        {
+          "value": "20px",
+          "count": 2
+        },
+        {
+          "value": "16px",
+          "count": 1
+        },
+        {
+          "value": "24px",
+          "count": 1
+        },
+        {
+          "value": "40px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "4px 4px",
+          "count": 59
+        },
+        {
+          "value": "8px 8px",
+          "count": 7
+        },
+        {
+          "value": "12px 0px",
+          "count": 1
+        },
+        {
+          "value": "16px 16px",
+          "count": 1
+        },
+        {
+          "value": "24px 24px",
+          "count": 1
+        },
+        {
+          "value": "2px 2px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "color, background-color, border-color, text-decoration-color, fill, stroke 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 40
+        },
+        {
+          "value": "all 0s ease",
+          "count": 1
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1280px",
+          "count": 3
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "3 tracks",
+          "count": 2
+        },
+        {
+          "value": "5 tracks",
+          "count": 1
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 1,
+      "fixedElements": 1,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": false,
+      "images": 17,
+      "lazyImages": 12,
+      "searchInputs": 1,
+      "selects": 1,
+      "buttons": 25,
+      "tabs": 0,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "uhcheduqokzrcwuzqzql.supabase.co",
+        "count": 32
+      },
+      {
+        "value": "assets.aitools.fyi",
+        "count": 15
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "fetch",
+        "count": 43
+      },
+      {
+        "value": "script",
+        "count": 24
+      },
+      {
+        "value": "link",
+        "count": 15
+      },
+      {
+        "value": "img",
+        "count": 11
+      },
+      {
+        "value": "css",
+        "count": 1
+      },
+      {
+        "value": "iframe",
+        "count": 1
+      },
+      {
+        "value": "other",
+        "count": 1
+      }
+    ],
+    "requestCount": 96,
+    "textLength": 3578,
+    "contrast": {
+      "sampled": 105,
+      "skippedForComplexBackground": 0,
+      "min": 4.79,
+      "p10": 5.19,
+      "median": 5.19,
+      "belowRequirement": 0,
+      "worst": [
+        {
+          "selector": "span.px-2",
+          "text": "EN",
+          "fontSize": 14,
+          "ratio": 4.79,
+          "required": 4.5
+        },
+        {
+          "selector": "button.px-4",
+          "text": "Login",
+          "fontSize": 16,
+          "ratio": 4.79,
+          "required": 4.5
+        },
+        {
+          "selector": "h1.text-xl",
+          "text": "Find Best AI Tools That Make Your Life E",
+          "fontSize": 30,
+          "ratio": 4.79,
+          "required": 3
+        },
+        {
+          "selector": "a.py-2",
+          "text": "Deals",
+          "fontSize": 16,
+          "ratio": 4.83,
+          "required": 4.5
+        },
+        {
+          "selector": "a.px-4",
+          "text": "Submit",
+          "fontSize": 16,
+          "ratio": 5.19,
+          "required": 4.5
+        },
+        {
+          "selector": "button.px-2",
+          "text": "Search",
+          "fontSize": 16,
+          "ratio": 5.19,
+          "required": 4.5
+        },
+        {
+          "selector": "span.relative",
+          "text": "Productivity",
+          "fontSize": 14,
+          "ratio": 5.19,
+          "required": 4.5
+        },
+        {
+          "selector": "span",
+          "text": "Image Generation",
+          "fontSize": 14,
+          "ratio": 5.19,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 7499,
+    "scrollScreens": 8.9,
+    "primaryList": {
+      "signature": "div.bg-indigo-50/30.bg-white.border.flex.hover:shadow-indigo-300.hover:shadow-lg.rounded.shadow-md.text-start",
+      "count": 15,
+      "parents": 1,
+      "width": 374,
+      "height": {
+        "min": 382,
+        "max": 403,
+        "median": 383
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 1
+    },
+    "repeatedComponents": [
+      {
+        "signature": "div.bg-indigo-50/30.bg-white.border.flex.hover:shadow-indigo-300.hover:shadow-lg.rounded.shadow-md.text-start",
+        "count": 15,
+        "parents": 1,
+        "width": 374,
+        "height": {
+          "min": 382,
+          "max": 403,
+          "median": 383
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 1
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 352
+        },
+        {
+          "value": "14px",
+          "count": 69
+        },
+        {
+          "value": "20px",
+          "count": 17
+        }
+      ]
+    },
+    "textLength": 3525
+  }
+}

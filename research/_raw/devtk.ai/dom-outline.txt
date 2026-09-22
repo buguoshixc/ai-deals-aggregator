@@ -1,0 +1,89 @@
+# https://devtk.ai/
+# 抓取时间 2026-09-22T16:29:24.295Z
+
+## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
+<header.sticky.top-0.z-50> 1440x57
+  <nav.hidden.md:flex.items-center> 378x20
+<main.flex-1> 1440x2383
+  <section.border-b.bg-gradient-to-b.from-primary/5> 1440x552
+    <h1.text-4xl.font-bold.tracking-tight> 768x96 — Plan AI model spend and API throughput.
+  <section.py-10> 1248x484
+    <h2.text-2xl.font-bold.tracking-tight> 672x32 — Lead with workflows, not a wall of tools.
+    <h3.text-lg.font-semibold> 355x28 — Model Economics
+    <h3.text-lg.font-semibold> 355x28 — Throughput & Limits
+    <h3.text-lg.font-semibold> 355x28 — Structured Output
+  <section.border-t.py-10> 1248x661
+    <h2.text-2xl.font-bold.tracking-tight> 1248x32 — Core tools
+    <h3.mb-2.font-semibold.text-card-foreground> 250x24 — AI Model Pricing Calculator
+    <h3.mb-2.font-semibold.text-card-foreground> 250x48 — AI API Throughput Planner & Cost Estimator
+    <h3.mb-2.font-semibold.text-card-foreground> 250x24 — AI Token Counter
+    <h3.mb-2.font-semibold.text-card-foreground> 250x48 — Free LLM VRAM Calculator — GPU Memory Check
+    <h3.mb-2.font-semibold.text-card-foreground> 250x24 — JSON Schema Builder
+    <h3.mb-2.font-semibold.text-card-foreground> 250x48 — Prompt Diff & Version Compare
+  <section.border-t.py-10> 1248x315
+    <h2.text-2xl.font-bold.tracking-tight> 807x32 — High-intent guides
+    <h3.font-semibold.leading-6> 258x24 — AI API Pricing Comparison 2026
+    <h3.font-semibold.leading-6> 258x24 — OpenAI API Pricing Guide
+    <h3.font-semibold.leading-6> 258x24 — Claude API Pricing Guide
+    <h3.font-semibold.leading-6> 258x24 — AI Coding Agent Cost
+  <section.border-t.py-10> 1248x339
+    <h2.text-2xl.font-bold.tracking-tight> 1248x32 — Resources that stay, without owning the homepage
+    <h3.font-semibold> 258x24 — All tools
+    <h3.font-semibold> 258x24 — Models directory
+    <h3.font-semibold> 258x24 — AI credits & deals
+    <h3.font-semibold> 258x24 — Guides
+<footer.border-t.bg-background> 1440x374
+  <h3.mb-3.text-sm.font-semibold> 328x20 — Core Workflows
+  <ul.space-y-2.text-sm.text-muted-foreground> 328x160
+  <h3.mb-3.text-sm.font-semibold> 328x20 — Resources
+  <ul.space-y-2.text-sm.text-muted-foreground> 328x160
+  <h3.mb-3.text-sm.font-semibold> 328x20 — Site
+  <ul.space-y-2.text-sm.text-muted-foreground> 328x160
+  <nav.flex.items-center.gap-4> 48x20
+
+## class 命名频次（前 45）
+   66  transition-colors
+   62  text-sm
+   44  flex
+   40  items-center
+   36  text-muted-foreground
+   33  hover:bg-accent
+   32  border
+   23  px-3
+   22  py-2
+   21  font-semibold
+   20  text-primary
+   19  hover:text-foreground
+   17  justify-between
+   15  font-medium
+   15  hover:text-accent-foreground
+   15  mt-2
+   15  leading-6
+   15  rounded-lg
+   14  rounded-2xl
+   13  block
+   13  rounded-sm
+   13  text-foreground/80
+   12  shadow-sm
+   11  p-5
+   10  font-bold
+   10  justify-center
+    9  flex-col
+    9  bg-card
+    9  p-6
+    8  gap-4
+    7  px-4
+    7  text-foreground/60
+    7  hover:text-foreground/80
+    7  relative
+    7  group
+    7  border-t
+    7  mb-4
+    7  rounded-full
+    7  bg-primary/10
+    7  text-xs
+    7  mt-4
+    7  text-2xl
+    6  grid
+    6  rounded-xl
+    6  transition-all

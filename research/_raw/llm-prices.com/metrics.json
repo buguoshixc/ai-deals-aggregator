@@ -1,0 +1,431 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "llm-prices.com",
+  "target": "https://llm-prices.com/",
+  "fetchedAt": "2026-09-22T16:23:58.277Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 7903,
+      "hydration": {
+        "textBefore": 511,
+        "textAfter": 5754
+      },
+      "notes": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 5752,
+      "hydration": {
+        "textBefore": 511,
+        "textAfter": 5754
+      },
+      "notes": []
+    }
+  ],
+  "desktop": {
+    "url": "https://www.llm-prices.com/",
+    "title": "LLM pricing calculator",
+    "lang": "en",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 7506,
+    "scrollScreens": 8.3,
+    "meta": {
+      "description": null,
+      "ogImage": null,
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width, initial-scale=1.0"
+    },
+    "canonical": null,
+    "hreflang": [],
+    "jsonLdTypes": [],
+    "landmarks": {
+      "header": 0,
+      "nav": 0,
+      "main": 0,
+      "section": 0,
+      "article": 0,
+      "aside": 0,
+      "footer": 0,
+      "form": 0,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "LLM pricing calculator"
+      },
+      {
+        "level": 2,
+        "text": "Model prices (per million tokens)"
+      }
+    ],
+    "detailUrlPatterns": [],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 0,
+    "repeatedComponents": [
+      {
+        "signature": "tr",
+        "count": 158,
+        "parents": 2,
+        "width": 600,
+        "height": {
+          "min": 45,
+          "max": 61,
+          "median": 45
+        },
+        "fullyVisibleFirstScreen": 16,
+        "touchedFirstScreen": 17
+      }
+    ],
+    "primaryList": {
+      "signature": "tr",
+      "count": 158,
+      "parents": 2,
+      "width": 600,
+      "height": {
+        "min": 45,
+        "max": 61,
+        "median": 45
+      },
+      "fullyVisibleFirstScreen": 16,
+      "touchedFirstScreen": 17
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 973
+        },
+        {
+          "value": "rgb(51, 51, 51)",
+          "count": 159
+        },
+        {
+          "value": "rgb(102, 102, 102)",
+          "count": 119
+        },
+        {
+          "value": "rgb(119, 119, 119)",
+          "count": 2
+        },
+        {
+          "value": "rgb(0, 0, 238)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(225, 240, 255)",
+          "count": 157
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 10
+        },
+        {
+          "value": "rgb(242, 242, 242)",
+          "count": 4
+        },
+        {
+          "value": "rgb(249, 249, 249)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "14px",
+          "count": 958
+        },
+        {
+          "value": "13.3333px",
+          "count": 157
+        },
+        {
+          "value": "11.9px",
+          "count": 110
+        },
+        {
+          "value": "16px",
+          "count": 24
+        },
+        {
+          "value": "13.6px",
+          "count": 2
+        },
+        {
+          "value": "24px",
+          "count": 2
+        },
+        {
+          "value": "12px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 1244
+        },
+        {
+          "value": "700",
+          "count": 10
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "Arial",
+          "count": 1254
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 1086
+        },
+        {
+          "value": "4px",
+          "count": 165
+        },
+        {
+          "value": "8px",
+          "count": 3
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(0, 0, 0, 0.1) 0px 2px 10px 0px",
+          "count": 3
+        }
+      ],
+      "gaps": [
+        {
+          "value": "20px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "8px 8px",
+          "count": 635
+        },
+        {
+          "value": "5px 5px",
+          "count": 157
+        },
+        {
+          "value": "10px 10px",
+          "count": 5
+        },
+        {
+          "value": "20px 20px",
+          "count": 3
+        }
+      ],
+      "transitions": [
+        {
+          "value": "background-color, border-color 0.2s, 0.2s ease, ease",
+          "count": 157
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1000px",
+          "count": 1
+        }
+      ],
+      "gridTemplates": []
+    },
+    "behavior": {
+      "stickyElements": 0,
+      "fixedElements": 0,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": false,
+      "images": 0,
+      "lazyImages": 0,
+      "searchInputs": 1,
+      "selects": 0,
+      "buttons": 161,
+      "tabs": 0,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "plausible.io",
+        "count": 1
+      },
+      {
+        "value": "static.cloudflareinsights.com",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "script",
+        "count": 2
+      },
+      {
+        "value": "fetch",
+        "count": 1
+      },
+      {
+        "value": "other",
+        "count": 1
+      },
+      {
+        "value": "xmlhttprequest",
+        "count": 1
+      }
+    ],
+    "requestCount": 5,
+    "textLength": 5754,
+    "contrast": {
+      "sampled": 400,
+      "skippedForComplexBackground": 0,
+      "min": 5.13,
+      "p10": 5.74,
+      "median": 21,
+      "belowRequirement": 0,
+      "worst": [
+        {
+          "selector": "span",
+          "text": "(Cached)",
+          "fontSize": 11.9,
+          "ratio": 5.13,
+          "required": 4.5
+        },
+        {
+          "selector": "div",
+          "text": "Note: Different models use different tok",
+          "fontSize": 12,
+          "ratio": 5.45,
+          "required": 4.5
+        },
+        {
+          "selector": "label",
+          "text": "Number of input tokens (aka prompt token",
+          "fontSize": 16,
+          "ratio": 5.74,
+          "required": 4.5
+        },
+        {
+          "selector": "span",
+          "text": "(aka prompt tokens)",
+          "fontSize": 13.6,
+          "ratio": 5.74,
+          "required": 4.5
+        },
+        {
+          "selector": "label",
+          "text": "Number of cached input tokens",
+          "fontSize": 16,
+          "ratio": 5.74,
+          "required": 4.5
+        },
+        {
+          "selector": "label",
+          "text": "Number of output tokens (aka completion ",
+          "fontSize": 16,
+          "ratio": 5.74,
+          "required": 4.5
+        },
+        {
+          "selector": "span",
+          "text": "(aka completion tokens)",
+          "fontSize": 13.6,
+          "ratio": 5.74,
+          "required": 4.5
+        },
+        {
+          "selector": "label",
+          "text": "Cost per million input tokens ($):",
+          "fontSize": 16,
+          "ratio": 5.74,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 415,
+      "height": 899
+    },
+    "pageHeight": 11357,
+    "scrollScreens": 12.6,
+    "primaryList": {
+      "signature": "tr",
+      "count": 158,
+      "parents": 2,
+      "width": 375,
+      "height": {
+        "min": 45,
+        "max": 109,
+        "median": 61
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 1
+    },
+    "repeatedComponents": [
+      {
+        "signature": "tr",
+        "count": 158,
+        "parents": 2,
+        "width": 375,
+        "height": {
+          "min": 45,
+          "max": 109,
+          "median": 61
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 1
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "14px",
+          "count": 958
+        },
+        {
+          "value": "13.3333px",
+          "count": 157
+        },
+        {
+          "value": "11.9px",
+          "count": 110
+        },
+        {
+          "value": "16px",
+          "count": 24
+        },
+        {
+          "value": "13.6px",
+          "count": 2
+        },
+        {
+          "value": "24px",
+          "count": 2
+        },
+        {
+          "value": "12px",
+          "count": 1
+        }
+      ]
+    },
+    "textLength": 5754
+  }
+}

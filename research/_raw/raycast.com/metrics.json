@@ -1,0 +1,1162 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "raycast.com",
+  "target": "https://raycast.com/",
+  "fetchedAt": "2026-09-22T16:25:52.332Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 19445,
+      "hydration": {
+        "textBefore": 8381,
+        "textAfter": 8397
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 16703,
+      "hydration": {
+        "textBefore": 7677,
+        "textAfter": 7677
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    }
+  ],
+  "desktop": {
+    "url": "https://www.raycast.com/",
+    "title": "Raycast - Your shortcut to everything",
+    "lang": "en",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 14616,
+    "scrollScreens": 16.2,
+    "meta": {
+      "description": "A collection of powerful productivity tools all within an extendable launcher.",
+      "ogImage": "https://www.raycast.com/opengraph-image-pwu6ef.png?opengraph-image.1f-98etzkaz5s.png",
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width, initial-scale=1"
+    },
+    "canonical": "https://www.raycast.com",
+    "hreflang": [],
+    "jsonLdTypes": [],
+    "landmarks": {
+      "header": 0,
+      "nav": 0,
+      "main": 0,
+      "section": 0,
+      "article": 0,
+      "aside": 0,
+      "footer": 0,
+      "form": 1,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "Your shortcut to everything."
+      },
+      {
+        "level": 2,
+        "text": "It’s not about saving time."
+      },
+      {
+        "level": 2,
+        "text": "There’s an extension for that."
+      },
+      {
+        "level": 3,
+        "text": "Plus thousands more..."
+      },
+      {
+        "level": 2,
+        "text": "Meet your new virtual assistant"
+      },
+      {
+        "level": 3,
+        "text": "AI Chat"
+      },
+      {
+        "level": 3,
+        "text": "Quick AI"
+      },
+      {
+        "level": 3,
+        "text": "AI Extensions"
+      },
+      {
+        "level": 2,
+        "text": "Built for professionals like you."
+      },
+      {
+        "level": 2,
+        "text": "Don't repeat yourself."
+      },
+      {
+        "level": 2,
+        "text": "Stay in the loop."
+      },
+      {
+        "level": 3,
+        "text": "Build the perfect tools."
+      },
+      {
+        "level": 2,
+        "text": "Take the short way."
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug/:slug",
+        "count": 38,
+        "samples": [
+          "https://www.raycast.com/core-features/ai",
+          "https://www.raycast.com/users/sign_in",
+          "https://www.raycast.com/download/windows"
+        ]
+      },
+      {
+        "shape": "/:slug",
+        "count": 35,
+        "samples": [
+          "https://www.raycast.com/store",
+          "https://www.raycast.com/pro",
+          "https://www.raycast.com/ios"
+        ]
+      },
+      {
+        "shape": "/:slug/category/:slug",
+        "count": 10,
+        "samples": [
+          "https://www.raycast.com/store/category/design-tools",
+          "https://www.raycast.com/store/category/developer-tools",
+          "https://www.raycast.com/store/category/pomodoro-timer"
+        ]
+      },
+      {
+        "shape": "/pricing",
+        "count": 2,
+        "samples": [
+          "https://www.raycast.com/pricing"
+        ]
+      },
+      {
+        "shape": "/privacy",
+        "count": 2,
+        "samples": [
+          "https://www.raycast.com/privacy"
+        ]
+      },
+      {
+        "shape": "/blog",
+        "count": 1,
+        "samples": [
+          "https://www.raycast.com/blog"
+        ]
+      },
+      {
+        "shape": "/blog/:slug",
+        "count": 1,
+        "samples": [
+          "https://www.raycast.com/blog/a-technical-deep-dive-into-the-new-raycast"
+        ]
+      },
+      {
+        "shape": "/faq",
+        "count": 1,
+        "samples": [
+          "https://www.raycast.com/faq"
+        ]
+      },
+      {
+        "shape": "/careers",
+        "count": 1,
+        "samples": [
+          "https://www.raycast.com/careers"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 4,
+    "internalLinkCount": 96,
+    "repeatedComponents": [
+      {
+        "signature": "div.YoutubeCarousel-module__Jy8ojW__embla__slide",
+        "count": 18,
+        "parents": 1,
+        "width": 230,
+        "height": {
+          "min": 185,
+          "max": 185,
+          "median": 185
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "div.ExtensionHighlight-module__3Yq4tG__extensionCardWrapper",
+        "count": 17,
+        "parents": 1,
+        "width": 360,
+        "height": {
+          "min": 536,
+          "max": 536,
+          "median": 536
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "span",
+        "count": 13,
+        "parents": 2,
+        "width": 206,
+        "height": {
+          "min": 29,
+          "max": 67,
+          "median": 54
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "button.styles-module__V1XIQW__item",
+        "count": 7,
+        "parents": 1,
+        "width": 255,
+        "height": {
+          "min": 32,
+          "max": 32,
+          "median": 32
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "a.APISection-module__DBt7hq__col.APISection-module__DBt7hq__colLink",
+        "count": 6,
+        "parents": 1,
+        "width": 355,
+        "height": {
+          "min": 64,
+          "max": 355,
+          "median": 300
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "div.Footer-module__nhiC3q__linkGroup",
+        "count": 6,
+        "parents": 1,
+        "width": 147,
+        "height": {
+          "min": 597,
+          "max": 597,
+          "median": 597
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "primaryList": {
+      "signature": "div.YoutubeCarousel-module__Jy8ojW__embla__slide",
+      "count": 18,
+      "parents": 1,
+      "width": 230,
+      "height": {
+        "min": 185,
+        "max": 185,
+        "median": 185
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 1042
+        },
+        {
+          "value": "rgb(106, 107, 108)",
+          "count": 172
+        },
+        {
+          "value": "rgb(156, 156, 157)",
+          "count": 120
+        },
+        {
+          "value": "rgb(230, 230, 230)",
+          "count": 51
+        },
+        {
+          "value": "rgb(67, 67, 69)",
+          "count": 49
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.4)",
+          "count": 24
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.6)",
+          "count": 21
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.8)",
+          "count": 17
+        },
+        {
+          "value": "rgb(47, 48, 49)",
+          "count": 13
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.3)",
+          "count": 11
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.9)",
+          "count": 5
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.7)",
+          "count": 3
+        },
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 1
+        },
+        {
+          "value": "rgb(140, 214, 255)",
+          "count": 1
+        },
+        {
+          "value": "rgb(255, 99, 99)",
+          "count": 1
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.5)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgba(255, 255, 255, 0.05)",
+          "count": 21
+        },
+        {
+          "value": "rgb(67, 67, 69)",
+          "count": 18
+        },
+        {
+          "value": "rgb(8, 9, 12)",
+          "count": 6
+        },
+        {
+          "value": "rgb(230, 230, 230)",
+          "count": 5
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.02)",
+          "count": 5
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.1)",
+          "count": 5
+        },
+        {
+          "value": "rgb(27, 28, 30)",
+          "count": 3
+        },
+        {
+          "value": "rgb(69, 35, 36)",
+          "count": 2
+        },
+        {
+          "value": "rgb(17, 18, 20)",
+          "count": 1
+        },
+        {
+          "value": "rgb(19, 13, 14)",
+          "count": 1
+        },
+        {
+          "value": "rgb(38, 38, 38)",
+          "count": 1
+        },
+        {
+          "value": "rgb(51, 51, 51)",
+          "count": 1
+        },
+        {
+          "value": "rgb(7, 8, 10)",
+          "count": 1
+        },
+        {
+          "value": "rgba(215, 42, 42, 0.02)",
+          "count": 1
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.7)",
+          "count": 1
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.9)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 744
+        },
+        {
+          "value": "14px",
+          "count": 241
+        },
+        {
+          "value": "23.75px",
+          "count": 225
+        },
+        {
+          "value": "24px",
+          "count": 139
+        },
+        {
+          "value": "32px",
+          "count": 137
+        },
+        {
+          "value": "18px",
+          "count": 39
+        },
+        {
+          "value": "13px",
+          "count": 37
+        },
+        {
+          "value": "20px",
+          "count": 16
+        },
+        {
+          "value": "12px",
+          "count": 14
+        },
+        {
+          "value": "10px",
+          "count": 8
+        },
+        {
+          "value": "11.9px",
+          "count": 6
+        },
+        {
+          "value": "15px",
+          "count": 3
+        },
+        {
+          "value": "22px",
+          "count": 2
+        },
+        {
+          "value": "56px",
+          "count": 1
+        },
+        {
+          "value": "64px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "18.4px",
+          "count": 581
+        },
+        {
+          "value": "27.3125px",
+          "count": 225
+        },
+        {
+          "value": "36.8px",
+          "count": 136
+        },
+        {
+          "value": "27.6px",
+          "count": 107
+        },
+        {
+          "value": "22.4px",
+          "count": 66
+        },
+        {
+          "value": "16px",
+          "count": 51
+        },
+        {
+          "value": "38.4px",
+          "count": 32
+        },
+        {
+          "value": "16.1px",
+          "count": 27
+        },
+        {
+          "value": "25.6px",
+          "count": 26
+        },
+        {
+          "value": "19.6px",
+          "count": 18
+        },
+        {
+          "value": "20.7px",
+          "count": 17
+        },
+        {
+          "value": "32px",
+          "count": 9
+        },
+        {
+          "value": "19.2px",
+          "count": 8
+        },
+        {
+          "value": "14px",
+          "count": 7
+        },
+        {
+          "value": "11.9px",
+          "count": 6
+        },
+        {
+          "value": "20px",
+          "count": 6
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "500",
+          "count": 834
+        },
+        {
+          "value": "400",
+          "count": 630
+        },
+        {
+          "value": "600",
+          "count": 139
+        },
+        {
+          "value": "300",
+          "count": 6
+        },
+        {
+          "value": "700",
+          "count": 4
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "Inter",
+          "count": 982
+        },
+        {
+          "value": "SF Pro Text",
+          "count": 522
+        },
+        {
+          "value": "Segoe UI Variable",
+          "count": 79
+        },
+        {
+          "value": "GeistMono",
+          "count": 29
+        },
+        {
+          "value": "JetBrains Mono",
+          "count": 1
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 1234
+        },
+        {
+          "value": "11px",
+          "count": 159
+        },
+        {
+          "value": "12px",
+          "count": 40
+        },
+        {
+          "value": "20px",
+          "count": 37
+        },
+        {
+          "value": "16px",
+          "count": 27
+        },
+        {
+          "value": "8px",
+          "count": 24
+        },
+        {
+          "value": "99999px",
+          "count": 24
+        },
+        {
+          "value": "4px",
+          "count": 18
+        },
+        {
+          "value": "6px",
+          "count": 16
+        },
+        {
+          "value": "9px",
+          "count": 12
+        },
+        {
+          "value": "25%",
+          "count": 5
+        },
+        {
+          "value": "30px",
+          "count": 3
+        },
+        {
+          "value": "10px",
+          "count": 2
+        },
+        {
+          "value": "4.76px",
+          "count": 2
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(0, 0, 0, 0.4) 0px 1.5px 0.5px 2.5px, rgb(0, 0, 0) 0px 0px 0.5px 1px, rgba(0, 0, 0, 0.25) 0px 2px 1px 1px inset, rgba(255, 255, 255, 0.2) 0px 1px 1px 1px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px inset",
+          "count": 159
+        },
+        {
+          "value": "rgb(27, 28, 30) 0px 0px 0px 1px, rgb(7, 8, 10) 0px 0px 0px 1px inset",
+          "count": 54
+        },
+        {
+          "value": "rgba(215, 201, 175, 0.05) 0px 0px 20px 5px, rgba(215, 201, 175, 0.05) 0px 0px 16px -7px",
+          "count": 18
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.28) 0px 1.189px 2.377px 0px",
+          "count": 17
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.05) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.25) 0px 0px 0px 1px, rgba(0, 0, 0, 0.2) 0px -1px 0px 0px inset",
+          "count": 17
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.1) 0px 1px 0px 0px inset",
+          "count": 6
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.5) 0px 0px 0px 2px, rgba(255, 255, 255, 0.19) 0px 0px 14px 0px, rgba(0, 0, 0, 0.2) 0px -1px 0.4px 0px inset, rgb(255, 255, 255) 0px 1px 0.4px 0px inset",
+          "count": 5
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.1) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.4) 0px 30px 50px 0px, rgba(3, 15, 129, 0.09) 0px 4px 24px 0px, rgba(255, 255, 255, 0.06) 0px 0px 0px 1px inset",
+          "count": 3
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.15) 0px 1px 1px 0px inset",
+          "count": 3
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.03) 0px 7px 3px 0px, rgba(0, 0, 0, 0.25) 0px 4px 4px 0px",
+          "count": 2
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.2) 0px 12px 24px 6px",
+          "count": 2
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.1) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.4) 0px 30px 50px 0px, rgba(51, 3, 129, 0.09) 0px 4px 24px 0px, rgba(255, 255, 255, 0.06) 0px 0px 0px 1px inset",
+          "count": 2
+        }
+      ],
+      "gaps": [
+        {
+          "value": "8px",
+          "count": 127
+        },
+        {
+          "value": "12px",
+          "count": 35
+        },
+        {
+          "value": "24px",
+          "count": 25
+        },
+        {
+          "value": "4px 24px",
+          "count": 24
+        },
+        {
+          "value": "16px",
+          "count": 18
+        },
+        {
+          "value": "32px",
+          "count": 9
+        },
+        {
+          "value": "40px",
+          "count": 8
+        },
+        {
+          "value": "20px",
+          "count": 6
+        },
+        {
+          "value": "3px",
+          "count": 6
+        },
+        {
+          "value": "4px",
+          "count": 4
+        },
+        {
+          "value": "25px",
+          "count": 2
+        },
+        {
+          "value": "48px",
+          "count": 2
+        },
+        {
+          "value": "56px",
+          "count": 2
+        },
+        {
+          "value": "80px",
+          "count": 2
+        },
+        {
+          "value": "0px",
+          "count": 1
+        },
+        {
+          "value": "10px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "14.5px 14.5px",
+          "count": 159
+        },
+        {
+          "value": "24px 24px",
+          "count": 40
+        },
+        {
+          "value": "8px 8px",
+          "count": 40
+        },
+        {
+          "value": "24px 0px",
+          "count": 17
+        },
+        {
+          "value": "12px 12px",
+          "count": 16
+        },
+        {
+          "value": "224px 224px",
+          "count": 6
+        },
+        {
+          "value": "50px 50px",
+          "count": 6
+        },
+        {
+          "value": "20px 20px",
+          "count": 3
+        },
+        {
+          "value": "16px 16px",
+          "count": 2
+        },
+        {
+          "value": "2px 2px",
+          "count": 2
+        },
+        {
+          "value": "40px 0px",
+          "count": 2
+        },
+        {
+          "value": "96px 0px",
+          "count": 2
+        },
+        {
+          "value": "0px 16px",
+          "count": 1
+        },
+        {
+          "value": "0px 224px",
+          "count": 1
+        },
+        {
+          "value": "0px 50px",
+          "count": 1
+        },
+        {
+          "value": "0px 64px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "opacity, box-shadow, transform, color, --key-bg-start-color, --key-bg-end-color 0.4s, 0.2s, 0.2s, 0.2s, 0.4s, 0.4s cubic-bezier(0.23, 1, 0.32, 1), cubic-bezier(0.23, 1, 0.32, 1), cubic-bezier(0.23, 1, 0.32, 1), cubic-bezier(0.23, 1, 0.32, 1), cubic-bezier(0.23, 1, 0.32, 1), cubic-bezier(0.23, 1, 0.32, 1)",
+          "count": 159
+        },
+        {
+          "value": "color 0.3s ease",
+          "count": 88
+        },
+        {
+          "value": "all 0.3s ease",
+          "count": 42
+        },
+        {
+          "value": "fill 0.4s cubic-bezier(0.23, 1, 0.32, 1)",
+          "count": 26
+        },
+        {
+          "value": "box-shadow 0.2s ease",
+          "count": 24
+        },
+        {
+          "value": "transform 0.3s ease",
+          "count": 21
+        },
+        {
+          "value": "all 0s ease",
+          "count": 19
+        },
+        {
+          "value": "filter 0.3s ease",
+          "count": 18
+        },
+        {
+          "value": "opacity 0.2s ease",
+          "count": 18
+        },
+        {
+          "value": "all 0.2s ease-in-out",
+          "count": 10
+        },
+        {
+          "value": "background-color 0.15s ease",
+          "count": 6
+        },
+        {
+          "value": "background-image, background-color, box-shadow, transform 0.2s, 0.2s, 0.2s, 0.1s ease, ease, ease-in-out, ease-in-out",
+          "count": 5
+        },
+        {
+          "value": "box-shadow 0.2s ease-in-out",
+          "count": 2
+        },
+        {
+          "value": "color 0.2s ease",
+          "count": 2
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1204px",
+          "count": 6
+        },
+        {
+          "value": "1440px",
+          "count": 5
+        },
+        {
+          "value": "1064px",
+          "count": 2
+        },
+        {
+          "value": "1252px",
+          "count": 2
+        },
+        {
+          "value": "1060px",
+          "count": 1
+        },
+        {
+          "value": "1200px",
+          "count": 1
+        },
+        {
+          "value": "2000px",
+          "count": 1
+        },
+        {
+          "value": "818px",
+          "count": 1
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "1 tracks",
+          "count": 209
+        },
+        {
+          "value": "2 tracks",
+          "count": 33
+        },
+        {
+          "value": "3 tracks",
+          "count": 2
+        },
+        {
+          "value": "5 tracks",
+          "count": 1
+        },
+        {
+          "value": "6 tracks",
+          "count": 1
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 0,
+      "fixedElements": 1,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": true,
+      "images": 99,
+      "lazyImages": 46,
+      "searchInputs": 0,
+      "selects": 0,
+      "buttons": 26,
+      "tabs": 7,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "i.ytimg.com",
+        "count": 8
+      },
+      {
+        "value": "o379433.ingest.us.sentry.io",
+        "count": 3
+      },
+      {
+        "value": "r.wdfl.co",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "link",
+        "count": 64
+      },
+      {
+        "value": "script",
+        "count": 23
+      },
+      {
+        "value": "fetch",
+        "count": 4
+      },
+      {
+        "value": "css",
+        "count": 1
+      }
+    ],
+    "requestCount": 92,
+    "textLength": 8397,
+    "contrast": {
+      "sampled": 168,
+      "skippedForComplexBackground": 218,
+      "min": 2.03,
+      "p10": 2.03,
+      "median": 5.32,
+      "belowRequirement": 84,
+      "worst": [
+        {
+          "selector": "span.index-module__NFhuXW__username",
+          "text": "@MKBHD",
+          "fontSize": 16,
+          "ratio": 2.03,
+          "required": 4.5
+        },
+        {
+          "selector": "span.index-module__NFhuXW__username",
+          "text": "@koenbok",
+          "fontSize": 16,
+          "ratio": 2.03,
+          "required": 4.5
+        },
+        {
+          "selector": "span.index-module__NFhuXW__username",
+          "text": "@avstorm",
+          "fontSize": 16,
+          "ratio": 2.03,
+          "required": 4.5
+        },
+        {
+          "selector": "span.index-module__NFhuXW__username",
+          "text": "@adamwathan",
+          "fontSize": 16,
+          "ratio": 2.03,
+          "required": 4.5
+        },
+        {
+          "selector": "span.index-module__NFhuXW__username",
+          "text": "@wesbos",
+          "fontSize": 16,
+          "ratio": 2.03,
+          "required": 4.5
+        },
+        {
+          "selector": "span.index-module__NFhuXW__username",
+          "text": "@ridd_design",
+          "fontSize": 16,
+          "ratio": 2.03,
+          "required": 4.5
+        },
+        {
+          "selector": "span.index-module__NFhuXW__username",
+          "text": "@mxstbr",
+          "fontSize": 16,
+          "ratio": 2.03,
+          "required": 4.5
+        },
+        {
+          "selector": "span.index-module__NFhuXW__username",
+          "text": "@holman",
+          "fontSize": 16,
+          "ratio": 2.03,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 14052,
+    "scrollScreens": 16.6,
+    "primaryList": {
+      "signature": "a.NavLink-module__qZd0pW__navLink",
+      "count": 9,
+      "parents": 1,
+      "width": 324,
+      "height": {
+        "min": 41,
+        "max": 41,
+        "median": 41
+      },
+      "fullyVisibleFirstScreen": 9,
+      "touchedFirstScreen": 9
+    },
+    "repeatedComponents": [
+      {
+        "signature": "div.YoutubeCarousel-module__Jy8ojW__embla__slide",
+        "count": 18,
+        "parents": 1,
+        "width": 230,
+        "height": {
+          "min": 185,
+          "max": 185,
+          "median": 185
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "div.ExtensionHighlight-module__3Yq4tG__extensionCardWrapper",
+        "count": 17,
+        "parents": 1,
+        "width": 300,
+        "height": {
+          "min": 446,
+          "max": 446,
+          "median": 446
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "span",
+        "count": 13,
+        "parents": 2,
+        "width": 206,
+        "height": {
+          "min": 29,
+          "max": 72,
+          "median": 29
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 573
+        },
+        {
+          "value": "14px",
+          "count": 347
+        },
+        {
+          "value": "23.75px",
+          "count": 224
+        },
+        {
+          "value": "32px",
+          "count": 138
+        },
+        {
+          "value": "24px",
+          "count": 135
+        },
+        {
+          "value": "13px",
+          "count": 40
+        },
+        {
+          "value": "18px",
+          "count": 38
+        },
+        {
+          "value": "11px",
+          "count": 14
+        }
+      ]
+    },
+    "textLength": 7677
+  }
+}

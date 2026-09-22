@@ -1,0 +1,1037 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "toolify.ai",
+  "target": "https://www.toolify.ai/",
+  "fetchedAt": "2026-09-22T16:27:15.150Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 44389,
+      "hydration": {
+        "textBefore": 22767,
+        "textAfter": 22767
+      },
+      "notes": [
+        "goto 失败: page.goto: Timeout 30000ms exceeded.",
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 41216,
+      "hydration": {
+        "textBefore": 22569,
+        "textAfter": 22569
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    }
+  ],
+  "desktop": {
+    "url": "https://www.toolify.ai/",
+    "title": "Best AI Tools Directory & AI Tools List - Toolify",
+    "lang": "en",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 7918,
+    "scrollScreens": 8.8,
+    "meta": {
+      "description": "Toolify is the largest AI tools directory & GPT Store Apps. Over 30800+ AI Websites and AI Tools. AI Tools list and GPTs Store Apps list are auto updated by ChatGPT.",
+      "ogImage": "https://cdn.toolify.ai/default.webp",
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    },
+    "canonical": "https://www.toolify.ai/",
+    "hreflang": [
+      {
+        "hreflang": "x-default",
+        "href": "https://www.toolify.ai/"
+      },
+      {
+        "hreflang": "de",
+        "href": "https://www.toolify.ai/de/"
+      },
+      {
+        "hreflang": "es",
+        "href": "https://www.toolify.ai/es/"
+      },
+      {
+        "hreflang": "fr",
+        "href": "https://www.toolify.ai/fr/"
+      },
+      {
+        "hreflang": "ja",
+        "href": "https://www.toolify.ai/ja/"
+      },
+      {
+        "hreflang": "ko",
+        "href": "https://www.toolify.ai/ko/"
+      },
+      {
+        "hreflang": "pt",
+        "href": "https://www.toolify.ai/pt/"
+      },
+      {
+        "hreflang": "zh-TW",
+        "href": "https://www.toolify.ai/tw/"
+      },
+      {
+        "hreflang": "vi",
+        "href": "https://www.toolify.ai/vi/"
+      },
+      {
+        "hreflang": "zh-CN",
+        "href": "https://www.toolify.ai/zh/"
+      }
+    ],
+    "jsonLdTypes": [],
+    "landmarks": {
+      "header": 1,
+      "nav": 0,
+      "main": 0,
+      "section": 3,
+      "article": 0,
+      "aside": 0,
+      "footer": 1,
+      "form": 0,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "Discover The Best AI Websites & Tools"
+      },
+      {
+        "level": 3,
+        "text": "Master Midjourney Prompts"
+      },
+      {
+        "level": 3,
+        "text": "--sref 4215135847"
+      },
+      {
+        "level": 3,
+        "text": "--sref 2776475560"
+      },
+      {
+        "level": 3,
+        "text": "Bartolome Esteban Murillo's painting depicting …"
+      },
+      {
+        "level": 3,
+        "text": "Knolling"
+      },
+      {
+        "level": 3,
+        "text": "--sref 4098393957"
+      },
+      {
+        "level": 3,
+        "text": "Ghada Amer's painting depicting …"
+      },
+      {
+        "level": 2,
+        "text": "Free AI Tools by Category"
+      },
+      {
+        "level": 2,
+        "text": "Featured*"
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/category/:slug",
+        "count": 137,
+        "samples": [
+          "https://www.toolify.ai/category/ai-api",
+          "https://www.toolify.ai/category/ai-developer-tools",
+          "https://www.toolify.ai/category/ai-models"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug",
+        "count": 94,
+        "samples": [
+          "https://www.toolify.ai/prompts/gpt-image-2",
+          "https://www.toolify.ai/prompts/seedream-5-pro",
+          "https://www.toolify.ai/prompts/seedance-2-5"
+        ]
+      },
+      {
+        "shape": "/:slug",
+        "count": 81,
+        "samples": [
+          "https://www.toolify.ai/free-ai-tools",
+          "https://www.toolify.ai/new",
+          "https://www.toolify.ai/most-saved"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug/:slug",
+        "count": 42,
+        "samples": [
+          "https://www.toolify.ai/midjourney-library/sref/cosmic-pointillist-dreamscapes",
+          "https://www.toolify.ai/midjourney-library/style/dreamy",
+          "https://www.toolify.ai/midjourney-library/style/surreal"
+        ]
+      },
+      {
+        "shape": "/tool/:slug",
+        "count": 27,
+        "samples": [
+          "https://www.toolify.ai/tool/today-ai-1",
+          "https://www.toolify.ai/tool/kennel-by-waldo",
+          "https://www.toolify.ai/tool/playwriter"
+        ]
+      },
+      {
+        "shape": "/apps",
+        "count": 2,
+        "samples": [
+          "https://www.toolify.ai/apps"
+        ]
+      },
+      {
+        "shape": "/category",
+        "count": 2,
+        "samples": [
+          "https://www.toolify.ai/category"
+        ]
+      },
+      {
+        "shape": "/submit",
+        "count": 2,
+        "samples": [
+          "https://www.toolify.ai/submit"
+        ]
+      },
+      {
+        "shape": "/jobs",
+        "count": 1,
+        "samples": [
+          "https://www.toolify.ai/jobs"
+        ]
+      },
+      {
+        "shape": "/login",
+        "count": 1,
+        "samples": [
+          "https://www.toolify.ai/login"
+        ]
+      },
+      {
+        "shape": "/blog",
+        "count": 1,
+        "samples": [
+          "https://www.toolify.ai/blog"
+        ]
+      },
+      {
+        "shape": "/news",
+        "count": 1,
+        "samples": [
+          "https://www.toolify.ai/news"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 396,
+    "repeatedComponents": [
+      {
+        "signature": "li",
+        "count": 40,
+        "parents": 3,
+        "width": 237,
+        "height": {
+          "min": 40,
+          "max": 60,
+          "median": 40
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "div.w-full",
+        "count": 22,
+        "parents": 3,
+        "width": 256,
+        "height": {
+          "min": 144,
+          "max": 144,
+          "median": 144
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "div.cursor-pointer.flex.flex-col.group-for-link.overflow-hidden.relative.rounded-lg.show-blur-on-hover.tool-dom.tool-item",
+        "count": 20,
+        "parents": 1,
+        "width": 619,
+        "height": {
+          "min": 112,
+          "max": 120,
+          "median": 120
+        },
+        "fullyVisibleFirstScreen": 1,
+        "touchedFirstScreen": 2
+      },
+      {
+        "signature": "a.flex.flex-shrink-0.group.items-center.rounded",
+        "count": 11,
+        "parents": 3,
+        "width": 123,
+        "height": {
+          "min": 24,
+          "max": 24,
+          "median": 24
+        },
+        "fullyVisibleFirstScreen": 5,
+        "touchedFirstScreen": 5
+      },
+      {
+        "signature": "div.cursor-pointer.flex.flex-col.group-for-link.history-recommended.overflow-hidden.relative.rounded-lg.show-blur-on-hover.tool-dom.tool-item",
+        "count": 10,
+        "parents": 1,
+        "width": 619,
+        "height": {
+          "min": 112,
+          "max": 120,
+          "median": 112
+        },
+        "fullyVisibleFirstScreen": 1,
+        "touchedFirstScreen": 1
+      },
+      {
+        "signature": "a.cursor-pointer.flex.gap-1.group.items-start.mt-3.transition-colors",
+        "count": 10,
+        "parents": 1,
+        "width": 358,
+        "height": {
+          "min": 44,
+          "max": 44,
+          "median": 44
+        },
+        "fullyVisibleFirstScreen": 6,
+        "touchedFirstScreen": 7
+      }
+    ],
+    "primaryList": {
+      "signature": "a.cursor-pointer.flex.gap-1.group.items-start.mt-3.transition-colors",
+      "count": 10,
+      "parents": 1,
+      "width": 358,
+      "height": {
+        "min": 44,
+        "max": 44,
+        "median": 44
+      },
+      "fullyVisibleFirstScreen": 6,
+      "touchedFirstScreen": 7
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 2578
+        },
+        {
+          "value": "rgb(64, 64, 64)",
+          "count": 164
+        },
+        {
+          "value": "rgb(10, 10, 10)",
+          "count": 157
+        },
+        {
+          "value": "rgb(157, 157, 157)",
+          "count": 149
+        },
+        {
+          "value": "rgb(107, 114, 128)",
+          "count": 120
+        },
+        {
+          "value": "rgb(156, 163, 175)",
+          "count": 43
+        },
+        {
+          "value": "rgb(113, 80, 230)",
+          "count": 39
+        },
+        {
+          "value": "rgb(25, 25, 25)",
+          "count": 37
+        },
+        {
+          "value": "rgb(120, 130, 140)",
+          "count": 30
+        },
+        {
+          "value": "rgb(75, 85, 99)",
+          "count": 12
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 7
+        },
+        {
+          "value": "rgb(250, 250, 250)",
+          "count": 6
+        },
+        {
+          "value": "rgb(115, 115, 115)",
+          "count": 5
+        },
+        {
+          "value": "rgb(31, 41, 55)",
+          "count": 2
+        },
+        {
+          "value": "rgb(154, 154, 159)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(245, 245, 245)",
+          "count": 127
+        },
+        {
+          "value": "rgb(243, 244, 246)",
+          "count": 52
+        },
+        {
+          "value": "rgb(250, 250, 250)",
+          "count": 25
+        },
+        {
+          "value": "rgb(235, 234, 253)",
+          "count": 14
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 9
+        },
+        {
+          "value": "rgb(113, 80, 230)",
+          "count": 5
+        },
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 2
+        },
+        {
+          "value": "rgb(244, 244, 254)",
+          "count": 2
+        },
+        {
+          "value": "rgb(142, 100, 238)",
+          "count": 1
+        },
+        {
+          "value": "rgb(242, 242, 242)",
+          "count": 1
+        },
+        {
+          "value": "rgb(255, 149, 64)",
+          "count": 1
+        },
+        {
+          "value": "rgb(57, 175, 253)",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.05)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 2682
+        },
+        {
+          "value": "14px",
+          "count": 333
+        },
+        {
+          "value": "12px",
+          "count": 203
+        },
+        {
+          "value": "0px",
+          "count": 116
+        },
+        {
+          "value": "18px",
+          "count": 7
+        },
+        {
+          "value": "20px",
+          "count": 3
+        },
+        {
+          "value": "22px",
+          "count": 2
+        },
+        {
+          "value": "28px",
+          "count": 2
+        },
+        {
+          "value": "60px",
+          "count": 2
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "24px",
+          "count": 2656
+        },
+        {
+          "value": "20px",
+          "count": 323
+        },
+        {
+          "value": "16px",
+          "count": 203
+        },
+        {
+          "value": "0px",
+          "count": 116
+        },
+        {
+          "value": "32px",
+          "count": 26
+        },
+        {
+          "value": "28px",
+          "count": 12
+        },
+        {
+          "value": "22px",
+          "count": 10
+        },
+        {
+          "value": "42px",
+          "count": 2
+        },
+        {
+          "value": "70px",
+          "count": 2
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 2950
+        },
+        {
+          "value": "500",
+          "count": 196
+        },
+        {
+          "value": "600",
+          "count": 172
+        },
+        {
+          "value": "700",
+          "count": 31
+        },
+        {
+          "value": "800",
+          "count": 1
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "Helvetica",
+          "count": 3082
+        },
+        {
+          "value": "helvetica neue",
+          "count": 267
+        },
+        {
+          "value": "Metropolis",
+          "count": 1
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 2562
+        },
+        {
+          "value": "4px",
+          "count": 159
+        },
+        {
+          "value": "12px",
+          "count": 152
+        },
+        {
+          "value": "10px",
+          "count": 125
+        },
+        {
+          "value": "50%",
+          "count": 124
+        },
+        {
+          "value": "8px",
+          "count": 110
+        },
+        {
+          "value": "9999px",
+          "count": 71
+        },
+        {
+          "value": "14px",
+          "count": 30
+        },
+        {
+          "value": "4px 4px 0px",
+          "count": 12
+        },
+        {
+          "value": "384px",
+          "count": 1
+        },
+        {
+          "value": "400px",
+          "count": 1
+        },
+        {
+          "value": "670px",
+          "count": 1
+        },
+        {
+          "value": "6px",
+          "count": 1
+        },
+        {
+          "value": "8px 0px 0px 8px",
+          "count": 1
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(17, 7, 53, 0.05) 0px 51px 78px 0px, rgba(17, 7, 53, 0.04) 0px 21.307px 35.494px 0px, rgba(17, 7, 53, 0.03) 0px 11.392px 18.942px 0px",
+          "count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "value": "8px",
+          "count": 441
+        },
+        {
+          "value": "12px",
+          "count": 62
+        },
+        {
+          "value": "4px",
+          "count": 36
+        },
+        {
+          "value": "12px 4px",
+          "count": 6
+        },
+        {
+          "value": "16px",
+          "count": 5
+        },
+        {
+          "value": "normal 4px",
+          "count": 5
+        },
+        {
+          "value": "10px",
+          "count": 2
+        },
+        {
+          "value": "normal 28px",
+          "count": 2
+        },
+        {
+          "value": "18px 20px",
+          "count": 1
+        },
+        {
+          "value": "2px",
+          "count": 1
+        },
+        {
+          "value": "32px",
+          "count": 1
+        },
+        {
+          "value": "normal 16px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "16px 16px",
+          "count": 162
+        },
+        {
+          "value": "4px 4px",
+          "count": 74
+        },
+        {
+          "value": "16px 8px",
+          "count": 22
+        },
+        {
+          "value": "8px 8px",
+          "count": 9
+        },
+        {
+          "value": "0px 8px",
+          "count": 7
+        },
+        {
+          "value": "48px 48px",
+          "count": 2
+        },
+        {
+          "value": "0px 12px",
+          "count": 1
+        },
+        {
+          "value": "0px 4px",
+          "count": 1
+        },
+        {
+          "value": "10px 10px",
+          "count": 1
+        },
+        {
+          "value": "16px 12px",
+          "count": 1
+        },
+        {
+          "value": "16px 32px",
+          "count": 1
+        },
+        {
+          "value": "32px 16px",
+          "count": 1
+        },
+        {
+          "value": "32px 44px",
+          "count": 1
+        },
+        {
+          "value": "3px 3px",
+          "count": 1
+        },
+        {
+          "value": "64px 24px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "background-color, border-color, color, fill, stroke 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 40
+        },
+        {
+          "value": "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 23
+        },
+        {
+          "value": "transform, box-shadow 0.2s, 0.2s ease, ease",
+          "count": 6
+        },
+        {
+          "value": "all 0s ease",
+          "count": 3
+        },
+        {
+          "value": "all 0.2s ease",
+          "count": 1
+        },
+        {
+          "value": "opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        },
+        {
+          "value": "opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        },
+        {
+          "value": "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1482px",
+          "count": 3
+        },
+        {
+          "value": "1504px",
+          "count": 2
+        },
+        {
+          "value": "1376px",
+          "count": 1
+        },
+        {
+          "value": "672px",
+          "count": 1
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "5 tracks",
+          "count": 5
+        },
+        {
+          "value": "1 tracks",
+          "count": 1
+        },
+        {
+          "value": "2 tracks",
+          "count": 1
+        },
+        {
+          "value": "3 tracks",
+          "count": 1
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 3,
+      "fixedElements": 0,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": true,
+      "images": 316,
+      "lazyImages": 1,
+      "searchInputs": 1,
+      "selects": 0,
+      "buttons": 5,
+      "tabs": 0,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "cdn-images.toolify.ai",
+        "count": 145
+      },
+      {
+        "value": "cdn.toolify.ai",
+        "count": 1
+      },
+      {
+        "value": "plausible.louhu.com",
+        "count": 1
+      },
+      {
+        "value": "static.cloudflareinsights.com",
+        "count": 1
+      },
+      {
+        "value": "www.googletagmanager.com",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "img",
+        "count": 149
+      },
+      {
+        "value": "script",
+        "count": 19
+      },
+      {
+        "value": "link",
+        "count": 12
+      }
+    ],
+    "requestCount": 180,
+    "textLength": 22767,
+    "contrast": {
+      "sampled": 400,
+      "skippedForComplexBackground": 3,
+      "min": 2.43,
+      "p10": 2.6,
+      "median": 4.44,
+      "belowRequirement": 202,
+      "worst": [
+        {
+          "selector": "div.w-[22px]",
+          "text": "10",
+          "fontSize": 14,
+          "ratio": 2.43,
+          "required": 4.5
+        },
+        {
+          "selector": "div.left-0",
+          "text": "6669 tools",
+          "fontSize": 14,
+          "ratio": 2.43,
+          "required": 4.5
+        },
+        {
+          "selector": "div.left-0",
+          "text": "24855 tools",
+          "fontSize": 14,
+          "ratio": 2.43,
+          "required": 4.5
+        },
+        {
+          "selector": "div.left-0",
+          "text": "6305 tools",
+          "fontSize": 14,
+          "ratio": 2.43,
+          "required": 4.5
+        },
+        {
+          "selector": "div.left-0",
+          "text": "10042 tools",
+          "fontSize": 14,
+          "ratio": 2.43,
+          "required": 4.5
+        },
+        {
+          "selector": "div.left-0",
+          "text": "12357 tools",
+          "fontSize": 14,
+          "ratio": 2.43,
+          "required": 4.5
+        },
+        {
+          "selector": "div.left-0",
+          "text": "8358 tools",
+          "fontSize": 14,
+          "ratio": 2.43,
+          "required": 4.5
+        },
+        {
+          "selector": "div.left-0",
+          "text": "17873 tools",
+          "fontSize": 14,
+          "ratio": 2.43,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 24228,
+    "scrollScreens": 28.7,
+    "primaryList": {
+      "signature": "a.flex.flex-shrink-0.group.items-center.rounded",
+      "count": 9,
+      "parents": 3,
+      "width": 123,
+      "height": {
+        "min": 24,
+        "max": 24,
+        "median": 24
+      },
+      "fullyVisibleFirstScreen": 3,
+      "touchedFirstScreen": 3
+    },
+    "repeatedComponents": [
+      {
+        "signature": "div.w-full",
+        "count": 22,
+        "parents": 1,
+        "width": 181,
+        "height": {
+          "min": 128,
+          "max": 128,
+          "median": 128
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "div.cursor-pointer.flex.flex-col.group-for-link.overflow-hidden.relative.rounded-lg.show-blur-on-hover.tool-dom.tool-item",
+        "count": 20,
+        "parents": 1,
+        "width": 336,
+        "height": {
+          "min": 120,
+          "max": 120,
+          "median": 120
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 1
+      },
+      {
+        "signature": "li",
+        "count": 17,
+        "parents": 3,
+        "width": 358,
+        "height": {
+          "min": 40,
+          "max": 40,
+          "median": 40
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 1377
+        },
+        {
+          "value": "12px",
+          "count": 200
+        },
+        {
+          "value": "14px",
+          "count": 124
+        },
+        {
+          "value": "18px",
+          "count": 5
+        },
+        {
+          "value": "20px",
+          "count": 3
+        },
+        {
+          "value": "24px",
+          "count": 3
+        },
+        {
+          "value": "15px",
+          "count": 2
+        },
+        {
+          "value": "28px",
+          "count": 2
+        }
+      ]
+    },
+    "textLength": 22569
+  }
+}

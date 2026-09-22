@@ -1,0 +1,76 @@
+# https://free-for.dev/
+# 抓取时间 2026-09-22T16:21:28.127Z
+
+## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
+<main> 1440x900
+  <aside.sidebar> 300x900
+    <h1.app-name> 299x31 — Free for Developers
+    <ul> 284x2118
+      <ul> 269x2046
+  <section.content> 1140x900
+    <article.markdown-section> 1026x60750
+      <h1> 996x40 — free-for.dev
+      <h1> 996x40 — Table of Contents
+      <ul> 996x1459
+      <h2> 996x36 — Major Cloud Providers
+      <ul> 996x3305
+        <ul> 972x589
+        <ul> 972x282
+        <ul> 972x512
+        <ul> 972x333
+          <ul> 948x77
+        <ul> 972x154
+        <ul> 972x333
+        <ul> 972x691
+      <h2> 996x36 — Cloud management solutions
+      <ul> 996x410
+      <h2> 996x36 — Source Code Repos
+      <ul> 996x461
+      <h2> 996x36 — APIs, Data, and ML
+      <ul> 996x5656
+      <h2> 996x36 — Artifact Repos
+      <ul> 996x179
+      <h2> 996x36 — Tools for Teams and Collaboration
+      <ul> 996x3097
+      <h2> 996x36 — CMS
+      <ul> 996x589
+      <h2> 996x36 — Code Generation
+      <ul> 996x307
+      <h2> 996x36 — Code Quality
+      <ul> 996x768
+      <h2> 996x36 — Code Search and Browsing
+      <ul> 996x129
+      <h2> 996x36 — CI and CD
+      <ul> 996x896
+      <h2> 996x36 — Testing
+      <ul> 996x1561
+      <h2> 996x36 — Security and PKI
+      <ul> 996x1612
+      <h2> 996x36 — Authentication, Authorization, and User Management
+      <ul> 996x1152
+      <h2> 996x36 — Mobile App Distribution and Feedback
+      <ul> 996x256
+      <h2> 996x36 — Management System
+      <ul> 996x205
+      <h2> 996x36 — Messaging and Streaming
+      <ul> 996x819
+
+## class 命名频次（前 45）
+   59  section-link
+   19  anchor
+    1  ready
+    1  sticky
+    1  github-corner
+    1  sidebar-toggle
+    1  sidebar-toggle-button
+    1  sidebar
+    1  search
+    1  input-wrap
+    1  clear-button
+    1  results-panel
+    1  app-name
+    1  app-name-link
+    1  sidebar-nav
+    1  content
+    1  markdown-section
+    1  progress

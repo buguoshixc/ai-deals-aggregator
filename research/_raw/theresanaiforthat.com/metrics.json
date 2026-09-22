@@ -1,0 +1,1139 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "theresanaiforthat.com",
+  "target": "https://theresanaiforthat.com/",
+  "fetchedAt": "2026-09-22T16:28:08.882Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 22800,
+      "hydration": {
+        "textBefore": 5446,
+        "textAfter": 5446
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 23211,
+      "hydration": {
+        "textBefore": 5405,
+        "textAfter": 5405
+      },
+      "notes": []
+    }
+  ],
+  "desktop": {
+    "url": "https://theresanaiforthat.com/",
+    "title": "There's An AI For That® — The front page of AI",
+    "lang": "en-US",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 3687,
+    "scrollScreens": 4.1,
+    "meta": {
+      "description": "The #1 website for AI. Real time tracking of tools, models, news, devices, robots, fundraises and more. Used by 90M+ humans. Bookmark to stay ahead.",
+      "ogImage": "https://media.theresanaiforthat.com/assets/og-image-5.png?v=1",
+      "colorScheme": null,
+      "themeColor": "#2d2e3a",
+      "viewport": "width=device-width, initial-scale=1, viewport-fit=cover"
+    },
+    "canonical": "https://theresanaiforthat.com",
+    "hreflang": [],
+    "jsonLdTypes": [
+      "WebSite"
+    ],
+    "landmarks": {
+      "header": 0,
+      "nav": 0,
+      "main": 0,
+      "section": 14,
+      "article": 0,
+      "aside": 0,
+      "footer": 1,
+      "form": 1,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 2,
+        "text": "Search"
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 3,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug/:slug",
+        "count": 2790,
+        "samples": [
+          "https://theresanaiforthat.com/@taaft/image-generator/?ref=header",
+          "https://theresanaiforthat.com/@taaft/video-generator/?ref=header",
+          "https://theresanaiforthat.com/s/school/"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug/:slug/:num",
+        "count": 192,
+        "samples": [
+          "https://theresanaiforthat.com/company/caddi-1/fundraise/2670/",
+          "https://theresanaiforthat.com/company/artificial-intelligence-underwriting-company-aiuc/fundraise/2669/",
+          "https://theresanaiforthat.com/company/nuance-labs/fundraise/2674/"
+        ]
+      },
+      {
+        "shape": "/:slug",
+        "count": 131,
+        "samples": [
+          "https://theresanaiforthat.com/leaderboard/",
+          "https://theresanaiforthat.com/tasks/",
+          "https://theresanaiforthat.com/mini-tools/"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug/:slug/:slug",
+        "count": 105,
+        "samples": [
+          "https://theresanaiforthat.com/company/shopify/repository/react-native-skia/",
+          "https://theresanaiforthat.com/company/shopify/repository/roast/",
+          "https://theresanaiforthat.com/company/adobe/repository/spacecat-api-service/"
+        ]
+      },
+      {
+        "shape": "/model/:slug",
+        "count": 59,
+        "samples": [
+          "https://theresanaiforthat.com/model/jev/",
+          "https://theresanaiforthat.com/model/adapt-1-machina/",
+          "https://theresanaiforthat.com/model/eve-v1/"
+        ]
+      },
+      {
+        "shape": "/news",
+        "count": 38,
+        "samples": [
+          "https://theresanaiforthat.com/news/",
+          "https://theresanaiforthat.com/news/?topic=military-ai",
+          "https://theresanaiforthat.com/news/?topic=lawsuit"
+        ]
+      },
+      {
+        "shape": "/news/:num/:num/:slug",
+        "count": 28,
+        "samples": [
+          "https://theresanaiforthat.com/news/2026/09/us-military-modifies-ai-and-lethal-targeting-process-after-iran-school-strike/",
+          "https://theresanaiforthat.com/news/2026/09/british-columbia-sues-openai-alleging-chatgpt-aided-mass-school-shooting/",
+          "https://theresanaiforthat.com/news/2026/09/openai-projections-point-to-a-massive-278-billion-cash-burn-through-2030-that-exceeds-the-national-budgets-of-indonesia-and-norway-856-billion-comput/"
+        ]
+      },
+      {
+        "shape": "/tools",
+        "count": 10,
+        "samples": [
+          "https://theresanaiforthat.com/tools/?feature_ids=34",
+          "https://theresanaiforthat.com/tools/?feature_ids=52",
+          "https://theresanaiforthat.com/tools/?feature_ids=47"
+        ]
+      },
+      {
+        "shape": "/signup",
+        "count": 6,
+        "samples": [
+          "https://theresanaiforthat.com/signup/?redirect_to=https%3A%2F%2Ftheresanaiforthat.com%2F",
+          "https://theresanaiforthat.com/signup/?source=website&redirect_to=https%3A%2F%2Ftheresanaiforthat.com%2F",
+          "https://theresanaiforthat.com/signup/?s=f#?source=website&redirect_to=https%3A%2F%2Ftheresanaiforthat.com%2F"
+        ]
+      },
+      {
+        "shape": "/login",
+        "count": 6,
+        "samples": [
+          "https://theresanaiforthat.com/login/?redirect_to=https%3A%2F%2Ftheresanaiforthat.com%2F",
+          "https://theresanaiforthat.com/login/?redirect_to=%2F"
+        ]
+      },
+      {
+        "shape": "/terms",
+        "count": 5,
+        "samples": [
+          "https://theresanaiforthat.com/terms/"
+        ]
+      },
+      {
+        "shape": "/privacy",
+        "count": 5,
+        "samples": [
+          "https://theresanaiforthat.com/privacy/"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 1,
+    "internalLinkCount": 3405,
+    "repeatedComponents": [
+      {
+        "signature": "div.home-listing-row.home-today-row.listing-table-row",
+        "count": 37,
+        "parents": 1,
+        "width": 1388,
+        "height": {
+          "min": 65,
+          "max": 65,
+          "median": 65
+        },
+        "fullyVisibleFirstScreen": 5,
+        "touchedFirstScreen": 6
+      },
+      {
+        "signature": "a.menu_item",
+        "count": 13,
+        "parents": 1,
+        "width": 246,
+        "height": {
+          "min": 50,
+          "max": 50,
+          "median": 50
+        },
+        "fullyVisibleFirstScreen": 13,
+        "touchedFirstScreen": 13
+      }
+    ],
+    "primaryList": {
+      "signature": "a.menu_item",
+      "count": 13,
+      "parents": 1,
+      "width": 246,
+      "height": {
+        "min": 50,
+        "max": 50,
+        "median": 50
+      },
+      "fullyVisibleFirstScreen": 13,
+      "touchedFirstScreen": 13
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(236, 236, 241)",
+          "count": 1106
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 426
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.58)",
+          "count": 222
+        },
+        {
+          "value": "rgb(250, 204, 21)",
+          "count": 91
+        },
+        {
+          "value": "rgb(94, 187, 255)",
+          "count": 60
+        },
+        {
+          "value": "rgb(205, 205, 205)",
+          "count": 20
+        },
+        {
+          "value": "rgb(176, 177, 185)",
+          "count": 14
+        },
+        {
+          "value": "rgb(160, 162, 180)",
+          "count": 13
+        },
+        {
+          "value": "rgb(16, 35, 19)",
+          "count": 9
+        },
+        {
+          "value": "rgb(20, 184, 166)",
+          "count": 6
+        },
+        {
+          "value": "rgb(255, 87, 34)",
+          "count": 4
+        },
+        {
+          "value": "rgb(114, 117, 134)",
+          "count": 3
+        },
+        {
+          "value": "rgb(239, 68, 68)",
+          "count": 3
+        },
+        {
+          "value": "rgb(56, 189, 248)",
+          "count": 3
+        },
+        {
+          "value": "rgb(41, 41, 50)",
+          "count": 1
+        },
+        {
+          "value": "rgb(45, 46, 57)",
+          "count": 1
+        },
+        {
+          "value": "rgb(77, 77, 93)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgba(255, 255, 255, 0.07)",
+          "count": 115
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 45
+        },
+        {
+          "value": "rgb(49, 51, 64)",
+          "count": 39
+        },
+        {
+          "value": "rgba(18, 19, 27, 0.94)",
+          "count": 37
+        },
+        {
+          "value": "rgb(41, 41, 50)",
+          "count": 33
+        },
+        {
+          "value": "rgb(53, 55, 70)",
+          "count": 28
+        },
+        {
+          "value": "rgba(30, 173, 249, 0.12)",
+          "count": 25
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.12)",
+          "count": 18
+        },
+        {
+          "value": "rgb(62, 63, 79)",
+          "count": 17
+        },
+        {
+          "value": "rgba(55, 56, 70, 0.89)",
+          "count": 16
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.08)",
+          "count": 13
+        },
+        {
+          "value": "rgb(45, 46, 58)",
+          "count": 5
+        },
+        {
+          "value": "rgb(74, 74, 91)",
+          "count": 3
+        },
+        {
+          "value": "rgb(44, 46, 59)",
+          "count": 2
+        },
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 1
+        },
+        {
+          "value": "rgb(204, 204, 204)",
+          "count": 1
+        },
+        {
+          "value": "rgb(236, 236, 241)",
+          "count": 1
+        },
+        {
+          "value": "rgb(24, 103, 161)",
+          "count": 1
+        },
+        {
+          "value": "rgb(30, 30, 38)",
+          "count": 1
+        },
+        {
+          "value": "rgb(44, 44, 56)",
+          "count": 1
+        },
+        {
+          "value": "rgb(50, 222, 132)",
+          "count": 1
+        },
+        {
+          "value": "rgb(55, 57, 70)",
+          "count": 1
+        },
+        {
+          "value": "rgb(68, 69, 86)",
+          "count": 1
+        },
+        {
+          "value": "rgba(16, 35, 19, 0.12)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "13px",
+          "count": 765
+        },
+        {
+          "value": "9px",
+          "count": 296
+        },
+        {
+          "value": "10px",
+          "count": 237
+        },
+        {
+          "value": "16px",
+          "count": 212
+        },
+        {
+          "value": "11px",
+          "count": 163
+        },
+        {
+          "value": "12px",
+          "count": 157
+        },
+        {
+          "value": "13.3333px",
+          "count": 86
+        },
+        {
+          "value": "14px",
+          "count": 58
+        },
+        {
+          "value": "17px",
+          "count": 7
+        },
+        {
+          "value": "15px",
+          "count": 2
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "10px",
+          "count": 237
+        },
+        {
+          "value": "9px",
+          "count": 207
+        },
+        {
+          "value": "11px",
+          "count": 111
+        },
+        {
+          "value": "16.9px",
+          "count": 109
+        },
+        {
+          "value": "10.35px",
+          "count": 88
+        },
+        {
+          "value": "13.3333px",
+          "count": 74
+        },
+        {
+          "value": "12px",
+          "count": 38
+        },
+        {
+          "value": "13px",
+          "count": 34
+        },
+        {
+          "value": "14.3px",
+          "count": 32
+        },
+        {
+          "value": "14.85px",
+          "count": 20
+        },
+        {
+          "value": "18.2px",
+          "count": 20
+        },
+        {
+          "value": "13.2px",
+          "count": 19
+        },
+        {
+          "value": "14px",
+          "count": 19
+        },
+        {
+          "value": "12.1px",
+          "count": 14
+        },
+        {
+          "value": "18px",
+          "count": 12
+        },
+        {
+          "value": "28px",
+          "count": 6
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 1235
+        },
+        {
+          "value": "600",
+          "count": 361
+        },
+        {
+          "value": "500",
+          "count": 261
+        },
+        {
+          "value": "700",
+          "count": 61
+        },
+        {
+          "value": "800",
+          "count": 52
+        },
+        {
+          "value": "900",
+          "count": 13
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "-apple-system",
+          "count": 1981
+        },
+        {
+          "value": "Arial",
+          "count": 2
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 1570
+        },
+        {
+          "value": "999px",
+          "count": 190
+        },
+        {
+          "value": "7px",
+          "count": 71
+        },
+        {
+          "value": "10px",
+          "count": 37
+        },
+        {
+          "value": "11px",
+          "count": 37
+        },
+        {
+          "value": "50%",
+          "count": 26
+        },
+        {
+          "value": "8px",
+          "count": 18
+        },
+        {
+          "value": "20px",
+          "count": 16
+        },
+        {
+          "value": "17px",
+          "count": 9
+        },
+        {
+          "value": "16px",
+          "count": 3
+        },
+        {
+          "value": "12px",
+          "count": 2
+        },
+        {
+          "value": "0px 0px 17px 17px",
+          "count": 1
+        },
+        {
+          "value": "14px",
+          "count": 1
+        },
+        {
+          "value": "2px",
+          "count": 1
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(0, 0, 0, 0.33) 0px 0px 1px 0px",
+          "count": 52
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.28) 0px 5px 14px 0px",
+          "count": 37
+        },
+        {
+          "value": "rgba(49, 51, 64, 0.95) -10px 0px 18px 0px",
+          "count": 36
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.27) 0px 0px 2px 1px",
+          "count": 20
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.55) 0px 0px 1px 0px",
+          "count": 4
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "count": 4
+        },
+        {
+          "value": "rgba(53, 55, 70, 0.95) -10px 0px 18px 0px",
+          "count": 4
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.4) 0px 0px 3px 0px",
+          "count": 2
+        },
+        {
+          "value": "rgb(0, 168, 140) 0px 0px 3px 1px",
+          "count": 1
+        },
+        {
+          "value": "rgb(10, 10, 16) 0px 0px 4px 0px",
+          "count": 1
+        },
+        {
+          "value": "rgb(236, 236, 241) 0px 0px 1px 1px",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.08) 0px 0px 4px 0px inset",
+          "count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "value": "4px",
+          "count": 113
+        },
+        {
+          "value": "8px",
+          "count": 95
+        },
+        {
+          "value": "4px 5px",
+          "count": 61
+        },
+        {
+          "value": "1px",
+          "count": 57
+        },
+        {
+          "value": "10px",
+          "count": 39
+        },
+        {
+          "value": "0px 8px",
+          "count": 37
+        },
+        {
+          "value": "3px",
+          "count": 37
+        },
+        {
+          "value": "6px",
+          "count": 20
+        },
+        {
+          "value": "5px",
+          "count": 3
+        },
+        {
+          "value": "0px",
+          "count": 1
+        },
+        {
+          "value": "12px",
+          "count": 1
+        },
+        {
+          "value": "9px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "2px 2px",
+          "count": 83
+        },
+        {
+          "value": "5px 5px",
+          "count": 43
+        },
+        {
+          "value": "7px 7px",
+          "count": 38
+        },
+        {
+          "value": "2px 1px",
+          "count": 37
+        },
+        {
+          "value": "3px 3px",
+          "count": 37
+        },
+        {
+          "value": "6px 5px",
+          "count": 14
+        },
+        {
+          "value": "8px 8px",
+          "count": 14
+        },
+        {
+          "value": "10px 10px",
+          "count": 7
+        },
+        {
+          "value": "14px 14px",
+          "count": 5
+        },
+        {
+          "value": "6px 6px",
+          "count": 4
+        },
+        {
+          "value": "4px 4px",
+          "count": 2
+        },
+        {
+          "value": "0px 38px",
+          "count": 1
+        },
+        {
+          "value": "0px 50px",
+          "count": 1
+        },
+        {
+          "value": "12px 0px",
+          "count": 1
+        },
+        {
+          "value": "12px 12px",
+          "count": 1
+        },
+        {
+          "value": "40.5px 0px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "all 0s ease",
+          "count": 20
+        },
+        {
+          "value": "all 0.2s ease-in-out",
+          "count": 15
+        },
+        {
+          "value": "background, border-color, color 0.15s, 0.15s, 0.15s ease, ease, ease",
+          "count": 14
+        },
+        {
+          "value": "transform 0.15s ease",
+          "count": 2
+        },
+        {
+          "value": "transform 0.3s ease",
+          "count": 2
+        },
+        {
+          "value": "all 0.2s ease",
+          "count": 1
+        },
+        {
+          "value": "all 0.4s ease",
+          "count": 1
+        },
+        {
+          "value": "background 0.15s ease",
+          "count": 1
+        },
+        {
+          "value": "background, color 0.15s, 0.15s ease, ease",
+          "count": 1
+        },
+        {
+          "value": "border-color, background, transform 0.15s, 0.15s, 0.15s ease, ease, ease",
+          "count": 1
+        },
+        {
+          "value": "opacity 0.15s ease",
+          "count": 1
+        },
+        {
+          "value": "opacity, transform, background 0.18s, 0.18s, 0.18s ease, ease, ease",
+          "count": 1
+        },
+        {
+          "value": "transform 0.2s ease-in",
+          "count": 1
+        },
+        {
+          "value": "width, transform 0.2s, 0.2s ease-in-out, ease-in-out",
+          "count": 1
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1390px",
+          "count": 1
+        },
+        {
+          "value": "1416px",
+          "count": 1
+        },
+        {
+          "value": "700px",
+          "count": 1
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "6 tracks",
+          "count": 41
+        },
+        {
+          "value": "1 tracks",
+          "count": 21
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 41,
+      "fixedElements": 4,
+      "prefersColorSchemeRules": 1,
+      "bodyBgIsDark": true,
+      "images": 76,
+      "lazyImages": 74,
+      "searchInputs": 21,
+      "selects": 1,
+      "buttons": 2225,
+      "tabs": 259,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "media.theresanaiforthat.com",
+        "count": 99
+      },
+      {
+        "value": "video.theresanaiforthat.com",
+        "count": 6
+      },
+      {
+        "value": "lh3.googleusercontent.com",
+        "count": 4
+      },
+      {
+        "value": "accounts.google.com",
+        "count": 2
+      },
+      {
+        "value": "blogs.nvidia.com",
+        "count": 1
+      },
+      {
+        "value": "i.ytimg.com",
+        "count": 1
+      },
+      {
+        "value": "image.cnbcfm.com",
+        "count": 1
+      },
+      {
+        "value": "plausible.io",
+        "count": 1
+      },
+      {
+        "value": "r.wdfl.co",
+        "count": 1
+      },
+      {
+        "value": "techcrunch.com",
+        "count": 1
+      },
+      {
+        "value": "yt3.ggpht.com",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "img",
+        "count": 105
+      },
+      {
+        "value": "css",
+        "count": 10
+      },
+      {
+        "value": "fetch",
+        "count": 8
+      },
+      {
+        "value": "script",
+        "count": 8
+      },
+      {
+        "value": "link",
+        "count": 7
+      },
+      {
+        "value": "xmlhttprequest",
+        "count": 6
+      },
+      {
+        "value": "other",
+        "count": 2
+      }
+    ],
+    "requestCount": 146,
+    "textLength": 5674,
+    "contrast": {
+      "sampled": 347,
+      "skippedForComplexBackground": 7,
+      "min": 2.94,
+      "p10": 5.36,
+      "median": 10.63,
+      "belowRequirement": 2,
+      "worst": [
+        {
+          "selector": "span",
+          "text": "The front page of AI.",
+          "fontSize": 14,
+          "ratio": 2.94,
+          "required": 4.5
+        },
+        {
+          "selector": "span",
+          "text": "Used by 90M+ humans.",
+          "fontSize": 14,
+          "ratio": 2.94,
+          "required": 4.5
+        },
+        {
+          "selector": "span.home-today-views-value",
+          "text": "311k",
+          "fontSize": 10,
+          "ratio": 5.14,
+          "required": 4.5
+        },
+        {
+          "selector": "span.home-today-views-value",
+          "text": "173",
+          "fontSize": 10,
+          "ratio": 5.14,
+          "required": 4.5
+        },
+        {
+          "selector": "span.home-today-views-value",
+          "text": "53k",
+          "fontSize": 10,
+          "ratio": 5.14,
+          "required": 4.5
+        },
+        {
+          "selector": "span.home-today-views-value",
+          "text": "2.4k",
+          "fontSize": 10,
+          "ratio": 5.14,
+          "required": 4.5
+        },
+        {
+          "selector": "span.home-tab-badge",
+          "text": "53,818",
+          "fontSize": 11,
+          "ratio": 5.32,
+          "required": 4.5
+        },
+        {
+          "selector": "span.home-tab-badge",
+          "text": "363",
+          "fontSize": 11,
+          "ratio": 5.32,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 3818,
+    "scrollScreens": 4.5,
+    "primaryList": {
+      "signature": "a.menu_item",
+      "count": 13,
+      "parents": 1,
+      "width": 246,
+      "height": {
+        "min": 50,
+        "max": 50,
+        "median": 50
+      },
+      "fullyVisibleFirstScreen": 13,
+      "touchedFirstScreen": 13
+    },
+    "repeatedComponents": [
+      {
+        "signature": "div.home-listing-row.home-today-row.listing-table-row",
+        "count": 37,
+        "parents": 1,
+        "width": 1013,
+        "height": {
+          "min": 65,
+          "max": 65,
+          "median": 65
+        },
+        "fullyVisibleFirstScreen": 4,
+        "touchedFirstScreen": 5
+      },
+      {
+        "signature": "a.menu_item",
+        "count": 13,
+        "parents": 1,
+        "width": 246,
+        "height": {
+          "min": 50,
+          "max": 50,
+          "median": 50
+        },
+        "fullyVisibleFirstScreen": 13,
+        "touchedFirstScreen": 13
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "13px",
+          "count": 786
+        },
+        {
+          "value": "9px",
+          "count": 296
+        },
+        {
+          "value": "10px",
+          "count": 237
+        },
+        {
+          "value": "16px",
+          "count": 214
+        },
+        {
+          "value": "11px",
+          "count": 179
+        },
+        {
+          "value": "12px",
+          "count": 137
+        },
+        {
+          "value": "13.3333px",
+          "count": 86
+        },
+        {
+          "value": "14px",
+          "count": 21
+        }
+      ]
+    },
+    "textLength": 5405
+  }
+}

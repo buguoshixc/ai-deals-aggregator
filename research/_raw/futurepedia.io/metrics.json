@@ -1,0 +1,1011 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "futurepedia.io",
+  "target": "https://www.futurepedia.io/",
+  "fetchedAt": "2026-09-22T16:24:34.125Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 11339,
+      "hydration": {
+        "textBefore": 4765,
+        "textAfter": 4765
+      },
+      "notes": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 17845,
+      "hydration": {
+        "textBefore": 4539,
+        "textAfter": 4539
+      },
+      "notes": []
+    }
+  ],
+  "desktop": {
+    "url": "https://www.futurepedia.io/",
+    "title": "Find The Best AI Tools & Software, Futurepedia.io",
+    "lang": "en",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 6948,
+    "scrollScreens": 7.7,
+    "meta": {
+      "description": "Futurepedia is a free site to help you find the best AI tools and software to make your work and life more efficient and productive. Updated daily, join millions of followers of our website, newsletter, and YouTube.",
+      "ogImage": "https://www.futurepedia.io/api/og?title=Find+The+Best+AI+Tools+%26+Software%2C+Futurepedia.io&image=https%3A%2F%2Fwww.futurepedia.io%2FFuturepedia-OG.png",
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width, initial-scale=1, minimum-scale=1, user-scalable=no"
+    },
+    "canonical": "https://www.futurepedia.io",
+    "hreflang": [],
+    "jsonLdTypes": [
+      "Organization"
+    ],
+    "landmarks": {
+      "header": 2,
+      "nav": 2,
+      "main": 0,
+      "section": 3,
+      "article": 2,
+      "aside": 0,
+      "footer": 1,
+      "form": 2,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "Everything your business needs to master AI, all in one place."
+      },
+      {
+        "level": 2,
+        "text": "Start learning AI free with our 2 best-selling courses"
+      },
+      {
+        "level": 3,
+        "text": "AI Boot Camp"
+      },
+      {
+        "level": 3,
+        "text": "Prompting Essentials"
+      },
+      {
+        "level": 2,
+        "text": "Trending Categories"
+      },
+      {
+        "level": 2,
+        "text": "AI Tool Categories"
+      },
+      {
+        "level": 2,
+        "text": "The World’s Leading Independent AI Education & Discovery Platform"
+      },
+      {
+        "level": 3,
+        "text": ""
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug/:slug",
+        "count": 48,
+        "samples": [
+          "https://www.futurepedia.io/ai-tools/ai-agents",
+          "https://www.futurepedia.io/resources/automation",
+          "https://www.futurepedia.io/ai-tools/chatbots"
+        ]
+      },
+      {
+        "shape": "/:slug",
+        "count": 19,
+        "samples": [
+          "https://www.futurepedia.io/ai-tools",
+          "https://www.futurepedia.io/business-function",
+          "https://www.futurepedia.io/ai-education-platform"
+        ]
+      },
+      {
+        "shape": "/tool/:slug",
+        "count": 14,
+        "samples": [
+          "https://www.futurepedia.io/tool/chatgpt",
+          "https://www.futurepedia.io/tool/claude",
+          "https://www.futurepedia.io/tool/hubspot-aeo-sensor"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug/:slug",
+        "count": 5,
+        "samples": [
+          "https://www.futurepedia.io/ai-tools/art-generators/best",
+          "https://www.futurepedia.io/ai-tools/image-generators/best",
+          "https://www.futurepedia.io/ai-tools/chatbots/best"
+        ]
+      },
+      {
+        "shape": "/register",
+        "count": 4,
+        "samples": [
+          "https://www.futurepedia.io/register",
+          "https://www.futurepedia.io/register?source=skillleap&course=skillleap-free-promo&return_to=https%3A%2F%2Fskillleap.futurepedia.io%2Fenroll%2F3784218%3Fprice_id%3D4742492&homepage_free_course_cta=1"
+        ]
+      },
+      {
+        "shape": "/login",
+        "count": 2,
+        "samples": [
+          "https://www.futurepedia.io/login"
+        ]
+      },
+      {
+        "shape": "/contact",
+        "count": 1,
+        "samples": [
+          "https://www.futurepedia.io/contact"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 96,
+    "repeatedComponents": [
+      {
+        "signature": "li",
+        "count": 26,
+        "parents": 4,
+        "width": 120,
+        "height": {
+          "min": 25,
+          "max": 40,
+          "median": 25
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "div.bg-white.duration-500.flex.gap-4.hover:shadow-2xl.items-center.justify-normal.p-4.rounded-2xl.shadow-lg.transition-shadow.w-full",
+        "count": 10,
+        "parents": 1,
+        "width": 300,
+        "height": {
+          "min": 86,
+          "max": 112,
+          "median": 112
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "button.active:no-underline.flex.font-normal.gap-[10px].hover:no-underline.hover:opacity-75.hover:px-3.items-center.leading-20.16.py-3.rounded-xl.text-base.text-left.text-textGray.w-full",
+        "count": 9,
+        "parents": 1,
+        "width": 256,
+        "height": {
+          "min": 48,
+          "max": 48,
+          "median": 48
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "div.bg-white.pb-[14px].pt-6.px-6.rounded-20.shadow-card-shadow.w-full",
+        "count": 7,
+        "parents": 1,
+        "width": 984,
+        "height": {
+          "min": 141,
+          "max": 141,
+          "median": 141
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "primaryList": {
+      "signature": "li",
+      "count": 26,
+      "parents": 4,
+      "width": 120,
+      "height": {
+        "min": 25,
+        "max": 40,
+        "median": 25
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(3, 7, 18)",
+          "count": 285
+        },
+        {
+          "value": "rgb(117, 117, 117)",
+          "count": 104
+        },
+        {
+          "value": "lab(76.3898 14.5258 98.4589)",
+          "count": 30
+        },
+        {
+          "value": "rgb(111, 207, 151)",
+          "count": 28
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 26
+        },
+        {
+          "value": "lab(47.7841 -0.393182 -10.0268)",
+          "count": 24
+        },
+        {
+          "value": "lab(85.1236 -0.612259 -3.7138)",
+          "count": 22
+        },
+        {
+          "value": "rgb(39, 54, 83)",
+          "count": 22
+        },
+        {
+          "value": "rgb(115, 192, 255)",
+          "count": 21
+        },
+        {
+          "value": "lab(16.132 -0.318035 -14.6672)",
+          "count": 20
+        },
+        {
+          "value": "rgb(128, 138, 154)",
+          "count": 15
+        },
+        {
+          "value": "rgb(85, 112, 255)",
+          "count": 14
+        },
+        {
+          "value": "rgb(1, 140, 255)",
+          "count": 8
+        },
+        {
+          "value": "rgb(249, 250, 251)",
+          "count": 5
+        },
+        {
+          "value": "lab(35.5623 -1.74978 -15.4316)",
+          "count": 2
+        },
+        {
+          "value": "rgb(15, 23, 41)",
+          "count": 2
+        },
+        {
+          "value": "rgb(208, 224, 255)",
+          "count": 2
+        },
+        {
+          "value": "rgb(255, 85, 85)",
+          "count": 2
+        },
+        {
+          "value": "rgb(73, 173, 255)",
+          "count": 2
+        },
+        {
+          "value": "lab(65.9269 -0.832707 -8.17473)",
+          "count": 1
+        },
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 33
+        },
+        {
+          "value": "oklab(0.725275 -0.0595974 -0.138879 / 0.1)",
+          "count": 11
+        },
+        {
+          "value": "rgb(237, 247, 255)",
+          "count": 7
+        },
+        {
+          "value": "rgba(255, 150, 53, 0.1)",
+          "count": 5
+        },
+        {
+          "value": "lab(66.9756 -58.27 19.5419)",
+          "count": 3
+        },
+        {
+          "value": "lab(91.7353 -0.998765 -4.76968)",
+          "count": 3
+        },
+        {
+          "value": "rgb(245, 245, 245)",
+          "count": 2
+        },
+        {
+          "value": "rgb(73, 173, 255)",
+          "count": 2
+        },
+        {
+          "value": "lab(96.1596 -0.0823438 -1.13575)",
+          "count": 1
+        },
+        {
+          "value": "rgb(10, 14, 35)",
+          "count": 1
+        },
+        {
+          "value": "rgb(3, 12, 58)",
+          "count": 1
+        },
+        {
+          "value": "rgb(57, 96, 239)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 510
+        },
+        {
+          "value": "14px",
+          "count": 101
+        },
+        {
+          "value": "20px",
+          "count": 44
+        },
+        {
+          "value": "24px",
+          "count": 12
+        },
+        {
+          "value": "12px",
+          "count": 7
+        },
+        {
+          "value": "32px",
+          "count": 4
+        },
+        {
+          "value": "64px",
+          "count": 3
+        },
+        {
+          "value": "10px",
+          "count": 2
+        },
+        {
+          "value": "18px",
+          "count": 2
+        },
+        {
+          "value": "50px",
+          "count": 2
+        },
+        {
+          "value": "30px",
+          "count": 1
+        },
+        {
+          "value": "48px",
+          "count": 1
+        },
+        {
+          "value": "80px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "24px",
+          "count": 476
+        },
+        {
+          "value": "20px",
+          "count": 65
+        },
+        {
+          "value": "20.16px",
+          "count": 37
+        },
+        {
+          "value": "16px",
+          "count": 31
+        },
+        {
+          "value": "28px",
+          "count": 22
+        },
+        {
+          "value": "14px",
+          "count": 15
+        },
+        {
+          "value": "25.2px",
+          "count": 10
+        },
+        {
+          "value": "26.4px",
+          "count": 10
+        },
+        {
+          "value": "28.8px",
+          "count": 5
+        },
+        {
+          "value": "76.8px",
+          "count": 3
+        },
+        {
+          "value": "15px",
+          "count": 2
+        },
+        {
+          "value": "18px",
+          "count": 2
+        },
+        {
+          "value": "25px",
+          "count": 2
+        },
+        {
+          "value": "32px",
+          "count": 2
+        },
+        {
+          "value": "38.4px",
+          "count": 2
+        },
+        {
+          "value": "60px",
+          "count": 2
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 604
+        },
+        {
+          "value": "700",
+          "count": 53
+        },
+        {
+          "value": "600",
+          "count": 24
+        },
+        {
+          "value": "500",
+          "count": 7
+        },
+        {
+          "value": "800",
+          "count": 2
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "ui-sans-serif",
+          "count": 558
+        },
+        {
+          "value": "Outfit",
+          "count": 132
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 571
+        },
+        {
+          "value": "20px",
+          "count": 31
+        },
+        {
+          "value": "12px",
+          "count": 26
+        },
+        {
+          "value": "3.35544e+07px",
+          "count": 20
+        },
+        {
+          "value": "16px",
+          "count": 10
+        },
+        {
+          "value": "8px",
+          "count": 10
+        },
+        {
+          "value": "46px",
+          "count": 8
+        },
+        {
+          "value": "15px",
+          "count": 7
+        },
+        {
+          "value": "124px",
+          "count": 3
+        },
+        {
+          "value": "0px 0px 100px 100px",
+          "count": 1
+        },
+        {
+          "value": "32px",
+          "count": 1
+        },
+        {
+          "value": "41px",
+          "count": 1
+        },
+        {
+          "value": "6px",
+          "count": 1
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
+          "count": 10
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.09) 35px 20px 122px 0px",
+          "count": 9
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px",
+          "count": 5
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 15px 0px",
+          "count": 2
+        }
+      ],
+      "gaps": [
+        {
+          "value": "16px",
+          "count": 31
+        },
+        {
+          "value": "10px",
+          "count": 21
+        },
+        {
+          "value": "24px",
+          "count": 11
+        },
+        {
+          "value": "6px",
+          "count": 8
+        },
+        {
+          "value": "12px",
+          "count": 7
+        },
+        {
+          "value": "8px",
+          "count": 5
+        },
+        {
+          "value": "32px",
+          "count": 4
+        },
+        {
+          "value": "20px",
+          "count": 3
+        },
+        {
+          "value": "4px",
+          "count": 3
+        },
+        {
+          "value": "10px 40px",
+          "count": 1
+        },
+        {
+          "value": "60px",
+          "count": 1
+        },
+        {
+          "value": "64px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "16px 16px",
+          "count": 25
+        },
+        {
+          "value": "12px 12px",
+          "count": 9
+        },
+        {
+          "value": "9px 9px",
+          "count": 8
+        },
+        {
+          "value": "24px 14px",
+          "count": 7
+        },
+        {
+          "value": "8px 8px",
+          "count": 5
+        },
+        {
+          "value": "22.5px 22.5px",
+          "count": 3
+        },
+        {
+          "value": "40px 40px",
+          "count": 3
+        },
+        {
+          "value": "20px 20px",
+          "count": 2
+        },
+        {
+          "value": "2px 2px",
+          "count": 2
+        },
+        {
+          "value": "0px 128px",
+          "count": 1
+        },
+        {
+          "value": "2px 3px",
+          "count": 1
+        },
+        {
+          "value": "32px 0px",
+          "count": 1
+        },
+        {
+          "value": "40px 68px",
+          "count": 1
+        },
+        {
+          "value": "48px 32px",
+          "count": 1
+        },
+        {
+          "value": "4px 4px",
+          "count": 1
+        },
+        {
+          "value": "56px 0px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 14
+        },
+        {
+          "value": "box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 10
+        },
+        {
+          "value": "all 0s ease",
+          "count": 3
+        },
+        {
+          "value": "color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 2
+        },
+        {
+          "value": "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        },
+        {
+          "value": "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        },
+        {
+          "value": "transform, translate, scale, rotate 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1280px",
+          "count": 5
+        },
+        {
+          "value": "1060px",
+          "count": 1
+        },
+        {
+          "value": "1148px",
+          "count": 1
+        },
+        {
+          "value": "1296px",
+          "count": 1
+        },
+        {
+          "value": "1300px",
+          "count": 1
+        },
+        {
+          "value": "700px",
+          "count": 1
+        },
+        {
+          "value": "701px",
+          "count": 1
+        },
+        {
+          "value": "800px",
+          "count": 1
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "3 tracks",
+          "count": 2
+        },
+        {
+          "value": "2 tracks",
+          "count": 1
+        },
+        {
+          "value": "4 tracks",
+          "count": 1
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 1,
+      "fixedElements": 1,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": false,
+      "images": 54,
+      "lazyImages": 52,
+      "searchInputs": 2,
+      "selects": 0,
+      "buttons": 35,
+      "tabs": 0,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "cdn2.futurepedia.io",
+        "count": 7
+      },
+      {
+        "value": "ipapi.co",
+        "count": 1
+      },
+      {
+        "value": "static.cloudflareinsights.com",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "link",
+        "count": 50
+      },
+      {
+        "value": "img",
+        "count": 14
+      },
+      {
+        "value": "fetch",
+        "count": 5
+      },
+      {
+        "value": "early-hints",
+        "count": 2
+      },
+      {
+        "value": "script",
+        "count": 2
+      },
+      {
+        "value": "other",
+        "count": 1
+      },
+      {
+        "value": "xmlhttprequest",
+        "count": 1
+      }
+    ],
+    "requestCount": 75,
+    "textLength": 4854,
+    "contrast": {
+      "sampled": 142,
+      "skippedForComplexBackground": 8,
+      "min": 1.09,
+      "p10": 1.96,
+      "median": 4.61,
+      "belowRequirement": 36,
+      "worst": [
+        {
+          "selector": "span.absolute",
+          "text": "FREE",
+          "fontSize": 10,
+          "ratio": 1.09,
+          "required": 4.5
+        },
+        {
+          "selector": "span.absolute",
+          "text": "FREE",
+          "fontSize": 10,
+          "ratio": 1.09,
+          "required": 4.5
+        },
+        {
+          "selector": "div.text-sm",
+          "text": "10",
+          "fontSize": 14,
+          "ratio": 1.9,
+          "required": 4.5
+        },
+        {
+          "selector": "a.text-mainHover",
+          "text": "#ai chatbots",
+          "fontSize": 16,
+          "ratio": 1.96,
+          "required": 4.5
+        },
+        {
+          "selector": "a.text-mainHover",
+          "text": "#research",
+          "fontSize": 16,
+          "ratio": 1.96,
+          "required": 4.5
+        },
+        {
+          "selector": "a.text-mainHover",
+          "text": "#ai agents",
+          "fontSize": 16,
+          "ratio": 1.96,
+          "required": 4.5
+        },
+        {
+          "selector": "a.text-mainHover",
+          "text": "#ai chatbots",
+          "fontSize": 16,
+          "ratio": 1.96,
+          "required": 4.5
+        },
+        {
+          "selector": "a.text-mainHover",
+          "text": "#code assistant",
+          "fontSize": 16,
+          "ratio": 1.96,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 10249,
+    "scrollScreens": 12.1,
+    "primaryList": {
+      "signature": "li",
+      "count": 26,
+      "parents": 4,
+      "width": 120,
+      "height": {
+        "min": 25,
+        "max": 50,
+        "median": 25
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "repeatedComponents": [
+      {
+        "signature": "li",
+        "count": 26,
+        "parents": 4,
+        "width": 120,
+        "height": {
+          "min": 25,
+          "max": 50,
+          "median": 25
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "div.bg-white.duration-500.flex.gap-4.hover:shadow-2xl.items-center.justify-normal.p-4.rounded-2xl.shadow-lg.transition-shadow.w-full",
+        "count": 10,
+        "parents": 1,
+        "width": 358,
+        "height": {
+          "min": 86,
+          "max": 86,
+          "median": 86
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "div.bg-white.pb-[14px].pt-6.px-6.rounded-20.shadow-card-shadow.w-full",
+        "count": 7,
+        "parents": 1,
+        "width": 358,
+        "height": {
+          "min": 181,
+          "max": 203,
+          "median": 181
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 1
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 431
+        },
+        {
+          "value": "14px",
+          "count": 99
+        },
+        {
+          "value": "20px",
+          "count": 40
+        },
+        {
+          "value": "12px",
+          "count": 9
+        },
+        {
+          "value": "18px",
+          "count": 9
+        },
+        {
+          "value": "32px",
+          "count": 8
+        },
+        {
+          "value": "10px",
+          "count": 2
+        },
+        {
+          "value": "26px",
+          "count": 2
+        }
+      ]
+    },
+    "textLength": 4616
+  }
+}

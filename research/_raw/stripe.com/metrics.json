@@ -1,0 +1,1617 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "stripe.com",
+  "target": "https://stripe.com/",
+  "fetchedAt": "2026-09-22T16:25:08.414Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 31165,
+      "hydration": {
+        "textBefore": 7781,
+        "textAfter": 7781
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 35764,
+      "hydration": {
+        "textBefore": 6585,
+        "textAfter": 7787
+      },
+      "notes": []
+    }
+  ],
+  "desktop": {
+    "url": "https://stripe.com/jp",
+    "title": "Stripe | 収益向上のための金融インフラ",
+    "lang": "ja-JP",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 15438,
+    "scrollScreens": 17.2,
+    "meta": {
+      "description": "Stripe は、あらゆる規模や業種のビジネスにおける決済の受け入れ、柔軟な請求モデルの構築、および資金移動の管理を支援する、金融サービスプラットフォームです。",
+      "ogImage": "https://b.stripecdn.com/mkt-ssr-statics/assets/_next/static/media/stripe.37119086.jpg",
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width, initial-scale=1, viewport-fit=cover"
+    },
+    "canonical": "https://stripe.com/jp",
+    "hreflang": [
+      {
+        "hreflang": "x-default",
+        "href": "https://stripe.com/"
+      },
+      {
+        "hreflang": "en-US",
+        "href": "https://stripe.com/"
+      },
+      {
+        "hreflang": "es-US",
+        "href": "https://stripe.com/es-us"
+      },
+      {
+        "hreflang": "zh-US",
+        "href": "https://stripe.com/zh-us"
+      },
+      {
+        "hreflang": "en-AE",
+        "href": "https://stripe.com/ae"
+      },
+      {
+        "hreflang": "de-AT",
+        "href": "https://stripe.com/at"
+      },
+      {
+        "hreflang": "en-AT",
+        "href": "https://stripe.com/en-at"
+      },
+      {
+        "hreflang": "en-AU",
+        "href": "https://stripe.com/au"
+      },
+      {
+        "hreflang": "nl-BE",
+        "href": "https://stripe.com/nl-be"
+      },
+      {
+        "hreflang": "fr-BE",
+        "href": "https://stripe.com/fr-be"
+      },
+      {
+        "hreflang": "de-BE",
+        "href": "https://stripe.com/de-be"
+      },
+      {
+        "hreflang": "en-BE",
+        "href": "https://stripe.com/en-be"
+      },
+      {
+        "hreflang": "en-BG",
+        "href": "https://stripe.com/en-bg"
+      },
+      {
+        "hreflang": "pt-BR",
+        "href": "https://stripe.com/br"
+      },
+      {
+        "hreflang": "en-BR",
+        "href": "https://stripe.com/en-br"
+      },
+      {
+        "hreflang": "en-CA",
+        "href": "https://stripe.com/en-ca"
+      },
+      {
+        "hreflang": "fr-CA",
+        "href": "https://stripe.com/fr-ca"
+      },
+      {
+        "hreflang": "de-CH",
+        "href": "https://stripe.com/de-ch"
+      },
+      {
+        "hreflang": "fr-CH",
+        "href": "https://stripe.com/fr-ch"
+      },
+      {
+        "hreflang": "it-CH",
+        "href": "https://stripe.com/it-ch"
+      },
+      {
+        "hreflang": "en-CH",
+        "href": "https://stripe.com/en-ch"
+      },
+      {
+        "hreflang": "zh-CN",
+        "href": "https://stripe.com/cn"
+      },
+      {
+        "hreflang": "en-CN",
+        "href": "https://stripe.com/en-cn"
+      },
+      {
+        "hreflang": "en-CY",
+        "href": "https://stripe.com/en-cy"
+      },
+      {
+        "hreflang": "en-CZ",
+        "href": "https://stripe.com/en-cz"
+      },
+      {
+        "hreflang": "de-DE",
+        "href": "https://stripe.com/de"
+      },
+      {
+        "hreflang": "en-DE",
+        "href": "https://stripe.com/en-de"
+      },
+      {
+        "hreflang": "en-DK",
+        "href": "https://stripe.com/en-dk"
+      },
+      {
+        "hreflang": "en-EE",
+        "href": "https://stripe.com/en-ee"
+      },
+      {
+        "hreflang": "es-ES",
+        "href": "https://stripe.com/es"
+      },
+      {
+        "hreflang": "en-ES",
+        "href": "https://stripe.com/en-es"
+      },
+      {
+        "hreflang": "en-FI",
+        "href": "https://stripe.com/en-fi"
+      },
+      {
+        "hreflang": "sv-FI",
+        "href": "https://stripe.com/sv-fi"
+      },
+      {
+        "hreflang": "fr-FR",
+        "href": "https://stripe.com/fr"
+      },
+      {
+        "hreflang": "en-FR",
+        "href": "https://stripe.com/en-fr"
+      },
+      {
+        "hreflang": "en-GB",
+        "href": "https://stripe.com/gb"
+      },
+      {
+        "hreflang": "en-GI",
+        "href": "https://stripe.com/en-gi"
+      },
+      {
+        "hreflang": "en-GR",
+        "href": "https://stripe.com/en-gr"
+      },
+      {
+        "hreflang": "en-HK",
+        "href": "https://stripe.com/en-hk"
+      },
+      {
+        "hreflang": "zh-HK",
+        "href": "https://stripe.com/zh-hk"
+      },
+      {
+        "hreflang": "en-HR",
+        "href": "https://stripe.com/en-hr"
+      },
+      {
+        "hreflang": "it-HR",
+        "href": "https://stripe.com/it-hr"
+      },
+      {
+        "hreflang": "en-HU",
+        "href": "https://stripe.com/en-hu"
+      },
+      {
+        "hreflang": "en-IE",
+        "href": "https://stripe.com/ie"
+      },
+      {
+        "hreflang": "en-IN",
+        "href": "https://stripe.com/in"
+      },
+      {
+        "hreflang": "it-IT",
+        "href": "https://stripe.com/it"
+      },
+      {
+        "hreflang": "en-IT",
+        "href": "https://stripe.com/en-it"
+      },
+      {
+        "hreflang": "ja-JP",
+        "href": "https://stripe.com/jp"
+      },
+      {
+        "hreflang": "en-JP",
+        "href": "https://stripe.com/en-jp"
+      },
+      {
+        "hreflang": "de-LI",
+        "href": "https://stripe.com/de-li"
+      },
+      {
+        "hreflang": "en-LI",
+        "href": "https://stripe.com/en-li"
+      },
+      {
+        "hreflang": "en-LT",
+        "href": "https://stripe.com/en-lt"
+      },
+      {
+        "hreflang": "fr-LU",
+        "href": "https://stripe.com/fr-lu"
+      },
+      {
+        "hreflang": "de-LU",
+        "href": "https://stripe.com/de-lu"
+      },
+      {
+        "hreflang": "en-LU",
+        "href": "https://stripe.com/en-lu"
+      },
+      {
+        "hreflang": "en-LV",
+        "href": "https://stripe.com/en-lv"
+      },
+      {
+        "hreflang": "en-MY",
+        "href": "https://stripe.com/en-my"
+      },
+      {
+        "hreflang": "zh-MY",
+        "href": "https://stripe.com/zh-my"
+      },
+      {
+        "hreflang": "en-MT",
+        "href": "https://stripe.com/en-mt"
+      },
+      {
+        "hreflang": "es-MX",
+        "href": "https://stripe.com/mx"
+      },
+      {
+        "hreflang": "en-MX",
+        "href": "https://stripe.com/en-mx"
+      },
+      {
+        "hreflang": "nl-NL",
+        "href": "https://stripe.com/nl"
+      },
+      {
+        "hreflang": "en-NL",
+        "href": "https://stripe.com/en-nl"
+      },
+      {
+        "hreflang": "en-NO",
+        "href": "https://stripe.com/en-no"
+      },
+      {
+        "hreflang": "en-NZ",
+        "href": "https://stripe.com/nz"
+      },
+      {
+        "hreflang": "en-PL",
+        "href": "https://stripe.com/en-pl"
+      },
+      {
+        "hreflang": "pt-PT",
+        "href": "https://stripe.com/pt-pt"
+      },
+      {
+        "hreflang": "en-PT",
+        "href": "https://stripe.com/en-pt"
+      },
+      {
+        "hreflang": "en-RO",
+        "href": "https://stripe.com/en-ro"
+      },
+      {
+        "hreflang": "sv-SE",
+        "href": "https://stripe.com/se"
+      },
+      {
+        "hreflang": "en-SE",
+        "href": "https://stripe.com/en-se"
+      },
+      {
+        "hreflang": "en-SG",
+        "href": "https://stripe.com/en-sg"
+      },
+      {
+        "hreflang": "zh-SG",
+        "href": "https://stripe.com/zh-sg"
+      },
+      {
+        "hreflang": "en-SI",
+        "href": "https://stripe.com/en-si"
+      },
+      {
+        "hreflang": "it-SI",
+        "href": "https://stripe.com/it-si"
+      },
+      {
+        "hreflang": "en-SK",
+        "href": "https://stripe.com/en-sk"
+      },
+      {
+        "hreflang": "th-TH",
+        "href": "https://stripe.com/th"
+      },
+      {
+        "hreflang": "en-TH",
+        "href": "https://stripe.com/en-th"
+      },
+      {
+        "hreflang": "pt",
+        "href": "https://stripe.com/br"
+      },
+      {
+        "hreflang": "nl",
+        "href": "https://stripe.com/nl"
+      },
+      {
+        "hreflang": "en",
+        "href": "https://stripe.com/"
+      },
+      {
+        "hreflang": "fr",
+        "href": "https://stripe.com/fr"
+      },
+      {
+        "hreflang": "de",
+        "href": "https://stripe.com/de"
+      },
+      {
+        "hreflang": "it",
+        "href": "https://stripe.com/it"
+      },
+      {
+        "hreflang": "ja",
+        "href": "https://stripe.com/jp"
+      },
+      {
+        "hreflang": "zh",
+        "href": "https://stripe.com/zh-sg"
+      },
+      {
+        "hreflang": "es",
+        "href": "https://stripe.com/es"
+      },
+      {
+        "hreflang": "sv",
+        "href": "https://stripe.com/se"
+      },
+      {
+        "hreflang": "th",
+        "href": "https://stripe.com/th"
+      }
+    ],
+    "jsonLdTypes": [
+      "WebSite",
+      "Organization"
+    ],
+    "landmarks": {
+      "header": 6,
+      "nav": 1,
+      "main": 1,
+      "section": 18,
+      "article": 0,
+      "aside": 0,
+      "footer": 1,
+      "form": 0,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "事業成長を支える金融インフラ。 決済から組込み型金融、エージェンティックコマースまで、企業の収益最大化を支援。"
+      },
+      {
+        "level": 1,
+        "text": "事業成長を支える金融インフラ。 決済から組込み型金融、エージェンティックコマースまで、企業の収益最大化を支援。"
+      },
+      {
+        "level": 2,
+        "text": "ビジネスの形態を問わない、柔軟なプラットフォーム。"
+      },
+      {
+        "level": 3,
+        "text": "オンライン決済・対面決済をグローバルに展開"
+      },
+      {
+        "level": 3,
+        "text": "あらゆるサブスク・課金モデルに対応"
+      },
+      {
+        "level": 3,
+        "text": "プラットフォームに決済機能を統合"
+      },
+      {
+        "level": 3,
+        "text": "エージェンティックコマースを導入"
+      },
+      {
+        "level": 3,
+        "text": "ステーブルコインと暗号資産で越境決済に対応"
+      },
+      {
+        "level": 3,
+        "text": "安心の日本語サポート。"
+      },
+      {
+        "level": 3,
+        "text": "シンプルな料金体系"
+      },
+      {
+        "level": 2,
+        "text": "Payments"
+      },
+      {
+        "level": 3,
+        "text": "営業チームにご相談。"
+      },
+      {
+        "level": 2,
+        "text": "利用開始までの流れ。"
+      },
+      {
+        "level": 3,
+        "text": "アカウント登録"
+      },
+      {
+        "level": 3,
+        "text": "アカウント審査"
+      },
+      {
+        "level": 3,
+        "text": "Stripe が利用可能に"
+      },
+      {
+        "level": 2,
+        "text": "グローバルなコマースを 支える基盤"
+      },
+      {
+        "level": 2,
+        "text": "あらゆるビジネスに対応。"
+      },
+      {
+        "level": 3,
+        "text": "機動力のある金融インフラで、大企業の基盤を刷新"
+      },
+      {
+        "level": 3,
+        "text": "トヨタは Stripe Connect を活用してサステナビリティ・マーケットプレイスを構築しています。"
+      },
+      {
+        "level": 3,
+        "text": "DeNA は Stripe を利用して決済のオーソリ成功率を 10% 向上させました。"
+      },
+      {
+        "level": 3,
+        "text": "日本経済新聞は Stripe を活用して 1,000 万件のデジタル会員基盤を支えています"
+      },
+      {
+        "level": 3,
+        "text": "東急は Stripe を利用してサブスクのコンバージョンを 20% 向上させました"
+      },
+      {
+        "level": 3,
+        "text": "強固なビジネス基盤で、スタートアップの成長を加速"
+      },
+      {
+        "level": 3,
+        "text": "SaaS プラットフォームを「金融オペレーティングシステム」へ"
+      },
+      {
+        "level": 2,
+        "text": "あらゆる技術スタックに、信頼と拡張性を。"
+      },
+      {
+        "level": 3,
+        "text": "既存のシステムと接続。"
+      },
+      {
+        "level": 3,
+        "text": "事業規模を確実に拡大。"
+      },
+      {
+        "level": 3,
+        "text": "インテグレーションの方法を選択。"
+      },
+      {
+        "level": 2,
+        "text": "Stripe の最前線"
+      },
+      {
+        "level": 3,
+        "text": "Stripe を利用するビジネスが 2025 年に生み出す$1.9兆。"
+      },
+      {
+        "level": 3,
+        "text": "15万以上のユーザーが過去最高の 1 日を達成。"
+      },
+      {
+        "level": 3,
+        "text": "Tidemark によるバーティカル / 中小企業 SaaS ベンチマークレポート。"
+      },
+      {
+        "level": 3,
+        "text": "Shopify CEO のトビ・リュトケ氏と、Stripe 共同創業者兼 CEO のジョン・コリソンが対談。"
+      },
+      {
+        "level": 3,
+        "text": "アプリストア外決済のための新ツール。"
+      },
+      {
+        "level": 3,
+        "text": "Crypto.com × Stripe: 暗号資産決済をより身近に。"
+      },
+      {
+        "level": 3,
+        "text": "AI プラットフォームを通じた商品購入を可能に。"
+      },
+      {
+        "level": 3,
+        "text": "大手小売業者が顧客体験を統合し、成長を促進する方法。"
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug/:slug/:slug",
+        "count": 77,
+        "samples": [
+          "https://stripe.com/jp/customers/amazon",
+          "https://stripe.com/jp/customers/toyota",
+          "https://stripe.com/jp/customers/slack"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug",
+        "count": 40,
+        "samples": [
+          "https://stripe.com/jp/products",
+          "https://stripe.com/jp/enterprise",
+          "https://stripe.com/jp/professional-services"
+        ]
+      },
+      {
+        "shape": "/:slug/pricing",
+        "count": 5,
+        "samples": [
+          "https://stripe.com/jp/pricing",
+          "https://stripe.com/jp/pricing#global-payments"
+        ]
+      },
+      {
+        "shape": "/:slug/contact/:slug",
+        "count": 5,
+        "samples": [
+          "https://stripe.com/jp/contact/sales"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug/news/:slug",
+        "count": 4,
+        "samples": [
+          "https://stripe.com/jp/newsroom/news/google-and-stripe",
+          "https://stripe.com/jp/newsroom/news/stripe-openai-instant-checkout",
+          "https://stripe.com/jp/newsroom/news/bfcm2025"
+        ]
+      },
+      {
+        "shape": "/:slug/pricing/:slug",
+        "count": 2,
+        "samples": [
+          "https://stripe.com/jp/pricing/local-payment-methods"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug/:num",
+        "count": 2,
+        "samples": [
+          "https://stripe.com/jp/annual-updates/2025"
+        ]
+      },
+      {
+        "shape": "/:slug/blog/:slug",
+        "count": 2,
+        "samples": [
+          "https://stripe.com/jp/blog/introducing-our-agentic-commerce-solutions"
+        ]
+      },
+      {
+        "shape": "/:slug",
+        "count": 1,
+        "samples": [
+          "https://stripe.com/jp"
+        ]
+      },
+      {
+        "shape": "/:slug/contact",
+        "count": 1,
+        "samples": [
+          "https://stripe.com/jp/contact"
+        ]
+      },
+      {
+        "shape": "/:slug/blog",
+        "count": 1,
+        "samples": [
+          "https://stripe.com/jp/blog"
+        ]
+      },
+      {
+        "shape": "/:slug/privacy",
+        "count": 1,
+        "samples": [
+          "https://stripe.com/jp/privacy"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 145,
+    "repeatedComponents": [
+      {
+        "signature": "li.hero-logo-wall-section__cell",
+        "count": 13,
+        "parents": 1,
+        "width": 224,
+        "height": {
+          "min": 72,
+          "max": 72,
+          "median": 72
+        },
+        "fullyVisibleFirstScreen": 13,
+        "touchedFirstScreen": 13
+      },
+      {
+        "signature": "div.feature-detail",
+        "count": 9,
+        "parents": 3,
+        "width": 400,
+        "height": {
+          "min": 165,
+          "max": 419,
+          "median": 165
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "div.squeezy-carousel__item-details",
+        "count": 8,
+        "parents": 1,
+        "width": 1232,
+        "height": {
+          "min": 100,
+          "max": 100,
+          "median": 100
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "div.footer-links-block",
+        "count": 8,
+        "parents": 4,
+        "width": 295,
+        "height": {
+          "min": 26,
+          "max": 795,
+          "median": 195
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "li.carousel__item.case-study-carousel__item",
+        "count": 7,
+        "parents": 1,
+        "width": 332,
+        "height": {
+          "min": 579,
+          "max": 579,
+          "median": 579
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "primaryList": {
+      "signature": "li.hero-logo-wall-section__cell",
+      "count": 13,
+      "parents": 1,
+      "width": 224,
+      "height": {
+        "min": 72,
+        "max": 72,
+        "median": 72
+      },
+      "fullyVisibleFirstScreen": 13,
+      "touchedFirstScreen": 13
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 1028
+        },
+        {
+          "value": "rgb(83, 58, 253)",
+          "count": 470
+        },
+        {
+          "value": "rgb(80, 97, 122)",
+          "count": 161
+        },
+        {
+          "value": "rgb(6, 27, 49)",
+          "count": 140
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 104
+        },
+        {
+          "value": "rgb(100, 116, 141)",
+          "count": 80
+        },
+        {
+          "value": "rgb(115, 137, 255)",
+          "count": 24
+        },
+        {
+          "value": "rgb(0, 0, 238)",
+          "count": 22
+        },
+        {
+          "value": "rgb(60, 79, 105)",
+          "count": 18
+        },
+        {
+          "value": "rgb(39, 57, 81)",
+          "count": 16
+        },
+        {
+          "value": "rgb(255, 97, 24)",
+          "count": 14
+        },
+        {
+          "value": "rgb(26, 44, 68)",
+          "count": 14
+        },
+        {
+          "value": "rgb(100, 128, 178)",
+          "count": 7
+        },
+        {
+          "value": "rgb(131, 155, 200)",
+          "count": 4
+        },
+        {
+          "value": "rgb(127, 125, 252)",
+          "count": 3
+        },
+        {
+          "value": "rgb(163, 181, 214)",
+          "count": 3
+        },
+        {
+          "value": "rgba(16, 16, 16, 0.3)",
+          "count": 3
+        },
+        {
+          "value": "rgb(129, 184, 26)",
+          "count": 2
+        },
+        {
+          "value": "rgba(0, 14, 255, 0.5)",
+          "count": 2
+        },
+        {
+          "value": "rgb(125, 139, 164)",
+          "count": 1
+        },
+        {
+          "value": "rgb(45, 37, 100)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 40
+        },
+        {
+          "value": "rgb(229, 237, 245)",
+          "count": 14
+        },
+        {
+          "value": "rgb(248, 250, 253)",
+          "count": 14
+        },
+        {
+          "value": "rgba(255, 255, 255, 0)",
+          "count": 12
+        },
+        {
+          "value": "rgb(83, 58, 253)",
+          "count": 9
+        },
+        {
+          "value": "rgb(226, 228, 255)",
+          "count": 3
+        },
+        {
+          "value": "rgb(227, 236, 247)",
+          "count": 3
+        },
+        {
+          "value": "rgb(232, 233, 255)",
+          "count": 3
+        },
+        {
+          "value": "rgb(28, 30, 84)",
+          "count": 3
+        },
+        {
+          "value": "rgb(13, 23, 56)",
+          "count": 2
+        },
+        {
+          "value": "rgb(255, 224, 209)",
+          "count": 2
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.65)",
+          "count": 2
+        },
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 1
+        },
+        {
+          "value": "rgb(0, 214, 111)",
+          "count": 1
+        },
+        {
+          "value": "rgba(248, 250, 253, 0.45)",
+          "count": 1
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.38)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 1791
+        },
+        {
+          "value": "10px",
+          "count": 107
+        },
+        {
+          "value": "14px",
+          "count": 57
+        },
+        {
+          "value": "26px",
+          "count": 35
+        },
+        {
+          "value": "9px",
+          "count": 29
+        },
+        {
+          "value": "22px",
+          "count": 25
+        },
+        {
+          "value": "8px",
+          "count": 18
+        },
+        {
+          "value": "48px",
+          "count": 13
+        },
+        {
+          "value": "18px",
+          "count": 12
+        },
+        {
+          "value": "12px",
+          "count": 10
+        },
+        {
+          "value": "32px",
+          "count": 9
+        },
+        {
+          "value": "44px",
+          "count": 6
+        },
+        {
+          "value": "11px",
+          "count": 5
+        },
+        {
+          "value": "20px",
+          "count": 2
+        },
+        {
+          "value": "56px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "16px",
+          "count": 229
+        },
+        {
+          "value": "20px",
+          "count": 85
+        },
+        {
+          "value": "22.4px",
+          "count": 81
+        },
+        {
+          "value": "0px",
+          "count": 68
+        },
+        {
+          "value": "14px",
+          "count": 58
+        },
+        {
+          "value": "11.5px",
+          "count": 48
+        },
+        {
+          "value": "24.2px",
+          "count": 25
+        },
+        {
+          "value": "29.12px",
+          "count": 24
+        },
+        {
+          "value": "10.8px",
+          "count": 18
+        },
+        {
+          "value": "8px",
+          "count": 14
+        },
+        {
+          "value": "25.2px",
+          "count": 12
+        },
+        {
+          "value": "8.96px",
+          "count": 12
+        },
+        {
+          "value": "12px",
+          "count": 10
+        },
+        {
+          "value": "35.2px",
+          "count": 9
+        },
+        {
+          "value": "19.2px",
+          "count": 7
+        },
+        {
+          "value": "48px",
+          "count": 7
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 1134
+        },
+        {
+          "value": "600",
+          "count": 634
+        },
+        {
+          "value": "300",
+          "count": 352
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "sohne-var",
+          "count": 2120
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 2007
+        },
+        {
+          "value": "4px",
+          "count": 57
+        },
+        {
+          "value": "6px",
+          "count": 33
+        },
+        {
+          "value": "50%",
+          "count": 6
+        },
+        {
+          "value": "5px",
+          "count": 5
+        },
+        {
+          "value": "8px",
+          "count": 4
+        },
+        {
+          "value": "100%",
+          "count": 3
+        },
+        {
+          "value": "3px",
+          "count": 2
+        },
+        {
+          "value": "0px 0px 6px 6px",
+          "count": 1
+        },
+        {
+          "value": "16px",
+          "count": 1
+        },
+        {
+          "value": "6px 6px 0px 0px",
+          "count": 1
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(50, 50, 93, 0.12) 0px 16px 32px 0px",
+          "count": 2
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.1) 0px 30px 60px -50px, rgba(50, 50, 93, 0.25) 0px 30px 60px -10px",
+          "count": 1
+        },
+        {
+          "value": "rgba(23, 23, 23, 0.06) 0px 3px 6px 0px",
+          "count": 1
+        },
+        {
+          "value": "rgba(23, 23, 23, 0.08) 0px 15px 35px 0px",
+          "count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "value": "8px",
+          "count": 58
+        },
+        {
+          "value": "16px",
+          "count": 29
+        },
+        {
+          "value": "32px",
+          "count": 18
+        },
+        {
+          "value": "64px",
+          "count": 13
+        },
+        {
+          "value": "16px normal",
+          "count": 12
+        },
+        {
+          "value": "4px",
+          "count": 10
+        },
+        {
+          "value": "4px normal",
+          "count": 8
+        },
+        {
+          "value": "10px",
+          "count": 6
+        },
+        {
+          "value": "1px",
+          "count": 6
+        },
+        {
+          "value": "24px",
+          "count": 6
+        },
+        {
+          "value": "normal 8px",
+          "count": 5
+        },
+        {
+          "value": "8px 16px",
+          "count": 4
+        },
+        {
+          "value": "12px",
+          "count": 3
+        },
+        {
+          "value": "14px",
+          "count": 3
+        },
+        {
+          "value": "32px 16px",
+          "count": 3
+        },
+        {
+          "value": "5px",
+          "count": 3
+        }
+      ],
+      "paddings": [
+        {
+          "value": "8px 8px",
+          "count": 15
+        },
+        {
+          "value": "24px 24px",
+          "count": 14
+        },
+        {
+          "value": "6px 6px",
+          "count": 14
+        },
+        {
+          "value": "14.5px 15.5px",
+          "count": 12
+        },
+        {
+          "value": "11px 11px",
+          "count": 9
+        },
+        {
+          "value": "15.5px 16.5px",
+          "count": 8
+        },
+        {
+          "value": "0px 8px",
+          "count": 7
+        },
+        {
+          "value": "32px 32px",
+          "count": 7
+        },
+        {
+          "value": "96px 96px",
+          "count": 6
+        },
+        {
+          "value": "12px 12px",
+          "count": 5
+        },
+        {
+          "value": "2px 4px",
+          "count": 4
+        },
+        {
+          "value": "36px 36px",
+          "count": 4
+        },
+        {
+          "value": "40px 40px",
+          "count": 4
+        },
+        {
+          "value": "4px 4px",
+          "count": 4
+        },
+        {
+          "value": "64px 64px",
+          "count": 4
+        },
+        {
+          "value": "5.5px 0px",
+          "count": 3
+        }
+      ],
+      "transitions": [
+        {
+          "value": "color 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
+          "count": 139
+        },
+        {
+          "value": "fill 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
+          "count": 56
+        },
+        {
+          "value": "opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
+          "count": 55
+        },
+        {
+          "value": "stroke 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
+          "count": 55
+        },
+        {
+          "value": "transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
+          "count": 55
+        },
+        {
+          "value": "transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1)",
+          "count": 39
+        },
+        {
+          "value": "background-color, color, outline-color, border 0.3s, 0.3s, 0.3s, 0.3s cubic-bezier(0.25, 1, 0.5, 1), cubic-bezier(0.25, 1, 0.5, 1), cubic-bezier(0.25, 1, 0.5, 1), cubic-bezier(0.25, 1, 0.5, 1)",
+          "count": 25
+        },
+        {
+          "value": "opacity 0.12s ease",
+          "count": 16
+        },
+        {
+          "value": "clip-path 0.8s cubic-bezier(0.165, 0.84, 0.44, 1)",
+          "count": 10
+        },
+        {
+          "value": "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+          "count": 10
+        },
+        {
+          "value": "opacity 0.25s linear",
+          "count": 8
+        },
+        {
+          "value": "opacity 0.4s cubic-bezier(0.3, 0, 0.2, 1)",
+          "count": 8
+        },
+        {
+          "value": "opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1)",
+          "count": 8
+        },
+        {
+          "value": "transform 0.25s cubic-bezier(0.6, 0, 0.2, 0.5)",
+          "count": 8
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1266px",
+          "count": 16
+        },
+        {
+          "value": "817.778px",
+          "count": 8
+        },
+        {
+          "value": "752px",
+          "count": 5
+        },
+        {
+          "value": "876.096px",
+          "count": 4
+        },
+        {
+          "value": "856px",
+          "count": 3
+        },
+        {
+          "value": "858.624px",
+          "count": 2
+        },
+        {
+          "value": "988.416px",
+          "count": 2
+        },
+        {
+          "value": "1298px",
+          "count": 1
+        },
+        {
+          "value": "1349px",
+          "count": 1
+        },
+        {
+          "value": "671px",
+          "count": 1
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "2 tracks",
+          "count": 22
+        },
+        {
+          "value": "3 tracks",
+          "count": 14
+        },
+        {
+          "value": "12 tracks",
+          "count": 7
+        },
+        {
+          "value": "1 tracks",
+          "count": 6
+        },
+        {
+          "value": "4 tracks",
+          "count": 3
+        },
+        {
+          "value": "5 tracks",
+          "count": 1
+        },
+        {
+          "value": "8 tracks",
+          "count": 1
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 1,
+      "fixedElements": 1,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": true,
+      "images": 27,
+      "lazyImages": 17,
+      "searchInputs": 0,
+      "selects": 0,
+      "buttons": 28,
+      "tabs": 0,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "b.stripecdn.com",
+        "count": 88
+      },
+      {
+        "value": "images.stripeassets.com",
+        "count": 5
+      },
+      {
+        "value": "q.stripe.com",
+        "count": 3
+      },
+      {
+        "value": "r.stripe.com",
+        "count": 3
+      },
+      {
+        "value": "assets.stripeassets.com",
+        "count": 1
+      },
+      {
+        "value": "ext.stripe.com",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "script",
+        "count": 77
+      },
+      {
+        "value": "img",
+        "count": 9
+      },
+      {
+        "value": "link",
+        "count": 9
+      },
+      {
+        "value": "fetch",
+        "count": 7
+      },
+      {
+        "value": "other",
+        "count": 3
+      },
+      {
+        "value": "iframe",
+        "count": 2
+      }
+    ],
+    "requestCount": 107,
+    "textLength": 7781,
+    "contrast": {
+      "sampled": 400,
+      "skippedForComplexBackground": 3,
+      "min": 1,
+      "p10": 4.75,
+      "median": 6.3,
+      "belowRequirement": 15,
+      "worst": [
+        {
+          "selector": "span",
+          "text": "購入者に返金する方法を教えてください。",
+          "fontSize": 16,
+          "ratio": 1,
+          "required": 4.5
+        },
+        {
+          "selector": "span.hero-section__title-copy",
+          "text": "決済から組込み型金融、エージェンティックコマースまで、企業の収益最大化を支援。",
+          "fontSize": 44,
+          "ratio": 2.39,
+          "required": 3
+        },
+        {
+          "selector": "div",
+          "text": "続ける",
+          "fontSize": 10,
+          "ratio": 2.41,
+          "required": 4.5
+        },
+        {
+          "selector": "div",
+          "text": "Weiter",
+          "fontSize": 10,
+          "ratio": 2.41,
+          "required": 4.5
+        },
+        {
+          "selector": "div",
+          "text": "続行",
+          "fontSize": 10,
+          "ratio": 2.41,
+          "required": 4.5
+        },
+        {
+          "selector": "div",
+          "text": "続ける",
+          "fontSize": 10,
+          "ratio": 2.41,
+          "required": 4.5
+        },
+        {
+          "selector": "div",
+          "text": "続ける",
+          "fontSize": 10,
+          "ratio": 2.41,
+          "required": 4.5
+        },
+        {
+          "selector": "div",
+          "text": "Weiter",
+          "fontSize": 10,
+          "ratio": 2.41,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 22057,
+    "scrollScreens": 26.1,
+    "primaryList": {
+      "signature": "li.hero-logo-wall-section__cell",
+      "count": 13,
+      "parents": 1,
+      "width": 130,
+      "height": {
+        "min": 64,
+        "max": 64,
+        "median": 64
+      },
+      "fullyVisibleFirstScreen": 13,
+      "touchedFirstScreen": 13
+    },
+    "repeatedComponents": [
+      {
+        "signature": "li.hero-logo-wall-section__cell",
+        "count": 13,
+        "parents": 1,
+        "width": 130,
+        "height": {
+          "min": 64,
+          "max": 64,
+          "median": 64
+        },
+        "fullyVisibleFirstScreen": 13,
+        "touchedFirstScreen": 13
+      },
+      {
+        "signature": "div.feature-detail",
+        "count": 9,
+        "parents": 3,
+        "width": 358,
+        "height": {
+          "min": 165,
+          "max": 411,
+          "median": 188
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "li.carousel__item.mobile-carousel__item",
+        "count": 8,
+        "parents": 1,
+        "width": 358,
+        "height": {
+          "min": 657,
+          "max": 657,
+          "median": 657
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "16px",
+          "count": 1831
+        },
+        {
+          "value": "10px",
+          "count": 107
+        },
+        {
+          "value": "20px",
+          "count": 41
+        },
+        {
+          "value": "12px",
+          "count": 36
+        },
+        {
+          "value": "9px",
+          "count": 29
+        },
+        {
+          "value": "8px",
+          "count": 18
+        },
+        {
+          "value": "18px",
+          "count": 15
+        },
+        {
+          "value": "28px",
+          "count": 10
+        }
+      ]
+    },
+    "textLength": 7787
+  }
+}

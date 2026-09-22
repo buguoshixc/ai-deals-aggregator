@@ -1,0 +1,1106 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "artificialanalysis.ai",
+  "target": "https://artificialanalysis.ai/",
+  "fetchedAt": "2026-09-22T16:23:34.339Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 9381,
+      "hydration": {
+        "textBefore": 15471,
+        "textAfter": 15471
+      },
+      "notes": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 14152,
+      "hydration": {
+        "textBefore": 14924,
+        "textAfter": 14924
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    }
+  ],
+  "desktop": {
+    "url": "https://artificialanalysis.ai/",
+    "title": "AI Model & API Providers Analysis | Artificial Analysis",
+    "lang": "en",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 25600,
+    "scrollScreens": 28.4,
+    "meta": {
+      "description": "Comparison and analysis of AI models and API hosting providers. Independent benchmarks across key performance metrics including quality, price, output speed & latency.",
+      "ogImage": "https://artificialanalysis.ai/opengraph-image.png?732728ccc2829321",
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width, initial-scale=1"
+    },
+    "canonical": "https://artificialanalysis.ai",
+    "hreflang": [],
+    "jsonLdTypes": [
+      "Dataset"
+    ],
+    "landmarks": {
+      "header": 0,
+      "nav": 2,
+      "main": 1,
+      "section": 14,
+      "article": 0,
+      "aside": 1,
+      "footer": 1,
+      "form": 1,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "Independent analysis of AI"
+      },
+      {
+        "level": 3,
+        "text": "Intelligence"
+      },
+      {
+        "level": 3,
+        "text": "Speed"
+      },
+      {
+        "level": 3,
+        "text": "Cost per Task"
+      },
+      {
+        "level": 2,
+        "text": "Intelligence Updated"
+      },
+      {
+        "level": 3,
+        "text": "Artificial Analysis Intelligence Index"
+      },
+      {
+        "level": 3,
+        "text": "Artificial Analysis Intelligence Index"
+      },
+      {
+        "level": 3,
+        "text": "Artificial Analysis Intelligence Index by Open Weights / Proprietary"
+      },
+      {
+        "level": 3,
+        "text": "Artificial Analysis Intelligence Index"
+      },
+      {
+        "level": 3,
+        "text": "Open Weights"
+      },
+      {
+        "level": 3,
+        "text": "Cost per Intelligence Index Task"
+      },
+      {
+        "level": 3,
+        "text": "Cost per Intelligence Index Task"
+      },
+      {
+        "level": 3,
+        "text": "Intelligence Index vs. Cost per Intelligence Index Task"
+      },
+      {
+        "level": 3,
+        "text": "Cost per Intelligence Index Task"
+      },
+      {
+        "level": 3,
+        "text": "Artificial Analysis Intelligence Index"
+      },
+      {
+        "level": 3,
+        "text": "Intelligence Index vs. Cost per Intelligence Index Task, by Model Rele"
+      },
+      {
+        "level": 3,
+        "text": "Cost per Intelligence Index Task"
+      },
+      {
+        "level": 3,
+        "text": "Artificial Analysis Intelligence Index"
+      },
+      {
+        "level": 3,
+        "text": "Frontier Language Model Intelligence, Over Time"
+      },
+      {
+        "level": 3,
+        "text": "Artificial Analysis Intelligence Index"
+      },
+      {
+        "level": 2,
+        "text": "Coding Agent Index Updated"
+      },
+      {
+        "level": 3,
+        "text": "Artificial Analysis Coding Agent Index"
+      },
+      {
+        "level": 3,
+        "text": "Artificial Analysis Coding Agent Index vs. Cost per Task"
+      },
+      {
+        "level": 3,
+        "text": "How to Read This Chart"
+      },
+      {
+        "level": 2,
+        "text": "Image & Video"
+      },
+      {
+        "level": 3,
+        "text": "Text to Image Leaderboard"
+      },
+      {
+        "level": 2,
+        "text": "Speech"
+      },
+      {
+        "level": 3,
+        "text": "Provider Voice Arena Preference Elo"
+      },
+      {
+        "level": 3,
+        "text": "Arena Preference Elo"
+      },
+      {
+        "level": 2,
+        "text": "Capability Indexes"
+      },
+      {
+        "level": 3,
+        "text": "Artificial Analysis Finance & Accounting Index"
+      },
+      {
+        "level": 2,
+        "text": "Benchmarks"
+      },
+      {
+        "level": 3,
+        "text": "Intelligence Evaluations"
+      },
+      {
+        "level": 3,
+        "text": "Intelligence Evaluation Relevance"
+      },
+      {
+        "level": 3,
+        "text": "Artificial Analysis Intelligence Index"
+      },
+      {
+        "level": 3,
+        "text": "AA-Briefcase v1.1 Updated"
+      },
+      {
+        "level": 3,
+        "text": "AA-Briefcase Elo"
+      },
+      {
+        "level": 3,
+        "text": "AA-Briefcase Elo"
+      },
+      {
+        "level": 3,
+        "text": "AA-AnalystAgent"
+      },
+      {
+        "level": 3,
+        "text": "AA-AnalystAgent pass^5"
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/models/:slug",
+        "count": 49,
+        "samples": [
+          "https://artificialanalysis.ai/models/capabilities",
+          "https://artificialanalysis.ai/models/claude-fable-5-1",
+          "https://artificialanalysis.ai/models/gpt-6-astra"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug",
+        "count": 45,
+        "samples": [
+          "https://artificialanalysis.ai/articles/artificial-analysis-intelligence-index-v4-3",
+          "https://artificialanalysis.ai/articles/benchmarking-grok-4-7",
+          "https://artificialanalysis.ai/methodology/intelligence-benchmarking"
+        ]
+      },
+      {
+        "shape": "/:slug",
+        "count": 16,
+        "samples": [
+          "https://artificialanalysis.ai/trends",
+          "https://artificialanalysis.ai/optima",
+          "https://artificialanalysis.ai/changelog"
+        ]
+      },
+      {
+        "shape": "/pricing",
+        "count": 2,
+        "samples": [
+          "https://artificialanalysis.ai/pricing?source=nav&from=%2F"
+        ]
+      },
+      {
+        "shape": "/login",
+        "count": 2,
+        "samples": [
+          "https://artificialanalysis.ai/login"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug/:slug",
+        "count": 1,
+        "samples": [
+          "https://artificialanalysis.ai/image/leaderboard/text-to-image"
+        ]
+      },
+      {
+        "shape": "/models/:slug/:slug",
+        "count": 1,
+        "samples": [
+          "https://artificialanalysis.ai/models/capabilities/finance-and-accounting"
+        ]
+      },
+      {
+        "shape": "/:slug/models",
+        "count": 1,
+        "samples": [
+          "https://artificialanalysis.ai/leaderboards/models"
+        ]
+      },
+      {
+        "shape": "/about",
+        "count": 1,
+        "samples": [
+          "https://artificialanalysis.ai/about"
+        ]
+      },
+      {
+        "shape": "/contact",
+        "count": 1,
+        "samples": [
+          "https://artificialanalysis.ai/contact"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 14,
+    "internalLinkCount": 136,
+    "repeatedComponents": [
+      {
+        "signature": "div.text-left.text-sm",
+        "count": 18,
+        "parents": 1,
+        "width": 536,
+        "height": {
+          "min": 298,
+          "max": 298,
+          "median": 298
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "li",
+        "count": 14,
+        "parents": 3,
+        "width": 217,
+        "height": {
+          "min": 24,
+          "max": 24,
+          "median": 24
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "section.scroll-mt-24",
+        "count": 11,
+        "parents": 1,
+        "width": 1162,
+        "height": {
+          "min": 697,
+          "max": 6304,
+          "median": 1461
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "primaryList": {
+      "signature": "div.text-left.text-sm",
+      "count": 18,
+      "parents": 1,
+      "width": 536,
+      "height": {
+        "min": 298,
+        "max": 298,
+        "median": 298
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 2730
+        },
+        {
+          "value": "rgb(148, 148, 148)",
+          "count": 203
+        },
+        {
+          "value": "rgb(120, 120, 120)",
+          "count": 149
+        },
+        {
+          "value": "rgb(77, 77, 77)",
+          "count": 47
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 21
+        },
+        {
+          "value": "rgb(116, 26, 102)",
+          "count": 12
+        },
+        {
+          "value": "rgb(204, 120, 92)",
+          "count": 6
+        },
+        {
+          "value": "rgb(31, 31, 31)",
+          "count": 6
+        },
+        {
+          "value": "rgb(0, 137, 244)",
+          "count": 3
+        },
+        {
+          "value": "rgb(115, 108, 211)",
+          "count": 3
+        },
+        {
+          "value": "rgb(255, 105, 0)",
+          "count": 3
+        },
+        {
+          "value": "rgb(28, 127, 248)",
+          "count": 3
+        },
+        {
+          "value": "rgb(34, 67, 230)",
+          "count": 3
+        },
+        {
+          "value": "rgb(52, 168, 83)",
+          "count": 3
+        },
+        {
+          "value": "rgb(163, 163, 163)",
+          "count": 2
+        },
+        {
+          "value": "rgb(177, 253, 235)",
+          "count": 2
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.6)",
+          "count": 1
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.75)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 142
+        },
+        {
+          "value": "rgb(241, 242, 244)",
+          "count": 42
+        },
+        {
+          "value": "rgb(148, 148, 148)",
+          "count": 30
+        },
+        {
+          "value": "rgb(231, 231, 231)",
+          "count": 21
+        },
+        {
+          "value": "rgb(67, 0, 59)",
+          "count": 21
+        },
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 18
+        },
+        {
+          "value": "rgb(250, 250, 250)",
+          "count": 18
+        },
+        {
+          "value": "rgb(116, 26, 102)",
+          "count": 6
+        },
+        {
+          "value": "rgb(0, 137, 244)",
+          "count": 5
+        },
+        {
+          "value": "rgb(115, 108, 211)",
+          "count": 4
+        },
+        {
+          "value": "rgb(144, 144, 144)",
+          "count": 4
+        },
+        {
+          "value": "rgb(255, 112, 24)",
+          "count": 4
+        },
+        {
+          "value": "rgb(28, 127, 248)",
+          "count": 4
+        },
+        {
+          "value": "rgb(31, 31, 31)",
+          "count": 4
+        },
+        {
+          "value": "rgb(34, 67, 230)",
+          "count": 4
+        },
+        {
+          "value": "rgb(80, 80, 80)",
+          "count": 4
+        },
+        {
+          "value": "rgba(144, 238, 144, 0.25)",
+          "count": 4
+        },
+        {
+          "value": "rgb(103, 103, 103)",
+          "count": 3
+        },
+        {
+          "value": "rgb(112, 112, 112)",
+          "count": 3
+        },
+        {
+          "value": "rgb(176, 176, 176)",
+          "count": 3
+        },
+        {
+          "value": "rgb(204, 120, 92)",
+          "count": 3
+        },
+        {
+          "value": "rgb(208, 208, 208)",
+          "count": 3
+        },
+        {
+          "value": "rgb(235, 53, 104)",
+          "count": 3
+        },
+        {
+          "value": "rgb(253, 111, 0)",
+          "count": 3
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "14px",
+          "count": 1428
+        },
+        {
+          "value": "16px",
+          "count": 1288
+        },
+        {
+          "value": "12px",
+          "count": 278
+        },
+        {
+          "value": "11px",
+          "count": 94
+        },
+        {
+          "value": "20px",
+          "count": 69
+        },
+        {
+          "value": "30px",
+          "count": 36
+        },
+        {
+          "value": "24px",
+          "count": 14
+        },
+        {
+          "value": "10px",
+          "count": 3
+        },
+        {
+          "value": "18px",
+          "count": 1
+        },
+        {
+          "value": "80px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "24px",
+          "count": 1288
+        },
+        {
+          "value": "20px",
+          "count": 789
+        },
+        {
+          "value": "14px",
+          "count": 617
+        },
+        {
+          "value": "16px",
+          "count": 279
+        },
+        {
+          "value": "28px",
+          "count": 70
+        },
+        {
+          "value": "11px",
+          "count": 60
+        },
+        {
+          "value": "36px",
+          "count": 36
+        },
+        {
+          "value": "16.5px",
+          "count": 35
+        },
+        {
+          "value": "12px",
+          "count": 20
+        },
+        {
+          "value": "32px",
+          "count": 14
+        },
+        {
+          "value": "19.25px",
+          "count": 2
+        },
+        {
+          "value": "15px",
+          "count": 1
+        },
+        {
+          "value": "80px",
+          "count": 1
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 3069
+        },
+        {
+          "value": "500",
+          "count": 143
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "suisseIntl",
+          "count": 3091
+        },
+        {
+          "value": "victorSerifBasic",
+          "count": 121
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 2803
+        },
+        {
+          "value": "8px",
+          "count": 193
+        },
+        {
+          "value": "9999px",
+          "count": 161
+        },
+        {
+          "value": "4px",
+          "count": 22
+        },
+        {
+          "value": "8px 8px 0px 0px",
+          "count": 15
+        },
+        {
+          "value": "24px",
+          "count": 11
+        },
+        {
+          "value": "2px",
+          "count": 4
+        },
+        {
+          "value": "12px",
+          "count": 2
+        },
+        {
+          "value": "6px",
+          "count": 1
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "count": 36
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+          "count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "value": "8px",
+          "count": 304
+        },
+        {
+          "value": "4px",
+          "count": 232
+        },
+        {
+          "value": "16px",
+          "count": 28
+        },
+        {
+          "value": "0px",
+          "count": 27
+        },
+        {
+          "value": "20px",
+          "count": 26
+        },
+        {
+          "value": "48px",
+          "count": 26
+        },
+        {
+          "value": "6px",
+          "count": 21
+        },
+        {
+          "value": "2px",
+          "count": 19
+        },
+        {
+          "value": "12px",
+          "count": 17
+        },
+        {
+          "value": "32px",
+          "count": 13
+        },
+        {
+          "value": "24px",
+          "count": 5
+        },
+        {
+          "value": "4px 16px",
+          "count": 4
+        },
+        {
+          "value": "16px 28px",
+          "count": 1
+        },
+        {
+          "value": "28px",
+          "count": 1
+        },
+        {
+          "value": "64px",
+          "count": 1
+        },
+        {
+          "value": "normal 12px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "2px 2px",
+          "count": 94
+        },
+        {
+          "value": "8px 8px",
+          "count": 94
+        },
+        {
+          "value": "6px 6px",
+          "count": 30
+        },
+        {
+          "value": "4px 4px",
+          "count": 19
+        },
+        {
+          "value": "16px 16px",
+          "count": 18
+        },
+        {
+          "value": "12px 12px",
+          "count": 16
+        },
+        {
+          "value": "20px 0px",
+          "count": 13
+        },
+        {
+          "value": "32px 32px",
+          "count": 10
+        },
+        {
+          "value": "8px 20px",
+          "count": 3
+        },
+        {
+          "value": "28px 28px",
+          "count": 2
+        },
+        {
+          "value": "0px 12px",
+          "count": 1
+        },
+        {
+          "value": "20px 20px",
+          "count": 1
+        },
+        {
+          "value": "20px 32px",
+          "count": 1
+        },
+        {
+          "value": "36px 80px",
+          "count": 1
+        },
+        {
+          "value": "64px 160px",
+          "count": 1
+        },
+        {
+          "value": "8px 0px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "color, background-color, border-color, text-decoration-color, fill, stroke 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 324
+        },
+        {
+          "value": "transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 24
+        },
+        {
+          "value": "left, width, height, top 0.28s cubic-bezier(0.33, 1, 0.68, 1)",
+          "count": 16
+        },
+        {
+          "value": "all 0s ease",
+          "count": 3
+        },
+        {
+          "value": "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        },
+        {
+          "value": "opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        },
+        {
+          "value": "width, border-radius 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1440px",
+          "count": 5
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "12 tracks",
+          "count": 29
+        },
+        {
+          "value": "2 tracks",
+          "count": 3
+        },
+        {
+          "value": "3 tracks",
+          "count": 1
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 2,
+      "fixedElements": 0,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": false,
+      "images": 14,
+      "lazyImages": 14,
+      "searchInputs": 0,
+      "selects": 0,
+      "buttons": 413,
+      "tabs": 66,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "www.googletagmanager.com",
+        "count": 2
+      },
+      {
+        "value": "analytics.ahrefs.com",
+        "count": 1
+      },
+      {
+        "value": "www.google-analytics.com",
+        "count": 1
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "script",
+        "count": 72
+      },
+      {
+        "value": "link",
+        "count": 12
+      },
+      {
+        "value": "img",
+        "count": 9
+      },
+      {
+        "value": "fetch",
+        "count": 7
+      },
+      {
+        "value": "image",
+        "count": 5
+      },
+      {
+        "value": "other",
+        "count": 1
+      }
+    ],
+    "requestCount": 106,
+    "textLength": 15471,
+    "contrast": {
+      "sampled": 400,
+      "skippedForComplexBackground": 0,
+      "min": 2.52,
+      "p10": 3.03,
+      "median": 21,
+      "belowRequirement": 77,
+      "worst": [
+        {
+          "selector": "p.text-sm",
+          "text": "Intelligence Index v4.3 replaces 𝜏³-Ban",
+          "fontSize": 14,
+          "ratio": 2.52,
+          "required": 4.5
+        },
+        {
+          "selector": "p.text-sm",
+          "text": "Six professional-domain indices, updated",
+          "fontSize": 14,
+          "ratio": 2.52,
+          "required": 4.5
+        },
+        {
+          "selector": "div.col-span-1",
+          "text": "New article published · 21 Sept",
+          "fontSize": 12,
+          "ratio": 2.71,
+          "required": 4.5
+        },
+        {
+          "selector": "div.col-span-1",
+          "text": "New language model evaluation · 21 Sept",
+          "fontSize": 12,
+          "ratio": 2.71,
+          "required": 4.5
+        },
+        {
+          "selector": "div.col-span-1",
+          "text": "New language model evaluation · 21 Sept",
+          "fontSize": 12,
+          "ratio": 2.71,
+          "required": 4.5
+        },
+        {
+          "selector": "div.col-span-1",
+          "text": "New language model evaluation · 21 Sept",
+          "fontSize": 12,
+          "ratio": 2.71,
+          "required": 4.5
+        },
+        {
+          "selector": "div.col-span-1",
+          "text": "Methodology updated · 19 Sept",
+          "fontSize": 12,
+          "ratio": 2.71,
+          "required": 4.5
+        },
+        {
+          "selector": "div.col-span-1",
+          "text": "New language model evaluation · 18 Sept",
+          "fontSize": 12,
+          "ratio": 2.71,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 34227,
+    "scrollScreens": 40.6,
+    "primaryList": {
+      "signature": "div.text-left.text-sm",
+      "count": 18,
+      "parents": 1,
+      "width": 284,
+      "height": {
+        "min": 298,
+        "max": 314,
+        "median": 298
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "repeatedComponents": [
+      {
+        "signature": "div.text-left.text-sm",
+        "count": 18,
+        "parents": 1,
+        "width": 284,
+        "height": {
+          "min": 298,
+          "max": 314,
+          "median": 298
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "li",
+        "count": 14,
+        "parents": 3,
+        "width": 159,
+        "height": {
+          "min": 24,
+          "max": 24,
+          "median": 24
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "section.scroll-mt-24",
+        "count": 11,
+        "parents": 1,
+        "width": 350,
+        "height": {
+          "min": 809,
+          "max": 10074,
+          "median": 1840
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "14px",
+          "count": 1411
+        },
+        {
+          "value": "16px",
+          "count": 1237
+        },
+        {
+          "value": "12px",
+          "count": 261
+        },
+        {
+          "value": "11px",
+          "count": 94
+        },
+        {
+          "value": "20px",
+          "count": 69
+        },
+        {
+          "value": "30px",
+          "count": 33
+        },
+        {
+          "value": "24px",
+          "count": 17
+        },
+        {
+          "value": "10px",
+          "count": 1
+        }
+      ]
+    },
+    "textLength": 14924
+  }
+}

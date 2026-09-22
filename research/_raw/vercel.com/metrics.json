@@ -1,0 +1,856 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "vercel.com",
+  "target": "https://vercel.com/",
+  "fetchedAt": "2026-09-22T16:23:55.581Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 20366,
+      "hydration": {
+        "textBefore": 878,
+        "textAfter": 878
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 19387,
+      "hydration": {
+        "textBefore": 621,
+        "textAfter": 627
+      },
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
+    }
+  ],
+  "desktop": {
+    "url": "https://vercel.com/",
+    "title": "Agentic Infrastructure - Vercel",
+    "lang": "en",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 5333,
+    "scrollScreens": 5.9,
+    "meta": {
+      "description": "The autonomous stack for every app and agent.",
+      "ogImage": "https://lishhsx6kmthaacj.public.blob.vercel-storage.com/og-home-not-x.png",
+      "colorScheme": "dark light",
+      "themeColor": "#FAFAFA",
+      "viewport": "width=device-width, initial-scale=1, maximum-scale=1"
+    },
+    "canonical": "https://vercel.com",
+    "hreflang": [],
+    "jsonLdTypes": [
+      "Organization",
+      "Service",
+      "SoftwareApplication"
+    ],
+    "landmarks": {
+      "header": 6,
+      "nav": 3,
+      "main": 1,
+      "section": 10,
+      "article": 0,
+      "aside": 1,
+      "footer": 1,
+      "form": 0,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "Agentic Infrastructure"
+      },
+      {
+        "level": 2,
+        "text": "Build agents on infrastructure that thinks like them"
+      },
+      {
+        "level": 2,
+        "text": "Ship apps that scale from zero to millions instantly"
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      },
+      {
+        "level": 2,
+        "text": ""
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug",
+        "count": 75,
+        "samples": [
+          "https://vercel.com/home",
+          "https://vercel.com/ai-sdk",
+          "https://vercel.com/ai-gateway"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug",
+        "count": 33,
+        "samples": [
+          "https://vercel.com/products/observability",
+          "https://vercel.com/products/previews",
+          "https://vercel.com/frameworks/nextjs"
+        ]
+      },
+      {
+        "shape": "/docs/:slug/:slug/:slug",
+        "count": 5,
+        "samples": [
+          "https://vercel.com/docs/frameworks/full-stack/nuxt",
+          "https://vercel.com/docs/frameworks/full-stack/sveltekit",
+          "https://vercel.com/docs/frameworks/backend/nitro"
+        ]
+      },
+      {
+        "shape": "/legal/:slug",
+        "count": 4,
+        "samples": [
+          "https://vercel.com/legal/privacy-policy",
+          "https://vercel.com/legal/cookie-policy",
+          "https://vercel.com/legal/dpa"
+        ]
+      },
+      {
+        "shape": "/docs",
+        "count": 3,
+        "samples": [
+          "https://vercel.com/docs"
+        ]
+      },
+      {
+        "shape": "/about",
+        "count": 3,
+        "samples": [
+          "https://vercel.com/about"
+        ]
+      },
+      {
+        "shape": "/blog",
+        "count": 3,
+        "samples": [
+          "https://vercel.com/blog"
+        ]
+      },
+      {
+        "shape": "/pricing",
+        "count": 3,
+        "samples": [
+          "https://vercel.com/pricing"
+        ]
+      },
+      {
+        "shape": "/contact/:slug",
+        "count": 3,
+        "samples": [
+          "https://vercel.com/contact/sales"
+        ]
+      },
+      {
+        "shape": "/signup",
+        "count": 3,
+        "samples": [
+          "https://vercel.com/signup"
+        ]
+      },
+      {
+        "shape": "/docs/:slug/:slug",
+        "count": 3,
+        "samples": [
+          "https://vercel.com/docs/rest-api/sdk",
+          "https://vercel.com/docs/flags/flags-sdk-reference",
+          "https://vercel.com/docs/queues/sdk"
+        ]
+      },
+      {
+        "shape": "/login",
+        "count": 2,
+        "samples": [
+          "https://vercel.com/login"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 1,
+    "internalLinkCount": 148,
+    "repeatedComponents": [
+      {
+        "signature": "div",
+        "count": 15,
+        "parents": 3,
+        "width": 1392,
+        "height": {
+          "min": 32,
+          "max": 772,
+          "median": 324
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "primaryList": {
+      "signature": "div",
+      "count": 15,
+      "parents": 3,
+      "width": 1392,
+      "height": {
+        "min": 32,
+        "max": 772,
+        "median": 324
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(23, 23, 23)",
+          "count": 289
+        },
+        {
+          "value": "rgb(77, 77, 77)",
+          "count": 189
+        },
+        {
+          "value": "rgb(143, 143, 143)",
+          "count": 30
+        },
+        {
+          "value": "lab(80.976 0 -0.0000119209)",
+          "count": 12
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 8
+        },
+        {
+          "value": "rgb(41, 122, 58)",
+          "count": 3
+        },
+        {
+          "value": "rgb(0, 114, 245)",
+          "count": 1
+        },
+        {
+          "value": "rgb(102, 102, 102)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 9
+        },
+        {
+          "value": "rgb(23, 23, 23)",
+          "count": 6
+        },
+        {
+          "value": "rgb(250, 250, 250)",
+          "count": 3
+        },
+        {
+          "value": "lab(7.78201 -0.0000149012 0)",
+          "count": 2
+        },
+        {
+          "value": "oklab(0.984799 0.0000446141 0.0000197291 / 0.5)",
+          "count": 1
+        },
+        {
+          "value": "rgb(102, 102, 102)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "14px",
+          "count": 299
+        },
+        {
+          "value": "16px",
+          "count": 195
+        },
+        {
+          "value": "12px",
+          "count": 14
+        },
+        {
+          "value": "24px",
+          "count": 11
+        },
+        {
+          "value": "11px",
+          "count": 10
+        },
+        {
+          "value": "56px",
+          "count": 5
+        },
+        {
+          "value": "64px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "20px",
+          "count": 233
+        },
+        {
+          "value": "24px",
+          "count": 195
+        },
+        {
+          "value": "21px",
+          "count": 76
+        },
+        {
+          "value": "16px",
+          "count": 13
+        },
+        {
+          "value": "32px",
+          "count": 9
+        },
+        {
+          "value": "56px",
+          "count": 5
+        },
+        {
+          "value": "26.4px",
+          "count": 2
+        },
+        {
+          "value": "16.5px",
+          "count": 1
+        },
+        {
+          "value": "64px",
+          "count": 1
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 437
+        },
+        {
+          "value": "500",
+          "count": 79
+        },
+        {
+          "value": "450",
+          "count": 19
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "GeistSans",
+          "count": 508
+        },
+        {
+          "value": "Geist Mono",
+          "count": 27
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 496
+        },
+        {
+          "value": "3.35544e+07px",
+          "count": 25
+        },
+        {
+          "value": "6px",
+          "count": 10
+        },
+        {
+          "value": "0px 0px 0px 1px",
+          "count": 1
+        },
+        {
+          "value": "0px 8px 8px 0px",
+          "count": 1
+        },
+        {
+          "value": "100%",
+          "count": 1
+        },
+        {
+          "value": "4px",
+          "count": 1
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px, rgb(250, 250, 250) 0px 0px 0px 1px",
+          "count": 5
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(235, 235, 235) 0px 0px 0px 1px",
+          "count": 4
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(235, 235, 235) 0px 0px 0px 1px inset",
+          "count": 3
+        },
+        {
+          "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgb(0, 114, 245) 0px 0px 0px 4px",
+          "count": 1
+        }
+      ],
+      "gaps": [
+        {
+          "value": "6px",
+          "count": 87
+        },
+        {
+          "value": "4px",
+          "count": 12
+        },
+        {
+          "value": "12px",
+          "count": 6
+        },
+        {
+          "value": "4px 20px",
+          "count": 4
+        },
+        {
+          "value": "40px",
+          "count": 3
+        },
+        {
+          "value": "44px",
+          "count": 3
+        },
+        {
+          "value": "8px",
+          "count": 3
+        },
+        {
+          "value": "normal 20px",
+          "count": 3
+        },
+        {
+          "value": "20px",
+          "count": 2
+        },
+        {
+          "value": "3px",
+          "count": 2
+        },
+        {
+          "value": "0px",
+          "count": 1
+        },
+        {
+          "value": "10px",
+          "count": 1
+        },
+        {
+          "value": "16px",
+          "count": 1
+        },
+        {
+          "value": "16px normal",
+          "count": 1
+        },
+        {
+          "value": "24px",
+          "count": 1
+        },
+        {
+          "value": "256px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "2px 2px",
+          "count": 169
+        },
+        {
+          "value": "6px 6px",
+          "count": 4
+        },
+        {
+          "value": "20px 20px",
+          "count": 3
+        },
+        {
+          "value": "16px 16px",
+          "count": 2
+        },
+        {
+          "value": "40px 40px",
+          "count": 2
+        },
+        {
+          "value": "1px 1px",
+          "count": 1
+        },
+        {
+          "value": "24px 40px",
+          "count": 1
+        },
+        {
+          "value": "32px 32px",
+          "count": 1
+        },
+        {
+          "value": "8px 8px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to 0.1s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 79
+        },
+        {
+          "value": "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 8
+        },
+        {
+          "value": "opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 7
+        },
+        {
+          "value": "opacity 0.3s cubic-bezier(0, 0, 0.2, 1)",
+          "count": 4
+        },
+        {
+          "value": "background, box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 3
+        },
+        {
+          "value": "color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to 0.5s cubic-bezier(0, 0, 0.2, 1)",
+          "count": 3
+        },
+        {
+          "value": "height 0.2s cubic-bezier(0, 0, 0.2, 1)",
+          "count": 3
+        },
+        {
+          "value": "opacity, scale 0.2s cubic-bezier(0.23, 1, 0.32, 1)",
+          "count": 2
+        },
+        {
+          "value": "all 0.2s ease",
+          "count": 1
+        },
+        {
+          "value": "all 0s ease",
+          "count": 1
+        },
+        {
+          "value": "opacity 0.2s cubic-bezier(0, 0, 0.2, 1)",
+          "count": 1
+        },
+        {
+          "value": "opacity 0.7s linear",
+          "count": 1
+        },
+        {
+          "value": "opacity 1.2s linear",
+          "count": 1
+        },
+        {
+          "value": "opacity 1s ease",
+          "count": 1
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1448px",
+          "count": 3
+        },
+        {
+          "value": "1024px",
+          "count": 1
+        },
+        {
+          "value": "1080px",
+          "count": 1
+        },
+        {
+          "value": "673.344px",
+          "count": 1
+        },
+        {
+          "value": "961px",
+          "count": 1
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "12 tracks",
+          "count": 9
+        },
+        {
+          "value": "1 tracks",
+          "count": 3
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 1,
+      "fixedElements": 3,
+      "prefersColorSchemeRules": 0,
+      "bodyBgIsDark": false,
+      "images": 5,
+      "lazyImages": 3,
+      "searchInputs": 0,
+      "selects": 0,
+      "buttons": 11,
+      "tabs": 0,
+      "relNext": 0
+    },
+    "externalDomains": [
+      {
+        "value": "lishhsx6kmthaacj.public.blob.vercel-storage.com",
+        "count": 2
+      },
+      {
+        "value": "o205439.ingest.us.sentry.io",
+        "count": 2
+      }
+    ],
+    "resourceTypes": [
+      {
+        "value": "script",
+        "count": 53
+      },
+      {
+        "value": "link",
+        "count": 20
+      },
+      {
+        "value": "fetch",
+        "count": 9
+      },
+      {
+        "value": "img",
+        "count": 2
+      },
+      {
+        "value": "other",
+        "count": 1
+      }
+    ],
+    "requestCount": 85,
+    "textLength": 878,
+    "contrast": {
+      "sampled": 166,
+      "skippedForComplexBackground": 0,
+      "min": 3.1,
+      "p10": 8.1,
+      "median": 8.1,
+      "belowRequirement": 4,
+      "worst": [
+        {
+          "selector": "span.sr-only",
+          "text": "",
+          "fontSize": 14,
+          "ratio": 3.1,
+          "required": 4.5
+        },
+        {
+          "selector": "span.sr-only",
+          "text": "",
+          "fontSize": 14,
+          "ratio": 3.1,
+          "required": 4.5
+        },
+        {
+          "selector": "span.sr-only",
+          "text": "",
+          "fontSize": 14,
+          "ratio": 3.1,
+          "required": 4.5
+        },
+        {
+          "selector": "a.fixed",
+          "text": "Skip to content",
+          "fontSize": 16,
+          "ratio": 4.44,
+          "required": 4.5
+        },
+        {
+          "selector": "p.status-text",
+          "text": "",
+          "fontSize": 12,
+          "ratio": 5.5,
+          "required": 4.5
+        },
+        {
+          "selector": "span.flex",
+          "text": "Products",
+          "fontSize": 14,
+          "ratio": 8.1,
+          "required": 4.5
+        },
+        {
+          "selector": "span.flex",
+          "text": "Resources",
+          "fontSize": 14,
+          "ratio": 8.1,
+          "required": 4.5
+        },
+        {
+          "selector": "span.flex",
+          "text": "Enterprise",
+          "fontSize": 14,
+          "ratio": 8.1,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 4981,
+    "scrollScreens": 5.9,
+    "primaryList": {
+      "signature": "div",
+      "count": 15,
+      "parents": 3,
+      "width": 342,
+      "height": {
+        "min": 32,
+        "max": 772,
+        "median": 296
+      },
+      "fullyVisibleFirstScreen": 0,
+      "touchedFirstScreen": 0
+    },
+    "repeatedComponents": [
+      {
+        "signature": "div",
+        "count": 15,
+        "parents": 3,
+        "width": 342,
+        "height": {
+          "min": 32,
+          "max": 772,
+          "median": 296
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "14px",
+          "count": 279
+        },
+        {
+          "value": "16px",
+          "count": 215
+        },
+        {
+          "value": "12px",
+          "count": 14
+        },
+        {
+          "value": "11px",
+          "count": 10
+        },
+        {
+          "value": "24px",
+          "count": 8
+        },
+        {
+          "value": "32px",
+          "count": 5
+        },
+        {
+          "value": "20px",
+          "count": 3
+        },
+        {
+          "value": "48px",
+          "count": 1
+        }
+      ]
+    },
+    "textLength": 623
+  }
+}
