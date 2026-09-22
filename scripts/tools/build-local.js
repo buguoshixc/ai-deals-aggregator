@@ -32,8 +32,14 @@ const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
 const SITE_NAME = 'AI 优惠聚合器';
 const SITE_DESCRIPTION = '聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。全部指向厂商官方页。';
 
-/** 预渲染卡片数的下限：低于此值说明抽取或过滤逻辑坏了，宁可构建失败 */
-const MIN_PRERENDERED_CARDS = 60;
+/**
+ * 预渲染卡片数的下限：低于此值说明抽取或过滤逻辑坏了，宁可构建失败。
+ *
+ * 原为 60（对应 71 条优惠逐条成卡）。引入「同一张官方表格 = 一条优惠」的折叠后，
+ * 默认视图稳定在 53 张卡片，因此下调到 45 留出余量。真正防止折叠丢条目的是
+ * renderDeals() 里的无损断言（Σ模型数 === 未过期优惠条数），不是这个数字。
+ */
+const MIN_PRERENDERED_CARDS = 45;
 
 const RENDER_CORE_RE = /\/\* =+\s*\n\s*\* RENDER-CORE:START[\s\S]*?\/\* =+\s*\n\s*\* RENDER-CORE:END[\s\S]*?\*\//;
 
@@ -80,7 +86,7 @@ function loadRenderCore(html) {
   const context = vm.createContext(shim);
   new vm.Script(match[0], { filename: 'index.html#RENDER-CORE' }).runInContext(context);
 
-  for (const name of ['cardHtml', 'defaultVisible', 'defaultOrder']) {
+  for (const name of ['cardHtml', 'defaultVisible', 'defaultOrder', 'defaultCards']) {
     if (typeof context[name] !== 'function') {
       throw new Error(`RENDER-CORE 区块缺少函数 ${name}()`);
     }
@@ -101,11 +107,25 @@ function replaceMarker(html, marker, replacement) {
 
 /** 默认视图（优惠 Tab、无筛选）的卡片 HTML */
 function renderDeals(renderCore, payload) {
-  const list = renderCore.defaultOrder(renderCore.defaultVisible(payload.deals));
-  if (list.length < MIN_PRERENDERED_CARDS) {
-    throw new Error(`预渲染卡片只有 ${list.length} 条，低于下限 ${MIN_PRERENDERED_CARDS}（数据或过滤逻辑异常）`);
+  const visible = renderCore.defaultVisible(payload.deals);
+  const cards = renderCore.defaultCards(payload.deals);
+
+  // 无损断言：折叠只改变呈现粒度，不能丢条目。
+  // 折叠卡贡献 models.length 条，未折叠的单条卡贡献 1 条——两者之和必须等于未过期优惠数。
+  const covered = cards.reduce((n, card) => n + (Array.isArray(card.models) ? card.models.length : 1), 0);
+  if (covered !== visible.length) {
+    throw new Error(`折叠丢失条目：卡片覆盖 ${covered} 条，未过期优惠 ${visible.length} 条`);
   }
-  return { html: list.map(deal => renderCore.cardHtml(deal)).join('\n      '), count: list.length };
+
+  if (cards.length < MIN_PRERENDERED_CARDS) {
+    throw new Error(`预渲染卡片只有 ${cards.length} 条，低于下限 ${MIN_PRERENDERED_CARDS}（数据或过滤逻辑异常）`);
+  }
+  return {
+    html: cards.map(card => renderCore.cardHtml(card)).join('\n      '),
+    count: cards.length,
+    cards: cards,
+    visibleCount: visible.length
+  };
 }
 
 /**
@@ -148,7 +168,7 @@ function toJsonLd(data) {
     .replace(/\u2029/g, '\\u2029');
 }
 
-function buildJsonLd(payload, faqItems) {
+function buildJsonLd(faqItems, cards) {
   const pageUrl = SITE_URL;
   const ogImage = SITE_URL + 'og-image.png';
 
@@ -180,31 +200,30 @@ function buildJsonLd(payload, faqItems) {
     }))
   };
 
-  // ItemList：只列默认视图里的真实优惠，顺序与页面一致
-  const deals = payload.deals.filter(deal => deal.type === 'deal' && !isExpired(deal));
+  // ItemList：与页面可见卡片一一对应（折叠后一条优惠一张卡），顺序与页面一致。
+  // 折叠卡把覆盖的模型名写进 description，保留「模型名 + 免费额度」这类长尾检索词。
   const itemList = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: 'AI 工具优惠与免费额度',
-    numberOfItems: deals.length,
-    itemListElement: deals.map((deal, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: deal.title,
-      url: deal.url
-    }))
+    numberOfItems: cards.length,
+    itemListElement: cards.map((card, index) => {
+      const item = {
+        '@type': 'ListItem',
+        position: index + 1,
+        name: card.title,
+        url: card.url
+      };
+      if (Array.isArray(card.models)) {
+        item.description = `覆盖 ${card.models.length} 个模型：${card.models.join('、')}`;
+      }
+      return item;
+    })
   };
 
   return [organization, breadcrumb, faqPage, itemList]
     .map(data => `  <script type="application/ld+json">\n${toJsonLd(data)}\n  </script>`)
     .join('\n');
-}
-
-/** 与前端 isExpired 等价的判定（构建期用当天日期） */
-function isExpired(deal) {
-  if (!deal.expiresAt) return false;
-  const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
-  return deal.expiresAt < today;
 }
 
 /* ------------------------------------------------------------------ */
@@ -244,7 +263,7 @@ function assemble() {
   const faqItems = extractFaq(html);
   console.log(`  FAQ 解析: ${faqItems.length} 条`);
 
-  const jsonLd = buildJsonLd(payload, faqItems);
+  const jsonLd = buildJsonLd(faqItems, rendered.cards);
   html = replaceMarker(html, '<!--PRERENDER:jsonld-->', jsonLd);
   console.log(`  JSON-LD: ${(jsonLd.match(/application\/ld\+json/g) || []).length} 段`);
 
@@ -272,9 +291,12 @@ function assemble() {
   </url>
 </urlset>
 `, 'utf8');
+
+  // 交给自检：折叠覆盖的条目总数需与页面卡片内容对得上
+  return rendered;
 }
 
-function selfCheck() {
+function selfCheck(built) {
   console.log('\n=== 4) 产物自检 ===');
   let failed = 0;
   const fail = (message) => { console.log('  ✗ ' + message); failed++; };
@@ -308,9 +330,25 @@ function selfCheck() {
     console.log(`  ✓ 预渲染卡片: ${cardCount} 条`);
   }
 
-  const ctaCount = (html.match(/class="cta"/g) || []).length;
+  // 只在「已渲染的卡片」里数，避免把内联脚本里的模板字符串字面量也算进去
+  // （cardHtml 的源码里含有 class="cta" / class="deal-models" 这些字面量）。
+  const ctaCount = (html.match(/class="cta" href="https?:/g) || []).length;
   console.log(`  ✓ CTA 按钮: ${ctaCount} 个`);
   if (ctaCount < cardCount) fail(`CTA 按钮 ${ctaCount} 个少于卡片 ${cardCount} 条`);
+
+  // 折叠无损：产物里「折叠卡覆盖的模型数 + 单条卡数」必须等于未过期优惠条数，
+  // 即数据层的无损断言确实落到了静态正文里（模型名真的被输出，而不是只写在内存里）
+  if (built) {
+    const modelsSum = [...html.matchAll(/data-model-count="(\d+)"/g)]
+      .reduce((n, m) => n + Number(m[1]), 0);
+    const foldedCards = (html.match(/<div class="deal-models" data-model-count="\d+">/g) || []).length;
+    const covered = (cardCount - foldedCards) + modelsSum;
+    if (covered !== built.visibleCount) {
+      fail(`折叠覆盖条目 ${covered} 条 ≠ 未过期优惠 ${built.visibleCount} 条（折叠卡 ${foldedCards} 张 / 模型名 ${modelsSum} 个）`);
+    } else {
+      console.log(`  ✓ 折叠无损: ${cardCount} 张卡片覆盖 ${built.visibleCount} 条优惠（${foldedCards} 张折叠卡 / ${modelsSum} 个模型名）`);
+    }
+  }
 
   if (!/rel="canonical"/.test(html)) fail('缺少 canonical');
   if (!/hreflang="x-default"/.test(html)) fail('缺少 hreflang');
@@ -372,5 +410,5 @@ function selfCheck() {
 }
 
 runValidate();
-assemble();
-if (!selfCheck()) process.exit(1);
+const built = assemble();
+if (!selfCheck(built)) process.exit(1);

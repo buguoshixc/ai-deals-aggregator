@@ -475,6 +475,158 @@
       return '<span class="' + cls + '">' + escapeHtml(label) + '</span>';
     }
 
+    /* ================================================================
+     * 折叠：官方页面上的「一张表」= 一条优惠
+     *
+     * 同一 (厂商, 落地页, 优惠文案, 适用条件, 有效期) 的多条数据，本质上是同一张表格的
+     * 多行——渲染成一张卡片、卡内列出覆盖的模型，而不是 N 张几乎相同的卡片。
+     * 全部为纯函数，构建期预渲染与浏览器渲染共用同一份，不会分叉。
+     * ================================================================ */
+
+    /**
+     * 折叠键。返回 null 表示该条自成一卡：
+     * 工具条目、非优惠条目、缺少厂商或落地页的条目都不参与折叠（避免误合并）。
+     */
+    function foldKey(deal) {
+      if (!deal || deal.type !== 'deal') return null;
+      if (!deal.vendor || !deal.url) return null;
+      return [deal.vendor, deal.url, deal.discountInfo || '', deal.eligibility || '', deal.validity || '']
+        .join('\u0001');
+    }
+
+    /** 折叠标题里的显示名：优先来源名（百度千帆 / 火山方舟），人工策展来源退回厂商名 */
+    function displayNameOf(deal) {
+      const source = String(deal.source || '').trim();
+      if (source && !/^Curated/i.test(source)) return source;
+      return String(deal.vendor || '').trim();
+    }
+
+    /** 一组标题的最长公共后缀（无边界约束）——用来找「这几条共有的那句话」 */
+    function commonSuffix(titles) {
+      let suffix = titles[0];
+      for (const title of titles) {
+        let i = 0;
+        while (i < suffix.length && i < title.length &&
+          suffix[suffix.length - 1 - i] === title[title.length - 1 - i]) i++;
+        suffix = suffix.slice(suffix.length - i);
+      }
+      return suffix;
+    }
+
+    /**
+     * 边界安全的公共后缀：从最长公共后缀里取「以空格开头」的那一段。
+     * 保证剥离只切在词与词之间——「Doubao-流式语音识别 免费额度」剥出的是
+     * 「Doubao-流式语音识别」，而不是把「识别」一起切走。
+     */
+    function boundarySuffix(titles) {
+      const suffix = commonSuffix(titles);
+      const at = suffix.indexOf(' ');
+      return at >= 0 ? suffix.slice(at) : null;
+    }
+
+    /** 折叠卡的标题；返回 null 表示放弃改名，沿用代表条目原标题 */
+    function foldTitle(group, usedTitles) {
+      const titles = group.map(deal => String(deal.title || ''));
+      const shortest = titles.reduce((n, t) => Math.min(n, t.length), Infinity);
+      const display = displayNameOf(group[0]);
+      if (!display) return null;
+
+      const boundary = boundarySuffix(titles);
+      const candidates = [];
+      if (boundary) candidates.push(boundary.trim());
+      candidates.push(commonSuffix(titles).trim());
+
+      for (const tail of candidates) {
+        if (tail.length < 2 || tail.length >= shortest) continue;
+        const title = display + ' ' + tail;
+        if (!usedTitles.has(title)) return title;
+      }
+      return null;
+    }
+
+    /** 把一组同源条目合并成一张卡片；描述类字段由代表条目承载 */
+    function foldGroup(group, usedTitles) {
+      const titles = group.map(deal => String(deal.title || ''));
+      const shortest = titles.reduce((n, t) => Math.min(n, t.length), Infinity);
+      const boundary = boundarySuffix(titles);
+      const strip = boundary && boundary.trim().length >= 2 && boundary.trim().length < shortest
+        ? boundary : null;
+
+      // 代表条目：已核验优先 → 信息更完整者 → 数据顺序第一条
+      const rank = deal => (deal.verified ? 4 : 0) +
+        (Array.isArray(deal.features) && deal.features.length ? 2 : 0) +
+        (deal.priceLine ? 1 : 0);
+      let base = group[0];
+      for (const deal of group) if (rank(deal) > rank(base)) base = deal;
+
+      const models = [];
+      group.forEach((deal, i) => {
+        const title = titles[i];
+        const name = (strip ? title.slice(0, title.length - strip.length) : title).trim() || title;
+        if (!models.includes(name)) models.push(name);
+      });
+
+      // 组内最早的非空截止日期：折叠不能削弱「即将截止」的排序优先级
+      const expiries = group.map(deal => deal.expiresAt).filter(Boolean).sort();
+      const lastSeen = group.map(deal => deal.lastSeen).filter(Boolean).sort().pop();
+      const verifiedAt = group.map(deal => deal.verifiedAt).filter(Boolean).sort().pop();
+
+      const title = foldTitle(group, usedTitles) || base.title;
+      usedTitles.add(title);
+
+      return Object.assign({}, base, {
+        title: title,
+        expiresAt: expiries.length ? expiries[0] : (base.expiresAt || null),
+        // 诚实性红线：只有组内每一条都核验过，才把这张卡标为「已核验」
+        verified: group.every(deal => deal.verified),
+        verifiedAt: verifiedAt || null,
+        lastSeen: lastSeen || base.lastSeen,
+        models: models,
+        modelCount: models.length
+      });
+    }
+
+    /**
+     * 折叠入口：把「同一张官方表格」的多行合并为一张卡片。
+     * 单成员组原样返回该条目、不改写任何字段，因此非重复条目与工具条目的渲染结果不变。
+     */
+    function foldDeals(deals) {
+      const groups = new Map();
+      const keys = new Array(deals.length);
+
+      deals.forEach((deal, i) => {
+        const key = foldKey(deal);
+        keys[i] = key;
+        if (key === null) return;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(deal);
+      });
+
+      const cards = [];
+      const emitted = new Set();
+      const usedTitles = new Set();
+      deals.forEach((deal, i) => {
+        const key = keys[i];
+        if (key === null) { cards.push(deal); return; }
+        if (emitted.has(key)) return;
+        emitted.add(key);
+        const group = groups.get(key);
+        cards.push(group.length === 1 ? group[0] : foldGroup(group, usedTitles));
+      });
+      return cards;
+    }
+
+    /**
+     * 折叠卡的模型清单。刻意只用一个纯文本 div、不加任何 CSS——
+     * 无样式时天然可读，样式与截断策略留给后续单独处理。
+     * data-model-count 同时供样式挂载与构建期无损断言使用。
+     */
+    function modelsHtml(deal) {
+      if (!Array.isArray(deal.models) || deal.models.length < 2) return '';
+      return '<div class="deal-models" data-model-count="' + deal.models.length + '">' +
+        deal.models.map(model => escapeHtml(model)).join('、') + '</div>';
+    }
+
     function cardHtml(deal) {
       const url = safeUrl(deal.url);
       const title = escapeHtml(deal.title);
@@ -523,7 +675,7 @@
       return '<article class="' + classes.join(' ') + '">' +
         '<div class="card-head">' + titleHtml +
         '<div class="badges">' + badges.join('') + '</div></div>' +
-        priceLineHtml(deal) + description + tagsHtml(deal) +
+        priceLineHtml(deal) + description + modelsHtml(deal) + tagsHtml(deal) +
         '<div class="card-foot">' + foot.join('') + '</div>' + cta +
         '</article>';
     }
@@ -548,6 +700,14 @@
       return deals.filter(deal => deal.type === 'deal' && !isExpired(deal));
     }
 
+    /**
+     * 默认视图的卡片列表（预渲染与浏览器共用的唯一入口）。
+     * 顺序：先按过期过滤 → 再折叠 → 最后排序；过期成员不会混进折叠组。
+     */
+    function defaultCards(deals) {
+      return defaultOrder(foldDeals(defaultVisible(deals)));
+    }
+
     /* ================================================================
      * RENDER-CORE:END
      * ================================================================ */
@@ -568,12 +728,17 @@
       countTools: document.getElementById('countTools')
     };
 
+    /** 计数一律以「折叠后的卡片」为准，与页面实际卡片数、构建期预渲染数三者一致 */
+    function cardCountOf(predicate) {
+      return foldDeals(state.deals.filter(predicate)).length;
+    }
+
     function dealCount() {
-      return state.deals.filter(d => d.type === 'deal' && !isExpired(d)).length;
+      return cardCountOf(d => d.type === 'deal' && !isExpired(d));
     }
 
     function toolCount() {
-      return state.deals.filter(d => d.type !== 'deal').length;
+      return cardCountOf(d => d.type !== 'deal');
     }
 
     function loadDeals() {
@@ -604,7 +769,9 @@
       const region = els.region.value;
       const category = els.category.value;
 
-      const list = state.deals.filter(deal => {
+      // 先按筛选条件挑出条目，再折叠成卡片：搜索命中同一张表的多个模型时，
+      // 折叠卡里的模型清单自然收窄为「命中的那几个」，既保留上下文又不失相关性。
+      const list = foldDeals(state.deals.filter(deal => {
         if (state.tab === 'deals') {
           if (deal.type !== 'deal') return false;
           if (isExpired(deal)) return false;
@@ -620,7 +787,7 @@
           if (!haystack.includes(search)) return false;
         }
         return true;
-      });
+      }));
 
       const order = els.sort.value;
       if (order === 'title') {
@@ -640,8 +807,8 @@
 
       const scope = state.tab === 'deals' ? '条优惠' : '条工具';
       els.stats.innerHTML = '共 <strong>' + list.length + '</strong> ' + scope + ' · ' +
-        '国内 ' + state.deals.filter(d => d.region === 'cn' && d.type === 'deal' && !isExpired(d)).length + ' 条优惠 · ' +
-        '国外 ' + state.deals.filter(d => d.region === 'global' && d.type === 'deal' && !isExpired(d)).length + ' 条优惠';
+        '国内 ' + cardCountOf(d => d.region === 'cn' && d.type === 'deal' && !isExpired(d)) + ' 条优惠 · ' +
+        '国外 ' + cardCountOf(d => d.region === 'global' && d.type === 'deal' && !isExpired(d)) + ' 条优惠';
 
       if (!list.length) {
         els.list.innerHTML = '<div class="empty">没有匹配的' + (state.tab === 'deals' ? '优惠' : '工具') + '，试试清空筛选条件。</div>';
