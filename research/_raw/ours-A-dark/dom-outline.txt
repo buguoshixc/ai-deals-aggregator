@@ -1,0 +1,75 @@
+# http://127.0.0.1:8080/
+# 抓取时间 2026-09-22T17:28:28.934Z
+
+## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
+<header.top> 1440x59
+<nav.facets> 1440x43
+  … 14 children (div)
+<main> 1380x5004
+  … 25 children (select)
+  … 66 children (div)
+    <article.g.t1> 452x192
+      <h3> 338x20 — GLM-4.7-Flash 免费模型
+    <article.g.t1> 452x192
+      <h3> 338x20 — GLM-4.5-Flash 免费模型
+    <article.g.t1> 452x192
+      <h3> 338x20 — GLM-4.6V-Flash 免费模型
+    <article.g.t1> 452x192
+      <h3> 338x20 — GLM-4.1V-Thinking-Flash 免费模型
+    <article.g.t1> 452x192
+      <h3> 338x20 — GLM-4V-Flash 免费模型
+    <article.g.t1> 452x192
+      <h3> 338x20 — CogView-3-Flash 免费模型
+    <article.g.t1> 452x192
+      <h3> 338x20 — CogVideoX-Flash 免费模型
+  <section.faq> 1380x314
+    <h2> 1380x23 — 常见问题
+<footer> 1380x112
+<dialog.dlg> 0x0
+  <form> 0x0
+
+## class 命名频次（前 45）
+   15  t1
+    8  hint
+    7  g
+    7  tierdot
+    7  tiernum
+    7  gh
+    7  logos
+    7  lg
+    7  gt
+    7  vendor
+    7  tg
+    7  cn
+    7  of
+    7  bar
+    7  tx
+    7  feats
+    7  meta
+    7  sp
+    7  go
+    2  on
+    1  js
+    1  top
+    1  topin
+    1  brand
+    1  mark
+    1  btxt
+    1  search
+    1  seg
+    1  topstat
+    1  facets
+    1  facetsin
+    1  wrap
+    1  rbar
+    1  rright
+    1  catpick
+    1  sortbox
+    1  grid
+    1  tierhead
+    1  n
+    1  line
+    1  faq
+    1  dlg
+    1  x
+    1  dbody
