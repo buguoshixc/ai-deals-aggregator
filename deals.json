@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-09-22T11:28:35+08:00",
+  "updatedAt": "2026-09-22T19:20:25+08:00",
   "count": 121,
   "deals": [
     {
@@ -23,7 +23,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "9c12f13df3ba",
@@ -45,7 +46,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "ad1d0c83909d",
@@ -67,7 +69,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "8b2e8d64f11f",
@@ -89,7 +92,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "4d4bcb5b6829",
@@ -111,7 +115,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "bf156583e97c",
@@ -133,7 +138,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "8814355d59e1",
@@ -155,7 +161,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "e384895f5935",
@@ -177,7 +184,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "e65f54470862",
@@ -199,7 +207,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "9180073deef1",
@@ -221,7 +230,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "017bdbc04e70",
@@ -243,7 +253,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "8b609cb05116",
@@ -265,7 +276,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "78384299b660",
@@ -287,7 +299,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "c4ab5c5d8101",
@@ -309,7 +322,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "5c38e515a3ae",
@@ -331,7 +345,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "4c7952115477",
@@ -353,7 +368,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "a1255b2fbae2",
@@ -375,7 +391,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "e237cab7c007",
@@ -397,7 +414,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "ebd47f6d2522",
@@ -419,7 +437,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "e7e8f538456c",
@@ -441,7 +460,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "6798f78de5ce",
@@ -463,7 +483,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "f22e3cd094ad",
@@ -485,7 +506,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "62e3166acec0",
@@ -507,7 +529,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "5dedb9455508",
@@ -529,7 +552,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "df1210f69a39",
@@ -551,7 +575,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "f5ffff50772c",
@@ -573,7 +598,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "c789f0a090bf",
@@ -595,7 +621,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "c05dc74bfd78",
@@ -617,7 +644,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "4a875a435019",
@@ -639,7 +667,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "9c553dd82d2d",
@@ -661,7 +690,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "3c8a9a6a9ee9",
@@ -683,7 +713,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "6013b80f266f",
@@ -705,7 +736,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "7762168d515d",
@@ -727,7 +759,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "c971e33a9cd0",
@@ -749,7 +782,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "654e05ed3453",
@@ -771,7 +805,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "314fb9d43531",
@@ -793,7 +828,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "070cad8aa770",
@@ -815,7 +851,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "4fede366f914",
@@ -837,7 +874,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "014a945319a7",
@@ -859,7 +897,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "90ef368f720d",
@@ -881,7 +920,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "a134b60a8edc",
@@ -903,7 +943,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "c3d6bd34ebfe",
@@ -925,7 +966,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "8583e9860d88",
@@ -947,7 +989,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "54d867a4530d",
@@ -969,7 +1012,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "c9c5429f2205",
@@ -991,7 +1035,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "f91e1085801f",
@@ -1013,7 +1058,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "4fcc2847e3fc",
@@ -1035,7 +1081,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "46b1877f5969",
@@ -1057,7 +1104,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "31232ad4315e",
@@ -1079,7 +1127,77 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "cb45e0c735bd",
+      "title": "HubSpot AEO Sensor",
+      "vendor": "HubSpot AEO",
+      "url": "https://www.hubspot.com/aeo-sensor",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "其他",
+      "description": "Tracks how AI answer engines shift your website’s visibility.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-22",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "9e7c938ec401",
+      "title": "Midjourney",
+      "vendor": "Midjourney",
+      "url": "https://www.midjourney.com/home/",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "Unlock true digital artistry.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-22",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "376b6b3397e6",
+      "title": "Grok",
+      "vendor": "Grok",
+      "url": "https://x.ai/grok",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/grok",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": "freemium",
+      "priceLine": null,
+      "features": null,
+      "category": "对话模型",
+      "description": "Chat with data, images, code, and real-time search.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-22",
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "a67c07bf4993",
@@ -1101,7 +1219,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "173ff7aa837e",
@@ -1123,7 +1242,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "bf08e4fbd5ac",
@@ -1145,7 +1265,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "7f3607d92aa5",
@@ -1167,7 +1288,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "7f1250402ebb",
@@ -1189,7 +1311,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "9ce2f3d45c11",
@@ -1211,7 +1334,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "413a77602a7c",
@@ -1233,7 +1357,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "06bc1d631f62",
@@ -1255,7 +1380,31 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "e3af28ce5ca1",
+      "title": "Emergent.sh",
+      "vendor": "Emergent.sh",
+      "url": "https://emergent.sh/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/emergent-sh",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "编程开发",
+      "description": "An IDE for code migration from legacy to modern frameworks through coding agents.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-22",
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "28434ca44079",
@@ -1268,6 +1417,8 @@
       "type": "tool",
       "discountInfo": null,
       "pricingModel": null,
+      "priceLine": null,
+      "features": null,
       "category": "对话模型",
       "description": "A tool for AI development with diverse tools and models.",
       "eligibility": null,
@@ -1275,7 +1426,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "0750a3061d72",
@@ -1297,7 +1449,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "5975c73aa115",
@@ -1310,6 +1463,8 @@
       "type": "tool",
       "discountInfo": null,
       "pricingModel": null,
+      "priceLine": null,
+      "features": null,
       "category": "编程开发",
       "description": "A tool for creating clips from long-form videos.",
       "eligibility": null,
@@ -1317,27 +1472,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
-    },
-    {
-      "id": "e3af28ce5ca1",
-      "title": "Emergent.sh",
-      "vendor": "Emergent.sh",
-      "url": "https://emergent.sh/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/emergent-sh",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "category": "编程开发",
-      "description": "An IDE for code migration from legacy to modern frameworks through coding agents.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "ec17511a4284",
@@ -1350,6 +1486,8 @@
       "type": "tool",
       "discountInfo": null,
       "pricingModel": null,
+      "priceLine": null,
+      "features": null,
       "category": "图像绘画",
       "description": "A tool to convert 2D images into 3D models",
       "eligibility": null,
@@ -1357,7 +1495,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "9fdccd9de525",
@@ -1370,6 +1509,8 @@
       "type": "tool",
       "discountInfo": null,
       "pricingModel": null,
+      "priceLine": null,
+      "features": null,
       "category": "图像绘画",
       "description": "A tool to create videos from text or voice using digital avatars.",
       "eligibility": null,
@@ -1377,7 +1518,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "72410d92e184",
@@ -1399,7 +1541,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "b4d191dd0c65",
@@ -1421,7 +1564,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "ab4c0e5c007e",
@@ -1443,7 +1587,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "cbfce04c5556",
@@ -1465,7 +1610,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "2d0ceeea880d",
@@ -1487,7 +1633,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "a1bb0302318b",
@@ -1509,7 +1656,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "12dbf1bf1180",
@@ -1531,7 +1679,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "544bb843f605",
@@ -1553,7 +1702,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "642216383013",
@@ -1575,7 +1725,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "f820af7d3a70",
@@ -1597,7 +1748,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "f2294d28cbe8",
@@ -1619,7 +1771,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "da0d5a1929b4",
@@ -1641,7 +1794,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "d344dfeebd73",
@@ -1663,7 +1817,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "8ad33957ce77",
@@ -1685,7 +1840,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "d37287db1754",
@@ -1707,7 +1863,8 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": false
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "97d21ff73d3e",
@@ -2050,66 +2207,6 @@
       "verified": false
     },
     {
-      "id": "cb45e0c735bd",
-      "title": "HubSpot AEO Sensor",
-      "vendor": "HubSpot AEO",
-      "url": "https://www.hubspot.com/aeo-sensor",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "category": "其他",
-      "description": "Tracks how AI answer engines shift your website’s visibility.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-21",
-      "verified": false
-    },
-    {
-      "id": "9e7c938ec401",
-      "title": "Midjourney",
-      "vendor": "Midjourney",
-      "url": "https://www.midjourney.com/home/",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "category": "图像绘画",
-      "description": "Unlock true digital artistry.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-21",
-      "verified": false
-    },
-    {
-      "id": "376b6b3397e6",
-      "title": "Grok",
-      "vendor": "Grok",
-      "url": "https://x.ai/grok",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/grok",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": "freemium",
-      "category": "对话模型",
-      "description": "Chat with data, images, code, and real-time search.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-22",
-      "verified": false
-    },
-    {
       "id": "913211f6d165",
       "title": "火山方舟 豆包全系模型 个人开发者 50 万 tokens 免费额度",
       "vendor": "火山引擎（字节跳动）",
@@ -2127,7 +2224,14 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "50 万 tokens",
+        "豆包全系模型",
+        "个人开发者"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "65f0bdd295ac",
@@ -2147,7 +2251,14 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "100 万 tokens",
+        "有效期 1 年",
+        "需实名认证"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "6869e7866510",
@@ -2167,7 +2278,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "Spark Lite 免费",
+        "创建应用即可调用"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "833a9889bfb7",
@@ -2187,7 +2304,14 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "百万级交互量",
+        "八大 AI 服务",
+        "乐享会员 2888 元"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "e63402b5cc83",
@@ -2207,7 +2331,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "15 元代金券",
+        "需实名认证"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "0c30d79a5016",
@@ -2227,7 +2357,14 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "首月免费",
+        "每 5 小时 1500 次",
+        "无门槛配额"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "d8d0ba522315",
@@ -2247,7 +2384,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "多款模型标价 0",
+        "文本 / 向量 / 图像 / 语音"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "bcba406ed9ff",
@@ -2267,7 +2410,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "两个语音模型限时免费",
+        "按 Token 计费其他"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "c59299cdc88e",
@@ -2287,7 +2436,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "免费 M3Plus API",
+        "需申请审核"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "f578493037d4",
@@ -2307,7 +2462,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "非营利折扣价",
+        "最少 2 席"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "df8ec56faa17",
@@ -2327,7 +2488,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "全部付费功能免费",
+        "需学籍验证"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "8e7b0fd03e73",
@@ -2347,7 +2514,14 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "免费 Copilot Pro",
+        "教师 / 开源维护者",
+        "每月重评估"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "219f6fca7f31",
@@ -2367,7 +2541,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "Copilot 免费",
+        "Azure / DataCamp 等"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "42c65c0d8d9d",
@@ -2387,7 +2567,14 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "免费 12 个月",
+        "价值 $19.99/月",
+        "高校学生"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "6644f3b43bdb",
@@ -2407,7 +2594,14 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "$100 额度",
+        "无需信用卡",
+        "可每年续期"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "514a84a1064a",
@@ -2427,7 +2621,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "5 折购买",
+        "含 Copilot"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "e4f7271cf7dc",
@@ -2447,7 +2647,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "最高 $200,000",
+        "可用于 Bedrock"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "5253b5ed77b1",
@@ -2467,7 +2673,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "Figma + FigJam 免费",
+        "学生 / 教师"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "c25b0ed788e3",
@@ -2487,7 +2699,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "免费 Plus 计划",
+        "学校须在 WHED"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "aacd5856bba2",
@@ -2507,7 +2725,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "Business 折扣价",
+        "需非营利核验"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "4bda0ebbb091",
@@ -2527,7 +2751,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": "免费档 $0 → 付费档",
+      "features": [
+        "每月 10,000 credits",
+        "TTS / 克隆 / Dubbing"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "b75b42583ad8",
@@ -2547,7 +2777,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": "免费档 $0 → 付费档",
+      "features": [
+        "一次性 125 credits",
+        "含 5GB 素材存储"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "c433fee91818",
@@ -2567,7 +2803,13 @@
       "expiresAt": null,
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
-      "verified": true
+      "verified": true,
+      "priceLine": "学生折扣月费 → Pro",
+      "features": [
+        "折扣月费订 Pro",
+        "最长 12 个月"
+      ],
+      "verifiedAt": "2026-09-22"
     }
   ]
 }
