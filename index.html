@@ -565,8 +565,10 @@
      *
      * logo key 为 null = 归一照做，但不挂图形。绝不拿一个近似的图充数：
      * 没拿到厂商自己发布的品牌图形，卡片上就不放 logo。
-     * 已确认抓不到官网图形的（站点拒绝抓取 / 只有被 Cloudflare 挡住的 ICO）：
-     *   midjourney / huggingface / mistral / together / ideogram / leonardo / krea / xai
+     *
+     * 本机网络下确认抓不到官网图形的（详见 assets/logos/README.md 的缺口表）：
+     *   Midjourney（官网对抓取 403，且页面内联 favicon 是整张透明的占位图）
+     *   xAI / Ideogram / Leonardo / KREA（官网域名解析异常，所有子资源请求超时）
      * 想要补上：把图形放进 assets/logos/ 并在 manifest.json 登记，再把 key 填回这里。
      */
     const VENDOR_RULES = [
@@ -605,13 +607,15 @@
       [/recraft/i, 'recraft', 'Recraft', 'recraft'],
       // 以下只做归一，不挂 logo（尚无厂商官方图形）
       [/midjourney/i, 'midjourney', 'Midjourney', null],
-      [/hugging\s?face/i, 'huggingface', 'Hugging Face', null],
-      [/mistral/i, 'mistral', 'Mistral', null],
-      [/together/i, 'together', 'Together AI', null],
       [/ideogram/i, 'ideogram', 'Ideogram', null],
       [/leonardo/i, 'leonardo', 'Leonardo AI', null],
-      [/krea/i, 'krea', 'KREA', null],
-      [/grok|xai/i, 'xai', 'xAI', null]
+      // 必须带边界：/krea/i 会命中「Kreado AI」（另一家），把它误标成 KREA
+      [/\bkrea\b|krea\.ai/i, 'krea', 'KREA', null],
+      [/grok|xai/i, 'xai', 'xAI', null],
+      // 以下三家有已登记的官方品牌图形，但目前数据里还没有它们的条目
+      [/hugging\s?face/i, 'huggingface', 'Hugging Face', 'huggingface'],
+      [/mistral/i, 'mistral', 'Mistral', 'mistral'],
+      [/together/i, 'together', 'Together AI', 'together']
     ];
 
     /** [匹配模型名的正则, logo key, 显示名]：用于折叠卡上的模型家族 logo */

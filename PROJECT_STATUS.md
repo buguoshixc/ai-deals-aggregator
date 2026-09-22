@@ -555,8 +555,11 @@ Layer3Labs 9 · 人工策展（国内）9 · 智谱AI 7 · 智谱AI活动页 5 �
     （目前 71 条优惠里仍有一部分为空）。
 14. **智谱免费模型的厂商级合并**：那 7 条「XX 免费模型」`url` 各不相同，不属于「同一张表」，
     2.10 刻意没有合并。要合并需另写一条厂商级策略（与「同源折叠」是两回事，不要混在一个函数里）。
-15. **还有 8 家厂商没有 logo**：Midjourney（官网 403）、xAI / Mistral / Hugging Face / Ideogram /
-    Leonardo / KREA / Together（本机网络连不上其官网）。缺口表在 `assets/logos/README.md`。
+15. **还有 5 家厂商没有 logo**（数据里有条目、但拿不到官方图形）：Midjourney（官网 403，页面内联
+    favicon 经画布校验是整张透明的占位图）、xAI / Ideogram / Leonardo / KREA（官网域名解析异常，
+    强制 IPv4 与真浏览器均超时）。**这 5 家的官网在本机网络下不可达，本地无解**，
+    需要在能正常解析的网络里取；判定依据与探针输出见 `assets/logos/README.md`。
+    Hugging Face / Mistral / Together 的官方品牌图形已经拿到并登记，但数据里还没有这三家的条目。
     另外科大讯飞只有 32px favicon、商汤方形图标只有 120×184，需要向品牌方要矢量素材。
 16. **`deals.json` 的体积**：`dist/index.html` 155 KB（预渲染 53 张卡 + 内联脚本）。
     GitHub Pages 会 gzip，实际传输约 30 KB；如果继续增长，可把内联脚本拆成外部文件换取缓存命中。
