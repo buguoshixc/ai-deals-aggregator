@@ -1,0 +1,296 @@
+{
+  "target": "http://127.0.0.1:49751/",
+  "generatedAt": "2026-09-22T17:14:39.218Z",
+  "total": 55,
+  "failed": 0,
+  "metrics": {
+    "cards": 62,
+    "cols": 3,
+    "tierHeads": 4,
+    "tiles": 65,
+    "tileKeys": 32,
+    "cardHeight": 192,
+    "firstScreenFull": 9,
+    "firstScreenPart": 12,
+    "gridTop": 160,
+    "pageHeight": 5334,
+    "prerenderedCards": 62,
+    "prerenderedLinks": 124,
+    "externalRequests": 0,
+    "failedRequests": 0,
+    "jsErrors": 0,
+    "target": "http://127.0.0.1:49751/",
+    "generatedAt": "2026-09-22T17:14:39.218Z"
+  },
+  "checks": [
+    {
+      "name": "静态骨架有卡片",
+      "ok": true,
+      "detail": "62 条"
+    },
+    {
+      "name": "静态骨架有外链",
+      "ok": true,
+      "detail": "124 个"
+    },
+    {
+      "name": "力度分带已预渲染",
+      "ok": true,
+      "detail": "4 档"
+    },
+    {
+      "name": "筛选条已预渲染",
+      "ok": true,
+      "detail": "11 个 facet"
+    },
+    {
+      "name": "logo 已预渲染",
+      "ok": true,
+      "detail": "65 个 tile"
+    },
+    {
+      "name": "无 JS 时不显示「详情」提示",
+      "ok": true
+    },
+    {
+      "name": "卡片数与预渲染一致",
+      "ok": true,
+      "detail": "62 条"
+    },
+    {
+      "name": "桌面三列",
+      "ok": true,
+      "detail": "3 列"
+    },
+    {
+      "name": "卡片高度统一",
+      "ok": true,
+      "detail": "192px"
+    },
+    {
+      "name": "首屏完整可见卡片 ≥ 9",
+      "ok": true,
+      "detail": "完整 9 张 / 含截断 12 张 · 网格起点 160px · 页高 5334px"
+    },
+    {
+      "name": "汇总条已填充",
+      "ok": true,
+      "detail": "显示 62 条卡片 · 国内 42 · 国外 20 · 覆盖 4 个力度档位"
+    },
+    {
+      "name": "顶栏汇总已填充",
+      "ok": true,
+      "detail": "62 条优惠 · 已核验 32 · 更新 2026-09-23"
+    },
+    {
+      "name": "全部 logo 可加载且有尺寸",
+      "ok": true,
+      "detail": "32 个"
+    },
+    {
+      "name": "缩写块有字 / 不裁切 / 已标注",
+      "ok": true,
+      "detail": "3 个（空 0 / 裁切 0 / 未标注 0） 例：稀宇=MiniMax（稀宇科技） 稀宇=MiniMax（稀宇科技） 海螺=海螺AI（MiniMax）"
+    },
+    {
+      "name": "官方图形与缩写块不混用",
+      "ok": true,
+      "detail": "每张卡二选一"
+    },
+    {
+      "name": "卡片内容无溢出",
+      "ok": true,
+      "detail": "全部卡片内容在高度内"
+    },
+    {
+      "name": "悬停确实展开了 logo 簇",
+      "ok": true,
+      "detail": "间距 -6px → 3px（4 个 tile）"
+    },
+    {
+      "name": "展开前后：卡片高 / logo 簇宽 / 标题宽 均不变",
+      "ok": true,
+      "detail": "{\"before\":{\"card\":192,\"strip\":105,\"tileGap\":-6,\"title\":257,\"titleBox\":20,\"tiles\":4},\"after\":{\"card\":192,\"strip\":105,\"tileGap\":3,\"title\":257,\"titleBox\":20,\"tiles\":4}}"
+    },
+    {
+      "name": "点卡片打开弹层",
+      "ok": true,
+      "detail": "「百度千帆 新用户免费额度」"
+    },
+    {
+      "name": "弹层标题与卡片一致",
+      "ok": true,
+      "detail": "弹层「百度千帆 新用户免费额度」"
+    },
+    {
+      "name": "弹层在视口正中",
+      "ok": true,
+      "detail": "中心偏移 x=0px y=0px"
+    },
+    {
+      "name": "弹层未溢出视口",
+      "ok": true
+    },
+    {
+      "name": "弹层有字段表与领取入口",
+      "ok": true,
+      "detail": "4 个字段"
+    },
+    {
+      "name": "弹层 logo 一行平铺",
+      "ok": true,
+      "detail": "4 个 tile，宽 38px"
+    },
+    {
+      "name": "可以关闭",
+      "ok": true
+    },
+    {
+      "name": "「已核验」筛选生效",
+      "ok": true,
+      "detail": "62 → 32"
+    },
+    {
+      "name": "「国内」筛选生效",
+      "ok": true,
+      "detail": "→ 18"
+    },
+    {
+      "name": "取消筛选后回到全量",
+      "ok": true,
+      "detail": "62"
+    },
+    {
+      "name": "非力度排序时不显示分带",
+      "ok": true,
+      "detail": "分带 0 个"
+    },
+    {
+      "name": "切回力度排序恢复分带",
+      "ok": true,
+      "detail": "分带 4 个，卡片 62"
+    },
+    {
+      "name": "搜索有结果且收窄",
+      "ok": true,
+      "detail": "2 条 → 扣子 Coze 部分模型限时免费 每模型 100 次/天 / 百度千帆 新用户免费额度"
+    },
+    {
+      "name": "工具 Tab 有卡片",
+      "ok": true,
+      "detail": "112 条（其中工具 50）"
+    },
+    {
+      "name": "工具卡不冒充优惠",
+      "ok": true,
+      "detail": "0 条越界，50 条用灰条简介"
+    },
+    {
+      "name": "长尾厂商走名称缩写兜底",
+      "ok": true,
+      "detail": "官方图形 75 个 / 缩写块 40 个（NE AN GE GA LD LI）"
+    },
+    {
+      "name": "无横向溢出",
+      "ok": true,
+      "detail": "溢出 0px"
+    },
+    {
+      "name": "移动端单列",
+      "ok": true,
+      "detail": "1 列"
+    },
+    {
+      "name": "移动端卡片完整",
+      "ok": true,
+      "detail": "62 卡片 / 69 tile"
+    },
+    {
+      "name": "手机弹层也在正中",
+      "ok": true,
+      "detail": "中心偏移 x=0px y=0px"
+    },
+    {
+      "name": "手机弹层不超出屏幕",
+      "ok": true
+    },
+    {
+      "name": "卡片提示只给有译文的条目",
+      "ok": true,
+      "detail": "62 张卡中 6 张带「中文」提示"
+    },
+    {
+      "name": "提示语说明详情页有中文翻译",
+      "ok": true,
+      "detail": "详情页附中文翻译"
+    },
+    {
+      "name": "译文显示在英文原文下面",
+      "ok": true,
+      "detail": "英文仍保留：Education Pro is offered to verifi…"
+    },
+    {
+      "name": "译文确实是中文",
+      "ok": true,
+      "detail": "通过验证的学生与教育工作者可优惠购买 Education P"
+    },
+    {
+      "name": "译文默认展开",
+      "ok": true,
+      "detail": "3 个译文块"
+    },
+    {
+      "name": "点一下能收起",
+      "ok": true,
+      "detail": "open=true 隐藏=true localStorage=0"
+    },
+    {
+      "name": "同一份详情里的译文块同步折叠",
+      "ok": true
+    },
+    {
+      "name": "刷新后仍记得「已收起」",
+      "ok": true,
+      "detail": "3 个译文块，展开 无"
+    },
+    {
+      "name": "收起后还能再展开",
+      "ok": true
+    },
+    {
+      "name": "同一会话内换卡片也保持收起（不刷新）",
+      "ok": true,
+      "detail": "「Canva」3 个译文块全部收起"
+    },
+    {
+      "name": "无译文的卡片不出现译文块",
+      "ok": true,
+      "detail": "「GLM-4.7-Flash 免费模型」0 个译文块"
+    },
+    {
+      "name": "工具卡片的英文简介也带译文",
+      "ok": true,
+      "detail": "「ChatGPT / OpenAI」卡片英文「Use the free plan or choose annual billi」→ 详情 3 个译文块，简介译文：可直接使用免费档，或在官方定价页选择年付。"
+    },
+    {
+      "name": "手机端译文可折叠且不撑破弹层",
+      "ok": true,
+      "detail": "宽度合规 / 3 块 true→false / 横向溢出 0px"
+    },
+    {
+      "name": "没有外部请求（无 CDN 热链）",
+      "ok": true,
+      "detail": "全部同源"
+    },
+    {
+      "name": "没有加载失败",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "没有 JS 错误",
+      "ok": true,
+      "detail": "0 个"
+    }
+  ]
+}

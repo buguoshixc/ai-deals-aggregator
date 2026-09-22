@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "openrouter.ai",
   "target": "https://openrouter.ai/models",
-  "fetchedAt": "2026-09-22T16:23:05.372Z",
+  "fetchedAt": "2026-09-22T16:46:23.572Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,22 +11,24 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 12340,
+      "elapsedMs": 29447,
       "hydration": {
-        "textBefore": 9681,
-        "textAfter": 8067
+        "textBefore": 10477,
+        "textAfter": 8966
       },
-      "notes": []
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
     },
     {
       "viewport": {
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 14241,
+      "elapsedMs": 12085,
       "hydration": {
-        "textBefore": 6597,
-        "textAfter": 6597
+        "textBefore": 9379,
+        "textAfter": 7635
       },
       "notes": []
     }
@@ -39,8 +41,8 @@
       "width": 1440,
       "height": 900
     },
-    "pageHeight": 101376,
-    "scrollScreens": 112.6,
+    "pageHeight": 101711,
+    "scrollScreens": 113,
     "meta": {
       "description": "Compare 500+ LLMs from OpenAI, Anthropic, Google, Meta and more — pricing, context length, and benchmarks side by side, all through one API.",
       "ogImage": "https://openrouter.ai/dynamic-og?pathname=models&title=Compare+AI+Models%3A+Pricing%2C+Context+%26+Benchmarks&description=Compare+500%2B+LLMs+from+OpenAI%2C+Anthropic%2C+Google%2C+Meta+and+more+%E2%80%94+pricing%2C+context+length%2C+and+benchmarks+side+by+side%2C+all+through+one+API.&v=2",
@@ -176,9 +178,9 @@
         "shape": "/:slug/:slug",
         "count": 45,
         "samples": [
-          "https://openrouter.ai/assemblyai/universal-3-5-pro",
-          "https://openrouter.ai/xiaomi/mimo-v2.6-pro-ultraspeed",
-          "https://openrouter.ai/xiaomi/mimo-v2.6-flash"
+          "https://openrouter.ai/anthropic/claude-opus-5.5:batch",
+          "https://openrouter.ai/anthropic/claude-opus-5.5",
+          "https://openrouter.ai/assemblyai/universal-3-5-pro"
         ]
       },
       {
@@ -263,7 +265,7 @@
         "width": 1425,
         "height": {
           "min": 36,
-          "max": 101320,
+          "max": 101655,
           "median": 47
         },
         "fullyVisibleFirstScreen": 15,
@@ -290,7 +292,7 @@
       "width": 1425,
       "height": {
         "min": 36,
-        "max": 101320,
+        "max": 101655,
         "median": 47
       },
       "fullyVisibleFirstScreen": 15,
@@ -300,11 +302,11 @@
       "textColors": [
         {
           "value": "rgba(3, 8, 10, 0.69)",
-          "count": 758
+          "count": 754
         },
         {
           "value": "rgb(3, 8, 10)",
-          "count": 619
+          "count": 617
         },
         {
           "value": "rgb(252, 252, 254)",
@@ -316,26 +318,22 @@
         },
         {
           "value": "rgb(0, 136, 254)",
-          "count": 22
+          "count": 24
         },
         {
           "value": "rgb(107, 142, 35)",
           "count": 20
         },
         {
-          "value": "rgb(64, 224, 208)",
-          "count": 6
-        },
-        {
           "value": "rgb(118, 36, 244)",
           "count": 5
         },
         {
-          "value": "oklab(0.12716 -0.00976589 -0.00767095 / 0.483)",
-          "count": 1
+          "value": "rgb(64, 224, 208)",
+          "count": 3
         },
         {
-          "value": "rgb(138, 96, 0)",
+          "value": "oklab(0.12716 -0.00976589 -0.00767095 / 0.483)",
           "count": 1
         },
         {
@@ -354,7 +352,7 @@
         },
         {
           "value": "oklab(0.631347 -0.055476 -0.192722 / 0.12)",
-          "count": 11
+          "count": 12
         },
         {
           "value": "rgba(3, 8, 10, 0.03)",
@@ -373,10 +371,6 @@
           "count": 2
         },
         {
-          "value": "oklab(0.822324 -0.130191 -0.0115834 / 0.12)",
-          "count": 2
-        },
-        {
           "value": "rgb(118, 36, 244)",
           "count": 2
         },
@@ -385,7 +379,7 @@
           "count": 1
         },
         {
-          "value": "oklab(0.753392 0.0333853 0.153612 / 0.12)",
+          "value": "oklab(0.822324 -0.130191 -0.0115834 / 0.12)",
           "count": 1
         },
         {
@@ -400,11 +394,11 @@
       "fontSizes": [
         {
           "value": "14px",
-          "count": 1369
+          "count": 1363
         },
         {
           "value": "12px",
-          "count": 73
+          "count": 71
         },
         {
           "value": "16px",
@@ -418,15 +412,15 @@
       "lineHeights": [
         {
           "value": "22.75px",
-          "count": 1292
-        },
-        {
-          "value": "18.9px",
-          "count": 77
+          "count": 1295
         },
         {
           "value": "19.5px",
-          "count": 71
+          "count": 69
+        },
+        {
+          "value": "18.9px",
+          "count": 68
         },
         {
           "value": "21.6px",
@@ -444,11 +438,11 @@
       "fontWeights": [
         {
           "value": "450",
-          "count": 1150
+          "count": 1149
         },
         {
           "value": "500",
-          "count": 319
+          "count": 312
         },
         {
           "value": "600",
@@ -458,7 +452,7 @@
       "fontFamilies": [
         {
           "value": "Plus Jakarta Sans",
-          "count": 1497
+          "count": 1489
         },
         {
           "value": "geistMono",
@@ -472,7 +466,7 @@
       "radii": [
         {
           "value": "0px",
-          "count": 1379
+          "count": 1371
         },
         {
           "value": "4px",
@@ -480,7 +474,7 @@
         },
         {
           "value": "6px",
-          "count": 37
+          "count": 38
         },
         {
           "value": "8px",
@@ -488,7 +482,7 @@
         },
         {
           "value": "9999px",
-          "count": 15
+          "count": 14
         }
       ],
       "shadows": [
@@ -512,7 +506,7 @@
       "gaps": [
         {
           "value": "8px",
-          "count": 139
+          "count": 143
         },
         {
           "value": "6px",
@@ -520,7 +514,7 @@
         },
         {
           "value": "4px",
-          "count": 36
+          "count": 35
         },
         {
           "value": "12px",
@@ -540,10 +534,6 @@
         },
         {
           "value": "32px",
-          "count": 1
-        },
-        {
-          "value": "normal 4px",
           "count": 1
         }
       ],
@@ -566,7 +556,7 @@
         },
         {
           "value": "8px 8px",
-          "count": 15
+          "count": 12
         },
         {
           "value": "2px 2px",
@@ -600,7 +590,7 @@
       "transitions": [
         {
           "value": "color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
-          "count": 174
+          "count": 177
         },
         {
           "value": "opacity, translate, filter 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -628,7 +618,7 @@
         },
         {
           "value": "color 0.15s ease",
-          "count": 8
+          "count": 9
         },
         {
           "value": "background-color, border-color 0.15s cubic-bezier(0.22, 1, 0.36, 1)",
@@ -643,15 +633,15 @@
           "count": 3
         },
         {
-          "value": "color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-          "count": 3
-        },
-        {
           "value": "translate, width 0.25s cubic-bezier(0.77, 0, 0.175, 1)",
           "count": 2
         },
         {
           "value": "all 0.1s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        },
+        {
+          "value": "color, box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
           "count": 1
         }
       ],
@@ -685,7 +675,7 @@
       "lazyImages": 17,
       "searchInputs": 3,
       "selects": 0,
-      "buttons": 127,
+      "buttons": 126,
       "tabs": 50,
       "relNext": 0
     },
@@ -695,35 +685,35 @@
         "count": 8
       },
       {
-        "value": "t0.gstatic.com",
-        "count": 8
+        "value": "1-b57m3v5ugxwufyoepdslxrfq7u-gxzko2mqxwxqzek4hqmz44bxyi-p.client.protect.clerk.com",
+        "count": 6
       },
       {
-        "value": "1-hnytstwt7fhyleqzrmu7afbzrm-mbyn5moj7fwbaoun4pkbvw5jvi-p.client.protect.clerk.com",
-        "count": 5
+        "value": "t0.gstatic.com",
+        "count": 6
       },
       {
         "value": "www.googletagmanager.com",
         "count": 2
       },
       {
-        "value": "1-hnytstwt7fhyleqzrmu7afbzrm-mbyn5moj7fwbaoun4pkbvw5jvi-l.client.protect.clerk.com",
+        "value": "1-b57m3v5ugxwufyoepdslxrfq7u-gxzko2mqxwxqzek4hqmz44bxyi-l.client.protect.clerk.com",
         "count": 1
       },
       {
-        "value": "1-hnytstwt7fhyleqzrmu7afbzrm-mbyn5moj7fwbaoun4pkbvw5jvi-p.client.protect.clerk.com:18443",
+        "value": "1-b57m3v5ugxwufyoepdslxrfq7u-gxzko2mqxwxqzek4hqmz44bxyi-p.client.protect.clerk.com:18443",
         "count": 1
       },
       {
-        "value": "1-hnytstwt7fhyleqzrmu7afbzrm-mbyn5moj7fwbaoun4pkbvw5jvi-p.client.protect.clerk.com:2082",
+        "value": "1-b57m3v5ugxwufyoepdslxrfq7u-gxzko2mqxwxqzek4hqmz44bxyi-p.client.protect.clerk.com:2082",
         "count": 1
       },
       {
-        "value": "1-hnytstwt7fhyleqzrmu7afbzrm-mbyn5moj7fwbaoun4pkbvw5jvi-p.client.protect.clerk.com:8443",
+        "value": "1-b57m3v5ugxwufyoepdslxrfq7u-gxzko2mqxwxqzek4hqmz44bxyi-p.client.protect.clerk.com:8443",
         "count": 1
       },
       {
-        "value": "1-hnytstwt7fhyleqzrmu7afbzrm-mbyn5moj7fwbaoun4pkbvw5jvi-p.client.protect.clerk.com:992",
+        "value": "1-b57m3v5ugxwufyoepdslxrfq7u-gxzko2mqxwxqzek4hqmz44bxyi-p.client.protect.clerk.com:992",
         "count": 1
       },
       {
@@ -754,11 +744,11 @@
       },
       {
         "value": "fetch",
-        "count": 19
+        "count": 20
       },
       {
         "value": "img",
-        "count": 15
+        "count": 14
       },
       {
         "value": "link",
@@ -782,22 +772,15 @@
       }
     ],
     "requestCount": 137,
-    "textLength": 8067,
+    "textLength": 8966,
     "contrast": {
-      "sampled": 254,
+      "sampled": 257,
       "skippedForComplexBackground": 0,
-      "min": 5.59,
+      "min": 5.79,
       "p10": 7.5,
       "median": 7.58,
       "belowRequirement": 0,
       "worst": [
-        {
-          "selector": "div.inline-flex",
-          "text": "18+",
-          "fontSize": 12,
-          "ratio": 5.59,
-          "required": 4.5
-        },
         {
           "selector": "div.inline-flex",
           "text": "50% off",
@@ -846,6 +829,13 @@
           "fontSize": 14,
           "ratio": 6.16,
           "required": 4.5
+        },
+        {
+          "selector": "div.inline-flex",
+          "text": "Hiring",
+          "fontSize": 12,
+          "ratio": 6.71,
+          "required": 4.5
         }
       ]
     }
@@ -855,8 +845,8 @@
       "width": 390,
       "height": 844
     },
-    "pageHeight": 102168,
-    "scrollScreens": 121.1,
+    "pageHeight": 102481,
+    "scrollScreens": 121.4,
     "primaryList": {
       "signature": "li.absolute.flex.flex-col.group.justify-center.left-0.px-0.5.py-1.top-0.w-full",
       "count": 14,
@@ -889,7 +879,7 @@
       "fontSizes": [
         {
           "value": "14px",
-          "count": 763
+          "count": 756
         },
         {
           "value": "16px",
@@ -905,6 +895,6 @@
         }
       ]
     },
-    "textLength": 6597
+    "textLength": 7635
   }
 }

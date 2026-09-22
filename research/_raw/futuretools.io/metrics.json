@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "futuretools.io",
   "target": "https://futuretools.io/",
-  "fetchedAt": "2026-09-22T16:21:56.927Z",
+  "fetchedAt": "2026-09-22T16:51:23.314Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,22 +11,24 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 15918,
+      "elapsedMs": 15853,
       "hydration": {
-        "textBefore": 9537,
-        "textAfter": 9537
+        "textBefore": 9714,
+        "textAfter": 9714
       },
-      "notes": []
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
     },
     {
       "viewport": {
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 9617,
+      "elapsedMs": 8506,
       "hydration": {
         "textBefore": 9237,
-        "textAfter": 9414
+        "textAfter": 9237
       },
       "notes": []
     }
@@ -766,24 +768,12 @@
     },
     "externalDomains": [
       {
-        "value": "dxukomxvxegiferomewe.supabase.co",
-        "count": 4
-      },
-      {
         "value": "i.ytimg.com",
         "count": 4
       },
       {
-        "value": "images.ctfassets.net",
-        "count": 2
-      },
-      {
-        "value": "cdn.geekwire.com",
-        "count": 1
-      },
-      {
-        "value": "eleven-public-cdn.elevenlabs.io",
-        "count": 1
+        "value": "dxukomxvxegiferomewe.supabase.co",
+        "count": 3
       },
       {
         "value": "image.theregister.com",
@@ -817,30 +807,26 @@
     "resourceTypes": [
       {
         "value": "img",
-        "count": 50
+        "count": 45
       },
       {
         "value": "script",
         "count": 13
       },
       {
-        "value": "fetch",
-        "count": 11
-      },
-      {
         "value": "link",
         "count": 6
       },
       {
-        "value": "beacon",
+        "value": "fetch",
         "count": 4
       },
       {
-        "value": "other",
-        "count": 1
+        "value": "beacon",
+        "count": 3
       }
     ],
-    "requestCount": 85,
+    "requestCount": 71,
     "textLength": 9714,
     "contrast": {
       "sampled": 179,
@@ -974,11 +960,11 @@
       "fontSizes": [
         {
           "value": "16px",
-          "count": 380
+          "count": 361
         },
         {
           "value": "14px",
-          "count": 146
+          "count": 144
         },
         {
           "value": "11px",
@@ -986,7 +972,7 @@
         },
         {
           "value": "12px",
-          "count": 31
+          "count": 30
         },
         {
           "value": "10px",
@@ -1002,10 +988,10 @@
         },
         {
           "value": "24px",
-          "count": 4
+          "count": 3
         }
       ]
     },
-    "textLength": 9414
+    "textLength": 9237
   }
 }

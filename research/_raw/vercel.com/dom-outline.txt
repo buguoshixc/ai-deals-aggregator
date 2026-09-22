@@ -1,8 +1,50 @@
 # https://vercel.com/
-# 抓取时间 2026-09-22T16:23:55.581Z
+# 抓取时间 2026-09-22T17:00:49.431Z
 
 ## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
-… 25 children (body)
+… 26 children (body)
+
+## 面积兜底：渲染面积最大的 40 个元素（语义层级不足时看页面由哪几块组成）
+ 1440× 5333  <div.flex.min-w-0>
+ 1440× 5333  <div.@container.flex-1.min-w-0>
+ 1440× 4659  <main.overflow-x-clip>
+ 1440× 4659  <div.max-w-(--ds-page-width-with-margin).px-(--geist-page-margin).mx-auto>
+ 1392× 2363  <section.mt-40.@md:mt-52>
+ 1392× 2363  <div.flex.flex-col.gap-20>
+ 1440×  900  <div.w-full.h-full.inset-0>
+ 1416×  884  <div.flex.flex-col.gap-6>
+ 1440×  846  <footer.max-w-[var(--ds-page-width-with-margin)].mx-auto.px-[var(--geist-page-margin)]>
+ 1440×  836  <div.invisible.opacity-0.max-[880px]:data-[open]:!visible>
+ 1440×  836  <div.pointer-events-none.fixed.inset-x-0>
+ 1392×  836  <section.relative.flex.min-h-[min(calc(100svh-var(--header-height)),1100px)]>
+ 1416×  764  <div.flex.flex-col.gap-6>
+ 1392×  772  <div>
+ 1392×  728  <div.relative.flex.min-h-0>
+ 1392×  728  <div.group/hero.relative.flex>
+ 1392×  728  <div.pointer-events-none.z-0.relative>
+ 1392×  718  <section.mt-40.@md:mt-52>
+ 1392×  700  <nav>
+ 1392×  700  <div.grid.gap-x-6.gap-y-6>
+ 1440×  610  <div>
+ 1392×  618  <div>
+ 1392×  617  <div>
+ 1392×  617  <div.flex.flex-col.gap-11>
+ 1392×  617  <div.flex.flex-col.gap-11>
+ 1392×  617  <div.flex.flex-col.gap-11>
+ 1392×  582  <div.@container.mt-20.p-px>
+ 1390×  580  <section.grid.grid-cols-1.gap-5>
+ 1080×  720  <div.absolute.left-1/2.top-[calc(50%+var(--hero-shader-y-offset,0px))]>
+ 1080×  720  <div.absolute.inset-0.transition-opacity>
+ 1080×  720  <div.absolute.inset-0.z-0>
+ 1080×  720  <div.absolute.inset-0.z-0>
+ 1080×  720  <canvas.absolute.inset-0.block>
+ 1080×  720  <div.absolute.inset-0.pointer-events-none>
+ 1394×  480  <div.px-px.-mx-px>
+ 1392×  461  <div.relative.grid.grid-cols-12>
+ 1392×  461  <div.relative.grid.grid-cols-12>
+ 1392×  461  <div.relative.grid.grid-cols-12>
+ 1440×  432  <div.flex.flex-col.px-6>
+ 1196×  458  <g>
 
 ## class 命名频次（前 45）
     1  root

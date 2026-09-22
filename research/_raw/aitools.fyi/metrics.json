@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "aitools.fyi",
   "target": "https://aitools.fyi/",
-  "fetchedAt": "2026-09-22T16:25:39.206Z",
+  "fetchedAt": "2026-09-22T16:48:08.165Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,7 +11,7 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 15577,
+      "elapsedMs": 9932,
       "hydration": {
         "textBefore": 3578,
         "textAfter": 3578
@@ -23,9 +23,9 @@
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 19748,
+      "elapsedMs": 8754,
       "hydration": {
-        "textBefore": 3525,
+        "textBefore": 3524,
         "textAfter": 3525
       },
       "notes": []
@@ -506,7 +506,7 @@
       },
       {
         "value": "assets.aitools.fyi",
-        "count": 15
+        "count": 16
       }
     ],
     "resourceTypes": [
@@ -524,7 +524,7 @@
       },
       {
         "value": "img",
-        "count": 11
+        "count": 12
       },
       {
         "value": "css",
@@ -539,7 +539,7 @@
         "count": 1
       }
     ],
-    "requestCount": 96,
+    "requestCount": 97,
     "textLength": 3578,
     "contrast": {
       "sampled": 105,

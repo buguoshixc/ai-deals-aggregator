@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "framer.com",
   "target": "https://www.framer.com/",
-  "fetchedAt": "2026-09-22T16:26:36.352Z",
+  "fetchedAt": "2026-09-22T16:54:15.202Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,10 +11,10 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 20244,
+      "elapsedMs": 15359,
       "hydration": {
-        "textBefore": 5870,
-        "textAfter": 5870
+        "textBefore": 6052,
+        "textAfter": 6052
       },
       "notes": [
         "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
@@ -25,10 +25,10 @@
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 17917,
+      "elapsedMs": 14624,
       "hydration": {
-        "textBefore": 2506,
-        "textAfter": 2506
+        "textBefore": 2645,
+        "textAfter": 2645
       },
       "notes": [
         "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
@@ -53,18 +53,27 @@
       "viewport": "width=device-width"
     },
     "canonical": "https://www.framer.com/",
-    "hreflang": [],
+    "hreflang": [
+      {
+        "hreflang": "en",
+        "href": "https://www.framer.com/"
+      },
+      {
+        "hreflang": "x-default",
+        "href": "https://www.framer.com/"
+      }
+    ],
     "jsonLdTypes": [
       "Organization"
     ],
     "landmarks": {
       "header": 7,
-      "nav": 4,
+      "nav": 1,
       "main": 1,
       "section": 6,
       "article": 0,
       "aside": 0,
-      "footer": 3,
+      "footer": 1,
       "form": 1,
       "dialog": 0
     },
@@ -83,19 +92,7 @@
       },
       {
         "level": 3,
-        "text": "Design with an agent"
-      },
-      {
-        "level": 3,
         "text": "Run your CMS with an agent"
-      },
-      {
-        "level": 3,
-        "text": "Run your CMS with an agent"
-      },
-      {
-        "level": 3,
-        "text": "Code with an agent"
       },
       {
         "level": 3,
@@ -165,25 +162,25 @@
     "detailUrlPatterns": [
       {
         "shape": "/:slug/:slug",
-        "count": 177,
+        "count": 49,
         "samples": [
-          "https://www.framer.com/developers/comparison",
-          "https://www.framer.com/developers/plugins-introduction",
-          "https://www.framer.com/developers/plugins-quick-start"
+          "https://www.framer.com/agents/external/#connect",
+          "https://www.framer.com/community/gallery/",
+          "https://www.framer.com/stories/miro/"
         ]
       },
       {
         "shape": "/:slug",
-        "count": 122,
+        "count": 46,
         "samples": [
           "https://www.framer.com/enterprise/",
           "https://www.framer.com/brand",
-          "https://www.framer.com/developers/"
+          "https://www.framer.com/skills"
         ]
       },
       {
         "shape": "/:slug/:slug/:slug",
-        "count": 13,
+        "count": 5,
         "samples": [
           "https://www.framer.com/academy/lessons/localization",
           "https://www.framer.com/community/marketplace/templates/",
@@ -192,71 +189,72 @@
       },
       {
         "shape": "/legal/:slug",
-        "count": 7,
+        "count": 4,
         "samples": [
           "https://www.framer.com/legal/security",
-          "https://www.framer.com/legal/community-terms"
+          "https://www.framer.com/legal/community-terms",
+          "https://www.framer.com/legal/cookie-statement"
         ]
       },
       {
         "shape": "/signup",
-        "count": 6,
+        "count": 3,
         "samples": [
           "https://www.framer.com/signup/"
         ]
       },
       {
         "shape": "/pricing",
-        "count": 4,
+        "count": 2,
         "samples": [
           "https://www.framer.com/pricing"
         ]
       },
       {
+        "shape": "/:slug/signup",
+        "count": 1,
+        "samples": [
+          "https://www.framer.com/r/signup/"
+        ]
+      },
+      {
+        "shape": "/:slug/feed",
+        "count": 1,
+        "samples": [
+          "https://www.framer.com/community/feed/"
+        ]
+      },
+      {
         "shape": "/blog",
-        "count": 3,
+        "count": 1,
         "samples": [
           "https://www.framer.com/blog/"
         ]
       },
       {
         "shape": "/help",
-        "count": 3,
+        "count": 1,
         "samples": [
           "https://www.framer.com/help/"
         ]
       },
       {
         "shape": "/contact",
-        "count": 3,
+        "count": 1,
         "samples": [
           "https://www.framer.com/contact/"
         ]
       },
       {
         "shape": "/careers",
-        "count": 3,
+        "count": 1,
         "samples": [
           "https://www.framer.com/careers/"
-        ]
-      },
-      {
-        "shape": "/:slug/signup",
-        "count": 2,
-        "samples": [
-          "https://www.framer.com/r/signup/"
-        ]
-      },
-      {
-        "shape": "/:slug/faq",
-        "count": 2,
-        "samples": [
-          "https://www.framer.com/developers/faq"
         ]
       }
     ],
     "hashOnlyLinks": 0,
-    "internalLinkCount": 374,
+    "internalLinkCount": 137,
     "repeatedComponents": [
       {
         "signature": "li.ticker-item",
@@ -289,7 +287,7 @@
       "textColors": [
         {
           "value": "rgb(0, 0, 0)",
-          "count": 1668
+          "count": 1799
         },
         {
           "value": "rgb(0, 0, 238)",
@@ -297,11 +295,11 @@
         },
         {
           "value": "rgb(255, 255, 255)",
-          "count": 163
+          "count": 164
         },
         {
           "value": "rgb(153, 153, 153)",
-          "count": 125
+          "count": 159
         },
         {
           "value": "rgba(255, 255, 255, 0.6)",
@@ -321,7 +319,7 @@
         },
         {
           "value": "rgb(0, 153, 255)",
-          "count": 8
+          "count": 7
         },
         {
           "value": "rgb(214, 122, 92)",
@@ -338,6 +336,10 @@
         {
           "value": "rgb(5, 5, 5)",
           "count": 3
+        },
+        {
+          "value": "rgb(34, 34, 34)",
+          "count": 2
         },
         {
           "value": "rgba(255, 255, 255, 0.5)",
@@ -366,16 +368,12 @@
           "count": 33
         },
         {
-          "value": "rgb(0, 153, 255)",
-          "count": 23
+          "value": "rgba(255, 255, 255, 0.1)",
+          "count": 21
         },
         {
           "value": "rgb(255, 255, 255)",
-          "count": 19
-        },
-        {
-          "value": "rgba(255, 255, 255, 0.1)",
-          "count": 19
+          "count": 20
         },
         {
           "value": "rgb(30, 30, 30)",
@@ -388,6 +386,10 @@
         {
           "value": "rgba(0, 187, 136, 0.1)",
           "count": 10
+        },
+        {
+          "value": "rgb(0, 153, 255)",
+          "count": 7
         },
         {
           "value": "rgb(153, 153, 153)",
@@ -406,10 +408,6 @@
           "count": 4
         },
         {
-          "value": "rgba(0, 153, 255, 0.1)",
-          "count": 4
-        },
-        {
           "value": "rgba(0, 153, 255, 0.22)",
           "count": 4
         },
@@ -423,6 +421,10 @@
         },
         {
           "value": "rgb(48, 48, 48)",
+          "count": 3
+        },
+        {
+          "value": "rgba(0, 153, 255, 0.1)",
           "count": 3
         },
         {
@@ -457,15 +459,15 @@
       "fontSizes": [
         {
           "value": "12px",
-          "count": 2315
+          "count": 2447
         },
         {
           "value": "14px",
-          "count": 116
+          "count": 120
         },
         {
           "value": "13px",
-          "count": 68
+          "count": 99
         },
         {
           "value": "18px",
@@ -527,7 +529,7 @@
         },
         {
           "value": "20.8px",
-          "count": 45
+          "count": 76
         },
         {
           "value": "16px",
@@ -539,7 +541,7 @@
         },
         {
           "value": "12px",
-          "count": 30
+          "count": 31
         },
         {
           "value": "24.3px",
@@ -554,12 +556,12 @@
           "count": 14
         },
         {
-          "value": "20.25px",
+          "value": "14px",
           "count": 11
         },
         {
-          "value": "14px",
-          "count": 10
+          "value": "20.25px",
+          "count": 11
         },
         {
           "value": "0px",
@@ -578,18 +580,18 @@
           "count": 3
         },
         {
-          "value": "1px",
+          "value": "15px",
           "count": 3
         }
       ],
       "fontWeights": [
         {
           "value": "400",
-          "count": 2337
+          "count": 2470
         },
         {
           "value": "500",
-          "count": 214
+          "count": 248
         },
         {
           "value": "600",
@@ -603,11 +605,11 @@
       "fontFamilies": [
         {
           "value": "sans-serif",
-          "count": 2137
+          "count": 2263
         },
         {
           "value": "Inter",
-          "count": 233
+          "count": 274
         },
         {
           "value": "Inter Variable",
@@ -637,11 +639,11 @@
       "radii": [
         {
           "value": "0px",
-          "count": 2114
+          "count": 2289
         },
         {
           "value": "8px",
-          "count": 230
+          "count": 232
         },
         {
           "value": "15px",
@@ -653,15 +655,11 @@
         },
         {
           "value": "20px",
-          "count": 24
+          "count": 27
         },
         {
           "value": "4px",
-          "count": 23
-        },
-        {
-          "value": "50%",
-          "count": 17
+          "count": 24
         },
         {
           "value": "100px",
@@ -669,11 +667,11 @@
         },
         {
           "value": "18px",
-          "count": 12
+          "count": 13
         },
         {
           "value": "10px",
-          "count": 10
+          "count": 11
         },
         {
           "value": "5px",
@@ -690,6 +688,10 @@
         {
           "value": "50px",
           "count": 3
+        },
+        {
+          "value": "12px",
+          "count": 2
         }
       ],
       "shadows": [
@@ -702,46 +704,50 @@
           "count": 3
         },
         {
-          "value": "rgba(0, 0, 0, 0.2) 0px 16.1005px 25.7608px 0px",
-          "count": 2
-        },
-        {
-          "value": "rgba(0, 0, 0, 0.2) 0px 26px 41.6px 0px",
-          "count": 2
-        },
-        {
-          "value": "rgba(0, 0, 0, 0.2) 0px 35.8995px 57.4392px 0px",
-          "count": 2
-        },
-        {
           "value": "rgba(255, 255, 255, 0.1) 0px 0px 0px 1px",
           "count": 2
         },
         {
-          "value": "rgba(0, 0, 0, 0.2) 0px 12px 19.2px 0px",
+          "value": "rgba(0, 0, 0, 0.1) 0px 10px 20px 0px, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset",
           "count": 1
         },
         {
-          "value": "rgba(0, 0, 0, 0.2) 0px 40px 64px 0px",
+          "value": "rgba(0, 0, 0, 0.2) 0px 12.0003px 19.2005px 0px",
           "count": 1
         },
         {
-          "value": "rgba(0, 0, 0, 0.25) 0px 2px 4px 0px",
+          "value": "rgba(0, 0, 0, 0.2) 0px 16.0317px 25.6507px 0px",
           "count": 1
         },
         {
-          "value": "rgba(0, 153, 255, 0.15) 0px 1px 2px 0px, rgba(0, 153, 255, 0.2) 0px 2px 4px 0px",
+          "value": "rgba(0, 0, 0, 0.2) 0px 16.1698px 25.8717px 0px",
           "count": 1
         },
         {
-          "value": "rgba(255, 255, 255, 0.08) 0px 0px 0px 1px",
+          "value": "rgba(0, 0, 0, 0.2) 0px 25.9024px 41.4438px 0px",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.2) 0px 26.0976px 41.7562px 0px",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.2) 0px 35.8302px 57.3283px 0px",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.2) 0px 35.9683px 57.5493px 0px",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.2) 0px 39.9997px 63.9995px 0px",
           "count": 1
         }
       ],
       "gaps": [
         {
           "value": "10px",
-          "count": 235
+          "count": 236
         },
         {
           "value": "5px",
@@ -765,7 +771,7 @@
         },
         {
           "value": "20px",
-          "count": 15
+          "count": 17
         },
         {
           "value": "30px",
@@ -807,7 +813,7 @@
       "paddings": [
         {
           "value": "10px 10px",
-          "count": 34
+          "count": 35
         },
         {
           "value": "0px 1px",
@@ -818,12 +824,12 @@
           "count": 22
         },
         {
-          "value": "25px 25px",
+          "value": "20px 20px",
           "count": 11
         },
         {
-          "value": "20px 20px",
-          "count": 9
+          "value": "25px 25px",
+          "count": 11
         },
         {
           "value": "40px 40px",
@@ -862,18 +868,18 @@
           "count": 4
         },
         {
-          "value": "2px 2px",
+          "value": "3px 3px",
           "count": 4
         },
         {
-          "value": "3px 3px",
-          "count": 4
+          "value": "120px 120px",
+          "count": 3
         }
       ],
       "transitions": [
         {
           "value": "all 0s ease",
-          "count": 16
+          "count": 1
         }
       ],
       "containerMaxWidths": [
@@ -911,28 +917,40 @@
     },
     "behavior": {
       "stickyElements": 1,
-      "fixedElements": 1,
+      "fixedElements": 2,
       "prefersColorSchemeRules": 0,
       "bodyBgIsDark": true,
-      "images": 83,
-      "lazyImages": 82,
+      "images": 84,
+      "lazyImages": 83,
       "searchInputs": 0,
       "selects": 0,
-      "buttons": 8,
+      "buttons": 5,
       "tabs": 0,
       "relNext": 0
     },
     "externalDomains": [
       {
         "value": "framerusercontent.com",
-        "count": 24
+        "count": 129
       },
       {
         "value": "api.framer.com",
-        "count": 5
+        "count": 9
       },
       {
         "value": "events.framer.com",
+        "count": 7
+      },
+      {
+        "value": "analytics.framer.com",
+        "count": 3
+      },
+      {
+        "value": "analytics.twitter.com",
+        "count": 3
+      },
+      {
+        "value": "app.framerstatic.com",
         "count": 3
       },
       {
@@ -940,11 +958,27 @@
         "count": 3
       },
       {
+        "value": "www.google.com",
+        "count": 3
+      },
+      {
         "value": "accounts.google.com",
         "count": 2
       },
       {
-        "value": "app.framerstatic.com",
+        "value": "bzrcdn.openai.com",
+        "count": 2
+      },
+      {
+        "value": "framer.com",
+        "count": 2
+      },
+      {
+        "value": "ingest.promptwatch.com",
+        "count": 2
+      },
+      {
+        "value": "t.co",
         "count": 2
       },
       {
@@ -956,7 +990,11 @@
         "count": 1
       },
       {
-        "value": "bzrcdn.openai.com",
+        "value": "analytics.google.com",
+        "count": 1
+      },
+      {
+        "value": "bzr.openai.com",
         "count": 1
       },
       {
@@ -968,54 +1006,50 @@
         "count": 1
       },
       {
-        "value": "ingest.promptwatch.com",
-        "count": 1
-      },
-      {
-        "value": "static.ads-twitter.com",
-        "count": 1
-      },
-      {
-        "value": "www.dubcdn.com",
-        "count": 1
-      },
-      {
-        "value": "www.google.com",
+        "value": "googleads.g.doubleclick.net",
         "count": 1
       }
     ],
     "resourceTypes": [
       {
+        "value": "script",
+        "count": 107
+      },
+      {
         "value": "img",
-        "count": 14
+        "count": 38
+      },
+      {
+        "value": "fetch",
+        "count": 15
+      },
+      {
+        "value": "xmlhttprequest",
+        "count": 12
       },
       {
         "value": "css",
         "count": 10
       },
       {
-        "value": "script",
-        "count": 10
-      },
-      {
-        "value": "fetch",
-        "count": 6
-      },
-      {
-        "value": "xmlhttprequest",
-        "count": 6
+        "value": "video",
+        "count": 3
       },
       {
         "value": "link",
         "count": 2
       },
       {
-        "value": "video",
+        "value": "beacon",
+        "count": 1
+      },
+      {
+        "value": "iframe",
         "count": 1
       }
     ],
-    "requestCount": 49,
-    "textLength": 5870,
+    "requestCount": 189,
+    "textLength": 6052,
     "contrast": {
       "sampled": 400,
       "skippedForComplexBackground": 2,
@@ -1122,7 +1156,11 @@
       "fontSizes": [
         {
           "value": "12px",
-          "count": 524
+          "count": 1027
+        },
+        {
+          "value": "14px",
+          "count": 112
         },
         {
           "value": "18px",
@@ -1131,10 +1169,6 @@
         {
           "value": "15px",
           "count": 11
-        },
-        {
-          "value": "14px",
-          "count": 8
         },
         {
           "value": "13px",
@@ -1154,6 +1188,6 @@
         }
       ]
     },
-    "textLength": 2506
+    "textLength": 2645
   }
 }

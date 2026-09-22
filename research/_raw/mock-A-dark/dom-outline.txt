@@ -1,0 +1,74 @@
+# http://127.0.0.1:8080/mockups/v3/A-conservative/
+# 抓取时间 2026-09-22T16:58:01.449Z
+
+## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
+<header.top> 1440x59
+<main.wrap> 1420x1156
+  <section.demohead> 1388x71
+    <h1> 1388x33 — 方案 A · 保守：视觉层重做，信息架构与 URL 一个都不碰
+  <article.g> 455x192
+    <h3> 343x22 — GLM-4.7-Flash 免费模型
+  <article.g> 455x192
+    <h3> 343x22 — GLM-4.5-Flash 免费模型
+  <article.g> 455x192
+    <h3> 343x22 — GLM-4.6V-Flash 免费模型
+  <article.g> 455x192
+    <h3> 343x22 — 扣子 Coze 新用户首次注册赠送 1500 活动积分
+  <article.g> 455x192
+    <h3> 343x22 — 扣子 Coze 个人版每日登录赠送 1500 活动积分
+  <article.g> 455x192
+    <h3> 343x22 — 扣子 Coze 部分模型限时免费 每模型 100 次/天
+  <article.g> 455x192
+    <h3> 343x22 — Runway 免费计划 一次性 125 credits
+  <article.g> 455x192
+    <h3> 343x43 — 魔搭 ModelScope API-Inference 免费推理 API（动态限流）
+  <section.demohead> 1388x88
+    <h1> 1388x27 — token 对照（左边是线上现值，右边是提案值）
+  <section.demohead> 1388x111
+    <h1> 1388x27 — 动效与层级
+<footer> 1440x67
+
+## class 命名频次（前 45）
+   16  cta
+    9  n
+    8  g
+    8  tiernum
+    8  gh
+    8  logos
+    8  lg
+    8  gt
+    8  vendor
+    8  tg
+    8  of
+    8  bar
+    8  tx
+    8  feats
+    8  meta
+    8  sp
+    8  ghost
+    7  cn
+    6  sw
+    6  chip
+    6  m
+    5  anno
+    3  vh
+    3  demohead
+    3  band
+    3  line
+    3  grid
+    2  wrap
+    1  skip
+    1  top
+    1  topin
+    1  brand
+    1  mark
+    1  btxt
+    1  search
+    1  seg
+    1  topstat
+    1  note
+    1  t1
+    1  t2
+    1  t3
+    1  gl
+    1  tokens

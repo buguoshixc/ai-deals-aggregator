@@ -1,7 +1,50 @@
 # https://www.toolify.ai/
-# 抓取时间 2026-09-22T16:27:15.150Z
+# 抓取时间 2026-09-22T17:01:55.560Z
 
 ## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
-… 31 children (body)
+… 34 children (body)
+  … 331 children (svg)
+
+## 面积兜底：渲染面积最大的 40 个元素（语义层级不足时看页面由哪几块组成）
+ 1440× 7918  <div>
+ 1440× 7918  <div>
+ 1440× 7918  <div>
+ 1440× 7795  <div>
+ 1440× 7795  <div.index-container.bg-neutral-50>
+ 1440× 7462  <div>
+ 1440× 3918  <div.home-index-content.bg-neutral-50.border-b>
+ 1344× 3917  <div.flex.flex-col.xxxl:flex-row>
+ 1440× 3054  <section.py-12.home-index-content>
+ 1344× 2958  <div.max-w-11xl.mx-auto>
+ 1344× 2888  <div.grid.grid-cols-1.sm:grid-cols-2>
+  653× 3917  <div.order-1.xxxl:order-2.md:flex-1>
+  653× 3812  <section.index-tools-section.p-4.border-l>
+  619× 3696  <div.tools.grid.gap-2>
+ 1376× 1580  <div.footer-content.max-w-8xl.mx-auto>
+ 1312× 1240  <div.grid.gap-8.mt-8>
+ 1440×  490  <section.bg-neutral-100.home-index-content.py-12>
+ 1344×  394  <div.max-w-18xl.mx-auto>
+ 1440×  333  <div.interactive-gradient-bg>
+ 1440×  333  <div.gradient-background>
+ 1440×  333  <div.grid-overlay>
+ 1440×  333  <div.noise-overlay>
+ 1440×  333  <div.banner-content-wrapper.border-b.border-neutral-200>
+ 1440×  332  <div.home-banner-content.max-w-11xl.px-4>
+ 1344×  336  <div.w-full.relative.group>
+ 1344×  336  <div.overflow-hidden>
+ 1344×  336  <div.flex.transition-transform.duration-300>
+ 1344×  336  <div.flex-shrink-0.w-full>
+ 1344×  336  <div.grid.grid-cols-2.sm:grid-cols-2>
+ 1344×  336  <div.flex-shrink-0.w-full>
+ 1344×  336  <div.grid.grid-cols-2.sm:grid-cols-2>
+ 1344×  336  <div.flex-shrink-0.w-full>
+  400×  860  <div.order-3.xxxl:order-3.block>
+  384×  859  <div.w-full.xxxl:w-[384px].mb-8>
+  384×  828  <div.sidebar-scroll-container>
+  652×  478  <div.gradient-sphere.sphere-1>
+  237× 1240  <div.col-span-1>
+  237× 1240  <div.col-span-1>
+  237× 1240  <div.col-span-1>
+  237× 1240  <div.col-span-1>
 
 ## class 命名频次（前 45）

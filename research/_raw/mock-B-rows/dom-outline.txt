@@ -1,0 +1,73 @@
+# http://127.0.0.1:8080/mockups/v3/B-balanced/dense-rows.html
+# 抓取时间 2026-09-22T16:58:08.276Z
+
+## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
+<header.top> 1440x59
+<main.wrap> 1420x1433
+  <section.demohead> 1388x71
+    <h1> 1388x33 — 方案 B · 均衡：卡片 ↔ 紧凑行，两种视图切换
+  <article.g> 455x192
+    <h3> 343x22 — GLM-4.7-Flash 免费模型
+  <article.g> 455x192
+    <h3> 343x22 — GLM-4.5-Flash 免费模型
+  <article.g> 455x192
+    <h3> 343x22 — GLM-4.6V-Flash 免费模型
+  <article.g> 455x192
+    <h3> 343x22 — 扣子 Coze 新用户首次注册赠送 1500 活动积分
+  <article.g> 455x192
+    <h3> 343x22 — 扣子 Coze 个人版每日登录赠送 1500 活动积分
+  <article.g> 455x192
+    <h3> 343x22 — 扣子 Coze 部分模型限时免费 每模型 100 次/天
+  <article.g> 455x192
+    <h3> 343x22 — Runway 免费计划 一次性 125 credits
+  <article.g> 455x192
+    <h3> 343x43 — 魔搭 ModelScope API-Inference 免费推理 API（动态限流）
+  <article.g> 455x192
+    <h3> 343x22 — Perplexity
+  … 13 children (div)
+  <section.demohead> 1388x89
+    <h1> 1388x27 — 为什么是 46px 而不是更矮
+<footer> 1440x67
+
+## class 命名频次（前 45）
+   18  cta
+   16  tiernum
+   16  lg
+   14  v
+    9  g
+    9  gh
+    9  logos
+    9  gt
+    9  vendor
+    9  tg
+    9  of
+    9  bar
+    9  tx
+    9  meta
+    9  sp
+    9  ghost
+    8  feats
+    7  cn
+    7  row
+    7  t
+    7  o
+    7  when
+    5  vh
+    2  note
+    2  wrap
+    2  demohead
+    2  f
+    2  gl
+    1  skip
+    1  top
+    1  topin
+    1  brand
+    1  mark
+    1  btxt
+    1  search
+    1  seg
+    1  topstat
+    1  only-cards
+    1  grid
+    1  only-rows
+    1  rowhead

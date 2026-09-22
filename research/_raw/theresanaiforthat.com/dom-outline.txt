@@ -1,13 +1,69 @@
 # https://theresanaiforthat.com/
-# 抓取时间 2026-09-22T16:28:08.882Z
+# 抓取时间 2026-09-22T16:49:36.333Z
 
 ## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
 … 40 children (body)
+  … 27 children (div)
+    … 18 children (svg)
+    <h2> 0x0 — Search
+    <ul> 0x0
+    <ul.notifications_list> 0x0
+    … 59 children (div)
+    … 19 children (div)
+      … 14 children (div)
+      … 27 children (div)
+  <h2> 0x0 — 
+  <h3> 0x0 — 
+  <h3> 0x0 — 
+  <h3> 0x0 — 
+  <footer> 1440x711
+    … 14 children (div)
+  <h3> 0x0 — 
+  … 12 children (div)
 
 ## class 命名频次（前 45）
-    1  listing-table-page
-    1  today-listing-page
-    1  home-listing-tabs-page
-    1  visitor
-    1  chrome
-    1  noscroll
+   20  home-listings-secondary-tab
+   19  hidden
+   13  switch
+   13  slider
+   11  active
+    9  requires_login
+    9  home-today-entity-toggle
+    9  home-today-entity-toggle-label
+    9  home-today-entity-toggle-text
+    9  home-today-entity-toggle-count
+    7  invisible
+    7  cmd_or_ctrl_symbol
+    6  search_key
+    6  cmdk_pill
+    6  modal
+    4  noevents
+    4  switch-label
+    4  footer_row
+    4  signin_google_btn
+    3  search_wrap
+    3  search_bar_wrap
+    3  search_action
+    3  search_input
+    3  search_prompt
+    3  search_button
+    3  search_text
+    3  website_control
+    3  s_suggestion
+    3  s_ai
+    3  ai-icon
+    3  related_name
+    3  top3
+    3  home-listings-secondary
+    3  home-listings-secondary-list
+    3  home-listings-secondary-menu-option
+    3  home-listings-action
+    3  home-listings-secondary-clear
+    3  mode-option
+    3  mode-content
+    3  mode-icon
+    3  mode-text
+    3  toggle
+    3  toggle-slider
+    3  footer_links_column
+    3  modal_title_simple

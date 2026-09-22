@@ -1,7 +1,59 @@
 # https://aitools.fyi/
-# 抓取时间 2026-09-22T16:25:39.206Z
+# 抓取时间 2026-09-22T16:48:08.165Z
 
 ## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
 … 12 children (body)
+  <nav.w-full.py-4.shadow-sm> 1440x72
+  <main.w-full.flex.flex-col> 1440x2625
+    <h1.text-xl.font-semibold.md:text-2xl> 601x36 — Find Best AI Tools That Make Your Life Easy!
+    <form.flex.gap-2.md:gap-3> 530x40
+    … 16 children (div)
+  <footer.py-6.border-t.border-gray-400> 1440x290
+    … 18 children (div)
 
 ## class 命名频次（前 45）
+   25  items-center
+   25  text-sm
+   22  rounded
+   19  px-2
+   18  flex
+   15  justify-center
+   15  text-white
+   15  sm:font-medium
+   14  py-2
+   14  border
+   13  w-full
+   13  bg-primary
+   12  lg:text-base
+   11  hidden
+   11  font-medium
+   11  py-1
+   10  transition-colors
+   10  focus:outline-none
+    9  relative
+    8  px-4
+    8  hover:bg-primary
+    7  text-primary
+    7  font-normal
+    7  text-black
+    7  hover:text-primary
+    7  focus:ring-2
+    7  focus:ring-ring
+    7  focus:ring-offset-2
+    7  border-transparent
+    7  inline-block
+    7  font-[450]
+    7  sm:px-2
+    7  sm:py-1
+    7  break-words
+    7  mt-0
+    6  xl:block
+    6  xl:font-semibold
+    6  inline-flex
+    6  flex-col
+    5  h-10
+    5  rounded-full
+    4  container
+    4  mx-auto
+    4  md:px-8
+    4  lg:px-20

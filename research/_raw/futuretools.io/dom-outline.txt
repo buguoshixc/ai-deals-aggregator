@@ -1,11 +1,102 @@
 # https://futuretools.io/
-# 抓取时间 2026-09-22T16:21:56.927Z
+# 抓取时间 2026-09-22T16:51:23.314Z
 
 ## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
-… 80 children (body)
+… 81 children (body)
+  <header.sticky.top-0.z-50> 1440x61
+    <nav.mx-auto.flex.max-w-7xl> 1280x60
+  <main.flex-1> 1440x3580
+    <section.relative.overflow-hidden.border-b> 1440x580
+      <h1.font-display.text-4xl.font-bold> 578x126 — Stay ahead on AI. All in ONE place.
+      <form.relative.flex.flex-col> 576x44
+      … 14 children (div)
+      … 17 children (defs)
+      … 11 children (g)
+      … 90 children (g)
+      … 49 children (g)
+      … 49 children (g)
+      … 22 children (g)
+    <section.py-12.lg:py-16> 1440x1563
+      <h2.font-display.text-2xl.font-bold> 357x36 — AI News
+      <h3.mt-1.5.font-display.text-base> 662x50 — Meta's AI App Muse Surpasses ChatGPT's Early Mobile Download
+      <h3.mt-1.5.font-display.text-base> 662x50 — OpenAI Calls for US-Led Global AI Standards to Govern Autono
+      <h3.mt-1.5.font-display.text-base> 662x50 — OpenAI Academy Expands With New AI Learning Paths for Develo
+      <h3.mt-1.5.font-display.text-base> 662x50 — SpaceXAI Launches Grok 4.7: Faster Coding Model at $2/M Toke
+      <h3.mt-1.5.font-display.text-base> 662x50 — Alibaba's Qwen-Image-2.1 Unifies Image Generation, Editing &
+      <h3.mt-1.5.font-display.text-base> 662x50 — ElevenLabs Studio 4.0 Adds AI Video, Voice & Music Generatio
+      <h3.mt-1.5.font-display.text-base> 662x50 — Amazon Blocks Meta's Muse AI Agent From Shopping on Amazon.c
+      <h3.mt-1.5.font-display.text-base> 662x50 — Trump Creates "AI Force" Modeled on Space Force, Plans to Na
+      <h3.mt-1.5.font-display.text-base> 662x50 — Google's Gemini AI Autonomously Hacked 3 Companies During Cy
+      <h3.mt-1.5.font-display.text-base> 662x50 — Anthropic's Claude Code Now Supports OpenAI's AGENTS.md Stan
+      <aside.lg:pt-1> 340x1435
+        <h2.font-display.text-lg.font-bold> 139x28 — Top 20 AI Tools
+        … 20 children (div)
+        … 20 children (div)
+    <section.border-t.border-border/50.py-12> 1440x441
+      <h2.font-display.text-2xl.font-bold> 326x36 — AI News with Matt
+    <section.border-t.border-border/50.py-12> 1440x359
+      <h2.min-w-0.font-display.text-2xl> 379x36 — Commentary & Analysis
+      <h3.line-clamp-2.font-display.text-sm> 406x19 — What We Should Keep Human
+      <h3.line-clamp-2.font-display.text-sm> 406x39 — Why Everyone Should Have a Local AI Model (Even If You Love 
+      <h3.line-clamp-2.font-display.text-sm> 406x19 — AI Agents, 6G, and the Future of Computing
+      <h3.line-clamp-2.font-display.text-sm> 406x19 — Agents, Humanist Superintelligence, and Healthcare
+    <section.relative.overflow-hidden.border-t> 1440x637
+      <h2.mt-4.font-display.text-3xl> 676x97 — Get the AI Income Database, free when you join
+      <ul.mt-6.space-y-2.5.text-sm> 676x80
+      <form.relative.flex.flex-col> 576x44
+  <footer.border-t.border-border/50.bg-surface> 1440x436
+    <h3.font-display.text-sm.font-semibold> 280x20 — Site
+    <ul.mt-4.grid.grid-cols-2> 280x194
+    <h3.font-display.text-sm.font-semibold> 280x20 — Social
+    <ul.mt-4.grid.grid-cols-2> 280x80
+    <h3.font-display.text-sm.font-semibold> 280x20 — Legal
+    <ul.mt-4.space-y-2.5> 280x58
+    <h3.font-display.text-sm.font-semibold> 280x20 — More from Matt
+    <ul.mt-4.space-y-2.5> 280x58
 
 ## class 命名频次（前 45）
-    1  syne_53f86cd1-module__kiT3Eq__variable
-    1  plus_jakarta_sans_8def66c5-module__XA8t6q__variable
-    1  font-sans
-    1  antialiased
+  114  transition-colors
+  113  flex
+   96  text-sm
+   84  text-muted-foreground
+   69  items-center
+   62  border
+   60  font-semibold
+   57  rounded-lg
+   57  overflow-hidden
+   52  group-hover:text-primary
+   51  relative
+   50  shrink-0
+   45  font-display
+   41  px-3
+   40  flex-1
+   39  group
+   36  font-bold
+   35  min-w-0
+   35  bg-secondary
+   35  object-cover
+   34  truncate
+   32  flex-col
+   32  text-xs
+   32  border-border/40
+   27  border-border/50
+   24  w-full
+   24  transition-all
+   24  text-base
+   24  gap-3
+   24  duration-300
+   24  leading-none
+   24  hover:text-primary
+   22  rounded-xl
+   22  h-full
+   21  tracking-tight
+   21  font-medium
+   20  h-8
+   20  text-muted-foreground/70
+   20  gap-4
+   20  tabular-nums
+   19  hover:bg-accent
+   19  items-end
+   19  bg-card/60
+   19  leading-snug
+   19  rounded-md

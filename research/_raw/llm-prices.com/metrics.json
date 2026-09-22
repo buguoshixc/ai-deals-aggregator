@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "llm-prices.com",
   "target": "https://llm-prices.com/",
-  "fetchedAt": "2026-09-22T16:23:58.277Z",
+  "fetchedAt": "2026-09-22T17:04:20.360Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,10 +11,10 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 7903,
+      "elapsedMs": 16362,
       "hydration": {
         "textBefore": 511,
-        "textAfter": 5754
+        "textAfter": 5804
       },
       "notes": []
     },
@@ -23,10 +23,10 @@
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 5752,
+      "elapsedMs": 21734,
       "hydration": {
         "textBefore": 511,
-        "textAfter": 5754
+        "textAfter": 5804
       },
       "notes": []
     }
@@ -39,8 +39,8 @@
       "width": 1440,
       "height": 900
     },
-    "pageHeight": 7506,
-    "scrollScreens": 8.3,
+    "pageHeight": 7596,
+    "scrollScreens": 8.4,
     "meta": {
       "description": null,
       "ogImage": null,
@@ -78,7 +78,7 @@
     "repeatedComponents": [
       {
         "signature": "tr",
-        "count": 158,
+        "count": 160,
         "parents": 2,
         "width": 600,
         "height": {
@@ -92,7 +92,7 @@
     ],
     "primaryList": {
       "signature": "tr",
-      "count": 158,
+      "count": 160,
       "parents": 2,
       "width": 600,
       "height": {
@@ -107,15 +107,15 @@
       "textColors": [
         {
           "value": "rgb(0, 0, 0)",
-          "count": 973
+          "count": 985
         },
         {
           "value": "rgb(51, 51, 51)",
-          "count": 159
+          "count": 161
         },
         {
           "value": "rgb(102, 102, 102)",
-          "count": 119
+          "count": 120
         },
         {
           "value": "rgb(119, 119, 119)",
@@ -129,7 +129,7 @@
       "backgrounds": [
         {
           "value": "rgb(225, 240, 255)",
-          "count": 157
+          "count": 159
         },
         {
           "value": "rgb(255, 255, 255)",
@@ -147,15 +147,15 @@
       "fontSizes": [
         {
           "value": "14px",
-          "count": 958
+          "count": 970
         },
         {
           "value": "13.3333px",
-          "count": 157
+          "count": 159
         },
         {
           "value": "11.9px",
-          "count": 110
+          "count": 111
         },
         {
           "value": "16px",
@@ -178,7 +178,7 @@
       "fontWeights": [
         {
           "value": "400",
-          "count": 1244
+          "count": 1259
         },
         {
           "value": "700",
@@ -188,17 +188,17 @@
       "fontFamilies": [
         {
           "value": "Arial",
-          "count": 1254
+          "count": 1269
         }
       ],
       "radii": [
         {
           "value": "0px",
-          "count": 1086
+          "count": 1099
         },
         {
           "value": "4px",
-          "count": 165
+          "count": 167
         },
         {
           "value": "8px",
@@ -220,11 +220,11 @@
       "paddings": [
         {
           "value": "8px 8px",
-          "count": 635
+          "count": 643
         },
         {
           "value": "5px 5px",
-          "count": 157
+          "count": 159
         },
         {
           "value": "10px 10px",
@@ -238,7 +238,7 @@
       "transitions": [
         {
           "value": "background-color, border-color 0.2s, 0.2s ease, ease",
-          "count": 157
+          "count": 159
         }
       ],
       "containerMaxWidths": [
@@ -258,7 +258,7 @@
       "lazyImages": 0,
       "searchInputs": 1,
       "selects": 0,
-      "buttons": 161,
+      "buttons": 163,
       "tabs": 0,
       "relNext": 0
     },
@@ -291,7 +291,7 @@
       }
     ],
     "requestCount": 5,
-    "textLength": 5754,
+    "textLength": 5804,
     "contrast": {
       "sampled": 400,
       "skippedForComplexBackground": 0,
@@ -364,11 +364,11 @@
       "width": 415,
       "height": 899
     },
-    "pageHeight": 11357,
-    "scrollScreens": 12.6,
+    "pageHeight": 11463,
+    "scrollScreens": 12.8,
     "primaryList": {
       "signature": "tr",
-      "count": 158,
+      "count": 160,
       "parents": 2,
       "width": 375,
       "height": {
@@ -382,7 +382,7 @@
     "repeatedComponents": [
       {
         "signature": "tr",
-        "count": 158,
+        "count": 160,
         "parents": 2,
         "width": 375,
         "height": {
@@ -398,15 +398,15 @@
       "fontSizes": [
         {
           "value": "14px",
-          "count": 958
+          "count": 970
         },
         {
           "value": "13.3333px",
-          "count": 157
+          "count": 159
         },
         {
           "value": "11.9px",
-          "count": 110
+          "count": 111
         },
         {
           "value": "16px",
@@ -426,6 +426,6 @@
         }
       ]
     },
-    "textLength": 5754
+    "textLength": 5804
   }
 }

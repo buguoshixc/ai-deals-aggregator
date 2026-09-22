@@ -1,7 +1,49 @@
 # https://www.notion.com/
-# 抓取时间 2026-09-22T16:28:45.019Z
+# 抓取时间 2026-09-22T17:00:07.138Z
 
 ## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
-… 48 children (body)
+… 37 children (body)
+
+## 面积兜底：渲染面积最大的 40 个元素（语义层级不足时看页面由哪几块组成）
+ 1440× 4053  <div>
+ 1440× 3549  <main.layout-module-scss-module__18xgza__main.layout-module-scss-module__18xgza__withoutPadding>
+ 1440× 1448  <div.homepage-module-scss-module__-Qs3Ha__main.homepage-module-scss-module__-Qs3Ha__mainLoose>
+ 1440× 1329  <div.homepageHeroTeamsAndAgents-module-scss-module__KlQGRG__heroContainer>
+ 1440× 1149  <div.heroGrid-module-scss-module__Zc4oCG__heroGrid.homepageHeroTeamsAndAgents-module-scss-module__KlQGRG__simplifiedHeroGrid>
+ 1229× 1256  <div.homepage-module-scss-module__-Qs3Ha__section.homepage-module-scss-module__-Qs3Ha__tightSpacing>
+ 1229×  948  <div.bentos-module-scss-module__KqyldW__bentoGrid.bentos-module-scss-module__KqyldW__bentoGridAccentMuted>
+ 1440×  772  <div.homepage-module-scss-module__-Qs3Ha__main.homepage-module-scss-module__-Qs3Ha__mainLoose>
+ 1229×  580  <div.homepage-module-scss-module__-Qs3Ha__section>
+ 1229×  580  <section>
+ 1229×  492  <div.socialProofV2-module-scss-module__Mcafya__block>
+ 1229×  492  <div.socialProofV2-module-scss-module__Mcafya__cards>
+  960×  601  <div.heroGrid-module-scss-module__Zc4oCG__item.heroGrid-module-scss-module__Zc4oCG__regionCenter.homepageHeroTeamsAndAgents-module-scss-module__KlQGRG__media>
+  960×  601  <div.HeroMedia-module-scss-module__t-AqdW__productImageContainer>
+  960×  601  <div.HeroMedia-module-scss-module__t-AqdW__productImage>
+  958×  599  <video.Video-module-scss-module__D671CW__video.Video-module-scss-module__D671CW__videoAspectRatio.HeroMedia-module-scss-module__t-AqdW__media>
+  958×  599  <picture.HeroMedia-module-scss-module__t-AqdW__poster.HeroMedia-module-scss-module__t-AqdW__posterHidden>
+  958×  599  <img.HeroMedia-module-scss-module__t-AqdW__posterImage>
+ 1440×  396  <footer.surface.surfaceBase.surface-module-scss-module__CFFfpW__surfaceBase>
+ 1229×  364  <article.bento-module-scss-module__xvimDq__bento.base-module-scss-module__QPCBRq__theme.gray-palette-module-scss-module__6FCNga__theme>
+ 1229×  364  <div.bento-module-scss-module__xvimDq__bentoInner>
+ 1229×  364  <a.bento-module-scss-module__xvimDq__bentoAnchor>
+ 1380×  292  <div.layout-module-scss-module__e_tYXa__layout>
+ 1252×  308  <div.heroGrid-module-scss-module__Zc4oCG__item.heroGrid-module-scss-module__Zc4oCG__regionContent.homepageHeroTeamsAndAgents-module-scss-module__KlQGRG__content>
+ 1252×  308  <header.homepageHeroTeamsAndAgents-module-scss-module__KlQGRG__contentHeader>
+ 1252×  292  <div.grid-module-scss-module__lgnKUW__grid.footer-module-scss-module__U-iC1W__grid>
+  602×  578  <picture.bento-module-scss-module__xvimDq__bentoImagePicture.bento-module-scss-module__xvimDq__alignCenter>
+  602×  578  <picture.bento-module-scss-module__xvimDq__bentoImagePicture.bento-module-scss-module__xvimDq__alignCenter>
+  602×  560  <article.bento-module-scss-module__xvimDq__bento.base-module-scss-module__QPCBRq__theme.gray-palette-module-scss-module__6FCNga__theme>
+  602×  560  <div.bento-module-scss-module__xvimDq__bentoInner>
+  602×  560  <a.bento-module-scss-module__xvimDq__bentoAnchor>
+  602×  560  <article.bento-module-scss-module__xvimDq__bento.base-module-scss-module__QPCBRq__theme.gray-palette-module-scss-module__6FCNga__theme>
+  602×  560  <div.bento-module-scss-module__xvimDq__bentoInner>
+  602×  560  <a.bento-module-scss-module__xvimDq__bentoAnchor>
+  826×  376  <div.globalNavigation-module-scss-module__HWB10a__dropdown>
+  554×  554  <img.next-image.bento-module-scss-module__xvimDq__bentoImage>
+  554×  554  <img.next-image.bento-module-scss-module__xvimDq__bentoImage>
+  794×  352  <div>
+  794×  352  <div.productFeaturesDropdown-module-scss-module__qVhEtq__desktop>
+  602×  452  <div.bento-module-scss-module__xvimDq__bentoMedia.bentos-module-scss-module__KqyldW__bentoMedia.bento-module-scss-module__xvimDq__noBezel>
 
 ## class 命名频次（前 45）

@@ -1,8 +1,57 @@
 # https://openrouter.ai/models
-# 抓取时间 2026-09-22T16:23:05.372Z
+# 抓取时间 2026-09-22T16:46:23.572Z
 
 ## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
 … 30 children (body)
+  <nav.h-14.bg-background.w-full> 1425x56
+    <nav.relative.z-10.flex> 0x0
+      <ul.group.flex.flex-1> 0x0
+    <nav.relative.z-10.flex> 0x0
+      <ul.group.flex.flex-1> 0x0
 
 ## class 命名频次（前 45）
-    1  tabular-nums
+   40  items-center
+   33  text-muted-foreground
+   29  justify-center
+   23  inline-flex
+   22  rounded-md
+   21  disabled:pointer-events-none
+   21  disabled:opacity-50
+   21  h-8
+   21  font-medium
+   20  flex
+   20  duration-quick
+   19  cursor-pointer
+   18  gap-2
+   18  whitespace-nowrap
+   18  hover:text-accent-foreground
+   17  text-button
+   17  no-underline
+   17  transition-[color,background-color,border-color,box-shadow,scale]
+   17  ease-smooth-out
+   17  active:scale-(--scale-medium)
+   17  data-[disabled]:active:scale-100
+   17  motion-reduce:transition-colors
+   17  motion-reduce:active:scale-100
+   17  focus-visible:outline-none
+   17  focus-visible:border-focus-border
+   17  focus-visible:shadow-focus
+   17  [&_svg]:pointer-events-none
+   17  [&_svg]:size-4
+   17  [&_svg]:shrink-0
+   17  px-2
+   15  hover:bg-accent-subtle
+   15  active:bg-accent-subtle/80
+   14  w-auto
+   10  group
+    6  text-sm
+    6  contents
+    5  absolute
+    5  relative
+    5  shrink-0
+    5  transition-colors
+    5  flex-1
+    5  gap-1
+    4  w-full
+    4  py-2
+    4  focus-visible:bg-card-hover

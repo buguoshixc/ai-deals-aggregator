@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "appsumo.com",
   "target": "https://appsumo.com/",
-  "fetchedAt": "2026-09-22T16:29:01.604Z",
+  "fetchedAt": "2026-09-22T17:02:57.297Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,7 +11,7 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 21582,
+      "elapsedMs": 36376,
       "hydration": {
         "textBefore": 2786,
         "textAfter": 2786
@@ -25,10 +25,10 @@
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 23146,
+      "elapsedMs": 21683,
       "hydration": {
-        "textBefore": 2733,
-        "textAfter": 2733
+        "textBefore": 2731,
+        "textAfter": 2731
       },
       "notes": [
         "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
@@ -65,7 +65,7 @@
       "article": 0,
       "aside": 0,
       "footer": 1,
-      "form": 1,
+      "form": 2,
       "dialog": 0
     },
     "headings": [
@@ -91,15 +91,15 @@
       },
       {
         "level": 3,
+        "text": "WarmySender"
+      },
+      {
+        "level": 3,
         "text": "DigiParser"
       },
       {
         "level": 3,
         "text": "SocialBu"
-      },
-      {
-        "level": 3,
-        "text": "WarmySender"
       },
       {
         "level": 3,
@@ -238,11 +238,11 @@
         },
         {
           "value": "rgb(27, 27, 27)",
-          "count": 163
+          "count": 166
         },
         {
           "value": "rgb(255, 255, 255)",
-          "count": 74
+          "count": 91
         },
         {
           "value": "rgb(2, 20, 20)",
@@ -253,8 +253,16 @@
           "count": 24
         },
         {
+          "value": "rgb(39, 39, 39)",
+          "count": 21
+        },
+        {
           "value": "rgb(67, 77, 89)",
           "count": 13
+        },
+        {
+          "value": "rgb(134, 134, 134)",
+          "count": 9
         },
         {
           "value": "rgb(234, 234, 240)",
@@ -269,18 +277,26 @@
           "count": 5
         },
         {
+          "value": "rgb(74, 74, 74)",
+          "count": 4
+        },
+        {
           "value": "rgb(14, 110, 244)",
           "count": 2
         },
         {
           "value": "rgb(90, 104, 121)",
           "count": 2
+        },
+        {
+          "value": "rgb(8, 8, 8)",
+          "count": 1
         }
       ],
       "backgrounds": [
         {
           "value": "rgb(255, 255, 255)",
-          "count": 17
+          "count": 20
         },
         {
           "value": "rgb(255, 235, 231)",
@@ -289,6 +305,14 @@
         {
           "value": "rgb(65, 130, 255)",
           "count": 4
+        },
+        {
+          "value": "rgb(255, 188, 0)",
+          "count": 2
+        },
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 1
         },
         {
           "value": "rgb(2, 20, 20)",
@@ -307,18 +331,26 @@
           "count": 1
         },
         {
-          "value": "rgb(255, 188, 0)",
+          "value": "rgba(0, 0, 0, 0.3)",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.33)",
+          "count": 1
+        },
+        {
+          "value": "rgba(255, 255, 255, 0)",
           "count": 1
         }
       ],
       "fontSizes": [
         {
           "value": "16px",
-          "count": 401
+          "count": 422
         },
         {
           "value": "14px",
-          "count": 93
+          "count": 108
         },
         {
           "value": "18px",
@@ -326,11 +358,15 @@
         },
         {
           "value": "20px",
-          "count": 17
+          "count": 20
         },
         {
           "value": "88px",
           "count": 9
+        },
+        {
+          "value": "80px",
+          "count": 6
         },
         {
           "value": "12px",
@@ -338,7 +374,15 @@
         },
         {
           "value": "24px",
-          "count": 2
+          "count": 5
+        },
+        {
+          "value": "11px",
+          "count": 4
+        },
+        {
+          "value": "15px",
+          "count": 3
         },
         {
           "value": "30px",
@@ -352,7 +396,7 @@
         },
         {
           "value": "20px",
-          "count": 88
+          "count": 102
         },
         {
           "value": "28px",
@@ -371,8 +415,24 @@
           "count": 5
         },
         {
+          "value": "20.8px",
+          "count": 4
+        },
+        {
+          "value": "37.5px",
+          "count": 3
+        },
+        {
           "value": "32px",
           "count": 2
+        },
+        {
+          "value": "18.2px",
+          "count": 1
+        },
+        {
+          "value": "26px",
+          "count": 1
         },
         {
           "value": "36px",
@@ -382,15 +442,19 @@
       "fontWeights": [
         {
           "value": "400",
-          "count": 474
+          "count": 521
         },
         {
           "value": "700",
-          "count": 60
+          "count": 61
         },
         {
           "value": "900",
           "count": 9
+        },
+        {
+          "value": "500",
+          "count": 7
         },
         {
           "value": "600",
@@ -403,14 +467,30 @@
           "count": 534
         },
         {
+          "value": "Open Sans",
+          "count": 31
+        },
+        {
           "value": "__Barlow_f0b089",
           "count": 16
+        },
+        {
+          "value": "Helvetica Neue",
+          "count": 14
+        },
+        {
+          "value": "Montserrat",
+          "count": 8
+        },
+        {
+          "value": "Helvetica",
+          "count": 2
         }
       ],
       "radii": [
         {
           "value": "0px",
-          "count": 506
+          "count": 554
         },
         {
           "value": "8px",
@@ -429,11 +509,31 @@
           "count": 2
         },
         {
+          "value": "2px",
+          "count": 2
+        },
+        {
+          "value": "3px",
+          "count": 2
+        },
+        {
           "value": "12px",
           "count": 1
         },
         {
+          "value": "30px",
+          "count": 1
+        },
+        {
           "value": "32px",
+          "count": 1
+        },
+        {
+          "value": "50%",
+          "count": 1
+        },
+        {
+          "value": "8px 8px 0px 0px",
           "count": 1
         },
         {
@@ -444,6 +544,10 @@
       "shadows": [
         {
           "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(241, 246, 255) 0px 10px 30px 0px",
+          "count": 1
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.3) 0px 0px 0px 2px",
           "count": 1
         }
       ],
@@ -496,7 +600,7 @@
       "paddings": [
         {
           "value": "8px 8px",
-          "count": 9
+          "count": 13
         },
         {
           "value": "16px 16px",
@@ -505,6 +609,10 @@
         {
           "value": "4px 4px",
           "count": 3
+        },
+        {
+          "value": "10px 10px",
+          "count": 2
         },
         {
           "value": "56px 0px",
@@ -519,7 +627,7 @@
           "count": 1
         },
         {
-          "value": "10px 10px",
+          "value": "0px 5px",
           "count": 1
         },
         {
@@ -543,6 +651,10 @@
           "count": 1
         },
         {
+          "value": "5px 6px",
+          "count": 1
+        },
+        {
           "value": "80px 0px",
           "count": 1
         }
@@ -553,6 +665,10 @@
           "count": 3
         },
         {
+          "value": "all 0.2s ease",
+          "count": 2
+        },
+        {
           "value": "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
           "count": 1
         },
@@ -561,11 +677,23 @@
           "count": 1
         },
         {
+          "value": "all, transform 0.2s, 0.001s ease, ease",
+          "count": 1
+        },
+        {
+          "value": "box-shadow 0.3s ease",
+          "count": 1
+        },
+        {
           "value": "color, background-color, border-color, text-decoration-color, fill, stroke 0.15s cubic-bezier(0, 0, 0.2, 1)",
           "count": 1
         },
         {
           "value": "transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        },
+        {
+          "value": "transform 0.3s ease-out",
           "count": 1
         },
         {
@@ -604,48 +732,76 @@
     },
     "behavior": {
       "stickyElements": 0,
-      "fixedElements": 2,
+      "fixedElements": 4,
       "prefersColorSchemeRules": 0,
       "bodyBgIsDark": false,
-      "images": 55,
+      "images": 56,
       "lazyImages": 23,
       "searchInputs": 1,
       "selects": 0,
-      "buttons": 8,
+      "buttons": 12,
       "tabs": 0,
       "relNext": 0
     },
     "externalDomains": [
       {
         "value": "appsumo2next-cdn.appsumo.com",
-        "count": 36
+        "count": 44
       },
       {
         "value": "appsumo2-cdn.appsumo.com",
-        "count": 23
+        "count": 24
       },
       {
-        "value": "www.google.com",
-        "count": 9
+        "value": "static.klaviyo.com",
+        "count": 17
       },
       {
         "value": "metrics.appsumo.com",
+        "count": 13
+      },
+      {
+        "value": "www.google.com",
+        "count": 12
+      },
+      {
+        "value": "analytics.tiktok.com",
+        "count": 10
+      },
+      {
+        "value": "googleads.g.doubleclick.net",
+        "count": 7
+      },
+      {
+        "value": "assets.privy.com",
         "count": 6
+      },
+      {
+        "value": "www.google.com.tw",
+        "count": 6
+      },
+      {
+        "value": "analytics.google.com",
+        "count": 5
+      },
+      {
+        "value": "analytics.twitter.com",
+        "count": 5
       },
       {
         "value": "www.googletagmanager.com",
         "count": 5
       },
       {
-        "value": "analytics.google.com",
-        "count": 4
-      },
-      {
         "value": "cdn-cookieyes.com",
         "count": 4
       },
       {
-        "value": "analytics.twitter.com",
+        "value": "static-tracking.klaviyo.com",
+        "count": 4
+      },
+      {
+        "value": "fonts.googleapis.com",
         "count": 3
       },
       {
@@ -653,141 +809,125 @@
         "count": 3
       },
       {
-        "value": "www.google.com.tw",
-        "count": 2
-      },
-      {
-        "value": "ad.doubleclick.net",
-        "count": 1
-      },
-      {
-        "value": "alb.reddit.com",
-        "count": 1
-      },
-      {
-        "value": "analytics.tiktok.com",
-        "count": 1
+        "value": "www.google-analytics.com",
+        "count": 3
       },
       {
         "value": "api.privy.com",
-        "count": 1
+        "count": 2
       },
       {
-        "value": "bat.bing.com",
-        "count": 1
+        "value": "connect.facebook.net",
+        "count": 2
       },
       {
-        "value": "directory.cookieyes.com",
-        "count": 1
-      },
-      {
-        "value": "log.cookieyes.com",
-        "count": 1
-      },
-      {
-        "value": "o93004.ingest.sentry.io",
-        "count": 1
-      },
-      {
-        "value": "pixel-config.reddit.com",
-        "count": 1
-      },
-      {
-        "value": "scripts.clarity.ms",
-        "count": 1
+        "value": "events.privy.com",
+        "count": 2
       }
     ],
     "resourceTypes": [
       {
-        "value": "fetch",
-        "count": 45
-      },
-      {
         "value": "script",
-        "count": 34
+        "count": 70
       },
       {
         "value": "img",
-        "count": 33
+        "count": 56
+      },
+      {
+        "value": "fetch",
+        "count": 54
       },
       {
         "value": "link",
-        "count": 19
-      },
-      {
-        "value": "xmlhttprequest",
-        "count": 2
+        "count": 26
       },
       {
         "value": "beacon",
+        "count": 9
+      },
+      {
+        "value": "xmlhttprequest",
+        "count": 8
+      },
+      {
+        "value": "iframe",
+        "count": 2
+      },
+      {
+        "value": "css",
+        "count": 1
+      },
+      {
+        "value": "other",
         "count": 1
       }
     ],
-    "requestCount": 134,
-    "textLength": 2786,
+    "requestCount": 227,
+    "textLength": 3022,
     "contrast": {
-      "sampled": 140,
+      "sampled": 158,
       "skippedForComplexBackground": 0,
-      "min": 3.58,
-      "p10": 5.17,
+      "min": 1.2,
+      "p10": 4.09,
       "median": 17.22,
-      "belowRequirement": 5,
+      "belowRequirement": 16,
       "worst": [
         {
-          "selector": "button.!border",
-          "text": "View deal",
-          "fontSize": 16,
-          "ratio": 3.58,
-          "required": 4.5
+          "selector": "div.-my-2",
+          "text": "1",
+          "fontSize": 88,
+          "ratio": 1.2,
+          "required": 3
         },
         {
-          "selector": "button.!border",
-          "text": "View deal",
-          "fontSize": 16,
-          "ratio": 3.58,
-          "required": 4.5
+          "selector": "div.-my-2",
+          "text": "2",
+          "fontSize": 88,
+          "ratio": 1.2,
+          "required": 3
         },
         {
-          "selector": "button.!border",
-          "text": "View deal",
-          "fontSize": 16,
-          "ratio": 3.58,
-          "required": 4.5
+          "selector": "div.-my-2",
+          "text": "3",
+          "fontSize": 88,
+          "ratio": 1.2,
+          "required": 3
         },
         {
-          "selector": "button.!border",
-          "text": "View deal",
-          "fontSize": 16,
-          "ratio": 3.58,
-          "required": 4.5
+          "selector": "div.-my-2",
+          "text": "4",
+          "fontSize": 88,
+          "ratio": 1.2,
+          "required": 3
         },
         {
-          "selector": "span.ml-1.5",
-          "text": "NEW",
-          "fontSize": 12,
-          "ratio": 4.09,
-          "required": 4.5
+          "selector": "div.-my-2",
+          "text": "5",
+          "fontSize": 88,
+          "ratio": 1.2,
+          "required": 3
         },
         {
-          "selector": "a.text-bolt",
-          "text": "be the first!",
-          "fontSize": 14,
-          "ratio": 4.61,
-          "required": 4.5
+          "selector": "div.-my-2",
+          "text": "6",
+          "fontSize": 88,
+          "ratio": 1.2,
+          "required": 3
         },
         {
-          "selector": "span",
-          "text": "15 reviews",
-          "fontSize": 14,
-          "ratio": 5.17,
-          "required": 4.5
+          "selector": "div.-my-2",
+          "text": "7",
+          "fontSize": 88,
+          "ratio": 1.2,
+          "required": 3
         },
         {
-          "selector": "span",
-          "text": "82 reviews",
-          "fontSize": 14,
-          "ratio": 5.17,
-          "required": 4.5
+          "selector": "div.-my-2",
+          "text": "8",
+          "fontSize": 88,
+          "ratio": 1.2,
+          "required": 3
         }
       ]
     }
@@ -864,7 +1004,7 @@
         },
         {
           "value": "12px",
-          "count": 4
+          "count": 3
         },
         {
           "value": "24px",
@@ -872,6 +1012,6 @@
         }
       ]
     },
-    "textLength": 2733
+    "textLength": 2731
   }
 }

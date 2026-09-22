@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "notion.com",
   "target": "https://www.notion.com/",
-  "fetchedAt": "2026-09-22T16:28:45.019Z",
+  "fetchedAt": "2026-09-22T17:00:07.138Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,21 +11,23 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 19460,
+      "elapsedMs": 19890,
       "hydration": {
-        "textBefore": 2112,
-        "textAfter": 2109
+        "textBefore": 1587,
+        "textAfter": 1585
       },
-      "notes": []
+      "notes": [
+        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
+      ]
     },
     {
       "viewport": {
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 24987,
+      "elapsedMs": 30902,
       "hydration": {
-        "textBefore": 1985,
+        "textBefore": 1461,
         "textAfter": 1983
       },
       "notes": [
@@ -41,8 +43,8 @@
       "width": 1440,
       "height": 900
     },
-    "pageHeight": 4551,
-    "scrollScreens": 5.1,
+    "pageHeight": 4053,
+    "scrollScreens": 4.5,
     "meta": {
       "description": "Build Custom Agents, search across all your apps, and automate busywork. The AI workspace where teams get more done, faster.",
       "ogImage": "https://www.notion.com/front-static/meta/teams-and-agents.jpg",
@@ -146,7 +148,7 @@
       "header": 4,
       "nav": 2,
       "main": 1,
-      "section": 3,
+      "section": 2,
       "article": 3,
       "aside": 0,
       "footer": 1,
@@ -213,16 +215,12 @@
       {
         "level": 2,
         "text": "Trusted by teams that ship."
-      },
-      {
-        "level": 2,
-        "text": "Get started today."
       }
     ],
     "detailUrlPatterns": [
       {
         "shape": "/:slug",
-        "count": 49,
+        "count": 48,
         "samples": [
           "https://www.notion.com/zh-cn",
           "https://www.notion.com/product",
@@ -248,13 +246,6 @@
         ]
       },
       {
-        "shape": "/signup",
-        "count": 3,
-        "samples": [
-          "https://www.notion.com/signup?from=marketing&pathname=%2F&tid=f9718909593b4c1d87081449d8416819"
-        ]
-      },
-      {
         "shape": "/help",
         "count": 2,
         "samples": [
@@ -269,6 +260,13 @@
         ]
       },
       {
+        "shape": "/signup",
+        "count": 2,
+        "samples": [
+          "https://www.notion.com/signup?from=marketing&pathname=%2F&tid=ab031295d3d04f5da80905c2aaad5e8c"
+        ]
+      },
+      {
         "shape": "/explore",
         "count": 2,
         "samples": [
@@ -279,7 +277,7 @@
         "shape": "/login",
         "count": 1,
         "samples": [
-          "https://www.notion.com/login?from=marketing&pathname=%2F&tid=f9718909593b4c1d87081449d8416819"
+          "https://www.notion.com/login?from=marketing&pathname=%2F&tid=ab031295d3d04f5da80905c2aaad5e8c"
         ]
       },
       {
@@ -298,14 +296,14 @@
       }
     ],
     "hashOnlyLinks": 0,
-    "internalLinkCount": 90,
+    "internalLinkCount": 88,
     "repeatedComponents": [],
     "primaryList": null,
     "tokens": {
       "textColors": [
         {
           "value": "rgba(0, 0, 0, 0.898)",
-          "count": 194
+          "count": 187
         },
         {
           "value": "rgba(0, 0, 0, 0.75)",
@@ -313,19 +311,11 @@
         },
         {
           "value": "rgba(0, 0, 0, 0.95)",
-          "count": 61
+          "count": 60
         },
         {
           "value": "rgb(255, 255, 255)",
-          "count": 46
-        },
-        {
-          "value": "rgb(163, 158, 152)",
           "count": 45
-        },
-        {
-          "value": "rgb(97, 93, 89)",
-          "count": 15
         },
         {
           "value": "rgb(0, 0, 0)",
@@ -337,7 +327,7 @@
         },
         {
           "value": "rgb(9, 127, 232)",
-          "count": 9
+          "count": 8
         },
         {
           "value": "rgb(0, 117, 222)",
@@ -363,7 +353,7 @@
         },
         {
           "value": "rgb(255, 255, 255)",
-          "count": 18
+          "count": 17
         },
         {
           "value": "rgb(249, 249, 248)",
@@ -375,10 +365,6 @@
         },
         {
           "value": "rgb(0, 117, 222)",
-          "count": 3
-        },
-        {
-          "value": "rgb(246, 245, 244)",
           "count": 2
         },
         {
@@ -418,6 +404,10 @@
           "count": 1
         },
         {
+          "value": "rgb(246, 245, 244)",
+          "count": 1
+        },
+        {
           "value": "rgb(26, 174, 57)",
           "count": 1
         },
@@ -429,15 +419,11 @@
       "fontSizes": [
         {
           "value": "16px",
-          "count": 331
+          "count": 325
         },
         {
           "value": "14px",
-          "count": 78
-        },
-        {
-          "value": "24px",
-          "count": 45
+          "count": 63
         },
         {
           "value": "40px",
@@ -450,10 +436,6 @@
         {
           "value": "20px",
           "count": 4
-        },
-        {
-          "value": "0px",
-          "count": 3
         },
         {
           "value": "18px",
@@ -472,10 +454,6 @@
           "count": 2
         },
         {
-          "value": "42px",
-          "count": 1
-        },
-        {
           "value": "96px",
           "count": 1
         }
@@ -483,15 +461,15 @@
       "lineHeights": [
         {
           "value": "24px",
-          "count": 259
-        },
-        {
-          "value": "20px",
-          "count": 126
+          "count": 253
         },
         {
           "value": "0px",
-          "count": 72
+          "count": 69
+        },
+        {
+          "value": "20px",
+          "count": 66
         },
         {
           "value": "28px",
@@ -516,24 +494,20 @@
         {
           "value": "100px",
           "count": 1
-        },
-        {
-          "value": "48px",
-          "count": 1
         }
       ],
       "fontWeights": [
         {
           "value": "400",
-          "count": 265
+          "count": 258
         },
         {
           "value": "500",
-          "count": 203
+          "count": 141
         },
         {
           "value": "700",
-          "count": 16
+          "count": 15
         },
         {
           "value": "600",
@@ -543,7 +517,7 @@
       "fontFamilies": [
         {
           "value": "NotionInter",
-          "count": 484
+          "count": 414
         },
         {
           "value": "Lyon Text",
@@ -553,15 +527,11 @@
       "radii": [
         {
           "value": "0px",
-          "count": 383
+          "count": 330
         },
         {
           "value": "8px",
-          "count": 52
-        },
-        {
-          "value": "4px",
-          "count": 21
+          "count": 50
         },
         {
           "value": "12px",
@@ -570,6 +540,10 @@
         {
           "value": "9999.01px",
           "count": 7
+        },
+        {
+          "value": "4px",
+          "count": 6
         },
         {
           "value": "100%",
@@ -605,7 +579,7 @@
       "gaps": [
         {
           "value": "8px",
-          "count": 44
+          "count": 29
         },
         {
           "value": "0px 8px",
@@ -613,7 +587,7 @@
         },
         {
           "value": "12px",
-          "count": 23
+          "count": 19
         },
         {
           "value": "16px",
@@ -644,14 +618,6 @@
           "count": 1
         },
         {
-          "value": "20px",
-          "count": 1
-        },
-        {
-          "value": "36px",
-          "count": 1
-        },
-        {
           "value": "40px 24px",
           "count": 1
         },
@@ -671,7 +637,7 @@
       "paddings": [
         {
           "value": "6px 6px",
-          "count": 27
+          "count": 25
         },
         {
           "value": "3px 3px",
@@ -722,10 +688,6 @@
           "count": 1
         },
         {
-          "value": "64px 64px",
-          "count": 1
-        },
-        {
           "value": "80px 24px",
           "count": 1
         }
@@ -733,7 +695,7 @@
       "transitions": [
         {
           "value": "background-color, color 0.2s cubic-bezier(0.42, 0, 1, 1)",
-          "count": 27
+          "count": 25
         },
         {
           "value": "text-decoration-color 0.2s cubic-bezier(0.42, 0, 1, 1)",
@@ -764,10 +726,6 @@
           "count": 1
         },
         {
-          "value": "all 0s ease",
-          "count": 1
-        },
-        {
           "value": "background-color, border-color 0.2s cubic-bezier(0.42, 0, 1, 1)",
           "count": 1
         },
@@ -785,6 +743,10 @@
         },
         {
           "value": "transform 0.3s cubic-bezier(0.86, 0, 0.07, 1)",
+          "count": 1
+        },
+        {
+          "value": "transform 0.3s ease",
           "count": 1
         }
       ],
@@ -809,7 +771,7 @@
       "gridTemplates": [
         {
           "value": "1 tracks",
-          "count": 89
+          "count": 74
         },
         {
           "value": "2 tracks",
@@ -860,50 +822,18 @@
         "count": 46
       },
       {
-        "value": "www.googletagmanager.com",
-        "count": 4
-      },
-      {
         "value": "exp.notion.com",
         "count": 3
-      },
-      {
-        "value": "transcend-cdn.com",
-        "count": 3
-      },
-      {
-        "value": "accounts.google.com",
-        "count": 2
-      },
-      {
-        "value": "app.notion.com",
-        "count": 2
-      },
-      {
-        "value": "http-inputs-notion.splunkcloud.com",
-        "count": 1
-      },
-      {
-        "value": "o324374.ingest.sentry.io",
-        "count": 1
-      },
-      {
-        "value": "videos.ctfassets.net",
-        "count": 1
-      },
-      {
-        "value": "www.google.com",
-        "count": 1
       }
     ],
     "resourceTypes": [
       {
-        "value": "script",
-        "count": 80
+        "value": "link",
+        "count": 54
       },
       {
-        "value": "link",
-        "count": 66
+        "value": "script",
+        "count": 52
       },
       {
         "value": "css",
@@ -911,29 +841,21 @@
       },
       {
         "value": "fetch",
-        "count": 12
+        "count": 6
       },
       {
         "value": "img",
-        "count": 10
-      },
-      {
-        "value": "other",
-        "count": 1
-      },
-      {
-        "value": "video",
-        "count": 1
+        "count": 6
       }
     ],
-    "requestCount": 195,
-    "textLength": 2111,
+    "requestCount": 143,
+    "textLength": 1587,
     "contrast": {
-      "sampled": 88,
+      "sampled": 80,
       "skippedForComplexBackground": 0,
       "min": 1,
       "p10": 1,
-      "median": 16.62,
+      "median": 17.4,
       "belowRequirement": 12,
       "worst": [
         {

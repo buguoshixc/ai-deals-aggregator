@@ -1,7 +1,62 @@
 # https://www.futurepedia.io/
-# 抓取时间 2026-09-22T16:24:34.125Z
+# 抓取时间 2026-09-22T17:03:38.787Z
 
 ## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
-… 46 children (body)
+… 64 children (body)
+
+## 面积兜底：渲染面积最大的 40 个元素（语义层级不足时看页面由哪几块组成）
+ 1440× 6767  <div.relative.min-h-fit>
+ 1440× 6767  <div.pb-32>
+ 7696×  400  <ul.react-multi-carousel-track>
+ 1440× 1321  <div.mb-10.flex.flex-col>
+ 1300× 1321  <div.flex.max-w-[1300px].flex-col>
+ 1296× 1159  <div.mx-auto.mt-[50px].max-w-[1296px]>
+ 1264× 1071  <div.flex.items-start.gap-6>
+ 1440×  926  <section.border-grayLight.mt-10.border-t>
+ 1408×  946  <div.mx-4>
+ 1454×  909  <div.go1632949049>
+ 1440×  900  <div.bg-gradient-blue.relative.w-full>
+ 1440×  900  <img.object-cover.object-center>
+ 1440×  900  <div.go2933276541.go2369186930>
+ 1408×  868  <div.pointer-events-none.fixed.bottom-4>
+ 1280×  946  <div.rich-text-block.mx-auto.w-full>
+ 1280×  946  <div.prose:text-slate-100.prose-xl.prose-slate>
+  984× 1071  <div.w-full>
+  984× 1071  <div.w-full.space-y-[14px]>
+ 1060×  869  <div.mx-auto.max-w-[1060px]>
+ 1440×  589  <footer.bg-ice-950>
+ 1148×  733  <div.relative.mx-auto.max-w-[1148px]>
+ 1300×  630  <div.rounded-20.bg-white.p-10>
+ 1300×  630  <div.rounded-20.bg-white.p-10>
+ 1280×  589  <div.mx-auto.max-w-7xl.px-6>
+ 1280×  554  <section.mx-auto.w-full.max-w-7xl>
+ 1280×  554  <section.mx-auto.bg-white.px-4>
+ 1280×  534  <div.mx-auto.flex.flex-col>
+ 1440×  431  <div.my-10.flex.items-center>
+ 1248×  431  <div.flex.w-full.flex-col>
+ 1220×  440  <div.mt-5.flex.flex-col>
+ 1220×  440  <div.mt-5.flex.flex-col>
+ 1060×  438  <div.mb-8.grid.gap-4>
+ 1216×  360  <div.w-full.xl:grid.xl:grid-cols-[300px_1fr_200px]>
+ 1248×  342  <div.mx-auto.mt-10.grid>
+  888×  480  <div.react-multi-carousel-list.py-10.w-[70vw]>
+ 1148×  264  <h1.text-32.lg:text-80.mt-6>
+  604×  440  <div.md:max-w-[604px]>
+  604×  440  <div.md:max-w-[604px]>
+  592×  440  <div>
+  592×  440  <div>
 
 ## class 命名频次（前 45）
+    6  rs-toast-container
+    4  go2417249464
+    1  rs-toast-provider
+    1  rs-toast-container-top-center
+    1  rs-toast-container-bottom-center
+    1  rs-toast-container-top-start
+    1  rs-toast-container-top-end
+    1  rs-toast-container-bottom-start
+    1  rs-toast-container-bottom-end
+    1  go613305155
+    1  go471583506
+    1  go3921366393
+    1  go3967842156

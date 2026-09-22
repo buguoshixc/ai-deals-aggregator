@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "vercel.com",
   "target": "https://vercel.com/",
-  "fetchedAt": "2026-09-22T16:23:55.581Z",
+  "fetchedAt": "2026-09-22T17:00:49.431Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,7 +11,7 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 20366,
+      "elapsedMs": 20242,
       "hydration": {
         "textBefore": 878,
         "textAfter": 878
@@ -25,10 +25,10 @@
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 19387,
+      "elapsedMs": 17487,
       "hydration": {
         "textBefore": 621,
-        "textAfter": 627
+        "textAfter": 621
       },
       "notes": [
         "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
@@ -147,7 +147,7 @@
     "detailUrlPatterns": [
       {
         "shape": "/:slug",
-        "count": 75,
+        "count": 76,
         "samples": [
           "https://vercel.com/home",
           "https://vercel.com/ai-sdk",
@@ -217,13 +217,6 @@
         ]
       },
       {
-        "shape": "/signup",
-        "count": 3,
-        "samples": [
-          "https://vercel.com/signup"
-        ]
-      },
-      {
         "shape": "/docs/:slug/:slug",
         "count": 3,
         "samples": [
@@ -237,6 +230,13 @@
         "count": 2,
         "samples": [
           "https://vercel.com/login"
+        ]
+      },
+      {
+        "shape": "/signup",
+        "count": 2,
+        "samples": [
+          "https://vercel.com/signup"
         ]
       }
     ],
@@ -692,7 +692,7 @@
     "resourceTypes": [
       {
         "value": "script",
-        "count": 53
+        "count": 67
       },
       {
         "value": "link",
@@ -700,7 +700,11 @@
       },
       {
         "value": "fetch",
-        "count": 9
+        "count": 16
+      },
+      {
+        "value": "beacon",
+        "count": 2
       },
       {
         "value": "img",
@@ -711,10 +715,10 @@
         "count": 1
       }
     ],
-    "requestCount": 85,
+    "requestCount": 108,
     "textLength": 878,
     "contrast": {
-      "sampled": 166,
+      "sampled": 171,
       "skippedForComplexBackground": 0,
       "min": 3.1,
       "p10": 8.1,
@@ -750,31 +754,31 @@
           "required": 4.5
         },
         {
+          "selector": "span.text-green-900",
+          "text": "",
+          "fontSize": 12,
+          "ratio": 5.33,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text-green-900",
+          "text": "",
+          "fontSize": 12,
+          "ratio": 5.33,
+          "required": 4.5
+        },
+        {
+          "selector": "span.text-green-900",
+          "text": "",
+          "fontSize": 12,
+          "ratio": 5.33,
+          "required": 4.5
+        },
+        {
           "selector": "p.status-text",
           "text": "",
           "fontSize": 12,
           "ratio": 5.5,
-          "required": 4.5
-        },
-        {
-          "selector": "span.flex",
-          "text": "Products",
-          "fontSize": 14,
-          "ratio": 8.1,
-          "required": 4.5
-        },
-        {
-          "selector": "span.flex",
-          "text": "Resources",
-          "fontSize": 14,
-          "ratio": 8.1,
-          "required": 4.5
-        },
-        {
-          "selector": "span.flex",
-          "text": "Enterprise",
-          "fontSize": 14,
-          "ratio": 8.1,
           "required": 4.5
         }
       ]
@@ -851,6 +855,6 @@
         }
       ]
     },
-    "textLength": 623
+    "textLength": 627
   }
 }

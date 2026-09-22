@@ -1,7 +1,121 @@
 # https://linear.app/
-# 抓取时间 2026-09-22T16:23:10.418Z
+# 抓取时间 2026-09-22T16:51:54.842Z
 
 ## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
 … 178 children (body)
+  <section> 1440x0
+  <header.TZTsQG_header.TZTsQG_header> 1440x73
+    <nav.TZTsQG_menuRoot> 1440x72
+      <ul.TZTsQG_list> 1282x72
+        <ul.TZTsQG_navItems> 442x32
+        <ul.TZTsQG_buttons> 143x32
+  <main._5l06ia_content> 1440x9466
+    … 39 children (div)
+      <h1.sc-KOGVz.cVAQDa.Fzcv4W_insetLarge> 1282x128 — The product development system for teams and agents The prod
+      <nav.Mmx1Wq_sidebar> 232x704
+      <header._1uFtza_header._1uFtza_locationBar> 1070x44
+      … 11 children (div)
+      <section> 232x0
+      … 14 children (svg)
+      … 25 children (svg)
+      … 25 children (svg)
+      … 25 children (svg)
+      … 13 children (svg)
+      … 15 children (svg)
+      <section.b-30Va_root.b-30Va_rootHomepage> 1344x1226
+        <h2.sc-KOGVz.lmPTvT.b-30Va_title> 542x83 — Intake and integrations
+        <header.qM9FAa_header> 478x61
+      <section.b-30Va_root.b-30Va_rootHomepage> 1344x1229
+        <h2.sc-KOGVz.lmPTvT.b-30Va_title> 542x83 — Planning and monitoring
+        … 11 children (div)
+        … 28 children (div)
+        … 28 children (div)
+        <header._9Zs8oG_initiativesBoxHeader> 672x56
+        … 100 children (g)
+        … 69 children (g)
+        … 124 children (g)
+        … 76 children (g)
+        … 69 children (g)
+      <section.b-30Va_root.b-30Va_rootHomepage> 1344x1232
+        <h2.sc-KOGVz.lmPTvT.b-30Va_title> 542x83 — AI and automations
+        <header.NN4GVa_header> 398x48
+        <header.NN4GVa_header> 398x48
+        <header.NN4GVa_header> 398x48
+        <header.NN4GVa_header> 398x48
+      <section.b-30Va_root.b-30Va_rootHomepage> 1344x1220
+        <h2.sc-KOGVz.lmPTvT.b-30Va_title> 542x83 — Build, review, and ship
+        … 14 children (div)
+        … 18 children (code)
+          … 11 children (span)
+          … 11 children (span)
+          … 11 children (span)
+        … 18 children (span)
+          … 11 children (span)
+          … 12 children (span)
+          … 11 children (span)
+          … 11 children (span)
+          … 11 children (span)
+      <h2.sc-KOGVz.anihd> 224x48 — Changelog
+      <section.Dc5tqa_container.hide-laptop> 1344x564
+  <footer.Jmh1Wq_footer> 1440x494
+    <h3.Jmh1Wq_sectionTitle> 160x20 — Product
+    <ul.Jmh1Wq_sectionList> 160x178
+    <h3.Jmh1Wq_sectionTitle> 160x20 — Features
+    <ul.Jmh1Wq_sectionList> 160x238
+    <h3.Jmh1Wq_sectionTitle> 160x20 — Company
+    <ul.Jmh1Wq_sectionList> 160x208
+    <h3.Jmh1Wq_sectionTitle> 160x20 — Resources
+    <ul.Jmh1Wq_sectionList> 160x208
+    <h3.Jmh1Wq_sectionTitle> 160x20 — Connect
+    <ul.Jmh1Wq_sectionList> 160x148
+    <h3.Jmh1Wq_sectionTitle> 0x0 — Legal
+    <ul.Jmh1Wq_sectionList> 0x0
+  … 70 children (defs)
+  … 266 children (defs)
 
 ## class 命名频次（前 45）
+  223  sc-KOGVz
+   65  I_mUeq_root
+   60  ImRUSq_root
+   60  ngusfW_text
+   37  Jmh1Wq_sectionItem
+   37  Jmh1Wq_sectionLink
+   37  I_mUeq_variant-dimmed
+   34  _5mGmSq_root
+   31  ImRUSq_align-center
+   28  jqlWID
+   26  line
+   24  ngusfW_keyword
+   22  hide-mobile
+   21  Fzcv4W_inset
+   21  NhgLzG_scaledIcon
+   20  M31rWW_ingredient
+   20  M31rWW_ingredientButton
+   20  M31rWW_ingredientLink
+   20  M31rWW_ingredientPlus
+   18  Sz_9La_root
+   17  ImRUSq_column
+   16  _5k-xcq_card
+   16  qM9FAa_issue
+   16  _5k-xcq_header
+   16  gHBLUR
+   16  qM9FAa_avatarSlot
+   16  _5k-xcq_title
+   16  _5k-xcq_titleText
+   16  iPvIJI
+   16  _5k-xcq_tags
+   16  _5k-xcq_priority
+   15  show-mobile
+   15  _5k-xcq_label
+   15  jRjUFu
+   14  qM9FAa_messageText
+   13  Mmx1Wq_navItem
+   12  TZTsQG_item
+   11  dvwHH
+   10  hide-laptop
+   10  jwDQSd
+   10  dWfZyd
+   10  M31rWW_unevenIngredient
+    9  Fzcv4W_shine
+    9  _5k-xcq_labelDot
+    8  TZTsQG_anchor

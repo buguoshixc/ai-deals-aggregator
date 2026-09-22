@@ -1,0 +1,78 @@
+# http://127.0.0.1:8080/mockups/v3/index.html
+# 抓取时间 2026-09-22T17:11:46.087Z
+
+## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
+<header.top> 1440x59
+<main.wrap> 1420x511
+  <section.demohead> 1388x72
+    <h1> 1388x33 — 三套方案 · 同一批真实数据
+  <section.demohead> 1388x72
+    <h1> 1388x27 — 三套都不做的事（红线）
+  <section.demohead> 1388x111
+    <h1> 1388x27 — 这些提案是从哪来的（证据链）
+<footer> 1440x67
+
+## 面积兜底：渲染面积最大的 40 个元素（语义层级不足时看页面由哪几块组成）
+ 1420×  511  <main.wrap>
+ 1388×  181  <div.tokens>
+ 1388×  111  <section.demohead>
+ 1388×   72  <section.demohead>
+ 1388×   72  <section.demohead>
+ 1440×   67  <footer>
+ 1440×   59  <header.top>
+ 1420×   58  <div.topin>
+  444×  181  <div.sw>
+  444×  181  <div.sw>
+  444×  181  <div.sw>
+ 1420×   50  <div.wrap>
+  900×   62  <p>
+ 1388×   33  <h1>
+ 1420×   32  <p.note>
+ 1388×   27  <h1>
+ 1388×   27  <h1>
+  900×   36  <code>
+  900×   23  <p>
+  900×   21  <p>
+  420×   38  <div.search>
+  418×   34  <div.m>
+  418×   33  <div.m>
+  418×   33  <div.m>
+  378×   36  <input>
+  418×   30  <p>
+  418×   30  <p>
+  418×   30  <p>
+  418×   24  <div.n>
+  418×   24  <div.n>
+  418×   24  <div.n>
+  160×   30  <div.seg>
+  203×   23  <span.anno>
+  149×   30  <a.brand>
+  108×   37  <a.skip>
+  152×   23  <span.anno>
+  143×   23  <span.anno>
+  111×   29  <span.btxt>
+  140×   23  <span.anno>
+  105×   28  <a.cta>
+
+## class 命名频次（前 45）
+    9  m
+    9  cta
+    6  ghost
+    6  anno
+    3  vh
+    3  demohead
+    3  sw
+    3  n
+    2  wrap
+    1  skip
+    1  top
+    1  topin
+    1  brand
+    1  mark
+    1  btxt
+    1  search
+    1  seg
+    1  topstat
+    1  note
+    1  tokens
+    1  tg

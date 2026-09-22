@@ -1,0 +1,53 @@
+# http://127.0.0.1:8080/mockups/v3/B-balanced/affordances.html
+# 抓取时间 2026-09-22T16:58:27.583Z
+
+## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
+<header.top> 1440x59
+<main.wrap> 1420x998
+  <section.demohead> 1388x71
+    <h1> 1388x33 — 状态与出口
+  <section.demohead> 1388x103
+    <h1> 1388x27 — 三个出口（全部零依赖）
+  <article.g> 455x192
+    <h3> 343x22 — GLM-4.7-Flash 免费模型
+  <article.g> 455x192
+    <h3> 343x22 — GLM-4.5-Flash 免费模型
+  <article.g> 455x192
+    <h3> 343x22 — GLM-4.6V-Flash 免费模型
+<footer> 1440x67
+
+## class 命名频次（前 45）
+    6  cta
+    3  vh
+    3  anno
+    3  g
+    3  tiernum
+    3  gh
+    3  logos
+    3  lg
+    3  gt
+    3  vendor
+    3  tg
+    3  cn
+    3  of
+    3  bar
+    3  tx
+    3  feats
+    3  meta
+    3  sp
+    3  ghost
+    2  wrap
+    2  demohead
+    2  grid
+    2  state
+    1  skip
+    1  top
+    1  topin
+    1  brand
+    1  mark
+    1  btxt
+    1  search
+    1  seg
+    1  topstat
+    1  note
+    1  skel

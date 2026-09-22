@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "futurepedia.io",
   "target": "https://www.futurepedia.io/",
-  "fetchedAt": "2026-09-22T16:24:34.125Z",
+  "fetchedAt": "2026-09-22T17:03:38.787Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,10 +11,10 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 11339,
+      "elapsedMs": 28144,
       "hydration": {
         "textBefore": 4765,
-        "textAfter": 4765
+        "textAfter": 9451
       },
       "notes": []
     },
@@ -23,7 +23,7 @@
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 17845,
+      "elapsedMs": 11054,
       "hydration": {
         "textBefore": 4539,
         "textAfter": 4539
@@ -39,8 +39,8 @@
       "width": 1440,
       "height": 900
     },
-    "pageHeight": 6948,
-    "scrollScreens": 7.7,
+    "pageHeight": 7428,
+    "scrollScreens": 8.3,
     "meta": {
       "description": "Futurepedia is a free site to help you find the best AI tools and software to make your work and life more efficient and productive. Updated daily, join millions of followers of our website, newsletter, and YouTube.",
       "ogImage": "https://www.futurepedia.io/api/og?title=Find+The+Best+AI+Tools+%26+Software%2C+Futurepedia.io&image=https%3A%2F%2Fwww.futurepedia.io%2FFuturepedia-OG.png",
@@ -101,11 +101,20 @@
     "detailUrlPatterns": [
       {
         "shape": "/:slug/:slug",
-        "count": 48,
+        "count": 117,
         "samples": [
           "https://www.futurepedia.io/ai-tools/ai-agents",
           "https://www.futurepedia.io/resources/automation",
           "https://www.futurepedia.io/ai-tools/chatbots"
+        ]
+      },
+      {
+        "shape": "/tool/:slug",
+        "count": 92,
+        "samples": [
+          "https://www.futurepedia.io/tool/chatgpt",
+          "https://www.futurepedia.io/tool/claude",
+          "https://www.futurepedia.io/tool/hubspot-aeo-sensor"
         ]
       },
       {
@@ -115,15 +124,6 @@
           "https://www.futurepedia.io/ai-tools",
           "https://www.futurepedia.io/business-function",
           "https://www.futurepedia.io/ai-education-platform"
-        ]
-      },
-      {
-        "shape": "/tool/:slug",
-        "count": 14,
-        "samples": [
-          "https://www.futurepedia.io/tool/chatgpt",
-          "https://www.futurepedia.io/tool/claude",
-          "https://www.futurepedia.io/tool/hubspot-aeo-sensor"
         ]
       },
       {
@@ -151,6 +151,13 @@
         ]
       },
       {
+        "shape": "/:slug/legal",
+        "count": 2,
+        "samples": [
+          "https://www.futurepedia.io/ai-tools/legal"
+        ]
+      },
+      {
         "shape": "/contact",
         "count": 1,
         "samples": [
@@ -159,7 +166,7 @@
       }
     ],
     "hashOnlyLinks": 0,
-    "internalLinkCount": 96,
+    "internalLinkCount": 245,
     "repeatedComponents": [
       {
         "signature": "li",
@@ -170,6 +177,19 @@
           "min": 25,
           "max": 40,
           "median": 25
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "li.react-multi-carousel-item",
+        "count": 23,
+        "parents": 1,
+        "width": 296,
+        "height": {
+          "min": 400,
+          "max": 400,
+          "median": 400
         },
         "fullyVisibleFirstScreen": 0,
         "touchedFirstScreen": 0
@@ -231,35 +251,51 @@
       "textColors": [
         {
           "value": "rgb(3, 7, 18)",
-          "count": 285
+          "count": 862
         },
         {
-          "value": "rgb(117, 117, 117)",
-          "count": 104
+          "value": "rgb(73, 173, 255)",
+          "count": 283
         },
         {
           "value": "lab(76.3898 14.5258 98.4589)",
-          "count": 30
+          "count": 174
+        },
+        {
+          "value": "lab(48.0876 -2.03595 -16.5814)",
+          "count": 156
+        },
+        {
+          "value": "rgb(117, 117, 117)",
+          "count": 148
+        },
+        {
+          "value": "lab(85.1236 -0.612259 -3.7138)",
+          "count": 138
+        },
+        {
+          "value": "rgb(107, 114, 128)",
+          "count": 52
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 29
         },
         {
           "value": "rgb(111, 207, 151)",
           "count": 28
         },
         {
-          "value": "rgb(255, 255, 255)",
+          "value": "lab(26.9569 -1.47016 -15.6993)",
           "count": 26
+        },
+        {
+          "value": "rgb(39, 54, 83)",
+          "count": 25
         },
         {
           "value": "lab(47.7841 -0.393182 -10.0268)",
           "count": 24
-        },
-        {
-          "value": "lab(85.1236 -0.612259 -3.7138)",
-          "count": 22
-        },
-        {
-          "value": "rgb(39, 54, 83)",
-          "count": 22
         },
         {
           "value": "rgb(115, 192, 255)",
@@ -282,8 +318,16 @@
           "count": 8
         },
         {
+          "value": "lab(70.5521 -66.5147 45.8073)",
+          "count": 7
+        },
+        {
           "value": "rgb(249, 250, 251)",
           "count": 5
+        },
+        {
+          "value": "lab(65.5349 -2.25151 -14.5072)",
+          "count": 4
         },
         {
           "value": "lab(35.5623 -1.74978 -15.4316)",
@@ -300,24 +344,12 @@
         {
           "value": "rgb(255, 85, 85)",
           "count": 2
-        },
-        {
-          "value": "rgb(73, 173, 255)",
-          "count": 2
-        },
-        {
-          "value": "lab(65.9269 -0.832707 -8.17473)",
-          "count": 1
-        },
-        {
-          "value": "rgb(0, 0, 0)",
-          "count": 1
         }
       ],
       "backgrounds": [
         {
           "value": "rgb(255, 255, 255)",
-          "count": 33
+          "count": 59
         },
         {
           "value": "oklab(0.725275 -0.0595974 -0.138879 / 0.1)",
@@ -336,15 +368,15 @@
           "count": 3
         },
         {
-          "value": "lab(91.7353 -0.998765 -4.76968)",
-          "count": 3
-        },
-        {
           "value": "rgb(245, 245, 245)",
           "count": 2
         },
         {
           "value": "rgb(73, 173, 255)",
+          "count": 2
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.5)",
           "count": 2
         },
         {
@@ -362,28 +394,40 @@
         {
           "value": "rgb(57, 96, 239)",
           "count": 1
+        },
+        {
+          "value": "rgb(8, 8, 8)",
+          "count": 1
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.7)",
+          "count": 1
         }
       ],
       "fontSizes": [
         {
           "value": "16px",
-          "count": 510
+          "count": 735
         },
         {
-          "value": "14px",
-          "count": 101
+          "value": "18px",
+          "count": 606
         },
         {
           "value": "20px",
-          "count": 44
+          "count": 441
         },
         {
-          "value": "24px",
-          "count": 12
+          "value": "14px",
+          "count": 231
         },
         {
           "value": "12px",
-          "count": 7
+          "count": 87
+        },
+        {
+          "value": "24px",
+          "count": 15
         },
         {
           "value": "32px",
@@ -395,10 +439,6 @@
         },
         {
           "value": "10px",
-          "count": 2
-        },
-        {
-          "value": "18px",
           "count": 2
         },
         {
@@ -420,24 +460,28 @@
       ],
       "lineHeights": [
         {
+          "value": "28px",
+          "count": 652
+        },
+        {
           "value": "24px",
-          "count": 476
+          "count": 635
+        },
+        {
+          "value": "26.4px",
+          "count": 403
         },
         {
           "value": "20px",
-          "count": 65
-        },
-        {
-          "value": "20.16px",
-          "count": 37
+          "count": 197
         },
         {
           "value": "16px",
-          "count": 31
+          "count": 109
         },
         {
-          "value": "28px",
-          "count": 22
+          "value": "20.16px",
+          "count": 81
         },
         {
           "value": "14px",
@@ -448,12 +492,8 @@
           "count": 10
         },
         {
-          "value": "26.4px",
-          "count": 10
-        },
-        {
           "value": "28.8px",
-          "count": 5
+          "count": 8
         },
         {
           "value": "76.8px",
@@ -487,19 +527,19 @@
       "fontWeights": [
         {
           "value": "400",
-          "count": 604
+          "count": 1806
+        },
+        {
+          "value": "500",
+          "count": 137
+        },
+        {
+          "value": "600",
+          "count": 131
         },
         {
           "value": "700",
           "count": 53
-        },
-        {
-          "value": "600",
-          "count": 24
-        },
-        {
-          "value": "500",
-          "count": 7
         },
         {
           "value": "800",
@@ -509,7 +549,7 @@
       "fontFamilies": [
         {
           "value": "ui-sans-serif",
-          "count": 558
+          "count": 1997
         },
         {
           "value": "Outfit",
@@ -519,14 +559,22 @@
       "radii": [
         {
           "value": "0px",
-          "count": 571
+          "count": 1867
+        },
+        {
+          "value": "12px",
+          "count": 101
         },
         {
           "value": "20px",
           "count": 31
         },
         {
-          "value": "12px",
+          "value": "4px",
+          "count": 26
+        },
+        {
+          "value": "6px",
           "count": 26
         },
         {
@@ -534,11 +582,15 @@
           "count": 20
         },
         {
-          "value": "16px",
-          "count": 10
+          "value": "50%",
+          "count": 14
         },
         {
           "value": "8px",
+          "count": 11
+        },
+        {
+          "value": "16px",
           "count": 10
         },
         {
@@ -554,26 +606,18 @@
           "count": 3
         },
         {
+          "value": "35px",
+          "count": 2
+        },
+        {
           "value": "0px 0px 100px 100px",
-          "count": 1
-        },
-        {
-          "value": "32px",
-          "count": 1
-        },
-        {
-          "value": "41px",
-          "count": 1
-        },
-        {
-          "value": "6px",
           "count": 1
         }
       ],
       "shadows": [
         {
           "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px",
-          "count": 10
+          "count": 36
         },
         {
           "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.09) 35px 20px 122px 0px",
@@ -590,8 +634,20 @@
       ],
       "gaps": [
         {
+          "value": "8px",
+          "count": 65
+        },
+        {
           "value": "16px",
-          "count": 31
+          "count": 57
+        },
+        {
+          "value": "4px",
+          "count": 29
+        },
+        {
+          "value": "4px 8px",
+          "count": 26
         },
         {
           "value": "10px",
@@ -610,19 +666,11 @@
           "count": 7
         },
         {
-          "value": "8px",
-          "count": 5
-        },
-        {
           "value": "32px",
           "count": 4
         },
         {
           "value": "20px",
-          "count": 3
-        },
-        {
-          "value": "4px",
           "count": 3
         },
         {
@@ -640,6 +688,18 @@
       ],
       "paddings": [
         {
+          "value": "8px 8px",
+          "count": 57
+        },
+        {
+          "value": "0px 16px",
+          "count": 26
+        },
+        {
+          "value": "16px 8px",
+          "count": 26
+        },
+        {
           "value": "16px 16px",
           "count": 25
         },
@@ -656,15 +716,11 @@
           "count": 7
         },
         {
-          "value": "8px 8px",
-          "count": 5
+          "value": "40px 40px",
+          "count": 4
         },
         {
           "value": "22.5px 22.5px",
-          "count": 3
-        },
-        {
-          "value": "40px 40px",
           "count": 3
         },
         {
@@ -694,19 +750,15 @@
         {
           "value": "48px 32px",
           "count": 1
-        },
-        {
-          "value": "4px 4px",
-          "count": 1
-        },
-        {
-          "value": "56px 0px",
-          "count": 1
         }
       ],
       "transitions": [
         {
           "value": "color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 66
+        },
+        {
+          "value": "background 0.5s ease",
           "count": 14
         },
         {
@@ -714,8 +766,8 @@
           "count": 10
         },
         {
-          "value": "all 0s ease",
-          "count": 3
+          "value": "all 0.5s ease",
+          "count": 2
         },
         {
           "value": "color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -735,6 +787,10 @@
         }
       ],
       "containerMaxWidths": [
+        {
+          "value": "800px",
+          "count": 27
+        },
         {
           "value": "1280px",
           "count": 5
@@ -762,10 +818,6 @@
         {
           "value": "701px",
           "count": 1
-        },
-        {
-          "value": "800px",
-          "count": 1
         }
       ],
       "gridTemplates": [
@@ -785,70 +837,146 @@
     },
     "behavior": {
       "stickyElements": 1,
-      "fixedElements": 1,
+      "fixedElements": 2,
       "prefersColorSchemeRules": 0,
       "bodyBgIsDark": false,
-      "images": 54,
-      "lazyImages": 52,
+      "images": 80,
+      "lazyImages": 78,
       "searchInputs": 2,
       "selects": 0,
-      "buttons": 35,
+      "buttons": 77,
       "tabs": 0,
       "relNext": 0
     },
     "externalDomains": [
       {
         "value": "cdn2.futurepedia.io",
-        "count": 7
+        "count": 16
+      },
+      {
+        "value": "www.google.com",
+        "count": 5
+      },
+      {
+        "value": "a.plerdy.com",
+        "count": 4
+      },
+      {
+        "value": "accounts.google.com",
+        "count": 2
+      },
+      {
+        "value": "app.varify.io",
+        "count": 2
+      },
+      {
+        "value": "connect.facebook.net",
+        "count": 2
+      },
+      {
+        "value": "www.googletagmanager.com",
+        "count": 2
+      },
+      {
+        "value": "api.hubspot.com",
+        "count": 1
+      },
+      {
+        "value": "api.webbotify.com",
+        "count": 1
+      },
+      {
+        "value": "content-firebaseappcheck.googleapis.com",
+        "count": 1
+      },
+      {
+        "value": "cta-service-cms2.hubspot.com",
+        "count": 1
       },
       {
         "value": "ipapi.co",
         "count": 1
       },
       {
-        "value": "static.cloudflareinsights.com",
+        "value": "js.hs-analytics.net",
+        "count": 1
+      },
+      {
+        "value": "js.hs-banner.com",
+        "count": 1
+      },
+      {
+        "value": "js.hs-scripts.com",
+        "count": 1
+      },
+      {
+        "value": "js.hsadspixel.net",
+        "count": 1
+      },
+      {
+        "value": "js.hubspot.com",
+        "count": 1
+      },
+      {
+        "value": "js.hubspotfeedback.com",
+        "count": 1
+      },
+      {
+        "value": "js.usemessages.com",
+        "count": 1
+      },
+      {
+        "value": "perf-na1.hsforms.com",
         "count": 1
       }
     ],
     "resourceTypes": [
       {
         "value": "link",
-        "count": 50
+        "count": 52
       },
       {
-        "value": "img",
-        "count": 14
+        "value": "script",
+        "count": 36
       },
       {
         "value": "fetch",
-        "count": 5
+        "count": 28
+      },
+      {
+        "value": "img",
+        "count": 19
+      },
+      {
+        "value": "xmlhttprequest",
+        "count": 4
       },
       {
         "value": "early-hints",
         "count": 2
       },
       {
-        "value": "script",
+        "value": "iframe",
         "count": 2
+      },
+      {
+        "value": "css",
+        "count": 1
       },
       {
         "value": "other",
         "count": 1
-      },
-      {
-        "value": "xmlhttprequest",
-        "count": 1
       }
     ],
-    "requestCount": 75,
-    "textLength": 4854,
+    "requestCount": 145,
+    "textLength": 9451,
     "contrast": {
-      "sampled": 142,
+      "sampled": 359,
       "skippedForComplexBackground": 8,
       "min": 1.09,
-      "p10": 1.96,
+      "p10": 2.41,
       "median": 4.61,
-      "belowRequirement": 36,
+      "belowRequirement": 139,
       "worst": [
         {
           "selector": "span.absolute",
@@ -872,38 +1000,38 @@
           "required": 4.5
         },
         {
-          "selector": "a.text-mainHover",
-          "text": "#ai chatbots",
-          "fontSize": 16,
-          "ratio": 1.96,
+          "selector": "div.text-sm",
+          "text": "7",
+          "fontSize": 14,
+          "ratio": 1.9,
           "required": 4.5
         },
         {
-          "selector": "a.text-mainHover",
-          "text": "#research",
-          "fontSize": 16,
-          "ratio": 1.96,
+          "selector": "div.text-sm",
+          "text": "3",
+          "fontSize": 14,
+          "ratio": 1.9,
           "required": 4.5
         },
         {
-          "selector": "a.text-mainHover",
-          "text": "#ai agents",
-          "fontSize": 16,
-          "ratio": 1.96,
+          "selector": "div.text-sm",
+          "text": "4",
+          "fontSize": 14,
+          "ratio": 1.9,
           "required": 4.5
         },
         {
-          "selector": "a.text-mainHover",
-          "text": "#ai chatbots",
-          "fontSize": 16,
-          "ratio": 1.96,
+          "selector": "div.text-sm",
+          "text": "4",
+          "fontSize": 14,
+          "ratio": 1.9,
           "required": 4.5
         },
         {
-          "selector": "a.text-mainHover",
-          "text": "#code assistant",
-          "fontSize": 16,
-          "ratio": 1.96,
+          "selector": "div.text-sm",
+          "text": "6",
+          "fontSize": 14,
+          "ratio": 1.9,
           "required": 4.5
         }
       ]
@@ -914,8 +1042,8 @@
       "width": 390,
       "height": 844
     },
-    "pageHeight": 10249,
-    "scrollScreens": 12.1,
+    "pageHeight": 10285,
+    "scrollScreens": 12.2,
     "primaryList": {
       "signature": "li",
       "count": 26,
@@ -986,7 +1114,7 @@
         },
         {
           "value": "12px",
-          "count": 9
+          "count": 11
         },
         {
           "value": "18px",
@@ -1006,6 +1134,6 @@
         }
       ]
     },
-    "textLength": 4616
+    "textLength": 4612
   }
 }

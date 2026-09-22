@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "superhuman.com",
   "target": "https://www.superhuman.com/",
-  "fetchedAt": "2026-09-22T16:27:51.178Z",
+  "fetchedAt": "2026-09-22T16:55:01.875Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,10 +11,10 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 34525,
+      "elapsedMs": 18244,
       "hydration": {
-        "textBefore": 3290,
-        "textAfter": 3294
+        "textBefore": 3288,
+        "textAfter": 3375
       },
       "notes": [
         "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
@@ -25,10 +25,10 @@
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 29858,
+      "elapsedMs": 18665,
       "hydration": {
-        "textBefore": 3093,
-        "textAfter": 3183
+        "textBefore": 3090,
+        "textAfter": 3178
       },
       "notes": [
         "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
@@ -69,11 +69,11 @@
     "headings": [
       {
         "level": 2,
-        "text": "Bring AI inside every app and tab with Superhuman Go"
+        "text": "Save 4+ hours each week with Superhuman Mail"
       },
       {
         "level": 2,
-        "text": "Bring AI inside every app and tab with Superhuman Go"
+        "text": "Save 4+ hours each week with Superhuman Mail"
       },
       {
         "level": 2,
@@ -230,6 +230,14 @@
         ]
       },
       {
+        "shape": "/:slug/signup",
+        "count": 4,
+        "samples": [
+          "https://superhuman.com/mail/signup",
+          "https://superhuman.com/auth/signup?screen_hint=signup"
+        ]
+      },
+      {
         "shape": "/docs",
         "count": 3,
         "samples": [
@@ -242,14 +250,6 @@
         "samples": [
           "https://superhuman.com/go/use-cases/ai-study-assistant",
           "https://superhuman.com/mail/features/email-mcp"
-        ]
-      },
-      {
-        "shape": "/:slug/signup",
-        "count": 2,
-        "samples": [
-          "https://superhuman.com/mail/signup",
-          "https://superhuman.com/auth/signup?screen_hint=signup"
         ]
       },
       {
@@ -289,7 +289,7 @@
       }
     ],
     "hashOnlyLinks": 0,
-    "internalLinkCount": 67,
+    "internalLinkCount": 69,
     "repeatedComponents": [
       {
         "signature": "li",
@@ -343,7 +343,7 @@
         },
         {
           "value": "color(srgb 1 1 1 / 0.8)",
-          "count": 56
+          "count": 57
         },
         {
           "value": "color(srgb 0.0784314 0.0784314 0.0745098 / 0.65)",
@@ -419,7 +419,7 @@
       "fontSizes": [
         {
           "value": "16px",
-          "count": 413
+          "count": 414
         },
         {
           "value": "14px",
@@ -461,7 +461,7 @@
         },
         {
           "value": "24px",
-          "count": 109
+          "count": 110
         },
         {
           "value": "16px",
@@ -503,7 +503,7 @@
       "fontWeights": [
         {
           "value": "460",
-          "count": 401
+          "count": 402
         },
         {
           "value": "600",
@@ -521,13 +521,13 @@
       "fontFamilies": [
         {
           "value": "Super Sans VF",
-          "count": 485
+          "count": 486
         }
       ],
       "radii": [
         {
           "value": "0px",
-          "count": 456
+          "count": 457
         },
         {
           "value": "12px",
@@ -716,7 +716,7 @@
       "fixedElements": 0,
       "prefersColorSchemeRules": 0,
       "bodyBgIsDark": false,
-      "images": 52,
+      "images": 53,
       "lazyImages": 26,
       "searchInputs": 0,
       "selects": 0,
@@ -727,19 +727,15 @@
     "externalDomains": [
       {
         "value": "superhumanstatic.com",
-        "count": 72
+        "count": 56
       },
       {
         "value": "gnar.grammarly.com",
-        "count": 5
-      },
-      {
-        "value": "www.knotch-cdn.com",
         "count": 4
       },
       {
-        "value": "pagead2.googlesyndication.com",
-        "count": 3
+        "value": "www.google.com",
+        "count": 4
       },
       {
         "value": "transcend-cdn.com",
@@ -750,27 +746,19 @@
         "count": 3
       },
       {
+        "value": "analytics.google.com",
+        "count": 2
+      },
+      {
+        "value": "ad.doubleclick.net",
+        "count": 1
+      },
+      {
+        "value": "bat.bing.com",
+        "count": 1
+      },
+      {
         "value": "bzrcdn.openai.com",
-        "count": 2
-      },
-      {
-        "value": "frontdoor.knotch.it",
-        "count": 2
-      },
-      {
-        "value": "www.google-analytics.com",
-        "count": 2
-      },
-      {
-        "value": "arttrk.com",
-        "count": 1
-      },
-      {
-        "value": "bzr.openai.com",
-        "count": 1
-      },
-      {
-        "value": "carddealer.knotch.com",
         "count": 1
       },
       {
@@ -778,15 +766,31 @@
         "count": 1
       },
       {
+        "value": "connect.facebook.net",
+        "count": 1
+      },
+      {
+        "value": "j.6sc.co",
+        "count": 1
+      },
+      {
+        "value": "js.adsrvr.org",
+        "count": 1
+      },
+      {
+        "value": "snap.licdn.com",
+        "count": 1
+      },
+      {
         "value": "static-web.grammarly.com",
         "count": 1
       },
       {
-        "value": "tracking-api.g2.com",
+        "value": "tracking.g2crowd.com",
         "count": 1
       },
       {
-        "value": "tracking.g2crowd.com",
+        "value": "utt.impactcdn.com",
         "count": 1
       },
       {
@@ -796,28 +800,32 @@
       {
         "value": "www.dubcdn.com",
         "count": 1
+      },
+      {
+        "value": "www.googleadservices.com",
+        "count": 1
       }
     ],
     "resourceTypes": [
       {
         "value": "script",
-        "count": 39
-      },
-      {
-        "value": "img",
-        "count": 28
+        "count": 42
       },
       {
         "value": "link",
         "count": 17
       },
       {
-        "value": "fetch",
+        "value": "img",
         "count": 11
       },
       {
+        "value": "fetch",
+        "count": 10
+      },
+      {
         "value": "beacon",
-        "count": 8
+        "count": 5
       },
       {
         "value": "video",
@@ -828,8 +836,8 @@
         "count": 1
       }
     ],
-    "requestCount": 106,
-    "textLength": 3294,
+    "requestCount": 88,
+    "textLength": 3284,
     "contrast": {
       "sampled": 50,
       "skippedForComplexBackground": 6,
@@ -902,8 +910,8 @@
       "width": 390,
       "height": 844
     },
-    "pageHeight": 10230,
-    "scrollScreens": 12.1,
+    "pageHeight": 10490,
+    "scrollScreens": 12.4,
     "primaryList": {
       "signature": "li",
       "count": 32,
@@ -949,7 +957,7 @@
       "fontSizes": [
         {
           "value": "16px",
-          "count": 371
+          "count": 372
         },
         {
           "value": "14px",
@@ -977,6 +985,6 @@
         }
       ]
     },
-    "textLength": 3096
+    "textLength": 3087
   }
 }

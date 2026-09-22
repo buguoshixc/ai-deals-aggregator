@@ -1,8 +1,50 @@
 # https://appsumo.com/
-# 抓取时间 2026-09-22T16:29:01.604Z
+# 抓取时间 2026-09-22T17:02:57.297Z
 
 ## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
-… 23 children (body)
+… 33 children (body)
+
+## 面积兜底：渲染面积最大的 40 个元素（语义层级不足时看页面由哪几块组成）
+ 1440× 1968  <div>
+ 1440× 1968  <div.flex.min-h-screen.flex-col>
+ 1440× 1704  <div.pt-[var(--header-height)]>
+ 1440× 1624  <div.mx-auto.flex.w-full>
+ 1440×  900  <div.privy.privy-popup-container.privy-display-3862219>
+ 1440×  900  <canvas>
+ 1440×  900  <div>
+ 1408×  868  <div>
+ 1440×  708  <div.mx-auto.flex.w-full>
+ 1376×  556  <div.grid.grid-cols-1.gap-6>
+ 1440×  502  <div.privy-popup-content-wrap>
+ 1440×  462  <div>
+ 1440×  430  <div.mx-auto.flex.w-full>
+ 1440×  382  <div.relative.my-10.px-4>
+ 1440×  350  <div.absolute.inset-0.bottom-10>
+ 1408×  350  <div.mx-auto.w-full.max-w-layout>
+ 1344×  350  <div.relative.flex.items-stretch>
+ 1376×  314  <div.grid.w-full.grid-cols-2>
+ 1440×  264  <footer.bg-black-pearl.py-10.text-white>
+  702×  502  <div.privy-popup-inner-content-wrap>
+  700×  500  <div.privy-popup-content.privy-foreground-element>
+ 1440×  184  <div.mx-auto.max-w-layout.px-4>
+ 1376×  184  <div.flex.flex-col.md:flex-row>
+ 1440×  152  <div>
+ 1438×  150  <iframe>
+  594×  350  <div.relative.grow-0.rounded-xl>
+ 1032×  184  <div.grid.grid-cols-2.gap-y-5>
+ 1440×   80  <header.fixed.left-0.top-0>
+ 1440×   80  <div.z-20.mx-auto.w-full>
+  464×  236  <div.space-y-4>
+  684×  132  <div.privy-element-wrapper.privy-text-element-wrapper.privy-element-wrapper-absolute>
+  684×  132  <div.privy-element.privy-text-element.privy-text-left>
+  320×  280  <div.row-start-1.sm:row-start-1.sm:mt-0>
+  320×  280  <div.flex.h-full.w-full>
+  320×  280  <div.relative.flex.h-full>
+  320×  280  <div.row-start-1.sm:row-start-1.sm:mt-0>
+  320×  280  <div.flex.h-full.w-full>
+  320×  280  <div.relative.flex.h-full>
+  320×  280  <div.row-start-3.mt-4.sm:row-start-1>
+  320×  280  <div.flex.h-full.w-full>
 
 ## class 命名频次（前 45）
     1  __variable_3e4138

@@ -1,0 +1,525 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "mock-index",
+  "target": "http://127.0.0.1:8080/mockups/v3/index.html",
+  "fetchedAt": "2026-09-22T17:11:46.087Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 2456,
+      "hydration": {
+        "textBefore": 1291,
+        "textAfter": 1291
+      },
+      "notes": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 2429,
+      "hydration": {
+        "textBefore": 1291,
+        "textAfter": 1291
+      },
+      "notes": []
+    }
+  ],
+  "desktop": {
+    "url": "http://127.0.0.1:8080/mockups/v3/index.html",
+    "title": "mockups v3 · 三套方案对比",
+    "lang": "zh-CN",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 900,
+    "scrollScreens": 1,
+    "meta": {
+      "description": null,
+      "ogImage": null,
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width, initial-scale=1"
+    },
+    "canonical": null,
+    "hreflang": [],
+    "jsonLdTypes": [],
+    "landmarks": {
+      "header": 1,
+      "nav": 0,
+      "main": 1,
+      "section": 3,
+      "article": 0,
+      "aside": 0,
+      "footer": 1,
+      "form": 0,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "三套方案 · 同一批真实数据"
+      },
+      {
+        "level": 1,
+        "text": "三套都不做的事（红线）"
+      },
+      {
+        "level": 1,
+        "text": "这些提案是从哪来的（证据链）"
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug/:slug/:slug/:slug",
+        "count": 9,
+        "samples": [
+          "http://127.0.0.1:8080/mockups/v3/A-conservative/index.html",
+          "http://127.0.0.1:8080/mockups/v3/A-conservative/PLAN.md",
+          "http://127.0.0.1:8080/mockups/v3/B-balanced/dense.html"
+        ]
+      },
+      {
+        "shape": "/:slug/:slug/:slug",
+        "count": 2,
+        "samples": [
+          "http://127.0.0.1:8080/mockups/v3/index.html#main",
+          "http://127.0.0.1:8080/mockups/v3/index.html"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 11,
+    "repeatedComponents": [],
+    "primaryList": null,
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(107, 114, 128)",
+          "count": 41
+        },
+        {
+          "value": "rgb(15, 23, 42)",
+          "count": 30
+        },
+        {
+          "value": "rgb(59, 91, 253)",
+          "count": 6
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 4
+        },
+        {
+          "value": "rgb(0, 0, 0)",
+          "count": 3
+        },
+        {
+          "value": "rgb(73, 80, 102)",
+          "count": 3
+        },
+        {
+          "value": "rgb(217, 45, 75)",
+          "count": 1
+        },
+        {
+          "value": "rgb(35, 72, 196)",
+          "count": 1
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 8
+        },
+        {
+          "value": "rgb(59, 91, 253)",
+          "count": 3
+        },
+        {
+          "value": "rgb(238, 243, 255)",
+          "count": 1
+        },
+        {
+          "value": "rgb(246, 247, 249)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "11px",
+          "count": 24
+        },
+        {
+          "value": "13px",
+          "count": 20
+        },
+        {
+          "value": "14px",
+          "count": 19
+        },
+        {
+          "value": "12px",
+          "count": 13
+        },
+        {
+          "value": "13.3333px",
+          "count": 3
+        },
+        {
+          "value": "16px",
+          "count": 3
+        },
+        {
+          "value": "10px",
+          "count": 2
+        },
+        {
+          "value": "15px",
+          "count": 2
+        },
+        {
+          "value": "18px",
+          "count": 2
+        },
+        {
+          "value": "22px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "16.5px",
+          "count": 24
+        },
+        {
+          "value": "21px",
+          "count": 18
+        },
+        {
+          "value": "19.5px",
+          "count": 17
+        },
+        {
+          "value": "18px",
+          "count": 13
+        },
+        {
+          "value": "24.7px",
+          "count": 3
+        },
+        {
+          "value": "24px",
+          "count": 3
+        },
+        {
+          "value": "17.25px",
+          "count": 2
+        },
+        {
+          "value": "27px",
+          "count": 2
+        },
+        {
+          "value": "11.5px",
+          "count": 1
+        },
+        {
+          "value": "15px",
+          "count": 1
+        },
+        {
+          "value": "16.1px",
+          "count": 1
+        },
+        {
+          "value": "33px",
+          "count": 1
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 59
+        },
+        {
+          "value": "700",
+          "count": 17
+        },
+        {
+          "value": "600",
+          "count": 13
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "-apple-system",
+          "count": 76
+        },
+        {
+          "value": "monospace",
+          "count": 10
+        },
+        {
+          "value": "Arial",
+          "count": 3
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 66
+        },
+        {
+          "value": "6px",
+          "count": 11
+        },
+        {
+          "value": "999px",
+          "count": 6
+        },
+        {
+          "value": "10px",
+          "count": 3
+        },
+        {
+          "value": "0px 0px 6px",
+          "count": 1
+        },
+        {
+          "value": "4px",
+          "count": 1
+        },
+        {
+          "value": "9px",
+          "count": 1
+        }
+      ],
+      "shadows": [],
+      "gaps": [
+        {
+          "value": "4px",
+          "count": 9
+        },
+        {
+          "value": "12px",
+          "count": 2
+        },
+        {
+          "value": "8px",
+          "count": 2
+        }
+      ],
+      "paddings": [
+        {
+          "value": "5px 5px",
+          "count": 12
+        },
+        {
+          "value": "2px 2px",
+          "count": 7
+        },
+        {
+          "value": "12px 12px",
+          "count": 3
+        },
+        {
+          "value": "16px 0px",
+          "count": 3
+        },
+        {
+          "value": "8px 8px",
+          "count": 2
+        },
+        {
+          "value": "0px 12px",
+          "count": 1
+        },
+        {
+          "value": "0px 60px",
+          "count": 1
+        },
+        {
+          "value": "12px 0px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "background-color, color 0.1s, 0.1s cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 12
+        },
+        {
+          "value": "border-color, box-shadow 0.1s, 0.1s cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1420px",
+          "count": 8
+        },
+        {
+          "value": "900px",
+          "count": 3
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "1 tracks",
+          "count": 1
+        },
+        {
+          "value": "4 tracks",
+          "count": 1
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 1,
+      "fixedElements": 0,
+      "prefersColorSchemeRules": 1,
+      "bodyBgIsDark": false,
+      "images": 0,
+      "lazyImages": 0,
+      "searchInputs": 1,
+      "selects": 0,
+      "buttons": 0,
+      "tabs": 0,
+      "relNext": 0
+    },
+    "externalDomains": [],
+    "resourceTypes": [
+      {
+        "value": "link",
+        "count": 2
+      },
+      {
+        "value": "other",
+        "count": 1
+      }
+    ],
+    "requestCount": 3,
+    "textLength": 1291,
+    "contrast": {
+      "sampled": 65,
+      "skippedForComplexBackground": 1,
+      "min": 4.51,
+      "p10": 4.51,
+      "median": 4.83,
+      "belowRequirement": 0,
+      "worst": [
+        {
+          "selector": "p.note",
+          "text": "三套方案都能点开看。共同点：都不引入任何依赖、不热链 CDN、保持零构建单文件、",
+          "fontSize": 13,
+          "ratio": 4.51,
+          "required": 4.5
+        },
+        {
+          "selector": "p",
+          "text": "所有数字都来自实测（research/EVIDENCE.md、research/",
+          "fontSize": 13,
+          "ratio": 4.51,
+          "required": 4.5
+        },
+        {
+          "selector": "code",
+          "text": "research/EVIDENCE.md",
+          "fontSize": 13,
+          "ratio": 4.51,
+          "required": 4.5
+        },
+        {
+          "selector": "code",
+          "text": "research/GAP-MATRIX.md",
+          "fontSize": 13,
+          "ratio": 4.51,
+          "required": 4.5
+        },
+        {
+          "selector": "code",
+          "text": "research/DESIGN-TOKENS.md",
+          "fontSize": 13,
+          "ratio": 4.51,
+          "required": 4.5
+        },
+        {
+          "selector": "span.anno",
+          "text": "不引入前端框架 / 打包器",
+          "fontSize": 11,
+          "ratio": 4.51,
+          "required": 4.5
+        },
+        {
+          "selector": "span.anno",
+          "text": "不热链 CDN 或 Web 字体",
+          "fontSize": 11,
+          "ratio": 4.51,
+          "required": 4.5
+        },
+        {
+          "selector": "span.anno",
+          "text": "不加载任何统计或广告脚本",
+          "fontSize": 11,
+          "ratio": 4.51,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 1549,
+    "scrollScreens": 1.8,
+    "primaryList": null,
+    "repeatedComponents": [],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "11px",
+          "count": 24
+        },
+        {
+          "value": "13px",
+          "count": 20
+        },
+        {
+          "value": "14px",
+          "count": 19
+        },
+        {
+          "value": "12px",
+          "count": 13
+        },
+        {
+          "value": "13.3333px",
+          "count": 3
+        },
+        {
+          "value": "16px",
+          "count": 3
+        },
+        {
+          "value": "10px",
+          "count": 2
+        },
+        {
+          "value": "15px",
+          "count": 2
+        }
+      ]
+    },
+    "textLength": 1291
+  }
+}

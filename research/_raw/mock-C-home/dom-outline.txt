@@ -1,0 +1,60 @@
+# http://127.0.0.1:8080/mockups/v3/C-ambitious/home.html
+# 抓取时间 2026-09-22T16:56:53.375Z
+
+## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
+<header.top> 1440x59
+<main.wrap> 1420x914
+  <section.demohead> 1388x71
+    <h1> 1388x33 — 按意图直达，而不是先看一屏再筛
+  <nav.facetsin> 1388x42
+  <article.g> 455x192
+    <h3> 343x22 — GLM-4.7-Flash 免费模型
+  <article.g> 455x192
+    <h3> 343x22 — GLM-4.5-Flash 免费模型
+  <article.g> 455x192
+    <h3> 343x22 — GLM-4.6V-Flash 免费模型
+  <article.g> 455x192
+    <h3> 343x22 — 扣子 Coze 新用户首次注册赠送 1500 活动积分
+  <article.g> 455x192
+    <h3> 343x22 — 扣子 Coze 个人版每日登录赠送 1500 活动积分
+  <article.g> 455x192
+    <h3> 343x22 — 扣子 Coze 部分模型限时免费 每模型 100 次/天
+  <section.demohead> 1388x338
+    <h1> 1388x27 — 收藏与对比
+    <table> 1388x203
+<footer> 1440x67
+
+## class 命名频次（前 45）
+   24  cta
+   18  ghost
+    6  f
+    6  g
+    6  tiernum
+    6  gh
+    6  logos
+    6  lg
+    6  gt
+    6  vendor
+    6  tg
+    6  cn
+    6  of
+    6  bar
+    6  tx
+    6  feats
+    6  meta
+    6  sp
+    3  vh
+    2  note
+    2  wrap
+    2  demohead
+    1  skip
+    1  top
+    1  topin
+    1  brand
+    1  mark
+    1  btxt
+    1  search
+    1  seg
+    1  topstat
+    1  facetsin
+    1  grid

@@ -1,10 +1,75 @@
 # https://ai-bot.cn/
-# 抓取时间 2026-09-22T16:29:50.664Z
+# 抓取时间 2026-09-22T16:50:33.723Z
 
 ## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
-… 17 children (body)
+… 16 children (body)
+  <ul.navbar-nav.navbar-top.site-menu> 703x42
+    <ul.sub-menu> 160x567
+    <ul.sub-menu> 160x86
+    <ul.sub-menu> 160x160
+  <ul.nav.navbar-menu.text-xs> 0x0
+  <form.super-search-fm> 800x50
+  <ul.search-type.tab-auto-scrollbar.overflow-x-auto> 393x41
+  <ul.search-type.tab-auto-scrollbar.overflow-x-auto> 0x0
+  <ul.search-type.tab-auto-scrollbar.overflow-x-auto> 0x0
+  <ul.search-type.tab-auto-scrollbar.overflow-x-auto> 0x0
+  <ul.search-type.tab-auto-scrollbar.overflow-x-auto> 0x0
+  <ul> 0x0
+  <ul.nav.nav-pills.tab-auto-scrollbar> 99x28
+  … 12 children (div)
+  <ul.nav.nav-pills.tab-auto-scrollbar> 102x28
+  … 38 children (div)
+    … 30 children (div)
+    <ul.nav.nav-pills.tab-auto-scrollbar> 945x28
+    … 30 children (div)
+    … 30 children (div)
+    <ul.nav.nav-pills.tab-auto-scrollbar> 891x28
+    … 30 children (div)
+  … 27 children (p)
 
 ## class 命名频次（前 45）
-    1  home
-    1  blog
-    1  sidebar_no
+   44  text-muted
+   31  d-flex
+   29  mb-4
+   28  menu-item
+   28  align-items-center
+   23  row
+   23  mr-2
+   22  menu-item-type-taxonomy
+   22  nav-link
+   22  tab-pane
+   21  position-relative
+   20  iconfont
+   20  nav-item
+   19  pagenumber
+   19  ajax-list-body
+   19  io-mx-n2
+   19  mt-4
+   18  text-sm
+   17  tab-noajax
+   16  col-2a
+   16  col-md-2a
+   16  col-lg-3a
+   15  flex-fill
+   15  menu-item-object-favorites
+   15  text-xs
+   15  overflowClip_1
+   15  col-lg-12
+   15  customize_nothing
+   15  nothing
+   15  icon-loading
+   15  icon-spin
+   13  justify-content-center
+   12  rounded-xl
+   12  p-2
+   12  h-100
+   12  position-absolute
+   11  active
+   10  m-0
+   10  tab-auto-scrollbar
+   10  overflow-x-auto
+   10  tab-card
+   10  col-xl-4a
+   10  col-xxl-5a
+   10  type-category
+   10  img-post

@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "ai-bot.cn",
   "target": "https://ai-bot.cn/",
-  "fetchedAt": "2026-09-22T16:29:50.664Z",
+  "fetchedAt": "2026-09-22T16:50:33.723Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,21 +11,19 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 13138,
+      "elapsedMs": 8460,
       "hydration": {
         "textBefore": 14125,
         "textAfter": 14125
       },
-      "notes": [
-        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
-      ]
+      "notes": []
     },
     {
       "viewport": {
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 8162,
+      "elapsedMs": 5591,
       "hydration": {
         "textBefore": 13943,
         "textAfter": 13943
@@ -553,6 +551,14 @@
     },
     "externalDomains": [
       {
+        "value": "ep1.adtrafficquality.google",
+        "count": 2
+      },
+      {
+        "value": "ep2.adtrafficquality.google",
+        "count": 2
+      },
+      {
         "value": "googleads.g.doubleclick.net",
         "count": 2
       },
@@ -565,19 +571,15 @@
         "count": 2
       },
       {
-        "value": "ep1.adtrafficquality.google",
-        "count": 1
-      },
-      {
-        "value": "ep2.adtrafficquality.google",
-        "count": 1
-      },
-      {
         "value": "lf1-cdn-tos.bytegoofy.com",
         "count": 1
       },
       {
         "value": "www.google-analytics.com",
+        "count": 1
+      },
+      {
+        "value": "www.google.com",
         "count": 1
       },
       {
@@ -592,7 +594,7 @@
     "resourceTypes": [
       {
         "value": "img",
-        "count": 35
+        "count": 36
       },
       {
         "value": "css",
@@ -608,7 +610,7 @@
       },
       {
         "value": "iframe",
-        "count": 2
+        "count": 4
       },
       {
         "value": "other",
@@ -623,7 +625,7 @@
         "count": 1
       }
     ],
-    "requestCount": 75,
+    "requestCount": 78,
     "textLength": 14125,
     "contrast": {
       "sampled": 400,

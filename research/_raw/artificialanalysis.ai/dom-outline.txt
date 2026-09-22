@@ -1,13 +1,74 @@
 # https://artificialanalysis.ai/
-# 抓取时间 2026-09-22T16:23:34.339Z
+# 抓取时间 2026-09-22T16:46:46.815Z
 
 ## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
 … 187 children (body)
+  <main.min-h-screen> 1440x25600
+    <nav.relative.flex-1.w-full> 1400x36
+      <ul.group.flex-1.list-none> 797x36
+    <section.container.pt-9.pb-10> 1440x426
+      <h1.text-5xl.md:text-6xl.lg:text-[5rem]> 684x160 — Independent analysis of AI
+    <section.container> 1440x455
+      <h3.text-2xl.font-brand-serif.font-medium> 119x32 — Intelligence
+      … 16 children (svg)
+      <h3.text-2xl.font-brand-serif.font-medium> 63x32 — Speed
+      … 16 children (svg)
+      <h3.text-2xl.font-brand-serif.font-medium> 141x32 — Cost per Task
+      … 16 children (svg)
+    … 81 children (div)
+    <aside.hidden.lg:block.col-span-2> 210x23147
+      <nav.flex.flex-col.gap-3> 210x298
+    … 12 children (div)
+    <section> 1440x0
+    <footer.relative.mt-auto.bg-brand-purple-light> 1440x676
+      <form.pointer-events-auto> 572x58
+      <ul.space-y-1> 217x136
+      <ul.space-y-1> 217x136
+      <ul.space-y-1> 217x108
 
 ## class 命名频次（前 45）
-    1  h-full
-    1  overscroll-y-none
-    1  relative
-    1  font-brand-sans
-    1  text-foreground
-    1  bg-background
+   56  flex
+   52  items-center
+   50  transition-colors
+   41  text-sm
+   32  gap-2
+   30  justify-center
+   28  text-brand-plum
+   26  inline-flex
+   26  text-xs
+   22  disabled:opacity-50
+   21  disabled:pointer-events-none
+   19  hover:underline
+   18  flex-shrink-0
+   17  whitespace-nowrap
+   16  rounded-lg
+   16  group
+   14  px-3
+   14  focus-visible:outline-none
+   12  relative
+   12  text-white
+   12  h-9
+   12  group-hover:opacity-100
+   11  justify-between
+   11  font-brand-serif
+   11  focus-visible:ring-1
+   11  focus-visible:ring-ring
+   11  [&_svg]:pointer-events-none
+   11  [&_svg]:shrink-0
+   11  py-2
+   11  rounded-3xl
+   11  h-2
+   11  w-2
+   11  mt-1
+   10  w-full
+   10  bg-black
+   10  focus:outline-none
+   10  bg-transparent
+   10  absolute
+   10  bg-neutral-500
+   10  opacity-50
+    9  rounded-full
+    9  hidden
+    9  [&_svg]:w-4
+    9  [&_svg]:h-4
+    9  z-10

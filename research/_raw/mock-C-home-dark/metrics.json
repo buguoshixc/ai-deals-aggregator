@@ -1,0 +1,690 @@
+{
+  "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
+  "slug": "mock-C-home-dark",
+  "target": "http://127.0.0.1:8080/mockups/v3/C-ambitious/home.html",
+  "fetchedAt": "2026-09-22T16:58:34.400Z",
+  "proxy": null,
+  "needles": [],
+  "renderedAt": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "elapsedMs": 2779,
+      "hydration": {
+        "textBefore": 1784,
+        "textAfter": 1793
+      },
+      "notes": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "elapsedMs": 2727,
+      "hydration": {
+        "textBefore": 1784,
+        "textAfter": 1793
+      },
+      "notes": []
+    }
+  ],
+  "desktop": {
+    "url": "http://127.0.0.1:8080/mockups/v3/C-ambitious/home.html",
+    "title": "方案 C · 进取 — 首页按意图重排",
+    "lang": "zh-CN",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pageHeight": 1131,
+    "scrollScreens": 1.3,
+    "meta": {
+      "description": null,
+      "ogImage": null,
+      "colorScheme": null,
+      "themeColor": null,
+      "viewport": "width=device-width, initial-scale=1"
+    },
+    "canonical": null,
+    "hreflang": [],
+    "jsonLdTypes": [],
+    "landmarks": {
+      "header": 1,
+      "nav": 1,
+      "main": 1,
+      "section": 2,
+      "article": 6,
+      "aside": 0,
+      "footer": 1,
+      "form": 0,
+      "dialog": 0
+    },
+    "headings": [
+      {
+        "level": 1,
+        "text": "按意图直达，而不是先看一屏再筛"
+      },
+      {
+        "level": 3,
+        "text": "GLM-4.7-Flash 免费模型"
+      },
+      {
+        "level": 3,
+        "text": "GLM-4.5-Flash 免费模型"
+      },
+      {
+        "level": 3,
+        "text": "GLM-4.6V-Flash 免费模型"
+      },
+      {
+        "level": 3,
+        "text": "扣子 Coze 新用户首次注册赠送 1500 活动积分"
+      },
+      {
+        "level": 3,
+        "text": "扣子 Coze 个人版每日登录赠送 1500 活动积分"
+      },
+      {
+        "level": 3,
+        "text": "扣子 Coze 部分模型限时免费 每模型 100 次/天"
+      },
+      {
+        "level": 1,
+        "text": "收藏与对比"
+      }
+    ],
+    "detailUrlPatterns": [
+      {
+        "shape": "/:slug/:slug/:slug/:slug",
+        "count": 8,
+        "samples": [
+          "http://127.0.0.1:8080/mockups/v3/C-ambitious/home.html#main",
+          "http://127.0.0.1:8080/mockups/v3/C-ambitious/index.html",
+          "http://127.0.0.1:8080/mockups/v3/C-ambitious/home.html#"
+        ]
+      }
+    ],
+    "hashOnlyLinks": 0,
+    "internalLinkCount": 8,
+    "repeatedComponents": [
+      {
+        "signature": "article.g",
+        "count": 6,
+        "parents": 1,
+        "width": 455,
+        "height": {
+          "min": 192,
+          "max": 192,
+          "median": 192
+        },
+        "fullyVisibleFirstScreen": 6,
+        "touchedFirstScreen": 6
+      }
+    ],
+    "primaryList": {
+      "signature": "article.g",
+      "count": 6,
+      "parents": 1,
+      "width": 455,
+      "height": {
+        "min": 192,
+        "max": 192,
+        "median": 192
+      },
+      "fullyVisibleFirstScreen": 6,
+      "touchedFirstScreen": 6
+    },
+    "tokens": {
+      "textColors": [
+        {
+          "value": "rgb(232, 236, 242)",
+          "count": 100
+        },
+        {
+          "value": "rgb(182, 190, 201)",
+          "count": 35
+        },
+        {
+          "value": "rgb(141, 151, 165)",
+          "count": 33
+        },
+        {
+          "value": "rgb(124, 147, 255)",
+          "count": 18
+        },
+        {
+          "value": "rgb(11, 13, 16)",
+          "count": 12
+        },
+        {
+          "value": "rgb(255, 107, 129)",
+          "count": 7
+        },
+        {
+          "value": "rgb(61, 220, 151)",
+          "count": 6
+        },
+        {
+          "value": "rgb(91, 100, 114)",
+          "count": 6
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 4
+        },
+        {
+          "value": "rgb(20, 23, 28)",
+          "count": 2
+        }
+      ],
+      "backgrounds": [
+        {
+          "value": "rgb(20, 23, 28)",
+          "count": 17
+        },
+        {
+          "value": "rgb(28, 33, 41)",
+          "count": 17
+        },
+        {
+          "value": "rgb(124, 147, 255)",
+          "count": 6
+        },
+        {
+          "value": "rgb(16, 35, 29)",
+          "count": 6
+        },
+        {
+          "value": "rgb(177, 140, 255)",
+          "count": 6
+        },
+        {
+          "value": "rgb(255, 255, 255)",
+          "count": 6
+        },
+        {
+          "value": "rgb(61, 220, 151)",
+          "count": 6
+        },
+        {
+          "value": "rgb(11, 13, 16)",
+          "count": 1
+        },
+        {
+          "value": "rgb(232, 236, 242)",
+          "count": 1
+        }
+      ],
+      "fontSizes": [
+        {
+          "value": "13px",
+          "count": 68
+        },
+        {
+          "value": "14px",
+          "count": 55
+        },
+        {
+          "value": "12px",
+          "count": 32
+        },
+        {
+          "value": "11px",
+          "count": 30
+        },
+        {
+          "value": "16px",
+          "count": 12
+        },
+        {
+          "value": "9px",
+          "count": 12
+        },
+        {
+          "value": "10px",
+          "count": 7
+        },
+        {
+          "value": "13.3333px",
+          "count": 3
+        },
+        {
+          "value": "15px",
+          "count": 2
+        },
+        {
+          "value": "18px",
+          "count": 1
+        },
+        {
+          "value": "22px",
+          "count": 1
+        }
+      ],
+      "lineHeights": [
+        {
+          "value": "19.5px",
+          "count": 65
+        },
+        {
+          "value": "21px",
+          "count": 54
+        },
+        {
+          "value": "16.5px",
+          "count": 30
+        },
+        {
+          "value": "18px",
+          "count": 20
+        },
+        {
+          "value": "13.5px",
+          "count": 12
+        },
+        {
+          "value": "21.6px",
+          "count": 12
+        },
+        {
+          "value": "15px",
+          "count": 6
+        },
+        {
+          "value": "24.7px",
+          "count": 3
+        },
+        {
+          "value": "17.25px",
+          "count": 2
+        },
+        {
+          "value": "11.5px",
+          "count": 1
+        },
+        {
+          "value": "16.1px",
+          "count": 1
+        },
+        {
+          "value": "27px",
+          "count": 1
+        },
+        {
+          "value": "33px",
+          "count": 1
+        }
+      ],
+      "fontWeights": [
+        {
+          "value": "400",
+          "count": 142
+        },
+        {
+          "value": "600",
+          "count": 55
+        },
+        {
+          "value": "700",
+          "count": 26
+        }
+      ],
+      "fontFamilies": [
+        {
+          "value": "-apple-system",
+          "count": 201
+        },
+        {
+          "value": "Arial",
+          "count": 15
+        },
+        {
+          "value": "monospace",
+          "count": 7
+        }
+      ],
+      "radii": [
+        {
+          "value": "0px",
+          "count": 142
+        },
+        {
+          "value": "6px",
+          "count": 26
+        },
+        {
+          "value": "4px",
+          "count": 22
+        },
+        {
+          "value": "10px",
+          "count": 7
+        },
+        {
+          "value": "10px 0px 12px",
+          "count": 6
+        },
+        {
+          "value": "2px",
+          "count": 6
+        },
+        {
+          "value": "7px",
+          "count": 6
+        },
+        {
+          "value": "999px",
+          "count": 6
+        },
+        {
+          "value": "0px 0px 6px",
+          "count": 1
+        },
+        {
+          "value": "9px",
+          "count": 1
+        }
+      ],
+      "shadows": [
+        {
+          "value": "rgba(255, 255, 255, 0.08) 0px 0px 0px 1px",
+          "count": 6
+        },
+        {
+          "value": "rgb(61, 220, 151) 3px 0px 0px 0px inset",
+          "count": 3
+        }
+      ],
+      "gaps": [
+        {
+          "value": "4px",
+          "count": 24
+        },
+        {
+          "value": "8px",
+          "count": 20
+        },
+        {
+          "value": "10px",
+          "count": 6
+        },
+        {
+          "value": "3px",
+          "count": 6
+        },
+        {
+          "value": "5px",
+          "count": 6
+        },
+        {
+          "value": "12px",
+          "count": 2
+        },
+        {
+          "value": "7px",
+          "count": 1
+        }
+      ],
+      "paddings": [
+        {
+          "value": "5px 5px",
+          "count": 27
+        },
+        {
+          "value": "10px 10px",
+          "count": 20
+        },
+        {
+          "value": "2px 2px",
+          "count": 18
+        },
+        {
+          "value": "8px 0px",
+          "count": 7
+        },
+        {
+          "value": "12px 12px",
+          "count": 6
+        },
+        {
+          "value": "4px 4px",
+          "count": 6
+        },
+        {
+          "value": "1px 1px",
+          "count": 4
+        },
+        {
+          "value": "0px 12px",
+          "count": 2
+        },
+        {
+          "value": "16px 0px",
+          "count": 2
+        },
+        {
+          "value": "8px 8px",
+          "count": 2
+        },
+        {
+          "value": "0px 60px",
+          "count": 1
+        },
+        {
+          "value": "12px 0px",
+          "count": 1
+        }
+      ],
+      "transitions": [
+        {
+          "value": "background-color, color 0.1s, 0.1s cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 27
+        },
+        {
+          "value": "border-color, box-shadow 0.15s, 0.15s cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 6
+        },
+        {
+          "value": "border-color, color, background-color 0.1s, 0.1s, 0.1s cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 6
+        },
+        {
+          "value": "border-color, box-shadow 0.1s, 0.1s cubic-bezier(0.4, 0, 0.2, 1), cubic-bezier(0.4, 0, 0.2, 1)",
+          "count": 1
+        }
+      ],
+      "containerMaxWidths": [
+        {
+          "value": "1420px",
+          "count": 7
+        },
+        {
+          "value": "900px",
+          "count": 3
+        }
+      ],
+      "gridTemplates": [
+        {
+          "value": "1 tracks",
+          "count": 13
+        },
+        {
+          "value": "3 tracks",
+          "count": 1
+        }
+      ]
+    },
+    "behavior": {
+      "stickyElements": 1,
+      "fixedElements": 0,
+      "prefersColorSchemeRules": 1,
+      "bodyBgIsDark": true,
+      "images": 0,
+      "lazyImages": 0,
+      "searchInputs": 1,
+      "selects": 0,
+      "buttons": 18,
+      "tabs": 6,
+      "relNext": 0
+    },
+    "externalDomains": [],
+    "resourceTypes": [
+      {
+        "value": "link",
+        "count": 2
+      },
+      {
+        "value": "img",
+        "count": 1
+      },
+      {
+        "value": "other",
+        "count": 1
+      }
+    ],
+    "requestCount": 4,
+    "textLength": 1793,
+    "contrast": {
+      "sampled": 138,
+      "skippedForComplexBackground": 1,
+      "min": 5.98,
+      "p10": 6.08,
+      "median": 8.62,
+      "belowRequirement": 0,
+      "worst": [
+        {
+          "selector": "span.lg",
+          "text": "ZH",
+          "fontSize": 9,
+          "ratio": 5.98,
+          "required": 4.5
+        },
+        {
+          "selector": "span.lg",
+          "text": "ZH",
+          "fontSize": 9,
+          "ratio": 5.98,
+          "required": 4.5
+        },
+        {
+          "selector": "span.lg",
+          "text": "ZH",
+          "fontSize": 9,
+          "ratio": 5.98,
+          "required": 4.5
+        },
+        {
+          "selector": "span.lg",
+          "text": "CO",
+          "fontSize": 9,
+          "ratio": 5.98,
+          "required": 4.5
+        },
+        {
+          "selector": "span.lg",
+          "text": "CO",
+          "fontSize": 9,
+          "ratio": 5.98,
+          "required": 4.5
+        },
+        {
+          "selector": "span.lg",
+          "text": "CO",
+          "fontSize": 9,
+          "ratio": 5.98,
+          "required": 4.5
+        },
+        {
+          "selector": "small",
+          "text": "MOCKUP v3 · C 进取",
+          "fontSize": 10,
+          "ratio": 6.08,
+          "required": 4.5
+        },
+        {
+          "selector": "div.topstat",
+          "text": "80 条优惠 · 已核验 32",
+          "fontSize": 13,
+          "ratio": 6.08,
+          "required": 4.5
+        }
+      ]
+    }
+  },
+  "mobile": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "pageHeight": 2476,
+    "scrollScreens": 2.9,
+    "primaryList": {
+      "signature": "article.g",
+      "count": 6,
+      "parents": 1,
+      "width": 358,
+      "height": {
+        "min": 182,
+        "max": 203,
+        "median": 203
+      },
+      "fullyVisibleFirstScreen": 2,
+      "touchedFirstScreen": 3
+    },
+    "repeatedComponents": [
+      {
+        "signature": "article.g",
+        "count": 6,
+        "parents": 1,
+        "width": 358,
+        "height": {
+          "min": 182,
+          "max": 203,
+          "median": 203
+        },
+        "fullyVisibleFirstScreen": 2,
+        "touchedFirstScreen": 3
+      }
+    ],
+    "tokens": {
+      "fontSizes": [
+        {
+          "value": "13px",
+          "count": 68
+        },
+        {
+          "value": "14px",
+          "count": 55
+        },
+        {
+          "value": "12px",
+          "count": 32
+        },
+        {
+          "value": "11px",
+          "count": 30
+        },
+        {
+          "value": "16px",
+          "count": 12
+        },
+        {
+          "value": "9px",
+          "count": 12
+        },
+        {
+          "value": "10px",
+          "count": 7
+        },
+        {
+          "value": "13.3333px",
+          "count": 3
+        }
+      ]
+    },
+    "textLength": 1793
+  }
+}

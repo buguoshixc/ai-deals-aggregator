@@ -1,13 +1,57 @@
 # https://llm-prices.com/
-# 抓取时间 2026-09-22T16:23:58.277Z
+# 抓取时间 2026-09-22T17:04:20.360Z
 
 ## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
 <h1> 300x28 — LLM pricing calculator
 <h2> 600x28 — Model prices (per million tokens)
-<table.preset-table> 600x7197
-  … 157 children (tbody)
+<table.preset-table> 600x7287
+  … 159 children (tbody)
+
+## 面积兜底：渲染面积最大的 40 个元素（语义层级不足时看页面由哪几块组成）
+ 1000× 7536  <div.container>
+ 1000× 7464  <div.flex-container>
+  640× 7444  <div.presets>
+  600× 7287  <div>
+  600× 7287  <table.preset-table>
+  600× 7235  <tbody>
+  340× 7444  <div.calculator>
+ 1000×   72  <div.disclaimer>
+  600×   61  <tr>
+  600×   61  <tr>
+  600×   61  <tr>
+  600×   61  <tr>
+  600×   61  <tr>
+  600×   52  <thead>
+  600×   52  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
+  600×   45  <tr>
 
 ## class 命名频次（前 45）
+    8  model-name-btn
+    8  compare-checkbox
     6  input-group
     3  cost-input-group
     3  sort-icon

@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "stripe.com",
   "target": "https://stripe.com/",
-  "fetchedAt": "2026-09-22T16:25:08.414Z",
+  "fetchedAt": "2026-09-22T16:53:04.192Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,46 +11,44 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 31165,
+      "elapsedMs": 13255,
       "hydration": {
-        "textBefore": 7781,
-        "textAfter": 7781
+        "textBefore": 4932,
+        "textAfter": 5949
       },
-      "notes": [
-        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
-      ]
+      "notes": []
     },
     {
       "viewport": {
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 35764,
+      "elapsedMs": 11086,
       "hydration": {
-        "textBefore": 6585,
-        "textAfter": 7787
+        "textBefore": 4772,
+        "textAfter": 6029
       },
       "notes": []
     }
   ],
   "desktop": {
-    "url": "https://stripe.com/jp",
-    "title": "Stripe | 収益向上のための金融インフラ",
-    "lang": "ja-JP",
+    "url": "https://stripe.com/zh-us",
+    "title": "Stripe | 金融基础设施，托举营收增长",
+    "lang": "zh-US",
     "viewport": {
       "width": 1440,
       "height": 900
     },
-    "pageHeight": 15438,
-    "scrollScreens": 17.2,
+    "pageHeight": 14420,
+    "scrollScreens": 16,
     "meta": {
-      "description": "Stripe は、あらゆる規模や業種のビジネスにおける決済の受け入れ、柔軟な請求モデルの構築、および資金移動の管理を支援する、金融サービスプラットフォームです。",
+      "description": "Stripe 是一家金融服务平台，致力于帮助各类企业接受付款、建立灵活的计费模式以及管理资金流转。",
       "ogImage": "https://b.stripecdn.com/mkt-ssr-statics/assets/_next/static/media/stripe.37119086.jpg",
       "colorScheme": null,
       "themeColor": null,
       "viewport": "width=device-width, initial-scale=1, viewport-fit=cover"
     },
-    "canonical": "https://stripe.com/jp",
+    "canonical": "https://stripe.com/zh-us",
     "hreflang": [
       {
         "hreflang": "x-default",
@@ -414,10 +412,10 @@
       "Organization"
     ],
     "landmarks": {
-      "header": 6,
+      "header": 5,
       "nav": 1,
       "main": 1,
-      "section": 18,
+      "section": 15,
       "article": 0,
       "aside": 0,
       "footer": 1,
@@ -427,265 +425,242 @@
     "headings": [
       {
         "level": 1,
-        "text": "事業成長を支える金融インフラ。 決済から組込み型金融、エージェンティックコマースまで、企業の収益最大化を支援。"
+        "text": "金融基础设施，托举营收增长。无论您是刚刚起步，还是已达百亿规模，我们帮助您在全球范围内接受付款、提供金融服务，并实施定制化营收模式。"
       },
       {
         "level": 1,
-        "text": "事業成長を支える金融インフラ。 決済から組込み型金融、エージェンティックコマースまで、企業の収益最大化を支援。"
+        "text": "金融基础设施，托举营收增长。无论您是刚刚起步，还是已达百亿规模，我们帮助您在全球范围内接受付款、提供金融服务，并实施定制化营收模式。"
       },
       {
         "level": 2,
-        "text": "ビジネスの形態を問わない、柔軟なプラットフォーム。"
+        "text": "灵活的解决方案，适配各种业务模式。"
       },
       {
         "level": 3,
-        "text": "オンライン決済・対面決済をグローバルに展開"
+        "text": "接受并优化全球支付，涵盖线上和线下"
       },
       {
         "level": 3,
-        "text": "あらゆるサブスク・課金モデルに対応"
+        "text": "支持任何计费模式"
       },
       {
         "level": 3,
-        "text": "プラットフォームに決済機能を統合"
+        "text": "布局智能体商务"
       },
       {
         "level": 3,
-        "text": "エージェンティックコマースを導入"
+        "text": "创建发卡计划"
       },
       {
         "level": 3,
-        "text": "ステーブルコインと暗号資産で越境決済に対応"
+        "text": "通过稳定币和加密货币，实现无国界资金流转"
       },
       {
         "level": 3,
-        "text": "安心の日本語サポート。"
-      },
-      {
-        "level": 3,
-        "text": "シンプルな料金体系"
+        "text": "将支付功能嵌入您的平台"
       },
       {
         "level": 2,
-        "text": "Payments"
-      },
-      {
-        "level": 3,
-        "text": "営業チームにご相談。"
+        "text": "全球商务的金融底座"
       },
       {
         "level": 2,
-        "text": "利用開始までの流れ。"
+        "text": "赋能各种规模的企业。"
       },
       {
         "level": 3,
-        "text": "アカウント登録"
+        "text": "以敏捷的金融基础设施，驱动大型企业核心转型"
       },
       {
         "level": 3,
-        "text": "アカウント審査"
+        "text": "Hertz 携手 Stripe 实现一体化商务。"
       },
       {
         "level": 3,
-        "text": "Stripe が利用可能に"
+        "text": "URBN 将 50 亿美元的线上和门店营收整合至 Stripe 平台。"
+      },
+      {
+        "level": 3,
+        "text": "Instacart 依托 Stripe 赋能在线生鲜杂货配送业务。"
+      },
+      {
+        "level": 3,
+        "text": "Le Monde 借助 Stripe 改善本地和国际支付。"
+      },
+      {
+        "level": 3,
+        "text": "构建金融底座，让初创企业加速起跑"
+      },
+      {
+        "level": 3,
+        "text": "将您的 SaaS 平台升级为全能金融操作系统"
       },
       {
         "level": 2,
-        "text": "グローバルなコマースを 支える基盤"
+        "text": "可靠、可扩展的基础设施，适配任何技术栈。"
+      },
+      {
+        "level": 3,
+        "text": "无缝对接现有系统："
+      },
+      {
+        "level": 3,
+        "text": "从容扩展业务。"
+      },
+      {
+        "level": 3,
+        "text": "选择合适的集成路径。"
       },
       {
         "level": 2,
-        "text": "あらゆるビジネスに対応。"
+        "text": "最新动态"
       },
       {
         "level": 3,
-        "text": "機動力のある金融インフラで、大企業の基盤を刷新"
+        "text": "2025 年，Stripe 上的企业创造了 US$1.9万亿 的价值。"
       },
       {
         "level": 3,
-        "text": "トヨタは Stripe Connect を活用してサステナビリティ・マーケットプレイスを構築しています。"
+        "text": "15万+用户在 Stripe 上迎来历史最佳单日业绩。"
       },
       {
         "level": 3,
-        "text": "DeNA は Stripe を利用して決済のオーソリ成功率を 10% 向上させました。"
+        "text": "Tidemark 的垂直和中小企业 SaaS 基准报告。"
       },
       {
         "level": 3,
-        "text": "日本経済新聞は Stripe を活用して 1,000 万件のデジタル会員基盤を支えています"
+        "text": "Shopify 的 Tobi Lütke 与 John Collison 展开对谈。"
       },
       {
         "level": 3,
-        "text": "東急は Stripe を利用してサブスクのコンバージョンを 20% 向上させました"
+        "text": "在应用商店之外处理支付的新工具。"
       },
       {
         "level": 3,
-        "text": "強固なビジネス基盤で、スタートアップの成長を加速"
+        "text": "Crypto.com 与 Stripe 合作，提供更出色的加密货币支付体验。"
       },
       {
         "level": 3,
-        "text": "SaaS プラットフォームを「金融オペレーティングシステム」へ"
-      },
-      {
-        "level": 2,
-        "text": "あらゆる技術スタックに、信頼と拡張性を。"
+        "text": "让您的产品支持通过 AI 平台直接购买。"
       },
       {
         "level": 3,
-        "text": "既存のシステムと接続。"
+        "text": "领先的零售商如何统一客户体验并推动增长。"
       },
       {
         "level": 3,
-        "text": "事業規模を確実に拡大。"
-      },
-      {
-        "level": 3,
-        "text": "インテグレーションの方法を選択。"
-      },
-      {
-        "level": 2,
-        "text": "Stripe の最前線"
-      },
-      {
-        "level": 3,
-        "text": "Stripe を利用するビジネスが 2025 年に生み出す$1.9兆。"
-      },
-      {
-        "level": 3,
-        "text": "15万以上のユーザーが過去最高の 1 日を達成。"
-      },
-      {
-        "level": 3,
-        "text": "Tidemark によるバーティカル / 中小企業 SaaS ベンチマークレポート。"
-      },
-      {
-        "level": 3,
-        "text": "Shopify CEO のトビ・リュトケ氏と、Stripe 共同創業者兼 CEO のジョン・コリソンが対談。"
-      },
-      {
-        "level": 3,
-        "text": "アプリストア外決済のための新ツール。"
-      },
-      {
-        "level": 3,
-        "text": "Crypto.com × Stripe: 暗号資産決済をより身近に。"
-      },
-      {
-        "level": 3,
-        "text": "AI プラットフォームを通じた商品購入を可能に。"
-      },
-      {
-        "level": 3,
-        "text": "大手小売業者が顧客体験を統合し、成長を促進する方法。"
+        "text": "本周好书推荐"
       }
     ],
     "detailUrlPatterns": [
       {
         "shape": "/:slug/:slug/:slug",
-        "count": 77,
+        "count": 86,
         "samples": [
-          "https://stripe.com/jp/customers/amazon",
-          "https://stripe.com/jp/customers/toyota",
-          "https://stripe.com/jp/customers/slack"
+          "https://stripe.com/zh-us/customers/amazon",
+          "https://stripe.com/zh-us/customers/shopify",
+          "https://stripe.com/zh-us/customers/mindbody"
         ]
       },
       {
         "shape": "/:slug/:slug",
-        "count": 40,
+        "count": 41,
         "samples": [
-          "https://stripe.com/jp/products",
-          "https://stripe.com/jp/enterprise",
-          "https://stripe.com/jp/professional-services"
-        ]
-      },
-      {
-        "shape": "/:slug/pricing",
-        "count": 5,
-        "samples": [
-          "https://stripe.com/jp/pricing",
-          "https://stripe.com/jp/pricing#global-payments"
-        ]
-      },
-      {
-        "shape": "/:slug/contact/:slug",
-        "count": 5,
-        "samples": [
-          "https://stripe.com/jp/contact/sales"
+          "https://stripe.com/zh-us/products",
+          "https://stripe.com/zh-us/enterprise",
+          "https://stripe.com/zh-us/professional-services"
         ]
       },
       {
         "shape": "/:slug/:slug/news/:slug",
-        "count": 4,
+        "count": 12,
         "samples": [
-          "https://stripe.com/jp/newsroom/news/google-and-stripe",
-          "https://stripe.com/jp/newsroom/news/stripe-openai-instant-checkout",
-          "https://stripe.com/jp/newsroom/news/bfcm2025"
+          "https://stripe.com/zh-us/newsroom/news/stripe-openai-instant-checkout",
+          "https://stripe.com/zh-us/newsroom/news/nvidia-collaboration-with-stripe",
+          "https://stripe.com/zh-us/newsroom/news/stripe-ford-agreement"
         ]
       },
       {
-        "shape": "/:slug/pricing/:slug",
-        "count": 2,
+        "shape": "/:slug/contact/:slug",
+        "count": 4,
         "samples": [
-          "https://stripe.com/jp/pricing/local-payment-methods"
+          "https://stripe.com/zh-us/contact/sales"
+        ]
+      },
+      {
+        "shape": "/:slug/pricing",
+        "count": 3,
+        "samples": [
+          "https://stripe.com/zh-us/pricing"
         ]
       },
       {
         "shape": "/:slug/:slug/:num",
-        "count": 2,
+        "count": 3,
         "samples": [
-          "https://stripe.com/jp/annual-updates/2025"
+          "https://stripe.com/zh-us/sessions/2026?utm_medium=owned-surfaces&utm_source=9cb9&utm_campaign=GLOBAL_4301&utm_content=8a70&utm_term=5a728d3d167c",
+          "https://stripe.com/zh-us/annual-updates/2025"
         ]
       },
       {
         "shape": "/:slug/blog/:slug",
         "count": 2,
         "samples": [
-          "https://stripe.com/jp/blog/introducing-our-agentic-commerce-solutions"
+          "https://stripe.com/zh-us/blog/introducing-our-agentic-commerce-solutions"
+        ]
+      },
+      {
+        "shape": "/:slug/legal/:slug",
+        "count": 2,
+        "samples": [
+          "https://stripe.com/zh-us/legal/restricted-businesses",
+          "https://stripe.com/zh-us/legal/cookies-policy"
         ]
       },
       {
         "shape": "/:slug",
         "count": 1,
         "samples": [
-          "https://stripe.com/jp"
-        ]
-      },
-      {
-        "shape": "/:slug/contact",
-        "count": 1,
-        "samples": [
-          "https://stripe.com/jp/contact"
+          "https://stripe.com/zh-us"
         ]
       },
       {
         "shape": "/:slug/blog",
         "count": 1,
         "samples": [
-          "https://stripe.com/jp/blog"
+          "https://stripe.com/zh-us/blog"
         ]
       },
       {
         "shape": "/:slug/privacy",
         "count": 1,
         "samples": [
-          "https://stripe.com/jp/privacy"
+          "https://stripe.com/zh-us/privacy"
+        ]
+      },
+      {
+        "shape": "/:slug/sitemap",
+        "count": 1,
+        "samples": [
+          "https://stripe.com/zh-us/sitemap"
         ]
       }
     ],
     "hashOnlyLinks": 0,
-    "internalLinkCount": 145,
+    "internalLinkCount": 159,
     "repeatedComponents": [
       {
-        "signature": "li.hero-logo-wall-section__cell",
-        "count": 13,
+        "signature": "li.logo-carousel__item",
+        "count": 30,
         "parents": 1,
-        "width": 224,
+        "width": 172,
         "height": {
           "min": 72,
           "max": 72,
           "median": 72
         },
-        "fullyVisibleFirstScreen": 13,
-        "touchedFirstScreen": 13
+        "fullyVisibleFirstScreen": 30,
+        "touchedFirstScreen": 30
       },
       {
         "signature": "div.feature-detail",
@@ -693,9 +668,22 @@
         "parents": 3,
         "width": 400,
         "height": {
-          "min": 165,
-          "max": 419,
-          "median": 165
+          "min": 138,
+          "max": 414,
+          "median": 160
+        },
+        "fullyVisibleFirstScreen": 0,
+        "touchedFirstScreen": 0
+      },
+      {
+        "signature": "li.carousel__item.case-study-carousel__item",
+        "count": 8,
+        "parents": 1,
+        "width": 332,
+        "height": {
+          "min": 552,
+          "max": 552,
+          "median": 552
         },
         "fullyVisibleFirstScreen": 0,
         "touchedFirstScreen": 0
@@ -706,86 +694,73 @@
         "parents": 1,
         "width": 1232,
         "height": {
-          "min": 100,
-          "max": 100,
-          "median": 100
+          "min": 75,
+          "max": 75,
+          "median": 75
         },
         "fullyVisibleFirstScreen": 0,
         "touchedFirstScreen": 0
       },
       {
         "signature": "div.footer-links-block",
-        "count": 8,
+        "count": 7,
         "parents": 4,
         "width": 295,
         "height": {
-          "min": 26,
+          "min": 99,
           "max": 795,
           "median": 195
-        },
-        "fullyVisibleFirstScreen": 0,
-        "touchedFirstScreen": 0
-      },
-      {
-        "signature": "li.carousel__item.case-study-carousel__item",
-        "count": 7,
-        "parents": 1,
-        "width": 332,
-        "height": {
-          "min": 579,
-          "max": 579,
-          "median": 579
         },
         "fullyVisibleFirstScreen": 0,
         "touchedFirstScreen": 0
       }
     ],
     "primaryList": {
-      "signature": "li.hero-logo-wall-section__cell",
-      "count": 13,
+      "signature": "li.logo-carousel__item",
+      "count": 30,
       "parents": 1,
-      "width": 224,
+      "width": 172,
       "height": {
         "min": 72,
         "max": 72,
         "median": 72
       },
-      "fullyVisibleFirstScreen": 13,
-      "touchedFirstScreen": 13
+      "fullyVisibleFirstScreen": 30,
+      "touchedFirstScreen": 30
     },
     "tokens": {
       "textColors": [
         {
           "value": "rgb(0, 0, 0)",
-          "count": 1028
+          "count": 864
         },
         {
           "value": "rgb(83, 58, 253)",
-          "count": 470
+          "count": 542
         },
         {
           "value": "rgb(80, 97, 122)",
-          "count": 161
+          "count": 160
         },
         {
           "value": "rgb(6, 27, 49)",
-          "count": 140
+          "count": 123
         },
         {
           "value": "rgb(255, 255, 255)",
-          "count": 104
+          "count": 89
         },
         {
           "value": "rgb(100, 116, 141)",
-          "count": 80
+          "count": 68
+        },
+        {
+          "value": "rgb(0, 0, 238)",
+          "count": 34
         },
         {
           "value": "rgb(115, 137, 255)",
           "count": 24
-        },
-        {
-          "value": "rgb(0, 0, 238)",
-          "count": 22
         },
         {
           "value": "rgb(60, 79, 105)",
@@ -806,6 +781,10 @@
         {
           "value": "rgb(100, 128, 178)",
           "count": 7
+        },
+        {
+          "value": "rgb(90, 102, 119)",
+          "count": 5
         },
         {
           "value": "rgb(131, 155, 200)",
@@ -832,10 +811,6 @@
           "count": 2
         },
         {
-          "value": "rgb(125, 139, 164)",
-          "count": 1
-        },
-        {
           "value": "rgb(45, 37, 100)",
           "count": 1
         }
@@ -843,23 +818,23 @@
       "backgrounds": [
         {
           "value": "rgb(255, 255, 255)",
-          "count": 40
+          "count": 24
         },
         {
           "value": "rgb(229, 237, 245)",
+          "count": 16
+        },
+        {
+          "value": "rgba(255, 255, 255, 0)",
           "count": 14
         },
         {
           "value": "rgb(248, 250, 253)",
-          "count": 14
-        },
-        {
-          "value": "rgba(255, 255, 255, 0)",
-          "count": 12
+          "count": 9
         },
         {
           "value": "rgb(83, 58, 253)",
-          "count": 9
+          "count": 7
         },
         {
           "value": "rgb(226, 228, 255)",
@@ -874,19 +849,11 @@
           "count": 3
         },
         {
-          "value": "rgb(28, 30, 84)",
-          "count": 3
-        },
-        {
           "value": "rgb(13, 23, 56)",
           "count": 2
         },
         {
           "value": "rgb(255, 224, 209)",
-          "count": 2
-        },
-        {
-          "value": "rgba(255, 255, 255, 0.65)",
           "count": 2
         },
         {
@@ -898,18 +865,26 @@
           "count": 1
         },
         {
+          "value": "rgb(242, 247, 254)",
+          "count": 1
+        },
+        {
           "value": "rgba(248, 250, 253, 0.45)",
           "count": 1
         },
         {
           "value": "rgba(255, 255, 255, 0.38)",
           "count": 1
+        },
+        {
+          "value": "rgba(255, 255, 255, 0.65)",
+          "count": 1
         }
       ],
       "fontSizes": [
         {
           "value": "16px",
-          "count": 1791
+          "count": 1668
         },
         {
           "value": "10px",
@@ -917,11 +892,11 @@
         },
         {
           "value": "14px",
-          "count": 57
+          "count": 65
         },
         {
           "value": "26px",
-          "count": 35
+          "count": 32
         },
         {
           "value": "9px",
@@ -929,7 +904,7 @@
         },
         {
           "value": "22px",
-          "count": 25
+          "count": 20
         },
         {
           "value": "8px",
@@ -937,23 +912,19 @@
         },
         {
           "value": "48px",
-          "count": 13
-        },
-        {
-          "value": "18px",
-          "count": 12
+          "count": 17
         },
         {
           "value": "12px",
-          "count": 10
+          "count": 11
+        },
+        {
+          "value": "18px",
+          "count": 11
         },
         {
           "value": "32px",
-          "count": 9
-        },
-        {
-          "value": "44px",
-          "count": 6
+          "count": 11
         },
         {
           "value": "11px",
@@ -961,7 +932,7 @@
         },
         {
           "value": "20px",
-          "count": 2
+          "count": 1
         },
         {
           "value": "56px",
@@ -971,23 +942,23 @@
       "lineHeights": [
         {
           "value": "16px",
-          "count": 229
+          "count": 214
         },
         {
           "value": "20px",
-          "count": 85
-        },
-        {
-          "value": "22.4px",
-          "count": 81
-        },
-        {
-          "value": "0px",
-          "count": 68
+          "count": 88
         },
         {
           "value": "14px",
-          "count": 58
+          "count": 62
+        },
+        {
+          "value": "0px",
+          "count": 56
+        },
+        {
+          "value": "22.4px",
+          "count": 49
         },
         {
           "value": "11.5px",
@@ -995,11 +966,11 @@
         },
         {
           "value": "24.2px",
-          "count": 25
+          "count": 20
         },
         {
           "value": "29.12px",
-          "count": 24
+          "count": 20
         },
         {
           "value": "10.8px",
@@ -1010,20 +981,20 @@
           "count": 14
         },
         {
-          "value": "25.2px",
-          "count": 12
-        },
-        {
           "value": "8.96px",
           "count": 12
         },
         {
-          "value": "12px",
-          "count": 10
+          "value": "25.2px",
+          "count": 11
         },
         {
           "value": "35.2px",
-          "count": 9
+          "count": 11
+        },
+        {
+          "value": "12px",
+          "count": 10
         },
         {
           "value": "19.2px",
@@ -1037,27 +1008,23 @@
       "fontWeights": [
         {
           "value": "400",
-          "count": 1134
+          "count": 1241
         },
         {
-          "value": "600",
-          "count": 634
-        },
-        {
-          "value": "300",
-          "count": 352
+          "value": "500",
+          "count": 755
         }
       ],
       "fontFamilies": [
         {
           "value": "sohne-var",
-          "count": 2120
+          "count": 1996
         }
       ],
       "radii": [
         {
           "value": "0px",
-          "count": 2007
+          "count": 1883
         },
         {
           "value": "4px",
@@ -1065,15 +1032,11 @@
         },
         {
           "value": "6px",
-          "count": 33
-        },
-        {
-          "value": "50%",
-          "count": 6
+          "count": 35
         },
         {
           "value": "5px",
-          "count": 5
+          "count": 6
         },
         {
           "value": "8px",
@@ -1082,6 +1045,10 @@
         {
           "value": "100%",
           "count": 3
+        },
+        {
+          "value": "2px",
+          "count": 2
         },
         {
           "value": "3px",
@@ -1096,6 +1063,10 @@
           "count": 1
         },
         {
+          "value": "6px 0px 0px 6px",
+          "count": 1
+        },
+        {
           "value": "6px 6px 0px 0px",
           "count": 1
         }
@@ -1104,6 +1075,10 @@
         {
           "value": "rgba(50, 50, 93, 0.12) 0px 16px 32px 0px",
           "count": 2
+        },
+        {
+          "value": "rgba(0, 0, 0, 0.06) 0px 4px 24px 0px, rgba(0, 0, 0, 0.03) 0px 1px 2px 0px",
+          "count": 1
         },
         {
           "value": "rgba(0, 0, 0, 0.1) 0px 30px 60px -50px, rgba(50, 50, 93, 0.25) 0px 30px 60px -10px",
@@ -1121,27 +1096,27 @@
       "gaps": [
         {
           "value": "8px",
-          "count": 58
+          "count": 47
         },
         {
           "value": "16px",
-          "count": 29
+          "count": 17
         },
         {
           "value": "32px",
-          "count": 18
+          "count": 16
         },
         {
           "value": "64px",
-          "count": 13
+          "count": 14
         },
         {
           "value": "16px normal",
-          "count": 12
+          "count": 11
         },
         {
           "value": "4px",
-          "count": 10
+          "count": 9
         },
         {
           "value": "4px normal",
@@ -1152,11 +1127,7 @@
           "count": 6
         },
         {
-          "value": "1px",
-          "count": 6
-        },
-        {
-          "value": "24px",
+          "value": "12px",
           "count": 6
         },
         {
@@ -1164,61 +1135,53 @@
           "count": 5
         },
         {
-          "value": "8px 16px",
+          "value": "14px",
           "count": 4
         },
         {
-          "value": "12px",
-          "count": 3
-        },
-        {
-          "value": "14px",
-          "count": 3
+          "value": "24px",
+          "count": 4
         },
         {
           "value": "32px 16px",
           "count": 3
         },
         {
-          "value": "5px",
+          "value": "8px 16px",
           "count": 3
+        },
+        {
+          "value": "40px",
+          "count": 2
+        },
+        {
+          "value": "40px 16px",
+          "count": 2
         }
       ],
       "paddings": [
-        {
-          "value": "8px 8px",
-          "count": 15
-        },
-        {
-          "value": "24px 24px",
-          "count": 14
-        },
         {
           "value": "6px 6px",
           "count": 14
         },
         {
           "value": "14.5px 15.5px",
-          "count": 12
+          "count": 11
         },
         {
           "value": "11px 11px",
           "count": 9
         },
         {
-          "value": "15.5px 16.5px",
-          "count": 8
-        },
-        {
           "value": "0px 8px",
           "count": 7
         },
         {
-          "value": "32px 32px",
+          "value": "15.5px 16.5px",
           "count": 7
         },
         {
-          "value": "96px 96px",
+          "value": "32px 32px",
           "count": 6
         },
         {
@@ -1226,11 +1189,11 @@
           "count": 5
         },
         {
-          "value": "2px 4px",
+          "value": "2px 2px",
           "count": 4
         },
         {
-          "value": "36px 36px",
+          "value": "2px 4px",
           "count": 4
         },
         {
@@ -1246,38 +1209,54 @@
           "count": 4
         },
         {
+          "value": "96px 96px",
+          "count": 4
+        },
+        {
           "value": "5.5px 0px",
           "count": 3
+        },
+        {
+          "value": "9px 9px",
+          "count": 3
+        },
+        {
+          "value": "10.5px 11.5px",
+          "count": 2
         }
       ],
       "transitions": [
         {
           "value": "color 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
-          "count": 139
+          "count": 151
         },
         {
           "value": "fill 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
-          "count": 56
+          "count": 124
         },
         {
           "value": "opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
-          "count": 55
+          "count": 46
         },
         {
           "value": "stroke 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
-          "count": 55
+          "count": 46
         },
         {
           "value": "transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
-          "count": 55
+          "count": 46
         },
         {
           "value": "transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1)",
-          "count": 39
+          "count": 46
+        },
+        {
+          "value": "opacity 0.15s linear",
+          "count": 36
         },
         {
           "value": "background-color, color, outline-color, border 0.3s, 0.3s, 0.3s, 0.3s cubic-bezier(0.25, 1, 0.5, 1), cubic-bezier(0.25, 1, 0.5, 1), cubic-bezier(0.25, 1, 0.5, 1), cubic-bezier(0.25, 1, 0.5, 1)",
-          "count": 25
+          "count": 24
         },
         {
           "value": "opacity 0.12s ease",
@@ -1285,57 +1264,57 @@
         },
         {
           "value": "clip-path 0.8s cubic-bezier(0.165, 0.84, 0.44, 1)",
-          "count": 10
+          "count": 12
         },
         {
           "value": "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+          "count": 12
+        },
+        {
+          "value": "opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1)",
           "count": 10
         },
         {
           "value": "opacity 0.25s linear",
-          "count": 8
+          "count": 9
         },
         {
           "value": "opacity 0.4s cubic-bezier(0.3, 0, 0.2, 1)",
-          "count": 8
-        },
-        {
-          "value": "opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1)",
-          "count": 8
-        },
-        {
-          "value": "transform 0.25s cubic-bezier(0.6, 0, 0.2, 0.5)",
           "count": 8
         }
       ],
       "containerMaxWidths": [
         {
           "value": "1266px",
-          "count": 16
+          "count": 13
         },
         {
           "value": "817.778px",
           "count": 8
         },
         {
-          "value": "752px",
-          "count": 5
+          "value": "884.52px",
+          "count": 4
         },
         {
-          "value": "876.096px",
-          "count": 4
+          "value": "752px",
+          "count": 3
         },
         {
           "value": "856px",
           "count": 3
         },
         {
-          "value": "858.624px",
+          "value": "1088.64px",
           "count": 2
         },
         {
-          "value": "988.416px",
+          "value": "866.88px",
           "count": 2
+        },
+        {
+          "value": "1232px",
+          "count": 1
         },
         {
           "value": "1298px",
@@ -1344,36 +1323,28 @@
         {
           "value": "1349px",
           "count": 1
-        },
-        {
-          "value": "671px",
-          "count": 1
         }
       ],
       "gridTemplates": [
         {
           "value": "2 tracks",
-          "count": 22
+          "count": 16
         },
         {
           "value": "3 tracks",
-          "count": 14
-        },
-        {
-          "value": "12 tracks",
-          "count": 7
+          "count": 13
         },
         {
           "value": "1 tracks",
-          "count": 6
+          "count": 9
+        },
+        {
+          "value": "12 tracks",
+          "count": 8
         },
         {
           "value": "4 tracks",
           "count": 3
-        },
-        {
-          "value": "5 tracks",
-          "count": 1
         },
         {
           "value": "8 tracks",
@@ -1386,18 +1357,18 @@
       "fixedElements": 1,
       "prefersColorSchemeRules": 0,
       "bodyBgIsDark": true,
-      "images": 27,
-      "lazyImages": 17,
+      "images": 38,
+      "lazyImages": 23,
       "searchInputs": 0,
       "selects": 0,
-      "buttons": 28,
+      "buttons": 31,
       "tabs": 0,
       "relNext": 0
     },
     "externalDomains": [
       {
         "value": "b.stripecdn.com",
-        "count": 88
+        "count": 93
       },
       {
         "value": "images.stripeassets.com",
@@ -1414,28 +1385,24 @@
       {
         "value": "assets.stripeassets.com",
         "count": 1
-      },
-      {
-        "value": "ext.stripe.com",
-        "count": 1
       }
     ],
     "resourceTypes": [
       {
         "value": "script",
-        "count": 77
+        "count": 81
+      },
+      {
+        "value": "link",
+        "count": 10
       },
       {
         "value": "img",
         "count": 9
       },
       {
-        "value": "link",
-        "count": 9
-      },
-      {
         "value": "fetch",
-        "count": 7
+        "count": 6
       },
       {
         "value": "other",
@@ -1446,33 +1413,33 @@
         "count": 2
       }
     ],
-    "requestCount": 107,
-    "textLength": 7781,
+    "requestCount": 111,
+    "textLength": 5949,
     "contrast": {
       "sampled": 400,
       "skippedForComplexBackground": 3,
       "min": 1,
       "p10": 4.75,
       "median": 6.3,
-      "belowRequirement": 15,
+      "belowRequirement": 14,
       "worst": [
         {
-          "selector": "span",
-          "text": "購入者に返金する方法を教えてください。",
-          "fontSize": 16,
+          "selector": "span.hds-heading",
+          "text": "为 AI 构建经济基础设施",
+          "fontSize": 48,
           "ratio": 1,
-          "required": 4.5
+          "required": 3
         },
         {
           "selector": "span.hero-section__title-copy",
-          "text": "決済から組込み型金融、エージェンティックコマースまで、企業の収益最大化を支援。",
-          "fontSize": 44,
+          "text": "无论您是刚刚起步，还是已达百亿规模，我们帮助您在全球范围内接受付款、提供金融服务",
+          "fontSize": 48,
           "ratio": 2.39,
           "required": 3
         },
         {
           "selector": "div",
-          "text": "続ける",
+          "text": "继续",
           "fontSize": 10,
           "ratio": 2.41,
           "required": 4.5
@@ -1493,14 +1460,14 @@
         },
         {
           "selector": "div",
-          "text": "続ける",
+          "text": "继续",
           "fontSize": 10,
           "ratio": 2.41,
           "required": 4.5
         },
         {
           "selector": "div",
-          "text": "続ける",
+          "text": "继续",
           "fontSize": 10,
           "ratio": 2.41,
           "required": 4.5
@@ -1520,34 +1487,34 @@
       "width": 390,
       "height": 844
     },
-    "pageHeight": 22057,
-    "scrollScreens": 26.1,
+    "pageHeight": 19590,
+    "scrollScreens": 23.2,
     "primaryList": {
-      "signature": "li.hero-logo-wall-section__cell",
-      "count": 13,
+      "signature": "li.logo-carousel__item",
+      "count": 30,
       "parents": 1,
-      "width": 130,
+      "width": 172,
       "height": {
-        "min": 64,
-        "max": 64,
-        "median": 64
+        "min": 72,
+        "max": 72,
+        "median": 72
       },
-      "fullyVisibleFirstScreen": 13,
-      "touchedFirstScreen": 13
+      "fullyVisibleFirstScreen": 30,
+      "touchedFirstScreen": 30
     },
     "repeatedComponents": [
       {
-        "signature": "li.hero-logo-wall-section__cell",
-        "count": 13,
+        "signature": "li.logo-carousel__item",
+        "count": 30,
         "parents": 1,
-        "width": 130,
+        "width": 172,
         "height": {
-          "min": 64,
-          "max": 64,
-          "median": 64
+          "min": 72,
+          "max": 72,
+          "median": 72
         },
-        "fullyVisibleFirstScreen": 13,
-        "touchedFirstScreen": 13
+        "fullyVisibleFirstScreen": 30,
+        "touchedFirstScreen": 30
       },
       {
         "signature": "div.feature-detail",
@@ -1555,22 +1522,22 @@
         "parents": 3,
         "width": 358,
         "height": {
-          "min": 165,
-          "max": 411,
-          "median": 188
+          "min": 138,
+          "max": 383,
+          "median": 160
         },
         "fullyVisibleFirstScreen": 0,
         "touchedFirstScreen": 0
       },
       {
-        "signature": "li.carousel__item.mobile-carousel__item",
+        "signature": "li.carousel__item.case-study-carousel__item",
         "count": 8,
         "parents": 1,
         "width": 358,
         "height": {
-          "min": 657,
-          "max": 657,
-          "median": 657
+          "min": 477,
+          "max": 477,
+          "median": 477
         },
         "fullyVisibleFirstScreen": 0,
         "touchedFirstScreen": 0
@@ -1580,19 +1547,19 @@
       "fontSizes": [
         {
           "value": "16px",
-          "count": 1831
+          "count": 1697
         },
         {
           "value": "10px",
           "count": 107
         },
         {
-          "value": "20px",
-          "count": 41
+          "value": "12px",
+          "count": 39
         },
         {
-          "value": "12px",
-          "count": 36
+          "value": "20px",
+          "count": 38
         },
         {
           "value": "9px",
@@ -1603,15 +1570,15 @@
           "count": 18
         },
         {
-          "value": "18px",
-          "count": 15
+          "value": "22px",
+          "count": 11
         },
         {
-          "value": "28px",
-          "count": 10
+          "value": "18px",
+          "count": 9
         }
       ]
     },
-    "textLength": 7787
+    "textLength": 6029
   }
 }

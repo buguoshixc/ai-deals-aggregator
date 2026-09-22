@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "devtk.ai",
   "target": "https://devtk.ai/",
-  "fetchedAt": "2026-09-22T16:29:24.295Z",
+  "fetchedAt": "2026-09-22T16:50:16.050Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,7 +11,7 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 7798,
+      "elapsedMs": 4528,
       "hydration": {
         "textBefore": 3506,
         "textAfter": 3506
@@ -23,7 +23,7 @@
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 4486,
+      "elapsedMs": 6509,
       "hydration": {
         "textBefore": 3469,
         "textAfter": 3469

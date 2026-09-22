@@ -1,0 +1,57 @@
+# http://127.0.0.1:8080/mockups/v3/C-ambitious/i18n.html
+# 抓取时间 2026-09-22T16:58:40.928Z
+
+## 语义骨架（缩进 = 层级，数字 = 渲染尺寸）
+<header.top> 1440x59
+<main.wrap> 1420x642
+  <section.demohead> 1388x72
+    <h1> 1388x33 — 同一份数据，两套语言入口
+  <article.g> 688x192
+    <h3> 576x22 — GLM-4.7-Flash 免费模型
+  <article.g> 688x192
+    <h3> 576x22 — GLM-4.5-Flash 免费模型
+  <article.g> 688x192
+    <h3> 583x22 — GLM-4.7-Flash 免费模型
+  <article.g> 688x192
+    <h3> 583x22 — GLM-4.5-Flash 免费模型
+  <section.demohead> 1388x88
+    <h1> 1388x27 — 成本要说清楚
+<footer> 1440x67
+
+## class 命名频次（前 45）
+    6  cta
+    4  g
+    4  tiernum
+    4  gh
+    4  logos
+    4  lg
+    4  gt
+    4  vendor
+    4  tg
+    4  of
+    4  bar
+    4  tx
+    4  meta
+    4  sp
+    3  vh
+    2  wrap
+    2  demohead
+    2  band
+    2  t2
+    2  n
+    2  line
+    2  grid
+    2  cn
+    2  feats
+    2  ghost
+    2  gl
+    1  skip
+    1  top
+    1  topin
+    1  brand
+    1  mark
+    1  btxt
+    1  search
+    1  seg
+    1  topstat
+    1  note

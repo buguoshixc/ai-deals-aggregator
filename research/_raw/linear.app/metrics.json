@@ -2,7 +2,7 @@
   "_note": "本文件是原始证据。transferSize 在跨域无 Timing-Allow-Origin 时可能为 0；对比度为纯色背景近似值，complex background 的样本被计入 skippedForComplexBackground。",
   "slug": "linear.app",
   "target": "https://linear.app/",
-  "fetchedAt": "2026-09-22T16:23:10.418Z",
+  "fetchedAt": "2026-09-22T16:51:54.842Z",
   "proxy": null,
   "needles": [],
   "renderedAt": [
@@ -11,21 +11,19 @@
         "width": 1440,
         "height": 900
       },
-      "elapsedMs": 18416,
+      "elapsedMs": 14113,
       "hydration": {
         "textBefore": 8707,
         "textAfter": 8707
       },
-      "notes": [
-        "load 事件 8s 内未触发（有长轮询/埋点的站点常见），继续按内容判断"
-      ]
+      "notes": []
     },
     {
       "viewport": {
         "width": 390,
         "height": 844
       },
-      "elapsedMs": 13593,
+      "elapsedMs": 13032,
       "hydration": {
         "textBefore": 3498,
         "textAfter": 3498
@@ -952,7 +950,7 @@
     "externalDomains": [
       {
         "value": "static.linear.app",
-        "count": 187
+        "count": 179
       },
       {
         "value": "e.linear.app",
@@ -966,7 +964,7 @@
     "resourceTypes": [
       {
         "value": "other",
-        "count": 129
+        "count": 121
       },
       {
         "value": "link",
@@ -985,7 +983,7 @@
         "count": 1
       }
     ],
-    "requestCount": 195,
+    "requestCount": 187,
     "textLength": 8707,
     "contrast": {
       "sampled": 392,
