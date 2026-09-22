@@ -825,6 +825,93 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     `卡片 transition-duration=${reduced.dur} · 仍在动的元素 ${reduced.offenders} 个`);
   await rmPage.close();
 
+  console.log('\n=== 14) 订阅 · 同页锚点 · 纠错入口 ===');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('article.g', { timeout: 15000 });
+  await page.waitForTimeout(300);
+
+  const anchorState = await page.evaluate(() => {
+    const nav = document.getElementById('jumpNav');
+    const links = nav ? [...nav.querySelectorAll('a[href^="#tier-"]')] : [];
+    const targets = links.map(a => document.querySelector(a.getAttribute('href')));
+    return {
+      exists: Boolean(nav),
+      links: links.length,
+      resolved: targets.filter(Boolean).length,
+      firstTop: targets[0] ? Math.round(targets[0].getBoundingClientRect().top) : null
+    };
+  });
+  check('同页锚点导航存在且都有落点',
+    anchorState.exists && anchorState.links >= 3 && anchorState.resolved === anchorState.links,
+    `${anchorState.links} 个锚点 / 落点 ${anchorState.resolved} 个 / 首个落点 top=${anchorState.firstTop}px`);
+
+  const jumped = await page.evaluate(async () => {
+    const before = window.scrollY;
+    document.querySelector('#jumpNav a[href="#tier-2"]').click();
+    await new Promise(r => setTimeout(r, 450));
+    return { before, after: window.scrollY, hash: location.hash };
+  });
+  check('点锚点真的跳到该档位', jumped.after > jumped.before && jumped.hash === '#tier-2',
+    `scrollY ${jumped.before} → ${jumped.after}（${jumped.hash}）`);
+
+  const jumpToggle = await page.evaluate(async () => {
+    document.querySelector('[data-sort="updated"]').click();
+    await new Promise(r => setTimeout(r, 350));
+    const hidden = document.getElementById('jumpNav').hidden;
+    const bands = document.querySelectorAll('.tierhead').length;
+    document.querySelector('[data-sort="tier"]').click();
+    await new Promise(r => setTimeout(r, 350));
+    return { hidden, bands, restored: !document.getElementById('jumpNav').hidden };
+  });
+  check('非分带排序时锚点导航隐藏（不留死锚点）',
+    jumpToggle.hidden === true && jumpToggle.bands === 0 && jumpToggle.restored,
+    `不分带时 hidden=${jumpToggle.hidden}（分带 ${jumpToggle.bands} 个）· 切回后恢复=${jumpToggle.restored}`);
+
+  const report = await page.evaluate(async () => {
+    document.querySelector('article.g').click();
+    await new Promise(r => setTimeout(r, 350));
+    const link = [...document.querySelectorAll('#detail .dact a')].find(a => /issues\/new/.test(a.href));
+    const out = link ? {
+      href: link.href,
+      blank: link.target === '_blank',
+      rel: link.rel,
+      prefilled: decodeURIComponent(link.href).includes('id：') && decodeURIComponent(link.href).includes('官方页：')
+    } : null;
+    document.querySelector('#detail .x').click();
+    await new Promise(r => setTimeout(r, 250));
+    return out;
+  });
+  check('详情里有预填 id 的纠错入口',
+    Boolean(report) && report.blank && report.prefilled && /github\.com\/.+\/issues\/new/.test(report.href),
+    report ? `${report.href.slice(0, 76)}…（rel=${report.rel}）` : '未找到纠错链接');
+
+  const feeds = await page.evaluate(async () => {
+    const links = [...document.querySelectorAll('link[rel="alternate"]')]
+      .map(l => ({ type: l.type, href: l.getAttribute('href') }))
+      .filter(l => /feed/.test(l.href || ''));
+    const json = await (await fetch('feed.json', { cache: 'no-cache' })).json();
+    const xml = await (await fetch('feed.xml', { cache: 'no-cache' })).text();
+    return {
+      links,
+      version: json.version,
+      jsonItems: json.items.length,
+      xmlItems: (xml.match(/<item>/g) || []).length,
+      firstUrl: json.items[0] ? json.items[0].url : ''
+    };
+  });
+  check('页面声明了两份订阅源',
+    feeds.links.some(l => /rss\+xml/.test(l.type)) && feeds.links.some(l => /feed\+json/.test(l.type)),
+    feeds.links.map(l => `${l.type} → ${l.href}`).join(' · ') || '未声明');
+  check('feed.json 是 JSON Feed 1.1 且条目与 feed.xml 一致',
+    feeds.version === 'https://jsonfeed.org/version/1.1' && feeds.jsonItems > 0 && feeds.jsonItems === feeds.xmlItems,
+    `${feeds.jsonItems} 条（xml ${feeds.xmlItems}）· 首条 ${String(feeds.firstUrl).slice(0, 44)}`);
+
+  const ldTypes = await page.evaluate(() => [...document.querySelectorAll('script[type="application/ld+json"]')]
+    .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }));
+  check('结构化数据含 WebSite 节点', ldTypes.includes('WebSite') && ldTypes.includes('Organization'),
+    ldTypes.join(' / '));
+
   console.log('\n=== 10) 请求与错误 ===');
   check('没有外部请求（无 CDN 热链）', externalRequests.length === 0,
     externalRequests.length ? externalRequests.slice(0, 3).join(', ') : '全部同源');
