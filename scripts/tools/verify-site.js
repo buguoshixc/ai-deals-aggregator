@@ -665,6 +665,144 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.waitForTimeout(200);
 
+  console.log('\n=== 13) 配色主题 · 无障碍 · 对比度 ===');
+
+  // 对比度探针（与 study-site.js 同一套 WCAG 近似算法）：
+  // 只算纯色背景；渐变/图片背景的样本跳过，避免把「图上的白字」算成不合格。
+  const contrastProbe = () => {
+    const parse = value => {
+      const m = String(value).match(/rgba?\(([^)]+)\)/);
+      if (!m) return null;
+      const parts = m[1].split(',').map(x => parseFloat(x));
+      return parts.length < 3 || parts.some(Number.isNaN) ? null : { rgb: parts.slice(0, 3), a: parts.length > 3 ? parts[3] : 1 };
+    };
+    const lum = rgb => {
+      const f = c => { const v = c / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+      return 0.2126 * f(rgb[0]) + 0.7152 * f(rgb[1]) + 0.0722 * f(rgb[2]);
+    };
+    const bgOf = el => {
+      let node = el;
+      while (node && node !== document.documentElement.parentNode) {
+        const s = getComputedStyle(node);
+        if (s.backgroundImage && s.backgroundImage !== 'none') return null;
+        const c = parse(s.backgroundColor);
+        if (c && c.a >= 0.95) return c.rgb;
+        node = node.parentElement;
+      }
+      return [255, 255, 255];
+    };
+    const out = { sampled: 0, skipped: 0, below: 0, min: null, worst: [] };
+    for (const el of document.querySelectorAll('body *')) {
+      const s = getComputedStyle(el);
+      if (s.display === 'none' || s.visibility === 'hidden') continue;
+      const rect = el.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) continue;
+      // 单个字符也采样：档位角标「1」这类最容易出问题的元素就一个字符
+      if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim().length >= 1)) continue;
+      const fg = parse(s.color);
+      if (!fg) continue;
+      const bg = bgOf(el);
+      if (!bg) { out.skipped++; continue; }
+      // 半透明文字先与背景混合，否则 rgba(0,0,0,.5) 会被当成纯黑算出虚高的对比度
+      const fgRgb = fg.a >= 0.95 ? fg.rgb : [0, 1, 2].map(i => fg.rgb[i] * fg.a + bg[i] * (1 - fg.a));
+      const l1 = lum(fgRgb); const l2 = lum(bg);
+      const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+      const size = parseFloat(s.fontSize);
+      const required = size >= 24 || (size >= 18.66 && Number(s.fontWeight) >= 700) ? 3 : 4.5;
+      out.sampled++;
+      if (ratio < required) {
+        out.below++;
+        out.worst.push({
+          ratio: Math.round(ratio * 100) / 100,
+          text: (el.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 24),
+          selector: el.tagName.toLowerCase() + (typeof el.className === 'string' && el.className.trim() ? '.' + el.className.trim().split(/\s+/)[0] : '')
+        });
+      }
+      const r = Math.round(ratio * 100) / 100;
+      out.min = out.min === null ? r : Math.min(out.min, r);
+    }
+    out.worst.sort((a, b) => a.ratio - b.ratio);
+    out.worst = out.worst.slice(0, 3);
+    return out;
+  };
+
+  const semantics = await page.evaluate(() => ({
+    header: document.querySelectorAll('header').length,
+    nav: document.querySelectorAll('nav').length,
+    main: document.querySelectorAll('main').length,
+    facets: document.querySelectorAll('[data-facet]').length,
+    pressed: document.querySelectorAll('[data-facet][aria-pressed]').length,
+    segButtons: document.querySelectorAll('#themeSeg [data-theme-value]').length
+  }));
+  check('语义标签齐备（header / nav / main）',
+    semantics.header >= 1 && semantics.nav >= 1 && semantics.main >= 1,
+    `header=${semantics.header} nav=${semantics.nav} main=${semantics.main}`);
+  check('筛选按钮逐个带 aria-pressed', semantics.facets > 0 && semantics.pressed === semantics.facets,
+    `${semantics.pressed}/${semantics.facets} 个`);
+
+  const lightContrast = await page.evaluate(contrastProbe);
+  const worstText = probe => probe.worst.map(w => `${w.selector}「${w.text}」${w.ratio}`).join(' · ') || '无';
+  check('亮色主题：低于 4.5:1 的文本 ≤ 20', lightContrast.below <= 20,
+    `抽样 ${lightContrast.sampled} · 跳过复杂背景 ${lightContrast.skipped} · 低于要求 ${lightContrast.below} · 最低 ${lightContrast.min} · 最差 ${worstText(lightContrast)}`);
+
+  // 主题切换：深色 → 记住 → 刷新仍深色 → 暗色下对比度同样达标 → 切回跟随系统
+  await page.click('#themeSeg [data-theme-value="dark"]');
+  await page.waitForTimeout(250);
+  const darkNow = await page.evaluate(() => ({
+    attr: document.documentElement.getAttribute('data-theme'),
+    stored: (() => { try { return localStorage.getItem('dsh.theme'); } catch (e) { return 'n/a'; } })(),
+    bodyBg: getComputedStyle(document.body).backgroundColor,
+    colorScheme: getComputedStyle(document.documentElement).colorScheme
+  }));
+  check('切到深色立即生效并记住',
+    darkNow.attr === 'dark' && darkNow.stored === 'dark' && darkNow.colorScheme.includes('dark'),
+    `data-theme=${darkNow.attr} localStorage=${darkNow.stored} color-scheme=${darkNow.colorScheme} body=${darkNow.bodyBg}`);
+
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('article.g', { timeout: 15000 });
+  await page.waitForTimeout(300);
+  const darkAfterReload = await page.evaluate(() => ({
+    attr: document.documentElement.getAttribute('data-theme'),
+    bodyBg: getComputedStyle(document.body).backgroundColor
+  }));
+  check('刷新后仍是深色（无「先亮后暗」闪回）',
+    darkAfterReload.attr === 'dark' && darkAfterReload.bodyBg === darkNow.bodyBg,
+    `data-theme=${darkAfterReload.attr} body=${darkAfterReload.bodyBg}`);
+
+  const darkContrast = await page.evaluate(contrastProbe);
+  check('暗色主题：低于 4.5:1 的文本 ≤ 20', darkContrast.below <= 20,
+    `抽样 ${darkContrast.sampled} · 低于要求 ${darkContrast.below} · 最低 ${darkContrast.min} · 最差 ${worstText(darkContrast)}`);
+
+  check('两种主题下抽样量相当（深色不是把内容藏起来）',
+    darkContrast.sampled >= Math.round(lightContrast.sampled * 0.8),
+    `亮色 ${lightContrast.sampled} → 暗色 ${darkContrast.sampled}`);
+
+  await page.click('#themeSeg [data-theme-value="auto"]');
+  await page.waitForTimeout(200);
+  const backToAuto = await page.evaluate(() => ({
+    attr: document.documentElement.getAttribute('data-theme'),
+    stored: (() => { try { return localStorage.getItem('dsh.theme'); } catch (e) { return 'n/a'; } })()
+  }));
+  check('切回「跟随系统」会清掉手动选择', backToAuto.attr === null && backToAuto.stored === null,
+    `data-theme=${backToAuto.attr} localStorage=${backToAuto.stored}`);
+
+  // 动效可关：系统偏好优先，任何过渡都不再是真动效
+  const rmPage = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  await rmPage.goto(base, { waitUntil: 'load' });
+  await rmPage.waitForTimeout(300);
+  const reduced = await rmPage.evaluate(() => {
+    const card = document.querySelector('article.g');
+    const dur = card ? getComputedStyle(card).transitionDuration : 'n/a';
+    const offenders = [...document.querySelectorAll('body *')].filter(el => {
+      const s = getComputedStyle(el);
+      return parseFloat(s.transitionDuration) > 0.02 || parseFloat(s.animationDuration) > 0.02;
+    }).length;
+    return { dur, offenders };
+  });
+  check('prefers-reduced-motion 下动效被关掉', reduced.offenders === 0,
+    `卡片 transition-duration=${reduced.dur} · 仍在动的元素 ${reduced.offenders} 个`);
+  await rmPage.close();
+
   console.log('\n=== 10) 请求与错误 ===');
   check('没有外部请求（无 CDN 热链）', externalRequests.length === 0,
     externalRequests.length ? externalRequests.slice(0, 3).join(', ') : '全部同源');
