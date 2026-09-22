@@ -412,6 +412,231 @@ function check(name, ok, detail) {
     `中心偏移 x=${mobileDialog.offset.x}px y=${mobileDialog.offset.y}px`);
   check('手机弹层不超出屏幕', mobileDialog.fits);
 
+  console.log('\n=== 11) 详情页中文翻译 ===');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.waitForTimeout(250);
+
+  // 从头来一遍：清掉折叠偏好并重新加载，验证「默认展开」
+  await page.evaluate(() => { try { localStorage.removeItem('dsh.dealZhOpen'); } catch (e) {} });
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('article.g', { timeout: 15000 });
+  await page.waitForTimeout(400);
+
+  const zh = await page.evaluate(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const cards = [...document.querySelectorAll('article.g')];
+    const marked = cards.filter(c => c.querySelector('.zhmark'));
+    const plain = cards.filter(c => !c.querySelector('.zhmark'));
+    const dlg = document.getElementById('detail');
+
+    const out = {
+      cards: cards.length,
+      marked: marked.length,
+      markTitle: marked.length ? (marked[0].querySelector('.zhmark').getAttribute('title') || '') : '',
+      hintVisible: marked.length ? marked[0].querySelector('.zhmark').offsetHeight > 0 : false
+    };
+
+    // ① 有提示的卡片：弹层里必须有译文块，且英文原文一字未改
+    marked[0].click();
+    await sleep(300);
+    const boxes = [...dlg.querySelectorAll('.zht')];
+    out.dialogBoxes = boxes.length;
+    out.dialogOpenDefault = boxes.every(b => b.open);
+    out.texts = boxes.map(b => (b.querySelector('.zbody').textContent || '').trim());
+    // 译文必须是中文（有汉字），且和同一容器里的英文原文不是同一段文字
+    const cjk = s => (s.match(/[\u4e00-\u9fa5]/g) || []).length;
+    out.allChinese = out.texts.length > 0 && out.texts.every(t => cjk(t) >= 4);
+    // 英文原文仍在：译文块的父容器里必须同时存在原文节点
+    out.englishKept = boxes.every(b => {
+      const holder = b.parentElement;
+      const text = holder.textContent.replace(b.textContent, '');
+      return /[A-Za-z]{4,}/.test(text);
+    });
+    // 版式：译文的顶边必须在英文原文之后（DOM 顺序 + 实际位置两重）
+    out.afterEnglish = boxes.every(b => {
+      const prev = b.previousElementSibling;
+      if (!prev) return false;
+      const follows = (prev.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+      const lower = b.getBoundingClientRect().top >= prev.getBoundingClientRect().bottom - 1;
+      return follows || lower;
+    });
+    out.englishSample = (dlg.querySelector('.doffer p') || dlg.querySelector('.ddesc') || {}).textContent || '';
+    out.zhSample = out.texts[0] || '';
+
+    // ② 可折叠：点 summary 之后正文不再渲染
+    boxes[0].querySelector('summary').click();
+    await sleep(200);
+    const first = dlg.querySelector('.zht');
+    out.collapsed = first.open === false;
+    // 注意：不能用 offsetHeight 判断「收起了没有」——Chromium 对关闭的 <details>
+    // 用的是 content-visibility 语义，子元素仍会报出上一次的布局高度。checkVisibility()
+    // 才会把 content-visibility 算进去。
+    const body = first.querySelector('.zbody');
+    out.collapsedHidesText = typeof body.checkVisibility === 'function'
+      ? body.checkVisibility() === false
+      : getComputedStyle(body).visibility === 'hidden';
+    out.bodyProbe = { checkVisibility: body.checkVisibility ? body.checkVisibility() : null, offsetHeight: body.offsetHeight };
+    // 同一份详情里的其它译文块要跟着同步，不能一半开一半关
+    out.synced = [...dlg.querySelectorAll('.zht')].every(b => b.open === first.open);
+    out.stored = (() => { try { return localStorage.getItem('dsh.dealZhOpen'); } catch (e) { return 'n/a'; } })();
+
+    return out;
+  });
+
+  check('卡片提示只给有译文的条目', zh.marked > 0 && zh.marked < zh.cards,
+    `${zh.cards} 张卡中 ${zh.marked} 张带「中文」提示`);
+  check('提示语说明详情页有中文翻译', /中文翻译/.test(zh.markTitle) && zh.hintVisible, zh.markTitle);
+  check('译文显示在英文原文下面', zh.afterEnglish && zh.englishKept,
+    `英文仍保留：${zh.englishSample.slice(0, 34)}…`);
+  check('译文确实是中文', zh.allChinese, zh.zhSample.slice(0, 30));
+  check('译文默认展开', zh.dialogOpenDefault, `${zh.dialogBoxes} 个译文块`);
+  check('点一下能收起', zh.collapsed && zh.collapsedHidesText,
+    `open=${zh.collapsed} 隐藏=${zh.collapsedHidesText} localStorage=${zh.stored}`);
+  check('同一份详情里的译文块同步折叠', zh.synced);
+
+  // ③ 收起后重新加载：偏好必须还在（否则每次开卡片都又弹开，等于没做折叠）
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('article.g', { timeout: 15000 });
+  await page.waitForTimeout(400);
+  const zhAfterReload = await page.evaluate(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const card = [...document.querySelectorAll('article.g')].find(c => c.querySelector('.zhmark'));
+    card.click();
+    await sleep(300);
+    const boxes = [...document.getElementById('detail').querySelectorAll('.zht')];
+    const first = boxes[0];
+    const out = { boxes: boxes.length, anyOpen: boxes.some(b => b.open) };
+    // 再展开一次，顺便验证折叠是可逆的
+    if (first) { first.querySelector('summary').click(); await sleep(200); }
+    out.reopened = first ? first.open === true : false;
+    return out;
+  });
+  check('刷新后仍记得「已收起」', zhAfterReload.boxes > 0 && !zhAfterReload.anyOpen,
+    `${zhAfterReload.boxes} 个译文块，展开 ${zhAfterReload.anyOpen ? '有' : '无'}`);
+  check('收起后还能再展开', zhAfterReload.reopened);
+
+  // ③.5 同一会话内换卡片（不刷新）：偏好必须当场生效。
+  // 这条是回归测试——最初只在启动时读一次偏好，收起后点开下一张卡又会全部弹开。
+  const zhSameSession = await page.evaluate(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const dlg = document.getElementById('detail');
+    dlg.querySelector('.x').click();
+    await sleep(200);
+    const marked = [...document.querySelectorAll('article.g')].filter(c => c.querySelector('.zhmark'));
+    if (marked.length < 2) return { skipped: true };
+    marked[0].click();
+    await sleep(300);
+    const firstOpen = dlg.querySelector('.zht').open;
+    dlg.querySelector('.zht summary').click();
+    await sleep(250);
+    const afterCollapse = dlg.querySelector('.zht').open;
+    dlg.querySelector('.x').click();
+    await sleep(200);
+    marked[1].click();
+    await sleep(300);
+    const nextOpen = [...dlg.querySelectorAll('.zht')].map(b => b.open);
+    const nextTitle = dlg.querySelector('h2').textContent.trim();
+    dlg.querySelector('.x').click();
+    await sleep(200);
+    return { skipped: false, firstOpen, afterCollapse, nextOpen, nextTitle };
+  });
+  check('同一会话内换卡片也保持收起（不刷新）',
+    zhSameSession.skipped || (zhSameSession.afterCollapse === false && zhSameSession.nextOpen.every(o => o === false)),
+    zhSameSession.skipped ? '（本页只有一张带译文的卡）'
+      : `「${zhSameSession.nextTitle}」${zhSameSession.nextOpen.length} 个译文块全部收起`);
+
+  // ④ 负向：没有提示的卡片，弹层里就不该冒出译文块
+  const zhNegative = await page.evaluate(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const dlg = document.getElementById('detail');
+    dlg.querySelector('.x').click();
+    await sleep(200);
+    const card = [...document.querySelectorAll('article.g')].find(c => !c.querySelector('.zhmark'));
+    if (!card) return { skipped: true };
+    card.click();
+    await sleep(300);
+    const out = { boxes: dlg.querySelectorAll('.zht').length, title: card.querySelector('h3').textContent.trim() };
+    dlg.querySelector('.x').click();
+    await sleep(200);
+    return out;
+  });
+  check('无译文的卡片不出现译文块', zhNegative.skipped || zhNegative.boxes === 0,
+    zhNegative.skipped ? '（本页无此类卡片）' : `「${zhNegative.title}」0 个译文块`);
+
+  // ⑤ 工具卡片：正文就是英文 description（灰条），译文必须同样出现在详情里
+  const zhTools = await page.evaluate(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    document.querySelector('[data-facet="tab"][data-value="tools"]').click();
+    await sleep(350);
+    const dlg = document.getElementById('detail');
+    // 必须挑 type=tool 的卡（.g.tool）：那类卡片的正文才是英文 description
+    const marked = [...document.querySelectorAll('article.g.tool')].filter(c => c.querySelector('.zhmark'));
+    if (!marked.length) return { skipped: true };
+    const card = marked[0];
+    const cardText = ((card.querySelector('.of.plain .tx') || {}).textContent || '').trim();
+    card.click();
+    await sleep(400);
+    const boxes = [...dlg.querySelectorAll('.zht')];
+    // 卡片正文是 description，所以要比的就是「紧跟在 .ddesc 后面」的那个译文块。
+    // 注意工具条目也可能带 discountInfo（详情里同样有译文块），取 boxes[0] 会拿错。
+    const descBox = dlg.querySelector('.ddesc + .zht');
+    const out = {
+      skipped: false,
+      markedTools: marked.length,
+      boxes: boxes.length,
+      cardIsTool: card.classList.contains('tool'),
+      englishOnCard: cardText.slice(0, 40),
+      hasDescBox: Boolean(descBox),
+      zhText: descBox ? descBox.querySelector('.zbody').textContent.trim().slice(0, 30) : '',
+      // 卡片上那句英文必须能在详情里原样找到，译文就挂在它下面
+      englishInDialog: Boolean(descBox) && descBox.parentElement.textContent.includes(cardText),
+      title: dlg.querySelector('h2').textContent.trim()
+    };
+    dlg.querySelector('.x').click();
+    await sleep(200);
+    document.querySelector('[data-facet="tab"][data-value="deals"]').click();
+    await sleep(300);
+    return out;
+  });
+  check('工具卡片的英文简介也带译文',
+    zhTools.skipped || (zhTools.cardIsTool && zhTools.hasDescBox && zhTools.englishInDialog),
+    zhTools.skipped ? '（工具 Tab 无带译文的卡片）'
+      : `「${zhTools.title}」卡片英文「${zhTools.englishOnCard}」→ 详情 ${zhTools.boxes} 个译文块，简介译文：${zhTools.zhText}`);
+
+  // ⑥ 手机上手也能收起
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(300);
+  const zhMobile = await page.evaluate(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const card = [...document.querySelectorAll('article.g')].find(c => c.querySelector('.zhmark'));
+    card.click();
+    await sleep(350);
+    const dlg = document.getElementById('detail');
+    const box = dlg.querySelector('.zht');
+    if (!box) return { found: false };
+    const fits = dlg.getBoundingClientRect().width <= window.innerWidth + 1;
+    // 先归一到展开态，再点一次收起：两个方向都验，且不受上一步留下的偏好影响
+    if (!box.open) { box.querySelector('summary').click(); await sleep(250); }
+    const wasOpen = box.open;
+    box.querySelector('summary').click();
+    await sleep(250);
+    const out = {
+      found: true, fits, wasOpen, nowOpen: box.open, collapsed: box.open === false,
+      boxes: dlg.querySelectorAll('.zht').length,
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
+    };
+    dlg.querySelector('.x').click();
+    await sleep(200);
+    return out;
+  });
+  check('手机端译文可折叠且不撑破弹层', zhMobile.found && zhMobile.fits && zhMobile.collapsed,
+    zhMobile.found
+      ? `宽度合规 / ${zhMobile.boxes} 块 ${zhMobile.wasOpen}→${zhMobile.nowOpen} / 横向溢出 ${zhMobile.overflow}px`
+      : '未找到译文块');
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.waitForTimeout(200);
+
   console.log('\n=== 10) 请求与错误 ===');
   check('没有外部请求（无 CDN 热链）', externalRequests.length === 0,
     externalRequests.length ? externalRequests.slice(0, 3).join(', ') : '全部同源');

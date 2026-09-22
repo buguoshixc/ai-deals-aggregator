@@ -23,6 +23,7 @@ const { execFileSync } = require('child_process');
 const { render: renderOgImage } = require('../lib/og-image');
 const { load: loadLogos, write: writeLogos } = require('../lib/logos');
 const { load: loadRenderCore } = require('../lib/render-core');
+const { attach: attachZh, summarize: summarizeZh } = require('../lib/zh');
 
 const ROOT = path.join(__dirname, '..', '..');
 const outArg = process.argv.find(a => a.startsWith('--out='));
@@ -249,6 +250,39 @@ function assemble() {
   console.log(`  logo 资产: ${logoStat.count} 个 → logos/ ${logoStat.files} 个文件 + logos.css（${(logoStat.bytes / 1024).toFixed(1)} KB）`);
 
   const payload = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
+
+  // 中文译文覆盖层：构建期贴一次，并把**贴好的**那份写进 dist/deals.json。
+  // 关键点——浏览器 fetch('deals.json') 拿到的和下面预渲染用的是同一份对象，
+  // 于是「构建期预渲染」与「浏览器端渲染」仍然只有一条代码路径。
+  // 译文只在 zh 字段，英文原文字段一个字节都不动。
+  const zhAttached = attachZh(payload.deals);
+  payload.deals = zhAttached.deals;
+
+  // 译文门禁。第 1 步的校验跑在**未贴译文**的 deals.json 上，所以 validateDeal 里的 zh
+  // 规则在那里永远不会被触发——必须在这里补一道，否则「译文不是中文 / 字段名写错 / 超长」
+  // 这类错误会一路静默发到线上。
+  // 分级处理：不合规 = 硬失败（译文文件只有人维护，永远能改对）；
+  //          原文已变 = 警告 + 该字段译文停用（采集器改英文不该把发布卡死）。
+  if (zhAttached.report.skipped.length) {
+    const lines = zhAttached.report.skipped.map(row => `  - ${row.title} [${row.id}]: ${row.message}`);
+    throw new Error(`中文译文不合规（${zhAttached.report.skipped.length} 处），已阻止发布：\n${lines.join('\n')}`);
+  }
+
+  fs.writeFileSync(path.join(OUT, 'deals.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  console.log(`  中文译文: ${summarizeZh(zhAttached.report)}`);
+  zhAttached.report.stale.forEach(row =>
+    console.warn(`    🔁 原文已变，译文已停用待复核: ${row.title} — ${row.message}`));
+  zhAttached.report.orphaned.forEach(row =>
+    console.warn(`    ⚠️  译文对不上任何条目 id（条目可能改名/换 URL）: ${row.id} ${row.title}`));
+  zhAttached.report.warnings.forEach(row =>
+    console.warn(`    ℹ️  ${row.title}: ${row.message}`));
+  if (zhAttached.report.unmanaged.length) {
+    console.log(`    ℹ️  ${zhAttached.report.unmanaged.length} 条译文不在覆盖层里（deals.json 自带，覆盖层管不到）`);
+  }
+  if (zhAttached.report.missing.length) {
+    console.log(`    ℹ️  仍有 ${zhAttached.report.missing.length} 条英文文案待翻译（node scripts/tools/zh-todo.js）`);
+  }
+
   const indexFile = path.join(OUT, 'index.html');
   let html = fs.readFileSync(indexFile, 'utf8');
 
@@ -307,8 +341,8 @@ function assemble() {
 </urlset>
 `, 'utf8');
 
-  // 交给自检：折叠覆盖的条目总数需与页面卡片内容对得上
-  return rendered;
+  // 交给自检：折叠覆盖的条目总数需与页面卡片内容对得上；译文条数用于产物回读比对
+  return Object.assign({}, rendered, { zhWithZh: zhAttached.report.withZh });
 }
 
 function selfCheck(built) {
@@ -339,6 +373,28 @@ function selfCheck(built) {
   console.log(`  deals.json: schemaVersion=${payload.schemaVersion}, count=${payload.count}, updatedAt=${payload.updatedAt}`);
   if (payload.schemaVersion !== 2) fail('schemaVersion 不是 2');
   if (payload.count !== payload.deals.length) fail('count 与 deals 长度不一致');
+
+  // 译文必须真的落到产物里：浏览器 fetch('deals.json') 拿的就是这一份，
+  // 这里漏写不会报错，只会让线上详情页静悄悄没有中文。
+  const zhDeals = payload.deals.filter(deal => deal.zh && Object.keys(deal.zh).length);
+  const zhFields = zhDeals.reduce((n, deal) => n + Object.keys(deal.zh).length, 0);
+  if (zhDeals.length !== built.zhWithZh) {
+    fail(`译文没写进产物：贴了 ${built.zhWithZh} 条，产物里只有 ${zhDeals.length} 条`);
+  } else if (zhDeals.length) {
+    // 英文原文必须原样保留：译文只能新增字段，不能顶掉原文
+    const clobbered = zhDeals.filter((deal, i) => {
+      return Object.keys(deal.zh).some(key => {
+        const value = deal[key];
+        return typeof value !== 'string' || !value.trim();
+      });
+    });
+    if (clobbered.length) fail(`译文顶掉了英文原文: ${clobbered.slice(0, 3).map(d => d.title).join('、')}`);
+    else console.log(`  ✓ 中文译文: ${zhDeals.length} 条 / ${zhFields} 个字段（英文原文原样保留）`);
+  }
+  const markCount = ((fs.readFileSync(path.join(OUT, 'index.html'), 'utf8')
+    .replace(/<script[\s\S]*?<\/script>/gi, '').match(/class="zhmark"/g)) || []).length;
+  if (zhDeals.length && !markCount) fail('有译文但预渲染卡片上没有「中文」提示');
+  if (markCount) console.log(`  ✓ 卡片「中文」提示: 预渲染 ${markCount} 处`);
 
   // 产物里不该出现源码/依赖/文档
   for (const forbidden of ['scripts', 'node_modules', 'package.json', 'package-lock.json', '.git', '.github', 'PROJECT_STATUS.md', 'README.md']) {

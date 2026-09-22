@@ -14,6 +14,7 @@
 const { makeDeal, todayCN } = require('./lib/schema');
 const { loadStore, loadDeals, writeDeals, mergeAll, assertAllValid } = require('./lib/store');
 const { loadCurated } = require('./lib/curated');
+const { attach: attachZh, summarize: summarizeZh } = require('./lib/zh');
 const { createReport, printReport } = require('./lib/report');
 const { describeError } = require('./lib/http');
 const registry = require('./collectors');
@@ -140,10 +141,26 @@ async function main() {
   const cnCount = deals.filter(d => d.region === 'cn').length;
   console.log(`其中：优惠 ${dealCount} 条，国内 ${cnCount} 条，含截止时间 ${deals.filter(d => d.expiresAt).length} 条`);
 
+  // 贴上人工中文译文（scripts/data/translations_zh.json）。
+  // 放在这里而不是渲染期：写盘后浏览器 fetch('deals.json') 拿到的就是同一份，
+  // 构建期预渲染与浏览器渲染因此共用一条代码路径，不会分叉。
+  const { deals: localized, report: zhReport } = attachZh(deals);
+  console.log(`中文译文: ${summarizeZh(zhReport)}`);
+  if (zhReport.stale.length) {
+    zhReport.stale.forEach(row => console.warn(`  🔁 原文已变，译文停用待复核: ${row.title} — ${row.message}`));
+  }
+  if (zhReport.orphaned.length) {
+    zhReport.orphaned.forEach(row => console.warn(`  ⚠️  译文对不上任何条目 id: ${row.id} ${row.title}`));
+  }
+  zhReport.skipped.forEach(row => console.warn(`  ⚠️  译文不合规被丢弃: ${row.title} — ${row.message}`));
+  if (zhReport.missing.length) {
+    console.log(`  ℹ️  仍有 ${zhReport.missing.length} 条英文文案待翻译（node scripts/tools/zh-todo.js 查看）`);
+  }
+
   if (dryRun) {
     console.log('\n(dry-run，未写盘)');
     console.log('\n新增/变更预览（前 15 条优惠）：');
-    deals.filter(d => d.type === 'deal').slice(0, 15).forEach(d => {
+    localized.filter(d => d.type === 'deal').slice(0, 15).forEach(d => {
       console.log(`  · [${d.region}] ${d.title} — ${(d.discountInfo || '').slice(0, 70)}`);
       console.log(`      ${d.url}`);
     });
@@ -155,8 +172,8 @@ async function main() {
     return;
   }
 
-  assertAllValid(deals);
-  const payload = writeDeals(deals);
+  assertAllValid(localized);
+  const payload = writeDeals(localized);
   console.log(`\n✅ 已写入 deals.json：${payload.count} 条，updatedAt=${payload.updatedAt}`);
 }
 

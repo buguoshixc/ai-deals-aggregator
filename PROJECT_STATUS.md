@@ -580,6 +580,62 @@ npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/
 字节级恢复）。改文档一律走编辑工具；万一中招，用 `node scripts/tools/_restore-from-git.js <file>`
 恢复（它直接写 `git show` 的原始字节，不做任何编码/换行转换）。
 
+### 2.15 新增：详情页中文翻译（国外英文文案）+ 卡片提示
+
+**问题**：`region: "global"` 的条目来自 Futuretools / Curated，`discountInfo` / `description` /
+`eligibility` 是英文散文（37 条工具简介如 `A tool to convert long videos into short clips.`，
+9 条策展优惠是整段英文）。访客以中文为主，点开详情看到满屏英文等于没写。
+
+**做法**：人工译文覆盖层，**不是渲染期机翻**。
+
+| 决策 | 理由 |
+|---|---|
+| 译文存 `scripts/data/translations_zh.json`，键为 `deal.id` | 人工维护、可复核；不混进采集数据 |
+| 采集与构建**都**调 `attach()`，结果写进 `deals.json` 的 `zh` | 浏览器 `fetch('deals.json')` 与构建期预渲染读到同一份，仍然只有一条代码路径 |
+| `zh` 只**新增**字段，**绝不覆盖**英文原文 | 译文永远挂在原文下面；原文一个字都不删 |
+| 详情里渲染成 `<details class="zht">`，默认展开 | 访客是中文用户，译文就该先看到；不想要的人点一下收起，偏好记 localStorage |
+| 卡片提示放 `.meta` 行而非标题旁 | 那行是 `nowrap + overflow:hidden` 横排，加个胶囊不会让标题重排，卡片定高不变 |
+| 每条译文另存 `src` 原文指纹 | 英文被采集器改写后指纹对不上 → 该字段译文**自动停用**并催促复核；宁可不出译文，也不出与原文矛盾的中文 |
+
+**判定「这段是不是英文散文」**由 `scripts/lib/zh.js` 统一负责，构建与工具共用：
+零汉字 + 拉丁字母 > 8，或有零星汉字但出现英文虚词（the/and/for/with…）。
+
+**踩的坑**：第一版用「CJK 占比 < 25% 就算英文」，把
+`官方定价页标注多款模型价格为「免费」：文本 Hunyuan-MT-7B、bge-reranker-v2-m3……`
+这类**本来就是中文**的条目误判成待翻译（中文技术文案里模型名和 URL 占了大半字符数）。
+44 条误判里 3 条是这个原因，改判据后剩 41 条真待翻译。
+
+**覆盖**：41 条 / 59 个字段（32 条工具简介 + 9 条策展优惠 × 3 字段）。默认视图 62 张卡里
+6 张带「中文」胶囊；其余为国内中文条目，本来就不需要翻译。
+
+**门禁**（`npm run selftest:zh` 逐一演练过，都能拦住）：
+
+- 译文不合规（不含汉字 / 字段名非法 / 超长 / 原文为空）→ **硬失败阻止发布**。
+- 原文已变 → 警告 + 该字段译文停用（采集器改英文不该把发布卡死）。
+- 译文键对不上任何条目 → 告警（`deal.id` 是 `sha1(vendor|title|url)`，改名换 URL 都会变）。
+- 第 1 步的数据校验跑在**未贴译文**的 `deals.json` 上，`validateDeal` 里的 zh 规则在那里
+  永远不会触发，所以这道门禁是在构建里单独补的。
+
+**两个抓到的真 bug**（都是「演练/量测」而不是「读代码」发现的）：
+
+1. **收起偏好要等刷新才生效**。最初只在页面启动时读一次 localStorage，`toggle` 时只写不读内存，
+   结果收起后点开下一张卡片又全部弹开，折叠等于白做。改为 `toggle` 时同步 `setZhOpen()`，
+   并让同一份详情里的多个译文块同步折叠。
+2. **`deals.json` 已带 `zh` 时，停用逻辑失效**。`attach()` 在 `result.zh` 为空时直接
+   `return deal`，把文件里已经贴好的旧译文原样留下——「原文变了就停用译文」的保证当场失效。
+   改为：覆盖层对它覆盖到的 id 是**唯一权威**，命中就必须以它为结果，包括「结果为无」。
+
+**验收**：`npm run verify` 从 42 项增到 **55 项**，新增 13 项专测译文——
+卡片提示与译文块双向一致（有提示必有译文 / 无提示必无译文）、译文在英文原文下面且原文仍在、
+译文确实是中文、默认展开、点一下收起、同页多个块同步折叠、刷新后仍记得收起、
+不刷新换卡片也保持收起、**工具卡片的英文简介也带译文**、手机端可折叠且不撑破弹层。
+
+**教训（第二次踩同一个坑）**：又用 PowerShell 做文本改写，
+`(Get-Content -Raw) -replace … | Set-Content -Encoding utf8` 把一个脚本文件写成了 mojibake。
+改代码/文档一律走编辑工具，**不要用 PowerShell 读写**。
+另：`execFileSync` 在成功时只返回 stdout，构建的告警走 `console.warn`（stderr）会被整段丢掉——
+演练脚本因此误判「没有告警」，改用 `spawnSync` 才看得到。
+
 ---
 
 ## 三、命令速查
@@ -594,10 +650,12 @@ npm run collect:headless      # 额外启用无头来源并写盘（需本机 Ed
 npm test                # 数据 + 前端校验（零依赖）
 npm run test:strict     # 附加内容质量指标
 npm run build           # 本地复现发布产物（含预渲染 + logo 资产）并自检
-npm run verify          # 真浏览器验收（54 项断言；需 playwright-core + 本机 Edge）
+npm run verify          # 真浏览器验收（55 项断言；需 playwright-core + 本机 Edge）
 npm run verify:shots    # 同上，并把截图写到 mockups/.preview/
 npm run report:tier     # 分档分布 + 每张卡命中的判据 + 判据读到的原文
 npm run report:vendor   # 厂商归一报告（多少种脏写法归到了同一家）
+npm run todo:zh         # 中文翻译待办（--json / --scaffold 盖原文指纹 / --orphans）
+npm run selftest:zh     # 中文译文门禁演练（自恢复，验证坏译文真的会被拦下）
 npm run fetch:logos     # 从厂商官网抓品牌图标，补进 assets/logos/
 npm run serve                          # 本地预览源码目录 http://127.0.0.1:8080
 node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 index.html）
@@ -636,6 +694,7 @@ node scripts/data/backfill-cards.js --check          # 核对策展条目的卡�
 | 人工核验（`verified: true`） | 32 |
 | 卡片特性标签（`features`） | 32（全部为人工策展条目） |
 | 价格阶梯（`priceLine`） | 3（仅官方页明确写出「免费 → 付费」的条目） |
+| 中文译文（`zh`，见 2.15） | 41 条 / 59 个字段（32 条工具简介 + 9 条策展优惠 × 3 字段） |
 | 垃圾条目 | 0 |
 
 **折叠后默认视图**（见 2.10）：**62 张卡片** = 单条卡 + 3 张折叠卡（百度千帆 1 张覆盖

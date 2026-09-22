@@ -1,0 +1,328 @@
+{
+  "_note": "人工中文译文覆盖层。键 = deal.id（sha1(vendor|title|url) 前 12 位）。只放译文，绝不覆盖英文原文——英文原文字段一个字节都不改。src 是原文指纹：译文照抄的那段英文；英文被采集器改写后指纹对不上，该字段译文会自动停用并在构建日志里催促复核，避免出现和原文矛盾的中文。维护方式：node scripts/tools/zh-todo.js 看清单 → 填译文 → node scripts/tools/zh-todo.js --scaffold 盖指纹。",
+  "byId": {
+    "cb45e0c735bd": {
+      "_title": "HubSpot AEO Sensor",
+      "src": {
+        "description": "Tracks how AI answer engines shift your website’s visibility."
+      },
+      "description": "追踪 AI 问答引擎如何改变你网站的曝光表现。"
+    },
+    "9e7c938ec401": {
+      "_title": "Midjourney",
+      "src": {
+        "description": "Unlock true digital artistry."
+      },
+      "description": "释放真正的数字艺术表现力。"
+    },
+    "376b6b3397e6": {
+      "_title": "Grok",
+      "src": {
+        "description": "Chat with data, images, code, and real-time search."
+      },
+      "description": "与数据、图片、代码对话，并支持实时联网搜索。"
+    },
+    "a67c07bf4993": {
+      "_title": "Ankon AI",
+      "src": {
+        "description": "Turns topics, scripts, or PDFs into narrated whiteboard videos."
+      },
+      "description": "把选题、脚本或 PDF 变成带解说的白板动画视频。"
+    },
+    "173ff7aa837e": {
+      "_title": "Cliphi",
+      "src": {
+        "description": "A tool to convert long videos into short clips."
+      },
+      "description": "把长视频自动切成短视频片段的工具。"
+    },
+    "bf08e4fbd5ac": {
+      "_title": "Star By Face",
+      "src": {
+        "description": "A tool to find celebrity look-alike suggestions based on your photo."
+      },
+      "description": "上传照片，找出与你相像的名人。"
+    },
+    "7f3607d92aa5": {
+      "_title": "Genmo Mochi-1",
+      "src": {
+        "description": "Create videos from text with AI"
+      },
+      "description": "用 AI 把文字生成视频。"
+    },
+    "7f1250402ebb": {
+      "_title": "Klarent",
+      "src": {
+        "description": "AI-powered, no-code QA test automation platform for web and mobile."
+      },
+      "description": "面向 Web 与移动端的 AI 无代码测试自动化平台。"
+    },
+    "9ce2f3d45c11": {
+      "_title": "Jason AI",
+      "src": {
+        "description": "A tool for automating B2B conversations and bookings."
+      },
+      "description": "自动处理 B2B 客户沟通与约谈的工具。"
+    },
+    "413a77602a7c": {
+      "_title": "Tenki Cloud",
+      "src": {
+        "description": "A tool for self-hosted GitHub Actions runners with automatic scaling capabilities."
+      },
+      "description": "自建 GitHub Actions 运行器，支持自动扩缩容。"
+    },
+    "e3af28ce5ca1": {
+      "_title": "Emergent.sh",
+      "src": {
+        "description": "An IDE for code migration from legacy to modern frameworks through coding agents."
+      },
+      "description": "用编码智能体把遗留代码迁移到现代框架的 IDE。"
+    },
+    "28434ca44079": {
+      "_title": "Google AI Studio",
+      "src": {
+        "description": "A tool for AI development with diverse tools and models."
+      },
+      "description": "集成多种工具与模型的 AI 开发平台。"
+    },
+    "0750a3061d72": {
+      "_title": "Flora AI",
+      "src": {
+        "description": "A platform to integrate multiple AI models for generating images, videos, and character designs."
+      },
+      "description": "整合多个 AI 模型，用于生成图像、视频与角色设计。"
+    },
+    "06bc1d631f62": {
+      "_title": "Sync.so",
+      "src": {
+        "description": "A tool to sync lips and clone voices in videos"
+      },
+      "description": "为视频做口型同步与声音克隆。"
+    },
+    "5975c73aa115": {
+      "_title": "Qlip.ai",
+      "src": {
+        "description": "A tool for creating clips from long-form videos."
+      },
+      "description": "从长视频中剪出片段的工具。"
+    },
+    "ec17511a4284": {
+      "_title": "Copilot 3D",
+      "src": {
+        "description": "A tool to convert 2D images into 3D models"
+      },
+      "description": "把 2D 图片转成 3D 模型。"
+    },
+    "9fdccd9de525": {
+      "_title": "Humva",
+      "src": {
+        "description": "A tool to create videos from text or voice using digital avatars."
+      },
+      "description": "用数字人把文字或语音做成视频。"
+    },
+    "72410d92e184": {
+      "_title": "TickClip",
+      "src": {
+        "description": "AI tool that checks price, reviews, and seller trust before you buy."
+      },
+      "description": "下单前替你核对价格、评价与卖家可信度的 AI 工具。"
+    },
+    "b4d191dd0c65": {
+      "_title": "HiClip",
+      "src": {
+        "description": "A tool that creates short, highlight clips from long-form videos."
+      },
+      "description": "从长视频里自动挑出精彩片段做成短片。"
+    },
+    "ab4c0e5c007e": {
+      "_title": "Kreado AI",
+      "src": {
+        "description": "A tool to create multilingual language videos."
+      },
+      "description": "制作多语言视频的工具。"
+    },
+    "cbfce04c5556": {
+      "_title": "Motionleap",
+      "src": {
+        "description": "An App to animate still images with effects."
+      },
+      "description": "给静态照片加上动效的 App。"
+    },
+    "2d0ceeea880d": {
+      "_title": "NotebookLM",
+      "src": {
+        "description": "Chat with your documents and websites"
+      },
+      "description": "与你的文档和网页对话。"
+    },
+    "a1bb0302318b": {
+      "_title": "Granola",
+      "src": {
+        "description": "An AI notepad that transcribes meetings using your computer audio and automatically generates notes, action items, and follow-ups."
+      },
+      "description": "AI 记事本：用电脑音频转写会议内容，自动生成笔记、待办与跟进事项。"
+    },
+    "12dbf1bf1180": {
+      "_title": "Wispr Flow",
+      "src": {
+        "description": "A tool to convert speech to formatted text instantly."
+      },
+      "description": "把口述实时转成排版好的文字。"
+    },
+    "544bb843f605": {
+      "_title": "Hermes 3",
+      "src": {
+        "description": "A tool to perform complex creative and analytical tasks with long-term context."
+      },
+      "description": "具备长期上下文，可完成复杂创作与分析任务。"
+    },
+    "642216383013": {
+      "_title": "Reflect",
+      "src": {
+        "description": "The Ultimate Note-Taking Tool"
+      },
+      "description": "终极笔记工具。"
+    },
+    "f820af7d3a70": {
+      "_title": "N8N",
+      "src": {
+        "description": "A platform to connect and automate tasks across multiple applications and services."
+      },
+      "description": "跨多个应用与服务连接并自动化任务的平台。"
+    },
+    "f2294d28cbe8": {
+      "_title": "Leonardo AI",
+      "src": {
+        "description": "Create unique production-ready game assets"
+      },
+      "description": "生成可直接用于生产的独特游戏素材。"
+    },
+    "da0d5a1929b4": {
+      "_title": "Recraft",
+      "src": {
+        "description": "A tool for transforming images into vector art, illustrations, and 3D images."
+      },
+      "description": "把图片转成矢量图、插画与 3D 图像的工具。"
+    },
+    "d344dfeebd73": {
+      "_title": "Ideogram",
+      "src": {
+        "description": "A tool to generate customized graphics and animations."
+      },
+      "description": "生成定制图形与动画的工具。"
+    },
+    "8ad33957ce77": {
+      "_title": "KREA",
+      "src": {
+        "description": "A design tool to generate images and videos."
+      },
+      "description": "生成图像与视频的设计工具。"
+    },
+    "d37287db1754": {
+      "_title": "BuseyBench",
+      "src": {
+        "description": "An AI benchmark that tests how well language models generate Gary Busey portraits as SVG output."
+      },
+      "description": "一个 AI 基准测试：考察语言模型用 SVG 画出 Gary Busey 肖像的水平。"
+    },
+    "f5ffff50772c": {
+      "_title": "ChatGPT / OpenAI",
+      "src": {
+        "discountInfo": "Free ChatGPT tier; annual billing available for Business and Enterprise plans. No standing public student or nonprofit discount was listed on the official pricing page when checked.",
+        "description": "Use the free plan or choose annual billing from the official pricing page.",
+        "eligibility": "Individuals, teams already standardizing on ChatGPT, businesses comparing seat costs."
+      },
+      "discountInfo": "ChatGPT 提供免费档；Business 与 Enterprise 套餐可选年付。核查官方定价页时，页面上没有列出长期有效的公开学生或非营利折扣。",
+      "description": "可直接使用免费档，或在官方定价页选择年付。",
+      "eligibility": "个人用户、已统一使用 ChatGPT 的团队，以及正在比较席位成本的企业。"
+    },
+    "c789f0a090bf": {
+      "_title": "Google Gemini",
+      "src": {
+        "discountInfo": "Free Gemini access remains available. Google AI Pro student offers vary by country; the U.S. student offer page says the previous student offer ended March 11, 2026.",
+        "description": "Check the official Gemini student and subscription pages for your region.",
+        "eligibility": "Students checking regional offers, Google Workspace users, people who want a free AI assistant."
+      },
+      "discountInfo": "Gemini 免费访问仍然可用。Google AI Pro 的学生优惠因国家而异；美国学生优惠页面写明，上一轮学生优惠已于 2026 年 3 月 11 日结束。",
+      "description": "请查看你所在地区的 Gemini 官方学生页与订阅页。",
+      "eligibility": "在查各国学生优惠的学生、Google Workspace 用户，以及想要免费 AI 助手的用户。"
+    },
+    "c05dc74bfd78": {
+      "_title": "Perplexity",
+      "src": {
+        "discountInfo": "Education Pro is offered to verified students and educators at a discount. Perplexity also says promo codes are distributed through official partners and channels.",
+        "description": "Verify student or educator status, or use partner promotions from official channels.",
+        "eligibility": "Students, educators, research-heavy users, people comparing AI search tools."
+      },
+      "discountInfo": "通过验证的学生与教育工作者可优惠购买 Education Pro。Perplexity 同时说明，优惠码只通过官方合作伙伴与官方渠道发放。",
+      "description": "先完成学生或教育工作者身份验证，或使用官方渠道发布的合作方优惠。",
+      "eligibility": "学生、教育工作者、重度检索用户，以及正在比较 AI 搜索工具的人。"
+    },
+    "4a875a435019": {
+      "_title": "Canva",
+      "src": {
+        "discountInfo": "Canva Nonprofits gives eligible registered nonprofits free Canva Pro features and collaboration tools for up to 50 users; additional nonprofit seats are discounted. Canva Education is free for eligible K-12 educators and students.",
+        "description": "Apply through Canva Nonprofits or Canva Education eligibility verification.",
+        "eligibility": "Nonprofits, schools, K-12 teachers, design and marketing teams."
+      },
+      "discountInfo": "Canva 非营利计划为符合条件的注册非营利组织免费提供 Canva Pro 功能与协作工具，最多 50 个席位，超出的非营利席位按折扣价购买。Canva 教育版对符合条件的 K-12 教师与学生免费。",
+      "description": "通过 Canva 非营利计划或 Canva 教育版的身份验证入口申请。",
+      "eligibility": "非营利组织、学校、K-12 教师，以及设计与市场团队。"
+    },
+    "9c553dd82d2d": {
+      "_title": "Cursor",
+      "src": {
+        "discountInfo": "Cursor says anyone can start free. Its student page points students toward campus and online event promotions; its pricing page warns that third-party Cursor subscriptions are unauthorized.",
+        "description": "Use the free plan and buy only through cursor.com if upgrading.",
+        "eligibility": "Students watching for campus promos, developers testing AI coding tools."
+      },
+      "discountInfo": "Cursor 表示任何人都可以免费开始使用。它的学生页面把学生引向校园与线上活动优惠；定价页则提醒，第三方出售的 Cursor 订阅均未获授权。",
+      "description": "先用免费档；如需升级，只在 cursor.com 官方渠道购买。",
+      "eligibility": "关注校园优惠的学生，以及正在试用 AI 编程工具的开发者。"
+    },
+    "3c8a9a6a9ee9": {
+      "_title": "Replit",
+      "src": {
+        "discountInfo": "Replit pricing lists annual savings on paid plans. Its docs have also listed student discounts such as $15 off per month for the first six months of Replit Core.",
+        "description": "Check Replit pricing and student signup paths before subscribing.",
+        "eligibility": "Students, solo builders, app builders using Replit Agent."
+      },
+      "discountInfo": "Replit 定价页列出了付费套餐的年付优惠。其文档中也出现过学生折扣，例如 Replit Core 前六个月每月减 $15。",
+      "description": "订阅前先核对 Replit 定价页与学生注册入口。",
+      "eligibility": "学生、独立开发者，以及使用 Replit Agent 做应用的开发者。"
+    },
+    "6013b80f266f": {
+      "_title": "Zapier",
+      "src": {
+        "discountInfo": "Zapier offers annual billing savings and says nonprofits get 15% off any paid plan, excluding pay-per-task charges.",
+        "description": "Choose annual billing or apply through Zapier for Nonprofits.",
+        "eligibility": "Nonprofits, small businesses automating repetitive tasks."
+      },
+      "discountInfo": "Zapier 提供年付优惠，并表示非营利组织购买任意付费套餐可享 15% 折扣，按任务计费的部分除外。",
+      "description": "选择年付，或通过 Zapier 非营利计划申请。",
+      "eligibility": "非营利组织，以及想把重复任务自动化的中小企业。"
+    },
+    "7762168d515d": {
+      "_title": "Make",
+      "src": {
+        "discountInfo": "Make advertises a 12-month free license for eligible NGOs through its NGO program.",
+        "description": "Apply through Make for NGOs.",
+        "eligibility": "NGOs, nonprofits, operations teams building workflow automation."
+      },
+      "discountInfo": "Make 通过其 NGO 计划，为符合条件的非政府组织提供 12 个月免费授权。",
+      "description": "通过 Make 的 NGO 计划申请。",
+      "eligibility": "非政府组织、非营利组织，以及在做工作流自动化的运营团队。"
+    },
+    "c971e33a9cd0": {
+      "_title": "ChatGPT Plus for Veterans (OpenAI)",
+      "src": {
+        "discountInfo": "OpenAI, working with SheerID for verification, offers one full year of free ChatGPT Plus to eligible veterans and transitioning servicemembers, alongside example chats and a getting-started guide for job search, benefits, and relocation pla",
+        "description": "Verify military or veteran status through SheerID at the official claim page.",
+        "eligibility": "Veterans and active-duty servicemembers preparing to separate from the military."
+      },
+      "discountInfo": "OpenAI 与 SheerID 合作完成身份验证，为符合条件的退伍军人和即将退役的现役军人提供整整一年免费 ChatGPT Plus，并附示例对话，以及面向求职、福利申请与搬迁规划的入门指南。",
+      "description": "在官方领取页面通过 SheerID 完成军人或退伍身份验证。",
+      "eligibility": "退伍军人，以及准备退役的现役军人。"
+    }
+  }
+}
