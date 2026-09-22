@@ -24,285 +24,342 @@
   <meta name="twitter:description" content="聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。">
   <meta name="twitter:image" content="__SITE_URL__og-image.png">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <!-- 厂商 logo：构建期由 scripts/lib/logos.js 从 assets/logos/manifest.json 生成，
+       卡片上只写 data-logo 属性，图形由 logos.css 提供，不热链任何第三方 CDN。 -->
+  <link rel="stylesheet" href="logos.css">
   <style>
+    :root {
+      --bg: #f6f7f9;
+      --card: #fff;
+      --ink: #0f172a;
+      --ink2: #495066;
+      --mut: #8c94a6;
+      --line: #e6e9ef;
+      --line2: #f0f2f6;
+      --brand: #3b5bfd;
+      --deal: #d92d4b;
+      --dealsoft: #fff1f4;
+      --cn: #0b7a63;
+      --cnbg: #e8f7f2;
+      --gl: #2348c4;
+      --glbg: #eef3ff;
+      --ok: #0b7a63;
+      --warn: #c2410c;
+      --r: 10px;
+      --topH: 58px;
+      --facetH: 41px;
+      --cardH: 192px;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    :root {
-      --bg: #f5f7fa;
-      --card: #ffffff;
-      --ink: #16213e;
-      --ink-soft: #555c6b;
-      --muted: #8a93a6;
-      --line: #e5e9f0;
-      --brand: #4361ee;
-      --deal: #e11d48;
-      --deal-bg: #fff1f2;
-      --soon: #ea580c;
-      --cn: #0f766e;
-      --cn-bg: #ecfdf5;
-      --global: #1d4ed8;
-      --global-bg: #eff6ff;
-    }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', Roboto, sans-serif;
+      font: 13.5px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', Roboto, sans-serif;
       background: var(--bg);
       color: var(--ink);
-      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .container { max-width: 1040px; margin: 0 auto; padding: 2rem 1rem 3rem; }
+    a { color: var(--brand); }
 
-    header { text-align: center; margin-bottom: 1.75rem; }
-    header h1 { font-size: 2rem; letter-spacing: -0.5px; }
-    header h1 span { color: var(--deal); }
-    header p { color: var(--ink-soft); font-size: 0.95rem; margin-top: 0.35rem; }
+    /* ---------- 顶栏 ---------- */
+    .top { background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
+    .topin { max-width: 1420px; margin: 0 auto; padding: 0 20px; height: var(--topH); display: flex; align-items: center; gap: 18px; }
 
-    .tabs {
-      display: flex;
-      gap: 0.5rem;
-      justify-content: center;
-      margin-bottom: 1.25rem;
+    .brand { display: flex; align-items: center; gap: 10px; white-space: nowrap; text-decoration: none; color: inherit; }
+    .mark {
+      width: 30px; height: 30px; border-radius: 9px; flex: none;
+      background: linear-gradient(140deg, #4f6bff, #3b5bfd);
+      display: grid; place-items: center;
+      box-shadow: 0 2px 6px -2px rgba(59, 91, 253, .55);
+    }
+    .btxt { display: flex; flex-direction: column; line-height: 1.15; }
+    .btxt b { font-size: 14.5px; font-weight: 750; letter-spacing: -.2px; }
+    .btxt b em { font-style: normal; color: var(--deal); }
+    .btxt small { font-size: 10px; color: var(--mut); letter-spacing: .6px; font-weight: 500; }
+
+    .search {
+      flex: 1; max-width: 440px; display: flex; align-items: center; gap: 9px;
+      border: 1px solid var(--line); border-radius: 8px; padding: 0 12px; background: #fafbfc;
+    }
+    .search:focus-within { border-color: var(--brand); background: #fff; box-shadow: 0 0 0 3px rgba(59, 91, 253, .12); }
+    .search input { border: 0; outline: 0; background: 0; flex: 1; padding: 8px 0; font: inherit; font-size: 13px; color: var(--ink); }
+    .search input::placeholder { color: var(--mut); }
+
+    .topstat { font-size: 12.5px; color: var(--mut); white-space: nowrap; margin-left: auto; }
+    .topstat b { color: var(--ink); }
+
+    /* ---------- 筛选条 ---------- */
+    .facets { background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: var(--topH); z-index: 19; }
+    .facetsin {
+      max-width: 1420px; margin: 0 auto; padding: 8px 20px;
+      display: flex; gap: 7px; align-items: center; overflow-x: auto; scrollbar-width: none;
+    }
+    .facetsin::-webkit-scrollbar { display: none; }
+
+    .f {
+      font-size: 12.5px; border: 1px solid var(--line); background: #fff; color: var(--ink2);
+      border-radius: 999px; padding: 4px 11px; white-space: nowrap; cursor: pointer;
+      font-family: inherit; transition: border-color .13s, color .13s, background .13s;
+    }
+    .f:hover { border-color: #c3ceff; color: var(--brand); }
+    .f.on { background: var(--ink); border-color: var(--ink); color: #fff; font-weight: 600; }
+    .f.ok { border-color: #b9e3d7; color: var(--ok); background: #f4fdfa; }
+    .f.ok.on { background: var(--ok); border-color: var(--ok); color: #fff; }
+    .f b { opacity: .7; margin-left: 3px; font-weight: 600; }
+    .fsep { width: 1px; height: 15px; background: var(--line); flex: none; margin: 0 3px; }
+
+    /* ---------- 结果条 ---------- */
+    .wrap { max-width: 1420px; margin: 0 auto; padding: 0 20px 60px; }
+    .rbar {
+      display: flex; justify-content: space-between; align-items: center; gap: 14px;
+      margin: 16px 0 10px; font-size: 12.5px; color: var(--mut); flex-wrap: wrap;
+    }
+    .rbar b { color: var(--ink); }
+    .rright { display: flex; align-items: center; gap: 10px; }
+    .catpick select {
+      font: inherit; font-size: 12px; color: var(--ink2); background: #fff;
+      border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; cursor: pointer;
+    }
+    .catpick select:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 2px rgba(59, 91, 253, .15); }
+    .sortbox { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+    .sortbox button {
+      padding: 6px 12px; font: inherit; font-size: 12px; color: var(--ink2);
+      border: 0; border-left: 1px solid var(--line); background: none; cursor: pointer; white-space: nowrap;
+    }
+    .sortbox button:first-child { border-left: 0; }
+    .sortbox button:hover { color: var(--brand); }
+    .sortbox button.on { background: var(--ink); color: #fff; font-weight: 600; }
+
+    /* ---------- 网格 ---------- */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: min-content; gap: 12px; }
+
+    .g {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+      padding: 13px 14px; height: var(--cardH);
+      display: flex; flex-direction: column; position: relative; overflow: hidden;
+      transition: border-color .13s, box-shadow .13s;
+    }
+    .g:hover { border-color: #cdd6e6; box-shadow: 0 6px 18px -12px rgba(15, 23, 42, .3); }
+    /* 已核验：左侧一条窄绿边，扫视时不用读文字就能分辨 */
+    .g.verified { box-shadow: inset 2px 0 0 var(--ok); }
+    .g.verified:hover { box-shadow: inset 2px 0 0 var(--ok), 0 6px 18px -12px rgba(15, 23, 42, .3); }
+    .g.expired { opacity: .55; }
+
+    /* 档位角标：左侧三角 + 数字，颜色与档位带一致 */
+    .g .tierdot { position: absolute; top: 0; left: 0; width: 0; height: 0; border-top: 22px solid #cbd5e1; border-right: 22px solid transparent; border-radius: var(--r) 0 0 0; }
+    .g .tiernum { position: absolute; top: 2px; left: 4px; font-size: 9px; font-weight: 800; color: #fff; font-family: ui-monospace, monospace; z-index: 1; }
+    .g.t1 .tierdot { border-top-color: #0e9f6e; }
+    .g.t2 .tierdot { border-top-color: #5b7cfa; }
+    .g.t3 .tierdot { border-top-color: #2563eb; }
+    .g.t4 .tierdot { border-top-color: #e08a2e; }
+    .g.t5 .tierdot { border-top-color: #94a3b8; }
+
+    /* ---------- 卡片头 ---------- */
+    .gh { display: flex; gap: 9px; align-items: flex-start; padding-left: 12px; }
+    .gt { flex: 1; min-width: 0; }
+    .g h3 {
+      font-size: 14px; font-weight: 680; line-height: 1.4; letter-spacing: -.1px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .g h3 a { color: inherit; text-decoration: none; }
+    .g h3 a:hover { color: var(--brand); }
+    .g .vendor {
+      font-size: 11px; color: var(--mut); margin-top: 3px;
+      display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
     }
 
-    .tab {
-      border: 1px solid var(--line);
-      background: var(--card);
-      color: var(--ink-soft);
-      padding: 0.55rem 1.25rem;
-      border-radius: 999px;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.15s;
-      font-family: inherit;
+    /* logo 簇：压缩态叠加、hover 展开。
+       容器宽度按「展开后」的宽度预留（由渲染核心按 tile 数算出），
+       因此展开只填满预留空间、不会改变任何兄弟元素的宽度 —— 标题不会重排、卡片高度不变。 */
+    .logos { display: flex; flex: none; padding-top: 1px; position: relative; z-index: 2; }
+    .lg {
+      width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center;
+      border: 1.5px solid #fff; box-shadow: 0 1px 3px -1px rgba(15, 23, 42, .28);
+      margin-left: -6px; position: relative; background: #fff; overflow: hidden;
+      transition: margin-left .18s cubic-bezier(.34, 1.4, .64, 1), width .18s;
     }
+    .lg:first-child { margin-left: 0; }
+    .logos:hover .lg { margin-left: 3px; }
+    .logos:hover .lg:first-child { margin-left: 0; }
+    .logos .lg:hover { box-shadow: 0 2px 6px -1px rgba(15, 23, 42, .42); z-index: 6; }
+    .lg.more { background: #eef1f6; color: #5b6472; font-size: 10px; font-weight: 700; font-family: ui-monospace, monospace; }
 
-    .tab:hover { border-color: var(--brand); color: var(--brand); }
-    .tab.active { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 600; }
-    .tab .count { opacity: 0.75; font-size: 0.85em; margin-left: 0.3rem; }
+    .tg { flex: none; font-size: 10px; font-weight: 650; border-radius: 4px; padding: 2px 5px; white-space: nowrap; }
+    .tg.cn { background: var(--cnbg); color: var(--cn); }
+    .tg.gl { background: var(--glbg); color: var(--gl); }
+    .tg.due { background: var(--dealsoft); color: var(--deal); }
 
-    .controls { display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
-
-    .controls input,
-    .controls select {
-      padding: 0.6rem 0.9rem;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      font-size: 0.95rem;
-      background: var(--card);
-      color: var(--ink);
-      font-family: inherit;
+    /* ---------- 优惠正文 ---------- */
+    .of { margin-top: 9px; display: flex; gap: 8px; }
+    .of .bar { flex: none; width: 3px; border-radius: 2px; background: #94a3b8; margin-top: 1px; }
+    .of.t1 .bar { background: #0e9f6e; }
+    .of.t2 .bar { background: #7c3aed; }
+    .of.t3 .bar { background: #2563eb; }
+    .of.t4 .bar { background: var(--warn); }
+    .of .tx {
+      font-size: 13px; line-height: 1.5; color: #1f2937;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
+    .of .tx b { color: var(--deal); font-weight: 700; }
+    .of.t1 .tx b { color: #0b7a44; }
+    .of.t2 .tx b { color: #6d28d9; }
+    /* 工具条目：没有优惠文案，正文是工具简介，用灰条与优惠区分开 */
+    .of.plain .bar { background: #cbd5e1; }
+    .of.plain .tx { color: var(--ink2); }
 
-    .controls input { flex: 1; min-width: 200px; }
-    .controls select { min-width: 140px; }
-    .controls input:focus,
-    .controls select:focus {
-      outline: none;
-      border-color: var(--brand);
-      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.15);
+    .feats { display: flex; gap: 5px; margin-top: 9px; flex-wrap: wrap; overflow: hidden; max-height: 22px; }
+    .feats span { font-size: 11px; background: #f2f4f8; color: #4b5563; border-radius: 4px; padding: 2px 7px; white-space: nowrap; }
+    .feats span.more { background: #eef2ff; color: var(--brand); }
+
+    .meta {
+      margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line2);
+      display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--mut);
+      white-space: nowrap; overflow: hidden;
     }
+    .meta .ok { color: var(--ok); font-weight: 650; }
+    .meta .sp { margin-left: auto; display: flex; gap: 10px; align-items: center; flex: none; }
+    .meta .go { color: var(--brand); font-weight: 650; text-decoration: none; }
+    .meta .go:hover { text-decoration: underline; }
+    /* 「详情」提示只在 JS 生效时出现：没有 JS 时点卡片不会开弹层，就不该给出可点的暗示 */
+    .meta .hint { display: none; color: var(--mut); }
+    body.js .meta .hint { display: inline; }
+    body.js .g { cursor: pointer; }
+    body.js .g:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
-    .stats { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
-    .stats strong { color: var(--deal); }
+    .g.tool h3 { font-weight: 550; color: #6b7280; }
 
-    .deals-list { display: grid; gap: 0.85rem; }
-
-    .deal-card {
-      background: var(--card);
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      padding: 1.1rem 1.25rem;
-      transition: transform 0.15s, box-shadow 0.15s;
+    /* ---------- 档位分带 ---------- */
+    .tierhead {
+      grid-column: 1 / -1; display: flex; align-items: center; gap: 8px;
+      margin: 2px 0 -4px; font-size: 11.5px; color: var(--mut);
+      position: sticky; top: calc(var(--topH) + var(--facetH)); z-index: 5;
+      background: linear-gradient(var(--bg) 72%, transparent); padding: 3px 0 2px;
     }
+    .tierhead .n { width: 16px; height: 16px; border-radius: 5px; display: grid; place-items: center; font-size: 9.5px; font-weight: 800; color: #fff; font-family: ui-monospace, monospace; flex: none; }
+    .tierhead.t1 .n { background: #0e9f6e; }
+    .tierhead.t2 .n { background: #5b7cfa; }
+    .tierhead.t3 .n { background: #2563eb; }
+    .tierhead.t4 .n { background: #e08a2e; }
+    .tierhead.t5 .n { background: #94a3b8; }
+    .tierhead b { color: var(--ink); font-size: 12px; }
+    .tierhead .hint { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tierhead .line { flex: 1; height: 1px; background: var(--line); min-width: 12px; }
 
-    .deal-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(22, 33, 62, 0.09); }
-    .deal-card.tool { background: #fcfcfe; }
-    .deal-card.expired { opacity: 0.55; }
-    .deal-card.expired:hover { transform: none; box-shadow: none; }
+    .empty { grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: var(--mut); background: var(--card); border-radius: 12px; border: 1px dashed var(--line); }
+    .loading { grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--mut); }
 
-    .card-head { display: flex; gap: 0.75rem; align-items: baseline; flex-wrap: wrap; }
-
-    .deal-title {
-      font-size: 1.05rem;
-      font-weight: 650;
-      color: var(--ink);
-      text-decoration: none;
-    }
-    .deal-title:hover { color: var(--brand); }
-
-    .badges { display: flex; gap: 0.35rem; flex-wrap: wrap; align-items: center; }
-
-    .badge {
-      font-size: 0.72rem;
-      padding: 0.1rem 0.45rem;
-      border-radius: 4px;
-      font-weight: 500;
-      white-space: nowrap;
-    }
-
-    .badge.region-cn { background: var(--cn-bg); color: var(--cn); }
-    .badge.region-global { background: var(--global-bg); color: var(--global); }
-    .badge.category { background: #f1f4f9; color: #475069; }
-    .badge.pricing { background: #f6f7f9; color: var(--muted); }
-    /* 优惠类型徽章：与 pricing 区分开，避免"免费"与"折扣"混淆 */
-    .badge.ki-kind { background: var(--deal-bg); color: var(--deal); }
-    .badge.hot { background: #fff7ed; color: #c2410c; }
-
-    /* 价格阶梯：一眼看清「免费档能进、升级多少钱」 */
-    .price-line {
-      margin-top: 0.5rem;
-      font-size: 0.98rem;
-      font-weight: 700;
-      color: var(--ink);
-    }
-
-    .discount {
-      display: block;
-      margin-top: 0.6rem;
-      background: var(--deal-bg);
-      color: var(--deal);
-      border-left: 3px solid var(--deal);
-      padding: 0.45rem 0.7rem;
-      border-radius: 0 6px 6px 0;
-      font-size: 0.92rem;
-      font-weight: 600;
-      line-height: 1.5;
-    }
-
-    .deal-description {
-      color: var(--ink-soft);
-      font-size: 0.9rem;
-      margin-top: 0.55rem;
-    }
-
-    /* 特性标签：把长句拆成可扫的短块 */
-    .features { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.6rem; }
-
-    .feature-chip {
-      font-size: 0.78rem;
-      padding: 0.15rem 0.5rem;
-      border-radius: 999px;
-      background: #f1f4f9;
-      color: #475069;
-      white-space: nowrap;
-    }
-
-    .card-foot {
-      display: flex;
-      gap: 0.9rem;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-top: 0.7rem;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .card-foot a { color: var(--brand); text-decoration: none; }
-    .card-foot a:hover { text-decoration: underline; }
-    .vendor { color: #475069; font-weight: 500; }
-
-    .expiry { color: var(--muted); }
-    .expiry.soon { color: var(--soon); font-weight: 600; }
-    .expiry.past { color: #b91c1c; }
-    /* 核验/更新日期：比来源更重要的新鲜度信号，单独给一点重量 */
-    .stamp { color: #6b7280; }
-    .stamp.verified { color: #0f766e; font-weight: 500; }
-
-    /* 主行动按钮：取代原先页脚里的文字链 */
-    .cta {
-      display: block;
-      width: 100%;
-      margin-top: 0.85rem;
-      padding: 0.55rem 0.9rem;
-      text-align: center;
-      background: var(--brand);
-      color: #fff;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: background 0.15s;
-    }
-    .cta:hover { background: #3550d8; }
-
-    .empty {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: var(--muted);
-      background: var(--card);
-      border-radius: 12px;
-      border: 1px dashed var(--line);
-    }
-
-    .loading { text-align: center; padding: 3rem; color: var(--muted); }
-
-    /* 常见问题：同时是 FAQPage 结构化数据的可见对应内容 */
+    /* ---------- 常见问题 ---------- */
     .faq { margin-top: 2.5rem; }
-    .faq h2 { font-size: 1.15rem; margin-bottom: 0.85rem; }
-    .faq details {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 0.8rem 1rem;
-      margin-bottom: 0.6rem;
-    }
-    .faq summary { cursor: pointer; font-weight: 600; font-size: 0.95rem; }
-    .faq p { color: var(--ink-soft); font-size: 0.9rem; margin-top: 0.55rem; }
+    .faq h2 { font-size: 15px; margin-bottom: .85rem; }
+    .faq details { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: .8rem 1rem; margin-bottom: .6rem; }
+    .faq summary { cursor: pointer; font-weight: 600; font-size: 13.5px; }
+    .faq p { color: var(--ink2); font-size: 13px; margin-top: .55rem; }
 
-    footer {
-      text-align: center;
-      margin-top: 2.5rem;
-      padding-top: 1.25rem;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 0.8rem;
-      line-height: 1.8;
-    }
+    footer { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); color: var(--mut); font-size: 12px; line-height: 1.9; text-align: center; }
 
-    @media (max-width: 640px) {
-      header h1 { font-size: 1.5rem; }
-      .controls { flex-direction: column; }
-      .controls input, .controls select { width: 100%; min-width: auto; }
+    /* ---------- 详情弹层 ---------- */
+    .dlg {
+      border: 0; padding: 0; border-radius: 14px; background: #fff; color: var(--ink);
+      width: min(680px, calc(100vw - 40px)); max-height: 86vh;
+      box-shadow: 0 30px 70px -20px rgba(15, 23, 42, .5);
+    }
+    .dlg::backdrop { background: rgba(15, 23, 42, .45); backdrop-filter: blur(2px); }
+    .dlg .x {
+      position: absolute; top: 14px; right: 16px; width: 30px; height: 30px; border-radius: 8px;
+      border: 0; background: none; display: grid; place-items: center;
+      color: var(--mut); font-size: 16px; line-height: 1; cursor: pointer; font-family: inherit;
+    }
+    .dlg .x:hover { background: #f2f4f8; color: var(--ink); }
+    .dbody { padding: 24px 26px 22px; }
+    .dh { display: flex; gap: 12px; align-items: flex-start; padding-right: 36px; }
+    /* 弹层里的 logo 簇不压缩、不预留宽度：一行平铺 */
+    .dh-logos { display: flex; flex: none; gap: 6px; padding-top: 3px; }
+    .dh .lg { width: 38px; height: 38px; border-radius: 11px; margin-left: 0; border-color: var(--line); flex: none; }
+    .dh .lg.more { font-size: 13px; }
+    .dh h2 { font-size: 19px; font-weight: 750; line-height: 1.35; letter-spacing: -.3px; flex: 1; }
+    .dsub { font-size: 12.5px; color: var(--mut); margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .doffer { margin-top: 16px; background: var(--dealsoft); border-left: 3px solid var(--deal); border-radius: 0 9px 9px 0; padding: 12px 14px; }
+    .doffer .lab { font-size: 10.5px; font-weight: 700; color: var(--deal); letter-spacing: .4px; }
+    .doffer p { margin-top: 5px; font-size: 14px; font-weight: 600; color: #9f1239; line-height: 1.6; }
+    .ddesc { font-size: 13px; color: var(--ink2); margin-top: 14px; line-height: 1.7; }
+    .dgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 9px; overflow: hidden; margin-top: 16px; }
+    .dgrid .cv { background: #fff; padding: 11px 13px; }
+    .dgrid .cv .k { font-size: 10.5px; color: var(--mut); letter-spacing: .4px; }
+    .dgrid .cv .v { font-size: 13px; margin-top: 3px; color: var(--ink); word-break: break-word; }
+    .dgrid .cv .v.ok { color: var(--ok); font-weight: 650; }
+    .dmodels { margin-top: 15px; }
+    .dmodels .lb { font-size: 10.5px; color: var(--mut); letter-spacing: .4px; }
+    .dmodels .mlist { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+    .dmodels .mlist span { font-size: 11px; background: #f2f4f8; color: #4b5563; border-radius: 4px; padding: 2px 7px; }
+    .dact { margin-top: 20px; display: flex; gap: 10px; }
+    .dact .pri { flex: 1; text-align: center; background: var(--brand); color: #fff; text-decoration: none; font-weight: 650; font-size: 14px; padding: 12px; border-radius: 9px; }
+    .dact .pri:hover { background: #2d4ae8; }
+    .dact .sec { border: 1px solid var(--line); color: var(--ink2); text-decoration: none; font-size: 13px; padding: 12px 16px; border-radius: 9px; white-space: nowrap; }
+    .dact .sec:hover { border-color: #c3ceff; color: var(--brand); }
+    .dsrc { margin-top: 14px; font-size: 11.5px; color: var(--mut); line-height: 1.7; }
+
+    /* ---------- 响应式 ---------- */
+    @media (max-width: 1180px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 760px) {
+      :root { --cardH: auto; }
+      .grid { grid-template-columns: 1fr; gap: 9px; }
+      .topin { gap: 12px; height: auto; padding: 10px 16px; flex-wrap: wrap; }
+      .search { max-width: none; order: 3; min-width: 100%; }
+      .topstat { order: 2; }
+      .facets { position: static; }
+      .facetsin { padding: 8px 16px; }
+      .wrap { padding: 0 16px 50px; }
+      .g { height: auto; min-height: 168px; }
+      .tierhead { position: static; }
+      .rbar { margin-top: 12px; }
+      .dbody { padding: 22px 20px 20px; }
+      .dgrid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>AI <span>优惠</span>聚合器</h1>
-      <p>国内外大模型的真实优惠：新用户免费额度 · 免费模型 · 学生/教师/非营利折扣 · 限时促销</p>
-    </header>
-
-    <div class="tabs" role="tablist">
-      <button class="tab active" id="tabDeals" role="tab" aria-selected="true">优惠<span class="count" id="countDeals"></span></button>
-      <button class="tab" id="tabTools" role="tab" aria-selected="false">全部工具<span class="count" id="countTools"></span></button>
+  <div class="top">
+    <div class="topin">
+      <a class="brand" href="./">
+        <span class="mark" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
+            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
+          </svg>
+        </span>
+        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日核验</small></span>
+      </a>
+      <label class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c94a6" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="searchInput" placeholder="搜索模型、厂商或优惠内容…" aria-label="搜索模型、厂商或优惠内容">
+      </label>
+      <div class="topstat" id="topStat"><!--PRERENDER:topstat--></div>
     </div>
+  </div>
 
-    <div class="controls">
-      <input type="search" id="searchInput" placeholder="搜索模型、厂商或优惠…" aria-label="搜索">
-      <select id="regionFilter" aria-label="地区">
-        <option value="">全部地区</option>
-        <option value="cn">国内</option>
-        <option value="global">国外</option>
-      </select>
-      <select id="categoryFilter" aria-label="分类">
-        <option value="">全部分类</option>
-      </select>
-      <select id="sortSelect" aria-label="排序">
-        <option value="expiry">即将截止优先</option>
-        <option value="updated">最近更新</option>
-        <option value="title">名称</option>
-      </select>
+  <div class="facets">
+    <div class="facetsin" id="facets" role="group" aria-label="筛选"><!--PRERENDER:facets--></div>
+  </div>
+
+  <div class="wrap">
+    <div class="rbar">
+      <div id="stats" role="status" aria-live="polite"><!--PRERENDER:stats--></div>
+      <div class="rright">
+        <label class="catpick"><select id="categoryFilter" aria-label="分类"><option value="">全部分类</option><!--PRERENDER:categories--></select></label>
+        <div class="sortbox" id="sortBox" role="group" aria-label="排序">
+          <button type="button" data-sort="tier">优惠力度优先</button>
+          <button type="button" data-sort="expiry">即将截止</button>
+          <button type="button" data-sort="updated">最近更新</button>
+        </div>
+      </div>
     </div>
-
-    <div class="stats" id="stats" role="status" aria-live="polite"></div>
 
     <!--
-      构建期会把下面的注释标记替换为默认视图（优惠 Tab、无筛选）的卡片 HTML。
+      构建期会把下面的注释标记替换为默认视图的卡片 HTML。
       这样不执行 JS 也能读到完整内容（爬虫/生成式引擎可见），JS 启动后会照常接管筛选与搜索。
     -->
-    <div class="deals-list" id="dealsList">
+    <div class="grid" id="dealsList">
       <!--PRERENDER:deals-->
       <div class="loading">加载数据中…</div>
     </div>
@@ -332,14 +389,26 @@
         条目会标注「已核验」及核验日期；自动采集的条目标注「数据更新」日期，表示最近一次采集到该信息的时间。
         发现过期或错误信息，欢迎提交修正。</p>
       </details>
+      <details>
+        <summary>优惠力度是怎么分档、怎么排序的？</summary>
+        <p>按「拿到手要花多少钱」从低到高分五档：完全免费、免费额度、身份优惠、折扣促销、付费为主。
+        档位由每条数据里已有的字段（定价模式、适用条件、优惠说明）自动推导，不额外猜测；
+        同一档内按「即将截止优先、其次最近更新」排序。厂商 logo 为各厂商官方品牌图形，仅作标识用途。</p>
+      </details>
     </section>
 
     <footer>
       <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span></p>
       <p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p>
       <p>本站不收录付费推广位，排序与推荐理由不出售。</p>
+      <p>厂商 logo 版权归各厂商所有，仅作标识用途。</p>
     </footer>
   </div>
+
+  <dialog class="dlg" id="detail" aria-labelledby="detailTitle">
+    <form method="dialog"><button class="x" aria-label="关闭详情">✕</button></form>
+    <div class="dbody" id="detailBody"></div>
+  </dialog>
 
   <script>
     'use strict';
@@ -349,17 +418,13 @@
      *
      * 纯渲染核心：只允许常量与纯函数，禁止引用 document / window / state / els。
      * scripts/tools/build-local.js 会按此标记抽取本区块，在无 DOM 的沙箱里求值，
-     * 用于构建期预渲染静态卡片——因此「构建期渲染」与「浏览器渲染」共用同一份模板，
+     * 用于构建期预渲染静态骨架——因此「构建期渲染」与「浏览器渲染」共用同一份模板，
      * 不会分叉。若在此区块内引用 DOM，构建立即失败。
+     *
+     * 分区：① 常量与档位  ② 厂商归一 + logo  ③ 时间与转义  ④ 折叠
+     *       ⑤ 筛选 / 排序 / 渲染  ⑥ 构建期入口（default* 前缀）
      * ================================================================ */
 
-    const PRICING_LABELS = {
-      free: '免费',
-      freemium: '免费增值',
-      paid: '付费',
-      trial: '免费试用',
-      credits: '赠送额度'
-    };
     const REGION_LABELS = { cn: '国内', global: '国外' };
     const SOON_DAYS = 7;
 
@@ -374,6 +439,278 @@
 
     /** 同一条目可同时具备的补充标签 */
     const EXTRA_KIND_LABELS = ['折扣', '限时免费', '免费额度'];
+
+    /* ----------------------------------------------------------------
+     * ① 优惠力度分档
+     *
+     * 只按「拿到手要花多少钱」分档，全部由数据里已有的字段推导，不引入外部评分、
+     * 不接广告位。规则按顺序命中即停，判据名会写进角标的 title，可逐条复核。
+     *
+     * 1 完全免费  注册就能用，不用等额度到账
+     * 2 免费额度  新用户一次性赠送 / 首月免费，够跑一段时间
+     * 3 身份优惠  学生 / 教师 / 非营利 / 初创 / 开源 —— 有资格就不花钱
+     * 4 折扣促销  要花钱，但比标准价便宜，或限时免费
+     * 5 付费为主  没有免费档
+     * ---------------------------------------------------------------- */
+
+    const TIERS = [
+      { n: 1, key: 'free', name: '完全免费', hint: '注册就能用，不用等额度到账' },
+      { n: 2, key: 'grant', name: '免费额度', hint: '新用户一次性赠送 / 首月免费，够跑一段时间' },
+      { n: 3, key: 'identity', name: '身份优惠', hint: '学生 / 教师 / 非营利 / 初创 —— 有资格就不花钱' },
+      { n: 4, key: 'promo', name: '折扣促销', hint: '要花钱，但比标准价便宜' },
+      { n: 5, key: 'paid', name: '付费为主', hint: '没有免费档，或免费档偏紧' }
+    ];
+
+    /** 身份门槛：命中即归入「身份优惠」 */
+    const IDENTITY_RE = /学生|教师|教育|非营利|非盈利|公益|在校|高校|大学|初创|开源|维护者|退役|军人|student|teacher|educat|nonprofit|non-profit|\bngo\b|startup|veteran|academic|faculty|campus|university|college|school|maintainer/i;
+    /** 一次性赠送 / 首月免费：额度型优惠。「首月」必须紧跟「免费」，否则「首月 9.9 元起」会被误判成赠送 */
+    const GRANT_RE = /免费额度|代金券|优惠券|赠送|资源包|礼包|免费领取|新用户|首月[^，。;；]{0,4}免费|体验金|免费试用|free\s+(credits?|tokens?|quota|trial)/i;
+    /** 促销信号：折扣或限时 */
+    const PROMO_RE = /折扣|打折|限时|促销|特惠|优惠价|立减|降价|秒杀|半价|五折|九折|\d\s*折|discount|promo|\boff\b|%\s*off/i;
+
+    const TIER_RULE_LABELS = {
+      identity: '判据：优惠标题或说明里写明身份门槛（学生 / 教师 / 非营利 / 初创 / 开源）',
+      grant: '判据：新用户一次性赠送、首月免费或赠送额度',
+      free: '判据：定价模式本身是免费档（free / 免费增值）',
+      promo: '判据：要付费，但标题或说明里写明折扣或限时',
+      paid: '判据：其余（付费或未标注免费档）'
+    };
+
+    /**
+     * 否定语境：句子里明说「没有这类优惠」时，不能凭关键词判档。
+     * 与 scripts/lib/schema.js 的 hasDiscountSignal 同一套做法——先剔除否定句再判。
+     * 采集回来的原文里真的有这种句子：
+     *   「No standing public student or nonprofit discount was listed…」
+     *   「…says the previous student offer ended March 11, 2026」
+     * 不剔除就会把「已结束的学生优惠」挂进「身份优惠」档。
+     */
+    const TIER_NEGATION_RE = [
+      /\bno\s+(standing\s+|public\s+|current\s+|official\s+)?[\w\s]{0,30}\b(discount|offer|deal|promotion|promo|student|nonprofit|free)s?\b/i,
+      /\bnot\s+(available|offered|applicable|listed|provide[sd]?)\b/i,
+      /\bno longer\b/i,
+      /\b(ended|expired|discontinued|unavailable)\b/i,
+      /(未|没有|暂无)[^。；]{0,10}(优惠|折扣|活动|免费额度|学生|赠送)|不(再|含|提供|享受|参与)/
+    ];
+
+    /**
+     * 断句。刻意不用正则一次切完，因为「U.S.」「e.g.」这类缩写会把句子拦腰截断，
+     * 而截断恰好会把否定词与它否定的对象分到两句里——反而掩盖「这个优惠已结束」。
+     * 规则：中文标点一律断句；英文句点只在「前一个字符是小写字母 / 数字 / 右括号，
+     * 且后面跟空白」时才算句末。
+     */
+    function splitSentences(value) {
+      const text = String(value === null || value === undefined ? '' : value);
+      const out = [];
+      let current = '';
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        current += ch;
+        const strong = '。！？；!?;'.indexOf(ch) >= 0;
+        const weak = ch === '.' && /[a-z0-9)"']/.test(text[i - 1] || '') && /\s/.test(text[i + 1] || '');
+        if (strong || weak) {
+          if (current.trim()) out.push(current.trim());
+          current = '';
+        }
+      }
+      if (current.trim()) out.push(current.trim());
+      return out;
+    }
+
+    /** 剔除否定句后的正文；判据都读它，不读原始全文 */
+    function affirmativeText(value) {
+      return splitSentences(value)
+        .filter(sentence => !TIER_NEGATION_RE.some(re => re.test(sentence)))
+        .join('。');
+    }
+
+    function tierIndexOf(n) {
+      for (let i = 0; i < TIERS.length; i++) if (TIERS[i].n === n) return i;
+      return TIERS.length - 1;
+    }
+
+    /**
+     * 分档。返回 { n, key, name, rule }。
+     *
+     * 判据分两侧读：
+     *   offer —— 标题 + 优惠说明，描述「这是什么优惠」
+     *   who   —— 适用条件，描述「谁能拿」
+     * 身份门槛与赠送额度只在 offer 侧成立才算数。原因是目录站抓来的适用条件常常是
+     * 媒体受众词（"Students, solo builders, app builders…"），并不是真的门槛；
+     * 拿它当判据会把 Replit、Zapier 这类普通免费档错划进「身份优惠」。
+     */
+    function tierOf(deal) {
+      const offer = affirmativeText([deal.title, deal.discountInfo].filter(Boolean).join('。'));
+      const who = affirmativeText(deal.eligibility);
+      let rule;
+      if (IDENTITY_RE.test(offer)) rule = 'identity';
+      else if (GRANT_RE.test(offer) || deal.pricingModel === 'credits' || deal.pricingModel === 'trial') rule = 'grant';
+      else if (deal.pricingModel === 'free' || deal.pricingModel === 'freemium') rule = 'free';
+      else if (PROMO_RE.test(offer) || PROMO_RE.test(who)) rule = 'promo';
+      else rule = 'paid';
+
+      const tier = TIERS.find(t => t.key === rule) || TIERS[4];
+      return { n: tier.n, key: tier.key, name: tier.name, rule: rule };
+    }
+
+    /* ----------------------------------------------------------------
+     * ② 厂商归一 + 品牌 logo
+     *
+     * 采集来的 vendor 字符串很脏（「火山引擎」/「火山引擎（字节跳动）」/「腾讯云 混元大模型」），
+     * 归一后同时供三处使用：厂商筛选、卡片上的 vendor 行、logo 取图。
+     * 规则按顺序命中即停，只匹配 vendor 字段本身（不匹配标题），避免误判。
+     * logo key 必须存在于 assets/logos/manifest.json —— 构建期会断言，缺一个就构建失败。
+     * ---------------------------------------------------------------- */
+
+    /** [匹配 vendor 的正则, 规范厂商 key, 显示名, logo key]
+     *
+     * logo key 为 null = 归一照做，但不挂图形。绝不拿一个近似的图充数：
+     * 没拿到厂商自己发布的品牌图形，卡片上就不放 logo。
+     * 已确认抓不到官网图形的（站点拒绝抓取 / 只有被 Cloudflare 挡住的 ICO）：
+     *   midjourney / huggingface / mistral / together / ideogram / leonardo / krea / xai
+     * 想要补上：把图形放进 assets/logos/ 并在 manifest.json 登记，再把 key 填回这里。
+     */
+    const VENDOR_RULES = [
+      [/百度|千帆|ernie|文心/i, 'baidu', '百度智能云', 'baidu'],
+      [/火山|方舟|豆包|doubao|volc/i, 'volcengine', '火山引擎', 'volcengine'],
+      [/腾讯|混元|hunyuan/i, 'tencent', '腾讯云', 'tencent-cloud'],
+      [/智谱|glm|bigmodel|cogview|cogvideo/i, 'zhipu', '智谱AI', 'zhipu'],
+      [/讯飞|星火|xfyun/i, 'iflytek', '科大讯飞', 'iflytek'],
+      [/阿里|百炼|通义|qwen|dashscope|modelscope/i, 'aliyun', '阿里云', 'alibabacloud'],
+      [/月之暗面|moonshot|kimi/i, 'moonshot', '月之暗面', 'moonshotai'],
+      [/硅基流动|siliconflow/i, 'siliconflow', '硅基流动', 'siliconflow'],
+      [/阶跃|stepfun|step-?audio/i, 'stepfun', '阶跃星辰', 'stepfun'],
+      [/商汤|sensetime|sensenova|日日新/i, 'sensetime', '商汤科技', 'sensetime'],
+      [/百川|baichuan/i, 'baichuan', '百川智能', 'baichuan'],
+      [/deepseek|深度求索/i, 'deepseek', 'DeepSeek', 'deepseek'],
+      [/github/i, 'github', 'GitHub', 'github'],
+      [/microsoft|azure|微软/i, 'microsoft', 'Microsoft', 'microsoft'],
+      [/google|gemini|notebooklm/i, 'google', 'Google', 'google'],
+      [/anthropic|claude/i, 'anthropic', 'Anthropic', 'anthropic'],
+      [/openai|chatgpt|gpt[\s-]?image|^gpt\b/i, 'openai', 'OpenAI', 'openai'],
+      [/perplexity/i, 'perplexity', 'Perplexity', 'perplexity'],
+      [/canva/i, 'canva', 'Canva', 'canva'],
+      [/cursor/i, 'cursor', 'Cursor', 'cursor'],
+      [/replit/i, 'replit', 'Replit', 'replit'],
+      [/zapier/i, 'zapier', 'Zapier', 'zapier'],
+      [/^make\b|make\.com/i, 'make', 'Make', 'make'],
+      [/notion/i, 'notion', 'Notion', 'notion'],
+      [/figma/i, 'figma', 'Figma', 'figma'],
+      [/elevenlabs/i, 'elevenlabs', 'ElevenLabs', 'elevenlabs'],
+      [/runway/i, 'runway', 'Runway', 'runway'],
+      [/amazon|aws/i, 'aws', 'AWS', 'aws'],
+      [/windsurf|exafunction/i, 'windsurf', 'Windsurf', 'windsurf'],
+      [/groq/i, 'groq', 'Groq', 'groq'],
+      [/\bn8n\b/i, 'n8n', 'n8n', 'n8n'],
+      [/cohere/i, 'cohere', 'Cohere', 'cohere'],
+      [/recraft/i, 'recraft', 'Recraft', 'recraft'],
+      // 以下只做归一，不挂 logo（尚无厂商官方图形）
+      [/midjourney/i, 'midjourney', 'Midjourney', null],
+      [/hugging\s?face/i, 'huggingface', 'Hugging Face', null],
+      [/mistral/i, 'mistral', 'Mistral', null],
+      [/together/i, 'together', 'Together AI', null],
+      [/ideogram/i, 'ideogram', 'Ideogram', null],
+      [/leonardo/i, 'leonardo', 'Leonardo AI', null],
+      [/krea/i, 'krea', 'KREA', null],
+      [/grok|xai/i, 'xai', 'xAI', null]
+    ];
+
+    /** [匹配模型名的正则, logo key, 显示名]：用于折叠卡上的模型家族 logo */
+    const MODEL_LOGO_RULES = [
+      [/ernie|文心/i, 'baidu', '文心 ERNIE'],
+      [/^qianfan/i, 'baidu', '千帆'],
+      [/deepseek/i, 'deepseek', 'DeepSeek'],
+      [/^qwen|通义/i, 'qwen', 'Qwen'],
+      [/kimi|moonshot/i, 'moonshotai', 'Kimi'],
+      [/glm|chatglm|智谱/i, 'zhipu', 'GLM'],
+      [/hunyuan|混元/i, 'tencent-cloud', '混元'],
+      [/doubao|豆包|seedream|seed-?character|^seed|seededit/i, 'volcengine', '豆包'],
+      [/^gpt|^o[1-9]\b|dall-?e|sora|whisper/i, 'openai', 'OpenAI'],
+      [/claude/i, 'anthropic', 'Claude'],
+      [/gemini|gemma|imagen|veo/i, 'google', 'Gemini'],
+      [/step-?\d|stepfun|阶跃/i, 'stepfun', '阶跃星辰'],
+      [/sensetime|sensenova|日日新/i, 'sensetime', '商汤'],
+      [/baichuan|百川/i, 'baichuan', '百川']
+    ];
+
+    /** 长条图形（宽高比 > 2）：塞进方块会被压成一条线，由 logos.css 改成横向胶囊 */
+    const WIDE_LOGOS = ['siliconflow'];
+
+    /** 模板可能输出的全部 logo key；构建期会断言它们都在 manifest 里 */
+    function logoKeys() {
+      const keys = [];
+      const add = key => { if (key && !keys.includes(key)) keys.push(key); };
+      VENDOR_RULES.forEach(rule => add(rule[3]));
+      MODEL_LOGO_RULES.forEach(rule => add(rule[1]));
+      return keys;
+    }
+
+    function logoNameOf(key) {
+      for (const rule of MODEL_LOGO_RULES) if (rule[1] === key) return rule[2];
+      for (const rule of VENDOR_RULES) if (rule[3] === key) return rule[2];
+      return key;
+    }
+
+    /** 厂商归一：命中规则用规范名，否则原样返回（绝不给没有规则的条目硬套一个厂商） */
+    function vendorOf(deal) {
+      const raw = String(deal.vendor || '').trim();
+      if (raw) {
+        for (const [re, key, name, logo] of VENDOR_RULES) {
+          if (re.test(raw)) return { key: key, name: name, logo: logo, raw: raw };
+        }
+      }
+      return { key: raw || '', name: raw, logo: null, raw: raw };
+    }
+
+    /** 模型名 → 模型家族 logo */
+    function modelLogoOf(model) {
+      const text = String(model || '');
+      for (const [re, key] of MODEL_LOGO_RULES) if (re.test(text)) return key;
+      return null;
+    }
+
+    /**
+     * logo 簇。压缩态叠加、hover 展开；容器宽度按「展开后」的宽度预留，
+     * 展开时只填满预留空间，不改变标题可用宽度（否则标题会在 hover 时重排）。
+     * detailed=true 用于详情弹层：不压缩、不预留宽度，容器类名换成 .dh-logos。
+     */
+    function logoHtml(deal, detailed) {
+      const vendor = vendorOf(deal);
+      const keys = [];
+      const add = key => { if (key && !keys.includes(key)) keys.push(key); };
+      add(vendor.logo);
+      const models = Array.isArray(deal.models) ? deal.models : [];
+      if (models.length > 1) models.forEach(model => add(modelLogoOf(model)));
+      if (!keys.length) return '';
+
+      const shown = keys.slice(0, 4);
+      const rest = keys.length - shown.length;
+      const tiles = shown.concat(rest > 0 ? ['__more__'] : []);
+
+      let expanded = 0;
+      tiles.forEach((key, i) => {
+        const base = (rest > 0 && key === '__more__') ? 24 : (WIDE_LOGOS.includes(key) ? 48 : 24);
+        expanded += i === 0 ? base : base + 3;
+      });
+
+      const names = shown.map(logoNameOf);
+      const tip = models.length > 1
+        ? '覆盖 ' + models.length + ' 个模型：' + models.slice(0, 6).join('、') + (models.length > 6 ? ' 等' : '')
+        : names.join('、') + ' 官方品牌图形';
+
+      const html = tiles.map(key => {
+        if (key === '__more__') return '<span class="lg more" aria-hidden="true">+' + rest + '</span>';
+        const name = logoNameOf(key);
+        return '<span class="lg" data-logo="' + escapeAttr(key) + '" role="img" aria-label="' + escapeAttr(name) + '"></span>';
+      }).join('');
+
+      return detailed
+        ? '<span class="dh-logos" title="' + escapeAttr(tip) + '">' + html + '</span>'
+        : '<span class="logos" style="width:' + expanded + 'px" title="' + escapeAttr(tip) + '">' + html + '</span>';
+    }
+
+    /* ----------------------------------------------------------------
+     * ③ 时间与转义
+     * ---------------------------------------------------------------- */
 
     /** 北京时间当天（YYYY-MM-DD） */
     function todayCN() {
@@ -410,16 +747,16 @@
     }
 
     /**
-     * 卡片底部的新鲜度标识。
+     * 底部的新鲜度标识。
      * 只有人工逐条核验过的条目才允许显示「已核验」——自动采集条目显示采集日期，
      * 不把「抓到过」说成「核验过」。
      */
     function stampOf(deal) {
       if (deal.verified && deal.verifiedAt) {
-        return { label: '已核验：' + deal.verifiedAt, verified: true };
+        return { label: '已核验 ' + deal.verifiedAt, verified: true };
       }
       if (deal.lastSeen) {
-        return { label: '数据更新：' + deal.lastSeen, verified: false };
+        return { label: '数据更新 ' + deal.lastSeen, verified: false };
       }
       return null;
     }
@@ -427,9 +764,10 @@
     function stampHtml(deal) {
       const stamp = stampOf(deal);
       if (!stamp) return '';
-      const cls = stamp.verified ? 'stamp verified' : 'stamp';
+      const cls = stamp.verified ? 'ok' : '';
       const tip = stamp.verified ? '已人工对照官方页面核验' : '最近一次采集到该信息的时间';
-      return '<span class="' + cls + '" title="' + escapeAttr(tip) + '">' + escapeHtml(stamp.label) + '</span>';
+      return '<span class="' + cls + '" title="' + escapeAttr(tip) + '">' +
+        (stamp.verified ? '✓ ' : '') + escapeHtml(stamp.label) + '</span>';
     }
 
     /** 优惠类型徽章：来自 pricingModel + discountInfo 的补充标签 */
@@ -446,42 +784,92 @@
       return [...new Set(labels)];
     }
 
-    /** 价格阶梯行；数据没有可靠来源时不渲染（不编造升级路径） */
-    function priceLineHtml(deal) {
-      if (!deal.priceLine) return '';
-      return '<div class="price-line">' + escapeHtml(deal.priceLine) + '</div>';
+    /**
+     * 优惠正文：只在标点处切一刀，把前半句加粗便于扫读。
+     * 绝不改写、截断或补写文案——加粗以外的每个字都来自数据。
+     */
+    function splitOffer(text) {
+      const value = String(text === null || text === undefined ? '' : text).trim();
+      if (!value) return null;
+      let lead = '';
+      let rest = value;
+      for (const sep of ['：', ':', '——', '；', ';', '。']) {
+        const at = value.indexOf(sep);
+        if (at > 0 && at <= 26) { lead = value.slice(0, at); rest = value.slice(at + sep.length); break; }
+      }
+      if (!lead) {
+        const at = value.search(/[，,]/);
+        if (at > 0 && at <= 26) { lead = value.slice(0, at); rest = value.slice(at + 1); }
+      }
+      return { lead: lead.trim(), rest: rest.trim() };
     }
 
-    /** 特性标签；没有标签时回退展示优惠详情，保证卡片不会出现空白块 */
+    /** 优惠说明（只有 true 的优惠条目才有；工具条目不编造优惠文案） */
+    function offerOf(deal) {
+      return splitOffer(deal.discountInfo);
+    }
+
+    /**
+     * 卡片正文。优惠条目显示优惠说明（档位配色的竖条 + 加粗前半句）；
+     * 工具条目显示工具简介（灰条、不加粗）——两者都是数据里已有的原文。
+     */
+    function offerHtml(deal, tierN) {
+      const isDeal = deal.type === 'deal';
+      const offer = isDeal ? offerOf(deal) : (deal.description ? { lead: '', rest: deal.description } : null);
+      if (!offer) return '';
+      const body = (isDeal && offer.lead)
+        ? '<b>' + escapeHtml(offer.lead) + '</b>' + (offer.rest ? ' · ' + escapeHtml(offer.rest) : '')
+        : escapeHtml(offer.rest);
+      return '<div class="of ' + (isDeal ? 't' + tierN : 'plain') + '"><span class="bar"></span><div class="tx">' + body + '</div></div>';
+    }
+
+    /** 特性标签：只用数据里已有的字段拼，缺了就少显示，不编造 */
+    function featsOf(deal) {
+      const list = [];
+      const push = text => {
+        const value = String(text === null || text === undefined ? '' : text).trim();
+        if (value && !list.includes(value)) list.push(value);
+      };
+      if (Array.isArray(deal.features)) deal.features.forEach(push);
+      if (deal.priceLine) push(deal.priceLine);
+      if (Array.isArray(deal.models) && deal.models.length > 1) push(deal.models.length + ' 个模型共用额度');
+      if (deal.eligibility && Array.from(deal.eligibility).length <= 18) push(deal.eligibility);
+      return list;
+    }
+
+    function featsHtml(deal) {
+      const list = featsOf(deal);
+      if (!list.length) return '';
+      const shown = list.slice(0, 3);
+      const rest = list.length - shown.length;
+      return '<div class="feats">' +
+        shown.map(text => '<span>' + escapeHtml(text) + '</span>').join('') +
+        (rest > 0 ? '<span class="more">+' + rest + '</span>' : '') +
+        '</div>';
+    }
+
+    /** 地区 / 截止角标 */
     function tagsHtml(deal) {
-      if (Array.isArray(deal.features) && deal.features.length) {
-        return '<div class="features">' +
-          deal.features.map(f => '<span class="feature-chip">' + escapeHtml(f) + '</span>').join('') +
-          '</div>';
+      const tags = [];
+      if (deal.region) {
+        const cn = deal.region === 'cn';
+        tags.push('<span class="tg ' + (cn ? 'cn' : 'gl') + '">' + escapeHtml(REGION_LABELS[deal.region] || deal.region) + '</span>');
       }
-      if (deal.type === 'deal' && deal.discountInfo) {
-        return '<div class="discount">' + escapeHtml(deal.discountInfo) + '</div>';
-      }
-      return '';
-    }
-
-    function expiryHtml(deal) {
       const days = daysUntil(deal.expiresAt);
-      if (days === null) return '';
-      const label = days < 0 ? '已过期（' + deal.expiresAt + '）'
-        : days === 0 ? '今天截止'
-        : '截止 ' + deal.expiresAt + '（剩 ' + days + ' 天）';
-      const cls = days < 0 ? 'expiry past' : (days <= SOON_DAYS ? 'expiry soon' : 'expiry');
-      return '<span class="' + cls + '">' + escapeHtml(label) + '</span>';
+      if (days !== null) {
+        const label = days < 0 ? '已过期' : days === 0 ? '今天截止' : '剩 ' + days + ' 天';
+        tags.push('<span class="tg due" title="' + escapeAttr('截止 ' + deal.expiresAt) + '">' + escapeHtml(label) + '</span>');
+      }
+      return tags.join('');
     }
 
-    /* ================================================================
-     * 折叠：官方页面上的「一张表」= 一条优惠
+    /* ----------------------------------------------------------------
+     * ④ 折叠：官方页面上的「一张表」= 一条优惠
      *
      * 同一 (厂商, 落地页, 优惠文案, 适用条件, 有效期) 的多条数据，本质上是同一张表格的
      * 多行——渲染成一张卡片、卡内列出覆盖的模型，而不是 N 张几乎相同的卡片。
      * 全部为纯函数，构建期预渲染与浏览器渲染共用同一份，不会分叉。
-     * ================================================================ */
+     * ---------------------------------------------------------------- */
 
     /**
      * 折叠键。返回 null 表示该条自成一卡：
@@ -616,129 +1004,432 @@
       return cards;
     }
 
-    /**
-     * 折叠卡的模型清单。刻意只用一个纯文本 div、不加任何 CSS——
-     * 无样式时天然可读，样式与截断策略留给后续单独处理。
-     * data-model-count 同时供样式挂载与构建期无损断言使用。
-     */
-    function modelsHtml(deal) {
-      if (!Array.isArray(deal.models) || deal.models.length < 2) return '';
-      return '<div class="deal-models" data-model-count="' + deal.models.length + '">' +
-        deal.models.map(model => escapeHtml(model)).join('、') + '</div>';
+    /* ----------------------------------------------------------------
+     * ⑤ 筛选 / 排序 / 渲染
+     * ---------------------------------------------------------------- */
+
+    const TABS = [
+      { key: 'deals', label: '优惠' },
+      { key: 'tools', label: '全部工具' }
+    ];
+
+    const SORTS = [
+      { key: 'tier', label: '优惠力度优先' },
+      { key: 'expiry', label: '即将截止' },
+      { key: 'updated', label: '最近更新' }
+    ];
+
+    /** 默认视图（预渲染与浏览器首屏共用） */
+    const DEFAULT_FILTERS = {
+      tab: 'deals', region: '', category: '', vendor: '', verified: false, search: '', sort: 'tier'
+    };
+
+    function defaultFilters() {
+      return Object.assign({}, DEFAULT_FILTERS);
     }
 
-    function cardHtml(deal) {
-      const url = safeUrl(deal.url);
-      const title = escapeHtml(deal.title);
-      const titleHtml = url
-        ? '<a class="deal-title" href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">' + title + '</a>'
-        : '<span class="deal-title">' + title + '</span>';
-
-      const badges = [];
-      if (deal.region) {
-        badges.push('<span class="badge region-' + escapeAttr(deal.region) + '">' +
-          escapeHtml(REGION_LABELS[deal.region] || deal.region) + '</span>');
+    function matches(deal, filters) {
+      if (filters.tab === 'deals') {
+        if (deal.type !== 'deal') return false;
+      } else if (deal.type === 'deal' && isExpired(deal)) {
+        return false;
       }
-      if (deal.category) badges.push('<span class="badge category">' + escapeHtml(deal.category) + '</span>');
-      kindBadges(deal).forEach(kind => {
-        badges.push('<span class="badge kind">' + escapeHtml(kind) + '</span>');
+      if (deal.type === 'deal' && isExpired(deal)) return false;
+      if (filters.verified && !deal.verified) return false;
+      if (filters.region && deal.region !== filters.region) return false;
+      if (filters.category && deal.category !== filters.category) return false;
+      if (filters.vendor && vendorOf(deal).key !== filters.vendor) return false;
+      if (filters.search) {
+        const haystack = [deal.title, deal.vendor, deal.discountInfo, deal.description, deal.category,
+          deal.source, deal.eligibility, (deal.features || []).join(' ')]
+          .filter(Boolean).join(' ').toLowerCase();
+        if (!haystack.includes(filters.search)) return false;
+      }
+      return true;
+    }
+
+    function compareCards(a, b) {
+      if (a.tier !== b.tier) return a.tier - b.tier;
+      const da = daysUntil(a.expiresAt);
+      const db = daysUntil(b.expiresAt);
+      if (da === null && db === null) return String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
+      if (da === null) return 1;
+      if (db === null) return -1;
+      if (da !== db) return da - db;
+      return String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
+    }
+
+    /** 打上档位标记：排序与角标都读这里算出的 tier，避免两次推导出不同结果 */
+    function withTier(deal) {
+      return Object.assign({}, deal, { tier: tierOf(deal).n });
+    }
+
+    function orderCards(list, sort) {
+      if (sort === 'title') {
+        return list.map(withTier).sort((a, b) => String(a.title).localeCompare(String(b.title), 'zh-Hans-CN'));
+      }
+      if (sort === 'updated') {
+        return list.map(withTier).sort((a, b) => String(b.lastSeen || '').localeCompare(String(a.lastSeen || '')));
+      }
+      if (sort === 'expiry') {
+        return list.map(withTier).sort((a, b) => {
+          const da = daysUntil(a.expiresAt);
+          const db = daysUntil(b.expiresAt);
+          if (da === null && db === null) return 0;
+          if (da === null) return 1;
+          if (db === null) return -1;
+          return da - db;
+        });
+      }
+      return list.map(withTier).sort(compareCards);
+    }
+
+    /** 通过筛选的原始条目（未经折叠） */
+    function visibleDeals(deals, filters) {
+      return deals.filter(deal => matches(deal, filters));
+    }
+
+    /**
+     * 卡片列表：筛选 → 折叠 → 打档位 → 排序。
+     * 浏览器与构建期预渲染都走这一个入口，默认视图就是 filters 取默认值的那一次调用。
+     */
+    function cardsFor(deals, filters) {
+      return orderCards(foldDeals(visibleDeals(deals, filters)), filters.sort || 'tier');
+    }
+
+    /** 构建期/首屏：默认视图 */
+    function defaultVisible(deals) {
+      return visibleDeals(deals, DEFAULT_FILTERS);
+    }
+
+    function defaultCards(deals) {
+      return cardsFor(deals, DEFAULT_FILTERS);
+    }
+
+    /** 各维度的候选值与计数；计数按「当前作用域」实时算，不写死 */
+    function facetModel(deals, filters) {
+      const scopeFor = patch => visibleDeals(deals, Object.assign({}, filters, patch));
+      const count = (list, key) => foldDeals(list).length;
+      const base = Object.assign({}, filters);
+
+      const tabs = TABS.map(tab => ({
+        key: tab.key, label: tab.label,
+        count: count(scopeFor({ tab: tab.key, vendor: '', category: '', region: '', verified: false }), tab.key)
+      }));
+
+      const regions = ['cn', 'global'].map(region => ({
+        key: region, label: REGION_LABELS[region],
+        count: count(scopeFor({ region: region === filters.region ? '' : region }), region)
+      }));
+
+      const vendors = new Map();
+      for (const deal of scopeFor({ vendor: '' })) {
+        const vendor = vendorOf(deal);
+        if (!vendor.key) continue;
+        if (!vendors.has(vendor.key)) vendors.set(vendor.key, { key: vendor.key, label: vendor.name, count: 0 });
+        vendors.get(vendor.key).count++;
+      }
+      const vendorList = [...vendors.values()]
+        .map(item => Object.assign({}, item, { count: foldDeals(scopeFor({ vendor: item.key })).length }))
+        .filter(item => item.count >= 2)
+        .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'zh-Hans-CN'))
+        .slice(0, 6);
+
+      const categories = [...new Set(deals.map(d => d.category).filter(Boolean))].sort();
+
+      return {
+        tabs: tabs,
+        regions: regions,
+        vendors: vendorList,
+        categories: categories,
+        verified: count(scopeFor({ verified: !filters.verified, vendor: '', category: '', region: '' }), 'verified'),
+        base: base
+      };
+    }
+
+    function facetBarHtml(deals, filters) {
+      const model = facetModel(deals, filters);
+      const parts = [];
+
+      parts.push('<button type="button" class="f ok' + (filters.verified ? ' on' : '') + '" data-facet="verified" aria-pressed="' +
+        (filters.verified ? 'true' : 'false') + '">✓ 已核验<b>' + model.verified + '</b></button>');
+      parts.push('<span class="fsep"></span>');
+
+      model.tabs.forEach((tab, i) => {
+        parts.push('<button type="button" class="f' + (filters.tab === tab.key ? ' on' : '') + '" data-facet="tab" data-value="' +
+          escapeAttr(tab.key) + '"' + (i === 0 ? ' data-first="1"' : '') + '>' + escapeHtml(tab.label) + '<b>' + tab.count + '</b></button>');
+      });
+      parts.push('<span class="fsep"></span>');
+
+      model.regions.forEach(region => {
+        parts.push('<button type="button" class="f' + (filters.region === region.key ? ' on' : '') + '" data-facet="region" data-value="' +
+          escapeAttr(region.key) + '">' + escapeHtml(region.label) + '<b>' + region.count + '</b></button>');
       });
 
-      const description = deal.description
-        ? '<div class="deal-description">' + escapeHtml(deal.description) + '</div>'
-        : '';
-
-      const foot = [];
-      if (deal.vendor) foot.push('<span class="vendor">' + escapeHtml(deal.vendor) + '</span>');
-      if (deal.eligibility) foot.push('<span>适用：' + escapeHtml(deal.eligibility) + '</span>');
-      if (deal.validity) foot.push('<span class="expiry">有效期：' + escapeHtml(deal.validity) + '</span>');
-      const expiry = expiryHtml(deal);
-      if (expiry) foot.push(expiry);
-      const stamp = stampHtml(deal);
-      if (stamp) foot.push(stamp);
-      if (deal.source) {
-        const sourceUrl = safeUrl(deal.sourceUrl);
-        foot.push(sourceUrl
-          ? '<span>来源：<a href="' + escapeAttr(sourceUrl) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(deal.source) + '</a></span>'
-          : '<span>来源：' + escapeHtml(deal.source) + '</span>');
+      if (model.vendors.length) {
+        parts.push('<span class="fsep"></span>');
+        model.vendors.forEach(vendor => {
+          parts.push('<button type="button" class="f' + (filters.vendor === vendor.key ? ' on' : '') + '" data-facet="vendor" data-value="' +
+            escapeAttr(vendor.key) + '" title="只看 ' + escapeAttr(vendor.label) + '">' + escapeHtml(vendor.label) + '<b>' + vendor.count + '</b></button>');
+        });
       }
 
-      const cta = url
-        ? '<a class="cta" href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">' +
-          (deal.type === 'deal' ? '获取优惠' : '查看官方页面') + ' &rarr;</a>'
-        : '';
+      return parts.join('');
+    }
 
-      const classes = ['deal-card'];
+    function categoryOptionsHtml(deals) {
+      return [...new Set(deals.map(d => d.category).filter(Boolean))].sort()
+        .map(category => '<option value="' + escapeAttr(category) + '">' + escapeHtml(category) + '</option>')
+        .join('');
+    }
+
+    /** 顶栏右侧的汇总：静态骨架与首屏都读它 */
+    function topStatHtml(deals, updatedAt) {
+      const cards = defaultCards(deals);
+      const verified = cards.filter(card => card.verified).length;
+      const date = updatedAt ? String(updatedAt).slice(0, 10) : '';
+      return '<b>' + cards.length + '</b> 条优惠 · 已核验 <b style="color:var(--ok)">' + verified + '</b>' +
+        (date ? ' · 更新 ' + escapeHtml(date) : '');
+    }
+
+    function statsHtml(deals, filters) {
+      const cards = cardsFor(deals, filters);
+      const cn = cards.filter(card => card.region === 'cn').length;
+      const global = cards.length - cn;
+      const tiers = TIERS.filter(tier => cards.some(card => card.tier === tier.n)).length;
+      if (!cards.length) return '没有匹配的条目';
+      return '显示 <b>' + cards.length + '</b> 条卡片 · 国内 ' + cn + ' · 国外 ' + global +
+        ' · 覆盖 <b>' + tiers + '</b> 个力度档位';
+    }
+
+    /** 卡片。档位由 tierOf 现算，因此单独调用也正确 */
+    function cardHtml(deal) {
+      const url = safeUrl(deal.url);
+      const tier = tierOf(deal);
+      const vendor = vendorOf(deal);
+      const title = escapeHtml(deal.title);
+      const titleHtml = url
+        ? '<a href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">' + title + '</a>'
+        : title;
+
+      const sub = [vendor.name, deal.category].filter(Boolean).join(' · ');
+
+      const classes = ['g', 't' + tier.n];
       if (deal.type !== 'deal') classes.push('tool');
+      if (deal.verified) classes.push('verified');
       if (isExpired(deal)) classes.push('expired');
 
-      return '<article class="' + classes.join(' ') + '">' +
-        '<div class="card-head">' + titleHtml +
-        '<div class="badges">' + badges.join('') + '</div></div>' +
-        priceLineHtml(deal) + description + modelsHtml(deal) + tagsHtml(deal) +
-        '<div class="card-foot">' + foot.join('') + '</div>' + cta +
+      const cta = url
+        ? '<a class="go" href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">' +
+          (deal.type === 'deal' ? '获取' : '查看') + ' →</a>'
+        : '';
+
+      return '<article class="' + classes.join(' ') + '" data-tier="' + tier.n + '" data-rule="' + escapeAttr(tier.rule) + '"' +
+        (Array.isArray(deal.models) && deal.models.length > 1 ? ' data-model-count="' + deal.models.length + '"' : '') + '>' +
+        '<span class="tierdot" aria-hidden="true"></span>' +
+        '<span class="tiernum" aria-hidden="true" title="' + escapeAttr('档位 ' + tier.n + ' ' + tier.name + ' · ' + (TIER_RULE_LABELS[tier.rule] || '')) + '">' + tier.n + '</span>' +
+        '<div class="gh">' + logoHtml(deal) +
+        '<div class="gt"><h3>' + titleHtml + '</h3>' +
+        (sub ? '<div class="vendor">' + escapeHtml(sub) + '</div>' : '') + '</div>' +
+        tagsHtml(deal) + '</div>' +
+        offerHtml(deal, tier.n) +
+        featsHtml(deal) +
+        '<div class="meta">' + stampHtml(deal) +
+        '<span class="sp"><span class="hint">详情</span>' + cta + '</span></div>' +
         '</article>';
     }
 
-    /**
-     * 默认排序（即将截止优先 → 最近更新 → 名称）。
-     * 抽成纯函数，供浏览器与构建期预渲染共用，避免两处排序语义分叉。
-     */
-    function defaultOrder(list) {
-      return [...list].sort((a, b) => {
-        const da = daysUntil(a.expiresAt);
-        const db = daysUntil(b.expiresAt);
-        if (da === null && db === null) return String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
-        if (da === null) return 1;
-        if (db === null) return -1;
-        return da - db;
-      });
+    /** 档位分带：只有该档位有卡片时才输出 */
+    function tierHeadHtml(tier, count) {
+      return '<div class="tierhead t' + tier.n + '"><span class="n" aria-hidden="true">' + tier.n + '</span>' +
+        '<b>' + escapeHtml(tier.name) + '</b>' +
+        '<span class="hint">' + escapeHtml(tier.hint) + ' · ' + count + ' 条</span>' +
+        '<span class="line"></span></div>';
     }
 
-    /** 默认视图过滤：优惠 Tab、未过期、无筛选条件 */
-    function defaultVisible(deals) {
-      return deals.filter(deal => deal.type === 'deal' && !isExpired(deal));
+    /** 完整网格内容：分带 + 卡片；非「力度优先」排序时不分带 */
+    function gridHtml(cards, filters) {
+      if (!cards.length) {
+        return '<div class="empty">没有匹配的条目，试试清空筛选条件。</div>';
+      }
+      if ((filters.sort || 'tier') !== 'tier') {
+        return cards.map(cardHtml).join('');
+      }
+      const out = [];
+      for (const tier of TIERS) {
+        const group = cards.filter(card => card.tier === tier.n);
+        if (!group.length) continue;
+        out.push(tierHeadHtml(tier, group.length));
+        group.forEach(card => out.push(cardHtml(card)));
+      }
+      return out.join('');
     }
 
-    /**
-     * 默认视图的卡片列表（预渲染与浏览器共用的唯一入口）。
-     * 顺序：先按过期过滤 → 再折叠 → 最后排序；过期成员不会混进折叠组。
-     */
-    function defaultCards(deals) {
-      return defaultOrder(foldDeals(defaultVisible(deals)));
+    /** 详情弹层内容：全部字段原样展示，不加工 */
+    function detailHtml(deal) {
+      const url = safeUrl(deal.url);
+      const tier = tierOf(deal);
+      const vendor = vendorOf(deal);
+      const stamp = stampOf(deal);
+      const offer = offerOf(deal);
+
+      const cells = [];
+      const cell = (key, value, cls) => {
+        if (!value) return;
+        cells.push('<div class="cv"><div class="k">' + escapeHtml(key) + '</div><div class="v' + (cls ? ' ' + cls : '') + '">' + escapeHtml(value) + '</div></div>');
+      };
+      cell('适用条件', deal.eligibility);
+      cell('有效期说明', deal.validity);
+      cell('截止日期', deal.expiresAt ? deal.expiresAt + '（' + (daysUntil(deal.expiresAt) >= 0 ? '剩 ' + daysUntil(deal.expiresAt) + ' 天' : '已过期') + '）' : '');
+      cell('价格阶梯', deal.priceLine);
+      cell('优惠力度', '档位 ' + tier.n + ' · ' + tier.name, 'ok');
+      cell('核验状态', stamp ? (deal.verified ? '✓ ' + stamp.label + '（已人工对照官方页）' : stamp.label + '（采集时间，非人工核验）') : '');
+
+      const models = Array.isArray(deal.models) ? deal.models : [];
+      const modelsHtml = models.length > 1
+        ? '<div class="dmodels"><div class="lb">覆盖模型（' + models.length + '）· 共用同一份额度</div><div class="mlist">' +
+          models.map(model => '<span>' + escapeHtml(model) + '</span>').join('') + '</div></div>'
+        : '';
+
+      const kind = kindBadges(deal).map(label => '<span>' + escapeHtml(label) + '</span>').join('');
+
+      return '<div class="dh">' + logoHtml(deal, true) +
+        '<h2 id="detailTitle">' + escapeHtml(deal.title) + '</h2></div>' +
+        '<div class="dsub">' + (vendor.name ? '<span>' + escapeHtml(vendor.name) + '</span><span>·</span>' : '') +
+        (deal.category ? '<span>' + escapeHtml(deal.category) + '</span><span>·</span>' : '') +
+        (deal.region ? '<span>' + escapeHtml(REGION_LABELS[deal.region] || deal.region) + '</span><span>·</span>' : '') +
+        (stamp ? '<span class="' + (deal.verified ? 'ok' : '') + '">' + (deal.verified ? '✓ ' : '') + escapeHtml(stamp.label) + '</span>' : '') +
+        '</div>' +
+        (offer ? '<div class="doffer"><div class="lab">档位 ' + tier.n + ' · ' + escapeHtml(tier.name) + '</div><p>' +
+          (offer.lead ? '<b>' + escapeHtml(offer.lead) + '</b>' + (offer.rest ? ' · ' : '') : '') + escapeHtml(offer.rest) + '</p></div>' : '') +
+        (deal.description ? '<p class="ddesc">' + escapeHtml(deal.description) + '</p>' : '') +
+        (cells.length ? '<div class="dgrid">' + cells.join('') + '</div>' : '') +
+        modelsHtml +
+        (kind ? '<div class="dmodels"><div class="lb">优惠类型</div><div class="mlist">' + kind + '</div></div>' : '') +
+        '<div class="dact">' + (url
+          ? '<a class="pri" href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">前往官方页面' +
+            (deal.type === 'deal' ? '领取' : '查看') + ' →</a>'
+          : '') +
+        '<a class="sec" href="#" data-close>关闭</a></div>' +
+        '<div class="dsrc">来源：' + escapeHtml(deal.source || '未标注') +
+        (deal.firstSeen ? ' · 首次收录 ' + escapeHtml(deal.firstSeen) : '') +
+        (deal.lastSeen ? ' · 最近采集 ' + escapeHtml(deal.lastSeen) : '') +
+        (deal.sourceUrl ? '<br>原始出处：' + escapeHtml(deal.sourceUrl) : '') +
+        '</div>';
     }
 
     /* ================================================================
      * RENDER-CORE:END
      * ================================================================ */
 
-    const state = { tab: 'deals', deals: [], updatedAt: null };
+    document.body.classList.add('js');
+
+    const state = { deals: [], updatedAt: null, filters: defaultFilters(), cards: [] };
 
     const els = {
       list: document.getElementById('dealsList'),
-      search: document.getElementById('searchInput'),
-      region: document.getElementById('regionFilter'),
-      category: document.getElementById('categoryFilter'),
-      sort: document.getElementById('sortSelect'),
+      facets: document.getElementById('facets'),
       stats: document.getElementById('stats'),
+      topStat: document.getElementById('topStat'),
+      search: document.getElementById('searchInput'),
+      category: document.getElementById('categoryFilter'),
+      sortBox: document.getElementById('sortBox'),
       lastUpdated: document.getElementById('lastUpdated'),
-      tabDeals: document.getElementById('tabDeals'),
-      tabTools: document.getElementById('tabTools'),
-      countDeals: document.getElementById('countDeals'),
-      countTools: document.getElementById('countTools')
+      detail: document.getElementById('detail'),
+      detailBody: document.getElementById('detailBody')
     };
 
-    /** 计数一律以「折叠后的卡片」为准，与页面实际卡片数、构建期预渲染数三者一致 */
-    function cardCountOf(predicate) {
-      return foldDeals(state.deals.filter(predicate)).length;
+    function renderFacets() {
+      const active = document.activeElement;
+      const focusKey = active && active.dataset && active.dataset.facet
+        ? active.dataset.facet + ':' + (active.dataset.value || '')
+        : null;
+      els.facets.innerHTML = facetBarHtml(state.deals, state.filters);
+      if (!focusKey) return;
+      // 重建 innerHTML 会丢焦点：按键操作时把焦点还给同一个 chip，否则键盘用户会被弹回页首
+      const restored = els.facets.querySelector('[data-facet="' + focusKey.split(':')[0] + '"]' +
+        (focusKey.split(':')[1] ? '[data-value="' + focusKey.split(':')[1] + '"]' : ''));
+      if (restored) restored.focus();
     }
 
-    function dealCount() {
-      return cardCountOf(d => d.type === 'deal' && !isExpired(d));
+    function renderSortBox() {
+      els.sortBox.querySelectorAll('[data-sort]').forEach(button => {
+        const on = button.dataset.sort === state.filters.sort;
+        button.classList.toggle('on', on);
+        button.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
     }
 
-    function toolCount() {
-      return cardCountOf(d => d.type !== 'deal');
+    function render() {
+      const cards = cardsFor(state.deals, state.filters);
+      state.cards = cards;
+      els.list.innerHTML = gridHtml(cards, state.filters);
+      els.stats.innerHTML = statsHtml(state.deals, state.filters);
+      renderFacets();
+      renderSortBox();
+    }
+
+    function openDetail(card) {
+      els.detailBody.innerHTML = detailHtml(card);
+      if (typeof els.detail.showModal === 'function') {
+        if (!els.detail.open) els.detail.showModal();
+      } else {
+        els.detail.setAttribute('open', '');
+      }
+    }
+
+    function bindEvents() {
+      let debounce = null;
+      els.search.addEventListener('input', () => {
+        clearTimeout(debounce);
+        debounce = setTimeout(() => {
+          state.filters.search = els.search.value.trim().toLowerCase();
+          render();
+        }, 120);
+      });
+
+      els.category.addEventListener('change', () => {
+        state.filters.category = els.category.value;
+        render();
+      });
+
+      els.facets.addEventListener('click', event => {
+        const button = event.target.closest('[data-facet]');
+        if (!button) return;
+        const facet = button.dataset.facet;
+        if (facet === 'verified') state.filters.verified = !state.filters.verified;
+        else if (facet === 'tab') state.filters = Object.assign({}, state.filters, { tab: button.dataset.value, vendor: '' });
+        else state.filters[facet] = state.filters[facet] === button.dataset.value ? '' : button.dataset.value;
+        render();
+      });
+
+      els.sortBox.addEventListener('click', event => {
+        const button = event.target.closest('[data-sort]');
+        if (!button) return;
+        state.filters.sort = button.dataset.sort;
+        render();
+      });
+
+      els.list.addEventListener('click', event => {
+        if (event.target.closest('a')) return;
+        const node = event.target.closest('.g');
+        if (!node) return;
+        const nodes = [...els.list.querySelectorAll('.g')];
+        const card = state.cards[nodes.indexOf(node)];
+        if (card) openDetail(card);
+      });
+
+      els.detailBody.addEventListener('click', event => {
+        if (event.target.closest('[data-close]')) {
+          event.preventDefault();
+          els.detail.close();
+        }
+      });
+
+      // 点遮罩关闭：<dialog> 的 ::backdrop 点击事件目标就是 dialog 本身
+      els.detail.addEventListener('click', event => {
+        if (event.target === els.detail) els.detail.close();
+      });
     }
 
     function loadDeals() {
@@ -754,96 +1445,14 @@
         });
     }
 
-    function populateCategories() {
-      const categories = [...new Set(state.deals.map(d => d.category).filter(Boolean))].sort();
-      categories.forEach(cat => {
-        const option = document.createElement('option');
-        option.value = cat;
-        option.textContent = cat;
-        els.category.appendChild(option);
-      });
-    }
-
-    function visibleDeals() {
-      const search = els.search.value.trim().toLowerCase();
-      const region = els.region.value;
-      const category = els.category.value;
-
-      // 先按筛选条件挑出条目，再折叠成卡片：搜索命中同一张表的多个模型时，
-      // 折叠卡里的模型清单自然收窄为「命中的那几个」，既保留上下文又不失相关性。
-      const list = foldDeals(state.deals.filter(deal => {
-        if (state.tab === 'deals') {
-          if (deal.type !== 'deal') return false;
-          if (isExpired(deal)) return false;
-        } else if (deal.type === 'deal' && isExpired(deal)) {
-          return false;
-        }
-        if (region && deal.region !== region) return false;
-        if (category && deal.category !== category) return false;
-        if (search) {
-          const haystack = [deal.title, deal.vendor, deal.discountInfo, deal.description, deal.category,
-            deal.source, (deal.features || []).join(' ')]
-            .filter(Boolean).join(' ').toLowerCase();
-          if (!haystack.includes(search)) return false;
-        }
-        return true;
-      }));
-
-      const order = els.sort.value;
-      if (order === 'title') {
-        return list.sort((a, b) => String(a.title).localeCompare(String(b.title), 'zh-Hans-CN'));
-      }
-      if (order === 'updated') {
-        return list.sort((a, b) => String(b.lastSeen || '').localeCompare(String(a.lastSeen || '')));
-      }
-      return defaultOrder(list);
-    }
-
-    function render() {
-      const list = visibleDeals();
-
-      els.countDeals.textContent = ' ' + dealCount();
-      els.countTools.textContent = ' ' + toolCount();
-
-      const scope = state.tab === 'deals' ? '条优惠' : '条工具';
-      els.stats.innerHTML = '共 <strong>' + list.length + '</strong> ' + scope + ' · ' +
-        '国内 ' + cardCountOf(d => d.region === 'cn' && d.type === 'deal' && !isExpired(d)) + ' 条优惠 · ' +
-        '国外 ' + cardCountOf(d => d.region === 'global' && d.type === 'deal' && !isExpired(d)) + ' 条优惠';
-
-      if (!list.length) {
-        els.list.innerHTML = '<div class="empty">没有匹配的' + (state.tab === 'deals' ? '优惠' : '工具') + '，试试清空筛选条件。</div>';
-        return;
-      }
-
-      els.list.innerHTML = list.map(cardHtml).join('');
-    }
-
-    function bindEvents() {
-      els.search.addEventListener('input', render);
-      els.region.addEventListener('change', render);
-      els.category.addEventListener('change', render);
-      els.sort.addEventListener('change', render);
-
-      els.tabDeals.addEventListener('click', () => switchTab('deals'));
-      els.tabTools.addEventListener('click', () => switchTab('tools'));
-    }
-
-    function switchTab(tab) {
-      state.tab = tab;
-      els.tabDeals.classList.toggle('active', tab === 'deals');
-      els.tabTools.classList.toggle('active', tab === 'tools');
-      els.tabDeals.setAttribute('aria-selected', tab === 'deals');
-      els.tabTools.setAttribute('aria-selected', tab === 'tools');
-      render();
-    }
-
     loadDeals()
       .then(() => {
-        populateCategories();
-        bindEvents();
+        els.category.insertAdjacentHTML('beforeend', categoryOptionsHtml(state.deals));
         els.lastUpdated.textContent = state.updatedAt
           ? new Date(state.updatedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
           : '未知（数据未标注更新时间）';
+        els.topStat.innerHTML = topStatHtml(state.deals, state.updatedAt);
+        bindEvents();
         render();
       })
       .catch(error => {

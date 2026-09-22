@@ -30,8 +30,22 @@ npm run collect         # 全量采集并写入 deals.json
 npm test                # 数据 + 前端静态校验（零依赖，可直接跑）
 npm run test:strict     # 额外校验内容质量指标
 npm run build           # 校验 → 组装并预渲染 dist/ → 产物自检
+npm run verify          # 真浏览器验收（密度/裁切/hover/筛选/弹层/移动端）
+npm run verify:shots    # 同上，并把截图写到 mockups/.preview/
 npm run serve                          # 本地预览源码目录 http://127.0.0.1:8080
 node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 index.html）
+```
+
+> 本地看效果请一律用 **`npm run build` + `node scripts/serve.js --dir=dist`**：
+> 源码目录里的 `index.html` 还没预渲染，`logos.css` 也尚未生成，直接开是看不到 logo 的。
+
+调规则用的报告：
+
+```bash
+npm run report:tier                    # 分档分布 + 每张卡命中的判据 + 判据读到的原文
+npm run report:tier -- --tier=2        # 只看某一档
+npm run report:vendor                  # 厂商归一并计（多少条脏 vendor 归到了同一家）
+npm run report:tier -- --all           # 连工具条目一起看
 ```
 
 抓 JS 渲染的公开页（可选能力，需要本机装有 Edge 或 Chrome）：
@@ -124,6 +138,9 @@ npm run build
 index.html                    前端（原生 HTML/CSS/JS，无构建；含预渲染标记与 RENDER-CORE 纯函数区）
 deals.json                    线上数据
 robots.txt                    放行搜索引擎与 AI 爬虫（GEO）
+assets/logos/
+  manifest.json               厂商 logo 登记表（名称/来源/取图方式/质量）
+  *.png *.svg                 从厂商官网下载的原始文件（见 assets/logos/README.md）
 scripts/
   collect.js                  采集编排：注册表 → 归一 → 去重 → 熔断 → 写盘 → 报告
   validate.js                 数据与前端校验（零依赖，CI 门禁）
@@ -137,6 +154,8 @@ scripts/
     official.js               聚合站条目 → 官方页解析
     http.js                   UA / 超时 / 重试 / 并发限流 / robots.txt
     browser.js                无头浏览器渲染（可选能力，仅 --headless 时加载）
+    render-core.js            从 index.html 抽取 RENDER-CORE 并在无 DOM 沙箱求值
+    logos.js                  logo 资产装配：manifest → dist/logos/ + dist/logos.css
     og-image.js               零依赖 OG 分享图生成（手写 PNG 编码 + 点阵字模）
     report.js                 采集报告表格
     curated.js                人工策展数据加载
@@ -154,6 +173,9 @@ scripts/
     official_urls.json        聚合站条目 → 官方页映射
   tools/                      采集器调试工具与发布产物组装
     build-local.js            校验 → 组装 dist/ → 预渲染 → 自检（本地与 CI 同一路径）
+    verify-site.js            真浏览器验收：密度/裁切/hover/筛选/弹层/移动端（dev，需 playwright-core）
+    tier-report.js            分档与厂商归一报告（调规则时先看它）
+    fetch-logos.js            从厂商官网抓取品牌图标，补进 assets/logos/
 ```
 
 ## 采集来源策略
@@ -204,13 +226,17 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 `build-local.js` 在组装阶段把内容**预渲染**进静态 HTML，因此不执行 JS 也能读到完整正文
 （搜索引擎、生成式引擎、社交 unfurl 都直接可读）。
 
-### 三个预渲染标记
+### 六个预渲染标记
 
 源码 `index.html` 里保留标记，构建期替换；替换后若仍有残留，构建直接失败（不发空壳页）：
 
 | 标记 | 构建期替换为 |
 |---|---|
-| `<!--PRERENDER:deals-->` | 默认视图（优惠 Tab、无筛选）的卡片 HTML |
+| `<!--PRERENDER:deals-->` | 默认视图（优惠 Tab、无筛选）的**力度分带 + 卡片** HTML |
+| `<!--PRERENDER:facets-->` | 筛选条的 facet 按钮与实时计数 |
+| `<!--PRERENDER:topstat-->` | 顶栏右侧汇总（条数 / 已核验数 / 更新日期） |
+| `<!--PRERENDER:stats-->` | 结果条（显示多少条卡片 · 国内 / 国外 · 覆盖几个档位） |
+| `<!--PRERENDER:categories-->` | 分类下拉的 `<option>` |
 | `<!--PRERENDER:jsonld-->` | `Organization` / `BreadcrumbList` / `FAQPage` / `ItemList` 四段 JSON-LD |
 | `__SITE_URL__` | 站点绝对地址（避免源码里硬编码第二份 URL） |
 
@@ -220,23 +246,77 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 常量与纯函数的区块：
 
 ```
-/* ==== RENDER-CORE:START ==== */   ... cardHtml / defaultVisible / defaultOrder / escape* ...
+/* ==== RENDER-CORE:START ==== */
+    常量与档位     TIERS / tierOf / affirmativeText
+    厂商归一       VENDOR_RULES / vendorOf / logoHtml
+    时间与转义     daysUntil / escapeHtml / offerOf / featsOf / tagsHtml
+    折叠           foldKey / foldGroup / foldDeals
+    筛选与渲染     matches / cardsFor / facetBarHtml / cardHtml / gridHtml / detailHtml
 /* ==== RENDER-CORE:END   ==== */
 ```
 
-`build-local.js` 按标记抽出该区块，在**没有 DOM 的 vm 沙箱**里求值后调用 `cardHtml()` 生成
-静态卡片。这条约束是刻意的：一旦有人在区块内引用 `document` / `window` / `state`，构建立即
-报错，而不是悄悄产出一个坏页面。浏览器端继续复用同一份函数做筛选与搜索。
+`scripts/lib/render-core.js` 按标记抽出该区块，在**没有 DOM 的 vm 沙箱**里求值。构建期调
+`defaultCards()` + `gridHtml()` 生成静态骨架，浏览器端调 `cardsFor(deals, filters)` 做筛选——
+**默认视图就是同一函数取默认筛选参数的那一次调用**，两条路径不可能分叉。
+
+这条约束是刻意的：一旦有人在区块内引用 `document` / `window` / `state`，构建立即报错，
+而不是悄悄产出一个坏页面。
+
+### 优惠力度分档（排序依据）
+
+默认排序按「拿到手要花多少钱」从低到高，五档：
+
+| 档 | 名称 | 判据（按顺序命中即停） |
+|---|---|---|
+| 1 | 完全免费 | `pricingModel` ∈ {free, freemium} |
+| 2 | 免费额度 | 标题/说明命中「新用户 / 赠送 / 免费额度 / 代金券 / 首月…免费」，或 `pricingModel` ∈ {credits, trial} |
+| 3 | 身份优惠 | 标题/说明命中身份门槛（学生 / 教师 / 非营利 / 初创 / 开源…） |
+| 4 | 折扣促销 | 要付费，但命中折扣或限时 |
+| 5 | 付费为主 | 其余 |
+
+规则全部写在 RENDER-CORE 里，读的都是数据里**已有**的字段，不引入外部评分。
+两个刻意的取舍：
+
+- **判据分两侧读**：`标题 + discountInfo` 是「这是什么优惠」，`eligibility` 是「谁能拿」。
+  身份门槛只在优惠侧成立才算数——目录站抓来的适用条件经常是媒体受众词
+  （`Students, solo builders, app builders…`），拿它当门槛会把普通免费档错划进身份优惠。
+- **先剔除否定句**：采集回来的原文里真有
+  `No standing public student or nonprofit discount was listed…`
+  和 `…the previous student offer ended March 11, 2026`。
+  不剔除就会把「已结束的优惠」挂进身份优惠档。
+
+同一档内按「即将截止优先 → 其次最近更新」排序（严格的旧排序语义细化）。
+`npm run report:tier` 会把每张卡命中的判据和判据读到的原文逐条列出来，调规则先看它。
+
+### 厂商 logo
+
+厂商 logo 是**厂商官方品牌图形**，登记在 `assets/logos/manifest.json`，构建期由
+`scripts/lib/logos.js` 生成为 `dist/logos/` + `dist/logos.css`。页面上只写 `data-logo`
+属性，图形由 CSS 提供——因此渲染核心保持纯函数，且**不热链任何第三方 CDN**。
+
+构建期断言「模板引用的 logo key 全部已登记」，缺一个就构建失败。抓不到官方图形的厂商
+（Midjourney 403、xAI / Mistral 等连不上）**就是不放 logo**，不拿近似图凑数。
+详见 `assets/logos/README.md`。
 
 ### 诚实性约束（与竞品的关键差别）
 
-- 卡片底部只在**人工逐条回访官方页**的条目上显示「已核验：{日期}」；自动采集条目显示
-  「数据更新：{lastSeen}」。不把「抓到过」说成「核验过」。
-- 无 `priceLine` 的条目**不渲染价格阶梯行**，无 `features` 的条目回退展示 `discountInfo`，
-  不生成近似内容。
+- 卡片底部只在**人工逐条回访官方页**的条目上显示「已核验 {日期}」；自动采集条目显示
+  「数据更新 {lastSeen}」。不把「抓到过」说成「核验过」。
+- 无 `features` 的条目回退展示 `discountInfo`；工具条目显示工具简介（灰条）而**不冒充优惠**
+  （优惠正文用档位配色的竖条，两者视觉上分得开）。
+- 优惠正文只在标点处切一刀加粗前半句，**不改写、不截断、不补写**一个字。
 - `FAQPage` 结构化数据**从页面可见的 `<details>` 文案反向解析**生成，保证两者逐字一致
   （构建自检会校验这一致性）。
 - 页脚明确声明「本站不收录付费推广位，排序与推荐理由不出售」。
+
+### 真浏览器验收
+
+卡片是**固定高度**的，任何一处内容变高都会被 `overflow:hidden` 静默裁掉；logo 簇是 hover
+展开的，很容易把标题挤到换行、把网格行高顶动。这两类问题静态检查都看不见，所以有
+`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 35 项断言——
+无 JS 时的静态骨架、卡片高度是否统一、**每张卡最后一个元素有没有越过内边距**、
+hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排序、搜索、移动端横向溢出、
+外部请求数、JS 报错数。
 
 ### 无障碍与 OG 图
 

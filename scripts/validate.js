@@ -212,13 +212,19 @@ function checkIndex() {
   }
 
   // 预渲染标记：删掉它们会让 SEO 静态骨架静默失效（构建期才会报错），这里提前告警
-  for (const marker of ['<!--PRERENDER:deals-->', '<!--PRERENDER:jsonld-->']) {
+  for (const marker of [
+    '<!--PRERENDER:deals-->', '<!--PRERENDER:facets-->', '<!--PRERENDER:topstat-->',
+    '<!--PRERENDER:stats-->', '<!--PRERENDER:categories-->', '<!--PRERENDER:jsonld-->'
+  ]) {
     if (!html.includes(marker)) {
       warn(`index.html 缺少预渲染标记 ${marker}（会让构建期静态骨架失效）`);
     }
   }
   if (!/RENDER-CORE:START/.test(html) || !/RENDER-CORE:END/.test(html)) {
     warn('index.html 缺少 RENDER-CORE 标记区块（构建期无法抽取渲染核心）');
+  }
+  if (!/logos\.css/.test(html)) {
+    warn('index.html 未引用 logos.css（厂商 logo 不会显示）');
   }
   if (!/__SITE_URL__/.test(html) && !/rel="canonical"/.test(html)) {
     warn('index.html 缺少 canonical 或 __SITE_URL__ 占位');

@@ -3,3 +3,6 @@ dist/
 screenshot.png
 *.log
 .DS_Store
+
+# 前端样稿的预览截图（不入库）
+mockups/**/.preview/

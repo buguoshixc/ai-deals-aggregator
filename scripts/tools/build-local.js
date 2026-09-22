@@ -19,15 +19,18 @@
 
 const fs = require('fs');
 const path = require('path');
-const vm = require('vm');
 const { execFileSync } = require('child_process');
 const { render: renderOgImage } = require('../lib/og-image');
+const { load: loadLogos, write: writeLogos } = require('../lib/logos');
+const { load: loadRenderCore } = require('../lib/render-core');
 
 const ROOT = path.join(__dirname, '..', '..');
 const outArg = process.argv.find(a => a.startsWith('--out='));
 const OUT = path.join(ROOT, outArg ? outArg.slice(6) : 'dist');
 
 const PUBLIC_FILES = ['index.html', 'deals.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
+/** 构建期生成、不走源码拷贝的产物 */
+const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png'];
 const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
 const SITE_NAME = 'AI 优惠聚合器';
 const SITE_DESCRIPTION = '聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。全部指向厂商官方页。';
@@ -41,7 +44,11 @@ const SITE_DESCRIPTION = '聚合国内外 AI 大模型的真实优惠：新用�
  */
 const MIN_PRERENDERED_CARDS = 45;
 
-const RENDER_CORE_RE = /\/\* =+\s*\n\s*\* RENDER-CORE:START[\s\S]*?\/\* =+\s*\n\s*\* RENDER-CORE:END[\s\S]*?\*\//;
+/** 骨架里所有必须被构建期填掉的标记 */
+const PRERENDER_MARKERS = [
+  'PRERENDER:deals', 'PRERENDER:facets', 'PRERENDER:topstat',
+  'PRERENDER:stats', 'PRERENDER:categories', 'PRERENDER:jsonld'
+];
 
 function runValidate() {
   console.log('=== 1) 发布前数据校验 ===');
@@ -59,39 +66,20 @@ function runValidate() {
  * 一旦有人在区块内引用 document/window/state，这里立即抛错——构建立刻失败，
  * 而不是悄悄产出一个坏页面。
  */
-function loadRenderCore(html) {
-  const match = html.match(RENDER_CORE_RE);
-  if (!match) {
-    throw new Error('index.html 中找不到 RENDER-CORE 标记区块（纯渲染核心），无法预渲染');
+/**
+ * 渲染核心引用的 logo key 必须全部登记在 assets/logos/manifest.json 里。
+ * 缺一个就构建失败——否则页面上会静默出现一个空白方块。
+ */
+function checkLogoCoverage(renderCore, logos) {
+  const referenced = renderCore.logoKeys();
+  const missing = referenced.filter(key => !logos[key]);
+  if (missing.length) {
+    throw new Error(`RENDER-CORE 引用了未登记的 logo: ${missing.join(', ')}（请补进 assets/logos/manifest.json）`);
   }
-
-  const shim = {
-    document: {
-      createElement() {
-        let text = '';
-        return {
-          set textContent(value) { text = value === null || value === undefined ? '' : String(value); },
-          get textContent() { return text; },
-          get innerHTML() {
-            return text
-              .replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;');
-          }
-        };
-      }
-    }
-  };
-
-  const context = vm.createContext(shim);
-  new vm.Script(match[0], { filename: 'index.html#RENDER-CORE' }).runInContext(context);
-
-  for (const name of ['cardHtml', 'defaultVisible', 'defaultOrder', 'defaultCards']) {
-    if (typeof context[name] !== 'function') {
-      throw new Error(`RENDER-CORE 区块缺少函数 ${name}()`);
-    }
-  }
-  return context;
+  const used = new Set(referenced);
+  const unused = Object.keys(logos).filter(key => !used.has(key));
+  console.log(`  logo 覆盖: 模板引用 ${referenced.length} 个 / 已登记 ${Object.keys(logos).length} 个` +
+    (unused.length ? `（暂未使用: ${unused.join(', ')}）` : ''));
 }
 
 /* ------------------------------------------------------------------ */
@@ -108,6 +96,7 @@ function replaceMarker(html, marker, replacement) {
 /** 默认视图（优惠 Tab、无筛选）的卡片 HTML */
 function renderDeals(renderCore, payload) {
   const visible = renderCore.defaultVisible(payload.deals);
+  const filters = renderCore.defaultFilters();
   const cards = renderCore.defaultCards(payload.deals);
 
   // 无损断言：折叠只改变呈现粒度，不能丢条目。
@@ -120,11 +109,23 @@ function renderDeals(renderCore, payload) {
   if (cards.length < MIN_PRERENDERED_CARDS) {
     throw new Error(`预渲染卡片只有 ${cards.length} 条，低于下限 ${MIN_PRERENDERED_CARDS}（数据或过滤逻辑异常）`);
   }
+
+  // 分档分布：分档规则改了之后，这里是第一时间能看出「档位塌了」的地方
+  const dist = new Map();
+  cards.forEach(card => dist.set(card.tier, (dist.get(card.tier) || 0) + 1));
+  const distText = [...dist.entries()].sort((a, b) => a[0] - b[0])
+    .map(([tier, n]) => `档${tier}:${n}`).join(' ');
+
   return {
-    html: cards.map(card => renderCore.cardHtml(card)).join('\n      '),
+    html: renderCore.gridHtml(cards, filters),
     count: cards.length,
     cards: cards,
-    visibleCount: visible.length
+    visibleCount: visible.length,
+    dist: distText,
+    facets: renderCore.facetBarHtml(payload.deals, filters),
+    categories: renderCore.categoryOptionsHtml(payload.deals),
+    stats: renderCore.statsHtml(payload.deals, filters),
+    topStat: renderCore.topStatHtml(payload.deals, payload.updatedAt)
   };
 }
 
@@ -241,18 +242,32 @@ function assemble() {
     fs.copyFileSync(from, path.join(OUT, file));
   }
 
+  // 厂商 logo：品牌矢量现场生成为独立 SVG，官网文件原样拷贝，规则写进 logos.css。
+  // 全部落盘、不热链任何第三方 CDN。
+  const logoSet = loadLogos();
+  const logoStat = writeLogos(OUT, logoSet.logos);
+  console.log(`  logo 资产: ${logoStat.count} 个 → logos/ ${logoStat.files} 个文件 + logos.css（${(logoStat.bytes / 1024).toFixed(1)} KB）`);
+
   const payload = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
   const indexFile = path.join(OUT, 'index.html');
   let html = fs.readFileSync(indexFile, 'utf8');
 
   console.log('\n=== 3) 预渲染静态骨架 ===');
-  const renderCore = loadRenderCore(html);
+  const renderCore = loadRenderCore(indexFile);
+  checkLogoCoverage(renderCore, logoSet.logos);
 
   // 默认视图卡片：同时移除「加载数据中…」占位（预渲染内容已经可读）
   const rendered = renderDeals(renderCore, payload);
   html = replaceMarker(html, '<!--PRERENDER:deals-->', rendered.html);
   html = html.replace(/\s*<div class="loading">加载数据中…<\/div>/g, '');
-  console.log(`  卡片预渲染: ${rendered.count} 条`);
+  console.log(`  卡片预渲染: ${rendered.count} 条（${rendered.dist}）`);
+
+  // 骨架的其余部分：筛选条计数、顶栏汇总、结果条、分类选项
+  html = replaceMarker(html, '<!--PRERENDER:facets-->', rendered.facets);
+  html = replaceMarker(html, '<!--PRERENDER:topstat-->', rendered.topStat);
+  html = replaceMarker(html, '<!--PRERENDER:stats-->', rendered.stats);
+  html = replaceMarker(html, '<!--PRERENDER:categories-->', rendered.categories);
+  console.log(`  筛选条 / 汇总 / 分类选项: 已填充`);
 
   // 站点绝对地址：源码里不硬编码第二份 URL
   const urlSlots = html.split('__SITE_URL__').length - 1;
@@ -268,7 +283,7 @@ function assemble() {
   console.log(`  JSON-LD: ${(jsonLd.match(/application\/ld\+json/g) || []).length} 段`);
 
   // 标记必须全部消失——残留意味着某个替换静默失败了
-  for (const marker of ['PRERENDER:deals', 'PRERENDER:jsonld']) {
+  for (const marker of PRERENDER_MARKERS) {
     if (html.includes(marker)) throw new Error(`预渲染标记未被替换: ${marker}`);
   }
 
@@ -301,10 +316,23 @@ function selfCheck(built) {
   let failed = 0;
   const fail = (message) => { console.log('  ✗ ' + message); failed++; };
 
-  for (const file of [...PUBLIC_FILES, 'sitemap.xml', 'og-image.png']) {
+  for (const file of [...PUBLIC_FILES, ...GENERATED_FILES]) {
     const ok = fs.existsSync(path.join(OUT, file));
     console.log(`  ${ok ? '✓' : '✗'} ${file}`);
     if (!ok) failed++;
+  }
+
+  // logo 资产：目录存在、文件数与 manifest 对得上、CSS 里每条规则都有对应文件
+  const logoDir = path.join(OUT, 'logos');
+  if (!fs.existsSync(logoDir)) fail('缺少 logos/ 目录');
+  else {
+    const sheet = fs.readFileSync(path.join(OUT, 'logos.css'), 'utf8');
+    const rules = [...new Set([...sheet.matchAll(/^\.lg\[data-logo="([^"]+)"\]\{/gm)].map(m => m[1]))];
+    const missing = rules.filter(key => !fs.existsSync(path.join(logoDir, `${key}.svg`)) &&
+      !fs.existsSync(path.join(logoDir, `${key}.png`)));
+    if (!rules.length) fail('logos.css 里没有任何 logo 规则');
+    else if (missing.length) fail(`logos.css 引用了不存在的图形: ${missing.join(', ')}`);
+    else console.log(`  ✓ logo: ${rules.length} 条规则 → logos/ ${fs.readdirSync(logoDir).length} 个文件`);
   }
 
   const payload = JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8'));
@@ -319,34 +347,61 @@ function selfCheck(built) {
 
   // --- 预渲染与 SEO 自检 ---
   const html = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
+  // 内联脚本里含模板字符串字面量（class="go" / data-logo="…" 之类），
+  // 数标记时必须先把 <script> 摘掉，否则会把源码当成已渲染的卡片数进去。
+  const markup = html.replace(/<script[\s\S]*?<\/script>/gi, '');
 
   if (/PRERENDER:/.test(html)) fail('产物 index.html 仍残留 PRERENDER 标记');
   if (/__SITE_URL__/.test(html)) fail('产物 index.html 仍残留 __SITE_URL__ 占位');
 
-  const cardCount = (html.match(/<article class="deal-card/g) || []).length;
+  const cardCount = (markup.match(/<article class="g /g) || []).length;
   if (cardCount < MIN_PRERENDERED_CARDS) {
     fail(`预渲染卡片 ${cardCount} 条 < ${MIN_PRERENDERED_CARDS}`);
   } else {
     console.log(`  ✓ 预渲染卡片: ${cardCount} 条`);
   }
 
+  // 分档分带：默认按力度排序，五档里有卡片的档必须都有带
+  const tierHeads = [...markup.matchAll(/<div class="tierhead t(\d)">/g)].map(m => Number(m[1]));
+  const tierDots = [...markup.matchAll(/data-tier="(\d)"/g)].map(m => Number(m[1]));
+  if (built) {
+    const expected = new Set(built.cards.map(card => card.tier));
+    const missingTier = [...expected].filter(tier => !tierHeads.includes(tier));
+    if (missingTier.length) fail(`档位 ${missingTier.join(', ')} 有卡片但缺少分带标题`);
+    else if (tierDots.length !== cardCount) fail(`档位角标 ${tierDots.length} 个 ≠ 卡片 ${cardCount} 条`);
+    else console.log(`  ✓ 力度分带: ${tierHeads.length} 档（${built.dist}）`);
+  }
+
+  // 厂商 logo：卡片上的 data-logo 必须都能在产物里找到图形文件
+  const tileKeys = [...new Set([...markup.matchAll(/data-logo="([^"]+)"/g)].map(m => m[1]))];
+  const brokenLogos = tileKeys.filter(key => !fs.existsSync(path.join(logoDir, `${key}.svg`)) &&
+    !fs.existsSync(path.join(logoDir, `${key}.png`)));
+  if (brokenLogos.length) fail(`卡片引用了产物里不存在的 logo: ${brokenLogos.join(', ')}`);
+  else console.log(`  ✓ 卡片 logo: ${tileKeys.length} 个厂商图形全部就位`);
+
+  // 骨架的其余部分不能留空
+  if (/<!--PRERENDER:/.test(html)) fail('产物仍有未替换的预渲染标记');
+  const facetCount = (markup.match(/data-facet="/g) || []).length;
+  if (facetCount < 4) fail(`筛选条只有 ${facetCount} 个按钮（预渲染失败）`);
+  else console.log(`  ✓ 筛选条: ${facetCount} 个 facet 按钮`);
+
   // 只在「已渲染的卡片」里数，避免把内联脚本里的模板字符串字面量也算进去
-  // （cardHtml 的源码里含有 class="cta" / class="deal-models" 这些字面量）。
-  const ctaCount = (html.match(/class="cta" href="https?:/g) || []).length;
-  console.log(`  ✓ CTA 按钮: ${ctaCount} 个`);
-  if (ctaCount < cardCount) fail(`CTA 按钮 ${ctaCount} 个少于卡片 ${cardCount} 条`);
+  // （cardHtml 的源码里含有 class="go" / data-model-count 这些字面量）。
+  const ctaCount = (markup.match(/class="go" href="https?:/g) || []).length;
+  console.log(`  ✓ 官方页入口: ${ctaCount} 个`);
+  if (ctaCount < cardCount) fail(`官方页入口 ${ctaCount} 个少于卡片 ${cardCount} 条`);
 
   // 折叠无损：产物里「折叠卡覆盖的模型数 + 单条卡数」必须等于未过期优惠条数，
-  // 即数据层的无损断言确实落到了静态正文里（模型名真的被输出，而不是只写在内存里）
+  // 即数据层的无损断言确实落到了静态正文里（覆盖模型数真的被输出，而不是只写在内存里）
   if (built) {
-    const modelsSum = [...html.matchAll(/data-model-count="(\d+)"/g)]
+    const modelsSum = [...markup.matchAll(/data-model-count="(\d+)"/g)]
       .reduce((n, m) => n + Number(m[1]), 0);
-    const foldedCards = (html.match(/<div class="deal-models" data-model-count="\d+">/g) || []).length;
+    const foldedCards = (markup.match(/<article class="g [^>]*data-model-count="/g) || []).length;
     const covered = (cardCount - foldedCards) + modelsSum;
     if (covered !== built.visibleCount) {
-      fail(`折叠覆盖条目 ${covered} 条 ≠ 未过期优惠 ${built.visibleCount} 条（折叠卡 ${foldedCards} 张 / 模型名 ${modelsSum} 个）`);
+      fail(`折叠覆盖条目 ${covered} 条 ≠ 未过期优惠 ${built.visibleCount} 条（折叠卡 ${foldedCards} 张 / 覆盖模型 ${modelsSum} 个）`);
     } else {
-      console.log(`  ✓ 折叠无损: ${cardCount} 张卡片覆盖 ${built.visibleCount} 条优惠（${foldedCards} 张折叠卡 / ${modelsSum} 个模型名）`);
+      console.log(`  ✓ 折叠无损: ${cardCount} 张卡片覆盖 ${built.visibleCount} 条优惠（${foldedCards} 张折叠卡 / ${modelsSum} 个模型）`);
     }
   }
 

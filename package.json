@@ -19,6 +19,11 @@
     "test": "node scripts/validate.js",
     "test:strict": "node scripts/validate.js --strict",
     "build": "node scripts/tools/build-local.js",
+    "verify": "node scripts/tools/verify-site.js",
+    "verify:shots": "node scripts/tools/verify-site.js --shots",
+    "report:tier": "node scripts/tools/tier-report.js",
+    "report:vendor": "node scripts/tools/tier-report.js --vendor",
+    "fetch:logos": "node scripts/tools/fetch-logos.js",
     "serve": "node scripts/serve.js"
   },
   "dependencies": {

@@ -347,6 +347,86 @@ ASCII，所以分享图只排品牌标记与站点名，不做中文排版——
 
 ---
 
+### 2.11 新增：前端重做为高密度分档网格 + 真厂商 logo
+
+**背景**：线上是「一行一张卡」，1440×900 首屏只能看到 **3 张**卡片，全部内容要滚 **14.5 屏**；
+优惠与免费额度的区别也要读文字才知道。这里把「一屏能看到多少条」和「一眼能不能分出
+免费 / 收费」当成两个可测量指标来解。
+
+**做了什么**
+
+| 项 | 之前 | 现在 |
+|---|---|---|
+| 布局 | 单列，卡片宽 1008px、高 228px | 1440px 下 **3 列**，卡片高 **192px**（统一） |
+| 首屏卡片数 | 3 张 | **10 张** |
+| 全部内容滚动 | 14.5 屏 | **5.2 屏**（页高 4722px，含 FAQ + 页脚） |
+| 排序依据 | 即将截止优先 | **优惠力度五档**（完全免费 → 免费额度 → 身份优惠 → 折扣促销 → 付费为主），同档内按即将截止 → 最近更新 |
+| 厂商标识 | 纯文字 vendor | **29 家真厂商 logo**（官方品牌图形），折叠卡上还显示覆盖的模型家族 logo |
+| 筛选 | 两个下拉 + 两个 Tab | **facet 筛选条**（已核验 / 类型 / 地区 / 厂商计数），带实时计数 |
+| 详情 | 无 | 点卡片开弹层，字段原样铺开（适用条件 / 有效期 / 价格阶梯 / 核验状态 / 覆盖模型 / 来源） |
+
+**分档规则的两次纠错**（都由报告工具查出来，不是拍脑袋）
+
+1. 一开始只在 `eligibility` 里找身份词，结果 Replit / Zapier / Google Gemini 这类普通免费档
+   被划进「身份优惠」——因为目录站抓来的适用条件写的是媒体受众词
+   （`Students, solo builders, app builders…`），不是门槛。
+   → 改成 **offer 侧（标题 + 优惠说明）才算身份门槛**，适用条件只作参考。
+2. 修正后仍有假阳性，因为原文里就有否定句：
+   `No standing public student or nonprofit discount was listed…`、
+   `…says the previous student offer ended March 11, 2026`。
+   → 加 **否定句剔除**（与 `schema.js` 的 `hasDiscountSignal` 同一套思路）。断句刻意手写而不用
+   正则一次切完——`U.S.` 这类缩写会把句子拦腰截断，反而把否定词和它否定的对象分到两句里。
+
+最终分布：**①完全免费 12 · ②免费额度 20 · ③身份优惠 18 · ④折扣促销 3 · ⑤付费为主 0**
+（第 5 档当前无成员：默认视图里所有条目要么免费、要么有额度、要么有身份或折扣信号）。
+`npm run report:tier` 会逐条列出命中的判据和判据读到的原文，调规则先看它。
+
+**厂商 logo：全部是官方品牌图形**
+
+* 19 条品牌矢量（simple-icons 品牌路径 + Microsoft 四色方块矢量重建）
+* 19 个厂商官网文件（`openai.com` 的 apple-icon、`siliconflow.cn/logo-new.svg`、
+  `portal.volccdn.com` favicon、`bigmodel.cn` favicon …）
+* 构建期由 `scripts/lib/logos.js` 生成为 `dist/logos/` + `dist/logos.css`；
+  页面只写 `data-logo` 属性，**不热链任何 CDN**（`npm run verify` 断言外部请求 = 0）
+* 构建期断言「模板引用的 logo key 全部已登记」，缺一个直接构建失败
+* 抓不到官方图形的 8 家（Midjourney 403，xAI / Mistral / Hugging Face / Ideogram /
+  Leonardo / KREA / Together 连通性失败）**就是不挂 logo**，不拿近似图凑数；
+  科大讯飞只有 32px favicon、商汤方形图标只有 120×184，如实记进
+  `assets/logos/README.md` 的缺口表
+
+**厂商归一**：采集来的 vendor 字符串有 78 种写法（`火山引擎` / `火山引擎（字节跳动）`、
+`科大讯飞 讯飞开放平台`、`腾讯云 混元大模型`…）。RENDER-CORE 里一张有序规则表把它们归到
+规范厂商，同时供**厂商筛选、卡片 vendor 行、logo 取图**三处使用。没有规则的条目原样返回，
+不硬套厂商。
+
+**架构上没有分叉**：筛选、排序、分档、渲染全部收进 RENDER-CORE 纯函数区，浏览器走
+`cardsFor(deals, filters)`，构建期走 `cardsFor(deals, DEFAULT_FILTERS)`——**默认视图就是同一
+函数取默认参数的那一次调用**。预渲染标记从 2 个增加到 6 个（卡片、facet 计数、顶栏汇总、
+结果条、分类选项、JSON-LD）。
+
+**修掉的两个真实缺陷**
+
+1. 详情弹层的 logo 簇只有类名、没有布局规则，`display:grid` 的 tile 会在行内元素里**竖着叠起来**。
+   由 `npm run verify` 的移动端 tile 计数异常暴露。现在弹层用独立的 `.dh-logos` 一行平铺。
+2. 工具条目渲染了优惠正文块，再用 CSS `display:none` 藏掉——DOM 里存在、视觉上不存在。
+   改成工具条目显示**工具简介（灰条、不加粗）**，优惠条目显示**优惠说明（档位配色竖条、
+   前半句加粗）**，两者都是数据原文，视觉语言也分得开。
+
+**验证**：新增 `npm run verify`（真浏览器 35 项断言）。卡片是固定高度，内容变高会被
+`overflow:hidden` 静默裁掉，所以断言里最关键的一条是「每张卡最后一个元素的底边有没有越过
+卡片内边距」——53 张卡全部通过。另有 hover 前后「卡片高 / logo 簇宽 / 标题宽」三量不变
+（logo 簇的容器宽度按展开后预留，展开只填满预留空间，不挤标题、不顶网格行高）。
+截图见 `mockups/.preview/site-*.png`。
+
+**改动范围**：`index.html`（重写）、`scripts/lib/logos.js`、`scripts/lib/render-core.js`（新）、
+`scripts/tools/build-local.js`、`scripts/tools/verify-site.js`（新）、
+`scripts/tools/tier-report.js`（新）、`scripts/tools/fetch-logos.js`（新）、
+`assets/logos/`（38 个 logo + manifest + README）、`scripts/validate.js`（预渲染标记清单）。
+`deals.json` / 采集器 / `schema.js` / CI 工作流**零改动**。
+
+
+---
+
 ## 三、命令速查
 
 ```bash
@@ -357,7 +437,12 @@ npm run collect:headless:dry  # 额外启用无头来源（智谱活动页 / 火
 npm run collect:headless      # 额外启用无头来源并写盘（需本机 Edge/Chrome）
 npm test                # 数据 + 前端校验（零依赖）
 npm run test:strict     # 附加内容质量指标
-npm run build           # 本地复现发布产物（含预渲染）并自检
+npm run build           # 本地复现发布产物（含预渲染 + logo 资产）并自检
+npm run verify          # 真浏览器验收（35 项断言；需 playwright-core + 本机 Edge）
+npm run verify:shots    # 同上，并把截图写到 mockups/.preview/
+npm run report:tier     # 分档分布 + 每张卡命中的判据 + 判据读到的原文
+npm run report:vendor   # 厂商归一报告（多少种脏写法归到了同一家）
+npm run fetch:logos     # 从厂商官网抓品牌图标，补进 assets/logos/
 npm run serve                          # 本地预览源码目录 http://127.0.0.1:8080
 node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 index.html）
 
@@ -395,6 +480,10 @@ node scripts/data/backfill-cards.js --check          # 核对策展条目的卡�
 **折叠后默认视图**（见 2.10）：**53 张卡片** = 50 张单条卡 + 3 张折叠卡（百度千帆 1 张覆盖
 17 个模型、火山方舟 2 张各覆盖 2 个模型）。换言之，71 条优惠里有 **18 条**是「同一张官方表格的
 重复投影」。国内 33 张 / 国外 20 张。
+
+**力度分档分布**（见 2.11）：①完全免费 12 · ②免费额度 20 · ③身份优惠 18 · ④折扣促销 3 ·
+⑤付费为主 0。卡片上出现 **29 家厂商 logo**；`assets/logos/` 共登记 38 个图形
+（19 个品牌矢量 + 19 个官网文件），其余为工具页备用。
 
 来源分布：Futuretools 29 · 百度千帆 17 · aitools.fyi 15 · 人工策展（国外）14 · 火山方舟 12 ·
 Layer3Labs 9 · 人工策展（国内）9 · 智谱AI 7 · 智谱AI活动页 5 · Futurepedia 3 · 阿里云百炼 1
@@ -441,27 +530,38 @@ Layer3Labs 9 · 人工策展（国内）9 · 智谱AI 7 · 智谱AI活动页 5 �
 9. **`priceLine` 覆盖率**：目前只有 3 条。可在日报价页明确给出档位时补，不必强求。
 10. **i18n**：已预留 `hreflang` 结构（`zh-CN` + `x-default` 自指）。若要做英文站，
     加 `en` 版本并补 `hreflang="en"` 即可，无需返工现有结构。
-11. **折叠卡的模型清单样式化**：当前 `.deal-models` 是纯文本 `、` 连接、**无任何 CSS**（刻意如此，
-    见 2.10 交接）。可做 chip、超过 N 个折叠展开、「覆盖 17 个模型」角标。
-12. **厂商筛选器**：折叠解决了「同一张表刷屏」，但「我要用 X 家」仍是缺失的检索意图。落地前必须先建
-    **vendor 归一表**（数据里同时存在 `火山引擎` 与 `火山引擎（字节跳动）`）；`scripts/data/aliases.json`
-    里已有 `qianfan` / `volcengine` / `zhipu` / `kimi` / `hunyuan` 等厂商级规范 key 可复用，不必从零建。
-13. **`eligibility` 筛选器**：学生 / 教师 / 新用户 / 初创 / 非营利是这类站点最真实的检索意图之一
-    （搜「学生」能命中 8 条，说明需求存在，只是没有入口）。但目前 57 条没有 `eligibility` 字段，
-    需先补齐再做成筛选器。
+11. ~~**折叠卡的模型清单样式化**~~ —— **2.11 已做**：折叠卡上显示覆盖的模型家族 logo（最多 4 个 +
+    `+N`），旁边一枚「N 个模型共用额度」的 chip，点击卡片在弹层里列出全部模型名。
+    卡片正文里不再铺 17 个模型名（放不下），模型名保留在 JSON-LD 的 `ItemList.description` 里。
+12. ~~**厂商筛选器**~~ —— **2.11 已做**：筛选条上有按条数排序的厂商 facet（≥2 条的才出现，
+    最多 6 个），底层是 RENDER-CORE 里的 `VENDOR_RULES` 归一表（78 种脏写法 → 规范厂商）。
+    归一表同时给卡片 vendor 行与 logo 取图用。
+13. **`eligibility` 筛选器**：学生 / 教师 / 新用户 / 初创 / 非营利是这类站点最真实的检索意图之一。
+    2.11 的「身份优惠」档只是它的近似（18 张卡），真正按身份筛需要先把 `eligibility` 补齐
+    （目前 71 条优惠里仍有一部分为空）。
 14. **智谱免费模型的厂商级合并**：那 7 条「XX 免费模型」`url` 各不相同，不属于「同一张表」，
     2.10 刻意没有合并。要合并需另写一条厂商级策略（与「同源折叠」是两回事，不要混在一个函数里）。
+15. **还有 8 家厂商没有 logo**：Midjourney（官网 403）、xAI / Mistral / Hugging Face / Ideogram /
+    Leonardo / KREA / Together（本机网络连不上其官网）。缺口表在 `assets/logos/README.md`。
+    另外科大讯飞只有 32px favicon、商汤方形图标只有 120×184，需要向品牌方要矢量素材。
+16. **`deals.json` 的体积**：`dist/index.html` 155 KB（预渲染 53 张卡 + 内联脚本）。
+    GitHub Pages 会 gzip，实际传输约 30 KB；如果继续增长，可把内联脚本拆成外部文件换取缓存命中。
 
 ---
 
 ## 六、技术栈
 
-- **前端**：原生 HTML + CSS + JavaScript（单文件，零构建）
+- **前端**：原生 HTML + CSS + JavaScript（单文件，零构建）；1440px 下三列高密度卡片网格，
+  档位分带 + facet 筛选条 + `<dialog>` 详情弹层
+- **厂商 logo**：`assets/logos/manifest.json` 登记 → `scripts/lib/logos.js` 构建期生成
+  `dist/logos/`（品牌矢量现场生成 SVG）+ `dist/logos.css`；不热链 CDN
 - **采集**：Node.js 20+ / axios / cheerio，自建 http 封装（UA、超时、重试、并发限流、robots.txt）
 - **无头采集**：playwright-core + 本机 Edge/Chrome（本地）/ playwright 自带 chromium（CI），不下载多余内核
 - **校验**：自建零依赖校验脚本（`scripts/validate.js`）
-- **预渲染**：`vm` 沙箱抽出主页面里的 RENDER-CORE 纯函数区求值（构建期与浏览器端共用同一份模板）；
-  默认视图卡片由唯一的 `defaultCards()` 产出：**过滤过期 → 折叠同源 → 排序**
+- **预渲染**：`scripts/lib/render-core.js` 用 `vm` 沙箱抽出主页面里的 RENDER-CORE 纯函数区求值
+  （构建期与浏览器端共用同一份模板）；默认视图由唯一的 `cardsFor(deals, DEFAULT_FILTERS)` 产出：
+  **过滤 → 折叠同源 → 打档位 → 排序**
+- **真浏览器验收**：playwright-core + 本机 Edge，35 项断言（`scripts/tools/verify-site.js`）
 - **OG 分享图**：Node 内置 `zlib` 手写 PNG 编码 + 内置 5×7 点阵字模（零外部依赖）
 - **部署**：GitHub Actions → GitHub Pages
-- **存储**：静态 `deals.json`（v2 契约）
+- **存储**：静态 `deals.json`（v2 契约，前端新增的档位/logo 均为**派生**，不写回数据）
