@@ -9,6 +9,8 @@
  *   node scripts/tools/build-local.js && node scripts/tools/verify-site.js
  *   node scripts/tools/verify-site.js --dir=dist --keep        # 保留浏览器窗口（调试用）
  *   node scripts/tools/verify-site.js --url=https://…/         # 直接验收线上站点（部署后冒烟）
+ *   node scripts/tools/verify-site.js --json=out.json          # 顺带写出机器可读指标（密度/页高/请求数/断言明细）
+ *   node scripts/tools/verify-site.js --compare=base.json      # 与基线比回归：密度不得降、页高/请求不得涨
  *
  * 退出码非 0 = 有断言失败。
  */
@@ -53,6 +55,18 @@ function check(name, ok, detail) {
   results.push({ name, ok: !!ok, detail });
   console.log(`  ${ok ? '✓' : '✗'} ${name}${detail ? ' — ' + detail : ''}`);
 }
+
+/**
+ * 机器可读指标：`--json=` 把它写成文件，`--compare=` 拿它跟基线比。
+ *
+ * 为什么要有这个：改动前后的「密度有没有退、页高有没有涨、请求有没有多」必须是**脚本产出的数字**，
+ * 不能手抄进文档（手抄的数字没人复核，也没有回归保护）。用法：
+ *   node scripts/tools/verify-site.js --json=research/_raw/ours-baseline/verify.json
+ *   node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json
+ */
+const metrics = {};
+const jsonArg = process.argv.find(a => a.startsWith('--json='));
+const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
 (async () => {
   let server = null;
@@ -141,6 +155,20 @@ function check(name, ok, detail) {
   check('卡片高度统一', rendered.heights.length === 1, rendered.heights.join('/') + 'px');
   check('首屏完整可见卡片 ≥ 9', rendered.firstScreenFull >= 9,
     `完整 ${rendered.firstScreenFull} 张 / 含截断 ${rendered.firstScreenPart} 张 · 网格起点 ${rendered.gridTop}px · 页高 ${rendered.pageHeight}px`);
+  Object.assign(metrics, {
+    cards: rendered.cards,
+    cols: rendered.cols,
+    tierHeads: rendered.tierHeads,
+    tiles: rendered.tiles,
+    tileKeys: rendered.tileKeys.length,
+    cardHeight: rendered.heights[0],
+    firstScreenFull: rendered.firstScreenFull,
+    firstScreenPart: rendered.firstScreenPart,
+    gridTop: rendered.gridTop,
+    pageHeight: rendered.pageHeight,
+    prerenderedCards: noJs.cards,
+    prerenderedLinks: noJs.links
+  });
   check('汇总条已填充', /显示\s*\d+\s*条卡片/.test(rendered.stats), rendered.stats.slice(0, 40));
   check('顶栏汇总已填充', /\d+\s*条优惠/.test(rendered.topStat), rendered.topStat);
   console.log(`     logo key: ${rendered.tileKeys.length} 个 → ${rendered.tileKeys.join(' ')}`);
@@ -645,6 +673,51 @@ function check(name, ok, detail) {
 
   await browser.close();
   if (server) server.close();
+
+  Object.assign(metrics, {
+    externalRequests: externalRequests.length,
+    failedRequests: failedRequests.length,
+    jsErrors: errors.length,
+    target: base,
+    generatedAt: new Date().toISOString()
+  });
+
+  // 回归比对：只比「改了之后不能倒退」的量。密度不得下降，页高/请求不得增加，错误必须仍为 0。
+  if (compareArg) {
+    console.log('\n=== 12) 回归比对（--compare）===');
+    const baselineFile = path.resolve(ROOT, compareArg.slice('--compare='.length));
+    if (!fs.existsSync(baselineFile)) {
+      check('回归基线文件存在', false, `找不到 ${path.relative(ROOT, baselineFile)}`);
+    } else {
+      const parsed = JSON.parse(fs.readFileSync(baselineFile, 'utf8'));
+      const ref = parsed.metrics || parsed;
+      const num = v => (typeof v === 'number' ? v : 0);
+      check('回归：卡片数不减少', metrics.cards >= num(ref.cards), `${num(ref.cards)} → ${metrics.cards}`);
+      check('回归：首屏完整可见不减少', metrics.firstScreenFull >= num(ref.firstScreenFull),
+        `${num(ref.firstScreenFull)} → ${metrics.firstScreenFull}`);
+      check('回归：页高不增加（容差 15%）', metrics.pageHeight <= Math.round(num(ref.pageHeight) * 1.15),
+        `${num(ref.pageHeight)}px → ${metrics.pageHeight}px`);
+      check('回归：外部请求不增加', metrics.externalRequests <= num(ref.externalRequests),
+        `${num(ref.externalRequests)} → ${metrics.externalRequests}`);
+      check('回归：JS 错误仍为 0', metrics.jsErrors === 0, `${metrics.jsErrors} 个`);
+      console.log(`     基线：${path.relative(ROOT, baselineFile)}（生成于 ${parsed.generatedAt || '未知时间'}）`);
+    }
+  }
+
+  if (jsonArg) {
+    const outFile = path.resolve(ROOT, jsonArg.slice('--json='.length));
+    fs.mkdirSync(path.dirname(outFile), { recursive: true });
+    const failedCount = results.filter(r => !r.ok).length;
+    fs.writeFileSync(outFile, `${JSON.stringify({
+      target: base,
+      generatedAt: metrics.generatedAt,
+      total: results.length,
+      failed: failedCount,
+      metrics,
+      checks: results
+    }, null, 2)}\n`, 'utf8');
+    console.log(`\n机器可读报告已写出：${path.relative(ROOT, outFile)}（${results.length} 项，失败 ${failedCount} 项）`);
+  }
 
   const failed = results.filter(r => !r.ok);
   console.log(`\n${failed.length ? '❌' : '✅'} 验收 ${results.length} 项，失败 ${failed.length} 项`);
