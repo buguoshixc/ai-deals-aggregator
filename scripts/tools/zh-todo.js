@@ -7,6 +7,7 @@
  *   node scripts/tools/zh-todo.js --json           # 输出机器可读清单
  *   node scripts/tools/zh-todo.js --scaffold       # 生成 translations_zh.json 骨架（已译的保留）
  *   node scripts/tools/zh-todo.js --orphans        # 只看对不上 id 的译文
+ *   node scripts/tools/zh-todo.js --check          # 门禁视角：只回答「有没有要人处理的事」，带退出码
  *   node scripts/tools/zh-todo.js --file=xxx.json  # 换 deals.json
  *
  * 判定逻辑与构建期共用 scripts/lib/zh.js，不会出现「工具说不用翻、构建期说缺译文」。
@@ -78,6 +79,34 @@ for (const deal of attached) {
 if (has('json')) {
   console.log(JSON.stringify({ total: todo.length, todo }, null, 2));
   process.exit(0);
+}
+
+if (has('check')) {
+  // 门禁视角：不打印整份待办清单，只回答「有没有需要人来处理的事」，并给出退出码。
+  //
+  // 为什么是**建议性**门禁：译文对不上 id 的典型原因是条目改名/换 URL（id = sha1(vendor|title|url)），
+  // 这时站点该照常发布（英文原文仍在，卡片只是少一条中文提示），但不该没人知道。
+  // 所以 CI 里它写进运行 Summary 而不阻断发布；本地提交前可以直接跑，非零退出即有事要办。
+  const drift = report.orphaned.length + report.stale.length + report.dropped + report.skipped.length;
+  const pendingFields = todo.reduce((n, row) => n + row.missing.length, 0);
+  const clean = drift === 0 && todo.length === 0;
+
+  console.log(`译文门禁 · ${path.relative(ROOT, overlayFile)}`);
+  console.log(`  已贴 ${report.attached} 条 / ${report.fields} 个字段（数据共 ${report.total} 条）`);
+  console.log(
+    `  ${drift ? '✗' : '✓'} 漂移 ${drift} 处` +
+      `（对不上 id ${report.orphaned.length} · 原文已变停用 ${report.dropped} · 不合法 ${report.skipped.length}）`
+  );
+  console.log(`  ${todo.length ? '✗' : '✓'} 待译 ${todo.length} 条 / ${pendingFields} 个字段`);
+  if (report.warnings.length) {
+    console.log(`  ℹ️  无指纹 ${report.warnings.length} 处（原文被改写时发现不了，建议在覆盖层里补 src）`);
+  }
+  for (const row of report.orphaned) console.log(`    孤儿   [${row.id}] ${row.title}`);
+  for (const row of report.stale) console.log(`    停用   [${row.id}] ${row.title}：${row.message}`);
+  for (const row of report.skipped) console.log(`    不合法 [${row.id}] ${row.title}：${row.message}`);
+  for (const row of todo) console.log(`    待译   [${row.id}] ${row.title}：${row.missing.join('/')}`);
+  console.log(clean ? '\n✅ 译文与数据一致' : '\n❌ 需要人工处理（见上）');
+  process.exit(clean ? 0 : 1);
 }
 
 if (has('scaffold')) {

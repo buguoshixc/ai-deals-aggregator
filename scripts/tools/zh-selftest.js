@@ -8,6 +8,7 @@
  *   ② 原文指纹对不上       → 构建成功，但该字段译文停用（不能拿旧译文配新原文）
  *   ③ 译文键对不上任何条目 → 构建成功并告警（孤儿）
  *   ④ 覆盖层删掉一条译文   → 产物里也必须消失（不能靠 deals.json 里的残留撑着）
+ *   ⑤ 同一份孤儿数据       → `zh-todo --check` 必须非零退出（建议性门禁要看得见漂移）
  *
  * 用法：node scripts/tools/zh-selftest.js
  */
@@ -36,6 +37,16 @@ function run() {
 
 const badLines = out => out.split('\n').filter(l => l.includes('✗') || l.includes('❌')).map(l => l.trim());
 const zhLine = out => (out.split('\n').find(l => l.includes('中文译文: ')) || '').trim();
+
+/** 跑一次译文漂移门禁（zh-todo --check）：它不构建，只回答「有没有要人处理的事」 */
+function runCheck() {
+  const r = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'tools', 'zh-todo.js'), '--check'],
+    { cwd: ROOT, encoding: 'utf8' });
+  return {
+    code: typeof r.status === 'number' ? r.status : 1,
+    out: `${r.stdout || ''}${r.stderr || ''}`
+  };
+}
 
 const original = fs.readFileSync(FILE, 'utf8');
 const results = [];
@@ -91,6 +102,12 @@ try {
     r3.code === 0 && /译文对不上任何条目 id/.test(r3.out),
     r3.code === 0 ? '已告警' : '构建失败', r3);
 
+  // ⑤ 同一份孤儿数据：构建放行（发布不该被卡），但门禁必须把它标出来
+  const r3b = runCheck();
+  record('译文对不上 id → check:zh 非零退出',
+    r3b.code !== 0 && /漂移 1 处/.test(r3b.out) && /孤儿\s+\[deadbeef0000\]/.test(r3b.out),
+    r3b.code !== 0 ? '已按漂移退出' : '竟然返回 0（漂移会被漏掉）', r3);
+
   // ④ 覆盖层删掉一条译文 → 产物里也必须消失
   const removed = JSON.parse(original);
   delete removed.byId[onlyOne].description;
@@ -112,10 +129,15 @@ const fields = Object.keys(JSON.parse(original).byId)
   .reduce((n, id) => n + Object.keys(JSON.parse(original).byId[id])
     .filter(k => !k.startsWith('_') && k !== 'src').length, 0);
 const restored = back.code === 0 && new RegExp(`中文译文: \\d+/\\d+ 条带中文译文（${fields} 个字段）`).test(back.out);
+// 复原后门禁也必须回到 0：一个常年红的检查等于没有检查
+const backCheck = runCheck();
+const checkClean = backCheck.code === 0 && /译文与数据一致/.test(backCheck.out);
 
 console.log('\n=== 中文译文门禁演练 ===');
 results.forEach(r => console.log(`  ${r.pass ? '✓' : '✗'} ${r.name} — ${r.detail}`));
 console.log(`  ${restored ? '✓' : '✗'} 复原后构建回到 ${fields} 个译文字段`);
-const failed = results.filter(r => !r.pass).length + (restored ? 0 : 1);
-console.log(`\n${failed ? '❌' : '✅'} 演练 ${results.length + 1} 项，失败 ${failed} 项`);
+console.log(`  ${checkClean ? '✓' : '✗'} 复原后 check:zh 回到 0（建议性门禁不会常红）`);
+const extra = [restored, checkClean];
+const failed = results.filter(r => !r.pass).length + extra.filter(v => !v).length;
+console.log(`\n${failed ? '❌' : '✅'} 演练 ${results.length + extra.length} 项，失败 ${failed} 项`);
 process.exit(failed ? 1 : 0);

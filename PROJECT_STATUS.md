@@ -638,6 +638,46 @@ npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/
 
 ---
 
+### 2.16 收口：译文漂移从「构建日志里的一句话」变成可自动发现（check:zh）
+
+**起因**：2.15 把译文门禁做进了构建，但有两类事只在日志里说一声——**译文对不上 id（孤儿）**
+与**还有条目没译**。CI 里没人会去读构建日志，漂移就这样悄悄留着：条目改名 / 换 URL 会让
+`id = sha1(vendor|title|url)` 变掉，那一条的中文从此不再出现，而没有任何东西变红。
+
+**做法**（四处，都很小）：
+
+| 位置 | 改动 |
+|---|---|
+| `scripts/tools/zh-todo.js` | 新增 `--check`：不打印整份待办，只回答「有没有要人处理的事」，脏就非零退出 |
+| `package.json` | 新增 `npm run check:zh` |
+| `.github/workflows/collect.yml` | 新增 `Translation drift check (advisory)` 步骤，结果写进运行 Summary |
+| `scripts/tools/zh-selftest.js` | 新增第 ⑤ 项（孤儿必须让 `--check` 非零退出），并断言**复原后 `--check` 回到 0** |
+
+**为什么是建议性（`continue-on-error`）而不是硬门禁**：`deploy.yml` 在采集任务失败时会跳过发布
+（见 2.6），把漂移做成硬失败等于「有人改了个条目名 → 站点数据停止更新」。有漂移时该照常发布
+（英文原文仍在，卡片只是少一枚「中文」胶囊），但必须有人看见——所以它写 Summary，不卡链路。
+本地提交前直接跑 `npm run check:zh`，那时非零退出就是硬信号。
+
+**验证**（都是跑出来的，不是读代码看出来的）：
+
+| 检查 | 结果 |
+|---|---|
+| `npm run check:zh`（干净态） | 已贴 41 条 / 59 个字段 · 漂移 0 · 待译 0 → **exit 0** |
+| 负向：把一条数据的 `id` 改成 `deadbeef0000`（模拟改名） | 漂移 1 处 / 待译 1 条，点名 `孤儿 [cb45e0c735bd] HubSpot AEO Sensor` → **exit 1** |
+| `npm run selftest:zh` | 由 5 项增到 **7 项**全绿，含「复原后 check 回到 0」——一个常年红的检查等于没有检查 |
+| 收口核对（另一会话提交后的状态） | `npm test` / `test:strict` 通过；`npm run build` 产物自检全过；`npm run verify` **55 项 0 失败** |
+
+**顺带核清的一件事（免得后人做无用功）**：源文件 `deals.json` 里**没有** `zh` 字段，这不是漏做。
+构建期 `build-local.js` 会把 `attach()` 贴好译文的整份数据写进 **`dist/deals.json`**（实测 41 条带译文），
+浏览器 `fetch('deals.json')` 拿到的就是这一份；覆盖层 `translations_zh.json` 是译文的唯一权威。
+所以**不需要**为了让译文生效去跑 `npm run collect`——那反而会把译文复制进源数据，多出一份会漂移的状态。
+
+**同批入库**：`mockups/`（001–009 号设计稿对比页 + `logos/` + `_tools/`）此前一直没进版本库，
+而它们是 2.11 那次重做的决策依据，随本次一并入库；`.preview/` 截图、`_*.txt` 快照与 `.zh-backup/`
+自动备份不入库（已加 `.gitignore` 规则）。
+
+---
+
 ## 三、命令速查
 
 

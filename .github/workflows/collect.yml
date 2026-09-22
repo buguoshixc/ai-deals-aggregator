@@ -59,6 +59,19 @@ jobs:
       - name: Validate new data (strict gate)
         run: node scripts/validate.js --strict
 
+      # 译文漂移检查：条目改名/换 URL 会让 id 变化，人工译文就对不上了（id = sha1(vendor|title|url)）。
+      # continue-on-error：这是**建议性**检查——有漂移时站点该照常发布（英文原文仍在，卡片只是
+      # 少一条「中文」提示），但必须有人看见，所以写进运行 Summary，而不是让采集/发布链路红掉。
+      - name: Translation drift check (advisory)
+        continue-on-error: true
+        run: |
+          {
+            echo "### 中文译文漂移检查"
+            echo '```'
+            node scripts/tools/zh-todo.js --check 2>&1 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       # 采集报告落到 Summary：某次无头来源零产出时能立刻发现，不用翻日志
       - name: Publish run summary
         if: always()

@@ -23,6 +23,7 @@
     "verify:shots": "node scripts/tools/verify-site.js --shots",
     "selftest:zh": "node scripts/tools/zh-selftest.js",
     "todo:zh": "node scripts/tools/zh-todo.js",
+    "check:zh": "node scripts/tools/zh-todo.js --check",
     "report:tier": "node scripts/tools/tier-report.js",
     "report:vendor": "node scripts/tools/tier-report.js --vendor",
     "fetch:logos": "node scripts/tools/fetch-logos.js",

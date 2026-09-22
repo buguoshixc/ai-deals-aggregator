@@ -32,6 +32,7 @@ npm run test:strict     # 额外校验内容质量指标
 npm run build           # 校验 → 组装并预渲染 dist/ → 产物自检
 npm run verify          # 真浏览器验收（密度/裁切/hover/筛选/弹层/移动端）
 npm run verify:shots    # 同上，并把截图写到 mockups/.preview/
+npm run check:zh        # 译文漂移门禁：对不上 id / 原文已变 / 待译 逐条列出，非零退出即有要办的事
 npm run serve                          # 本地预览源码目录 http://127.0.0.1:8080
 node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 index.html）
 ```
@@ -332,11 +333,20 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 
 ```bash
 npm run todo:zh         # 列出待翻译条目（原文 + 已有译文），--json / --scaffold / --orphans
-npm run selftest:zh     # 门禁演练：塞坏数据进去，验证构建拦得住
+npm run check:zh        # 漂移门禁：非零退出 = 有译文对不上 id / 原文已变 / 还有条目没译
+npm run selftest:zh     # 门禁演练：塞坏数据进去，验证构建拦得住、check 也标得出来
 ```
 
 构建期门禁：译文不合规（不含汉字 / 字段名非法 / 超长 / 原文为空）**硬失败阻止发布**；
 原文已变则警告并停用该字段；译文键对不上任何条目则告警（条目改名换 URL 会让 id 变化）。
+
+`check:zh` 是**建议性**门禁：它不阻断发布（有漂移时站点该照常上线，英文原文仍在，卡片只是少一枚
+「中文」胶囊），但把漂移写进 CI 运行 Summary，不让它只留在构建日志里。采集工作流里的这一
+步是 `continue-on-error`，其余仍是硬门禁。
+
+> 覆盖层是译文的**唯一权威**：源文件 `deals.json` 里不需要手工写 `zh`。
+> 构建时 `build-local.js` 会把贴好译文的整份数据写进 **`dist/deals.json`**——
+> 那才是浏览器 `fetch('deals.json')` 真正拿到的那一份。
 第 1 步的数据校验跑在未贴译文的 `deals.json` 上，所以这道门禁是在构建里单独补的。
 
 ### 诚实性约束（与竞品的关键差别）
