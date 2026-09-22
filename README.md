@@ -294,8 +294,12 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 `scripts/lib/logos.js` 生成为 `dist/logos/` + `dist/logos.css`。页面上只写 `data-logo`
 属性，图形由 CSS 提供——因此渲染核心保持纯函数，且**不热链任何第三方 CDN**。
 
-构建期断言「模板引用的 logo key 全部已登记」，缺一个就构建失败。抓不到官方图形的厂商
-（Midjourney 403、xAI / Mistral 等连不上）**就是不放 logo**，不拿近似图凑数。
+构建期断言「模板引用的 logo key 全部已登记」，缺一个就构建失败。
+
+**拿不到官方图形时退到名称缩写兜底块**（`Wispr Flow → WF`、`KREA → KR`）：
+低饱和深色底 + 白字，`title` / `aria-label` 写明「名称缩写，未取得官方品牌图形」，
+且**绝不与官方图形出现在同一张卡上**（构建与 `npm run verify` 都断言二选一）。
+顺序是硬的——拿得到真图形就绝不用缩写。当前 72 家厂商里 30 家用官方图形、42 家用缩写兜底。
 详见 `assets/logos/README.md`。
 
 ### 诚实性约束（与竞品的关键差别）

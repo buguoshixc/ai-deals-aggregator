@@ -167,6 +167,26 @@ function check(name, ok, detail) {
   }, rendered.tileKeys);
   check('全部 logo 可加载且有尺寸', logoProbe.length === 0, logoProbe.join('; ') || `${rendered.tileKeys.length} 个`);
 
+  // 名称缩写兜底块：必须真有字、不被裁、并且明确标注「不是官方图形」
+  const textTile = await page.evaluate(() => {
+    const tiles = [...document.querySelectorAll('.lg.text')];
+    return {
+      count: tiles.length,
+      empty: tiles.filter(t => !t.textContent.trim()).length,
+      clipped: tiles.filter(t => t.scrollWidth > t.clientWidth + 1).length,
+      unlabeled: tiles.filter(t => !/名称缩写/.test(t.getAttribute('title') || '') ||
+        !/名称缩写/.test(t.getAttribute('aria-label') || '')).length,
+      sample: tiles.slice(0, 4).map(t => t.textContent.trim() + '=' + t.getAttribute('title').split('：')[0])
+    };
+  });
+  check('缩写块有字 / 不裁切 / 已标注', textTile.empty === 0 && textTile.clipped === 0 && textTile.unlabeled === 0,
+    `${textTile.count} 个（空 ${textTile.empty} / 裁切 ${textTile.clipped} / 未标注 ${textTile.unlabeled}）${textTile.sample.length ? ' 例：' + textTile.sample.join(' ') : ''}`);
+
+  // 同一张卡不能既挂官方图形又挂缩写块
+  const mixed = await page.evaluate(() => [...document.querySelectorAll('article.g')]
+    .filter(c => c.querySelector('.lg[data-logo]') && c.querySelector('.lg.text')).length);
+  check('官方图形与缩写块不混用', mixed === 0, mixed ? `${mixed} 张卡混用` : '每张卡二选一');
+
   console.log('\n=== 4) 内容没有被裁掉 ===');
   const clip = await page.evaluate(() => {
     const bad = [];
@@ -298,17 +318,30 @@ function check(name, ok, detail) {
   await page.waitForTimeout(300);
   const tools = await page.evaluate(() => {
     const cards = [...document.querySelectorAll('article.g.tool')];
+    const glyphs = [...document.querySelectorAll('article.g .lg.text')];
     return {
       cards: document.querySelectorAll('article.g').length,
       toolCards: cards.length,
       // 工具条目不该出现「档位配色的优惠正文」——那是优惠专属的视觉语言
       tierColored: cards.filter(c => c.querySelector('.of:not(.plain)')).length,
       plain: cards.filter(c => c.querySelector('.of.plain')).length,
+      textTiles: glyphs.length,
+      realTiles: document.querySelectorAll('article.g .lg[data-logo]').length,
+      samples: glyphs.slice(0, 6).map(t => t.textContent.trim()),
       stats: document.querySelector('#stats').textContent.trim()
     };
   });
   check('工具 Tab 有卡片', tools.cards > 53, `${tools.cards} 条（其中工具 ${tools.toolCards}）`);
   check('工具卡不冒充优惠', tools.tierColored === 0, `${tools.tierColored} 条越界，${tools.plain} 条用灰条简介`);
+  check('长尾厂商走名称缩写兜底', tools.textTiles > 0 && tools.realTiles > 0,
+    `官方图形 ${tools.realTiles} 个 / 缩写块 ${tools.textTiles} 个（${tools.samples.join(' ')}）`);
+
+  if (process.argv.includes('--shots')) {
+    const SHOT_DIR = path.join(ROOT, 'mockups', '.preview');
+    fs.mkdirSync(SHOT_DIR, { recursive: true });
+    await page.screenshot({ path: path.join(SHOT_DIR, 'site-桌面-全部工具.png') });
+    console.log(`  截图已写入 ${path.relative(ROOT, SHOT_DIR)}/site-桌面-全部工具.png`);
+  }
   await page.click('[data-facet="tab"][data-value="deals"]');
   await page.waitForTimeout(300);
 

@@ -49,13 +49,14 @@ if (flag('vendor')) {
   }
   const rows = [...tally.entries()].sort((a, b) => b[1].count - a[1].count);
   console.log('=== 厂商归一（共 ' + rows.length + ' 家）===');
-  console.log('  条数  厂商            logo      原始 vendor 字符串');
+  console.log('  条数  厂商            官方图形      名称缩写   原始 vendor 字符串');
   for (const [key, row] of rows) {
-    console.log('  ' + String(row.count).padStart(4) + '  ' + row.name.padEnd(14) +
-      '  ' + String(row.logo || '—').padEnd(14) + ' ' + [...row.raw].join(' / '));
+    const mark = row.logo ? '' : core.textMarkOf(row.name);
+    console.log('  ' + String(row.count).padStart(4) + '  ' + row.name.padEnd(15) +
+      '  ' + String(row.logo || '—').padEnd(12) + '  ' + String(mark || '—').padEnd(8) + ' ' + [...row.raw].join(' / '));
   }
-  console.log('\n有 logo 的厂商: ' + rows.filter(r => r[1].logo).length + ' / ' + rows.length);
-  console.log('模板引用的 logo key: ' + core.logoKeys().join(', '));
+  const withLogo = rows.filter(r => r[1].logo).length;
+  console.log('\n官方品牌图形: ' + withLogo + ' 家 / 名称缩写兜底: ' + (rows.length - withLogo) + ' 家 / 共 ' + rows.length + ' 家');
   process.exit(0);
 }
 

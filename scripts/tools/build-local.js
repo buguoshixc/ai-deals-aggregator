@@ -376,8 +376,15 @@ function selfCheck(built) {
   const tileKeys = [...new Set([...markup.matchAll(/data-logo="([^"]+)"/g)].map(m => m[1]))];
   const brokenLogos = tileKeys.filter(key => !fs.existsSync(path.join(logoDir, `${key}.svg`)) &&
     !fs.existsSync(path.join(logoDir, `${key}.png`)));
+  const textTiles = (markup.match(/class="lg text"/g) || []).length;
   if (brokenLogos.length) fail(`卡片引用了产物里不存在的 logo: ${brokenLogos.join(', ')}`);
-  else console.log(`  ✓ 卡片 logo: ${tileKeys.length} 个厂商图形全部就位`);
+  else console.log(`  ✓ 卡片 logo: 官方图形 ${tileKeys.length} 个 / 名称缩写兜底 ${textTiles} 个`);
+
+  // 「官方图形」与「名称缩写兜底」必须二选一：混在同一张卡上会让人以为缩写块也是官方 logo
+  const cardsMarkup = markup.split('<article class="g ').slice(1).map(chunk => chunk.split('</article>')[0]);
+  const mixed = cardsMarkup.filter(card => /data-logo="/.test(card) && /class="lg text"/.test(card)).length;
+  if (mixed) fail(`有 ${mixed} 张卡片同时出现官方图形与名称缩写块（应二选一）`);
+  else console.log(`  ✓ 图形与缩写不混用: ${cardsMarkup.length} 张卡片均为二选一`);
 
   // 骨架的其余部分不能留空
   if (/<!--PRERENDER:/.test(html)) fail('产物仍有未替换的预渲染标记');

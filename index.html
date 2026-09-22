@@ -184,6 +184,12 @@
     .logos:hover .lg:first-child { margin-left: 0; }
     .logos .lg:hover { box-shadow: 0 2px 6px -1px rgba(15, 23, 42, .42); z-index: 6; }
     .lg.more { background: #eef1f6; color: #5b6472; font-size: 10px; font-weight: 700; font-family: ui-monospace, monospace; }
+    /* 名称缩写兜底块：低饱和深底 + 白字，一眼区别于品牌图形（底色由内联 style 给） */
+    .lg.text {
+      color: #fff; font-size: 9.5px; font-weight: 700; letter-spacing: -.3px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      text-align: center; line-height: 1;
+    }
 
     .tg { flex: none; font-size: 10px; font-weight: 650; border-radius: 4px; padding: 2px 5px; white-space: nowrap; }
     .tg.cn { background: var(--cnbg); color: var(--cn); }
@@ -277,6 +283,7 @@
     .dh-logos { display: flex; flex: none; gap: 6px; padding-top: 3px; }
     .dh .lg { width: 38px; height: 38px; border-radius: 11px; margin-left: 0; border-color: var(--line); flex: none; }
     .dh .lg.more { font-size: 13px; }
+    .dh .lg.text { font-size: 14px; letter-spacing: -.5px; }
     .dh h2 { font-size: 19px; font-weight: 750; line-height: 1.35; letter-spacing: -.3px; flex: 1; }
     .dsub { font-size: 12.5px; color: var(--mut); margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .doffer { margin-top: 16px; background: var(--dealsoft); border-left: 3px solid var(--deal); border-radius: 0 9px 9px 0; padding: 12px 14px; }
@@ -639,6 +646,35 @@
     /** 长条图形（宽高比 > 2）：塞进方块会被压成一条线，由 logos.css 改成横向胶囊 */
     const WIDE_LOGOS = ['siliconflow'];
 
+    /**
+     * 名称缩写方块的底色。刻意用低饱和的深色，与品牌色明显不同——
+     * 目的是让人一眼看出「这不是品牌图形」，而不是把它当成官方 logo。
+     */
+    const TEXT_TILE_COLORS = ['#5b6472', '#4c6b8a', '#5a7d6a', '#7a6a52', '#6b5b7a', '#476b74'];
+
+    /**
+     * 厂商名 → 缩写。拉丁名取前两个词的首字母（Wispr Flow → WF），
+     * 只有一个词或中日韩名就取前两个字符（KREA → KR，商汤科技 → 商汤）。
+     * 纯函数，同一个名字永远得到同一个缩写。
+     */
+    function textMarkOf(value) {
+      const text = String(value === null || value === undefined ? '' : value).trim();
+      if (!text) return '';
+      const cjk = text.match(/[\u3400-\u9fff\u3040-\u30ff\uac00-\ud7af]/g);
+      if (cjk) return cjk.slice(0, 2).join('');
+      const words = text.split(/[\s._\-–—/+]+/).filter(Boolean);
+      if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+      return (words[0] || text).slice(0, 2).toUpperCase();
+    }
+
+    /** 名称 → 稳定的色号下标（同一个厂商永远同色） */
+    function nameHue(value) {
+      const text = String(value || '');
+      let hash = 0;
+      for (let i = 0; i < text.length; i++) hash = (hash * 31 + text.charCodeAt(i)) % 100000;
+      return hash;
+    }
+
     /** 模板可能输出的全部 logo key；构建期会断言它们都在 manifest 里 */
     function logoKeys() {
       const keys = [];
@@ -676,6 +712,12 @@
      * logo 簇。压缩态叠加、hover 展开；容器宽度按「展开后」的宽度预留，
      * 展开时只填满预留空间，不改变标题可用宽度（否则标题会在 hover 时重排）。
      * detailed=true 用于详情弹层：不压缩、不预留宽度，容器类名换成 .dh-logos。
+     *
+     * 取不到官方品牌图形时（厂商官网不可达、或对方只发布过被 CDN 挡住的图标），
+     * 退到「厂商名缩写」方块。这是明确的降级，不是冒充：
+     *   · 底色用低饱和深色，与品牌色明显不同；
+     *   · title 与 aria-label 都写明「名称缩写，未取得官方品牌图形」；
+     *   · 只要拿得到真图形，就绝不会走这条路。
      */
     function logoHtml(deal, detailed) {
       const vendor = vendorOf(deal);
@@ -684,7 +726,19 @@
       add(vendor.logo);
       const models = Array.isArray(deal.models) ? deal.models : [];
       if (models.length > 1) models.forEach(model => add(modelLogoOf(model)));
-      if (!keys.length) return '';
+
+      // 没有任何官方品牌图形：用名称缩写兜底
+      if (!keys.length) {
+        const mark = textMarkOf(vendor.name);
+        if (!mark) return '';
+        const tip = vendor.name + '：名称缩写，未取得官方品牌图形';
+        const color = TEXT_TILE_COLORS[nameHue(vendor.name) % TEXT_TILE_COLORS.length];
+        const tile = '<span class="lg text" style="background:' + color + '" role="img" aria-label="' +
+          escapeAttr(tip) + '" title="' + escapeAttr(tip) + '">' + escapeHtml(mark) + '</span>';
+        return detailed
+          ? '<span class="dh-logos" title="' + escapeAttr(tip) + '">' + tile + '</span>'
+          : '<span class="logos" style="width:24px" title="' + escapeAttr(tip) + '">' + tile + '</span>';
+      }
 
       const shown = keys.slice(0, 4);
       const rest = keys.length - shown.length;
