@@ -1082,6 +1082,69 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.waitForTimeout(200);
 
+  console.log('\n=== 17) 键盘可达与焦点归还 ===');
+  await page.goto(base, { waitUntil: 'load' });
+  await page.waitForSelector('article.g', { timeout: 15000 });
+  await page.waitForTimeout(300);
+
+  const focusable = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('article.g')];
+    return {
+      cards: cards.length,
+      tabbable: cards.filter(card => card.getAttribute('tabindex') === '0').length,
+      labelled: cards.filter(card => (card.getAttribute('aria-label') || '').includes('按回车')).length
+    };
+  });
+  check('卡片进入 Tab 顺序且标注了键盘用法',
+    focusable.tabbable === focusable.cards && focusable.labelled === focusable.cards,
+    `${focusable.tabbable}/${focusable.cards} 张可聚焦 · ${focusable.labelled} 张有 aria-label`);
+
+  await page.focus('article.g');
+  const firstCardTitle = await page.evaluate(() => document.querySelector('article.g h3').textContent.trim());
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(400);
+  const kbOpen = await page.evaluate(() => ({
+    open: document.getElementById('detail').open,
+    title: (document.querySelector('#detail h2') || {}).textContent || ''
+  }));
+  check('回车能打开详情', kbOpen.open && kbOpen.title === firstCardTitle,
+    `弹层=${kbOpen.open}「${kbOpen.title.slice(0, 22)}」`);
+
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(400);
+  const afterEsc = await page.evaluate(() => {
+    const active = document.activeElement;
+    return {
+      open: document.getElementById('detail').open,
+      tag: active ? active.tagName.toLowerCase() : '',
+      isCard: Boolean(active && active.classList && active.classList.contains('g')),
+      title: active && active.querySelector ? ((active.querySelector('h3') || {}).textContent || '') : ''
+    };
+  });
+  check('Esc 关闭后焦点归还给那张卡片',
+    afterEsc.open === false && afterEsc.isCard && afterEsc.title === firstCardTitle,
+    `弹层=${afterEsc.open} · 焦点在 <${afterEsc.tag}>「${afterEsc.title.slice(0, 22)}」`);
+
+  await page.click('#viewSeg [data-view="rows"]');
+  await page.waitForTimeout(400);
+  await page.focus('.r');
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(400);
+  const rowKb = await page.evaluate(() => ({
+    open: document.getElementById('detail').open,
+    allTabbable: [...document.querySelectorAll('.r')].every(row => row.getAttribute('tabindex') === '0')
+  }));
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(400);
+  const rowFocusBack = await page.evaluate(() =>
+    Boolean(document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('r')));
+  check('列表视图的行同样可聚焦、回车打开、Esc 后归位',
+    rowKb.open && rowKb.allTabbable && rowFocusBack,
+    `弹层=${rowKb.open} · 行全部可聚焦=${rowKb.allTabbable} · 焦点归位=${rowFocusBack}`);
+
+  await page.click('#viewSeg [data-view="cards"]');
+  await page.waitForTimeout(300);
+
   console.log('\n=== 10) 请求与错误 ===');
   check('没有外部请求（无 CDN 热链）', externalRequests.length === 0,
     externalRequests.length ? externalRequests.slice(0, 3).join(', ') : '全部同源');
