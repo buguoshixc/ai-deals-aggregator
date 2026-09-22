@@ -250,23 +250,35 @@ function check(name, ok, detail) {
       || document.querySelector('article.g');
     const title = card.querySelector('h3').textContent.trim();
     card.click();
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise(r => setTimeout(r, 250));
     const dlg = document.getElementById('detail');
     const open = dlg.open;
     const shown = dlg.querySelector('h2') ? dlg.querySelector('h2').textContent.trim() : '';
     const cells = dlg.querySelectorAll('.dgrid .cv').length;
     const cta = !!dlg.querySelector('.dact .pri');
+    // 弹层必须落在视口正中：*{margin:0} 会把 <dialog> 的 UA margin:auto 覆盖掉，
+    // 结果钉在左上角——只看「打开了吗」是发现不了的，必须量位置。
+    const box = dlg.getBoundingClientRect();
+    const offset = {
+      x: Math.round((box.left + box.width / 2) - window.innerWidth / 2),
+      y: Math.round((box.top + box.height / 2) - window.innerHeight / 2)
+    };
     // 弹层里的 logo 必须一行平铺（曾经因为容器没有布局规则而竖着叠起来）
     const dl = dlg.querySelector('.dh-logos');
     const tops = dl ? [...dl.querySelectorAll('.lg')].map(el => Math.round(el.getBoundingClientRect().top)) : [];
     const oneRow = tops.length > 1 && new Set(tops).size === 1;
     const tileW = dl && dl.querySelector('.lg') ? Math.round(dl.querySelector('.lg').getBoundingClientRect().width) : 0;
+    const escaped = box.left >= -1 && box.top >= -1 &&
+      box.right <= window.innerWidth + 1 && box.bottom <= window.innerHeight + 1;
     dlg.querySelector('.x').click();
     await new Promise(r => setTimeout(r, 200));
-    return { title, shown, open, cells, cta, closed: !dlg.open, oneRow, tiles: tops.length, tileW };
+    return { title, shown, open, cells, cta, closed: !dlg.open, oneRow, tiles: tops.length, tileW, offset, escaped };
   });
   check('点卡片打开弹层', dialog.open, `「${dialog.title}」`);
   check('弹层标题与卡片一致', dialog.shown === dialog.title, `弹层「${dialog.shown}」`);
+  check('弹层在视口正中', Math.abs(dialog.offset.x) <= 2 && Math.abs(dialog.offset.y) <= 2,
+    `中心偏移 x=${dialog.offset.x}px y=${dialog.offset.y}px`);
+  check('弹层未溢出视口', dialog.escaped);
   check('弹层有字段表与领取入口', dialog.cells >= 2 && dialog.cta, `${dialog.cells} 个字段`);
   check('弹层 logo 一行平铺', dialog.oneRow || dialog.tiles <= 1, `${dialog.tiles} 个 tile，宽 ${dialog.tileW}px`);
   check('可以关闭', dialog.closed);
@@ -376,6 +388,29 @@ function check(name, ok, detail) {
   check('无横向溢出', mobile.overflowX <= 0, `溢出 ${mobile.overflowX}px`);
   check('移动端单列', mobile.cols === 1, `${mobile.cols} 列`);
   check('移动端卡片完整', mobile.cards >= 45 && mobile.tiles >= 20, `${mobile.cards} 卡片 / ${mobile.tiles} tile`);
+
+  // 手机上弹层更容易贴边：窄屏 + 高内容，必须再量一次位置
+  const mobileDialog = await page.evaluate(async () => {
+    document.querySelector('article.g').click();
+    await new Promise(r => setTimeout(r, 300));
+    const dlg = document.getElementById('detail');
+    const box = dlg.getBoundingClientRect();
+    const out = {
+      open: dlg.open,
+      offset: {
+        x: Math.round((box.left + box.width / 2) - window.innerWidth / 2),
+        y: Math.round((box.top + box.height / 2) - window.innerHeight / 2)
+      },
+      fits: box.width <= window.innerWidth + 1 && box.height <= window.innerHeight + 1,
+      scrollable: dlg.scrollHeight >= dlg.clientHeight
+    };
+    dlg.querySelector('.x').click();
+    await new Promise(r => setTimeout(r, 200));
+    return out;
+  });
+  check('手机弹层也在正中', mobileDialog.open && Math.abs(mobileDialog.offset.x) <= 2 && Math.abs(mobileDialog.offset.y) <= 2,
+    `中心偏移 x=${mobileDialog.offset.x}px y=${mobileDialog.offset.y}px`);
+  check('手机弹层不超出屏幕', mobileDialog.fits);
 
   console.log('\n=== 10) 请求与错误 ===');
   check('没有外部请求（无 CDN 热链）', externalRequests.length === 0,

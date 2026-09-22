@@ -268,6 +268,10 @@
     .dlg {
       border: 0; padding: 0; border-radius: 14px; background: #fff; color: var(--ink);
       width: min(680px, calc(100vw - 40px)); max-height: 86vh;
+      /* 必须显式写 margin:auto：<dialog> 本来靠 UA 样式的 margin:auto 居中，
+         但本文件顶部的 *{margin:0} 会把它覆盖成 0——而弹层已是 inset:0，
+         于是四个方向都贴边、又无 auto 外边距，就钉在左上角了。 */
+      margin: auto;
       box-shadow: 0 30px 70px -20px rgba(15, 23, 42, .5);
     }
     .dlg::backdrop { background: rgba(15, 23, 42, .45); backdrop-filter: blur(2px); }
