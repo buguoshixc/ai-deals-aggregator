@@ -14,6 +14,12 @@
 3. **零产出的采集器不上线**。注册表里只保留实测有产出的来源，避免"代码在跑但没数据"。
 4. **坏数据不发布**。`scripts/validate.js` 是部署门禁，校验不过就不部署。
 5. **不抓登录态**。只抓公开页；需要登录才可见的内容不进自动采集链路。
+6. **不编造、不夸大**。看不到升级路径就不写 `priceLine`，没有可信标签就不写 `features`，
+   自动采集的条目不冒充"已核验"。宁可信息少一行，也不给不可信的内容。
+7. **发布产物必须有静态正文**。内容预渲染进 HTML，不依赖 JS 才能被读到；且卡片模板只维护一份
+   （见「预渲染与 SEO/GEO」）。
+8. **不卖排序**。不收录付费推广位；如将来引入推广，必须带 `rel="sponsored"` 与显式标注，
+   且排序、价格说明与推荐理由永不出售。
 
 ## 快速开始
 
@@ -23,7 +29,9 @@ npm run collect:dry     # 只采集并打印报告，不写盘
 npm run collect         # 全量采集并写入 deals.json
 npm test                # 数据 + 前端静态校验（零依赖，可直接跑）
 npm run test:strict     # 额外校验内容质量指标
-npm run serve           # 本地预览 http://127.0.0.1:8080
+npm run build           # 校验 → 组装并预渲染 dist/ → 产物自检
+npm run serve                          # 本地预览源码目录 http://127.0.0.1:8080
+node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 index.html）
 ```
 
 抓 JS 渲染的公开页（可选能力，需要本机装有 Edge 或 Chrome）：
@@ -66,6 +74,8 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
       "type": "deal",              // deal | tool
       "discountInfo": "…",         // type=deal 时必填
       "pricingModel": "free",      // free | freemium | paid | trial | credits | null
+      "priceLine": "免费 → $20/月 Pro",  // 卡片价格阶梯；无可靠来源时为 null
+      "features": ["15 元代金券", "需实名认证"],  // 卡片特性标签，≤3 个、每个 ≤20 字
       "category": "API服务",       // 固定 12 类枚举
       "description": "…",
       "eligibility": "新用户（需实名认证）",
@@ -73,11 +83,37 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
       "expiresAt": "2026-12-31",    // 绝对截止日期，可为 null
       "firstSeen": "2026-09-20",
       "lastSeen": "2026-09-21",
-      "verified": true              // 人工核验过
+      "verified": true,             // 人工核验过
+      "verifiedAt": "2026-09-22"    // 核验日期；仅 verified=true 时可填
     }
   ]
 }
 ```
+
+### 卡片三字段的填写纪律
+
+`priceLine` / `features` / `verifiedAt` 是给卡片信息层级用的，**只在有把握时填**：
+
+| 字段 | 规则 |
+|---|---|
+| `features` | 只取该条 `discountInfo` / `validity` 里已写明的事实，≤3 个、每个 ≤20 字。**不从 `description` 自动切分或生成**——没有可信来源就留空，卡片自动回退展示 `discountInfo`。 |
+| `priceLine` | 只有官方页明确给出「免费档 → 付费档」时才填。看不出升级路径就留 `null`，卡片不渲染该行，**不编造价格阶梯**。 |
+| `verifiedAt` | 仅人工逐条回访官方页的条目可填（当前 23 条策展数据）。自动采集条目一律为 `null`，卡片显示「数据更新：{lastSeen}」而不是「已核验」——不把「抓到过」说成「核验过」。 |
+
+新增策展条目并补齐这三个字段的流程：
+
+```bash
+# 1) 在 scripts/data/curated_*.json 加条目（含 features / priceLine / verifiedAt）
+# 2) 校验策展文件本身
+node scripts/validate.js
+# 3) 跑一次采集，把策展数据合并进 deals.json（预渲染读的是 deals.json）
+npm run collect
+# 4) 重新构建产物
+npm run build
+```
+
+> `verifiedAt` 需要填「本次回访官方页的日期」。`scripts/data/backfill-cards.js` 保留了本次
+> 补齐所用的 title → 字段映射，可作为新增条目时的写法参考（重复执行会覆盖日期，勿盲跑）。
 
 分类枚举：对话模型 / 图像绘画 / 视频 / 音频语音 / 编程开发 / 办公效率 / API服务 / 智能体 /
 搜索研究 / 设计创意 / 教育学习 / 其他。
@@ -85,13 +121,14 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 ## 目录结构
 
 ```
-index.html                    前端（原生 HTML/CSS/JS，无构建）
+index.html                    前端（原生 HTML/CSS/JS，无构建；含预渲染标记与 RENDER-CORE 纯函数区）
 deals.json                    线上数据
+robots.txt                    放行搜索引擎与 AI 爬虫（GEO）
 scripts/
   collect.js                  采集编排：注册表 → 归一 → 去重 → 熔断 → 写盘 → 报告
   validate.js                 数据与前端校验（零依赖，CI 门禁）
   migrate.js                  v1 → v2 迁移与清洗
-  serve.js                    零依赖本地预览服务器
+  serve.js                    零依赖本地预览服务器（--dir=dist 可预览产物）
   lib/
     schema.js                 v2 契约：makeDeal / validateDeal / 垃圾与优惠信号判定
     store.js                  读写、合并、过期修剪、写盘熔断、发布前断言
@@ -100,6 +137,7 @@ scripts/
     official.js               聚合站条目 → 官方页解析
     http.js                   UA / 超时 / 重试 / 并发限流 / robots.txt
     browser.js                无头浏览器渲染（可选能力，仅 --headless 时加载）
+    og-image.js               零依赖 OG 分享图生成（手写 PNG 编码 + 点阵字模）
     report.js                 采集报告表格
     curated.js                人工策展数据加载
   collectors/
@@ -111,9 +149,11 @@ scripts/
   data/
     curated_cn.json           国内人工策展（可核验的官方优惠）
     curated_global.json       国外人工策展
+    backfill-cards.js         一次性补齐卡片字段的映射记录（新增条目时作写法参考）
     aliases.json              产品别名表（跨源去重）
     official_urls.json        聚合站条目 → 官方页映射
-  tools/                      采集器调试工具（探测页面结构、优惠信号、词频、渲染态）
+  tools/                      采集器调试工具与发布产物组装
+    build-local.js            校验 → 组装 dist/ → 预渲染 → 自检（本地与 CI 同一路径）
 ```
 
 ## 采集来源策略
@@ -157,6 +197,56 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 
 浏览器内核优先用本机已装的 Edge / Chrome；CI（Ubuntu）上由工作流安装 playwright 自带 chromium。
 出口 IP 已实测可达（`bigmodel.cn` 与 `volcengine.com` 均返回 HTTP 200，无风控特征）。
+
+## 预渲染与 SEO/GEO
+
+页面仍是**单文件、零构建依赖**的原生 HTML/CSS/JS，但发布产物 `dist/index.html` 不是空壳：
+`build-local.js` 在组装阶段把内容**预渲染**进静态 HTML，因此不执行 JS 也能读到完整正文
+（搜索引擎、生成式引擎、社交 unfurl 都直接可读）。
+
+### 三个预渲染标记
+
+源码 `index.html` 里保留标记，构建期替换；替换后若仍有残留，构建直接失败（不发空壳页）：
+
+| 标记 | 构建期替换为 |
+|---|---|
+| `<!--PRERENDER:deals-->` | 默认视图（优惠 Tab、无筛选）的卡片 HTML |
+| `<!--PRERENDER:jsonld-->` | `Organization` / `BreadcrumbList` / `FAQPage` / `ItemList` 四段 JSON-LD |
+| `__SITE_URL__` | 站点绝对地址（避免源码里硬编码第二份 URL） |
+
+### 模板只有一处：RENDER-CORE 纯函数区
+
+卡片模板**不会**在构建期与浏览器端各写一份。`index.html` 内联脚本里用标记划出一块只含
+常量与纯函数的区块：
+
+```
+/* ==== RENDER-CORE:START ==== */   ... cardHtml / defaultVisible / defaultOrder / escape* ...
+/* ==== RENDER-CORE:END   ==== */
+```
+
+`build-local.js` 按标记抽出该区块，在**没有 DOM 的 vm 沙箱**里求值后调用 `cardHtml()` 生成
+静态卡片。这条约束是刻意的：一旦有人在区块内引用 `document` / `window` / `state`，构建立即
+报错，而不是悄悄产出一个坏页面。浏览器端继续复用同一份函数做筛选与搜索。
+
+### 诚实性约束（与竞品的关键差别）
+
+- 卡片底部只在**人工逐条回访官方页**的条目上显示「已核验：{日期}」；自动采集条目显示
+  「数据更新：{lastSeen}」。不把「抓到过」说成「核验过」。
+- 无 `priceLine` 的条目**不渲染价格阶梯行**，无 `features` 的条目回退展示 `discountInfo`，
+  不生成近似内容。
+- `FAQPage` 结构化数据**从页面可见的 `<details>` 文案反向解析**生成，保证两者逐字一致
+  （构建自检会校验这一致性）。
+- 页脚明确声明「本站不收录付费推广位，排序与推荐理由不出售」。
+
+### 无障碍与 OG 图
+
+- `og-image.png` 由 `scripts/lib/og-image.js` 用 Node 内置 `zlib` 手写 PNG 编码生成
+  （1200×630），文字用内置 5×7 点阵字模绘制。**取舍**：点阵字模只能绘制 ASCII，因此分享图
+  只画品牌标记与站点名，不做中文排版——换来的是构建仍然零外部依赖、CI 无需装图像库。
+  自检会校验 PNG magic、IHDR 尺寸，以及三处文字确实绘制成功（像素计数下限）。
+- 首页含 `canonical`、`hreflang(zh-CN / x-default)`、`og:*`、`twitter:*`、
+  `<meta name="robots" content="index, follow, max-image-preview:large">`。
+- `robots.txt` 显式放行主流 AI 爬虫（GEO 意图声明）。
 
 ## 自动化与部署
 

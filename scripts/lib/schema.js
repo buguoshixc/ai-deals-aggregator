@@ -14,6 +14,12 @@ const REGIONS = ['cn', 'global'];
 const TYPES = ['deal', 'tool'];
 const PRICING_MODELS = ['free', 'freemium', 'paid', 'trial', 'credits'];
 
+/** 卡片上展示的特性标签：最多 3 个，每个最多 20 字 */
+const MAX_FEATURES = 3;
+const MAX_FEATURE_LENGTH = 20;
+/** 价格阶梯行（如「免费 → $20/月 Pro」）的最大长度 */
+const MAX_PRICE_LINE_LENGTH = 60;
+
 /** 垃圾数据特征（CSS 残片、导航文本、模板残留） */
 const GARBAGE_PATTERNS = [
   /\.css-[a-z0-9]+/i,
@@ -133,6 +139,37 @@ function cleanText(value, maxLength = 200) {
     text = text.slice(0, maxLength).trim();
   }
   return text;
+}
+
+/**
+ * 卡片的特性标签：最多 3 个、每个最多 20 字、去重、过滤垃圾。
+ *
+ * 刻意「只清洗不外推」：自动采集条目没有可信的标签来源，这里不会从 description
+ * 里切分或生成标签——上游不提供就返回 null，卡片渲染时回退到 discountInfo。
+ */
+function normalizeFeatures(value) {
+  if (!Array.isArray(value)) return null;
+  const out = [];
+  for (const item of value) {
+    if (typeof item !== 'string') continue;
+    const text = cleanText(item, MAX_FEATURE_LENGTH);
+    if (!text || isGarbage(text)) continue;
+    if (!out.includes(text)) out.push(text);
+    if (out.length >= MAX_FEATURES) break;
+  }
+  return out.length ? out : null;
+}
+
+/**
+ * 人工核验日期（YYYY-MM-DD）：含义是「最后一次对照官方页确认此优惠成立的日期」。
+ * 仅人工策展条目填写；自动采集条目没有人工核验动作，一律为 null。
+ * 未来日期视为非法——它一定是数据错误。
+ */
+function normalizeVerifiedAt(value, now) {
+  const date = normalizeDate(value);
+  if (!date) return null;
+  if (date > todayCN(now)) return null;
+  return date;
 }
 
 /** 去掉追踪参数 */
@@ -287,6 +324,8 @@ function makeDeal(raw = {}, opts = {}) {
     type,
     discountInfo: type === 'deal' ? discountInfo : (discountInfo || null),
     pricingModel: pricingModel || null,
+    priceLine: cleanText(raw.priceLine, MAX_PRICE_LINE_LENGTH) || null,
+    features: normalizeFeatures(raw.features),
     category: mapCategory({ category: raw.category, title, description }),
     description: (!description || isGarbage(description)) ? '' : description,
     eligibility: cleanText(raw.eligibility, 120) || null,
@@ -294,7 +333,8 @@ function makeDeal(raw = {}, opts = {}) {
     expiresAt,
     firstSeen,
     lastSeen,
-    verified: raw.verified === true
+    verified: raw.verified === true,
+    verifiedAt: raw.verified === true ? normalizeVerifiedAt(raw.verifiedAt, opts.now) : null
   };
 
   return deal;
@@ -327,6 +367,45 @@ function validateDeal(deal, index = 0) {
   if (deal.pricingModel !== null && !PRICING_MODELS.includes(deal.pricingModel)) {
     errors.push(`${where}: pricingModel 非法(${deal.pricingModel})`);
   }
+  if (deal.priceLine !== null && deal.priceLine !== undefined) {
+    if (typeof deal.priceLine !== 'string') errors.push(`${where}: priceLine 必须是字符串`);
+    else if (!deal.priceLine.trim() || deal.priceLine.length > MAX_PRICE_LINE_LENGTH) {
+      errors.push(`${where}: priceLine 为空或超过 ${MAX_PRICE_LINE_LENGTH} 字`);
+    } else if (isGarbage(deal.priceLine)) {
+      errors.push(`${where}: priceLine 命中垃圾特征`);
+    }
+  }
+  if (deal.features !== null && deal.features !== undefined) {
+    if (!Array.isArray(deal.features)) {
+      errors.push(`${where}: features 必须是数组`);
+    } else if (!deal.features.length) {
+      errors.push(`${where}: features 为空数组（无标签时应为 null）`);
+    } else if (deal.features.length > MAX_FEATURES) {
+      errors.push(`${where}: features 超过 ${MAX_FEATURES} 个`);
+    } else {
+      deal.features.forEach((feature, i) => {
+        if (typeof feature !== 'string') errors.push(`${where}: features[${i}] 必须是字符串`);
+        else if (!feature.trim()) errors.push(`${where}: features[${i}] 为空`);
+        else if (feature.length > MAX_FEATURE_LENGTH) {
+          errors.push(`${where}: features[${i}] 超过 ${MAX_FEATURE_LENGTH} 字`);
+        } else if (isGarbage(feature)) errors.push(`${where}: features[${i}] 命中垃圾特征`);
+      });
+      if (new Set(deal.features).size !== deal.features.length) {
+        errors.push(`${where}: features 存在重复项`);
+      }
+    }
+  }
+  if (deal.verifiedAt !== null && deal.verifiedAt !== undefined) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(deal.verifiedAt))) {
+      errors.push(`${where}: verifiedAt 格式非法`);
+    } else if (String(deal.verifiedAt) > todayCN()) {
+      errors.push(`${where}: verifiedAt 是未来日期(${deal.verifiedAt})`);
+    }
+  }
+  // 核验日期只对人工核验条目有意义：未核验却带日期，说明来源搞错了
+  if (deal.verified !== true && deal.verifiedAt) {
+    errors.push(`${where}: verified 非 true 却带 verifiedAt`);
+  }
   if (deal.type === 'deal' && !deal.discountInfo) errors.push(`${where}: type=deal 但 discountInfo 为空`);
   if (deal.discountInfo && isGarbage(deal.discountInfo)) errors.push(`${where}: discountInfo 命中垃圾特征`);
   if (deal.expiresAt && !/^\d{4}-\d{2}-\d{2}$/.test(deal.expiresAt)) errors.push(`${where}: expiresAt 格式非法`);
@@ -340,8 +419,8 @@ function validateDeal(deal, index = 0) {
 
   const allowed = new Set([
     'id', 'title', 'vendor', 'url', 'source', 'sourceUrl', 'region', 'type',
-    'discountInfo', 'pricingModel', 'category', 'description', 'eligibility', 'validity',
-    'expiresAt', 'firstSeen', 'lastSeen', 'verified'
+    'discountInfo', 'pricingModel', 'priceLine', 'features', 'category', 'description',
+    'eligibility', 'validity', 'expiresAt', 'firstSeen', 'lastSeen', 'verified', 'verifiedAt'
   ]);
   for (const key of Object.keys(deal)) {
     if (!allowed.has(key)) errors.push(`${where}: 未知字段 ${key}`);
@@ -355,11 +434,16 @@ module.exports = {
   REGIONS,
   TYPES,
   PRICING_MODELS,
+  MAX_FEATURES,
+  MAX_FEATURE_LENGTH,
+  MAX_PRICE_LINE_LENGTH,
   GARBAGE_PATTERNS,
   todayCN,
   nowCN,
   normalizeDate,
   cleanText,
+  normalizeFeatures,
+  normalizeVerifiedAt,
   normalizeUrl,
   stripTracking,
   isGarbage,

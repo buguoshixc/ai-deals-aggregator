@@ -13,7 +13,13 @@
     "eligibility": "经核验的非营利组织",
     "validity": "长期有效（保持非营利资格即可）",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "非营利折扣价",
+      "最少 2 席"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "GitHub Copilot 学生免费（Copilot Student）",
@@ -29,7 +35,13 @@
     "eligibility": "经 GitHub Education 验证的在校学生",
     "validity": "长期有效（GitHub 每月重新评估资格）",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "全部付费功能免费",
+      "需学籍验证"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "GitHub Copilot 教师与开源维护者免费 Pro",
@@ -45,7 +57,14 @@
     "eligibility": "经验证的教师 / 热门开源项目维护者",
     "validity": "长期有效（每月重新评估资格）",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "免费 Copilot Pro",
+      "教师 / 开源维护者",
+      "每月重评估"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "GitHub Student Developer Pack 学生开发者工具包",
@@ -61,7 +80,13 @@
     "eligibility": "在校学生（需学籍验证）",
     "validity": "长期有效（合作方 offer 定期更新）",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "Copilot 免费",
+      "Azure / DataCamp 等"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "Google AI Pro 学生免费 12 个月（含 Gemini 高级版）",
@@ -77,7 +102,14 @@
     "eligibility": "符合条件的高校在校学生",
     "validity": "限时返校季活动，领取后 12 个月免费",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "免费 12 个月",
+      "价值 $19.99/月",
+      "高校学生"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "Microsoft Azure for Students 学生免费 100 美元额度",
@@ -93,7 +125,14 @@
     "eligibility": "在校学生",
     "validity": "12 个月，可每年续期",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "$100 额度",
+      "无需信用卡",
+      "可每年续期"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "微软 Microsoft 365 教育版 学生 5 折（含 Copilot）",
@@ -109,7 +148,13 @@
     "eligibility": "在校大学生及家长",
     "validity": "长期有效（需保持学生身份验证）",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "5 折购买",
+      "含 Copilot"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "AWS Activate 初创公司最高 20 万美元云 credits",
@@ -125,7 +170,13 @@
     "eligibility": "初创公司（含自筹与已融资团队）",
     "validity": "长期有效的项目，按阶段申请",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "最高 $200,000",
+      "可用于 Bedrock"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "Figma for Education 学生与教师免费",
@@ -141,7 +192,13 @@
     "eligibility": "在校学生 / 教育工作者",
     "validity": "长期有效",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "Figma + FigJam 免费",
+      "学生 / 教师"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "Notion 教育版 学生与教师免费 Plus",
@@ -157,7 +214,13 @@
     "eligibility": "高校学生与教育工作者（学校须在 WHED 名录）",
     "validity": "长期有效",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "免费 Plus 计划",
+      "学校须在 WHED"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "Notion for Nonprofits 非营利组织 Business 折扣",
@@ -173,7 +236,13 @@
     "eligibility": "经核验的非营利组织",
     "validity": "长期有效（需保持非营利资格）",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "Business 折扣价",
+      "需非营利核验"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "ElevenLabs 免费计划 每月 10000 credits",
@@ -189,7 +258,13 @@
     "eligibility": "所有新用户",
     "validity": "长期有效的免费档（每月 10,000 credits）",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "每月 10,000 credits",
+      "TTS / 克隆 / Dubbing"
+    ],
+    "priceLine": "免费档 $0 → 付费档",
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "Runway 免费计划 一次性 125 credits",
@@ -205,7 +280,13 @@
     "eligibility": "所有新用户",
     "validity": "一次性额度，不过期",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "一次性 125 credits",
+      "含 5GB 素材存储"
+    ],
+    "priceLine": "免费档 $0 → 付费档",
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "Windsurf 学生折扣订阅 Pro（最长 12 个月）",
@@ -221,6 +302,12 @@
     "eligibility": "经认可高等院校的在校学生",
     "validity": "每个折扣期最长 12 个月，可续 3 次",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "折扣月费订 Pro",
+      "最长 12 个月"
+    ],
+    "priceLine": "学生折扣月费 → Pro",
+    "verifiedAt": "2026-09-22"
   }
 ]

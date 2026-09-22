@@ -2,16 +2,27 @@
 /**
  * 零依赖本地预览服务器（避免依赖 npx http-server 联网下载）。
  *
- * 用法：node scripts/serve.js [--port 8080]
+ * 用法：
+ *   node scripts/serve.js                 # 预览仓库根目录（源码 index.html）
+ *   node scripts/serve.js --dir=dist      # 预览发布产物（预渲染后的 index.html）
+ *   node scripts/serve.js --port 8080
  */
 
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = path.join(__dirname, '..');
 const portArg = process.argv.indexOf('--port');
 const PORT = portArg > -1 ? Number(process.argv[portArg + 1]) : 8080;
+const dirArg = process.argv.find(a => a.startsWith('--dir='));
+const ROOT = dirArg
+  ? path.resolve(dirArg.slice(6))
+  : path.join(__dirname, '..');
+
+if (!fs.existsSync(ROOT)) {
+  console.error(`目录不存在: ${ROOT}（先跑 npm run build 生成 dist/）`);
+  process.exit(1);
+}
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -52,5 +63,6 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`本地预览： http://127.0.0.1:${PORT}/`);
+  console.log(`服务目录： ${ROOT}`);
   console.log('（Ctrl+C 停止）');
 });

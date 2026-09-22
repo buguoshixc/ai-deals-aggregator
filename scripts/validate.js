@@ -113,7 +113,10 @@ function checkDealsFile() {
     withExpiry,
     withValidity,
     withTimeInfo: withExpiry + withValidity,
-    verified
+    verified,
+    withFeatures: store.deals.filter(d => Array.isArray(d.features) && d.features.length).length,
+    withPriceLine: store.deals.filter(d => d.priceLine).length,
+    trustedMissingFeatures: store.deals.filter(d => d.verified && !(Array.isArray(d.features) && d.features.length)).length
   };
 
   checkCoverage(store.deals);
@@ -208,6 +211,19 @@ function checkIndex() {
     warn('index.html 似乎没有按 v2 结构（payload.deals）读取数据');
   }
 
+  // 预渲染标记：删掉它们会让 SEO 静态骨架静默失效（构建期才会报错），这里提前告警
+  for (const marker of ['<!--PRERENDER:deals-->', '<!--PRERENDER:jsonld-->']) {
+    if (!html.includes(marker)) {
+      warn(`index.html 缺少预渲染标记 ${marker}（会让构建期静态骨架失效）`);
+    }
+  }
+  if (!/RENDER-CORE:START/.test(html) || !/RENDER-CORE:END/.test(html)) {
+    warn('index.html 缺少 RENDER-CORE 标记区块（构建期无法抽取渲染核心）');
+  }
+  if (!/__SITE_URL__/.test(html) && !/rel="canonical"/.test(html)) {
+    warn('index.html 缺少 canonical 或 __SITE_URL__ 占位');
+  }
+
   // 内联脚本语法校验（能抓出拼写/括号类低级错误）
   const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1]);
   if (!scripts.length) {
@@ -241,8 +257,15 @@ function main() {
     console.log(`含截止时间    : ${stats.withExpiry}`);
     console.log(`含有效期说明  : ${stats.withValidity}（合计时间信息 ${stats.withTimeInfo}）`);
     console.log(`人工核验      : ${stats.verified}`);
+    console.log(`卡片特性标签  : ${stats.withFeatures} 条`);
+    console.log(`价格阶梯      : ${stats.withPriceLine} 条`);
   }
   console.log(`策展数据      : ${curatedStats.curated} 条`);
+
+  // 覆盖率提示：人工核验过却还没有特性标签的条目，是最值得优先补齐的（卡片会退化成纯文字块）
+  if (stats && stats.trustedMissingFeatures > 0) {
+    warn(`有 ${stats.trustedMissingFeatures} 条已核验条目缺少 features 标签，卡片将退化为纯 discountInfo 展示`);
+  }
 
   if (strict && stats) {
     if (stats.deals < 40) error(`[strict] 真实优惠 ${stats.deals} 条 < 40`);

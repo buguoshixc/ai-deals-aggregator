@@ -3,12 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI 优惠聚合器 — 国内外大模型折扣与免费福利</title>
-  <meta name="description" content="聚合国内外 AI 大模型的真实优惠：新用户免费额度、学生/教师/非营利折扣、限时促销，数据每日自动更新。">
+  <title>AI 优惠聚合器 — 国内外大模型免费额度与折扣（每日更新）</title>
+  <meta name="description" content="聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。全部指向厂商官方页，数据每日自动更新并校验。">
   <meta name="keywords" content="AI优惠,大模型免费额度,API折扣,AI打折,学生优惠,免费试用">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <link rel="canonical" href="__SITE_URL__">
+  <link rel="alternate" hreflang="zh-CN" href="__SITE_URL__">
+  <link rel="alternate" hreflang="x-default" href="__SITE_URL__">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="AI 优惠聚合器 — 国内外大模型折扣与免费福利">
-  <meta property="og:description" content="聚合国内外 AI 大模型的真实优惠：新用户免费额度、学生/教师/非营利折扣、限时促销。">
+  <meta property="og:site_name" content="AI 优惠聚合器">
+  <meta property="og:url" content="__SITE_URL__">
+  <meta property="og:title" content="AI 优惠聚合器 — 国内外大模型免费额度与折扣（每日更新）">
+  <meta property="og:description" content="聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。全部指向厂商官方页。">
+  <meta property="og:image" content="__SITE_URL__og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AI 优惠聚合器 — 国内外大模型免费额度与折扣">
+  <meta name="twitter:description" content="聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。">
+  <meta name="twitter:image" content="__SITE_URL__og-image.png">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -131,9 +145,20 @@
     .badge.region-global { background: var(--global-bg); color: var(--global); }
     .badge.category { background: #f1f4f9; color: #475069; }
     .badge.pricing { background: #f6f7f9; color: var(--muted); }
+    /* 优惠类型徽章：与 pricing 区分开，避免"免费"与"折扣"混淆 */
+    .badge.ki-kind { background: var(--deal-bg); color: var(--deal); }
+    .badge.hot { background: #fff7ed; color: #c2410c; }
+
+    /* 价格阶梯：一眼看清「免费档能进、升级多少钱」 */
+    .price-line {
+      margin-top: 0.5rem;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
 
     .discount {
-      display: inline-block;
+      display: block;
       margin-top: 0.6rem;
       background: var(--deal-bg);
       color: var(--deal);
@@ -149,6 +174,18 @@
       color: var(--ink-soft);
       font-size: 0.9rem;
       margin-top: 0.55rem;
+    }
+
+    /* 特性标签：把长句拆成可扫的短块 */
+    .features { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.6rem; }
+
+    .feature-chip {
+      font-size: 0.78rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: #f1f4f9;
+      color: #475069;
+      white-space: nowrap;
     }
 
     .card-foot {
@@ -168,6 +205,26 @@
     .expiry { color: var(--muted); }
     .expiry.soon { color: var(--soon); font-weight: 600; }
     .expiry.past { color: #b91c1c; }
+    /* 核验/更新日期：比来源更重要的新鲜度信号，单独给一点重量 */
+    .stamp { color: #6b7280; }
+    .stamp.verified { color: #0f766e; font-weight: 500; }
+
+    /* 主行动按钮：取代原先页脚里的文字链 */
+    .cta {
+      display: block;
+      width: 100%;
+      margin-top: 0.85rem;
+      padding: 0.55rem 0.9rem;
+      text-align: center;
+      background: var(--brand);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .cta:hover { background: #3550d8; }
 
     .empty {
       text-align: center;
@@ -179,6 +236,19 @@
     }
 
     .loading { text-align: center; padding: 3rem; color: var(--muted); }
+
+    /* 常见问题：同时是 FAQPage 结构化数据的可见对应内容 */
+    .faq { margin-top: 2.5rem; }
+    .faq h2 { font-size: 1.15rem; margin-bottom: 0.85rem; }
+    .faq details {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      margin-bottom: 0.6rem;
+    }
+    .faq summary { cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+    .faq p { color: var(--ink-soft); font-size: 0.9rem; margin-top: 0.55rem; }
 
     footer {
       text-align: center;
@@ -201,7 +271,7 @@
   <div class="container">
     <header>
       <h1>AI <span>优惠</span>聚合器</h1>
-      <p>国内外大模型的真实优惠：新用户免费额度 · 学生/教师/非营利折扣 · 限时促销</p>
+      <p>国内外大模型的真实优惠：新用户免费额度 · 免费模型 · 学生/教师/非营利折扣 · 限时促销</p>
     </header>
 
     <div class="tabs" role="tablist">
@@ -228,17 +298,61 @@
 
     <div class="stats" id="stats" role="status" aria-live="polite"></div>
 
+    <!--
+      构建期会把下面的注释标记替换为默认视图（优惠 Tab、无筛选）的卡片 HTML。
+      这样不执行 JS 也能读到完整内容（爬虫/生成式引擎可见），JS 启动后会照常接管筛选与搜索。
+    -->
     <div class="deals-list" id="dealsList">
+      <!--PRERENDER:deals-->
       <div class="loading">加载数据中…</div>
     </div>
+
+    <section class="faq" aria-labelledby="faqTitle">
+      <h2 id="faqTitle">常见问题</h2>
+      <details>
+        <summary>哪些国内外厂商提供新用户免费额度？</summary>
+        <p>国内外主流大模型平台普遍为新注册用户提供一次性免费额度。国内可关注百度千帆、火山方舟、
+        阿里云百炼、腾讯混元、智谱AI、讯飞开放平台、Kimi 开放平台等；国外可关注 OpenAI、Anthropic、
+        Groq、OpenRouter 等。本站默认视图只收录这类可领取的真实优惠，并逐条标注适用条件与有效期。</p>
+      </details>
+      <details>
+        <summary>学生、教师和非营利组织有哪些 AI 优惠？</summary>
+        <p>不少厂商提供身份优惠：GitHub Copilot 对学生、教师与热门开源维护者免费；Google 提供学生版
+        AI Pro 免费期；Microsoft 提供 Azure 学生额度与教育折扣；Notion、Figma 提供教育版或非营利折扣。
+        本站可用分类与地区筛选快速定位，卡片上会写明适用身份与核验方式。</p>
+      </details>
+      <details>
+        <summary>优惠的有效期和截止日期怎么看？</summary>
+        <p>卡片底部会显示有效期说明；有明确截止日期的优惠会额外标注剩余天数并对临近截止的做高亮。
+        促销类优惠常由厂商随时调整，且部分额度有效期写在厂商控制台内，最终以官方页面为准。</p>
+      </details>
+      <details>
+        <summary>信息多久更新一次？怎么确认还有效？</summary>
+        <p>数据每天自动采集两次（北京时间 08:00 / 20:00），过期优惠会自动下架。人工逐条回访过官方页的
+        条目会标注「已核验」及核验日期；自动采集的条目标注「数据更新」日期，表示最近一次采集到该信息的时间。
+        发现过期或错误信息，欢迎提交修正。</p>
+      </details>
+    </section>
 
     <footer>
       <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span></p>
       <p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p>
+      <p>本站不收录付费推广位，排序与推荐理由不出售。</p>
     </footer>
   </div>
 
   <script>
+    'use strict';
+
+    /* ================================================================
+     * RENDER-CORE:START
+     *
+     * 纯渲染核心：只允许常量与纯函数，禁止引用 document / window / state / els。
+     * scripts/tools/build-local.js 会按此标记抽取本区块，在无 DOM 的沙箱里求值，
+     * 用于构建期预渲染静态卡片——因此「构建期渲染」与「浏览器渲染」共用同一份模板，
+     * 不会分叉。若在此区块内引用 DOM，构建立即失败。
+     * ================================================================ */
+
     const PRICING_LABELS = {
       free: '免费',
       freemium: '免费增值',
@@ -249,21 +363,17 @@
     const REGION_LABELS = { cn: '国内', global: '国外' };
     const SOON_DAYS = 7;
 
-    const state = { tab: 'deals', deals: [], updatedAt: null };
-
-    const els = {
-      list: document.getElementById('dealsList'),
-      search: document.getElementById('searchInput'),
-      region: document.getElementById('regionFilter'),
-      category: document.getElementById('categoryFilter'),
-      sort: document.getElementById('sortSelect'),
-      stats: document.getElementById('stats'),
-      lastUpdated: document.getElementById('lastUpdated'),
-      tabDeals: document.getElementById('tabDeals'),
-      tabTools: document.getElementById('tabTools'),
-      countDeals: document.getElementById('countDeals'),
-      countTools: document.getElementById('countTools')
+    /** 优惠类型标签：与 pricingModel 的白名单语义不同，这里描述「这是什么优惠」 */
+    const KIND_LABELS = {
+      free: '免费版',
+      freemium: '免费增值',
+      paid: '折扣',
+      trial: '免费试用',
+      credits: '赠送额度'
     };
+
+    /** 同一条目可同时具备的补充标签 */
+    const EXTRA_KIND_LABELS = ['折扣', '限时免费', '免费额度'];
 
     /** 北京时间当天（YYYY-MM-DD） */
     function todayCN() {
@@ -298,6 +408,165 @@
     function escapeAttr(value) {
       return escapeHtml(value).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
+
+    /**
+     * 卡片底部的新鲜度标识。
+     * 只有人工逐条核验过的条目才允许显示「已核验」——自动采集条目显示采集日期，
+     * 不把「抓到过」说成「核验过」。
+     */
+    function stampOf(deal) {
+      if (deal.verified && deal.verifiedAt) {
+        return { label: '已核验：' + deal.verifiedAt, verified: true };
+      }
+      if (deal.lastSeen) {
+        return { label: '数据更新：' + deal.lastSeen, verified: false };
+      }
+      return null;
+    }
+
+    function stampHtml(deal) {
+      const stamp = stampOf(deal);
+      if (!stamp) return '';
+      const cls = stamp.verified ? 'stamp verified' : 'stamp';
+      const tip = stamp.verified ? '已人工对照官方页面核验' : '最近一次采集到该信息的时间';
+      return '<span class="' + cls + '" title="' + escapeAttr(tip) + '">' + escapeHtml(stamp.label) + '</span>';
+    }
+
+    /** 优惠类型徽章：来自 pricingModel + discountInfo 的补充标签 */
+    function kindBadges(deal) {
+      if (deal.type !== 'deal') return [];
+      const labels = [];
+      const base = KIND_LABELS[deal.pricingModel];
+      if (base) labels.push(base);
+      const text = String(deal.discountInfo || '');
+      for (const kind of EXTRA_KIND_LABELS) {
+        if (kind === base) continue;
+        if (text.includes(kind)) labels.push(kind);
+      }
+      return [...new Set(labels)];
+    }
+
+    /** 价格阶梯行；数据没有可靠来源时不渲染（不编造升级路径） */
+    function priceLineHtml(deal) {
+      if (!deal.priceLine) return '';
+      return '<div class="price-line">' + escapeHtml(deal.priceLine) + '</div>';
+    }
+
+    /** 特性标签；没有标签时回退展示优惠详情，保证卡片不会出现空白块 */
+    function tagsHtml(deal) {
+      if (Array.isArray(deal.features) && deal.features.length) {
+        return '<div class="features">' +
+          deal.features.map(f => '<span class="feature-chip">' + escapeHtml(f) + '</span>').join('') +
+          '</div>';
+      }
+      if (deal.type === 'deal' && deal.discountInfo) {
+        return '<div class="discount">' + escapeHtml(deal.discountInfo) + '</div>';
+      }
+      return '';
+    }
+
+    function expiryHtml(deal) {
+      const days = daysUntil(deal.expiresAt);
+      if (days === null) return '';
+      const label = days < 0 ? '已过期（' + deal.expiresAt + '）'
+        : days === 0 ? '今天截止'
+        : '截止 ' + deal.expiresAt + '（剩 ' + days + ' 天）';
+      const cls = days < 0 ? 'expiry past' : (days <= SOON_DAYS ? 'expiry soon' : 'expiry');
+      return '<span class="' + cls + '">' + escapeHtml(label) + '</span>';
+    }
+
+    function cardHtml(deal) {
+      const url = safeUrl(deal.url);
+      const title = escapeHtml(deal.title);
+      const titleHtml = url
+        ? '<a class="deal-title" href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">' + title + '</a>'
+        : '<span class="deal-title">' + title + '</span>';
+
+      const badges = [];
+      if (deal.region) {
+        badges.push('<span class="badge region-' + escapeAttr(deal.region) + '">' +
+          escapeHtml(REGION_LABELS[deal.region] || deal.region) + '</span>');
+      }
+      if (deal.category) badges.push('<span class="badge category">' + escapeHtml(deal.category) + '</span>');
+      kindBadges(deal).forEach(kind => {
+        badges.push('<span class="badge kind">' + escapeHtml(kind) + '</span>');
+      });
+
+      const description = deal.description
+        ? '<div class="deal-description">' + escapeHtml(deal.description) + '</div>'
+        : '';
+
+      const foot = [];
+      if (deal.vendor) foot.push('<span class="vendor">' + escapeHtml(deal.vendor) + '</span>');
+      if (deal.eligibility) foot.push('<span>适用：' + escapeHtml(deal.eligibility) + '</span>');
+      if (deal.validity) foot.push('<span class="expiry">有效期：' + escapeHtml(deal.validity) + '</span>');
+      const expiry = expiryHtml(deal);
+      if (expiry) foot.push(expiry);
+      const stamp = stampHtml(deal);
+      if (stamp) foot.push(stamp);
+      if (deal.source) {
+        const sourceUrl = safeUrl(deal.sourceUrl);
+        foot.push(sourceUrl
+          ? '<span>来源：<a href="' + escapeAttr(sourceUrl) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(deal.source) + '</a></span>'
+          : '<span>来源：' + escapeHtml(deal.source) + '</span>');
+      }
+
+      const cta = url
+        ? '<a class="cta" href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">' +
+          (deal.type === 'deal' ? '获取优惠' : '查看官方页面') + ' &rarr;</a>'
+        : '';
+
+      const classes = ['deal-card'];
+      if (deal.type !== 'deal') classes.push('tool');
+      if (isExpired(deal)) classes.push('expired');
+
+      return '<article class="' + classes.join(' ') + '">' +
+        '<div class="card-head">' + titleHtml +
+        '<div class="badges">' + badges.join('') + '</div></div>' +
+        priceLineHtml(deal) + description + tagsHtml(deal) +
+        '<div class="card-foot">' + foot.join('') + '</div>' + cta +
+        '</article>';
+    }
+
+    /**
+     * 默认排序（即将截止优先 → 最近更新 → 名称）。
+     * 抽成纯函数，供浏览器与构建期预渲染共用，避免两处排序语义分叉。
+     */
+    function defaultOrder(list) {
+      return [...list].sort((a, b) => {
+        const da = daysUntil(a.expiresAt);
+        const db = daysUntil(b.expiresAt);
+        if (da === null && db === null) return String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
+        if (da === null) return 1;
+        if (db === null) return -1;
+        return da - db;
+      });
+    }
+
+    /** 默认视图过滤：优惠 Tab、未过期、无筛选条件 */
+    function defaultVisible(deals) {
+      return deals.filter(deal => deal.type === 'deal' && !isExpired(deal));
+    }
+
+    /* ================================================================
+     * RENDER-CORE:END
+     * ================================================================ */
+
+    const state = { tab: 'deals', deals: [], updatedAt: null };
+
+    const els = {
+      list: document.getElementById('dealsList'),
+      search: document.getElementById('searchInput'),
+      region: document.getElementById('regionFilter'),
+      category: document.getElementById('categoryFilter'),
+      sort: document.getElementById('sortSelect'),
+      stats: document.getElementById('stats'),
+      lastUpdated: document.getElementById('lastUpdated'),
+      tabDeals: document.getElementById('tabDeals'),
+      tabTools: document.getElementById('tabTools'),
+      countDeals: document.getElementById('countDeals'),
+      countTools: document.getElementById('countTools')
+    };
 
     function dealCount() {
       return state.deals.filter(d => d.type === 'deal' && !isExpired(d)).length;
@@ -335,7 +604,7 @@
       const region = els.region.value;
       const category = els.category.value;
 
-      let list = state.deals.filter(deal => {
+      const list = state.deals.filter(deal => {
         if (state.tab === 'deals') {
           if (deal.type !== 'deal') return false;
           if (isExpired(deal)) return false;
@@ -345,7 +614,8 @@
         if (region && deal.region !== region) return false;
         if (category && deal.category !== category) return false;
         if (search) {
-          const haystack = [deal.title, deal.vendor, deal.discountInfo, deal.description, deal.category, deal.source]
+          const haystack = [deal.title, deal.vendor, deal.discountInfo, deal.description, deal.category,
+            deal.source, (deal.features || []).join(' ')]
             .filter(Boolean).join(' ').toLowerCase();
           if (!haystack.includes(search)) return false;
         }
@@ -353,103 +623,28 @@
       });
 
       const order = els.sort.value;
-      list.sort((a, b) => {
-        if (order === 'title') return String(a.title).localeCompare(String(b.title), 'zh-Hans-CN');
-        if (order === 'updated') return String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
-        const da = daysUntil(a.expiresAt);
-        const db = daysUntil(b.expiresAt);
-        if (da === null && db === null) return String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
-        if (da === null) return 1;
-        if (db === null) return -1;
-        return da - db;
-      });
-
-      return list;
-    }
-
-    function expiryHtml(deal) {
-      const days = daysUntil(deal.expiresAt);
-      if (days === null) return '';
-      const label = days < 0 ? `已过期（${deal.expiresAt}）`
-        : days === 0 ? `今天截止`
-        : `截止 ${deal.expiresAt}（剩 ${days} 天）`;
-      const cls = days < 0 ? 'expiry past' : (days <= SOON_DAYS ? 'expiry soon' : 'expiry');
-      return `<span class="${cls}">${escapeHtml(label)}</span>`;
-    }
-
-    function cardHtml(deal) {
-      const url = safeUrl(deal.url);
-      const title = escapeHtml(deal.title);
-      const titleHtml = url
-        ? `<a class="deal-title" href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${title}</a>`
-        : `<span class="deal-title">${title}</span>`;
-
-      const badges = [];
-      if (deal.region) {
-        badges.push(`<span class="badge region-${escapeAttr(deal.region)}">${escapeHtml(REGION_LABELS[deal.region] || deal.region)}</span>`);
+      if (order === 'title') {
+        return list.sort((a, b) => String(a.title).localeCompare(String(b.title), 'zh-Hans-CN'));
       }
-      if (deal.category) badges.push(`<span class="badge category">${escapeHtml(deal.category)}</span>`);
-      if (deal.pricingModel) {
-        const label = PRICING_LABELS[deal.pricingModel] || deal.pricingModel;
-        badges.push(`<span class="badge pricing">${escapeHtml(label)}</span>`);
+      if (order === 'updated') {
+        return list.sort((a, b) => String(b.lastSeen || '').localeCompare(String(a.lastSeen || '')));
       }
-
-      const discount = deal.discountInfo
-        ? `<div class="discount">${escapeHtml(deal.discountInfo)}</div>`
-        : '';
-
-      const description = deal.description
-        ? `<div class="deal-description">${escapeHtml(deal.description)}</div>`
-        : '';
-
-      const foot = [];
-      if (deal.vendor) foot.push(`<span class="vendor">${escapeHtml(deal.vendor)}</span>`);
-      if (deal.eligibility) foot.push(`<span>适用：${escapeHtml(deal.eligibility)}</span>`);
-      const validity = deal.validity ? `<span class="expiry">有效期：${escapeHtml(deal.validity)}</span>` : '';
-      if (validity) foot.push(validity);
-      const expiry = expiryHtml(deal);
-      if (expiry) foot.push(expiry);
-      if (deal.source) {
-        const sourceUrl = safeUrl(deal.sourceUrl);
-        foot.push(sourceUrl
-          ? `<span>来源：<a href="${escapeAttr(sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(deal.source)}</a></span>`
-          : `<span>来源：${escapeHtml(deal.source)}</span>`);
-      }
-      if (deal.verified) foot.push('<span title="已人工核验">✓ 已核验</span>');
-      if (url) {
-        foot.push(`<a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">查看官方页面 &rarr;</a>`);
-      }
-
-      const classes = ['deal-card'];
-      if (deal.type !== 'deal') classes.push('tool');
-      if (isExpired(deal)) classes.push('expired');
-
-      return `
-        <article class="${classes.join(' ')}">
-          <div class="card-head">
-            ${titleHtml}
-            <div class="badges">${badges.join('')}</div>
-          </div>
-          ${discount}
-          ${description}
-          <div class="card-foot">${foot.join('')}</div>
-        </article>
-      `;
+      return defaultOrder(list);
     }
 
     function render() {
       const list = visibleDeals();
 
-      els.countDeals.textContent = ` ${dealCount()}`;
-      els.countTools.textContent = ` ${toolCount()}`;
+      els.countDeals.textContent = ' ' + dealCount();
+      els.countTools.textContent = ' ' + toolCount();
 
       const scope = state.tab === 'deals' ? '条优惠' : '条工具';
-      els.stats.innerHTML = `共 <strong>${list.length}</strong> ${scope} · ` +
-        `国内 ${state.deals.filter(d => d.region === 'cn' && d.type === 'deal' && !isExpired(d)).length} 条优惠 · ` +
-        `国外 ${state.deals.filter(d => d.region === 'global' && d.type === 'deal' && !isExpired(d)).length} 条优惠`;
+      els.stats.innerHTML = '共 <strong>' + list.length + '</strong> ' + scope + ' · ' +
+        '国内 ' + state.deals.filter(d => d.region === 'cn' && d.type === 'deal' && !isExpired(d)).length + ' 条优惠 · ' +
+        '国外 ' + state.deals.filter(d => d.region === 'global' && d.type === 'deal' && !isExpired(d)).length + ' 条优惠';
 
       if (!list.length) {
-        els.list.innerHTML = `<div class="empty">没有匹配的${state.tab === 'deals' ? '优惠' : '工具'}，试试清空筛选条件。</div>`;
+        els.list.innerHTML = '<div class="empty">没有匹配的' + (state.tab === 'deals' ? '优惠' : '工具') + '，试试清空筛选条件。</div>';
         return;
       }
 
@@ -485,9 +680,11 @@
         render();
       })
       .catch(error => {
-        els.list.innerHTML = '<div class="empty">数据加载失败，请稍后刷新重试。</div>';
+        // 预渲染的静态卡片仍在 DOM 里，无 JS / 拉取失败时页面依旧可读可点，
+        // 因此这里只在控制台暴露错误，不用错误态覆盖已有内容。
         console.error('加载 deals.json 失败：', error);
       });
   </script>
+  <!--PRERENDER:jsonld-->
 </body>
 </html>

@@ -1,4 +1,40 @@
 User-agent: *
 Allow: /
 
+# 显式放行生成式引擎（GEO）：本站在正文里给出可引用的优惠事实与来源链接，
+# 希望被 AI 检索/回答引用。Allow: / 已覆盖这些爬虫，这里再单独声明一次意图，
+# 避免将来收紧通配规则时把它们误伤。
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
 Sitemap: https://buguoshixc.github.io/ai-deals-aggregator/sitemap.xml

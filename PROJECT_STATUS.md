@@ -1,6 +1,6 @@
 # AI 优惠聚合器 — 项目状态
 
-**最后更新**：2026-09-21
+**最后更新**：2026-09-22
 **项目地址**：https://buguoshixc.github.io/ai-deals-aggregator/
 **仓库**：https://github.com/buguoshixc/ai-deals-aggregator
 
@@ -23,6 +23,8 @@
 | 自动化 | 采集与部署互相耦合，构建期抓取 | 采集 / 发布职责分离，发布不再依赖网络抓取 |
 | JS 渲染的公开页 | 一律放弃，只能人工策展 | 无头浏览器采集，火山方舟/智谱活动页已自动化（CI 每天 2 次） |
 | 质量门禁 | 无 | `npm test`（零依赖）+ strict 内容指标，部署前强制 |
+| 卡片信息层级 | 标题 + 段落文字，需逐字阅读 | 价格阶梯 / 频率标签 / 特性 chip / 核验日期 / 全宽 CTA（可扫读） |
+| 可发现性 | 纯 JS 渲染，爬虫看到「加载数据中…」 | 发布产物含完整静态正文 + canonical / hreflang / og / 4 段 JSON-LD / FAQ / og 图 |
 
 ---
 
@@ -202,15 +204,80 @@ npm run collect:headless:dry  # 额外启用无头来源（智谱活动页 / 火
 npm run collect:headless      # 额外启用无头来源并写盘（需本机 Edge/Chrome）
 npm test                # 数据 + 前端校验（零依赖）
 npm run test:strict     # 附加内容质量指标
-npm run build           # 本地复现发布产物并自检
-npm run serve           # 本地预览 http://127.0.0.1:8080
+npm run build           # 本地复现发布产物（含预渲染）并自检
+npm run serve                          # 本地预览源码目录 http://127.0.0.1:8080
+node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 index.html）
 
 node scripts/collect.js --list                       # 已注册来源
 node scripts/collect.js --only=cn_qianfan --dry-run  # 单源调试
 node scripts/tools/inspect-source.js <url> --rows    # 看页面表格结构
 node scripts/tools/find-offers.js <url>              # 探测页面有无优惠内容
 node scripts/tools/term-count.js <url> 免费 额度      # 判断是否 JS 空壳
+
+node scripts/lib/og-image.js --out=dist/og-image.png # 单独重新生成 OG 分享图（带像素自检）
+node scripts/data/backfill-cards.js --check          # 核对策展条目的卡片字段是否齐备
 ```
+
+> 新增策展条目时：先编辑 `scripts/data/curated_*.json`（含 `features`/`priceLine`/`verifiedAt`）
+> → `npm run collect` 把新字段合并进 `deals.json` → `npm run build` 重新预渲染。
+> 顺序不能颠倒：预渲染读的是 `deals.json`，不是策展文件（见 2.9）。
+
+---
+
+---
+
+### 2.9 新增：卡片信息架构 + SEO/GEO 静态骨架
+
+**背景**：与同类站点（devtk.ai 的优惠页）逐项对比后确认，我们的**数据侧明显更强**（优惠 71 条 vs 18 条、
+国内 51 条对方几乎空白、全自动采集 vs 人工维护），但**产品侧与可发现性明显更弱**：
+卡片把信息压成等权重的连续文本（阅读式而非扫描式）、没有价格阶梯与核验日期、CTA 是页脚文字链；
+页面内容全靠 JS 运行时渲染，爬虫拿到的是「加载数据中…」；没有 canonical / JSON-LD / og 图 / FAQ。
+
+**这次把这 7 项补齐**（1–4 卡片信息架构，5–7 SEO 基建）：
+
+| 项 | 做法 |
+|---|---|
+| ① 特性标签 | v2 契约新增 `features`（≤3 个、每个 ≤20 字），卡片渲染为 chip；无标签时回退 `discountInfo` |
+| ② 核验日期 | 新增 `verifiedAt`；**只有人工逐条回访官方页的条目显示「已核验」**，自动采集条目显示「数据更新：{lastSeen}」 |
+| ③ 价格阶梯 | 新增 `priceLine`；无可靠来源时为 `null`，卡片不渲染该行（不编造升级路径） |
+| ④ CTA 按钮化 | 页脚文字链改为卡片底部全宽实心按钮「获取优惠 →」 |
+| ⑤ FAQ + FAQPage | 页面新增 4 条可见问答；`FAQPage` 结构化数据**从可见文案反向解析生成**，构建自检校验逐字一致 |
+| ⑥ canonical / hreflang / og / twitter / 结构化数据 | 补 canonical、`hreflang(zh-CN / x-default)`、`og:*`、`twitter:*`、`max-image-preview:large`；4 段 JSON-LD（Organization / BreadcrumbList / FAQPage / ItemList）；零依赖生成的 `og-image.png`（1200×630） |
+| ⑦ robots.txt | 显式放行 GPTBot / ClaudeBot / PerplexityBot / Google-Extended 等 11 个爬虫，声明 GEO 意图 |
+
+**关键设计：预渲染，但不引入第二份模板**
+
+发布产物 `dist/index.html` 现在含**完整静态正文**——不执行 JS 也能读到 71 张卡片的标题、价格、
+标签与官方链接（爬虫/生成式引擎视角与用户一致）。做法是在 `index.html` 里划出一块
+`RENDER-CORE` 纯函数区，构建脚本按标记抽出、在**无 DOM 的 vm 沙箱**里求值后调用同一个
+`cardHtml()` 生成静态卡片。因此「构建期渲染」与「浏览器渲染」是**同一份模板**，不会分叉；
+一旦有人在区块里引用 `document` / `window` / `state`，构建立即失败，而不是悄悄产出坏页面。
+
+产物自检新增断言：预渲染卡片 ≥60 条、CTA 数不少于卡片数、无 `PRERENDER`/`__SITE_URL__` 残留、
+4 段 JSON-LD 均可 `JSON.parse`、FAQ 可见文案与结构化数据逐字一致、`og-image.png` 为合法 PNG 且 1200×630。
+
+**诚实性红线（与竞品的差别，刻意保留）**
+
+- 不把「抓到过」说成「核验过」：只有 23 条人工策展条目显示核验日期。
+- 看不到升级路径就不写价格阶梯；没有可信标签就不写特性标签（**不从 `description` 自动切分**）。
+- 不收录付费推广位；页脚明写「排序与推荐理由不出售」。
+
+**取舍**：`og-image.png` 用 Node 内置 `zlib` 手写 PNG 编码 + 5×7 点阵字模生成。点阵字模只能画
+ASCII，所以分享图只排品牌标记与站点名，不做中文排版——换来构建仍然零外部依赖（CI 不需要装图像库）。
+
+**顺带修正**：`serve.js` 新增 `--dir=` 以便直接预览发布产物；修正分类下拉被误标为「地区」的
+`aria-label`；`.github/workflows` 未改动（`build-local.js` 依旧零依赖，`dist/` 仍是产物路径）。
+
+**验证**（本机 Edge + playwright-core 实测）：
+
+| 场景 | 结果 |
+|---|---|
+| 不执行 JS 读取 `dist/index.html` | 71 张卡片、71 个 CTA、完整正文可见 |
+| 浏览器默认视图 | 71 卡片 / 53 特性 chip / 3 价格行 / 23 条「已核验」/ 48 条「数据更新」 |
+| 全部工具 Tab | 121 条（含 50 条工具） |
+| 搜索 | 「学生」命中 8 条；「tokens」命中 25 条（特性标签已参与搜索） |
+| 地区筛选 | 国内 51 条，全部带国内徽章 |
+| 页面控制台错误 | 0 |
 
 ---
 
@@ -225,6 +292,8 @@ node scripts/tools/term-count.js <url> 免费 额度      # 判断是否 JS 空�
 | 工具信息（`type: "tool"`） | 50 |
 | 带时间信息（截止日期或有效期说明） | 52 |
 | 人工核验（`verified: true`） | 23 |
+| 卡片特性标签（`features`） | 23（全部为人工策展条目） |
+| 价格阶梯（`priceLine`） | 3（仅官方页明确写出「免费 → 付费」的条目） |
 | 垃圾条目 | 0 |
 
 来源分布：Futuretools 29 · 百度千帆 17 · aitools.fyi 15 · 人工策展（国外）14 · 火山方舟 12 ·
@@ -262,9 +331,16 @@ Layer3Labs 9 · 人工策展（国内）9 · 智谱AI 7 · 智谱AI活动页 5 �
 3. **过期信息的自动降级**：`expiresAt` 到期后自动从默认视图移除（已实现），可再加"最近过期"归档页。
 4. **来源健康度监控**：采集报告落库，某个源连续 N 天零产出就报警。
 5. **自定义域名**：目前用 `buguoshixc.github.io/ai-deals-aggregator/`，如需绑域名需另行配置 CNAME。
+   （绑域名后记得同步 `build-local.js` 里的 `SITE_URL`，canonical / og:url / sitemap 都由它生成。）
 6. **用户反馈入口**：卡片上加"信息有误"链接，跳 GitHub Issue 模板。
 7. **`deploy.yml` 同步收尾**：把它的 `checkout@v4` / `setup-node@v4` 也升到 `@v5`、runner 钉版本，
    与 `collect.yml` 保持一致（纯清理，不影响发布逻辑）。
+8. **给自动采集条目补 `features`**：目前 48 条自动条目没有特性标签，卡片回退展示 `discountInfo`。
+   若能为常见来源（百度千帆、火山方舟）写规则化的标签提取，卡片整齐度会再上一个台阶——
+   但必须遵守"只取原文事实、不生成近似内容"的约束（见 2.9 诚实性红线）。
+9. **`priceLine` 覆盖率**：目前只有 3 条。可在日报价页明确给出档位时补，不必强求。
+10. **i18n**：已预留 `hreflang` 结构（`zh-CN` + `x-default` 自指）。若要做英文站，
+    加 `en` 版本并补 `hreflang="en"` 即可，无需返工现有结构。
 
 ---
 
@@ -274,5 +350,7 @@ Layer3Labs 9 · 人工策展（国内）9 · 智谱AI 7 · 智谱AI活动页 5 �
 - **采集**：Node.js 20+ / axios / cheerio，自建 http 封装（UA、超时、重试、并发限流、robots.txt）
 - **无头采集**：playwright-core + 本机 Edge/Chrome（本地）/ playwright 自带 chromium（CI），不下载多余内核
 - **校验**：自建零依赖校验脚本（`scripts/validate.js`）
+- **预渲染**：`vm` 沙箱抽出主页面里的 RENDER-CORE 纯函数区求值（构建期与浏览器端共用同一份模板）
+- **OG 分享图**：Node 内置 `zlib` 手写 PNG 编码 + 内置 5×7 点阵字模（零外部依赖）
 - **部署**：GitHub Actions → GitHub Pages
 - **存储**：静态 `deals.json`（v2 契约）

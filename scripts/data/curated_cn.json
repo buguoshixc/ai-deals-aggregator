@@ -13,7 +13,14 @@
     "eligibility": "个人开发者（需注册火山引擎账号）",
     "validity": "官方公告未标注截止日期，实际额度有效期以火山方舟控制台为准",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "50 万 tokens",
+      "豆包全系模型",
+      "个人开发者"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "腾讯混元 新用户 100 万 tokens 免费资源包",
@@ -29,7 +36,14 @@
     "eligibility": "通过腾讯云实名认证的新用户",
     "validity": "资源包有效期 1 年，自开通服务起 1 年内未用完则过期作废",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "100 万 tokens",
+      "有效期 1 年",
+      "需实名认证"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "讯飞星火 Spark Lite 轻量级大模型免费使用",
@@ -45,7 +59,13 @@
     "eligibility": "注册讯飞开放平台的开发者（需创建应用）",
     "validity": "长期有效（官方文档未标注截止日期）",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "Spark Lite 免费",
+      "创建应用即可调用"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "讯飞开放平台 新手免费福利礼包",
@@ -61,7 +81,14 @@
     "eligibility": "新注册开发者；乐享会员需完成认证",
     "validity": "长期活动（以官方页面展示为准）",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "百万级交互量",
+      "八大 AI 服务",
+      "乐享会员 2888 元"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "Kimi 开放平台 新用户 15 元代金券",
@@ -77,7 +104,13 @@
     "eligibility": "Kimi 开放平台新注册用户（需实名认证）",
     "validity": "以代金券实际到期时间为准",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "15 元代金券",
+      "需实名认证"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "商汤日日新 Token Plan 首月限时免费",
@@ -93,7 +126,14 @@
     "eligibility": "SenseNova 平台开发者（无门槛配额）",
     "validity": "限时活动，开发者首月免费",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "首月免费",
+      "每 5 小时 1500 次",
+      "无门槛配额"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "硅基流动 免费模型专区",
@@ -109,7 +149,13 @@
     "eligibility": "所有注册开发者",
     "validity": "长期有效（以官方定价页实时标注为准）",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "多款模型标价 0",
+      "文本 / 向量 / 图像 / 语音"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "阶跃星辰 StepAudio 3 语音大模型限时免费",
@@ -125,7 +171,13 @@
     "eligibility": "StepFun 开放平台注册开发者",
     "validity": "限时免费（官方未标注具体截止日期）",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "两个语音模型限时免费",
+      "按 Token 计费其他"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   },
   {
     "title": "百川智能 海纳百川计划 免费使用 M3Plus API",
@@ -141,6 +193,12 @@
     "eligibility": "申请加入海纳百川计划的开发者 / 机构（需审核）",
     "validity": "未标注截止日期",
     "expiresAt": null,
-    "verified": true
+    "verified": true,
+    "features": [
+      "免费 M3Plus API",
+      "需申请审核"
+    ],
+    "priceLine": null,
+    "verifiedAt": "2026-09-22"
   }
 ]
