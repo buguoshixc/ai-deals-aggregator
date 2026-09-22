@@ -1,6 +1,7 @@
 {
   "note": "厂商品牌图形登记表。页面只写 data-logo=\"key\"，图形由 scripts/lib/logos.js 在构建期生成为 dist/logos/ 与 dist/logos.css。品牌图形版权归各厂商所有，本站仅作标识用途。",
   "order": [
+    "ai360",
     "alibabacloud",
     "anthropic",
     "aws",
@@ -8,6 +9,7 @@
     "baidu",
     "canva",
     "cohere",
+    "coze",
     "cursor",
     "deepseek",
     "dify",
@@ -26,6 +28,7 @@
     "microsoft",
     "midjourney",
     "mistral",
+    "modelscope",
     "moonshotai",
     "n8n",
     "notion",
@@ -49,6 +52,15 @@
     "zhipu"
   ],
   "logos": {
+    "ai360": {
+      "name": "360智脑",
+      "kind": "file",
+      "file": "ai360.png",
+      "bg": "#ffffff",
+      "pad": "3px",
+      "source": "https://p1.ssl.qhimg.com/t0180f58567ac1a6ba5.png（ai.360.com 的 <link rel=\"shortcut icon\">，360 自家 CDN）",
+      "quality": "高清 150×150"
+    },
     "alibabacloud": {
       "name": "阿里云百炼",
       "kind": "brand",
@@ -513,6 +525,26 @@
       "source": "https://www.krea.ai/favicon/favicon-64.png（经本机代理从厂商官网取得）",
       "quality": "够用 64×64",
       "note": "站点尺寸表里最大就是 64×64"
+    },
+    "coze": {
+      "name": "扣子 Coze",
+      "kind": "brand",
+      "viewBox": "0 0 24 24",
+      "color": "#4D53E8",
+      "bg": "#eef1ff",
+      "scale": "72%",
+      "d": "M9.366 12.096a.61.61 0 0 0-.608.608v1.218a.609.609 0 1 0 1.217 0v-1.218a.61.61 0 0 0-.609-.608m.8 3.453a.605.605 0 0 1 0-.86.605.605 0 0 1 .859 0 1.52 1.52 0 0 0 2.149 0 .605.605 0 0 1 .859 0 .605.605 0 0 1 0 .86 2.73 2.73 0 0 1-3.867 0m4.062-2.24a.61.61 0 1 1 .609.609.606.606 0 0 1-.61-.609zM3.023 0A3.024 3.024 0 0 0 0 3.023v17.954A3.024 3.024 0 0 0 3.023 24h17.954A3.024 3.024 0 0 0 24 20.977V3.023A3.024 3.024 0 0 0 20.977 0ZM12.1 3.78h.004a6.287 6.287 0 0 1 6.283 6.286v2.635h1.508c1.73 0 2.12 2.426.476 2.97l-1.984.663v1.137a1.513 1.513 0 0 1-2.19 1.353l-1.101-.549c-.052-.024-.115 0-.131.055-.892 2.785-4.835 2.785-5.727 0a.095.095 0 0 0-.13-.055l-1.102.55a1.513 1.513 0 0 1-2.19-1.354v-1.139l-1.984-.66c-1.647-.541-1.254-2.97.477-2.97h1.507v-2.636A6.285 6.285 0 0 1 12.1 3.78",
+      "source": "simple-icons 官方品牌路径（矢量，随构建生成为独立 SVG）",
+      "quality": "矢量"
+    },
+    "modelscope": {
+      "name": "魔搭 ModelScope",
+      "kind": "file",
+      "file": "modelscope.png",
+      "bg": "#ffffff",
+      "pad": "3px",
+      "source": "https://www.modelscope.cn/favicon.ico（官网 favicon，128×128 帧转 PNG；来源为阿里 CDN g.alicdn.com/sail-web/maas/.../favicon/128.ico 同图）",
+      "quality": "高清 128×128"
     }
   }
 }

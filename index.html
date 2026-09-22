@@ -233,6 +233,16 @@
     body.js .g { cursor: pointer; }
     body.js .g:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
+    /* 卡片提示：这条数据的详情页里附了中文翻译。
+       放在 .meta 行而不是标题旁——.meta 是 nowrap + overflow:hidden 的横排，
+       多一个小胶囊不会让标题重排，卡片高度因此不变（卡片是定高 + overflow:hidden，
+       任何挤压都会静默裁掉内容）。 */
+    .zhmark {
+      flex: none; font-size: 10px; font-weight: 650; line-height: 1.5;
+      border-radius: 4px; padding: 1px 5px; background: #eef2ff;
+      color: var(--brand); border: 1px solid #dde4ff;
+    }
+
     .g.tool h3 { font-weight: 550; color: #6b7280; }
 
     /* ---------- 档位分带 ---------- */
@@ -294,6 +304,38 @@
     .doffer .lab { font-size: 10.5px; font-weight: 700; color: var(--deal); letter-spacing: .4px; }
     .doffer p { margin-top: 5px; font-size: 14px; font-weight: 600; color: #9f1239; line-height: 1.6; }
     .ddesc { font-size: 13px; color: var(--ink2); margin-top: 14px; line-height: 1.7; }
+
+    /* ---------- 中文翻译块 ----------
+       紧贴在英文原文正下方。默认展开（访客以中文为主），点一下收起；
+       收起后由 localStorage 记住，下次打开详情不会又弹开。
+       译文只在这里出现，英文原文字段本身一个字节都没改。 */
+    .zht { margin-top: 7px; }
+    .zht > summary {
+      display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+      list-style: none; font-size: 11px; font-weight: 650; color: var(--brand);
+      padding: 2px 8px 2px 5px; border-radius: 5px; background: #eef2ff;
+      border: 1px solid #dde4ff; user-select: none;
+    }
+    .zht > summary::-webkit-details-marker { display: none; }
+    .zht > summary:hover { background: #e3e9ff; }
+    .zht > summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+    .zht .ztag {
+      font-size: 9.5px; font-weight: 800; color: #fff; background: var(--brand);
+      border-radius: 3px; padding: 0 3px; font-family: ui-monospace, monospace;
+    }
+    .zht .zcaret {
+      width: 0; height: 0; border-left: 4px solid currentColor;
+      border-top: 3.5px solid transparent; border-bottom: 3.5px solid transparent;
+      transition: transform .13s;
+    }
+    .zht[open] .zcaret { transform: rotate(90deg); }
+    .zht .zbody {
+      margin-top: 6px; font-size: 13px; line-height: 1.7; color: var(--ink);
+      border-left: 2px solid #dde4ff; padding: 1px 0 1px 10px;
+    }
+    /* 译文挂在优惠条（玫红底）里时，正文仍用深色，避免玫红叠玫红糊成一片 */
+    .doffer .zht .zbody { color: #7f1d3d; border-left-color: #f5c6d6; }
+    .dgrid .cv .zht > summary { font-size: 10.5px; }
     .dgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 9px; overflow: hidden; margin-top: 16px; }
     .dgrid .cv { background: #fff; padding: 11px 13px; }
     .dgrid .cv .k { font-size: 10.5px; color: var(--mut); letter-spacing: .4px; }
@@ -585,16 +627,23 @@
     const VENDOR_RULES = [
       [/百度|千帆|ernie|文心/i, 'baidu', '百度智能云', 'baidu'],
       [/火山|方舟|豆包|doubao|volc/i, 'volcengine', '火山引擎', 'volcengine'],
+      // 扣子与火山引擎同属字节，但产品独立展示；必须排在火山/豆包规则之后、且自身正则要能
+      // 命中「扣子 Coze（字节跳动）」这类 vendor，否则会被上面的字节系规则并进火山引擎（2026-09 新增）
+      [/扣子|coze/i, 'coze', '扣子 Coze', 'coze'],
       [/腾讯|混元|hunyuan/i, 'tencent', '腾讯云', 'tencent-cloud'],
       [/智谱|glm|bigmodel|cogview|cogvideo/i, 'zhipu', '智谱AI', 'zhipu'],
       [/讯飞|星火|xfyun/i, 'iflytek', '科大讯飞', 'iflytek'],
-      [/阿里|百炼|通义|qwen|dashscope|modelscope/i, 'aliyun', '阿里云', 'alibabacloud'],
+      // 魔搭必须排在 /阿里/ 之前：它是阿里家的产品，但厂商视角是独立社区（2026-09 新增）
+      [/魔搭|modelscope/i, 'modelscope', '魔搭 ModelScope', 'modelscope'],
+      [/阿里|百炼|通义|qwen|dashscope/i, 'aliyun', '阿里云', 'alibabacloud'],
       [/月之暗面|moonshot|kimi/i, 'moonshot', '月之暗面', 'moonshotai'],
       [/硅基流动|siliconflow/i, 'siliconflow', '硅基流动', 'siliconflow'],
       [/阶跃|stepfun|step-?audio/i, 'stepfun', '阶跃星辰', 'stepfun'],
       [/商汤|sensetime|sensenova|日日新/i, 'sensetime', '商汤科技', 'sensetime'],
       [/百川|baichuan/i, 'baichuan', '百川智能', 'baichuan'],
       [/deepseek|深度求索/i, 'deepseek', 'DeepSeek', 'deepseek'],
+      // 360 智脑开放平台在 ai.360.com（ai.360.cn 是另一个产品「360 AI」，勿混）
+      [/360\s*智脑|ai\.360|奇虎/i, 'ai360', '360智脑', 'ai360'],
       [/github/i, 'github', 'GitHub', 'github'],
       [/microsoft|azure|微软/i, 'microsoft', 'Microsoft', 'microsoft'],
       [/google|gemini|notebooklm/i, 'google', 'Google', 'google'],
@@ -644,7 +693,12 @@
       [/gemini|gemma|imagen|veo/i, 'google', 'Gemini'],
       [/step-?\d|stepfun|阶跃/i, 'stepfun', '阶跃星辰'],
       [/sensetime|sensenova|日日新/i, 'sensetime', '商汤'],
-      [/baichuan|百川/i, 'baichuan', '百川']
+      [/baichuan|百川/i, 'baichuan', '百川'],
+      // 2026-09 新增：扣子平台上托管的第三方模型（Kimi / 阶跃等）在折叠卡上不挂厂商标，
+      // 只挂平台标，避免把「扣子上的 Kimi」误标成月之暗面官方额度
+      [/扣子|coze/i, 'coze', '扣子'],
+      [/魔搭|modelscope/i, 'modelscope', '魔搭'],
+      [/360\s*zhinao|智脑|360gpt/i, 'ai360', '360智脑']
     ];
 
     /** 长条图形（宽高比 > 2）：塞进方块会被压成一条线，由 logos.css 改成横向胶囊 */
@@ -923,6 +977,57 @@
         tags.push('<span class="tg due" title="' + escapeAttr('截止 ' + deal.expiresAt) + '">' + escapeHtml(label) + '</span>');
       }
       return tags.join('');
+    }
+
+    /* ----------------------------------------------------------------
+     * ③.5 中文译文
+     *
+     * 国外来源的优惠文案是英文。译文来自 deals.json 的 `zh` 字段（人工维护的
+     * scripts/data/translations_zh.json，构建期贴上），**只做展示、绝不覆盖原文**：
+     * 英文原文字段一个字节都不改，译文永远挂在原文下面。
+     * 取不到译文就什么都不渲染——渲染层不编造、不机翻。
+     * ---------------------------------------------------------------- */
+
+    /**
+     * 译文折叠偏好。默认展开（访客是中文用户，译文就该先看到）；
+     * 用户收起过就记住，浏览器启动时用 setZhOpen() 把默认值改掉。
+     * 只有 var 会挂到全局对象上——vm 沙箱抽取的是「函数 + var」，const/let 抽不出来。
+     */
+    var ZH_OPEN = true;
+    function setZhOpen(value) { ZH_OPEN = value !== false; }
+    function zhOpen() { return ZH_OPEN === true; }
+
+    /** 某字段的中文译文；没有译文返回空串 */
+    function zhOf(deal, field) {
+      if (!deal || !deal.zh || typeof deal.zh !== 'object') return '';
+      const text = deal.zh[field];
+      return typeof text === 'string' && text.trim() ? text.trim() : '';
+    }
+
+    /** 这条数据是否附带中文译文（卡片据此提示「详情页有中文翻译」） */
+    function hasZh(deal) {
+      if (!deal || !deal.zh || typeof deal.zh !== 'object') return false;
+      const keys = Object.keys(deal.zh);
+      for (let i = 0; i < keys.length; i++) {
+        if (zhOf(deal, keys[i])) return true;
+      }
+      return false;
+    }
+
+    /** 可折叠的中文翻译块：紧贴在英文原文下面 */
+    function zhBlock(deal, field) {
+      const text = zhOf(deal, field);
+      if (!text) return '';
+      return '<details class="zht"' + (zhOpen() ? ' open' : '') + '>' +
+        '<summary><span class="ztag" aria-hidden="true">译</span>中文翻译' +
+        '<span class="zcaret" aria-hidden="true"></span></summary>' +
+        '<div class="zbody">' + escapeHtml(text) + '</div></details>';
+    }
+
+    /** 卡片上的提示：这条数据的详情页里附了中文翻译 */
+    function zhMarkHtml(deal) {
+      if (!hasZh(deal)) return '';
+      return '<span class="zhmark" title="' + escapeAttr('详情页附中文翻译') + '">中文</span>';
     }
 
     /* ----------------------------------------------------------------
@@ -1296,7 +1401,7 @@
         tagsHtml(deal) + '</div>' +
         offerHtml(deal, tier.n) +
         featsHtml(deal) +
-        '<div class="meta">' + stampHtml(deal) +
+        '<div class="meta">' + stampHtml(deal) + zhMarkHtml(deal) +
         '<span class="sp"><span class="hint">详情</span>' + cta + '</span></div>' +
         '</article>';
     }
@@ -1336,14 +1441,16 @@
       const offer = offerOf(deal);
 
       const cells = [];
-      const cell = (key, value, cls) => {
+      // zhField：该字段有中文译文时，在英文原文正下方挂一个可折叠的译文块
+      const cell = (key, value, cls, zhField) => {
         if (!value) return;
-        cells.push('<div class="cv"><div class="k">' + escapeHtml(key) + '</div><div class="v' + (cls ? ' ' + cls : '') + '">' + escapeHtml(value) + '</div></div>');
+        cells.push('<div class="cv"><div class="k">' + escapeHtml(key) + '</div><div class="v' + (cls ? ' ' + cls : '') + '">' + escapeHtml(value) + '</div>' +
+          (zhField ? zhBlock(deal, zhField) : '') + '</div>');
       };
-      cell('适用条件', deal.eligibility);
-      cell('有效期说明', deal.validity);
+      cell('适用条件', deal.eligibility, null, 'eligibility');
+      cell('有效期说明', deal.validity, null, 'validity');
       cell('截止日期', deal.expiresAt ? deal.expiresAt + '（' + (daysUntil(deal.expiresAt) >= 0 ? '剩 ' + daysUntil(deal.expiresAt) + ' 天' : '已过期') + '）' : '');
-      cell('价格阶梯', deal.priceLine);
+      cell('价格阶梯', deal.priceLine, null, 'priceLine');
       cell('优惠力度', '档位 ' + tier.n + ' · ' + tier.name, 'ok');
       cell('核验状态', stamp ? (deal.verified ? '✓ ' + stamp.label + '（已人工对照官方页）' : stamp.label + '（采集时间，非人工核验）') : '');
 
@@ -1363,8 +1470,9 @@
         (stamp ? '<span class="' + (deal.verified ? 'ok' : '') + '">' + (deal.verified ? '✓ ' : '') + escapeHtml(stamp.label) + '</span>' : '') +
         '</div>' +
         (offer ? '<div class="doffer"><div class="lab">档位 ' + tier.n + ' · ' + escapeHtml(tier.name) + '</div><p>' +
-          (offer.lead ? '<b>' + escapeHtml(offer.lead) + '</b>' + (offer.rest ? ' · ' : '') : '') + escapeHtml(offer.rest) + '</p></div>' : '') +
-        (deal.description ? '<p class="ddesc">' + escapeHtml(deal.description) + '</p>' : '') +
+          (offer.lead ? '<b>' + escapeHtml(offer.lead) + '</b>' + (offer.rest ? ' · ' : '') : '') + escapeHtml(offer.rest) + '</p>' +
+          zhBlock(deal, 'discountInfo') + '</div>' : '') +
+        (deal.description ? '<p class="ddesc">' + escapeHtml(deal.description) + '</p>' + zhBlock(deal, 'description') : '') +
         (cells.length ? '<div class="dgrid">' + cells.join('') + '</div>' : '') +
         modelsHtml +
         (kind ? '<div class="dmodels"><div class="lb">优惠类型</div><div class="mlist">' + kind + '</div></div>' : '') +
@@ -1385,6 +1493,16 @@
      * ================================================================ */
 
     document.body.classList.add('js');
+
+    // 中文译文的折叠偏好：默认展开，用户收起过就记住（下次打开详情仍是收起的）。
+    // 放在第一次 detailHtml() 之前执行，所以不会出现「先展开再收起」的闪动。
+    // 隐私模式下 localStorage 可能抛异常——静默退回默认值。
+    const ZH_PREF_KEY = 'dsh.dealZhOpen';
+    try {
+      setZhOpen(localStorage.getItem(ZH_PREF_KEY) !== '0');
+    } catch (error) {
+      setZhOpen(true);
+    }
 
     const state = { deals: [], updatedAt: null, filters: defaultFilters(), cards: [] };
 
@@ -1487,6 +1605,24 @@
           els.detail.close();
         }
       });
+
+      // 记住译文的折叠偏好。toggle 不冒泡，所以用捕获阶段监听。
+      // 反过来的方向不用管：innerHTML 里带 open 属性插入的元素不会触发 toggle。
+      els.detailBody.addEventListener('toggle', event => {
+        const box = event.target;
+        if (!box || !box.classList || !box.classList.contains('zht')) return;
+        // 顺手更新内存里的默认值：不更新的话「收起」要等下次刷新才生效，
+        // 同一会话里点开下一张卡片又会全部弹开，折叠等于白做。
+        setZhOpen(box.open);
+        try {
+          localStorage.setItem(ZH_PREF_KEY, box.open ? '1' : '0');
+        } catch (error) { /* 隐私模式：记不住就算了，不影响本次折叠 */ }
+        // 同一份详情里的多个译文块保持同步——一半展开一半收起只会让人困惑。
+        // 赋值只在状态不同的时候发生，而 toggle 只在状态真的变化时触发，因此不会递归。
+        els.detailBody.querySelectorAll('.zht').forEach(other => {
+          if (other !== box && other.open !== box.open) other.open = box.open;
+        });
+      }, true);
 
       // 点遮罩关闭：<dialog> 的 ::backdrop 点击事件目标就是 dialog 本身
       els.detail.addEventListener('click', event => {

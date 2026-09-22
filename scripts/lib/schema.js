@@ -7,6 +7,7 @@
 
 const crypto = require('crypto');
 const { CATEGORIES, mapCategory } = require('./categories');
+const { normalizeZh } = require('./zh');
 
 const SCHEMA_VERSION = 2;
 
@@ -41,12 +42,19 @@ const GARBAGE_PATTERNS = [
 /** 真实优惠信号（用于 type:"deal" 判定，保守策略） */
 const DISCOUNT_PATTERNS = [
   /\d+\s*%\s*(off|discount|折扣)/i,
+  // 中文折扣写法：五折 / 5 折 / 9 折 / 折扣价。刻意只收"折扣"或以"折"结尾的写法，
+  // 避免误伤"折合/折算/转折"这类同字词（2026-09 补：此前 9 折、五折一律识别不出）
+  /折扣|(?:\d+(?:\.\d+)?|[一二三四五六七八九两])\s*折(?!合|算|旧|腾|叠)/,
   /(discount|promo|deal|coupon|voucher)\b/i,
   /折扣|打折|限时|优惠券|优惠价|立减|特惠/,
   /免费额度|免费试用|免费领取|新用户.*免费|首月.*免费/,
-  // 中文"免费模型/免费开放"这类表述（"免费增值"已在上面被剥离）
-  /免费(的)?(大模型|模型|API|接口|使用|调用|开放)|永久免费|完全免费|长期免费|彻底免费/,
-  /赠送|免费领取|免费领取额度|新用户.*(赠送|领取)/,
+  // 中文"免费模型/免费开放"这类表述（"免费增值"已在上面被剥离）。两个方向都要认：
+  // ①「免费 + 修饰 + 名词」——免费推理 API / 免费资源包；
+  // ②「名词 + 修饰 + 免费」——标注为免费（硅基流动定价页的原话）。
+  // 早期只认紧邻写法（免费API/免费调用），把这两类真实表述整条漏判（2026-09 修）
+  /免费(的)?[\u4e00-\u9fa5A-Za-z0-9]{0,6}(大模型|模型|API|接口|使用|调用|开放|体验|推理|资源包)|(大模型|模型|API|接口|资源包)[\u4e00-\u9fa5A-Za-z0-9]{0,4}免费|永久免费|完全免费|长期免费|彻底免费/,
+  // 赠送类：既有「赠送 1500 活动积分」「获赠体验券」，也有「赠送 Token」「新用户赠送」等写法
+  /赠送|获赠|免费领取|免费领取额度|新用户.*(赠送|领取)/,
   /(free)\s+(\d+\s*)?(credits?|tokens?|quota|trial|months?|year)/i,
   /\bcredits?\b.*\b(free|bonus|grant)/i,
   /(students?|teachers?|educators?|nonprofits?|veterans?|startups?)\b[^.]{0,40}\b(free|discount|save|off)\b/i,
@@ -337,6 +345,10 @@ function makeDeal(raw = {}, opts = {}) {
     verifiedAt: raw.verified === true ? normalizeVerifiedAt(raw.verifiedAt, opts.now) : null
   };
 
+  // zh：中文译文（scripts/data/translations_zh.json 的覆盖层，由 attach() 贴上）。
+  // 构造期原样带过、不做校验——校验统一由 validateDeal 把关，避免构造期静默丢译文。
+  if (raw.zh && typeof raw.zh === 'object' && !Array.isArray(raw.zh)) deal.zh = raw.zh;
+
   return deal;
 }
 
@@ -417,10 +429,18 @@ function validateDeal(deal, index = 0) {
   if (typeof deal.verified !== 'boolean') errors.push(`${where}: verified 必须是布尔`);
   if (deal.vendor !== undefined && typeof deal.vendor !== 'string') errors.push(`${where}: vendor 必须是字符串`);
 
+  // 中文译文：形状、长度、汉字含量、原文是否为空、原文指纹是否还对得上
+  if (deal.zh !== null && deal.zh !== undefined) {
+    const result = normalizeZh(deal.zh, deal);
+    result.errors.forEach(message => errors.push(`${where}: ${message}`));
+    if (!result.zh) errors.push(`${where}: zh 里没有任何有效译文（空对象应写成 null 或直接省略）`);
+  }
+
   const allowed = new Set([
     'id', 'title', 'vendor', 'url', 'source', 'sourceUrl', 'region', 'type',
     'discountInfo', 'pricingModel', 'priceLine', 'features', 'category', 'description',
-    'eligibility', 'validity', 'expiresAt', 'firstSeen', 'lastSeen', 'verified', 'verifiedAt'
+    'eligibility', 'validity', 'expiresAt', 'firstSeen', 'lastSeen', 'verified', 'verifiedAt',
+    'zh'
   ]);
   for (const key of Object.keys(deal)) {
     if (!allowed.has(key)) errors.push(`${where}: 未知字段 ${key}`);

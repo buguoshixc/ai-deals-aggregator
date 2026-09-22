@@ -112,6 +112,18 @@ Ideogram 站内 `new-logo.svg` 是 **5:1 长条字标**（方形格位不合适�
 
 建议有条件时向品牌方索取矢量素材，替换后 `quality` 字段同步改掉。
 
+## 2026-09 扩源新增的 3 家（扣子 Coze / 360智脑 / 魔搭 ModelScope）
+
+| key | 取图方式 | 来源 |
+|---|---|---|
+| `coze` | `brand` 矢量 | simple-icons 官方品牌路径（官网只有 20×20 favicon，太小） |
+| `ai360` | `file` 150×150 | `ai.360.com` 自己的 `<link rel="shortcut icon">`（360 自家 CDN 上的图） |
+| `modelscope` | `file` 128×128 | `modelscope.cn/favicon.ico` 的最大帧；本工具刻意不收 ICO，故用 Pillow 转成 PNG 后入库 |
+
+> 魔搭这条是「官网 ICO → PNG」的人工转换，`fetch-logos.js` 重跑不会自动复现；
+> 换图时要么照样手工转，要么改用其它官方图形源（`TARGETS` 里已登记该 key 供探测）。
+> 扣子同理：官网取不到够大的图形，走的是图形库品牌路径，已在 `source` 里写明来源。
+
 ## 已登记但暂未被引用
 
 这几家的官方图形已登记，**但数据里目前还没有它们的条目**，所以卡片上暂时用不到。
@@ -130,6 +142,7 @@ Ideogram 站内 `new-logo.svg` 是 **5:1 长条字标**（方形格位不合适�
 ```bash
 npm run fetch:logos                      # 探测内置候选清单，命中就写入 assets/logos/
 npm run fetch:logos -- --only=canva      # 只试某几家
+node scripts/tools/fetch-logos.js --url=新厂商=https://新厂商官网/   # 试一个还没进清单的厂商
 # 也可以手工把文件放进 assets/logos/
 ```
 

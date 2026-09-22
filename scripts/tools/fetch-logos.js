@@ -9,6 +9,10 @@
  *   node scripts/tools/fetch-logos.js            # 只探测，不写盘
  *   node scripts/tools/fetch-logos.js --write    # 写入 assets/logos/
  *   node scripts/tools/fetch-logos.js --only=openai,canva
+ *   node scripts/tools/fetch-logos.js --url=key=https://厂商官网/   # 临时试一个还没进清单的厂商
+ *
+ * --url 的意义：内置 TARGETS 是「已确认要收的厂商」，而探源阶段经常要先试一批候选官网。
+ * 有了它就不必为了试一家而先改 TARGETS；试通了再把结果按正常流程登记进 TARGETS 与 manifest。
  *
  * 抓到的文件仍必须在 assets/logos/manifest.json 里登记后才会被使用——
  * 下载和采用是两步，避免未经确认的图形直接上线。
@@ -25,6 +29,10 @@ const TIMEOUT = 15000;
 /** key → 官网首页 + 已知图标路径（按优先级） */
 const TARGETS = {
   openai: ['https://openai.com/', '/favicon.svg', '/favicon.ico', '/apple-touch-icon.png'],
+  // 新厂商（2026-09 扩源）：Coze 官网只有 20×20 favicon，图形走 simple-icons 品牌路径，
+  // 故不在这里登记；魔搭 favicon 是 128×128 ICO（本工具刻意不收 ICO），已人工转为 PNG 入库
+  ai360: ['https://ai.360.com/', '/favicon.ico', '/apple-touch-icon.png'],
+  modelscope: ['https://www.modelscope.cn/', '/favicon.ico', '/apple-touch-icon.png'],
   canva: ['https://www.canva.com/', '/favicon.ico', '/apple-touch-icon.png', '/favicon.svg'],
   cursor: ['https://cursor.com/', '/favicon.svg', '/apple-touch-icon.png', '/favicon.ico'],
   make: ['https://www.make.com/', '/favicon.ico', '/apple-touch-icon.png', '/favicon.svg'],
@@ -115,11 +123,23 @@ async function main() {
   const write = process.argv.includes('--write');
   const onlyArg = process.argv.find(a => a.startsWith('--only='));
   const only = onlyArg ? onlyArg.slice(7).split(',').map(s => s.trim()).filter(Boolean) : null;
-  const keys = Object.keys(TARGETS).filter(k => !only || only.includes(k));
+  // --url=key=https://官网/ 可重复；与内置清单合并，key 冲突时以命令行给的为准
+  const extra = {};
+  for (const arg of process.argv.filter(a => a.startsWith('--url='))) {
+    const body = arg.slice(6);
+    const at = body.indexOf('=');
+    if (at <= 0) {
+      console.error(`--url 参数格式应为 --url=key=https://厂商官网/ ，收到: ${arg}`);
+      process.exit(1);
+    }
+    extra[body.slice(0, at).trim()] = [body.slice(at + 1).trim()];
+  }
+  const targets = { ...TARGETS, ...extra };
+  const keys = Object.keys(targets).filter(k => !only || only.includes(k));
 
   const results = [];
   for (const key of keys) {
-    const [home, ...fallbacks] = TARGETS[key];
+    const [home, ...fallbacks] = targets[key];
     process.stdout.write(`\n${key.padEnd(12)} ${home}\n`);
 
     const page = await get(home, false);

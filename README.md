@@ -98,7 +98,11 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
       "firstSeen": "2026-09-20",
       "lastSeen": "2026-09-21",
       "verified": true,             // 人工核验过
-      "verifiedAt": "2026-09-22"    // 核验日期；仅 verified=true 时可填
+      "verifiedAt": "2026-09-22",   // 核验日期；仅 verified=true 时可填
+      "zh": {                       // 中文译文（可选）。只增加字段，绝不覆盖英文原文
+        "discountInfo": "…",
+        "description": "…"
+      }
     }
   ]
 }
@@ -155,6 +159,7 @@ scripts/
     http.js                   UA / 超时 / 重试 / 并发限流 / robots.txt
     browser.js                无头浏览器渲染（可选能力，仅 --headless 时加载）
     render-core.js            从 index.html 抽取 RENDER-CORE 并在无 DOM 沙箱求值
+    zh.js                     中文译文覆盖层：英文散文判定 / 原文指纹校验 / 贴到条目上
     logos.js                  logo 资产装配：manifest → dist/logos/ + dist/logos.css
     og-image.js               零依赖 OG 分享图生成（手写 PNG 编码 + 点阵字模）
     report.js                 采集报告表格
@@ -168,12 +173,15 @@ scripts/
   data/
     curated_cn.json           国内人工策展（可核验的官方优惠）
     curated_global.json       国外人工策展
+    translations_zh.json      国外英文文案的人工中文译文（键为 deal.id，含原文指纹 src）
     backfill-cards.js         一次性补齐卡片字段的映射记录（新增条目时作写法参考）
     aliases.json              产品别名表（跨源去重）
     official_urls.json        聚合站条目 → 官方页映射
   tools/                      采集器调试工具与发布产物组装
     build-local.js            校验 → 组装 dist/ → 预渲染 → 自检（本地与 CI 同一路径）
-    verify-site.js            真浏览器验收：密度/裁切/hover/筛选/弹层/移动端（dev，需 playwright-core）
+    verify-site.js            真浏览器验收：密度/裁切/hover/筛选/弹层/译文折叠/移动端（dev，需 playwright-core）
+    zh-todo.js                中文翻译待办与脚手架（--json / --scaffold 盖原文指纹 / --orphans）
+    zh-selftest.js            中文译文门禁演练（自恢复，验证坏译文真的会被拦下）
     tier-report.js            分档与厂商归一报告（调规则时先看它）
     fetch-logos.js            从厂商官网抓取品牌图标，补进 assets/logos/
 ```
@@ -302,6 +310,35 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 顺序是硬的——拿得到真图形就绝不用缩写。当前 72 家厂商里 35 家用官方图形、37 家用缩写兜底。
 详见 `assets/logos/README.md`（含直连取不到时怎么走代理 + 真浏览器取图）。
 
+### 中文翻译（国外条目的英文文案）
+
+国外来源（Futuretools / Curated）的 `discountInfo` / `description` / `eligibility` 是英文散文，
+而访客以中文为主。做法是**人工译文覆盖层**，不是渲染期机翻：
+
+- 译文集中维护在 `scripts/data/translations_zh.json`，键为 `deal.id`，只放译文。
+- 采集（`collect.js`）与构建（`build-local.js`）**都**调用 `scripts/lib/zh.js` 的 `attach()`，
+  把结果写进 `deals.json` 的 `zh` 字段。浏览器 `fetch('deals.json')` 与构建期预渲染因此
+  读到同一份数据，仍然只有一条代码路径。
+- **英文原文字段一个字节都不改**。译文永远挂在原文下面，详情弹层里渲染成
+  `<details class="zht">`（默认展开，点一下收起，偏好记在 localStorage）。
+- 卡片上给一个 `中文` 胶囊提示「详情页附中文翻译」，放在 `.meta` 行而不是标题旁——
+  那一行是 `nowrap + overflow:hidden` 的横排，加个胶囊不会让标题重排，卡片定高不变。
+- **原文指纹**：每条译文连同它照抄的那段英文一起存进 `src`。英文被采集器改写后指纹对不上，
+  该字段译文**自动停用**并在构建日志里催促复核——宁可不出译文，也不出与原文矛盾的中文。
+- 判定「这段是不是英文散文」由 `scripts/lib/zh.js` 统一负责，构建与工具共用：
+  零汉字 + 拉丁字母 > 8，或有零星汉字但出现英文虚词。踩过的坑是「CJK 占比 < 25% 就算英文」
+  会把 `官方定价页标注多款模型价格为「免费」：文本 Hunyuan-MT-7B、bge-m3……`
+  这种**本来就是中文**的条目误判进来。
+
+```bash
+npm run todo:zh         # 列出待翻译条目（原文 + 已有译文），--json / --scaffold / --orphans
+npm run selftest:zh     # 门禁演练：塞坏数据进去，验证构建拦得住
+```
+
+构建期门禁：译文不合规（不含汉字 / 字段名非法 / 超长 / 原文为空）**硬失败阻止发布**；
+原文已变则警告并停用该字段；译文键对不上任何条目则告警（条目改名换 URL 会让 id 变化）。
+第 1 步的数据校验跑在未贴译文的 `deals.json` 上，所以这道门禁是在构建里单独补的。
+
 ### 诚实性约束（与竞品的关键差别）
 
 - 卡片底部只在**人工逐条回访官方页**的条目上显示「已核验 {日期}」；自动采集条目显示
@@ -309,6 +346,9 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 - 无 `features` 的条目回退展示 `discountInfo`；工具条目显示工具简介（灰条）而**不冒充优惠**
   （优惠正文用档位配色的竖条，两者视觉上分得开）。
 - 优惠正文只在标点处切一刀加粗前半句，**不改写、不截断、不补写**一个字。
+- 中文译文只出现在**人工逐条翻译过**的条目上：卡片有「中文」胶囊 ⟺ 详情里真有译文块
+  （构建自检与 `npm run verify` 双向断言，两个方向都查）。取不到译文就什么都不渲染，
+  **不机翻、不占位**。译文与英文原文并列展示，原文永远在上、一个字都不删。
 - `FAQPage` 结构化数据**从页面可见的 `<details>` 文案反向解析**生成，保证两者逐字一致
   （构建自检会校验这一致性）。
 - 页脚明确声明「本站不收录付费推广位，排序与推荐理由不出售」。
@@ -317,7 +357,7 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 
 卡片是**固定高度**的，任何一处内容变高都会被 `overflow:hidden` 静默裁掉；logo 簇是 hover
 展开的，很容易把标题挤到换行、把网格行高顶动。这两类问题静态检查都看不见，所以有
-`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 35 项断言——
+`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 54 项断言——
 无 JS 时的静态骨架、卡片高度是否统一、**每张卡最后一个元素有没有越过内边距**、
 hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排序、搜索、移动端横向溢出、
 外部请求数、JS 报错数。
