@@ -7,7 +7,8 @@
  *
  * 用法：
  *   node scripts/tools/build-local.js && node scripts/tools/verify-site.js
- *   node scripts/tools/verify-site.js --dir=dist --keep   # 保留浏览器窗口（调试用）
+ *   node scripts/tools/verify-site.js --dir=dist --keep        # 保留浏览器窗口（调试用）
+ *   node scripts/tools/verify-site.js --url=https://…/         # 直接验收线上站点（部署后冒烟）
  *
  * 退出码非 0 = 有断言失败。
  */
@@ -19,6 +20,7 @@ const { chromium } = require('playwright-core');
 
 const ROOT = path.join(__dirname, '..', '..');
 const dirArg = process.argv.find(a => a.startsWith('--dir='));
+const urlArg = process.argv.find(a => a.startsWith('--url='));
 const DIR = path.join(ROOT, dirArg ? dirArg.slice(6) : 'dist');
 const EDGE = process.env.DSH_EDGE || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 
@@ -53,12 +55,21 @@ function check(name, ok, detail) {
 }
 
 (async () => {
-  if (!fs.existsSync(path.join(DIR, 'index.html'))) {
-    console.error(`找不到 ${path.relative(ROOT, DIR)}/index.html，请先 npm run build`);
-    process.exit(1);
+  let server = null;
+  let base;
+  if (urlArg) {
+    base = urlArg.slice(6);
+    if (!base.endsWith('/')) base += '/';
+    console.log(`验收目标：${base}（线上站点，不启动本地服务器）`);
+  } else {
+    if (!fs.existsSync(path.join(DIR, 'index.html'))) {
+      console.error(`找不到 ${path.relative(ROOT, DIR)}/index.html，请先 npm run build`);
+      process.exit(1);
+    }
+    const started = await serve(DIR);
+    server = started.server;
+    base = `http://127.0.0.1:${started.port}/`;
   }
-  const { server, port } = await serve(DIR);
-  const base = `http://127.0.0.1:${port}/`;
   const browser = await chromium.launch({ executablePath: EDGE, headless: !process.argv.includes('--keep') });
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 
@@ -119,14 +130,17 @@ function check(name, ok, detail) {
       gridTop: Math.round(gridBox.top),
       stats: document.querySelector('#stats').textContent.trim(),
       topStat: document.querySelector('#topStat').textContent.trim(),
-      firstScreen: cards.filter(c => c.getBoundingClientRect().top < window.innerHeight).length,
+      // 两个口径分开报：「完整可见」才是能一眼读完的卡片数
+      firstScreenFull: cards.filter(c => c.getBoundingClientRect().bottom <= window.innerHeight).length,
+      firstScreenPart: cards.filter(c => c.getBoundingClientRect().top < window.innerHeight).length,
       pageHeight: Math.round(document.documentElement.scrollHeight)
     };
   });
   check('卡片数与预渲染一致', rendered.cards >= 45, `${rendered.cards} 条`);
   check('桌面三列', rendered.cols === 3, `${rendered.cols} 列`);
   check('卡片高度统一', rendered.heights.length === 1, rendered.heights.join('/') + 'px');
-  check('首屏卡片数 ≥ 9', rendered.firstScreen >= 9, `${rendered.firstScreen} 条 / 页高 ${rendered.pageHeight}px`);
+  check('首屏完整可见卡片 ≥ 9', rendered.firstScreenFull >= 9,
+    `完整 ${rendered.firstScreenFull} 张 / 含截断 ${rendered.firstScreenPart} 张 · 网格起点 ${rendered.gridTop}px · 页高 ${rendered.pageHeight}px`);
   check('汇总条已填充', /显示\s*\d+\s*条卡片/.test(rendered.stats), rendered.stats.slice(0, 40));
   check('顶栏汇总已填充', /\d+\s*条优惠/.test(rendered.topStat), rendered.topStat);
   console.log(`     logo key: ${rendered.tileKeys.length} 个 → ${rendered.tileKeys.join(' ')}`);
@@ -337,7 +351,7 @@ function check(name, ok, detail) {
   check('没有 JS 错误', errors.length === 0, errors.slice(0, 3).join(' | ') || '0 个');
 
   await browser.close();
-  server.close();
+  if (server) server.close();
 
   const failed = results.filter(r => !r.ok);
   console.log(`\n${failed.length ? '❌' : '✅'} 验收 ${results.length} 项，失败 ${failed.length} 项`);
