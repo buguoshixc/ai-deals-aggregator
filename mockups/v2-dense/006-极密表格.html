@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>样稿 B2 · 极密表格（一行 7 条）</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#111726; --ink2:#4a5265; --mut:#8990a1;
+    --line:#e5e8ee; --line2:#f1f3f7;
+    --brand:#3b5bfd; --deal:#d92d4b;
+    --cn:#0b7a63; --cnbg:#e8f7f2; --gl:#2348c4; --glbg:#eef3ff;
+    --ok:#0b7a63; --warn:#c2410c;
+    --mono:"SF Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1480px;margin:0 auto;padding:0 18px 50px}
+
+  /* ---------- 顶栏 ---------- */
+  .top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+  .topin{max-width:1480px;margin:0 auto;padding:0 18px;height:52px;display:flex;align-items:center;gap:18px}
+  .brand{display:flex;align-items:center;gap:8px;font-weight:750;font-size:14.5px;white-space:nowrap}
+  .brand .dot{width:22px;height:22px;border-radius:6px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:800}
+  .brand em{font-style:normal;color:var(--deal)}
+  .search{flex:1;max-width:460px;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:7px;padding:0 10px;background:#fafbfc}
+  .search input{border:0;outline:0;background:0;flex:1;padding:7px 0;font:inherit;font-size:12.5px}
+  .search input::placeholder{color:var(--mut)}
+  .density{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;margin-left:auto}
+  .density span{padding:5px 10px;font-size:11.5px;color:var(--ink2);border-left:1px solid var(--line);cursor:pointer;white-space:nowrap}
+  .density span:first-child{border-left:0}
+  .density span.on{background:#eef2ff;color:var(--brand);font-weight:650}
+  .top .cnt{font-size:12px;color:var(--mut);white-space:nowrap}
+
+  /* ---------- facet 一行 ---------- */
+  .facets{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:52px;z-index:29}
+  .facetsin{max-width:1480px;margin:0 auto;padding:8px 18px;display:flex;gap:6px;align-items:center;overflow-x:auto}
+  .f{font-size:12px;border:1px solid var(--line);background:#fff;color:var(--ink2);border-radius:6px;padding:3px 9px;white-space:nowrap;cursor:pointer}
+  .f:hover{border-color:#c3ceff;color:var(--brand)}
+  .f.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+  .f.ok{border-color:#b9e3d7;color:var(--ok);background:#f4fdfa}
+  .f.ok.on{background:var(--ok);border-color:var(--ok);color:#fff}
+  .f b{opacity:.65;margin-left:3px;font-family:var(--mono);font-size:11px}
+  .fsep{width:1px;height:14px;background:var(--line);flex:none;margin:0 2px}
+
+  /* ---------- 表格 ---------- */
+  .tbwrap{background:#fff;border:1px solid var(--line);border-radius:9px;margin-top:12px;overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:940px}
+  thead th{
+    text-align:left;font-size:10.5px;font-weight:650;color:var(--mut);letter-spacing:.4px;text-transform:uppercase;
+    background:#fafbfc;border-bottom:1px solid var(--line);padding:8px 12px;white-space:nowrap;position:sticky;top:0;z-index:2;
+  }
+  tbody tr{border-bottom:1px solid var(--line2)}
+  tbody tr:last-child{border-bottom:0}
+  tbody tr:hover{background:#fafbff}
+  tbody tr.verified td:first-child{box-shadow:inset 2px 0 0 var(--ok)}
+  tbody tr.tool{opacity:.62}
+  /* 密度三档：只改 row 高度 */
+  #d-compact td{padding:5px 12px}
+  #d-normal td{padding:8px 12px}
+  #d-loose td{padding:13px 12px}
+  td{padding:8px 12px;vertical-align:top}
+
+  .c1{width:20%}.c2{width:37%}.c3{width:17%}.c4{width:12%}.c5{width:14%}
+
+  .nm{font-weight:640;font-size:12.5px;line-height:1.4}
+  .nm a{color:inherit;text-decoration:none}
+  .nm a:hover{color:var(--brand)}
+  .sub{font-size:10.5px;color:var(--mut);margin-top:2px;display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+  .tag{font-size:9.5px;font-weight:650;border-radius:3px;padding:1px 5px;white-space:nowrap}
+  .tag.cn{background:var(--cnbg);color:var(--cn)}
+  .tag.gl{background:var(--glbg);color:var(--gl)}
+  .tag.cat{background:#f0f2f6;color:#5b6472}
+  .tag.due{background:#fff1f4;color:var(--deal)}
+
+  /* 优惠列：色条 + 一行主信息 + 一行补充 */
+  .of{display:flex;gap:8px}
+  .of .bar{flex:none;width:2.5px;border-radius:2px;background:var(--deal);margin-top:2px}
+  .of.free .bar{background:#0e9f6e}
+  .of.credit .bar{background:#7c3aed}
+  .of.student .bar{background:#2563eb}
+  .of.limited .bar{background:var(--warn)}
+  .of .tx{font-size:12.5px;line-height:1.45}
+  .of .tx b{color:var(--deal);font-weight:700;font-family:var(--mono);font-size:12px}
+  .of.free .tx b{color:#0b7a44}
+  .of.credit .tx b{color:#6d28d9}
+  .of .more{font-size:11px;color:var(--mut);margin-top:2px;line-height:1.45;
+            display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+
+  .elig{font-size:11.5px;color:var(--ink2);line-height:1.45;
+        display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .tm{font-size:11.5px;color:var(--ink2);white-space:nowrap}
+  .tm.soon{color:var(--warn);font-weight:700}
+  .tm .s{display:block;font-size:10px;color:var(--mut);font-weight:400;margin-top:1px}
+  .st{font-size:11px;white-space:nowrap}
+  .st .ok{color:var(--ok);font-weight:650}
+  .st .auto{color:var(--mut)}
+  .st .d{display:block;font-size:10px;color:var(--mut);font-family:var(--mono);margin-top:1px}
+  .go{display:inline-block;margin-top:3px;font-size:11px;color:var(--brand);text-decoration:none;font-weight:650;white-space:nowrap}
+  .go:hover{text-decoration:underline}
+
+  /* 厂商分组行：吸收重复文案，附额度摘要 */
+  tr.grp td{background:#f4f7fb;border-bottom:1px solid var(--line);padding:6px 12px}
+  tr.grp .gin{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--ink2)}
+  tr.grp b{color:var(--ink);font-size:12.5px}
+  tr.grp .n{background:#e4e9f2;border-radius:999px;padding:1px 7px;font-size:10.5px;font-family:var(--mono)}
+  tr.grp .sum{margin-left:auto;font-family:var(--mono);font-size:11px;color:#5b6472}
+
+  footer{margin-top:24px;text-align:center;color:var(--mut);font-size:11.5px;line-height:1.9}
+
+  @media(max-width:900px){
+    .topin{gap:12px;height:auto;padding:9px 14px;flex-wrap:wrap}
+    .search{max-width:none;order:3;min-width:100%}
+    .density{margin-left:0}
+    .top .cnt{font-size:11.5px}
+    .facets{top:0;position:static}
+    .tbwrap{margin-left:-18px;margin-right:-18px;border-radius:0;border-left:0;border-right:0}
+    table{min-width:720px}
+    .c3{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="topin">
+    <div class="brand"><span class="dot">%</span>AI <em>优惠</em>聚合器</div>
+    <label class="search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8990a1" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input placeholder="搜索模型、厂商或优惠内容…">
+    </label>
+    <div class="density">
+      <span class="on">紧凑</span><span>标准</span><span>宽松</span>
+    </div>
+    <div class="cnt"><b>71</b> 条 · 已核验 <b style="color:var(--ok)">23</b></div>
+  </div>
+</div>
+
+<div class="facets">
+  <div class="facetsin">
+    <span class="f ok on">✓ 已核验 <b>23</b></span>
+    <span class="fsep"></span>
+    <span class="f on">全部 <b>71</b></span>
+    <span class="f">国内 <b>51</b></span>
+    <span class="f">国外 <b>20</b></span>
+    <span class="fsep"></span>
+    <span class="f">百度智能云 <b>17</b></span>
+    <span class="f">智谱AI <b>12</b></span>
+    <span class="f">火山引擎 <b>12</b></span>
+    <span class="fsep"></span>
+    <span class="f">免费额度</span>
+    <span class="f">学生 / 教育</span>
+    <span class="f">非营利</span>
+    <span class="f">限时促销</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="tbwrap">
+    <table id="d-compact">
+      <thead>
+        <tr>
+          <th class="c1">模型 / 产品</th>
+          <th class="c2">优惠内容</th>
+          <th class="c3">适用条件</th>
+          <th class="c4">有效期</th>
+          <th class="c5">核验状态</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="verified">
+          <td><div class="nm"><a href="#">GitHub Copilot 学生免费</a></div>
+              <div class="sub"><span class="tag gl">国外</span><span class="tag cat">编程开发</span></div></td>
+          <td><div class="of student"><span class="bar"></span><div>
+              <div class="tx"><b>全部付费功能免费</b> · Copilot Student</div>
+              <div class="more">需 GitHub Education 学籍验证，验证与生效分两步，可能需数天</div>
+          </div></div></td>
+          <td><div class="elig">经 GitHub Education 验证的在校学生</div></td>
+          <td><div class="tm">长期有效</div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div>
+              <a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <tr class="verified">
+          <td><div class="nm"><a href="#">ElevenLabs 免费计划</a></div>
+              <div class="sub"><span class="tag gl">国外</span><span class="tag cat">音频语音</span></div></td>
+          <td><div class="of free"><span class="bar"></span><div>
+              <div class="tx"><b>每月 10,000 credits</b> · 免费档 $0 → 付费档</div>
+              <div class="more">TTS / 语音克隆 / Dubbing 全产品共享，免费计划不参与结转</div>
+          </div></div></td>
+          <td><div class="elig">所有新用户</div></td>
+          <td><div class="tm">长期有效</div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div>
+              <a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <tr class="verified">
+          <td><div class="nm"><a href="#">阶跃星辰 StepAudio 3 限时免费</a></div>
+              <div class="sub"><span class="tag cn">国内</span><span class="tag due">剩 5 天</span></div></td>
+          <td><div class="of limited"><span class="bar"></span><div>
+              <div class="tx"><b>限时免费</b> · 输入/输出价格均标注免费</div>
+              <div class="more">stepaudio-3-realtime-preview / stepaudio-3-chat-preview</div>
+          </div></div></td>
+          <td><div class="elig">StepFun 开放平台注册开发者</div></td>
+          <td><div class="tm soon">剩 5 天<span class="s">2026-09-27</span></div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div>
+              <a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <tr class="verified">
+          <td><div class="nm"><a href="#">硅基流动 免费模型专区</a></div>
+              <div class="sub"><span class="tag cn">国内</span><span class="tag cat">API服务</span></div></td>
+          <td><div class="of free"><span class="bar"></span><div>
+              <div class="tx"><b>多款模型标价 0</b> · 文本 / 向量 / 图像 / 语音</div>
+              <div class="more">Hunyuan-MT-7B、bge-m3、Kolors、SenseVoiceSmall 等十余款</div>
+          </div></div></td>
+          <td><div class="elig">所有注册开发者</div></td>
+          <td><div class="tm">以官方定价页为准</div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div>
+              <a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <tr class="verified">
+          <td><div class="nm"><a href="#">Kimi 开放平台 15 元代金券</a></div>
+              <div class="sub"><span class="tag cn">国内</span><span class="tag cat">API服务</span></div></td>
+          <td><div class="of credit"><span class="bar"></span><div>
+              <div class="tx"><b>15 元代金券</b> · 注册即赠</div>
+              <div class="more">可用于体验 Kimi K3 等模型的 API 调用</div>
+          </div></div></td>
+          <td><div class="elig">Kimi 开放平台新注册用户（需实名认证）</div></td>
+          <td><div class="tm">以代金券到期为准</div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div>
+              <a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <tr class="verified">
+          <td><div class="nm"><a href="#">腾讯混元 免费资源包</a></div>
+              <div class="sub"><span class="tag cn">国内</span><span class="tag cat">对话模型</span></div></td>
+          <td><div class="of free"><span class="bar"></span><div>
+              <div class="tx"><b>100 万 tokens</b> · 多个模型共用</div>
+              <div class="more">Hunyuan-a13b、role、translation、Vision 1.5 等共用；用完不自动转后付费</div>
+          </div></div></td>
+          <td><div class="elig">通过腾讯云实名认证的新用户</div></td>
+          <td><div class="tm">1 年<span class="s">未用完作废</span></div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div>
+              <a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <tr class="verified">
+          <td><div class="nm"><a href="#">Anthropic Claude 非营利折扣</a></div>
+              <div class="sub"><span class="tag gl">国外</span><span class="tag cat">对话模型</span></div></td>
+          <td><div class="of"><span class="bar"></span><div>
+              <div class="tx"><b>Team $8 / Enterprise $10</b> 每用户每月</div>
+              <div class="more">团队不足 150 人最少 2 席；含与标准版相同的 Opus / Sonnet / Haiku</div>
+          </div></div></td>
+          <td><div class="elig">经核验的非营利组织</div></td>
+          <td><div class="tm">长期有效</div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div>
+              <a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <tr class="verified">
+          <td><div class="nm"><a href="#">Notion 教育版 免费 Plus</a></div>
+              <div class="sub"><span class="tag gl">国外</span><span class="tag cat">办公效率</span></div></td>
+          <td><div class="of student"><span class="bar"></span><div>
+              <div class="tx"><b>免费 Plus 计划</b> · 含无限存储</div>
+              <div class="more">学校须在 WHED 名录；不接受学生证，K-12 学生与教师不符合资格</div>
+          </div></div></td>
+          <td><div class="elig">高校学生与教育工作者</div></td>
+          <td><div class="tm">长期有效</div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div>
+              <a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <tr class="verified">
+          <td><div class="nm"><a href="#">AWS Activate 云 credits</a></div>
+              <div class="sub"><span class="tag gl">国外</span><span class="tag cat">API服务</span></div></td>
+          <td><div class="of credit"><span class="bar"></span><div>
+              <div class="tx"><b>最高 $200,000</b> AWS Activate Credits</div>
+              <div class="more">可用于基础设施、数据服务及 Amazon Bedrock 第三方模型</div>
+          </div></div></td>
+          <td><div class="elig">初创公司（含自筹与已融资团队）</div></td>
+          <td><div class="tm">按阶段申请</div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div>
+              <a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <tr class="verified">
+          <td><div class="nm"><a href="#">Google AI Pro 学生免费</a></div>
+              <div class="sub"><span class="tag gl">国外</span><span class="tag cat">对话模型</span></div></td>
+          <td><div class="of student"><span class="bar"></span><div>
+              <div class="tx"><b>免费 12 个月</b> · 价值 $19.99/月</div>
+              <div class="more">含 4 倍 Gemini 用量、Gmail/Docs 中的 Gemini、5TB 存储</div>
+          </div></div></td>
+          <td><div class="elig">符合条件的高校在校学生</div></td>
+          <td><div class="tm">返校季活动</div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div>
+              <a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <!-- 厂商分组：重复文案只写一次，后续行极简 -->
+        <tr class="grp">
+          <td colspan="5"><div class="gin">
+            <b>百度智能云 · 千帆</b><span class="n">17</span>
+            <span>同一份新用户额度，覆盖 17 个模型</span>
+            <span class="sum">100 万 Tokens · 3 个月 · 需实名</span>
+          </div></td>
+        </tr>
+
+        <tr>
+          <td><div class="nm"><a href="#">ERNIE-4.5-Turbo-128K</a></div></td>
+          <td><div class="of free"><span class="bar"></span><div><div class="tx"><b>100 万 Tokens</b> · 3 个月</div></div></div></td>
+          <td><div class="elig">千帆新用户（需实名认证）</div></td>
+          <td><div class="tm">3 个月</div></td>
+          <td><div class="st"><span class="auto">数据更新</span><span class="d">2026-09-22</span></div><a class="go" href="#">获取 →</a></td>
+        </tr>
+        <tr>
+          <td><div class="nm"><a href="#">DeepSeek-R1</a></div></td>
+          <td><div class="of free"><span class="bar"></span><div><div class="tx" style="color:var(--mut)">同上（同一份额度）</div></div></div></td>
+          <td><div class="elig">千帆新用户（需实名认证）</div></td>
+          <td><div class="tm">3 个月</div></td>
+          <td><div class="st"><span class="auto">数据更新</span><span class="d">2026-09-22</span></div><a class="go" href="#">获取 →</a></td>
+        </tr>
+        <tr>
+          <td><div class="nm"><a href="#">DeepSeek-V3.1</a></div></td>
+          <td><div class="of free"><span class="bar"></span><div><div class="tx" style="color:var(--mut)">同上（同一份额度）</div></div></div></td>
+          <td><div class="elig">千帆新用户（需实名认证）</div></td>
+          <td><div class="tm">3 个月</div></td>
+          <td><div class="st"><span class="auto">数据更新</span><span class="d">2026-09-22</span></div><a class="go" href="#">获取 →</a></td>
+        </tr>
+        <tr>
+          <td><div class="nm"><a href="#">Qwen3-235B-A22B</a></div></td>
+          <td><div class="of free"><span class="bar"></span><div><div class="tx" style="color:var(--mut)">同上（同一份额度）</div></div></div></td>
+          <td><div class="elig">千帆新用户（需实名认证）</div></td>
+          <td><div class="tm">3 个月</div></td>
+          <td><div class="st"><span class="auto">数据更新</span><span class="d">2026-09-22</span></div><a class="go" href="#">获取 →</a></td>
+        </tr>
+        <tr>
+          <td><div class="nm"><a href="#">Kimi-K2-Instruct</a></div></td>
+          <td><div class="of free"><span class="bar"></span><div><div class="tx" style="color:var(--mut)">同上（同一份额度）</div></div></div></td>
+          <td><div class="elig">千帆新用户（需实名认证）</div></td>
+          <td><div class="tm">3 个月</div></td>
+          <td><div class="st"><span class="auto">数据更新</span><span class="d">2026-09-22</span></div><a class="go" href="#">展开其余 12 个 →</a></td>
+        </tr>
+
+        <tr>
+          <td><div class="nm"><a href="#">智谱AI GLM-5.3-Flash 限时五折</a></div>
+              <div class="sub"><span class="tag cn">国内</span><span class="tag cat">API服务</span></div></td>
+          <td><div class="of limited"><span class="bar"></span><div>
+              <div class="tx"><b>限时五折</b> · 输入 0.4 元 / 输出 1.4 元</div>
+              <div class="more">缓存命中 0.115 元；标准价为输入 0.8 元、输出 2.8 元</div>
+          </div></div></td>
+          <td><div class="elig">所有调用 GLM-5.3-Flash 的开发者</div></td>
+          <td><div class="tm">限时活动<span class="s">未标注截止</span></div></td>
+          <td><div class="st"><span class="auto">数据更新</span><span class="d">2026-09-22</span></div><a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <tr>
+          <td><div class="nm"><a href="#">火山方舟 豆包 50 万 tokens</a></div>
+              <div class="sub"><span class="tag cn">国内</span><span class="tag cat">对话模型</span></div></td>
+          <td><div class="of free"><span class="bar"></span><div>
+              <div class="tx"><b>50 万 tokens</b> · 豆包全系模型</div>
+              <div class="more">另提供 10,000 RPM / 800,000 TPM 的大流量额度</div>
+          </div></div></td>
+          <td><div class="elig">个人开发者（需注册火山引擎账号）</div></td>
+          <td><div class="tm">以控制台为准</div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div><a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <tr>
+          <td><div class="nm"><a href="#">讯飞星火 Spark Lite 免费</a></div>
+              <div class="sub"><span class="tag cn">国内</span><span class="tag cat">对话模型</span></div></td>
+          <td><div class="of free"><span class="bar"></span><div>
+              <div class="tx"><b>Spark Lite 免费</b> · 官方文档标注</div>
+              <div class="more">注册并创建应用后使用 APIPassword 即可调用</div>
+          </div></div></td>
+          <td><div class="elig">注册讯飞开放平台的开发者</div></td>
+          <td><div class="tm">长期有效</div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div><a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <tr>
+          <td><div class="nm"><a href="#">商汤日日新 Token Plan 首月免费</a></div>
+              <div class="sub"><span class="tag cn">国内</span><span class="tag cat">API服务</span></div></td>
+          <td><div class="of free"><span class="bar"></span><div>
+              <div class="tx"><b>首月免费</b> · 每 5 小时 1500 次调用</div>
+              <div class="more">随 SenseNova 6.7 Flash-Lite 发布的限时活动</div>
+          </div></div></td>
+          <td><div class="elig">SenseNova 平台开发者</div></td>
+          <td><div class="tm">限时活动</div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div><a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <tr>
+          <td><div class="nm"><a href="#">百川智能 海纳百川计划</a></div>
+              <div class="sub"><span class="tag cn">国内</span><span class="tag cat">对话模型</span></div></td>
+          <td><div class="of free"><span class="bar"></span><div>
+              <div class="tx"><b>免费 M3Plus API</b> · 需申请审核</div>
+          </div></div></td>
+          <td><div class="elig">申请加入海纳百川计划的开发者 / 机构</div></td>
+          <td><div class="tm">未标注截止</div></td>
+          <td><div class="st"><span class="ok">✓ 已核验</span><span class="d">2026-09-22</span></div><a class="go" href="#">获取 →</a></td>
+        </tr>
+
+        <!-- 工具条目：弱化，几乎只占一行 -->
+        <tr class="tool">
+          <td><div class="nm" style="font-weight:520;color:#6b7280"><a href="#">NotebookLM</a></div>
+              <div class="sub"><span class="tag gl">国外</span><span class="tag cat">工具</span></div></td>
+          <td><div class="of" style="opacity:.75"><span class="bar" style="background:#cbd5e1"></span><div>
+              <div class="tx" style="color:#6b7280;font-weight:400">Chat with your documents and websites。</div>
+          </div></div></td>
+          <td><div class="elig" style="color:var(--mut)">—</div></td>
+          <td><div class="tm" style="color:var(--mut)">—</div></td>
+          <td><div class="st"><span class="auto">来源 Futuretools</span><span class="d">2026-09-22</span></div><a class="go" href="#">查看 →</a></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    本站不收录付费推广位 · 排序与推荐理由不出售 · 数据每日 08:00 / 20:00 自动更新
+  </footer>
+</div>
+</body>
+</html>

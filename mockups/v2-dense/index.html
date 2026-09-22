@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>高密度样稿 · 一行多张</title>
+<style>
+  :root{--bg:#0f1115;--card:#171a21;--line:#262b35;--ink:#e9edf4;--ink2:#a6b0c0;--mut:#6d7789;--brand:#4361ee;--ok:#3ddc97;--warn:#ffb454;--red:#ff6b81}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1240px;margin:0 auto;padding:40px 24px 70px}
+  h1{font-size:28px;font-weight:800;letter-spacing:-.6px}
+  h1 em{font-style:normal;color:var(--red)}
+  .lede{color:var(--ink2);margin-top:12px;font-size:14.5px;max-width:860px}
+
+  /* 对比条 */
+  .bench{margin-top:24px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  .bench h3{font-size:14px;font-weight:700;color:var(--ink)}
+  .bench .sub{font-size:12.5px;color:var(--mut);margin-top:3px}
+  .bars{margin-top:14px;display:grid;gap:9px}
+  .bar{display:grid;grid-template-columns:170px 1fr 96px;gap:12px;align-items:center;font-size:13px}
+  .bar .nm{color:var(--ink2)}
+  .bar .track{height:22px;background:#0d1016;border:1px solid var(--line);border-radius:6px;overflow:hidden;position:relative}
+  .bar .fill{height:100%;border-radius:0 5px 5px 0;transition:width .3s}
+  .bar .val{text-align:right;font-family:ui-monospace,monospace;font-size:12px;color:var(--ink)}
+  .bar.old .fill{background:linear-gradient(90deg,#7f1d1d,#b91c1c)}
+  .bar.b1 .fill{background:linear-gradient(90deg,#1e3a8a,#3b82f6)}
+  .bar.b2 .fill{background:linear-gradient(90deg,#065f46,#10b981)}
+  .bar.b3 .fill{background:linear-gradient(90deg,#3730a3,#6366f1)}
+  .bar.old .nm{color:var(--red);font-weight:650}
+  .legend{margin-top:12px;font-size:12px;color:var(--mut)}
+  .legend b{color:var(--ink2)}
+
+  .list{margin-top:30px;display:grid;gap:14px}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;
+        display:grid;grid-template-columns:1fr 268px;gap:22px;align-items:start;transition:border-color .15s}
+  .item:hover{border-color:#39424f}
+  .item h2{font-size:19px;font-weight:750;letter-spacing:-.3px}
+  .item h2 a{color:inherit;text-decoration:none}
+  .item h2 a:hover{color:var(--brand)}
+  .item .tagline{color:var(--ink2);font-size:13.5px;margin-top:5px}
+  .stats{display:flex;gap:22px;margin-top:14px;flex-wrap:wrap}
+  .stat .k{font-size:11px;color:var(--mut);letter-spacing:.3px}
+  .stat .v{font-size:17px;font-weight:750;font-family:ui-monospace,monospace;letter-spacing:-.5px;margin-top:2px}
+  .stat .v.good{color:var(--ok)}
+  .item ul{margin-top:14px;list-style:none;display:grid;gap:5px}
+  .item li{font-size:13px;color:var(--ink2);padding-left:16px;position:relative}
+  .item li::before{content:"·";position:absolute;left:5px;color:var(--mut);font-weight:800}
+  .item li b{color:var(--ink);font-weight:600}
+  .side .open{display:block;text-align:center;background:var(--brand);color:#fff;text-decoration:none;
+              font-weight:650;font-size:14px;padding:11px;border-radius:9px}
+  .side .open:hover{background:#3550d8}
+  .side .note{font-size:11.5px;color:var(--mut);margin-top:9px;text-align:center;line-height:1.7}
+  .pill{display:inline-block;font-size:10.5px;font-weight:650;border-radius:5px;padding:2px 7px;margin-left:7px;vertical-align:2px}
+  .pill.rec{background:rgba(61,220,151,.15);color:var(--ok)}
+  .pill.mid{background:rgba(255,180,84,.15);color:var(--warn)}
+
+  .tip{margin-top:30px;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--brand);
+       border-radius:0 12px 12px 0;padding:16px 18px;font-size:13.5px;color:var(--ink2)}
+  .tip b{color:var(--ink)}
+  footer{margin-top:34px;text-align:center;color:var(--mut);font-size:12.5px;line-height:2}
+  @media(max-width:900px){.item{grid-template-columns:1fr}.bar{grid-template-columns:110px 1fr 76px;font-size:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>高密度样稿 · <em>一行多张</em></h1>
+  <p class="lede">
+    上一轮四个稿子都是一行一张卡，你的反馈是对的。这三个都按「一行多张 + 压缩单条高度」重做，
+    并且都标了实测密度。仍然<strong>纯静态</strong>：只有 hover 与纯 CSS 详情面板，没有 JS。
+  </p>
+
+  <div class="bench">
+    <h3>实测密度对比</h3>
+    <div class="sub">视口 1440×900 · 数字为「首屏可见条目数」（越长约好）</div>
+    <div class="bars">
+      <div class="bar old"><span class="nm">线上现版（一行 1 张）</span>
+        <span class="track"><span class="fill" style="width:15%"></span></span>
+        <span class="val">3 条</span></div>
+      <div class="bar b1"><span class="nm">005 高密度网格 · 4 列</span>
+        <span class="track"><span class="fill" style="width:100%"></span></span>
+        <span class="val">20 条</span></div>
+      <div class="bar b3"><span class="nm">007 紧凑网格 · 3 列</span>
+        <span class="track"><span class="fill" style="width:75%"></span></span>
+        <span class="val">15 条</span></div>
+      <div class="bar b2"><span class="nm">006 极密表格 · 63px/行</span>
+        <span class="track"><span class="fill" style="width:60%"></span></span>
+        <span class="val">12 条</span></div>
+    </div>
+    <div class="legend">
+      看完全部 71 条的滚动量：现版 <b>约 14.5 屏</b> → 005 <b>1.5 屏</b> / 007 <b>1.3 屏</b> / 006 <b>1.8 屏</b>
+    </div>
+  </div>
+
+  <div class="list">
+
+    <div class="item" style="border-color:#3ddc97">
+      <div>
+        <h2><a href="009-真Logo版.html" target="_blank">009 · 真厂商 Logo + 惠民分档排序</a><span class="pill rec">最新</span></h2>
+        <div class="tagline">把「标题里抠字」换成厂商官方品牌图形：矢量优先，位图取自厂商官网自己的图标文件</div>
+        <div class="stats">
+          <div class="stat"><div class="k">真 logo</div><div class="v good">30 家</div></div>
+          <div class="stat"><div class="k">矢量</div><div class="v">22 家</div></div>
+          <div class="stat"><div class="k">首屏可见</div><div class="v">10 条</div></div>
+          <div class="stat"><div class="k">外部请求</div><div class="v good">0</div></div>
+        </div>
+        <ul>
+          <li><b>全部换成厂商官方品牌图形</b>：22 家是矢量 SVG（随样稿内联），8 家取厂商官网自己发布的图标文件</li>
+          <li><b>不热链任何 CDN</b>——logo 全部内联为 data URI，既不把访客 IP 交给第三方，也不怕对方改文件</li>
+          <li>页面底部附<b>「厂商 logo 来源」表</b>，逐行列出每家用的是哪张图、什么质量，可直接复核</li>
+          <li>长条图形单独适配：硅基流动 logo 是 4.9:1 的横条，塞方块会被压扁 → 改用<b>横向胶囊</b></li>
+          <li>把鼠标移到百度千帆那张卡的 logo 上看<b>压缩 → 展开</b>（实测 hover 前后卡片高度都是 172px，不顶动网格）</li>
+        </ul>
+      </div>
+      <div class="side">
+        <a class="open" href="009-真Logo版.html" target="_blank">打开 009</a>
+        <div class="note">文末有 logo 来源表<br>两家低清的已标注待确认</div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div>
+        <h2><a href="008-007加Logo与惠民排序.html" target="_blank">008 · 首字母方块版（已被 009 取代）</a><span class="pill mid">旧</span></h2>
+        <div class="tagline">你指出的问题版本：logo 是从标题里取字拼的，不是真 logo</div>
+        <div class="stats">
+          <div class="stat"><div class="k">真 logo</div><div class="v">0</div></div>
+          <div class="stat"><div class="k">档位</div><div class="v">5 档</div></div>
+          <div class="stat"><div class="k">首屏可见</div><div class="v">12 条</div></div>
+        </div>
+        <ul>
+          <li>留作对照。排序分档方案与 009 相同，只差 logo</li>
+        </ul>
+      </div>
+      <div class="side">
+        <a class="open" href="008-007加Logo与惠民排序.html" target="_blank">打开 008</a>
+        <div class="note">对照用</div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div>
+        <h2><a href="007-紧凑网格与详情面板.html" target="_blank">007 · 紧凑网格 + 详情面板</a><span class="pill mid">你已选定</span></h2>
+        <div class="tagline">3 列紧凑卡，点「详情」弹面板看完整信息——008 就是它的改进版</div>
+        <div class="stats">
+          <div class="stat"><div class="k">一屏可见</div><div class="v good">15 条</div></div>
+          <div class="stat"><div class="k">单卡高度</div><div class="v">153px</div></div>
+          <div class="stat"><div class="k">列数</div><div class="v">3</div></div>
+          <div class="stat"><div class="k">总滚动</div><div class="v">1.3 屏</div></div>
+        </div>
+        <ul>
+          <li>你选定的原始版本，留作对照</li>
+          <li>详情面板是<b>浮层</b>，打开不离开列表、不丢失滚动位置</li>
+          <li>面板已实测：点详情弹出 680×542、点关闭收起（纯 CSS <code>:target</code>）</li>
+        </ul>
+      </div>
+      <div class="side">
+        <a class="open" href="007-紧凑网格与详情面板.html" target="_blank">打开 007</a>
+        <div class="note">对照用</div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div>
+        <h2><a href="005-高密度网格.html" target="_blank">005 · 高密度网格</a><span class="pill rec">密度最高</span></h2>
+        <div class="tagline">4 列卡片，容器放宽到 1480px，每张卡只留 4 行</div>
+        <div class="stats">
+          <div class="stat"><div class="k">一屏可见</div><div class="v good">20 条</div></div>
+          <div class="stat"><div class="k">单卡高度</div><div class="v">177px</div></div>
+          <div class="stat"><div class="k">列数</div><div class="v">4</div></div>
+          <div class="stat"><div class="k">总滚动</div><div class="v">1.5 屏</div></div>
+        </div>
+        <ul>
+          <li>卡片结构压到 4 行：<b>标题 + 优惠行 + 元信息行</b>，特性 chip 取消</li>
+          <li>标题超长自动<b>截断 2 行</b>，保证卡片等高、网格不参差</li>
+          <li>响应式：1480px→4 列，1320→3 列，1000→2 列，680→1 列</li>
+        </ul>
+      </div>
+      <div class="side">
+        <a class="open" href="005-高密度网格.html" target="_blank">打开 005</a>
+        <div class="note">适合「快速扫一遍有哪些优惠」<br>代价：单条信息最少</div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div>
+        <h2><a href="006-极密表格.html" target="_blank">006 · 极密表格</a><span class="pill mid">信息最全</span></h2>
+        <div class="tagline">五列表格，单行仅 63px，附「紧凑 / 标准 / 宽松」三档行高切换</div>
+        <div class="stats">
+          <div class="stat"><div class="k">一屏可见</div><div class="v good">12 条</div></div>
+          <div class="stat"><div class="k">单行高度</div><div class="v">63px</div></div>
+          <div class="stat"><div class="k">列数</div><div class="v">5 列</div></div>
+          <div class="stat"><div class="k">总滚动</div><div class="v">1.8 屏</div></div>
+        </div>
+        <ul>
+          <li>每行<b>同时可见</b>：模型 / 优惠 / 适用条件 / 有效期 / 核验状态</li>
+          <li>表头 <b>sticky</b>；右上角<b>行高三档</b>——同一份数据，紧凑看总量、宽松看细节</li>
+          <li>百度千帆 17 条用<b>分组行 +「同上」</b>压成 5 行</li>
+        </ul>
+      </div>
+      <div class="side">
+        <a class="open" href="006-极密表格.html" target="_blank">打开 006</a>
+        <div class="note">适合「按条件横向对比」<br>代价：手机端要横向滚动</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tip">
+    <b>008 里的排序方案（待你确认）：</b>
+    ① <b>完全免费</b>（永久免费档 / 免费模型，不用等额度到账）→
+    ② <b>免费额度</b>（新用户赠送 tokens / credits / 代金券，一次性）→
+    ③ <b>身份优惠</b>（学生 / 教师 / 非营利 / 初创，拿到资格也不花钱）→
+    ④ <b>折扣促销</b>（要花钱但低于标准价、限时）→
+    ⑤ <b>付费为主</b>（无免费档或免费档已取消）。
+    同档内再按「额度价值 → 截止时间 → 更新时间」排。这套定义的边界在哪、要不要合并档位，等你定。
+  </div>
+
+  <footer>
+    样稿仅供选风格，均为静态展示 · 数据取自本站 deals.json 真实文案<br>
+    选好方向后我再出正式方案（含改动点与验收标准）
+  </footer>
+</div>
+</body>
+</html>

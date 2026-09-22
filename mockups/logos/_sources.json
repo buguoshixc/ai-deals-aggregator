@@ -1,0 +1,101 @@
+[
+  {
+    "slug": "tencent-cloud",
+    "name": "腾讯云",
+    "file": "tencent-cloud.ico",
+    "source": "https://cloudcache.tencent-cloud.com/qcloud/favicon.ico?t=201902181234",
+    "format": "ICO",
+    "size": "32x32",
+    "bytes": 949
+  },
+  {
+    "slug": "zhipu",
+    "name": "智谱AI",
+    "file": "zhipu.png",
+    "source": "https://www.bigmodel.cn/static/images/favicon.png",
+    "format": "PNG",
+    "size": "90x90",
+    "bytes": 1441
+  },
+  {
+    "slug": "volcengine",
+    "name": "火山引擎",
+    "file": "volcengine.png",
+    "source": "https://portal.volccdn.com/obj/volcfe/misc/favicon.png",
+    "format": "PNG",
+    "size": "192x192",
+    "bytes": 3400
+  },
+  {
+    "slug": "iflytek",
+    "name": "科大讯飞",
+    "file": "iflytek.ico",
+    "source": "https://www.xfyun.cn/static/favicon.ico",
+    "format": "ICO",
+    "size": "32x32",
+    "bytes": 14278
+  },
+  {
+    "slug": "siliconflow",
+    "name": "硅基流动",
+    "file": "siliconflow.png",
+    "source": "https://siliconflow.cn/favicon.ico",
+    "format": "PNG",
+    "size": "48x48",
+    "bytes": 358
+  },
+  {
+    "slug": "stepfun",
+    "name": "阶跃星辰",
+    "file": "stepfun.svg",
+    "source": "https://www.stepfun.com/step_favicon.svg",
+    "format": "image/svg+xml",
+    "size": "0x0",
+    "bytes": 773
+  },
+  {
+    "slug": "sensetime",
+    "name": "商汤",
+    "file": "sensetime.ico",
+    "source": "https://www.sensetime.com/assets/favicon.ico",
+    "format": "ICO",
+    "size": "16x16",
+    "bytes": 1150
+  },
+  {
+    "slug": "baichuan",
+    "name": "百川智能",
+    "file": "baichuan.png",
+    "source": "https://www.baichuan-ai.com/apple-touch-icon.png",
+    "format": "PNG",
+    "size": "180x180",
+    "bytes": 7357
+  },
+  {
+    "slug": "groq",
+    "name": "Groq",
+    "file": "groq.svg",
+    "source": "https://groq.com/favicon.svg",
+    "format": "SVG",
+    "size": "undefinedxundefined",
+    "bytes": 362
+  },
+  {
+    "slug": "runway",
+    "name": "Runway",
+    "file": "runway.png",
+    "source": "https://runwayml.com/icon.png?icon.35ps9bmugbe1e.png",
+    "format": "PNG",
+    "size": "320x320",
+    "bytes": 4846
+  },
+  {
+    "slug": "aws",
+    "name": "AWS",
+    "file": "aws.png",
+    "source": "https://a0.awsstatic.com/libra-css/images/site/touch-icon-ipad-144-smile.png",
+    "format": "PNG",
+    "size": "144x144",
+    "bytes": 3061
+  }
+]

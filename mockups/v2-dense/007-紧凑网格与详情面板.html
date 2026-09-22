@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>样稿 C2 · 紧凑网格 + 详情面板</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#0f172a; --ink2:#495066; --mut:#8c94a6;
+    --line:#e6e9ef; --line2:#f0f2f6;
+    --brand:#3b5bfd; --deal:#d92d4b; --dealsoft:#fff1f4;
+    --cn:#0b7a63; --cnbg:#e8f7f2; --gl:#2348c4; --glbg:#eef3ff;
+    --ok:#0b7a63; --warn:#c2410c;
+    --r:10px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font:13.5px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1420px;margin:0 auto;padding:0 20px 60px}
+
+  /* ---------- 顶栏 ---------- */
+  .top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+  .topin{max-width:1420px;margin:0 auto;padding:0 20px;height:54px;display:flex;align-items:center;gap:18px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:750;font-size:15px;white-space:nowrap}
+  .brand .dot{width:24px;height:24px;border-radius:7px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800}
+  .brand em{font-style:normal;color:var(--deal)}
+  .search{flex:1;max-width:480px;display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:8px;padding:0 12px;background:#fafbfc}
+  .search input{border:0;outline:0;background:0;flex:1;padding:8px 0;font:inherit;font-size:13px}
+  .search input::placeholder{color:var(--mut)}
+  .top .stat{font-size:12.5px;color:var(--mut);white-space:nowrap;margin-left:auto}
+  .top .stat b{color:var(--ink)}
+
+  .facets{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:54px;z-index:19}
+  .facetsin{max-width:1420px;margin:0 auto;padding:9px 20px;display:flex;gap:7px;align-items:center;overflow-x:auto}
+  .f{font-size:12.5px;border:1px solid var(--line);background:#fff;color:var(--ink2);border-radius:999px;padding:4px 11px;white-space:nowrap;cursor:pointer}
+  .f:hover{border-color:#c3ceff;color:var(--brand)}
+  .f.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+  .f.ok{border-color:#b9e3d7;color:var(--ok);background:#f4fdfa}
+  .f.ok.on{background:var(--ok);border-color:var(--ok);color:#fff}
+  .f b{opacity:.7;margin-left:3px}
+  .fsep{width:1px;height:15px;background:var(--line);flex:none;margin:0 3px}
+
+  .rbar{display:flex;justify-content:space-between;align-items:center;margin:16px 0 10px;font-size:12.5px;color:var(--mut)}
+  .rbar b{color:var(--ink)}
+  .rbar .hint{color:var(--brand)}
+
+  /* ---------- 3 列紧凑网格 ---------- */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+  .g{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:13px 14px;
+     display:flex;flex-direction:column;position:relative;transition:border-color .13s,box-shadow .13s}
+  .g:hover{border-color:#cdd6e6;box-shadow:0 6px 18px -12px rgba(15,23,42,.3)}
+  .g.verified{box-shadow:inset 2px 0 0 var(--ok)}
+
+  .gh{display:flex;gap:8px;align-items:flex-start}
+  .g h3{font-size:14px;font-weight:680;line-height:1.4;letter-spacing:-.1px;flex:1;
+        display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .g h3 a{color:inherit;text-decoration:none}
+  .g h3 a:hover{color:var(--brand)}
+  .tg{flex:none;font-size:10px;font-weight:650;border-radius:4px;padding:2px 5px;white-space:nowrap}
+  .tg.cn{background:var(--cnbg);color:var(--cn)}
+  .tg.gl{background:var(--glbg);color:var(--gl)}
+  .tg.due{background:#fff1f4;color:var(--deal)}
+
+  .vendor{font-size:11px;color:var(--mut);margin-top:3px}
+
+  /* 优惠：卡片唯一强信息 */
+  .of{margin-top:9px;display:flex;gap:8px}
+  .of .bar{flex:none;width:3px;border-radius:2px;background:var(--deal);margin-top:1px}
+  .of.free .bar{background:#0e9f6e}
+  .of.credit .bar{background:#7c3aed}
+  .of.student .bar{background:#2563eb}
+  .of.limited .bar{background:var(--warn)}
+  .of .tx{font-size:13px;line-height:1.5;color:#1f2937;
+          display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .of .tx b{color:var(--deal);font-weight:700}
+  .of.free .tx b{color:#0b7a44}
+  .of.credit .tx b{color:#6d28d9}
+
+  /* 特性 chip 只留 2 个，多的收进面板 */
+  .feats{display:flex;gap:5px;margin-top:9px;flex-wrap:wrap;overflow:hidden;max-height:22px}
+  .feats span{font-size:11px;background:#f2f4f8;color:#4b5563;border-radius:4px;padding:2px 7px;white-space:nowrap}
+  .feats span.more{background:#eef2ff;color:var(--brand)}
+
+  .meta{margin-top:auto;padding-top:10px;border-top:1px solid var(--line2);display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mut)}
+  .meta .ok{color:var(--ok);font-weight:650}
+  .meta .sp{margin-left:auto;display:flex;gap:10px;align-items:center}
+  .meta .det{color:var(--brand);font-weight:650;text-decoration:none;cursor:pointer}
+  .meta .det:hover{text-decoration:underline}
+  .meta .go{color:var(--brand);font-weight:650;text-decoration:none}
+  .meta .go:hover{text-decoration:underline}
+
+  .g.tool{background:#fcfcfd}
+  .g.tool h3{font-weight:550;color:#6b7280}
+  .g.tool .of{display:none}
+
+  /* ============ 详情面板：纯 CSS :target 实现（样稿演示用） ============ */
+  .panel{
+    position:fixed;inset:0;z-index:60;display:none;
+  }
+  .panel:target{display:block}
+  .panel .scrim{position:absolute;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(2px)}
+  .panel .box{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:min(680px,calc(100vw - 40px));max-height:86vh;overflow:auto;
+    background:#fff;border-radius:14px;box-shadow:0 30px 70px -20px rgba(15,23,42,.5);
+    padding:26px 28px 24px;
+  }
+  .box .close{position:absolute;top:16px;right:18px;width:30px;height:30px;border-radius:8px;
+              display:grid;place-items:center;color:var(--mut);text-decoration:none;font-size:17px;line-height:1}
+  .box .close:hover{background:#f2f4f8;color:var(--ink)}
+  .box .dh{display:flex;gap:10px;align-items:flex-start;padding-right:36px}
+  .box h2{font-size:19px;font-weight:750;line-height:1.35;letter-spacing:-.3px;flex:1}
+  .box .dsub{font-size:12.5px;color:var(--mut);margin-top:5px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .box .doffer{margin-top:16px;background:var(--dealsoft);border-left:3px solid var(--deal);border-radius:0 9px 9px 0;padding:12px 14px}
+  .box .doffer .lab{font-size:10.5px;font-weight:700;color:var(--deal);letter-spacing:.4px}
+  .box .doffer p{margin-top:5px;font-size:14.5px;font-weight:600;color:#9f1239;line-height:1.6}
+  .box .ddesc{font-size:13.5px;color:var(--ink2);margin-top:14px;line-height:1.7}
+  .box .dgrid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);
+              border-radius:9px;overflow:hidden;margin-top:16px}
+  .box .dgrid .cv{background:#fff;padding:11px 13px}
+  .box .dgrid .cv .k{font-size:10.5px;color:var(--mut);letter-spacing:.4px}
+  .box .dgrid .cv .v{font-size:13px;margin-top:3px;color:var(--ink)}
+  .box .dgrid .cv .v.ok{color:var(--ok);font-weight:650}
+  .box .dfeats{display:flex;gap:6px;flex-wrap:wrap;margin-top:15px}
+  .box .dfeats span{font-size:12px;background:#f2f4f8;color:#4b5563;border-radius:5px;padding:3px 9px}
+  .box .dact{margin-top:20px;display:flex;gap:10px}
+  .box .dact .pri{flex:1;text-align:center;background:var(--brand);color:#fff;text-decoration:none;
+                  font-weight:650;font-size:14px;padding:12px;border-radius:9px}
+  .box .dact .pri:hover{background:#2d4ae8}
+  .box .dact .sec{border:1px solid var(--line);color:var(--ink2);text-decoration:none;font-size:13px;
+                  padding:12px 16px;border-radius:9px;white-space:nowrap}
+  .box .dact .sec:hover{border-color:#c3ceff;color:var(--brand)}
+  .box .src{margin-top:14px;font-size:11.5px;color:var(--mut)}
+
+  footer{margin-top:30px;text-align:center;color:var(--mut);font-size:12px;line-height:1.9}
+
+  @media(max-width:1180px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:700px){
+    .grid{grid-template-columns:1fr;gap:9px}
+    .topin{gap:12px;height:auto;padding:10px 16px;flex-wrap:wrap}
+    .search{max-width:none;order:3;min-width:100%}
+    .facets{top:0;position:static}
+    .wrap{padding:0 16px 50px}
+    .box{padding:22px 20px 20px}
+    .box .dgrid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="topin">
+    <div class="brand"><span class="dot">%</span>AI <em>优惠</em>聚合器</div>
+    <label class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c94a6" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input placeholder="搜索模型、厂商或优惠内容…">
+    </label>
+    <div class="stat"><b>71</b> 条优惠 · 已核验 <b style="color:var(--ok)">23</b> · 更新 2026-09-22</div>
+  </div>
+</div>
+
+<div class="facets">
+  <div class="facetsin">
+    <span class="f ok on">✓ 已核验 <b>23</b></span>
+    <span class="fsep"></span>
+    <span class="f on">全部 <b>71</b></span>
+    <span class="f">国内 <b>51</b></span>
+    <span class="f">国外 <b>20</b></span>
+    <span class="fsep"></span>
+    <span class="f">百度智能云 <b>17</b></span>
+    <span class="f">智谱AI <b>12</b></span>
+    <span class="f">火山引擎 <b>12</b></span>
+    <span class="fsep"></span>
+    <span class="f">免费额度</span>
+    <span class="f">学生 / 教育</span>
+    <span class="f">非营利</span>
+    <span class="f">限时促销</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="rbar">
+    <div>显示 <b>71</b> 条 · 一屏约可见 <b>12</b> 张 · 点「详情」展开完整信息，不必离开页面</div>
+    <div class="hint">卡片只放决策必需信息，其余收进详情</div>
+  </div>
+
+  <div class="grid">
+
+    <article class="g verified">
+      <div class="gh"><h3><a href="#">GitHub Copilot 学生免费（Copilot Student）</a></h3><span class="tg gl">国外</span></div>
+      <div class="vendor">GitHub · 编程开发</div>
+      <div class="of student"><span class="bar"></span><div class="tx"><b>全部付费功能免费</b></div></div>
+      <div class="feats"><span>全部付费功能免费</span><span>需学籍验证</span><span class="more">+1</span></div>
+      <div class="meta"><span class="ok">✓ 已核验 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g verified">
+      <div class="gh"><h3><a href="#">ElevenLabs 免费计划 每月 10000 credits</a></h3><span class="tg gl">国外</span></div>
+      <div class="vendor">ElevenLabs · 音频语音</div>
+      <div class="of free"><span class="bar"></span><div class="tx"><b>每月 10,000 credits</b> · 免费档 $0 → 付费档</div></div>
+      <div class="feats"><span>无需信用卡</span><span>长期有效</span><span class="more">+1</span></div>
+      <div class="meta"><span class="ok">✓ 已核验 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p2">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g">
+      <div class="gh"><h3><a href="#">百度千帆 ERNIE-4.5-Turbo-128K 免费额度</a></h3><span class="tg cn">国内</span></div>
+      <div class="vendor">百度智能云 · API服务</div>
+      <div class="of free"><span class="bar"></span><div class="tx"><b>赠送 100 万 Tokens</b> · 有效期 3 个月</div></div>
+      <div class="feats"><span>50 万 tokens</span><span>需实名认证</span><span class="more">+1</span></div>
+      <div class="meta"><span>数据更新 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p3">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g verified">
+      <div class="gh"><h3><a href="#">阶跃星辰 StepAudio 3 语音大模型限时免费</a></h3><span class="tg due">剩 5 天</span></div>
+      <div class="vendor">阶跃星辰 · 音频语音</div>
+      <div class="of limited"><span class="bar"></span><div class="tx"><b>限时免费</b> · 输入/输出价格均标注免费</div></div>
+      <div class="feats"><span>两个语音模型</span><span>截止 2026-09-27</span></div>
+      <div class="meta"><span class="ok">✓ 已核验 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g verified">
+      <div class="gh"><h3><a href="#">硅基流动 免费模型专区</a></h3><span class="tg cn">国内</span></div>
+      <div class="vendor">硅基流动 · API服务</div>
+      <div class="of free"><span class="bar"></span><div class="tx"><b>多款模型标价 0</b> · 文本 / 向量 / 图像 / 语音</div></div>
+      <div class="feats"><span>多款模型标价 0</span><span>文本 / 向量 / 图像 / 语音</span></div>
+      <div class="meta"><span class="ok">✓ 已核验 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g verified">
+      <div class="gh"><h3><a href="#">腾讯混元 新用户 100 万 tokens 免费资源包</a></h3><span class="tg cn">国内</span></div>
+      <div class="vendor">腾讯云 · 对话模型</div>
+      <div class="of free"><span class="bar"></span><div class="tx"><b>100 万 tokens</b> · 多个模型共用</div></div>
+      <div class="feats"><span>100 万 tokens</span><span>有效期 1 年</span><span class="more">+1</span></div>
+      <div class="meta"><span class="ok">✓ 已核验 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g verified">
+      <div class="gh"><h3><a href="#">Kimi 开放平台 新用户 15 元代金券</a></h3><span class="tg cn">国内</span></div>
+      <div class="vendor">月之暗面 · API服务</div>
+      <div class="of credit"><span class="bar"></span><div class="tx"><b>15 元代金券</b> · 注册即赠</div></div>
+      <div class="feats"><span>15 元代金券</span><span>需实名认证</span></div>
+      <div class="meta"><span class="ok">✓ 已核验 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g verified">
+      <div class="gh"><h3><a href="#">Anthropic Claude 非营利组织折扣</a></h3><span class="tg gl">国外</span></div>
+      <div class="vendor">Anthropic · 对话模型</div>
+      <div class="of"><span class="bar"></span><div class="tx"><b>Team $8 / Enterprise $10</b> 每用户每月</div></div>
+      <div class="feats"><span>非营利折扣价</span><span>最少 2 席</span></div>
+      <div class="meta"><span class="ok">✓ 已核验 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g verified">
+      <div class="gh"><h3><a href="#">Notion 教育版 学生与教师免费 Plus</a></h3><span class="tg gl">国外</span></div>
+      <div class="vendor">Notion · 办公效率</div>
+      <div class="of student"><span class="bar"></span><div class="tx"><b>免费 Plus 计划</b> · 含无限存储、30 天版本历史</div></div>
+      <div class="feats"><span>免费 Plus 计划</span><span>学校须在 WHED</span></div>
+      <div class="meta"><span class="ok">✓ 已核验 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g verified">
+      <div class="gh"><h3><a href="#">AWS Activate 初创公司最高 20 万美元云 credits</a></h3><span class="tg gl">国外</span></div>
+      <div class="vendor">AWS · API服务</div>
+      <div class="of credit"><span class="bar"></span><div class="tx"><b>最高 $200,000</b> AWS Activate Credits</div></div>
+      <div class="feats"><span>最高 $200,000</span><span>可用于 Bedrock</span></div>
+      <div class="meta"><span class="ok">✓ 已核验 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g verified">
+      <div class="gh"><h3><a href="#">Google AI Pro 学生免费 12 个月（含 Gemini 高级版）</a></h3><span class="tg gl">国外</span></div>
+      <div class="vendor">Google · 对话模型</div>
+      <div class="of student"><span class="bar"></span><div class="tx"><b>免费 12 个月</b> · 价值 $19.99/月</div></div>
+      <div class="feats"><span>免费 12 个月</span><span>价值 $19.99/月</span><span class="more">+1</span></div>
+      <div class="meta"><span class="ok">✓ 已核验 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g">
+      <div class="gh"><h3><a href="#">火山方舟 豆包全系模型 50 万 tokens 免费额度</a></h3><span class="tg cn">国内</span></div>
+      <div class="vendor">火山引擎 · 对话模型</div>
+      <div class="of free"><span class="bar"></span><div class="tx"><b>50 万 tokens</b> · 豆包全系模型</div></div>
+      <div class="feats"><span>50 万 tokens</span><span>豆包全系模型</span><span class="more">+1</span></div>
+      <div class="meta"><span class="ok">✓ 已核验 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g">
+      <div class="gh"><h3><a href="#">智谱AI GLM-5.3-Flash 限时五折</a></h3><span class="tg cn">国内</span></div>
+      <div class="vendor">智谱AI · API服务</div>
+      <div class="of limited"><span class="bar"></span><div class="tx"><b>限时五折</b> · 输入 0.4 元 / 输出 1.4 元</div></div>
+      <div class="feats"><span>限时五折</span><span>缓存命中 0.115 元</span></div>
+      <div class="meta"><span>数据更新 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g">
+      <div class="gh"><h3><a href="#">讯飞星火 Spark Lite 轻量级大模型免费使用</a></h3><span class="tg cn">国内</span></div>
+      <div class="vendor">科大讯飞 · 对话模型</div>
+      <div class="of free"><span class="bar"></span><div class="tx"><b>Spark Lite 免费</b> · 官方文档标注</div></div>
+      <div class="feats"><span>Spark Lite 免费</span><span>创建应用即可调用</span></div>
+      <div class="meta"><span class="ok">✓ 已核验 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g">
+      <div class="gh"><h3><a href="#">商汤日日新 Token Plan 首月限时免费</a></h3><span class="tg cn">国内</span></div>
+      <div class="vendor">商汤科技 · API服务</div>
+      <div class="of free"><span class="bar"></span><div class="tx"><b>首月免费</b> · 每 5 小时 1500 次调用</div></div>
+      <div class="feats"><span>首月免费</span><span>无门槛配额</span></div>
+      <div class="meta"><span class="ok">✓ 已核验 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">获取 →</a></span></div>
+    </article>
+
+    <article class="g tool">
+      <div class="gh"><h3><a href="#">NotebookLM</a></h3><span class="tg gl">工具</span></div>
+      <div class="vendor">Google · 对话模型</div>
+      <div class="meta" style="margin-top:auto"><span>来源 Futuretools · 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">查看 →</a></span></div>
+    </article>
+
+    <article class="g tool">
+      <div class="gh"><h3><a href="#">Recraft</a></h3><span class="tg gl">工具</span></div>
+      <div class="vendor">Recraft · 图像绘画</div>
+      <div class="meta" style="margin-top:auto"><span>来源 Futuretools · 2026-09-22</span>
+        <span class="sp"><a class="det" href="#p1">详情</a><a class="go" href="#">查看 →</a></span></div>
+    </article>
+
+  </div>
+
+  <footer>
+    本站不收录付费推广位 · 排序与推荐理由不出售<br>
+    数据每日 08:00 / 20:00 自动更新 · 最后更新 2026-09-22 19:20
+  </footer>
+</div>
+
+<!-- ============ 详情面板（示范一张）：点卡片上的「详情」即可打开 ============ -->
+<div class="panel" id="p1">
+  <a class="scrim" href="#"></a>
+  <div class="box">
+    <a class="close" href="#" aria-label="关闭">✕</a>
+    <div class="dh">
+      <h2>GitHub Copilot 学生免费（Copilot Student）</h2>
+      <span class="tg gl">国外</span>
+    </div>
+    <div class="dsub">
+      <span>GitHub</span><span>·</span><span>编程开发</span><span>·</span>
+      <span style="color:var(--ok);font-weight:650">✓ 已核验 2026-09-22</span>
+    </div>
+
+    <div class="doffer">
+      <div class="lab">学生免费</div>
+      <p>通过 GitHub Education 验证的在校学生可免费使用 Copilot 全部付费功能（Copilot Student）。</p>
+    </div>
+
+    <p class="ddesc">在 github.com/settings/education/benefits 完成学籍验证后激活 Copilot Student；验证通过与权益生效是两个步骤，可能需数天。</p>
+
+    <div class="dgrid">
+      <div class="cv"><div class="k">适用条件</div><div class="v">经 GitHub Education 验证的在校学生</div></div>
+      <div class="cv"><div class="k">有效期</div><div class="v">长期有效（每月重新评估资格）</div></div>
+      <div class="cv"><div class="k">定价模式</div><div class="v">免费</div></div>
+      <div class="cv"><div class="k">核验状态</div><div class="v ok">✓ 已核验 2026-09-22</div></div>
+    </div>
+
+    <div class="dfeats">
+      <span>全部付费功能免费</span><span>需学籍验证</span><span>每月重评估</span>
+    </div>
+
+    <div class="dact">
+      <a class="pri" href="#">前往官方页面领取 →</a>
+      <a class="sec" href="#">复制链接</a>
+    </div>
+    <div class="src">来源：Curated · 首次收录 2026-09-21 · 最近采集 2026-09-22</div>
+  </div>
+</div>
+
+<div class="panel" id="p2">
+  <a class="scrim" href="#"></a>
+  <div class="box">
+    <a class="close" href="#" aria-label="关闭">✕</a>
+    <div class="dh"><h2>ElevenLabs 免费计划 每月 10000 credits</h2><span class="tg gl">国外</span></div>
+    <div class="dsub"><span>ElevenLabs</span><span>·</span><span>音频语音</span><span>·</span>
+      <span style="color:var(--ok);font-weight:650">✓ 已核验 2026-09-22</span></div>
+    <div class="doffer">
+      <div class="lab">免费额度</div>
+      <p>Free 计划 $0，每月 10,000 credits，可用于 TTS、语音克隆、Dubbing 等全部产品（credits 全产品共享）。</p>
+    </div>
+    <p class="ddesc">注册即得免费额度，无需付费；免费计划不参与 credits 结转（rollover）。</p>
+    <div class="dgrid">
+      <div class="cv"><div class="k">适用条件</div><div class="v">所有新用户</div></div>
+      <div class="cv"><div class="k">有效期</div><div class="v">长期有效的免费档（每月 10,000 credits）</div></div>
+      <div class="cv"><div class="k">价格阶梯</div><div class="v">免费档 $0 → 付费档</div></div>
+      <div class="cv"><div class="k">核验状态</div><div class="v ok">✓ 已核验 2026-09-22</div></div>
+    </div>
+    <div class="dfeats"><span>每月 10,000 credits</span><span>TTS / 克隆 / Dubbing</span><span>无需信用卡</span></div>
+    <div class="dact"><a class="pri" href="#">前往官方页面领取 →</a><a class="sec" href="#">复制链接</a></div>
+    <div class="src">来源：Curated · 最近采集 2026-09-22</div>
+  </div>
+</div>
+
+<div class="panel" id="p3">
+  <a class="scrim" href="#"></a>
+  <div class="box">
+    <a class="close" href="#" aria-label="关闭">✕</a>
+    <div class="dh"><h2>百度千帆 ERNIE-4.5-Turbo-128K 新用户免费额度</h2><span class="tg cn">国内</span></div>
+    <div class="dsub"><span>百度智能云</span><span>·</span><span>API服务</span><span>·</span>
+      <span>数据更新 2026-09-22</span></div>
+    <div class="doffer">
+      <div class="lab">新用户免费额度</div>
+      <p>首次开通千帆即自动发放免费额度：赠送 100 万 Tokens，有效期 3 个月。</p>
+    </div>
+    <p class="ddesc">百度千帆大模型平台新用户免费额度，访问平台并同意用户协议后自动开通发放，仅可抵扣预置模型在线推理消耗的 Tokens。</p>
+    <div class="dgrid">
+      <div class="cv"><div class="k">适用条件</div><div class="v">千帆平台新用户（需实名认证）</div></div>
+      <div class="cv"><div class="k">有效期</div><div class="v">自开通起 3 个月</div></div>
+      <div class="cv"><div class="k">定价模式</div><div class="v">免费</div></div>
+      <div class="cv"><div class="k">核验状态</div><div class="v">数据更新 2026-09-22（非人工核验）</div></div>
+    </div>
+    <div class="dfeats"><span>100 万 Tokens</span><span>需实名认证</span></div>
+    <div class="dact"><a class="pri" href="#">前往官方页面领取 →</a><a class="sec" href="#">复制链接</a></div>
+    <div class="src">来源：百度千帆 · 该额度同时覆盖千帆平台共 17 个模型</div>
+  </div>
+</div>
+
+</body>
+</html>

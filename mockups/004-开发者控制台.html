@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>样稿 D · 开发者控制台</title>
+<style>
+  :root{
+    --bg:#0b0f16; --bg2:#111823; --card:#131a26; --card2:#18202e;
+    --line:#232d3d; --line2:#1b2431;
+    --ink:#e8edf5; --ink2:#a3b0c2; --mut:#6b7a90;
+    --brand:#5b7cfa; --brand2:#7c5bfa;
+    --green:#3ddc97; --amber:#ffb454; --red:#ff6b81; --cyan:#4cc9f0;
+    --mono:"SF Mono",ui-monospace,"Cascadia Mono",Consolas,"Liberation Mono",monospace;
+    --r:10px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+       background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+
+  .shell{display:grid;grid-template-columns:238px 1fr;min-height:100vh}
+
+  /* ---------- 左侧栏 ---------- */
+  .side{background:var(--bg2);border-right:1px solid var(--line);padding:18px 0;position:sticky;top:0;height:100vh;overflow:auto}
+  .logo{display:flex;align-items:center;gap:10px;padding:0 18px 18px;border-bottom:1px solid var(--line2)}
+  .logo .mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand2));
+               display:grid;place-items:center;font-weight:800;font-size:14px;color:#fff;flex:none}
+  .logo .txt{font-weight:700;font-size:14.5px;letter-spacing:-.2px;line-height:1.25}
+  .logo .txt em{font-style:normal;color:var(--green)}
+  .logo .txt small{display:block;font-size:10.5px;color:var(--mut);font-weight:500;letter-spacing:.3px}
+
+  .snav{padding:14px 10px}
+  .snav .grp{font-size:10.5px;letter-spacing:1.2px;color:var(--mut);padding:12px 8px 6px;text-transform:uppercase}
+  .snav a{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;color:var(--ink2);
+          text-decoration:none;font-size:13.5px;margin-bottom:1px}
+  .snav a:hover{background:var(--card2);color:var(--ink)}
+  .snav a.on{background:rgba(91,124,250,.14);color:#b9c8ff;font-weight:600;box-shadow:inset 2px 0 0 var(--brand)}
+  .snav a .c{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--mut);background:var(--card);border-radius:5px;padding:1px 6px}
+  .snav a.on .c{color:#b9c8ff;background:rgba(91,124,250,.2)}
+
+  .sidefoot{padding:14px 18px;border-top:1px solid var(--line2);font-size:11.5px;color:var(--mut);line-height:1.9}
+  .sidefoot .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);
+                 box-shadow:0 0 0 3px rgba(61,220,151,.14);margin-right:6px}
+
+  /* ---------- 主区 ---------- */
+  .main{padding:26px 30px 70px;min-width:0}
+
+  .topline{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+  .topline h1{font-size:25px;font-weight:750;letter-spacing:-.5px}
+  .topline h1 em{font-style:normal;color:var(--green)}
+  .topline p{color:var(--ink2);font-size:13.5px;margin-top:6px}
+  .topline .actions{display:flex;gap:9px}
+  .btn{border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:8px;
+       padding:8px 14px;font:inherit;font-size:13px;cursor:pointer}
+  .btn:hover{border-color:#33415a;color:var(--ink)}
+  .btn.pri{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:650}
+  .btn.pri:hover{background:#4a6ae8}
+
+  /* ---------- 指标 ---------- */
+  .kv{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:22px}
+  .kv .cell{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+  .kv .cell .k{font-size:11.5px;color:var(--mut);letter-spacing:.4px}
+  .kv .cell .v{font-family:var(--mono);font-size:23px;font-weight:600;letter-spacing:-.5px;margin-top:6px}
+  .kv .cell .s{font-size:11px;color:var(--mut);margin-top:4px}
+  .kv .cell.g .v{color:var(--green)}
+  .kv .cell.b .v{color:var(--brand)}
+  .kv .cell.a .v{color:var(--amber)}
+
+  /* ---------- 过滤台 ---------- */
+  .console{background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin-top:16px;overflow:hidden}
+  .cbar{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line2)}
+  .cbar .prompt{font-family:var(--mono);color:var(--green);font-size:13px;flex:none}
+  .cbar input{flex:1;background:0;border:0;outline:0;font-family:var(--mono);font-size:13.5px;color:var(--ink)}
+  .cbar input::placeholder{color:var(--mut)}
+  .cbar .kbd{font-family:var(--mono);font-size:10.5px;color:var(--mut);border:1px solid var(--line);
+             border-radius:4px;padding:2px 6px;flex:none}
+  .cfilters{display:flex;gap:8px;padding:11px 14px;flex-wrap:wrap;border-bottom:1px solid var(--line2);background:#0f1621}
+  .fbtn{font-family:var(--mono);font-size:12px;border:1px solid var(--line);background:var(--card2);color:var(--ink2);
+        border-radius:6px;padding:5px 11px;cursor:pointer}
+  .fbtn:hover{border-color:#33415a;color:var(--ink)}
+  .fbtn.on{background:rgba(91,124,250,.16);border-color:rgba(91,124,250,.5);color:#b9c8ff}
+  .fbtn.ok.on{background:rgba(61,220,151,.14);border-color:rgba(61,220,151,.45);color:var(--green)}
+  .cfilters .lbl{font-family:var(--mono);font-size:11.5px;color:var(--mut);align-self:center;margin-right:2px}
+
+  /* ---------- 列表 ---------- */
+  .results{margin-top:18px}
+  .rhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;
+         font-family:var(--mono);font-size:12px;color:var(--mut)}
+  .rhead b{color:var(--ink)}
+
+  .row{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:10px;
+       display:grid;grid-template-columns:38px 1fr 168px;gap:16px;transition:border-color .15s,background .15s}
+  .row:hover{border-color:#2f3d54;background:var(--card2)}
+  .row.verified{border-left:2px solid var(--green)}
+
+  /* 序号列：控制台感 */
+  .idx{font-family:var(--mono);font-size:12px;color:var(--mut);padding-top:2px}
+
+  .rbody{min-width:0}
+  .rtitle{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .rtitle h3{font-size:15.5px;font-weight:700;letter-spacing:-.2px}
+  .rtitle h3 a{color:inherit;text-decoration:none}
+  .rtitle h3 a:hover{color:var(--brand)}
+  .tag{font-family:var(--mono);font-size:10.5px;border-radius:4px;padding:2px 7px;white-space:nowrap}
+  .tag.cn{background:rgba(61,220,151,.12);color:var(--green)}
+  .tag.gl{background:rgba(76,201,240,.12);color:var(--cyan)}
+  .tag.cat{background:var(--card2);color:var(--mut);border:1px solid var(--line)}
+  .tag.hot{background:rgba(255,180,84,.14);color:var(--amber)}
+  .tag.due{background:rgba(255,107,129,.14);color:var(--red)}
+  .rvendor{font-size:12px;color:var(--mut);margin-top:3px}
+
+  /* 优惠内容：用代码块的视觉强调 */
+  .offer{margin-top:11px;background:#0f1621;border:1px solid var(--line2);border-left:2px solid var(--green);
+         border-radius:0 8px 8px 0;padding:10px 13px}
+  .offer.student{border-left-color:var(--cyan)}
+  .offer.credit{border-left-color:var(--brand2)}
+  .offer.limited{border-left-color:var(--amber)}
+  .offer .line1{font-size:14px;font-weight:650;color:var(--ink)}
+  .offer .line1 .hl{color:var(--green);font-family:var(--mono);font-size:14.5px}
+  .offer.student .line1 .hl{color:var(--cyan)}
+  .offer.credit .line1 .hl{color:#b9a8ff}
+  .offer.limited .line1 .hl{color:var(--amber)}
+  .offer .line2{font-size:12.5px;color:var(--ink2);margin-top:5px}
+
+  .feats{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .feats span{font-family:var(--mono);font-size:11px;color:var(--ink2);background:var(--card2);
+              border:1px solid var(--line);border-radius:5px;padding:2px 8px}
+
+  /* 右侧元数据列 */
+  .rmeta{border-left:1px dashed var(--line);padding-left:16px;font-size:12px;display:flex;flex-direction:column;gap:9px}
+  .rmeta .m .k{font-size:10.5px;color:var(--mut);letter-spacing:.4px;font-family:var(--mono)}
+  .rmeta .m .v{color:var(--ink2);margin-top:2px;line-height:1.5}
+  .rmeta .m .v.ok{color:var(--green);font-weight:600;font-family:var(--mono);font-size:11.5px}
+  .rmeta .m .v.auto{color:var(--mut);font-family:var(--mono);font-size:11.5px}
+  .rmeta .go{margin-top:auto;display:block;text-align:center;background:var(--brand);color:#fff;text-decoration:none;
+             font-size:12.5px;font-weight:650;padding:9px;border-radius:7px}
+  .rmeta .go:hover{background:#4a6ae8}
+  .rmeta .go.weak{background:var(--card2);color:var(--ink2);border:1px solid var(--line)}
+
+  /* 工具条目：整行弱化 */
+  .row.tool{opacity:.68}
+  .row.tool .offer{display:none}
+  .row.tool .rmeta .go{background:var(--card2);color:var(--ink2);border:1px solid var(--line)}
+
+  /* 重复数据处理：同额度折叠 */
+  .dupe{margin-top:11px;background:#0f1621;border:1px dashed var(--line);border-radius:8px;overflow:hidden}
+  .dupe .dhead{display:flex;align-items:center;gap:10px;padding:9px 13px;font-family:var(--mono);font-size:12px;color:var(--ink2)}
+  .dupe .dhead .badge{background:rgba(91,124,250,.16);color:#b9c8ff;border-radius:5px;padding:2px 8px;font-size:11px}
+  .dupe .dhead .caret{margin-left:auto;color:var(--mut)}
+  .dupe .dlist{display:flex;flex-wrap:wrap;gap:6px;padding:0 13px 11px}
+  .dupe .dlist span{font-family:var(--mono);font-size:11px;color:var(--ink2);background:var(--card2);
+                    border:1px solid var(--line);border-radius:5px;padding:2px 8px}
+  .dupe .dlist span.more{color:#b9c8ff;border-style:dashed;border-color:rgba(91,124,250,.4)}
+
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line2);
+         font-family:var(--mono);font-size:11.5px;color:var(--mut);text-align:center;line-height:2}
+
+  @media(max-width:1080px){
+    .shell{grid-template-columns:1fr}
+    .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);
+          display:flex;gap:0;padding:12px;overflow:auto}
+    .logo{padding:0 16px 0 6px;border-bottom:0;border-right:1px solid var(--line2);flex:none}
+    .snav{display:flex;gap:6px;padding:0 10px;align-items:center}
+    .snav .grp,.sidefoot{display:none}
+    .snav a{white-space:nowrap;margin:0}
+    .kv{grid-template-columns:repeat(2,1fr)}
+    .row{grid-template-columns:1fr}
+    .rmeta{border-left:0;border-top:1px dashed var(--line);padding-left:0;padding-top:12px}
+    .idx{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ---------- 左侧栏 ---------- -->
+  <aside class="side">
+    <div class="logo">
+      <span class="mark">%</span>
+      <span class="txt">AI <em>Deals</em><small>优惠聚合器</small></span>
+    </div>
+    <nav class="snav">
+      <div class="grp">浏览</div>
+      <a class="on" href="#">全部优惠 <span class="c">71</span></a>
+      <a href="#">已核验 <span class="c">23</span></a>
+      <a href="#">国内 <span class="c">51</span></a>
+      <a href="#">国外 <span class="c">20</span></a>
+      <a href="#">即将截止 <span class="c">6</span></a>
+      <div class="grp">按类型</div>
+      <a href="#">免费额度 <span class="c">38</span></a>
+      <a href="#">免费模型 <span class="c">12</span></a>
+      <a href="#">学生 / 教育 <span class="c">9</span></a>
+      <a href="#">非营利 <span class="c">4</span></a>
+      <a href="#">限时促销 <span class="c">6</span></a>
+      <div class="grp">其他</div>
+      <a href="#">全部工具 <span class="c">50</span></a>
+      <a href="#">来源说明</a>
+    </nav>
+    <div class="sidefoot">
+      <span class="dot"></span>自动更新中<br>
+      每日 08:00 / 20:00<br>
+      <span style="font-family:var(--mono)">最后 2026-09-22 19:20</span>
+    </div>
+  </aside>
+
+  <!-- ---------- 主区 ---------- -->
+  <main class="main">
+    <div class="topline">
+      <div>
+        <h1>国内外大模型的<em>真实优惠</em></h1>
+        <p>新用户免费额度 · 免费模型 · 学生 / 教师 / 非营利折扣 · 限时促销 —— 全部直达厂商官方页</p>
+      </div>
+      <div class="actions">
+        <button class="btn">导出 CSV</button>
+        <button class="btn pri">只看已核验</button>
+      </div>
+    </div>
+
+    <div class="kv">
+      <div class="cell"><div class="k">在架优惠</div><div class="v">71</div><div class="s">默认视图</div></div>
+      <div class="cell g"><div class="k">人工核验</div><div class="v">23</div><div class="s">逐条回访官方页</div></div>
+      <div class="cell b"><div class="k">国内条目</div><div class="v">51</div><div class="s">12 家厂商</div></div>
+      <div class="cell"><div class="k">国外条目</div><div class="v">20</div><div class="s">含学生 / 非营利</div></div>
+      <div class="cell a"><div class="k">即将截止</div><div class="v">6</div><div class="s">7 天内</div></div>
+    </div>
+
+    <div class="console">
+      <div class="cbar">
+        <span class="prompt">›</span>
+        <input placeholder="搜索模型、厂商或优惠内容…  例如 免费额度 / 学生 / tokens">
+        <span class="kbd">/</span>
+      </div>
+      <div class="cfilters">
+        <span class="lbl">filter</span>
+        <span class="fbtn ok on">✓ 已核验 23</span>
+        <span class="fbtn on">全部地区</span>
+        <span class="fbtn">国内 51</span>
+        <span class="fbtn">国外 20</span>
+        <span class="fbtn">免费额度</span>
+        <span class="fbtn">免费模型</span>
+        <span class="fbtn">学生 / 教育</span>
+        <span class="fbtn">非营利</span>
+        <span class="fbtn">限时促销</span>
+      </div>
+    </div>
+
+    <div class="results">
+      <div class="rhead">
+        <span>显示 <b>71</b> 条 · 按 即将截止 排序</span>
+        <span>view: card / list ▾</span>
+      </div>
+
+      <!-- 已核验 + 学生 -->
+      <article class="row verified">
+        <div class="idx">01</div>
+        <div class="rbody">
+          <div class="rtitle">
+            <h3><a href="#">GitHub Copilot 学生免费（Copilot Student）</a></h3>
+            <span class="tag gl">国外</span><span class="tag cat">编程开发</span>
+          </div>
+          <div class="rvendor">GitHub</div>
+          <div class="offer student">
+            <div class="line1"><span class="hl">全部付费功能免费</span> · Copilot Student</div>
+            <div class="line2">通过 GitHub Education 验证的在校学生可免费使用；验证通过与权益生效是两个步骤，可能需数天。</div>
+          </div>
+          <div class="feats"><span>需学籍验证</span><span>每月重评估</span><span>长期有效</span></div>
+        </div>
+        <div class="rmeta">
+          <div class="m"><div class="k">ELIGIBILITY</div><div class="v">经 GitHub Education 验证的在校学生</div></div>
+          <div class="m"><div class="k">STATUS</div><div class="v ok">✓ 已核验 2026-09-22</div></div>
+          <a class="go" href="#">获取优惠 →</a>
+        </div>
+      </article>
+
+      <!-- 已核验 + 免费额度 + 价格阶梯 -->
+      <article class="row verified">
+        <div class="idx">02</div>
+        <div class="rbody">
+          <div class="rtitle">
+            <h3><a href="#">ElevenLabs 免费计划 每月 10000 credits</a></h3>
+            <span class="tag gl">国外</span><span class="tag cat">音频语音</span>
+          </div>
+          <div class="rvendor">ElevenLabs</div>
+          <div class="offer">
+            <div class="line1"><span class="hl">每月 10,000 credits</span> · 免费档 $0 → 付费档</div>
+            <div class="line2">可用于 TTS、语音克隆、Dubbing 等全部产品；credits 全产品共享，免费计划不参与结转。</div>
+          </div>
+          <div class="feats"><span>无需信用卡</span><span>长期有效</span></div>
+        </div>
+        <div class="rmeta">
+          <div class="m"><div class="k">ELIGIBILITY</div><div class="v">所有新用户</div></div>
+          <div class="m"><div class="k">STATUS</div><div class="v ok">✓ 已核验 2026-09-22</div></div>
+          <a class="go" href="#">获取优惠 →</a>
+        </div>
+      </article>
+
+      <!-- 重复数据：同额度折叠 -->
+      <article class="row">
+        <div class="idx">03</div>
+        <div class="rbody">
+          <div class="rtitle">
+            <h3><a href="#">百度千帆 新用户 100 万 Tokens 免费额度</a></h3>
+            <span class="tag cn">国内</span><span class="tag cat">API服务</span>
+          </div>
+          <div class="rvendor">百度智能云 · 千帆平台</div>
+          <div class="offer">
+            <div class="line1"><span class="hl">100 万 Tokens</span> · 有效期 3 个月</div>
+            <div class="line2">首次开通千帆即自动发放，仅可抵扣预置模型在线推理消耗的 Tokens；需实名认证。</div>
+          </div>
+          <div class="dupe">
+            <div class="dhead"><span class="badge">17 个模型共用此额度</span><span>不是每个模型各 100 万</span><span class="caret">▾</span></div>
+            <div class="dlist">
+              <span>ERNIE-4.5-Turbo-128K</span><span>ERNIE-4.5-Turbo-32K</span><span>ERNIE-4.5-Turbo-VL</span>
+              <span>ERNIE-X1-Turbo-32K</span><span>DeepSeek-R1</span><span>DeepSeek-V3</span>
+              <span>DeepSeek-V3.1</span><span>Kimi-K2-Instruct</span><span>Qwen3-235B-A22B</span>
+              <span class="more">+8 个模型</span>
+            </div>
+          </div>
+        </div>
+        <div class="rmeta">
+          <div class="m"><div class="k">ELIGIBILITY</div><div class="v">千帆平台新用户（需实名认证）</div></div>
+          <div class="m"><div class="k">STATUS</div><div class="v auto">○ 数据更新 2026-09-22</div></div>
+          <a class="go" href="#">获取优惠 →</a>
+        </div>
+      </article>
+
+      <!-- 限时 -->
+      <article class="row verified">
+        <div class="idx">04</div>
+        <div class="rbody">
+          <div class="rtitle">
+            <h3><a href="#">阶跃星辰 StepAudio 3 语音大模型限时免费</a></h3>
+            <span class="tag cn">国内</span><span class="tag due">剩 5 天</span>
+          </div>
+          <div class="rvendor">阶跃星辰 StepFun</div>
+          <div class="offer limited">
+            <div class="line1"><span class="hl">限时免费</span> · 输入/输出价格均标注免费</div>
+            <div class="line2">stepaudio-3-realtime-preview 与 stepaudio-3-chat-preview；同页其他模型按 Token / 字符计费。</div>
+          </div>
+          <div class="feats"><span>两个语音模型</span><span>截止 2026-09-27</span></div>
+        </div>
+        <div class="rmeta">
+          <div class="m"><div class="k">ELIGIBILITY</div><div class="v">StepFun 开放平台注册开发者</div></div>
+          <div class="m"><div class="k">STATUS</div><div class="v ok">✓ 已核验 2026-09-22</div></div>
+          <a class="go" href="#">获取优惠 →</a>
+        </div>
+      </article>
+
+      <!-- 已核验 + 赠送额度 -->
+      <article class="row verified">
+        <div class="idx">05</div>
+        <div class="rbody">
+          <div class="rtitle">
+            <h3><a href="#">Kimi 开放平台 新用户 15 元代金券</a></h3>
+            <span class="tag cn">国内</span><span class="tag cat">API服务</span>
+          </div>
+          <div class="rvendor">月之暗面 Moonshot AI</div>
+          <div class="offer credit">
+            <div class="line1"><span class="hl">15 元代金券</span> · 注册即赠</div>
+            <div class="line2">可用于体验 Kimi K3 等模型的 API 调用；完成实名认证后发放。</div>
+          </div>
+          <div class="feats"><span>需实名认证</span><span>控制台查余额</span></div>
+        </div>
+        <div class="rmeta">
+          <div class="m"><div class="k">ELIGIBILITY</div><div class="v">Kimi 开放平台新注册用户</div></div>
+          <div class="m"><div class="k">STATUS</div><div class="v ok">✓ 已核验 2026-09-22</div></div>
+          <a class="go" href="#">获取优惠 →</a>
+        </div>
+      </article>
+
+      <!-- 工具条目：明显弱化 -->
+      <article class="row tool">
+        <div class="idx">06</div>
+        <div class="rbody">
+          <div class="rtitle">
+            <h3><a href="#">NotebookLM</a></h3>
+            <span class="tag gl">国外</span><span class="tag cat">工具条目</span>
+          </div>
+          <div class="rvendor">Google · Chat with your documents and websites。</div>
+        </div>
+        <div class="rmeta">
+          <div class="m"><div class="k">SOURCE</div><div class="v">Futuretools</div></div>
+          <div class="m"><div class="k">UPDATED</div><div class="v auto">2026-09-22</div></div>
+          <a class="go weak" href="#">查看官方页面 →</a>
+        </div>
+      </article>
+
+    </div>
+
+    <footer>
+      本站不收录付费推广位 · 排序与推荐理由不出售<br>
+      优惠信息来自厂商官方页与公开折扣页，最终以官方页面为准
+    </footer>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>前端样稿对比 · AI 优惠聚合器</title>
+<style>
+  :root{--bg:#0f1115;--card:#171a21;--line:#262b35;--ink:#e9edf4;--ink2:#a6b0c0;--mut:#6d7789;--brand:#4361ee}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1280px;margin:0 auto;padding:40px 24px 70px}
+  h1{font-size:29px;font-weight:800;letter-spacing:-.6px}
+  h1 em{font-style:normal;color:#ff6b81}
+  .lede{color:var(--ink2);margin-top:12px;font-size:14.5px;max-width:820px}
+  .lede code{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:13px}
+  .note{margin-top:14px;background:var(--card);border:1px solid var(--line);border-left:3px solid #ffb454;
+        border-radius:0 10px 10px 0;padding:14px 16px;font-size:13.5px;color:var(--ink2)}
+  .note b{color:var(--ink)}
+
+  .list{margin-top:34px;display:grid;gap:14px}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;
+        display:grid;grid-template-columns:52px 1fr 300px;gap:20px;align-items:start;transition:border-color .15s}
+  .item:hover{border-color:#39424f}
+  .num{font-size:26px;font-weight:800;letter-spacing:-1px;color:var(--mut);font-variant-numeric:tabular-nums}
+  .item h2{font-size:19px;font-weight:750;letter-spacing:-.3px}
+  .item h2 a{color:inherit;text-decoration:none}
+  .item h2 a:hover{color:var(--brand)}
+  .item .tagline{color:var(--ink2);font-size:13.5px;margin-top:5px}
+  .item ul{margin-top:12px;list-style:none;display:grid;gap:5px}
+  .item li{font-size:13px;color:var(--ink2);padding-left:17px;position:relative}
+  .item li::before{content:"·";position:absolute;left:5px;color:var(--mut);font-weight:800}
+  .item li b{color:var(--ink);font-weight:600}
+  .side{display:flex;flex-direction:column;gap:9px}
+  .open{display:block;text-align:center;background:var(--brand);color:#fff;text-decoration:none;
+        font-weight:650;font-size:14px;padding:11px;border-radius:9px}
+  .open:hover{background:#3550d8}
+  .meta{font-size:12px;color:var(--mut);text-align:center;line-height:1.7}
+  .fit{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#000}
+  .fit .row{display:flex;justify-content:space-between;padding:6px 10px;font-size:11.5px;color:var(--ink2);border-bottom:1px solid var(--line)}
+  .fit .row:last-child{border-bottom:0}
+  .fit .row span:last-child{font-weight:600}
+  .yes{color:#3ddc97}.no{color:#6d7789}.part{color:#ffb454}
+
+  .pick{margin-top:34px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .pick h3{font-size:16px;font-weight:750}
+  .pick .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+  .pick .col{background:#12151b;border:1px solid var(--line);border-radius:10px;padding:14px}
+  .pick .col h4{font-size:13.5px;color:var(--ink);font-weight:700;margin-bottom:7px}
+  .pick .col p{font-size:12.5px;color:var(--ink2);line-height:1.7}
+  footer{margin-top:40px;text-align:center;color:var(--mut);font-size:12.5px;line-height:2}
+  @media(max-width:980px){.item{grid-template-columns:1fr}.num{font-size:20px}.pick .cols{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>前端样稿 · <em>4 个方向</em></h1>
+  <p class="lede">
+    都是<strong>纯静态展示稿</strong>——只有 CSS hover 效果，没有 JS、没有真实筛选与跳转。
+    用的是真实数据（<code>deals.json</code> 里的实际文案与数字），方便你判断版式扛不扛得住真实内容。
+  </p>
+
+  <div class="note">
+    <b>请注意每个样稿都在处理同一个难题：</b>百度千帆那 17 条的优惠文案<strong>完全一样</strong>，
+    只有模型名不同。四个稿子给了四种答案——分组标题（A）、分组行 + 续行弱化（B）、
+    合并成一条 + 模型名平铺（C）、折叠展开（D）。这一条的观感差异，基本就是这个站好不好看的关键。
+  </div>
+
+  <div class="list">
+
+    <div class="item">
+      <div class="num">A</div>
+      <div>
+        <h2><a href="001-清爽卡片.html" target="_blank">清爽卡片</a></h2>
+        <div class="tagline">现代化的信息卡片站，最接近当前版本的升级路径</div>
+        <ul>
+          <li><b>双列卡片</b>，每张卡完整自洽：优惠 → 描述 → 标签 → 页脚 → 全宽按钮</li>
+          <li><b>已核验用左侧绿色边条</b>，23 条人工核验一眼可辨</li>
+          <li>顶部 <b>4 个数字指标</b> + 快捷筛选 chip 行（含「只看已核验」）</li>
+          <li>优惠详情<b>提到描述之前</b>，红色强调块作为第一视觉焦点</li>
+          <li>同类条目用<b>分组标题</b>分隔，吸收重复文案</li>
+        </ul>
+      </div>
+      <div class="side">
+        <a class="open" href="001-清爽卡片.html" target="_blank">打开样稿 A</a>
+        <div class="fit">
+          <div class="row"><span>改动成本</span><span class="part">中</span></div>
+          <div class="row"><span>适合手机</span><span class="yes">好</span></div>
+          <div class="row"><span>一屏信息量</span><span class="part">中</span></div>
+          <div class="row"><span>重复数据</span><span class="part">分组标题</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="num">B</div>
+      <div>
+        <h2><a href="002-高密度清单.html" target="_blank">高密度清单</a></h2>
+        <div class="tagline">表格化信息工具，效率优先，一屏看十几条</div>
+        <ul>
+          <li><b>五列表格</b>：模型 / 优惠内容 / 适用条件 / 有效期 / 核验状态</li>
+          <li>横向 <b>厂商 facet 条</b>，把国内 12 家厂商摊开成一行，点击即筛</li>
+          <li>时效<b>独立成列</b>，临近截止直接标红「剩 5 天」</li>
+          <li>优惠类型用<b>左侧色条</b>区分：免费 / 额度 / 学生 / 限时</li>
+          <li>重复额度用<b>分组行 + 续行弱化</b>，17 条压成 4 行</li>
+        </ul>
+      </div>
+      <div class="side">
+        <a class="open" href="002-高密度清单.html" target="_blank">打开样稿 B</a>
+        <div class="fit">
+          <div class="row"><span>改动成本</span><span class="part">中高</span></div>
+          <div class="row"><span>适合手机</span><span class="part">需降级</span></div>
+          <div class="row"><span>一屏信息量</span><span class="yes">最高</span></div>
+          <div class="row"><span>重复数据</span><span class="yes">分组行</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="num">C</div>
+      <div>
+        <h2><a href="003-编辑精选.html" target="_blank">编辑精选</a></h2>
+        <div class="tagline">内容站/杂志感，有主张、有编排，最不像「聚合器」</div>
+        <ul>
+          <li><b>衬线标题 + 报纸式报头</b>，观感最独特，容易记住</li>
+          <li>顶部 <b>4 个主题入口</b>（免费额度 / 学生 / 非营利 / 限时），按需求分流</li>
+          <li><b>一张大头条卡</b>：左侧讲价值，右侧抬出额度/适用/有效期/领取方式</li>
+          <li>优惠陈述用<b>编辑体例</b>，关键数字放大成衬线大号</li>
+          <li>重复额度<b>合并成一条</b>，17 个模型名平铺在下方标签墙</li>
+        </ul>
+      </div>
+      <div class="side">
+        <a class="open" href="003-编辑精选.html" target="_blank">打开样稿 C</a>
+        <div class="fit">
+          <div class="row"><span>改动成本</span><span class="yes">低</span></div>
+          <div class="row"><span>适合手机</span><span class="yes">好</span></div>
+          <div class="row"><span>一屏信息量</span><span class="part">中</span></div>
+          <div class="row"><span>重复数据</span><span class="yes">合并</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="num">D</div>
+      <div>
+        <h2><a href="004-开发者控制台.html" target="_blank">开发者控制台</a></h2>
+        <div class="tagline">深色 + 等宽字体，面向开发者，工具感最强</div>
+        <ul>
+          <li><b>左侧固定侧栏</b>导航：<b>12 家国内厂商直接列出来</b>，点击即筛</li>
+          <li><b>深色配色</b>+等宽字体，优惠内容做成代码块质感</li>
+          <li>行式布局：序号 / 正文 / 右侧元数据列（适用、核验状态、按钮）</li>
+          <li>重复额度用<b>可折叠区块</b>展开 17 个模型名</li>
+          <li>工具条目整行弱化到 68% 透明度，不抢优惠注意力</li>
+        </ul>
+      </div>
+      <div class="side">
+        <a class="open" href="004-开发者控制台.html" target="_blank">打开样稿 D</a>
+        <div class="fit">
+          <div class="row"><span>改动成本</span><span class="no">最高</span></div>
+          <div class="row"><span>适合手机</span><span class="part">需重构</span></div>
+          <div class="row"><span>一屏信息量</span><span class="yes">高</span></div>
+          <div class="row"><span>重复数据</span><span class="yes">折叠</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="pick">
+    <h3>也可以混搭 —— 下面这几处是各稿里相对独立、可以单独摘出来的</h3>
+    <div class="cols">
+      <div class="col">
+        <h4>底子用 A 或 C</h4>
+        <p>卡片/编辑风对手机最友好，改动量也可控，适合作为主版式。</p>
+      </div>
+      <div class="col">
+        <h4>摘 B 的厂商 facet 条</h4>
+        <p>国内 12 家厂商是我们相对同类站点最硬的差异，横向一条就能暴露出来。</p>
+      </div>
+      <div class="col">
+        <h4>摘 D 的深色主题</h4>
+        <p>深色可以作为独立开关，不必替换主版式；开发者受众对深色偏好明显。</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    样稿仅供选风格，均为静态展示 · 数据取自本站 deals.json 真实文案<br>
+    选好方向后我再出正式方案（含改动点与验收标准）
+  </footer>
+</div>
+</body>
+</html>

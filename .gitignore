@@ -6,3 +6,11 @@ screenshot.png
 
 # 前端样稿的预览截图（不入库）
 mockups/**/.preview/
+
+# 设计稿目录里的临时快照与自动备份：不是设计史的一部分，不入库
+mockups/_*.txt
+mockups/_*.json
+mockups/.zh-backup/
+
+# 参考站拆解证据里的截图：可重新生成且体积大（19 站约 45 MB），只入库结构与报告
+research/_raw/**/shots/
