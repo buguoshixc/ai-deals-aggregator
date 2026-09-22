@@ -32,13 +32,16 @@ const MIME = {
   '.svg': 'image/svg+xml', '.png': 'image/png', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8'
 };
 
-/** 极简静态服务器：只服务 dist/，避免依赖外部包 */
+/** 极简静态服务器：只服务 dist/，避免依赖外部包。
+ *  必须像真实静态托管那样把目录解析成 index.html —— 独立详情页的 URL 是
+ *  `deal/<id>/`，早先这里直接对目录返回 404，于是「本地 404、线上正常」的假失败。 */
 function serve(dir) {
   return new Promise(resolve => {
     const server = http.createServer((req, res) => {
       const urlPath = decodeURIComponent(req.url.split('?')[0]);
       const rel = urlPath === '/' ? 'index.html' : urlPath.replace(/^\/+/, '');
-      const file = path.join(dir, rel);
+      let file = path.join(dir, rel);
+      if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
       if (!file.startsWith(dir) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
         res.writeHead(404).end('not found');
         return;
@@ -889,6 +892,93 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }));
   check('结构化数据含 WebSite 节点', ldTypes.includes('WebSite') && ldTypes.includes('Organization'),
     ldTypes.join(' / '));
+
+  console.log('\n=== 15) 独立详情页 ===');
+  const homeLink = await page.evaluate(() => {
+    const card = document.querySelector('article.g');
+    const titleLink = card.querySelector('.gt h3 a');
+    const cta = card.querySelector('.meta .go');
+    return {
+      titleHref: titleLink ? titleLink.getAttribute('href') : '',
+      titleBlank: titleLink ? titleLink.target : '',
+      ctaHref: cta ? cta.getAttribute('href') : '',
+      ctaBlank: cta ? cta.target : ''
+    };
+  });
+  check('首页标题链接指向站内详情页',
+    /^deal\/[0-9a-f]+\/$/.test(homeLink.titleHref) && homeLink.titleBlank !== '_blank',
+    `${homeLink.titleHref}（target=${homeLink.titleBlank || '无'}）`);
+  check('首页 CTA 仍直达厂商官方页',
+    /^https?:/.test(homeLink.ctaHref) && homeLink.ctaBlank === '_blank',
+    `${String(homeLink.ctaHref).slice(0, 56)}（target=${homeLink.ctaBlank}）`);
+
+  const detailUrl = new URL(homeLink.titleHref, base).href;
+  const errorsBeforeDetail = errors.length;
+  const externalBeforeDetail = externalRequests.length;
+  await page.goto(detailUrl, { waitUntil: 'load' });
+  await page.waitForTimeout(300);
+  const detail = await page.evaluate(() => {
+    const pane = document.querySelector('.dpane');
+    const canonical = document.querySelector('link[rel="canonical"]');
+    return {
+      heading: (document.querySelector('.dpane h2') || {}).textContent || '',
+      canonical: canonical ? canonical.href : '',
+      crumbs: document.querySelectorAll('.crumb a, .crumb span').length,
+      back: Boolean(document.querySelector('.jumpback')),
+      paneChars: pane ? pane.innerText.replace(/\s+/g, ' ').trim().length : 0,
+      official: [...document.querySelectorAll('.dact a')].filter(a => /^https?:/.test(a.href)).length,
+      ld: document.querySelectorAll('script[type="application/ld+json"]').length
+    };
+  });
+  check('详情页有标题与面包屑', Boolean(detail.heading) && detail.crumbs >= 3,
+    `${detail.heading.slice(0, 26)} · 面包屑 ${detail.crumbs} 段 · 正文 ${detail.paneChars} 字符`);
+  // canonical 用的是**生产域名**（SITE_URL）。这个站是 GitHub 项目页，
+  // canonical 路径带 `/ai-deals-aggregator/` 前缀，而本地验收服务在根路径下，
+  // 所以判据是「当前路径是 canonical 路径的后缀」——本地与线上都成立。
+  const canonicalPath = (() => { try { return new URL(detail.canonical).pathname; } catch (e) { return ''; } })();
+  const detailPath = new URL(detailUrl).pathname;
+  check('详情页 canonical 自指', Boolean(canonicalPath) && canonicalPath.endsWith(detailPath),
+    `${detail.canonical}（当前路径 ${detailPath}）`);
+  check('详情页有返回入口与官方链接', detail.back && detail.official >= 1,
+    `返回入口=${detail.back} · 官方链接 ${detail.official} 个`);
+  check('详情页有结构化数据', detail.ld >= 2, `${detail.ld} 段`);
+  check('详情页没有 JS 错误', errors.length === errorsBeforeDetail, `${errors.length - errorsBeforeDetail} 个`);
+  check('详情页没有外部请求', externalRequests.length === externalBeforeDetail,
+    externalRequests.slice(externalBeforeDetail).slice(0, 2).join(', ') || '0 个');
+
+  // 关掉 JS 再读一次：内容必须仍在——这是「预渲染」最硬的可验证定义
+  const noJsContext = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+  const noJsPage = await noJsContext.newPage();
+  await noJsPage.goto(detailUrl, { waitUntil: 'load' });
+  const noJsDetail = await noJsPage.evaluate(() => ({
+    chars: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0,
+    heading: (document.querySelector('.dpane h2') || {}).textContent || '',
+    official: [...document.querySelectorAll('a')].filter(a => /^https?:/.test(a.getAttribute('href') || '')).length
+  }));
+  await noJsContext.close();
+  check('详情页不执行 JS 也能读到内容',
+    noJsDetail.chars > 400 && Boolean(noJsDetail.heading) && noJsDetail.official >= 1,
+    `正文 ${noJsDetail.chars} 字符 · 标题「${noJsDetail.heading.slice(0, 22)}」· 官方链接 ${noJsDetail.official} 个`);
+
+  // 主题沿用首页的选择（同一套 localStorage 约定）
+  await page.evaluate(() => { try { localStorage.setItem('dsh.theme', 'dark'); } catch (e) {} });
+  await page.reload({ waitUntil: 'load' });
+  const detailDark = await page.evaluate(() => {
+    const pressed = document.querySelector('#themeSeg [aria-pressed="true"]');
+    return {
+      attr: document.documentElement.getAttribute('data-theme'),
+      pressed: pressed ? pressed.dataset.themeValue : null,
+      bodyBg: getComputedStyle(document.body).backgroundColor
+    };
+  });
+  check('详情页沿用首页的主题选择',
+    detailDark.attr === 'dark' && detailDark.pressed === 'dark',
+    `data-theme=${detailDark.attr} · 选中「${detailDark.pressed}」· body=${detailDark.bodyBg}`);
+  await page.evaluate(() => { try { localStorage.removeItem('dsh.theme'); } catch (e) {} });
+
+  await page.goto(base, { waitUntil: 'load' });
+  await page.waitForSelector('article.g', { timeout: 15000 });
+  await page.waitForTimeout(300);
 
   console.log('\n=== 10) 请求与错误 ===');
   check('没有外部请求（无 CDN 热链）', externalRequests.length === 0,
