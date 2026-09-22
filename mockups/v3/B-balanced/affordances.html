@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>方案 B · 均衡 — 状态、订阅与纠错入口</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<style>
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .demohead { max-width: var(--maxW); margin: 0 auto; padding: var(--s4) var(--s4) 0; }
+  .demohead h1 { font-size: 22px; font-weight: 700; }
+  .demohead p { color: var(--mut); font-size: var(--fs-md); margin-top: 6px; max-width: 900px; }
+  .demohead p b { color: var(--ink); }
+  .anno { display: inline-block; font-size: var(--fs-xs); color: var(--mut); border: 1px dashed var(--line); border-radius: 999px; padding: 2px 9px; margin-right: 6px; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要内容</a>
+<input class="vh" type="radio" name="theme" id="theme-auto" checked>
+<input class="vh" type="radio" name="theme" id="theme-light">
+<input class="vh" type="radio" name="theme" id="theme-dark">
+<header class="top">
+  <div class="topin">
+    <a class="brand" href="../index.html"><span class="mark">AI</span><span class="btxt"><b>AI 优惠<em>聚合器</em></b><small>MOCKUP v3 · B 附属</small></span></a>
+    <div class="search"><span aria-hidden="true">⌕</span><input type="search" placeholder="搜索模型、厂商或优惠…" aria-label="搜索"></div>
+    <div class="seg" role="group" aria-label="主题">
+      <label for="theme-auto">跟随系统</label><label for="theme-light">浅色</label><label for="theme-dark">深色</label>
+    </div>
+    <div class="topstat"><b>80</b> 条优惠 · 已核验 32</div>
+  </div>
+</header>
+<p class="note">这一页看<b>四个状态</b>（空 / 无结果 / 加载骨架 / 出错）与三个零依赖出口：订阅（<code>feed.xml</code> + <code>feed.json</code>）、纠错入口（预填 GitHub Issue）、手机端紧凑视图。</p>
+<main id="main" class="wrap">
+
+<section class="demohead" style="padding:0 0 var(--s3)"><h1>状态与出口</h1>
+<p>四个状态都必须成立，且<b>无 JS 时页面仍能读到全部预渲染正文</b>——所以状态只覆盖列表区，不动正文。</p></section>
+
+<div class="grid">
+  <div class="state"><b>没有匹配的优惠</b>试试更短的关键词，或清掉筛选条件。<br><a href="#">清空筛选</a></div>
+  <div class="state" style="border-style:solid"><b>数据加载失败</b>页面已按上次构建的静态内容展示（不执行 JS 也能用）。<br><a href="#">重新加载</a></div>
+  <div class="skel"><i></i><i></i><i></i></div>
+</div>
+
+<section class="demohead" style="padding:var(--s4) 0 var(--s3)"><h1 style="font-size:18px">三个出口（全部零依赖）</h1>
+<p>
+  <span class="anno">feed.xml（RSS 2.0）</span><span class="anno">feed.json（JSON Feed 1.1）</span><span class="anno">GitHub Issue 纠错模板</span>
+  订阅与纠错都是<b>构建期生成的静态文件/链接</b>，不新增任何外部请求，也不需要后端。
+</p></section>
+
+<div class="grid">
+  <article class="g" data-tier="1" data-verified="0"><span class="tiernum" aria-hidden="true">1</span><div class="gh"><div class="logos"><span class="lg"><img src="../../../assets/logos/zhipu.png" alt="" loading="lazy" onerror="this.parentNode.textContent='ZH'"></span></div><div class="gt"><h3><a href="https://docs.bigmodel.cn/cn/guide/models/free/glm-4.7-flash">GLM-4.7-Flash 免费模型</a></h3><div class="vendor">智谱AI · 对话模型</div></div><span class="tg cn">国内</span></div><div class="of"><span class="bar"></span><div class="tx"><b>官方模型列表标注为免费模型，调用价格 0 元</b> · 免费文本模型 延续 GLM-4.7 基座的通用能力</div></div><div class="feats"><span>所有注册开发者（需实名认证开通）</span></div><div class="meta"><span class="sp"><a class="cta ghost" href="#">信息有误</a><a class="cta" href="https://docs.bigmodel.cn/cn/guide/models/free/glm-4.7-flash">获取 →</a></span></div></article><article class="g" data-tier="1" data-verified="0"><span class="tiernum" aria-hidden="true">1</span><div class="gh"><div class="logos"><span class="lg"><img src="../../../assets/logos/zhipu.png" alt="" loading="lazy" onerror="this.parentNode.textContent='ZH'"></span></div><div class="gt"><h3><a href="https://docs.bigmodel.cn/cn/guide/models/free/glm-4.5-flash">GLM-4.5-Flash 免费模型</a></h3><div class="vendor">智谱AI · 对话模型</div></div><span class="tg cn">国内</span></div><div class="of"><span class="bar"></span><div class="tx"><b>官方模型列表标注为免费模型，调用价格 0 元</b> · 免费文本模型 支持最长 128K 的上下文处理</div></div><div class="feats"><span>所有注册开发者（需实名认证开通）</span></div><div class="meta"><span class="sp"><a class="cta ghost" href="#">信息有误</a><a class="cta" href="https://docs.bigmodel.cn/cn/guide/models/free/glm-4.5-flash">获取 →</a></span></div></article><article class="g" data-tier="1" data-verified="0"><span class="tiernum" aria-hidden="true">1</span><div class="gh"><div class="logos"><span class="lg"><img src="../../../assets/logos/zhipu.png" alt="" loading="lazy" onerror="this.parentNode.textContent='ZH'"></span></div><div class="gt"><h3><a href="https://docs.bigmodel.cn/cn/guide/models/free/glm-4.6v-flash">GLM-4.6V-Flash 免费模型</a></h3><div class="vendor">智谱AI · 对话模型</div></div><span class="tg cn">国内</span></div><div class="of"><span class="bar"></span><div class="tx"><b>官方模型列表标注为免费模型，调用价格 0 元</b> · 免费模型，支持视觉推理</div></div><div class="feats"><span>所有注册开发者（需实名认证开通）</span></div><div class="meta"><span class="sp"><a class="cta ghost" href="#">信息有误</a><a class="cta" href="https://docs.bigmodel.cn/cn/guide/models/free/glm-4.6v-flash">获取 →</a></span></div></article>
+</div>
+</main>
+<footer><div class="wrap" style="padding-bottom:0">静态展示稿 · 数据取自 <code>dist/deals.json</code> 的真实条目 · 只有 CSS，没有交互脚本（仅图片加载失败时有一处内联兜底）<br>
+排序与推荐理由不出售 · 全部链接指向厂商官方页</div></footer>
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+/* ============================================================================
+   方案 A/B/C 共用的 token 层 —— 这一层就是提案本身
+   ----------------------------------------------------------------------------
+   来源与推导全部写在 research/DESIGN-TOKENS.md，这里只放结论值。
+   三处与原站（index.html :root）不同的关键点：
+     1. --mut 由 #8c94a6 改为 #6b7280 —— 原值在 --bg 上只有 2.84:1，在 --card 上 3.04:1，
+        而它承载的是 11px 的 .meta/.vendor 文字（实测 400 个文本节点里 100 条不达标）。
+        #6b7280 在 --card 上 4.83:1、在 --bg 上 4.50:1，两处都过 AA。
+     2. 暗色不是「亮色反相」，而是照标杆的三件套：底 / 面 / 发丝环
+        （linear: #08090a / #0f1011 / rgba(255,255,255,.08)；raycast: #08090c / rgba(255,255,255,.05) / #434345）。
+        色相保留、饱和降低、亮度提高，档位语义不变。
+     3. 动效只有 3 档时长 + 2 条曲线，全部来自标杆实测频次最高的取值。
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* 面与字 --------------------------------------------------------------- */
+  --bg: #f6f7f9;
+  --card: #fff;
+  --ink: #0f172a;
+  --ink2: #495066;
+  --mut: #6b7280;          /* 承载文字：--card 4.83:1 / --bg 4.50:1 */
+  --mut-deco: #8c94a6;     /* 原 --mut 降级为纯装饰（分隔、图标），不承载文字 */
+  --line: #e6e9ef;
+  --line2: #f0f2f6;
+  --ring: rgba(15, 23, 42, .07);   /* 发丝环：替代大投影做层级 */
+
+  /* 品牌与语义 ----------------------------------------------------------- */
+  --brand: #3b5bfd;
+  --deal: #d92d4b;
+  --deal-ink: #9f1239;     /* 玫红底（--dealsoft）上的文字：--deal 本身只有 4.32:1，够不到 4.5 */
+  --dealsoft: #fff1f4;
+  --cn: #0b7a63;
+  --cnbg: #e8f7f2;
+  --gl: #2348c4;
+  --glbg: #eef3ff;
+  --ok: #0b7a63;
+  --warn: #c2410c;
+
+  /* 力度档位（语义固定：1 完全免费 → 4 折扣促销） ------------------------ */
+  --t1: #0e9f6e;
+  --t2: #7c3aed;
+  --t3: #2563eb;
+  --t4: #c2410c;
+  --t5: #94a3b8;
+  /* 档位色块上的**文字**颜色：亮色档位配深字、深色档位配白字。
+     实测：9px 白字压 #0e9f6e 只有 3.38:1、压 #94a3b8 只有 2.57:1 —— 都不到 4.5。
+     一个颜色一个「on 色」而不是全局一个白字，是这套 token 里最容易漏的一处。 */
+  --on-t1: #05291c;
+  --on-t2: #fff;
+  --on-t3: #fff;
+  --on-t4: #fff;
+  --on-t5: #1f2937;
+  /* 实心强调块（主 CTA / 品牌块）上的文字色：亮色品牌配白字，暗色品牌偏亮、必须配深字 */
+  --on-accent: #fff;
+  --mark-from: #4f6bff;
+  --mark-to: #3b5bfd;
+
+  /* 排版：6 级阶梯，正文抬到 14px（对齐 openrouter / artificialanalysis 一档） */
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 13px;
+  --fs-base: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 19px;
+  --lh: 1.5;
+
+  /* 形状与间距：4 的倍数体系 */
+  --r-sm: 6px;
+  --r: 10px;
+  --r-dlg: 12px;
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+
+  /* 动效：时长与曲线均取自标杆出现次数最多的取值（见 DESIGN-TOKENS §5） */
+  --t-fast: 100ms;                                   /* linear .1s 一档 */
+  --t-base: 150ms;                                   /* Tailwind 默认，跨站最多 */
+  --t-slow: 250ms;                                   /* openrouter expo-out 一档 */
+  --e-std: cubic-bezier(.4, 0, .2, 1);
+  --e-out: cubic-bezier(.22, 1, .36, 1);
+
+  /* 层级：环 + 微投影，不再用 18px 扩散的大投影 */
+  --elev-hover: 0 0 0 1px var(--ring), 0 2px 8px -4px rgba(15, 23, 42, .18);
+  --elev-tile: 0 1px 3px -1px rgba(15, 23, 42, .28);
+
+  --topH: 58px;
+  --facetH: 41px;
+  --cardH: 192px;
+  --rowH: 46px;
+  --maxW: 1420px;
+}
+
+/* 暗色：底 / 面 / 环三件套；logo tile 保留浅底，保证 30+ 家第三方图形仍可辨识 */
+:root[data-theme="dark"],
+:root:has(#theme-dark:checked) {
+  color-scheme: dark;
+
+  --bg: #0b0d10;
+  --card: #14171c;
+  --ink: #e8ecf2;
+  --ink2: #b6bec9;
+  --mut: #8d97a5;          /* 暗底 6.07:1 */
+  --mut-deco: #6b7280;
+  --line: #242a33;
+  --line2: #1c2129;
+  --ring: rgba(255, 255, 255, .07);
+
+  --brand: #7c93ff;
+  --deal: #ff6b81;
+  --deal-ink: #ff8f9f;
+  --dealsoft: #2a1418;
+  --cn: #3ddc97;
+  --cnbg: #10231d;
+  --gl: #8fb0ff;
+  --glbg: #141c33;
+  --ok: #3ddc97;
+  --warn: #ffab6b;
+
+  --t1: #3ddc97;
+  --t2: #b18cff;
+  --t3: #7aa2ff;
+  --t4: #ffab6b;
+  --t5: #8d97a5;
+  /* 暗色下档位色整体提亮，所以**全部**改成深色文字（这就是「暗色不是自动反色」的实证：
+     同一处角标，亮色主题要 3 种 on 色，暗色主题统一 1 种） */
+  --on-t1: #0b0d10;
+  --on-t2: #0b0d10;
+  --on-t3: #0b0d10;
+  --on-t4: #0b0d10;
+  --on-t5: #0b0d10;
+  --on-accent: #0b0d10;      /* 白字压 #7c93ff 只有 2.81:1，深字 6.85:1 */
+  --mark-from: #3b5bfd;
+  --mark-to: #2b45d6;        /* 品牌块在暗色下压深，白字才能保持 5:1 以上 */
+
+  --elev-hover: 0 0 0 1px var(--ring), 0 4px 14px -6px rgba(0, 0, 0, .7);
+  --elev-tile: 0 0 0 1px rgba(255, 255, 255, .08);
+}
+
+/* 系统偏好：只在用户没有手动选过时生效（手动选择写入 data-theme） */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not(:has(#theme-light:checked)) {
+    color-scheme: dark;
+    --bg: #0b0d10; --card: #14171c; --ink: #e8ecf2; --ink2: #b6bec9; --mut: #8d97a5;
+    --line: #242a33; --line2: #1c2129; --ring: rgba(255, 255, 255, .07);
+    --brand: #7c93ff; --deal: #ff6b81; --deal-ink: #ff8f9f; --dealsoft: #2a1418;
+    --cn: #3ddc97; --cnbg: #10231d; --gl: #8fb0ff; --glbg: #141c33; --ok: #3ddc97; --warn: #ffab6b;
+    --t1: #3ddc97; --t2: #b18cff; --t3: #7aa2ff; --t4: #ffab6b; --t5: #8d97a5;
+    --on-t1: #0b0d10; --on-t2: #0b0d10; --on-t3: #0b0d10; --on-t4: #0b0d10; --on-t5: #0b0d10;
+    --on-accent: #0b0d10; --mark-from: #3b5bfd; --mark-to: #2b45d6;
+    --elev-hover: 0 0 0 1px var(--ring), 0 4px 14px -6px rgba(0, 0, 0, .7);
+    --elev-tile: 0 0 0 1px rgba(255, 255, 255, .08);
+  }
+}
+
+/* 动效可关：系统偏好优先，任何过渡都不再是真动效 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

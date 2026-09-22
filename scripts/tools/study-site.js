@@ -62,6 +62,7 @@ function usage(message) {
   console.error('   --proxy=<url>     浏览器代理，如 http://127.0.0.1:7890');
   console.error('   --wait=文案A|文案B 显式等待目标文案出现（SPA 必用；不要用 networkidle）');
   console.error(`   --settle=<ms>     渲染稳定后再等的毫秒数（缺省 ${SETTLE_WAIT}）`);
+  console.error('   --scheme=light|dark  强制 prefers-color-scheme（验证暗色模式用）');
   console.error('   --force            robots.txt 不允许时仍然抓取（仅限你确认可抓的站点）');
   console.error('   --no-shots         不截图（只要结构化证据时更快）');
   console.error('   --mobile-only      只截手机首屏');
@@ -74,6 +75,8 @@ if (!/^https?:\/\//i.test(target)) usage(`URL 必须是 http(s)：${target}`);
 const proxy = opt('proxy');
 const needles = String(opt('wait', '')).split('|').map(s => s.trim()).filter(Boolean);
 const settleWait = Math.max(0, Number(opt('settle', SETTLE_WAIT)) || SETTLE_WAIT);
+// 让浏览器按指定偏好渲染：验证暗色模式与 prefers-reduced-motion 时必须能强制
+const scheme = ['light', 'dark'].includes(opt('scheme')) ? opt('scheme') : null;
 const outDir = path.resolve(ROOT, opt('out', path.join('research', '_raw', hostSlug(target))));
 const shots = !has('no-shots');
 const mobileOnly = has('mobile-only');
@@ -431,7 +434,9 @@ function analyzePage() {
   for (const el of elements.slice(0, CAP)) {
     if (samples.length >= 400) break;
     if (!visible(el)) continue;
-    const own = [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim().length >= 2);
+    // 注意：单个字符也采样（档位号「1」这类就一个字符）。早期版本要求 ≥2 个字符，
+    // 结果档位角标这种最容易出问题的元素被整类漏掉——门禁自己不能有盲区。
+    const own = [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim().length >= 1);
     if (!own) continue;
     const s = getComputedStyle(el);
     const fg = parseColor(s.color);
@@ -495,12 +500,39 @@ function outlinePage() {
       depth++;
     }
     if (!interesting && children.length > 10) {
+      // 子节点很多的容器（SPA 的 body / #app、列表容器）：不是一头扎进叶子节点，
+      // 但也不能直接跳过——那样骨架只剩一两层（ai-bot.cn 上实测只剩 10 行）。
+      // 折中：打印子节点数，再只往下走「自己还有结构」的那几个子节点。
       lines.push(`${'  '.repeat(depth)}… ${children.length} children (${tag})`);
+      const structural = children.filter(child => child.children.length >= 3).slice(0, 8);
+      for (const child of structural) walk(child, depth + 1);
       return;
     }
     for (const child of children.slice(0, 60)) walk(child, depth);
   };
   if (document.body) walk(document.body, 0);
+
+  // 兜底：整页都是 div 的站点（Tailwind 类名、几乎没有语义标签）走不出层级，
+  // 这时按「渲染面积」列出最大的 40 个元素 —— 至少能看出页面由哪几块组成。
+  // 触发条件：正常骨架不足 25 行（vercel / notion / toolify 这类页面实测就是这种情况）。
+  if (lines.length < 25 && document.body) {
+    const big = [...document.querySelectorAll('body *')]
+      .map(el => {
+        const r = el.getBoundingClientRect();
+        return { el, w: Math.round(r.width), h: Math.round(r.height), area: r.width * r.height };
+      })
+      .filter(item => item.w >= 40 && item.h >= 20)
+      .sort((a, b) => b.area - a.area)
+      .slice(0, 40);
+    lines.push('', '## 面积兜底：渲染面积最大的 40 个元素（语义层级不足时看页面由哪几块组成）');
+    for (const item of big) {
+      const cls = typeof item.el.className === 'string' && item.el.className.trim()
+        ? '.' + item.el.className.trim().split(/\s+/).slice(0, 3).join('.')
+        : '';
+      lines.push(`${String(item.w).padStart(5)}×${String(item.h).padStart(5)}  <${item.el.tagName.toLowerCase()}${cls}>`);
+    }
+  }
+
   const freq = Object.entries(classFreq).sort((a, b) => b[1] - a[1]).slice(0, 45);
   return { outline: lines.join('\n'), classFrequency: freq };
 }
@@ -595,7 +627,7 @@ async function main() {
   const browser = await launchBrowser();
   try {
     if (!mobileOnly) {
-      const desktop = await browser.newContext({ userAgent: DEFAULT_UA, locale: 'zh-CN', viewport: DESKTOP });
+      const desktop = await browser.newContext({ userAgent: DEFAULT_UA, locale: 'zh-CN', viewport: DESKTOP, colorScheme: scheme || undefined });
       results.push(
         await renderInto(desktop, target, {
           viewport: DESKTOP,
@@ -609,6 +641,7 @@ async function main() {
       userAgent: DEFAULT_UA,
       locale: 'zh-CN',
       viewport: MOBILE,
+      colorScheme: scheme || undefined,
       isMobile: true,
       hasTouch: true,
       deviceScaleFactor: 2

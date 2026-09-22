@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>方案 A · 保守 — 只动视觉层</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<style>
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .demohead { max-width: var(--maxW); margin: 0 auto; padding: var(--s4) var(--s4) 0; }
+  .demohead h1 { font-size: 22px; font-weight: 700; }
+  .demohead p { color: var(--mut); font-size: var(--fs-md); margin-top: 6px; max-width: 900px; }
+  .demohead p b { color: var(--ink); }
+  .anno { display: inline-block; font-size: var(--fs-xs); color: var(--mut); border: 1px dashed var(--line); border-radius: 999px; padding: 2px 9px; margin-right: 6px; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要内容</a>
+<input class="vh" type="radio" name="theme" id="theme-auto" checked>
+<input class="vh" type="radio" name="theme" id="theme-light">
+<input class="vh" type="radio" name="theme" id="theme-dark">
+<header class="top">
+  <div class="topin">
+    <a class="brand" href="../index.html"><span class="mark">AI</span><span class="btxt"><b>AI 优惠<em>聚合器</em></b><small>MOCKUP v3 · A 保守</small></span></a>
+    <div class="search"><span aria-hidden="true">⌕</span><input type="search" placeholder="搜索模型、厂商或优惠…" aria-label="搜索"></div>
+    <div class="seg" role="group" aria-label="主题">
+      <label for="theme-auto">跟随系统</label><label for="theme-light">浅色</label><label for="theme-dark">深色</label>
+    </div>
+    <div class="topstat"><b>80</b> 条优惠 · 已核验 32</div>
+  </div>
+</header>
+<p class="note">这一页要看的只有一件事：<b>同一批卡片，换掉 token 层之后是什么样</b>。右上角切「跟随系统 / 浅色 / 深色」——深色不是把浅色反过来，而是底 / 面 / 发丝环三件套（见 <code>shared/tokens.css</code> 注释）。缩到 760px 以下还能看手机端。</p>
+<main id="main" class="wrap">
+
+<section class="demohead" style="padding:0 0 var(--s3)">
+  <h1>方案 A · 保守：视觉层重做，信息架构与 URL 一个都不碰</h1>
+  <p>卡片密度、筛选、折叠、链接指向全部保持线上现状；改的只有颜色、字阶、圆角、层级与动效。下面是同一批真实数据。</p>
+</section>
+<div class="band t1"><span class="n">1</span><b>完全免费</b><span class="line"></span><span>扫一眼就知道这一档不用掏钱</span></div>
+<div class="grid"><article class="g" data-tier="1" data-verified="0"><span class="tiernum" aria-hidden="true">1</span><div class="gh"><div class="logos"><span class="lg"><img src="../../../assets/logos/zhipu.png" alt="" loading="lazy" onerror="this.parentNode.textContent='ZH'"></span></div><div class="gt"><h3><a href="https://docs.bigmodel.cn/cn/guide/models/free/glm-4.7-flash">GLM-4.7-Flash 免费模型</a></h3><div class="vendor">智谱AI · 对话模型</div></div><span class="tg cn">国内</span></div><div class="of"><span class="bar"></span><div class="tx"><b>官方模型列表标注为免费模型，调用价格 0 元</b> · 免费文本模型 延续 GLM-4.7 基座的通用能力</div></div><div class="feats"><span>所有注册开发者（需实名认证开通）</span></div><div class="meta"><span class="sp"><a class="cta ghost" href="#">信息有误</a><a class="cta" href="https://docs.bigmodel.cn/cn/guide/models/free/glm-4.7-flash">获取 →</a></span></div></article><article class="g" data-tier="1" data-verified="0"><span class="tiernum" aria-hidden="true">1</span><div class="gh"><div class="logos"><span class="lg"><img src="../../../assets/logos/zhipu.png" alt="" loading="lazy" onerror="this.parentNode.textContent='ZH'"></span></div><div class="gt"><h3><a href="https://docs.bigmodel.cn/cn/guide/models/free/glm-4.5-flash">GLM-4.5-Flash 免费模型</a></h3><div class="vendor">智谱AI · 对话模型</div></div><span class="tg cn">国内</span></div><div class="of"><span class="bar"></span><div class="tx"><b>官方模型列表标注为免费模型，调用价格 0 元</b> · 免费文本模型 支持最长 128K 的上下文处理</div></div><div class="feats"><span>所有注册开发者（需实名认证开通）</span></div><div class="meta"><span class="sp"><a class="cta ghost" href="#">信息有误</a><a class="cta" href="https://docs.bigmodel.cn/cn/guide/models/free/glm-4.5-flash">获取 →</a></span></div></article><article class="g" data-tier="1" data-verified="0"><span class="tiernum" aria-hidden="true">1</span><div class="gh"><div class="logos"><span class="lg"><img src="../../../assets/logos/zhipu.png" alt="" loading="lazy" onerror="this.parentNode.textContent='ZH'"></span></div><div class="gt"><h3><a href="https://docs.bigmodel.cn/cn/guide/models/free/glm-4.6v-flash">GLM-4.6V-Flash 免费模型</a></h3><div class="vendor">智谱AI · 对话模型</div></div><span class="tg cn">国内</span></div><div class="of"><span class="bar"></span><div class="tx"><b>官方模型列表标注为免费模型，调用价格 0 元</b> · 免费模型，支持视觉推理</div></div><div class="feats"><span>所有注册开发者（需实名认证开通）</span></div><div class="meta"><span class="sp"><a class="cta ghost" href="#">信息有误</a><a class="cta" href="https://docs.bigmodel.cn/cn/guide/models/free/glm-4.6v-flash">获取 →</a></span></div></article></div>
+<div class="band t2"><span class="n">2</span><b>免费额度</b><span class="line"></span><span>新用户额度 / 免费模型</span></div>
+<div class="grid"><article class="g" data-tier="2" data-verified="1"><span class="tiernum" aria-hidden="true">2</span><div class="gh"><div class="logos"><span class="lg">CO</span></div><div class="gt"><h3><a href="https://docs.coze.cn/coze_pro_credits">扣子 Coze 新用户首次注册赠送 1500 活动积分</a></h3><div class="vendor">扣子 Coze · 智能体</div></div><span class="tg cn">国内</span></div><div class="of"><span class="bar"></span><div class="tx"><b>官方积分规则页</b> · 扣子个人版新用户首次注册一次性赠送 1500 活动积分（个人免费版即可参与），积分有效期 30 天，可抵扣扣子任务、扣子编程、Token 与插件调用等消耗。</div></div><div class="feats"><span>注册即送 1500 积分</span><span>有效期 30 天</span><span>可抵扣 Token</span></div><div class="meta"><span class="sp"><a class="cta ghost" href="#">信息有误</a><a class="cta" href="https://docs.coze.cn/coze_pro_credits">获取 →</a></span></div></article><article class="g" data-tier="2" data-verified="1"><span class="tiernum" aria-hidden="true">2</span><div class="gh"><div class="logos"><span class="lg">CO</span></div><div class="gt"><h3><a href="https://docs.coze.cn/guides_coze_points_activity_rules">扣子 Coze 个人版每日登录赠送 1500 活动积分</a></h3><div class="vendor">扣子 Coze · 智能体</div></div><span class="tg cn">国内</span></div><div class="of"><span class="bar"></span><div class="tx"><b>官方活动规则</b> · 扣子个人版用户每日成功登录即可获赠 1500 活动积分，每个自然日每个账号限领一次；每次发放的积分有效期 1 天，从发放之时起算，每日积分有效期独立计算、可累计使用。</div></div><div class="feats"><span>每日登录领 1500 积分</span><span>当天有效可累计</span><span>个人免费版可用</span></div><div class="meta"><span class="sp"><a class="cta ghost" href="#">信息有误</a><a class="cta" href="https://docs.coze.cn/guides_coze_points_activity_rules">获取 →</a></span></div></article><article class="g" data-tier="2" data-verified="1"><span class="tiernum" aria-hidden="true">2</span><div class="gh"><div class="logos"><span class="lg">CO</span></div><div class="gt"><h3><a href="https://docs.coze.cn/coze_pro_model_fee">扣子 Coze 部分模型限时免费 每模型 100 次/天</a></h3><div class="vendor">扣子 Coze · 对话模型</div></div><span class="tg cn">国内</span></div><div class="of"><span class="bar"></span><div class="tx"><b>官方模型费用文档</b> · Kimi-8k/32k/128k、阶跃星辰等模型限时免费，限额使用、每个模型 100 次/天，不扣减积分；另有智能体调用 100 次/天的免费额度。</div></div><div class="feats"><span>Kimi 等模型限时免费</span><span>每模型 100 次/天</span><span>不扣减积分</span></div><div class="meta"><span class="sp"><a class="cta ghost" href="#">信息有误</a><a class="cta" href="https://docs.coze.cn/coze_pro_model_fee">获取 →</a></span></div></article></div>
+<div class="band t3"><span class="n">3</span><b>身份优惠</b><span class="line"></span><span>学生 / 教师 / 非营利</span></div>
+<div class="grid"><article class="g" data-tier="2" data-verified="1"><span class="tiernum" aria-hidden="true">2</span><div class="gh"><div class="logos"><span class="lg"><img src="../../../assets/logos/runway.png" alt="" loading="lazy" onerror="this.parentNode.textContent='RU'"></span></div><div class="gt"><h3><a href="https://runway.com/pricing">Runway 免费计划 一次性 125 credits</a></h3><div class="vendor">Runway · 视频</div></div><span class="tg gl">国外</span></div><div class="of"><span class="bar"></span><div class="tx"><b>Free 计划 $0</b> · 赠送一次性 125 credits（不过期），可试用 Gen 系列视频/图像生成模型，含 5GB 素材存储；按月付费计划另享年付 8 折。</div></div><div class="feats"><span>一次性 125 credits</span><span>含 5GB 素材存储</span><span>免费档 $0 → 付费档</span></div><div class="meta"><span class="sp"><a class="cta ghost" href="#">信息有误</a><a class="cta" href="https://runway.com/pricing">获取 →</a></span></div></article><article class="g" data-tier="3" data-verified="1"><span class="tiernum" aria-hidden="true">3</span><div class="gh"><div class="logos"><span class="lg"><img src="../../../assets/logos/modelscope.png" alt="" loading="lazy" onerror="this.parentNode.textContent='MO'"></span></div><div class="gt"><h3><a href="https://www.modelscope.cn/docs/model-service/API-Inference/limits">魔搭 ModelScope API-Inference 免费推理 API（动态限流）</a></h3><div class="vendor">魔搭 ModelScope · API服务</div></div><span class="tg cn">国内</span></div><div class="of"><span class="bar"></span><div class="tx"><b>官方使用限制页原文</b> · 免费推理 API——「魔搭通过API-Inference，将开源模型服务化并通过API接口进行标准化，免费提供给广大开发者体验。」该免费推理 API 由阿里云提供算力支持，额度与并发会随平台资源实时动态调整，并提供魔粒兑换机制。</div></div><div class="feats"><span>开源模型免费 API</span><span>需绑阿里云实名认证</span><span>额度并发动态调整</span></div><div class="meta"><span class="sp"><a class="cta ghost" href="#">信息有误</a><a class="cta" href="https://www.modelscope.cn/docs/model-service/API-Inference/limits">获取 →</a></span></div></article></div>
+
+<section class="demohead" style="padding:var(--s4) 0 0">
+  <h1 style="font-size:18px">token 对照（左边是线上现值，右边是提案值）</h1>
+  <p>对比度是按 WCAG 相对亮度公式算的（纯色背景）：<b>--mut 这一处从 2.84:1 提到 4.50:1</b>，而它承载的是 11px 的元信息文字——线上实测 400 个文本节点里有 100 条不达标，主要就是它。</p>
+</section>
+<div class="tokens">
+  <div class="sw"><div class="chip" style="background:#8c94a6"></div><div class="n">--mut 现值 #8c94a6</div><div class="m">--bg 上 2.84:1 ✗ · --card 上 3.04:1 ✗</div></div>
+  <div class="sw"><div class="chip" style="background:#6b7280"></div><div class="n">--mut 提案 #6b7280</div><div class="m">--bg 上 4.50:1 ✓ · --card 上 4.83:1 ✓</div></div>
+  <div class="sw"><div class="chip" style="background:#0e9f6e"></div><div class="n">档位 1 · 完全免费</div><div class="m">亮色 #0e9f6e → 暗色 #3ddc97（降饱和提亮）</div></div>
+  <div class="sw"><div class="chip" style="background:#7c3aed"></div><div class="n">档位 2 · 免费额度</div><div class="m">亮色 #7c3aed → 暗色 #b18cff</div></div>
+  <div class="sw"><div class="chip" style="background:#2563eb"></div><div class="n">档位 3 · 身份优惠</div><div class="m">亮色 #2563eb → 暗色 #7aa2ff</div></div>
+  <div class="sw"><div class="chip" style="background:#c2410c"></div><div class="n">档位 4 · 折扣促销</div><div class="m">亮色 #c2410c → 暗色 #ffab6b</div></div>
+</div>
+
+<section class="demohead" style="padding:var(--s4) 0 0">
+  <h1 style="font-size:18px">动效与层级</h1>
+  <p>
+    <span class="anno">--t-fast 100ms</span><span class="anno">--t-base 150ms</span><span class="anno">--t-slow 250ms</span>
+    <span class="anno">--e-std cubic-bezier(.4,0,.2,1)</span><span class="anno">--e-out cubic-bezier(.22,1,.36,1)</span>
+    时长与曲线都取自标杆实测里出现次数最多的取值（Tailwind 默认 150ms 跨站最多；linear 用 100ms；openrouter 用 expo-out 250ms 做进场）。
+    把鼠标放到卡片上：<b>边框消失、换成 1px 发丝环 + 微投影</b>，而不是现在的 18px 扩散投影——高密度网格里相邻卡片不会被互相压暗。
+    系统开启「减少动态效果」后，这里的过渡会全部停掉。
+  </p>
+</section>
+</main>
+<footer><div class="wrap" style="padding-bottom:0">静态展示稿 · 数据取自 <code>dist/deals.json</code> 的真实条目 · 只有 CSS，没有交互脚本（仅图片加载失败时有一处内联兜底）<br>
+排序与推荐理由不出售 · 全部链接指向厂商官方页</div></footer>
+
+</body>
+</html>

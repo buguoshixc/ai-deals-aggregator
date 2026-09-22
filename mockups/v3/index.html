@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mockups v3 · 三套方案对比</title>
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/base.css">
+<style>
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .demohead { max-width: var(--maxW); margin: 0 auto; padding: var(--s4) var(--s4) 0; }
+  .demohead h1 { font-size: 22px; font-weight: 700; }
+  .demohead p { color: var(--mut); font-size: var(--fs-md); margin-top: 6px; max-width: 900px; }
+  .demohead p b { color: var(--ink); }
+  .anno { display: inline-block; font-size: var(--fs-xs); color: var(--mut); border: 1px dashed var(--line); border-radius: 999px; padding: 2px 9px; margin-right: 6px; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要内容</a>
+<input class="vh" type="radio" name="theme" id="theme-auto" checked>
+<input class="vh" type="radio" name="theme" id="theme-light">
+<input class="vh" type="radio" name="theme" id="theme-dark">
+<header class="top">
+  <div class="topin">
+    <a class="brand" href="index.html"><span class="mark">AI</span><span class="btxt"><b>AI 优惠<em>聚合器</em></b><small>MOCKUP v3 · 方案对比</small></span></a>
+    <div class="search"><span aria-hidden="true">⌕</span><input type="search" placeholder="搜索模型、厂商或优惠…" aria-label="搜索"></div>
+    <div class="seg" role="group" aria-label="主题">
+      <label for="theme-auto">跟随系统</label><label for="theme-light">浅色</label><label for="theme-dark">深色</label>
+    </div>
+    <div class="topstat"><b>80</b> 条优惠 · 已核验 32</div>
+  </div>
+</header>
+<p class="note">三套方案都能点开看。共同点：都<b>不引入任何依赖</b>、不热链 CDN、保持零构建单文件、不编造数据、不卖排序。差别只在<b>动到哪一层</b>。</p>
+<main id="main" class="wrap">
+
+<section class="demohead" style="padding:0 0 var(--s3)">
+  <h1>三套方案 · 同一批真实数据</h1>
+  <p>所有数字都来自实测（<code>research/EVIDENCE.md</code>、<code>research/GAP-MATRIX.md</code>、<code>research/DESIGN-TOKENS.md</code>）。下面每套都能点开对应 demo。</p>
+</section>
+
+<div class="tokens" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+  <div class="sw">
+    <div class="n" style="font-size:var(--fs-lg)">A · 保守</div>
+    <div class="m" style="margin-top:6px">只动视觉层：token、暗色、动效、对比度、层级、排版权重、语义标签、四态。</div>
+    <div class="m" style="margin-top:8px">
+      <b>改后指标</b>：对比度不达标 100/400 → ≤20 · 假字重 354 → 0 · 字号 12 种 → 6 级 · 暗色 0 → 2 套 ·
+      动效 3 组 ad-hoc → 4 token + 可关 · 断言 55 → ≥64
+    </div>
+    <div class="m" style="margin-top:8px"><b>不动</b>：URL 结构、卡片密度（首屏仍 9 张）、筛选与折叠逻辑</div>
+    <p style="margin-top:12px"><a class="cta" href="./A-conservative/index.html">打开 A 的 demo</a>
+    <a class="cta ghost" href="./A-conservative/PLAN.md" style="margin-left:6px">PLAN.md</a></p>
+  </div>
+
+  <div class="sw" style="border-color:var(--brand)">
+    <div class="n" style="font-size:var(--fs-lg)">B · 均衡 <span class="tg" style="background:var(--glbg);color:var(--gl)">推荐</span></div>
+    <div class="m" style="margin-top:6px">A 的全部 + 每条优惠一个静态页 + 紧凑行视图 + feed + 纠错入口 + 手机端密度。</div>
+    <div class="m" style="margin-top:8px">
+      <b>改后指标</b>：可索引 URL 1 → 81 · 同源内链 1 → ~140 · 首屏 9 → <b>16+</b>（紧凑视图）·
+      手机 15 屏 → ≤12 · 断言 55 → ≥70
+    </div>
+    <div class="m" style="margin-top:8px"><b>不动</b>：数据结构（详情页字段全是派生）、投稿/账号/统计</div>
+    <p style="margin-top:12px">
+      <a class="cta" href="./B-balanced/dense.html">紧凑视图</a>
+      <a class="cta ghost" href="./B-balanced/detail.html" style="margin-left:6px">详情页</a>
+      <a class="cta ghost" href="./B-balanced/affordances.html" style="margin-left:6px">状态与出口</a>
+      <a class="cta ghost" href="./B-balanced/PLAN.md" style="margin-left:6px">PLAN.md</a>
+    </p>
+  </div>
+
+  <div class="sw">
+    <div class="n" style="font-size:var(--fs-lg)">C · 进取</div>
+    <div class="m" style="margin-top:6px">B 的全部 + 收藏/对比 + 首页按意图重排（5 个一级入口）+ 英文覆盖。</div>
+    <div class="m" style="margin-top:8px">
+      <b>改后指标</b>：一级视图 1 → 5 · 收藏/对比从无到有 · hreflang 2 → 4 条 + <code>/en/</code> 页面集 ·
+      断言 55 → ≥90
+    </div>
+    <div class="m" style="margin-top:8px"><b>注意</b>：英文覆盖是<b>持续人工成本</b>（每条新数据都要译），不是一次性投入</div>
+    <p style="margin-top:12px">
+      <a class="cta" href="./C-ambitious/home.html">首页 IA</a>
+      <a class="cta ghost" href="./C-ambitious/i18n.html" style="margin-left:6px">中英双版</a>
+      <a class="cta ghost" href="./C-ambitious/PLAN.md" style="margin-left:6px">PLAN.md</a>
+    </p>
+  </div>
+</div>
+
+<section class="demohead" style="padding:var(--s4) 0 0">
+  <h1 style="font-size:18px">三套都不做的事（红线）</h1>
+  <p>
+    <span class="anno">不引入前端框架 / 打包器</span><span class="anno">不热链 CDN 或 Web 字体</span>
+    <span class="anno">不加载任何统计或广告脚本</span><span class="anno">不编造 priceLine / features / 核验状态</span>
+    <span class="anno">不卖排序与推荐位</span><span class="anno">不做机器翻译</span>
+  </p>
+</section>
+
+<section class="demohead" style="padding:var(--s4) 0 0">
+  <h1 style="font-size:18px">这些提案是从哪来的（证据链）</h1>
+  <p>
+    20 个参考站（12 个同类垂直站 + 8 个设计标杆）用 <code>scripts/tools/study-site.js</code> 拆成结构化证据 →
+    <code>research/EVIDENCE.md</code>（原始数字总表）→ <code>research/GAP-MATRIX.md</code>（差距与取舍）→
+    <code>research/DESIGN-TOKENS.md</code>（token 级结论）。我们自己也用同一把尺子量了一遍（<code>research/_raw/ours-baseline/</code>），
+    所以「首屏 9 张 / 5.9 屏 / 1 条内链 / 对比度 100 条不达标」都是实测值，不是估计。
+  </p>
+</section>
+</main>
+<footer><div class="wrap" style="padding-bottom:0">静态展示稿 · 数据取自 <code>dist/deals.json</code> 的真实条目 · 只有 CSS，没有交互脚本（仅图片加载失败时有一处内联兜底）<br>
+排序与推荐理由不出售 · 全部链接指向厂商官方页</div></footer>
+
+</body>
+</html>

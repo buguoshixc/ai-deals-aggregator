@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>方案 B · 均衡 — 单条详情页</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<style>
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .demohead { max-width: var(--maxW); margin: 0 auto; padding: var(--s4) var(--s4) 0; }
+  .demohead h1 { font-size: 22px; font-weight: 700; }
+  .demohead p { color: var(--mut); font-size: var(--fs-md); margin-top: 6px; max-width: 900px; }
+  .demohead p b { color: var(--ink); }
+  .anno { display: inline-block; font-size: var(--fs-xs); color: var(--mut); border: 1px dashed var(--line); border-radius: 999px; padding: 2px 9px; margin-right: 6px; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要内容</a>
+<input class="vh" type="radio" name="theme" id="theme-auto" checked>
+<input class="vh" type="radio" name="theme" id="theme-light">
+<input class="vh" type="radio" name="theme" id="theme-dark">
+<header class="top">
+  <div class="topin">
+    <a class="brand" href="../index.html"><span class="mark">AI</span><span class="btxt"><b>AI 优惠<em>聚合器</em></b><small>MOCKUP v3 · B 详情页</small></span></a>
+    <div class="search"><span aria-hidden="true">⌕</span><input type="search" placeholder="搜索模型、厂商或优惠…" aria-label="搜索"></div>
+    <div class="seg" role="group" aria-label="主题">
+      <label for="theme-auto">跟随系统</label><label for="theme-light">浅色</label><label for="theme-dark">深色</label>
+    </div>
+    <div class="topstat"><b>80</b> 条优惠 · 已核验 32</div>
+  </div>
+</header>
+<p class="note">这一页是 <b>每条优惠一个静态页</b> 的样例（构建期生成 <code>dist/deal/&lt;id&gt;/index.html</code>，当前 80 条）。首页卡片标题指向这里，<b>「获取 →」仍然直达厂商官方页</b>——「落地页指向官方」的原则不变。页面不执行 JS 也能读到全部字段（构建期预渲染）。</p>
+<main id="main" class="wrap">
+
+<nav class="crumb" aria-label="面包屑"><a href="#">首页</a> › <a href="#">图像绘画</a> › <span>Perplexity</span></nav>
+<article>
+  <div class="dtitle">
+    <div class="logos"><span class="lg">PE</span></div>
+    <div><h1>Perplexity</h1>
+      <div class="dsub">Perplexity · 图像绘画 <span class="tg gl">国外</span>
+      
+      <span class="tg" style="background:var(--line2);color:var(--ink2)">档位 3</span></div>
+    </div>
+  </div>
+
+  <div class="doffer"><div class="lab">优惠内容</div><p>Education Pro is offered to verified students and educators at a discount. Perplexity also says promo codes are distributed through official partners and channels.</p>
+    <div class="dzh">中文翻译：通过验证的学生与教育工作者可优惠购买 Education Pro。Perplexity 同时说明，优惠码只通过官方合作伙伴与官方渠道发放。</div></div>
+
+  <div class="dgrid">
+    <div class="cv"><div class="k">适用条件</div><div class="v">Students, educators, research-heavy users, people comparing AI search tools.</div></div>
+    <div class="cv"><div class="k">有效期</div><div class="v">官方页未给出绝对截止日期</div></div>
+    <div class="cv"><div class="k">价格阶梯</div><div class="v">官方页未明确写出免费 → 付费的路径</div></div>
+    <div class="cv"><div class="k">核验状态</div><div class="v">数据更新 2026-09-22（自动采集，未人工核验）</div></div>
+    <div class="cv"><div class="k">分类</div><div class="v">图像绘画</div></div>
+    <div class="cv"><div class="k">定价模式</div><div class="v">freemium</div></div>
+  </div>
+
+  
+
+  <div class="dact">
+    <a class="pri" href="https://www.perplexity.ai/help-center/en/articles/12590157-what-is-education-pro.html">前往厂商官方页获取 →</a>
+    <a class="sec" href="#">信息有误 / 我核验过</a>
+    <a class="sec" href="#">加入对比</a>
+  </div>
+
+  <div class="dsrc">
+    来源署名：Layer3Labs · <a href="https://www.layer3labs.io/ai-discounts">原始出处</a><br>
+    本页 canonical：<code>https://buguoshixc.github.io/ai-deals-aggregator/deal/c05dc74bfd78/</code> ·
+    结构化数据：BreadcrumbList + ItemList（与首页同一套 RENDER-CORE 纯函数产出）<br>
+    排序与推荐理由不出售；本页不收录任何付费推广位。
+  </div>
+</article>
+</main>
+<footer><div class="wrap" style="padding-bottom:0">静态展示稿 · 数据取自 <code>dist/deals.json</code> 的真实条目 · 只有 CSS，没有交互脚本（仅图片加载失败时有一处内联兜底）<br>
+排序与推荐理由不出售 · 全部链接指向厂商官方页</div></footer>
+
+</body>
+</html>
