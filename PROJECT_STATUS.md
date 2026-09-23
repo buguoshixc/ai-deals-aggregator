@@ -932,6 +932,115 @@ hreflang + og/twitter + `WebPage`/`BreadcrumbList` + 面包屑 + 返回入口 + 
 
 ---
 
+### 2.22 收藏 / 对比（G11）落地
+
+**落地位置**：分支 `feat/favorites-compare`（基于 `master` = `8caee06`，本地，未推送）。
+只动 4 个文件：`index.html`、`scripts/tools/build-local.js`、`scripts/tools/verify-site.js`、本章。
+**零新依赖、零新请求、零后端**——`localStorage` + `URLSearchParams`，与 PLAN.md G11 的决策一致。
+
+#### ① 收藏
+
+- 卡片上是一个**绝对定位的星标**（`☆` / `★`，`:hover` 与 `aria-pressed` 双状态，`aria-label="收藏 <标题>"`）。
+- 详情弹层里是**完整标注的两个按钮**：「收藏 / 已收藏」与「加入对比 / 已加入对比（点一下移出）」。
+- 键 `dsh.favorites`（与 `dsh.theme` / `dsh.view` / `dsh.dealZhOpen` 同一套命名），
+  每一次读写都包在 `try/catch` 里——隐私模式下静默退回默认值。
+
+#### ② 对比
+
+- 底部**固定条**（`已选 N / 4 条进入对比` + 已选标题 + 打开对比 / 清空对比）+ `<dialog>` 对比视图。
+- 键 `dsh.compare`；**上限 4 条**，满员时第 5 条的按钮直接 `disabled` 并写明「对比已满 4 条」，
+  不是点了没反应。
+- 可分享 URL：`?compare=id,id,…`。**URL 优先于 localStorage**，所以把链接发给别人、
+  对方在那个上下文里没有任何本机选择，也一样还原同一组对比（顺序也一致）。
+
+#### ③ 「只展示有值的字段」这条被实测逼得更严了一档
+
+PLAN.md §5 的原话是「对比表只展示有值的字段，缺值不占位」。第一版按「跳过整列都空的字段」实现，
+一跑数据就暴露了漏洞：`priceLine` 全站只有 3 条、有效期也是有人有有人没有，于是并排 4 条时
+经常出现 **3 个格子有字、第 4 个空格子**（15 张抽样表里 14 个空格子）——空格子正是要避免的那种噪音
+（读者分不清「没有这个字段」和「没抓到」）。改成**一行只在每个条目都有值时才出现**，
+现在 15 张 4 列表 + 31 张 2 列表共 **430 个单元格，空格子 0 个**。这一条同时也进了产物自检口径。
+
+#### ④ 三条硬约束怎么保证
+
+| 约束 | 做法 |
+|---|---|
+| **192px 定高卡片不能被顶破** | 星标 `position:absolute`（`right: var(--s2)`, `bottom: var(--s3)`），**不参与布局**；卡片高度仍由 `height: var(--cardH)` 决定。星形符号放在 `::before/::after` 伪元素里（两者都绝对定位、互不占位），按钮自身的**文字内容仍是完整中文标签**，对比度审计与屏幕阅读器读到的都是它。`.meta` 右侧留 40px 走廊放星标——只改横向内边距，不动卡片高度、不动网格行高。**`bottom` 必须用 `--s3` 而不是 `--s2`：见 ⑥。** |
+| **390px 不许横向溢出** | 对比条 `position:fixed; left:0; right:0`，内容 `nowrap`、标题条 `overflow:hidden`；对比表 `thead th:first-child` 与 `tbody th` 给显式宽度，宽表在 `.cmpscroll`（`overflow-x:auto`）里滚，弹层本身 `width: min(920px, calc(100vw - 40px))`。 |
+| **没有 JS 就不给可点暗示** | 星标、对比条、对比弹层**整块由 JS 建 DOM**（`createElement`），预渲染的 HTML 里零控件；`body:not(.js) .g .fav { display: none }` 再兜一层。产物自检直接扫产物断言这件事。 |
+
+#### ⑤ 验证
+
+| 门禁 | 结果 |
+|---|---|
+| `npm test` / `test:strict` / `check:zh` | exit 0 / 0 / 0 |
+| `npm run build` | exit 0，产物自检通过（新增 2 条：预渲染零控件、`CMP_MAX = 4` 口径） |
+| `build` ×2 + 清单 SHA256 | ✅ **139 个文件**，`manifest.sha256 = 5cac78a2…a08282`，两份清单逐字节相同 |
+| `verify-site.js` | **+11 项断言**（第 1 节 +1、新增第 17.5 节 +10）；`check()` 调用点 94 → **105**，运行时报数 **99 → 110** |
+| `verify:regress` | 真浏览器实跑：**110 项**。第一轮 1 项失败（见 ⑥），修好后全绿 |
+
+> 运行时报数 = 文件里的 `check()` 调用点 + `--compare` 那段回归检查；
+> `94 + 5 = 99`（2.21 的基线）、`105 + 5 = 110`（本节），两边都对得上，
+> 所以「+11 项」这个数是可以自己复算的，不必靠文档转述。
+
+> **本会话（写这一节的会话）跑不了浏览器门禁**：`verify` / `verify:regress` / `verify:shots` /
+> `selftest:zh` 都以 **`spawn EPERM`** 失败（与 2.21 记录的是同一件事，不是回归）。
+> **`verify:regress` 的 110 项是在 captain 的会话里跑的**，不是在这里。
+> 我另外试过绕开 playwright 的管道：改用 `stdio: 'ignore'` 起 Edge + TCP 调试端口说 CDP——
+> 进程能起来（拿到 pid），但 Edge 立刻以 `2147483651`（`0x80000003` STATUS_BREAKPOINT）退出，
+> 连 `--dump-dom` 也起不来。**这不是 stdio 的问题，是 Edge 自己的内部 IPC 被沙箱拒了**，
+> 所以「换个方式起浏览器」这条路在本环境是死的，不要重复试。
+
+#### ⑥ 门禁抓出来的问题（jsdom 看不见的那一类）
+
+**卡片内容无溢出：62 张卡片集体报 3px 纵向溢出**（`overflowY: 0`）。
+
+- **根因**：星标 `<button class="fav">` 是卡片的**最后一个子元素**，而 §4 的判据取
+  「最后一个可见子元素的底边」，`over = lastChild.bottom − (card.bottom − paddingBottom)`。
+  卡片是 1px 边框，绝对定位元素的 `bottom` 又从**内边距盒**量起，于是
+  `over = paddingBottom − borderBottom − bottom = 12 − 1 − 8 = 3`——
+  与门禁报的 `over: 3`、且**每张卡都一样**、`overflowY` 恒为 0
+  （绝对定位子元素不计入 `scrollHeight`）完全吻合。
+- **修法**：`bottom: var(--s2)` → `bottom: var(--s3)`（＝卡片自身下内边距）。
+  内边距写的也是 `var(--s3)`，两者永远同步，`over ≡ −1`，与 `--s3` 将来取什么值无关。
+  `over = −1` 落在判据的 `+1` 容差之内。判据一个字都没动（见下）。
+- **没有采用的两种做法**：① 把星标挪出「最后一个子元素」的位置（`prepend` 到 `.meta` 之前）——
+  那样判据就查不到它了，等于绕过而不是修好；② 给判据加「跳过绝对定位元素」——
+  那是**门禁语义变更**，本轮没有正当理由，不做。
+
+> **教训（与 2.21 的 EPERM 注记同一类）**：jsdom 冒烟 47 项全过，却对这个 3px 一无所知——
+> 它没有布局引擎，`getBoundingClientRect()` 一律返回 0。**逻辑正确 ≠ 几何正确。**
+> 任何涉及尺寸/溢出/定位的改动，本地必须假定「未验证」，直到真浏览器跑过 §4 + §5 + §10 三条。
+
+**判据未被改动的机械证据**（写进报告、也可自行复算）：
+
+```
+§4 clip judge byte-identical to master : true (914 bytes)
+  still samples last child             : true   (kids[kids.length - 1])
+  tolerance still "+ 1"                : true   (lastBottom > innerBottom + 1)
+  still pushes overflowY > 1           : true
+check() call sites  master = 94  HEAD = 105
+```
+
+#### ⑦ 冒烟测试抓出来的三个真 bug（都不是读代码看出来的）
+
+1. **点星标会顺带弹出详情弹层**——列表上的点击委托把这次点击当成了「点了卡片」。
+   改成在**捕获阶段**先处理星标并 `stopPropagation`，冒泡监听里再兜一道防御性判断。
+2. **对比弹层打开时是空的**——`renderCompareBody()` 只在 `toggleCmp()` 里调过，
+   `openCompare()` 没调。分享链接进来点「打开对比」就是一张空表。
+3. **分享链接的标题条是空的**——对比条标题读 `state.cards`，而它在首次 `render()` 之后才有内容；
+   把标题重画挂进 `render()` 才对齐。
+
+#### ⑧ 明确没做
+
+- 不做「收藏列表 / 只看收藏」这个筛选入口（PLAN.md 只要求能收藏与对比，加筛选会牵动 facet 计数）。
+- 收藏/对比**不做跨设备同步**（红线：不做后端、不做账号、无外部请求）。
+- 星标只挂在**卡片**上，列表（紧凑行）视图不挂——行高 46px 里再塞一个绝对定位按钮会压住 CTA；
+  收藏在行视图里仍可经详情弹层完成（弹层里的按钮与卡片同一套逻辑）。
+- 上一节列的第 22、23 项（首页按意图重排、英文覆盖）仍未做。
+
+---
+
 ## 三、命令速查
 
 
@@ -1088,7 +1197,8 @@ Layer3Labs 9 · **人工策展（国内）18** · 智谱AI 7 · 智谱AI活动�
 18. ~~**每条优惠一个独立静态页**~~ —— **2.19 已做**（G1/G8）：`dist/deal/<id>/`，可索引 URL 1 → 81。
 19. ~~**紧凑行视图**~~ —— **2.19 已做**（G2/G14）：首屏 9 → 13 行，手机 15.1 → 5.5 屏。
 20. ~~**订阅出口**~~ —— **2.19 已做**（G9）：`feed.xml` + `feed.json`，各 80 条。
-21. **收藏 / 对比（属 C）**：`localStorage` + 可分享 URL；无 JS 时按钮不渲染。
+21. ~~**收藏 / 对比（属 C）**~~ —— **2.22 已做**（G11）：卡片星标 + 详情弹层完整动作 +
+    底部对比条 + `?compare=` 可分享 URL，上限 4 条；整块由 JS 建 DOM，无 JS 时零控件。
 22. **首页按意图重排（属 C）**：把「一个列表 + facet」升级成按意图直达的一级入口（免费 / 学生 / 国内厂商…），
     每个入口独立静态路径、各自 canonical。
 23. **英文覆盖（属 C）**：`hreflang` 结构已预留（`zh-CN` + `x-default` 自指）。**注意这是持续成本**——
@@ -1108,7 +1218,8 @@ Layer3Labs 9 · **人工策展（国内）18** · 智谱AI 7 · 智谱AI活动�
 - **预渲染**：`scripts/lib/render-core.js` 用 `vm` 沙箱抽出主页面里的 RENDER-CORE 纯函数区求值
   （构建期与浏览器端共用同一份模板）；默认视图由唯一的 `cardsFor(deals, DEFAULT_FILTERS)` 产出：
   **过滤 → 折叠同源 → 打档位 → 排序**
-- **真浏览器验收**：playwright-core + 本机 Edge，54 项断言（`scripts/tools/verify-site.js`）
+- **真浏览器验收**：playwright-core + 本机 Edge，**110 项**断言（`scripts/tools/verify-site.js`；
+  文件里 105 个 `check()` 调用点 + `--compare` 的 5 项回归）
 - **OG 分享图**：Node 内置 `zlib` 手写 PNG 编码 + 内置 5×7 点阵字模（零外部依赖）
 - **部署**：GitHub Actions → GitHub Pages
 - **存储**：静态 `deals.json`（v2 契约，前端新增的档位/logo 均为**派生**，不写回数据）

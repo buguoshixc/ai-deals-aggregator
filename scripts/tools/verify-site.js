@@ -129,7 +129,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       tierHeads: document.querySelectorAll('.tierhead').length,
       facets: document.querySelectorAll('[data-facet]').length,
       logos: document.querySelectorAll('.lg').length,
-      hintsHidden: [...document.querySelectorAll('.meta .hint')].every(el => getComputedStyle(el).display === 'none')
+      hintsHidden: [...document.querySelectorAll('.meta .hint')].every(el => getComputedStyle(el).display === 'none'),
+      // 收藏/对比：星标、底部对比条、对比弹层**整块由 JS 建 DOM**，
+      // 所以预渲染的 HTML 里应该一个都没有；去掉 body.js 之后再确认一次
+      // 也不留可见的控件（脚本被拦/被禁用时同样是这个状态）。
+      favToggles: document.querySelectorAll('[data-fav-toggle]').length,
+      favVisible: [...document.querySelectorAll('[data-fav-toggle]')].filter(el => el.offsetHeight > 0).length,
+      cmpBar: document.querySelectorAll('.cmpbar').length,
+      cmpBarVisible: [...document.querySelectorAll('.cmpbar')].some(el => el.offsetHeight > 0),
+      cmpDialogOpen: Boolean(document.querySelector('dialog#compare[open]'))
     };
   });
   check('静态骨架有卡片', noJs.cards >= 45, `${noJs.cards} 条`);
@@ -138,6 +146,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('筛选条已预渲染', noJs.facets >= 4, `${noJs.facets} 个 facet`);
   check('logo 已预渲染', noJs.logos >= 20, `${noJs.logos} 个 tile`);
   check('无 JS 时不显示「详情」提示', noJs.hintsHidden);
+  check('无 JS 时不渲染收藏/对比控件',
+    noJs.favToggles === 0 && noJs.favVisible === 0 && noJs.cmpBar === 0 && !noJs.cmpDialogOpen,
+    `星标 ${noJs.favToggles} 个 / 可见 ${noJs.favVisible} 个 · 对比条 ${noJs.cmpBar} 个 / 可见 ${noJs.cmpBarVisible} · 对比弹层展开 ${noJs.cmpDialogOpen}`);
 
   // 第 1 步故意断掉了 deals.json，这里把收集器清空，后面测的是正常加载
   errors.length = 0;
@@ -1165,6 +1176,219 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
   await page.click('#viewSeg [data-view="cards"]');
   await page.waitForTimeout(300);
+
+  console.log('\n=== 17.5) 收藏 / 对比（G11）===');
+
+  /**
+   * 星标不按卡片下标找：筛选或排序一变，`article.g` 的先后顺序就变了。
+   * 这里一律按**标题**定位（星级数据用的是稳定的 deal.id），断言之间不会互相干扰。
+   */
+  const starState = (title) => page.evaluate(probe => {
+    const card = [...document.querySelectorAll('article.g')]
+      .find(el => el.querySelector('h3').textContent.trim() === probe);
+    if (!card) return { found: false };
+    const button = card.querySelector('[data-fav-toggle]');
+    return {
+      found: true,
+      hasButton: Boolean(button),
+      pressed: button ? button.getAttribute('aria-pressed') : null,
+      label: button ? button.getAttribute('aria-label') || '' : '',
+      // 绝对定位是硬约束：一定位就退出正常流，卡片高度/标题宽度/网格行高都不会被它顶动
+      position: button ? getComputedStyle(button).position : '',
+      cardHeight: Math.round(card.getBoundingClientRect().height),
+      titleWidth: Math.round(card.querySelector('h3').getBoundingClientRect().width)
+    };
+  }, title);
+
+  const clickStar = (title) => page.evaluate(probe => {
+    const card = [...document.querySelectorAll('article.g')]
+      .find(el => el.querySelector('h3').textContent.trim() === probe);
+    if (!card) return false;
+    const button = card.querySelector('[data-fav-toggle]');
+    if (!button) return false;
+    button.click();
+    return true;
+  }, title);
+
+  // 从干净的偏好开始：这一步之前的断言都没碰过收藏/对比的键
+  await page.evaluate(() => {
+    try { localStorage.removeItem('dsh.favorites'); localStorage.removeItem('dsh.compare'); } catch (e) { /* 忽略 */ }
+  });
+  await page.goto(base, { waitUntil: 'load' });   // 不带 query，避免上一次的 ?compare= 干扰
+  await waitForApp(page);
+
+  const favTitle = await page.evaluate(() => document.querySelector('article.g h3').textContent.trim());
+  const starBefore = await starState(favTitle);
+  check('卡片上有收藏星标，且是绝对定位（不参与布局）',
+    starBefore.found && starBefore.hasButton && starBefore.pressed === 'false' && starBefore.position === 'absolute',
+    `position=${starBefore.position} aria-pressed=${starBefore.pressed} · aria-label「${starBefore.label.slice(0, 18)}」`);
+
+  await clickStar(favTitle);
+  await page.waitForTimeout(150);
+  const afterFavClick = await starState(favTitle);
+  const detailOpenedByStar = await page.evaluate(() => document.getElementById('detail').open);
+  check('点星标即收藏，且不会顺带弹出详情弹层',
+    afterFavClick.pressed === 'true' && !detailOpenedByStar,
+    `aria-pressed=${afterFavClick.pressed} · 详情弹层=${detailOpenedByStar}`);
+
+  const favStored = await page.evaluate(() => {
+    try { return localStorage.getItem('dsh.favorites'); } catch (e) { return 'n/a'; }
+  });
+  await page.reload({ waitUntil: 'load' });
+  await waitForApp(page);
+  const starAfterReload = await starState(favTitle);
+  check('收藏写进 localStorage，刷新后仍然亮着',
+    starAfterReload.pressed === 'true' && Boolean(favStored),
+    `刷新前 localStorage=${favStored} → 刷新后 aria-pressed=${starAfterReload.pressed} · 卡片高 ${starBefore.cardHeight}→${starAfterReload.cardHeight}px · 标题宽 ${starBefore.titleWidth}→${starAfterReload.titleWidth}px`);
+
+  // 详情弹层里的两个完整动作（选题里写的是「卡片上是角标、完整动作在弹层」）
+  const detailActions = await page.evaluate(async (probe) => {
+    const card = [...document.querySelectorAll('article.g')]
+      .find(el => el.querySelector('h3').textContent.trim() === probe);
+    card.click();
+    await new Promise(r => setTimeout(r, 250));
+    const fav = document.querySelector('#detailBody [data-fav]');
+    const cmp = document.querySelector('#detailBody [data-cmp]');
+    return {
+      open: document.getElementById('detail').open,
+      fav: fav ? { text: fav.textContent.trim(), pressed: fav.getAttribute('aria-pressed') } : null,
+      cmp: cmp ? { text: cmp.textContent.trim(), pressed: cmp.getAttribute('aria-pressed') } : null
+    };
+  }, favTitle);
+  check('详情弹层里有完整标注的「收藏 / 加入对比」',
+    detailActions.open && Boolean(detailActions.fav) && Boolean(detailActions.cmp) &&
+    detailActions.fav.pressed === 'true' && detailActions.cmp.text.includes('加入对比'),
+    `收藏「${detailActions.fav ? detailActions.fav.text : '缺失'}」· 对比「${detailActions.cmp ? detailActions.cmp.text : '缺失'}」`);
+
+  // ── 对比：上限 4 条，第 5 条必须被挡住 ──
+  const cmpLimit = await page.evaluate(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const cards = [...document.querySelectorAll('article.g')];
+    const added = [];
+    for (let i = 0; i < 5 && i < cards.length; i++) {
+      cards[i].click();
+      await sleep(120);
+      const button = document.querySelector('#detailBody [data-cmp]');
+      if (!button || button.disabled) { document.getElementById('detail').close(); await sleep(80); continue; }
+      button.click();
+      await sleep(80);
+      added.push(button.getAttribute('aria-pressed'));
+      document.getElementById('detail').close();
+      await sleep(80);
+    }
+    const bar = document.getElementById('cmpbar');
+    return {
+      addedTry: added.length,
+      lastPressed: added[added.length - 1],
+      barHidden: !bar || bar.hidden,
+      count: document.getElementById('cmpCount') ? document.getElementById('cmpCount').textContent.trim() : '',
+      chips: document.querySelectorAll('.cmpchip').length,
+      stored: (() => {
+        try { return JSON.parse(localStorage.getItem('dsh.compare') || '[]').length; } catch (e) { return -1; }
+      })(),
+      url: new URLSearchParams(location.search).get('compare')
+    };
+  });
+  check('对比最多收 4 条，第 5 条被挡住',
+    cmpLimit.addedTry === 4 && cmpLimit.lastPressed === 'true' && cmpLimit.stored === 4 &&
+    !cmpLimit.barHidden && cmpLimit.chips === 4,
+    `点 5 次收进 ${cmpLimit.addedTry} 条 · localStorage ${cmpLimit.stored} 条 · 对比条「${cmpLimit.count}」· 标题条 ${cmpLimit.chips} 个`);
+
+  check('选择写进可分享 URL（?compare=id,id,…）',
+    Boolean(cmpLimit.url) && cmpLimit.url.split(',').filter(Boolean).length === 4,
+    `?compare=${cmpLimit.url}`);
+
+  // ── 分享链接可复现：换一个「没有本机选择」的浏览器上下文打开 ──
+  const cmpUrl = await page.evaluate(() => location.href);
+  const sharePage = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await sharePage.goto(cmpUrl, { waitUntil: 'load' });
+  await waitForApp(sharePage);
+  const restored = await sharePage.evaluate(() => {
+    const bar = document.getElementById('cmpbar');
+    return {
+      url: new URLSearchParams(location.search).get('compare'),
+      stored: (() => {
+        try { return JSON.parse(localStorage.getItem('dsh.compare') || '[]').length; } catch (e) { return -1; }
+      })(),
+      barVisible: Boolean(bar && !bar.hidden && bar.offsetHeight > 0),
+      chips: [...document.querySelectorAll('.cmpchip')].map(el => el.textContent.trim()),
+      starsOn: [...document.querySelectorAll('[data-fav-toggle]')].filter(b => b.getAttribute('aria-pressed') === 'true').length
+    };
+  });
+  check('分享链接打开后选择被复现（URL 是唯一事实来源，不靠本机 localStorage）',
+    restored.chips.length === 4 && restored.barVisible && restored.starsOn === 0,
+    `还原 ${restored.chips.length} 条 · 对比条可见 ${restored.barVisible} · 该上下文里的收藏 ${restored.starsOn} 个 · ?compare=${restored.url}`);
+
+  // ── 对比表：只出现有值的字段，一个空单元格都没有 ──
+  const tableShape = await sharePage.evaluate(async () => {
+    document.getElementById('cmpOpen').click();
+    await new Promise(r => setTimeout(r, 250));
+    const dlg = document.getElementById('compare');
+    const cells = [...dlg.querySelectorAll('.cmptable td')];
+    return {
+      open: dlg.open,
+      columns: dlg.querySelectorAll('.cmptable thead th').length - 1,
+      rows: dlg.querySelectorAll('.cmptable tbody tr').length,
+      rowLabels: [...dlg.querySelectorAll('.cmptable tbody th')].map(el => el.textContent.trim()),
+      emptyCells: cells.filter(td => !td.textContent.trim()).length,
+      placeholder: cells.filter(td => /暂无|暂无数据|N\/A|—/.test(td.textContent)).length,
+      shareHref: (document.getElementById('cmpShare') || {}).getAttribute
+        ? document.getElementById('cmpShare').getAttribute('href') : ''
+    };
+  });
+  check('对比表：4 列并排、行都是关键字段、单元格零空白',
+    tableShape.open && tableShape.columns === 4 && tableShape.rows >= 1 && tableShape.emptyCells === 0 &&
+    tableShape.placeholder === 0,
+    `${tableShape.columns} 列 / ${tableShape.rows} 行（${tableShape.rowLabels.join('、')}）· 空格子 ${tableShape.emptyCells} 个`);
+
+  // ── Esc 关闭并归还焦点 ──
+  const cmpFocus = await sharePage.evaluate(() => {
+    const button = document.getElementById('cmpOpen');
+    button.focus();
+    return {
+      before: document.activeElement === button,
+      href: (document.getElementById('cmpShare') || {}).href || ''
+    };
+  });
+  await sharePage.keyboard.press('Escape');
+  await sharePage.waitForTimeout(300);
+  const cmpAfterEsc = await sharePage.evaluate(() => {
+    const active = document.activeElement;
+    return {
+      open: document.getElementById('compare').open,
+      isOpenButton: Boolean(active && active.id === 'cmpOpen'),
+      tag: active ? active.tagName.toLowerCase() : ''
+    };
+  });
+  check('Esc 关闭对比视图并把焦点还给「打开对比」按钮',
+    cmpAfterEsc.open === false && cmpAfterEsc.isOpenButton,
+    `弹层=${cmpAfterEsc.open} · 焦点在 <${cmpAfterEsc.tag}>`);
+
+  // ── 390px：对比条展开时也不许横向滚动 ──
+  await sharePage.setViewportSize({ width: 390, height: 844 });
+  await sharePage.waitForTimeout(250);
+  const cmpMobile = await sharePage.evaluate(() => {
+    const bar = document.getElementById('cmpbar');
+    const box = bar ? bar.getBoundingClientRect() : null;
+    return {
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+      overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      barVisible: Boolean(bar && !bar.hidden),
+      barLeft: box ? Math.round(box.left) : null,
+      barRight: box ? Math.round(box.right) : null,
+      barText: bar ? (document.getElementById('cmpCount') || {}).textContent : ''
+    };
+  });
+  check('390px 下对比条展开也不产生横向溢出',
+    cmpMobile.barVisible && cmpMobile.overflowX === 0 &&
+    cmpMobile.barLeft >= 0 && cmpMobile.barRight <= cmpMobile.clientWidth + 1,
+    `对比条 ${cmpMobile.barLeft}–${cmpMobile.barRight}px / 视口 ${cmpMobile.clientWidth}px · 溢出 ${cmpMobile.overflowX}px · 「${String(cmpMobile.barText).trim()}」`);
+
+  await sharePage.close();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);
 
   console.log('\n=== 10) 请求与错误 ===');
   check('没有外部请求（无 CDN 热链）', externalRequests.length === 0,
