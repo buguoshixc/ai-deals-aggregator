@@ -23,17 +23,23 @@ A 与 B 已全部落地（分支栈，未合并）。C 的三项我**没有擅�
 合并命令（两种任选，彩排已验证零冲突）：
 
 ```bash
-# ① 分层合并：想要到哪层就停在哪层（只要 A 就跑第一条）
+# ① 推荐：直接用彩排分支。它基于**最新 master**，已含另一个会话的 waitForApp 修复
+#    与我的集成，是「跑过全部门禁」的那个状态（99 项 0 失败）
+git switch master
+git merge --no-ff trial/merge-rehearsal-2
+
+# ② 分层合并：想要到哪层就停在哪层（只要 A 就跑第一条）
 git switch master
 git merge --no-ff feat/visual-token-layer   # A 视觉层：token/暗色/对比度/语义
 git merge --no-ff feat/b-extras             # + 订阅 feed / 纠错入口 / WebSite / 同页锚点
 git merge --no-ff feat/detail-pages         # + 每条优惠一个独立静态页（URL 1 → 81）
 git merge --no-ff feat/row-view             # + 紧凑行视图（首屏 13 行 / 手机 5.5 屏）
 git merge --no-ff feat/polish               # + 圆角间距收敛与键盘可达
-
-# ② 直接用彩排分支（含全部 5 层，且是「跑过全部门禁」的那个状态）
-git switch master && git merge --no-ff trial/merge-rehearsal
+git cherry-pick 044dd51                     # 走这条路径时补上 waitForApp 集成（见 SUMMARY.md 第八节）
 ```
+
+> 注：`trial/merge-rehearsal`（第 9 轮那个）已被 `trial/merge-rehearsal-2` 取代 —— 前者基于旧 `master`。
+> 两条路径都**零冲突**（已实测）。
 
 **`git push` 我一次都没执行**：它会触发 CI 采集与 GitHub Pages 部署，需要你明确同意。
 部署前建议先本地看一眼：
