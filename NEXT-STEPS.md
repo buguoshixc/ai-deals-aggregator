@@ -20,7 +20,7 @@
 | **窄屏横向溢出（新发现）** | ✅ 门禁只量 390px，所以从没报过：**320px 溢出 42px、360px 溢出 2px**（根因 `.grid` 的 `1fr` = `minmax(auto,1fr)`，下限被卡片顶在 345.5px）。改成 `minmax(0, 1fr)` 后**均归 0**，且卡内被裁元素 0 个 |
 | **门禁补盲区** | ✅ `verify-site.js` §10 新增 3 条断言（逐个控件是否被裁 / chip 是否排满一行 / **360px 页面级溢出**），前两条同时验 390 与 360 两档；**§4 既有判据一字未改**（该文件 +78/−0 纯新增） |
 | **本地预览** | ✅ `node scripts/serve.js --dir=dist` → `http://127.0.0.1:8080/`（200，标题正确） |
-| **上线** | ✅ 按你的「push」：`git push origin master` **快进** `c70706b..ecbc815`；Deploy 工作流 **success**；线上 `verify --url=` **108 项 0 失败**（见 2.28） |
+| **上线** | ✅ 按你的「push」：`git push origin master` **快进** `c70706b..ecbc815`；Deploy 工作流 **success**；线上 `verify --url=` **108 项 0 失败**；记录本身随后也推了（`ecbc815..fa2403d`，两次 Deploy 都 success）。现本地 = 上游 = **`fa2403d`**（见 2.28） |
 
 **合并态门禁（在 `0d6b869` + 本轮改动这一棵树上实跑）**：`test` / `test:strict` / `check:zh` exit 0（漂移 0、待译 0）；
 `selftest:zh` **7 项 0 失败**；`selftest:expiry` **55 项 0 失败**；`build` ×2 → **139 文件**、全树摘要两次一致
@@ -38,6 +38,9 @@
 
 **已上线（2026-09-23）**：你说「push」后执行了 `git push origin master` ——
 `c70706b..ecbc815` **快进**推送成功，Deploy 工作流 [run 35841045158](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35841045158) **success**。
+随后这份**上线记录本身**也推了（`ecbc815..fa2403d`，同样快进，
+Deploy [run 35849728738](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35849728738) success）——
+两次差别只在 3 个 `.md`，`dist` 不含 `.md`，所以**线上产物两次完全相同**。
 
 > **一处口径纠正（原先写错了，已改）**：旧文档说「`push` 会触发 CI 采集与 Pages 部署」。
 > 实际 `deploy.yml` 是**纯发布**流程（它自己的注释就写着「不做采集（采集由 collect.yml 负责）」）：
@@ -58,8 +61,9 @@
 ## 三、分支地图
 
 ```
-master = origin/master            ecbc815  ← 已上线：A/B/收尾 + G11 + 两次并回上游 + 两个手机端横向修复
- ├─ ecbc815   fix(mobile): 修掉两个手机端横向问题 + 门禁补 3 条断言
+master = origin/master            fa2403d  ← 已上线：A/B/收尾 + G11 + 两次并回上游 + 两个手机端横向修复
+ ├─ fa2403d   docs: 上线记录（2.28）+ 口径纠正：push 只触发发布，不触发采集
+ ├─ ecbc815   fix(mobile): 修掉两个手机端横向问题 + 门禁补 3 条断言   ← 108 项线上冒烟测试打的就是这份
  ├─ 0d6b869   merge: 并回 origin/master 的 fix/detail-close
  ├─ 71d020a   merge: 并回 origin/master（重写过的 A/B 线 + 数据 + 活动期限三分类）
  ├─ feat/visual-token-layer      874cd6b  A：token 层 / 暗色 / 对比度 / 语义与无障碍
@@ -76,4 +80,3 @@ backup/pre-origin-merge-b261add  b261add ← 并上游前的 master（保险）
 > **现在本地与上游完全一致**（`git status -sb` 无 ahead/behind）。要回退**已上线的**东西，
 > 不要 `reset`（历史已经推出去了），用 `git revert -m 1 <merge>` 或直接 revert 单个提交。
 > 两个 backup tag 只对「本地还想回到某个旧状态」有用，且它们都没推送过。
-> 若已经推上去了，就不要 reset，用 `git revert -m 1 <merge>` 反向提交。

@@ -1336,6 +1336,18 @@ G11 的 `buildDetailActions()` 与 `insertAdjacentElement('beforebegin', …)` �
 `git status -sb` 为 `## master...origin/master`（无 ahead/behind）。推送前先 `git fetch`（exit 0），
 确认远端仍是 `c70706b`、且是本地祖先 —— 所以这次是快进，没有重写上游历史。
 
+> **闭合（补记）**：本节这份**记录本身**随后也推送了 —— `ecbc815..fa2403d`（同样是快进），
+> Deploy 工作流 [run 35849728738](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35849728738) **success**。
+> 所以**远端 `refs/heads/master` 现在是 `fa2403d`**；上面那个 `ecbc815` 是**代码那次推送的当时值**，
+> 不是笔误。两次推送的内容差别只在 3 个 `.md`，而 `dist` 不含 `.md`
+> （`PUBLIC_FILES` = index.html / deals.json / favicon.svg / robots.txt / .nojekyll），
+> 因此**线上产物两次完全相同** —— 那次 108 项冒烟测试对现在线上的内容依然成立（已复查：
+> 首页 200、五项改动标记都在、`deal/ebd47f6d2522/` 与 `feed.xml`/`feed.json`/`sitemap.xml`/`robots.txt` 全 200）。
+>
+> 顺带记一条自己踩的坑：补推时代理（FlClash）**又断了一次**，第一次补推以同样的 7890 连接失败告终。
+> 那次重试脚本里我犯了「`fetch` 失败后仍用旧 remote-tracking ref 做快进判断」的错，已改成
+> **fetch 成功才继续**。
+
 **发布链路**：Deploy 工作流 [run 35841045158](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35841045158) **success**。
 
 **线上冒烟测试**（这一条才是「上线成功」的实证，不是看工作流绿灯）：

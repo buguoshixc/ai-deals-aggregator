@@ -6,8 +6,8 @@
 > **配套文件**：待你点头的事见 [`NEXT-STEPS.md`](NEXT-STEPS.md)；
 > 逐步的详细记录见 [`PROJECT_STATUS.md`](PROJECT_STATUS.md) 的 2.17–2.27。
 >
-> 状态：**已上线**（2026-09-23）。`master` = **`ecbc815`**，已快进推送到 `origin/master`，
-> Deploy 工作流 success，线上跑了 `verify --url=` **108 项 0 失败**。
+> 状态：**已上线**（2026-09-23）。`master` = `origin/master` = **`fa2403d`**（代码那次推送是 `ecbc815`），
+> Deploy 工作流**两次** success，线上跑了 `verify --url=` **108 项 0 失败**。
 > 本轮内容：A/B/收尾 + 收藏对比（G11）+ 活动期限三分类 + 上游详情修复 + 两个手机端横向问题修复；
 > 两次并回 `origin/master` 与上线记录见 `PROJECT_STATUS.md` 2.27–2.28。
 > 剩余事项（都可选）见 [`NEXT-STEPS.md`](NEXT-STEPS.md)。
@@ -58,8 +58,9 @@
 ## 三、代码在哪
 
 ```
-master = origin/master        ecbc815  ← 已上线：A/B/收尾 + 收藏对比（G11）+ 两次并回上游 + 两个手机端横向修复
- ├─ ecbc815   fix(mobile): 修掉两个手机端横向问题 + 门禁补 3 条断言
+master = origin/master        fa2403d  ← 已上线：A/B/收尾 + 收藏对比（G11）+ 两次并回上游 + 两个手机端横向修复
+ ├─ fa2403d   docs: 上线记录（2.28）+ 口径纠正：push 只触发发布，不触发采集
+ ├─ ecbc815   fix(mobile): 修掉两个手机端横向问题 + 门禁补 3 条断言   ← 那次 108 项冒烟测试打的就是这份
  ├─ 0d6b869   merge: 并回 origin/master 的 fix/detail-close
  ├─ 71d020a   merge: 并回 origin/master（重写过的 A/B 线 + 数据更新 + 活动期限三分类）
  ├─ feat/visual-token-layer   874cd6b  A：token 层 / 暗色 / 对比度 / 语义与无障碍
@@ -72,13 +73,13 @@ master = origin/master        ecbc815  ← 已上线：A/B/收尾 + 收藏对比
  └─ feat/expiry-window          c02e017  ← 活动期限三分类（已在 origin/master 上）
 ```
 
-- **`master` = `origin/master` = `ecbc815`**（本地与上游一致，无 ahead/behind）。
+- **`master` = `origin/master` = `fa2403d`**（本地与上游一致，无 ahead/behind）。
 - 分层合并的老命令已用不上（两条线都进 `master` 了）。回退点：`backup/pre-ab-merge`（A/B 合并前）、
   `backup/pre-origin-merge-b261add`（并上游前）；两者都没推送过，只对本地回退有用。
 - **已推送上线**（2026-09-23，你说「push」之后）：`c70706b..ecbc815` **快进**推送成功、Deploy 工作流 success，
-  线上 `verify --url=` **108 项 0 失败**。现在本地与上游完全一致。
-  口径纠正：`push` **只触发发布**（`deploy.yml` 是纯发布流程），采集由 `collect.yml` 按定时跑 —— 旧文档写成
-  「push 会触发 CI 采集」是错的，已改（见 `PROJECT_STATUS.md` 2.28）。
+  线上 `verify --url=` **108 项 0 失败**。随后这份**记录本身**也推了（`ecbc815..fa2403d`，同样快进，
+  Deploy [run 35849728738](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35849728738) success）——
+  两次差别只在 3 个 `.md`，`dist` 不含 `.md`，所以**线上产物两次完全相同**，那次冒烟测试对现在的线上依然成立。
 
 ## 四、接下来要做的事
 
@@ -222,9 +223,11 @@ G11 的 `buildDetailActions()` 插桩点仍在。
 **（6）上线。** 你说「push」后执行 `git push origin master`（先 `fetch` 复核过）：
 **快进** `c70706b..ecbc815`，Deploy 工作流 [run 35841045158](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35841045158) **success**，
 线上 `npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/` → **108 项 0 失败**
-（113 − 5 项 `--compare` 回归）。**第一次 push 失败过**：git 全局代理指向 `127.0.0.1:7890`（FlClash），
-当时它没在跑；代理起来后同一条命令直接成功 —— 这条坑连同「push 只触发发布、不触发采集」的口径纠正
-都记在 `PROJECT_STATUS.md` 2.28。
+（113 − 5 项 `--compare` 回归）。随后**这份记录本身**也推了：`ecbc815..fa2403d`（同样快进，
+Deploy [run 35849728738](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35849728738) success）——
+两次差别只在 3 个 `.md`，`dist` 不含 `.md`，所以**线上产物两次完全相同**，那次冒烟测试对现在的线上依然成立。
+**第一次 push 失败过**：git 全局代理指向 `127.0.0.1:7890`（FlClash），当时它没在跑（补推时又断了一次）；
+代理起来后同一条命令直接成功。这条坑连同「push 只触发发布、不触发采集」的口径纠正都记在 `PROJECT_STATUS.md` 2.28。
 
 ---
 
