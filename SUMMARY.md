@@ -86,20 +86,22 @@ master                       10cc923  ← 你的原版 + 文档 + 另一个会�
 | `research/EVIDENCE.md` | 21 站原始数字总表（可复核） |
 | `research/GAP-MATRIX.md` | 差距矩阵：该做 18 条 + 不学 9 条 + 落地状态 |
 | `research/DESIGN-TOKENS.md` | 现有 token ↔ 标杆数值 ↔ 建议值（含暗色两套与对比度推导） |
+| `research/VISION-REVIEW.md` | **独立视觉评述**（23 条：20 个参考站 + 3 个自有产物）+ 方法 / 硬约束 / 已知限制 / 对我们可执行的项 |
 | `research/vertical/`、`research/benchmark/` | 20 份逐站报告（九节 / 八节，只引证据） |
 | `mockups/v3/` | 三套方案的可点开 demo（双击 `index.html`）+ 各自 `PLAN.md` |
 | `scripts/tools/study-site.js` | 参考站拆解器（本次新增，可复跑刷新证据） |
 
 ## 六、两点如实说明
 
-1. **视觉复核没做成**：原计划把参考站截图交给视觉模型独立审阅，但该模型所在 provider 返回
-   **HTTP 402（余额不足）**，5 个审阅任务全部失败。补偿手段：所有结论都基于 DOM / 样式 / 度量与
-   对比度计算；三套 mockup 都用同一把尺子量过（对比度 0 条不达标、外部请求 0、断链 0）。
-   截图保留在 `research/_raw/*/shots/`（未入库，可重跑生成）供人工查看。
-   **2026-09-23 重试：仍未恢复。** 单张截图的连通性探针返回空，因此**没有**消耗 5 个正式审阅任务；
-   模型 `deepseek-v4-flash-vision-exp` 在 provider 目录中确实存在且声明 `input: ["text", "image"]`
-   （provider=`deepseek`，`api.deepseek.com`），所以仍指向该账号余额。另：**主模型 `deepseek-v4.1` 不声明图像输入**
-   （`read_image` 直接被拒），因此无法用主模型替代视觉模型——这一点比原记录写得明确。
+1. ~~**视觉复核没做成**~~ → **已补齐（2026-09-23）**：23 条独立视觉评述（20 个参考站 + 3 个自有产物）
+   全部拿到，逐条见 [`research/VISION-REVIEW.md`](research/VISION-REVIEW.md)。
+   过程如实记录：首次确为 provider **HTTP 402（余额不足）**；充值后重试**仍失败**，我用三路对照
+   （默认模型成功、另两个模型失败）定位到真因是**我把 provider id 传错了**——应为 `deepseek-official`，
+   不是 `deepseek` / `llm-deepseek`。又用凭据库里的 key 直连 `api.deepseek.com` 验证：
+   `/v1/models` 与 `/v1/chat/completions` 都是 **200** 且正常计费，**账号与模型一直是好的**。
+   复核还带回两条新限制（11/108 张截图超过模型 8192px 单边上限；
+   **整页截图可能是拼接产物，页高 ≠ 内容长度**），以及一个门禁盲区（只查页面级溢出，
+   查不出被 `overflow:hidden` 裁掉的控件）——后者已补 `scripts/tools/check-mobile-chrome.js`。
 2. **A + B 是在没有等到点单的情况下实施的**：依据是三套方案为逐项包含关系（A ⊂ B ⊂ C），
    任何选择都要先做 A；且全程在分支上推进、`master` 始终保持你原版的样子。
    如果你不认可这个判断，删掉那几个分支即可，`master` 不受影响。

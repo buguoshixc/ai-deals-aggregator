@@ -1116,6 +1116,43 @@ check() call sites  master = 94  HEAD = 105
 
 ---
 
+### 2.25 视觉复核补齐（原计划 B4）+ 两条「疑似缺陷」的复核结论（2026-09-23）
+
+**背景**：`research/README.md` §3/§6 一直挂着「视觉评述未完成」（当时的记录：provider HTTP 402）。
+
+**结果**：已跑通。**23 条独立视觉评述**（20 个参考站 + 3 个自有产物），全部 `sawImage = true`，
+逐条照录在 `research/VISION-REVIEW.md`（含方法、硬约束与已知限制）。
+
+**为什么之前跑不成——诊断做实了，不是推测**：
+
+- 首次确为 402（余额不足），当时的记录是准确的。
+- 用户充值后我重试**仍失败**，于是做了三路对照实验：
+  `qiyuan + deepseek-v4.1`（会话默认模型）**成功**；`qiyuan + glm-5.3`、`deepseek + deepseek-flash` **全部失败**。
+  → 说明 `agent()` 的 provider/model 覆盖机制本身是好的，问题在**我传错了 provider id**。
+- `dsh --profile web --dump-config` 里写着默认 agent 模型是 **`provider: deepseek-official`**；换成它之后 6/6 批一次成功。
+- 再用凭据库里的 key 直连 `api.deepseek.com` 验证账号：`GET /v1/models` → **200**，
+  其中 `deepseek-flash` 声明 `input_modalities: ["text","image"]`；`POST /v1/chat/completions` → **200** 且正常计费。
+  **结论：整条链路上唯一的问题就是把 provider id 猜成了 `deepseek` / `llm-deepseek`。**
+
+**视觉复核带回来的两条「疑似缺陷」，已在当前构建上复核（不拿快照当现状）**：
+
+| 疑似 | 实测（390px，当前构建） | 判定 |
+|---|---|---|
+| 手机端排序行被右边缘裁切（「最近更」露半截、深色按钮被切） | `#sortBox` right=373 < 视口 390、`clipped=0`；三个按钮 88/65/65px 均未截断 | ❌ **不成立** |
+| 暗色模式顶栏仍是浅色（上浅下黑割裂带） | `[dark] header.top=rgb(20,23,28)`、`body=rgb(11,13,16)`、`card=#14171c` | ❌ **不成立** |
+| 跳转 chip ①②③ 后 ④ 单独折行、右侧留大片空白 | `#jumpNav` chips=4、**rows=2、perRow=[3,1]**，末枚 chip 右边缘 x=105 → 右侧 **269px** 空白 | ✅ **成立**（页面级无溢出，属视觉秩序问题） |
+
+**顺带补了门禁的一个盲区**：`verify-site.js` 只断言**页面级**无横向溢出
+（`documentElement.scrollWidth === clientWidth`）。控件被父容器 `overflow:hidden` 裁掉一截时，
+页面级宽度可以完全正常——**门禁全绿，肉眼却看得见被裁的控件**；这个盲区正是视觉复核暴露出来的。
+新增 `scripts/tools/check-mobile-chrome.js`：逐控件量 `width / scrollWidth / clientWidth / clipped`
+与相对父、相对视口的越界量，并输出 `#jumpNav` 的折行情况与亮/暗两套的底色对照。
+
+**仍未处理**（需要时再做）：chip 折成 3+1 的观感问题（可改成横向滚动或等宽），
+以及 `VISION-REVIEW.md` §6 第 4–6 条（控制带偏厚、强调色重复节奏、暗色卡片与底色明度差）。
+
+---
+
 ## 三、命令速查
 
 

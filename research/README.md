@@ -77,7 +77,7 @@ node scripts/tools/study-site.js <url> --out=research/_raw/<slug> [--scheme=ligh
 | toolify.ai | `goto` 30s 超时（有 note），部分内容可能未渲染完 | 保留，报告里标注受限 |
 | vercel.com / notion.com / framer.com | 几乎不含语义标签，骨架走「面积兜底」清单 | 骨架一节据此写，已标注方法 |
 | appsumo.com / free-for-dev | 页面结构以 div 为主，部分区块语义缺失 | 同上 |
-| 视觉评述（原计划 B4） | **未完成**：视觉模型 `deepseek-v4-flash-vision-exp` 所在 provider 返回 HTTP 402（余额不足），5 个视觉审阅任务全部失败 | 已知限制，见 §6；改用**程序化验证**（对比度、外部请求、结构断言）替代，截图仍保留供人工查看 |
+| 视觉评述（原计划 B4） | **已完成**（2026-09-23 补跑）：23 条独立视觉评述全部拿到（20 个参考站 + 3 个自有产物），逐条见 [`VISION-REVIEW.md`](VISION-REVIEW.md) | 首次确因 402 失败；补跑失败的真因是我们把 **provider id 传错**（应为 `deepseek-official`），账号一直是好的。程序化验证仍保留——两条腿都要 |
 | 需登录的控制台类页面 | 按项目既有边界，不做登录态抓取 | 从未纳入样本 |
 
 ---
@@ -118,9 +118,17 @@ node scripts/tools/study-site.js <url> --out=research/_raw/<slug> [--scheme=ligh
 
 ## 6. 已知限制
 
-1. **视觉评述缺失**（见 §3）：主模型不能读图，指定的视觉模型 provider 余额不足（402）。
-   补偿手段：① 所有结论以 DOM/样式/度量与对比度计算为准；② 三套方案 demo 全部用同一把尺子量过
-   （对比度 0 条不达标、外部请求 0）；③ 截图保留在 `research/_raw/*/shots/` 供人工查看。
+1. ~~**视觉评述缺失**~~ → **已补齐（2026-09-23）**：见 [`VISION-REVIEW.md`](VISION-REVIEW.md)。
+   过程如实记录：首次确为 provider 402（余额不足）；充值后仍失败的真因是我们**把 provider id 传错了**
+   （应为 `deepseek-official`，不是 `deepseek` / `llm-deepseek`）——用凭据库里的 key 直连 `api.deepseek.com`
+   验证过：`GET /v1/models` → 200、`POST /v1/chat/completions` → 200 且正常计费，账号与模型一直是好的。
+   视觉复核**自己又带回两条限制**（见 `VISION-REVIEW.md` §2）：
+   ① **11 / 108 张截图超过模型的 8192px 单边上限**（最大 `free-for-dev/shots/desktop-full.png` 14.9 MB），
+   这些站只读到手机首屏或降采样图，**字号不可细究**；
+   ② **整页截图可能是拼接产物**——`openrouter.ai` 的同一屏列表在约 16400 / 32800 / 98400 px 处原样重复、
+   之间夹整片纯白，**所以「整页截图高度」≠「真实内容长度」**：凡以页高为口径的跨站比较（含我们自己的
+   「首屏 / 手机屏数」对照），遇到这类站都需要用 DOM 高度复核。
+   实测补记：这两条限制之外，复核带回来的两条「疑似缺陷」在当前构建上**都不成立**（详见 `VISION-REVIEW.md` §6）。
 2. **对比度是近似值**：只算纯色背景，渐变/图片背景样本被跳过（各站跳过数量记录在
    `skippedForComplexBackground`，raycast 跳过 219 条、linear 95 条，跨站比较时以「不达标条数」为主）。
 3. **单次抓取快照**：所有数字是某一时刻的渲染结果，站点改版即失效；重跑同一条命令即可刷新。
