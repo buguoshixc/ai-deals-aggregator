@@ -15,6 +15,8 @@
 | **合并态门禁** | ✅ `test` / `test:strict` / `check:zh` exit 0；`selftest:zh` **7/7**；`build` ×2 清单 SHA256 **完全一致**（139 文件）；`verify:regress` **99 项 0 失败** + 5 项回归全过 |
 | **文档同步** | ✅ 补上原先缺失的 `PROJECT_STATUS.md` **2.21**；全仓「未合并」表述改为实际状态（`SUMMARY.md`、`docs/DESIGN-RULES.md`、`research/GAP-MATRIX.md`） |
 | **本地预览** | ✅ `node scripts/serve.js --dir=dist` → `http://127.0.0.1:8080/`（200，标题正确） |
+| **收藏 / 对比（G11）** | ✅ 已实现并合并为 **`30d547f`**。门禁抓出「62 张卡集体 3px 纵向溢出」并修掉（纯 CSS 一行，判据一字未动）；合并态 **110 项 0 失败**、`selftest:zh` 7/7、两次构建一致 |
+| **首页按意图重排的静态页** | ✅ 5 个入口页 + 审阅总览已生成（`mockups/v4/intent/`，**从真实构建产物衍生**，非手绘），**待你定稿** |
 
 > ⚠️ **一条会误导后来人的环境坑**：本会话沙箱（`workspace-write`）**禁止子进程管道 stdio**。
 > `selftest:zh`（用 `spawnSync` 调构建）与 `verify:regress`（用 playwright 启 Edge）会以 **EPERM** 失败，
@@ -45,30 +47,35 @@
 
 | 项 | 状态 | 说明 |
 |---|---|---|
-| 收藏 / 对比 | 待实施 | `localStorage` + 可分享 URL，最多 4 条并排对比关键字段；会改动卡片交互与信息层级 |
-| 首页按意图重排 | 待定稿 | 把「一个列表 + facet」升级为按意图直达的一级入口（免费 / 学生 / 国内厂商…），每个入口独立静态路径；**动手前先出 mockup 给你定稿** |
+| 收藏 / 对比 | ✅ **已落地并合并**（`30d547f`） | 卡片星标 + 详情弹层完整动作 + 底部对比条 + `?compare=` 可分享链接；合并态 110 项 0 失败 |
+| 首页按意图重排 | **待你定稿** | 5 个入口页现在就能点开：`http://127.0.0.1:8081/mockups/v4/intent/index.html`。要你定四件事：入口集合 / 学生页**窄口径 13 条**还是**宽口径 19 条** / 路径命名 /「全部工具」的位置 |
 | 英文覆盖 | **不做** | 唯一带持续人工成本的项（每条新数据都要人工译） |
 
-参考：`mockups/v3/C-ambitious/PLAN.md`、`home.html`、`i18n.html`。
+参考：`mockups/v4/intent/`（本次新增，样式/页头/卡片全部取自真实产物）、`mockups/v3/C-ambitious/PLAN.md`。
 
 ### 3. 是否上线
 
 **`git push` 仍一次都没执行** —— 它会触发 CI 采集与 GitHub Pages 部署，需要你明确同意。
 部署后可用 `npm run verify -- --url=<线上地址>` 当冒烟测试。
 
+> ⚠️ **推送前必须先并一次上游数据**：`origin/master` 已被**定时 CI 采集**推了一个提交
+> `43e81cc chore(data): 更新优惠数据 2026-09-23 11:29 CST`（**只动 `deals.json`**，+205/−64）。
+> 并进来之后卡片数与各入口计数都会变，`mockups/v4` 的计数要重新生成、门禁要重跑一遍。
+
 ---
 
 ## 三、分支地图（全部未推送）
 
 ```
-master                       10cc923  ← A + B + 收尾 已全合（本次会话）
+master                       30d547f  ← A + B + 收尾（10cc923）+ 收藏/对比（G11）全部已合并
  ├─ feat/visual-token-layer  874cd6b  A：token 层 / 暗色 / 对比度 / 语义与无障碍
  │   └─ feat/b-extras         ec05252  + 订阅 feed / 纠错入口 / WebSite / 同页锚点
  │       └─ feat/detail-pages f1213d5  + 每条优惠一个独立静态页（URL 1 → 81）
  │           └─ feat/row-view 7bfc607  + 紧凑行视图（首屏 13 行 / 手机 5.5 屏）
  │               └─ feat/polish f55e8a9  + 圆角间距收敛与键盘可达
- └─ trial/merge-rehearsal-2  044dd51  ← 本次合并的来源
-backup/pre-ab-merge          fb08832  ← 合并前的 master（保险）
+ ├─ trial/merge-rehearsal-2  044dd51  ← A/B/收尾 的合并来源
+ └─ feat/favorites-compare   e0cd50d  ← 收藏/对比（c2310d8 实现 + e0cd50d 修 3px）
+backup/pre-ab-merge          fb08832  ← A/B 合并前的 master（保险）
 ```
 
 > 分层合并的老命令已用不上了（A/B 已在 `master` 里）。要回退：`git reset --hard backup/pre-ab-merge`
