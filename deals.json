@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-09-23T00:25:05+08:00",
+  "updatedAt": "2026-09-23T11:29:09+08:00",
   "count": 130,
   "deals": [
     {
@@ -599,7 +599,12 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "discountInfo": "ChatGPT 提供免费档；Business 与 Enterprise 套餐可选年付。核查官方定价页时，页面上没有列出长期有效的公开学生或非营利折扣。",
+        "description": "可直接使用免费档，或在官方定价页选择年付。",
+        "eligibility": "个人用户、已统一使用 ChatGPT 的团队，以及正在比较席位成本的企业。"
+      }
     },
     {
       "id": "c789f0a090bf",
@@ -622,7 +627,12 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "discountInfo": "Gemini 免费访问仍然可用。Google AI Pro 的学生优惠因国家而异；美国学生优惠页面写明，上一轮学生优惠已于 2026 年 3 月 11 日结束。",
+        "description": "请查看你所在地区的 Gemini 官方学生页与订阅页。",
+        "eligibility": "在查各国学生优惠的学生、Google Workspace 用户，以及想要免费 AI 助手的用户。"
+      }
     },
     {
       "id": "c05dc74bfd78",
@@ -645,7 +655,12 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "discountInfo": "通过验证的学生与教育工作者可优惠购买 Education Pro。Perplexity 同时说明，优惠码只通过官方合作伙伴与官方渠道发放。",
+        "description": "先完成学生或教育工作者身份验证，或使用官方渠道发布的合作方优惠。",
+        "eligibility": "学生、教育工作者、重度检索用户，以及正在比较 AI 搜索工具的人。"
+      }
     },
     {
       "id": "4a875a435019",
@@ -668,7 +683,12 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "discountInfo": "Canva 非营利计划为符合条件的注册非营利组织免费提供 Canva Pro 功能与协作工具，最多 50 个席位，超出的非营利席位按折扣价购买。Canva 教育版对符合条件的 K-12 教师与学生免费。",
+        "description": "通过 Canva 非营利计划或 Canva 教育版的身份验证入口申请。",
+        "eligibility": "非营利组织、学校、K-12 教师，以及设计与市场团队。"
+      }
     },
     {
       "id": "9c553dd82d2d",
@@ -691,7 +711,12 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "discountInfo": "Cursor 表示任何人都可以免费开始使用。它的学生页面把学生引向校园与线上活动优惠；定价页则提醒，第三方出售的 Cursor 订阅均未获授权。",
+        "description": "先用免费档；如需升级，只在 cursor.com 官方渠道购买。",
+        "eligibility": "关注校园优惠的学生，以及正在试用 AI 编程工具的开发者。"
+      }
     },
     {
       "id": "3c8a9a6a9ee9",
@@ -714,7 +739,12 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "discountInfo": "Replit 定价页列出了付费套餐的年付优惠。其文档中也出现过学生折扣，例如 Replit Core 前六个月每月减 $15。",
+        "description": "订阅前先核对 Replit 定价页与学生注册入口。",
+        "eligibility": "学生、独立开发者，以及使用 Replit Agent 做应用的开发者。"
+      }
     },
     {
       "id": "6013b80f266f",
@@ -737,7 +767,12 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "discountInfo": "Zapier 提供年付优惠，并表示非营利组织购买任意付费套餐可享 15% 折扣，按任务计费的部分除外。",
+        "description": "选择年付，或通过 Zapier 非营利计划申请。",
+        "eligibility": "非营利组织，以及想把重复任务自动化的中小企业。"
+      }
     },
     {
       "id": "7762168d515d",
@@ -760,7 +795,12 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "discountInfo": "Make 通过其 NGO 计划，为符合条件的非政府组织提供 12 个月免费授权。",
+        "description": "通过 Make 的 NGO 计划申请。",
+        "eligibility": "非政府组织、非营利组织，以及在做工作流自动化的运营团队。"
+      }
     },
     {
       "id": "c971e33a9cd0",
@@ -783,7 +823,12 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "discountInfo": "OpenAI 与 SheerID 合作完成身份验证，为符合条件的退伍军人和即将退役的现役军人提供整整一年免费 ChatGPT Plus，并附示例对话，以及面向求职、福利申请与搬迁规划的入门指南。",
+        "description": "在官方领取页面通过 SheerID 完成军人或退伍身份验证。",
+        "eligibility": "退伍军人，以及准备退役的现役军人。"
+      }
     },
     {
       "id": "654e05ed3453",
@@ -1151,7 +1196,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "把选题、脚本或 PDF 变成带解说的白板动画视频。"
+      }
     },
     {
       "id": "173ff7aa837e",
@@ -1174,7 +1222,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "把长视频自动切成短视频片段的工具。"
+      }
     },
     {
       "id": "bf08e4fbd5ac",
@@ -1197,7 +1248,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "上传照片，找出与你相像的名人。"
+      }
     },
     {
       "id": "7f3607d92aa5",
@@ -1220,7 +1274,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "用 AI 把文字生成视频。"
+      }
     },
     {
       "id": "7f1250402ebb",
@@ -1243,7 +1300,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "面向 Web 与移动端的 AI 无代码测试自动化平台。"
+      }
     },
     {
       "id": "9ce2f3d45c11",
@@ -1266,7 +1326,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "自动处理 B2B 客户沟通与约谈的工具。"
+      }
     },
     {
       "id": "413a77602a7c",
@@ -1289,7 +1352,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "自建 GitHub Actions 运行器，支持自动扩缩容。"
+      }
     },
     {
       "id": "e3af28ce5ca1",
@@ -1312,7 +1378,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "用编码智能体把遗留代码迁移到现代框架的 IDE。"
+      }
     },
     {
       "id": "28434ca44079",
@@ -1335,76 +1404,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "0750a3061d72",
-      "title": "Flora AI",
-      "vendor": "Flora AI",
-      "url": "https://www.florafauna.ai/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/flora-ai",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "A platform to integrate multiple AI models for generating images, videos, and character designs.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-23",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "06bc1d631f62",
-      "title": "Sync.so",
-      "vendor": "Sync.so",
-      "url": "https://sync.so/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/sync-so",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "视频",
-      "description": "A tool to sync lips and clone voices in videos",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-23",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "5975c73aa115",
-      "title": "Qlip.ai",
-      "vendor": "Qlip.ai",
-      "url": "https://www.qlip.ai/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/qlip-ai",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "编程开发",
-      "description": "A tool for creating clips from long-form videos.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-23",
-      "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "集成多种工具与模型的 AI 开发平台。"
+      }
     },
     {
       "id": "ec17511a4284",
@@ -1427,7 +1430,88 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "把 2D 图片转成 3D 模型。"
+      }
+    },
+    {
+      "id": "0750a3061d72",
+      "title": "Flora AI",
+      "vendor": "Flora AI",
+      "url": "https://www.florafauna.ai/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/flora-ai",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "A platform to integrate multiple AI models for generating images, videos, and character designs.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-23",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "整合多个 AI 模型，用于生成图像、视频与角色设计。"
+      }
+    },
+    {
+      "id": "06bc1d631f62",
+      "title": "Sync.so",
+      "vendor": "Sync.so",
+      "url": "https://sync.so/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/sync-so",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "视频",
+      "description": "A tool to sync lips and clone voices in videos",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-23",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "为视频做口型同步与声音克隆。"
+      }
+    },
+    {
+      "id": "5975c73aa115",
+      "title": "Qlip.ai",
+      "vendor": "Qlip.ai",
+      "url": "https://www.qlip.ai/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/qlip-ai",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "编程开发",
+      "description": "A tool for creating clips from long-form videos.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-23",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "从长视频中剪出片段的工具。"
+      }
     },
     {
       "id": "9fdccd9de525",
@@ -1450,7 +1534,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "用数字人把文字或语音做成视频。"
+      }
     },
     {
       "id": "72410d92e184",
@@ -1473,7 +1560,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "下单前替你核对价格、评价与卖家可信度的 AI 工具。"
+      }
     },
     {
       "id": "b4d191dd0c65",
@@ -1496,7 +1586,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "从长视频里自动挑出精彩片段做成短片。"
+      }
     },
     {
       "id": "ab4c0e5c007e",
@@ -1519,7 +1612,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "制作多语言视频的工具。"
+      }
     },
     {
       "id": "cbfce04c5556",
@@ -1542,7 +1638,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "给静态照片加上动效的 App。"
+      }
     },
     {
       "id": "2d0ceeea880d",
@@ -1565,7 +1664,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "与你的文档和网页对话。"
+      }
     },
     {
       "id": "a1bb0302318b",
@@ -1588,7 +1690,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "AI 记事本：用电脑音频转写会议内容，自动生成笔记、待办与跟进事项。"
+      }
     },
     {
       "id": "12dbf1bf1180",
@@ -1611,7 +1716,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "把口述实时转成排版好的文字。"
+      }
     },
     {
       "id": "544bb843f605",
@@ -1634,7 +1742,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "具备长期上下文，可完成复杂创作与分析任务。"
+      }
     },
     {
       "id": "642216383013",
@@ -1657,7 +1768,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "终极笔记工具。"
+      }
     },
     {
       "id": "f820af7d3a70",
@@ -1680,7 +1794,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "跨多个应用与服务连接并自动化任务的平台。"
+      }
     },
     {
       "id": "f2294d28cbe8",
@@ -1703,7 +1820,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "生成可直接用于生产的独特游戏素材。"
+      }
     },
     {
       "id": "da0d5a1929b4",
@@ -1726,7 +1846,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "把图片转成矢量图、插画与 3D 图像的工具。"
+      }
     },
     {
       "id": "d344dfeebd73",
@@ -1749,7 +1872,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "生成定制图形与动画的工具。"
+      }
     },
     {
       "id": "8ad33957ce77",
@@ -1772,7 +1898,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "生成图像与视频的设计工具。"
+      }
     },
     {
       "id": "d37287db1754",
@@ -1795,7 +1924,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "一个 AI 基准测试：考察语言模型用 SVG 画出 Gary Busey 肖像的水平。"
+      }
     },
     {
       "id": "97d21ff73d3e",
@@ -2209,7 +2341,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "追踪 AI 问答引擎如何改变你网站的曝光表现。"
+      }
     },
     {
       "id": "9e7c938ec401",
@@ -2232,7 +2367,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-22",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "释放真正的数字艺术表现力。"
+      }
     },
     {
       "id": "376b6b3397e6",
@@ -2255,7 +2393,10 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-23",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "与数据、图片、代码对话，并支持实时联网搜索。"
+      }
     },
     {
       "id": "913211f6d165",
