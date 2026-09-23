@@ -478,6 +478,26 @@
 
     footer { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); color: var(--mut); font-size: 12px; line-height: 1.9; text-align: center; }
 
+    /* ---------- 独立详情页（构建期生成 deal/<id>/index.html）---------- */
+    .jumpback {
+      margin-left: auto; font-size: var(--fs-md); color: var(--brand); text-decoration: none;
+      border: 1px solid var(--line); border-radius: var(--r-sm); padding: 6px 12px; white-space: nowrap;
+      transition: border-color var(--t-fast) var(--e-std), color var(--t-fast) var(--e-std);
+    }
+    .jumpback:hover { border-color: var(--brand); color: var(--brand); }
+    .crumb { font-size: var(--fs-md); color: var(--mut); margin: var(--s4) 0 var(--s3); word-break: break-word; }
+    .crumb a { color: var(--mut); text-decoration: none; }
+    .crumb a:hover { color: var(--brand); text-decoration: underline; }
+    .dpane {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--r-dlg);
+      padding: var(--s4) var(--s4) var(--s2); max-width: 820px;
+    }
+    .dpane-src {
+      font-size: var(--fs-md); color: var(--mut); line-height: 1.8;
+      margin-top: var(--s3); max-width: 820px; word-break: break-all;
+    }
+    .dpane-src a { color: var(--brand); }
+
     /* ---------- 详情弹层 ---------- */
     .dlg {
       border: 0; padding: 0; border-radius: 14px; background: var(--card); color: var(--ink);
@@ -669,12 +689,14 @@
     </section>
     </main>
 
+    <!--SHARED:footer:START-->
     <footer>
       <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span></p>
       <p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p>
       <p>本站不收录付费推广位，排序与推荐理由不出售。</p>
       <p>厂商 logo 版权归各厂商所有，仅作标识用途。</p>
     </footer>
+    <!--SHARED:footer:END-->
   </div>
 
   <dialog class="dlg" id="detail" aria-labelledby="detailTitle">
@@ -1613,15 +1635,28 @@
         '&body=' + encodeURIComponent(body) + '&labels=data-fix';
     }
 
+    /**
+     * 独立详情页的站内路径。相对路径（`deal/<id>/`）在本地预览与 GitHub Pages
+     * 项目站点下都成立，不需要知道站点前缀。
+     */
+    function detailHref(deal) {
+      return deal && deal.id ? 'deal/' + encodeURIComponent(deal.id) + '/' : '';
+    }
+
     /** 卡片。档位由 tierOf 现算，因此单独调用也正确 */
     function cardHtml(deal) {
       const url = safeUrl(deal.url);
       const tier = tierOf(deal);
       const vendor = vendorOf(deal);
       const title = escapeHtml(deal.title);
-      const titleHtml = url
-        ? '<a href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">' + title + '</a>'
-        : title;
+      // 标题指向**站内详情页**（可索引、可内链），CTA 仍直达厂商官方页——
+      // 「落地页指向官方」的原则不变（见 README 设计原则 2）。
+      const internal = detailHref(deal);
+      const titleHtml = internal
+        ? '<a href="' + escapeAttr(internal) + '">' + title + '</a>'
+        : url
+          ? '<a href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">' + title + '</a>'
+          : title;
 
       const sub = [vendor.name, deal.category].filter(Boolean).join(' · ');
 
@@ -1768,7 +1803,18 @@
         button.setAttribute('aria-pressed', on ? 'true' : 'false');
       });
     }
-    // body.js 已加，切换器此时才显示出来，立刻把选中态画对（否则会闪一下「跟随系统」）
+    // body.js 已加，切换器此时才显示出来，立刻把选中态画对（否则会闪一下「跟随系统」）。
+    // 主题切换的绑定独立于列表逻辑：独立详情页没有列表，但同样要能切主题。
+    function bindThemeSeg() {
+      const seg = document.getElementById('themeSeg');
+      if (!seg) return;
+      // 回车/空格由 <button> 原生支持，不需要额外键盘处理
+      seg.addEventListener('click', event => {
+        const button = event.target.closest('[data-theme-value]');
+        if (button) applyTheme(button.dataset.themeValue);
+      });
+    }
+    bindThemeSeg();
     renderThemeSeg();
 
     // 中文译文的折叠偏好：默认展开，用户收起过就记住（下次打开详情仍是收起的）。
@@ -1839,12 +1885,6 @@
     }
 
     function bindEvents() {
-      // 主题切换：三态按钮，回车/空格由 <button> 原生支持，不需要额外键盘处理
-      document.getElementById('themeSeg').addEventListener('click', event => {
-        const button = event.target.closest('[data-theme-value]');
-        if (button) applyTheme(button.dataset.themeValue);
-      });
-
       let debounce = null;
       els.search.addEventListener('input', () => {
         clearTimeout(debounce);
@@ -1929,28 +1969,35 @@
         });
     }
 
-    loadDeals()
-      .then(() => {
-        els.category.insertAdjacentHTML('beforeend', categoryOptionsHtml(state.deals));
-        els.lastUpdated.textContent = state.updatedAt
-          ? new Date(state.updatedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
-          : '未知（数据未标注更新时间）';
-        els.topStat.innerHTML = topStatHtml(state.deals, state.updatedAt);
-        bindEvents();
-        render();
-      })
-      .catch(error => {
-        // 预渲染的静态卡片仍在 DOM 里，无 JS / 拉取失败时页面依旧可读可点，
-        // 因此这里**不覆盖**已有内容，只加一条提示与重试入口（错误态不能把内容变没）。
-        console.error('加载 deals.json 失败：', error);
-        const anchor = document.getElementById('stats');
-        if (anchor && !document.getElementById('loadErr')) {
-          anchor.insertAdjacentHTML('afterend',
-            '<div class="loaderr" id="loadErr" role="alert">数据加载失败，当前显示的是上次构建时的静态内容。' +
-            '<button type="button" id="retryLoad">重新加载</button></div>');
-          document.getElementById('retryLoad').addEventListener('click', () => location.reload());
-        }
-      });
+    // 独立详情页没有列表容器：主题切换已在上面绑定，这里不再拉数据，
+    // 于是详情页是**纯静态**的（不 fetch、不渲染、零控制台错误）。
+    if (!els.list) {
+      const lastUpdated = document.getElementById('lastUpdated');
+      if (lastUpdated) lastUpdated.textContent = '见首页';
+    } else {
+      loadDeals()
+        .then(() => {
+          els.category.insertAdjacentHTML('beforeend', categoryOptionsHtml(state.deals));
+          els.lastUpdated.textContent = state.updatedAt
+            ? new Date(state.updatedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
+            : '未知（数据未标注更新时间）';
+          els.topStat.innerHTML = topStatHtml(state.deals, state.updatedAt);
+          bindEvents();
+          render();
+        })
+        .catch(error => {
+          // 预渲染的静态卡片仍在 DOM 里，无 JS / 拉取失败时页面依旧可读可点，
+          // 因此这里**不覆盖**已有内容，只加一条提示与重试入口（错误态不能把内容变没）。
+          console.error('加载 deals.json 失败：', error);
+          const anchor = document.getElementById('stats');
+          if (anchor && !document.getElementById('loadErr')) {
+            anchor.insertAdjacentHTML('afterend',
+              '<div class="loaderr" id="loadErr" role="alert">数据加载失败，当前显示的是上次构建时的静态内容。' +
+              '<button type="button" id="retryLoad">重新加载</button></div>');
+            document.getElementById('retryLoad').addEventListener('click', () => location.reload());
+          }
+        });
+    }
   </script>
   <!--PRERENDER:jsonld-->
 </body>
