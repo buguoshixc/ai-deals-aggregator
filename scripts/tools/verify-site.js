@@ -1002,6 +1002,108 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   await page.waitForSelector('article.g', { timeout: 15000 });
   await page.waitForTimeout(300);
 
+  console.log('\n=== 16) 紧凑行视图 ===');
+  const viewToggle = await page.evaluate(() => {
+    const seg = document.getElementById('viewSeg');
+    return { exists: Boolean(seg), buttons: seg ? seg.querySelectorAll('[data-view]').length : 0 };
+  });
+  check('有视图切换器（卡片 / 列表）', viewToggle.exists && viewToggle.buttons === 2, `${viewToggle.buttons} 个按钮`);
+
+  await page.click('#viewSeg [data-view="rows"]');
+  await page.waitForTimeout(400);
+  const rowsView = await page.evaluate(() => {
+    const rows = [...document.querySelectorAll('.r')];
+    const first = rows[0];
+    return {
+      cls: document.getElementById('dealsList').className,
+      rows: rows.length,
+      visible: rows.filter(row => row.getBoundingClientRect().bottom <= window.innerHeight).length,
+      pageHeight: Math.round(document.documentElement.scrollHeight),
+      rowHeight: first ? Math.round(first.getBoundingClientRect().height) : 0,
+      hasInternal: Boolean(first && first.querySelector('.rt a[href^="deal/"]')),
+      hasCta: Boolean(first && first.querySelector('.ra .go[target="_blank"]')),
+      bands: document.querySelectorAll('.tierhead').length,
+      jumpHidden: document.getElementById('jumpNav').hidden,
+      stored: (() => { try { return localStorage.getItem('dsh.view'); } catch (e) { return 'n/a'; } })()
+    };
+  });
+  check('列表视图：首屏完整可见 ≥ 12 行（实测 13，卡片视图 9）', rowsView.visible >= 12,
+    `${rowsView.visible} 行（行高 ${rowsView.rowHeight}px · 共 ${rowsView.rows} 行 · 页高 ${rowsView.pageHeight}px）；` +
+    `卡片视图同口径 ${rendered.firstScreenFull} 张`);
+  check('列表视图：条目数与卡片一致且字段同源',
+    rowsView.rows === rendered.cards && rowsView.hasInternal && rowsView.hasCta,
+    `${rowsView.rows} 行 · 站内标题链接=${rowsView.hasInternal} · 官方 CTA=${rowsView.hasCta}`);
+  check('列表视图：不分带且锚点导航隐藏（不留死锚点）',
+    rowsView.bands === 0 && rowsView.jumpHidden === true,
+    `分带 ${rowsView.bands} 个 · 锚点 hidden=${rowsView.jumpHidden}`);
+  check('列表视图：偏好已写入 localStorage', rowsView.stored === 'rows', `dsh.view=${rowsView.stored}`);
+
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('.r, article.g', { timeout: 15000 });
+  await page.waitForTimeout(400);
+  const rowsAfterReload = await page.evaluate(() => {
+    const pressed = document.querySelector('#viewSeg [aria-pressed="true"]');
+    return {
+      cls: document.getElementById('dealsList').className,
+      pressed: pressed ? pressed.dataset.view : null
+    };
+  });
+  check('刷新后仍是列表视图', rowsAfterReload.cls === 'rows' && rowsAfterReload.pressed === 'rows',
+    `class=${rowsAfterReload.cls} · 选中「${rowsAfterReload.pressed}」`);
+
+  const rowDetail = await page.evaluate(async () => {
+    document.querySelector('.r').click();
+    await new Promise(r => setTimeout(r, 350));
+    const out = {
+      open: document.getElementById('detail').open,
+      title: (document.querySelector('#detail h2') || {}).textContent || ''
+    };
+    document.querySelector('#detail .x').click();
+    await new Promise(r => setTimeout(r, 250));
+    return out;
+  });
+  check('列表视图整行也能打开详情', rowDetail.open && Boolean(rowDetail.title),
+    `弹层 open=${rowDetail.open}「${rowDetail.title.slice(0, 22)}」`);
+
+  await page.click('#viewSeg [data-view="cards"]');
+  await page.waitForTimeout(400);
+  const backToCards = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('article.g')];
+    return {
+      cls: document.getElementById('dealsList').className,
+      cards: cards.length,
+      visible: cards.filter(card => card.getBoundingClientRect().bottom <= window.innerHeight).length,
+      bands: document.querySelectorAll('.tierhead').length,
+      stored: (() => { try { return localStorage.getItem('dsh.view'); } catch (e) { return 'n/a'; } })()
+    };
+  });
+  check('切回卡片视图恢复原样（密度与分带都不变）',
+    backToCards.cls === 'grid' && backToCards.cards === rendered.cards &&
+      backToCards.visible === rendered.firstScreenFull && backToCards.bands >= 3,
+    `${backToCards.cards} 张卡 · 首屏完整可见 ${backToCards.visible} 张 · 分带 ${backToCards.bands} 个 · dsh.view=${backToCards.stored}`);
+
+  // 手机端密度：同一轮里先量卡片、再量列表，直接比页高（不跨运行比数字）
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(400);
+  const mobileCards = await page.evaluate(() => Math.round(document.documentElement.scrollHeight));
+  await page.click('#viewSeg [data-view="rows"]');
+  await page.waitForTimeout(500);
+  const mobileRows = await page.evaluate(() => ({
+    pageHeight: Math.round(document.documentElement.scrollHeight),
+    screens: Math.round((document.documentElement.scrollHeight / window.innerHeight) * 10) / 10,
+    overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    rows: document.querySelectorAll('.r').length
+  }));
+  check('手机端列表视图明显更短且不横向溢出',
+    mobileRows.overflow === 0 && mobileRows.pageHeight < mobileCards * 0.8,
+    `卡片 ${mobileCards}px → 列表 ${mobileRows.pageHeight}px（${mobileRows.screens} 屏 · ${mobileRows.rows} 行 · 横向溢出 ${mobileRows.overflow}px）`);
+
+  await page.click('#viewSeg [data-view="cards"]');
+  await page.waitForTimeout(300);
+  await page.evaluate(() => { try { localStorage.removeItem('dsh.view'); } catch (e) {} });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.waitForTimeout(200);
+
   console.log('\n=== 10) 请求与错误 ===');
   check('没有外部请求（无 CDN 热链）', externalRequests.length === 0,
     externalRequests.length ? externalRequests.slice(0, 3).join(', ') : '全部同源');
