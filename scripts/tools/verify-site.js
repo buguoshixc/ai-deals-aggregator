@@ -57,6 +57,25 @@ function check(name, ok, detail) {
 }
 
 /**
+ * 等应用真正接管，而不是等一个固定毫秒数。
+ *
+ * `#lastUpdated` 初值是 `--`，**只有** loadDeals() 的 .then 里才会被填上时间——
+ * 而 bindEvents() 与 render() 就在同一个 .then 里。预渲染不填它，所以它是
+ * 「事件已绑定、state.cards 已就绪」的可靠信号。
+ *
+ * 为什么必须这么写：本地服务器毫秒级返回，固定 sleep 400ms 看着没问题；
+ * 换成线上 GitHub Pages 要几百毫秒，卡片点击就会打在 bindEvents() 之前——
+ * 事件没人接，弹层不开，后面断言全崩（`--url=` 跑线上时真的这样挂过）。
+ */
+async function waitForApp(page, timeout = 20000) {
+  await page.waitForFunction(() => {
+    const el = document.getElementById('lastUpdated');
+    return !!el && el.textContent.trim() !== '' && el.textContent.trim() !== '--';
+  }, { timeout });
+  await page.waitForTimeout(120);
+}
+
+/**
  * 机器可读指标：`--json=` 把它写成文件，`--compare=` 拿它跟基线比。
  *
  * 为什么要有这个：改动前后的「密度有没有退、页高有没有涨、请求有没有多」必须是**脚本产出的数字**，
@@ -125,7 +144,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   console.log('\n=== 2) 有 JS：接管后的默认视图 ===');
   await page.unroute('**/deals.json');
   await page.goto(base, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(400);
+  await waitForApp(page);
 
   const rendered = await page.evaluate(() => {
     const cards = [...document.querySelectorAll('article.g')];
@@ -448,7 +467,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   await page.evaluate(() => { try { localStorage.removeItem('dsh.dealZhOpen'); } catch (e) {} });
   await page.reload({ waitUntil: 'load' });
   await page.waitForSelector('article.g', { timeout: 15000 });
-  await page.waitForTimeout(400);
+  await waitForApp(page);
 
   const zh = await page.evaluate(async () => {
     const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -463,6 +482,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       markTitle: marked.length ? (marked[0].querySelector('.zhmark').getAttribute('title') || '') : '',
       hintVisible: marked.length ? marked[0].querySelector('.zhmark').offsetHeight > 0 : false
     };
+    // 没有一张卡带提示就直接返回，让断言红着报出来——不要在后面拿 undefined 崩栈，
+    // 崩栈只能看到 TypeError，看不出「线上一个提示都没有」这个真正的问题。
+    if (!marked.length) return out;
 
     // ① 有提示的卡片：弹层里必须有译文块，且英文原文一字未改
     marked[0].click();
@@ -525,7 +547,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   // ③ 收起后重新加载：偏好必须还在（否则每次开卡片都又弹开，等于没做折叠）
   await page.reload({ waitUntil: 'load' });
   await page.waitForSelector('article.g', { timeout: 15000 });
-  await page.waitForTimeout(400);
+  await waitForApp(page);
   const zhAfterReload = await page.evaluate(async () => {
     const sleep = ms => new Promise(r => setTimeout(r, ms));
     const card = [...document.querySelectorAll('article.g')].find(c => c.querySelector('.zhmark'));
