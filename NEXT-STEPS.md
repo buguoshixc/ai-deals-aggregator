@@ -1,8 +1,9 @@
 # 下一步：现在的状态，以及还需要你点头的事
 
-> 更新于 **2026-09-23 13:1x**（本次会话：并回上游两次 → 修掉两个手机端横向问题 → 门禁补 3 条断言 →
-> 合并态全门禁复验 → **已按你的「push」上线**）。
-> 全貌总览见 [`SUMMARY.md`](SUMMARY.md)；逐步记录见 `PROJECT_STATUS.md` 的 2.17–2.28。
+> 更新于 **2026-09-23 23:2x**。本轮（前一节会话）：并回上游两次 → 修掉两个手机端横向问题 → 门禁补 3 条断言 →
+> 合并态全门禁复验 → **已按你的「push」上线**。
+> 追加（按用户反馈新起的分支，见第二节·五）：修「打开对比」点不开 + 新增收藏列表入口，**未合并、未推送**。
+> 全貌总览见 [`SUMMARY.md`](SUMMARY.md)；逐步记录见 `PROJECT_STATUS.md` 的 2.17–2.29。
 
 ---
 
@@ -58,12 +59,38 @@ Deploy [run 35849728738](https://github.com/buguoshixc/ai-deals-aggregator/actio
 
 ---
 
+## 二·五、待你点单：收藏入口 + 「打开对比」修复（分支已就绪，**未合并、未推送**）
+
+**起因是你的两条反馈**：点击收藏后没有入口打开收藏列表；加入 2 个模型后点「打开对比」打不开。
+复核后是**三条现象、三条根因**（真浏览器实测，详见 `PROJECT_STATUS.md` 2.29）：
+
+| 现象 | 根因（一句话） |
+|---|---|
+| 「打开对比」点不开（必现） | 弹层的 `hidden` 属性从没被摘掉，而 `body.js .cmpdlg[hidden]{display:none}` 是作者级规则 ⇒ 进了顶层却 `display:none`、0×0，**页面还被 inert 冻住** |
+| 换筛选后「打开对比」静默失效 | 对比项只在**当前筛选后的卡片**里解析；不足 2 条时直接 `return`，条上却仍写「已选 2 条」而标题条 0 个 |
+| 收藏只有「加」没有「看」 | 2.22 当时明确列为不做；本轮补上入口 |
+
+**做了什么**：弹层显隐交回 `<dialog>` 的 `open`；新增 `state.selectIndex`（按**整份数据**解析收藏/对比，
+与筛选/Tab/折叠无关）；新增**收藏入口**「★ 我的收藏 N」（只看收藏的视图 + 空态说明 +
+失效收藏的「清理这 N 条」，入口放筛选条最前面以免手机上要横滑才看见）。
+
+**门禁（本分支实跑）**：`verify` **124 项 0 失败**（基线 108，+16 条新断言，全部量几何而不是 DOM 状态）；
+`verify:regress` **129 项 0 失败**（5 项回归全过：卡片 62→62、首屏 9→9、页高 5382px 在容差内、外部请求 0、JS 错误 0）；
+`build` ×2 摘要一致（139 文件）；`test` / `test:strict` / `check:zh` / `selftest:zh`(7) / `selftest:expiry`(55) 全绿；
+`check-mobile-chrome` 零裁切。默认视图**预渲染产物与改动前逐字节相同**（markup 与 JSON-LD 两侧 SHA 一致）。
+
+**你要决定的只有一件**：合并进 `master` 并推送（`git merge --no-ff` + `git push`），还是先放着。
+分支在 `.worktrees/fav-entry`（worktree，已 gitignore），**主工作区一个文件都没碰**——
+当时另一个会话正在主工作区改 `build-local.js` 等文件；若它先提交，合并时按 2.27 的「两侧内容都不丢」处理。
+
+---
+
 ## 三、分支地图
 
 ```
 master = origin/master            fa2403d  ← 已上线：A/B/收尾 + G11 + 两次并回上游 + 两个手机端横向修复
  ├─ fa2403d   docs: 上线记录（2.28）+ 口径纠正：push 只触发发布，不触发采集
- ├─ ecbc815   fix(mobile): 修掉两个手机端横向问题 + 门禁补 3 条断言   ← 108 项线上冒烟测试打的就是这份
+ ├─ ecbc815   fix(mobile): 修掉两个手机端横向问题 + 门禁补 3 条断言
  ├─ 0d6b869   merge: 并回 origin/master 的 fix/detail-close
  ├─ 71d020a   merge: 并回 origin/master（重写过的 A/B 线 + 数据 + 活动期限三分类）
  ├─ feat/visual-token-layer      874cd6b  A：token 层 / 暗色 / 对比度 / 语义与无障碍
@@ -72,7 +99,8 @@ master = origin/master            fa2403d  ← 已上线：A/B/收尾 + G11 + �
  │           └─ feat/row-view    7bfc607  + 紧凑行视图（首屏 13 行 / 手机 5.5 屏）
  │               └─ feat/polish  f55e8a9  + 圆角间距收敛与键盘可达
  ├─ feat/favorites-compare       e0cd50d  ← 收藏/对比（c2310d8 实现 + e0cd50d 修 3px）
- └─ feat/expiry-window           c02e017  ← 活动期限三分类
+ ├─ feat/expiry-window           c02e017  ← 活动期限三分类
+ └─ fix/favorites-entry-and-compare-open   ← 2.29：修「打开对比」+ 收藏列表入口（未合并、未推送）
 backup/pre-ab-merge              fb08832  ← A/B 合并前的 master（保险）
 backup/pre-origin-merge-b261add  b261add ← 并上游前的 master（保险）
 ```

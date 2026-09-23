@@ -58,7 +58,10 @@ const URL = process.argv[2] || 'http://127.0.0.1:8080/';
         pastViewport: Math.round(r.right - window.innerWidth)
       };
     };
-    for (const s of ['#sortBox', '#categoryFilter', '.catpick', '#jumpNav', '#viewSeg', '#stats', '.rbar', '.rright']) {
+    // 收藏入口与「清理失效收藏」也要逐个量：入口在筛选条里（那一行是横向滚动容器，
+    // 被裁掉一截时页面级宽度完全正常，正是本探针存在的理由），清理按钮在结果条文字后面。
+    for (const s of ['#sortBox', '#categoryFilter', '.catpick', '#jumpNav', '#viewSeg', '#stats', '.rbar', '.rright',
+      '#facets [data-facet="fav"]', '#stats [data-fav-prune]']) {
       res.items.push(pick(s));
     }
     // 跳转 chip 是否折行：按 offsetTop 分组

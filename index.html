@@ -758,6 +758,20 @@
     .cmpshare { font-size: var(--fs-sm); color: var(--ink2); min-width: 0; word-break: break-all; }
     .cmpnote { margin-top: var(--s3); font-size: var(--fs-sm); color: var(--mut); line-height: 1.7; }
 
+    /* ---------- 收藏：失效清理 ----------
+       收藏入口本身复用 .f 的全部样式（不多一条规则）；这里只补一个按钮：
+       只在「有收藏在当前数据里找不到」时由 JS 建出来，预渲染 HTML 里永远没有它
+       （产物自检与 verify 都断言 `data-fav-prune` 不在静态骨架里）。
+       它是行内元素，嵌在结果条的文字后面：窄屏靠文字自然折行，不新增溢出风险。 */
+    #stats .prune {
+      font: inherit; font-size: var(--fs-sm); cursor: pointer; margin-left: var(--s2);
+      border: 1px solid var(--line); border-radius: var(--r-sm); padding: 2px 8px;
+      background: var(--card); color: var(--ink2); white-space: nowrap;
+      transition: border-color var(--t-fast) var(--e-std), color var(--t-fast) var(--e-std);
+    }
+    #stats .prune:hover { border-color: var(--brand); color: var(--brand); }
+    #stats .prune:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
     /* ---------- 响应式 ---------- */
     @media (max-width: 1180px) { .grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 760px) {
@@ -1667,13 +1681,34 @@
       { key: 'updated', label: '最近更新' }
     ];
 
-    /** 默认视图（预渲染与浏览器首屏共用） */
+    /**
+     * 默认视图（预渲染与浏览器首屏共用）。
+     *
+     * `fav` / `favIds` 是「只看收藏」这一视角的状态：**纯数据**（布尔 + id 数组），
+     * 因此渲染核心仍然是纯函数，构建期拿到的是 `fav: false, favIds: []` ——
+     * 预渲染产物与本次改动前**逐字节相同**（构建自检与 verify 都断言这件事）。
+     */
     const DEFAULT_FILTERS = {
-      tab: 'deals', region: '', category: '', vendor: '', verified: false, search: '', sort: 'tier'
+      tab: 'deals', region: '', category: '', vendor: '', verified: false, search: '', sort: 'tier',
+      fav: false, favIds: []
     };
 
     function defaultFilters() {
       return Object.assign({}, DEFAULT_FILTERS);
+    }
+
+    /** 收藏视角用的 id 集合；构建期没有这个字段，一律按「空集合」处理 */
+    function favIdsOf(filters) {
+      return filters && Array.isArray(filters.favIds) ? filters.favIds : [];
+    }
+
+    /**
+     * 选择集（收藏 / 对比）解析所用的作用域：与「全部工具」同宽 ——
+     * 优惠与工具都在里面，且都排除已过期条目。
+     * 收藏与对比的 id 都从卡片上取，因此解析必须与「页面上可能出现的卡片」同一口径。
+     */
+    function selectScopeFilters() {
+      return Object.assign(defaultFilters(), { tab: 'tools' });
     }
 
     function matches(deal, filters) {
@@ -1740,11 +1775,26 @@
     }
 
     /**
+     * 卡片列表（未排序）：筛选 → 折叠 →（收藏视角）按**卡片 id** 收敛。
+     *
+     * 收藏为什么在**折叠之后**收敛：星标挂在卡片上，存下来的就是那张卡的 id。
+     * 若按原始条目 id 过滤，百度千帆那张折叠卡（17 个模型）会退回「ERNIE-4.5-Turbo-VL 免费额度」
+     * 这类单模型标题——收藏视图里的标题与当初星标的那张卡不一致。
+     * 先折叠再按卡片 id 收敛，收藏视图看到的就正是当初星标的那张卡。
+     */
+    function scopedCards(deals, filters) {
+      const cards = foldDeals(visibleDeals(deals, filters));
+      if (!filters || !filters.fav) return cards;
+      const ids = favIdsOf(filters);
+      return cards.filter(card => ids.indexOf(String(card.id || '')) >= 0);
+    }
+
+    /**
      * 卡片列表：筛选 → 折叠 → 打档位 → 排序。
      * 浏览器与构建期预渲染都走这一个入口，默认视图就是 filters 取默认值的那一次调用。
      */
     function cardsFor(deals, filters) {
-      return orderCards(foldDeals(visibleDeals(deals, filters)), filters.sort || 'tier');
+      return orderCards(scopedCards(deals, filters), (filters && filters.sort) || 'tier');
     }
 
     /** 构建期/首屏：默认视图 */
@@ -1758,18 +1808,21 @@
 
     /** 各维度的候选值与计数；计数按「当前作用域」实时算，不写死 */
     function facetModel(deals, filters) {
-      const scopeFor = patch => visibleDeals(deals, Object.assign({}, filters, patch));
-      const count = (list, key) => foldDeals(list).length;
+      const withPatch = patch => Object.assign({}, filters, patch);
+      const scopeFor = patch => visibleDeals(deals, withPatch(patch));
+      // 计数与真正渲染同源：筛选 → 折叠 →（收藏视角）按卡片 id 收敛，再数卡片。
+      // 旧写法是 foldDeals(visibleDeals(...))，fav 为假时与之逐字节等价。
+      const count = patch => scopedCards(deals, withPatch(patch)).length;
       const base = Object.assign({}, filters);
 
       const tabs = TABS.map(tab => ({
         key: tab.key, label: tab.label,
-        count: count(scopeFor({ tab: tab.key, vendor: '', category: '', region: '', verified: false }), tab.key)
+        count: count({ tab: tab.key, vendor: '', category: '', region: '', verified: false })
       }));
 
       const regions = ['cn', 'global'].map(region => ({
         key: region, label: REGION_LABELS[region],
-        count: count(scopeFor({ region: region === filters.region ? '' : region }), region)
+        count: count({ region: region === filters.region ? '' : region })
       }));
 
       const vendors = new Map();
@@ -1780,7 +1833,7 @@
         vendors.get(vendor.key).count++;
       }
       const vendorList = [...vendors.values()]
-        .map(item => Object.assign({}, item, { count: foldDeals(scopeFor({ vendor: item.key })).length }))
+        .map(item => Object.assign({}, item, { count: count({ vendor: item.key }) }))
         .filter(item => item.count >= 2)
         .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'zh-Hans-CN'))
         .slice(0, 6);
@@ -1792,14 +1845,31 @@
         regions: regions,
         vendors: vendorList,
         categories: categories,
-        verified: count(scopeFor({ verified: !filters.verified, vendor: '', category: '', region: '' }), 'verified'),
+        verified: count({ verified: !filters.verified, vendor: '', category: '', region: '' }),
         base: base
       };
     }
 
-    function facetBarHtml(deals, filters) {
+    /**
+     * 筛选条。第三参数 `favInfo` 是收藏视角的**纯数据**（`{ total, stale, hidden }`），
+     * 构建期不传 ⇒ `total` 为 0 ⇒ 收藏入口**一个字节都不会进预渲染 HTML**
+     * （无 JS 时不许有「点了没反应」的控件，这条由产物自检与 verify 双重断言）。
+     */
+    function facetBarHtml(deals, filters, favInfo) {
       const model = facetModel(deals, filters);
       const parts = [];
+      const favTotal = favInfo && favInfo.total > 0 ? favInfo.total : 0;
+
+      // 收藏入口。刻意放在**最前面**：这一行在窄屏是横向滚动容器，
+      // 放到末尾意味着手机上要先横滑才能看见自己刚收藏的东西。
+      // 零收藏且没进收藏视角时不渲染——没有可看的东西就不该有按钮。
+      if (favTotal > 0 || filters.fav) {
+        parts.push('<button type="button" class="f fav' + (filters.fav ? ' on' : '') +
+          '" data-facet="fav" data-fav-open aria-pressed="' + (filters.fav ? 'true' : 'false') + '" title="' +
+          escapeAttr(filters.fav ? '退出收藏视图' : '只看我收藏的条目（共 ' + favTotal + ' 条，只存在本机）') + '">' +
+          '<span aria-hidden="true">★</span> 我的收藏<b>' + favTotal + '</b></button>');
+        parts.push('<span class="fsep"></span>');
+      }
 
       parts.push('<button type="button" class="f ok' + (filters.verified ? ' on' : '') + '" data-facet="verified" aria-pressed="' +
         (filters.verified ? 'true' : 'false') + '">✓ 已核验<b>' + model.verified + '</b></button>');
@@ -1845,12 +1915,35 @@
         (date ? ' · 更新 ' + escapeHtml(date) : '');
     }
 
-    function statsHtml(deals, filters) {
+    /**
+     * 结果条。第三参数 `favInfo` 是收藏视角的纯数据（`{ total, stale, hidden }`），
+     * 构建期不传 ⇒ 输出与改动前逐字节相同（预渲染产物不变）。
+     *
+     * 两种「少了」必须分开说，否则读者分不清「我没收藏」和「收藏了但被筛选挡住」：
+     *   hidden  被当前筛选挡住的收藏条数
+     *   stale   当前数据里已经找不到的收藏（条目改名 / 下架）。**不自动删用户数据**，
+     *           只在收藏视图里说明，并给一个明确的清理按钮。
+     */
+    function statsHtml(deals, filters, favInfo) {
       const cards = cardsFor(deals, filters);
       const cn = cards.filter(card => card.region === 'cn').length;
       const global = cards.length - cn;
       const tiers = TIERS.filter(tier => cards.some(card => card.tier === tier.n)).length;
-      if (!cards.length) return '没有匹配的条目';
+      const info = favInfo || null;
+      const stale = info && info.stale > 0 ? info.stale : 0;
+      const prune = filters.fav && stale
+        ? ' · 另有 <b>' + stale + '</b> 条收藏在当前数据里找不到（条目可能已改名或下架）' +
+          '<button type="button" class="prune" data-fav-prune>清理这 ' + stale + ' 条</button>'
+        : '';
+      if (!cards.length) {
+        if (filters.fav) return '没有符合条件的收藏卡片 · 地区 / 分类 / 厂商 / 搜索等筛选可能把它挡住了' + prune;
+        return '没有匹配的条目';
+      }
+      if (filters.fav) {
+        const hidden = info && info.hidden > 0 ? info.hidden : 0;
+        return '显示 <b>' + cards.length + '</b> 条收藏卡片' +
+          (hidden ? ' · 其余 ' + hidden + ' 条被当前筛选挡住' : '') + prune;
+      }
       return '显示 <b>' + cards.length + '</b> 条卡片 · 国内 ' + cn + ' · 国外 ' + global +
         ' · 覆盖 <b>' + tiers + '</b> 个力度档位';
     }
@@ -2208,7 +2301,13 @@
       setZhOpen(true);
     }
 
-    const state = { deals: [], updatedAt: null, filters: defaultFilters(), cards: [], view: 'cards' };
+    const state = {
+      deals: [], updatedAt: null, filters: defaultFilters(), cards: [], view: 'cards',
+      /** 收藏与对比共用的「id → 卡片 / 条目」索引：按**整份数据**解析，不随当前筛选变化 */
+      selectIndex: new Map(),
+      /** localStorage 里原样的收藏 id（含已失效的）；favIds 是其中能在当前数据里解析到的那些 */
+      favStored: [], favIds: []
+    };
 
     /* ---------- 视图：卡片 / 列表 ----------
        默认卡片（与预渲染完全一致）；「列表」是可选的高密度视图，偏好记 localStorage。
@@ -2287,11 +2386,51 @@
       try { localStorage.setItem(key, JSON.stringify(ids)); } catch (error) { /* 记不住不影响本次会话 */ }
     }
 
-    /** 当前页的 id → 卡片。对比表与收藏星标都按 id 找卡片，不按下标（下标会随筛选变） */
+    /**
+     * id → 卡片 / 条目（对比表、收藏视图、星标都按 id 找，不按下标——下标会随筛选变）。
+     *
+     * **必须查 `state.selectIndex`（整份数据），不能查 `state.cards`（当前筛选的结果）**：
+     * 选择是一个跨视图的集合，不是当前视图的子集。旧写法查 `state.cards`，于是
+     * 「选 2 条 → 换个筛选把这 2 条挡住 → 点『打开对比』」会**静默失效**：
+     * 实测条上仍写着「已选 2 条」而标题条 0 个，点了什么也不发生（门禁只看 DOM 状态，看不见）。
+     */
     function cardById(id) {
       const key = String(id || '');
       if (!key) return null;
-      return state.cards.filter(card => String(card.id || '') === key)[0] || null;
+      return state.selectIndex.get(key) || null;
+    }
+
+    /**
+     * 选择集索引。两级：
+     *   ① **折叠后的卡片**（与页面上出现的卡片同一个入口，因此标题与用户当初点的那张一致）；
+     *   ② 再用**未过期**的原始条目补齐 —— 覆盖「在筛选视图里星标了折叠组的非代表条目」这类 id。
+     */
+    function buildSelectIndex() {
+      const index = new Map();
+      scopedCards(state.deals, selectScopeFilters()).forEach(card => {
+        const key = String(card.id || '');
+        if (key) index.set(key, card);
+      });
+      state.deals.forEach(deal => {
+        const key = String(deal.id || '');
+        if (key && !index.has(key) && !isExpired(deal)) index.set(key, deal);
+      });
+      return index;
+    }
+
+    /**
+     * 收藏视角的纯数据（喂给 RENDER-CORE 的 facetBarHtml / statsHtml，保持它们是纯函数）：
+     *   total   本机收藏总数（storage 原样，含失效的）——入口上的计数就是它
+     *   stale   其中在当前数据里找不到的（条目改名 / 下架）；收藏视图里会说明并提供清理
+     *   hidden  解析得到、但被当前筛选挡住的条数（只在收藏视角下有意义）
+     */
+    function favInfo() {
+      const total = state.favStored.length;
+      return {
+        total: total,
+        stale: total - state.favIds.length,
+        hidden: state.filters.fav ? Math.max(0, state.favIds.length - state.cards.length) : 0
+      };
     }
 
     // 页面上用了两个 <dialog>（详情 / 对比）。模块级的「当前详情卡片」让详情弹层里
@@ -2300,6 +2439,8 @@
     let favInDetail = [];
     let cmpInDetail = [];
     let cmpReturnFocus = null;
+    /** 对比选择里被自动移除的失效条数的说明（选择一变就清掉，不做成常驻告警） */
+    let cmpNote = '';
 
     function isFav(id) { return favInDetail.indexOf(id) >= 0; }
     function inCmp(id) { return cmpInDetail.indexOf(id) >= 0; }
@@ -2350,11 +2491,22 @@
       const bar = document.getElementById('cmpbar');
       if (!bar) return;
       const count = cmpInDetail.length;
-      // 只有 1 条时弹层里没有可并排的东西——不进对比视图，但选择仍然记着（星标已亮）
-      bar.hidden = count < 2;
+      const ready = cmpCards().length;
+      // 只有 1 条时弹层里没有可并排的东西——不进对比视图，但选择仍然记着（星标已亮）。
+      // 例外：有「有选择被移除」的说明时让条留下来承载那句话，否则「少了一条」没有任何落点；
+      // 一条都不剩（含全是失效项）时条不出现——那种情况与「清空对比」等价，弹层也没东西可并排。
+      bar.hidden = count === 0 || (ready < 2 && !cmpNote);
       if (bar.hidden) return;
+      const open = document.getElementById('cmpOpen');
+      if (open) {
+        // 不足 2 条时明确 disabled 并写明原因，而不是「点了没反应」
+        open.disabled = ready < 2;
+        open.title = ready < 2 ? '再选 1 条才能并排对比' : '并排看这 ' + ready + ' 条的关键字段';
+      }
+      // 计数与标题条**同源**：都是「解析得到的条数」，不再出现「已选 2 条 · 0 个标题」
       document.getElementById('cmpCount').innerHTML =
-        '已选 <b>' + count + '</b> / ' + CMP_MAX + ' 条进入对比';
+        '已选 <b>' + count + '</b> / ' + CMP_MAX + ' 条进入对比' +
+        (cmpNote ? ' · ' + escapeHtml(cmpNote) : '');
     }
 
     /* ---------- 对比视图 ---------- */
@@ -2363,7 +2515,10 @@
       const dlg = document.createElement('dialog');
       dlg.className = 'dlg cmpdlg';
       dlg.id = 'compare';
-      dlg.hidden = true;
+      // 这里**不能**设 hidden：`.cmpdlg[hidden]{display:none}` 是作者级规则，
+      // 而 showModal() 只加 open 属性、不会摘掉 hidden —— 于是弹层进了顶层（页面被 inert 冻住）
+      // 却永远是 display:none、0×0，人眼什么也看不见（实测：open=true · hidden=true · display:none · :modal=true）。
+      // 显隐交给 <dialog> 自己的 open 语义；样式里那条 [hidden] 规则保留，作为「标记被写回 HTML」时的兜底。
       dlg.setAttribute('aria-labelledby', 'cmpTitle');
       dlg.innerHTML =
         '<form method="dialog"><button class="x" aria-label="关闭对比">✕</button></form>' +
@@ -2410,11 +2565,16 @@
 
     function openCompare() {
       const link = cmpInDetail.map(cardById).filter(Boolean);
+      // 不足 2 条时按钮本来就是 disabled；这里再挡一次（键盘/程序化调用），
+      // 但**不再静默**——条上的文案与按钮 title 已经说明「再选 1 条」。
       if (link.length < 2) return;
       rememberCmpFocus();
       // 每次打开都重画：分享链接带着 ?compare= 进来时、以及中途改过选择时，
       // 弹层里那份内容都必须是当前选择——否则会开出一张空表。
       renderCompareBody();
+      // 双保险：万一将来有人又把 hidden 写回标记，这里也保证打开时它是可见的
+      els.compare.hidden = false;
+      els.compare.removeAttribute('hidden');
       if (typeof els.compare.showModal === 'function') {
         if (!els.compare.open) els.compare.showModal();
       } else {
@@ -2446,17 +2606,73 @@
 
     /* ---------- 选择状态的写入口（全部收在这里，保证条/弹层/星标一致）---------- */
 
-    function toggleFav(id) {
-      if (!id) return;
-      favInDetail = isFav(id) ? favInDetail.filter(x => x !== id) : favInDetail.concat([id]);
-      writeIdList(FAV_KEY, favInDetail);
+    /**
+     * 收藏的唯一写入口。
+     * `state.favStored` 是 **storage 原样**的那一份（含失效 id），`state.favIds` 是其中能在
+     * 当前数据里解析到的那些 —— 渲染只吃 favIds，计数/清理提示吃 favStored。
+     * 不自动删失效收藏：那是用户自己存的东西，只能在收藏视图里点「清理」显式删除。
+     */
+    function setFavorites(nextStored) {
+      state.favStored = nextStored.map(id => String(id)).filter(Boolean);
+      state.favIds = state.favStored.filter(id => state.selectIndex.has(id));
+      state.filters.favIds = state.favIds;
+      favInDetail = state.favIds;                    // 星标/详情按钮读的就是这一份
+      writeIdList(FAV_KEY, state.favStored);
+    }
+
+    /** 收藏计数、收藏入口、结果条上的说明都在这里刷新（不重建网格，保住焦点与滚动位置） */
+    function syncSelectionUI() {
+      renderFacets();
+      els.stats.innerHTML = statsHtml(state.deals, state.filters, favInfo());
       syncFavStars();
       syncDetailFavButtons();
+      renderCompareCardsOnly();
+    }
+
+    /** 收藏视图里「当前那张卡消失了」时把焦点交给收藏入口——否则键盘用户被扔回页首 */
+    function focusFavChip() {
+      const chip = document.querySelector('#facets [data-facet="fav"]');
+      if (!chip) return false;
+      try { chip.focus({ preventScroll: true }); } catch (error) { return false; }
+      return true;
+    }
+
+    function toggleFav(id) {
+      const key = String(id || '');
+      if (!key) return;
+      const removing = state.favStored.indexOf(key) >= 0;
+      setFavorites(removing ? state.favStored.filter(x => x !== key) : state.favStored.concat([key]));
+      if (state.filters.fav) {
+        // 收藏视图下卡片集合会变（被取消的那张要立刻消失），必须重画；
+        // render() 收尾会把焦点还给同一张卡，卡片没了则落到收藏入口上（见 render()）。
+        render();
+        // 还有一种丢焦点的路径：焦点本来就不在任何地方（例如程序化 click()），
+        // 那种情况下 render() 里拿不到「原来在哪张卡上」，这里补一次兜底。
+        if (removing && document.activeElement === document.body) focusFavChip();
+        return;
+      }
+      syncSelectionUI();
+    }
+
+    /** 收藏视图开关。与「已核验」同型：只翻一个标志位，其它筛选原样叠加 */
+    function toggleFavView() {
+      state.filters.fav = !state.filters.fav;
+      render();
+    }
+
+    /** 清理「在当前数据里找不到」的收藏（只删解析不到的那些，其余原样保留） */
+    function pruneStaleFavorites() {
+      const kept = state.favStored.filter(id => state.selectIndex.has(id));
+      if (kept.length === state.favStored.length) return;
+      setFavorites(kept);
+      syncSelectionUI();
+      focusFavChip();
     }
 
     function toggleCmp(id) {
       const key = String(id || '');
       if (!key) return;
+      cmpNote = '';   // 选择一变，「有东西被移除」那句说明就过期了
       if (inCmp(key)) cmpInDetail = cmpInDetail.filter(x => x !== key);
       else if (cmpInDetail.length >= CMP_MAX) return;   // 超上限直接不收录（唯一的入口都先判了 disabled）
       else cmpInDetail = cmpInDetail.concat([key]);
@@ -2471,6 +2687,7 @@
 
     function clearCmp() {
       cmpInDetail = [];
+      cmpNote = '';
       writeIdList(CMP_KEY, cmpInDetail);
       syncCompareUrl();
       syncFavStars();
@@ -2572,7 +2789,10 @@
       els.list.insertAdjacentElement('beforebegin', els.compareBar);
       document.body.appendChild(els.compare);
 
-      favInDetail = readIdList(FAV_KEY);
+      // 选择集索引要在任何 id 解析之前建好：收藏与对比都按**整份数据**解析，
+      // 而不是按当前筛选后的 state.cards（后者会让「换个筛选就打不开对比」）。
+      state.selectIndex = buildSelectIndex();
+      setFavorites(readIdList(FAV_KEY));
 
       // 对比选择：URL 优先（可分享的那一份），没有才退回本机上次的选择。
       // 无论来源都按 CMP_MAX 截断——分享来的链接也不能越界。
@@ -2583,7 +2803,12 @@
           fromUrl = raw.split(',').map(part => part.trim()).filter(Boolean);
         }
       } catch (error) { fromUrl = null; }
-      cmpInDetail = (fromUrl || readIdList(CMP_KEY)).slice(0, CMP_MAX);
+      const wanted = (fromUrl || readIdList(CMP_KEY)).slice(0, CMP_MAX);
+      // 数据每天都在变（id 是 厂商|标题|落地页 的指纹），旧选择里的条目可能已经改名或下架。
+      // 解析不到的**自动移除**（它们既显示不出来也删不掉），并把这件事写在对比条上，不静默吞掉。
+      cmpInDetail = wanted.filter(id => state.selectIndex.has(id));
+      const dropped = wanted.length - cmpInDetail.length;
+      cmpNote = dropped ? '已移除 ' + dropped + ' 条当前数据里找不到的对比项' : '';
       writeIdList(CMP_KEY, cmpInDetail);
       syncCompareUrl();
       renderCompareBar();
@@ -2624,6 +2849,11 @@
         if (event.target.closest('[data-fav]')) { toggleFav(favId); return; }
         if (event.target.closest('[data-cmp]')) { toggleCmp(favId); return; }
       });
+
+      // 结果条里的「清理 N 条失效收藏」：只删在当前数据里找不到的那些
+      els.stats.addEventListener('click', event => {
+        if (event.target.closest('[data-fav-prune]')) pruneStaleFavorites();
+      });
     }
 
     /**
@@ -2653,7 +2883,7 @@
       const focusKey = active && active.dataset && active.dataset.facet
         ? active.dataset.facet + ':' + (active.dataset.value || '')
         : null;
-      els.facets.innerHTML = facetBarHtml(state.deals, state.filters);
+      els.facets.innerHTML = facetBarHtml(state.deals, state.filters, favInfo());
       if (!focusKey) return;
       // 重建 innerHTML 会丢焦点：按键操作时把焦点还给同一个 chip，否则键盘用户会被弹回页首
       const restored = els.facets.querySelector('[data-facet="' + focusKey.split(':')[0] + '"]' +
@@ -2677,7 +2907,7 @@
       const rowsView = state.view === 'rows';
       els.list.className = rowsView ? 'rows' : 'grid';
       els.list.innerHTML = rowsView ? rowsHtml(cards) : gridHtml(cards, state.filters);
-      els.stats.innerHTML = statsHtml(state.deals, state.filters);
+      els.stats.innerHTML = statsHtml(state.deals, state.filters, favInfo());
       renderFacets();
       renderSortBox();
       renderViewSeg();
@@ -2685,7 +2915,9 @@
       // 对比条里的标题条也按当前卡片表重画：state.cards 是首次 render() 之后才有内容的，
       // 分享链接（?compare=）进来时正是靠这一句把标题补上
       renderCompareCardsOnly();
-      restoreCardFocus(focusId);
+      // 焦点先还给同一张卡；收藏视图里取消收藏会让那张卡整张消失（焦点无处可还），
+      // 这一种情况把焦点交给收藏入口——否则键盘用户被直接扔回页首。
+      if (!restoreCardFocus(focusId) && focusId && state.filters.fav) focusFavChip();
       // 锚点只在「力度优先 + 卡片视图」下有效（列表视图不分带），避免死锚点
       const jump = document.getElementById('jumpNav');
       if (jump) jump.hidden = rowsView || (state.filters.sort || 'tier') !== 'tier';
@@ -2706,17 +2938,19 @@
      * 把焦点还回同一张卡片——**连星标一起还**。
      * 不这么做的话，点一下星标就会因为 render() 重建 DOM 而丢掉焦点（键盘用户直接被弹回页首）。
      * 星标在显示上没有过渡（只有 :hover / :focus-visible），因此不需要等重排。
+     * 返回是否真的还上了：调用方据此决定要不要退到别的落点（见 render() 里的收藏入口兜底）。
      */
     function restoreCardFocus(cardId) {
-      if (!cardId) return;
+      if (!cardId) return false;
       const index = state.cards.findIndex(card => String((card && card.id) || '') === cardId);
-      if (index < 0) return;
+      if (index < 0) return false;
       const nodes = els.list.querySelectorAll('.g, .r');
       const node = nodes[index];
-      if (!node) return;
+      if (!node) return false;
       const button = node.querySelector('.fav');
       const target = button || node;
-      try { target.focus({ preventScroll: true }); } catch (error) { /* 元素不可聚焦，忽略 */ }
+      try { target.focus({ preventScroll: true }); } catch (error) { return false; }
+      return true;
     }
 
     function openDetail(card) {
@@ -2764,6 +2998,8 @@
         const button = event.target.closest('[data-facet]');
         if (!button) return;
         const facet = button.dataset.facet;
+        // 收藏入口：只翻一个标志位（与「已核验」同型），已选中的其它筛选原样叠加
+        if (facet === 'fav') { toggleFavView(); return; }
         if (facet === 'verified') state.filters.verified = !state.filters.verified;
         else if (facet === 'tab') state.filters = Object.assign({}, state.filters, { tab: button.dataset.value, vendor: '' });
         else state.filters[facet] = state.filters[facet] === button.dataset.value ? '' : button.dataset.value;

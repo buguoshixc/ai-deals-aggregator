@@ -690,7 +690,12 @@ function selfCheck(built) {
   const html = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
   // 内联脚本里含模板字符串字面量（class="go" / data-logo="…" 之类），
   // 数标记时必须先把 <script> 摘掉，否则会把源码当成已渲染的卡片数进去。
-  const markup = html.replace(/<script[\s\S]*?<\/script>/gi, '');
+  //
+  // `<style>` 同样要摘掉，而且**必须**摘：样式注释里写到某个控件标记（例如
+  // 「实测 data-fav-prune 只在有失效收藏时出现」）时，标记扫描会把注释当成控件本身——
+  // 本次就是这么假失败过一次。这与下面 tier 计数那次踩的是同一个坑
+  // （CSS 选择器 `[data-tier="1"] .rnum` 被算成档位角标）：**要数的是元素，不是文本。**
+  const markup = html.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '');
 
   if (/PRERENDER:/.test(html)) fail('产物 index.html 仍残留 PRERENDER 标记');
   if (/__SITE_URL__/.test(html)) fail('产物 index.html 仍残留 __SITE_URL__ 占位');
@@ -750,8 +755,10 @@ function selfCheck(built) {
   //
   // 标记要写得足够具体：`.cmpbar` / `.fav` 这类**类名**在 <style> 里本来就有
   // （样式块不属于 markup），拿类名去找必然假失败——要找的是「控件元素」本身。
-  const g11Controls = ['data-fav-toggle', 'data-fav=', 'data-cmp-open', 'data-cmp-clear',
-    'data-cmp-remove', 'class="cmpbar"', 'id="cmpbar"', 'id="compare"'];
+  // `data-fav-open`（收藏入口）/ `data-fav-prune`（清理失效收藏）与星标同源：
+  // 收藏入口按「本机收藏数 > 0」才渲染，而构建期没有 localStorage ⇒ 预渲染里必然是零。
+  const g11Controls = ['data-fav-toggle', 'data-fav=', 'data-fav-open', 'data-fav-prune',
+    'data-cmp-open', 'data-cmp-clear', 'data-cmp-remove', 'class="cmpbar"', 'id="cmpbar"', 'id="compare"'];
   const g11Leaked = g11Controls.filter(token => markup.includes(token));
   if (g11Leaked.length) fail(`预渲染 HTML 里出现了收藏/对比控件（无 JS 时的死按钮）: ${g11Leaked.join(', ')}`);
   else console.log('  ✓ 收藏/对比: 预渲染 HTML 零控件（整块由 JS 建，无 JS 时不给可点暗示）');
