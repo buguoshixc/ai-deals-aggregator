@@ -619,6 +619,133 @@
     .dact .sec:hover { border-color: #c3ceff; color: var(--brand); }
     .dsrc { margin-top: 14px; font-size: 11.5px; color: var(--mut); line-height: 1.7; }
 
+    /* ---------- 详情弹层里的收藏 / 对比 ----------
+       整块由 JS 插入（没有 JS 就不该出现可点的收藏按钮），因此这里不需要 body.js 门控；
+       按钮本身是 flex 行，比 .dact 的链接行更靠上，两行之间只隔一个间距。 */
+    .dfav { display: flex; gap: var(--s2); margin-top: var(--s3); flex-wrap: wrap; }
+    .dfav button {
+      font: inherit; font-size: var(--fs-base); font-weight: 600; cursor: pointer;
+      border: 1px solid var(--line); border-radius: var(--r); background: var(--card); color: var(--ink);
+      padding: 10px 14px; display: inline-flex; align-items: center; gap: var(--s1);
+      /* 只列出来的属性，不用 transition: all —— 规范禁止（见 docs/DESIGN-RULES.md） */
+      transition: border-color var(--t-fast) var(--e-std), background-color var(--t-fast) var(--e-std), color var(--t-fast) var(--e-std);
+    }
+    .dfav button:hover { border-color: var(--brand); color: var(--brand); }
+    .dfav button[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--on-accent); }
+    .dfav button:disabled { cursor: not-allowed; color: var(--mut); background: var(--bg); border-color: var(--line2); }
+    .dfav button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    .dfav button .st { font-size: var(--fs-lg); line-height: 1; }
+
+    /* ---------- 收藏：卡片上的星标 ----------
+       卡片是 **192px 定高 + overflow:hidden** 的容器，任何进入正常流的元素都会挤压内容、
+       被静默裁掉。因此这个按钮：
+         · 绝对定位（right/bottom），**不参与布局** —— 卡片高度、标题宽度、logo 簇宽度、网格行高全部不变；
+         · 星形符号放在 ::before / ::after 伪元素里（两者都绝对定位、互不占位），
+           按钮自身的文字内容仍是完整中文标签，对比度审计与屏幕阅读器读到的都是它；
+         · .meta 右侧加一条 40px 的走廊（padding-right），星标落在这条走廊里，
+           不会压住「获取 →」这个真实链接。
+       点击由 body.js 门控，去掉 js 类即不再给可点暗示（与 .seg / .meta .hint 同一套做法）。 */
+    .g .fav {
+      position: absolute; right: var(--s2); bottom: var(--s2); z-index: 2;
+      width: 24px; height: 24px; padding: 0; margin: 0;
+      display: grid; place-items: center; cursor: pointer;
+      font: inherit; font-size: 0; line-height: 1;
+      border: 1px solid var(--line); border-radius: var(--r-sm);
+      background: var(--card); color: var(--ink);
+      transition: border-color var(--t-fast) var(--e-std), background-color var(--t-fast) var(--e-std), color var(--t-fast) var(--e-std);
+    }
+    .g .fav::before, .g .fav::after {
+      font-size: 15px; line-height: 1;
+      position: absolute; inset: 0; display: grid; place-items: center;
+    }
+    .g .fav::before { content: '\2606'; }                       /* ☆ 未收藏：空心 */
+    .g .fav::after { content: '\2605'; opacity: 0; }            /* ★ 已收藏：实心 */
+    .g .fav[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--on-accent); }
+    .g .fav[aria-pressed="true"]::after { opacity: 1; }
+    .g .fav:hover { border-color: var(--brand); color: var(--brand); }
+    .g .fav[aria-pressed="true"]:hover { color: var(--on-accent); }
+    .g .fav:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    body:not(.js) .g .fav { display: none; }
+    /* .meta 是 nowrap + overflow:hidden 的横排：右侧留出星标的走廊不会改变卡片高度 */
+    body.js .g .meta { padding-right: 40px; }
+
+    /* ---------- 对比：底部固定条 ----------
+       固定定位 + 不改变 body 内边距 ⇒ **不顶动任何布局**（页高/首屏卡片数都不变）。
+       横向：left/right 归零、内容 nowrap、两端对齐，390px 下没有可横向滚动的东西。
+       与内容的分隔只用 --line 上边框，不引入新的投影取值（散值投影是 2.18 清掉的那类熵）。 */
+    .cmpbar {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+      border-top: 1px solid var(--line); background: var(--card);
+      padding: var(--s2) var(--s4);
+    }
+    .cmpbar[hidden] { display: none; }
+    .cmpin { max-width: 1420px; margin: 0 auto; display: flex; align-items: center; gap: var(--s3); min-width: 0; }
+    .cmpn { font-size: var(--fs-md); color: var(--ink2); white-space: nowrap; }
+    .cmpn b { color: var(--ink); }
+    /* 标题条：nowrap + overflow:hidden，窄屏只裁切不撑宽（横向溢出为 0 的关键之一） */
+    .cmpchips { flex: 1; min-width: 0; display: flex; gap: var(--s1); overflow: hidden; }
+    .cmpchip {
+      font-size: var(--fs-xs); background: var(--line2); color: var(--ink2);
+      border-radius: var(--r-sm); padding: 2px 8px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; max-width: 210px;
+    }
+    .cmpbtn {
+      font: inherit; font-size: var(--fs-md); font-weight: 600; cursor: pointer;
+      border: 1px solid var(--line); border-radius: var(--r-sm); padding: 7px 14px; white-space: nowrap;
+      background: var(--card); color: var(--ink);
+      transition: border-color var(--t-fast) var(--e-std), background-color var(--t-fast) var(--e-std), color var(--t-fast) var(--e-std);
+    }
+    .cmpbtn.open { background: var(--brand); border-color: var(--brand); color: var(--on-accent); }
+    .cmpbtn:hover { border-color: var(--brand); color: var(--brand); }
+    .cmpbtn.open:hover { background: var(--ink); border-color: var(--ink); color: var(--card); }
+    .cmpclear { margin-left: auto; background: none; border-color: transparent; color: var(--ink2); font-weight: 500; }
+    .cmpbar .cmpbtn:focus-visible, .cmpin .cmpbtn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+    /* ---------- 对比视图（弹层）----------
+       复用 .dlg 的居中/遮罩/尺寸约定，只把宽度放宽到能并排放下 4 列。
+       body.js 门控：这块整由 JS 建，正常情况下它连 DOM 都不存在；万一将来有人把标记
+       挪回 HTML，这一条仍能保证「脚本没接管时不给可点暗示」。 */
+    .cmpdlg { width: min(920px, calc(100vw - 40px)); }
+    body.js .cmpdlg[hidden] { display: none; }
+    .cmpdlg .x { z-index: 1; }
+    .cmpbody { padding: 24px; max-height: 86vh; overflow: auto; }
+    .cmpbody h2 { font-size: var(--fs-xl); font-weight: 700; letter-spacing: -.3px; padding-right: 36px; }
+    .cmpsub { font-size: var(--fs-sm); color: var(--mut); margin-top: var(--s1); line-height: 1.7; }
+    /* 4 条并排：窄屏靠横向滚动，绝不让弹层把页面撑宽 */
+    .cmpscroll { margin-top: var(--s4); overflow-x: auto; }
+    .cmptable { border-collapse: collapse; width: 100%; }
+    .cmptable th, .cmptable td {
+      border-bottom: 1px solid var(--line2); padding: 10px var(--s3);
+      text-align: left; vertical-align: top; font-size: var(--fs-md); line-height: 1.6;
+    }
+    .cmptable thead th { border-bottom-color: var(--line); font-size: var(--fs-md); color: var(--ink); min-width: 136px; }
+    .cmptable tbody th {
+      width: 88px; font-weight: 500; color: var(--mut); white-space: nowrap;
+      background: var(--bg); position: sticky; left: 0;
+    }
+    .cmptable td { color: var(--ink); min-width: 136px; word-break: break-word; }
+    .cmptable thead th:first-child { width: 88px; min-width: 88px; }
+    .cmptable .cmptitle { display: block; font-weight: 600; }
+    .cmptable .cmpvendor { display: block; font-size: var(--fs-xs); color: var(--mut); margin-top: var(--s1); }
+    .cmptable .cmpdrop {
+      margin-top: var(--s2); font: inherit; font-size: var(--fs-sm); cursor: pointer;
+      border: 1px solid var(--line); border-radius: var(--r-sm); padding: 3px 8px;
+      background: var(--card); color: var(--ink2); white-space: nowrap;
+      transition: border-color var(--t-fast) var(--e-std), color var(--t-fast) var(--e-std);
+    }
+    .cmptable .cmpdrop:hover { border-color: var(--deal); color: var(--deal-ink); }
+    .cmptable .cmpdrop:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    .cmpact { display: flex; gap: var(--s3); align-items: center; flex-wrap: wrap; margin-top: var(--s4); }
+    .cmpact .pri {
+      font: inherit; font-size: var(--fs-base); font-weight: 600; cursor: pointer;
+      background: var(--brand); color: var(--on-accent); border: 0; border-radius: var(--r); padding: 11px 16px;
+      transition: background-color var(--t-fast) var(--e-std);
+    }
+    .cmpact .pri:hover { background: var(--ink); color: var(--card); }
+    .cmpact .pri:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    .cmpshare { font-size: var(--fs-sm); color: var(--ink2); min-width: 0; word-break: break-all; }
+    .cmpnote { margin-top: var(--s3); font-size: var(--fs-sm); color: var(--mut); line-height: 1.7; }
+
     /* ---------- 响应式 ---------- */
     @media (max-width: 1180px) { .grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 760px) {
@@ -640,6 +767,12 @@
       .seg button { padding: 6px 8px; }
       .dbody { padding: 20px; }
       .dgrid { grid-template-columns: 1fr; }
+      /* 对比条与对比弹层：390px 下只缩小内边距，宽度始终跟着视口走（不制造横向溢出） */
+      .cmpbar { padding: var(--s2) var(--s3); }
+      .cmpbody { padding: 20px; }
+      .cmpbody h2 { font-size: var(--fs-lg); }
+      .cmptable tbody th { width: 68px; min-width: 68px; }
+      .cmptable thead th:first-child { width: 68px; min-width: 68px; }
     }
   </style>
 </head>
@@ -1866,6 +1999,99 @@
         '</div>';
     }
 
+    /* ----------------------------------------------------------------
+     * ⑤.5 收藏 / 对比（G11）—— 对比表的字段与表格
+     *
+     * 表里只出现**数据里真的有值**的字段：缺值不占位、不写「暂无数据」。
+     * 这是 PLAN.md §5 明确要求的对冲——`priceLine` 只有 3 条、`features` 31 条，
+     * 如果按固定 5 行输出，表里会是一片空白噪音，也就不再「诚实」。
+     * 全为纯函数，构建期与浏览器共用同一份（构建期由产物自检断言「零空单元格」）。
+     * ---------------------------------------------------------------- */
+
+    /** 对比表能展示的字段上限：并排 4 条时再多就扫不动了，PLAN.md 只要求这 5 项 */
+    const CMP_MAX = 4;
+
+    function cmpText(value) {
+      return String(value === null || value === undefined ? '' : value).trim();
+    }
+
+    /**
+     * 一条数据的对比字段，**只返回有值的**：
+     *   quota       额度 / 免费档
+     *   eligibility 适用条件
+     *   validity    有效期（有效期说明与截止日期两处有值就都带上）
+     *   price       价格阶梯
+     *   verified    核验状态（「已核验 + 日期」与「数据更新 + 日期」是两件事，措辞不混）
+     */
+    function cmpFieldsFor(deal) {
+      const rows = [];
+      if (!deal) return rows;
+      const push = (key, label, value) => {
+        const text = cmpText(value);
+        if (text) rows.push({ key: key, label: label, value: text });
+      };
+
+      const pricing = KIND_LABELS[deal.pricingModel];
+      const quota = [cmpText(deal.discountInfo), pricing].filter(Boolean);
+      push('quota', '额度', quota.join(' · '));
+      push('eligibility', '适用条件', deal.eligibility);
+      push('validity', '有效期', [cmpText(deal.validity), cmpText(deal.expiresAt)].filter(Boolean).join(' · '));
+      push('price', '价格阶梯', deal.priceLine);
+
+      if (deal.verified && deal.verifiedAt) push('verified', '核验状态', '已核验 ' + cmpText(deal.verifiedAt) + '（人工对照官方页）');
+      else if (deal.lastSeen) push('verified', '核验状态', '数据更新 ' + cmpText(deal.lastSeen) + '（采集时间，非人工核验）');
+
+      return rows;
+    }
+
+    /** 表头单元格：标题 + 厂商（厂商取不到就只留标题，不写占位符） */
+    function cmpHeadHtml(deal, index) {
+      const vendor = vendorOf(deal).name;
+      return '<th scope="col">' +
+        '<span class="cmptitle">' + escapeHtml(deal.title) + '</span>' +
+        (vendor ? '<span class="cmpvendor">' + escapeHtml(vendor) + '</span>' : '') +
+        '<button type="button" class="cmpdrop" data-cmp-remove="' + escapeAttr(deal.id || '') +
+        '" aria-label="' + escapeAttr('从对比中移除 ' + deal.title) + '">移除</button>' +
+        '<span hidden data-cmp-index="' + index + '"></span>' +
+        '</th>';
+    }
+
+    /**
+     * 对比表：列 = 条目（2–4 条），行 = 关键字段。
+     *
+     * **一行只在每个条目都有值时才出现。** 这条比「只跳过整列都空的字段」更严，
+     * 而它是实测逼出来的：`priceLine` 全站只有 3 条、有效期也是有人有有人没有，
+     * 于是并排 4 条时经常出现「3 个格子有字、第 4 个空格子」——空格子正是
+     * PLAN.md §5 要避免的那种噪音（读者分不清「没有这个字段」和「没抓到」）。
+     * 现在缺一条就整行不出，表里**一个空单元格都没有**。
+     * 行顺序按字段固定（与数据顺序无关），因此同一组选择永远得到同一张表。
+     */
+    function cmpTableHtml(cards) {
+      if (!Array.isArray(cards) || cards.length < 2) return '';
+      const perCard = cards.map(cmpFieldsFor);
+      const keys = [];
+      perCard.forEach(rows => rows.forEach(row => { if (!keys.includes(row.key)) keys.push(row.key); }));
+      // 只保留「每个条目都有值」的字段
+      const shared = keys.filter(key => perCard.every(rows => rows.some(row => row.key === key)));
+
+      const head = '<thead><tr><th scope="col"><span class="cmpvendor">关键字段</span></th>' +
+        cards.map(cmpHeadHtml).join('') + '</tr></thead>';
+
+      const body = shared.map(key => {
+        let label = '';
+        perCard.forEach(rows => rows.forEach(row => { if (row.key === key && !label) label = row.label; }));
+        const cells = perCard.map(rows => {
+          const hit = rows.filter(row => row.key === key)[0];
+          return '<td>' + escapeHtml(hit.value) + '</td>';
+        }).join('');
+        return '<tr><th scope="row">' + escapeHtml(label) + '</th>' + cells + '</tr>';
+      }).join('');
+
+      // 一条共同字段都没有（数据太薄）就不硬凑一张空表
+      if (!body) return '';
+      return '<table class="cmptable">' + head + '<tbody>' + body + '</tbody></table>';
+    }
+
     /* ================================================================
      * RENDER-CORE:END
      * ================================================================ */
@@ -1967,6 +2193,403 @@
       detailBody: document.getElementById('detailBody')
     };
 
+    /* ================================================================
+     * 收藏 / 对比（G11）
+     *
+     * 三条硬约束，都来自这个仓库已有的规矩：
+     *   ① 没有 JS ⇒ 一个收藏/对比控件都不出现。做法是**整块由 JS 建 DOM**
+     *      （卡片上的星标、底部对比条、对比弹层都是 createElement 出来的），
+     *      预渲染的 HTML 里因此连一个死按钮都没有；再加上 body.js 门控，
+     *      脚本被禁用/被拦时控件也回到 display:none。
+     *   ② 卡片是 192px 定高 + overflow:hidden，星标必须**绝对定位、不参与布局**，
+     *      否则会被静默裁掉（.meta 右侧留了 40px 走廊给星标，不影响卡片高度）。
+     *   ③ 选择要能用一条 URL 复现：`?compare=id,id`（URLSearchParams 读、有序写回）。
+     *      localStorage 只记「本机上次的选择」，URL 才是可分享的那一份。
+     * ================================================================ */
+
+    /** 收藏的条目 id（localStorage；隐私模式下抛异常，静默退回空集） */
+    const FAV_KEY = 'dsh.favorites';
+    /** 对比栏的条目 id（最多 CMP_MAX 条，超出直接不收录） */
+    const CMP_KEY = 'dsh.compare';
+    const CMP_QUERY = 'compare';
+
+    function readIdList(key) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.map(id => String(id)).filter(Boolean);
+      } catch (error) {
+        return [];   // 隐私模式 / 存进去的不是 JSON：都当作「没有收藏」
+      }
+    }
+
+    function writeIdList(key, ids) {
+      try { localStorage.setItem(key, JSON.stringify(ids)); } catch (error) { /* 记不住不影响本次会话 */ }
+    }
+
+    /** 当前页的 id → 卡片。对比表与收藏星标都按 id 找卡片，不按下标（下标会随筛选变） */
+    function cardById(id) {
+      const key = String(id || '');
+      if (!key) return null;
+      return state.cards.filter(card => String(card.id || '') === key)[0] || null;
+    }
+
+    // 页面上用了两个 <dialog>（详情 / 对比）。模块级的「当前详情卡片」让详情弹层里
+    // 的收藏按钮不必靠 DOM 反查卡片；对比弹层里的移除按钮则按 id 查（表格里本来就有 id）。
+    let favId = null;
+    let favInDetail = [];
+    let cmpInDetail = [];
+    let cmpReturnFocus = null;
+
+    function isFav(id) { return favInDetail.indexOf(id) >= 0; }
+    function inCmp(id) { return cmpInDetail.indexOf(id) >= 0; }
+
+    /** 对比条里的卡片，按选择顺序（顺序 = 分享 URL 里的顺序，可复现） */
+    function cmpCards() {
+      return cmpInDetail.map(cardById).filter(Boolean);
+    }
+
+    /**
+     * 把内存里的选择写回可分享 URL。只在真的变了的时候写，
+     * 避免把一次普通浏览变成一条无意义的 history 记录。
+     */
+    function syncCompareUrl() {
+      if (typeof history === 'undefined' || !history.replaceState) return;
+      try {
+        const url = new URL(location.href);
+        if (cmpInDetail.length) url.searchParams.set(CMP_QUERY, cmpInDetail.join(','));
+        else url.searchParams.delete(CMP_QUERY);
+        const next = url.pathname + url.search + url.hash;
+        if (next !== location.pathname + location.search + location.hash) history.replaceState(null, '', next);
+      } catch (error) { /* 非 http(s) 环境（file://、沙箱 iframe）下改不了 URL，不影响使用 */ }
+    }
+
+    /* ---------- 底部对比条 ---------- */
+
+    function buildCompareBar() {
+      const bar = document.createElement('div');
+      bar.className = 'cmpbar';
+      bar.id = 'cmpbar';
+      bar.hidden = true;
+      // 对比条不进 Tab 顺序里当「一个控件」：里面的按钮各自可聚焦
+      bar.setAttribute('role', 'region');
+      bar.setAttribute('aria-label', '对比栏');
+      bar.innerHTML =
+        '<div class="cmpin">' +
+        '<span class="cmpn" id="cmpCount"></span>' +
+        // 已选条目的标题平铺出来。容器是 flex:1 + min-width:0 + overflow:hidden：
+        // 窄屏被裁掉的是标题，不是页面宽度（390px 下横向溢出仍为 0）
+        '<span class="cmpchips" id="cmpCards"></span>' +
+        '<button type="button" class="cmpbtn open" id="cmpOpen" data-cmp-open aria-haspopup="dialog">打开对比</button>' +
+        '<button type="button" class="cmpbtn cmpclear" id="cmpClear" data-cmp-clear>清空对比</button>' +
+        '</div>';
+      return bar;
+    }
+
+    function renderCompareBar() {
+      const bar = document.getElementById('cmpbar');
+      if (!bar) return;
+      const count = cmpInDetail.length;
+      // 只有 1 条时弹层里没有可并排的东西——不进对比视图，但选择仍然记着（星标已亮）
+      bar.hidden = count < 2;
+      if (bar.hidden) return;
+      document.getElementById('cmpCount').innerHTML =
+        '已选 <b>' + count + '</b> / ' + CMP_MAX + ' 条进入对比';
+    }
+
+    /* ---------- 对比视图 ---------- */
+
+    function buildCompareDialog() {
+      const dlg = document.createElement('dialog');
+      dlg.className = 'dlg cmpdlg';
+      dlg.id = 'compare';
+      dlg.hidden = true;
+      dlg.setAttribute('aria-labelledby', 'cmpTitle');
+      dlg.innerHTML =
+        '<form method="dialog"><button class="x" aria-label="关闭对比">✕</button></form>' +
+        '<div class="cmpbody" id="cmpBody"></div>';
+      return dlg;
+    }
+
+    function renderCompareBody() {
+      const body = document.getElementById('cmpBody');
+      if (!body) return;
+      const cards = cmpCards();
+      const table = cmpTableHtml(cards);
+      body.innerHTML = '<h2 id="cmpTitle">优惠对比</h2>' +
+        '<p class="cmpsub">并排看 ' + cards.length + ' 条优惠的关键字段：额度、适用条件、有效期、价格阶梯、核验状态。' +
+        '没有值的字段不出现在表里——缺数据就空着不写，不拿「暂无数据」凑数。</p>' +
+        (table ? '<div class="cmpscroll">' + table + '</div>' :
+          '<p class="cmpsub">选择会随筛选变化，请保留至少 2 条。</p>') +
+        '<div class="cmpact">' +
+        '<a class="pri" id="cmpShare" href="#" data-cmp-copy>复制这条对比链接</a>' +
+        '<button type="button" class="cmpdrop" data-close>关闭对比</button>' +
+        '</div>' +
+        '<p class="cmpnote" id="cmpShareNote">对比选择只存在你自己的浏览器里，并会写进上面的链接——把链接发给别人，' +
+        '对方打开就是同一组对比（条目按链接里的顺序并排，底部对比条会显示「已选 N 条」）。</p>' +
+        '<p class="cmpnote">最多同时对比 ' + CMP_MAX + ' 条。收藏与对比都只用 localStorage，不上传到任何服务器。</p>';
+      renderCompareShare();
+    }
+
+    function renderCompareShare() {
+      const link = document.getElementById('cmpShare');
+      if (!link) return;
+      const url = new URL(location.href);
+      if (cmpInDetail.length) url.searchParams.set(CMP_QUERY, cmpInDetail.join(','));
+      else url.searchParams.delete(CMP_QUERY);
+      link.href = url.href;
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+      link.setAttribute('aria-label', '复制这条对比链接（在新标签打开同一组对比）');
+    }
+
+    function rememberCmpFocus() {
+      const active = document.activeElement;
+      cmpReturnFocus = active && active.closest && active.closest('#cmpbar, #compare, article.g, .r') ? active : null;
+    }
+
+    function openCompare() {
+      const link = cmpInDetail.map(cardById).filter(Boolean);
+      if (link.length < 2) return;
+      rememberCmpFocus();
+      // 每次打开都重画：分享链接带着 ?compare= 进来时、以及中途改过选择时，
+      // 弹层里那份内容都必须是当前选择——否则会开出一张空表。
+      renderCompareBody();
+      if (typeof els.compare.showModal === 'function') {
+        if (!els.compare.open) els.compare.showModal();
+      } else {
+        els.compare.setAttribute('open', '');
+      }
+    }
+
+    function closeCompare() {
+      if (els.compare.open) els.compare.close();
+      else els.compare.removeAttribute('open');
+    }
+
+    /**
+     * 关闭对比视图（含 Esc）后把焦点还给打开它的那个按钮。
+     * 没有这一条，键盘用户关掉对比表就被扔回页首——与详情弹层同一条规矩。
+     */
+    function restoreCompareFocus() {
+      const target = cmpReturnFocus;
+      cmpReturnFocus = null;
+      if (target && document.contains(target)) {
+        try { target.focus(); } catch (error) { /* 元素已不可聚焦，忽略 */ }
+      } else {
+        const open = document.getElementById('cmpOpen');
+        if (open && !open.closest('.cmpbar').hidden) {
+          try { open.focus(); } catch (error) { /* 忽略 */ }
+        }
+      }
+    }
+
+    /* ---------- 选择状态的写入口（全部收在这里，保证条/弹层/星标一致）---------- */
+
+    function toggleFav(id) {
+      if (!id) return;
+      favInDetail = isFav(id) ? favInDetail.filter(x => x !== id) : favInDetail.concat([id]);
+      writeIdList(FAV_KEY, favInDetail);
+      syncFavStars();
+      syncDetailFavButtons();
+    }
+
+    function toggleCmp(id) {
+      const key = String(id || '');
+      if (!key) return;
+      if (inCmp(key)) cmpInDetail = cmpInDetail.filter(x => x !== key);
+      else if (cmpInDetail.length >= CMP_MAX) return;   // 超上限直接不收录（唯一的入口都先判了 disabled）
+      else cmpInDetail = cmpInDetail.concat([key]);
+      writeIdList(CMP_KEY, cmpInDetail);
+      syncCompareUrl();
+      syncFavStars();
+      syncDetailFavButtons();
+      renderCompareBar();
+      renderCompareCardsOnly();
+      if (els.compare.open) renderCompareBody();
+    }
+
+    function clearCmp() {
+      cmpInDetail = [];
+      writeIdList(CMP_KEY, cmpInDetail);
+      syncCompareUrl();
+      syncFavStars();
+      syncDetailFavButtons();
+      renderCompareBar();   // 清空后条自己隐藏（hidden 由 renderCompareBar 统一决定）
+    }
+
+    function renderCompareCardsOnly() {
+      const host = document.getElementById('cmpCards');
+      if (!host) return;
+      // 对比条里直接列出已选条目的标题，省得为了确认「选了哪 4 条」还得开一次弹层
+      host.innerHTML = cmpCards().map(card =>
+        '<span class="cmpchip">' + escapeHtml(card.title) + '</span>').join('');
+    }
+
+    /* ---------- 星标：只注入 DOM，**绝不进渲染模板** ---------- */
+
+    const FAV_STAR = '\u2606';   // ☆ 星形符号走 CSS 伪元素，按钮自身文字是完整中文标签
+
+    function buildFavButton(card) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'fav';
+      button.setAttribute('data-fav-toggle', '');
+      button.innerHTML = '<span class="st" aria-hidden="true"></span>';
+      return card && card.id ? applyFavState(button, card) : button;
+    }
+
+    function applyFavState(button, card) {
+      const on = card && card.id ? isFav(String(card.id)) : false;
+      button.setAttribute('aria-pressed', on ? 'true' : 'false');
+      button.setAttribute('aria-label', '收藏 ' + (card ? card.title : ''));
+      button.setAttribute('title', on ? '取消收藏（本机保存）' : '收藏（只存在本机，不上传）');
+      return button;
+    }
+
+    /** 给当前渲染出来的每张卡片挂星标；卡片被 render() 重建过就重新挂一次 */
+    function syncFavStars() {
+      if (!els.list) return;
+      const nodes = els.list.querySelectorAll('article.g');
+      nodes.forEach((node, i) => {
+        const card = state.cards[i];
+        if (!card || !card.id) return;
+        let button = node.querySelector('.fav');
+        if (!button) {
+          button = buildFavButton(card);
+          node.appendChild(button);
+        } else {
+          applyFavState(button, card);
+        }
+      });
+    }
+
+    /** 详情弹层里的两个按钮：状态跟着选择走（不重建 DOM，避免点一下焦点就没了） */
+    function syncDetailFavButtons() {
+      if (!els.detailBody) return;
+      const card = cardById(favId);
+      const favButton = els.detailBody.querySelector('[data-fav]');
+      if (favButton && card) {
+        const on = isFav(favId);
+        favButton.setAttribute('aria-pressed', on ? 'true' : 'false');
+        favButton.querySelector('.st').textContent = on ? '★' : '☆';
+        favButton.setAttribute('title', on ? '取消收藏（本机保存）' : '收藏（只存在本机，不上传）');
+      }
+      const cmpButton = els.detailBody.querySelector('[data-cmp]');
+      if (cmpButton) {
+        const on = inCmp(favId);
+        const full = cmpInDetail.length >= CMP_MAX;
+        cmpButton.setAttribute('aria-pressed', on ? 'true' : 'false');
+        cmpButton.textContent = on ? '已加入对比（点一下移出）' : (full ? '对比已满 ' + CMP_MAX + ' 条' : '加入对比');
+        cmpButton.disabled = !on && full;
+        cmpButton.setAttribute('title', on ? '从对比里移出这一条'
+          : (full ? '对比最多 ' + CMP_MAX + ' 条，请先在对比栏里移除一条' : '加入底部对比栏（最多 ' + CMP_MAX + ' 条）'));
+      }
+    }
+
+    /** 详情弹层里的收藏/对比行：完全由 JS 建，没有 JS 就不会出现 */
+    function buildDetailActions() {
+      const row = document.createElement('div');
+      row.className = 'dfav';
+      const favButton = document.createElement('button');
+      favButton.type = 'button';
+      favButton.setAttribute('data-fav', '');
+      favButton.innerHTML = '<span class="st" aria-hidden="true">☆</span><span>收藏</span>';
+      const cmpButton = document.createElement('button');
+      cmpButton.type = 'button';
+      cmpButton.setAttribute('data-cmp', '');
+      cmpButton.textContent = '加入对比';
+      row.appendChild(favButton);
+      row.appendChild(cmpButton);
+      return row;
+    }
+
+    function rememberDetailCard(card) {
+      favId = card && card.id ? String(card.id) : null;
+    }
+
+    function setupPrefs() {
+      els.list.insertAdjacentElement('beforebegin', els.compareBar);
+      document.body.appendChild(els.compare);
+
+      favInDetail = readIdList(FAV_KEY);
+
+      // 对比选择：URL 优先（可分享的那一份），没有才退回本机上次的选择。
+      // 无论来源都按 CMP_MAX 截断——分享来的链接也不能越界。
+      let fromUrl = null;
+      try {
+        const raw = new URLSearchParams(location.search).get(CMP_QUERY);
+        if (raw !== null) {
+          fromUrl = raw.split(',').map(part => part.trim()).filter(Boolean);
+        }
+      } catch (error) { fromUrl = null; }
+      cmpInDetail = (fromUrl || readIdList(CMP_KEY)).slice(0, CMP_MAX);
+      writeIdList(CMP_KEY, cmpInDetail);
+      syncCompareUrl();
+      renderCompareBar();
+      renderCompareCardsOnly();
+
+      els.compareBar.addEventListener('click', event => {
+        if (event.target.closest('[data-cmp-open]')) { openCompare(); return; }
+        if (event.target.closest('[data-cmp-clear]')) { clearCmp(); return; }
+      });
+
+      // 卡片上的星标：先 stopPropagation，否则这次点击会冒泡到列表的委托监听里，
+      // 被当成「点了卡片」把详情弹层也打开——点收藏不该顺带弹出一个弹层。
+      els.list.addEventListener('click', event => {
+        if (!event.target.closest('[data-fav-toggle]')) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const node = event.target.closest('article.g');
+        const index = [...els.list.querySelectorAll('article.g')].indexOf(node);
+        const card = state.cards[index];
+        if (card) toggleFav(String(card.id || ''));
+      }, true);   // 捕获阶段：抢在 bindEvents() 里那个冒泡监听之前
+
+      els.compare.addEventListener('click', event => {
+        if (event.target.closest('[data-cmp-copy]')) {
+          event.preventDefault();
+          copyCompareLink();
+          return;
+        }
+        if (event.target.closest('[data-close]')) { closeCompare(); return; }
+        const drop = event.target.closest('[data-cmp-remove]');
+        if (drop) { toggleCmp(drop.dataset.cmpRemove); return; }
+        if (event.target === els.compare) closeCompare();   // 点遮罩
+      });
+
+      els.compare.addEventListener('close', restoreCompareFocus);
+
+      els.detailBody.addEventListener('click', event => {
+        if (event.target.closest('[data-fav]')) { toggleFav(favId); return; }
+        if (event.target.closest('[data-cmp]')) { toggleCmp(favId); return; }
+      });
+    }
+
+    /**
+     * 复制分享链接。剪贴板 API 在非安全上下文（http 局域网预览）下不存在，
+     * 因此失败就老实告诉用户「请手动复制」——不假装复制成功了。
+     */
+    function copyCompareLink() {
+      const note = document.getElementById('cmpShareNote');
+      const link = document.getElementById('cmpShare');
+      if (!note || !link) return;
+      const done = () => { note.textContent = '链接已复制：' + link.href; };
+      const manual = () => { note.textContent = '这个环境不允许自动复制，请手动复制：' + link.href; };
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(link.href).then(done, manual);
+          return;
+        }
+      } catch (error) { /* 落到下面的手动提示 */ }
+      manual();
+    }
+
+    els.compare = buildCompareDialog();
+    els.compareBar = buildCompareBar();
+
     function renderFacets() {
       const active = document.activeElement;
       const focusKey = active && active.dataset && active.dataset.facet
@@ -1989,6 +2612,8 @@
     }
 
     function render() {
+      // innerHTML 会重建全部卡片，星标与焦点都在里面；先记下焦点在哪张卡上
+      const focusId = focusCardId();
       const cards = cardsFor(state.deals, state.filters);
       state.cards = cards;
       const rowsView = state.view === 'rows';
@@ -1998,15 +2623,53 @@
       renderFacets();
       renderSortBox();
       renderViewSeg();
+      syncFavStars();
+      // 对比条里的标题条也按当前卡片表重画：state.cards 是首次 render() 之后才有内容的，
+      // 分享链接（?compare=）进来时正是靠这一句把标题补上
+      renderCompareCardsOnly();
+      restoreCardFocus(focusId);
       // 锚点只在「力度优先 + 卡片视图」下有效（列表视图不分带），避免死锚点
       const jump = document.getElementById('jumpNav');
       if (jump) jump.hidden = rowsView || (state.filters.sort || 'tier') !== 'tier';
     }
 
+    /** 当前焦点所在的卡片 id（焦点在星标上也算这张卡）；不在卡片上返回 null */
+    function focusCardId() {
+      const active = document.activeElement;
+      if (!active || !active.closest) return null;
+      const node = active.closest('article.g, .r');
+      if (!node) return null;
+      const nodes = [...els.list.querySelectorAll('.g, .r')];
+      const card = state.cards[nodes.indexOf(node)];
+      return card && card.id ? String(card.id) : null;
+    }
+
+    /**
+     * 把焦点还回同一张卡片——**连星标一起还**。
+     * 不这么做的话，点一下星标就会因为 render() 重建 DOM 而丢掉焦点（键盘用户直接被弹回页首）。
+     * 星标在显示上没有过渡（只有 :hover / :focus-visible），因此不需要等重排。
+     */
+    function restoreCardFocus(cardId) {
+      if (!cardId) return;
+      const index = state.cards.findIndex(card => String((card && card.id) || '') === cardId);
+      if (index < 0) return;
+      const nodes = els.list.querySelectorAll('.g, .r');
+      const node = nodes[index];
+      if (!node) return;
+      const button = node.querySelector('.fav');
+      const target = button || node;
+      try { target.focus({ preventScroll: true }); } catch (error) { /* 元素不可聚焦，忽略 */ }
+    }
+
     function openDetail(card) {
       // 记住触发元素，关闭时把焦点还回去——否则键盘用户关掉弹层就被扔回页首
       detailReturnFocus = document.activeElement;
+      rememberDetailCard(card);
       els.detailBody.innerHTML = detailHtml(card);
+      // 收藏 / 对比两个按钮由 JS 建，插在「前往官方页面」那一行之前
+      const actions = els.detailBody.querySelector('.dact');
+      if (actions) actions.insertAdjacentElement('beforebegin', buildDetailActions());
+      syncDetailFavButtons();
       if (typeof els.detail.showModal === 'function') {
         if (!els.detail.open) els.detail.showModal();
       } else {
@@ -2066,6 +2729,9 @@
 
       els.list.addEventListener('click', event => {
         if (event.target.closest('a')) return;
+        // 星标由 setupPrefs() 在捕获阶段先处理掉了；这里再挡一次，
+        // 免得将来有人动了那个监听的时机，点收藏就又顺带弹出详情
+        if (event.target.closest('[data-fav-toggle]')) return;
         // 列表视图的整行也可点开详情（与卡片一致）
         const node = event.target.closest('.g') || event.target.closest('.r');
         if (!node) return;
@@ -2146,6 +2812,9 @@
             ? new Date(state.updatedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
             : '未知（数据未标注更新时间）';
           els.topStat.innerHTML = topStatHtml(state.deals, state.updatedAt);
+          // 收藏 / 对比：在第一次 render() 之前装好，卡片一出现就带星标，
+          // 也让 ?compare= 分享链接里的选择赶上首屏（不必等用户再点一次）
+          setupPrefs();
           bindEvents();
           render();
         })
@@ -2153,6 +2822,9 @@
           // 预渲染的静态卡片仍在 DOM 里，无 JS / 拉取失败时页面依旧可读可点，
           // 因此这里**不覆盖**已有内容，只加一条提示与重试入口（错误态不能把内容变没）。
           console.error('加载 deals.json 失败：', error);
+          // 收藏/对比整块由 JS 建；数据没到手时一个控件都不建，不留死按钮。
+          // 顺带把 URL 上那条带 ?compare= 的选择清掉——它已经还原不出来了。
+          dropCompareQuery();
           const anchor = document.getElementById('stats');
           if (anchor && !document.getElementById('loadErr')) {
             anchor.insertAdjacentHTML('afterend',
@@ -2161,6 +2833,17 @@
             document.getElementById('retryLoad').addEventListener('click', () => location.reload());
           }
         });
+    }
+
+    /** 数据没到手时把 ?compare= 去掉：留着它只会让人以为「链接坏了」 */
+    function dropCompareQuery() {
+      if (typeof history === 'undefined' || !history.replaceState) return;
+      try {
+        const url = new URL(location.href);
+        if (!url.searchParams.has(CMP_QUERY)) return;
+        url.searchParams.delete(CMP_QUERY);
+        history.replaceState(null, '', url.pathname + url.search + url.hash);
+      } catch (error) { /* 非 http(s) 环境：URL 改不了也不影响 */ }
     }
   </script>
   <!--PRERENDER:jsonld-->

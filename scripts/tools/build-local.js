@@ -743,6 +743,23 @@ function selfCheck(built) {
   else if (dangling.length) fail(`锚点没有落点：${[...new Set(dangling)].join(', ')}`);
   else console.log(`  ✓ 同页锚点: ${[...new Set(anchors)].length} 个都有落点`);
 
+  // 收藏 / 对比（G11）：预渲染的 HTML 里**一个控件都不能有**。
+  // 整块由 JS 建 DOM（星标挂在卡片上、对比条与对比弹层都是 createElement），
+  // 所以无 JS 时页面上连一个「点了没反应」的死按钮都不存在——这是 PLAN.md G11 的硬要求，
+  // 在这里用产物本身证明，而不是靠人读代码相信。
+  //
+  // 标记要写得足够具体：`.cmpbar` / `.fav` 这类**类名**在 <style> 里本来就有
+  // （样式块不属于 markup），拿类名去找必然假失败——要找的是「控件元素」本身。
+  const g11Controls = ['data-fav-toggle', 'data-fav=', 'data-cmp-open', 'data-cmp-clear',
+    'data-cmp-remove', 'class="cmpbar"', 'id="cmpbar"', 'id="compare"'];
+  const g11Leaked = g11Controls.filter(token => markup.includes(token));
+  if (g11Leaked.length) fail(`预渲染 HTML 里出现了收藏/对比控件（无 JS 时的死按钮）: ${g11Leaked.join(', ')}`);
+  else console.log('  ✓ 收藏/对比: 预渲染 HTML 零控件（整块由 JS 建，无 JS 时不给可点暗示）');
+
+  // 字段与表头口径：JS 里写死「最多 4 条」，产物自检跟着对一遍，避免两处漂移
+  if (!/const CMP_MAX = 4;/.test(html)) fail('index.html 里找不到 const CMP_MAX = 4（对比上限口径变了？）');
+  else console.log('  ✓ 对比上限: CMP_MAX = 4（与页脚提示文案同源）');
+
   // 纠错入口：详情弹层是 JS 渲染的（与弹层本身一致），所以这里只断言模板存在，
   // 真实行为（点开详情能看到带 id 的 Issue 链接）由 verify-site.js 在浏览器里验。
   if (!/issues\/new\?title=/.test(html)) fail('详情模板里没有纠错入口');
