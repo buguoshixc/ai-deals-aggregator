@@ -202,6 +202,54 @@ function checkCurated() {
   return { curated: total };
 }
 
+/* ---------------- 门禁自身的守卫 ---------------- */
+
+/**
+ * 数据诚信守卫（只在 --strict 下跑，不影响普通校验的输出）。
+ *
+ * 「verified=true 但没有 verifiedAt」是一条**看得见却抓不到**的假声明：
+ * validateDeal 原本只拦反向（未核验却带日期），而 store.mergeAll 曾给策展条目凭空写
+ * verified: true —— 于是「✓ 数据更新 <机器日期>（已人工对照官方页）」会照发，
+ * 校验器却一路绿灯。现在 schema.js 补了反向断言，这里再钉一颗钉子：
+ * 用一条**内存里编造**的记录反复确认那条断言真的在拦人 —— 谁哪天把它删了，
+ * CI 的 strict 步骤立刻变红，而不是等到页面开始撒谎。
+ * 只读：不动 deals.json，也不做任何写盘。
+ */
+function checkVerifiedGuard() {
+  const { makeDeal, validateDeal } = require('./lib/schema');
+  const sample = makeDeal(
+    {
+      title: 'Verified Guard Probe',
+      url: 'https://example.com/verified-guard-probe',
+      discountInfo: 'Save 50% on the annual plan',
+      type: 'deal'
+    },
+    { source: 'Guard', region: 'global', trustType: true }
+  );
+  if (!sample) {
+    error('数据诚信守卫无法构造探针记录（makeDeal 行为已变，请检查 schema.js）');
+    return;
+  }
+
+  const cases = [
+    { name: 'verified=true 且 verifiedAt=null', deal: { ...sample, verified: true, verifiedAt: null } },
+    { name: 'verified=true 且无 verifiedAt 字段', deal: { ...sample, verified: true } },
+    { name: 'verified 非 true 却带 verifiedAt', deal: { ...sample, verified: false, verifiedAt: '2026-01-01' } }
+  ];
+  const leaked = cases.filter(c => validateDeal(c.deal).ok).map(c => c.name);
+  if (leaked.length) {
+    error(
+      `数据诚信守卫失效：下列假声明竟然通过 validateDeal —— ${leaked.join('；')}。` +
+      '「已核验」必须始终带人工回访官方页的日期（schema.js 的 verified/verifiedAt 断言）。'
+    );
+  }
+
+  // 正例也要在：别把守卫写成"一律拒绝 verified"，否则真正的核验标注会被误伤
+  if (!validateDeal({ ...sample, verified: true, verifiedAt: '2026-01-01' }).ok) {
+    error('数据诚信守卫过严：带 verifiedAt 的核验条目被误判为非法');
+  }
+}
+
 /* ---------------- 前端 ---------------- */
 
 function checkIndex() {
@@ -258,6 +306,7 @@ function main() {
   const { stats } = checkDealsFile();
   const curatedStats = checkCurated();
   checkIndex();
+  if (strict) checkVerifiedGuard();
 
   console.log('=== 数据校验 ===');
   if (stats) {

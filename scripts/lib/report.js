@@ -56,6 +56,12 @@ function createReport() {
         valid: rows.reduce((n, r) => n + r.valid, 0),
         deals: rows.reduce((n, r) => n + r.deals, 0),
         failed: rows.filter(r => r.error).length,
+        // 失败来源逐条留下（id / 名称 / 错误），供采集日志与 CI Summary 直接引用。
+        // 单源失败是常态（见 collect.yml 的浏览器安装步骤：装不上也要继续跑静态链路），
+        // 所以它只进报告与 Summary，不参与拦写盘判定。
+        failedSources: rows
+          .filter(r => r.error)
+          .map(r => ({ id: r.sourceId, name: r.name, error: String(r.error) })),
         emptySources: rows.filter(r => r.valid === 0).map(r => r.name)
       };
     }
@@ -92,6 +98,12 @@ function printReport(report, { title = '采集报告' } = {}) {
   const s = report.summary();
   console.log('-'.repeat(line.length + 6));
   console.log(`合计：${s.sources} 个来源，产出 ${s.produced} 条，合格 ${s.valid} 条，其中优惠 ${s.deals} 条，失败 ${s.failed} 个`);
+  if (s.failedSources.length) {
+    // 逐条点名，而不是只在表格最右列塞一截错误文本：单源失败不阻断写盘，
+    // 所以它是唯一能让人注意到"这个来源坏了"的地方（CI Summary 也抓这一行）。
+    console.log(`来源失败（advisory，不阻断写盘）：`);
+    s.failedSources.forEach(f => console.log(`  ✗ ${f.id} ${f.name}: ${String(f.error).slice(0, 100)}`));
+  }
   if (s.emptySources.length) {
     console.log(`⚠️  零产出来源（不应长期保留在注册表）：${s.emptySources.join('、')}`);
   }

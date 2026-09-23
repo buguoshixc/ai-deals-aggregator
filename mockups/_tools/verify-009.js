@@ -2,7 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright-core');
 const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
-const DIR = path.join(__dirname, 'mockups', 'v2-dense');
+// 本脚本在 mockups/_tools/ 下：仓库根往上两级，样稿目录是 mockups/v2-dense。
+// 早先写成 __dirname + 'mockups/v2-dense'，解析成 mockups/_tools/mockups/v2-dense（不存在）。
+const REPO_ROOT = path.join(__dirname, '..', '..');
+const DIR = path.join(REPO_ROOT, 'mockups', 'v2-dense');
+console.log(`[verify-009] 样稿目录 ${path.relative(process.cwd(), DIR).replace(/\\/g, '/')}`);
 const FILE = '009-真Logo版.html';
 const url = 'file:///' + path.join(DIR, FILE).replace(/\\/g, '/');
 

@@ -26,6 +26,27 @@ dist/logos.css                   每个 logo 一条规则
 构建期会断言「模板引用的每个 logo key 都已登记」。缺一个就**构建失败**，
 而不是在页面上留一个空白方块。
 
+## manifest.json 由人维护；`gen-manifest.js` 只做并集，永不覆盖
+
+`manifest.json` 是**人工维护的唯一事实来源**——新增、改来源、调 `quality` 都直接编辑它。
+
+`mockups/_tools/gen-manifest.js` 是当初**一次性播种**用的脚本，已经中性化：它**只做并集、绝不减键**。
+之所以要改成这样，是因为它曾经会破坏构建：
+
+| | 覆盖语义（旧，已废弃） | 并集语义（现在） |
+|---|---|---|
+| 文件已存在时 | 整份重写 | 逐条并集：已有条目的值一个字节都不动，只补种子里新出现的 key |
+| 键数 | 38（脚本自认的种子） | ≥ 现有登记数（当前 49），**永不减少** |
+| 对构建的影响 | 删掉 ai360 / huggingface / mistral / together / midjourney / xai / ideogram / leonardo / krea / coze / modelscope 共 11 条登记 → `node scripts/tools/build-local.js` 直接 exit 1（`RENDER-CORE 引用了未登记的 logo`） | 无影响 |
+| 重跑结果 | 静默破坏发布 | 当前内容下**字节无变化**，可以当自检跑 |
+
+```bash
+node mockups/_tools/gen-manifest.js   # 安全：只并集；现有 49 条一个都不会少
+```
+
+它只在 `manifest.json` **不存在**时才按种子生成，并且任何情况下都不会写出一份比现有登记更少的文件
+（真出现键数倒退会抛错中止，不写盘）。日常加厂商仍然走下面的流程，别指望它替你补元数据。
+
 ## 两种取图方式
 
 manifest 里每条 logo 的 `kind` 只有两种：
@@ -56,7 +77,8 @@ manifest 里每条 logo 的 `kind` 只有两种：
 | 标注 | `title` 与 `aria-label` 都写明「名称缩写，未取得官方品牌图形」，鼠标悬停即可看到 |
 | 不复用 | 缩写块没有 `data-logo` 属性，不走 `logos.css`，也不会被误当成登记过的图形 |
 
-当前覆盖情况（`npm run report:vendor` 可复核）：**官方品牌图形 35 家 / 名称缩写兜底 37 家 / 共 72 家**。
+当前覆盖情况（`npm run report:vendor` 可复核）：**官方品牌图形 38 家 / 名称缩写兜底 39 家 / 共 77 家**
+（2026-09-23 实测输出：`官方品牌图形: 38 家 / 名称缩写兜底: 39 家 / 共 77 家`）。
 缩写块里有 1 组重名（`Labrynth` 与 `Leonardo AI` 都是 `LA`）——这不成问题，
 因为卡片上紧挨着就写着厂商全名，缩写块只是视觉锚点，不承担唯一标识。
 

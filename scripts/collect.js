@@ -1,6 +1,19 @@
 #!/usr/bin/env node
 /**
- * 采集编排器：注册表 → 采集 → 归一（makeDeal）→ 去重合并 → 熔断 → 写盘 → 报告。
+ * 采集编排器：注册表 → 采集 → 归一（makeDeal）→ 去重合并 → 门槛 → 写盘 → 报告。
+ *
+ * 写盘/退出只有两条**拦**的理由（其余一切都只是告警）：
+ *   ① 真的没有可发布内容：本次采集零产出且未加 --force → 跳过写盘、非 0 退出。
+ *      （零产出还要照写 updatedAt/策展 lastSeen，等于把一次失败伪装成"刚更新过"。）
+ *   ② 译文不合规：zhReport.skipped 非空 → 与构建期同一把尺子，跳过写盘、非 0 退出。
+ *
+ * 明确区分两个**不拦**的概念，别把它们混成一个"降级"：
+ *   · 单源失败（某个采集器抛错）：常态而非异常——collect.yml 的浏览器安装步骤本身就是
+ *     continue-on-error，装不上时无头来源会各自报错并产出 0 条，而那条链路是设计上要
+ *     容忍的。所以它只在报告里逐条点名 + 写进 CI Summary，不阻断写盘、不影响退出码。
+ *   · 采集量骤降（stats.degraded：新采 < 既有 × 30%）：同样只告警。若它顺手拦写盘，
+ *     一次 playwright 装不上就能让 deals.json 不落库 → deploy.yml 判 skipped → 线上停更。
+ *     真正无法发布的情形由①兜住：零产出时本来就没有新东西可写。
  *
  * 用法：
  *   node scripts/collect.js                     # 全量采集并写盘
@@ -8,11 +21,11 @@
  *   node scripts/collect.js --headless          # 额外启用无头浏览器来源（抓 JS 渲染的公开页）
  *   node scripts/collect.js --only=cn_docs      # 只跑指定来源
  *   node scripts/collect.js --list              # 列出已注册来源
- *   node scripts/collect.js --force             # 即使零产出也写盘（默认零产出跳过写盘）
+ *   node scripts/collect.js --force             # 即使零产出也照写（坏译文一律不写盘）
  */
 
 const { makeDeal, todayCN } = require('./lib/schema');
-const { loadStore, loadDeals, writeDeals, mergeAll, assertAllValid } = require('./lib/store');
+const { loadStore, writeDeals, mergeAll, assertAllValid } = require('./lib/store');
 const { loadCurated } = require('./lib/curated');
 const { attach: attachZh, summarize: summarizeZh } = require('./lib/zh');
 const { createReport, printReport } = require('./lib/report');
@@ -34,6 +47,7 @@ function option(name, fallback = null) {
 async function collectFrom(collector, report) {
   report.start(collector.id, collector.name, collector.region);
   const items = [];
+  let failed = false;
 
   try {
     const raw = await collector.collect();
@@ -66,11 +80,12 @@ async function collectFrom(collector, report) {
       droppedInvalid
     });
   } catch (error) {
+    failed = true;
     report.finish(collector.id, { error: describeError(error) });
     console.error(`  ✗ ${collector.name}: ${describeError(error)}`);
   }
 
-  return items;
+  return { items, failed };
 }
 
 async function main() {
@@ -101,9 +116,11 @@ async function main() {
 
   const report = createReport();
   const fresh = [];
+  let collectorFailures = 0;
   for (const collector of picked) {
     console.log(`→ ${collector.name}`);
-    const items = await collectFrom(collector, report);
+    const { items, failed } = await collectFrom(collector, report);
+    if (failed) collectorFailures++;
     fresh.push(...items);
   }
 
@@ -122,10 +139,20 @@ async function main() {
 
   const { deals, stats } = mergeAll({ fresh, existing, curated: curated.deals, today });
 
+  const force = flag('force');
+  // 「没有可发布内容」= 本次采集一条都没产出来（含被丢弃的垃圾条目）。
+  // 这与「单源失败」「采集量骤降」是三个不同的概念：后两者只告警，见文件头注释。
+  const nothingCollected = fresh.length === 0;
   if (stats.degraded) {
     console.warn(
-      `⚠️  熔断告警：本次仅采到 ${stats.fresh} 条，低于既有 ${stats.existing} 条的 ` +
-      `${Math.round(stats.circuitBreakerRatio * 100)}%。已保留既有数据（合并不删除）。`
+      `⚠️  降级告警：本次仅采到 ${stats.fresh} 条，低于既有 ${stats.existing} 条的 ` +
+      `${Math.round(stats.circuitBreakerRatio * 100)}%（仅告警，不拦写盘；零产出时才拦）。`
+    );
+  }
+  if (collectorFailures) {
+    console.warn(
+      `⚠️  来源失败 ${collectorFailures}/${picked.length} 个（advisory：逐条见报告表与「来源失败」清单，` +
+      `不拦写盘——单源失败是常态，静默跳过才是问题）`
     );
   }
 
@@ -155,7 +182,14 @@ async function main() {
   if (zhReport.orphaned.length) {
     zhReport.orphaned.forEach(row => console.warn(`  ⚠️  译文对不上任何条目 id: ${row.id} ${row.title}`));
   }
-  zhReport.skipped.forEach(row => console.warn(`  ⚠️  译文不合规被丢弃: ${row.title} — ${row.message}`));
+  zhReport.skipped.forEach(row =>
+    console.warn(`  ⚠️  译文不合规: [${row.id}] ${row.title} — ${row.message}`));
+  if (zhReport.unmanaged.length) {
+    console.warn(
+      `  ⚠️  ${zhReport.unmanaged.length} 条译文不在覆盖层里（deals.json 自带、覆盖层管不到）：` +
+      `${zhReport.unmanaged.slice(0, 5).map(row => row.title).join('、')}`
+    );
+  }
   if (zhReport.missing.length) {
     console.log(`  ℹ️  仍有 ${zhReport.missing.length} 条英文文案待翻译（node scripts/tools/zh-todo.js 查看）`);
   }
@@ -170,14 +204,33 @@ async function main() {
     return;
   }
 
-  if (fresh.length === 0 && !flag('force')) {
-    console.log('\n本次零产出，跳过写盘（避免误报"数据已更新"）。如需强制写入请加 --force');
-    return;
+  // 译文不合规：与构建期同一把尺子。
+  // build-local.js 遇到同一种数据直接 throw（阻止发布）；采集期在这里只 warn 的话，
+  // CI 会把不合规的 zh 提交进 deals.json，下一次采集的 "Validate current data (before)"
+  // 立刻变红——采集链路从此卡死，而真正的坏数据还躺在仓库里。
+  if (zhReport.skipped.length) {
+    console.error(
+      `\n❌ 译文不合规 ${zhReport.skipped.length} 处，跳过写盘（构建期同样会硬失败，加 --force 也不放行）。` +
+      `先修 scripts/data/translations_zh.json`
+    );
+    process.exit(1);
+  }
+
+  // 唯一会拦写盘的采集侧情形：真的没有可发布内容。
+  // 零产出还要照写，会把 updatedAt 改成今天、把 32 条策展的 lastSeen 全刷成今天，
+  // 站点看上去"刚更新过"，实际上这次什么都没采到 —— 那是在替一次失败背书。
+  // 反过来，单源失败 / 采集量骤降**不**在这里拦：见文件头那两条"不拦"的概念。
+  if (nothingCollected && !force) {
+    console.error(
+      `\n❌ 本次采集零产出（${picked.length} 个来源都没有可发布的条目），跳过写盘。` +
+      `既有 deals.json 未被改动；确需照写请加 --force`
+    );
+    process.exit(1);
   }
 
   assertAllValid(localized);
   const payload = writeDeals(localized);
-  console.log(`\n✅ 已写入 deals.json：${payload.count} 条，updatedAt=${payload.updatedAt}`);
+  console.log(`\n✅ 已写入 deals.json：${payload.count} 条，updatedAt=${payload.updatedAt}${force ? '（--force 放行）' : ''}`);
 }
 
 main().catch(error => {

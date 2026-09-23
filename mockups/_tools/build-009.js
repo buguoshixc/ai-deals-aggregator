@@ -5,8 +5,13 @@
 const fs = require('fs');
 const path = require('path');
 
-const LOGODIR = path.join(__dirname, 'mockups', 'logos');
-const OUT = path.join(__dirname, 'mockups', 'v2-dense', '009-真Logo版.html');
+// 本脚本在 mockups/_tools/ 下，仓库根要往上两级；输出与输入都在 mockups/ 下（再往上一级）。
+// 早先这里从 __dirname 之下又拼 'mockups'，解析成 mockups/_tools/mockups/… 这个不存在的路径，
+// 四个样稿工具一起被阻断。gen-manifest.js 的 __dirname,'..','..' 才是正确写法。
+const REPO_ROOT = path.join(__dirname, '..', '..');
+const LOGODIR = path.join(REPO_ROOT, 'mockups', 'logos');
+const OUT = path.join(REPO_ROOT, 'mockups', 'v2-dense', '009-真Logo版.html');
+console.log(`[build-009] 仓库根 ${path.relative(process.cwd(), REPO_ROOT) || '.'} · logo 源 ${path.relative(process.cwd(), LOGODIR).replace(/\\/g, '/')} · 输出 ${path.relative(process.cwd(), OUT).replace(/\\/g, '/')}`);
 const brand = JSON.parse(fs.readFileSync(path.join(LOGODIR, '_brand-svg.json'), 'utf8'));
 
 const MIME = { '.png': 'image/png', '.svg': 'image/svg+xml' };

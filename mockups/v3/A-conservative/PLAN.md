@@ -19,7 +19,7 @@
 | 卡片层级 | `1px border` + hover 大扩散投影 | 发丝环 + 微投影（`0 0 0 1px` + `0 2px 8px -4px`） | 断言：hover 前后卡片高度/网格行高不变 |
 | 语义骨架 | `header=0 nav=0 main=0` | 各 ≥1，且 facet 用 `aria-pressed` 表达选中 | 断言 + 键盘 Tab 顺序完整 |
 | 首屏密度 | 9 张（卡片模式） | **9 张（不变，本方案不追密度）** | `verify-site.js` 既有断言 |
-| `verify` 断言数 | 55 项 | ≥64 项 | 脚本输出 |
+| `verify` 断言数 | 55 项（当时实测；当前 108 项 / `--compare` 113 项 —— 见 `PROJECT_STATUS.md` 命令速查） | ≥64 项 | 脚本输出 |
 
 ## 2. 具体做什么（逐条对应 `research/GAP-MATRIX.md`）
 

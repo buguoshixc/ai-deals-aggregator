@@ -12,7 +12,9 @@
  *     于是构建期预渲染与浏览器渲染仍然只有一条代码路径。
  *  3. 绝不覆盖原文：`zh` 是**附加**字段，英文原文字段一个字节都不改。
  *
- * 键：deal.id（vendor|title|url 的 sha1 前 12 位）。id 变了翻译就失效，
+ * 键：deal.id（`sha1(lower(vendor)|lower(title)|lower(url))` 前 12 位 —— 三个字段**先转小写**再拼，
+ * 与 `scripts/lib/schema.js` 的 `makeId()` 逐字一致）。少写 lower() 就会算错：实测 130 条里 123 条的
+ * id 会变（详见 PROJECT_STATUS「七、审计发现」的 id 陷阱）。id 变了翻译就失效，
  * 所以 attach() 会把「对不上任何条目」的键报为 orphaned，由构建日志喊出来。
  */
 
@@ -204,7 +206,10 @@ function attach(deals, overlay = load()) {
   const out = deals.map(deal => {
     const raw = byId[deal.id];
     if (!raw) {
-      // 覆盖层没管这一条。deals.json 里若已带 zh（collect 写盘时贴过一次），原样放过。
+      // 覆盖层没管这一条。deals.json 里若已带 zh（上一次采集贴上去的），原样放过——
+      // 但也有代价：这一条不走下面的指纹比对，原文被改写时「停用旧译文」的保证对它无效。
+      // 所以这里同时记进 unmanaged，由 check:zh（zh-todo.js --check）计为漂移报出来，
+      // 不然「从覆盖层撤回一条译文」会变成旧译文照发、门禁仍然全绿。
       if (deal.zh && Object.keys(deal.zh).length) unmanaged.push({ id: deal.id, title: deal.title });
       return deal;
     }
@@ -265,6 +270,7 @@ function summarize(report) {
   if (report.dropped) parts.push(`${report.dropped} 处因原文已变停用`);
   if (report.orphaned.length) parts.push(`${report.orphaned.length} 条译文对不上 id`);
   if (report.skipped.length) parts.push(`${report.skipped.length} 处译文不合法`);
+  if (report.unmanaged.length) parts.push(`${report.unmanaged.length} 条译文不在覆盖层里`);
   return parts.join(' · ');
 }
 

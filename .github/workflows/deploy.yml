@@ -28,18 +28,20 @@ jobs:
   build:
     # 采集任务失败时（例如 strict 门禁没过）不发布，保留线上上一份好数据
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-latest
+    # 钉死 runner 版本而不是浮动标签：镜像换代（2026-10-19 起 latest 迁 Ubuntu 26）
+    # 不跟着漂，与 collect.yml / probe-sources.yml 一致。
+    runs-on: ubuntu-24.04
     env:
       TZ: Asia/Shanghai
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24'
 
       # 同一条路径：本地 `node scripts/tools/build-local.js` 与 CI 完全一致
       # 该脚本零外部依赖，因此无需 npm install，发布不再依赖网络抓取
@@ -47,10 +49,10 @@ jobs:
         run: node scripts/tools/build-local.js
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v6
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: 'dist'
 
@@ -58,10 +60,10 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: build
 
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

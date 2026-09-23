@@ -79,7 +79,7 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
   "count": 128,
   "deals": [
     {
-      "id": "a1b2c3d4e5f6",       // sha1(vendor|title|url) 前 12 位，稳定去重键
+      "id": "a1b2c3d4e5f6",       // sha1(lower(vendor)|lower(title)|lower(url)) 前 12 位，稳定去重键
       "title": "…",
       "vendor": "百度智能云",
       "url": "https://…",          // 必须是官方优惠/定价页
@@ -117,7 +117,7 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 |---|---|
 | `features` | 只取该条 `discountInfo` / `validity` 里已写明的事实，≤3 个、每个 ≤20 字。**不从 `description` 自动切分或生成**——没有可信来源就留空，卡片自动回退展示 `discountInfo`。 |
 | `priceLine` | 只有官方页明确给出「免费档 → 付费档」时才填。看不出升级路径就留 `null`，卡片不渲染该行，**不编造价格阶梯**。 |
-| `verifiedAt` | 仅人工逐条回访官方页的条目可填（当前 23 条策展数据）。自动采集条目一律为 `null`，卡片显示「数据更新：{lastSeen}」而不是「已核验」——不把「抓到过」说成「核验过」。 |
+| `verifiedAt` | 仅人工逐条回访官方页的条目可填（当前 **32 条**策展数据：`curated_cn` 18 + `curated_global` 14，`node scripts/validate.js` 实测输出「策展数据 32 条」）。自动采集条目一律为 `null`，卡片显示「数据更新：{lastSeen}」而不是「已核验」——不把「抓到过」说成「核验过」。 |
 
 新增策展条目并补齐这三个字段的流程：
 
@@ -147,13 +147,13 @@ assets/logos/
   manifest.json               厂商 logo 登记表（名称/来源/取图方式/质量）
   *.png *.svg                 从厂商官网下载的原始文件（见 assets/logos/README.md）
 scripts/
-  collect.js                  采集编排：注册表 → 归一 → 去重 → 熔断 → 写盘 → 报告
+  collect.js                  采集编排：注册表 → 采集 → 归一 → 去重 → 门槛 → 写盘 → 报告（写盘门槛见文件头注释）
   validate.js                 数据与前端校验（零依赖，CI 门禁）
   migrate.js                  v1 → v2 迁移与清洗
   serve.js                    零依赖本地预览服务器（--dir=dist 可预览产物）
   lib/
     schema.js                 v2 契约：makeDeal / validateDeal / 垃圾与优惠信号判定
-    store.js                  读写、合并、过期修剪、写盘熔断、发布前断言
+    store.js                  读写、合并、过期修剪、发布前断言（采集量骤降只记 degraded 告警，不拦写盘）
     dedup.js                  标题归一 + 别名表 + 信息量择优合并
     classify.js               地区判定、有效期抽取
     official.js               聚合站条目 → 官方页解析
@@ -340,12 +340,14 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 **拿不到官方图形时退到名称缩写兜底块**（`Wispr Flow → WF`、`KREA → KR`）：
 低饱和深色底 + 白字，`title` / `aria-label` 写明「名称缩写，未取得官方品牌图形」，
 且**绝不与官方图形出现在同一张卡上**（构建与 `npm run verify` 都断言二选一）。
-顺序是硬的——拿得到真图形就绝不用缩写。当前 72 家厂商里 35 家用官方图形、37 家用缩写兜底。
+顺序是硬的——拿得到真图形就绝不用缩写。当前 **77 家厂商里 38 家用官方图形、39 家用缩写兜底**
+（`npm run report:vendor` 实测输出 `官方品牌图形: 38 家 / 名称缩写兜底: 39 家 / 共 77 家`）。
 详见 `assets/logos/README.md`（含直连取不到时怎么走代理 + 真浏览器取图）。
 
 ### 中文翻译（国外条目的英文文案）
 
-国外来源（Futuretools / Curated）的 `discountInfo` / `description` / `eligibility` 是英文散文，
+国外来源（Futuretools / Curated）的 `discountInfo` / `description` / `eligibility` / `validity` / `priceLine`
+是英文散文（这 5 个就是 `scripts/lib/zh.js` 的 `ZH_FIELDS`——允许翻译的字段就是它们），
 而访客以中文为主。做法是**人工译文覆盖层**，不是渲染期机翻：
 
 - 译文集中维护在 `scripts/data/translations_zh.json`，键为 `deal.id`，只放译文。
@@ -399,7 +401,9 @@ npm run selftest:zh     # 门禁演练：塞坏数据进去，验证构建拦得
 
 卡片是**固定高度**的，任何一处内容变高都会被 `overflow:hidden` 静默裁掉；logo 簇是 hover
 展开的，很容易把标题挤到换行、把网格行高顶动。这两类问题静态检查都看不见，所以有
-`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 55 项断言——
+`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 **108 项断言**——
+（无 `--compare`；带基线回归比对的 `npm run verify:regress` 共 **113 项**。静态 `check()` 调用点 114 =
+108 常跑 + 5 回归 + 1 条仅在基线文件缺失时执行的失败分支。）
 无 JS 时的静态骨架、卡片高度是否统一、**每张卡最后一个元素有没有越过内边距**、
 hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排序、搜索、移动端横向溢出、
 中文译文的展示与折叠、外部请求数、JS 报错数。
@@ -416,9 +420,17 @@ hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排�
 
 ## 自动化与部署
 
-- `.github/workflows/collect.yml`：每天北京时间 08:00 / 20:00 采集 → 校验（含 strict 门禁）→ 有变化才提交 `deals.json`。
+- `.github/workflows/collect.yml`：cron **名义**上是每天北京时间 08:00 / 20:00（`0 0 * * *` / `0 12 * * *`
+  = UTC 00:00 / 12:00）采集 → 校验（含 strict 门禁）→ 有变化才提交 `deals.json`。
   采集步骤为 `node scripts/collect.js --headless`（静态来源 + 无头来源），前面会安装 playwright 自带
   chromium（失败不阻断），运行结果汇总到该次运行的 **Summary** 标签页。
+  **实测**：GitHub 的 schedule 队列常把这一跑延后 **3 到 6 小时**。2026-09-23 从 Actions API 复核 4 次
+  schedule 运行的 `created_at`（延后 +3h26m50s 到 +5h55m40s）：
+  `2026-09-21T17:55:40Z`（名义 12:00Z → 北京 09-22 01:55，延后 5h55m40s，run 35635091297）、
+  `2026-09-22T03:26:50Z`（名义 00:00Z → 北京 11:26，延后 3h26m50s，run 35683186610）、
+  `2026-09-22T16:22:56Z`（名义 12:00Z → 北京 09-23 00:22，延后 4h22m56s，run 35753733647）、
+  `2026-09-23T03:27:38Z`（名义 00:00Z → 北京 11:27，延后 3h27m38s，run 35814407156）。
+  所以别把「08:00 / 20:00」当成实际更新时间。
 - `.github/workflows/probe-sources.yml`：**手动触发**的只读探针，验证 Actions 出口 IP 能否访问/渲染
   智谱活动页与火山方舟（厂商风控或镜像变更后用它复检）。
 - `.github/workflows/deploy.yml`：`push` 到 master 时**纯发布**（不再在构建期采集），组装 `dist/` 后部署到 Pages。
@@ -434,7 +446,7 @@ hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排�
 
 | 内容 | 更新方式 | 频率 |
 |---|---|---|
-| 采集到的优惠 / 工具条目（静态来源） | 自动（GitHub Actions 定时） | 每天 2 次（北京 08:00 / 20:00）；数据无变化则不提交 |
+| 采集到的优惠 / 工具条目（静态来源） | 自动（GitHub Actions 定时） | 名义每天 2 次（北京 08:00 / 20:00）；**实测常延后 3 到 6 小时**（见上文）；数据无变化则不提交 |
 | 无头来源（智谱活动页 / 火山方舟） | 自动（同上，跑在同一次采集里） | 每天 2 次；内核装不上或页面改版时该来源产出 0 条，不会写坏数据 |
 | 线上页面 | 自动（提交后经 `workflow_run` 触发部署） | 跟随采集，或任意一次 `push` |
 | 过期优惠下架 | 自动（每次采集时修剪） | 过期超过 14 天的优惠被移除 |

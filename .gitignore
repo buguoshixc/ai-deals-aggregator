@@ -12,8 +12,19 @@ mockups/_*.txt
 mockups/_*.json
 mockups/.zh-backup/
 
-# 参考站拆解证据里的截图：可重新生成且体积大（19 站约 45 MB），只入库结构与报告
+# 参考站拆解证据里的截图：可重新生成且体积大（20 站 60 张约 49 MB），只入库结构与报告
 research/_raw/**/shots/
+# 兜底：shots/ 之外散落的截图同样不入库（证据只留结构与报告，图可重拍）
+research/_raw/**/*.png
+
+# DSH 会话的残留探针：临时诊断脚本，会读本机 ~/.dsh/.credentials.yaml，
+# 文件自己写着 Safe to delete——不属于本项目源码，不入库
+.vision-probe.mjs
+.*-probe.mjs
 
 # 并行开发的隔离工作树（git worktree）：不能进主仓库索引
 .worktrees/
+
+# AgentTeams 运行时状态目录（任务台账、成员邮箱、各任务的 scratch 证据脚本）：
+# 是协作过程的临时状态而不是项目源码，绝不入库
+.agent-teams/

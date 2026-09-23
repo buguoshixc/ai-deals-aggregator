@@ -8,6 +8,12 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
+// 本脚本在 mockups/_tools/ 下：仓库根往上两级，logo 目录是 mockups/logos。
+// 早先写成了 __dirname + 'mockups/logos'（不存在），替换图与删旧图都会落到错误路径。
+const REPO_ROOT = path.join(__dirname, '..', '..');
+const LOGO_DIR = path.join(REPO_ROOT, 'mockups', 'logos');
+console.log(`[find-logos] 下载目标目录 ${path.relative(process.cwd(), LOGO_DIR).replace(/\\/g, '/')}`);
+
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36';
 const get = (url, ms = 15000) => new Promise((res) => {
   const req = https.get(url, { headers: { 'user-agent': UA, accept: '*/*' }, timeout: ms }, (r) => {
@@ -66,10 +72,10 @@ const TARGETS = [
     }
     if (best) {
       const ext = best.fmt === 'SVG' ? '.svg' : '.png';
-      const out = path.join(__dirname, 'mockups', 'logos', slug + ext);
+      const out = path.join(LOGO_DIR, slug + ext);
       fs.writeFileSync(out, best.body);
       for (const old of ['.png', '.svg', '.ico']) {
-        const p = path.join(__dirname, 'mockups', 'logos', slug + old);
+        const p = path.join(LOGO_DIR, slug + old);
         if (old !== ext && fs.existsSync(p)) fs.unlinkSync(p);
       }
       console.log('   → 采用 ' + best.fmt + ' ' + (best.fmt === 'SVG' ? '矢量' : best.w + 'x' + best.h) + '  ' + slug + ext);

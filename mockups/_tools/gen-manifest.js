@@ -1,14 +1,28 @@
 /**
- * 一次性生成 assets/logos/manifest.json：
- *   把样稿阶段的品牌路径数据（mockups/logos/_brand-svg.json）与人工核定的元数据合并，
- *   落到项目自己的资产目录里，之后 manifest 就是唯一事实来源。
+ * 从样稿阶段的品牌路径数据（mockups/logos/_brand-svg.json）播种 assets/logos/manifest.json。
  *
- * 只跑一次；生成后请直接编辑 assets/logos/manifest.json。
+ * **这个脚本已中性化：它只做并集，绝不减键。**
+ *
+ * 曾经的形态是「一次性生成、整文件覆盖」。那是个会破坏构建的陷阱：脚本自认的种子只有
+ * 38 个 key，而 manifest 是人工维护的、已经长到 49 个 key——重跑会把 ai360 / huggingface /
+ * mistral / together / midjourney / xai / ideogram / leonardo / krea / coze / modelscope
+ * 这 11 条登记整段删掉，接着 `node scripts/tools/build-local.js` 立刻 exit 1
+ * （build-local.js 的 checkLogoCoverage：「RENDER-CORE 引用了未登记的 logo」）。
+ *
+ * 现在的语义：
+ *   ① 目标文件不存在 → 照旧生成（首次播种这条路不变）；
+ *   ② 目标文件已存在 → **逐条并集**：已有条目的值一个字节都不动（人工字段优先），
+ *      只把种子里有、manifest 里没有的 key 补进去；
+ *   ③ 任何情况下都不会让已登记的条目变少；真出现种子带来的键数倒退就抛错中止（不写盘）。
+ *
+ * 因此重跑本脚本对当前 manifest 是**字节无变化**的操作，可以放心当自检跑。
+ * 日常改 manifest 仍然直接编辑 assets/logos/manifest.json（人工维护的唯一事实来源）。
  */
 const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..', '..');
+const MANIFEST_FILE = path.join(ROOT, 'assets', 'logos', 'manifest.json');
 const brand = JSON.parse(fs.readFileSync(path.join(ROOT, 'mockups', 'logos', '_brand-svg.json'), 'utf8'));
 
 /** 品牌底色调：极浅的品牌色，让矢量剪影不显得孤零零 */
@@ -95,12 +109,76 @@ for (const key of Object.keys(FILES).sort()) {
   if (item.fit) logos[key].fit = item.fit;
 }
 
-const manifest = {
+const seed = {
   note: '厂商品牌图形登记表。页面只写 data-logo="key"，图形由 scripts/lib/logos.js 在构建期生成为 dist/logos/ 与 dist/logos.css。品牌图形版权归各厂商所有，本站仅作标识用途。',
   order: Object.keys(logos).sort(),
   logos: logos
 };
 
-fs.writeFileSync(path.join(ROOT, 'assets', 'logos', 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
-const brandCount = Object.values(logos).filter(l => l.kind === 'brand').length;
-console.log(`✅ assets/logos/manifest.json 已生成：${Object.keys(logos).length} 个 logo（矢量 ${brandCount} / 官网文件 ${Object.keys(logos).length - brandCount}）`);
+/* ---------------- 并集写入（绝不覆盖人工条目） ---------------- */
+
+const stableStringify = obj => JSON.stringify(obj, null, 2) + '\n';
+
+const existing = fs.existsSync(MANIFEST_FILE)
+  ? JSON.parse(fs.readFileSync(MANIFEST_FILE, 'utf8'))
+  : null;
+
+const seedKeys = Object.keys(seed.logos);
+let next;
+let added = [];
+let kept = [];
+let mode;
+
+if (!existing) {
+  // ① 首次播种
+  mode = 'seeded';
+  next = seed;
+} else {
+  // ② 逐条并集：已有条目的值原样保留（人工维护的字段优先），只补种子里新出现的 key
+  const existingLogos = (existing && typeof existing.logos === 'object' && existing.logos) || {};
+  const existingKeys = Object.keys(existingLogos);
+  added = seedKeys.filter(key => !(key in existingLogos));
+  kept = existingKeys;
+
+  const merged = {};
+  // 键序也要稳定：沿用 manifest 自己的顺序（`order` 是排序后的清单，
+  // 但 `logos` 的键序是人工累积下来的，重排会让整份文件无谓地改字节）。
+  // 种子新增的 key 追加在末尾，待人工把顺序归置好。
+  for (const key of existingKeys) merged[key] = existingLogos[key];
+  for (const key of added) merged[key] = seed.logos[key];
+
+  // ③ 键数恒等式：merged 由「现有全部 key + 种子里的新 key」构成，所以并集语义下
+  //    键数只增不减——这一行在当前实现里**不可能**为真。留着它不是为了兜住今天的逻辑，
+  //    而是给未来改动加一道闸：谁要是把上面的构造改成「先清空再填种子」，
+  //    这里会立刻炸在写盘之前，而不是等到构建期才发现 11 条 logo 登记没了。
+  if (Object.keys(merged).length < existingKeys.length) {
+    throw new Error(
+      `并集结果 ${Object.keys(merged).length} 个 key 少于现有 ${existingKeys.length} 个——拒绝写盘。`
+    );
+  }
+
+  const note = existing.note || seed.note;
+  mode = added.length ? 'merged' : 'unchanged';
+  next = { note, order: Object.keys(merged).sort(), logos: merged };
+}
+
+// 内容不变就不碰文件：既保持字节稳定，也避免无意义的 mtime 变化
+const before = existing ? fs.readFileSync(MANIFEST_FILE, 'utf8') : null;
+const after = stableStringify(next);
+if (before !== after) fs.writeFileSync(MANIFEST_FILE, after, 'utf8');
+
+const total = Object.keys(next.logos).length;
+const brandCount = Object.values(next.logos).filter(l => l.kind === 'brand').length;
+const rel = path.relative(ROOT, MANIFEST_FILE).replace(/\\/g, '/');
+
+if (mode === 'seeded') {
+  console.log(`✅ ${rel} 首次生成：${total} 个 logo（矢量 ${brandCount} / 官网文件 ${total - brandCount}）`);
+} else {
+  console.log(`ℹ️  ${rel} 是人工维护的唯一事实来源，本脚本**只做并集、绝不减键**（禁止整文件覆盖）。`);
+  console.log(`    现有登记 ${kept.length} 个 key，种子 ${seedKeys.length} 个 key；` +
+    `本次新增 ${added.length} 个，保留 ${kept.length} 个。`);
+  if (added.length) console.log(`    新增：${added.join(', ')}`);
+  console.log(before === after
+    ? `    结果：${rel} 内容无变化（${total} 个 logo，矢量 ${brandCount} / 官网文件 ${total - brandCount}）`
+    : `    结果：已并集写回 ${total} 个 logo（矢量 ${brandCount} / 官网文件 ${total - brandCount}）`);
+}

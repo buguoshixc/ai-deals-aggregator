@@ -72,6 +72,26 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # 来源失败清单（**建议性**，与译文漂移检查同款）：单个采集器报错是常态而非异常——
+      # 上面的浏览器安装步骤本身就是 continue-on-error，装不上时无头来源会各自报错并产出 0 条，
+      # 那正是这条链路设计上要容忍的情形。所以它**不**阻断写盘、**不**让采集 job 变红
+      # （否则一次 playwright 装不上 → deals.json 不落库 → deploy 判 skipped → 线上停更）。
+      # 代价是"坏了没人知道"，所以这里把失败来源逐条写进运行 Summary，让它可查。
+      - name: Failed sources (advisory)
+        if: always()
+        continue-on-error: true
+        run: |
+          {
+            echo "### 采集来源失败清单（建议性，不阻断写盘）"
+            echo '```'
+            if grep -qE "^  ✗ " /tmp/collect.log 2>/dev/null; then
+              grep -E "^  ✗ |^合计：" /tmp/collect.log || true
+            else
+              echo "本次没有采集器报错"
+            fi
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       # 采集报告落到 Summary：某次无头来源零产出时能立刻发现，不用翻日志
       - name: Publish run summary
         if: always()
@@ -79,7 +99,7 @@ jobs:
           {
             echo "### 采集结果"
             echo '```'
-            grep -E "合计|火山方舟|智谱AI活动页|零产出|熔断|已写入|数据无变化|✗" /tmp/collect.log 2>/dev/null || echo "(无采集日志)"
+            grep -E "合计|来源失败|火山方舟|智谱AI活动页|零产出|降级|已写入|数据无变化|✗" /tmp/collect.log 2>/dev/null || echo "(无采集日志)"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 

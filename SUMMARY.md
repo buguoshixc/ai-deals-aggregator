@@ -7,7 +7,8 @@
 > 逐步的详细记录见 [`PROJECT_STATUS.md`](PROJECT_STATUS.md) 的 2.17–2.27。
 >
 > 状态：**已上线**（2026-09-23）。`master` = `origin/master` = **`fa2403d`**（代码那次推送是 `ecbc815`），
-> Deploy 工作流**两次** success，线上跑了 `verify --url=` **108 项 0 失败**。
+> Deploy 工作流**两次** success，线上跑了 `verify --url=` **108 项 0 失败**（上线当日的记录；
+> **线上复测值：权威值待复测（见 P0-2）**——本机到该 host 无通路）。
 > 本轮内容：A/B/收尾 + 收藏对比（G11）+ 活动期限三分类 + 上游详情修复 + 两个手机端横向问题修复；
 > 两次并回 `origin/master` 与上线记录见 `PROJECT_STATUS.md` 2.27–2.28。
 > 剩余事项（都可选）见 [`NEXT-STEPS.md`](NEXT-STEPS.md)。
@@ -30,7 +31,7 @@
 | 参考站研究 | 自研拆解器 `scripts/tools/study-site.js`，拆 **20 个参考站**（12 同类 + 8 标杆），并**用同一把尺子量了自己** | ✅ |
 | 差距与提案 | `GAP-MATRIX.md`（该做 18 条 / 明确不学 9 条）、`DESIGN-TOKENS.md`、**三套可点开的 mockup** + 各自 PLAN | ✅ |
 | 实施 | **未等到点单**，按「A ⊂ B ⊂ C」自行推进了 A + B + 收尾（当时全程在分支，`master` 未动） | ✅ 已由用户点单全合（2.21） |
-| 验收与沉淀 | 断言 55 → **99 项**；`docs/DESIGN-RULES.md`（含逐条落地情况与 3 处偏差）；`PROJECT_STATUS` 2.17–2.21；**合并彩排全绿** | ✅ |
+| 验收与沉淀 | 断言 55 → **99 项**（当时值）；`docs/DESIGN-RULES.md`（含逐条落地情况与 3 处偏差）；`PROJECT_STATUS` 2.17–2.21；**合并彩排全绿** | ✅ |
 | 收藏 / 对比（G11） | 卡片星标 + 详情完整动作 + 底部对比条 + `?compare=` 可分享 URL；门禁抓出「62 张卡集体 3px 纵向溢出」并修掉（判据一字未动） | ✅ 已合并（2.22–2.23） |
 | 上游并回 | 并回 `origin/master` 两次：被重写过的 A/B 线 + 数据更新 + **活动期限三分类** + 详情重复「关闭」修复；两侧内容零丢失 | ✅（2.26–2.27） |
 | 手机端控制带 | 视觉复核带回的 chip 折行 3+1（右侧空 269px）已修；并把「控件被 `overflow:hidden` 裁切」补成门禁断言 | ✅（2.27） |
@@ -49,10 +50,10 @@
 | 活动期限标注 | 只标「剩 N 天」，没日期就不标；排序等于取文件行序 | **三分类**（剩 N 天 / 未标注截止日期 / 长期活动）；无日期时按最近更新兜底，次序不再漂 |
 | 手机端控制带 | 跳转 chip 折成 3+1，右侧空 **269px** | **4 枚等分一行**（末枚右侧余量 0px），控制带从两行降到一行 |
 | 窄屏横向溢出 | 320px 溢出 **42px**、360px 溢出 2px（门禁只量 390px，从没报过） | 均 **0px**，且卡内被裁元素 0 个 |
-| `verify` 断言 | 55 项 | **113 项 0 失败**（+ 5 项回归 = 108 个 `check()` 调用点 + 5） |
+| `verify` 断言 | 55 项 | **113 项 0 失败**（= 108 常跑 + 5 回归；静态 `check()` 调用点 114 = 108 + 5 + 1 条仅在基线文件缺失时执行的失败分支） |
 
 **门禁**：`npm test`、`test:strict`、`check:zh`（待译 0）、`selftest:zh`（7 项）、`selftest:expiry`（55 项）、
-`build` 产物自检（139 文件）、`verify:regress`（**113 项 + 5 项回归**）、两次构建全树摘要一致
+`build` 产物自检（产物 139 文件）、`verify:regress`（**113 项 0 失败**，已含那 5 项回归比对）、两次构建全树摘要一致
 （`8be46e1581651038a7662e41…`）—— 全绿，且是在**合并态 + 本轮改动**（`0d6b869` 之上）这一棵树上实跑的。
 
 ## 三、代码在哪
@@ -77,7 +78,7 @@ master = origin/master        fa2403d  ← 已上线：A/B/收尾 + 收藏对比
 - 分层合并的老命令已用不上（两条线都进 `master` 了）。回退点：`backup/pre-ab-merge`（A/B 合并前）、
   `backup/pre-origin-merge-b261add`（并上游前）；两者都没推送过，只对本地回退有用。
 - **已推送上线**（2026-09-23，你说「push」之后）：`c70706b..ecbc815` **快进**推送成功、Deploy 工作流 success，
-  线上 `verify --url=` **108 项 0 失败**。随后这份**记录本身**也推了（`ecbc815..fa2403d`，同样快进，
+  线上 `verify --url=` **108 项 0 失败**（上线当日的记录；线上复测值：**权威值待复测（见 P0-2）**）。随后这份**记录本身**也推了（`ecbc815..fa2403d`，同样快进，
   Deploy [run 35849728738](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35849728738) success）——
   两次差别只在 3 个 `.md`，`dist` 不含 `.md`，所以**线上产物两次完全相同**，那次冒烟测试对现在的线上依然成立。
 
@@ -223,7 +224,7 @@ G11 的 `buildDetailActions()` 插桩点仍在。
 **（6）上线。** 你说「push」后执行 `git push origin master`（先 `fetch` 复核过）：
 **快进** `c70706b..ecbc815`，Deploy 工作流 [run 35841045158](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35841045158) **success**，
 线上 `npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/` → **108 项 0 失败**
-（113 − 5 项 `--compare` 回归）。随后**这份记录本身**也推了：`ecbc815..fa2403d`（同样快进，
+（113 − 5 项 `--compare` 回归。**这是上线当日的记录：线上复测值待复测（见 P0-2）**——本机到该 host 无通路）。随后**这份记录本身**也推了：`ecbc815..fa2403d`（同样快进，
 Deploy [run 35849728738](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35849728738) success）——
 两次差别只在 3 个 `.md`，`dist` 不含 `.md`，所以**线上产物两次完全相同**，那次冒烟测试对现在的线上依然成立。
 **第一次 push 失败过**：git 全局代理指向 `127.0.0.1:7890`（FlClash），当时它没在跑（补推时又断了一次）；

@@ -1,5 +1,13 @@
 /**
- * deals.json 读写、合并、修剪、写盘熔断。
+ * deals.json 读写、合并、修剪，以及"这次采集是不是真的没东西可发"的信号。
+ *
+ * mergeAll() 只负责把 degraded 标志与比率算出来（stats.degraded），本身不动盘。
+ * 注意 degraded 的语义是**只告警**：调用方（scripts/collect.js）读到它只会多打一行，
+ * 写盘照常——一次 playwright 装不上就能让 deals.json 不落库、deploy 判 skipped、
+ * 线上停更，那比"数据看起来旧一天"更糟。
+ * 真正拦写盘的只有「本次采集零产出且未加 --force」（没有新东西可写时，
+ * 照写只会把 updatedAt 与策展 lastSeen 刷成今天，把失败伪装成一次成功）与
+ * 「译文不合规」（与构建期同一把尺子），两处都在 collect.js 里。
  */
 
 const fs = require('fs');
@@ -11,6 +19,7 @@ const { applyDeadline } = require('./expiry');
 const DEALS_FILE = path.join(__dirname, '..', '..', 'deals.json');
 const MAX_DEALS = 300;
 const EXPIRED_GRACE_DAYS = 14;
+/** 采集量骤降的判定阈值：本次新采 < 既有条数 × 30% 即视为疑似异常（**只告警**，不拦写盘） */
 const CIRCUIT_BREAKER_RATIO = 0.3;
 
 /** 人工策展来源：其分类结果受信任，不随启发式规则变动 */
@@ -91,8 +100,13 @@ function prune(deals, { today = todayCN(), max = MAX_DEALS } = {}) {
  * @returns {{deals:object[], stats:object}}
  */
 function mergeAll({ fresh = [], existing = [], curated = [], today = todayCN() } = {}) {
-  // 策展数据是可信来源：刷新 lastSeen，标记 verified
-  const curatedRefreshed = curated.map(deal => ({ ...deal, lastSeen: today, verified: true }));
+  // 策展数据是可信来源：刷新 lastSeen（"今天还见到它"是合并期真的知道的事）。
+  //
+  // 这里**不再**顺手写 verified: true。核验标注是人的声明，出处只有一处：
+  // scripts/data/curated_*.json 里逐条写明的 verified/verifiedAt（loadCurated → makeDeal 原样带过）。
+  // 合并期凭空盖章会产出一条 validateDeal 抓不到、页面却照发「✓ 已人工对照官方页」的假声明
+  // （verified=true 且 verifiedAt=null）；schema.js 现在补了反向断言，构造期也必须保持诚实。
+  const curatedRefreshed = curated.map(deal => ({ ...deal, lastSeen: today }));
 
   // 既有数据每次合并都重新体检：垃圾条目退役，分类按当前规则重算
   const retired = [];
@@ -126,6 +140,9 @@ function mergeAll({ fresh = [], existing = [], curated = [], today = todayCN() }
   const { deals: merged, mergedCount } = dedup(withDeadline([...fresh, ...cleanExisting, ...curatedRefreshed]));
   const { deals: kept, removed } = prune(merged, { today });
 
+  // 采集量骤降：只作为"这次结果可能不完整"的信号返回，不拦写盘（见文件头）。
+  // 单独一个采集器抛错属于调用方的范畴（report.summary().failedSources），
+  // 不参与这里的计算——两个概念别混成一个"降级"。
   const degraded = cleanExisting.length > 0 && fresh.length < cleanExisting.length * CIRCUIT_BREAKER_RATIO;
 
   return {

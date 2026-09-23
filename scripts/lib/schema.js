@@ -98,7 +98,14 @@ function nowCN(date = new Date()) {
   return shiftCN(date).toISOString().replace(/\.\d{3}Z$/, '+08:00');
 }
 
-/** 把各种日期写法归一为 YYYY-MM-DD，失败返回 null */
+/**
+ * 把各种日期写法归一为 YYYY-MM-DD，失败返回 null。
+ *
+ * 只认**带 4 位年份**的写法（与 lib/expiry.js 的绝对日期一致）：
+ *   YYYY-MM-DD / YYYY/M/D / YYYY.M.D / YYYY年M月D日 / YYYYMMDD / 明确年份的英文写法。
+ * 「YYYY-MM」按该月 1 日归一（月粒度没有更细的信息，1 日是约定不是猜测）。
+ * 没有年份的写法（'March 5'、'5'）一律返回 null —— 补一个默认年份就是编造日期。
+ */
 function normalizeDate(value) {
   if (!value) return null;
   const raw = String(value).trim();
@@ -113,9 +120,16 @@ function normalizeDate(value) {
   m = raw.match(/^(\d{4})(\d{2})(\d{2})$/);
   if (m) return fmtDate(m[1], m[2], m[3]);
 
-  const parsed = new Date(raw);
-  if (!Number.isNaN(parsed.getTime())) {
-    return shiftCN(parsed).toISOString().slice(0, 10);
+  // 兜底解析：只对**已经写明年份**的字符串启用。
+  // 早先这里无条件交给 new Date()，于是「March 5」「5」这种没有年份的写法会被引擎
+  // 补一个默认年份（'March 5' → 2001-03-05），等于凭空编造一个完整日期；
+  // 而本文件与 lib/expiry.js 都声明「一律要求带 4 位年份，否则返回 null」。
+  // 现在两侧口径一致：字符串里找不到 4 位年份就不解析，返回 null。
+  if (/(?:^|\D)\d{4}(?:\D|$)/.test(raw)) {
+    const parsed = new Date(raw);
+    if (!Number.isNaN(parsed.getTime())) {
+      return shiftCN(parsed).toISOString().slice(0, 10);
+    }
   }
   return null;
 }
@@ -417,6 +431,13 @@ function validateDeal(deal, index = 0) {
   // 核验日期只对人工核验条目有意义：未核验却带日期，说明来源搞错了
   if (deal.verified !== true && deal.verifiedAt) {
     errors.push(`${where}: verified 非 true 却带 verifiedAt`);
+  }
+  // 反向也要拦：卡片只在有 verifiedAt 时才敢显示「✓ 人工核验 <日期>」。
+  // verified=true 却不带日期 = 一句没有出处的假声明（页面会退化成拿机器日期顶上），
+  // 而构造期（makeDeal / store.mergeAll）任何"顺手盖上"的写法都会落到这个形态。
+  // 所以核验标注的唯一出处是人工写进 scripts/data/curated_*.json 的 verified + verifiedAt。
+  if (deal.verified === true && !deal.verifiedAt) {
+    errors.push(`${where}: verified=true 却没有 verifiedAt（「已核验」必须带上人工回访官方页的日期）`);
   }
   if (deal.type === 'deal' && !deal.discountInfo) errors.push(`${where}: type=deal 但 discountInfo 为空`);
   if (deal.discountInfo && isGarbage(deal.discountInfo)) errors.push(`${where}: discountInfo 命中垃圾特征`);

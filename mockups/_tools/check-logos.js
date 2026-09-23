@@ -5,7 +5,11 @@
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
-const DIR = path.join(__dirname, 'mockups', 'logos');
+// 本脚本在 mockups/_tools/ 下：仓库根往上两级，logo 目录是 mockups/logos。
+// 早先写成 __dirname + 'mockups/logos'，解析成 mockups/_tools/mockups/logos（不存在）。
+const REPO_ROOT = path.join(__dirname, '..', '..');
+const DIR = path.join(REPO_ROOT, 'mockups', 'logos');
+console.log(`[check-logos] 扫描目录 ${path.relative(process.cwd(), DIR).replace(/\\/g, '/')}`);
 
 function paeth(a, b, c) {
   const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c);

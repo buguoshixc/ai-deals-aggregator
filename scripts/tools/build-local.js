@@ -20,7 +20,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
-const { render: renderOgImage } = require('../lib/og-image');
+const { render: renderOgImage, selfCheck: selfCheckOgImage } = require('../lib/og-image');
 const { load: loadLogos, write: writeLogos } = require('../lib/logos');
 const { load: loadRenderCore } = require('../lib/render-core');
 const { attach: attachZh, summarize: summarizeZh } = require('../lib/zh');
@@ -130,23 +130,91 @@ function renderDeals(renderCore, payload) {
   };
 }
 
+/* ---------------- FAQ：生成侧解析 + 复核侧独立解析 ---------------- */
+
 /**
- * 从已渲染的 HTML 中解析 FAQ 条目。
+ * HTML 片段 → 页面可见的纯文本（单行）。
+ *
+ * 顺序是硬的：**先剥标签、后解码实体**。反过来的话，正文里合法写出的 `&lt;b&gt;`
+ * 会在解码后变成真标签、再被剥掉——把内容吃掉。decodeEntities 的 `&amp;` 必须最后
+ * 替换（否则 `&amp;lt;` 会被二次解码成 `<`），这条既有顺序不动。
+ */
+function plainText(fragment) {
+  return decodeEntities(String(fragment).replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * 取出 FAQ 区块（`<section class="faq">`）的 HTML，并先摘掉 `<script>`。
+ *
+ * 为什么必须摘脚本：渲染核心的源码就内联在页面里，里面有
+ * `return '<details class="zht"' + …` 这样的**字符串字面量**。不摘掉的话，
+ * 「扫全页 `<details>`」的实现会把它当成第 6 个问答（升级后的自检正是这样当场发现的）。
+ *
+ * 找不到 FAQ 区块就抛错而不是静默回退全页：那样「逐字一致」就无法被验证，
+ * 应该让构建红掉，而不是拿一个错误的比对结果报绿。
+ */
+function faqSectionHtml(html) {
+  const noScript = String(html).replace(/<script[\s\S]*?<\/script>/gi, '');
+  const section = noScript.match(/<section[^>]*class="[^"]*\bfaq\b[^"]*"[^>]*>([\s\S]*?)<\/section>/);
+  if (!section) throw new Error('找不到 FAQ 区块（<section class="faq">），无法核对可见文案与 FAQPage 是否一致');
+  return section[1];
+}
+
+/**
+ * 从已渲染的 HTML 中解析 FAQ 条目（**生成** FAQPage 用）。
+ *
  * FAQPage 结构化数据必须与页面上可见的问答逐字一致，因此这里以 HTML 为唯一事实来源，
  * 而不是在 JS 里再抄一份文案（抄一份就一定会漂移）。
+ *
+ * 一个问答可以有多段（`<p>` 不止一个）。早先的正则写死了「一问一答只有一个 `<p>`」，
+ * 遇到两段的问答（本站第 3 条就是这样）会把 `</p><p>` 当成答案文本的一部分带进 JSON-LD
+ * ——这段脏数据已随线上产物发布过。现在按 `<details>` 整块取，答案里每个 `<p>` 当作一段，
+ * 段落之间用单个空格连接，得到与页面可见文字一致、且不含任何标记的纯文本。
  */
 function extractFaq(html) {
   const items = [];
-  const re = /<details>\s*<summary>([\s\S]*?)<\/summary>\s*<p>([\s\S]*?)<\/p>\s*<\/details>/g;
+  const re = /<details\b[^>]*>\s*<summary\b[^>]*>([\s\S]*?)<\/summary>([\s\S]*?)<\/details>/g;
+  const scope = faqSectionHtml(html);
   let m;
-  while ((m = re.exec(html)) !== null) {
-    items.push({
-      question: decodeEntities(m[1]).replace(/\s+/g, ' ').trim(),
-      answer: decodeEntities(m[2]).replace(/\s+/g, ' ').trim()
-    });
+  while ((m = re.exec(scope)) !== null) {
+    const paragraphs = [...m[2].matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/g)]
+      .map(p => plainText(p[1]))
+      .filter(Boolean);
+    // 没有 <p> 的问答也要能解析：退回整块纯文本，绝不静默丢条目
+    const answer = paragraphs.length ? paragraphs.join(' ') : plainText(m[2]);
+    items.push({ question: plainText(m[1]), answer });
   }
   if (items.length < 3) {
     throw new Error(`只解析到 ${items.length} 条 FAQ，至少需要 3 条才能生成 FAQPage`);
+  }
+  return items;
+}
+
+/**
+ * 从**最终 HTML** 里回读可见 FAQ（**复核**用）。刻意与 extractFaq() 不同源。
+ *
+ * extractFaq() 是生成结构化数据的那条路；可见侧若也调它，比较就是恒等的
+ * （结构化数据本来就是它生成的），「逐字一致」这句断言永远不可能失败——
+ * 上一个已发布缺陷（答案里夹带 `</p><p>`）正是这样溜过去的。
+ *
+ * 这里走第二条路，而且**段落拆法也不同**：生成侧匹配 `<p>…</p>` 成对标签，
+ * 复核侧直接按「段落结束」切分。任何一侧出分歧——丢了一段、多带标签、
+ * 边界处理不同、文案只改了一边——都会在下面的自检里报红。
+ * 两侧共用「FAQ 区块」这个取景范围（取景错了会被下面的条数断言抓住）。
+ */
+function visibleFaq(html) {
+  const items = [];
+  const re = /<details\b[^>]*>([\s\S]*?)<\/details>/g;
+  let m;
+  while ((m = re.exec(faqSectionHtml(html))) !== null) {
+    const body = m[1];
+    const summary = body.match(/<summary\b[^>]*>([\s\S]*?)<\/summary>/);
+    if (!summary) continue;
+    const paragraphs = body.slice(summary.index + summary[0].length)
+      .split(/<\/(?:p|li|div)\s*>|<br\s*\/?>/i)
+      .map(chunk => plainText(chunk))
+      .filter(Boolean);
+    items.push({ question: plainText(summary[1]), paragraphs });
   }
   return items;
 }
@@ -326,9 +394,18 @@ ${items}
  * toolify `/tool/:slug ×27`、artificialanalysis `/models/:slug ×49`），而我们原先全站
  * 只有 1 个 URL、1 条内链（见 research/GAP-MATRIX.md G1）。这是「可发现性」的根因。
  *
- * **不引入第二份模板**：页面主体直接调用 RENDER-CORE 的 `detailHtml()`——与首页详情弹层
- * 是同一个函数；样式块、页脚也从**已组装好的 index.html** 里抽出来（index.html 里有
- * `<!--SHARED:footer:START/END-->` 标记）。因此首页与详情页不会分叉。
+ * **只共用一半，边界要写清楚**：页面主体直接调用 RENDER-CORE 的 `detailHtml()`——与首页详情弹层
+ * 是同一个函数；`<style>`、主题前置脚本、页脚三者从**已组装好的 index.html** 里抽出来
+ * （页脚靠 `<!--SHARED:footer:START/END-->` 标记，抽不到就抛错，见下面的 `writeDetailPages()`）。
+ *
+ * **但这三块是硬编码的第二份，没有任何标记或断言保证两边一致**：
+ *   ① 品牌头部文案与 mark SVG（本文件下面 `<header class="top">` 里 `<a class="brand">` 那段 ↔ index.html:806-813）；
+ *   ② `#themeSeg` 三个主题按钮（本文件下面的 `themeSeg` 常量 ↔ index.html:819-823）；
+ *   ③ 详情页的主题切换脚本（本文件下面的 `themeBind` 常量 ↔ index.html:2163-2199，且把 `THEME_KEY`
+ *      的值 `'dsh.theme'` 直接抄成字面量，不引用首页那个常量）。
+ * 所以**改首页品牌文案或主题行为不会同步到 80 个详情页**，也不会报错。详见
+ * PROJECT_STATUS.md「七、审计发现」的模板分叉那一节（那里记了 2026-09-23 工作区的确切行号；
+ * 本文件自己的行号刻意不写——加几行注释就会整体位移）。
  *
  * **纯静态**：详情页不加载主脚本，不 fetch deals.json——没有列表要渲染，也就没有控制台错误；
  * 只保留一个极小的主题切换脚本（与首页同一套 localStorage 约定）。
@@ -545,7 +622,12 @@ function assemble() {
   zhAttached.report.warnings.forEach(row =>
     console.warn(`    ℹ️  ${row.title}: ${row.message}`));
   if (zhAttached.report.unmanaged.length) {
-    console.log(`    ℹ️  ${zhAttached.report.unmanaged.length} 条译文不在覆盖层里（deals.json 自带，覆盖层管不到）`);
+    // 覆盖层管不到的译文：指纹比对（lib/zh.js）对它们不会执行，原文被改写时停用逻辑失效，
+    // 旧译文会一直发到线上。这里按告警打出来，并由 check:zh（zh-todo.js --check）计为漂移。
+    console.warn(
+      `    ⚠️  ${zhAttached.report.unmanaged.length} 条译文不在覆盖层里（deals.json 自带、覆盖层管不到）：` +
+      `${zhAttached.report.unmanaged.slice(0, 5).map(row => row.title).join('、')}`
+    );
   }
   if (zhAttached.report.missing.length) {
     console.log(`    ℹ️  仍有 ${zhAttached.report.missing.length} 条英文文案待翻译（node scripts/tools/zh-todo.js）`);
@@ -591,10 +673,16 @@ function assemble() {
 
   fs.writeFileSync(indexFile, html, 'utf8');
 
-  // OG 分享图
+  // OG 分享图。
+  // 画完立刻自检（og-image.selfCheck）：点阵字模没有自动换行，排版一变文字就会被静默裁掉，
+  // 而只查 PNG 头部与尺寸是看不出来的。自检失败直接抛出 → 组装中止、构建非 0 退出、
+  // deploy.yml 不会发布。自检必须留在构建路径上——早先它只在 og-image.js 的 main() 里跑
+  // （require.main === module 守卫），构建走的是 require，于是这一段从未被执行过。
   const og = renderOgImage();
   fs.writeFileSync(path.join(OUT, 'og-image.png'), og);
+  const ogStats = selfCheckOgImage(og);
   console.log(`  OG 分享图: ${(og.length / 1024).toFixed(1)} KB`);
+  console.log(`    OG 自检: 标记 ${ogStats.white}px · 副标题 ${ogStats.pale}px · 底部说明 ${ogStats.faint}px`);
 
   // 独立详情页（每条优惠一个静态 URL）+ sitemap
   const lastmod = String(payload.updatedAt || '').slice(0, 10);
@@ -871,19 +959,36 @@ function selfCheck(built) {
     }
   }
 
-  // FAQ 可见文案与 FAQPage 必须逐字一致
+  // FAQ 可见文案与 FAQPage 必须逐字一致。
+  //
+  // 两层断言，缺一不可：
+  //   ① 用 visibleFaq() 从产物**独立**回读可见文案（与生成侧不同源，段落拆法也不同），
+  //      逐条比对问题与「各段用单空格拼接」的答案 —— 抓截断、丢段、边界处理分叉；
+  //   ② 结构化答案里**不许出现 HTML 标签** —— 标签不是答案文本，搜索引擎会把它们
+  //      当字面文字读给用户；这一层不依赖任何解析实现，是最硬的兜底。
+  // （原来的实现可见侧也调 extractFaq()，两侧同源 ⇒ 比较恒等、永远不可能失败。）
   try {
     const faq = ldBlocks.map(b => JSON.parse(b)).find(d => d['@type'] === 'FAQPage');
     if (faq) {
-      const visible = extractFaq(html);
-      const schemaQuestions = faq.mainEntity.map(q => q.name);
-      const schemaAnswers = faq.mainEntity.map(q => q.acceptedAnswer.text);
-      const mismatch = visible.some((item, i) => item.question !== schemaQuestions[i] || item.answer !== schemaAnswers[i]);
-      if (mismatch || visible.length !== schemaQuestions.length) {
-        fail(`FAQ 可见文案与 FAQPage 不一致（可见 ${visible.length} 条 / 结构化 ${schemaQuestions.length} 条）`);
-      } else {
-        console.log(`  ✓ FAQ 文案与结构化数据一致: ${visible.length} 条`);
+      const visible = visibleFaq(html);
+      const schema = faq.mainEntity.map(q => ({ question: q.name, answer: q.acceptedAnswer.text }));
+      const problems = [];
+
+      if (visible.length !== schema.length) {
+        problems.push(`条数：可见 ${visible.length} / 结构化 ${schema.length}`);
       }
+      visible.forEach((item, i) => {
+        if (!schema[i]) return;
+        if (item.question !== schema[i].question) problems.push(`第 ${i + 1} 条问题不一致`);
+        if (item.paragraphs.join(' ') !== schema[i].answer) problems.push(`第 ${i + 1} 条答案不一致`);
+      });
+      schema.forEach((item, i) => {
+        const tags = item.answer.match(/<\/?[a-z][^>]*>/gi);
+        if (tags) problems.push(`第 ${i + 1} 条答案夹带 HTML 标签 ${[...new Set(tags)].join(' ')}`);
+      });
+
+      if (problems.length) fail(`FAQ 可见文案与 FAQPage 不一致：${problems.join('；')}`);
+      else console.log(`  ✓ FAQ 文案与结构化数据一致: ${visible.length} 条（可见侧独立回读 + 无标签残留）`);
     }
   } catch (e) {
     fail('FAQ 一致性校验失败: ' + e.message);

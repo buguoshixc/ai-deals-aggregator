@@ -20,7 +20,7 @@ const { ZH_FIELDS, ZH_FIELD_LABELS, load, attach, isEnglishProse, cjkCount } = r
 const ROOT = path.join(__dirname, '..', '..');
 
 const NOTE = [
-  '人工中文译文覆盖层。键 = deal.id（sha1(vendor|title|url) 前 12 位）。',
+  '人工中文译文覆盖层。键 = deal.id（sha1(lower(vendor)|lower(title)|lower(url)) 前 12 位——三个字段先转小写再拼，与 scripts/lib/schema.js 的 makeId() 一致）。',
   '只放译文，绝不覆盖英文原文——英文原文字段一个字节都不改。',
   'src 是原文指纹：译文照抄的那段英文。英文被采集器改写后指纹对不上，',
   '该字段的译文会自动停用并在构建日志里催促复核，避免出现和原文矛盾的中文。',
@@ -54,7 +54,7 @@ if (has('orphans')) {
   } else {
     console.log(`对不上任何条目 id 的译文（${report.orphaned.length}）：`);
     for (const row of report.orphaned) console.log(`  ${row.id}  ${row.title}`);
-    console.log('\nid = sha1(vendor|title|url) 前 12 位。条目改名/换 URL 后 id 会变，译文需要跟着改键。');
+    console.log('\nid = sha1(lower(vendor)|lower(title)|lower(url)) 前 12 位（三个字段先转小写再拼，与 schema.js 的 makeId() 一致）。条目改名/换 URL 后 id 会变，译文需要跟着改键。');
   }
   process.exit(0);
 }
@@ -84,10 +84,17 @@ if (has('json')) {
 if (has('check')) {
   // 门禁视角：不打印整份待办清单，只回答「有没有需要人来处理的事」，并给出退出码。
   //
-  // 为什么是**建议性**门禁：译文对不上 id 的典型原因是条目改名/换 URL（id = sha1(vendor|title|url)），
+  // 为什么是**建议性**门禁：译文对不上 id 的典型原因是条目改名/换 URL（id = sha1(lower(vendor)|lower(title)|lower(url))），
   // 这时站点该照常发布（英文原文仍在，卡片只是少一条中文提示），但不该没人知道。
   // 所以 CI 里它写进运行 Summary 而不阻断发布；本地提交前可以直接跑，非零退出即有事要办。
-  const drift = report.orphaned.length + report.stale.length + report.dropped + report.skipped.length;
+  //
+  // unmanaged（deals.json 自带、覆盖层里没有的译文）也算漂移，理由：
+  // 覆盖层对它是**看不见**的——原文被采集器改写时，lib/zh.js 的指纹比对根本不会跑，
+  // 停用逻辑失效，旧译文会一直发到线上；而构建期只打一行 ℹ️。曾实测过：把一条译文
+  // 从覆盖层撤回，deals.json 里的旧译文照发、check:zh 仍然是 0（等于门禁对这个方向失明）。
+  // 判据放在这里而不是「顺手删掉 deal.zh」：不动的数据不会出错，删掉反而是静默丢失。
+  const drift = report.orphaned.length + report.stale.length + report.dropped +
+    report.skipped.length + report.unmanaged.length;
   const pendingFields = todo.reduce((n, row) => n + row.missing.length, 0);
   const clean = drift === 0 && todo.length === 0;
 
@@ -95,7 +102,8 @@ if (has('check')) {
   console.log(`  已贴 ${report.attached} 条 / ${report.fields} 个字段（数据共 ${report.total} 条）`);
   console.log(
     `  ${drift ? '✗' : '✓'} 漂移 ${drift} 处` +
-      `（对不上 id ${report.orphaned.length} · 原文已变停用 ${report.dropped} · 不合法 ${report.skipped.length}）`
+      `（对不上 id ${report.orphaned.length} · 原文已变停用 ${report.dropped} · 不合法 ${report.skipped.length}` +
+      ` · 覆盖层管不到 ${report.unmanaged.length}）`
   );
   console.log(`  ${todo.length ? '✗' : '✓'} 待译 ${todo.length} 条 / ${pendingFields} 个字段`);
   if (report.warnings.length) {
@@ -104,6 +112,9 @@ if (has('check')) {
   for (const row of report.orphaned) console.log(`    孤儿   [${row.id}] ${row.title}`);
   for (const row of report.stale) console.log(`    停用   [${row.id}] ${row.title}：${row.message}`);
   for (const row of report.skipped) console.log(`    不合法 [${row.id}] ${row.title}：${row.message}`);
+  for (const row of report.unmanaged) {
+    console.log(`    管不到 [${row.id}] ${row.title}：deals.json 里有译文但覆盖层没这条（撤回的译文会照发）`);
+  }
   for (const row of todo) console.log(`    待译   [${row.id}] ${row.title}：${row.missing.join('/')}`);
   console.log(clean ? '\n✅ 译文与数据一致' : '\n❌ 需要人工处理（见上）');
   process.exit(clean ? 0 : 1);
@@ -178,13 +189,17 @@ console.log(`待译   ${todo.length} 条 / ${todo.reduce((n, r) => n + r.missing
 if (report.dropped) console.log(`停用   ${report.dropped} 处译文（原文已变，见下）`);
 if (report.orphaned.length) console.log(`孤儿   ${report.orphaned.length} 条译文对不上 id（--orphans 查看）`);
 if (report.skipped.length) console.log(`不合法 ${report.skipped.length} 处译文（见下）`);
+if (report.unmanaged.length) console.log(`管不到 ${report.unmanaged.length} 条译文（deals.json 自带、覆盖层里没有，见下）`);
 if (report.warnings.length) console.log(`无指纹 ${report.warnings.length} 处译文（原文变化时发现不了）`);
 console.log('');
 
 for (const err of report.stale) console.log(`  🔁 [${err.id}] ${err.title}: ${err.message}`);
 for (const err of report.skipped) console.log(`  ⚠️  [${err.id}] ${err.title}: ${err.message}`);
+for (const row of report.unmanaged) {
+  console.log(`  ⚠️  [${row.id}] ${row.title}: 覆盖层里没有这条，译文指纹不会被校验`);
+}
 for (const err of report.warnings) console.log(`  ℹ️  [${err.id}] ${err.title}: ${err.message}`);
-if (report.stale.length || report.skipped.length || report.warnings.length) console.log('');
+if (report.stale.length || report.skipped.length || report.unmanaged.length || report.warnings.length) console.log('');
 
 for (const row of todo) {
   const flag = row.translated.length ? `（已有 ${row.translated.map(f => ZH_FIELD_LABELS[f] || f).join('/')}）` : '';

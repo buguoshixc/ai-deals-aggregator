@@ -35,7 +35,12 @@ const http = client();
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
- * GET 文本，带重试。失败返回 null（单源失败不影响整体）。
+ * GET 文本，带重试。
+ *
+ * 失败**不返回 null，而是 throw**：重试耗尽后抛 `xxx 抓取失败: …`，
+ * robots.txt 不允许时抛 `robots.txt 不允许抓取: …`（调用方自行决定是整源放弃
+ * 还是记录后继续——「单源失败不影响整体」的策略在采集器/编排层，不在这里）。
+ * 只对 HTTP 状态码宽容：2xx/3xx 之外由 axios 抛错并进入重试。
  */
 async function getText(url, options = {}) {
   const { retries = DEFAULT_RETRIES, timeout = DEFAULT_TIMEOUT, headers = {}, allow = true } = options;

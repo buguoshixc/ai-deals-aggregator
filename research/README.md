@@ -22,7 +22,7 @@ node scripts/tools/study-site.js <url> --out=research/_raw/<slug> [--scheme=ligh
 | `metrics.json` | 结构：页面高度/屏数、主列表组件签名与尺寸、**首屏完整可见条目数**（与 `verify-site.js` 同口径：底边 ≤ 视口底边）、同源链接与 URL 形态聚类、canonical/hreflang/JSON-LD/landmarks、交互控件计数、外部域名与请求数、静态正文长度、**对比度抽样（WCAG，纯色背景近似）** |
 | `tokens.json` | 视觉系统的**频次分布**：色值、字阶、行高、字重、圆角、阴影、间距、动效（属性+时长+曲线）、容器宽、栅格 |
 | `dom-outline.txt` | 语义骨架 + class 命名频次；语义层级不足 25 行时附「按渲染面积排序的最大 40 个元素」兜底 |
-| `shots/*.png` | 桌面首屏 / 桌面整页 / 手机首屏（**不入库**，19 站约 45 MB，可随时重跑） |
+| `shots/*.png` | 桌面首屏 / 桌面整页 / 手机首屏（**不入库**；20 个参考站各 3 张 = 60 张约 49 MB，含 mock/ours 快照共 108 张约 60 MB，可随时重跑） |
 
 **纪律**（都写进了工具注释）：
 

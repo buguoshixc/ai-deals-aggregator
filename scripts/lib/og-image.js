@@ -262,7 +262,14 @@ function render() {
   return encodePng(WIDTH, HEIGHT, canvas);
 }
 
-/** 自检：确认三处文字都真的画进了画布（而不是被裁掉或根本没渲染） */
+/**
+ * 自检：确认三处文字都真的画进了画布（而不是被裁掉或根本没渲染）。
+ *
+ * 两个调用点，缺一不可：main()（直接跑本脚本时）与 scripts/tools/build-local.js 的组装
+ * 阶段（发布走的是这条路）。只查 PNG 头部与尺寸无法发现文字被裁掉，所以自检必须在
+ * 构建路径上跑；它失败就抛错，构建随之非 0 退出。因此这里是公开导出的一部分，
+ * 且必须保持「只读入参、无副作用、可重复调用」。
+ */
 function selfCheck(png) {
   const raw = zlib.inflateSync(readIdat(png));
   const stride = WIDTH * 4;

@@ -43,7 +43,7 @@
 
 旧代码的问题：三个采集器各写各的字段、选择器靠猜、零产出也留在流程里。
 
-新结构：注册表 + 统一归一 + 去重 + 熔断 + 报告。
+新结构：注册表 + 统一归一 + 去重 + 熔断 + 报告。（"熔断"是当时的日志叫法；它当时也只告警、不拦写盘——现状口径见本节下面那条说明。）
 
 ```
 scripts/collectors/
@@ -57,7 +57,9 @@ scripts/lib/
 
 关键机制：
 
-- **写盘熔断**：新采条目少于既有数据的 30% 时告警并合并保留，不会把站点写空。
+- **降级告警（当时的日志措辞是「熔断告警」）**：新采条目少于既有数据的 30% 时**只告警**并合并保留，不会把站点写空。
+  → **真正拦写盘/退出的只有两条**，口径以 `scripts/collect.js` 文件头为准：「① 本次采集零产出且未加 `--force`」
+  与「② `zhReport.skipped` 非空（译文不合规）」；「单源失败」与「采集量骤降」明确**不拦**写盘、不动退出码。
 - **既有数据每次体检**：垃圾条目自动退役、分类按当前规则重算（修掉了"改了规则对旧数据无效"的坑）。
 - **否定语境识别**：折扣表里写着"No standing public discount was listed"的行，不会被误判成优惠。
 - **官方页解析**：聚合站条目优先取行内官方链接，缺链接时查 `data/official_urls.json` 映射。
@@ -88,8 +90,9 @@ AppSumo（客户端渲染，0 产出）、Product Hunt deals（403）。
 保持原生 HTML/CSS/JS 单文件、零构建（这是它能在 Pages 上稳定运行的根本原因），做了这些改动：
 
 - **严格模式**：默认 Tab 只显示 `type: "deal"` 且未过期的优惠；"全部工具"独立 Tab。
-- **分面筛选**：地区（国内 / 国外）、分类（固定 12 类枚举）、搜索、排序（即将截止 / 最近更新 / 名称）。
-- **视觉层级**：优惠徽章红底高亮，定价模式灰字，国内 / 国外颜色区分，`≤7 天` 截止高亮。
+- **分面筛选**：地区（国内 / 国外）、分类（固定 12 类枚举）、搜索、排序（默认 **「优惠力度优先」**，另有「即将截止」/「最近更新」两档——**没有「名称」排序**，见 `index.html` 的 `SORTS` 与 `data-sort` 按钮）。
+- **视觉层级**：优惠徽章红底高亮，定价模式灰字，国内 / 国外颜色区分。
+  （本节早先还写着「`≤7 天` 截止高亮」——**实测尚未实现**：`index.html` 里只有 `const SOON_DAYS = 7;` 这一处声明，全仓零引用、没有任何阈值逻辑，见 P0-2 复核。）
 - **安全修复**：原 `escapeHtml` 用于 `href` 属性不转义引号，存在属性注入风险；现在 URL 走 `http(s)` 白名单 + `escapeAttr`。
 - **"最后更新"改为读数据里的 `updatedAt`**（原来显示的是浏览器当前时间，与数据无关）。
 - 补齐 meta description / OG / favicon / robots.txt / sitemap.xml 与空状态、加载态、错误态。
@@ -101,9 +104,14 @@ AppSumo（客户端渲染，0 产出）、Product Hunt deals（403）。
 
 现在：
 
-- `collect.yml`：每天北京时间 08:00 / 20:00 采集 → `validate`（含 strict 门禁）→ 有变化才提交 `deals.json`。
+- `collect.yml`：cron **名义**上是每天北京时间 08:00 / 20:00（UTC 00:00 / 12:00）采集 → `validate`（含 strict 门禁）→ 有变化才提交 `deals.json`。
+  **实测**：GitHub 的 schedule 队列常延后 **3 到 6 小时**——2026-09-23 从 Actions API 复核 4 次 schedule 运行的
+  `created_at`（+3h26m50s 到 +5h55m40s）：`2026-09-21T17:55:40Z`（名义 12:00Z，延后 5h55m40s，run 35635091297）、
+  `2026-09-22T03:26:50Z`（名义 00:00Z，延后 3h26m50s，run 35683186610）、`2026-09-22T16:22:56Z`（名义 12:00Z，延后 4h22m56s，
+  run 35753733647）、`2026-09-23T03:27:38Z`（名义 00:00Z，延后 3h27m38s，run 35814407156）。「08:00 / 20:00」是名义时间。
 - `deploy.yml`：`push` 到 master 时**纯发布**。调用 `node scripts/tools/build-local.js` 组装 `dist/`
-  （只有 6 个公开文件，约 80 KB），零依赖、不联网抓取。
+  （`PUBLIC_FILES` 5 个公开源文件：index.html / deals.json / favicon.svg / robots.txt / .nojekyll；产物
+  `dist/` 根目录 10 个文件 507.1 KB，含 80 个详情页在内全量 139 个文件约 4.8 MB），零依赖、不联网抓取。
 - 本地 `npm run build` 与 CI 走**同一个脚本**，避免"本地通过、线上失败"。
 
 ### 2.6 修复：机器人提交无法触发部署（上线后发现）
@@ -189,7 +197,7 @@ Collect AI Deals   7754087  schedule  2026-09-21T03:28Z   → 提交了 76ee1e5
 4. 采集步骤改为 `node scripts/collect.js --headless`，并加 `set -o pipefail` 与 `tee`，
    保证采集失败不会被管道掩盖
 5. 新增 `Publish run summary`（`if: always()`）：把各来源产出、零产出告警、熔断告警写进运行 Summary，
-   某天某个来源零产出时不用翻日志就能看见
+   某天某个来源零产出时不用翻日志就能看见（「熔断告警」是该步当时的日志措辞，现在这条告警叫「降级告警」）。
 
 `deploy.yml` 未改动（纯发布路径保持原样）。
 
@@ -228,7 +236,7 @@ Collect AI Deals   7754087  schedule  2026-09-21T03:28Z   → 提交了 76ee1e5
 
 **诚实性红线（与竞品的差别，刻意保留）**
 
-- 不把「抓到过」说成「核验过」：只有 23 条人工策展条目显示核验日期。
+- 不把「抓到过」说成「核验过」：只有 **32 条**人工策展条目显示核验日期（`curated_cn` 18 + `curated_global` 14；`node scripts/validate.js` 实测「人工核验 32」「策展数据 32 条」）。
 - 看不到升级路径就不写价格阶梯；没有可信标签就不写特性标签（**不从 `description` 自动切分**）。
 - 不收录付费推广位；页脚明写「排序与推荐理由不出售」。
 
@@ -461,7 +469,12 @@ npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/
 | 标注 | `title` 与 `aria-label` 都写明「名称缩写，未取得官方品牌图形」 |
 | 不复用 | 缩写块没有 `data-logo` 属性，不走 `logos.css`，不会被误当成已登记的图形 |
 
-**结果**：72 家厂商里 **30 家用官方品牌图形、42 家用缩写兜底**（`npm run report:vendor` 可复核）。
+**结果（2.12 当时值）**：72 家厂商里 **30 家用官方品牌图形、42 家用缩写兜底**（`npm run report:vendor` 可复核）。
+
+> **当前实测（2026-09-23 复测）**：共 **77 家**——**官方品牌图形 38 家 / 名称缩写兜底 39 家**
+> （`npm run report:vendor` 输出 `官方品牌图形: 38 家 / 名称缩写兜底: 39 家 / 共 77 家`）。
+> 上面那组 30 / 42 与 2.13 的 35 / 37 一样，都是**当时值**，不是现状。
+
 默认视图 53 张卡片本来就全部有真图形（兜底 0 个），变化集中在 `全部工具` Tab。
 42 个缩写块里有 1 组重名（`Labrynth` 与 `Leonardo AI` 都是 `LA`）——不成问题，
 卡片上紧挨着就写着厂商全名，缩写块只是视觉锚点。
@@ -509,7 +522,7 @@ npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/
 
 **结果**
 
-| | 之前（2.12） | 现在 |
+| | 之前（2.12） | 现在（2.13 当时值） |
 |---|---|---|
 | 官方品牌图形 | 30 家 | **35 家** |
 | 名称缩写兜底 | 42 家 | **37 家** |
@@ -612,7 +625,7 @@ npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/
 
 - 译文不合规（不含汉字 / 字段名非法 / 超长 / 原文为空）→ **硬失败阻止发布**。
 - 原文已变 → 警告 + 该字段译文停用（采集器改英文不该把发布卡死）。
-- 译文键对不上任何条目 → 告警（`deal.id` 是 `sha1(vendor|title|url)`，改名换 URL 都会变）。
+- 译文键对不上任何条目 → 告警（`deal.id` 是 `sha1(lower(vendor)|lower(title)|lower(url))`，三个字段先转小写；改名换 URL 都会变）。
 - 第 1 步的数据校验跑在**未贴译文**的 `deals.json` 上，`validateDeal` 里的 zh 规则在那里
   永远不会触发，所以这道门禁是在构建里单独补的。
 
@@ -642,7 +655,7 @@ npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/
 
 **起因**：2.15 把译文门禁做进了构建，但有两类事只在日志里说一声——**译文对不上 id（孤儿）**
 与**还有条目没译**。CI 里没人会去读构建日志，漂移就这样悄悄留着：条目改名 / 换 URL 会让
-`id = sha1(vendor|title|url)` 变掉，那一条的中文从此不再出现，而没有任何东西变红。
+`id = sha1(lower(vendor)|lower(title)|lower(url))` 变掉，那一条的中文从此不再出现，而没有任何东西变红。
 
 **做法**（四处，都很小）：
 
@@ -690,7 +703,7 @@ npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/
 | `metrics.json` | 页面高度/屏数、主列表组件签名与尺寸、**首屏完整可见条目数**（与 `verify-site.js` 同口径）、同源链接与 URL 形态聚类、canonical/hreflang/JSON-LD、外部域名与请求数、静态正文长度、**对比度抽样** |
 | `tokens.json` | 色值/字阶/行高/字重/圆角/阴影/间距/动效的**频次分布**（频次才是设计系统的证据） |
 | `dom-outline.txt` | 语义骨架 + class 命名频次；层级不足 25 行时附「按渲染面积排序的最大 40 个元素」兜底 |
-| `shots/*.png` | 桌面首屏/整页 + 手机首屏（不入库，45 MB，可随时重跑） |
+| `shots/*.png` | 桌面首屏/整页 + 手机首屏（不入库；20 站 60 张约 49 MB，含 mock/ours 共 108 张约 60 MB，可随时重跑） |
 
 跑的过程中修掉两个**工具自身**的缺陷（都是被证据的荒谬值暴露的）：
 
@@ -1341,8 +1354,9 @@ G11 的 `buildDetailActions()` 与 `insertAdjacentElement('beforebegin', …)` �
 > 所以**远端 `refs/heads/master` 现在是 `fa2403d`**；上面那个 `ecbc815` 是**代码那次推送的当时值**，
 > 不是笔误。两次推送的内容差别只在 3 个 `.md`，而 `dist` 不含 `.md`
 > （`PUBLIC_FILES` = index.html / deals.json / favicon.svg / robots.txt / .nojekyll），
-> 因此**线上产物两次完全相同** —— 那次 108 项冒烟测试对现在线上的内容依然成立（已复查：
-> 首页 200、五项改动标记都在、`deal/ebd47f6d2522/` 与 `feed.xml`/`feed.json`/`sitemap.xml`/`robots.txt` 全 200）。
+> 因此**线上产物两次完全相同** —— 那次 108 项冒烟测试对现在线上的内容依然成立（**当时**复查：
+> 首页 200、五项改动标记都在、`deal/ebd47f6d2522/` 与 `feed.xml`/`feed.json`/`sitemap.xml`/`robots.txt` 全 200；
+> 线上复测值见本节末尾的 ⚠️）。
 >
 > 顺带记一条自己踩的坑：补推时代理（FlClash）**又断了一次**，第一次补推以同样的 7890 连接失败告终。
 > 那次重试脚本里我犯了「`fetch` 失败后仍用旧 remote-tracking ref 做快进判断」的错，已改成
@@ -1351,8 +1365,13 @@ G11 的 `buildDetailActions()` 与 `insertAdjacentElement('beforebegin', …)` �
 **发布链路**：Deploy 工作流 [run 35841045158](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35841045158) **success**。
 
 **线上冒烟测试**（这一条才是「上线成功」的实证，不是看工作流绿灯）：
-`npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/` → **验收 108 项，失败 0 项**。
+`npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/` → **验收 108 项，失败 0 项**（上线当日的本机运行记录）。
 （`verify` 不含 `--compare` 的 5 项回归，113 − 5 = 108；两个数在 2.27 ⑦ 里对得上。）
+
+> ⚠️ **线上复测值：权威值待复测（见 P0-2）** —— 2026-09-23 复测时本机到该 host **无通路**
+> （直连与经 `127.0.0.1:7890` 代理都是 `page.goto: net::ERR_CONNECTION_CLOSED`，挂在第 1 节、零断言；
+> 同期 `api.github.com` 可达）。所以上面这个 108 应读作**上线当时的记录**，不是本机现在能复现的现状值。
+
 线上确实带上了本轮的三条新断言 —— 例如
 `360px 页面级无横向溢出 — 溢出 0px · 网格 328px / 容器 328px`、
 `390px 与 360px：跳转 chip 都排满一行 — 390px: chips=4 rows=1 perRow=[4] 余量=0px · 360px: …`。
@@ -1389,7 +1408,7 @@ npm run collect:headless      # 额外启用无头来源并写盘（需本机 Ed
 npm test                # 数据 + 前端校验（零依赖）
 npm run test:strict     # 附加内容质量指标
 npm run build           # 本地复现发布产物（含预渲染 + logo 资产）并自检
-npm run verify          # 真浏览器验收（分支 2.18 落地后 69 项断言；需 playwright-core + 本机 Edge）
+npm run verify          # 真浏览器验收（当前 108 项断言；加 --compare 为 113 项。分支 2.18 落地时是 69 项——当时值；需 playwright-core + 本机 Edge）
 npm run verify:shots    # 同上，并把截图写到 mockups/.preview/
 npm run verify:baseline # 把当前指标（卡片数/首屏密度/页高/请求数）写成回归基线
 npm run verify:regress  # 与基线比回归：密度不得降、页高/请求不得涨（5 项断言）
@@ -1505,8 +1524,13 @@ Layer3Labs 9 · **人工策展（国内）18** · 智谱AI 7 · 智谱AI活动�
    （绑域名后记得同步 `build-local.js` 里的 `SITE_URL`，canonical / og:url / sitemap 都由它生成。）
 6. ~~**用户反馈入口**：卡片上加"信息有误"链接，跳 GitHub Issue 模板。~~ —— **2.19 已做**：
    详情页/弹层里都有预填 `id`、厂商、官方页的 Issue 链接，并有断言校验预填内容。
-7. **`deploy.yml` 同步收尾**：把它的 `checkout@v4` / `setup-node@v4` 也升到 `@v5`、runner 钉版本，
-   与 `collect.yml` 保持一致（纯清理，不影响发布逻辑）。
+7. ~~**`deploy.yml` 同步收尾**：把它的 `checkout@v4` / `setup-node@v4` 也升到 `@v5`、runner 钉版本，
+   与 `collect.yml` 保持一致（纯清理，不影响发布逻辑）。~~ —— **已完成**（2026-09-23 收尾审计）：
+   实际范围比原文更大——除 `checkout@v4→v5`、`setup-node@v4→v5` 与两个 job 的 runner 钉成 `ubuntu-24.04` 外，
+   还升了 `configure-pages@v4→v6`、`upload-pages-artifact@v3→v5`、`deploy-pages@v4→v5`（旧那一代跑在
+   **已被移除的 Node20 runtime** 上），构建的 `node-version` 由 `'20'` 提到 `'24'`；`package.json` 的
+   `engines.node` 同步从 `>=20` 收紧到 `>=20.18.1`（对齐锁文件里 cheerio / undici 的下限）。
+   这组口径现在由 `scripts/tools/check-ci-consistency.js`（在 verify.yml 的 gate job 里跑）持续断言。
 8. **给自动采集条目补 `features`**：目前 48 条自动条目没有特性标签，卡片回退展示 `discountInfo`。
    若能为常见来源（百度千帆、火山方舟）写规则化的标签提取，卡片整齐度会再上一个台阶——
    但必须遵守"只取原文事实、不生成近似内容"的约束（见 2.9 诚实性红线）。
@@ -1524,7 +1548,7 @@ Layer3Labs 9 · **人工策展（国内）18** · 智谱AI 7 · 智谱AI活动�
     （目前 71 条优惠里仍有一部分为空）。
 14. **智谱免费模型的厂商级合并**：那 7 条「XX 免费模型」`url` 各不相同，不属于「同一张表」，
     2.10 刻意没有合并。要合并需另写一条厂商级策略（与「同源折叠」是两回事，不要混在一个函数里）。
-15. **名称缩写兜底还剩 40 家**：都是有官方图形就该换掉的（口径是「拿得到就一定用真图形」）。
+15. **名称缩写兜底还剩 39 家**（2026-09-23 实测：`node scripts/tools/tier-report.js --vendor` 末行输出 `官方品牌图形: 38 家 / 名称缩写兜底: 39 家 / 共 77 家`）：都是有官方图形就该换掉的（口径是「拿得到就一定用真图形」）。
     数据里出现过的厂商已在 2.13 / 2.14 换成真图形；剩下的是目录站抓来的长尾工具，
     多数连官网都不确定（2.14 新增 3 家里，扣子 Coze 走的是图形库品牌路径，已在 manifest 注明）。
     另有一批**图形尺寸偏小**、可用但不理想：科大讯飞 32×32、Ideogram 48×48、KREA 64×64、
@@ -1558,8 +1582,111 @@ Layer3Labs 9 · **人工策展（国内）18** · 智谱AI 7 · 智谱AI活动�
 - **预渲染**：`scripts/lib/render-core.js` 用 `vm` 沙箱抽出主页面里的 RENDER-CORE 纯函数区求值
   （构建期与浏览器端共用同一份模板）；默认视图由唯一的 `cardsFor(deals, DEFAULT_FILTERS)` 产出：
   **过滤 → 折叠同源 → 打档位 → 排序**
-- **真浏览器验收**：playwright-core + 本机 Edge，**110 项**断言（`scripts/tools/verify-site.js`；
-  文件里 105 个 `check()` 调用点 + `--compare` 的 5 项回归）
+- **真浏览器验收**：playwright-core + 本机 Edge（或 `DSH_EDGE` 指向的内核），**108 项**断言
+  （`scripts/tools/verify-site.js`；无 `--compare` 时 108 项，带基线回归的 `verify:regress` 113 项；
+  文件里 114 个 `check()` 调用点 = 108 常跑 + 5 回归 + 1 条仅基线文件缺失时执行的失败分支）
 - **OG 分享图**：Node 内置 `zlib` 手写 PNG 编码 + 内置 5×7 点阵字模（零外部依赖）
 - **部署**：GitHub Actions → GitHub Pages
 - **存储**：静态 `deals.json`（v2 契约，前端新增的档位/logo 均为**派生**，不写回数据）
+
+---
+
+## 七、审计发现（2026-09-23）：三个坑与「可安全删除的对象」台账
+
+> 本节是**只读审计**的产物：三处「文档/注释说的」与「代码做的」不一致的坑，加上一份
+> 删得掉、但**本次一律不删**的对象台账。所有数字都是本机实测，命令可原样复核。
+
+### 7.1 `deal.id` 的公式：注释里少了个 `lower()`（最高价值）
+
+实现（唯一权威）在 `scripts/lib/schema.js` 的 `makeId()`（当前 275–279 行），关键是把三个字段**先转小写**：
+
+```js
+const basis = `${(vendor || '').toLowerCase()}|${(title || '').toLowerCase()}|${(url || '').toLowerCase()}`;
+return crypto.createHash('sha1').update(basis).digest('hex').slice(0, 12);
+```
+
+但**另外 7 处**把它写成不带小写的「`sha1(vendor|title|url)` 前 12 位」：`scripts/lib/zh.js:15`、
+`scripts/tools/zh-todo.js:23 / 57 / 87`、`README.md:82`（JSON 示例的注释）、`PROJECT_STATUS.md` 旧 626 / 656 行。
+**2026-09-23 已把上面这 7 处全部改对**（四处注释 + README 示例 + 本文件那两行）；
+**只剩 `scripts/data/translations_zh.json` 的 `_note`** 还是旧文案 —— 它是工具生成的快照，
+下次 `node scripts/tools/zh-todo.js --scaffold` 会按新文案覆盖；该文件属译文数据，本次没动。
+
+**实测（本机 130 条，2026-09-23）**：
+
+| 口径 | 命中的 id |
+|---|---|
+| 按实现（`toLowerCase()` 后拼） | **130 / 130** |
+| 按旧注释（不小写） | **7 / 130** —— 这 7 条恰好 vendor / title / url 全小写（如 `more.graphics`、`阿里云百炼…`） |
+
+**如果照旧注释去「修正」代码，代价是**：
+
+- **123 条 id 会变**（130 条里只有那 7 条不变）；
+- 详情页 URL 是 `deal/<id>/`：**80 个详情页里 74 个的 URL 会变**，另 6 条恰好全小写、URL 不变
+  （阿里云百炼 / 联网资源 / 火山方舟 豆包全系 / 腾讯混元 / 讯飞开放平台 / 360智脑）。
+  —— 审计初稿写的是「80 个全变」，这里是**实测修正后的 74**。这些 URL 已上线、进了 `sitemap.xml`
+  与首页内链，换 id 等于一次**没有重定向的批量 404**；
+- **41 条人工译文全部变孤儿**：`translations_zh.json` 的 41 个键全都对得上现役条目，id 一换就全军覆没，
+  卡片上的「中文」胶囊一起消失（`check:zh` 会报，但它只是建议性门禁，不拦发布）。
+
+**教训**：同一个公式被抄进注释、工具输出、示例 JSON、生成的数据文件共 8 处，实现只有 1 处。
+改公式的正确顺序是：先改 `makeId()`，再 `grep -rn "sha1(" scripts README.md PROJECT_STATUS.md` 找齐所有抄本。
+
+### 7.2 详情页模板只共用一半（分叉边界写在这里）
+
+`scripts/tools/build-local.js` 的 `writeDetailPages()` 生成 80 个 `dist/deal/<id>/index.html`。
+**与首页共用的是这三块**（从已组装好的 `index.html` 里抽，抽不到就抛错）：
+
+| 共用块 | build-local.js | index.html |
+|---|---|---|
+| `<style>` 样式块 | 414 / 528 | 全站样式块 |
+| 「主题必须在首次绘制前决定」前置脚本 | 415 / 526 | 同名前置脚本 |
+| 页脚（`<!--SHARED:footer:START/END-->` 标记） | 416 / 560 | 907–914 |
+
+**而这三块是硬编码的第二份副本** —— 没有标记、没有断言，也不在「抽不到就抛错」的保护范围内：
+
+| 第二份副本 | build-local.js | index.html |
+|---|---|---|
+| 品牌头部：mark SVG + 「AI 优惠聚合器 / 真实优惠 · 每日核验」 | 533–541 | 806–813 |
+| `#themeSeg` 三个主题按钮 | 422–426 | 819–823 |
+| 详情页的主题切换脚本（`THEME_KEY` 的值 `'dsh.theme'` 被抄成字面量，不引用常量） | 428–462 | 2163–2199 |
+
+**后果**：改首页的**品牌文案**或**主题行为**不会同步到 80 个详情页，构建与 `npm run verify` 都不会报错
+（验收断言以首页为主，详情页只做抽样 canonical / 文案断言）。本次同时把 build-local.js:397
+那段「不引入第二份模板 … 因此首页与详情页不会分叉」的过度乐观注释改成了如实的边界描述。
+
+> 行号口径：上面两列都是 **2026-09-23 工作区**的值。build-local.js 一侧刻意只在此处写行号 ——
+> 本次审计自己就踩过：在该文件里加 10 行注释，把它自身后续所有行号整体推后了 10 行。
+> 复核时请以符号为准（`writeDetailPages` / `themeSeg` / `themeBind` / `<a class="brand">`）。
+
+### 7.3 本机跑 `npm run verify` 需要浏览器内核
+
+- `scripts/tools/verify-site.js:27` **只认路径**：`DSH_EDGE` 环境变量，缺省写死 Windows 的
+  `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe` —— 它**不**去读 playwright 的内核缓存。
+- `scripts/lib/browser.js:22`（无头采集那条路）自己探测：`msedge` → `chrome` → playwright 自带内核
+  （`bundled`），都不可用时报 `NO_BROWSER` 并提示装内核。
+- 一行装上（本地 / CI 通用）：`npx playwright install --with-deps chromium`
+- 装完让验收用上它（verify-site.js 只认路径，要把路径喂给 `DSH_EDGE`）：
+  `DSH_EDGE="$(node -e "process.stdout.write(require('playwright-core').chromium.executablePath())")" npm run verify`
+- 缓存位置：Linux / macOS `~/.cache/ms-playwright`，Windows `%LOCALAPPDATA%\ms-playwright`。
+  **本机现状**：`%LOCALAPPDATA%\ms-playwright` 里有 `chromium-1243`（本轮门禁验证时装的），
+  且本机装有 Edge，所以现在两条路都能跑。
+
+### 7.4 「可安全删除的对象」台账（只写不执行）
+
+> **本节不执行任何删除。** 本次审计全程只读：没有跑 `git branch -d/-D`、`git tag -d`、
+> `git stash drop`、`git gc`、`git prune`。每条给出「为什么安全」的证据与确切命令，
+> **留给人事后决定**；证据都能用同一条命令复核，哈希与计数取自 2026-09-23 的工作区。
+
+| 对象 | 为什么安全（证据） | 命令（本次未执行） |
+|---|---|---|
+| 7 个 `feat/*`：`feat/b-extras` `feat/detail-pages` `feat/expiry-window` `feat/favorites-compare` `feat/polish` `feat/row-view` `feat/visual-token-layer` | 都是 `master` 的祖先：`git merge-base --is-ancestor <分支> master` 为真，且 `git rev-list --count master..<分支` 为 `0` —— 内容全在 master 里 | `git branch -d feat/b-extras feat/detail-pages feat/expiry-window feat/favorites-compare feat/polish feat/row-view feat/visual-token-layer` |
+| `trial/merge-rehearsal-2`（`044dd51`） | 同上：`master..` 计数 `0`、是 master 祖先（2.21 全合用的就是它） | `git branch -d trial/merge-rehearsal-2` |
+| `fix/detail-close`（`c70706b`） | 是 master 祖先（`git branch -vv` 显示 `behind 29`、ahead 0）。⚠️ **它的 upstream 被错配成 `origin/master`**（本该是 `origin/fix/detail-close`）：在这个分支上 `git pull` 会去拉 master、`git push` 会试图推 master | 先 `git branch --unset-upstream fix/detail-close`，再 `git branch -d fix/detail-close` |
+| 2 个 backup 标签：`backup/pre-ab-merge`（`fb08832`）、`backup/pre-origin-merge-b261add`（`b261add`） | 两者都是 master 祖先 —— 提交在 master 历史里仍然可达，删标签只丢「名字」，随时可 `git tag <名> <sha>` 重建；且 `git ls-remote --tags origin` **输出为空**（远端一个标签都没有），删除不影响上游 | `git tag -d backup/pre-ab-merge backup/pre-origin-merge-b261add` |
+| `trial/merge-rehearsal`（`4066a17`） | **不是** master 祖先（ahead 6）：5 个「rehearsal: merge …」合并提交 + 1 个文档提交。`git cherry master trial/merge-rehearsal` 判定那个唯一的非合并提交没有等价 patch；它的 `deals.json` 130 个 id **全部**在 master 里（独有 0）；那节文档（「2.21 合并彩排」）在 master 上已被改写成现行 2.21。⚠️ 删除会丢掉**被改写前的那版措辞**，想留就先打标签 | 想留：`git tag archive/trial-merge-rehearsal trial/merge-rehearsal`；确认不要：`git branch -D trial/merge-rehearsal` |
+| stash `60df32f`（`stash@{0}`「本地手工产出的 121 条（CI 已产出等价数据 068d925）」） | **独有 id 为 0**：它的 `deals.json` 121 个 id 与 master 的 130 个、与 `068d925` 的 121 个都没有差集；`git diff 068d925 stash@{0}` 只有 `deals.json` 的 61/61 行；`068d925`（「chore(data): 更新优惠数据 2026-09-21 22:44」）本身是 master 祖先 | `git stash drop stash@{0}` |
+| `backup-pre-rewrite`（`cb0850c`） | 不是 master 祖先（ahead 11），但 `git cherry master backup-pre-rewrite` 的 **11/11 全部是 `-`**（patch 等价 → 内容已由 master 里的对应提交承载）；它的 `deals.json` 104 个 id 独有 0 —— 内容无独创，只剩作者溯源价值 | `git branch -D backup-pre-rewrite` |
+
+**台账之外的观察**：`fix/detail-close` 的 upstream 错配是目前唯一的「危险默认值」——
+在 `git branch -vv` 里它只是一行 `[origin/master: behind 29]`，但足以让一次手滑的 `git push` 去动 master。
+修法已记在上表，本次不执行。

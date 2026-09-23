@@ -9,6 +9,8 @@
  *   ③ 译文键对不上任何条目 → 构建成功并告警（孤儿）
  *   ④ 覆盖层删掉一条译文   → 产物里也必须消失（不能靠 deals.json 里的残留撑着）
  *   ⑤ 同一份孤儿数据       → `zh-todo --check` 必须非零退出（建议性门禁要看得见漂移）
+ *   ⑥ 整条译文从覆盖层撤回 → 构建放行，但 `zh-todo --check` 必须把 deals.json 里
+ *                            残留的旧译文（unmanaged）计为漂移而非放过
  *
  * 用法：node scripts/tools/zh-selftest.js
  */
@@ -119,6 +121,26 @@ try {
   record('覆盖层删掉译文 → 产物同步消失',
     r4.code === 0 && !stillThere,
     r4.code === 0 ? (stillThere ? '产物里还留着旧译文' : '产物已同步') : '构建失败', r4);
+
+  // ⑥ 整条译文从覆盖层撤回（deals.json 里还留着上次贴上的 zh）
+  //    → 构建照旧放行（英文原文还在，发布不该被卡），但译文门禁必须报红。
+  //    修复前这里会漏：覆盖层没覆盖的 id 走的是 lib/zh.js 的 unmanaged 分支
+  //    （原样保留 deal.zh、不做指纹比对），而 check:zh 的漂移判据不算 unmanaged，
+  //    于是「撤回一条译文」的结果是旧译文照发、门禁仍然 exit 0。
+  const withdrawn = JSON.parse(original);
+  delete withdrawn.byId[onlyOne];
+  write(withdrawn);
+  const r5 = run();
+  const unmanagedZh = JSON.parse(fs.readFileSync(path.join(ROOT, 'dist', 'deals.json'), 'utf8'))
+    .deals.some(d => d.id === onlyOne && d.zh && Object.keys(d.zh).length);
+  record('撤回整条译文 → 构建放行但产物里的旧译文被标为覆盖层管不到',
+    r5.code === 0 && unmanagedZh && /不在覆盖层里/.test(r5.out),
+    r5.code === 0 ? (unmanagedZh ? '已按管不到告警' : '产物里没有旧译文（case ④ 的残留？）') : '构建失败', r5);
+
+  const r5b = runCheck();
+  record('撤回整条译文 → check:zh 非零退出（unmanaged 计入漂移）',
+    r5b.code !== 0 && /漂移 1 处/.test(r5b.out) && /管不到/.test(r5b.out) && !/译文与数据一致/.test(r5b.out),
+    r5b.code !== 0 ? '已按漂移退出' : '竟然返回 0（撤回的译文会被漏掉）', r5);
 } finally {
   fs.writeFileSync(FILE, original, 'utf8');
 }

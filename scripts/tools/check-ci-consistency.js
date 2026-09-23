@@ -1,0 +1,467 @@
+#!/usr/bin/env node
+/**
+ * CI 口径一致性门禁：把「四条 workflow 的 action 版本 / runner / Node 版本 / 触发面」与
+ * 「package.json 的 engines 下限 vs 锁文件里依赖要求的下限」固化成**可失败**的断言。
+ *
+ * 为什么需要它（实证）：deploy.yml 曾经是全仓唯一跑在**已被移除的 Node20 runtime** 上的一代
+ * （checkout@v4 / setup-node@v4 / configure-pages@v4 / upload-pages-artifact@v3 / deploy-pages@v4、
+ * node-version '20'、runs-on ubuntu-latest），而 collect.yml 与 probe-sources.yml 早就在 v5。
+ * 这种漂移当时没有任何门禁会报出来，只有人肉审计才发现——本脚本就是为了不再发生第二次。
+ *
+ * 用法：
+ *   node scripts/tools/check-ci-consistency.js                 # 检查本仓库
+ *   node scripts/tools/check-ci-consistency.js --root=<目录>    # 检查另一份副本（负向演练用）
+ * 退出码：0 = 全部通过；1 = 有断言失败（输出里逐条给 ✗ 与原因）。
+ *
+ * ── 三条刻意的设计 ──────────────────────────────────────────────────────────────
+ *  1. **零外部依赖**（只用 fs / path）：CI 里这一步跑在 `npm ci` 之前也不缺东西，
+ *     而仓库并没有 YAML 解析库（js-yaml 不是依赖）。所以这里自带一个**够用的**
+ *     缩进式读取器：只认「块映射 / 序列项 / 块标量(| >) / 流式序列([...])」这几种形状，
+ *     块标量（run: | …）整体跳过，因此 `run:` 里的 `#`、`-`、HTML 都不会干扰解析。
+ *  2. **断言「取值 / 路径」而不是「文本里有没有某个字符串」**：runner 一律看 `runs-on` 的**值**，
+ *     node-version 一律看它是否真的落在某个 setup-node 步骤的 `with:` 之下（按 path 判）；
+ *     绝不用「文件里不得出现 ubuntu-latest」这类字符串判据——注释里合法提到它就会误报（t9 踩过）。
+ *  3. **按 SHA 钉死是允许且推荐的**：`owner/repo@<40 位 sha>` 永远不判红（比 `@v5` 更安全）。
+ *     只有「旧主版本（@v1..v4，含 @v4.1.1 这类点分写法）」与「浮动引用（@main / @master / 裸分支名）」
+ *     才判红。版本上界不在这里设：各 workflow 的**冻结 uses 集合**（断言 (2)）已经钉住了每个 action
+ *     的期望主版本，所以 checkout@v6 会被 (2) 抓住，而不必在 (1) 里再设一条上界规则。
+ *
+ * ── 覆盖范围（历次修复的边界都写在这里） ──────────────────────────────────────────
+ *  · (0)/(0b) 必需 workflow 清单写死并要求逐个存在，同时**硬断言「磁盘集合 == 必需清单」**：
+ *    **未登记的新 workflow 一律硬红（哪怕它的 runner / Node 版本全都合规）** —— 这是**登记制**：
+ *    新增一条 workflow 必须同步改**三处**（`REQUIRED_WORKFLOWS`、(2) 的 `FROZEN_USES`、
+ *    `FROZEN_ASSERTION_NAMES`），并把 verify.yml 里的 `--expect-checks` 数字一并更新；
+ *  · (1)/(1b)/(3c)/(4)/(4b)/(4c) 扫的是**磁盘集合**（不是写死的四条）：这样「删/改名」由 (0)/(0b) 报红，
+ *    而「新文件漂移」也会被这几条直接抓住 —— t24 曾把视野收窄成写死的四条，导致未登记的新文件能穿过去（F7）；
+ *  · (2) 刻意**只**遍历 `FROZEN_USES` 的键（不扫磁盘集合）：没有冻结条目就无从比对，扫了必然判「多出」而全红。
+ *    这正是登记制自洽的原因 —— 未登记的文件由 (0b) 硬红，而不是靠 (2) 误伤；
+ *  · (1)/(1b) 跨文件的 uses 版本与引用形式检查（t21/t23/F3：点分写法、@main 这类浮动引用）；
+ *  · (2) 每个必需 workflow 的 uses 集合等于**各自冻结集合**（t23/F4：以前只有 deploy.yml 有集合断言）；
+ *  · (3)/(3c)/(4) runner 与 Node 版本跨所有磁盘上的 workflow 一致（t21），且 node-version 必须**按 path**
+ *    落在 setup-node 的 `with:` 下（t23/F5：job 级 `env: node-version` 曾能骗过检查器）；
+ *  · (9) 触发面：verify.yml 的 `on:` 不得被 `paths` / `paths-ignore` 过滤（t24/F6）。**为什么**：
+ *    它将来会被设成**必需检查**，而必需检查一旦被 path 过滤，PR 只改别的目录时 workflow 根本不触发，
+ *    检查既不是红也不是绿，而是**永久 pending** —— 分支保护会把 PR 卡死，且没人能从红绿看出原因。
+ *
+ * ── 看门狗、带外项数与它们各自的边界（如实记录，不做过度设计） ───────────────────────
+ *  末尾的「(W) 断言名单与冻结清单等值」断言：**删掉任意一条断言**、或**把任意一条断言改名**，
+ *  都会在这里变红（比"只比数量"更强）。它有一条**保护不了自己的固有边界**：如果被删的是最后一条
+ *  或这条看门狗本身，就没有东西还能报出来了 —— reviewer 明确记为 info（不是 blocker），这里只如实写明。
+ *  为了**减少**（不是消除）这条边界，`--expect-checks=<N>` 可从**外部**钉住实跑项数（CI 里由
+ *  verify.yml 传入）：带了该参数就断言「实跑项数 == N」，不等即红；**不带参数时本地照常能跑（exit 0），
+ *  但会打印一行明确提示，说明"总项数"这条边界在本次运行中没有被守护**。两者刻意保持互相独立：
+ *  一次删除带不走两个机制（除非连 externally pinned 的数字与名字清单一起改）。
+ */
+'use strict';
+const fs = require('fs');
+const path = require('path');
+
+const rootArg = process.argv.find(a => a.startsWith('--root='));
+const ROOT = rootArg ? path.resolve(rootArg.slice('--root='.length)) : path.join(__dirname, '..', '..');
+/** 带外钉住的实跑项数（F8）：数字写在调用方（verify.yml），删掉看门狗时的静默降级由它兜住 */
+const expectArg = process.argv.find(a => a.startsWith('--expect-checks='));
+const EXPECT_CHECKS = expectArg ? Number(expectArg.slice('--expect-checks='.length)) : null;
+const WF_DIR = path.join(ROOT, '.github', 'workflows');
+
+/* ────────────────────────── 冻结口径（唯一事实来源） ────────────────────────── */
+
+/** 必需 workflow：**写死**这份清单并要求逐个存在（不能只依赖 readdirSync 的结果集） */
+const REQUIRED_WORKFLOWS = ['collect.yml', 'deploy.yml', 'probe-sources.yml', 'verify.yml'];
+
+/** 每个必需 workflow 的 uses 冻结集合（含主版本；SHA 钉死的等价写法见 parseUses 的 allowed） */
+const FROZEN_USES = {
+  'collect.yml': ['actions/checkout@v5', 'actions/setup-node@v5'],
+  'deploy.yml': [
+    'actions/checkout@v5',
+    'actions/setup-node@v5',
+    'actions/configure-pages@v6',
+    'actions/upload-pages-artifact@v5',
+    'actions/deploy-pages@v5'
+  ],
+  'probe-sources.yml': ['actions/checkout@v5', 'actions/setup-node@v5'],
+  'verify.yml': ['actions/checkout@v5', 'actions/setup-node@v5']
+};
+
+const EXPECT_RUNS_ON = 'ubuntu-24.04';
+const EXPECT_NODE_VERSION = '24';
+const EXPECT_JOBS = ['build', 'deploy'];
+/** 「采集失败就不发布」的语义：build job 的 if 必须逐字保持 */
+const EXPECT_BUILD_IF = "github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'";
+const BRIDGE_WORKFLOW = 'Collect AI Deals';
+/** 必须保持「无路径过滤」的 workflow（它要当必需检查；被 paths 过滤 = PR 永久 pending） */
+const NO_PATH_FILTER_WORKFLOWS = ['verify.yml'];
+
+/**
+ * 应当被执行的断言名单（**字面量**，刻意不派生：改名也要能被看门狗抓到）。
+ * 增删断言时同步改这里 —— 于是「断言集合变了」这件事在 diff 里一眼可见。
+ */
+const FROZEN_ASSERTION_NAMES = [
+  '(0) 必需 workflow 存在：collect.yml',
+  '(0) 必需 workflow 存在：deploy.yml',
+  '(0) 必需 workflow 存在：probe-sources.yml',
+  '(0) 必需 workflow 存在：verify.yml',
+  '(0b) 磁盘上的 workflow 集合 == 必需清单（互为子集；未登记的新文件也硬红）',
+  '(1) 必需 workflow 的 uses 没有 v1..v4 旧代引用（按主版本比较，含 @v4.1.1 这类点分写法）',
+  '(1b) 必需 workflow 的 uses 没有浮动引用（@main / @master / 裸分支名；按 SHA 钉死是允许且推荐的）',
+  '(2) collect.yml 的 uses 集合等于冻结集合',
+  '(2) deploy.yml 的 uses 集合等于冻结集合',
+  '(2) probe-sources.yml 的 uses 集合等于冻结集合',
+  '(2) verify.yml 的 uses 集合等于冻结集合',
+  '(3) deploy.yml 两个 job 的 runs-on 都是 ubuntu-24.04',
+  '(3b) 全部 workflow 的 runs-on 都不是浮动标签（按取值判，不按字符串判）',
+  '(3c) 全部磁盘上的 workflow 的 runs-on 取值集合唯一（按 jobs.<job>.runs-on 的 path 判）',
+  "(4) 全部磁盘上的 workflow 的 node-version 取值集合唯一（只认 setup-node 步骤 with: 下的值）",
+  '(4b) 每个带 setup-node 的 job 都显式给出 with.node-version',
+  '(4c) 没有把 node-version 写在 env: 等无效位置（那种写法会骗过检查器）',
+  '(5) deploy.yml 的 job 名严格等于 build / deploy',
+  '(6) engines 下限不低于锁文件里最严的依赖下限（从锁文件推导）',
+  '(7a) deploy.yml 的 on: 仍含 workflow_run 桥接',
+  '(7b) build job 的 if 表达式逐字未变',
+  '(8) verify.yml 的 gate job 存在且没有 job 级 if（永不 skipped）',
+  '(9) verify.yml 的 on: 没有被 paths / paths-ignore 过滤（必需检查被过滤 = PR 永久 pending）'
+];
+const WATCHDOG_NAME = '(W) 断言名单与冻结清单等值（删一条或改名都会红；本看门狗保护不了自己被删）';
+
+/* ────────────────────────────── 小工具 ────────────────────────────── */
+
+/** 去掉行尾注释（引号内的 # 不算注释） */
+function stripComment(s) {
+  let out = '';
+  let quote = null;
+  for (const ch of s) {
+    if (quote) { if (ch === quote) quote = null; out += ch; continue; }
+    if (ch === '"' || ch === "'") { quote = ch; out += ch; continue; }
+    if (ch === '#') break;
+    out += ch;
+  }
+  return out;
+}
+
+/** 缩进式读取器：返回 [{indent, key, value, path, inSeq}]；块标量内容整体跳过 */
+function parseWorkflow(text) {
+  const entries = [];
+  const stack = [];
+  let blockIndent = -1;
+  const lines = String(text).replace(/\r\n?/g, '\n').split('\n');
+  for (const raw of lines) {
+    const indent = (raw.match(/^[ \t]*/) || [''])[0].replace(/\t/g, '  ').length;
+    const trimmed = raw.trim();
+    if (blockIndent >= 0) {
+      if (trimmed === '' || indent > blockIndent) continue;
+      blockIndent = -1;
+    }
+    if (trimmed === '' || trimmed.startsWith('#')) continue;
+
+    const kv = /^([A-Za-z0-9_.\-]+):(?:\s+(.*))?$/.exec(trimmed);
+    if (kv) {
+      const rawValue = kv[2];
+      const isBlockScalar = rawValue !== undefined && /^[|>][-+]?$/.test(rawValue.trim());
+      let value = rawValue === undefined || isBlockScalar ? null : stripComment(rawValue).trim();
+      if (value === '') value = null;
+      while (stack.length && stack[stack.length - 1].indent >= indent) stack.pop();
+      entries.push({ indent, key: kv[1], value, path: [...stack.map(e => e.key), kv[1]] });
+      if (rawValue === undefined || isBlockScalar) stack.push({ indent, key: kv[1] });
+      if (isBlockScalar) blockIndent = indent;
+      continue;
+    }
+
+    if (trimmed === '-' || trimmed.startsWith('- ')) {
+      const body = stripComment(trimmed.replace(/^-\s?/, '')).trim();
+      while (stack.length && stack[stack.length - 1].indent >= indent) stack.pop();
+      const seqKv = /^([A-Za-z0-9_.\-]+):\s*(.*)$/.exec(body);
+      if (seqKv) entries.push({ indent, key: seqKv[1], value: seqKv[2].trim() || null, path: [...stack.map(e => e.key), seqKv[1]], inSeq: true });
+      else entries.push({ indent, key: null, value: body, path: stack.map(e => e.key), inSeq: true });
+    }
+  }
+  return entries;
+}
+
+const readWorkflow = f => parseWorkflow(fs.readFileSync(path.join(WF_DIR, f), 'utf8'));
+const existingWorkflowFiles = () => {
+  try { return fs.readdirSync(WF_DIR).filter(f => /\.ya?ml$/.test(f)).sort(); } catch { return []; }
+};
+
+/** 流式序列 / 标量 → 字符串数组 */
+function asList(value) {
+  if (value === null || value === undefined) return [];
+  const s = String(value).trim();
+  if (s.startsWith('[') && s.endsWith(']')) {
+    return s.slice(1, -1).split(',').map(x => x.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean);
+  }
+  return [s.replace(/^['"]|['"]$/g, '')];
+}
+
+const ver = v => String(v).trim().split(/[.\-+]/).map(n => parseInt(n, 10) || 0).concat([0, 0, 0]).slice(0, 3);
+const cmpVer = (a, b) => { const A = ver(a), B = ver(b); for (let i = 0; i < 3; i++) if (A[i] !== B[i]) return A[i] - B[i]; return 0; };
+
+/** 解析 `owner/repo@ref`：kind = sha | floating | version | unknown | malformed */
+function parseUses(u) {
+  const s = String(u).trim();
+  const m = /^([\w.-]+\/[\w.-]+)@(.+)$/.exec(s);
+  if (!m) return { raw: s, action: null, ref: null, kind: 'malformed' };
+  const action = m[1], ref = m[2];
+  if (/^[0-9a-f]{40}$/i.test(ref)) return { raw: s, action, ref, kind: 'sha' };      // SHA 钉死：允许且推荐
+  if (/^(main|master|HEAD)$/i.test(ref)) return { raw: s, action, ref, kind: 'floating' };
+  const v = /^v(\d+)(?:\.\d+)*$/.exec(ref);
+  if (v) return { raw: s, action, ref, major: Number(v[1]), kind: 'version' };
+  return { raw: s, action, ref, kind: 'unknown' };
+}
+
+const usesEntries = entries => entries.filter(e => e.key === 'uses' && e.value !== null);
+const usesOf = entries => usesEntries(entries).map(e => e.value);
+const jobsOf = entries => entries.filter(e => e.path.length === 2 && e.path[0] === 'jobs').map(e => e.key);
+/** job 维度的 runs-on：只认 jobs.<job>.runs-on（按 path 判，不看裸键名） */
+const runsOnByJob = entries => Object.fromEntries(entries
+  .filter(e => e.key === 'runs-on' && e.path.length === 3 && e.path[0] === 'jobs')
+  .map(e => [e.path[1], e.value]));
+/** 带 setup-node 的 job（uses 落在 jobs.<job>.steps 之下） */
+const jobsWithSetupNode = entries => [...new Set(usesEntries(entries)
+  .filter(e => /^actions\/setup-node@/.test(String(e.value)) && e.path[0] === 'jobs' && e.path.includes('steps'))
+  .map(e => e.path[1]))];
+/** 某个 job 里 setup-node 步骤 `with:` 下的 node-version（只认这个位置） */
+const stepNodeVersions = (entries, job) => entries
+  .filter(e => e.key === 'node-version' && e.value !== null && e.path[0] === 'jobs' && e.path[1] === job &&
+    e.path.includes('steps') && e.path.includes('with'))
+  .map(e => String(e.value).replace(/^['"]|['"]$/g, ''));
+/** 不在 setup-node 步骤 with: 之下的同名键（env: / job env: / 其它位置） */
+const misplacedNodeVersions = entries => entries
+  .filter(e => e.key === 'node-version' && e.value !== null &&
+    !(e.path[0] === 'jobs' && e.path.includes('steps') && e.path.includes('with')))
+  .map(e => `${e.path.join('.')} = ${e.value}`);
+
+/* ────────────────────────────── 断言框架 ────────────────────────────── */
+
+const results = [];
+function check(name, ok, detail) {
+  results.push({ name, ok: !!ok, detail });
+  console.log(`  ${ok ? '✓' : '✗'} ${name}${detail ? ' — ' + detail : ''}`);
+}
+
+console.log(`CI 口径一致性检查 · root=${ROOT}`);
+console.log(`磁盘上的 workflow 文件：${existingWorkflowFiles().join(' / ') || '(无)'}`);
+console.log(`必需清单（写死）：${REQUIRED_WORKFLOWS.join(' / ')}\n`);
+
+/* ────────────────────────── (0)/(0b) 必需文件与磁盘集合 ────────────────────────── */
+// (0) 逐个发断言：删掉/改名任一必需 workflow 都必须红（t23/F1 —— 以前删掉 verify.yml 反而 exit 0，
+// 连 (8) 那条唯一的「gate 永不 skipped」守护都会整条消失）。
+const DISK_FILES = existingWorkflowFiles();          // 磁盘集合：跨文件断言一律扫它（t27/F7）
+const wf = {};
+for (const f of DISK_FILES) wf[f] = readWorkflow(f);
+for (const f of REQUIRED_WORKFLOWS) {
+  const ok = Object.prototype.hasOwnProperty.call(wf, f);
+  check(`(0) 必需 workflow 存在：${f}`, ok, ok ? '存在' : `**缺失**（磁盘上没有 ${path.join(WF_DIR, f)}）`);
+}
+// (0b) 登记制：磁盘集合与必需清单必须互为子集。**未登记的新文件一律硬红（哪怕内容全合规）** ——
+// 否则新文件会悄悄绕过「登记才纳入覆盖」的约定（t27/F7：t24 把视野收窄成写死的四条，新文件能穿过去）。
+const unregistered = DISK_FILES.filter(f => !REQUIRED_WORKFLOWS.includes(f));
+const disappeared = REQUIRED_WORKFLOWS.filter(f => !DISK_FILES.includes(f));
+check('(0b) 磁盘上的 workflow 集合 == 必需清单（互为子集；未登记的新文件也硬红）',
+  unregistered.length === 0 && disappeared.length === 0,
+  unregistered.length || disappeared.length
+    ? [
+      unregistered.length ? `未登记：${unregistered.join('、')}` : '',
+      disappeared.length ? `已消失：${disappeared.join('、')}` : '',
+      '→ 新增/删除 workflow 必须同步改三处：REQUIRED_WORKFLOWS（本文件的必需清单）、(2) 的 FROZEN_USES、'
+      + 'FROZEN_ASSERTION_NAMES（并把 verify.yml 里的 --expect-checks 数字一并更新）'
+    ].filter(Boolean).join('；')
+    : `磁盘 ${DISK_FILES.length} 个 = 必需清单 ${REQUIRED_WORKFLOWS.length} 个：${DISK_FILES.join(' / ')}`);
+
+/* ────────────────── (1)/(1b) uses 的版本与引用形式（扫磁盘集合） ────────────────── */
+const oldRefs = [];
+const floatingRefs = [];
+for (const f of DISK_FILES) {
+  for (const e of usesEntries(wf[f] || [])) {
+    const p = parseUses(e.value);
+    if (p.kind === 'version' && p.major < 5) oldRefs.push(`${f}: ${p.raw}（主版本 v${p.major}）`);
+    if (p.kind === 'floating') floatingRefs.push(`${f}: ${p.raw}（浮动引用）`);
+    if (p.kind === 'unknown' || p.kind === 'malformed') floatingRefs.push(`${f}: ${p.raw}（不是 @v<N>，也不是 40 位 SHA）`);
+  }
+}
+check('(1) 必需 workflow 的 uses 没有 v1..v4 旧代引用（按主版本比较，含 @v4.1.1 这类点分写法）',
+  oldRefs.length === 0, oldRefs.length ? oldRefs.join('、') : `扫了磁盘上 ${DISK_FILES.length} 个 workflow 的全部 uses`);
+check('(1b) 必需 workflow 的 uses 没有浮动引用（@main / @master / 裸分支名；按 SHA 钉死是允许且推荐的）',
+  floatingRefs.length === 0, floatingRefs.length ? floatingRefs.join('、') : '未发现浮动引用（SHA 钉死的写法同样视为通过）');
+
+/* ────────────────── (2) 每个必需 workflow 的 uses 集合 = 冻结集合 ────────────────── */
+// 刻意只遍历 FROZEN_USES 的键（= REQUIRED_WORKFLOWS），**不扫磁盘集合**：
+// 新文件在 FROZEN_USES 里没有条目，扫它必然判「多出」而全红——登记制下这件事由 (0b) 负责硬红。
+for (const f of REQUIRED_WORKFLOWS) {
+  const expected = FROZEN_USES[f] || [];
+  const observed = usesEntries(wf[f] || []).map(e => parseUses(e.value));
+  const problems = [];
+  const pool = [...observed];
+  for (const exp of expected) {
+    const [action, ref] = exp.split('@');
+    const major = Number(/^v(\d+)(?:\.\d+)*$/.exec(ref)[1]);
+    const idx = pool.findIndex(o => o.action === action && ((o.kind === 'version' && o.major === major) || o.kind === 'sha'));
+    if (idx < 0) problems.push(`缺 ${exp}（或未按 SHA 钉死）`);
+    else pool.splice(idx, 1);
+  }
+  if (pool.length) problems.push(`多出 ${pool.map(o => o.raw).join('、')}`);
+  check(`(2) ${f} 的 uses 集合等于冻结集合`, problems.length === 0,
+    problems.length ? problems.join('；') : (usesOf(wf[f] || []).join('、') || '(无 uses)'));
+}
+
+/* ────────────────────────── (3) runner 口径 ────────────────────────── */
+const deployRunsOn = runsOnByJob(wf['deploy.yml'] || []);
+const deployJobs = jobsOf(wf['deploy.yml'] || []);
+const runsOnBad = Object.entries(deployRunsOn).filter(([, v]) => v !== EXPECT_RUNS_ON).map(([j, v]) => `${j} → ${v}`);
+const runsOnMissing = deployJobs.filter(j => !(j in deployRunsOn));
+check('(3) deploy.yml 两个 job 的 runs-on 都是 ubuntu-24.04',
+  runsOnBad.length === 0 && runsOnMissing.length === 0,
+  runsOnBad.length || runsOnMissing.length
+    ? [runsOnBad.join('、'), runsOnMissing.length ? `缺 runs-on：${runsOnMissing.join('、')}` : ''].filter(Boolean).join('；')
+    : Object.entries(deployRunsOn).map(([j, v]) => `${j}=${v}`).join('、'));
+
+const floatingLabels = [];
+for (const [f, entries] of Object.entries(wf)) {
+  for (const [job, v] of Object.entries(runsOnByJob(entries))) {
+    if (v && /-latest$/.test(String(v))) floatingLabels.push(`${f}: ${job} → ${v}`);
+  }
+}
+check('(3b) 全部 workflow 的 runs-on 都不是浮动标签（按取值判，不按字符串判）',
+  floatingLabels.length === 0, floatingLabels.length ? floatingLabels.join('、') : '未发现 *-latest 取值（注释里提到它不算漂移）');
+
+const runsOnPerFile = {};
+for (const f of DISK_FILES) {
+  const m = runsOnByJob(wf[f] || []);
+  runsOnPerFile[f] = Object.values(m).map(String);
+}
+const runsOnUnion = [...new Set(Object.values(runsOnPerFile).flat())].sort();
+const runsOnEmpty = Object.entries(runsOnPerFile).filter(([, v]) => v.length === 0).map(([f]) => f);
+check('(3c) 全部磁盘上的 workflow 的 runs-on 取值集合唯一（按 jobs.<job>.runs-on 的 path 判）',
+  runsOnEmpty.length === 0 && runsOnUnion.length === 1 && runsOnUnion[0] === EXPECT_RUNS_ON,
+  runsOnEmpty.length ? `这些文件没有解析到 runs-on：${runsOnEmpty.join('、')}（新 workflow 请按登记制同步改三处）`
+    : `${runsOnUnion.join('、')} — ${Object.entries(runsOnPerFile).map(([f, v]) => `${f}=${v.join('/')}`).join('、')}`);
+
+/* ─────────────────── (4)/(4b)/(4c) node-version：只认生效位置 ─────────────────── */
+const nodePerFile = {};
+const nodeProblems = [];
+const misplaced = [];
+for (const f of DISK_FILES) {
+  const entries = wf[f] || [];
+  const vals = [];
+  for (const job of jobsWithSetupNode(entries)) {
+    const vs = stepNodeVersions(entries, job);
+    if (!vs.length) nodeProblems.push(`${f}: job ${job} 有 setup-node 但没给 with.node-version`);
+    vals.push(...vs);
+  }
+  nodePerFile[f] = vals;
+  misplaced.push(...misplacedNodeVersions(entries).map(x => `${f}: ${x}`));
+}
+const nodeUnion = [...new Set(Object.values(nodePerFile).flat())].sort();
+const nodeEmpty = Object.entries(nodePerFile).filter(([, v]) => v.length === 0).map(([f]) => f);
+check("(4) 全部磁盘上的 workflow 的 node-version 取值集合唯一（只认 setup-node 步骤 with: 下的值）",
+  nodeEmpty.length === 0 && nodeUnion.length === 1 && nodeUnion[0] === EXPECT_NODE_VERSION,
+  nodeEmpty.length ? `这些文件没有解析到 setup-node 的 with.node-version：${nodeEmpty.join('、')}（新 workflow 请按登记制同步改三处）`
+    : `${nodeUnion.join('、')} — ${Object.entries(nodePerFile).map(([f, v]) => `${f}=${v.join('/')}`).join('、')}`);
+check('(4b) 每个带 setup-node 的 job 都显式给出 with.node-version',
+  nodeProblems.length === 0, nodeProblems.length ? nodeProblems.join('、') : `覆盖 ${DISK_FILES.map(f => `${f}:${jobsWithSetupNode(wf[f] || []).length} 个 job`).join('、')}`);
+check('(4c) 没有把 node-version 写在 env: 等无效位置（那种写法会骗过检查器）',
+  misplaced.length === 0, misplaced.length ? misplaced.join('、') : '未发现无效位置的 node-version');
+
+/* ────────────────────────── (5)(6)(7)(8)(9) ────────────────────────── */
+const deployJobNames = jobsOf(wf['deploy.yml'] || []);
+check('(5) deploy.yml 的 job 名严格等于 build / deploy',
+  JSON.stringify(deployJobNames) === JSON.stringify(EXPECT_JOBS), deployJobNames.join('、') || '(未解析到 job)');
+
+let enginesOk = false, enginesDetail = '';
+try {
+  const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+  const lock = JSON.parse(fs.readFileSync(path.join(ROOT, 'package-lock.json'), 'utf8'));
+  const declared = String((pkg.engines && pkg.engines.node) || '');
+  const floors = [], unparsed = [];
+  for (const [name, meta] of Object.entries(lock.packages || {})) {
+    const e = meta && meta.engines && meta.engines.node;
+    if (!e) continue;
+    const m = /^>=\s*(\d+(?:\.\d+){0,2})$/.exec(String(e).trim());
+    if (m) floors.push({ name: name || '(root)', v: m[1] });
+    else unparsed.push(`${name || '(root)'} → ${e}`);
+  }
+  floors.sort((a, b) => cmpVer(b.v, a.v));
+  const strictest = floors[0];
+  const dm = /^>=\s*(\d+(?:\.\d+){0,2})$/.exec(declared);
+  if (!dm) enginesDetail = `package.json 的 engines.node 不是单一下限形式：${JSON.stringify(declared)}`;
+  else if (!strictest) enginesDetail = '锁文件里没有任何可解析的 engines.node 下限';
+  else {
+    enginesOk = cmpVer(dm[1], strictest.v) >= 0;
+    enginesDetail = `声明 ${declared} ≥ 锁文件最严 ${strictest.v}（来自 ${floors.filter(f => f.v === strictest.v).map(f => f.name.replace('node_modules/', '')).join('、')}）`;
+  }
+  if (unparsed.length) enginesDetail += `；⚠️ ${unparsed.length} 条依赖的 engines.node 不是单一下限形式（未参与比较）：${unparsed.join('、')}`;
+} catch (e) {
+  enginesDetail = `读取 package.json / package-lock.json 失败：${e.message}`;
+}
+// 边界（如实记录）：该断言比较的是**下限的数值大小**，不判断上限/范围表达式的语义。
+check('(6) engines 下限不低于锁文件里最严的依赖下限（从锁文件推导）', enginesOk, enginesDetail);
+
+const onEntries = (f, key) => (wf[f] || []).filter(e => e.path[0] === 'on' && e.path.length === 2 && e.key === key);
+const bridge = onEntries('deploy.yml', 'workflow_run')[0];
+const bridgeWorkflows = asList(((wf['deploy.yml'] || []).find(e => e.path.join('.') === 'on.workflow_run.workflows') || {}).value);
+const bridgeTypes = asList(((wf['deploy.yml'] || []).find(e => e.path.join('.') === 'on.workflow_run.types') || {}).value);
+check('(7a) deploy.yml 的 on: 仍含 workflow_run 桥接',
+  !!bridge && bridgeWorkflows.includes(BRIDGE_WORKFLOW) && bridgeTypes.includes('completed'),
+  bridge ? `workflows=${JSON.stringify(bridgeWorkflows)} types=${JSON.stringify(bridgeTypes)}` : 'on: 块里没有 workflow_run');
+
+const buildIf = ((wf['deploy.yml'] || []).find(e => e.path.join('.') === 'jobs.build.if') || {}).value;
+check('(7b) build job 的 if 表达式逐字未变', buildIf === EXPECT_BUILD_IF,
+  buildIf === undefined ? '没有找到 jobs.build.if' : buildIf);
+
+// (8) 无条件执行（t23/F1）：verify.yml 缺失或改名时，(0) 已经报红，这里也必须给出自己的 ✗
+const verifyEntries = wf['verify.yml'] || [];
+const gateExists = verifyEntries.some(e => e.path.length === 2 && e.path[0] === 'jobs' && e.key === 'gate');
+const gateIf = (verifyEntries.find(e => e.path.join('.') === 'jobs.gate.if') || {}).value;
+check('(8) verify.yml 的 gate job 存在且没有 job 级 if（永不 skipped）',
+  Object.prototype.hasOwnProperty.call(wf, 'verify.yml') && gateExists && gateIf === undefined,
+  !Object.prototype.hasOwnProperty.call(wf, 'verify.yml') ? '**verify.yml 缺失**（gate 检查无从谈起）'
+    : !gateExists ? '没有 gate job（改名即视为漂移：必需检查名要对得上）'
+      : gateIf !== undefined ? `发现 job 级 if：${gateIf}（会被判 skipped，必需检查永远等不到结果）` : '无 job 级 if');
+
+// (9) 触发面：必需检查不得被 paths / paths-ignore 过滤（t24/F6，按 path 判，不按字符串判）
+const filterHits = [];
+for (const f of NO_PATH_FILTER_WORKFLOWS) {
+  for (const e of (wf[f] || [])) {
+    if (e.path[0] === 'on' && /^paths(-ignore)?$/.test(e.key)) {
+      filterHits.push(`${f}: on.${e.path.slice(1, -1).join('.') || e.path[1]} → ${e.key}`);
+    }
+  }
+}
+check('(9) verify.yml 的 on: 没有被 paths / paths-ignore 过滤（必需检查被过滤 = PR 永久 pending）',
+  filterHits.length === 0, filterHits.length ? filterHits.join('、') : 'on: 下没有任何 paths / paths-ignore');
+
+/* ─────────────────── (W) 看门狗：断言名单等值（不可跳过） ─────────────────── */
+// 刻意放在所有分支之外：删一条断言、或改任意一条断言名，都会在这里变红。
+// 固有边界：看门狗保护不了**自己**被删（那时它也不存在了）—— 如实记录，不做过度设计。
+const observedNames = results.map(r => r.name);
+const missingNames = FROZEN_ASSERTION_NAMES.filter(n => !observedNames.includes(n));
+const extraNames = observedNames.filter(n => !FROZEN_ASSERTION_NAMES.includes(n) && n !== WATCHDOG_NAME);
+check(WATCHDOG_NAME, missingNames.length === 0 && extraNames.length === 0,
+  missingNames.length || extraNames.length
+    ? [missingNames.length ? `少 ${missingNames.length} 条：${missingNames.join('、')}` : '',
+      extraNames.length ? `多 ${extraNames.length} 条：${extraNames.join('、')}` : ''].filter(Boolean).join('；')
+    : `实跑 ${observedNames.length} 条 = 冻结清单 ${FROZEN_ASSERTION_NAMES.length} 条 + 本看门狗`);
+
+const failed = results.filter(r => !r.ok);
+
+// (E) 带外项数（F8，见文件头「看门狗、带外项数与它们各自的边界」）。
+// 刻意**不走 check()**：它是带外机制，不进 FROZEN_ASSERTION_NAMES、也不改变「N 项」的定义，
+// 这样「删掉看门狗」与「项数被外部钉住」两个机制互相独立，一次删除带不走两个。
+if (EXPECT_CHECKS === null) {
+  console.log('ℹ️  未带 --expect-checks=<N>：本次没有从外部钉住总项数 —— '
+    + '若有人删掉末尾那条看门狗，项数会静默降 1 且仍然 exit 0，这条边界本轮无人守护（CI 里由 verify.yml 传入）。');
+} else if (!Number.isInteger(EXPECT_CHECKS) || EXPECT_CHECKS <= 0) {
+  failed.push({ name: '(E) --expect-checks 的取值必须是不小于 1 的整数', ok: false, detail: `收到 ${expectArg}` });
+} else if (results.length !== EXPECT_CHECKS) {
+  failed.push({
+    name: '(E) 实跑项数 == 外部钉住的 --expect-checks', ok: false,
+    detail: `实跑 ${results.length} 项 ≠ 钉住 ${EXPECT_CHECKS} 项`
+      + '（新增/删除断言后请同步 verify.yml 的 --expect-checks 数字与 FROZEN_ASSERTION_NAMES）'
+  });
+} else {
+  console.log(`✓ (E) 实跑项数 == --expect-checks=${EXPECT_CHECKS}（数字钉在调用方，与看门狗互相独立）`);
+}
+
+console.log(`\n${failed.length ? '❌' : '✅'} CI 口径检查 ${results.length} 项，失败 ${failed.length} 项`);
+if (failed.length) {
+  failed.forEach(f => console.log(`   ✗ ${f.name}${f.detail ? ' — ' + f.detail : ''}`));
+  process.exit(1);
+}
