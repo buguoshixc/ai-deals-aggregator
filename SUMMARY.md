@@ -6,9 +6,11 @@
 > **配套文件**：待你点头的事见 [`NEXT-STEPS.md`](NEXT-STEPS.md)；
 > 逐步的详细记录见 [`PROJECT_STATUS.md`](PROJECT_STATUS.md) 的 2.17–2.27。
 >
-> 状态：**A/B/收尾 + 收藏对比（G11）+ 活动期限三分类 + 上游的详情修复，全部已在 `master` 且合并态门禁全绿**
-> （2026-09-23，`master` = `0d6b869`；两次并回 `origin/master` 见 2.27）。**仍未推送** ——
-> 而且 `origin/master` 现在已是本地的祖先，所以推送会是一次**快进**。剩余事项见 [`NEXT-STEPS.md`](NEXT-STEPS.md)。
+> 状态：**已上线**（2026-09-23）。`master` = **`ecbc815`**，已快进推送到 `origin/master`，
+> Deploy 工作流 success，线上跑了 `verify --url=` **108 项 0 失败**。
+> 本轮内容：A/B/收尾 + 收藏对比（G11）+ 活动期限三分类 + 上游详情修复 + 两个手机端横向问题修复；
+> 两次并回 `origin/master` 与上线记录见 `PROJECT_STATUS.md` 2.27–2.28。
+> 剩余事项（都可选）见 [`NEXT-STEPS.md`](NEXT-STEPS.md)。
 
 ---
 
@@ -56,10 +58,10 @@
 ## 三、代码在哪
 
 ```
-master                       0d6b869  ← 本地主线：A/B/收尾 + 收藏对比（G11）+ 两次并回 origin/master
+master = origin/master        ecbc815  ← 已上线：A/B/收尾 + 收藏对比（G11）+ 两次并回上游 + 两个手机端横向修复
+ ├─ ecbc815   fix(mobile): 修掉两个手机端横向问题 + 门禁补 3 条断言
+ ├─ 0d6b869   merge: 并回 origin/master 的 fix/detail-close
  ├─ 71d020a   merge: 并回 origin/master（重写过的 A/B 线 + 数据更新 + 活动期限三分类）
- └─ 0d6b869   merge: 并回 origin/master 的 fix/detail-close
-origin/master                c70706b  ← 上游（另一个会话推的）：A/B 重写版 + 数据 + expiry + 详情修复
  ├─ feat/visual-token-layer   874cd6b  A：token 层 / 暗色 / 对比度 / 语义与无障碍
  │   └─ feat/b-extras          ec05252  + 订阅 feed / 纠错入口 / WebSite / 同页锚点
  │       └─ feat/detail-pages  f1213d5  + 每条优惠一个独立静态页（URL 1 → 81）
@@ -70,10 +72,13 @@ origin/master                c70706b  ← 上游（另一个会话推的）：A/
  └─ feat/expiry-window          c02e017  ← 活动期限三分类（已在 origin/master 上）
 ```
 
-- **`master` 已合并、未推送**；`origin/master`（`c70706b`）现在是它的**祖先**，所以推送是一次**快进**，不重写上游历史。
+- **`master` = `origin/master` = `ecbc815`**（本地与上游一致，无 ahead/behind）。
 - 分层合并的老命令已用不上（两条线都进 `master` 了）。回退点：`backup/pre-ab-merge`（A/B 合并前）、
-  `backup/pre-origin-merge-b261add`（并上游前）。
-- `git push` 一次都没执行（它会触发 CI 采集与 GitHub Pages 部署）。
+  `backup/pre-origin-merge-b261add`（并上游前）；两者都没推送过，只对本地回退有用。
+- **已推送上线**（2026-09-23，你说「push」之后）：`c70706b..ecbc815` **快进**推送成功、Deploy 工作流 success，
+  线上 `verify --url=` **108 项 0 失败**。现在本地与上游完全一致。
+  口径纠正：`push` **只触发发布**（`deploy.yml` 是纯发布流程），采集由 `collect.yml` 按定时跑 —— 旧文档写成
+  「push 会触发 CI 采集」是错的，已改（见 `PROJECT_STATUS.md` 2.28）。
 
 ## 四、接下来要做的事
 
@@ -89,8 +94,8 @@ origin/master                c70706b  ← 上游（另一个会话推的）：A/
 
 **还剩这些**：
 
-1. **是否上线（唯一需要你点头的事）**：`push` 会触发 CI 采集与 GitHub Pages 部署。
-   现在推送就是一次**快进**（上游已是本地祖先），推完可用 `npm run verify -- --url=<线上地址>` 当冒烟测试。
+1. ~~**是否上线**~~ → **已上线（2026-09-23）**：`git push origin master` 快进推送 `c70706b..ecbc815`，
+   Deploy 工作流 success，线上即最新构建。部署后用 `npm run verify -- --url=<线上地址>` 做了冒烟测试。
 2. **三个观感项可选做**（都不是缺陷，见 `research/VISION-REVIEW.md` §6 第 4–6 条）：
    控制带偏厚、强调色重复节奏、暗色卡片与底色的明度差。要做的话我按同样的流程来（改 → 门禁 → 视觉复核）。
 
@@ -213,6 +218,13 @@ G11 的 `buildDetailActions()` 插桩点仍在。
 两档都验）、以及 **360px 的页面级横向溢出**（这条正是上面那 42px 的直接判据，它以前不存在）。
 断言数 **110 → 113 项**；**§4 那条既有判据一个字都没动** —— `git diff` 对 `verify-site.js` 是
 **+78 / −0（纯新增）**，判据本身与 HEAD **逐字节相同**（353 字节）。
+
+**（6）上线。** 你说「push」后执行 `git push origin master`（先 `fetch` 复核过）：
+**快进** `c70706b..ecbc815`，Deploy 工作流 [run 35841045158](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35841045158) **success**，
+线上 `npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/` → **108 项 0 失败**
+（113 − 5 项 `--compare` 回归）。**第一次 push 失败过**：git 全局代理指向 `127.0.0.1:7890`（FlClash），
+当时它没在跑；代理起来后同一条命令直接成功 —— 这条坑连同「push 只触发发布、不触发采集」的口径纠正
+都记在 `PROJECT_STATUS.md` 2.28。
 
 ---
 

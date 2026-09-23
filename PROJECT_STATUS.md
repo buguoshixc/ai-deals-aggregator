@@ -1329,6 +1329,42 @@ G11 的 `buildDetailActions()` 与 `insertAdjacentElement('beforebegin', …)` �
 
 ---
 
+### 2.28 上线（按用户「push」）与部署复核（2026-09-23）
+
+**执行**：`git push origin master` → **快进** `c70706b..ecbc815`，退出码 0。
+**核对**：远端 `refs/heads/master` = `ecbc8152e03bd6da32ded962262bc94be95a26b6` = 本地 HEAD；
+`git status -sb` 为 `## master...origin/master`（无 ahead/behind）。推送前先 `git fetch`（exit 0），
+确认远端仍是 `c70706b`、且是本地祖先 —— 所以这次是快进，没有重写上游历史。
+
+**发布链路**：Deploy 工作流 [run 35841045158](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/35841045158) **success**。
+
+**线上冒烟测试**（这一条才是「上线成功」的实证，不是看工作流绿灯）：
+`npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/` → **验收 108 项，失败 0 项**。
+（`verify` 不含 `--compare` 的 5 项回归，113 − 5 = 108；两个数在 2.27 ⑦ 里对得上。）
+线上确实带上了本轮的三条新断言 —— 例如
+`360px 页面级无横向溢出 — 溢出 0px · 网格 328px / 容器 328px`、
+`390px 与 360px：跳转 chip 都排满一行 — 390px: chips=4 rows=1 perRow=[4] 余量=0px · 360px: …`。
+
+**一处口径纠正（旧文档写错了，已改）**：此前多处写着「`push` 会触发 CI 采集与 GitHub Pages 部署」。
+实际 `deploy.yml` 是**纯发布**流程（它自己的注释原文：「纯发布流程：不做采集（采集由 collect.yml 负责）」）：
+`push` **只触发发布**。采集由 `collect.yml` 按**定时**（UTC 00:00 / 12:00 = 北京时间 08:00 / 20:00）
+或 `workflow_dispatch` 跑，跑完再由 `workflow_run` 唤起发布 —— 因为用仓库自带 `GITHUB_TOKEN` 推的提交
+不会再触发其它 workflow。所以「推送后线上立刻更新」是对的，「推送会顺带多跑一次采集」是错的。
+已改 `NEXT-STEPS.md` 与 `SUMMARY.md`。
+
+**一条环境坑（会浪费后来人时间）**：本机 git 全局配置了代理
+（`C:/Users/星澈/.gitconfig` 的 `http.proxy` / `https.proxy` = `http://127.0.0.1:7890`，由 FlClash 提供）。
+**第一次 push 与 fetch 都以失败告终**：
+`fatal: unable to access '…': Failed to connect to 127.0.0.1 port 7890`（退出码 128）。
+当时 FlClash 没在跑，而直连也不通 —— 实测 `Test-NetConnection github.com:443` = **False**、
+绕过代理的 `git ls-remote` 也在 21 秒后失败。
+**判据：看到 7890 连不上 → 先确认 FlClash 在运行，不要怀疑 git、凭据或远端仓库。**
+代理起来后**同一条命令直接成功**。附带一条：`api.github.com` 可以**直连**（实测 True），
+所以查 CI 运行状态不需要代理。另外注意首次排查时 `Get-NetTCPConnection` 一度没列出 7890，
+而几分钟后再查就在了（FlClash 是那时起来的）——**端口探测的结论只在当次有效**。
+
+---
+
 ## 三、命令速查
 
 
