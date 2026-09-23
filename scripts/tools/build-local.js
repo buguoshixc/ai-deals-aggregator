@@ -31,7 +31,7 @@ const OUT = path.join(ROOT, outArg ? outArg.slice(6) : 'dist');
 
 const PUBLIC_FILES = ['index.html', 'deals.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
 /** 构建期生成、不走源码拷贝的产物 */
-const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png'];
+const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json'];
 const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
 const SITE_NAME = 'AI 优惠聚合器';
 const SITE_DESCRIPTION = '聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。全部指向厂商官方页。';
@@ -177,10 +177,24 @@ function buildJsonLd(faqItems, cards) {
   const organization = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    '@id': SITE_URL + '#organization',
     name: SITE_NAME,
     url: pageUrl,
     logo: SITE_URL + 'favicon.svg',
     description: SITE_DESCRIPTION
+  };
+
+  // WebSite：站点级身份节点。同类标杆里 devtk.ai 只有 2 类结构化数据就包含它，
+  // 我们原先 4 类反而缺它（见 research/GAP-MATRIX.md G8 的补注）。
+  const website = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': SITE_URL + '#website',
+    url: pageUrl,
+    name: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    inLanguage: 'zh-CN',
+    publisher: { '@id': SITE_URL + '#organization' }
   };
 
   const breadcrumb = {
@@ -223,9 +237,80 @@ function buildJsonLd(faqItems, cards) {
     })
   };
 
-  return [organization, breadcrumb, faqPage, itemList]
+  return [organization, website, breadcrumb, faqPage, itemList]
     .map(data => `  <script type="application/ld+json">\n${toJsonLd(data)}\n  </script>`)
     .join('\n');
+}
+
+/** XML 文本转义：RSS 里一个裸 & 就能让整份 feed 解析失败 */
+function xmlEscape(value) {
+  return String(value === null || value === undefined ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+/**
+ * 订阅产物：feed.xml（RSS 2.0）+ feed.json（JSON Feed 1.1）。
+ *
+ * 为什么放在构建期：本站没有后端，也不打算加。订阅说到底是「把已经预渲染的内容再序列化一遍」，
+ * 只用 Node 内置模块就能做完，仍然零依赖、零外部请求。
+ * 只收录 type=deal 的条目，按最近一次采集时间倒序，最多 100 条。
+ */
+function renderFeeds(payload) {
+  const deals = (payload.deals || [])
+    .filter(deal => deal.type === 'deal')
+    .sort((a, b) => String(b.lastSeen || '').localeCompare(String(a.lastSeen || '')))
+    .slice(0, 100);
+  const updated = payload.updatedAt ? new Date(payload.updatedAt) : new Date();
+
+  const describe = deal => [
+    deal.discountInfo,
+    deal.zh && deal.zh.discountInfo ? `中文：${deal.zh.discountInfo}` : '',
+    deal.eligibility ? `适用：${deal.eligibility}` : '',
+    deal.validity ? `有效期：${deal.validity}` : ''
+  ].filter(Boolean).join(' ');
+
+  const items = deals.map(deal => `    <item>
+      <title>${xmlEscape(deal.title)}</title>
+      <link>${xmlEscape(deal.url)}</link>
+      <guid isPermaLink="false">${xmlEscape(deal.id)}</guid>
+      <pubDate>${new Date(deal.lastSeen || updated).toUTCString()}</pubDate>
+      <description>${xmlEscape(describe(deal))}</description>
+    </item>`).join('\n');
+
+  const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>${xmlEscape(SITE_NAME)}</title>
+    <link>${SITE_URL}</link>
+    <description>${xmlEscape(SITE_DESCRIPTION)}</description>
+    <language>zh-CN</language>
+    <lastBuildDate>${updated.toUTCString()}</lastBuildDate>
+${items}
+  </channel>
+</rss>
+`;
+
+  const json = {
+    version: 'https://jsonfeed.org/version/1.1',
+    title: SITE_NAME,
+    home_page_url: SITE_URL,
+    feed_url: SITE_URL + 'feed.json',
+    description: SITE_DESCRIPTION,
+    language: 'zh-CN',
+    items: deals.map(deal => {
+      const item = { id: deal.id, url: deal.url, title: deal.title, content_text: describe(deal) };
+      if (deal.lastSeen) item.date_modified = deal.lastSeen;
+      const tags = [deal.vendor, deal.category].filter(Boolean);
+      if (tags.length) item.tags = tags;
+      return item;
+    })
+  };
+
+  return { rss, json: JSON.stringify(json, null, 2) + '\n', count: deals.length };
 }
 
 /* ------------------------------------------------------------------ */
@@ -341,6 +426,12 @@ function assemble() {
 </urlset>
 `, 'utf8');
 
+  // 订阅：RSS 2.0 + JSON Feed（构建期生成，零依赖）
+  const feeds = renderFeeds(payload);
+  fs.writeFileSync(path.join(OUT, 'feed.xml'), feeds.rss, 'utf8');
+  fs.writeFileSync(path.join(OUT, 'feed.json'), feeds.json, 'utf8');
+  console.log(`  订阅产物: feed.xml + feed.json（各 ${feeds.count} 条）`);
+
   // 交给自检：折叠覆盖的条目总数需与页面卡片内容对得上；译文条数用于产物回读比对
   return Object.assign({}, rendered, { zhWithZh: zhAttached.report.withZh });
 }
@@ -418,7 +509,7 @@ function selfCheck(built) {
   }
 
   // 分档分带：默认按力度排序，五档里有卡片的档必须都有带
-  const tierHeads = [...markup.matchAll(/<div class="tierhead t(\d)">/g)].map(m => Number(m[1]));
+  const tierHeads = [...markup.matchAll(/<div class="tierhead t(\d)"[^>]*>/g)].map(m => Number(m[1]));
   const tierDots = [...markup.matchAll(/data-tier="(\d)"/g)].map(m => Number(m[1]));
   if (built) {
     const expected = new Set(built.cards.map(card => card.tier));
@@ -447,6 +538,18 @@ function selfCheck(built) {
   const facetCount = (markup.match(/data-facet="/g) || []).length;
   if (facetCount < 4) fail(`筛选条只有 ${facetCount} 个按钮（预渲染失败）`);
   else console.log(`  ✓ 筛选条: ${facetCount} 个 facet 按钮`);
+
+  // 同页锚点：导航里的 #tier-N 必须在预渲染正文里有对应 id，否则就是死锚点
+  const anchors = [...markup.matchAll(/href="#(tier-\d)"/g)].map(m => m[1]);
+  const dangling = anchors.filter(id => !markup.includes(`id="${id}"`));
+  if (!anchors.length) fail('找不到「跳到档位」锚点');
+  else if (dangling.length) fail(`锚点没有落点：${[...new Set(dangling)].join(', ')}`);
+  else console.log(`  ✓ 同页锚点: ${[...new Set(anchors)].length} 个都有落点`);
+
+  // 纠错入口：详情弹层是 JS 渲染的（与弹层本身一致），所以这里只断言模板存在，
+  // 真实行为（点开详情能看到带 id 的 Issue 链接）由 verify-site.js 在浏览器里验。
+  if (!/issues\/new\?title=/.test(html)) fail('详情模板里没有纠错入口');
+  else console.log('  ✓ 纠错入口: 详情模板已内置（真实行为由 npm run verify 验）');
 
   // 只在「已渲染的卡片」里数，避免把内联脚本里的模板字符串字面量也算进去
   // （cardHtml 的源码里含有 class="go" / data-model-count 这些字面量）。
@@ -477,7 +580,7 @@ function selfCheck(built) {
   }
 
   const ldBlocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m => m[1]);
-  const expectedTypes = ['Organization', 'BreadcrumbList', 'FAQPage', 'ItemList'];
+  const expectedTypes = ['Organization', 'WebSite', 'BreadcrumbList', 'FAQPage', 'ItemList'];
   const foundTypes = [];
   for (const [i, block] of ldBlocks.entries()) {
     try {
@@ -492,6 +595,27 @@ function selfCheck(built) {
   }
   if (ldBlocks.length === expectedTypes.length && foundTypes.length === expectedTypes.length) {
     console.log(`  ✓ JSON-LD: ${foundTypes.join(' / ')}`);
+  }
+
+  // 订阅产物：两份必须条目数一致、能被解析、且声明的版本正确
+  const feedXml = fs.readFileSync(path.join(OUT, 'feed.xml'), 'utf8');
+  const feedItems = (feedXml.match(/<item>/g) || []).length;
+  let feedJsonBox = null;
+  try {
+    feedJsonBox = JSON.parse(fs.readFileSync(path.join(OUT, 'feed.json'), 'utf8'));
+  } catch (e) {
+    fail(`feed.json 解析失败: ${e.message}`);
+  }
+  if (feedJsonBox) {
+    if (!/^<\?xml version="1\.0" encoding="UTF-8"\?>/.test(feedXml)) fail('feed.xml 缺少 XML 声明');
+    if (feedJsonBox.version !== 'https://jsonfeed.org/version/1.1') fail('feed.json 不是 JSON Feed 1.1');
+    if (feedItems !== feedJsonBox.items.length) {
+      fail(`订阅条目数不一致：feed.xml ${feedItems} 条 vs feed.json ${feedJsonBox.items.length} 条`);
+    } else if (!feedItems) {
+      fail('订阅里没有任何条目（应至少有 type=deal 的条目）');
+    } else {
+      console.log(`  ✓ 订阅条目一致: ${feedItems} 条（feed.xml / feed.json）`);
+    }
   }
 
   // FAQ 可见文案与 FAQPage 必须逐字一致
