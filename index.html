@@ -1894,8 +1894,7 @@
           ? '<a class="pri" href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">前往官方页面' +
             (deal.type === 'deal' ? '领取' : '查看') + ' →</a>'
           : '') +
-        '<a class="sec" href="' + escapeAttr(reportUrl(deal)) + '" target="_blank" rel="noopener noreferrer">信息有误 / 我核验过</a>' +
-        '<a class="sec" href="#" data-close>关闭</a></div>' +
+        '<a class="sec" href="' + escapeAttr(reportUrl(deal)) + '" target="_blank" rel="noopener noreferrer">信息有误 / 我核验过</a></div>' +
         '<div class="dsrc">来源：' + escapeHtml(deal.source || '未标注') +
         (deal.firstSeen ? ' · 首次收录 ' + escapeHtml(deal.firstSeen) : '') +
         (deal.lastSeen ? ' · 最近采集 ' + escapeHtml(deal.lastSeen) : '') +
@@ -2111,12 +2110,10 @@
         if (card) openDetail(card);
       });
 
-      els.detailBody.addEventListener('click', event => {
-        if (event.target.closest('[data-close]')) {
-          event.preventDefault();
-          els.detail.close();
-        }
-      });
+      // 弹层只保留右上角的 ✕ 关闭（外加 Esc 与点遮罩）：先前动作区里还有一个
+      // 「关闭」链接，与 ✕ 重复；而它经 detailHtml() 复用到了独立详情页上，
+      // 那些页面不加载主脚本，链接点下去是死的（href="#" 只会跳回页首）。
+      // 关掉 <dialog> 之后 focusDetailReturn() 会接管焦点归还（见 dialog 的 close 事件）。
 
       // 记住译文的折叠偏好。toggle 不冒泡，所以用捕获阶段监听。
       // 反过来的方向不用管：innerHTML 里带 open 属性插入的元素不会触发 toggle。
