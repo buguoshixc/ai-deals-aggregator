@@ -120,7 +120,7 @@
 ## 落地情况（F 阶段回填 · 每条都有断言或实测数字）
 
 落地位置：分支 `feat/visual-token-layer`（A）→ `feat/b-extras` → `feat/detail-pages` → `feat/row-view`（B）。
-`master` 未合并、未推送。
+当时 `master` 未合并、未推送；**2026-09-23 已全合进 `master`（合并提交 `10cc923`）并在合并态复验通过**（见 `PROJECT_STATUS.md` 2.21）。
 
 | 规则 | 状态 | 怎么验的 / 实测值 |
 |---|---|---|
