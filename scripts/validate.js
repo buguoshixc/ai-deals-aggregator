@@ -12,6 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 const { validateDeal, cleanText, isGarbage, SCHEMA_VERSION } = require('./lib/schema');
+const { isOngoing } = require('./lib/expiry');
 const { CATEGORIES } = require('./lib/categories');
 
 const ROOT = path.join(__dirname, '..');
@@ -113,6 +114,9 @@ function checkDealsFile() {
     withExpiry,
     withValidity,
     withTimeInfo: withExpiry + withValidity,
+    // 活动期限三分类：与卡片角标、排序档位同一套判据（lib/expiry.js ↔ index.html 的 expiryState）
+    ongoing: store.deals.filter(d => !d.expiresAt && isOngoing(d.validity || '')).length,
+    noDeadline: store.deals.filter(d => !d.expiresAt && !isOngoing(d.validity || '')).length,
     verified,
     withFeatures: store.deals.filter(d => Array.isArray(d.features) && d.features.length).length,
     withPriceLine: store.deals.filter(d => d.priceLine).length,
@@ -262,6 +266,7 @@ function main() {
     console.log(`国内 / 国外   : ${stats.cn} / ${stats.global}`);
     console.log(`含截止时间    : ${stats.withExpiry}`);
     console.log(`含有效期说明  : ${stats.withValidity}（合计时间信息 ${stats.withTimeInfo}）`);
+    console.log(`活动期限      : 有截止日期 ${stats.withExpiry} · 未标注截止日期 ${stats.noDeadline} · 长期活动 ${stats.ongoing}`);
     console.log(`人工核验      : ${stats.verified}`);
     console.log(`卡片特性标签  : ${stats.withFeatures} 条`);
     console.log(`价格阶梯      : ${stats.withPriceLine} 条`);

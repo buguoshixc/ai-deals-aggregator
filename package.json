@@ -24,6 +24,7 @@
     "verify:baseline": "node scripts/tools/verify-site.js --json=research/_raw/ours-baseline/verify.json",
     "verify:regress": "node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json",
     "selftest:zh": "node scripts/tools/zh-selftest.js",
+    "selftest:expiry": "node scripts/tools/expiry-selftest.js",
     "todo:zh": "node scripts/tools/zh-todo.js",
     "check:zh": "node scripts/tools/zh-todo.js --check",
     "report:tier": "node scripts/tools/tier-report.js",

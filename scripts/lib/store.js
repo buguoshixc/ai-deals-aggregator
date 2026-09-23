@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { SCHEMA_VERSION, nowCN, todayCN, validateDeal, isGarbage, hasDiscountSignal } = require('./schema');
 const { dedup, score } = require('./dedup');
+const { applyDeadline } = require('./expiry');
 
 const DEALS_FILE = path.join(__dirname, '..', '..', 'deals.json');
 const MAX_DEALS = 300;
@@ -113,7 +114,16 @@ function mergeAll({ fresh = [], existing = [], curated = [], today = todayCN() }
       return { ...deal, type: 'tool' };
     });
 
-  const { deals: merged, mergedCount } = dedup([...fresh, ...cleanExisting, ...curatedRefreshed]);
+  // 文案里写死了绝对截止日的，统一在这里补 expiresAt（抽不到就留空 = 长期活动/未标注）。
+  // 抽取规则见 lib/expiry.js：只认带年份且附近有结束语义的日期，绝不猜。
+  let extractedDeadlines = 0;
+  const withDeadline = list => list.map(deal => {
+    const next = applyDeadline(deal);
+    if (next !== deal) extractedDeadlines++;
+    return next;
+  });
+
+  const { deals: merged, mergedCount } = dedup(withDeadline([...fresh, ...cleanExisting, ...curatedRefreshed]));
   const { deals: kept, removed } = prune(merged, { today });
 
   const degraded = cleanExisting.length > 0 && fresh.length < cleanExisting.length * CIRCUIT_BREAKER_RATIO;
@@ -125,6 +135,7 @@ function mergeAll({ fresh = [], existing = [], curated = [], today = todayCN() }
       existing: existing.length,
       curated: curatedRefreshed.length,
       mergedDuplicates: mergedCount,
+      extractedDeadlines,
       beforePrune: merged.length,
       afterPrune: kept.length,
       removedExpired: removed.expired.length,

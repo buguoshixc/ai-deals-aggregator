@@ -385,6 +385,8 @@
     .tg.cn { background: var(--cnbg); color: var(--cn); }
     .tg.gl { background: var(--glbg); color: var(--gl); }
     .tg.due { background: var(--dealsoft); color: var(--deal); }
+    .tg.long { background: var(--bg); color: var(--mut); }
+    .tg.uns { background: transparent; color: var(--mut); box-shadow: inset 0 0 0 1px var(--line); }
 
     /* ---------- 优惠正文 ---------- */
     .of { margin-top: var(--s2); display: flex; gap: var(--s2); }
@@ -823,7 +825,7 @@
         <label class="catpick"><select id="categoryFilter" aria-label="分类"><option value="">全部分类</option><!--PRERENDER:categories--></select></label>
         <div class="sortbox" id="sortBox" role="group" aria-label="排序">
           <button type="button" data-sort="tier">优惠力度优先</button>
-          <button type="button" data-sort="expiry">即将截止</button>
+          <button type="button" data-sort="expiry" title="有截止日期的按剩余天数升序；「未标注截止日期」与「长期活动」依次排在最后">即将截止</button>
           <button type="button" data-sort="updated">最近更新</button>
         </div>
         <div class="seg" id="viewSeg" role="group" aria-label="视图">
@@ -866,8 +868,14 @@
       </details>
       <details>
         <summary>优惠的有效期和截止日期怎么看？</summary>
-        <p>卡片底部会显示有效期说明；有明确截止日期的优惠会额外标注剩余天数并对临近截止的做高亮。
-        促销类优惠常由厂商随时调整，且部分额度有效期写在厂商控制台内，最终以官方页面为准。</p>
+        <p>卡片上按三种情况标注：官方写明截止日期的标「剩 N 天」并对临近截止的做高亮；官方写明长期有效的标
+        「长期活动」；官方没提截止日期的标「未标注截止日期」——「没查到」不会写成「长期」。
+        用「即将截止」排序时，有截止日期的按剩余天数从少到多排在最前，没有截止日期的依次排在最后
+        （未标注截止日期 → 长期活动）。像「自开通起 3 个月」「有效期 1 年」这类相对期限从开通当天起算，
+        没有绝对截止日，也归入没有截止日期的一类。</p>
+        <p>实际收录中，多数免费额度与身份优惠官方只写「限时」而不给具体日期，所以「即将截止」这一档常常是空的：
+        不是排序失效，而是官方页面上确实没有那个日期。促销类优惠常由厂商随时调整，部分额度有效期写在
+        厂商控制台内，最终以官方页面为准。</p>
       </details>
       <details>
         <summary>信息多久更新一次？怎么确认还有效？</summary>
@@ -1280,6 +1288,32 @@
       return days !== null && days < 0;
     }
 
+    /**
+     * 活动期限三分类。排序、卡片角标、详情弹层都读这里，避免三处各推一遍。
+     *
+     *   due     有绝对截止日期 —— 标「剩 N 天」，按剩余天数升序排在最前
+     *   unknown 官方没标注截止日期 —— 标「未标注截止日期」，垫底区的前半段
+     *   ongoing 官方写明长期/永久有效 —— 标「长期活动」，排在最后
+     *
+     * rank 是排序档位：截止日 < 未标注 < 长期。「未标注」排在「长期」之前，是因为它
+     * 仍有随时结束的可能，比确认长期的活动更该先被看到。
+     * 措辞边界：「未标注」绝不能被写成「长期」——前者是「我们没查到」，后者是官方原话。
+     * 词表与 scripts/lib/classify.js 的 isOngoing() 一致，只改一边会让卡片角标与后端统计对不上。
+     */
+    const ONGOING_RE = /长期|永久有效|常年|不限时|ongoing|no expiration|always available|no end date/i;
+
+    function expiryState(deal) {
+      const days = daysUntil(deal.expiresAt);
+      if (days !== null) {
+        const label = days < 0 ? '已过期' : days === 0 ? '今天截止' : '剩 ' + days + ' 天';
+        return { key: 'due', rank: 0, days: days, label: label, note: deal.expiresAt + '（' + label + '）' };
+      }
+      if (ONGOING_RE.test(String(deal.validity || ''))) {
+        return { key: 'ongoing', rank: 2, days: null, label: '长期活动', note: '长期活动（官方有效期说明里写明长期有效）' };
+      }
+      return { key: 'unknown', rank: 1, days: null, label: '未标注截止日期', note: '官方未标注截止日期，以官方页面为准' };
+    }
+
     /** 仅允许 http/https，避免 javascript: 之类的属性注入 */
     function safeUrl(url) {
       if (typeof url !== 'string') return null;
@@ -1400,18 +1434,17 @@
         '</div>';
     }
 
-    /** 地区 / 截止角标 */
+    /** 地区 / 活动期限角标；期限走三分类，没截止日的条目标「长期活动」或「未标注截止日期」 */
     function tagsHtml(deal) {
       const tags = [];
       if (deal.region) {
         const cn = deal.region === 'cn';
         tags.push('<span class="tg ' + (cn ? 'cn' : 'gl') + '">' + escapeHtml(REGION_LABELS[deal.region] || deal.region) + '</span>');
       }
-      const days = daysUntil(deal.expiresAt);
-      if (days !== null) {
-        const label = days < 0 ? '已过期' : days === 0 ? '今天截止' : '剩 ' + days + ' 天';
-        tags.push('<span class="tg due" title="' + escapeAttr('截止 ' + deal.expiresAt) + '">' + escapeHtml(label) + '</span>');
-      }
+      const state = expiryState(deal);
+      const cls = state.key === 'due' ? 'due' : state.key === 'ongoing' ? 'long' : 'uns';
+      const title = state.key === 'due' ? '截止 ' + deal.expiresAt : state.note;
+      tags.push('<span class="tg ' + cls + '" title="' + escapeAttr(title) + '">' + escapeHtml(state.label) + '</span>');
       return tags.join('');
     }
 
@@ -1675,13 +1708,15 @@
         return list.map(withTier).sort((a, b) => String(b.lastSeen || '').localeCompare(String(a.lastSeen || '')));
       }
       if (sort === 'expiry') {
+        // 三分类次序：有截止日（按剩余天数升序）→ 未标注截止日期 → 长期活动。
+        // 后两档都没有截止日可比，退回「最近更新优先」——这样次序是确定的，不再取决于
+        // deals.json 里的原始行序（旧实现两档之间返回 0，等于没排，换个数据文件就换顺序）。
         return list.map(withTier).sort((a, b) => {
-          const da = daysUntil(a.expiresAt);
-          const db = daysUntil(b.expiresAt);
-          if (da === null && db === null) return 0;
-          if (da === null) return 1;
-          if (db === null) return -1;
-          return da - db;
+          const sa = expiryState(a);
+          const sb = expiryState(b);
+          if (sa.rank !== sb.rank) return sa.rank - sb.rank;
+          if (sa.key === 'due' && sa.days !== sb.days) return sa.days - sb.days;
+          return String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
         });
       }
       return list.map(withTier).sort(compareCards);
@@ -1969,7 +2004,9 @@
       };
       cell('适用条件', deal.eligibility, null, 'eligibility');
       cell('有效期说明', deal.validity, null, 'validity');
-      cell('截止日期', deal.expiresAt ? deal.expiresAt + '（' + (daysUntil(deal.expiresAt) >= 0 ? '剩 ' + daysUntil(deal.expiresAt) + ' 天' : '已过期') + '）' : '');
+      // 三分类都落在这一行：有截止日给日期与剩余天数；没有就给「长期活动」或「未标注截止日期」
+      const expiry = expiryState(deal);
+      cell('活动期限', expiry.note, expiry.key === 'due' ? 'ok' : null);
       cell('价格阶梯', deal.priceLine, null, 'priceLine');
       cell('优惠力度', '档位 ' + tier.n + ' · ' + tier.name, 'ok');
       cell('核验状态', stamp ? (deal.verified ? '✓ ' + stamp.label + '（已人工对照官方页）' : stamp.label + '（采集时间，非人工核验）') : '');
