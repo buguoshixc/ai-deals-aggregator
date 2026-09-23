@@ -8,12 +8,12 @@ name: Verify site (gate)
 # selftest:zh、selftest:expiry）全都不在 CI 里——CI 只跑 validate.js 与 build-local.js。
 # 这条 workflow 补上这两件事：**PR 触发** + **把重门禁搬进 CI**。
 #
-# ⚠️ 关键约束：gate 这个 job **永远不许 skipped**，所以下面没有、也不要加 job 级 if。
+# ⚠️ 关键约束：gate 这个 job **永远不许被跳过**，所以下面没有、也不要加 job 级 if。
 #   背景：deploy.yml 的 build 带着 `if: github.event_name != 'workflow_run' || …`，
-#   采集失败时它会被判成 **skipped**——而 skipped 的检查**永远无法满足必需检查**
-#   （分支保护会一直显示 pending，既不是红也不是绿）。要判断"该不该出版/该不该拦"，
-#   就把判断写进**步骤**里（见下面「浏览器可用性判定」与「门禁结论」两步）：
-#   这个 job 每次都必须真跑并给出结论——要么绿、要么红。
+#   采集失败时它会被跳过——而按 GitHub 官方语义，**job 被 if 跳过时报的是 "Success"**：
+#   没跑却算过（静默变绿），对门禁而言这是**最坏**形态；会一直 Pending 的是 **workflow 级**跳过
+#   （paths / branches / commit message，见下面 ⑦）。要判断"该不该出版/该不该拦"，就把判断
+#   写进**步骤**里（见「浏览器可用性判定」与「门禁结论」两步）：每次都必须真跑——要么绿、要么红。
 #
 # 触发面：
 #   pull_request → master   分支在合并前就可见（本地分支推上来即可）
@@ -41,8 +41,8 @@ on:
 permissions:
   contents: read
 
-# 同一 ref 上新的运行取代旧的（旧的被 cancel，新的照常给结论）——
-# 这不是"skipped"：最新一次运行一定会报告结果。
+# 同一 ref 上新的运行取代旧的：被取代的那次报的是 **cancelled**，不在 success / skipped / neutral 之列。
+# 之所以无害：必需检查按**最新 commit SHA** 匹配，新的 run 会在新 SHA 上重新报到并给出结论。
 concurrency:
   group: verify-${{ github.ref }}
   cancel-in-progress: true
@@ -80,8 +80,10 @@ jobs:
       #    被路径过滤就不是「跳过」而是**永久 pending**，改文档的 PR 会被卡死且看不出原因；
       # ⑧ 末尾看门狗断言「断言名单与冻结清单等值」：删一条断言或改名同样红。
       # ⑨ 带外项数：--expect-checks=24 把「总项数」这个事实钉在**调用方**（本文件），因为看门狗
-      #    保护不了自己被删（删掉它自己时项数会静默降到 23 且仍 exit 0）。数字与脚本里的
-      #    FROZEN_ASSERTION_NAMES 是两条独立机制：新增/删除断言时要同时更新这两处。
+      #    保护不了自己被删（删掉它自己时项数会静默降到 23 且仍 exit 0）。这个数字是**唯一出处**：
+      #    脚本命令行不带参数裸跑（本地）时也会回来读本行，所以本地同样受保护；谁删掉本行的参数，
+      #    脚本会直接 fail-closed 判红。数字与脚本里的 FROZEN_ASSERTION_NAMES 是两条独立机制：
+      #    新增/删除断言时要同时更新这两处。
       - name: CI consistency (action / runner / node-version / engines drift)
         run: node scripts/tools/check-ci-consistency.js --expect-checks=24
 
@@ -168,7 +170,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       # 「浏览器不可用」的**降级判定**：写在这里而不是写成 job 级 if ——
-      # job 级 if 会让整个 gate 被 skipped，而 skipped 无法满足必需检查。
+      # job 级 if 一旦跳过，该 job 的检查**报 Success**（没跑却算过）——对门禁而言这是最坏形态。
       # 步骤内判死：默认失败；只有人工在 workflow_dispatch 上勾了开关才降级。
       - name: Browser availability decision (never silent)
         id: decision

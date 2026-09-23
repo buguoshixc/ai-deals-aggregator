@@ -99,7 +99,7 @@ jobs:
           {
             echo "### 采集结果"
             echo '```'
-            grep -E "合计|来源失败|火山方舟|智谱AI活动页|零产出|降级|已写入|数据无变化|✗" /tmp/collect.log 2>/dev/null || echo "(无采集日志)"
+            grep -E "合计|来源失败|火山方舟|智谱AI活动页|零产出|降级|已写入|数据无变化|译文不合规|✗|❌" /tmp/collect.log 2>/dev/null || echo "(无采集日志)"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 

@@ -47,10 +47,14 @@
  *  末尾的「(W) 断言名单与冻结清单等值」断言：**删掉任意一条断言**、或**把任意一条断言改名**，
  *  都会在这里变红（比"只比数量"更强）。它有一条**保护不了自己的固有边界**：如果被删的是最后一条
  *  或这条看门狗本身，就没有东西还能报出来了 —— reviewer 明确记为 info（不是 blocker），这里只如实写明。
- *  为了**减少**（不是消除）这条边界，`--expect-checks=<N>` 可从**外部**钉住实跑项数（CI 里由
- *  verify.yml 传入）：带了该参数就断言「实跑项数 == N」，不等即红；**不带参数时本地照常能跑（exit 0），
- *  但会打印一行明确提示，说明"总项数"这条边界在本次运行中没有被守护**。两者刻意保持互相独立：
- *  一次删除带不走两个机制（除非连 externally pinned 的数字与名字清单一起改）。
+ *  为了**减少**（不是消除）这条边界，末尾的 (E) 用「实跑项数 == 期望项数」从**外部**钉住总项数。
+ *  期望项数的**唯一出处是 verify.yml 的调用行**（gate 步骤里的 `--expect-checks=24`）：
+ *   · CI 里由 verify.yml 显式传入；命令行显式传 `--expect-checks=<N>` 时以传入值为准（兼容旧用法）；
+ *   · **不带参数（本地裸跑）时同样从 verify.yml 读那个数字** —— 所以本地也一样受这条边界保护：
+ *     删掉末尾那条看门狗，本地裸跑同样会红（此前这里只打印一行"本轮无人守护"，是个静默降级的口子）；
+ *   · 读不到那个数字（verify.yml 少了该参数 / 那条 run 被改成读取器会跳过的块标量）⇒ **fail-closed**：
+ *     直接判红并给出修复指引，绝不悄悄退化成"没人守护"。
+ *  两者刻意保持互相独立：一次删除带不走两个机制（除非连 verify.yml 里的数字与名字清单一起改）。
  */
 'use strict';
 const fs = require('fs');
@@ -58,9 +62,13 @@ const path = require('path');
 
 const rootArg = process.argv.find(a => a.startsWith('--root='));
 const ROOT = rootArg ? path.resolve(rootArg.slice('--root='.length)) : path.join(__dirname, '..', '..');
-/** 带外钉住的实跑项数（F8）：数字写在调用方（verify.yml），删掉看门狗时的静默降级由它兜住 */
+/**
+ * 带外钉住的实跑项数（F8）：数字的**唯一出处**是 verify.yml 的 gate 调用行（`--expect-checks=N`）。
+ * 命令行显式传 `--expect-checks=<N>` 时以传入值为准（兼容旧用法）；**不带参数时也从 verify.yml 读那个数字**
+ * （读取与断言都在末尾 (E) 处），于是本地裸跑同样被这条边界保护；取不到即 fail-closed。
+ */
 const expectArg = process.argv.find(a => a.startsWith('--expect-checks='));
-const EXPECT_CHECKS = expectArg ? Number(expectArg.slice('--expect-checks='.length)) : null;
+const CLI_EXPECT_CHECKS = expectArg ? Number(expectArg.slice('--expect-checks='.length)) : null;
 const WF_DIR = path.join(ROOT, '.github', 'workflows');
 
 /* ────────────────────────── 冻结口径（唯一事实来源） ────────────────────────── */
@@ -414,7 +422,7 @@ check('(8) verify.yml 的 gate job 存在且没有 job 级 if（永不 skipped�
   Object.prototype.hasOwnProperty.call(wf, 'verify.yml') && gateExists && gateIf === undefined,
   !Object.prototype.hasOwnProperty.call(wf, 'verify.yml') ? '**verify.yml 缺失**（gate 检查无从谈起）'
     : !gateExists ? '没有 gate job（改名即视为漂移：必需检查名要对得上）'
-      : gateIf !== undefined ? `发现 job 级 if：${gateIf}（会被判 skipped，必需检查永远等不到结果）` : '无 job 级 if');
+      : gateIf !== undefined ? `发现 job 级 if：${gateIf}（跳过会报 Success = 没跑却算过，必需检查会被静默满足）` : '无 job 级 if');
 
 // (9) 触发面：必需检查不得被 paths / paths-ignore 过滤（t24/F6，按 path 判，不按字符串判）
 const filterHits = [];
@@ -442,22 +450,61 @@ check(WATCHDOG_NAME, missingNames.length === 0 && extraNames.length === 0,
 
 const failed = results.filter(r => !r.ok);
 
+/**
+ * 期望项数的唯一出处：verify.yml 的 gate 步骤里那条
+ * `run: node scripts/tools/check-ci-consistency.js --expect-checks=N`。
+ * 复用本文件自带的 parseWorkflow（不引入 YAML 依赖，npm ci 之前也跑得动）：
+ * 它把块标量整体跳过 ⇒ 谁把这条 run 改成 `run: |` 多行写法，这里就取不到数字，按 fail-closed 判红。
+ */
+function expectChecksFromVerifyYml() {
+  const gateRuns = (wf['verify.yml'] || []).filter(e => e.key === 'run' && e.value !== null
+    && e.path[0] === 'jobs' && e.path[1] === 'gate' && e.path.includes('steps'));
+  const found = [...new Set(gateRuns
+    .map(e => (/--expect-checks=(\d+)/.exec(String(e.value)) || [])[1])
+    .filter(v => v !== undefined))];
+  if (!found.length) {
+    return {
+      error: `verify.yml 的 gate 步骤里读不到 --expect-checks=<N>`
+        + `（找到 ${gateRuns.length} 条可解析的 run: 行，没有一条含该参数；`
+        + '若这条 run 被改成了 `run: |` 块标量写法，本读取器会整体跳过它）。'
+        + '期望项数的唯一出处就是这一行 —— 应从 verify.yml 的 gate 步骤读取 --expect-checks，请恢复它。'
+    };
+  }
+  if (found.length > 1) {
+    return {
+      error: `verify.yml 的 gate 步骤里有多处且不一致的 --expect-checks：${found.join('、')}`
+        + ' —— 应从 verify.yml 的 gate 步骤读取**唯一**的 --expect-checks，请恢复它。'
+    };
+  }
+  return { value: Number(found[0]) };
+}
+
 // (E) 带外项数（F8，见文件头「看门狗、带外项数与它们各自的边界」）。
 // 刻意**不走 check()**：它是带外机制，不进 FROZEN_ASSERTION_NAMES、也不改变「N 项」的定义，
 // 这样「删掉看门狗」与「项数被外部钉住」两个机制互相独立，一次删除带不走两个。
+// 期望值来源：命令行 --expect-checks=<N>（显式传入时以它为准），否则**从 verify.yml 的 gate 调用行读**——
+// 本地裸跑走的就是后者，所以本地删掉末尾看门狗同样会红，而不是只打印一行"本轮无人守护"。
+// 两处都取不到 ⇒ fail-closed：判红 + 修复指引，绝不悄悄退化成"没人守护"。
+const derivedExpect = expectArg ? null : expectChecksFromVerifyYml();
+const EXPECT_CHECKS = expectArg ? CLI_EXPECT_CHECKS
+  : (derivedExpect.value === undefined ? null : derivedExpect.value);
+const EXPECT_CHECKS_SOURCE = expectArg ? `命令行 --expect-checks=${CLI_EXPECT_CHECKS}` : 'verify.yml 的 gate 调用行';
 if (EXPECT_CHECKS === null) {
-  console.log('ℹ️  未带 --expect-checks=<N>：本次没有从外部钉住总项数 —— '
-    + '若有人删掉末尾那条看门狗，项数会静默降 1 且仍然 exit 0，这条边界本轮无人守护（CI 里由 verify.yml 传入）。');
+  failed.push({
+    name: '(E) 期望项数必须能取到（fail-closed：不许悄悄退化成"无人守护"）', ok: false,
+    detail: (derivedExpect && derivedExpect.error) || '未知原因'
+  });
 } else if (!Number.isInteger(EXPECT_CHECKS) || EXPECT_CHECKS <= 0) {
   failed.push({ name: '(E) --expect-checks 的取值必须是不小于 1 的整数', ok: false, detail: `收到 ${expectArg}` });
 } else if (results.length !== EXPECT_CHECKS) {
   failed.push({
     name: '(E) 实跑项数 == 外部钉住的 --expect-checks', ok: false,
-    detail: `实跑 ${results.length} 项 ≠ 钉住 ${EXPECT_CHECKS} 项`
+    detail: `实跑 ${results.length} 项 ≠ 钉住 ${EXPECT_CHECKS} 项（期望值来自 ${EXPECT_CHECKS_SOURCE}）`
       + '（新增/删除断言后请同步 verify.yml 的 --expect-checks 数字与 FROZEN_ASSERTION_NAMES）'
   });
 } else {
-  console.log(`✓ (E) 实跑项数 == --expect-checks=${EXPECT_CHECKS}（数字钉在调用方，与看门狗互相独立）`);
+  console.log(`✓ (E) 实跑项数 == --expect-checks=${EXPECT_CHECKS}（期望值来自 ${EXPECT_CHECKS_SOURCE}；`
+    + '数字钉在调用方，与看门狗互相独立）');
 }
 
 console.log(`\n${failed.length ? '❌' : '✅'} CI 口径检查 ${results.length} 项，失败 ${failed.length} 项`);

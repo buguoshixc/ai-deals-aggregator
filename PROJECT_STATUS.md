@@ -1,6 +1,6 @@
 # AI 优惠聚合器 — 项目状态
 
-**最后更新**：2026-09-22
+**最后更新**：2026-09-23
 **项目地址**：https://buguoshixc.github.io/ai-deals-aggregator/
 **仓库**：https://github.com/buguoshixc/ai-deals-aggregator
 
@@ -1591,9 +1591,9 @@ Layer3Labs 9 · **人工策展（国内）18** · 智谱AI 7 · 智谱AI活动�
 
 ---
 
-## 七、审计发现（2026-09-23）：三个坑与「可安全删除的对象」台账
+## 七、审计发现（2026-09-23）：四个坑与「可安全删除的对象」台账
 
-> 本节是**只读审计**的产物：三处「文档/注释说的」与「代码做的」不一致的坑，加上一份
+> 本节是**只读审计**的产物：四处「文档/注释/提交信息说的」与「代码/平台实际做的」不一致的坑，加上一份
 > 删得掉、但**本次一律不删**的对象台账。所有数字都是本机实测，命令可原样复核。
 
 ### 7.1 `deal.id` 的公式：注释里少了个 `lower()`（最高价值）
@@ -1690,3 +1690,89 @@ return crypto.createHash('sha1').update(basis).digest('hex').slice(0, 12);
 **台账之外的观察**：`fix/detail-close` 的 upstream 错配是目前唯一的「危险默认值」——
 在 `git branch -vv` 里它只是一行 `[origin/master: behind 29]`，但足以让一次手滑的 `git push` 去动 master。
 修法已记在上表，本次不执行。
+
+### 7.5 CI 必需检查（required status checks）的真实语义 —— 并更正 `cfd443b` 里的错误结论
+
+**这一节是更正，不是新发现**：上一轮收敛提交 **`cfd443b`** 的提交信息（④ CI 三块工作）与当轮的交付说明里
+下过一句结论——「`deploy.yml` 的 `build` 带 job 级 `if`（`workflow_run` 桥接）⇒ 被要求时必然 skipped
+⇒ 满足不了必需检查 ⇒ PR 永久 pending」。**这句话是错的；它是 captain（也是写本节的人）在上一轮写下的错误结论。**
+提交信息不可变（改写历史不是本仓库允许的动作），所以更正只能写在这里：**以下面这套语义为准，
+`cfd443b` 提交信息与当轮说明里那句话作废。**
+
+**GitHub 的官方语义**——[Troubleshooting required status checks](https://docs.github.com/en/enterprise-cloud@latest/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks)
+（2026-09-23 取全文复核；下面这张表就是该页「Handling skipped but required checks」一节的三行）：
+
+| 成因 | 结果 |
+|---|---|
+| **workflow** 被 path filtering / branch filtering / commit message 跳过 | 关联检查停在 **"Pending"**，**阻止合并** |
+| **job** 被条件（`if:`）跳过 | **该 job 报告 "Success"** |
+| job 依赖的 job 失败 | 依赖方被跳过，**可能不阻止合并** |
+
+同一页另外三条硬事实，上一轮恰好把第 1、2 条用反了：
+
+1. **成功的检查状态包含 `success`、`skipped`、`neutral`** —— `skipped` 本身就算「满足要求」；
+2. job 产生的检查**只有在 run 由** `push` / `pull_request` / `pull_request_review` / `pull_request_target` /
+   `deployment` / `deployment_status` **触发时**，才会在 PR 的检查区被评估、才谈得上满足必需检查；
+3. 必需检查必须**对得上名字**且在最近 7 天内成功过，否则只会一直显示
+   「Expected — Waiting for status to be reported」。
+
+**错在哪（拆成两半，都要记牢）**
+
+- **因果链是错的**：job 被 `if:` 跳过 ⇒ 该 job 的检查**报 Success**，不是 pending。
+  「有 job 级 `if` ⇒ 满足不了必需检查 ⇒ 永久 pending」这句话要从记忆里删掉；
+  真正会 pending 的是**上表第 1 行**：workflow 被 path / branch 过滤或提交信息跳过。
+- **结论凑巧是对的，理由完全不对**：`build` 确实不能、也不该做 PR 必需检查 —— 理由是**触发面**（见下），
+  与 job 级 `if` 无关。把「结论对」当成「理由对」写进不可变的提交信息，是这次真正的问题。
+
+**为什么 `gate` 是、且应当是唯一的必需检查**
+
+| 判据 | `verify.yml` 的 `gate` | 为什么这条判据重要 |
+|---|---|---|
+| 单 job、不依赖 `needs:` | ✅ 全文件只有 `gate` 一个 job | 表第 3 行：依赖方被跳过时可以「不阻止合并」，必需检查名挂在那里等于没挂 |
+| job 级无 `if:` | ✅ `jobs.gate`（`verify.yml:51` 起）没有 job 级 `if`；步骤级那两条 `if`（`Real-browser acceptance (verify-site.js)` 与 `Gate conclusion` 两步；行号会腐烂，当前约 `:231` / `:240`）只决定「跑不跑那一步」，不改变 job 的结论 | 表第 2 行：job 级 `if` 跳过会**报 Success**，对门禁来说这是最坏形态（**没跑却算过**）。所以「`gate` 不许有 job 级 `if`」这个决定仍然成立，**只是理由要换成这一条** |
+| 无 `paths` / `paths-ignore` | ✅ `on:` 下只有 `pull_request.branches` / `push.branches` / `workflow_dispatch.inputs` | 表第 1 行：被路径过滤是**永久 Pending**，PR 既不红也不绿 |
+| 有 PR 可用的触发 | ✅ `pull_request: branches: [master]` —— 那是**目标分支**过滤，本仓库的集成分支就是 master（本文件里所有合并记录都指向它），正常 PR 都命中 | 硬事实 2：没有 `pull_request`，就没有会被评估到 PR 上的检查 |
+| 覆盖同一条构建 | ✅ 步骤 `Assemble site (same path as deploy.yml)` 执行 `node scripts/tools/build-local.js` | 「PR 上没人跑构建」这个担心不成立：跑的就是发布用的同一个脚本 |
+
+**「唯一」是逐条实测的**：四条 workflow 的触发面一个个看过 —— `collect.yml` = `schedule` + `workflow_dispatch`；
+`probe-sources.yml` = `workflow_dispatch`；`deploy.yml` = `push`(master) + `workflow_run` + `workflow_dispatch`；
+`verify.yml` = `pull_request` + `push` + `workflow_dispatch`。
+⇒ **`gate` 是四条里唯一会在 PR 上产生检查的 job**，所以分支保护的「必需检查」一栏只该填 `gate`。
+（「它现在是否已经挂在必需检查里」属于 GitHub 侧的仓库设置，本文件不做断言 —— 本节只写「该填什么、为什么」。）
+
+**为什么 `build` 不要设成必需检查**（两条独立理由，任何一条都足够）
+
+1. **它没有 PR 可用的触发。** `deploy.yml:9–16` 的 `on:` 只有 `push`（`branches: [master]`）/ `workflow_run` /
+   `workflow_dispatch`：后两者**根本不在硬事实 2 的事件清单里**；`push` 虽在清单里，却被 `branches: [master]`
+   限定 —— PR 的 head 分支推送不触发它，master 上那一次 `push` 也不属于任何 PR。结果：`build` 这条检查
+   **永远不会出现在 PR 的检查区**，把它设成必需检查只会得到一个永远等不到报告的「Expected」。
+   这是**设计使然**：`deploy.yml` 是**发布**管线（它自己的注释原文：「纯发布流程：不做采集」），不是 PR 管线。
+2. **`gate` 已经跑了同一条构建。** 上面那一步执行的就是 `node scripts/tools/build-local.js`，与 `deploy.yml`
+   的 `Validate data and assemble site` 是同一个脚本；再挂一个 `build` 不会多验任何东西，只会多一个要维护的检查名。
+
+**告诫：不要把 `needs:` 的依赖方设成必需检查**（表第 3 行）。`deploy.yml` 现在就是 `deploy: needs: build`：
+`build` 被 `if` 跳过（采集失败）时 `deploy` 一起跳过 —— 那是**刻意的「不发布」语义**，不是缺陷。
+但将来 `gate` 若拆成多个 job，必需检查必须挂在**没有任何 job `needs` 它**的那一个上；
+真要挂依赖方，就得按官方写法给它 `if: always()`，否则会落进「被跳过、且可能不阻止合并」那一格。
+
+**机器守卫（已经在跑，别删）**：`scripts/tools/check-ci-consistency.js` 用三条断言把上面这套设计钉住 ——
+(7b) `jobs.build.if` 表达式逐字未变（防有人为了「让检查通过」删掉跳过发布的语义）、
+(8) `verify.yml` 的 `gate` 存在且没有 job 级 `if`、
+(9) `verify.yml` 的 `on:` 没有被 `paths` / `paths-ignore` 过滤；
+三条都由 `gate` 里的 `node scripts/tools/check-ci-consistency.js --expect-checks=24` 执行。
+
+**同一错误说法曾残留两处（写本节时只改文档、把它们登记在案；随后一轮已按本节改正 —— 下面保留原文以便对照）**
+
+- `.github/workflows/verify.yml:11–16` 的注释块（**已按本节改正**）：曾把 `build` 的 job 级 `if` 说成「会被判成 skipped ——
+  而 skipped 的检查**永远无法满足必需检查**（分支保护会一直显示 pending）」—— **这句是错的**（job 跳过报 Success）。
+  它下面的操作决定（不给 `gate` 加 job 级 `if`、把判定写进步骤）**仍然正确**，理由按本节换成
+  「跳过会报 Success，等于没跑却算过」。
+- `scripts/tools/check-ci-consistency.js` 里断言 **(8) verify.yml 的 gate job 存在且没有 job 级 if（永不 skipped）** 的失败文案
+  （**断言名是稳定标识**；行号只作提示、会继续腐烂：断言本体当前约 `:421`、失败文案当前约 `:425`）：「（会被判 skipped，必需检查永远等不到结果）」
+  —— **这句也是错的**，同上（该文案已在后续一轮按本节改成「跳过报 Success = 没跑却算过」）；它守的行为（`gate` 不许有 job 级 `if`）保留，改文案时不要顺手把断言删掉（看门狗与 `--expect-checks=24` 会红）。
+
+> 一句话记法：**workflow 被跳过 = Pending（卡死）；job 被跳过 = Success（静默变绿）；依赖失败被跳过 = 可能不拦。**
+> 能当必需检查的，只可能是「任何 PR 都会报到、且一定会真跑」的那一个 job。
+>
+> 出处（本节全部依据这一页）：
+> https://docs.github.com/en/enterprise-cloud@latest/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks

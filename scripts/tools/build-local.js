@@ -27,7 +27,23 @@ const { attach: attachZh, summarize: summarizeZh } = require('../lib/zh');
 
 const ROOT = path.join(__dirname, '..', '..');
 const outArg = process.argv.find(a => a.startsWith('--out='));
-const OUT = path.join(ROOT, outArg ? outArg.slice(6) : 'dist');
+/** 最终输出目录。--out 语义不变：用户给什么路径，产物最终就落在什么路径上。 */
+const FINAL_OUT = path.join(ROOT, outArg ? outArg.slice(6) : 'dist');
+/**
+ * 组装暂存目录：最终输出目录的**兄弟目录**（同卷 ⇒ 可用 renameSync 原子替换）。
+ *
+ * 第 2 阶段的一切写入都指向它，只有全部自检通过之后才替换到 FINAL_OUT。
+ * 这样「自检失败」不再等于「上一份好的产物已经被删掉、磁盘上留下一个像构建成功的
+ * 半成品目录」：失败路径清掉暂存目录，FINAL_OUT 原封不动。
+ */
+const STAGE_OUT = `${FINAL_OUT}.building`;
+/** 组装期间的写入目标（下称 OUT）。失败时它会被整个清掉，FINAL_OUT 不动。 */
+let OUT = STAGE_OUT;
+
+/** 对外报的路径一律是最终目录（相对仓库根），不报暂存目录。 */
+function showOut(dir) {
+  return `${path.relative(ROOT, dir) || '.'}/`;
+}
 
 const PUBLIC_FILES = ['index.html', 'deals.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
 /** 构建期生成、不走源码拷贝的产物 */
@@ -578,9 +594,13 @@ ${renderCore.detailHtml(deal)}
 /* ------------------------------------------------------------------ */
 
 function assemble() {
-  console.log(`\n=== 2) 组装产物 ${path.relative(ROOT, OUT)}/ ===`);
-  fs.rmSync(OUT, { recursive: true, force: true });
-  fs.mkdirSync(OUT, { recursive: true });
+  console.log(`\n=== 2) 组装产物 ${showOut(FINAL_OUT)} ===`);
+  console.log(`  写入暂存目录 ${showOut(STAGE_OUT)}`);
+  console.log(`  自检全过之后才替换到 ${showOut(FINAL_OUT)}；失败则清掉暂存目录，${showOut(FINAL_OUT)} 保持原样`);
+  // maxRetries/retryDelay：Windows 上杀软、同步客户端、静态服务都可能短暂占住目录，
+  // 默认 0 重试会直接 EPERM/EBUSY 失败。
+  fs.rmSync(STAGE_OUT, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
+  fs.mkdirSync(STAGE_OUT, { recursive: true });
 
   for (const file of PUBLIC_FILES) {
     const from = path.join(ROOT, file);
@@ -678,6 +698,8 @@ function assemble() {
   // 而只查 PNG 头部与尺寸是看不出来的。自检失败直接抛出 → 组装中止、构建非 0 退出、
   // deploy.yml 不会发布。自检必须留在构建路径上——早先它只在 og-image.js 的 main() 里跑
   // （require.main === module 守卫），构建走的是 require，于是这一段从未被执行过。
+  // 这里写的是暂存目录，所以这一抛不会碰到上一份 FINAL_OUT。（和下面 selfCheck() 的
+  // 「返回 false」失败路径一样，两者都在替换输出目录之前。）
   const og = renderOgImage();
   fs.writeFileSync(path.join(OUT, 'og-image.png'), og);
   const ogStats = selfCheckOgImage(og);
@@ -1009,6 +1031,104 @@ function selfCheck(built) {
   return failed === 0;
 }
 
-runValidate();
-const built = assemble();
-if (!selfCheck(built)) process.exit(1);
+/* ------------------------------------------------------------------ */
+/* 暂存 → 最终：只有全部自检通过才替换                                  */
+/* ------------------------------------------------------------------ */
+
+/** 自检失败（selfCheck 已经逐项打印过原因）——不是异常，只是构建不通过 */
+class SelfCheckFailed extends Error {}
+
+function sleepMs(ms) {
+  // 同步脚本里等一小会儿：Windows 上杀软/同步客户端/静态服务可能短暂占住目录，
+  // rename 会 EPERM/EBUSY，一次瞬时占用不该把一份已经造好的产物判死。
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+function renameWithRetry(from, to, attempts = 10) {
+  for (let i = 1; ; i++) {
+    try {
+      fs.renameSync(from, to);
+      return;
+    } catch (err) {
+      if (i >= attempts) throw err;
+      sleepMs(50 * i);
+    }
+  }
+}
+
+/**
+ * 暂存目录 → 最终目录。
+ *
+ * 不做「先 rmSync(FINAL_OUT) 再 rename」：那样在两步之间磁盘上没有任何完整产物，
+ * 中途挂掉就等于旧产物没了、新产物还没就位。这里的两步 rename 让旧目录先整块搬到
+ * 备份名（同卷 rename，内容始终完整），新目录就位之后才删备份；第二步 rename 失败
+ * 还能把旧目录原样搬回来——构建失败绝不等于产物消失。
+ */
+function promoteStaging() {
+  const backup = `${FINAL_OUT}.stale`;
+  fs.rmSync(backup, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
+  const hadOld = fs.existsSync(FINAL_OUT);
+  if (hadOld) renameWithRetry(FINAL_OUT, backup);
+  try {
+    renameWithRetry(STAGE_OUT, FINAL_OUT);
+  } catch (err) {
+    // 回滚：最终目录回到替换之前的样子，绝不留下「没有产物」的状态
+    if (hadOld && !fs.existsSync(FINAL_OUT)) renameWithRetry(backup, FINAL_OUT);
+    throw err;
+  }
+  if (hadOld) fs.rmSync(backup, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
+}
+
+function removeDirWithRetry(dir) {
+  try {
+    fs.rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 50 });
+  } catch (err) {
+    console.error(`  ⚠️  清理失败 ${showOut(dir)}: ${err.message}`);
+  }
+}
+
+/**
+ * 替换中途失败时的兜底：最终目录不在、备份还在，就把备份搬回去。
+ * （promoteStaging 内部已经回滚过一次，这里防的是「连回滚那次 rename 也失败」。）
+ */
+function restoreBackupIfNeeded() {
+  const backup = `${FINAL_OUT}.stale`;
+  if (!fs.existsSync(backup) || fs.existsSync(FINAL_OUT)) return;
+  try {
+    renameWithRetry(backup, FINAL_OUT);
+    console.error(`  ↩️  已把上一份产物从 ${showOut(backup)} 恢复到 ${showOut(FINAL_OUT)}`);
+  } catch (err) {
+    console.error(`  ⚠️  ${showOut(FINAL_OUT)} 缺失且备份恢复失败（原样保留 ${showOut(backup)}）：${err.message}`);
+  }
+}
+
+/** 失败路径：清掉暂存目录；FINAL_OUT 原封不动 */
+function discardStaging() {
+  removeDirWithRetry(STAGE_OUT);
+  // 备份目录只在最终目录确实存在时才删。否则它可能是上一份产物的唯一一份
+  // （替换失败且回滚也失败），删掉就等于把用户仅有的产物弄丢了。
+  if (fs.existsSync(FINAL_OUT)) removeDirWithRetry(`${FINAL_OUT}.stale`);
+  else if (fs.existsSync(`${FINAL_OUT}.stale`)) {
+    console.error(`  ⚠️  保留备份目录 ${showOut(`${FINAL_OUT}.stale`)}（${showOut(FINAL_OUT)} 不在，它是上一份产物）`);
+  }
+}
+
+function main() {
+  runValidate();
+  const built = assemble();
+  // selfCheck 用「返回 false」而不是抛错表示失败；抛错（如 og-image 自检）与返回 false
+  // 都必须走下面同一个 catch。只有全部自检通过，才允许把暂存目录换成最终目录。
+  if (!selfCheck(built)) throw new SelfCheckFailed('产物自检未通过');
+  promoteStaging();
+  console.log(`\n✅ 构建完成 → ${showOut(FINAL_OUT)}（自检全过，已从暂存目录就位）`);
+}
+
+try {
+  main();
+} catch (err) {
+  restoreBackupIfNeeded();
+  discardStaging();
+  console.error(`\n❌ 构建失败：${err instanceof SelfCheckFailed ? err.message : (err && err.stack) || String(err)}`);
+  console.error(`   ${showOut(FINAL_OUT)} 未被改动${fs.existsSync(FINAL_OUT) ? '' : '（原本不存在，现在仍不存在）'}；暂存目录已清理，可直接重跑。`);
+  process.exit(1);
+}

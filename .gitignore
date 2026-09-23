@@ -28,3 +28,11 @@ research/_raw/**/*.png
 # AgentTeams 运行时状态目录（任务台账、成员邮箱、各任务的 scratch 证据脚本）：
 # 是协作过程的临时状态而不是项目源码，绝不入库
 .agent-teams/
+
+# 构建暂存目录（build-local.js）：产物先写进 <输出目录>.building，全部自检通过之后才
+# 替换到真正的输出目录（默认 dist/，于是默认名是 dist.building）；替换瞬间旧目录先搬到
+# <输出目录>.stale 作备份，新目录就位后立即删除。构建失败时两者都会被自动清掉，
+# 这里兜底保证它们绝不进 git 索引（--out=<dir> 时名字随之变化，所以按后缀匹配）。
+# 注意 dist/ 不在其中：它仍是真正的发布产物目录，deploy.yml 上传的就是它。
+*.building/
+*.stale/
