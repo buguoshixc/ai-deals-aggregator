@@ -32,13 +32,16 @@ const MIME = {
   '.svg': 'image/svg+xml', '.png': 'image/png', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8'
 };
 
-/** 极简静态服务器：只服务 dist/，避免依赖外部包 */
+/** 极简静态服务器：只服务 dist/，避免依赖外部包。
+ *  必须像真实静态托管那样把目录解析成 index.html —— 独立详情页的 URL 是
+ *  `deal/<id>/`，早先这里直接对目录返回 404，于是「本地 404、线上正常」的假失败。 */
 function serve(dir) {
   return new Promise(resolve => {
     const server = http.createServer((req, res) => {
       const urlPath = decodeURIComponent(req.url.split('?')[0]);
       const rel = urlPath === '/' ? 'index.html' : urlPath.replace(/^\/+/, '');
-      const file = path.join(dir, rel);
+      let file = path.join(dir, rel);
+      if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
       if (!file.startsWith(dir) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
         res.writeHead(404).end('not found');
         return;
@@ -686,6 +689,482 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.waitForTimeout(200);
+
+  console.log('\n=== 13) 配色主题 · 无障碍 · 对比度 ===');
+
+  // 对比度探针（与 study-site.js 同一套 WCAG 近似算法）：
+  // 只算纯色背景；渐变/图片背景的样本跳过，避免把「图上的白字」算成不合格。
+  const contrastProbe = () => {
+    const parse = value => {
+      const m = String(value).match(/rgba?\(([^)]+)\)/);
+      if (!m) return null;
+      const parts = m[1].split(',').map(x => parseFloat(x));
+      return parts.length < 3 || parts.some(Number.isNaN) ? null : { rgb: parts.slice(0, 3), a: parts.length > 3 ? parts[3] : 1 };
+    };
+    const lum = rgb => {
+      const f = c => { const v = c / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+      return 0.2126 * f(rgb[0]) + 0.7152 * f(rgb[1]) + 0.0722 * f(rgb[2]);
+    };
+    const bgOf = el => {
+      let node = el;
+      while (node && node !== document.documentElement.parentNode) {
+        const s = getComputedStyle(node);
+        if (s.backgroundImage && s.backgroundImage !== 'none') return null;
+        const c = parse(s.backgroundColor);
+        if (c && c.a >= 0.95) return c.rgb;
+        node = node.parentElement;
+      }
+      return [255, 255, 255];
+    };
+    const out = { sampled: 0, skipped: 0, below: 0, min: null, worst: [] };
+    for (const el of document.querySelectorAll('body *')) {
+      const s = getComputedStyle(el);
+      if (s.display === 'none' || s.visibility === 'hidden') continue;
+      const rect = el.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) continue;
+      // 单个字符也采样：档位角标「1」这类最容易出问题的元素就一个字符
+      if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim().length >= 1)) continue;
+      const fg = parse(s.color);
+      if (!fg) continue;
+      const bg = bgOf(el);
+      if (!bg) { out.skipped++; continue; }
+      // 半透明文字先与背景混合，否则 rgba(0,0,0,.5) 会被当成纯黑算出虚高的对比度
+      const fgRgb = fg.a >= 0.95 ? fg.rgb : [0, 1, 2].map(i => fg.rgb[i] * fg.a + bg[i] * (1 - fg.a));
+      const l1 = lum(fgRgb); const l2 = lum(bg);
+      const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+      const size = parseFloat(s.fontSize);
+      const required = size >= 24 || (size >= 18.66 && Number(s.fontWeight) >= 700) ? 3 : 4.5;
+      out.sampled++;
+      if (ratio < required) {
+        out.below++;
+        out.worst.push({
+          ratio: Math.round(ratio * 100) / 100,
+          text: (el.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 24),
+          selector: el.tagName.toLowerCase() + (typeof el.className === 'string' && el.className.trim() ? '.' + el.className.trim().split(/\s+/)[0] : '')
+        });
+      }
+      const r = Math.round(ratio * 100) / 100;
+      out.min = out.min === null ? r : Math.min(out.min, r);
+    }
+    out.worst.sort((a, b) => a.ratio - b.ratio);
+    out.worst = out.worst.slice(0, 3);
+    return out;
+  };
+
+  const semantics = await page.evaluate(() => ({
+    header: document.querySelectorAll('header').length,
+    nav: document.querySelectorAll('nav').length,
+    main: document.querySelectorAll('main').length,
+    facets: document.querySelectorAll('[data-facet]').length,
+    pressed: document.querySelectorAll('[data-facet][aria-pressed]').length,
+    segButtons: document.querySelectorAll('#themeSeg [data-theme-value]').length
+  }));
+  check('语义标签齐备（header / nav / main）',
+    semantics.header >= 1 && semantics.nav >= 1 && semantics.main >= 1,
+    `header=${semantics.header} nav=${semantics.nav} main=${semantics.main}`);
+  check('筛选按钮逐个带 aria-pressed', semantics.facets > 0 && semantics.pressed === semantics.facets,
+    `${semantics.pressed}/${semantics.facets} 个`);
+
+  const lightContrast = await page.evaluate(contrastProbe);
+  const worstText = probe => probe.worst.map(w => `${w.selector}「${w.text}」${w.ratio}`).join(' · ') || '无';
+  check('亮色主题：低于 4.5:1 的文本 ≤ 20', lightContrast.below <= 20,
+    `抽样 ${lightContrast.sampled} · 跳过复杂背景 ${lightContrast.skipped} · 低于要求 ${lightContrast.below} · 最低 ${lightContrast.min} · 最差 ${worstText(lightContrast)}`);
+
+  // 主题切换：深色 → 记住 → 刷新仍深色 → 暗色下对比度同样达标 → 切回跟随系统
+  await page.click('#themeSeg [data-theme-value="dark"]');
+  await page.waitForTimeout(250);
+  const darkNow = await page.evaluate(() => ({
+    attr: document.documentElement.getAttribute('data-theme'),
+    stored: (() => { try { return localStorage.getItem('dsh.theme'); } catch (e) { return 'n/a'; } })(),
+    bodyBg: getComputedStyle(document.body).backgroundColor,
+    colorScheme: getComputedStyle(document.documentElement).colorScheme
+  }));
+  check('切到深色立即生效并记住',
+    darkNow.attr === 'dark' && darkNow.stored === 'dark' && darkNow.colorScheme.includes('dark'),
+    `data-theme=${darkNow.attr} localStorage=${darkNow.stored} color-scheme=${darkNow.colorScheme} body=${darkNow.bodyBg}`);
+
+  await page.reload({ waitUntil: 'load' });
+  await waitForApp(page);
+  const darkAfterReload = await page.evaluate(() => ({
+    attr: document.documentElement.getAttribute('data-theme'),
+    bodyBg: getComputedStyle(document.body).backgroundColor
+  }));
+  check('刷新后仍是深色（无「先亮后暗」闪回）',
+    darkAfterReload.attr === 'dark' && darkAfterReload.bodyBg === darkNow.bodyBg,
+    `data-theme=${darkAfterReload.attr} body=${darkAfterReload.bodyBg}`);
+
+  const darkContrast = await page.evaluate(contrastProbe);
+  check('暗色主题：低于 4.5:1 的文本 ≤ 20', darkContrast.below <= 20,
+    `抽样 ${darkContrast.sampled} · 低于要求 ${darkContrast.below} · 最低 ${darkContrast.min} · 最差 ${worstText(darkContrast)}`);
+
+  check('两种主题下抽样量相当（深色不是把内容藏起来）',
+    darkContrast.sampled >= Math.round(lightContrast.sampled * 0.8),
+    `亮色 ${lightContrast.sampled} → 暗色 ${darkContrast.sampled}`);
+
+  await page.click('#themeSeg [data-theme-value="auto"]');
+  await page.waitForTimeout(200);
+  const backToAuto = await page.evaluate(() => ({
+    attr: document.documentElement.getAttribute('data-theme'),
+    stored: (() => { try { return localStorage.getItem('dsh.theme'); } catch (e) { return 'n/a'; } })()
+  }));
+  check('切回「跟随系统」会清掉手动选择', backToAuto.attr === null && backToAuto.stored === null,
+    `data-theme=${backToAuto.attr} localStorage=${backToAuto.stored}`);
+
+  // 动效可关：系统偏好优先，任何过渡都不再是真动效
+  const rmPage = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  await rmPage.goto(base, { waitUntil: 'load' });
+  await rmPage.waitForTimeout(300);
+  const reduced = await rmPage.evaluate(() => {
+    const card = document.querySelector('article.g');
+    const dur = card ? getComputedStyle(card).transitionDuration : 'n/a';
+    const offenders = [...document.querySelectorAll('body *')].filter(el => {
+      const s = getComputedStyle(el);
+      return parseFloat(s.transitionDuration) > 0.02 || parseFloat(s.animationDuration) > 0.02;
+    }).length;
+    return { dur, offenders };
+  });
+  check('prefers-reduced-motion 下动效被关掉', reduced.offenders === 0,
+    `卡片 transition-duration=${reduced.dur} · 仍在动的元素 ${reduced.offenders} 个`);
+  await rmPage.close();
+
+  console.log('\n=== 14) 订阅 · 同页锚点 · 纠错入口 ===');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.reload({ waitUntil: 'load' });
+  await waitForApp(page);
+
+  const anchorState = await page.evaluate(() => {
+    const nav = document.getElementById('jumpNav');
+    const links = nav ? [...nav.querySelectorAll('a[href^="#tier-"]')] : [];
+    const targets = links.map(a => document.querySelector(a.getAttribute('href')));
+    return {
+      exists: Boolean(nav),
+      links: links.length,
+      resolved: targets.filter(Boolean).length,
+      firstTop: targets[0] ? Math.round(targets[0].getBoundingClientRect().top) : null
+    };
+  });
+  check('同页锚点导航存在且都有落点',
+    anchorState.exists && anchorState.links >= 3 && anchorState.resolved === anchorState.links,
+    `${anchorState.links} 个锚点 / 落点 ${anchorState.resolved} 个 / 首个落点 top=${anchorState.firstTop}px`);
+
+  const jumped = await page.evaluate(async () => {
+    const before = window.scrollY;
+    document.querySelector('#jumpNav a[href="#tier-2"]').click();
+    await new Promise(r => setTimeout(r, 450));
+    return { before, after: window.scrollY, hash: location.hash };
+  });
+  check('点锚点真的跳到该档位', jumped.after > jumped.before && jumped.hash === '#tier-2',
+    `scrollY ${jumped.before} → ${jumped.after}（${jumped.hash}）`);
+
+  const jumpToggle = await page.evaluate(async () => {
+    document.querySelector('[data-sort="updated"]').click();
+    await new Promise(r => setTimeout(r, 350));
+    const hidden = document.getElementById('jumpNav').hidden;
+    const bands = document.querySelectorAll('.tierhead').length;
+    document.querySelector('[data-sort="tier"]').click();
+    await new Promise(r => setTimeout(r, 350));
+    return { hidden, bands, restored: !document.getElementById('jumpNav').hidden };
+  });
+  check('非分带排序时锚点导航隐藏（不留死锚点）',
+    jumpToggle.hidden === true && jumpToggle.bands === 0 && jumpToggle.restored,
+    `不分带时 hidden=${jumpToggle.hidden}（分带 ${jumpToggle.bands} 个）· 切回后恢复=${jumpToggle.restored}`);
+
+  const report = await page.evaluate(async () => {
+    document.querySelector('article.g').click();
+    await new Promise(r => setTimeout(r, 350));
+    const link = [...document.querySelectorAll('#detail .dact a')].find(a => /issues\/new/.test(a.href));
+    const out = link ? {
+      href: link.href,
+      blank: link.target === '_blank',
+      rel: link.rel,
+      prefilled: decodeURIComponent(link.href).includes('id：') && decodeURIComponent(link.href).includes('官方页：')
+    } : null;
+    document.querySelector('#detail .x').click();
+    await new Promise(r => setTimeout(r, 250));
+    return out;
+  });
+  check('详情里有预填 id 的纠错入口',
+    Boolean(report) && report.blank && report.prefilled && /github\.com\/.+\/issues\/new/.test(report.href),
+    report ? `${report.href.slice(0, 76)}…（rel=${report.rel}）` : '未找到纠错链接');
+
+  const feeds = await page.evaluate(async () => {
+    const links = [...document.querySelectorAll('link[rel="alternate"]')]
+      .map(l => ({ type: l.type, href: l.getAttribute('href') }))
+      .filter(l => /feed/.test(l.href || ''));
+    const json = await (await fetch('feed.json', { cache: 'no-cache' })).json();
+    const xml = await (await fetch('feed.xml', { cache: 'no-cache' })).text();
+    return {
+      links,
+      version: json.version,
+      jsonItems: json.items.length,
+      xmlItems: (xml.match(/<item>/g) || []).length,
+      firstUrl: json.items[0] ? json.items[0].url : ''
+    };
+  });
+  check('页面声明了两份订阅源',
+    feeds.links.some(l => /rss\+xml/.test(l.type)) && feeds.links.some(l => /feed\+json/.test(l.type)),
+    feeds.links.map(l => `${l.type} → ${l.href}`).join(' · ') || '未声明');
+  check('feed.json 是 JSON Feed 1.1 且条目与 feed.xml 一致',
+    feeds.version === 'https://jsonfeed.org/version/1.1' && feeds.jsonItems > 0 && feeds.jsonItems === feeds.xmlItems,
+    `${feeds.jsonItems} 条（xml ${feeds.xmlItems}）· 首条 ${String(feeds.firstUrl).slice(0, 44)}`);
+
+  const ldTypes = await page.evaluate(() => [...document.querySelectorAll('script[type="application/ld+json"]')]
+    .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }));
+  check('结构化数据含 WebSite 节点', ldTypes.includes('WebSite') && ldTypes.includes('Organization'),
+    ldTypes.join(' / '));
+
+  console.log('\n=== 15) 独立详情页 ===');
+  const homeLink = await page.evaluate(() => {
+    const card = document.querySelector('article.g');
+    const titleLink = card.querySelector('.gt h3 a');
+    const cta = card.querySelector('.meta .go');
+    return {
+      titleHref: titleLink ? titleLink.getAttribute('href') : '',
+      titleBlank: titleLink ? titleLink.target : '',
+      ctaHref: cta ? cta.getAttribute('href') : '',
+      ctaBlank: cta ? cta.target : ''
+    };
+  });
+  check('首页标题链接指向站内详情页',
+    /^deal\/[0-9a-f]+\/$/.test(homeLink.titleHref) && homeLink.titleBlank !== '_blank',
+    `${homeLink.titleHref}（target=${homeLink.titleBlank || '无'}）`);
+  check('首页 CTA 仍直达厂商官方页',
+    /^https?:/.test(homeLink.ctaHref) && homeLink.ctaBlank === '_blank',
+    `${String(homeLink.ctaHref).slice(0, 56)}（target=${homeLink.ctaBlank}）`);
+
+  const detailUrl = new URL(homeLink.titleHref, base).href;
+  const errorsBeforeDetail = errors.length;
+  const externalBeforeDetail = externalRequests.length;
+  await page.goto(detailUrl, { waitUntil: 'load' });
+  // 详情页是**纯静态**的（不加载主脚本），所以没有「等应用接管」可言：
+  // #lastUpdated 在那边永远是 `--`；这里等页面主体渲染出来即可。
+  await page.waitForSelector('.dpane', { timeout: 15000 });
+  await page.waitForTimeout(200);
+  const detail = await page.evaluate(() => {
+    const pane = document.querySelector('.dpane');
+    const canonical = document.querySelector('link[rel="canonical"]');
+    return {
+      heading: (document.querySelector('.dpane h2') || {}).textContent || '',
+      canonical: canonical ? canonical.href : '',
+      crumbs: document.querySelectorAll('.crumb a, .crumb span').length,
+      back: Boolean(document.querySelector('.jumpback')),
+      paneChars: pane ? pane.innerText.replace(/\s+/g, ' ').trim().length : 0,
+      official: [...document.querySelectorAll('.dact a')].filter(a => /^https?:/.test(a.href)).length,
+      ld: document.querySelectorAll('script[type="application/ld+json"]').length
+    };
+  });
+  check('详情页有标题与面包屑', Boolean(detail.heading) && detail.crumbs >= 3,
+    `${detail.heading.slice(0, 26)} · 面包屑 ${detail.crumbs} 段 · 正文 ${detail.paneChars} 字符`);
+  // canonical 用的是**生产域名**（SITE_URL）。这个站是 GitHub 项目页，
+  // canonical 路径带 `/ai-deals-aggregator/` 前缀，而本地验收服务在根路径下，
+  // 所以判据是「当前路径是 canonical 路径的后缀」——本地与线上都成立。
+  const canonicalPath = (() => { try { return new URL(detail.canonical).pathname; } catch (e) { return ''; } })();
+  const detailPath = new URL(detailUrl).pathname;
+  check('详情页 canonical 自指', Boolean(canonicalPath) && canonicalPath.endsWith(detailPath),
+    `${detail.canonical}（当前路径 ${detailPath}）`);
+  check('详情页有返回入口与官方链接', detail.back && detail.official >= 1,
+    `返回入口=${detail.back} · 官方链接 ${detail.official} 个`);
+  check('详情页有结构化数据', detail.ld >= 2, `${detail.ld} 段`);
+  check('详情页没有 JS 错误', errors.length === errorsBeforeDetail, `${errors.length - errorsBeforeDetail} 个`);
+  check('详情页没有外部请求', externalRequests.length === externalBeforeDetail,
+    externalRequests.slice(externalBeforeDetail).slice(0, 2).join(', ') || '0 个');
+
+  // 关掉 JS 再读一次：内容必须仍在——这是「预渲染」最硬的可验证定义
+  const noJsContext = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+  const noJsPage = await noJsContext.newPage();
+  await noJsPage.goto(detailUrl, { waitUntil: 'load' });
+  const noJsDetail = await noJsPage.evaluate(() => ({
+    chars: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0,
+    heading: (document.querySelector('.dpane h2') || {}).textContent || '',
+    official: [...document.querySelectorAll('a')].filter(a => /^https?:/.test(a.getAttribute('href') || '')).length
+  }));
+  await noJsContext.close();
+  check('详情页不执行 JS 也能读到内容',
+    noJsDetail.chars > 400 && Boolean(noJsDetail.heading) && noJsDetail.official >= 1,
+    `正文 ${noJsDetail.chars} 字符 · 标题「${noJsDetail.heading.slice(0, 22)}」· 官方链接 ${noJsDetail.official} 个`);
+
+  // 主题沿用首页的选择（同一套 localStorage 约定）
+  await page.evaluate(() => { try { localStorage.setItem('dsh.theme', 'dark'); } catch (e) {} });
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('.dpane', { timeout: 15000 });   // 详情页静态：等主体，不等应用
+  const detailDark = await page.evaluate(() => {
+    const pressed = document.querySelector('#themeSeg [aria-pressed="true"]');
+    return {
+      attr: document.documentElement.getAttribute('data-theme'),
+      pressed: pressed ? pressed.dataset.themeValue : null,
+      bodyBg: getComputedStyle(document.body).backgroundColor
+    };
+  });
+  check('详情页沿用首页的主题选择',
+    detailDark.attr === 'dark' && detailDark.pressed === 'dark',
+    `data-theme=${detailDark.attr} · 选中「${detailDark.pressed}」· body=${detailDark.bodyBg}`);
+  await page.evaluate(() => { try { localStorage.removeItem('dsh.theme'); } catch (e) {} });
+
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);   // 等应用接管，而不是等固定毫秒（线上比本地慢得多）
+
+  console.log('\n=== 16) 紧凑行视图 ===');
+  const viewToggle = await page.evaluate(() => {
+    const seg = document.getElementById('viewSeg');
+    return { exists: Boolean(seg), buttons: seg ? seg.querySelectorAll('[data-view]').length : 0 };
+  });
+  check('有视图切换器（卡片 / 列表）', viewToggle.exists && viewToggle.buttons === 2, `${viewToggle.buttons} 个按钮`);
+
+  await page.click('#viewSeg [data-view="rows"]');
+  await page.waitForTimeout(400);
+  const rowsView = await page.evaluate(() => {
+    const rows = [...document.querySelectorAll('.r')];
+    const first = rows[0];
+    return {
+      cls: document.getElementById('dealsList').className,
+      rows: rows.length,
+      visible: rows.filter(row => row.getBoundingClientRect().bottom <= window.innerHeight).length,
+      pageHeight: Math.round(document.documentElement.scrollHeight),
+      rowHeight: first ? Math.round(first.getBoundingClientRect().height) : 0,
+      hasInternal: Boolean(first && first.querySelector('.rt a[href^="deal/"]')),
+      hasCta: Boolean(first && first.querySelector('.ra .go[target="_blank"]')),
+      bands: document.querySelectorAll('.tierhead').length,
+      jumpHidden: document.getElementById('jumpNav').hidden,
+      stored: (() => { try { return localStorage.getItem('dsh.view'); } catch (e) { return 'n/a'; } })()
+    };
+  });
+  check('列表视图：首屏完整可见 ≥ 12 行（实测 13，卡片视图 9）', rowsView.visible >= 12,
+    `${rowsView.visible} 行（行高 ${rowsView.rowHeight}px · 共 ${rowsView.rows} 行 · 页高 ${rowsView.pageHeight}px）；` +
+    `卡片视图同口径 ${rendered.firstScreenFull} 张`);
+  check('列表视图：条目数与卡片一致且字段同源',
+    rowsView.rows === rendered.cards && rowsView.hasInternal && rowsView.hasCta,
+    `${rowsView.rows} 行 · 站内标题链接=${rowsView.hasInternal} · 官方 CTA=${rowsView.hasCta}`);
+  check('列表视图：不分带且锚点导航隐藏（不留死锚点）',
+    rowsView.bands === 0 && rowsView.jumpHidden === true,
+    `分带 ${rowsView.bands} 个 · 锚点 hidden=${rowsView.jumpHidden}`);
+  check('列表视图：偏好已写入 localStorage', rowsView.stored === 'rows', `dsh.view=${rowsView.stored}`);
+
+  await page.reload({ waitUntil: 'load' });
+  await waitForApp(page);
+  const rowsAfterReload = await page.evaluate(() => {
+    const pressed = document.querySelector('#viewSeg [aria-pressed="true"]');
+    return {
+      cls: document.getElementById('dealsList').className,
+      pressed: pressed ? pressed.dataset.view : null
+    };
+  });
+  check('刷新后仍是列表视图', rowsAfterReload.cls === 'rows' && rowsAfterReload.pressed === 'rows',
+    `class=${rowsAfterReload.cls} · 选中「${rowsAfterReload.pressed}」`);
+
+  const rowDetail = await page.evaluate(async () => {
+    document.querySelector('.r').click();
+    await new Promise(r => setTimeout(r, 350));
+    const out = {
+      open: document.getElementById('detail').open,
+      title: (document.querySelector('#detail h2') || {}).textContent || ''
+    };
+    document.querySelector('#detail .x').click();
+    await new Promise(r => setTimeout(r, 250));
+    return out;
+  });
+  check('列表视图整行也能打开详情', rowDetail.open && Boolean(rowDetail.title),
+    `弹层 open=${rowDetail.open}「${rowDetail.title.slice(0, 22)}」`);
+
+  await page.click('#viewSeg [data-view="cards"]');
+  await page.waitForTimeout(400);
+  const backToCards = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('article.g')];
+    return {
+      cls: document.getElementById('dealsList').className,
+      cards: cards.length,
+      visible: cards.filter(card => card.getBoundingClientRect().bottom <= window.innerHeight).length,
+      bands: document.querySelectorAll('.tierhead').length,
+      stored: (() => { try { return localStorage.getItem('dsh.view'); } catch (e) { return 'n/a'; } })()
+    };
+  });
+  check('切回卡片视图恢复原样（密度与分带都不变）',
+    backToCards.cls === 'grid' && backToCards.cards === rendered.cards &&
+      backToCards.visible === rendered.firstScreenFull && backToCards.bands >= 3,
+    `${backToCards.cards} 张卡 · 首屏完整可见 ${backToCards.visible} 张 · 分带 ${backToCards.bands} 个 · dsh.view=${backToCards.stored}`);
+
+  // 手机端密度：同一轮里先量卡片、再量列表，直接比页高（不跨运行比数字）
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(400);
+  const mobileCards = await page.evaluate(() => Math.round(document.documentElement.scrollHeight));
+  await page.click('#viewSeg [data-view="rows"]');
+  await page.waitForTimeout(500);
+  const mobileRows = await page.evaluate(() => ({
+    pageHeight: Math.round(document.documentElement.scrollHeight),
+    screens: Math.round((document.documentElement.scrollHeight / window.innerHeight) * 10) / 10,
+    overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    rows: document.querySelectorAll('.r').length
+  }));
+  check('手机端列表视图明显更短且不横向溢出',
+    mobileRows.overflow === 0 && mobileRows.pageHeight < mobileCards * 0.8,
+    `卡片 ${mobileCards}px → 列表 ${mobileRows.pageHeight}px（${mobileRows.screens} 屏 · ${mobileRows.rows} 行 · 横向溢出 ${mobileRows.overflow}px）`);
+
+  await page.click('#viewSeg [data-view="cards"]');
+  await page.waitForTimeout(300);
+  await page.evaluate(() => { try { localStorage.removeItem('dsh.view'); } catch (e) {} });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.waitForTimeout(200);
+
+  console.log('\n=== 17) 键盘可达与焦点归还 ===');
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);   // 同第 16 节：等接管，不等毫秒
+
+  const focusable = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('article.g')];
+    return {
+      cards: cards.length,
+      tabbable: cards.filter(card => card.getAttribute('tabindex') === '0').length,
+      labelled: cards.filter(card => (card.getAttribute('aria-label') || '').includes('按回车')).length
+    };
+  });
+  check('卡片进入 Tab 顺序且标注了键盘用法',
+    focusable.tabbable === focusable.cards && focusable.labelled === focusable.cards,
+    `${focusable.tabbable}/${focusable.cards} 张可聚焦 · ${focusable.labelled} 张有 aria-label`);
+
+  await page.focus('article.g');
+  const firstCardTitle = await page.evaluate(() => document.querySelector('article.g h3').textContent.trim());
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(400);
+  const kbOpen = await page.evaluate(() => ({
+    open: document.getElementById('detail').open,
+    title: (document.querySelector('#detail h2') || {}).textContent || ''
+  }));
+  check('回车能打开详情', kbOpen.open && kbOpen.title === firstCardTitle,
+    `弹层=${kbOpen.open}「${kbOpen.title.slice(0, 22)}」`);
+
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(400);
+  const afterEsc = await page.evaluate(() => {
+    const active = document.activeElement;
+    return {
+      open: document.getElementById('detail').open,
+      tag: active ? active.tagName.toLowerCase() : '',
+      isCard: Boolean(active && active.classList && active.classList.contains('g')),
+      title: active && active.querySelector ? ((active.querySelector('h3') || {}).textContent || '') : ''
+    };
+  });
+  check('Esc 关闭后焦点归还给那张卡片',
+    afterEsc.open === false && afterEsc.isCard && afterEsc.title === firstCardTitle,
+    `弹层=${afterEsc.open} · 焦点在 <${afterEsc.tag}>「${afterEsc.title.slice(0, 22)}」`);
+
+  await page.click('#viewSeg [data-view="rows"]');
+  await page.waitForTimeout(400);
+  await page.focus('.r');
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(400);
+  const rowKb = await page.evaluate(() => ({
+    open: document.getElementById('detail').open,
+    allTabbable: [...document.querySelectorAll('.r')].every(row => row.getAttribute('tabindex') === '0')
+  }));
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(400);
+  const rowFocusBack = await page.evaluate(() =>
+    Boolean(document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('r')));
+  check('列表视图的行同样可聚焦、回车打开、Esc 后归位',
+    rowKb.open && rowKb.allTabbable && rowFocusBack,
+    `弹层=${rowKb.open} · 行全部可聚焦=${rowKb.allTabbable} · 焦点归位=${rowFocusBack}`);
+
+  await page.click('#viewSeg [data-view="cards"]');
+  await page.waitForTimeout(300);
 
   console.log('\n=== 10) 请求与错误 ===');
   check('没有外部请求（无 CDN 热链）', externalRequests.length === 0,

@@ -31,7 +31,7 @@ const OUT = path.join(ROOT, outArg ? outArg.slice(6) : 'dist');
 
 const PUBLIC_FILES = ['index.html', 'deals.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
 /** 构建期生成、不走源码拷贝的产物 */
-const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png'];
+const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json'];
 const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
 const SITE_NAME = 'AI 优惠聚合器';
 const SITE_DESCRIPTION = '聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。全部指向厂商官方页。';
@@ -177,10 +177,24 @@ function buildJsonLd(faqItems, cards) {
   const organization = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    '@id': SITE_URL + '#organization',
     name: SITE_NAME,
     url: pageUrl,
     logo: SITE_URL + 'favicon.svg',
     description: SITE_DESCRIPTION
+  };
+
+  // WebSite：站点级身份节点。同类标杆里 devtk.ai 只有 2 类结构化数据就包含它，
+  // 我们原先 4 类反而缺它（见 research/GAP-MATRIX.md G8 的补注）。
+  const website = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': SITE_URL + '#website',
+    url: pageUrl,
+    name: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    inLanguage: 'zh-CN',
+    publisher: { '@id': SITE_URL + '#organization' }
   };
 
   const breadcrumb = {
@@ -223,9 +237,263 @@ function buildJsonLd(faqItems, cards) {
     })
   };
 
-  return [organization, breadcrumb, faqPage, itemList]
+  return [organization, website, breadcrumb, faqPage, itemList]
     .map(data => `  <script type="application/ld+json">\n${toJsonLd(data)}\n  </script>`)
     .join('\n');
+}
+
+/** XML 文本转义：RSS 里一个裸 & 就能让整份 feed 解析失败 */
+function xmlEscape(value) {  return String(value === null || value === undefined ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+/** 详情页模板里做 HTML 转义：字符集与 XML 转义相同，直接复用 */
+const htmlEscape = xmlEscape;
+
+/**
+ * 订阅产物：feed.xml（RSS 2.0）+ feed.json（JSON Feed 1.1）。
+ *
+ * 为什么放在构建期：本站没有后端，也不打算加。订阅说到底是「把已经预渲染的内容再序列化一遍」，
+ * 只用 Node 内置模块就能做完，仍然零依赖、零外部请求。
+ * 只收录 type=deal 的条目，按最近一次采集时间倒序，最多 100 条。
+ */
+function renderFeeds(payload) {
+  const deals = (payload.deals || [])
+    .filter(deal => deal.type === 'deal')
+    .sort((a, b) => String(b.lastSeen || '').localeCompare(String(a.lastSeen || '')))
+    .slice(0, 100);
+  const updated = payload.updatedAt ? new Date(payload.updatedAt) : new Date();
+
+  const describe = deal => [
+    deal.discountInfo,
+    deal.zh && deal.zh.discountInfo ? `中文：${deal.zh.discountInfo}` : '',
+    deal.eligibility ? `适用：${deal.eligibility}` : '',
+    deal.validity ? `有效期：${deal.validity}` : ''
+  ].filter(Boolean).join(' ');
+
+  const items = deals.map(deal => `    <item>
+      <title>${xmlEscape(deal.title)}</title>
+      <link>${xmlEscape(deal.url)}</link>
+      <guid isPermaLink="false">${xmlEscape(deal.id)}</guid>
+      <pubDate>${new Date(deal.lastSeen || updated).toUTCString()}</pubDate>
+      <description>${xmlEscape(describe(deal))}</description>
+    </item>`).join('\n');
+
+  const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>${xmlEscape(SITE_NAME)}</title>
+    <link>${SITE_URL}</link>
+    <description>${xmlEscape(SITE_DESCRIPTION)}</description>
+    <language>zh-CN</language>
+    <lastBuildDate>${updated.toUTCString()}</lastBuildDate>
+${items}
+  </channel>
+</rss>
+`;
+
+  const json = {
+    version: 'https://jsonfeed.org/version/1.1',
+    title: SITE_NAME,
+    home_page_url: SITE_URL,
+    feed_url: SITE_URL + 'feed.json',
+    description: SITE_DESCRIPTION,
+    language: 'zh-CN',
+    items: deals.map(deal => {
+      const item = { id: deal.id, url: deal.url, title: deal.title, content_text: describe(deal) };
+      if (deal.lastSeen) item.date_modified = deal.lastSeen;
+      const tags = [deal.vendor, deal.category].filter(Boolean);
+      if (tags.length) item.tags = tags;
+      return item;
+    })
+  };
+
+  return { rss, json: JSON.stringify(json, null, 2) + '\n', count: deals.length };
+}
+
+/* ------------------------------------------------------------------ */
+/* 独立详情页                                                          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 每条优惠一个独立静态页：`dist/deal/<id>/index.html`
+ *
+ * **为什么要做**：同类站里 11/12 都有路径型条目页（futuretools `/tools/:slug ×40`、
+ * toolify `/tool/:slug ×27`、artificialanalysis `/models/:slug ×49`），而我们原先全站
+ * 只有 1 个 URL、1 条内链（见 research/GAP-MATRIX.md G1）。这是「可发现性」的根因。
+ *
+ * **不引入第二份模板**：页面主体直接调用 RENDER-CORE 的 `detailHtml()`——与首页详情弹层
+ * 是同一个函数；样式块、页脚也从**已组装好的 index.html** 里抽出来（index.html 里有
+ * `<!--SHARED:footer:START/END-->` 标记）。因此首页与详情页不会分叉。
+ *
+ * **纯静态**：详情页不加载主脚本，不 fetch deals.json——没有列表要渲染，也就没有控制台错误；
+ * 只保留一个极小的主题切换脚本（与首页同一套 localStorage 约定）。
+ */
+function writeDetailPages(payload, indexHtml, renderCore) {
+  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
+  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
+  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
+  if (!style || !themeScript || !footerRaw) {
+    throw new Error('抽取详情页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
+  }
+  const footer = footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>').trim();
+
+  const themeSeg = `<div class="seg" id="themeSeg" role="group" aria-label="配色主题">
+        <button type="button" data-theme-value="auto" aria-pressed="true">跟随系统</button>
+        <button type="button" data-theme-value="light" aria-pressed="false">浅色</button>
+        <button type="button" data-theme-value="dark" aria-pressed="false">深色</button>
+      </div>`;
+
+  const themeBind = `<script>
+    /* 详情页是纯静态的：只需要主题切换，不拉数据、不渲染列表 */
+    (function () {
+      var seg = document.getElementById('themeSeg');
+      document.body.classList.add('js');
+      function current() {
+        var t = document.documentElement.getAttribute('data-theme');
+        return t === 'light' || t === 'dark' ? t : 'auto';
+      }
+      function paint() {
+        var now = current();
+        seg.querySelectorAll('[data-theme-value]').forEach(function (button) {
+          var on = button.dataset.themeValue === now;
+          button.classList.toggle('on', on);
+          button.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+      }
+      seg.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-theme-value]');
+        if (!button) return;
+        var value = button.dataset.themeValue;
+        try {
+          if (value === 'light' || value === 'dark') {
+            document.documentElement.setAttribute('data-theme', value);
+            localStorage.setItem('dsh.theme', value);
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.removeItem('dsh.theme');
+          }
+        } catch (error) { /* 隐私模式：本次会话内仍生效，只是记不住 */ }
+        paint();
+      });
+      paint();
+    })();
+  </script>`;
+
+  const deals = (payload.deals || []).filter(deal => deal.type === 'deal' && deal.id);
+  const pages = [];
+
+  for (const deal of deals) {
+    const vendor = renderCore.vendorOf(deal);
+    const tier = renderCore.tierOf(deal);
+    const pageUrl = `${SITE_URL}deal/${encodeURIComponent(deal.id)}/`;
+    const title = `${deal.title} — 官方优惠与免费额度 | ${SITE_NAME}`;
+    const desc = String(deal.discountInfo || deal.description || SITE_NAME).replace(/\s+/g, ' ').slice(0, 150);
+    const official = String(deal.url || '');
+
+    // 结构化数据：WebPage（说清这一页是什么）+ BreadcrumbList（说清它在站内的位置）。
+    // 刻意不用 Product/Offer：我们不是售卖方，标成商品会构成过度声明。
+    const webPage = {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      '@id': pageUrl + '#page',
+      url: pageUrl,
+      name: deal.title,
+      description: desc,
+      inLanguage: 'zh-CN',
+      isPartOf: { '@id': SITE_URL + '#website' },
+      about: { '@type': 'Thing', name: [vendor.name, deal.category].filter(Boolean).join(' · ') }
+    };
+    const breadcrumb = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: '首页', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: deal.category || '全部优惠', item: SITE_URL },
+        { '@type': 'ListItem', position: 3, name: deal.title, item: pageUrl }
+      ]
+    };
+    const jsonLd = [webPage, breadcrumb]
+      .map(data => `  <script type="application/ld+json">\n${toJsonLd(data)}\n  </script>`)
+      .join('\n');
+
+    const html = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${htmlEscape(title)}</title>
+<meta name="description" content="${htmlEscape(desc)}">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="${htmlEscape(pageUrl)}">
+<link rel="alternate" hreflang="zh-CN" href="${htmlEscape(pageUrl)}">
+<link rel="alternate" hreflang="x-default" href="${htmlEscape(pageUrl)}">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="${htmlEscape(SITE_NAME)}">
+<meta property="og:url" content="${htmlEscape(pageUrl)}">
+<meta property="og:title" content="${htmlEscape(deal.title)}">
+<meta property="og:description" content="${htmlEscape(desc)}">
+<meta property="og:image" content="${SITE_URL}og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="alternate" type="application/rss+xml" title="${htmlEscape(SITE_NAME)} · RSS" href="../../feed.xml">
+<link rel="alternate" type="application/feed+json" title="${htmlEscape(SITE_NAME)} · JSON Feed" href="../../feed.json">
+<link rel="stylesheet" href="../../logos.css">
+${themeScript}
+${jsonLd}
+${style}
+</head>
+<body>
+  <header class="top">
+    <div class="topin">
+      <a class="brand" href="../../">
+        <span class="mark" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
+            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
+          </svg>
+        </span>
+        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日核验</small></span>
+      </a>
+      <a class="jumpback" href="../../">← 返回全部优惠</a>
+      ${themeSeg}
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main id="main">
+      <nav class="crumb" aria-label="面包屑">
+        <a href="../../">首页</a> › <span>${htmlEscape(deal.category || '全部优惠')}</span> › <span>${htmlEscape(deal.title)}</span>
+      </nav>
+      <article class="dbody dpane" data-tier="${tier.n}">
+${renderCore.detailHtml(deal)}
+      </article>
+      <p class="dpane-src">
+        官方页：<a href="${htmlEscape(official)}" target="_blank" rel="noopener noreferrer">${htmlEscape(official)}</a>
+        · 本站只做收录与核验，最终以厂商官方页面为准；排序与推荐理由不出售。
+      </p>
+    </main>
+    ${footer}
+  </div>
+  ${themeBind}
+</body>
+</html>
+`;
+
+    const dir = path.join(OUT, 'deal', deal.id);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'index.html'), html, 'utf8');
+    pages.push({ id: deal.id, url: pageUrl, title: deal.title, text: String(deal.discountInfo || '') });
+  }
+
+  return pages;
 }
 
 /* ------------------------------------------------------------------ */
@@ -328,8 +596,18 @@ function assemble() {
   fs.writeFileSync(path.join(OUT, 'og-image.png'), og);
   console.log(`  OG 分享图: ${(og.length / 1024).toFixed(1)} KB`);
 
-  // sitemap
+  // 独立详情页（每条优惠一个静态 URL）+ sitemap
   const lastmod = String(payload.updatedAt || '').slice(0, 10);
+  const detailPages = writeDetailPages(payload, html, renderCore);
+  console.log(`  详情页: ${detailPages.length} 个 → deal/<id>/index.html`);
+
+  const dealUrls = detailPages.map(page => `  <url>
+    <loc>${page.url}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`).join('\n');
+
   fs.writeFileSync(path.join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -338,8 +616,15 @@ function assemble() {
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+${dealUrls}
 </urlset>
 `, 'utf8');
+
+  // 订阅：RSS 2.0 + JSON Feed（构建期生成，零依赖）
+  const feeds = renderFeeds(payload);
+  fs.writeFileSync(path.join(OUT, 'feed.xml'), feeds.rss, 'utf8');
+  fs.writeFileSync(path.join(OUT, 'feed.json'), feeds.json, 'utf8');
+  console.log(`  订阅产物: feed.xml + feed.json（各 ${feeds.count} 条）`);
 
   // 交给自检：折叠覆盖的条目总数需与页面卡片内容对得上；译文条数用于产物回读比对
   return Object.assign({}, rendered, { zhWithZh: zhAttached.report.withZh });
@@ -418,13 +703,16 @@ function selfCheck(built) {
   }
 
   // 分档分带：默认按力度排序，五档里有卡片的档必须都有带
-  const tierHeads = [...markup.matchAll(/<div class="tierhead t(\d)">/g)].map(m => Number(m[1]));
-  const tierDots = [...markup.matchAll(/data-tier="(\d)"/g)].map(m => Number(m[1]));
+  const tierHeads = [...markup.matchAll(/<div class="tierhead t(\d)"[^>]*>/g)].map(m => Number(m[1]));
+  // 只在**卡片本体**里数 data-tier：早先是在整份 markup 里数，于是 CSS 里
+  // `[data-tier="1"] .rnum { … }` 这类选择器会被算成「档位角标」，一加样式就假失败。
+  const cardChunks = markup.split('<article class="g ').slice(1).map(chunk => chunk.split('</article>')[0]);
+  const tierDots = cardChunks.filter(chunk => /data-tier="\d"/.test(chunk)).length;
   if (built) {
     const expected = new Set(built.cards.map(card => card.tier));
     const missingTier = [...expected].filter(tier => !tierHeads.includes(tier));
     if (missingTier.length) fail(`档位 ${missingTier.join(', ')} 有卡片但缺少分带标题`);
-    else if (tierDots.length !== cardCount) fail(`档位角标 ${tierDots.length} 个 ≠ 卡片 ${cardCount} 条`);
+    else if (tierDots !== cardCount) fail(`带档位角标的卡片 ${tierDots} 张 ≠ 卡片 ${cardCount} 条`);
     else console.log(`  ✓ 力度分带: ${tierHeads.length} 档（${built.dist}）`);
   }
 
@@ -448,11 +736,62 @@ function selfCheck(built) {
   if (facetCount < 4) fail(`筛选条只有 ${facetCount} 个按钮（预渲染失败）`);
   else console.log(`  ✓ 筛选条: ${facetCount} 个 facet 按钮`);
 
+  // 同页锚点：导航里的 #tier-N 必须在预渲染正文里有对应 id，否则就是死锚点
+  const anchors = [...markup.matchAll(/href="#(tier-\d)"/g)].map(m => m[1]);
+  const dangling = anchors.filter(id => !markup.includes(`id="${id}"`));
+  if (!anchors.length) fail('找不到「跳到档位」锚点');
+  else if (dangling.length) fail(`锚点没有落点：${[...new Set(dangling)].join(', ')}`);
+  else console.log(`  ✓ 同页锚点: ${[...new Set(anchors)].length} 个都有落点`);
+
+  // 纠错入口：详情弹层是 JS 渲染的（与弹层本身一致），所以这里只断言模板存在，
+  // 真实行为（点开详情能看到带 id 的 Issue 链接）由 verify-site.js 在浏览器里验。
+  if (!/issues\/new\?title=/.test(html)) fail('详情模板里没有纠错入口');
+  else console.log('  ✓ 纠错入口: 详情模板已内置（真实行为由 npm run verify 验）');
+
   // 只在「已渲染的卡片」里数，避免把内联脚本里的模板字符串字面量也算进去
   // （cardHtml 的源码里含有 class="go" / data-model-count 这些字面量）。
   const ctaCount = (markup.match(/class="go" href="https?:/g) || []).length;
   console.log(`  ✓ 官方页入口: ${ctaCount} 个`);
   if (ctaCount < cardCount) fail(`官方页入口 ${ctaCount} 个少于卡片 ${cardCount} 条`);
+
+  // 首页内链：标题指向站内详情页（可索引、可内链），CTA 仍直达官方页
+  const titleHrefs = [...markup.matchAll(/<h3><a href="([^"]+)"/g)].map(m => m[1]);
+  const toDetail = titleHrefs.filter(href => href.startsWith('deal/')).length;
+  if (!titleHrefs.length) fail('首页没有卡片标题链接');
+  else if (toDetail !== titleHrefs.length) fail(`首页标题链接有 ${titleHrefs.length - toDetail} 个没指向站内详情页`);
+  else console.log(`  ✓ 首页内链: ${toDetail} 个标题链接全部指向站内详情页（CTA 仍指官方）`);
+
+  // 独立详情页：数量、canonical 自指、静态正文、纯静态（不拉数据）、sitemap 一致
+  const dealEntries = payload.deals.filter(deal => deal.type === 'deal' && deal.id);
+  const detailRoot = path.join(OUT, 'deal');
+  const detailDirs = fs.existsSync(detailRoot)
+    ? fs.readdirSync(detailRoot, { withFileTypes: true }).filter(entry => entry.isDirectory()).length
+    : 0;
+  if (detailDirs !== dealEntries.length) fail(`详情页 ${detailDirs} 个 ≠ type=deal ${dealEntries.length} 条`);
+  else console.log(`  ✓ 详情页数量: ${detailDirs} 个（= type=deal 条数）`);
+
+  const sitemapLocs = [...fs.readFileSync(path.join(OUT, 'sitemap.xml'), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)]
+    .map(match => match[1]);
+  if (sitemapLocs.length !== dealEntries.length + 1) {
+    fail(`sitemap ${sitemapLocs.length} 条 ≠ 首页 1 + 详情页 ${dealEntries.length}`);
+  } else {
+    const notListed = dealEntries.filter(deal => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(deal.id)}/`)));
+    if (notListed.length) fail(`sitemap 漏了 ${notListed.length} 个详情页`);
+    else console.log(`  ✓ sitemap: ${sitemapLocs.length} 条（首页 + ${dealEntries.length} 个详情页，无遗漏）`);
+  }
+
+  const sampleDeals = [dealEntries[0], dealEntries[Math.floor(dealEntries.length / 2)], dealEntries[dealEntries.length - 1]].filter(Boolean);
+  let detailBad = 0;
+  for (const deal of sampleDeals) {
+    const pageFile = path.join(OUT, 'deal', deal.id, 'index.html');
+    if (!fs.existsSync(pageFile)) { fail(`缺少详情页 ${deal.id}`); detailBad++; continue; }
+    const page = fs.readFileSync(pageFile, 'utf8');
+    if (!page.includes(`/deal/${encodeURIComponent(deal.id)}/`)) { fail(`详情页 canonical 不是自指: ${deal.id}`); detailBad++; }
+    const prose = String(deal.discountInfo || '').slice(0, 12);
+    if (prose && !page.includes(prose)) { fail(`详情页缺少本条优惠文案（不执行 JS 读不到）: ${deal.id}`); detailBad++; }
+    if (/fetch\('deals\.json'/.test(page)) { fail(`详情页仍会拉 deals.json（应纯静态）: ${deal.id}`); detailBad++; }
+  }
+  if (!detailBad) console.log(`  ✓ 详情页抽样: ${sampleDeals.length} 个均自指 canonical、含本条文案、纯静态`);
 
   // 折叠无损：产物里「折叠卡覆盖的模型数 + 单条卡数」必须等于未过期优惠条数，
   // 即数据层的无损断言确实落到了静态正文里（覆盖模型数真的被输出，而不是只写在内存里）
@@ -477,7 +816,7 @@ function selfCheck(built) {
   }
 
   const ldBlocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m => m[1]);
-  const expectedTypes = ['Organization', 'BreadcrumbList', 'FAQPage', 'ItemList'];
+  const expectedTypes = ['Organization', 'WebSite', 'BreadcrumbList', 'FAQPage', 'ItemList'];
   const foundTypes = [];
   for (const [i, block] of ldBlocks.entries()) {
     try {
@@ -492,6 +831,27 @@ function selfCheck(built) {
   }
   if (ldBlocks.length === expectedTypes.length && foundTypes.length === expectedTypes.length) {
     console.log(`  ✓ JSON-LD: ${foundTypes.join(' / ')}`);
+  }
+
+  // 订阅产物：两份必须条目数一致、能被解析、且声明的版本正确
+  const feedXml = fs.readFileSync(path.join(OUT, 'feed.xml'), 'utf8');
+  const feedItems = (feedXml.match(/<item>/g) || []).length;
+  let feedJsonBox = null;
+  try {
+    feedJsonBox = JSON.parse(fs.readFileSync(path.join(OUT, 'feed.json'), 'utf8'));
+  } catch (e) {
+    fail(`feed.json 解析失败: ${e.message}`);
+  }
+  if (feedJsonBox) {
+    if (!/^<\?xml version="1\.0" encoding="UTF-8"\?>/.test(feedXml)) fail('feed.xml 缺少 XML 声明');
+    if (feedJsonBox.version !== 'https://jsonfeed.org/version/1.1') fail('feed.json 不是 JSON Feed 1.1');
+    if (feedItems !== feedJsonBox.items.length) {
+      fail(`订阅条目数不一致：feed.xml ${feedItems} 条 vs feed.json ${feedJsonBox.items.length} 条`);
+    } else if (!feedItems) {
+      fail('订阅里没有任何条目（应至少有 type=deal 的条目）');
+    } else {
+      console.log(`  ✓ 订阅条目一致: ${feedItems} 条（feed.xml / feed.json）`);
+    }
   }
 
   // FAQ 可见文案与 FAQPage 必须逐字一致
