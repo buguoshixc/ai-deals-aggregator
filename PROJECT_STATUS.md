@@ -577,8 +577,8 @@ npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/
 **教训（值得单独记）**：批量改这些文档时**不要用 PowerShell 的 `Get-Content`/`Set-Content`**——
 `Get-Content -Raw` 在本机按 GBK 解码 UTF-8 文件、`Set-Content` 再按 GBK 回写，
 会把整份中文文档变成 mojibake（本次 README 与本文档都被毁过一次，靠 `git show HEAD:<file>`
-字节级恢复）。改文档一律走编辑工具；万一中招，用 `node scripts/tools/_restore-from-git.js <file>`
-恢复（它直接写 `git show` 的原始字节，不做任何编码/换行转换）。
+字节级恢复）。改文档一律走编辑工具；万一中招，用 `node scripts/tools/restore-from-git.js <file>`
+恢复（它直接写 `git show` 的原始字节，不做任何编码/换行转换）；`--check` 只比对不写盘。
 
 ### 2.15 新增：详情页中文翻译（国外英文文案）+ 卡片提示
 
