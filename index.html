@@ -2132,8 +2132,9 @@
         });
     }
 
-    // 独立详情页没有列表容器：主题切换已在上面绑定，这里不再拉数据，
-    // 于是详情页是**纯静态**的（不 fetch、不渲染、零控制台错误）。
+    // 兜底：若这个脚本被放到没有列表容器的页面上，就只保留已绑定的主题切换，
+    // 不拉数据、不渲染列表。注意详情页默认**根本不加载这个脚本**（它是纯静态的），
+    // 这里只是防御性写法；也因此详情页的 #lastUpdated 永远是初值 `--`。
     if (!els.list) {
       const lastUpdated = document.getElementById('lastUpdated');
       if (lastUpdated) lastUpdated.textContent = '见首页';
