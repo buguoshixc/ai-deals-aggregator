@@ -646,7 +646,17 @@
            不会压住「获取 →」这个真实链接。
        点击由 body.js 门控，去掉 js 类即不再给可点暗示（与 .seg / .meta .hint 同一套做法）。 */
     .g .fav {
-      position: absolute; right: var(--s2); bottom: var(--s2); z-index: 2;
+      /* bottom 用 --s3（= 卡片的下内边距），**不能用 --s2**。
+         verify-site.js §4「卡片内容无溢出」的判据是「最后一个可见子元素的底边不得越过卡片内边距」：
+             over = lastChild.bottom − (card.bottom − paddingBottom)
+         卡片有 1px 边框，而绝对定位元素的 bottom 从**内边距盒**量起，于是
+             over = paddingBottom − borderBottom − bottom = 12 − 1 − bottom。
+         bottom:--s2(8px) 时 over = +3 —— 62 张卡片会集体报「3px 溢出」（门禁实测抓到过）。
+         bottom:--s3(12px) 时 over = −1。内边距本身也写的是 var(--s3)，两者永远同步，
+         因此 over 恒为 −1，与 --s3 将来取什么值无关。
+         星标是绝对定位的装饰件，不被 scrollHeight 计入（所以 overflowY 一直是 0）——
+         但**不因此就该绕过那条判据**：让它落在内边距盒之内，判据对它的检查才有意义。 */
+      position: absolute; right: var(--s2); bottom: var(--s3); z-index: 2;
       width: 24px; height: 24px; padding: 0; margin: 0;
       display: grid; place-items: center; cursor: pointer;
       font: inherit; font-size: 0; line-height: 1;
