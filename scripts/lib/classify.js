@@ -81,9 +81,13 @@ function extractExpiry(text, { today = null } = {}) {
   return null;
 }
 
-/** "长期有效"标注（前端展示用，不占用 expiresAt） */
+/**
+ * "长期有效"标注（前端展示用，不占用 expiresAt）。
+ * 词表与 index.html 的 ONGOING_RE 必须一致：两边只改一处，会让卡片上的「长期活动」
+ * 角标与后端统计对不上。`npm run selftest:expiry` 会断言两边对同一批样例判断相同。
+ */
 function isOngoing(text) {
-  return /长期有效|永久有效|ongoing|no expiration|always available|长期/.test(cleanText(text, 400));
+  return /长期|永久有效|常年|不限时|ongoing|no expiration|always available|no end date/i.test(cleanText(text, 400));
 }
 
 module.exports = { SOURCE_REGIONS, inferRegion, extractExpiry, isOngoing };

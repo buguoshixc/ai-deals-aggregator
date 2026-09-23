@@ -14,3 +14,6 @@ mockups/.zh-backup/
 
 # 参考站拆解证据里的截图：可重新生成且体积大（19 站约 45 MB），只入库结构与报告
 research/_raw/**/shots/
+
+# 并行开发的隔离工作树（git worktree）：不能进主仓库索引
+.worktrees/

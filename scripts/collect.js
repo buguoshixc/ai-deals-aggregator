@@ -140,6 +140,9 @@ async function main() {
   const dealCount = deals.filter(d => d.type === 'deal').length;
   const cnCount = deals.filter(d => d.region === 'cn').length;
   console.log(`其中：优惠 ${dealCount} 条，国内 ${cnCount} 条，含截止时间 ${deals.filter(d => d.expiresAt).length} 条`);
+  if (stats.extractedDeadlines) {
+    console.log(`  ↳ 其中 ${stats.extractedDeadlines} 条是从文案里抽到的绝对截止日（只认写死的日期，规则见 lib/expiry.js）`);
+  }
 
   // 贴上人工中文译文（scripts/data/translations_zh.json）。
   // 放在这里而不是渲染期：写盘后浏览器 fetch('deals.json') 拿到的就是同一份，
