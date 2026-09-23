@@ -450,6 +450,84 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('移动端单列', mobile.cols === 1, `${mobile.cols} 列`);
   check('移动端卡片完整', mobile.cards >= 45 && mobile.tiles >= 20, `${mobile.cards} 卡片 / ${mobile.tiles} tile`);
 
+  // 控制带逐个控件体检 + 跳转 chip 折行 + **更窄视口的页面级溢出** —— 补的是门禁的两个盲区：
+  // ① 上面那条「无横向溢出」只看**页面级** scrollWidth：控件被父容器 `overflow:hidden` 切掉一截时，
+  //    页面级宽度照样正常，门禁全绿而肉眼看是「最近更新」只剩「最近更」
+  //    （`.sortbox` 与 `.seg` 恰好都是 `overflow:hidden`；见 research/VISION-REVIEW.md §6）。
+  // ② 它也只量 **390px**：真正的横向溢出发生在更窄处 —— 本轮实测 360px 溢出 2px、320px 溢出 42px。
+  //    根因是 `.grid` 的 `1fr` 等价于 `minmax(auto, 1fr)`，自动下限被卡片最小内容顶在 345.5px，
+  //    视口窄于约 378px 时轨道就撑破容器（见 PROJECT_STATUS 2.27 ⑤）。
+  // 先回到干净的默认态：锚点行只在「卡片视图 + 力度优先」下可见，靠前的小节会改这两个状态。
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);
+  const chromeProbe = () => page.evaluate(() => {
+    const CLIP = ['hidden', 'clip'];
+    const label = el => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') +
+      (typeof el.className === 'string' && el.className.trim()
+        ? '.' + el.className.trim().split(/\s+/).join('.') : '') +
+      '「' + (el.textContent || '').trim().slice(0, 8) + '」';
+    const controls = [...document.querySelectorAll(
+      '#sortBox button, #categoryFilter, #viewSeg button, #jumpNav a, .rright, .rbar, #stats')]
+      .filter(el => el.getBoundingClientRect().width > 0);
+    const selfClipped = [], cutByAncestor = [], pastViewport = [];
+    for (const el of controls) {
+      const box = el.getBoundingClientRect();
+      // ① 自己就把内容裁了：overflow 非 visible，而内容比盒子宽
+      if (el.scrollWidth - el.clientWidth > 1 && CLIP.includes(getComputedStyle(el).overflowX)) {
+        selfClipped.push(label(el));
+      }
+      // ② 被祖先里某个 overflow:hidden/clip 的盒子切掉一截 —— 页面级宽度查不出的那一类
+      for (let p = el.parentElement; p; p = p.parentElement) {
+        if (!CLIP.includes(getComputedStyle(p).overflowX)) continue;
+        if (box.right > p.getBoundingClientRect().right + 1) {
+          cutByAncestor.push(label(el) + ' ← ' + label(p));
+          break;
+        }
+      }
+      // ③ 直接越出视口
+      if (box.right > window.innerWidth + 1) pastViewport.push(label(el));
+    }
+    const nav = document.getElementById('jumpNav');
+    const links = nav ? [...nav.querySelectorAll('a')] : [];
+    const rows = {};
+    links.forEach(a => { const t = Math.round(a.offsetTop); rows[t] = (rows[t] || 0) + 1; });
+    const navBox = nav && !nav.hidden && nav.getBoundingClientRect().height > 0 ? nav.getBoundingClientRect() : null;
+    const last = links.length ? links[links.length - 1].getBoundingClientRect() : null;
+    const grid = document.getElementById('dealsList');
+    return {
+      width: window.innerWidth,
+      docOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      gridW: Math.round(grid.getBoundingClientRect().width),
+      containerW: Math.round(grid.parentElement.getBoundingClientRect().width),
+      checked: controls.length, selfClipped, cutByAncestor, pastViewport,
+      jumpVisible: Boolean(navBox), chips: links.length,
+      chipRows: Object.keys(rows).length, perRow: Object.values(rows),
+      // 末枚 chip 右边缘离锚点行右边缘还有多远：折成 3+1 时这里会剩大半行（当时实测 269px）
+      tailGap: navBox && last ? Math.round(navBox.right - last.right) : null
+    };
+  });
+  const chrome390 = await chromeProbe();
+  await page.setViewportSize({ width: 360, height: 844 });
+  await page.waitForTimeout(250);
+  const chrome360 = await chromeProbe();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(250);
+  const chromes = [chrome390, chrome360];
+  const chromeBad = chromes.flatMap(c => c.selfClipped.concat(c.cutByAncestor, c.pastViewport));
+  check('390px 与 360px：逐个控件都不被裁、不越出视口（页面级溢出查不出的那一类）',
+    chromeBad.length === 0,
+    chromeBad.length
+      ? chromeBad.join(' / ')
+      : `${chrome390.checked} + ${chrome360.checked} 个控件逐个量过：自裁 0 · 被祖先裁 0 · 越出视口 0`);
+  check('390px 与 360px：跳转 chip 都排满一行（不折成 3+1、右侧不留大片空白）',
+    chromes.every(c => c.jumpVisible && c.chips === 4 && c.chipRows === 1 &&
+      c.perRow[0] === 4 && c.tailGap !== null && c.tailGap <= 8),
+    chromes.map(c => `${c.width}px: chips=${c.chips} rows=${c.chipRows}` +
+      ` perRow=${JSON.stringify(c.perRow)} 余量=${c.tailGap}px`).join(' · '));
+  check('360px 页面级无横向溢出（390px 那条量不到更窄的视口）',
+    chrome360.docOverflow <= 0 && chrome360.gridW <= chrome360.containerW + 0.5,
+    `溢出 ${chrome360.docOverflow}px · 网格 ${chrome360.gridW}px / 容器 ${chrome360.containerW}px`);
+
   // 手机上弹层更容易贴边：窄屏 + 高内容，必须再量一次位置
   const mobileDialog = await page.evaluate(async () => {
     document.querySelector('article.g').click();

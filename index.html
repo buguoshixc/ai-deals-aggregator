@@ -762,7 +762,11 @@
     @media (max-width: 1180px) { .grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 760px) {
       :root { --cardH: auto; }
-      .grid { grid-template-columns: 1fr; gap: var(--s2); }
+      /* 单列用 minmax(0, 1fr) 而不是 1fr：`1fr` 等价于 `minmax(auto, 1fr)`，那个 auto 下限
+         会被卡片的最小内容顶住（实测 345.5px），于是视口窄于约 378px 时整条轨道撑破容器——
+         360px 溢出 2px、320px 溢出 42px（页面级横向滚动）。`minmax(0, …)` 让轨道收进容器宽度，
+         实测 320/360px 溢出均归 0，且卡内没有任何元素被裁（`.g` 是 overflow:hidden，必须验这一点）。 */
+      .grid { grid-template-columns: minmax(0, 1fr); gap: var(--s2); }
       .topin { gap: 12px; height: auto; padding: 10px 16px; flex-wrap: wrap; }
       .search { max-width: none; order: 3; min-width: 100%; }
       .topstat { order: 2; }
@@ -777,6 +781,14 @@
       .rright { flex-wrap: wrap; justify-content: flex-end; gap: var(--s2); width: 100%; }
       .sortbox button { padding: 6px 8px; }
       .seg button { padding: 6px 8px; }
+      /* 跳到档位：390px 下「跳到 + 4 枚 chip」一行放不下 → 折成 3+1，第二行只剩一枚、
+         右侧空出 269px（视觉复核带回的缺陷，见 research/VISION-REVIEW.md §6）。
+         窄屏隐藏可视的「跳到」两字（`nav` 的 aria-label="跳到力度档位" 已提供同一语义），
+         4 枚按容器等分排成一行：不折行、不留空白，控制带还从两行降到一行。
+         刻意不写 nowrap —— 将来档位名变长时，宁可让 chip 内换行，也不要再出现 3+1 那种残行。 */
+      .jump { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s1); align-items: stretch; }
+      .jump .lb { display: none; }
+      .jump a { text-align: center; padding: var(--s1) 2px; }
       .dbody { padding: 20px; }
       .dgrid { grid-template-columns: 1fr; }
       /* 对比条与对比弹层：390px 下只缩小内边距，宽度始终跟着视口走（不制造横向溢出） */
