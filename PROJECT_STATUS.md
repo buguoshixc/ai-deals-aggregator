@@ -789,7 +789,7 @@ futurepedia / futuretools / llm-prices / openrouter / theresanaiforthat / toolif
 ### 2.19 方案 B 全部落地（独立详情页 + 紧凑行视图 + 四条零成本项）
 
 **落地位置**：分支栈 `feat/visual-token-layer`（2.18 的 A）→ `feat/b-extras` → `feat/detail-pages` → `feat/row-view`。
-`master` 未合并、未推送。**每一层都可单独合并**。
+`master` 当时未合并、未推送（**已于 2.21 全合进 `master`**）。**每一层都可单独合并**。
 
 #### ① 独立详情页（`f1213d5`）—— 可发现性的根因
 
@@ -880,8 +880,55 @@ hreflang + og/twitter + `WebPage`/`BreadcrumbList` + 面包屑 + 返回入口 + 
 **验证**：`verify` 断言 **95 → 99 项 0 失败**；产物自检通过；两次构建 SHA256 一致；
 定高卡片的「内容无溢出」与「hover 三量不变」断言继续通过（说明间距改动没有撑破 192px 卡片）。
 
-**当前分支栈**（仍未合并、未推送）：`feat/visual-token-layer` → `feat/b-extras` → `feat/detail-pages`
-→ `feat/row-view` → `feat/polish`。
+**分支栈**（当时未合并；**已于 2.21 全合进 `master`**，仍未推送）：`feat/visual-token-layer` → `feat/b-extras`
+→ `feat/detail-pages` → `feat/row-view` → `feat/polish`。
+
+---
+
+### 2.21 全合进 master + 合并态全门禁复验（2026-09-23）
+
+**决策**：用户选「全合」——取 `trial/merge-rehearsal-2`（跑过全门禁的那个状态，且已含另一会话的
+`waitForApp` 修复与我的集成）。C 的三项里选「收藏 / 对比」与「首页按意图重排」，**英文覆盖不做**。
+
+**合并前先复核**（不信文档里的旧结论，重跑一遍）：
+
+- 彩排分支的 merge-base 是 `006819d`，**并不包含** `master` 之后那两个文档提交 —— 即「基于最新 master」
+  这句话严格说不成立。用 `git merge-tree --write-tree`（**不动任何 ref**）重跑合并且 exit 0、零冲突，才动手。
+- 备份 tag：`backup/pre-ab-merge` → `fb08832`（合并前的 master）。
+
+**合并**：`git merge --no-ff trial/merge-rehearsal-2` → 合并提交 **`10cc923`**（本地，未推送）。
+带进来 9 个文件、+4752/−147：`index.html` +780、`scripts/tools/build-local.js` +374、
+`scripts/tools/verify-site.js` +483，以及 `research/_raw/ours-A-{light,dark}/` 复测证据。
+
+**合并态全门禁复验（全部在 `10cc923` 上跑）**：
+
+| 门禁 | 结果 |
+|---|---|
+| `npm test` / `test:strict` / `check:zh` | exit 0 / 0 / 0 |
+| `selftest:zh` | ✅ 演练 **7 项，失败 0 项** |
+| `build` ×2 + 清单 SHA256 | ✅ 139 个文件，两次构建清单哈希**完全一致**（`6F1DA2DF…900A`） |
+| `verify:regress` | ✅ 验收 **99 项，失败 0 项** + 5 项回归全过 |
+
+> **一条环境注意事项（会误导后来人，写下来）**：本会话的沙箱是 `workspace-write`，**禁止子进程管道 stdio**。
+> `selftest:zh` 用 `spawnSync` 调构建、`verify-site.js` 用 playwright 启 Edge，都会以 **EPERM** 失败——
+> 表现为「7 项全失败、子进程输出为空」，看着像回归，其实是环境。用独立探针确认 `spawnSync` 返回
+> `errorCode=EPERM` 后，以更宽模式重跑同样的命令才拿到上表的绿。
+> **判据：子进程输出为空 + 每一项都失败 = 先怀疑环境，别急着改代码。**
+
+**文档一致性修正**：`2.21` 这条记录原先只存在于**旧的**彩排分支（`trial/merge-rehearsal`）上；
+`master` 与 `trial/merge-rehearsal-2` 的 `PROJECT_STATUS.md` **都没有 2.21**（两份文件逐字节相同），
+所以 `SUMMARY.md` 里「详细记录见 2.17–2.21」当时指向了一个不存在的章节。本次补齐，并把全仓
+「未合并」表述统一改为实际状态（`SUMMARY.md`、`docs/DESIGN-RULES.md`、`research/GAP-MATRIX.md`）。
+
+**视觉复核重试：仍失败**。单张截图的连通性探针返回空，因此**没有**消耗 5 个正式审阅任务；
+模型 `deepseek-v4-flash-vision-exp` 在 provider 目录中确实存在、且声明 `input: ["text", "image"]`
+（provider=`deepseek`，`api.deepseek.com`），所以仍指向该账号余额问题。
+**另一条比原记录更明确的限制**：主模型 `deepseek-v4.1` 不声明图像输入，`read_image` 会被直接拒绝，
+**无法用主模型替代视觉模型**读截图。
+
+**本地预览**：`node scripts/serve.js --dir=dist` → `http://127.0.0.1:8080/` 返回 200、标题正确；
+可索引 URL 复核为 sitemap **81 条**（首页 + 80 个 `deal/<id>/`），首页站内标题链接 **62 条**
+（与 GAP-MATRIX 的记录一致，不是缺陷）。
 
 ---
 

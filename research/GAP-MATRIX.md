@@ -75,7 +75,7 @@
 
 上表是**研究时点的差距快照**，不改写。这一节记录到目前为此实际落了什么、实测值是多少。
 落地在分支上（`feat/visual-token-layer` → `feat/b-extras` → `feat/detail-pages` → `feat/row-view`），
-`master` 未合并、未推送。
+当时 `master` 未合并、未推送；**2026-09-23 已全合进 `master`（合并提交 `10cc923`）**。
 
 | 项 | 状态 | 实测 |
 |---|---|---|
