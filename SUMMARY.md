@@ -48,16 +48,17 @@
 ## 三、代码在哪
 
 ```
-master                       b597da3  ← 你的原版 + 文档（2.17–2.21 + NEXT-STEPS）
- ├─ feat/visual-token-layer  874cd6b  A：token 层 / 暗色 / 对比度 / 语义与无障碍
- │   └─ feat/b-extras         ec05252  + 订阅 feed / 纠错入口 / WebSite / 同页锚点
- │       └─ feat/detail-pages f1213d5  + 每条优惠一个独立静态页（URL 1 → 81）
- │           └─ feat/row-view 7bfc607  + 紧凑行视图（首屏 13 行 / 手机 5.5 屏）
+master                       006819d+  ← 你的原版 + 文档 + **另一个会话的 3 个提交**（见第八节）
+ ├─ feat/visual-token-layer   874cd6b  A：token 层 / 暗色 / 对比度 / 语义与无障碍
+ │   └─ feat/b-extras          ec05252  + 订阅 feed / 纠错入口 / WebSite / 同页锚点
+ │       └─ feat/detail-pages  f1213d5  + 每条优惠一个独立静态页（URL 1 → 81）
+ │           └─ feat/row-view  7bfc607  + 紧凑行视图（首屏 13 行 / 手机 5.5 屏）
  │               └─ feat/polish f55e8a9  + 圆角间距收敛 / 键盘可达与焦点归还
- │                   └─ trial/merge-rehearsal 4066a17  ← 合并彩排（全门禁已验证）
+ │                   └─ trial/merge-rehearsal-2  044dd51  ← **推荐**：基于最新 master 的彩排，全门禁已验证
+ └─ trial/merge-rehearsal      4066a17  ← 第 9 轮的彩排，**已被上面那个取代**（基于旧 master）
 ```
 
-- **`master` 未合并、未推送**：领先 `origin/master` 14 个提交，全部在本地。
+- **`master` 未合并、未推送**：全部提交都在本地。
 - 5 层**可以只合你要的那一层**；合并命令见 `NEXT-STEPS.md`。
 - `git push` 一次都没执行（它会触发 CI 采集与 GitHub Pages 部署）。
 
@@ -102,6 +103,41 @@ master                       b597da3  ← 你的原版 + 文档（2.17–2.21 + 
    结果条约 48px 的固定 chrome；同口径下卡片视图是 9 张，所以真实增益 **+44%**（不是 +78%）。
 2. **卡片标题保留 14px**（提案写 16px）：192px 定高卡片里标题是 2 行截断，加大会挤压优惠文案与 meta 行。
 3. **英文页未做**（属 C）；`hreflang` 仍为 2 条（`zh-CN` + `x-default` 自指）。
+
+---
+
+## 八、更新（09:20）：另一个会话回到 `master` 了，彩排已重做
+
+写这份总结时发现：**08:58–09:06 之间另一个会话往 `master` 提交了 3 次**，其中一次改到了
+我正在维护的 `scripts/tools/verify-site.js`。因此第 9 轮那次彩排**过时了**，我重做了一遍。
+
+**他们提交了什么**
+
+| 提交 | 内容 |
+|---|---|
+| `657d4b2` | `merge: 合并 CI 自动采集提交（deals.json 分叉）` —— 把 CI 定时采集产生的数据提交并进来（当前仍是 130 条 / 80 条优惠） |
+| `45dc4cd` | 新增 `scripts/tools/restore-from-git.js`（字节级文档恢复工具）+ PROJECT_STATUS 两行 |
+| `e80209c` | **一个真修复**：验收脚本原先用固定 `waitForTimeout` 等页面接管，本地够用，**换成 GitHub Pages 就打在 `bindEvents()` 之前**，弹层不开、断言崩栈。他们加了 `waitForApp()`（等 `#lastUpdated` 从 `--` 变成时间）。他们用 `--url=` 对线上跑过 55 项全过 |
+
+**我做了什么**
+
+1. **重做彩排**：`trial/merge-rehearsal-2`（基于最新 master）—— 5 层依次合并**依然零冲突**
+   （两边改到同一个文件，但改的是不同区域，git 按行合并成功）。
+2. **把他们的修复推广到我的新断言**：我第 13–17 节的 6 处 reload/goto 用的是同样的固定 sleep，
+   属于同一个隐患，一并改成 `waitForApp`。
+   **一处必须例外**：独立详情页**根本不加载主脚本**（纯静态），它的 `#lastUpdated` 永远是 `--`，
+   `waitForApp` 在那边必然超时——第一次改完就真的挂了；详情页改为等 `.dpane` 渲染出来。
+3. **验证**：`trial/merge-rehearsal-2` 上 `verify:regress` **99 项 0 失败**、`selftest:zh` 7 项、
+   产物自检通过、两次构建 SHA256 一致。
+
+**两条合并路径的差别（重要）**
+
+| 路径 | 结果 |
+|---|---|
+| `git merge --no-ff trial/merge-rehearsal-2` | ✅ **推荐**：已含他们的修复 + 我的 `waitForApp` 集成，且是跑过全门禁的那个状态 |
+| 分层合并 5 个 `feat/*` | ✅ 也能干净合并；但我的新增断言会保留固定 sleep（对线上跑时是隐患）。要这条路径的话，再 `git cherry-pick 044dd51` 即可补上集成 |
+
+> 也就是说：**合并仍然是一次性、零冲突的操作**，只是「推荐哪一个分支」换了。
 
 ---
 
