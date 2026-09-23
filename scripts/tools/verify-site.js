@@ -784,8 +784,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     `data-theme=${darkNow.attr} localStorage=${darkNow.stored} color-scheme=${darkNow.colorScheme} body=${darkNow.bodyBg}`);
 
   await page.reload({ waitUntil: 'load' });
-  await page.waitForSelector('article.g', { timeout: 15000 });
-  await page.waitForTimeout(300);
+  await waitForApp(page);
   const darkAfterReload = await page.evaluate(() => ({
     attr: document.documentElement.getAttribute('data-theme'),
     bodyBg: getComputedStyle(document.body).backgroundColor
@@ -831,8 +830,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   console.log('\n=== 14) 订阅 · 同页锚点 · 纠错入口 ===');
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.reload({ waitUntil: 'load' });
-  await page.waitForSelector('article.g', { timeout: 15000 });
-  await page.waitForTimeout(300);
+  await waitForApp(page);
 
   const anchorState = await page.evaluate(() => {
     const nav = document.getElementById('jumpNav');
@@ -938,7 +936,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   const errorsBeforeDetail = errors.length;
   const externalBeforeDetail = externalRequests.length;
   await page.goto(detailUrl, { waitUntil: 'load' });
-  await page.waitForTimeout(300);
+  // 详情页是**纯静态**的（不加载主脚本），所以没有「等应用接管」可言：
+  // #lastUpdated 在那边永远是 `--`；这里等页面主体渲染出来即可。
+  await page.waitForSelector('.dpane', { timeout: 15000 });
+  await page.waitForTimeout(200);
   const detail = await page.evaluate(() => {
     const pane = document.querySelector('.dpane');
     const canonical = document.querySelector('link[rel="canonical"]');
@@ -985,6 +986,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   // 主题沿用首页的选择（同一套 localStorage 约定）
   await page.evaluate(() => { try { localStorage.setItem('dsh.theme', 'dark'); } catch (e) {} });
   await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('.dpane', { timeout: 15000 });   // 详情页静态：等主体，不等应用
   const detailDark = await page.evaluate(() => {
     const pressed = document.querySelector('#themeSeg [aria-pressed="true"]');
     return {
@@ -999,8 +1001,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   await page.evaluate(() => { try { localStorage.removeItem('dsh.theme'); } catch (e) {} });
 
   await page.goto(base, { waitUntil: 'load' });
-  await page.waitForSelector('article.g', { timeout: 15000 });
-  await page.waitForTimeout(300);
+  await waitForApp(page);   // 等应用接管，而不是等固定毫秒（线上比本地慢得多）
 
   console.log('\n=== 16) 紧凑行视图 ===');
   const viewToggle = await page.evaluate(() => {
@@ -1039,8 +1040,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('列表视图：偏好已写入 localStorage', rowsView.stored === 'rows', `dsh.view=${rowsView.stored}`);
 
   await page.reload({ waitUntil: 'load' });
-  await page.waitForSelector('.r, article.g', { timeout: 15000 });
-  await page.waitForTimeout(400);
+  await waitForApp(page);
   const rowsAfterReload = await page.evaluate(() => {
     const pressed = document.querySelector('#viewSeg [aria-pressed="true"]');
     return {
@@ -1106,8 +1106,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
   console.log('\n=== 17) 键盘可达与焦点归还 ===');
   await page.goto(base, { waitUntil: 'load' });
-  await page.waitForSelector('article.g', { timeout: 15000 });
-  await page.waitForTimeout(300);
+  await waitForApp(page);   // 同第 16 节：等接管，不等毫秒
 
   const focusable = await page.evaluate(() => {
     const cards = [...document.querySelectorAll('article.g')];
