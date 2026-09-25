@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-09-25T00:37:48+08:00",
+  "updatedAt": "2026-09-25T11:36:56+08:00",
   "count": 131,
   "deals": [
     {
@@ -1332,6 +1332,32 @@
       }
     },
     {
+      "id": "28434ca44079",
+      "title": "Google AI Studio",
+      "vendor": "Google AI",
+      "url": "https://aistudio.google.com/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/google-ai-studio",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "对话模型",
+      "description": "A tool for AI development with diverse tools and models.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-25",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "集成多种工具与模型的 AI 开发平台。"
+      }
+    },
+    {
       "id": "413a77602a7c",
       "title": "Tenki Cloud",
       "vendor": "Tenki Cloud",
@@ -1381,32 +1407,6 @@
       "verifiedAt": null,
       "zh": {
         "description": "用编码智能体把遗留代码迁移到现代框架的 IDE。"
-      }
-    },
-    {
-      "id": "28434ca44079",
-      "title": "Google AI Studio",
-      "vendor": "Google AI",
-      "url": "https://aistudio.google.com/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/google-ai-studio",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "对话模型",
-      "description": "A tool for AI development with diverse tools and models.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-25",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "集成多种工具与模型的 AI 开发平台。"
       }
     },
     {
