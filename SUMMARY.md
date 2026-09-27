@@ -4,13 +4,18 @@
 > 目标、已完成部分、实测数字、代码在哪、接下来要做什么、以及两处如实说明。
 >
 > **配套文件**：待你点头的事见 [`NEXT-STEPS.md`](NEXT-STEPS.md)；
-> 逐步的详细记录见 [`PROJECT_STATUS.md`](PROJECT_STATUS.md) 的 2.17–2.27。
+> 逐步的详细记录见 [`PROJECT_STATUS.md`](PROJECT_STATUS.md) 的 2.17–2.29。
 >
 > 状态：**已上线**（2026-09-23）。`master` = `origin/master` = **`fa2403d`**（代码那次推送是 `ecbc815`），
 > Deploy 工作流**两次** success，线上跑了 `verify --url=` **108 项 0 失败**（上线当日的记录；
 > **线上复测值：权威值待复测（见 P0-2）**——本机到该 host 无通路）。
 > 本轮内容：A/B/收尾 + 收藏对比（G11）+ 活动期限三分类 + 上游详情修复 + 两个手机端横向问题修复；
 > 两次并回 `origin/master` 与上线记录见 `PROJECT_STATUS.md` 2.27–2.28。
+>
+> **另有未合并分支**（按用户反馈新做，**未合并、未推送**）：`fix/favorites-entry-and-compare-open`
+> —— 修「打开对比」点不开（`hidden` 属性没摘 ⇒ 弹层进了顶层却 `display:none`）+
+> 换筛选后静默失效 + 新增**收藏列表入口**「★ 我的收藏 N」。门禁 `verify:regress` **129 项 0 失败**，
+> 详见 `PROJECT_STATUS.md` 2.29 与 [`NEXT-STEPS.md`](NEXT-STEPS.md) 第二节·五。
 > 剩余事项（都可选）见 [`NEXT-STEPS.md`](NEXT-STEPS.md)。
 
 ---

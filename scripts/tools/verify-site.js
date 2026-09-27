@@ -135,6 +135,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       // 也不留可见的控件（脚本被拦/被禁用时同样是这个状态）。
       favToggles: document.querySelectorAll('[data-fav-toggle]').length,
       favVisible: [...document.querySelectorAll('[data-fav-toggle]')].filter(el => el.offsetHeight > 0).length,
+      // 收藏**入口**与「清理失效收藏」同样是 JS 建的：静态骨架里一个都不该有
+      favOpeners: document.querySelectorAll('[data-fav-open]').length,
+      favPrunes: document.querySelectorAll('[data-fav-prune]').length,
       cmpBar: document.querySelectorAll('.cmpbar').length,
       cmpBarVisible: [...document.querySelectorAll('.cmpbar')].some(el => el.offsetHeight > 0),
       cmpDialogOpen: Boolean(document.querySelector('dialog#compare[open]'))
@@ -149,6 +152,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('无 JS 时不渲染收藏/对比控件',
     noJs.favToggles === 0 && noJs.favVisible === 0 && noJs.cmpBar === 0 && !noJs.cmpDialogOpen,
     `星标 ${noJs.favToggles} 个 / 可见 ${noJs.favVisible} 个 · 对比条 ${noJs.cmpBar} 个 / 可见 ${noJs.cmpBarVisible} · 对比弹层展开 ${noJs.cmpDialogOpen}`);
+  check('无 JS 时也没有收藏入口 / 失效清理按钮（同样是 JS 建的）',
+    noJs.favOpeners === 0 && noJs.favPrunes === 0,
+    `收藏入口 ${noJs.favOpeners} 个 · 清理按钮 ${noJs.favPrunes} 个`);
 
   // 第 1 步故意断掉了 deals.json，这里把收集器清空，后面测的是正常加载
   errors.length = 0;
@@ -467,7 +473,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         ? '.' + el.className.trim().split(/\s+/).join('.') : '') +
       '「' + (el.textContent || '').trim().slice(0, 8) + '」';
     const controls = [...document.querySelectorAll(
-      '#sortBox button, #categoryFilter, #viewSeg button, #jumpNav a, .rright, .rbar, #stats')]
+      '#sortBox button, #categoryFilter, #viewSeg button, #jumpNav a, .rright, .rbar, #stats, #facets [data-facet="fav"]')]
       .filter(el => el.getBoundingClientRect().width > 0);
     const selfClipped = [], cutByAncestor = [], pastViewport = [];
     for (const el of controls) {
@@ -1442,6 +1448,62 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     cmpAfterEsc.open === false && cmpAfterEsc.isOpenButton,
     `弹层=${cmpAfterEsc.open} · 焦点在 <${cmpAfterEsc.tag}>`);
 
+  // ── 弹层必须**真的看得见** ──
+  // 旧实现把 hidden 写在 <dialog> 上又从不摘掉，而 `body.js .cmpdlg[hidden] { display: none }`
+  // 是作者级规则、showModal() 也压不过：实测点开之后 open=true、:modal=true，
+  // 但 display:none、rect 0×0 —— 页面被 inert 冻住而屏幕上什么都没有。
+  // 只断言 `open` 属性的检查对这件事完全无感，所以这一条量的是**几何**。
+  await sharePage.evaluate(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const dlg = document.getElementById('compare');
+    if (dlg.open) dlg.close();
+    await sleep(120);
+    document.getElementById('cmpOpen').click();
+    await sleep(320);
+  });
+  const cmpVisible = await sharePage.evaluate(() => {
+    const dlg = document.getElementById('compare');
+    const box = dlg.getBoundingClientRect();
+    return {
+      open: dlg.open,
+      hiddenAttr: dlg.hasAttribute('hidden'),
+      display: getComputedStyle(dlg).display,
+      width: Math.round(box.width),
+      height: Math.round(box.height),
+      fits: box.left >= -1 && box.top >= -1 &&
+        box.right <= window.innerWidth + 1 && box.bottom <= window.innerHeight + 1,
+      modal: dlg.matches(':modal'),
+      cols: dlg.querySelectorAll('.cmptable thead th').length - 1
+    };
+  });
+  check('点「打开对比」弹层真的可见（量几何，不只看 open 属性）',
+    cmpVisible.open && !cmpVisible.hiddenAttr && cmpVisible.display !== 'none' &&
+    cmpVisible.width > 200 && cmpVisible.height > 100 && cmpVisible.fits && cmpVisible.modal,
+    `open=${cmpVisible.open} · hidden=${cmpVisible.hiddenAttr} · display=${cmpVisible.display} · ${cmpVisible.width}×${cmpVisible.height}px ·` +
+    ` 在视口内=${cmpVisible.fits} · :modal=${cmpVisible.modal} · ${cmpVisible.cols} 列`);
+
+  // ── 关掉之后不能留下一个不可见的顶层 modal ──
+  // 那正是旧 bug 的副作用：弹层看不见，但整页被 inert 冻住，点什么都没反应。
+  const cmpUnfrozen = await sharePage.evaluate(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    document.getElementById('compare').close();
+    await sleep(220);
+    const lingering = document.querySelector('dialog:modal');
+    document.querySelector('article.g').click();
+    await sleep(280);
+    const detailOpen = document.getElementById('detail').open;
+    if (detailOpen) document.getElementById('detail').close();
+    await sleep(150);
+    return {
+      lingering: Boolean(lingering),
+      detailOpen: detailOpen,
+      compareOpen: document.getElementById('compare').open
+    };
+  });
+  check('关闭对比后不留顶层 modal，页面立刻恢复可交互',
+    !cmpUnfrozen.lingering && cmpUnfrozen.detailOpen && !cmpUnfrozen.compareOpen,
+    `残留 :modal=${cmpUnfrozen.lingering} · 关闭后点卡片能开详情=${cmpUnfrozen.detailOpen} · 弹层仍开=${cmpUnfrozen.compareOpen}`);
+
   // ── 390px：对比条展开时也不许横向滚动 ──
   await sharePage.setViewportSize({ width: 390, height: 844 });
   await sharePage.waitForTimeout(250);
@@ -1463,8 +1525,286 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     cmpMobile.barLeft >= 0 && cmpMobile.barRight <= cmpMobile.clientWidth + 1,
     `对比条 ${cmpMobile.barLeft}–${cmpMobile.barRight}px / 视口 ${cmpMobile.clientWidth}px · 溢出 ${cmpMobile.overflowX}px · 「${String(cmpMobile.barText).trim()}」`);
 
+  // ── 390px：弹层自己也不许超出视口（宽表在 .cmpscroll 里横滚，弹层不撑宽页面）──
+  const cmpMobileDialog = await sharePage.evaluate(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    document.getElementById('cmpOpen').click();
+    await sleep(320);
+    const dlg = document.getElementById('compare');
+    const box = dlg.getBoundingClientRect();
+    const scroll = dlg.querySelector('.cmpscroll');
+    const result = {
+      display: getComputedStyle(dlg).display,
+      width: Math.round(box.width),
+      left: Math.round(box.left),
+      right: Math.round(box.right),
+      clientWidth: document.documentElement.clientWidth,
+      overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      scrollable: Boolean(scroll) && scroll.scrollWidth > scroll.clientWidth
+    };
+    dlg.close();
+    await sleep(120);
+    return result;
+  });
+  check('390px 下对比弹层不超出视口（宽表靠内部横滚）',
+    cmpMobileDialog.display !== 'none' && cmpMobileDialog.left >= 0 &&
+    cmpMobileDialog.right <= cmpMobileDialog.clientWidth + 1 &&
+    cmpMobileDialog.width <= cmpMobileDialog.clientWidth - 40 + 1 &&
+    cmpMobileDialog.overflowX === 0,
+    `弹层 ${cmpMobileDialog.left}–${cmpMobileDialog.right}px（宽 ${cmpMobileDialog.width}px）/ 视口 ${cmpMobileDialog.clientWidth}px ·` +
+    ` 页面横向溢出 ${cmpMobileDialog.overflowX}px · 表内可横滚=${cmpMobileDialog.scrollable}`);
+
   await sharePage.close();
   await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);
+
+  console.log('\n=== 17.6) 对比：选择与筛选解耦（换筛选后仍能并排）===');
+  // 旧实现里 `cmpCards()` 只查 state.cards（当前筛选的结果），而对比条计数查的是选择本身：
+  // 于是「选 2 条 → 换个筛选把两条都挡住」之后，条上仍写着「已选 2 条」而标题条 0 个，
+  // 点「打开对比」什么也不发生（openCompare 在解析不足 2 条时直接 return，没有任何反馈）。
+  await page.evaluate(() => { try { localStorage.removeItem('dsh.compare'); } catch (e) { /* 忽略 */ } });
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);
+  const decoupled = await page.evaluate(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const pick = selector => document.querySelector(selector);
+    pick('[data-facet="region"][data-value="cn"]').click();       // 只看国内
+    await sleep(350);
+    const cards = [...document.querySelectorAll('article.g')];
+    for (let i = 0; i < 2; i++) {
+      cards[i].click(); await sleep(180);
+      pick('#detailBody [data-cmp]').click(); await sleep(100);
+      pick('#detail').close(); await sleep(120);
+    }
+    pick('[data-facet="region"][data-value="global"]').click();    // 换成国外：两条都不在当前视图里
+    await sleep(400);
+    const before = {
+      hidden: pick('#cmpbar').hidden,
+      text: pick('#cmpCount').textContent.trim(),
+      chips: document.querySelectorAll('.cmpchip').length
+    };
+    pick('#cmpOpen').click(); await sleep(350);
+    const dlg = pick('#compare');
+    const box = dlg.getBoundingClientRect();
+    const after = {
+      open: dlg.open,
+      display: getComputedStyle(dlg).display,
+      width: Math.round(box.width),
+      cols: dlg.querySelectorAll('.cmptable thead th').length - 1
+    };
+    dlg.close();
+    return { before: before, after: after };
+  });
+  check('筛选挡住已选项时「打开对比」仍然打开（选择是跨视图的集合，不是当前视图的子集）',
+    !decoupled.before.hidden && decoupled.after.open && decoupled.after.display !== 'none' &&
+    decoupled.after.width > 200 && decoupled.after.cols === 2,
+    `换筛选后条上「${decoupled.before.text}」→ 弹层 open=${decoupled.after.open} · display=${decoupled.after.display} ·` +
+    ` ${decoupled.after.width}px / ${decoupled.after.cols} 列`);
+  check('对比条计数与标题条同源（不再「已选 2 条 · 0 个标题」）',
+    decoupled.before.chips === 2,
+    `标题条 ${decoupled.before.chips} 个 · 条上「${decoupled.before.text}」`);
+
+  // ── 失效对比项：数据每天更新（id 是 厂商|标题|落地页 的指纹），旧选择可能已改名/下架 ──
+  const staleCmp = await (async () => {
+    const realId = await page.evaluate(() => {
+      try { return JSON.parse(localStorage.getItem('dsh.compare') || '[]')[0]; } catch (e) { return null; }
+    });
+    await page.evaluate(id => {
+      try { localStorage.setItem('dsh.compare', JSON.stringify([id, 'deadbeef0000'])); } catch (e) { /* 忽略 */ }
+    }, realId);
+    await page.goto(base, { waitUntil: 'load' });
+    await waitForApp(page);
+    const one = await page.evaluate(() => {
+      const bar = document.getElementById('cmpbar');
+      return {
+        hidden: bar.hidden,
+        text: document.getElementById('cmpCount').textContent.trim(),
+        openDisabled: document.getElementById('cmpOpen').disabled,
+        stored: (() => { try { return JSON.parse(localStorage.getItem('dsh.compare') || '[]').length; } catch (e) { return -1; } })()
+      };
+    });
+    // 再补一条**不在对比里**的卡：说明应清掉、按钮恢复可用
+    const two = await page.evaluate(async () => {
+      const sleep = ms => new Promise(r => setTimeout(r, ms));
+      const cards = [...document.querySelectorAll('article.g')];
+      let picked = false;
+      for (let i = 1; i < 6 && !picked; i++) {
+        cards[i].click(); await sleep(180);
+        const button = document.querySelector('#detailBody [data-cmp]');
+        if (button.getAttribute('aria-pressed') === 'true') { document.getElementById('detail').close(); await sleep(120); continue; }
+        button.click(); await sleep(120);
+        document.getElementById('detail').close(); await sleep(150);
+        picked = true;
+      }
+      return {
+        picked: picked,
+        text: document.getElementById('cmpCount').textContent.trim(),
+        openDisabled: document.getElementById('cmpOpen').disabled,
+        stored: (() => { try { return JSON.parse(localStorage.getItem('dsh.compare') || '[]').length; } catch (e) { return -1; } })()
+      };
+    });
+    return { one: one, two: two };
+  })();
+  check('对比选择里的失效项被移除，并在条上说明（不静默消失）',
+    staleCmp.one.stored === 1 && !staleCmp.one.hidden && /找不到/.test(staleCmp.one.text) && staleCmp.one.openDisabled,
+    `localStorage 剩 ${staleCmp.one.stored} 条 · 条可见=${!staleCmp.one.hidden} · 打开按钮 disabled=${staleCmp.one.openDisabled} · 「${staleCmp.one.text}」`);
+  check('补选一条后失效说明清掉、按钮恢复可用',
+    staleCmp.two.picked && staleCmp.two.stored === 2 && !staleCmp.two.openDisabled && !/找不到/.test(staleCmp.two.text),
+    `补选成功=${staleCmp.two.picked} · 选择 ${staleCmp.two.stored} 条 · 按钮 disabled=${staleCmp.two.openDisabled} · 「${staleCmp.two.text}」`);
+
+  console.log('\n=== 17.7) 收藏入口：只看收藏 ===');
+  await page.evaluate(() => {
+    try { localStorage.removeItem('dsh.favorites'); localStorage.removeItem('dsh.compare'); } catch (e) { /* 忽略 */ }
+  });
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);
+  const favBaseline = await page.evaluate(() => ({
+    cards: document.querySelectorAll('article.g').length,
+    entry: document.querySelectorAll('#facets [data-facet="fav"]').length
+  }));
+  check('零收藏时筛选条里没有收藏入口（不给「点了没反应」的按钮）',
+    favBaseline.entry === 0 && favBaseline.cards > 45,
+    `入口 ${favBaseline.entry} 个 · 默认视图 ${favBaseline.cards} 张卡片`);
+
+  // 真实鼠标点星标（会移动焦点，与键盘路径一致）
+  const clickStarAt = async (target, index) => {
+    const box = await target.evaluate(i => {
+      const button = [...document.querySelectorAll('article.g [data-fav-toggle]')][i || 0];
+      const rect = button.getBoundingClientRect();
+      return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+    }, index || 0);
+    await target.mouse.click(box.x, box.y);
+    await target.waitForTimeout(280);
+  };
+  await clickStarAt(page);
+  const favEntry = await page.evaluate(() => {
+    const chip = document.querySelector('#facets [data-facet="fav"]');
+    return {
+      exists: Boolean(chip),
+      text: chip ? chip.textContent.trim() : '',
+      count: chip && chip.querySelector('b') ? Number(chip.querySelector('b').textContent) : -1,
+      pressed: chip ? chip.getAttribute('aria-pressed') : null,
+      label: chip ? chip.getAttribute('title') || '' : '',
+      stored: (() => { try { return JSON.parse(localStorage.getItem('dsh.favorites') || '[]').length; } catch (e) { return -1; } })()
+    };
+  });
+  check('收藏一条后出现「我的收藏」入口，计数为 1 且未选中',
+    favEntry.exists && favEntry.count === 1 && favEntry.stored === 1 && favEntry.pressed === 'false' && /只存在本机/.test(favEntry.label),
+    `入口「${favEntry.text}」· 计数 ${favEntry.count} / localStorage ${favEntry.stored} 条 · aria-pressed=${favEntry.pressed} · title「${favEntry.label}」`);
+
+  await page.click('#facets [data-facet="fav"]');
+  await page.waitForTimeout(320);
+  const favView = await page.evaluate(() => ({
+    cards: document.querySelectorAll('article.g').length,
+    pressed: document.querySelector('#facets [data-facet="fav"]').getAttribute('aria-pressed'),
+    starsOn: document.querySelectorAll('[data-fav-toggle][aria-pressed="true"]').length,
+    stats: document.getElementById('stats').textContent.trim()
+  }));
+  check('收藏视图只留下收藏的卡片（星标亮、结果条切到收藏口径）',
+    favView.cards === 1 && favView.pressed === 'true' && favView.starsOn === 1 && /条收藏卡片/.test(favView.stats),
+    `${favView.cards} 张卡片 · 星标亮 ${favView.starsOn} 个 · aria-pressed=${favView.pressed} · 「${favView.stats}」`);
+
+  // 收藏视图里取消收藏：卡片要立刻消失，说明要到位，焦点不能丢到页面外
+  await clickStarAt(page);
+  const favAfterUnfav = await page.evaluate(() => ({
+    cards: document.querySelectorAll('article.g').length,
+    stats: document.getElementById('stats').textContent.trim(),
+    entryStillThere: Boolean(document.querySelector('#facets [data-facet="fav"]')),
+    stored: (() => { try { return JSON.parse(localStorage.getItem('dsh.favorites') || '[]').length; } catch (e) { return -1; } })(),
+    focusOnEntry: Boolean(document.activeElement && document.activeElement.dataset &&
+      document.activeElement.dataset.facet === 'fav')
+  }));
+  check('收藏视图里取消收藏：卡片立刻消失、空态有说明、焦点落到入口',
+    favAfterUnfav.cards === 0 && favAfterUnfav.stored === 0 && favAfterUnfav.entryStillThere &&
+    /没有符合条件的收藏卡片/.test(favAfterUnfav.stats) && favAfterUnfav.focusOnEntry,
+    `${favAfterUnfav.cards} 张卡片 · localStorage ${favAfterUnfav.stored} 条 · 入口仍在=${favAfterUnfav.entryStillThere} ·` +
+    ` 焦点在入口=${favAfterUnfav.focusOnEntry} · 「${favAfterUnfav.stats.slice(0, 40)}…」`);
+
+  await page.click('#facets [data-facet="fav"]');
+  await page.waitForTimeout(320);
+  const favBack = await page.evaluate(() => ({
+    cards: document.querySelectorAll('article.g').length,
+    entryGone: !document.querySelector('#facets [data-facet="fav"]')
+  }));
+  check('退出收藏视图后回到原来的卡片数（进入/退出不改其它筛选）',
+    favBack.cards === favBaseline.cards && favBack.entryGone,
+    `${favBack.cards} 张（进入前 ${favBaseline.cards} 张）· 零收藏后入口自动收起=${favBack.entryGone}`);
+
+  // ── 失效收藏：条目改名/下架后 id 对不上。不自动删用户数据，但必须说明 + 给清理入口 ──
+  await clickStarAt(page);
+  const realFavId = await page.evaluate(() => {
+    try { return JSON.parse(localStorage.getItem('dsh.favorites') || '[]')[0]; } catch (e) { return null; }
+  });
+  await page.evaluate(id => {
+    try { localStorage.setItem('dsh.favorites', JSON.stringify(['deadbeef0000', id])); } catch (e) { /* 忽略 */ }
+  }, realFavId);
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);
+  const staleEntry = await page.evaluate(() => {
+    const chip = document.querySelector('#facets [data-facet="fav"]');
+    return { count: chip && chip.querySelector('b') ? Number(chip.querySelector('b').textContent) : -1 };
+  });
+  await page.click('#facets [data-facet="fav"]');
+  await page.waitForTimeout(320);
+  const staleView = await page.evaluate(() => ({
+    cards: document.querySelectorAll('article.g').length,
+    stats: document.getElementById('stats').textContent.trim(),
+    prunes: document.querySelectorAll('[data-fav-prune]').length
+  }));
+  check('收藏入口按本机收藏总数计数（含失效项），视图里说明「找不到」并给出清理按钮',
+    staleEntry.count === 2 && staleView.cards === 1 && staleView.prunes === 1 && /找不到/.test(staleView.stats),
+    `入口计数 ${staleEntry.count} · 视图 ${staleView.cards} 张卡片 · 清理按钮 ${staleView.prunes} 个 · 「${staleView.stats}」`);
+
+  // 390 / 360px：入口与清理按钮在这个状态下也要留在视口里、不产生横向溢出
+  const favMobile = [];
+  for (const width of [390, 360]) {
+    await page.setViewportSize({ width: width, height: 844 });
+    await page.waitForTimeout(280);
+    favMobile.push(await page.evaluate(() => {
+      const box = selector => {
+        const el = document.querySelector(selector);
+        if (!el) return null;
+        const rect = el.getBoundingClientRect();
+        return { left: Math.round(rect.left), right: Math.round(rect.right), width: Math.round(rect.width) };
+      };
+      return {
+        width: window.innerWidth,
+        overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        entry: box('#facets [data-facet="fav"]'),
+        prune: box('[data-fav-prune]'),
+        statsClipped: (() => {
+          const stats = document.getElementById('stats');
+          return stats.scrollWidth - stats.clientWidth;
+        })()
+      };
+    }));
+  }
+  check('390px 与 360px：收藏入口与清理按钮都在视口内、无横向溢出',
+    favMobile.every(item => item.entry && item.prune && item.overflowX <= 0 &&
+      item.entry.left >= 0 && item.entry.right <= item.width + 1 &&
+      item.prune.left >= 0 && item.prune.right <= item.width + 1 && item.statsClipped <= 1),
+    favMobile.map(item => `${item.width}px：入口 ${item.entry ? item.entry.left + '–' + item.entry.right : '缺失'} ·` +
+      ` 清理 ${item.prune ? item.prune.left + '–' + item.prune.right : '缺失'} · 溢出 ${item.overflowX}px`).join(' · '));
+
+  await page.click('[data-fav-prune]');
+  await page.waitForTimeout(320);
+  const afterPrune = await page.evaluate(() => {
+    const chip = document.querySelector('#facets [data-facet="fav"]');
+    return {
+      stored: (() => { try { return JSON.parse(localStorage.getItem('dsh.favorites') || '[]').length; } catch (e) { return -1; } })(),
+      count: chip && chip.querySelector('b') ? Number(chip.querySelector('b').textContent) : -1,
+      prunes: document.querySelectorAll('[data-fav-prune]').length,
+      cards: document.querySelectorAll('article.g').length
+    };
+  });
+  check('点「清理」只删失效项：真实收藏保留、计数与说明同步',
+    afterPrune.stored === 1 && afterPrune.count === 1 && afterPrune.prunes === 0 && afterPrune.cards === 1,
+    `localStorage ${afterPrune.stored} 条 · 入口计数 ${afterPrune.count} · 清理按钮 ${afterPrune.prunes} 个 · 视图 ${afterPrune.cards} 张卡片`);
+
+  // 收尾：把收藏与收藏视图清干净，别把状态带进 §10 的移动端量测
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.evaluate(() => { try { localStorage.removeItem('dsh.favorites'); } catch (e) { /* 忽略 */ } });
   await page.goto(base, { waitUntil: 'load' });
   await waitForApp(page);
 
