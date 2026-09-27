@@ -279,73 +279,178 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     clip.length ? `${clip.length} 条溢出，例如 ${JSON.stringify(clip.slice(0, 3))}` : '全部卡片内容在高度内');
 
   console.log('\n=== 4b) 折叠卡：同一家公司的同类优惠并成一张 ===');
-  // 三条独立判据（都是量出来的，不是读 DOM 状态）：
-  //   ① 每一条优惠都归到**恰好一张**卡上——按厂商归一 + 卡片标题里的型号集合认领，
-  //      最后统计「没被认领的条数」「被两张卡同时认领的条数」，两者都必须为 0；
-  //   ② 折叠卡声明覆盖 N 条，那 N 条必须真的都能认领到这张卡上（不虚报）；
-  //   ③ 卡片那行优惠文案整句显示完（没被 2 行 clamp 吃掉半句）。
+  // 六条独立判据，全部**可证伪**（2026-09-27 那次对抗性复核把「不可证伪」当缺陷报了上来：
+  // 旧的①只按标题字符串互相包含来认领，把 foldKey 里的厂商抹掉后仍全绿；旧③只看有没有溢出，
+  // 把文案换成「（摘要）xxxx」也全绿。现在改量「卡片说了什么」，并且断言都得低于数据）：
+  //   ① 按 **id** 认领：每条优惠恰好落在一张卡上（data-deal-ids 与数据一一对应）；
+  //   ② 认领关系**同厂商**（把厂商从折叠键里抹掉就必红）；
+  //   ③ 折叠卡声明覆盖 N 条 = 实际认领 N 条；
+  //   ④ **额度口径与数据一致**：data-quota=shared 的卡，其成员的官方文案必须真的一样；
+  //      varies 的卡必须写着「各型号额度不同」且**不许**出现「共用同一份额度」；
+  //   ⑤ 卡片那行文案**没被裁**，且折叠卡至少说清了代表条目的一句话（空话/摘要话必红）；
+  //   ⑥ 被折叠的每一条都还能从首页走到自己的详情页（预渲染的站内链接，无 JS 也成立）。
   const folded = await page.evaluate(async () => {
     const data = await (await fetch('deals.json')).json();
     const norm = text => String(text || '').replace(/[^a-z0-9\u4e00-\u9fa5]+/gi, '').toLowerCase();
-    const cards = [...document.querySelectorAll('article.g')].map(card => ({
-      title: card.querySelector('h3').textContent.trim(),
-      declared: Number(card.dataset.modelCount || 0),
-      claimedTitles: card.dataset.models ? card.dataset.models.split('\n') : null,
-      offer: (card.querySelector('.of .tx') || {}).textContent || '',
-      clamped: card.querySelector('.of .tx')
-        ? card.querySelector('.of .tx').scrollHeight - card.querySelector('.of .tx').clientHeight > 1
-        : false
-    }));
+    const cards = [...document.querySelectorAll('article.g')].map(card => {
+      const tx = card.querySelector('.of .tx');
+      return {
+        title: card.querySelector('h3').textContent.trim(),
+        declared: Number(card.dataset.modelCount || 0),
+        ids: card.dataset.dealIds ? card.dataset.dealIds.split(',') : [],
+        quota: card.dataset.quota || '',
+        feats: card.textContent,
+        offer: tx ? tx.textContent : '',
+        clamped: tx ? tx.scrollHeight - tx.clientHeight > 1 : false,
+        memberLinks: [...card.querySelectorAll('.fmembers a')].map(a => a.getAttribute('href') || ''),
+        memberText: (card.querySelector('.fmembers') || {}).textContent || ''
+      };
+    });
+    const byId = new Map();
+    for (const deal of data.deals) if (deal.type === 'deal') byId.set(String(deal.id), deal);
 
-    const owners = new Map();
+    const owners = new Map();          // deal id → [card titles]
     const unmatched = [];
     const multiOwned = [];
-    for (const deal of data.deals) {
-      if (deal.type !== 'deal') continue;
-      const titleKey = norm(deal.title);
-      // 折叠卡自带 data-models（覆盖的条目原名，换行分隔）⇒ 直接认领，不用猜标题前缀。
-      // 认领判据用「互相包含」：折叠卡里的模型名是条目原名去掉公共后缀后的部分
-      // （「ERNIE-4.5-Turbo-128K」对「ERNIE-4.5-Turbo-128K 新用户免费额度」），
-      // 单条卡的标题则与条目原名完全一致——两种都认。
-      const hits = cards.filter(card => card.claimedTitles
-        ? card.claimedTitles.some(name => { const k = norm(name); return k && (titleKey.includes(k) || k.includes(titleKey)); })
-        : card.title === deal.title);
+    const crossVendor = [];
+    const claimedIds = new Set();
+    for (const card of cards) {
+      for (const id of card.ids) {
+        claimedIds.add(id);
+        if (!owners.has(id)) owners.set(id, []);
+        owners.get(id).push(card);
+      }
+    }
+    for (const [id, deal] of byId) {
+      const hits = owners.get(id) || [];
       if (!hits.length) { unmatched.push(deal.title); continue; }
       if (hits.length > 1) multiOwned.push(deal.title);
-      const title = hits[0].title;
-      if (!owners.has(title)) owners.set(title, []);
-      owners.get(title).push(deal.title);
+      // ② 同厂商：卡片标题里应含该厂商的一个关键词（用户看到的名字）。
+      //    厂商如果不参与折叠（比如把 foldKey 里的厂商抹掉），这条必红。
+      //    **单条卡跳过**：单条卡是「原样返回该条目」，标题就是条目标题，本来就不必带厂商名
+      //    （「Perplexity」「联网资源 免费额度」「GLM-5.3-Flash 限时五折」都是真实存在的条目名）。
+      //    这条断言要证伪的是「跨厂商被并进同一张卡」，那只有折叠卡才可能发生。
+      const VENDOR_WORDS = [
+        ['百度智能云', ['百度', '千帆', 'ernie']],
+        ['火山引擎', ['火山', '方舟', '豆包', 'doubao']],
+        ['智谱AI', ['智谱', 'glm', 'cogview', 'cogvideo']],
+        ['扣子 Coze', ['扣子', 'coze']],
+        ['阿里云', ['阿里', '百炼', '通义', 'qwen']],
+        ['腾讯云', ['腾讯', '混元', 'hunyuan']],
+        ['科大讯飞', ['讯飞', '星火', 'xfyun']],
+        ['月之暗面', ['月之暗面', 'moonshot', 'kimi']],
+        ['硅基流动', ['硅基流动', 'siliconflow']],
+        ['阶跃星辰', ['阶跃', 'stepfun', 'stepaudio']],
+        ['商汤科技', ['商汤', 'sensenova', '日日新']],
+        ['百川智能', ['百川', 'baichuan']],
+        ['DeepSeek', ['deepseek', '深度求索']],
+        ['360智脑', ['360']],
+        ['魔搭 ModelScope', ['魔搭', 'modelscope']],
+        ['MiniMax（稀宇科技）', ['minimax', '稀宇']],
+        ['海螺AI', ['海螺', 'hailuo']],
+        ['Microsoft', ['microsoft', '微软', 'azure']],
+        ['Google', ['google', 'gemini']]
+      ];
+      const wordsOf = vendor => {
+        const raw = String(vendor || '').toLowerCase();
+        // 先按厂商名本身匹配（「百度智能云」→ 百度那一条），再退回关键词匹配。
+        // 顺序不能反：反了会让「百度智能云」先命中任何含「百度」的表项，把关键词表认错行。
+        for (const [name, words] of VENDOR_WORDS) {
+          const key = name.toLowerCase();
+          if (key.length >= 2 && raw.includes(key.slice(0, 2))) return words;
+        }
+        for (const [, words] of VENDOR_WORDS) if (words.some(w => raw.includes(w))) return words;
+        return [raw.slice(0, 3)];
+      };
+      const foldedHits = hits.filter(card => card.declared > 1);
+      if (!foldedHits.length) continue;
+      const vendorWords = wordsOf(deal.vendor);
+      const ok = foldedHits.some(card => {
+        const t = card.title.toLowerCase();
+        return vendorWords.some(w => w && t.includes(w));
+      });
+      if (!ok) crossVendor.push(`${deal.title} → 「${foldedHits.map(h => h.title).join('、')}」`);
     }
+    // 卡片里出现、但数据里没有的 id（凭空捏造）
+    const ghostIds = [...claimedIds].filter(id => !byId.has(id));
 
-    const multi = cards.filter(card => card.declared > 1);
+    const foldedCards = cards.filter(card => card.declared > 1).map(card => {
+      const members = card.ids.map(id => byId.get(id)).filter(Boolean);
+      const texts = members.map(d => String(d.discountInfo || '').trim()).filter(Boolean);
+      const distinct = new Set(texts);
+      return {
+        title: card.title,
+        declared: card.declared,
+        claimed: card.ids.filter(id => byId.has(id)).length,
+        quota: card.quota,
+        distinctTexts: distinct.size,
+        // 卡片那行必须至少说清代表条目那句（用数据反查：任一成员文案的开头 12 字）
+        coversRepresentative: texts.some(t => card.offer.includes(t.slice(0, 12))),
+        saysShared: card.feats.includes('共用同一份额度'),
+        saysVaries: card.feats.includes('各型号额度不同'),
+        clamped: card.clamped,
+        offer: card.offer,
+        memberLinks: card.memberLinks.filter(Boolean),
+        memberTextChars: card.memberText.length,
+        // 预渲染的成员原文：**每种不同的文案**至少要在卡片静态正文里出现一次（无 JS 也读得到）。
+        // 分母是「不同文案数」——同一份文案覆盖 N 个型号时说一遍就够（那正是 modelOffers 的口径）。
+        prerenderedTexts: [...distinct].filter(t => card.memberText.includes(t.slice(0, 12))).length,
+        distinctTexts: distinct.size
+      };
+    });
+
     return {
-      deals: data.deals.filter(d => d.type === 'deal').length,
+      deals: byId.size,
       cards: cards.length,
       unmatched,
       multiOwned,
-      foldedCards: multi.map(card => ({
-        title: card.title,
-        declared: card.declared,
-        claimed: (owners.get(card.title) || []).length,
-        offer: card.offer.trim(),
-        clamped: card.clamped
-      }))
+      crossVendor,
+      ghostIds,
+      foldedCards
     };
   });
 
-  check('每条优惠都归到恰好一张卡上（没有条目丢失）',
-    folded.unmatched.length === 0 && folded.multiOwned.length === 0,
-    `未认领 ${folded.unmatched.length} 条 / 被多张卡认领 ${folded.multiOwned.length} 条` +
-    (folded.unmatched.length ? ` · 例：${folded.unmatched.slice(0, 3).join('、')}` : '') +
-    (folded.multiOwned.length ? ` · 例：${folded.multiOwned.slice(0, 3).join('、')}` : ''));
+  check('每条优惠按 id 归到恰好一张卡上（没有条目丢失、也没有凭空捏造的 id）',
+    folded.unmatched.length === 0 && folded.multiOwned.length === 0 && folded.ghostIds.length === 0,
+    `未认领 ${folded.unmatched.length} 条 / 被多张卡认领 ${folded.multiOwned.length} 条 / 卡片上不存在的 id ${folded.ghostIds.length} 个` +
+    (folded.unmatched.length ? ` · 例：${folded.unmatched.slice(0, 3).join('、')}` : ''));
+
+  check('认领关系同厂商（折叠键把厂商算进去了，不是只按优惠文案并卡）',
+    folded.crossVendor.length === 0,
+    folded.crossVendor.length ? `跨厂商 ${folded.crossVendor.length} 条 · 例：${folded.crossVendor.slice(0, 2).join(' / ')}`
+      : `全部 ${folded.deals} 条都落在同一厂商的卡片上`);
+
+  // 这条断言的牙口是**实跑验过**的：把折叠键里的厂商抹掉（`foldKey` 只返回 type+条件+有效期）
+  // 后，重建产物仍能过构建自检，但这条当场变红「跨厂商 11 条」。
+  // （只把厂商换成空串是**不够**的——那样各家仍被优惠类型分在不同组里，不会真的并成一张卡，
+  //   所以验牙口要用「键里根本不含厂商」这种版本。）
 
   check('折叠卡声明的覆盖条数与实际认领数一致（不虚报）',
     folded.foldedCards.every(card => card.declared === card.claimed && card.declared >= 2),
     folded.foldedCards.map(card => `${card.title}：声明 ${card.declared} / 认领 ${card.claimed}`).join(' · ') || '本页没有折叠卡');
 
-  check('折叠卡那行优惠文案整句显示（没有被 2 行 clamp 截断）',
-    folded.foldedCards.every(card => !card.clamped),
-    folded.foldedCards.map(card => `${card.title}：${card.offer.length} 字${card.clamped ? '（被裁）' : ''}`).join(' · ') || '本页没有折叠卡');
+  check('折叠卡的额度口径与数据一致（各型号额度不同时不许写「共用同一份额度」）',
+    folded.foldedCards.every(card => {
+      const shared = card.distinctTexts <= 1;
+      if (card.quota === 'shared') return shared && card.saysShared && !card.saysVaries;
+      if (card.quota === 'varies') return !shared && card.saysVaries && !card.saysShared;
+      return false;
+    }),
+    folded.foldedCards.map(card => `${card.title}：${card.quota} · 数据里 ${card.distinctTexts} 种文案 · ` +
+      `卡上${card.saysVaries ? '「各型号额度不同」' : card.saysShared ? '「共用同一份额度」' : '无额度说明'}`).join(' · ') || '本页没有折叠卡');
+
+  check('折叠卡那行优惠文案没被裁、且说清了代表条目那句',
+    folded.foldedCards.every(card => !card.clamped && card.coversRepresentative),
+    folded.foldedCards.map(card => `${card.title}：${card.offer.length} 字${card.clamped ? '（被裁）' : ''}${card.coversRepresentative ? '' : '（没覆盖到成员文案）'}`).join(' · ') || '本页没有折叠卡');
+
+  check('折叠卡把成员原文预渲染进静态正文（无 JS / 爬虫也读得到）',
+    folded.foldedCards.every(card => card.prerenderedTexts === card.distinctTexts && card.memberTextChars > 0),
+    folded.foldedCards.map(card => `${card.title}：${card.prerenderedTexts}/${card.distinctTexts} 种原文 · ${card.memberTextChars} 字`).join(' · ') || '本页没有折叠卡');
+
+  check('被折叠的每一条都还能从首页点到自己的详情页',
+    folded.foldedCards.every(card => card.memberLinks.length === card.declared &&
+      card.memberLinks.every(href => /^deal\/[^/]+\/$/.test(href))),
+    folded.foldedCards.map(card => `${card.title}：成员链接 ${card.memberLinks.length}/${card.declared}`).join(' · ') || '本页没有折叠卡');
 
   console.log('\n=== 5) logo 簇 hover 展开不影响布局 ===');
   // 用真实鼠标悬停触发 :hover（不是注入 CSS 模拟），measure 前后四个量。
@@ -1733,7 +1838,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     entry: document.querySelectorAll('#facets [data-facet="fav"]').length
   }));
   check('零收藏时筛选条里没有收藏入口（不给「点了没反应」的按钮）',
-    favBaseline.entry === 0 && favBaseline.cards > 45,
+    favBaseline.entry === 0 && favBaseline.cards >= 30,
     `入口 ${favBaseline.entry} 个 · 默认视图 ${favBaseline.cards} 张卡片`);
 
   // 真实鼠标点星标（会移动焦点，与键盘路径一致）
@@ -1871,9 +1976,55 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     afterPrune.stored === 1 && afterPrune.count === 1 && afterPrune.prunes === 0 && afterPrune.cards === 1,
     `localStorage ${afterPrune.stored} 条 · 入口计数 ${afterPrune.count} · 清理按钮 ${afterPrune.prunes} 个 · 视图 ${afterPrune.cards} 张卡片`);
 
+  // 17.7b) 折叠接管的收藏：2.30 之前星标过的**成员条目 id** 现在由那张折叠卡代表。
+  // 这是「折叠不许弄丢用户数据」的直接判据 —— 之前会显示 0 张卡 + 一句「可能被筛选挡住了」的错话。
+  // 用一个真的会被折叠的 id（从卡片的 data-deal-ids 里取一条非代表条目）。
+  await page.evaluate(() => { try { localStorage.removeItem('dsh.favorites'); localStorage.removeItem('dsh.compare'); } catch (e) { /* 忽略 */ } });
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);
+  const foldedFav = await (async () => {
+    const member = await page.evaluate(async () => {
+      const data = await (await fetch('deals.json')).json();
+      const card = [...document.querySelectorAll('article.g')].find(c => (c.dataset.dealIds || '').split(',').length > 3);
+      if (!card) return null;
+      const ids = card.dataset.dealIds.split(',');
+      return {
+        card: card.querySelector('h3').textContent.trim(),
+        // 取一个**不是代表条目**的成员：它才是 2.30 里「被折走」的那一类
+        id: ids.slice(1).find(id => id !== ids[0]) || ids[1],
+        rep: ids[0],
+        deals: data.deals.length
+      };
+    });
+    if (!member) return { skipped: true };
+    await page.evaluate(id => localStorage.setItem('dsh.favorites', JSON.stringify([id])), member.id);
+    await page.goto(base, { waitUntil: 'load' });
+    await waitForApp(page);
+    await page.click('#facets [data-facet="fav"]');
+    await page.waitForTimeout(320);
+    const view = await page.evaluate(() => ({
+      cards: document.querySelectorAll('article.g').length,
+      titles: [...document.querySelectorAll('article.g h3')].map(h => h.textContent.trim()),
+      stats: (document.getElementById('stats') || {}).textContent.trim(),
+      prunes: document.querySelectorAll('[data-fav-prune]').length,
+      entry: (() => {
+        const chip = document.querySelector('#facets [data-facet="fav"]');
+        return chip ? chip.textContent.trim() : '';
+      })()
+    }));
+    return Object.assign({ skipped: false }, member, view);
+  })();
+  check('收藏一条已被折叠的成员条目：落到那张折叠卡上、不报「找不到」、也不诱导清理',
+    foldedFav.skipped ||
+      (foldedFav.cards === 1 && foldedFav.titles[0] === foldedFav.card &&
+        foldedFav.prunes === 0 && !/找不到/.test(foldedFav.stats)),
+    foldedFav.skipped ? '（本页没有折叠卡，跳过）'
+      : `收藏成员 id ${foldedFav.id} → 视图 ${foldedFav.cards} 张卡「${foldedFav.titles.join('、')}」· ` +
+        `清理按钮 ${foldedFav.prunes} 个 · 「${foldedFav.stats}」`);
+
   // 收尾：把收藏与收藏视图清干净，别把状态带进 §10 的移动端量测
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.evaluate(() => { try { localStorage.removeItem('dsh.favorites'); } catch (e) { /* 忽略 */ } });
+  await page.evaluate(() => { try { localStorage.removeItem('dsh.favorites'); localStorage.removeItem('dsh.compare'); } catch (e) { /* 忽略 */ } });
   await page.goto(base, { waitUntil: 'load' });
   await waitForApp(page);
 

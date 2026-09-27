@@ -23,6 +23,7 @@
     "verify:shots": "node scripts/tools/verify-site.js --shots",
     "verify:baseline": "node scripts/tools/verify-site.js --json=research/_raw/ours-baseline/verify.json",
     "verify:regress": "node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json",
+    "verify:prefold": "node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify-pre-fold.json",
     "selftest:zh": "node scripts/tools/zh-selftest.js",
     "selftest:expiry": "node scripts/tools/expiry-selftest.js",
     "todo:zh": "node scripts/tools/zh-todo.js",

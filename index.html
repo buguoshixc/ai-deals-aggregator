@@ -390,6 +390,22 @@
 
     /* ---------- 优惠正文 ---------- */
     .of { margin-top: var(--s2); display: flex; gap: var(--s2); }
+    /* 卡内额外内容（折叠卡覆盖的每一条）的锚点。卡片是 192px 定高 + `overflow:hidden`，
+       所以这里只做定位、不占位：里面那块绝对定位地浮在正文之上，卡片的几何一字不变。
+       代价是它压住正文顶上约 11px —— 折叠卡那行文案本来就被压到 2 行上限，多这一行不会更糟；
+       好处是 231 个字塞进 4 行也不会把卡片撑破。 */
+    .ofwrap { position: relative; }
+    .ofwrap .of { margin-top: 13px; }
+    /* 折叠卡覆盖的每一条（预渲染、带站内链接）：绝对定位 ⇒ 不占卡片高度，
+       192px 定高卡片的几何一字不变；10px 单行、可横向滚动 ⇒ 231 字塞进 4 行不会溢出。
+       键盘可达（成员链接是 <a>），聚焦时整块高亮，视觉上不至于「有链接却看不见」。 */
+    .fmembers {
+      position: absolute; top: 0; left: 0; right: 0;
+      font-size: 10px; color: var(--mut); white-space: nowrap; overflow-x: auto;
+    }
+    .fmembers:focus-within { background: var(--line2); }
+    .fmembers a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+    .fmembers a:hover { color: var(--brand); }
     .of .bar { flex: none; width: 3px; border-radius: var(--r-pill); background: var(--t5); margin-top: 1px; }
     .of.t1 .bar { background: var(--t1); }
     .of.t2 .bar { background: var(--t2); }
@@ -614,6 +630,9 @@
     .dmodels .lb { font-size: 10.5px; color: var(--mut); letter-spacing: .4px; }
     .dmodels .mlist { display: flex; gap: var(--s1); flex-wrap: wrap; margin-top: var(--s2); }
     .dmodels .mlist span { font-size: 11px; background: var(--line2); color: var(--ink2); border-radius: var(--r-sm); padding: 2px 8px; }
+    /* 型号链到它自己的详情页：外观与原来的纯文字 chip 一致，只是可点、可聚焦 */
+    .dmodels .mlist a { font-size: 11px; background: var(--line2); color: var(--ink2); border-radius: var(--r-sm); padding: 2px 8px; text-decoration: none; }
+    .dmodels .mlist a:hover { color: var(--brand); text-decoration: underline; text-underline-offset: 2px; }
     /* 折叠卡里「各型号额度」是整句原文，横排会互相顶到 —— 一条一行读得清 */
     .dmodels .mlist.offers { flex-direction: column; align-items: flex-start; gap: var(--s1); }
     .dmodels .mlist.offers span { display: block; line-height: 1.5; }
@@ -1159,7 +1178,7 @@
       [/deepseek/i, 'deepseek', 'DeepSeek'],
       [/^qwen|通义/i, 'qwen', 'Qwen'],
       [/kimi|moonshot/i, 'moonshotai', 'Kimi'],
-      [/glm|chatglm|智谱|cogview|cogvideo/i, 'zhipu', 'GLM'],
+      [/glm|chatglm|智谱/i, 'zhipu', 'GLM'],
       [/hunyuan|混元/i, 'tencent-cloud', '混元'],
       [/doubao|豆包|seedream|seed-?character|^seed|seededit/i, 'volcengine', '豆包'],
       [/^gpt|^o[1-9]\b|dall-?e|sora|whisper/i, 'openai', 'OpenAI'],
@@ -1420,14 +1439,29 @@
       return { lead: lead.trim(), rest: rest.trim() };
     }
 
+    /**
+     * 折叠卡的额度口径 —— 这**不能猜**。
+     *
+     * `modelOffers` 非空就意味着组内各型号的官方文案不一样（额度/规格不同），
+     * 这时写「共用同一份额度」是**假话**：实测火山方舟那张卡 9 个型号有 5 种额度
+     * （文本 50万tokens / 图像 50张 / 200张 / 语音 5000字符 / 20小时 / 向量 50万tokens）。
+     * 两个渲染点（卡片特性标签、详情弹层小标题）都读这一个函数，不许各写一份文案。
+     */
+    function quotaNoteOf(deal) {
+      const models = Array.isArray(deal.models) ? deal.models : [];
+      if (models.length < 2) return null;
+      return deal.modelOffers ? '各型号额度不同' : '共用同一份额度';
+    }
+
     /** 优惠说明（只有 true 的优惠条目才有；工具条目不编造优惠文案） */
     function offerOf(deal) {
       return splitOffer(deal.discountInfo);
     }
 
     /**
-     * 卡片 / 行视图那行优惠文案。折叠卡带 offerSummary（组内每条的文案都在里面，
-     * 因为型号不同额度往往也不同）；单条卡没有这个字段，行为与改动前逐字节相同。
+     * 卡片 / 行视图那行优惠文案。
+     * 折叠卡带 offerSummary（公共前缀只说一遍 + 差异归堆；实在装不下时它就是代表条目原文）。
+     * 单条卡没有这个字段，取的就是自己那条的完整文案 —— 与改动前逐字相同。
      * 详情弹层不用它——弹层是按「一条数据」展示的，那里必须仍是那条的原文。
      */
     function offerTextOf(deal) {
@@ -1439,12 +1473,19 @@
     /**
      * 卡片正文。优惠条目显示优惠说明（档位配色的竖条 + 加粗前半句）；
      * 工具条目显示工具简介（灰条、不加粗）——两者都是数据里已有的原文。
+     * 加粗那一刀切在第一个标点处，与 2.30 之前完全一致（合并后的折叠卡也照切）。
      */
     function offerHtml(deal, tierN) {
       const isDeal = deal.type === 'deal';
       const text = isDeal ? offerTextOf(deal) : String(deal.description || '');
-      if (!text) return '';
-      return '<div class="of ' + (isDeal ? 't' + tierN : 'plain') + '"><span class="bar"></span><div class="tx">' + escapeHtml(text) + '</div></div>';
+      const members = isDeal ? foldMembersHtml(deal) : '';
+      if (!text && !members) return '';
+      const split = isDeal ? splitOffer(text) : null;
+      const body = split && split.lead
+        ? '<b>' + escapeHtml(split.lead) + '</b>' + (split.rest ? ' · ' + escapeHtml(split.rest) : '')
+        : escapeHtml(text);
+      return '<div class="ofwrap">' + members +
+        '<div class="of ' + (isDeal ? 't' + tierN : 'plain') + '"><span class="bar"></span><div class="tx">' + body + '</div></div></div>';
     }
 
     /** 特性标签：只用数据里已有的字段拼，缺了就少显示，不编造 */
@@ -1456,7 +1497,10 @@
       };
       if (Array.isArray(deal.features)) deal.features.forEach(push);
       if (deal.priceLine) push(deal.priceLine);
-      if (Array.isArray(deal.models) && deal.models.length > 1) push(deal.models.length + ' 个模型共用额度');
+      const quota = quotaNoteOf(deal);
+      if (quota) {
+        push((Array.isArray(deal.models) ? deal.models.length : 0) + ' 个模型 · ' + quota);
+      }
       if (deal.eligibility && Array.from(deal.eligibility).length <= 18) push(deal.eligibility);
       return list;
     }
@@ -1546,9 +1590,10 @@
      * ---------------------------------------------------------------- */
 
     /**
-     * 归一厂商键：折叠与筛选共用同一套厂商规则（VENDOR_RULES），因此
-     * 「MiniMax（稀宇科技）」与「MiniMax」这类同厂不同写法不会再各自成卡。
-     * 没有规则的厂商原样返回——绝不给没有规则的条目硬套一个厂商。
+     * 归一厂商键：折叠与筛选共用同一套厂商规则（VENDOR_RULES）。
+     * 所以**凡是在规则表里写明的同厂异名**都会归到同一家（例如 `/阿里|百炼|通义|qwen/i`
+     * 把「阿里云百炼」与「通义」并成一家），折叠时也就不会各出一张卡。
+     * 规则表里没有的两个名字不会被硬凑成一家——那是厂商数据的缺口，得先补数据。
      */
     function canonicalVendorOf(deal) {
       const vendor = vendorOf(deal);
@@ -1591,7 +1636,7 @@
     }
 
     /**
-     * 折叠键：(厂商, 优惠类型)。
+     * 折叠键：(厂商, 优惠类型, 适用条件, 有效期说明)。
      *
      * 旧键是「厂商 × 落地页 × 优惠文案 × 条件 × 有效期」——落地页进了键，于是
      * 智谱那 7 条免费模型（一条一个 docs 页）一条都合不上，页面上一家公司的同类优惠
@@ -1599,13 +1644,20 @@
      * 不同都不再拆开，优惠类型真的不同（新用户资源包 / 邀请好友 / 限时五折 / Batch 五折）
      * 仍然各自成卡。跨厂商绝不会合并（厂商在键里）。
      *
-     * 返回 null 表示该条自成一卡：工具条目、非优惠条目、缺少厂商或落地页的条目都不参与
-     * 折叠（避免把「没有落地页可点」的条目并进一张指向别处的卡）。
+     * 适用条件与有效期**留在键里**：折叠卡只在弹层里展示代表条目的这两项，若组内不一致
+     * （「所有注册开发者」vs「仅企业认证新用户」、「长期有效」vs「2026-12-31 截止」），
+     * 一张卡就只能说清其中一条 —— 那种情况宁可两张卡，也不合并成一张说半句的。
+     *
+     * 返回 null 表示该条自成一卡：工具条目、非优惠条目、缺少厂商或落地页的条目、
+     * 以及**剥掉厂商名与型号后什么都没剩下**的条目（那种「类型」是空的，键会退化成
+     * 厂商本身，把「Cursor」和「Cursor IDE」这类不同条目并成一张）都不参与折叠。
      */
     function foldKey(deal) {
       if (!deal || deal.type !== 'deal') return null;
       if (!deal.vendor || !deal.url) return null;
-      return [canonicalVendorOf(deal).key, offerKindOf(deal)].join('\u0001');
+      const kind = offerKindOf(deal);
+      if (!kind) return null;
+      return [canonicalVendorOf(deal).key, kind, deal.eligibility || '', deal.validity || ''].join('\u0001');
     }
 
     /** 折叠标题里的显示名：优先来源名（百度千帆 / 火山方舟），人工策展来源退回厂商名 */
@@ -1719,6 +1771,9 @@
         offerSummary: foldOfferText(group, base),
         models: models,
         modelCount: models.length,
+        // 覆盖的条目 id（顺序与 models 一一对应）：让「这张卡到底覆盖了哪几条」
+        // 在产物里可逐条复核，而不是只能靠标题字符串反推（那是会被前缀撞车的）
+        dealIds: group.map(deal => String(deal.id || '')),
         // 详情弹层用：每个型号自己的额度（组内文案都相同时为 null，不重复啰嗦）
         modelOffers: modelOffersOf(models, group)
       });
@@ -1822,14 +1877,31 @@
     }
 
     /**
+     * 优惠类型去掉「品牌/型号前缀」后的尾巴：`GLM-* 免费模型 → 免费模型`、
+     * `Doubao-* 语音合成 免费额度 → 语音合成 免费额度`、`* 语音合成 免费额度 → 语音合成 免费额度`。
+     * 带品牌与不带品牌的写法因此能归到同一个桶里 —— 它们说的本来就是同一件事。
+     * 返回空串表示「去掉之后就什么都不剩了」，这种条目不参与合并。
+     */
+    function kindTailOf(kind) {
+      let tail = String(kind || '');
+      // 打头的拉丁品牌词（可带型号占位符）先剥掉
+      tail = tail.replace(new RegExp('^[A-Za-z][A-Za-z0-9]*[._+-]*' + KIND_PLACEHOLDER + '?'), '');
+      // 占位符可能落在中段（`* 语音合成 免费额度`）：剥掉它，好与 `Doubao-* 语音合成 免费额度` 对齐
+      tail = tail.split(KIND_PLACEHOLDER).join('');
+      tail = tail.replace(/^[\s·:：,，;；、（）()\-–—]+/, '').trim();
+      if (!/[\u4e00-\u9fa5A-Za-z0-9]/.test(tail)) return '';
+      return tail;
+    }
+
+    /**
      * 折叠入口：把「同一家公司的同一类优惠」的多行合并为一张卡片。
      *
-     * 主键是 (厂商, 优惠类型)，优惠类型里保留品牌词（GLM-* / Doubao-* / ERNIE-*），
+     * 主键是 (厂商, 优惠类型, 适用条件, 有效期)，优惠类型里保留品牌词（GLM-* / Doubao-* / ERNIE-*），
      * 免得把一家公司的不同产品线混成一张。但同一家公司的**同一类免费模型**常常换了品牌词
      * （智谱那边 GLM 系与 CogView / CogVideoX 都写「免费模型」），只按主键会留下几张
      * 看起来一模一样的卡——所以再补一条**合并轮**：
      * 同一厂商下、去掉品牌词后类型相同（且去掉的确实只是品牌词）的组，并到成员最多的那组。
-     * 合并后 type 取成员最多的类型，卡片标题与卡内模型列表都由组本身重新算，不会张冠李戴。
+     * 合并后卡片标题与卡内模型列表都由组本身重新算，不会张冠李戴。
      *
      * 单成员组原样返回该条目、不改写任何字段，因此非重复条目与工具条目的渲染结果不变。
      */
@@ -1845,18 +1917,19 @@
         groups.get(key).push(deal);
       });
 
-      // 合并轮：只在「同一厂商 + 类型去掉打头的品牌词后完全相同」时动手。
+      // 合并轮：只在「同一厂商 + 类型去掉品牌词后完全相同」时动手。
       // 这个限制很关键：`GLM-* 免费模型` 与 `CogView-* 免费模型` 该并（同一家公司的同一类免费模型，
       // 只是模型家族不同），但 `GLM-* 限时五折` 与 `Batch API 批量调用五折` 语义完全不同
       // （一个是打折、一个是批量接口），品牌词不在打头位置时一律不参与合并。
+      // `kindTailOf` 两种写法都要能归一：`Doubao-语音合成 免费额度` 与 `语音合成 免费额度`
+      // 指的是同一件事，不能因为一边带品牌词就分成两张卡。
       const kinds = new Map();
       for (const [key, group] of groups) {
-        const kind = key.slice(key.indexOf('\u0001') + 1);
-        const stripped = kind.replace(new RegExp('^[A-Za-z][A-Za-z0-9]*[._+-]*' + KIND_PLACEHOLDER), '').trim();
-        if (stripped === kind) continue;
-        // 去掉品牌词后必须还剩下实词（只靠标点相同不算同一类）
-        if (!/[\u4e00-\u9fa5A-Za-z0-9]/.test(stripped)) continue;
-        const bucket = key.slice(0, key.indexOf('\u0001')) + '\u0001' + stripped;
+        const parts = key.split('\u0001');
+        const tail = kindTailOf(parts[1] || '');
+        if (!tail) continue;
+        // 桶里同样带上适用条件与有效期：合并轮不许绕过主键那条诚实性约束
+        const bucket = [parts[0], tail, parts[2] || '', parts[3] || ''].join('\u0001');
         if (!kinds.has(bucket)) kinds.set(bucket, []);
         kinds.get(bucket).push(key);
       }
@@ -2228,9 +2301,17 @@
 
       return '<article class="' + classes.join(' ') + '" data-tier="' + tier.n + '" data-rule="' + escapeAttr(tier.rule) + '"' +
         ' tabindex="0" role="group" aria-label="' + escapeAttr(deal.title + '（按回车查看详情）') + '"' +
-        // 覆盖的条目原名（换行分隔）：门禁靠它把每一条数据认领回这张卡，从而证明「折叠没丢条目」
+        // 这张卡代表的**条目 id**：单条卡就是它自己，折叠卡是它覆盖的那一组（与 models 一一对应）。
+        // 门禁靠它把每条数据认领回一张卡 —— id 与数据一一对应，不会像标题字符串那样被前缀撞车。
+        ' data-deal-ids="' + escapeAttr((Array.isArray(deal.dealIds) && deal.dealIds.length
+          ? deal.dealIds
+          : [deal.id]).filter(Boolean).join(',')) + '"' +
+        // 折叠卡另外声明：覆盖条数、卡内显示用的型号名（由标题剥掉公共后缀得到，不等于条目原名）、
+        // 额度口径（shared / varies）。门禁逐条核对这三项与数据是否一致。
         (Array.isArray(deal.models) && deal.models.length > 1
-          ? ' data-model-count="' + deal.models.length + '" data-models="' + escapeAttr(deal.models.join('\n')) + '"'
+          ? ' data-model-count="' + deal.models.length + '"' +
+            ' data-models="' + escapeAttr(deal.models.join('\n')) + '"' +
+            ' data-quota="' + (deal.modelOffers ? 'varies' : 'shared') + '"'
           : '') + '>' +
         '<span class="tierdot" aria-hidden="true"></span>' +
         '<span class="tiernum" aria-hidden="true" title="' + escapeAttr('档位 ' + tier.n + ' ' + tier.name + ' · ' + (TIER_RULE_LABELS[tier.rule] || '')) + '">' + tier.n + '</span>' +
@@ -2243,6 +2324,34 @@
         '<div class="meta">' + stampHtml(deal) + zhMarkHtml(deal) +
         '<span class="sp"><span class="hint">详情</span>' + cta + '</span></div>' +
         '</article>';
+    }
+
+    /**
+     * 折叠卡覆盖的每一条：**模型名链到它自己的详情页**，官方原文跟在后面。
+     *
+     * 两个作用，都是「不丢东西」：
+     *   ① 站内链接 —— 折叠会把成员条目从首页链接里拿掉，详情页就成了只能靠 sitemap 找到的孤页；
+     *      这里给每条一个链接，30 个被折叠的详情页重新可达（门禁逐个核对）。
+     *   ② 静态正文 —— 这一段是**预渲染**出来的，因此无 JS 的访客与爬虫也读得到每条的额度文案
+     *      （之前只有 JS 建的弹层里有）。样式上收成一行小字，不占视觉重心。
+     */
+    function foldMembersHtml(deal) {
+      const models = Array.isArray(deal.models) ? deal.models : [];
+      const ids = Array.isArray(deal.dealIds) ? deal.dealIds : [];
+      if (models.length < 2 || !ids.length) return '';
+      const offers = deal.modelOffers && typeof deal.modelOffers === 'object' ? deal.modelOffers : null;
+      // 组内文案都一样时（modelOffers 为 null）说一遍就够：挂在第一条上，其余只列型号。
+      const sharedText = offers ? '' : String(deal.discountInfo || '').trim();
+      const rows = models.map((model, i) => {
+        const id = ids[i];
+        const name = escapeHtml(model);
+        const label = id
+          ? '<a href="' + escapeAttr('deal/' + encodeURIComponent(id) + '/') + '">' + name + '</a>'
+          : name;
+        const text = offers && offers[model] ? offers[model] : (i === 0 ? sharedText : '');
+        return '<span>' + label + (text ? '：' + escapeHtml(text) : '') + '</span>';
+      });
+      return '<div class="fmembers" data-fold-members="' + models.length + '">' + rows.join('') + '</div>';
     }
 
     /** 档位分带：只有该档位有卡片时才输出。id 供顶部「跳到档位」锚点使用 */
@@ -2340,16 +2449,28 @@
       cell('核验状态', stamp ? (deal.verified ? '✓ ' + stamp.label + '（已人工对照官方页）' : stamp.label + '（采集时间，非人工核验）') : '');
 
       const models = Array.isArray(deal.models) ? deal.models : [];
+      const ids = Array.isArray(deal.dealIds) ? deal.dealIds : [];
+      const quotaNote = quotaNoteOf(deal);
+      // 型号链到它自己的详情页：折叠之后成员条目从首页链接里消失了，这里把它们接回来
       const modelsHtml = models.length > 1
-        ? '<div class="dmodels"><div class="lb">覆盖模型（' + models.length + '）· 共用同一份额度</div><div class="mlist">' +
-          models.map(model => '<span>' + escapeHtml(model) + '</span>').join('') + '</div></div>'
+        ? '<div class="dmodels"><div class="lb">覆盖模型（' + models.length + '）· ' + escapeHtml(quotaNote || '') + '</div><div class="mlist">' +
+          models.map((model, i) => (ids[i]
+            ? '<a href="' + escapeAttr('deal/' + encodeURIComponent(ids[i]) + '/') + '">' + escapeHtml(model) + '</a>'
+            : '<span>' + escapeHtml(model) + '</span>')).join('') + '</div></div>'
         : '';
       // 折叠卡上每个型号自己那条优惠文案：组内一样时 modelOffers 为 null（不重复啰嗦），
       // 不一样时才逐条列出——折叠把「50张 vs 200张」这种差异留在这里，而不是丢掉。
       const offers = deal.modelOffers && typeof deal.modelOffers === 'object' ? deal.modelOffers : null;
       const modelOffersHtml = offers
         ? '<div class="dmodels"><div class="lb">各型号额度（官方页面原文）</div><div class="mlist offers">' +
-          Object.keys(offers).map(model => '<span><b>' + escapeHtml(model) + '</b>' + escapeHtml(offers[model]) + '</span>').join('') +
+          Object.keys(offers).map((model, i) => {
+            const at = models.indexOf(model);
+            const id = at >= 0 ? ids[at] : '';
+            const name = id
+              ? '<a href="' + escapeAttr('deal/' + encodeURIComponent(id) + '/') + '"><b>' + escapeHtml(model) + '</b></a>'
+              : '<b>' + escapeHtml(model) + '</b>';
+            return '<span>' + name + escapeHtml(offers[model]) + '</span>';
+          }).join('') +
           '</div></div>'
         : '';
 
@@ -2537,6 +2658,8 @@
       deals: [], updatedAt: null, filters: defaultFilters(), cards: [], view: 'cards',
       /** 收藏与对比共用的「id → 卡片 / 条目」索引：按**整份数据**解析，不随当前筛选变化 */
       selectIndex: new Map(),
+      /** 原始条目 id → 它被折进的那张卡（见 buildSelectIndex 第 ③ 级） */
+      selectOwner: new Map(),
       /** localStorage 里原样的收藏 id（含已失效的）；favIds 是其中能在当前数据里解析到的那些 */
       favStored: [], favIds: []
     };
@@ -2625,43 +2748,99 @@
      * 选择是一个跨视图的集合，不是当前视图的子集。旧写法查 `state.cards`，于是
      * 「选 2 条 → 换个筛选把这 2 条挡住 → 点『打开对比』」会**静默失效**：
      * 实测条上仍写着「已选 2 条」而标题条 0 个，点了什么也不发生（门禁只看 DOM 状态，看不见）。
+     *
+     * 查之前先 `resolveSelectId`：**条目被折叠进某张卡时，它的 id 落到那张卡上**，
+     * 这样 2.30 之前存的收藏 / 分享出去的 `?compare=` 链接不会指向一个页面上不存在的条目。
      */
     function cardById(id) {
-      const key = String(id || '');
+      const key = resolveSelectId(id);
       if (!key) return null;
       return state.selectIndex.get(key) || null;
     }
 
     /**
-     * 选择集索引。两级：
+     * 选择集索引。三级，缺一不可：
      *   ① **折叠后的卡片**（与页面上出现的卡片同一个入口，因此标题与用户当初点的那张一致）；
-     *   ② 再用**未过期**的原始条目补齐 —— 覆盖「在筛选视图里星标了折叠组的非代表条目」这类 id。
+     *   ② 再用**未过期**的原始条目补齐 —— 覆盖「在筛选视图里星标了折叠组」这类情况；
+     *   ③ `ownerOf`：**原始条目 id → 它所属的那张卡**。
+     *
+     * ③ 是 2.30 补的，专治折叠带来的一个真问题：收藏是按**卡片 id** 收敛的
+     * （星标挂在卡片上），而 2.30 之后有 30 条条目被折进了别的卡片 ——
+     * 2.30 之前用户星标过的那些条目 id 就再也对不上任何一张卡，收藏视图会显示成 0 张，
+     * 却给一句「可能被筛选挡住了」的错话，而且「清理失效收藏」也不会出现（它并不失效）。
+     * 有了 ownerOf，这种 id 会被落到**它现在所属的那张折叠卡**上：收藏照旧可见，条数不虚报。
      */
     function buildSelectIndex() {
       const index = new Map();
+      const ownerOf = new Map();
       scopedCards(state.deals, selectScopeFilters()).forEach(card => {
         const key = String(card.id || '');
         if (key) index.set(key, card);
       });
       state.deals.forEach(deal => {
         const key = String(deal.id || '');
-        if (key && !index.has(key) && !isExpired(deal)) index.set(key, deal);
+        if (!key || isExpired(deal)) return;
+        if (!index.has(key)) index.set(key, deal);
+        const cardId = foldedIntoOf(deal, index);
+        if (cardId) ownerOf.set(key, cardId);
       });
+      state.selectOwner = ownerOf;
       return index;
+    }
+
+    /**
+     * 这条未过期条目在页面上最终落在哪张卡上：自己成卡（返回它自己的 id）或者被折进了
+     * 某张折叠卡（返回那张卡的 id）。判据用卡片上的 `dealIds` —— 与 `data-deal-ids`
+     * 同一份事实，不用标题字符串反推。
+     *
+     * 注意：**每张卡都有 `dealIds`**（单条卡就是它自己那一条），所以「是不是折叠卡」
+     * 必须看 `modelCount > 1`，不能只看字段在不在 —— 早先写成「有 dealIds 就当折叠」，
+     * 结果把单条卡也当成折叠卡、解析出一个不存在的 id，收藏视图直接空了。
+     */
+    function foldedIntoOf(deal, index) {
+      const key = String(deal.id || '');
+      const cards = [...index.values()].filter(card => Array.isArray(card.dealIds));
+      // 自己就是一张单条卡的，落到自己头上
+      for (const card of cards) {
+        if (card.dealIds.length === 1 && card.dealIds[0] === key) return String(card.id || '');
+      }
+      // 被折进某张折叠卡的，落到那张卡上
+      for (const card of cards) {
+        if (card.dealIds.length > 1 && card.dealIds.indexOf(key) >= 0) return String(card.id || '');
+      }
+      return '';
+    }
+
+    /** 收藏 id → 页面上那张卡的 id（条目被折叠了就落到它所属的卡片上） */
+    function resolveSelectId(id) {
+      const key = String(id || '');
+      if (!key) return '';
+      const owner = state.selectOwner instanceof Map ? state.selectOwner.get(key) : '';
+      return owner || key;
     }
 
     /**
      * 收藏视角的纯数据（喂给 RENDER-CORE 的 facetBarHtml / statsHtml，保持它们是纯函数）：
      *   total   本机收藏总数（storage 原样，含失效的）——入口上的计数就是它
-     *   stale   其中在当前数据里找不到的（条目改名 / 下架）；收藏视图里会说明并提供清理
+     *   stale   其中**真正无效**的条数（存储里的 id 在当前数据里已经不存在了）
      *   hidden  解析得到、但被当前筛选挡住的条数（只在收藏视角下有意义）
+     *
+     * 注意「被折叠进别张卡」的收藏**既不算失效、也不算可用**：它仍然有效（只是由那张折叠卡
+     * 代表），所以既不该诱导用户去「清理」，也不该让「有 1 条找不到」这句话出现。
      */
     function favInfo() {
       const total = state.favStored.length;
+      const usable = state.favStored.filter(id => {
+        const at = resolveSelectId(id);
+        return Boolean(state.selectIndex.get(at)) && at === String(id || '');
+      }).length;
+      const stale = state.favStored.filter(id => !state.selectIndex.get(resolveSelectId(id))).length;
       return {
         total: total,
-        stale: total - state.favIds.length,
-        hidden: state.filters.fav ? Math.max(0, state.favIds.length - state.cards.length) : 0
+        stale: stale,
+        hidden: state.filters.fav ? Math.max(0, state.favIds.length - state.cards.length) : 0,
+        // 统计用（不影响渲染）：被折叠接管的收藏条数
+        merged: total - usable - stale
       };
     }
 
@@ -2842,11 +3021,15 @@
      * 收藏的唯一写入口。
      * `state.favStored` 是 **storage 原样**的那一份（含失效 id），`state.favIds` 是其中能在
      * 当前数据里解析到的那些 —— 渲染只吃 favIds，计数/清理提示吃 favStored。
+     * 解析走 `resolveSelectId`：**被折叠进别张卡的条目 id 会落到那张卡上**（2.30 新增），
+     * 所以 2.30 之前星标过的成员条目不会变成「收藏了但看不见」。
      * 不自动删失效收藏：那是用户自己存的东西，只能在收藏视图里点「清理」显式删除。
      */
     function setFavorites(nextStored) {
       state.favStored = nextStored.map(id => String(id)).filter(Boolean);
-      state.favIds = state.favStored.filter(id => state.selectIndex.has(id));
+      state.favIds = state.favStored
+        .map(resolveSelectId)
+        .filter((id, i, all) => state.selectIndex.has(id) && all.indexOf(id) === i);
       state.filters.favIds = state.favIds;
       favInDetail = state.favIds;                    // 星标/详情按钮读的就是这一份
       writeIdList(FAV_KEY, state.favStored);
@@ -2892,9 +3075,17 @@
       render();
     }
 
-    /** 清理「在当前数据里找不到」的收藏（只删解析不到的那些，其余原样保留） */
+    /**
+     * 清理收藏里**真正失效**的那些：解析不到的（条目改名 / 下架）以及解析到但不是卡片的。
+     *
+     * 注意「被折叠进别张卡」的收藏**不在此列**：它们仍然有效（只是并进了那张折叠卡），
+     * 删掉它们等于替用户扔掉一个还能看的收藏 —— 与 2.22 那条「不自动删用户数据」一致。
+     */
     function pruneStaleFavorites() {
-      const kept = state.favStored.filter(id => state.selectIndex.has(id));
+      const kept = state.favStored.filter(id => {
+        const at = resolveSelectId(id);
+        return Boolean(state.selectIndex.get(at)) && at === String(id || '');
+      });
       if (kept.length === state.favStored.length) return;
       setFavorites(kept);
       syncSelectionUI();
@@ -3038,7 +3229,11 @@
       const wanted = (fromUrl || readIdList(CMP_KEY)).slice(0, CMP_MAX);
       // 数据每天都在变（id 是 厂商|标题|落地页 的指纹），旧选择里的条目可能已经改名或下架。
       // 解析不到的**自动移除**（它们既显示不出来也删不掉），并把这件事写在对比条上，不静默吞掉。
-      cmpInDetail = wanted.filter(id => state.selectIndex.has(id));
+      // 被**折叠进别的卡片**的条目不算找不到：它现在由那张折叠卡代表，链接照旧有效。
+      const resolved = wanted.map(resolveSelectId);
+      cmpInDetail = resolved
+        .filter((id, i, all) => state.selectIndex.has(id) && all.indexOf(id) === i)
+        .slice(0, CMP_MAX);
       const dropped = wanted.length - cmpInDetail.length;
       cmpNote = dropped ? '已移除 ' + dropped + ' 条当前数据里找不到的对比项' : '';
       writeIdList(CMP_KEY, cmpInDetail);

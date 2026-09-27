@@ -1,0 +1,27 @@
+{
+  "target": "http://127.0.0.1:54753/",
+  "generatedAt": "2026-09-22T17:14:39.218Z",
+  "total": 55,
+  "failed": 0,
+  "metrics": {
+    "cards": 62,
+    "cols": 3,
+    "tierHeads": 4,
+    "tiles": 65,
+    "tileKeys": 32,
+    "cardHeight": 192,
+    "firstScreenFull": 9,
+    "firstScreenPart": 12,
+    "gridTop": 160,
+    "pageHeight": 5334,
+    "prerenderedCards": 62,
+    "prerenderedLinks": 124,
+    "coveredDeals": 80,
+    "externalRequests": 0,
+    "failedRequests": 0,
+    "jsErrors": 0,
+    "target": "http://127.0.0.1:49751/",
+    "generatedAt": "2026-09-27T15:34:57.819Z"
+  },
+  "referenceOf": "2.30 之前（da35d0d^）的卡片口径；其余指标沿用本轮基线"
+}
