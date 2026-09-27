@@ -1603,8 +1603,20 @@ AutoDraw：`Autocorrect but for drawings` → 「画画版的自动纠错。」�
 对话模型 / 图像绘画 / 视频 —— 分类筛选本身仍然正确（按原始条目的分类过滤），只是卡片上这一行是**代表**的。
 详情弹层的「各型号额度」在窄屏需要滚动（`.dlg` 是 `overflow:auto`，实测可滚到底）。
 
+**上线（2026-09-27，按用户「推送」）**：推送前 `fetch` —— 远端没有前进（`origin/master` 仍是 `674c63f`，
+正是本分支的基点），因此 **快进**：主工作区 `git merge --ff-only fix/fold-same-vendor`
+（**文件零改动**，只挪指针，`git status` 全程干净）→ `git push origin master` **`674c63f..250ba12`**。
+两条工作流对 `250ba12` **双双 success**：
+[Deploy](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36328609547) ·
+[Verify site (gate)](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36328609490)。
+
+**线上实证**（真浏览器打线上，不拿工作流绿灯当结论）：线上首页 **50 张卡**（改前 62）·
+折叠卡 `智谱AI 免费模型×7` / `百度千帆 新用户免费额度×17` / `火山方舟 免费额度×9` ·
+卡片覆盖条数 **80** · 汇总条「显示 50 条卡片 · 国内 30 · 国外 20」· **JS 错误 0**；
+并且 `verify --url=<线上>` **整链路 127 项 0 失败**（2.29 那次因本机经代理访问 Pages 抖动没跑完，这次一次跑完）。
+
 > 本轮改动全程在隔离工作树 `.worktrees/fold-same-vendor`（分支 `fix/fold-same-vendor`）里做，
-> 因为**主工作区当时有另一个会话在跑**。
+> 因为**主工作区当时有另一个会话在跑**；只有最后快进 master 指针那一步在主工作区执行，那一步不改文件。
 
 ---
 

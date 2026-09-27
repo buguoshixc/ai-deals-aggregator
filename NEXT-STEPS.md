@@ -1,8 +1,8 @@
 # 下一步：现在的状态，以及还需要你点头的事
 
-> 更新于 **2026-09-27**。最后一轮（按你的反馈新起的分支，见第二节·六）：
-> 修「同一家公司的同类优惠没有被合并」—— 智谱AI 那 12 张卡（含 GLM 的 7 条免费模型）现在合成 6 张，
-> **门禁全绿、未合并、未推送**。
+> 更新于 **2026-09-27**。最后一轮：修「同一家公司的同类优惠没有被合并」——
+> 智谱AI 那 12 张卡（含 GLM 的 7 条免费模型）现在合成 6 张，**已按你的「推送」上线并复核线上**
+> （见第二节·六）。
 > 本轮之前：并回上游两次 → 修掉两个手机端横向问题 → 门禁补 3 条断言 → 合并态全门禁复验 → 已按你的「push」上线；
 > 以及第二节·五的「打开对比」点不开 + 收藏列表入口（**已上线**）。
 > 全貌总览见 [`SUMMARY.md`](SUMMARY.md)；逐步记录见 `PROJECT_STATUS.md` 的 2.17–2.30。
@@ -90,7 +90,7 @@ Deploy [run 35849728738](https://github.com/buguoshixc/ai-deals-aggregator/actio
 
 ---
 
-## 二·六、已修：同一家公司的同类优惠并成一张卡（2026-09-27，**未推送**）
+## 二·六、已修并上线：同一家公司的同类优惠并成一张卡（2026-09-27）
 
 **起因是你的反馈**：「同一家公司的优惠没有被合并，就比如 GLM 一下子有 8 条优惠信息」。
 复核后确认**不是数据重复，是呈现口径的问题**（逐步记录见 `PROJECT_STATUS.md` 2.30）：
@@ -125,10 +125,25 @@ Deploy [run 35849728738](https://github.com/buguoshixc/ai-deals-aggregator/actio
 `selftest:zh`(9) / `selftest:expiry`(55) 全绿 · `check-mobile-chrome` 零裁切 ·
 `check-ci-consistency` 24 项 0 失败。
 新增的 §4b 三条断言**当场抓出两个真问题**（认领判据写错、89 字文案确实被 clamp 裁了），
-所以它们不是「写完就绿」的装饰。**未推送、未合并**——按你的话再说。
+所以它们不是「写完就绿」的装饰。
+
+**上线（2026-09-27，按你的「推送」）**：推送前先 `fetch` —— 远端没有前进（`origin/master` 仍是
+`674c63f`），本分支的基点正是它，于是 **快进**：`git merge --ff-only fix/fold-same-vendor`
+（**文件零改动**，只挪 master 指针；主工作区 `git status` 全程干净）→ `git push origin master`
+**`674c63f..250ba12`**。两条工作流对 `250ba12` **双双 success**：
+[Deploy](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36328609547) ·
+[Verify site (gate)](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36328609490)。
+
+**线上实证**（不拿工作流绿灯当结论）：线上首页 **50 张卡**（改前 62）· 折叠卡
+`智谱AI 免费模型×7` / `百度千帆 新用户免费额度×17` / `火山方舟 免费额度×9` ·
+卡片覆盖条数 **80**（一条不丢）· 智谱AI 只剩 **6 张**（其中「GLM-5.3-Flash 限时五折」标题不以「智谱」开头，
+探测按标题前缀只数到 5 张，属探测口径）· 汇总条「显示 50 条卡片 · 国内 30 · 国外 20」· **JS 错误 0**。
+并且**线上整链路冒烟跑通了**：`verify --url=<线上>` **127 项 0 失败**（2.29 那次因本机经代理抖动没跑完，
+这次一次跑完）。
 
 > 本轮全程在隔离工作树 `.worktrees/fold-same-vendor`（分支 `fix/fold-same-vendor`）里做，
-> **没碰主工作区**（当时有另一个会话在跑）。
+> **没碰主工作区**（当时有另一个会话在跑）——只有最后快进 master 指针那一步是在主工作区执行的，
+> 那一步不改任何文件。
 
 ---
 
@@ -155,7 +170,6 @@ master = origin/master            777e3b7  ← 已上线（2026-09-27）：A/B/�
  ├─ feat/favorites-compare       e0cd50d  ← 收藏/对比（c2310d8 实现 + e0cd50d 修 3px）
  ├─ feat/expiry-window           c02e017  ← 活动期限三分类
  ├─ fix/favorites-entry-and-compare-open  875b723  ← 2.29：修「打开对比」+ 收藏列表入口（**已并入 master**）
- ├─ fix/fold-same-vendor         da35d0d  ← 2.30：同一家公司的同类优惠并成一张卡（智谱 12→6 张，**未合并、未推送**）
  └─ trial/fav-cmp-merge         0c7e5aa  ← 2.29 的合并预演分支（**已随快进并入 master**）
 backup/pre-ab-merge              fb08832  ← A/B 合并前的 master（保险）
 backup/pre-origin-merge-b261add  b261add ← 并上游前的 master（保险）
@@ -163,8 +177,9 @@ backup/pre-origin-merge-b261add  b261add ← 并上游前的 master（保险）
 
 > **2.30 那条分支是在隔离工作树里做的**：`.worktrees/fold-same-vendor`（`.gitignore` 已覆盖
 > `.worktrees/`，不会进主仓库索引）。当时主工作区有另一个会话在跑采集，所以没有在主工作区里改任何文件。
-> 要复核它：`git -C ".worktrees/fold-same-vendor" show --stat da35d0d`，或直接
-> `cd .worktrees/fold-same-vendor && npm run build && npm run verify`。
+> 它已按你的「推送」**快进并入 `master` 并推上去了**（`674c63f..250ba12`），两条工作流 success。
+> 要复核：`git -C ".worktrees/fold-same-vendor" show --stat da35d0d`，或
+> `cd .worktrees/fold-same-vendor && npm run build && npm run verify`（还在，随时能复跑）。
 
 > **现在本地与上游完全一致**（`git status -sb` 无 ahead/behind）。要回退**已上线的**东西，
 > 不要 `reset`（历史已经推出去了），用 `git revert -m 1 <merge>` 或直接 revert 单个提交。
