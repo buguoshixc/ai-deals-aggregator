@@ -1530,6 +1530,41 @@ G11 的 `buildDetailActions()` 与 `insertAdjacentElement('beforebegin', …)` �
 该文件（`scripts/tools/build-local.js`）在 master 线上被改过，而 `index.html` **一行未动**——
 所以「卡片 / 筛选条 / 汇总这些预渲染标记区与改动前逐字节相同」这条结论在合并态依然成立。
 
+#### ⑩ 上线（2026-09-27，按用户「推送上线」）
+
+**推送链**（本地 7 个提交，快进）：`4a37a3c..da3b6e1  master -> master`，之后 `master` = `origin/master` = **`da3b6e1`**。
+其中除了本轮的 `875b723` / `f601f37` / `0c7e5aa`，还包含**另一会话的两个本地提交**（`cfd443b`、`882da8d`）——
+它们本来就挂在 `master` 上，推送绕不开；如实记在这里。
+
+**推送前必须先并回远端，而且远端确实前进过**：`fetch` 发现 `origin/master` 已从 `35aa371` 走到 `4a37a3c`
+（**8 次定时数据更新**，2026-09-24 ~ 09-27，只动 `deals.json`，+237/−191）。只读预演 `git merge-tree` 报零冲突，
+真合并也只有 `deals.json` 一个文件。合并后数据：**132 条**（优惠 80 / 工具 52，比本轮起点多 2 条工具条目），
+预渲染卡片仍是 **62 张**、详情页仍是 80 个。
+
+**顺带补掉一个会让新门禁当场变红的坑**：那 2 条新进工具条目（DeepBrain AI / AutoDraw）没有中文译文，
+`check:zh` 报「待译 2 条」，而 `verify.yml` 的 `Translation self-test` 是**硬步骤**（没有 `continue-on-error`）——
+带着它推上去，这条新门禁的**第一次运行**就会失败。按仓库既有流程补了译文（`zh-todo.js` → 填译文 → `--scaffold` 盖原文指纹），
+既有 41 条零改动（逐条 JSON 等值比对），`check:zh` exit 0、`selftest:zh` 9 项 0 失败。
+**这 2 条译文是 agent 起草的**（DeepBrain AI：`A tool to create text-to-speech videos.` → 「把文本做成配音视频的工具。」；
+AutoDraw：`Autocorrect but for drawings` → 「画画版的自动纠错。」），欢迎按官方文案复核。
+
+**发布链与线上实证**（都不拿工作流绿灯当结论）：
+
+| 项 | 结果 |
+|---|---|
+| `Deploy to GitHub Pages`（push `da3b6e1`） | ✅ **success**；线上 `index.html` 279,385 字节，本轮 7 个标记（`data-fav-open` / `data-fav-prune` / `buildSelectIndex` / `state.selectIndex` / `data-facet="fav"` / `cmpNote` / `selectScopeFilters`）**全部存在** |
+| `Verify site (gate)`（push `da3b6e1`） | ✅ **success**（这条新门禁的**首次运行**） |
+| 线上 `deals.json` | ✅ HTTP 200 · 131,857 字节 · 132 条 · `updatedAt 2026-09-27T11:51:17+08:00` |
+| 线上详情页抽样 | ✅ `deal/2eae0e246de2/` HTTP 200（55,125 字节） |
+| **线上定向探针**（显式走代理、真实鼠标操作） | 首屏 62 卡 / `lastUpdated 2026/9/27 11:51:17` / 零收藏时**无**收藏入口 → 点星标后入口出现「★ 我的收藏1」→ 点入口进收藏视图（1 张卡、`aria-pressed=true`、「显示 1 条收藏卡片」）→ 加 2 条对比后点「打开对比」：**`display=block`、920×548、`:modal=true`、2 列**（本轮修的那条）→ Esc 后 `open=false` 且无残留 `:modal`；**JS 错误 0** |
+
+**一处如实说明（本轮门禁没做到的事）**：`npm run verify -- --url=<线上>` 这条**整链路**冒烟在本机**跑不完**——
+三次尝试分别死在不同阶段（§11 等 `deals.json` 应用启动超时、另两次在更早的页面装载阶段），
+是这台机器**经代理访问 Pages 的抖动**（同一时刻 PowerShell 直查线上 200、定向探针一次装载成功）。
+本地同一份产物 `verify:regress` **129 项 0 失败**（含全部 16 条新断言）。
+**结论按证据分级写**：本地全量门禁绿 + 线上产物完整性 + 线上定向探针通过；
+「线上 124 项整链路」这一条**没有拿到绿**，网络稳定时可重跑补上。
+
 ---
 
 ## 三、命令速查

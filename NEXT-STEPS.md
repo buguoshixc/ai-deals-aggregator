@@ -59,7 +59,7 @@ Deploy [run 35849728738](https://github.com/buguoshixc/ai-deals-aggregator/actio
 
 ---
 
-## 二·五、待你点单：收藏入口 + 「打开对比」修复（分支已就绪，**未合并、未推送**）
+## 二·五、已办：收藏入口 + 「打开对比」修复（**2026-09-27 已上线**）
 
 **起因是你的两条反馈**：点击收藏后没有入口打开收藏列表；加入 2 个模型后点「打开对比」打不开。
 复核后是**三条现象、三条根因**（真浏览器实测，详见 `PROJECT_STATUS.md` 2.29）：
@@ -74,14 +74,17 @@ Deploy [run 35849728738](https://github.com/buguoshixc/ai-deals-aggregator/actio
 与筛选/Tab/折叠无关）；新增**收藏入口**「★ 我的收藏 N」（只看收藏的视图 + 空态说明 +
 失效收藏的「清理这 N 条」，入口放筛选条最前面以免手机上要横滑才看见）。
 
-**门禁（本分支实跑）**：`verify` **124 项 0 失败**（基线 108，+16 条新断言，全部量几何而不是 DOM 状态）；
+**门禁（本地同一份产物实跑）**：`verify` **124 项 0 失败**（基线 108，+16 条新断言，全部量几何而不是 DOM 状态）；
 `verify:regress` **129 项 0 失败**（5 项回归全过：卡片 62→62、首屏 9→9、页高 5382px 在容差内、外部请求 0、JS 错误 0）；
-`build` ×2 摘要一致（139 文件）；`test` / `test:strict` / `check:zh` / `selftest:zh`(7) / `selftest:expiry`(55) 全绿；
-`check-mobile-chrome` 零裁切。默认视图**预渲染产物与改动前逐字节相同**（markup 与 JSON-LD 两侧 SHA 一致）。
+`build` 自检通过；`test` / `test:strict` / `check:zh` / `selftest:zh`(9) / `selftest:expiry`(55) 全绿；
+`check-mobile-chrome` 零裁切。默认视图**预渲染产物与改动前逐字节相同**。
 
-**你要决定的只有一件**：合并进 `master` 并推送（`git merge --no-ff` + `git push`），还是先放着。
-分支在 `.worktrees/fav-entry`（worktree，已 gitignore），**主工作区一个文件都没碰**——
-当时另一个会话正在主工作区改 `build-local.js` 等文件；若它先提交，合并时按 2.27 的「两侧内容都不丢」处理。
+**上线（2026-09-27）**：推送前先 `fetch`，远端已前进到 `4a37a3c`（8 次定时数据更新）→ 零冲突并回 →
+重跑门禁 → 补 2 条新进条目的中文译文（否则新门禁 `Translation self-test` 会当场变红）→
+`git push origin master` 快进到 **`da3b6e1`**。
+`Deploy to GitHub Pages` 与 `Verify site (gate)` **双双 success**；线上定向探针实测：
+收藏入口出现、收藏视图正常、**「打开对比」弹层可见（920×548、`:modal=true`、2 列）**、Esc 后无残留弹层、JS 错误 0。
+唯一没拿到绿的是 `verify --url=` **整链路**冒烟——本机经代理访问 Pages 抖动，三次死在不同加载阶段（如实记在 2.29 ⑩）。
 
 ---
 

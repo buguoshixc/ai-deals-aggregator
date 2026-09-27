@@ -12,10 +12,13 @@
 > 本轮内容：A/B/收尾 + 收藏对比（G11）+ 活动期限三分类 + 上游详情修复 + 两个手机端横向问题修复；
 > 两次并回 `origin/master` 与上线记录见 `PROJECT_STATUS.md` 2.27–2.28。
 >
-> **另有未合并分支**（按用户反馈新做，**未合并、未推送**）：`fix/favorites-entry-and-compare-open`
+> **本轮追加（按用户反馈新做，2026-09-27 已上线）**：`fix/favorites-entry-and-compare-open`
 > —— 修「打开对比」点不开（`hidden` 属性没摘 ⇒ 弹层进了顶层却 `display:none`）+
-> 换筛选后静默失效 + 新增**收藏列表入口**「★ 我的收藏 N」。门禁 `verify:regress` **129 项 0 失败**，
-> 详见 `PROJECT_STATUS.md` 2.29 与 [`NEXT-STEPS.md`](NEXT-STEPS.md) 第二节·五。
+> 换筛选后静默失效 + 新增**收藏列表入口**「★ 我的收藏 N」。
+> 推送前先并回远端 8 次定时数据更新（零冲突），并补 2 条新进条目的中文译文；
+> `git push` 快进到 **`da3b6e1`**，`Deploy to GitHub Pages` 与 `Verify site (gate)` **双双 success**，
+> 线上定向探针实测两条修复都生效（弹层可见 920×548、收藏入口与视图正常、JS 错误 0）。
+> 本地门禁 `verify:regress` **129 项 0 失败**。详见 `PROJECT_STATUS.md` 2.29 与 [`NEXT-STEPS.md`](NEXT-STEPS.md) 第二节·五。
 > 剩余事项（都可选）见 [`NEXT-STEPS.md`](NEXT-STEPS.md)。
 
 ---
