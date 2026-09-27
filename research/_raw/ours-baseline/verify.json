@@ -1,37 +1,38 @@
 {
-  "target": "http://127.0.0.1:49751/",
-  "generatedAt": "2026-09-22T17:14:39.218Z",
-  "total": 55,
+  "target": "http://127.0.0.1:58000/",
+  "generatedAt": "2026-09-27T14:57:46.993Z",
+  "total": 127,
   "failed": 0,
   "metrics": {
-    "cards": 62,
+    "cards": 50,
     "cols": 3,
     "tierHeads": 4,
-    "tiles": 65,
+    "tiles": 53,
     "tileKeys": 32,
     "cardHeight": 192,
     "firstScreenFull": 9,
     "firstScreenPart": 12,
-    "gridTop": 160,
-    "pageHeight": 5334,
-    "prerenderedCards": 62,
-    "prerenderedLinks": 124,
+    "gridTop": 196,
+    "pageHeight": 4566,
+    "prerenderedCards": 50,
+    "prerenderedLinks": 50,
+    "coveredDeals": 80,
     "externalRequests": 0,
     "failedRequests": 0,
     "jsErrors": 0,
-    "target": "http://127.0.0.1:49751/",
-    "generatedAt": "2026-09-22T17:14:39.218Z"
+    "target": "http://127.0.0.1:58000/",
+    "generatedAt": "2026-09-27T14:57:46.993Z"
   },
   "checks": [
     {
       "name": "静态骨架有卡片",
       "ok": true,
-      "detail": "62 条"
+      "detail": "50 条"
     },
     {
       "name": "静态骨架有外链",
       "ok": true,
-      "detail": "124 个"
+      "detail": "50 个"
     },
     {
       "name": "力度分带已预渲染",
@@ -46,16 +47,26 @@
     {
       "name": "logo 已预渲染",
       "ok": true,
-      "detail": "65 个 tile"
+      "detail": "53 个 tile"
     },
     {
       "name": "无 JS 时不显示「详情」提示",
       "ok": true
     },
     {
+      "name": "无 JS 时不渲染收藏/对比控件",
+      "ok": true,
+      "detail": "星标 0 个 / 可见 0 个 · 对比条 0 个 / 可见 false · 对比弹层展开 false"
+    },
+    {
+      "name": "无 JS 时也没有收藏入口 / 失效清理按钮（同样是 JS 建的）",
+      "ok": true,
+      "detail": "收藏入口 0 个 · 清理按钮 0 个"
+    },
+    {
       "name": "卡片数与预渲染一致",
       "ok": true,
-      "detail": "62 条"
+      "detail": "50 条"
     },
     {
       "name": "桌面三列",
@@ -70,17 +81,17 @@
     {
       "name": "首屏完整可见卡片 ≥ 9",
       "ok": true,
-      "detail": "完整 9 张 / 含截断 12 张 · 网格起点 160px · 页高 5334px"
+      "detail": "完整 9 张 / 含截断 12 张 · 网格起点 196px · 页高 4566px"
     },
     {
       "name": "汇总条已填充",
       "ok": true,
-      "detail": "显示 62 条卡片 · 国内 42 · 国外 20 · 覆盖 4 个力度档位"
+      "detail": "显示 50 条卡片 · 国内 30 · 国外 20 · 覆盖 4 个力度档位"
     },
     {
       "name": "顶栏汇总已填充",
       "ok": true,
-      "detail": "62 条优惠 · 已核验 32 · 更新 2026-09-23"
+      "detail": "50 条优惠 · 已核验 32 · 更新 2026-09-27"
     },
     {
       "name": "全部 logo 可加载且有尺寸",
@@ -103,14 +114,29 @@
       "detail": "全部卡片内容在高度内"
     },
     {
+      "name": "每条优惠都归到恰好一张卡上（没有条目丢失）",
+      "ok": true,
+      "detail": "未认领 0 条 / 被多张卡认领 0 条"
+    },
+    {
+      "name": "折叠卡声明的覆盖条数与实际认领数一致（不虚报）",
+      "ok": true,
+      "detail": "智谱AI 免费模型：声明 7 / 认领 7 · 百度千帆 新用户免费额度：声明 17 / 认领 17 · 火山方舟 免费额度：声明 9 / 认领 9"
+    },
+    {
+      "name": "折叠卡那行优惠文案整句显示（没有被 2 行 clamp 截断）",
+      "ok": true,
+      "detail": "智谱AI 免费模型：48 字 · 百度千帆 新用户免费额度：38 字 · 火山方舟 免费额度：25 字"
+    },
+    {
       "name": "悬停确实展开了 logo 簇",
       "ok": true,
-      "detail": "间距 -6px → 3px（4 个 tile）"
+      "detail": "间距 -6px → 4px（4 个 tile）"
     },
     {
       "name": "展开前后：卡片高 / logo 簇宽 / 标题宽 均不变",
       "ok": true,
-      "detail": "{\"before\":{\"card\":192,\"strip\":105,\"tileGap\":-6,\"title\":257,\"titleBox\":20,\"tiles\":4},\"after\":{\"card\":192,\"strip\":105,\"tileGap\":3,\"title\":257,\"titleBox\":20,\"tiles\":4}}"
+      "detail": "{\"before\":{\"card\":192,\"strip\":105,\"tileGap\":-6,\"title\":167,\"titleBox\":20,\"tiles\":4},\"after\":{\"card\":192,\"strip\":105,\"tileGap\":4,\"title\":167,\"titleBox\":20,\"tiles\":4}}"
     },
     {
       "name": "点卡片打开弹层",
@@ -134,7 +160,7 @@
     {
       "name": "弹层有字段表与领取入口",
       "ok": true,
-      "detail": "4 个字段"
+      "detail": "5 个字段"
     },
     {
       "name": "弹层 logo 一行平铺",
@@ -148,7 +174,7 @@
     {
       "name": "「已核验」筛选生效",
       "ok": true,
-      "detail": "62 → 32"
+      "detail": "50 → 32"
     },
     {
       "name": "「国内」筛选生效",
@@ -158,7 +184,7 @@
     {
       "name": "取消筛选后回到全量",
       "ok": true,
-      "detail": "62"
+      "detail": "50"
     },
     {
       "name": "非力度排序时不显示分带",
@@ -168,27 +194,27 @@
     {
       "name": "切回力度排序恢复分带",
       "ok": true,
-      "detail": "分带 4 个，卡片 62"
+      "detail": "分带 4 个，卡片 50"
     },
     {
       "name": "搜索有结果且收窄",
       "ok": true,
-      "detail": "2 条 → 扣子 Coze 部分模型限时免费 每模型 100 次/天 / 百度千帆 新用户免费额度"
+      "detail": "2 条 → 百度千帆 新用户免费额度 / 扣子 Coze 部分模型限时免费 每模型 100 次/天"
     },
     {
       "name": "工具 Tab 有卡片",
       "ok": true,
-      "detail": "112 条（其中工具 50）"
+      "detail": "102 条（其中工具 52）"
     },
     {
       "name": "工具卡不冒充优惠",
       "ok": true,
-      "detail": "0 条越界，50 条用灰条简介"
+      "detail": "0 条越界，52 条用灰条简介"
     },
     {
       "name": "长尾厂商走名称缩写兜底",
       "ok": true,
-      "detail": "官方图形 75 个 / 缩写块 40 个（NE AN GE GA LD LI）"
+      "detail": "官方图形 63 个 / 缩写块 42 个（NE AN GE GA LD LI）"
     },
     {
       "name": "无横向溢出",
@@ -203,7 +229,22 @@
     {
       "name": "移动端卡片完整",
       "ok": true,
-      "detail": "62 卡片 / 69 tile"
+      "detail": "50 卡片 / 57 tile"
+    },
+    {
+      "name": "390px 与 360px：逐个控件都不被裁、不越出视口（页面级溢出查不出的那一类）",
+      "ok": true,
+      "detail": "13 + 13 个控件逐个量过：自裁 0 · 被祖先裁 0 · 越出视口 0"
+    },
+    {
+      "name": "390px 与 360px：跳转 chip 都排满一行（不折成 3+1、右侧不留大片空白）",
+      "ok": true,
+      "detail": "390px: chips=4 rows=1 perRow=[4] 余量=0px · 360px: chips=4 rows=1 perRow=[4] 余量=0px"
+    },
+    {
+      "name": "360px 页面级无横向溢出（390px 那条量不到更窄的视口）",
+      "ok": true,
+      "detail": "溢出 0px · 网格 328px / 容器 328px"
     },
     {
       "name": "手机弹层也在正中",
@@ -217,7 +258,7 @@
     {
       "name": "卡片提示只给有译文的条目",
       "ok": true,
-      "detail": "62 张卡中 6 张带「中文」提示"
+      "detail": "50 张卡中 6 张带「中文」提示"
     },
     {
       "name": "提示语说明详情页有中文翻译",
@@ -265,7 +306,7 @@
     {
       "name": "无译文的卡片不出现译文块",
       "ok": true,
-      "detail": "「GLM-4.7-Flash 免费模型」0 个译文块"
+      "detail": "「智谱AI 免费模型」0 个译文块"
     },
     {
       "name": "工具卡片的英文简介也带译文",
@@ -276,6 +317,326 @@
       "name": "手机端译文可折叠且不撑破弹层",
       "ok": true,
       "detail": "宽度合规 / 3 块 true→false / 横向溢出 0px"
+    },
+    {
+      "name": "语义标签齐备（header / nav / main）",
+      "ok": true,
+      "detail": "header=1 nav=2 main=1"
+    },
+    {
+      "name": "筛选按钮逐个带 aria-pressed",
+      "ok": true,
+      "detail": "11/11 个"
+    },
+    {
+      "name": "亮色主题：低于 4.5:1 的文本 ≤ 20",
+      "ok": true,
+      "detail": "抽样 635 · 跳过复杂背景 8 · 低于要求 0 · 最低 4.51 · 最差 无"
+    },
+    {
+      "name": "切到深色立即生效并记住",
+      "ok": true,
+      "detail": "data-theme=dark localStorage=dark color-scheme=dark body=rgb(11, 13, 16)"
+    },
+    {
+      "name": "刷新后仍是深色（无「先亮后暗」闪回）",
+      "ok": true,
+      "detail": "data-theme=dark body=rgb(11, 13, 16)"
+    },
+    {
+      "name": "暗色主题：低于 4.5:1 的文本 ≤ 20",
+      "ok": true,
+      "detail": "抽样 635 · 低于要求 0 · 最低 5.24 · 最差 无"
+    },
+    {
+      "name": "两种主题下抽样量相当（深色不是把内容藏起来）",
+      "ok": true,
+      "detail": "亮色 635 → 暗色 635"
+    },
+    {
+      "name": "切回「跟随系统」会清掉手动选择",
+      "ok": true,
+      "detail": "data-theme=null localStorage=null"
+    },
+    {
+      "name": "prefers-reduced-motion 下动效被关掉",
+      "ok": true,
+      "detail": "卡片 transition-duration=1e-05s · 仍在动的元素 0 个"
+    },
+    {
+      "name": "同页锚点导航存在且都有落点",
+      "ok": true,
+      "detail": "4 个锚点 / 落点 4 个 / 首个落点 top=198px"
+    },
+    {
+      "name": "点锚点真的跳到该档位",
+      "ok": true,
+      "detail": "scrollY 0 → 642（#tier-2）"
+    },
+    {
+      "name": "非分带排序时锚点导航隐藏（不留死锚点）",
+      "ok": true,
+      "detail": "不分带时 hidden=true（分带 0 个）· 切回后恢复=true"
+    },
+    {
+      "name": "详情里有预填 id 的纠错入口",
+      "ok": true,
+      "detail": "https://github.com/buguoshixc/ai-deals-aggregator/issues/new?title=%5B%E4%BF…（rel=noopener noreferrer）"
+    },
+    {
+      "name": "页面声明了两份订阅源",
+      "ok": true,
+      "detail": "application/rss+xml → feed.xml · application/feed+json → feed.json"
+    },
+    {
+      "name": "feed.json 是 JSON Feed 1.1 且条目与 feed.xml 一致",
+      "ok": true,
+      "detail": "80 条（xml 80）· 首条 https://cloud.baidu.com/doc/qianfan/s/Imi2rp"
+    },
+    {
+      "name": "结构化数据含 WebSite 节点",
+      "ok": true,
+      "detail": "Organization / WebSite / BreadcrumbList / FAQPage / ItemList"
+    },
+    {
+      "name": "首页标题链接指向站内详情页",
+      "ok": true,
+      "detail": "deal/ebd47f6d2522/（target=无）"
+    },
+    {
+      "name": "首页 CTA 仍直达厂商官方页",
+      "ok": true,
+      "detail": "https://docs.bigmodel.cn/cn/guide/models/free/glm-4.7-fl（target=_blank）"
+    },
+    {
+      "name": "详情页有标题与面包屑",
+      "ok": true,
+      "detail": "GLM-4.7-Flash 免费模型 · 面包屑 3 段 · 正文 366 字符"
+    },
+    {
+      "name": "详情页 canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/deal/ebd47f6d2522/（当前路径 /deal/ebd47f6d2522/）"
+    },
+    {
+      "name": "详情页有返回入口与官方链接",
+      "ok": true,
+      "detail": "返回入口=true · 官方链接 2 个"
+    },
+    {
+      "name": "详情页有结构化数据",
+      "ok": true,
+      "detail": "2 段"
+    },
+    {
+      "name": "详情页没有 JS 错误",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "详情页没有外部请求",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "详情页不执行 JS 也能读到内容",
+      "ok": true,
+      "detail": "正文 639 字符 · 标题「GLM-4.7-Flash 免费模型」· 官方链接 3 个"
+    },
+    {
+      "name": "详情页沿用首页的主题选择",
+      "ok": true,
+      "detail": "data-theme=dark · 选中「dark」· body=rgb(11, 13, 16)"
+    },
+    {
+      "name": "有视图切换器（卡片 / 列表）",
+      "ok": true,
+      "detail": "2 个按钮"
+    },
+    {
+      "name": "列表视图：首屏完整可见 ≥ 12 行（实测 13，卡片视图 9）",
+      "ok": true,
+      "detail": "13 行（行高 46px · 共 50 行 · 页高 3356px）；卡片视图同口径 9 张"
+    },
+    {
+      "name": "列表视图：条目数与卡片一致且字段同源",
+      "ok": true,
+      "detail": "50 行 · 站内标题链接=true · 官方 CTA=true"
+    },
+    {
+      "name": "列表视图：不分带且锚点导航隐藏（不留死锚点）",
+      "ok": true,
+      "detail": "分带 0 个 · 锚点 hidden=true"
+    },
+    {
+      "name": "列表视图：偏好已写入 localStorage",
+      "ok": true,
+      "detail": "dsh.view=rows"
+    },
+    {
+      "name": "刷新后仍是列表视图",
+      "ok": true,
+      "detail": "class=rows · 选中「rows」"
+    },
+    {
+      "name": "列表视图整行也能打开详情",
+      "ok": true,
+      "detail": "弹层 open=true「智谱AI 免费模型」"
+    },
+    {
+      "name": "切回卡片视图恢复原样（密度与分带都不变）",
+      "ok": true,
+      "detail": "50 张卡 · 首屏完整可见 9 张 · 分带 4 个 · dsh.view=cards"
+    },
+    {
+      "name": "手机端列表视图明显更短且不横向溢出",
+      "ok": true,
+      "detail": "卡片 10675px → 列表 3912px（4.6 屏 · 50 行 · 横向溢出 0px）"
+    },
+    {
+      "name": "卡片进入 Tab 顺序且标注了键盘用法",
+      "ok": true,
+      "detail": "50/50 张可聚焦 · 50 张有 aria-label"
+    },
+    {
+      "name": "回车能打开详情",
+      "ok": true,
+      "detail": "弹层=true「智谱AI 免费模型」"
+    },
+    {
+      "name": "Esc 关闭后焦点归还给那张卡片",
+      "ok": true,
+      "detail": "弹层=false · 焦点在 <article>「智谱AI 免费模型」"
+    },
+    {
+      "name": "列表视图的行同样可聚焦、回车打开、Esc 后归位",
+      "ok": true,
+      "detail": "弹层=true · 行全部可聚焦=true · 焦点归位=true"
+    },
+    {
+      "name": "卡片上有收藏星标，且是绝对定位（不参与布局）",
+      "ok": true,
+      "detail": "position=absolute aria-pressed=false · aria-label「收藏 智谱AI 免费模型」"
+    },
+    {
+      "name": "点星标即收藏，且不会顺带弹出详情弹层",
+      "ok": true,
+      "detail": "aria-pressed=true · 详情弹层=false"
+    },
+    {
+      "name": "收藏写进 localStorage，刷新后仍然亮着",
+      "ok": true,
+      "detail": "刷新前 localStorage=[\"ebd47f6d2522\"] → 刷新后 aria-pressed=true · 卡片高 192→192px · 标题宽 278→278px"
+    },
+    {
+      "name": "详情弹层里有完整标注的「收藏 / 加入对比」",
+      "ok": true,
+      "detail": "收藏「★收藏」· 对比「加入对比」"
+    },
+    {
+      "name": "对比最多收 4 条，第 5 条被挡住",
+      "ok": true,
+      "detail": "点 5 次收进 4 条 · localStorage 4 条 · 对比条「已选 4 / 4 条进入对比」· 标题条 4 个"
+    },
+    {
+      "name": "选择写进可分享 URL（?compare=id,id,…）",
+      "ok": true,
+      "detail": "?compare=ebd47f6d2522,ead998e58cd9,6869e7866510,d8d0ba522315"
+    },
+    {
+      "name": "分享链接打开后选择被复现（URL 是唯一事实来源，不靠本机 localStorage）",
+      "ok": true,
+      "detail": "还原 4 条 · 对比条可见 true · 该上下文里的收藏 0 个 · ?compare=ebd47f6d2522,ead998e58cd9,6869e7866510,d8d0ba522315"
+    },
+    {
+      "name": "对比表：4 列并排、行都是关键字段、单元格零空白",
+      "ok": true,
+      "detail": "4 列 / 4 行（额度、适用条件、有效期、核验状态）· 空格子 0 个"
+    },
+    {
+      "name": "Esc 关闭对比视图并把焦点还给「打开对比」按钮",
+      "ok": true,
+      "detail": "弹层=false · 焦点在 <button>"
+    },
+    {
+      "name": "点「打开对比」弹层真的可见（量几何，不只看 open 属性）",
+      "ok": true,
+      "detail": "open=true · hidden=false · display=block · 920×735px · 在视口内=true · :modal=true · 4 列"
+    },
+    {
+      "name": "关闭对比后不留顶层 modal，页面立刻恢复可交互",
+      "ok": true,
+      "detail": "残留 :modal=false · 关闭后点卡片能开详情=true · 弹层仍开=false"
+    },
+    {
+      "name": "390px 下对比条展开也不产生横向溢出",
+      "ok": true,
+      "detail": "对比条 0–390px / 视口 390px · 溢出 0px · 「已选 4 / 4 条进入对比」"
+    },
+    {
+      "name": "390px 下对比弹层不超出视口（宽表靠内部横滚）",
+      "ok": true,
+      "detail": "弹层 20–370px（宽 350px）/ 视口 390px · 页面横向溢出 0px · 表内可横滚=true"
+    },
+    {
+      "name": "筛选挡住已选项时「打开对比」仍然打开（选择是跨视图的集合，不是当前视图的子集）",
+      "ok": true,
+      "detail": "换筛选后条上「已选 2 / 4 条进入对比」→ 弹层 open=true · display=block · 920px / 2 列"
+    },
+    {
+      "name": "对比条计数与标题条同源（不再「已选 2 条 · 0 个标题」）",
+      "ok": true,
+      "detail": "标题条 2 个 · 条上「已选 2 / 4 条进入对比」"
+    },
+    {
+      "name": "对比选择里的失效项被移除，并在条上说明（不静默消失）",
+      "ok": true,
+      "detail": "localStorage 剩 1 条 · 条可见=true · 打开按钮 disabled=true · 「已选 1 / 4 条进入对比 · 已移除 1 条当前数据里找不到的对比项」"
+    },
+    {
+      "name": "补选一条后失效说明清掉、按钮恢复可用",
+      "ok": true,
+      "detail": "补选成功=true · 选择 2 条 · 按钮 disabled=false · 「已选 2 / 4 条进入对比」"
+    },
+    {
+      "name": "零收藏时筛选条里没有收藏入口（不给「点了没反应」的按钮）",
+      "ok": true,
+      "detail": "入口 0 个 · 默认视图 50 张卡片"
+    },
+    {
+      "name": "收藏一条后出现「我的收藏」入口，计数为 1 且未选中",
+      "ok": true,
+      "detail": "入口「★ 我的收藏1」· 计数 1 / localStorage 1 条 · aria-pressed=false · title「只看我收藏的条目（共 1 条，只存在本机）」"
+    },
+    {
+      "name": "收藏视图只留下收藏的卡片（星标亮、结果条切到收藏口径）",
+      "ok": true,
+      "detail": "1 张卡片 · 星标亮 1 个 · aria-pressed=true · 「显示 1 条收藏卡片」"
+    },
+    {
+      "name": "收藏视图里取消收藏：卡片立刻消失、空态有说明、焦点落到入口",
+      "ok": true,
+      "detail": "0 张卡片 · localStorage 0 条 · 入口仍在=true · 焦点在入口=true · 「没有符合条件的收藏卡片 · 地区 / 分类 / 厂商 / 搜索等筛选可能把它挡住…」"
+    },
+    {
+      "name": "退出收藏视图后回到原来的卡片数（进入/退出不改其它筛选）",
+      "ok": true,
+      "detail": "50 张（进入前 50 张）· 零收藏后入口自动收起=true"
+    },
+    {
+      "name": "收藏入口按本机收藏总数计数（含失效项），视图里说明「找不到」并给出清理按钮",
+      "ok": true,
+      "detail": "入口计数 2 · 视图 1 张卡片 · 清理按钮 1 个 · 「显示 1 条收藏卡片 · 另有 1 条收藏在当前数据里找不到（条目可能已改名或下架）清理这 1 条」"
+    },
+    {
+      "name": "390px 与 360px：收藏入口与清理按钮都在视口内、无横向溢出",
+      "ok": true,
+      "detail": "390px：入口 16–117 · 清理 124–203 · 溢出 0px · 360px：入口 16–117 · 清理 149–228 · 溢出 0px"
+    },
+    {
+      "name": "点「清理」只删失效项：真实收藏保留、计数与说明同步",
+      "ok": true,
+      "detail": "localStorage 1 条 · 入口计数 1 · 清理按钮 0 个 · 视图 1 张卡片"
     },
     {
       "name": "没有外部请求（无 CDN 热链）",

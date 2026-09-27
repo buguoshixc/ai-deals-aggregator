@@ -17,7 +17,10 @@ const RENDER_CORE_RE = /\/\* =+\s*\n\s*\* RENDER-CORE:START[\s\S]*?\/\* =+\s*\n\
 const REQUIRED = [
   'cardHtml', 'gridHtml', 'detailHtml', 'defaultVisible', 'defaultCards', 'defaultFilters',
   'facetBarHtml', 'statsHtml', 'topStatHtml', 'categoryOptionsHtml', 'logoKeys', 'tierOf',
-  'vendorOf', 'offerOf', 'featsOf'
+  'vendorOf', 'offerOf', 'featsOf',
+  // 卡片 / 行视图那行优惠文案的取值口径（折叠卡优先取 offerSummary）：
+  // 单独抽出来，构建期预渲染与浏览器渲染共用同一份，工具也能直接断言折叠卡说了什么
+  'offerTextOf'
 ];
 
 function load(htmlPath = path.join(ROOT, 'index.html')) {

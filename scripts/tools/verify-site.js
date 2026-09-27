@@ -278,6 +278,75 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('卡片内容无溢出', clip.length === 0,
     clip.length ? `${clip.length} 条溢出，例如 ${JSON.stringify(clip.slice(0, 3))}` : '全部卡片内容在高度内');
 
+  console.log('\n=== 4b) 折叠卡：同一家公司的同类优惠并成一张 ===');
+  // 三条独立判据（都是量出来的，不是读 DOM 状态）：
+  //   ① 每一条优惠都归到**恰好一张**卡上——按厂商归一 + 卡片标题里的型号集合认领，
+  //      最后统计「没被认领的条数」「被两张卡同时认领的条数」，两者都必须为 0；
+  //   ② 折叠卡声明覆盖 N 条，那 N 条必须真的都能认领到这张卡上（不虚报）；
+  //   ③ 卡片那行优惠文案整句显示完（没被 2 行 clamp 吃掉半句）。
+  const folded = await page.evaluate(async () => {
+    const data = await (await fetch('deals.json')).json();
+    const norm = text => String(text || '').replace(/[^a-z0-9\u4e00-\u9fa5]+/gi, '').toLowerCase();
+    const cards = [...document.querySelectorAll('article.g')].map(card => ({
+      title: card.querySelector('h3').textContent.trim(),
+      declared: Number(card.dataset.modelCount || 0),
+      claimedTitles: card.dataset.models ? card.dataset.models.split('\n') : null,
+      offer: (card.querySelector('.of .tx') || {}).textContent || '',
+      clamped: card.querySelector('.of .tx')
+        ? card.querySelector('.of .tx').scrollHeight - card.querySelector('.of .tx').clientHeight > 1
+        : false
+    }));
+
+    const owners = new Map();
+    const unmatched = [];
+    const multiOwned = [];
+    for (const deal of data.deals) {
+      if (deal.type !== 'deal') continue;
+      const titleKey = norm(deal.title);
+      // 折叠卡自带 data-models（覆盖的条目原名，换行分隔）⇒ 直接认领，不用猜标题前缀。
+      // 认领判据用「互相包含」：折叠卡里的模型名是条目原名去掉公共后缀后的部分
+      // （「ERNIE-4.5-Turbo-128K」对「ERNIE-4.5-Turbo-128K 新用户免费额度」），
+      // 单条卡的标题则与条目原名完全一致——两种都认。
+      const hits = cards.filter(card => card.claimedTitles
+        ? card.claimedTitles.some(name => { const k = norm(name); return k && (titleKey.includes(k) || k.includes(titleKey)); })
+        : card.title === deal.title);
+      if (!hits.length) { unmatched.push(deal.title); continue; }
+      if (hits.length > 1) multiOwned.push(deal.title);
+      const title = hits[0].title;
+      if (!owners.has(title)) owners.set(title, []);
+      owners.get(title).push(deal.title);
+    }
+
+    const multi = cards.filter(card => card.declared > 1);
+    return {
+      deals: data.deals.filter(d => d.type === 'deal').length,
+      cards: cards.length,
+      unmatched,
+      multiOwned,
+      foldedCards: multi.map(card => ({
+        title: card.title,
+        declared: card.declared,
+        claimed: (owners.get(card.title) || []).length,
+        offer: card.offer.trim(),
+        clamped: card.clamped
+      }))
+    };
+  });
+
+  check('每条优惠都归到恰好一张卡上（没有条目丢失）',
+    folded.unmatched.length === 0 && folded.multiOwned.length === 0,
+    `未认领 ${folded.unmatched.length} 条 / 被多张卡认领 ${folded.multiOwned.length} 条` +
+    (folded.unmatched.length ? ` · 例：${folded.unmatched.slice(0, 3).join('、')}` : '') +
+    (folded.multiOwned.length ? ` · 例：${folded.multiOwned.slice(0, 3).join('、')}` : ''));
+
+  check('折叠卡声明的覆盖条数与实际认领数一致（不虚报）',
+    folded.foldedCards.every(card => card.declared === card.claimed && card.declared >= 2),
+    folded.foldedCards.map(card => `${card.title}：声明 ${card.declared} / 认领 ${card.claimed}`).join(' · ') || '本页没有折叠卡');
+
+  check('折叠卡那行优惠文案整句显示（没有被 2 行 clamp 截断）',
+    folded.foldedCards.every(card => !card.clamped),
+    folded.foldedCards.map(card => `${card.title}：${card.offer.length} 字${card.clamped ? '（被裁）' : ''}`).join(' · ') || '本页没有折叠卡');
+
   console.log('\n=== 5) logo 簇 hover 展开不影响布局 ===');
   // 用真实鼠标悬停触发 :hover（不是注入 CSS 模拟），measure 前后四个量。
   const probe = await page.evaluateHandle(() => {
@@ -1808,6 +1877,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   await page.goto(base, { waitUntil: 'load' });
   await waitForApp(page);
 
+  // 折叠覆盖口径：一张折叠卡贡献它覆盖的条数（data-model-count），单条卡贡献 1。
+  // 这是「数据有没有丢」的量，与「卡片数」刻意分开——折叠本来就会让卡片数下降。
+  metrics.coveredDeals = await page.evaluate(() =>
+    [...document.querySelectorAll('article.g')].reduce((n, card) => {
+      const count = Number(card.dataset.modelCount || 0);
+      return n + (count > 1 ? count : 1);
+    }, 0)
+  );
+
   console.log('\n=== 10) 请求与错误 ===');
   check('没有外部请求（无 CDN 热链）', externalRequests.length === 0,
     externalRequests.length ? externalRequests.slice(0, 3).join(', ') : '全部同源');
@@ -1835,6 +1913,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       const parsed = JSON.parse(fs.readFileSync(baselineFile, 'utf8'));
       const ref = parsed.metrics || parsed;
       const num = v => (typeof v === 'number' ? v : 0);
+      // 卡片数会随折叠口径变化（同一家公司的同类优惠并成一张卡时就该下降），
+      // 所以「不减少」这条盯的是**覆盖的优惠条数**——那才是丢了数据的信号。
+      check('回归：覆盖的优惠条数不减少', metrics.coveredDeals >= num(ref.coveredDeals),
+        `${num(ref.coveredDeals)} → ${metrics.coveredDeals}`);
       check('回归：卡片数不减少', metrics.cards >= num(ref.cards), `${num(ref.cards)} → ${metrics.cards}`);
       check('回归：首屏完整可见不减少', metrics.firstScreenFull >= num(ref.firstScreenFull),
         `${num(ref.firstScreenFull)} → ${metrics.firstScreenFull}`);
