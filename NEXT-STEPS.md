@@ -127,6 +127,13 @@ Deploy [run 35849728738](https://github.com/buguoshixc/ai-deals-aggregator/actio
 新增的 §4b 三条断言**当场抓出两个真问题**（认领判据写错、89 字文案确实被 clamp 裁了），
 所以它们不是「写完就绿」的装饰。
 
+**上线后又做了一轮独立对抗性复核（2.31）**：一个独立子代理专门去**证伪**这次改动 ——
+用破坏性改动验断言是否真会变红、自己写解析器核对产物、构造合并规则反例、真浏览器验收藏/对比/无 JS。
+它查出 **9 个真问题**（其中两个是本轮自己引入的：火山那张卡谎称「9 个模型共用额度」、
+单条卡的加粗前半句被改没了），逐条修完并再次上线（`f9826fd` + `43eba28`）。详见
+`PROJECT_STATUS.md` 2.31；牙齿测试也实跑了（把改动破坏掉，看断言是否变红：4 条断言有牙，
+另一条要用「折叠键根本不含厂商」那种版本才验得出）。
+
 **上线（2026-09-27，按你的「推送」）**：推送前先 `fetch` —— 远端没有前进（`origin/master` 仍是
 `674c63f`），本分支的基点正是它，于是 **快进**：`git merge --ff-only fix/fold-same-vendor`
 （**文件零改动**，只挪 master 指针；主工作区 `git status` 全程干净）→ `git push origin master`
@@ -170,15 +177,19 @@ master = origin/master            777e3b7  ← 已上线（2026-09-27）：A/B/�
  ├─ feat/favorites-compare       e0cd50d  ← 收藏/对比（c2310d8 实现 + e0cd50d 修 3px）
  ├─ feat/expiry-window           c02e017  ← 活动期限三分类
  ├─ fix/favorites-entry-and-compare-open  875b723  ← 2.29：修「打开对比」+ 收藏列表入口（**已并入 master**）
+ ├─ fix/fold-same-vendor         da35d0d  ← 2.30：同一家公司的同类优惠并成一张卡（智谱 12→6 张，**已并入 master**）
+ │                                f9826fd  ← 2.31：修掉对抗性复核查出的 9 个问题（**已并入 master**）
+ │                                43eba28  ← 2.31：加粗切点回到原文第一个标点（**已并入 master**）
  └─ trial/fav-cmp-merge         0c7e5aa  ← 2.29 的合并预演分支（**已随快进并入 master**）
 backup/pre-ab-merge              fb08832  ← A/B 合并前的 master（保险）
 backup/pre-origin-merge-b261add  b261add ← 并上游前的 master（保险）
 ```
 
-> **2.30 那条分支是在隔离工作树里做的**：`.worktrees/fold-same-vendor`（`.gitignore` 已覆盖
+> **2.30 / 2.31 是在隔离工作树里做的**：`.worktrees/fold-same-vendor`（`.gitignore` 已覆盖
 > `.worktrees/`，不会进主仓库索引）。当时主工作区有另一个会话在跑采集，所以没有在主工作区里改任何文件。
-> 它已按你的「推送」**快进并入 `master` 并推上去了**（`674c63f..250ba12`），两条工作流 success。
-> 要复核：`git -C ".worktrees/fold-same-vendor" show --stat da35d0d`，或
+> 已按你的「推送」**快进并入 `master` 并推上去了**：2.30 = `674c63f..250ba12`，
+> 2.31（复核修复）= `6554e26..43eba28`，四次工作流全 success。
+> 要复核：`git -C ".worktrees/fold-same-vendor" log --oneline -6`，或
 > `cd .worktrees/fold-same-vendor && npm run build && npm run verify`（还在，随时能复跑）。
 
 > **现在本地与上游完全一致**（`git status -sb` 无 ahead/behind）。要回退**已上线的**东西，
