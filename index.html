@@ -1461,31 +1461,41 @@
     /**
      * 卡片 / 行视图那行优惠文案。
      * 折叠卡带 offerSummary（公共前缀只说一遍 + 差异归堆；实在装不下时它就是代表条目原文）。
-     * 单条卡没有这个字段，取的就是自己那条的完整文案 —— 与改动前逐字相同。
+     * 单条卡没有这个字段，取的就是自己那条的完整文案 —— 与改动前**逐字相同**。
      * 详情弹层不用它——弹层是按「一条数据」展示的，那里必须仍是那条的原文。
      */
     function offerTextOf(deal) {
       if (deal.offerSummary) return deal.offerSummary;
       const offer = splitOffer(deal.discountInfo);
-      return [offer.lead, offer.rest].filter(Boolean).join(' · ');
+      if (!offer) return '';
+      // 用原文里的那个分隔符，不要统一换成别的字符：这一行是逐字比对过的
+      const sep = ['：', ':', '——', '；', ';', '。', '，', ','].find(s => deal.discountInfo.includes(s)) || ' · ';
+      return offer.lead ? offer.lead + sep + offer.rest : offer.rest;
     }
 
     /**
      * 卡片正文。优惠条目显示优惠说明（档位配色的竖条 + 加粗前半句）；
      * 工具条目显示工具简介（灰条、不加粗）——两者都是数据里已有的原文。
-     * 加粗那一刀切在第一个标点处，与 2.30 之前完全一致（合并后的折叠卡也照切）。
+     *
+     * 单条卡走 `offerOf` 原来那条路（加粗切在**原文第一个标点**处，与 2.30 之前逐字相同）；
+     * 折叠卡才在合并后的文案上重新切一刀。别把单条卡也塞进「先拼成一行再切」那条路——
+     * 那样切点会跟着拼出来的分隔符跑，加粗的位置就变了（2.31 踩过这个坑）。
      */
     function offerHtml(deal, tierN) {
       const isDeal = deal.type === 'deal';
-      const text = isDeal ? offerTextOf(deal) : String(deal.description || '');
-      const members = isDeal ? foldMembersHtml(deal) : '';
-      if (!text && !members) return '';
-      const split = isDeal ? splitOffer(text) : null;
-      const body = split && split.lead
-        ? '<b>' + escapeHtml(split.lead) + '</b>' + (split.rest ? ' · ' + escapeHtml(split.rest) : '')
-        : escapeHtml(text);
-      return '<div class="ofwrap">' + members +
-        '<div class="of ' + (isDeal ? 't' + tierN : 'plain') + '"><span class="bar"></span><div class="tx">' + body + '</div></div></div>';
+      if (!isDeal) {
+        const text = String(deal.description || '');
+        if (!text) return '';
+        return '<div class="ofwrap"><div class="of plain"><span class="bar"></span><div class="tx">' + escapeHtml(text) + '</div></div></div>';
+      }
+      const merged = Boolean(deal.offerSummary);
+      const offer = merged ? splitOffer(deal.offerSummary) : offerOf(deal);
+      if (!offer) return '';
+      const body = offer.lead
+        ? '<b>' + escapeHtml(offer.lead) + '</b>' + (offer.rest ? ' · ' + escapeHtml(offer.rest) : '')
+        : escapeHtml(offer.rest);
+      return '<div class="ofwrap">' + foldMembersHtml(deal) +
+        '<div class="of t' + tierN + '"><span class="bar"></span><div class="tx">' + body + '</div></div></div>';
     }
 
     /** 特性标签：只用数据里已有的字段拼，缺了就少显示，不编造 */
