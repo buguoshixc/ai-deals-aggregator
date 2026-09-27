@@ -91,7 +91,14 @@ Deploy [run 35849728738](https://github.com/buguoshixc/ai-deals-aggregator/actio
 ## 三、分支地图
 
 ```
-master = origin/master            fa2403d  ← 已上线：A/B/收尾 + G11 + 两次并回上游 + 两个手机端横向修复
+master = origin/master            777e3b7  ← 已上线（2026-09-27）：A/B/收尾 + G11 + 活动期限 + 手机端修复
+                                            + 另一会话的采集/门禁收敛 + 2.29（收藏入口 + 「打开对比」修复）
+ ├─ 777e3b7   docs: 上线记录 —— 收藏入口 + 「打开对比」修复已推送并复核线上
+ ├─ da3b6e1   data(zh): 补 2 条定时采集新进条目的中文译文（DeepBrain AI / AutoDraw）
+ ├─ 11d1551   merge: 并回 origin/master 的 8 次定时数据更新（2026-09-24 ~ 09-27，零冲突）
+ ├─ 0c7e5aa   docs: 预演分支复跑门禁 + 澄清合并态 JSON-LD 的哈希变化来源
+ ├─ f601f37   merge: 把 fix/favorites-entry-and-compare-open 并进 master 线（冲突仅 2 个文档）
+ ├─ 882da8d / cfd443b   另一会话：CI 一致性门禁 / 数据契约 / 生成器与文档口径收敛
  ├─ fa2403d   docs: 上线记录（2.28）+ 口径纠正：push 只触发发布，不触发采集
  ├─ ecbc815   fix(mobile): 修掉两个手机端横向问题 + 门禁补 3 条断言   ← 108 项线上冒烟测试打的就是这份（上线当日的记录；线上复测值待复测，见 P0-2）
  ├─ 0d6b869   merge: 并回 origin/master 的 fix/detail-close
@@ -103,7 +110,8 @@ master = origin/master            fa2403d  ← 已上线：A/B/收尾 + G11 + �
  │               └─ feat/polish  f55e8a9  + 圆角间距收敛与键盘可达
  ├─ feat/favorites-compare       e0cd50d  ← 收藏/对比（c2310d8 实现 + e0cd50d 修 3px）
  ├─ feat/expiry-window           c02e017  ← 活动期限三分类
- └─ fix/favorites-entry-and-compare-open   ← 2.29：修「打开对比」+ 收藏列表入口（未合并、未推送）
+ ├─ fix/favorites-entry-and-compare-open  875b723  ← 2.29：修「打开对比」+ 收藏列表入口（**已并入 master**）
+ └─ trial/fav-cmp-merge         0c7e5aa  ← 2.29 的合并预演分支（**已随快进并入 master**）
 backup/pre-ab-merge              fb08832  ← A/B 合并前的 master（保险）
 backup/pre-origin-merge-b261add  b261add ← 并上游前的 master（保险）
 ```
