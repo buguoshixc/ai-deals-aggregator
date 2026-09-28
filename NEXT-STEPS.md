@@ -5,7 +5,33 @@
 > （见第二节·六）。
 > 本轮之前：并回上游两次 → 修掉两个手机端横向问题 → 门禁补 3 条断言 → 合并态全门禁复验 → 已按你的「push」上线；
 > 以及第二节·五的「打开对比」点不开 + 收藏列表入口（**已上线**）。
-> 全貌总览见 [`SUMMARY.md`](SUMMARY.md)；逐步记录见 `PROJECT_STATUS.md` 的 2.17–2.30。
+> 全貌总览见 [`SUMMARY.md`](SUMMARY.md)；逐步记录见 `PROJECT_STATUS.md`（最新一节 **2.33**）。
+>
+> ⚠️ **本文件里的分支/版本坐标已作废**（当时的 `master = 777e3b7`）：之后又有多次定时数据更新与
+> 推送。要复核现状请以 `git log` 与 `PROJECT_STATUS.md` 2.33 为准。
+>
+> **2026-09-28 新增一轮：`v1.0-public-readiness`（分支 `feat/v1-public-readiness`，尚未推送）**
+> —— 目标是把项目从「功能比较完整的个人项目」变成「可以公开、长期、低维护成本运行的数据产品」。
+> 四项已知线上问题已修（有效期语义 / 锚点假隐藏 / 中文译文可搜 / 原文截断留痕）；
+> 发布链改成 `prepublish(完整门禁) → build → deploy`，**门禁红时本次版本绝不发布**；
+> 新增数据源健康状态与 `/status/` 页（跨运行的 `scripts/data/source-health.json`）。
+> 另外：译文门禁从建议性改成硬门禁（漂移必红、待译按 7 天宽限期）。
+> 收尾时 3 条待译（Midjourney / Grok / Unboring.ai，上游改写 + 新进条目）**已由人补译完毕**，
+> 现在 `npm run check:zh` 报 `待译 0 条`；同时修掉一个假红陷阱 —— 已译好的行原先会一直留在
+> `scripts/data/zh-pending.json` 里，等上游再改写一次、译文撤下时会翻出旧日期当成「等了很久」，
+> 现在作者循环 `--scaffold` 会顺带划账（两条牙守着：已译好的必须消失、仍缺译的必须保留原日期）。
+> 下一阶段（学生 + 开发者数据模型）的前置条件见 `PROJECT_STATUS.md` 2.33 的 F 节。
+>
+> **⏳ 还差三件只能由人在 GitHub 网页上做的事**（详细步骤见
+> `research/v1.0-public-readiness-report.md` 第七节）：
+> 1. **建专用 GitHub App**（`Contents: Read and write`、不勾 Webhook），
+>    把 **App ID** 与**私钥全文**存成仓库 Secret `COLLECT_APP_ID` / `COLLECT_APP_PRIVATE_KEY`。
+>    为什么必须：`github-actions`（App ID 15368）是平台原生身份，**不能**被加进 ruleset 绕过名单
+>    （API 422），所以机器人必须有自己可安装的 App 身份。
+> 2. **合并这一版**（顺序：先配好 Secret，再合并 —— 代码刻意不退回 `GITHUB_TOKEN`）。
+> 3. **建 master ruleset**：`Require a pull request`(approvals 0) + `Require status checks: gate`
+>    + `Block force pushes` + `Restrict deletions`；**绕过名单只加第 1 步那个 App**。
+>    验证：PR 上 gate 未过时合不了 · 手动跑一次采集能提交 · **你自己直推 master 被拒**。
 
 ---
 

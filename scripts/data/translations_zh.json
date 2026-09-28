@@ -92,13 +92,34 @@
     "c971e33a9cd0": {
       "_title": "ChatGPT Plus for Veterans (OpenAI)",
       "src": {
-        "discountInfo": "OpenAI, working with SheerID for verification, offers one full year of free ChatGPT Plus to eligible veterans and transitioning servicemembers, alongside example chats and a getting-started guide for job search, benefits, and relocation pla",
+        "discountInfo": "OpenAI, working with SheerID for verification, offers one full year of free ChatGPT Plus to eligible veterans and transitioning servicemembers, alongside example chats and a getting-started guide for job search, benefits, and relocation…",
         "description": "Verify military or veteran status through SheerID at the official claim page.",
         "eligibility": "Veterans and active-duty servicemembers preparing to separate from the military."
       },
       "discountInfo": "OpenAI 与 SheerID 合作完成身份验证，为符合条件的退伍军人和即将退役的现役军人提供整整一年免费 ChatGPT Plus，并附示例对话，以及面向求职、福利申请与搬迁规划的入门指南。",
       "description": "在官方领取页面通过 SheerID 完成军人或退伍身份验证。",
       "eligibility": "退伍军人，以及准备退役的现役军人。"
+    },
+    "cb45e0c735bd": {
+      "_title": "HubSpot AEO Sensor",
+      "src": {
+        "description": "Tracks how AI answer engines shift your website’s visibility."
+      },
+      "description": "追踪 AI 问答引擎如何改变你网站的曝光表现。"
+    },
+    "9e7c938ec401": {
+      "_title": "Midjourney",
+      "description": "用提示词生成图片与视频。",
+      "src": {
+        "description": "Creates images and videos from prompts."
+      }
+    },
+    "376b6b3397e6": {
+      "_title": "Grok",
+      "description": "对话式 AI，基于实时网络与 X 的内容给出及时回答。",
+      "src": {
+        "description": "A conversational AI for timely answers from the live web and X."
+      }
     },
     "a67c07bf4993": {
       "_title": "Ankon AI",
@@ -142,27 +163,6 @@
       },
       "description": "自动处理 B2B 客户沟通与约谈的工具。"
     },
-    "413a77602a7c": {
-      "_title": "Tenki Cloud",
-      "src": {
-        "description": "A tool for self-hosted GitHub Actions runners with automatic scaling capabilities."
-      },
-      "description": "自建 GitHub Actions 运行器，支持自动扩缩容。"
-    },
-    "e3af28ce5ca1": {
-      "_title": "Emergent.sh",
-      "src": {
-        "description": "An IDE for code migration from legacy to modern frameworks through coding agents."
-      },
-      "description": "用编码智能体把遗留代码迁移到现代框架的 IDE。"
-    },
-    "28434ca44079": {
-      "_title": "Google AI Studio",
-      "src": {
-        "description": "A tool for AI development with diverse tools and models."
-      },
-      "description": "集成多种工具与模型的 AI 开发平台。"
-    },
     "ec17511a4284": {
       "_title": "Copilot 3D",
       "src": {
@@ -170,12 +170,12 @@
       },
       "description": "把 2D 图片转成 3D 模型。"
     },
-    "0750a3061d72": {
-      "_title": "Flora AI",
+    "413a77602a7c": {
+      "_title": "Tenki Cloud",
       "src": {
-        "description": "A platform to integrate multiple AI models for generating images, videos, and character designs."
+        "description": "A tool for self-hosted GitHub Actions runners with automatic scaling capabilities."
       },
-      "description": "整合多个 AI 模型，用于生成图像、视频与角色设计。"
+      "description": "自建 GitHub Actions 运行器，支持自动扩缩容。"
     },
     "06bc1d631f62": {
       "_title": "Sync.so",
@@ -184,12 +184,12 @@
       },
       "description": "为视频做口型同步与声音克隆。"
     },
-    "5975c73aa115": {
-      "_title": "Qlip.ai",
+    "e3af28ce5ca1": {
+      "_title": "Emergent.sh",
       "src": {
-        "description": "A tool for creating clips from long-form videos."
+        "description": "An IDE for code migration from legacy to modern frameworks through coding agents."
       },
-      "description": "从长视频中剪出片段的工具。"
+      "description": "用编码智能体把遗留代码迁移到现代框架的 IDE。"
     },
     "72048178d658": {
       "_title": "DeepBrain AI",
@@ -197,6 +197,34 @@
       "src": {
         "description": "A tool to create text-to-speech videos."
       }
+    },
+    "28434ca44079": {
+      "_title": "Google AI Studio",
+      "src": {
+        "description": "A tool for AI development with diverse tools and models."
+      },
+      "description": "集成多种工具与模型的 AI 开发平台。"
+    },
+    "0750a3061d72": {
+      "_title": "Flora AI",
+      "src": {
+        "description": "A platform to integrate multiple AI models for generating images, videos, and character designs."
+      },
+      "description": "整合多个 AI 模型，用于生成图像、视频与角色设计。"
+    },
+    "5975c73aa115": {
+      "_title": "Qlip.ai",
+      "src": {
+        "description": "A tool for creating clips from long-form videos."
+      },
+      "description": "从长视频中剪出片段的工具。"
+    },
+    "cbfce04c5556": {
+      "_title": "Motionleap",
+      "src": {
+        "description": "An App to animate still images with effects."
+      },
+      "description": "给静态照片加上动效的 App。"
     },
     "9fdccd9de525": {
       "_title": "Humva",
@@ -212,18 +240,11 @@
       },
       "description": "制作多语言视频的工具。"
     },
-    "cbfce04c5556": {
-      "_title": "Motionleap",
+    "39d2832e3c8f": {
+      "_title": "Unboring.ai",
+      "description": "在线编辑照片与视频的平台。",
       "src": {
-        "description": "An App to animate still images with effects."
-      },
-      "description": "给静态照片加上动效的 App。"
-    },
-    "f9720295b45d": {
-      "_title": "AutoDraw",
-      "description": "画画版的自动纠错。",
-      "src": {
-        "description": "Autocorrect but for drawings"
+        "description": "A platform to edit photos and videos online."
       }
     },
     "2d0ceeea880d": {
@@ -303,6 +324,20 @@
       },
       "description": "一个 AI 基准测试：考察语言模型用 SVG 画出 Gary Busey 肖像的水平。"
     },
+    "f9720295b45d": {
+      "_title": "AutoDraw",
+      "description": "画画版的自动纠错。",
+      "src": {
+        "description": "Autocorrect but for drawings"
+      }
+    },
+    "0ddacfb2cc6e": {
+      "_title": "Wavel.ai",
+      "src": {
+        "description": "A platform with video solutions, including subtitling and voiceovers."
+      },
+      "description": "一个提供视频解决方案的平台，包含字幕与配音功能。"
+    },
     "72410d92e184": {
       "_title": "TickClip",
       "src": {
@@ -316,34 +351,6 @@
         "description": "A tool that creates short, highlight clips from long-form videos."
       },
       "description": "从长视频里自动挑出精彩片段做成短片。"
-    },
-    "cb45e0c735bd": {
-      "_title": "HubSpot AEO Sensor",
-      "src": {
-        "description": "Tracks how AI answer engines shift your website’s visibility."
-      },
-      "description": "追踪 AI 问答引擎如何改变你网站的曝光表现。"
-    },
-    "9e7c938ec401": {
-      "_title": "Midjourney",
-      "src": {
-        "description": "Unlock true digital artistry."
-      },
-      "description": "释放真正的数字艺术表现力。"
-    },
-    "376b6b3397e6": {
-      "_title": "Grok",
-      "src": {
-        "description": "Chat with data, images, code, and real-time search."
-      },
-      "description": "与数据、图片、代码对话，并支持实时联网搜索。"
-    },
-    "0ddacfb2cc6e": {
-      "_title": "Wavel.ai",
-      "src": {
-        "description": "A platform with video solutions, including subtitling and voiceovers."
-      },
-      "description": "一个提供视频解决方案的平台，包含字幕与配音功能。"
     }
   }
 }

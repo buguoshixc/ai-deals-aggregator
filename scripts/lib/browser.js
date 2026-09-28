@@ -27,6 +27,24 @@ const DEFAULT_CONTENT_TIMEOUT = 25000;
 const DEFAULT_SETTLE_WAIT = 600;
 
 let cachedChannel;
+/** 最近一次「浏览器能不能起来」的结论：source-health 用它判定无头来源到底有没有条件跑（探针本身不写盘） */
+let launchStatus = { attempted: false, ok: null, channel: null, error: null, checkedAt: null };
+
+function recordLaunch(ok, channel, error) {
+  launchStatus = {
+    attempted: true,
+    ok: Boolean(ok),
+    channel: channel || null,
+    error: ok ? null : String(error || '浏览器不可用').split('\n')[0].slice(0, 200),
+    checkedAt: new Date().toISOString()
+  };
+  return launchStatus;
+}
+
+/** 只读快照：{attempted, ok, channel, error, checkedAt}。没探测过时 ok === null */
+function getLaunchStatus() {
+  return { ...launchStatus };
+}
 
 function launchOptions(target) {
   return target === 'bundled' ? { headless: true } : { channel: target, headless: true };
@@ -40,6 +58,7 @@ async function detectChannel() {
     try {
       browser = await chromium.launch(launchOptions(target));
       cachedChannel = target;
+      recordLaunch(true, target);
       return target;
     } catch (error) {
       /* 该内核不可用，试下一个 */
@@ -47,6 +66,7 @@ async function detectChannel() {
       if (browser) await browser.close().catch(() => {});
     }
   }
+  recordLaunch(false, null, '未找到可用的浏览器内核（Edge / Chrome / playwright 自带 chromium 都起不来）');
   return null;
 }
 
@@ -60,7 +80,14 @@ async function launch(options = {}) {
     error.code = 'NO_BROWSER';
     throw error;
   }
-  return chromium.launch(launchOptions(target));
+  try {
+    const browser = await chromium.launch(launchOptions(target));
+    recordLaunch(true, target);
+    return browser;
+  } catch (error) {
+    recordLaunch(false, target, error.message);
+    throw error;
+  }
 }
 
 /**
@@ -206,6 +233,7 @@ const available = async () => Boolean(await detectChannel());
 
 module.exports = {
   detectChannel,
+  getLaunchStatus,
   launch,
   withPage,
   render,

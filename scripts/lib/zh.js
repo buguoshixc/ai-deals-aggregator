@@ -35,6 +35,13 @@ const ZH_MAX = {
   priceLine: 80
 };
 
+/**
+ * 待译条目的宽限期（天）：超过它，`zh-todo --check` 就从「提醒」转成「拦」。
+ * 定这份数字的理由：采集每天两次，一周足够人把几条新条目的译文补上；
+ * 再长就回到「有新优惠 → 永远没人译」的老样子。改它要动这一行代码，不是调阈值。
+ */
+const PENDING_GRACE_DAYS = 7;
+
 const ZH_FIELD_LABELS = {
   discountInfo: '优惠说明',
   description: '简介',
@@ -274,11 +281,118 @@ function summarize(report) {
   return parts.join(' · ');
 }
 
+/* ------------------------------------------------------------------ */
+/* 待译条目的年龄                                                      */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 北京时间今天（YYYY-MM-DD）。刻意**不** require schema.js —— 那边 require 了本文件，
+ * 反过来引用会成环（schema → zh → schema）。
+ */
+function todayCN(now = new Date()) {
+  return new Date(new Date(now).getTime() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+}
+
+/**
+ * 统计待译条目的年龄：`{ count, oldestDays, rows: [{id, title, fields, days, since, source}] }`（按天降序）。
+ *
+ * **年龄从「它进入待译」那天算起**，不是从条目第一次被采集到算起。这个区别是必须的：
+ * 上游改写会让一条老条目的译文失效（2026-09-28 实测：Midjourney / Grok 的英文被换掉，
+ * 两条中文随之失效）——它的 `firstSeen` 是 7 天前，用 `firstSeen` 计时等于「刚失效就超期」，
+ * 第二天门禁就红，而人根本没有反应时间。所以：
+ *   ① 优先用 `pending.byKey['<id>|<field>']`（由 `collect.js` 每轮维护的**进入待译日期**）；
+ *   ② 没有记录时才退回 `firstSeen`（老数据 / 手工构造的数据）；
+ *   ③ 两者都没有就从今天起算 —— 绝不把「不知道它什么时候进来的」当成「它已经陈年」。
+ */
+function pendingAge(missing = [], deals = [], { today = todayCN(), pending = null } = {}) {
+  const byId = new Map((deals || []).map(deal => [String(deal && deal.id), deal || {}]));
+  const byKey = (pending && pending.byKey) || {};
+  const rows = (missing || []).map(row => {
+    const deal = byId.get(String(row.id)) || {};
+    const fields = row.fields || [];
+    const since = fields.map(field => byKey[`${row.id}|${field}`]).find(v => /^\d{4}-\d{2}-\d{2}$/.test(String(v)));
+    const fallback = /^\d{4}-\d{2}-\d{2}$/.test(String(deal.firstSeen || '')) ? String(deal.firstSeen) : today;
+    const source = since ? 'pending' : (/^\d{4}-\d{2}-\d{2}$/.test(String(deal.firstSeen || '')) ? 'firstSeen' : 'today');
+    const from = since || fallback;
+    const days = Math.max(0, Math.round(
+      (Date.parse(`${today}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86400000
+    ));
+    return { id: row.id, title: row.title, fields, days, since: from, source };
+  }).sort((a, b) => b.days - a.days);
+  return { count: rows.length, oldestDays: rows.reduce((n, row) => Math.max(n, row.days), 0), rows };
+}
+
+/* ------------------------------------------------------------------ */
+/* 待译状态（跨运行）：记「它是什么时候开始等着被翻译的」              */
+/* ------------------------------------------------------------------ */
+
+const PENDING_FILE = path.join(__dirname, '..', 'data', 'zh-pending.json');
+
+function emptyPending() {
+  return { schemaVersion: 1, updatedAt: null, byKey: {} };
+}
+
+/** 读取待译状态；文件缺失或损坏时返回空文档（门禁不该因为一份状态文件写坏就跑不动） */
+function loadPending(file = PENDING_FILE) {
+  if (!fs.existsSync(file)) return { doc: emptyPending(), file, missing: true, broken: null };
+  try {
+    const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const byKey = parsed && typeof parsed.byKey === 'object' && parsed.byKey ? parsed.byKey : {};
+    return { doc: { ...emptyPending(), ...parsed, byKey }, file, missing: false, broken: null };
+  } catch (error) {
+    return { doc: emptyPending(), file, missing: false, broken: error.message };
+  }
+}
+
+function writePending(doc, file = PENDING_FILE) {
+  fs.writeFileSync(file, `${JSON.stringify(doc, null, 2)}\n`, 'utf8');
+  return doc;
+}
+
+/**
+ * 推进待译状态（纯函数）。由 `collect.js` 每轮调用一次：
+ *   · 本轮仍在待译的 `(id, field)`：保留原日期；新出现的记今天；
+ *   · 已经译好的：删掉（下次再失效就重新从那天起算）。
+ *
+ * 为什么由采集写而不是由门禁写：门禁（`zh-todo --check`）必须是只读的 ——
+ * 一个会改文件的检查不是检查。
+ *
+ * @returns {{doc:object, entered:string[], cleared:string[], kept:number}}
+ */
+function updatePending(previousDoc, missing = [], { today = todayCN(), now = new Date() } = {}) {
+  const previous = (previousDoc && previousDoc.byKey) || {};
+  const byKey = {};
+  const entered = [];
+  let kept = 0;
+  for (const row of missing || []) {
+    for (const field of row.fields || []) {
+      const key = `${row.id}|${field}`;
+      const existing = previous[key];
+      if (/^\d{4}-\d{2}-\d{2}$/.test(String(existing))) {
+        byKey[key] = String(existing);
+        kept++;
+      } else {
+        byKey[key] = today;
+        entered.push(key);
+      }
+    }
+  }
+  const cleared = Object.keys(previous).filter(key => !(key in byKey));
+  return {
+    doc: { schemaVersion: 1, updatedAt: new Date(now).toISOString(), byKey },
+    entered,
+    cleared,
+    kept
+  };
+}
+
 module.exports = {
   DEFAULT_FILE,
+  PENDING_FILE,
   ZH_FIELDS,
   ZH_MAX,
   ZH_FIELD_LABELS,
+  PENDING_GRACE_DAYS,
   cjkCount,
   latinCount,
   isEnglishProse,
@@ -286,5 +400,11 @@ module.exports = {
   normalizeZh,
   load,
   attach,
-  summarize
+  summarize,
+  todayCN,
+  pendingAge,
+  emptyPending,
+  loadPending,
+  writePending,
+  updatePending
 };

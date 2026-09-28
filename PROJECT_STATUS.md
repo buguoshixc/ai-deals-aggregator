@@ -1721,6 +1721,178 @@ tooltip 改成「本条记录最近一次更新的日期」（策展条目的 `l
 
 ---
 
+### 2.33 `v1.0-public-readiness`：数据正确性、发布可信度、采集健康度（2026-09-28，分支 `feat/v1-public-readiness`）
+
+**这一轮不开发新功能，只做三件事：把已知的线上错误修掉、让门禁真正拦住发布、让采集器坏掉时能被看见。**
+优先级按用户给定：数据正确性 > 发布可信度 > 采集健康度 > 可维护性 > 新功能。
+
+**A. 四个已知线上问题（逐个先复核是否仍存在，存在才修）**
+
+| # | 复核结论 | 改法 | 实测影响 |
+|---|---|---|---|
+| A1 | **仍存在且已上线**：`ongoing` 只做正向子串匹配，21 条里有 **11 条**自己的 `validity` 就写着「官方未标注截止日期 / 以官方…为准」；详情页并列「官方未标注截止日期」与「官方…写明长期有效」两行（80 个详情页里 21 页带这句伪造溯源）；7 条的源头是采集器自己造词 | 判据改成**正向线索 且 无否定线索**（`ONGOING_POSITIVE_RE` + `ONGOING_HEDGE_RE`，前后端同源标记块）+ 出处修正（`cn_docs.js` / `headless.js` / `curated_cn.json`）+ 11 条存量离线订正 | 分布 `0/112/21` → **`0/123/10`**；首页角标 `tg long` 15→10、`tg uns` 35→40；含伪造 note 的详情页 21→**0**；卡片 50 / 覆盖 80 不变 |
+| A2 | **仍存在且已发布**：`.jump{display:flex}`（作者级）盖掉 UA 的 `[hidden]{display:none}` ⇒ `jump.hidden=true` 是**无操作**，列表视图 / updated / expiry 三种状态下导航照旧可见可点；验证脚本只读 `hidden` 属性 | 加 `.jump[hidden]{display:none}`；断言改量**几何**（`display` / `getBoundingClientRect` / `offsetHeight` / 死链计数）；顺带修掉「筛掉某一档后 `#tier-N` 落点消失而导航仍可见」这个此前没被覆盖的死锚点来源 | verify 136 → **145** 项；牙齿：注释掉那条 CSS → 4 项当场红（`hidden=true display=flex h=18`） |
+| A3 | **仍存在**：haystack 不含任何 `zh.*`，也不含 `validity`/`priceLine`（都是用户可见字段）⇒ 把屏幕上的中文复制去搜必然 0 结果 | haystack 补 `zhSearchText(deal)`（本条译文 + 折叠卡成员的译文，后者只用于检索、不参与渲染）+ `validity` / `priceLine` | verify 新增 §8b 四条断言（优惠视图与全部工具视图各一次，**现场取产物、不硬编码条目**）；牙齿：去掉 zh 字段 → 两条「中文译文可搜」红（0/50、0/103） |
+| A4 | **仍存在**：`cleanText` 主动删掉上游的 `...`/`…`，超长时又直接 `slice` 切在半个词中间 ⇒ `……Getsolved 将检测和重写整`、`…relocation pla`；另有 3 处抽句正则跨过「；」「：」抓出半句 | `cleanText` 保留截断语义（补 `…`、退词边界、**不越上限**、**幂等**）；三处正则的否定字符类补上句读；17 条存量按「新值去掉记号后必须是旧值前缀」的机械判据订正 | 上游 15/15 条 aitools 描述以 `...` 结尾（**现场抓取复核**）；新增 `selftest:text` **46 项**；牙齿：关掉记号追加 → 12 项红，关掉词边界退让 → 1 项红 |
+
+> A4 有一条如实说明：Futurepedia 的 Midjourney / Grok 上游**真的换过文案**，不属于本次修复，
+> 没有被混进那 17 条（判据会排除它们），留给下一次采集。
+
+**B. CI / 发布链：gate 红时本次版本绝不发布**
+
+复核结论（线上实证，不是推断）：`gate` 与 `deploy` 之间**没有任何依赖**——同一 SHA `e01dcfc`
+上 `gate=failure` 而 `build`/`deploy=success` 照发；定时采集那条链路上（机器人 push 不触发
+任何 workflow）**原本完全没有门禁**；部署路径上只跑非 strict 的 `validate`。
+
+改法：门禁的步骤实现只保留一处 —— **`.github/actions/gate/action.yml`（复合 action，13 步）**，
+三条 workflow 共用；发布链在 `needs:` 上真正依赖它：
+
+```
+collect.yml : 采集 → 写盘 → [一致性门禁 + 完整门禁] → git push → (workflow_run) deploy.yml
+deploy.yml  : prepublish(完整门禁，无 job 级 if) → build → deploy
+verify.yml  : gate（PR/push，检查名不变）→ 复用同一个 action
+```
+
+为什么不用 reusable workflow（用户提议的 `gate.yml`）：① 检查名 `gate` 是分支保护的必需名，
+reusable 调用会把它变成 `<调用方>/<被调>` 形态，且 deploy 再建同名 job 会出现同名检查；
+② 一致性门禁把「期望项数唯一出处」钉在 verify.yml 的一行 `run:` 上，gate 变 `uses:` 后那套
+机制必须改写；③ 新增 workflow 文件会牵动一串冻结断言。复合 action 三样都避开了。
+
+一致性门禁同步（30 项，`--expect-checks` 24 → 30），新增 6 条把这次重构本身钉住：
+(10) 复合 action 的**步骤名序列**逐项冻结、(10b) 每个 run 步骤都给 shell、(10c) 不含第三方 uses、
+(11) 三个调用方各恰好一次、(12) 发布链 needs 关系 + prepublish 无 job 级 if、
+(13) collect.yml 的门禁排在 `git push` 之前。牙齿四轮全部实跑（拿掉 needs / 拿掉真浏览器验收
+那一步 / 给 prepublish 加 job 级 if / 把门禁挪到 push 之后 → 各自变红，证据在提交信息里）。
+
+> **仍未证明的部分（如实记录）**：「门禁红 ⇒ build/deploy 不执行」的端到端证明需要一次真实
+> Actions 运行（草稿分支或 PR）。本机没有第二套 CI，所以上面四轮验的是**静态断言的牙**，
+> 不是 CI 行为本身。
+
+**C. 数据源健康状态（本轮唯一的新能力）**
+
+解决的问题：首页只写「数据更新 {今天}」，而人工策展条目的 `lastSeen` 每天都在刷新——
+「某个来源坏了几天」与「某个来源这次没有新内容」在页面上长得一模一样；采集报告只活在
+当次运行的内存里，CI 一结束就没了。
+
+- `scripts/lib/health.js`：状态机（规则表见文件头），跨运行状态入库为
+  **`scripts/data/source-health.json`**（与 `deals.json` 同批提交）。
+  关键取舍：**单次零产出判 `degraded` 而不是 `failed`**（规则匹配不到 ≠ 服务坏了），
+  连续 3 次才升 `failed`；**无头来源在浏览器没起来时一律不报 healthy**；
+  失败时 `lastSuccessAt` 不被刷成今天。
+- `collect.js`：打印健康表（来源/上次/本次/增减/状态/最近成功），并把此前**被静默吞掉**的
+  关键数字显式打印（0 也打印）：`修剪明细: 下架过期 / 超出上限 / 退役垃圾 / 重分类`、
+  `来源明细: 采集器失败 n/m · 零产出 n（点名）· 异常 n · 失败 n · 无头浏览器 可用|不可用`、
+  `待译 n 条（最老 X 天，宽限 Y 天）` ——`removedExpired`/`removedOverflow` 此前只有一次性
+  工具 `migrate.js` 打印过。
+- `build-local.js`（仍零外部依赖）：发布 `source-health.json` 并生成 **`/status/`** 静态页
+  （复用首页 style/主题脚本/页脚，零外部请求）。页面上只写绝对时间（北京时间），相对时间由
+  一个内联小脚本在浏览器里换算——否则同一份数据在不同时刻构建会产出不同字节，与「连续两次
+  build 产物一致」冲突。自检逐个来源与 JSON 对账（状态标签、条数、状态序列），
+  并断言页脚相对链接按深度生成、占位符不残留。
+- `selftest:health` **51 项**：把用户列的 5 种情形逐条钉住（17→17 healthy；请求成功 0 条
+  **不判 failed**；17→0 degraded；17→0→0→0 第 3 个零起 failed；浏览器没起来 → failed），
+  外加采集器抛异常、陡降、恢复清零、本轮没跑的来源不许冒充「今天健康」。牙齿：关掉零产出判据 → 红。
+
+**D. 译文门禁策略（方案 A + 老化门禁）**
+
+复核结论：`verify.yml` 的 Translation self-test 没有 `continue-on-error`，而 `zh-selftest`
+断言「复原后 check:zh 回到 0」，`check:zh` 又要求 `todo.length === 0` ——**只要 `deals.json`
+里有一条未翻译的英文散文，下一次人工 push 的 gate 必红**（`e01dcfc` 那次红就是这个）。
+
+改法：拆成两档 —— **漂移必红**（孤儿/原文已变/不合规/覆盖层管不到，无宽限期）；
+**待译按年龄判**（默认宽限 7 天，超过转红；数量与「最老 N 天」每次都打印，进 Summary、
+采集日志与 `/status/`）。顺带修掉漂移数的**重复计数**（`stale` 与 `dropped` 是同一批事件，
+打印出「漂移 4 处」而分解式只有 2）。
+
+**年龄的基准是「它进入待译那天」，不是 `firstSeen`**（收尾时补的一处修正）：
+上游改写会让**一条老条目**的译文失效 —— 2026-09-28 实测 Midjourney / Grok 的英文被换掉，
+两条中文随之失效；它们 `firstSeen` 是 7 天前，用 `firstSeen` 计时等于「刚失效就超期」，
+第二天门禁就会红而人没有反应时间。所以新增**入库的跨运行状态**
+`scripts/data/zh-pending.json`（每个 `(条目, 字段)` 进入待译的日期）：
+仍在待译的保留原日期、译好的删掉、新出现的记今天；由 `collect.js` 写、门禁只读
+（会改文件的检查不是检查）。没有记录时才退回 `firstSeen`，两者都没有就从今天起算。
+`check:zh` 会打印 `（N 天，自 YYYY-MM-DD 起 · 依据 pending|firstSeen|today）`。
+新增两条牙齿：firstSeen 30 天前但今天才进入待译 → **放行**；firstSeen 今天但已等 30 天 → **拦下**。
+
+**E′. 收尾时用真实 YAML 解析器复验 workflow，抓到一个会上线的错**
+
+`collect.yml` 的步骤名写成 `- name: CI consistency (bare run: 期望项数…)` —— 里面的
+「冒号 + 空格」在块上下文里是**映射分隔符**，GitHub 的真实 YAML 解析器会**拒绝整个文件**。
+仓库自带的一致性检查用的是无依赖的缩进读取器，它把这一行读成合法的 name/值对，
+于是本地所有门禁全绿、推上去 workflow 直接 parse 失败、什么都不跑。
+用 Python 的 PyYAML 复验 5 个 YAML 文件时才发现（这是本轮**没有**被自己的门禁抓到的一类错误）。
+
+改法：步骤名里的「冒号 + 空格」换成破折号；新增断言 **(14)**：扫 4 个 workflow + 复合 action 的
+**全部未加引号标量**，出现「冒号+空格」即红（`--expect-checks` 30 → 31）。
+边界如实记录：只查这一种，引号包裹的值与块标量不查，也不做完整 YAML 校验
+（那需要引入解析器，与本文件「npm ci 之前就能跑」的定位冲突）。
+
+**E″. 推进前补完 3 条译文，并修掉「账本从不划账」这个假红陷阱**
+
+待译的 3 条（Midjourney / Grok 因上游改写失效，Unboring.ai 新进）由**人**补译完毕
+（H2 的红线是**不做机器翻译**，不是「不许人写」）：`用提示词生成图片与视频。` /
+`对话式 AI，基于实时网络与 X 的内容给出及时回答。` / `在线编辑照片与视频的平台。`，
+再用 `--scaffold` 把当前英文盖成指纹；`check:zh` 现在报 `待译 0 条 / 0 个字段`。
+
+补译时发现 `--scaffold` **只写覆盖层、从不划账**：已译好的行会一直留在
+`scripts/data/zh-pending.json` 里。这埋了个假红 —— 上游之后再改写一次原文、人按既有处置
+（撤下译文而不是改写）时，账本会翻出**上一轮**的日期当成「这条已经等了很多天」，
+宽限期一天不剩、门禁当场转红。现在 `--scaffold` 收尾时调 `collect.js` 用的同一个纯函数
+（`updatePending`）划账，且只在真有增删时才落盘（不为一次无变化去刷 `updatedAt`）。
+新增两条牙：已译好的字段 → 行必须消失**且打印明细**；仍缺译的字段 → 行必须**保留原日期**。
+两条都做了破坏验证（牙齿 16 / 17）。
+
+**E‴. 分支保护的落地细节：`github-actions` 不能被加进绕过名单 → 给机器人一个专用 App 身份**
+
+原计划是把 `GitHub Actions` 加进 master ruleset 的绕过名单，好让定时采集照常提交。
+**这个计划是错的**，查证结论（2026-09-29）：
+
+- GitHub 文档给出的绕过候选是穷举的：仓库/组织/企业管理员、`maintain`|`write` 角色、Teams、
+  Deploy keys（仅 GHES）、**可安装的 GitHub Apps**、Dependabot、Copilot cloud agent
+  —— **没有「GitHub Actions」**，所以界面上根本找不到它；
+- `github-actions`（App ID **15368**）是**平台原生身份**，不是「安装在仓库上的 GitHub App」；
+  用 API 传 `actor_type: "Integration", actor_id: 15368` 返回 **HTTP 422**
+  （`Actor GitHub Actions integration must be part of the ruleset source or owner organization`）；
+- 替代方案「机器人开 PR + 自动合并」同样不通：`GITHUB_TOKEN` 建的 PR **不触发**
+  `pull_request` workflow，`gate` 永远 pending，自动合并永远等不到。
+
+处置：给机器人一个**自己的、可安装的 GitHub App**，并把它**单独**列进绕过名单（只豁免机器人）。
+
+- 新增 `scripts/tools/app-token.js`（零依赖）：Node 原生 `crypto` 签 RS256 JWT →
+  `GET /app`（拿 slug）→ `GET /repos/{repo}/installation` → `POST /app/installations/{id}/access_tokens`。
+- `collect.yml`：checkout 改 `persist-credentials: false`；新增 **Mint GitHub App token** 步骤
+  （刻意排在采集**之前** —— 凭据没配好要 10 秒内失败）；提交步骤用 App 身份推送；
+  提交信息加 **`[skip ci]`**（App token 推的提交**会**触发 workflow，不加会让同一 SHA
+  同时跑 deploy 的 `push` 链与 `workflow_run` 链，白跑一遍发布）。
+- 缺 Secret 时**明确失败、不退回 `GITHUB_TOKEN`**：退回只会把真正的原因藏进一句含混的 `GH006`。
+- 新增门禁步骤 **App-token self-test**（门禁 13 → 14 步）+ `npm run selftest:app-token`（67 项，离线）：
+  盯 JWT 的 10 分钟硬上限、三步 `Authorization` 都是 App JWT、**PKCS#1**（App 页面下载的那一种）
+  与 PKCS#8 两种私钥都要能用、**「从 `.pem` 粘贴进 Secret 输入框」的四种真实变体**
+  （CRLF / 漏结尾换行 / 多带空白 / 换行被压成字面量 `\n` —— 实测只有最后一种会炸，
+  而那一种正是 `normalizePrivateKey` 修的）、token 只进 `$GITHUB_OUTPUT`。
+- 新增断言 **(15)**（`--expect-checks` 31 → 32）。**它在写完后立刻抓到自己的假阴性**：
+  牙齿探针发现「把 `[skip ci]` 从提交命令里删掉」「把 `persist-credentials` 改成 true」
+  两条断言**依然是绿的** —— 因为 workflow 的注释里各写过一次同样的字样，全文 grep 被注释喂饱了。
+  修法是先 `stripComment` 再查。**凡是「文件里出现过某个字样」型断言都有这个坑**，
+  已写进 `check-ci-consistency.js` 的注释里。
+- 顺带把「真实 YAML 解析器复验」从一次性动作升级成可选工具 `scripts/tools/yaml-recheck.py`
+  （人工运行；CI 跑不了它，因为需要 python3 + PyYAML）。本次复验 5 个 YAML + **19 条结构断言**全过。
+
+**E. 本轮实跑的门禁（全部 0 退出）**
+
+`validate` · `validate --strict` · `check:zh` · `selftest:zh`(15) · `selftest:expiry`(94) ·
+`selftest:text`(46) · `selftest:health`(51) · `selftest:app-token`(67) ·
+`check-ci-consistency`(32) · `build`（自检全过）·
+`verify`(**145 项 0 失败**) · `verify --compare`(**151 项 0 失败**，6 项回归全过：覆盖 80→80、
+卡片 50→50、首屏 9→9、页高 4566px、外部请求 0、JS 错误 0)。
+本轮还实跑了一次**真实采集**（134 条，9 个来源全部正常），产物与两份跨运行状态一并入库。
+
+**F. 本轮明确不做**（留给下一阶段）：学生/开发者数据模型（audience / eligibility 扩展 /
+是否需要信用卡 / 中国大陆可用性 / benefit type / claim requirements）、首页分类入口、
+`/student/` `/developer/` `/free-api/`、分类 RSS、Evidence/Provenance、Deal History。
+
+---
+
 ## 三、命令速查
 
 ```bash

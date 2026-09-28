@@ -10,10 +10,16 @@
  * 明确区分两个**不拦**的概念，别把它们混成一个"降级"：
  *   · 单源失败（某个采集器抛错）：常态而非异常——collect.yml 的浏览器安装步骤本身就是
  *     continue-on-error，装不上时无头来源会各自报错并产出 0 条，而那条链路是设计上要
- *     容忍的。所以它只在报告里逐条点名 + 写进 CI Summary，不阻断写盘、不影响退出码。
- *   · 采集量骤降（stats.degraded：新采 < 既有 × 30%）：同样只告警。若它顺手拦写盘，
- *     一次 playwright 装不上就能让 deals.json 不落库 → deploy.yml 判 skipped → 线上停更。
+ *     容忍的。所以它只在报告里逐条点名、写进 CI Summary 与**跨运行的健康表**
+ *     （scripts/data/source-health.json），不阻断写盘、不影响退出码。
+ *   · 采集量骤降（stats.degraded：新采 < 既有 × 30%）：同样只告警。
  *     真正无法发布的情形由①兜住：零产出时本来就没有新东西可写。
+ *
+ * 本脚本**不是**唯一的把关点：collect.yml 在 `git push` **之前**还会跑一次完整门禁
+ * （.github/actions/gate）——数据有问题就根本不入库。所以这里"不拦"的东西仍可能在
+ * 门禁那一步被拦下（例如无头浏览器不可用 ⇒ 无头来源判 headless_unavailable ⇒ 门禁红）。
+ * 旧注释里"deploy.yml 判 skipped → 线上停更"的说法自 2026-09-28 起已不成立：
+ * 发布链现在自己先过门禁，采集失败会被 deploy.yml 的 prepublish 明确拒绝。
  *
  * 用法：
  *   node scripts/collect.js                     # 全量采集并写盘
@@ -27,9 +33,10 @@
 const { makeDeal, todayCN } = require('./lib/schema');
 const { loadStore, writeDeals, mergeAll, assertAllValid } = require('./lib/store');
 const { loadCurated } = require('./lib/curated');
-const { attach: attachZh, summarize: summarizeZh } = require('./lib/zh');
-const { createReport, printReport } = require('./lib/report');
+const { attach: attachZh, summarize: summarizeZh, pendingAge, loadPending, writePending, updatePending, PENDING_GRACE_DAYS } = require('./lib/zh');
+const { createReport, printReport, printHealth } = require('./lib/report');
 const { describeError } = require('./lib/http');
+const health = require('./lib/health');
 const registry = require('./collectors');
 
 const args = process.argv.slice(2);
@@ -126,6 +133,48 @@ async function main() {
 
   printReport(report, { title: dryRun ? '采集报告（dry-run）' : '采集报告' });
 
+  // 数据源健康：把本轮每个来源的结果推进**跨运行**的心跳文件。
+  // 为什么必须有它：报告表只活在这次运行的内存里，而 store.js 会把策展条目的 lastSeen
+  // 刷成今天，于是「某个源坏了几天」与「某个源这次没新东西」在页面上长得一模一样。
+  const headlessIds = new Set(registry.list({ headless: true }).filter(c => c.headless).map(c => c.id));
+  const browserStatus = (() => {
+    try {
+      return require('./lib/browser').getLaunchStatus();
+    } catch (error) {
+      return { attempted: false, ok: null, error: error.message };
+    }
+  })();
+  const healthAttempts = report.list().map(row => {
+    const isHeadless = headlessIds.has(row.sourceId);
+    return {
+      source: row.sourceId,
+      name: row.name,
+      region: row.region,
+      kind: isHeadless ? 'headless' : 'static',
+      ok: !row.error,
+      error: row.error,
+      valid: row.valid,
+      produced: row.produced,
+      deals: row.deals,
+      ms: row.ms,
+      // 无头来源失败时，区分「浏览器根本起不来」与「页面抓到了但规则变空」：
+      // 只有前者能说成 headless_unavailable，后者是采集器该修了。
+      headlessReady: isHeadless ? (row.error ? browserStatus.ok === true : true) : true
+    };
+  });
+  const healthStore = health.load();
+  if (healthStore.broken) {
+    console.warn(`⚠️  ${health.HEALTH_FILE} 解析失败（${healthStore.broken}），本轮按空历史重算`);
+  }
+  const { doc: healthDoc, summary: healthSummary } = health.build({
+    previousDoc: healthStore.doc,
+    attempts: healthAttempts
+  });
+  printHealth(healthSummary);
+  if (browserStatus.attempted && browserStatus.ok === false) {
+    console.warn(`⚠️  无头浏览器不可用（${browserStatus.error || '未知原因'}）—— 无头来源本轮一律不报「正常」`);
+  }
+
   const curated = loadCurated();
   for (const row of curated.report) {
     if (row.missing) continue;
@@ -158,6 +207,16 @@ async function main() {
 
   console.log(`合并结果: 新采 ${stats.fresh} + 既有 ${stats.existing} + 策展 ${stats.curated} ` +
     `→ 去重合并 ${stats.mergedDuplicates} → 修剪前 ${stats.beforePrune} → 最终 ${stats.afterPrune}`);
+  // 这些关键数字一律**显式打印，0 也打印**。此前 removedExpired / removedOverflow 只被
+  // 算出来、只有 migrate.js 那个一次性工具打印过，采集日志与 CI Summary 里根本看不到——
+  // 「静默吞掉关键数字」本身就是要修的问题（报告里 0 与「没跑」是两回事）。
+  console.log(`修剪明细: 下架过期 ${stats.removedExpired} 条 · 超出上限 ${stats.removedOverflow} 条 · ` +
+    `退役垃圾 ${stats.removedGarbage} 条 · 重分类 ${stats.reclassified} 条`);
+  console.log(`来源明细: 采集器失败 ${collectorFailures}/${picked.length} 个 · ` +
+    `零产出 ${healthSummary.zeroOutputSources.length} 个` +
+    `${healthSummary.zeroOutputSources.length ? `（${healthSummary.zeroOutputSources.map(r => r.source).join('、')}）` : ''} · ` +
+    `异常 ${healthSummary.degraded} 个 · 失败 ${healthSummary.failed} 个 · ` +
+    `无头浏览器 ${browserStatus.attempted ? (browserStatus.ok ? '可用' : '不可用') : '未探测'}`);
   if (stats.removedGarbage) {
     console.log(`退役垃圾/无效旧条目 ${stats.removedGarbage} 条：${stats.retiredTitles.join('、')}`);
   }
@@ -191,7 +250,16 @@ async function main() {
     );
   }
   if (zhReport.missing.length) {
-    console.log(`  ℹ️  仍有 ${zhReport.missing.length} 条英文文案待翻译（node scripts/tools/zh-todo.js 查看）`);
+    // 「还有几条没译」不够用：译文门禁是按**年龄**判的（超过宽限期就拦），所以必须把
+    // 「最老多少天」一起说出来 —— 否则没人知道下一次 push 会不会红。
+    // 年龄从「进入待译」那天算起（本轮结束时写回 zh-pending.json），不是 firstSeen：
+    // 上游改写会让一条老条目的译文失效，用 firstSeen 计时等于「刚失效就超期」。
+    const pendingStore = loadPending();
+    const age = pendingAge(zhReport.missing, localized, { today, pending: pendingStore.doc });
+    console.log(`  ℹ️  待译 ${zhReport.missing.length} 条（最老 ${age.oldestDays} 天，宽限 ${PENDING_GRACE_DAYS} 天）：` +
+      `node scripts/tools/zh-todo.js 查看`);
+    console.log(`      ${age.rows.slice(0, 5).map(row => `${row.title}（${row.days} 天）`).join('、')}` +
+      `${age.rows.length > 5 ? ` 等 ${age.rows.length} 条` : ''}`);
   }
 
   if (dryRun) {
@@ -230,7 +298,22 @@ async function main() {
 
   assertAllValid(localized);
   const payload = writeDeals(localized);
+  // 心跳与数据同批写盘：`source-health.json` 入库（dist/ 是 gitignore 的，存不了跨运行状态）。
+  // 注意：上面两条硬拦（译文不合规 / 零产出）会让本次提前退出，于是**这一次**的来源结果
+  // 不会落盘——CI 里那两种情况本来也不会提交任何文件。设计上接受这个边界：单源失败而
+  // 整体成功（最常见的情形）一定会被记下来。
+  health.write(healthDoc);
+
+  // 待译状态：记下每个 (条目, 字段) **进入待译的日期**，供译文门禁算年龄。
+  // 为什么需要它：上游改写会让一条老条目的译文失效，用 firstSeen 计时等于「刚失效就超期」，
+  // 第二天门禁就红而人没有反应时间。这里由**采集**写、门禁只读（会改文件的检查不是检查）。
+  const pendingNext = updatePending(loadPending().doc, zhReport.missing, { today });
+  writePending(pendingNext.doc);
   console.log(`\n✅ 已写入 deals.json：${payload.count} 条，updatedAt=${payload.updatedAt}${force ? '（--force 放行）' : ''}`);
+  console.log(`✅ 已写入 source-health.json：${healthSummary.total} 个来源` +
+    `（正常 ${healthSummary.healthy} · 异常 ${healthSummary.degraded} · 失败 ${healthSummary.failed}）`);
+  console.log(`✅ 已写入 zh-pending.json：${Object.keys(pendingNext.doc.byKey).length} 个待译字段` +
+    `（本轮新进入 ${pendingNext.entered.length} · 已译好清掉 ${pendingNext.cleared.length}）`);
 }
 
 main().catch(error => {

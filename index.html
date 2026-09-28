@@ -312,6 +312,11 @@
     }
     .jump a:hover { border-color: var(--brand); color: var(--brand); }
     .jump a:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    /* hidden 必须真的不显示：上面 .jump 是**作者级** display 声明，会盖掉 UA 样式表里的
+       [hidden]{display:none}（层叠先比来源再比特异性，作者级无条件胜出），于是 js 里
+       `jump.hidden = true` 只改了属性、导航照旧可见可点 —— 这正是「假隐藏」。
+       `.jump[hidden]`（0,2,0）胜过 `.jump`（0,1,0），也顺带盖住媒体查询里的 display:grid。 */
+    .jump[hidden] { display: none; }
 
     /* ---------- 网格 ---------- */
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: min-content; gap: 12px; }
@@ -917,6 +922,8 @@
         <summary>优惠的有效期和截止日期怎么看？</summary>
         <p>卡片上按三种情况标注：官方写明截止日期的标「剩 N 天」并对临近截止的做高亮；官方写明长期有效的标
         「长期活动」；官方没提截止日期的标「未标注截止日期」——「没查到」不会写成「长期」。
+        官方只写「限时」不给日期、或写「以官方页面为准」的，一律算「未标注截止日期」；某一条额度或折扣
+        标了「永久」「不过期」也不等于整个优惠活动长期有效——只有官方明确写明活动长期，才会标「长期活动」。
         用「即将截止」排序时，有截止日期的按剩余天数从少到多排在最前，没有截止日期的依次排在最后
         （未标注截止日期 → 长期活动）。像「自开通起 3 个月」「有效期 1 年」这类相对期限从开通当天起算，
         没有绝对截止日，也归入没有截止日期的一类。</p>
@@ -940,7 +947,7 @@
 
     <!--SHARED:footer:START-->
     <footer>
-      <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span></p>
+      <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span> · <a href="__STATUS_HREF__">数据源状态</a></p>
       <p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p>
       <p>本站不收录付费推广位，排序与推荐理由不出售。</p>
       <p>厂商 logo 版权归各厂商所有，仅作标识用途。</p>
@@ -1343,10 +1350,30 @@
      *
      * rank 是排序档位：截止日 < 未标注 < 长期。「未标注」排在「长期」之前，是因为它
      * 仍有随时结束的可能，比确认长期的活动更该先被看到。
+     *
      * 措辞边界：「未标注」绝不能被写成「长期」——前者是「我们没查到」，后者是官方原话。
-     * 词表与 scripts/lib/classify.js 的 isOngoing() 一致，只改一边会让卡片角标与后端统计对不上。
+     * 判据是「正向线索 **且** 没有否定线索」两条：只要文案里出现「未标注截止日期 /
+     * 以官方…为准」这类否定线索，就**不可能**是官方长期承诺，一律落 unknown。
+     * 2026-09-28 修掉的那 11 条不实陈述（线上 80 个详情页里的 21 页）就是只做正向子串匹配
+     * 造成的：`长期有效（官方模型列表未标注截止日期）` 自己写着官方没标截止日，却被判
+     * 「长期活动」，详情页于是并列「官方未标注截止日期」与「官方…写明长期有效」两行。
+     *
+     * ⚠️ 下面两条正则的**源文本**与 scripts/lib/classify.js 的 ONGOING_POSITIVE_RE /
+     * ONGOING_HEDGE_RE 逐字节一致，改一边不改另一边会让卡片角标与后端统计打架——
+     * `npm run selftest:expiry` 会抽取 ONGOING:START/END 标记块做**文本级**比对，不是只比行为。
      */
-    const ONGOING_RE = /长期|永久有效|常年|不限时|ongoing|no expiration|always available|no end date/i;
+    /* ONGOING:START */
+    const ONGOING_POSITIVE_RE = /(?:长期|常年|永久)[^，。；;、）)]{0,6}(?:有效|活动|可用|开放|提供|免费)|不限时|无截止日期|不设截止|Ongoing|no expiration|always available|no end date/i;
+    const ONGOING_HEDGE_RE = /未标(?:注)?截止|未标明截止|以官方[^，。；;]{0,12}为准|以[^，。；;]{0,8}实时[^，。；;]{0,8}为准|随时(?:结束|调整|变更)|不另行通知/;
+    /* ONGOING:END */
+
+    /** 「官方写明长期」= 命中正向线索且**没有**否定线索。空文案一律 false。 */
+    function isOngoing(validity) {
+      const text = String(validity || '');
+      if (!text) return false;
+      if (ONGOING_HEDGE_RE.test(text)) return false;
+      return ONGOING_POSITIVE_RE.test(text);
+    }
 
     function expiryState(deal) {
       const days = daysUntil(deal.expiresAt);
@@ -1354,8 +1381,8 @@
         const label = days < 0 ? '已过期' : days === 0 ? '今天截止' : '剩 ' + days + ' 天';
         return { key: 'due', rank: 0, days: days, label: label, note: deal.expiresAt + '（' + label + '）' };
       }
-      if (ONGOING_RE.test(String(deal.validity || ''))) {
-        return { key: 'ongoing', rank: 2, days: null, label: '长期活动', note: '长期活动（官方有效期说明里写明长期有效）' };
+      if (isOngoing(deal.validity)) {
+        return { key: 'ongoing', rank: 2, days: null, label: '长期活动', note: '长期活动（官方写明长期有效）' };
       }
       return { key: 'unknown', rank: 1, days: null, label: '未标注截止日期', note: '官方未标注截止日期，以官方页面为准' };
     }
@@ -1583,6 +1610,25 @@
       return '<span class="zhmark" title="' + escapeAttr('详情页附中文翻译') + '">中文</span>';
     }
 
+    /**
+     * **检索用**的中文串（只进搜索 haystack，绝不参与渲染）。
+     *
+     * 两段来源：
+     *   · 本条自己的译文 `deal.zh.*` —— 详情弹层里逐字段渲染，是用户直接看得到的正文；
+     *   · 折叠卡成员的译文 `deal.memberZhText` —— 折叠卡只保留代表条目的字段，
+     *     成员的译文不会出现在这张卡上，但成员的详情页（deal/<id>/）上有，用户同样看得到。
+     * 分开返回而不是并进 `deal.zh`：译文必须挂在它自己那句英文原文下面，
+     * 混淆两者会造出「中文与上方英文对不上」的卡片（lib/zh.js 的原文指纹防的就是这件事）。
+     */
+    function zhSearchText(deal) {
+      if (!deal || typeof deal !== 'object') return '';
+      const own = deal.zh && typeof deal.zh === 'object'
+        ? Object.keys(deal.zh).map(key => (typeof deal.zh[key] === 'string' ? deal.zh[key] : '')).join(' ')
+        : '';
+      const members = typeof deal.memberZhText === 'string' ? deal.memberZhText : '';
+      return (own + ' ' + members).trim();
+    }
+
     /* ----------------------------------------------------------------
      * ④ 折叠：官方页面上的「一张表」= 一条优惠
      *
@@ -1777,6 +1823,15 @@
         // 覆盖的条目 id（顺序与 models 一一对应）：让「这张卡到底覆盖了哪几条」
         // 在产物里可逐条复核，而不是只能靠标题字符串反推（那是会被前缀撞车的）
         dealIds: group.map(deal => String(deal.id || '')),
+        // **只用于搜索 haystack**：组内成员条目的中文译文。
+        // 折叠卡只带代表条目的字段，成员的 zh 会被丢掉；而成员的详情页（deal/<id>/）
+        // 上那一段中文是用户真的看得到的，搜不到就是「看得见搜不到」。
+        // 为什么单独存一个串、不并进 base.zh：译文必须挂在它自己那句英文原文下面，
+        // 把成员的译文并进代表条目的 zh 会造出「中文与上方英文对不上」的卡片——
+        // lib/zh.js 的原文指纹防的正是这件事。所以它只进检索，永不参与渲染。
+        memberZhText: group.map(deal => deal.zh && typeof deal.zh === 'object'
+          ? Object.keys(deal.zh).map(k => (typeof deal.zh[k] === 'string' ? deal.zh[k] : '')).join(' ')
+          : '').filter(Boolean).join(' '),
         // 详情弹层用：每个型号自己的额度（组内文案都相同时为 null，不重复啰嗦）
         modelOffers: modelOffersOf(models, group)
       });
@@ -2019,8 +2074,13 @@
       if (filters.category && deal.category !== filters.category) return false;
       if (filters.vendor && vendorOf(deal).key !== filters.vendor) return false;
       if (filters.search) {
+        // 用户能看见的文字都必须能被搜到。中文译文（deal.zh.*）是**渲染出来**的正文
+        // （卡片「中文」胶囊 + 详情弹层里的可折叠译文块），此前的 haystack 里一个字都没有，
+        // 于是「把看到的中文复制一段来搜」必然 0 结果。validity / priceLine 同理
+        // （详情弹层里的「有效期说明」「价格阶梯」两行），一起补上。
         const haystack = [deal.title, deal.vendor, deal.discountInfo, deal.description, deal.category,
-          deal.source, deal.eligibility, (deal.features || []).join(' ')]
+          deal.source, deal.eligibility, deal.validity, deal.priceLine, zhSearchText(deal),
+          (deal.features || []).join(' ')]
           .filter(Boolean).join(' ').toLowerCase();
         if (!haystack.includes(filters.search)) return false;
       }
@@ -3340,9 +3400,22 @@
       // 焦点先还给同一张卡；收藏视图里取消收藏会让那张卡整张消失（焦点无处可还），
       // 这一种情况把焦点交给收藏入口——否则键盘用户被直接扔回页首。
       if (!restoreCardFocus(focusId) && focusId && state.filters.fav) focusFavChip();
-      // 锚点只在「力度优先 + 卡片视图」下有效（列表视图不分带），避免死锚点
+      // 锚点只在「力度优先 + 卡片视图」下有效（列表视图不分带），避免死锚点。
+      // 而且**逐条**核对落点：筛选/搜索把某一档清空时，那个 #tier-N 就不存在了，
+      // 只把整块藏起来不够 —— 留在可见导航里的死链接照样会把人送进一片空白。
+      // 判定写在步骤里而不是靠 CSS 属性：.jump[hidden]{display:none} 是这条语义的兜底，
+      // npm run verify 量的是 getComputedStyle / getBoundingClientRect，不是 hidden 属性。
       const jump = document.getElementById('jumpNav');
-      if (jump) jump.hidden = rowsView || (state.filters.sort || 'tier') !== 'tier';
+      if (jump) {
+        const jumpUsable = !rowsView && (state.filters.sort || 'tier') === 'tier';
+        let jumpAlive = 0;
+        jump.querySelectorAll('a[href^="#tier-"]').forEach(link => {
+          const reachable = jumpUsable && Boolean(document.querySelector(link.getAttribute('href')));
+          link.hidden = !reachable;
+          if (reachable) jumpAlive++;
+        });
+        jump.hidden = !jumpUsable || jumpAlive === 0;
+      }
     }
 
     /** 当前焦点所在的卡片 id（焦点在星标上也算这张卡）；不在卡片上返回 null */

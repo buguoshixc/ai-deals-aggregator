@@ -14,8 +14,8 @@
  */
 
 const { cleanText, normalizeDate, todayCN } = require('./schema');
-// 「长期有效」的判据只保留一份实现（classify.js），前端 index.html 的 ONGOING_RE 与它同词表
-const { isOngoing } = require('./classify');
+// 「长期有效」的判据只保留一份实现（classify.js），前端 index.html 的 ONGOING:START/END 块与它同词表
+const { isOngoing, ONGOING_PATTERNS } = require('./classify');
 
 /** 结束语义：日期必须落在这些词的附近才算截止日 */
 const END_CUE_RE = /截止|截至|至|到|结束|到期|最后|until|till|through|thru|\bends?\b|\bend(?:ing)?\b|expir|deadline|no later than/i;
@@ -111,4 +111,4 @@ function applyDeadline(deal, { today = todayCN() } = {}) {
   return { ...deal, expiresAt: deadline };
 }
 
-module.exports = { extractDeadline, isOngoing, applyDeadline, collectAbsoluteDates };
+module.exports = { extractDeadline, isOngoing, ONGOING_PATTERNS, applyDeadline, collectAbsoluteDates };
