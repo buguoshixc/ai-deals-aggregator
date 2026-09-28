@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-09-28T11:50:50+08:00",
-  "count": 133,
+  "updatedAt": "2026-09-28T21:21:46+08:00",
+  "count": 134,
   "deals": [
     {
       "id": "2eae0e246de2",
@@ -1176,6 +1176,78 @@
       "verifiedAt": null
     },
     {
+      "id": "cb45e0c735bd",
+      "title": "HubSpot AEO Sensor",
+      "vendor": "HubSpot AEO",
+      "url": "https://www.hubspot.com/aeo-sensor",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "其他",
+      "description": "Tracks how AI answer engines shift your website’s visibility.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-28",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "追踪 AI 问答引擎如何改变你网站的曝光表现。"
+      }
+    },
+    {
+      "id": "9e7c938ec401",
+      "title": "Midjourney",
+      "vendor": "Midjourney",
+      "url": "https://www.midjourney.com/home/",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "Creates images and videos from prompts.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-28",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "376b6b3397e6",
+      "title": "Grok",
+      "vendor": "Grok",
+      "url": "https://x.ai/grok",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/grok",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": "freemium",
+      "priceLine": null,
+      "features": null,
+      "category": "对话模型",
+      "description": "A conversational AI for timely answers from the live web and X.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-28",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "a67c07bf4993",
       "title": "Ankon AI",
       "vendor": "Ankon AI",
@@ -1384,6 +1456,32 @@
       }
     },
     {
+      "id": "06bc1d631f62",
+      "title": "Sync.so",
+      "vendor": "Sync.so",
+      "url": "https://sync.so/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/sync-so",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "视频",
+      "description": "A tool to sync lips and clone voices in videos",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-28",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "为视频做口型同步与声音克隆。"
+      }
+    },
+    {
       "id": "e3af28ce5ca1",
       "title": "Emergent.sh",
       "vendor": "Emergent.sh",
@@ -1407,6 +1505,32 @@
       "verifiedAt": null,
       "zh": {
         "description": "用编码智能体把遗留代码迁移到现代框架的 IDE。"
+      }
+    },
+    {
+      "id": "72048178d658",
+      "title": "DeepBrain AI",
+      "vendor": "DeepBrain AI",
+      "url": "https://www.deepbrain.io/aistudios?via=futuretools",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/deepbrain-ai",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "视频",
+      "description": "A tool to create text-to-speech videos.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-25",
+      "lastSeen": "2026-09-28",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "把文本做成配音视频的工具。"
       }
     },
     {
@@ -1462,32 +1586,6 @@
       }
     },
     {
-      "id": "06bc1d631f62",
-      "title": "Sync.so",
-      "vendor": "Sync.so",
-      "url": "https://sync.so/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/sync-so",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "视频",
-      "description": "A tool to sync lips and clone voices in videos",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-28",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "为视频做口型同步与声音克隆。"
-      }
-    },
-    {
       "id": "5975c73aa115",
       "title": "Qlip.ai",
       "vendor": "Qlip.ai",
@@ -1514,29 +1612,29 @@
       }
     },
     {
-      "id": "72048178d658",
-      "title": "DeepBrain AI",
-      "vendor": "DeepBrain AI",
-      "url": "https://www.deepbrain.io/aistudios?via=futuretools",
+      "id": "cbfce04c5556",
+      "title": "Motionleap",
+      "vendor": "Motionleap",
+      "url": "https://apps.apple.com/us/app/motionleap-by-lightricks/id1381206010",
       "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/deepbrain-ai",
+      "sourceUrl": "https://futuretools.io/tools/motionleap",
       "region": "global",
       "type": "tool",
       "discountInfo": null,
       "pricingModel": null,
       "priceLine": null,
       "features": null,
-      "category": "视频",
-      "description": "A tool to create text-to-speech videos.",
+      "category": "图像绘画",
+      "description": "An App to animate still images with effects.",
       "eligibility": null,
       "validity": null,
       "expiresAt": null,
-      "firstSeen": "2026-09-25",
+      "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-28",
       "verified": false,
       "verifiedAt": null,
       "zh": {
-        "description": "把文本做成配音视频的工具。"
+        "description": "给静态照片加上动效的 App。"
       }
     },
     {
@@ -1592,12 +1690,12 @@
       }
     },
     {
-      "id": "cbfce04c5556",
-      "title": "Motionleap",
-      "vendor": "Motionleap",
-      "url": "https://apps.apple.com/us/app/motionleap-by-lightricks/id1381206010",
+      "id": "39d2832e3c8f",
+      "title": "Unboring.ai",
+      "vendor": "Unboring.ai",
+      "url": "https://unboring.ai/",
       "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/motionleap",
+      "sourceUrl": "https://futuretools.io/tools/unboring-ai",
       "region": "global",
       "type": "tool",
       "discountInfo": null,
@@ -1605,43 +1703,14 @@
       "priceLine": null,
       "features": null,
       "category": "图像绘画",
-      "description": "An App to animate still images with effects.",
+      "description": "A platform to edit photos and videos online.",
       "eligibility": null,
       "validity": null,
       "expiresAt": null,
-      "firstSeen": "2026-09-21",
+      "firstSeen": "2026-09-28",
       "lastSeen": "2026-09-28",
       "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "给静态照片加上动效的 App。"
-      }
-    },
-    {
-      "id": "f9720295b45d",
-      "title": "AutoDraw",
-      "vendor": "AutoDraw",
-      "url": "https://autodraw.com/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/autodraw",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "Autocorrect but for drawings",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-27",
-      "lastSeen": "2026-09-28",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "画画版的自动纠错。"
-      }
+      "verifiedAt": null
     },
     {
       "id": "2d0ceeea880d",
@@ -1976,29 +2045,6 @@
       "verifiedAt": null
     },
     {
-      "id": "e4bd8003b3d6",
-      "title": "GLM-5.3-Flash 限时五折",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "GLM-5.3-Flash（原生多模态、1M 上下文）：限时五折输入 0.4 元、缓存命中 0.115 元、输出 1.4 元；标准价输入 0.8 元、缓存命中 0.23 元、输出 2.8 元GLM-5.2：输入 8 元、缓存命中 2 元、输出 28 元GLM-5.1：输入 [0,32K) 6 元 / [",
-      "pricingModel": "paid",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明（无头浏览器渲染后提取）。",
-      "eligibility": "所有调用 GLM-5.3-Flash 的开发者",
-      "validity": "限时活动（官方未标注截止日期）",
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-28",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
       "id": "adcb6471a512",
       "title": "智谱AI Batch API 批量调用五折",
       "vendor": "智谱AI",
@@ -2321,6 +2367,55 @@
       "verifiedAt": null
     },
     {
+      "id": "f9720295b45d",
+      "title": "AutoDraw",
+      "vendor": "AutoDraw",
+      "url": "https://autodraw.com/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/autodraw",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "Autocorrect but for drawings",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-27",
+      "lastSeen": "2026-09-28",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "画画版的自动纠错。"
+      }
+    },
+    {
+      "id": "e4bd8003b3d6",
+      "title": "GLM-5.3-Flash 限时五折",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "GLM-5.3-Flash（原生多模态、1M 上下文）：限时五折输入 0.4 元、缓存命中 0.115 元、输出 1.4 元；标准价输入 0.8 元、缓存命中 0.23 元、输出 2.8 元GLM-5.2：输入 8 元、缓存命中 2 元、输出 28 元GLM-5.1：输入 [0,32K) 6 元 / [",
+      "pricingModel": "paid",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明（无头浏览器渲染后提取）。",
+      "eligibility": "所有调用 GLM-5.3-Flash 的开发者",
+      "validity": "限时活动（官方未标注截止日期）",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-28",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "0ddacfb2cc6e",
       "title": "Wavel.ai",
       "vendor": "Wavel.ai",
@@ -2341,7 +2436,10 @@
       "firstSeen": "2026-09-28",
       "lastSeen": "2026-09-28",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "一个提供视频解决方案的平台，包含字幕与配音功能。"
+      }
     },
     {
       "id": "72410d92e184",
@@ -2393,84 +2491,6 @@
       "verifiedAt": null,
       "zh": {
         "description": "从长视频里自动挑出精彩片段做成短片。"
-      }
-    },
-    {
-      "id": "cb45e0c735bd",
-      "title": "HubSpot AEO Sensor",
-      "vendor": "HubSpot AEO",
-      "url": "https://www.hubspot.com/aeo-sensor",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "其他",
-      "description": "Tracks how AI answer engines shift your website’s visibility.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-22",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "追踪 AI 问答引擎如何改变你网站的曝光表现。"
-      }
-    },
-    {
-      "id": "9e7c938ec401",
-      "title": "Midjourney",
-      "vendor": "Midjourney",
-      "url": "https://www.midjourney.com/home/",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "Unlock true digital artistry.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-22",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "释放真正的数字艺术表现力。"
-      }
-    },
-    {
-      "id": "376b6b3397e6",
-      "title": "Grok",
-      "vendor": "Grok",
-      "url": "https://x.ai/grok",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/grok",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": "freemium",
-      "priceLine": null,
-      "features": null,
-      "category": "对话模型",
-      "description": "Chat with data, images, code, and real-time search.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-28",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "与数据、图片、代码对话，并支持实时联网搜索。"
       }
     },
     {

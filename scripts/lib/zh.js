@@ -35,6 +35,13 @@ const ZH_MAX = {
   priceLine: 80
 };
 
+/**
+ * 待译条目的宽限期（天）：超过它，`zh-todo --check` 就从「提醒」转成「拦」。
+ * 定这份数字的理由：采集每天两次，一周足够人把几条新条目的译文补上；
+ * 再长就回到「有新优惠 → 永远没人译」的老样子。改它要动这一行代码，不是调阈值。
+ */
+const PENDING_GRACE_DAYS = 7;
+
 const ZH_FIELD_LABELS = {
   discountInfo: '优惠说明',
   description: '简介',
@@ -274,11 +281,44 @@ function summarize(report) {
   return parts.join(' · ');
 }
 
+/* ------------------------------------------------------------------ */
+/* 待译条目的年龄                                                      */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 北京时间今天（YYYY-MM-DD）。刻意**不** require schema.js —— 那边 require 了本文件，
+ * 反过来引用会成环（schema → zh → schema）。
+ */
+function todayCN(now = new Date()) {
+  return new Date(new Date(now).getTime() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+}
+
+/**
+ * 统计待译条目的年龄：`{ count, oldestDays, rows: [{id, title, fields, days}] }`（按天降序）。
+ *
+ * 年龄按 `firstSeen`（条目第一次被采集到的日期）算，**缺失时从今天起算** ——
+ * 绝不把「不知道它什么时候进来的」当成「它已经陈年」，否则一次数据迁移就能把门禁点着。
+ * 于是「新采进来的英文条目」从 0 天开始计时，而不是一进来就超期。
+ */
+function pendingAge(missing = [], deals = [], { today = todayCN() } = {}) {
+  const byId = new Map((deals || []).map(deal => [String(deal && deal.id), deal || {}]));
+  const rows = (missing || []).map(row => {
+    const deal = byId.get(String(row.id)) || {};
+    const from = /^\d{4}-\d{2}-\d{2}$/.test(String(deal.firstSeen || '')) ? String(deal.firstSeen) : today;
+    const days = Math.max(0, Math.round(
+      (Date.parse(`${today}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86400000
+    ));
+    return { id: row.id, title: row.title, fields: row.fields || [], days };
+  }).sort((a, b) => b.days - a.days);
+  return { count: rows.length, oldestDays: rows.reduce((n, row) => Math.max(n, row.days), 0), rows };
+}
+
 module.exports = {
   DEFAULT_FILE,
   ZH_FIELDS,
   ZH_MAX,
   ZH_FIELD_LABELS,
+  PENDING_GRACE_DAYS,
   cjkCount,
   latinCount,
   isEnglishProse,
@@ -286,5 +326,7 @@ module.exports = {
   normalizeZh,
   load,
   attach,
-  summarize
+  summarize,
+  todayCN,
+  pendingAge
 };

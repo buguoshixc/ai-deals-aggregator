@@ -53,6 +53,13 @@ function runCheck() {
 const original = fs.readFileSync(FILE, 'utf8');
 const results = [];
 
+/** 覆盖层里**真的有译文**的字段数（空字符串是 --scaffold 留下的空槽位，normalizeZh 当没译处理） */
+const overlayFieldCount = () => Object.keys(JSON.parse(original).byId)
+  .reduce((n, id) => n + Object.keys(JSON.parse(original).byId[id])
+    .filter(k => !k.startsWith('_') && k !== 'src' &&
+      typeof JSON.parse(original).byId[id][k] === 'string' && JSON.parse(original).byId[id][k].trim())
+    .length, 0);
+
 function record(name, pass, detail, r) {
   results.push({ name, pass, detail });
   if (pass) return;
@@ -87,9 +94,7 @@ try {
   write(stale);
   const r2 = run();
   const counted = /中文译文: \d+\/\d+ 条带中文译文（(\d+) 个字段）/.exec(r2.out);
-  const expected = Object.keys(original ? JSON.parse(original).byId : {})
-    .reduce((n, id) => n + Object.keys(JSON.parse(original).byId[id])
-      .filter(k => !k.startsWith('_') && k !== 'src').length, 0) - 1;
+  const expected = overlayFieldCount() - 1;
   record('原文已变 → 警告并停用该字段译文',
     r2.code === 0 && /原文已变，译文已停用待复核/.test(r2.out) &&
     counted && Number(counted[1]) === expected,
@@ -147,19 +152,110 @@ try {
 
 // 复原后再构建一次：确认演练没有把覆盖层改坏
 const back = run();
-const fields = Object.keys(JSON.parse(original).byId)
-  .reduce((n, id) => n + Object.keys(JSON.parse(original).byId[id])
-    .filter(k => !k.startsWith('_') && k !== 'src').length, 0);
+const fields = overlayFieldCount();
 const restored = back.code === 0 && new RegExp(`中文译文: \\d+/\\d+ 条带中文译文（${fields} 个字段）`).test(back.out);
-// 复原后门禁也必须回到 0：一个常年红的检查等于没有检查
+
+/**
+ * 复原后的复核。判据从「exit 0」升级为「**漂移为 0**」——
+ * 2026-09-28 起待译是按年龄判的（宽限 7 天），所以只要还有未超期的待译，
+ * exit 0 与 exit 1 都可能出现，用它当判据就变成了「有没有人手翻译」而不是「门禁坏没坏」。
+ * 但也不能只查漂移就放过：exit 非 0 时**必须**是「待译超期」这一个理由，
+ * 否则（例如有人把待译做成永久静默、或漂移判据失效）这条同样会红。
+ */
 const backCheck = runCheck();
-const checkClean = backCheck.code === 0 && /译文与数据一致/.test(backCheck.out);
+const driftZero = /漂移 0 处/.test(backCheck.out) && /✓ 漂移 0 处/.test(backCheck.out);
+const checkClean = driftZero &&
+  (backCheck.code === 0 || /待译已超过 \d+ 天宽限/.test(backCheck.out));
+
+/* ------------------------------------------------------------------ */
+/* ⑦ 待译的年龄门禁：新条目进得来、陈年条目不放过                        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 这两条是「方案 A（英文可上线 + 待译状态）」唯一的牙。
+ *
+ * 做法：造一份**临时 deals.json**（zh-todo 支持 --file=），塞一条英文散文条目：
+ *  · firstSeen = 30 天前 → 超过宽限 → 必须非零退出（否则「永远待译」没人管）；
+ *  · firstSeen = 今天   → 宽限内 → 必须 exit 0 且输出里写明「待译 1 条」（否则待译被静默吞掉）。
+ * 临时文件写在 dist/ 下（那是 gitignore 的构建产物目录），用完即删。
+ */
+const tmpDir = path.join(ROOT, 'dist');
+if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
+const shiftDays = n => new Date(Date.now() + 8 * 3600 * 1000 - n * 86400000).toISOString().slice(0, 10);
+const makeProbeFile = (file, firstSeen) => fs.writeFileSync(file, `${JSON.stringify({
+  schemaVersion: 2,
+  updatedAt: `${shiftDays(0)}T00:00:00+08:00`,
+  count: 1,
+  deals: [{
+    id: 'selftest-pending-probe',
+    title: 'Self-test pending probe',
+    vendor: 'Self-test',
+    url: 'https://example.com/selftest-pending-probe',
+    source: 'Self-test',
+    sourceUrl: null,
+    region: 'global',
+    type: 'tool',
+    discountInfo: null,
+    pricingModel: null,
+    priceLine: null,
+    features: null,
+    category: '其他',
+    description: 'A probe entry that is English prose and has no translation at all.',
+    eligibility: null,
+    validity: null,
+    expiresAt: null,
+    firstSeen,
+    lastSeen: shiftDays(0),
+    verified: false,
+    verifiedAt: null
+  }]
+}, null, 2)}\n`, 'utf8');
+
+const runCheckOn = (file, grace, overlay) => {
+  const args = [path.join(ROOT, 'scripts', 'tools', 'zh-todo.js'), '--check', `--file=${file}`, `--grace=${grace}`];
+  if (overlay) args.push(`--overlay=${overlay}`);
+  const r = spawnSync(process.execPath, args, { cwd: ROOT, encoding: 'utf8' });
+  return { code: typeof r.status === 'number' ? r.status : 1, out: `${r.stdout || ''}${r.stderr || ''}` };
+};
+
+const staleProbe = path.join(tmpDir, '.zh-selftest-stale.json');
+const freshProbe = path.join(tmpDir, '.zh-selftest-fresh.json');
+// 空覆盖层：探针 deals.json 里只有一条自造条目，用真覆盖层会让 45 条译文全变「对不上 id」，
+// 那样测到的是孤儿判据而不是年龄判据。
+const emptyOverlay = path.join(tmpDir, '.zh-selftest-overlay.json');
+let agingStale;
+let agingFresh;
+try {
+  fs.writeFileSync(emptyOverlay, `${JSON.stringify({ _note: 'selftest', byId: {} }, null, 2)}\n`, 'utf8');
+
+  makeProbeFile(staleProbe, shiftDays(30));
+  const rStale = runCheckOn(staleProbe, 7, emptyOverlay);
+  agingStale = {
+    pass: rStale.code !== 0 && /待译 1 条/.test(rStale.out) && /最老 30 天/.test(rStale.out) &&
+      /超过 7 天宽限/.test(rStale.out),
+    detail: rStale.code !== 0 ? '已按超期拦下' : '竟然放行（陈年待译没人管）'
+  };
+  record('待译超过宽限期（30 天）→ check:zh 必须拦下', agingStale.pass, agingStale.detail, rStale);
+
+  makeProbeFile(freshProbe, shiftDays(0));
+  const rFresh = runCheckOn(freshProbe, 7, emptyOverlay);
+  agingFresh = {
+    pass: rFresh.code === 0 && /待译 1 条/.test(rFresh.out) && /最老 0 天/.test(rFresh.out),
+    detail: rFresh.code === 0 ? '宽限内放行且可见' : '新条目被拦（等于方案 B，站点会停更）'
+  };
+  record('待译在宽限期内（今天新进）→ check:zh 放行但必须写明待译条数', agingFresh.pass, agingFresh.detail, rFresh);
+} finally {
+  for (const file of [staleProbe, freshProbe, emptyOverlay]) {
+    try { fs.unlinkSync(file); } catch (error) { /* 不存在就算了 */ }
+  }
+}
 
 console.log('\n=== 中文译文门禁演练 ===');
 results.forEach(r => console.log(`  ${r.pass ? '✓' : '✗'} ${r.name} — ${r.detail}`));
 console.log(`  ${restored ? '✓' : '✗'} 复原后构建回到 ${fields} 个译文字段`);
-console.log(`  ${checkClean ? '✓' : '✗'} 复原后 check:zh 回到 0（建议性门禁不会常红）`);
+console.log(`  ${checkClean ? '✓' : '✗'} 复原后 check:zh 漂移回到 0（待译只受宽限期约束）`);
 const extra = [restored, checkClean];
 const failed = results.filter(r => !r.pass).length + extra.filter(v => !v).length;
 console.log(`\n${failed ? '❌' : '✅'} 演练 ${results.length + extra.length} 项，失败 ${failed} 项`);
+if (failed && !checkClean) console.log(`  ↳ 复原后 check:zh 输出：${backCheck.out.split('\n').slice(0, 4).join(' | ')}`);
 process.exit(failed ? 1 : 0);

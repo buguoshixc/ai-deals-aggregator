@@ -24,6 +24,7 @@ const { render: renderOgImage, selfCheck: selfCheckOgImage } = require('../lib/o
 const { load: loadLogos, write: writeLogos } = require('../lib/logos');
 const { load: loadRenderCore } = require('../lib/render-core');
 const { attach: attachZh, summarize: summarizeZh } = require('../lib/zh');
+const health = require('../lib/health');
 
 const ROOT = path.join(__dirname, '..', '..');
 const outArg = process.argv.find(a => a.startsWith('--out='));
@@ -47,7 +48,7 @@ function showOut(dir) {
 
 const PUBLIC_FILES = ['index.html', 'deals.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
 /** 构建期生成、不走源码拷贝的产物 */
-const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json'];
+const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'source-health.json'];
 const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
 const SITE_NAME = 'AI 优惠聚合器';
 const SITE_DESCRIPTION = '聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。全部指向厂商官方页。';
@@ -433,7 +434,10 @@ function writeDetailPages(payload, indexHtml, renderCore) {
   if (!style || !themeScript || !footerRaw) {
     throw new Error('抽取详情页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
   }
-  const footer = footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>').trim();
+  const footer = footerRaw
+    .replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>')
+    .replace(/__STATUS_HREF__/g, '../../status/')
+    .trim();
 
   const themeSeg = `<div class="seg" id="themeSeg" role="group" aria-label="配色主题">
         <button type="button" data-theme-value="auto" aria-pressed="true">跟随系统</button>
@@ -593,6 +597,182 @@ ${renderCore.detailHtml(deal)}
 /* 组装                                                                */
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/* 数据源状态页（/status/）                                             */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 「数据源状态」静态页。
+ *
+ * 给谁看：项目维护者、技术用户、以及任何想核对「这个站到底还在不在更新」的人。
+ * 它回答的是采集报告回答不了的那个问题：**某个来源是不是已经坏了几天**
+ * （报告表只活在当次运行的内存里，而 store.js 会把策展条目的 lastSeen 刷成今天，
+ * 于是「源坏了」与「源这次没新内容」在首页上长得一模一样）。
+ *
+ * 实现取舍：
+ *  · 不引入任何外部请求，复用 index.html 的 `<style>` / 主题前置脚本 / 页脚，
+ *    与详情页同一套抽取方式（样式只有一处，不会漂移）；
+ *  · **构建确定性**：页面上只写绝对时间（北京时间），相对时间（「2 小时前」）由一个
+ *    内联小脚本在浏览器里换算 —— 否则同一个数据在不同时刻构建会产出不同字节，
+ *    与「连续两次 build 产物一致」的规矩冲突；无 JS 时读到的仍是完整信息。
+ *  · 数据缺失（还没有过一次成功采集）时生成一页说明，而不是让构建失败。
+ */
+function renderStatusPage(healthDoc, indexHtml) {
+  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
+  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
+  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
+  if (!style || !themeScript || !footerRaw) {
+    throw new Error('抽取状态页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
+  }
+  const footer = footerRaw
+    .replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>')
+    .replace(/__STATUS_HREF__/g, '../status/')
+    .trim();
+  const summary = health.summarize(healthDoc);
+  const rows = summary.rows;
+
+  const rowHtml = row => {
+    const label = health.STATUS_LABEL[row.status] || row.status;
+    const reason = row.reason ? (health.REASON_LABEL[row.reason] || row.reason) : '';
+    const missing = row.lastRunMissing ? '<small>本轮未跑（沿用上次结果）</small>' : '';
+    return `
+        <tr>
+          <th scope="row">${htmlEscape(row.name || row.source)}<small>${htmlEscape(row.source)} · ${
+  row.kind === 'headless' ? '无头浏览器' : '静态抓取'}${row.region === 'cn' ? ' · 国内' : ' · 国外'}</small>${missing}</th>
+          <td class="st"><span class="stt ${htmlEscape(row.status)}">${htmlEscape(label)}</span>${
+  reason ? `<small>${htmlEscape(reason)}</small>` : ''}</td>
+          <td class="num">${Number(row.lastItemCount) || 0}</td>
+          <td class="num">${row.previousItemCount === null || row.previousItemCount === undefined ? '—' : Number(row.previousItemCount)}</td>
+          <td class="num">${Number(row.consecutiveFailures) || 0} / ${Number(row.consecutiveZero) || 0}</td>
+          <td><time datetime="${htmlEscape(row.lastSuccessAt || '')}" data-rel>${htmlEscape(health.formatCN(row.lastSuccessAt))}</time></td>
+        </tr>`;
+  };
+
+  const body = rows.length
+    ? rows.map(rowHtml).join('')
+    : '<tr><td colspan="6">还没有采集记录：这份文件由 `node scripts/collect.js` 写入，第一次采集成功后这里会有数据。</td></tr>';
+
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数据源状态 · ${htmlEscape(SITE_NAME)}</title>
+<meta name="description" content="每个采集来源的最近一次结果：条数变化、最近成功时间、连续失败次数。用于核对本站的数据是不是真的还在更新。">
+<link rel="canonical" href="${SITE_URL}status/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+${themeScript}
+${style}
+<style>
+  /* 只用首页已有的设计变量，不新建一套视觉语言 */
+  .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+  .stop h1 { font-size: 19px; margin: 0; }
+  .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
+  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+  .stable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  .stable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
+  .stable th, .stable td { text-align: left; padding: 10px 12px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
+  .stable thead th { border-top: 0; color: var(--mut); font-weight: 600; white-space: nowrap; }
+  .stable tbody th { font-weight: 600; }
+  .stable small { display: block; color: var(--mut); font-weight: 400; font-size: 11.5px; margin-top: 2px; }
+  .stable .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .stt { display: inline-block; padding: 2px 8px; border-radius: var(--r-pill); border: 1px solid var(--line); white-space: nowrap; }
+  .stt.healthy { color: var(--ok, #137a4b); border-color: currentColor; }
+  .stt.degraded { color: var(--warn, #a35a00); border-color: currentColor; }
+  .stt.failed { color: var(--bad, #b3261e); border-color: currentColor; }
+  .stable-wrap { overflow-x: auto; }
+  @media (max-width: 760px) { .stable th, .stable td { padding: 8px 9px; } }
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="topin">
+      <a class="brand" href="../">
+        <span class="mark" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
+            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
+          </svg>
+        </span>
+        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
+      </a>
+      <a class="jumpback" href="../">← 返回全部优惠</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main id="main">
+      <nav class="crumb" aria-label="面包屑"><a href="../">首页</a> › <span>数据源状态</span></nav>
+
+      <div class="stop">
+        <h1>数据源状态</h1>
+        <span class="meta">数据生成时间 ${htmlEscape(health.formatCN(healthDoc && healthDoc.generatedAt))}（北京时间）</span>
+      </div>
+      <p class="snote">
+        这里列出每个采集来源**最近一次**的结果与跨运行的连续性。为什么要公开它：
+        首页只写「数据更新 {日期}」，而人工策展的条目每天都在刷新，所以「某个来源坏了几天」
+        与「某个来源这次没有新内容」在首页上看起来是一样的——这一页把它们分开。
+        状态规则：采集器报错、或连续 3 次零产出即 <b>❌ 失败</b>；请求成功但条数掉到上次一半以下、
+        或零产出但还没到 3 次即 <b>⚠️ 异常</b>；其余为 <b>✅ 正常</b>。
+        「连续失败 / 连续零产出」两列分别是这两个计数器的当前值。
+      </p>
+
+      <div class="stable-wrap">
+      <table class="stable">
+        <caption>共 ${summary.total} 个来源 · 正常 ${summary.healthy} · 异常 ${summary.degraded} · 失败 ${summary.failed}</caption>
+        <thead>
+          <tr>
+            <th scope="col">来源</th>
+            <th scope="col">状态</th>
+            <th scope="col" class="num">本次条数</th>
+            <th scope="col" class="num">上次条数</th>
+            <th scope="col" class="num">连续失败 / 零产出</th>
+            <th scope="col">最近成功</th>
+          </tr>
+        </thead>
+        <tbody>${body}
+        </tbody>
+      </table>
+      </div>
+
+      <p class="snote" style="margin-top: var(--s3)">
+        机器可读的同一份数据：<a href="../source-health.json">source-health.json</a>。
+        本站只做收录与整理，来源站点的可用性、内容与最终条款以官方页面为准。
+      </p>
+    </main>
+    ${footer}
+  </div>
+  <script>
+    /* 相对时间只在浏览器里换算：页面字节因此与构建时刻无关（连续两次 build 产物一致）。
+       禁用 JS 时读到的仍是完整的绝对时间。 */
+    (function () {
+      document.body.classList.add('js');
+      var now = Date.now();
+      Array.prototype.forEach.call(document.querySelectorAll('time[data-rel]'), function (el) {
+        var at = Date.parse(el.getAttribute('datetime'));
+        if (isNaN(at)) return;
+        var minutes = Math.round((now - at) / 60000);
+        var text = minutes < 1 ? '刚刚'
+          : minutes < 60 ? minutes + ' 分钟前'
+            : minutes < 1440 ? Math.round(minutes / 60) + ' 小时前'
+              : Math.round(minutes / 1440) + ' 天前';
+        el.setAttribute('title', el.textContent);
+        el.textContent = text;
+      });
+    })();
+  </script>
+</body>
+</html>
+`;
+}
+
+/* ------------------------------------------------------------------ */
+/* 组装                                                                 */
+/* ------------------------------------------------------------------ */
+
 function assemble() {
   console.log(`\n=== 2) 组装产物 ${showOut(FINAL_OUT)} ===`);
   console.log(`  写入暂存目录 ${showOut(STAGE_OUT)}`);
@@ -691,7 +871,11 @@ function assemble() {
     if (html.includes(marker)) throw new Error(`预渲染标记未被替换: ${marker}`);
   }
 
-  fs.writeFileSync(indexFile, html, 'utf8');
+  // 页脚的「数据源状态」链接：站内相对路径在不同深度下不一样
+  // （首页 `status/`、详情页 `../../status/`、状态页自己 `../status/`），
+  // 所以源码里只有一处占位符，各自在写出前替换。这里先只处理**首页那一份**，
+  // 详情页与状态页的替换在各自的写出函数里做（它们拿到的是同一份含占位符的 html）。
+  fs.writeFileSync(indexFile, html.replace(/__STATUS_HREF__/g, 'status/'), 'utf8');
 
   // OG 分享图。
   // 画完立刻自检（og-image.selfCheck）：点阵字模没有自动换行，排版一变文字就会被静默裁掉，
@@ -736,8 +920,26 @@ ${dealUrls}
   fs.writeFileSync(path.join(OUT, 'feed.json'), feeds.json, 'utf8');
   console.log(`  订阅产物: feed.xml + feed.json（各 ${feeds.count} 条）`);
 
+  // 数据源状态：把采集写入的心跳文件发布出去（机器可读），并生成一页可读的 /status/。
+  // 文件缺失（还没跑过一次成功采集）时生成「暂无数据」页，而不是让构建失败——
+  // 一份状态页缺席不该阻断发布。
+  const healthStore = health.load();
+  const healthDoc = healthStore.missing || healthStore.broken ? health.emptyDoc() : healthStore.doc;
+  if (healthStore.broken) console.log(`  ⚠️  ${health.HEALTH_FILE} 解析失败：${healthStore.broken}（状态页按无数据渲染）`);
+  fs.writeFileSync(path.join(OUT, 'source-health.json'), `${JSON.stringify(healthDoc, null, 2)}\n`, 'utf8');
+  const statusDir = path.join(OUT, 'status');
+  fs.mkdirSync(statusDir, { recursive: true });
+  fs.writeFileSync(path.join(statusDir, 'index.html'), renderStatusPage(healthDoc, html), 'utf8');
+  const healthSummary = health.summarize(healthDoc);
+  console.log(`  数据源状态: source-health.json + status/index.html（${healthSummary.total} 个来源：` +
+    `正常 ${healthSummary.healthy} · 异常 ${healthSummary.degraded} · 失败 ${healthSummary.failed}）`);
+
   // 交给自检：折叠覆盖的条目总数需与页面卡片内容对得上；译文条数用于产物回读比对
-  return Object.assign({}, rendered, { zhWithZh: zhAttached.report.withZh });
+  return Object.assign({}, rendered, {
+    zhWithZh: zhAttached.report.withZh,
+    healthSources: healthSummary.total,
+    healthStatusText: healthSummary.rows.map(row => `${row.source}=${row.status}`).join(',')
+  });
 }
 
 function selfCheck(built) {
@@ -768,6 +970,39 @@ function selfCheck(built) {
   console.log(`  deals.json: schemaVersion=${payload.schemaVersion}, count=${payload.count}, updatedAt=${payload.updatedAt}`);
   if (payload.schemaVersion !== 2) fail('schemaVersion 不是 2');
   if (payload.count !== payload.deals.length) fail('count 与 deals 长度不一致');
+
+  // 数据源状态页：与 source-health.json 逐个来源对账（状态标签、条数、行数），
+  // 而不是只看「文件存在」——状态页最容易的坏法是「页面上写着正常，数据里其实是失败」。
+  const statusFile = path.join(OUT, 'status', 'index.html');
+  if (!fs.existsSync(statusFile)) fail('缺少 status/index.html');
+  else {
+    const page = fs.readFileSync(statusFile, 'utf8');
+    const doc = JSON.parse(fs.readFileSync(path.join(OUT, 'source-health.json'), 'utf8'));
+    const summary = health.summarize(doc);
+    const rows = [...page.matchAll(/<span class="stt ([a-z]+)">/g)].map(m => m[1]);
+    const problems = [];
+    if (summary.total !== built.healthSources) {
+      problems.push(`来源数不一致：产物里 ${rows.length} 行 / 数据里 ${summary.total} 个`);
+    }
+    for (const row of summary.rows) {
+      const expected = health.STATUS_LABEL[row.status];
+      if (!page.includes(expected)) problems.push(`${row.source} 的状态标签 ${expected} 不在页面上`);
+    }
+    const expectedStatuses = summary.rows.map(row => row.status).sort().join(',');
+    if (rows.slice().sort().join(',') !== expectedStatuses) {
+      problems.push(`状态序列不一致：页面 ${rows.join(',')} / 数据 ${expectedStatuses}`);
+    }
+    if (summary.total > 0 && !/<time datetime="[^"]*"/.test(page)) {
+      problems.push('状态页没有任何 <time datetime>（无 JS 时可读性依赖它）');
+    }
+    if (summary.total === 0 && !/还没有采集记录/.test(page)) {
+      problems.push('没有采集数据时，状态页必须明说，而不是给一张空表');
+    }
+    if (!page.includes('source-health.json')) problems.push('状态页没有指向 source-health.json 的链接');
+    if (problems.length) fail(`数据源状态页：${problems.join('；')}`);
+    else console.log(`  ✓ 数据源状态: ${summary.total} 个来源与 source-health.json 逐个对账一致` +
+      `（正常 ${summary.healthy} · 异常 ${summary.degraded} · 失败 ${summary.failed}）`);
+  }
 
   // 译文必须真的落到产物里：浏览器 fetch('deals.json') 拿的就是这一份，
   // 这里漏写不会报错，只会让线上详情页静悄悄没有中文。
@@ -809,6 +1044,24 @@ function selfCheck(built) {
 
   if (/PRERENDER:/.test(html)) fail('产物 index.html 仍残留 PRERENDER 标记');
   if (/__SITE_URL__/.test(html)) fail('产物 index.html 仍残留 __SITE_URL__ 占位');
+  {
+    // 页脚链接的占位符必须被各自那一份替换掉：残留会变成一条 404 的死链
+    const indexHtml = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
+    const leftovers = [];
+    if (/__STATUS_HREF__/.test(indexHtml)) leftovers.push('index.html');
+    if (/__STATUS_HREF__/.test(fs.readFileSync(statusFile, 'utf8'))) leftovers.push('status/index.html');
+    const dealDirs = fs.readdirSync(path.join(OUT, 'deal'));
+    for (const id of dealDirs) {
+      if (/__STATUS_HREF__/.test(fs.readFileSync(path.join(OUT, 'deal', id, 'index.html'), 'utf8'))) leftovers.push(`deal/${id}/`);
+    }
+    if (leftovers.length) fail(`__STATUS_HREF__ 占位符残留：${leftovers.slice(0, 5).join('、')}`);
+    else {
+      const linked = /href="(\.\.\/)*status\/"/.test(indexHtml) && dealDirs.length > 0 &&
+        /href="\.\.\/\.\.\/status\/"/.test(fs.readFileSync(path.join(OUT, 'deal', dealDirs[0], 'index.html'), 'utf8'));
+      if (!linked) fail('页脚的「数据源状态」链接没有按深度生成相对路径');
+      else console.log(`  ✓ 页脚状态链接: 首页 status/ · 详情页 ../../status/ · 状态页 ../status/`);
+    }
+  }
 
   const cardCount = (markup.match(/<article class="g /g) || []).length;
   if (cardCount < MIN_PRERENDERED_CARDS) {
