@@ -10,10 +10,16 @@
  * 明确区分两个**不拦**的概念，别把它们混成一个"降级"：
  *   · 单源失败（某个采集器抛错）：常态而非异常——collect.yml 的浏览器安装步骤本身就是
  *     continue-on-error，装不上时无头来源会各自报错并产出 0 条，而那条链路是设计上要
- *     容忍的。所以它只在报告里逐条点名 + 写进 CI Summary，不阻断写盘、不影响退出码。
- *   · 采集量骤降（stats.degraded：新采 < 既有 × 30%）：同样只告警。若它顺手拦写盘，
- *     一次 playwright 装不上就能让 deals.json 不落库 → deploy.yml 判 skipped → 线上停更。
+ *     容忍的。所以它只在报告里逐条点名、写进 CI Summary 与**跨运行的健康表**
+ *     （scripts/data/source-health.json），不阻断写盘、不影响退出码。
+ *   · 采集量骤降（stats.degraded：新采 < 既有 × 30%）：同样只告警。
  *     真正无法发布的情形由①兜住：零产出时本来就没有新东西可写。
+ *
+ * 本脚本**不是**唯一的把关点：collect.yml 在 `git push` **之前**还会跑一次完整门禁
+ * （.github/actions/gate）——数据有问题就根本不入库。所以这里"不拦"的东西仍可能在
+ * 门禁那一步被拦下（例如无头浏览器不可用 ⇒ 无头来源判 headless_unavailable ⇒ 门禁红）。
+ * 旧注释里"deploy.yml 判 skipped → 线上停更"的说法自 2026-09-28 起已不成立：
+ * 发布链现在自己先过门禁，采集失败会被 deploy.yml 的 prepublish 明确拒绝。
  *
  * 用法：
  *   node scripts/collect.js                     # 全量采集并写盘

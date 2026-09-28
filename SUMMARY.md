@@ -4,7 +4,15 @@
 > 目标、已完成部分、实测数字、代码在哪、接下来要做什么、以及两处如实说明。
 >
 > **配套文件**：待你点头的事见 [`NEXT-STEPS.md`](NEXT-STEPS.md)；
-> 逐步的详细记录见 [`PROJECT_STATUS.md`](PROJECT_STATUS.md) 的 2.17–2.29。
+> 逐步的详细记录见 [`PROJECT_STATUS.md`](PROJECT_STATUS.md)（最新一节是 **2.33**）。
+>
+> ⚠️ **本文件记录的是 2026-09-23 ~ 09-27 的那一轮**，其中的版本坐标已作废：
+> 当时写的 `master = fa2403d` 早已被后续推送与定时数据更新推进（**当前以 `git log` 为准**）。
+>
+> **本轮之后（2026-09-28）：`v1.0-public-readiness`，在分支 `feat/v1-public-readiness` 上**
+> —— 不开发新功能，只做三件事：修掉四个已知线上问题（有效期语义 / 锚点假隐藏 / 中文不可搜 /
+> 文本截断）、把门禁变成「红就不发布」（`prepublish → build → deploy`，门禁实现只此一处）、
+> 新增数据源健康状态与 `/status/` 页。**尚未推送**；完整记录见 `PROJECT_STATUS.md` 2.33。
 >
 > 状态：**已上线**（2026-09-23）。`master` = `origin/master` = **`fa2403d`**（代码那次推送是 `ecbc815`），
 > Deploy 工作流**两次** success，线上跑了 `verify --url=` **108 项 0 失败**（上线当日的记录；
