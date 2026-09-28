@@ -1610,6 +1610,25 @@
       return '<span class="zhmark" title="' + escapeAttr('详情页附中文翻译') + '">中文</span>';
     }
 
+    /**
+     * **检索用**的中文串（只进搜索 haystack，绝不参与渲染）。
+     *
+     * 两段来源：
+     *   · 本条自己的译文 `deal.zh.*` —— 详情弹层里逐字段渲染，是用户直接看得到的正文；
+     *   · 折叠卡成员的译文 `deal.memberZhText` —— 折叠卡只保留代表条目的字段，
+     *     成员的译文不会出现在这张卡上，但成员的详情页（deal/<id>/）上有，用户同样看得到。
+     * 分开返回而不是并进 `deal.zh`：译文必须挂在它自己那句英文原文下面，
+     * 混淆两者会造出「中文与上方英文对不上」的卡片（lib/zh.js 的原文指纹防的就是这件事）。
+     */
+    function zhSearchText(deal) {
+      if (!deal || typeof deal !== 'object') return '';
+      const own = deal.zh && typeof deal.zh === 'object'
+        ? Object.keys(deal.zh).map(key => (typeof deal.zh[key] === 'string' ? deal.zh[key] : '')).join(' ')
+        : '';
+      const members = typeof deal.memberZhText === 'string' ? deal.memberZhText : '';
+      return (own + ' ' + members).trim();
+    }
+
     /* ----------------------------------------------------------------
      * ④ 折叠：官方页面上的「一张表」= 一条优惠
      *
@@ -1804,6 +1823,15 @@
         // 覆盖的条目 id（顺序与 models 一一对应）：让「这张卡到底覆盖了哪几条」
         // 在产物里可逐条复核，而不是只能靠标题字符串反推（那是会被前缀撞车的）
         dealIds: group.map(deal => String(deal.id || '')),
+        // **只用于搜索 haystack**：组内成员条目的中文译文。
+        // 折叠卡只带代表条目的字段，成员的 zh 会被丢掉；而成员的详情页（deal/<id>/）
+        // 上那一段中文是用户真的看得到的，搜不到就是「看得见搜不到」。
+        // 为什么单独存一个串、不并进 base.zh：译文必须挂在它自己那句英文原文下面，
+        // 把成员的译文并进代表条目的 zh 会造出「中文与上方英文对不上」的卡片——
+        // lib/zh.js 的原文指纹防的正是这件事。所以它只进检索，永不参与渲染。
+        memberZhText: group.map(deal => deal.zh && typeof deal.zh === 'object'
+          ? Object.keys(deal.zh).map(k => (typeof deal.zh[k] === 'string' ? deal.zh[k] : '')).join(' ')
+          : '').filter(Boolean).join(' '),
         // 详情弹层用：每个型号自己的额度（组内文案都相同时为 null，不重复啰嗦）
         modelOffers: modelOffersOf(models, group)
       });
@@ -2046,8 +2074,13 @@
       if (filters.category && deal.category !== filters.category) return false;
       if (filters.vendor && vendorOf(deal).key !== filters.vendor) return false;
       if (filters.search) {
+        // 用户能看见的文字都必须能被搜到。中文译文（deal.zh.*）是**渲染出来**的正文
+        // （卡片「中文」胶囊 + 详情弹层里的可折叠译文块），此前的 haystack 里一个字都没有，
+        // 于是「把看到的中文复制一段来搜」必然 0 结果。validity / priceLine 同理
+        // （详情弹层里的「有效期说明」「价格阶梯」两行），一起补上。
         const haystack = [deal.title, deal.vendor, deal.discountInfo, deal.description, deal.category,
-          deal.source, deal.eligibility, (deal.features || []).join(' ')]
+          deal.source, deal.eligibility, deal.validity, deal.priceLine, zhSearchText(deal),
+          (deal.features || []).join(' ')]
           .filter(Boolean).join(' ').toLowerCase();
         if (!haystack.includes(filters.search)) return false;
       }

@@ -585,6 +585,82 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   await page.fill('#searchInput', '');
   await page.waitForTimeout(300);
 
+  console.log('\n=== 8b) 中文译文可搜索 ===');
+
+  /**
+   * 用户**看得见**的中文必须搜得到：卡片上的「中文」胶囊指的就是详情弹层里那段人工译文，
+   * 把其中一段中文复制进搜索框却 0 结果，就是「看得见搜不到」。
+   *
+   * 不硬编码任何条目：从同一份产物（`fetch('deals.json')`，本地与 --url= 线上冒烟都同源可取）里
+   * 现取一条**当前视图里真有卡**的带译文条目，再取它译文里连续 ≥6 个汉字去搜。
+   * 卡片标题用两种口径匹配：单条卡（标题即条目标题）与折叠卡（标题是折叠后的，靠 data-deal-ids 认领）。
+   */
+  const ZH_PROBE = `(async () => {
+    const payload = await (await fetch('deals.json')).json();
+    const deals = payload.deals || [];
+    const cards = [...document.querySelectorAll('article.g')];
+    const cardTitles = new Set();
+    const byMemberId = new Map();
+    for (const card of cards) {
+      const title = ((card.querySelector('h3') || {}).textContent || '').trim();
+      if (title) cardTitles.add(title);
+      for (const id of (card.dataset.dealIds || '').split(',').filter(Boolean)) byMemberId.set(id, title);
+    }
+    const runOf = s => (String(s).match(/[\\u4e00-\\u9fa5]{6,}/) || [''])[0];
+    for (const deal of deals) {
+      const title = String(deal.title || '').trim();
+      const cardTitle = cardTitles.has(title) ? title : (byMemberId.get(String(deal.id)) || null);
+      if (!cardTitle || !deal.zh || typeof deal.zh !== 'object') continue;
+      for (const field of Object.keys(deal.zh)) {
+        const phrase = runOf(deal.zh[field]);
+        if (phrase) return { id: deal.id, title, cardTitle, field, phrase, zh: String(deal.zh[field]) };
+      }
+    }
+    return null;
+  })()`;
+
+  const zhSearchOnce = async phrase => {
+    await page.fill('#searchInput', phrase);
+    await page.waitForTimeout(350);
+    return page.evaluate(() => ({
+      count: document.querySelectorAll('article.g').length,
+      titles: [...document.querySelectorAll('article.g h3')].map(h => h.textContent.trim())
+    }));
+  };
+
+  const baseDealCards = await page.evaluate(() => document.querySelectorAll('article.g').length);
+  const zhDeal = await page.evaluate(ZH_PROBE);
+  check('优惠视图里存在带中文译文的卡片（检索验证的取样前提）', Boolean(zhDeal),
+    zhDeal ? `${zhDeal.title} · 译文字段 ${zhDeal.field}` : '找不到——译文可能全部落在「全部工具」视图里');
+  if (zhDeal) {
+    const hit = await zhSearchOnce(zhDeal.phrase);
+    const matched = hit.titles.indexOf(zhDeal.cardTitle) >= 0;
+    check('中文译文可搜：粘贴译文里的中文片段能搜到那张卡',
+      hit.count > 0 && hit.count < baseDealCards && matched,
+      `搜「${zhDeal.phrase}」→ ${hit.count}/${baseDealCards} 张卡 · 命中「${zhDeal.cardTitle}」=${matched}`);
+  }
+  await page.fill('#searchInput', '');
+  await page.waitForTimeout(300);
+
+  // 44 条译文里 38 条属于工具条目，只测优惠视图会漏掉大头
+  await page.click('[data-facet="tab"][data-value="tools"]');
+  await page.waitForTimeout(400);
+  const baseToolCards = await page.evaluate(() => document.querySelectorAll('article.g').length);
+  const zhTool = await page.evaluate(ZH_PROBE);
+  check('「全部工具」视图里存在带中文译文的卡片（检索验证的取样前提）', Boolean(zhTool),
+    zhTool ? `${zhTool.title} · 译文字段 ${zhTool.field}` : '找不到');
+  if (zhTool) {
+    const hit = await zhSearchOnce(zhTool.phrase);
+    const matched = hit.titles.indexOf(zhTool.cardTitle) >= 0;
+    check('中文译文可搜（全部工具视图）：同样能搜到',
+      hit.count > 0 && hit.count < baseToolCards && matched,
+      `搜「${zhTool.phrase}」→ ${hit.count}/${baseToolCards} 张卡 · 命中「${zhTool.cardTitle}」=${matched}`);
+  }
+  await page.fill('#searchInput', '');
+  await page.waitForTimeout(300);
+  await page.click('[data-facet="tab"][data-value="deals"]');
+  await page.waitForTimeout(400);
+
   console.log('\n=== 9) 全部工具 Tab ===');
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.waitForTimeout(200);
