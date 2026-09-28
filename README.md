@@ -403,8 +403,20 @@ npm run selftest:zh     # 门禁演练：塞坏数据进去，验证构建拦得
 为什么不是「待译必红」：自动采集每天两次，任何一条新英文条目都会让下一次人工 push 的 gate
 变红（2026-09-28 e01dcfc 实测就是这条链），系统会长期停在「有新优惠 → 必然 CI 红」。
 为什么待译也不能无声：数量与最老天数进 CI Summary、采集日志与 `/status/` 页面。
-**年龄按 `firstSeen` 算**，缺失时从今天起算——绝不把数据迁移日当成陈年。
 `npm run check:zh -- --grace=0` 可以把待译也当成必红（发布前自查用）。
+
+**年龄从「它进入待译」那天算起**，不是从条目第一次被采集到（`firstSeen`）算起。
+这个区别是必须的：上游改写会让**一条老条目**的译文失效（2026-09-28 实测：Midjourney / Grok
+的英文被换掉，两条中文随之失效），用 `firstSeen` 计时等于「刚失效就超期」，第二天门禁就红
+而人没有反应时间。所以：
+
+- `scripts/data/zh-pending.json`（**入库**的跨运行状态）记下每个 `(条目, 字段)` 进入待译的日期；
+  由 `collect.js` 每轮维护（仍在待译的保留原日期、译好的删掉、新出现的记今天），
+  门禁只读 —— **会改文件的检查不是检查**；
+- 没有记录时才退回 `firstSeen`；两者都没有就从今天起算（绝不把「不知道它什么时候进来的」
+  当成「它已经陈年」）；
+- `npm run check:zh` 会打印 `（N 天，自 YYYY-MM-DD 起 · 依据 pending|firstSeen|today）`，
+  算的是哪一天一眼可见。
 
 > 顺带一条血泪账：漂移数曾经把 `stale` 与 `dropped` 加了两遍（`lib/zh.js` 里后者就是前者的
 > 计数），于是打印出「漂移 4 处」而分解式只有 2 —— 数字对不上的门禁没人会信，已只计一次。
@@ -527,7 +539,8 @@ hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排�
   —— 线上实证：`e01dcfc` 上 `gate=failure` 而 `build`/`deploy=success` 照发。
 - `.github/workflows/collect.yml`：cron **名义**上是每天北京时间 08:00 / 20:00（`0 0 * * *` / `0 12 * * *`
   = UTC 00:00 / 12:00）采集 → 校验 → **提交前的完整门禁** → 有变化才提交
-  `deals.json` + `scripts/data/source-health.json`。门禁排在 `git push` **之前**：数据有问题
+  `deals.json` + `scripts/data/source-health.json` + `scripts/data/zh-pending.json`
+  （三份一起走：数据本身，以及两份跨运行状态）。门禁排在 `git push` **之前**：数据有问题
   就根本不入库（机器人提交一进 master 就会被 deploy 的 workflow_run 接走）。
   采集步骤为 `node scripts/collect.js --headless`（静态来源 + 无头来源），前面会安装 playwright 自带
   chromium（这一步失败不阻断采集本身，但会让无头来源在健康表里判成 `headless_unavailable`，

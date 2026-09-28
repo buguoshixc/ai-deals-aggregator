@@ -1801,18 +1801,39 @@ reusable 调用会把它变成 `<调用方>/<被调>` 形态，且 deploy 再建
 
 改法：拆成两档 —— **漂移必红**（孤儿/原文已变/不合规/覆盖层管不到，无宽限期）；
 **待译按年龄判**（默认宽限 7 天，超过转红；数量与「最老 N 天」每次都打印，进 Summary、
-采集日志与 `/status/`）。年龄按 `firstSeen` 算、缺失时从今天起算。
-顺带修掉漂移数的**重复计数**（`stale` 与 `dropped` 是同一批事件，打印出「漂移 4 处」而
-分解式只有 2）。新增两条年龄门禁的牙（造临时 deals.json：30 天前 → 必须拦；今天 → 必须放行
-且写明待译条数）。
+采集日志与 `/status/`）。顺带修掉漂移数的**重复计数**（`stale` 与 `dropped` 是同一批事件，
+打印出「漂移 4 处」而分解式只有 2）。
+
+**年龄的基准是「它进入待译那天」，不是 `firstSeen`**（收尾时补的一处修正）：
+上游改写会让**一条老条目**的译文失效 —— 2026-09-28 实测 Midjourney / Grok 的英文被换掉，
+两条中文随之失效；它们 `firstSeen` 是 7 天前，用 `firstSeen` 计时等于「刚失效就超期」，
+第二天门禁就会红而人没有反应时间。所以新增**入库的跨运行状态**
+`scripts/data/zh-pending.json`（每个 `(条目, 字段)` 进入待译的日期）：
+仍在待译的保留原日期、译好的删掉、新出现的记今天；由 `collect.js` 写、门禁只读
+（会改文件的检查不是检查）。没有记录时才退回 `firstSeen`，两者都没有就从今天起算。
+`check:zh` 会打印 `（N 天，自 YYYY-MM-DD 起 · 依据 pending|firstSeen|today）`。
+新增两条牙齿：firstSeen 30 天前但今天才进入待译 → **放行**；firstSeen 今天但已等 30 天 → **拦下**。
+
+**E′. 收尾时用真实 YAML 解析器复验 workflow，抓到一个会上线的错**
+
+`collect.yml` 的步骤名写成 `- name: CI consistency (bare run: 期望项数…)` —— 里面的
+「冒号 + 空格」在块上下文里是**映射分隔符**，GitHub 的真实 YAML 解析器会**拒绝整个文件**。
+仓库自带的一致性检查用的是无依赖的缩进读取器，它把这一行读成合法的 name/值对，
+于是本地所有门禁全绿、推上去 workflow 直接 parse 失败、什么都不跑。
+用 Python 的 PyYAML 复验 5 个 YAML 文件时才发现（这是本轮**没有**被自己的门禁抓到的一类错误）。
+
+改法：步骤名里的「冒号 + 空格」换成破折号；新增断言 **(14)**：扫 4 个 workflow + 复合 action 的
+**全部未加引号标量**，出现「冒号+空格」即红（`--expect-checks` 30 → 31）。
+边界如实记录：只查这一种，引号包裹的值与块标量不查，也不做完整 YAML 校验
+（那需要引入解析器，与本文件「npm ci 之前就能跑」的定位冲突）。
 
 **E. 本轮实跑的门禁（全部 0 退出）**
 
-`validate` · `validate --strict` · `check:zh` · `selftest:zh`(11) · `selftest:expiry`(94) ·
-`selftest:text`(46) · `selftest:health`(51) · `check-ci-consistency`(30) · `build`（自检全过）·
+`validate` · `validate --strict` · `check:zh` · `selftest:zh`(13) · `selftest:expiry`(94) ·
+`selftest:text`(46) · `selftest:health`(51) · `check-ci-consistency`(31) · `build`（自检全过）·
 `verify`(**145 项 0 失败**) · `verify --compare`(**151 项 0 失败**，6 项回归全过：覆盖 80→80、
 卡片 50→50、首屏 9→9、页高 4566px、外部请求 0、JS 错误 0)。
-本轮还实跑了一次**真实采集**（134 条，9 个来源全部正常），产物与健康状态一并入库。
+本轮还实跑了一次**真实采集**（134 条，9 个来源全部正常），产物与两份跨运行状态一并入库。
 
 **F. 本轮明确不做**（留给下一阶段）：学生/开发者数据模型（audience / eligibility 扩展 /
 是否需要信用卡 / 中国大陆可用性 / benefit type / claim requirements）、首页分类入口、

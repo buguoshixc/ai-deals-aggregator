@@ -33,7 +33,7 @@
 const { makeDeal, todayCN } = require('./lib/schema');
 const { loadStore, writeDeals, mergeAll, assertAllValid } = require('./lib/store');
 const { loadCurated } = require('./lib/curated');
-const { attach: attachZh, summarize: summarizeZh, pendingAge, PENDING_GRACE_DAYS } = require('./lib/zh');
+const { attach: attachZh, summarize: summarizeZh, pendingAge, loadPending, writePending, updatePending, PENDING_GRACE_DAYS } = require('./lib/zh');
 const { createReport, printReport, printHealth } = require('./lib/report');
 const { describeError } = require('./lib/http');
 const health = require('./lib/health');
@@ -252,7 +252,10 @@ async function main() {
   if (zhReport.missing.length) {
     // 「还有几条没译」不够用：译文门禁是按**年龄**判的（超过宽限期就拦），所以必须把
     // 「最老多少天」一起说出来 —— 否则没人知道下一次 push 会不会红。
-    const age = pendingAge(zhReport.missing, localized, { today });
+    // 年龄从「进入待译」那天算起（本轮结束时写回 zh-pending.json），不是 firstSeen：
+    // 上游改写会让一条老条目的译文失效，用 firstSeen 计时等于「刚失效就超期」。
+    const pendingStore = loadPending();
+    const age = pendingAge(zhReport.missing, localized, { today, pending: pendingStore.doc });
     console.log(`  ℹ️  待译 ${zhReport.missing.length} 条（最老 ${age.oldestDays} 天，宽限 ${PENDING_GRACE_DAYS} 天）：` +
       `node scripts/tools/zh-todo.js 查看`);
     console.log(`      ${age.rows.slice(0, 5).map(row => `${row.title}（${row.days} 天）`).join('、')}` +
@@ -300,9 +303,17 @@ async function main() {
   // 不会落盘——CI 里那两种情况本来也不会提交任何文件。设计上接受这个边界：单源失败而
   // 整体成功（最常见的情形）一定会被记下来。
   health.write(healthDoc);
+
+  // 待译状态：记下每个 (条目, 字段) **进入待译的日期**，供译文门禁算年龄。
+  // 为什么需要它：上游改写会让一条老条目的译文失效，用 firstSeen 计时等于「刚失效就超期」，
+  // 第二天门禁就红而人没有反应时间。这里由**采集**写、门禁只读（会改文件的检查不是检查）。
+  const pendingNext = updatePending(loadPending().doc, zhReport.missing, { today });
+  writePending(pendingNext.doc);
   console.log(`\n✅ 已写入 deals.json：${payload.count} 条，updatedAt=${payload.updatedAt}${force ? '（--force 放行）' : ''}`);
   console.log(`✅ 已写入 source-health.json：${healthSummary.total} 个来源` +
     `（正常 ${healthSummary.healthy} · 异常 ${healthSummary.degraded} · 失败 ${healthSummary.failed}）`);
+  console.log(`✅ 已写入 zh-pending.json：${Object.keys(pendingNext.doc.byKey).length} 个待译字段` +
+    `（本轮新进入 ${pendingNext.entered.length} · 已译好清掉 ${pendingNext.cleared.length}）`);
 }
 
 main().catch(error => {

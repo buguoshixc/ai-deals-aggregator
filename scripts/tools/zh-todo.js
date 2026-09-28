@@ -18,7 +18,8 @@
 const fs = require('fs');
 const path = require('path');
 const {
-  ZH_FIELDS, ZH_FIELD_LABELS, PENDING_GRACE_DAYS, load, attach, isEnglishProse, cjkCount, todayCN, pendingAge
+  ZH_FIELDS, ZH_FIELD_LABELS, PENDING_GRACE_DAYS, PENDING_FILE,
+  load, attach, isEnglishProse, cjkCount, todayCN, pendingAge, loadPending
 } = require('../lib/zh');
 
 const ROOT = path.join(__dirname, '..', '..');
@@ -41,6 +42,7 @@ const opt = (name, fallback = null) => {
 
 const dealsFile = path.resolve(ROOT, opt('file', 'deals.json'));
 const overlayFile = path.resolve(ROOT, opt('overlay', path.join('scripts', 'data', 'translations_zh.json')));
+const pendingFile = path.resolve(ROOT, opt('pending', path.join('scripts', 'data', 'zh-pending.json')));
 
 const store = JSON.parse(fs.readFileSync(dealsFile, 'utf8'));
 const deals = Array.isArray(store) ? store : store.deals || [];
@@ -111,7 +113,13 @@ if (has('check')) {
     process.exit(1);
   }
   const pendingFields = todo.reduce((n, row) => n + row.missing.length, 0);
-  const age = pendingAge(report.missing, attached, { today: todayCN() });
+  // 年龄从「它进入待译」那天算起（跨运行状态由 collect.js 维护）；没有记录时退回 firstSeen。
+  // 这一步**只读**：会改文件的检查不是检查，写状态是采集那边的事。
+  const pendingStore = loadPending(pendingFile);
+  if (pendingStore.broken) {
+    console.warn(`⚠️  ${path.relative(ROOT, pendingFile)} 解析失败（${pendingStore.broken}），本轮按 firstSeen 计时`);
+  }
+  const age = pendingAge(report.missing, attached, { today: todayCN(), pending: pendingStore.doc });
   const overdue = age.rows.filter(row => row.days > grace);
   const clean = drift === 0 && overdue.length === 0;
 
@@ -136,7 +144,8 @@ if (has('check')) {
     console.log(`    管不到 [${row.id}] ${row.title}：deals.json 里有译文但覆盖层没这条（撤回的译文会照发）`);
   }
   for (const row of age.rows) {
-    console.log(`    ${row.days > grace ? '超期' : '待译'}   [${row.id}] ${row.title}：${row.fields.join('/')}（${row.days} 天）`);
+    console.log(`    ${row.days > grace ? '超期' : '待译'}   [${row.id}] ${row.title}：${row.fields.join('/')}` +
+      `（${row.days} 天，自 ${row.since} 起 · 依据 ${row.source}）`);
   }
   if (has('json')) {
     console.log(JSON.stringify({

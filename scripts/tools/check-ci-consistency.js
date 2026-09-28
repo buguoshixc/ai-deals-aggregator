@@ -582,6 +582,12 @@ if (idxGateRef >= 0 && idxPush >= 0 && idxGateRef > idxPush) {
   collectProblems.push('门禁写在 git push 之后（门禁红也拦不住入库）');
 }
 if (commitStepCount !== 1) collectProblems.push(`「Commit and push」步骤出现 ${commitStepCount} 次（期望恰好 1 次）`);
+// 提交内容：三份东西必须一起走 —— 数据本身，以及两份**跨运行状态**
+//（来源健康、待译进入日期）。少一份就会出现「状态永远停在首次运行」或
+//「译文年龄退回 firstSeen，一失效就超期」这类静默退化。
+for (const needed of ['deals.json', 'scripts/data/source-health.json', 'scripts/data/zh-pending.json']) {
+  if (!collectRaw.includes(needed)) collectProblems.push(`collect.yml 的提交里没有 ${needed}`);
+}
 check('(13) collect.yml 的门禁步骤排在提交步骤之前',
   collectProblems.length === 0,
   collectProblems.length ? collectProblems.join('；')

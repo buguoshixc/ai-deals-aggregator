@@ -211,9 +211,10 @@ const makeProbeFile = (file, firstSeen) => fs.writeFileSync(file, `${JSON.string
   }]
 }, null, 2)}\n`, 'utf8');
 
-const runCheckOn = (file, grace, overlay) => {
+const runCheckOn = (file, grace, overlay, pending) => {
   const args = [path.join(ROOT, 'scripts', 'tools', 'zh-todo.js'), '--check', `--file=${file}`, `--grace=${grace}`];
   if (overlay) args.push(`--overlay=${overlay}`);
+  if (pending) args.push(`--pending=${pending}`);
   const r = spawnSync(process.execPath, args, { cwd: ROOT, encoding: 'utf8' });
   return { code: typeof r.status === 'number' ? r.status : 1, out: `${r.stdout || ''}${r.stderr || ''}` };
 };
@@ -223,8 +224,11 @@ const freshProbe = path.join(tmpDir, '.zh-selftest-fresh.json');
 // 空覆盖层：探针 deals.json 里只有一条自造条目，用真覆盖层会让 45 条译文全变「对不上 id」，
 // 那样测到的是孤儿判据而不是年龄判据。
 const emptyOverlay = path.join(tmpDir, '.zh-selftest-overlay.json');
+// 待译状态探针：用来验「年龄从**进入待译**那天算起，而不是 firstSeen」
+const pendingProbe = path.join(tmpDir, '.zh-selftest-pending.json');
 let agingStale;
 let agingFresh;
+let agingSince;
 try {
   fs.writeFileSync(emptyOverlay, `${JSON.stringify({ _note: 'selftest', byId: {} }, null, 2)}\n`, 'utf8');
 
@@ -244,8 +248,37 @@ try {
     detail: rFresh.code === 0 ? '宽限内放行且可见' : '新条目被拦（等于方案 B，站点会停更）'
   };
   record('待译在宽限期内（今天新进）→ check:zh 放行但必须写明待译条数', agingFresh.pass, agingFresh.detail, rFresh);
+
+  /**
+   * 年龄的**基准**必须是「进入待译那天」，不是 firstSeen。
+   * 反例就是 2026-09-28 实测到的：上游改写了 Midjourney / Grok 的英文，两条老条目的译文失效
+   * ——它们的 firstSeen 是 7 天前，用 firstSeen 计时等于「刚失效就超期」，第二天门禁就红。
+   *  · (a) firstSeen 30 天前 + 待译状态记的是今天 → **必须放行**（刚刚才进入待译）；
+   *  · (b) firstSeen 今天     + 待译状态记的是 30 天前 → **必须拦下**（义务从 30 天前就存在）。
+   */
+  makeProbeFile(staleProbe, shiftDays(30));   // 复用它：firstSeen = 30 天前
+  fs.writeFileSync(pendingProbe, `${JSON.stringify({
+    schemaVersion: 1, updatedAt: new Date().toISOString(),
+    byKey: { 'selftest-pending-probe|description': shiftDays(0) }
+  }, null, 2)}\n`, 'utf8');
+  const rSinceA = runCheckOn(staleProbe, 7, emptyOverlay, pendingProbe);
+  agingSince = {
+    pass: rSinceA.code === 0 && /最老 0 天/.test(rSinceA.out) && /依据 pending/.test(rSinceA.out),
+    detail: rSinceA.code === 0 ? '按「进入待译」计时，刚失效的老条目不被误拦' : '仍然用 firstSeen 计时（老条目刚失效就超期）'
+  };
+  record('上游改写让老条目译文失效 → 年龄从「进入待译」算起（不误拦）', agingSince.pass, agingSince.detail, rSinceA);
+
+  makeProbeFile(freshProbe, shiftDays(0));    // firstSeen = 今天
+  fs.writeFileSync(pendingProbe, `${JSON.stringify({
+    schemaVersion: 1, updatedAt: new Date().toISOString(),
+    byKey: { 'selftest-pending-probe|description': shiftDays(30) }
+  }, null, 2)}\n`, 'utf8');
+  const rSinceB = runCheckOn(freshProbe, 7, emptyOverlay, pendingProbe);
+  record('待译状态显示它已经等了 30 天 → 即便 firstSeen 是今天也必须拦下',
+    rSinceB.code !== 0 && /最老 30 天/.test(rSinceB.out) && /超过 7 天宽限/.test(rSinceB.out),
+    rSinceB.code !== 0 ? '已按进入待译的天数拦下' : '竟然放行（待译状态被忽略）', rSinceB);
 } finally {
-  for (const file of [staleProbe, freshProbe, emptyOverlay]) {
+  for (const file of [staleProbe, freshProbe, emptyOverlay, pendingProbe]) {
     try { fs.unlinkSync(file); } catch (error) { /* 不存在就算了 */ }
   }
 }
