@@ -1865,9 +1865,11 @@ reusable 调用会把它变成 `<调用方>/<被调>` 形态，且 deploy 再建
   提交信息加 **`[skip ci]`**（App token 推的提交**会**触发 workflow，不加会让同一 SHA
   同时跑 deploy 的 `push` 链与 `workflow_run` 链，白跑一遍发布）。
 - 缺 Secret 时**明确失败、不退回 `GITHUB_TOKEN`**：退回只会把真正的原因藏进一句含混的 `GH006`。
-- 新增门禁步骤 **App-token self-test**（门禁 13 → 14 步）+ `npm run selftest:app-token`（61 项，离线）：
+- 新增门禁步骤 **App-token self-test**（门禁 13 → 14 步）+ `npm run selftest:app-token`（67 项，离线）：
   盯 JWT 的 10 分钟硬上限、三步 `Authorization` 都是 App JWT、**PKCS#1**（App 页面下载的那一种）
-  与 PKCS#8 两种私钥都要能用、token 只进 `$GITHUB_OUTPUT`。
+  与 PKCS#8 两种私钥都要能用、**「从 `.pem` 粘贴进 Secret 输入框」的四种真实变体**
+  （CRLF / 漏结尾换行 / 多带空白 / 换行被压成字面量 `\n` —— 实测只有最后一种会炸，
+  而那一种正是 `normalizePrivateKey` 修的）、token 只进 `$GITHUB_OUTPUT`。
 - 新增断言 **(15)**（`--expect-checks` 31 → 32）。**它在写完后立刻抓到自己的假阴性**：
   牙齿探针发现「把 `[skip ci]` 从提交命令里删掉」「把 `persist-credentials` 改成 true」
   两条断言**依然是绿的** —— 因为 workflow 的注释里各写过一次同样的字样，全文 grep 被注释喂饱了。
@@ -1879,7 +1881,7 @@ reusable 调用会把它变成 `<调用方>/<被调>` 形态，且 deploy 再建
 **E. 本轮实跑的门禁（全部 0 退出）**
 
 `validate` · `validate --strict` · `check:zh` · `selftest:zh`(15) · `selftest:expiry`(94) ·
-`selftest:text`(46) · `selftest:health`(51) · `selftest:app-token`(61) ·
+`selftest:text`(46) · `selftest:health`(51) · `selftest:app-token`(67) ·
 `check-ci-consistency`(32) · `build`（自检全过）·
 `verify`(**145 项 0 失败**) · `verify --compare`(**151 项 0 失败**，6 项回归全过：覆盖 80→80、
 卡片 50→50、首屏 9→9、页高 4566px、外部请求 0、JS 错误 0)。

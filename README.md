@@ -625,11 +625,13 @@ hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排�
   `GH006`，把真正的原因（凭据没配）藏起来；
 - **token 只进 `$GITHUB_OUTPUT`，且先 `::add-mask::`**：日志里不会出现明文。
 
-`npm run selftest:app-token`（61 项，离线、不起网络）盯住三件最容易写错的事：
+`npm run selftest:app-token`（67 项，离线、不起网络）盯住三件最容易写错的事：
 JWT 不超过 GitHub 的 **10 分钟**硬上限、三步的 `Authorization` **都是 App JWT**、
-以及三条失败路径必须给出可照做的报错。它还额外盯住一个真会踩的格式问题：
-App 页面下载的私钥是 **PKCS#1**（`-----BEGIN RSA PRIVATE KEY-----`），
-与自测里顺手生成的 PKCS#8 不是同一种，两种都验。`check-ci-consistency` 的断言 **(15)** 再把它钉死：
+以及三条失败路径必须给出可照做的报错。它还额外盯住两类真会踩的**输入形态**：
+App 页面下载的私钥是 **PKCS#1**（`-----BEGIN RSA PRIVATE KEY-----`，与顺手生成的 PKCS#8 不同），
+以及「从 `.pem` 复制粘贴进 Secret 输入框」的四种真实变体（CRLF / 漏结尾换行 / 多带空白 /
+换行被压成字面量 `\n`）——实测只有最后一种会炸，而那一种正是 `normalizePrivateKey` 修的。
+`check-ci-consistency` 的断言 **(15)** 再把它钉死：
 把推送退回 `GITHUB_TOKEN` 的改动**在本地完全看不出来**（本机没有 ruleset，`git push` 照样成功），
 只会在线上定时任务里烂掉。
 

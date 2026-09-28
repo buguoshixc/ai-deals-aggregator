@@ -125,6 +125,29 @@ check('PKCS#1 私钥签出的 JWT 能用对应公钥验过',
 check('PKCS#1 + 字面量 \\n 一起出现时也能还原',
   normalizePrivateKey(pkcs1.privateKey.replace(/\n/g, '\\n')).key === pkcs1.privateKey.trim());
 
+/* ── 3d) 「从 .pem 复制粘贴到 Secret 输入框」的真实变体 ──────────
+   这一段测的是**用户实际会交上来的东西**，不是理想输入：
+   Windows 记事本打开 .pem 再复制 → 剪贴板里是 CRLF；手选时容易漏掉结尾换行或多带空白。
+   实测（OpenSSL）：CRLF 与各种空白变体都能签，**只有字面量 \n 会炸**
+   （error:1E08010C DECODER routines::unsupported）—— 而那一种正是 normalizePrivateKey 修的。
+   把这四类钉住，免得日后「顺手简化」normalize 时把唯一真正需要修的那种弄丢。 */
+const signOk = (pem) => {
+  try {
+    crypto.createSign('RSA-SHA256').update('probe').sign(pem);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+check('CRLF 换行（记事本复制的 .pem）可以直接签', signOk(pkcs1.privateKey.replace(/\n/g, '\r\n')));
+check('CRLF 且没有结尾换行也可以签', signOk(pkcs1.privateKey.replace(/\n/g, '\r\n').trim()));
+check('漏掉结尾换行也可以签', signOk(pkcs1.privateKey.trim()));
+check('首尾多带空白也可以签', signOk(`  \n${pkcs1.privateKey}\n\n  `));
+check('**未经规范化**的字面量 \\n 确实签不动（证明 normalize 那一步不是多余的）',
+  signOk(pkcs1.privateKey.replace(/\n/g, '\\n')) === false);
+check('经规范化后同一条字面量 \\n 私钥能签',
+  signOk(normalizePrivateKey(pkcs1.privateKey.replace(/\n/g, '\\n')).key));
+
 /* ── 4) 提交者身份 ──────────────────────────────────────────────── */
 const id = botIdentity(APP_ID, 'ai-deals-collect-bot');
 checkEqual('提交者名字是 <slug>[bot]', id.name, 'ai-deals-collect-bot[bot]');
