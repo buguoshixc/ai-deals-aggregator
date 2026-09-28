@@ -324,8 +324,6 @@
     }
     /* hover 换成「发丝环 + 微投影」：192px 定高 + 12px 间距的网格里，18px 扩散投影会让相邻卡片互相压暗 */
     .g:hover { border-color: transparent; box-shadow: var(--elev-hover); }
-    .g.verified { box-shadow: inset 3px 0 0 var(--ok); }
-    .g.verified:hover { box-shadow: inset 3px 0 0 var(--ok), var(--elev-hover); }
     .g.expired { opacity: .55; }
 
     /* 档位角标：左侧三角 + 数字，颜色与档位带一致 */
@@ -847,7 +845,7 @@
             <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
           </svg>
         </span>
-        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日核验</small></span>
+        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
       </a>
       <label class="search">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c94a6" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -913,7 +911,7 @@
         <summary>学生、教师和非营利组织有哪些 AI 优惠？</summary>
         <p>不少厂商提供身份优惠：GitHub Copilot 对学生、教师与热门开源维护者免费；Google 提供学生版
         AI Pro 免费期；Microsoft 提供 Azure 学生额度与教育折扣；Notion、Figma 提供教育版或非营利折扣。
-        本站可用分类与地区筛选快速定位，卡片上会写明适用身份与核验方式。</p>
+        本站可用分类与地区筛选快速定位，卡片上会写明适用身份与领取方式。</p>
       </details>
       <details>
         <summary>优惠的有效期和截止日期怎么看？</summary>
@@ -928,9 +926,8 @@
       </details>
       <details>
         <summary>信息多久更新一次？怎么确认还有效？</summary>
-        <p>数据每天自动采集两次（北京时间 08:00 / 20:00），过期优惠会自动下架。人工逐条回访过官方页的
-        条目会标注「已核验」及核验日期；自动采集的条目标注「数据更新」日期，表示最近一次采集到该信息的时间。
-        发现过期或错误信息，欢迎提交修正。</p>
+        <p>数据每天自动采集两次（北京时间 08:00 / 20:00），过期优惠会自动下架。每条都标注「数据更新」日期，
+        表示这条记录最近一次更新的时间——优惠内容仍以厂商官方页面为准。发现过期或错误信息，欢迎提交修正。</p>
       </details>
       <details>
         <summary>优惠力度是怎么分档、怎么排序的？</summary>
@@ -1382,27 +1379,22 @@
     }
 
     /**
-     * 底部的新鲜度标识。
-     * 只有人工逐条核验过的条目才允许显示「已核验」——自动采集条目显示采集日期，
-     * 不把「抓到过」说成「核验过」。
+     * 底部的新鲜度标识：只有一句话 ——「数据更新 + 日期」。
+     *
+     * 这里曾按来源分两种角标（人工回访过官方页的「已核验」/ 自动采集的「数据更新」），
+     * 但两者并列时反而误导：人工核验那条的日期常常比自动采集的旧，读起来像「这条更不新鲜」。
+     * 现在对外只有一个口径；数据字段 `verified` / `verifiedAt` 仍在（见 README），只是不再渲染。
      */
     function stampOf(deal) {
-      if (deal.verified && deal.verifiedAt) {
-        return { label: '已核验 ' + deal.verifiedAt, verified: true };
-      }
-      if (deal.lastSeen) {
-        return { label: '数据更新 ' + deal.lastSeen, verified: false };
-      }
-      return null;
+      return deal.lastSeen
+        ? { label: '数据更新 ' + deal.lastSeen, date: String(deal.lastSeen) }
+        : null;
     }
 
     function stampHtml(deal) {
       const stamp = stampOf(deal);
       if (!stamp) return '';
-      const cls = stamp.verified ? 'ok' : '';
-      const tip = stamp.verified ? '已人工对照官方页面核验' : '最近一次采集到该信息的时间';
-      return '<span class="' + cls + '" title="' + escapeAttr(tip) + '">' +
-        (stamp.verified ? '✓ ' : '') + escapeHtml(stamp.label) + '</span>';
+      return '<span title="本条记录最近一次更新的日期">' + escapeHtml(stamp.label) + '</span>';
     }
 
     /** 优惠类型徽章：来自 pricingModel + discountInfo 的补充标签 */
@@ -1746,7 +1738,8 @@
       const strip = boundary && boundary.trim().length >= 2 && boundary.trim().length < shortest
         ? boundary : null;
 
-      // 代表条目：已核验优先 → 信息更完整者 → 数据顺序第一条
+      // 代表条目：字段更完整者优先（人工策展条目字段最全，故核验标志仍作为内部权重），
+      // 其次数据顺序第一条。这个权重只决定「谁代表这张卡」，与页面上显示什么无关。
       const rank = deal => (deal.verified ? 4 : 0) +
         (Array.isArray(deal.features) && deal.features.length ? 2 : 0) +
         (deal.priceLine ? 1 : 0);
@@ -1771,7 +1764,7 @@
       return Object.assign({}, base, {
         title: title,
         expiresAt: expiries.length ? expiries[0] : (base.expiresAt || null),
-        // 诚实性红线：只有组内每一条都核验过，才把这张卡标为「已核验」
+        // verified/verifiedAt 只作**数据透传**（页面已不再显示核验标签），口径仍是「组内每条都核验过才算」
         verified: group.every(deal => deal.verified),
         verifiedAt: verifiedAt || null,
         lastSeen: lastSeen || base.lastSeen,
@@ -1993,7 +1986,7 @@
      * 预渲染产物与本次改动前**逐字节相同**（构建自检与 verify 都断言这件事）。
      */
     const DEFAULT_FILTERS = {
-      tab: 'deals', region: '', category: '', vendor: '', verified: false, search: '', sort: 'tier',
+      tab: 'deals', region: '', category: '', vendor: '', search: '', sort: 'tier',
       fav: false, favIds: []
     };
 
@@ -2022,7 +2015,6 @@
         return false;
       }
       if (deal.type === 'deal' && isExpired(deal)) return false;
-      if (filters.verified && !deal.verified) return false;
       if (filters.region && deal.region !== filters.region) return false;
       if (filters.category && deal.category !== filters.category) return false;
       if (filters.vendor && vendorOf(deal).key !== filters.vendor) return false;
@@ -2121,7 +2113,7 @@
 
       const tabs = TABS.map(tab => ({
         key: tab.key, label: tab.label,
-        count: count({ tab: tab.key, vendor: '', category: '', region: '', verified: false })
+        count: count({ tab: tab.key, vendor: '', category: '', region: '' })
       }));
 
       const regions = ['cn', 'global'].map(region => ({
@@ -2149,7 +2141,6 @@
         regions: regions,
         vendors: vendorList,
         categories: categories,
-        verified: count({ verified: !filters.verified, vendor: '', category: '', region: '' }),
         base: base
       };
     }
@@ -2174,10 +2165,6 @@
           '<span aria-hidden="true">★</span> 我的收藏<b>' + favTotal + '</b></button>');
         parts.push('<span class="fsep"></span>');
       }
-
-      parts.push('<button type="button" class="f ok' + (filters.verified ? ' on' : '') + '" data-facet="verified" aria-pressed="' +
-        (filters.verified ? 'true' : 'false') + '">✓ 已核验<b>' + model.verified + '</b></button>');
-      parts.push('<span class="fsep"></span>');
 
       model.tabs.forEach((tab, i) => {
         parts.push('<button type="button" class="f' + (filters.tab === tab.key ? ' on' : '') + '" data-facet="tab" data-value="' +
@@ -2213,9 +2200,8 @@
     /** 顶栏右侧的汇总：静态骨架与首屏都读它 */
     function topStatHtml(deals, updatedAt) {
       const cards = defaultCards(deals);
-      const verified = cards.filter(card => card.verified).length;
       const date = updatedAt ? String(updatedAt).slice(0, 10) : '';
-      return '<b>' + cards.length + '</b> 条优惠 · 已核验 <b style="color:var(--ok)">' + verified + '</b>' +
+      return '<b>' + cards.length + '</b> 条优惠' +
         (date ? ' · 更新 ' + escapeHtml(date) : '');
     }
 
@@ -2266,7 +2252,7 @@
         '厂商：' + (deal.vendor || ''),
         '官方页：' + (deal.url || ''),
         '',
-        '问题类型（保留一行）：信息过期 / 额度变了 / 链接失效 / 已核验无误 / 其他',
+        '问题类型（保留一行）：信息过期 / 额度变了 / 链接失效 / 核对无误 / 其他',
         '',
         '补充说明：'
       ].join('\n');
@@ -2301,7 +2287,6 @@
 
       const classes = ['g', 't' + tier.n];
       if (deal.type !== 'deal') classes.push('tool');
-      if (deal.verified) classes.push('verified');
       if (isExpired(deal)) classes.push('expired');
 
       const cta = url
@@ -2419,7 +2404,7 @@
         '</div>' +
         '<div class="ro">' + escapeHtml(offerText) + '</div>' +
         '<div class="rf">' + escapeHtml(feats[0] || '') + '</div>' +
-        '<div class="rm">' + (stamp ? (stamp.verified ? '✓ ' : '') + escapeHtml(stamp.label) : '') + '</div>' +
+        '<div class="rm">' + (stamp ? escapeHtml(stamp.label) : '') + '</div>' +
         '<div class="ra">' + (url
           ? '<a class="go" href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">' +
             (deal.type === 'deal' ? '获取' : '查看') + ' →</a>'
@@ -2456,7 +2441,7 @@
       cell('活动期限', expiry.note, expiry.key === 'due' ? 'ok' : null);
       cell('价格阶梯', deal.priceLine, null, 'priceLine');
       cell('优惠力度', '档位 ' + tier.n + ' · ' + tier.name, 'ok');
-      cell('核验状态', stamp ? (deal.verified ? '✓ ' + stamp.label + '（已人工对照官方页）' : stamp.label + '（采集时间，非人工核验）') : '');
+      cell('更新时间', stamp ? stamp.date + '（本条记录最近一次更新）' : '');
 
       const models = Array.isArray(deal.models) ? deal.models : [];
       const ids = Array.isArray(deal.dealIds) ? deal.dealIds : [];
@@ -2491,7 +2476,7 @@
         '<div class="dsub">' + (vendor.name ? '<span>' + escapeHtml(vendor.name) + '</span><span>·</span>' : '') +
         (deal.category ? '<span>' + escapeHtml(deal.category) + '</span><span>·</span>' : '') +
         (deal.region ? '<span>' + escapeHtml(REGION_LABELS[deal.region] || deal.region) + '</span><span>·</span>' : '') +
-        (stamp ? '<span class="' + (deal.verified ? 'ok' : '') + '">' + (deal.verified ? '✓ ' : '') + escapeHtml(stamp.label) + '</span>' : '') +
+        (stamp ? '<span>' + escapeHtml(stamp.label) + '</span>' : '') +
         '</div>' +
         (offer ? '<div class="doffer"><div class="lab">档位 ' + tier.n + ' · ' + escapeHtml(tier.name) + '</div><p>' +
           (offer.lead ? '<b>' + escapeHtml(offer.lead) + '</b>' + (offer.rest ? ' · ' : '') : '') + escapeHtml(offer.rest) + '</p>' +
@@ -2505,7 +2490,7 @@
           ? '<a class="pri" href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">前往官方页面' +
             (deal.type === 'deal' ? '领取' : '查看') + ' →</a>'
           : '') +
-        '<a class="sec" href="' + escapeAttr(reportUrl(deal)) + '" target="_blank" rel="noopener noreferrer">信息有误 / 我核验过</a></div>' +
+        '<a class="sec" href="' + escapeAttr(reportUrl(deal)) + '" target="_blank" rel="noopener noreferrer">信息有误 / 提交反馈</a></div>' +
         '<div class="dsrc">来源：' + escapeHtml(deal.source || '未标注') +
         (deal.firstSeen ? ' · 首次收录 ' + escapeHtml(deal.firstSeen) : '') +
         (deal.lastSeen ? ' · 最近采集 ' + escapeHtml(deal.lastSeen) : '') +
@@ -2535,7 +2520,7 @@
      *   eligibility 适用条件
      *   validity    有效期（有效期说明与截止日期两处有值就都带上）
      *   price       价格阶梯
-     *   verified    核验状态（「已核验 + 日期」与「数据更新 + 日期」是两件事，措辞不混）
+     *   updated     最近一次数据更新（页面上只有这一种口径，不再分「人工核验 / 自动采集」）
      */
     function cmpFieldsFor(deal) {
       const rows = [];
@@ -2552,8 +2537,8 @@
       push('validity', '有效期', [cmpText(deal.validity), cmpText(deal.expiresAt)].filter(Boolean).join(' · '));
       push('price', '价格阶梯', deal.priceLine);
 
-      if (deal.verified && deal.verifiedAt) push('verified', '核验状态', '已核验 ' + cmpText(deal.verifiedAt) + '（人工对照官方页）');
-      else if (deal.lastSeen) push('verified', '核验状态', '数据更新 ' + cmpText(deal.lastSeen) + '（采集时间，非人工核验）');
+      const stamp = stampOf(deal);
+      if (stamp) push('updated', '更新时间', stamp.label);
 
       return rows;
     }
@@ -2953,7 +2938,7 @@
       const cards = cmpCards();
       const table = cmpTableHtml(cards);
       body.innerHTML = '<h2 id="cmpTitle">优惠对比</h2>' +
-        '<p class="cmpsub">并排看 ' + cards.length + ' 条优惠的关键字段：额度、适用条件、有效期、价格阶梯、核验状态。' +
+        '<p class="cmpsub">并排看 ' + cards.length + ' 条优惠的关键字段：额度、适用条件、有效期、价格阶梯、更新时间。' +
         '没有值的字段不出现在表里——缺数据就空着不写，不拿「暂无数据」凑数。</p>' +
         (table ? '<div class="cmpscroll">' + table + '</div>' :
           '<p class="cmpsub">选择会随筛选变化，请保留至少 2 条。</p>') +
@@ -3079,7 +3064,7 @@
       syncSelectionUI();
     }
 
-    /** 收藏视图开关。与「已核验」同型：只翻一个标志位，其它筛选原样叠加 */
+    /** 收藏视图开关。只翻一个标志位，其它筛选原样叠加 */
     function toggleFavView() {
       state.filters.fav = !state.filters.fav;
       render();
@@ -3435,10 +3420,9 @@
         const button = event.target.closest('[data-facet]');
         if (!button) return;
         const facet = button.dataset.facet;
-        // 收藏入口：只翻一个标志位（与「已核验」同型），已选中的其它筛选原样叠加
+        // 收藏入口：只翻一个标志位，已选中的其它筛选原样叠加
         if (facet === 'fav') { toggleFavView(); return; }
-        if (facet === 'verified') state.filters.verified = !state.filters.verified;
-        else if (facet === 'tab') state.filters = Object.assign({}, state.filters, { tab: button.dataset.value, vendor: '' });
+        if (facet === 'tab') state.filters = Object.assign({}, state.filters, { tab: button.dataset.value, vendor: '' });
         else state.filters[facet] = state.filters[facet] === button.dataset.value ? '' : button.dataset.value;
         render();
       });

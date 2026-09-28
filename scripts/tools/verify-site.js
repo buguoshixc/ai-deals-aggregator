@@ -140,7 +140,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       favPrunes: document.querySelectorAll('[data-fav-prune]').length,
       cmpBar: document.querySelectorAll('.cmpbar').length,
       cmpBarVisible: [...document.querySelectorAll('.cmpbar')].some(el => el.offsetHeight > 0),
-      cmpDialogOpen: Boolean(document.querySelector('dialog#compare[open]'))
+      cmpDialogOpen: Boolean(document.querySelector('dialog#compare[open]')),
+      // 「已核验」这个维度已经下线（原因见 §7）。静态骨架是**爬虫与无 JS 访客真正读到的文本**，
+      // 而 §7 量的是水合之后的 DOM —— 两条路径各量一遍，撤掉的东西才不会从任何一侧溜回来。
+      legacyLabels: [...document.querySelectorAll('article.g')].filter(el => /已核验/.test(el.textContent)).length,
+      stampedCards: [...document.querySelectorAll('article.g')].filter(el => /数据更新 \d{4}-\d{2}-\d{2}/.test(el.textContent)).length
     };
   });
   check('静态骨架有卡片', noJs.cards >= 45, `${noJs.cards} 条`);
@@ -155,6 +159,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('无 JS 时也没有收藏入口 / 失效清理按钮（同样是 JS 建的）',
     noJs.favOpeners === 0 && noJs.favPrunes === 0,
     `收藏入口 ${noJs.favOpeners} 个 · 清理按钮 ${noJs.favPrunes} 个`);
+  check('静态骨架里没有「已核验」字样', noJs.legacyLabels === 0, `${noJs.legacyLabels} 张命中`);
+  check('静态骨架每张卡片都带「数据更新」日期', noJs.stampedCards === noJs.cards && noJs.cards > 0,
+    `${noJs.stampedCards}/${noJs.cards}`);
 
   // 第 1 步故意断掉了 deals.json，这里把收集器清空，后面测的是正常加载
   errors.length = 0;
@@ -528,13 +535,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   const filter = await page.evaluate(async () => {
     const count = () => document.querySelectorAll('article.g').length;
     const base = count();
-    document.querySelector('[data-facet="verified"]').click();
-    await new Promise(r => setTimeout(r, 150));
-    const verified = count();
+    // 「已核验」这个维度已经从页面撤掉（它和「数据更新」并列时反而让人以为核验过的条目更旧）。
+    // 撤掉的东西也要有断言盯着——否则将来谁把它加回来，这里不会有任何反应。
+    // 只读**渲染出来的卡片文本**：内联脚本源码里还留着解释这件事的注释，扫整页会假红。
+    const cards = [...document.querySelectorAll('article.g')];
+    const legacyFacet = Boolean(document.querySelector('[data-facet="verified"]'));
+    const legacyText = cards.filter(card => /已核验/.test(card.textContent)).length;
+    const stamped = cards.filter(card => /数据更新 \d{4}-\d{2}-\d{2}/.test(card.textContent)).length;
     document.querySelector('[data-facet="region"][data-value="cn"]').click();
     await new Promise(r => setTimeout(r, 150));
     const cn = count();
-    document.querySelector('[data-facet="verified"]').click();
     document.querySelector('[data-facet="region"][data-value="cn"]').click();
     await new Promise(r => setTimeout(r, 150));
     const back = count();
@@ -545,10 +555,21 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     const sorted = count();
     document.querySelector('#sortBox [data-sort="tier"]').click();
     await new Promise(r => setTimeout(r, 150));
-    return { base, verified, cn, back, noBands, sorted, bands: document.querySelectorAll('.tierhead').length };
+    const facets = document.getElementById('facets');
+    const top = document.getElementById('topStat');
+    return {
+      base, cn, back, noBands, sorted, bands: document.querySelectorAll('.tierhead').length,
+      cards: cards.length, legacyFacet, legacyText, stamped,
+      legacyInFacets: Boolean(facets) && /已核验/.test(facets.textContent),
+      legacyInTop: Boolean(top) && /已核验/.test(top.textContent)
+    };
   });
-  check('「已核验」筛选生效', filter.verified > 0 && filter.verified < filter.base, `${filter.base} → ${filter.verified}`);
-  check('「国内」筛选生效', filter.cn > 0 && filter.cn <= filter.verified, `→ ${filter.cn}`);
+  check('筛选条里不再有「已核验」按钮与计数', !filter.legacyFacet && !filter.legacyInFacets);
+  check('卡片与顶栏不再出现「已核验」字样', filter.legacyText === 0 && !filter.legacyInTop,
+    `卡片 ${filter.legacyText} 张命中`);
+  check('每张卡片都标注「数据更新」日期', filter.stamped === filter.cards && filter.cards > 0,
+    `${filter.stamped}/${filter.cards}`);
+  check('「国内」筛选生效', filter.cn > 0 && filter.cn < filter.base, `${filter.base} → ${filter.cn}`);
   check('取消筛选后回到全量', filter.back === filter.base, `${filter.back}`);
   check('非力度排序时不显示分带', filter.noBands === 0, `分带 ${filter.noBands} 个`);
   check('切回力度排序恢复分带', filter.bands >= 3, `分带 ${filter.bands} 个，卡片 ${filter.sorted}`);

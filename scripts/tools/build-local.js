@@ -553,7 +553,7 @@ ${style}
             <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
           </svg>
         </span>
-        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日核验</small></span>
+        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
       </a>
       <a class="jumpback" href="../../">← 返回全部优惠</a>
       ${themeSeg}
@@ -570,7 +570,7 @@ ${renderCore.detailHtml(deal)}
       </article>
       <p class="dpane-src">
         官方页：<a href="${htmlEscape(official)}" target="_blank" rel="noopener noreferrer">${htmlEscape(official)}</a>
-        · 本站只做收录与核验，最终以厂商官方页面为准；排序与推荐理由不出售。
+        · 本站只做收录与整理，最终以厂商官方页面为准；排序与推荐理由不出售。
       </p>
     </main>
     ${footer}

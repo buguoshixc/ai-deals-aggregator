@@ -4,7 +4,7 @@ name: Verify site (gate)
 #   collect.yml  只在 schedule / workflow_dispatch 上跑（定时采集，不校验 PR）
 #   deploy.yml   只在 master 的 push / workflow_run 上跑（只发布，不校验 PR）
 # 结果是：pull_request 事件**一个 workflow 都没有**，本地十几个分支在合并前对 CI
-# 完全不可见；而文档里大力宣传的重门禁（verify-site.js 的 108 项真浏览器断言、
+# 完全不可见；而文档里大力宣传的重门禁（verify-site.js 的 136 项真浏览器断言、
 # selftest:zh、selftest:expiry）全都不在 CI 里——CI 只跑 validate.js 与 build-local.js。
 # 这条 workflow 补上这两件事：**PR 触发** + **把重门禁搬进 CI**。
 #
@@ -185,7 +185,7 @@ jobs:
             echo "浏览器可用（$EXE）→ 真浏览器验收将执行"
             {
               echo ""
-              echo "- 判定：**真浏览器验收将执行**（verify-site.js / 108 项断言 / 可执行文件 \`$EXE\`）"
+              echo "- 判定：**真浏览器验收将执行**（verify-site.js / 136 项断言 / 可执行文件 \`$EXE\`）"
             } >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
