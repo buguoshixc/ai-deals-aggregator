@@ -312,6 +312,11 @@
     }
     .jump a:hover { border-color: var(--brand); color: var(--brand); }
     .jump a:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    /* hidden 必须真的不显示：上面 .jump 是**作者级** display 声明，会盖掉 UA 样式表里的
+       [hidden]{display:none}（层叠先比来源再比特异性，作者级无条件胜出），于是 js 里
+       `jump.hidden = true` 只改了属性、导航照旧可见可点 —— 这正是「假隐藏」。
+       `.jump[hidden]`（0,2,0）胜过 `.jump`（0,1,0），也顺带盖住媒体查询里的 display:grid。 */
+    .jump[hidden] { display: none; }
 
     /* ---------- 网格 ---------- */
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: min-content; gap: 12px; }
@@ -3362,9 +3367,22 @@
       // 焦点先还给同一张卡；收藏视图里取消收藏会让那张卡整张消失（焦点无处可还），
       // 这一种情况把焦点交给收藏入口——否则键盘用户被直接扔回页首。
       if (!restoreCardFocus(focusId) && focusId && state.filters.fav) focusFavChip();
-      // 锚点只在「力度优先 + 卡片视图」下有效（列表视图不分带），避免死锚点
+      // 锚点只在「力度优先 + 卡片视图」下有效（列表视图不分带），避免死锚点。
+      // 而且**逐条**核对落点：筛选/搜索把某一档清空时，那个 #tier-N 就不存在了，
+      // 只把整块藏起来不够 —— 留在可见导航里的死链接照样会把人送进一片空白。
+      // 判定写在步骤里而不是靠 CSS 属性：.jump[hidden]{display:none} 是这条语义的兜底，
+      // npm run verify 量的是 getComputedStyle / getBoundingClientRect，不是 hidden 属性。
       const jump = document.getElementById('jumpNav');
-      if (jump) jump.hidden = rowsView || (state.filters.sort || 'tier') !== 'tier';
+      if (jump) {
+        const jumpUsable = !rowsView && (state.filters.sort || 'tier') === 'tier';
+        let jumpAlive = 0;
+        jump.querySelectorAll('a[href^="#tier-"]').forEach(link => {
+          const reachable = jumpUsable && Boolean(document.querySelector(link.getAttribute('href')));
+          link.hidden = !reachable;
+          if (reachable) jumpAlive++;
+        });
+        jump.hidden = !jumpUsable || jumpAlive === 0;
+      }
     }
 
     /** 当前焦点所在的卡片 id（焦点在星标上也算这张卡）；不在卡片上返回 null */

@@ -1122,6 +1122,50 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   await page.reload({ waitUntil: 'load' });
   await waitForApp(page);
 
+  /**
+   * 锚点导航的**真实渲染**探针（几何 + 计算样式），不是读 `hidden` 属性。
+   *
+   * 为什么必须量几何：`.jump { display: flex }`（以及 max-width:760px 下的 `display: grid`）
+   * 是作者级声明，CSS 层叠在比特异性之前先比**来源**——作者级无条件赢过 UA 样式表里的
+   * `[hidden] { display: none }`。于是 `jump.hidden = true` 与「导航照旧可见可点」可以同时成立，
+   * 只读属性的断言会一路绿灯（2026-09-28 实测就是这种假隐藏进了线上）。
+   * dangling = 可见链接里指不到落点的个数：筛选/搜索把某一档清空时会产生真死锚点。
+   */
+  const JUMP_GEOM = `(() => {
+    const nav = document.getElementById('jumpNav');
+    if (!nav) return { exists: false };
+    const cs = getComputedStyle(nav);
+    const rect = nav.getBoundingClientRect();
+    const links = [...nav.querySelectorAll('a[href^="#tier-"]')];
+    const shown = links.filter(a => a.getBoundingClientRect().height > 0);
+    return {
+      exists: true,
+      hidden: nav.hidden,
+      display: cs.display,
+      height: Math.round(rect.height),
+      offsetHeight: nav.offsetHeight,
+      links: links.length,
+      shownLinks: shown.length,
+      bands: document.querySelectorAll('.tierhead').length,
+      dangling: links.filter(a => a.getBoundingClientRect().height > 0 &&
+        !document.querySelector(a.getAttribute('href'))).length
+    };
+  })()`;
+  const probeJump = (sort = null) => page.evaluate(async ({ sort: s, src }) => {
+    if (s) {
+      document.querySelector('[data-sort="' + s + '"]').click();
+      await new Promise(r => setTimeout(r, 350));
+    }
+    return (0, eval)(src); // eslint-disable-line no-eval
+  }, { sort, src: JUMP_GEOM });
+  const jumpShownOk = s => Boolean(s && s.exists) && s.display !== 'none' && s.height > 0 &&
+    s.offsetHeight > 0 && s.shownLinks > 0 && s.dangling === 0;
+  const jumpHiddenOk = s => Boolean(s && s.exists) && s.hidden === true && s.display === 'none' &&
+    s.height === 0 && s.offsetHeight === 0 && s.dangling === 0;
+  const jumpDetail = s => s && s.exists
+    ? `hidden=${s.hidden} display=${s.display} h=${s.height} offsetH=${s.offsetHeight} 可见链接=${s.shownLinks} 死链=${s.dangling}`
+    : '(没有 #jumpNav)';
+
   const anchorState = await page.evaluate(() => {
     const nav = document.getElementById('jumpNav');
     const links = nav ? [...nav.querySelectorAll('a[href^="#tier-"]')] : [];
@@ -1146,18 +1190,39 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('点锚点真的跳到该档位', jumped.after > jumped.before && jumped.hash === '#tier-2',
     `scrollY ${jumped.before} → ${jumped.after}（${jumped.hash}）`);
 
-  const jumpToggle = await page.evaluate(async () => {
-    document.querySelector('[data-sort="updated"]').click();
-    await new Promise(r => setTimeout(r, 350));
-    const hidden = document.getElementById('jumpNav').hidden;
-    const bands = document.querySelectorAll('.tierhead').length;
-    document.querySelector('[data-sort="tier"]').click();
-    await new Promise(r => setTimeout(r, 350));
-    return { hidden, bands, restored: !document.getElementById('jumpNav').hidden };
-  });
-  check('非分带排序时锚点导航隐藏（不留死锚点）',
-    jumpToggle.hidden === true && jumpToggle.bands === 0 && jumpToggle.restored,
-    `不分带时 hidden=${jumpToggle.hidden}（分带 ${jumpToggle.bands} 个）· 切回后恢复=${jumpToggle.restored}`);
+  // 四种状态下都量**真实渲染**。旧断言只读 `hidden` 属性，于是「CSS 里没有 .jump[hidden]
+  // {display:none}」这种假隐藏可以一直绿着上线（本次修的是同一处）。
+  const jumpCardTier = await probeJump(null);
+  check('卡片视图 + 力度优先：锚点导航真的显示（几何判定）',
+    jumpShownOk(jumpCardTier), jumpDetail(jumpCardTier));
+
+  const jumpUpdated = await probeJump('updated');
+  check('updated 排序：锚点导航**真的**隐藏（几何判定，不留死锚点）',
+    jumpHiddenOk(jumpUpdated), jumpDetail(jumpUpdated));
+
+  const jumpExpiry = await probeJump('expiry');
+  check('expiry 排序：锚点导航**真的**隐藏（几何判定，不留死锚点）',
+    jumpHiddenOk(jumpExpiry), jumpDetail(jumpExpiry));
+
+  const jumpBack = await probeJump('tier');
+  check('切回力度优先：锚点导航恢复显示',
+    jumpShownOk(jumpBack) && jumpBack.bands >= 3,
+    `${jumpDetail(jumpBack)} · 分带 ${jumpBack.bands} 个`);
+
+  // 筛选/搜索把档位清空时，`#tier-N` 落点会消失——这是旧断言完全没覆盖的死锚点来源
+  await page.fill('#searchInput', 'zzz-没有这条优惠-zzz');
+  await page.waitForTimeout(400);
+  const jumpNoResult = await page.evaluate(JUMP_GEOM);
+  check('搜索无结果（全部档位为空）：锚点导航整块隐藏，不留死锚点',
+    jumpHiddenOk(jumpNoResult) && jumpNoResult.bands === 0,
+    `${jumpDetail(jumpNoResult)} · 分带 ${jumpNoResult.bands} 个`);
+
+  await page.fill('#searchInput', '');
+  await page.waitForTimeout(400);
+  const jumpRestored = await page.evaluate(JUMP_GEOM);
+  check('清空搜索后锚点导航恢复且每个锚点都有落点',
+    jumpShownOk(jumpRestored) && jumpRestored.links >= 3,
+    jumpDetail(jumpRestored));
 
   const report = await page.evaluate(async () => {
     document.querySelector('article.g').click();
@@ -1302,7 +1367,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
   await page.click('#viewSeg [data-view="rows"]');
   await page.waitForTimeout(400);
-  const rowsView = await page.evaluate(() => {
+  const rowsView = await page.evaluate((src) => {
     const rows = [...document.querySelectorAll('.r')];
     const first = rows[0];
     return {
@@ -1314,19 +1379,19 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       hasInternal: Boolean(first && first.querySelector('.rt a[href^="deal/"]')),
       hasCta: Boolean(first && first.querySelector('.ra .go[target="_blank"]')),
       bands: document.querySelectorAll('.tierhead').length,
-      jumpHidden: document.getElementById('jumpNav').hidden,
+      jump: (0, eval)(src), // eslint-disable-line no-eval
       stored: (() => { try { return localStorage.getItem('dsh.view'); } catch (e) { return 'n/a'; } })()
     };
-  });
+  }, JUMP_GEOM);
   check('列表视图：首屏完整可见 ≥ 12 行（实测 13，卡片视图 9）', rowsView.visible >= 12,
     `${rowsView.visible} 行（行高 ${rowsView.rowHeight}px · 共 ${rowsView.rows} 行 · 页高 ${rowsView.pageHeight}px）；` +
     `卡片视图同口径 ${rendered.firstScreenFull} 张`);
   check('列表视图：条目数与卡片一致且字段同源',
     rowsView.rows === rendered.cards && rowsView.hasInternal && rowsView.hasCta,
     `${rowsView.rows} 行 · 站内标题链接=${rowsView.hasInternal} · 官方 CTA=${rowsView.hasCta}`);
-  check('列表视图：不分带且锚点导航隐藏（不留死锚点）',
-    rowsView.bands === 0 && rowsView.jumpHidden === true,
-    `分带 ${rowsView.bands} 个 · 锚点 hidden=${rowsView.jumpHidden}`);
+  check('列表视图：不分带且锚点导航真的隐藏（几何判定，不留死锚点）',
+    rowsView.bands === 0 && jumpHiddenOk(rowsView.jump),
+    `分带 ${rowsView.bands} 个 · ${jumpDetail(rowsView.jump)}`);
   check('列表视图：偏好已写入 localStorage', rowsView.stored === 'rows', `dsh.view=${rowsView.stored}`);
 
   await page.reload({ waitUntil: 'load' });
