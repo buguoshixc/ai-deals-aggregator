@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-09-28T21:21:46+08:00",
+  "updatedAt": "2026-09-28T23:44:31+08:00",
   "count": 134,
   "deals": [
     {
@@ -1176,78 +1176,6 @@
       "verifiedAt": null
     },
     {
-      "id": "cb45e0c735bd",
-      "title": "HubSpot AEO Sensor",
-      "vendor": "HubSpot AEO",
-      "url": "https://www.hubspot.com/aeo-sensor",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "其他",
-      "description": "Tracks how AI answer engines shift your website’s visibility.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-28",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "追踪 AI 问答引擎如何改变你网站的曝光表现。"
-      }
-    },
-    {
-      "id": "9e7c938ec401",
-      "title": "Midjourney",
-      "vendor": "Midjourney",
-      "url": "https://www.midjourney.com/home/",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "Creates images and videos from prompts.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-28",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "376b6b3397e6",
-      "title": "Grok",
-      "vendor": "Grok",
-      "url": "https://x.ai/grok",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/grok",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": "freemium",
-      "priceLine": null,
-      "features": null,
-      "category": "对话模型",
-      "description": "A conversational AI for timely answers from the live web and X.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-28",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
       "id": "a67c07bf4993",
       "title": "Ankon AI",
       "vendor": "Ankon AI",
@@ -1612,32 +1540,6 @@
       }
     },
     {
-      "id": "cbfce04c5556",
-      "title": "Motionleap",
-      "vendor": "Motionleap",
-      "url": "https://apps.apple.com/us/app/motionleap-by-lightricks/id1381206010",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/motionleap",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "An App to animate still images with effects.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-28",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "给静态照片加上动效的 App。"
-      }
-    },
-    {
       "id": "9fdccd9de525",
       "title": "Humva",
       "vendor": "Humva",
@@ -1690,6 +1592,32 @@
       }
     },
     {
+      "id": "cbfce04c5556",
+      "title": "Motionleap",
+      "vendor": "Motionleap",
+      "url": "https://apps.apple.com/us/app/motionleap-by-lightricks/id1381206010",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/motionleap",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "An App to animate still images with effects.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-28",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "给静态照片加上动效的 App。"
+      }
+    },
+    {
       "id": "39d2832e3c8f",
       "title": "Unboring.ai",
       "vendor": "Unboring.ai",
@@ -1710,7 +1638,10 @@
       "firstSeen": "2026-09-28",
       "lastSeen": "2026-09-28",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "在线编辑照片与视频的平台。"
+      }
     },
     {
       "id": "2d0ceeea880d",
@@ -2365,6 +2296,84 @@
       "lastSeen": "2026-09-28",
       "verified": false,
       "verifiedAt": null
+    },
+    {
+      "id": "cb45e0c735bd",
+      "title": "HubSpot AEO Sensor",
+      "vendor": "HubSpot AEO",
+      "url": "https://www.hubspot.com/aeo-sensor",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "其他",
+      "description": "Tracks how AI answer engines shift your website’s visibility.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-28",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "追踪 AI 问答引擎如何改变你网站的曝光表现。"
+      }
+    },
+    {
+      "id": "9e7c938ec401",
+      "title": "Midjourney",
+      "vendor": "Midjourney",
+      "url": "https://www.midjourney.com/home/",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "Creates images and videos from prompts.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-28",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "用提示词生成图片与视频。"
+      }
+    },
+    {
+      "id": "376b6b3397e6",
+      "title": "Grok",
+      "vendor": "Grok",
+      "url": "https://x.ai/grok",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/grok",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": "freemium",
+      "priceLine": null,
+      "features": null,
+      "category": "对话模型",
+      "description": "A conversational AI for timely answers from the live web and X.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-28",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "对话式 AI，基于实时网络与 X 的内容给出及时回答。"
+      }
     },
     {
       "id": "f9720295b45d",
