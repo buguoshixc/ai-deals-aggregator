@@ -20,11 +20,16 @@ CI 里跑不了它：需要 python3 + PyYAML，而 CI 的定位是「`npm ci` �
 退出码：0 = 全过；1 = 有解析失败或结构断言不成立。
 """
 import json
+import pathlib
 import sys
 
 import yaml
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
+# 路径相对**脚本位置**解析，而不是当前工作目录 —— 否则从别的目录跑就全线报「文件不存在」，
+# 而那种报错长得像「YAML 全坏了」，很容易把人带偏。
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 FILES = [
     ".github/workflows/collect.yml",
@@ -36,19 +41,22 @@ FILES = [
 
 docs = {}
 problems = []
-for path in FILES:
-    with open(path, encoding="utf-8") as fh:
-        text = fh.read()
+for rel in FILES:
+    full = ROOT / rel
+    if not full.is_file():
+        problems.append(f"{rel}: 文件不存在（找的是 {full}）")
+        continue
+    text = full.read_text(encoding="utf-8")
     try:
         doc = yaml.safe_load(text)
     except yaml.YAMLError as exc:
-        problems.append(f"{path}: 解析失败 -> {exc}")
+        problems.append(f"{rel}: 解析失败 -> {exc}")
         continue
     if doc is None:
-        problems.append(f"{path}: 解析成空文档")
+        problems.append(f"{rel}: 解析成空文档")
         continue
-    docs[path] = doc
-    print(f"OK  {path}")
+    docs[rel] = doc
+    print(f"OK  {rel}")
 
 if problems:
     print("\n".join(problems))

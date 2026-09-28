@@ -564,6 +564,11 @@ hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排�
 > 2026-09-29 起机器人改用**专用 App token** 推送（原因见下一节），而 App token **会**触发
 > workflow —— 于是同一个 SHA 上会同时跑 deploy.yml 的 `push` 链与 `workflow_run` 链，
 > 白跑一遍发布。所以机器人的提交里带 `[skip ci]`，把 push 触发的那条按掉。
+> **这不是猜的**：官方 `Skipping workflow runs` 原文 ——
+> 「Skip instructions only apply to the `push` and `pull_request` events.」
+> 也就是说它**不会**压住 `workflow_run`，发布链照常；反过来，若有人以为它能拦
+> `workflow_run`，站点才会真停更。（同一页还明写：被跳过的 workflow 其检查停在 Pending，
+> 所以数据提交上的 `gate` 永远 Pending —— 它在 master 上、没有 PR 要它，属预期。）
 > **发布只走 `workflow_run` 这一条**：它是唯一能携带「上游采集结论」的触发方式，
 > 无论机器人用哪种身份都必需。
 > 于是同一条链路上 verify.yml 也不会跑（被 `[skip ci]` 按掉的正是它），所以 deploy 的

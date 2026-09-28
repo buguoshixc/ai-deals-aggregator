@@ -180,6 +180,14 @@ jobs:
             # 不加这一句，同一个 SHA 上会同时触发 deploy.yml 的 push 链与 workflow_run 链，
             # 白跑一遍发布。发布只留 workflow_run 那一条 —— 它带着「上游采集是否成功」的
             # 显式判定，发布前还要再跑一次完整门禁。
+            #
+            # ⚠️ 这一句是**载荷假设**，别当装饰删掉、也别以为它会压住发布。官方原文
+            #   `Skipping workflow runs`：「Skip instructions only apply to the `push` and
+            #   `pull_request` events.」—— 它压掉的是 verify.yml(push) 与 deploy.yml(push)，
+            #   **workflow_run 不受影响**，所以「Collect 跑完 → deploy 的 prepublish」照常。
+            #   删掉它 = 白跑一遍发布；误以为它能拦 workflow_run 才会真停更。
+            # 另注：被跳过的 workflow 其检查会停在 Pending（同一页文档明写），
+            #   所以这个数据提交上 `gate` 永远 Pending —— 它在 master 上、没有 PR 要它，属预期。
             git commit -m "chore(data): 更新优惠数据与来源健康 $(date '+%Y-%m-%d %H:%M %Z') [skip ci]"
             # 换用 App 身份推送（checkout 已用 persist-credentials: false，没有残留凭据）。
             # 这个 App 被单独列在 master ruleset 的绕过名单里 —— 只豁免机器人，不豁免人。
