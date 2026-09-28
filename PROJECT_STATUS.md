@@ -1878,6 +1878,30 @@ reusable 调用会把它变成 `<调用方>/<被调>` 形态，且 deploy 再建
 - 顺带把「真实 YAML 解析器复验」从一次性动作升级成可选工具 `scripts/tools/yaml-recheck.py`
   （人工运行；CI 跑不了它，因为需要 python3 + PyYAML）。本次复验 5 个 YAML + **19 条结构断言**全过。
 
+**E⁗. 上线当晚的真机验证（把「静态断言说它会红」换成「真跑过」）**
+
+外部依赖（App + ruleset）全部落地后，用真实 Actions 运行补上了本轮唯一一条「只能由 CI 证明」的事：
+
+| run | workflow | job | 结论 |
+|---|---|---|---|
+| 36447225018 | Verify site (gate) @ `ci-red-probe` | `gate` | **failure** |
+| 36447343899 | Deploy to GitHub Pages @ `ci-red-probe` | `prepublish` | **failure** |
+| 同上 | 同上 | `build` / `deploy` | **skipped**（不是 success） |
+
+这正是 `e01dcfc` 那个线上反例（同一 SHA 上 `gate=failure` 而 `build`/`deploy=success`）的正向对照。
+红分支用完即删，全程没碰 master、没动线上。
+
+同时证实两条此前只有文档依据的事：
+- **`[skip ci]` 不压 `workflow_run`**：机器人带 `[skip ci]` 的提交（`259199b`）推上去 10 秒后，
+  `event: workflow_run` 的 Deploy 照常触发且 `success`（run 36446947933 / 36446089965）。
+  这是**载荷假设** —— 若反过来，线上会停止更新而不是多跑一遍。
+- **绕过是规则集级生效的**：规则集创建于 `15:49:24Z`，`15:52:53Z` 的一次机器人提交照常推进 master。
+  所以后来补勾 `required_status_checks` 不会把采集掐死。
+
+**一个值得记的教训**：第一次配 ruleset 漏了 `required_status_checks`（界面上的勾选状态看不出异常）。
+发现方式是读 `GET /rules/branches/master`（**生效规则**的聚合视图，比 `GET /rulesets/{id}` 更权威）——
+当时只回来三条，补勾后回来四条。**「配了保护」与「保护真的生效」是两件事。**
+
 **E. 本轮实跑的门禁（全部 0 退出）**
 
 `validate` · `validate --strict` · `check:zh` · `selftest:zh`(15) · `selftest:expiry`(94) ·
