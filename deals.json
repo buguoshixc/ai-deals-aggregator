@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-09-28T00:31:22+08:00",
+  "updatedAt": "2026-09-28T11:50:50+08:00",
   "count": 133,
   "deals": [
     {
@@ -1540,6 +1540,32 @@
       }
     },
     {
+      "id": "9fdccd9de525",
+      "title": "Humva",
+      "vendor": "Humva",
+      "url": "https://www.humva.com/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/humva",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "A tool to create videos from text or voice using digital avatars.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-28",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "用数字人把文字或语音做成视频。"
+      }
+    },
+    {
       "id": "ab4c0e5c007e",
       "title": "Kreado AI",
       "vendor": "Kreado AI",
@@ -1616,29 +1642,6 @@
       "zh": {
         "description": "画画版的自动纠错。"
       }
-    },
-    {
-      "id": "0ddacfb2cc6e",
-      "title": "Wavel.ai",
-      "vendor": "Wavel.ai",
-      "url": "https://wavel.ai/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/wavel-ai",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "视频",
-      "description": "A platform with video solutions, including subtitling and voiceovers.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-28",
-      "lastSeen": "2026-09-28",
-      "verified": false,
-      "verifiedAt": null
     },
     {
       "id": "2d0ceeea880d",
@@ -2318,30 +2321,27 @@
       "verifiedAt": null
     },
     {
-      "id": "9fdccd9de525",
-      "title": "Humva",
-      "vendor": "Humva",
-      "url": "https://www.humva.com/",
+      "id": "0ddacfb2cc6e",
+      "title": "Wavel.ai",
+      "vendor": "Wavel.ai",
+      "url": "https://wavel.ai/",
       "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/humva",
+      "sourceUrl": "https://futuretools.io/tools/wavel-ai",
       "region": "global",
       "type": "tool",
       "discountInfo": null,
       "pricingModel": null,
       "priceLine": null,
       "features": null,
-      "category": "图像绘画",
-      "description": "A tool to create videos from text or voice using digital avatars.",
+      "category": "视频",
+      "description": "A platform with video solutions, including subtitling and voiceovers.",
       "eligibility": null,
       "validity": null,
       "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-27",
+      "firstSeen": "2026-09-28",
+      "lastSeen": "2026-09-28",
       "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "用数字人把文字或语音做成视频。"
-      }
+      "verifiedAt": null
     },
     {
       "id": "72410d92e184",
