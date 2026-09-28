@@ -219,6 +219,15 @@ const runCheckOn = (file, grace, overlay, pending) => {
   return { code: typeof r.status === 'number' ? r.status : 1, out: `${r.stdout || ''}${r.stderr || ''}` };
 };
 
+/** 跑作者循环的 --scaffold（会写覆盖层与待译账本，所以必须全程指向探针文件） */
+const runScaffoldOn = (file, overlay, pending) => {
+  const args = [path.join(ROOT, 'scripts', 'tools', 'zh-todo.js'), '--scaffold', `--file=${file}`];
+  if (overlay) args.push(`--overlay=${overlay}`);
+  if (pending) args.push(`--pending=${pending}`);
+  const r = spawnSync(process.execPath, args, { cwd: ROOT, encoding: 'utf8' });
+  return { code: typeof r.status === 'number' ? r.status : 1, out: `${r.stdout || ''}${r.stderr || ''}` };
+};
+
 const staleProbe = path.join(tmpDir, '.zh-selftest-stale.json');
 const freshProbe = path.join(tmpDir, '.zh-selftest-fresh.json');
 // 空覆盖层：探针 deals.json 里只有一条自造条目，用真覆盖层会让 45 条译文全变「对不上 id」，
@@ -226,6 +235,11 @@ const freshProbe = path.join(tmpDir, '.zh-selftest-fresh.json');
 const emptyOverlay = path.join(tmpDir, '.zh-selftest-overlay.json');
 // 待译状态探针：用来验「年龄从**进入待译**那天算起，而不是 firstSeen」
 const pendingProbe = path.join(tmpDir, '.zh-selftest-pending.json');
+// 待译账本「划账」探针：作者循环（--scaffold）必须只把**已译好**的行划掉
+const pruneDealDone = 'A probe entry whose Chinese translation is already written and fingerprinted.';
+const pruneProbe = path.join(tmpDir, '.zh-selftest-prune.json');
+const pruneOverlay = path.join(tmpDir, '.zh-selftest-prune-overlay.json');
+const prunePending = path.join(tmpDir, '.zh-selftest-prune-pending.json');
 let agingStale;
 let agingFresh;
 let agingSince;
@@ -277,8 +291,69 @@ try {
   record('待译状态显示它已经等了 30 天 → 即便 firstSeen 是今天也必须拦下',
     rSinceB.code !== 0 && /最老 30 天/.test(rSinceB.out) && /超过 7 天宽限/.test(rSinceB.out),
     rSinceB.code !== 0 ? '已按进入待译的天数拦下' : '竟然放行（待译状态被忽略）', rSinceB);
+  /**
+   * 待译账本必须**只记还没译的字段** —— 已经译好的行要在作者循环里被划掉。
+   * 不划掉就是个假红陷阱：上游之后改写原文、人按 H2 把译文撤下（而不是改写）时，
+   * 账本会翻出**上一轮**的日期当成「这条已经等了很多天」，宽限期一天不剩、门禁当场转红。
+   * （2026-09-28 收尾时 Midjourney / Grok 的行就停在 09-28，正是这个形状。）
+   * 两侧都测，缺一条都不算数：
+   *  · (a) 已经译好的字段 → 它的行必须消失；
+   *  · (b) 仍然缺译的字段 → 行必须留下，**日期原样不动**（不能被顺手改成今天）。
+   */
+  const mkDeal = (id, title, description) => ({
+    id, title, vendor: 'Self-test',
+    url: `https://example.com/${id}`,
+    source: 'Self-test', sourceUrl: null, region: 'global', type: 'tool',
+    discountInfo: null, pricingModel: null, priceLine: null, features: null,
+    category: '其他', description,
+    eligibility: null, validity: null, expiresAt: null,
+    firstSeen: shiftDays(40), lastSeen: shiftDays(0),
+    verified: false, verifiedAt: null
+  });
+  fs.writeFileSync(pruneProbe, `${JSON.stringify({
+    schemaVersion: 2,
+    updatedAt: `${shiftDays(0)}T00:00:00+08:00`,
+    count: 2,
+    deals: [
+      mkDeal('selftest-prune-done', 'Self-test prune done', pruneDealDone),
+      mkDeal('selftest-prune-keep', 'Self-test prune keep',
+        'A probe entry that is still waiting for its Chinese translation.')
+    ]
+  }, null, 2)}\n`, 'utf8');
+  fs.writeFileSync(pruneOverlay, `${JSON.stringify({
+    _note: 'selftest',
+    byId: {
+      'selftest-prune-done': {
+        _title: 'Self-test prune done',
+        description: '这条已经有译文了。',
+        src: { description: pruneDealDone }
+      }
+    }
+  }, null, 2)}\n`, 'utf8');
+  fs.writeFileSync(prunePending, `${JSON.stringify({
+    schemaVersion: 1,
+    updatedAt: new Date().toISOString(),
+    byKey: {
+      'selftest-prune-done|description': shiftDays(30),
+      'selftest-prune-keep|description': shiftDays(5)
+    }
+  }, null, 2)}\n`, 'utf8');
+
+  const rPrune = runScaffoldOn(pruneProbe, pruneOverlay, prunePending);
+  const afterPrune = JSON.parse(fs.readFileSync(prunePending, 'utf8')).byKey || {};
+  const doneGone = !('selftest-prune-done|description' in afterPrune);
+  const clearedLogged = /划掉 1 行/.test(rPrune.out);
+  const keepKept = afterPrune['selftest-prune-keep|description'] === shiftDays(5);
+  record('已译好的字段 → 作者循环必须把它的待译行划掉（否则下次撤译文会假红）',
+    rPrune.code === 0 && doneGone && clearedLogged,
+    doneGone
+      ? (clearedLogged ? '已划掉并打印明细' : '行已消失但没打印「划掉 N 行」明细（人看不到发生了什么）')
+      : `行还在：${JSON.stringify(afterPrune)}`, rPrune);
+  record('仍缺译的字段 → 作者循环必须保留原日期（不能顺手重置成今天）',
+    keepKept,
+    keepKept ? `原样保留 ${shiftDays(5)}` : `日期被改写为 ${afterPrune['selftest-prune-keep|description']}（等于把宽限期重置）`, rPrune);
 } finally {
-  for (const file of [staleProbe, freshProbe, emptyOverlay, pendingProbe]) {
+  for (const file of [staleProbe, freshProbe, emptyOverlay, pendingProbe, pruneProbe, pruneOverlay, prunePending]) {
     try { fs.unlinkSync(file); } catch (error) { /* 不存在就算了 */ }
   }
 }

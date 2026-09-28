@@ -1827,9 +1827,24 @@ reusable 调用会把它变成 `<调用方>/<被调>` 形态，且 deploy 再建
 边界如实记录：只查这一种，引号包裹的值与块标量不查，也不做完整 YAML 校验
 （那需要引入解析器，与本文件「npm ci 之前就能跑」的定位冲突）。
 
+**E″. 推进前补完 3 条译文，并修掉「账本从不划账」这个假红陷阱**
+
+待译的 3 条（Midjourney / Grok 因上游改写失效，Unboring.ai 新进）由**人**补译完毕
+（H2 的红线是**不做机器翻译**，不是「不许人写」）：`用提示词生成图片与视频。` /
+`对话式 AI，基于实时网络与 X 的内容给出及时回答。` / `在线编辑照片与视频的平台。`，
+再用 `--scaffold` 把当前英文盖成指纹；`check:zh` 现在报 `待译 0 条 / 0 个字段`。
+
+补译时发现 `--scaffold` **只写覆盖层、从不划账**：已译好的行会一直留在
+`scripts/data/zh-pending.json` 里。这埋了个假红 —— 上游之后再改写一次原文、人按既有处置
+（撤下译文而不是改写）时，账本会翻出**上一轮**的日期当成「这条已经等了很多天」，
+宽限期一天不剩、门禁当场转红。现在 `--scaffold` 收尾时调 `collect.js` 用的同一个纯函数
+（`updatePending`）划账，且只在真有增删时才落盘（不为一次无变化去刷 `updatedAt`）。
+新增两条牙：已译好的字段 → 行必须消失**且打印明细**；仍缺译的字段 → 行必须**保留原日期**。
+两条都做了破坏验证（牙齿 16 / 17）。
+
 **E. 本轮实跑的门禁（全部 0 退出）**
 
-`validate` · `validate --strict` · `check:zh` · `selftest:zh`(13) · `selftest:expiry`(94) ·
+`validate` · `validate --strict` · `check:zh` · `selftest:zh`(15) · `selftest:expiry`(94) ·
 `selftest:text`(46) · `selftest:health`(51) · `check-ci-consistency`(31) · `build`（自检全过）·
 `verify`(**145 项 0 失败**) · `verify --compare`(**151 项 0 失败**，6 项回归全过：覆盖 80→80、
 卡片 50→50、首屏 9→9、页高 4566px、外部请求 0、JS 错误 0)。

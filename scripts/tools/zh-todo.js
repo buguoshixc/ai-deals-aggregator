@@ -19,7 +19,8 @@ const fs = require('fs');
 const path = require('path');
 const {
   ZH_FIELDS, ZH_FIELD_LABELS, PENDING_GRACE_DAYS, PENDING_FILE,
-  load, attach, isEnglishProse, cjkCount, todayCN, pendingAge, loadPending
+  load, attach, isEnglishProse, cjkCount, todayCN, pendingAge, loadPending,
+  updatePending, writePending
 } = require('../lib/zh');
 
 const ROOT = path.join(__dirname, '..', '..');
@@ -216,6 +217,32 @@ if (has('scaffold')) {
   if (keptStale.length) {
     console.log(`\n以下字段英文已变，指纹保持不变（请复核译文）：`);
     keptStale.forEach(line => console.log(`  ⚠️  ${line}`));
+  }
+
+  // 顺手把「已经译好」的行从待译账本里划掉（与 collect.js 调同一个纯函数）。
+  //
+  // 为什么必须划掉：账本只该记**还没译**的字段。留着旧日期会埋一个假红 ——
+  // 上游之后改写原文、人按 H2 把译文撤下（而不是改写）时，账本会翻出**上一轮**的
+  // 日期当成「这条已经等了很多天」，宽限期一天都不剩，门禁当场转红。
+  // 2026-09-28 就是踩着这个坑收尾的：Midjourney / Grok 的日期停在 09-28，
+  // 一旦上游再改写一次、译文再撤一次，它们会立刻超期。
+  //
+  // 注意时机：这一步在**填译文之前**跑时只会登记新进待译的字段（这是对的）；
+  // 在**填完之后**跑才会划账 —— 所以作者循环照旧「先 --scaffold 补槽位 → 填 → 再 --scaffold」。
+  const pendingStore = loadPending(pendingFile);
+  if (pendingStore.broken) {
+    console.warn(`⚠️  ${path.relative(ROOT, pendingFile)} 解析失败（${pendingStore.broken}），本次不动待译账本`);
+  } else {
+    const advanced = updatePending(pendingStore.doc, report.missing);
+    if (advanced.cleared.length || advanced.entered.length) {
+      writePending(advanced.doc, pendingFile);
+      if (advanced.cleared.length) {
+        console.log(`已从 ${path.relative(ROOT, pendingFile)} 划掉 ${advanced.cleared.length} 行（已译好）：${advanced.cleared.join('、')}`);
+      }
+      if (advanced.entered.length) {
+        console.log(`已登记 ${advanced.entered.length} 行进入待译（从今天起算宽限）：${advanced.entered.join('、')}`);
+      }
+    }
   }
   process.exit(0);
 }
