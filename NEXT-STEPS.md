@@ -21,6 +21,17 @@
 > `scripts/data/zh-pending.json` 里，等上游再改写一次、译文撤下时会翻出旧日期当成「等了很久」，
 > 现在作者循环 `--scaffold` 会顺带划账（两条牙守着：已译好的必须消失、仍缺译的必须保留原日期）。
 > 下一阶段（学生 + 开发者数据模型）的前置条件见 `PROJECT_STATUS.md` 2.33 的 F 节。
+>
+> **⏳ 还差三件只能由人在 GitHub 网页上做的事**（详细步骤见
+> `research/v1.0-public-readiness-report.md` 第七节）：
+> 1. **建专用 GitHub App**（`Contents: Read and write`、不勾 Webhook），
+>    把 **App ID** 与**私钥全文**存成仓库 Secret `COLLECT_APP_ID` / `COLLECT_APP_PRIVATE_KEY`。
+>    为什么必须：`github-actions`（App ID 15368）是平台原生身份，**不能**被加进 ruleset 绕过名单
+>    （API 422），所以机器人必须有自己可安装的 App 身份。
+> 2. **合并这一版**（顺序：先配好 Secret，再合并 —— 代码刻意不退回 `GITHUB_TOKEN`）。
+> 3. **建 master ruleset**：`Require a pull request`(approvals 0) + `Require status checks: gate`
+>    + `Block force pushes` + `Restrict deletions`；**绕过名单只加第 1 步那个 App**。
+>    验证：PR 上 gate 未过时合不了 · 手动跑一次采集能提交 · **你自己直推 master 被拒**。
 
 ---
 

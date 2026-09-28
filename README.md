@@ -524,9 +524,9 @@ hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排�
 
 ## 自动化与部署
 
-**门禁的步骤实现只有一处**：`.github/actions/gate/action.yml`（复合 action，13 步）——
+**门禁的步骤实现只有一处**：`.github/actions/gate/action.yml`（复合 action，14 步）——
 `npm ci → validate --strict → 译文门禁 → 译文演练 → 活动期限演练 → 文本清洗演练 → 健康演练
-→ 组装产物 → 准备浏览器 → 浏览器可用性判定 → 真浏览器验收 → 回归比对 → 结论`。
+→ 采集机器人身份演练 → 组装产物 → 准备浏览器 → 浏览器可用性判定 → 真浏览器验收 → 回归比对 → 结论`。
 三条 workflow 共用它，没有第二套测试链。
 
 - `.github/workflows/verify.yml`（**必需检查名 `gate`**）：`pull_request` / `push`(master) /
@@ -561,9 +561,12 @@ hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排�
 
 > ⚠️ **为什么部署还要监听 `workflow_run`**
 > GitHub 规定：用仓库自带的 `GITHUB_TOKEN` 推送所产生的事件**不会**再触发其它 workflow。
-> 所以 collect.yml 里机器人提交 `deals.json` 后，`push` 事件唤不醒 deploy.yml，线上不会更新。
-> 因此 deploy.yml 额外监听 `workflow_run: Collect AI Deals completed` 把这条链路补上。
-> **那条链路上 verify.yml 根本不会跑**（机器人 push 不触发 workflow），所以 deploy 的
+> 2026-09-29 起机器人改用**专用 App token** 推送（原因见下一节），而 App token **会**触发
+> workflow —— 于是同一个 SHA 上会同时跑 deploy.yml 的 `push` 链与 `workflow_run` 链，
+> 白跑一遍发布。所以机器人的提交里带 `[skip ci]`，把 push 触发的那条按掉。
+> **发布只走 `workflow_run` 这一条**：它是唯一能携带「上游采集结论」的触发方式，
+> 无论机器人用哪种身份都必需。
+> 于是同一条链路上 verify.yml 也不会跑（被 `[skip ci]` 按掉的正是它），所以 deploy 的
 > `prepublish` 是唯一的把关点——这也是为什么门禁必须能在发布链里自己跑一遍。
 
 > ⚠️ **发布路径因此依赖 npm registry**：真浏览器验收需要 `playwright-core`，所以门禁里有
@@ -579,6 +582,51 @@ hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排�
 > 「不减少」。合法的数据缩减（过期下架、重新折叠）会拦发布，处置方式是**人工、留痕**地
 > 重刷基线：`npm run verify:baseline`（基线文件 `research/_raw/ours-baseline/verify.json` 在 git 里，
 > 改它必然出现在 diff 里，无法静默绕过）。
+
+### 采集机器人的身份（专用 GitHub App）
+
+定时采集要把数据推进 `master`。如果 `master` 设成「**必须走 PR + 必须过 `gate`**」，
+用仓库自带的 `GITHUB_TOKEN` 推送就会被挡在门外 —— 而采集是无人值守的，
+症状是**每天两次静默失败**。
+
+直觉方案是「把 GitHub Actions 加进 ruleset 的绕过名单」，但**做不到**（2026-09-29 查证）：
+
+- GitHub 文档给出的绕过候选是**穷举**的：仓库/组织/企业管理员、`maintain`|`write` 角色、
+  Teams、Deploy keys（仅 GHES）、**可安装的 GitHub Apps**、Dependabot、Copilot cloud agent
+  —— 里面没有「GitHub Actions」，所以那个选项在界面上**根本不存在**；
+- `github-actions`（App ID **15368**）是**平台原生身份**（每次 `GITHUB_TOKEN` 调用的背后都是它），
+  不是「安装在仓库上的 GitHub App」。用 API 传
+  `actor_type: "Integration", actor_id: 15368` 会返回 **HTTP 422**：
+  `Actor GitHub Actions integration must be part of the ruleset source or owner organization`。
+- 也不能改走「机器人开 PR + 自动合并」：用 `GITHUB_TOKEN` 建的 PR **不会触发**
+  `pull_request` workflow，`gate` 永远 pending，自动合并永远等不到。
+
+于是本项目给机器人一个**自己的 App 身份**，并把它**单独**列进绕过名单 —— 只豁免机器人，不豁免人：
+
+| 项 | 值 |
+|---|---|
+| 权限 | Repository permissions → **Contents: Read and write**（推送提交所需的最小集） |
+| Webhook | **不勾**（不需要） |
+| Secret 1 | `COLLECT_APP_ID` —— App 页面上的 App ID |
+| Secret 2 | `COLLECT_APP_PRIVATE_KEY` —— App 页面底部 *Generate a private key* 下载的 `.pem` **全文** |
+| ruleset 绕过名单 | 只加这个 App（`Repository admin` **不要**加 —— 那等于人也能绕过） |
+
+实现：`scripts/tools/app-token.js`（零依赖，用 Node 原生 `crypto` 签 RS256 JWT，
+再换一次性的 installation token）。三处刻意的设计：
+
+- **换取步骤排在采集之前**：凭据没配好要在 10 秒内失败，而不是等一轮十几分钟的采集跑完
+  才发现最后一步推不上去；
+- **缺 Secret 时明确失败，不退回 `GITHUB_TOKEN`**：退回会在 ruleset 生效后变成一句含混的
+  `GH006`，把真正的原因（凭据没配）藏起来；
+- **token 只进 `$GITHUB_OUTPUT`，且先 `::add-mask::`**：日志里不会出现明文。
+
+`npm run selftest:app-token`（61 项，离线、不起网络）盯住三件最容易写错的事：
+JWT 不超过 GitHub 的 **10 分钟**硬上限、三步的 `Authorization` **都是 App JWT**、
+以及三条失败路径必须给出可照做的报错。它还额外盯住一个真会踩的格式问题：
+App 页面下载的私钥是 **PKCS#1**（`-----BEGIN RSA PRIVATE KEY-----`），
+与自测里顺手生成的 PKCS#8 不是同一种，两种都验。`check-ci-consistency` 的断言 **(15)** 再把它钉死：
+把推送退回 `GITHUB_TOKEN` 的改动**在本地完全看不出来**（本机没有 ruleset，`git push` 照样成功），
+只会在线上定时任务里烂掉。
 
 ### 更新频率一览
 

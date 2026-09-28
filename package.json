@@ -28,6 +28,7 @@
     "selftest:expiry": "node scripts/tools/expiry-selftest.js",
     "selftest:text": "node scripts/tools/text-selftest.js",
     "selftest:health": "node scripts/tools/health-selftest.js",
+    "selftest:app-token": "node scripts/tools/app-token-selftest.js",
     "todo:zh": "node scripts/tools/zh-todo.js",
     "check:zh": "node scripts/tools/zh-todo.js --check",
     "report:tier": "node scripts/tools/tier-report.js",

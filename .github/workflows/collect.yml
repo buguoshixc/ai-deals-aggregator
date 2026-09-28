@@ -42,13 +42,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # 不持久化 GITHUB_TOKEN：推送改用下面换来的 App token。
+          # 原因见 scripts/tools/app-token.js 顶部 —— github-actions（App ID 15368）是
+          # **平台原生身份**，不是可安装的 GitHub App，因此**不能**被加进 ruleset 绕过名单
+          # （API 422：Actor GitHub Actions integration must be part of the ruleset source
+          # or owner organization）。master 一旦要求「必须走 PR + 必须过 gate」，
+          # GITHUB_TOKEN 推送就会被挡下，而采集是无人值守的。
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
+
+      # 机器人身份：换取专用 GitHub App 的 installation token。
+      # 刻意放在最前面 —— 凭据没配好要在 10 秒内失败，而不是等一轮十几分钟的采集跑完，
+      # 才发现最后一步推不上去。
+      # 缺 Secret 时**明确失败**、不退回 GITHUB_TOKEN：退回会在 ruleset 生效后变成一句
+      # 含混的 GH006，把真正的原因（凭据没配）藏起来。
+      - name: Mint GitHub App token (robot identity)
+        id: app
+        run: node scripts/tools/app-token.js
+        env:
+          COLLECT_APP_ID: ${{ secrets.COLLECT_APP_ID }}
+          COLLECT_APP_PRIVATE_KEY: ${{ secrets.COLLECT_APP_PRIVATE_KEY }}
 
       - name: Install dependencies
         run: npm ci
@@ -142,9 +160,13 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Commit and push if changed
+        env:
+          APP_TOKEN: ${{ steps.app.outputs.token }}
+          BOT_NAME: ${{ steps.app.outputs.bot_name }}
+          BOT_EMAIL: ${{ steps.app.outputs.bot_email }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "$BOT_NAME"
+          git config user.email "$BOT_EMAIL"
           # 两份跨运行状态与数据同批入库：
           #  · source-health.json —— 上次条数 / 连续失败次数，不入库就永远是「首次运行」，
           #    也就发现不了「某个源已经坏了几天」；
@@ -154,6 +176,13 @@ jobs:
           if git diff --cached --quiet; then
             echo "数据无变化，跳过提交"
           else
-            git commit -m "chore(data): 更新优惠数据与来源健康 $(date '+%Y-%m-%d %H:%M %Z')"
+            # [skip ci] 是必须的：App token 推的提交**会**触发 workflow（GITHUB_TOKEN 不会），
+            # 不加这一句，同一个 SHA 上会同时触发 deploy.yml 的 push 链与 workflow_run 链，
+            # 白跑一遍发布。发布只留 workflow_run 那一条 —— 它带着「上游采集是否成功」的
+            # 显式判定，发布前还要再跑一次完整门禁。
+            git commit -m "chore(data): 更新优惠数据与来源健康 $(date '+%Y-%m-%d %H:%M %Z') [skip ci]"
+            # 换用 App 身份推送（checkout 已用 persist-credentials: false，没有残留凭据）。
+            # 这个 App 被单独列在 master ruleset 的绕过名单里 —— 只豁免机器人，不豁免人。
+            git remote set-url origin "https://x-access-token:${APP_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
             git push
           fi

@@ -1842,10 +1842,45 @@ reusable 调用会把它变成 `<调用方>/<被调>` 形态，且 deploy 再建
 新增两条牙：已译好的字段 → 行必须消失**且打印明细**；仍缺译的字段 → 行必须**保留原日期**。
 两条都做了破坏验证（牙齿 16 / 17）。
 
+**E‴. 分支保护的落地细节：`github-actions` 不能被加进绕过名单 → 给机器人一个专用 App 身份**
+
+原计划是把 `GitHub Actions` 加进 master ruleset 的绕过名单，好让定时采集照常提交。
+**这个计划是错的**，查证结论（2026-09-29）：
+
+- GitHub 文档给出的绕过候选是穷举的：仓库/组织/企业管理员、`maintain`|`write` 角色、Teams、
+  Deploy keys（仅 GHES）、**可安装的 GitHub Apps**、Dependabot、Copilot cloud agent
+  —— **没有「GitHub Actions」**，所以界面上根本找不到它；
+- `github-actions`（App ID **15368**）是**平台原生身份**，不是「安装在仓库上的 GitHub App」；
+  用 API 传 `actor_type: "Integration", actor_id: 15368` 返回 **HTTP 422**
+  （`Actor GitHub Actions integration must be part of the ruleset source or owner organization`）；
+- 替代方案「机器人开 PR + 自动合并」同样不通：`GITHUB_TOKEN` 建的 PR **不触发**
+  `pull_request` workflow，`gate` 永远 pending，自动合并永远等不到。
+
+处置：给机器人一个**自己的、可安装的 GitHub App**，并把它**单独**列进绕过名单（只豁免机器人）。
+
+- 新增 `scripts/tools/app-token.js`（零依赖）：Node 原生 `crypto` 签 RS256 JWT →
+  `GET /app`（拿 slug）→ `GET /repos/{repo}/installation` → `POST /app/installations/{id}/access_tokens`。
+- `collect.yml`：checkout 改 `persist-credentials: false`；新增 **Mint GitHub App token** 步骤
+  （刻意排在采集**之前** —— 凭据没配好要 10 秒内失败）；提交步骤用 App 身份推送；
+  提交信息加 **`[skip ci]`**（App token 推的提交**会**触发 workflow，不加会让同一 SHA
+  同时跑 deploy 的 `push` 链与 `workflow_run` 链，白跑一遍发布）。
+- 缺 Secret 时**明确失败、不退回 `GITHUB_TOKEN`**：退回只会把真正的原因藏进一句含混的 `GH006`。
+- 新增门禁步骤 **App-token self-test**（门禁 13 → 14 步）+ `npm run selftest:app-token`（61 项，离线）：
+  盯 JWT 的 10 分钟硬上限、三步 `Authorization` 都是 App JWT、**PKCS#1**（App 页面下载的那一种）
+  与 PKCS#8 两种私钥都要能用、token 只进 `$GITHUB_OUTPUT`。
+- 新增断言 **(15)**（`--expect-checks` 31 → 32）。**它在写完后立刻抓到自己的假阴性**：
+  牙齿探针发现「把 `[skip ci]` 从提交命令里删掉」「把 `persist-credentials` 改成 true」
+  两条断言**依然是绿的** —— 因为 workflow 的注释里各写过一次同样的字样，全文 grep 被注释喂饱了。
+  修法是先 `stripComment` 再查。**凡是「文件里出现过某个字样」型断言都有这个坑**，
+  已写进 `check-ci-consistency.js` 的注释里。
+- 顺带把「真实 YAML 解析器复验」从一次性动作升级成可选工具 `scripts/tools/yaml-recheck.py`
+  （人工运行；CI 跑不了它，因为需要 python3 + PyYAML）。本次复验 5 个 YAML + **19 条结构断言**全过。
+
 **E. 本轮实跑的门禁（全部 0 退出）**
 
 `validate` · `validate --strict` · `check:zh` · `selftest:zh`(15) · `selftest:expiry`(94) ·
-`selftest:text`(46) · `selftest:health`(51) · `check-ci-consistency`(31) · `build`（自检全过）·
+`selftest:text`(46) · `selftest:health`(51) · `selftest:app-token`(61) ·
+`check-ci-consistency`(32) · `build`（自检全过）·
 `verify`(**145 项 0 失败**) · `verify --compare`(**151 项 0 失败**，6 项回归全过：覆盖 80→80、
 卡片 50→50、首屏 9→9、页高 4566px、外部请求 0、JS 错误 0)。
 本轮还实跑了一次**真实采集**（134 条，9 个来源全部正常），产物与两份跨运行状态一并入库。
