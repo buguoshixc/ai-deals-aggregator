@@ -74,9 +74,13 @@ async function collectAliyun() {
   $('script,style,noscript,svg').remove();
   const text = $('body').text().replace(/\s+/g, ' ');
 
-  const quota = text.match(/每个模型均有独立的免费额度[^。]{0,40}/);
-  const region = text.match(/仅华北\s*2（北京）地域模型享有免费额度[^。]{0,30}/);
-  const expire = text.match(/额度过期后[^。]{0,40}/);
+  // 句子边界：只认「。」会跨过中文的「；」「：」继续吃下去，抓出
+  // `…额度有效期内是否使用均不会暂停计时； 额度过` 这种断在半句的残片。
+  // 把分句标点一起排除掉，捕到的就是一句完整的话。
+  const SENT = '[^。；;：:\\n]';
+  const quota = text.match(new RegExp(`每个模型均有独立的免费额度${SENT}{0,40}`));
+  const region = text.match(new RegExp(`仅华北\\s*2（北京）地域模型享有免费额度${SENT}{0,30}`));
+  const expire = text.match(new RegExp(`额度过期后${SENT}{0,40}`));
 
   if (!quota) return [];
 

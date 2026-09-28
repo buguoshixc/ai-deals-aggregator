@@ -78,7 +78,9 @@ const ZHIPU_RULES = [
   },
   {
     key: 'glm_flash_half',
-    match: /(GLM-5\.3-Flash[^。]{0,24}限时五折[^。]{0,120})/,
+    // 只认「。」会跨过表格里的「：」，把整张价格表吃进来，末尾停在 `6 元 / [` 这种
+    // 半个令牌上。把分句/分栏标点一起排除，捕到的就是这一句话。
+    match: /(GLM-5\.3-Flash[^。；;：:\n]{0,24}限时五折[^。；;：:\n]{0,120})/,
     build: m => ({
       title: 'GLM-5.3-Flash 限时五折',
       discountInfo: cleanText(m[1], 240),
@@ -89,7 +91,7 @@ const ZHIPU_RULES = [
   },
   {
     key: 'batch_half',
-    match: /Batch API[^。]{0,40}?五折[^。]{0,80}/,
+    match: /Batch API[^。；;：:\n]{0,40}?五折[^。；;：:\n]{0,80}/,
     build: m => ({
       title: '智谱AI Batch API 批量调用五折',
       discountInfo: `批量调用五折特惠：${cleanText(m[0], 200)}`,
@@ -99,7 +101,7 @@ const ZHIPU_RULES = [
   },
   {
     key: 'cache_free',
-    match: /缓存存储[：:]([^。]{0,80}?限时免费[^。]{0,40})/,
+    match: /缓存存储[：:]([^。；;：:\n]{0,80}?限时免费[^。；;：:\n]{0,40})/,
     build: m => ({
       title: '智谱AI 上下文缓存存储限时免费',
       discountInfo: `上下文缓存存储限时免费：${cleanText(m[1], 200)}`,

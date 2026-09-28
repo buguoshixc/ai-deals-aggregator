@@ -146,7 +146,27 @@ function fmtDate(y, mo, d) {
 /* 文本工具                                                           */
 /* ------------------------------------------------------------------ */
 
-/** 清洗文本：去零宽字符、压缩空白、去截断残尾、限长 */
+/**
+ * 清洗文本：去零宽字符、压缩空白、限长，**并保留「这里被截断了」这个语义**。
+ *
+ * 旧实现的注释写着「去截断残尾」，做的事是 `replace(/(\.\.\.|…)\s*$/, '')` ——
+ * 把上游用来标记「后面还有，只是我没给全」的省略号**删掉**，超长时再直接
+ * `slice(0, max)` 切在半个词中间。于是屏幕上出现 `……Getsolved 将检测和重写整`、
+ * `…benefits, and relocation pla` 这种断在半路的句子，而读者无从知道它不完整。
+ *
+ * 现在两条纪律：
+ *  ① 上游本来以 `...` / `…` 结尾（aitools.fyi 的 zhDescription 实测 15/15 如此）：
+ *     记下这件事，剥掉原省略号之后**照样补回一个 `…`**；
+ *  ② 我们自己按 maxLength 切：先退到词边界（切点两侧都是拉丁字母时退到最近的空格，
+ *     但不短于上限的 60%），再补 `…`；中日韩没有词边界，原样切。
+ *
+ * 不变量（都有断言盯着）：
+ *  · 返回值长度**绝不超过** maxLength —— priceLine(60)/validity(60)/features(20) 等
+ *    schema 断言依赖它，补记号必须先让位；
+ *  · 幂等：`cleanText(cleanText(v,n),n) === cleanText(v,n)` —— validateDeal 会拿
+ *    `cleanText(deal.title,150) === deal.title` 复核存量数据，不幂等就会把好数据判成坏数据；
+ *  · 只返回一个省略号是没有意义的（空内容就返回空串，不补记号）。
+ */
 function cleanText(value, maxLength = 200) {
   if (value === null || value === undefined) return '';
   let text = String(value)
@@ -154,11 +174,27 @@ function cleanText(value, maxLength = 200) {
     .replace(/\s+/g, ' ')
     .trim();
 
-  // 去掉 "…" / "..." 结尾的截断残尾
-  text = text.replace(/(\.\.\.|…)\s*$/, '').trim();
+  // ① 上游的截断残尾：先记下来，稍后与「我们自己切了」用同一个记号标出
+  const upstreamCut = /(?:\.\.\.|…)\s*$/.test(text);
+  if (upstreamCut) text = text.replace(/(?:\.\.\.|…)\s*$/, '').trim();
+  if (!text) return '';
 
-  if (maxLength && text.length > maxLength) {
-    text = text.slice(0, maxLength).trim();
+  const cut = Boolean(maxLength) && text.length > maxLength;
+  if (cut) {
+    let slice = text.slice(0, Math.max(1, maxLength - 1));
+    // ② 不在半个词中间切：切点两侧都是拉丁字母时退到最近的空格（退让下限 60%，免得退太狠）
+    if (/[A-Za-z]$/.test(slice) && /^[A-Za-z]/.test(text.slice(slice.length))) {
+      const floor = Math.floor((maxLength - 1) * 0.6);
+      const space = slice.lastIndexOf(' ');
+      if (space >= floor) slice = slice.slice(0, space);
+    }
+    text = slice.trim();
+  }
+
+  if (cut || upstreamCut) {
+    const room = maxLength ? maxLength - 1 : 0;
+    const body = maxLength && text.length > room ? text.slice(0, room).trim() : text;
+    text = body ? body + '…' : body;
   }
   return text;
 }
