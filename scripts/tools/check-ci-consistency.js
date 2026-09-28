@@ -78,26 +78,54 @@ const REQUIRED_WORKFLOWS = ['collect.yml', 'deploy.yml', 'probe-sources.yml', 'v
 
 /** 每个必需 workflow 的 uses 冻结集合（含主版本；SHA 钉死的等价写法见 parseUses 的 allowed） */
 const FROZEN_USES = {
-  'collect.yml': ['actions/checkout@v5', 'actions/setup-node@v5'],
+  // 三个 workflow 都调用同一个复合 action（门禁的唯一实现）——本地引用按逐字相等匹配。
+  'collect.yml': ['actions/checkout@v5', 'actions/setup-node@v5', './.github/actions/gate'],
   'deploy.yml': [
+    // checkout / setup-node 在 prepublish 与 build 里各出现一次 —— 冻结表是**多重集**，
+    // 每个 job 自己都要 checkout + setup-node，少一个就红。
     'actions/checkout@v5',
+    'actions/checkout@v5',
+    'actions/setup-node@v5',
     'actions/setup-node@v5',
     'actions/configure-pages@v6',
     'actions/upload-pages-artifact@v5',
-    'actions/deploy-pages@v5'
+    'actions/deploy-pages@v5',
+    './.github/actions/gate'
   ],
   'probe-sources.yml': ['actions/checkout@v5', 'actions/setup-node@v5'],
-  'verify.yml': ['actions/checkout@v5', 'actions/setup-node@v5']
+  'verify.yml': ['actions/checkout@v5', 'actions/setup-node@v5', './.github/actions/gate']
 };
 
 const EXPECT_RUNS_ON = 'ubuntu-24.04';
 const EXPECT_NODE_VERSION = '24';
-const EXPECT_JOBS = ['build', 'deploy'];
+/** deploy.yml 的 job 名与**顺序**（发布链必须是 prepublish → build → deploy） */
+const EXPECT_JOBS = ['prepublish', 'build', 'deploy'];
 /** 「采集失败就不发布」的语义：build job 的 if 必须逐字保持 */
 const EXPECT_BUILD_IF = "github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'";
 const BRIDGE_WORKFLOW = 'Collect AI Deals';
 /** 必须保持「无路径过滤」的 workflow（它要当必需检查；被 paths 过滤 = PR 永久 pending） */
 const NO_PATH_FILTER_WORKFLOWS = ['verify.yml'];
+/** 门禁的唯一实现（三个 workflow 共用它；步骤序列在下面被逐项冻结） */
+const GATE_ACTION = '.github/actions/gate/action.yml';
+const GATE_ACTION_REF = './.github/actions/gate';
+/** 门禁步骤的冻结序列：**顺序与数量**都算契约——谁把真浏览器验收从门禁里拿掉，(10) 立刻红 */
+const GATE_STEP_NAMES = [
+  'Install dependencies',
+  'Validate data (strict)',
+  'Translation gate (drift blocks, pending ages out)',
+  'Translation self-test',
+  'Expiry self-test',
+  'Text / cleanText self-test',
+  'Source-health self-test',
+  'Assemble site (same path as deploy.yml)',
+  'Prepare browser for the real-browser gate',
+  'Browser availability decision (never silent)',
+  'Real-browser acceptance (verify-site.js)',
+  'Regression verify (baseline compare)',
+  'Gate conclusion'
+];
+/** 三个调用方：都必须恰好调用一次门禁 action */
+const GATE_CALLERS = ['collect.yml', 'deploy.yml', 'verify.yml'];
 
 /**
  * 应当被执行的断言名单（**字面量**，刻意不派生：改名也要能被看门狗抓到）。
@@ -115,18 +143,24 @@ const FROZEN_ASSERTION_NAMES = [
   '(2) deploy.yml 的 uses 集合等于冻结集合',
   '(2) probe-sources.yml 的 uses 集合等于冻结集合',
   '(2) verify.yml 的 uses 集合等于冻结集合',
-  '(3) deploy.yml 两个 job 的 runs-on 都是 ubuntu-24.04',
+  '(3) deploy.yml 全部 job 的 runs-on 都是 ubuntu-24.04',
   '(3b) 全部 workflow 的 runs-on 都不是浮动标签（按取值判，不按字符串判）',
   '(3c) 全部磁盘上的 workflow 的 runs-on 取值集合唯一（按 jobs.<job>.runs-on 的 path 判）',
   "(4) 全部磁盘上的 workflow 的 node-version 取值集合唯一（只认 setup-node 步骤 with: 下的值）",
   '(4b) 每个带 setup-node 的 job 都显式给出 with.node-version',
   '(4c) 没有把 node-version 写在 env: 等无效位置（那种写法会骗过检查器）',
-  '(5) deploy.yml 的 job 名严格等于 build / deploy',
+  '(5) deploy.yml 的 job 名与顺序严格等于 prepublish / build / deploy',
   '(6) engines 下限不低于锁文件里最严的依赖下限（从锁文件推导）',
   '(7a) deploy.yml 的 on: 仍含 workflow_run 桥接',
   '(7b) build job 的 if 表达式逐字未变',
   '(8) verify.yml 的 gate job 存在且没有 job 级 if（永不 skipped）',
-  '(9) verify.yml 的 on: 没有被 paths / paths-ignore 过滤（必需检查被过滤 = PR 永久 pending）'
+  '(9) verify.yml 的 on: 没有被 paths / paths-ignore 过滤（必需检查被过滤 = PR 永久 pending）',
+  '(10) gate 复合 action 存在且步骤名序列等于冻结清单',
+  '(10b) gate 复合 action 的每个 run 步骤都显式给出 shell（复合 action 的硬要求）',
+  '(10c) gate 复合 action 不含任何第三方 uses（门禁里不引入未冻结的外部动作）',
+  '(11) collect.yml / deploy.yml / verify.yml 各恰好调用一次门禁 action',
+  '(12) deploy.yml 的发布链必须先过门禁：prepublish 无 job 级 if、build 依赖它、deploy 依赖 build',
+  '(13) collect.yml 的门禁步骤排在提交步骤之前'
 ];
 const WATCHDOG_NAME = '(W) 断言名单与冻结清单等值（删一条或改名都会红；本看门狗保护不了自己被删）';
 
@@ -202,9 +236,14 @@ function asList(value) {
 const ver = v => String(v).trim().split(/[.\-+]/).map(n => parseInt(n, 10) || 0).concat([0, 0, 0]).slice(0, 3);
 const cmpVer = (a, b) => { const A = ver(a), B = ver(b); for (let i = 0; i < 3; i++) if (A[i] !== B[i]) return A[i] - B[i]; return 0; };
 
-/** 解析 `owner/repo@ref`：kind = sha | floating | version | unknown | malformed */
+/**
+ * 解析 `uses`：kind = sha | floating | version | unknown | malformed | local
+ * `./…` 开头的**本地复合 action** 是仓库自己的文件（提交即版本）：既不是浮动引用，
+ * 也不需要钉版本，单独一类 —— 见 (1b) 与 (2) 的例外处理。
+ */
 function parseUses(u) {
   const s = String(u).trim();
+  if (s.startsWith('./')) return { raw: s, action: s, ref: null, kind: 'local' };
   const m = /^([\w.-]+\/[\w.-]+)@(.+)$/.exec(s);
   if (!m) return { raw: s, action: null, ref: null, kind: 'malformed' };
   const action = m[1], ref = m[2];
@@ -282,6 +321,7 @@ for (const f of DISK_FILES) {
     const p = parseUses(e.value);
     if (p.kind === 'version' && p.major < 5) oldRefs.push(`${f}: ${p.raw}（主版本 v${p.major}）`);
     if (p.kind === 'floating') floatingRefs.push(`${f}: ${p.raw}（浮动引用）`);
+    // 本地 `./…` 引用（复合 action）是仓库自己的文件，提交即版本 —— 不算浮动引用
     if (p.kind === 'unknown' || p.kind === 'malformed') floatingRefs.push(`${f}: ${p.raw}（不是 @v<N>，也不是 40 位 SHA）`);
   }
 }
@@ -299,9 +339,15 @@ for (const f of REQUIRED_WORKFLOWS) {
   const problems = [];
   const pool = [...observed];
   for (const exp of expected) {
-    const [action, ref] = exp.split('@');
-    const major = Number(/^v(\d+)(?:\.\d+)*$/.exec(ref)[1]);
-    const idx = pool.findIndex(o => o.action === action && ((o.kind === 'version' && o.major === major) || o.kind === 'sha'));
+    // 本地引用（`./…`）按**逐字相等**匹配：它没有 @ref 可拆，交给 parseUses 之前的
+    // `exp.split('@')` 会拿到 undefined 并在这里抛 TypeError（历史坑）。
+    const idx = exp.startsWith('./')
+      ? pool.findIndex(o => o.kind === 'local' && o.raw === exp)
+      : pool.findIndex(o => {
+        const [action, ref] = exp.split('@');
+        const major = Number(/^v(\d+)(?:\.\d+)*$/.exec(ref)[1]);
+        return o.action === action && ((o.kind === 'version' && o.major === major) || o.kind === 'sha');
+      });
     if (idx < 0) problems.push(`缺 ${exp}（或未按 SHA 钉死）`);
     else pool.splice(idx, 1);
   }
@@ -315,7 +361,7 @@ const deployRunsOn = runsOnByJob(wf['deploy.yml'] || []);
 const deployJobs = jobsOf(wf['deploy.yml'] || []);
 const runsOnBad = Object.entries(deployRunsOn).filter(([, v]) => v !== EXPECT_RUNS_ON).map(([j, v]) => `${j} → ${v}`);
 const runsOnMissing = deployJobs.filter(j => !(j in deployRunsOn));
-check('(3) deploy.yml 两个 job 的 runs-on 都是 ubuntu-24.04',
+check('(3) deploy.yml 全部 job 的 runs-on 都是 ubuntu-24.04',
   runsOnBad.length === 0 && runsOnMissing.length === 0,
   runsOnBad.length || runsOnMissing.length
     ? [runsOnBad.join('、'), runsOnMissing.length ? `缺 runs-on：${runsOnMissing.join('、')}` : ''].filter(Boolean).join('；')
@@ -370,7 +416,7 @@ check('(4c) 没有把 node-version 写在 env: 等无效位置（那种写法会
 
 /* ────────────────────────── (5)(6)(7)(8)(9) ────────────────────────── */
 const deployJobNames = jobsOf(wf['deploy.yml'] || []);
-check('(5) deploy.yml 的 job 名严格等于 build / deploy',
+check('(5) deploy.yml 的 job 名与顺序严格等于 prepublish / build / deploy',
   JSON.stringify(deployJobNames) === JSON.stringify(EXPECT_JOBS), deployJobNames.join('、') || '(未解析到 job)');
 
 let enginesOk = false, enginesDetail = '';
@@ -435,6 +481,110 @@ for (const f of NO_PATH_FILTER_WORKFLOWS) {
 }
 check('(9) verify.yml 的 on: 没有被 paths / paths-ignore 过滤（必需检查被过滤 = PR 永久 pending）',
   filterHits.length === 0, filterHits.length ? filterHits.join('、') : 'on: 下没有任何 paths / paths-ignore');
+
+/* ─────────── (10)(11)(12)(13)：门禁接线（2026-09-28 的发布链重构） ─────────── */
+
+// 复合 action 也用同一套缩进读取器解析（不引入 YAML 依赖）。
+const gatePath = path.join(ROOT, GATE_ACTION);
+let gateEntries = [];
+let gateParseError = null;
+try {
+  gateEntries = parseWorkflow(fs.readFileSync(gatePath, 'utf8'));
+} catch (error) {
+  gateParseError = error.message;
+}
+const gateSteps = gateEntries.filter(e => e.path.includes('steps'));
+const gateStepNames = gateEntries
+  .filter(e => e.key === 'name' && e.path[0] === 'runs' && e.path.includes('steps'))
+  .map(e => String(e.value).replace(/^['"]|['"]$/g, ''));
+
+// (10) 步骤序列（顺序 + 数量）逐项冻结：谁把真浏览器验收、回归比对、或译文门禁
+// 从门禁里拿掉，这条立刻红 —— 这是本次重构最需要盯住的东西。
+const stepDiff = [];
+for (let i = 0; i < Math.max(gateStepNames.length, GATE_STEP_NAMES.length); i++) {
+  const actual = gateStepNames[i];
+  const expected = GATE_STEP_NAMES[i];
+  if (actual !== expected) stepDiff.push(`#${i + 1} 期望「${expected || '(无)'}」实得「${actual || '(无)'}」`);
+}
+check('(10) gate 复合 action 存在且步骤名序列等于冻结清单',
+  !gateParseError && stepDiff.length === 0,
+  gateParseError ? `读取 ${GATE_ACTION} 失败：${gateParseError}`
+    : stepDiff.length ? stepDiff.slice(0, 4).join('；')
+      : `${GATE_ACTION} 共 ${gateStepNames.length} 步，逐项一致`);
+
+// (10b) 复合 action 的每个 run 步骤都必须显式给出 shell —— 这是 GitHub 的硬要求，
+// 少一个就是「本地看着没问题、推上去直接 parse 失败」。
+// 注意：`run: |` 是块标量，缩进读取器会把它的 value 记成 null，所以判据只能是「有没有 run 这个键」。
+const runSteps = gateSteps.filter(e => e.key === 'run');
+const shells = gateSteps.filter(e => e.key === 'shell').length;
+check('(10b) gate 复合 action 的每个 run 步骤都显式给出 shell（复合 action 的硬要求）',
+  !gateParseError && runSteps.length > 0 && shells === runSteps.length,
+  gateParseError ? '文件读取失败' : `run 步骤 ${runSteps.length} 个 / shell 声明 ${shells} 个`);
+
+// (10c) 门禁里不引入任何第三方 uses：一旦引入，就得同时进 FROZEN_USES 与版本冻结，
+// 而门禁本身不该依赖外部动作（它现在的步骤全是 run:）。
+const thirdPartyInGate = usesEntries(gateEntries)
+  .map(e => String(e.value))
+  .filter(v => !v.startsWith('./'));
+check('(10c) gate 复合 action 不含任何第三方 uses（门禁里不引入未冻结的外部动作）',
+  !gateParseError && thirdPartyInGate.length === 0,
+  gateParseError ? '文件读取失败' : (thirdPartyInGate.length ? thirdPartyInGate.join('、') : '只有 run: 步骤'));
+
+// (11) 三个调用方各恰好一次：少了 = 那条链路没有门禁；多了 = 同一份门禁被跑两遍
+// （既浪费，也说明有人把门禁复制成了两套）。
+const gateCallDetail = GATE_CALLERS.map(f =>
+  `${f}:${usesEntries(wf[f] || []).filter(e => parseUses(e.value).kind === 'local' &&
+    parseUses(e.value).raw === GATE_ACTION_REF).length}`);
+const gateCallsOk = gateCallDetail.every(item => item.endsWith(':1'));
+check('(11) collect.yml / deploy.yml / verify.yml 各恰好调用一次门禁 action',
+  gateCallsOk, gateCallDetail.join('、'));
+
+// (12) 发布链必须「先过门禁再发布」。三件事一起看：
+//   · prepublish **没有** job 级 if（被跳过的 job 报 Success，等于没跑却算过）；
+//   · build 的 needs 含 prepublish（门禁红 ⇒ build 根本没有机会执行）；
+//   · deploy 的 needs 是 build（保持原样）。
+const prepublishIf = (wf['deploy.yml'] || []).find(e => e.path.join('.') === 'jobs.prepublish.if');
+const needsOf = job => {
+  const direct = (wf['deploy.yml'] || []).find(e => e.path.join('.') === `jobs.${job}.needs`);
+  const list = (wf['deploy.yml'] || []).filter(e => e.path[0] === 'jobs' && e.path[1] === job &&
+    e.path.length === 4 && e.path[2] === 'needs' && e.inSeq === false && e.key === null);
+  if (direct) return asList(direct.value);
+  return list.map(e => String(e.value));
+};
+const buildNeeds = needsOf('build');
+const deployNeeds = needsOf('deploy');
+const gateWiringProblems = [];
+if (prepublishIf) gateWiringProblems.push(`prepublish 有 job 级 if：${prepublishIf.value}`);
+if (!buildNeeds.includes('prepublish')) gateWiringProblems.push(`build.needs=${JSON.stringify(buildNeeds)} 不含 prepublish`);
+if (!deployNeeds.includes('build')) gateWiringProblems.push(`deploy.needs=${JSON.stringify(deployNeeds)} 不含 build`);
+if (!(wf['deploy.yml'] || []).some(e => e.path.join('.') === 'jobs.prepublish.steps')) {
+  gateWiringProblems.push('prepublish 没有 steps（门禁没接上）');
+}
+check('(12) deploy.yml 的发布链必须先过门禁：prepublish 无 job 级 if、build 依赖它、deploy 依赖 build',
+  gateWiringProblems.length === 0,
+  gateWiringProblems.length ? gateWiringProblems.join('；')
+    : `prepublish(无 if) → build(needs=${JSON.stringify(buildNeeds)}) → deploy(needs=${JSON.stringify(deployNeeds)})`);
+
+// (13) 采集路径的门禁必须在**提交之前**：机器人提交一进 master 就会被 deploy 的
+// workflow_run 接走，门禁放在提交之后就只是「事后告警」。
+// 判据用**原文位置**而不是解析结果：提交步骤的脚本是 `run: |` 块标量，缩进读取器按设计
+// 整体跳过块标量内容（那是它不引入 YAML 依赖的代价），所以「谁在前谁在后」直接比字符串位置，
+// 反而更贴近事实。两处引用都恰好只有一次（前者由 (11) 保证）。
+const collectRaw = fs.readFileSync(path.join(WF_DIR, 'collect.yml'), 'utf8');
+const idxGateRef = collectRaw.indexOf(`uses: ${GATE_ACTION_REF}`);
+const idxPush = collectRaw.indexOf('git push');
+const commitStepCount = (collectRaw.match(/name: Commit and push if changed/g) || []).length;
+const collectProblems = [];
+if (idxGateRef < 0) collectProblems.push(`collect.yml 里没有 \`uses: ${GATE_ACTION_REF}\``);
+if (idxPush < 0) collectProblems.push('collect.yml 里没有 git push（提交步骤不见了）');
+if (idxGateRef >= 0 && idxPush >= 0 && idxGateRef > idxPush) {
+  collectProblems.push('门禁写在 git push 之后（门禁红也拦不住入库）');
+}
+if (commitStepCount !== 1) collectProblems.push(`「Commit and push」步骤出现 ${commitStepCount} 次（期望恰好 1 次）`);
+check('(13) collect.yml 的门禁步骤排在提交步骤之前',
+  collectProblems.length === 0,
+  collectProblems.length ? collectProblems.join('；')
+    : `门禁在字节 ${idxGateRef} → git push 在字节 ${idxPush}（同一 collect job 里，步骤顺序即语义）`);
 
 /* ─────────────────── (W) 看门狗：断言名单等值（不可跳过） ─────────────────── */
 // 刻意放在所有分支之外：删一条断言、或改任意一条断言名，都会在这里变红。

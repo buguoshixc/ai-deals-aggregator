@@ -1,0 +1,227 @@
+name: 'Gate（完整门禁）'
+description: >-
+  collect → validate → 译文 → 两个自测 → build → 真浏览器验收 → 回归比对的**唯一实现**。
+  verify.yml（PR/push）、deploy.yml（发布前）、collect.yml（提交数据前）都调用这一个文件，
+  避免出现两套相似但不同的测试链。
+
+# 为什么是复合 action 而不是 reusable workflow（2026-09-28 的决定，附理由）：
+#  ① **检查名不能变**。verify.yml 的 job 名 `gate` 是分支保护要填的必需检查名；
+#     换成 reusable 调用后，被调 job 的检查名会变成 `<调用方 job> / <被调 job>`
+#     这种形态，只能等第一次 CI 跑完读 check-runs 才知道，而且 deploy.yml 再建一个同名
+#     job 就会在同一 SHA 上出现两个同名检查。
+#  ② `scripts/tools/check-ci-consistency.js` 把「期望项数的唯一出处」钉在 verify.yml 的
+#     一行 `run:`（`--expect-checks=N`）上；gate job 一旦变成 `uses:` 调用就没有 steps，
+#     那套机制必须改写。复合 action 下它一个字都不用动。
+#  ③ 新增 workflow 文件会同时触发 (0b) 登记、(1)/(1b) 全文件 uses 扫描、
+#     (3c)/(4) 必须有 runs-on 与 setup-node+node-version 等一串约束；
+#     复合 action 不在 `.github/workflows/` 的扫描面里，改动面小一个量级。
+#  代价：调用方各自保留 checkout / setup-node / runs-on / timeout（各 3 行）。
+#
+# ⚠️ 调用方约定：**先 checkout、再 setup-node**，然后调用本 action。
+#    本 action 从 `npm ci` 开始（真浏览器验收需要 playwright-core，采集与发布路径因此
+#    都依赖 npm registry —— 这条写进了 README）。
+# ⚠️ 本 action 里**没有 continue-on-error**：需要「不判死」的只有浏览器准备一步，
+#    它自身逻辑走到 `exit 0`；唯一的判定点是紧随其后的「浏览器可用性判定」。
+
+inputs:
+  allow_degraded_run:
+    description: >-
+      仅人工触发时可用：'true' = 浏览器装不上也放行静态门禁，并在 Summary 与注解里
+      明确写出「本次没有做真浏览器验收」。PR / push / 定时采集一律传 'false'。
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    # 依赖：真浏览器验收需要 playwright-core；下面「准备浏览器」那步要读它的版本号。
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    # 数据门禁：collect.yml 采集后跑的就是这一条（strict），PR/发布路径同样要过。
+    - name: Validate data (strict)
+      shell: bash
+      run: node scripts/validate.js --strict
+
+    # 译文门禁（2026-09-28 起是**硬门禁**，此前只是建议性）：
+    #   漂移（孤儿 / 原文已变 / 不合法 / 覆盖层管不到）= 必红，没有宽限期；
+    #   待译 = 按年龄判，超过宽限期（默认 7 天）转红，数量与「最老 N 天」每次都打印。
+    # 为什么必须硬：软门禁等于没有门禁——线上可能正拿着一份与英文对不上的中文，
+    # 而 CI 一路绿灯。为什么不能要求待译为 0：自动采集每天两次，那会让系统长期停在
+    # 「有新优惠 → 必然 CI 红」（2026-09-28 e01dcfc 实测）。
+    - name: Translation gate (drift blocks, pending ages out)
+      shell: bash
+      run: node scripts/tools/zh-todo.js --check
+
+    - name: Translation self-test
+      shell: bash
+      run: node scripts/tools/zh-selftest.js
+
+    - name: Expiry self-test
+      shell: bash
+      run: node scripts/tools/expiry-selftest.js
+
+    - name: Text / cleanText self-test
+      shell: bash
+      run: node scripts/tools/text-selftest.js
+
+    - name: Source-health self-test
+      shell: bash
+      run: node scripts/tools/health-selftest.js
+
+    # 发布产物由 build-local.js 组装（与 deploy.yml 完全同一条路径），
+    # 失败即拦：能装出坏产物就不该合并、更不该发布。
+    - name: Assemble site (same path as deploy.yml)
+      shell: bash
+      run: node scripts/tools/build-local.js
+
+    # 浏览器准备：**这一步不判死**，只负责"把有没有浏览器弄清楚"。
+    # 判死放在后面的「浏览器可用性判定」里，好处是失败原因写在一处，
+    # 且无论是 playwright 装的还是 runner 自带的浏览器，都在同一条判定线上。
+    # 末尾显式 `exit 0`：本 action 刻意不用 continue-on-error，行为要自己写清楚。
+    - name: Prepare browser for the real-browser gate
+      id: browser
+      shell: bash
+      run: |
+        set +e             # 安装/探测失败都要走到"明确报错"分支，不中途退出（默认的 bash -e 会）
+        set -uo pipefail
+
+        PW_VERSION=$(node -p "require('playwright-core/package.json').version")
+        echo "playwright-core 版本: $PW_VERSION"
+
+        # --with-deps 需要 sudo（GitHub runner 有）；装不上就退到 runner 自带浏览器
+        npx --yes "playwright@$PW_VERSION" install --with-deps chromium \
+          || echo "::warning title=chromium 安装失败::npx playwright install chromium 未成功，继续探测系统自带浏览器"
+
+        # playwright-core 期望的内核路径（版本严格对应，最优先）
+        PW_EXE=$(node -e "process.stdout.write(require('playwright-core').chromium.executablePath())" 2>/dev/null || true)
+
+        # 退路：GitHub 的 ubuntu 镜像自带 google-chrome / microsoft-edge
+        EXE=""
+        for cand in "${PW_EXE:-}" /usr/bin/microsoft-edge /usr/bin/google-chrome \
+                    /usr/bin/google-chrome-stable /usr/bin/chromium /usr/bin/chromium-browser /snap/bin/chromium; do
+          if [ -n "$cand" ] && [ -x "$cand" ]; then EXE="$cand"; break; fi
+        done
+
+        if [ -n "$EXE" ]; then
+          echo "browser_available=true" >> "$GITHUB_OUTPUT"
+          echo "executable=$EXE" >> "$GITHUB_OUTPUT"
+          echo "浏览器可执行文件: $EXE"
+        else
+          echo "browser_available=false" >> "$GITHUB_OUTPUT"
+          echo "executable=" >> "$GITHUB_OUTPUT"
+          echo "没有找到可用的浏览器可执行文件"
+        fi
+
+        {
+          echo "### 真浏览器验收 · 浏览器准备"
+          echo ""
+          if [ -n "$EXE" ]; then
+            echo "- 可执行文件：\`$EXE\`"
+            echo "- 结论：✅ 浏览器就绪，verify-site.js 会**真实执行**。"
+          else
+            echo "- playwright-core 期望路径：\`${PW_EXE:-<空>}\`（不存在或不可执行）"
+            echo "- 已逐个探测：playwright chromium、microsoft-edge、google-chrome、chromium（/usr/bin 与 /snap/bin）"
+            echo "- 结论：⚠️ **没有可用的浏览器可执行文件**。这一步本身不判死，"
+            echo "  下一步「浏览器可用性判定」会按明确规则处理——默认**直接失败**，绝不静默变绿。"
+          fi
+        } >> "$GITHUB_STEP_SUMMARY"
+
+        exit 0
+
+    # 「浏览器不可用」的**降级判定**：写在这里而不是写成 job 级 if ——
+    # job 级 if 一旦跳过，该 job 的检查**报 Success**（没跑却算过）——对门禁而言这是最坏形态。
+    # 步骤内判死：默认失败；只有人工显式降级才放行。
+    - name: Browser availability decision (never silent)
+      id: decision
+      shell: bash
+      run: |
+        set -uo pipefail
+        AVAIL='${{ steps.browser.outputs.browser_available }}'
+        EXE='${{ steps.browser.outputs.executable }}'
+        ALLOW='${{ inputs.allow_degraded_run }}'
+
+        if [ "$AVAIL" = "true" ]; then
+          echo "mode=full" >> "$GITHUB_OUTPUT"
+          echo "浏览器可用（$EXE）→ 真浏览器验收将执行"
+          {
+            echo ""
+            echo "- 判定：**真浏览器验收将执行**（verify-site.js + 回归比对，可执行文件 \`$EXE\`）"
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+        fi
+
+        if [ "$ALLOW" = "true" ]; then
+          echo "mode=degraded" >> "$GITHUB_OUTPUT"
+          echo "::warning title=降级运行：本次没有做真浏览器验收::没有可用的浏览器可执行文件；因显式 allow_degraded_run=true，只跑静态门禁"
+          {
+            echo ""
+            echo "### ⚠️ 降级运行：本次**没有做真浏览器验收**"
+            echo ""
+            echo "没有找到可用浏览器，且这次**显式**允许降级（人工触发）。"
+            echo "被跳过的是 verify-site.js 的真浏览器断言（横向溢出 / 内容裁切 / 弹层 / 键盘无障碍 / 对比 / 390px…）。"
+            echo "静态门禁（strict 校验、译文门禁、各个 selftest、产物自检）已照常执行。"
+            echo ""
+            echo "=> **这个绿灯不包含真浏览器验收**，不要当成完整门禁的依据。"
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+        fi
+
+        echo "mode=none" >> "$GITHUB_OUTPUT"
+        echo "::error title=真浏览器验收无法执行::没有可用的浏览器可执行文件，且本次没有显式允许降级——门禁明确失败（不静默变绿）"
+        {
+          echo ""
+          echo "### ❌ 真浏览器验收**没有执行** —— 明确失败"
+          echo ""
+          echo "没有找到可用的浏览器可执行文件（playwright chromium 与系统自带 chrome/edge 都不可用），"
+          echo "而本次没有显式允许降级，所以这里**直接失败**，而不是给一个「没有验证过」的绿灯。"
+          echo ""
+          echo "处理办法："
+          echo "1. 重跑本 job（多数情况是 npx 拉内核时的网络抖动）；"
+          echo "2. 确认 runner 镜像里有 google-chrome / microsoft-edge；"
+          echo "3. 确实只需要静态门禁时，人工 \`workflow_dispatch\` 并勾选 \`allow_degraded_run\`，"
+          echo "   Summary 会留下「未做真浏览器验收」的明确记录。"
+        } >> "$GITHUB_STEP_SUMMARY"
+        exit 1
+
+    # 真浏览器验收：只有判定为 full 才跑（degraded 时不跑，但上面已经明确记录了原因）。
+    # verify-site.js 默认写死 Windows 的 Edge 路径，所以必须用它的 DSH_EDGE 覆盖成
+    # runner 上真实存在的可执行文件——不然 Linux 上会直接 launch 失败。
+    - name: Real-browser acceptance (verify-site.js)
+      if: steps.decision.outputs.mode == 'full'
+      shell: bash
+      env:
+        DSH_EDGE: ${{ steps.browser.outputs.executable }}
+      run: node scripts/tools/verify-site.js
+
+    # 回归比对：与 research/_raw/ours-baseline/verify.json（入库的冻结基线）比
+    # 覆盖条数 / 卡片数 / 首屏完整可见条数 / 页高 / 外部请求 / JS 错误。
+    # 代价写在 README：这几项「只能升不能降」，合法的数据缩减（过期下架、重新折叠）
+    # 会拦发布，处置方式是**人工、留痕**地重刷基线（npm run verify:baseline）。
+    - name: Regression verify (baseline compare)
+      if: steps.decision.outputs.mode == 'full'
+      shell: bash
+      env:
+        DSH_EDGE: ${{ steps.browser.outputs.executable }}
+      run: node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json
+
+    # 结论落 Summary（if: always() —— 前面的步骤红了也要把结论与"判了什么"写清楚；
+    # 这一步只记录，不改变 job 的成败）。
+    - name: Gate conclusion
+      if: always()
+      shell: bash
+      run: |
+        {
+          echo ""
+          echo "### 门禁结论"
+          echo ""
+          if [ "${{ steps.decision.outputs.mode }}" = "full" ]; then
+            echo "- 静态门禁 + **真浏览器验收 + 回归比对**都跑了"
+          elif [ "${{ steps.decision.outputs.mode }}" = "degraded" ]; then
+            echo "- ⚠️ 只跑了静态门禁（**未做真浏览器验收**，显式降级）"
+          else
+            echo "- ❌ 真浏览器验收没有执行（见上一条注解与 Summary 顶部原因）"
+          fi
+          echo "- 触发事件：\`${{ github.event_name }}\` @ \`${{ github.ref }}\`"
+        } >> "$GITHUB_STEP_SUMMARY"

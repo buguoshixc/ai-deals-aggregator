@@ -4,23 +4,28 @@ name: Verify site (gate)
 #   collect.yml  只在 schedule / workflow_dispatch 上跑（定时采集，不校验 PR）
 #   deploy.yml   只在 master 的 push / workflow_run 上跑（只发布，不校验 PR）
 # 结果是：pull_request 事件**一个 workflow 都没有**，本地十几个分支在合并前对 CI
-# 完全不可见；而文档里大力宣传的重门禁（verify-site.js 的 136 项真浏览器断言、
-# selftest:zh、selftest:expiry）全都不在 CI 里——CI 只跑 validate.js 与 build-local.js。
-# 这条 workflow 补上这两件事：**PR 触发** + **把重门禁搬进 CI**。
+# 完全不可见；而文档里大力宣传的重门禁（真浏览器断言、selftest:zh、selftest:expiry）
+# 全都不在 CI 里。这条 workflow 补上这两件事：**PR 触发** + **把重门禁搬进 CI**。
 #
-# ⚠️ 关键约束：gate 这个 job **永远不许被跳过**，所以下面没有、也不要加 job 级 if。
-#   背景：deploy.yml 的 build 带着 `if: github.event_name != 'workflow_run' || …`，
-#   采集失败时它会被跳过——而按 GitHub 官方语义，**job 被 if 跳过时报的是 "Success"**：
-#   没跑却算过（静默变绿），对门禁而言这是**最坏**形态；会一直 Pending 的是 **workflow 级**跳过
-#   （paths / branches / commit message，见下面 ⑦）。要判断"该不该出版/该不该拦"，就把判断
-#   写进**步骤**里（见「浏览器可用性判定」与「门禁结论」两步）：每次都必须真跑——要么绿、要么红。
+# 2026-09-28 起的结构：门禁的**步骤实现只有一处** —— `.github/actions/gate/action.yml`
+# （复合 action）。本文件、deploy.yml、collect.yml 都调用它，避免出现两套相似但不同的
+# 测试链。为什么不是 reusable workflow：见 action.yml 头部那三条理由（检查名不能变、
+# 「期望项数唯一出处」钉在本文件的一行 run: 上、新增 workflow 会牵动一串冻结断言）。
+#
+# ⚠️ 关键约束：这个 job 的**名字与 id 都必须是 `gate`**（分支保护的必需检查名就是它），
+#   而且**永远不许有 job 级 if**：按 GitHub 官方语义，job 被 if 跳过时报的是 "Success"
+#   —— 没跑却算过，对门禁而言是最坏形态。要判断"该不该出版/该不该拦"，就把判断写进
+#   **步骤**里（见 action.yml 的「浏览器可用性判定」）：每次都必须真跑，要么绿、要么红。
+#   `scripts/tools/check-ci-consistency.js` 的断言 (8) 与 (10) 分别守着这两件事。
 #
 # 触发面：
 #   pull_request → master   分支在合并前就可见（本地分支推上来即可）
 #   push         → master   合并后的落点也验一遍
-#   workflow_dispatch       手动跑（另有一个仅手动可用的 allow_degraded_run 开关，见下）
+#   workflow_dispatch       手动跑（另有仅手动可用的 allow_degraded_run 开关）
 # 注：机器人用仓库自带 GITHUB_TOKEN 推的 deals.json 提交**不会**触发本 workflow
-#     （原因见 deploy.yml 里 workflow_run 那段说明），所以这条门禁覆盖的是人类 PR/推送。
+#     （原因见 deploy.yml 里 workflow_run 那段说明）。所以采集那条链路的门禁在
+#     collect.yml 里自己跑（提交数据**之前**），发布那条链路的门禁在 deploy.yml 里自己跑
+#     （发布**之前**）——本文件覆盖的是人类 PR / 推送，也正是分支保护要求的那一个。
 on:
   pull_request:
     branches: [ master ]
@@ -49,7 +54,7 @@ concurrency:
 
 jobs:
   gate:
-    # name 与 job id 都钉成 `gate`：将来把它设成必需检查时，检查名要对得上。
+    # name 与 job id 都钉成 `gate`：分支保护的必需检查名要对得上。
     name: gate
     # 钉死 runner 版本，与 collect.yml / probe-sources.yml / deploy.yml 一致
     # （浮动标签会在镜像换代时悄悄换掉浏览器与系统库）。
@@ -69,186 +74,28 @@ jobs:
           cache: npm
 
       # CI 口径漂移门禁（脚本 scripts/tools/check-ci-consistency.js，零依赖 ⇒ 放在 npm ci 之前）：
-      # ① 四个必需 workflow 写死并要求逐个存在（删/改名任一即红）；② uses 里没有 @v1..v4（含 @v4.1.1
-      #    这类点分写法）与 @main / @master 浮动引用（**按 40 位 SHA 钉死是允许且推荐的**）；
-      # ③ 每个 workflow 的 uses 集合 = 各自的冻结集合（checkout / setup-node 及 deploy 的五个 action）；
-      # ④ runs-on 与 node-version 跨四个 workflow 取值唯一（按**取值**与 **path** 判：注释里提到
-      #    「*-latest 浮动标签」不算漂移；node-version 必须真的落在 setup-node 步骤的 with: 之下，
-      #    写在 job 级 env 里的同名键会被单独判红）；⑤ engines 下限从 package-lock.json 推导后比较；
-      # ⑥ 守住 deploy.yml 的 workflow_run 桥接与 build job 的 if（防有人为了「让检查通过」删掉
-      #    跳过发布的语义）；⑦ **本文件的 on: 不得加 paths / paths-ignore** —— 它将来要当必需检查，
-      #    被路径过滤就不是「跳过」而是**永久 pending**，改文档的 PR 会被卡死且看不出原因；
-      # ⑧ 末尾看门狗断言「断言名单与冻结清单等值」：删一条断言或改名同样红。
-      # ⑨ 带外项数：--expect-checks=24 把「总项数」这个事实钉在**调用方**（本文件），因为看门狗
-      #    保护不了自己被删（删掉它自己时项数会静默降到 23 且仍 exit 0）。这个数字是**唯一出处**：
-      #    脚本命令行不带参数裸跑（本地）时也会回来读本行，所以本地同样受保护；谁删掉本行的参数，
-      #    脚本会直接 fail-closed 判红。数字与脚本里的 FROZEN_ASSERTION_NAMES 是两条独立机制：
-      #    新增/删除断言时要同时更新这两处。
+      # ① 四个必需 workflow 写死并要求逐个存在（删/改名任一即红）；② uses 里没有 @v1..@v4（含 @v4.1.1
+      #    这类点分写法）与 @main / @master 浮动引用（**按 40 位 SHA 钉死是允许且推荐的**；本地复合
+      #    action 的 `./…` 引用单独识别，不算浮动）；③ 每个 workflow 的 uses 集合 = 各自的冻结集合；
+      # ④ runs-on 与 node-version 跨 workflow 取值唯一（按**取值**与 **path** 判：注释里提到
+      #    「*-latest 浮动标签」不算漂移；node-version 必须真的落在 setup-node 步骤的 with: 之下）；
+      # ⑤ engines 下限从 package-lock.json 推导后比较；⑥ 守住 deploy.yml 的 workflow_run 桥接、
+      #    build job 的 if、以及**发布链必须先过 gate**（prepublish 无 job 级 if + needs 关系）；
+      # ⑦ 本文件的 on: 不得加 paths / paths-ignore —— 它要当必需检查，被路径过滤就不是「跳过」
+      #    而是**永久 pending**；⑧ 守住 `.github/actions/gate/action.yml` 的**步骤序列**：谁把真浏览器
+      #    验收从门禁里拿掉，这里立刻红；⑨ collect.yml 的 gate 必须排在提交步骤之前；
+      # ⑩ 末尾看门狗断言「断言名单与冻结清单等值」。
+      # ⑪ 带外项数：`--expect-checks=30` 把「总项数」这个事实钉在**调用方**（本文件），因为看门狗
+      #    保护不了自己被删（删掉它自己时项数会静默降到 29 且仍 exit 0）。这个数字是**唯一出处**：
+      #    脚本命令行不带参数裸跑（本地、以及 collect/deploy 里的裸跑）时也会回来读本行。
+      #    注意这条 run **必须是单行**：读取器刻意跳过 `run: |` 块标量（fail-closed）。
       - name: CI consistency (action / runner / node-version / engines drift)
-        run: node scripts/tools/check-ci-consistency.js --expect-checks=24
+        run: node scripts/tools/check-ci-consistency.js --expect-checks=30
 
-      - name: Install dependencies
-        run: npm ci
-
-      # 浏览器准备：**这一步不判死**（continue-on-error），只负责"把有没有浏览器弄清楚"。
-      # 判死放在后面的「浏览器可用性判定」步骤里，好处是：失败原因写在一处，
-      # 且无论是 playwright 装的还是 runner 自带的浏览器，都在同一条判定线上。
-      - name: Prepare browser for the real-browser gate
-        id: browser
-        continue-on-error: true
-        run: |
-          set +e             # 安装/探测失败都要走到"明确报错"分支，不中途退出（默认的 bash -e 会）
-          set -uo pipefail
-
-          PW_VERSION=$(node -p "require('playwright-core/package.json').version")
-          echo "playwright-core 版本: $PW_VERSION"
-
-          # --with-deps 需要 sudo（GitHub runner 有）；装不上就退到 runner 自带浏览器
-          npx --yes "playwright@$PW_VERSION" install --with-deps chromium \
-            || echo "::warning title=chromium 安装失败::npx playwright install chromium 未成功，继续探测系统自带浏览器"
-
-          # playwright-core 期望的内核路径（版本严格对应，最优先）
-          PW_EXE=$(node -e "process.stdout.write(require('playwright-core').chromium.executablePath())" 2>/dev/null || true)
-
-          # 退路：GitHub 的 ubuntu 镜像自带 google-chrome / microsoft-edge
-          EXE=""
-          for cand in "${PW_EXE:-}" /usr/bin/microsoft-edge /usr/bin/google-chrome \
-                      /usr/bin/google-chrome-stable /usr/bin/chromium /usr/bin/chromium-browser /snap/bin/chromium; do
-            if [ -n "$cand" ] && [ -x "$cand" ]; then EXE="$cand"; break; fi
-          done
-
-          if [ -n "$EXE" ]; then
-            echo "browser_available=true" >> "$GITHUB_OUTPUT"
-            echo "executable=$EXE" >> "$GITHUB_OUTPUT"
-            echo "浏览器可执行文件: $EXE"
-          else
-            echo "browser_available=false" >> "$GITHUB_OUTPUT"
-            echo "executable=" >> "$GITHUB_OUTPUT"
-            echo "没有找到可用的浏览器可执行文件"
-          fi
-
-          {
-            echo "### 真浏览器验收 · 浏览器准备"
-            echo ""
-            if [ -n "$EXE" ]; then
-              echo "- 可执行文件：\`$EXE\`"
-              echo "- 结论：✅ 浏览器就绪，verify-site.js 会**真实执行**。"
-            else
-              echo "- playwright-core 期望路径：\`${PW_EXE:-<空>}\`（不存在或不可执行）"
-              echo "- 已逐个探测：playwright chromium、microsoft-edge、google-chrome、chromium（/usr/bin 与 /snap/bin）"
-              echo "- 结论：⚠️ **没有可用的浏览器可执行文件**。这一步本身不判死，"
-              echo "  下一步「浏览器可用性判定」会按明确规则处理——默认**直接失败**，绝不静默变绿。"
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      # 数据门禁：collect.yml 采集后跑的就是这一条（strict），PR 上同样要过。
-      - name: Validate data (strict)
-        run: node scripts/validate.js --strict
-
-      # 发布产物由 build-local.js 组装（与 deploy.yml 完全同一条路径），
-      # 失败即拦：能装出坏产物就不该合并。
-      - name: Assemble site (same path as deploy.yml)
-        run: node scripts/tools/build-local.js
-
-      # 两个自测演练（文档里算"重门禁"，此前完全不在 CI）：纯本地、零网络、秒级。
-      - name: Translation self-test
-        run: node scripts/tools/zh-selftest.js
-
-      - name: Expiry self-test
-        run: node scripts/tools/expiry-selftest.js
-
-      # 译文漂移检查：**建议性**，与 collect.yml 保持同一口径——有漂移时站点照常发布
-      # （英文原文仍在，卡片只是少一条「中文」提示），但必须在 PR 上看得见。
-      - name: Translation drift check (advisory)
-        continue-on-error: true
-        run: |
-          {
-            echo "### 中文译文漂移检查（建议性，不拦）"
-            echo '```'
-            node scripts/tools/zh-todo.js --check 2>&1 || true
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      # 「浏览器不可用」的**降级判定**：写在这里而不是写成 job 级 if ——
-      # job 级 if 一旦跳过，该 job 的检查**报 Success**（没跑却算过）——对门禁而言这是最坏形态。
-      # 步骤内判死：默认失败；只有人工在 workflow_dispatch 上勾了开关才降级。
-      - name: Browser availability decision (never silent)
-        id: decision
-        run: |
-          set -uo pipefail
-          AVAIL='${{ steps.browser.outputs.browser_available }}'
-          EXE='${{ steps.browser.outputs.executable }}'
-          ALLOW='${{ inputs.allow_degraded_run }}'
-
-          if [ "$AVAIL" = "true" ]; then
-            echo "mode=full" >> "$GITHUB_OUTPUT"
-            echo "浏览器可用（$EXE）→ 真浏览器验收将执行"
-            {
-              echo ""
-              echo "- 判定：**真浏览器验收将执行**（verify-site.js / 136 项断言 / 可执行文件 \`$EXE\`）"
-            } >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-
-          if [ "$ALLOW" = "true" ]; then
-            echo "mode=degraded" >> "$GITHUB_OUTPUT"
-            echo "::warning title=降级运行：本次没有做真浏览器验收::没有可用的浏览器可执行文件；因手动触发了 allow_degraded_run=true，只跑静态门禁"
-            {
-              echo ""
-              echo "### ⚠️ 降级运行：本次**没有做真浏览器验收**"
-              echo ""
-              echo "没有找到可用浏览器，且这次是**人工手动**触发并勾选了 \`allow_degraded_run=true\`。"
-              echo "被跳过的是 verify-site.js 的真浏览器断言（横向溢出 / 内容裁切 / 弹层 / 键盘无障碍 / 对比 / 390px…）。"
-              echo "静态门禁（strict 校验、产物自检、两个 selftest）已照常执行。"
-              echo ""
-              echo "=> **这个绿灯不包含真浏览器验收**，不要当成完整门禁的依据。"
-            } >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-
-          echo "mode=none" >> "$GITHUB_OUTPUT"
-          echo "::error title=真浏览器验收无法执行::没有可用的浏览器可执行文件，且本次不是人工降级运行——门禁明确失败（不静默变绿）"
-          {
-            echo ""
-            echo "### ❌ 真浏览器验收**没有执行** —— 明确失败"
-            echo ""
-            echo "没有找到可用的浏览器可执行文件（playwright chromium 与系统自带 chrome/edge 都不可用），"
-            echo "而本次不是人工降级运行，所以这里**直接失败**，而不是给一个「没有验证过」的绿灯。"
-            echo ""
-            echo "处理办法："
-            echo "1. 重跑本 job（多数情况是 npx 拉内核时的网络抖动）；"
-            echo "2. 确认 runner 镜像里有 google-chrome / microsoft-edge；"
-            echo "3. 确实只需要静态门禁时，手动 workflow_dispatch 并勾选 \`allow_degraded_run\`，"
-            echo "   Summary 会留下「未做真浏览器验收」的明确记录。"
-          } >> "$GITHUB_STEP_SUMMARY"
-          exit 1
-
-      # 真浏览器验收：只有判定为 full 才跑（degraded 时不跑，但上面已经明确记录了原因，
-      # 且 degraded 只能是人工手动触发，PR/push 永远走不到这里）。
-      # verify-site.js 默认写死 Windows 的 Edge 路径，所以必须用它的 DSH_EDGE 覆盖成
-      # runner 上真实存在的可执行文件——不然 Linux 上会直接 launch 失败。
-      - name: Real-browser acceptance (verify-site.js)
-        if: steps.decision.outputs.mode == 'full'
-        env:
-          DSH_EDGE: ${{ steps.browser.outputs.executable }}
-        run: |
-          node scripts/tools/verify-site.js
-
-      # 结论落 Summary（if: always() —— 前面的步骤红了也要把结论与"判了什么"写清楚；
-      # 这一步只记录，不改变 job 的成败）。
-      - name: Gate conclusion
-        if: always()
-        run: |
-          {
-            echo ""
-            echo "### 门禁结论"
-            echo ""
-            if [ "${{ steps.decision.outputs.mode }}" = "full" ]; then
-              echo "- 静态门禁 + **真浏览器验收**都跑了（verify-site.js 的完整断言集）"
-            elif [ "${{ steps.decision.outputs.mode }}" = "degraded" ]; then
-              echo "- ⚠️ 只跑了静态门禁（**未做真浏览器验收**，人工降级运行）"
-            else
-              echo "- ❌ 真浏览器验收没有执行（见上一条注解与 Summary 顶部原因）"
-            fi
-            echo "- 触发事件：\`${{ github.event_name }}\` @ \`${{ github.ref }}\`"
-          } >> "$GITHUB_STEP_SUMMARY"
+      # 门禁本体：与 deploy.yml 的 prepublish、collect.yml 的提交前检查**同一个文件**。
+      - name: Gate (validate → translation → selftests → build → real browser)
+        uses: ./.github/actions/gate
+        with:
+          # workflow_dispatch 的 boolean 输入在 PR/push 上是空上下文，统一转成字符串
+          # （复合 action 内部按 `[ "$ALLOW" = "true" ]` 比较）。
+          allow_degraded_run: ${{ inputs.allow_degraded_run && 'true' || 'false' }}

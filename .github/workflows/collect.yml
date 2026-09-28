@@ -1,10 +1,25 @@
 name: Collect AI Deals
 
+# 采集链路（2026-09-28 起）：采集 → 写盘 → **完整门禁** → 提交 → （workflow_run）发布。
+#
+# 门禁为什么放在**提交之前**：机器人提交一进 master 就是既成事实——它会立刻被
+# deploy.yml 的 workflow_run 接走。放在提交前意味着「数据有问题就根本不入库」，
+# 而不是「先入库、再靠下一轮去发现」。用的还是 `.github/actions/gate/action.yml`
+# 那一个实现（与 verify.yml / deploy.yml 同源），没有第二套测试链。
+#
+# 代价如实记录：门禁是**严格**的（浏览器装不上 = 门禁红 = 本次不提交、线上保留上一版）。
+# 逃生口只有一个且必须人工：workflow_dispatch 勾 allow_degraded_run，Summary 里会
+# 明确留下「本次没有做真浏览器验收」。
 on:
   schedule:
     - cron: '0 0 * * *'   # UTC 00:00 = 北京时间 08:00
     - cron: '0 12 * * *'  # UTC 12:00 = 北京时间 20:00
   workflow_dispatch:      # 手动触发
+    inputs:
+      allow_degraded_run:
+        description: '浏览器不可用时仍提交数据（会在 Summary 明确记「未做真浏览器验收」）'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -19,6 +34,7 @@ jobs:
     # 钉死版本而不是 ubuntu-latest：无头浏览器依赖系统库，镜像换代容易踩坑
     # （ubuntu-latest 将于 2026-10-19 迁到 Ubuntu 26）
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     env:
       TZ: Asia/Shanghai
 
@@ -42,7 +58,8 @@ jobs:
 
       # 无头来源（智谱活动页 / 火山方舟）需要浏览器内核。
       # continue-on-error：装不上也不能拖垮整条已经稳定运行的静态采集链路——
-      # 那种情况下无头来源会各自报错并产出 0 条，报告与 Summary 里都看得见。
+      # 那种情况下无头来源会各自报错并产出 0 条，报告、健康表与 Summary 里都看得见
+      # （健康表会把它们判成 headless_unavailable 而不是 healthy）。
       - name: Install browser for JS-rendered sources
         continue-on-error: true
         run: |
@@ -59,24 +76,36 @@ jobs:
       - name: Validate new data (strict gate)
         run: node scripts/validate.js --strict
 
-      # 译文漂移检查：条目改名/换 URL 会让 id 变化，人工译文就对不上了（id = sha1(vendor|title|url)）。
-      # continue-on-error：这是**建议性**检查——有漂移时站点该照常发布（英文原文仍在，卡片只是
-      # 少一条「中文」提示），但必须有人看见，所以写进运行 Summary，而不是让采集/发布链路红掉。
-      - name: Translation drift check (advisory)
+      # CI 口径漂移门禁：裸跑（不带 --expect-checks），项数自动从 verify.yml 的那一行派生 ——
+      # 数字只有一个出处，本地裸跑同样受保护。
+      - name: CI consistency (bare run: 期望项数从 verify.yml 派生)
+        run: node scripts/tools/check-ci-consistency.js
+
+      # 提交前的完整门禁（与 verify.yml / deploy.yml 同一个 action）。
+      # 放在这里而不是提交之后：门禁红 ⇒ 数据不入库 ⇒ 线上保留上一版。
+      # 注意 collect.js 已经在报告里逐条点名了失败来源与零产出来源，
+      # 但「单源失败」本身不拦写盘（那是有意的），拦的是门禁这一关。
+      - name: Gate (validate → translation → selftests → build → real browser)
+        uses: ./.github/actions/gate
+        with:
+          allow_degraded_run: ${{ inputs.allow_degraded_run && 'true' || 'false' }}
+
+      # 译文状态：门禁本身已经是硬检查，这里把清单写进 Summary，
+      # 点开就能看到「哪几条要人管、最老多少天」，不必翻日志。
+      - name: Translation status (advisory summary)
+        if: always()
         continue-on-error: true
         run: |
           {
-            echo "### 中文译文漂移检查"
+            echo "### 中文译文状态"
             echo '```'
             node scripts/tools/zh-todo.js --check 2>&1 || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # 来源失败清单（**建议性**，与译文漂移检查同款）：单个采集器报错是常态而非异常——
+      # 来源失败清单（**建议性**，与译文状态同款）：单个采集器报错是常态而非异常——
       # 上面的浏览器安装步骤本身就是 continue-on-error，装不上时无头来源会各自报错并产出 0 条，
-      # 那正是这条链路设计上要容忍的情形。所以它**不**阻断写盘、**不**让采集 job 变红
-      # （否则一次 playwright 装不上 → deals.json 不落库 → deploy 判 skipped → 线上停更）。
-      # 代价是"坏了没人知道"，所以这里把失败来源逐条写进运行 Summary，让它可查。
+      # 那正是这条链路设计上要容忍的情形。所以它**不**阻断写盘，只把失败来源逐条写进 Summary。
       - name: Failed sources (advisory)
         if: always()
         continue-on-error: true
@@ -92,14 +121,21 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # 采集报告落到 Summary：某次无头来源零产出时能立刻发现，不用翻日志
+      # 采集报告落到 Summary：某次无头来源零产出时能立刻发现，不用翻日志。
+      # 2026-09-28 起采集日志里多了「数据源健康（跨运行）」表与显式计数行
+      # （修剪明细 / 来源明细 / 待译条数与最老天数），一并抓进来。
       - name: Publish run summary
         if: always()
         run: |
           {
             echo "### 采集结果"
             echo '```'
-            grep -E "合计|来源失败|火山方舟|智谱AI活动页|零产出|降级|已写入|数据无变化|译文不合规|✗|❌" /tmp/collect.log 2>/dev/null || echo "(无采集日志)"
+            grep -E "合计|来源失败|零产出|降级|已写入|数据无变化|译文不合规|修剪明细|来源明细|待译|✗|❌" /tmp/collect.log 2>/dev/null || echo "(无采集日志)"
+            echo '```'
+            echo ""
+            echo "### 数据源健康（跨运行）"
+            echo '```'
+            sed -n '/=== 数据源健康/,/^合计：/p' /tmp/collect.log 2>/dev/null || echo "(无健康表)"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -107,10 +143,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add deals.json
+          # source-health.json 与数据同批入库：它是**跨运行**状态（上次条数、连续失败次数），
+          # 不入库就永远是「首次运行」，也就发现不了「某个源已经坏了几天」。
+          git add deals.json scripts/data/source-health.json
           if git diff --cached --quiet; then
             echo "数据无变化，跳过提交"
           else
-            git commit -m "chore(data): 更新优惠数据 $(date '+%Y-%m-%d %H:%M %Z')"
+            git commit -m "chore(data): 更新优惠数据与来源健康 $(date '+%Y-%m-%d %H:%M %Z')"
             git push
           fi

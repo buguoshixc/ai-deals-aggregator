@@ -6,6 +6,17 @@ name: Deploy to GitHub Pages
 #    GitHub 规定「用仓库自带 GITHUB_TOKEN 推送所产生的事件不会再触发其它 workflow」，
 #    因此 collect.yml 里机器人提交 deals.json 后，push 事件不会唤醒本 workflow，
 #    线上站点不会自动更新。监听「Collect AI Deals 跑完」才能补上这条链路。
+#
+# 2026-09-28 起：**发布链自己先过完整门禁**。
+#   此前 gate（verify.yml）与 deploy 是两条互不相干的并行链：`build` 的 if 只看 Collect
+#   的结论，而第一句 `github.event_name != 'workflow_run'` 让每一次人工 push 都无条件发布
+#   —— 线上实证：e01dcfc 上 `gate=failure` 而 `build`/`deploy=success` 照发。
+#   现在 job 顺序是 `prepublish`（跑 .github/actions/gate，与 PR 路径同一个文件）
+#   → `build` → `deploy`，门禁红则 build/deploy **根本没有机会执行**。
+#
+# ⚠️ prepublish **绝不加 job 级 if**：被 if 跳过的 job 报 Success（没跑却算过）。
+#   「采集失败就不发布」改由**步骤内的显式判定**承担（见 prepublish 的第一步）：
+#   它失败时 build 因 needs 而跳过 —— 而真正拦住发布的是「没跑 prepublish 就没有 build」。
 on:
   push:
     branches: [ master ]
@@ -25,9 +36,63 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # 发布前的完整门禁：与 verify.yml 的 gate 跑**同一个复合 action**。
+  # 采集链路（workflow_run）上 verify.yml 根本不跑（机器人 push 不触发 workflow），
+  # 所以这里的门禁是那条链路上唯一的把关点。
+  prepublish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      TZ: Asia/Shanghai
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+
+      # 「上游采集失败就不发布」的显式判定。
+      # 写成步骤而不是 job 级 if：job 被跳过时报的是 Success，而这里要的是**明确失败**
+      # —— 让「采集没过门禁所以这次不发布」在 Actions 页面上看得见、日志里说得清。
+      - name: Refuse to publish when the upstream run failed
+        run: |
+          set -uo pipefail
+          if [ "${{ github.event_name }}" != "workflow_run" ]; then
+            echo "触发事件 ${{ github.event_name }}：无需检查上游采集结论"
+            exit 0
+          fi
+          CONCLUSION='${{ github.event.workflow_run.conclusion }}'
+          echo "上游运行：${{ github.event.workflow_run.name }} #${{ github.event.workflow_run.run_number }} → $CONCLUSION"
+          if [ "$CONCLUSION" != "success" ]; then
+            echo "::error title=上游采集未通过，拒绝发布::Collect AI Deals 的结论是 $CONCLUSION；本次不发布，线上保留上一份成功版本"
+            {
+              echo ""
+              echo "### ⛔ 上游采集未通过 → 本次不发布"
+              echo ""
+              echo "- 上游运行：\`${{ github.event.workflow_run.name }}\` #${{ github.event.workflow_run.run_number }}"
+              echo "- 结论：\`$CONCLUSION\`"
+              echo "- 处理：线上继续保留上一份成功发布的版本；先修采集侧的问题，"
+              echo "  需要重新发布时手动 \`workflow_dispatch\` 本工作流（它同样要先过完整门禁）。"
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "上游采集成功，继续跑发布前门禁"
+
+      # 发布路径**永远严格**：不提供降级开关（allow_degraded_run='false'）。
+      - name: Gate (same implementation as verify.yml)
+        uses: ./.github/actions/gate
+        with:
+          allow_degraded_run: 'false'
+
   build:
-    # 采集任务失败时（例如 strict 门禁没过）不发布，保留线上上一份好数据
+    # 采集任务失败时（例如 strict 门禁没过）不发布，保留线上上一份好数据。
+    # 这一行是**逐字冻结**的：check-ci-consistency.js 的断言 (7b) 会比对它的完整文本。
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    needs: prepublish
     # 钉死 runner 版本而不是浮动标签：镜像换代（2026-10-19 起 latest 迁 Ubuntu 26）
     # 不跟着漂，与 collect.yml / probe-sources.yml 一致。
     runs-on: ubuntu-24.04
@@ -43,8 +108,9 @@ jobs:
         with:
           node-version: '24'
 
-      # 同一条路径：本地 `node scripts/tools/build-local.js` 与 CI 完全一致
-      # 该脚本零外部依赖，因此无需 npm install，发布不再依赖网络抓取
+      # 同一条路径：本地 `node scripts/tools/build-local.js` 与 CI 完全一致。
+      # 该脚本零外部依赖，所以这一步不需要 npm ci；需要依赖的是**门禁**那一步
+      # （真浏览器验收要 playwright-core），它在 prepublish 里已经跑过了。
       - name: Validate data and assemble site
         run: node scripts/tools/build-local.js
 
