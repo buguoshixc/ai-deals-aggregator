@@ -917,6 +917,8 @@
         <summary>优惠的有效期和截止日期怎么看？</summary>
         <p>卡片上按三种情况标注：官方写明截止日期的标「剩 N 天」并对临近截止的做高亮；官方写明长期有效的标
         「长期活动」；官方没提截止日期的标「未标注截止日期」——「没查到」不会写成「长期」。
+        官方只写「限时」不给日期、或写「以官方页面为准」的，一律算「未标注截止日期」；某一条额度或折扣
+        标了「永久」「不过期」也不等于整个优惠活动长期有效——只有官方明确写明活动长期，才会标「长期活动」。
         用「即将截止」排序时，有截止日期的按剩余天数从少到多排在最前，没有截止日期的依次排在最后
         （未标注截止日期 → 长期活动）。像「自开通起 3 个月」「有效期 1 年」这类相对期限从开通当天起算，
         没有绝对截止日，也归入没有截止日期的一类。</p>
@@ -1343,10 +1345,30 @@
      *
      * rank 是排序档位：截止日 < 未标注 < 长期。「未标注」排在「长期」之前，是因为它
      * 仍有随时结束的可能，比确认长期的活动更该先被看到。
+     *
      * 措辞边界：「未标注」绝不能被写成「长期」——前者是「我们没查到」，后者是官方原话。
-     * 词表与 scripts/lib/classify.js 的 isOngoing() 一致，只改一边会让卡片角标与后端统计对不上。
+     * 判据是「正向线索 **且** 没有否定线索」两条：只要文案里出现「未标注截止日期 /
+     * 以官方…为准」这类否定线索，就**不可能**是官方长期承诺，一律落 unknown。
+     * 2026-09-28 修掉的那 11 条不实陈述（线上 80 个详情页里的 21 页）就是只做正向子串匹配
+     * 造成的：`长期有效（官方模型列表未标注截止日期）` 自己写着官方没标截止日，却被判
+     * 「长期活动」，详情页于是并列「官方未标注截止日期」与「官方…写明长期有效」两行。
+     *
+     * ⚠️ 下面两条正则的**源文本**与 scripts/lib/classify.js 的 ONGOING_POSITIVE_RE /
+     * ONGOING_HEDGE_RE 逐字节一致，改一边不改另一边会让卡片角标与后端统计打架——
+     * `npm run selftest:expiry` 会抽取 ONGOING:START/END 标记块做**文本级**比对，不是只比行为。
      */
-    const ONGOING_RE = /长期|永久有效|常年|不限时|ongoing|no expiration|always available|no end date/i;
+    /* ONGOING:START */
+    const ONGOING_POSITIVE_RE = /(?:长期|常年|永久)[^，。；;、）)]{0,6}(?:有效|活动|可用|开放|提供|免费)|不限时|无截止日期|不设截止|Ongoing|no expiration|always available|no end date/i;
+    const ONGOING_HEDGE_RE = /未标(?:注)?截止|未标明截止|以官方[^，。；;]{0,12}为准|以[^，。；;]{0,8}实时[^，。；;]{0,8}为准|随时(?:结束|调整|变更)|不另行通知/;
+    /* ONGOING:END */
+
+    /** 「官方写明长期」= 命中正向线索且**没有**否定线索。空文案一律 false。 */
+    function isOngoing(validity) {
+      const text = String(validity || '');
+      if (!text) return false;
+      if (ONGOING_HEDGE_RE.test(text)) return false;
+      return ONGOING_POSITIVE_RE.test(text);
+    }
 
     function expiryState(deal) {
       const days = daysUntil(deal.expiresAt);
@@ -1354,8 +1376,8 @@
         const label = days < 0 ? '已过期' : days === 0 ? '今天截止' : '剩 ' + days + ' 天';
         return { key: 'due', rank: 0, days: days, label: label, note: deal.expiresAt + '（' + label + '）' };
       }
-      if (ONGOING_RE.test(String(deal.validity || ''))) {
-        return { key: 'ongoing', rank: 2, days: null, label: '长期活动', note: '长期活动（官方有效期说明里写明长期有效）' };
+      if (isOngoing(deal.validity)) {
+        return { key: 'ongoing', rank: 2, days: null, label: '长期活动', note: '长期活动（官方写明长期有效）' };
       }
       return { key: 'unknown', rank: 1, days: null, label: '未标注截止日期', note: '官方未标注截止日期，以官方页面为准' };
     }

@@ -257,7 +257,7 @@ const VOLC_ARK_RULES = [
       title: '火山方舟 协作奖励计划：每日免费领取单模型最高 500 万 Tokens',
       discountInfo: `协作奖励计划：可免费领取单模型每日最高 ${m[1]} Tokens（官方标注二期已全面升级）。`,
       eligibility: '火山方舟用户',
-      validity: '每日可领取（活动长期，官方未标注截止日期）',
+      validity: '每日可领取（官方未标注截止日期）',
       pricingModel: 'free',
       category: 'API服务'
     })

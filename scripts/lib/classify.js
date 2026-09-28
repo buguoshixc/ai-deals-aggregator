@@ -59,7 +59,7 @@ const MONTHS = {
  * 从一段文案中抽取截止日期。
  * 只认明确年份的写法，避免把"3 天试用"误判成日期。
  */
-function extractExpiry(text, { today = null } = {}) {
+function extractExpiry(text) {
   const raw = cleanText(text, 600);
   if (!raw) return null;
 
@@ -75,19 +75,68 @@ function extractExpiry(text, { today = null } = {}) {
   m = raw.match(/valid (?:through|until|till)\s+(\d{4})-(\d{1,2})-(\d{1,2})/i);
   if (m) return normalizeDate(`${m[1]}-${m[2]}-${m[3]}`);
 
-  if (today && /长期有效|永久有效|ongoing|no expiration|always available/i.test(raw)) {
-    return null;
-  }
+  // 曾经这里还有一份**更窄的**「长期」词表（缺 长期/常年/不限时/no end date），但它两个分支
+  // 都 return null、唯一调用点也不传 today，等于死代码——留着只会让下一个人以为它才是判据。
+  // 「长期」的唯一判据是下面的 isOngoing()。
   return null;
 }
 
+/* ------------------------------------------------------------------ */
+/* 活动期限：官方明确「长期」的判据                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 「长期活动」的判据 = **正向线索 且 没有否定线索**。
+ *
+ * 为什么必须有否定判据（2026-09-28 实测的 11 条线上不实陈述）：
+ *   旧实现只做 `/长期|永久有效|…/` 的子串匹配，于是
+ *   `长期有效（官方模型列表未标注截止日期）` 这种**自己就写着官方没标截止日**的文案被判成
+ *   「官方写明长期有效」，卡片角标出「长期活动」、详情页「活动期限」行写
+ *   「长期活动（官方有效期说明里写明长期有效）」——把「我们没查到」写成了「官方说长期」。
+ *   判据缺的不是关键词，而是**否定**：文案里一旦出现「未标注截止日期 / 以官方…为准」，
+ *   这条就不可能是官方长期承诺，只能落 `unknown`。
+ *
+ * 正向线索必须锚在**活动/有效期**语义上（有效 / 活动 / 可用 / 开放 / 提供 / 免费）。
+ * 这一条是为了区分你问过的两类话术：
+ *   「某个权益永久」  —— `额度不过期`、`永久五折`、`一次性额度，不过期`
+ *   「整个活动长期」  —— `长期有效`、`常年可用`、`no expiration`
+ * 前者落在 `(?:长期|常年|永久)` 之后 0–6 字却接不到活动语义（或是「不过期」这种只讲权益的
+ * 写法），因此**不判 ongoing**（落 unknown）。宁可少标一个「长期活动」，也不替官方扩大承诺。
+ *
+ * ⚠️ 这两条正则的**源文本**是前后端共享契约：index.html 的 RENDER-CORE 里有一份逐字节相同的
+ * 副本（标记块 `ONGOING:START/END`）。改这里必须同步改那边，`npm run selftest:expiry` 会做
+ * **文本级**比对（不只比行为），只改一边立刻红。
+ */
+const ONGOING_POSITIVE_RE = /(?:长期|常年|永久)[^，。；;、）)]{0,6}(?:有效|活动|可用|开放|提供|免费)|不限时|无截止日期|不设截止|Ongoing|no expiration|always available|no end date/i;
+
+/** 否定线索：官方没写截止日 / 让我们以官方页为准 / 随时可能调整 —— 命中即**绝不能**判长期 */
+const ONGOING_HEDGE_RE = /未标(?:注)?截止|未标明截止|以官方[^，。；;]{0,12}为准|以[^，。；;]{0,8}实时[^，。；;]{0,8}为准|随时(?:结束|调整|变更)|不另行通知/;
+
 /**
  * "长期有效"标注（前端展示用，不占用 expiresAt）。
- * 词表与 index.html 的 ONGOING_RE 必须一致：两边只改一处，会让卡片上的「长期活动」
- * 角标与后端统计对不上。`npm run selftest:expiry` 会断言两边对同一批样例判断相同。
+ * @param {string} text 通常是 deal.validity
+ * @returns {boolean}
  */
 function isOngoing(text) {
-  return /长期|永久有效|常年|不限时|ongoing|no expiration|always available|no end date/i.test(cleanText(text, 400));
+  const raw = cleanText(text, 400);
+  if (!raw) return false;
+  if (ONGOING_HEDGE_RE.test(raw)) return false;
+  return ONGOING_POSITIVE_RE.test(raw);
 }
 
-module.exports = { SOURCE_REGIONS, inferRegion, extractExpiry, isOngoing };
+/** 供 selftest 做「前后端词表逐字节一致」比对的源文本（正则字面量内部内容） */
+const ONGOING_PATTERNS = {
+  positive: ONGOING_POSITIVE_RE.source,
+  hedge: ONGOING_HEDGE_RE.source,
+  flags: ONGOING_POSITIVE_RE.flags
+};
+
+module.exports = {
+  SOURCE_REGIONS,
+  inferRegion,
+  extractExpiry,
+  isOngoing,
+  ONGOING_POSITIVE_RE,
+  ONGOING_HEDGE_RE,
+  ONGOING_PATTERNS
+};

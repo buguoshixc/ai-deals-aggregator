@@ -144,7 +144,11 @@ async function collectZhipu() {
         discountInfo: `官方模型列表标注为免费模型，调用价格 0 元${summary ? `：${summary}` : ''}`,
         description: '智谱开放平台（bigmodel.cn）注册并创建 API Key 后可直接调用，无需单独领取额度。',
         eligibility: '所有注册开发者（需实名认证开通）',
-        validity: '长期有效（官方模型列表未标注截止日期）',
+        // 官方模型列表只写「免费」，**没有**任何期限说明。这里曾经写成
+        // `长期有效（官方模型列表未标注截止日期）`——前半句是我们替官方加的承诺，
+        // 被 classify.isOngoing() 判成「官方写明长期有效」后，线上详情页会同时出现
+        // 「官方未标注截止日期」和「官方…写明长期有效」两行。只写我们真的看到的东西。
+        validity: '官方模型列表未标注截止日期',
         pricingModel: 'free'
       });
     });

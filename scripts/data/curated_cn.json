@@ -57,7 +57,7 @@
     "discountInfo": "官方接口文档标注轻量级大语言模型 Spark Lite「支持免费使用」，模型列表中该档位调用免费。",
     "description": "注册讯飞开放平台并创建应用后，使用对应版本的 APIPassword 即可调用；Lite 版免费用量在控制台查看。",
     "eligibility": "注册讯飞开放平台的开发者（需创建应用）",
-    "validity": "长期有效（官方文档未标注截止日期）",
+    "validity": "官方文档未标注截止日期",
     "expiresAt": null,
     "verified": true,
     "features": [
@@ -79,7 +79,7 @@
     "discountInfo": "官方新手页三大免费福利：新手产品礼包（八大 AI 服务、百万级交互量免费领取）、乐享会员（最高价值 2888 元）、用户成长礼包；另提供语音听写、语音合成、实时转写、图片生成等能力免费体验。",
     "description": "注册讯飞开放平台账号后在新手指南页按引导领取，部分权益需完成认证。",
     "eligibility": "新注册开发者；乐享会员需完成认证",
-    "validity": "长期活动（以官方页面展示为准）",
+    "validity": "官方页面未标注截止日期",
     "expiresAt": null,
     "verified": true,
     "features": [
@@ -147,7 +147,7 @@
     "discountInfo": "官方定价页标注多款模型价格为「免费」：文本 Hunyuan-MT-7B、Xing4.0-29B、PaddleOCR-VL；向量与重排 bge-m3、bge-reranker-v2-m3、bge-large-zh/en；图像 Kolors 文生图；语音 XingChenGSR、XingChenASR 系列、SenseVoiceSmall。",
     "description": "注册硅基流动账号并创建 API Key 后即可直接调用这些免费模型，按量计费价格显示为 0。",
     "eligibility": "所有注册开发者",
-    "validity": "长期有效（以官方定价页实时标注为准）",
+    "validity": "官方定价页未标注截止日期（实时价格以官方页为准）",
     "expiresAt": null,
     "verified": true,
     "features": [

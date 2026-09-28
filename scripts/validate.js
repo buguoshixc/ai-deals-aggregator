@@ -205,6 +205,40 @@ function checkCurated() {
 /* ---------------- 门禁自身的守卫 ---------------- */
 
 /**
+ * 活动期限守卫（只在 --strict 下跑）。
+ *
+ * 「长期活动」的判据是**正向线索 且 没有否定线索**两层。2026-09-28 实测：旧实现只有正向
+ * 子串匹配，于是 11 条自己写着「官方未标注截止日期」的条目被判成「官方写明长期有效」，
+ * 线上 80 个详情页里有 21 页带着那句伪造的溯源（「长期活动（官方有效期说明里写明长期有效）」）。
+ * 光加样例不够——样例表只覆盖你想到的写法；这里再钉一颗钉子：**用探针直接验证两层判据都在**。
+ * 谁哪天为了「让检查通过」把否定层删掉/注释掉，CI 的 strict 步骤立刻变红，而不是等页面开始撒谎。
+ * 只读：不动 deals.json，也不做任何写盘。
+ */
+function checkOngoingGuard() {
+  const cases = [
+    { text: '长期有效', want: true, why: '官方明确长期' },
+    { text: '常年有效', want: true, why: '官方明确常年' },
+    { text: 'No expiration', want: true, why: '英文「无到期」' },
+    { text: '官方未标注截止日期', want: false, why: '官方没写截止日' },
+    { text: '未标截止日期，以官方为准', want: false, why: '官方没写 + 以官方为准' },
+    { text: '以官方页面为准', want: false, why: '让我们以官方页为准' },
+    { text: '长期有效（官方模型列表未标注截止日期）', want: false, why: '自相矛盾：正向前缀 + 否定后缀' },
+    { text: '额度不过期', want: false, why: '某个权益永久 ≠ 活动长期' },
+    { text: '永久五折', want: false, why: '折扣永久 ≠ 活动长期' }
+  ];
+  const broken = cases.filter(c => isOngoing(c.text) !== c.want)
+    .map(c => `${c.why}：「${c.text}」期望 ${c.want ? '长期' : '未标注'}，实得 ${isOngoing(c.text) ? '长期' : '未标注'}`);
+  if (broken.length) {
+    error(
+      `活动期限判据守卫失效：下列样例判错 —— ${broken.join('；')}。` +
+      '「官方写明长期」必须是「正向线索 且 没有否定线索（未标注截止日期 / 以官方…为准）」，' +
+      '且「某个权益永久」（额度不过期 / 永久五折）不等于「整个活动长期」——' +
+      '判据在 scripts/lib/classify.js 的 ONGOING_POSITIVE_RE / ONGOING_HEDGE_RE（与 index.html 的 ONGOING:START 块同源）。'
+    );
+  }
+}
+
+/**
  * 数据诚信守卫（只在 --strict 下跑，不影响普通校验的输出）。
  *
  * 「verified=true 但没有 verifiedAt」是一条**看得见却抓不到**的假声明：
@@ -307,6 +341,7 @@ function main() {
   const curatedStats = checkCurated();
   checkIndex();
   if (strict) checkVerifiedGuard();
+  if (strict) checkOngoingGuard();
 
   console.log('=== 数据校验 ===');
   if (stats) {
