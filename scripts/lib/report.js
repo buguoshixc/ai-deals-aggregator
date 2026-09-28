@@ -109,4 +109,56 @@ function printReport(report, { title = '采集报告' } = {}) {
   }
 }
 
-module.exports = { createReport, printReport, pad };
+/** 健康状态的中文简写（表格里用的短标签，与 health.STATUS_LABEL 的符号版区分开） */
+const STATUS_TEXT = { healthy: '正常', degraded: '异常', failed: '失败' };
+
+/**
+ * 数据源健康表（跨运行状态，不是当次运行的表）。
+ *
+ * 列：来源 / 上次 / 本次 / 增减 / 状态 / 最近成功。刻意把「上次」放在「本次」左边 ——
+ * 判断一个来源是不是坏了，看的是这两个数的关系，不是本次的绝对值。
+ */
+function printHealth(summary, { title = '数据源健康（跨运行）' } = {}) {
+  const rows = summary.rows || [];
+  console.log(`\n=== ${title} ===`);
+  if (!rows.length) {
+    console.log('（本轮没有任何来源记录）');
+    return;
+  }
+  const header = [pad('来源', 18), pad('上次', 6), pad('本次', 6), pad('增减', 6), pad('状态', 10), '最近成功'];
+  console.log(header.join(' '));
+  console.log('-'.repeat(header.join(' ').length + 6));
+  for (const row of rows) {
+    const status = STATUS_TEXT[row.status] || row.status;
+    const last = row.lastSuccessAt ? row.lastSuccessAt.replace('T', ' ').slice(0, 16) : '从未';
+    const extra = row.reason && row.reason !== 'zero_output' ? `（${row.reason}）` : '';
+    console.log([
+      pad(row.name || row.source, 18),
+      pad(row.previousItemCount === null ? '—' : row.previousItemCount, 6),
+      pad(row.lastItemCount, 6),
+      pad(row.delta > 0 ? `+${row.delta}` : row.delta, 6),
+      pad(status + extra, 10),
+      last
+    ].join(' '));
+  }
+  console.log('-'.repeat(header.join(' ').length + 6));
+  console.log(`合计：${summary.total} 个来源 · 正常 ${summary.healthy} · 异常 ${summary.degraded} · 失败 ${summary.failed}`);
+  if (summary.failedSources.length) {
+    // 逐条点名 + 连续次数：这是「某个源已经坏了几天」唯一会开口说话的地方
+    console.log('失败来源：');
+    summary.failedSources.forEach(row => console.log(
+      `  ✗ ${row.source} ${row.name}：连续失败 ${row.consecutiveFailures} 次 / 连续零产出 ${row.consecutiveZero} 次` +
+      `${row.lastError ? ` — ${String(row.lastError).slice(0, 100)}` : ''}`
+    ));
+  }
+  if (summary.degradedSources.length) {
+    console.log('异常来源（继续观察，连续零产出达到阈值会升级为失败）：');
+    summary.degradedSources.forEach(row => console.log(
+      `  ⚠️  ${row.source} ${row.name}：上次 ${row.previousItemCount === null ? '—' : row.previousItemCount} 条 → 本次 ${row.lastItemCount} 条` +
+      `${row.reason ? `（${row.reason}）` : ''}`
+    ));
+  }
+}
+
+module.exports = { createReport, printReport, printHealth, pad };
+

@@ -26,6 +26,8 @@
     "verify:prefold": "node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify-pre-fold.json",
     "selftest:zh": "node scripts/tools/zh-selftest.js",
     "selftest:expiry": "node scripts/tools/expiry-selftest.js",
+    "selftest:text": "node scripts/tools/text-selftest.js",
+    "selftest:health": "node scripts/tools/health-selftest.js",
     "todo:zh": "node scripts/tools/zh-todo.js",
     "check:zh": "node scripts/tools/zh-todo.js --check",
     "report:tier": "node scripts/tools/tier-report.js",
