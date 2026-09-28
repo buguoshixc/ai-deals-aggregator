@@ -85,12 +85,15 @@ jobs:
       #    而是**永久 pending**；⑧ 守住 `.github/actions/gate/action.yml` 的**步骤序列**：谁把真浏览器
       #    验收从门禁里拿掉，这里立刻红；⑨ collect.yml 的 gate 必须排在提交步骤之前；
       # ⑩ 末尾看门狗断言「断言名单与冻结清单等值」。
-      # ⑪ 带外项数：`--expect-checks=30` 把「总项数」这个事实钉在**调用方**（本文件），因为看门狗
-      #    保护不了自己被删（删掉它自己时项数会静默降到 29 且仍 exit 0）。这个数字是**唯一出处**：
+      # ⑪ 未加引号的标量里不得出现「冒号 + 空格」—— 那在块上下文里是映射分隔符，GitHub 的
+      #    真实 YAML 解析器会拒绝整个文件（本仓库的缩进读取器读得过去，于是本地全绿、
+      #    推上去什么都不跑；2026-09-28 实测踩到过一次，用 Python 的 YAML 解析器才发现）。
+      # ⑫ 带外项数：`--expect-checks=31` 把「总项数」这个事实钉在**调用方**（本文件），因为看门狗
+      #    保护不了自己被删（删掉它自己时项数会静默降到 30 且仍 exit 0）。这个数字是**唯一出处**：
       #    脚本命令行不带参数裸跑（本地、以及 collect/deploy 里的裸跑）时也会回来读本行。
       #    注意这条 run **必须是单行**：读取器刻意跳过 `run: |` 块标量（fail-closed）。
       - name: CI consistency (action / runner / node-version / engines drift)
-        run: node scripts/tools/check-ci-consistency.js --expect-checks=30
+        run: node scripts/tools/check-ci-consistency.js --expect-checks=31
 
       # 门禁本体：与 deploy.yml 的 prepublish、collect.yml 的提交前检查**同一个文件**。
       - name: Gate (validate → translation → selftests → build → real browser)

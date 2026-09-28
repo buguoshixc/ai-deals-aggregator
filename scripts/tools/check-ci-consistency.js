@@ -160,7 +160,8 @@ const FROZEN_ASSERTION_NAMES = [
   '(10c) gate 复合 action 不含任何第三方 uses（门禁里不引入未冻结的外部动作）',
   '(11) collect.yml / deploy.yml / verify.yml 各恰好调用一次门禁 action',
   '(12) deploy.yml 的发布链必须先过门禁：prepublish 无 job 级 if、build 依赖它、deploy 依赖 build',
-  '(13) collect.yml 的门禁步骤排在提交步骤之前'
+  '(13) collect.yml 的门禁步骤排在提交步骤之前',
+  '(14) workflow 与复合 action 里没有「未加引号的标量含『冒号+空格』」（真实 YAML 会拒绝，本文件的缩进读取器读得过去）'
 ];
 const WATCHDOG_NAME = '(W) 断言名单与冻结清单等值（删一条或改名都会红；本看门狗保护不了自己被删）';
 
@@ -586,8 +587,36 @@ check('(13) collect.yml 的门禁步骤排在提交步骤之前',
   collectProblems.length ? collectProblems.join('；')
     : `门禁在字节 ${idxGateRef} → git push 在字节 ${idxPush}（同一 collect job 里，步骤顺序即语义）`);
 
-/* ─────────────────── (W) 看门狗：断言名单等值（不可跳过） ─────────────────── */
-// 刻意放在所有分支之外：删一条断言、或改任意一条断言名，都会在这里变红。
+/* ─────────── (14) 真实 YAML 会拒绝、而缩进读取器读得过去的那种行 ─────────── */
+
+/**
+ * 2026-09-28 实测踩到：`- name: CI consistency (bare run: 期望项数…)` 里的
+ * 「冒号 + 空格」在块上下文里是**映射分隔符**，GitHub 的真实 YAML 解析器直接拒绝整个文件
+ * （本文件自带的缩进读取器读得过去 —— 它不引入 YAML 依赖的代价就是这个）。
+ * 这类错误的特点是：本地所有门禁全绿，推上去 workflow 直接 parse 失败、什么都不跑。
+ * 所以补一条针对性的 lint：**未加引号的标量值里不得出现「冒号 + 空格」**。
+ *
+ * 边界（如实记录）：只查这一种。引号包裹的值、块标量（value 为 null）都不查；
+ * 也不做完整 YAML 校验（那需要引入解析器，与本文件"npm ci 之前就能跑"的定位冲突）。
+ */
+const yamlHazards = [];
+for (const file of [...DISK_FILES, GATE_ACTION]) {
+  const entries = file === GATE_ACTION ? gateEntries : (wf[file] || []);
+  for (const e of entries) {
+    if (e.value === null || e.value === undefined) continue;
+    const raw = String(e.value);
+    const quoted = /^['"].*['"]$/.test(raw.trim());
+    const body = raw.trim();
+    if (!quoted && /: /.test(body)) {
+      yamlHazards.push(`${file}: ${e.path.join('.') || e.key} → ${body.slice(0, 60)}`);
+    }
+  }
+}
+check('(14) workflow 与复合 action 里没有「未加引号的标量含『冒号+空格』」（真实 YAML 会拒绝，本文件的缩进读取器读得过去）',
+  yamlHazards.length === 0,
+  yamlHazards.length ? yamlHazards.join('；') : `扫了 ${DISK_FILES.length} 个 workflow + ${GATE_ACTION} 的全部未加引号标量`);
+
+/* ─────────────────── (W) 看门狗：断言名单等值（不可跳过） ─────────────────── */// 刻意放在所有分支之外：删一条断言、或改任意一条断言名，都会在这里变红。
 // 固有边界：看门狗保护不了**自己**被删（那时它也不存在了）—— 如实记录，不做过度设计。
 const observedNames = results.map(r => r.name);
 const missingNames = FROZEN_ASSERTION_NAMES.filter(n => !observedNames.includes(n));

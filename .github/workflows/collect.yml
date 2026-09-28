@@ -78,7 +78,9 @@ jobs:
 
       # CI 口径漂移门禁：裸跑（不带 --expect-checks），项数自动从 verify.yml 的那一行派生 ——
       # 数字只有一个出处，本地裸跑同样受保护。
-      - name: CI consistency (bare run: 期望项数从 verify.yml 派生)
+      # 注：步骤名里不要出现「冒号 + 空格」，那是 YAML 的映射分隔符，会被真实解析器拒绝
+      #（仓库自带的一致性检查用的是无依赖的缩进读取器，它读得过去，GitHub 读不过去）。
+      - name: CI consistency (bare run — 期望项数从 verify.yml 派生)
         run: node scripts/tools/check-ci-consistency.js
 
       # 提交前的完整门禁（与 verify.yml / deploy.yml 同一个 action）。
