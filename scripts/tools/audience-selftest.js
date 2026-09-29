@@ -564,6 +564,59 @@ check('migrationCredibility：策展来源无回访日期时补 curated，且 pr
   })());
 
 /* ================================================================== */
+console.log('\n=== 6b) 三态映射合并：两条「产出不该取决于谁当 winner」的不变量 ===');
+
+// 这两条是 2026-09-29 **从干净基线重新推导 `deals.json`** 时暴露的（合 master 取它的数据、
+// 六字段归零后重跑采集）。它们一直没被发现，是因为增量累积出来的 `deals.json` 里，
+// 那些键恰好是早期某一轮由 winner 写进去的，之后每轮都在 winner 身上被原样带走。
+//
+//   ① `pickScalar` 原先只看 winner：loser 单方面写了 `unknown` 时它返回 winner 的
+//      `undefined`，`pickMap` 随后把**整键丢掉** —— 「查过、没有证据」被降级成「没写」，
+//      而契约 §3 说这两件事不是一回事。
+//   ② `pickMap` 的键序是 `[...winner 的键, ...loser 独有的键]`，没有规范化：
+//      值一样、字节不一样，同一条记录换个 winner 就换个写法。
+//
+// 实测规模：人工文件声明 **28** 个显式 `unknown` 键，从零重放只剩 **17** 个；
+// 修好 ① 之后 ② 立刻以「16 处策展值不一致」的形式浮出来（逐条看值完全相同、只有键序不同）。
+const mapSideA = () => carve({
+  source: 'Curated',
+  // ⚠️ 键序刻意把 `identityVerificationRequired` 放在前面。第一版写成
+  // `{ newUserOnly: true, identityVerificationRequired: 'unknown' }`，于是「A 赢」与
+  // 「B 赢」两种情况下 `new Set([...w, ...l])` 碰巧给出**同一个键序**，
+  // 三条键序断言全都测不到东西 —— 反证时只有 unknown 那一条红了，这才发现。
+  // 夹具的键序必须让两种 winner 产生**不同**结果，断言才有牙齿。
+  eligibilityDetail: { identityVerificationRequired: 'unknown', newUserOnly: true }
+});
+const mapSideB = () => carve({
+  source: '智谱AI', type: 'deal', discountInfo: '官方免费模型',
+  eligibilityDetail: { newUserOnly: true }
+});
+const mAB = merge(mapSideA(), mapSideB(), { conflicts: [] });
+const mBA = merge(mapSideB(), mapSideA(), { conflicts: [] });
+const keysOf = m => Object.keys((m && m.eligibilityDetail) || {});
+
+check('三态映射：显式 unknown 键不会因为「它在输的那一侧」而被丢掉',
+  Boolean(mAB.eligibilityDetail) && mAB.eligibilityDetail.identityVerificationRequired === 'unknown' &&
+  Boolean(mBA.eligibilityDetail) && mBA.eligibilityDetail.identityVerificationRequired === 'unknown',
+  `A→B ${JSON.stringify(mAB.eligibilityDetail)} · B→A ${JSON.stringify(mBA.eligibilityDetail)}`);
+check('三态映射：键序规范化 —— 交换两侧，键序相同（产出不取决于谁当 winner）',
+  keysOf(mAB).join(',') === keysOf(mBA).join(','),
+  `${keysOf(mAB).join(',')} vs ${keysOf(mBA).join(',')}`);
+check('三态映射：两种 winner 下的键序都等于词表的规范序（与 makeDeal 归一化同一份出处）',
+  [mAB, mBA].every(m => keysOf(m).join(',') ===
+    au.ELIGIBILITY_KEYS.filter(k => k in (m.eligibilityDetail || {})).join(',')),
+  `${keysOf(mAB).join(',')} · ${keysOf(mBA).join(',')}`);
+
+const avAB = merge(
+  carve({ source: 'Curated', availability: { chinaUsable: 'unknown' } }),
+  carve({ source: '智谱AI', type: 'deal', discountInfo: '官方免费模型' }),
+  { conflicts: [] }
+);
+check('availability：输的那一侧单方面写的 unknown（chinaUsable）同样不丢',
+  Boolean(avAB.availability) && avAB.availability.chinaUsable === 'unknown',
+  JSON.stringify(avAB.availability));
+
+/* ================================================================== */
 console.log('\n=== 7) mergeAll：新字段活过一轮真实采集 ===');
 
 const survivor = probeDeal({

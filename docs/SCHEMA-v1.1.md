@@ -796,6 +796,73 @@ WORDING_CONTRACT = { triLabel, chinaUsableLine, FIELD_LABELS, AUDIENCE_LABELS,
 > 是**这条门禁对 `zh` 的语义断言错了**（它假设覆盖层只增不减）。
 > 一个把正常行为判成失败的守卫比没有守卫更糟：它会被绕过或被改松。
 
+### 10.6b 从干净基线重新推导，暴露了「一直绿着、其实靠历史累积撑着」的状态
+
+**触发它的是一件与代码无关的事**：把 v1.1 分支合 master（好让 PR 能跑 CI），
+master 上有两次采集机器人的自动提交，与本支改同一批数据文件 → 冲突。
+比对后发现本支那份 `deals.json` 的 `firstSeen` 有 **32 条**被刷成了当天，
+而 master 保留着正确的 `2026-09-21`（就是 `dedup.js` / `store.js` 里记着的那次事故的残留）。
+于是合并取 master 那一侧 —— **六字段归零**，然后重跑采集让管线把它们重新推导出来。
+
+**结果**：六字段**精确地长回了 425 个**（与收口前逐个持平），说明声明式来源是完备的 ✅
+—— 但同一次 `check-reproducible` **变红了**，而且是两节一起红：
+
+```
+① 策展值保真        不一致          7~8 处
+③ 出处一致/不动点   provenance 漂移  7 处
+```
+
+一条条看，全是同一件事：**人工文件里显式写的 `unknown` 键，从零推导时不见了。**
+实测规模：人工文件声明 **28** 个显式 `unknown` 键，重新推导后只剩 **17** 个。
+
+#### 两个根因，都在 `dedup.js` 的合并侧
+
+**① `pickScalar` 只在 winner 身上找 `unknown`（不对称）**
+
+```js
+if (!lKnown) return { value: winnerValue, source: wKnown ? winnerSource : null };
+```
+
+两侧都「不是已知值」时一律返回 **winner** 的值。于是 loser 单方面写了 `unknown` 时，
+返回的是 winner 的 `undefined`，`pickMap` 随后 `continue` 把**整键丢掉** ——
+「查过、没有证据」被静默降级成「没写」，而 §3 说这两件事不是一回事。
+
+修法：两侧都不是已知值时，**显式写了 `unknown` 的一方**胜出，并把贡献者记成它
+（与 `pickMap` 里「只要某一侧提供了值，那一侧就是贡献者」同一条规矩）。
+
+**② `pickMap` 的键序没有规范化**
+
+```js
+for (const key of new Set([...Object.keys(w), ...Object.keys(l)])) {
+```
+
+键序 = `[...winner 的键, ...loser 独有的键]` —— **值一样、字节不一样**，
+同一条记录换个 winner 就换个写法。修好 ① 之后它立刻以
+「**16 处策展值不一致**」的形式浮出来，逐条看值完全相同：
+`{"identityVerificationRequired":"unknown","newUserOnly":true}` vs
+`{"newUserOnly":true,"identityVerificationRequired":"unknown"}`。
+而 ① 是拿 `JSON.stringify` 逐字节比的 —— 所以这不是「断言太严」，是**产出本身不确定**。
+
+修法：加 `canonicalMapOrder()`，按 `audience.ELIGIBILITY_KEYS` / `CLAIM_KEYS`
+（与 `makeDeal` 归一化**同一份出处**）重排键序。
+
+#### 为什么它藏了这么久
+
+因为 `deals.json` 是**增量累积**出来的：那些键是早期某一轮**正好由 winner** 写进去的，
+之后每一轮它都在 winner 身上被原样带走 —— 于是每一轮门禁都是绿的。
+**只有从零重放才会问出「这些键到底能不能被推导出来」，而答案是不能。**
+
+> 这正是 `check-reproducible` 存在的理由，也是它第一次真正兑现价值：
+> 它不是被新代码弄红的，是被**一次与代码无关的合并**推到「从零重推」的位置上才红的。
+> 一个只在增量路径上验证过的「可重建」，其实没有验证过可重建。
+
+两条不变量现在各由 `audience-selftest.js` 的断言钉住（121 → **125** 项），
+并且**分别**做过反证：只回退 ① → `unknown` 那一条红；只回退 ② → 键序那一条红；
+都不回退 → 全绿。（第一次反证是**无效**的：两处一起回退时，① 让那个键整个消失，
+② 的断言于是因为「两边都没有这个键」而空转通过 —— 反证必须**单独**做。
+夹具也返工过一次：第一版两个键的书写顺序让「谁当 winner」碰巧产出同一键序，
+三条键序断言全都测不到东西。）
+
 ### 10.7 同一个洞只堵了一半：`migrate-audience` 的 editorial 规则（2026-09-29 收口时发现）
 
 **发现路径**：给 `migrate-audience-verify.js` 做 CI 夹具时，为了让夹具**逐分支覆盖**，

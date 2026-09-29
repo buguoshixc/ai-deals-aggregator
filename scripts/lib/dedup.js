@@ -142,7 +142,27 @@ function credibilityOf(deal) {
 function pickScalar(winnerValue, loserValue, winnerSource, loserSource) {
   const wKnown = winnerValue !== null && winnerValue !== undefined && winnerValue !== audience.TRISTATE_UNKNOWN;
   const lKnown = loserValue !== null && loserValue !== undefined && loserValue !== audience.TRISTATE_UNKNOWN;
-  if (!lKnown) return { value: winnerValue, source: wKnown ? winnerSource : null };
+  if (!lKnown) {
+    // ⚠️ 两侧都「不是已知值」时，**显式写了 `unknown` 的一方**胜出，而不是一律取 winner。
+    //
+    // 契约 §3：`unknown` 是「查过、没有证据」，缺席 / `null` 是「没写」—— 两者不是一回事，
+    // 而前者信息量更大（它是一条**否定性结论**）。原实现只看 winner：loser 单方面写了
+    // `unknown` 时，这里原样返回 winner 的 `undefined`，`pickMap` 随后 `continue` 把整键丢掉。
+    //
+    // 后果是**不对称**的：同一个键，赢的那一侧写了就留、输的那一侧写了就丢 ——
+    // 于是「同一份人工文件，因为合并时谁当 winner 不同，`unknown` 键时有时无」。
+    //
+    // 为什么一直没被发现：增量累积出来的 `deals.json` 里，那些键是**早期某一轮**正好
+    // 由 winner 写进去的，之后每轮都在 winner 身上被原样带走。**从干净基线重新推导才会暴露** ——
+    // 2026-09-29 合 master（取它的 `deals.json`，六字段归零）后重跑采集，实测：
+    // 人工文件声明 **28** 个显式 `unknown` 键，重新推导只剩 **17** 个，
+    // `check-reproducible` ①（策展值保真）与 ③（管线不动点）当场变红，7~8 处漂移。
+    // 这也说明那条门禁是对的：它抓的正是一个「一直绿着、其实是靠历史累积撑着」的状态。
+    if (!wKnown && winnerValue !== audience.TRISTATE_UNKNOWN && loserValue === audience.TRISTATE_UNKNOWN) {
+      return { value: loserValue, source: loserSource };
+    }
+    return { value: winnerValue, source: wKnown ? winnerSource : null };
+  }
   if (!wKnown) return { value: loserValue, source: loserSource };
   if (winnerValue === loserValue) return { value: winnerValue, source: winnerSource };
   // 两侧都已知且冲突：可信度高的胜；同级时 winner 胜（口径 = score() 不变）
@@ -203,6 +223,28 @@ function pickMap(winnerMap, loserMap, winnerSource, loserSource, carryWinner, ca
     if (merged.length) sources.set(key, [...new Set(merged)]);
   }
   return { value: Object.keys(value).length ? value : null, sources };
+}
+
+/**
+ * 三态映射的**规范键序**：与 `makeDeal` 归一化同一份出处（`audience.js` 的键表）。
+ *
+ * 为什么合并结果必须自己排一遍序：`pickMap` 是按
+ * `[...winner 的键, ...loser 独有的键]` 生成对象的，于是**同一条记录、同一份输入，
+ * 只因为谁当 winner 不同，键序就会不同** —— 值一模一样，字节不一样。
+ *
+ * 后果实测（2026-09-29）：修好 `pickScalar` 的 `unknown` 丢失之后，
+ * `check-reproducible` ① 立刻报了 16 处「策展值不一致」，逐条看**值完全相同、只有键序不同**：
+ *   `{"identityVerificationRequired":"unknown","newUserOnly":true}`
+ *   vs `{"newUserOnly":true,"identityVerificationRequired":"unknown"}`
+ * 而 ① 是拿 `JSON.stringify` 逐字节比的。所以这不是「断言太严」，是**产出本身不确定**：
+ * 同一份人工文件在不同轮次会写出不同字节，diff 噪声、缓存失效都从这里来。
+ */
+function canonicalMapOrder(map, keys) {
+  const out = {};
+  for (const key of keys) if (map[key] !== undefined) out[key] = map[key];
+  // 词表之外的键（不该有，但归一化是「只清洗不外推」，这里不吞掉它们）按原序追加
+  for (const key of Object.keys(map)) if (!(key in out)) out[key] = map[key];
+  return out;
 }
 
 /** availability：三态 + 地区限制原文，两者各自记账（carry 同上） */
@@ -383,7 +425,8 @@ function mergeAudienceFields(winner, loser, stats) {
   for (const field of ['eligibilityDetail', 'claimRequirements']) {
     const picked = pickMap(winner[field], loser[field], wSource, lSource, carryOf(winner, field), carryOf(loser, field));
     if (!picked.value) continue;
-    out[field] = picked.value;
+    // 键序**规范化**（见 canonicalMapOrder）：不能让产出取决于谁当 winner
+    out[field] = canonicalMapOrder(picked.value, field === 'eligibilityDetail' ? audience.ELIGIBILITY_KEYS : audience.CLAIM_KEYS);
     const conflicts = [];
     for (const [key, source] of picked.sources) {
       const wv = winner[field] && winner[field][key];
