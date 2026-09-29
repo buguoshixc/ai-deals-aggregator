@@ -371,6 +371,275 @@ function collectionsOf(deal) {
   return COLLECTION_PAGES.filter(page => COLLECTION_PREDICATES[page.predicate](deal)).map(page => page.slug);
 }
 
+/* ------------------------------------------------------------------ */
+/* 按需求找优惠（v1.2）：意图 → 判据 的唯一注册表                       */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 「学生 / 开发者」回答的是「我是谁」；这一层回答的是「我要什么」。
+ *
+ * ## 为什么是独立一层，而不是往首页筛选条里再加几个 chip
+ *
+ * 首页的筛选条已经是横向滚动的一行（收藏 + Tab + 地区 + 分类 + 厂商），窄屏上再加十枚
+ * chip，等于把「入口清晰」这件事交给用户横滑去发现。更要紧的是**无 JS**：首页是一个
+ * 构建期写死的静态文件，`?need=xxx` 这种 query **改不了服务端返回的 HTML** ——
+ * 无 JS 的访客点进去，看到的仍然是全量卡片，也就是「点了没反应」。入口页各生成一个
+ * 静态 URL（`/need/<slug>/`）是纯静态站上唯一能同时满足「可分享」与「无 JS 可读」的形状。
+ *
+ * ## 判据的纪律（与本文件其它部分同一条）
+ *
+ *  ① **只用 v1.1 已有的字段**，不新造词表、不做文本推断。唯一的例外是 `ai-coding`，
+ *     下面单独写了它为什么只能按 `category` 收、以及这个口径的缺口。
+ *  ② **只认肯定信号**：`false` 是已知值（例如「不需要信用卡」），`unknown` 与缺席一律
+ *     不算 —— 缺证据不等于证据。（`no-card` 只收 `creditCardRequired === false`，
+ *     这正是本阶段那条红线在入口层的落点：绝不把「尚未确认」渲染成「不需要」。）
+ *  ③ 判据**只在这里写一遍**，算出来的结果作为数据（`needs`）进 `dist/deals.json`；
+ *     页面生成、首页入口与断言全部读那一份，前端一个判据都不复刻。
+ *
+ * ## 为什么每条都要写 criteria 与 why
+ *
+ * 这十条里有四条**名不副实**，而它们恰恰是最容易被误读的：
+ *   · `no-card` 全库只有 1 条 —— 「无需信用卡」这个词会让读者以为其余 79 条都要卡；
+ *   · `china-usable` 只有 30 条，而 `region: 'cn'` 有 60 条 —— 差额不是「不可用」，
+ *     是「来源没写」；
+ *   · `ai-coding` 没有可用字段，只能按类目收 4 条；
+ *   · `free-tier` 收 60 条，分不清「活动免费」与「免费档」。
+ * 这些缺口写在页面上（`why`）、写在数据里（`criteria`）、也写进报告，
+ * 而不是靠读者自己从数字里猜。**一个入口页如果只能靠猜才知道它收的是什么，它就不该上线。**
+ */
+const NEED_GROUPS = [
+  { key: 'student', label: '学生' },
+  { key: 'developer', label: '开发者' }
+];
+
+/**
+ * 十条判据函数。全部是纯函数、只读字段，`deal` 为 `null` / 残缺对象时也必须返回布尔值
+ * （入口页是按数据现算的，一条脏数据不该让整次构建抛错）。
+ */
+const isStudentOnlyNeed = deal => isStudentDeal(deal);
+const isEduIdentityNeed = deal => {
+  const list = deal && Array.isArray(deal.audience) ? deal.audience : [];
+  const email = deal && deal.eligibilityDetail ? deal.eligibilityDetail.educationEmailRequired : undefined;
+  return list.includes('education') || list.includes('educator') || email === true;
+};
+/** 「不需要信用卡」= 来源**明说**不需要。`unknown` 与缺席都不算（见文件头的三态语义） */
+const isNoCardNeed = deal => Boolean(deal && deal.claimRequirements) &&
+  deal.claimRequirements.creditCardRequired === false;
+/** ⚠️ 刻意**不用** `region === 'cn'`。SCHEMA-v1.1 §2.5 明写：来源是国内不构成「国内可用」的证据 */
+const isChinaUsableNeed = deal => Boolean(deal && deal.availability) &&
+  deal.availability.chinaUsable === true;
+/** 与首页「① 完全免费」档同一字段口径（`pricingModel`），不做任何文本推断 */
+const isFreeTierNeed = deal => deal && (deal.pricingModel === 'free' || deal.pricingModel === 'freemium');
+const isFreeApiNeed = deal => freeApiSignal(deal).applies;
+const isFreeTokensNeed = deal => Boolean(deal) && Array.isArray(deal.benefitType) &&
+  deal.benefitType.includes('free_credits');
+/** ⚠️ 唯一没有字段支撑的一项：只能按类目收，且**不**扫标题正文（扫出来的 10 条里 6 条是误报） */
+const isAiCodingNeed = deal => Boolean(deal) && deal.category === '编程开发';
+const isFreeModelNeed = deal => Boolean(deal) && Array.isArray(deal.benefitType) &&
+  deal.benefitType.includes('free_model');
+const isDevCreditsNeed = deal => developerSignal(deal).applies;
+
+const NEED_PREDICATES = {
+  studentOnly: isStudentOnlyNeed,
+  eduIdentity: isEduIdentityNeed,
+  noCard: isNoCardNeed,
+  chinaUsable: isChinaUsableNeed,
+  freeTier: isFreeTierNeed,
+  freeApi: isFreeApiNeed,
+  freeTokens: isFreeTokensNeed,
+  aiCoding: isAiCodingNeed,
+  freeModel: isFreeModelNeed,
+  devCredits: isDevCreditsNeed
+};
+
+/**
+ * 十条入口的注册表。形状与 `COLLECTION_PAGES` 一致（同一套生成循环读它），
+ * 额外四个字段：
+ *   · `group` —— 首页入口行里的分组（学生 / 开发者），来自 `NEED_GROUPS`；
+ *   · `criteria` —— 判据的**机器可读**一句话，进 `dist/deals.json`，也是报告里的那一列；
+ *   · `short` —— **窄屏**首页入口上的短标签（见下）；
+ *   · `count` 不走这里 —— 条数按数据现算，写死就会出现「页面写 12、实际列 7」。
+ *
+ * ## 为什么需要 `short`
+ *
+ * 窄屏（390/360px）实测：十枚完整标签折成 5 行 chip、整块 204px 高，把首屏的卡片
+ * 挤到一张都不剩（改之前是 1 张）。这不是「标签写长了」的美学问题，而是**首屏没有任何
+ * 内容**。短标签（学生组「专享 / 教育 / 免卡 / 国内 / 免费」，开发者组「API / Tokens /
+ * Coding / 模型 / Credits」）把 5 行压到 2 行，整块降到 128px。
+ *
+ * 短标签**只出现在窄屏的首页入口行上**：落地页的标题、面包屑、`<title>`、JSON-LD
+ * 与桌面端入口仍然用完整 `label`（`renderNeedRow` 按一个 `?short=1` 的标记选择用哪一个），
+ * 所以「点进去看到的是完整标题、桌面端读到的是完整标签」，没有一个读者只能看到缩写。
+ */
+const NEED_PAGES = [
+  {
+    slug: 'student-only',
+    group: 'student',
+    label: '学生专享',
+    short: '专享',
+    heading: '面向学生的 AI 优惠',
+    depth: 2,
+    predicate: 'studentOnly',
+    criteria: "audience 含 student，或 eligibilityDetail.studentRequired 为 true，或福利类型是 student_plan",
+    description: '来源明确说面向学生的 AI 优惠：学生套餐、需学生身份或教育邮箱的订阅与教育折扣，逐条标注门槛与是否中国大陆可用。',
+    why: [
+      '这一页收的是<b>来源明确说面向学生</b>的优惠：适用人群写了「学生」、资格门槛里「需要学生身份」为「是」、或福利类型是学生专属计划。这三条是<b>或</b>的关系，命中任意一条就进这一页。',
+      '与 /student/ 分类页<b>同一份判据</b>（都来自 audience.js 的 studentSignal），所以两页的条数不可能分头变化。',
+      '「来源没提学生身份」的条目不会被收进来，那只说明我们没查到，不说明学生不能用。门槛逐条列出，没有依据的一律写「尚未确认」。'
+    ]
+  },
+  {
+    slug: 'edu-identity',
+    group: 'student',
+    label: '教育身份可领',
+    short: '教育',
+    heading: '凭教育身份可以领取的 AI 优惠',
+    depth: 2,
+    predicate: 'eduIdentity',
+    criteria: 'audience 含 education 或 educator，或 eligibilityDetail.educationEmailRequired 为 true',
+    description: '凭教育身份可领取的 AI 优惠：面向学生与教师的教育版、教育邮箱验证后可领的订阅与额度。',
+    why: [
+      '这一页收的是<b>教育身份</b>相关的优惠：适用人群写了「学生 / 教师 / 教育机构」，或资格门槛里「需要教育邮箱」为「是」。',
+      '教育邮箱这一项在全库里只有几条有明确值 —— 大多数来源只写「在校学生」而不说要不要用学校邮箱，所以<b>这一页比「学生专享」更窄</b>，不代表其余条目领不到。',
+      '儿童与中小学（K-12）、部分平台的地区限制会另写在条目自己的说明里，以官方页面为准。'
+    ]
+  },
+  {
+    slug: 'no-card',
+    group: 'student',
+    label: '无需信用卡',
+    short: '免卡',
+    heading: '不需要信用卡的 AI 优惠',
+    depth: 2,
+    predicate: 'noCard',
+    criteria: 'claimRequirements.creditCardRequired 明确为 false（来源明说不需要）',
+    description: '来源明确写着不需要绑定信用卡的 AI 优惠：注册即可领取的免费额度与教育版。',
+    why: [
+      '这一页只收<b>来源明确写着「不需要信用卡」</b>的条目 —— 数据里这一项是三态的，只有写成「否」才算数。',
+      '<b>没有写这一项的条目一个都不收</b>：绝大多数来源根本没提支付方式，那些条目是「尚未确认」，而「尚未确认」不等于「需要信用卡」，也不等于「不需要」。',
+      '这是本站数字最小的一页，也是最能说明口径的一页：宁可只列上面那几条，也不把没查到的写成「不需要卡」。想知道某一条要不要卡，只能点进官方页面确认。'
+    ]
+  },
+  {
+    slug: 'china-usable',
+    group: 'student',
+    label: '国内可用',
+    short: '国内',
+    heading: '中国大陆用户可以正常领取使用的优惠',
+    depth: 2,
+    predicate: 'chinaUsable',
+    criteria: 'availability.chinaUsable 明确为 true',
+    description: '中国大陆用户可正常注册使用的 AI 优惠：来源写明可用或可完成国内实名认证的条目。',
+    why: [
+      '这一页只收<b>中国大陆可用性明确为「是」</b>的条目 —— 依据是来源自己写明可以正常注册使用，或在规则上只能由持大陆身份证的用户完成实名认证。',
+      '⚠️ 它与首页的「国内」筛选<b>不是同一件事</b>：首页那个按钮按 region 收「来自国内来源」的条目，本页按 availability.chinaUsable 收「已确认大陆可用」的条目。两者的差额是<b>尚未确认</b>，不是「不可用」—— 本页顶部的条数因此明显少于首页点「国内」看到的数量。',
+      'Schema 契约里写明：「来自国内来源」<b>不构成</b>「大陆可用」的证据。所以这里不拿 region 顶替，宁可少收一批。',
+      '地区限制的原文摘要（如果有）逐条列在「中国大陆可用性」一列里。'
+    ]
+  },
+  {
+    slug: 'free-tier',
+    group: 'student',
+    label: '完全免费',
+    short: '免费',
+    heading: '免费档可用：不用付费就能用上的优惠',
+    depth: 2,
+    predicate: 'freeTier',
+    criteria: "pricingModel 为 free 或 freemium（与首页「① 完全免费」档同一字段口径）",
+    description: '不用付费就能用上的 AI 优惠：定价模式为免费或免费增值的条目，含免费额度、免费模型与免费版订阅。',
+    why: [
+      '这一页收的是<b>定价模式本身是免费档</b>的条目（数据里的 free 与 freemium 两种写法），与首页分档里「① 完全免费」用的是同一个字段，不做任何文本推断。',
+      '「免费档」说的是<b>存在一个不用付钱就能用的档位</b>，不等于所有功能免费：额度上限、并发限制、是否要实名，逐条写在各自的条目里。',
+      '这一页条目最多，也最杂：里面既有永久免费的开源模型调用，也有每月重置的免费额度，还有折扣促销。要看「拿到手到底是什么」，请对照每条的福利类型与官方页面。'
+    ]
+  },
+  {
+    slug: 'free-api',
+    group: 'developer',
+    label: '免费 API',
+    short: 'API',
+    heading: '可以免费调用的 API',
+    depth: 2,
+    predicate: 'freeApi',
+    criteria: 'benefitType 含 free_api',
+    description: '可以免费调用的 AI API：福利类型标注为「免费 API」的条目，含国内平台的新用户免费额度与国外平台的试用额度。',
+    why: [
+      '这一页按<b>福利类型</b>收：福利类型里写了「免费 API」的条目。与 /free-api/ 分类页、/developer/ 分类页<b>不互斥</b>，同一条优惠常常同时在这几页里。',
+      '「免费」的具体形态差异很大：一次性赠送 Token、每日重置额度、限时免费、开源模型免费推理，都算在内。以每条卡片上的说明与官方页面为准。',
+      '调用前一般要注册账号，部分平台还要求实名认证或绑定支付方式（后两项只有在来源写明时才会标注，没写就是「尚未确认」）。'
+    ]
+  },
+  {
+    slug: 'free-tokens',
+    group: 'developer',
+    label: '免费 Tokens',
+    short: 'Tokens',
+    heading: '赠送 Token / 免费额度类优惠',
+    depth: 2,
+    predicate: 'freeTokens',
+    criteria: 'benefitType 含 free_credits',
+    description: '赠送 Token 与免费额度的 AI 优惠：新用户礼包、活动积分、按量抵扣的体验金，逐条标注领取门槛与可用性。',
+    why: [
+      '这一页按<b>福利类型</b>收：福利类型里写了「免费额度」的条目 —— 拿到手是可以按量消耗的 Token、积分或体验金，而不是一个免费档位。',
+      '它与「免费 API」高度重叠但不相等：赠送的额度通常也能用来调 API。差别在<b>拿到手是什么</b>，不在能不能调用。',
+      '额度的计量单位、重置周期与过期时间差异极大（一次性 / 每日重置 / 90 天有效），逐条写在说明里；官方没写的，这一页也不会替它补。'
+    ]
+  },
+  {
+    slug: 'ai-coding',
+    group: 'developer',
+    label: 'AI Coding',
+    short: 'Coding',
+    heading: '编程开发类 AI 优惠',
+    depth: 2,
+    predicate: 'aiCoding',
+    criteria: "category 为「编程开发」（唯一没有专门字段支撑的一项，见本页说明）",
+    description: '编程开发类的 AI 优惠：代码补全、编程助手与开发者工具包，含学生与教师可领的免费额度。',
+    why: [
+      '这一页只收<b>分类被归为「编程开发」</b>的条目。它是这批入口里<b>唯一没有专门字段支撑</b>的一项 —— 数据模型里没有「是否用于写代码」这个字段。',
+      '刻意<b>不去扫标题与正文</b>凑数：按关键词扫能扫出的条目里一多半是误报（正文里出现了 Copilot、代码块之类的词，但那条优惠本身不是编程工具）。用类目收，条数少，但每一条都站得住 —— 具体条数就是本页顶部的那个数字。',
+      '所以这一页<b>明显偏少</b>，这是数据缺口而不是没有这类优惠。补法是给采集侧加一个字段，不是在这一页放宽判据。'
+    ]
+  },
+  {
+    slug: 'free-model',
+    group: 'developer',
+    label: '免费模型',
+    short: '模型',
+    heading: '可以免费使用的模型',
+    depth: 2,
+    predicate: 'freeModel',
+    criteria: 'benefitType 含 free_model',
+    description: '可以免费使用的 AI 模型：福利类型标注为「免费模型」的条目，含开源模型免费推理与限时免费模型。',
+    why: [
+      '这一页按<b>福利类型</b>收：福利类型里写了「免费模型」的条目 —— 免费的是<b>模型本身</b>（某些模型可以零成本调用），而不是账户里的额度。',
+      '国内平台的「限时免费模型」多属此类：按天限次、不扣积分，超出后按量计费。限次与重置周期写在各自条目里。',
+      '模型清单会变：官方随时可能调整哪些模型在免费范围内，最终以官方页面为准。'
+    ]
+  },
+  {
+    slug: 'dev-credits',
+    group: 'developer',
+    label: '开发者 Credits',
+    short: 'Credits',
+    heading: '面向开发者的赠送额度',
+    depth: 2,
+    predicate: 'devCredits',
+    criteria: 'audience 含 developer，或 benefitType 含 developer_credit',
+    description: '面向开发者的赠送额度与赠金：云平台 credits、创业扶持额度、开发者计划的资源包。',
+    why: [
+      '这一页收的是<b>给开发者的赠金与资源包</b>：适用人群写了「开发者」，或福利类型是「开发者赠送额度」。',
+      '与「免费 Tokens」的区别在<b>给谁</b>与<b>给什么</b>：这里多是云平台与开发者计划的 credits（可用于算力、存储与模型调用），额度常常要申请或满足资格（初创、开源维护者等）。',
+      '申请类条目的人工审核时间、额度有效期与是否需要信用卡，逐条列在「门槛 / 领取要求」一列；来源没写的显示「尚未确认」。'
+    ]
+  }
+];
+
+/** 一条记录属于哪几条需求入口（顺序与 NEED_PAGES 一致 —— 序列化结果因此稳定可复现） */
+function needsOf(deal) {
+  return NEED_PAGES.filter(page => NEED_PREDICATES[page.predicate](deal)).map(page => page.slug);
+}
+
 /**
  * 措辞契约的**唯一出处**：同一句话在两处实现里必须逐字相同。
  *
@@ -668,6 +937,11 @@ module.exports = {
   COLLECTION_PAGES,
   COLLECTION_PREDICATES,
   collectionsOf,
+  // 按需求找优惠（v1.2）：意图 → 判据 的唯一注册表（页面生成 / 首页入口 / 断言共用）
+  NEED_GROUPS,
+  NEED_PAGES,
+  NEED_PREDICATES,
+  needsOf,
   chinaUsableLine,
   audienceRows,
   audienceSearchText,

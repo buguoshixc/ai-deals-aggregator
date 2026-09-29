@@ -1672,6 +1672,279 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     restoredCards > 0, `${restoredCards} 张卡`);
 
   /* ------------------------------------------------------------------ */
+  /* 按需求找优惠（/need/<slug>/ × 10 + 首页入口行）                       */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 15b2) 按需求找优惠：入口行与十条静态落地页 ===');
+
+  /**
+   * 为什么这一段必须存在（与 15b 同一个理由，但**风险形状不同**）：
+   *
+   * ① `/need/<slug>/` 是站点里**第一类两层深**的路由。分类页在 `../`，它在 `../../`——
+   *    前缀写错的症状极其隐蔽：页面能打开、内容都在、canonical 也对，**只有所有内链 404**。
+   *    静态自检里有一条查前缀，但那只证明「字面量是 `../../`」；这里证明的是
+   *    **浏览器点进去真的能到**。
+   * ② 首页入口行是**构建期注入**的，它的数字来自数据层（条目数），而落地页表格的行数
+   *    也来自数据层 —— 两者必须逐条相等。不一致时的症状是「首页写 12、页面列 7」，
+   *    两边各自的检查都会是绿的（首页只管渲染，页面只管自己）。
+   * ③ 这一行的每一条都必须是 `<a>`：无 JS 的访客点它必须能跳走。它离 `[data-facet]`
+   *    那些按钮只有几十像素，重构时被顺手换成 button 是最可能发生的回归。
+   * ④ 窄屏：入口行不做横滑（横滑的入口等于没有入口），所以要在 390px 量
+   *    「有几行、有没有被裁、有没有把页面撑宽」。
+   */
+  const needTruth = await page.evaluate(`(async () => {
+    const payload = await (await fetch('/deals.json')).json();
+    const deals = (payload.deals || []).filter(d => d.type === 'deal');
+    const needs = {};
+    for (const d of deals) for (const slug of (d.needs || [])) (needs[slug] = needs[slug] || []).push(d.id);
+    return { needs, total: deals.length };
+  })()`).catch(() => null);
+
+  if (!needTruth || !Object.keys(needTruth.needs).length) {
+    check('dist/deals.json 里有按需求命中（needs 字段）', false, '读不到 deals.json 或 needs 为空');
+  } else {
+    // 首页入口行：逐条读出 href / 文字 / 数字
+    await page.goto(base, { waitUntil: 'load' });
+    await waitForApp(page);
+    const navRow = await page.evaluate(() => {
+      const nav = document.querySelector('nav.needs');
+      if (!nav) return null;
+      const links = [...nav.querySelectorAll('a')];
+      return {
+        count: links.length,
+        items: links.map(a => {
+          // 标签有两套 span（桌面全称 / 窄屏缩写），由 CSS 切换 —— 数标签必须取
+          // **当前可见的那一个**。第一版直接读 `a.textContent`，两套 span 的文字被拼在一起
+          // （「学生专享学生专享」），而断言里那句 `replace(/\d+$/,'')` 恰好把重复部分
+          // 当成了「标题里本来就有数字」，于是它一直绿着 —— 一个把 bug 藏起来的断言。
+          const full = a.querySelector('.nl-full');
+          const short = a.querySelector('.nl-short');
+          const visible = [full, short].find(el => el && getComputedStyle(el).display !== 'none');
+          return {
+            href: a.getAttribute('href'),
+            label: ((visible || a).textContent || '').replace(/\s+/g, ' ').trim(),
+            fullLabel: full ? full.textContent.trim() : '',
+            shortLabel: short ? short.textContent.trim() : '',
+            badge: Number((a.querySelector('b') || {}).textContent || ''),
+            isAnchor: a.tagName === 'A'
+          };
+        }),
+        // 两套标签缺一不可：缺全称则桌面端只剩缩写，缺缩写则窄屏又回到 240px 长块
+        bothLabels: links.filter(a => a.querySelector('.nl-full') && a.querySelector('.nl-short')).length,
+        // 这一块里不允许出现任何需要 JS 才生效的控件（无 JS 时的死按钮）
+        controls: nav.querySelectorAll('button, input, select').length,
+        inViewport: links.every(a => {
+          const r = a.getBoundingClientRect();
+          return r.left >= 0 && r.right <= window.innerWidth + 1 && r.width > 0;
+        }),
+        rows: new Set(links.map(a => a.offsetTop)).size,
+        overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth
+      };
+    });
+    check('首页有「按需求找优惠」入口行，且每条都是 <a>（无 JS 也能点）',
+      Boolean(navRow) && navRow.count === Object.keys(needTruth.needs).length && navRow.items.every(i => i.isAnchor),
+      navRow ? `${navRow.count} 条入口 / 数据里 ${Object.keys(needTruth.needs).length} 个需求 · 控件 ${navRow.controls} 个`
+        : '找不到 nav.needs');
+    check('入口行里没有任何 JS 控件（无 JS 时不给可点暗示）',
+      Boolean(navRow) && navRow.controls === 0,
+      navRow ? `${navRow.controls} 个` : '—');
+    check('每条入口都同时带全称与窄屏短标签（CSS 切换，无 JS 也生效）',
+      Boolean(navRow) && navRow.bothLabels === navRow.count,
+      navRow ? `${navRow.bothLabels}/${navRow.count} 条两套齐全 · 全称「${navRow.items[0] && navRow.items[0].fullLabel}」/ 短「${navRow.items[0] && navRow.items[0].shortLabel}」` : '—');
+    check('桌面端入口显示的是全称、不是缩写',
+      Boolean(navRow) && navRow.items.every(i => i.label === i.fullLabel && i.label.length > 0),
+      navRow ? navRow.items.filter(i => i.label !== i.fullLabel).map(i => `${i.href} 显示「${i.label}」`).join(' · ') || '全部全称' : '—');
+    // 首页数字 == 落地页行数（两个方向都查：数字对不对、有没有多余的入口）
+    const badgeMismatch = (navRow ? navRow.items : []).filter(item => {
+      const slug = String(item.href || '').replace(/^need\//, '').replace(/\/$/, '');
+      return (needTruth.needs[slug] || []).length !== item.badge;
+    });
+    check('首页每条入口的数字 == 数据里该需求的条数',
+      Boolean(navRow) && badgeMismatch.length === 0,
+      navRow ? (badgeMismatch.length
+        ? badgeMismatch.map(i => `${i.href} 首页 ${i.badge} / 数据 ${(needTruth.needs[String(i.href).replace(/^need\//, '').replace(/\/$/, '')] || []).length}`).join(' · ')
+        : `${navRow.items.map(i => `${i.label}${i.badge}`).join(' ')}`) : '—');
+
+    // 逐条落地页：能打开、canonical 自指、条目集合逐 id 相等、内链真能到详情页
+    for (const [slug, expectedIds] of Object.entries(needTruth.needs)) {
+      const routeUrl = new URL(`need/${slug}/`, base).href;
+      const errorsBefore = errors.length;
+      const externalBefore = externalRequests.length;
+      await page.goto(routeUrl, { waitUntil: 'load' });
+      const info = await page.evaluate(() => ({
+        h1: ((document.querySelector('h1') || {}).textContent || '').trim(),
+        canonical: (document.querySelector('link[rel="canonical"]') || {}).href || '',
+        rows: document.querySelectorAll('.ctable tbody tr').length,
+        ids: [...document.querySelectorAll('.ctable tbody a[href*="/deal/"]')]
+          .map(a => (a.getAttribute('href') || '').split('/deal/')[1] || '').map(s => s.replace(/\/$/, '')),
+        headers: [...document.querySelectorAll('.ctable thead th')].map(el => el.textContent.trim()),
+        bodyHasEvidence: /适用人群：|福利类型含|定价模式：|分类：|需要信用卡：|中国大陆可用性：/.test(
+          (document.querySelector('.ctable tbody') || {}).textContent || ''),
+        feeds: document.querySelectorAll('link[rel="alternate"]').length,
+        ldTypes: [...document.querySelectorAll('script[type="application/ld+json"]')]
+          .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }),
+        text: document.body ? document.body.innerText.replace(/\\s+/g, ' ').trim().length : 0,
+        jumpback: (document.querySelector('a.jumpback') || {}).getAttribute
+          ? document.querySelector('a.jumpback').getAttribute('href') : ''
+      }));
+
+      const onPage = new Set(info.ids);
+      const missing = expectedIds.filter(id => !onPage.has(id));
+      const extra = info.ids.filter(id => !expectedIds.includes(id));
+      check(`/need/${slug}/ 条目集合与 deals.json 的 needs 逐 id 相等`,
+        missing.length === 0 && extra.length === 0 && info.ids.length === expectedIds.length &&
+        info.rows === expectedIds.length,
+        `页面 ${info.ids.length} 条 / 数据 ${expectedIds.length} 条` +
+        `${missing.length ? ` · 漏 ${missing.length}` : ''}${extra.length ? ` · 多 ${extra.length}` : ''}`);
+      check(`/need/${slug}/ canonical 自指 + 双 feed + 三段 JSON-LD`,
+        info.canonical.endsWith(`/need/${slug}/`) && info.feeds === 2 &&
+        JSON.stringify(info.ldTypes.slice().sort()) === JSON.stringify(['BreadcrumbList', 'CollectionPage', 'ItemList']),
+        `${info.canonical} · feed ${info.feeds} · JSON-LD [${info.ldTypes.join(', ')}]`);
+      check(`/need/${slug}/ 有「为什么在这一页」一列且写了依据`,
+        info.headers.includes('为什么在这一页') && info.bodyHasEvidence,
+        `表头 [${info.headers.join(' | ')}]`);
+      check(`/need/${slug}/ 没有 JS 错误、没有外部请求`,
+        errors.length === errorsBefore && externalRequests.length === externalBefore,
+        `错误 ${errors.length - errorsBefore} · 外部请求 ${externalRequests.length - externalBefore}`);
+
+      // 两层深的内链必须真的能到（前缀写错的唯一症状就在这里）。
+      // 判据取 **HTTP 状态 + 落地页自己的 canonical**，不读 h1 —— 详情页的 h1 是标题，
+      // 而「是不是详情页」这件事由它自指的 canonical 说清楚（更硬，且不依赖文案排版）。
+      const firstLink = await page.evaluate(() => {
+        const a = document.querySelector('.ctable tbody a[href*="/deal/"]');
+        return a ? a.href : '';
+      });
+      if (!firstLink) {
+        check(`/need/${slug}/ 表格里有点得进去的详情页内链`, false, '第一行没有 /deal/ 链接');
+      } else {
+        const response = await page.goto(firstLink, { waitUntil: 'load' });
+        // 期望值取**浏览器解析后的落地地址**（`page.url()`），不自己拼字符串：
+        // 手拼的版本会把 `need/<slug>/../../deal/x/` 这种未归一形态算进去，
+        // 于是断言红在一个与「前缀对不对」无关的地方（第一版就是这么错的）。
+        const landed = page.url().split(/[?#]/)[0];
+        const arrived = await page.evaluate(() => ({
+          raw: (document.querySelector('link[rel="canonical"]') || {}).getAttribute
+            ? document.querySelector('link[rel="canonical"]').getAttribute('href') : '(none)',
+          text: (document.body ? document.body.innerText : '').replace(/\s+/g, ' ').trim().length
+        }));
+        // 判据：**落地页就是那条详情页**。比较的键取 deal id —— 它是唯一既跨 origin 又
+        // 跨部署前缀都稳定的东西。三个坑在这里各踩过一次，写下来免得下一个人重踩：
+        //   ① 不比 origin：本地验收跑在 `127.0.0.1`，canonical 必须指线上（设计如此）；
+        //   ② 不比部署前缀：生产挂在 `/ai-deals-aggregator/` 下，本地没有这一层；
+        //   ③ 不手写正则剥前缀：剥不干净时断言会静默变成「永远为假」。
+        const dealIdOf = url => (String(url).match(/\/deal\/([^/?#]+)/) || [])[1] || '';
+        const landedId = dealIdOf(landed);
+        const canonicalId = dealIdOf(arrived.raw);
+        check(`/need/${slug}/ 的详情页内链真的能打开（两层深前缀没写错）`,
+          Boolean(response && response.ok()) && Boolean(landedId) &&
+          landedId === canonicalId && arrived.text > 200,
+          `HTTP ${response ? response.status() : '—'} · 落地 deal/${landedId} · canonical deal/${canonicalId} · 正文 ${arrived.text} 字`);
+      }
+    }
+
+    // 有 JS 的入口行 + 窄屏几何：不做横滑、不被裁、不撑宽页面
+    await page.goto(base, { waitUntil: 'load' });
+    await waitForApp(page);
+    for (const width of [390, 360]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.waitForTimeout(150);
+      const geo = await page.evaluate(() => {
+        const nav = document.querySelector('nav.needs');
+        const links = [...nav.querySelectorAll('a')];
+        const visibleLabel = a => {
+          const els = [...a.querySelectorAll('.nl-full, .nl-short')];
+          const shown = els.filter(el => getComputedStyle(el).display !== 'none');
+          return shown.map(el => el.textContent).join('');
+        };
+        const tops = [...new Set(links.map(a => Math.round(a.getBoundingClientRect().top)))].sort((x, y) => x - y);
+        return {
+          rows: new Set(links.map(a => a.offsetTop)).size,
+          chipRows: tops.length,
+          perRow: tops.map(t => links.filter(a => Math.round(a.getBoundingClientRect().top) === t).length),
+          clipped: links.filter(a => a.scrollWidth > a.clientWidth + 1).length,
+          visible: links.filter(a => {
+            const r = a.getBoundingClientRect();
+            return r.width > 0 && r.left >= 0 && r.right <= window.innerWidth + 1;
+          }).length,
+          total: links.length,
+          overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          navScrollW: nav.scrollWidth,
+          navClientW: nav.clientWidth,
+          // 窄屏必须**真的**切到短标签。这一条防的是「CSS 媒体查询没生效」——
+          // 那时十枚全称会折成 5 行、整块 204px，而 clipped/overflow 全部照旧是 0，
+          // 单看几何数字完全正常（这个坑实际踩过一次，症状只是「首屏少一张卡」）。
+          labels: links.map(a => visibleLabel(a)),
+          // 有标签一个都没显示出来 = 两套 span 都 display:none（切换规则写错）
+          labelsBlank: links.filter(a => !visibleLabel(a)).length,
+          navH: Math.round(nav.getBoundingClientRect().height)
+        };
+      });
+      check(`按需求入口 ${width}px：全部入口在视口内、不被裁、页面不横向溢出`,
+        geo.clipped === 0 && geo.visible === geo.total && geo.overflowX === 0,
+        `${geo.visible}/${geo.total} 可见 · ${geo.chipRows} 行 chip（${geo.perRow.join('/')}）· 整块 ${geo.navH}px · 被裁 ${geo.clipped} · 页面溢出 ${geo.overflowX}px`);
+      check(`按需求入口 ${width}px：切到了窄屏短标签（每枚都有可见文字）`,
+        geo.labelsBlank === 0 && geo.labels.every(label => label.length > 0 && label.length <= 8),
+        `${geo.labelsBlank} 枚无文字 · 标签「${geo.labels.join('|')}」`);
+      // 每组的 chip 排布：5 枚按 2 列排必然是 2+2+1。判据不是「不许有 1」——
+      // **每组 5 枚按两列排，末行必然是 1 枚**，那是除不尽的算术而不是缺陷；
+      // 要防的是另外两件事（这两个都真实发生过，而 clipped/overflow 都还是 0）：
+      //   ① 组名占掉网格第 1 列 ⇒ 首行只排得下 2 枚、多出一行（5 枚排成 3 行）；
+      //   ② 幽灵行/被拉高 ⇒ 整块 240px 变 256px、首屏少一张卡。
+      const groups = await page.evaluate(() => {
+        const out = [];
+        document.querySelectorAll('nav.needs .nlinks').forEach(box => {
+          const links = [...box.querySelectorAll('a')];
+          const tops = [...new Set(links.map(a => Math.round(a.getBoundingClientRect().top)))].sort((x, y) => x - y);
+          out.push({
+            perRow: tops.map(t => links.filter(a => Math.round(a.getBoundingClientRect().top) === t).length),
+            gridRows: getComputedStyle(box).gridTemplateRows.split(' ').filter(Boolean).length,
+            boxH: Math.round(box.getBoundingClientRect().height)
+          });
+        });
+        return out;
+      });
+      check(`按需求入口 ${width}px：每组两列排布，没有幽灵行、没有被拉高`,
+        groups.length === 2 && groups.every(g =>
+          g.perRow.length === 3 && g.perRow[0] === 2 && g.perRow[1] === 2 && g.perRow[2] === 1 &&
+          g.gridRows === 3 && g.boxH <= 100) && geo.navH < 300,
+        `${groups.length} 组 · ${groups.map(g => `每行 ${g.perRow.join('/')}（grid 轨道 ${g.gridRows} · 块高 ${g.boxH}px）`).join(' · ')} · 整块 ${geo.navH}px`);
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+
+    // 无 JS：这是「预渲染」的硬定义 —— 关掉 JS 打开一条需求页，表格与判据说明都要在
+    {
+      const noJsCtx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+      const noJsP = await noJsCtx.newPage();
+      const probes = [];
+      for (const slug of ['no-card', 'ai-coding', 'china-usable']) {
+        if (!needTruth.needs[slug]) continue;
+        await noJsP.goto(new URL(`need/${slug}/`, base).href, { waitUntil: 'load' });
+        probes.push(await noJsP.evaluate(() => ({
+          chars: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0,
+          rows: document.querySelectorAll('.ctable tbody tr').length,
+          links: document.querySelectorAll('.ctable tbody a[href*="/deal/"]').length,
+          why: document.body.innerText.includes('这一页'),
+          jumpback: [...document.querySelectorAll('a')].some(a => (a.getAttribute('href') || '') === '../../')
+        })));
+      }
+      // 顺便：无 JS 打开**首页**时入口行必须还在（它是构建期注入的静态导航）
+      await noJsP.goto(base, { waitUntil: 'load' });
+      const homeNoJs = await noJsP.evaluate(() => ({
+        entries: document.querySelectorAll('nav.needs a').length,
+        firstHref: (document.querySelector('nav.needs a') || {}).getAttribute
+          ? document.querySelector('nav.needs a').getAttribute('href') : ''
+      }));
+      await noJsCtx.close();
+      check('需求页不执行 JS 也能读到判据说明与全部条目（预渲染的硬定义）',
+        probes.length > 0 && probes.every(p => p.chars > 500 && p.rows > 0 && p.links > 0 && p.why && p.jumpback),
+        probes.map((p, i) => `${['no-card', 'ai-coding', 'china-usable'][i]} ${p.rows} 行/${p.chars} 字`).join(' · '));
+      check('无 JS 打开首页时「按需求找优惠」入口行仍在且指向需求页',
+        homeNoJs.entries === Object.keys(needTruth.needs).length && /^need\//.test(homeNoJs.firstHref),
+        `${homeNoJs.entries} 条入口 · 首条 ${homeNoJs.firstHref}`);
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
   /* 数据源状态页（/status/）                                             */
   /* ------------------------------------------------------------------ */
 
