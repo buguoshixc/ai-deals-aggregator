@@ -1,6 +1,6 @@
 # AI 优惠聚合器 — 项目状态
 
-**最后更新**：2026-09-23
+**最后更新**：2026-09-29（最新一节 **2.34 `v1.2-intent-first-home`**）
 **项目地址**：https://buguoshixc.github.io/ai-deals-aggregator/
 **仓库**：https://github.com/buguoshixc/ai-deals-aggregator
 
@@ -1914,6 +1914,72 @@ reusable 调用会把它变成 `<调用方>/<被调>` 形态，且 deploy 再建
 **F. 本轮明确不做**（留给下一阶段）：学生/开发者数据模型（audience / eligibility 扩展 /
 是否需要信用卡 / 中国大陆可用性 / benefit type / claim requirements）、首页分类入口、
 `/student/` `/developer/` `/free-api/`、分类 RSS、Evidence/Provenance、Deal History。
+
+> ⚠️ **上面 F 节的前四项已在 `v1.1-student-developer-model` 落地并从零重推数据**
+> （报告：`research/v1.1-student-developer-model-report.md` 与 `research/v1.1-closure-report.md`，
+> 已合并进 master `1fc0c00`）。本节保留原文以便对照，**不要按它判断现状**。
+
+---
+
+### 2.34 `v1.2-intent-first-home`：把首页从「筛选器」升级成「按需求找优惠」（2026-09-29，分支 `v1.2-intent-first-home`）
+
+**目标（用户原话）**：把首页从「数据库筛选器」升级成「按用户真实需求找优惠」；核心用户是国内大学生 + 开发者。
+完整报告：`research/v1.2-intent-first-home-report.md`（含 7 条硬约束、3 个方案取舍、7 条被门禁抓出的真问题、7 条明确没做的）。
+
+**先分析 IA 再动手（用户要求「先给 2–3 个低成本方案，不要直接大改」）**：改前的首页是一台筛选器——
+13 个 facet 按钮 + 搜索 + 排序 + 卡/列表视图，用户必须先知道「要什么」才能把需求翻译成按钮，
+而首页上连「学生」两个字都没有。
+
+| 方案 | 结果 |
+|---|---|
+| A. 首页 need 筛选 + `?need=` | ❌ 落选。首页是静态文件，**无法按 query 产出不同内容** ⇒ 「URL 可分享」与「无 JS 可读」同时落空。且 `.facetsin` 已是横向滚动容器，再塞 10 枚会让入口变成「要横滑才看得见」 |
+| **B. `/need/<slug>/` 静态落地页** | ✅ **选中**。唯一同时满足「可分享 + 无 JS + 移动端清晰」的形状；复用 v1.1 的注册表 / 生成循环 / sitemap / 双 feed / 三段 JSON-LD / 自检 / 验收**一整套**机器 |
+| C. 只做首页锚点 | ❌ 做不到。首页没有「需求」这一维，锚点落点会退回「按档位分带」 |
+
+**落地**：
+
+- `scripts/lib/audience.js` 新增 `NEED_GROUPS` / `NEED_PAGES` / `NEED_PREDICATES`（10 条）/ `needsOf`，
+  形状与 v1.1 的 `COLLECTION_PAGES` 一致 —— **判据只写一遍**；
+- 十条入口（学生：学生专享 12 / 教育身份可领 7 / 无需信用卡 1 / 国内可用 30 / 完全免费 60；
+  开发者：免费 API 45 / 免费 Tokens 44 / AI Coding 4 / 免费模型 12 / 开发者 Credits 67），
+  条数一律**按数据现算**；
+- `renderCollectionPage` 泛化成 `renderDirectoryPage(spec)`，一个循环同时产 3 个分类页（1 层深）
+  与 10 个需求页（2 层深），前缀由 `depth` 推导；
+- 需求页多一列「**为什么在这一页**」——把该条记录**命中的那个字段**作为数据传进模板，
+  前端不做任何判断；
+- `needs` 是**派生字段**，进 `dist/deals.json`（与 `collections` 同构）；
+  **v1.1 的字段契约一个字没改**，`schema.js` / `store.js` / `dedup.js` / `scripts/data/*` 全部没碰。
+
+**移动端**：首页一行入口在窄屏换成短标签 + 两列，**切换只用 CSS 媒体查询、不用 JS**
+（无 JS 的访客在窄屏上也要看到短标签）。全称与短标签两个 `<span>` 同时在 DOM 里。
+
+**密度账（最贵的一项，逐次量）**：
+
+| 时点 | 入口行高 | 网格起点 | 首屏完整卡片 |
+|---|---|---|---|
+| 改之前 | — | 196px | 9 |
+| 两行 entry（第一版） | 38px | 234px | **6** ❌ |
+| 压成一行（最终，桌面端） | 31px | 227px | **9** ✅ |
+
+**验证**：`build` 自检 + `npm run verify` **244 项** / `verify:regress` **250 项 / 失败 0**；
+`selftest:audience` **161 项**（§9 是本轮新增的 41 项）；`test` / `test:strict` / `check:ci`（32 项）/
+`check:reproducible`（两次构建 SHA256 一致）全绿。
+
+**被门禁抓出的真问题（7 条，没有一条是读代码看出来的）**：入口数字把 54 条 tool 也算进去（15≠12）；
+需求页内链断言拿本地 URL 比生产 canonical 而**永远为假**；入口行两套标签被拼成
+「学生专享学生专享」而断言因为一个 `replace(/\d+$/,'')` 一直绿着；
+窄屏组名占掉网格第 1 列产生 phantom 行（整块 256px）；移动端媒体查询**特异性打平靠源序**；
+`why` 文案里 3 处写死条数；后台服务器 `--port=8099` 写法不对压根没起来。
+
+**明确没做 / 已知边界**：`ai-coding` 没有字段支撑（只有 `category==='编程开发'`，4 条，
+页面直说是数据缺口）；`creditCardRequired` 全库仅 1/80 有明确值；`student_plan` 规范值缺席；
+`dev-credits` 67 条偏宽（继承 v1.1 `developerSignal`）；方案 A（`?need=`）没做也没排期
+（不是成本问题，是形状不满足要求 5+6）；窄屏首屏不再有完整卡片（**显式取舍**：
+要求 7 是「移动端优先保证入口清晰」，卡片靠滚动）。
+
+**下一步建议**：进入 `v1.3-evidence-provenance`，并把 `ai-coding` 的字段缺口并进去。
+理由：十条需求页已经把**字段**打到读者眼前，「这句话从哪来」是唯一的下一层空白，
+而 `provenance` 现在只有 88/134 条、且缺字段级出处。
 
 ---
 

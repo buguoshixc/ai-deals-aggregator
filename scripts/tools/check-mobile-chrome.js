@@ -60,9 +60,32 @@ const URL = process.argv[2] || 'http://127.0.0.1:8080/';
     };
     // 收藏入口与「清理失效收藏」也要逐个量：入口在筛选条里（那一行是横向滚动容器，
     // 被裁掉一截时页面级宽度完全正常，正是本探针存在的理由），清理按钮在结果条文字后面。
+    // v1.2 起「按需求找优惠」入口行也要量：它是**不做横滑**的一行（窄屏靠 flex-wrap 折行），
+    // 折行没折好时的症状是「最后一枚被裁掉半个字」—— 页面级宽度照旧正常。
     for (const s of ['#sortBox', '#categoryFilter', '.catpick', '#jumpNav', '#viewSeg', '#stats', '.rbar', '.rright',
-      '#facets [data-facet="fav"]', '#stats [data-fav-prune]']) {
+      '#facets [data-facet="fav"]', '#stats [data-fav-prune]', 'nav.needs']) {
       res.items.push(pick(s));
+    }
+    // 按需求入口的逐条几何：有没有被裁、有没有跑出视口、折成几行、是不是横滚容器
+    const needsNav = document.querySelector('nav.needs');
+    if (needsNav) {
+      const nlinks = [...needsNav.querySelectorAll('a')];
+      const nrows = {};
+      nlinks.forEach(a => { const t = a.offsetTop; nrows[t] = (nrows[t] || 0) + 1; });
+      res.needs = {
+        count: nlinks.length,
+        rows: Object.keys(nrows).length,
+        perRow: Object.values(nrows),
+        clipped: nlinks.filter(a => a.scrollWidth > a.clientWidth + 1).length,
+        outOfViewport: nlinks.filter(a => {
+          const r = a.getBoundingClientRect();
+          return r.left < 0 || r.right > window.innerWidth + 1 || r.width === 0;
+        }).length,
+        navScrollW: needsNav.scrollWidth,
+        navClientW: needsNav.clientWidth,
+        // 这一行**不该**是横向滚动容器（横滑的入口等于没有入口）
+        overflowX: getComputedStyle(needsNav).overflowX
+      };
     }
     // 跳转 chip 是否折行：按 offsetTop 分组
     const jump = document.getElementById('jumpNav');
@@ -103,6 +126,13 @@ const URL = process.argv[2] || 'http://127.0.0.1:8080/';
     out.push('  #jumpNav: chips=' + mobile.jump.count + ' rows=' + mobile.jump.rows + ' perRow=' + JSON.stringify(mobile.jump.perRow) +
       ' scrollW=' + mobile.jump.navScrollW + ' clientW=' + mobile.jump.navClientW +
       ' lastChipRight=' + mobile.jump.lastChipRight);
+  }
+  if (mobile.needs) {
+    out.push('  nav.needs: links=' + mobile.needs.count + ' rows=' + mobile.needs.rows +
+      ' perRow=' + JSON.stringify(mobile.needs.perRow) +
+      ' clipped=' + mobile.needs.clipped + ' outOfViewport=' + mobile.needs.outOfViewport +
+      ' scrollW=' + mobile.needs.navScrollW + ' clientW=' + mobile.needs.navClientW +
+      ' overflowX=' + mobile.needs.overflowX);
   }
   out.push('  #sortBox buttons: ' + JSON.stringify(mobile.sortBtns));
 
