@@ -15,6 +15,7 @@ const path = require('path');
 const { SCHEMA_VERSION, nowCN, todayCN, validateDeal, isGarbage, hasDiscountSignal } = require('./schema');
 const { dedup, score } = require('./dedup');
 const { applyDeadline } = require('./expiry');
+const { loadOverrides, applyOverrides } = require('./audience-overrides');
 
 const DEALS_FILE = path.join(__dirname, '..', '..', 'deals.json');
 const MAX_DEALS = 300;
@@ -46,10 +47,18 @@ function loadDeals(file = DEALS_FILE) {
   return loadStore(file).deals;
 }
 
-function writeDeals(deals, file = DEALS_FILE, now = new Date()) {
+/**
+ * 写盘。
+ *
+ * `preserveUpdatedAt` 给一次性迁移（scripts/migrate.js --audience）用：那边只补 provenance、
+ * **没有采到任何新数据**，把 updatedAt 刷成当下就是把数据新鲜度变成一句假话
+ * （updatedAt 的语义是「这份数据是什么时候采到的」，不是「这个文件什么时候被写过」）。
+ * 默认仍按当下写，采集路径的行为一个字节都没变。
+ */
+function writeDeals(deals, file = DEALS_FILE, now = new Date(), { preserveUpdatedAt = null } = {}) {
   const payload = {
     schemaVersion: SCHEMA_VERSION,
-    updatedAt: nowCN(now),
+    updatedAt: preserveUpdatedAt || nowCN(now),
     count: deals.length,
     deals
   };
@@ -99,7 +108,7 @@ function prune(deals, { today = todayCN(), max = MAX_DEALS } = {}) {
  * @param {string}   params.today
  * @returns {{deals:object[], stats:object}}
  */
-function mergeAll({ fresh = [], existing = [], curated = [], today = todayCN() } = {}) {
+function mergeAll({ fresh = [], existing = [], curated = [], overrides = undefined, today = todayCN() } = {}) {
   // 策展数据是可信来源：刷新 lastSeen（"今天还见到它"是合并期真的知道的事）。
   //
   // 这里**不再**顺手写 verified: true。核验标注是人的声明，出处只有一处：
@@ -137,7 +146,52 @@ function mergeAll({ fresh = [], existing = [], curated = [], today = todayCN() }
     return next;
   });
 
-  const { deals: merged, mergedCount } = dedup(withDeadline([...fresh, ...cleanExisting, ...curatedRefreshed]));
+  // v1.1 修：「首次收录日期」不得被 merge 推晚（2026-09-29 实测事故）。
+  //
+  // 现象：32 条策展记录的 `firstSeen` 在一次真实 merge 里从 2026-09-21 被刷成当天，
+  // 而且**每一轮都会再刷一次**，「首次收录」这个字段从此不表示任何历史。
+  //
+  // 根因在数据流而不是某一行的写法：`scripts/data/curated_*.json` **不带 `firstSeen`**，
+  // `makeDeal` 于是按 `todayCN()` 盖当天（构造期「缺省 = 今天」本身是对的，对**新**条目尤其对）；
+  // 而策展侧在 merge 里赢了记录，那个「今天」就顶掉了既有记录里真实的历史日期。
+  // 所以补救必须在**进 dedup 之前**：把既有记录的 `firstSeen` 直接注入策展副本，
+  // 让两侧带着同一个历史日期去比较 —— 等 dedup 跑完再改就来不及了（旧值已经不在候选里）。
+  //
+  // 不变量（由 merge 里的取更早逻辑 + 这里共同保证）：**一条记录的 firstSeen 只会变早或不变**。
+  // 这与 `lastSeen` 恰好相反，两者不能写成同一套。
+  const firstSeenById = new Map();
+  for (const deal of [...existing, ...fresh, ...curated]) {
+    if (!deal || !deal.firstSeen) continue;
+    const known = firstSeenById.get(deal.id);
+    if (!known || deal.firstSeen < known) firstSeenById.set(deal.id, deal.firstSeen);
+  }
+  const injectFirstSeen = deal => {
+    const earliest = firstSeenById.get(deal.id);
+    if (!earliest || earliest >= deal.firstSeen) return deal;
+    return { ...deal, firstSeen: earliest };
+  };
+
+  const audienceStats = { conflicts: [] };
+
+  // v1.1 收口：六字段的**第二个人工来源**（scripts/data/audience-overrides.json）。
+  //
+  // 为什么默认加载而不是让调用方显式传：`mergeAll` 有 5 个调用点（collect / migrate /
+  // 两个重放工具 / 自测），漏掉任何一个都会让那条路径上的六字段静默丢失 ——
+  // 而「漏了一处」正是这一整类 bug 的成因（见 check-reproducible.js 的文件头）。
+  // 显式关闭请传 `overrides: new Map()`（空表），不要靠删文件。
+  //
+  // 注入发生在**进 dedup 之前**：这样两侧带着同一份人工值去比较，与 firstSeen 的
+  // 处理同理 —— 等 dedup 跑完再补就来不及了。
+  const overrideMap = overrides === undefined ? loadOverrides().byId : overrides;
+  const overrideStats = { applied: 0, conflicts: [] };
+  const withOverrides = list => applyOverrides(list, overrideMap, overrideStats);
+
+  const input = [
+    ...withOverrides(fresh).map(injectFirstSeen),
+    ...withOverrides(cleanExisting).map(injectFirstSeen),
+    ...curatedRefreshed.map(injectFirstSeen)
+  ];
+  const { deals: merged, mergedCount } = dedup(withDeadline(input), { stats: audienceStats });
   const { deals: kept, removed } = prune(merged, { today });
 
   // 采集量骤降：只作为"这次结果可能不完整"的信号返回，不拦写盘（见文件头）。
@@ -161,6 +215,22 @@ function mergeAll({ fresh = [], existing = [], curated = [], today = todayCN() }
       retiredTitles: retired.map(d => d.title).slice(0, 10),
       reclassified: reclassified.length,
       reclassifiedTitles: reclassified.slice(0, 10),
+      // v1.1：六个新字段的逐字段可信度仲裁留痕（dedup.mergeAudienceFields 收集）。
+      // 为什么必须留痕：这条路径修掉的是一个**静默**错误 —— 实测过采集侧 123 分 >
+      // 策展侧 120 分（策展条目一旦被判成 tool 就先输 50 分），于是人工核过的
+      // `availability.chinaUsable=false` 被机器推的 true 覆盖，validate 看不出、
+      // 日志里也一个字都没有。现在冲突数进 stats、明细进列表，采集期显式打印（0 也打印）。
+      audienceConflicts: audienceStats.conflicts.length,
+      audienceConflictTitles: [...new Set(audienceStats.conflicts.map(c => c.title))].slice(0, 10),
+      // 明细出口（契约 §5.3.1 明确要求「不能只给计数」）：谁覆盖了谁、双方可信度是多少，
+      // 必须能逐条看到 —— 只给一个数字，人工复核时无从下手，等于没留痕。
+      audienceConflictList: audienceStats.conflicts.slice(0, 20),
+      // v1.1 收口：声明式补充（audience-overrides.json）的命中与冲突留痕。
+      // 冲突 = 文件里那个值与记录上原本的值不一致 —— 按可信度 curated 胜过 collected，
+      // 人工值赢，但**必须留痕**：静默覆盖人工值/被人工值静默覆盖，两个方向都是这一阶段的教训。
+      overridesApplied: overrideStats.applied,
+      overrideConflicts: overrideStats.conflicts.length,
+      overrideConflictList: overrideStats.conflicts.slice(0, 20),
       degraded,
       circuitBreakerRatio: CIRCUIT_BREAKER_RATIO
     }

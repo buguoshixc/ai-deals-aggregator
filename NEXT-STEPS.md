@@ -10,7 +10,7 @@
 > ⚠️ **本文件里的分支/版本坐标已作废**（当时的 `master = 777e3b7`）：之后又有多次定时数据更新与
 > 推送。要复核现状请以 `git log` 与 `PROJECT_STATUS.md` 2.33 为准。
 >
-> **2026-09-28 新增一轮：`v1.0-public-readiness`（分支 `feat/v1-public-readiness`，尚未推送）**
+> **2026-09-28 新增一轮：`v1.0-public-readiness`（16 个提交，已合并进 master）**
 > —— 目标是把项目从「功能比较完整的个人项目」变成「可以公开、长期、低维护成本运行的数据产品」。
 > 四项已知线上问题已修（有效期语义 / 锚点假隐藏 / 中文译文可搜 / 原文截断留痕）；
 > 发布链改成 `prepublish(完整门禁) → build → deploy`，**门禁红时本次版本绝不发布**；
@@ -22,16 +22,19 @@
 > 现在作者循环 `--scaffold` 会顺带划账（两条牙守着：已译好的必须消失、仍缺译的必须保留原日期）。
 > 下一阶段（学生 + 开发者数据模型）的前置条件见 `PROJECT_STATUS.md` 2.33 的 F 节。
 >
-> **⏳ 还差三件只能由人在 GitHub 网页上做的事**（详细步骤见
-> `research/v1.0-public-readiness-report.md` 第七节）：
-> 1. **建专用 GitHub App**（`Contents: Read and write`、不勾 Webhook），
->    把 **App ID** 与**私钥全文**存成仓库 Secret `COLLECT_APP_ID` / `COLLECT_APP_PRIVATE_KEY`。
->    为什么必须：`github-actions`（App ID 15368）是平台原生身份，**不能**被加进 ruleset 绕过名单
->    （API 422），所以机器人必须有自己可安装的 App 身份。
-> 2. **合并这一版**（顺序：先配好 Secret，再合并 —— 代码刻意不退回 `GITHUB_TOKEN`）。
-> 3. **建 master ruleset**：`Require a pull request`(approvals 0) + `Require status checks: gate`
->    + `Block force pushes` + `Restrict deletions`；**绕过名单只加第 1 步那个 App**。
->    验证：PR 上 gate 未过时合不了 · 手动跑一次采集能提交 · **你自己直推 master 被拒**。
+> **✅ 那三件只能由人在 GitHub 网页上做的事：已全部完成**（2026-09-28 当晚）
+> 1. **专用 GitHub App** 已建、已安装，`COLLECT_APP_ID` / `COLLECT_APP_PRIVATE_KEY` 已存。
+>    为什么必须：`github-actions`（App ID 15368）是平台原生身份，**不能**被加进 ruleset
+>    绕过名单（API 422）—— 细节见 `research/v1.0-public-readiness-report.md` 第七节。
+> 2. **PR #1 已合并**（`b95f15c`）；合并后 master 上 `gate` + `prepublish` + `build` + `deploy` 四段全绿。
+> 3. **ruleset `master-gate` 已 Active**，生效规则四条：`pull_request`(0 审批) ·
+>    `required_status_checks: gate`（**钉在 GitHub Actions 签发方上**）· `non_fast_forward` · `deletion`；
+>    绕过名单只有那个 App。机器人已在其下两次成功提交数据（`a7d7a22` / `259199b`）。
+>
+> 真机证据（两条红探针 run 的逐 job 结论）、以及「第一次配置漏了 `required_status_checks`、
+> 后来怎么用 `GET /rules/branches/master` 发现」都记在报告第七节。
+> 只剩一件顺带做的事：**下次开 PR 时留意 `gate` 红时 Merge 是否真的被禁用** ——
+> 现有证据证明的是「门禁红 ⇒ 不发布」，不是「红着合不了」。
 
 ---
 

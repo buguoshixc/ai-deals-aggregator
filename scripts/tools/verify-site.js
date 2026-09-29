@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// 重新落盘（无内容改动）：清掉编辑器观察缓存
 /**
  * 线上产物的真浏览器验收（dev 工具，需要 playwright-core）。
  *
@@ -1409,10 +1410,394 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     heading: (document.querySelector('.dpane h2') || {}).textContent || '',
     official: [...document.querySelectorAll('a')].filter(a => /^https?:/.test(a.getAttribute('href') || '')).length
   }));
+  // ⚠️ 取样必须在 `noJsContext.close()` **之前**做完（页面随 context 一起销毁）。
+  // ⚠️ 路径必须用绝对 `/deals.json`：此刻页面停在 `deal/<id>/` 下，相对路径会解析成
+  //    `deal/<id>/deals.json` → 404 → fetch 抛错 → 整段取样变成 null，
+  //    报出来却是「取样失败」，看着像数据缺失。两处都踩过。
+  const audienceSample = await noJsPage.evaluate(`(async () => {
+    const payload = await (await fetch('/deals.json')).json();
+    const deals = payload.deals || [];
+    const hasValue = value => {
+      if (value === null || value === undefined) return false;
+      if (Array.isArray(value)) return value.length > 0;
+      if (typeof value === 'object') return Object.keys(value).length > 0;
+      return true;
+    };
+    return {
+      total: deals.length,
+      knownCount: deals.filter(d => d.type === 'deal' && hasValue(d.audience)).length,
+      unknownCount: deals.filter(d => d.type === 'deal' && d.availability && d.availability.chinaUsable === 'unknown').length,
+      falseCount: deals.filter(d => d.type === 'deal' && d.availability && d.availability.chinaUsable === false).length,
+      knownChinaCount: deals.filter(d => d.type === 'deal' && d.availability &&
+        (d.availability.chinaUsable === true || d.availability.chinaUsable === false)).length
+    };
+  })()`).catch(() => null);
   await noJsContext.close();
   check('详情页不执行 JS 也能读到内容',
     noJsDetail.chars > 400 && Boolean(noJsDetail.heading) && noJsDetail.official >= 1,
     `正文 ${noJsDetail.chars} 字符 · 标题「${noJsDetail.heading.slice(0, 22)}」· 官方链接 ${noJsDetail.official} 个`);
+
+  /**
+   * v1.1 受众字段的结构化行（学生 / 开发者模型）。
+   *
+   * 为什么必须单独断言：上面那条「不执行 JS 也能读到内容」只判 `chars > 400`，
+   * 所以**新行一个都不渲染也能过** —— 它盯的是「有没有内容」，不是「有没有这几行」。
+   * 而这几行正是本阶段的交付物，必须有牙。
+   *
+   * 取样一律**现场从 deals.json 取**（照 §8b「中文译文可搜」的写法），不硬编码条目标题：
+   * 数据是每天变的，硬编码会在明天变成假红。没有对应数据时优雅跳过（不制造假红）。
+   * 三条断言，正反两面都覆盖：
+   *   ① 有 audience 的条目 → 字段表里必须有「适用人群」行，且取值非空；
+   *   ② `chinaUsable:'unknown'` 的条目 → 必须出现「尚未确认」，**绝不出现**「中国大陆用户不可用」。
+   *      这是本阶段那条红线在真页面上的唯一牙齿：unknown 是「没查到」，不是「不可用」——
+   *      写成后者会让读者据此放弃一条其实能领的优惠。
+   *   ③ `chinaUsable:false` 的条目 → 照直说「中国大陆用户不可用」（确定值不得软化）。
+   *      本轮数据里 false 可能是 0 条 → 跳过而不是假红。
+   */
+  const audienceRowsOf = async (dealId) => {
+    await page.goto(new URL(`deal/${dealId}/`, base).href, { waitUntil: 'load' });
+    await page.waitForSelector('.dpane', { timeout: 15000 });
+    return page.evaluate(() => {
+      const pane = document.querySelector('.dpane');
+      return {
+        text: pane ? pane.innerText.replace(/\s+/g, ' ').trim() : '',
+        rows: [...document.querySelectorAll('.dgrid .cv')].map(cell => ({
+          k: ((cell.querySelector('.k') || {}).textContent || '').trim(),
+          v: ((cell.querySelector('.v') || {}).textContent || '').trim()
+        }))
+      };
+    });
+  };
+
+  /** 现场挑一条 deal（判据以源码文本传入，避免把函数塞进字符串） */
+  const pickDeal = (predicateSource) => page.evaluate(`(async () => {
+    const payload = await (await fetch('/deals.json')).json();
+    const hasValue = v => v !== null && v !== undefined && !(Array.isArray(v) && !v.length) &&
+      !(typeof v === 'object' && !Array.isArray(v) && !Object.keys(v).length);
+    const pred = ${predicateSource};
+    const d = (payload.deals || []).find(x => x.type === 'deal' && pred(x, hasValue));
+    return d ? { id: d.id, title: d.title } : null;
+  })()`);
+
+  if (audienceSample && audienceSample.knownCount > 0) {
+    const sample = await pickDeal('(x, hasValue) => hasValue(x.audience)');
+    const shown = await audienceRowsOf(sample.id);
+    const row = shown.rows.find(item => item.k === '适用人群');
+    check('详情页出现「适用人群」结构化行，且取值不是空的',
+      Boolean(row) && Boolean(row.v) && shown.text.includes('适用人群'),
+      row ? `「${sample.title}」→ ${row.v} · 字段表 ${shown.rows.length} 格` : '未找到「适用人群」行');
+  } else {
+    check('详情页结构化行取样前提：deals.json 里存在带 audience 的 deal',
+      false, `当前带 audience 的 deal 为 ${audienceSample ? audienceSample.knownCount : '取样失败'} 条`);
+  }
+
+  if (audienceSample && audienceSample.unknownCount > 0) {
+    const unknownOne = await pickDeal('(x) => x.availability && x.availability.chinaUsable === "unknown"');
+    const pane = await audienceRowsOf(unknownOne.id);
+    check('unknown 的中国大陆可用性渲染成「尚未确认」，**绝不**渲染成「中国大陆用户不可用」',
+      pane.text.includes('尚未确认') && !pane.text.includes('中国大陆用户不可用'),
+      `「${unknownOne.title}」：含「尚未确认」=${pane.text.includes('尚未确认')} · ` +
+      `含「中国大陆用户不可用」=${pane.text.includes('中国大陆用户不可用')}`);
+  } else {
+    console.log('  ℹ️  跳过 unknown 红线断言：本轮没有任何 chinaUsable=unknown 的条目（不制造假红）');
+  }
+
+  if (audienceSample && audienceSample.falseCount > 0) {
+    const falseOne = await pickDeal('(x) => x.availability && x.availability.chinaUsable === false');
+    const pane = await audienceRowsOf(falseOne.id);
+    check('chinaUsable=false 的条目照直说「中国大陆用户不可用」（确定值不得软化）',
+      pane.text.includes('中国大陆用户不可用'), `「${falseOne.title}」`);
+  } else {
+    console.log(`  ℹ️  跳过「不可用」反面断言：本轮 chinaUsable=false 共 ${audienceSample ? audienceSample.falseCount : 0} 条（没有反例可测）`);
+  }
+
+  // 搜索：新字段的中文标签词必须能搜到，且 unknown **不进** haystack（否则搜索结果虚高）
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);
+  await page.fill('#searchInput', '中国大陆');
+  await page.waitForTimeout(350);
+  const chinaSearch = await page.evaluate(() => document.querySelectorAll('article.g').length);
+  const knownChina = audienceSample ? audienceSample.knownChinaCount : 0;
+  if (knownChina > 0) {
+    check('搜「中国大陆」命中数 ≤ 已知可用性的条目数（unknown 不进 haystack，结果不许虚高）',
+      chinaSearch > 0 && chinaSearch <= knownChina,
+      `命中 ${chinaSearch} 张卡 · 已知可用性 ${knownChina} 条 · unknown ${audienceSample ? audienceSample.unknownCount : 0} 条`);
+  } else {
+    console.log('  ℹ️  跳过「中国大陆」搜索断言：本轮没有任何条目带已确认的 chinaUsable');
+  }
+  await page.fill('#searchInput', '');
+  await page.waitForTimeout(250);
+
+  /* ------------------------------------------------------------------ */
+  /* 分类页（/student/ /developer/ /free-api/）与首页分类筛选器           */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 15b) 分类页与首页分类筛选器 ===');
+
+  /**
+   * 为什么这一段必须存在：`/status/` 那条先例**在 verify-site.js 里一个字都没有**
+   * （子代理核查：全文 0 处命中）。它的全部守卫只是 build-local.js 里的静态自检，
+   * 于是「页面上真的是不是那样」从来没有被真浏览器看过一眼。
+   * 新路由不重复那个模式：静态自检管「产物内容对不对」，这里管「浏览器里读出来对不对」。
+   *
+   * 断言分四类：
+   *   ① 三个路由都真的能打开、canonical 自指、控制台无错、无外部请求；
+   *   ② **关掉 JS 也能读到表格与条目**（预渲染的硬定义）+ 三态措辞不压平；
+   *   ③ 页面上的条目集合与 dist/deals.json 里 `collections` 的筛选结果**逐 id 相等**
+   *      （两个方向都查：页面少的、页面多的）；
+   *   ④ 首页筛选器：点「学生」筛出来的**卡片数**与分类页的**条数**对得上 ——
+   *      这条直接钉住「同一份判据」这件事：如果前端偷偷自己算一遍，两个数字迟早分家。
+   */
+  const collectionRoutes = [
+    { slug: 'student', key: 'student' },
+    { slug: 'developer', key: 'developer' },
+    { slug: 'free-api', key: 'free-api' }
+  ];
+
+  // dist/deals.json 里 `collections` 的真值（浏览器与 node 都读这一份）
+  const collectionTruth = await page.evaluate(`(async () => {
+    const payload = await (await fetch('/deals.json')).json();
+    const deals = (payload.deals || []).filter(d => d.type === 'deal');
+    const out = {};
+    for (const slug of ['student', 'developer', 'free-api']) {
+      out[slug] = deals.filter(d => (d.collections || []).includes(slug)).map(d => d.id);
+    }
+    out.__total = deals.length;
+    out.__tagged = deals.filter(d => (d.collections || []).length).length;
+    return out;
+  })()`).catch(() => null);
+
+  for (const route of collectionRoutes) {
+    const routeUrl = new URL(`${route.slug}/`, base).href;
+    const errorsBefore = errors.length;
+    const externalBefore = externalRequests.length;
+    await page.goto(routeUrl, { waitUntil: 'load' });
+    const info = await page.evaluate(() => ({
+      title: (document.querySelector('h1') || {}).textContent || '',
+      canonical: (document.querySelector('link[rel="canonical"]') || {}).href || '',
+      rows: document.querySelectorAll('.ctable tbody tr').length,
+      ids: [...document.querySelectorAll('.ctable tbody a[href*="/deal/"]')]
+        .map(a => (a.getAttribute('href') || '').split('/deal/')[1] || '').map(s => s.replace(/\/$/, '')),
+      feeds: document.querySelectorAll('link[rel="alternate"]').length,
+      ldTypes: [...document.querySelectorAll('script[type="application/ld+json"]')]
+        .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }),
+      text: document.body ? document.body.innerText.replace(/\\s+/g, ' ').trim().length : 0
+    }));
+
+    const expectedIds = (collectionTruth && collectionTruth[route.slug]) || [];
+    const onPage = new Set(info.ids);
+    const missing = expectedIds.filter(id => !onPage.has(id));
+    const extra = info.ids.filter(id => !expectedIds.includes(id));
+
+    check(`/${route.slug}/ 能打开且标题非空`,
+      Boolean(info.title) && info.rows > 0,
+      `「${info.title}」· 表格 ${info.rows} 行 · 正文 ${info.text} 字`);
+    check(`/${route.slug}/ canonical 自指`,
+      info.canonical.endsWith(`/${route.slug}/`) && info.canonical.includes('buguoshixc.github.io'),
+      info.canonical);
+    check(`/${route.slug}/ 条目集合与 deals.json 的 collections 逐 id 相等`,
+      missing.length === 0 && extra.length === 0 && info.ids.length === expectedIds.length,
+      `页面 ${info.ids.length} 条 / 数据 ${expectedIds.length} 条` +
+      `${missing.length ? ` · 漏 ${missing.length}` : ''}${extra.length ? ` · 多 ${extra.length}` : ''}`);
+    // 「恰好」而不是「包含」：只判包含时，多出一段结构化数据不会有任何东西变红。
+    const COLLECTION_LD = ['BreadcrumbList', 'CollectionPage', 'ItemList'];
+    check(`/${route.slug}/ 恰好两个订阅源 + 恰好三段 JSON-LD（CollectionPage / BreadcrumbList / ItemList）`,
+      info.feeds === 2 && JSON.stringify(info.ldTypes.slice().sort()) === JSON.stringify(COLLECTION_LD),
+      `feed ${info.feeds} 个 · JSON-LD [${info.ldTypes.join(', ')}]（期望 [${COLLECTION_LD.join(', ')}]）`);
+    check(`/${route.slug}/ 没有 JS 错误、没有外部请求`,
+      errors.length === errorsBefore && externalRequests.length === externalBefore,
+      `错误 ${errors.length - errorsBefore} · 外部请求 ${externalRequests.length - externalBefore}`);
+  }
+
+  // 关掉 JS 再读一遍：这是「预渲染」最硬的可验证定义（详情页那条同一把尺子）
+  {
+    const noJsCtx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+    const noJsP = await noJsCtx.newPage();
+    const perRoute = [];
+    for (const route of collectionRoutes) {
+      await noJsP.goto(new URL(`${route.slug}/`, base).href, { waitUntil: 'load' });
+      perRoute.push(await noJsP.evaluate(() => ({
+        chars: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0,
+        rows: document.querySelectorAll('.ctable tbody tr').length,
+        links: document.querySelectorAll('.ctable tbody a[href*="/deal/"]').length,
+        // 页脚的分类入口在无 JS 时也必须可点（它是站内导航，不是 JS 控件）
+        footLinks: [...document.querySelectorAll('footer a')].map(a => a.getAttribute('href') || ''),
+        // 三态措辞：不许把「没有依据」压成「不可用」
+        hasUnknownWording: document.body.innerText.includes('尚未确认'),
+        claimsUnusable: /中国大陆用户不可用/.test(document.body.innerText)
+      })));
+    }
+    await noJsCtx.close();
+    const weakest = perRoute.reduce((min, item) => Math.min(min, item.chars), Infinity);
+    check('分类页不执行 JS 也能读到条目表（预渲染的硬定义）',
+      perRoute.every(item => item.chars > 500 && item.rows > 0 && item.links > 0),
+      perRoute.map((item, i) => `/${collectionRoutes[i].slug}/ ${item.rows} 行/${item.chars} 字`).join(' · ') +
+      ` · 最短正文 ${weakest} 字`);
+    check('分类页无 JS 时页脚分类入口仍在且指向正确（站内导航不是 JS 控件）',
+      perRoute.every(item => ['student/', 'developer/', 'free-api/'].every(rel =>
+        item.footLinks.some(href => href.endsWith(rel)))),
+      `页脚链接 ${perRoute[0].footLinks.filter(h => /student\/|developer\/|free-api\//.test(h)).join(', ')}`);
+    // 三态措辞：只要页面上出现了「不可用」这种确定表述，就必须同时也出现「尚未确认」——
+    // 否则说明渲染把 unknown 压成了 false（本阶段那条红线）
+    check('分类页没有把「尚未确认」压成「不可用」',
+      perRoute.every(item => !item.claimsUnusable || item.hasUnknownWording),
+      perRoute.map((item, i) => `/${collectionRoutes[i].slug}/ 不可用=${item.claimsUnusable}/尚未确认=${item.hasUnknownWording}`).join(' · '));
+  }
+
+  // 首页筛选器：点「学生」，卡片数必须与 /student/ 的条数对得上（同一份判据的机器证明）
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);
+  for (const route of collectionRoutes) {
+    const expected = (collectionTruth && collectionTruth[route.slug] || []).length;
+    const button = page.locator(`#facets [data-facet="collection"][data-value="${route.slug}"]`);
+    if (await button.count() === 0) {
+      check(`首页有「${route.slug}」分类入口`, false, '筛选条里找不到该按钮');
+      continue;
+    }
+    const label = (await button.innerText()).replace(/\s+/g, ' ').trim();
+    await button.click();
+    await page.waitForTimeout(300);
+    const cards = await page.evaluate(() => document.querySelectorAll('article.g').length);
+    // 折叠会让卡片数 ≤ 条目数：判据是「不超过且 > 0」，同时与分类页条数一起打印出来对照。
+    check(`首页点「${route.slug}」筛出的卡片数与 /${route.slug}/ 一致（同一份判据）`,
+      cards > 0 && cards <= expected && expected > 0,
+      `入口「${label}」→ ${cards} 张卡 · 分类页/数据 ${expected} 条` +
+      `${cards < expected ? `（折叠合并 ${expected - cards} 条）` : ''}`);
+    // 取消筛选，回到全量，避免影响后面的断言
+    await button.click();
+    await page.waitForTimeout(250);
+  }
+  const restoredCards = await page.evaluate(() => document.querySelectorAll('article.g').length);
+  check('取消分类筛选后回到全量卡片视图（进入/退出不改其它筛选）',
+    restoredCards > 0, `${restoredCards} 张卡`);
+
+  /* ------------------------------------------------------------------ */
+  /* 数据源状态页（/status/）                                             */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 15c) 数据源状态页（/status/）===');
+
+  /**
+   * 为什么这一段必须存在：`/status/` 是本站唯一一条**先于 v1.1 存在**的独立路由，
+   * 而它在 verify-site.js 里此前是 **0 处覆盖**（全文 0 处命中）。它的全部守卫只是
+   * build-local.js 的静态自检，于是「页面上真的是不是那样」从来没有被真浏览器看过一眼。
+   *
+   * 静态自检查不出的那一类，恰恰是这一页最可能的坏法：三列数字与时间都是
+   * `white-space: nowrap`，来源一多，窄屏上必然溢出。`.stable-wrap { overflow-x: auto }`
+   * 就是为它写的 —— 而此前**没有任何断言证明那一层还在**。少了它，桌面端一切正常，
+   * 手机上整页横向滚动，而所有静态检查都是绿的。
+   *
+   * 所以这一段里最要紧的不是「内容对不对」（静态自检逐来源对账已管），
+   * 而是 **390px / 360px 下不产生页面级横向溢出**。
+   */
+  {
+    const statusRouteUrl = new URL('status/', base).href;
+    const errorsBefore = errors.length;
+    const externalBefore = externalRequests.length;
+    await page.goto(statusRouteUrl, { waitUntil: 'load' });
+    const st = await page.evaluate(() => ({
+      h1: ((document.querySelector('h1') || {}).textContent || '').trim(),
+      canonical: (document.querySelector('link[rel="canonical"]') || {}).href || '',
+      rows: document.querySelectorAll('.stable tbody tr').length,
+      statuses: [...document.querySelectorAll('.stt')].map(el => el.textContent.trim()),
+      feeds: document.querySelectorAll('link[rel="alternate"]').length,
+      ldTypes: [...document.querySelectorAll('script[type="application/ld+json"]')]
+        .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }),
+      healthLinks: [...document.querySelectorAll('a')]
+        .filter(a => (a.getAttribute('href') || '').includes('source-health.json')).length,
+      text: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0
+    }));
+    // 真值取机器可读的那一份：页面与它同源，但**浏览器里读出来的那一页**才算数
+    const healthTruth = await page.evaluate(`(async () => {
+      const doc = await (await fetch('/source-health.json')).json();
+      const rows = doc.sources || [];
+      const label = { healthy: '✅ 正常', degraded: '⚠️ 异常', failed: '❌ 失败' };
+      return { total: rows.length, labels: rows.map(r => label[r.status] || r.status) };
+    })()`).catch(() => null);
+
+    check('/status/ 能打开且标题非空',
+      Boolean(st.h1) && st.rows > 0, `「${st.h1}」· 表格 ${st.rows} 行 · 正文 ${st.text} 字`);
+    check('/status/ canonical 自指',
+      st.canonical.endsWith('/status/') && st.canonical.includes('buguoshixc.github.io'), st.canonical);
+    check('/status/ 行数与状态标签与 source-health.json 逐个对账',
+      Boolean(healthTruth) && st.rows === healthTruth.total &&
+      st.rows === st.statuses.length &&
+      st.statuses.slice().sort().join(',') === healthTruth.labels.slice().sort().join(','),
+      healthTruth
+        ? `页面 ${st.rows} 行 / 数据 ${healthTruth.total} 个 · 标签 [${[...new Set(st.statuses)].join(' ')}]`
+        : '读不到 source-health.json');
+    // JSON-LD 断言**恰好等于**，不是「包含」：SCHEMA §10.4.1 明确写了这一页不发
+    // Dataset / ItemList（机器可读的那份是 source-health.json，声明两次迟早分家）。
+    // 只判包含的话，加第三段谁都不会发现 —— 那句承诺就没有守卫。
+    // feed 同理取「恰好两个」。
+    const STATUS_LD = ['BreadcrumbList', 'WebPage'];
+    check('/status/ 补齐五条约定：恰好两个 feed + 恰好两段 JSON-LD（WebPage + BreadcrumbList）',
+      st.feeds === 2 && JSON.stringify(st.ldTypes.slice().sort()) === JSON.stringify(STATUS_LD),
+      `feed ${st.feeds} 个 · JSON-LD [${st.ldTypes.join(', ')}]（期望 [${STATUS_LD.join(', ')}]）`);
+    check('/status/ 有指向 source-health.json 的链接（机器可读的那一份）',
+      st.healthLinks > 0, `${st.healthLinks} 个`);
+    check('/status/ 没有 JS 错误、没有外部请求',
+      errors.length === errorsBefore && externalRequests.length === externalBefore,
+      `错误 ${errors.length - errorsBefore} · 外部请求 ${externalRequests.length - externalBefore}`);
+
+    // 无 JS：这是「预渲染」的硬定义。`<time datetime>` 是绝对时间的载体 ——
+    // 相对时间（「2 小时前」）由一个内联脚本换算，禁用 JS 时必须还能读到完整信息。
+    const noJsStatus = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+    const noJsStatusP = await noJsStatus.newPage();
+    await noJsStatusP.goto(statusRouteUrl, { waitUntil: 'load' });
+    const stNoJs = await noJsStatusP.evaluate(() => ({
+      chars: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0,
+      rows: document.querySelectorAll('.stable tbody tr').length,
+      times: document.querySelectorAll('time[datetime]').length,
+      // 页脚路由入口在无 JS 时也必须可点（站内导航不是 JS 控件）
+      footLinks: [...document.querySelectorAll('footer a')].map(a => a.getAttribute('href') || '')
+    }));
+    await noJsStatus.close();
+    check('/status/ 不执行 JS 也能读到来源表与绝对时间（预渲染的硬定义）',
+      stNoJs.chars > 500 && stNoJs.rows > 0 && stNoJs.times > 0,
+      `${stNoJs.rows} 行 / ${stNoJs.chars} 字 / ${stNoJs.times} 个 <time datetime>`);
+    check('/status/ 无 JS 时页脚路由入口仍在且指向正确',
+      ['status/', 'student/', 'developer/', 'free-api/'].every(rel =>
+        stNoJs.footLinks.some(href => href.endsWith(rel))),
+      `页脚链接 ${stNoJs.footLinks.filter(h => /status\/|student\/|developer\/|free-api\//.test(h)).join(', ')}`);
+
+    // ★ 这一段里最要紧的断言。
+    //
+    // 判据刻意只看**结果**（页面级 `scrollWidth` 有没有超出视口），不看**机制**
+    // （`.stable-wrap` 的 `overflow-x` 是不是 `auto`）：机制是实现细节，把它写进断言，
+    // 将来有人把宽表换成移动端的卡片式排版（页面照样不横滚）就会被判红 ——
+    // 那正是「守卫在正常行为上失败」这一类错误。机制只在明细里报出来，供排查用。
+    //
+    // ⚠️ 明细里**只报事实，不做因果解读**。第一版写的是「表格宽于容器、靠内部横滚」，
+    // 那句话由 `wrap.scrollWidth > wrap.clientWidth` 推出 —— 而在 `overflow-x: visible`
+    // 的失败现场它**照样为真**，于是失败行会印出一句「靠内部横滚」的假解释
+    // （独立验证代理在 121px 溢出的那一行上抓到的）。现在直接报两个宽度。
+    for (const width of [390, 360]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.waitForTimeout(200);
+      const mobile = await page.evaluate(() => {
+        const wrap = document.querySelector('.stable-wrap');
+        const table = document.querySelector('.stable');
+        const rect = el => (el ? Math.round(el.getBoundingClientRect().width) : null);
+        return {
+          docOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          wrapOverflowX: wrap ? getComputedStyle(wrap).overflowX : '(无 .stable-wrap)',
+          tableWidth: rect(table),
+          wrapWidth: rect(wrap)
+        };
+      });
+      check(`/status/ ${width}px 不产生页面级横向溢出（宽表应在容器内横滚，而不是撑开整页）`,
+        mobile.docOverflow <= 1,
+        `页面溢出 ${mobile.docOverflow}px · .stable-wrap overflow-x=${mobile.wrapOverflowX} · ` +
+        `表格宽 ${mobile.tableWidth}px / 容器宽 ${mobile.wrapWidth}px`);
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.waitForTimeout(200);
+  }
+
+  // 回到详情页：后面的主题断言接着用这一页
+  await page.goto(detailUrl, { waitUntil: 'load' });
+  await page.waitForSelector('.dpane', { timeout: 15000 });
 
   // 主题沿用首页的选择（同一套 localStorage 约定）
   await page.evaluate(() => { try { localStorage.setItem('dsh.theme', 'dark'); } catch (e) {} });
@@ -1751,7 +2136,18 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       rows: dlg.querySelectorAll('.cmptable tbody tr').length,
       rowLabels: [...dlg.querySelectorAll('.cmptable tbody th')].map(el => el.textContent.trim()),
       emptyCells: cells.filter(td => !td.textContent.trim()).length,
-      placeholder: cells.filter(td => /暂无|暂无数据|N\/A|—/.test(td.textContent)).length,
+      // 占位符判据：**整格就是占位符**，而不是「文本里出现过某个字符」。
+      //
+      // 原先写的是 `/暂无|暂无数据|N\/A|—/`（全文匹配），于是任何正文里带一个破折号的
+      // 单元格都会被算成占位符 —— 实测：`…横幅：「申请加入海纳百川计划 · 免费使用 …」— 额度…`
+      // 这一格是**有内容的真值**，却因为中间那个 `—` 被判成占位。
+      // 这个假阳性一直存在，只是它是**取决于选中哪 4 张卡**的：排序一变、选中的卡片一换，
+      // 它就从绿变红（v1.1 收口给排序补了收尾比较之后当场现形）。
+      // 一条会随无关改动翻面的断言，比没有断言更糟 —— 它会教人忽略红色。
+      placeholder: cells.filter(td => /^(—|–|暂无|暂无数据|N\/A|无)$/.test(td.textContent.trim())).length,
+      // 哪几格是占位符（诊断用：只报计数时无法定位是哪条卡片的哪个字段）
+      samplePlaceholders: cells.filter(td => /^(—|–|暂无|暂无数据|N\/A|无)$/.test(td.textContent.trim()))
+        .slice(0, 4).map(td => td.textContent.trim().slice(0, 24)),
       shareHref: (document.getElementById('cmpShare') || {}).getAttribute
         ? document.getElementById('cmpShare').getAttribute('href') : ''
     };
@@ -1759,7 +2155,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('对比表：4 列并排、行都是关键字段、单元格零空白',
     tableShape.open && tableShape.columns === 4 && tableShape.rows >= 1 && tableShape.emptyCells === 0 &&
     tableShape.placeholder === 0,
-    `${tableShape.columns} 列 / ${tableShape.rows} 行（${tableShape.rowLabels.join('、')}）· 空格子 ${tableShape.emptyCells} 个`);
+    `${tableShape.columns} 列 / ${tableShape.rows} 行（${tableShape.rowLabels.join('、')}）· ` +
+    `空格子 ${tableShape.emptyCells} 个 · 占位符 ${tableShape.placeholder} 个` +
+    // `placeholder` 与 `emptyCells` 是**两个不同的判据**，而这条消息原先只打空格子数 ——
+    // 于是「占位符 > 0」这种失败会显示成一行看起来一切正常的数字（实测踩过）。
+    `${tableShape.placeholder ? '（占位符：' + tableShape.samplePlaceholders.join(' / ') + '）' : ''}`);
 
   // ── Esc 关闭并归还焦点 ──
   const cmpFocus = await sharePage.evaluate(() => {

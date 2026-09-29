@@ -1,0 +1,1062 @@
+{
+  "schemaVersion": 1,
+  "purpose": "deals.json 六字段的第二个人工来源（第一个是 curated_*.json）。让 deals.json 成为可重建的纯投影。",
+  "note": "本文件由 scripts/tools/audience-overrides-extract.js 从 research/v1.1/DATA-BACKFILL.md 第四节逐条表生成，值取自 deals.json（已归一、已过校验），依据取自报告的引文列，两者在生成时逐条对账（不印证就拒绝落盘）。它**不是**「值的一份拷贝」这么简单：它是这些值的**唯一权威落点**。在此之前这些值只存在于 deals.json 里，没有任何文件能重建它们 —— 采集器不产出六字段，重放一轮 merge 会全部丢失。credibility 记 curated 而不是 editorial：这些是人读官方页得出的判断（带引文），但**没有**人工回访核验，verifiedAt 因此为空、verified 为 false。这与 CREDIBILITY_RANK 的定义一致（curated = 人工策展来源、未核验）。新增条目请直接编辑本文件，然后跑 node scripts/tools/check-reproducible.js 验证可重建性。",
+  "entries": [
+    {
+      "id": "2eae0e246de2",
+      "title": "ERNIE-4.5-Turbo-128K 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "9c12f13df3ba",
+      "title": "ERNIE-4.5-Turbo-32K 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "ad1d0c83909d",
+      "title": "ERNIE-4.5-Turbo-VL 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "8b2e8d64f11f",
+      "title": "ERNIE-X1-Turbo-32K 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "4d4bcb5b6829",
+      "title": "DeepSeek-R1 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "bf156583e97c",
+      "title": "DeepSeek-R1-250528 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "8814355d59e1",
+      "title": "DeepSeek-V3-250324 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "e384895f5935",
+      "title": "DeepSeek-V3.1-250821 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "e65f54470862",
+      "title": "DeepSeek-V3.1-Think-250821 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "9180073deef1",
+      "title": "Kimi-K2-Instruct 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "017bdbc04e70",
+      "title": "Qwen3-235B-A22B-Instruct-2507 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "8b609cb05116",
+      "title": "Qwen3-30B-A3B-Instruct-2507 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "78384299b660",
+      "title": "Qwen3-Coder-30B-A3B-Instruct 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "c4ab5c5d8101",
+      "title": "Qwen3-Coder-480B-A35B-Instruct 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "5c38e515a3ae",
+      "title": "bge-large-en 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "4c7952115477",
+      "title": "bge-large-zh 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "a1255b2fbae2",
+      "title": "qianfan-sug-8k 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「赠送 100万 Tokens…仅可抵扣预置模型在线推理消耗」→ free_credits + free_api；eligibility「千帆平台新用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true；description「访问平台并同意用户协议后自动开通发放」→ manualApplication =…"
+    },
+    {
+      "id": "e237cab7c007",
+      "title": "阿里云百炼 新用户免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「各模型独立赠送免费额度（通常为 100 万 Token）」→ free_credits + free_api；eligibility「阿里云百炼新用户（需实名认证）」；description「需完成实名认证后使用」→ accountRequired；discountInfo「新用户开通百炼后…赠送」→ manualApplication = false"
+    },
+    {
+      "id": "ebd47f6d2522",
+      "title": "GLM-4.7-Flash 免费模型",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_model",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": false
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「官方模型列表标注为免费模型，调用价格 0 元」→ free_model + free_api；eligibility「所有注册开发者（需实名认证开通）」→ identityVerificationRequired = true、不限新用户；description「注册并创建 API Key 后可直接调用，无需单独领取额度」→ manualApplication = fal…"
+    },
+    {
+      "id": "e7e8f538456c",
+      "title": "GLM-4.5-Flash 免费模型",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_model",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": false
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「官方模型列表标注为免费模型，调用价格 0 元」→ free_model + free_api；eligibility「所有注册开发者（需实名认证开通）」→ identityVerificationRequired = true、不限新用户；description「注册并创建 API Key 后可直接调用，无需单独领取额度」→ manualApplication = fal…"
+    },
+    {
+      "id": "6798f78de5ce",
+      "title": "GLM-4.6V-Flash 免费模型",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_model",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": false
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「官方模型列表标注为免费模型，调用价格 0 元」→ free_model + free_api；eligibility「所有注册开发者（需实名认证开通）」→ identityVerificationRequired = true、不限新用户；description「注册并创建 API Key 后可直接调用，无需单独领取额度」→ manualApplication = fal…"
+    },
+    {
+      "id": "f22e3cd094ad",
+      "title": "GLM-4.1V-Thinking-Flash 免费模型",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_model",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": false
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「官方模型列表标注为免费模型，调用价格 0 元」→ free_model + free_api；eligibility「所有注册开发者（需实名认证开通）」→ identityVerificationRequired = true、不限新用户；description「注册并创建 API Key 后可直接调用，无需单独领取额度」→ manualApplication = fal…"
+    },
+    {
+      "id": "62e3166acec0",
+      "title": "GLM-4V-Flash 免费模型",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_model",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": false
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「官方模型列表标注为免费模型，调用价格 0 元」→ free_model + free_api；eligibility「所有注册开发者（需实名认证开通）」→ identityVerificationRequired = true、不限新用户；description「注册并创建 API Key 后可直接调用，无需单独领取额度」→ manualApplication = fal…"
+    },
+    {
+      "id": "5dedb9455508",
+      "title": "CogView-3-Flash 免费模型",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_model",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": false
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「官方模型列表标注为免费模型，调用价格 0 元」→ free_model + free_api；eligibility「所有注册开发者（需实名认证开通）」→ identityVerificationRequired = true、不限新用户；description「注册并创建 API Key 后可直接调用，无需单独领取额度」→ manualApplication = fal…"
+    },
+    {
+      "id": "df1210f69a39",
+      "title": "CogVideoX-Flash 免费模型",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_model",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": false
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「官方模型列表标注为免费模型，调用价格 0 元」→ free_model + free_api；eligibility「所有注册开发者（需实名认证开通）」→ identityVerificationRequired = true、不限新用户；description「注册并创建 API Key 后可直接调用，无需单独领取额度」→ manualApplication = fal…"
+    },
+    {
+      "id": "f5ffff50772c",
+      "title": "ChatGPT / OpenAI",
+      "audience": [
+        "general"
+      ],
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "evidence": "DI 原文「Free ChatGPT tier」→ general；同一条 DI 记录到官方定价页未见常设学生 / 非营利折扣 —— 这是「查过没有」的证据，不是 student 判定"
+    },
+    {
+      "id": "c789f0a090bf",
+      "title": "Google Gemini",
+      "audience": [
+        "student",
+        "general"
+      ],
+      "availability": {
+        "chinaUsable": "unknown",
+        "regionRestriction": "学生优惠按国家/地区而异；美国站学生优惠已于 2026-03-11 结束"
+      },
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "evidence": "DI 原文「Free Gemini access remains available…Google AI Pro student offers vary by country；美国站学生优惠已于 2026-03-11 结束」→ student + general，并把地区差异留在 regionRestriction"
+    },
+    {
+      "id": "c05dc74bfd78",
+      "title": "Perplexity",
+      "audience": [
+        "student",
+        "educator"
+      ],
+      "benefitType": [
+        "discount"
+      ],
+      "eligibilityDetail": {
+        "studentRequired": true,
+        "identityVerificationRequired": true
+      },
+      "availability": {
+        "chinaUsable": "unknown"
+      },
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "evidence": "DI 原文「Education Pro is offered to verified students and educators at a discount」→ audience / benefitType / studentRequired；description「Verify student or educator status」→ identityVerificationRequired"
+    },
+    {
+      "id": "4a875a435019",
+      "title": "Canva",
+      "audience": [
+        "student",
+        "educator",
+        "other"
+      ],
+      "benefitType": [
+        "free_subscription",
+        "discount"
+      ],
+      "eligibilityDetail": {
+        "studentRequired": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": true
+      },
+      "availability": {
+        "chinaUsable": "unknown"
+      },
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "evidence": "DI 原文「Canva Education is free for eligible K-12 educators and students」+「eligible registered nonprofits」→ student / educator / other（枚举无 nonprofit、K-12）；description「Apply through…eligibility verificat…"
+    },
+    {
+      "id": "9c553dd82d2d",
+      "title": "Cursor",
+      "audience": [
+        "student",
+        "developer"
+      ],
+      "availability": {
+        "chinaUsable": "unknown"
+      },
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "evidence": "DI 原文「student page points students toward campus and online event promotions」→ student；Cursor 是 AI 编程工具 → developer（推断）。免费档不是完整订阅，benefitType 刻意留空",
+      "inferredFields": [
+        "audience",
+        "availability"
+      ]
+    },
+    {
+      "id": "3c8a9a6a9ee9",
+      "title": "Replit",
+      "audience": [
+        "student",
+        "developer"
+      ],
+      "benefitType": [
+        "discount"
+      ],
+      "eligibilityDetail": {
+        "studentRequired": true
+      },
+      "availability": {
+        "chinaUsable": "unknown"
+      },
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "evidence": "DI 原文「student discounts such as $15 off per month for the first six months of Replit Core」→ student + discount + studentRequired"
+    },
+    {
+      "id": "6013b80f266f",
+      "title": "Zapier",
+      "audience": [
+        "other"
+      ],
+      "benefitType": [
+        "discount"
+      ],
+      "claimRequirements": {
+        "manualApplication": true
+      },
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "evidence": "DI 原文「nonprofits get 15% off any paid plan」→ other（枚举无 nonprofit）+ discount；description「apply through Zapier for Nonprofits」→ manualApplication"
+    },
+    {
+      "id": "7762168d515d",
+      "title": "Make",
+      "audience": [
+        "other"
+      ],
+      "benefitType": [
+        "free_subscription"
+      ],
+      "claimRequirements": {
+        "manualApplication": true
+      },
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "evidence": "DI 原文「12-month free license for eligible NGOs」→ other（枚举无 NGO）+ free_subscription；description「Apply through Make for NGOs」→ manualApplication"
+    },
+    {
+      "id": "c971e33a9cd0",
+      "title": "ChatGPT Plus for Veterans (OpenAI)",
+      "audience": [
+        "other"
+      ],
+      "benefitType": [
+        "free_subscription"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": true
+      },
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "evidence": "DI 原文「one full year of free ChatGPT Plus to eligible veterans and transitioning servicemembers」→ other（枚举无 veterans）+ free_subscription；「working with SheerID for verification」→ identityVerificationReq…"
+    },
+    {
+      "id": "070cad8aa770",
+      "title": "Verla",
+      "audience": [
+        "student"
+      ],
+      "evidence": "description 原文「Verla 是一款为大学生设计的作业助手」→ student"
+    },
+    {
+      "id": "c3d6bd34ebfe",
+      "title": "Getsolved",
+      "audience": [
+        "student",
+        "other"
+      ],
+      "evidence": "description 原文「面向学生、营销人员和专业人士」→ student + other（枚举无营销 / 专业人士）"
+    },
+    {
+      "id": "413a77602a7c",
+      "title": "Tenki Cloud",
+      "audience": [
+        "developer"
+      ],
+      "sourceUrl": "https://futuretools.io/tools/tenki-cloud",
+      "evidence": "description 原文「self-hosted GitHub Actions runners with automatic scaling」是开发者基础设施 → developer（推断）",
+      "inferredFields": [
+        "audience"
+      ]
+    },
+    {
+      "id": "e3af28ce5ca1",
+      "title": "Emergent.sh",
+      "audience": [
+        "developer"
+      ],
+      "sourceUrl": "https://futuretools.io/tools/emergent-sh",
+      "evidence": "description 原文「An IDE for code migration from legacy to modern frameworks through coding agents」→ developer（推断）",
+      "inferredFields": [
+        "audience"
+      ]
+    },
+    {
+      "id": "28434ca44079",
+      "title": "Google AI Studio",
+      "audience": [
+        "developer"
+      ],
+      "sourceUrl": "https://futuretools.io/tools/google-ai-studio",
+      "evidence": "description 原文「A tool for AI development with diverse tools and models」→ developer（推断）",
+      "inferredFields": [
+        "audience"
+      ]
+    },
+    {
+      "id": "97d21ff73d3e",
+      "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": true,
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「新用户注册专享 2000万 免费 Tokens 资源包」→ free_credits + free_api；eligibility「新注册用户（需实名认证）」→ newUserOnly / identityVerificationRequired = true"
+    },
+    {
+      "id": "1688614d6669",
+      "title": "智谱AI 邀请好友注册赠送 Tokens 资源包",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "developer_credit"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "evidence": "discountInfo「邀好友注册赠送 Tokens 资源包（最高 2 亿 Tokens）」→ free_credits + developer_credit；同一句「邀好友实名注册」→ identityVerificationRequired = true 且 manualApplication = false"
+    },
+    {
+      "id": "adcb6471a512",
+      "title": "智谱AI Batch API 批量调用五折",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "discount"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": false
+      },
+      "evidence": "eligibility「所有开发者（批量离线任务）」→ developer 且不限新用户；discountInfo「按标准 API 价格的五折计费」→ discount"
+    },
+    {
+      "id": "ead998e58cd9",
+      "title": "智谱AI 上下文缓存存储限时免费",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "trial"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": false
+      },
+      "evidence": "eligibility「所有调用智谱 API 的开发者」→ developer 且不限新用户；discountInfo「上下文缓存存储限时免费」→ trial"
+    },
+    {
+      "id": "1888ab62bd67",
+      "title": "Doubao-Seed-Character 免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "evidence": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（文本生成）：50万tokens」",
+      "inferredFields": [
+        "audience",
+        "benefitType"
+      ]
+    },
+    {
+      "id": "d6aaee8c7379",
+      "title": "Doubao-Seedream-5.0-lite 免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "evidence": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：50张」",
+      "inferredFields": [
+        "audience",
+        "benefitType"
+      ]
+    },
+    {
+      "id": "45ead69d60cc",
+      "title": "Doubao-Seedream-4.5 免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "evidence": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」",
+      "inferredFields": [
+        "audience",
+        "benefitType"
+      ]
+    },
+    {
+      "id": "7f8c32f6a327",
+      "title": "Doubao-Seedream-4.0 免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "evidence": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」",
+      "inferredFields": [
+        "audience",
+        "benefitType"
+      ]
+    },
+    {
+      "id": "47a4c57f3a15",
+      "title": "Doubao-语音合成 免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "evidence": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符」",
+      "inferredFields": [
+        "audience",
+        "benefitType"
+      ]
+    },
+    {
+      "id": "57847fbcc1ed",
+      "title": "Doubao-声音复刻 免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "evidence": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符 + 10复刻声音」",
+      "inferredFields": [
+        "audience",
+        "benefitType"
+      ]
+    },
+    {
+      "id": "2db62eb1a8a0",
+      "title": "Doubao-流式语音识别 免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "evidence": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」",
+      "inferredFields": [
+        "audience",
+        "benefitType"
+      ]
+    },
+    {
+      "id": "8dada3205ed8",
+      "title": "Doubao-录音文件识别 免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "evidence": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」",
+      "inferredFields": [
+        "audience",
+        "benefitType"
+      ]
+    },
+    {
+      "id": "407572a1e046",
+      "title": "Doubao-embedding-vision 免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "evidence": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（向量模型）：50万tokens」",
+      "inferredFields": [
+        "audience",
+        "benefitType"
+      ]
+    },
+    {
+      "id": "4e659666cbb2",
+      "title": "联网资源 免费额度",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "evidence": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（联网插件）：2万次/月」",
+      "inferredFields": [
+        "audience",
+        "benefitType"
+      ]
+    },
+    {
+      "id": "4caf88e30671",
+      "title": "火山方舟 协作奖励计划：每日免费领取单模型最高 500 万 Tokens",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "developer_credit"
+      ],
+      "claimRequirements": {
+        "accountRequired": true
+      },
+      "evidence": "discountInfo「可免费领取单模型每日最高 500万 Tokens」→ free_credits + developer_credit（协作奖励）；eligibility「火山方舟用户」→ accountRequired"
+    },
+    {
+      "id": "c694e7c5f125",
+      "title": "火山方舟 Agent Plan 限时 9.9 元起",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "discount"
+      ],
+      "claimRequirements": {
+        "accountRequired": true
+      },
+      "evidence": "discountInfo「方舟 Agent Plan 限时首月 9.9 元起」→ discount；eligibility「火山方舟用户（首月优惠）」→ accountRequired"
+    },
+    {
+      "id": "e4bd8003b3d6",
+      "title": "GLM-5.3-Flash 限时五折",
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "discount"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": false
+      },
+      "evidence": "eligibility「所有调用 GLM-5.3-Flash 的开发者」→ developer 且不限新用户；discountInfo「GLM-5.3-Flash…限时五折」→ discount"
+    }
+  ]
+}

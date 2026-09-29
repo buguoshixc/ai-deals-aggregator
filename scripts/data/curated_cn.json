@@ -20,7 +20,40 @@
       "个人开发者"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_credits",
+      "free_api"
+    ],
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://www.volcengine.com/docs/6359/1279663",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": "unknown",
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "腾讯混元 新用户 100 万 tokens 免费资源包",
@@ -43,7 +76,54 @@
       "需实名认证"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_credits",
+      "free_api"
+    ],
+    "eligibilityDetail": {
+      "newUserOnly": true,
+      "identityVerificationRequired": true
+    },
+    "claimRequirements": {
+      "accountRequired": true,
+      "manualApplication": false
+    },
+    "availability": {
+      "chinaUsable": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated",
+          "note": "eligibility 原文「通过腾讯云实名认证的新用户」"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "availability": {
+          "basis": "inferred",
+          "derived": "inferred",
+          "note": "eligibility 原文「通过腾讯云实名认证的新用户」：大陆实名认证只能由持大陆身份证的用户完成，据此推断大陆用户可注册并领取（官方未逐条写明额度是否限地区，故按 §2.5.1 第二档记 true 并留下推理链）"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   },
   {
     "title": "讯飞星火 Spark Lite 轻量级大模型免费使用",
@@ -65,7 +145,40 @@
       "创建应用即可调用"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_model",
+      "free_api"
+    ],
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://www.xfyun.cn/doc/spark/HTTP%E8%B0%83%E7%94%A8%E6%96%87%E6%A1%A3.html",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": "unknown",
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "讯飞开放平台 新手免费福利礼包",
@@ -88,7 +201,44 @@
       "乐享会员 2888 元"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_credits",
+      "developer_credit"
+    ],
+    "eligibilityDetail": {
+      "newUserOnly": true,
+      "identityVerificationRequired": "unknown"
+    },
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://www.xfyun.cn/beginner",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   },
   {
     "title": "Kimi 开放平台 新用户 15 元代金券",
@@ -110,7 +260,53 @@
       "需实名认证"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_credits",
+      "developer_credit"
+    ],
+    "eligibilityDetail": {
+      "newUserOnly": true,
+      "identityVerificationRequired": true
+    },
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "availability": {
+      "chinaUsable": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://www.kimi.com/help/kimi-api/api-free-trial",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated",
+          "note": "description 原文「完成实名认证后发放」"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "availability": {
+          "basis": "inferred",
+          "derived": "inferred",
+          "note": "eligibility 原文「Kimi 开放平台新注册用户（需实名认证）」：大陆实名认证只能由持大陆身份证的用户完成，据此推断大陆用户可注册并领取（官方未逐条写明额度是否限地区，故按 §2.5.1 第二档记 true 并留下推理链）"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   },
   {
     "title": "商汤日日新 Token Plan 首月限时免费",
@@ -133,7 +329,40 @@
       "无门槛配额"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_api",
+      "trial"
+    ],
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://www.sensetime.com/cn/news/51170639",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": "unknown",
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "硅基流动 免费模型专区",
@@ -155,7 +384,45 @@
       "文本 / 向量 / 图像 / 语音"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_model",
+      "free_api"
+    ],
+    "claimRequirements": {
+      "accountRequired": true,
+      "manualApplication": false
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://siliconflow.cn/pricing",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": false,
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "阶跃星辰 StepAudio 3 语音大模型限时免费",
@@ -177,7 +444,40 @@
       "按 Token 计费其他"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_model",
+      "trial"
+    ],
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": "unknown",
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "百川智能 海纳百川计划 免费使用 M3Plus API",
@@ -199,7 +499,39 @@
       "需申请审核"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_api"
+    ],
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://platform.baichuan-ai.com/docs/guide",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": "unknown",
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "扣子 Coze 新用户首次注册赠送 1500 活动积分",
@@ -222,7 +554,45 @@
       "可抵扣 Token"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_credits",
+      "developer_credit"
+    ],
+    "eligibilityDetail": {
+      "newUserOnly": true,
+      "identityVerificationRequired": "unknown"
+    },
+    "claimRequirements": {
+      "accountRequired": true,
+      "manualApplication": false
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://docs.coze.cn/coze_pro_credits",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   },
   {
     "title": "扣子 Coze 个人版每日登录赠送 1500 活动积分",
@@ -245,7 +615,45 @@
       "个人免费版可用"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_credits",
+      "developer_credit"
+    ],
+    "claimRequirements": {
+      "accountRequired": true,
+      "manualApplication": false
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://docs.coze.cn/guides_coze_points_activity_rules",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": false,
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "扣子 Coze 部分模型限时免费 每模型 100 次/天",
@@ -268,7 +676,43 @@
       "不扣减积分"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_model"
+    ],
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://docs.coze.cn/coze_pro_model_fee",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": false,
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "扣子 Coze 官方付费插件每日免费额度 10-30 次/天",
@@ -291,7 +735,44 @@
       "覆盖图像与音视频"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_api",
+      "free_credits"
+    ],
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://docs.coze.cn/coze_pro_plugin_fee",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": false,
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "360智脑开放平台 新用户获赠体验券/代金券（官方协议条款）",
@@ -314,7 +795,48 @@
       "需先申请开通"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_credits",
+      "developer_credit"
+    ],
+    "eligibilityDetail": {
+      "newUserOnly": true,
+      "identityVerificationRequired": true
+    },
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "availability": {
+      "chinaUsable": "unknown"
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://ai.360.com/open/zh/terms",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated",
+          "note": "description 原文「需 360 账号、绑定手机号」：国内手机号说明国内用户可注册，但协议未写明券种与 API 调用是否限地区，故 chinaUsable 记 unknown；原文只写「绑定手机号」未写大陆手机号，且未写「实名认证」，未达 §2.5.1 第二档，故 chinaUsable 保持 unknown"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   },
   {
     "title": "MiniMax 开放平台 Token Plan 好友邀请 受邀人 9 折",
@@ -337,7 +859,44 @@
       "代金券抵扣 API 费用"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "discount"
+    ],
+    "claimRequirements": {
+      "accountRequired": true,
+      "manualApplication": false
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://platform.minimax.cn/docs/token-plan/faq",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": false,
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "MiniMax MiniMax-M3 按量计费永久五折",
@@ -360,7 +919,45 @@
       "官方标注「永久」"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "discount",
+      "free_api"
+    ],
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": false,
+      "identityVerificationRequired": "unknown"
+    },
+    "claimRequirements": {
+      "accountRequired": true,
+      "manualApplication": false
+    }
   },
   {
     "title": "海螺AI 会员限时优惠价 基础会员 55 元/月",
@@ -383,7 +980,43 @@
       "含每月贝壳额度"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "general"
+    ],
+    "benefitType": [
+      "discount"
+    ],
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://hailuoai.com/vip",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": false,
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "魔搭 ModelScope API-Inference 免费推理 API（动态限流）",
@@ -406,6 +1039,52 @@
       "额度并发动态调整"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_api",
+      "free_model"
+    ],
+    "eligibilityDetail": {
+      "newUserOnly": false,
+      "identityVerificationRequired": true
+    },
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "availability": {
+      "chinaUsable": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://www.modelscope.cn/docs/model-service/API-Inference/limits",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated",
+          "note": "eligibility 原文「绑定阿里云账号并完成实名认证」"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "availability": {
+          "basis": "inferred",
+          "derived": "inferred",
+          "note": "eligibility 原文「该阿里云账号已通过实名认证」：大陆实名认证只能由持大陆身份证的用户完成，据此推断大陆用户可注册并领取（官方未逐条写明额度是否限地区，故按 §2.5.1 第二档记 true 并留下推理链）"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   }
 ]

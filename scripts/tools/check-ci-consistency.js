@@ -112,11 +112,22 @@ const GATE_ACTION_REF = './.github/actions/gate';
 const GATE_STEP_NAMES = [
   'Install dependencies',
   'Validate data (strict)',
+  // v1.1 收口新增：可重建性（值必须有源）。与 strict 分开，因为红的含义不同 ——
+  // strict 红 = 值不合法；这一条红 = 值合法但**没有任何文件能重建它**。
+  'Reproducibility gate (no value without a source)',
+  // v1.1 收口新增：`migrate.js --audience` 的验收比对。它此前**跑不起来**（缺 --before
+  // 基线文件），于是「能改写 deals.json 的命令行工具」没有任何 CI 守卫。改成 9 条合成
+  // 夹具逐分支覆盖后才接得进来；接进来之前它就已经抓到一处潜伏缺陷（见 action.yml 注释）。
+  'Migration verifier (audience provenance backfill)',
   'Translation gate (drift blocks, pending ages out)',
   'Translation self-test',
   'Expiry self-test',
   'Text / cleanText self-test',
   'Source-health self-test',
+  // v1.1 新增：受众字段（三态语义 / merge 可信度仲裁 / 措辞同源）的全部红线守卫都在这支自测里。
+  // 它原先只在本机跑，于是这几类回归在 CI 里看不见（t1 核验的 B5）。判断标准不是"多新"，
+  // 而是"它红的时候有没有别的步骤会替它红"——没有，所以必须进来。
+  'Audience self-test',
   'App-token self-test',
   'Assemble site (same path as deploy.yml)',
   'Prepare browser for the real-browser gate',
