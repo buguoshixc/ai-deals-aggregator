@@ -629,6 +629,8 @@
     .dgrid .cv .k { font-size: 10.5px; color: var(--mut); letter-spacing: .4px; }
     .dgrid .cv .v { font-size: 13px; margin-top: var(--s1); color: var(--ink); word-break: break-word; }
     .dgrid .cv .v.ok { color: var(--ok); font-weight: 600; }
+    /* v1.1：「尚未确认」的取值用告警色标出来 —— 它不是「否」，但也不该看起来像一条普通信息 */
+    .dgrid .cv .v.warn { color: var(--warn); }
     .dmodels { margin-top: var(--s4); }
     .dmodels .lb { font-size: 10.5px; color: var(--mut); letter-spacing: .4px; }
     .dmodels .mlist { display: flex; gap: var(--s1); flex-wrap: wrap; margin-top: var(--s2); }
@@ -947,6 +949,11 @@
 
     <!--SHARED:footer:START-->
     <footer>
+      <!-- 分类入口。放在页脚而不是顶栏：顶栏那一条已经排满（品牌 + 主题切换 + 返回），
+           而且这三个页面是「按需求找」的入口，不是每天都要看一眼的东西。
+           链接用占位符，由 build-local.js 按输出深度统一解析（ROUTE_HREFS）——
+           页脚是一份共享片段，写死相对路径在详情页那一层必然错。 -->
+      <p class="catnav" aria-label="按需求浏览">按需求浏览：<a href="__STUDENT_HREF__">学生优惠</a> · <a href="__DEVELOPER_HREF__">开发者优惠</a> · <a href="__FREEAPI_HREF__">免费 API</a></p>
       <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span> · <a href="__STATUS_HREF__">数据源状态</a></p>
       <p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p>
       <p>本站不收录付费推广位，排序与推荐理由不出售。</p>
@@ -974,6 +981,17 @@
      * 分区：① 常量与档位  ② 厂商归一 + logo  ③ 时间与转义  ④ 折叠
      *       ⑤ 筛选 / 排序 / 渲染  ⑥ 构建期入口（default* 前缀）
      * ================================================================ */
+
+    /* AUDIENCE:START
+     * 前端的措辞同源块：与 scripts/lib/audience.js 的 WORDING_CONTRACT 逐项一致，
+     * 由 checkWordingContract() 做文本级比对（selftest:audience 与 validate --strict 共用）。
+     * RENDER-CORE 在 vm 沙箱里跑、不能 require，所以这份副本在所难免——比对就是它的牙。
+     *
+     * 改这里的任何一个字，都必须同时改 scripts/lib/audience.js 的对应表；
+     * 只改一边会立刻让 validate --strict 变红（报出具体是哪一项不一致）。
+     */
+    const AUDIENCE_WORDING = {"triLabel":{"true":"是","false":"否","unknown":"尚未确认"},"chinaUsableLine":{"true":"中国大陆用户可正常注册使用","false":"中国大陆用户不可用","unknown":"尚未确认"},"chinaUsableLineWithRestriction":{"true":"中国大陆用户可用（{restriction}）","false":"中国大陆用户不可用（{restriction}）"},"FIELD_LABELS":{"audience":"适用人群","benefitType":"福利类型","eligibilityDetail":"资格门槛","claimRequirements":"领取条件","availability":"中国大陆可用情况","chinaUsable":"中国大陆可用性"},"AUDIENCE_LABELS":{"student":"学生","developer":"开发者","educator":"教师 / 教研人员","education":"教育机构","general":"所有用户","other":"其他人群"},"BENEFIT_LABELS":{"free_subscription":"免费订阅","free_credits":"免费额度","free_api":"免费 API","free_model":"免费模型","discount":"折扣优惠","trial":"免费试用","student_plan":"学生专属计划","developer_credit":"开发者赠送额度","other":"其他"},"ELIGIBILITY_LABELS":{"studentRequired":"需要学生身份","educationEmailRequired":"需要教育邮箱","identityVerificationRequired":"需要实名 / 身份认证","newUserOnly":"仅限新用户"},"CLAIM_LABELS":{"creditCardRequired":"需要信用卡","manualApplication":"需要人工申请 / 审核","accountRequired":"需要注册账号"}};
+    /* AUDIENCE:END */
 
     const REGION_LABELS = { cn: '国内', global: '国外' };
     const SOON_DAYS = 7;
@@ -1394,6 +1412,123 @@
       return /^https?:\/\//i.test(trimmed) ? trimmed : null;
     }
 
+    /* ----------------------------------------------------------------
+     * ④.5 学生 / 开发者模型的详情页行（v1.1）
+     *
+     * 五个新字段渲染成详情页 dgrid 里的若干行。三条纪律，都是本阶段的立身之本：
+     *
+     *  ① **没有证据 ≠ 否**。三态 `true` / `false` / `"unknown"` 的措辞只从
+     *     `AUDIENCE_WORDING.triLabel` 出，`"unknown"` 落到「尚未确认」——
+     *     绝不是「否」。把「我们没查到」写成「否」，读者会据此放弃一条其实能领的优惠。
+     *  ② **整组无数据不渲染这一组**。字段缺席（旧条目、采集器没写）时整行不出现：
+     *     一行「未收录」是噪音，读者分不清「没查」与「没有」。而 `chinaUsable:'unknown'`
+     *     是**唯一**的例外 —— 它出「尚未确认」（见 `chinaUsableLine` 的注释）。
+     *  ③ 措辞的同源副本就是上面那个 `AUDIENCE_WORDING` 常量（`AUDIENCE:START/END` 标记块），
+     *     由 `selftest:audience` 与 `validate --strict` 做**文本级**逐字节比对。
+     *     ⚠️ 下面这段绝不能各写一份中文：改措辞只改那个块，改完必须跑 `npm run selftest:audience`。
+     *
+     * 与 `scripts/lib/audience.js` 的 `audienceRows()` 是**同源语义**（同一张键名 / 同一批标签），
+     * 但这份跑在浏览器的 vm 沙箱里、不能 require，所以是副本；行为一致性由 selftest 逐条比对。
+     * ---------------------------------------------------------------- */
+
+    /** 数组字段（audience / benefitType）的中文摘要；无明确人群时返回 '' —— **不返回「所有用户」** */
+    function audienceLabelsOf(deal, field, labels) {
+      const list = deal && Array.isArray(deal[field]) ? deal[field] : [];
+      return list.map(key => labels[key] || key).join(' / ');
+    }
+
+    /** 三态 → 中文。**唯一出处是常量块**，这里不再写一遍字面量 */
+    function audienceTriText(value) {
+      const map = AUDIENCE_WORDING.triLabel;
+      if (value === true) return map.true;
+      if (value === false) return map.false;
+      return map.unknown;
+    }
+
+    /**
+     * 中国大陆可用性那一行。⚠️ 措辞与拼句规则都必须与 `scripts/lib/audience.js` 的
+     * `chinaUsableLine()` **逐字**一致：
+     *   true 且无限制 → `chinaUsableLine.true`；true 带限制 → `chinaUsableLineWithRestriction.true`
+     *   false 带限制 → `chinaUsableLineWithRestriction.false`；"unknown" → 「尚未确认」
+     *   只写了地区限制、没写三态 → 只说地区限制，**不替它推可用性**
+     *
+     * 这里踩过一次：我最初在**两种情况下都拼基础句** `chinaUsableLine.true`，于是带限制时
+     * 前端出「中国大陆用户可正常注册使用（…）」、后端出「中国大陆用户可用（…）」——
+     * 而契约的措辞表当时只钉了**不带限制**的那一句，所以两边都「符合字面契约」却互相矛盾，
+     * 同源比对也照不到（它只比常量表，不比拼句）。现在模板 `chinaUsableLineWithRestriction`
+     * 进了契约块，**拼句规则因此只剩一份**：这里只负责替换 `{restriction}` 槽位。
+     */
+    function audienceChinaLine(deal) {
+      const words = AUDIENCE_WORDING.chinaUsableLine;
+      const templates = AUDIENCE_WORDING.chinaUsableLineWithRestriction;
+      const availability = deal && deal.availability;
+      if (!availability || typeof availability !== 'object') return '';
+      const value = availability.chinaUsable;
+      const restriction = typeof availability.regionRestriction === 'string'
+        ? availability.regionRestriction.trim() : '';
+      if (value === true) {
+        return restriction ? audienceFillRestriction(templates.true, restriction) : words.true;
+      }
+      if (value === false) {
+        return restriction ? audienceFillRestriction(templates.false, restriction) : words.false;
+      }
+      if (value === 'unknown') return words.unknown;
+      return restriction || '';
+    }
+
+    /** 填 `{restriction}` 槽位。与 lib/audience.js 的 fillRestriction 同一语义（split/join，不用 replace 免得 $ 被当替换模式） */
+    function audienceFillRestriction(template, restriction) {
+      return String(template).split('{restriction}').join(restriction);
+    }
+
+    /**
+     * 详情页要渲染的新字段行。**只输出有明确数据的行**：
+     *   · 整组缺席 → 不出行；
+     *   · 三态里为 `"unknown"` 的**单个键** → 该键不出行（它是「我们没查到」，不是信息）；
+     *   · `chinaUsable:'unknown'` 是唯一例外 → 出「尚未确认」（这一行本身就是决策输入）。
+     * @returns {Array<{key:string, label:string, value:string}>}
+     */
+    function audienceRows(deal) {
+      const rows = [];
+      if (!deal || typeof deal !== 'object') return rows;
+      const words = AUDIENCE_WORDING;
+
+      const audience = audienceLabelsOf(deal, 'audience', words.AUDIENCE_LABELS);
+      if (audience) rows.push({ key: 'audience', label: words.FIELD_LABELS.audience, value: audience });
+
+      const benefit = audienceLabelsOf(deal, 'benefitType', words.BENEFIT_LABELS);
+      if (benefit) rows.push({ key: 'benefitType', label: words.FIELD_LABELS.benefitType, value: benefit });
+
+      const eligibility = deal.eligibilityDetail || {};
+      AUDIENCE_ELIGIBILITY_KEYS.forEach(key => {
+        const value = eligibility[key];
+        if (value === true || value === false) {
+          rows.push({ key: 'eligibilityDetail.' + key, label: words.ELIGIBILITY_LABELS[key], value: audienceTriText(value) });
+        }
+      });
+
+      const claim = deal.claimRequirements || {};
+      AUDIENCE_CLAIM_KEYS.forEach(key => {
+        const value = claim[key];
+        if (value === true || value === false) {
+          rows.push({ key: 'claimRequirements.' + key, label: words.CLAIM_LABELS[key], value: audienceTriText(value) });
+        }
+      });
+
+      const region = deal.availability && typeof deal.availability.regionRestriction === 'string'
+        ? deal.availability.regionRestriction.trim() : '';
+      const china = deal.availability && deal.availability.chinaUsable;
+      if (china === true || china === false || china === 'unknown' || region) {
+        rows.push({ key: 'availability.chinaUsable', label: words.FIELD_LABELS.chinaUsable, value: audienceChinaLine(deal) });
+      }
+
+      return rows;
+    }
+
+    /** 三态映射的键次序与 scripts/lib/audience.js 的 ELIGIBILITY_KEYS / CLAIM_KEYS 一致（渲染次序即此） */
+    const AUDIENCE_ELIGIBILITY_KEYS = ['studentRequired', 'educationEmailRequired', 'identityVerificationRequired', 'newUserOnly'];
+    const AUDIENCE_CLAIM_KEYS = ['creditCardRequired', 'manualApplication', 'accountRequired'];
+
     function escapeHtml(value) {
       const div = document.createElement('div');
       div.textContent = value === null || value === undefined ? '' : String(value);
@@ -1700,12 +1835,41 @@
      * 以及**剥掉厂商名与型号后什么都没剩下**的条目（那种「类型」是空的，键会退化成
      * 厂商本身，把「Cursor」和「Cursor IDE」这类不同条目并成一张）都不参与折叠。
      */
+    /**
+     * 折叠键里的人群分量（v1.1 收口补）。
+     *
+     * ## 为什么折叠必须看人群
+     *
+     * 折叠说的是「这几条其实是同一条优惠的不同型号」。而一张折叠卡只写得下一份
+     * **适用人群**摘要、并且只链到**一个**代表成员的详情页。把「仅限学生」和「人人可用」
+     * 的两条并成一张卡，那张卡上的每一句话都会对其中一半成员不成立 ——
+     * 这正是本项目一直在拦的那类失真：**页面比事实更确定**。
+     *
+     * 与既有的第四条主键分量（`eligibility` 原文）是同一个道理，只是那条比的是原文、
+     * 这条比的是结构化后的人群：原文写法不同但含义相同的两条，以前会因为
+     * `eligibility` 字符串不同而分开，现在也不会被这条误并（分量是「相等才同组」）。
+     *
+     * ## 为什么现在才加、以及为什么不改变任何现有行为
+     *
+     * 用 RENDER-CORE 本体（vm 沙箱，不是第二份实现）实测过：当前 6 个多成员组里
+     * **audience 与 collections 不一致的组各 0 个** —— 也就是说这条约束今天
+     * 一条卡片都不会改变（构建自检会断言卡片数不变）。
+     * 它现在加进来，是因为「今天恰好成立」与「结构上不可能不成立」是两件事：
+     * 前者靠数据碰巧，后者靠代码。哪天采集器给同一个折叠组里的某一条补上 `audience`，
+     * 前者会静默产出一张对一半成员说谎的卡。
+     */
+    const audienceKeyOf = deal => {
+      const list = Array.isArray(deal.audience) ? [...deal.audience].sort() : [];
+      return list.join(',');
+    };
+
     function foldKey(deal) {
       if (!deal || deal.type !== 'deal') return null;
       if (!deal.vendor || !deal.url) return null;
       const kind = offerKindOf(deal);
       if (!kind) return null;
-      return [canonicalVendorOf(deal).key, kind, deal.eligibility || '', deal.validity || ''].join('\u0001');
+      return [canonicalVendorOf(deal).key, kind, deal.eligibility || '', deal.validity || '',
+        audienceKeyOf(deal)].join('\u0001');
     }
 
     /** 折叠标题里的显示名：优先来源名（百度千帆 / 火山方舟），人工策展来源退回厂商名 */
@@ -1986,8 +2150,10 @@
         const parts = key.split('\u0001');
         const tail = kindTailOf(parts[1] || '');
         if (!tail) continue;
-        // 桶里同样带上适用条件与有效期：合并轮不许绕过主键那条诚实性约束
-        const bucket = [parts[0], tail, parts[2] || '', parts[3] || ''].join('\u0001');
+        // 桶里同样带上适用条件、有效期与人群：合并轮不许绕过主键那几条诚实性约束。
+        // （`parts[4]` 是人群分量 —— 忘了带上它，合并轮就会把刚在 `foldKey` 里
+        //   分开的两组又并回去，等于这条约束白加。）
+        const bucket = [parts[0], tail, parts[2] || '', parts[3] || '', parts[4] || ''].join('\u0001');
         if (!kinds.has(bucket)) kinds.set(bucket, []);
         kinds.get(bucket).push(key);
       }
@@ -2042,8 +2208,29 @@
      */
     const DEFAULT_FILTERS = {
       tab: 'deals', region: '', category: '', vendor: '', search: '', sort: 'tier',
+      // 分类筛选（学生 / 开发者 / 免费 API）。
+      //
+      // ⚠️ 这里**不重新判断分类归属** —— 判据只有一处，在 `scripts/lib/audience.js` 的
+      // `collectionsOf()`，构建期算好写进 dist/deals.json 的 `collections` 字段。
+      // 前端只做一件事：`deal.collections` 里有没有这个 slug。
+      //
+      // 为什么不在前端再写一份判据：那样「首页筛出 12 条」与「/student/ 列出 12 条」就成了
+      // 两份实现的结果，任何一侧改动都会让两个数字分头变化，而两边各自的测试都会是绿的。
+      // 这一阶段已经在这一类分歧上栽过（覆盖率口径 vs 分类口径）。判据写一遍，结果当数据传。
+      collection: '',
       fav: false, favIds: []
     };
+
+    /**
+     * 分类入口的**展示顺序与文案**（判据不在这里，见 DEFAULT_FILTERS 的注释）。
+     * slug 必须与 `audience.COLLECTION_PAGES` 一致 —— 产物自检会对着
+     * dist/deals.json 里真实出现过的 collections 值逐个核对，写错或漏写会红。
+     */
+    const COLLECTION_FACETS = [
+      { key: 'student', label: '学生', icon: '🎓' },
+      { key: 'developer', label: '开发者', icon: '⌨' },
+      { key: 'free-api', label: '免费 API', icon: '⚡' }
+    ];
 
     function defaultFilters() {
       return Object.assign({}, DEFAULT_FILTERS);
@@ -2063,6 +2250,63 @@
       return Object.assign(defaultFilters(), { tab: 'tools' });
     }
 
+    /**
+     * 学生 / 开发者字段的**检索串**（只进搜索 haystack，绝不参与渲染）。
+     *
+     * 与 lib/audience.js 的 audienceSearchText() 同源语义；中文词**只从
+     * AUDIENCE:START/END 块的 AUDIENCE_WORDING 取**（那是与详情页渲染同源的措辞副本），
+     * 前端绝不允许再出现第二份中文标签表。
+     *
+     * 两条纪律：
+     *  ① **只拼已知值**。三态写 `"unknown"` 表示「我们查过、没有证据」，它一个词都不拼 ——
+     *     否则「信用卡」会搜出一堆「尚未确认要不要信用卡」的条目，搜索结果虚高
+     *     （契约 §8「首页卡片」：只把新字段的中文标签词并入搜索 haystack）。
+     *  ② 拼的是**页面上真的会出现的字**：`true` / `false` 都进（详情页对两者都渲染
+     *     「需要信用卡」那一行的标签，值是「是」/「否」），但**不拼** triLabel 的「是」「否」
+     *     —— 单字进 haystack 会让一次搜索命中半个页面。
+     *     lib 那边还有一条「不需要信用卡」的搜索别名，它不在任何渲染路径上，
+     *     这里刻意不复刻：措辞只许有一个来源（真要加，先加进 AUDIENCE_WORDING 块）。
+     */
+    function audienceSearchText(deal) {
+      if (!deal || typeof deal !== 'object') return '';
+      const wording = (typeof AUDIENCE_WORDING === 'object' && AUDIENCE_WORDING) || {};
+      const AUDIENCE_LABELS = wording.AUDIENCE_LABELS || {};
+      const BENEFIT_LABELS = wording.BENEFIT_LABELS || {};
+      const ELIGIBILITY_LABELS = wording.ELIGIBILITY_LABELS || {};
+      const CLAIM_LABELS = wording.CLAIM_LABELS || {};
+      const CHINA_LINE = wording.chinaUsableLine || {};
+      const parts = [];
+
+      // 枚举值本身也拼进去：方便直接搜 `student` / `free_api`
+      (Array.isArray(deal.audience) ? deal.audience : []).forEach(key => {
+        parts.push(key, AUDIENCE_LABELS[key]);
+      });
+      (Array.isArray(deal.benefitType) ? deal.benefitType : []).forEach(key => {
+        parts.push(key, BENEFIT_LABELS[key]);
+      });
+
+      // 三态映射：逐键走**数据自己的键**（白名单由 schema 把关，这里不再抄一份键表），
+      // 只认 true / false；"unknown" 与缺席一样安静。
+      const pushTriKeys = (map, labels) => {
+        if (!map || typeof map !== 'object') return;
+        Object.keys(map).forEach(key => {
+          if (map[key] === true || map[key] === false) parts.push(labels[key]);
+        });
+      };
+      pushTriKeys(deal.eligibilityDetail, ELIGIBILITY_LABELS);
+      pushTriKeys(deal.claimRequirements, CLAIM_LABELS);
+
+      // 中国大陆可用性：只在**已知**时拼措辞 —— "unknown" 一声不吭
+      // （那是「尚未确认」，既不是可用也不是不可用）。
+      // 只写了地区限制、没写三态的条目，仍然把原文摘要拼进去。
+      const availability = deal.availability && typeof deal.availability === 'object' ? deal.availability : {};
+      if (availability.chinaUsable === true) parts.push(CHINA_LINE.true);
+      else if (availability.chinaUsable === false) parts.push(CHINA_LINE.false);
+      if (typeof availability.regionRestriction === 'string') parts.push(availability.regionRestriction);
+
+      return parts.filter(Boolean).join(' ');
+    }
+
     function matches(deal, filters) {
       if (filters.tab === 'deals') {
         if (deal.type !== 'deal') return false;
@@ -2073,6 +2317,10 @@
       if (filters.region && deal.region !== filters.region) return false;
       if (filters.category && deal.category !== filters.category) return false;
       if (filters.vendor && vendorOf(deal).key !== filters.vendor) return false;
+      // 分类筛选：只读构建期算好的 `collections`（判据的唯一出处是 audience.collectionsOf）。
+      // 老数据里没有这个字段时按「不属于任何分类」处理 —— 与「查过、没有依据」一致，
+      // 不猜、也不因为字段缺失就把条目漏进分类页。
+      if (filters.collection && !(deal.collections || []).includes(filters.collection)) return false;
       if (filters.search) {
         // 用户能看见的文字都必须能被搜到。中文译文（deal.zh.*）是**渲染出来**的正文
         // （卡片「中文」胶囊 + 详情弹层里的可折叠译文块），此前的 haystack 里一个字都没有，
@@ -2080,6 +2328,7 @@
         // （详情弹层里的「有效期说明」「价格阶梯」两行），一起补上。
         const haystack = [deal.title, deal.vendor, deal.discountInfo, deal.description, deal.category,
           deal.source, deal.eligibility, deal.validity, deal.priceLine, zhSearchText(deal),
+          audienceSearchText(deal),
           (deal.features || []).join(' ')]
           .filter(Boolean).join(' ').toLowerCase();
         if (!haystack.includes(filters.search)) return false;
@@ -2087,15 +2336,47 @@
       return true;
     }
 
+    /**
+     * 完全同分时的收尾比较 —— **让次序与数据文件的行序无关**（v1.1 收口补）。
+     *
+     * `compareCards` 在「档位相同 + 截止情况相同 + 最近更新相同」时返回 0，
+     * 于是那两张卡的先后完全由 `deals.json` 里的行序决定：换一次采集、某一行的位置变了，
+     * 默认视图的顺序就跟着变。既有的 `expiry` 排序已经因为同一个理由补过一次
+     * （注释里写着「旧实现两档之间返回 0，等于没排，换个数据文件就换顺序」），
+     * 这里是同一条规矩补到 `tier` 这条主排序上。
+     *
+     * ## 为什么收尾维度选「人群」而不是随便挑个字段
+     *
+     * ① 它是这一阶段新增的、读者最关心的一维（「这条是不是给我的」）；
+     * ② 同分的两张卡往往就是同一类优惠的不同型号，按人群聚在一起比按文件行序可解释；
+     * ③ 最后用标题兜底，保证**全序** —— 不兜底的话，两条标题与人群都相同的记录仍会退回行序。
+     *
+     * ## 这条改动的边界（有意收窄）
+     *
+     * 它**只在两张卡已经逐项同分时**才生效，不改变任何「有分可比」的相对次序。
+     * 首页没有用户画像，所以「按人群偏好排序」（学生优先等）是没有依据的 ——
+     * 那需要先问用户是谁，而不是替他假设。这里只让次序确定、可复现、可解释。
+     */
+    function tieBreak(a, b) {
+      const ka = (Array.isArray(a.audience) ? [...a.audience].sort() : []).join(',');
+      const kb = (Array.isArray(b.audience) ? [...b.audience].sort() : []).join(',');
+      if (ka !== kb) return ka < kb ? -1 : 1;
+      return String(a.title || '').localeCompare(String(b.title || ''), 'zh-Hans-CN');
+    }
+
     function compareCards(a, b) {
       if (a.tier !== b.tier) return a.tier - b.tier;
       const da = daysUntil(a.expiresAt);
       const db = daysUntil(b.expiresAt);
-      if (da === null && db === null) return String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
+      if (da === null && db === null) {
+        const bySeen = String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
+        return bySeen !== 0 ? bySeen : tieBreak(a, b);
+      }
       if (da === null) return 1;
       if (db === null) return -1;
       if (da !== db) return da - db;
-      return String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
+      const bySeen = String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
+      return bySeen !== 0 ? bySeen : tieBreak(a, b);
     }
 
     /** 打上档位标记：排序与角标都读这里算出的 tier，避免两次推导出不同结果 */
@@ -2119,7 +2400,8 @@
           const sb = expiryState(b);
           if (sa.rank !== sb.rank) return sa.rank - sb.rank;
           if (sa.key === 'due' && sa.days !== sb.days) return sa.days - sb.days;
-          return String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
+          const bySeen = String(b.lastSeen || '').localeCompare(String(a.lastSeen || ''));
+          return bySeen !== 0 ? bySeen : tieBreak(a, b);
         });
       }
       return list.map(withTier).sort(compareCards);
@@ -2181,6 +2463,14 @@
         count: count({ region: region === filters.region ? '' : region })
       }));
 
+      // 分类入口：计数与真正渲染同源（走同一个 count()，即 筛选 → 折叠 → 收藏收敛）。
+      // 与 region 的写法一致：已经选中的那一项显示「取消这个筛选后」的条数，
+      // 于是按钮上的数字始终是「点下去会看到多少条」。
+      const collections = COLLECTION_FACETS.map(item => ({
+        key: item.key, label: item.label, icon: item.icon,
+        count: count({ collection: item.key === filters.collection ? '' : item.key })
+      }));
+
       const vendors = new Map();
       for (const deal of scopeFor({ vendor: '' })) {
         const vendor = vendorOf(deal);
@@ -2199,6 +2489,7 @@
       return {
         tabs: tabs,
         regions: regions,
+        collections: collections,
         vendors: vendorList,
         categories: categories,
         base: base
@@ -2238,6 +2529,22 @@
           escapeAttr(region.key) + '" aria-pressed="' + (filters.region === region.key ? 'true' : 'false') + '">' +
           escapeHtml(region.label) + '<b>' + region.count + '</b></button>');
       });
+
+      // 分类入口（学生 / 开发者 / 免费 API）。刻意紧跟在地区后面：
+      // 「国内 / 国外」回答的是「我在哪」，分类回答的是「我是谁、我要什么」——
+      // 两者是同一层的缩小条件，放在一起用户才会连着用。
+      // 计数为 0 的不渲染：一个点下去空空如也的入口不如没有。
+      const liveCollections = model.collections.filter(item => item.count > 0 || filters.collection === item.key);
+      if (liveCollections.length) {
+        parts.push('<span class="fsep"></span>');
+        liveCollections.forEach(item => {
+          parts.push('<button type="button" class="f col' + (filters.collection === item.key ? ' on' : '') +
+            '" data-facet="collection" data-value="' + escapeAttr(item.key) + '" aria-pressed="' +
+            (filters.collection === item.key ? 'true' : 'false') + '" title="只看' + escapeAttr(item.label) +
+            '相关的优惠（与 ' + escapeAttr('/' + item.key + '/') + ' 这一页同一份判据）">' +
+            '<span aria-hidden="true">' + item.icon + '</span> ' + escapeHtml(item.label) + '<b>' + item.count + '</b></button>');
+        });
+      }
 
       if (model.vendors.length) {
         parts.push('<span class="fsep"></span>');
@@ -2495,6 +2802,15 @@
           (zhField ? zhBlock(deal, zhField) : '') + '</div>');
       };
       cell('适用条件', deal.eligibility, null, 'eligibility');
+      // v1.1 学生 / 开发者模型：只在**有明确数据**时出行（整组无数据则整组不出现）。
+      // 位置就地插在「适用条件」之后：受众与资格门槛是同一件事的两种说法，隔开读会断线。
+      audienceRows(deal).forEach(row => {
+        // `chinaUsable:'unknown'` 用 --warn 标一下：这一行是「要不要为它折腾」的决策输入，
+        // 「尚未确认」本身有决策价值（明确告诉他别把这条当已确认可用），值得一眼看见。
+        const cls = row.key === 'availability.chinaUsable' && row.value === AUDIENCE_WORDING.chinaUsableLine.unknown
+          ? 'warn' : null;
+        cell(row.label, row.value, cls);
+      });
       cell('有效期说明', deal.validity, null, 'validity');
       // 三分类都落在这一行：有截止日给日期与剩余天数；没有就给「长期活动」或「未标注截止日期」
       const expiry = expiryState(deal);

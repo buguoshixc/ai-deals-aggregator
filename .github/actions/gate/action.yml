@@ -44,6 +44,35 @@ runs:
       shell: bash
       run: node scripts/validate.js --strict
 
+    # 可重建性门禁（v1.1 收口补）：`deals.json` 里不许有「没有任何源」的值。
+    #
+    # 为什么它是独立一步、而不是并进 strict：两者问的是不同问题，红的时候处置方式也不同。
+    # strict 问「值合不合法」；这一条问「这个值是谁说的」——把六字段剥掉重放一轮 merge，
+    # 还产不产得出来。合并不了说明值只存在于那一个文件里，任何一次手工编辑都不可追溯。
+    #
+    # 为什么必须有机器守卫：这道缺口活了整整一程，靠的是「大家都以为别人在管」。
+    # 实测过一次它的隐蔽性 —— 另一个重放工具（audience-rebuild.js）报 0/0 全绿，
+    # 因为它把六字段当输入原样传过去，只验了策展那半边。没有独立断言就会重演。
+    - name: Reproducibility gate (no value without a source)
+      shell: bash
+      run: node scripts/tools/check-reproducible.js
+
+    # 迁移验收（2026-09-29 收口补）：`migrate.js --audience` 会给存量数据补 provenance，
+    # 而它是**能改写 deals.json 的命令行工具**——判据只有一处实现（lib/migrate-audience.js）。
+    #
+    # 为什么现在才接进来：它此前**跑不起来**，卡点是「缺 --before 基线文件」。当时只有
+    # 「把某次真实迁移前后的整份 deals.json 冻进仓库」这一条路，而那条路覆盖不足
+    # （真实数据里 verified:false 的策展记录一条都没有，curated 那一档根本没人走）
+    # 且会随 schema 演进腐烂。改成 9 条**合成夹具**逐分支覆盖后，代价降到可以接受。
+    #
+    # 它在第一次跑之前就抓到了一个**潜伏缺陷**：`dedup.credibilityOf` 早已加固成
+    # 「editorial 要求来源也是策展」，而 lib/migrate-audience.js 当时还在用
+    # 「verified + verifiedAt 就升级」——同一个洞只堵了一半，而 validateDeal 两种档位
+    # 都放行，不会有任何东西变红。夹具的第 4 条就是它。
+    - name: Migration verifier (audience provenance backfill)
+      shell: bash
+      run: node scripts/tools/migrate-audience-verify.js
+
     # 译文门禁（2026-09-28 起是**硬门禁**，此前只是建议性）：
     #   漂移（孤儿 / 原文已变 / 不合法 / 覆盖层管不到）= 必红，没有宽限期；
     #   待译 = 按年龄判，超过宽限期（默认 7 天）转红，数量与「最老 N 天」每次都打印。
@@ -69,6 +98,15 @@ runs:
     - name: Source-health self-test
       shell: bash
       run: node scripts/tools/health-selftest.js
+
+    # 受众字段（学生 / 开发者数据模型）自测：零依赖、离线、秒级。
+    # 为什么必须进门禁（v1.1 补，由 t1 核验的 B5 发现）：这个自测原先只在本机跑，
+    # 于是「三态措辞漂移 / merge 低可信覆盖高可信 / 假出处」这几类回归在 CI 里**看不见**
+    # —— 而它们恰好是本阶段全部红线的守卫。判断一个自测该不该进门禁的标准不是"它多新"，
+    # 而是"它红的时候，有没有别的步骤会替它红"：这里没有，所以必须进来。
+    - name: Audience self-test
+      shell: bash
+      run: node scripts/tools/audience-selftest.js
 
     # 采集机器人身份（GitHub App token）自测：零依赖、离线、秒级。
     # 为什么进门禁：这条凭据链是**无人值守采集的命门**，写错的症状是「每天两次静默失败」

@@ -180,6 +180,11 @@ async function main() {
     if (row.missing) continue;
     console.log(`策展 ${row.file}: ${row.ok}/${row.total} 条可用`);
     row.dropped.forEach(d => console.warn(`  ⚠️  策展丢弃 [${d.reason}] ${d.title}`));
+    // v1.1：新字段「写了却没生效」。与上面那条「整条丢弃」是两回事——记录照收，
+    // 只是某个字段被归一悄悄洗掉了（枚举拼错的表现与「本来就没写」一模一样）。
+    // 采集期只告警不拦写盘：策展文件的门禁在 `npm run validate` 那边是**错误**级。
+    (row.audienceDropped || []).forEach(d => console.warn(
+      `  ⚠️  新字段落空 [${d.field}${d.key ? '.' + d.key : ''}] ${d.title} —— ${d.reason}`));
   }
 
   const store = loadStore();
@@ -212,6 +217,29 @@ async function main() {
   // 「静默吞掉关键数字」本身就是要修的问题（报告里 0 与「没跑」是两回事）。
   console.log(`修剪明细: 下架过期 ${stats.removedExpired} 条 · 超出上限 ${stats.removedOverflow} 条 · ` +
     `退役垃圾 ${stats.removedGarbage} 条 · 重分类 ${stats.reclassified} 条`);
+  // v1.1 受众字段的可信度仲裁明细。与其他关键数字同规矩：**0 也打印** ——
+  // 「这一轮没有冲突」与「这段检查根本没跑」在日志里必须是两句话。
+  // 冲突 = 两侧对同一个新字段给出了**不同且都已知**的值，此时按可信度择优（§5.1），
+  // 输掉的那一方被记下来供人工复核 —— 静默择优等于把「人工核过的 false 被机器推的 true
+  // 覆盖」这类事故藏起来（那正是本阶段要根除的形态）。
+  console.log(`受众字段: 可信度仲裁冲突 ${stats.audienceConflicts} 处 · ` +
+    `涉及 ${(stats.audienceConflictTitles || []).length} 条`);
+  if (stats.audienceConflicts) {
+    console.log(`  ↳ 冲突条目（最多 10 条）：${(stats.audienceConflictTitles || []).join('、')}`);
+  }
+  // v1.1 收口：声明式补充（scripts/data/audience-overrides.json）这一轮的命中情况。
+  // 为什么必须打印命中数：这些值的**唯一权威**在那份文件里，采集期是唯一会大量改写
+  // deals.json 的时刻。命中数掉了（比如某次采集改了标题 → id 变了），文件里就出现了
+  // 指向不存在条目的孤儿条目 —— 而 deals.json 看起来一切正常，只是那些值「又变成没源的」。
+  // check-reproducible.js 会在 CI 里拦，但日志里提前一轮看到更好定位。
+  if (stats.overridesApplied !== undefined) {
+    console.log(`声明式补充: 命中 ${stats.overridesApplied} 条 · 与文件不一致 ${stats.overrideConflicts} 处`);
+    if (stats.overrideConflicts) {
+      for (const item of (stats.overrideConflictList || []).slice(0, 5)) {
+        console.log(`  ↳ ${item.title} · ${item.field}：文件 ${JSON.stringify(item.inOverrides)} / 记录 ${JSON.stringify(item.inFile)}（按可信度取文件值）`);
+      }
+    }
+  }
   console.log(`来源明细: 采集器失败 ${collectorFailures}/${picked.length} 个 · ` +
     `零产出 ${healthSummary.zeroOutputSources.length} 个` +
     `${healthSummary.zeroOutputSources.length ? `（${healthSummary.zeroOutputSources.map(r => r.source).join('、')}）` : ''} · ` +
@@ -263,6 +291,21 @@ async function main() {
   }
 
   if (dryRun) {
+    // ⚠️ dry-run 也要过最终门禁 —— 它**不写盘**，所以校验在这里是纯只读的。
+    //
+    // 这里原先直接 return，把 `assertAllValid` 整条跳过了。后果实测过（2026-09-29）：
+    // 一次真实采集里 merge 产出了 11 条 `provenance.fields` 指向只有 unknown 的字段，
+    // `--dry-run` **一路绿灯**、把「新增/变更预览」照常打完，只有真正写盘的那一次才失败。
+    // 那是这个项目里最不该出现的一种绿灯：预览的全部意义就是「先看看会不会出事」，
+    // 而它恰好看不见唯一会拦下写盘的那道门。
+    try {
+      assertAllValid(localized);
+      console.log('\n✓ 最终门禁：数据全部合规（dry-run 也跑这一步，它只读不写）');
+    } catch (error) {
+      console.error('\n❌ dry-run 期间最终门禁失败（没有写盘，既有 deals.json 未改动）：');
+      console.error(`   ${error.message}`);
+      process.exit(1);
+    }
     console.log('\n(dry-run，未写盘)');
     console.log('\n新增/变更预览（前 15 条优惠）：');
     localized.filter(d => d.type === 'deal').slice(0, 15).forEach(d => {

@@ -19,7 +19,48 @@
       "最少 2 席"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "other"
+    ],
+    "benefitType": [
+      "discount"
+    ],
+    "eligibilityDetail": {
+      "newUserOnly": false,
+      "identityVerificationRequired": true
+    },
+    "claimRequirements": {
+      "manualApplication": true,
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://support.claude.com/en/articles/12893767-getting-started-with-claude-for-nonprofits",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated",
+          "note": "description 原文「通过合作方 Goodstack 提交非营利资格核验表单后即可开通」→ 需人工提交"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "availability": {
+      "chinaUsable": "unknown"
+    }
   },
   {
     "title": "GitHub Copilot 学生免费（Copilot Student）",
@@ -41,7 +82,47 @@
       "需学籍验证"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "student",
+      "developer"
+    ],
+    "benefitType": [
+      "student_plan",
+      "free_subscription"
+    ],
+    "eligibilityDetail": {
+      "educationEmailRequired": "unknown",
+      "identityVerificationRequired": true
+    },
+    "claimRequirements": {
+      "manualApplication": true,
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-students",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated",
+          "note": "description 原文「验证通过与权益生效是两个步骤，可能需数天」→ 需审核等待"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   },
   {
     "title": "GitHub Copilot 教师与开源维护者免费 Pro",
@@ -64,7 +145,44 @@
       "每月重评估"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "educator",
+      "developer"
+    ],
+    "benefitType": [
+      "free_subscription"
+    ],
+    "eligibilityDetail": {
+      "identityVerificationRequired": true,
+      "newUserOnly": false
+    },
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-teachers-and-os-maintainers",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   },
   {
     "title": "GitHub Student Developer Pack 学生开发者工具包",
@@ -86,7 +204,48 @@
       "Azure / DataCamp 等"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "student",
+      "developer"
+    ],
+    "benefitType": [
+      "student_plan",
+      "free_credits",
+      "developer_credit"
+    ],
+    "eligibilityDetail": {
+      "educationEmailRequired": "unknown",
+      "identityVerificationRequired": true
+    },
+    "claimRequirements": {
+      "manualApplication": true,
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://education.github.com/pack",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated",
+          "note": "description 原文「用学校邮箱 / 学籍材料申请 Student Developer Pack，通过后在 GitHub Education 中激活」→ 需申请审核"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   },
   {
     "title": "Google AI Pro 学生免费 12 个月（含 Gemini 高级版）",
@@ -109,7 +268,54 @@
       "高校学生"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "student"
+    ],
+    "benefitType": [
+      "student_plan",
+      "free_subscription",
+      "trial"
+    ],
+    "eligibilityDetail": {
+      "educationEmailRequired": "unknown",
+      "identityVerificationRequired": true
+    },
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "availability": {
+      "chinaUsable": false,
+      "regionRestriction": "官方学生优惠按国家/地区区分（美国为 AI Pro、美国以外为 AI Plus）"
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://blog.google/innovation-and-ai/products/gemini-app/student-offer-google-ai/",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "availability": {
+          "basis": "inferred",
+          "derived": "inferred",
+          "note": "官方学生优惠按国家/地区区分（美国为 AI Pro、美国以外为 AI Plus）且未列出中国大陆适用地区，据此记为不可用；来源未逐国列出可用清单，推理链记在此处"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   },
   {
     "title": "Microsoft Azure for Students 学生免费 100 美元额度",
@@ -132,7 +338,48 @@
       "可每年续期"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "student",
+      "developer"
+    ],
+    "benefitType": [
+      "student_plan",
+      "free_credits",
+      "developer_credit"
+    ],
+    "eligibilityDetail": {
+      "educationEmailRequired": "unknown",
+      "identityVerificationRequired": true
+    },
+    "claimRequirements": {
+      "creditCardRequired": false,
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://azure.microsoft.com/en-us/free/students",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated",
+          "note": "discountInfo 原文「均无需信用卡」→ 来源明说不需要，故记 false（不是没查到）"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   },
   {
     "title": "微软 Microsoft 365 教育版 学生 5 折（含 Copilot）",
@@ -154,7 +401,45 @@
       "含 Copilot"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "student",
+      "educator"
+    ],
+    "benefitType": [
+      "discount",
+      "free_subscription"
+    ],
+    "eligibilityDetail": {
+      "educationEmailRequired": true,
+      "identityVerificationRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://www.microsoft.com/en-us/education/students",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "claimRequirements": {
+      "accountRequired": true
+    }
   },
   {
     "title": "AWS Activate 初创公司最高 20 万美元云 credits",
@@ -176,7 +461,44 @@
       "可用于 Bedrock"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "developer"
+    ],
+    "benefitType": [
+      "free_credits",
+      "developer_credit"
+    ],
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://aws.amazon.com/startups/",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": false,
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "Figma for Education 学生与教师免费",
@@ -198,7 +520,46 @@
       "学生 / 教师"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "student",
+      "educator",
+      "education"
+    ],
+    "benefitType": [
+      "student_plan",
+      "free_subscription"
+    ],
+    "eligibilityDetail": {
+      "educationEmailRequired": true,
+      "identityVerificationRequired": true
+    },
+    "claimRequirements": {
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://www.figma.com/education/",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   },
   {
     "title": "Notion 教育版 学生与教师免费 Plus",
@@ -220,7 +581,47 @@
       "学校须在 WHED"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "student",
+      "educator"
+    ],
+    "benefitType": [
+      "student_plan",
+      "free_subscription"
+    ],
+    "eligibilityDetail": {
+      "educationEmailRequired": true,
+      "identityVerificationRequired": true
+    },
+    "claimRequirements": {
+      "manualApplication": false,
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://www.notion.com/product/notion-for-education",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated",
+          "note": "description 原文「选择「Get free Education plan」自动升级」→ 不需要人工审核"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   },
   {
     "title": "Notion for Nonprofits 非营利组织 Business 折扣",
@@ -242,7 +643,44 @@
       "需非营利核验"
     ],
     "priceLine": null,
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "other"
+    ],
+    "benefitType": [
+      "discount"
+    ],
+    "eligibilityDetail": {
+      "identityVerificationRequired": true
+    },
+    "claimRequirements": {
+      "manualApplication": true,
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://www.notion.com/nonprofits",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated",
+          "note": "description 原文「提交非营利证明材料申请，审核通过后 Notion 自动应用折扣」→ 需申请审核"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   },
   {
     "title": "ElevenLabs 免费计划 每月 10000 credits",
@@ -264,7 +702,45 @@
       "TTS / 克隆 / Dubbing"
     ],
     "priceLine": "免费档 $0 → 付费档",
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "general"
+    ],
+    "benefitType": [
+      "free_subscription",
+      "free_credits"
+    ],
+    "claimRequirements": {
+      "accountRequired": true,
+      "manualApplication": false
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://elevenlabs.io/pricing",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": true,
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "Runway 免费计划 一次性 125 credits",
@@ -286,7 +762,45 @@
       "含 5GB 素材存储"
     ],
     "priceLine": "免费档 $0 → 付费档",
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "general"
+    ],
+    "benefitType": [
+      "free_subscription",
+      "free_credits"
+    ],
+    "claimRequirements": {
+      "accountRequired": true,
+      "manualApplication": false
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://runway.com/pricing",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    },
+    "eligibilityDetail": {
+      "newUserOnly": true,
+      "identityVerificationRequired": "unknown"
+    }
   },
   {
     "title": "Windsurf 学生折扣订阅 Pro（最长 12 个月）",
@@ -308,6 +822,46 @@
       "最长 12 个月"
     ],
     "priceLine": "学生折扣月费 → Pro",
-    "verifiedAt": "2026-09-22"
+    "verifiedAt": "2026-09-22",
+    "audience": [
+      "student",
+      "developer"
+    ],
+    "benefitType": [
+      "student_plan",
+      "discount"
+    ],
+    "eligibilityDetail": {
+      "educationEmailRequired": true,
+      "identityVerificationRequired": true
+    },
+    "claimRequirements": {
+      "manualApplication": true,
+      "accountRequired": true
+    },
+    "provenance": {
+      "credibility": "editorial",
+      "sourceUrl": "https://windsurf.com/student-terms-and-conditions",
+      "fields": {
+        "audience": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "benefitType": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "eligibilityDetail": {
+          "basis": "source",
+          "derived": "stated"
+        },
+        "claimRequirements": {
+          "basis": "source",
+          "derived": "stated",
+          "note": "条款 §2.B 原文「You will be required to submit certain information…」→ 需提交资料并等待核验"
+        }
+      },
+      "verifiedAt": "2026-09-22"
+    }
   }
 ]

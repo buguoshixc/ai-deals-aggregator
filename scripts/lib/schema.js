@@ -8,6 +8,7 @@
 const crypto = require('crypto');
 const { CATEGORIES, mapCategory } = require('./categories');
 const { normalizeZh } = require('./zh');
+const audience = require('./audience');
 
 const SCHEMA_VERSION = 2;
 
@@ -20,6 +21,20 @@ const MAX_FEATURES = 3;
 const MAX_FEATURE_LENGTH = 20;
 /** 价格阶梯行（如「免费 → $20/月 Pro」）的最大长度 */
 const MAX_PRICE_LINE_LENGTH = 60;
+
+/* ---------------- v1.1 学生 / 开发者模型 ---------------- */
+
+/**
+ * 新字段的**固定顺序**。全部追加在记录末尾（`zh` 之后），
+ * 因此一次迁移的 diff 只是「每条约 6 行新增」，不会因为重排 key 让 134 条全变成改动。
+ */
+const AUDIENCE_FIELD_ORDER = [
+  'audience', 'benefitType', 'eligibilityDetail', 'claimRequirements', 'availability', 'provenance'
+];
+
+/** provenance.sourceUrl 之外的文本上限 */
+const MAX_REGION_RESTRICTION_LENGTH = 120;
+const MAX_PROVENANCE_NOTE_LENGTH = 200;
 
 /** 垃圾数据特征（CSS 残片、导航文本、模板残留） */
 const GARBAGE_PATTERNS = [
@@ -219,6 +234,115 @@ function normalizeFeatures(value) {
 }
 
 /**
+ * `provenance.contrib` 归一：逐字段的贡献者记账（契约 §5.2.2）。
+ *
+ * 形状 `{ <字段名>: [可信度, …] }`；去非法项、去重、空数组丢弃。
+ * 整组没有一个有效键时返回 null（与其它字段一样：空对象非法）。
+ */
+function normalizeContrib(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const out = {};
+  for (const key of Object.keys(value)) {
+    if (!AUDIENCE_FIELD_ORDER.includes(key)) continue;
+    const list = Array.isArray(value[key]) ? value[key] : [value[key]];
+    const kept = [];
+    for (const item of list) {
+      if (!audience.CREDIBILITIES.includes(item)) continue;
+      if (!kept.includes(item)) kept.push(item);
+    }
+    if (kept.length) out[key] = kept;
+  }
+  return Object.keys(out).length ? out : null;
+}
+
+/**
+ * provenance 归一：「这条断言是谁说的」。
+ *
+ * 形状（契约见 docs/SCHEMA-v1.1.md 第 2.6 节）：
+ *   { credibility, sourceUrl?, verifiedAt?, fields: { <字段名>: { basis, derived?, note? } } }
+ *
+ * 两条纪律：
+ *  ① `fields` 的键必须是**这条记录上真的存在且非空的字段**（由调用方传 `present` 进来）——
+ *     指向空字段的来源声明是纯粹的噪音，而且会让人误以为「有出处」；
+ *  ② `basis: 'inferred'` 必须带 `note`：从条款推出「国内不可用」这类结论，推理链本身
+ *     就是断言的一部分，写不下来说明它不该被当成结论。
+ *
+ * 非法输入一律返回 null（不抛错）：构造期静默丢弃、validateDeal 才报错 ——
+ * 与 zh 的处理一致，避免「构造期悄悄丢字段」与「校验期看不见」两头都占。
+ *
+ * @param {object} value  原始 provenance
+ * @param {Set<string>} present 记录上**确实有明确值**的新字段名集合
+ */
+function normalizeProvenance(value, present) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  if (!audience.CREDIBILITIES.includes(value.credibility)) return null;
+
+  const out = { credibility: value.credibility };
+  const sourceUrl = normalizeUrl(value.sourceUrl);
+  if (sourceUrl) out.sourceUrl = sourceUrl;
+  const verifiedAt = normalizeVerifiedAt(value.verifiedAt);
+  if (verifiedAt) out.verifiedAt = verifiedAt;
+
+  // contrib：逐字段的贡献者记账（契约 §5.2.2）。它是「整条可信度」的唯一落点 ——
+  // 不落盘的话，下一次 loadStore 读回来的记录没有记忆，entryCredibility 会退回
+  // 书写期偏高的 credibility，假可信度就按天继承放大。
+  const contrib = normalizeContrib(value.contrib);
+  if (contrib) out.contrib = contrib;
+
+  const fields = {};
+  const raw = value.fields && typeof value.fields === 'object' && !Array.isArray(value.fields) ? value.fields : {};
+  for (const key of Object.keys(raw)) {
+    if (!AUDIENCE_FIELD_ORDER.includes(key)) continue;
+    // ① 只保留「记录上真的有值」的字段
+    if (!present.has(key)) continue;
+    const entry = raw[key];
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) continue;
+    if (!audience.BASIS_VALUES.includes(entry.basis)) continue;
+    const item = { basis: entry.basis };
+    if (entry.derived !== undefined) {
+      if (!audience.DERIVED_VALUES.includes(entry.derived)) continue;
+      item.derived = entry.derived;
+    }
+    const note = cleanText(entry.note, MAX_PROVENANCE_NOTE_LENGTH);
+    if (note) item.note = note;
+    // ② 声明为推断就必须有推理说明（basis 与 derived 两个入口都算），否则这条声明不算数。
+    //    注意这里是**丢弃**而不是抛错：构造期只清洗，validateDeal 负责把「写了但非法」
+    //    报出来（两条都要有，否则手写数据里的 typo 会被静默吞掉）。
+    if ((entry.basis === 'inferred' || entry.derived === 'inferred') && !item.note) continue;
+    fields[key] = item;
+  }
+  if (Object.keys(fields).length) out.fields = fields;
+  return out;
+}
+
+/**
+ * 把 v1.1 的六个字段挂到记录上（**只挂有值的**）。
+ *
+ * 单独抽出来是为了「字段顺序」这件事只有一个出处：`AUDIENCE_FIELD_ORDER` 的次序写进
+ * 对象字面量，因此 JSON.stringify 出来的 key 顺序是确定的，迁移 diff 稳定可审。
+ *
+ * provenance 的 `fields` 键必须在**归一之后**判断有无值，所以先算五个字段、
+ * 再拿它们算 present 集合、最后才归一 provenance（顺序反了会把 `audience: ['bogus']`
+ * 这种被丢掉的非法值当成「有出处」）。
+ */
+function attachAudienceFields(deal, raw) {
+  const normalized = {
+    audience: audience.normalizeEnumList(raw.audience, audience.AUDIENCES),
+    benefitType: audience.normalizeEnumList(raw.benefitType, audience.BENEFIT_TYPES),
+    eligibilityDetail: audience.normalizeTristateMap(raw.eligibilityDetail, audience.ELIGIBILITY_KEYS),
+    claimRequirements: audience.normalizeTristateMap(raw.claimRequirements, audience.CLAIM_KEYS),
+    availability: audience.normalizeAvailability(raw.availability)
+  };
+  const present = new Set(AUDIENCE_FIELD_ORDER.filter(key => audience.hasKnown(normalized[key])));
+  normalized.provenance = normalizeProvenance(raw.provenance, present);
+
+  for (const key of AUDIENCE_FIELD_ORDER) {
+    if (normalized[key] !== null && normalized[key] !== undefined) deal[key] = normalized[key];
+  }
+  return deal;
+}
+
+/**
  * 人工核验日期（YYYY-MM-DD）：含义是「最后一次对照官方页确认此优惠成立的日期」。
  * 仅人工策展条目填写；自动采集条目没有人工核验动作，一律为 null。
  * 未来日期视为非法——它一定是数据错误。
@@ -399,6 +523,10 @@ function makeDeal(raw = {}, opts = {}) {
   // 构造期原样带过、不做校验——校验统一由 validateDeal 把关，避免构造期静默丢译文。
   if (raw.zh && typeof raw.zh === 'object' && !Array.isArray(raw.zh)) deal.zh = raw.zh;
 
+  // v1.1 学生 / 开发者模型：只清洗不外推，且**只挂有值的字段**（缺席 = unknown）。
+  // 挂在最后，是为了让字段顺序在 JSON 里稳定（见 AUDIENCE_FIELD_ORDER）。
+  attachAudienceFields(deal, raw);
+
   return deal;
 }
 
@@ -497,13 +625,211 @@ function validateDeal(deal, index = 0) {
     'id', 'title', 'vendor', 'url', 'source', 'sourceUrl', 'region', 'type',
     'discountInfo', 'pricingModel', 'priceLine', 'features', 'category', 'description',
     'eligibility', 'validity', 'expiresAt', 'firstSeen', 'lastSeen', 'verified', 'verifiedAt',
-    'zh'
+    'zh',
+    ...AUDIENCE_FIELD_ORDER
   ]);
   for (const key of Object.keys(deal)) {
     if (!allowed.has(key)) errors.push(`${where}: 未知字段 ${key}`);
   }
 
+  validateAudienceFields(deal, where, errors);
+
   return { ok: errors.length === 0, errors };
+}
+
+/**
+ * v1.1 六个字段的校验。
+ *
+ * 尺度是「非法枚举 / 非法类型 / 空容器一律硬拦，缺席一律放行」：
+ * 本阶段刻意**不要求**这些字段存在 —— 旧 134 条的诚实取值就是缺席（unknown），
+ * 一条都不需要人工补完也能继续发布。
+ *
+ * 空容器（`[]` / `{}`）判非法而不是当成「没有」，是因为它在渲染层走的分支与缺席
+ * 完全不同（`[]` 会进「有 audience」那一支然后渲染出空行）。把「没写」与「写了空」
+ * 在数据层归一，渲染层就不用为它写防御代码。
+ */
+function validateAudienceFields(deal, where, errors) {
+  const listRule = (field, allowedValues) => {
+    const value = deal[field];
+    if (value === null || value === undefined) return;
+    if (!Array.isArray(value)) {
+      errors.push(`${where}: ${field} 必须是数组（单值也写成数组；没有就省略该字段）`);
+      return;
+    }
+    if (!value.length) {
+      errors.push(`${where}: ${field} 是空数组（没有值时应省略该字段或写 null）`);
+      return;
+    }
+    const seen = new Set();
+    value.forEach((item, i) => {
+      if (typeof item !== 'string') errors.push(`${where}: ${field}[${i}] 必须是字符串`);
+      else if (!allowedValues.includes(item)) errors.push(`${where}: ${field}[${i}] 不在枚举内(${item})`);
+      else if (seen.has(item)) errors.push(`${where}: ${field}[${i}] 重复(${item})`);
+      else seen.add(item);
+    });
+  };
+
+  const mapRule = (field, keys) => {
+    const value = deal[field];
+    if (value === null || value === undefined) return;
+    if (typeof value !== 'object' || Array.isArray(value)) {
+      errors.push(`${where}: ${field} 必须是对象`);
+      return;
+    }
+    const present = Object.keys(value);
+    if (!present.length) {
+      errors.push(`${where}: ${field} 是空对象（没有值时应省略该字段或写 null）`);
+      return;
+    }
+    for (const key of present) {
+      const item = value[key];
+      if (!keys.includes(key)) {
+        errors.push(`${where}: ${field}.${key} 不是已知维度（已知：${keys.join('/')}）`);
+        continue;
+      }
+      // 三态：true / false / "unknown" 三个**字面量**，null 与 0/1/'true' 都不接受
+      if (item !== true && item !== false && item !== audience.TRISTATE_UNKNOWN) {
+        errors.push(`${where}: ${field}.${key} 必须是 true / false / "${audience.TRISTATE_UNKNOWN}" 三者之一（实得 ${JSON.stringify(item)}）`);
+      }
+    }
+  };
+
+  listRule('audience', audience.AUDIENCES);
+  listRule('benefitType', audience.BENEFIT_TYPES);
+  mapRule('eligibilityDetail', audience.ELIGIBILITY_KEYS);
+  mapRule('claimRequirements', audience.CLAIM_KEYS);
+
+  const availability = deal.availability;
+  if (availability !== null && availability !== undefined) {
+    if (typeof availability !== 'object' || Array.isArray(availability)) {
+      errors.push(`${where}: availability 必须是对象`);
+    } else {
+      const keys = Object.keys(availability);
+      if (!keys.length) errors.push(`${where}: availability 是空对象`);
+      for (const key of keys) {
+        if (key === 'chinaUsable') {
+          const value = availability.chinaUsable;
+          if (value !== true && value !== false && value !== audience.TRISTATE_UNKNOWN) {
+            errors.push(`${where}: availability.chinaUsable 必须是 true / false / "${audience.TRISTATE_UNKNOWN}" 三者之一（实得 ${JSON.stringify(value)}）`);
+          }
+        } else if (key === 'regionRestriction') {
+          const value = availability.regionRestriction;
+          if (typeof value !== 'string' || !value.trim()) {
+            errors.push(`${where}: availability.regionRestriction 必须是非空字符串`);
+          } else if (Array.from(value).length > MAX_REGION_RESTRICTION_LENGTH) {
+            errors.push(`${where}: availability.regionRestriction 超过 ${MAX_REGION_RESTRICTION_LENGTH} 字`);
+          }
+        } else {
+          errors.push(`${where}: availability.${key} 不是已知键（已知：chinaUsable/regionRestriction）`);
+        }
+      }
+    }
+  }
+
+  const provenance = deal.provenance;
+  if (provenance !== null && provenance !== undefined) {
+    if (typeof provenance !== 'object' || Array.isArray(provenance)) {
+      errors.push(`${where}: provenance 必须是对象`);
+      return;
+    }
+    if (!audience.CREDIBILITIES.includes(provenance.credibility)) {
+      errors.push(`${where}: provenance.credibility 非法(${provenance.credibility})，必须是 ${audience.CREDIBILITIES.join('/')}`);
+    }
+    if (provenance.sourceUrl !== undefined && provenance.sourceUrl !== null) {
+      const url = String(provenance.sourceUrl);
+      if (!/^https?:\/\//i.test(url)) errors.push(`${where}: provenance.sourceUrl 必须是 http(s)`);
+      else if (stripTracking(url) !== url) errors.push(`${where}: provenance.sourceUrl 含追踪参数`);
+    }
+    if (provenance.verifiedAt !== undefined && provenance.verifiedAt !== null) {
+      const date = String(provenance.verifiedAt);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) errors.push(`${where}: provenance.verifiedAt 格式非法`);
+      else if (date > todayCN()) errors.push(`${where}: provenance.verifiedAt 是未来日期(${date})`);
+      // 只有人工维护的两档才可能有「人工回访日期」。`collected`（自动采集）与它同时出现
+      // 是一条自相矛盾的声明：采集器没有"回访官方页"这个动作（t1 核验的 B7，实测原先放行）。
+      if (!['editorial', 'curated'].includes(provenance.credibility)) {
+        errors.push(`${where}: provenance.credibility=${provenance.credibility} 不该有 verifiedAt —— 只有 editorial/curated 才有人工回访日期`);
+      }
+    }
+    if (provenance.fields !== undefined && provenance.fields !== null) {
+      if (typeof provenance.fields !== 'object' || Array.isArray(provenance.fields)) {
+        errors.push(`${where}: provenance.fields 必须是对象`);
+      } else if (!Object.keys(provenance.fields).length) {
+        errors.push(`${where}: provenance.fields 是空对象（没有来源说明时应省略整个 provenance）`);
+      } else {
+        for (const key of Object.keys(provenance.fields)) {
+          if (!AUDIENCE_FIELD_ORDER.includes(key)) {
+            errors.push(`${where}: provenance.fields.${key} 不是 v1.1 字段（已知：${AUDIENCE_FIELD_ORDER.join('/')}）`);
+            continue;
+          }
+          // 来源声明必须指向**记录上真的有值**的字段：指向空字段的出处是假出处
+          if (!audience.hasKnown(deal[key])) {
+            errors.push(`${where}: provenance.fields.${key} 指向一个没有值的字段（该字段缺席、为空、或只有 unknown）`);
+            continue;
+          }
+          const entry = provenance.fields[key];
+          if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+            errors.push(`${where}: provenance.fields.${key} 必须是对象`);
+            continue;
+          }
+          if (!audience.BASIS_VALUES.includes(entry.basis)) {
+            errors.push(`${where}: provenance.fields.${key}.basis 非法(${entry.basis})，必须是 ${audience.BASIS_VALUES.join('/')}`);
+          }
+          if (entry.derived !== undefined && !audience.DERIVED_VALUES.includes(entry.derived)) {
+            errors.push(`${where}: provenance.fields.${key}.derived 非法(${entry.derived})`);
+          }
+          if (entry.note !== undefined && entry.note !== null) {
+            if (typeof entry.note !== 'string' || !entry.note.trim()) {
+              errors.push(`${where}: provenance.fields.${key}.note 必须是非空字符串`);
+            } else if (Array.from(entry.note).length > MAX_PROVENANCE_NOTE_LENGTH) {
+              errors.push(`${where}: provenance.fields.${key}.note 超过 ${MAX_PROVENANCE_NOTE_LENGTH} 字`);
+            }
+          }
+          // 推断出来的结论必须写下推理链 —— 这是「不猜」原则在数据层的最后一颗钉子。
+          // 两个入口都要拦（t1 核验的 B9：原先只拦了 basis，`derived:'inferred'` 却放行）：
+          // `basis:'inferred'` 与 `derived:'inferred'` 都是「这是我们推的」的声明方式，
+          // 只堵一个等于留了条侧门。
+          const inferred = entry.basis === 'inferred' || entry.derived === 'inferred';
+          if (inferred && !(typeof entry.note === 'string' && entry.note.trim())) {
+            errors.push(`${where}: provenance.fields.${key} 声明为推断（basis/derived=inferred）时必须带 note —— 推断链就是断言的一部分`);
+          }
+        }
+      }
+    }
+    // contrib：逐字段的贡献者记账（契约 §5.2.2）。它是「整条可信度」的唯一落点，
+    // 缺了它，下一次合并就会用书写期偏高的 credibility 去仲裁 → 假可信度按天继承。
+    if (provenance.contrib !== undefined && provenance.contrib !== null) {
+      if (typeof provenance.contrib !== 'object' || Array.isArray(provenance.contrib)) {
+        errors.push(`${where}: provenance.contrib 必须是对象`);
+      } else if (!Object.keys(provenance.contrib).length) {
+        errors.push(`${where}: provenance.contrib 是空对象（没有记账时应省略它）`);
+      } else {
+        for (const key of Object.keys(provenance.contrib)) {
+          if (!AUDIENCE_FIELD_ORDER.includes(key)) {
+            errors.push(`${where}: provenance.contrib.${key} 不是 v1.1 字段`);
+            continue;
+          }
+          const list = provenance.contrib[key];
+          if (!Array.isArray(list) || !list.length) {
+            errors.push(`${where}: provenance.contrib.${key} 必须是非空数组`);
+            continue;
+          }
+          for (const item of list) {
+            if (!audience.CREDIBILITIES.includes(item)) {
+              errors.push(`${where}: provenance.contrib.${key} 含非法可信度(${item})`);
+            }
+          }
+          if (new Set(list).size !== list.length) {
+            errors.push(`${where}: provenance.contrib.${key} 有重复项`);
+          }
+        }
+      }
+    }
+    for (const key of Object.keys(provenance)) {
+      if (!['credibility', 'sourceUrl', 'verifiedAt', 'fields', 'contrib'].includes(key)) {
+        errors.push(`${where}: provenance 里的未知键 ${key}`);
+      }
+    }
+  }
 }
 
 module.exports = {
@@ -514,6 +840,9 @@ module.exports = {
   MAX_FEATURES,
   MAX_FEATURE_LENGTH,
   MAX_PRICE_LINE_LENGTH,
+  AUDIENCE_FIELD_ORDER,
+  MAX_REGION_RESTRICTION_LENGTH,
+  MAX_PROVENANCE_NOTE_LENGTH,
   GARBAGE_PATTERNS,
   todayCN,
   nowCN,
@@ -521,6 +850,8 @@ module.exports = {
   cleanText,
   normalizeFeatures,
   normalizeVerifiedAt,
+  normalizeProvenance,
+  attachAudienceFields,
   normalizeUrl,
   stripTracking,
   isGarbage,

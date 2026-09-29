@@ -14,6 +14,7 @@ const vm = require('vm');
 const { validateDeal, cleanText, isGarbage, SCHEMA_VERSION } = require('./lib/schema');
 const { isOngoing } = require('./lib/expiry');
 const { CATEGORIES } = require('./lib/categories');
+const { auditAudienceFields } = require('./lib/audience-audit');
 
 const ROOT = path.join(__dirname, '..');
 const DEALS_FILE = path.join(ROOT, 'deals.json');
@@ -125,7 +126,8 @@ function checkDealsFile() {
 
   checkCoverage(store.deals);
   checkSuspectedDuplicates(store.deals);
-  return { stats };
+  // 覆盖率统计要用到原始条目数组（audienceCoverage 自己按 type 分档）
+  return { stats, deals: store.deals };
 }
 
 /** 疑似重复：同一地区下，一条的归一化标题是另一条的前缀（说明别名表漏登记） */
@@ -164,10 +166,148 @@ function checkCoverage(deals) {
   }
 }
 
+/* ---------------- v1.1 学生 / 开发者模型 ---------------- */
+
+/**
+ * 受众字段守卫（只在 --strict 下跑）。
+ *
+ * 三件事，对应契约 §7.2：
+ *  ① **非法枚举 / 类型 / 空容器**必须被 validateDeal 拦下（探针式，不读 deals.json 的运气）；
+ *  ② 红线：`unknown` **不得**被渲染成确定答案 —— 断言 `chinaUsableLine()` 对 `chinaUsable:'unknown'`
+ *     的输出不含「不可用 / 否」，且含「尚未确认」；
+ *  ③ 措辞跨层一致：`index.html` 的 `AUDIENCE:START/END` 块与 `lib/audience.js` 的
+ *     `WORDING_CONTRACT` 逐项比对（前端把「尚未确认」改成「待确认」、或后端改掉映射，
+ *     两边各自的单元测试都会全绿，只有文本比对能在改动那一刻红）。
+ *
+ * ⚠️ 这条守卫最初（契约原文）引用的是 `audienceSummary`，而它只拼 `deal.audience`，
+ * 对 `{availability:{chinaUsable:'unknown'}}` 返回**空串** —— 照原文写探针**必红**，
+ * 且红得莫名其妙（断言说的是措辞，失败原因却是取错了字段）。已改为 `chinaUsableLine`，
+ * 并把「取到的是哪个函数」也一并钉住：文档会引错函数名而它自己写不出错。
+ * 只读：不动 deals.json，也不做任何写盘。
+ */
+function checkAudienceGuard() {
+  const { makeDeal } = require('./lib/schema');
+  const au = require('./lib/audience');
+
+  // ① 探针：编造记录，确认非法形态真的被拦、合法形态真的放行
+  const base = makeDeal(
+    { title: 'Audience Guard Probe', url: 'https://example.com/audience-guard', discountInfo: 'Save 50% on the annual plan' },
+    { source: 'Guard', region: 'global' }
+  );
+  if (!base) {
+    error('受众字段守卫无法构造探针记录（makeDeal 行为已变，请检查 schema.js）');
+    return;
+  }
+  const probe = (patch) => validateDeal({ ...base, ...patch });
+  const mustFail = [
+    ['非法 audience 枚举', { audience: ['wizard'] }],
+    ['非法 benefitType 枚举', { benefitType: ['free_money'] }],
+    ['audience 写成标量', { audience: 'student' }],
+    ['audience 空数组', { audience: [] }],
+    ['audience 重复项', { audience: ['student', 'student'] }],
+    ['三态写成 0', { claimRequirements: { creditCardRequired: 0 } }],
+    ['三态写成 "true" 字符串', { claimRequirements: { creditCardRequired: 'true' } }],
+    ['三态写成 null', { eligibilityDetail: { studentRequired: null } }],
+    ['三态映射空对象', { eligibilityDetail: {} }],
+    ['三态映射未知键', { claimRequirements: { hasFreeTrial: true } }],
+    ['availability.chinaUsable 非法值', { availability: { chinaUsable: 'yes' } }],
+    ['availability 未知键', { availability: { chineseUsable: true } }],
+    ['provenance 非法 credibility', { audience: ['student'], provenance: { credibility: 'guessed', fields: { audience: { basis: 'source' } } } }],
+    ['provenance 指向无值字段', { audience: ['student'], provenance: { credibility: 'curated', fields: { availability: { basis: 'source' } } } }],
+    ['provenance 指向只有 unknown 的字段', { claimRequirements: { creditCardRequired: 'unknown' }, provenance: { credibility: 'curated', fields: { claimRequirements: { basis: 'source' } } } }],
+    ['provenance inferred 缺 note', { availability: { chinaUsable: false }, provenance: { credibility: 'curated', fields: { availability: { basis: 'inferred' } } } }],
+    ['provenance 里的未知键', { audience: ['student'], provenance: { credibility: 'curated', sneaky: 1, fields: { audience: { basis: 'source' } } } }]
+  ];
+  const leaked = mustFail.filter(([, patch]) => probe(patch).ok).map(([name]) => name);
+  if (leaked.length) {
+    error(
+      `受众字段守卫失效：下列非法形态竟然通过 validateDeal —— ${leaked.join('；')}。` +
+      '三态只接受 true / false / "unknown" 三个字面量，空容器与非法枚举一律硬拦（契约 §7.1）。'
+    );
+  }
+  const mustPass = [
+    ['旧条目（六字段全缺席）', {}],
+    ['student + developer 双 audience', { audience: ['student', 'developer'], benefitType: ['student_plan', 'free_subscription'] }],
+    ['三态混合', { eligibilityDetail: { studentRequired: true, educationEmailRequired: 'unknown' }, claimRequirements: { creditCardRequired: false } }],
+    ['unknown 明确写出', { availability: { chinaUsable: 'unknown' } }],
+    ['合法 provenance', { audience: ['student'], provenance: { credibility: 'curated', sourceUrl: 'https://example.com/a', verifiedAt: '2026-01-01', fields: { audience: { basis: 'source', derived: 'stated' } } } }]
+  ];
+  const rejected = mustPass.filter(([, patch]) => !probe(patch).ok).map(([name]) => name);
+  if (rejected.length) {
+    error(`受众字段守卫过严：下列合法形态被误判为非法 —— ${rejected.join('；')}（守卫过严与失效一样是缺陷）`);
+  }
+
+  // ② 红线：unknown 不得渲染成确定答案
+  const unknownDeal = { availability: { chinaUsable: au.TRISTATE_UNKNOWN } };
+  const line = au.chinaUsableLine(unknownDeal);
+  if (typeof line !== 'string' || !line.includes('尚未确认')) {
+    error(`受众字段红线失守：chinaUsableLine() 对 unknown 返回「${line}」，不含「尚未确认」`);
+  }
+  if (/不可用|不能用|否/.test(line)) {
+    error(`受众字段红线失守：chinaUsableLine() 对 unknown 返回「${line}」，把「没查到」说成了确定答案`);
+  }
+  if (au.triLabel(au.TRISTATE_UNKNOWN) !== '尚未确认') {
+    error(`受众字段红线失守：triLabel(unknown) = 「${au.triLabel(au.TRISTATE_UNKNOWN)}」，应为「尚未确认」`);
+  }
+  // 反例也要在：确定值必须照直说
+  if (au.chinaUsableLine({ availability: { chinaUsable: false } }) !== '中国大陆用户不可用') {
+    error('受众字段红线失守：chinaUsableLine() 对 false 不再是「中国大陆用户不可用」（确定值必须照直说）');
+  }
+
+  // ③ 措辞跨层一致
+  if (fs.existsSync(INDEX_FILE)) {
+    const wording = au.checkWordingContract(fs.readFileSync(INDEX_FILE, 'utf8'));
+    if (!wording.ok) {
+      error(
+        `受众字段措辞跨层漂移：${wording.reasons.join('；')}。` +
+        'index.html 的 /* AUDIENCE:START */ 块与 lib/audience.js 的 WORDING_CONTRACT 必须逐项一致 —— ' +
+        '两侧各有一份实现在所难免（RENDER-CORE 在 vm 沙箱里跑、不能 require），文本比对是唯一的牙。'
+      );
+    }
+  }
+}
+
+/**
+ * 受众字段覆盖率（信息性，**不是**错误）。
+ *
+ * 分母口径 = `type==='deal'` 的条目：工具类条目没有「领取条件」，
+ * 把它们算进分母会让数字永远上不去且没有意义（契约 §7.3）。
+ */
+function audienceCoverage(deals) {
+  const au = require('./lib/audience');
+  const scope = deals.filter(deal => deal.type === 'deal');
+  const total = scope.length;
+  const rate = count => (total ? `${count}/${total}（${(count / total * 100).toFixed(1)}%）` : `0/${total}`);
+  const hasList = (deal, field) => Array.isArray(deal[field]) && deal[field].length > 0;
+  const hasKnownTri = (deal, field, keys) => keys.some(key => {
+    const value = deal[field] && deal[field][key];
+    return value === true || value === false;
+  });
+  const knownScope = deals.filter(deal => au.hasKnown(deal.audience) || au.hasKnown(deal.benefitType)
+    || au.hasKnown(deal.eligibilityDetail) || au.hasKnown(deal.claimRequirements) || au.hasKnown(deal.availability));
+  return {
+    scope: total,
+    student: scope.filter(deal => hasList(deal, 'audience') && deal.audience.includes('student')).length,
+    developer: scope.filter(deal => hasList(deal, 'audience') && deal.audience.includes('developer')).length,
+    audienceAny: scope.filter(deal => hasList(deal, 'audience')).length,
+    benefitType: scope.filter(deal => hasList(deal, 'benefitType')).length,
+    creditCard: scope.filter(deal => hasKnownTri(deal, 'claimRequirements', ['creditCardRequired'])).length,
+    studentRequired: scope.filter(deal => hasKnownTri(deal, 'eligibilityDetail', ['studentRequired'])).length,
+    educationEmail: scope.filter(deal => hasKnownTri(deal, 'eligibilityDetail', ['educationEmailRequired'])).length,
+    chinaUsable: scope.filter(deal => deal.availability
+      && (deal.availability.chinaUsable === true || deal.availability.chinaUsable === false)).length,
+    provenance: scope.filter(deal => deal.provenance && deal.provenance.credibility).length,
+    // 「已知值但无 provenance」：这是覆盖率报告里最该被优先补的那一类
+    knownWithoutProvenance: knownScope.filter(deal => !(deal.provenance && deal.provenance.credibility)).length,
+    known: knownScope.length
+  };
+}
+
 /* ---------------- 策展数据 ---------------- */
 
 function checkCurated() {
   let total = 0;
+  let audienceDropped = 0;
   for (const file of CURATED_FILES) {
     if (!fs.existsSync(file)) {
       warn(`策展文件缺失（可选）: ${path.relative(ROOT, file)}`);
@@ -196,10 +336,22 @@ function checkCurated() {
         result.errors.forEach(e => error(`${path.basename(file)}: ${e}`));
       }
       if (isCN && deal.region !== 'cn') error(`${path.basename(file)}[${index}] 国内策展数据 region 必须是 cn`);
+
+      // v1.1：手写数据里「声明了却归一后消失」的新字段。**必须是错误而不是警告** ——
+      // 这是本阶段最阴的一类错：枚举拼错时那条记录看起来与「本来就没写」一模一样，
+      // 页面上少一行而 validateDeal 只看到「字段缺席」，而缺席是合法的（契约 §3）。
+      // 校验器看的是归一**之后**的世界，字是在归一**之前**写错的，所以只能在入口对账。
+      // 判据与 loadCurated 共用同一个函数（不准各写一份，v1.0 的 ONGOING 教训）。
+      const audit = auditAudienceFields(raw, deal);
+      audit.dropped.forEach(item => {
+        audienceDropped++;
+        error(`${path.basename(file)}[${index}] ${deal.title || raw.title || '(无标题)'}: ` +
+          `${item.field}${item.key ? '.' + item.key : ''} 写了却没生效 —— ${item.reason}`);
+      });
       total++;
     });
   }
-  return { curated: total };
+  return { curated: total, audienceDropped };
 }
 
 /* ---------------- 门禁自身的守卫 ---------------- */
@@ -337,11 +489,12 @@ function checkIndex() {
 
 function main() {
   const strict = process.argv.includes('--strict');
-  const { stats } = checkDealsFile();
+  const { stats, deals } = checkDealsFile();
   const curatedStats = checkCurated();
   checkIndex();
   if (strict) checkVerifiedGuard();
   if (strict) checkOngoingGuard();
+  if (strict) checkAudienceGuard();
 
   console.log('=== 数据校验 ===');
   if (stats) {
@@ -356,6 +509,23 @@ function main() {
     console.log(`价格阶梯      : ${stats.withPriceLine} 条`);
   }
   console.log(`策展数据      : ${curatedStats.curated} 条`);
+  // 有值时它已经在上面作为**错误**报过并 exit 1 了，所以这行只在 0 的时候看得见 ——
+  // 「0 也打印」的意思正是让「没检查」与「检查了、干净」在日志里长得不一样。
+  console.log(`受众字段落空  : ${curatedStats.audienceDropped} 处（策展文件里写了却没进记录的新字段）`);
+
+  // v1.1 受众字段覆盖率：分母 = type==='deal'（工具条目没有「领取条件」）。
+  // 覆盖率低是**正确结果** —— 没有证据就留空，编数据才是失败（契约 §7.3）。
+  if (stats && Array.isArray(deals)) {
+    const cov = audienceCoverage(deals);
+    const r = count => `${count}/${cov.scope}（${cov.scope ? (count / cov.scope * 100).toFixed(1) : '0.0'}%）`;
+    console.log('受众字段      : 分母 = type=deal 的条目');
+    console.log(`  适用人群    : 学生 ${r(cov.student)} · 开发者 ${r(cov.developer)} · 任一 ${r(cov.audienceAny)}`);
+    console.log(`  福利类型    : ${r(cov.benefitType)}`);
+    console.log(`  需要信用卡  : 已知 ${r(cov.creditCard)}`);
+    console.log(`  需要学生认证: 已知 ${r(cov.studentRequired)} · 需要教育邮箱 已知 ${r(cov.educationEmail)}`);
+    console.log(`  中国可用性  : 已知 ${r(cov.chinaUsable)}`);
+    console.log(`  出处声明    : ${r(cov.provenance)} · 有已知值但无出处 ${cov.knownWithoutProvenance} 条 / 有已知值 ${cov.known} 条`);
+  }
 
   // 覆盖率提示：人工核验过却还没有特性标签的条目，是最值得优先补齐的（卡片会退化成纯文字块）
   if (stats && stats.trustedMissingFeatures > 0) {

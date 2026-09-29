@@ -37,6 +37,18 @@ npm run serve                          # 本地预览源码目录 http://127.0.0
 node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 index.html）
 ```
 
+跑一遍 CI 会跑的全部静态门禁（`npm run verify` 需要浏览器，单列）。
+下面刻意写成**一行**：`&&` 在 bash 与 PowerShell 7 里都能用，而换行续行符两边不一样
+（bash 是 `\`、PowerShell 是反引号），写成多行会让其中一边复制过去跑不起来。
+
+```bash
+npm run test:strict && npm run check:reproducible && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:audience && npm run selftest:app-token && npm run build && npm run check:ci
+```
+
+> `migrate:audience:verify` **不需要参数**：它默认跑 `scripts/data/fixtures/` 下那对合成夹具
+> （9 条记录逐分支覆盖）。要比对一次真实的 `migrate.js --audience`，成对传
+> `--before=<旧 deal.json> --after=<新 deal.json>`。
+
 > 本地看效果请一律用 **`npm run build` + `node scripts/serve.js --dir=dist`**：
 > 源码目录里的 `index.html` 还没预渲染，`logos.css` 也尚未生成，直接开是看不到 logo 的。
 
@@ -155,6 +167,11 @@ scripts/
     schema.js                 v2 契约：makeDeal / validateDeal / 垃圾与优惠信号判定
     store.js                  读写、合并、过期修剪、发布前断言（采集量骤降只记 degraded 告警，不拦写盘）
     dedup.js                  标题归一 + 别名表 + 信息量择优合并
+    audience.js               v1.1 六字段的**单一词汇源**：枚举 / 三态 / 分类判据 / 页面措辞
+    audience-audit.js         手写数据「声明了却归一后消失」的对账（拼错枚举不会静默变没写）
+    audience-overrides.js     第二个人工来源（声明式补充）的加载与应用；contrib 只增不减
+    migrate-audience.js       一次性补 provenance 的纯函数（只补出处，**不猜值**）
+    health.js                 采集来源健康状态：状态规则 / 摘要 / 绝对时间格式
     classify.js               地区判定、有效期抽取
     official.js               聚合站条目 → 官方页解析
     http.js                   UA / 超时 / 重试 / 并发限流 / robots.txt
@@ -174,18 +191,29 @@ scripts/
   data/
     curated_cn.json           国内人工策展（可核验的官方优惠）
     curated_global.json       国外人工策展
+    audience-overrides.json   v1.1 **第二个人工来源**：采集侧条目的六字段声明式补充（每条带引文）
+    source-health.json        采集来源的跨运行状态（每轮 collect 写入，与 deals.json 同批提交）
+    fixtures/                 migrate-audience-verify 的合成夹具（before/after 成对，逐分支覆盖）
     translations_zh.json      国外英文文案的人工中文译文（键为 deal.id，含原文指纹 src）
     backfill-cards.js         一次性补齐卡片字段的映射记录（新增条目时作写法参考）
     aliases.json              产品别名表（跨源去重）
     official_urls.json        聚合站条目 → 官方页映射
   tools/                      采集器调试工具与发布产物组装
     build-local.js            校验 → 组装 dist/ → 预渲染 → 自检（本地与 CI 同一路径）
-    verify-site.js            真浏览器验收：密度/裁切/hover/筛选/弹层/译文折叠/移动端（dev，需 playwright-core）
+    verify-site.js            真浏览器验收：密度/裁切/hover/筛选/弹层/译文折叠/移动端/分类页/状态页（dev，需 playwright-core）
+    check-reproducible.js     可重建性门禁：文件里不许有「没有任何源」的值（五个判据，CI）
+    audience-selftest.js      受众字段全部红线守卫（三态 / 仲裁 / 措辞同源，CI）
+    audience-report.js        覆盖率报告：已知 / unknown / 缺席三栏分列，逐条可审计
+    audience-overrides-extract.js  从 DATA-BACKFILL.md 那张表生成 overrides（与数据对不上就拒绝写）
+    migrate-audience-verify.js     `migrate.js --audience` 的验收比对（默认跑合成夹具，CI）
+    check-ci-consistency.js   看门狗：门禁步骤序列 / 冻结断言名单 / --expect-checks 互相独立（CI）
     zh-todo.js                中文翻译待办与脚手架（--json / --scaffold 盖原文指纹 / --orphans）
     zh-selftest.js            中文译文门禁演练（自恢复，验证坏译文真的会被拦下）
     tier-report.js            分档与厂商归一报告（调规则时先看它）
     fetch-logos.js            从厂商官网抓取品牌图标，补进 assets/logos/
 ```
+
+契约文档在 `docs/SCHEMA-v1.1.md`（六字段的语义、可信度档位、可重建判据、五条既有约定）。
 
 ## 采集来源策略
 
@@ -481,6 +509,24 @@ npm run selftest:zh     # 门禁演练：塞坏数据进去，验证构建拦得
 `collect.js` 每轮写入、与 `deals.json` 同批提交；`npm run selftest:health`（51 项）钉住
 上面这张规则表，包括「单次零产出不算 failed」「连续 3 次才升级」「浏览器没起来不许报 healthy」。
 
+**它同时满足站点的五条既有约定**（2026-09-29 收口前只满足两条）：
+
+| 约定 | 做法 |
+|---|---|
+| sitemap | 进 `sitemap.xml`，`priority 0.3` —— **低于**详情页 0.7（它是工具页，不是搜索入口） |
+| feed | 声明两个 `rel="alternate"`；自己不产条目（订阅是「内容更新」语义，一页运维表不是更新） |
+| JSON-LD | 两段：`WebPage` + `BreadcrumbList`（**一段一个对象**，不塞进一个数组） |
+| 预渲染 | 表格构建期写死 |
+| 无 JS 可读 | 绝对时间在 `<time datetime>` 里；「2 小时前」只由内联脚本换算，禁用 JS 时读到的仍是完整信息 |
+
+它还**不发** `Dataset` / `ItemList`：机器可读的那一份就是 `source-health.json`，页面上直接链着它。
+把同一份事实声明两次，两次迟早会分家，而分家时两边各自看都自洽 —— 没有任何东西会红。
+
+`npm run verify` 对它有 10 条真浏览器断言，其中最要紧的两条是 **390px / 360px 不产生页面级
+横向溢出**：三列数字与时间都是 `white-space: nowrap`，宽表靠 `.stable-wrap` 内部横滚。
+把那一层去掉，桌面端毫无变化，390px 溢出 121px、360px 溢出 151px（实测）—— 这类缺陷静态检查
+一条都看不见。
+
 ### 诚实性约束（与竞品的关键差别）
 
 - 卡片底部只有**一种**新鲜度标注：「数据更新 {lastSeen}」。这里曾分「已核验」（人工逐条回访官方页）
@@ -502,9 +548,13 @@ npm run selftest:zh     # 门禁演练：塞坏数据进去，验证构建拦得
 
 卡片是**固定高度**的，任何一处内容变高都会被 `overflow:hidden` 静默裁掉；logo 簇是 hover
 展开的，很容易把标题挤到换行、把网格行高顶动。这两类问题静态检查都看不见，所以有
-`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 **145 项断言**——
-（无 `--compare`；带基线回归比对的 `npm run verify:regress` 共 **151 项**。静态 `check()` 调用点 152 =
-145 常跑 + 6 回归 + 1 条仅在基线文件缺失时执行的失败分支。）
+`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 **181 项断言**；带基线回归比对的
+`npm run verify:regress` 共 **187 项**（多出的 6 条是回归比对：覆盖条数、卡片数、首屏完整可见、
+页高、外部请求、JS 错误）。
+这两个数字由工具自己打印（`✅ 验收 N 项，失败 0 项`），跑一次就能核。**不要拿源码里 `check(`
+的调用点数去反推**：按行首 `check(` 计是 177 处，与执行项数并不相等 —— 有的调用在循环里
+（分类页 3 条路由 × 5 类断言、状态页 2 个视口各一轮），有的在 `if/else` 里
+（取样前提不成立时只打印「跳过」，不计一项）。
 无 JS 时的静态骨架、卡片高度是否统一、**每张卡最后一个元素有没有越过内边距**、
 hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排序、搜索、中文译文可搜、
 移动端横向溢出、**锚点导航的真实渲染状态**（量 `getComputedStyle.display` 与几何，
@@ -524,10 +574,15 @@ hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排�
 
 ## 自动化与部署
 
-**门禁的步骤实现只有一处**：`.github/actions/gate/action.yml`（复合 action，14 步）——
-`npm ci → validate --strict → 译文门禁 → 译文演练 → 活动期限演练 → 文本清洗演练 → 健康演练
-→ 采集机器人身份演练 → 组装产物 → 准备浏览器 → 浏览器可用性判定 → 真浏览器验收 → 回归比对 → 结论`。
+**门禁的步骤实现只有一处**：`.github/actions/gate/action.yml`（复合 action，**17 步**）——
+`npm ci → validate --strict → 可重建性门禁 → 迁移验收比对 → 译文门禁 → 译文演练 → 活动期限演练
+→ 文本清洗演练 → 健康演练 → 受众字段演练 → 采集机器人身份演练 → 组装产物 → 准备浏览器
+→ 浏览器可用性判定 → 真浏览器验收 → 回归比对 → 结论`。
 三条 workflow 共用它，没有第二套测试链。
+
+> 步骤的**顺序与数量**是一份冻结契约（`check-ci-consistency.js` 的 `GATE_STEP_NAMES`）：
+> 谁把真浏览器验收、回归比对或译文门禁从门禁里拿掉，`npm run check:ci` 立刻红。
+> 所以上面这句「17 步」不是抄来的，是被断言钉住的。
 
 - `.github/workflows/verify.yml`（**必需检查名 `gate`**）：`pull_request` / `push`(master) /
   手动。步骤是 checkout → setup-node → 一致性门禁（单行 `run:`，`--expect-checks=N` 是项数的
