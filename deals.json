@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-09-29T17:51:50+08:00",
+  "updatedAt": "2026-09-29T12:25:08+08:00",
   "count": 134,
   "deals": [
     {
@@ -24,67 +24,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "9c12f13df3ba",
@@ -107,67 +47,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "ad1d0c83909d",
@@ -190,67 +70,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "8b2e8d64f11f",
@@ -273,67 +93,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "4d4bcb5b6829",
@@ -356,67 +116,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "bf156583e97c",
@@ -439,67 +139,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "8814355d59e1",
@@ -522,67 +162,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "e384895f5935",
@@ -605,67 +185,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "e65f54470862",
@@ -688,67 +208,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "9180073deef1",
@@ -771,67 +231,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "017bdbc04e70",
@@ -854,67 +254,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "8b609cb05116",
@@ -937,67 +277,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "78384299b660",
@@ -1020,67 +300,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "c4ab5c5d8101",
@@ -1103,67 +323,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "5c38e515a3ae",
@@ -1186,67 +346,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "4c7952115477",
@@ -1269,67 +369,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "a1255b2fbae2",
@@ -1352,67 +392,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "e237cab7c007",
@@ -1435,67 +415,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "ebd47f6d2522",
@@ -1518,67 +438,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_model",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "e7e8f538456c",
@@ -1601,67 +461,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_model",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "6798f78de5ce",
@@ -1684,67 +484,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_model",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "f22e3cd094ad",
@@ -1767,67 +507,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_model",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "62e3166acec0",
@@ -1850,67 +530,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_model",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "5dedb9455508",
@@ -1933,67 +553,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_model",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "df1210f69a39",
@@ -2016,67 +576,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_model",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "f5ffff50772c",
@@ -2100,24 +600,6 @@
       "lastSeen": "2026-09-29",
       "verified": false,
       "verifiedAt": null,
-      "audience": [
-        "general"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
-        "contrib": {
-          "audience": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      },
       "zh": {
         "discountInfo": "ChatGPT 提供免费档；Business 与 Enterprise 套餐可选年付。核查官方定价页时，页面上没有列出长期有效的公开学生或非营利折扣。",
         "description": "可直接使用免费档，或在官方定价页选择年付。",
@@ -2146,36 +628,6 @@
       "lastSeen": "2026-09-29",
       "verified": false,
       "verifiedAt": null,
-      "audience": [
-        "student",
-        "general"
-      ],
-      "availability": {
-        "chinaUsable": "unknown",
-        "regionRestriction": "学生优惠按国家/地区而异；美国站学生优惠已于 2026-03-11 结束"
-      },
-      "provenance": {
-        "credibility": "curated",
-        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      },
       "zh": {
         "discountInfo": "Gemini 免费访问仍然可用。Google AI Pro 的学生优惠因国家而异；美国学生优惠页面写明，上一轮学生优惠已于 2026 年 3 月 11 日结束。",
         "description": "请查看你所在地区的 Gemini 官方学生页与订阅页。",
@@ -2204,52 +656,6 @@
       "lastSeen": "2026-09-29",
       "verified": false,
       "verifiedAt": null,
-      "audience": [
-        "student",
-        "educator"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "eligibilityDetail": {
-        "studentRequired": true,
-        "identityVerificationRequired": true
-      },
-      "availability": {
-        "chinaUsable": "unknown"
-      },
-      "provenance": {
-        "credibility": "curated",
-        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      },
       "zh": {
         "discountInfo": "通过验证的学生与教育工作者可优惠购买 Education Pro。Perplexity 同时说明，优惠码只通过官方合作伙伴与官方渠道发放。",
         "description": "先完成学生或教育工作者身份验证，或使用官方渠道发布的合作方优惠。",
@@ -2278,64 +684,6 @@
       "lastSeen": "2026-09-29",
       "verified": false,
       "verifiedAt": null,
-      "audience": [
-        "student",
-        "educator",
-        "other"
-      ],
-      "benefitType": [
-        "free_subscription",
-        "discount"
-      ],
-      "eligibilityDetail": {
-        "studentRequired": true,
-        "identityVerificationRequired": true
-      },
-      "claimRequirements": {
-        "manualApplication": true
-      },
-      "availability": {
-        "chinaUsable": "unknown"
-      },
-      "provenance": {
-        "credibility": "curated",
-        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      },
       "zh": {
         "discountInfo": "Canva 非营利计划为符合条件的注册非营利组织免费提供 Canva Pro 功能与协作工具，最多 50 个席位，超出的非营利席位按折扣价购买。Canva 教育版对符合条件的 K-12 教师与学生免费。",
         "description": "通过 Canva 非营利计划或 Canva 教育版的身份验证入口申请。",
@@ -2364,32 +712,6 @@
       "lastSeen": "2026-09-29",
       "verified": false,
       "verifiedAt": null,
-      "audience": [
-        "student",
-        "developer"
-      ],
-      "availability": {
-        "chinaUsable": "unknown"
-      },
-      "provenance": {
-        "credibility": "curated",
-        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "DI 原文「student page points students toward campus and online event promotions」→ student；Cursor 是 AI 编程工具 → developer（推断）。免费档不是完整订阅，benefitType 刻意留空"
-          }
-        }
-      },
       "zh": {
         "discountInfo": "Cursor 表示任何人都可以免费开始使用。它的学生页面把学生引向校园与线上活动优惠；定价页则提醒，第三方出售的 Cursor 订阅均未获授权。",
         "description": "先用免费档；如需升级，只在 cursor.com 官方渠道购买。",
@@ -2418,51 +740,6 @@
       "lastSeen": "2026-09-29",
       "verified": false,
       "verifiedAt": null,
-      "audience": [
-        "student",
-        "developer"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "eligibilityDetail": {
-        "studentRequired": true
-      },
-      "availability": {
-        "chinaUsable": "unknown"
-      },
-      "provenance": {
-        "credibility": "curated",
-        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      },
       "zh": {
         "discountInfo": "Replit 定价页列出了付费套餐的年付优惠。其文档中也出现过学生折扣，例如 Replit Core 前六个月每月减 $15。",
         "description": "订阅前先核对 Replit 定价页与学生注册入口。",
@@ -2491,44 +768,6 @@
       "lastSeen": "2026-09-29",
       "verified": false,
       "verifiedAt": null,
-      "audience": [
-        "other"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "claimRequirements": {
-        "manualApplication": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      },
       "zh": {
         "discountInfo": "Zapier 提供年付优惠，并表示非营利组织购买任意付费套餐可享 15% 折扣，按任务计费的部分除外。",
         "description": "选择年付，或通过 Zapier 非营利计划申请。",
@@ -2557,44 +796,6 @@
       "lastSeen": "2026-09-29",
       "verified": false,
       "verifiedAt": null,
-      "audience": [
-        "other"
-      ],
-      "benefitType": [
-        "free_subscription"
-      ],
-      "claimRequirements": {
-        "manualApplication": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      },
       "zh": {
         "discountInfo": "Make 通过其 NGO 计划，为符合条件的非政府组织提供 12 个月免费授权。",
         "description": "通过 Make 的 NGO 计划申请。",
@@ -2623,54 +824,6 @@
       "lastSeen": "2026-09-29",
       "verified": false,
       "verifiedAt": null,
-      "audience": [
-        "other"
-      ],
-      "benefitType": [
-        "free_subscription"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true
-      },
-      "claimRequirements": {
-        "manualApplication": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      },
       "zh": {
         "discountInfo": "OpenAI 与 SheerID 合作完成身份验证，为符合条件的退伍军人和即将退役的现役军人提供整整一年免费 ChatGPT Plus，并附示例对话，以及面向求职、福利申请与搬迁规划的入门指南。",
         "description": "在官方领取页面通过 SheerID 完成军人或退伍身份验证。",
@@ -2744,24 +897,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "student"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "4fede366f914",
@@ -2876,25 +1012,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "student",
-        "other"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "8583e9860d88",
@@ -3056,84 +1174,6 @@
       "lastSeen": "2026-09-29",
       "verified": false,
       "verifiedAt": null
-    },
-    {
-      "id": "cb45e0c735bd",
-      "title": "HubSpot AEO Sensor",
-      "vendor": "HubSpot AEO",
-      "url": "https://www.hubspot.com/aeo-sensor",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "其他",
-      "description": "Tracks how AI answer engines shift your website’s visibility.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-29",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "追踪 AI 问答引擎如何改变你网站的曝光表现。"
-      }
-    },
-    {
-      "id": "9e7c938ec401",
-      "title": "Midjourney",
-      "vendor": "Midjourney",
-      "url": "https://www.midjourney.com/home/",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "Creates images and videos from prompts.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-29",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "用提示词生成图片与视频。"
-      }
-    },
-    {
-      "id": "376b6b3397e6",
-      "title": "Grok",
-      "vendor": "Grok",
-      "url": "https://x.ai/grok",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/grok",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": "freemium",
-      "priceLine": null,
-      "features": null,
-      "category": "对话模型",
-      "description": "A conversational AI for timely answers from the live web and X.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-29",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "对话式 AI，基于实时网络与 X 的内容给出及时回答。"
-      }
     },
     {
       "id": "a67c07bf4993",
@@ -3339,25 +1379,6 @@
       "lastSeen": "2026-09-29",
       "verified": false,
       "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "sourceUrl": "https://futuretools.io/tools/tenki-cloud",
-        "contrib": {
-          "audience": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "description 原文「self-hosted GitHub Actions runners with automatic scaling」是开发者基础设施 → developer（推断）"
-          }
-        }
-      },
       "zh": {
         "description": "自建 GitHub Actions 运行器，支持自动扩缩容。"
       }
@@ -3410,25 +1431,6 @@
       "lastSeen": "2026-09-29",
       "verified": false,
       "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "sourceUrl": "https://futuretools.io/tools/emergent-sh",
-        "contrib": {
-          "audience": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "description 原文「An IDE for code migration from legacy to modern frameworks through coding agents」→ developer（推断）"
-          }
-        }
-      },
       "zh": {
         "description": "用编码智能体把遗留代码迁移到现代框架的 IDE。"
       }
@@ -3455,25 +1457,6 @@
       "lastSeen": "2026-09-29",
       "verified": false,
       "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "sourceUrl": "https://futuretools.io/tools/google-ai-studio",
-        "contrib": {
-          "audience": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "description 原文「A tool for AI development with diverse tools and models」→ developer（推断）"
-          }
-        }
-      },
       "zh": {
         "description": "集成多种工具与模型的 AI 开发平台。"
       }
@@ -3967,66 +1950,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "1688614d6669",
@@ -4049,66 +1973,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "developer_credit"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "adcb6471a512",
@@ -4131,44 +1996,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "eligibilityDetail": {
-        "newUserOnly": false
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "ead998e58cd9",
@@ -4191,44 +2019,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "trial"
-      ],
-      "eligibilityDetail": {
-        "newUserOnly": false
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "1888ab62bd67",
@@ -4251,37 +2042,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（文本生成）：50万tokens」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（文本生成）：50万tokens」"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "d6aaee8c7379",
@@ -4304,37 +2065,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：50张」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：50张」"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "45ead69d60cc",
@@ -4357,37 +2088,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "7f8c32f6a327",
@@ -4410,37 +2111,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "47a4c57f3a15",
@@ -4463,37 +2134,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符」"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "57847fbcc1ed",
@@ -4516,37 +2157,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符 + 10复刻声音」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符 + 10复刻声音」"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "2db62eb1a8a0",
@@ -4569,37 +2180,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "8dada3205ed8",
@@ -4622,37 +2203,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "407572a1e046",
@@ -4675,37 +2226,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（向量模型）：50万tokens」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（向量模型）：50万tokens」"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "4e659666cbb2",
@@ -4728,37 +2249,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（联网插件）：2万次/月」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（联网插件）：2万次/月」"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "4caf88e30671",
@@ -4781,45 +2272,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "developer_credit"
-      ],
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "c694e7c5f125",
@@ -4842,43 +2295,84 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "cb45e0c735bd",
+      "title": "HubSpot AEO Sensor",
+      "vendor": "HubSpot AEO",
+      "url": "https://www.hubspot.com/aeo-sensor",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "其他",
+      "description": "Tracks how AI answer engines shift your website’s visibility.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-28",
+      "verified": false,
       "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
+      "zh": {
+        "description": "追踪 AI 问答引擎如何改变你网站的曝光表现。"
+      }
+    },
+    {
+      "id": "9e7c938ec401",
+      "title": "Midjourney",
+      "vendor": "Midjourney",
+      "url": "https://www.midjourney.com/home/",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "Creates images and videos from prompts.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-28",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "用提示词生成图片与视频。"
+      }
+    },
+    {
+      "id": "376b6b3397e6",
+      "title": "Grok",
+      "vendor": "Grok",
+      "url": "https://x.ai/grok",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/grok",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": "freemium",
+      "priceLine": null,
+      "features": null,
+      "category": "对话模型",
+      "description": "A conversational AI for timely answers from the live web and X.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "对话式 AI，基于实时网络与 X 的内容给出及时回答。"
       }
     },
     {
@@ -4928,44 +2422,7 @@
       "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-28",
       "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "eligibilityDetail": {
-        "newUserOnly": false
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": null
     },
     {
       "id": "0ddacfb2cc6e",
@@ -5056,68 +2513,21 @@
       "type": "deal",
       "discountInfo": "火山方舟面向个人用户提供豆包全系模型 500,000 tokens 的免费推理额度；豆包通用模型 pro/lite 的 4K、32K 版本另提供 10,000 RPM、800,000 TPM 的大流量额度。",
       "pricingModel": "free",
+      "category": "对话模型",
+      "description": "火山方舟面向个人开发者开放后，注册即可调用豆包等十数种大模型并使用免费推理额度，额度按模型计算。",
+      "eligibility": "个人开发者（需注册火山引擎账号）",
+      "validity": "官方公告未标注截止日期，实际额度有效期以火山方舟控制台为准",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
       "priceLine": null,
       "features": [
         "50 万 tokens",
         "豆包全系模型",
         "个人开发者"
       ],
-      "category": "对话模型",
-      "description": "火山方舟面向个人开发者开放后，注册即可调用豆包等十数种大模型并使用免费推理额度，额度按模型计算。",
-      "eligibility": "个人开发者（需注册火山引擎账号）",
-      "validity": "官方公告未标注截止日期，实际额度有效期以火山方舟控制台为准",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": "unknown"
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://www.volcengine.com/docs/6359/1279663",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "65f0bdd295ac",
@@ -5130,85 +2540,21 @@
       "type": "deal",
       "discountInfo": "首次开通腾讯混元服务后发放一次性免费资源包：Hunyuan-a13b、Hunyuan-role、Hunyuan-translation、HY Vision 1.5 Instruct、Hunyuan-turbos-vision 等共用 100 万 tokens；Hunyuan-embedding 另送 100 万 tokens。",
       "pricingModel": "free",
+      "category": "对话模型",
+      "description": "完成腾讯云实名认证后，首次在混元大模型控制台点击「立即使用」即自动发放；免费额度用完后不会自动转后付费。",
+      "eligibility": "通过腾讯云实名认证的新用户",
+      "validity": "资源包有效期 1 年，自开通服务起 1 年内未用完则过期作废",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
       "priceLine": null,
       "features": [
         "100 万 tokens",
         "有效期 1 年",
         "需实名认证"
       ],
-      "category": "对话模型",
-      "description": "完成腾讯云实名认证后，首次在混元大模型控制台点击「立即使用」即自动发放；免费额度用完后不会自动转后付费。",
-      "eligibility": "通过腾讯云实名认证的新用户",
-      "validity": "资源包有效期 1 年，自开通服务起 1 年内未用完则过期作废",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ],
-          "availability": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated",
-            "note": "eligibility 原文「通过腾讯云实名认证的新用户」"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "inferred",
-            "derived": "inferred",
-            "note": "eligibility 原文「通过腾讯云实名认证的新用户」：大陆实名认证只能由持大陆身份证的用户完成，据此推断大陆用户可注册并领取（官方未逐条写明额度是否限地区，故按 §2.5.1 第二档记 true 并留下推理链）"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "6869e7866510",
@@ -5221,67 +2567,20 @@
       "type": "deal",
       "discountInfo": "官方接口文档标注轻量级大语言模型 Spark Lite「支持免费使用」，模型列表中该档位调用免费。",
       "pricingModel": "free",
-      "priceLine": null,
-      "features": [
-        "Spark Lite 免费",
-        "创建应用即可调用"
-      ],
       "category": "对话模型",
       "description": "注册讯飞开放平台并创建应用后，使用对应版本的 APIPassword 即可调用；Lite 版免费用量在控制台查看。",
       "eligibility": "注册讯飞开放平台的开发者（需创建应用）",
       "validity": "官方文档未标注截止日期",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
+      "priceLine": null,
+      "features": [
+        "Spark Lite 免费",
+        "创建应用即可调用"
       ],
-      "benefitType": [
-        "free_model",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": "unknown"
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://www.xfyun.cn/doc/spark/HTTP%E8%B0%83%E7%94%A8%E6%96%87%E6%A1%A3.html",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "833a9889bfb7",
@@ -5294,72 +2593,21 @@
       "type": "deal",
       "discountInfo": "官方新手页三大免费福利：新手产品礼包（八大 AI 服务、百万级交互量免费领取）、乐享会员（最高价值 2888 元）、用户成长礼包；另提供语音听写、语音合成、实时转写、图片生成等能力免费体验。",
       "pricingModel": "credits",
+      "category": "API服务",
+      "description": "注册讯飞开放平台账号后在新手指南页按引导领取，部分权益需完成认证。",
+      "eligibility": "新注册开发者；乐享会员需完成认证",
+      "validity": "官方页面未标注截止日期",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
       "priceLine": null,
       "features": [
         "百万级交互量",
         "八大 AI 服务",
         "乐享会员 2888 元"
       ],
-      "category": "API服务",
-      "description": "注册讯飞开放平台账号后在新手指南页按引导领取，部分权益需完成认证。",
-      "eligibility": "新注册开发者；乐享会员需完成认证",
-      "validity": "官方页面未标注截止日期",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "developer_credit"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://www.xfyun.cn/beginner",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "e63402b5cc83",
@@ -5372,83 +2620,20 @@
       "type": "deal",
       "discountInfo": "Kimi 开放平台为新注册用户提供免费测试额度：注册即赠送 15 元代金券，可用于体验 Kimi K3 等模型的 API 调用。",
       "pricingModel": "credits",
-      "priceLine": null,
-      "features": [
-        "15 元代金券",
-        "需实名认证"
-      ],
       "category": "API服务",
       "description": "完成实名认证后发放；剩余额度可在控制台「费用明细」查看，代金券用完后需充值继续使用。",
       "eligibility": "Kimi 开放平台新注册用户（需实名认证）",
       "validity": "以代金券实际到期时间为准",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
+      "priceLine": null,
+      "features": [
+        "15 元代金券",
+        "需实名认证"
       ],
-      "benefitType": [
-        "free_credits",
-        "developer_credit"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://www.kimi.com/help/kimi-api/api-free-trial",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ],
-          "availability": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated",
-            "note": "description 原文「完成实名认证后发放」"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "inferred",
-            "derived": "inferred",
-            "note": "eligibility 原文「Kimi 开放平台新注册用户（需实名认证）」：大陆实名认证只能由持大陆身份证的用户完成，据此推断大陆用户可注册并领取（官方未逐条写明额度是否限地区，故按 §2.5.1 第二档记 true 并留下推理链）"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "0c30d79a5016",
@@ -5461,68 +2646,21 @@
       "type": "deal",
       "discountInfo": "官方公告：随 SenseNova 6.7 Flash-Lite 发布，SenseNova Token Plan 限时免费开放，开发者首月可享每 5 小时 1500 次调用的无门槛免费配额。",
       "pricingModel": "free",
+      "category": "API服务",
+      "description": "登录 SenseNova 平台即可申请领取限时免费使用；官方称后续将推出 Lite、Pro 等档位。",
+      "eligibility": "SenseNova 平台开发者（无门槛配额）",
+      "validity": "限时活动，开发者首月免费",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
       "priceLine": null,
       "features": [
         "首月免费",
         "每 5 小时 1500 次",
         "无门槛配额"
       ],
-      "category": "API服务",
-      "description": "登录 SenseNova 平台即可申请领取限时免费使用；官方称后续将推出 Lite、Pro 等档位。",
-      "eligibility": "SenseNova 平台开发者（无门槛配额）",
-      "validity": "限时活动，开发者首月免费",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_api",
-        "trial"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": "unknown"
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://www.sensetime.com/cn/news/51170639",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "d8d0ba522315",
@@ -5535,72 +2673,20 @@
       "type": "deal",
       "discountInfo": "官方定价页标注多款模型价格为「免费」：文本 Hunyuan-MT-7B、Xing4.0-29B、PaddleOCR-VL；向量与重排 bge-m3、bge-reranker-v2-m3、bge-large-zh/en；图像 Kolors 文生图；语音 XingChenGSR、XingChenASR 系列、SenseVoiceSmall。",
       "pricingModel": "free",
-      "priceLine": null,
-      "features": [
-        "多款模型标价 0",
-        "文本 / 向量 / 图像 / 语音"
-      ],
       "category": "API服务",
       "description": "注册硅基流动账号并创建 API Key 后即可直接调用这些免费模型，按量计费价格显示为 0。",
       "eligibility": "所有注册开发者",
       "validity": "官方定价页未标注截止日期（实时价格以官方页为准）",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
+      "priceLine": null,
+      "features": [
+        "多款模型标价 0",
+        "文本 / 向量 / 图像 / 语音"
       ],
-      "benefitType": [
-        "free_model",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://siliconflow.cn/pricing",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "bcba406ed9ff",
@@ -5613,67 +2699,20 @@
       "type": "deal",
       "discountInfo": "官方定价详情页中，stepaudio-3-realtime-preview 与 stepaudio-3-chat-preview 两个语音大模型的输入/输出价格均标注为「限时免费」。",
       "pricingModel": "trial",
-      "priceLine": null,
-      "features": [
-        "两个语音模型限时免费",
-        "按 Token 计费其他"
-      ],
       "category": "音频语音",
       "description": "在 StepFun 开放平台注册并创建 API Key 后即可调用；同页其他模型按 Token/字符计费。",
       "eligibility": "StepFun 开放平台注册开发者",
       "validity": "限时免费（官方未标注具体截止日期）",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
+      "priceLine": null,
+      "features": [
+        "两个语音模型限时免费",
+        "按 Token 计费其他"
       ],
-      "benefitType": [
-        "free_model",
-        "trial"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": "unknown"
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "c59299cdc88e",
@@ -5686,66 +2725,387 @@
       "type": "deal",
       "discountInfo": "开放平台文档页横幅：「申请加入海纳百川计划 · 免费使用 M3Plus API」——申请加入该计划后可免费调用百川 M3Plus（循证增强医疗大模型）API。",
       "pricingModel": "free",
-      "priceLine": null,
-      "features": [
-        "免费 M3Plus API",
-        "需申请审核"
-      ],
       "category": "对话模型",
       "description": "点击页面横幅进入申请流程，审核通过后即可免费使用 M3Plus API。",
       "eligibility": "申请加入海纳百川计划的开发者 / 机构（需审核）",
       "validity": "未标注截止日期",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-21",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
+      "priceLine": null,
+      "features": [
+        "免费 M3Plus API",
+        "需申请审核"
       ],
-      "benefitType": [
-        "free_api"
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "f578493037d4",
+      "title": "Anthropic Claude 非营利组织折扣",
+      "vendor": "Anthropic",
+      "url": "https://support.claude.com/en/articles/12893767-getting-started-with-claude-for-nonprofits",
+      "source": "Curated",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "经核验的非营利组织可享 Claude Team / Enterprise 折扣价：Team 计划 $8/用户/月、Enterprise 计划 $10/用户/月（团队不足 150 人最少 2 席）。",
+      "pricingModel": "paid",
+      "category": "对话模型",
+      "description": "通过合作方 Goodstack 提交非营利资格核验表单后即可开通；折扣价包含与标准 Team / Enterprise 相同的 Opus / Sonnet / Haiku 模型。",
+      "eligibility": "经核验的非营利组织",
+      "validity": "长期有效（保持非营利资格即可）",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "非营利折扣价",
+        "最少 2 席"
       ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": "unknown"
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://platform.baichuan-ai.com/docs/guide",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "df8ec56faa17",
+      "title": "GitHub Copilot 学生免费（Copilot Student）",
+      "vendor": "GitHub",
+      "url": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-students",
+      "source": "Curated",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "通过 GitHub Education 验证的在校学生可免费使用 Copilot 全部付费功能（Copilot Student）。",
+      "pricingModel": "free",
+      "category": "编程开发",
+      "description": "在 github.com/settings/education/benefits 完成学籍验证后激活 Copilot Student；验证通过与权益生效是两个步骤，可能需数天。",
+      "eligibility": "经 GitHub Education 验证的在校学生",
+      "validity": "长期有效（GitHub 每月重新评估资格）",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "全部付费功能免费",
+        "需学籍验证"
+      ],
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "8e7b0fd03e73",
+      "title": "GitHub Copilot 教师与开源维护者免费 Pro",
+      "vendor": "GitHub",
+      "url": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-teachers-and-os-maintainers",
+      "source": "Curated",
+      "sourceUrl": null,
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "已验证教师以及热门开源仓库维护者可免费获得 GitHub Copilot Pro 访问权。",
+      "pricingModel": "free",
+      "category": "编程开发",
+      "description": "在 Copilot 设置页若显示「GitHub Copilot Pro」资格页即表示符合条件；不符合者可使用 Copilot Free。",
+      "eligibility": "经验证的教师 / 热门开源项目维护者",
+      "validity": "长期有效（每月重新评估资格）",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "免费 Copilot Pro",
+        "教师 / 开源维护者",
+        "每月重评估"
+      ],
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "219f6fca7f31",
+      "title": "GitHub Student Developer Pack 学生开发者工具包",
+      "vendor": "GitHub",
+      "url": "https://education.github.com/pack",
+      "source": "Curated",
+      "sourceUrl": null,
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "学生免费领取开发者工具包，含 GitHub Copilot、GitHub Codespaces、Microsoft Azure、DataCamp、FrontendMasters 等合作方免费额度与服务。",
+      "pricingModel": "free",
+      "category": "编程开发",
+      "description": "用学校邮箱 / 学籍材料申请 Student Developer Pack，通过后在 GitHub Education 中激活各合作方 offer。",
+      "eligibility": "在校学生（需学籍验证）",
+      "validity": "长期有效（合作方 offer 定期更新）",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "Copilot 免费",
+        "Azure / DataCamp 等"
+      ],
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "42c65c0d8d9d",
+      "title": "Google AI Pro 学生免费 12 个月（含 Gemini 高级版）",
+      "vendor": "Google",
+      "url": "https://blog.google/innovation-and-ai/products/gemini-app/student-offer-google-ai/",
+      "source": "Curated",
+      "sourceUrl": null,
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "符合条件的高校学生免费获得 12 个月 Google AI Pro（美国，价值 $19.99/月）；美国以外学生免费 12 个月 Google AI Plus；另有 Google AI Pro + YouTube Premium 组合最高 70% off。",
+      "pricingModel": "free",
+      "category": "对话模型",
+      "description": "在 Google 官方学生 hub（gemini.google.com/students）领取；含 4 倍 Gemini 用量、Gmail/Docs 中的 Gemini、5TB 存储等。",
+      "eligibility": "符合条件的高校在校学生",
+      "validity": "限时返校季活动，领取后 12 个月免费",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "免费 12 个月",
+        "价值 $19.99/月",
+        "高校学生"
+      ],
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "6644f3b43bdb",
+      "title": "Microsoft Azure for Students 学生免费 100 美元额度",
+      "vendor": "Microsoft",
+      "url": "https://azure.microsoft.com/en-us/free/students",
+      "source": "Curated",
+      "sourceUrl": null,
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "学生免费获得 $100 Azure 额度（可用于 Azure OpenAI 等），另有 Azure for Students Starter 免费档，均无需信用卡。",
+      "pricingModel": "credits",
+      "category": "API服务",
+      "description": "用学校邮箱注册 Azure for Students；额度用尽或到期后可转按量付费，订阅可每年续期继续免费使用。",
+      "eligibility": "在校学生",
+      "validity": "12 个月，可每年续期",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "$100 额度",
+        "无需信用卡",
+        "可每年续期"
+      ],
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "514a84a1064a",
+      "title": "微软 Microsoft 365 教育版 学生 5 折（含 Copilot）",
+      "vendor": "Microsoft",
+      "url": "https://www.microsoft.com/en-us/education/students",
+      "source": "Curated",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "用大学邮箱可 5 折购买含 Copilot 的 Microsoft 365；免费使用 Microsoft 365 for the web（Word/Excel/PowerPoint）；Microsoft Store 指定设备（含 Surface）学生与家长 9 折。",
+      "pricingModel": "paid",
+      "category": "办公效率",
+      "description": "在微软教育学生页按引导用学校邮箱验证身份，即可获得折扣与免费网页版 Office。",
+      "eligibility": "在校大学生及家长",
+      "validity": "长期有效（需保持学生身份验证）",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "5 折购买",
+        "含 Copilot"
+      ],
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "e4f7271cf7dc",
+      "title": "AWS Activate 初创公司最高 20 万美元云 credits",
+      "vendor": "Amazon Web Services",
+      "url": "https://aws.amazon.com/startups/",
+      "source": "Curated",
+      "sourceUrl": null,
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "初创公司最高 $200,000 AWS Activate Credits，可用于基础设施、数据服务及 Amazon Bedrock 第三方模型；AI 初创可申请额外 credits。",
+      "pricingModel": "credits",
+      "category": "API服务",
+      "description": "在 AWS Activate 申请页按阶段（MVP → Series A）提交申请，通过后获得 credits 与技术支持。",
+      "eligibility": "初创公司（含自筹与已融资团队）",
+      "validity": "长期有效的项目，按阶段申请",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "最高 $200,000",
+        "可用于 Bedrock"
+      ],
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "5253b5ed77b1",
+      "title": "Figma for Education 学生与教师免费",
+      "vendor": "Figma",
+      "url": "https://www.figma.com/education/",
+      "source": "Curated",
+      "sourceUrl": null,
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "学生和教师免费使用 Figma 与 FigJam（含设计、白板协作与课堂工具）。",
+      "pricingModel": "free",
+      "category": "设计创意",
+      "description": "用学生 / 教师邮箱注册账号，再完成教育身份验证即可免费开通。",
+      "eligibility": "在校学生 / 教育工作者",
+      "validity": "长期有效",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "Figma + FigJam 免费",
+        "学生 / 教师"
+      ],
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "c25b0ed788e3",
+      "title": "Notion 教育版 学生与教师免费 Plus",
+      "vendor": "Notion",
+      "url": "https://www.notion.com/product/notion-for-education",
+      "source": "Curated",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "符合条件的学生与教育工作者免费获得 Notion Plus 计划（含无限存储、30 天版本历史等）。",
+      "pricingModel": "free",
+      "category": "办公效率",
+      "description": "用学校邮箱登录后在 Billing 页选择「Get free Education plan」自动升级；学校需被 WHED 收录，不接受学生证，K-12 学生与教师不符合资格。",
+      "eligibility": "高校学生与教育工作者（学校须在 WHED 名录）",
+      "validity": "长期有效",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "免费 Plus 计划",
+        "学校须在 WHED"
+      ],
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "aacd5856bba2",
+      "title": "Notion for Nonprofits 非营利组织 Business 折扣",
+      "vendor": "Notion",
+      "url": "https://www.notion.com/nonprofits",
+      "source": "Curated",
+      "sourceUrl": null,
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "通过核验的非营利组织可在 Notion Business 计划上获得折扣价（官方页未标示具体折扣比例）。",
+      "pricingModel": "paid",
+      "category": "办公效率",
+      "description": "提交非营利证明材料申请，审核通过后 Notion 自动应用折扣并邮件通知，随后即可按折扣价升级 Business 计划。",
+      "eligibility": "经核验的非营利组织",
+      "validity": "长期有效（需保持非营利资格）",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": null,
+      "features": [
+        "Business 折扣价",
+        "需非营利核验"
+      ],
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "4bda0ebbb091",
+      "title": "ElevenLabs 免费计划 每月 10000 credits",
+      "vendor": "ElevenLabs",
+      "url": "https://elevenlabs.io/pricing",
+      "source": "Curated",
+      "sourceUrl": "https://futuretools.io/tools/eleven-labs",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "Free 计划 $0，每月 10,000 credits，可用于 TTS、语音克隆、Dubbing 等全部产品（credits 全产品共享）。",
+      "pricingModel": "free",
+      "category": "音频语音",
+      "description": "注册即得免费额度，无需付费；免费计划不参与 credits 结转（rollover）。",
+      "eligibility": "所有新用户",
+      "validity": "长期有效的免费档（每月 10,000 credits）",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": "免费档 $0 → 付费档",
+      "features": [
+        "每月 10,000 credits",
+        "TTS / 克隆 / Dubbing"
+      ],
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "b75b42583ad8",
+      "title": "Runway 免费计划 一次性 125 credits",
+      "vendor": "Runway",
+      "url": "https://runway.com/pricing",
+      "source": "Curated",
+      "sourceUrl": "https://futuretools.io/tools/runway",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "Free 计划 $0，赠送一次性 125 credits（不过期），可试用 Gen 系列视频/图像生成模型，含 5GB 素材存储；按月付费计划另享年付 8 折。",
+      "pricingModel": "free",
+      "category": "视频",
+      "description": "注册 Runway 账号即可获得 125 credits 体验生成式视频工具。",
+      "eligibility": "所有新用户",
+      "validity": "一次性额度，不过期",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": "免费档 $0 → 付费档",
+      "features": [
+        "一次性 125 credits",
+        "含 5GB 素材存储"
+      ],
+      "verifiedAt": "2026-09-22"
+    },
+    {
+      "id": "c433fee91818",
+      "title": "Windsurf 学生折扣订阅 Pro（最长 12 个月）",
+      "vendor": "Windsurf (Exafunction)",
+      "url": "https://windsurf.com/student-terms-and-conditions",
+      "source": "Curated",
+      "sourceUrl": null,
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "符合条件的高校学生可按折扣月费订阅 Windsurf Pro，最长连续 12 个月；可再提交资料最多激活 3 个额外折扣期。",
+      "pricingModel": "paid",
+      "category": "编程开发",
+      "description": "需提交姓名、就读院校、学校邮箱、出生日期等资料完成学生资格核验（条款页未标示具体折扣金额）。",
+      "eligibility": "经认可高等院校的在校学生",
+      "validity": "每个折扣期最长 12 个月，可续 3 次",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-29",
+      "verified": true,
+      "priceLine": "学生折扣月费 → Pro",
+      "features": [
+        "折扣月费订 Pro",
+        "最长 12 个月"
+      ],
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "176234a80147",
@@ -5769,62 +3129,10 @@
       "eligibility": "扣子个人版新注册用户（每个账号仅限领取一次，企业版用户不参与）",
       "validity": "发放的活动积分有效期 30 天，从发放之时起算",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-22",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "developer_credit"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://docs.coze.cn/coze_pro_credits",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "b8f11a235591",
@@ -5848,62 +3156,10 @@
       "eligibility": "扣子个人版用户（含个人免费版；企业版用户不参与），每个自然日每账号限领一次",
       "validity": "每次发放的活动积分有效期 1 天，每日独立计算（活动不定期开放）",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-22",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "developer_credit"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://docs.coze.cn/guides_coze_points_activity_rules",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "e91f65960877",
@@ -5927,60 +3183,10 @@
       "eligibility": "所有扣子用户（在大模型节点中选择标注限时免费的模型）",
       "validity": "官方标注限时免费、未标注截止日期；100 次/天按自然日重置",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-22",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_model"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://docs.coze.cn/coze_pro_model_fee",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "0273d8b23412",
@@ -6004,61 +3210,10 @@
       "eligibility": "所有扣子用户（主账号及其子账号共享免费额度）",
       "validity": "按天重置（标注累计的按累计量计），官方未标注活动截止日期",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-22",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_api",
-        "free_credits"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://docs.coze.cn/coze_pro_plugin_fee",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "4987c183fc1a",
@@ -6082,68 +3237,10 @@
       "eligibility": "新用户等不特定人群（需 360 账号、绑定手机号并通过意向申请开通）",
       "validity": "官方未标注截止日期；协议载明平台有权调整券种与有效期，调整前会通知",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-22",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "developer_credit"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": "unknown"
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://ai.360.com/open/zh/terms",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ],
-          "availability": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated",
-            "note": "description 原文「需 360 账号、绑定手机号」：国内手机号说明国内用户可注册，但协议未写明券种与 API 调用是否限地区，故 chinaUsable 记 unknown；原文只写「绑定手机号」未写大陆手机号，且未写「实名认证」，未达 §2.5.1 第二档，故 chinaUsable 保持 unknown"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "7691c150c8e5",
@@ -6167,61 +3264,10 @@
       "eligibility": "MiniMax 开放平台注册用户（受邀人需通过邀请链接购买 Token Plan）",
       "validity": "代金券自发放之日起 90 天有效；邀请活动官方未标注截止日期",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-22",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://platform.minimax.cn/docs/token-plan/faq",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "b4d87c02f4d9",
@@ -6245,62 +3291,10 @@
       "eligibility": "所有开放平台用户（按量计费 API Key）",
       "validity": "官方标注「永久五折」，未标截止日期",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-22",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "discount",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "1c057c22422c",
@@ -6324,60 +3318,10 @@
       "eligibility": "海螺AI 注册用户（促销期内购买会员套餐）",
       "validity": "限时优惠价，促销期结束后恢复原价，以官方页面实时展示为准",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-22",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "general"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://hailuoai.com/vip",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     },
     {
       "id": "b56f33b3d4f3",
@@ -6401,1196 +3345,10 @@
       "eligibility": "魔搭账号需先绑定阿里云账号，且该阿里云账号已通过实名认证",
       "validity": "官方未标注截止日期；额度与并发按实时资源动态调整",
       "expiresAt": null,
-      "firstSeen": "2026-09-29",
+      "firstSeen": "2026-09-23",
       "lastSeen": "2026-09-29",
       "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_api",
-        "free_model"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://www.modelscope.cn/docs/model-service/API-Inference/limits",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ],
-          "availability": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated",
-            "note": "eligibility 原文「绑定阿里云账号并完成实名认证」"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "inferred",
-            "derived": "inferred",
-            "note": "eligibility 原文「该阿里云账号已通过实名认证」：大陆实名认证只能由持大陆身份证的用户完成，据此推断大陆用户可注册并领取（官方未逐条写明额度是否限地区，故按 §2.5.1 第二档记 true 并留下推理链）"
-          }
-        }
-      }
-    },
-    {
-      "id": "f578493037d4",
-      "title": "Anthropic Claude 非营利组织折扣",
-      "vendor": "Anthropic",
-      "url": "https://support.claude.com/en/articles/12893767-getting-started-with-claude-for-nonprofits",
-      "source": "Curated",
-      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "经核验的非营利组织可享 Claude Team / Enterprise 折扣价：Team 计划 $8/用户/月、Enterprise 计划 $10/用户/月（团队不足 150 人最少 2 席）。",
-      "pricingModel": "paid",
-      "priceLine": null,
-      "features": [
-        "非营利折扣价",
-        "最少 2 席"
-      ],
-      "category": "对话模型",
-      "description": "通过合作方 Goodstack 提交非营利资格核验表单后即可开通；折扣价包含与标准 Team / Enterprise 相同的 Opus / Sonnet / Haiku 模型。",
-      "eligibility": "经核验的非营利组织",
-      "validity": "长期有效（保持非营利资格即可）",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "other"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "manualApplication": true,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": "unknown"
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://support.claude.com/en/articles/12893767-getting-started-with-claude-for-nonprofits",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ],
-          "availability": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated",
-            "note": "description 原文「通过合作方 Goodstack 提交非营利资格核验表单后即可开通」→ 需人工提交"
-          }
-        }
-      }
-    },
-    {
-      "id": "df8ec56faa17",
-      "title": "GitHub Copilot 学生免费（Copilot Student）",
-      "vendor": "GitHub",
-      "url": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-students",
-      "source": "Curated",
-      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "通过 GitHub Education 验证的在校学生可免费使用 Copilot 全部付费功能（Copilot Student）。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": [
-        "全部付费功能免费",
-        "需学籍验证"
-      ],
-      "category": "编程开发",
-      "description": "在 github.com/settings/education/benefits 完成学籍验证后激活 Copilot Student；验证通过与权益生效是两个步骤，可能需数天。",
-      "eligibility": "经 GitHub Education 验证的在校学生",
-      "validity": "长期有效（GitHub 每月重新评估资格）",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "student",
-        "developer"
-      ],
-      "benefitType": [
-        "student_plan",
-        "free_subscription"
-      ],
-      "eligibilityDetail": {
-        "educationEmailRequired": "unknown",
-        "identityVerificationRequired": true
-      },
-      "claimRequirements": {
-        "manualApplication": true,
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-students",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated",
-            "note": "description 原文「验证通过与权益生效是两个步骤，可能需数天」→ 需审核等待"
-          }
-        }
-      }
-    },
-    {
-      "id": "8e7b0fd03e73",
-      "title": "GitHub Copilot 教师与开源维护者免费 Pro",
-      "vendor": "GitHub",
-      "url": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-teachers-and-os-maintainers",
-      "source": "Curated",
-      "sourceUrl": null,
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "已验证教师以及热门开源仓库维护者可免费获得 GitHub Copilot Pro 访问权。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": [
-        "免费 Copilot Pro",
-        "教师 / 开源维护者",
-        "每月重评估"
-      ],
-      "category": "编程开发",
-      "description": "在 Copilot 设置页若显示「GitHub Copilot Pro」资格页即表示符合条件；不符合者可使用 Copilot Free。",
-      "eligibility": "经验证的教师 / 热门开源项目维护者",
-      "validity": "长期有效（每月重新评估资格）",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "educator",
-        "developer"
-      ],
-      "benefitType": [
-        "free_subscription"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-teachers-and-os-maintainers",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "219f6fca7f31",
-      "title": "GitHub Student Developer Pack 学生开发者工具包",
-      "vendor": "GitHub",
-      "url": "https://education.github.com/pack",
-      "source": "Curated",
-      "sourceUrl": null,
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "学生免费领取开发者工具包，含 GitHub Copilot、GitHub Codespaces、Microsoft Azure、DataCamp、FrontendMasters 等合作方免费额度与服务。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": [
-        "Copilot 免费",
-        "Azure / DataCamp 等"
-      ],
-      "category": "编程开发",
-      "description": "用学校邮箱 / 学籍材料申请 Student Developer Pack，通过后在 GitHub Education 中激活各合作方 offer。",
-      "eligibility": "在校学生（需学籍验证）",
-      "validity": "长期有效（合作方 offer 定期更新）",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "student",
-        "developer"
-      ],
-      "benefitType": [
-        "student_plan",
-        "free_credits",
-        "developer_credit"
-      ],
-      "eligibilityDetail": {
-        "educationEmailRequired": "unknown",
-        "identityVerificationRequired": true
-      },
-      "claimRequirements": {
-        "manualApplication": true,
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://education.github.com/pack",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated",
-            "note": "description 原文「用学校邮箱 / 学籍材料申请 Student Developer Pack，通过后在 GitHub Education 中激活」→ 需申请审核"
-          }
-        }
-      }
-    },
-    {
-      "id": "42c65c0d8d9d",
-      "title": "Google AI Pro 学生免费 12 个月（含 Gemini 高级版）",
-      "vendor": "Google",
-      "url": "https://blog.google/innovation-and-ai/products/gemini-app/student-offer-google-ai/",
-      "source": "Curated",
-      "sourceUrl": null,
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "符合条件的高校学生免费获得 12 个月 Google AI Pro（美国，价值 $19.99/月）；美国以外学生免费 12 个月 Google AI Plus；另有 Google AI Pro + YouTube Premium 组合最高 70% off。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": [
-        "免费 12 个月",
-        "价值 $19.99/月",
-        "高校学生"
-      ],
-      "category": "对话模型",
-      "description": "在 Google 官方学生 hub（gemini.google.com/students）领取；含 4 倍 Gemini 用量、Gmail/Docs 中的 Gemini、5TB 存储等。",
-      "eligibility": "符合条件的高校在校学生",
-      "validity": "限时返校季活动，领取后 12 个月免费",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "student"
-      ],
-      "benefitType": [
-        "student_plan",
-        "free_subscription",
-        "trial"
-      ],
-      "eligibilityDetail": {
-        "educationEmailRequired": "unknown",
-        "identityVerificationRequired": true
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": false,
-        "regionRestriction": "官方学生优惠按国家/地区区分（美国为 AI Pro、美国以外为 AI Plus）"
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://blog.google/innovation-and-ai/products/gemini-app/student-offer-google-ai/",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ],
-          "availability": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "inferred",
-            "derived": "inferred",
-            "note": "官方学生优惠按国家/地区区分（美国为 AI Pro、美国以外为 AI Plus）且未列出中国大陆适用地区，据此记为不可用；来源未逐国列出可用清单，推理链记在此处"
-          }
-        }
-      }
-    },
-    {
-      "id": "6644f3b43bdb",
-      "title": "Microsoft Azure for Students 学生免费 100 美元额度",
-      "vendor": "Microsoft",
-      "url": "https://azure.microsoft.com/en-us/free/students",
-      "source": "Curated",
-      "sourceUrl": null,
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "学生免费获得 $100 Azure 额度（可用于 Azure OpenAI 等），另有 Azure for Students Starter 免费档，均无需信用卡。",
-      "pricingModel": "credits",
-      "priceLine": null,
-      "features": [
-        "$100 额度",
-        "无需信用卡",
-        "可每年续期"
-      ],
-      "category": "API服务",
-      "description": "用学校邮箱注册 Azure for Students；额度用尽或到期后可转按量付费，订阅可每年续期继续免费使用。",
-      "eligibility": "在校学生",
-      "validity": "12 个月，可每年续期",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "student",
-        "developer"
-      ],
-      "benefitType": [
-        "student_plan",
-        "free_credits",
-        "developer_credit"
-      ],
-      "eligibilityDetail": {
-        "educationEmailRequired": "unknown",
-        "identityVerificationRequired": true
-      },
-      "claimRequirements": {
-        "creditCardRequired": false,
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://azure.microsoft.com/en-us/free/students",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated",
-            "note": "discountInfo 原文「均无需信用卡」→ 来源明说不需要，故记 false（不是没查到）"
-          }
-        }
-      }
-    },
-    {
-      "id": "514a84a1064a",
-      "title": "微软 Microsoft 365 教育版 学生 5 折（含 Copilot）",
-      "vendor": "Microsoft",
-      "url": "https://www.microsoft.com/en-us/education/students",
-      "source": "Curated",
-      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "用大学邮箱可 5 折购买含 Copilot 的 Microsoft 365；免费使用 Microsoft 365 for the web（Word/Excel/PowerPoint）；Microsoft Store 指定设备（含 Surface）学生与家长 9 折。",
-      "pricingModel": "paid",
-      "priceLine": null,
-      "features": [
-        "5 折购买",
-        "含 Copilot"
-      ],
-      "category": "办公效率",
-      "description": "在微软教育学生页按引导用学校邮箱验证身份，即可获得折扣与免费网页版 Office。",
-      "eligibility": "在校大学生及家长",
-      "validity": "长期有效（需保持学生身份验证）",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "student",
-        "educator"
-      ],
-      "benefitType": [
-        "discount",
-        "free_subscription"
-      ],
-      "eligibilityDetail": {
-        "educationEmailRequired": true,
-        "identityVerificationRequired": true
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://www.microsoft.com/en-us/education/students",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "e4f7271cf7dc",
-      "title": "AWS Activate 初创公司最高 20 万美元云 credits",
-      "vendor": "Amazon Web Services",
-      "url": "https://aws.amazon.com/startups/",
-      "source": "Curated",
-      "sourceUrl": null,
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "初创公司最高 $200,000 AWS Activate Credits，可用于基础设施、数据服务及 Amazon Bedrock 第三方模型；AI 初创可申请额外 credits。",
-      "pricingModel": "credits",
-      "priceLine": null,
-      "features": [
-        "最高 $200,000",
-        "可用于 Bedrock"
-      ],
-      "category": "API服务",
-      "description": "在 AWS Activate 申请页按阶段（MVP → Series A）提交申请，通过后获得 credits 与技术支持。",
-      "eligibility": "初创公司（含自筹与已融资团队）",
-      "validity": "长期有效的项目，按阶段申请",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "developer_credit"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://aws.amazon.com/startups/",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "5253b5ed77b1",
-      "title": "Figma for Education 学生与教师免费",
-      "vendor": "Figma",
-      "url": "https://www.figma.com/education/",
-      "source": "Curated",
-      "sourceUrl": null,
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "学生和教师免费使用 Figma 与 FigJam（含设计、白板协作与课堂工具）。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": [
-        "Figma + FigJam 免费",
-        "学生 / 教师"
-      ],
-      "category": "设计创意",
-      "description": "用学生 / 教师邮箱注册账号，再完成教育身份验证即可免费开通。",
-      "eligibility": "在校学生 / 教育工作者",
-      "validity": "长期有效",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "student",
-        "educator",
-        "education"
-      ],
-      "benefitType": [
-        "student_plan",
-        "free_subscription"
-      ],
-      "eligibilityDetail": {
-        "educationEmailRequired": true,
-        "identityVerificationRequired": true
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://www.figma.com/education/",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "c25b0ed788e3",
-      "title": "Notion 教育版 学生与教师免费 Plus",
-      "vendor": "Notion",
-      "url": "https://www.notion.com/product/notion-for-education",
-      "source": "Curated",
-      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "符合条件的学生与教育工作者免费获得 Notion Plus 计划（含无限存储、30 天版本历史等）。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": [
-        "免费 Plus 计划",
-        "学校须在 WHED"
-      ],
-      "category": "办公效率",
-      "description": "用学校邮箱登录后在 Billing 页选择「Get free Education plan」自动升级；学校需被 WHED 收录，不接受学生证，K-12 学生与教师不符合资格。",
-      "eligibility": "高校学生与教育工作者（学校须在 WHED 名录）",
-      "validity": "长期有效",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "student",
-        "educator"
-      ],
-      "benefitType": [
-        "student_plan",
-        "free_subscription"
-      ],
-      "eligibilityDetail": {
-        "educationEmailRequired": true,
-        "identityVerificationRequired": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://www.notion.com/product/notion-for-education",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated",
-            "note": "description 原文「选择「Get free Education plan」自动升级」→ 不需要人工审核"
-          }
-        }
-      }
-    },
-    {
-      "id": "aacd5856bba2",
-      "title": "Notion for Nonprofits 非营利组织 Business 折扣",
-      "vendor": "Notion",
-      "url": "https://www.notion.com/nonprofits",
-      "source": "Curated",
-      "sourceUrl": null,
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "通过核验的非营利组织可在 Notion Business 计划上获得折扣价（官方页未标示具体折扣比例）。",
-      "pricingModel": "paid",
-      "priceLine": null,
-      "features": [
-        "Business 折扣价",
-        "需非营利核验"
-      ],
-      "category": "办公效率",
-      "description": "提交非营利证明材料申请，审核通过后 Notion 自动应用折扣并邮件通知，随后即可按折扣价升级 Business 计划。",
-      "eligibility": "经核验的非营利组织",
-      "validity": "长期有效（需保持非营利资格）",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "other"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true
-      },
-      "claimRequirements": {
-        "manualApplication": true,
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://www.notion.com/nonprofits",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated",
-            "note": "description 原文「提交非营利证明材料申请，审核通过后 Notion 自动应用折扣」→ 需申请审核"
-          }
-        }
-      }
-    },
-    {
-      "id": "4bda0ebbb091",
-      "title": "ElevenLabs 免费计划 每月 10000 credits",
-      "vendor": "ElevenLabs",
-      "url": "https://elevenlabs.io/pricing",
-      "source": "Curated",
-      "sourceUrl": "https://futuretools.io/tools/eleven-labs",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "Free 计划 $0，每月 10,000 credits，可用于 TTS、语音克隆、Dubbing 等全部产品（credits 全产品共享）。",
-      "pricingModel": "free",
-      "priceLine": "免费档 $0 → 付费档",
-      "features": [
-        "每月 10,000 credits",
-        "TTS / 克隆 / Dubbing"
-      ],
-      "category": "音频语音",
-      "description": "注册即得免费额度，无需付费；免费计划不参与 credits 结转（rollover）。",
-      "eligibility": "所有新用户",
-      "validity": "长期有效的免费档（每月 10,000 credits）",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "general"
-      ],
-      "benefitType": [
-        "free_subscription",
-        "free_credits"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://elevenlabs.io/pricing",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "b75b42583ad8",
-      "title": "Runway 免费计划 一次性 125 credits",
-      "vendor": "Runway",
-      "url": "https://runway.com/pricing",
-      "source": "Curated",
-      "sourceUrl": "https://futuretools.io/tools/runway",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "Free 计划 $0，赠送一次性 125 credits（不过期），可试用 Gen 系列视频/图像生成模型，含 5GB 素材存储；按月付费计划另享年付 8 折。",
-      "pricingModel": "free",
-      "priceLine": "免费档 $0 → 付费档",
-      "features": [
-        "一次性 125 credits",
-        "含 5GB 素材存储"
-      ],
-      "category": "视频",
-      "description": "注册 Runway 账号即可获得 125 credits 体验生成式视频工具。",
-      "eligibility": "所有新用户",
-      "validity": "一次性额度，不过期",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "general"
-      ],
-      "benefitType": [
-        "free_subscription",
-        "free_credits"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": "unknown",
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://runway.com/pricing",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "c433fee91818",
-      "title": "Windsurf 学生折扣订阅 Pro（最长 12 个月）",
-      "vendor": "Windsurf (Exafunction)",
-      "url": "https://windsurf.com/student-terms-and-conditions",
-      "source": "Curated",
-      "sourceUrl": null,
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "符合条件的高校学生可按折扣月费订阅 Windsurf Pro，最长连续 12 个月；可再提交资料最多激活 3 个额外折扣期。",
-      "pricingModel": "paid",
-      "priceLine": "学生折扣月费 → Pro",
-      "features": [
-        "折扣月费订 Pro",
-        "最长 12 个月"
-      ],
-      "category": "编程开发",
-      "description": "需提交姓名、就读院校、学校邮箱、出生日期等资料完成学生资格核验（条款页未标示具体折扣金额）。",
-      "eligibility": "经认可高等院校的在校学生",
-      "validity": "每个折扣期最长 12 个月，可续 3 次",
-      "expiresAt": null,
-      "firstSeen": "2026-09-29",
-      "lastSeen": "2026-09-29",
-      "verified": true,
-      "verifiedAt": "2026-09-22",
-      "audience": [
-        "student",
-        "developer"
-      ],
-      "benefitType": [
-        "student_plan",
-        "discount"
-      ],
-      "eligibilityDetail": {
-        "educationEmailRequired": true,
-        "identityVerificationRequired": true
-      },
-      "claimRequirements": {
-        "manualApplication": true,
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "editorial",
-        "sourceUrl": "https://windsurf.com/student-terms-and-conditions",
-        "verifiedAt": "2026-09-22",
-        "contrib": {
-          "audience": [
-            "editorial"
-          ],
-          "benefitType": [
-            "editorial"
-          ],
-          "eligibilityDetail": [
-            "editorial"
-          ],
-          "claimRequirements": [
-            "editorial"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated",
-            "note": "条款 §2.B 原文「You will be required to submit certain information…」→ 需提交资料并等待核验"
-          }
-        }
-      }
+      "verifiedAt": "2026-09-22"
     }
   ]
 }
