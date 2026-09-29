@@ -542,11 +542,16 @@ const MIGRATION_PROBES = [
   { source: '智谱AI' },                                                   // → 不补
   {}                                                                      // → 不补（连 source 都没有）
 ];
+// ⚠️ 下面这条一致性断言单独看是**后置条件自证**（它拿实现自己的输出做期望），
+// 所以它只能抓「有人把两份规则又拆开」，抓不住「两份一起改错」。
+// 真正钉住语义的是紧接着的两条**写死期望值**的断言（非策展来源必须不补；
+// 策展来源无日期只能补 curated 且不带 verifiedAt）—— 那两条不依赖被测函数。
+// 这个分工由反证证实过：把规则回退成旧写法，这一条与那两条**同时**变红。
 const badMigration = MIGRATION_PROBES.filter(deal => {
   const claimed = migrationCredibility(deal);
   return claimed !== null && claimed !== credibilityOf(deal);
 });
-check('migrationCredibility 的档位恒等于 credibilityOf（或 null）—— 两条规则不许各算一份',
+check('migrationCredibility 的档位恒等于 credibilityOf（或 null）—— 两条规则不许各算一份（后置条件自证）',
   badMigration.length === 0,
   badMigration.map(d => `${JSON.stringify(d)} → migration=${migrationCredibility(d)} / credibilityOf=${credibilityOf(d)}`).join(' | ') ||
   `${MIGRATION_PROBES.length} 个探针全部一致`);

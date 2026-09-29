@@ -49,6 +49,23 @@
  *   `editorial` 的定义互相矛盾。当时只写了说明、没动数据；现在按「文件服从规则」修掉了，
  *   并由上面的 ⑤ 保证不再分家 —— 两条规则（`credibilityOf` 与 `migrationCredibility`）
  *   对这 32 条的输入本来就一致地给出 `editorial`，所以不存在「两种读法」。）
+ *
+ * ## ⚠️ 那 32 条手写值的「之前」是什么状态：无法从 git 复核
+ *
+ * 上面几段一直在说「文件里手写的是 `credibility:'curated'`」。这句话**当时为真**
+ * （写这一段时的工作区就是这样：同一轮里读文件、逐条比对、只改了 `credibility` 的值），
+ * 但它**在版本历史里查不到**，因为那次中间状态**从未提交**：
+ *
+ *   · 提交 `08d81cc`（v1.1 之前）里，两个策展文件**一个 `provenance` 都没有**，
+ *     自然也没有 `credibility`；
+ *   · `git log -S'"credibility"' --all -- <两个文件>` 为空，悬空对象里也没有；
+ *   · 整个 v1.1（含 `provenance` 块本身）是随收口一起进 `f4c17d5` 的 ——
+ *     于是相对历史看，那些值**一出现就是 `editorial`**。
+ *
+ * 这是独立验证代理查出来的（它把这半条判成 REFUTED，判得对）。留这段的目的不是辩解，
+ * 而是记下一条纪律：**未提交的中间状态不是证据**。以后这类「我改之前它是什么样」的
+ * 断言，要么在动手前先 `git stash`/临时提交留痕，要么就把话说清楚 ——
+ * 说成「工作区当时是 X（不可从历史复核）」而不是「文件里写的是 X」。
  */
 
 const fs = require('fs');
@@ -216,8 +233,10 @@ function main() {
 
   // ---- ⑤ 人工文件里手写的 credibility 必须等于规则算出来的那一档 ----
   //
-  // 这一条修的是一个**看起来像 bug 的合法状态**：32 条策展记录手写 `credibility:'curated'`，
-  // 而代码对同样的输入（`source ∈ {Curated, Curated-CN}` + `verified:true` + `verifiedAt`）
+  // 这一条修的是一个**看起来像 bug 的合法状态**：32 条策展记录曾手写
+  // `credibility:'curated'`（⚠️ 那是**当时未提交的工作区状态**，无法从 git 复核 ——
+  // 详见文件头「那 32 条手写值的『之前』是什么状态」那段），而代码对同样的输入
+  // （`source ∈ {Curated, Curated-CN}` + `verified:true` + `verifiedAt`）
   // 一律算出 `editorial` —— merge 落盘的就是 `editorial`。`validateDeal` 两种取值都放行，
   // 所以两者可以长期矛盾而**没有任何东西会红**。
   //

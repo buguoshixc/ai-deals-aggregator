@@ -751,7 +751,7 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <!-- feed 约定：状态页自己不产出条目（订阅是「内容更新」语义，一页运维表不是更新），
      但必须能被订阅发现 —— 与首页、详情页、分类页声明同两个 feed。
-     这一条是 v1.1 收口补的：此页原先**只满足五条既有约定里的两条**。 -->
+     这一条是 v1.1 收口补的：此页原先只满足五条既有约定里的两条。 -->
 <link rel="alternate" type="application/rss+xml" title="${htmlEscape(SITE_NAME)} · RSS" href="../feed.xml">
 <link rel="alternate" type="application/feed+json" title="${htmlEscape(SITE_NAME)} · JSON Feed" href="../feed.json">
 ${themeScript}
@@ -803,7 +803,7 @@ ${jsonLdBlocks}
         <span class="meta">数据生成时间 ${htmlEscape(health.formatCN(healthDoc && healthDoc.generatedAt))}（北京时间）</span>
       </div>
       <p class="snote">
-        这里列出每个采集来源**最近一次**的结果与跨运行的连续性。为什么要公开它：
+        这里列出每个采集来源<b>最近一次</b>的结果与跨运行的连续性。为什么要公开它：
         首页只写「数据更新 {日期}」，而人工策展的条目每天都在刷新，所以「某个来源坏了几天」
         与「某个来源这次没有新内容」在首页上看起来是一样的——这一页把它们分开。
         状态规则：采集器报错、或连续 3 次零产出即 <b>❌ 失败</b>；请求成功但条数掉到上次一半以下、
@@ -1056,7 +1056,7 @@ ${why}
       </div>
 
       <p class="snote" style="margin-top: var(--s3)">
-        分类之间**不互斥**：一条优惠可以同时出现在多个分类页里（既是给学生的、也是免费 API 的情况很常见）。
+        分类之间<b>不互斥</b>：一条优惠可以同时出现在多个分类页里（既是给学生的、也是免费 API 的情况很常见）。
         本站只做收录与整理，来源站点的可用性、内容与最终条款以官方页面为准。
       </p>
     </main>
@@ -1423,6 +1423,17 @@ function selfCheck(built) {
     for (const need of ['WebPage', 'BreadcrumbList']) {
       if (!statusLd.includes(need)) problems.push(`缺少 JSON-LD ${need}`);
     }
+    // 「多了」也要拦，而且要拦得完整（重复的 WebPage 也算多）。
+    //
+    // §10.4.1 明确写了这一页**不发** Dataset / ItemList，理由是「机器可读的那一份是
+    // source-health.json，同一份事实声明两次、两次迟早分家，而分家时没有任何东西会红」。
+    // 只断言「包含」的话，那句话本身就是一句没有守卫的承诺 —— 加第三个 JSON-LD
+    // （乃至加一个 Dataset）谁都不会发现。独立验证代理指出的正是这一点。
+    const STATUS_LD_EXPECTED = ['BreadcrumbList', 'WebPage'];
+    const statusLdActual = statusLd.slice().sort();
+    if (JSON.stringify(statusLdActual) !== JSON.stringify(STATUS_LD_EXPECTED)) {
+      problems.push(`JSON-LD 集合不是恰好 [${STATUS_LD_EXPECTED.join(', ')}]，实得 [${statusLdActual.join(', ')}]`);
+    }
     // 预渲染正文的**下限按状态分档**，两个数字都取自实测的**内容**长度（剥掉 style 之后）：
     //   · 9 个来源、表格正常 → 1188 字
     //   · 一个来源都没有（合法状态）→ 646 字，页面明说「还没有采集记录」
@@ -1438,7 +1449,11 @@ function selfCheck(built) {
     }
     // 光有长度不算数：内容里必须真的有那张表。这条与上面的字数是**互相独立**的两件事 ——
     // 字数够而表是空的，说明渲染路径断了；表在而字数不够，说明文案被丢了。
-    if (summary.total > 0 && !/<tbody>[\s\S]*?<tr>[\s\S]*?<\/tr>[\s\S]*?<\/tbody>/.test(page)) {
+    // ⚠️ 先把 `<script>` 摘掉再取 tbody：本文件自己的纪律是「数标记先摘 script」，
+    //    不摘的话，将来某个内联脚本里出现 `<tbody>…<tr>…</tr>…</tbody>` 就会让这条断言
+    //    变成**永远为真**的空转（独立验证代理指出这一点）。
+    const statusBody = (page.replace(/<script[\s\S]*?<\/script>/gi, '').match(/<tbody>([\s\S]*?)<\/tbody>/) || [])[1] || '';
+    if (summary.total > 0 && !/<tr>/.test(statusBody)) {
       problems.push('预渲染正文够长，但 <tbody> 里一行都没有（表格没渲染出来）');
     }
     if (ROUTE_MARKERS.some(marker => page.includes(marker))) problems.push('残留路由占位符');
@@ -1522,6 +1537,40 @@ function selfCheck(built) {
         `${leftovers.length > 6 ? ` 等 ${leftovers.length} 处` : ''}`);
     } else {
       console.log(`  ✓ 页脚路由链接: ${ROUTE_HREFS.length} 条路由 × ${routeOutputs.length} 个输出，深度前缀与去占位逐项对账`);
+    }
+
+    // 作者写的正文里不许残留 Markdown 记号 —— 它是**直接写进 HTML 的**，不是 Markdown。
+    //
+    // 为什么要有这条：`audience.js` 的 `why` 与状态页/分类页的正文都曾把强调写成 `**这样**`、
+    // 把字段名写成 `` `这样` ``，于是 **16 个 `**` 与 14 个反引号原样出现在读者眼前**
+    // （独立验证代理在 4 类页面上数出来的），而没有任何门禁会因此变红。
+    // 更糟的是「预渲染正文过短」那条长度断言还把星号当成内容算进去了 ——
+    // 一条在数自己造成的排版噪声的守卫。
+    //
+    // 扫描面刻意收在**作者写的容器**（`.snote` / `<caption>`）里，而不是整页文本：
+    // 采集来的文案（标题 / discountInfo）里出现 `**` 或反引号是**数据**，不是我们的排版错误；
+    // 拿它判红会变成一条「在正常数据上失败」的守卫，而那比没有守卫更糟。
+    const mdMarkers = [];
+    for (const [rel] of routeOutputs) {
+      const file = path.join(OUT, rel);
+      if (!fs.existsSync(file)) continue;
+      const page = fs.readFileSync(file, 'utf8');
+      const prose = [
+        ...[...page.matchAll(/<p class="snote"[^>]*>([\s\S]*?)<\/p>/g)].map(m => m[1]),
+        ...[...page.matchAll(/<caption>([\s\S]*?)<\/caption>/g)].map(m => m[1])
+      ].map(chunk => chunk.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
+      for (const chunk of prose) {
+        const stars = (chunk.match(/\*\*/g) || []).length;
+        const ticks = (chunk.match(/`/g) || []).length;
+        if (stars || ticks) {
+          mdMarkers.push(`${rel}（**×${stars} · 反引号×${ticks}）：${chunk.slice(0, 50)}…`);
+        }
+      }
+    }
+    if (mdMarkers.length) {
+      fail(`作者正文里残留 Markdown 记号（读者会原样看到）：${mdMarkers.slice(0, 4).join('；')}`);
+    } else {
+      console.log('  ✓ 作者正文无 Markdown 记号: .snote / <caption> 里的强调一律用 <b>，字段名直接写');
     }
   }
 
@@ -1679,16 +1728,32 @@ function selfCheck(built) {
       for (const need of ['CollectionPage', 'BreadcrumbList', 'ItemList']) {
         if (!ldTypes.includes(need)) problems.push(`${page.slug}/ 缺少 JSON-LD ${need}`);
       }
+      // 「多了」同样要拦：只断言「包含」的话，多出一段不属于本页类型的结构化数据
+      // （比如把状态页的 WebPage 抄过来、或给目录页发 Dataset）不会有任何东西变红。
+      const COLLECTION_LD_EXPECTED = ['BreadcrumbList', 'CollectionPage', 'ItemList'];
+      const ldActual = ldTypes.slice().sort();
+      if (JSON.stringify(ldActual) !== JSON.stringify(COLLECTION_LD_EXPECTED)) {
+        problems.push(`${page.slug}/ JSON-LD 集合不是恰好 [${COLLECTION_LD_EXPECTED.join(', ')}]，实得 [${ldActual.join(', ')}]`);
+      }
       // ③ 预渲染正文（无 JS 可读）：表格是构建期写死的。
-      //    阈值取自实测的**内容**长度（剥掉 style 之后的纯文本）：
-      //    /student/ 12 行 1884 字 · /developer/ 67 行 6593 字 · /free-api/ 45 行 4820 字；
-      //    一条都没有时只剩页头页脚 + 一句「当前没有符合这一分类…」，约 700 字。
-      //    ⚠️ 这里原先只剥 `<script>`，于是量到的 4 万字里 38950 是 CSS —— 等于没量。
+      //    阈值**按条目数成比例**，不是常数。常数版本连续踩了两次：
+      //      · 第一版只剥 `<script>`，量到的 4 万字里 38950 是 CSS（等于没量）；
+      //      · 改成量内容后取常数 500，而**表体空掉**时实测 610 / 659 / 691 字
+      //        （/developer/ /free-api/ /student/）—— 全部大于 500，**照样放行**。
+      //    实测每条约 90–100 字（/student/ 12 行 1884 · /developer/ 67 行 6593 ·
+      //    /free-api/ 45 行 4820），页头页脚等固定部分约 650 字。取 60 字/条留余量：
+      //    条目越多阈值越紧，而「表体空掉」在 count>0 时必然低于它。
       const text = prerenderedText(body);
-      if (text.length < 500) problems.push(`${page.slug}/ 预渲染正文过短（内容 ${text.length} 字），无 JS 时读不到内容`);
-      // 长度之外还要看结构：表格行数与数据对得上（上面 ① 已经逐 id 比过集合，
-      // 这里补一条「页面上真的有一个表」）
-      if (page.count > 0 && !/<tbody>[\s\S]*?href="\.\.\/deal\//.test(body)) {
+      const textFloor = 600 + 60 * page.count;
+      if (text.length < textFloor) {
+        problems.push(`${page.slug}/ 预渲染正文过短（内容 ${text.length} 字 < ${textFloor} = 600 + 60×${page.count}）`);
+      }
+      // 结构断言与上面的字数是**互相独立**的两件事：字数够而表是空的，说明渲染路径断了。
+      // ⚠️ 先把 `<script>` 摘掉再取 tbody（本文件自己的纪律：数标记先摘 script）——
+      //    不摘的话，将来某个内联脚本里出现 `<tbody>…</tbody>` 就会让这条断言永远为真。
+      const bodyNoScript = body.replace(/<script[\s\S]*?<\/script>/gi, '');
+      const tbody = (bodyNoScript.match(/<tbody>([\s\S]*?)<\/tbody>/) || [])[1] || '';
+      if (page.count > 0 && !/href="\.\.\/deal\//.test(tbody)) {
         problems.push(`${page.slug}/ <tbody> 里一个详情页链接都没有（表格没渲染出来）`);
       }
       if (/__[A-Z_]+_HREF__/.test(body)) problems.push(`${page.slug}/ 残留路由占位符`);

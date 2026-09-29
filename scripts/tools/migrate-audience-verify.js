@@ -230,13 +230,20 @@ check('editorial 一律带 verifiedAt（人工回访日期是声明的组成部�
 // 「该补的都补了」不能用 before 快照里的 provenance 去判 —— 那是**永远不成立**的错判据
 // （before 的定义就是「还没有 provenance」），我第一版就写成了这样，夹具一跑立刻露馅。
 // 正确做法：用 before 快照按**规则**算出应有条数，再与 after 里实际补上的条数对账。
+//
+// ⚠️ 这一条的期望值是用**被测的同一个函数**（`migrationCredibility` / `provableFields`）
+// 算出来的，所以它单独看是**同义反复**：函数改坏了，期望值跟着一起变，它照样绿。
+// 真正的守卫是下一节那条「以 before 重跑一次，输出与 after **逐字节**相同」——
+// `after` 是入库的冻结文件、是先写死期望表再生成的，函数一变就对不上。
+// 独立验证代理在反证里证实了这个分工：把规则回退成旧写法，这一条**没红**，那条红了。
+// 保留它是因为它能抓「该补的漏补了」这一类**计数**错误，只是别把它当成规则守卫。
 const expectedAddable = BEFORE.filter(deal =>
   !deal.provenance &&
   migrationCredibility(deal) &&
   provableFields(deal).length > 0
 ).length;
 const actualAddedCount = addedProvenance.length;
-check('该补的都补了：before 按规则算出的应有条数 === after 实际补上的条数',
+check('该补的都补了：before 按规则算出的应有条数 === after 实际补上的条数（同义反复，非规则守卫）',
   expectedAddable === actualAddedCount,
   `应补 ${expectedAddable} 条，实补 ${actualAddedCount} 条`);
 console.log(`  （provenance 条数：${provenanceBefore} → ${provenanceAfter}，新补 ${addedProvenance.length} 条）`);

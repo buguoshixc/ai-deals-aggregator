@@ -1599,9 +1599,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       missing.length === 0 && extra.length === 0 && info.ids.length === expectedIds.length,
       `页面 ${info.ids.length} 条 / 数据 ${expectedIds.length} 条` +
       `${missing.length ? ` · 漏 ${missing.length}` : ''}${extra.length ? ` · 多 ${extra.length}` : ''}`);
-    check(`/${route.slug}/ 声明了两个订阅源且有三段 JSON-LD（含 BreadcrumbList）`,
-      info.feeds >= 2 && ['CollectionPage', 'BreadcrumbList', 'ItemList'].every(t => info.ldTypes.includes(t)),
-      `feed ${info.feeds} 个 · JSON-LD [${info.ldTypes.join(', ')}]`);
+    // 「恰好」而不是「包含」：只判包含时，多出一段结构化数据不会有任何东西变红。
+    const COLLECTION_LD = ['BreadcrumbList', 'CollectionPage', 'ItemList'];
+    check(`/${route.slug}/ 恰好两个订阅源 + 恰好三段 JSON-LD（CollectionPage / BreadcrumbList / ItemList）`,
+      info.feeds === 2 && JSON.stringify(info.ldTypes.slice().sort()) === JSON.stringify(COLLECTION_LD),
+      `feed ${info.feeds} 个 · JSON-LD [${info.ldTypes.join(', ')}]（期望 [${COLLECTION_LD.join(', ')}]）`);
     check(`/${route.slug}/ 没有 JS 错误、没有外部请求`,
       errors.length === errorsBefore && externalRequests.length === externalBefore,
       `错误 ${errors.length - errorsBefore} · 外部请求 ${externalRequests.length - externalBefore}`);
@@ -1724,9 +1726,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       healthTruth
         ? `页面 ${st.rows} 行 / 数据 ${healthTruth.total} 个 · 标签 [${[...new Set(st.statuses)].join(' ')}]`
         : '读不到 source-health.json');
-    check('/status/ 补齐五条约定：双 feed + 两段 JSON-LD（含 BreadcrumbList）',
-      st.feeds >= 2 && ['WebPage', 'BreadcrumbList'].every(t => st.ldTypes.includes(t)),
-      `feed ${st.feeds} 个 · JSON-LD [${st.ldTypes.join(', ')}]`);
+    // JSON-LD 断言**恰好等于**，不是「包含」：SCHEMA §10.4.1 明确写了这一页不发
+    // Dataset / ItemList（机器可读的那份是 source-health.json，声明两次迟早分家）。
+    // 只判包含的话，加第三段谁都不会发现 —— 那句承诺就没有守卫。
+    // feed 同理取「恰好两个」。
+    const STATUS_LD = ['BreadcrumbList', 'WebPage'];
+    check('/status/ 补齐五条约定：恰好两个 feed + 恰好两段 JSON-LD（WebPage + BreadcrumbList）',
+      st.feeds === 2 && JSON.stringify(st.ldTypes.slice().sort()) === JSON.stringify(STATUS_LD),
+      `feed ${st.feeds} 个 · JSON-LD [${st.ldTypes.join(', ')}]（期望 [${STATUS_LD.join(', ')}]）`);
     check('/status/ 有指向 source-health.json 的链接（机器可读的那一份）',
       st.healthLinks > 0, `${st.healthLinks} 个`);
     check('/status/ 没有 JS 错误、没有外部请求',
@@ -1760,21 +1767,29 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     // （`.stable-wrap` 的 `overflow-x` 是不是 `auto`）：机制是实现细节，把它写进断言，
     // 将来有人把宽表换成移动端的卡片式排版（页面照样不横滚）就会被判红 ——
     // 那正是「守卫在正常行为上失败」这一类错误。机制只在明细里报出来，供排查用。
+    //
+    // ⚠️ 明细里**只报事实，不做因果解读**。第一版写的是「表格宽于容器、靠内部横滚」，
+    // 那句话由 `wrap.scrollWidth > wrap.clientWidth` 推出 —— 而在 `overflow-x: visible`
+    // 的失败现场它**照样为真**，于是失败行会印出一句「靠内部横滚」的假解释
+    // （独立验证代理在 121px 溢出的那一行上抓到的）。现在直接报两个宽度。
     for (const width of [390, 360]) {
       await page.setViewportSize({ width, height: 844 });
       await page.waitForTimeout(200);
       const mobile = await page.evaluate(() => {
         const wrap = document.querySelector('.stable-wrap');
+        const table = document.querySelector('.stable');
+        const rect = el => (el ? Math.round(el.getBoundingClientRect().width) : null);
         return {
           docOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
           wrapOverflowX: wrap ? getComputedStyle(wrap).overflowX : '(无 .stable-wrap)',
-          scrollsInside: Boolean(wrap) && wrap.scrollWidth > wrap.clientWidth
+          tableWidth: rect(table),
+          wrapWidth: rect(wrap)
         };
       });
       check(`/status/ ${width}px 不产生页面级横向溢出（宽表应在容器内横滚，而不是撑开整页）`,
         mobile.docOverflow <= 1,
         `页面溢出 ${mobile.docOverflow}px · .stable-wrap overflow-x=${mobile.wrapOverflowX} · ` +
-        `表格${mobile.scrollsInside ? '宽于容器、靠内部横滚' : '未超出容器'}`);
+        `表格宽 ${mobile.tableWidth}px / 容器宽 ${mobile.wrapWidth}px`);
     }
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.waitForTimeout(200);

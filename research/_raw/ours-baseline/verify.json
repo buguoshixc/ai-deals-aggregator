@@ -1,6 +1,6 @@
 {
-  "target": "http://127.0.0.1:49334/",
-  "generatedAt": "2026-09-29T11:30:03.219Z",
+  "target": "http://127.0.0.1:57333/",
+  "generatedAt": "2026-09-29T12:05:42.914Z",
   "total": 181,
   "failed": 0,
   "metrics": {
@@ -20,8 +20,8 @@
     "externalRequests": 0,
     "failedRequests": 0,
     "jsErrors": 0,
-    "target": "http://127.0.0.1:49334/",
-    "generatedAt": "2026-09-29T11:30:03.219Z"
+    "target": "http://127.0.0.1:57333/",
+    "generatedAt": "2026-09-29T12:05:42.914Z"
   },
   "checks": [
     {
@@ -550,7 +550,7 @@
     {
       "name": "/student/ 能打开且标题非空",
       "ok": true,
-      "detail": "「面向学生的 AI 优惠」· 表格 12 行 · 正文 1878 字"
+      "detail": "「面向学生的 AI 优惠」· 表格 12 行 · 正文 1860 字"
     },
     {
       "name": "/student/ canonical 自指",
@@ -563,9 +563,9 @@
       "detail": "页面 12 条 / 数据 12 条"
     },
     {
-      "name": "/student/ 声明了两个订阅源且有三段 JSON-LD（含 BreadcrumbList）",
+      "name": "/student/ 恰好两个订阅源 + 恰好三段 JSON-LD（CollectionPage / BreadcrumbList / ItemList）",
       "ok": true,
-      "detail": "feed 2 个 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+      "detail": "feed 2 个 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]（期望 [BreadcrumbList, CollectionPage, ItemList]）"
     },
     {
       "name": "/student/ 没有 JS 错误、没有外部请求",
@@ -575,7 +575,7 @@
     {
       "name": "/developer/ 能打开且标题非空",
       "ok": true,
-      "detail": "「面向开发者的 AI 优惠」· 表格 67 行 · 正文 6641 字"
+      "detail": "「面向开发者的 AI 优惠」· 表格 67 行 · 正文 6629 字"
     },
     {
       "name": "/developer/ canonical 自指",
@@ -588,9 +588,9 @@
       "detail": "页面 67 条 / 数据 67 条"
     },
     {
-      "name": "/developer/ 声明了两个订阅源且有三段 JSON-LD（含 BreadcrumbList）",
+      "name": "/developer/ 恰好两个订阅源 + 恰好三段 JSON-LD（CollectionPage / BreadcrumbList / ItemList）",
       "ok": true,
-      "detail": "feed 2 个 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+      "detail": "feed 2 个 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]（期望 [BreadcrumbList, CollectionPage, ItemList]）"
     },
     {
       "name": "/developer/ 没有 JS 错误、没有外部请求",
@@ -600,7 +600,7 @@
     {
       "name": "/free-api/ 能打开且标题非空",
       "ok": true,
-      "detail": "「可以免费调用的 API」· 表格 45 行 · 正文 4847 字"
+      "detail": "「可以免费调用的 API」· 表格 45 行 · 正文 4835 字"
     },
     {
       "name": "/free-api/ canonical 自指",
@@ -613,9 +613,9 @@
       "detail": "页面 45 条 / 数据 45 条"
     },
     {
-      "name": "/free-api/ 声明了两个订阅源且有三段 JSON-LD（含 BreadcrumbList）",
+      "name": "/free-api/ 恰好两个订阅源 + 恰好三段 JSON-LD（CollectionPage / BreadcrumbList / ItemList）",
       "ok": true,
-      "detail": "feed 2 个 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+      "detail": "feed 2 个 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]（期望 [BreadcrumbList, CollectionPage, ItemList]）"
     },
     {
       "name": "/free-api/ 没有 JS 错误、没有外部请求",
@@ -625,7 +625,7 @@
     {
       "name": "分类页不执行 JS 也能读到条目表（预渲染的硬定义）",
       "ok": true,
-      "detail": "/student/ 12 行/1858 字 · /developer/ 67 行/6566 字 · /free-api/ 45 行/4794 字 · 最短正文 1858 字"
+      "detail": "/student/ 12 行/1840 字 · /developer/ 67 行/6554 字 · /free-api/ 45 行/4782 字 · 最短正文 1840 字"
     },
     {
       "name": "分类页无 JS 时页脚分类入口仍在且指向正确（站内导航不是 JS 控件）",
@@ -660,7 +660,7 @@
     {
       "name": "/status/ 能打开且标题非空",
       "ok": true,
-      "detail": "「数据源状态」· 表格 9 行 · 正文 1064 字"
+      "detail": "「数据源状态」· 表格 9 行 · 正文 1060 字"
     },
     {
       "name": "/status/ canonical 自指",
@@ -673,9 +673,9 @@
       "detail": "页面 9 行 / 数据 9 个 · 标签 [✅ 正常]"
     },
     {
-      "name": "/status/ 补齐五条约定：双 feed + 两段 JSON-LD（含 BreadcrumbList）",
+      "name": "/status/ 补齐五条约定：恰好两个 feed + 恰好两段 JSON-LD（WebPage + BreadcrumbList）",
       "ok": true,
-      "detail": "feed 2 个 · JSON-LD [WebPage, BreadcrumbList]"
+      "detail": "feed 2 个 · JSON-LD [WebPage, BreadcrumbList]（期望 [BreadcrumbList, WebPage]）"
     },
     {
       "name": "/status/ 有指向 source-health.json 的链接（机器可读的那一份）",
@@ -690,7 +690,7 @@
     {
       "name": "/status/ 不执行 JS 也能读到来源表与绝对时间（预渲染的硬定义）",
       "ok": true,
-      "detail": "9 行 / 1163 字 / 9 个 <time datetime>"
+      "detail": "9 行 / 1159 字 / 9 个 <time datetime>"
     },
     {
       "name": "/status/ 无 JS 时页脚路由入口仍在且指向正确",
@@ -700,12 +700,12 @@
     {
       "name": "/status/ 390px 不产生页面级横向溢出（宽表应在容器内横滚，而不是撑开整页）",
       "ok": true,
-      "detail": "页面溢出 0px · .stable-wrap overflow-x=auto · 表格宽于容器、靠内部横滚"
+      "detail": "页面溢出 0px · .stable-wrap overflow-x=auto · 表格宽 495px / 容器宽 358px"
     },
     {
       "name": "/status/ 360px 不产生页面级横向溢出（宽表应在容器内横滚，而不是撑开整页）",
       "ok": true,
-      "detail": "页面溢出 0px · .stable-wrap overflow-x=auto · 表格宽于容器、靠内部横滚"
+      "detail": "页面溢出 0px · .stable-wrap overflow-x=auto · 表格宽 495px / 容器宽 328px"
     },
     {
       "name": "详情页沿用首页的主题选择",
