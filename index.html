@@ -39,9 +39,11 @@
   <meta name="twitter:description" content="聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。">
   <meta name="twitter:image" content="__SITE_URL__og-image.png">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <!-- 订阅：构建期生成的两份静态 feed（零依赖、无后端） -->
-  <link rel="alternate" type="application/rss+xml" title="AI 优惠聚合器 · RSS" href="feed.xml">
-  <link rel="alternate" type="application/feed+json" title="AI 优惠聚合器 · JSON Feed" href="feed.json">
+  <!-- 订阅发现：这一行的内容由构建期按 Feed 注册表生成（scripts/lib/feeds.js），
+       源码里不留第二份清单 —— 抄一份的后果是「改了注册表、忘了改 HTML」，
+       而这种漂移没有任何东西会红。首页只暴露四个订阅选择（全部优惠 / 最近变化 /
+       学生 / 开发者），其余集中放在 /feeds/ 订阅中心，不往 <head> 里塞几十个。 -->
+  <!--PRERENDER:feeds-->
   <!-- 厂商 logo：构建期由 scripts/lib/logos.js 从 assets/logos/manifest.json 生成，
        卡片上只写 data-logo 属性，图形由 logos.css 提供，不热链任何第三方 CDN。 -->
   <link rel="stylesheet" href="logos.css">
@@ -1142,9 +1144,9 @@
            链接用占位符，由 build-local.js 按输出深度统一解析（ROUTE_HREFS）——
            页脚是一份共享片段，写死相对路径在详情页那一层必然错。 -->
       <p class="catnav" aria-label="按需求浏览">按需求浏览：<a href="__STUDENT_HREF__">学生优惠</a> · <a href="__DEVELOPER_HREF__">开发者优惠</a> · <a href="__FREEAPI_HREF__">免费 API</a></p>
-      <!-- 变化雷达页（v1.5）也放页脚：首页顶部那一行条带只在自己有内容时才热闹，
-           而 /changes/ 是要能随时点进去看「这两天到底变没变」的地方。 -->
-      <p class="catnav" aria-label="优惠变化">优惠变化：<a href="__CHANGES_HREF__">变化雷达</a></p>
+      <!-- 变化雷达页（v1.5）与订阅中心（v1.6）共用一行：加一行页脚会把 5 种深度的
+           输出全部加高，而这两条入口本来就属于同一件事（「变化」与「订阅变化」）。 -->
+      <p class="catnav" aria-label="变化与订阅">优惠变化：<a href="__CHANGES_HREF__">变化雷达</a> · <a href="__FEEDS_HREF__">订阅这些优惠</a></p>
       <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span> · <a href="__STATUS_HREF__">数据源状态</a></p>
       <p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p>
       <p>本站不收录付费推广位，排序与推荐理由不出售。</p>

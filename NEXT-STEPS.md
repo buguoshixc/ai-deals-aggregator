@@ -1,6 +1,29 @@
 # 下一步：现在的状态，以及还需要你点头的事
 
-> **2026-09-30 最新一轮：`v1.5-change-radar`（分支 `v1.5-change-radar`，隔离工作树
+> **2026-09-30 最新一轮：`v1.6-subscription`（分支 `v1.6-subscription`，隔离工作树
+> `.worktrees/v1.6-subscription`，基点 `v1.5-change-radar = 12d4d08`）**
+> —— 目标：**在不引入账号 / 数据库 / 邮件 / 推送 / 第三方 SDK / 行为追踪的前提下，
+> 让读者订阅自己真正关心的优惠变化**，继续跑 GitHub Pages 静态构建。
+> 产出 **18 个 Feed × 2 种格式（RSS 2.0 + JSON Feed 1.1）= 36 个静态文件**：
+> A 类优惠 Feed（全部 / 学生 / 开发者 / 免费 API / 免费 Tokens / AI Coding / 国内可用 / 9 家厂商）
+> 回答「当前有哪些符合这个条件的优惠」；B 类变化 Feed（`/feed/new.*`、`/feed/changes.*`）
+> 回答「最近发生了什么」。判据只有一处：`scripts/lib/feeds.js` 的注册表 + `validate()`，
+> 优惠 Feed 的谓词**直接引用页面注册表**、变化 Feed 的条目**直接取雷达分栏**。
+> 三处硬承诺：**主链接回归站内**（此前 80 条条目全部把权重导出站外）· **Stable ID
+> 不动 `deal.id`**（升级不会给老订阅者重推）· **连续 10 次真实构建逐字节一致**。
+> 新增 `selftest:feeds`（66 项，含 4 项 Tooth Test）、`check:feeds:reproducible`、`report:feeds`；
+> 门禁新增两步（冻结序列 21 → 23 步，`--expect-checks=32` 不变）。
+> 门禁实跑：`verify` **297 项 0 失败** · `verify --compare` **303 项 0 失败**（页高 +1.2%，
+> 容差 15%）· 既有 11 支自测全绿 · 投毒演练确认「重复 guid / 死链 ⇒ 构建红」。
+> **未合并、未推送** —— 等你的「推送」。完整报告：`research/v1.6-subscription-report.md`；
+> 契约：`docs/SCHEMA-v1.6.md`。
+> ⚠️ 交付当天**变化订阅是空的**（变更日志起算日 2026-09-30、0 条事件）—— 这是如实结果，
+> 页面与 Feed 的说明都写明「空是事实，不是故障」，**没有补造任何历史事件**。
+> 下一阶段建议：**可进入 `v1.7-seo-expansion`**（订阅把主链接、`/feeds/` 入口、
+> `atom:link rel=self`、`icon`/`favicon` 这几块 SEO 地基补齐了）；但先让采集链跑满
+> 2–3 天拿到真实变化样本，**在此之前不要改 `changes.js` 的窗口与高价值判据**。
+>
+> **2026-09-30 上一轮：`v1.5-change-radar`（分支 `v1.5-change-radar`，隔离工作树
 > `.worktrees/v1.5-change-radar`，基点 `origin/master = b202d21`，其中已含 v1.4 的 PR #6）**
 > —— 目标：**让用户有理由反复回来**，而不是搜索一次就离开。在 v1.4 的变更日志之上做出
 > 五个分栏：今日新增 / 最近 7 天变化 / 即将结束 / 已结束 / 重新出现；

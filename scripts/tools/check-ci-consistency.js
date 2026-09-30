@@ -138,12 +138,20 @@ const GATE_STEP_NAMES = [
   // 上限 / 纯函数 / 墓碑与「不可用」的措辞）。它与 v1.4 那一支互补：
   // 前者管「记录对不对」，这一支管「取出来的视图对不对」，红的含义不同。
   'Change-radar self-test',
+  // v1.6 新增：订阅层（Stable ID / 时间只来自数据 / 10 次构建逐字节一致 / 排除项 /
+  // 空 Feed 策略 / 厂商门槛与 slug / XML 良构 / 4 项 Tooth Test）。
+  // 与 v1.5 那一支互补：前者管「取出来的视图对不对」，这一支管
+  // 「把视图序列化成订阅源之后还对不对」，红的含义不同。
+  'Feeds self-test',
   // v1.1 新增：受众字段（三态语义 / merge 可信度仲裁 / 措辞同源）的全部红线守卫都在这支自测里。
   // 它原先只在本机跑，于是这几类回归在 CI 里看不见（t1 核验的 B5）。判断标准不是"多新"，
   // 而是"它红的时候有没有别的步骤会替它红"——没有，所以必须进来。
   'Audience self-test',
   'App-token self-test',
   'Assemble site (same path as deploy.yml)',
+  // v1.6 新增：**真实连续构建**两次，逐字节比对全部 Feed 文件。自测证明的是
+  // 「纯函数同输入同输出」，证明不了「构建脚本没把时钟写进产物」——两者红的含义不同。
+  'Feeds reproducibility (build twice, byte-compare)',
   'Prepare browser for the real-browser gate',
   'Browser availability decision (never silent)',
   'Real-browser acceptance (verify-site.js)',

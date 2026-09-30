@@ -36,3 +36,6 @@ research/_raw/**/*.png
 # 注意 dist/ 不在其中：它仍是真正的发布产物目录，deploy.yml 上传的就是它。
 *.building/
 *.stale/
+
+# v1.6 订阅可复现门禁的临时输出目录（构建后即删；这里兜底，防止中断时留下半成品）
+dist.feeds-repro*/

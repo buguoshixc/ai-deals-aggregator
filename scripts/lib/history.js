@@ -924,6 +924,9 @@ module.exports = {
   replayedValue,
   lastLifecycleOf,
   eventsOf,
+  // v1.6 订阅层用：变化条目的稳定 id 直接取这把「事件身份」尺子（lib/feeds.js 的 eventFeedId），
+  // 不另写一套唯一性判据 —— 同一件事只允许有一种身份定义。
+  eventKey,
   verifyStore,
   historyFor,
   attachToDeals,

@@ -823,6 +823,30 @@ App 页面下载的私钥是 **PKCS#1**（`-----BEGIN RSA PRIVATE KEY-----`，�
 | 人工策展优惠（`scripts/data/curated_*.json`） | **人工** | 由人修改并推送，无自动更新 |
 | 采集器选择器 / 别名表 | **人工** | 对方站点改版导致零产出时需要人修 |
 
+## 订阅（v1.6）
+
+**不需要账号、没有邮件列表、没有推送服务**：订阅就是一批构建期生成的静态文件，
+把地址粘进任意 RSS / JSON Feed 阅读器即可。全部入口在 **`/feeds/`（订阅中心）**。
+
+| 类别 | 路径 | 回答 |
+|---|---|---|
+| 优惠 Feed | `/feed.xml`、`/feed/student.*`、`/feed/developer.*`、`/feed/free-api.*`、`/feed/free-tokens.*`、`/feed/ai-coding.*`、`/feed/china.*`、`/feed/vendor/<slug>.*` | 当前有哪些符合这个条件的优惠 |
+| 变化 Feed | `/feed/new.*`（最近新增）、`/feed/changes.*`（最近变化） | 最近发生了什么 |
+
+共 **18 个 Feed × 2 种格式（RSS 2.0 + JSON Feed 1.1）= 36 个静态文件**。要点：
+
+- **条目主链接是本站** `/deal/<id>/`（官方页在正文与 JSON Feed 的 `external_url` 里），
+  这里曾经把 80 条条目全部指向站外。
+- **Stable ID**：优惠条目沿用 `deal.id`（**升级 v1.6 不会给老订阅者重推**）；
+  变化条目用事件身份的哈希。**连续 10 次构建逐字节一致**。
+- **时间只来自数据**：`pubDate` = 首次收录或事件日期；`lastSeen`（每轮采集都刷新）
+  永不进机器可读时间字段。
+- **文案微调与元信息不进订阅**：`description` 改一个标点、换一处分类都不会推给读者。
+- 唯一权威在 `scripts/lib/feeds.js`，契约在 [`docs/SCHEMA-v1.6.md`](docs/SCHEMA-v1.6.md)。
+
+相关命令：`npm run selftest:feeds`（66 项，含 4 项 Tooth Test）·
+`npm run check:feeds:reproducible -- --runs=10`（连续构建逐字节比对）· `npm run report:feeds`（人读报告）。
+
 ## 隐私声明
 
 本项目仅供个人使用，不收集任何用户访问数据。
