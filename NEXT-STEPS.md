@@ -1,5 +1,19 @@
 # 下一步：现在的状态，以及还需要你点头的事
 
+> **2026-09-30 最新一轮：`v1.4-deal-history`（分支 `v1.4-deal-history`，隔离工作树
+> `.worktrees/v1.4-deal-history`，基于 `master = 2204565`）**
+> —— 目标：**记录优惠生命周期与重要变化**，让「首次发现 / 免费额度变化 / 新增截止日期 /
+> 领取条件变化 / 从官方页消失 / 消失后重现」六个问题可被机器验证地回答。
+> 方案是 **D 混合**：显式 change event 作唯一运行时存储 + 一次性值基线（可重放验证）+
+> git diff 降级为离线交叉校验（`npm run history:audit`，不进 CI）。**首页一行未改**（不做变化雷达）。
+> 新增 `scripts/data/deal-history.json`（一次性基线 86.7 KB + 追加事件，交付时 0 条 ——
+> 历史自 2026-09-30 起算，不补造）；新增两个 CI 门禁 `check:history` 与 `selftest:history`(52)。
+> 门禁实跑：`verify` 262 项 0 失败 · `verify --compare` 268 项 0 失败；`build` ×2 产物 SHA256 一致。
+> **未合并、未推送** —— 等你的「推送」。
+> 完整报告：`research/v1.4-deal-history-report.md`；契约：`docs/SCHEMA-v1.4.md`。
+> 下一阶段建议：**可进入 `v1.5-change-radar`**，但先观察一个采集周期拿到真实事件样本，
+> 再决定聚合粒度；入口优先考虑 `/changes/` 静态页，而不是动首页密度（见报告第十节）。
+>
 > ⚠️ **本文件里的分支/版本坐标已作废**（当时的 `master = 777e3b7`）：之后又有多次定时数据更新、
 > 推送、以及 `v1.0` / `v1.1` 两轮（均已合并进 master）。要复核现状请以 `git log` 与
 > `PROJECT_STATUS.md` 为准。
