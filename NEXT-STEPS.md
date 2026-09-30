@@ -1,6 +1,25 @@
 # 下一步：现在的状态，以及还需要你点头的事
 
-> **2026-09-30 最新一轮：`v1.6-subscription`（分支 `v1.6-subscription`，隔离工作树
+> **2026-09-30 最新一轮：`v1.7-seo-expansion`（分支 `v1.7-seo-expansion`，隔离工作树
+> `.worktrees/v1.7-seo-expansion`，基点 `v1.6-subscription = 71a4057`）**
+> —— 目标：**把已有的结构化数据组织成真正有搜索价值的静态入口页**（不是批量造 SEO 页）。
+> 新增 **16 个页面**：厂商页 9（`/vendor/<slug>/`，门槛复用订阅的 `VENDOR_THRESHOLDS`）·
+> 分类页 5（`/category/<slug>/`，门槛 ≥4 条 + 人工允许表 + 集合唯一性）· 枢纽页 2
+> （`/vendor/` `/category/`，同时是面包屑父级）。另收口 **3 对早就是重复内容的近义 URL**
+> （旧地址降为 `noindex,follow` 别名页，短路由保留为被索引入口）。
+> 顺手修掉四个**早就在、但没有任何断言会红**的缺陷：首页与 80 个详情页缺 `<h1>`（113 页里 81 页）·
+> `ItemList` 声明数与页面行数不符（`/developer/` 声明 67 实列 50）· 详情页面包屑把分类指向站根。
+> 新增 **27 个检查码**的 SEO 门禁，两个**输入完全不同源**的执行点（构建期 + `npm run verify:seo`
+> 只读 dist 独立重推），外加 6 条 Tooth Test 实证「该红时真的会红」。
+> 实测：113 页 / 可索引 110 / sitemap 110 / Feed 46 个文件；`verify` 335 项、`verify:regress` 341 项全过，
+> **首屏仍是 9 张卡**（首页只把品牌 `<b>` 换成 `<h1>` 并在页脚那一行加了入口，没有新增整行）。
+> 契约 `docs/SCHEMA-v1.7.md` · 报告 `research/v1.7-seo-expansion-report.md`。
+> **未合并、未推送 —— 等你的「推送」。**
+>
+> 对下一阶段的判断：**适合进入 `v2.0-ai-assisted-maintenance`**，唯一前置条件与 v1.6 相同 ——
+> `deal-history.json` 仍是 **0 事件**，先跑满 3 天采集拿到真实变化样本再进。
+>
+> **2026-09-30 上一轮：`v1.6-subscription`（分支 `v1.6-subscription`，隔离工作树
 > `.worktrees/v1.6-subscription`，基点 `v1.5-change-radar = 12d4d08`）**
 > —— 目标：**在不引入账号 / 数据库 / 邮件 / 推送 / 第三方 SDK / 行为追踪的前提下，
 > 让读者订阅自己真正关心的优惠变化**，继续跑 GitHub Pages 静态构建。

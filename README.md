@@ -32,6 +32,9 @@ npm run test:strict     # 额外校验内容质量指标
 npm run build           # 校验 → 组装并预渲染 dist/ → 产物自检
 npm run verify          # 真浏览器验收（密度/裁切/hover/筛选/弹层/移动端）
 npm run verify:shots    # 同上，并把截图写到 mockups/.preview/
+npm run selftest:seo    # v1.7 SEO 门禁演练：27 个检查码逐个定向篡改，每个都必须会响
+npm run verify:seo      # v1.7 SEO 独立验收：只读 dist，条目集合/sitemap 成员/索引策略现场重推
+npm run report:seo      # 落地页人读报告：有哪些页 / 哪些主题没成页及原因 / slug 与钉住表
 npm run check:zh        # 译文漂移门禁：对不上 id / 原文已变 / 待译 逐条列出，非零退出即有要办的事
 npm run serve                          # 本地预览源码目录 http://127.0.0.1:8080
 node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 index.html）
@@ -82,6 +85,23 @@ node scripts/tools/term-count.js <url> 免费 额度 --render  # 渲染后再探
 node scripts/tools/render-source.js <url> --rows     # 渲染公开页并看表格/优惠信号
 node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲染诊断（零产出时用）
 ```
+
+## URL 地图（v1.7）
+
+| 路由 | 是什么 | 索引 |
+|---|---|---|
+| `/` | 首页（筛选 + 卡片/列表 + 变化雷达条带 + 按需求入口行） | ✅ |
+| `/student/` `/developer/` `/free-api/` | 按人群 / 福利类型的聚合页（v1.1） | ✅ |
+| `/need/<slug>/` | 按需求找优惠（v1.2，7 页可索引 + 3 页别名） | ✅ / ⛔ |
+| `/category/<slug>/` | 按数据里的分类枚举切的聚合页（5 页，v1.7） | ✅ |
+| `/vendor/<slug>/` | 按**规范厂商名**切的聚合页（9 页，v1.7） | ✅ |
+| `/vendor/` `/category/` | 上面两类页的目录，同时是面包屑的父级（v1.7） | ✅ |
+| `/deal/<id>/` | 每条优惠一个静态页（80 页） | ✅ |
+| `/changes/` `/feeds/` `/status/` | 变化雷达 / 订阅中心 / 数据源状态 | ✅ |
+| `/feed/**`、`feed.xml`、`feed.json` | 23 份订阅 × 2 种格式 = 46 个文件 | 资源，不进 sitemap |
+
+契约（URL / 门槛 / 索引策略 / 27 个检查码）见 [`docs/SCHEMA-v1.7.md`](docs/SCHEMA-v1.7.md)；
+「这一版到底发了什么、哪些页为什么没发」见 [`research/v1.7-seo-expansion-report.md`](research/v1.7-seo-expansion-report.md)。
 
 ## 数据契约（deals.json v2）
 
@@ -225,6 +245,10 @@ scripts/
     audience-overrides-extract.js  从 DATA-BACKFILL.md 那张表生成 overrides（与数据对不上就拒绝写）
     migrate-audience-verify.js     `migrate.js --audience` 的验收比对（默认跑合成夹具，CI）
     check-ci-consistency.js   看门狗：门禁步骤序列 / 冻结断言名单 / --expect-checks 互相独立（CI）
+    seo-selftest.js           v1.7 SEO 门禁演练（27 个检查码逐个定向篡改 + 干净夹具必须静默 +
+                              门槛分支 + slug/钉住/别名三张表的不变量，CI）
+    seo-verify.js             v1.7 SEO 独立验收（**只读 dist/**，与构建期输入完全不同源，CI）
+    seo-report.js             落地页人读报告（页面清单 / 未成页的主题与原因 / 索引策略 / slug 契约）
     zh-todo.js                中文翻译待办与脚手架（--json / --scaffold 盖原文指纹 / --orphans）
     zh-selftest.js            中文译文门禁演练（自恢复，验证坏译文真的会被拦下）
     tier-report.js            分档与厂商归一报告（调规则时先看它）

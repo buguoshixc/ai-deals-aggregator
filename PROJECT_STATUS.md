@@ -2665,3 +2665,81 @@ return crypto.createHash('sha1').update(basis).digest('hex').slice(0, 12);
   既有 11 支自测（15/94/46/161/91/51/67/61/89 项）全绿。
 - **契约** `docs/SCHEMA-v1.6.md` · **报告** `research/v1.6-subscription-report.md`。
   未合并、未推送；建议先观察 2–3 天采集周期拿到真实变化样本，再评价变化流的分栏与窗口。
+
+---
+
+### 2.38 `v1.7-seo-expansion`：有门槛的落地页系统 + SEO 安全门禁（2026-09-30，分支 `v1.7-seo-expansion`）
+
+**目标**：把已有的高质量结构化数据组织成**真正有搜索价值的静态入口页**，并让「薄页 / 重复页 /
+坏链接」在构建期不可能悄悄上线。**不是**批量制造 SEO 页面。
+
+**先说结论**：用户框定的第一批页面里 `/student/` `/developer/` `/free-api/` `/need/free-tokens/`
+`/need/free-model/` `/need/china-usable/` **早就存在**（v1.1/v1.2）。所以本轮真实做的是：
+新增**厂商页 / 分类页 / 两个枢纽页**，收口**已经存在的 3 对近义重复页**，修掉**4 类早已存在但无人发现的
+SEO 硬缺陷**，再加一道门禁与 6 条 Tooth Test。
+
+**修掉的四个既有缺陷（都不是读代码看出来的，是量出来的）**
+
+| 缺陷 | 实测 | 处置 |
+|---|---|---|
+| 首页**一个 `<h1>` 都没有**，80 个详情页的标题是 `<h2>` | 113 页里 **81 页**在文档结构上缺一级标题；旧审计数到的「1 个」其实是内联脚本模板字符串里的 `<h1>` | 首页品牌改成 `<h1>`（CSS 把几何锁死在同尺寸，不新增一行 ⇒ 首屏仍是 9 张卡）；`detailHtml(deal, {headingTag:'h1'})` 只对独立详情页生效（弹层里仍是 h2） |
+| `ItemList.numberOfItems` 声明 `deals.length` 却只发 `slice(0,50)` | `/developer/` **声明 67、实列 50**；`/changes/` 同型（被 0 事件掩盖） | 全量发出，并加 `itemlist-arity` 断言「声明数 == 元素数 == 页面数据行数（`data-item` 标记）」 |
+| **3 对页面条目集合逐条相同**、两对标题逐字相同 | student ≡ student-only(12) · free-api ≡ need/free-api(45) · developer ≡ dev-credits(67) | 保留短路由为被索引入口，旧地址降为 `noindex,follow` 别名页（自指 canonical + 页面上写明关系），不进 sitemap |
+| 详情页面包屑把「分类」指向**站根** | `/deal/<id>/` 的 `BreadcrumbList` 第 2 级 `item: SITE_URL` —— 一条「说自己在分类页、点开是首页」的假链接 | 有分类页就给真 URL，没有就**省略 `item`**；并加 `breadcrumb-target-exists` 检查码 |
+
+**新增页面类型与门槛**（`scripts/lib/landing.js` 是唯一致出）
+
+- 厂商页 `/vendor/<slug>/` **9 个**：门槛**复用订阅的 `VENDOR_THRESHOLDS`**（有效优惠 ≥2 或事件 ≥3），
+  于是「页面的条目集合」与「它的 Feed 的条目集合」不可能分头变化。
+- 分类页 `/category/<slug>/` **5 个**：门槛 `≥4 条` + 人工允许表 + 集合唯一性。实测分布
+  36/15/6/5/**4** ‖ 3/2/2/1/1/1，4 与 3 之间是自然断层；`编程开发(4)` 与 `/need/ai-coding/`
+  集合逐条相同 ⇒ 由既有页承担（不重复建 URL），`其他` 是内部兜底枚举 ⇒ 人工排除。
+- 枢纽页 `/vendor/` `/category/` **2 个**：子页目录，同时是面包屑的父级（保证面包屑 URL 真实存在）。
+- **钉住表** `scripts/data/landing-pages.json`：19 条路由「必须一直存在」，跌破门槛照常生成、
+  条数为 0 则构建红 —— 收录过的 URL 不许静默消失。
+
+**厂商身份归一（本轮最隐蔽的一处不一致）**：`vendor-slugs.json` 的键原先是**采集时的原始字符串**，
+而渲染/筛选/logo 用 `vendorOf()` 的规范名 —— 同一家公司两个身份（`火山引擎（字节跳动）` vs `火山引擎`）。
+v1.7 把键与 `feeds.js` 的分组都切到规范名（用**注入** `vendorKeyOf` 的方式，`feeds.js` 仍是纯函数），
+**slug 值一个未改** ⇒ 老订阅者 Feed URL 零破坏。顺带把厂商 Feed 的 `homePageUrl` 从站根改为 `/vendor/<slug>/`，
+并新增 `page-exists` 检查码。
+
+**SEO 安全门禁：27 个检查码 × 2 个输入完全不同源的执行点**
+
+- 构建期 `seo.validate()`（从磁盘回读刚写下的 113 页）；
+- `npm run verify:seo`（**只读 dist/**：可索引性按 `robots` meta 判、条目集合按 `deals.json` 重算、
+  sitemap 成员解析 XML、Feed 清单走磁盘）。**为什么两个都要**：构建期的描述符是它自己记下来的，
+  两份数据同源时一个错误的判据会在两边一致地错下去。
+- `npm run selftest:seo`（62 项）：干净夹具必须 0 问题 + **27 个码逐个定向篡改，每个都必须会响** ——
+  一个永远不响的检查码比没有检查码更糟。
+
+**Tooth Test 6 条全部实跑**（注入 → 记录逐字红色 → 用**文件备份**还原 → 复跑确认回到绿）：
+共用 canonical / sitemap 里塞不存在的 URL / 绕过门槛生成 1 条厂商页 / ItemList 声明数不符 /
+面包屑指向不存在页 / **产物级制造 orphan**（后两条：orphan 由 `verify:seo` 而不是构建期发现）。
+
+> ⚠️ **本轮踩的最大一个坑（值得单独记）**：第一版 Tooth Test 驱动用 `git checkout -- <file>` 还原，
+> 而当时的改动**还没提交** ——「还原」把整份 `build-local.js`（约 300 行改动）清空了。
+> 处置：先提交幸存文件，再按记录逐条重新应用，重建后产物与丢失前**逐字节等价**；
+> 驱动脚本改成基于**当前工作区副本**的备份/还原。**任何「还原」动作都不能依赖「改动已提交」这个前提。**
+
+**规模与门禁**
+
+| 指标 | v1.6 | v1.7 |
+|---|---|---|
+| HTML 页 / 可索引 | 97 / 97 | **113 / 110**（+3 条 noindex 别名） |
+| sitemap | 97 | **110** |
+| Feed 文件 | 36 | **46**（+5 份分类 Feed × 2 格式） |
+| dist | 192 文件 / 8.50 MiB | **218 文件 / 10.06 MiB**（+18%，预算上限 16 MiB） |
+| `npm run build` | 0.90 s | **1.01 s** |
+| `npm run verify` | 297 项 | **335 项**（+§18 落地页 38 项） |
+| `verify:regress` | 303 项 | **341 项**；卡片 50→50 · 首屏 **9→9** · 页高 +1.7%（容差 15%） |
+
+既有 11 支自测全绿（`selftest:feeds` 从 66 → **71 项**，夹具同步规范厂商名）；
+`check:ci` 32 项（门禁步骤序列 23 → **25 步**，新增 `SEO self-test` 与
+`SEO verification (independent, from dist/)`，均无 `continue-on-error`）。
+
+- **契约** `docs/SCHEMA-v1.7.md` · **报告** `research/v1.7-seo-expansion-report.md`。
+  未合并、未推送。
+- **对 v2.0 的判断**：**适合进入**，唯一前置条件仍是 v1.6 报告里那条 ——
+  `deal-history.json` 今天仍是 **0 事件**，而 AI 辅助维护要判断的第一件事恰恰是「什么变化值得通知人」。
+  建议先跑满 3 天采集拿到真实事件样本，再进 v2.0。
