@@ -9,6 +9,7 @@ const crypto = require('crypto');
 const { CATEGORIES, mapCategory } = require('./categories');
 const { normalizeZh } = require('./zh');
 const audience = require('./audience');
+const provenance = require('./provenance');
 
 const SCHEMA_VERSION = 2;
 
@@ -527,6 +528,13 @@ function makeDeal(raw = {}, opts = {}) {
   // 挂在最后，是为了让字段顺序在 JSON 里稳定（见 AUDIENCE_FIELD_ORDER）。
   attachAudienceFields(deal, raw);
 
+  // v1.3 官方原文证据：有界引文（≤3 条 × ≤200 字）。
+  // 放在**六字段之后**：它同样是「追加字段」，顺序固定才不会让存量记录的 diff 漂移。
+  // 超长/缺出处/聚合站出处/未来日期一律在构造期丢掉 —— 报错由 validateDeal 与
+  // 两个人工来源入口（curated / audience-overrides）的对账负责，见 provenance.auditEvidence。
+  const evidence = provenance.normalizeEvidence(raw.evidence, { today });
+  if (evidence) deal.evidence = evidence;
+
   return deal;
 }
 
@@ -625,16 +633,58 @@ function validateDeal(deal, index = 0) {
     'id', 'title', 'vendor', 'url', 'source', 'sourceUrl', 'region', 'type',
     'discountInfo', 'pricingModel', 'priceLine', 'features', 'category', 'description',
     'eligibility', 'validity', 'expiresAt', 'firstSeen', 'lastSeen', 'verified', 'verifiedAt',
-    'zh',
+    'zh', 'evidence',
     ...AUDIENCE_FIELD_ORDER
   ]);
   for (const key of Object.keys(deal)) {
     if (!allowed.has(key)) errors.push(`${where}: 未知字段 ${key}`);
   }
 
+  validateEvidence(deal, where, errors);
   validateAudienceFields(deal, where, errors);
 
   return { ok: errors.length === 0, errors };
+}
+
+/**
+ * v1.3 官方原文证据的校验（每条写盘、每次 CI 都跑）。
+ *
+ * 判据只有一处：**把归一器再跑一遍**。写进来的东西只要与 `normalizeEvidence()` 的输出
+ * 有任何一个字节不同，就说明它不是规范形态（超长、聚合站出处、未来日期、重复、
+ * 顺序漂移……）。这样「什么算合法引文」不必在这里抄第二份 —— 抄一份就会有两份会分家。
+ *
+ * 硬上限（条数 / 单条字数 / 全库预算）里的前两条在这里逐条报错，全库预算在
+ * `validate.js` 的 `checkEvidenceBudget()` 里报（它需要看到整份数据）。
+ */
+function validateEvidence(deal, where, errors) {
+  const value = deal.evidence;
+  if (value === null || value === undefined) return;
+  if (!Array.isArray(value)) {
+    errors.push(`${where}: evidence 必须是数组（单条也写成数组；没有就省略该字段）`);
+    return;
+  }
+  if (!value.length) {
+    errors.push(`${where}: evidence 是空数组（没有引文时应省略该字段或写 null）`);
+    return;
+  }
+
+  const today = todayCN();
+  const normalized = provenance.normalizeEvidence(value, { today });
+  if (!normalized) {
+    provenance.auditEvidence(value, null, { today }).slice(0, 3).forEach(item => {
+      errors.push(`${where}: evidence[${item.index}] 非法 —— ${item.reason}`);
+    });
+    errors.push(`${where}: evidence 里没有任何一条合法引文`);
+    return;
+  }
+  if (normalized.length !== value.length) {
+    provenance.auditEvidence(value, normalized, { today }).slice(0, 3).forEach(item => {
+      errors.push(`${where}: evidence[${item.index}] 非法 —— ${item.reason}`);
+    });
+  }
+  if (JSON.stringify(normalized) !== JSON.stringify(value)) {
+    errors.push(`${where}: evidence 不是规范形态（顺序 / 去重 / 字段构成与归一结果不一致）`);
+  }
 }
 
 /**
@@ -843,6 +893,8 @@ module.exports = {
   AUDIENCE_FIELD_ORDER,
   MAX_REGION_RESTRICTION_LENGTH,
   MAX_PROVENANCE_NOTE_LENGTH,
+  MAX_EVIDENCE_QUOTE_LENGTH: provenance.MAX_EVIDENCE_QUOTE_LENGTH,
+  MAX_EVIDENCE_ITEMS: provenance.MAX_EVIDENCE_ITEMS,
   GARBAGE_PATTERNS,
   todayCN,
   nowCN,

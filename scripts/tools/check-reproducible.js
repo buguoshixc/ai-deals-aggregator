@@ -194,6 +194,7 @@ function main() {
 
   const provenanceDrift = [];
   const fixedPointDrift = [];
+  const evidenceDrift = [];
   for (const before of store.deals) {
     const after = fixedById.get(before.id);
     if (!after) {
@@ -204,6 +205,15 @@ function main() {
       provenanceDrift.push({
         title: before.title,
         detail: `${JSON.stringify(before.provenance ?? null)} → ${JSON.stringify(after.provenance ?? null)}`
+      });
+    }
+    // v1.3：官方引文也是**人工文件里的输入**，必须原样穿过 merge。
+    // 为什么单独一条：`evidence` 不在 §5.1 的六字段仲裁里，它的合并规则是「并集 + 排序 + 上限」，
+    // 谁写错（比如按 winner 取）都不会让别的断言红 —— 只会让证据静默消失或换序。
+    if (!same(before.evidence ?? null, after.evidence ?? null)) {
+      evidenceDrift.push({
+        title: before.title,
+        detail: `${JSON.stringify(before.evidence ?? null)} → ${JSON.stringify(after.evidence ?? null)}`
       });
     }
     for (const field of VALUE_FIELDS) {
@@ -290,10 +300,12 @@ function main() {
     invented: invented.length,
     provenanceDrift: provenanceDrift.length,
     fixedPointDrift: fixedPointDrift.length,
+    evidenceDrift: evidenceDrift.length,
     humanCredibilityDrift: humanCredibilityDrift.length,
     humanCredibilityExamples: humanCredibilityDrift.slice(0, 8),
     orphanExamples: orphans.slice(0, 12),
     provenanceExamples: provenanceDrift.slice(0, 5),
+    evidenceExamples: evidenceDrift.slice(0, 5),
     fixedPointExamples: fixedPointDrift.slice(0, 12)
   };
 
@@ -324,6 +336,8 @@ function main() {
     provenanceDrift.slice(0, 5).forEach(item => console.log(`   · ${item.title}: ${item.detail}`));
     console.log(`值字段漂移     : ${result.fixedPointDrift} 处（必须为 0）`);
     fixedPointDrift.slice(0, 12).forEach(item => console.log(`   · ${item.title} · ${item.field}: ${item.detail}`));
+    console.log(`引文漂移       : ${result.evidenceDrift} 处（必须为 0 —— 官方引文是人工输入，必须原样穿过 merge）`);
+    evidenceDrift.slice(0, 5).forEach(item => console.log(`   · ${item.title}: ${item.detail}`));
     console.log('');
     console.log('=== ⑤ 人工文件的 credibility = 规则算出来的那一档 ===');
     console.log(`手写值矛盾     : ${result.humanCredibilityDrift} 处（必须为 0）`);
@@ -333,7 +347,7 @@ function main() {
   }
 
   const failed = result.curatedProjectionDrift || result.orphans || result.invented ||
-    result.provenanceDrift || result.fixedPointDrift || result.overridesInvalid ||
+    result.provenanceDrift || result.fixedPointDrift || result.evidenceDrift || result.overridesInvalid ||
     result.overrideMissingTargets || result.overrideCuratedClash || result.humanCredibilityDrift ||
     (result.overridesMissing && result.nonCurated > 0);
 

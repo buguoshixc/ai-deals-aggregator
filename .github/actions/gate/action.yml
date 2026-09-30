@@ -99,6 +99,15 @@ runs:
       shell: bash
       run: node scripts/tools/health-selftest.js
 
+    # v1.3 信息来源（evidence / provenance）自测：零依赖、离线、秒级。
+    # 为什么进门禁：这一层管的是**引文的版权红线**（条数 / 字数 / 全库预算）与
+    # 「最近成功采集」四种状态的语义。它们失效时的表现全是「页面正常、构建正常」——
+    # 实测已经踩过一次：`known` 没被单独放行，每条真采到的记录都渲染成「未知」，
+    # 而当时构建自检全绿。这里没有别的步骤会替它红，所以必须进来。
+    - name: Provenance self-test
+      shell: bash
+      run: node scripts/tools/provenance-selftest.js
+
     # 受众字段（学生 / 开发者数据模型）自测：零依赖、离线、秒级。
     # 为什么必须进门禁（v1.1 补，由 t1 核验的 B5 发现）：这个自测原先只在本机跑，
     # 于是「三态措辞漂移 / merge 低可信覆盖高可信 / 假出处」这几类回归在 CI 里**看不见**

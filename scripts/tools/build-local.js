@@ -26,6 +26,7 @@ const { load: loadRenderCore } = require('../lib/render-core');
 const { attach: attachZh, summarize: summarizeZh } = require('../lib/zh');
 const health = require('../lib/health');
 const audience = require('../lib/audience');
+const provenance = require('../lib/provenance');
 
 const ROOT = path.join(__dirname, '..', '..');
 const outArg = process.argv.find(a => a.startsWith('--out='));
@@ -1126,6 +1127,35 @@ function assemble() {
     else delete deal.collections;
   }
 
+  // v1.3：采集事实（层 C）也在构建期派生，同样只进 dist。
+  //
+  // 为什么不是写进源数据：`lastSuccessAt` 是**来源**的属性、且每轮采集都刷新，
+  // 写进源数据会让 134 条记录天天全变一行（diff 失去意义、可重建性门禁也跟着变形）。
+  // 心跳的唯一权威是 source-health.json，这里只做一次 join；join 的键是
+  // `deal.source` ↔ 心跳行的 `name`（1:1，由下面的自检与 provenance-selftest 盯着）。
+  //
+  // 缺失分级也在这里定死：整份心跳缺失/损坏 → 全部 unavailable（而不是把每条都判成「未知」，
+  // 那会把「构建没拿到数据」说成「这个来源查不到」）。
+  const healthStore = health.load();
+  const healthDoc = healthStore.missing || healthStore.broken ? health.emptyDoc() : healthStore.doc;
+  if (healthStore.broken) console.log(`  ⚠️  ${health.HEALTH_FILE} 解析失败：${healthStore.broken}（状态页按无数据渲染）`);
+  const sourceIndex = provenance.buildSourceIndex(healthDoc);
+  const unmatchedSources = new Set();
+  for (const deal of payload.deals) {
+    deal.sourceFacts = provenance.factsFor(deal, {
+      index: sourceIndex,
+      healthMissing: healthStore.missing,
+      healthBroken: Boolean(healthStore.broken)
+    });
+    if (!provenance.SOURCE_TYPES[deal.source]) unmatchedSources.add(deal.source || '(无来源)');
+  }
+  if (unmatchedSources.size) {
+    // 只告警不拦发布：来源表漏登记时的表现是那几条显示「未知」，而不是页面说假话。
+    // 真拦在 `validate --strict` 的 provenance 守卫里（那里能逐条点名到记录）。
+    console.warn(`    ⚠️  有 ${unmatchedSources.size} 个来源没在 provenance.SOURCE_TYPES 里登记：` +
+      `${[...unmatchedSources].join('、')}（这些记录会显示「来源类型：未知」）`);
+  }
+
   fs.writeFileSync(path.join(OUT, 'deals.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
   console.log(`  中文译文: ${summarizeZh(zhAttached.report)}`);
   zhAttached.report.stale.forEach(row =>
@@ -1271,9 +1301,9 @@ ${dealUrls}
   // 数据源状态：把采集写入的心跳文件发布出去（机器可读），并生成一页可读的 /status/。
   // 文件缺失（还没跑过一次成功采集）时生成「暂无数据」页，而不是让构建失败——
   // 一份状态页缺席不该阻断发布。
-  const healthStore = health.load();
-  const healthDoc = healthStore.missing || healthStore.broken ? health.emptyDoc() : healthStore.doc;
-  if (healthStore.broken) console.log(`  ⚠️  ${health.HEALTH_FILE} 解析失败：${healthStore.broken}（状态页按无数据渲染）`);
+  // ⚠️ `healthStore / healthDoc` 在前面派生 `sourceFacts` 时已经加载过一次 —— 这里复用，
+  // 不重新 load：两次 load 之间文件若被采集改动，页面上的「来源状态」与记录上的
+  // 「最近成功采集」就会来自两个不同版本的心跳，而两边各自看都自洽。
   fs.writeFileSync(path.join(OUT, 'source-health.json'), `${JSON.stringify(healthDoc, null, 2)}\n`, 'utf8');
   const statusDir = path.join(OUT, 'status');
   fs.mkdirSync(statusDir, { recursive: true });
@@ -1331,6 +1361,9 @@ function selfCheck(built) {
   //
   // 口径：dist 必须**恰好等于** 源 + 构建期**声明过的**变换，多一个字段少一个字段都算不一致。
   //   ① `collections` —— 构建期算出的分类归属（**只增**的派生字段）
+  //   ③ `sourceFacts` —— v1.3 构建期算出的采集事实（来源类型 / 采集方式 / 最近成功采集），
+  //      同样只增；它的真值在 source-health.json 与 provenance.SOURCE_TYPES 里，
+  //      这里只存放「渲染那一刻看到的值」。
   //   ② `zh`         —— 中文译文覆盖层。⚠️ 它**不是只增**：覆盖层会按指纹停用「原文已变」
   //      的译文、也会把撤回的译文从产物里去掉（`selftest:zh` 的两个用例正是这两件事）。
   //      所以它**不比字节**，只断言「不多出别的字段」；译文自身的正确性由它自己的门禁管
@@ -1339,7 +1372,7 @@ function selfCheck(built) {
   // ⚠️ 第一版把 `zh` 也按字节比了，于是 `selftest:zh` 的两个用例当场变红 ——
   // 那不是译文坏了，是**这条门禁对 `zh` 的语义断言错了**：它假设覆盖层只增不减。
   // 一个把正常行为判成失败的守卫，比没有守卫更糟（它会被绕过或被改松）。
-  const BUILD_ADDED = new Set(['collections']);
+  const BUILD_ADDED = new Set(['collections', 'sourceFacts']);
   const BUILD_MANAGED = new Set(['zh']);
   {
     const source = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
@@ -1371,7 +1404,151 @@ function selfCheck(built) {
       }
     }
     if (problems.length) fail(`deals.json 与发布产物不一致：${problems.slice(0, 8).join('；')}`);
-    else console.log(`  ✓ 源/产物一致: ${payload.deals.length} 条逐字段相同（构建期只动 zh / collections）`);
+    else console.log(`  ✓ 源/产物一致: ${payload.deals.length} 条逐字段相同（构建期只动 zh / collections / sourceFacts）`);
+  }
+
+  // ---- v1.3：信息来源块（evidence / sourceFacts）----------------------------
+  //
+  // 这一块要么在页面上说真话，要么不如不说：`lastSuccessAt` 是 join 出来的，
+  // join 错了（来源改名、心跳换了字段名）页面**不会报错**，只会显示一个看起来正常的日期。
+  // 所以这里逐条与 source-health.json 对账，并把渲染器真正产出的 HTML 拿出来扫两件事：
+  // ① 三个缺失状态有没有各自说出来；② 有没有混进本站自发的有效性结论。
+  //
+  // 红线只在**我们自己写的字**上扫（SOURCE_WORDING 的全部取值 + provenance 的推理 note），
+  // **不扫** evidence 里的官方引文 —— 官方原话里出现「保证」「永久」是事实，不是我们的承诺，
+  // 把引文也纳入扫描会让这条红线在第一句真实引文上就变成假红，然后被人改松。
+  {
+    const problems = [];
+    const doc = JSON.parse(fs.readFileSync(path.join(OUT, 'source-health.json'), 'utf8'));
+    const byName = new Map((doc.sources || []).map(row => [row.name, row]));
+
+    const budget = provenance.budgetOf(payload.deals);
+    if (budget.chars > provenance.EVIDENCE_TOTAL_BUDGET_CHARS) {
+      problems.push(`引文字符 ${budget.chars} 超过全库预算 ${provenance.EVIDENCE_TOTAL_BUDGET_CHARS}`);
+    }
+    if (budget.maxLength > provenance.MAX_EVIDENCE_QUOTE_LENGTH) {
+      problems.push(`单条引文 ${budget.maxLength} 字，超过 ${provenance.MAX_EVIDENCE_QUOTE_LENGTH} 字上限`);
+    }
+    if (budget.maxPerDeal > provenance.MAX_EVIDENCE_ITEMS) {
+      problems.push(`单条记录引文 ${budget.maxPerDeal} 条，超过 ${provenance.MAX_EVIDENCE_ITEMS} 条上限`);
+    }
+
+    const rc = loadRenderCore(path.join(OUT, 'index.html'));
+    const indexHtml = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
+    const wording = audience.parseWordingBlock(audience.extractWordingBlock(indexHtml)) || {};
+    const ownWords = Object.keys(wording)
+      .filter(group => group.startsWith('SOURCE_'))
+      .flatMap(group => Object.values(wording[group] || {}))
+      .map(String);
+    for (const stamp of provenance.STAMP_PATTERNS) {
+      const hit = ownWords.filter(text => stamp.re.test(text));
+      if (hit.length) problems.push(`信息来源措辞里出现本站自发的有效性结论（${stamp.why}）：${hit.slice(0, 2).join(' / ')}`);
+    }
+    const LABELS = wording.SOURCE_LABELS || {};
+    const NOTES = wording.SOURCE_NOTES || {};
+    const STATE = wording.SOURCE_STATE || {};
+    if (!LABELS.sectionTitle || !NOTES.disclaimer) {
+      problems.push('产物里的 SOURCE_WORDING 措辞块缺失或不可解析（信息来源块没法校对）');
+    }
+
+    let curatedSeen = 0;
+    let unavailableSeen = 0;
+    let unknownSeen = 0;
+    let evidenceSeen = 0;
+    for (const deal of payload.deals) {
+      const facts = deal.sourceFacts;
+      if (!facts || typeof facts !== 'object') {
+        problems.push(`${deal.id} 缺少 sourceFacts（派生字段没写进产物）`);
+        continue;
+      }
+      if (!['static', 'headless', 'curated', 'unknown'].includes(facts.method)) {
+        problems.push(`${deal.id} 的 sourceFacts.method 非法（${facts.method}）`);
+      }
+      if (!['official', 'directory', 'curated', 'unknown'].includes(facts.sourceType)) {
+        problems.push(`${deal.id} 的 sourceFacts.sourceType 非法（${facts.sourceType}）`);
+      }
+      if (!['known', 'na', 'unknown', 'unavailable'].includes(facts.lastSuccessState)) {
+        problems.push(`${deal.id} 的 sourceFacts.lastSuccessState 非法（${facts.lastSuccessState}）`);
+      }
+
+      const row = byName.get(deal.source);
+      if (facts.method === 'curated') {
+        curatedSeen++;
+        if (facts.lastSuccessState !== 'na') {
+          problems.push(`${deal.title}: 人工策展条目的 lastSuccessState 应为 na，实得 ${facts.lastSuccessState}`);
+        }
+      } else if (row) {
+        if (facts.sourceId !== row.source) problems.push(`${deal.title}: sourceId ${facts.sourceId} ≠ 心跳 ${row.source}`);
+        const expectedMethod = row.kind === 'headless' ? 'headless' : 'static';
+        if (facts.method !== expectedMethod) problems.push(`${deal.title}: 采集方式 ${facts.method} ≠ 心跳 ${row.kind}`);
+        if ((facts.lastSuccessAt || null) !== (row.lastSuccessAt || null)) {
+          problems.push(`${deal.title}: 最近成功采集与心跳不一致`);
+        }
+      } else if (facts.lastSuccessState === 'known' || facts.lastSuccessState === 'na') {
+        problems.push(`${deal.title}: 来源「${deal.source}」不在心跳里，却报告 ${facts.lastSuccessState}`);
+      } else if (facts.lastSuccessState === 'unavailable') {
+        unavailableSeen++;
+      } else {
+        unknownSeen++;
+      }
+
+      // 渲染器实际产出：必须成块、必须带免责句、缺失状态必须各自说出口
+      const block = rc.sourceBlockHtml(deal);
+      if (!block.includes(LABELS.sectionTitle)) problems.push(`${deal.title}: 信息来源块没有标题`);
+      if (!block.includes(NOTES.disclaimer)) problems.push(`${deal.title}: 信息来源块没有免责句`);
+      if (!block.includes(LABELS.lastSuccess)) problems.push(`${deal.title}: 缺少「最近成功采集」一行`);
+      if (facts.lastSuccessState === 'na' && !block.includes(STATE.na)) {
+        problems.push(`${deal.title}: 人工策展没有显示「${STATE.na}」`);
+      }
+      if (facts.lastSuccessState === 'unavailable' && !block.includes(STATE.unavailable)) {
+        problems.push(`${deal.title}: 心跳不可用没有显示「${STATE.unavailable}」`);
+      }
+      if (facts.lastSuccessState === 'unknown' && !block.includes(STATE.unknown)) {
+        problems.push(`${deal.title}: 来源未知没有显示「${STATE.unknown}」`);
+      }
+      // ⚠️ 这条是**实测补的**：第一版漏了它，于是「state 归一不认识 known」把每一条真的采到了
+      // 的记录都渲染成「未知」，而上面那三条断言全绿 —— 页面看起来完全正常。
+      if (facts.lastSuccessState === 'known' && !/<time datetime="[^"]+">/.test(block)) {
+        problems.push(`${deal.title}: 最近成功采集是 known，却没有渲染出 <time>`);
+      }
+      if (/已核验/.test(block)) problems.push(`${deal.title}: 信息来源块里出现「已核验」（本站不给自己盖章）`);
+
+      // 推理 note 也是我们自己写的字，同样不许变成有效性承诺
+      const notes = deal.provenance && deal.provenance.fields
+        ? Object.values(deal.provenance.fields).map(item => item && item.note).filter(Boolean) : [];
+      for (const stamp of provenance.STAMP_PATTERNS) {
+        const hit = notes.filter(text => stamp.re.test(text));
+        if (hit.length) problems.push(`${deal.title}: 推理 note 里出现有效性承诺（${stamp.why}）`);
+      }
+
+      const evidence = Array.isArray(deal.evidence) ? deal.evidence : [];
+      if (evidence.length) {
+        evidenceSeen++;
+        for (const item of evidence) {
+          if (Array.from(String(item.quote)).length > provenance.MAX_EVIDENCE_QUOTE_LENGTH) {
+            problems.push(`${deal.title}: 引文超长`);
+          }
+          if (!block.includes('dsrc-quote')) problems.push(`${deal.title}: 引文没有渲染出来`);
+        }
+      }
+    }
+
+    // 静态详情页也要有这一块（它由同一个 detailHtml 渲染，但**写盘路径不同**，
+    // 断言必须落在产物文件上，而不是「我调用了同一个函数」这句自证上）。
+    const dealIds = payload.deals.filter(deal => deal.type === 'deal' && deal.id).map(deal => deal.id);
+    const missingPages = dealIds.filter(id => !fs.existsSync(path.join(OUT, 'deal', id, 'index.html')));
+    if (missingPages.length) problems.push(`缺少详情页 ${missingPages.length} 个`);
+    else if (dealIds.length && LABELS.sectionTitle) {
+      const sample = fs.readFileSync(path.join(OUT, 'deal', dealIds[0], 'index.html'), 'utf8');
+      if (!sample.includes(LABELS.sectionTitle)) problems.push('详情页里没有信息来源块');
+    }
+
+    if (problems.length) fail(`信息来源（v1.3）：${problems.slice(0, 6).join('；')}`);
+    else {
+      console.log(`  ✓ 信息来源: ${payload.deals.length} 条记录逐个与心跳对账一致（有引文 ${evidenceSeen} 条 · ` +
+        `人工策展 ${curatedSeen} 条显示「${STATE.na}」 · 来源未知 ${unknownSeen} 条 · ` +
+        `心跳不可用 ${unavailableSeen} 条）`);
+    }
   }
 
   // 数据源状态页：与 source-health.json 逐个来源对账（状态标签、条数、行数），

@@ -4,8 +4,9 @@
 
 const fs = require('fs');
 const path = require('path');
-const { makeDeal } = require('./schema');
+const { makeDeal, todayCN } = require('./schema');
 const { auditAudienceFields } = require('./audience-audit');
+const provenance = require('./provenance');
 
 const DATA_DIR = path.join(__dirname, '..', 'data');
 
@@ -27,11 +28,12 @@ function loadCurated({ dir = DATA_DIR } = {}) {
   const deals = [];
   const report = [];
   const audienceDropped = [];
+  const evidenceDropped = [];
 
   for (const spec of CURATED_FILES) {
     const full = path.join(dir, spec.file);
     if (!fs.existsSync(full)) {
-      report.push({ file: spec.file, total: 0, ok: 0, dropped: [], audienceDropped: [], missing: true });
+      report.push({ file: spec.file, total: 0, ok: 0, dropped: [], audienceDropped: [], evidenceDropped: [], missing: true });
       continue;
     }
 
@@ -45,6 +47,7 @@ function loadCurated({ dir = DATA_DIR } = {}) {
 
     const dropped = [];
     const fileAudienceDropped = [];
+    const fileEvidenceDropped = [];
     let ok = 0;
     list.forEach((raw, index) => {
       const deal = makeDeal(raw, {
@@ -78,15 +81,35 @@ function loadCurated({ dir = DATA_DIR } = {}) {
         fileAudienceDropped.push(entry);
         audienceDropped.push(entry);
       });
+      // v1.3：声明了官方引文、而归一之后不见了 —— 与六字段同一条理由：
+      // 校验器只看得到归一之后的世界，写坏的字只在这里能对上账。
+      provenance.auditEvidence(raw.evidence, deal.evidence, { today: todayCN() }).forEach(item => {
+        const entry = {
+          file: spec.file,
+          index,
+          title: deal.title || raw.title || '(无标题)',
+          reason: item.reason
+        };
+        fileEvidenceDropped.push(entry);
+        evidenceDropped.push(entry);
+      });
       deal.verified = raw.verified === true;
       deals.push(deal);
       ok++;
     });
 
-    report.push({ file: spec.file, total: list.length, ok, dropped, audienceDropped: fileAudienceDropped, missing: false });
+    report.push({
+      file: spec.file,
+      total: list.length,
+      ok,
+      dropped,
+      audienceDropped: fileAudienceDropped,
+      evidenceDropped: fileEvidenceDropped,
+      missing: false
+    });
   }
 
-  return { deals, report, audienceDropped };
+  return { deals, report, audienceDropped, evidenceDropped };
 }
 
 module.exports = { loadCurated, CURATED_FILES, DATA_DIR };

@@ -11,10 +11,11 @@
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
-const { validateDeal, cleanText, isGarbage, SCHEMA_VERSION } = require('./lib/schema');
+const { validateDeal, cleanText, isGarbage, SCHEMA_VERSION, todayCN } = require('./lib/schema');
 const { isOngoing } = require('./lib/expiry');
 const { CATEGORIES } = require('./lib/categories');
 const { auditAudienceFields } = require('./lib/audience-audit');
+const provenance = require('./lib/provenance');
 
 const ROOT = path.join(__dirname, '..');
 const DEALS_FILE = path.join(ROOT, 'deals.json');
@@ -126,8 +127,42 @@ function checkDealsFile() {
 
   checkCoverage(store.deals);
   checkSuspectedDuplicates(store.deals);
+  // v1.3：引文的全库预算。逐条上限在 validateDeal 里，这一条看的是**整份数据**：
+  // 单条都不超，合起来仍可能悄悄长成一份第三方内容的副本 —— 这正是要防的事。
+  const evidenceBudget = checkEvidenceBudget(store.deals);
   // 覆盖率统计要用到原始条目数组（audienceCoverage 自己按 type 分档）
-  return { stats, deals: store.deals };
+  return { stats: { ...stats, evidenceBudget }, deals: store.deals };
+}
+
+/**
+ * v1.3 引文预算（每次写盘、每次 CI 都跑）。
+ *
+ * 两个口径一起用，因为各自都能被绕过：
+ *  · 绝对字符上限 —— 谁把上限提高就必须改这一行代码（而不是调一个阈值）；
+ *  · 占 deals.json 的比例上限 —— 条数增长时，引文占比不会因为「总量也变大了」而被稀释。
+ * 超限是**错误**：这条红线管的是版权风险，不是「好不好看」。
+ */
+function checkEvidenceBudget(deals) {
+  const budget = provenance.budgetOf(deals);
+  if (budget.maxLength > provenance.MAX_EVIDENCE_QUOTE_LENGTH) {
+    error(`引文超长：最长 ${budget.maxLength} 字 > ${provenance.MAX_EVIDENCE_QUOTE_LENGTH} 字`);
+  }
+  if (budget.maxPerDeal > provenance.MAX_EVIDENCE_ITEMS) {
+    error(`引文条数超限：单条记录最多 ${budget.maxPerDeal} 条 > ${provenance.MAX_EVIDENCE_ITEMS} 条`);
+  }
+  if (budget.chars > provenance.EVIDENCE_TOTAL_BUDGET_CHARS) {
+    error(`引文全库预算超限：${budget.chars} 字 > ${provenance.EVIDENCE_TOTAL_BUDGET_CHARS} 字`);
+  }
+  let bytes = 0;
+  try {
+    bytes = fs.statSync(DEALS_FILE).size;
+  } catch (err) {
+    bytes = 0;
+  }
+  if (bytes && budget.chars > bytes * provenance.EVIDENCE_BUDGET_RATIO) {
+    error(`引文占 deals.json 的比例超限：${budget.chars}/${bytes} 字 > ${provenance.EVIDENCE_BUDGET_RATIO * 100}%`);
+  }
+  return budget;
 }
 
 /** 疑似重复：同一地区下，一条的归一化标题是另一条的前缀（说明别名表漏登记） */
@@ -308,6 +343,7 @@ function audienceCoverage(deals) {
 function checkCurated() {
   let total = 0;
   let audienceDropped = 0;
+  let evidenceDropped = 0;
   for (const file of CURATED_FILES) {
     if (!fs.existsSync(file)) {
       warn(`策展文件缺失（可选）: ${path.relative(ROOT, file)}`);
@@ -348,10 +384,104 @@ function checkCurated() {
         error(`${path.basename(file)}[${index}] ${deal.title || raw.title || '(无标题)'}: ` +
           `${item.field}${item.key ? '.' + item.key : ''} 写了却没生效 —— ${item.reason}`);
       });
+      // v1.3：官方引文「写了却没生效」。与六字段同一条理由，而且这里更该硬拦 ——
+      // 引文是**证据**：一条超长/缺出处的引文被静默丢掉，页面上只会显示「未收录片段」，
+      // 读者与作者都看不出「我们以为核过的原文其实没进产物」。
+      provenance.auditEvidence(raw.evidence, deal.evidence, { today: todayCN() }).forEach(item => {
+        evidenceDropped++;
+        error(`${path.basename(file)}[${index}] ${deal.title || raw.title || '(无标题)'}: ` +
+          `evidence[${item.index}] 写了却没生效 —— ${item.reason}`);
+      });
       total++;
     });
   }
-  return { curated: total, audienceDropped };
+  return { curated: total, audienceDropped, evidenceDropped };
+}
+
+/**
+ * v1.3 信息来源守卫（只在 --strict 下跑）。
+ *
+ * 三件事：
+ *  ① **探针**：非法引文（超长 / 聚合站出处 / 未来日期 / 未知字段 / 空数组）必须被
+ *     `validateDeal` 拦下，合法引文必须放行 —— 不读 deals.json 的运气；
+ *  ② **来源登记表完整**：每条记录的 `source` 都能在 `provenance.SOURCE_TYPES` 里找到。
+ *     没登记的表现不是报错而是页面上显示「来源类型：未知」，静默且成片 —— 所以在这里硬拦；
+ *  ③ **红线**：我们的措辞里不许出现本站自发的有效性结论（`STAMP_PATTERNS`），
+ *     且三个缺失状态必须各有自己的词（不适用 / 未知 / 不可用），不许合成一句「暂无」。
+ *
+ * 只读：不动 deals.json，也不做任何写盘。
+ */
+function checkProvenanceGuard() {
+  const { makeDeal } = require('./lib/schema');
+  const au = require('./lib/audience');
+  const base = makeDeal(
+    { title: 'Provenance Guard Probe', url: 'https://example.com/provenance-guard', discountInfo: 'Save 50% on the annual plan' },
+    { source: 'aitools.fyi', region: 'global' }
+  );
+  if (!base) {
+    error('信息来源守卫无法构造探针记录（makeDeal 行为已变，请检查 schema.js）');
+    return;
+  }
+  const quote = { field: 'discountInfo', quote: '官方原话：年付五折', sourceUrl: 'https://example.com/provenance-guard', capturedAt: '2026-01-01' };
+  const probe = evidence => validateDeal({ ...base, evidence }, 0).ok;
+
+  if (!probe([quote])) error('信息来源守卫：一条合法引文被 validateDeal 拦下了（合法形态必须放行）');
+  if (!probe(undefined)) error('信息来源守卫：没有 evidence 的记录被拦下了（缺席必须放行）');
+
+  const mustFail = [
+    ['引文超过 200 字', [{ ...quote, quote: 'x'.repeat(provenance.MAX_EVIDENCE_QUOTE_LENGTH + 1) }]],
+    ['引文绑定了未知字段', [{ ...quote, field: 'notAField' }]],
+    ['引文出处是聚合站', [{ ...quote, sourceUrl: 'https://futuretools.io/tools/x' }]],
+    ['引文出处不是 http(s)', [{ ...quote, sourceUrl: 'ftp://example.com/x' }]],
+    ['引文采集日期在未来', [{ ...quote, capturedAt: '2099-01-01' }]],
+    ['引文采集日期格式非法', [{ ...quote, capturedAt: '2026/01/01' }]],
+    ['引文缺 quote', [{ ...quote, quote: '   ' }]],
+    ['evidence 是空数组', []],
+    ['evidence 不是数组', { ...quote }],
+    ['单条记录引文超过 3 条', [quote, { ...quote, field: 'validity' }, { ...quote, field: 'priceLine' }, { ...quote, field: 'eligibility' }]]
+  ];
+  mustFail.forEach(([name, evidence]) => {
+    if (probe(evidence)) error(`信息来源守卫：${name} 竟然通过了 validateDeal`);
+  });
+
+  // ② 来源登记表：每条记录的来源都必须能分类（否则整批显示「来源类型：未知」）
+  const deals = readJson(DEALS_FILE, 'deals.json');
+  if (Array.isArray(deals)) {
+    const unregistered = [...new Set(deals.map(deal => deal && deal.source).filter(Boolean))]
+      .filter(source => !provenance.SOURCE_TYPES[source]);
+    if (unregistered.length) {
+      error(`信息来源守卫：这些来源没在 provenance.SOURCE_TYPES 里登记 —— ${unregistered.join('、')}` +
+        '（没登记时页面上成片显示「来源类型：未知」，而且是静默的）');
+    }
+    // 引文里出现聚合站出处是硬错误，一条也不许有（validateDeal 已逐条拦，这里对存量再对一次账）
+    deals.forEach(deal => {
+      (Array.isArray(deal.evidence) ? deal.evidence : []).forEach((item, i) => {
+        if (item && provenance.isAggregatorUrl(item.sourceUrl)) {
+          error(`信息来源守卫：${deal.title} 的 evidence[${i}] 出处指向聚合站（${provenance.hostOf(item.sourceUrl)}）`);
+        }
+      });
+    });
+  }
+
+  // ③ 红线：措辞里不许有本站自发的有效性结论；三个缺失状态必须各有词
+  const wording = au.WORDING_CONTRACT;
+  const own = Object.keys(wording)
+    .filter(group => group.startsWith('SOURCE_'))
+    .flatMap(group => Object.values(wording[group] || {}))
+    .map(String);
+  if (!own.length) error('信息来源守卫：措辞契约里没有任何 SOURCE_ 组（信息来源块的措辞没有约束）');
+  provenance.STAMP_PATTERNS.forEach(stamp => {
+    const hit = own.filter(text => stamp.re.test(text));
+    if (hit.length) error(`信息来源守卫：措辞里出现本站自发的有效性结论（${stamp.why}）—— ${hit.slice(0, 2).join(' / ')}`);
+  });
+  for (const key of ['na', 'unknown', 'unavailable']) {
+    const text = wording.SOURCE_STATE && wording.SOURCE_STATE[key];
+    if (!text) error(`信息来源守卫：缺失状态 ${key} 没有措辞（三种事实必须各有各的说法）`);
+  }
+  const texts = ['na', 'unknown', 'unavailable'].map(key => (wording.SOURCE_STATE || {})[key]);
+  if (new Set(texts).size !== texts.length) {
+    error(`信息来源守卫：三个缺失状态的措辞有重复（${JSON.stringify(texts)}）——「不适用 / 未知 / 不可用」是三种不同的事实`);
+  }
 }
 
 /* ---------------- 门禁自身的守卫 ---------------- */
@@ -495,6 +625,7 @@ function main() {
   if (strict) checkVerifiedGuard();
   if (strict) checkOngoingGuard();
   if (strict) checkAudienceGuard();
+  if (strict) checkProvenanceGuard();
 
   console.log('=== 数据校验 ===');
   if (stats) {
@@ -512,6 +643,14 @@ function main() {
   // 有值时它已经在上面作为**错误**报过并 exit 1 了，所以这行只在 0 的时候看得见 ——
   // 「0 也打印」的意思正是让「没检查」与「检查了、干净」在日志里长得不一样。
   console.log(`受众字段落空  : ${curatedStats.audienceDropped} 处（策展文件里写了却没进记录的新字段）`);
+  console.log(`官方引文落空  : ${curatedStats.evidenceDropped} 处（策展文件里写了却没进记录的官方原文片段）`);
+  if (stats && stats.evidenceBudget) {
+    const b = stats.evidenceBudget;
+    // 0 也打印：离上限多远、有没有引文，是两件都要知道的事（0 条时这条线是「制度在位」的证据）
+    console.log(`官方引文预算  : ${b.items} 条 / ${b.withEvidence} 条记录 · ${b.chars} 字 ` +
+      `（单条上限 ${provenance.MAX_EVIDENCE_QUOTE_LENGTH} 字 · 每条上限 ${provenance.MAX_EVIDENCE_ITEMS} 条 · ` +
+      `全库上限 ${provenance.EVIDENCE_TOTAL_BUDGET_CHARS} 字）`);
+  }
 
   // v1.1 受众字段覆盖率：分母 = type==='deal'（工具条目没有「领取条件」）。
   // 覆盖率低是**正确结果** —— 没有证据就留空，编数据才是失败（契约 §7.3）。

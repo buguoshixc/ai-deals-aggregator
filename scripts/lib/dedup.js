@@ -4,6 +4,7 @@
 
 const aliases = require('../data/aliases.json');
 const audience = require('./audience');
+const provenance = require('./provenance');
 
 const ALIASES = Object.fromEntries(
   Object.entries(aliases).filter(([key]) => !key.startsWith('_'))
@@ -510,6 +511,16 @@ function merge(a, b, stats) {
 
   // v1.1：六个新字段走独立的可信度仲裁（不依赖 score，见 mergeAudienceFields 的注释）
   Object.assign(merged, mergeAudienceFields(winner, loser, stats));
+
+  // v1.3：官方原文证据取**并集**（去重 + 确定性排序 + 上限）。
+  //
+  // 为什么不跟 winner 走：引文是人工写下的官方原话，它的价值与「这条记录最终由谁代表」
+  // 无关。丢掉 loser 的引文 = 因为记录代表换了个来源就销毁证据。
+  // 排序与上限都在 provenance.mergeEvidence 里（唯一出处）：产出必须与输入顺序无关，
+  // 否则同一条记录换个 winner 就会得到不同字节，check-reproducible 会红。
+  const evidence = provenance.mergeEvidence(a.evidence, b.evidence);
+  if (evidence) merged.evidence = evidence;
+  else delete merged.evidence;
 
   return merged;
 }
