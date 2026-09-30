@@ -1,9 +1,15 @@
 /**
  * 统一 HTTP 客户端：UA、超时、重试、并发限流、robots.txt 友好。
  * 采集器只应通过本模块访问网络。
+ *
+ * v2.0 起这里还负责**页面结构摘要的捕获**（`lib/dom-digest.js`）。
+ * 之所以挂在这里而不是每个采集器里，正是因为上面那句话：所有页面都从这一个出口进来，
+ * 于是"给每一次抓取留一份结构摘要"只需要一处，**采集器一行都不用改**。
+ * 没有开启捕获作用域时是空操作 —— 诊断脚本、logo 抓取等完全不受影响。
  */
 
 const axios = require('axios');
+const domDigest = require('./dom-digest');
 
 const DEFAULT_UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
@@ -53,7 +59,10 @@ async function getText(url, options = {}) {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const res = await http.get(url, { timeout, headers });
-      return typeof res.data === 'string' ? res.data : String(res.data);
+      const text = typeof res.data === 'string' ? res.data : String(res.data);
+      // 结构摘要：只在采集作用域内生效（见 dom-digest.js 的 beginCapture）
+      if (domDigest.isCapturing()) domDigest.note(url, text, { httpStatus: res.status });
+      return text;
     } catch (error) {
       lastError = error;
       if (attempt < retries) await sleep(600 * (attempt + 1));

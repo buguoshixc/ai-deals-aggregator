@@ -37,6 +37,7 @@ const { attach: attachZh, summarize: summarizeZh, pendingAge, loadPending, write
 const { createReport, printReport, printHealth } = require('./lib/report');
 const { describeError } = require('./lib/http');
 const health = require('./lib/health');
+const domDigest = require('./lib/dom-digest');
 const registry = require('./collectors');
 
 const args = process.argv.slice(2);
@@ -55,9 +56,16 @@ async function collectFrom(collector, report) {
   report.start(collector.id, collector.name, collector.region);
   const items = [];
   let failed = false;
+  let digests = [];
 
   try {
+    // v2.0：为这次抓取留一份**页面结构摘要**（不含正文）。
+    // 打开捕获作用域后，lib/http.js 与 lib/browser.js 这两个仅有的网络出口会把
+    // 每一次抓取的结构摘要记进来；采集器本身一行都不用改。
+    const probes = domDigest.probesFor(collector.id);
+    domDigest.beginCapture(probes);
     const raw = await collector.collect();
+    digests = domDigest.endCapture();
     let valid = 0;
     let deals = 0;
     let droppedGarbage = 0;
@@ -88,11 +96,12 @@ async function collectFrom(collector, report) {
     });
   } catch (error) {
     failed = true;
+    digests = domDigest.isCapturing() ? domDigest.endCapture() : digests;
     report.finish(collector.id, { error: describeError(error) });
     console.error(`  ✗ ${collector.name}: ${describeError(error)}`);
   }
 
-  return { items, failed };
+  return { items, failed, digests };
 }
 
 async function main() {
@@ -123,12 +132,14 @@ async function main() {
 
   const report = createReport();
   const fresh = [];
+  const snapshotEntries = [];
   let collectorFailures = 0;
   for (const collector of picked) {
     console.log(`→ ${collector.name}`);
-    const { items, failed } = await collectFrom(collector, report);
+    const { items, failed, digests } = await collectFrom(collector, report);
     if (failed) collectorFailures++;
     fresh.push(...items);
+    snapshotEntries.push({ source: collector.id, name: collector.name, digests: digests || [] });
   }
 
   printReport(report, { title: dryRun ? '采集报告（dry-run）' : '采集报告' });
@@ -347,6 +358,16 @@ async function main() {
   // 整体成功（最常见的情形）一定会被记下来。
   health.write(healthDoc);
 
+  // v2.0：页面结构摘要的跨运行快照（每个来源保留两代，**不含页面正文**）。
+  // 与健康表同批入库、同一个理由：不入库就永远是"首次抓取"，也就发现不了
+  // 「昨天 td=42、今天 td=0」这种最能说明问题的变化。
+  // 它只是**证据**，不参与任何取值：删掉它，采集/合并/构建的结果一字不变。
+  const snapshotDoc = domDigest.buildSnapshotDoc({
+    previousDoc: domDigest.loadSnapshots().doc,
+    entries: snapshotEntries
+  });
+  domDigest.writeSnapshots(snapshotDoc);
+
   // 待译状态：记下每个 (条目, 字段) **进入待译的日期**，供译文门禁算年龄。
   // 为什么需要它：上游改写会让一条老条目的译文失效，用 firstSeen 计时等于「刚失效就超期」，
   // 第二天门禁就红而人没有反应时间。这里由**采集**写、门禁只读（会改文件的检查不是检查）。
@@ -357,6 +378,9 @@ async function main() {
     `（正常 ${healthSummary.healthy} · 异常 ${healthSummary.degraded} · 失败 ${healthSummary.failed}）`);
   console.log(`✅ 已写入 zh-pending.json：${Object.keys(pendingNext.doc.byKey).length} 个待译字段` +
     `（本轮新进入 ${pendingNext.entered.length} · 已译好清掉 ${pendingNext.cleared.length}）`);
+  const snapshotCount = snapshotEntries.filter(entry => entry.digests.length).length;
+  console.log(`✅ 已写入 source-snapshots.json：${snapshotCount}/${snapshotEntries.length} 个来源有结构摘要` +
+    `（共 ${snapshotEntries.reduce((sum, entry) => sum + entry.digests.length, 0)} 份；不含页面正文）`);
 }
 
 main().catch(error => {

@@ -65,12 +65,9 @@ async function collectAitools() {
   return items;
 }
 
-/** Futurepedia：首页卡片 + 详情页补全（官网 / 定价 / 描述） */
-async function collectFuturepedia() {
-  const headers = { Referer: 'https://www.futurepedia.io/' };
-  const html = await getText('https://www.futurepedia.io/', { headers });
+/** Futurepedia：列表页卡片（纯解析，不碰网络） */
+function parseFuturepediaList(html) {
   const $ = cheerio.load(html);
-
   const seen = new Set();
   const pages = [];
   $('a[href*="/tool/"]').each((_, el) => {
@@ -83,6 +80,14 @@ async function collectFuturepedia() {
       pageUrl: href.startsWith('http') ? href : `https://www.futurepedia.io${href}`
     });
   });
+  return pages;
+}
+
+/** Futurepedia：首页卡片 + 详情页补全（官网 / 定价 / 描述） */
+async function collectFuturepedia() {
+  const headers = { Referer: 'https://www.futurepedia.io/' };
+  const html = await getText('https://www.futurepedia.io/', { headers });
+  const pages = parseFuturepediaList(html);
 
   const details = await mapLimit(pages.slice(0, 40), 3, page => fetchFuturepediaDetail(page.pageUrl, headers));
 
@@ -126,11 +131,9 @@ async function fetchFuturepediaDetail(pageUrl, headers) {
   return { description: cleanText(description, 200), pricing: cleanText(pricing, 60), website };
 }
 
-/** Futuretools：卡片列表 + 详情页描述 + /go/ 跳转解析官网 */
-async function collectFuturetools() {
-  const html = await getText('https://www.futuretools.io/', { timeout: 30000 });
+/** Futuretools：列表页卡片（纯解析，不碰网络） */
+function parseFuturetoolsList(html) {
   const $ = cheerio.load(html);
-
   const seen = new Set();
   const tools = [];
   $('a[href^="/tools/"]').each((_, el) => {
@@ -141,6 +144,13 @@ async function collectFuturetools() {
     seen.add(href);
     tools.push({ title, category, pageUrl: `https://futuretools.io${href}` });
   });
+  return tools;
+}
+
+/** Futuretools：卡片列表 + 详情页描述 + /go/ 跳转解析官网 */
+async function collectFuturetools() {
+  const html = await getText('https://www.futuretools.io/', { timeout: 30000 });
+  const tools = parseFuturetoolsList(html);
 
   const details = await mapLimit(tools.slice(0, 60), 5, tool => fetchFuturetoolsDetail(tool.pageUrl));
 
@@ -191,12 +201,16 @@ module.exports = [
     id: 'futurepedia',
     name: 'Futurepedia',
     region: 'global',
-    collect: collectFuturepedia
+    collect: collectFuturepedia,
+    parse: parseFuturepediaList,
+    fixture: 'futurepedia.list'
   },
   {
     id: 'futuretools',
     name: 'Futuretools',
     region: 'global',
-    collect: collectFuturetools
+    collect: collectFuturetools,
+    parse: parseFuturetoolsList,
+    fixture: 'futuretools.list'
   }
 ];

@@ -80,6 +80,9 @@ function assertsSomething(value) {
 /* 规则 R1–R5                                                          */
 /* ------------------------------------------------------------------ */
 
+/** 这些任务的 `evidence` 是**短句列表**（不是 {field,quote}） */
+const STRING_EVIDENCE_TASKS = ['dedup_pair', 'diagnose_source'];
+
 /**
  * @param {object} candidateValue `result` 里的候选值（不含 evidence/confidence）
  * @param {{task:string, evidence:object[], confidence:object}} ctx
@@ -93,11 +96,10 @@ function checkDeterministic(candidateValue, ctx = {}) {
 
   // R5：引文条数与长度（schema 已管一次，这里对任何任务都再管一次）
   if (evidence.length > 3) errors.push(`R5 引文最多 3 条，实际 ${evidence.length} 条`);
-  if (task === 'dedup_pair') {
-    // 重复候选的 evidence 是**短句列表**（"same official URL" 这种），不是 {field,quote}
+  if (STRING_EVIDENCE_TASKS.includes(task)) {
     for (const item of evidence) {
-      if (typeof item !== 'string' || !item.trim()) errors.push('R5 重复候选的 evidence 必须是非空字符串');
-      else if (item.length > 120) errors.push('R5 重复候选的 evidence 每条不得超过 120 字');
+      if (typeof item !== 'string' || !item.trim()) errors.push(`R5 ${task} 的 evidence 必须是非空字符串`);
+      else if (item.length > 200) errors.push(`R5 ${task} 的 evidence 每条不得超过 200 字`);
     }
   } else {
     for (const item of evidence) {
@@ -122,7 +124,8 @@ function checkDeterministic(candidateValue, ctx = {}) {
     }
   }
 
-  if (task === 'extract_offer' || !schemas.SCHEMAS[task] || task === 'audit_record') {
+  // 只有「字段候选」这一种任务需要逐字段的证据覆盖检查
+  if (task === 'extract_offer') {
     errors.push(...checkCandidateFields(candidateValue, evidence, flags));
   }
 
