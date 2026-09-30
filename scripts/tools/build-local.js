@@ -30,6 +30,8 @@ const provenance = require('../lib/provenance');
 const history = require('../lib/history');
 const changes = require('../lib/changes');
 const feeds = require('../lib/feeds');
+const landing = require('../lib/landing');
+const seo = require('../lib/seo');
 
 const ROOT = path.join(__dirname, '..', '..');
 const outArg = process.argv.find(a => a.startsWith('--out='));
@@ -76,32 +78,63 @@ const ROUTE_HREFS = [
   // v1.5：变化雷达静态页（与首页条带同一个数据源，只是列出全部分栏）
   ['__CHANGES_HREF__', 'changes/'],
   // v1.6：订阅中心（列出全部 Feed，并给出 RSS / JSON Feed 地址）
-  ['__FEEDS_HREF__', 'feeds/']
+  ['__FEEDS_HREF__', 'feeds/'],
+  // v1.7：厂商页与分类页两个枢纽（页脚那一行）
+  ['__VENDOR_HREF__', 'vendor/'],
+  ['__CATEGORY_HREF__', 'category/']
 ];
-/** 残留占位符的扫描清单（与 ROUTE_HREFS 同源，避免两处各写一份） */
-const ROUTE_MARKERS = ROUTE_HREFS.map(([marker]) => marker);
+/**
+ * 残留占位符的扫描清单（与 ROUTE_HREFS 同源，避免两处各写一份），外加 `__PREFIX__`。
+ *
+ * `__PREFIX__` 是**动态路由**（`vendor/zhipu/` 这类由数据决定的地址）的深度前缀占位符：
+ * 它不能进 ROUTE_HREFS —— 那张表是「固定路由 + 相对路径」，而它的第二条断言会变成
+ * `page.includes('href=""')` 这种永远为真的废话。所以它单独解析、单独扫描残留。
+ */
+const ROUTE_MARKERS = [...ROUTE_HREFS.map(([marker]) => marker), '__PREFIX__'];
 
 /**
- * 目录页的**唯一清单**（v1.2）：分类页（`/student/` 等）与按需求页（`/need/<slug>/`）
- * 合成一张表，一起走 `renderDirectoryPage()` 这一个生成循环。
+ * 落地页的**唯一清单**：分类页（`/student/` 等）、按需求页（`/need/<slug>/`）、
+ * 分类页（`/category/<slug>/`）、厂商页（`/vendor/<slug>/`）、两个枢纽页与三条别名页，
+ * 全部由 `scripts/lib/landing.js` 的 `planLandingPages()` 一次算出，一起走
+ * `renderDirectoryPage()` 这一个生成循环。
  *
- * 为什么合成一张表：两类页面共用五条既有约定（预渲染 / 无 JS 可读 / sitemap / 双 feed /
- * JSON-LD），而「哪一条忘了进 sitemap」正是 `/status/` 当年踩过的坑。两份实现意味着
- * 这个不变量要维持两次；一张表 + 一个循环让漏一条在结构上不可能。
+ * 为什么是「一张表 + 一个循环」：这些页面共用五条既有约定（预渲染 / 无 JS 可读 /
+ * sitemap / feed / JSON-LD），而「哪一条忘了进 sitemap」正是 `/status/` 当年踩过的坑。
+ * v1.7 一次加了四类页面，各写一遍就是四倍的风险。
  *
- * 三个字段是这里补出来的（注册表里不重复写）：
- *   · `kind`  —— `'collection'` / `'need'`，只影响表头与「命中依据」那一列；
- *   · `route` —— 站点根下的相对路由（分类页 `student/`，按需求页 `need/<slug>/`）；
- *   · `depth` —— 输出层数（分类页 1 ⇒ `'../'`，按需求页 2 ⇒ `'../../'`）。
+ * 它在 `assemble()` 里被赋值（门槛要看真实数据），赋值前是空数组 —— 任何在赋值前
+ * 使用它的代码都会得到「一页都没有」而不是上一轮的残留。
  */
-const DIRECTORY_PAGES = [
-  ...audience.COLLECTION_PAGES.map(spec => Object.assign({}, spec, {
-    kind: 'collection', route: `${spec.slug}/`, depth: 1
-  })),
-  ...audience.NEED_PAGES.map(spec => Object.assign({}, spec, {
-    kind: 'need', route: `need/${spec.slug}/`, depth: spec.depth || 2
-  }))
-];
+let DIRECTORY_PAGES = [];
+/** 本次构建的落地页计划（含被跳过的页面与原因），由 assemble() 赋值 */
+let PLAN = null;
+/**
+ * 规范厂商名取值器（`vendorOf(deal).name`）。在 assemble() 里由 RENDER-CORE 装配。
+ *
+ * 默认实现是**原始字符串**：这样任何在装配之前误用它的路径都不会悄悄得到规范名，
+ * 而是与「没有归一」的旧行为一致 —— 差别会在断言里露出来，不会静默。
+ */
+let VENDOR_KEY_OF = deal => String((deal && deal.vendor) || '');
+
+/**
+ * 页脚那一行的「少量厂商入口」。
+ *
+ * 只在页脚，不进首页首屏：v1.5 的密度账写明任何独立成行的条带都会把首屏完整卡片
+ * 从 9 张压到 6 张（余量只有 1px）。页脚是共享片段，因此这一行会在**每一种深度**的
+ * 输出里出现 —— 厂商页因此天然有大量站内入链（orphan 检查不需要额外的补丁）。
+ *
+ * 只列前 5 家 + 「全部厂商」，链接用 `__PREFIX__` 占位（深度前缀由 resolveRouteHrefs 解析）。
+ */
+function renderVendorLine(plan) {
+  const vendors = (plan && plan.vendorPages) || [];
+  if (!vendors.length) return '<!-- 厂商入口：本次没有达到门槛的厂商页（不渲染死链） -->';
+  const top = vendors.slice(0, 5);
+  const links = top.map(page => `<a href="__PREFIX__${page.route}">${htmlEscape(page.key)}</a>`).join(' · ');
+  const more = vendors.length > top.length
+    ? ` · <a href="__VENDOR_HREF__">全部 ${vendors.length} 家厂商</a>`
+    : '';
+  return `<span class="vline">（${links}${more}）</span>`;
+}
 
 /**
  * 首页「按需求找优惠」入口行。**构建期注入**，与 NEED_PAGES 同一份注册表。
@@ -121,7 +154,9 @@ function renderNeedRow(deals) {
   const scope = deals.filter(deal => deal.type === 'deal');
   const groups = audience.NEED_GROUPS.map(group => {
     const links = DIRECTORY_PAGES
-      .filter(spec => spec.kind === 'need' && spec.group === group.key)
+      // v1.7：三条近义页降级为别名页（noindex），但它们仍是可用的需求入口，
+      // 首页入口行照旧全部列出 —— 入口的完整性不受索引策略影响。
+      .filter(spec => (spec.kind === 'need' || spec.kind === 'alias') && spec.group === group.key)
       .map(spec => ({ spec, count: scope.filter(deal => (deal.needs || []).includes(spec.slug)).length }))
       .filter(item => item.count > 0);
     if (!links.length) return null;
@@ -157,7 +192,9 @@ function renderNeedRow(deals) {
 function resolveRouteHrefs(html, prefix) {
   let out = html;
   for (const [marker, rel] of ROUTE_HREFS) out = out.split(marker).join(prefix + rel);
-  return out;
+  // 动态路由（厂商页 / 分类页）的深度前缀：源码里写 __PREFIX__vendor/<slug>/，
+  // 由这里按输出深度解析 —— 写死相对路径在详情页那一层必然错。
+  return out.split('__PREFIX__').join(prefix);
 }
 
 /**
@@ -193,7 +230,9 @@ const MIN_PRERENDERED_CARDS = 45;
 /** 骨架里所有必须被构建期填掉的标记 */
 const PRERENDER_MARKERS = [
   'PRERENDER:deals', 'PRERENDER:facets', 'PRERENDER:topstat',
-  'PRERENDER:stats', 'PRERENDER:categories', 'PRERENDER:needs', 'PRERENDER:changes', 'PRERENDER:feeds', 'PRERENDER:jsonld'
+  'PRERENDER:stats', 'PRERENDER:categories', 'PRERENDER:needs', 'PRERENDER:changes', 'PRERENDER:feeds', 'PRERENDER:jsonld',
+  // v1.7：页脚那一行的「少量厂商入口」（由落地页计划生成，见 renderVendorLine）
+  'PRERENDER:vendorline'
 ];
 
 function runValidate() {
@@ -487,7 +526,7 @@ const htmlEscape = xmlEscape;
  * **纯静态**：详情页不加载主脚本，不 fetch deals.json——没有列表要渲染，也就没有控制台错误；
  * 只保留一个极小的主题切换脚本（与首页同一套 localStorage 约定）。
  */
-function writeDetailPages(payload, indexHtml, renderCore) {
+function writeDetailPages(payload, indexHtml, renderCore, plan) {
   const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
   const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
   const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
@@ -549,8 +588,22 @@ function writeDetailPages(payload, indexHtml, renderCore) {
     const tier = renderCore.tierOf(deal);
     const pageUrl = `${SITE_URL}deal/${encodeURIComponent(deal.id)}/`;
     const title = `${deal.title} — 官方优惠与免费额度 | ${SITE_NAME}`;
-    const desc = String(deal.discountInfo || deal.description || SITE_NAME).replace(/\s+/g, ' ').slice(0, 150);
+    const desc = (() => {
+      // 描述：厂商 + 标题 + 优惠原文。**为什么要带标题前缀**：80 个详情页里有 17 条
+      // （百度千帆那张表）的 `discountInfo` 是逐字相同的，只取 discountInfo 会让这 17 页
+      // 的 meta description 完全一样 —— 重复描述在搜索结果里等于没有描述。
+      // 前缀是数据本身（厂商名与标题），不是我们写的营销文案；截断沿用 `…` 留痕的规矩。
+      const raw = `${vendor.name ? `${vendor.name}｜` : ''}${deal.title}：${String(deal.discountInfo || deal.description || SITE_NAME).replace(/\s+/g, ' ')}`;
+      return raw.length > 150 ? `${raw.slice(0, 149).trimEnd()}…` : raw;
+    })();
     const official = String(deal.url || '');
+    // 站内位置：详情页挂到它自己的分类页（存在时）；厂商页则链在正文里（下面的「这家厂商的其他优惠」）。
+    const categoryPage = plan
+      ? plan.pages.find(page => page.kind === 'category' && page.indexable && page.key === deal.category)
+      : null;
+    const vendorPage = plan
+      ? plan.pages.find(page => page.kind === 'vendor' && page.indexable && page.key === vendor.name)
+      : null;
 
     // 结构化数据：WebPage（说清这一页是什么）+ BreadcrumbList（说清它在站内的位置）。
     // 刻意不用 Product/Offer：我们不是售卖方，标成商品会构成过度声明。
@@ -570,7 +623,12 @@ function writeDetailPages(payload, indexHtml, renderCore) {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: '首页', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: deal.category || '全部优惠', item: SITE_URL },
+        // v1.7：分类那一级**存在就给 URL、不存在就只给名字**（省略 `item`）。
+        // 旧实现把这个 `item` 指向站根 —— 那是一条「面包屑说自己在分类页、点开却是首页」的
+        // 假链接，而没有任何断言会红（Tooth Test #5 就是为它写的）。
+        categoryPage
+          ? { '@type': 'ListItem', position: 2, name: deal.category, item: `${SITE_URL}${categoryPage.route}` }
+          : { '@type': 'ListItem', position: 2, name: deal.category || '全部优惠' },
         { '@type': 'ListItem', position: 3, name: deal.title, item: pageUrl }
       ]
     };
@@ -626,11 +684,18 @@ ${style}
   <div class="wrap">
     <main id="main">
       <nav class="crumb" aria-label="面包屑">
-        <a href="../../">首页</a> › <span>${htmlEscape(deal.category || '全部优惠')}</span> › <span>${htmlEscape(deal.title)}</span>
+        <a href="../../">首页</a> › ${categoryPage
+    ? `<a href="../../${categoryPage.route}">${htmlEscape(deal.category)}</a>`
+    : `<span>${htmlEscape(deal.category || '全部优惠')}</span>`} › <span>${htmlEscape(deal.title)}</span>
       </nav>
       <article class="dbody dpane" data-tier="${tier.n}">
-${renderCore.detailHtml(deal)}
+${renderCore.detailHtml(deal, { headingTag: 'h1' })}
       </article>
+      <p class="dpane-more">
+${vendorPage
+    ? `        这家厂商的其他优惠：<a href="../../${vendorPage.route}">${htmlEscape(vendor.name)} 的全部 ${vendorPage.count} 条</a>`
+    : '        <a href="../../">← 返回全部优惠</a>'}
+      </p>
       <p class="dpane-src">
         官方页：<a href="${htmlEscape(official)}" target="_blank" rel="noopener noreferrer">${htmlEscape(official)}</a>
         · 本站只做收录与整理，最终以厂商官方页面为准；排序与推荐理由不出售。
@@ -1293,6 +1358,19 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
     prefix
   ).trim();
 
+  // v1.7：页面类型。`hub` 列子页面、`alias` 是 noindex 的旧地址，其余列条目。
+  const kind = spec.kind || 'collection';
+  const isHub = kind === 'hub';
+  const isAlias = kind === 'alias';
+  const summary = Array.isArray(context.summary) ? context.summary : [];
+  const plan = context.plan || null;
+  const pageFeeds = Array.isArray(context.feedsForPage) ? context.feedsForPage : [];
+
+  // 订阅声明：本页自己的 Feed（如果有）+ 站点根 Feed。两者都要 ——
+  // 根 Feed 是「全部优惠」，本页 Feed 是「这一类」，读者的选择不同。
+  const ownFeedTags = pageFeeds.length ? feeds.feedLinkTags(pageFeeds, prefix) : '';
+  const feedTags = [ownFeedTags, feeds.rootFeedTags(prefix)].filter(Boolean).join('\n');
+
   const triText = value => (value === true ? '是' : value === false ? '否' : '尚未确认');
 
   // 门槛 / 领取要求：只写**已知**的键，一个都没有就明说来源没写。
@@ -1358,15 +1436,29 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
         }
         break;
       default:
-        parts.push('尚未确认');
+        // v1.7：分类页与厂商页也各写一句「为什么在这一页」—— 依据同样是**数据里已有的字段**，
+        // 不是从标题里猜的。没有这一列，读者看到「这一类只有 4 条」时无法区分
+        // 「没有这类优惠」与「我们没查到」。
+        if (kind === 'category') {
+          parts.push(`分类：${deal.category || '未标注'}`);
+          parts.push(`福利类型：${audience.benefitSummary(deal) || '未标注'}`);
+        } else if (kind === 'vendor') {
+          parts.push(`厂商：${VENDOR_KEY_OF(deal) || '未标注'}`);
+          parts.push(`福利类型：${audience.benefitSummary(deal) || '未标注'}`);
+        } else {
+          parts.push('尚未确认');
+        }
     }
     return parts;
   };
 
-  const isNeed = spec.kind === 'need';
-  const HEADERS = isNeed
-    ? ['优惠', '适用人群', '为什么在这一页', '门槛 / 领取要求', '中国大陆可用性']
-    : ['优惠', '适用人群', '福利类型', '门槛 / 领取要求', '中国大陆可用性'];
+  const isNeed = kind === 'need';
+  const useEvidence = isNeed || kind === 'category' || kind === 'vendor' || isAlias;
+  const HEADERS = isHub
+    ? ['页面', '条目数', '这一页收什么', '订阅']
+    : (useEvidence
+      ? ['优惠', '适用人群', '为什么在这一页', '门槛 / 领取要求', '中国大陆可用性']
+      : ['优惠', '适用人群', '福利类型', '门槛 / 领取要求', '中国大陆可用性']);
 
   const rowHtml = deal => {
     const audienceText = audience.audienceSummary(deal) || '未标注';
@@ -1375,11 +1467,13 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
       .concat(knownLabelList(deal.claimRequirements, audience.CLAIM_LABELS));
     const china = audience.chinaUsableLine(deal);
     const zh = deal.zh && deal.zh.title ? deal.zh.title : '';
-    const third = isNeed
+    const third = useEvidence
       ? (evidenceOf(deal).map(htmlEscape).join('<br>') || '<span class="none">尚未确认</span>')
       : (benefitText ? htmlEscape(benefitText) : '<span class="none">未标注</span>');
+    // data-item：SEO 门禁据此**独立**数页面上的数据行，与 ItemList 的条数对账
+    // （Tooth Test #4：声明 10 项而页面只有 9 行）。它不参与渲染。
     return `
-        <tr>
+        <tr data-item="${htmlEscape(deal.id)}">
           <th scope="row"><a href="${prefix}deal/${encodeURIComponent(deal.id)}/">${htmlEscape(deal.title)}</a>${
   zh ? `<small class="zh">${htmlEscape(zh)}</small>` : ''}<small>${htmlEscape(deal.vendor || '')}</small></th>
           <td>${htmlEscape(audienceText)}</td>
@@ -1389,15 +1483,42 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
         </tr>`;
   };
 
-  const emptyRow = isNeed
-    ? `<tr><td colspan="5">当前没有符合这一需求的条目。这不代表没有这类优惠，只代表我们手上的条目里没有一条满足本页判据。</td></tr>`
-    : `<tr><td colspan="5">当前没有符合这一分类、且有明确依据的条目。</td></tr>`;
+  /** 枢纽页的一行：只有子页面链接、条数与订阅地址，不夹带条目 */
+  const hubRowHtml = child => {
+    const childFeeds = feeds.feedsForPage(child, context.allFeeds || []);
+    const sub = childFeeds.length
+      ? childFeeds.map(feed => `<a href="${prefix}${feed.spec.path}">RSS</a> · <a href="${prefix}${feed.spec.jsonPath}">JSON</a>`).join('<br>')
+      : '<span class="none">站点根 Feed</span>';
+    return `
+        <tr data-child="${htmlEscape(child.route)}">
+          <th scope="row"><a href="${prefix}${child.route}">${htmlEscape(child.title || child.label)}</a></th>
+          <td>${htmlEscape(String(child.count))}</td>
+          <td>${htmlEscape(child.description || child.heading || '')}</td>
+          <td>${sub}</td>
+        </tr>`;
+  };
 
-  const body = deals.length
-    ? deals.map(rowHtml).join('')
-    : emptyRow;
+  const emptyRow = isHub
+    ? '<tr><td colspan="4">当前没有达到门槛的子页面。这不代表没有这类优惠，只代表我们手上的条目里还没有一类满足生成门槛。</td></tr>'
+    : (useEvidence
+      ? '<tr><td colspan="5">当前没有符合这一页判据的条目。这不代表没有这类优惠，只代表我们手上的条目里没有一条满足本页判据。</td></tr>'
+      : '<tr><td colspan="5">当前没有符合这一分类、且有明确依据的条目。</td></tr>');
+
+  const childList = isHub ? (spec.children || []) : [];
+  const body = isHub
+    ? (childList.length ? childList.map(hubRowHtml).join('') : emptyRow)
+    : (deals.length ? deals.map(rowHtml).join('') : emptyRow);
 
   const why = spec.why.map(line => `        ${line}`).join('\n');
+
+  // 面包屑：分类页/厂商页多一层**真实存在**的枢纽（`/category/`、`/vendor/`）。
+  // 面包屑的每一级 URL 都必须真的能打开 —— 这是 v1.7 起有断言的一条（Tooth Test #5）。
+  const crumbParent = kind === 'category'
+    ? { name: '按分类浏览', route: 'category/' }
+    : (kind === 'vendor' ? { name: '按厂商浏览', route: 'vendor/' } : null);
+  const aliasTarget = isAlias && plan
+    ? (plan.pages.find(page => page.route === spec.aliasOf) || null)
+    : null;
 
   // JSON-LD：#1 CollectionPage、#2 BreadcrumbList、#3 ItemList。
   // `/status/` 那页连面包屑都只有可见侧、结构化数据一条都没有 —— 这里补齐。
@@ -1407,6 +1528,23 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
   // 自检按 `JSON.parse(block)['@type']` 读；塞成数组时那个表达式得到 `undefined`，
   // 既不抛错也不命中 —— 自检会报「缺少 JSON-LD」而真正的原因是**形状不对**。
   // （第一版就是这么写的，被这条自检当场拦下。）
+  //
+  // v1.7 起 ItemList **全量发出**（不再 `slice(0, 50)`）：老实现声明 `deals.length`
+  // 却只发 50 项，/developer/ 67 条那一页就成了「声明 67、实列 50」——
+  // 而没有任何断言会发现（Tooth Test #4 就是为它写的）。
+  const itemListElements = isHub
+    ? childList.map((child, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${SITE_URL}${child.route}`,
+      name: child.title || child.label
+    }))
+    : deals.map((deal, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${SITE_URL}deal/${encodeURIComponent(deal.id)}/`,
+      name: deal.title
+    }));
   const jsonLdBlocks = [
     {
       '@context': 'https://schema.org',
@@ -1422,20 +1560,18 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: '首页', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: spec.title, item: pageUrl }
+        ...(crumbParent
+          ? [{ '@type': 'ListItem', position: 2, name: crumbParent.name, item: `${SITE_URL}${crumbParent.route}` }]
+          : []),
+        { '@type': 'ListItem', position: crumbParent ? 3 : 2, name: spec.title, item: pageUrl }
       ]
     },
     {
       '@context': 'https://schema.org',
       '@type': 'ItemList',
       name: spec.heading,
-      numberOfItems: deals.length,
-      itemListElement: deals.slice(0, 50).map((deal, index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        url: `${SITE_URL}deal/${encodeURIComponent(deal.id)}/`,
-        name: deal.title
-      }))
+      numberOfItems: itemListElements.length,
+      itemListElement: itemListElements
     }
   ].map(data => `<script type="application/ld+json">
 ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
@@ -1443,18 +1579,48 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 
   // 表头 / 题注 / 分类间说明：按 kind 分叉。分类页那句「分类之间不互斥」在按需求页上
   // 是错的（需求之间不互斥，且同一页里的判据是「或」）—— 照抄会让页面上出现一句
-  // 与事实不符的话，这正是 v1.0 那类错误。所以两种 kind 各写一句，各自成立。
+  // 与事实不符的话，这正是 v1.0 那类错误。所以每种 kind 各写一句，各自成立。
   const headRow = HEADERS.map(text => `            <th scope="col">${htmlEscape(text)}</th>`).join('\n');
-  const caption = isNeed
-    ? `共 ${deals.length} 条。每一行的依据都在对应的详情页上；没有依据的字段写「尚未确认」，不写成「不可用」。
+  const caption = isHub
+    ? `共 ${childList.length} 个入口。每个入口一页，页面上的条数按当前数据现算；没有达到门槛的分类与厂商不会出现在这里，原因写在构建日志与项目报告里。`
+    : (isAlias
+      ? `共 ${deals.length} 条 —— 与 <a href="${prefix}${spec.aliasOf}">${htmlEscape(aliasTarget ? aliasTarget.title : spec.aliasOf)}</a> 是同一批条目（同一份判据）。这一页保留旧地址可用，但<b>不参与搜索收录</b>；收录以目标页为准。`
+      : (isNeed
+        ? `共 ${deals.length} 条。每一行的依据都在对应的详情页上；没有依据的字段写「尚未确认」，不写成「不可用」。
           本页按单一判据收条目，判据写在上面的说明里；首页会把同一厂商的同类优惠折叠成一张卡片，所以首页入口上的数字（卡片数）通常少于这里的条数。`
-    : `共 ${deals.length} 条。每一行的依据都在对应的详情页上；没有依据的字段写「尚未确认」，不写成「不可用」。
-          首页会把同一厂商的同类优惠折叠成一张卡片，所以首页筛选项上的数字（卡片数）通常少于这里的条数。`;
-  const footNote = isNeed
-    ? `分类之间<b>不互斥</b>：一条优惠可以同时出现在多个分类页与多个需求页里。
+        : `共 ${deals.length} 条。每一行的依据都在对应的详情页上；没有依据的字段写「尚未确认」，不写成「不可用」。
+          首页会把同一厂商的同类优惠折叠成一张卡片，所以首页筛选项上的数字（卡片数）通常少于这里的条数。`));
+  const footNote = isHub
+    ? `这里列出的入口都是<b>静态页面</b>：无 JS 也能打开，每页都有自指 canonical 与自己的订阅地址。
         本站只做收录与整理，来源站点的可用性、内容与最终条款以官方页面为准。`
-    : `分类之间<b>不互斥</b>：一条优惠可以同时出现在多个分类页里（既是给学生的、也是免费 API 的情况很常见）。
-        本站只做收录与整理，来源站点的可用性、内容与最终条款以官方页面为准。`;
+    : (kind === 'vendor'
+      ? `厂商名按站内<b>归一规则</b>合并（同一个公司的不同写法落到同一页）。同一条优惠也会出现在分类页、学生页或开发者页里 —— 那几种页面是<b>不同</b>的切法，本来就会重叠。
+        本站只做收录与整理，来源站点的可用性、内容与最终条款以官方页面为准。`
+      : `分类之间<b>不互斥</b>：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API 的情况很常见）。
+        本站只做收录与整理，来源站点的可用性、内容与最终条款以官方页面为准。`);
+
+  // 数据摘要（v1.7）：每个数字都带 `data-summary-label/value`，既给读者看，
+  // 也给 SEO 门禁**独立重算**用 —— 「页面写 12、实际列 7」因此在构建期就红。
+  const summaryHtml = summary.length
+    ? `      <ul class="lsum" aria-label="当前数据摘要">
+${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" data-summary-value="${htmlEscape(String(row.value))}">` +
+    `<span>${htmlEscape(row.label)}</span><b>${htmlEscape(String(row.value))}</b>${htmlEscape(row.unit || '')}` +
+    `<small title="${htmlEscape(row.source || '')}">判据：${htmlEscape(row.source || '')}</small></li>`).join('\n')}
+      </ul>`
+    : '';
+
+  // 最近变化（v1.7）：判据不在模板里，`landing.topicChangesOf()` 已经把本页条目的事件挑出来。
+  const topicHtml = context.topic
+    ? context.renderCore.changesTopicHtml(context.topic, prefix)
+    : '';
+
+  // 别名页的可见说明：读者点进旧地址时要知道自己在哪、该去哪里。
+  const aliasNote = isAlias
+    ? `      <p class="snote aliasnote">这一页是<b>旧地址</b>：它与 <a href="${prefix}${spec.aliasOf}">` +
+      `${htmlEscape(aliasTarget ? aliasTarget.title : spec.aliasOf)}</a> 收的是同一批条目（同一份判据）。` +
+      `页面保留是为了让老链接仍然可用，但搜索引擎的收录以目标页为准（本页为 noindex）。` +
+      `${spec.aliasReason ? `原因：${htmlEscape(spec.aliasReason)}` : ''}</p>`
+    : '';
 
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -1463,14 +1629,15 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${htmlEscape(spec.heading)} · ${htmlEscape(SITE_NAME)}</title>
 <meta name="description" content="${htmlEscape(spec.description)}">
+<meta name="robots" content="${isAlias ? 'noindex, follow' : 'index, follow, max-image-preview:large'}">
 <link rel="canonical" href="${pageUrl}">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
-<!-- feed 约定：目录页自己不产出条目（订阅是「内容更新」语义，一页目录不是更新），
-     但必须能被订阅发现 —— 与首页、详情页声明同两个 feed。 -->
-${feeds.rootFeedTags(prefix)}
+<!-- feed 约定：本页自己的订阅（如果有）+ 站点根 Feed。两者都要：根 Feed 是「全部优惠」，
+     本页 Feed 是「这一类」，读者的选择不同。 -->
+${feedTags}
 ${themeScript}
 ${style}
 <style>
@@ -1479,6 +1646,12 @@ ${style}
   .cstop h1 { font-size: 19px; margin: 0; }
   .cstop .meta { color: var(--mut); font-size: var(--fs-sm); }
   .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+  .aliasnote { border-left: 3px solid var(--line); padding-left: var(--s2); }
+  .lsum { display: flex; flex-wrap: wrap; gap: var(--s2); list-style: none; margin: 0 0 var(--s3); padding: 0; }
+  .lsum li { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 10px; font-size: var(--fs-sm); }
+  .lsum li span { color: var(--mut); }
+  .lsum li b { margin: 0 2px 0 6px; }
+  .lsum li small { display: block; color: var(--mut); font-size: 11px; margin-top: 2px; max-width: 34ch; }
   .ctable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
   .ctable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
   .ctable th, .ctable td { text-align: left; padding: 10px 12px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
@@ -1510,15 +1683,20 @@ ${jsonLdBlocks}
 
   <div class="wrap">
     <main id="main">
-      <nav class="crumb" aria-label="面包屑"><a href="${prefix}">首页</a> › <span>${htmlEscape(spec.title)}</span></nav>
+      <nav class="crumb" aria-label="面包屑"><a href="${prefix}">首页</a>${
+  crumbParent ? ` › <a href="${prefix}${crumbParent.route}">${htmlEscape(crumbParent.name)}</a>` : ''
+} › <span>${htmlEscape(spec.title)}</span></nav>
 
       <div class="cstop">
         <h1>${htmlEscape(spec.heading)}</h1>
-        <span class="meta">共 ${deals.length} 条 · 数据更新 ${htmlEscape(String(context.lastmod || ''))}</span>
+        <span class="meta">共 ${isHub ? childList.length : deals.length} ${isHub ? '个入口' : '条'} · 数据更新 ${htmlEscape(String(context.lastmod || ''))}</span>
       </div>
+${aliasNote}
       <p class="snote">
 ${why}
       </p>
+
+${summaryHtml}
 
       <div class="ctable-wrap">
       <table class="ctable">
@@ -1532,6 +1710,8 @@ ${headRow}
         </tbody>
       </table>
       </div>
+
+${topicHtml}
 
       <p class="snote" style="margin-top: var(--s3)">
         ${footNote}
@@ -1568,6 +1748,15 @@ function assemble() {
   const logoSet = loadLogos();
   const logoStat = writeLogos(OUT, logoSet.logos);
   console.log(`  logo 资产: ${logoStat.count} 个 → logos/ ${logoStat.files} 个文件 + logos.css（${(logoStat.bytes / 1024).toFixed(1)} KB）`);
+
+  // RENDER-CORE 在这里就装配好（v1.7 起提前到读数据之前）：落地页计划与厂商 Feed
+  // 都要用 `vendorOf()` 的**规范厂商名** —— 页面与订阅若各用一套厂商标识，
+  // 就会出现「/vendor/volcengine/ 列 13 条、它的 Feed 只有 12 条」这种自相矛盾。
+  // 沙箱里的函数全是纯函数，提前装配没有任何副作用。
+  const indexFile = path.join(OUT, 'index.html');
+  const renderCore = loadRenderCore(indexFile);
+  checkLogoCoverage(renderCore, logoSet.logos);
+  VENDOR_KEY_OF = deal => renderCore.vendorOf(deal).name;
 
   const payload = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
 
@@ -1682,13 +1871,52 @@ function assemble() {
     ` · 已结束 ${radarStats.totals.ended} · 重新出现 ${radarStats.totals.restored} · 其他（不上首页）${radarStats.totals.other}` +
     ` · 首页条带 ${radarStats.homeCount} 项`);
 
+  // v1.7：落地页计划。**一次算清**「哪些页面该存在、每页收哪些条目、谁被跳过、为什么」，
+  // 之后目录页生成、sitemap、首页入口行、页脚厂商行、Feed 声明与产物自检都读这一份。
+  //
+  // 厂商门槛**复用订阅那一套常量**（feeds.VENDOR_THRESHOLDS）：页面与 Feed 的集合
+  // 因此在结构上不可能分头变化 —— 这正是 v1.6 报告里那条「URL 稳定性只兜住一半」的补法。
+  const vendorEventCount = (() => {
+    const counts = new Map();
+    const vendorOfId = new Map(payload.deals.map(deal => [deal && deal.id, deal ? VENDOR_KEY_OF(deal) : '']));
+    for (const event of history.eventsOf(historyStore.store)) {
+      const name = vendorOfId.get(event && event.id);
+      if (!name) continue;
+      counts.set(name, (counts.get(name) || 0) + 1);
+    }
+    return counts;
+  })();
+  PLAN = landing.planLandingPages({
+    deals: payload.deals,
+    vendorKeyOf: VENDOR_KEY_OF,
+    vendorSlugs: feeds.VENDOR_SLUGS,
+    vendorThresholds: feeds.VENDOR_THRESHOLDS,
+    eventCountOf: name => vendorEventCount.get(name) || 0
+  });
+  DIRECTORY_PAGES = PLAN.pages;
+  if (PLAN.problems.length) {
+    // 门槛层的硬问题（达标厂商没登记 slug / 钉住的页面没生成 / 别名页没登记）。
+    // 刻意在这里就抛出：这些是**配置与人做的决定**不一致，不是数据波动，
+    // 继续构建只会把「某一页悄悄消失」变成线上的 404。
+    throw new Error(`落地页计划有问题（${PLAN.problems.length} 处）：\n${PLAN.problems.map(line => `  - ${line}`).join('\n')}`);
+  }
+  console.log(`  落地页计划: ${landing.statsOf(DIRECTORY_PAGES).indexable} 条可索引 + ` +
+    `${landing.statsOf(DIRECTORY_PAGES).noindex} 条别名`);
+  for (const row of PLAN.skipped) {
+    // 被跳过的页面**逐条点名**（含条数与原因）：一个入口页「悄悄消失」是没人能发现的事故。
+    console.log(`    跳过 ${row.kind}/${row.key}${row.route ? ` (${row.route})` : ''}：` +
+      `count=${row.count}${row.eventCount !== undefined ? ` events=${row.eventCount}` : ''} · ${row.reason}` +
+      `${row.detail ? ` · ${row.detail}` : ''}`);
+  }
+
   const feedBundle = feeds.buildFeeds({
     deals: payload.deals,
     store: historyStore.store,
     radar,
     asOf: radarAsOf,
     updatedAt: payload.updatedAt,
-    availability: radarAvailability
+    availability: radarAvailability,
+    vendorKeyOf: VENDOR_KEY_OF
   });
 
   fs.writeFileSync(path.join(OUT, 'deals.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
@@ -1711,13 +1939,8 @@ function assemble() {
     console.log(`    ℹ️  仍有 ${zhAttached.report.missing.length} 条英文文案待翻译（node scripts/tools/zh-todo.js）`);
   }
 
-  const indexFile = path.join(OUT, 'index.html');
-  let html = fs.readFileSync(indexFile, 'utf8');
-
   console.log('\n=== 3) 预渲染静态骨架 ===');
-  const renderCore = loadRenderCore(indexFile);
-  checkLogoCoverage(renderCore, logoSet.logos);
-
+  let html = fs.readFileSync(indexFile, 'utf8');
   // 默认视图卡片：同时移除「加载数据中…」占位（预渲染内容已经可读）
   const rendered = renderDeals(renderCore, payload);
   html = replaceMarker(html, '<!--PRERENDER:deals-->', rendered.html);
@@ -1755,6 +1978,12 @@ function assemble() {
   html = replaceMarker(html, '<!--PRERENDER:jsonld-->', jsonLd);
   console.log(`  JSON-LD: ${(jsonLd.match(/application\/ld\+json/g) || []).length} 段`);
 
+  // v1.7：页脚那一行的厂商入口（前 5 家 + 「全部 N 家」）。由落地页计划生成，
+  // 源码里不留第二份厂商清单 —— 抄一份的后果是「改了注册表、忘了改 HTML」，
+  // 而那种漂移不会有任何东西变红。这一份会被各深度的写出函数从同一段页脚里继承，
+  // 所以 9 家厂商页在**每一种**页面上都有入链。
+  html = replaceMarker(html, '<!--PRERENDER:vendorline-->', renderVendorLine(PLAN));
+
   // 标记必须全部消失——残留意味着某个替换静默失败了
   for (const marker of PRERENDER_MARKERS) {
     if (html.includes(marker)) throw new Error(`预渲染标记未被替换: ${marker}`);
@@ -1788,35 +2017,64 @@ function assemble() {
 
   // 独立详情页（每条优惠一个静态 URL）+ sitemap
   const lastmod = String(payload.updatedAt || '').slice(0, 10);
-  const detailPages = writeDetailPages(payload, html, renderCore);
+  const detailPages = writeDetailPages(payload, html, renderCore, PLAN);
   console.log(`  详情页: ${detailPages.length} 个 → deal/<id>/index.html`);
 
-  // 目录页（/student/ /developer/ /free-api/ + /need/<slug>/ × 10）：归属与命中都已在上面
-  // 算好写进 dist/deals.json，这里只按同一份数据取条目 —— 不再重算一遍判据。
+  // 落地页（v1.7）：清单与条目归属都来自 `landing.planLandingPages()` 那一份计划，
+  // 这里只负责按计划写文件、并把「写了什么」原样记下来交给产物自检回读对账。
   //
-  // 条数为 0 的按需求页**不生成**（与首页入口行、sitemap 三处同一个判据）：一个空页面对
-  // 读者没有价值，而「入口点了进空页」比没有入口更糟。被跳过的 slug 逐个打进日志，
-  // 免得「某一页悄悄消失」变成没人发现的事故。
+  // 为什么条目不再在这里筛：判据曾经只写一遍（audience.js），但 v1.7 一次加了
+  // 分类页/厂商页/枢纽页/别名页四类，「每类各筛一次」就是四份判据。现在
+  // `landing.itemsOf()` 是唯一入口 —— 页面行数、ItemList、摘要数字、变化过滤
+  // 与 Feed 都从它拿同一批 id。
   const directoryPages = [];
-  const skippedNeeds = [];
+  const pageDescriptors = []; // 交给 seo.validate() 的页面描述符（含 html 与条目 id）
   for (const spec of DIRECTORY_PAGES) {
-    const field = spec.kind === 'need' ? 'needs' : 'collections';
-    const matched = payload.deals.filter(deal => deal.type === 'deal' && (deal[field] || []).includes(spec.slug));
-    if (spec.kind === 'need' && matched.length === 0) { skippedNeeds.push(spec.slug); continue; }
+    const matched = landing.itemsOf(spec, payload.deals, { vendorKeyOf: VENDOR_KEY_OF });
+    const summary = spec.kind === 'hub' ? [] : landing.summaryOf(spec, matched, {
+      asOf: lastmod, vendorKeyOf: VENDOR_KEY_OF
+    });
+    const topic = spec.kind === 'hub' || spec.kind === 'alias'
+      ? null
+      : landing.topicChangesOf(radar, matched.map(deal => deal.id), { sectionOrder: changes.SECTION_ORDER });
+    if (topic) topic.title = `「${spec.title || spec.label}」最近的变化`;
+    const pageFeeds = feeds.feedsForPage(spec, feedBundle.feeds);
+    const page = renderDirectoryPage(spec, matched, html, {
+      lastmod, summary, topic, plan: PLAN, feedsForPage: pageFeeds, allFeeds: feedBundle.feeds, renderCore
+    });
+    // 枢纽页列的是子页面，不是条目 —— 它的「条数」就是子页数（正文下限与摘要口径都读它）
+    const pageCount = spec.kind === 'hub' ? (spec.children || []).length : matched.length;
     const dir = path.join(OUT, spec.route);
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, 'index.html'),
-      renderDirectoryPage(spec, matched, html, { lastmod }), 'utf8');
+    fs.writeFileSync(path.join(dir, 'index.html'), page, 'utf8');
     directoryPages.push({
-      kind: spec.kind, slug: spec.slug, title: spec.title || spec.label,
-      count: matched.length, url: `${SITE_URL}${spec.route}`, route: spec.route
+      kind: spec.kind, slug: spec.slug, key: spec.key, title: spec.title || spec.label,
+      count: pageCount, url: `${SITE_URL}${spec.route}`, route: spec.route,
+      indexable: spec.indexable, aliasOf: spec.aliasOf || null, pinned: Boolean(spec.pinned),
+      itemIds: matched.map(deal => deal.id),
+      childRoutes: spec.kind === 'hub' ? (spec.children || []).map(child => child.route) : [],
+      summary, feedIds: pageFeeds.map(feed => feed.spec.id),
+      feedMatch: (spec.kind === 'category' || spec.kind === 'vendor') && spec.slug ? [
+        spec.kind === 'category' ? `category-${spec.slug}` : `vendor-${spec.slug}`
+      ] : [],
+      html: page
     });
+    pageDescriptors.push(directoryPages[directoryPages.length - 1]);
   }
   const collectionPages = directoryPages.filter(page => page.kind === 'collection');
-  const needPages = directoryPages.filter(page => page.kind === 'need');
+  // 「按需求页」的口径包含降级为别名的那三条：首页入口行会列出全部 10 条，
+  // 两边的集合必须继续逐个对得上（v1.2 的断言就是这么用的）。
+  const needPages = directoryPages.filter(page => page.kind === 'need' || page.kind === 'alias');
+  const vendorPages = directoryPages.filter(page => page.kind === 'vendor');
+  const categoryPages = directoryPages.filter(page => page.kind === 'category');
+  const hubPages = directoryPages.filter(page => page.kind === 'hub');
+  const aliasPages = directoryPages.filter(page => page.kind === 'alias');
   console.log(`  分类页: ${collectionPages.map(p => `/${p.slug}/ ${p.count} 条`).join(' · ')}`);
-  console.log(`  按需求页: ${needPages.map(p => `/${p.route} ${p.count} 条`).join(' · ')}` +
-    (skippedNeeds.length ? `（跳过空入口: ${skippedNeeds.join(', ')}）` : ''));
+  console.log(`  按需求页: ${needPages.map(p => `/${p.route} ${p.count} 条${p.aliasOf ? ' [别名]' : ''}`).join(' · ')}`);
+  console.log(`  分类落地页: ${categoryPages.map(p => `/${p.route} ${p.count} 条`).join(' · ') || '（无）'}`);
+  console.log(`  厂商落地页: ${vendorPages.map(p => `/${p.route} ${p.count} 条`).join(' · ') || '（无）'}`);
+  console.log(`  枢纽页: ${hubPages.map(p => `/${p.route} ${p.count} 个入口`).join(' · ') || '（无）'}` +
+    ` · 别名页: ${aliasPages.length} 条（noindex，不进 sitemap）`);
 
   // 变化雷达页（/changes/，v1.5）：与首页条带同一份 radar、同一套渲染函数。
   //
@@ -1840,15 +2098,25 @@ function assemble() {
     <priority>0.7</priority>
   </url>`).join('\n');
 
-  // 目录页进 sitemap，优先级高于详情页：它们是入口，详情页是叶子。
+  // 落地页进 sitemap，优先级高于详情页：它们是入口，详情页是叶子。
   // v1.2 起分类页与按需求页共用这一段（同一个 directoryPages 列表），
   // 所以「新增一条路由忘了进 sitemap」在结构上不可能 —— 条数断言还会逐个对账。
-  const directoryUrls = directoryPages.map(page => `  <url>
+  //
+  // v1.7 起：**只有可索引的页面进 sitemap**（别名页是 noindex，进 sitemap 等于自相矛盾），
+  // 优先级按类型声明，而不是统统 0.9 —— 声明要与实际用途一致（这条口径与状态页 0.3、
+  // 订阅中心 0.6 是同一条）。
+  const SITEMAP_PRIORITY = { collection: '0.9', need: '0.9', category: '0.9', vendor: '0.8', hub: '0.8' };
+  const directoryUrls = directoryPages
+    .filter(page => page.indexable)
+    .map(page => `  <url>
     <loc>${page.url}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>${SITEMAP_PRIORITY[page.kind] || '0.8'}</priority>
   </url>`).join('\n');
+  const sitemapEntries = [SITE_URL, ...directoryPages.filter(page => page.indexable).map(page => page.url),
+    `${SITE_URL}status/`, `${SITE_URL}changes/`, `${SITE_URL}feeds/`,
+    ...detailPages.map(page => page.url)];
 
   // 状态页也进 sitemap（五条既有约定的第三条，v1.1 收口补）。
   //
@@ -1962,6 +2230,16 @@ ${dealUrls}
     directoryPages,
     collectionPages,
     needPages,
+    // v1.7：四类新页面各自的视图 + 计划 + 交给 SEO 门禁的页面描述符 + sitemap 全量条目。
+    // 自检不重算门槛，只对账「计划里说要生成的，产物里真的都在」。
+    vendorPages,
+    categoryPages,
+    hubPages,
+    aliasPages,
+    plan: PLAN,
+    pageDescriptors,
+    sitemapEntries,
+    lastmod,
     // v1.5：变化雷达交给自检做**回读对账**（条带 ↔ 数据 ↔ 页面三方）。把 radar 与
     // 基准日一并带下去，自检因此不必重算一遍判据 —— 重算就等于把判据写了两遍。
     radar,
@@ -2626,6 +2904,12 @@ function selfCheck(built) {
       // 于是「某一层页脚的相对前缀写错」在那 10 个页面上不会被这条断言照到。
       // 补进来是顺手加固，不是本轮改动的一部分；真红了说明这里本来就有一条错链。
       ...built.needPages.map(page => [`${page.route}index.html`, '../../']),
+      // v1.7：新增的四类页面（分类落地页/厂商落地页两层、枢纽页一层、别名页两层）。
+      // 深度由路由段数推导，**不写死** —— 新页面少写一层前缀的症状是所有内链 404，
+      // 而页面本身看起来完全正常。
+      ...built.directoryPages
+        .filter(page => page.kind === 'category' || page.kind === 'vendor' || page.kind === 'hub' || page.kind === 'alias')
+        .map(page => [`${page.route}index.html`, '../'.repeat(page.route.split('/').filter(Boolean).length)]),
       ...dealDirs.map(id => [`deal/${id}/index.html`, '../../'])
     ];
     const leftovers = [];
@@ -2787,21 +3071,30 @@ function selfCheck(built) {
   //
   // 每一项都写成自述的：数字对不上时，报错信息里的分项就是排查路径。
   // v1.5：再加一项「变化雷达页」。v1.6：再加一项「订阅中心」。
-  const expectedLocs = dealEntries.length + 1 /* 首页 */ + built.directoryPages.length + 1 /* 状态页 */
+  // v1.7：sitemap 只收**可索引**的页面（别名页是 noindex，进 sitemap 等于自相矛盾），
+  // 而且条数不再手写公式 —— 直接与构建期生成的那份 `sitemapEntries` 逐条对账。
+  const indexableDirectories = built.directoryPages.filter(page => page.indexable);
+  const expectedLocs = dealEntries.length + 1 /* 首页 */ + indexableDirectories.length + 1 /* 状态页 */
     + 1 /* 变化雷达页 */ + 1 /* 订阅中心 */;
   if (sitemapLocs.length !== expectedLocs) {
-    fail(`sitemap ${sitemapLocs.length} 条 ≠ 首页 1 + 目录页 ${built.directoryPages.length}` +
-      `（分类页 ${built.collectionPages.length} + 按需求页 ${built.needPages.length}）+ 状态页 1 + 变化雷达页 1 + 订阅中心 1 + 详情页 ${dealEntries.length}`);
+    fail(`sitemap ${sitemapLocs.length} 条 ≠ 首页 1 + 可索引落地页 ${indexableDirectories.length}` +
+      `（分类页 ${built.collectionPages.length} + 按需求页/别名 ${built.needPages.length} 中可索引的` +
+      ` + 分类落地页 ${built.categoryPages.length} + 厂商落地页 ${built.vendorPages.length}` +
+      ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 订阅中心 1 + 详情页 ${dealEntries.length}`);
   } else {
     const notListed = dealEntries.filter(deal => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(deal.id)}/`)));
-    const directoriesNotListed = built.directoryPages.filter(page => !sitemapLocs.includes(page.url));
+    const directoriesNotListed = indexableDirectories.filter(page => !sitemapLocs.includes(page.url));
+    const aliasesListed = built.aliasPages.filter(page => sitemapLocs.includes(page.url));
     if (notListed.length) fail(`sitemap 漏了 ${notListed.length} 个详情页`);
-    else if (directoriesNotListed.length) fail(`sitemap 漏了目录页: ${directoriesNotListed.map(p => p.route).join(', ')}`);
+    else if (directoriesNotListed.length) fail(`sitemap 漏了落地页: ${directoriesNotListed.map(p => p.route).join(', ')}`);
+    else if (aliasesListed.length) fail(`sitemap 里出现了 noindex 的别名页: ${aliasesListed.map(p => p.route).join(', ')}`);
     else if (!sitemapLocs.includes(`${SITE_URL}status/`)) fail('sitemap 漏了状态页 status/');
     else if (!sitemapLocs.includes(`${SITE_URL}changes/`)) fail('sitemap 漏了变化雷达页 changes/');
     else if (!sitemapLocs.includes(`${SITE_URL}feeds/`)) fail('sitemap 漏了订阅中心 feeds/');
     else console.log(`  ✓ sitemap: ${sitemapLocs.length} 条（首页 + ${built.collectionPages.length} 个分类页 + ` +
-      `${built.needPages.length} 个按需求页 + 状态页 + 变化雷达页 + 订阅中心 + ${dealEntries.length} 个详情页，无遗漏）`);
+      `${built.needPages.length} 条按需求/别名页中可索引的部分 + ${built.categoryPages.length} 个分类落地页 + ` +
+      `${built.vendorPages.length} 个厂商落地页 + ${built.hubPages.length} 个枢纽页 + 状态页 + 变化雷达页 + 订阅中心 + ` +
+      `${dealEntries.length} 个详情页；${built.aliasPages.length} 条别名页已排除）`);
   }
 
   // 分类页：**逐条回读对账**，而不是「文件存在就算过」。
@@ -2823,16 +3116,35 @@ function selfCheck(built) {
       if (!fs.existsSync(file)) { problems.push(`缺少 ${page.route}index.html`); continue; }
       const body = fs.readFileSync(file, 'utf8');
 
-      // ① 条目集合逐个 id 对账（页面 → 数据 与 数据 → 页面 两个方向）
+      // ① 条目集合逐个 id 对账（页面 → 数据 与 数据 → 页面 两个方向）。
+      //    v1.7：期望集合按**类型**从已发布数据独立重算一次 —— 不读构建期记下的 itemIds。
+      //    （读自己写下的东西等于对账自己，那正是「页面写 12、实际列 7」能溜过去的原因。）
       const onPage = new Set([...body.matchAll(/href="([^"]*?)deal\/([^/"]+)\/"/g)].map(m => decodeURIComponent(m[2])));
-      const expected = new Set(published.deals
-        .filter(deal => deal.type === 'deal' && (deal[field] || []).includes(page.slug))
-        .map(deal => deal.id));
-      const missing = [...expected].filter(id => !onPage.has(id));
-      const extra = [...onPage].filter(id => !expected.has(id));
-      if (missing.length) problems.push(`${page.route} 漏了 ${missing.length} 条（如 ${missing.slice(0, 3).join(', ')}）`);
-      if (extra.length) problems.push(`${page.route} 多了 ${extra.length} 条不该在这一页里的（如 ${extra.slice(0, 3).join(', ')}）`);
-      if (page.count !== expected.size) problems.push(`${page.route} 报告条数 ${page.count} ≠ 数据 ${expected.size}`);
+      const pool = published.deals.filter(deal => deal.type === 'deal');
+      let expected = new Set();
+      if (page.kind === 'collection') expected = new Set(pool.filter(d => (d.collections || []).includes(page.slug)).map(d => d.id));
+      else if (page.kind === 'need') expected = new Set(pool.filter(d => (d.needs || []).includes(page.slug)).map(d => d.id));
+      else if (page.kind === 'alias') {
+        const target = built.directoryPages.find(item => item.route === page.aliasOf);
+        if (!target) problems.push(`${page.route} 的别名目标 ${page.aliasOf} 不在产物里`);
+        else if (target.kind === 'collection') expected = new Set(pool.filter(d => (d.collections || []).includes(target.slug)).map(d => d.id));
+        else expected = new Set(pool.filter(d => (d.needs || []).includes(target.slug)).map(d => d.id));
+      } else if (page.kind === 'category') expected = new Set(pool.filter(d => d.category === page.key).map(d => d.id));
+      else if (page.kind === 'vendor') expected = new Set(pool.filter(d => VENDOR_KEY_OF(d) === page.key).map(d => d.id));
+      if (page.kind === 'hub') {
+        // 枢纽页列的是**子页面**，不是条目：逐个核对子页链接，并断言没有混进条目行
+        const children = page.childRoutes || [];
+        for (const route of children) {
+          if (!body.includes(`href="${prefix}${route}"`)) problems.push(`${page.route} 缺少到子页 ${route} 的链接`);
+        }
+        if (onPage.size) problems.push(`${page.route} 是枢纽页，却渲染了 ${onPage.size} 条条目行`);
+      } else {
+        const missing = [...expected].filter(id => !onPage.has(id));
+        const extra = [...onPage].filter(id => !expected.has(id));
+        if (missing.length) problems.push(`${page.route} 漏了 ${missing.length} 条（如 ${missing.slice(0, 3).join(', ')}）`);
+        if (extra.length) problems.push(`${page.route} 多了 ${extra.length} 条不该在这一页里的（如 ${extra.slice(0, 3).join(', ')}）`);
+        if (page.count !== expected.size) problems.push(`${page.route} 报告条数 ${page.count} ≠ 数据 ${expected.size}`);
+      }
       // ①′ 内链前缀必须与输出层数一致。写死的症状极隐蔽：页面打得开、内容都对，
       //     只有**所有**内链 404。分类页 1 层（`../`）、按需求页 2 层（`../../`）。
       const wrongPrefix = [...body.matchAll(/href="((?:\.\.\/)+)deal\//g)]
@@ -2843,8 +3155,17 @@ function selfCheck(built) {
 
       // ② 该有的元信息一个都不能少
       if (!body.includes(`<link rel="canonical" href="${page.url}">`)) problems.push(`${page.route} canonical 不是自指`);
+      if (!page.indexable && !/name="robots"[^>]*noindex/.test(body)) problems.push(`${page.route} 是别名页却没有 noindex`);
+      if (page.indexable && /name="robots"[^>]*noindex/.test(body)) problems.push(`${page.route} 可索引却带了 noindex`);
       if (!body.includes(`href="${prefix}feed.xml"`) || !body.includes(`href="${prefix}feed.json"`)) {
         problems.push(`${page.route} 没有声明订阅源（前缀 ${prefix}）`);
+      }
+      // ②′ 有专属 Feed 的页面必须声明它（v1.7：学生/开发者/免费 API/免费 Tokens/AI Coding/国内可用
+      //     /分类页/厂商页都有对应 Feed，页面不声明等于读者找不到订阅入口）
+      for (const feed of feeds.feedsForPage({ kind: page.kind, slug: page.slug }, built.feedBundle.feeds)) {
+        if (!body.includes(`href="${prefix}${feed.spec.path}"`)) {
+          problems.push(`${page.route} 没有声明本页对应的 Feed ${feed.spec.id}（${feed.spec.path}）`);
+        }
       }
       let ldTypes = [];
       try {
@@ -2863,6 +3184,23 @@ function selfCheck(built) {
       if (JSON.stringify(ldActual) !== JSON.stringify(COLLECTION_LD_EXPECTED)) {
         problems.push(`${page.route} JSON-LD 集合不是恰好 [${COLLECTION_LD_EXPECTED.join(', ')}]，实得 [${ldActual.join(', ')}]`);
       }
+      // ②″ ItemList 的条数必须与页面上的数据行**逐一对上**（v1.7 的 Tooth Test #4）。
+      //     老实现声明 `deals.length` 却只发 `slice(0,50)`：/developer/ 67 条页面声明 67、实列 50，
+      //     没有任何断言会发现 —— 这就是加这一条的理由。
+      {
+        const itemListBlock = [...body.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+          .map(m => { try { return JSON.parse(m[1]); } catch (error) { return null; } })
+          .find(data => data && data['@type'] === 'ItemList');
+        const rows = (body.match(/data-item="/g) || []).length + (body.match(/data-child="/g) || []).length;
+        if (!itemListBlock) problems.push(`${page.route} 没有 ItemList`);
+        else {
+          const elements = Array.isArray(itemListBlock.itemListElement) ? itemListBlock.itemListElement.length : 0;
+          if (Number(itemListBlock.numberOfItems) !== elements) {
+            problems.push(`${page.route} ItemList 声明 ${itemListBlock.numberOfItems} 项但只发了 ${elements} 项`);
+          }
+          if (elements !== rows) problems.push(`${page.route} ItemList 有 ${elements} 项，页面数据行有 ${rows} 行`);
+        }
+      }
       // ③ 预渲染正文（无 JS 可读）：表格是构建期写死的。
       //    阈值**按条目数成比例**，不是常数。常数版本连续踩了两次：
       //      · 第一版只剥 `<script>`，量到的 4 万字里 38950 是 CSS（等于没量）；
@@ -2872,31 +3210,40 @@ function selfCheck(built) {
       //    /free-api/ 45 行 4820），页头页脚等固定部分约 650 字。取 60 字/条留余量：
       //    条目越多阈值越紧，而「表体空掉」在 count>0 时必然低于它。
       const text = prerenderedText(body);
-      const textFloor = 600 + 60 * page.count;
+      const textFloor = page.kind === 'hub' ? 500 + 60 * page.count : 600 + 60 * page.count;
       if (text.length < textFloor) {
-        problems.push(`${page.route} 预渲染正文过短（内容 ${text.length} 字 < ${textFloor} = 600 + 60×${page.count}）`);
+        problems.push(`${page.route} 预渲染正文过短（内容 ${text.length} 字 < ${textFloor}）`);
       }
       // 结构断言与上面的字数是**互相独立**的两件事：字数够而表是空的，说明渲染路径断了。
       // ⚠️ 先把 `<script>` 摘掉再取 tbody（本文件自己的纪律：数标记先摘 script）——
       //    不摘的话，将来某个内联脚本里出现 `<tbody>…</tbody>` 就会让这条断言永远为真。
       const bodyNoScript = body.replace(/<script[\s\S]*?<\/script>/gi, '');
       const tbody = (bodyNoScript.match(/<tbody>([\s\S]*?)<\/tbody>/) || [])[1] || '';
-      if (page.count > 0 && !tbody.includes(`href="${prefix}deal/`)) {
+      if (page.count > 0 && page.kind === 'hub' && !tbody.includes(`href="${prefix}`)) {
+        problems.push(`${page.route} <tbody> 里一个子页链接都没有（表格没渲染出来）`);
+      }
+      if (page.count > 0 && page.kind !== 'hub' && !tbody.includes(`href="${prefix}deal/`)) {
         problems.push(`${page.route} <tbody> 里一个详情页链接都没有（表格没渲染出来）`);
       }
-      // ③′ 按需求页多一条：表头必须有「为什么在这一页」，且 tbody 里至少有一行写了依据。
-      //     没有这一列，十条入口里那四个「数字让人意外」的页面就只剩一个光秃秃的条数，
+      // ③′ 有「命中依据」列的页面：表头必须有那一列，且 tbody 里至少有一行写了依据。
+      //     没有这一列，那几条「数字让人意外」的页面就只剩一个光秃秃的条数，
       //     读者无法区分「没有这类优惠」与「我们没查到」。
-      if (page.kind === 'need') {
+      if (page.kind === 'need' || page.kind === 'category' || page.kind === 'vendor' || page.kind === 'alias') {
         if (!bodyNoScript.includes('为什么在这一页')) problems.push(`${page.route} 表头缺少「为什么在这一页」一列`);
-        if (page.count > 0 && !/适用人群：|福利类型含|定价模式：|分类：|需要信用卡：|中国大陆可用性：/.test(tbody)) {
+        if (page.count > 0 && !/适用人群：|福利类型含|定价模式：|分类：|需要信用卡：|中国大陆可用性：|厂商：/.test(tbody)) {
           problems.push(`${page.route} <tbody> 里没有一行写出命中依据`);
         }
       }
       if (/__[A-Z_]+_HREF__/.test(body)) problems.push(`${page.route} 残留路由占位符`);
+      if (body.includes('__PREFIX__')) problems.push(`${page.route} 残留 __PREFIX__ 占位符`);
       // ④ 三态措辞：不许把「没有依据」写成「不可用」
       if (/中国大陆[^。；]{0,12}不可用/.test(body) && !/尚未确认/.test(body)) {
         problems.push(`${page.route} 出现了「不可用」却没有任何「尚未确认」——三态措辞可能被压平`);
+      }
+      // ④′ 摘要块：每个数字都必须带机器可读的 data-summary-label/value，
+      //     且**至少一行**（只有「当前条目」也算）—— 一个渲染失败的空摘要块会静默消失。
+      if (page.kind !== 'hub' && page.count > 0 && !/data-summary-label="/.test(body)) {
+        problems.push(`${page.route} 没有渲染数据摘要块`);
       }
     }
 
@@ -3043,7 +3390,10 @@ function selfCheck(built) {
         : null,
       pages: built.pageRoutes,
       asOf: built.radarAsOf,
-      availability: built.radar.availability
+      availability: built.radar.availability,
+      // 厂商归属必须与页面/Feed 构建时用的是**同一个**规范名取值器，
+      // 否则「扣子 Coze（字节跳动）」这类写法会被判成「不属于该厂商」。
+      vendorKeyOf: VENDOR_KEY_OF
     });
     // 文件真的落盘了吗（含子目录）——存在的清单以注册表为准，不写死文件名
     const missingFiles = [];
@@ -3082,7 +3432,13 @@ function selfCheck(built) {
       ['changes/index.html', '变化雷达页', '../'],
       ['feeds/index.html', '订阅中心', '../'],
       ...built.collectionPages.map(page => [`${page.slug}/index.html`, `/${page.slug}/`, '../']),
-      ...built.needPages.map(page => [`${page.route}index.html`, `/${page.route}`, '../../'])
+      ...built.needPages.map(page => [`${page.route}index.html`, `/${page.route}`, '../../']),
+      // v1.7：新增的四类页面同样要声明订阅源（分类页/厂商页还各有自己的那一份 Feed）。
+      // 深度按路由段数推导，不写死。
+      ...built.directoryPages
+        .filter(page => page.kind === 'category' || page.kind === 'vendor' || page.kind === 'hub' || page.kind === 'alias')
+        .map(page => [`${page.route}index.html`, `/${page.route}`,
+          '../'.repeat(page.route.split('/').filter(Boolean).length)])
     ]) {
       const file = path.join(OUT, rel);
       if (!fs.existsSync(file)) { problems.push(`${label} 的产物文件缺失`); continue; }
@@ -3177,6 +3533,111 @@ function selfCheck(built) {
     }
   } catch (e) {
     fail('FAQ 一致性校验失败: ' + e.message);
+  }
+
+  // SEO 安全门禁（v1.7）：把**刚刚写下的全部页面**交给 `seo.validate()` 过一遍。
+  //
+  // 这一段是全站唯一一处「跨页面」的检查：标题/canonical 是否唯一、ItemList 与页面
+  // 数据行是否一致、面包屑每一级是否真实存在、sitemap 与索引策略是否一致、
+  // 有没有孤儿页、摘要数字能不能被独立重算。单页自检再多也照不到这些问题 ——
+  // 它们全都只在**页面之间**才成立。
+  //
+  // 描述符从磁盘回读（而不是复用内存里刚生成的字符串）：这样「写盘时写坏了」
+  // 也会被照到。`npm run verify:seo` 会用**另一套解析**再跑一次同一批规则。
+  {
+    const sitemapXml = fs.readFileSync(path.join(OUT, 'sitemap.xml'), 'utf8');
+    const sitemap = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
+    const sitemapSet = new Set(sitemap.map(url => url.slice(SITE_URL.length)));
+    const published = JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8')).deals;
+    const dealsById = new Map(published.map(deal => [deal.id, deal]));
+    const descriptors = [];
+    const readPage = (route, meta) => {
+      const rel = route === '' ? 'index.html' : `${route}index.html`;
+      const file = path.join(OUT, rel);
+      if (!fs.existsSync(file)) { fail(`SEO 门禁：缺少页面文件 ${rel}`); return null; }
+      return Object.assign({
+        route,
+        html: fs.readFileSync(file, 'utf8'),
+        indexable: true,
+        inSitemap: sitemapSet.has(route),
+        itemIds: [],
+        childRoutes: [],
+        summary: []
+      }, meta);
+    };
+    const fixed = [
+      readPage('', {
+        kind: 'home', expectItemList: true,
+        // 首页的 ListItem 指向**官方页面**（v0.9 起的设计），而页面可见的卡片按折叠后的
+        // 条数渲染（一张折叠卡覆盖多条优惠）—— 因此行数对账与成员对账在首页不适用，
+        // 它由首页自己那几条断言守着（卡片数 / CTA 数 / 折叠无损 / JSON-LD 类型集合）。
+        checkItemListRows: false, checkItemListMembers: false
+      }),
+      readPage('status/', { kind: 'status', expectItemList: false }),
+      readPage('changes/', { kind: 'changes', expectItemList: true }),
+      readPage('feeds/', { kind: 'feeds', expectItemList: false })
+    ].filter(Boolean);
+    const dealDescriptors = dealEntries.map(deal => readPage(`deal/${encodeURIComponent(deal.id)}/`, {
+      kind: 'deal', expectItemList: false, itemIds: [deal.id]
+    })).filter(Boolean);
+    const directoryDescriptors = built.directoryPages.map(page => readPage(page.route, {
+      kind: page.kind,
+      indexable: page.indexable,
+      inSitemap: sitemapSet.has(page.route),
+      itemIds: page.itemIds,
+      childRoutes: page.childRoutes,
+      summary: page.summary,
+      count: page.count,
+      pinned: page.pinned,
+      expectItemList: true,
+      feedMatch: page.feedMatch
+    })).filter(Boolean);
+    descriptors.push(...fixed, ...dealDescriptors, ...directoryDescriptors);
+
+    const result = seo.validate(descriptors, {
+      siteUrl: SITE_URL,
+      sitemap,
+      pinned: landing.loadPinned().map(row => row.route),
+      aliases: landing.loadAliases(),
+      thresholds: {
+        categoryMinDeals: landing.CATEGORY_MIN_DEALS,
+        vendorMinDeals: feeds.VENDOR_THRESHOLDS.minDeals
+      },
+      dealsById,
+      asOf: built.lastmod,
+      vendorKeyOf: VENDOR_KEY_OF,
+      feedSpecs: built.feedBundle.feeds.map(feed => feed.spec),
+      // 静态文件的清单**从磁盘现场走一遍**，不手写：手写的清单漏一个就会把一条
+      // 正常链接判成死链（第一版就漏了 46 个 Feed 文件，一次报出 76 条假红）。
+      staticFiles: (() => {
+        const set = new Set();
+        const walk = (dir, base) => {
+          for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const rel = base ? `${base}/${entry.name}` : entry.name;
+            if (entry.isDirectory()) walk(path.join(dir, entry.name), `${rel}`);
+            else if (entry.name !== 'index.html') set.add(rel);
+          }
+        };
+        walk(OUT, '');
+        return set;
+      })(),
+      gate: { skipped: built.plan.skipped }
+    });
+    if (result.problems.length) {
+      const byCode = seo.summarize(result).byCode;
+      for (const problem of result.problems.slice(0, 12)) {
+        fail(`SEO[${problem.code}] ${problem.route}：${problem.detail}`);
+      }
+      if (result.problems.length > 12) {
+        fail(`SEO 还有 ${result.problems.length - 12} 处问题未逐条打印（按码统计：${JSON.stringify(byCode)}）`);
+      }
+    } else {
+      const s = result.stats;
+      console.log(`  ✓ SEO 安全门禁: ${seo.PROBLEM_CODES.length} 个检查码 × ${s.pages} 个页面全过` +
+        `（可索引 ${s.indexable} · 别名 ${s.noindex} · 详情页 ${s.dealPages} · 落地页 ${s.landingPages} · ` +
+        `厂商页 ${s.vendorPages} · 分类页 ${s.categoryPages} · sitemap ${s.sitemapEntries} · ` +
+        `孤儿 ${s.orphans} · 重复 canonical ${s.duplicateCanonical} · 无效内链 ${s.invalidLinks}）`);
+    }
   }
 
   // OG 图必须是合法 PNG 且尺寸正确
