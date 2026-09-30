@@ -57,6 +57,18 @@ runs:
       shell: bash
       run: node scripts/tools/check-reproducible.js
 
+    # 历史一致性门禁（v1.4 新增）：`deal-history.json` 必须与当前 `deals.json` 自洽。
+    #
+    # 与上面那条同一条纪律，只是换成了时间维度：可重建性问「这个值是谁说的」，
+    # 这一条问「这个值是怎么变过来的」——把一次性基线 + 追加事件重放一遍，
+    # 必须逐字段等于今天的 deals.json；链断裂 / 记录静默消失 / 未跟踪字段进日志都必红。
+    #
+    # 为什么必须有它：没有它，历史就是一段自说自话的文本，谁都能往里写一条
+    # 「X 在 9 月 1 日改过」，而页面与构建全绿。人类读不出这种差异，机器可以。
+    - name: History verify (log consistent with deals.json)
+      shell: bash
+      run: node scripts/tools/history-verify.js
+
     # 迁移验收（2026-09-29 收口补）：`migrate.js --audience` 会给存量数据补 provenance，
     # 而它是**能改写 deals.json 的命令行工具**——判据只有一处实现（lib/migrate-audience.js）。
     #
@@ -107,6 +119,14 @@ runs:
     - name: Provenance self-test
       shell: bash
       run: node scripts/tools/provenance-selftest.js
+
+    # v1.4 变更记录自测：零依赖、离线、秒级。
+    # 它盯的是这一层赖以成立的全部承诺：只记重要字段（description / lastSeen / zh 变化 → 0 事件）、
+    # 有锚点、链可重放、来源失败时**不**误报「消失」、超限必红不自动截断。
+    # 判断标准与上面几支相同：它红的时候没有别的步骤会替它红。
+    - name: Deal-history self-test
+      shell: bash
+      run: node scripts/tools/history-selftest.js
 
     # 受众字段（学生 / 开发者数据模型）自测：零依赖、离线、秒级。
     # 为什么必须进门禁（v1.1 补，由 t1 核验的 B5 发现）：这个自测原先只在本机跑，

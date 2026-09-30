@@ -37,6 +37,7 @@ const { attach: attachZh, summarize: summarizeZh, pendingAge, loadPending, write
 const { createReport, printReport, printHealth } = require('./lib/report');
 const { describeError } = require('./lib/http');
 const health = require('./lib/health');
+const history = require('./lib/history');
 const registry = require('./collectors');
 
 const args = process.argv.slice(2);
@@ -95,8 +96,79 @@ async function collectFrom(collector, report) {
   return { items, failed };
 }
 
-async function main() {
-  const headless = flag('headless');
+/**
+ * v1.4：把本次观测并进历史日志（纯计算，落盘由调用方在 writeDeals 之后做）。
+ *
+ * 三个输入的口径必须写清楚，否则「来源不再列出」会变成误报机器：
+ *   · freshIds  —— 本次采集器真的产出过的 id；
+ *   · absenceEligibleSources —— 允许参与「未见」计数的来源：本轮心跳 healthy、
+ *     不是上一轮遗留（stale）、且确实跑出了条目。失败 / 骤降 / 零产出的来源一律不计 ——
+ *     否则一次坏采集（无头浏览器装不上、页面改版）会把整片条目误判成「消失」。
+ *   · removed —— id → 移除原因，直接取 mergeAll 手里已有的对象（不在历史层重写规则）。
+ */
+function recordHistory({ previous, next, fresh, stats, healthSummary, today, only }) {
+  if (only) {
+    console.log('历史层: 本次为 --only 子集运行，跳过（避免把未跑的来源误判成「不再列出」）');
+    return null;
+  }
+  const loaded = history.load();
+  if (loaded.missing) {
+    console.warn(`⚠️  未找到 ${history.HISTORY_FILE} —— 本次不记录历史（**不会**自动生成基线）。`);
+    console.warn('   首次启用请跑一次 `npm run history:baseline`（一次性，且会拒绝重跑）。');
+    return null;
+  }
+  if (loaded.broken) {
+    console.warn(`⚠️  ${history.HISTORY_FILE} 解析失败（${loaded.broken}）—— 本次不记录历史，由 check:history 报错。`);
+    return null;
+  }
+
+  const removal = new Map();
+  const reasonPairs = [
+    [stats.removedExpiredIds, 'pruned_expired'],
+    [stats.removedOverflowIds, 'pruned_overflow'],
+    [stats.removedGarbageIds, 'retired_garbage']
+  ];
+  for (const [ids, reason] of reasonPairs) {
+    for (const id of ids || []) removal.set(id, reason);
+  }
+
+  // 由本站规则推导出来的字段：`expiresAt` 是 applyDeadline 从文案里抽的、`type` 是
+  // 重分类算的。两者都要如实标成 derived —— 读者得能分清「来源变了」与「我们的规则变了」。
+  const derivedFields = new Set();
+  if (stats.extractedDeadlines > 0) derivedFields.add('expiresAt');
+  if (stats.reclassified > 0) derivedFields.add('type');
+
+  const rows = (healthSummary && healthSummary.rows) || [];
+  const absenceEligibleSources = rows
+    .filter(row => row && row.status === 'healthy' && !row.stale && Number(row.lastItemCount) > 0)
+    .map(row => row.source);
+
+  const { store, stats: historyStats } = history.record(loaded.store, {
+    previous,
+    next,
+    at: today,
+    runAt: new Date().toISOString(),
+    freshIds: fresh.map(deal => deal.id).filter(Boolean),
+    absenceEligibleSources,
+    removed: removal,
+    derivedFields
+  });
+  return { store, stats: historyStats, eligibleSources: absenceEligibleSources.length };
+}
+
+function printHistoryStats({ stats, store, eligibleSources }) {
+  const byType = stats.byType || {};
+  console.log(`历史层: 新增事件 ${stats.appended} 条（` +
+    `${history.EVENT_TYPES.map(type => `${type} ${byType[type] || 0}`).join(' · ')}）· ` +
+    `观测态 ${stats.absenceTracked} 条 · 可判定「未见」的来源 ${eligibleSources} 个`);
+  if (stats.appended === 0) {
+    console.log('        （本次没有任何重要字段变化——description 文案微调与 lastSeen 刷新不记事件）');
+  }
+  const total = history.eventsOf(store).length;
+  console.log(`        历史累计 ${total} 条事件 · 起算日 ${store.startedAt}`);
+}
+
+async function main() {  const headless = flag('headless');
 
   if (flag('list')) {
     console.log(`已注册采集器${headless ? '（含无头浏览器来源）' : ''}：`);
@@ -307,6 +379,11 @@ async function main() {
       process.exit(1);
     }
     console.log('\n(dry-run，未写盘)');
+    // 历史层也做一次**只读**预览：record() 是纯函数，这里不落盘。
+    // 预览里能看到「这一轮将记下哪些事件」，正是 dry-run 存在的意义。
+    const preview = recordHistory({ previous: existing, next: deals, fresh, stats, healthSummary, today, only });
+    if (preview) console.log('历史层预览（未写盘）:');
+    if (preview) printHistoryStats(preview);
     console.log('\n新增/变更预览（前 15 条优惠）：');
     localized.filter(d => d.type === 'deal').slice(0, 15).forEach(d => {
       console.log(`  · [${d.region}] ${d.title} — ${(d.discountInfo || '').slice(0, 70)}`);
@@ -340,12 +417,29 @@ async function main() {
   }
 
   assertAllValid(localized);
+
+  // v1.4：历史层（append-only 变更日志）—— 与 deals.json **同批**写入。
+  //
+  // 为什么放在这里而不是 mergeAll 里：mergeAll 被可重建性门禁重放调用（它会剥字段、
+  // 传 existing: []），把落盘副作用塞进去会让「重放产出同一份文件」变成「重放顺便
+  // 改写历史」。写入点只有一个：这条采集路径。
+  //
+  // 跳过条件（与 deals.json 同进退）：
+  //   · --dry-run（在上面已经 return）与 --only 子集运行 —— 一次子集运行会把其余来源
+  //     的条目整片误判成「来源不再列出」；
+  //   · 历史文件缺失 —— 只告警，**不自动生成基线**（无人看见地把当前状态冻成
+  //     「起始状态」正是本层最该避免的伪造历史；缺文件由 CI 的 check:history 拦）。
+  const historyStats = recordHistory({ previous: existing, next: deals, fresh, stats, healthSummary, today, only });
   const payload = writeDeals(localized);
   // 心跳与数据同批写盘：`source-health.json` 入库（dist/ 是 gitignore 的，存不了跨运行状态）。
   // 注意：上面两条硬拦（译文不合规 / 零产出）会让本次提前退出，于是**这一次**的来源结果
   // 不会落盘——CI 里那两种情况本来也不会提交任何文件。设计上接受这个边界：单源失败而
   // 整体成功（最常见的情形）一定会被记下来。
   health.write(healthDoc);
+  if (historyStats) {
+    history.save(historyStats.store);
+    printHistoryStats(historyStats);
+  }
 
   // 待译状态：记下每个 (条目, 字段) **进入待译的日期**，供译文门禁算年龄。
   // 为什么需要它：上游改写会让一条老条目的译文失效，用 firstSeen 计时等于「刚失效就超期」，

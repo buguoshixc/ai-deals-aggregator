@@ -167,12 +167,16 @@ jobs:
         run: |
           git config user.name "$BOT_NAME"
           git config user.email "$BOT_EMAIL"
-          # 两份跨运行状态与数据同批入库：
+          # 三份跨运行状态与数据同批入库：
           #  · source-health.json —— 上次条数 / 连续失败次数，不入库就永远是「首次运行」，
           #    也就发现不了「某个源已经坏了几天」；
           #  · zh-pending.json    —— 每个待译字段**进入待译的日期**，不入库的话译文门禁的年龄
-          #    只能退回 firstSeen，于是「上游改写导致老条目译文失效」会一失效就超期。
-          git add deals.json scripts/data/source-health.json scripts/data/zh-pending.json
+          #    只能退回 firstSeen，于是「上游改写导致老条目译文失效」会一失效就超期；
+          #  · deal-history.json（v1.4）—— 变更日志。它必须与本轮 deals.json **同一批**入库：
+          #    只写盘不提交的话，下一次采集的门禁会拿「已更新的 deals.json」去比「上次的日志」，
+          #    check:history 当场变红并卡住整条采集链；反过来日志入库而数据没入，也同样自相矛盾。
+          #    两者本来就是在同一次采集里成对产生的。
+          git add deals.json scripts/data/source-health.json scripts/data/zh-pending.json scripts/data/deal-history.json
           if git diff --cached --quiet; then
             echo "数据无变化，跳过提交"
           else
@@ -188,7 +192,7 @@ jobs:
             #   删掉它 = 白跑一遍发布；误以为它能拦 workflow_run 才会真停更。
             # 另注：被跳过的 workflow 其检查会停在 Pending（同一页文档明写），
             #   所以这个数据提交上 `gate` 永远 Pending —— 它在 master 上、没有 PR 要它，属预期。
-            git commit -m "chore(data): 更新优惠数据与来源健康 $(date '+%Y-%m-%d %H:%M %Z') [skip ci]"
+            git commit -m "chore(data): 更新优惠数据、来源健康与变更记录 $(date '+%Y-%m-%d %H:%M %Z') [skip ci]"
             # 换用 App 身份推送（checkout 已用 persist-credentials: false，没有残留凭据）。
             # 这个 App 被单独列在 master ruleset 的绕过名单里 —— 只豁免机器人，不豁免人。
             git remote set-url origin "https://x-access-token:${APP_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"

@@ -213,6 +213,12 @@ function mergeAll({ fresh = [], existing = [], curated = [], overrides = undefin
       removedOverflow: removed.overflow.length,
       removedGarbage: retired.length,
       retiredTitles: retired.map(d => d.title).slice(0, 10),
+      // v1.4：移除对象的 **id**（不只是计数）。历史层要按 id 记 `ended` 事件并带上
+      // 真实的移除原因；只给计数的话，history 就得把 prune/体检的规则再实现一遍 ——
+      // 那正是本项目反复吃亏的「同一判据两处实现」。这里直接透出手里已有的对象。
+      removedExpiredIds: removed.expired.map(d => d.id).filter(Boolean),
+      removedOverflowIds: removed.overflow.map(d => d.id).filter(Boolean),
+      removedGarbageIds: retired.map(d => d.id).filter(Boolean),
       reclassified: reclassified.length,
       reclassifiedTitles: reclassified.slice(0, 10),
       // v1.1：六个新字段的逐字段可信度仲裁留痕（dedup.mergeAudienceFields 收集）。

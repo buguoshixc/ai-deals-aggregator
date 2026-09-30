@@ -980,4 +980,18 @@ v1.2 的十条需求（学生专享 / 教育身份可领 / 无需信用卡 / 国
 | 10 条路由的 id 集合、canonical 自指、双 feed、三段 JSON-LD、「为什么在这一页」证据列、内链前缀真的能到 | `verify-site.js` §15b2 |
 | 无 JS 可读（首页入口行 + 三页抽查）、390/360px 几何 | 同上 |
 
+---
+
+## 十二、v1.4 补充：派生字段 `history`（**不是 v1.1 契约的一部分**）
+
+`dist/deals.json` 的每条记录多一个 `history`（有变更时才有），形状是
+`{ startedAt, total, shown, events: [{ at, type, field, from, to, reason?, origin? }] }`，
+**只进产物**：源 `deals.json` 里不允许出现它（`validateDeal` 白名单与
+`check-reproducible` 各拦一道）。
+
+真值不在数据文件里，而在 `scripts/data/deal-history.json`（一次性基线 + 追加事件；
+写入点只有 `scripts/collect.js`）。完整契约见 [`SCHEMA-v1.4.md`](SCHEMA-v1.4.md) ——
+本文件只登记一件事：**v1.1 的字段语义与可重建判据一个字没改**，`history` 与
+`collections` / `needs` / `sourceFacts` 同为构建期派生视图。
+
 

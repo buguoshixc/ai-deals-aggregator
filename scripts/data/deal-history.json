@@ -1,0 +1,2710 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-09-30",
+  "baseline": {
+    "at": "2026-09-30",
+    "note": "v1.4 开工时的既有状态快照（只含被跟踪字段）。它不是创建事件——这些记录更早就存在，只是此前没有历史。",
+    "fields": {
+      "014a945319a7": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "编程开发",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "017bdbc04e70": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "0273d8b23412": {
+        "discountInfo": "官方插件计费文档：官方付费插件普遍配有每日免费额度——添加文字、Doubao-图像生成等 30 次/天，智能绘图、音乐生成等 10 次/天，部分为累计额度（如视频剪辑 120 分钟）；额度内调用不扣积分。",
+        "pricingModel": "free",
+        "features": [
+          "近 20 款插件 30 次/天",
+          "额度内不扣积分",
+          "覆盖图像与音视频"
+        ],
+        "benefitType": [
+          "free_api",
+          "free_credits"
+        ],
+        "eligibility": "所有扣子用户（主账号及其子账号共享免费额度）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "按天重置（标注累计的按累计量计），官方未标注活动截止日期",
+        "type": "deal",
+        "category": "智能体",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "06bc1d631f62": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/sync-so",
+        "verified": false
+      },
+      "070cad8aa770": {
+        "pricingModel": "paid",
+        "audience": [
+          "student"
+        ],
+        "type": "tool",
+        "category": "教育学习",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "0750a3061d72": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/flora-ai",
+        "verified": false
+      },
+      "0c30d79a5016": {
+        "discountInfo": "官方公告：随 SenseNova 6.7 Flash-Lite 发布，SenseNova Token Plan 限时免费开放，开发者首月可享每 5 小时 1500 次调用的无门槛免费配额。",
+        "pricingModel": "free",
+        "features": [
+          "首月免费",
+          "每 5 小时 1500 次",
+          "无门槛配额"
+        ],
+        "benefitType": [
+          "free_api",
+          "trial"
+        ],
+        "eligibility": "SenseNova 平台开发者（无门槛配额）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": "unknown"
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "限时活动，开发者首月免费",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "0ddacfb2cc6e": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/wavel-ai",
+        "verified": false
+      },
+      "12dbf1bf1180": {
+        "type": "tool",
+        "category": "音频语音",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/wispr-flow",
+        "verified": false
+      },
+      "1688614d6669": {
+        "discountInfo": "邀好友实名注册即赠送 Tokens：官方活动页标注最高可领取总计 2亿 Tokens 资源包。",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "developer_credit"
+        ],
+        "eligibility": "智谱开放平台注册用户（邀请好友完成实名注册）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "智谱AI活动页",
+        "verified": false
+      },
+      "173ff7aa837e": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/cliphi-w0gfbv",
+        "verified": false
+      },
+      "176234a80147": {
+        "discountInfo": "官方积分规则页：扣子个人版新用户首次注册一次性赠送 1500 活动积分（个人免费版即可参与），积分有效期 30 天，可抵扣扣子任务、扣子编程、Token 与插件调用等消耗。",
+        "pricingModel": "free",
+        "features": [
+          "注册即送 1500 积分",
+          "有效期 30 天",
+          "可抵扣 Token"
+        ],
+        "benefitType": [
+          "free_credits",
+          "developer_credit"
+        ],
+        "eligibility": "扣子个人版新注册用户（每个账号仅限领取一次，企业版用户不参与）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "发放的活动积分有效期 30 天，从发放之时起算",
+        "type": "deal",
+        "category": "智能体",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "1888ab62bd67": {
+        "discountInfo": "火山方舟免费额度（文本生成）：50万tokens。",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "audience": [
+          "developer"
+        ],
+        "type": "deal",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "火山方舟",
+        "verified": false
+      },
+      "1c057c22422c": {
+        "discountInfo": "官方网站会员页原文：「基础会员：价格：105元/月，限时优惠价55元，促销期结束后将恢复为105元」；标准会员 385 元→限时 196 元、大师会员 799 元→限时 463 元，均含每月贝壳额度。",
+        "pricingModel": "paid",
+        "features": [
+          "基础会员 55 元/月",
+          "标准会员 196 元/月",
+          "含每月贝壳额度"
+        ],
+        "benefitType": [
+          "discount"
+        ],
+        "eligibility": "海螺AI 注册用户（促销期内购买会员套餐）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "general"
+        ],
+        "validity": "限时优惠价，促销期结束后恢复原价，以官方页面实时展示为准",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "Curated-CN",
+        "evidence": [
+          {
+            "field": "discountInfo",
+            "quote": "基础会员：价格：105元/月，限时优惠价55元，促销期结束后将恢复为105元",
+            "sourceUrl": "https://hailuoai.com/vip",
+            "capturedAt": "2026-09-22"
+          }
+        ],
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "219f6fca7f31": {
+        "discountInfo": "学生免费领取开发者工具包，含 GitHub Copilot、GitHub Codespaces、Microsoft Azure、DataCamp、FrontendMasters 等合作方免费额度与服务。",
+        "pricingModel": "free",
+        "features": [
+          "Copilot 免费",
+          "Azure / DataCamp 等"
+        ],
+        "benefitType": [
+          "student_plan",
+          "free_credits",
+          "developer_credit"
+        ],
+        "eligibility": "在校学生（需学籍验证）",
+        "eligibilityDetail": {
+          "educationEmailRequired": "unknown",
+          "identityVerificationRequired": true
+        },
+        "claimRequirements": {
+          "manualApplication": true,
+          "accountRequired": true
+        },
+        "audience": [
+          "student",
+          "developer"
+        ],
+        "validity": "长期有效（合作方 offer 定期更新）",
+        "type": "deal",
+        "category": "编程开发",
+        "region": "global",
+        "source": "Curated",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "28434ca44079": {
+        "audience": [
+          "developer"
+        ],
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/google-ai-studio",
+        "verified": false
+      },
+      "2d0ceeea880d": {
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/notebooklm",
+        "verified": false
+      },
+      "2db62eb1a8a0": {
+        "discountInfo": "火山方舟免费额度（语音模型）：20小时。",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "audience": [
+          "developer"
+        ],
+        "type": "deal",
+        "category": "音频语音",
+        "region": "cn",
+        "source": "火山方舟",
+        "verified": false
+      },
+      "2eae0e246de2": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "31232ad4315e": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "办公效率",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "314fb9d43531": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "376b6b3397e6": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "Futurepedia",
+        "sourceUrl": "https://www.futurepedia.io/tool/grok",
+        "verified": false
+      },
+      "39d2832e3c8f": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/unboring-ai",
+        "verified": false
+      },
+      "3c8a9a6a9ee9": {
+        "discountInfo": "Replit pricing lists annual savings on paid plans. Its docs have also listed student discounts such as $15 off per month for the first six months of Replit Core.",
+        "benefitType": [
+          "discount"
+        ],
+        "eligibility": "Students, solo builders, app builders using Replit Agent.",
+        "eligibilityDetail": {
+          "studentRequired": true
+        },
+        "audience": [
+          "student",
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": "unknown"
+        },
+        "type": "deal",
+        "category": "教育学习",
+        "region": "global",
+        "source": "Layer3Labs",
+        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+        "verified": false
+      },
+      "407572a1e046": {
+        "discountInfo": "火山方舟免费额度（向量模型）：50万tokens。",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "audience": [
+          "developer"
+        ],
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "火山方舟",
+        "verified": false
+      },
+      "413a77602a7c": {
+        "audience": [
+          "developer"
+        ],
+        "type": "tool",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/tenki-cloud",
+        "verified": false
+      },
+      "42c65c0d8d9d": {
+        "discountInfo": "符合条件的高校学生免费获得 12 个月 Google AI Pro（美国，价值 $19.99/月）；美国以外学生免费 12 个月 Google AI Plus；另有 Google AI Pro + YouTube Premium 组合最高 70% off。",
+        "pricingModel": "free",
+        "features": [
+          "免费 12 个月",
+          "价值 $19.99/月",
+          "高校学生"
+        ],
+        "benefitType": [
+          "student_plan",
+          "free_subscription",
+          "trial"
+        ],
+        "eligibility": "符合条件的高校在校学生",
+        "eligibilityDetail": {
+          "educationEmailRequired": "unknown",
+          "identityVerificationRequired": true
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "student"
+        ],
+        "availability": {
+          "chinaUsable": false,
+          "regionRestriction": "官方学生优惠按国家/地区区分（美国为 AI Pro、美国以外为 AI Plus）"
+        },
+        "validity": "限时返校季活动，领取后 12 个月免费",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "global",
+        "source": "Curated",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "45ead69d60cc": {
+        "discountInfo": "火山方舟免费额度（图像生成）：200张。",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "audience": [
+          "developer"
+        ],
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "cn",
+        "source": "火山方舟",
+        "verified": false
+      },
+      "46b1877f5969": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "47a4c57f3a15": {
+        "discountInfo": "火山方舟免费额度（语音模型）：5000字符。",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "audience": [
+          "developer"
+        ],
+        "type": "deal",
+        "category": "音频语音",
+        "region": "cn",
+        "source": "火山方舟",
+        "verified": false
+      },
+      "4987c183fc1a": {
+        "discountInfo": "官方《用户服务协议》原文：「平台有权根据自身运营需求和营销需要，针对新用户等不特定人群赠与体验券或代金券（具体名称以上线时为准）。体验券和代金券等可用于平台上360智脑大模型API调用消耗使用。」——即新用户可获赠可用于 API 抵扣的免费券，协议未公布具体面额与有效期。",
+        "pricingModel": "free",
+        "features": [
+          "新用户赠体验券/代金券",
+          "可用于大模型 API 抵扣",
+          "需先申请开通"
+        ],
+        "benefitType": [
+          "free_credits",
+          "developer_credit"
+        ],
+        "eligibility": "新用户等不特定人群（需 360 账号、绑定手机号并通过意向申请开通）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": "unknown"
+        },
+        "validity": "官方未标注截止日期；协议载明平台有权调整券种与有效期，调整前会通知",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "Curated-CN",
+        "evidence": [
+          {
+            "field": "discountInfo",
+            "quote": "平台有权根据自身运营需求和营销需要，针对新用户等不特定人群赠与体验券或代金券（具体名称以上线时为准）。体验券和代金券等可用于平台上360智脑大模型API调用消耗使用。",
+            "sourceUrl": "https://ai.360.com/open/zh/terms",
+            "capturedAt": "2026-09-22"
+          }
+        ],
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "4a875a435019": {
+        "discountInfo": "Canva Nonprofits gives eligible registered nonprofits free Canva Pro features and collaboration tools for up to 50 users; additional nonprofit seats are discounted. Canva Education is free for eligible K-12 educators and students.",
+        "benefitType": [
+          "free_subscription",
+          "discount"
+        ],
+        "eligibility": "Nonprofits, schools, K-12 teachers, design and marketing teams.",
+        "eligibilityDetail": {
+          "studentRequired": true,
+          "identityVerificationRequired": true
+        },
+        "claimRequirements": {
+          "manualApplication": true
+        },
+        "audience": [
+          "student",
+          "educator",
+          "other"
+        ],
+        "availability": {
+          "chinaUsable": "unknown"
+        },
+        "type": "deal",
+        "category": "教育学习",
+        "region": "global",
+        "source": "Layer3Labs",
+        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+        "verified": false
+      },
+      "4bda0ebbb091": {
+        "discountInfo": "Free 计划 $0，每月 10,000 credits，可用于 TTS、语音克隆、Dubbing 等全部产品（credits 全产品共享）。",
+        "pricingModel": "free",
+        "priceLine": "免费档 $0 → 付费档",
+        "features": [
+          "每月 10,000 credits",
+          "TTS / 克隆 / Dubbing"
+        ],
+        "benefitType": [
+          "free_subscription",
+          "free_credits"
+        ],
+        "eligibility": "所有新用户",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "general"
+        ],
+        "validity": "长期有效的免费档（每月 10,000 credits）",
+        "type": "deal",
+        "category": "音频语音",
+        "region": "global",
+        "source": "Curated",
+        "sourceUrl": "https://futuretools.io/tools/eleven-labs",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "4c7952115477": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "4caf88e30671": {
+        "discountInfo": "协作奖励计划：可免费领取单模型每日最高 500万 Tokens（官方标注二期已全面升级）。",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "developer_credit"
+        ],
+        "eligibility": "火山方舟用户",
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "每日可领取（官方未标注截止日期）",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "火山方舟",
+        "verified": false
+      },
+      "4d4bcb5b6829": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "4e659666cbb2": {
+        "discountInfo": "火山方舟免费额度（联网插件）：2万次/月。",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "audience": [
+          "developer"
+        ],
+        "type": "deal",
+        "category": "搜索研究",
+        "region": "cn",
+        "source": "火山方舟",
+        "verified": false
+      },
+      "4fcc2847e3fc": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "设计创意",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "4fede366f914": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "其他",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "514a84a1064a": {
+        "discountInfo": "用大学邮箱可 5 折购买含 Copilot 的 Microsoft 365；免费使用 Microsoft 365 for the web（Word/Excel/PowerPoint）；Microsoft Store 指定设备（含 Surface）学生与家长 9 折。",
+        "pricingModel": "paid",
+        "features": [
+          "5 折购买",
+          "含 Copilot"
+        ],
+        "benefitType": [
+          "discount",
+          "free_subscription"
+        ],
+        "eligibility": "在校大学生及家长",
+        "eligibilityDetail": {
+          "educationEmailRequired": true,
+          "identityVerificationRequired": true
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "student",
+          "educator"
+        ],
+        "validity": "长期有效（需保持学生身份验证）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Curated",
+        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "5253b5ed77b1": {
+        "discountInfo": "学生和教师免费使用 Figma 与 FigJam（含设计、白板协作与课堂工具）。",
+        "pricingModel": "free",
+        "features": [
+          "Figma + FigJam 免费",
+          "学生 / 教师"
+        ],
+        "benefitType": [
+          "student_plan",
+          "free_subscription"
+        ],
+        "eligibility": "在校学生 / 教育工作者",
+        "eligibilityDetail": {
+          "educationEmailRequired": true,
+          "identityVerificationRequired": true
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "student",
+          "educator",
+          "education"
+        ],
+        "validity": "长期有效",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "Curated",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "544bb843f605": {
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/hermes-3",
+        "verified": false
+      },
+      "54d867a4530d": {
+        "pricingModel": "free",
+        "type": "tool",
+        "category": "设计创意",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "57847fbcc1ed": {
+        "discountInfo": "火山方舟免费额度（语音模型）：5000字符 + 10复刻声音。",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "audience": [
+          "developer"
+        ],
+        "type": "deal",
+        "category": "音频语音",
+        "region": "cn",
+        "source": "火山方舟",
+        "verified": false
+      },
+      "5975c73aa115": {
+        "type": "tool",
+        "category": "编程开发",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/qlip-ai",
+        "verified": false
+      },
+      "5c38e515a3ae": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "5dedb9455508": {
+        "discountInfo": "官方模型列表标注为免费模型，调用价格 0 元：免费模型适合轻量图像创作",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_model",
+          "free_api"
+        ],
+        "eligibility": "所有注册开发者（需实名认证开通）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "官方模型列表未标注截止日期",
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "cn",
+        "source": "智谱AI",
+        "verified": false
+      },
+      "6013b80f266f": {
+        "discountInfo": "Zapier offers annual billing savings and says nonprofits get 15% off any paid plan, excluding pay-per-task charges.",
+        "benefitType": [
+          "discount"
+        ],
+        "eligibility": "Nonprofits, small businesses automating repetitive tasks.",
+        "claimRequirements": {
+          "manualApplication": true
+        },
+        "audience": [
+          "other"
+        ],
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "Layer3Labs",
+        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+        "verified": false
+      },
+      "62e3166acec0": {
+        "discountInfo": "官方模型列表标注为免费模型，调用价格 0 元：免费模型，支持图像理解",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_model",
+          "free_api"
+        ],
+        "eligibility": "所有注册开发者（需实名认证开通）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "官方模型列表未标注截止日期",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "智谱AI",
+        "verified": false
+      },
+      "642216383013": {
+        "type": "tool",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/reflect",
+        "verified": false
+      },
+      "654e05ed3453": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "65f0bdd295ac": {
+        "discountInfo": "首次开通腾讯混元服务后发放一次性免费资源包：Hunyuan-a13b、Hunyuan-role、Hunyuan-translation、HY Vision 1.5 Instruct、Hunyuan-turbos-vision 等共用 100 万 tokens；Hunyuan-embedding 另送 100 万 tokens。",
+        "pricingModel": "free",
+        "features": [
+          "100 万 tokens",
+          "有效期 1 年",
+          "需实名认证"
+        ],
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "通过腾讯云实名认证的新用户",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "资源包有效期 1 年，自开通服务起 1 年内未用完则过期作废",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "6644f3b43bdb": {
+        "discountInfo": "学生免费获得 $100 Azure 额度（可用于 Azure OpenAI 等），另有 Azure for Students Starter 免费档，均无需信用卡。",
+        "pricingModel": "credits",
+        "features": [
+          "$100 额度",
+          "无需信用卡",
+          "可每年续期"
+        ],
+        "benefitType": [
+          "student_plan",
+          "free_credits",
+          "developer_credit"
+        ],
+        "eligibility": "在校学生",
+        "eligibilityDetail": {
+          "educationEmailRequired": "unknown",
+          "identityVerificationRequired": true
+        },
+        "claimRequirements": {
+          "creditCardRequired": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "student",
+          "developer"
+        ],
+        "validity": "12 个月，可每年续期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "Curated",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "6798f78de5ce": {
+        "discountInfo": "官方模型列表标注为免费模型，调用价格 0 元：免费模型，支持视觉推理",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_model",
+          "free_api"
+        ],
+        "eligibility": "所有注册开发者（需实名认证开通）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "官方模型列表未标注截止日期",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "智谱AI",
+        "verified": false
+      },
+      "6869e7866510": {
+        "discountInfo": "官方接口文档标注轻量级大语言模型 Spark Lite「支持免费使用」，模型列表中该档位调用免费。",
+        "pricingModel": "free",
+        "features": [
+          "Spark Lite 免费",
+          "创建应用即可调用"
+        ],
+        "benefitType": [
+          "free_model",
+          "free_api"
+        ],
+        "eligibility": "注册讯飞开放平台的开发者（需创建应用）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": "unknown"
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "官方文档未标注截止日期",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "72048178d658": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/deepbrain-ai",
+        "verified": false
+      },
+      "72410d92e184": {
+        "type": "tool",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/tickclip-g0pql8",
+        "verified": false
+      },
+      "7691c150c8e5": {
+        "discountInfo": "官方 Token Plan 文档：通过邀请链接购买 Token Plan 可在结算时享受 9 折优惠；邀请人每成功邀请一位好友完成有效支付，可获得该订单实付金额 10% 的开放平台通用代金券，有效期 90 天。",
+        "pricingModel": "paid",
+        "features": [
+          "受邀人订阅 9 折",
+          "邀请人返 10% 代金券",
+          "代金券抵扣 API 费用"
+        ],
+        "benefitType": [
+          "discount"
+        ],
+        "eligibility": "MiniMax 开放平台注册用户（受邀人需通过邀请链接购买 Token Plan）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "代金券自发放之日起 90 天有效；邀请活动官方未标注截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "7762168d515d": {
+        "discountInfo": "Make advertises a 12-month free license for eligible NGOs through its NGO program.",
+        "benefitType": [
+          "free_subscription"
+        ],
+        "eligibility": "NGOs, nonprofits, operations teams building workflow automation.",
+        "claimRequirements": {
+          "manualApplication": true
+        },
+        "audience": [
+          "other"
+        ],
+        "type": "tool",
+        "category": "其他",
+        "region": "global",
+        "source": "Layer3Labs",
+        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+        "verified": false
+      },
+      "78384299b660": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "7f1250402ebb": {
+        "type": "tool",
+        "category": "编程开发",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/klarent-15bc54ee",
+        "verified": false
+      },
+      "7f3607d92aa5": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/genmo",
+        "verified": false
+      },
+      "7f8c32f6a327": {
+        "discountInfo": "火山方舟免费额度（图像生成）：200张。",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "audience": [
+          "developer"
+        ],
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "cn",
+        "source": "火山方舟",
+        "verified": false
+      },
+      "833a9889bfb7": {
+        "discountInfo": "官方新手页三大免费福利：新手产品礼包（八大 AI 服务、百万级交互量免费领取）、乐享会员（最高价值 2888 元）、用户成长礼包；另提供语音听写、语音合成、实时转写、图片生成等能力免费体验。",
+        "pricingModel": "credits",
+        "features": [
+          "百万级交互量",
+          "八大 AI 服务",
+          "乐享会员 2888 元"
+        ],
+        "benefitType": [
+          "free_credits",
+          "developer_credit"
+        ],
+        "eligibility": "新注册开发者；乐享会员需完成认证",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "官方页面未标注截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "8583e9860d88": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "8814355d59e1": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "8ad33957ce77": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/krea",
+        "verified": false
+      },
+      "8b2e8d64f11f": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "8b609cb05116": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "8dada3205ed8": {
+        "discountInfo": "火山方舟免费额度（语音模型）：20小时。",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "audience": [
+          "developer"
+        ],
+        "type": "deal",
+        "category": "音频语音",
+        "region": "cn",
+        "source": "火山方舟",
+        "verified": false
+      },
+      "8e7b0fd03e73": {
+        "discountInfo": "已验证教师以及热门开源仓库维护者可免费获得 GitHub Copilot Pro 访问权。",
+        "pricingModel": "free",
+        "features": [
+          "免费 Copilot Pro",
+          "教师 / 开源维护者",
+          "每月重评估"
+        ],
+        "benefitType": [
+          "free_subscription"
+        ],
+        "eligibility": "经验证的教师 / 热门开源项目维护者",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "educator",
+          "developer"
+        ],
+        "validity": "长期有效（每月重新评估资格）",
+        "type": "deal",
+        "category": "编程开发",
+        "region": "global",
+        "source": "Curated",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "90ef368f720d": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "913211f6d165": {
+        "discountInfo": "火山方舟面向个人用户提供豆包全系模型 500,000 tokens 的免费推理额度；豆包通用模型 pro/lite 的 4K、32K 版本另提供 10,000 RPM、800,000 TPM 的大流量额度。",
+        "pricingModel": "free",
+        "features": [
+          "50 万 tokens",
+          "豆包全系模型",
+          "个人开发者"
+        ],
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "个人开发者（需注册火山引擎账号）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": "unknown"
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "官方公告未标注截止日期，实际额度有效期以火山方舟控制台为准",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "9180073deef1": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "97d21ff73d3e": {
+        "discountInfo": "新用户注册专享 2000万 免费 Tokens 资源包，并含 120 次图像和视频资源包。",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "智谱开放平台新注册用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "智谱AI活动页",
+        "verified": false
+      },
+      "9c12f13df3ba": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "9c553dd82d2d": {
+        "discountInfo": "Cursor says anyone can start free. Its student page points students toward campus and online event promotions; its pricing page warns that third-party Cursor subscriptions are unauthorized.",
+        "eligibility": "Students watching for campus promos, developers testing AI coding tools.",
+        "audience": [
+          "student",
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": "unknown"
+        },
+        "type": "deal",
+        "category": "其他",
+        "region": "global",
+        "source": "Layer3Labs",
+        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+        "verified": false
+      },
+      "9ce2f3d45c11": {
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/jason-ai",
+        "verified": false
+      },
+      "9e7c938ec401": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futurepedia",
+        "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
+        "verified": false
+      },
+      "9fdccd9de525": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/humva",
+        "verified": false
+      },
+      "a1255b2fbae2": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "a134b60a8edc": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "a1bb0302318b": {
+        "type": "tool",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/granola-e110q8",
+        "verified": false
+      },
+      "a67c07bf4993": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/ankon-ai-kos341",
+        "verified": false
+      },
+      "aacd5856bba2": {
+        "discountInfo": "通过核验的非营利组织可在 Notion Business 计划上获得折扣价（官方页未标示具体折扣比例）。",
+        "pricingModel": "paid",
+        "features": [
+          "Business 折扣价",
+          "需非营利核验"
+        ],
+        "benefitType": [
+          "discount"
+        ],
+        "eligibility": "经核验的非营利组织",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true
+        },
+        "claimRequirements": {
+          "manualApplication": true,
+          "accountRequired": true
+        },
+        "audience": [
+          "other"
+        ],
+        "validity": "长期有效（需保持非营利资格）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Curated",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "ab4c0e5c007e": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/kreadoai",
+        "verified": false
+      },
+      "ad1d0c83909d": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "adcb6471a512": {
+        "discountInfo": "批量调用五折特惠：Batch API 面向大规模离线数据处理任务，按标准 API 价格的五折计费，适合批量分析、数据清洗等非实时场景",
+        "pricingModel": "paid",
+        "benefitType": [
+          "discount"
+        ],
+        "eligibility": "所有开发者（批量离线任务）",
+        "eligibilityDetail": {
+          "newUserOnly": false
+        },
+        "audience": [
+          "developer"
+        ],
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "智谱AI活动页",
+        "verified": false
+      },
+      "b4d191dd0c65": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/hiclip",
+        "verified": false
+      },
+      "b4d87c02f4d9": {
+        "discountInfo": "官方按量计费定价表：MiniMax-M3 标注「永久五折」——512k 输入以内输入 2.10 元/百万 tokens（原价 4.20）、输出 8.40 元（原价 16.80）、缓存读取 0.42 元（原价 0.84）；大于 512k 档同样五折。",
+        "pricingModel": "paid",
+        "features": [
+          "输入 2.10 元/百万 tokens",
+          "输出 8.40 元/百万 tokens",
+          "官方标注「永久」"
+        ],
+        "benefitType": [
+          "discount",
+          "free_api"
+        ],
+        "eligibility": "所有开放平台用户（按量计费 API Key）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "官方标注「永久五折」，未标截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "b56f33b3d4f3": {
+        "discountInfo": "官方使用限制页原文：免费推理 API——「魔搭通过API-Inference，将开源模型服务化并通过API接口进行标准化，免费提供给广大开发者体验。」该免费推理 API 由阿里云提供算力支持，额度与并发会随平台资源实时动态调整，并提供魔粒兑换机制。",
+        "pricingModel": "free",
+        "features": [
+          "开源模型免费 API",
+          "需绑阿里云实名认证",
+          "额度并发动态调整"
+        ],
+        "benefitType": [
+          "free_api",
+          "free_model"
+        ],
+        "eligibility": "魔搭账号需先绑定阿里云账号，且该阿里云账号已通过实名认证",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "官方未标注截止日期；额度与并发按实时资源动态调整",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "Curated-CN",
+        "evidence": [
+          {
+            "field": "discountInfo",
+            "quote": "魔搭通过API-Inference，将开源模型服务化并通过API接口进行标准化，免费提供给广大开发者体验。",
+            "sourceUrl": "https://www.modelscope.cn/docs/model-service/API-Inference/limits",
+            "capturedAt": "2026-09-22"
+          }
+        ],
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "b75b42583ad8": {
+        "discountInfo": "Free 计划 $0，赠送一次性 125 credits（不过期），可试用 Gen 系列视频/图像生成模型，含 5GB 素材存储；按月付费计划另享年付 8 折。",
+        "pricingModel": "free",
+        "priceLine": "免费档 $0 → 付费档",
+        "features": [
+          "一次性 125 credits",
+          "含 5GB 素材存储"
+        ],
+        "benefitType": [
+          "free_subscription",
+          "free_credits"
+        ],
+        "eligibility": "所有新用户",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "general"
+        ],
+        "validity": "一次性额度，不过期",
+        "type": "deal",
+        "category": "视频",
+        "region": "global",
+        "source": "Curated",
+        "sourceUrl": "https://futuretools.io/tools/runway",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "b8f11a235591": {
+        "discountInfo": "官方活动规则：扣子个人版用户每日成功登录即可获赠 1500 活动积分，每个自然日每个账号限领一次；每次发放的积分有效期 1 天，从发放之时起算，每日积分有效期独立计算、可累计使用。",
+        "pricingModel": "free",
+        "features": [
+          "每日登录领 1500 积分",
+          "当天有效可累计",
+          "个人免费版可用"
+        ],
+        "benefitType": [
+          "free_credits",
+          "developer_credit"
+        ],
+        "eligibility": "扣子个人版用户（含个人免费版；企业版用户不参与），每个自然日每账号限领一次",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "每次发放的活动积分有效期 1 天，每日独立计算（活动不定期开放）",
+        "type": "deal",
+        "category": "智能体",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "bcba406ed9ff": {
+        "discountInfo": "官方定价详情页中，stepaudio-3-realtime-preview 与 stepaudio-3-chat-preview 两个语音大模型的输入/输出价格均标注为「限时免费」。",
+        "pricingModel": "trial",
+        "features": [
+          "两个语音模型限时免费",
+          "按 Token 计费其他"
+        ],
+        "benefitType": [
+          "free_model",
+          "trial"
+        ],
+        "eligibility": "StepFun 开放平台注册开发者",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": "unknown"
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "限时免费（官方未标注具体截止日期）",
+        "type": "deal",
+        "category": "音频语音",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "bf08e4fbd5ac": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/star-by-face",
+        "verified": false
+      },
+      "bf156583e97c": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "c05dc74bfd78": {
+        "discountInfo": "Education Pro is offered to verified students and educators at a discount. Perplexity also says promo codes are distributed through official partners and channels.",
+        "pricingModel": "freemium",
+        "benefitType": [
+          "discount"
+        ],
+        "eligibility": "Students, educators, research-heavy users, people comparing AI search tools.",
+        "eligibilityDetail": {
+          "studentRequired": true,
+          "identityVerificationRequired": true
+        },
+        "audience": [
+          "student",
+          "educator"
+        ],
+        "availability": {
+          "chinaUsable": "unknown"
+        },
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Layer3Labs",
+        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+        "verified": false
+      },
+      "c25b0ed788e3": {
+        "discountInfo": "符合条件的学生与教育工作者免费获得 Notion Plus 计划（含无限存储、30 天版本历史等）。",
+        "pricingModel": "free",
+        "features": [
+          "免费 Plus 计划",
+          "学校须在 WHED"
+        ],
+        "benefitType": [
+          "student_plan",
+          "free_subscription"
+        ],
+        "eligibility": "高校学生与教育工作者（学校须在 WHED 名录）",
+        "eligibilityDetail": {
+          "educationEmailRequired": true,
+          "identityVerificationRequired": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "student",
+          "educator"
+        ],
+        "validity": "长期有效",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Curated",
+        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "c3d6bd34ebfe": {
+        "pricingModel": "freemium",
+        "audience": [
+          "student",
+          "other"
+        ],
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "c433fee91818": {
+        "discountInfo": "符合条件的高校学生可按折扣月费订阅 Windsurf Pro，最长连续 12 个月；可再提交资料最多激活 3 个额外折扣期。",
+        "pricingModel": "paid",
+        "priceLine": "学生折扣月费 → Pro",
+        "features": [
+          "折扣月费订 Pro",
+          "最长 12 个月"
+        ],
+        "benefitType": [
+          "student_plan",
+          "discount"
+        ],
+        "eligibility": "经认可高等院校的在校学生",
+        "eligibilityDetail": {
+          "educationEmailRequired": true,
+          "identityVerificationRequired": true
+        },
+        "claimRequirements": {
+          "manualApplication": true,
+          "accountRequired": true
+        },
+        "audience": [
+          "student",
+          "developer"
+        ],
+        "validity": "每个折扣期最长 12 个月，可续 3 次",
+        "type": "deal",
+        "category": "编程开发",
+        "region": "global",
+        "source": "Curated",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "c4ab5c5d8101": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "c59299cdc88e": {
+        "discountInfo": "开放平台文档页横幅：「申请加入海纳百川计划 · 免费使用 M3Plus API」——申请加入该计划后可免费调用百川 M3Plus（循证增强医疗大模型）API。",
+        "pricingModel": "free",
+        "features": [
+          "免费 M3Plus API",
+          "需申请审核"
+        ],
+        "benefitType": [
+          "free_api"
+        ],
+        "eligibility": "申请加入海纳百川计划的开发者 / 机构（需审核）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": "unknown"
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "未标注截止日期",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "c694e7c5f125": {
+        "discountInfo": "方舟 Agent Plan 限时首月 9.9 元起，覆盖超全模态模型与 Harness 能力。",
+        "pricingModel": "paid",
+        "benefitType": [
+          "discount"
+        ],
+        "eligibility": "火山方舟用户（首月优惠）",
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "限时活动（官方未标注截止日期）",
+        "type": "deal",
+        "category": "智能体",
+        "region": "cn",
+        "source": "火山方舟",
+        "verified": false
+      },
+      "c789f0a090bf": {
+        "discountInfo": "Free Gemini access remains available. Google AI Pro student offers vary by country; the U.S. student offer page says the previous student offer ended March 11, 2026.",
+        "pricingModel": "freemium",
+        "eligibility": "Students checking regional offers, Google Workspace users, people who want a free AI assistant.",
+        "audience": [
+          "student",
+          "general"
+        ],
+        "availability": {
+          "chinaUsable": "unknown",
+          "regionRestriction": "学生优惠按国家/地区而异；美国站学生优惠已于 2026-03-11 结束"
+        },
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "Layer3Labs",
+        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+        "verified": false
+      },
+      "c971e33a9cd0": {
+        "discountInfo": "OpenAI, working with SheerID for verification, offers one full year of free ChatGPT Plus to eligible veterans and transitioning servicemembers, alongside example chats and a getting-started guide for job search, benefits, and relocation…",
+        "benefitType": [
+          "free_subscription"
+        ],
+        "eligibility": "Veterans and active-duty servicemembers preparing to separate from the military.",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true
+        },
+        "claimRequirements": {
+          "manualApplication": true
+        },
+        "audience": [
+          "other"
+        ],
+        "type": "deal",
+        "category": "对话模型",
+        "region": "global",
+        "source": "Layer3Labs",
+        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+        "verified": false
+      },
+      "c9c5429f2205": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "智能体",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "cb45e0c735bd": {
+        "type": "tool",
+        "category": "其他",
+        "region": "global",
+        "source": "Futurepedia",
+        "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+        "verified": false
+      },
+      "cbfce04c5556": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/motionleap",
+        "verified": false
+      },
+      "d344dfeebd73": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/ideogram",
+        "verified": false
+      },
+      "d37287db1754": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/buseybench-k187w4",
+        "verified": false
+      },
+      "d6aaee8c7379": {
+        "discountInfo": "火山方舟免费额度（图像生成）：50张。",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "audience": [
+          "developer"
+        ],
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "cn",
+        "source": "火山方舟",
+        "verified": false
+      },
+      "d8d0ba522315": {
+        "discountInfo": "官方定价页标注多款模型价格为「免费」：文本 Hunyuan-MT-7B、Xing4.0-29B、PaddleOCR-VL；向量与重排 bge-m3、bge-reranker-v2-m3、bge-large-zh/en；图像 Kolors 文生图；语音 XingChenGSR、XingChenASR 系列、SenseVoiceSmall。",
+        "pricingModel": "free",
+        "features": [
+          "多款模型标价 0",
+          "文本 / 向量 / 图像 / 语音"
+        ],
+        "benefitType": [
+          "free_model",
+          "free_api"
+        ],
+        "eligibility": "所有注册开发者",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "官方定价页未标注截止日期（实时价格以官方页为准）",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "da0d5a1929b4": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/recraft",
+        "verified": false
+      },
+      "df1210f69a39": {
+        "discountInfo": "官方模型列表标注为免费模型，调用价格 0 元：免费视频生成模型",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_model",
+          "free_api"
+        ],
+        "eligibility": "所有注册开发者（需实名认证开通）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "官方模型列表未标注截止日期",
+        "type": "deal",
+        "category": "视频",
+        "region": "cn",
+        "source": "智谱AI",
+        "verified": false
+      },
+      "df8ec56faa17": {
+        "discountInfo": "通过 GitHub Education 验证的在校学生可免费使用 Copilot 全部付费功能（Copilot Student）。",
+        "pricingModel": "free",
+        "features": [
+          "全部付费功能免费",
+          "需学籍验证"
+        ],
+        "benefitType": [
+          "student_plan",
+          "free_subscription"
+        ],
+        "eligibility": "经 GitHub Education 验证的在校学生",
+        "eligibilityDetail": {
+          "educationEmailRequired": "unknown",
+          "identityVerificationRequired": true
+        },
+        "claimRequirements": {
+          "manualApplication": true,
+          "accountRequired": true
+        },
+        "audience": [
+          "student",
+          "developer"
+        ],
+        "validity": "长期有效（GitHub 每月重新评估资格）",
+        "type": "deal",
+        "category": "编程开发",
+        "region": "global",
+        "source": "Curated",
+        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "e237cab7c007": {
+        "discountInfo": "新用户开通百炼后各模型独立赠送免费额度：每个模型均有独立的免费额度（通常为 100 万 Token），不能跨模型合并或转移使用；仅华北2（北京）地域模型享有免费额度，其他地域无免费额度；额度过期后自动失效，不支持补发、延期或重置",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "阿里云百炼新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "各模型额度有独立有效期，过期后剩余部分自动作废、不补发",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "阿里云百炼",
+        "verified": false
+      },
+      "e384895f5935": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "e3af28ce5ca1": {
+        "audience": [
+          "developer"
+        ],
+        "type": "tool",
+        "category": "编程开发",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/emergent-sh",
+        "verified": false
+      },
+      "e4bd8003b3d6": {
+        "discountInfo": "GLM-5.3-Flash（原生多模态、1M 上下文）：限时五折输入 0.4 元、缓存命中 0.115 元、输出 1.4 元；标准价输入 0.8 元、缓存命中 0.23 元、输出 2.8 元GLM-5.2：输入 8 元、缓存命中 2 元、输出 28 元GLM-5.1：输入 [0,32K) 6 元 / [",
+        "pricingModel": "paid",
+        "benefitType": [
+          "discount"
+        ],
+        "eligibility": "所有调用 GLM-5.3-Flash 的开发者",
+        "eligibilityDetail": {
+          "newUserOnly": false
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "限时活动（官方未标注截止日期）",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "智谱AI活动页",
+        "verified": false
+      },
+      "e4f7271cf7dc": {
+        "discountInfo": "初创公司最高 $200,000 AWS Activate Credits，可用于基础设施、数据服务及 Amazon Bedrock 第三方模型；AI 初创可申请额外 credits。",
+        "pricingModel": "credits",
+        "features": [
+          "最高 $200,000",
+          "可用于 Bedrock"
+        ],
+        "benefitType": [
+          "free_credits",
+          "developer_credit"
+        ],
+        "eligibility": "初创公司（含自筹与已融资团队）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "长期有效的项目，按阶段申请",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "Curated",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "e63402b5cc83": {
+        "discountInfo": "Kimi 开放平台为新注册用户提供免费测试额度：注册即赠送 15 元代金券，可用于体验 Kimi K3 等模型的 API 调用。",
+        "pricingModel": "credits",
+        "features": [
+          "15 元代金券",
+          "需实名认证"
+        ],
+        "benefitType": [
+          "free_credits",
+          "developer_credit"
+        ],
+        "eligibility": "Kimi 开放平台新注册用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "以代金券实际到期时间为准",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "e65f54470862": {
+        "discountInfo": "首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibility": "千帆平台新用户（需实名认证）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "自开通起 3个月",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "百度千帆",
+        "verified": false
+      },
+      "e7e8f538456c": {
+        "discountInfo": "官方模型列表标注为免费模型，调用价格 0 元：免费文本模型 支持最长 128K 的上下文处理",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_model",
+          "free_api"
+        ],
+        "eligibility": "所有注册开发者（需实名认证开通）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "官方模型列表未标注截止日期",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "智谱AI",
+        "verified": false
+      },
+      "e91f65960877": {
+        "discountInfo": "官方模型费用文档：Kimi-8k/32k/128k、阶跃星辰等模型限时免费，限额使用、每个模型 100 次/天，不扣减积分；另有智能体调用 100 次/天的免费额度。",
+        "pricingModel": "free",
+        "features": [
+          "Kimi 等模型限时免费",
+          "每模型 100 次/天",
+          "不扣减积分"
+        ],
+        "benefitType": [
+          "free_model"
+        ],
+        "eligibility": "所有扣子用户（在大模型节点中选择标注限时免费的模型）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": "unknown",
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "官方标注限时免费、未标注截止日期；100 次/天按自然日重置",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "Curated-CN",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "ead998e58cd9": {
+        "discountInfo": "上下文缓存存储限时免费：将上下文缓存起来，按“元/百万tokens/小时”计费，目前多数模型为限时免费",
+        "pricingModel": "free",
+        "benefitType": [
+          "trial"
+        ],
+        "eligibility": "所有调用智谱 API 的开发者",
+        "eligibilityDetail": {
+          "newUserOnly": false
+        },
+        "audience": [
+          "developer"
+        ],
+        "validity": "限时免费（官方未标注截止日期）",
+        "type": "deal",
+        "category": "API服务",
+        "region": "cn",
+        "source": "智谱AI活动页",
+        "verified": false
+      },
+      "ebd47f6d2522": {
+        "discountInfo": "官方模型列表标注为免费模型，调用价格 0 元：免费文本模型 延续 GLM-4.7 基座的通用能力",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_model",
+          "free_api"
+        ],
+        "eligibility": "所有注册开发者（需实名认证开通）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "官方模型列表未标注截止日期",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "智谱AI",
+        "verified": false
+      },
+      "ec17511a4284": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/copilot-3d",
+        "verified": false
+      },
+      "f2294d28cbe8": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/leonardo-ai",
+        "verified": false
+      },
+      "f22e3cd094ad": {
+        "discountInfo": "官方模型列表标注为免费模型，调用价格 0 元：免费模型，支持视觉推理",
+        "pricingModel": "free",
+        "benefitType": [
+          "free_model",
+          "free_api"
+        ],
+        "eligibility": "所有注册开发者（需实名认证开通）",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "audience": [
+          "developer"
+        ],
+        "availability": {
+          "chinaUsable": true
+        },
+        "validity": "官方模型列表未标注截止日期",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "智谱AI",
+        "verified": false
+      },
+      "f578493037d4": {
+        "discountInfo": "经核验的非营利组织可享 Claude Team / Enterprise 折扣价：Team 计划 $8/用户/月、Enterprise 计划 $10/用户/月（团队不足 150 人最少 2 席）。",
+        "pricingModel": "paid",
+        "features": [
+          "非营利折扣价",
+          "最少 2 席"
+        ],
+        "benefitType": [
+          "discount"
+        ],
+        "eligibility": "经核验的非营利组织",
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": true,
+          "accountRequired": true
+        },
+        "audience": [
+          "other"
+        ],
+        "availability": {
+          "chinaUsable": "unknown"
+        },
+        "validity": "长期有效（保持非营利资格即可）",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "global",
+        "source": "Curated",
+        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+        "verified": true,
+        "verifiedAt": "2026-09-22"
+      },
+      "f5ffff50772c": {
+        "discountInfo": "Free ChatGPT tier; annual billing available for Business and Enterprise plans. No standing public student or nonprofit discount was listed on the official pricing page when checked.",
+        "pricingModel": "freemium",
+        "eligibility": "Individuals, teams already standardizing on ChatGPT, businesses comparing seat costs.",
+        "audience": [
+          "general"
+        ],
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "Layer3Labs",
+        "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+        "verified": false
+      },
+      "f820af7d3a70": {
+        "type": "tool",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/n8n",
+        "verified": false
+      },
+      "f91e1085801f": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "f9720295b45d": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/autodraw",
+        "verified": false
+      }
+    }
+  },
+  "absence": {},
+  "events": []
+}

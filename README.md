@@ -42,7 +42,7 @@ node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 in
 （bash 是 `\`、PowerShell 是反引号），写成多行会让其中一边复制过去跑不起来。
 
 ```bash
-npm run test:strict && npm run check:reproducible && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:audience && npm run selftest:app-token && npm run build && npm run check:ci
+npm run test:strict && npm run check:reproducible && npm run check:history && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:provenance && npm run selftest:history && npm run selftest:audience && npm run selftest:app-token && npm run build && npm run check:ci
 ```
 
 > `migrate:audience:verify` **不需要参数**：它默认跑 `scripts/data/fixtures/` 下那对合成夹具
@@ -135,6 +135,7 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 | `priceLine` | 只有官方页明确给出「免费档 → 付费档」时才填。看不出升级路径就留 `null`，卡片不渲染该行，**不编造价格阶梯**。 |
 | `verifiedAt` | 仅人工逐条回访官方页的条目可填（当前 **32 条**策展数据：`curated_cn` 18 + `curated_global` 14，`node scripts/validate.js` 实测输出「策展数据 32 条」）。自动采集条目一律为 `null`。**这两个字段只留在数据里**（`validate.js` 仍在守「`verified=true` 必须带日期」这条断言），页面上不再渲染核验标签——原因见下文「诚实性约束」。 |
 | `evidence` | v1.3：官方原文片段，**≤3 条 × ≤200 字**，只能用人工写入 `curated_*.json`（或 `audience-overrides.json` 的 `evidenceQuotes`）。超长**拒收**、出处不得是聚合站、必须绑定某个 `field`。全库还有 12000 字与「≤ deals.json 字节 5%」两道预算。契约见 [`docs/SCHEMA-v1.3.md`](docs/SCHEMA-v1.3.md)。 |
+| `history` | v1.4：**构建期派生字段，只进 `dist/deals.json`**。源数据里不能有它（`validate` 白名单与 `check-reproducible` 各拦一道）。真值是 `scripts/data/deal-history.json`（一次性基线 + 追加事件，写入点只有 `scripts/collect.js`）。契约见 [`docs/SCHEMA-v1.4.md`](docs/SCHEMA-v1.4.md)。 |
 
 新增策展条目并补齐这三个字段的流程：
 
@@ -210,6 +211,10 @@ scripts/
     verify-site.js            真浏览器验收：密度/裁切/hover/筛选/弹层/译文折叠/移动端/分类页/按需求页/状态页（dev，需 playwright-core）
     check-mobile-chrome.js    390px 下逐控件量裁切/越出视口/横向溢出（含 nav.needs 入口行）
     check-reproducible.js     可重建性门禁：文件里不许有「没有任何源」的值（五个判据，CI）
+    history-verify.js         v1.4 历史门禁：基线 + 事件重放必须等于当前 deals.json（链 / 生命周期 / 上限，CI）
+    history-baseline.js       一次性历史基线（已存在或已有事件时拒绝重跑）
+    history-audit.js          历史 × git 版本交叉校验（离线，**不进 CI**：浅克隆与历史重写都不适合当闸门）
+    history-selftest.js       v1.4 历史自测（噪音抑制 / 锚点 / 链 / 不误报「消失」/ 上限，CI）
     audience-selftest.js      受众字段全部红线守卫（三态 / 仲裁 / 措辞同源 / v1.2 需求注册表，CI）
     provenance-selftest.js    v1.3 信息来源自测（引文上限与预算 / 四种缺失状态 / 渲染措辞，CI）
     audience-report.js        覆盖率报告：已知 / unknown / 缺席三栏分列，逐条可审计
@@ -222,8 +227,9 @@ scripts/
     fetch-logos.js            从厂商官网抓取品牌图标，补进 assets/logos/
 ```
 
-契约文档在 `docs/SCHEMA-v1.1.md`（六字段的语义、可信度档位、可重建判据、五条既有约定）
-与 `docs/SCHEMA-v1.3.md`（信息来源：证据层 / 派生采集事实 / 引文上限 / 渲染与状态词）。
+契约文档在 `docs/SCHEMA-v1.1.md`（六字段的语义、可信度档位、可重建判据、五条既有约定）、
+`docs/SCHEMA-v1.3.md`（信息来源：证据层 / 派生采集事实 / 引文上限 / 渲染与状态词）
+与 `docs/SCHEMA-v1.4.md`（优惠历史：四方案决策 / 存储契约 / 什么算重要变化 / ended 的两种含义 / 上限）。
 
 ## 采集来源策略
 

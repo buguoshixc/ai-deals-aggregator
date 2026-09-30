@@ -115,6 +115,9 @@ const GATE_STEP_NAMES = [
   // v1.1 收口新增：可重建性（值必须有源）。与 strict 分开，因为红的含义不同 ——
   // strict 红 = 值不合法；这一条红 = 值合法但**没有任何文件能重建它**。
   'Reproducibility gate (no value without a source)',
+  // v1.4 新增：历史一致性的机器守卫（一次性基线 + 追加事件重放必须等于当前 deals.json）。
+  // 与可重建性分开的理由相同：红的含义不同 —— 前者是「值没有源」，后者是「变化没有账」。
+  'History verify (log consistent with deals.json)',
   // v1.1 收口新增：`migrate.js --audience` 的验收比对。它此前**跑不起来**（缺 --before
   // 基线文件），于是「能改写 deals.json 的命令行工具」没有任何 CI 守卫。改成 9 条合成
   // 夹具逐分支覆盖后才接得进来；接进来之前它就已经抓到一处潜伏缺陷（见 action.yml 注释）。
@@ -128,6 +131,9 @@ const GATE_STEP_NAMES = [
   // 「最近成功采集」四种状态的语义、以及「不许给自己盖有效性章」的措辞红线。
   // 与 Audience self-test 同一条判断标准：它红的时候没有别的步骤会替它红。
   'Provenance self-test',
+  // v1.4 新增：变更记录层（只记重要字段 / 锚点 / 链 / 来源失败不误报 / 上限）。
+  // 同一把尺子：它红的时候没有别的步骤会替它红。
+  'Deal-history self-test',
   // v1.1 新增：受众字段（三态语义 / merge 可信度仲裁 / 措辞同源）的全部红线守卫都在这支自测里。
   // 它原先只在本机跑，于是这几类回归在 CI 里看不见（t1 核验的 B5）。判断标准不是"多新"，
   // 而是"它红的时候有没有别的步骤会替它红"——没有，所以必须进来。
@@ -599,10 +605,12 @@ if (idxGateRef >= 0 && idxPush >= 0 && idxGateRef > idxPush) {
   collectProblems.push('门禁写在 git push 之后（门禁红也拦不住入库）');
 }
 if (commitStepCount !== 1) collectProblems.push(`「Commit and push」步骤出现 ${commitStepCount} 次（期望恰好 1 次）`);
-// 提交内容：三份东西必须一起走 —— 数据本身，以及两份**跨运行状态**
-//（来源健康、待译进入日期）。少一份就会出现「状态永远停在首次运行」或
-//「译文年龄退回 firstSeen，一失效就超期」这类静默退化。
-for (const needed of ['deals.json', 'scripts/data/source-health.json', 'scripts/data/zh-pending.json']) {
+// 提交内容：四份东西必须一起走 —— 数据本身，以及三份**跨运行状态**
+//（来源健康、待译进入日期、变更日志）。少一份就会出现「状态永远停在首次运行」、
+//「译文年龄退回 firstSeen，一失效就超期」，或 v1.4 实测差点放过去的那种最坏形态：
+//**采集把变更日志写进磁盘却没提交** —— 下一轮门禁拿「已更新的 deals.json」比「上一轮的日志」，
+// check:history 当场变红，整条采集链被自己的日志卡死。
+for (const needed of ['deals.json', 'scripts/data/source-health.json', 'scripts/data/zh-pending.json', 'scripts/data/deal-history.json']) {
   if (!collectRaw.includes(needed)) collectProblems.push(`collect.yml 的提交里没有 ${needed}`);
 }
 check('(13) collect.yml 的门禁步骤排在提交步骤之前',
