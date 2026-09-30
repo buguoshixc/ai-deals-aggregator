@@ -667,6 +667,106 @@ check('红线：unknown 的渲染文案里绝不含「不可用」',
   !au.chinaUsableLine({ availability: { chinaUsable: 'unknown' } }).includes('不可用'),
   au.chinaUsableLine({ availability: { chinaUsable: 'unknown' } }));
 
+/* ================================================================== */
+console.log('\n=== 9) 按需求找优惠（v1.2）：注册表与判据 ===');
+
+/**
+ * 为什么这一节必须存在：`NEED_PAGES` 是第二张「判据只写一遍」的注册表，
+ * 而它比 `COLLECTION_PAGES` 更容易坏在**措辞**上 —— 十条入口里有四条的数字会让
+ * 读者意外（`no-card` 只有 1 条、`ai-coding` 只有 4 条），页面上那段 `why` 就是
+ * 唯一的解释。它同时被构建期插进 HTML，所以格式错（Markdown 记号、版本号、
+ * 写死的条数）会**原样出现在读者眼前**——这正是 v1.1 踩过的那个坑。
+ */
+{
+  const slugs = au.NEED_PAGES.map(page => page.slug);
+  const groupKeys = au.NEED_GROUPS.map(group => group.key);
+  check('NEED_PAGES 的 slug 全局唯一', new Set(slugs).size === slugs.length, slugs.join(', '));
+  check('NEED_PAGES 的 slug 形如 kebab-case（稳定 URL）',
+    slugs.every(slug => /^[a-z][a-z0-9-]*$/.test(slug)), slugs.join(', '));
+  check('每个 slug 都有 predicate，且 predicate 在 NEED_PREDICATES 里有实现',
+    au.NEED_PAGES.every(page => typeof au.NEED_PREDICATES[page.predicate] === 'function'),
+    au.NEED_PAGES.filter(page => typeof au.NEED_PREDICATES[page.predicate] !== 'function').map(p => p.slug).join(', '));
+  check('每个 slug 都归入 NEED_GROUPS 里的某一组',
+    au.NEED_PAGES.every(page => groupKeys.includes(page.group)),
+    au.NEED_PAGES.filter(page => !groupKeys.includes(page.group)).map(p => p.slug).join(', '));
+  check('每条都有 label / heading / description / criteria（首页入口与页面标题都读它）',
+    au.NEED_PAGES.every(page => page.label && page.heading && page.description && page.criteria),
+    au.NEED_PAGES.filter(page => !(page.label && page.heading && page.description && page.criteria)).map(p => p.slug).join(', '));
+  // 窄屏短标签：必须有，且真的更短（否则「换短标签」这条优化会静默失效）
+  check('每条都有窄屏短标签，且短于全称（窄屏折行靠它压下来）',
+    au.NEED_PAGES.every(page => typeof page.short === 'string' && page.short.length > 0 && page.short.length < page.label.length),
+    au.NEED_PAGES.filter(page => !(typeof page.short === 'string' && page.short.length > 0 && page.short.length < page.label.length))
+      .map(p => `${p.slug}(${p.short || '无'})`).join(', '));
+  for (const page of au.NEED_PAGES) {
+    check(`短标签不含数字或版本号（${page.slug}「${page.short}」）`,
+      !/\d/.test(page.short || '') && !/v\d/.test(page.short || ''), page.short);
+  }
+  check('每条 why 至少三句（缺了就成了「只有条数、没有口径」的页面）',
+    au.NEED_PAGES.every(page => Array.isArray(page.why) && page.why.length >= 3),
+    au.NEED_PAGES.filter(page => !Array.isArray(page.why) || page.why.length < 3).map(p => p.slug).join(', '));
+  // 这两个记号会**原样渲染给读者**（构建期直接插进 .snote），构建自检也扫这一条
+  const markdownish = au.NEED_PAGES.filter(page => page.why.some(line => /\*\*|`/.test(line))).map(p => p.slug);
+  check('why 里没有 Markdown 记号（** 与反引号会原样出现在读者眼前）',
+    markdownish.length === 0, markdownish.join(', '));
+  // 版本号与写死的条数：条数是**按数据现算**的（页面顶部与首页入口都是），
+  // 写进文案必然过期 —— 而「过期」的具体样子是「页面上写着 4 条、表格里列了 12 行」。
+  // 第一版这条守卫太窄（只抓「N 条」），漏掉了「只有 4 条」「扫出 10 条，其中 6 条」这种写法；
+  // 现在按「why 里根本不该出现与条数有关的数字」判。
+  const frozenNumbers = au.NEED_PAGES.filter(page =>
+    page.why.some(line => /v\d+\.\d+/.test(line) || /\d+\s*(条|个条目)/.test(line))).map(p => p.slug);
+  check('why 里没有写死的条数（条数按数据现算，写死必然过期）',
+    frozenNumbers.length === 0, frozenNumbers.join(', '));
+
+  // 判据本身：三态只认肯定信号 —— 「未确认」绝不等于「不需要」
+  const noCard = au.NEED_PREDICATES.noCard;
+  check('no-card：creditCardRequired=false 命中', noCard({ claimRequirements: { creditCardRequired: false } }) === true);
+  check('no-card：creditCardRequired=true 不命中', noCard({ claimRequirements: { creditCardRequired: true } }) === false);
+  check('no-card：creditCardRequired="unknown" 不命中（没证据 ≠ 不需要）',
+    noCard({ claimRequirements: { creditCardRequired: 'unknown' } }) === false);
+  check('no-card：字段缺席不命中', noCard({ claimRequirements: {} }) === false);
+  check('no-card：claimRequirements 整个缺席不命中', noCard({}) === false);
+  check('no-card：字符串 "false" 不命中（只认布尔字面量）',
+    noCard({ claimRequirements: { creditCardRequired: 'false' } }) === false);
+  const china = au.NEED_PREDICATES.chinaUsable;
+  check('china-usable：chinaUsable=true 命中', china({ availability: { chinaUsable: true } }) === true);
+  check('china-usable：region=cn 单独不命中（SCHEMA §2.5：来源是国内不构成可用证据）',
+    china({ region: 'cn', availability: { chinaUsable: 'unknown' } }) === false);
+  check('china-usable："unknown" 不命中', china({ availability: { chinaUsable: 'unknown' } }) === false);
+  const edu = au.NEED_PREDICATES.eduIdentity;
+  check('edu-identity：educationEmailRequired=true 命中', edu({ eligibilityDetail: { educationEmailRequired: true } }) === true);
+  check('edu-identity：educationEmailRequired=false 不命中（明说不需要教育邮箱就不该在这页）',
+    edu({ eligibilityDetail: { educationEmailRequired: false } }) === false);
+
+  // 垃圾输入不许抛：入口页是按数据现算的，一条脏数据不该让整次构建炸掉
+  const garbage = [null, undefined, {}, { audience: 'student' }, { benefitType: null }, { availability: [] }, { category: 5 }, { claimRequirements: 0 }];
+  let threw = 0;
+  for (const value of garbage) {
+    for (const name of Object.keys(au.NEED_PREDICATES)) {
+      try { au.NEED_PREDICATES[name](value); } catch (error) { threw++; }
+    }
+  }
+  check('十条判据对残缺/脏数据一律返回布尔值、不抛异常', threw === 0, `${threw} 次抛错`);
+
+  // needsOf 的次序与去重（次序决定 dist/deals.json 的序列化结果，必须稳定）
+  const multi = { audience: ['student', 'developer'], benefitType: ['student_plan', 'free_api'], eligibilityDetail: { studentRequired: true } };
+  const list = au.needsOf(multi);
+  check('needsOf 命中多条时按注册表顺序返回', JSON.stringify(list) === JSON.stringify(slugs.filter(s => list.includes(s))), JSON.stringify(list));
+  check('needsOf 不产生重复 slug', new Set(list).size === list.length, JSON.stringify(list));
+  check('needsOf 对空记录返回空数组', JSON.stringify(au.needsOf({})) === '[]', JSON.stringify(au.needsOf({})));
+
+  // 真实数据不变量：每条 slug 至少有一条、且命中都落在注册表内
+  const dealRecords = deals.filter(d => d.type === 'deal');
+  const known = new Set(slugs);
+  const counts = slugs.map(slug => [slug, dealRecords.filter(d => au.needsOf(d).includes(slug)).length]);
+  const empty = counts.filter(([, n]) => n === 0);
+  check('每条入口在当前数据里都至少有一条（0 条的会被构建期跳过，那说明判据或数据坏了）',
+    empty.length === 0, empty.map(([slug]) => slug).join(', '));
+  console.log(`  当前命中分布：${counts.map(([slug, n]) => `${slug} ${n}`).join(' · ')}`);
+  check('所有记录的 needsOf 结果都落在注册表内',
+    dealRecords.every(d => au.needsOf(d).every(slug => known.has(slug))),
+    dealRecords.filter(d => au.needsOf(d).some(slug => !known.has(slug))).map(d => d.id).join(', '));
+}
+
 /* ------------------------------------------------------------------ */
 console.log(`\n${failures.length ? '❌' : '✅'} 受众字段自测：${pass} 项通过，${failures.length} 项失败`);
 if (failures.length) {

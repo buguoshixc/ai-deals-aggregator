@@ -318,6 +318,40 @@
        `.jump[hidden]`（0,2,0）胜过 `.jump`（0,1,0），也顺带盖住媒体查询里的 display:grid。 */
     .jump[hidden] { display: none; }
 
+    /* ---------- 按需求找优惠（v1.2） ----------
+       入口行与上面那条筛选条是**两层**，刻意不复用 .facetsin：
+         · 筛选条是横向滚动的单行、且按当前数据重画（计数随筛选变）；
+         · 这一行是静态导航（构建期注入、指向 /need/<slug>/ 落地页），无 JS 也必须完整可点，
+           所以禁止横向滚动容器（窄屏上「看不见的入口」等于没有入口）。
+
+       ⚠️ **宽度与高度都是量出来的，不是估的**（1440×900 实测）：
+       两组各占一行时这一块高 38px，网格起点 196→234px，首屏「完整可见」的卡片
+       从 9 张掉到 6 张 —— 基线本来就卡在 9 张那条线上，多 38px 就整掉一行。
+       合成一行（组名内联 + 分隔线）后高 28px，实测网格起点 224px、首屏完整可见 8 张。
+       这 28px 是「一个清晰入口」的定价，写在这里免得下一个人以为它免费。 */
+    .needs {
+      max-width: 1420px; margin: 0 auto; padding: 5px 20px 0;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--s2);
+      font-size: var(--fs-sm);
+    }
+    .needs .nlb { color: var(--mut); flex: none; }
+    .needs a {
+      display: inline-flex; align-items: center; gap: var(--s1);
+      color: var(--ink2); text-decoration: none; border: 1px solid var(--line);
+      border-radius: var(--r-pill); padding: 3px 10px; white-space: nowrap;
+      transition: border-color var(--t-fast) var(--e-std), color var(--t-fast) var(--e-std);
+    }
+    .needs a:hover { border-color: var(--brand); color: var(--brand); }
+    .needs a:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    .needs a b { opacity: .7; margin-left: 2px; font-weight: 600; }
+    /* 两套标签由 CSS 切换（不用 JS）：桌面端全称，窄屏缩写。见 NEED_PAGES 的 `short` 注释。 */
+    .needs .nl-short { display: none; }
+    /* 桌面端：两组并排在一行里；组名与 chip 之间只靠 gap 分隔。
+       `.ngroup` 与 `.nlinks` 都是**透明容器** —— 它们存在只是为了窄屏能换一种排法
+       （见媒体查询里那段注释），桌面端不参与任何尺寸计算。 */
+    .needs .ngroup, .needs .nlinks { display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--s2); }
+    .needs .nsep { width: 1px; height: 16px; background: var(--line); flex: none; margin: 0 var(--s1); }
+
     /* ---------- 网格 ---------- */
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: min-content; gap: 12px; }
 
@@ -852,6 +886,39 @@
       .jump { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s1); align-items: stretch; }
       .jump .lb { display: none; }
       .jump a { text-align: center; padding: var(--s1) 2px; }
+      /* 按需求入口：窄屏不做横滑（横滑的入口等于没有入口），改成两列定宽。
+         为什么不是靠 flex-wrap 自然折行：390px 实测折成 3/3/3/1 —— 末行只剩一枚、
+         右边空出 200 多像素的残行（`.jump` 当年就是被同一个毛病咬过一次，
+         见 research/VISION-REVIEW.md §6）。两列是**结构上**不可能出现残行的排法，
+         且组名独占一行、后面紧跟自己那一组的 chip。
+         代价是比自然折行多一行（+30px 高）；这一块本来就要占位，宁可要稳定的排布。 */
+      .needs { padding: 6px 16px 0; }
+      .needs a { padding: 4px 9px; }
+      /* 窄屏换短标签：十枚全称在本机实测折成 5 行 chip、整块 204px，把首屏的卡片挤到
+         一张都不剩（改之前是 1 张）。短标签把整块压回 136px。切换只靠 CSS，无 JS 也生效。 */
+      .needs .nl-full { display: none; }
+      .needs .nl-short { display: inline; }
+      /* 窄屏两列：组名独占一行，5 枚 chip 排成 2+2+1（实测整块 63px/组，10 枚共 3 行 chip）。
+         这里换过三种写法，每一种的症状都只是「数字变了」，所以把数字都写下来：
+           ① `.ngroup` 用 `display: grid; grid-template-columns: repeat(2, 1fr)` 且组名
+              是网格项 + `grid-column: 1 / -1`：实测 `grid-template-rows` =
+              `20px 28px 28px 28px` —— 5 枚 chip 只占 3 行却按 4 行算高，整块 256px；
+           ② `flex: 0 0 calc(50% - 4px)`：容器 358px、chip 175px、gap 8px，
+              两枚 350+8=358 正好卡在边界，第三枚落单成一行（整块仍是 256px）；
+           ③ `.ngroup` 与 chip 在同一个 flex 流里、用 `flex: 1 1 40%`：同样是落单。
+         现在的形状是**结构上**不可能出错的那种：组名在 `.nlinks` 之外（它自己一行），
+         `.nlinks` 是一个纯粹的容器 —— 桌面端 flex 行内，窄屏两列 grid，5 枚正好 2+2+1。
+         ⚠️ 选择器和基础规则**同级**（都是 `.needs .nlinks`），所以这里靠的是**源序**
+         （媒体查询在文件更后面）。第一版写成 `.nlinks` / `.ngroup` 两个类，特异性
+         2 vs 2 打平后基础规则赢了 —— 症状是「移动端量到的还是 240px、chip 仍是 2/2/1
+         但组名与 chip 同高」，看着像布局没生效，其实是层叠没生效。
+         判据不止是「看着顺眼」：`check-mobile-chrome.js` 会量 `nav.needs` 的
+         clipped / outOfViewport / overflowX，`verify-site.js` 的 §15b2 会量 390/360px。 */
+      .needs .nlinks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px var(--s2); flex: 1 1 100%; }
+      .needs .nlb { margin-top: 2px; }
+      .needs .nsep { display: none; }
+      .needs .ngroup { display: block; flex: 1 1 100%; }
+      .needs .ngroup a { justify-content: space-between; }
       .dbody { padding: 20px; }
       .dgrid { grid-template-columns: 1fr; }
       /* 对比条与对比弹层：390px 下只缩小内边距，宽度始终跟着视口走（不制造横向溢出） */
@@ -891,6 +958,17 @@
   <nav class="facets" aria-label="优惠筛选">
     <div class="facetsin" id="facets" role="group" aria-label="筛选"><!--PRERENDER:facets--></div>
   </nav>
+
+  <!--
+    按需求找优惠（v1.2）。**整块由构建期注入**（标记见下），源码里一个入口都不写死：
+      · 入口的清单与判据活在 scripts/lib/audience.js 的 NEED_PAGES（唯一出处）；
+      · 每条入口指向一个**预渲染的静态页** /need/<slug>/，所以它必须是无 JS 也能点的 <a>，
+        而不是 <button> —— 首页是静态文件，query 参数改不了服务端返回的 HTML，
+        「点了没反应」的那类死按钮在这里是不允许的（G11 同一条纪律）。
+      · 所以这一块里没有一个 [data-facet]，也没有一个 star/compare 控件：
+        产物自检会扫「预渲染 HTML 零 JS 控件」，它同时守着这一块。
+  -->
+  <!--PRERENDER:needs-->
 
   <div class="wrap">
     <main id="main">

@@ -919,4 +919,65 @@ for (const key of new Set([...Object.keys(w), ...Object.keys(l)])) {
 > 因为它拿同一个（已经坏掉的）函数去算期望，是**同义反复**。
 > 「传过去再传回来」式的断言测不出任何东西，这一课的第二个实例。
 
+---
+
+## 十一、v1.2 补充：派生字段 `needs`（**不是 v1.1 契约的一部分**）
+
+**一句话：v1.1 的字段契约一个字没改。** v1.2 只在 `dist/deals.json` 里多了一个
+**派生字段** `needs`，与已有的 `collections` 完全同构。
+
+### 11.1 它是什么
+
+```jsonc
+{
+  "id": "…",
+  "audience": ["student"],
+  // 输入字段（v1.1 契约，未改）
+  "needs": ["student-only", "free-tier"]   // ← v1.2 派生，构建期算出
+}
+```
+
+- 取值是 `NEED_PAGES` 里 slug 的子集，**顺序固定**为注册表顺序（所以序列化稳定、可 diff）；
+- 判据只在 `scripts/lib/audience.js` 的 `NEED_PREDICATES` 写一遍；
+  `needsOf(deal)` 是唯一入口，**前端只做 `includes()`，不做任何判断**；
+- 它进的是**构建产物**，不进 `scripts/data/*`，也不参与采集与 merge。
+
+### 11.2 为什么是派生字段而不是新字段
+
+v1.2 的十条需求（学生专享 / 教育身份可领 / 无需信用卡 / 国内可用 / 完全免费 /
+免费 API / 免费 Tokens / AI Coding / 免费模型 / 开发者 Credits）**全部**是 v1.1 六个新字段
+加 `pricingModel` / `category` 的函数，没有一个需要新的采集项 —— 除了 `ai-coding`，
+它是**明确没有字段支撑**的那一条（用 `category==='编程开发'` 兜着，只有 4 条，
+页面直说是数据缺口）。
+
+所以：
+- **不新增契约字段**：避免「加了一个字段但采集器不产、人工也不填」的第二类空字段；
+- **不改 `schema.js` / `store.js` / `dedup.js`**：v1.2 没有碰采集链；
+- 「派生」这个选择带来一个必须牢记的纪律：**`needs` 永远不许被当成数据源读回来**。
+  任何需要判断「这条是不是学生优惠」的地方都必须调 `needsOf` / 对应谓词，
+  否则判断就会有第二份实现（v1.1 已经因为同类原因踩过一次漂移）。
+
+### 11.3 三态与红线的继承
+
+`needs` 的十条判据一律遵守 v1.1 第四节的三态语义，**只认肯定信号**：
+
+- `no-card` 只在 `creditCardRequired === false` 时命中；`"unknown"` **不命中**
+  （没证据 ≠ 不需要卡）；字符串 `"false"` 也不命中（只认布尔字面量）；
+- `china-usable` 只在 `chinaUsable === true` 时命中；`region:'cn'` **单独不构成证据**
+  （这是 §2.5 已经写下的契约，v1.2 只是照着执行）；
+- 十条判据对 `null` / 数组 / 数字 / 缺字段一律返回布尔值、不抛异常
+  （8 类脏输入 × 10 条判据，断言在 `selftest:audience` §9）。
+
+### 11.4 断言位置
+
+| 断言 | 在哪 |
+|---|---|
+| 注册表结构（slug 唯一/kebab-case、group 合法、why ≥3 句、无 Markdown 记号、无写死条数、`short` 存在且更短） | `scripts/tools/audience-selftest.js` §9 |
+| 判据三态行为（含 `"false"` 字符串、`"unknown"`、脏输入不抛） | 同上 |
+| `needsOf` 顺序稳定、无重复、空记录返回 `[]` | 同上 |
+| 真实数据不变量（每条 slug ≥1 条命中、命中都在注册表内） | 同上 |
+| 首页入口数字 == 数据条数、双向无缺失、无 JS 控件、两套标签齐全 | `scripts/tools/build-local.js` 产物自检 + `verify-site.js` §15b2 |
+| 10 条路由的 id 集合、canonical 自指、双 feed、三段 JSON-LD、「为什么在这一页」证据列、内链前缀真的能到 | `verify-site.js` §15b2 |
+| 无 JS 可读（首页入口行 + 三页抽查）、390/360px 几何 | 同上 |
+
 

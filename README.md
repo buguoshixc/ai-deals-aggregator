@@ -173,6 +173,7 @@ scripts/
     store.js                  读写、合并、过期修剪、发布前断言（采集量骤降只记 degraded 告警，不拦写盘）
     dedup.js                  标题归一 + 别名表 + 信息量择优合并
     audience.js               v1.1 六字段的**单一词汇源**：枚举 / 三态 / 分类判据 / 页面措辞
+                               + v1.2 的 NEED_PAGES / NEED_PREDICATES / needsOf（按需求找优惠）
     audience-audit.js         手写数据「声明了却归一后消失」的对账（拼错枚举不会静默变没写）
     audience-overrides.js     第二个人工来源（声明式补充）的加载与应用；contrib 只增不减
     migrate-audience.js       一次性补 provenance 的纯函数（只补出处，**不猜值**）
@@ -206,9 +207,10 @@ scripts/
     official_urls.json        聚合站条目 → 官方页映射
   tools/                      采集器调试工具与发布产物组装
     build-local.js            校验 → 组装 dist/ → 预渲染 → 自检（本地与 CI 同一路径）
-    verify-site.js            真浏览器验收：密度/裁切/hover/筛选/弹层/译文折叠/移动端/分类页/状态页（dev，需 playwright-core）
+    verify-site.js            真浏览器验收：密度/裁切/hover/筛选/弹层/译文折叠/移动端/分类页/按需求页/状态页（dev，需 playwright-core）
+    check-mobile-chrome.js    390px 下逐控件量裁切/越出视口/横向溢出（含 nav.needs 入口行）
     check-reproducible.js     可重建性门禁：文件里不许有「没有任何源」的值（五个判据，CI）
-    audience-selftest.js      受众字段全部红线守卫（三态 / 仲裁 / 措辞同源，CI）
+    audience-selftest.js      受众字段全部红线守卫（三态 / 仲裁 / 措辞同源 / v1.2 需求注册表，CI）
     provenance-selftest.js    v1.3 信息来源自测（引文上限与预算 / 四种缺失状态 / 渲染措辞，CI）
     audience-report.js        覆盖率报告：已知 / unknown / 缺席三栏分列，逐条可审计
     audience-overrides-extract.js  从 DATA-BACKFILL.md 那张表生成 overrides（与数据对不上就拒绝写）
@@ -271,7 +273,7 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 `build-local.js` 在组装阶段把内容**预渲染**进静态 HTML，因此不执行 JS 也能读到完整正文
 （搜索引擎、生成式引擎、社交 unfurl 都直接可读）。
 
-### 六个预渲染标记
+### 七个预渲染标记
 
 源码 `index.html` 里保留标记，构建期替换；替换后若仍有残留，构建直接失败（不发空壳页）：
 
@@ -279,6 +281,7 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 |---|---|
 | `<!--PRERENDER:deals-->` | 默认视图（优惠 Tab、无筛选）的**力度分带 + 卡片** HTML |
 | `<!--PRERENDER:facets-->` | 筛选条的 facet 按钮与实时计数 |
+| `<!--PRERENDER:needs-->` | 「按需求找优惠」入口行（10 枚 `<a>`，无 JS 也在、也能点） |
 | `<!--PRERENDER:topstat-->` | 顶栏右侧汇总（条数 / 更新日期） |
 | `<!--PRERENDER:stats-->` | 结果条（显示多少条卡片 · 国内 / 国外 · 覆盖几个档位） |
 | `<!--PRERENDER:categories-->` | 分类下拉的 `<option>` |
@@ -565,16 +568,47 @@ npm run selftest:zh     # 门禁演练：塞坏数据进去，验证构建拦得
   超长拒收、出处禁聚合站；全库还有字数与占比两道预算——这一层的存在理由就是
   **不因为要展示而复制第三方全文**。
 
+### 按需求找优惠（v1.2）
+
+首页在筛选条下面有一行「按需求找优惠」入口，把「我是学生 / 我是开发者」的常见诉求
+直接用**静态路由**表达出来，而不是要求用户先把需求翻译成筛选条件：
+
+```
+学生  学生专享12  教育身份可领7  无需信用卡1  国内可用30  完全免费60
+      免费 API45  免费 Tokens44  AI Coding4  免费模型12  开发者 Credits67
+```
+
+十条入口各自对应一个 `/need/<slug>/` 静态页（预渲染表格 + 「为什么在这一页」证据列 +
+双 feed + 三段 JSON-LD + 自指 canonical + 进 sitemap），完整报告见
+`research/v1.2-intent-first-home-report.md`。
+
+**为什么是静态路由而不是 `?need=`**：首页是静态文件，无法按 query string 产出不同内容。
+`?need=free-api` 分享出去，别人打开的是「首页」而不是结果页，爬虫读到的也是首页 ——
+「URL 可分享」与「无 JS 可读」两条会同时落空。这是本轮唯一的形态性决策。
+
+**判据只写一遍**：十条判据在 `scripts/lib/audience.js` 的 `NEED_PREDICATES`，
+结果作为**派生字段** `needs` 写进 `dist/deals.json`（与 `collections` 同构），
+前端只做 `includes()`。**v1.1 的字段契约一个字没改**（见 `docs/SCHEMA-v1.1.md` 第十一节）。
+
+**入口行的数字全部按数据现算**：首页入口上的数字、页面顶部、表格行数、JSON-LD
+`ItemList` 全部同源；文案里禁止写死条数，有断言守着（这条断言写完当轮就抓到
+3 处我自己写死的数字）。
+
+**移动端**：≤760px 换成短标签（专享 / 教育 / 免卡 / 国内 / 免费 / API / Tokens /
+Coding / 模型 / Credits）并排成两列，**切换只用 CSS 媒体查询、不用 JS** ——
+无 JS 的访客在窄屏上也要看到短标签。全称与短标签两个 `<span>` 同时在 DOM 里，
+屏幕阅读器在桌面端读到的仍是全称。
+
 ### 真浏览器验收
 
 卡片是**固定高度**的，任何一处内容变高都会被 `overflow:hidden` 静默裁掉；logo 簇是 hover
 展开的，很容易把标题挤到换行、把网格行高顶动。这两类问题静态检查都看不见，所以有
-`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 **193 项断言**；带基线回归比对的
-`npm run verify:regress` 共 **199 项**（多出的 6 条是回归比对：覆盖条数、卡片数、首屏完整可见、
+`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 **256 项断言**；带基线回归比对的
+`npm run verify:regress` 共 **262 项**（多出的 6 条是回归比对：覆盖条数、卡片数、首屏完整可见、
 页高、外部请求、JS 错误）。
 这两个数字由工具自己打印（`✅ 验收 N 项，失败 0 项`），跑一次就能核。**不要拿源码里 `check(`
 的调用点数去反推**：按行首 `check(` 计是 177 处，与执行项数并不相等 —— 有的调用在循环里
-（分类页 3 条路由 × 5 类断言、状态页 2 个视口各一轮），有的在 `if/else` 里
+（分类页 3 条路由 × 5 类断言、10 条需求页 × 7 类断言、状态页 2 个视口各一轮），有的在 `if/else` 里
 （取样前提不成立时只打印「跳过」，不计一项）。
 无 JS 时的静态骨架、卡片高度是否统一、**每张卡最后一个元素有没有越过内边距**、
 hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排序、搜索、中文译文可搜、
