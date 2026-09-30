@@ -2739,7 +2739,23 @@ v1.7 把键与 `feeds.js` 的分组都切到规范名（用**注入** `vendorKey
 `SEO verification (independent, from dist/)`，均无 `continue-on-error`）。
 
 - **契约** `docs/SCHEMA-v1.7.md` · **报告** `research/v1.7-seo-expansion-report.md`。
-  未合并、未推送。
 - **对 v2.0 的判断**：**适合进入**，唯一前置条件仍是 v1.6 报告里那条 ——
   `deal-history.json` 今天仍是 **0 事件**，而 AI 辅助维护要判断的第一件事恰恰是「什么变化值得通知人」。
   建议先跑满 3 天采集拿到真实事件样本，再进 v2.0。
+
+**上线记录（2026-10-01 01:0x CST）**
+
+| 项 | 结果 |
+|---|---|
+| 推送 | `git push -u origin v1.7-seo-expansion`（新分支，4 个提交 / 25 个文件 +3792−167） |
+| 合并 | **PR #10** → `7ad0d86 Merge pull request #10 from buguoshixc/v1.7-seo-expansion`；master 与分支**树完全相同**（纯增量，没有带回 v1.4–v1.6） |
+| PR 门禁 | `Verify site (gate) #32`（跑在 `v1.7-seo-expansion` 上）**success** —— 含新增的两步 `SEO self-test` 与 `SEO verification (independent, from dist/)` |
+| 发布链 | `Deploy to GitHub Pages #71` **success** · `Verify site (gate) #33`（master）**success** |
+| 线上实证（HTTP 直取，不拿工作流绿灯当结论） | `/` 200 · `/vendor/zhipu/` 200（12 个 `data-item` 行 == ItemList 12，逐条对得上）· `/category/api/` 200（80,355 B）· `/vendor/` 200 · `/category/` 200 · `/need/student-only/` 200 且 `robots=noindex, follow` · `sitemap.xml` 200 **21,845 B / 110 条 `<loc>`**（与本地构建产物同量） |
+| 线上整链路冒烟 | `npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/` → **✅ 验收 335 项，失败 0 项**（含 §18 落地页 38 项与首页/详情页 `<h1>` 断言；v1.6 时是 297 项） |
+
+> 一处**看起来像问题、其实不是**的观察，写下来免得后人复查时误判：直接取线上 HTML 数 `<h1>`，
+> 首页会数到 **5 个**、厂商页 **2 个** —— 多出来的都在**内联脚本的模板字符串**里
+> （RENDER-CORE 的 `changesPageHtml` 等）。这也正是 `lib/seo.js` 里 `stripless()` 存在的理由：
+> 数标记前必须先摘 `<script>`/`<style>`，否则「113 页里 81 页缺 `<h1>`」这种真问题会被噪声淹掉。
+> 真浏览器侧（`verify-site.js` §18）量的是 DOM：首页与每个落地页都恰好 1 个 `<h1>`。

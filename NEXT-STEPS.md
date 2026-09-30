@@ -14,7 +14,9 @@
 > 实测：113 页 / 可索引 110 / sitemap 110 / Feed 46 个文件；`verify` 335 项、`verify:regress` 341 项全过，
 > **首屏仍是 9 张卡**（首页只把品牌 `<b>` 换成 `<h1>` 并在页脚那一行加了入口，没有新增整行）。
 > 契约 `docs/SCHEMA-v1.7.md` · 报告 `research/v1.7-seo-expansion-report.md`。
-> **未合并、未推送 —— 等你的「推送」。**
+> **已上线（2026-10-01）**：PR #10 → `7ad0d86`；PR 上的 `gate #32`、master 的 `Deploy #71` 与
+> `gate #33` 三条全 success；线上整链路冒烟 `verify --url=` **335 项 0 失败**，
+> 线上 `sitemap.xml` 110 条、`/vendor/zhipu/` 12 行与 ItemList 一致、`/need/student-only/` 带 noindex。
 >
 > 对下一阶段的判断：**适合进入 `v2.0-ai-assisted-maintenance`**，唯一前置条件与 v1.6 相同 ——
 > `deal-history.json` 仍是 **0 事件**，先跑满 3 天采集拿到真实变化样本再进。
