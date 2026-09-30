@@ -836,7 +836,15 @@
         }
       },
       "verifiedAt": "2026-09-22"
-    }
+    },
+    "evidence": [
+      {
+        "field": "discountInfo",
+        "quote": "平台有权根据自身运营需求和营销需要，针对新用户等不特定人群赠与体验券或代金券（具体名称以上线时为准）。体验券和代金券等可用于平台上360智脑大模型API调用消耗使用。",
+        "sourceUrl": "https://ai.360.com/open/zh/terms",
+        "capturedAt": "2026-09-22"
+      }
+    ]
   },
   {
     "title": "MiniMax 开放平台 Token Plan 好友邀请 受邀人 9 折",
@@ -1016,7 +1024,15 @@
     "eligibilityDetail": {
       "newUserOnly": false,
       "identityVerificationRequired": "unknown"
-    }
+    },
+    "evidence": [
+      {
+        "field": "discountInfo",
+        "quote": "基础会员：价格：105元/月，限时优惠价55元，促销期结束后将恢复为105元",
+        "sourceUrl": "https://hailuoai.com/vip",
+        "capturedAt": "2026-09-22"
+      }
+    ]
   },
   {
     "title": "魔搭 ModelScope API-Inference 免费推理 API（动态限流）",
@@ -1085,6 +1101,14 @@
         }
       },
       "verifiedAt": "2026-09-22"
-    }
+    },
+    "evidence": [
+      {
+        "field": "discountInfo",
+        "quote": "魔搭通过API-Inference，将开源模型服务化并通过API接口进行标准化，免费提供给广大开发者体验。",
+        "sourceUrl": "https://www.modelscope.cn/docs/model-service/API-Inference/limits",
+        "capturedAt": "2026-09-22"
+      }
+    ]
   }
 ]

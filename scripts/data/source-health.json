@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-29T13:04:54.254Z",
+  "generatedAt": "2026-09-29T17:48:21.615Z",
   "sources": [
     {
       "source": "aitools",
       "name": "aitools.fyi",
       "region": "global",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T13:04:54.254Z",
-      "lastSuccessAt": "2026-09-29T13:04:54.254Z",
+      "lastAttemptAt": "2026-09-29T17:48:21.615Z",
+      "lastSuccessAt": "2026-09-29T17:48:21.615Z",
       "lastItemCount": 15,
       "previousItemCount": 15,
       "delta": 0,
@@ -17,7 +17,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 3313,
+      "lastDurationMs": 2380,
       "headlessReady": null
     },
     {
@@ -25,8 +25,8 @@
       "name": "阿里云百炼",
       "region": "cn",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T13:04:54.254Z",
-      "lastSuccessAt": "2026-09-29T13:04:54.254Z",
+      "lastAttemptAt": "2026-09-29T17:48:21.615Z",
+      "lastSuccessAt": "2026-09-29T17:48:21.615Z",
       "lastItemCount": 1,
       "previousItemCount": 1,
       "delta": 0,
@@ -35,7 +35,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 729,
+      "lastDurationMs": 976,
       "headlessReady": null
     },
     {
@@ -43,8 +43,8 @@
       "name": "百度千帆",
       "region": "cn",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T13:04:54.254Z",
-      "lastSuccessAt": "2026-09-29T13:04:54.254Z",
+      "lastAttemptAt": "2026-09-29T17:48:21.615Z",
+      "lastSuccessAt": "2026-09-29T17:48:21.615Z",
       "lastItemCount": 17,
       "previousItemCount": 17,
       "delta": 0,
@@ -53,7 +53,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 518,
+      "lastDurationMs": 806,
       "headlessReady": null
     },
     {
@@ -72,15 +72,17 @@
       "reason": null,
       "lastError": null,
       "lastDurationMs": 3093,
-      "headlessReady": true
+      "headlessReady": true,
+      "stale": true,
+      "lastRunMissing": true
     },
     {
       "source": "cn_zhipu",
       "name": "智谱AI",
       "region": "cn",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T13:04:54.254Z",
-      "lastSuccessAt": "2026-09-29T13:04:54.254Z",
+      "lastAttemptAt": "2026-09-29T17:48:21.615Z",
+      "lastSuccessAt": "2026-09-29T17:48:21.615Z",
       "lastItemCount": 7,
       "previousItemCount": 7,
       "delta": 0,
@@ -89,7 +91,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 942,
+      "lastDurationMs": 380,
       "headlessReady": null
     },
     {
@@ -108,15 +110,17 @@
       "reason": null,
       "lastError": null,
       "lastDurationMs": 3855,
-      "headlessReady": true
+      "headlessReady": true,
+      "stale": true,
+      "lastRunMissing": true
     },
     {
       "source": "futurepedia",
       "name": "Futurepedia",
       "region": "global",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T13:04:54.254Z",
-      "lastSuccessAt": "2026-09-29T13:04:54.254Z",
+      "lastAttemptAt": "2026-09-29T17:48:21.615Z",
+      "lastSuccessAt": "2026-09-29T17:48:21.615Z",
       "lastItemCount": 7,
       "previousItemCount": 7,
       "delta": 0,
@@ -125,7 +129,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 11011,
+      "lastDurationMs": 4785,
       "headlessReady": null
     },
     {
@@ -133,8 +137,8 @@
       "name": "Futuretools",
       "region": "global",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T13:04:54.254Z",
-      "lastSuccessAt": "2026-09-29T13:04:54.254Z",
+      "lastAttemptAt": "2026-09-29T17:48:21.615Z",
+      "lastSuccessAt": "2026-09-29T17:48:21.615Z",
       "lastItemCount": 37,
       "previousItemCount": 37,
       "delta": 0,
@@ -143,7 +147,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 25910,
+      "lastDurationMs": 14935,
       "headlessReady": null
     },
     {
@@ -151,8 +155,8 @@
       "name": "Layer3Labs",
       "region": "global",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T13:04:54.254Z",
-      "lastSuccessAt": "2026-09-29T13:04:54.254Z",
+      "lastAttemptAt": "2026-09-29T17:48:21.615Z",
+      "lastSuccessAt": "2026-09-29T17:48:21.615Z",
       "lastItemCount": 13,
       "previousItemCount": 13,
       "delta": 0,
@@ -161,7 +165,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 2708,
+      "lastDurationMs": 1959,
       "headlessReady": null
     }
   ]
