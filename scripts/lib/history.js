@@ -413,6 +413,12 @@ function diffStates(previous, next, ctx = {}) {
  *        （= 本轮健康且确实跑出条目的来源；失败/骤降/零产出的来源一律不计，
  *         否则一次坏采集会把整片条目误判成「消失」）
  * @param {Map<string,string>} [params.removed] 本份发布里消失的 id → reason
+ * @param {Map<string,{title:string,vendor?:string}>} [params.labels]
+ *        墓碑标签（v1.5）：记录**离开数据集**或来源不再列出时的标题 / 厂商快照，挂在 `ended` 上。
+ *        为什么需要它：`title` / `vendor` 是身份字段、刻意不被跟踪（它们变了就是另一条记录），
+ *        于是记录一旦从 `deals.json` 消失，变化雷达上就只剩一个 12 位 id —— 那样的「已结束」
+ *        对读者没有价值。标签是**快照**，不是被跟踪的值：不参与链校验、不参与重放，
+ *        只回答「这条是谁」。v1.5 起可选写入；缺席的 `ended` 依然完全合法（向后兼容）。
  * @param {Set<string>} [params.derivedFields] 本轮由规则推导（而非直接观测）的字段
  * @returns {{store:object, stats:object}}
  */
@@ -425,6 +431,17 @@ function record(store, params = {}) {
   const freshIds = new Set(params.freshIds || []);
   const eligible = new Set(params.absenceEligibleSources || []);
   const removed = params.removed instanceof Map ? params.removed : new Map();
+  const labels = params.labels instanceof Map ? params.labels : new Map();
+
+  /** 归一墓碑标签：只保留非空 title 与可选 vendor；拿不到就当作没有（不写半个空对象） */
+  const labelOf = id => {
+    const raw = labels.get(id);
+    if (!raw || typeof raw !== 'object') return null;
+    const title = typeof raw.title === 'string' ? raw.title.trim() : '';
+    if (!title) return null;
+    const vendor = typeof raw.vendor === 'string' ? raw.vendor.trim() : '';
+    return vendor ? { title, vendor } : { title };
+  };
 
   const replayState = replay(base);
   const lifecycle = new Map(); // id → 最后一次生命周期事件类型
@@ -476,7 +493,8 @@ function record(store, params = {}) {
     if (nextIds.has(id)) continue;
     if (lifecycle.get(id) === 'ended') continue;                 // 已经记过
     const reason = removed.get(id) || 'withdrawn';
-    candidates.push({ id, at, type: 'ended', field: null, from: null, to: null, reason, runAt });
+    const label = labelOf(id);
+    candidates.push({ id, at, type: 'ended', field: null, from: null, to: null, reason, runAt, ...(label ? { label } : {}) });
   }
 
   // ---- ④ 来源不再列出（连续多次成功采集未见）-----------------------------
@@ -503,9 +521,12 @@ function record(store, params = {}) {
     const misses = (state && state.misses ? state.misses : 0) + 1;
     const since = (state && state.since) || at;
     if (misses >= MISS_CONFIRM_RUNS) {
+      // 来源不再列出：记录**仍在** deals.json 里，但将来它若被 prune，这个墓碑标签就是
+      // 雷达上「它叫什么」的唯一来源 —— 因此在这里也一并写上（此刻拿得到标题）。
+      const label = labelOf(deal.id);
       absentEvents.push({
         id: deal.id, at, type: 'ended', field: null, from: null, to: null,
-        reason: 'source_no_longer_lists', firstMissedAt: since, runAt
+        reason: 'source_no_longer_lists', firstMissedAt: since, runAt, ...(label ? { label } : {})
       });
       absence[deal.id] = { source, misses, since, endedAt: at };
     } else {
@@ -661,6 +682,25 @@ function verifyStore(store, deals, { today = null, bytes = null } = {}) {
         if (!TRACKED_FIELDS.includes(key)) problems.push(`${where}: created.fields 含未跟踪字段 ${key}`);
       }
       if (event.type !== 'ended' && event.reason !== undefined) problems.push(`${where}: ${event.type} 不应带 reason`);
+      // v1.5：`ended` 可带可选墓碑标签（标题 / 厂商快照）。它**不是**被跟踪的值 ——
+      // 不参与链校验、不参与重放，因此这里只校验形状，且只允许 ended 携带。
+      if (event.label !== undefined) {
+        if (event.type !== 'ended') {
+          problems.push(`${where}: ${event.type} 不应带 label（只有 ended 可以有墓碑标签）`);
+        } else if (!event.label || typeof event.label !== 'object' || Array.isArray(event.label)) {
+          problems.push(`${where}: ended 的 label 必须是对象`);
+        } else {
+          for (const key of Object.keys(event.label)) {
+            if (key !== 'title' && key !== 'vendor') problems.push(`${where}: ended.label 含未知键 ${key}`);
+          }
+          if (typeof event.label.title !== 'string' || !event.label.title.trim()) {
+            problems.push(`${where}: ended.label.title 必须是非空字符串（空标本等于没有标本）`);
+          }
+          if (event.label.vendor !== undefined && typeof event.label.vendor !== 'string') {
+            problems.push(`${where}: ended.label.vendor 必须是字符串`);
+          }
+        }
+      }
     } else {
       if (!TRACKED_FIELDS.includes(event.field)) { problems.push(`${where}: 未跟踪字段（${event.field}）`); return; }
       if (FIELD_EVENT[event.field] !== event.type) {
@@ -672,6 +712,8 @@ function verifyStore(store, deals, { today = null, bytes = null } = {}) {
         problems.push(`${where}: origin 非法（${event.origin}）`);
       }
       if (event.reason !== undefined) problems.push(`${where}: 字段事件不应带 reason`);
+      // 墓碑标签只属于 `ended`：字段事件带它说明有人把两种事件混在一起了
+      if (event.label !== undefined) problems.push(`${where}: 字段事件不应带 label（墓碑标签只属于 ended）`);
     }
     allIds.add(event.id);
     if (!perDeal.has(event.id)) perDeal.set(event.id, []);

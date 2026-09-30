@@ -294,7 +294,72 @@ section('⑧ 渲染视图有界');
 }
 
 /* ------------------------------------------------------------------ */
-section('⑨ 真实数据不变量');
+section('⑨ 墓碑标签（v1.5 的向后兼容扩展）');
+
+{
+  // 删除一条记录（它离开了数据集）→ ended 上应带上标题快照
+  const before = [deal(), deal({ id: ID_B, title: 'B 优惠', vendor: 'B 厂商' })];
+  const store = seeded(before);
+  const labels = new Map([
+    [ID_B, { title: 'B 优惠', vendor: 'B 厂商' }],
+    [ID_C, { title: '   ', vendor: 'C 厂商' }],   // 空标题 → 视为没有快照
+    [ID_A, { title: '' }]
+  ]);
+  const removed = new Map([[ID_B, 'pruned_expired']]);
+  const { store: next } = history.record(store, run({
+    previous: before, next: [deal()], removed, labels, absenceEligibleSources: []
+  }));
+  const endedB = next.events.find(event => event.id === ID_B && event.type === 'ended');
+  check('ended 带上墓碑标签（离开数据集后还能认出是谁）',
+    Boolean(endedB) && endedB.label && endedB.label.title === 'B 优惠' && endedB.label.vendor === 'B 厂商');
+  check('墓碑标签不影响链校验与重放', history.verifyStore(next, [deal()], { today: '2026-09-30' }).length === 0);
+
+  const noLabels = history.record(seeded(before), run({
+    previous: before, next: [deal()], removed, absenceEligibleSources: []
+  })).store;
+  const endedNoLabel = noLabels.events.find(event => event.id === ID_B && event.type === 'ended');
+  check('不传 labels 时 ended 依然合法（v1.4 行为的向后兼容）',
+    Boolean(endedNoLabel) && endedNoLabel.label === undefined &&
+    history.verifyStore(noLabels, [deal()], { today: '2026-09-30' }).length === 0);
+
+  const blank = history.record(seeded([deal({ id: ID_C })]), run({
+    previous: [deal({ id: ID_C })], next: [], removed: new Map([[ID_C, 'withdrawn']]),
+    labels, absenceEligibleSources: []
+  })).store;
+  const endedC = blank.events.find(event => event.id === ID_C && event.type === 'ended');
+  check('标题为空的快照不会被写进日志（空标本等于没有标本）', Boolean(endedC) && endedC.label === undefined);
+
+  // 形状校验的牙齿：四种坏标本都必须红
+  const base = JSON.parse(JSON.stringify(next));
+  const mutate = fn => { const copy = JSON.parse(JSON.stringify(base)); fn(copy); return copy; };
+  const at = copy => copy.events.find(event => event.id === ID_B && event.type === 'ended');
+  const cases = [
+    ['label 不是对象', copy => { at(copy).label = 'B 优惠'; }],
+    ['title 为空', copy => { at(copy).label = { title: '   ' }; }],
+    ['含未知键', copy => { at(copy).label = { title: 'B 优惠', sneaky: 1 }; }],
+    ['vendor 不是字符串', copy => { at(copy).label = { title: 'B 优惠', vendor: 42 }; }]
+  ];
+  for (const [why, fn] of cases) {
+    const problems = history.verifyStore(mutate(fn), [deal()], { today: '2026-09-30' });
+    check(`墓碑形状：${why} → 必红`, problems.some(text => text.includes('label')), problems.slice(0, 2).join('；'));
+  }
+  // 字段事件带墓碑标签：链本身完全正确（from = 基线值、to = 文件当前值），
+  // 唯一的毛病就是「label 挂错了事件类型」—— 这样报出来的就必须正好是这一条。
+  const fieldLabelStore = {
+    schemaVersion: 1,
+    startedAt: '2026-09-30',
+    baseline: { at: '2026-09-30', note: '夹具', fields: { [ID_A]: { discountInfo: '旧值', type: 'deal' } } },
+    absence: {},
+    events: [{ id: ID_A, at: '2026-09-30', type: 'benefit_changed', field: 'discountInfo', from: '旧值', to: '新值', label: { title: 'x' } }]
+  };
+  const fieldLabel = history.verifyStore(fieldLabelStore,
+    [{ id: ID_A, type: 'deal', title: '示例', discountInfo: '新值' }], { today: '2026-09-30' });
+  check('墓碑形状：字段事件带 label → 必红',
+    fieldLabel.some(text => text.includes('label')) && fieldLabel.length === 1, fieldLabel.join('；'));
+}
+
+/* ------------------------------------------------------------------ */
+section('⑩ 真实数据不变量');
 
 {
   const loaded = history.load();

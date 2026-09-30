@@ -70,6 +70,7 @@
 | `firstMissedAt` | 日期 | 仅 `ended(source_no_longer_lists)`：第一次没见到的日期 |
 | `runAt` | ISO | 本次采集运行的时间戳（精度审计用） |
 | `fields` | 对象 | 仅 `created`：这条记录的**初始值**，同时充当它的链锚点 |
+| `label` | `{title, vendor?}` | **v1.5 起的可选扩展**：仅 `ended`，记录离开数据集时的标题/厂商**快照**（墓碑）。它不是被跟踪的值 —— 不参与链校验与重放，只回答「这条是谁」。缺席完全合法（向后兼容）；形状规则见 [`SCHEMA-v1.5.md`](SCHEMA-v1.5.md) §六。 |
 
 事件类型（与需求逐字一致）：
 `created` · `updated` · `benefit_changed` · `eligibility_changed` · `expiry_changed` · `ended` · `restored`
@@ -167,3 +168,9 @@
 
 首页「变化雷达」、变更率统计、任何新排序/筛选维度、通知与订阅；每日全量快照；官方页 HTML/全文/
 截图/原始响应留存；存量历史回填；历史折叠/压缩工具；采集器与 v1.1/v1.3 数据契约的任何改动。
+
+> **v1.5 更新**：其中的「首页变化雷达」已由 [`SCHEMA-v1.5.md`](SCHEMA-v1.5.md) 实现
+> （首页一行条带 + `/changes/` 静态页），并把本文件的 `ended` 事件扩展了一个可选 `label`
+> 字段（向后兼容）。本文件其余各节仍然有效，**没有任何一条被 v1.5 推翻**：
+> 写入点仍只有 `scripts/collect.js` 一处，跟踪字段表、上限、`ended` 的两种含义、
+> 不补造历史的红线都不变。

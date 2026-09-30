@@ -352,6 +352,54 @@
     .needs .ngroup, .needs .nlinks { display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--s2); }
     .needs .nsep { width: 1px; height: 16px; background: var(--line); flex: none; margin: 0 var(--s1); }
 
+    /* ---------- 变化雷达（v1.5） ----------
+       与 .needs 同一套视觉语言（pill + --line 边框 + --fs-sm）。
+       **它不单独占一行**：与「跳到档位」共用 `.hubline` 这一行。原因是一道只有 1px 的余量 ——
+       1440×900 实测：网格起点 227px、卡片高 192px、行距 12px、档间分带标题 26px，
+       第三行（档 2 的第一行）底边 = 899px，距视口底边只剩 1px。任何独立成行的条带
+       （哪怕 23px 高）都会把首屏完整可见从 9 张压到 6 张 —— 这条由 verify-site.js 的
+       「首屏完整可见卡片 ≥ 9」硬断言当着，实测数据见本文件上方的 .hubline 注释与报告。
+       雷达因此是那一行的**可伸缩项**：`flex: 1 1 auto; min-width: 0`，内容超宽时由
+       正文区（.rscroll）内部横滑，绝不把整行顶成两行；唯一的入口「全部变化」放在
+       横滑容器**外面**、`flex: none` —— 一个需要横滑才看得见的入口等于没有入口（v1.2 的同一课）。 */
+    .hubline {
+      display: flex; align-items: center; gap: var(--s3); flex-wrap: nowrap;
+      min-width: 0; margin: 0 0 var(--s2);
+    }
+    /* 跳到档位**不许收缩**（`flex: 0 0 auto`）：它一旦被压窄，四个 chip 会在自己内部折成两行，
+       整行高度 +28px，首屏照样掉一行（演练实测：收缩版网格起点 261px、完整可见 6 张；
+       冻结版 227px、9 张）。要吸收宽度的只能是雷达的正文区（它内部横滑）。 */
+    .hubline .jump { margin: 0; flex: 0 0 auto; min-width: 0; }
+    .radar {
+      display: flex; align-items: center; gap: var(--s2);
+      font-size: var(--fs-sm); flex: 1 1 auto; min-width: 0;
+    }
+    .radar .rlb { color: var(--mut); flex: none; }
+    .radar .rscroll {
+      flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 6px var(--s2);
+      overflow-x: auto; overflow-y: hidden; white-space: nowrap;
+      scrollbar-width: none; -ms-overflow-style: none;
+    }
+    .radar .rscroll::-webkit-scrollbar { display: none; }
+    .radar .ritem {
+      display: inline-flex; align-items: center; gap: var(--s1); flex: none;
+      color: var(--ink2); text-decoration: none; border: 1px solid var(--line);
+      border-radius: var(--r-pill); padding: 3px 10px; white-space: nowrap;
+      transition: border-color var(--t-fast) var(--e-std), color var(--t-fast) var(--e-std);
+    }
+    a.ritem:hover { border-color: var(--brand); color: var(--brand); }
+    .radar .ritem:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    .radar .rty {
+      color: var(--deal-ink); background: var(--dealsoft); border-radius: var(--r-sm);
+      padding: 0 var(--s1); font-size: 10.5px; font-weight: 600;
+    }
+    .radar .rnone { color: var(--mut); }
+    /* 空态的两套文案：桌面端全称、窄屏短文案（由媒体查询切换，无 JS 也生效） */
+    .radar .rnone .rs { display: none; }
+    .radar .rmore { flex: none; color: var(--brand); text-decoration: none; white-space: nowrap; }
+    .radar .rmore:hover { text-decoration: underline; text-underline-offset: 2px; }
+    .radar .rmore:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
     /* ---------- 网格 ---------- */
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: min-content; gap: 12px; }
 
@@ -910,6 +958,14 @@
          代价是比自然折行多一行（+30px 高）；这一块本来就要占位，宁可要稳定的排布。 */
       .needs { padding: 6px 16px 0; }
       .needs a { padding: 4px 9px; }
+      /* 变化雷达：窄屏下「跳到档位」本身是四等分整行（见上），所以雷达顺延到下一行 ——
+         仍然只有一行（实测 24px），且正文区横滑、入口固定。桌面端它不额外占行。 */
+      .hubline { flex-wrap: wrap; gap: 6px var(--s3); }
+      .radar { flex: 1 1 100%; }
+      .radar .ritem { padding: 4px 9px; }
+      /* 窄屏换短文案：全称 22 字在 390px 下比正文区宽，会被裁掉半句（实测溢出 16px） */
+      .radar .rnone .rf { display: none; }
+      .radar .rnone .rs { display: inline; }
       /* 窄屏换短标签：十枚全称在本机实测折成 5 行 chip、整块 204px，把首屏的卡片挤到
          一张都不剩（改之前是 1 张）。短标签把整块压回 136px。切换只靠 CSS，无 JS 也生效。 */
       .needs .nl-full { display: none; }
@@ -986,6 +1042,11 @@
   -->
   <!--PRERENDER:needs-->
 
+  <!--
+    变化雷达（v1.5）在「跳到档位」那一行里（见 main 里的 .hubline）——
+    它**不单独占一行**，原因与实测数字写在 .radar / .hubline 的样式注释里。
+  -->
+
   <div class="wrap">
     <main id="main">
     <div class="rbar">
@@ -1004,13 +1065,25 @@
       </div>
     </div>
 
-    <nav class="jump" id="jumpNav" aria-label="跳到力度档位">
-      <span class="lb">跳到</span>
-      <a href="#tier-1">① 完全免费</a>
-      <a href="#tier-2">② 免费额度</a>
-      <a href="#tier-3">③ 身份优惠</a>
-      <a href="#tier-4">④ 折扣促销</a>
-    </nav>
+    <!--
+      变化雷达（v1.5）与「跳到档位」**共用一行**（`.hubline`）。
+      为什么不是自己占一行：1440×900 实测网格起点 227px、卡片 192px、行距 12px、
+      每档之间的分带标题 26px —— 第三行（档 2 的第一行）底边落在 899px，距视口底边
+      只剩 **1px**。任何独立成行的条带（哪怕 23px）都会整掉一行，首屏完整可见从
+      9 张掉到 6 张。跳到档位那一行右侧本来就有大量空白，因此雷达放在它右边、由
+      `flex: 1 1 auto; min-width: 0` 收缩（正文区内部横滑），一行之内解决。
+      窄屏例外：那里「跳到档位」本身是四等分整行，雷达顺延到下一行（仍是一行 24px）。
+    -->
+    <div class="hubline">
+      <nav class="jump" id="jumpNav" aria-label="跳到力度档位">
+        <span class="lb">跳到</span>
+        <a href="#tier-1">① 完全免费</a>
+        <a href="#tier-2">② 免费额度</a>
+        <a href="#tier-3">③ 身份优惠</a>
+        <a href="#tier-4">④ 折扣促销</a>
+      </nav>
+      <!--PRERENDER:changes-->
+    </div>
 
     <!--
       构建期会把下面的注释标记替换为默认视图的卡片 HTML。
@@ -1069,6 +1142,9 @@
            链接用占位符，由 build-local.js 按输出深度统一解析（ROUTE_HREFS）——
            页脚是一份共享片段，写死相对路径在详情页那一层必然错。 -->
       <p class="catnav" aria-label="按需求浏览">按需求浏览：<a href="__STUDENT_HREF__">学生优惠</a> · <a href="__DEVELOPER_HREF__">开发者优惠</a> · <a href="__FREEAPI_HREF__">免费 API</a></p>
+      <!-- 变化雷达页（v1.5）也放页脚：首页顶部那一行条带只在自己有内容时才热闹，
+           而 /changes/ 是要能随时点进去看「这两天到底变没变」的地方。 -->
+      <p class="catnav" aria-label="优惠变化">优惠变化：<a href="__CHANGES_HREF__">变化雷达</a></p>
       <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span> · <a href="__STATUS_HREF__">数据源状态</a></p>
       <p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p>
       <p>本站不收录付费推广位，排序与推荐理由不出售。</p>
@@ -1111,6 +1187,11 @@
        人工策展按设计没有采集器，与「心跳里匹配不到」是两件不同的事实。 */
     const SOURCE_WORDING = {"SOURCE_LABELS":{"sectionTitle":"信息来源","official":"官方页面","origin":"原始出处","source":"收录来源","sourceType":"来源类型","method":"采集方式","firstSeen":"首次收录","lastSeen":"最近发现","lastSuccess":"最近成功采集","basis":"断言依据","evidence":"官方原文片段"},"SOURCE_METHOD":{"static":"静态抓取（HTTP 解析）","headless":"无头浏览器渲染","curated":"人工策展（人工逐条整理）","unknown":"未知"},"SOURCE_TYPE":{"official":"厂商官方页直采","directory":"第三方目录站收录（已解析到官方页）","curated":"人工策展","unknown":"未知"},"SOURCE_STATE":{"na":"不适用","unknown":"未知","unavailable":"不可用"},"SOURCE_REASON":{"curated":"本条来自人工策展，不经过采集器","no_health_row":"来源心跳里没有这一条（来源改名 / 本轮只跑了部分来源）","no_health_doc":"本次构建没有可用的来源心跳数据"},"SOURCE_BASIS":{"source":"官方页面明写","documented":"依据官方条款原文","inferred":"由官方原文推断","none":"未声明依据"},"SOURCE_HEALTH":{"healthy":"最近一次采集正常","degraded":"最近一次采集异常","failed":"最近一次采集失败"},"SOURCE_FIELD_LABELS":{"discountInfo":"优惠说明","eligibility":"适用条件","validity":"有效期说明","priceLine":"价格阶梯","expiresAt":"截止日期"},"SOURCE_NOTES":{"noOrigin":"未署名原始出处","noEvidence":"未收录官方原文片段","evidenceNote":"以下片段摘自厂商官方页面，仅用于核对本页信息；完整内容与最终条款以官方页面为准。","disclaimer":"以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。"}};
     const HISTORY_WORDING = {"HISTORY_LABELS":{"sectionTitle":"变更记录","empty":"暂无变更记录","since":"变更记录自 {date} 起（此前状态没有记录）","more":"另有 {n} 条更早的记录未在此显示","from":"原","to":"新"},"HISTORY_TYPES":{"created":"首次收录","updated":"信息更新","benefit_changed":"优惠内容变化","eligibility_changed":"领取条件变化","expiry_changed":"有效期变化","ended":"不再收录","restored":"重新出现"},"HISTORY_END_REASONS":{"source_no_longer_lists":"来源不再列出（连续多次成功采集未见）","pruned_expired":"过期下架","pruned_overflow":"超出收录上限","retired_garbage":"判定为无效数据后退役","withdrawn":"已移除"},"HISTORY_FIELD_LABELS":{"discountInfo":"优惠说明","pricingModel":"计费模式","priceLine":"价格阶梯","features":"特性标签","benefitType":"优惠类型","eligibility":"适用条件","eligibilityDetail":"领取资格","claimRequirements":"领取要求","audience":"适用人群","availability":"可用性","expiresAt":"截止日期","validity":"有效期说明","type":"记录类型","category":"分类","region":"地区","source":"收录来源","sourceUrl":"原始出处","evidence":"官方原文片段","verified":"人工核验声明","verifiedAt":"人工核验日期"},"HISTORY_NOTES":{"derived":"（由本站规则推导）","lifecycle":"本条记录的生命周期事件","emptyNote":"起算日之前的状态没有历史记录，因此这里不显示任何变化。","disclaimer":"以上是本站采集与合并过程留下的观测记录；「不再收录」表示本站未再观测到该条目，不表示厂商已经下架或优惠已经失效。最终以厂商官方页面为准。"}};
+    /* v1.5 变化雷达的措辞同源副本：与 lib/changes.js 的 CHANGES_WORDING 同组名、同文本，
+       由 build-local 的产物自检逐项比对（validate --strict 的 checkWordingContract 也要求它
+       存在且是可解析的 JSON 字面量）。事件类型 / 字段名 / 结束原因 / 免责句**不在这里** ——
+       它们直接复用上面的 HISTORY_WORDING：同一件事在详情页与雷达上必须用同一个词。 */
+    const CHANGES_WORDING = {"CHANGES_SECTION":{"created":"今日新增","changed":"最近 7 天变化","endingSoon":"即将结束","ended":"已结束","restored":"重新出现"},"CHANGES_LABELS":{"radar":"变化雷达","pageTitle":"优惠变化雷达","all":"全部变化","more":"另有 {n} 条未显示","base":"以最近一次数据更新 {date} 为基准","since":"变更记录自 {date} 起（此前状态没有记录）","homeEmpty":"当前没有观测到变化","homeEmptySince":"当前没有观测到变化（记录自 {date} 起）","homeEmptyShort":"自 {date} 起记录，暂无变化","tombstone":"已移除的记录（无标题快照）","other":"不计入高价值的其他变化","otherNote":"这些变化只影响记录的元信息或写法（分类、出处、空白与措辞），不改变优惠本身，因此不进入首页雷达。"},"CHANGES_SOON":{"today":"今天截止","days":"剩 {n} 天"},"CHANGES_EMPTY":{"created":"截至基准日，没有观测到首次收录的条目。","changed":"最近 7 天内没有观测到优惠内容、领取条件或有效期的变化。","endingSoonNone":"当前收录的条目里没有一条写有绝对截止日期，因此这一栏暂时为空。","endingSoonLater":"有 {n} 条写有截止日期，但没有一条在 {days} 天内到期。","ended":"自起算日起，没有观测到不再收录的条目。","restored":"没有观测到重新出现的条目。","other":"没有这类变化。"},"CHANGES_NOTES":{"scope":"本页五个分栏互不重叠：今日新增只列今天首次收录的条目；最近 7 天变化列内容与期限的变化，以及过去 6 天内首次收录的条目。","window":"已结束与重新出现只列最近 30 天；更早的记录仍留在该条目自己的「变更记录」里。","soonBasis":"「即将结束」只认数据里写有绝对截止日期（expiresAt）的条目，剩余天数按基准日计算。","unavailable":"本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。","noEvents":"自起算日起还没有任何变更事件。"}};
     /* AUDIENCE:END */
 
     const REGION_LABELS = { cn: '国内', global: '国外' };
@@ -3334,6 +3415,210 @@
         (hidden ? '<p class="dhist-more">' + escapeHtml(W.HISTORY_LABELS.more.replace('{n}', String(hidden))) + '</p>' : '') +
         '<p class="dsrc-note">' + escapeHtml(W.HISTORY_NOTES.disclaimer) + '</p>' +
         '</div>';
+    }
+
+    /* ----------------------------------------------------------------
+     * ⑤.7 变化雷达（v1.5）—— 首页一行条带 + /changes/ 静态页
+     *
+     * **判据不在这里**：分栏、窗口、什么算高价值、什么只是「文案微调」，全部在
+     * `scripts/lib/changes.js` 的 `buildRadar()`（构建期算一次，唯一出处）。
+     * 这两个函数只负责把那份结果排版成 HTML，因此「构建期预渲染」与「静态页」
+     * 共用同一份模板，不会分叉。
+     *
+     * 三条纪律：
+     *   ① 只输出 `<a>` / `<span>` / `<nav>` / `<time>` —— 无 JS 时一个死控件都没有；
+     *   ② 事件类型 / 字段名 / 结束原因 / 免责句一律复用 HISTORY_WORDING：
+     *      同一件事在详情页的「变更记录」与雷达上必须是同一个词；
+     *   ③ 值一律原文展示（长值换行、不截断成半句话），标题解析不到就如实说没有标题快照。
+     * ---------------------------------------------------------------- */
+
+    /** 分栏锚点：camelCase 的 key 不进 URL */
+    const RADAR_ANCHORS = { created: 'created', changed: 'changed', endingSoon: 'soon', ended: 'ended', restored: 'restored' };
+
+    /** 该条在雷达上的类型标签（事件类走 HISTORY_TYPES，状态类走 CHANGES_SECTION） */
+    function radarTypeLabel(item) {
+      if (!item || typeof item !== 'object') return '';
+      if (item.kind === 'endingSoon') return CHANGES_WORDING.CHANGES_SECTION.endingSoon;
+      const types = HISTORY_WORDING.HISTORY_TYPES;
+      return typeof item.type === 'string' && hasOwn(types, item.type) ? types[item.type] : '';
+    }
+
+    /** 标题：拿不到就明说没有标题快照，绝不拿 id 之外的任何东西去凑 */
+    function radarTitleHtml(item) {
+      const title = item && item.titled && typeof item.title === 'string' ? item.title : '';
+      return escapeHtml(title || CHANGES_WORDING.CHANGES_LABELS.tombstone);
+    }
+
+    /** 行内链接：只有真有详情页的条目才给 href（工具条目与已离开数据集的条目只显示文本） */
+    function radarHrefOf(item, prefix) {
+      const href = item && typeof item.href === 'string' ? item.href : '';
+      if (!href) return '';
+      return String(prefix || '') + href;
+    }
+
+    /**
+     * 首页条带。**永远包含**「全部变化 →」入口，而且它不在横滑容器里 ——
+     * 窄屏上「一个需要横滑才看得见的入口」等于没有入口（v1.2 的同一课）。
+     */
+    function changesStripHtml(radar) {
+      const W = CHANGES_WORDING;
+      const L = W.CHANGES_LABELS;
+      const view = radar && typeof radar === 'object' ? radar : null;
+      const items = view && view.home && Array.isArray(view.home.items) ? view.home.items.slice(0, 3) : [];
+      const totals = view && view.totals && typeof view.totals === 'object' ? view.totals : {};
+      const total = ['created', 'changed', 'endingSoon', 'ended', 'restored']
+        .reduce((sum, key) => sum + (Number(totals[key]) || 0), 0);
+      // 被抑制的「其他变化」（元信息 + 文案微调）不进条带，但如实挂在数据属性上：
+      // 它是 `条带条数 + 其他 = 窗口内事件数 + 即将结束` 这条对账等式的另一半，
+      // 也是「我们没有把这几条变化悄悄丢掉」的可验证证据（真浏览器断言会读它）。
+      const otherTotal = Number(totals.other) || 0;
+      const since = view && typeof view.startedAt === 'string' ? view.startedAt : null;
+
+      let inner;
+      if (!view || view.availability !== 'ok') {
+        // 日志缺失/损坏：说「没有拿到」，不说「没有变化」——两者是不同的事实
+        inner = '<span class="rnone">' + escapeHtml(W.CHANGES_NOTES.unavailable) + '</span>';
+      } else if (!items.length) {
+        // 两套空态文案同时在 DOM 里、由 CSS 按宽度切换（不用 JS）：窄屏那套短一些，
+        // 否则整句比正文区宽，会被横滑容器裁掉半句。
+        const full = escapeHtml(since ? L.homeEmptySince.replace('{date}', since) : L.homeEmpty);
+        const short = escapeHtml(since ? L.homeEmptyShort.replace('{date}', since) : L.homeEmpty);
+        inner = '<span class="rnone"><span class="rf">' + full + '</span><span class="rs">' + short + '</span></span>';
+      } else {
+        inner = items.map(item => {
+          const badge = radarTypeLabel(item);
+          const body = (badge ? '<span class="rty">' + escapeHtml(badge) + '</span>' : '') +
+            '<span class="rti">' + radarTitleHtml(item) + '</span>';
+          const href = radarHrefOf(item, '');
+          const attr = ' class="ritem" data-deal-id="' + escapeAttr(String(item.id || '')) + '"';
+          return href
+            ? '<a' + attr + ' href="' + escapeAttr(href) + '">' + body + '</a>'
+            : '<span' + attr + '>' + body + '</span>';
+        }).join('');
+      }
+
+      return '<nav class="radar" aria-label="' + escapeAttr(L.radar) + '" data-radar-total="' + escapeAttr(String(total)) +
+        '" data-radar-other="' + escapeAttr(String(otherTotal)) + '">' +
+        '<span class="rlb">' + escapeHtml(L.radar) + '</span>' +
+        '<div class="rscroll">' + inner + '</div>' +
+        '<a class="rmore" href="changes/">' + escapeHtml(L.all) + ' →</a>' +
+        '</nav>';
+    }
+
+    /** 分栏为空时要说清**是哪种空**（数据缺口 vs 窗口内确实没有） */
+    function radarEmptyText(radar, key) {
+      const E = CHANGES_WORDING.CHANGES_EMPTY;
+      if (key !== 'endingSoon') return E[key] || '';
+      const covered = radar && radar.coverage ? Number(radar.coverage.dealsWithExpiresAt) || 0 : 0;
+      if (!covered) return E.endingSoonNone;
+      const days = radar && radar.windows ? Number(radar.windows.soonDays) || 7 : 7;
+      return E.endingSoonLater.replace('{n}', String(covered)).replace('{days}', String(days));
+    }
+
+    /** /changes/ 页的一行 */
+    function changesRowHtml(item, prefix) {
+      const W = CHANGES_WORDING;
+      const H = HISTORY_WORDING;
+      const at = item.kind === 'endingSoon' ? item.expiresAt : item.at;
+      const badge = radarTypeLabel(item);
+      const fieldLabel = item.field && hasOwn(H.HISTORY_FIELD_LABELS, item.field) ? H.HISTORY_FIELD_LABELS[item.field] : '';
+      const href = radarHrefOf(item, prefix);
+
+      let body;
+      if (item.kind === 'endingSoon') {
+        const days = Number(item.daysLeft) || 0;
+        const text = days <= 0 ? W.CHANGES_SOON.today : W.CHANGES_SOON.days.replace('{n}', String(days));
+        body = '<div class="chgv"><span class="chgnew">' + escapeHtml(text) + '</span></div>';
+      } else if (item.type === 'ended') {
+        const reasons = H.HISTORY_END_REASONS;
+        const reason = item.reason && hasOwn(reasons, item.reason) ? reasons[item.reason] : reasons.withdrawn;
+        body = '<div class="chgv"><span class="chgold">' + escapeHtml(reason) + '</span></div>';
+      } else if (item.type === 'created' || item.type === 'restored') {
+        body = '<div class="chgv"><span class="chgnote">' + escapeHtml(H.HISTORY_NOTES.lifecycle) + '</span></div>';
+      } else {
+        const from = historyValueText(item.from);
+        const to = historyValueText(item.to);
+        body = '<div class="chgv">' +
+          '<span class="chgold">' + escapeHtml(H.HISTORY_LABELS.from) + ' ' + (from ? escapeHtml(from) : '—') + '</span>' +
+          '<span class="chgnew">' + escapeHtml(H.HISTORY_LABELS.to) + ' ' + (to ? escapeHtml(to) : '—') + '</span>' +
+          (item.origin === 'derived' ? '<span class="chgnote">' + escapeHtml(H.HISTORY_NOTES.derived) + '</span>' : '') +
+          '</div>';
+      }
+
+      return '<li class="chgi" data-kind="' + escapeAttr(String(item.kind || '')) + '" data-deal-id="' + escapeAttr(String(item.id || '')) + '">' +
+        '<div class="chgh"><time datetime="' + escapeAttr(String(at || '')) + '">' + escapeHtml(String(at || '')) + '</time>' +
+        (badge ? '<span class="chgt">' + escapeHtml(badge) + '</span>' : '') +
+        (fieldLabel ? '<span class="chgf">' + escapeHtml(fieldLabel) + '</span>' : '') +
+        (href ? '<a class="chgn" href="' + escapeAttr(href) + '">' + radarTitleHtml(item) + '</a>'
+          : '<span class="chgn">' + radarTitleHtml(item) + '</span>') +
+        '</div>' + body + '</li>';
+    }
+
+    /** 一个分栏（标题带总数；空态按原因分开写） */
+    function changesSectionHtml(radar, key, prefix) {
+      const W = CHANGES_WORDING;
+      const section = radar.sections && radar.sections[key] ? radar.sections[key] : { items: [], truncated: 0 };
+      const total = radar.totals ? Number(radar.totals[key]) || 0 : 0;
+      const heading = W.CHANGES_SECTION[key] + '（' + total + '）';
+      let body;
+      if (!section.items || !section.items.length) {
+        body = '<p class="chgempty">' + escapeHtml(radarEmptyText(radar, key)) + '</p>';
+      } else {
+        body = '<ul class="chglist">' + section.items.map(item => changesRowHtml(item, prefix)).join('') + '</ul>';
+        if (section.truncated) {
+          body += '<p class="chgmore">' + escapeHtml(W.CHANGES_LABELS.more.replace('{n}', String(section.truncated))) + '</p>';
+        }
+      }
+      return '<section class="chgsec" id="' + escapeAttr(RADAR_ANCHORS[key] || key) + '">' +
+        '<h2>' + escapeHtml(heading) + '</h2>' + body + '</section>';
+    }
+
+    /**
+     * `/changes/` 页正文。`prefix` 由调用方按输出深度给出（首页 ''、`/changes/` 为 '../'），
+     * **不写死相对路径** —— 写死的症状是页面打得开、内容全对，而所有内链 404。
+     */
+    function changesPageHtml(radar, prefix) {
+      const W = CHANGES_WORDING;
+      const L = W.CHANGES_LABELS;
+      const N = W.CHANGES_NOTES;
+      const view = radar && typeof radar === 'object' ? radar : null;
+      const head = '<h1>' + escapeHtml(L.pageTitle) + '</h1>';
+
+      if (!view || view.availability !== 'ok') {
+        return head +
+          '<p class="snote chgwarn">' + escapeHtml(N.unavailable) + '</p>' +
+          '<p class="snote">' + escapeHtml(HISTORY_WORDING.HISTORY_NOTES.disclaimer) + '</p>';
+      }
+
+      const since = typeof view.startedAt === 'string' ? view.startedAt : null;
+      const asOf = typeof view.asOf === 'string' ? view.asOf : null;
+      const meta = '<div class="chgmeta">' +
+        (asOf ? '<span>' + escapeHtml(L.base.replace('{date}', asOf)) + '</span>' : '') +
+        (since ? '<span>' + escapeHtml(L.since.replace('{date}', since)) + '</span>' : '') +
+        '</div>';
+
+      const sections = Object.keys(RADAR_ANCHORS).map(key => changesSectionHtml(view, key, prefix)).join('');
+
+      // 「其他变化」：元信息更新 + 文案微调。**显式列出、不算进首页雷达** ——
+      // 把它们悄悄丢掉等于用「没有变化」冒充「变化不重要」。
+      const other = view.other && typeof view.other === 'object' ? view.other : { cosmetic: [], metadata: [] };
+      const otherItems = [].concat(other.cosmetic || [], other.metadata || [])
+        .sort((a, b) => (a.at === b.at ? (a.id < b.id ? -1 : a.id > b.id ? 1 : 0) : (a.at < b.at ? 1 : -1)));
+      const otherTotal = view.totals ? Number(view.totals.other) || 0 : otherItems.length;
+      const otherBlock = '<details class="chgother">' +
+        '<summary>' + escapeHtml(L.other) + '（' + escapeHtml(String(otherTotal)) + '）</summary>' +
+        '<p class="snote">' + escapeHtml(L.otherNote) + '</p>' +
+        (otherItems.length
+          ? '<ul class="chglist">' + otherItems.map(item => changesRowHtml(item, prefix)).join('') + '</ul>'
+          : '<p class="chgempty">' + escapeHtml(W.CHANGES_EMPTY.other) + '</p>') +
+        '</details>';
+
+      return head + meta +
+        '<p class="snote">' + escapeHtml(N.scope) + '</p>' +
+        '<p class="snote">' + escapeHtml(N.soonBasis) + '</p>' +
+        sections + otherBlock +
+        '<p class="snote">' + escapeHtml(N.window) + '</p>' +
+        '<p class="snote">' + escapeHtml(HISTORY_WORDING.HISTORY_NOTES.disclaimer) + '</p>';
     }
 
     /* ================================================================

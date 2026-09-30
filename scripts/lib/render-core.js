@@ -23,7 +23,11 @@ const REQUIRED = [
   'offerTextOf',
   // v1.3：信息来源块。构建自检要直接调用它来断言「每个缺失状态都说出来了」、
   // 「措辞里没有本站自发的有效性结论」，所以它必须是对外可见的纯函数。
-  'sourceBlockHtml', 'sourceFactsOf'
+  'sourceBlockHtml', 'sourceFactsOf',
+  // v1.5：变化雷达。首页条带与 /changes/ 静态页共用这两个函数——判据在
+  // lib/changes.js（构建期算一次），这里只排版；构建自检要直接调用它们来断言
+  // 「条带里没有低价值事件」「空态与不可用没有混为一谈」「内链集合与数据逐条对齐」。
+  'changesStripHtml', 'changesPageHtml'
 ];
 
 function load(htmlPath = path.join(ROOT, 'index.html')) {

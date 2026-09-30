@@ -63,8 +63,28 @@ const URL = process.argv[2] || 'http://127.0.0.1:8080/';
     // v1.2 起「按需求找优惠」入口行也要量：它是**不做横滑**的一行（窄屏靠 flex-wrap 折行），
     // 折行没折好时的症状是「最后一枚被裁掉半个字」—— 页面级宽度照旧正常。
     for (const s of ['#sortBox', '#categoryFilter', '.catpick', '#jumpNav', '#viewSeg', '#stats', '.rbar', '.rright',
-      '#facets [data-facet="fav"]', '#stats [data-fav-prune]', 'nav.needs']) {
+      '#facets [data-facet="fav"]', '#stats [data-fav-prune]', 'nav.needs', 'nav.radar']) {
       res.items.push(pick(s));
+    }
+    // 变化雷达（v1.5）的逐条几何：它是**唯一允许横滑**的一行（正文区 .rscroll），
+    // 判据是「nav 自身不溢出 + 入口（.rmore）在视口内 + 个子项没有被纵向裁掉」。
+    const radarNav = document.querySelector('nav.radar');
+    if (radarNav) {
+      const scroll = radarNav.querySelector('.rscroll');
+      const more = radarNav.querySelector('.rmore');
+      const items = [...radarNav.querySelectorAll('.ritem')];
+      const moreRect = more ? more.getBoundingClientRect() : null;
+      res.radar = {
+        height: Math.round(radarNav.getBoundingClientRect().height),
+        items: items.length,
+        clipped: items.filter(a => a.scrollHeight > a.clientHeight + 1).length,
+        navScrollW: radarNav.scrollWidth,
+        navClientW: radarNav.clientWidth,
+        navOverflow: radarNav.scrollWidth - radarNav.clientWidth,
+        scrollOverflow: scroll ? scroll.scrollWidth - scroll.clientWidth : 0,
+        moreRight: moreRect ? Math.round(moreRect.right) : null,
+        moreInViewport: moreRect ? moreRect.right <= window.innerWidth + 1 && moreRect.width > 0 : false
+      };
     }
     // 按需求入口的逐条几何：有没有被裁、有没有跑出视口、折成几行、是不是横滚容器
     const needsNav = document.querySelector('nav.needs');
@@ -133,6 +153,12 @@ const URL = process.argv[2] || 'http://127.0.0.1:8080/';
       ' clipped=' + mobile.needs.clipped + ' outOfViewport=' + mobile.needs.outOfViewport +
       ' scrollW=' + mobile.needs.navScrollW + ' clientW=' + mobile.needs.navClientW +
       ' overflowX=' + mobile.needs.overflowX);
+  }
+  if (mobile.radar) {
+    out.push('  nav.radar: height=' + mobile.radar.height + 'px items=' + mobile.radar.items +
+      ' clipped=' + mobile.radar.clipped +
+      ' navOverflow=' + mobile.radar.navOverflow + 'px scrollOverflow=' + mobile.radar.scrollOverflow + 'px' +
+      ' moreRight=' + mobile.radar.moreRight + ' moreInViewport=' + mobile.radar.moreInViewport);
   }
   out.push('  #sortBox buttons: ' + JSON.stringify(mobile.sortBtns));
 

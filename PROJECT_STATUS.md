@@ -1,6 +1,6 @@
 # AI 优惠聚合器 — 项目状态
 
-**最后更新**：2026-09-30（最新一节 **2.35 `v1.4-deal-history`**）
+**最后更新**：2026-09-30（最新一节 **2.36 `v1.5-change-radar`**）
 **项目地址**：https://buguoshixc.github.io/ai-deals-aggregator/
 **仓库**：https://github.com/buguoshixc/ai-deals-aggregator
 
@@ -2150,6 +2150,86 @@ A（每日全量快照）实测约 **170 MB/年**，直接否掉。
 
 **B. 下一步**：`v1.5-change-radar`（**建议进入**，前置条件见 `research/v1.4-deal-history-report.md` 第十节：
 先观察一个采集周期拿到真实事件样本，再决定聚合粒度；入口优先考虑 `/changes/` 静态页而不是动首页密度）。
+
+---
+
+### 2.36 `v1.5-change-radar`：变化雷达 —— 首页一行 + `/changes/` 静态页（2026-09-30，分支 `v1.5-change-radar`）
+
+**目标**：让用户有理由反复回来，而不是搜索一次就离开。在 v1.4 的变更日志之上做出五个分栏：
+今日新增 / 最近 7 天变化 / 即将结束 / 已结束 / 重新出现；首页只展示**高价值**变化，
+完整视图在 `/changes/`。
+
+**七条要求的落点**（逐条）：
+
+| 要求 | 落点 |
+|---|---|
+| ① 所有变化来自 v1.4 数据 | 判据是 `scripts/lib/changes.js` 的 `buildRadar()`：读 `deal-history.json` 的事件与 `deals.json` 的既有字段（新增的「不存在」= 没有数据） |
+| ② 不通过 LLM 猜测变化 | 纯规则、零依赖、无网络；`selftest:changes` 有一条静态扫描（不许出现 `require(` / `Date.now` / `process.env` / 网络调用），行为断言覆盖每一条规则 |
+| ③ 不把普通文案改写当重大变化 | 三道闸：v1.4 不跟踪 `description`/`lastSeen`/`zh`（0 事件）；自由文本字段的 from/to 在**文案归一**后相同 ⇒ 降级「文案微调」、进折叠块并计数、**永不上首页**；`updated` 元信息同样不上首页。日期与枚举字段不参与该判定 |
+| ④ 详情页查看单条优惠历史 | v1.4 已有（弹层 + 80 个静态详情页共用 `historyBlockHtml`）；v1.5 补入口与端到端断言：雷达行 → `deal/<id>/` → 页面含「变更记录」块（真浏览器实测 HTTP 200） |
+| ⑤ 首页只展示高价值变化 | 条带内容只取 `radar.home`（按 `HOME_PRIORITY`：created → ended → restored → benefit/expiry/eligibility → endingSoon），最多 3 项 |
+| ⑥ 移动端保持紧凑 | 条带在窄屏顺延到「跳到档位」的下一行、仍是一行（实测 18px 空态 / 28px 有内容）；入口 `flex:none` 永不被滑走；空态另有一套短文案（同一份 DOM，CSS 切换）；390/360px 页面级溢出 0 |
+| ⑦ 页面仍可静态生成 | 首页条带与 `/changes/` 都由构建期注入/生成，无 JS 可读；`/changes/` 进 sitemap、双 feed、三段 JSON-LD、自指 canonical |
+
+**分栏与窗口**（契约见 `docs/SCHEMA-v1.5.md`）：今日新增 = `created` 且 `at === 基准日`；
+最近 7 天变化 = 优惠内容 / 领取条件 / 有效期变化 + 过去 6 天内的首次收录；即将结束 = **状态量**
+（`expiresAt` 7 天内，按基准日算剩余天数）；已结束/重新出现 = `ended`/`restored`（30 天）；
+其他变化 = `updated` 元信息 + 文案微调（只在 `/changes/` 折叠块）。
+**基准日取数据时间**（`deals.json` 的 `updatedAt` 日期）而不是构建时刻：与卡片上的「数据更新」
+同一口径，且同一天两次构建的产物逐字节相同。
+
+**判据只写一遍**：`buildRadar()` 构建期算一次，首页条带与 `/changes/` 页读同一份结果
+（RENDER-CORE 的 `changesStripHtml` / `changesPageHtml` 只排版）。
+**不注入 `dist/deals.json`**（产物顶层键与源文件一致）、不新增 JSON 产物、不写任何数据文件 ——
+这一层是纯读视图。
+
+**v1.4 的向后兼容扩展**：`ended` 新增可选 `label:{title,vendor}`（离开数据集时的墓碑快照），
+由 `collect.js` 传入（来源是上一份发布）。它是快照、不是被跟踪的值：不参与链校验与重放；
+只有 `ended` 能带，形状不合规 `check:history` 必红；缺席完全合法（交付时 0 条事件，无需迁移）。
+**为什么需要**：`title`/`vendor` 是身份字段、刻意不被跟踪，记录一旦离开数据集，雷达上就只剩一个
+12 位 id —— 那样的「已结束」对读者没有价值。
+
+**首页密度是本轮最贵的取舍（实测，不是估的）**：1440×900 下网格起点 227px、卡片 192px、
+行距 12px、档间分带标题 26px ⇒ 第三行底边 **899px**，距视口底边只有 **1px**。
+因此条带**不单独占行**，与「跳到档位」共用 `.hubline` 一行，做成 `flex: 1 1 auto; min-width: 0`
+的可伸缩项（内容超宽由正文区横滑，入口在横滑容器外）。
+**演练抓到的第二个坑**：第一版让 `.jump` 可收缩（`flex: 0 1 auto`），它内部四个 chip 折行、
+整行 +28px、网格起点 261px、首屏 **6 张**；改成 `.jump { flex: 0 0 auto }` 后回到 227px / **9 张**。
+
+**空态与「不可用」分开说**：日志缺失/损坏 ⇒ 「本次构建没有拿到历史日志……这不表示『没有变化』」；
+空态按**原因**分写（「一条都没写绝对截止日期」vs「有 N 条写了但都不在 7 天内」）。
+构建自检直接拿一份 `availability:'unavailable'` 的合成 radar 调渲染函数断言两者不互相冒充。
+
+**门禁**：新增 `selftest:changes`（**89 项**）并进 CI 门禁（action.yml +1 步，冻结序列同步；
+`--expect-checks` 不变）；产物自检新增「变化雷达」块（条带 ↔ 页面 ↔ 日志三方对账、
+`data-radar-total`/`data-radar-other`、链接集合双向相等、措辞同源、空态分写、不可用不冒充）；
+`verify-site.js` 新增 §10b（**19 项**，含测试侧独立重算的第二把尺子）；`check-mobile-chrome.js` 新增
+`nav.radar` 几何；`report:changes` 提供人读报告。`history-selftest` 扩到 **61 项**（墓碑形状的四种坏标本）。
+
+**实跑**（本机同一份产物）：
+`test` / `test:strict` / `check:reproducible` / `check:history` / `check:zh` / `check:ci`(32) 全绿；
+`selftest:changes` **89** · `selftest:history` **61** · `selftest:zh` 15 · `selftest:expiry` 94 · `selftest:provenance` 91；
+`build` ×2 → `dist/index.html` SHA256 一致；`verify` **281 项 0 失败**；
+`verify --compare` **287 项 0 失败**（回归 6 项全过：覆盖 80→80 · 卡片 50→50 · **首屏 9→9** ·
+页高 4589→4642px · 外部请求 0 · JS 错误 0）；`check-mobile-chrome` 390px 零裁切、`nav.radar` 溢出 0。
+
+**非空路径用真实数据演练证明**（交付当天日志是 0 条事件，空态之外测不到）：临时在真实数据上造
+六类变化（真变化 / 仅尾随空格 / 元信息 / 改名⇒旧 id ended + 新 id created / 来源消失又重现 /
+补截止日期），跑 `check:history` + `build` + `verify`：**覆盖不变量成立、文案微调被抑制并计数、
+条带 3 项、`/changes/` 五栏都有内容、8 条内链全部 200 且详情页含「变更记录」、首屏仍 9 张**；
+随后 `restore-from-git.js` 逐字节还原两个文件（SHA256 前后一致）并复跑全套门禁。
+**演练抓出三处真问题**：`radar.WINDOWS` 拼错（只在「有截止日期但不在窗口内」这条分支上炸）、
+覆盖不变量把状态量 `endingSoon` 算成了事件、页面折叠块里的链接没进链接集合对账。
+
+**A. 明确不做**：LLM 摘要 / 语义相似度判重、变更通知与订阅、用 `firstSeen` 反推时间轴、
+历史回填、雷达自己的 RSS、采集器改动、`dist/deals.json` 形状变更、刷新冻结的密度回归基线。
+
+**B. 交付当天雷达是空的（如实）**：`deal-history.json` 起算日 2026-09-30、事件 0 条；
+`deals.json` 里 `expiresAt` 覆盖 **0/80**。所以五个分栏全空、首页条带是明确空态。
+**不补造任何历史**；第一次真实变化会在下一次定时采集（CI 每天两次）时落库。
+
+**C. 未推送** —— 等你的「推送」。分支 `v1.5-change-radar`，基点 `origin/master = b202d21`
+（v1.4 已在其中：PR #6 = `bec6068`），隔离工作树 `.worktrees/v1.5-change-radar`。
 
 ---
 

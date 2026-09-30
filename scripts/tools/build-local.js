@@ -28,6 +28,7 @@ const health = require('../lib/health');
 const audience = require('../lib/audience');
 const provenance = require('../lib/provenance');
 const history = require('../lib/history');
+const changes = require('../lib/changes');
 
 const ROOT = path.join(__dirname, '..', '..');
 const outArg = process.argv.find(a => a.startsWith('--out='));
@@ -71,7 +72,9 @@ const ROUTE_HREFS = [
   ['__STATUS_HREF__', 'status/'],
   ['__STUDENT_HREF__', 'student/'],
   ['__DEVELOPER_HREF__', 'developer/'],
-  ['__FREEAPI_HREF__', 'free-api/']
+  ['__FREEAPI_HREF__', 'free-api/'],
+  // v1.5：变化雷达静态页（与首页条带同一个数据源，只是列出全部分栏）
+  ['__CHANGES_HREF__', 'changes/']
 ];
 /** 残留占位符的扫描清单（与 ROUTE_HREFS 同源，避免两处各写一份） */
 const ROUTE_MARKERS = ROUTE_HREFS.map(([marker]) => marker);
@@ -188,7 +191,7 @@ const MIN_PRERENDERED_CARDS = 45;
 /** 骨架里所有必须被构建期填掉的标记 */
 const PRERENDER_MARKERS = [
   'PRERENDER:deals', 'PRERENDER:facets', 'PRERENDER:topstat',
-  'PRERENDER:stats', 'PRERENDER:categories', 'PRERENDER:needs', 'PRERENDER:jsonld'
+  'PRERENDER:stats', 'PRERENDER:categories', 'PRERENDER:needs', 'PRERENDER:changes', 'PRERENDER:jsonld'
 ];
 
 function runValidate() {
@@ -931,6 +934,168 @@ ${jsonLdBlocks}
 }
 
 /* ------------------------------------------------------------------ */
+/* 变化雷达页（/changes/，v1.5）                                        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 「优惠变化雷达」静态页：把首页那一行条带展开成五个分栏的完整视图。
+ *
+ * 与 `/status/`、目录页同一套做法（同一个 `<style>`、同一份页脚、同样的五条约定），
+ * 但有两点是这一页特有的：
+ *
+ *   ① **正文由 RENDER-CORE 渲染**（`renderCore.changesPageHtml`），与首页条带共用模板；
+ *      页面壳子（head / 面包屑 / 页脚）留在这里，因为那部分与站点其它页面必须逐字一致。
+ *   ② 它是**数据的视图，不是数据的家**：真值是 `scripts/data/deal-history.json`，
+ *      这里一个字节都不生成。日志不可用时这一页照常存在（路由不能凭空消失），
+ *      但正文必须说「没有拿到历史日志」，而不是「没有变化」。
+ */
+function renderChangesPage(radar, indexHtml, renderCore) {
+  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
+  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
+  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
+  if (!style || !themeScript || !footerRaw) {
+    throw new Error('抽取变化雷达页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
+  }
+  const footer = resolveRouteHrefs(
+    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
+    '../'
+  ).trim();
+
+  const W = changes.CHANGES_WORDING;
+  const PAGE_HEADING = W.CHANGES_LABELS.pageTitle;
+  const PAGE_DESCRIPTION = '优惠的变化按时间看：今日新增、最近 7 天变化、即将结束、已结束、重新出现。' +
+    '全部来自本站采集与合并过程留下的变更记录，不猜测、不做语义改写。';
+  const pageUrl = `${SITE_URL}changes/`;
+
+  // JSON-LD：#1 CollectionPage、#2 BreadcrumbList、#3 ItemList。
+  // 一段一个对象（塞成数组时自检读到的 @type 是 undefined，既不抛错也不命中）。
+  //
+  // ItemList 只收**真有详情页**的条目：给「已离开数据集」的条目发一个不存在的 URL，
+  // 就是在结构化数据里造死链 —— 那比少声明几条更糟。
+  const linkable = [];
+  for (const key of changes.SECTION_ORDER) {
+    for (const item of radar.sections[key].items) {
+      if (item.href) linkable.push({ id: item.id, title: item.titled && item.title ? item.title : W.CHANGES_LABELS.tombstone });
+    }
+  }
+  const highValueTotal = changes.SECTION_ORDER.reduce((sum, key) => sum + (Number(radar.totals[key]) || 0), 0);
+  const jsonLdBlocks = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: `${PAGE_HEADING} · ${SITE_NAME}`,
+      description: PAGE_DESCRIPTION,
+      url: pageUrl,
+      inLanguage: 'zh-CN',
+      isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL }
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: '首页', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: PAGE_HEADING, item: pageUrl }
+      ]
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: PAGE_HEADING,
+      numberOfItems: highValueTotal,
+      itemListElement: linkable.slice(0, 50).map((item, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `${SITE_URL}deal/${encodeURIComponent(item.id)}/`,
+        name: item.title
+      }))
+    }
+  ].map(data => `<script type="application/ld+json">
+${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
+</script>`).join('\n');
+
+  const body = renderCore.changesPageHtml(radar, '../')
+    .split('\n').map(line => `      ${line}`).join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${htmlEscape(PAGE_HEADING)} · ${htmlEscape(SITE_NAME)}</title>
+<meta name="description" content="${htmlEscape(PAGE_DESCRIPTION)}">
+<link rel="canonical" href="${pageUrl}">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<!-- feed 约定：这一页自己不产出条目（订阅是「内容更新」语义），但必须能被订阅发现。 -->
+<link rel="alternate" type="application/rss+xml" title="${htmlEscape(SITE_NAME)} · RSS" href="../feed.xml">
+<link rel="alternate" type="application/feed+json" title="${htmlEscape(SITE_NAME)} · JSON Feed" href="../feed.json">
+${themeScript}
+${style}
+<style>
+  /* 只用首页已有的设计变量，不新建一套视觉语言。
+     列表式（不是宽表）：手机上自然换行、不产生横向滚动 —— 与目录页的表格相反，
+     这里每行都有一段可能很长的原文（原值 → 新值），表格会把手机变成横向滚动条。 */
+  .chgmeta { display: flex; align-items: baseline; gap: var(--s3); flex-wrap: wrap; color: var(--mut); font-size: var(--fs-sm); margin: 0 0 var(--s3); }
+  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+  .snote.chgwarn { color: var(--warn, #a35a00); }
+  .chgsec { margin: 0 0 var(--s4); border-top: 1px solid var(--line); padding-top: var(--s3); }
+  .chgsec h2 { font-size: 15px; margin: 0 0 var(--s2); }
+  .chglist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .chgi { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; }
+  .chgh { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px var(--s2); font-size: var(--fs-sm); }
+  .chgh time { color: var(--mut); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .chgt { color: var(--deal-ink); background: var(--dealsoft); border-radius: var(--r-sm); padding: 0 var(--s1); font-weight: 600; }
+  .chgf { color: var(--mut); }
+  .chgn { color: var(--ink); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+  a.chgn:hover { color: var(--brand); text-decoration: underline; text-underline-offset: 2px; }
+  a.chgn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .chgv { display: grid; gap: 2px; margin-top: 4px; font-size: var(--fs-sm); overflow-wrap: anywhere; }
+  .chgv .chgold { color: var(--mut); }
+  .chgv .chgnew { color: var(--ink); }
+  .chgv .chgnote { color: var(--mut); font-size: 11.5px; }
+  .chgempty, .chgmore { color: var(--mut); font-size: var(--fs-sm); margin: 0; }
+  .chgother { margin: var(--s4) 0 0; border-top: 1px solid var(--line); padding-top: var(--s3); }
+  .chgother > summary { cursor: pointer; font-size: 14px; font-weight: 600; color: var(--ink2); }
+  .chgother > summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .chgother[open] > summary { margin-bottom: var(--s3); }
+  @media (max-width: 760px) {
+    .chgi { padding: 9px 10px; }
+    .chgh { gap: 2px var(--s2); }
+  }
+</style>
+${jsonLdBlocks}
+</head>
+<body>
+  <header class="top">
+    <div class="topin">
+      <a class="brand" href="../">
+        <span class="mark" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
+            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
+          </svg>
+        </span>
+        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
+      </a>
+      <a class="jumpback" href="../">← 返回全部优惠</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main id="main">
+      <nav class="crumb" aria-label="面包屑"><a href="../">首页</a> › <span>${htmlEscape(PAGE_HEADING)}</span></nav>
+${body}
+    </main>
+    ${footer}
+  </div>
+</body>
+</html>
+`;
+}
+
+/* ------------------------------------------------------------------ */
 /* 分类页（/student/ /developer/ /free-api/）                           */
 /* ------------------------------------------------------------------ */
 
@@ -1374,6 +1539,28 @@ function assemble() {
       `起算日 ${historyStats.startedAt}（deal-history.json + 每条最近 ${history.RENDER_LIMIT} 条注入 dist/deals.json）`);
   }
 
+  // v1.5：变化雷达。**判据只有一处**（lib/changes.js 的 buildRadar），这里算一次，
+  // 首页条带与 /changes/ 静态页共用同一份结果 —— 前端一个判据都不复刻。
+  //
+  // 基准日取**数据时间**（payload.updatedAt 的日期），不是构建时刻：
+  //   · 与卡片上的「数据更新」同一口径；页面上不会出现「基准日比数据还新」这种自相矛盾；
+  //   · 同一天两次构建的产物逐字节相同（构建确定性 N2），跨零点也不会因为构建时刻而变。
+  // 日志缺失/损坏时 availability = 'unavailable'，页面照常出、但明说「没拿到历史日志」，
+  // 绝不渲染成「没有变化」（这两种事实在页面上必须是两句不同的话）。
+  const radarAsOf = String(payload.updatedAt || '').slice(0, 10);
+  const radarAvailability = historyStore.missing || historyStore.broken ? 'unavailable' : 'ok';
+  const radar = changes.buildRadar({
+    deals: payload.deals,
+    store: historyStore.store,
+    asOf: radarAsOf,
+    availability: radarAvailability
+  });
+  const radarStats = changes.summarize(radar);
+  console.log(`  变化雷达: ${radar.availability === 'ok' ? '可用' : '不可用（无历史日志）'} · 基准日 ${radar.asOf || '未知'}` +
+    ` · 今日新增 ${radarStats.totals.created} · 最近 7 天变化 ${radarStats.totals.changed} · 即将结束 ${radarStats.totals.endingSoon}` +
+    ` · 已结束 ${radarStats.totals.ended} · 重新出现 ${radarStats.totals.restored} · 其他（不上首页）${radarStats.totals.other}` +
+    ` · 首页条带 ${radarStats.homeCount} 项`);
+
   fs.writeFileSync(path.join(OUT, 'deals.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
   console.log(`  中文译文: ${summarizeZh(zhAttached.report)}`);
   zhAttached.report.stale.forEach(row =>
@@ -1415,7 +1602,10 @@ function assemble() {
   // 按需求找优惠的入口行（v1.2）：静态 <a>，无 JS 可点。放在筛选条之后、
   // 正文之前 —— 它回答「我要什么」，筛选条回答「我要怎么缩」，后者是它的下游。
   html = replaceMarker(html, '<!--PRERENDER:needs-->', renderNeedRow(payload.deals));
-  console.log(`  筛选条 / 汇总 / 分类选项 / 按需求入口: 已填充`);
+  // 变化雷达条带（v1.5）：同样一行静态导航，紧跟按需求入口行。它与 /changes/ 页
+  // 共用 RENDER-CORE 的渲染函数，读的是上面算好的同一份 radar。
+  html = replaceMarker(html, '<!--PRERENDER:changes-->', renderCore.changesStripHtml(radar));
+  console.log(`  筛选条 / 汇总 / 分类选项 / 按需求入口 / 变化雷达: 已填充`);
 
   // 站点绝对地址：源码里不硬编码第二份 URL
   const urlSlots = html.split('__SITE_URL__').length - 1;
@@ -1486,6 +1676,17 @@ function assemble() {
   console.log(`  按需求页: ${needPages.map(p => `/${p.route} ${p.count} 条`).join(' · ')}` +
     (skippedNeeds.length ? `（跳过空入口: ${skippedNeeds.join(', ')}）` : ''));
 
+  // 变化雷达页（/changes/，v1.5）：与首页条带同一份 radar、同一套渲染函数。
+  //
+  // 它**始终生成**（与「条数为 0 的按需求页不生成」不同）：这一页的价值恰恰在于
+  // 「今天有没有变化」这个问题本身，而「没有变化」与「我们没查」是两种必须能读到的答案。
+  // 日志不可用时也照常出页 —— 路由凭空消失比一页说明更糟。
+  const changesDir = path.join(OUT, 'changes');
+  fs.mkdirSync(changesDir, { recursive: true });
+  fs.writeFileSync(path.join(changesDir, 'index.html'), renderChangesPage(radar, html, renderCore), 'utf8');
+  console.log(`  变化雷达页: /changes/（基准日 ${radar.asOf || '未知'} · 高价值 ${changes.SECTION_ORDER
+    .reduce((sum, key) => sum + (Number(radar.totals[key]) || 0), 0)} 条 · 其他 ${radar.totals.other} 条）`);
+
   const dealUrls = detailPages.map(page => `  <url>
     <loc>${page.url}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -1515,6 +1716,16 @@ function assemble() {
     <priority>0.3</priority>
   </url>`;
 
+  // 变化雷达页进 sitemap：priority 0.8 介于目录页 0.9 与详情页 0.7 之间 ——
+  // 它是一个入口（回答「今天有什么变了」），但不是分类入口，也不是叶子页面。
+  // `changefreq: daily` 是实话：数据每天采集两次，这一页的内容每天都可能变。
+  const changesUrl = `  <url>
+    <loc>${SITE_URL}changes/</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+
   fs.writeFileSync(path.join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -1525,6 +1736,7 @@ function assemble() {
   </url>
 ${directoryUrls}
 ${statusUrl}
+${changesUrl}
 ${dealUrls}
 </urlset>
 `, 'utf8');
@@ -1560,7 +1772,12 @@ ${dealUrls}
     // 它的过滤视图，既有断言不用改。
     directoryPages,
     collectionPages,
-    needPages
+    needPages,
+    // v1.5：变化雷达交给自检做**回读对账**（条带 ↔ 数据 ↔ 页面三方）。把 radar 与
+    // 基准日一并带下去，自检因此不必重算一遍判据 —— 重算就等于把判据写了两遍。
+    radar,
+    radarStats,
+    radarAsOf
   });
 }
 
@@ -1888,6 +2105,172 @@ function selfCheck(built) {
     }
   }
 
+  // ---- v1.5：变化雷达（首页条带 + /changes/ 静态页）-------------------------
+  //
+  // 这一层的坏法全部是「页面看起来正常」：条带注入漏了 → 首页那一行变成一句空态；
+  // 窗口算错 → 三天前新增的条目哪儿都不显示；链接前缀写错 → 页面全对而内链全 404；
+  // 措辞被人顺手改了 → 两处的说法开始分家。所以这里不是「文件存在就算过」，
+  // 而是**三方对账**：条带 ↔ /changes/ 页 ↔ 日志与记录。
+  if (!built.radar) {
+    fail('变化雷达：assemble() 没有把 radar 交给自检（自检无法对账）');
+  } else {
+    const problems = [];
+    const radar = built.radar;
+    const W = changes.CHANGES_WORDING;
+    const SECTION_KEYS = changes.SECTION_ORDER;
+    const rc = loadRenderCore(path.join(OUT, 'index.html'));
+    const indexHtml = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
+    const strip = (indexHtml.match(/<nav class="radar"[\s\S]*?<\/nav>/) || [''])[0];
+    const pageFile = path.join(OUT, 'changes', 'index.html');
+    const highValueTotal = SECTION_KEYS.reduce((sum, key) => sum + (Number(radar.totals[key]) || 0), 0);
+
+    // ① 首页条带：存在、总数与分栏一致、只有链接没有控件、入口在横滑区外
+    if (!strip) {
+      problems.push('首页没有变化雷达条带（预渲染标记没被替换？）');
+    } else {
+      const total = (strip.match(/data-radar-total="(\d+)"/) || [])[1];
+      const other = (strip.match(/data-radar-other="(\d+)"/) || [])[1];
+      if (total !== String(highValueTotal)) problems.push(`条带 data-radar-total=${total} ≠ 分栏合计 ${highValueTotal}`);
+      if (other !== String(radar.totals.other)) problems.push(`条带 data-radar-other=${other} ≠ 其他变化 ${radar.totals.other}`);
+      if (/<(button|input|select)\b/i.test(strip)) problems.push('条带里出现了 JS 控件（无 JS 时就是死按钮）');
+      if (!/class="rmore" href="changes\/"/.test(strip)) problems.push('条带缺少指向 /changes/ 的入口（或前缀写错）');
+      const scrollEnd = strip.indexOf('</div>');
+      const moreAt = strip.indexOf('class="rmore"');
+      if (moreAt >= 0 && scrollEnd >= 0 && moreAt < scrollEnd) {
+        problems.push('「全部变化」入口落在横滑容器里（窄屏上会被滑走）');
+      }
+      // 条带里的条目必须**逐项等于** radar.home（顺序也算：优先级的唯一出处是 changes.HOME_PRIORITY）
+      const stripIds = [...strip.matchAll(/class="ritem" data-deal-id="([0-9a-f]+)"/g)].map(m => m[1]);
+      const homeIds = radar.home.items.map(item => item.id);
+      if (JSON.stringify(stripIds) !== JSON.stringify(homeIds)) {
+        problems.push(`条带条目与 radar.home 不一致（条带 ${stripIds.join(',') || '空'} / 数据 ${homeIds.join(',') || '空'}）`);
+      }
+      if (!radar.home.items.length && !/class="rnone"/.test(strip)) problems.push('条带没有条目时也没有明确空态');
+    }
+
+    // ② 覆盖不变量：窗口内的事件必须**一条不漏**地出现在某个分栏或「其他变化」里。
+    //    这是拿日志直接算的（不是拿 radar 自证），因此能抓住「buildRadar 把某类事件丢了」。
+    if (radar.availability === 'ok') {
+      const store = history.load();
+      const events = history.eventsOf(store.store);
+      const recentFrom = changes.addDays(radar.asOf, -(changes.WINDOWS.recentDays - 1));
+      const endedFrom = changes.addDays(radar.asOf, -(changes.WINDOWS.endedDays - 1));
+      const inRecent = events.filter(event => event.at >= recentFrom && event.at <= radar.asOf);
+      const olderLifecycle = events.filter(event =>
+        (event.type === 'ended' || event.type === 'restored') && event.at >= endedFrom && event.at < recentFrom);
+      // ⚠️ 只数**事件**来源的分栏：`endingSoon` 是状态量（由 deals.json 的 expiresAt 现算），
+      // 它不对应日志里的任何一条事件 —— 把它算进覆盖数会让这条不变量永远差几条。
+      // 这条是演练抓出来的（非空数据上才暴露，空态下恒等于 0 看不出来）。
+      const covered = ['created', 'changed', 'ended', 'restored']
+        .reduce((sum, key) => sum + (Number(radar.totals[key]) || 0), 0) + (Number(radar.totals.other) || 0);
+      if (covered !== inRecent.length + olderLifecycle.length) {
+        problems.push(`覆盖不变量不成立：日志窗口内 ${inRecent.length + olderLifecycle.length} 条事件，` +
+          `雷达只覆盖了 ${covered} 条（分栏 ${['created', 'changed', 'ended', 'restored'].map(k => `${k} ${radar.totals[k]}`).join(' + ')} + 其他 ${radar.totals.other}）`);
+      }
+      // 已离开数据集的条目：要么有详情页可链，要么**没有**链接（不许有半条死链）
+      const dealDirs = fs.existsSync(path.join(OUT, 'deal')) ? new Set(fs.readdirSync(path.join(OUT, 'deal'))) : new Set();
+      const dangling = SECTION_KEYS
+        .flatMap(key => radar.sections[key].items)
+        .filter(item => item.href && !dealDirs.has(item.id));
+      if (dangling.length) problems.push(`雷达指向了不存在的详情页: ${dangling.slice(0, 3).map(i => i.id).join(', ')}`);
+    }
+
+    // ③ /changes/ 页：五条约定（预渲染 / 无 JS 可读 / sitemap / 双 feed / JSON-LD）
+    if (!fs.existsSync(pageFile)) {
+      problems.push('缺少 changes/index.html');
+    } else {
+      const page = fs.readFileSync(pageFile, 'utf8');
+      const noScript = page.replace(/<script[\s\S]*?<\/script>/gi, '');
+      if (!page.includes(`<link rel="canonical" href="${SITE_URL}changes/">`)) problems.push('changes/ 的 canonical 不是自指');
+      if (!page.includes('href="../feed.xml"') || !page.includes('href="../feed.json"')) problems.push('changes/ 没有声明订阅源');
+      if (/__[A-Z_]+_HREF__/.test(page)) problems.push('changes/ 残留路由占位符');
+      let ldTypes = [];
+      try {
+        ldTypes = [...page.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+          .map(m => JSON.parse(m[1])['@type']);
+      } catch (error) {
+        problems.push(`changes/ JSON-LD 解析失败: ${error.message}`);
+      }
+      const expectedLd = ['BreadcrumbList', 'CollectionPage', 'ItemList'];
+      if (JSON.stringify(ldTypes.slice().sort()) !== JSON.stringify(expectedLd)) {
+        problems.push(`changes/ JSON-LD 集合不是恰好 [${expectedLd.join(', ')}]，实得 [${ldTypes.slice().sort().join(', ')}]`);
+      }
+      // 分栏标题与总数必须来自权威表（标题在 CHANGES_SECTION，条数在 totals）
+      for (const key of SECTION_KEYS) {
+        const heading = W.CHANGES_SECTION[key] + '（' + (Number(radar.totals[key]) || 0) + '）';
+        if (!noScript.includes(heading)) problems.push(`changes/ 缺少分栏标题「${heading}」`);
+      }
+      if (!noScript.includes(W.CHANGES_LABELS.other)) problems.push('changes/ 缺少「不计入高价值的其他变化」块');
+      if (!noScript.includes(changes.CHANGES_WORDING.CHANGES_NOTES.soonBasis)) problems.push('changes/ 缺少「即将结束」的判据说明');
+      if (!noScript.includes(history.HISTORY_WORDING.HISTORY_NOTES.disclaimer)) problems.push('changes/ 缺少固定免责句');
+      // 空态必须按原因分开说：数据里一条截止日期都没有 ≠ 有但都不在窗口内
+      const emptySoon = radar.coverage.dealsWithExpiresAt === 0
+        ? W.CHANGES_EMPTY.endingSoonNone
+        : W.CHANGES_EMPTY.endingSoonLater.replace('{n}', String(radar.coverage.dealsWithExpiresAt))
+          .replace('{days}', String(radar.windows.soonDays));
+      if (!radar.sections.endingSoon.items.length && !noScript.includes(emptySoon)) {
+        problems.push('changes/ 的「即将结束」空态没有说清是哪种空（数据缺口 vs 窗口内没有）');
+      }
+      // 行 ↔ 数据双向对账：页面上的详情页链接集合 == 可链接条目集合。
+      // ⚠️ 折叠块（其他变化）里的行**也会**链到详情页 —— 只数五个分栏会误报「多了几条」。
+      const allItems = SECTION_KEYS.flatMap(key => radar.sections[key].items)
+        .concat(radar.other.cosmetic || [], radar.other.metadata || []);
+      const onPage = new Set([...noScript.matchAll(/href="\.\.\/deal\/([^/"]+)\/"/g)].map(m => decodeURIComponent(m[1])));
+      const linkable = new Set(allItems.filter(item => item.href).map(item => item.id));
+      const missing = [...linkable].filter(id => !onPage.has(id));
+      const extra = [...onPage].filter(id => !linkable.has(id));
+      if (missing.length) problems.push(`changes/ 漏了 ${missing.length} 条可链接条目（如 ${missing.slice(0, 3).join(', ')}）`);
+      if (extra.length) problems.push(`changes/ 多了 ${extra.length} 条不在雷达里的链接（如 ${extra.slice(0, 3).join(', ')}）`);
+      // 预渲染正文（无 JS 可读）。阈值按「固定说明 + 每条 40 字」估：实测空态页约 900 字，
+      // 每条事件行约 40–120 字。取 700 的下限只为拦住「渲染路径断了」这类坏法。
+      const text = prerenderedText(page);
+      const floor = 700 + 40 * (highValueTotal + radar.totals.other);
+      if (text.length < floor) problems.push(`changes/ 预渲染正文过短（${text.length} 字 < ${floor}）`);
+      // 其它变化必须**显式列出**（不是悄悄丢掉）
+      if (radar.totals.other > 0 && !noScript.includes('class="chgother"')) problems.push('有其他变化却没有列出折叠块');
+    }
+
+    // ④ 措辞同源：前端那份受控副本与 lib/changes.js 的权威表逐项比对
+    const wording = audience.parseWordingBlock(audience.extractWordingBlock(indexHtml)) || {};
+    for (const group of Object.keys(W)) {
+      const expected = W[group];
+      const actual = wording[group];
+      if (!actual || typeof actual !== 'object') { problems.push(`产物里缺 ${group}（变化雷达的措辞副本没了）`); continue; }
+      for (const key of Object.keys(expected)) {
+        if (actual[key] !== expected[key]) problems.push(`${group}.${key}：前端「${actual[key]}」≠ 权威表「${expected[key]}」`);
+      }
+    }
+    // 模板必须真的带槽位（有人把 {date} / {n} 删掉、改成写死一句话时，两端字符串仍然「相等」）
+    for (const [group, key] of [['CHANGES_LABELS', 'base'], ['CHANGES_LABELS', 'more'], ['CHANGES_LABELS', 'homeEmptyShort'], ['CHANGES_EMPTY', 'endingSoonLater'], ['CHANGES_SOON', 'days']]) {
+      if (!String(W[group][key]).includes('{')) problems.push(`${group}.${key} 的槽位丢了（退化成写死的一句话）`);
+    }
+
+    // ⑤ 红线：我们**自己写的字**里不许出现本站自发的有效性结论（数据里的原文不扫）
+    const ownWords = Object.keys(wording)
+      .filter(group => group.startsWith('CHANGES_') || group.startsWith('HISTORY_'))
+      .flatMap(group => Object.values(wording[group] || {}))
+      .map(String);
+    for (const stamp of provenance.STAMP_PATTERNS) {
+      const hit = ownWords.filter(value => stamp.re.test(value));
+      if (hit.length) problems.push(`雷达措辞里出现本站自发的有效性结论（${stamp.why}）：${hit.slice(0, 2).join(' / ')}`);
+    }
+
+    // ⑥ 「不可用」与「没有变化」必须是两句不同的话（拿渲染器直接断言，不靠人读代码）
+    const unavailableRadar = changes.buildRadar({ deals: [], store: null, asOf: radar.asOf, availability: 'unavailable' });
+    const unavailableStrip = rc.changesStripHtml(unavailableRadar);
+    const unavailablePage = rc.changesPageHtml(unavailableRadar, '../');
+    if (!unavailableStrip.includes(W.CHANGES_NOTES.unavailable) || !unavailablePage.includes(W.CHANGES_NOTES.unavailable)) {
+      problems.push('历史日志不可用时，条带或页面没有明说「没有拿到历史日志」');
+    }
+    if (unavailablePage.includes(W.CHANGES_EMPTY.created)) problems.push('日志不可用时页面用「没有变化」冒充了「不可用」');
+
+    if (problems.length) fail(`变化雷达（v1.5）：${problems.slice(0, 6).join('；')}`);
+    else {
+      console.log(`  ✓ 变化雷达: 条带 ${radar.home.items.length} 项 / 分栏合计 ${highValueTotal} 条 · 其他 ${radar.totals.other} 条` +
+        ` · /changes/ 五栏 + 折叠块齐 · 覆盖不变量成立 · 措辞与 lib/changes.js 逐项同源`);
+    }
+  }
+
   // 数据源状态页：与 source-health.json 逐个来源对账（状态标签、条数、行数），
   // 而不是只看「文件存在」——状态页最容易的坏法是「页面上写着正常，数据里其实是失败」。
   const statusFile = path.join(OUT, 'status', 'index.html');
@@ -2029,7 +2412,13 @@ function selfCheck(built) {
     const routeOutputs = [
       ['index.html', ''],
       ['status/index.html', '../'],
+      // v1.5：变化雷达页（浅一层路由）
+      ['changes/index.html', '../'],
       ...built.collectionPages.map(page => [`${page.slug}/index.html`, '../']),
+      // v1.2 遗留的扫描盲区：按需求页是**两层**路由，却一直没进这张表 ——
+      // 于是「某一层页脚的相对前缀写错」在那 10 个页面上不会被这条断言照到。
+      // 补进来是顺手加固，不是本轮改动的一部分；真红了说明这里本来就有一条错链。
+      ...built.needPages.map(page => [`${page.route}index.html`, '../../']),
       ...dealDirs.map(id => [`deal/${id}/index.html`, '../../'])
     ];
     const leftovers = [];
@@ -2190,18 +2579,20 @@ function selfCheck(built) {
   // v1.2 把「分类页」这一项换成「目录页」（分类页 + 按需求页），两者是同一张注册表。
   //
   // 每一项都写成自述的：数字对不上时，报错信息里的分项就是排查路径。
-  const expectedLocs = dealEntries.length + 1 /* 首页 */ + built.directoryPages.length + 1 /* 状态页 */;
+  // v1.5：再加一项「变化雷达页」。
+  const expectedLocs = dealEntries.length + 1 /* 首页 */ + built.directoryPages.length + 1 /* 状态页 */ + 1 /* 变化雷达页 */;
   if (sitemapLocs.length !== expectedLocs) {
     fail(`sitemap ${sitemapLocs.length} 条 ≠ 首页 1 + 目录页 ${built.directoryPages.length}` +
-      `（分类页 ${built.collectionPages.length} + 按需求页 ${built.needPages.length}）+ 状态页 1 + 详情页 ${dealEntries.length}`);
+      `（分类页 ${built.collectionPages.length} + 按需求页 ${built.needPages.length}）+ 状态页 1 + 变化雷达页 1 + 详情页 ${dealEntries.length}`);
   } else {
     const notListed = dealEntries.filter(deal => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(deal.id)}/`)));
     const directoriesNotListed = built.directoryPages.filter(page => !sitemapLocs.includes(page.url));
     if (notListed.length) fail(`sitemap 漏了 ${notListed.length} 个详情页`);
     else if (directoriesNotListed.length) fail(`sitemap 漏了目录页: ${directoriesNotListed.map(p => p.route).join(', ')}`);
     else if (!sitemapLocs.includes(`${SITE_URL}status/`)) fail('sitemap 漏了状态页 status/');
+    else if (!sitemapLocs.includes(`${SITE_URL}changes/`)) fail('sitemap 漏了变化雷达页 changes/');
     else console.log(`  ✓ sitemap: ${sitemapLocs.length} 条（首页 + ${built.collectionPages.length} 个分类页 + ` +
-      `${built.needPages.length} 个按需求页 + 状态页 + ${dealEntries.length} 个详情页，无遗漏）`);
+      `${built.needPages.length} 个按需求页 + 状态页 + 变化雷达页 + ${dealEntries.length} 个详情页，无遗漏）`);
   }
 
   // 分类页：**逐条回读对账**，而不是「文件存在就算过」。
