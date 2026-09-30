@@ -2054,9 +2054,10 @@ function assemble() {
       itemIds: matched.map(deal => deal.id),
       childRoutes: spec.kind === 'hub' ? (spec.children || []).map(child => child.route) : [],
       summary, feedIds: pageFeeds.map(feed => feed.spec.id),
-      feedMatch: (spec.kind === 'category' || spec.kind === 'vendor') && spec.slug ? [
-        spec.kind === 'category' ? `category-${spec.slug}` : `vendor-${spec.slug}`
-      ] : [],
+      // 「本页应该有哪份 Feed」取自**实际存在的那一份**（feedBundle），不按类型推断：
+      // 钉住但跌破门槛的厂商页会照常生成，而它的 Feed 不会（Feed 门槛是另一道），
+      // 按类型推断就会要求页面声明一份不存在的订阅源 —— 一条永远红的假警报。
+      feedMatch: pageFeeds.map(feed => feed.spec.id),
       html: page
     });
     pageDescriptors.push(directoryPages[directoryPages.length - 1]);
