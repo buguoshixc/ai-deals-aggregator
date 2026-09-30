@@ -1642,6 +1642,113 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   }
   await page.setViewportSize({ width: 1440, height: 900 });
 
+  /* ------------------------------------------------------------------ */
+  /* 15a3) 变更记录（v1.4 历史层）—— 真页面上的牙                        */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 15a3) 变更记录（v1.4 历史层）===');
+
+  /**
+   * 为什么必须在这里再验一遍（构建自检已经把注入的历史逐字节对过账）：
+   * 自检读的是内存里的 payload 与渲染函数，读者拿到的是**写盘后的详情页**。
+   *
+   * 历史这一层的坏法特别隐蔽：注入漏了 → 每条都显示「暂无变更记录」，页面看起来
+   * 完全正常（那正是「没记录」与「没变化」混淆的形态）；注入错位 → 页面显示一段
+   * 谁也没写过的历史。两者构建自检都能拦，但**只有真页面能证明它到了读者面前**。
+   *
+   * 取样一律现场从 deals.json 挑（数据每天变，硬编码明天就是假红）；缺样例时
+   * 打印跳过原因，不制造假红 —— 交付当天历史里确实是 0 条事件。
+   */
+  const readHistoryBlock = `(() => {
+    const box = document.querySelector('.dpane .dhist');
+    if (!box) return null;
+    return {
+      total: box.getAttribute('data-hist-total'),
+      text: box.innerText.replace(/\\s+/g, ' ').trim(),
+      heading: Boolean(box.querySelector('.dsrc-h')),
+      note: Boolean(box.querySelector('.dsrc-note')),
+      since: box.querySelector('.dhist-since') ? box.querySelector('.dhist-since').textContent.trim() : '',
+      events: box.querySelectorAll('.dhist-ev').length,
+      times: box.querySelectorAll('.dhist-ev time[datetime]').length,
+      types: [...box.querySelectorAll('.dhist-ev .hty')].map(node => node.textContent.trim()),
+      hasFromTo: box.textContent.includes('原 ') && box.textContent.includes('新 ')
+    };
+  })()`;
+
+  const historyBlockOf = async (dealId) => {
+    await page.goto(new URL(`deal/${dealId}/`, base).href, { waitUntil: 'load' });
+    await page.waitForSelector('.dpane .dhist, .dpane .dsrc', { timeout: 15000 });
+    return page.evaluate(readHistoryBlock);
+  };
+
+  const anyHistoryBlock = anyDeal ? await historyBlockOf(anyDeal.id) : null;
+  check('详情页有「变更记录」块，且带免责句与总数',
+    Boolean(anyHistoryBlock) && anyHistoryBlock.heading && anyHistoryBlock.note && anyHistoryBlock.total !== null,
+    anyHistoryBlock ? `总数 ${anyHistoryBlock.total} · ${anyHistoryBlock.events} 条事件行` : '没有找到 .dhist 块');
+  check('「变更记录」块里没有本站自发的有效性结论（已核验 / 100% 有效）',
+    Boolean(anyHistoryBlock) && !/已核验|100\s*%\s*(有效|可用)/.test(anyHistoryBlock.text),
+    anyHistoryBlock ? anyHistoryBlock.text.slice(0, 80) : '');
+
+  const historyOne = await pickDeal('(x) => x.history && Array.isArray(x.history.events) && x.history.events.length > 0');
+  if (historyOne) {
+    const block = await historyBlockOf(historyOne.id);
+    check('有变更记录的条目：事件行渲染出来，每行带日期与事件类型',
+      Boolean(block) && block.events >= 1 && block.times === block.events && block.types.every(Boolean),
+      block ? `「${historyOne.title}」→ ${block.events} 行 · 带时间 ${block.times} · 类型 ${block.types.join('/')}` : '取样失败');
+    check('有变更记录的条目：总数与 data-hist-total 一致，且起算说明在',
+      Boolean(block) && Number(block.total) >= block.events && /变更记录自 \d{4}-\d{2}-\d{2} 起/.test(block.since),
+      block ? `total=${block.total} · since=${block.since}` : '');
+  } else {
+    console.log('  ℹ️  跳过「有变更记录」断言：本轮历史里还没有任何事件（起算日之后没有观测到变化）');
+  }
+
+  const noHistoryOne = await pickDeal('(x) => !x.history');
+  if (noHistoryOne) {
+    const block = await historyBlockOf(noHistoryOne.id);
+    check('没有变更记录的条目：明说「暂无变更记录」而不是空白（空白会冒充「没有变化」）',
+      Boolean(block) && block.total === '0' && block.events === 0 && /暂无变更记录/.test(block.text),
+      block ? `total=${block.total} · 事件 ${block.events} 行 · 文本「${block.text.slice(0, 40)}」` : '取样失败');
+  } else {
+    console.log('  ℹ️  跳过「暂无变更记录」断言：本轮所有 deal 都有历史事件');
+  }
+
+  // 静态（不执行 JS）也必须读到这一块：详情页是预渲染的，历史块不能只活在水合之后。
+  if (anyDeal) {
+    const noJsHistoryCtx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+    const noJsHistoryPage = await noJsHistoryCtx.newPage();
+    await noJsHistoryPage.goto(new URL(`deal/${anyDeal.id}/`, base).href, { waitUntil: 'load' });
+    const staticBlock = await noJsHistoryPage.evaluate(readHistoryBlock);
+    await noJsHistoryCtx.close();
+    check('详情页不执行 JS 也能读到「变更记录」块（预渲染的硬定义）',
+      Boolean(staticBlock) && staticBlock.heading &&
+      (/暂无变更记录/.test(staticBlock.text) || staticBlock.events >= 1),
+      staticBlock ? `文本「${staticBlock.text.slice(0, 50)}」` : '禁用 JS 后找不到 .dhist');
+  }
+
+  // 手机端几何：历史值里有长文案（优惠说明最长 240 字），是新的溢出风险点。
+  for (const width of [390, 360]) {
+    if (!anyDeal) { check(`详情页变更记录块 ${width}px 不产生横向溢出`, false, '取样失败：读不到 deals.json'); continue; }
+    const overflow = await (async () => {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto(new URL(`deal/${anyDeal.id}/`, base).href, { waitUntil: 'load' });
+      await page.waitForSelector('.dpane .dhist', { timeout: 15000 });
+      return page.evaluate(() => {
+        const de = document.documentElement;
+        const box = document.querySelector('.dpane .dhist');
+        const events = [...box.querySelectorAll('.dhist-ev')];
+        return {
+          page: de.scrollWidth - de.clientWidth,
+          past: events.filter(row => row.getBoundingClientRect().right > de.clientWidth + 1).length,
+          events: events.length
+        };
+      });
+    })();
+    check(`详情页变更记录块 ${width}px 不产生横向溢出`,
+      overflow.page === 0 && overflow.past === 0,
+      `页面溢出 ${overflow.page}px · ${overflow.events} 条事件行中越界 ${overflow.past} 行`);
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+
   // 搜索：新字段的中文标签词必须能搜到，且 unknown **不进** haystack（否则搜索结果虚高）
   await page.goto(base, { waitUntil: 'load' });
   await waitForApp(page);

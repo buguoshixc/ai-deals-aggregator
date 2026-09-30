@@ -892,7 +892,7 @@ const WORDING_BLOCK = { start: 'AUDIENCE:START', end: 'AUDIENCE:END', constName:
  * 它们必须都在同一个标记块里、都是纯 JSON 字面量 —— 比对时合并成一个对象，
  * 组名不重名即可。**任何一个解析不出都算漂移**，不跳过。
  */
-const WORDING_CONSTS = ['AUDIENCE_WORDING', 'SOURCE_WORDING'];
+const WORDING_CONSTS = ['AUDIENCE_WORDING', 'SOURCE_WORDING', 'HISTORY_WORDING'];
 
 /**
  * 抽取 RENDER-CORE 里 `AUDIENCE:START/END` 标记块的内容。抽不到返回 null。

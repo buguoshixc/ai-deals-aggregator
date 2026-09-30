@@ -704,6 +704,22 @@
     .dsrc-note { margin: 8px 0 0; color: var(--mut); font-size: 11px; line-height: 1.6; }
     @media (max-width: 560px) { .dsrc-row { grid-template-columns: 5.5em minmax(0, 1fr); } }
 
+    /* v1.4 变更记录：沿用 .dsrc 的字号与色阶，只加事件行自己的排布（不新增视觉语言） */
+    .dhist { margin-top: 14px; font-size: 11.5px; color: var(--mut); line-height: 1.7; }
+    .dhist-since { margin: 0 0 6px; font-size: 11px; color: var(--mut); }
+    .dhist-list { display: grid; gap: 6px; }
+    .dhist-ev { border-left: 2px solid var(--line2, var(--line)); padding-left: 8px; }
+    .dhist-ev .hh { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+    .dhist-ev .hh time { color: var(--ink2); font-weight: 600; white-space: nowrap; }
+    .dhist-ev .hty { color: var(--ink2); }
+    .dhist-ev .hfd { color: var(--mut); }
+    .dhist-ev .hv { display: grid; gap: 2px; margin-top: 2px; min-width: 0; overflow-wrap: anywhere; }
+    .dhist-ev .ho { color: var(--mut); text-decoration: line-through; }
+    .dhist-ev .hn { color: var(--ink2); }
+    .dhist-ev .hd { color: var(--mut); font-size: 11px; }
+    .dhist-more { margin: 6px 0 0; color: var(--mut); font-size: 11px; }
+    .dhist .none { color: var(--mut); }
+
     /* ---------- 详情弹层里的收藏 / 对比 ----------
        整块由 JS 插入（没有 JS 就不该出现可点的收藏按钮），因此这里不需要 body.js 门控；
        按钮本身是 flex 行，比 .dact 的链接行更靠上，两行之间只隔一个间距。 */
@@ -1094,6 +1110,7 @@
        由 checkWordingContract() 逐项比对。三个缺失状态（不适用 / 未知 / 不可用）必须分开写：
        人工策展按设计没有采集器，与「心跳里匹配不到」是两件不同的事实。 */
     const SOURCE_WORDING = {"SOURCE_LABELS":{"sectionTitle":"信息来源","official":"官方页面","origin":"原始出处","source":"收录来源","sourceType":"来源类型","method":"采集方式","firstSeen":"首次收录","lastSeen":"最近发现","lastSuccess":"最近成功采集","basis":"断言依据","evidence":"官方原文片段"},"SOURCE_METHOD":{"static":"静态抓取（HTTP 解析）","headless":"无头浏览器渲染","curated":"人工策展（人工逐条整理）","unknown":"未知"},"SOURCE_TYPE":{"official":"厂商官方页直采","directory":"第三方目录站收录（已解析到官方页）","curated":"人工策展","unknown":"未知"},"SOURCE_STATE":{"na":"不适用","unknown":"未知","unavailable":"不可用"},"SOURCE_REASON":{"curated":"本条来自人工策展，不经过采集器","no_health_row":"来源心跳里没有这一条（来源改名 / 本轮只跑了部分来源）","no_health_doc":"本次构建没有可用的来源心跳数据"},"SOURCE_BASIS":{"source":"官方页面明写","documented":"依据官方条款原文","inferred":"由官方原文推断","none":"未声明依据"},"SOURCE_HEALTH":{"healthy":"最近一次采集正常","degraded":"最近一次采集异常","failed":"最近一次采集失败"},"SOURCE_FIELD_LABELS":{"discountInfo":"优惠说明","eligibility":"适用条件","validity":"有效期说明","priceLine":"价格阶梯","expiresAt":"截止日期"},"SOURCE_NOTES":{"noOrigin":"未署名原始出处","noEvidence":"未收录官方原文片段","evidenceNote":"以下片段摘自厂商官方页面，仅用于核对本页信息；完整内容与最终条款以官方页面为准。","disclaimer":"以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。"}};
+    const HISTORY_WORDING = {"HISTORY_LABELS":{"sectionTitle":"变更记录","empty":"暂无变更记录","since":"变更记录自 {date} 起（此前状态没有记录）","more":"另有 {n} 条更早的记录未在此显示","from":"原","to":"新"},"HISTORY_TYPES":{"created":"首次收录","updated":"信息更新","benefit_changed":"优惠内容变化","eligibility_changed":"领取条件变化","expiry_changed":"有效期变化","ended":"不再收录","restored":"重新出现"},"HISTORY_END_REASONS":{"source_no_longer_lists":"来源不再列出（连续多次成功采集未见）","pruned_expired":"过期下架","pruned_overflow":"超出收录上限","retired_garbage":"判定为无效数据后退役","withdrawn":"已移除"},"HISTORY_FIELD_LABELS":{"discountInfo":"优惠说明","pricingModel":"计费模式","priceLine":"价格阶梯","features":"特性标签","benefitType":"优惠类型","eligibility":"适用条件","eligibilityDetail":"领取资格","claimRequirements":"领取要求","audience":"适用人群","availability":"可用性","expiresAt":"截止日期","validity":"有效期说明","type":"记录类型","category":"分类","region":"地区","source":"收录来源","sourceUrl":"原始出处","evidence":"官方原文片段","verified":"人工核验声明","verifiedAt":"人工核验日期"},"HISTORY_NOTES":{"derived":"（由本站规则推导）","lifecycle":"本条记录的生命周期事件","emptyNote":"起算日之前的状态没有历史记录，因此这里不显示任何变化。","disclaimer":"以上是本站采集与合并过程留下的观测记录；「不再收录」表示本站未再观测到该条目，不表示厂商已经下架或优惠已经失效。最终以厂商官方页面为准。"}};
     /* AUDIENCE:END */
 
     const REGION_LABELS = { cn: '国内', global: '国外' };
@@ -2973,6 +2990,8 @@
         // v1.3：信息来源块（来源 / 新鲜度 / 断言依据 / 官方原文片段）。
         // 它取代了旧的一行「来源：… · 首次收录 … · 最近采集 …」——那一行把客观事实、
         // 缺失状态和出处混在一句里，读者没法判断「最近成功采集」到底有没有发生过。
+        // v1.4：变更记录（历史层）—— 无历史时也出块并明说「暂无变更记录」。
+        historyBlockHtml(deal) +
         sourceBlockHtml(deal);
     }
 
@@ -3212,6 +3231,108 @@
         '<div class="dsrc-h">' + escapeHtml(L.sectionTitle) + '</div>' +
         '<div class="dsrc-rows">' + rows.join('') + '</div>' +
         '<p class="dsrc-note">' + escapeHtml(W.SOURCE_NOTES.disclaimer) + '</p>' +
+        '</div>';
+    }
+
+    /* ----------------------------------------------------------------
+     * ⑤.9 变更记录（v1.4）
+     *
+     * 数据来自构建期注入的 `deal.history`（只进 dist/deals.json；源数据里没有这个字段）。
+     * 与 `sourceBlockHtml` 同样是**纯函数**：详情弹层与 80 个静态详情页共用一份，
+     * 因此「有 JS」与「无 JS」两条路径读到的历史不可能分叉。
+     *
+     * 三条措辞红线：
+     *   ① 「不再收录」只说本站**未再观测到**，绝不说成厂商下架/优惠失效（见 HISTORY_NOTES.disclaimer）；
+     *   ② 没有事件时明说「暂无变更记录」＋起算日，不用空白冒充「没有变化」；
+     *   ③ 值一律原文展示（长值换行、不截断成半句话）。
+     * ---------------------------------------------------------------- */
+
+    /** 归一 deal.history：认不出的取值一律丢弃（脏数据不允许渲染成一句断言） */
+    function historyOf(deal) {
+      const raw = deal && typeof deal.history === 'object' && deal.history ? deal.history : null;
+      if (!raw || !Array.isArray(raw.events) || !raw.events.length) return null;
+      const events = [];
+      for (const item of raw.events) {
+        if (!item || typeof item.at !== 'string') continue;
+        if (!hasOwn(HISTORY_WORDING.HISTORY_TYPES, item.type)) continue;
+        events.push({
+          at: item.at,
+          type: item.type,
+          field: typeof item.field === 'string' && hasOwn(HISTORY_WORDING.HISTORY_FIELD_LABELS, item.field) ? item.field : null,
+          from: item.from === undefined ? null : item.from,
+          to: item.to === undefined ? null : item.to,
+          reason: typeof item.reason === 'string' && hasOwn(HISTORY_WORDING.HISTORY_END_REASONS, item.reason) ? item.reason : null,
+          origin: item.origin === 'derived' ? 'derived' : 'observed'
+        });
+      }
+      if (!events.length) return null;
+      return {
+        startedAt: typeof raw.startedAt === 'string' ? raw.startedAt : null,
+        total: Number.isFinite(raw.total) ? raw.total : events.length,
+        events: events
+      };
+    }
+
+    /** 历史值展示：字符串原样；对象按 `键: 值` 平铺；数组用顿号连接。不截断 */
+    function historyValueText(value) {
+      if (value === null || value === undefined || value === '') return '';
+      if (typeof value === 'string') return value;
+      if (Array.isArray(value)) return value.map(historyValueText).filter(Boolean).join('、');
+      if (typeof value === 'object') {
+        return Object.keys(value).map(key => key + ': ' + historyValueText(value[key])).filter(Boolean).join(' · ');
+      }
+      return String(value);
+    }
+
+    function historyEventHtml(event) {
+      const W = HISTORY_WORDING;
+      const label = W.HISTORY_TYPES[event.type];
+      const fieldLabel = event.field ? W.HISTORY_FIELD_LABELS[event.field] : null;
+      let body = '';
+      if (event.type === 'ended') {
+        body = '<div class="hv"><span class="ho">' + escapeHtml(event.reason ? W.HISTORY_END_REASONS[event.reason] : W.HISTORY_END_REASONS.withdrawn) + '</span></div>';
+      } else if (event.type === 'restored') {
+        body = '<div class="hv"><span class="hn">' + escapeHtml(W.HISTORY_NOTES.lifecycle) + '</span></div>';
+      } else if (event.type === 'created') {
+        body = '<div class="hv"><span class="hn">' + escapeHtml(W.HISTORY_NOTES.lifecycle) + '</span></div>';
+      } else {
+        const from = historyValueText(event.from);
+        const to = historyValueText(event.to);
+        body = '<div class="hv">' +
+          '<span class="ho">' + escapeHtml(W.HISTORY_LABELS.from) + ' ' + (from ? escapeHtml(from) : '—') + '</span>' +
+          '<span class="hn">' + escapeHtml(W.HISTORY_LABELS.to) + ' ' + (to ? escapeHtml(to) : '—') + '</span>' +
+          (event.origin === 'derived' ? '<span class="hd">' + escapeHtml(W.HISTORY_NOTES.derived) + '</span>' : '') +
+          '</div>';
+      }
+      return '<div class="dhist-ev" data-hist-type="' + escapeAttr(event.type) + '">' +
+        '<div class="hh"><time datetime="' + escapeAttr(event.at) + '">' + escapeHtml(event.at) + '</time>' +
+        '<span class="hty">' + escapeHtml(label) + '</span>' +
+        (fieldLabel ? '<span class="hfd">' + escapeHtml(fieldLabel) + '</span>' : '') +
+        '</div>' + body + '</div>';
+    }
+
+    /** 「变更记录」整块 HTML（有 JS 与无 JS 共用；无历史时也出块，明说「暂无变更记录」） */
+    function historyBlockHtml(deal) {
+      if (!deal || typeof deal !== 'object') return '';
+      const W = HISTORY_WORDING;
+      const view = historyOf(deal);
+      const since = view && view.startedAt ? view.startedAt : null;
+      const sinceText = since ? W.HISTORY_LABELS.since.replace('{date}', since) : null;
+      if (!view) {
+        return '<div class="dhist" role="group" aria-label="' + escapeAttr(W.HISTORY_LABELS.sectionTitle) + '" data-hist-total="0">' +
+          '<div class="dsrc-h">' + escapeHtml(W.HISTORY_LABELS.sectionTitle) + '</div>' +
+          (sinceText ? '<p class="dhist-since">' + escapeHtml(sinceText) + '</p>' : '') +
+          '<div class="dhist-list"><div class="none">' + escapeHtml(W.HISTORY_LABELS.empty) + '</div></div>' +
+          '<p class="dsrc-note">' + escapeHtml(W.HISTORY_NOTES.emptyNote) + '</p>' +
+          '</div>';
+      }
+      const hidden = Math.max(0, view.total - view.events.length);
+      return '<div class="dhist" role="group" aria-label="' + escapeAttr(W.HISTORY_LABELS.sectionTitle) + '" data-hist-total="' + escapeAttr(String(view.total)) + '">' +
+        '<div class="dsrc-h">' + escapeHtml(W.HISTORY_LABELS.sectionTitle) + '</div>' +
+        (sinceText ? '<p class="dhist-since">' + escapeHtml(sinceText) + '</p>' : '') +
+        '<div class="dhist-list">' + view.events.map(historyEventHtml).join('') + '</div>' +
+        (hidden ? '<p class="dhist-more">' + escapeHtml(W.HISTORY_LABELS.more.replace('{n}', String(hidden))) + '</p>' : '') +
+        '<p class="dsrc-note">' + escapeHtml(W.HISTORY_NOTES.disclaimer) + '</p>' +
         '</div>';
     }
 

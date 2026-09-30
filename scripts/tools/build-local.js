@@ -27,6 +27,7 @@ const { attach: attachZh, summarize: summarizeZh } = require('../lib/zh');
 const health = require('../lib/health');
 const audience = require('../lib/audience');
 const provenance = require('../lib/provenance');
+const history = require('../lib/history');
 
 const ROOT = path.join(__dirname, '..', '..');
 const outArg = process.argv.find(a => a.startsWith('--out='));
@@ -50,7 +51,7 @@ function showOut(dir) {
 
 const PUBLIC_FILES = ['index.html', 'deals.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
 /** 构建期生成、不走源码拷贝的产物 */
-const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'source-health.json'];
+const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'source-health.json', 'deal-history.json'];
 const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
 const SITE_NAME = 'AI 优惠聚合器';
 const SITE_DESCRIPTION = '聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。全部指向厂商官方页。';
@@ -1355,6 +1356,24 @@ function assemble() {
       `${[...unmatchedSources].join('、')}（这些记录会显示「来源类型：未知」）`);
   }
 
+  // v1.4：变更记录（层 D）同样是构建期派生，只进 dist。
+  //
+  // 源数据里**不能**有 `history`（`validateDeal` 的白名单会拒，`check-reproducible` 也另有一条断言）：
+  // 它是「时间维度的派生视图」，真值在 `scripts/data/deal-history.json`。
+  // 注入是有界的（每条最近 N 条 + 总数），保证浏览器只需 fetch 一次 deals.json，
+  // 且弹层与静态详情页读到的历史**完全同源**（v1.3 那次 `known` 被渲染成「未知」的教训）。
+  const historyStore = history.load();
+  let historyStats = null;
+  if (historyStore.missing || historyStore.broken) {
+    console.warn(`    ⚠️  历史日志不可用（${historyStore.broken || '文件缺失'}）——本次产物里没有变更记录，check:history 会报错`);
+  } else {
+    historyStats = history.summarize(historyStore.store, payload.deals);
+    payload.deals = history.attachToDeals(payload.deals, historyStore.store);
+    fs.writeFileSync(path.join(OUT, 'deal-history.json'), `${JSON.stringify(historyStore.store, null, 2)}\n`, 'utf8');
+    console.log(`  变更记录: ${historyStats.events} 条事件 · 涉及 ${historyStats.recordsWithHistory} 条记录 · ` +
+      `起算日 ${historyStats.startedAt}（deal-history.json + 每条最近 ${history.RENDER_LIMIT} 条注入 dist/deals.json）`);
+  }
+
   fs.writeFileSync(path.join(OUT, 'deals.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
   console.log(`  中文译文: ${summarizeZh(zhAttached.report)}`);
   zhAttached.report.stale.forEach(row =>
@@ -1597,7 +1616,7 @@ function selfCheck(built) {
   // ⚠️ 第一版把 `zh` 也按字节比了，于是 `selftest:zh` 的两个用例当场变红 ——
   // 那不是译文坏了，是**这条门禁对 `zh` 的语义断言错了**：它假设覆盖层只增不减。
   // 一个把正常行为判成失败的守卫，比没有守卫更糟（它会被绕过或被改松）。
-  const BUILD_ADDED = new Set(['collections', 'needs', 'sourceFacts']);
+  const BUILD_ADDED = new Set(['collections', 'needs', 'sourceFacts', 'history']);
   const BUILD_MANAGED = new Set(['zh']);
   {
     const source = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
@@ -1629,7 +1648,7 @@ function selfCheck(built) {
       }
     }
     if (problems.length) fail(`deals.json 与发布产物不一致：${problems.slice(0, 8).join('；')}`);
-    else console.log(`  ✓ 源/产物一致: ${payload.deals.length} 条逐字段相同（构建期只动 zh / collections / needs / sourceFacts）`);
+    else console.log(`  ✓ 源/产物一致: ${payload.deals.length} 条逐字段相同（构建期只动 zh / collections / needs / sourceFacts / history）`);
   }
 
   // ---- v1.3：信息来源块（evidence / sourceFacts）----------------------------
@@ -1773,6 +1792,99 @@ function selfCheck(built) {
       console.log(`  ✓ 信息来源: ${payload.deals.length} 条记录逐个与心跳对账一致（有引文 ${evidenceSeen} 条 · ` +
         `人工策展 ${curatedSeen} 条显示「${STATE.na}」 · 来源未知 ${unknownSeen} 条 · ` +
         `心跳不可用 ${unavailableSeen} 条）`);
+    }
+  }
+
+  // ---- v1.4：变更记录（history）--------------------------------------------
+  //
+  // 这一层的坏法全部是「页面看起来正常」：注入漏了 → 每条都显示「暂无变更记录」；
+  // 注入的不是日志里那一段 → 页面显示一段谁也没写过的历史。所以这里做三件事：
+  //   ① 源数据里不许有 history（派生字段不得回流）；
+  //   ② 注入的每条必须**逐字节等于**日志里该 id 的最近 N 条，且 dist/deal-history.json 与源日志一致；
+  //   ③ 渲染器实际产出的 HTML 必须：有事件的列出事件、无事件的明说「暂无变更记录」、且措辞与后端逐项同源。
+  {
+    const problems = [];
+    const sourceDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
+    for (const deal of sourceDoc.deals || []) {
+      if (deal && Object.prototype.hasOwnProperty.call(deal, 'history')) {
+        problems.push(`源 deals.json 里出现了构建期派生字段 history（${deal.id}）`);
+        break;
+      }
+    }
+
+    const store = history.load();
+    if (store.missing || store.broken) {
+      problems.push(`历史日志不可用（${store.broken || '文件缺失'}）`);
+    } else {
+      const bytes = fs.statSync(store.file).size;
+      const today = (payload.updatedAt || '').slice(0, 10) || undefined;
+      problems.push(...history.verifyStore(store.store, payload.deals, { today, bytes }).slice(0, 4));
+
+      const distLogPath = path.join(OUT, 'deal-history.json');
+      if (!fs.existsSync(distLogPath)) problems.push('缺少产物 deal-history.json');
+      else if (fs.readFileSync(distLogPath, 'utf8') !== `${JSON.stringify(store.store, null, 2)}\n`) {
+        problems.push('产物 deal-history.json 与源历史日志不一致');
+      }
+
+      let withEvents = 0;
+      let injected = 0;
+      for (const deal of payload.deals) {
+        const expected = history.historyFor(store.store, deal.id);
+        const actual = deal.history || null;
+        if (JSON.stringify(expected) !== JSON.stringify(actual)) {
+          problems.push(`${deal.id}: 注入的 history 与日志不一致（期望 ${expected ? expected.total : 'null'} 条）`);
+          break;
+        }
+        if (actual) { injected++; withEvents += actual.events.length; }
+      }
+
+      const indexHtml = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
+      const wording = audience.parseWordingBlock(audience.extractWordingBlock(indexHtml)) || {};
+      for (const group of Object.keys(history.HISTORY_WORDING)) {
+        const expected = history.HISTORY_WORDING[group];
+        const actual = wording[group];
+        if (!actual || typeof actual !== 'object') { problems.push(`产物里缺措辞组 ${group}`); continue; }
+        for (const key of Object.keys(expected)) {
+          if (actual[key] !== expected[key]) problems.push(`${group}.${key}：前端「${actual[key]}」≠ 后端「${expected[key]}」`);
+        }
+      }
+      const sinceTemplate = wording.HISTORY_LABELS && wording.HISTORY_LABELS.since;
+      if (!sinceTemplate || !sinceTemplate.includes('{date}')) problems.push('「变更记录自 {date} 起」模板丢了槽位（退化成写死的一句话）');
+      const moreTemplate = wording.HISTORY_LABELS && wording.HISTORY_LABELS.more;
+      if (!moreTemplate || !moreTemplate.includes('{n}')) problems.push('「另有 {n} 条更早的记录」模板丢了槽位');
+
+      const sampleWith = payload.deals.find(deal => deal.history && deal.history.events.length);
+      const sampleWithout = payload.deals.find(deal => !deal.history);
+      const rc = loadRenderCore(path.join(OUT, 'index.html'));
+      if (sampleWith) {
+        const block = rc.historyBlockHtml(sampleWith);
+        if (!block.includes('data-hist-type=')) problems.push('有变更记录的条目没有渲染出事件行');
+        if (!block.includes(String(sampleWith.history.total))) problems.push('变更记录块没有带上总条数');
+        if (/已核验|100% 有效/.test(block)) problems.push('变更记录块里出现本站自发的有效性结论');
+      }
+      if (sampleWithout) {
+        const block = rc.historyBlockHtml(sampleWithout);
+        if (!block.includes(wording.HISTORY_LABELS.empty)) problems.push('无变更记录的条目没有明说「暂无变更记录」（空白冒充「没有变化」）');
+        if (!block.includes(wording.HISTORY_NOTES.emptyNote)) problems.push('无变更记录的条目缺少「起算日之前没有历史」的说明');
+        if (!block.includes('data-hist-total="0"')) problems.push('无变更记录的条目缺少 data-hist-total="0"');
+      }
+      if (!sampleWith) console.log(`    ℹ️  本次历史里还没有任何事件（起算日 ${store.store.startedAt}）——「有事件」那条断言本轮没有样本`);
+
+      // 静态详情页（写盘路径与本函数不同）必须也带上这一块
+      const firstDealId = (payload.deals.find(deal => deal.type === 'deal') || {}).id;
+      if (firstDealId) {
+        const page = path.join(OUT, 'deal', firstDealId, 'index.html');
+        if (fs.existsSync(page)) {
+          const html = fs.readFileSync(page, 'utf8');
+          if (!html.includes(wording.HISTORY_LABELS.sectionTitle)) problems.push('详情页里没有变更记录块');
+        }
+      }
+
+      if (problems.length) fail(`变更记录（v1.4）：${problems.slice(0, 6).join('；')}`);
+      else {
+        console.log(`  ✓ 变更记录: 日志 ${history.eventsOf(store.store).length} 条事件注入 ${injected} 条记录` +
+          `（共 ${withEvents} 条渲染事件）· 起算日 ${store.store.startedAt} · 措辞与后端逐项同源`);
+      }
     }
   }
 
