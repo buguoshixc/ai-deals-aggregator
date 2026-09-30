@@ -2049,6 +2049,16 @@ JS 错误 0) · `check-mobile-chrome` 零裁切。
 **A. 明确不做**：渲染 `verified`/`verifiedAt`（保持 2.32 的撤章决定）、给优惠下有效性结论、
 自动抓取官方全文/片段、卡片加新鲜度角标、回填存量 46 条无 provenance 记录、新增外部请求。
 
+**A′. 上线后的线上实证（2026-09-30）**：PR #4 合并（`42d4fd9`）→ Deploy 成功。
+线上 `deals.json` 带 `sourceFacts` 134 条、`evidence` 3 条；线上详情页块 10 行、
+人工策展显示「不适用」、引文渲染、无「已核验」；**线上整链路 `verify --url=` 256 项 0 失败**。
+跑线上冒烟时暴露出两个**此前就存在**的工具缺陷并已修（本地永远绿，因为本地服务在根路径）：
+① `verify-site.js` 几处取样写死 `/deals.json`、`/source-health.json` —— 线上是项目页
+（挂在 `/ai-deals-aggregator/` 下），根路径 404：先报取样失败，再因解引用 null **崩掉整个套件**；
+② 「搜中国大陆」用固定 350ms 等 120ms 防抖，整条套件跑到该处时实测过假红。
+修法：地址一律用 `new URL(..., base)` 解析、取样失败只报一条失败而不崩溃、搜索改为等
+「卡片数真的变了」（判据没放松：等不到变化照样红）。详见报告 §五。
+
 **B. 下一步**：`v1.4-deal-history`（见 `research/v1.3-evidence-provenance-report.md` §判断）。
 
 ---

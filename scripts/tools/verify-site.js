@@ -110,6 +110,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   const browser = await chromium.launch({ executablePath: EDGE, headless: !process.argv.includes('--keep') });
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 
+  /**
+   * `deals.json` 的绝对地址 —— **由 base 解析**，绝不写死 `/deals.json`。
+   *
+   * 为什么：线上是 GitHub **项目页**，站点挂在 `/ai-deals-aggregator/` 下，根路径的
+   * `/deals.json` 是 404。原先几处 `evaluate` 里写死了绝对根路径，本地服务在根路径上永远绿，
+   * 一跑 `--url=` 线上就取不到数据：先是「取样前提」报错，接着 v1.3 的取样解引用 null 直接崩。
+   * 用 `new URL('deals.json', base)` 之后，本地根路径与线上子路径同时成立。
+   */
+  const DEALS_URL = JSON.stringify(new URL('deals.json', base).href);
+
   const errors = [];
   const failedRequests = [];
   const externalRequests = [];
@@ -1419,11 +1429,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     official: [...document.querySelectorAll('a')].filter(a => /^https?:/.test(a.getAttribute('href') || '')).length
   }));
   // ⚠️ 取样必须在 `noJsContext.close()` **之前**做完（页面随 context 一起销毁）。
-  // ⚠️ 路径必须用绝对 `/deals.json`：此刻页面停在 `deal/<id>/` 下，相对路径会解析成
-  //    `deal/<id>/deals.json` → 404 → fetch 抛错 → 整段取样变成 null，
-  //    报出来却是「取样失败」，看着像数据缺失。两处都踩过。
+  // ⚠️ 路径必须**解析自站点根**（`DEALS_URL`），不能写相对路径也不能写死 `/deals.json`：
+  //    此刻页面停在 `deal/<id>/` 下，`deals.json` 会解析成 `deal/<id>/deals.json` → 404；
+  //    而线上是项目页，写死根路径同样 404。两种写法都踩过。
   const audienceSample = await noJsPage.evaluate(`(async () => {
-    const payload = await (await fetch('/deals.json')).json();
+    const payload = await (await fetch(${DEALS_URL})).json();
     const deals = payload.deals || [];
     const hasValue = value => {
       if (value === null || value === undefined) return false;
@@ -1479,7 +1489,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
   /** 现场挑一条 deal（判据以源码文本传入，避免把函数塞进字符串） */
   const pickDeal = (predicateSource) => page.evaluate(`(async () => {
-    const payload = await (await fetch('/deals.json')).json();
+    const payload = await (await fetch(${DEALS_URL})).json();
     const hasValue = v => v !== null && v !== undefined && !(Array.isArray(v) && !v.length) &&
       !(typeof v === 'object' && !Array.isArray(v) && !Object.keys(v).length);
     const pred = ${predicateSource};
@@ -1551,11 +1561,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     });
   };
 
+  // ⚠️ 取样失败（deals.json 读不到）时必须**报一条失败**而不是解引用 null 崩掉整个套件 ——
+  //    线上子路径那次崩溃就是这么来的：报错信息只有一句 TypeError，前面 200 多项断言的结果全丢了。
   const anyDeal = await pickDeal('() => true');
-  const anyBlock = await sourceBlockOf(anyDeal.id);
+  const anyBlock = anyDeal ? await sourceBlockOf(anyDeal.id) : null;
   check('详情页有「信息来源」块，且标签行完整（≥8 行）',
     Boolean(anyBlock) && anyBlock.rows >= 8 && anyBlock.hasHeading && anyBlock.hasNote,
-    anyBlock ? `「${anyDeal.title}」→ ${anyBlock.rows} 行 · ${anyBlock.links} 个链接` : '没有找到 .dsrc 块');
+    anyBlock ? `「${anyDeal.title}」→ ${anyBlock.rows} 行 · ${anyBlock.links} 个链接`
+      : (anyDeal ? '没有找到 .dsrc 块' : '取样失败：读不到 deals.json（站点根解析错？）'));
   check('信息来源块带免责句（不构成对有效性的判断）',
     Boolean(anyBlock) && /不构成对优惠是否有效/.test(anyBlock.text), anyBlock ? anyBlock.text.slice(-60) : '');
   check('信息来源块里有官方页面链接',
@@ -1608,6 +1621,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
    * 取最长的那个官方 URL 与其引文的详情页各量一次，量的是**页面级**溢出与**块内行**的越界。
    */
   for (const width of [390, 360]) {
+    if (!anyDeal) { check(`详情页信息来源块 ${width}px 不产生横向溢出`, false, '取样失败：读不到 deals.json'); continue; }
     const overflow = await (async () => {
       await page.setViewportSize({ width, height: 844 });
       await page.goto(new URL(`deal/${anyDeal.id}/`, base).href, { waitUntil: 'load' });
@@ -1631,8 +1645,17 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   // 搜索：新字段的中文标签词必须能搜到，且 unknown **不进** haystack（否则搜索结果虚高）
   await page.goto(base, { waitUntil: 'load' });
   await waitForApp(page);
+  const cardsBeforeSearch = await page.evaluate(() => document.querySelectorAll('article.g').length);
   await page.fill('#searchInput', '中国大陆');
-  await page.waitForTimeout(350);
+  // ⚠️ 等**筛选真的生效**，而不是赌一个固定毫秒数。
+  // 前端是 120ms 防抖 + 一次 render；单跑这一段时 120ms 就够，但整条套件跑到这里时
+  // 实测出现过「350ms 后仍是未过滤的 50 张卡」→ 断言假红（扫描时值刚好停在渲染之前）。
+  // 判据不变：等不到变化就按未过滤处理，断言照样会红 —— 只是不再把慢当成坏。
+  await page.waitForFunction(
+    before => document.querySelectorAll('article.g').length !== before,
+    cardsBeforeSearch,
+    { timeout: 5000 }
+  ).catch(() => { /* 超时不吞：下面照常量，量到没变化就是真失败 */ });
   const chinaSearch = await page.evaluate(() => document.querySelectorAll('article.g').length);
   const knownChina = audienceSample ? audienceSample.knownChinaCount : 0;
   if (knownChina > 0) {
@@ -1673,7 +1696,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
   // dist/deals.json 里 `collections` 的真值（浏览器与 node 都读这一份）
   const collectionTruth = await page.evaluate(`(async () => {
-    const payload = await (await fetch('/deals.json')).json();
+    const payload = await (await fetch(${DEALS_URL})).json();
     const deals = (payload.deals || []).filter(d => d.type === 'deal');
     const out = {};
     for (const slug of ['student', 'developer', 'free-api']) {
@@ -1810,7 +1833,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
    *    「有几行、有没有被裁、有没有把页面撑宽」。
    */
   const needTruth = await page.evaluate(`(async () => {
-    const payload = await (await fetch('/deals.json')).json();
+    const payload = await (await fetch(${DEALS_URL})).json();
     const deals = (payload.deals || []).filter(d => d.type === 'deal');
     const needs = {};
     for (const d of deals) for (const slug of (d.needs || [])) (needs[slug] = needs[slug] || []).push(d.id);
@@ -2097,9 +2120,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         .filter(a => (a.getAttribute('href') || '').includes('source-health.json')).length,
       text: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0
     }));
-    // 真值取机器可读的那一份：页面与它同源，但**浏览器里读出来的那一页**才算数
+    // 真值取机器可读的那一份：页面与它同源，但**浏览器里读出来的那一页**才算数。
+    // ⚠️ 地址同样由 base 解析（`/status/` 是子路径）：写死根路径时本地绿、线上 404，
+    //    而失败形态是「读不到 source-health.json」+ 一条 404 的 JS 错误 —— 看着像数据缺失。
     const healthTruth = await page.evaluate(`(async () => {
-      const doc = await (await fetch('/source-health.json')).json();
+      const doc = await (await fetch(${JSON.stringify(new URL('source-health.json', base).href)})).json();
       const rows = doc.sources || [];
       const label = { healthy: '✅ 正常', degraded: '⚠️ 异常', failed: '❌ 失败' };
       return { total: rows.length, labels: rows.map(r => label[r.status] || r.status) };
