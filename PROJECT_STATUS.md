@@ -2136,6 +2136,15 @@ A（每日全量快照）实测约 **170 MB/年**，直接否掉。
 （只动 `lastSeen`/`updatedAt`/心跳），因此基线无需重冻，`check:history` 依旧绿 —— 这也顺带证明了
 「例行采集的噪音不产生历史事件」在真数据上成立。
 
+**上线记录（2026-09-30）**：PR **#6** 创建 → `gate` **success**
+（[run 36699075822](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36699075822)）→ 合并为
+**`bec6068`** → `Verify site (gate)` 与 `Deploy to GitHub Pages` **双双 success**
+（[verify 36699446308](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36699446308) ·
+[deploy 36699446255](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36699446255)）。
+**线上实证**（`verify --url=https://buguoshixc.github.io/ai-deals-aggregator/`）：**262 项 0 失败**，
+详情页「变更记录」块在线、空态文案正确（「暂无变更记录 + 起算日之前的状态没有历史记录」）、
+**不执行 JS 也能读到**、390/360px 零溢出、加载失败 0。
+
 **A. 明确不做**：首页「变化雷达」、变更率统计、新排序/筛选维度、通知与订阅；每日全量快照；
 官方页 HTML/全文/截图留存；存量历史回填；历史压缩；采集器与 v1.1/v1.3 契约的任何改动。
 

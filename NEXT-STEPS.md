@@ -9,7 +9,8 @@
 > 新增 `scripts/data/deal-history.json`（一次性基线 86.7 KB + 追加事件，交付时 0 条 ——
 > 历史自 2026-09-30 起算，不补造）；新增两个 CI 门禁 `check:history` 与 `selftest:history`(52)。
 > 门禁实跑：`verify` 262 项 0 失败 · `verify --compare` 268 项 0 失败；`build` ×2 产物 SHA256 一致。
-> **未合并、未推送** —— 等你的「推送」。
+> **已上线（2026-09-30）**：PR **#6** → `gate` success → 合并 **`bec6068`** → Deploy success；
+> 线上 `verify --url=` **262 项 0 失败**（详情页「变更记录」块在线、空态与无 JS 可读都验过）。
 > 完整报告：`research/v1.4-deal-history-report.md`；契约：`docs/SCHEMA-v1.4.md`。
 > 下一阶段建议：**可进入 `v1.5-change-radar`**，但先观察一个采集周期拿到真实事件样本，
 > 再决定聚合粒度；入口优先考虑 `/changes/` 静态页，而不是动首页密度（见报告第十节）。
