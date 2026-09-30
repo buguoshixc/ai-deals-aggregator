@@ -104,7 +104,12 @@ const extractOffer = {
       evidence: {
         type: 'array',
         items: EVIDENCE_ITEM,
-        maxItems: 3,
+        // 上限是「每个可断言字段一条」，不是生产侧那个 3 条：
+        // 生产侧 3 条是**版权预算**（存进 deals.json 的引文总量受全库上限约束）；
+        // 候选侧是**证据覆盖**——5 个六字段 + 3 个内容字段都可能各需要一条引文。
+        // 两者混用会出现一个荒谬的结果：断言了 4 个字段的候选永远无法带上足够证据，
+        // 于是它只能被判无效，而不是"证据齐全"。落地时再按 3 条裁剪（见 ai-apply.js）。
+        maxItems: 7,
         description: '每个非 unknown 字段都必须在这里有一条同名引文；没有就把它写成 unknown'
       },
       confidence: {

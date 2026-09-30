@@ -1,0 +1,131 @@
+name: AI Maintenance (manual)
+
+# v2.0 AI 维护层：**只手动触发、只读仓库、只产出 artifact**。
+#
+# 为什么它不是定时任务的一部分（这是本版本最重要的边界之一）：
+# 采集链路是无人值守的，而"无人值守 + 会花钱 + 会失败"三件事放在一起，
+# 就一定会有人为了让它别红而把门禁调松。所以 AI 维护**不在** collect.yml 里，
+# 也不在 deploy.yml 的发布链上：它坏了，站点照常采集、照常发布。
+#
+# 为什么这个文件里没有任何 `git commit` / `git push`：
+# AI 只能提出候选。候选入不入库，由人审阅后在本地跑 ai-accept / ai-apply 决定。
+# 这一条由 scripts/tools/check-ci-consistency.js 的 (16) 断言守着 —— 不是靠注释记着。
+#
+# 需要真模型时：在仓库 Secrets 里设 AI_API_KEY（可另设 AI_BASE_URL），
+# 然后 dispatch 时把 provider 选成 openai-compat 或 anthropic、填上 model。
+# 没有 Secret 时 provider 会是 off，任务会打印"没有可用的 AI provider"并正常退出。
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: '维护任务'
+        type: choice
+        default: extract
+        options:
+          - extract
+          - dedup
+          - translate
+          - diagnose
+          - audit
+          - patch
+      limit:
+        description: '本次最多处理多少个单元'
+        type: string
+        default: '20'
+      provider:
+        description: 'provider（off = 不调用模型）'
+        type: choice
+        default: 'off'
+        options:
+          - 'off'
+          - openai-compat
+          - anthropic
+          - mock
+      model:
+        description: '模型名（provider 不是 off 时必填）'
+        type: string
+        default: ''
+      budget:
+        description: '成本上限（美元）'
+        type: string
+        default: '1.0'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-maintenance
+  cancel-in-progress: false
+
+jobs:
+  maintain:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      TZ: Asia/Shanghai
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # 自检与 fixture 回放都**离线**：没有 key、没有网络也能跑。
+      # 放在最前面：如果 AI 层的边界破了，先在这里失败，而不是等模型跑完才发现。
+      - name: AI layer self-test (offline)
+        run: node scripts/tools/ai-selftest.js
+
+      - name: Collector fixtures (offline replay)
+        run: node scripts/tools/fixture-test.js
+
+      # 只产出候选文件到 .ai-cache/candidates/（该目录 gitignore）。
+      # 退出码永远是 0，除非是我们自己写错了参数：AI 层的失败不该让 workflow 变红。
+      - name: Run AI maintenance task
+        env:
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_BASE_URL: ${{ secrets.AI_BASE_URL }}
+          AI_PROVIDER: ${{ inputs.provider }}
+          AI_MODEL: ${{ inputs.model }}
+          AI_MAX_COST_USD: ${{ inputs.budget }}
+        run: |
+          node scripts/ai/maintenance.js \
+            --task=${{ inputs.task }} \
+            --limit=${{ inputs.limit }} \
+            --out=.ai-cache/candidates/${{ inputs.task }}.json
+
+      - name: Usage and cost
+        if: always()
+        continue-on-error: true
+        run: node scripts/tools/ai-usage.js || true
+
+      # 产物只有候选与账本：方便下载审阅。留档 14 天即可 ——
+      # 真正要长期留的不是候选，而是"哪些候选被接受、为什么"（记在 ai-applied-log.json 里）。
+      - name: Upload candidates and usage ledger
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: ai-candidates-${{ inputs.task }}
+          path: .ai-cache/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish run summary
+        if: always()
+        run: |
+          {
+            echo "### AI 维护任务"
+            echo '```'
+            echo "task=${{ inputs.task }} provider=${{ inputs.provider }} model=${{ inputs.model }} limit=${{ inputs.limit }} budget=${{ inputs.budget }}"
+            ls -l .ai-cache/candidates/ 2>/dev/null || echo "(没有候选文件)"
+            echo '```'
+            echo "本次没有提交任何文件：候选需要人工审阅后，在本地跑 ai-accept / ai-apply 才会进入生产数据。"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -41,6 +41,8 @@ const CURRENCY_TOKENS = [
 
 const NEGATION_EN = /\b(no|not|never|without|excluded|excluding|unless|cannot|can't|doesn't|don't|isn't|aren't)\b/i;
 const NEGATION_ZH = /不|无|没|未|非|除非|禁止|无法|免于/;
+/** 强否定词组：译文中出现它等于给出了一个"不需要 X"的**结论**，必须有英文依据 */
+const STRONG_NEGATION_ZH = /无需|不需|不必|毋须|毋需|未要求|不要求|不用/;
 
 const FREE_EN = /\bfree\b|no cost|no charge|complimentary|\bzero\b|at no cost/i;
 const TRIAL_EN = /\btrial\b|试用|try (it )?free|14-day|30-day free/i;
@@ -135,8 +137,15 @@ function check({ en, zh, terms = [], field = '' } = {}) {
   const allowed = discountConversions(source);
   const missing = [...enNumbers].filter(n => !zhNumbers.has(n));
   const extra = [...zhNumbers].filter(n => !enNumbers.has(n) && !allowed.has(n));
-  // `70% off` → `7 折` 时，英文里的 70 会"消失"：这一条是允许的
-  const missingFiltered = missing.filter(n => source.includes(`${n}%`) || source.includes(`${n} %`));
+  // `70% off` → `7 折` 是唯一允许"英文数字消失"的情形，而且**必须真的换出了折数**。
+  // 早期写法是"英文里有 N% 就豁免 N"，太宽：译文把 70% 整个删掉也照样放行。
+  // 评测的篡改测试（m01）正是抓到了这个洞 —— 一条会误判"没丢数字"的守卫，
+  // 在真正的数字丢失面前什么都不说。
+  const missingFiltered = missing.filter(n => {
+    if (!new RegExp(`(^|\\D)${escapeRe(n)}\\s*%`).test(source)) return true; // 不是百分比写法 → 必须保留
+    const converted = (100 - Number(n)) / 10;
+    return !zhNumbers.has(normalizeNumber(converted)); // 没换出折数 → 仍然要拦
+  });
   if (missingFiltered.length) {
     violations.push({ code: 'number_missing', detail: `英文里的数字 ${missingFiltered.join('/')} 在译文里找不到` });
   }
@@ -172,9 +181,15 @@ function check({ en, zh, terms = [], field = '' } = {}) {
     }
   }
 
-  // ⑤ 否定语气
+  // ⑤ 否定语气（两个方向都要看，但第二方向刻意只认**强否定词组**）
   if (NEGATION_EN.test(source) && !NEGATION_ZH.test(target)) {
     violations.push({ code: 'negation_lost', detail: '英文里是否定句，译文里没有任何否定词' });
+  }
+  // 反方向：译文凭空多出一个否定结论。这里**不能**用裸的「不」——中文里「不」太常见
+  // （不止、不同、不仅），拿它当判据会把正确译文大批判红，然后这条规则就会被人关掉。
+  // 所以只认"无需/不必/未要求"这类**明确的否定性结论**；它们是真结论，不是语气词。
+  if (STRONG_NEGATION_ZH.test(target) && !NEGATION_EN.test(source)) {
+    violations.push({ code: 'negation_invented', detail: '译文里有「无需 / 不必 / 未要求」这类否定结论，但英文原文里没有任何否定表述' });
   }
 
   // ⑥ 力度放大：trial → 免费

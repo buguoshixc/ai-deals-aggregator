@@ -125,6 +125,24 @@ runs:
       shell: bash
       run: node scripts/tools/app-token-selftest.js
 
+    # v2.0 新增：AI 层边界自检（离线、零依赖、不读任何 API key）。
+    # 为什么必须进门禁：这一层守的是本版本全部红线的**结构性**部分 ——
+    # 「没有证据的断言进不来」「非法枚举进不来」「AI 挂了确定性链路不变」
+    # 「候选里出现密钥会被扫出来」「去重模块根本没有合并能力」。
+    # 这些判据的失效方式全都是**静默的**（页面照常、构建照常），
+    # 没有别的步骤会替它红；而它们一旦失效，AI 的建议就会开始悄悄改写生产数据。
+    - name: AI layer self-test
+      shell: bash
+      run: node scripts/tools/ai-selftest.js
+
+    # v2.0 新增：采集器 fixture 回放（离线）。
+    # 它把"解析器的行为"钉成契约：4 份最小 DOM 片段 + 解析器期望输出。
+    # 有了它，改采集器（无论人改还是 AI 出补丁）才有可判定的回归判据 ——
+    # 否则唯一的判据是"跑一遍真实页面看看还有没有数据"，那等于把测试建立在第三方的可用性上。
+    - name: Collector fixtures (offline replay)
+      shell: bash
+      run: node scripts/tools/fixture-test.js
+
     # 发布产物由 build-local.js 组装（与 deploy.yml 完全同一条路径），
     # 失败即拦：能装出坏产物就不该合并、更不该发布。
     - name: Assemble site (same path as deploy.yml)

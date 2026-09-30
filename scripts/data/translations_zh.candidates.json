@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "task": "translate_field",
+  "note": [
+    "AI 翻译草稿（v2.0）。它**不是**译文覆盖层：translations_zh.json 才是，而且只有人工可以改。",
+    "生成：node scripts/ai/maintenance.js --task=translate --out=scripts/data/translations_zh.candidates.json --limit=20",
+    "落地：node scripts/tools/zh-apply-candidates.js --id=<候选 id>（先 --accept，再落地）",
+    "本文件里全是**我们自己的英文原文**与 AI 的中文草稿，不含第三方页面正文，因此可以入仓。",
+    "当前为空是正常的：截至 v2.0 落地时，全库 63 个可翻译字段都已有人工译文。"
+  ],
+  "candidates": []
+}

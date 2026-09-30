@@ -142,7 +142,11 @@ const r = await generateStructured({
 3. **规则 R3**：所有枚举取值必须来自生产单一出处：
    `AUDIENCES / BENEFIT_TYPES / ELIGIBILITY_KEYS / CLAIM_KEYS / CATEGORIES / EVIDENCE_FIELDS`。
 4. **规则 R4**：`confidence ∈ [0,1]`。
-5. **规则 R5**：`evidence` ≤3 条、`quote` ≤200 字（复用 `provenance.MAX_EVIDENCE_*`）。
+5. **规则 R5**：候选的 `evidence` ≤7 条（**每个可断言字段一条**）、`quote` ≤200 字。
+   注意与生产侧的 `provenance.MAX_EVIDENCE_ITEMS = 3` 区分：那是**版权预算**
+   （存进 `deals.json` 的引文总量受全库上限约束），而候选侧要的是**证据覆盖**。
+   两者混用会出现一个荒谬结果 —— 断言了 4 个字段的候选永远带不满证据，只能被判无效。
+   落地时按 3 条裁剪（`ai-apply.js`），预算由既有的 `validate` 引文预算守着。
 6. `needs_human`：字段有值但只有**间接证据**（原文没写、靠推理）时标这个状态，
    审阅表单列「无据的确定」一栏。
 

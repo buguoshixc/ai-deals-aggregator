@@ -167,12 +167,16 @@ jobs:
         run: |
           git config user.name "$BOT_NAME"
           git config user.email "$BOT_EMAIL"
-          # 两份跨运行状态与数据同批入库：
+          # 三份跨运行状态与数据同批入库：
           #  · source-health.json —— 上次条数 / 连续失败次数，不入库就永远是「首次运行」，
           #    也就发现不了「某个源已经坏了几天」；
           #  · zh-pending.json    —— 每个待译字段**进入待译的日期**，不入库的话译文门禁的年龄
-          #    只能退回 firstSeen，于是「上游改写导致老条目译文失效」会一失效就超期。
-          git add deals.json scripts/data/source-health.json scripts/data/zh-pending.json
+          #    只能退回 firstSeen，于是「上游改写导致老条目译文失效」会一失效就超期；
+          #  · source-snapshots.json（v2.0）—— 每个来源两代**页面结构摘要**（不含页面正文）。
+          #    不入库就永远只有"这一次"，而诊断要的恰好是"变之前 / 变之后"：
+          #    「昨天 td=42、今天 td=0」这类最说明问题的证据只能靠跨运行留存。
+          #    它只是**证据**：删掉它，采集/合并/构建的结果一字不变。
+          git add deals.json scripts/data/source-health.json scripts/data/zh-pending.json scripts/data/source-snapshots.json
           if git diff --cached --quiet; then
             echo "数据无变化，跳过提交"
           else

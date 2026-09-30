@@ -95,7 +95,7 @@ function checkDeterministic(candidateValue, ctx = {}) {
   const evidence = Array.isArray(ctx.evidence) ? ctx.evidence : [];
 
   // R5：引文条数与长度（schema 已管一次，这里对任何任务都再管一次）
-  if (evidence.length > 3) errors.push(`R5 引文最多 3 条，实际 ${evidence.length} 条`);
+  if (evidence.length > 7) errors.push(`R5 引文最多 7 条（每个可断言字段一条），实际 ${evidence.length} 条`);
   if (STRING_EVIDENCE_TASKS.includes(task)) {
     for (const item of evidence) {
       if (typeof item !== 'string' || !item.trim()) errors.push(`R5 ${task} 的 evidence 必须是非空字符串`);
