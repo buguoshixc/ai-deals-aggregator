@@ -828,7 +828,7 @@ hreflang + og/twitter + `WebPage`/`BreadcrumbList` + 面包屑 + 返回入口 + 
 
 | 项 | 内容 |
 |---|---|
-| 订阅 | `feed.xml`（RSS 2.0）+ `feed.json`（JSON Feed 1.1），各 80 条；只用 Node 内置，零依赖 |
+| 订阅 | v1.6 起是 **18 个 Feed × 2 种格式 = 36 个静态文件**（`/feed.xml` 起，按意图 / 厂商 / 变化切分）；只用 Node 内置，零依赖。详见 §2.37 与 `docs/SCHEMA-v1.6.md` |
 | 纠错入口 | 详情里预填 `id`/厂商/官方页的 GitHub Issue 链接（不需要后端，也不需要表单服务） |
 | `WebSite` 节点 | JSON-LD 4 → 5 段（devtk.ai 只有 2 类就包含它，我们反而缺） |
 | 同页锚点 | 4 个档位带带 `id` + 顶部「跳到档位」条；非分带排序或列表视图时自动隐藏 |
@@ -2629,3 +2629,39 @@ return crypto.createHash('sha1').update(basis).digest('hex').slice(0, 12);
 >
 > 出处（本节全部依据这一页）：
 > https://docs.github.com/en/enterprise-cloud@latest/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks
+
+---
+
+### 2.37 `v1.6-subscription`：静态订阅体系 —— 18 个 Feed × 2 种格式（2026-09-30，分支 `v1.6-subscription`）
+
+**目标**：在不引入账号 / 数据库 / 邮件 / 推送 / 第三方 SDK / 行为追踪的前提下，让读者订阅自己真正关心的优惠变化。
+
+- **唯一判据**：`scripts/lib/feeds.js`（注册表 + 纯函数条目构建 + RSS/JSON 序列化 + 手写 XML 良构检查器 + `validate()`）。
+  优惠 Feed 的判据**指向既有页面注册表**（`COLLECTION_PAGES` / `NEED_PAGES` 的谓词函数），
+  变化 Feed 的条目**直接取雷达分栏**。订阅层没有新写一条判据（自测有静态扫描盯着）。
+- **两类语义不混**：A 类回答「当前有哪些符合这个条件的优惠」（条目 = 当前记录，排除已结束与已过期）；
+  B 类回答「最近发生了什么」（条目 = 高价值事件，文案微调与 `updated` 类元信息永不进订阅）。
+- **Stable ID**：优惠条目沿用 `deal.id`（**刻意不加前缀** ⇒ 升级 v1.6 不给老订阅者重推 80 条）；
+  变化条目用 `chg:` + `sha1(history.eventKey())` 前 16 位 —— 刻意不用可读 id，因为采集每天两次，
+  同一天同一字段可能变两次，可读形式会碰撞。
+- **时间只来自数据**：`pubDate`/`date_published` = `firstSeen` 或事件 `at`；`date_modified` = 最近一次
+  高价值变化（没有就**省略字段**）；`lastSeen`（每轮采集都刷新）永不进机器可读时间字段。
+- **防重复实证**：连续 **10 次真实构建**，36 个 Feed 文件逐字节一致（`check:feeds:reproducible --runs=10`）。
+- **空 Feed 显式化**：只有 `new` / `changes` 允许为空（起算日之前没有可观测的变化，属于事实），
+  且日志不可用时改说「没有拿到历史日志 —— 这不表示没有变化」；分类 Feed 为空即构建红。
+- **厂商门槛按实测分布**：`当前有效优惠 ≥ 2` 命中 9 家（33 家里），`历史事件 ≥ 3` 是只追加条件、
+  同时兜住订阅 URL 稳定性；slug 走人工表 `scripts/data/vendor-slugs.json`。
+- **Feed Discovery**：首页 `<head>` 只暴露 4 个选择 × 2 种格式 = **8 条** `rel="alternate"`，
+  由构建期从注册表注入（源码不留第二份清单）；`/changes/` 改声明变化 Feed 对；其余页面声明根 Feed 对。
+- **新页面 `/feeds/`**：订阅中心，五条既有约定齐（自指 canonical / 双 feed / 两段 JSON-LD /
+  sitemap `priority 0.6` / 预渲染 2958 字）；页脚「优惠变化：变化雷达 · 订阅这些优惠」合并成一行。
+  注意 `/feed/`（文件，单数）与 `/feeds/`（页面，复数）刻意不同名。
+- **三层验证**：产物自检（20 个检查码的三方对账）· `selftest:feeds`（**66 项**，含 4 项 Tooth Test）·
+  真浏览器 §14/§14b（`DOMParser` 真解析、链接可达、`/feeds/` 可用）。
+- **门禁**：`gate` 新增 `Feeds self-test` 与 `Feeds reproducibility (build twice, byte-compare)` 两步
+  （冻结序列 21 → 23 步）；`--expect-checks=32` **不变**。
+- **实测**：`npm run build` 通过（36 个 Feed 文件 · 338 条条目 · 产物 937.9 KB）；
+  `npm run verify` 297 项、`npm run verify:regress` 303 项全过，页高 4589 → 4642px（+1.2%，容差 15%）；
+  既有 11 支自测（15/94/46/161/91/51/67/61/89 项）全绿。
+- **契约** `docs/SCHEMA-v1.6.md` · **报告** `research/v1.6-subscription-report.md`。
+  未合并、未推送；建议先观察 2–3 天采集周期拿到真实变化样本，再评价变化流的分栏与窗口。

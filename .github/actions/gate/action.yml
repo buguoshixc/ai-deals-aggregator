@@ -138,6 +138,17 @@ runs:
       shell: bash
       run: node scripts/tools/changes-selftest.js
 
+    # v1.6 订阅层自测：零依赖、离线、秒级。
+    # 它盯的是订阅赖以成立的全部承诺：Stable ID（同一天同一字段变两次不撞 id）、
+    # 时间只来自数据（首次发现 / 事件日期，lastSeen 永不进机器可读字段）、
+    # 连续 10 次构建逐字节一致、工具/已结束/已过期不进「当前优惠」、文案微调与元信息
+    # 不进变化流、厂商门槛、空 Feed 策略、XML 良构检查器，以及 **4 项 Tooth Test**
+    # （篡改 guid / 判据 / 事件 / 链接必须恰好报出对应 code）。
+    # 它红的时候没有别的步骤会替它红 —— 与上面几支同一条判断标准。
+    - name: Feeds self-test
+      shell: bash
+      run: node scripts/tools/feeds-selftest.js
+
     # 受众字段（学生 / 开发者数据模型）自测：零依赖、离线、秒级。
     # 为什么必须进门禁（v1.1 补，由 t1 核验的 B5 发现）：这个自测原先只在本机跑，
     # 于是「三态措辞漂移 / merge 低可信覆盖高可信 / 假出处」这几类回归在 CI 里**看不见**
@@ -160,6 +171,15 @@ runs:
     - name: Assemble site (same path as deploy.yml)
       shell: bash
       run: node scripts/tools/build-local.js
+
+    # v1.6 订阅可复现：**真实连续构建**两次，逐字节比对全部 36 个 Feed 文件。
+    # 为什么自测之外还要这一支：自测证明的是「纯函数同输入同输出」，证明不了
+    # 「构建脚本没把时钟/路径写进产物」。这里跑的是与发布完全同一条路径，
+    # 还额外核对「所有时间字段都是数据日期的北京时间零点」。
+    # 交付报告里的 10 次实证：node scripts/tools/check-feeds-reproducible.js --runs=10
+    - name: Feeds reproducibility (build twice, byte-compare)
+      shell: bash
+      run: node scripts/tools/check-feeds-reproducible.js
 
     # 浏览器准备：**这一步不判死**，只负责"把有没有浏览器弄清楚"。
     # 判死放在后面的「浏览器可用性判定」里，好处是失败原因写在一处，

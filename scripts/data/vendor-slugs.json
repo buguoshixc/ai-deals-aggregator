@@ -1,0 +1,13 @@
+{
+  "_note": "厂商显示名 → 订阅 URL 里的 slug。人工维护，理由见 docs/SCHEMA-v1.6.md §4.3：显示名不可控（同一个厂商出现过两种写法）、哈希不可读、自动音译会随库变化 —— 只有人工表能同时满足「可读」与「厂商改名后订阅 URL 不变」。",
+  "_rule": "slug 必须匹配 ^[a-z0-9][a-z0-9-]*$，全局唯一。够订阅门槛（当前有效优惠 >= 2 条，或历史变更事件 >= 3 条）的厂商必须在这里有一行，否则 selftest:feeds 会红并给出建议值。",
+  "百度智能云": "baidu-ai-cloud",
+  "智谱AI": "zhipu",
+  "火山引擎": "volcengine",
+  "扣子 Coze（字节跳动）": "coze",
+  "GitHub": "github",
+  "科大讯飞 讯飞开放平台": "iflytek",
+  "Microsoft": "microsoft",
+  "Notion": "notion",
+  "MiniMax（稀宇科技）": "minimax"
+}

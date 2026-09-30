@@ -1337,33 +1337,176 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     Boolean(report) && report.blank && report.prefilled && /github\.com\/.+\/issues\/new/.test(report.href),
     report ? `${report.href.slice(0, 76)}…（rel=${report.rel}）` : '未找到纠错链接');
 
-  const feeds = await page.evaluate(async () => {
+  // 订阅（v1.6）：首页只暴露四个订阅选择（各两种格式 = 8 条 rel="alternate"），
+  // 每条都要**真的打得开、真的是那个格式、标题与 Feed 自己的 <title> 逐字相同**。
+  //
+  // 为什么在真浏览器里再验一遍：`build-local.js` 的产物自检只看字符串，
+  // 而阅读器关心的是「这份 XML 能不能被真解析器读出来」。这里用浏览器自带的
+  // DOMParser（一个与 build-local 的手写检查器**完全独立**的实现）来判良构。
+  const feedProbe = await page.evaluate(async () => {
     const links = [...document.querySelectorAll('link[rel="alternate"]')]
-      .map(l => ({ type: l.type, href: l.getAttribute('href') }))
+      .map(l => ({ type: l.type, title: l.title, href: l.getAttribute('href') }))
       .filter(l => /feed/.test(l.href || ''));
-    const json = await (await fetch('feed.json', { cache: 'no-cache' })).json();
-    const xml = await (await fetch('feed.xml', { cache: 'no-cache' })).text();
-    return {
-      links,
-      version: json.version,
-      jsonItems: json.items.length,
-      xmlItems: (xml.match(/<item>/g) || []).length,
-      firstUrl: json.items[0] ? json.items[0].url : ''
-    };
+    // 站点绝对前缀从 canonical 现取（本地服务时它仍是线上地址，所以条目链接是绝对的）
+    const canonical = (document.querySelector('link[rel="canonical"]') || {}).href || '';
+    const site = canonical.replace(/[^/]*$/, '');
+    const targets = ['feed.xml', 'feed.json', 'feed/changes.xml', 'feed/changes.json',
+      'feed/student.xml', 'feed/student.json', 'feed/developer.xml', 'feed/developer.json'];
+    const out = { links, site, targets: {} };
+    for (const rel of targets) {
+      const response = await fetch(rel, { cache: 'no-cache' });
+      const text = await response.text();
+      const box = { ok: response.ok, status: response.status, bytes: text.length, title: null, items: 0, ids: [], urls: [], parserError: null, version: null };
+      if (rel.endsWith('.xml')) {
+        const doc = new DOMParser().parseFromString(text, 'application/xml');
+        box.parserError = doc.querySelector('parsererror') ? doc.querySelector('parsererror').textContent.slice(0, 120) : null;
+        box.title = doc.querySelector('channel > title') ? doc.querySelector('channel > title').textContent : null;
+        const nodes = [...doc.querySelectorAll('item')];
+        box.items = nodes.length;
+        box.ids = nodes.map(node => (node.querySelector('guid') || {}).textContent || '');
+        box.urls = nodes.map(node => (node.querySelector('link') || {}).textContent || '');
+        box.image = Boolean(doc.querySelector('channel > image > url'));
+        box.selfLink = Boolean(doc.querySelector('channel > link[rel="self"]'));
+        box.lastBuildDate = doc.querySelector('channel > lastBuildDate') ? doc.querySelector('channel > lastBuildDate').textContent : null;
+      } else {
+        try {
+          const box2 = JSON.parse(text);
+          box.version = box2.version;
+          box.title = box2.title;
+          box.items = box2.items.length;
+          box.ids = box2.items.map(item => item.id);
+          box.urls = box2.items.map(item => item.url);
+          box.icon = box2.icon;
+          box.favicon = box2.favicon;
+          box.offMidnight = box2.items.filter(item =>
+            (item.date_published && !/T00:00:00\+08:00$/.test(item.date_published)) ||
+            (item.date_modified && !/T00:00:00\+08:00$/.test(item.date_modified))).length;
+        } catch (error) { box.parseError = error.message; }
+      }
+      out.targets[rel] = box;
+    }
+    return out;
   });
-  check('页面声明了两份订阅源',
-    feeds.links.some(l => /rss\+xml/.test(l.type)) && feeds.links.some(l => /feed\+json/.test(l.type)),
-    feeds.links.map(l => `${l.type} → ${l.href}`).join(' · ') || '未声明');
-  check('feed.json 是 JSON Feed 1.1 且条目与 feed.xml 一致',
-    feeds.version === 'https://jsonfeed.org/version/1.1' && feeds.jsonItems > 0 && feeds.jsonItems === feeds.xmlItems,
-    `${feeds.jsonItems} 条（xml ${feeds.xmlItems}）· 首条 ${String(feeds.firstUrl).slice(0, 44)}`);
+
+  check('首页声明了四个订阅选择 × 两种格式 = 8 条 rel="alternate"',
+    feedProbe.links.length === 8 &&
+    feedProbe.links.filter(l => /rss\+xml/.test(l.type)).length === 4 &&
+    feedProbe.links.filter(l => /feed\+json/.test(l.type)).length === 4,
+    feedProbe.links.map(l => l.href).join(' · ') || '未声明');
+
+  check('每个订阅目标的 <title> 与首页声明的 title 逐字相同（改了注册表忘了改页面就会红）',
+    feedProbe.links.every(l => {
+      const target = feedProbe.targets[l.href];
+      return target && target.title === l.title;
+    }),
+    feedProbe.links.filter(l => {
+      const target = feedProbe.targets[l.href];
+      return !target || target.title !== l.title;
+    }).map(l => `${l.href}: ${l.title} ≠ ${(feedProbe.targets[l.href] || {}).title}`).join(' | ') || '8 条一致');
+
+  const feedTargets = Object.entries(feedProbe.targets);
+  check('全部订阅目标是 200 且被真解析器读出来（无 XML 解析错误）',
+    feedTargets.every(([, box]) => box.ok && !box.parserError) && feedTargets.some(([rel]) => rel.endsWith('.xml')),
+    feedTargets.filter(([, box]) => !box.ok || box.parserError).map(([rel, box]) => `${rel}: ${box.status}${box.parserError ? ` ${box.parserError}` : ''}`).join(' | ') || `${feedTargets.length} 个目标`);
+
+  check('RSS 与 JSON Feed 的条目数、id 集合两侧一致',
+    feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([rel, box]) => {
+      const jsonBox = feedProbe.targets[rel.replace(/\.xml$/, '.json')];
+      return jsonBox && jsonBox.items === box.items &&
+        JSON.stringify(jsonBox.ids) === JSON.stringify(box.ids);
+    }),
+    feedTargets.filter(([rel]) => rel.endsWith('.xml')).map(([rel, box]) =>
+      `${rel} ${box.items} 条`).join(' · '));
+
+  check('订阅条目的主链接指向**本站**页面（不是把流量导出站外）',
+    feedTargets.every(([, box]) => box.urls.every(url => !url || url.startsWith(feedProbe.site))),
+    (feedTargets.map(([rel, box]) => box.urls.find(url => url && !url.startsWith(feedProbe.site)) && `${rel}: ${box.urls.find(url => url && !url.startsWith(feedProbe.site))}`).filter(Boolean)[0]) || '全部站内');
+
+  check('订阅条目的时间都是数据日期的北京时间零点（没有构建时刻泄进产物）',
+    feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => !box.offMidnight) &&
+    feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => /GMT$/.test(String(box.lastBuildDate || ''))),
+    feedTargets.map(([rel, box]) => `${rel}:${box.offMidnight || 0}`).slice(0, 4).join(' · '));
+
+  check('JSON Feed 都带 icon 与 favicon；RSS 都带 <image> 与 atom:link rel=self',
+    feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => box.icon && box.favicon) &&
+    feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => box.image && box.selfLink),
+    '两种格式的图标与自指字段齐备');
+
+  check('订阅里确实有优惠条目（不是空壳）', feedProbe.targets['feed.xml'].items > 0,
+    `feed.xml ${feedProbe.targets['feed.xml'].items} 条 · feed/changes.xml ${feedProbe.targets['feed/changes.xml'].items} 条（变化流为空是事实）`);
+
+  // 抽 3 条订阅里的链接真的打得开。**必须换成本地地址再取**：
+  // 产物里的链接是线上绝对 URL，直接 fetch 会真的打到 GitHub Pages ——
+  // 那既污染了第 10 节的「没有外部请求」断言，也让本地验收依赖公网。
+  const feedLinks = feedProbe.targets['feed.xml'].urls
+    .slice(0, 3)
+    .map(url => url.replace(feedProbe.site, ''))
+    .map(rel => (rel.startsWith('http') ? null : rel))
+    .filter(Boolean);
+  const linkProbe = await page.evaluate(async urls => {
+    const out = [];
+    for (const rel of urls) {
+      const response = await fetch(rel, { cache: 'no-cache' });
+      out.push({ rel, ok: response.ok, status: response.status });
+    }
+    return out;
+  }, feedLinks);
+  check('订阅里的条目链接真的打得开（换成本地地址取，不碰公网）',
+    linkProbe.length > 0 && linkProbe.every(row => row.ok),
+    linkProbe.map(row => `${row.rel} ${row.status}`).join(' · '));
 
   const ldTypes = await page.evaluate(() => [...document.querySelectorAll('script[type="application/ld+json"]')]
     .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }));
   check('结构化数据含 WebSite 节点', ldTypes.includes('WebSite') && ldTypes.includes('Organization'),
     ldTypes.join(' / '));
 
+  // ---- 14b) 订阅中心 /feeds/ ----
+  console.log('\n=== 14b) 订阅中心 /feeds/ ===');
+  const feedsPageUrl = new URL('feeds/', base).href;
+  await page.goto(feedsPageUrl, { waitUntil: 'load' });
+  const feedsPage = await page.evaluate(() => {
+    // 页面上列出的订阅地址是**线上绝对 URL**（就是要让人复制走的），所以在浏览器里
+    // 一律不 fetch —— 那会真的打到 GitHub Pages。存在性在 Node 侧对产物目录逐条核。
+    const hrefs = [...new Set([...document.querySelectorAll('a[href]')].map(a => a.getAttribute('href')))]
+      .filter(href => /\/feed(\/|\.xml|\.json)/.test(href));
+    return {
+      title: document.title,
+      canonical: (document.querySelector('link[rel="canonical"]') || {}).href || '',
+      alternates: document.querySelectorAll('link[rel="alternate"]').length,
+      ldTypes: [...document.querySelectorAll('script[type="application/ld+json"]')]
+        .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }),
+      rows: document.querySelectorAll('li.frow').length,
+      listed: hrefs,
+      text: document.body.textContent.replace(/\s+/g, ' ')
+    };
+  });
+  check('/feeds/ 存在且有标题', /订阅/.test(feedsPage.title), feedsPage.title);
+  check('/feeds/ canonical 自指', feedsPage.canonical.endsWith('/feeds/'), feedsPage.canonical);
+  check('/feeds/ 声明恰好两个订阅源（根 Feed 对）', feedsPage.alternates === 2, `${feedsPage.alternates} 个`);
+  check('/feeds/ JSON-LD 是 CollectionPage + BreadcrumbList',
+    JSON.stringify(feedsPage.ldTypes.slice().sort()) === JSON.stringify(['BreadcrumbList', 'CollectionPage']),
+    feedsPage.ldTypes.join(', '));
+  check('/feeds/ 列出了全部订阅源（每个厂商 Feed 一行）', feedsPage.rows >= 18, `${feedsPage.rows} 行`);
+  {
+    // 逐条对产物目录核对：页面上列出的每一个订阅地址都必须有对应文件
+    const sitePrefix = feedsPage.canonical.replace(/[^/]*$/, '');
+    const missing = feedsPage.listed
+      .map(href => href.replace(sitePrefix, ''))
+      .filter(route => /^feed(\/|\.)|^feed$/.test(route) && !fs.existsSync(path.join(DIR, decodeURIComponent(route))));
+    check('/feeds/ 上列出的每一个订阅地址都有对应产物文件',
+      feedsPage.listed.length >= 36 && missing.length === 0,
+      missing.length ? `缺 ${missing.slice(0, 3).join('、')}` : `${feedsPage.listed.length} 个地址全部存在`);
+  }
+  check('/feeds/ 明说不需要账号（无 JS 时也读得到）',
+    /没有账号|不需要账号/.test(feedsPage.text) && /没有邮件列表/.test(feedsPage.text));
+  check('/feeds/ 明说变化订阅为空是事实（起算日）',
+    /起算|记录自/.test(feedsPage.text));
+
   console.log('\n=== 15) 独立详情页 ===');
+  // 14b 把浏览器带到了 /feeds/，这一节要从首页取样 —— 显式回首页，
+  // 而不是依赖「上一步恰好还在首页」（那种隐式依赖一改顺序就炸）。
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);
   const homeLink = await page.evaluate(() => {
     const card = document.querySelector('article.g');
     const titleLink = card.querySelector('.gt h3 a');
@@ -3229,6 +3372,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       headings: heads,
       other: Boolean(document.querySelector('.chgother')),
       canonical: (document.querySelector('link[rel="canonical"]') || {}).href || '',
+      alternates: [...document.querySelectorAll('link[rel="alternate"]')].map(l => l.getAttribute('href') || ''),
       wrongPrefix: links.filter(href => href.startsWith('deal/')).length,
       links
     };
@@ -3239,6 +3383,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     changesPage.headings.join(' | '));
   check('/changes/ 有「不计入高价值的其他变化」折叠块', changesPage.other);
   check('/changes/ 的 canonical 自指', changesPage.canonical.endsWith('/changes/'), changesPage.canonical);
+  check('/changes/ 声明的是**变化**订阅源（v1.6 起这一页订的是变化本身）',
+    changesPage.alternates.length === 2 &&
+    changesPage.alternates.every(href => /feed\/changes\.(xml|json)$/.test(href)),
+    changesPage.alternates.join(' · ') || '未声明');
   check('/changes/ 的内链都带输出深度前缀（../deal/…）', changesPage.wrongPrefix === 0,
     changesPage.wrongPrefix ? `${changesPage.wrongPrefix} 条前缀错误` : `抽查 ${changesPage.links.length} 条`);
 

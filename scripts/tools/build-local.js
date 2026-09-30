@@ -20,7 +20,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
-const { render: renderOgImage, selfCheck: selfCheckOgImage } = require('../lib/og-image');
+const { render: renderOgImage, renderIcon, selfCheck: selfCheckOgImage, selfCheckIcon } = require('../lib/og-image');
 const { load: loadLogos, write: writeLogos } = require('../lib/logos');
 const { load: loadRenderCore } = require('../lib/render-core');
 const { attach: attachZh, summarize: summarizeZh } = require('../lib/zh');
@@ -29,6 +29,7 @@ const audience = require('../lib/audience');
 const provenance = require('../lib/provenance');
 const history = require('../lib/history');
 const changes = require('../lib/changes');
+const feeds = require('../lib/feeds');
 
 const ROOT = path.join(__dirname, '..', '..');
 const outArg = process.argv.find(a => a.startsWith('--out='));
@@ -52,10 +53,9 @@ function showOut(dir) {
 
 const PUBLIC_FILES = ['index.html', 'deals.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
 /** 构建期生成、不走源码拷贝的产物 */
-const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'source-health.json', 'deal-history.json'];
-const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
-const SITE_NAME = 'AI 优惠聚合器';
-const SITE_DESCRIPTION = '聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。全部指向厂商官方页。';
+const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json', 'deal-history.json'];
+// 站点常量与 XML 转义的**唯一出处**是 lib/feeds.js（v1.6 起订阅层也要用它们）。
+const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = feeds;
 
 /**
  * 站内独立路由（非首页、非详情页）的**唯一清单**：占位符 → 相对路径。
@@ -74,7 +74,9 @@ const ROUTE_HREFS = [
   ['__DEVELOPER_HREF__', 'developer/'],
   ['__FREEAPI_HREF__', 'free-api/'],
   // v1.5：变化雷达静态页（与首页条带同一个数据源，只是列出全部分栏）
-  ['__CHANGES_HREF__', 'changes/']
+  ['__CHANGES_HREF__', 'changes/'],
+  // v1.6：订阅中心（列出全部 Feed，并给出 RSS / JSON Feed 地址）
+  ['__FEEDS_HREF__', 'feeds/']
 ];
 /** 残留占位符的扫描清单（与 ROUTE_HREFS 同源，避免两处各写一份） */
 const ROUTE_MARKERS = ROUTE_HREFS.map(([marker]) => marker);
@@ -191,7 +193,7 @@ const MIN_PRERENDERED_CARDS = 45;
 /** 骨架里所有必须被构建期填掉的标记 */
 const PRERENDER_MARKERS = [
   'PRERENDER:deals', 'PRERENDER:facets', 'PRERENDER:topstat',
-  'PRERENDER:stats', 'PRERENDER:categories', 'PRERENDER:needs', 'PRERENDER:changes', 'PRERENDER:jsonld'
+  'PRERENDER:stats', 'PRERENDER:categories', 'PRERENDER:needs', 'PRERENDER:changes', 'PRERENDER:feeds', 'PRERENDER:jsonld'
 ];
 
 function runValidate() {
@@ -453,78 +455,10 @@ function buildJsonLd(faqItems, cards) {
     .join('\n');
 }
 
-/** XML 文本转义：RSS 里一个裸 & 就能让整份 feed 解析失败 */
-function xmlEscape(value) {  return String(value === null || value === undefined ? '' : value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-}
+/** XML 文本转义在 lib/feeds.js（RSS 里一个裸 & 就能让整份 feed 解析失败） */
 
 /** 详情页模板里做 HTML 转义：字符集与 XML 转义相同，直接复用 */
 const htmlEscape = xmlEscape;
-
-/**
- * 订阅产物：feed.xml（RSS 2.0）+ feed.json（JSON Feed 1.1）。
- *
- * 为什么放在构建期：本站没有后端，也不打算加。订阅说到底是「把已经预渲染的内容再序列化一遍」，
- * 只用 Node 内置模块就能做完，仍然零依赖、零外部请求。
- * 只收录 type=deal 的条目，按最近一次采集时间倒序，最多 100 条。
- */
-function renderFeeds(payload) {
-  const deals = (payload.deals || [])
-    .filter(deal => deal.type === 'deal')
-    .sort((a, b) => String(b.lastSeen || '').localeCompare(String(a.lastSeen || '')))
-    .slice(0, 100);
-  const updated = payload.updatedAt ? new Date(payload.updatedAt) : new Date();
-
-  const describe = deal => [
-    deal.discountInfo,
-    deal.zh && deal.zh.discountInfo ? `中文：${deal.zh.discountInfo}` : '',
-    deal.eligibility ? `适用：${deal.eligibility}` : '',
-    deal.validity ? `有效期：${deal.validity}` : ''
-  ].filter(Boolean).join(' ');
-
-  const items = deals.map(deal => `    <item>
-      <title>${xmlEscape(deal.title)}</title>
-      <link>${xmlEscape(deal.url)}</link>
-      <guid isPermaLink="false">${xmlEscape(deal.id)}</guid>
-      <pubDate>${new Date(deal.lastSeen || updated).toUTCString()}</pubDate>
-      <description>${xmlEscape(describe(deal))}</description>
-    </item>`).join('\n');
-
-  const rss = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
-  <channel>
-    <title>${xmlEscape(SITE_NAME)}</title>
-    <link>${SITE_URL}</link>
-    <description>${xmlEscape(SITE_DESCRIPTION)}</description>
-    <language>zh-CN</language>
-    <lastBuildDate>${updated.toUTCString()}</lastBuildDate>
-${items}
-  </channel>
-</rss>
-`;
-
-  const json = {
-    version: 'https://jsonfeed.org/version/1.1',
-    title: SITE_NAME,
-    home_page_url: SITE_URL,
-    feed_url: SITE_URL + 'feed.json',
-    description: SITE_DESCRIPTION,
-    language: 'zh-CN',
-    items: deals.map(deal => {
-      const item = { id: deal.id, url: deal.url, title: deal.title, content_text: describe(deal) };
-      if (deal.lastSeen) item.date_modified = deal.lastSeen;
-      const tags = [deal.vendor, deal.category].filter(Boolean);
-      if (tags.length) item.tags = tags;
-      return item;
-    })
-  };
-
-  return { rss, json: JSON.stringify(json, null, 2) + '\n', count: deals.length };
-}
 
 /* ------------------------------------------------------------------ */
 /* 独立详情页                                                          */
@@ -666,8 +600,7 @@ function writeDetailPages(payload, indexHtml, renderCore) {
 <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-<link rel="alternate" type="application/rss+xml" title="${htmlEscape(SITE_NAME)} · RSS" href="../../feed.xml">
-<link rel="alternate" type="application/feed+json" title="${htmlEscape(SITE_NAME)} · JSON Feed" href="../../feed.json">
+${feeds.rootFeedTags('../../')}
 <link rel="stylesheet" href="../../logos.css">
 ${themeScript}
 ${jsonLd}
@@ -825,8 +758,7 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 <!-- feed 约定：状态页自己不产出条目（订阅是「内容更新」语义，一页运维表不是更新），
      但必须能被订阅发现 —— 与首页、详情页、分类页声明同两个 feed。
      这一条是 v1.1 收口补的：此页原先只满足五条既有约定里的两条。 -->
-<link rel="alternate" type="application/rss+xml" title="${htmlEscape(SITE_NAME)} · RSS" href="../feed.xml">
-<link rel="alternate" type="application/feed+json" title="${htmlEscape(SITE_NAME)} · JSON Feed" href="../feed.json">
+${feeds.rootFeedTags('../')}
 ${themeScript}
 ${style}
 <style>
@@ -949,7 +881,8 @@ ${jsonLdBlocks}
  *      这里一个字节都不生成。日志不可用时这一页照常存在（路由不能凭空消失），
  *      但正文必须说「没有拿到历史日志」，而不是「没有变化」。
  */
-function renderChangesPage(radar, indexHtml, renderCore) {
+function renderChangesPage(radar, indexHtml, renderCore, context = {}) {
+  const changeFeedTags = context.changeFeedTags || feeds.rootFeedTags('../');
   const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
   const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
   const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
@@ -1028,9 +961,9 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<!-- feed 约定：这一页自己不产出条目（订阅是「内容更新」语义），但必须能被订阅发现。 -->
-<link rel="alternate" type="application/rss+xml" title="${htmlEscape(SITE_NAME)} · RSS" href="../feed.xml">
-<link rel="alternate" type="application/feed+json" title="${htmlEscape(SITE_NAME)} · JSON Feed" href="../feed.json">
+<!-- feed 约定：这一页自己不产出条目（订阅是「内容更新」语义），但**必须订到变化本身** ——
+     v1.6 起声明的是变化 Feed（v1.5 报告里「雷达没有自己的订阅源」那条技术债的收口）。 -->
+${changeFeedTags}
 ${themeScript}
 ${style}
 <style>
@@ -1121,6 +1054,195 @@ ${body}
  * 缺席的字段不写。分类归属本身也只认**肯定信号**（见 `audience.studentSignal` 的注释：
  * 覆盖率口径与分类口径在这里刻意不同）。
  */
+/* ------------------------------------------------------------------ */
+/* 订阅中心（/feeds/）：把注册表原样摊开，并如实说明空 Feed 为什么空     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 订阅中心。**它不产数据、不产条目**：全部内容来自 `lib/feeds.js` 的注册表与
+ * 已经算好的条目数，页面只做排版。
+ *
+ * 三条与站内其它页面同源的约定：
+ *   · 页面壳子（style / 主题脚本 / 页脚）从**已组装好的 index.html** 里抽，
+ *     不写第二份视觉语言；
+ *   · 站点常量与 URL 一律走 feeds 模块（那一份是唯一出处）；
+ *   · 订阅地址写**绝对 URL**：这一页的全部意义就是让读者把地址复制走。
+ *
+ * 空 Feed 的处理是本页的重点：`/feed/changes.*` 与 `/feed/new.*` 会长期为空
+ * （变更日志的起算日就是交付日），页面必须说清「这是事实，不是故障」，
+ * 措辞直接取 `lib/changes.js` 的权威表，不另写一句话。
+ */
+function renderFeedsPage(feedList, indexHtml, context = {}) {
+  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
+  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
+  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
+  if (!style || !themeScript || !footerRaw) {
+    throw new Error('抽取订阅中心共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
+  }
+  const footer = resolveRouteHrefs(
+    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
+    '../'
+  ).trim();
+
+  const W = feeds.FEEDS_WORDING;
+  const PAGE_HEADING = W.FEEDS_LABELS.pageTitle;
+  const PAGE_DESCRIPTION = '订阅 AI 优惠：全部优惠、最近变化、最近新增，以及按学生 / 开发者意图与按厂商切分的订阅源。' +
+    'RSS 与 JSON Feed 两种格式，全部由本站构建期生成的静态文件提供 —— 没有账号、没有邮件列表、没有推送服务。';
+  const pageUrl = `${SITE_URL}feeds/`;
+
+  const byId = new Map(feedList.map(feed => [feed.spec.id, feed]));
+  const pick = id => byId.get(id);
+  const groups = [
+    {
+      key: 'core', label: '全部与变化',
+      ids: ['all', 'changes', 'new'],
+      note: null
+    },
+    {
+      key: 'student', label: '学生',
+      ids: ['student', 'china'],
+      note: '按「我是谁」和「能不能在大陆用上」切；判据与 /student/、/need/china-usable/ 两页<b>同一份</b>。'
+    },
+    {
+      key: 'developer', label: '开发者',
+      ids: ['developer', 'free-api', 'free-tokens', 'ai-coding'],
+      note: '按福利类型与用途切；与目录页、按需求页共用同一套判据，所以订阅里的条数与页面上的行数不可能分头变化。'
+    }
+  ];
+  const vendorFeeds = feedList.filter(feed => feed.spec.vendor);
+
+  const rowHtml = feed => {
+    const spec = feed.spec;
+    const rss = SITE_URL + spec.path;
+    const json = SITE_URL + spec.jsonPath;
+    const latest = feed.items.length ? (feed.items[0].dateModified || feed.items[0].datePublished) : null;
+    const empty = feed.items.length === 0;
+    const countText = empty
+      ? `0 条${spec.kind === 'changes' ? `（${changes.CHANGES_WORDING.CHANGES_LABELS.since.replace('{date}', context.startedAt || context.asOf || '未知')}）` : ''}`
+      : `${feed.items.length} 条${latest ? ` · 最近一条 ${latest}` : ''}`;
+    const pageLink = spec.pageRoute
+      ? `<a href="../${spec.pageRoute}">看这一页</a> · `
+      : '';
+    return `      <li class="frow">
+        <div class="fhead"><b>${htmlEscape(spec.title)}</b><span class="fcount">${htmlEscape(countText)}</span></div>
+        <p class="fdesc">${htmlEscape(spec.description)}</p>
+        <p class="furl">${pageLink}<a href="${htmlEscape(rss)}">RSS</a> · <a href="${htmlEscape(json)}">JSON Feed</a></p>
+      </li>`;
+  };
+
+  const groupHtml = groups.map(group => {
+    const rows = group.ids.map(pick).filter(Boolean);
+    if (!rows.length) return '';
+    return `    <section class="fsec">
+      <h2>${htmlEscape(group.label)}</h2>
+      ${group.note ? `<p class="snote">${group.note}</p>` : ''}
+      <ul class="flist">
+${rows.map(rowHtml).join('\n')}
+      </ul>
+    </section>`;
+  }).filter(Boolean).join('\n');
+
+  const emptyChangeFeeds = feedList.filter(feed => feed.spec.kind === 'changes' && !feed.items.length);
+  const emptyNote = emptyChangeFeeds.length
+    ? `<p class="snote">最近变化与最近新增现在是空的：本站的变更记录自 ${htmlEscape(context.startedAt || context.asOf || '未知')} 起算，此前没有历史。` +
+      `空订阅是<b>事实</b>，不是故障 —— 一旦有新增或重要变化，它们会出现在这里。` +
+      `${context.availability !== 'ok' ? '（本次构建没有拿到变更日志，因此无法确认有没有变化。）' : ''}</p>`
+    : '';
+  const vendorNote = vendorFeeds.length
+    ? `<p class="snote">厂商订阅只给「当前收录的优惠 ≥ ${feeds.VENDOR_THRESHOLDS.minDeals} 条」或「历史变更事件 ≥ ${feeds.VENDOR_THRESHOLDS.minEvents} 条」的厂商生成：` +
+      `只出现一两条记录的厂商单独开一个订阅没有价值。厂商改名不会改订阅地址（地址来自人工维护的 slug 表）。</p>`
+    : '<p class="snote">当前没有达到门槛的厂商订阅。</p>';
+
+  const jsonLdBlocks = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: `${PAGE_HEADING} · ${SITE_NAME}`,
+      description: PAGE_DESCRIPTION,
+      url: pageUrl,
+      inLanguage: 'zh-CN',
+      isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL }
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: '首页', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: PAGE_HEADING, item: pageUrl }
+      ]
+    }
+  ].map(data => `<script type="application/ld+json">
+${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
+</script>`).join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${htmlEscape(PAGE_HEADING)} · ${htmlEscape(SITE_NAME)}</title>
+<meta name="description" content="${htmlEscape(PAGE_DESCRIPTION)}">
+<link rel="canonical" href="${pageUrl}">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<!-- feed 约定：这一页自己不产出条目（订阅是「内容更新」语义），但必须能被订阅发现。 -->
+${feeds.feedLinkTags([pick('all')].filter(Boolean), '../')}
+${themeScript}
+${style}
+<style>
+  /* 只用首页已有的设计变量。列表式（不是宽表）：订阅地址很长，窄屏上不能产生横向滚动。 */
+  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+  .fsec { margin: 0 0 var(--s4); border-top: 1px solid var(--line); padding-top: var(--s3); }
+  .fsec h2 { font-size: 15px; margin: 0 0 var(--s2); }
+  .flist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .frow { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; }
+  .fhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px var(--s2); font-size: var(--fs-sm); }
+  .fcount { color: var(--mut); font-variant-numeric: tabular-nums; }
+  .fdesc { margin: 4px 0 0; color: var(--ink2); font-size: var(--fs-sm); line-height: 1.6; }
+  .furl { margin: 6px 0 0; font-size: 11.5px; overflow-wrap: anywhere; }
+  .furl a { color: var(--brand); }
+</style>
+${jsonLdBlocks}
+</head>
+<body>
+  <header class="top">
+    <div class="topin">
+      <a class="brand" href="../"><span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span></a>
+      <a class="jumpback" href="../">← 返回全部优惠</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main id="main">
+      <nav class="crumb" aria-label="面包屑"><a href="../">首页</a> › <span>${htmlEscape(PAGE_HEADING)}</span></nav>
+      <h1>${htmlEscape(PAGE_HEADING)}</h1>
+      <p class="snote">把下面的地址粘进任意 RSS / JSON Feed 阅读器即可订阅。本站没有账号、没有邮件列表、没有推送服务，
+        也不会记录谁订阅了哪一份 —— 这些就是一个静态文件，和打开任何一个网页没有区别。</p>
+      ${emptyNote}
+${groupHtml}
+    <section class="fsec">
+      <h2>厂商订阅</h2>
+      ${vendorNote}
+      <ul class="flist">
+${vendorFeeds.map(rowHtml).join('\n')}
+      </ul>
+    </section>
+    <section class="fsec">
+      <h2>说明</h2>
+      <p class="snote">优惠订阅回答「当前有哪些符合这个条件的优惠」；最近变化与最近新增回答「最近发生了什么」，
+        只收优惠内容、领取条件、有效期与收录状态的变化 —— 改一个标点、换一处分类不会推给你。</p>
+      <p class="snote">${htmlEscape(W.FEEDS_NOTES.officialNote)}</p>
+    </section>
+    </main>
+    ${footer}
+  </div>
+</body>
+</html>
+`;
+}
+
 /* ------------------------------------------------------------------ */
 /* 目录页：分类页（/student/ …）与按需求页（/need/<slug>/）共用一条生成路径 */
 /* ------------------------------------------------------------------ */
@@ -1348,8 +1470,7 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 <link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
 <!-- feed 约定：目录页自己不产出条目（订阅是「内容更新」语义，一页目录不是更新），
      但必须能被订阅发现 —— 与首页、详情页声明同两个 feed。 -->
-<link rel="alternate" type="application/rss+xml" title="${htmlEscape(SITE_NAME)} · RSS" href="${prefix}feed.xml">
-<link rel="alternate" type="application/feed+json" title="${htmlEscape(SITE_NAME)} · JSON Feed" href="${prefix}feed.json">
+${feeds.rootFeedTags(prefix)}
 ${themeScript}
 ${style}
 <style>
@@ -1561,6 +1682,15 @@ function assemble() {
     ` · 已结束 ${radarStats.totals.ended} · 重新出现 ${radarStats.totals.restored} · 其他（不上首页）${radarStats.totals.other}` +
     ` · 首页条带 ${radarStats.homeCount} 项`);
 
+  const feedBundle = feeds.buildFeeds({
+    deals: payload.deals,
+    store: historyStore.store,
+    radar,
+    asOf: radarAsOf,
+    updatedAt: payload.updatedAt,
+    availability: radarAvailability
+  });
+
   fs.writeFileSync(path.join(OUT, 'deals.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
   console.log(`  中文译文: ${summarizeZh(zhAttached.report)}`);
   zhAttached.report.stale.forEach(row =>
@@ -1605,7 +1735,12 @@ function assemble() {
   // 变化雷达条带（v1.5）：同样一行静态导航，紧跟按需求入口行。它与 /changes/ 页
   // 共用 RENDER-CORE 的渲染函数，读的是上面算好的同一份 radar。
   html = replaceMarker(html, '<!--PRERENDER:changes-->', renderCore.changesStripHtml(radar));
-  console.log(`  筛选条 / 汇总 / 分类选项 / 按需求入口 / 变化雷达: 已填充`);
+  // 订阅发现（v1.6）：首页 <head> 只暴露四个订阅选择（全部优惠 / 最近变化 / 学生 / 开发者），
+  // 每个两种格式 = 8 条 rel="alternate"。**由注册表生成**，不在 index.html 里抄一份清单 ——
+  // 抄一份的后果是「改了注册表、忘了改 HTML」，而那种漂移没有任何东西会红。
+  html = replaceMarker(html, '<!--PRERENDER:feeds-->', feeds.feedLinkTags(
+    feedBundle.feeds.filter(feed => feed.spec.homepage), ''));
+  console.log(`  筛选条 / 汇总 / 分类选项 / 按需求入口 / 变化雷达 / 订阅发现: 已填充`);
 
   // 站点绝对地址：源码里不硬编码第二份 URL
   const urlSlots = html.split('__SITE_URL__').length - 1;
@@ -1643,6 +1778,13 @@ function assemble() {
   const ogStats = selfCheckOgImage(og);
   console.log(`  OG 分享图: ${(og.length / 1024).toFixed(1)} KB`);
   console.log(`    OG 自检: 标记 ${ogStats.white}px · 副标题 ${ogStats.pale}px · 底部说明 ${ogStats.faint}px`);
+
+  // Feed 图标：RSS <image> 与 JSON Feed 的 icon 都要一张 ≤144px 的点阵方图，
+  // OG 图（1200×630）不合规，所以现场画一张。同样走「画完立刻自检」。
+  const icon = renderIcon();
+  fs.writeFileSync(path.join(OUT, 'icon.png'), icon);
+  const iconStats = selfCheckIcon(icon);
+  console.log(`  Feed 图标: icon.png 144×144（${(icon.length / 1024).toFixed(1)} KB · 白块 ${iconStats.white}px）`);
 
   // 独立详情页（每条优惠一个静态 URL）+ sitemap
   const lastmod = String(payload.updatedAt || '').slice(0, 10);
@@ -1683,7 +1825,11 @@ function assemble() {
   // 日志不可用时也照常出页 —— 路由凭空消失比一页说明更糟。
   const changesDir = path.join(OUT, 'changes');
   fs.mkdirSync(changesDir, { recursive: true });
-  fs.writeFileSync(path.join(changesDir, 'index.html'), renderChangesPage(radar, html, renderCore), 'utf8');
+  fs.writeFileSync(path.join(changesDir, 'index.html'), renderChangesPage(radar, html, renderCore, {
+    // 这一页订阅「变化」本身：声明变化 Feed 而不是全量 Feed（v1.5 报告 §九-5 的遗留项）。
+    changeFeedTags: feeds.feedLinkTags(
+      feedBundle.feeds.filter(feed => feed.spec.kind === 'changes' && feed.spec.id === 'changes'), '../')
+  }), 'utf8');
   console.log(`  变化雷达页: /changes/（基准日 ${radar.asOf || '未知'} · 高价值 ${changes.SECTION_ORDER
     .reduce((sum, key) => sum + (Number(radar.totals[key]) || 0), 0)} 条 · 其他 ${radar.totals.other} 条）`);
 
@@ -1726,6 +1872,16 @@ function assemble() {
     <priority>0.8</priority>
   </url>`;
 
+  // 订阅中心进 sitemap：priority 0.6 **低于**详情页 0.7 —— 它是给「想订阅的人」的
+  // 工具页（列出全部 Feed 地址），不是读者找优惠的入口。声明与实际用途必须一致，
+  // 这和状态页拿 0.3 是同一条理由。
+  const feedsUrl = `  <url>
+    <loc>${SITE_URL}feeds/</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>`;
+
   fs.writeFileSync(path.join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -1737,15 +1893,48 @@ function assemble() {
 ${directoryUrls}
 ${statusUrl}
 ${changesUrl}
+${feedsUrl}
 ${dealUrls}
 </urlset>
 `, 'utf8');
 
-  // 订阅：RSS 2.0 + JSON Feed（构建期生成，零依赖）
-  const feeds = renderFeeds(payload);
-  fs.writeFileSync(path.join(OUT, 'feed.xml'), feeds.rss, 'utf8');
-  fs.writeFileSync(path.join(OUT, 'feed.json'), feeds.json, 'utf8');
-  console.log(`  订阅产物: feed.xml + feed.json（各 ${feeds.count} 条）`);
+  // 订阅产物（v1.6）：注册表在 lib/feeds.js，这里只负责落盘与日志。
+  //
+  // 三类语义各自成 Feed（优惠 / 变化 / 厂商），判据**全部引用既有注册表**：
+  // 优惠 Feed 用 audience.js 的谓词、变化 Feed 用 radar 的同一份分栏结果。
+  // 因此自检能拿「Feed 条目集合」与「页面表格行集合」逐条 id 对账，不需要第二份判据。
+  for (const feed of feedBundle.feeds) {
+    const file = path.join(OUT, feed.spec.path);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, feed.rss, 'utf8');
+    fs.writeFileSync(path.join(OUT, feed.spec.jsonPath), feed.json, 'utf8');
+  }
+  const feedStats = feeds.summarize(feedBundle.feeds);
+  console.log(`  订阅产物: ${feedStats.count} 个 Feed × 2 种格式 = ${feedStats.files} 个文件 · ` +
+    `共 ${feedStats.items} 条条目（优惠 ${feedStats.perKind.collection} 个 / 变化 ${feedStats.perKind.changes} 个）` +
+    (feedStats.empty.length ? ` · 空 Feed：${feedStats.empty.join('、')}（已显式允许）` : ''));
+  if (feedBundle.vendorUnmapped.length) {
+    console.warn(`    ⚠️  ${feedBundle.vendorUnmapped.length} 家够门槛的厂商没在 vendor-slugs.json 里登记，` +
+      `本轮不生成它们的订阅：${feedBundle.vendorUnmapped.join('、')}`);
+  }
+  if (feedBundle.vendorSkipped.length) {
+    console.warn(`    ⚠️  跳过 ${feedBundle.vendorSkipped.length} 个厂商 Feed（当前有效优惠为 0）：` +
+      `${feedBundle.vendorSkipped.map(row => row.vendor).join('、')}`);
+  }
+
+  // 订阅中心 /feeds/：把注册表原样摊开给读者，顺带解释「变化订阅为什么现在是空的」。
+  {
+    const feedsDir = path.join(OUT, 'feeds');
+    fs.mkdirSync(feedsDir, { recursive: true });
+    fs.writeFileSync(path.join(feedsDir, 'index.html'),
+      renderFeedsPage(feedBundle.feeds, html, {
+        lastmod,
+        asOf: radarAsOf,
+        availability: radarAvailability,
+        startedAt: historyStats ? historyStats.startedAt : null
+      }), 'utf8');
+    console.log(`  订阅中心: /feeds/（${feedStats.count} 个 Feed，RSS + JSON Feed 各一份）`);
+  }
 
   // 数据源状态：把采集写入的心跳文件发布出去（机器可读），并生成一页可读的 /status/。
   // 文件缺失（还没跑过一次成功采集）时生成「暂无数据」页，而不是让构建失败——
@@ -1777,7 +1966,21 @@ ${dealUrls}
     // 基准日一并带下去，自检因此不必重算一遍判据 —— 重算就等于把判据写了两遍。
     radar,
     radarStats,
-    radarAsOf
+    radarAsOf,
+    // v1.6：订阅层交给自检做**回读对账**（内存条目 ↔ RSS 回读 ↔ JSON 回读 + 语义不变量）。
+    // 判据不重算：validate() 用的就是构建期这一份 feedBundle。
+    feedBundle,
+    feedStats,
+    // 构建期真实生成的全部站内路由（含首页 '' 与刚才新增的 feeds/）——
+    // Feed 里每一条站内链接都要能在这里找到，否则就是一条死链。
+    pageRoutes: new Set([
+      '',
+      'status/',
+      'changes/',
+      'feeds/',
+      ...detailPages.map(page => `deal/${encodeURIComponent(page.id)}/`),
+      ...directoryPages.map(page => page.route)
+    ])
   });
 }
 
@@ -2182,7 +2385,9 @@ function selfCheck(built) {
       const page = fs.readFileSync(pageFile, 'utf8');
       const noScript = page.replace(/<script[\s\S]*?<\/script>/gi, '');
       if (!page.includes(`<link rel="canonical" href="${SITE_URL}changes/">`)) problems.push('changes/ 的 canonical 不是自指');
-      if (!page.includes('href="../feed.xml"') || !page.includes('href="../feed.json"')) problems.push('changes/ 没有声明订阅源');
+      if (!page.includes('href="../feed/changes.xml"') || !page.includes('href="../feed/changes.json"')) {
+        problems.push('changes/ 没有声明**变化**订阅源（v1.6 起这一页订的是变化本身，不是全量优惠）');
+      }
       if (/__[A-Z_]+_HREF__/.test(page)) problems.push('changes/ 残留路由占位符');
       let ldTypes = [];
       try {
@@ -2414,6 +2619,8 @@ function selfCheck(built) {
       ['status/index.html', '../'],
       // v1.5：变化雷达页（浅一层路由）
       ['changes/index.html', '../'],
+      // v1.6：订阅中心（同样一层深）
+      ['feeds/index.html', '../'],
       ...built.collectionPages.map(page => [`${page.slug}/index.html`, '../']),
       // v1.2 遗留的扫描盲区：按需求页是**两层**路由，却一直没进这张表 ——
       // 于是「某一层页脚的相对前缀写错」在那 10 个页面上不会被这条断言照到。
@@ -2579,11 +2786,12 @@ function selfCheck(built) {
   // v1.2 把「分类页」这一项换成「目录页」（分类页 + 按需求页），两者是同一张注册表。
   //
   // 每一项都写成自述的：数字对不上时，报错信息里的分项就是排查路径。
-  // v1.5：再加一项「变化雷达页」。
-  const expectedLocs = dealEntries.length + 1 /* 首页 */ + built.directoryPages.length + 1 /* 状态页 */ + 1 /* 变化雷达页 */;
+  // v1.5：再加一项「变化雷达页」。v1.6：再加一项「订阅中心」。
+  const expectedLocs = dealEntries.length + 1 /* 首页 */ + built.directoryPages.length + 1 /* 状态页 */
+    + 1 /* 变化雷达页 */ + 1 /* 订阅中心 */;
   if (sitemapLocs.length !== expectedLocs) {
     fail(`sitemap ${sitemapLocs.length} 条 ≠ 首页 1 + 目录页 ${built.directoryPages.length}` +
-      `（分类页 ${built.collectionPages.length} + 按需求页 ${built.needPages.length}）+ 状态页 1 + 变化雷达页 1 + 详情页 ${dealEntries.length}`);
+      `（分类页 ${built.collectionPages.length} + 按需求页 ${built.needPages.length}）+ 状态页 1 + 变化雷达页 1 + 订阅中心 1 + 详情页 ${dealEntries.length}`);
   } else {
     const notListed = dealEntries.filter(deal => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(deal.id)}/`)));
     const directoriesNotListed = built.directoryPages.filter(page => !sitemapLocs.includes(page.url));
@@ -2591,8 +2799,9 @@ function selfCheck(built) {
     else if (directoriesNotListed.length) fail(`sitemap 漏了目录页: ${directoriesNotListed.map(p => p.route).join(', ')}`);
     else if (!sitemapLocs.includes(`${SITE_URL}status/`)) fail('sitemap 漏了状态页 status/');
     else if (!sitemapLocs.includes(`${SITE_URL}changes/`)) fail('sitemap 漏了变化雷达页 changes/');
+    else if (!sitemapLocs.includes(`${SITE_URL}feeds/`)) fail('sitemap 漏了订阅中心 feeds/');
     else console.log(`  ✓ sitemap: ${sitemapLocs.length} 条（首页 + ${built.collectionPages.length} 个分类页 + ` +
-      `${built.needPages.length} 个按需求页 + 状态页 + 变化雷达页 + ${dealEntries.length} 个详情页，无遗漏）`);
+      `${built.needPages.length} 个按需求页 + 状态页 + 变化雷达页 + 订阅中心 + ${dealEntries.length} 个详情页，无遗漏）`);
   }
 
   // 分类页：**逐条回读对账**，而不是「文件存在就算过」。
@@ -2817,24 +3026,121 @@ function selfCheck(built) {
     console.log(`  ✓ JSON-LD: ${foundTypes.join(' / ')}`);
   }
 
-  // 订阅产物：两份必须条目数一致、能被解析、且声明的版本正确
-  const feedXml = fs.readFileSync(path.join(OUT, 'feed.xml'), 'utf8');
-  const feedItems = (feedXml.match(/<item>/g) || []).length;
-  let feedJsonBox = null;
-  try {
-    feedJsonBox = JSON.parse(fs.readFileSync(path.join(OUT, 'feed.json'), 'utf8'));
-  } catch (e) {
-    fail(`feed.json 解析失败: ${e.message}`);
+  // 订阅产物（v1.6）：**整张注册表**做三方对账 + 语义不变量。
+  //
+  // 这一段替换掉 v1.0–v1.5 的「只数条目数」检查。旧检查的漏洞是结构性的：
+  // 它只问「两份 feed 条数是否相等」——条目 id 重复、链接指向不存在的页面、
+  // 分类 Feed 混进不该有的条目、变化 Feed 引用不存在的事件，它一条都照不到。
+  //
+  // 现在交给 feeds.validate()：内存条目 ↔ RSS 回读 ↔ JSON 回读三方对账 +
+  // 判据/生命周期/事件存在性/时间来源/slug/空 Feed 等不变量，逐项带 code 报出。
+  {
+    const result = feeds.validate({
+      feeds: built.feedBundle.feeds,
+      deals: JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8')).deals,
+      store: fs.existsSync(path.join(OUT, 'deal-history.json'))
+        ? JSON.parse(fs.readFileSync(path.join(OUT, 'deal-history.json'), 'utf8'))
+        : null,
+      pages: built.pageRoutes,
+      asOf: built.radarAsOf,
+      availability: built.radar.availability
+    });
+    // 文件真的落盘了吗（含子目录）——存在的清单以注册表为准，不写死文件名
+    const missingFiles = [];
+    for (const feed of built.feedBundle.feeds) {
+      for (const rel of [feed.spec.path, feed.spec.jsonPath]) {
+        if (!fs.existsSync(path.join(OUT, rel))) missingFiles.push(rel);
+      }
+    }
+    if (missingFiles.length) fail(`订阅文件缺失：${missingFiles.slice(0, 4).join('、')}${missingFiles.length > 4 ? ` 等 ${missingFiles.length} 个` : ''}`);
+    for (const problem of result.problems.slice(0, 8)) {
+      fail(`订阅[${problem.code}] ${problem.feed}：${problem.detail}`);
+    }
+    if (result.problems.length > 8) fail(`订阅问题共 ${result.problems.length} 处（上面只列了前 8 处）`);
+    if (!result.problems.length && !missingFiles.length) {
+      console.log(`  ✓ 订阅: ${built.feedStats.count} 个 Feed × 2 种格式 = ${built.feedStats.files} 个文件 · ` +
+        `${built.feedStats.items} 条条目（三方对账 · id 唯一 · 链接可解析 · 判据一致 · 时间来自数据）` +
+        (built.feedStats.empty.length ? ` · 显式允许为空的：${built.feedStats.empty.join('、')}` : ''));
+    }
   }
-  if (feedJsonBox) {
-    if (!/^<\?xml version="1\.0" encoding="UTF-8"\?>/.test(feedXml)) fail('feed.xml 缺少 XML 声明');
-    if (feedJsonBox.version !== 'https://jsonfeed.org/version/1.1') fail('feed.json 不是 JSON Feed 1.1');
-    if (feedItems !== feedJsonBox.items.length) {
-      fail(`订阅条目数不一致：feed.xml ${feedItems} 条 vs feed.json ${feedJsonBox.items.length} 条`);
-    } else if (!feedItems) {
-      fail('订阅里没有任何条目（应至少有 type=deal 的条目）');
-    } else {
-      console.log(`  ✓ 订阅条目一致: ${feedItems} 条（feed.xml / feed.json）`);
+
+  // 订阅发现：HTML 里声明的每一条 rel="alternate" 都必须指向真实存在的 Feed，
+  // 且 title 与那份 Feed 自己的 <title> **逐字相同** —— 这条是「改了注册表忘了改页面」
+  // 唯一会红的地方（首页 8 条由注册表注入，其余页面各处只用 rootFeedTags 这一份）。
+  {
+    const byPath = new Map();
+    for (const feed of built.feedBundle.feeds) {
+      byPath.set(feed.spec.path, feed.spec.title);
+      byPath.set(feed.spec.jsonPath, feed.spec.title);
+    }
+    const progress = [];
+    const problems = [];
+    let declared = 0;
+    for (const [rel, label, prefix] of [
+      ['index.html', '首页', ''],
+      ['status/index.html', '状态页', '../'],
+      ['changes/index.html', '变化雷达页', '../'],
+      ['feeds/index.html', '订阅中心', '../'],
+      ...built.collectionPages.map(page => [`${page.slug}/index.html`, `/${page.slug}/`, '../']),
+      ...built.needPages.map(page => [`${page.route}index.html`, `/${page.route}`, '../../'])
+    ]) {
+      const file = path.join(OUT, rel);
+      if (!fs.existsSync(file)) { problems.push(`${label} 的产物文件缺失`); continue; }
+      const page = fs.readFileSync(file, 'utf8');
+      let count = 0;
+      for (const m of page.matchAll(/<link rel="alternate" type="(application\/rss\+xml|application\/feed\+json)" title="([^"]*)" href="([^"]*)">/g)) {
+        count++;
+        declared++;
+        const title = feeds.unescapeXml(m[2]);
+        const href = m[3];
+        if (!href.startsWith(prefix)) { problems.push(`${label} 的 ${href} 深度前缀不是 ${prefix || '(空)'}`); continue; }
+        const route = href.slice(prefix.length);
+        const expected = byPath.get(route);
+        if (!expected) { problems.push(`${label} 声明了不存在的订阅源 ${href}`); continue; }
+        if (expected !== title) problems.push(`${label} 的 ${href} 标题「${title}」≠ Feed 自己的「${expected}」`);
+        if (m[1] === 'application/rss+xml' && !route.endsWith('.xml')) problems.push(`${label} 的 RSS 类型与后缀不符：${href}`);
+        if (m[1] === 'application/feed+json' && !route.endsWith('.json')) problems.push(`${label} 的 JSON Feed 类型与后缀不符：${href}`);
+      }
+      // 每个页面都必须真的声明了订阅源（只查「没有残留」不够，把整段删掉同样没有残留）
+      if (count === 0) problems.push(`${label} 一条 rel="alternate" 都没有`);
+      progress.push(`${label}${count}`);
+    }
+    if (problems.length) fail(`订阅发现不一致：${problems.slice(0, 4).join('、')}`);
+    else console.log(`  ✓ 订阅发现: ${declared} 条 rel="alternate" 横跨 ${progress.length} 个页面，全部指向真实 Feed 且标题逐字一致`);
+  }
+
+  // 订阅中心页：五条约定（预渲染 / 无 JS 可读 / sitemap / 双 feed / JSON-LD）+
+  // 页面上列出的每一个订阅地址都必须真的存在。
+  {
+    const file = path.join(OUT, 'feeds/index.html');
+    if (!fs.existsSync(file)) fail('缺少 feeds/index.html');
+    else {
+      const page = fs.readFileSync(file, 'utf8');
+      const problems = [];
+      if (!page.includes(`<link rel="canonical" href="${SITE_URL}feeds/">`)) problems.push('canonical 不是自指');
+      if (/__[A-Z_]+_HREF__/.test(page)) problems.push('残留路由占位符');
+      if (!page.includes('href="../feed.xml"') || !page.includes('href="../feed.json"')) problems.push('没有声明根订阅源');
+      let ldTypes = [];
+      try {
+        ldTypes = [...page.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m => JSON.parse(m[1])['@type']);
+      } catch (error) {
+        problems.push('JSON-LD 解析失败: ' + error.message);
+      }
+      if (JSON.stringify(ldTypes.slice().sort()) !== JSON.stringify(['BreadcrumbList', 'CollectionPage'])) {
+        problems.push(`JSON-LD 不是恰好两段：${ldTypes.join(', ')}`);
+      }
+      // 页面上每个绝对订阅地址都要有对应的产物文件（相对路径还原成站内路由）
+      const listed = [...new Set([...page.matchAll(new RegExp(`href="${SITE_URL.replace(/[.]/g, '\\.')}([^"]+)"`, 'g'))].map(m => m[1]))];
+      for (const route of listed) {
+        if (route.endsWith('/')) continue;
+        if (!fs.existsSync(path.join(OUT, route))) problems.push(`列出的订阅地址没有文件：${route}`);
+      }
+      const text = page.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '')
+        .replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+      if (text.length < 600) problems.push(`预渲染正文过短（${text.length} 字）——无 JS 时读不到内容`);
+      if (!/没有账号|没有邮件列表/.test(text)) problems.push('没有说明「不需要账号」');
+      if (problems.length) fail(`订阅中心：${problems.join('；')}`);
+      else console.log(`  ✓ 订阅中心: /feeds/ 五条约定齐（自指 canonical · 双 feed · 两段 JSON-LD · 预渲染 ${text.length} 字 · ${listed.length} 个订阅地址全部存在）`);
     }
   }
 
