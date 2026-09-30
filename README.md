@@ -42,7 +42,7 @@ node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 in
 （bash 是 `\`、PowerShell 是反引号），写成多行会让其中一边复制过去跑不起来。
 
 ```bash
-npm run test:strict && npm run check:reproducible && npm run check:history && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:provenance && npm run selftest:history && npm run selftest:audience && npm run selftest:app-token && npm run build && npm run check:ci
+npm run test:strict && npm run check:reproducible && npm run check:history && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:provenance && npm run selftest:history && npm run selftest:changes && npm run selftest:audience && npm run selftest:app-token && npm run build && npm run check:ci
 ```
 
 > `migrate:audience:verify` **不需要参数**：它默认跑 `scripts/data/fixtures/` 下那对合成夹具
@@ -59,6 +59,7 @@ npm run report:tier                    # 分档分布 + 每张卡命中的判据
 npm run report:tier -- --tier=2        # 只看某一档
 npm run report:vendor                  # 厂商归一并计（多少条脏 vendor 归到了同一家）
 npm run report:tier -- --all           # 连工具条目一起看
+npm run report:changes                 # v1.5 变化雷达：五个分栏逐条列出 + 被抑制的「其他变化」（--json 可机读）
 ```
 
 抓 JS 渲染的公开页（可选能力，需要本机装有 Edge 或 Chrome）：
@@ -135,7 +136,7 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 | `priceLine` | 只有官方页明确给出「免费档 → 付费档」时才填。看不出升级路径就留 `null`，卡片不渲染该行，**不编造价格阶梯**。 |
 | `verifiedAt` | 仅人工逐条回访官方页的条目可填（当前 **32 条**策展数据：`curated_cn` 18 + `curated_global` 14，`node scripts/validate.js` 实测输出「策展数据 32 条」）。自动采集条目一律为 `null`。**这两个字段只留在数据里**（`validate.js` 仍在守「`verified=true` 必须带日期」这条断言），页面上不再渲染核验标签——原因见下文「诚实性约束」。 |
 | `evidence` | v1.3：官方原文片段，**≤3 条 × ≤200 字**，只能用人工写入 `curated_*.json`（或 `audience-overrides.json` 的 `evidenceQuotes`）。超长**拒收**、出处不得是聚合站、必须绑定某个 `field`。全库还有 12000 字与「≤ deals.json 字节 5%」两道预算。契约见 [`docs/SCHEMA-v1.3.md`](docs/SCHEMA-v1.3.md)。 |
-| `history` | v1.4：**构建期派生字段，只进 `dist/deals.json`**。源数据里不能有它（`validate` 白名单与 `check-reproducible` 各拦一道）。真值是 `scripts/data/deal-history.json`（一次性基线 + 追加事件，写入点只有 `scripts/collect.js`）。契约见 [`docs/SCHEMA-v1.4.md`](docs/SCHEMA-v1.4.md)。 |
+| `history` | v1.4：**构建期派生字段，只进 `dist/deals.json`**。源数据里不能有它（`validate` 白名单与 `check-reproducible` 各拦一道）。真值是 `scripts/data/deal-history.json`（一次性基线 + 追加事件，写入点只有 `scripts/collect.js`）。契约见 [`docs/SCHEMA-v1.4.md`](docs/SCHEMA-v1.4.md)；v1.5 给 `ended` 事件加了一个可选的 `label`（墓碑快照，向后兼容）。 |
 
 新增策展条目并补齐这三个字段的流程：
 
@@ -190,6 +191,7 @@ scripts/
     report.js                 采集报告表格
       curated.js                人工策展数据加载
     provenance.js             v1.3 信息来源：有界官方引文的归一/合并/预算 + 采集事实派生（心跳 join）
+    changes.js                v1.5 变化雷达：分栏/窗口/高价值判定 + 文案微调归一（纯函数、零依赖、无网络）
   collectors/
     index.js                  注册表
     cn_docs.js                国内：百度千帆免费额度表 / 阿里云百炼 / 智谱免费模型
@@ -215,6 +217,8 @@ scripts/
     history-baseline.js       一次性历史基线（已存在或已有事件时拒绝重跑）
     history-audit.js          历史 × git 版本交叉校验（离线，**不进 CI**：浅克隆与历史重写都不适合当闸门）
     history-selftest.js       v1.4 历史自测（噪音抑制 / 锚点 / 链 / 不误报「消失」/ 上限，CI）
+    changes-selftest.js       v1.5 变化雷达自测（分栏与窗口边界 / 覆盖不变量 / 文案微调 / 上限 / 纯函数，CI）
+    changes-report.js         变化雷达的人读报告（分栏逐条 + 被抑制的其他变化，调规则时先看它）
     audience-selftest.js      受众字段全部红线守卫（三态 / 仲裁 / 措辞同源 / v1.2 需求注册表，CI）
     provenance-selftest.js    v1.3 信息来源自测（引文上限与预算 / 四种缺失状态 / 渲染措辞，CI）
     audience-report.js        覆盖率报告：已知 / unknown / 缺席三栏分列，逐条可审计
@@ -228,8 +232,9 @@ scripts/
 ```
 
 契约文档在 `docs/SCHEMA-v1.1.md`（六字段的语义、可信度档位、可重建判据、五条既有约定）、
-`docs/SCHEMA-v1.3.md`（信息来源：证据层 / 派生采集事实 / 引文上限 / 渲染与状态词）
-与 `docs/SCHEMA-v1.4.md`（优惠历史：四方案决策 / 存储契约 / 什么算重要变化 / ended 的两种含义 / 上限）。
+`docs/SCHEMA-v1.3.md`（信息来源：证据层 / 派生采集事实 / 引文上限 / 渲染与状态词）、
+`docs/SCHEMA-v1.4.md`（优惠历史：四方案决策 / 存储契约 / 什么算重要变化 / ended 的两种含义 / 上限）
+与 `docs/SCHEMA-v1.5.md`（变化雷达：分栏与窗口 / 高价值判定 / 文案微调归一 / 空态与不可用 / 上限 / 路由与门禁）。
 
 ## 采集来源策略
 
@@ -279,7 +284,7 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 `build-local.js` 在组装阶段把内容**预渲染**进静态 HTML，因此不执行 JS 也能读到完整正文
 （搜索引擎、生成式引擎、社交 unfurl 都直接可读）。
 
-### 七个预渲染标记
+### 八个预渲染标记
 
 源码 `index.html` 里保留标记，构建期替换；替换后若仍有残留，构建直接失败（不发空壳页）：
 
@@ -288,6 +293,7 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 | `<!--PRERENDER:deals-->` | 默认视图（优惠 Tab、无筛选）的**力度分带 + 卡片** HTML |
 | `<!--PRERENDER:facets-->` | 筛选条的 facet 按钮与实时计数 |
 | `<!--PRERENDER:needs-->` | 「按需求找优惠」入口行（10 枚 `<a>`，无 JS 也在、也能点） |
+| `<!--PRERENDER:changes-->` | v1.5 变化雷达条带（与「跳到档位」共用一行；无变化时是明确空态） |
 | `<!--PRERENDER:topstat-->` | 顶栏右侧汇总（条数 / 更新日期） |
 | `<!--PRERENDER:stats-->` | 结果条（显示多少条卡片 · 国内 / 国外 · 覆盖几个档位） |
 | `<!--PRERENDER:categories-->` | 分类下拉的 `<option>` |
@@ -605,17 +611,68 @@ Coding / 模型 / Credits）并排成两列，**切换只用 CSS 媒体查询、
 无 JS 的访客在窄屏上也要看到短标签。全称与短标签两个 `<span>` 同时在 DOM 里，
 屏幕阅读器在桌面端读到的仍是全称。
 
+### 变化雷达（v1.5）
+
+v1.4 把「优惠怎么变的」记成了一份可重放验证的变更日志；v1.5 把它变成读者能用的视图 ——
+**首页一行条带 + 一页 `/changes/`**，让人有理由反复回来，而不是搜索一次就走。
+
+| 分栏 | 取什么 | 窗口 |
+|---|---|---|
+| 今日新增 | `created` 且 `at === 基准日` | 当天 |
+| 最近 7 天变化 | 优惠内容 / 领取条件 / 有效期变化（`benefit_changed` / `eligibility_changed` / `expiry_changed`），**以及过去 6 天内首次收录的条目** | 7 天 |
+| 即将结束 | **状态量**：`type=deal` 且 `expiresAt` 落在 7 天内、按基准日算剩余天数 | 前瞻 7 天 |
+| 已结束 | `ended`（每行写明原因：来源不再列出 / 过期下架 / 超出上限 / 判定无效） | 30 天 |
+| 重新出现 | `restored`（曾不再列出、后又观测到） | 30 天 |
+| 其他变化 | 元信息更新（`updated` 类字段）与**文案微调** —— 只在 `/changes/` 的折叠块里，**不上首页** | 7 天 |
+
+**判据只写一遍**：`scripts/lib/changes.js` 的 `buildRadar()` 是纯函数（不读时钟、不联网、零依赖），
+构建期算一次，首页条带与 `/changes/` 页读的是同一份结果。基准日是**数据时间**
+（`deals.json` 的 `updatedAt` 日期），不是构建时刻 —— 这样同一天两次构建的产物逐字节相同。
+它**不注入 `dist/deals.json`**（`dist/deals.json` 的顶层键与源文件保持一致）：这一层的产物是
+两个静态页面，浏览器不需要多拿一份数据。
+
+**普通文案改写不算重大变化**（这一轮点名的红线）：`description` / `lastSeen` / `zh` 在 v1.4 里
+就不被跟踪（产生 0 事件）；v1.5 再补一道 —— 被跟踪的**自由文本**字段若原值与新值在
+「文案归一」（去零宽字符、全角空格、折叠连续空白、trim）之后相同，一律降级为「文案微调」，
+进折叠块并计数，**不上首页**。日期与枚举字段不参与这条判定（差一个字符就是差一个语义）。
+判断全是规则，**没有任何 LLM、没有相似度近似、没有摘要**。
+
+**首页条带不单独占一行**（这是本轮最贵的取舍）：1440×900 实测网格起点 227px、卡片 192px、
+行距 12px、档间分带标题 26px，第三行底边 = 899px —— 距视口底边只剩 **1px**，任何独立成行的
+条带都会把首屏完整可见从 9 张压到 6 张（演练实测：独立成行时网格起点 250px、6 张）。
+所以它与「跳到档位」共用一行（`.hubline`），做成 `flex: 1 1 auto; min-width: 0` 的可伸缩项：
+内容超宽由正文区内部横滑，「全部变化」入口放在横滑容器外面（一个滑走的入口等于没有入口）。
+窄屏上「跳到档位」本身就是四等分整行，条带顺延到下一行（仍是一行 24–28px），
+空态另有一套短文案，避免整句被裁掉半句。
+
+**五条既有约定一个不少**：`/changes/` 有自指 canonical、双 feed、三段 JSON-LD
+（`CollectionPage` / `BreadcrumbList` / `ItemList`）、进 sitemap（`priority 0.8`，介于目录页 0.9
+与详情页 0.7 之间）、无 JS 可读（五栏 + 起算日 + 免责句都在静态 HTML 里）。
+每条雷达行链到该条优惠的详情页，那一页有它的完整「变更记录」（v1.4 的层，v1.5 补上入口与断言）。
+
+**空态与「不可用」分开说**：日志缺失/损坏时说「本次构建没有拿到历史日志」，
+绝不说成「没有变化」；每栏为空还要分清原因 —— 「即将结束」为空可能是「一条都没写绝对截止日期」
+（附实测覆盖数），也可能是「有 N 条写了，但都不在 7 天内到期」。
+
+**交付当天的真实状态**：`scripts/data/deal-history.json` 的起算日是 2026-09-30，
+当天 **0 条事件**、`deals.json` 里 **0 条 `expiresAt`**，所以五个分栏全空、首页条带是明确空态。
+这是如实结果（**不补造历史**）；非空路径由 `selftest:changes` 的夹具与一次**真实数据演练**
+证明（演练造了 6 类变化、跑完 build → verify，再逐字节还原两个文件）。
+
+契约见 [`docs/SCHEMA-v1.5.md`](docs/SCHEMA-v1.5.md)，完成报告见
+`research/v1.5-change-radar-report.md`。
+
 ### 真浏览器验收
 
 卡片是**固定高度**的，任何一处内容变高都会被 `overflow:hidden` 静默裁掉；logo 簇是 hover
 展开的，很容易把标题挤到换行、把网格行高顶动。这两类问题静态检查都看不见，所以有
-`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 **256 项断言**；带基线回归比对的
-`npm run verify:regress` 共 **262 项**（多出的 6 条是回归比对：覆盖条数、卡片数、首屏完整可见、
+`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 **281 项断言**；带基线回归比对的
+`npm run verify:regress` 共 **287 项**（多出的 6 条是回归比对：覆盖条数、卡片数、首屏完整可见、
 页高、外部请求、JS 错误）。
 这两个数字由工具自己打印（`✅ 验收 N 项，失败 0 项`），跑一次就能核。**不要拿源码里 `check(`
-的调用点数去反推**：按行首 `check(` 计是 177 处，与执行项数并不相等 —— 有的调用在循环里
-（分类页 3 条路由 × 5 类断言、10 条需求页 × 7 类断言、状态页 2 个视口各一轮），有的在 `if/else` 里
-（取样前提不成立时只打印「跳过」，不计一项）。
+的调用点数去反推**：按行首 `check(` 计是 190 处，与执行项数并不相等 —— 有的调用在循环里
+（分类页 3 条路由 × 5 类断言、10 条需求页 × 7 类断言、状态页 2 个视口各一轮、变化雷达 2 个视口各一轮），
+有的在 `if/else` 里（取样前提不成立时只打印「跳过」，不计一项）。
 无 JS 时的静态骨架、卡片高度是否统一、**每张卡最后一个元素有没有越过内边距**、
 hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排序、搜索、中文译文可搜、
 移动端横向溢出、**锚点导航的真实渲染状态**（量 `getComputedStyle.display` 与几何，
@@ -635,15 +692,16 @@ hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排�
 
 ## 自动化与部署
 
-**门禁的步骤实现只有一处**：`.github/actions/gate/action.yml`（复合 action，**17 步**）——
-`npm ci → validate --strict → 可重建性门禁 → 迁移验收比对 → 译文门禁 → 译文演练 → 活动期限演练
-→ 文本清洗演练 → 健康演练 → 受众字段演练 → 采集机器人身份演练 → 组装产物 → 准备浏览器
+**门禁的步骤实现只有一处**：`.github/actions/gate/action.yml`（复合 action，**21 步**）——
+`npm ci → validate --strict → 可重建性门禁 → 历史门禁 → 迁移验收比对 → 译文门禁 → 译文演练
+→ 活动期限演练 → 文本清洗演练 → 健康演练 → 信息来源演练 → 历史记录演练 → 变化雷达演练
+→ 受众字段演练 → 采集机器人身份演练 → 组装产物 → 准备浏览器
 → 浏览器可用性判定 → 真浏览器验收 → 回归比对 → 结论`。
 三条 workflow 共用它，没有第二套测试链。
 
 > 步骤的**顺序与数量**是一份冻结契约（`check-ci-consistency.js` 的 `GATE_STEP_NAMES`）：
 > 谁把真浏览器验收、回归比对或译文门禁从门禁里拿掉，`npm run check:ci` 立刻红。
-> 所以上面这句「17 步」不是抄来的，是被断言钉住的。
+> 所以上面这句「21 步」不是抄来的，是被断言钉住的。
 
 - `.github/workflows/verify.yml`（**必需检查名 `gate`**）：`pull_request` / `push`(master) /
   手动。步骤是 checkout → setup-node → 一致性门禁（单行 `run:`，`--expect-checks=N` 是项数的
@@ -760,6 +818,8 @@ App 页面下载的私钥是 **PKCS#1**（`-----BEGIN RSA PRIVATE KEY-----`，�
 | 线上页面 | 自动（提交后经 `workflow_run` 触发部署，发布前先过完整门禁） | 跟随采集，或任意一次 `push` |
 | 过期优惠下架 | 自动（每次采集时修剪） | 过期超过 14 天的优惠被移除 |
 | 数据源状态页 `/status/` 与 `/source-health.json` | 自动（每次采集写 `scripts/data/source-health.json`，构建期生成页面） | 跟随采集 |
+| 变化雷达条带与 `/changes/` 页 | 自动（构建期由 `scripts/data/deal-history.json` + `deals.json` 算出，不额外写数据） | 跟随采集与发布 |
+| 变更日志 `scripts/data/deal-history.json` | 自动（`collect.js` 在合并之后与 `deals.json` **同批**写入并提交；无事发生的运行字节不变） | 跟随采集 |
 | 人工策展优惠（`scripts/data/curated_*.json`） | **人工** | 由人修改并推送，无自动更新 |
 | 采集器选择器 / 别名表 | **人工** | 对方站点改版导致零产出时需要人修 |
 
@@ -774,3 +834,9 @@ App 页面下载的私钥是 **PKCS#1**（`-----BEGIN RSA PRIVATE KEY-----`，�
   （如 DeepSeek 官网）不注册采集器，改由人工策展维护。厂商改版会让某个来源产出 0 条——
   这是刻意设计的失败安全，届时用 `scripts/tools/render-source.js` 重新校准规则即可。
 - 促销信息时效性强，`expiresAt` 或 `validity` 字段标注时间信息；发现过期信息欢迎提 issue 修正。
+- **变化雷达的时间维度从 2026-09-30 开始**：此前 134 条没有任何历史事件（v1.4 的基线明确写着
+  「它不是创建事件」），所以雷达不会把它们说成「新增」。变更日志起算日之后，第一次真实变化
+  会在下一次定时采集时落库。交付当天日志是 0 条事件、`deals.json` 里 0 条 `expiresAt`，
+  因此五个分栏全空、首页条带是明确空态 —— 这是事实，不是故障。
+- **人工策展条目没有自动的「来源消失 / 人工移除」信号**（v1.4 写下的边界）：它们的生命周期事件
+  只在记录离开数据集时产生，因此「已结束」栏里的人工策展条目很罕见。

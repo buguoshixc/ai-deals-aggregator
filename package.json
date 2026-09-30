@@ -36,6 +36,8 @@
     "check:history": "node scripts/tools/history-verify.js",
     "history:baseline": "node scripts/tools/history-baseline.js",
     "history:audit": "node scripts/tools/history-audit.js",
+    "selftest:changes": "node scripts/tools/changes-selftest.js",
+    "report:changes": "node scripts/tools/changes-report.js",
     "selftest:health": "node scripts/tools/health-selftest.js",
     "selftest:app-token": "node scripts/tools/app-token-selftest.js",
     "todo:zh": "node scripts/tools/zh-todo.js",

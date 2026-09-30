@@ -580,9 +580,11 @@ function checkIndex() {
   }
 
   // 预渲染标记：删掉它们会让 SEO 静态骨架静默失效（构建期才会报错），这里提前告警
+  // （v1.2 的 needs 与 v1.5 的 changes 一并列进来：漏一个的表现是「那一块整块消失」）
   for (const marker of [
     '<!--PRERENDER:deals-->', '<!--PRERENDER:facets-->', '<!--PRERENDER:topstat-->',
-    '<!--PRERENDER:stats-->', '<!--PRERENDER:categories-->', '<!--PRERENDER:jsonld-->'
+    '<!--PRERENDER:stats-->', '<!--PRERENDER:categories-->', '<!--PRERENDER:needs-->',
+    '<!--PRERENDER:changes-->', '<!--PRERENDER:jsonld-->'
   ]) {
     if (!html.includes(marker)) {
       warn(`index.html 缺少预渲染标记 ${marker}（会让构建期静态骨架失效）`);

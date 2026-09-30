@@ -3121,6 +3121,204 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     }, 0)
   );
 
+  // ==================================================================
+  console.log('\n=== 10b) 变化雷达（v1.5：首页条带 + /changes/ 静态页）===');
+
+  // 期望值在**测试侧**独立算一遍（不调用构建期的 buildRadar）：从 deals.json 拿基准日，
+  // 从 deal-history.json 拿事件，按「最近 7 天 + 已结束/重新出现 30 天」数出来。
+  // 这样这条断言才算第二把尺子，而不是把被测代码的答案抄一遍。
+  const DEALS_URL_RAW = new URL('deals.json', base).href;
+  const radarExpect = await page.evaluate(async (dealsUrl) => {
+    const payload = await (await fetch(dealsUrl)).json();
+    const asOf = String(payload.updatedAt || '').slice(0, 10);
+    const historyUrl = new URL('deal-history.json', dealsUrl).href;
+    let events = [];
+    try {
+      const doc = await (await fetch(historyUrl)).json();
+      events = Array.isArray(doc.events) ? doc.events : [];
+    } catch (error) { events = null; }
+    if (!events) return { unavailable: true };
+    const day = n => new Date(Date.parse(`${asOf}T00:00:00Z`) + n * 86400000).toISOString().slice(0, 10);
+    const recentFrom = day(-6);
+    const endedFrom = day(-29);
+    const inRecent = events.filter(e => e.at >= recentFrom && e.at <= asOf);
+    const olderLifecycle = events.filter(e =>
+      (e.type === 'ended' || e.type === 'restored') && e.at >= endedFrom && e.at < recentFrom);
+    const highValueIds = new Set([...inRecent, ...olderLifecycle].map(e => e.id));
+    // 「即将结束」是状态量（不在日志里）：条带总数把它算进去了，所以这里也要算 ——
+    // 判据与 lib/changes.js 同一条（写在这里是刻意的第二实现，两边对不上就会红）。
+    const soonIds = (payload.deals || [])
+      .filter(deal => deal && deal.type === 'deal' && typeof deal.expiresAt === 'string')
+      .filter(deal => {
+        const days = Math.round((Date.parse(`${deal.expiresAt}T00:00:00Z`) - Date.parse(`${asOf}T00:00:00Z`)) / 86400000);
+        return Number.isFinite(days) && days >= 0 && days <= 7;
+      })
+      .map(deal => deal.id);
+    return {
+      unavailable: false,
+      asOf,
+      total: inRecent.length + olderLifecycle.length + soonIds.length,
+      coveredEvents: inRecent.length + olderLifecycle.length,
+      soon: soonIds.length,
+      allowedIds: [...new Set([...highValueIds, ...soonIds])]
+    };
+  }, DEALS_URL_RAW);
+
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);
+  const radarHome = await page.evaluate(() => {
+    const nav = document.querySelector('nav.radar');
+    if (!nav) return null;
+    const more = nav.querySelector('a.rmore');
+    const scroll = nav.querySelector('.rscroll');
+    const rect = nav.getBoundingClientRect();
+    return {
+      height: Math.round(rect.height),
+      total: Number(nav.dataset.radarTotal || 0),
+      other: Number(nav.dataset.radarOther || 0),
+      items: [...nav.querySelectorAll('.ritem')].map(el => ({ id: el.dataset.dealId || '', href: el.getAttribute('href') || '' })),
+      empty: Boolean(nav.querySelector('.rnone')),
+      unavailable: nav.textContent.includes('没有拿到历史日志'),
+      noChange: nav.textContent.includes('当前没有观测到变化'),
+      moreHref: more ? more.getAttribute('href') : null,
+      moreInViewport: more ? more.getBoundingClientRect().right <= window.innerWidth + 1 : false,
+      controls: nav.querySelectorAll('button, input, select').length,
+      navOverflow: nav.scrollWidth - nav.clientWidth,
+      scrollOverflow: scroll ? scroll.scrollWidth - scroll.clientWidth : 0
+    };
+  });
+  check('首页有变化雷达条带（构建期注入，无 JS 也在）', Boolean(radarHome),
+    radarHome ? `总数 ${radarHome.total} · ${radarHome.items.length} 项` : '找不到 nav.radar');
+  if (radarHome) {
+    check('条带只占一行（≤ 34px：首屏卡片预算）', radarHome.height <= 34, `${radarHome.height}px`);
+    check('条带里没有 JS 控件（无 JS 时一个死按钮都没有）', radarHome.controls === 0, `${radarHome.controls} 个`);
+    check('条带入口指向 /changes/ 且落在视口内',
+      radarHome.moreHref === 'changes/' && radarHome.moreInViewport,
+      `href=${radarHome.moreHref} · 在视口内=${radarHome.moreInViewport}`);
+    check('条带自身不横溢（横滑只发生在正文区）', radarHome.navOverflow <= 0,
+      `nav 溢出 ${radarHome.navOverflow}px · 正文区可滑 ${radarHome.scrollOverflow}px`);
+    check('条带最多 3 项', radarHome.items.length <= 3, `${radarHome.items.length} 项`);
+    if (radarExpect.unavailable) {
+      check('历史日志缺失时条带明说「没有拿到历史日志」（不冒充「没有变化」）', radarHome.unavailable,
+        radarHome.unavailable ? '' : '条带没有说明日志不可用');
+    } else {
+      // 条带只列高价值项，被抑制的「其他变化」不进条带 —— 等式因此是
+      // `条带条数 + 其他 = 窗口内事件数 + 即将结束`（两个数都挂在数据属性上，可机器核对）。
+      check('条带条数 + 其他变化 == 窗口内事件 + 即将结束（第二把尺子）',
+        radarHome.total + radarHome.other === radarExpect.total,
+        `条带 ${radarHome.total} + 其他 ${radarHome.other} / 重算 ${radarExpect.total}` +
+        `（基准日 ${radarExpect.asOf}：窗口事件 ${radarExpect.coveredEvents} + 即将结束 ${radarExpect.soon}）`);
+      const allowed = new Set(radarExpect.allowedIds);
+      const stray = radarHome.items.filter(item => !allowed.has(item.id)).map(item => item.id);
+      check('条带里的条目都来自窗口内的事件（没有凭空出现的项）', stray.length === 0, stray.join(', ') || '全部命中');
+      if (!radarExpect.total) {
+        check('没有变化时条带给出明确空态（不用空白冒充「没有变化」）',
+          radarHome.empty && radarHome.noChange, `空态=${radarHome.empty} · 文案=${radarHome.noChange}`);
+      }
+    }
+  }
+
+  // /changes/ 静态页：五条约定（预渲染 / 无 JS 可读 / sitemap / 双 feed / JSON-LD）+ 行链接可用
+  const changesUrl = new URL('changes/', base).href;
+  await page.goto(changesUrl, { waitUntil: 'load' });
+  const changesPage = await page.evaluate(() => {
+    const heads = [...document.querySelectorAll('.chgsec h2')].map(h => h.textContent.trim());
+    const links = [...document.querySelectorAll('a.chgn[href]')].map(a => a.getAttribute('href'));
+    return {
+      title: document.title,
+      headings: heads,
+      other: Boolean(document.querySelector('.chgother')),
+      canonical: (document.querySelector('link[rel="canonical"]') || {}).href || '',
+      wrongPrefix: links.filter(href => href.startsWith('deal/')).length,
+      links
+    };
+  });
+  check('/changes/ 页存在且有五个分栏', changesPage.headings.length === 5, changesPage.headings.join(' | '));
+  check('/changes/ 的分栏标题与条带同源（今日新增 / 最近 7 天变化 / 即将结束 / 已结束 / 重新出现）',
+    changesPage.headings.map(text => text.replace(/（\d+）$/, '')).join(',') === '今日新增,最近 7 天变化,即将结束,已结束,重新出现',
+    changesPage.headings.join(' | '));
+  check('/changes/ 有「不计入高价值的其他变化」折叠块', changesPage.other);
+  check('/changes/ 的 canonical 自指', changesPage.canonical.endsWith('/changes/'), changesPage.canonical);
+  check('/changes/ 的内链都带输出深度前缀（../deal/…）', changesPage.wrongPrefix === 0,
+    changesPage.wrongPrefix ? `${changesPage.wrongPrefix} 条前缀错误` : `抽查 ${changesPage.links.length} 条`);
+
+  // 雷达行 → 单条优惠的详情页（要求 4：详情页能看单条优惠的历史）。
+  // 没有可点的雷达行时如实报「本轮无样本」，并改验另一条出口（条带 → /changes/）。
+  if (changesPage.links.length) {
+    const probe = await page.evaluate(async (href) => {
+      const response = await fetch(href);
+      const text = await response.text();
+      return { ok: response.ok, status: response.status, hasHistory: text.includes('变更记录') };
+    }, changesPage.links[0]);
+    check('雷达行链到的详情页真的打得开且含「变更记录」块',
+      probe.ok && probe.hasHistory, `HTTP ${probe.status} · 含变更记录=${probe.hasHistory}`);
+  } else {
+    check('雷达行 → 单条历史（本轮无样本：日志里还没有任何事件）', true,
+      '跳过：可点的雷达行为 0（v1.5 交付当天日志为空，链路已由 selftest 与构建自检覆盖）');
+  }
+
+  // 无 JS：这一页也必须是完整正文
+  {
+    const noJsCtx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+    const noJsPage = await noJsCtx.newPage();
+    await noJsPage.goto(changesUrl, { waitUntil: 'load' });
+    const noJs = await noJsPage.evaluate(() => ({
+      heads: [...document.querySelectorAll('.chgsec h2')].map(h => h.textContent.trim()),
+      since: /变更记录自 \d{4}-\d{2}-\d{2} 起/.test(document.body.textContent),
+      disclaimer: document.body.textContent.includes('不表示厂商已经下架或优惠已经失效'),
+      other: document.body.textContent.includes('不计入高价值的其他变化')
+    }));
+    check('无 JS 时 /changes/ 五栏 + 起算日 + 免责句全部可读',
+      noJs.heads.length === 5 && noJs.since && noJs.disclaimer && noJs.other,
+      `分栏 ${noJs.heads.length} · 起算日 ${noJs.since} · 免责句 ${noJs.disclaimer} · 折叠块 ${noJs.other}`);
+    await noJsCtx.close();
+  }
+
+  // 窄屏：条带仍然一行、页面零横溢、入口不被滑走；/changes/ 也不产生横向溢出
+  const radarMobile = [];
+  for (const width of [390, 360]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto(base, { waitUntil: 'load' });
+    await waitForApp(page);
+    radarMobile.push(await page.evaluate(() => {
+      const nav = document.querySelector('nav.radar');
+      const more = nav ? nav.querySelector('a.rmore') : null;
+      const scroll = nav ? nav.querySelector('.rscroll') : null;
+      return {
+        width: window.innerWidth,
+        height: nav ? Math.round(nav.getBoundingClientRect().height) : -1,
+        overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        navOverflow: nav ? nav.scrollWidth - nav.clientWidth : -1,
+        // 空态时正文**不该**需要横滑（窄屏短文案就是为了这个；全称会被裁掉半句）
+        scrollOverflow: scroll ? scroll.scrollWidth - scroll.clientWidth : -1,
+        items: nav ? nav.querySelectorAll('.ritem').length : -1,
+        moreInViewport: more ? more.getBoundingClientRect().right <= window.innerWidth + 1 : false
+      };
+    }));
+  }
+  check('390px 与 360px：条带仍是一行、页面零横溢、入口在视口内',
+    radarMobile.every(item => item.height > 0 && item.height <= 40 && item.overflowX <= 0 &&
+      item.navOverflow <= 0 && item.moreInViewport),
+    radarMobile.map(item => `${item.width}px：高 ${item.height}px · 页溢 ${item.overflowX}px · 「全部变化」在视口内 ${item.moreInViewport}`).join(' · '));
+  check('窄屏空态：短文案不超出正文区（没有条目时不该需要横滑）',
+    radarMobile.every(item => item.items > 0 || item.scrollOverflow <= 1),
+    radarMobile.map(item => `${item.width}px：条目 ${item.items} · 正文区溢出 ${item.scrollOverflow}px`).join(' · '));
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(changesUrl, { waitUntil: 'load' });
+  const changesMobile = await page.evaluate(() => ({
+    overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    headings: [...document.querySelectorAll('.chgsec h2')].map(h => h.textContent.trim())
+  }));
+  check('390px：/changes/ 零横向溢出（列表式布局，不是宽表）',
+    changesMobile.overflowX <= 0 && changesMobile.headings.length === 5,
+    `溢出 ${changesMobile.overflowX}px · 分栏 ${changesMobile.headings.length}`);
+
+  // 回到桌面首页：后面的量测（覆盖条数）要在这个状态下取
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(base, { waitUntil: 'load' });
+  await waitForApp(page);
+
   console.log('\n=== 10) 请求与错误 ===');
   check('没有外部请求（无 CDN 热链）', externalRequests.length === 0,
     externalRequests.length ? externalRequests.slice(0, 3).join(', ') : '全部同源');

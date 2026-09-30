@@ -105,6 +105,8 @@ async function collectFrom(collector, report) {
  *     不是上一轮遗留（stale）、且确实跑出了条目。失败 / 骤降 / 零产出的来源一律不计 ——
  *     否则一次坏采集（无头浏览器装不上、页面改版）会把整片条目误判成「消失」。
  *   · removed —— id → 移除原因，直接取 mergeAll 手里已有的对象（不在历史层重写规则）。
+ *   · labels  —— v1.5：id → 标题 / 厂商快照，挂在 `ended` 事件上（记录离开数据集后，
+ *     它是变化雷达回答「这条是谁」的唯一来源）。
  */
 function recordHistory({ previous, next, fresh, stats, healthSummary, today, only }) {
   if (only) {
@@ -143,6 +145,15 @@ function recordHistory({ previous, next, fresh, stats, healthSummary, today, onl
     .filter(row => row && row.status === 'healthy' && !row.stale && Number(row.lastItemCount) > 0)
     .map(row => row.source);
 
+  // v1.5 墓碑标签：`ended` 事件上的标题 / 厂商快照。记录**离开数据集**之后，
+  // `deals.json` 里就查不到它是谁了（title/vendor 是身份字段、刻意不被跟踪），
+  // 而变化雷达的「已结束」栏需要回答「这条是谁」。来源取**上一份发布**（previous）——
+  // 那正是即将消失的那一条；本节之前的 old→new 映射已经把它从 next 里剔除了。
+  const labels = new Map();
+  for (const deal of previous || []) {
+    if (deal && deal.id && deal.title) labels.set(deal.id, { title: deal.title, vendor: deal.vendor || '' });
+  }
+
   const { store, stats: historyStats } = history.record(loaded.store, {
     previous,
     next,
@@ -151,6 +162,7 @@ function recordHistory({ previous, next, fresh, stats, healthSummary, today, onl
     freshIds: fresh.map(deal => deal.id).filter(Boolean),
     absenceEligibleSources,
     removed: removal,
+    labels,
     derivedFields
   });
   return { store, stats: historyStats, eligibleSources: absenceEligibleSources.length };

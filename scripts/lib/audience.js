@@ -888,11 +888,18 @@ function audienceSearchText(deal) {
 const WORDING_BLOCK = { start: 'AUDIENCE:START', end: 'AUDIENCE:END', constName: 'AUDIENCE_WORDING' };
 
 /**
- * 同源常量可以有多个（v1.3 加了 `SOURCE_WORDING`：信息来源块的措辞）。
+ * 同源常量可以有多个（v1.3 加了 `SOURCE_WORDING`：信息来源块的措辞；
+ * v1.5 加了 `CHANGES_WORDING`：变化雷达的分栏标题与空态）。
  * 它们必须都在同一个标记块里、都是纯 JSON 字面量 —— 比对时合并成一个对象，
  * 组名不重名即可。**任何一个解析不出都算漂移**，不跳过。
+ *
+ * ⚠️ 进这张表只保证「它存在且是可解析的 JSON」；逐字比对有两处：
+ *   · `WORDING_CONTRACT` 里登记过的组 → 由 `checkWordingContract()` 比（三态与信息来源措辞）；
+ *   · `CHANGES_WORDING` 的四个组 → 由 `build-local.js` 的产物自检按 lib/changes.js 的权威表
+ *     逐项比（与 HISTORY_WORDING 同一套做法：那些组没有登记进 WORDING_CONTRACT）。
+ *     「只进表、没人比」会让它退化成一句自我声明，所以两处都必须有人比。
  */
-const WORDING_CONSTS = ['AUDIENCE_WORDING', 'SOURCE_WORDING', 'HISTORY_WORDING'];
+const WORDING_CONSTS = ['AUDIENCE_WORDING', 'SOURCE_WORDING', 'HISTORY_WORDING', 'CHANGES_WORDING'];
 
 /**
  * 抽取 RENDER-CORE 里 `AUDIENCE:START/END` 标记块的内容。抽不到返回 null。
