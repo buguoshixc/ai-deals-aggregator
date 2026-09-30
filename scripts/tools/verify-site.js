@@ -1352,38 +1352,47 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     const site = canonical.replace(/[^/]*$/, '');
     const targets = ['feed.xml', 'feed.json', 'feed/changes.xml', 'feed/changes.json',
       'feed/student.xml', 'feed/student.json', 'feed/developer.xml', 'feed/developer.json'];
-    const out = { links, site, targets: {} };
+    const out = { links, site, siteReady: Boolean(site), targets: {} };
     for (const rel of targets) {
-      const response = await fetch(rel, { cache: 'no-cache' });
-      const text = await response.text();
-      const box = { ok: response.ok, status: response.status, bytes: text.length, title: null, items: 0, ids: [], urls: [], parserError: null, version: null };
-      if (rel.endsWith('.xml')) {
-        const doc = new DOMParser().parseFromString(text, 'application/xml');
-        box.parserError = doc.querySelector('parsererror') ? doc.querySelector('parsererror').textContent.slice(0, 120) : null;
-        box.title = doc.querySelector('channel > title') ? doc.querySelector('channel > title').textContent : null;
-        const nodes = [...doc.querySelectorAll('item')];
-        box.items = nodes.length;
-        box.ids = nodes.map(node => (node.querySelector('guid') || {}).textContent || '');
-        box.urls = nodes.map(node => (node.querySelector('link') || {}).textContent || '');
-        box.image = Boolean(doc.querySelector('channel > image > url'));
-        box.selfLink = Boolean(doc.querySelector('channel > link[rel="self"]'));
-        box.lastBuildDate = doc.querySelector('channel > lastBuildDate') ? doc.querySelector('channel > lastBuildDate').textContent : null;
-      } else {
-        try {
+      // 每一个目标都**独立**取样：线上刚发布、CDN 还没铺开时某个文件可能 404，
+      // 那时必须落成一条红断言（`ok:false` + 原因），而不是让整个验收脚本抛异常退出 ——
+      // 「脚本崩了」与「红了一项」在 CI 里是两件完全不同的事，前者会被误读成脚本坏了。
+      // （这条是线上首跑实测出来的：本地产物齐备时永远不会走到这个分支。）
+      const box = { ok: false, status: 0, bytes: 0, title: null, items: 0, ids: [], urls: [], parserError: null, error: null };
+      out.targets[rel] = box;
+      try {
+        const response = await fetch(rel, { cache: 'no-cache' });
+        const text = await response.text();
+        box.ok = response.ok;
+        box.status = response.status;
+        box.bytes = text.length;
+        if (rel.endsWith('.xml')) {
+          const doc = new DOMParser().parseFromString(text, 'application/xml');
+          box.parserError = doc.querySelector('parsererror') ? doc.querySelector('parsererror').textContent.slice(0, 120) : null;
+          box.title = doc.querySelector('channel > title') ? doc.querySelector('channel > title').textContent : null;
+          const nodes = [...doc.querySelectorAll('item')];
+          box.items = nodes.length;
+          box.ids = nodes.map(node => (node.querySelector('guid') || {}).textContent || '');
+          box.urls = nodes.map(node => (node.querySelector('link') || {}).textContent || '');
+          box.image = Boolean(doc.querySelector('channel > image > url'));
+          box.selfLink = Boolean(doc.querySelector('channel > link[rel="self"]'));
+          box.lastBuildDate = doc.querySelector('channel > lastBuildDate') ? doc.querySelector('channel > lastBuildDate').textContent : null;
+        } else {
           const box2 = JSON.parse(text);
           box.version = box2.version;
           box.title = box2.title;
-          box.items = box2.items.length;
-          box.ids = box2.items.map(item => item.id);
-          box.urls = box2.items.map(item => item.url);
+          box.items = Array.isArray(box2.items) ? box2.items.length : 0;
+          box.ids = (box2.items || []).map(item => item.id);
+          box.urls = (box2.items || []).map(item => item.url);
           box.icon = box2.icon;
           box.favicon = box2.favicon;
-          box.offMidnight = box2.items.filter(item =>
+          box.offMidnight = (box2.items || []).filter(item =>
             (item.date_published && !/T00:00:00\+08:00$/.test(item.date_published)) ||
             (item.date_modified && !/T00:00:00\+08:00$/.test(item.date_modified))).length;
-        } catch (error) { box.parseError = error.message; }
+        }
+      } catch (error) {
+        box.error = String((error && error.message) || error).slice(0, 160);
       }
-      out.targets[rel] = box;
     }
     return out;
   });
@@ -1405,29 +1414,35 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     }).map(l => `${l.href}: ${l.title} ≠ ${(feedProbe.targets[l.href] || {}).title}`).join(' | ') || '8 条一致');
 
   const feedTargets = Object.entries(feedProbe.targets);
+  const brokenTargets = feedTargets.filter(([, box]) => !box.ok || box.parserError || box.error);
+  const brokenDetail = brokenTargets.map(([rel, box]) =>
+    `${rel}: ${box.error || `HTTP ${box.status}`}${box.parserError ? ` ${box.parserError}` : ''}`).join(' | ');
+
   check('全部订阅目标是 200 且被真解析器读出来（无 XML 解析错误）',
-    feedTargets.every(([, box]) => box.ok && !box.parserError) && feedTargets.some(([rel]) => rel.endsWith('.xml')),
-    feedTargets.filter(([, box]) => !box.ok || box.parserError).map(([rel, box]) => `${rel}: ${box.status}${box.parserError ? ` ${box.parserError}` : ''}`).join(' | ') || `${feedTargets.length} 个目标`);
+    brokenTargets.length === 0 && feedTargets.some(([rel]) => rel.endsWith('.xml')),
+    brokenDetail || `${feedTargets.length} 个目标全部 200 且良构`);
 
   check('RSS 与 JSON Feed 的条目数、id 集合两侧一致',
     feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([rel, box]) => {
       const jsonBox = feedProbe.targets[rel.replace(/\.xml$/, '.json')];
-      return jsonBox && jsonBox.items === box.items &&
+      return box.ok && jsonBox && jsonBox.ok && jsonBox.items === box.items &&
         JSON.stringify(jsonBox.ids) === JSON.stringify(box.ids);
     }),
     feedTargets.filter(([rel]) => rel.endsWith('.xml')).map(([rel, box]) =>
-      `${rel} ${box.items} 条`).join(' · '));
+      `${rel} ${box.ok ? `${box.items} 条` : '取不到'}`).join(' · '));
 
   check('订阅条目的主链接指向**本站**页面（不是把流量导出站外）',
-    feedTargets.every(([, box]) => box.urls.every(url => !url || url.startsWith(feedProbe.site))),
-    (feedTargets.map(([rel, box]) => box.urls.find(url => url && !url.startsWith(feedProbe.site)) && `${rel}: ${box.urls.find(url => url && !url.startsWith(feedProbe.site))}`).filter(Boolean)[0]) || '全部站内');
+    feedTargets.every(([, box]) => box.ok && box.urls.every(url => !url || url.startsWith(feedProbe.site))),
+    (feedTargets.map(([rel, box]) => box.ok && box.urls.find(url => url && !url.startsWith(feedProbe.site)) && `${rel}: ${box.urls.find(url => url && !url.startsWith(feedProbe.site))}`).filter(Boolean)[0]) || '全部站内');
 
   check('订阅条目的时间都是数据日期的北京时间零点（没有构建时刻泄进产物）',
+    feedTargets.every(([, box]) => box.ok) &&
     feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => !box.offMidnight) &&
     feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => /GMT$/.test(String(box.lastBuildDate || ''))),
-    feedTargets.map(([rel, box]) => `${rel}:${box.offMidnight || 0}`).slice(0, 4).join(' · '));
+    brokenDetail || feedTargets.map(([rel, box]) => `${rel}:非零点 ${box.offMidnight || 0}`).slice(0, 4).join(' · '));
 
   check('JSON Feed 都带 icon 与 favicon；RSS 都带 <image> 与 atom:link rel=self',
+    feedTargets.every(([, box]) => box.ok) &&
     feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => box.icon && box.favicon) &&
     feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => box.image && box.selfLink),
     '两种格式的图标与自指字段齐备');
