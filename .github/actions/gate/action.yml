@@ -149,6 +149,16 @@ runs:
       shell: bash
       run: node scripts/tools/feeds-selftest.js
 
+    # v1.7 SEO 门禁自测：零依赖、离线、秒级。
+    # 它盯两件事，两件都必须用跑出来的结果回答：
+    #   ① **27 个检查码每一条都真的会响**（逐个定向篡改，断言对应 code 出现）——
+    #      一个永远不响的检查码比没有检查码更糟，因为它看起来在守着什么；
+    #   ② 未篡改的干净夹具 0 个问题（否则「永远报错」也能通过 ①）。
+    # 另含门槛函数的分支演练与注册表不变量（slug 表 / 钉住表 / 别名表 / 排除表）。
+    - name: SEO self-test
+      shell: bash
+      run: node scripts/tools/seo-selftest.js
+
     # 受众字段（学生 / 开发者数据模型）自测：零依赖、离线、秒级。
     # 为什么必须进门禁（v1.1 补，由 t1 核验的 B5 发现）：这个自测原先只在本机跑，
     # 于是「三态措辞漂移 / merge 低可信覆盖高可信 / 假出处」这几类回归在 CI 里**看不见**
@@ -180,6 +190,14 @@ runs:
     - name: Feeds reproducibility (build twice, byte-compare)
       shell: bash
       run: node scripts/tools/check-feeds-reproducible.js
+
+    # v1.7 SEO 独立验收：**只读 dist/**，把可索引性、条目集合、sitemap 成员、Feed 清单
+    # 全部从产物现场重新推导一遍，再与页面上的标记逐个对账。
+    # 为什么构建期那一遍不够：那里的描述符是构建过程自己记下来的，两份数据同源时，
+    # 一个错误的判据会在两边一致地错下去。这一支与它**输入完全不同源**。
+    - name: SEO verification (independent, from dist/)
+      shell: bash
+      run: node scripts/tools/seo-verify.js
 
     # 浏览器准备：**这一步不判死**，只负责"把有没有浏览器弄清楚"。
     # 判死放在后面的「浏览器可用性判定」里，好处是失败原因写在一处，

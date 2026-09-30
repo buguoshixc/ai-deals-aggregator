@@ -22,6 +22,22 @@ const path = require('path');
 const { chromium } = require('playwright-core');
 
 const ROOT = path.join(__dirname, '..', '..');
+// 零依赖的注册表（订阅与落地页）：验收脚本据此**按数据**算出「这一页应该声明几条订阅源」，
+// 而不是把一个数字写死在断言里 —— 写死的后果是每加一份分类 Feed 都要来改一次验收脚本。
+const feedsLib = require('../lib/feeds');
+const landingsLib = require('../lib/landing');
+
+/**
+ * 某个落地页**应该**声明几条 `rel="alternate"`：站点根 Feed 对（2 条）
+ * + 它自己的那一对（有专属 Feed 时 2 条）。别名页与无专属 Feed 的页面只有根那一对。
+ */
+function expectedFeedTags(kind, slug) {
+  if (kind === 'alias') return 2;
+  const own = feedsLib.feedsForPage({ kind, slug });
+  return 2 + (own.length ? 2 : 0);
+}
+void landingsLib;
+
 const dirArg = process.argv.find(a => a.startsWith('--dir='));
 const urlArg = process.argv.find(a => a.startsWith('--url='));
 const DIR = path.join(ROOT, dirArg ? dirArg.slice(6) : 'dist');
@@ -1537,7 +1553,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     const pane = document.querySelector('.dpane');
     const canonical = document.querySelector('link[rel="canonical"]');
     return {
-      heading: (document.querySelector('.dpane h2') || {}).textContent || '',
+      // v1.7：独立详情页的标题改成 `<h1>`（此前是 h2 —— 页面没有一级标题），
+      // 弹层里仍是 h2（那里已有一个 h1）。所以这里按 **id** 取，不按标签名取。
+      heading: (document.querySelector('#detailTitle') || {}).textContent || '',
+      h1: document.querySelectorAll('h1').length,
       canonical: canonical ? canonical.href : '',
       crumbs: document.querySelectorAll('.crumb a, .crumb span').length,
       back: Boolean(document.querySelector('.jumpback')),
@@ -1548,6 +1567,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   });
   check('详情页有标题与面包屑', Boolean(detail.heading) && detail.crumbs >= 3,
     `${detail.heading.slice(0, 26)} · 面包屑 ${detail.crumbs} 段 · 正文 ${detail.paneChars} 字符`);
+  check('详情页恰好一个 h1（独立文档必须有且只有一个一级标题）', detail.h1 === 1, `${detail.h1} 个`);
   // canonical 用的是**生产域名**（SITE_URL）。这个站是 GitHub 项目页，
   // canonical 路径带 `/ai-deals-aggregator/` 前缀，而本地验收服务在根路径下，
   // 所以判据是「当前路径是 canonical 路径的后缀」——本地与线上都成立。
@@ -1568,7 +1588,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   await noJsPage.goto(detailUrl, { waitUntil: 'load' });
   const noJsDetail = await noJsPage.evaluate(() => ({
     chars: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0,
-    heading: (document.querySelector('.dpane h2') || {}).textContent || '',
+    heading: (document.querySelector('#detailTitle') || {}).textContent || '',
     official: [...document.querySelectorAll('a')].filter(a => /^https?:/.test(a.getAttribute('href') || '')).length
   }));
   // ⚠️ 取样必须在 `noJsContext.close()` **之前**做完（页面随 context 一起销毁）。
@@ -1991,8 +2011,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       `${missing.length ? ` · 漏 ${missing.length}` : ''}${extra.length ? ` · 多 ${extra.length}` : ''}`);
     // 「恰好」而不是「包含」：只判包含时，多出一段结构化数据不会有任何东西变红。
     const COLLECTION_LD = ['BreadcrumbList', 'CollectionPage', 'ItemList'];
-    check(`/${route.slug}/ 恰好两个订阅源 + 恰好三段 JSON-LD（CollectionPage / BreadcrumbList / ItemList）`,
-      info.feeds === 2 && JSON.stringify(info.ldTypes.slice().sort()) === JSON.stringify(COLLECTION_LD),
+    const wantFeeds = expectedFeedTags('collection', route.slug);
+    check(`/${route.slug}/ 恰好 ${wantFeeds} 个订阅源 + 恰好三段 JSON-LD（CollectionPage / BreadcrumbList / ItemList）`,
+      info.feeds === wantFeeds && JSON.stringify(info.ldTypes.slice().sort()) === JSON.stringify(COLLECTION_LD),
       `feed ${info.feeds} 个 · JSON-LD [${info.ldTypes.join(', ')}]（期望 [${COLLECTION_LD.join(', ')}]）`);
     check(`/${route.slug}/ 没有 JS 错误、没有外部请求`,
       errors.length === errorsBefore && externalRequests.length === externalBefore,
@@ -2186,8 +2207,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         info.rows === expectedIds.length,
         `页面 ${info.ids.length} 条 / 数据 ${expectedIds.length} 条` +
         `${missing.length ? ` · 漏 ${missing.length}` : ''}${extra.length ? ` · 多 ${extra.length}` : ''}`);
-      check(`/need/${slug}/ canonical 自指 + 双 feed + 三段 JSON-LD`,
-        info.canonical.endsWith(`/need/${slug}/`) && info.feeds === 2 &&
+      const wantFeeds = expectedFeedTags('need', slug);
+      check(`/need/${slug}/ canonical 自指 + ${wantFeeds} 个订阅源 + 三段 JSON-LD`,
+        info.canonical.endsWith(`/need/${slug}/`) && info.feeds === wantFeeds &&
         JSON.stringify(info.ldTypes.slice().sort()) === JSON.stringify(['BreadcrumbList', 'CollectionPage', 'ItemList']),
         `${info.canonical} · feed ${info.feeds} · JSON-LD [${info.ldTypes.join(', ')}]`);
       check(`/need/${slug}/ 有「为什么在这一页」一列且写了依据`,
@@ -3472,6 +3494,86 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     externalRequests.length ? externalRequests.slice(0, 3).join(', ') : '全部同源');
   check('没有加载失败', failedRequests.length === 0, failedRequests.slice(0, 3).join(', ') || '0 个');
   check('没有 JS 错误', errors.length === 0, errors.slice(0, 3).join(' | ') || '0 个');
+
+  // §18 落地页（v1.7）：分类页 / 厂商页 / 枢纽页 / 别名页。
+  //
+  // 这几类的**结构**已经由构建期自检与 `npm run verify:seo`（零依赖静态）守住了；
+  // 这里量的是只有真浏览器才能回答的三件事：
+  //   · 页面真的打得开、只有一个 h1、canonical 指向自己；
+  //   · 表格里的行数与 ItemList 声明数**在真实 DOM 里**也对得上；
+  //   · 别名页在浏览器里读到的是 noindex（而不只是产物字符串里写着 noindex）。
+  {
+    console.log('\n=== 18) 落地页（分类 / 厂商 / 枢纽 / 别名）===');
+    const sitemapFile = path.join(DIR, 'sitemap.xml');
+    const sitemapText = fs.existsSync(sitemapFile) ? fs.readFileSync(sitemapFile, 'utf8') : '';
+    const samples = [
+      { route: 'category/api/', kind: 'category', label: '分类落地页' },
+      { route: 'vendor/zhipu/', kind: 'vendor', label: '厂商落地页' },
+      { route: 'category/', kind: 'hub', label: '分类枢纽页' },
+      { route: 'vendor/', kind: 'hub', label: '厂商枢纽页' },
+      { route: 'need/student-only/', kind: 'alias', label: '别名页' }
+    ];
+    for (const sample of samples) {
+      const errorsBefore = errors.length;
+      const externalBefore = externalRequests.length;
+      await page.goto(`${base}${sample.route}`, { waitUntil: 'load' });
+      const info = await page.evaluate(() => {
+        const ld = [...document.querySelectorAll('script[type="application/ld+json"]')]
+          .map(s => { try { return JSON.parse(s.textContent); } catch (e) { return null; } }).filter(Boolean);
+        const list = ld.find(data => data['@type'] === 'ItemList');
+        return {
+          h1: document.querySelectorAll('h1').length,
+          title: (document.querySelector('h1') || {}).textContent || '',
+          canonical: (document.querySelector('link[rel="canonical"]') || {}).href || '',
+          canonicalPath: (() => { try { return new URL((document.querySelector('link[rel="canonical"]') || {}).href).pathname; } catch (e) { return ''; } })(),
+          rows: document.querySelectorAll('.ctable tbody tr').length,
+          itemLinks: document.querySelectorAll('.ctable tbody a[href*="/deal/"]').length,
+          childLinks: document.querySelectorAll('.ctable tbody a[href$="/"]').length,
+          declared: list ? Number(list.numberOfItems) : -1,
+          declaredItems: list && Array.isArray(list.itemListElement) ? list.itemListElement.length : -1,
+          crumbs: [...document.querySelectorAll('.crumb a')].map(a => a.getAttribute('href') || ''),
+          summaryRows: document.querySelectorAll('[data-summary-label]').length,
+          robots: (document.querySelector('meta[name="robots"]') || {}).content || 'index, follow',
+          feeds: document.querySelectorAll('link[rel="alternate"]').length,
+          text: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0
+        };
+      });
+      const wantIndexable = sample.kind !== 'alias';
+      check(`${sample.label} /${sample.route} 打开且只有一个 h1`,
+        info.h1 === 1 && info.text > 400, `h1=${info.h1} · 正文 ${info.text} 字 · 「${info.title.slice(0, 20)}」`);
+      check(`${sample.label} /${sample.route} canonical 自指`,
+        info.canonicalPath.endsWith(`/${sample.route}`), info.canonical);
+      check(`${sample.label} /${sample.route} ItemList 声明数 == 可见行数`,
+        info.declared === info.declaredItems && info.declared === info.rows,
+        `声明 ${info.declared} / 元素 ${info.declaredItems} / 行 ${info.rows}`);
+      check(`${sample.label} /${sample.route} robots 与索引策略一致`,
+        /noindex/.test(info.robots) !== wantIndexable, info.robots);
+      if (fs.existsSync(sitemapFile)) {
+        const inSitemap = sitemapText.includes(`<loc>`) && sitemapText.split('<loc>').some(chunk => chunk.startsWith(`https://buguoshixc.github.io/ai-deals-aggregator/${sample.route}`));
+        check(`${sample.label} /${sample.route} 的 sitemap 成员资格与索引策略一致`,
+          inSitemap === wantIndexable, `sitemap ${inSitemap ? '有' : '无'}`);
+      }
+      if (sample.kind === 'category' || sample.kind === 'vendor') {
+        const parent = sample.kind === 'category' ? 'category/' : 'vendor/';
+        check(`${sample.label} /${sample.route} 面包屑指向真实存在的枢纽页`,
+          info.crumbs.some(href => href.endsWith(`/${parent}`)), info.crumbs.join(' '));
+        check(`${sample.label} /${sample.route} 有数据摘要块且声明了自己的订阅源`,
+          info.summaryRows >= 1 && info.feeds === 4, `摘要 ${info.summaryRows} 行 · feed ${info.feeds} 个`);
+      }
+      if (sample.kind === 'hub') {
+        check(`${sample.label} /${sample.route} 的每一行都是子页链接（不夹带条目行）`,
+          info.childLinks >= 1 && info.itemLinks === 0, `子页链接 ${info.childLinks} · 条目链接 ${info.itemLinks}`);
+      }
+      check(`${sample.label} /${sample.route} 没有 JS 错误、没有外部请求`,
+        errors.length === errorsBefore && externalRequests.length === externalBefore,
+        `错误 ${errors.length - errorsBefore} · 外部请求 ${externalRequests.length - externalBefore}`);
+    }
+
+    // 首页的一级标题：v1.7 之前首页**一个 h1 都没有**（主标题只是品牌里的 <b>）。
+    await page.goto(base, { waitUntil: 'load' });
+    const homeH1 = await page.evaluate(() => [...document.querySelectorAll('h1')].map(el => el.textContent.trim()));
+    check('首页恰好一个 h1 且就是站点主标题', homeH1.length === 1 && /优惠/.test(homeH1[0]), homeH1.join(' | '));
+  }
 
   await browser.close();
   if (server) server.close();

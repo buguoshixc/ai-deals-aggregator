@@ -232,6 +232,12 @@
     .btxt { display: flex; flex-direction: column; line-height: 1.15; }
     .btxt b { font-size: var(--fs-lg); font-weight: 700; letter-spacing: -.2px; }
     .btxt b em { font-style: normal; color: var(--deal); }
+    /* v1.7：首页此前**一个 <h1> 都没有**（主标题只是品牌里的 <b>）—— 文档结构上等于没有一级标题，
+       而全站其它 112 个页面都有。改成 h1 之后，下面两条把几何锁死在与 <b> 相同的状态：
+       浏览器默认的 h1 外边距与字号会把顶栏顶高一截，而顶栏一高，首屏完整卡片就从 9 张掉到 8 张
+       （v1.5 的密度账：余量只有 1px）。`margin: 0` + 继承字号 + `display: inline` 是关键三条。 */
+    .btxt h1.bt { font-size: var(--fs-lg); font-weight: 700; letter-spacing: -.2px; margin: 0; display: inline; line-height: inherit; }
+    .btxt h1.bt em { font-style: normal; color: var(--deal); }
     .btxt small { font-size: var(--fs-xs); color: var(--mut); letter-spacing: .6px; font-weight: 500; }
 
     .search {
@@ -1014,7 +1020,7 @@
             <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
           </svg>
         </span>
-        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
+        <span class="btxt"><h1 class="bt">AI <em>优惠</em>聚合器</h1><small>真实优惠 · 每日更新</small></span>
       </a>
       <label class="search">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c94a6" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -1144,6 +1150,10 @@
            链接用占位符，由 build-local.js 按输出深度统一解析（ROUTE_HREFS）——
            页脚是一份共享片段，写死相对路径在详情页那一层必然错。 -->
       <p class="catnav" aria-label="按需求浏览">按需求浏览：<a href="__STUDENT_HREF__">学生优惠</a> · <a href="__DEVELOPER_HREF__">开发者优惠</a> · <a href="__FREEAPI_HREF__">免费 API</a></p>
+      <!-- v1.7：厂商页与分类页两个枢纽 + 少量厂商入口。全部放在**已有的这一行**里，
+           不新增页脚行 —— 页脚是一份共享片段，加一行会把 5 种深度的输出全部加高
+           （v1.5 的密度账）。厂商名单由构建期按落地页计划注入，源码里不留第二份清单。 -->
+      <p class="catnav" aria-label="按厂商与分类浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a><!--PRERENDER:vendorline--></p>
       <!-- 变化雷达页（v1.5）与订阅中心（v1.6）共用一行：加一行页脚会把 5 种深度的
            输出全部加高，而这两条入口本来就属于同一件事（「变化」与「订阅变化」）。 -->
       <p class="catnav" aria-label="变化与订阅">优惠变化：<a href="__CHANGES_HREF__">变化雷达</a> · <a href="__FEEDS_HREF__">订阅这些优惠</a></p>
@@ -1393,7 +1403,13 @@
       // 以下三家数据里还没有条目，图形已登记待用
       [/hugging\s?face/i, 'huggingface', 'Hugging Face', 'huggingface'],
       [/mistral/i, 'mistral', 'Mistral', 'mistral'],
-      [/together/i, 'together', 'Together AI', 'together']
+      [/together/i, 'together', 'Together AI', 'together'],
+      // v1.7：同一家公司的两种写法必须落到同一页。数据里同时出现过
+      // 「MiniMax（稀宇科技）」与「海螺AI（MiniMax）」（海螺 AI 是 MiniMax 的产品），
+      // 不合并会让 /vendor/minimax/ 少收一条、并在筛选条里出现两家。
+      // 这一家没有取到官方品牌图形（见 assets/logos/README.md 的缺口表），
+      // 因此 logo key 为 null ⇒ 走既有的「名称缩写兜底」路径，不冒充品牌图形。
+      [/minimax|海螺/i, 'minimax', 'MiniMax（稀宇科技）', null]
     ];
 
     /** [匹配模型名的正则, logo key, 显示名]：用于折叠卡上的模型家族 logo */
@@ -2990,7 +3006,16 @@
       return cards.map(rowHtml).join('');
     }
 
-    function detailHtml(deal) {
+    /**
+     * 详情块。
+     *
+     * `opts.headingTag` —— 标题用哪个标签。**默认 `h2`**：首页与移动端是把这块内容注入
+     * 弹层里的，那里已经有一个 `<h1>`（首页标题），再来一个是两个一级标题。
+     * 独立详情页（/deal/<id>/）是**独立文档**，它必须有自己的 `<h1>`，由构建期传 `'h1'`。
+     * id 仍是 `detailTitle`，所以样式与断言不受标签变化影响。
+     */
+    function detailHtml(deal, opts) {
+      const headingTag = (opts && opts.headingTag === 'h1') ? 'h1' : 'h2';
       const url = safeUrl(deal.url);
       const tier = tierOf(deal);
       const vendor = vendorOf(deal);
@@ -3051,7 +3076,7 @@
       const kind = kindBadges(deal).map(label => '<span>' + escapeHtml(label) + '</span>').join('');
 
       return '<div class="dh">' + logoHtml(deal, true) +
-        '<h2 id="detailTitle">' + escapeHtml(deal.title) + '</h2></div>' +
+        '<' + headingTag + ' id="detailTitle">' + escapeHtml(deal.title) + '</' + headingTag + '></div>' +
         '<div class="dsub">' + (vendor.name ? '<span>' + escapeHtml(vendor.name) + '</span><span>·</span>' : '') +
         (deal.category ? '<span>' + escapeHtml(deal.category) + '</span><span>·</span>' : '') +
         (deal.region ? '<span>' + escapeHtml(REGION_LABELS[deal.region] || deal.region) + '</span><span>·</span>' : '') +
@@ -3621,6 +3646,55 @@
         sections + otherBlock +
         '<p class="snote">' + escapeHtml(N.window) + '</p>' +
         '<p class="snote">' + escapeHtml(HISTORY_WORDING.HISTORY_NOTES.disclaimer) + '</p>';
+    }
+
+    /**
+     * 某个主题的「最近变化」块（v1.7 落地页用）。
+     *
+     * `topic` 的形状由 `scripts/lib/landing.js` 的 `topicChangesOf()` 给出：
+     * `{ availability, asOf, startedAt, totals, sections: [{ key, items }], title }`。
+     *
+     * 三条纪律与 /changes/ 完全一致，因为**用的是同一批措辞常量与同一个行渲染函数**：
+     *   · 不在这里重新判断什么算变化（判据在 lib/changes.js，页面只排版）；
+     *   · 「没拿到历史日志」与「窗口内没有变化」是两句不同的话；
+     *   · 分栏标题、计数、免责句与 /changes/ 逐字相同 —— 同一件事在两页上是同一个词。
+     *
+     * 空态刻意**保留起算日**：读者要能看出「空」是因为记录自某天才开始，
+     * 而不是因为这一页忘了渲染。
+     */
+    function changesTopicHtml(topic, prefix) {
+      const W = CHANGES_WORDING;
+      const L = W.CHANGES_LABELS;
+      const N = W.CHANGES_NOTES;
+      const view = topic && typeof topic === 'object' ? topic : null;
+      const title = view && typeof view.title === 'string' && view.title ? view.title : L.radar;
+      const more = '<p class="snote"><a href="' + escapeAttr(String(prefix || '') + 'changes/') + '">' +
+        escapeHtml(L.all) + ' →</a></p>';
+      const head = '<h2>' + escapeHtml(title) + '</h2>';
+
+      if (!view || view.availability !== 'ok') {
+        // 日志缺失/损坏：说「没有拿到」，不说「没有变化」
+        return '<section class="chgsec" data-topic-availability="unavailable">' + head +
+          '<p class="chgempty">' + escapeHtml(N.unavailable) + '</p>' + more + '</section>';
+      }
+
+      const since = typeof view.startedAt === 'string' ? view.startedAt : null;
+      const asOf = typeof view.asOf === 'string' ? view.asOf : null;
+      const meta = '<div class="chgmeta">' +
+        (asOf ? '<span>' + escapeHtml(L.base.replace('{date}', asOf)) + '</span>' : '') +
+        (since ? '<span>' + escapeHtml(L.since.replace('{date}', since)) + '</span>' : '') +
+        '</div>';
+      const sections = Array.isArray(view.sections) ? view.sections : [];
+      const body = sections.length
+        ? sections.map(section => {
+          const label = hasOwn(W.CHANGES_SECTION, section.key) ? W.CHANGES_SECTION[section.key] : section.key;
+          return '<div class="chgsec"><h3>' + escapeHtml(label + '（' + section.items.length + '）') + '</h3>' +
+            '<ul class="chglist">' + section.items.map(item => changesRowHtml(item, prefix)).join('') + '</ul></div>';
+        }).join('')
+        : '<p class="chgempty">' + escapeHtml(since ? L.homeEmptySince.replace('{date}', since) : L.homeEmpty) + '</p>';
+
+      return '<section class="chgsec" data-topic-availability="ok" data-topic-total="' +
+        escapeAttr(String(Number(view.totals) || 0)) + '">' + head + meta + body + more + '</section>';
     }
 
     /* ================================================================

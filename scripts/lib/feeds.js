@@ -38,6 +38,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const audience = require('./audience');
+const landing = require('./landing');
 const history = require('./history');
 const changes = require('./changes');
 const { cleanText } = require('./schema');
@@ -246,7 +247,16 @@ const COLLECTION_FEED_PAGES = [
   { id: 'free-api', pageKind: 'collection', pageSlug: 'free-api' },
   { id: 'free-tokens', pageKind: 'need', pageSlug: 'free-tokens' },
   { id: 'ai-coding', pageKind: 'need', pageSlug: 'ai-coding' },
-  { id: 'china', pageKind: 'need', pageSlug: 'china-usable' }
+  { id: 'china', pageKind: 'need', pageSlug: 'china-usable' },
+  // v1.7：分类落地页各自一份订阅。只登记**真的会生成页面**的分类
+  // （门槛与人工允许表在 lib/landing.js 的 CATEGORY_PAGES）；多登记一个，
+  // Feed 会照常生成但页面不存在 —— 那种「订阅有、页面无」的不一致由
+  // /feeds/ 页面的回链与 selftest:seo 一起盯着。
+  { id: 'category-api', pageKind: 'category', pageSlug: 'api' },
+  { id: 'category-chat', pageKind: 'category', pageSlug: 'chat' },
+  { id: 'category-audio', pageKind: 'category', pageSlug: 'audio' },
+  { id: 'category-image', pageKind: 'category', pageSlug: 'image' },
+  { id: 'category-agent', pageKind: 'category', pageSlug: 'agent' }
 ];
 
 /** 首页 `<head>` 上暴露哪四个订阅选择（其余集中放在 /feeds/ 页） */
@@ -269,14 +279,48 @@ function rootFeedTags(prefix = '') {
 }
 
 function pageListOf(pageKind) {
-  return pageKind === 'need' ? audience.NEED_PAGES : audience.COLLECTION_PAGES;
+  if (pageKind === 'need') return audience.NEED_PAGES;
+  if (pageKind === 'category') return landing.CATEGORY_PAGES;
+  return audience.COLLECTION_PAGES;
 }
 function predicateMapOf(pageKind) {
-  return pageKind === 'need' ? audience.NEED_PREDICATES : audience.COLLECTION_PREDICATES;
+  if (pageKind === 'need') return audience.NEED_PREDICATES;
+  if (pageKind === 'category') return landing.CATEGORY_PREDICATES;
+  return audience.COLLECTION_PREDICATES;
 }
 /** 页面在站点根下的相对路由 */
 function pageRouteOf(pageKind, slug) {
-  return pageKind === 'need' ? `need/${slug}/` : `${slug}/`;
+  if (pageKind === 'need') return `need/${slug}/`;
+  if (pageKind === 'category') return `category/${slug}/`;
+  return `${slug}/`;
+}
+
+/** 厂商落地页的路由（订阅 spec 的 homePageUrl / pageRoute 与页面共用这一处） */
+function vendorRouteOf(slug) {
+  return `vendor/${slug}/`;
+}
+
+/**
+ * 一个页面**自己**的订阅源（v1.7）。
+ *
+ * v1.6 里页面→Feed 只能靠调用方硬编码 spec id（`build-local.js` 早先就是
+ * `byId.get('changes')` 这么写的），而「页面上忘了声明自己的 Feed」不会有任何东西变红。
+ * 这个函数让「页面**有**哪份 Feed」与「页面**声明**哪份 Feed」都从注册表推导：
+ *   · 分类页 / 按需求页 / 分类落地页 → COLLECTION_FEED_PAGES 里指向它的那一条；
+ *   · 厂商页 → `vendor-<slug>`（由厂商注册表决定，存在与不存在都以 spec 为准）。
+ *
+ * @param {object} page `{ kind, slug }` —— 落地页 spec 的最小切片
+ * @param {object[]} [feeds] 已构建的 feedBundle.feeds；省略时只按注册表推导（用于自检）
+ */
+function feedsForPage(page, feeds) {
+  if (!page || !page.slug) return [];
+  const spec = page.kind === 'vendor'
+    ? { id: `vendor-${page.slug}` }
+    : (COLLECTION_FEED_PAGES.find(entry => entry.pageKind === page.kind && entry.pageSlug === page.slug) || null);
+  if (!spec) return [];
+  if (!Array.isArray(feeds)) return [{ spec: { id: spec.id } }];
+  const hit = feeds.find(item => item.spec && item.spec.id === spec.id);
+  return hit ? [hit] : [];
 }
 
 /** 厂商 slug 表（人工维护；错误在 `validateVendorSlugs()` 与自测里报） */
@@ -449,7 +493,7 @@ function collectionSpec(base, pageKind, pageSlug, predicate) {
  * @param {object}   [params.store] 变更日志
  * @returns {{specs:object[], vendorSkipped:object[], vendorUnmapped:string[]}}
  */
-function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS } = {}) {
+function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS, vendorKeyOf = null } = {}) {
   const specs = [];
 
   specs.push({
@@ -460,9 +504,14 @@ function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS } =
   });
 
   for (const entry of COLLECTION_FEED_PAGES) {
-    const predicate = predicateMapOf(entry.pageKind)[
-      pageListOf(entry.pageKind).find(item => item.slug === entry.pageSlug).predicate
-    ];
+    const page = pageListOf(entry.pageKind).find(item => item.slug === entry.pageSlug);
+    if (!page) throw new Error(`Feed ${entry.id}: 页面注册表里没有 ${entry.pageKind}/${entry.pageSlug}`);
+    // 谓词查表的口径按注册表形状分两种：collection/need 的 spec 用 `predicate` 指向
+    // `*_PREDICATES` 里的键名，而 CATEGORY_PREDICATES **直接以 slug 为键**（没有第三层命名）。
+    const predicateMap = predicateMapOf(entry.pageKind);
+    const predicate = entry.pageKind === 'category'
+      ? predicateMap[entry.pageSlug]
+      : predicateMap[page.predicate];
     if (typeof predicate !== 'function') throw new Error(`Feed ${entry.id}: 找不到谓词实现`);
     specs.push(collectionSpec({
       id: entry.id, path: `feed/${entry.id}.xml`, jsonPath: `feed/${entry.id}.json`,
@@ -495,19 +544,29 @@ function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS } =
   });
 
   // 厂商 Feed：数据驱动，门槛见 VENDOR_THRESHOLDS。
+  //
+  // v1.7：分组键从**原始字符串**改成**规范厂商名**（`vendorOf(deal).name`，由调用方
+  // 通过 `vendorKeyOf` 注入）。理由是同一个公司会有多种写法（「火山引擎（字节跳动）」与
+  // 「火山引擎」），而 v1.7 起每家厂商有自己的落地页 `/vendor/<slug>/` ——
+  // 页面用规范名、Feed 用原始字符串，就会出现「页面列 13 条、它的 Feed 只有 12 条」
+  // 这种自相矛盾。注入而不是直接 require RENDER-CORE：这个文件必须保持纯函数、
+  // 可被自测直接调用（自测传自己的 keyOf）。
+  const keyOf = typeof vendorKeyOf === 'function' ? vendorKeyOf : (deal => String((deal && deal.vendor) || ''));
   const dealCount = new Map();
   for (const deal of deals) {
     if (!deal || deal.type !== 'deal') continue;
-    dealCount.set(deal.vendor, (dealCount.get(deal.vendor) || 0) + 1);
+    const name = keyOf(deal);
+    if (!name) continue;
+    dealCount.set(name, (dealCount.get(name) || 0) + 1);
   }
   const eventCount = new Map();
-  const vendorOfId = new Map(deals.map(deal => [deal && deal.id, deal && deal.vendor]));
+  const vendorOfId = new Map(deals.map(deal => [deal && deal.id, deal ? keyOf(deal) : '']));
   for (const event of history.eventsOf(store)) {
     const vendor = vendorOfId.get(event && event.id);
     if (!vendor) continue;
     eventCount.set(vendor, (eventCount.get(vendor) || 0) + 1);
   }
-  const vendors = [...new Set(deals.filter(deal => deal && deal.type === 'deal').map(deal => deal.vendor))];
+  const vendors = [...dealCount.keys()];
   vendors.sort();
   const vendorSkipped = [];
   const vendorUnmapped = [];
@@ -518,14 +577,16 @@ function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS } =
     if (!byCount && !byEvents) continue;
     const slug = vendorSlugs[vendor];
     if (!slug) { vendorUnmapped.push(vendor); continue; }
-    const items = deals.filter(deal => deal.type === 'deal' && deal.vendor === vendor);
+    const items = deals.filter(deal => deal.type === 'deal' && keyOf(deal) === vendor);
     if (!items.length) { vendorSkipped.push({ vendor, slug, reason: 'no_active_deals' }); continue; }
     specs.push({
       id: `vendor-${slug}`, kind: 'collection',
       path: `feed/vendor/${slug}.xml`, jsonPath: `feed/vendor/${slug}.json`,
       title: `${FEED_BRAND} · ${vendor}`,
       description: `${vendor} 当前收录的 AI 优惠与免费额度。${FEEDS_WORDING.FEEDS_NOTES.provider}`,
-      homePageUrl: SITE_URL, pageRoute: '', predicate: null,
+      // v1.7：厂商 Feed 的主页指向它自己的落地页（v1.6 时还没有这个页面，只能指站根 ——
+      // 于是「订阅了这一家」的读者在 Feed 里找不到对应的页面）。
+      homePageUrl: absolute(vendorRouteOf(slug)), pageRoute: vendorRouteOf(slug), predicate: null,
       mayBeEmpty: false, homepage: false, vendor,
       slug, itemCount: items.length
     });
@@ -538,13 +599,16 @@ function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS } =
 /* ------------------------------------------------------------------ */
 
 /** 优惠 Feed 的条目集合（判据来自 spec.predicate，排除已结束与已过期） */
-function collectionItems(spec, { deals, store, asOf }) {
+function collectionItems(spec, { deals, store, asOf, vendorKeyOf = null }) {
   const ended = endedIds(store);
+  const keyOf = typeof vendorKeyOf === 'function' ? vendorKeyOf : (deal => String((deal && deal.vendor) || ''));
   const pool = deals.filter(deal => deal && deal.type === 'deal');
   const matched = pool.filter(deal => {
     if (ended.has(deal.id)) return false;
     if (isExpired(deal, asOf)) return false;
-    if (spec.vendor && deal.vendor !== spec.vendor) return false;
+    // 厂商 Feed 的条目按**规范厂商名**取（与页面同一套口径）：用原始字符串比会漏掉
+    // 「扣子 Coze（字节跳动）」这类写法，症状是该厂商的 Feed 莫名其妙是空的。
+    if (spec.vendor && keyOf(deal) !== spec.vendor) return false;
     if (spec.predicate && !spec.predicate(deal)) return false;
     return true;
   });
@@ -750,8 +814,8 @@ function serializeJsonFeed(spec, items, { description }) {
  * @param {string}   [params.updatedAt] `deals.json` 的 updatedAt（lastBuildDate 用，不取构建时刻）
  * @returns {{feeds:object[], stats:object, vendorSkipped:object[], vendorUnmapped:string[]}}
  */
-function buildFeeds({ deals = [], store = null, radar = null, asOf = null, updatedAt = null, availability = 'ok', vendorSlugs = VENDOR_SLUGS } = {}) {
-  const resolved = resolveSpecs({ deals, store, vendorSlugs });
+function buildFeeds({ deals = [], store = null, radar = null, asOf = null, updatedAt = null, availability = 'ok', vendorSlugs = VENDOR_SLUGS, vendorKeyOf = null } = {}) {
+  const resolved = resolveSpecs({ deals, store, vendorSlugs, vendorKeyOf });
   const startedAt = store && typeof store.startedAt === 'string' ? store.startedAt : null;
   const specs = resolved.specs.map(spec => Object.assign({}, spec, {
     startedAt: spec.kind === 'changes' ? (startedAt || asOf) : null
@@ -761,7 +825,7 @@ function buildFeeds({ deals = [], store = null, radar = null, asOf = null, updat
   const feeds = specs.map(spec => {
     const all = spec.kind === 'changes'
       ? changeItems(spec, { deals, store, radar })
-      : collectionItems(spec, { deals, store, asOf });
+      : collectionItems(spec, { deals, store, asOf, vendorKeyOf });
     const items = all.slice(0, LIMITS.itemsPerFeed);
     const truncated = Math.max(0, all.length - items.length);
     truncatedTotal += truncated;
@@ -855,11 +919,12 @@ function unescapeXml(text) {
  */
 function validate({
   feeds = [], deals = [], store = null, pages = new Set(),
-  asOf = null, vendorSlugs = VENDOR_SLUGS, availability = 'ok'
+  asOf = null, vendorSlugs = VENDOR_SLUGS, availability = 'ok', vendorKeyOf = null
 } = {}) {
   const problems = [];
   const warnings = [];
   const add = (code, feed, detail) => problems.push({ code, feed, detail });
+  const keyOf = typeof vendorKeyOf === 'function' ? vendorKeyOf : (deal => String((deal && deal.vendor) || ''));
 
   const byId = new Map(deals.map(deal => [deal && deal.id, deal]));
   const eventKeys = new Set(history.eventsOf(store).map(event => history.eventKey(event)));
@@ -895,6 +960,12 @@ function validate({
 
     if (spec.vendor && !SLUG_RE.test(String(spec.slug || ''))) {
       add('vendor-slug', label, `厂商 slug 非法：${spec.slug}`);
+    }
+
+    // v1.7：Feed 声称的主页必须真的存在。厂商 Feed 曾把主页指向站根（那时没有厂商页），
+    // 于是「订阅了这一家」的读者在 Feed 里找不到对应页面 —— 而没有任何断言会红。
+    if (spec.pageRoute && !pages.has(spec.pageRoute)) {
+      add('page-exists', label, `主页指向不存在的页面：${spec.pageRoute}`);
     }
 
     if (!feed.items.length) {
@@ -959,7 +1030,7 @@ function validate({
       for (const item of feed.items) {
         const deal = byId.get(item.dealId);
         if (!deal || deal.type !== 'deal') { add('deal-exists', label, `${item.dealId} 不是一条优惠记录`); continue; }
-        if (spec.vendor && deal.vendor !== spec.vendor) add('predicate-holds', label, `${item.dealId} 不属于厂商 ${spec.vendor}`);
+        if (spec.vendor && keyOf(deal) !== spec.vendor) add('predicate-holds', label, `${item.dealId} 不属于厂商 ${spec.vendor}`);
         if (spec.predicate && !spec.predicate(deal)) add('predicate-holds', label, `${item.dealId} 不满足本 Feed 的判据`);
         if (isExpired(deal, asOf)) add('no-expired', label, `${item.dealId} 已过期却仍在「当前优惠」里`);
         const last = history.lastLifecycleOf(store, deal.id);
@@ -1023,6 +1094,10 @@ module.exports = {
   HOMEPAGE_FEED_IDS,
   COLLECTION_FEED_PAGES,
   FEEDS_WORDING,
+  // v1.7：页面 → 它自己的订阅源（页面声明与自检都读这一处，不再硬编码 spec id）
+  feedsForPage,
+  vendorRouteOf,
+  pageRouteOf,
   xmlEscape,
   checkXmlWellFormed,
   eventFeedId,

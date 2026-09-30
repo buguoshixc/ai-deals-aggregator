@@ -1,0 +1,18 @@
+{
+  "_note": "旧路由 → 目标路由的别名表。GitHub Pages 没有服务器 rewrite，所以旧路由**保留一个真实的静态页**：noindex,follow + 自指 canonical + 页面上给出到目标页的可见链接，且不进 sitemap。目标页才是被索引的那一个。",
+  "_rule": "① 目标路由必须真实生成且 indexable；② 别名页的条目集合必须与目标页**逐条相同**（它必须是同一个主题的旧地址，而不是另一个主题）；③ 别名链最长 1 跳（别名不能指向别名）；④ 别名路由必须同时出现在 landing-pages.json 的钉住列表里，否则构建红。本表 v1.7 的三条是历史遗留的近义 URL 收口：三对页面的条目集合曾逐条相同、其中两对标题逐字相同。",
+  "aliases": {
+    "need/student-only/": {
+      "target": "student/",
+      "reason": "与 /student/ 是同一份判据（audience.studentSignal）、同一批条目，标题也曾逐字相同。保留 /student/ 作为被索引的入口。"
+    },
+    "need/free-api/": {
+      "target": "free-api/",
+      "reason": "与 /free-api/ 是同一份判据（benefitType 含 free_api）、同一批条目，标题逐字相同。保留 /free-api/ 作为被索引的入口。"
+    },
+    "need/dev-credits/": {
+      "target": "developer/",
+      "reason": "与 /developer/ 是同一份判据（audience.developerSignal）、同一批条目。保留 /developer/ 作为被索引的入口。"
+    }
+  }
+}

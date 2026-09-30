@@ -50,6 +50,9 @@
     "report:audience": "node scripts/tools/audience-report.js",
     "check:reproducible": "node scripts/tools/check-reproducible.js",
     "check:ci": "node scripts/tools/check-ci-consistency.js",
+    "selftest:seo": "node scripts/tools/seo-selftest.js",
+    "verify:seo": "node scripts/tools/seo-verify.js",
+    "report:seo": "node scripts/tools/seo-report.js",
     "audience:overrides:extract": "node scripts/tools/audience-overrides-extract.js",
     "fetch:logos": "node scripts/tools/fetch-logos.js",
     "serve": "node scripts/serve.js"

@@ -66,6 +66,8 @@
 | P3 | 内容必须**预渲染**：不执行 JS 也能读到全部正文 | 我们现状达标（水合前后均 11459 字符）；反例是 vercel 仅 878 字符、notion 2111 字符 | 断言：断掉 `deals.json` 后卡片与外链仍 ≥45 |
 | P4 | 站点级身份补齐：`hreflang` 双语（如需）、`theme-color`、`og:*`、sitemap | devtk 3 条 hreflang（en/zh-CN/x-default）vs 我们 2 条自指 | 断言：hreflang 自指与互指正确 |
 | P5 | 长页给同页锚点导航 | free-for-dev 同页锚点 232 条、ai-bot.cn 64 条；我们 0 条 | 断言：档位带有 `id` 且锚点可达 |
+| P6 | **每个可索引页恰好一个 `<h1>`**；独立详情页用自己的 `<h1>`（弹层里仍是 `h2` —— 那里已有首页的 `<h1>`） | v1.7 实测：首页此前**一个 `<h1>` 都没有**（主标题只是品牌里的 `<b>`）、80 个详情页的标题是 `<h2>` —— 113 个页面里有 **81 个**在文档结构上缺一级标题，而没有任何断言会红（连旧审计数到的那 1 个，也是内联脚本模板字符串里的 `<h1>`） | 断言：`seo.validate()` 的 `h1-count`（113 页）+ `verify-site.js` 详情页与首页各一条（真浏览器数 DOM） |
+| P7 | **跨页面的** SEO 不变量必须单独有一道门禁：标题/canonical 唯一、ItemList 条数 == 可见数据行数、面包屑每一级真实存在、sitemap == 非 noindex 页面集合、无孤儿页、摘要数字可被独立重算 | 这些量**只在页面之间成立**，单页自检再多也照不到；v1.6 时 `/developer/` 就是「ItemList 声明 67、实列 50」而无人发现 | 断言：构建期 `seo.validate()`（27 个检查码）+ `npm run verify:seo`（只读 dist 独立重推一遍）+ `npm run selftest:seo`（27 个码逐个定向篡改，每个都必须会响） |
 
 ## 8. 内容与诚实性（红线，不因「学别人」而松动）
 
@@ -102,7 +104,7 @@
 | `transition: all` | ai-bot.cn 373 次、free-for-dev 59 次 | 把布局属性纳入过渡，长列表代价明显；标杆无一家采用 |
 | 默认暗色单主题 | linear / framer / raycast / stripe | 与卡面承载 30+ 家第三方 logo 的现实冲突（见 D3） |
 | 用页面长度换内容量 | openrouter 113 屏、free-for-dev 67.6 屏、artificialanalysis 28.4 屏 | 我们的指标是「一屏看到多少条」，不是页面有多长 |
-| 服务端路由式海量分类页 | ai-bot.cn `/:slug/:slug ×504`、toolify `/category/:slug ×134` | GitHub Pages 静态托管 + 单文件约束下不可行；主要收益由 P1 的详情页覆盖 |
+| 服务端路由式海量分类页 | ai-bot.cn `/:slug/:slug ×504`、toolify `/category/:slug ×134` | GitHub Pages 静态托管 + 单文件约束下不可行；主要收益由 P1 的详情页覆盖。**v1.7 的有界例外**：只加**过头门**的一层落地页（分类 5 + 厂商 9 + 枢纽 2），每条路由都被 `landing-pages.json` 钉住，并由 `duplicate-item-set` / `thin-content` / `orphan` 三个检查码守着 —— 那是「一批有门槛的入口页」，不是「把枚举摊开成 134 页」 |
 | 大投影堆层级 | notion 10 层阶梯、framer 动画插值阴影 | 与 192px 高密度网格冲突（见 E1） |
 | 巨型营销排版（72–96px 标题） | notion、framer | 与「一屏多条」的产品目标冲突 |
 | 客户端重筛选（数百按钮） | artificialanalysis 413 buttons / TAAFT 2233 buttons | 单文件零依赖下不值得；我们的 62 张卡的 facet 已够用 |

@@ -27,7 +27,10 @@ const REQUIRED = [
   // v1.5：变化雷达。首页条带与 /changes/ 静态页共用这两个函数——判据在
   // lib/changes.js（构建期算一次），这里只排版；构建自检要直接调用它们来断言
   // 「条带里没有低价值事件」「空态与不可用没有混为一谈」「内链集合与数据逐条对齐」。
-  'changesStripHtml', 'changesPageHtml'
+  'changesStripHtml', 'changesPageHtml',
+  // v1.7：某个主题的「最近变化」块（落地页用）。措辞与行渲染复用 /changes/ 的同一套，
+  // 所以「没拿到日志」与「窗口内没有变化」在两种页面上是同样两句话。
+  'changesTopicHtml'
 ];
 
 function load(htmlPath = path.join(ROOT, 'index.html')) {
