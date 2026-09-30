@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "builtAt": "2026-09-30T17:38:44Z",
+  "note": "每条篡改固定的施加目标（只收\"守卫确实报了\"的对，所以固化下来的目标都是能检出的）。 由 --build-golden 生成；改动它等于改动评测目标，应该在 diff 里被看见。 dealId 为 \"(synthetic)\" 表示当前人工译文语料里没有落点，改用一对人造中英文本单独验这条规则。",
+  "byMutation": {
+    "m01-number-deleted": {
+      "dealId": "3c8a9a6a9ee9",
+      "field": "discountInfo",
+      "expectedCode": "number_missing",
+      "detail": "删掉数字 15"
+    },
+    "m02-number-changed": {
+      "dealId": "3c8a9a6a9ee9",
+      "field": "discountInfo",
+      "expectedCode": "number_missing",
+      "detail": "15 → 16"
+    },
+    "m03-currency-swapped": {
+      "dealId": "3c8a9a6a9ee9",
+      "field": "discountInfo",
+      "expectedCode": "currency_missing",
+      "detail": "$ → ¥"
+    },
+    "m04-term-dropped": {
+      "dealId": "3c8a9a6a9ee9",
+      "field": "discountInfo",
+      "expectedCode": "term_missing",
+      "detail": "删掉专有名词 Replit（全部出现处）"
+    },
+    "m05-url-rewritten": {
+      "dealId": "9c553dd82d2d",
+      "field": "description",
+      "expectedCode": "url_changed",
+      "detail": "cursor.com → example-eval.invalid"
+    },
+    "m06-negation-deleted": {
+      "dealId": "(synthetic)",
+      "field": "(synthetic)",
+      "expectedCode": "negation_lost",
+      "detail": "人造中英对：英文原文的 No 被删掉，译文反而多出一个否定词「不」（\"不需要绑定信用卡\"）——这就是否定错位，guard 会以 negation_lost 或 negation_invented 报出来。"
+    },
+    "m07-trial-as-free": {
+      "dealId": "(synthetic)",
+      "field": "(synthetic)",
+      "expectedCode": "trial_as_free",
+      "detail": "人造中英对：原文是 14 天试用，中文把「体验」改写成「免费」——就是把力度放大。当前 63 对人工译文里没有 trial 类文案，所以这条规则只能用人造用例验。"
+    },
+    "m08-permanent-invented": {
+      "dealId": "06bc1d631f62",
+      "field": "description",
+      "expectedCode": "permanent_invented",
+      "detail": "插入「长期有效」"
+    },
+    "m09-cap-flattened": {
+      "dealId": "4a875a435019",
+      "field": "discountInfo",
+      "expectedCode": "cap_flattened",
+      "detail": "删掉「最多」"
+    },
+    "m10-date-invented": {
+      "dealId": "06bc1d631f62",
+      "field": "description",
+      "expectedCode": "date_invented",
+      "detail": "插入「2027 年」"
+    }
+  }
+}

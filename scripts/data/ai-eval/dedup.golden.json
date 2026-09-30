@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "builtAt": "2026-09-30T17:38:44Z",
+  "labelingRule": "same vendor（厂商名相同）AND same product（标题里的产品名词逐字相同）AND same benefit（优惠文案逐字相同或都为空）→ same_offer； same vendor AND same product 但 benefit 不同（如免费额度 vs 学生折扣）→ same_product_different_offer； same vendor，product 不同 → same_vendor； 没有共同厂商 / 产品 / URL / benefit → unrelated； 信息不足以判断 → uncertain。",
+  "note": "same vendor（厂商名相同）AND same product（标题里的产品名词逐字相同）AND same benefit（优惠文案逐字相同或都为空）→ same_offer； same vendor AND same product 但 benefit 不同（如免费额度 vs 学生折扣）→ same_product_different_offer； same vendor，product 不同 → same_vendor； 没有共同厂商 / 产品 / URL / benefit → unrelated； 信息不足以判断 → uncertain。",
+  "pairs": [
+    {
+      "a": "c3d6bd34ebfe",
+      "b": "8583e9860d88",
+      "relation": "same_vendor",
+      "reason": "同厂商 Getsolved，产品不同：整站入口 vs 具体的 AI 检测器"
+    },
+    {
+      "a": "45ead69d60cc",
+      "b": "7f8c32f6a327",
+      "relation": "same_vendor",
+      "reason": "同厂商 火山引擎，产品不同：Doubao-Seedream-4.5 vs 4.0 两个模型"
+    },
+    {
+      "a": "6798f78de5ce",
+      "b": "62e3166acec0",
+      "relation": "same_vendor",
+      "reason": "同厂商 智谱AI，产品不同：GLM-4.6V-Flash vs GLM-4V-Flash"
+    },
+    {
+      "a": "78384299b660",
+      "b": "c4ab5c5d8101",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：Qwen3-Coder-30B vs 480B"
+    },
+    {
+      "a": "9c12f13df3ba",
+      "b": "8b2e8d64f11f",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：ERNIE-X1-Turbo-32K vs ERNIE-4.5-Turbo-32K"
+    },
+    {
+      "a": "e384895f5935",
+      "b": "e65f54470862",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：DeepSeek-V3.1 vs DeepSeek-V3.1-Think"
+    },
+    {
+      "a": "e7e8f538456c",
+      "b": "62e3166acec0",
+      "relation": "same_vendor",
+      "reason": "同厂商 智谱AI，产品不同：GLM-4V-Flash vs GLM-4.5-Flash"
+    },
+    {
+      "a": "ebd47f6d2522",
+      "b": "62e3166acec0",
+      "relation": "same_vendor",
+      "reason": "同厂商 智谱AI，产品不同：GLM-4V-Flash vs GLM-4.7-Flash"
+    },
+    {
+      "a": "ebd47f6d2522",
+      "b": "e7e8f538456c",
+      "relation": "same_vendor",
+      "reason": "同厂商 智谱AI，产品不同：GLM-4.5-Flash vs GLM-4.7-Flash"
+    },
+    {
+      "a": "2eae0e246de2",
+      "b": "9c12f13df3ba",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：ERNIE-4.5-Turbo-128K vs 32K"
+    },
+    {
+      "a": "9c12f13df3ba",
+      "b": "ad1d0c83909d",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：ERNIE-4.5-Turbo-32K vs ERNIE-4.5-Turbo-VL"
+    },
+    {
+      "a": "2eae0e246de2",
+      "b": "ad1d0c83909d",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：ERNIE-4.5-Turbo-128K vs ERNIE-4.5-Turbo-VL"
+    },
+    {
+      "a": "e7e8f538456c",
+      "b": "6798f78de5ce",
+      "relation": "same_vendor",
+      "reason": "同厂商 智谱AI，产品不同：GLM-4.6V-Flash vs GLM-4.5-Flash"
+    },
+    {
+      "a": "ebd47f6d2522",
+      "b": "6798f78de5ce",
+      "relation": "same_vendor",
+      "reason": "同厂商 智谱AI，产品不同：GLM-4.6V-Flash vs GLM-4.7-Flash"
+    },
+    {
+      "a": "017bdbc04e70",
+      "b": "8b609cb05116",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：Qwen3-235B-A22B vs Qwen3-30B-A3B"
+    },
+    {
+      "a": "5c38e515a3ae",
+      "b": "4c7952115477",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：bge-large-en vs bge-large-zh"
+    },
+    {
+      "a": "4d4bcb5b6829",
+      "b": "bf156583e97c",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：DeepSeek-R1 vs DeepSeek-R1-250528"
+    },
+    {
+      "a": "8b609cb05116",
+      "b": "78384299b660",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：Qwen3-30B-A3B vs Qwen3-Coder-30B-A3B"
+    },
+    {
+      "a": "8814355d59e1",
+      "b": "e384895f5935",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：DeepSeek-V3-250324 vs DeepSeek-V3.1-250821"
+    },
+    {
+      "a": "d6aaee8c7379",
+      "b": "45ead69d60cc",
+      "relation": "same_vendor",
+      "reason": "同厂商 火山引擎，产品不同：Doubao-Seedream-4.5 vs 5.0-lite"
+    },
+    {
+      "a": "d6aaee8c7379",
+      "b": "7f8c32f6a327",
+      "relation": "same_vendor",
+      "reason": "同厂商 火山引擎，产品不同：Doubao-Seedream-4.0 vs 5.0-lite"
+    },
+    {
+      "a": "5dedb9455508",
+      "b": "df1210f69a39",
+      "relation": "same_vendor",
+      "reason": "同厂商 智谱AI，产品不同：CogView-3-Flash vs CogVideoX-Flash"
+    },
+    {
+      "a": "2eae0e246de2",
+      "b": "8b2e8d64f11f",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：ERNIE-4.5-Turbo-128K vs ERNIE-X1-Turbo-32K"
+    },
+    {
+      "a": "4d4bcb5b6829",
+      "b": "8814355d59e1",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：DeepSeek-R1 vs DeepSeek-V3-250324"
+    },
+    {
+      "a": "4d4bcb5b6829",
+      "b": "e384895f5935",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：DeepSeek-R1 vs DeepSeek-V3.1-250821"
+    },
+    {
+      "a": "8b609cb05116",
+      "b": "c4ab5c5d8101",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：Qwen3-30B-A3B vs Qwen3-Coder-480B"
+    },
+    {
+      "a": "bf156583e97c",
+      "b": "e384895f5935",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：DeepSeek-R1-250528 vs DeepSeek-V3.1-250821"
+    },
+    {
+      "a": "017bdbc04e70",
+      "b": "c4ab5c5d8101",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：Qwen3-235B-A22B vs Qwen3-Coder-480B"
+    },
+    {
+      "a": "2db62eb1a8a0",
+      "b": "8dada3205ed8",
+      "relation": "same_vendor",
+      "reason": "同厂商 火山引擎，产品不同：流式语音识别 vs 录音文件识别"
+    },
+    {
+      "a": "8814355d59e1",
+      "b": "e65f54470862",
+      "relation": "same_vendor",
+      "reason": "同厂商 百度智能云，产品不同：DeepSeek-V3-250324 vs DeepSeek-V3.1-Think-250821"
+    }
+  ]
+}

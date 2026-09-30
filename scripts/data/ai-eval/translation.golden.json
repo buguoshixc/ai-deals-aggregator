@@ -1,0 +1,585 @@
+{
+  "schemaVersion": 1,
+  "builtAt": "2026-09-30T17:38:44Z",
+  "note": "来源：scripts/data/translations_zh.json 里人工核准的译文。 en 取 entry.src[field]（译文**当初照着写的那段英文**），不是记录当前的英文： 若用当前英文，原文漂移会被算成守卫误报，而那不是误报。 terms 取 translate.termsOf(deal)（厂商名里的拉丁词），来自 deals.json。 drift 列的是「快照英文 ≠ 记录当前英文」的对，它们不影响本臂结论，但要让人看见。",
+  "pairs": [
+    {
+      "dealId": "06bc1d631f62",
+      "field": "description",
+      "en": "A tool to sync lips and clone voices in videos",
+      "zh": "为视频做口型同步与声音克隆。",
+      "terms": [
+        "Sync.so"
+      ]
+    },
+    {
+      "dealId": "0750a3061d72",
+      "field": "description",
+      "en": "A platform to integrate multiple AI models for generating images, videos, and character designs.",
+      "zh": "整合多个 AI 模型，用于生成图像、视频与角色设计。",
+      "terms": [
+        "Flora"
+      ]
+    },
+    {
+      "dealId": "0ddacfb2cc6e",
+      "field": "description",
+      "en": "A platform with video solutions, including subtitling and voiceovers.",
+      "zh": "一个提供视频解决方案的平台，包含字幕与配音功能。",
+      "terms": [
+        "Wavel.ai"
+      ]
+    },
+    {
+      "dealId": "12dbf1bf1180",
+      "field": "description",
+      "en": "A tool to convert speech to formatted text instantly.",
+      "zh": "把口述实时转成排版好的文字。",
+      "terms": [
+        "Wispr",
+        "Flow"
+      ]
+    },
+    {
+      "dealId": "173ff7aa837e",
+      "field": "description",
+      "en": "A tool to convert long videos into short clips.",
+      "zh": "把长视频自动切成短视频片段的工具。",
+      "terms": [
+        "Cliphi"
+      ]
+    },
+    {
+      "dealId": "28434ca44079",
+      "field": "description",
+      "en": "A tool for AI development with diverse tools and models.",
+      "zh": "集成多种工具与模型的 AI 开发平台。",
+      "terms": [
+        "Google"
+      ]
+    },
+    {
+      "dealId": "2d0ceeea880d",
+      "field": "description",
+      "en": "Chat with your documents and websites",
+      "zh": "与你的文档和网页对话。",
+      "terms": [
+        "NotebookLM"
+      ]
+    },
+    {
+      "dealId": "376b6b3397e6",
+      "field": "description",
+      "en": "A conversational AI for timely answers from the live web and X.",
+      "zh": "对话式 AI，基于实时网络与 X 的内容给出及时回答。",
+      "terms": [
+        "Grok"
+      ]
+    },
+    {
+      "dealId": "39d2832e3c8f",
+      "field": "description",
+      "en": "A platform to edit photos and videos online.",
+      "zh": "在线编辑照片与视频的平台。",
+      "terms": [
+        "Unboring.ai"
+      ]
+    },
+    {
+      "dealId": "3c8a9a6a9ee9",
+      "field": "discountInfo",
+      "en": "Replit pricing lists annual savings on paid plans. Its docs have also listed student discounts such as $15 off per month for the first six months of Replit Core.",
+      "zh": "Replit 定价页列出了付费套餐的年付优惠。其文档中也出现过学生折扣，例如 Replit Core 前六个月每月减 $15。",
+      "terms": [
+        "Replit"
+      ]
+    },
+    {
+      "dealId": "3c8a9a6a9ee9",
+      "field": "description",
+      "en": "Check Replit pricing and student signup paths before subscribing.",
+      "zh": "订阅前先核对 Replit 定价页与学生注册入口。",
+      "terms": [
+        "Replit"
+      ]
+    },
+    {
+      "dealId": "3c8a9a6a9ee9",
+      "field": "eligibility",
+      "en": "Students, solo builders, app builders using Replit Agent.",
+      "zh": "学生、独立开发者，以及使用 Replit Agent 做应用的开发者。",
+      "terms": [
+        "Replit"
+      ]
+    },
+    {
+      "dealId": "413a77602a7c",
+      "field": "description",
+      "en": "A tool for self-hosted GitHub Actions runners with automatic scaling capabilities.",
+      "zh": "自建 GitHub Actions 运行器，支持自动扩缩容。",
+      "terms": [
+        "Tenki",
+        "Cloud"
+      ]
+    },
+    {
+      "dealId": "4a875a435019",
+      "field": "discountInfo",
+      "en": "Canva Nonprofits gives eligible registered nonprofits free Canva Pro features and collaboration tools for up to 50 users; additional nonprofit seats are discounted. Canva Education is free for eligible K-12 educators and students.",
+      "zh": "Canva 非营利计划为符合条件的注册非营利组织免费提供 Canva Pro 功能与协作工具，最多 50 个席位，超出的非营利席位按折扣价购买。Canva 教育版对符合条件的 K-12 教师与学生免费。",
+      "terms": [
+        "Canva"
+      ]
+    },
+    {
+      "dealId": "4a875a435019",
+      "field": "description",
+      "en": "Apply through Canva Nonprofits or Canva Education eligibility verification.",
+      "zh": "通过 Canva 非营利计划或 Canva 教育版的身份验证入口申请。",
+      "terms": [
+        "Canva"
+      ]
+    },
+    {
+      "dealId": "4a875a435019",
+      "field": "eligibility",
+      "en": "Nonprofits, schools, K-12 teachers, design and marketing teams.",
+      "zh": "非营利组织、学校、K-12 教师，以及设计与市场团队。",
+      "terms": [
+        "Canva"
+      ]
+    },
+    {
+      "dealId": "544bb843f605",
+      "field": "description",
+      "en": "A tool to perform complex creative and analytical tasks with long-term context.",
+      "zh": "具备长期上下文，可完成复杂创作与分析任务。",
+      "terms": [
+        "Hermes"
+      ]
+    },
+    {
+      "dealId": "5975c73aa115",
+      "field": "description",
+      "en": "A tool for creating clips from long-form videos.",
+      "zh": "从长视频中剪出片段的工具。",
+      "terms": [
+        "Qlip.ai"
+      ]
+    },
+    {
+      "dealId": "6013b80f266f",
+      "field": "discountInfo",
+      "en": "Zapier offers annual billing savings and says nonprofits get 15% off any paid plan, excluding pay-per-task charges.",
+      "zh": "Zapier 提供年付优惠，并表示非营利组织购买任意付费套餐可享 15% 折扣，按任务计费的部分除外。",
+      "terms": [
+        "Zapier"
+      ]
+    },
+    {
+      "dealId": "6013b80f266f",
+      "field": "description",
+      "en": "Choose annual billing or apply through Zapier for Nonprofits.",
+      "zh": "选择年付，或通过 Zapier 非营利计划申请。",
+      "terms": [
+        "Zapier"
+      ]
+    },
+    {
+      "dealId": "6013b80f266f",
+      "field": "eligibility",
+      "en": "Nonprofits, small businesses automating repetitive tasks.",
+      "zh": "非营利组织，以及想把重复任务自动化的中小企业。",
+      "terms": [
+        "Zapier"
+      ]
+    },
+    {
+      "dealId": "642216383013",
+      "field": "description",
+      "en": "The Ultimate Note-Taking Tool",
+      "zh": "终极笔记工具。",
+      "terms": [
+        "Reflect"
+      ]
+    },
+    {
+      "dealId": "72048178d658",
+      "field": "description",
+      "en": "A tool to create text-to-speech videos.",
+      "zh": "把文本做成配音视频的工具。",
+      "terms": [
+        "DeepBrain"
+      ]
+    },
+    {
+      "dealId": "72410d92e184",
+      "field": "description",
+      "en": "AI tool that checks price, reviews, and seller trust before you buy.",
+      "zh": "下单前替你核对价格、评价与卖家可信度的 AI 工具。",
+      "terms": [
+        "TickClip"
+      ]
+    },
+    {
+      "dealId": "7762168d515d",
+      "field": "discountInfo",
+      "en": "Make advertises a 12-month free license for eligible NGOs through its NGO program.",
+      "zh": "Make 通过其 NGO 计划，为符合条件的非政府组织提供 12 个月免费授权。",
+      "terms": [
+        "Make"
+      ]
+    },
+    {
+      "dealId": "7762168d515d",
+      "field": "description",
+      "en": "Apply through Make for NGOs.",
+      "zh": "通过 Make 的 NGO 计划申请。",
+      "terms": [
+        "Make"
+      ]
+    },
+    {
+      "dealId": "7762168d515d",
+      "field": "eligibility",
+      "en": "NGOs, nonprofits, operations teams building workflow automation.",
+      "zh": "非政府组织、非营利组织，以及在做工作流自动化的运营团队。",
+      "terms": [
+        "Make"
+      ]
+    },
+    {
+      "dealId": "7f1250402ebb",
+      "field": "description",
+      "en": "AI-powered, no-code QA test automation platform for web and mobile.",
+      "zh": "面向 Web 与移动端的 AI 无代码测试自动化平台。",
+      "terms": [
+        "Klarent"
+      ]
+    },
+    {
+      "dealId": "7f3607d92aa5",
+      "field": "description",
+      "en": "Create videos from text with AI",
+      "zh": "用 AI 把文字生成视频。",
+      "terms": [
+        "Genmo",
+        "Mochi"
+      ]
+    },
+    {
+      "dealId": "8ad33957ce77",
+      "field": "description",
+      "en": "A design tool to generate images and videos.",
+      "zh": "生成图像与视频的设计工具。",
+      "terms": [
+        "KREA"
+      ]
+    },
+    {
+      "dealId": "9c553dd82d2d",
+      "field": "discountInfo",
+      "en": "Cursor says anyone can start free. Its student page points students toward campus and online event promotions; its pricing page warns that third-party Cursor subscriptions are unauthorized.",
+      "zh": "Cursor 表示任何人都可以免费开始使用。它的学生页面把学生引向校园与线上活动优惠；定价页则提醒，第三方出售的 Cursor 订阅均未获授权。",
+      "terms": [
+        "Cursor"
+      ]
+    },
+    {
+      "dealId": "9c553dd82d2d",
+      "field": "description",
+      "en": "Use the free plan and buy only through cursor.com if upgrading.",
+      "zh": "先用免费档；如需升级，只在 cursor.com 官方渠道购买。",
+      "terms": [
+        "Cursor"
+      ]
+    },
+    {
+      "dealId": "9c553dd82d2d",
+      "field": "eligibility",
+      "en": "Students watching for campus promos, developers testing AI coding tools.",
+      "zh": "关注校园优惠的学生，以及正在试用 AI 编程工具的开发者。",
+      "terms": [
+        "Cursor"
+      ]
+    },
+    {
+      "dealId": "9ce2f3d45c11",
+      "field": "description",
+      "en": "A tool for automating B2B conversations and bookings.",
+      "zh": "自动处理 B2B 客户沟通与约谈的工具。",
+      "terms": [
+        "Jason"
+      ]
+    },
+    {
+      "dealId": "9e7c938ec401",
+      "field": "description",
+      "en": "Creates images and videos from prompts.",
+      "zh": "用提示词生成图片与视频。",
+      "terms": [
+        "Midjourney"
+      ]
+    },
+    {
+      "dealId": "9fdccd9de525",
+      "field": "description",
+      "en": "A tool to create videos from text or voice using digital avatars.",
+      "zh": "用数字人把文字或语音做成视频。",
+      "terms": [
+        "Humva"
+      ]
+    },
+    {
+      "dealId": "a1bb0302318b",
+      "field": "description",
+      "en": "An AI notepad that transcribes meetings using your computer audio and automatically generates notes, action items, and follow-ups.",
+      "zh": "AI 记事本：用电脑音频转写会议内容，自动生成笔记、待办与跟进事项。",
+      "terms": [
+        "Granola"
+      ]
+    },
+    {
+      "dealId": "a67c07bf4993",
+      "field": "description",
+      "en": "Turns topics, scripts, or PDFs into narrated whiteboard videos.",
+      "zh": "把选题、脚本或 PDF 变成带解说的白板动画视频。",
+      "terms": [
+        "Ankon"
+      ]
+    },
+    {
+      "dealId": "ab4c0e5c007e",
+      "field": "description",
+      "en": "A tool to create multilingual language videos.",
+      "zh": "制作多语言视频的工具。",
+      "terms": [
+        "Kreado"
+      ]
+    },
+    {
+      "dealId": "b4d191dd0c65",
+      "field": "description",
+      "en": "A tool that creates short, highlight clips from long-form videos.",
+      "zh": "从长视频里自动挑出精彩片段做成短片。",
+      "terms": [
+        "HiClip"
+      ]
+    },
+    {
+      "dealId": "bf08e4fbd5ac",
+      "field": "description",
+      "en": "A tool to find celebrity look-alike suggestions based on your photo.",
+      "zh": "上传照片，找出与你相像的名人。",
+      "terms": [
+        "Star"
+      ]
+    },
+    {
+      "dealId": "c05dc74bfd78",
+      "field": "discountInfo",
+      "en": "Education Pro is offered to verified students and educators at a discount. Perplexity also says promo codes are distributed through official partners and channels.",
+      "zh": "通过验证的学生与教育工作者可优惠购买 Education Pro。Perplexity 同时说明，优惠码只通过官方合作伙伴与官方渠道发放。",
+      "terms": [
+        "Perplexity"
+      ]
+    },
+    {
+      "dealId": "c05dc74bfd78",
+      "field": "description",
+      "en": "Verify student or educator status, or use partner promotions from official channels.",
+      "zh": "先完成学生或教育工作者身份验证，或使用官方渠道发布的合作方优惠。",
+      "terms": [
+        "Perplexity"
+      ]
+    },
+    {
+      "dealId": "c05dc74bfd78",
+      "field": "eligibility",
+      "en": "Students, educators, research-heavy users, people comparing AI search tools.",
+      "zh": "学生、教育工作者、重度检索用户，以及正在比较 AI 搜索工具的人。",
+      "terms": [
+        "Perplexity"
+      ]
+    },
+    {
+      "dealId": "c789f0a090bf",
+      "field": "discountInfo",
+      "en": "Free Gemini access remains available. Google AI Pro student offers vary by country; the U.S. student offer page says the previous student offer ended March 11, 2026.",
+      "zh": "Gemini 免费访问仍然可用。Google AI Pro 的学生优惠因国家而异；美国学生优惠页面写明，上一轮学生优惠已于 2026 年 3 月 11 日结束。",
+      "terms": [
+        "Google",
+        "Gemini"
+      ]
+    },
+    {
+      "dealId": "c789f0a090bf",
+      "field": "description",
+      "en": "Check the official Gemini student and subscription pages for your region.",
+      "zh": "请查看你所在地区的 Gemini 官方学生页与订阅页。",
+      "terms": [
+        "Google",
+        "Gemini"
+      ]
+    },
+    {
+      "dealId": "c789f0a090bf",
+      "field": "eligibility",
+      "en": "Students checking regional offers, Google Workspace users, people who want a free AI assistant.",
+      "zh": "在查各国学生优惠的学生、Google Workspace 用户，以及想要免费 AI 助手的用户。",
+      "terms": [
+        "Google",
+        "Gemini"
+      ]
+    },
+    {
+      "dealId": "c971e33a9cd0",
+      "field": "discountInfo",
+      "en": "OpenAI, working with SheerID for verification, offers one full year of free ChatGPT Plus to eligible veterans and transitioning servicemembers, alongside example chats and a getting-started guide for job search, benefits, and relocation…",
+      "zh": "OpenAI 与 SheerID 合作完成身份验证，为符合条件的退伍军人和即将退役的现役军人提供整整一年免费 ChatGPT Plus，并附示例对话，以及面向求职、福利申请与搬迁规划的入门指南。",
+      "terms": [
+        "ChatGPT",
+        "Plus"
+      ]
+    },
+    {
+      "dealId": "c971e33a9cd0",
+      "field": "description",
+      "en": "Verify military or veteran status through SheerID at the official claim page.",
+      "zh": "在官方领取页面通过 SheerID 完成军人或退伍身份验证。",
+      "terms": [
+        "ChatGPT",
+        "Plus"
+      ]
+    },
+    {
+      "dealId": "c971e33a9cd0",
+      "field": "eligibility",
+      "en": "Veterans and active-duty servicemembers preparing to separate from the military.",
+      "zh": "退伍军人，以及准备退役的现役军人。",
+      "terms": [
+        "ChatGPT",
+        "Plus"
+      ]
+    },
+    {
+      "dealId": "cb45e0c735bd",
+      "field": "description",
+      "en": "Tracks how AI answer engines shift your website’s visibility.",
+      "zh": "追踪 AI 问答引擎如何改变你网站的曝光表现。",
+      "terms": [
+        "HubSpot",
+        "AEO"
+      ]
+    },
+    {
+      "dealId": "cbfce04c5556",
+      "field": "description",
+      "en": "An App to animate still images with effects.",
+      "zh": "给静态照片加上动效的 App。",
+      "terms": [
+        "Motionleap"
+      ]
+    },
+    {
+      "dealId": "d344dfeebd73",
+      "field": "description",
+      "en": "A tool to generate customized graphics and animations.",
+      "zh": "生成定制图形与动画的工具。",
+      "terms": [
+        "Ideogram"
+      ]
+    },
+    {
+      "dealId": "d37287db1754",
+      "field": "description",
+      "en": "An AI benchmark that tests how well language models generate Gary Busey portraits as SVG output.",
+      "zh": "一个 AI 基准测试：考察语言模型用 SVG 画出 Gary Busey 肖像的水平。",
+      "terms": [
+        "BuseyBench"
+      ]
+    },
+    {
+      "dealId": "da0d5a1929b4",
+      "field": "description",
+      "en": "A tool for transforming images into vector art, illustrations, and 3D images.",
+      "zh": "把图片转成矢量图、插画与 3D 图像的工具。",
+      "terms": [
+        "Recraft"
+      ]
+    },
+    {
+      "dealId": "e3af28ce5ca1",
+      "field": "description",
+      "en": "An IDE for code migration from legacy to modern frameworks through coding agents.",
+      "zh": "用编码智能体把遗留代码迁移到现代框架的 IDE。",
+      "terms": [
+        "Emergent.sh"
+      ]
+    },
+    {
+      "dealId": "ec17511a4284",
+      "field": "description",
+      "en": "A tool to convert 2D images into 3D models",
+      "zh": "把 2D 图片转成 3D 模型。",
+      "terms": [
+        "Copilot"
+      ]
+    },
+    {
+      "dealId": "f2294d28cbe8",
+      "field": "description",
+      "en": "Create unique production-ready game assets",
+      "zh": "生成可直接用于生产的独特游戏素材。",
+      "terms": [
+        "Leonardo"
+      ]
+    },
+    {
+      "dealId": "f5ffff50772c",
+      "field": "discountInfo",
+      "en": "Free ChatGPT tier; annual billing available for Business and Enterprise plans. No standing public student or nonprofit discount was listed on the official pricing page when checked.",
+      "zh": "ChatGPT 提供免费档；Business 与 Enterprise 套餐可选年付。核查官方定价页时，页面上没有列出长期有效的公开学生或非营利折扣。",
+      "terms": [
+        "ChatGPT"
+      ]
+    },
+    {
+      "dealId": "f5ffff50772c",
+      "field": "description",
+      "en": "Use the free plan or choose annual billing from the official pricing page.",
+      "zh": "可直接使用免费档，或在官方定价页选择年付。",
+      "terms": [
+        "ChatGPT"
+      ]
+    },
+    {
+      "dealId": "f5ffff50772c",
+      "field": "eligibility",
+      "en": "Individuals, teams already standardizing on ChatGPT, businesses comparing seat costs.",
+      "zh": "个人用户、已统一使用 ChatGPT 的团队，以及正在比较席位成本的企业。",
+      "terms": [
+        "ChatGPT"
+      ]
+    },
+    {
+      "dealId": "f820af7d3a70",
+      "field": "description",
+      "en": "A platform to connect and automate tasks across multiple applications and services.",
+      "zh": "跨多个应用与服务连接并自动化任务的平台。",
+      "terms": [
+        "N8N"
+      ]
+    },
+    {
+      "dealId": "f9720295b45d",
+      "field": "description",
+      "en": "Autocorrect but for drawings",
+      "zh": "画画版的自动纠错。",
+      "terms": [
+        "AutoDraw"
+      ]
+    }
+  ],
+  "drift": []
+}

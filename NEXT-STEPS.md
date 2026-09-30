@@ -4,6 +4,21 @@
 > 推送、以及 `v1.0` / `v1.1` 两轮（均已合并进 master）。要复核现状请以 `git log` 与
 > `PROJECT_STATUS.md` 为准。
 >
+> **2026-10-01 新增一轮：`v2.0-ai-assisted-maintenance`（分支 `v2.0-ai-assisted-maintenance`，隔离工作树）**
+> —— 目标：**用 AI 降低后台维护成本，而不是给网站加聊天入口**（采集器维护、字段标注、
+> 去重判断、翻译草稿、异常诊断）。**前端一个字节没改。**
+> AI 只能提出候选：候选由 `scripts/ai/` 产出、进 `.ai-cache/`（不入仓），
+> 人工 `ai:accept` 之后由 `ai:apply` 写进两个**已有人工来源层**（`curated_*.json` /
+> `audience-overrides.json`），再离线重建 `deals.json` 并跑门禁；红了整批回滚。
+> **采集链路完全不引用 AI 层**（静态断言），AI 挂掉/无 key 时退出码 0、站点照常。
+> 门禁新增两步（AI 层自检 37 项 + 采集器 fixture 回放 4 项，均离线）；
+> `check-ci-consistency` 新增 (16) 断言「AI 维护链路只手动触发、只读仓库、只出 artifact」，
+> `--expect-checks` 32 → 35。验收 **262 项 0 失败**（六项回归全过）。
+> 新门禁与新能力对本机没有 key 的限制也如实记在报告里：**前两臂评测不是模型分数**。
+> 完整报告：`research/v2.0-ai-assisted-maintenance-report.md`；
+> 前置的成本审计：`research/v2.0-maintenance-cost-audit.md`；契约：`docs/AI-MAINTENANCE-v2.0.md`。
+> **未合并、未推送** —— 等你的「推送」。
+>
 > **2026-09-29 新增一轮：`v1.2-intent-first-home`（分支 `v1.2-intent-first-home`，隔离工作树）**
 > —— 目标：**把首页从「数据库筛选器」升级成「按用户真实需求找优惠」**。
 > 首页多了一行「按需求找优惠」入口（10 枚静态 `<a>`，无 JS 也在、也能点），

@@ -2063,6 +2063,119 @@ JS 错误 0) · `check-mobile-chrome` 零裁切。
 
 ---
 
+### 2.35 `v2.0-ai-assisted-maintenance`：用 AI 降低后台维护成本（2026-10-01，分支 `v2.0-ai-assisted-maintenance`）
+
+**这一轮不加前台功能，一个前端字节都没改。** 目标按用户给定：*不是给网站加一个聊天机器人，
+而是用 AI 降低数据维护、采集器维护、去重判断和信息提取的人工成本*，且**AI 只能提出候选，
+不能无验证直接改写生产数据**。完整报告见 `research/v2.0-ai-assisted-maintenance-report.md`。
+
+#### ① 先做审计，再选能力（顺序不能反）
+
+`research/v2.0-maintenance-cost-audit.md` 是这一轮的**前置交付物**：在写任何 AI 代码之前，
+先把"今天仍然纯人工的活"用实测数字列出来（134 条数据 / 9 个注册采集器 / 32 条策展 /
+**56 条六字段 override 是人手写的** / 全库只有 3 条带引文 / 去重是精确匹配 + 一张手维护的别名表 /
+健康表只给"条数变了"而**全仓没有任何页面结构快照**）。Top N 决定落点顺序：
+地基 → 字段提取 → DOM 诊断 → 去重 → 翻译 → 评测 → fixtures/补丁。
+
+#### ② AI 层的边界（由测试守，不靠文档记）
+
+```text
+采集链路不引用 AI       collect.js / store.js / dedup.js 源码里不许出现 scripts/ai（静态断言）
+AI 从不上生产数据       只写 curated_*.json 与 audience-overrides.json 两个**已有人工来源层**
+无 key / 超时 / 非法 JSON 一律跳过   退出码 0，站点照常采集、构建、发布
+去重模块没有合并能力     scripts/ai/dedup.js 不导出任何 merge/apply/write 符号（符号表断言）
+AI 维护链路不碰仓库      ai-maintenance.yml 只 workflow_dispatch + contents:read（CI 断言 (16)）
+```
+
+#### ③ 交付的能力（全部只出候选）
+
+| 能力 | 入口 | 本轮实测 |
+|---|---|---|
+| 优惠字段提取（逐字段引文） | `npm run ai:extract` | 134 个单元，平均约 1.3 KB 输入；无引文的断言由候选层 R1 拦下 |
+| 疑似重复检测 | `npm run ai:dedup` | 确定性预筛把 8911 对压到 **15 对**（同 host / 同别名键 / 标题包含 / 二元组相似度 ≥ 阈值） |
+| 翻译草稿 | `npm run ai:translate` | 当前 **0 个待译单元**（63 个可译字段已全部有人工译文）——能力在，但没有活可干 |
+| 采集器 DOM drift 诊断 | `npm run ai:diagnose` | 两代结构摘要 + 探针命中 + 采集器源码；当前命中 **2 个**（两个无头源 stale/lastRunMissing） |
+| 数据质量审计 | `npm run ai:audit` | 确定性预筛从 134 条里挑出 **14 条**可疑（10 条"绝对化断言无引文支撑"、8 条"自由文本说学生而结构化字段没写"、1 条"数字在引文里找不到"） |
+| 采集器补丁候选 | `npm run ai:patch` | 只出 diff；**自证**=最小 diff 应用器 + 临时副本执行 + fixture 回归判定（实测：好补丁 13→13，破坏性补丁 13→0 被拦） |
+
+#### ④ 页面结构摘要：把"这个源坏了"从一句话变成一组数字
+
+Phase C 的捕获**零改动采集器**：`lib/http.js` 与 `lib/browser.js` 是仅有的两个网络出口，
+摘要只挂这两个出口。实测（真抓 Layer3Labs）：原始页面 **50,814 字节** → 摘要 **1,388 字节（2.7%）**，
+里面只有计数（`table=2 tr=20 td=80`）、标记、我们**自己声明**的探针命中（`table tr=20`）与类名直方图，
+**没有一个字的页面正文**（这条由自检的结构性判据守着：摘要里除 url 外不许出现超过 40 字的字符串）。
+每源保留两代、随数据入库 —— 不入库就永远只有"这一次"，而诊断要的恰好是"变之前 / 变之后"。
+
+#### ⑤ 落地闭环：候选 → 人点 → 写人工来源层 → 离线重建 → 门禁
+
+```bash
+npm run ai:review -- --task=extract   # 只读；「无据的确定」单列一栏
+npm run ai:accept -- --id=<id> --note="…"
+npm run ai:apply  -- --id=<id>        # 写 audience-overrides.json → rebuild-deals → validate --strict；红了整批回滚
+```
+
+新增 `scripts/tools/rebuild-deals.js`：**离线**重放 merge 重建 `deals.json`（不联网、确定性），
+所以落地之后工作树不会停在一个"人工文件改了、派生数据还没跟上"的不一致态里。
+它刻意**保持盘上键序** —— 否则会出现"改一个字段、45 条记录重排 54 行"的不可读 diff
+（`mergeAll` 的规范键序与盘上旧管线的键序不同，这个差异是本就存在的，留给 `npm run collect` 自己收敛）。
+端到端实测（mock 响应，演示后已还原）：overrides +38 行、deals.json +70 行，
+`validate --strict` 与 `check-reproducible` 双绿。
+
+#### ⑥ 安全
+
+`scripts/lib/secret-scan.js` 是密钥模式的**单一出处**（14 类：`sk-` / `sk-ant-` / `AIza` / `ghp_` /
+`github_pat_` / `AKIA` / `xox[baprs]-` / `Bearer …` / PEM 私钥 / 四个 `*_API_KEY=` 等），
+三处共用：送模型前脱敏、`build-local.js` 的产物自检、AI 自检的牙测试 6。
+实测：`dist` 干净扫描 **0 命中**；往产物里注入一个 `sk-` 形状串，同一次调用报出 `openai-key`；
+扫描结果只打印前 8 字符，不回显完整串。
+
+#### ⑦ 牙测试（`npm run ai:selftest`，离线、零依赖、**37 项 0 失败**）
+
+1 无引文的 `studentRequired=true` → 候选无效 ·
+2 非法 enum → 无效（另：三态不接受 `null` 与字符串 `"true"`）·
+3 引文无否定线索的 `creditCardRequired=false` → `needs_human` 并在审阅表单列（反向：有"无需"字样不误报）·
+4 去重模块无合并符号 + 真跑一轮后 `deals.json` 字节不变 ·
+5 AI 超时/HTTP/非法 JSON/非法枚举/缺必填五种坏法全部收敛成结构化 invalid，且 `collect.js --list`
+在 `AI_PROVIDER=off` 与 `AI_PROVIDER=fail` 下输出**完全一致** ·
+6 六类密钥样本全部检出、候选文件里的密钥会被扫出、`build-local` 确实接了扫描 ·
+另加结构性牙 12 条（缓存 key 与时间无关、探针声明表覆盖 9 个采集器、快照体积、`.ai-cache` 不入仓、
+deal 记录未新增 AI 字段、译文守卫对 63 篇人工译文**零误报**、补丁应用器拒绝坏上下文……）。
+
+#### ⑧ 评测：一个诚实的结论
+
+`npm run ai:eval` 三臂。**本机没有 API key**，所以臂 1（字段提取）与臂 2（去重）跑的是手写录制响应
+—— 它们证明的是**工装通不通**（输入构造 / schema 校验 / 候选规则 / 指标计算），
+**不是模型精度**，报告与 JSON 里都写明了这一点。臂 3（译文守卫）不调用任何模型，是**真测量**：
+63 篇人工译文 **0 误报**；10 项程序化篡改的检出率由评测暴露了两个真洞（百分比豁免过宽、
+译文凭空加否定），**已修**并复测为全部检出 —— 这正是"评测优先于自动化"的价值：
+这两个洞在人工使用中几乎不可能被发现。
+
+#### ⑨ 门禁与验收（全部实跑）
+
+| 门禁 | 结果 |
+|---|---|
+| `test` / `test:strict` / `check:zh` / `check:reproducible` | ✅ 全绿（译文漂移 0、待译 0、可重建） |
+| `selftest:zh` / `expiry` / `text` / `health` / `provenance` / `audience` / `app-token` | ✅ 15 / 94 / 46 / 51 / 91 / 161 / 67 项，失败均 0 |
+| `migrate-audience-verify` | ✅ 15/15 |
+| `ai:selftest` | ✅ **37 项 0 失败** |
+| `fixture:test` | ✅ **4 项 0 失败**（4 份 fixture，片段共约 15 KB） |
+| `check:ci` | ✅ **35 项 0 失败**（含新增 (16) 断言；`--expect-checks` 32 → 35） |
+| `build` | ✅ 产物自检全过（含密钥扫描），743.3 KB |
+| `verify --compare` | ✅ **验收 262 项 0 失败**；六项回归全过（覆盖 80→80、卡片 50→50、首屏 9→9、页高 4589→4620px 在容差内、外部请求 0、JS 错误 0） |
+
+#### ⑩ 如实记录的限制
+
+- **没有真实模型精度数字**：没有 key，臂 1/2 是录制响应。有 key 后 `AI_EVAL_LIVE=1` 可补跑，报告里留了位置。
+- **不动前端**：`provenance`/`credibility` 枚举与 deal 记录契约**一个字没改**，
+  AI 痕迹只记在 `scripts/data/ai-applied-log.json`（可追溯、不上前端）。是否在页面标注"AI 协助"留给下一轮。
+- **采集侧的内容字段没有落地通道**：`ai:apply` 只支持六字段（进 overrides）与策展来源的任意字段；
+  对采集来源的 `discountInfo` / `validity` 这类字段**明确拒绝**并说明原因 —— 不发明机制。
+- **一键重建 fixture 依赖当时的官方页面**：`npm run fixture:build -- --all` 会随页面变化产生 diff，需人工复核后提交。
+
+**B. 下一步**：有 key 后跑一次真实评测并回填指标；`v2.1` 再议是否把"AI 协助"标注到页面上。
+
+---
+
 ## 三、命令速查
 
 ```bash
@@ -2085,6 +2198,24 @@ npm run check:zh        # 译文漂移门禁：非零退出 = 有译文对不上
 npm run selftest:zh     # 中文译文门禁演练（自恢复，验证坏译文真的会被拦下）
 npm run selftest:expiry # 活动期限门禁演练：截止日抽取正/负样例 + 三分类 + 排序次序 + 前后端词表一致性
 npm run fetch:logos     # 从厂商官网抓品牌图标，补进 assets/logos/
+
+# v2.0 AI 维护层（可选，默认关闭；不开 AI 时这些命令也会正常退出）
+npm run ai:selftest     # AI 层边界自检（六颗主牙 + 结构性牙；离线、零依赖，CI 里也跑）
+npm run fixture:test    # 采集器 fixture 回放：解析器行为的契约（离线，CI 里也跑）
+npm run check:ci        # CI 口径一致性（含 (16)「AI 维护链路不许碰仓库」；当前 35 项）
+npm run rebuild         # 离线重放 merge 重建 deals.json（不联网；ai:apply 之后自动跑）
+npm run ai:diagnose     # 采集器坏了：两代结构摘要 + 探针命中 + 源码 → 候选原因
+npm run ai:extract -- --limit=10        # 优惠字段提取候选（逐字段引文）
+npm run ai:dedup                        # 疑似重复候选（结构上无法自动合并）
+npm run ai:translate                    # 翻译草稿 → scripts/data/translations_zh.candidates.json
+npm run ai:audit                        # 数据质量审计候选（要求给出可收敛的确定性规则）
+npm run ai:patch -- --source=<id>       # 采集器补丁候选（只出 diff；自证=应用+跑 fixture）
+npm run ai:review                       # 候选审阅表（只读；「无据的确定」单列一栏）
+npm run ai:accept -- --id=<id> --note="…"   # 记录人工决定（只改候选文件）
+npm run ai:apply  -- --id=<id>          # 唯一会写生产数据的工具（门禁红则整批回滚）
+npm run ai:usage                        # 用量与成本报表
+npm run ai:eval                         # 评测三臂（金标集 + 译文守卫篡改测试）
+npm run fixture:build -- --all          # 重建 fixture（会随官方页面变化，需人工复核 diff）
 npm run serve                          # 本地预览源码目录 http://127.0.0.1:8080
 node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 index.html）
 
@@ -2135,6 +2266,13 @@ node scripts/data/backfill-cards.js --check          # 核对策展条目的卡�
 | 价格阶梯（`priceLine`） | 3（仅官方页明确写出「免费 → 付费」的条目） |
 | 中文译文（`zh`，见 2.15 / 2.29 ⑩） | 43 条 / 61 个字段（含 2026-09-27 补的 DeepBrain AI、AutoDraw 两条） |
 | 垃圾条目 | 0 |
+
+> **v2.0 复核（2026-10-01，`updatedAt` = 2026-09-30T09:36:21+08:00）**：总条目 **134**、
+> 策展 32 条、六字段人工覆盖 **56 条**（`scripts/data/audience-overrides.json`）、
+> 全库带 `evidence` 引文的 **3 条**、中文译文 **45 条 / 63 个字段**（待译 0）、
+> 注册采集器 **9 个**。v2.0 新增四份 `scripts/data/` 文件：`source-probes.json`（探针声明表）、
+> `source-snapshots.json`（两代结构摘要，**不含正文**）、`ai-pricing.json`、`ai-applied-log.json`，
+> 以及两份不入仓的运行期内容（`.ai-cache/`、`translations_zh.candidates.json` 之外的候选）。
 
 **折叠后默认视图**（口径见 2.30，数字为 2026-09-27 复核值）：**50 张卡片** = 47 张单条卡 + 3 张折叠卡
 （智谱AI 1 张覆盖 7 个模型、百度千帆 1 张覆盖 17 个、火山方舟 1 张覆盖 9 个）。

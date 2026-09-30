@@ -94,7 +94,10 @@ async function main() {
   const options = {
     only: only ? only.split(',').map(s => s.trim()).filter(Boolean) : null,
     limit,
-    source: option('source', 'fetch'),
+    // `--source` 有两个完全不同的含义，取决于任务：extract 的输入来源（fetch / record），
+    // patch 的目标采集器 id。给所有任务都默认成 'fetch' 会让 patch 去找一个叫 fetch 的采集器
+    // （实测踩过：`--task=patch --dry-run` 报「没有注册的采集器 fetch」）。
+    source: option('source', taskName === 'extract' ? 'fetch' : null),
     fields: option('fields') ? option('fields').split(',').map(s => s.trim()) : null,
     maxPairs: option('max-pairs') ? Number(option('max-pairs')) : undefined,
     maxInputChars: option('max-chars') ? Number(option('max-chars')) : undefined,

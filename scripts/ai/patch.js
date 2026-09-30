@@ -184,17 +184,23 @@ function collectorFileOf(sourceId) {
 }
 
 async function units({ options = {} } = {}) {
-  const only = options.only ? [].concat(options.only) : (options.source ? [options.source] : []);
-  const ids = options.source ? [options.source] : only;
+  const only = options.only ? [].concat(options.only) : [];
+  // 只接受**已注册采集器**的 id：`--source` 在别的任务里是「输入来源」（fetch/record），
+  // 传进来一个不是采集器的值时应当退回「按最近一次诊断自动挑」，而不是报一个莫名其妙的源。
+  const registered = new Set(registry.all().map(entry => entry.id));
+  const requested = [options.source, ...only].filter(Boolean).map(String).filter(id => registered.has(id));
+  const ids = requested.length
+    ? requested
+    : (() => {
+      const file = candidates.latestCandidatesFile('diagnose');
+      if (!file) return [];
+      try {
+        return candidates.readCandidates(file).candidates.map(item => item.key).filter(key => registered.has(key));
+      } catch (error) {
+        return [];
+      }
+    })();
   const out = [];
-  if (!ids.length) {
-    // 没点名就用「最近一次诊断里出现过的来源」
-    const file = candidates.latestCandidatesFile('diagnose');
-    if (file) {
-      const payload = candidates.readCandidates(file);
-      for (const item of payload.candidates || []) if (item.key) ids.push(item.key);
-    }
-  }
 
   for (const sourceId of [...new Set(ids)]) {
     const entry = collectorEntry(sourceId);

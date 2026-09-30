@@ -162,6 +162,46 @@ function main() {
   for (const item of normal) {
     const deal = deals.get(item.dealId);
     console.log(`▸ ${item.id}  ${deal ? deal.title : item.dealId}${item.sourceUrl ? `  ${item.sourceUrl}` : ''}`);
+
+    // 审计与补丁候选不是"字段 → 值"，逐字段并排比没有意义，单独渲染。
+    // 审计的重点是**每一条发现都必须自带一条确定性规则建议** —— 这一层存在的目的
+    // 就是让 AI 判断最终收敛成零测试成本的断言。
+    if (item.task === 'audit_record') {
+      const findings = (item.candidate && item.candidate.findings) || [];
+      if (!findings.length) console.log('    （模型认为这条记录没有内部矛盾）');
+      for (const finding of findings) {
+        console.log(`    [${finding.severity}] ${finding.code}${finding.field ? ` · ${finding.field}` : ''}`);
+        console.log(`        断言：${finding.claim}`);
+        console.log(`        矛盾：${finding.contradiction}`);
+        if (finding.suggestedValidatorRule) console.log(`        可收敛成：${finding.suggestedValidatorRule}`);
+      }
+      console.log('');
+      continue;
+    }
+
+    if (item.task === 'patch_collector') {
+      console.log(`    文件：${(item.candidate && item.candidate.files || []).join(', ')}`);
+      console.log(`    理由：${(item.candidate && item.candidate.rationale) || '（无）'}`);
+      console.log(`    自证：补丁可应用=${item.deterministic.patchApplies} · fixture 回归=${item.deterministic.fixtureRegression}` +
+        `（${item.deterministic.fixtureBefore} → ${item.deterministic.fixtureAfter} 条）`);
+      if (item.candidate && item.candidate.riskNotes) console.log(`    风险：${item.candidate.riskNotes}`);
+      console.log('    —— 补丁不会由任何工具自动应用；请人工 review 后用 git apply。');
+      console.log('');
+      continue;
+    }
+
+    if (item.task === 'diagnose_source') {
+      const causes = (item.candidate && item.candidate.causes) || [];
+      console.log(`    可能原因：${causes.join(' / ')}（置信 ${item.candidate && item.candidate.confidence}）`);
+      for (const line of (item.candidate && item.candidate.evidence) || []) console.log(`    依据：${line}`);
+      for (const probe of (item.candidate && item.candidate.suggestedProbes) || []) {
+        console.log(`    探针建议：${probe.op} ${probe.kind}「${probe.value}」—— ${probe.why}`);
+      }
+      if (item.candidate && item.candidate.patchHint) console.log(`    修复方向：${item.candidate.patchHint}`);
+      console.log('');
+      continue;
+    }
+
     for (const row of rowsFor(item, deal)) {
       const changed = row.current !== row.next ? ' *' : '';
       console.log(`    ${row.field.padEnd(22)} 现：${row.current}  →  候选：${row.next}${changed}`);
