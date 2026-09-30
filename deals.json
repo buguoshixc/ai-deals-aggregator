@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-09-30T01:46:02+08:00",
+  "updatedAt": "2026-09-30T09:36:21+08:00",
   "count": 134,
   "deals": [
     {
@@ -3058,6 +3058,84 @@
       "verifiedAt": null
     },
     {
+      "id": "cb45e0c735bd",
+      "title": "HubSpot AEO Sensor",
+      "vendor": "HubSpot AEO",
+      "url": "https://www.hubspot.com/aeo-sensor",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "其他",
+      "description": "Tracks how AI answer engines shift your website’s visibility.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-30",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "追踪 AI 问答引擎如何改变你网站的曝光表现。"
+      }
+    },
+    {
+      "id": "9e7c938ec401",
+      "title": "Midjourney",
+      "vendor": "Midjourney",
+      "url": "https://www.midjourney.com/home/",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "Creates images and videos from prompts.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-30",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "用提示词生成图片与视频。"
+      }
+    },
+    {
+      "id": "376b6b3397e6",
+      "title": "Grok",
+      "vendor": "Grok",
+      "url": "https://x.ai/grok",
+      "source": "Futurepedia",
+      "sourceUrl": "https://www.futurepedia.io/tool/grok",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": "freemium",
+      "priceLine": null,
+      "features": null,
+      "category": "对话模型",
+      "description": "A conversational AI for timely answers from the live web and X.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-09-30",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "对话式 AI，基于实时网络与 X 的内容给出及时回答。"
+      }
+    },
+    {
       "id": "a67c07bf4993",
       "title": "Ankon AI",
       "vendor": "Ankon AI",
@@ -4801,84 +4879,6 @@
             "derived": "stated"
           }
         }
-      }
-    },
-    {
-      "id": "cb45e0c735bd",
-      "title": "HubSpot AEO Sensor",
-      "vendor": "HubSpot AEO",
-      "url": "https://www.hubspot.com/aeo-sensor",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "其他",
-      "description": "Tracks how AI answer engines shift your website’s visibility.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-29",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "追踪 AI 问答引擎如何改变你网站的曝光表现。"
-      }
-    },
-    {
-      "id": "9e7c938ec401",
-      "title": "Midjourney",
-      "vendor": "Midjourney",
-      "url": "https://www.midjourney.com/home/",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "Creates images and videos from prompts.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-29",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "用提示词生成图片与视频。"
-      }
-    },
-    {
-      "id": "376b6b3397e6",
-      "title": "Grok",
-      "vendor": "Grok",
-      "url": "https://x.ai/grok",
-      "source": "Futurepedia",
-      "sourceUrl": "https://www.futurepedia.io/tool/grok",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": "freemium",
-      "priceLine": null,
-      "features": null,
-      "category": "对话模型",
-      "description": "A conversational AI for timely answers from the live web and X.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-09-30",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "对话式 AI，基于实时网络与 X 的内容给出及时回答。"
       }
     },
     {
@@ -7266,7 +7266,15 @@
             "derived": "stated"
           }
         }
-      }
+      },
+      "evidence": [
+        {
+          "field": "discountInfo",
+          "quote": "平台有权根据自身运营需求和营销需要，针对新用户等不特定人群赠与体验券或代金券（具体名称以上线时为准）。体验券和代金券等可用于平台上360智脑大模型API调用消耗使用。",
+          "sourceUrl": "https://ai.360.com/open/zh/terms",
+          "capturedAt": "2026-09-22"
+        }
+      ]
     },
     {
       "id": "7691c150c8e5",
@@ -7500,7 +7508,15 @@
             "derived": "stated"
           }
         }
-      }
+      },
+      "evidence": [
+        {
+          "field": "discountInfo",
+          "quote": "基础会员：价格：105元/月，限时优惠价55元，促销期结束后将恢复为105元",
+          "sourceUrl": "https://hailuoai.com/vip",
+          "capturedAt": "2026-09-22"
+        }
+      ]
     },
     {
       "id": "b56f33b3d4f3",
@@ -7590,7 +7606,15 @@
             "note": "eligibility 原文「该阿里云账号已通过实名认证」：大陆实名认证只能由持大陆身份证的用户完成，据此推断大陆用户可注册并领取（官方未逐条写明额度是否限地区，故按 §2.5.1 第二档记 true 并留下推理链）"
           }
         }
-      }
+      },
+      "evidence": [
+        {
+          "field": "discountInfo",
+          "quote": "魔搭通过API-Inference，将开源模型服务化并通过API接口进行标准化，免费提供给广大开发者体验。",
+          "sourceUrl": "https://www.modelscope.cn/docs/model-service/API-Inference/limits",
+          "capturedAt": "2026-09-22"
+        }
+      ]
     }
   ]
 }

@@ -31,7 +31,8 @@ const fs = require('fs');
 const path = require('path');
 
 const audience = require('./audience');
-const { AUDIENCE_FIELD_ORDER, MAX_PROVENANCE_NOTE_LENGTH } = require('./schema');
+const provenance = require('./provenance');
+const { AUDIENCE_FIELD_ORDER, MAX_PROVENANCE_NOTE_LENGTH, todayCN } = require('./schema');
 const { CREDIBILITY_RANK } = require('./dedup');
 
 const DATA_DIR = path.join(__dirname, '..', 'data');
@@ -105,12 +106,29 @@ function loadOverrides({ file = OVERRIDES_FILE } = {}) {
     const evidence = typeof raw.evidence === 'string' ? raw.evidence.trim() : '';
     if (!evidence) report.invalid.push({ index, title: raw.title, id: raw.id, reason: '没有依据引文 —— 值没有可核的推理链' });
 
+    // v1.3：官方原文片段（可选，独立的 `evidenceQuotes` 键）。
+    //
+    // 为什么不复用上面那个 `evidence` 字符串：它的语义是「六个字段的推理链」，一段话覆盖多个
+    // 结论；而 v1.3 的引文是**绑定到某一个字段**的官方原话。同名不同义会让两者互相污染，
+    // 所以引文另起一个键，两者的校验、上限、展示各自独立。
+    const evidenceQuotes = provenance.normalizeEvidence(raw.evidenceQuotes, { today: todayCN() });
+    provenance.auditEvidence(raw.evidenceQuotes, evidenceQuotes, { today: todayCN() }).forEach(item => {
+      report.invalid.push({
+        index,
+        title: raw.title,
+        id: raw.id,
+        field: `evidenceQuotes[${item.index}]`,
+        reason: item.reason
+      });
+    });
+
     const entry = {
       id: raw.id,
       title: typeof raw.title === 'string' ? raw.title : '',
       fields,
       inferredFields,
       evidence,
+      ...(evidenceQuotes ? { evidenceQuotes } : {}),
       ...(typeof raw.sourceUrl === 'string' && raw.sourceUrl ? { sourceUrl: raw.sourceUrl } : {})
     };
     byId.set(entry.id, entry);
@@ -188,14 +206,23 @@ function applyOverride(deal, entry) {
     ? OVERRIDE_CREDIBILITY
     : Object.keys(CREDIBILITY_RANK).find(k => k !== 'none' && CREDIBILITY_RANK[k] === worst) || OVERRIDE_CREDIBILITY;
 
-  const provenance = { credibility };
+  // ⚠️ 局部变量不能叫 `provenance`：那会**遮蔽**本文件顶部 require 进来的同名模块，
+  // 于是下面调用 `provenance.mergeEvidence(...)` 会打到这个普通对象上（实测 TypeError）。
+  const provenanceBlock = { credibility };
   const sourceUrl = (previous && previous.sourceUrl) || entry.sourceUrl;
-  if (sourceUrl) provenance.sourceUrl = sourceUrl;
-  if (previous && previous.verifiedAt) provenance.verifiedAt = previous.verifiedAt;
-  if (Object.keys(contrib).length) provenance.contrib = contrib;
-  if (Object.keys(fields).length) provenance.fields = fields;
+  if (sourceUrl) provenanceBlock.sourceUrl = sourceUrl;
+  if (previous && previous.verifiedAt) provenanceBlock.verifiedAt = previous.verifiedAt;
+  if (Object.keys(contrib).length) provenanceBlock.contrib = contrib;
+  if (Object.keys(fields).length) provenanceBlock.fields = fields;
 
-  next.provenance = Object.keys(contrib).length ? provenance : null;
+  next.provenance = Object.keys(contrib).length ? provenanceBlock : null;
+
+  // v1.3：把这份文件里的官方原文引文并到记录上（并集 + 确定性排序 + 上限，
+  // 与 dedup.merge 走的是同一个函数）。未命中 overrides 的记录原样返回，不会凭空多出引文。
+  const quotes = provenance.mergeEvidence(next.evidence, entry.evidenceQuotes);
+  if (quotes) next.evidence = quotes;
+  else delete next.evidence;
+
   return next;
 }
 

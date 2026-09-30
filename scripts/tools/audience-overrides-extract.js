@@ -245,6 +245,26 @@ function main() {
     process.exit(1);
   }
 
+  // v1.3：人工写下的**官方原文引文**（`evidenceQuotes`）不在报告表里，报告表只管六字段。
+  // 所以重新生成时必须把它按 id 原样带过来 —— 否则一次「按报告重建」会静默删掉人工补的
+  // 证据，而肉眼只会看到「引文没了」，页面上退化成「未收录官方原文片段」。
+  // 这不是可选的美化：这个文件是那些值的**唯一权威落点**。
+  const preservedQuotes = new Map();
+  try {
+    const previous = JSON.parse(fs.readFileSync(OUT, 'utf8'));
+    for (const entry of previous.entries || []) {
+      if (entry && entry.id && entry.evidenceQuotes) preservedQuotes.set(entry.id, entry.evidenceQuotes);
+    }
+  } catch (error) {
+    // 首次生成 / 旧文件损坏：没有可保留的东西，继续（损坏会在下一步被 JSON.parse 之外的地方发现）
+  }
+  if (preservedQuotes.size) {
+    for (const entry of entries) {
+      if (preservedQuotes.has(entry.id)) entry.evidenceQuotes = preservedQuotes.get(entry.id);
+    }
+    console.log(`保留人工引文    : ${preservedQuotes.size} 条（evidenceQuotes 不在报告表里，必须原样带过来）`);
+  }
+
   const payload = {
     schemaVersion: 1,
     purpose: 'deals.json 六字段的第二个人工来源（第一个是 curated_*.json）。让 deals.json 成为可重建的纯投影。',

@@ -20,7 +20,10 @@ const REQUIRED = [
   'vendorOf', 'offerOf', 'featsOf',
   // 卡片 / 行视图那行优惠文案的取值口径（折叠卡优先取 offerSummary）：
   // 单独抽出来，构建期预渲染与浏览器渲染共用同一份，工具也能直接断言折叠卡说了什么
-  'offerTextOf'
+  'offerTextOf',
+  // v1.3：信息来源块。构建自检要直接调用它来断言「每个缺失状态都说出来了」、
+  // 「措辞里没有本站自发的有效性结论」，所以它必须是对外可见的纯函数。
+  'sourceBlockHtml', 'sourceFactsOf'
 ];
 
 function load(htmlPath = path.join(ROOT, 'index.html')) {

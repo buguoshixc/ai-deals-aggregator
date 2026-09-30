@@ -124,6 +124,10 @@ const GATE_STEP_NAMES = [
   'Expiry self-test',
   'Text / cleanText self-test',
   'Source-health self-test',
+  // v1.3 新增：信息来源（evidence / provenance）的全部红线 —— 引文的版权上限、
+  // 「最近成功采集」四种状态的语义、以及「不许给自己盖有效性章」的措辞红线。
+  // 与 Audience self-test 同一条判断标准：它红的时候没有别的步骤会替它红。
+  'Provenance self-test',
   // v1.1 新增：受众字段（三态语义 / merge 可信度仲裁 / 措辞同源）的全部红线守卫都在这支自测里。
   // 它原先只在本机跑，于是这几类回归在 CI 里看不见（t1 核验的 B5）。判断标准不是"多新"，
   // 而是"它红的时候有没有别的步骤会替它红"——没有，所以必须进来。

@@ -1983,6 +1983,76 @@ reusable 调用会把它变成 `<调用方>/<被调>` 形态，且 deploy 再建
 
 ---
 
+### 2.34 `v1.3-evidence-provenance`：让读者能自己判断来源与新鲜度（2026-09-30）
+
+**目标**：一条优惠「从哪来、多久没被重新看到、最近一次成功采集在何时、依据是什么」——
+全部以**客观事实**呈现，**不给站点自己盖章**（不出现「已核验 / 100% 有效」）。
+
+**设计成三层，寿命不同、存放位置不同**（契约 `docs/SCHEMA-v1.3.md`）：
+
+| 层 | 内容 | 落在哪 |
+|---|---|---|
+| A 记录事实 | `url` / `source` / `sourceUrl` / `firstSeen` / `lastSeen` / `provenance.*` | 源 `deals.json`（已有，语义不变） |
+| B 官方引文 `evidence` | ≤3 条 × ≤200 字的官方原文片段 | 源 `deals.json`，**只人工写** |
+| C 采集事实 `sourceFacts` | 来源类型 / 采集方式 / 最近成功采集 / 最近一次采集状态 | **只进 `dist/deals.json`**（构建期从 `source-health.json` join） |
+
+C 只进产物是本节最要紧的取舍：`lastSuccessAt` 是**来源**的属性且每轮都刷新，写进源数据会让
+134 条记录天天全变一行 —— diff 失去意义，可重建性门禁也会退化成「前提是采集没发生」。
+
+**页面**：详情弹层与 80 个静态详情页共用同一个 `sourceBlockHtml(deal)`（RENDER-CORE），
+固定十行；「最近成功采集」**四种状态分开说** —— `known`（真实时间）/ `不适用`（人工策展，
+按设计没有采集器）/ `未知`（心跳里没有这一条）/ `不可用`（本次构建没有心跳数据）。
+措辞进 `SOURCE_WORDING` 单一来源，与 `lib/audience.js` 的 `WORDING_CONTRACT` 逐字节比对。
+
+**避免大规模复制第三方内容**：条数（≤3）、单条长度（≤200 字，**超长拒收而不是截断**——
+截断过的原话就不是原话）、全库预算（≤12000 字且 ≤ `deals.json` 字节 5%）、出处禁聚合站、
+必须绑定一个 `field`。全文/HTML/截图/原始响应**一律不存**。
+
+**本轮实跑后暴露并修掉的三个真问题**（都不是估算出来的）：
+
+1. **`known` 被降级成「未知」**：渲染层把 `lastSuccessState` 拿去 `SOURCE_STATE` 里查，
+   而 `known` 不在那张表里（有值时显示的是时间本身）⇒ **每一条真采到的记录都渲染成「未知」**，
+   而当时的构建自检全绿。修法是单独放行 `known`，并补一条断言
+   「`known` 必须渲染出 `<time datetime>`」——没有这条断言，这个 bug 会一路发到线上。
+2. **局部变量遮蔽模块名**：`audience-overrides.applyOverride` 里原有一个局部 `provenance`
+   对象，v1.3 引入同名模块后 `provenance.mergeEvidence(...)` 打到了普通对象上
+   （实测 `TypeError`）。改名 `provenanceBlock`。
+3. **心跳缺失的优先级**：`factsFor` 原先「先查行、查不到再看整份是否缺失」，于是调用方若同时
+   传了心跳行与「文件缺失」标志，会渲染出一个**上一次的旧时间**。改成缺失标志优先。
+
+**数据侧**：本轮把 3 条策展记录里**早就写在 `discountInfo` 中的官方原话**升级成结构化引文
+（360智脑协议条款 / 海螺AI 会员价 / 魔搭 API-Inference），只补出处与日期，**没有引入任何新的
+第三方文本**；另跑了一次真实采集（134 条，9 个来源全部正常），引文因此经真实 merge 落进
+`deals.json` —— 顺便证明「引文是人工输入、必须原样穿过 merge」（`check-reproducible` 新增
+「引文漂移」一项，实测 0 处）。
+
+**门禁（本机同一份产物实跑，全 0 退出）**：`validate` · `validate --strict`（新增
+`checkProvenanceGuard` 探针：非法引文必拦、合法必放行、来源必须登记、红线措辞）·
+`check:zh`（漂移 0 / 待译 0）· `selftest:zh`(15) · `selftest:expiry`(94) · `selftest:text`(46) ·
+`selftest:audience`(125) · `selftest:health`(51) · `selftest:app-token`(67) ·
+**`selftest:provenance`(91，新增并进 CI 门禁)** · `check:ci`(32，门禁步骤冻结序列
+`Source-health → Provenance` 同步更新) · `check:reproducible`（引文漂移 0）·
+`build` ×2 产物逐字节一致（`dist/index.html` SHA256 相同）·
+`verify`(**256 项 0 失败**) · `verify --compare`(**262 项 0 失败**，6 项回归全过：覆盖 80→80、
+卡片 50→50、首屏 9→9、页高 4589→4620px（v1.2 的需求入口行 +31px，在容差内）、外部请求 0、
+JS 错误 0) · `check-mobile-chrome` 零裁切。
+
+> **与 v1.2 的合并**：本轮开工时基线是 PR #2（v1.1）。推送前远端已前进到 PR #3
+> （`v1.2-intent-first-home`：首页需求入口行 + 10 条 `/need/*` 静态页）＋一次机器人数据更新。
+> 已合并并**逐个人工解冲突**，两处需要判断的：① `build-local.js` 的构建期派生区与 selfCheck
+> —— 两个派生字段都要，`BUILD_ADDED` 最终是 `{collections, needs, sourceFacts}`；
+> ② `README.md` 的目录清单与验收项数。合并后两边的交付都在：v1.2 的 161 项受众/需求自测与
+> v1.3 的 91 项 provenance 自测同时绿，`needs` 与 `sourceFacts` 都在产物里
+> （`源/产物一致` 逐字段对账通过，sitemap 95 条 = 首页 + 3 分类页 + 10 需求页 + 状态页 + 80 详情页）。
+> 数据文件取远端那一侧后**重跑了一次真实采集**，引文由 curated 文件重新落盘。
+
+**A. 明确不做**：渲染 `verified`/`verifiedAt`（保持 2.32 的撤章决定）、给优惠下有效性结论、
+自动抓取官方全文/片段、卡片加新鲜度角标、回填存量 46 条无 provenance 记录、新增外部请求。
+
+**B. 下一步**：`v1.4-deal-history`（见 `research/v1.3-evidence-provenance-report.md` §判断）。
+
+---
+
 ## 三、命令速查
 
 ```bash

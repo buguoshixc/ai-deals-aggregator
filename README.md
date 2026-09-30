@@ -112,6 +112,10 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
       "lastSeen": "2026-09-21",
       "verified": true,             // 人工核验过
       "verifiedAt": "2026-09-22",   // 核验日期；仅 verified=true 时可填
+      "evidence": [                 // v1.3 可选：有界官方原文片段（≤3 条 × ≤200 字，只人工写）
+        { "field": "discountInfo", "quote": "…官方原话…",
+          "sourceUrl": "https://…官方页…", "capturedAt": "2026-09-22" }
+      ],
       "zh": {                       // 中文译文（可选）。只增加字段，绝不覆盖英文原文
         "discountInfo": "…",
         "description": "…"
@@ -130,6 +134,7 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 | `features` | 只取该条 `discountInfo` / `validity` 里已写明的事实，≤3 个、每个 ≤20 字。**不从 `description` 自动切分或生成**——没有可信来源就留空，卡片自动回退展示 `discountInfo`。 |
 | `priceLine` | 只有官方页明确给出「免费档 → 付费档」时才填。看不出升级路径就留 `null`，卡片不渲染该行，**不编造价格阶梯**。 |
 | `verifiedAt` | 仅人工逐条回访官方页的条目可填（当前 **32 条**策展数据：`curated_cn` 18 + `curated_global` 14，`node scripts/validate.js` 实测输出「策展数据 32 条」）。自动采集条目一律为 `null`。**这两个字段只留在数据里**（`validate.js` 仍在守「`verified=true` 必须带日期」这条断言），页面上不再渲染核验标签——原因见下文「诚实性约束」。 |
+| `evidence` | v1.3：官方原文片段，**≤3 条 × ≤200 字**，只能用人工写入 `curated_*.json`（或 `audience-overrides.json` 的 `evidenceQuotes`）。超长**拒收**、出处不得是聚合站、必须绑定某个 `field`。全库还有 12000 字与「≤ deals.json 字节 5%」两道预算。契约见 [`docs/SCHEMA-v1.3.md`](docs/SCHEMA-v1.3.md)。 |
 
 新增策展条目并补齐这三个字段的流程：
 
@@ -182,7 +187,8 @@ scripts/
     logos.js                  logo 资产装配：manifest → dist/logos/ + dist/logos.css
     og-image.js               零依赖 OG 分享图生成（手写 PNG 编码 + 点阵字模）
     report.js                 采集报告表格
-    curated.js                人工策展数据加载
+      curated.js                人工策展数据加载
+    provenance.js             v1.3 信息来源：有界官方引文的归一/合并/预算 + 采集事实派生（心跳 join）
   collectors/
     index.js                  注册表
     cn_docs.js                国内：百度千帆免费额度表 / 阿里云百炼 / 智谱免费模型
@@ -205,6 +211,7 @@ scripts/
     check-mobile-chrome.js    390px 下逐控件量裁切/越出视口/横向溢出（含 nav.needs 入口行）
     check-reproducible.js     可重建性门禁：文件里不许有「没有任何源」的值（五个判据，CI）
     audience-selftest.js      受众字段全部红线守卫（三态 / 仲裁 / 措辞同源 / v1.2 需求注册表，CI）
+    provenance-selftest.js    v1.3 信息来源自测（引文上限与预算 / 四种缺失状态 / 渲染措辞，CI）
     audience-report.js        覆盖率报告：已知 / unknown / 缺席三栏分列，逐条可审计
     audience-overrides-extract.js  从 DATA-BACKFILL.md 那张表生成 overrides（与数据对不上就拒绝写）
     migrate-audience-verify.js     `migrate.js --audience` 的验收比对（默认跑合成夹具，CI）
@@ -215,7 +222,8 @@ scripts/
     fetch-logos.js            从厂商官网抓取品牌图标，补进 assets/logos/
 ```
 
-契约文档在 `docs/SCHEMA-v1.1.md`（六字段的语义、可信度档位、可重建判据、五条既有约定）。
+契约文档在 `docs/SCHEMA-v1.1.md`（六字段的语义、可信度档位、可重建判据、五条既有约定）
+与 `docs/SCHEMA-v1.3.md`（信息来源：证据层 / 派生采集事实 / 引文上限 / 渲染与状态词）。
 
 ## 采集来源策略
 
@@ -546,6 +554,19 @@ npm run selftest:zh     # 门禁演练：塞坏数据进去，验证构建拦得
 - `FAQPage` 结构化数据**从页面可见的 `<details>` 文案反向解析**生成，保证两者逐字一致
   （构建自检会校验这一致性）。
 - 页脚明确声明「本站不收录付费推广位，排序与推荐理由不出售」。
+- **详情页有「信息来源」块（v1.3）**：官方页面 / 原始出处 / 收录来源 / 来源类型 / 采集方式 /
+  首次收录 / 最近发现 / 最近成功采集 / 断言依据 / 官方原文片段 —— 十行固定，缺值也出行，
+  但**绝不把「缺失」说成同一句话**：
+  - **不适用** = 人工策展，按设计不经过采集器；
+  - **未知** = 本该有，但来源心跳里没匹配到；
+  - **不可用** = 本次构建根本没有可用的心跳数据。
+
+  「最近成功采集」取自 `source-health.json`（构建期 join，只进 `dist`），不是每条记录自己存的
+  时间戳。块尾固定免责句，**不给优惠下有效性结论**：不渲染 `verified` / `verifiedAt`，
+  也不出现「已核验」「100% 有效」这类词（`validate --strict` 与 `provenance-selftest`
+  对措辞做逐字红线检查）。官方原文片段是**有界引文**：≤3 条 × ≤200 字、只人工写、
+  超长拒收、出处禁聚合站；全库还有字数与占比两道预算——这一层的存在理由就是
+  **不因为要展示而复制第三方全文**。
 
 ### 按需求找优惠（v1.2）
 
@@ -582,8 +603,8 @@ Coding / 模型 / Credits）并排成两列，**切换只用 CSS 媒体查询、
 
 卡片是**固定高度**的，任何一处内容变高都会被 `overflow:hidden` 静默裁掉；logo 簇是 hover
 展开的，很容易把标题挤到换行、把网格行高顶动。这两类问题静态检查都看不见，所以有
-`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 **244 项断言**；带基线回归比对的
-`npm run verify:regress` 共 **250 项**（多出的 6 条是回归比对：覆盖条数、卡片数、首屏完整可见、
+`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 **256 项断言**；带基线回归比对的
+`npm run verify:regress` 共 **262 项**（多出的 6 条是回归比对：覆盖条数、卡片数、首屏完整可见、
 页高、外部请求、JS 错误）。
 这两个数字由工具自己打印（`✅ 验收 N 项，失败 0 项`），跑一次就能核。**不要拿源码里 `check(`
 的调用点数去反推**：按行首 `check(` 计是 177 处，与执行项数并不相等 —— 有的调用在循环里

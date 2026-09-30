@@ -682,6 +682,27 @@
     .dact .sec { border: 1px solid var(--line); color: var(--ink2); text-decoration: none; font-size: 13px; padding: 12px 16px; border-radius: var(--r); white-space: nowrap; }
     .dact .sec:hover { border-color: #c3ceff; color: var(--brand); }
     .dsrc { margin-top: 14px; font-size: 11.5px; color: var(--mut); line-height: 1.7; }
+    /* ---------- v1.3 信息来源块 ----------
+       固定标签行 + 明确缺失状态。用现有 token，不新增视觉语言；不做折叠（这本来就是
+       「想核对的人才看」的那一块，再藏一层等于让它不存在）。 */
+    .dsrc-h { font-size: 12px; font-weight: 600; color: var(--ink2); margin-bottom: 6px; }
+    .dsrc-rows { display: grid; gap: 3px; }
+    .dsrc-row { display: grid; grid-template-columns: 6.5em minmax(0, 1fr); gap: 8px; align-items: start; }
+    .dsrc-row .k { color: var(--mut); white-space: nowrap; }
+    .dsrc-row .v { min-width: 0; overflow-wrap: anywhere; }
+    .dsrc-row .v a { color: var(--brand); text-decoration: none; }
+    .dsrc-row .v a:hover { text-decoration: underline; text-underline-offset: 2px; }
+    .dsrc .miss { color: var(--warn, #a35a00); }
+    .dsrc .none { color: var(--mut); }
+    .dsrc .why { display: block; color: var(--mut); font-size: 11px; line-height: 1.55; }
+    .dsrc-blist { display: grid; gap: 3px; }
+    .dsrc-basis b { color: var(--ink2); font-weight: 600; }
+    .dsrc-quotes { display: grid; gap: 6px; }
+    .dsrc-quote { border-left: 2px solid var(--line2, var(--line)); padding-left: 8px; }
+    .dsrc-quote .q { color: var(--ink2); }
+    .dsrc-quote .m { color: var(--mut); font-size: 11px; margin-top: 2px; }
+    .dsrc-note { margin: 8px 0 0; color: var(--mut); font-size: 11px; line-height: 1.6; }
+    @media (max-width: 560px) { .dsrc-row { grid-template-columns: 5.5em minmax(0, 1fr); } }
 
     /* ---------- 详情弹层里的收藏 / 对比 ----------
        整块由 JS 插入（没有 JS 就不该出现可点的收藏按钮），因此这里不需要 body.js 门控；
@@ -1069,6 +1090,10 @@
      * 只改一边会立刻让 validate --strict 变红（报出具体是哪一项不一致）。
      */
     const AUDIENCE_WORDING = {"triLabel":{"true":"是","false":"否","unknown":"尚未确认"},"chinaUsableLine":{"true":"中国大陆用户可正常注册使用","false":"中国大陆用户不可用","unknown":"尚未确认"},"chinaUsableLineWithRestriction":{"true":"中国大陆用户可用（{restriction}）","false":"中国大陆用户不可用（{restriction}）"},"FIELD_LABELS":{"audience":"适用人群","benefitType":"福利类型","eligibilityDetail":"资格门槛","claimRequirements":"领取条件","availability":"中国大陆可用情况","chinaUsable":"中国大陆可用性"},"AUDIENCE_LABELS":{"student":"学生","developer":"开发者","educator":"教师 / 教研人员","education":"教育机构","general":"所有用户","other":"其他人群"},"BENEFIT_LABELS":{"free_subscription":"免费订阅","free_credits":"免费额度","free_api":"免费 API","free_model":"免费模型","discount":"折扣优惠","trial":"免费试用","student_plan":"学生专属计划","developer_credit":"开发者赠送额度","other":"其他"},"ELIGIBILITY_LABELS":{"studentRequired":"需要学生身份","educationEmailRequired":"需要教育邮箱","identityVerificationRequired":"需要实名 / 身份认证","newUserOnly":"仅限新用户"},"CLAIM_LABELS":{"creditCardRequired":"需要信用卡","manualApplication":"需要人工申请 / 审核","accountRequired":"需要注册账号"}};
+    /* v1.3 信息来源块的措辞同源副本：与 lib/audience.js 的 WORDING_CONTRACT 同组名、同文本，
+       由 checkWordingContract() 逐项比对。三个缺失状态（不适用 / 未知 / 不可用）必须分开写：
+       人工策展按设计没有采集器，与「心跳里匹配不到」是两件不同的事实。 */
+    const SOURCE_WORDING = {"SOURCE_LABELS":{"sectionTitle":"信息来源","official":"官方页面","origin":"原始出处","source":"收录来源","sourceType":"来源类型","method":"采集方式","firstSeen":"首次收录","lastSeen":"最近发现","lastSuccess":"最近成功采集","basis":"断言依据","evidence":"官方原文片段"},"SOURCE_METHOD":{"static":"静态抓取（HTTP 解析）","headless":"无头浏览器渲染","curated":"人工策展（人工逐条整理）","unknown":"未知"},"SOURCE_TYPE":{"official":"厂商官方页直采","directory":"第三方目录站收录（已解析到官方页）","curated":"人工策展","unknown":"未知"},"SOURCE_STATE":{"na":"不适用","unknown":"未知","unavailable":"不可用"},"SOURCE_REASON":{"curated":"本条来自人工策展，不经过采集器","no_health_row":"来源心跳里没有这一条（来源改名 / 本轮只跑了部分来源）","no_health_doc":"本次构建没有可用的来源心跳数据"},"SOURCE_BASIS":{"source":"官方页面明写","documented":"依据官方条款原文","inferred":"由官方原文推断","none":"未声明依据"},"SOURCE_HEALTH":{"healthy":"最近一次采集正常","degraded":"最近一次采集异常","failed":"最近一次采集失败"},"SOURCE_FIELD_LABELS":{"discountInfo":"优惠说明","eligibility":"适用条件","validity":"有效期说明","priceLine":"价格阶梯","expiresAt":"截止日期"},"SOURCE_NOTES":{"noOrigin":"未署名原始出处","noEvidence":"未收录官方原文片段","evidenceNote":"以下片段摘自厂商官方页面，仅用于核对本页信息；完整内容与最终条款以官方页面为准。","disclaimer":"以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。"}};
     /* AUDIENCE:END */
 
     const REGION_LABELS = { cn: '国内', global: '国外' };
@@ -2945,11 +2970,10 @@
             (deal.type === 'deal' ? '领取' : '查看') + ' →</a>'
           : '') +
         '<a class="sec" href="' + escapeAttr(reportUrl(deal)) + '" target="_blank" rel="noopener noreferrer">信息有误 / 提交反馈</a></div>' +
-        '<div class="dsrc">来源：' + escapeHtml(deal.source || '未标注') +
-        (deal.firstSeen ? ' · 首次收录 ' + escapeHtml(deal.firstSeen) : '') +
-        (deal.lastSeen ? ' · 最近采集 ' + escapeHtml(deal.lastSeen) : '') +
-        (deal.sourceUrl ? '<br>原始出处：' + escapeHtml(deal.sourceUrl) : '') +
-        '</div>';
+        // v1.3：信息来源块（来源 / 新鲜度 / 断言依据 / 官方原文片段）。
+        // 它取代了旧的一行「来源：… · 首次收录 … · 最近采集 …」——那一行把客观事实、
+        // 缺失状态和出处混在一句里，读者没法判断「最近成功采集」到底有没有发生过。
+        sourceBlockHtml(deal);
     }
 
     /* ----------------------------------------------------------------
@@ -3043,6 +3067,152 @@
       // 一条共同字段都没有（数据太薄）就不硬凑一张空表
       if (!body) return '';
       return '<table class="cmptable">' + head + '<tbody>' + body + '</tbody></table>';
+    }
+
+    /* ----------------------------------------------------------------
+     * ⑤.6 信息来源（evidence / provenance）—— v1.3
+     *
+     * 用户要能自己判断「这条优惠是从哪来的、多久没被重新看到、最近一次成功采集在何时、
+     * 依据是什么」。这里**只输出客观事实**，不输出任何本站自发的有效性结论
+     * ——「已核验 / 100% 有效」这类词一个都不出现，措辞表就是上面的 SOURCE_WORDING，
+     * 由 validate --strict 的红线探针逐字扫（改松了会在 CI 里红，而不是在页面上）。
+     *
+     * 三个缺失状态必须分开显示（不适用 / 未知 / 不可用）：人工策展按设计没有采集器，
+     * 与「心跳里匹配不到这条记录」是两件不同的事实，合成一句「暂无」就等于丢信息。
+     *
+     * sourceFacts 是**构建期派生**字段（只进 dist/deals.json）：源数据里没有它，
+     * 所以这里每个取值都必须能容忍缺席（缺席一律降级成「未知」，不抛错、不留空白）。
+     * ---------------------------------------------------------------- */
+
+    function hasOwn(obj, key) {
+      return Boolean(obj) && Object.prototype.hasOwnProperty.call(obj, key);
+    }
+
+    /** ISO → 北京时间 "YYYY-MM-DD HH:mm"。
+        只写绝对时间：相对时间（「3 小时前」）会让同一份数据在不同时刻构建出不同字节，
+        与「连续两次 build 产物一致」的规矩冲突（与 /status/ 页同一处理）。 */
+    function cnStampOf(iso) {
+      if (!iso) return '';
+      const at = new Date(iso);
+      if (!isFinite(at.getTime())) return '';
+      const text = new Date(at.getTime() + 8 * 3600 * 1000).toISOString();
+      return text.slice(0, 10) + ' ' + text.slice(11, 16);
+    }
+
+    /** 归一 deal.sourceFacts：不认识的取值一律回到 unknown，绝不让脏数据渲染成一句断言 */
+    function sourceFactsOf(deal) {
+      const raw = deal && typeof deal.sourceFacts === 'object' && deal.sourceFacts ? deal.sourceFacts : {};
+      // ⚠️ `known` 不是 SOURCE_STATE 里的词（有值时页面上显示的是那个时间本身，不是「已知」），
+      // 所以它必须**单独放行**：漏掉它的话，每条真的采到了的记录都会被降级成「未知」——
+      // 而「未知」在页面上看起来完全正常，构建自检也照样绿。这是本轮实测踩到的坑。
+      const state = raw.lastSuccessState === 'known'
+        ? 'known'
+        : (hasOwn(SOURCE_WORDING.SOURCE_STATE, raw.lastSuccessState) ? raw.lastSuccessState : 'unknown');
+      return {
+        method: hasOwn(SOURCE_WORDING.SOURCE_METHOD, raw.method) ? raw.method : 'unknown',
+        sourceType: hasOwn(SOURCE_WORDING.SOURCE_TYPE, raw.sourceType) ? raw.sourceType : 'unknown',
+        healthStatus: hasOwn(SOURCE_WORDING.SOURCE_HEALTH, raw.healthStatus) ? raw.healthStatus : null,
+        state,
+        lastSuccessAt: typeof raw.lastSuccessAt === 'string' && raw.lastSuccessAt ? raw.lastSuccessAt : null
+      };
+    }
+
+    /** 引文/依据里的字段名：v1.3 自带标签优先，v1.1 六字段回退到 AUDIENCE_WORDING（措辞只有一处） */
+    function evidenceFieldLabel(field) {
+      if (hasOwn(SOURCE_WORDING.SOURCE_FIELD_LABELS, field)) return SOURCE_WORDING.SOURCE_FIELD_LABELS[field];
+      if (hasOwn(AUDIENCE_WORDING.FIELD_LABELS, field)) return AUDIENCE_WORDING.FIELD_LABELS[field];
+      return field;
+    }
+
+    function srcRowHtml(label, valueHtml) {
+      return '<div class="dsrc-row"><span class="k">' + escapeHtml(label) + '</span>' +
+        '<div class="v">' + valueHtml + '</div></div>';
+    }
+
+    function srcMissHtml(text) {
+      return '<span class="miss">' + escapeHtml(text) + '</span>';
+    }
+
+    function srcLinkHtml(url) {
+      return '<a href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(url) + '</a>';
+    }
+
+    /**
+     * 「信息来源」整块 HTML。
+     * 纯函数：构建期预渲染（详情页）与浏览器（详情弹层）共用同一份，避免两处分叉。
+     */
+    function sourceBlockHtml(deal) {
+      if (!deal || typeof deal !== 'object') return '';
+      const W = SOURCE_WORDING;
+      const L = W.SOURCE_LABELS;
+      const facts = sourceFactsOf(deal);
+      const rows = [];
+
+      const official = safeUrl(deal.url);
+      rows.push(srcRowHtml(L.official, official ? srcLinkHtml(official) : srcMissHtml(W.SOURCE_STATE.unknown)));
+
+      const origin = safeUrl(deal.sourceUrl);
+      rows.push(srcRowHtml(L.origin, origin
+        ? srcLinkHtml(origin)
+        : '<span class="none">' + escapeHtml(W.SOURCE_NOTES.noOrigin) + '</span>'));
+
+      rows.push(srcRowHtml(L.source, deal.source ? escapeHtml(deal.source) : srcMissHtml(W.SOURCE_STATE.unknown)));
+      rows.push(srcRowHtml(L.sourceType, escapeHtml(W.SOURCE_TYPE[facts.sourceType])));
+      rows.push(srcRowHtml(L.method, escapeHtml(W.SOURCE_METHOD[facts.method])));
+      rows.push(srcRowHtml(L.firstSeen, deal.firstSeen ? escapeHtml(deal.firstSeen) : srcMissHtml(W.SOURCE_STATE.unknown)));
+      rows.push(srcRowHtml(L.lastSeen, deal.lastSeen ? escapeHtml(deal.lastSeen) : srcMissHtml(W.SOURCE_STATE.unknown)));
+
+      let lastSuccess;
+      if (facts.state === 'known' && facts.lastSuccessAt) {
+        lastSuccess = '<time datetime="' + escapeAttr(facts.lastSuccessAt) + '">' +
+          escapeHtml(cnStampOf(facts.lastSuccessAt)) + '</time>（北京时间）' +
+          (facts.healthStatus ? ' · ' + escapeHtml(W.SOURCE_HEALTH[facts.healthStatus]) : '');
+      } else {
+        const state = facts.state === 'known' ? 'unknown' : facts.state;
+        const reasonKey = state === 'na' ? 'curated'
+          : state === 'unavailable' ? 'no_health_doc' : 'no_health_row';
+        lastSuccess = '<span class="' + (state === 'na' ? 'none' : 'miss') + '">' +
+          escapeHtml(W.SOURCE_STATE[state]) + '</span>' +
+          '<small class="why">' + escapeHtml(W.SOURCE_REASON[reasonKey]) + '</small>';
+      }
+      rows.push(srcRowHtml(L.lastSuccess, lastSuccess));
+
+      // 断言依据：逐字段说明「这个值是官方明写的、还是我们推的」。推断必须带推理链（≤200 字）。
+      const fields = deal.provenance && typeof deal.provenance.fields === 'object' && deal.provenance.fields
+        ? deal.provenance.fields : null;
+      const basis = [];
+      if (fields) {
+        Object.keys(fields).forEach(field => {
+          const item = fields[field] || {};
+          const words = hasOwn(W.SOURCE_BASIS, item.basis) ? W.SOURCE_BASIS[item.basis] : W.SOURCE_BASIS.none;
+          basis.push('<span class="dsrc-basis"><b>' + escapeHtml(evidenceFieldLabel(field)) + '</b>：' +
+            escapeHtml(words) + (item.note ? '<small class="why">' + escapeHtml(item.note) + '</small>' : '') + '</span>');
+        });
+      }
+      rows.push(srcRowHtml(L.basis, basis.length
+        ? '<div class="dsrc-blist">' + basis.join('') + '</div>'
+        : '<span class="none">' + escapeHtml(W.SOURCE_BASIS.none) + '</span>'));
+
+      // 官方原文片段：≤3 条 × ≤200 字（上限由数据层强制）。只展示片段本身 + 出处 + 采集日期，
+      // 绝不展示整页正文 —— 那一层不存、也不该存。
+      const evidence = Array.isArray(deal.evidence) ? deal.evidence : [];
+      const quotes = evidence.map(item => {
+        const url = safeUrl(item.sourceUrl);
+        return '<div class="dsrc-quote"><div class="q">' + escapeHtml(item.quote) + '</div>' +
+          '<div class="m">' + escapeHtml(evidenceFieldLabel(item.field)) +
+          (item.capturedAt ? ' · 采集于 ' + escapeHtml(item.capturedAt) : '') +
+          (url ? ' · ' + srcLinkHtml(url) : '') + '</div></div>';
+      });
+      rows.push(srcRowHtml(L.evidence, quotes.length
+        ? '<div class="dsrc-quotes">' + quotes.join('') + '</div>' +
+          '<small class="why">' + escapeHtml(W.SOURCE_NOTES.evidenceNote) + '</small>'
+        : '<span class="none">' + escapeHtml(W.SOURCE_NOTES.noEvidence) + '</span>'));
+
+      return '<div class="dsrc" role="group" aria-label="' + escapeAttr(L.sectionTitle) + '">' +
+        '<div class="dsrc-h">' + escapeHtml(L.sectionTitle) + '</div>' +
+        '<div class="dsrc-rows">' + rows.join('') + '</div>' +
+        '<p class="dsrc-note">' + escapeHtml(W.SOURCE_NOTES.disclaimer) + '</p>' +
+        '</div>';
     }
 
     /* ================================================================

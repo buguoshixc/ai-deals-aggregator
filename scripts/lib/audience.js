@@ -669,7 +669,78 @@ const WORDING_CONTRACT = {
   AUDIENCE_LABELS,
   BENEFIT_LABELS,
   ELIGIBILITY_LABELS,
-  CLAIM_LABELS
+  CLAIM_LABELS,
+
+  /* ---- v1.3：信息来源（evidence / provenance）块的措辞 ----
+   *
+   * 同样进跨层文本比对。理由与三态措辞一样：这块内容能不能被读成「本站给了保证」，
+   * 取决于这几个词怎么写；而「约束、缺失状态、免责句」恰好是最容易被顺手改松的地方。
+   *
+   * 三个缺失状态**必须分开写**（契约 §2.6 的 unknown 语义在 v1.3 的落地）：
+   *   na          人工策展按设计不经过采集器 —— 不是「我们没查到」
+   *   unknown     本该有、但心跳里匹配不到
+   *   unavailable 本次构建根本没有心跳数据
+   * 合成一句「暂无」，正是本阶段要修的那种「把两种不同的事实说成同一句话」。
+   */
+  SOURCE_LABELS: {
+    sectionTitle: '信息来源',
+    official: '官方页面',
+    origin: '原始出处',
+    source: '收录来源',
+    sourceType: '来源类型',
+    method: '采集方式',
+    firstSeen: '首次收录',
+    lastSeen: '最近发现',
+    lastSuccess: '最近成功采集',
+    basis: '断言依据',
+    evidence: '官方原文片段'
+  },
+  SOURCE_METHOD: {
+    static: '静态抓取（HTTP 解析）',
+    headless: '无头浏览器渲染',
+    curated: '人工策展（人工逐条整理）',
+    unknown: '未知'
+  },
+  SOURCE_TYPE: {
+    official: '厂商官方页直采',
+    directory: '第三方目录站收录（已解析到官方页）',
+    curated: '人工策展',
+    unknown: '未知'
+  },
+  SOURCE_STATE: {
+    na: '不适用',
+    unknown: '未知',
+    unavailable: '不可用'
+  },
+  SOURCE_REASON: {
+    curated: '本条来自人工策展，不经过采集器',
+    no_health_row: '来源心跳里没有这一条（来源改名 / 本轮只跑了部分来源）',
+    no_health_doc: '本次构建没有可用的来源心跳数据'
+  },
+  SOURCE_BASIS: {
+    source: '官方页面明写',
+    documented: '依据官方条款原文',
+    inferred: '由官方原文推断',
+    none: '未声明依据'
+  },
+  SOURCE_HEALTH: {
+    healthy: '最近一次采集正常',
+    degraded: '最近一次采集异常',
+    failed: '最近一次采集失败'
+  },
+  SOURCE_FIELD_LABELS: {
+    discountInfo: '优惠说明',
+    eligibility: '适用条件',
+    validity: '有效期说明',
+    priceLine: '价格阶梯',
+    expiresAt: '截止日期'
+  },
+  SOURCE_NOTES: {
+    noOrigin: '未署名原始出处',
+    noEvidence: '未收录官方原文片段',
+    evidenceNote: '以下片段摘自厂商官方页面，仅用于核对本页信息；完整内容与最终条款以官方页面为准。',
+    disclaimer: '以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。'
+  }
 };
 
 /**
@@ -817,6 +888,13 @@ function audienceSearchText(deal) {
 const WORDING_BLOCK = { start: 'AUDIENCE:START', end: 'AUDIENCE:END', constName: 'AUDIENCE_WORDING' };
 
 /**
+ * 同源常量可以有多个（v1.3 加了 `SOURCE_WORDING`：信息来源块的措辞）。
+ * 它们必须都在同一个标记块里、都是纯 JSON 字面量 —— 比对时合并成一个对象，
+ * 组名不重名即可。**任何一个解析不出都算漂移**，不跳过。
+ */
+const WORDING_CONSTS = ['AUDIENCE_WORDING', 'SOURCE_WORDING'];
+
+/**
  * 抽取 RENDER-CORE 里 `AUDIENCE:START/END` 标记块的内容。抽不到返回 null。
  *
  * 这个函数住在 lib 里而不是 selftest 里，是为了让**只有一个**解析实现：
@@ -843,13 +921,20 @@ function extractWordingBlock(html) {
  */
 function parseWordingBlock(block) {
   if (block === null) return null;
-  const m = new RegExp(`${WORDING_BLOCK.constName}\\s*=\\s*(\\{[\\s\\S]*?\\});`).exec(block);
-  if (!m) return null;
-  try {
-    return JSON.parse(m[1]);
-  } catch (error) {
-    return null;
+  const merged = {};
+  for (const name of WORDING_CONSTS) {
+    const m = new RegExp(`${name}\\s*=\\s*(\\{[\\s\\S]*?\\});`).exec(block);
+    if (!m) return null;
+    let parsed;
+    try {
+      parsed = JSON.parse(m[1]);
+    } catch (error) {
+      return null;
+    }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    Object.assign(merged, parsed);
   }
+  return merged;
 }
 
 /**
@@ -873,19 +958,19 @@ function checkWordingContract(html) {
   }
   const parsed = parseWordingBlock(block);
   if (!parsed) {
-    reasons.push(`标记块里的 ${WORDING_BLOCK.constName} 不是可解析的 JSON 对象（改坏了，或被写成了非字面量）`);
+    reasons.push(`标记块里的 ${WORDING_CONSTS.join(' / ')} 不是可解析的 JSON 对象（改坏了，或被写成了非字面量）`);
     return { ok: false, reasons, frontend: null };
   }
   for (const group of Object.keys(WORDING_CONTRACT)) {
     const expected = WORDING_CONTRACT[group];
     const actual = parsed[group];
     if (!actual || typeof actual !== 'object') {
-      reasons.push(`标记块里缺 ${WORDING_BLOCK.constName}.${group}`);
+      reasons.push(`标记块里缺 ${group}`);
       continue;
     }
     for (const key of Object.keys(expected)) {
       if (actual[key] !== expected[key]) {
-        reasons.push(`${WORDING_BLOCK.constName}.${group}.${key}：前端「${actual[key]}」≠ 后端「${expected[key]}」`);
+        reasons.push(`${group}.${key}：前端「${actual[key]}」≠ 后端「${expected[key]}」`);
       }
     }
   }
@@ -947,6 +1032,7 @@ module.exports = {
   audienceSearchText,
   WORDING_CONTRACT,
   WORDING_BLOCK,
+  WORDING_CONSTS,
   extractWordingBlock,
   parseWordingBlock,
   checkWordingContract

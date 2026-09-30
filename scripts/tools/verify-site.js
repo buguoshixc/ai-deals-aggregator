@@ -519,9 +519,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     const tileW = dl && dl.querySelector('.lg') ? Math.round(dl.querySelector('.lg').getBoundingClientRect().width) : 0;
     const escaped = box.left >= -1 && box.top >= -1 &&
       box.right <= window.innerWidth + 1 && box.bottom <= window.innerHeight + 1;
+    // v1.3：信息来源块也必须在**弹层**里（首页只有一个 URL，详情页之外的读者走的就是这里）
+    const srcBox = dlg.querySelector('.dsrc');
+    const srcRows = srcBox ? srcBox.querySelectorAll('.dsrc-row').length : 0;
+    const srcText = srcBox ? srcBox.innerText.replace(/\s+/g, ' ').trim() : '';
     dlg.querySelector('.x').click();
     await new Promise(r => setTimeout(r, 200));
-    return { title, shown, open, cells, cta, closed: !dlg.open, oneRow, tiles: tops.length, tileW, offset, escaped };
+    return { title, shown, open, cells, cta, closed: !dlg.open, oneRow, tiles: tops.length, tileW, offset, escaped, srcRows, srcText };
   });
   check('点卡片打开弹层', dialog.open, `「${dialog.title}」`);
   check('弹层标题与卡片一致', dialog.shown === dialog.title, `弹层「${dialog.shown}」`);
@@ -530,6 +534,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('弹层未溢出视口', dialog.escaped);
   check('弹层有字段表与领取入口', dialog.cells >= 2 && dialog.cta, `${dialog.cells} 个字段`);
   check('弹层 logo 一行平铺', dialog.oneRow || dialog.tiles <= 1, `${dialog.tiles} 个 tile，宽 ${dialog.tileW}px`);
+  check('弹层里有完整的信息来源块（来源 / 新鲜度 / 依据）',
+    dialog.srcRows >= 8 && /信息来源/.test(dialog.srcText) && /最近成功采集/.test(dialog.srcText) &&
+    !/已核验/.test(dialog.srcText),
+    `${dialog.srcRows} 行 · 含「最近成功采集」=${/最近成功采集/.test(dialog.srcText)}`);
   check('可以关闭', dialog.closed);
 
   console.log('\n=== 7) 筛选 / 排序真的生效 ===');
@@ -1510,6 +1518,115 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   } else {
     console.log(`  ℹ️  跳过「不可用」反面断言：本轮 chinaUsable=false 共 ${audienceSample ? audienceSample.falseCount : 0} 条（没有反例可测）`);
   }
+
+  /**
+   * v1.3 信息来源块（evidence / provenance）—— 真页面上的牙。
+   *
+   * 为什么必须在这里再验一遍（构建自检已经逐条对过账）：自检读的是**内存里的 payload**
+   * 与渲染函数，而读者拿到的是**写盘后的静态页**。两者断的链路不同 —— 例如「块被写进
+   * dist/deals.json 却没进详情页」「详情页模板抽取时把这块截掉了」，自检都看不见。
+   *
+   * 四个取样都**现场从 deals.json 挑**（照 §8b 的写法），不硬编码标题：数据每天变，
+   * 硬编码明天就是假红。缺样例时优雅跳过。
+   *   ① 任意一条 deal：块必须完整（标签行 ≥8、免责句在、官方链接在）；
+   *   ② 人工策展条目：最近成功采集必须显示「不适用」（不是「未知」——那是两种事实）；
+   *   ③ 采集侧条目：必须显示真实的 `<time datetime>`（而不是把 known 降级成「未知」）；
+   *   ④ 整块文本里不许出现「已核验」这类本站自发的有效性结论。
+   */
+  const sourceBlockOf = async (dealId) => {
+    await page.goto(new URL(`deal/${dealId}/`, base).href, { waitUntil: 'load' });
+    await page.waitForSelector('.dpane', { timeout: 15000 });
+    return page.evaluate(() => {
+      const box = document.querySelector('.dpane .dsrc');
+      if (!box) return null;
+      const text = box.innerText.replace(/\s+/g, ' ').trim();
+      return {
+        text,
+        rows: box.querySelectorAll('.dsrc-row').length,
+        time: box.querySelector('time[datetime]') ? box.querySelector('time[datetime]').getAttribute('datetime') : '',
+        links: [...box.querySelectorAll('a')].length,
+        hasHeading: Boolean(box.querySelector('.dsrc-h')),
+        hasNote: Boolean(box.querySelector('.dsrc-note'))
+      };
+    });
+  };
+
+  const anyDeal = await pickDeal('() => true');
+  const anyBlock = await sourceBlockOf(anyDeal.id);
+  check('详情页有「信息来源」块，且标签行完整（≥8 行）',
+    Boolean(anyBlock) && anyBlock.rows >= 8 && anyBlock.hasHeading && anyBlock.hasNote,
+    anyBlock ? `「${anyDeal.title}」→ ${anyBlock.rows} 行 · ${anyBlock.links} 个链接` : '没有找到 .dsrc 块');
+  check('信息来源块带免责句（不构成对有效性的判断）',
+    Boolean(anyBlock) && /不构成对优惠是否有效/.test(anyBlock.text), anyBlock ? anyBlock.text.slice(-60) : '');
+  check('信息来源块里有官方页面链接',
+    Boolean(anyBlock) && anyBlock.links >= 1, anyBlock ? `${anyBlock.links} 个链接` : '');
+  check('信息来源块里没有本站自发的有效性结论（已核验 / 100% 有效）',
+    Boolean(anyBlock) && !/已核验|100\s*%\s*(有效|可用)/.test(anyBlock.text),
+    anyBlock ? anyBlock.text.slice(0, 80) : '');
+
+  const curatedOne = await pickDeal('(x) => x.source === "Curated" || x.source === "Curated-CN"');
+  if (curatedOne) {
+    const curatedBlock = await sourceBlockOf(curatedOne.id);
+    check('人工策展条目：「最近成功采集」显示「不适用」（不是「未知」）',
+      Boolean(curatedBlock) && curatedBlock.text.includes('不适用') && curatedBlock.text.includes('不经过采集器'),
+      curatedBlock ? curatedBlock.text.slice(0, 80) : '');
+    check('人工策展条目不会假装成有采集记录（没有 <time>）',
+      Boolean(curatedBlock) && !curatedBlock.time, curatedBlock ? `time=${curatedBlock.time}` : '');
+  } else {
+    console.log('  ℹ️  跳过人工策展断言：本轮 deals.json 里没有 Curated / Curated-CN 条目');
+  }
+
+  const collectedOne = await pickDeal('(x) => x.sourceFacts && x.sourceFacts.lastSuccessState === "known"');
+  if (collectedOne) {
+    const collectedBlock = await sourceBlockOf(collectedOne.id);
+    const segment = collectedBlock ? (collectedBlock.text.split('最近成功采集')[1] || '') : '';
+    check('采集侧条目：渲染出真实的「最近成功采集」时间（known 不得被降级成「未知」）',
+      Boolean(collectedBlock) && /^\d{4}-\d{2}-\d{2}T/.test(collectedBlock.time) &&
+      !segment.includes('来源心跳里没有这一条'),
+      collectedBlock ? `time=${collectedBlock.time} · 段「${segment.slice(0, 40)}」` : '');
+  } else {
+    console.log('  ℹ️  跳过采样：本轮没有 lastSuccessState=known 的条目');
+  }
+
+  const evidenceOne = await pickDeal('(x) => Array.isArray(x.evidence) && x.evidence.length > 0');
+  if (evidenceOne) {
+    const evidenceBlock = await sourceBlockOf(evidenceOne.id);
+    check('有官方引文的条目：引文渲染出来，并带出处链接与采集日期',
+      Boolean(evidenceBlock) && /采集于 \d{4}-\d{2}-\d{2}/.test(evidenceBlock.text) &&
+      evidenceBlock.text.includes('官方原文片段'),
+      evidenceBlock ? evidenceBlock.text.slice(-120) : '');
+    check('引文块带「仅用于核对本页信息」的说明',
+      Boolean(evidenceBlock) && evidenceBlock.text.includes('仅用于核对本页信息'));
+  } else {
+    console.log('  ℹ️  跳过引文渲染断言：本轮 deals.json 里没有任何 evidence（引文是人工可选项）');
+  }
+
+  /**
+   * 信息来源块的手机端几何：这一块里**天然有长 URL**（官方页 / 出处链接 / 引文出处），
+   * 而 URL 在窄屏上是最容易把整页撑宽的东西。`check-mobile-chrome.js` 只看首页控制带，
+   * `verify-site.js` 的 390/360 溢出断言此前只看首页与 /status/ —— 详情页从来没有被量过。
+   * 取最长的那个官方 URL 与其引文的详情页各量一次，量的是**页面级**溢出与**块内行**的越界。
+   */
+  for (const width of [390, 360]) {
+    const overflow = await (async () => {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto(new URL(`deal/${anyDeal.id}/`, base).href, { waitUntil: 'load' });
+      await page.waitForSelector('.dpane .dsrc', { timeout: 15000 });
+      return page.evaluate(() => {
+        const de = document.documentElement;
+        const rows = [...document.querySelectorAll('.dpane .dsrc .dsrc-row')];
+        return {
+          page: de.scrollWidth - de.clientWidth,
+          rowsPast: rows.filter(row => row.getBoundingClientRect().right > de.clientWidth + 1).length,
+          rows: rows.length
+        };
+      });
+    })();
+    check(`详情页信息来源块 ${width}px 不产生横向溢出（长 URL 必须换行而不是撑宽）`,
+      overflow.page === 0 && overflow.rowsPast === 0,
+      `页面溢出 ${overflow.page}px · ${overflow.rows} 行中越界 ${overflow.rowsPast} 行`);
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
 
   // 搜索：新字段的中文标签词必须能搜到，且 unknown **不进** haystack（否则搜索结果虚高）
   await page.goto(base, { waitUntil: 'load' });

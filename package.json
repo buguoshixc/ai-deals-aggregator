@@ -31,6 +31,7 @@
     "selftest:expiry": "node scripts/tools/expiry-selftest.js",
     "selftest:text": "node scripts/tools/text-selftest.js",
     "selftest:audience": "node scripts/tools/audience-selftest.js",
+    "selftest:provenance": "node scripts/tools/provenance-selftest.js",
     "selftest:health": "node scripts/tools/health-selftest.js",
     "selftest:app-token": "node scripts/tools/app-token-selftest.js",
     "todo:zh": "node scripts/tools/zh-todo.js",

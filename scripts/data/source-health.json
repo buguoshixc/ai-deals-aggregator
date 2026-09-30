@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-29T17:46:02.101Z",
+  "generatedAt": "2026-09-30T01:36:21.446Z",
   "sources": [
     {
       "source": "aitools",
       "name": "aitools.fyi",
       "region": "global",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T17:46:02.101Z",
-      "lastSuccessAt": "2026-09-29T17:46:02.101Z",
+      "lastAttemptAt": "2026-09-30T01:36:21.446Z",
+      "lastSuccessAt": "2026-09-30T01:36:21.446Z",
       "lastItemCount": 15,
       "previousItemCount": 15,
       "delta": 0,
@@ -17,7 +17,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 660,
+      "lastDurationMs": 2179,
       "headlessReady": null
     },
     {
@@ -25,8 +25,8 @@
       "name": "阿里云百炼",
       "region": "cn",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T17:46:02.101Z",
-      "lastSuccessAt": "2026-09-29T17:46:02.101Z",
+      "lastAttemptAt": "2026-09-30T01:36:21.446Z",
+      "lastSuccessAt": "2026-09-30T01:36:21.446Z",
       "lastItemCount": 1,
       "previousItemCount": 1,
       "delta": 0,
@@ -35,7 +35,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 2531,
+      "lastDurationMs": 997,
       "headlessReady": null
     },
     {
@@ -43,8 +43,8 @@
       "name": "百度千帆",
       "region": "cn",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T17:46:02.101Z",
-      "lastSuccessAt": "2026-09-29T17:46:02.101Z",
+      "lastAttemptAt": "2026-09-30T01:36:21.446Z",
+      "lastSuccessAt": "2026-09-30T01:36:21.446Z",
       "lastItemCount": 17,
       "previousItemCount": 17,
       "delta": 0,
@@ -53,7 +53,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 4557,
+      "lastDurationMs": 681,
       "headlessReady": null
     },
     {
@@ -72,15 +72,17 @@
       "reason": null,
       "lastError": null,
       "lastDurationMs": 7345,
-      "headlessReady": true
+      "headlessReady": true,
+      "stale": true,
+      "lastRunMissing": true
     },
     {
       "source": "cn_zhipu",
       "name": "智谱AI",
       "region": "cn",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T17:46:02.101Z",
-      "lastSuccessAt": "2026-09-29T17:46:02.101Z",
+      "lastAttemptAt": "2026-09-30T01:36:21.446Z",
+      "lastSuccessAt": "2026-09-30T01:36:21.446Z",
       "lastItemCount": 7,
       "previousItemCount": 7,
       "delta": 0,
@@ -89,7 +91,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 882,
+      "lastDurationMs": 1003,
       "headlessReady": null
     },
     {
@@ -108,24 +110,26 @@
       "reason": null,
       "lastError": null,
       "lastDurationMs": 53202,
-      "headlessReady": true
+      "headlessReady": true,
+      "stale": true,
+      "lastRunMissing": true
     },
     {
       "source": "futurepedia",
       "name": "Futurepedia",
       "region": "global",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T17:46:02.101Z",
-      "lastSuccessAt": "2026-09-29T13:04:54.254Z",
+      "lastAttemptAt": "2026-09-30T01:36:21.446Z",
+      "lastSuccessAt": "2026-09-30T01:36:21.446Z",
       "lastItemCount": 7,
       "previousItemCount": 7,
       "delta": 0,
-      "consecutiveFailures": 1,
+      "consecutiveFailures": 0,
       "consecutiveZero": 0,
-      "status": "failed",
-      "reason": "collector_error",
-      "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
-      "lastDurationMs": 2410,
+      "status": "healthy",
+      "reason": null,
+      "lastError": null,
+      "lastDurationMs": 4362,
       "headlessReady": null
     },
     {
@@ -133,8 +137,8 @@
       "name": "Futuretools",
       "region": "global",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T17:46:02.101Z",
-      "lastSuccessAt": "2026-09-29T17:46:02.101Z",
+      "lastAttemptAt": "2026-09-30T01:36:21.446Z",
+      "lastSuccessAt": "2026-09-30T01:36:21.446Z",
       "lastItemCount": 37,
       "previousItemCount": 37,
       "delta": 0,
@@ -143,7 +147,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 4821,
+      "lastDurationMs": 12115,
       "headlessReady": null
     },
     {
@@ -151,8 +155,8 @@
       "name": "Layer3Labs",
       "region": "global",
       "kind": "static",
-      "lastAttemptAt": "2026-09-29T17:46:02.101Z",
-      "lastSuccessAt": "2026-09-29T17:46:02.101Z",
+      "lastAttemptAt": "2026-09-30T01:36:21.446Z",
+      "lastSuccessAt": "2026-09-30T01:36:21.446Z",
       "lastItemCount": 13,
       "previousItemCount": 13,
       "delta": 0,
@@ -161,7 +165,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 435,
+      "lastDurationMs": 1584,
       "headlessReady": null
     }
   ]
