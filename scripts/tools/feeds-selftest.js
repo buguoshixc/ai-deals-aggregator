@@ -30,6 +30,7 @@ const feeds = require('../lib/feeds');
 const changes = require('../lib/changes');
 const history = require('../lib/history');
 const audience = require('../lib/audience');
+const landing = require('../lib/landing');
 
 let passed = 0;
 const failures = [];
@@ -58,17 +59,35 @@ const payload = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'
 const AS_OF = String(payload.updatedAt).slice(0, 10);
 const historyStore = history.load();
 
+/**
+ * 规范厂商名取值器（与 build-local 用的是同一个：RENDER-CORE 的 `vendorOf().name`）。
+ *
+ * 自测**必须**用同一套口径，否则它会拿原始字符串去查规范名键的 slug 表，
+ * 把「扣子 Coze（字节跳动）」判成「够门槛却没登记 slug」—— 一条永远红的假警报。
+ */
+const renderCore = require('../lib/render-core').load(path.join(ROOT, 'index.html'));
+const VENDOR_KEY_OF = deal => renderCore.vendorOf(deal).name;
+
+/** 所有夹具构建都必须带同一个规范厂商名取值器（见 VENDOR_KEY_OF 的注释） */
+function buildWithVendor(opts) {
+  return feeds.buildFeeds(Object.assign({ vendorKeyOf: VENDOR_KEY_OF }, opts));
+}
+function validateWithVendor(opts) {
+  return feeds.validate(Object.assign({ vendorKeyOf: VENDOR_KEY_OF }, opts));
+}
+
 function radarOf(deals, store) {
   return changes.buildRadar({ deals, store, asOf: AS_OF, availability: 'ok' });
 }
 
 const radar = radarOf(payload.deals, historyStore.store);
-const bundle = feeds.buildFeeds({
+const bundle = buildWithVendor({
   deals: payload.deals,
   store: historyStore.store,
   radar,
   asOf: AS_OF,
-  updatedAt: payload.updatedAt
+  updatedAt: payload.updatedAt,
+  vendorKeyOf: VENDOR_KEY_OF
 });
 
 /** 构建期真实生成的全部站内路由（与 build-local 的 pageRoutes 同构） */
@@ -79,6 +98,15 @@ function pageRoutesOf(deals) {
   }
   for (const page of audience.COLLECTION_PAGES) pages.add(`${page.slug}/`);
   for (const page of audience.NEED_PAGES) pages.add(`need/${page.slug}/`);
+  // v1.7：分类落地页 / 厂商落地页 / 两个枢纽页 —— 厂商 Feed 的主页指向它们，
+  // 夹具里缺一条就会把「主页指向不存在页面」判成真问题（第一版就是这样红了 9 条）。
+  for (const page of landing.CATEGORY_PAGES) pages.add(`category/${page.slug}/`);
+  pages.add('category/');
+  pages.add('vendor/');
+  for (const [vendor, slug] of Object.entries(feeds.VENDOR_SLUGS)) {
+    void vendor;
+    pages.add(`vendor/${slug}/`);
+  }
   return pages;
 }
 const PAGES = pageRoutesOf(payload.deals);
@@ -131,9 +159,12 @@ section('二、注册表');
   check('分类 Feed 的描述与页面注册表逐字相同', (() => {
     return feeds.COLLECTION_FEED_PAGES.every(entry => {
       const spec = specs.find(item => item.id === entry.id);
-      const list = entry.pageKind === 'need' ? audience.NEED_PAGES : audience.COLLECTION_PAGES;
+      // v1.7：多了一类页面注册表（分类落地页 landing.CATEGORY_PAGES），
+      // 三处取名口径与 feeds.js 的 pageListOf() 一致。
+      const list = entry.pageKind === 'need' ? audience.NEED_PAGES
+        : (entry.pageKind === 'category' ? landing.CATEGORY_PAGES : audience.COLLECTION_PAGES);
       const page = list.find(item => item.slug === entry.pageSlug);
-      return spec && spec.description === page.description;
+      return Boolean(page) && spec && spec.description === page.description;
     });
   })());
   check('国内可用 Feed 的判据是 availability.chinaUsable（不是 region=cn）', (() => {
@@ -174,7 +205,7 @@ section('三、Stable ID 与防重复');
   // 连续 10 次构建逐字节一致
   const hashes = [];
   for (let i = 0; i < 10; i++) {
-    const again = feeds.buildFeeds({
+    const again = buildWithVendor({
       deals: payload.deals, store: historyStore.store, radar, asOf: AS_OF, updatedAt: payload.updatedAt
     });
     hashes.push(again.feeds.map(feed => `${feed.spec.id}:${feed.rss.length}:${feed.json.length}`).join('|'));
@@ -183,7 +214,7 @@ section('三、Stable ID 与防重复');
   check('10 次构建的 RSS/JSON 文本逐字节相同', (() => {
     const first = bundle.feeds.map(feed => `${feed.rss}\u0000${feed.json}`).join('\u0001');
     for (let i = 0; i < 3; i++) {
-      const again = feeds.buildFeeds({
+      const again = buildWithVendor({
         deals: payload.deals, store: historyStore.store, radar, asOf: AS_OF, updatedAt: payload.updatedAt
       });
       if (again.feeds.map(feed => `${feed.rss}\u0000${feed.json}`).join('\u0001') !== first) return false;
@@ -197,13 +228,13 @@ section('三、Stable ID 与防重复');
     for (const key of Object.keys(deal).sort().reverse()) out[key] = deal[key];
     return out;
   });
-  const stable = feeds.buildFeeds({
+  const stable = buildWithVendor({
     deals: shuffled, store: historyStore.store, radar, asOf: AS_OF, updatedAt: payload.updatedAt
   });
   check('打乱记录键序不改变 Feed 条目（序列化顺序不由输入顺序决定）',
     JSON.stringify(stable.feeds.map(feed => feed.items.map(item => item.id))) ===
     JSON.stringify(bundle.feeds.map(feed => feed.items.map(item => item.id))));
-  const laterSameDay = feeds.buildFeeds({
+  const laterSameDay = buildWithVendor({
     deals: payload.deals, store: historyStore.store, radar, asOf: AS_OF,
     updatedAt: `${AS_OF}T23:59:59+08:00`
   });
@@ -267,7 +298,7 @@ section('五、排除项与空 Feed 策略');
     absence: {},
     events: [{ id: 'dddddddddd05', at: '2026-09-20', type: 'ended', field: null, from: null, to: null, reason: 'withdrawn' }]
   };
-  const synthetic = feeds.buildFeeds({ deals, store, radar: null, asOf: '2026-09-30', updatedAt: '2026-09-30T10:00:00+08:00' });
+  const synthetic = buildWithVendor({ deals, store, radar: null, asOf: '2026-09-30', updatedAt: '2026-09-30T10:00:00+08:00' });
   const all = synthetic.feeds.find(feed => feed.spec.id === 'all').items.map(item => item.dealId);
   check('工具条目（type=tool）不进优惠 Feed', !all.includes('dddddddddd03'));
   check('已过期条目不进优惠 Feed', !all.includes('dddddddddd04'));
@@ -278,7 +309,7 @@ section('五、排除项与空 Feed 策略');
   // 这份合成数据里 student / developer / china 等分类 Feed 确实为空，
   // 它们必须被 validate 判红（数据缺了就该有人看见），而 new / changes 不判。
   const syntheticPages = pageRoutesOf(deals);
-  const verdict = feeds.validate({
+  const verdict = validateWithVendor({
     feeds: synthetic.feeds, deals, store, pages: syntheticPages, asOf: '2026-09-30'
   });
   const emptyFlagged = new Set(verdict.problems.filter(problem => problem.code === 'not-empty')
@@ -294,7 +325,7 @@ section('五、排除项与空 Feed 策略');
     return /还没有观测到/.test(feed.description) && /起算/.test(feed.description);
   })());
   check('日志不可用时变化 Feed 为空，但描述说的是「没有拿到历史日志」而不是「没有变化」', (() => {
-    const offline = feeds.buildFeeds({
+    const offline = buildWithVendor({
       deals, store: null, radar: radarOf(deals, null), asOf: '2026-09-30',
       updatedAt: '2026-09-30T10:00:00+08:00', availability: 'unavailable'
     });
@@ -321,7 +352,7 @@ section('六、厂商门槛与 slug');
     mk('eeeeeeeeee04', '三条事件'), mk('eeeeeeeeee05', '没登记'), mk('eeeeeeeeee06', '没登记')];
   const store = { schemaVersion: 1, startedAt: '2026-09-01', baseline: { at: '2026-09-01', fields: {} }, absence: {}, events: [] };
   const slugs = { '两条': 'two', '三条事件': 'three-events' };
-  const built = feeds.buildFeeds({
+  const built = buildWithVendor({
     deals, store, radar: null, asOf: '2026-09-30', updatedAt: '2026-09-30T10:00:00+08:00', vendorSlugs: slugs
   });
   const vendorIds = built.feeds.filter(feed => feed.spec.vendor).map(feed => feed.spec.vendor);
@@ -330,7 +361,7 @@ section('六、厂商门槛与 slug');
   const events = ['2026-09-01', '2026-09-02', '2026-09-03'].map((at, i) => ({
     id: 'eeeeeeeeee04', at, type: 'benefit_changed', field: 'discountInfo', from: `a${i}`, to: `b${i}`
   }));
-  const withEvents = feeds.buildFeeds({
+  const withEvents = buildWithVendor({
     deals, store: { ...store, events }, radar: null, asOf: '2026-09-30',
     updatedAt: '2026-09-30T10:00:00+08:00', vendorSlugs: slugs
   });
@@ -370,7 +401,7 @@ section('七、XML 良构检查器');
 section('八、Tooth Test：篡改必须红');
 
 {
-  const clean = feeds.validate({
+  const clean = validateWithVendor({
     feeds: bundle.feeds, deals: payload.deals, store: historyStore.store, pages: PAGES, asOf: AS_OF
   });
   check('未篡改的真实产物：0 个问题（验证器不是永远红的噪声）',
@@ -395,7 +426,7 @@ section('八、Tooth Test：篡改必须红');
       });
       feed.json = feeds.serializeJsonFeed(feed.spec, feed.items, { description: feed.description });
     }
-    return feeds.validate({
+    return validateWithVendor({
       feeds: copy, deals: payload.deals, store: historyStore.store, pages: PAGES, asOf: AS_OF
     }).problems;
   };

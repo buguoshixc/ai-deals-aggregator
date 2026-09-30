@@ -143,6 +143,10 @@ const GATE_STEP_NAMES = [
   // 与 v1.5 那一支互补：前者管「取出来的视图对不对」，这一支管
   // 「把视图序列化成订阅源之后还对不对」，红的含义不同。
   'Feeds self-test',
+  // v1.7 新增：SEO 门禁自测（27 个检查码逐条定向篡改 + 干净夹具必须静默 +
+  // 门槛分支 + 注册表不变量）。它红的时候没有别的步骤会替它红：
+  // 构建期那一遍跑的是真数据，验不到「某个检查码其实永远不会响」。
+  'SEO self-test',
   // v1.1 新增：受众字段（三态语义 / merge 可信度仲裁 / 措辞同源）的全部红线守卫都在这支自测里。
   // 它原先只在本机跑，于是这几类回归在 CI 里看不见（t1 核验的 B5）。判断标准不是"多新"，
   // 而是"它红的时候有没有别的步骤会替它红"——没有，所以必须进来。
@@ -152,6 +156,9 @@ const GATE_STEP_NAMES = [
   // v1.6 新增：**真实连续构建**两次，逐字节比对全部 Feed 文件。自测证明的是
   // 「纯函数同输入同输出」，证明不了「构建脚本没把时钟写进产物」——两者红的含义不同。
   'Feeds reproducibility (build twice, byte-compare)',
+  // v1.7 新增：**只读 dist/** 的 SEO 独立验收（可索引性 / 条目集合 / sitemap 成员 /
+  // Feed 清单全部现场重新推导）。它是唯一一处「输入与构建期完全不同源」的 SEO 检查。
+  'SEO verification (independent, from dist/)',
   'Prepare browser for the real-browser gate',
   'Browser availability decision (never silent)',
   'Real-browser acceptance (verify-site.js)',

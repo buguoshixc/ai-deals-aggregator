@@ -1,0 +1,25 @@
+{
+  "_note": "**钉住**的落地页：一旦某个路由被收录/被搜索结果引用，就不允许因为数据波动而静默消失。构建只读这张表，永不写它（构建必须可复现，写状态会破坏确定性）。",
+  "_rule": "`route` 是站根下的相对路由（如 vendor/zhipu/、category/api/）。规则：① 表里每个路由都必须生成成功，否则构建红；② 钉住的页面条数为 0 时构建也红 —— 空页面对读者没有价值，这时必须有人做决定（补数据，或为它登记 landing-aliases.json 并从这里移除）；③ 新达标但未钉住、且不在表里的页面会照常生成，构建日志会点名提醒补一行（不是错误）。",
+  "pages": [
+    { "route": "vendor/", "kind": "hub", "key": "vendor", "since": "2026-09-30" },
+    { "route": "vendor/baidu-ai-cloud/", "kind": "vendor", "key": "百度智能云", "since": "2026-09-30" },
+    { "route": "vendor/zhipu/", "kind": "vendor", "key": "智谱AI", "since": "2026-09-30" },
+    { "route": "vendor/volcengine/", "kind": "vendor", "key": "火山引擎", "since": "2026-09-30" },
+    { "route": "vendor/coze/", "kind": "vendor", "key": "扣子 Coze", "since": "2026-09-30" },
+    { "route": "vendor/github/", "kind": "vendor", "key": "GitHub", "since": "2026-09-30" },
+    { "route": "vendor/iflytek/", "kind": "vendor", "key": "科大讯飞", "since": "2026-09-30" },
+    { "route": "vendor/microsoft/", "kind": "vendor", "key": "Microsoft", "since": "2026-09-30" },
+    { "route": "vendor/notion/", "kind": "vendor", "key": "Notion", "since": "2026-09-30" },
+    { "route": "vendor/minimax/", "kind": "vendor", "key": "MiniMax（稀宇科技）", "since": "2026-09-30" },
+    { "route": "category/", "kind": "hub", "key": "category", "since": "2026-09-30" },
+    { "route": "category/api/", "kind": "category", "key": "API服务", "since": "2026-09-30" },
+    { "route": "category/chat/", "kind": "category", "key": "对话模型", "since": "2026-09-30" },
+    { "route": "category/audio/", "kind": "category", "key": "音频语音", "since": "2026-09-30" },
+    { "route": "category/image/", "kind": "category", "key": "图像绘画", "since": "2026-09-30" },
+    { "route": "category/agent/", "kind": "category", "key": "智能体", "since": "2026-09-30" },
+    { "route": "need/student-only/", "kind": "alias", "key": "student-only", "since": "2026-09-30" },
+    { "route": "need/free-api/", "kind": "alias", "key": "free-api", "since": "2026-09-30" },
+    { "route": "need/dev-credits/", "kind": "alias", "key": "dev-credits", "since": "2026-09-30" }
+  ]
+}

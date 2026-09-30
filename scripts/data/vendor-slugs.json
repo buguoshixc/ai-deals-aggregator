@@ -1,12 +1,13 @@
 {
-  "_note": "厂商显示名 → 订阅 URL 里的 slug。人工维护，理由见 docs/SCHEMA-v1.6.md §4.3：显示名不可控（同一个厂商出现过两种写法）、哈希不可读、自动音译会随库变化 —— 只有人工表能同时满足「可读」与「厂商改名后订阅 URL 不变」。",
-  "_rule": "slug 必须匹配 ^[a-z0-9][a-z0-9-]*$，全局唯一。够订阅门槛（当前有效优惠 >= 2 条，或历史变更事件 >= 3 条）的厂商必须在这里有一行，否则 selftest:feeds 会红并给出建议值。",
+  "_note": "厂商规范显示名 → URL 里的 slug（订阅 /feed/vendor/<slug>.* 与落地页 /vendor/<slug>/ 共用同一个）。人工维护，理由见 docs/SCHEMA-v1.7.md §3：显示名不可控（同一个厂商出现过多种写法）、哈希不可读、自动音译会随库变化 —— 只有人工表能同时满足「可读」与「厂商改名后 URL 不变」。",
+  "_keying": "键是 **规范化之后的厂商显示名**（index.html 的 RENDER-CORE 里 vendorOf() 的 name，例如「火山引擎（字节跳动）」规范化为「火山引擎」）。v1.6 之前键的是原始字符串，同一个公司会因此分裂成两行 —— v1.7 统一为规范名，slug 值一个未改。",
+  "_rule": "slug 必须匹配 ^[a-z0-9][a-z0-9-]*$，全局唯一。够门槛（当前有效优惠 >= 2 条，或历史变更事件 >= 3 条）的厂商必须在这里有一行，否则 selftest:feeds / selftest:seo 会红并给出建议值。改名必须换 slug 时，在 scripts/data/landing-aliases.json 登记旧路由 → 新路由，构建会自动产出旧 URL 的 noindex 别名页。",
   "百度智能云": "baidu-ai-cloud",
   "智谱AI": "zhipu",
   "火山引擎": "volcengine",
-  "扣子 Coze（字节跳动）": "coze",
+  "扣子 Coze": "coze",
   "GitHub": "github",
-  "科大讯飞 讯飞开放平台": "iflytek",
+  "科大讯飞": "iflytek",
   "Microsoft": "microsoft",
   "Notion": "notion",
   "MiniMax（稀宇科技）": "minimax"

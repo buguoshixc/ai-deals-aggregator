@@ -1,0 +1,15 @@
+{
+  "_note": "分类枚举（scripts/lib/categories.js 的 CATEGORIES）→ /category/<slug>/ 里的 slug。人工维护，理由与厂商 slug 表相同：枚举值是中文、哈希不可读、自动音译会随库变化。这里登记的是**全部可能成页的分类**；具体生成哪几页由 scripts/lib/landing.js 的 CATEGORY_PAGES（人工允许表）+ 门槛决定。",
+  "_rule": "slug 必须匹配 ^[a-z0-9][a-z0-9-]*$，全局唯一。没登记的分类不会生成页面；登记了但没进 CATEGORY_PAGES 的，必须在 landing.js 的 CATEGORY_EXCLUSIONS 里写明理由，否则 selftest:seo 会红 —— 「某一类悄悄没生成」必须是有人做过的决定。",
+  "API服务": "api",
+  "对话模型": "chat",
+  "图像绘画": "image",
+  "音频语音": "audio",
+  "智能体": "agent",
+  "编程开发": "coding",
+  "办公效率": "productivity",
+  "视频": "video",
+  "教育学习": "education",
+  "设计创意": "design",
+  "搜索研究": "research"
+}
