@@ -1,0 +1,54 @@
+{
+  "_note": "plans.json 的 Provider 归一表。与 deals 侧的厂商归一（index.html 的 RENDER-CORE 里 VENDOR_RULES / vendorOf()）是**两套身份空间**：deals 的 vendor 是采集来的原始串、渲染期归一；plans 的 provider 必须在这里登记，未登记一律构建期硬红 —— 这样才能保证「同一家平台不会在 Plans 里分裂成多个身份」。",
+  "_keying": "键是 key（稳定机器标识，直接进 plan.id）；name 是规范显示名（只用于展示，改名不会改 id）；slug 用于 Phase 2.2 的路由，与 scripts/data/vendor-slugs.json 同一套形状与唯一性判据。",
+  "_rule": "key 与 slug 必须匹配 ^[a-z0-9][a-z0-9-]*$ 且各自全局唯一；aliases 必须**已经是归一形态**（NFKC + 去首尾空白 + 折叠空白 + 转小写），匹配方式是**精确相等**（刻意不做子串/正则匹配：子串匹配会出「krea 命中 Kreado」那类误并）；name 与 vendor-slugs.json 的某个键相同时，两边的 slug 必须相同。",
+  "_cross_dataset": "同一个公司允许有两个 provider（例如字节跳动的「火山引擎」与 Trae 是两条产品线），但这类决定必须逐条在此登记，不能默认发生。",
+  "zhipu": {
+    "name": "智谱AI",
+    "slug": "zhipu",
+    "aliases": ["智谱ai", "智谱", "zhipu", "bigmodel", "glm"],
+    "logo": "zhipu"
+  },
+  "trae": {
+    "name": "Trae",
+    "slug": "trae",
+    "aliases": ["trae", "trae cn", "traecn", "trae.cn", "trae.ai"],
+    "logo": null
+  },
+  "qoder": {
+    "name": "Qoder CN",
+    "slug": "qoder",
+    "aliases": ["qoder", "qoder cn", "qodercn", "灵码", "通义灵码", "lingma"],
+    "logo": null
+  },
+  "codebuddy": {
+    "name": "腾讯 CodeBuddy",
+    "slug": "codebuddy",
+    "aliases": ["codebuddy", "腾讯 codebuddy", "腾讯codebuddy", "腾讯云代码助手"],
+    "logo": null
+  },
+  "moonshot": {
+    "name": "月之暗面",
+    "slug": "moonshot",
+    "aliases": ["月之暗面", "kimi", "moonshot", "moonshot ai"],
+    "logo": "moonshotai"
+  },
+  "minimax": {
+    "name": "MiniMax（稀宇科技）",
+    "slug": "minimax",
+    "aliases": ["minimax", "稀宇科技", "海螺ai", "海螺 ai"],
+    "logo": null
+  },
+  "github": {
+    "name": "GitHub",
+    "slug": "github",
+    "aliases": ["github", "github copilot", "copilot"],
+    "logo": "github"
+  },
+  "cursor": {
+    "name": "Cursor",
+    "slug": "cursor",
+    "aliases": ["cursor", "cursor ai", "anysphere"],
+    "logo": "cursor"
+  }
+}

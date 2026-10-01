@@ -3575,6 +3575,150 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     check('首页恰好一个 h1 且就是站点主标题', homeH1.length === 1 && /优惠/.test(homeH1[0]), homeH1.join(' | '));
   }
 
+  /* ------------------------------------------------------------------ */
+  /* 套餐对比页（/plans/coding/，v2.1）                                    */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 19) 套餐对比页（/plans/coding/）===');
+
+  /**
+   * 为什么这一段必须存在：v2.1 的第一段只建了数据模型，这一页是第二段 ——
+   * 而「页面上的数字是不是数据里的数字」这件事，构建期那几条断言查的是**我们写下的字节**，
+   * 不是**浏览器渲染出来的文字**。两者之间隔着：CSS 造成的裁切、`innerText` 与源码的差异、
+   * 宽表在窄屏上的溢出、以及"某一格其实被 `/plans/` 这种错前缀指走了"。
+   *
+   * 这里最要紧的两条是：
+   *   ① **不可比较的单价必须显示成「—」**（把 requests / 限速 / 用量池当成 0 元每亿 Token，
+   *      是这一页最容易犯、也最坏的错）；
+   *   ② **宽表不许撑开整页**（/status/ 那一页的教训：桌面绿、手机横滚，而静态检查全绿）。
+   */
+  {
+    const plansRoute = 'plans/coding/';
+    const plansRouteUrl = new URL(plansRoute, base).href;
+    const errorsBefore = errors.length;
+    const externalBefore = externalRequests.length;
+    await page.goto(plansRouteUrl, { waitUntil: 'load' });
+    const pt = await page.evaluate(() => ({
+      h1: (document.querySelector('h1') || {}).textContent || '',
+      h1Count: document.querySelectorAll('h1').length,
+      canonical: (document.querySelector('link[rel="canonical"]') || {}).href || '',
+      canonicalPath: (() => { try { return new URL((document.querySelector('link[rel="canonical"]') || {}).href).pathname; } catch (e) { return ''; } })(),
+      rows: document.querySelectorAll('.ptable tbody tr[data-item]').length,
+      rowIds: [...document.querySelectorAll('.ptable tbody tr[data-item]')].map(tr => tr.getAttribute('data-item')),
+      // 三个数值列：取单元格里 `<small>` 之前那一段（币种在 small 里）
+      numeric: [...document.querySelectorAll('.ptable tbody tr[data-item]')].map(tr =>
+        [...tr.querySelectorAll('td.num')].map(td => (td.innerText || '').replace(/\s+/g, ' ').trim().split(' ')[0])),
+      officialLinks: [...document.querySelectorAll('.ptable tbody a[href^="http"]')].map(a => a.href),
+      noneMarks: document.querySelectorAll('.ptable tbody .pnone').length,
+      declared: (() => {
+        const ld = [...document.querySelectorAll('script[type="application/ld+json"]')]
+          .map(s => { try { return JSON.parse(s.textContent); } catch (e) { return null; } }).filter(Boolean);
+        const list = ld.find(d => d['@type'] === 'ItemList');
+        return list ? Number(list.numberOfItems) : -1;
+      })(),
+      ldTypes: [...document.querySelectorAll('script[type="application/ld+json"]')]
+        .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }),
+      crumbs: [...document.querySelectorAll('.crumb a')].map(a => a.getAttribute('href') || ''),
+      footLinks: [...document.querySelectorAll('footer a')].map(a => a.getAttribute('href') || ''),
+      text: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim() : ''
+    }));
+    // 真值取机器可读的那一份（`dist/plans.json`）。地址同样由 base 解析 ——
+    // 写死根路径时本地绿、线上 404，而失败形态是「读不到数据」+ 一条 404 的 JS 错误。
+    const plansTruth = await page.evaluate(`(async () => {
+      const doc = await (await fetch(${JSON.stringify(new URL('plans.json', base).href)})).json();
+      return (doc.plans || []).map(p => ({
+        id: p.id,
+        planName: p.planName,
+        officialUrl: p.officialUrl,
+        regular: p.billing.regularPrice,
+        promo: p.billing.promoPrice,
+        unit: p.derivedMetrics && p.derivedMetrics.nominalUnitPrice ? p.derivedMetrics.nominalUnitPrice.price : null
+      }));
+    })()`).catch(() => null);
+
+    check('/plans/coding/ 能打开且恰好一个 h1',
+      pt.h1Count === 1 && pt.text.length > 1200 && /套餐/.test(pt.h1),
+      `h1 ${pt.h1Count} 个 · 正文 ${pt.text.length} 字 · 「${pt.h1.trim()}」`);
+    check('/plans/coding/ canonical 自指',
+      pt.canonicalPath.endsWith('/plans/coding/') && pt.canonical.includes('buguoshixc.github.io'), pt.canonical);
+    check('/plans/coding/ 行数与 plans.json 逐个对账',
+      Boolean(plansTruth) && pt.rows === plansTruth.length &&
+      pt.rowIds.slice().sort().join(',') === plansTruth.map(p => p.id).sort().join(','),
+      plansTruth ? `页面 ${pt.rows} 行 / 数据 ${plansTruth.length} 条` : '读不到 plans.json');
+    check('/plans/coding/ ItemList 声明数 == 9 行，且是 CollectionPage + Breadcrumb + ItemList',
+      pt.declared === pt.rows &&
+      JSON.stringify([...pt.ldTypes].sort()) === JSON.stringify(['BreadcrumbList', 'CollectionPage', 'ItemList']),
+      `声明 ${pt.declared} / 行 ${pt.rows} / JSON-LD [${pt.ldTypes.join(', ')}]`);
+
+    // ★ 不可比较的单价：一格都不许是数字，而且必须带 .pnone 标记
+    if (plansTruth) {
+      const mismatched = [];
+      plansTruth.forEach((plan, index) => {
+        const cells = pt.numeric[index] || [];
+        const [regular, promo, unit] = cells;
+        if (plan.regular === null && regular !== '未标注') mismatched.push(`${plan.planName} 原价未知却显示「${regular}」`);
+        if (plan.regular === 0 && !/0/.test(regular || '')) mismatched.push(`${plan.planName} 免费档没显示成 0（「${regular}」）`);
+        if (plan.promo === null && promo !== '—') mismatched.push(`${plan.planName} 无活动价却显示「${promo}」`);
+        if (plan.unit === null && unit !== '—') mismatched.push(`${plan.planName} 单价不可比较却显示「${unit}」`);
+        if (plan.unit !== null && unit === '—') mismatched.push(`${plan.planName} 单价可计算却显示「—」`);
+      });
+      check('/plans/coding/ 三个数值列与数据逐条对账（未知写「未标注」/「—」，免费写 0，不可比较一律「—」）',
+        mismatched.length === 0, mismatched.slice(0, 3).join(' · ') || '全部一致');
+      check('/plans/coding/ 不可比较的单价格数 == 数据里算不出的条数',
+        pt.noneMarks === plansTruth.filter(p => p.unit === null).length,
+        `页面标记 ${pt.noneMarks} 格 / 数据 ${plansTruth.filter(p => p.unit === null).length} 条`);
+      check('/plans/coding/ 每条套餐都有官方页链接且指向数据里的那个地址',
+        plansTruth.every(plan => pt.officialLinks.includes(plan.officialUrl)),
+        `${pt.officialLinks.length} 个官方链接`);
+    }
+
+    // 口径文案与结论性词汇。词汇清单是 `lib/plans-page.js` 的 FORBIDDEN_CLAIM_WORDS 的
+    // **浏览器镜像** —— 两边都查是有意的：构建期查的是我们写下的字节，这里查的是渲染出来的文字。
+    const forbidden = ['性价比', '最划算', '最超值', '最值得买', '值得买', '排行榜', '排行',
+      '综合评分', '星级', '推荐指数', 'TOP 1', 'TOP1', '第一名', '最优选'];
+    check('/plans/coding/ 写着「名义 Token 单价只用于粗略比较」的口径',
+      pt.text.includes('不代表不同模型 Token 的实际价值相同'));
+    check('/plans/coding/ 页面上没有结论性词汇（不做价值判断）',
+      forbidden.filter(word => pt.text.includes(word)).length === 0,
+      forbidden.filter(word => pt.text.includes(word)).join('、') || `查了 ${forbidden.length} 个词`);
+    check('/plans/coding/ 面包屑回站根（两层路由必须用 ../../，不是 ../）',
+      pt.crumbs.some(href => href === '../../'), pt.crumbs.join(' '));
+    check('/plans/coding/ 页脚有指向本页的入口',
+      pt.footLinks.some(href => href.endsWith('plans/coding/')), pt.footLinks.filter(h => h.includes('plans')).join(' '));
+    check('/plans/coding/ 没有 JS 错误、没有外部请求',
+      errors.length === errorsBefore && externalRequests.length === externalBefore,
+      `错误 ${errors.length - errorsBefore} · 外部请求 ${externalRequests.length - externalBefore}`);
+
+    // ★ 宽表必须在容器内横滚，不撑开整页（只量结果，不量机制）
+    for (const width of [390, 360]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.waitForTimeout(200);
+      const mobile = await page.evaluate(() => {
+        const wrap = document.querySelector('.ptable-wrap');
+        const table = document.querySelector('.ptable');
+        const rect = el => (el ? Math.round(el.getBoundingClientRect().width) : null);
+        return {
+          docOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          wrapOverflowX: wrap ? getComputedStyle(wrap).overflowX : '(无 .ptable-wrap)',
+          tableWidth: rect(table),
+          wrapWidth: rect(wrap)
+        };
+      });
+      check(`/plans/coding/ ${width}px 不产生页面级横向溢出（11 列宽表应在容器内横滚）`,
+        mobile.docOverflow <= 1,
+        `页面溢出 ${mobile.docOverflow}px · .ptable-wrap overflow-x=${mobile.wrapOverflowX} · ` +
+        `表格宽 ${mobile.tableWidth}px / 容器宽 ${mobile.wrapWidth}px`);
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.waitForTimeout(200);
+
+    // 入口：首页页脚必须有这一条（它是这一页唯一的站内入链来源，orphan 判据由此满足）。
+    await page.goto(base, { waitUntil: 'load' });
+    const homePlansLink = await page.evaluate(() =>
+      [...document.querySelectorAll('footer a')].some(a => (a.getAttribute('href') || '').endsWith('plans/coding/')));
+    check('首页页脚有「套餐对比」入口（这一页不是孤儿页）', homePlansLink);
+  }
+
   await browser.close();
   if (server) server.close();
 

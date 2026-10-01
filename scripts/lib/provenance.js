@@ -147,12 +147,16 @@ function normalizeCapturedAt(value, today) {
  * 归一单条引文。非法一律返回 null（构造期只清洗，`validateDeal` 与入口对账负责报错）。
  *
  * @param {object} raw
- * @param {{today?:string}} [opts]
+ * @param {{today?:string, fields?:string[]}} [opts]
+ *   `fields` 是**可选**的字段白名单覆盖，唯一的使用者是 plans（`lib/plan-schema.js` 的
+ *   `PLANS_EVIDENCE_FIELDS`）。默认值仍是 deals 的 `EVIDENCE_FIELDS`，所以不传这个参数时
+ *   本模块的行为与 v1.3 逐字节相同（`provenance-selftest` 有两条断言钉住这一点）。
  * @returns {object|null}
  */
 function normalizeEvidenceItem(raw, opts = {}) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
-  if (!EVIDENCE_FIELDS.includes(raw.field)) return null;
+  const fields = opts.fields || EVIDENCE_FIELDS;
+  if (!fields.includes(raw.field)) return null;
 
   const quote = cleanQuote(raw.quote);
   if (!quote) return null;
@@ -183,7 +187,7 @@ function evidenceKey(item) {
  * 字节必须一样，否则 `check-reproducible` 的「重放产出同一份文件」会红。
  *
  * @param {unknown} value
- * @param {{today?:string}} [opts]
+ * @param {{today?:string, fields?:string[], fieldOrder?:string[]}} [opts]
  * @returns {object[]|null} 空 → null（缺席，不是空数组）
  */
 function normalizeEvidence(value, opts = {}) {
@@ -200,13 +204,14 @@ function normalizeEvidence(value, opts = {}) {
     kept.push(item);
   }
   if (!kept.length) return null;
-  return sortAndCap(kept);
+  return sortAndCap(kept, opts);
 }
 
-function sortAndCap(items) {
+function sortAndCap(items, opts = {}) {
+  const fieldOrder = opts.fieldOrder || opts.fields || EVIDENCE_FIELD_ORDER;
   const order = item => {
-    const at = EVIDENCE_FIELD_ORDER.indexOf(item.field);
-    return at < 0 ? EVIDENCE_FIELD_ORDER.length : at;
+    const at = fieldOrder.indexOf(item.field);
+    return at < 0 ? fieldOrder.length : at;
   };
   const sorted = [...items].sort((a, b) => {
     const diff = order(a) - order(b);
@@ -225,7 +230,7 @@ function sortAndCap(items) {
  *
  * @returns {object[]|null}
  */
-function mergeEvidence(a, b) {
+function mergeEvidence(a, b, opts = {}) {
   const list = [];
   for (const side of [a, b]) {
     if (!Array.isArray(side)) continue;
@@ -240,7 +245,7 @@ function mergeEvidence(a, b) {
     seen.add(key);
     kept.push(item);
   }
-  return sortAndCap(kept);
+  return sortAndCap(kept, opts);
 }
 
 /**
@@ -252,7 +257,7 @@ function mergeEvidence(a, b) {
  *
  * @param {unknown} raw
  * @param {object[]|null} normalized
- * @param {{today?:string}} [opts]
+ * @param {{today?:string, fields?:string[]}} [opts]
  * @returns {{index:number, reason:string}[]}
  */
 function auditEvidence(raw, normalized, opts = {}) {
@@ -269,9 +274,10 @@ function auditEvidence(raw, normalized, opts = {}) {
 }
 
 function evidenceDropReason(raw, opts = {}) {
+  const fields = opts.fields || EVIDENCE_FIELDS;
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return '引文不是对象';
-  if (!EVIDENCE_FIELDS.includes(raw.field)) {
-    return `field「${raw.field}」不在允许清单（${EVIDENCE_FIELDS.join(' / ')}）`;
+  if (!fields.includes(raw.field)) {
+    return `field「${raw.field}」不在允许清单（${fields.join(' / ')}）`;
   }
   const quote = cleanQuote(raw.quote);
   if (!quote) return '没有原文片段（quote 为空）';

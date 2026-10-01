@@ -194,6 +194,15 @@ runs:
       shell: bash
       run: node scripts/tools/fixture-test.js
 
+    # v2.1 新增：Coding Plan 数据模型（plans.json）与套餐对比页的离线自测。
+    # 它红的时候没有别的步骤会替它红 —— 「requests 套餐不得生成 Token 单价」「限速套餐不得写
+    # 固定额度」「原价未知不得填 0」「改价不得换 id」「同平台同套餐不得有两条身份」
+    # 「三态不得与 false 混用」「聚合站出处不得当证据」「页面上不许出现结论性词汇」
+    # 「算不出的单价必须显示成 —」「未知必须显示成未标注」这些承诺只在这一步被逐条验证。
+    - name: Plans self-test (data + page)
+      shell: bash
+      run: node scripts/tools/plans-selftest.js
+
     # 发布产物由 build-local.js 组装（与 deploy.yml 完全同一条路径），
     # 失败即拦：能装出坏产物就不该合并、更不该发布。
     - name: Assemble site (same path as deploy.yml)
@@ -208,6 +217,13 @@ runs:
     - name: Feeds reproducibility (build twice, byte-compare)
       shell: bash
       run: node scripts/tools/check-feeds-reproducible.js
+
+    # v2.1 新增：plans.json 可重建性 —— 盘上那份必须等于人工来源层产出的那一份（逐字节）。
+    # 与上一条红的含义不同：Feeds 那条问的是「构建产物里有没有被塞进时钟」，
+    # 这一条问的是「有没有人手改了派生产物 / 改了来源层却忘了重建」。
+    - name: Plans reproducibility (curated → plans.json, byte-compare)
+      shell: bash
+      run: node scripts/tools/check-plans-reproducible.js
 
     # v1.7 SEO 独立验收：**只读 dist/**，把可索引性、条目集合、sitemap 成员、Feed 清单
     # 全部从产物现场重新推导一遍，再与页面上的标记逐个对账。

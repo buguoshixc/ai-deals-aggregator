@@ -16,9 +16,14 @@ const { isOngoing } = require('./lib/expiry');
 const { CATEGORIES } = require('./lib/categories');
 const { auditAudienceFields } = require('./lib/audience-audit');
 const provenance = require('./lib/provenance');
+// v2.1：Coding Plan 数据模型。**判据只在 lib/plan-schema.js 与 lib/providers.js 里各写一份**，
+// 这里只负责把它跑起来、把结论并进同一份 error/warn 账，不重抄任何一条规则。
+const planSchema = require('./lib/plan-schema');
+const providers = require('./lib/providers');
 
 const ROOT = path.join(__dirname, '..');
 const DEALS_FILE = path.join(ROOT, 'deals.json');
+const PLANS_FILE = path.join(ROOT, 'plans.json');
 const INDEX_FILE = path.join(ROOT, 'index.html');
 const CURATED_FILES = [
   path.join(__dirname, 'data', 'curated_cn.json'),
@@ -398,6 +403,47 @@ function checkCurated() {
   return { curated: total, audienceDropped, evidenceDropped };
 }
 
+/* ---------------- v2.1 plans.json（Coding Plan 数据模型） ---------------- */
+
+/**
+ * `plans.json` 的数据门禁。
+ *
+ * 与 deals 的分工刻意保持对称：这里只把 `lib/plan-schema.js` 的判据跑起来，
+ * 并把**入口对账**（人工来源层里"写了却没生效"的东西）翻成硬错误 ——
+ * 与 `checkCurated()` 同一条理由：校验器看得到的是归一**之后**的世界，
+ * 枚举拼错的字只在这里能对上账，而"没写"与"写坏了"在产物里长得一模一样。
+ *
+ * 只读：不动 plans.json，也不做任何写盘。
+ */
+function checkPlansFile() {
+  const store = readJson(PLANS_FILE, 'plans.json');
+
+  const providerLoad = providers.load();
+  if (providerLoad.missing) error('scripts/data/providers.json 不存在（plans 的 provider 必须登记，否则身份会分裂）');
+  if (providerLoad.broken) error(`providers.json 无法解析：${providerLoad.broken}`);
+
+  let stats = null;
+  if (store) {
+    const result = planSchema.validatePlansStore(store, { providerTable: providerLoad.table });
+    result.errors.forEach(message => error(message));
+    stats = planSchema.summarize(store);
+  }
+
+  try {
+    const curated = planSchema.loadCuratedPlans({ providerTable: providerLoad.table });
+    curated.problems.forEach(item => {
+      error(`curated_plans.json[${item.index === null ? '-' : item.index}] ${item.planName || '(无套餐名)'}: ${item.reason}`);
+    });
+    curated.evidenceDropped.forEach(item => {
+      error(`curated_plans.json[${item.index}] ${item.planName}: evidence 写了却没生效 —— ${item.reason}`);
+    });
+  } catch (e) {
+    error(`curated_plans.json 读取失败：${e.message}`);
+  }
+
+  return { stats };
+}
+
 /**
  * v1.3 信息来源守卫（只在 --strict 下跑）。
  *
@@ -623,6 +669,7 @@ function main() {
   const strict = process.argv.includes('--strict');
   const { stats, deals } = checkDealsFile();
   const curatedStats = checkCurated();
+  const { stats: planStats } = checkPlansFile();
   checkIndex();
   if (strict) checkVerifiedGuard();
   if (strict) checkOngoingGuard();
@@ -642,6 +689,19 @@ function main() {
     console.log(`价格阶梯      : ${stats.withPriceLine} 条`);
   }
   console.log(`策展数据      : ${curatedStats.curated} 条`);
+  // v2.1：套餐（plans）与优惠（deals）是两套数据，统计也分开打印，避免把两者读成一份。
+  if (planStats) {
+    const quotaMix = Object.entries(planStats.byQuotaType).map(([type, n]) => `${type} ${n}`).join(' · ');
+    const reasons = Object.entries(planStats.notComputableByQuotaType).map(([type, n]) => `${type} ${n}`).join(' · ');
+    console.log(`套餐（plans） : ${planStats.total} 条 · ${planStats.providers} 个平台 · 国内 ${planStats.cn} / 国外 ${planStats.global}`);
+    console.log(`  价格        : 有活动价 ${planStats.withPromo} 条 · 原价留空(null) ${planStats.priceUnknown} 条`);
+    console.log(`  额度类型    : ${quotaMix}`);
+    console.log(`  已知模型/限制: 带 supportedModels ${planStats.withModels} 条 · 带 restrictions ${planStats.withRestrictions} 条`);
+    // 「可计算 0 条」也要打印，而且要说清为什么 —— 0 是结论，不是缺省。
+    console.log(`  名义 Token 单价: 可计算 ${planStats.computable} 条 · 不可计算 ${planStats.total - planStats.computable} 条` +
+      (reasons ? `（按额度类型：${reasons}）` : ''));
+    console.log(`  官方引文    : ${planStats.evidenceItems} 条 · updatedAt ${planStats.updatedAt}`);
+  }
   // 有值时它已经在上面作为**错误**报过并 exit 1 了，所以这行只在 0 的时候看得见 ——
   // 「0 也打印」的意思正是让「没检查」与「检查了、干净」在日志里长得不一样。
   console.log(`受众字段落空  : ${curatedStats.audienceDropped} 处（策展文件里写了却没进记录的新字段）`);
@@ -682,6 +742,10 @@ function main() {
     if (stats.withTimeInfo < stats.deals * 0.6) {
       error(`[strict] 带时间信息（截止日期或有效期说明）的优惠 ${stats.withTimeInfo} 条 < 60% 的 ${stats.deals} 条`);
     }
+    // v2.1：plans 的下限。刻意只卡"小而可靠"的 5 条 —— 这一层宁可少收也不靠凑数，
+    // 但少于 5 条就没有比较价值（题面 §十三）。上限不在这里卡：MAX_PLANS 是结构上限，
+    // 而"别一次采几十个平台"是人的判断，不该写成一条会误伤的门禁。
+    if (planStats && planStats.total < 5) error(`[strict] plans 条数 ${planStats.total} < 5`);
   }
 
   if (warnings.length) {
