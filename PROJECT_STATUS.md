@@ -3177,3 +3177,12 @@ GitHub Copilot Pro · Cursor Pro。每条都来自本次实际抓取并读到的
   390px 无变化、溢出仍 0px。
 - 回归保护：`verify-site.js` §19 新增 2 条断言（盒子宽度 ≈ 表格宽度 · 每句 ≤ 2 行），
   **未新增门禁步骤**；`verify` **381 项 0 失败** · `verify:regress` **387 项 0 失败**。
+- **✅ 已上线（2026-10-01）**：分支 `fix/plans-notes-width`（`1c51b14`）→ PR **#17** →
+  `gate` **success**（[run 36822680821](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36822680821)）
+  → 合并 **`430c2a1`** → `Verify site (gate)` + `Deploy to GitHub Pages` 双双 success
+  （[run 36822963137](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36822963137)）。
+  **线上冒烟（真浏览器打线上地址，不是按本地结果推断）**：`/plans/coding/` **200**（134,299 字节，
+  与本地产物同字节）· 列表 / 末尾段 / 表格宽度 **1380 / 1380 / 1380px** · 每句 **1 行** ·
+  390px 溢出 **0px** · 载荷 1 段 · `<template>` 9 个 · 占位符残留 0 · 无 JS 9 行 / 9 链接 / **0 控件** /
+  正文 3352 字 · 首页有入口 · **线上 JS 错误 0** ·
+  `/` `/plans.json` `/changes/` `/status/` `/feeds/` `/sitemap.xml` 全部 200。
