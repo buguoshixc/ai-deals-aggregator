@@ -762,6 +762,28 @@
     .dmodels .mlist.offers { flex-direction: column; align-items: flex-start; gap: var(--s1); }
     .dmodels .mlist.offers span { display: block; line-height: 1.5; }
     .dmodels .mlist.offers span b { margin-right: 6px; color: var(--ink); }
+    /* ---------- v2.4 关联的正常套餐（Deal → Plan）----------
+       这一段回答的是「这条优惠对应的正常套餐长什么样」，所以字段刻意与套餐对比表同名
+       （正常价格 / 当前活动价 / 额度 / 主要模型），读者两边看到的是同一套口径。
+       只在**有关系**的条目上出现（注入的 relatedPlans 为空时整块不渲染）。 */
+    .dplans { margin-top: var(--s4); border: 1px solid var(--line); border-radius: var(--r); padding: var(--s3); background: var(--card); }
+    .dplans .dpl-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); }
+    .dplans .dpl { display: grid; gap: 6px; padding-top: var(--s2); border-top: 1px solid var(--line2); }
+    .dplans .dpl:first-child { padding-top: 0; border-top: 0; }
+    .dplans .dpl-who { color: var(--ink); font-weight: 600; text-decoration: none; }
+    .dplans .dpl-who:hover { color: var(--brand); text-decoration: underline; text-underline-offset: 2px; }
+    .dplans .dpl-status { font-size: 11px; color: var(--brand); }
+    .dplans .dpl-status.ended { color: var(--mut); }
+    .dplans .dpl-facts { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(9em, 1fr)); gap: 2px var(--s2); }
+    .dplans .dpl-facts dt { font-size: 10.5px; color: var(--mut); letter-spacing: .4px; }
+    .dplans .dpl-facts dd { margin: 0; font-size: 12.5px; color: var(--ink2); word-break: break-word; }
+    .dplans .dpl-facts dd small { color: var(--mut); margin-left: 4px; }
+    .dplans .dpl-promo { margin: 0; font-size: 12.5px; color: var(--ink2); }
+    .dplans .dpl-promo b { color: var(--ink); }
+    .dplans .dpl-save { margin: 0; font-size: 12.5px; color: var(--ok); font-weight: 600; }
+    .dplans .dpl-go { font-size: 12.5px; color: var(--brand); text-decoration: none; }
+    .dplans .dpl-go:hover { text-decoration: underline; text-underline-offset: 2px; }
+    .dplans .dsrc-note { margin: var(--s2) 0 0; }
     .dact { margin-top: 20px; display: flex; gap: 10px; }
     .dact .pri { flex: 1; text-align: center; background: var(--brand); color: var(--on-accent); text-decoration: none; font-weight: 600; font-size: 14px; padding: 12px; border-radius: var(--r); }
     .dact .pri:hover { background: var(--ink); color: var(--card); }
@@ -3062,6 +3084,12 @@
      */
     function detailHtml(deal, opts) {
       const headingTag = (opts && opts.headingTag === 'h1') ? 'h1' : 'h2';
+      /**
+       * v2.4：站内相对链接的**深度前缀**。首页弹层在站根（`''`），独立详情页在
+       * `/deal/<id>/`（`'../../'`）—— `detailHtml` 两边共用，所以前缀只能由调用方给。
+       * 写死任意一个都会让另一边出现 404 的内链，而页面本身看起来完全正常。
+       */
+      const prefix = (opts && typeof opts.prefix === 'string') ? opts.prefix : '';
       const url = safeUrl(deal.url);
       const tier = tierOf(deal);
       const vendor = vendorOf(deal);
@@ -3145,6 +3173,7 @@
         // 它取代了旧的一行「来源：… · 首次收录 … · 最近采集 …」——那一行把客观事实、
         // 缺失状态和出处混在一句里，读者没法判断「最近成功采集」到底有没有发生过。
         // v1.4：变更记录（历史层）—— 无历史时也出块并明说「暂无变更记录」。
+        relatedPlansHtml(deal, prefix) +
         historyBlockHtml(deal) +
         sourceBlockHtml(deal);
     }
@@ -3487,6 +3516,88 @@
         '<div class="dhist-list">' + view.events.map(historyEventHtml).join('') + '</div>' +
         (hidden ? '<p class="dhist-more">' + escapeHtml(W.HISTORY_LABELS.more.replace('{n}', String(hidden))) + '</p>' : '') +
         '<p class="dsrc-note">' + escapeHtml(W.HISTORY_NOTES.disclaimer) + '</p>' +
+        '</div>';
+    }
+
+    /* ----------------------------------------------------------------
+     * ⑤.6 关联的正常套餐（v2.4：Deal → Plan）
+     *
+     * 数据从哪来：`dist/deals.json` 里每条记录的 `relatedPlans`（构建期由
+     * `scripts/lib/deal-plan-links.js` 从人工关系表 `scripts/data/deal-plan-links.json`
+     * 算出来并注入）。**源 deals.json 里没有这个字段** —— 它和 `history` / `collections`
+     * 一样是「只进 dist」的派生视图，所以浏览器与静态详情页读到的永远是同一份。
+     *
+     * 三条纪律：
+     *   ① 没有关联就整块不渲染（其余 131 条优惠页不该多出一块空壳）；
+     *   ② 字段名与套餐对比表逐字同名（正常价格 / 当前活动价 / 额度 / 主要模型），
+     *      未知值写「未标注」或表格里的「—」，绝不写 0、也不留空白；
+     *   ③ 只用 `<a>` / `<span>` / `<dl>`：无 JS 时读得到，也没有「点了没反应」的死控件。
+     * ---------------------------------------------------------------- */
+
+    const PLAN_LINK_WORDING = {
+      sectionTitle: '关联的正常套餐',
+      current: '当前优惠',
+      ended: '该优惠已结束',
+      planGone: '该套餐已不再收录',
+      promo: '本优惠：',
+      eligible: '（限符合条件者）',
+      go: '查看套餐对比 →',
+      note: '套餐价格与额度以平台官方定价页为准；「当前活动价」是该套餐自己的官方活动价，与这条优惠不是同一个价格。',
+      unknown: '未标注'
+    };
+
+    /** 事实行：`[标签, 值字段, 币种字段]`。与套餐对比表的列同名同序，读者不必两处对照 */
+    const PLAN_LINK_FACTS = [
+      ['正常价格', 'regularText', 'regularCode'],
+      ['当前活动价', 'promoText', 'promoCode'],
+      ['计费周期', 'periodText', null],
+      ['额度', 'quotaText', null],
+      ['主要模型', 'modelsText', null]
+    ];
+
+    function relatedPlanStatusOf(item) {
+      if (item.planStatus === 'removed') return { text: PLAN_LINK_WORDING.planGone, ended: true };
+      if (item.linkStatus !== 'current' || item.planStatus === 'ended') {
+        return { text: PLAN_LINK_WORDING.ended, ended: true };
+      }
+      return { text: PLAN_LINK_WORDING.current, ended: false };
+    }
+
+    function relatedPlanHtml(item, prefix) {
+      if (!item || !item.planId) return '';
+      const id = String(item.planId);
+      const href = (prefix || '') + 'plans/coding/#plan-' + encodeURIComponent(id);
+      const status = relatedPlanStatusOf(item);
+      const facts = PLAN_LINK_FACTS.map(pair => {
+        const value = item[pair[1]] ? item[pair[1]] : PLAN_LINK_WORDING.unknown;
+        const code = pair[2] && item[pair[2]] ? item[pair[2]] : null;
+        return '<div><dt>' + escapeHtml(pair[0]) + '</dt><dd>' + escapeHtml(value) +
+          (code ? '<small>' + escapeHtml(code) + '</small>' : '') + '</dd></div>';
+      }).join('');
+      const promo = item.promoLine
+        ? '<p class="dpl-promo"><b>' + escapeHtml(PLAN_LINK_WORDING.promo) + '</b>' + escapeHtml(item.promoLine) +
+          (item.eligible ? escapeHtml(PLAN_LINK_WORDING.eligible) : '') + '</p>'
+        : '';
+      const savings = item.savingsText ? '<p class="dpl-save">' + escapeHtml(item.savingsText) + '</p>' : '';
+      return '<li class="dpl" data-plan-id="' + escapeAttr(id) + '">' +
+        '<a class="dpl-who" href="' + escapeAttr(href) + '">' + escapeHtml(item.title || id) + '</a>' +
+        '<span class="dpl-status' + (status.ended ? ' ended' : '') + '">' + escapeHtml(status.text) + '</span>' +
+        '<dl class="dpl-facts">' + facts + '</dl>' + promo + savings +
+        '<a class="dpl-go" href="' + escapeAttr(href) + '">' + escapeHtml(PLAN_LINK_WORDING.go) + '</a>' +
+        '</li>';
+    }
+
+    /** 「关联的正常套餐」整块（无关联返回空串） */
+    function relatedPlansHtml(deal, prefix) {
+      const items = deal && Array.isArray(deal.relatedPlans) ? deal.relatedPlans : [];
+      if (!items.length) return '';
+      const list = items.map(item => relatedPlanHtml(item, prefix || '')).join('');
+      if (!list) return '';
+      return '<div class="dplans" role="group" aria-label="' + escapeAttr(PLAN_LINK_WORDING.sectionTitle) + '"' +
+        ' data-related-plans="' + escapeAttr(String(items.length)) + '">' +
+        '<div class="dsrc-h">' + escapeHtml(PLAN_LINK_WORDING.sectionTitle) + '</div>' +
+        '<ul class="dpl-list">' + list + '</ul>' +
+        '<p class="dsrc-note">' + escapeHtml(PLAN_LINK_WORDING.note) + '</p>' +
         '</div>';
     }
 

@@ -1,0 +1,77 @@
+{
+  "_note": "优惠政策 ↔ Coding 套餐之间的**人工确认**关系。deals.json 与 plans.json 一个字节都不改：它们是派生产物且字段集封闭，关系属于人工来源层（与 providers.json / vendor-slugs.json 同类）。本文件只写事实与出处；节省金额、updatedAt、count、relatedPlans 一律由构建期推导，手写即校验错误。",
+  "_rules": "① planIds 每一条都必须存在于 plans.json，dealId 必须存在于 deals.json（deal 被下架后要把它整条移进 retired[]，快照字段不许省）；② provider 必须等于每个关联套餐的 provider，且当 providers.json 认不出 deal.vendor 这个原始串时必须写明 providerOverride；③ promo 只在官方页给出了可比较的价格时才写，且必须同币种、同周期、appliesTo 标注资格范围；④ 引文必须是官方页原文（聚合站出处与未来日期一律拒收）。记录按 dealId 升序、planIds 升序排列；basis 枚举见 docs/SCHEMA-v2.4.md。",
+  "schemaVersion": 1,
+  "links": [
+    {
+      "dealId": "7691c150c8e5",
+      "planIds": [
+        "a6a6a374dfba"
+      ],
+      "provider": "minimax",
+      "providerOverride": "采集原文的厂商串是「MiniMax（稀宇科技）」（带全角括号后缀），providers.json 的精确别名表里没有这一形态；平台身份以 providers.json 的 minimax 为准，不做子串匹配。",
+      "basis": "official-plan-page",
+      "evidence": [
+        {
+          "field": "relation",
+          "quote": "Token Plan 订阅优惠：通过邀请链接购买 Token Plan，可在结算时享受 9 折优惠。适用范围：适用于 Token Plan 全场套餐订阅及订阅升级。",
+          "sourceUrl": "https://platform.minimax.cn/docs/token-plan/faq",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "confirmedAt": "2026-10-01",
+      "promo": {
+        "price": 44.1,
+        "currency": "CNY",
+        "period": "monthly",
+        "appliesTo": "eligible",
+        "note": "受邀人通过邀请链接购买可享 9 折（官方 Token Plan FAQ：Plus ¥49/月；49 × 0.9 = 44.1 元/月）"
+      }
+    },
+    {
+      "dealId": "8e7b0fd03e73",
+      "planIds": [
+        "dd5cd38ae7b7"
+      ],
+      "provider": "github",
+      "basis": "official-plan-page",
+      "evidence": [
+        {
+          "field": "relation",
+          "quote": "There are two ways to qualify for free access to Copilot Pro: As a verified teacher on GitHub Education. As a maintainer of a popular open-source repository.",
+          "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-teachers-and-os-maintainers",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "confirmedAt": "2026-10-01",
+      "promo": {
+        "price": 0,
+        "currency": "USD",
+        "period": "monthly",
+        "appliesTo": "eligible",
+        "note": "已验证教师与热门开源仓库维护者可免费获得 Copilot Pro（资格限定）"
+      }
+    },
+    {
+      "dealId": "df8ec56faa17",
+      "planIds": [
+        "dd5cd38ae7b7"
+      ],
+      "provider": "github",
+      "basis": "official-plan-page",
+      "evidence": [
+        {
+          "field": "relation",
+          "quote": "Verified students on GitHub Education get free access to GitHub Copilot's features.",
+          "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-students",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "confirmedAt": "2026-10-01"
+    }
+  ],
+  "retired": []
+}

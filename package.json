@@ -56,6 +56,8 @@
     "selftest:plan-history": "node scripts/tools/plan-history-selftest.js",
     "check:plan-history": "node scripts/tools/check-plan-history.js",
     "report:plan-changes": "node scripts/tools/plan-changes-report.js",
+    "selftest:deal-plan-links": "node scripts/tools/deal-plan-links-selftest.js",
+    "report:deal-plan-links": "node scripts/tools/deal-plan-link-candidates.js",
     "check:ci": "node scripts/tools/check-ci-consistency.js",
     "selftest:seo": "node scripts/tools/seo-selftest.js",
     "verify:seo": "node scripts/tools/seo-verify.js",

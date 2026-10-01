@@ -30,7 +30,10 @@ const REQUIRED = [
   'changesStripHtml', 'changesPageHtml',
   // v1.7：某个主题的「最近变化」块（落地页用）。措辞与行渲染复用 /changes/ 的同一套，
   // 所以「没拿到日志」与「窗口内没有变化」在两种页面上是同样两句话。
-  'changesTopicHtml'
+  'changesTopicHtml',
+  // v2.4：Deal → Plan 的「关联的正常套餐」块。构建期要用它给静态详情页渲染这一块、
+  // 并断言前缀（'' / '../../'）与字段名，所以它必须是对外可见的纯函数。
+  'relatedPlansHtml'
 ];
 
 function load(htmlPath = path.join(ROOT, 'index.html')) {

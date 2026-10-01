@@ -238,6 +238,31 @@ plans.json                        # 派生产物（当前 9 条）；构建期�
 > 价格 / 额度 / 官方页 / 备注怎么改都**不会换 id**（id = `sha1(kind|provider|planName|计费周期)`），
 > 所以改价在后续的 Plan History 里是一件"变化"，而不是"一条记录消失、另一条出现"。
 
+### 优惠 ↔ 套餐关联（v2.4）
+
+优惠与套餐之间那条关系是**显式人工维护**的，单独一个来源文件（完整契约见
+[`docs/SCHEMA-v2.4.md`](docs/SCHEMA-v2.4.md)）：
+
+```
+scripts/data/deal-plan-links.json  # 人写事实：dealId + planIds + provider + basis + 官方引文 + 确认日期
+        ↓  npm run build          # 校验（不过就中止）→ 派生状态与节省金额 → 注入 dist
+dist/deals.json                    # 每条有关系记录多一个 relatedPlans（只进 dist 的派生视图）
+dist/deal-plan-links.json          # 关系表 + 派生 updatedAt/count（发布出去，供外部核对）
+        ↓
+/deal/<id>/ 的「关联的正常套餐」  ↔  /plans/coding/ 的「各套餐当前优惠」（双向深链）
+```
+
+| 门禁 | 管什么 |
+|---|---|
+| `npm run validate`（含 `--strict`） | 关系必须指向真实存在的 deal / plan；provider 必须一致，原始厂商串认不出来就必须写 `providerOverride`（多余的 override 也报错）；引文与 promo 形状；手写派生值即错 |
+| `npm run selftest:deal-plan-links` | 78 项：一优惠↔一套餐/多套餐、一套餐↔多优惠、已结束（过期/历史 ended/记录下架）、节省金额四道门（同套餐/同币种/同周期/全员可享）、候选报告没有写生产关系的路径（CI 门禁） |
+| `npm run build` 的产物自检 | 源 `deals.json` 不许出现 `relatedPlans`；注入与重算逐字段相同；两个页面上的块、锚点落点与深度前缀逐条对账；**没有关系的优惠页一个字节都不多** |
+| `npm run verify` | 真浏览器：读产物重算「哪些关系算当前」，再与 DOM 逐条比对（含"已结束的不得显示成当前优惠"） |
+| `npm run report:deal-plan-links` | 候选报告（`vendor-alias` / `url-host` / `title-mention`），**只供人工 review**，绝不自动写生产关系 |
+
+> 优惠结束后**套餐不会消失**：套餐行变成「暂无当前优惠」，关系改记在「历史优惠」里；
+> 优惠记录被采集层下架后，关系以带快照的 `retired` 记录留在文件里（不留死链）。
+
 ## 目录结构
 
 ```
@@ -282,6 +307,8 @@ scripts/
     providers.js              v2.1 Provider 归一：providers.json 的唯一读入口 + 与 vendor-slugs 的 slug 一致性
     plans-compare.js          v2.2 套餐对比页的**交互逻辑**（筛选/搜索/排序/展开）：纯函数 + 一个 init()，
                               双宿主（浏览器逐字节内联 / 自测 require 同一份字节）；不含任何结论性文案
+    deal-plan-links.js        v2.4 优惠 ↔ 套餐关系层：关系表的唯一读入/校验入口 + 状态判据 / 节省金额四道门 /
+                              两个方向的派生视图 + 候选报告（判据只有这一处，构建期与自测共用）
     secret-scan.js            v2.0 密钥模式扫描（产物自检 / 送模型前脱敏 / 牙测试共用同一份模式表）
   ai/                         v2.0 AI 维护层（**可选、默认关闭、永不进入采集链路**）
     provider.js               generateStructured()：AI 的唯一出口（永不 throw，失败收敛成 invalid）

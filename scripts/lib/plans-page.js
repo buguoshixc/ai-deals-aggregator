@@ -99,7 +99,11 @@ const PLANS_NOTES = [
   '筛选、搜索与排序都**只在你自己的浏览器里生效**：它们不改变这一页的地址，也不生成新的页面 —— 地址栏里永远是这一页，看到的永远是下面这张表的子集。',
   '价格区间只按**正常月费**筛，而且**不跨币种**：每一档都写着币种（如「¥50–99（CNY）」），我们没有汇率，也不打算用一个假汇率把美元和人民币放进同一个区间。原价未标注、以及非月付的套餐，在价格区间生效时不出现。',
   '排序里「不可比较」的一律排在**可比较项之后**，正序倒序都不越过它 —— 没有活动价、算不出名义 Token 单价的套餐，绝不会因为"看起来是 0"而排到最前面。价格排序还**按币种分组**（组内排序），不跨币种互相比较。',
-  '搜索覆盖平台名与常见别名、套餐名、模型名，以及页面上显示的额度类型与地区；中文显示值也能搜到（例如「智谱」「灵码」）。'
+  '搜索覆盖平台名与常见别名、套餐名、模型名，以及页面上显示的额度类型与地区；中文显示值也能搜到（例如「智谱」「灵码」）。',
+  // v2.4：优惠 ↔ 套餐。为什么必须写在页面上：这一块会把读者引到优惠页，而「为什么这条套餐有优惠、
+  // 那条没有」的判据如果不说，读者只能猜 —— 猜出来的结论往往是「我们漏了」。
+  '「当前优惠」只来自**显式确认**的关联（`deal-plan-links.json`，每条都带官方出处），并且只在优惠尚未结束、套餐仍在售时显示；相似度匹配只产出候选报告，不会自动写进这一页。',
+  '优惠结束后套餐**不会消失**：那一行会变成「暂无当前优惠」，而这段关系仍记在「历史优惠」里（已下架的优惠保留标题与厂商快照，因此不会有指向不存在页面的链接）。'
 ];
 
 const CURRENCY_SYMBOL = { CNY: '¥', USD: '$', HKD: 'HK$', EUR: '€', JPY: '¥', GBP: '£', SGD: 'S$' };
@@ -123,6 +127,27 @@ const RESTRICTION_LABEL = {
   concurrency: '并发', rate_limit: '限速', per_day_cap: '每日上限', rolling_window: '刷新窗口',
   output_limit: '输出上限', fair_use: '公平使用', region_restriction: '地区限制',
   account_required: '需要账号', invite_only: '仅限受邀', new_user_only: '仅限新用户'
+};
+
+/**
+ * v2.4：套餐页那一块「各套餐当前优惠」的**唯一用词出处**。
+ *
+ * 为什么用词要单列：这一块的每一句话都会被构建期断言与真浏览器断言逐字比对，
+ * 句子写两遍就会在某一处悄悄分家（v2.3 的 `planChangeText()` 就是这么来的）。
+ * `none`（暂无当前优惠）与 `historical`（历史优惠）必须分开：把「现在没有」与
+ * 「曾经有过、已经结束」写成同一句，就是把一件已经过去的事说成现在的事。
+ */
+const PLAN_DEALS_WORDING = {
+  sectionId: 'plan-deals',
+  heading: '各套餐当前优惠',
+  note: '关联是显式确认的：只有人工在 deal-plan-links.json 写明、且能在官方页找到出处的关联才会计入；相似度匹配只产出候选报告，不会自动写进这一页。',
+  none: '暂无当前优惠',
+  current: '当前优惠：',
+  historical: '历史优惠：',
+  eligible: '（限符合条件者）',
+  ended: '已结束',
+  fallback: '详情见优惠页',
+  viewDeal: '查看优惠 →'
 };
 
 /* ------------------------------------------------------------------ */
@@ -756,11 +781,171 @@ function renderRow(row) {
         </tr>`;
 }
 
+/* ------------------------------------------------------------------ */
+/* v2.4 优惠 ↔ 套餐：套餐页那一块（纯静态，无 JS 也读得到）              */
+/* ------------------------------------------------------------------ */
+
+/** 一条「当前优惠」：`当前优惠：<文案>[（限符合条件者）][ · 截止 <日期>]` */
+function planDealCurrentTextOf(item) {
+  const line = item.promoLine ? item.promoLine : PLAN_DEALS_WORDING.fallback;
+  const head = `${PLAN_DEALS_WORDING.current}${line}${item.eligible ? PLAN_DEALS_WORDING.eligible : ''}`;
+  return item.deadlineText ? `${head} · ${item.deadlineText}` : head;
+}
+
+/** 一条「历史优惠」：`历史优惠：<标题>（已结束 <日期>）`（日期没有就不写日期，不编一个） */
+function planDealHistoryTextOf(item) {
+  const title = item.dealTitle || item.title || item.dealId;
+  const at = item.endedAt ? ` ${item.endedAt}` : '';
+  return `${PLAN_DEALS_WORDING.historical}${title}（${PLAN_DEALS_WORDING.ended}${at}）`;
+}
+
+function planDealHrefOf(dealId, prefix) {
+  return `${prefix}deal/${encodeURIComponent(dealId)}/`;
+}
+
+/**
+ * 一行 = 一条套餐。**当前优惠与历史优惠用两个不同的 class**：
+ * `class="pdgo"`（当前）与 `class="pdgo pdgo-hist"`（历史）在断言里是两件事 ——
+ * 「已结束的优惠被当成当前优惠」这条 Tooth Test 靠的就是这个结构差别，而不是靠读文案。
+ */
+function planDealsRowHtml(row, opts = {}) {
+  const prefix = opts.prefix || '';
+  const who = `<a class="pdwho" href="#plan-${escapeHtml(row.planId)}">${escapeHtml(row.title || row.planId)}</a>`;
+  const parts = [];
+  for (const item of row.current) {
+    const savings = item.savingsText ? `<span class="pdsave">${escapeHtml(item.savingsText)}</span>` : '';
+    parts.push(`<span class="pdcur">${escapeHtml(planDealCurrentTextOf(item))}</span>${savings}` +
+      `<a class="pdgo" href="${escapeHtml(planDealHrefOf(item.dealId, prefix))}">${escapeHtml(PLAN_DEALS_WORDING.viewDeal)}</a>`);
+  }
+  if (!row.current.length) {
+    parts.push(`<span class="pdnone">${escapeHtml(PLAN_DEALS_WORDING.none)}</span>`);
+  }
+  for (const item of row.history) {
+    // 退役记录（优惠记录已被采集层下架）不给链接：那是一个不存在的页面，给了就是死链。
+    const link = item.retired
+      ? ''
+      : `<a class="pdgo pdgo-hist" href="${escapeHtml(planDealHrefOf(item.dealId, prefix))}">${escapeHtml(PLAN_DEALS_WORDING.viewDeal)}</a>`;
+    parts.push(`<span class="pdhist">${escapeHtml(planDealHistoryTextOf(item))}</span>${link}`);
+  }
+  const empty = !row.current.length && !row.history.length ? ' pdempty' : '';
+  return `          <li id="plan-deals-${escapeHtml(row.planId)}" class="pdrow${empty}">${who}${parts.join('')}</li>`;
+}
+
+/**
+ * 整块。放在表格之后、`#plans-compare` 之外 —— 因此 JS 替换筛选容器时不会把它一起抹掉。
+ *
+ * @param {object} view `lib/deal-plan-links.js` 的 `planDealsView()` 产物
+ */
+function planDealsBlockHtml(view, opts = {}) {
+  if (!view || !Array.isArray(view.rows)) return '';
+  const prefix = opts.prefix || '';
+  const home = opts.home || PLANS_HOME_HREF;
+  const note = escapeHtml(PLAN_DEALS_WORDING.note).replace(
+    'deal-plan-links.json',
+    `<a href="${escapeHtml(`${home}deal-plan-links.json`)}">deal-plan-links.json</a>`
+  );
+  const rows = view.rows.map(row => planDealsRowHtml(row, { prefix })).join('\n');
+  const sum = `共 ${view.counts.plans} 条套餐 · 当前有优惠 ${view.counts.withCurrent} 条` +
+    ` · 历史关联 ${view.counts.history} 条 · 数据基准日 ${view.asOf || UNKNOWN_TEXT}`;
+  return `      <section class="pplandeals" id="${PLAN_DEALS_WORDING.sectionId}">
+        <h2 class="ph2">${escapeHtml(PLAN_DEALS_WORDING.heading)}</h2>
+        <p class="snote">${note}</p>
+        <ul class="pdlist">
+${rows}
+        </ul>
+        <p class="pdsum">${escapeHtml(sum)}</p>
+      </section>`;
+}
+
+/** 取出 `#plan-deals` 那一段（断言用；取不到返回空串） */
+function planDealsBlockOf(text) {
+  const match = String(text || '').match(/<section class="pplandeals" id="plan-deals"[\s\S]*?<\/section>/);
+  return match ? match[0] : '';
+}
+
+/** 取出某条套餐的那一行 */
+function planDealsRowOf(block, planId) {
+  const text = String(block || '');
+  const start = text.indexOf(`<li id="plan-deals-${planId}"`);
+  if (start < 0) return '';
+  const next = text.indexOf('<li id="plan-deals-', start + 1);
+  return next < 0 ? text.slice(start) : text.slice(start, next);
+}
+
+/**
+ * v2.4 诚实性断言：块里的每一句话都必须与视图逐条对得上，且
+ * **已结束的关联一个都不许出现在「当前优惠」里**（Tooth Test #4 的牙）。
+ *
+ * @param {string} html 整页或正文
+ * @param {object|null} view `planDealsView()` 产物；为 null 时不检查（该页面没有传视图）
+ */
+function assertPlanDealsBlock(html, view, opts = {}) {
+  const problems = [];
+  if (!view || !Array.isArray(view.rows)) return problems;
+  const text = markupOnly(String(html));
+  const block = planDealsBlockOf(text);
+  if (!block) {
+    problems.push('缺少「各套餐当前优惠」块（#plan-deals）');
+    return problems;
+  }
+  const prefix = opts.prefix || PLANS_HOME_HREF;
+  const ids = [...block.matchAll(/<li id="plan-deals-([0-9a-f]{12})"/g)].map(match => match[1]);
+  if (ids.length !== view.rows.length) {
+    problems.push(`#plan-deals 的行数 ${ids.length} ≠ 套餐数 ${view.rows.length}`);
+  } else if (JSON.stringify(ids) !== JSON.stringify(view.rows.map(row => row.planId))) {
+    problems.push('#plan-deals 的套餐顺序与表内规范序不一致');
+  }
+
+  const currentDealIds = new Set();
+  for (const row of view.rows) {
+    const chunk = planDealsRowOf(block, row.planId);
+    if (!chunk) { problems.push(`#plan-deals 缺少套餐 ${row.planId} 的一行`); continue; }
+    if (!chunk.includes(`href="#plan-${row.planId}"`)) {
+      problems.push(`${row.planId}: 优惠行没有链回套餐行的锚点 #plan-${row.planId}`);
+    }
+    const hasNone = chunk.includes('<span class="pdnone">');
+    if (!row.current.length && !hasNone) {
+      problems.push(`${row.planId}: 没有当前优惠时必须写「${PLAN_DEALS_WORDING.none}」`);
+    }
+    if (row.current.length && hasNone) {
+      problems.push(`${row.planId}: 有当前优惠却同时写着「${PLAN_DEALS_WORDING.none}」`);
+    }
+    for (const item of row.current) {
+      currentDealIds.add(item.dealId);
+      const line = planDealCurrentTextOf(item);
+      if (!chunk.includes(escapeHtml(line))) problems.push(`${row.planId}: 当前优惠缺一句「${line}」`);
+      if (item.savingsText && !chunk.includes(escapeHtml(item.savingsText))) {
+        problems.push(`${row.planId}: 缺少节省金额「${item.savingsText}」`);
+      }
+      if (!chunk.includes(`class="pdgo" href="${planDealHrefOf(item.dealId, prefix)}"`)) {
+        problems.push(`${row.planId}: 当前优惠缺少「${PLAN_DEALS_WORDING.viewDeal}」链接（前缀应为 ${prefix}）`);
+      }
+    }
+    for (const item of row.history) {
+      const line = planDealHistoryTextOf(item);
+      if (!chunk.includes(escapeHtml(line))) problems.push(`${row.planId}: 历史优惠缺一句「${line}」`);
+    }
+  }
+
+  // Tooth Test #4：`class="pdgo"`（当前优惠专用）只能挂在「当前」的关联上
+  const linkedIds = [...block.matchAll(/<a class="pdgo" href="[^"]*?deal\/([0-9a-f]{12})\//g)].map(match => match[1]);
+  const wrong = [...new Set(linkedIds.filter(id => !currentDealIds.has(id)))];
+  if (wrong.length) {
+    problems.push(`#plan-deals 把已结束的关联 ${wrong.join('、')} 当成当前优惠（给了「${PLAN_DEALS_WORDING.viewDeal}」链接）`);
+  }
+
+  const sum = `共 ${view.counts.plans} 条套餐 · 当前有优惠 ${view.counts.withCurrent} 条 · 历史关联 ${view.counts.history} 条`;
+  if (!block.includes(escapeHtml(sum))) {
+    problems.push(`#plan-deals 的计数行与实际不一致（应为「${sum}」）`);
+  }
+  return problems;
+}
+
 /**
  * `<main>` 里的全部内容（含 `<h1>`）。面包屑、页头、页脚、`<head>` 由构建期套壳。
  *
  * @param {object[]} plans plans.json 的记录
- * @param {{providerTable?:object}} [opts]
+ * @param {{providerTable?:object, dealLinks?:object}} [opts]
  */
 function plansPageBody(plans, opts = {}) {
   const providerTable = opts.providerTable || providersLib.load().table;
@@ -776,12 +961,17 @@ function plansPageBody(plans, opts = {}) {
   const planChangesBlock = opts.planChanges
     ? planChangesBlockHtml(opts.planChanges, { prefix: opts.prefix || '', providerTable, plansById: new Map(plans.map(p => [p.id, p])) })
     : '';
+  // v2.4：优惠 ↔ 套餐。同样在 #plans-compare 之外、纯静态（无 JS 时也读得到）。
+  // 视图由 `lib/deal-plan-links.js` 算好传进来（判据只有一处），这里只排版。
+  const dealLinks = opts.dealLinks || null;
+  const dealLinksBlock = dealLinks ? `\n${planDealsBlockHtml(dealLinks, { prefix: opts.prefix || '', home })}` : '';
+  const dealLinksMeta = dealLinks ? ` · 当前有优惠 ${dealLinks.counts.withCurrent} 条` : '';
 
   return `      <nav class="crumb" aria-label="面包屑"><a href="${home}">首页</a> › <span>${escapeHtml(PLANS_HEADING)}</span></nav>
 
       <div class="stop">
         <h1>${escapeHtml(PLANS_HEADING)}</h1>
-        <span class="meta">共 ${rows.length} 条套餐 · ${providerCount} 个平台 · 国内 ${rows.filter(r => r.regionText === '国内').length} 条</span>
+        <span class="meta">共 ${rows.length} 条套餐 · ${providerCount} 个平台 · 国内 ${rows.filter(r => r.regionText === '国内').length} 条${dealLinksMeta}</span>
       </div>
 
       <p class="snote">${escapeHtml(PLANS_DESCRIPTION)}</p>
@@ -811,7 +1001,7 @@ ${unitSortable ? '' : `      <p class="snote">${escapeHtml(NO_UNIT_SORT_NOTE)}</
         </tbody>
       </table>
       </div>
-
+${dealLinksBlock}
       ${comparePayloadScriptHtml(payload)}
       <div class="ptpl" aria-hidden="true">
 ${planDetailTemplatesHtml(plans, { providerTable, planHistoryStore: opts.planHistoryStore, timelineLimit: opts.timelineLimit })}
@@ -1225,6 +1415,10 @@ function assertPageHonesty(html, plans, opts = {}) {
   //    外加「预渲染标记里零控件」。载荷错的时候**表格看上去完全正常**，
   //    所以这一条必须挂在同一个函数里 —— 构建期从磁盘回读时它会再跑一遍。
   problems.push(...assertCompareHonesty(html, plans, opts));
+
+  // ⑫ v2.4：优惠 ↔ 套餐块。视图由调用方传入（`deal-plan-links.js` 的 `planDealsView()`）；
+  //    没传视图 = 这一页没有渲染这一块，也就没有可对账的对象（既有调用方不受影响）。
+  problems.push(...assertPlanDealsBlock(text, opts.dealLinks || null, { prefix: opts.prefix }));
   return problems;
 }
 
@@ -1298,6 +1492,7 @@ module.exports = {
   SORT_LABEL,
   MODEL_NONE_KEY,
   NO_UNIT_SORT_NOTE,
+  PLAN_DEALS_WORDING,
   escapeHtml,
   formatNumber,
   providerNameOf,
@@ -1313,6 +1508,14 @@ module.exports = {
   markupOnly,
   plansPageBody,
   plansJsonLd,
+  // v2.4 优惠 ↔ 套餐（套餐页那一块）
+  planDealsBlockHtml,
+  planDealsRowHtml,
+  planDealsBlockOf,
+  planDealsRowOf,
+  planDealCurrentTextOf,
+  planDealHistoryTextOf,
+  assertPlanDealsBlock,
   rowHtmlById,
   cellText,
   // v2.3 变化展示：句子只有一处实现，页面 / 时间线 / /changes/ / 订阅源共用

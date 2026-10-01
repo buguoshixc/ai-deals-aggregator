@@ -40,6 +40,9 @@ const planSchema = require('../lib/plan-schema');
 const planHistory = require('../lib/plan-history');
 const planChanges = require('../lib/plan-changes');
 const providers = require('../lib/providers');
+// v2.4：优惠 ↔ 套餐关系层。真值在 scripts/data/deal-plan-links.json，
+// 这里只读、只校验、只派生（注入 dist/deals.json + 发布 dist/deal-plan-links.json）。
+const dealPlanLinks = require('../lib/deal-plan-links');
 
 /**
  * 套餐对比页的交互逻辑**源码**（逐字节内联进页面）。
@@ -81,7 +84,7 @@ function showOut(dir) {
  */
 const PUBLIC_FILES = ['index.html', 'deals.json', 'plans.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
 /** 构建期生成、不走源码拷贝的产物 */
-const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json', 'deal-history.json', 'plan-history.json'];
+const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json', 'deal-history.json', 'plan-history.json', 'deal-plan-links.json'];
 // 站点常量与 XML 转义的**唯一出处**是 lib/feeds.js（v1.6 起订阅层也要用它们）。
 const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = feeds;
 
@@ -718,7 +721,7 @@ ${style}
     : `<span>${htmlEscape(deal.category || '全部优惠')}</span>`} › <span>${htmlEscape(deal.title)}</span>
       </nav>
       <article class="dbody dpane" data-tier="${tier.n}">
-${renderCore.detailHtml(deal, { headingTag: 'h1' })}
+${renderCore.detailHtml(deal, { headingTag: 'h1', prefix: '../../' })}
       </article>
       <p class="dpane-more">
 ${vendorPage
@@ -1208,6 +1211,8 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     providerTable,
     planChanges: context.planChanges || null,
     planHistoryStore: context.planHistoryStore || null,
+    // v2.4：优惠 ↔ 套餐视图（判据在 lib/deal-plan-links.js，这里只把算好的结果传下去）
+    dealLinks: context.dealLinks || null,
     prefix
   });
 
@@ -1260,6 +1265,24 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
   .pchgorigin { color: var(--mut); }
   .pchnone, .pchnote { color: var(--mut); font-size: var(--fs-sm); margin: var(--s1) 0 0; }
   .pchgtl { margin-top: 2px; }
+  /* v2.4：各套餐当前优惠（Deal ↔ Plan）。纯静态内容（无控件），无 JS 时同样可读。
+     当前优惠与历史优惠刻意长得不一样：把「已结束」排成和「现在有」同样的样子，
+     等于用排版替读者做了一个不成立的判断。 */
+  .pplandeals { margin: var(--s3) 0; border: 1px solid var(--line); border-radius: var(--r); padding: var(--s3); background: var(--card); }
+  .pplandeals .ph2 { margin: 0 0 var(--s2); }
+  .pdlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .pdrow { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; font-size: var(--fs-sm); }
+  .pdrow + .pdrow { border-top: 1px solid var(--line2); padding-top: 6px; }
+  .pdwho { color: var(--ink); text-decoration: none; border-bottom: 1px dotted var(--line); }
+  .pdwho:hover { color: var(--brand); }
+  .pdcur { color: var(--ink); }
+  .pdsave { color: var(--ok); font-weight: 600; }
+  .pdnone { color: var(--mut); }
+  .pdhist { color: var(--mut); }
+  .pdgo { color: var(--brand); text-decoration: none; }
+  .pdgo:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .pdgo-hist { color: var(--mut); }
+  .pdsum { color: var(--mut); font-size: var(--fs-sm); margin: var(--s2) 0 0; }
   /* 窄屏：横滚 + 前两列固定（只有一张表、一套数据模板）。
      第一列给**确定宽度**，第二列的 left 才有确定的落点；两列用不透明底色，否则会透出滑过的单元格。
      ⚠️ .ptable 自带 overflow: hidden（桌面端圆角裁剪用的），它会成为**最近的可滚动祖先**，
@@ -2245,6 +2268,53 @@ function assemble() {
   const planRadarStats = planChanges.summarize(planRadar);
   const planHistoryStore = planHistoryAvailability === 'ok' ? planHistoryLoad.store : null;
 
+  // ---- v2.4：优惠 ↔ 套餐关系（Deal → Plan / Plan → Deal）--------------------------------
+  //
+  // 真值是人工来源层 `scripts/data/deal-plan-links.json`（deals.json 与 plans.json 都不改）。
+  // 这里做三件事，顺序不能变：**先校验**（不合法宁可不发布）、**再派生**（基准日 / 状态 / 节省金额）、
+  // **最后才注入**。注入的 `relatedPlans` 与发布的 `deal-plan-links.json` 都是**只进 dist** 的
+  // 派生视图 —— 源数据里出现它们会被下面的产物自检当场报红（和 `history` / `collections` 同一条纪律）。
+  const dealLinksLoad = dealPlanLinks.load();
+  if (dealLinksLoad.missing) {
+    throw new Error(`缺少 ${path.relative(ROOT, dealPlanLinks.LINKS_FILE)}：优惠与套餐的关系层不存在（它是仓库里的源文件，不是派生产物）`);
+  }
+  if (dealLinksLoad.broken) {
+    throw new Error(`${path.relative(ROOT, dealPlanLinks.LINKS_FILE)} 解析失败：${dealLinksLoad.broken}`);
+  }
+  const dealLinksAsOf = dealPlanLinks.asOfOf({
+    dealsUpdatedAt: payload.updatedAt,
+    plansUpdatedAt: plansStore.updatedAt
+  });
+  const dealLinksCtx = {
+    deals: payload.deals,
+    plans: plansStore.plans,
+    asOf: dealLinksAsOf,
+    providerTable,
+    dealHistoryStore: historyStore.store,
+    planHistoryStore,
+    strict: true
+  };
+  const dealLinksCheck = dealPlanLinks.validate(dealLinksLoad.doc, dealLinksCtx);
+  if (dealLinksCheck.errors.length) {
+    throw new Error(`deal-plan-links.json 未通过校验（${dealLinksCheck.errors.length} 项）：\n  - ${dealLinksCheck.errors.slice(0, 8).join('\n  - ')}`);
+  }
+  dealLinksCheck.warnings.forEach(message => console.warn(`    ⚠️  关联层：${message}`));
+  const dealLinksView = dealPlanLinks.planDealsView(dealLinksLoad.doc, dealLinksCtx);
+  const dealLinksByDeal = dealPlanLinks.dealView(dealLinksLoad.doc, dealLinksCtx);
+  for (const deal of payload.deals) {
+    const rows = dealLinksByDeal.get(deal.id);
+    if (rows && rows.length) deal.relatedPlans = dealPlanLinks.relatedPlansOf(rows);
+    else delete deal.relatedPlans;
+  }
+  {
+    const published = dealPlanLinks.publishedDoc(dealLinksLoad.doc);
+    fs.writeFileSync(path.join(OUT, 'deal-plan-links.json'), `${JSON.stringify(published, null, 2)}\n`, 'utf8');
+    console.log(`  优惠 ↔ 套餐: ${dealLinksCheck.stats.links} 条当前关系 · 历史 ${dealLinksCheck.stats.retired} 条` +
+      ` · 覆盖 ${dealLinksCheck.stats.plansWithCurrent}/${dealLinksCheck.stats.plans} 条套餐` +
+      ` · 基准日 ${dealLinksAsOf || '未知'}` +
+      (dealLinksCheck.stats.editorial ? ` · 人工判断 ${dealLinksCheck.stats.editorial} 条` : ''));
+  }
+
   const feedBundle = feeds.buildFeeds({
     deals: payload.deals,
     store: historyStore.store,
@@ -2447,12 +2517,13 @@ function assemble() {
     providerTable,
     planChanges: planRadar,
     planHistoryStore,
-    allFeeds: feedBundle.feeds
+    allFeeds: feedBundle.feeds,
+    dealLinks: dealLinksView
   });
   fs.writeFileSync(path.join(plansDir, 'index.html'), plansHtml, 'utf8');
   {
     const pageProblems = plansPage.assertPageHonesty(plansHtml, plansStore.plans, {
-      providerTable, planChanges: planRadar, planHistoryStore
+      providerTable, planChanges: planRadar, planHistoryStore, dealLinks: dealLinksView, prefix: '../../'
     });
     if (pageProblems.length) {
       throw new Error(`套餐对比页的诚实性断言未通过（${pageProblems.length} 处）：\n  - ${pageProblems.slice(0, 5).join('\n  - ')}`);
@@ -2645,6 +2716,12 @@ ${dealUrls}
     planRadar,
     planRadarStats,
     planHistoryAvailability,
+    // v2.4：优惠 ↔ 套餐关系。自检要拿**这一份**（构建期算出来的视图）去回读对账：
+    // dist/deals.json 的注入、dist/deal-plan-links.json、优惠页与套餐页上的文字都必须与它逐条一致。
+    dealLinksDoc: dealLinksLoad.doc,
+    dealLinksView,
+    dealLinksByDeal,
+    dealLinksAsOf,
     // v1.6：订阅层交给自检做**回读对账**（内存条目 ↔ RSS 回读 ↔ JSON 回读 + 语义不变量）。
     // 判据不重算：validate() 用的就是构建期这一份 feedBundle。
     feedBundle,
@@ -2791,6 +2868,101 @@ function selfCheck(built) {
     }
   }
 
+  // ---- v2.4：优惠 ↔ 套餐关系（从磁盘回读对账）--------------------------------
+  //
+  // 这一层的坏法全都是「页面看起来正常」：注入漏了 → 有关系的那几条优惠页少一块；
+  // 注入的是上一次的关系 → 页面显示一条谁也没确认过的关联；套餐页的块与视图不同步 →
+  // 「当前优惠」与「暂无当前优惠」对不上。所以这里读回磁盘，对账三份东西：
+  //   ① `dist/deals.json` 的 `relatedPlans` 必须等于用关系表**重算**的结果（逐字段）；
+  //   ② `dist/deal-plan-links.json` 的 links/retired 与源表深等，count/updatedAt 等于推导值；
+  //   ③ 优惠页与套餐页上的块落到字节上（含 `../../` 深度前缀、套餐行锚点落点、反向无块）。
+  {
+    const problems = [];
+    const sourceDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
+    for (const deal of sourceDoc.deals || []) {
+      if (deal && Object.prototype.hasOwnProperty.call(deal, 'relatedPlans')) {
+        problems.push(`源 deals.json 里出现了构建期派生字段 relatedPlans（${deal.id}）`);
+        break;
+      }
+    }
+
+    // ① dist/deals.json 的注入
+    const published = JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8'));
+    const expectedByDeal = new Map();
+    for (const [dealId, rows] of built.dealLinksByDeal) expectedByDeal.set(dealId, dealPlanLinks.relatedPlansOf(rows));
+    let injected = 0;
+    for (const deal of published.deals || []) {
+      const expected = expectedByDeal.get(deal.id) || null;
+      const actual = Array.isArray(deal.relatedPlans) ? deal.relatedPlans : null;
+      if (!expected) {
+        if (actual) problems.push(`${deal.id} 没有关系却注入了 relatedPlans`);
+        continue;
+      }
+      injected++;
+      if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+        problems.push(`${deal.id} 的 relatedPlans 与关系表重算结果不一致`);
+      }
+    }
+    if (injected !== expectedByDeal.size) {
+      problems.push(`注入到 dist 的关联条目 ${injected} ≠ 关系表覆盖的优惠 ${expectedByDeal.size} 条`);
+    }
+
+    // ② 发布的关系文件
+    const linksFile = path.join(OUT, 'deal-plan-links.json');
+    if (!fs.existsSync(linksFile)) {
+      problems.push('缺少 dist/deal-plan-links.json');
+    } else {
+      const doc = JSON.parse(fs.readFileSync(linksFile, 'utf8'));
+      const expected = dealPlanLinks.publishedDoc(built.dealLinksDoc);
+      if (JSON.stringify(doc.links) !== JSON.stringify(expected.links)) problems.push('dist/deal-plan-links.json 的 links 与源表不一致');
+      if (JSON.stringify(doc.retired) !== JSON.stringify(expected.retired)) problems.push('dist/deal-plan-links.json 的 retired 与源表不一致');
+      if (doc.count !== expected.count) problems.push(`dist/deal-plan-links.json 的 count（${doc.count}）≠ 推导值 ${expected.count}`);
+      if (doc.updatedAt !== expected.updatedAt) problems.push(`dist/deal-plan-links.json 的 updatedAt（${doc.updatedAt}）≠ 推导值 ${expected.updatedAt}`);
+    }
+
+    // ③ 页面上的块（套餐页 + 有关系的优惠详情页）
+    const plansPagePath = path.join(OUT, plansPage.PLANS_ROUTE, 'index.html');
+    const plansPageHtml = fs.existsSync(plansPagePath) ? fs.readFileSync(plansPagePath, 'utf8') : '';
+    if (!plansPageHtml) problems.push(`缺少 ${plansPage.PLANS_ROUTE}index.html（关系块无处安放）`);
+    problems.push(...plansPage.assertPlanDealsBlock(plansPageHtml, built.dealLinksView, { prefix: '../../' }));
+    for (const [dealId, rows] of built.dealLinksByDeal) {
+      const file = path.join(OUT, 'deal', dealId, 'index.html');
+      if (!fs.existsSync(file)) { problems.push(`有关联的优惠缺少详情页 ${dealId}`); continue; }
+      const page = fs.readFileSync(file, 'utf8');
+      if (!page.includes('关联的正常套餐')) problems.push(`${dealId} 的详情页没有「关联的正常套餐」块`);
+      for (const row of rows) {
+        if (!page.includes(`data-plan-id="${row.planId}"`)) problems.push(`${dealId} 的详情页缺少套餐 ${row.planId} 的一行`);
+        if (!page.includes(`href="../../plans/coding/#plan-${row.planId}"`)) {
+          problems.push(`${dealId} 的详情页指向套餐 ${row.planId} 的链接缺失或深度前缀不是 ../../`);
+        }
+      }
+    }
+    // 反向：没有关系的优惠页不许出现这一块（多出来的块是「凭空造了一条关系」的那种坏法）
+    for (const deal of published.deals || []) {
+      if (expectedByDeal.has(deal.id)) continue;
+      const file = path.join(OUT, 'deal', deal.id, 'index.html');
+      if (fs.existsSync(file) && fs.readFileSync(file, 'utf8').includes('class="dplans"')) {
+        problems.push(`${deal.id} 没有关系，详情页却渲染了关联块`);
+        break;
+      }
+    }
+    // 锚点落点：套餐页上必须真有 `id="plan-<planId>"`（否则关联链接是一条死锚点）
+    for (const row of built.dealLinksView.rows) {
+      if (!row.current.length && !row.history.length) continue;
+      if (!plansPageHtml.includes(`id="plan-${row.planId}"`)) {
+        problems.push(`套餐页缺少套餐 ${row.planId} 的行锚点（关联链接会指向不存在的锚点）`);
+      }
+    }
+
+    if (problems.length) fail(`优惠 ↔ 套餐关系：${problems.slice(0, 6).join('；')}`);
+    else {
+      const stats = built.dealLinksView.counts;
+      console.log(`  ✓ 优惠 ↔ 套餐: ${stats.links} 条关系覆盖 ${stats.withCurrent} 条套餐` +
+        `（当前 ${stats.current} 行 / 历史 ${stats.history} 行）· dist 注入 ${injected} 条` +
+        ` · 优惠页与套餐页逐条对账（含锚点与深度前缀）· 基准日 ${built.dealLinksAsOf || '未知'}`);
+    }
+  }
+
   // ---- 源数据 vs 发布数据的一致性门禁（v1.0 就记着的债，v1.1 收口补上）----
   //
   // 为什么必须有：`dist/deals.json` 是**发布出去的那一份** —— 浏览器 fetch 的是它，
@@ -2814,7 +2986,7 @@ function selfCheck(built) {
   // ⚠️ 第一版把 `zh` 也按字节比了，于是 `selftest:zh` 的两个用例当场变红 ——
   // 那不是译文坏了，是**这条门禁对 `zh` 的语义断言错了**：它假设覆盖层只增不减。
   // 一个把正常行为判成失败的守卫，比没有守卫更糟（它会被绕过或被改松）。
-  const BUILD_ADDED = new Set(['collections', 'needs', 'sourceFacts', 'history']);
+  const BUILD_ADDED = new Set(['collections', 'needs', 'sourceFacts', 'history', 'relatedPlans']);
   const BUILD_MANAGED = new Set(['zh']);
   {
     const source = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
@@ -2846,7 +3018,7 @@ function selfCheck(built) {
       }
     }
     if (problems.length) fail(`deals.json 与发布产物不一致：${problems.slice(0, 8).join('；')}`);
-    else console.log(`  ✓ 源/产物一致: ${payload.deals.length} 条逐字段相同（构建期只动 zh / collections / needs / sourceFacts / history）`);
+    else console.log(`  ✓ 源/产物一致: ${payload.deals.length} 条逐字段相同（构建期只动 zh / collections / needs / sourceFacts / history / relatedPlans）`);
   }
 
   // ---- v1.3：信息来源块（evidence / sourceFacts）----------------------------
