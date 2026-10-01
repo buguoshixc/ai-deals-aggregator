@@ -240,11 +240,20 @@
     .btxt h1.bt em { font-style: normal; color: var(--deal); }
     .btxt small { font-size: var(--fs-xs); color: var(--mut); letter-spacing: .6px; font-weight: 500; }
 
-    /* v2.2：顶栏里的「套餐对比」——并列的产品能力入口（不是优惠主入口）。
+    /* v2.2：顶栏里的「AI Coding 套餐对比」——并列的产品能力入口（不是优惠主入口）。
        为什么放顶栏：页脚那一行本来就有一条，但那一行在 5.9 屏之后；顶栏是 flex 行里的一个元素，
        在 1440×900 下**不增加任何高度**（首屏完整卡片仍是 9 张，v1.5 的密度账余量只有 1px）。
        视觉沿用内页「← 返回全部优惠」那一枚（.jumpback），只是不要它的 margin-left:auto
-       —— 顶栏里已经有一个 .topstat 用 auto 边距占住右侧，两个 auto 会把空白劈成两半。 */
+       —— 顶栏里已经有一个 .topstat 用 auto 边距占住右侧，两个 auto 会把空白劈成两半。
+
+       v2.2 上线后的调整（用户反馈"入口太不明显"）：
+         · **位置**：从品牌右边（第二顺位）挪到配色切换器右边。原来它挤在品牌与搜索框之间，
+           1440 下看着像品牌的一部分；现在的落点正好是切换器与右侧「50 条优惠」之间那块空白，
+           而且是 flex 行里紧跟 .seg 的一项 —— 视觉上独立成块，不与品牌抢位。
+         · **名字**：从「套餐对比」改成与页面 h1 同名的「AI Coding 套餐对比」
+           （`PLANS_HEADING`，唯一出处），点之前就知道点进去是什么。
+         · ⚠️ 宽度比原来多约 80px：顶栏是**不折行**的 flex 行，所以要守住"任何宽度都不横向溢出"。
+           实测 761–1920px 逐档量过（见 verify-site.js §19 的宽度扫描）。 */
     .plansnav {
       flex: none; font-size: var(--fs-md); color: var(--brand); text-decoration: none; white-space: nowrap;
       border: 1px solid var(--line); border-radius: var(--r-sm); padding: 6px 12px;
@@ -939,6 +948,17 @@
     #stats .prune:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
     /* ---------- 响应式 ---------- */
+    /* 761–940px：顶栏**一行放不下**，整页会横向滚动。
+       实测（扫了 320–1920 共 17 档）：加「AI Coding 套餐对比」之前，761px 溢出 78px、820px 溢出 19px；
+       加完之后 761px 溢出 138px、820px 溢出 79px —— 也就是说**这条溢出带本来就存在**，
+       这一版只是把它撑宽了，所以顺手一起修掉（`/status/` 那一页的教训：桌面绿、手机横滚，
+       而所有静态检查都是绿的；这次是"平板绿区"里的同一类盲点，只有逐档量才看得见）。
+       范围只取顶栏：.grid / .facets 那些真正属于"窄屏"的规则仍然只在 ≤760px 生效。 */
+    @media (min-width: 761px) and (max-width: 940px) {
+      .topin { gap: 12px; height: auto; padding: 10px 20px; flex-wrap: wrap; }
+      .search { max-width: none; order: 3; min-width: 100%; }
+      .topstat { order: 2; }
+    }
     @media (max-width: 1180px) { .grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 760px) {
       :root { --cardH: auto; }
@@ -1033,7 +1053,6 @@
         </span>
         <span class="btxt"><h1 class="bt">AI <em>优惠</em>聚合器</h1><small>真实优惠 · 每日更新</small></span>
       </a>
-      <a class="plansnav" href="__PLANS_HREF__" title="对比各平台长期在售的 AI Coding 套餐">套餐对比</a>
       <label class="search">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c94a6" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input type="search" id="searchInput" placeholder="搜索模型、厂商或优惠内容…" aria-label="搜索模型、厂商或优惠内容">
@@ -1043,6 +1062,9 @@
         <button type="button" data-theme-value="light" aria-pressed="false">浅色</button>
         <button type="button" data-theme-value="dark" aria-pressed="false">深色</button>
       </div>
+      <!-- 套餐对比入口：紧跟配色切换器（DOM 顺序 = 视觉顺序 = Tab 顺序），
+           名字与 /plans/coding/ 的 h1 逐字一致（`PLANS_HEADING`）。 -->
+      <a class="plansnav" href="__PLANS_HREF__" title="对比各平台长期在售的 AI Coding 套餐">AI Coding 套餐对比</a>
       <div class="topstat" id="topStat"><!--PRERENDER:topstat--></div>
     </div>
   </header>
