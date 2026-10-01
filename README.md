@@ -99,13 +99,15 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 | `/vendor/` `/category/` | 上面两类页的目录，同时是面包屑的父级（v1.7） | ✅ |
 | `/deal/<id>/` | 每条优惠一个静态页（80 页） | ✅ |
 | `/plans/coding/` | **AI Coding 套餐对比**（v2.2：9 条套餐一张表，可筛选 / 搜索 / 排序 / 逐行展开溯源；只列事实不排名） | ✅ |
+| `/plans/api/` | **API / Token 计费对比**（v2.5：7 条计费记录 / 37 个模型计价条目 / 5 家平台，11 列预渲染静态表；只列事实，零控件） | ✅ |
 | `/changes/` `/feeds/` `/status/` | 变化雷达 / 订阅中心 / 数据源状态 | ✅ |
-| `/feed/**`、`feed.xml`、`feed.json` | 23 份订阅 × 2 种格式 = 46 个文件 | 资源，不进 sitemap |
+| `/feed/**`、`feed.xml`、`feed.json` | 24 份订阅 × 2 种格式 = 48 个文件 | 资源，不进 sitemap |
 
-**合计 114 个 HTML 页**（111 条可索引 + 3 条 noindex 别名），sitemap **111 条**，dist **220 个文件**。
+**合计 115 个 HTML 页**（112 条可索引 + 3 条 noindex 别名），sitemap **112 条**，dist **227 个文件**。
 
 契约（URL / 门槛 / 索引策略 / 27 个检查码）见 [`docs/SCHEMA-v1.7.md`](docs/SCHEMA-v1.7.md)；
 套餐数据与套餐页的契约见 [`docs/SCHEMA-v2.1.md`](docs/SCHEMA-v2.1.md)；
+API / Token 计费的契约见 [`docs/SCHEMA-v2.5.md`](docs/SCHEMA-v2.5.md)；
 「这一版到底发了什么、哪些页为什么没发」见 [`research/v1.7-seo-expansion-report.md`](research/v1.7-seo-expansion-report.md)。
 
 ## 数据契约（deals.json v2）
@@ -263,12 +265,47 @@ dist/deal-plan-links.json          # 关系表 + 派生 updatedAt/count（发布
 > 优惠结束后**套餐不会消失**：套餐行变成「暂无当前优惠」，关系改记在「历史优惠」里；
 > 优惠记录被采集层下架后，关系以带快照的 `retired` 记录留在文件里（不留死链）。
 
+### API / Token 计费（v2.5）
+
+**按量计费**是另一个问题（「每百万 token 多少钱」），所以它是**另一份数据、另一条路由、另一套判据**
+—— 不是把套餐 schema 强行复用（完整契约与逐维度对照见 [`docs/SCHEMA-v2.5.md`](docs/SCHEMA-v2.5.md)）：
+
+```
+scripts/data/curated_api_plans.json   # 人写事实：provider + 计费产品 + 逐模型单价 + 官方引文
+        ↓  npm run api-plans:rebuild  # 归一 + 算 id/derivedMetrics + 推进变化日志（写盘前跑完整校验）
+api-plans.json                        # 派生产物（记录 = provider × 计费产品，模型价格是记录内的元素）
+        ↓  npm run build
+/plans/api/                           # 11 列预渲染静态表（零控件）+ 免费额度明细 + 最近变化 + 官方原文
+scripts/data/api-plan-history.json    # 追加式变化日志（与 plans/deals 共用 history-core 内核）
+```
+
+| 这一层与订阅套餐**不同**的三件事 | 做法 |
+|---|---|
+| **单位** | `pricing.unit` 是记录级必填枚举（`per_1M_tokens` / `per_1K_tokens` / `per_1M_characters`）；**全仓没有任何单位换算代码**（自测有静态扫描钉住）。把「每千」乘成「每百万」，会让两个口径不同的数字看起来可比 |
+| **credits** | 卖的是**钱**不是 token：字段白名单无 token 字段 + 额外拒绝键名含 `token` 的键 ⇒「$10 credits = 500 万 tokens」根本没有地方可写；`derivedMetrics` 恒为 `{}` |
+| **模型改名** | API 厂商改模型名很频繁。显示名**不进**被跟踪字段 ⇒ 只改显示名产生**零事件**；换 `modelKey` 才产生「移除 + 新增」，并由「同记录 + 同时增删 + 单价有完全相同项」留档为 `possible_rename`。**检测不等于自动合并** —— 本仓没有合并 modelKey 的代码路径 |
+
+| 门禁 | 管什么 |
+|---|---|
+| `npm run validate`（含 `--strict`） | 契约全量校验（单位与 token 单价的一致性 / 模型条目键 / credits 结构红线 / `derivedMetrics` 逐字节比对 / provider 登记 / 引文）+ 变化日志与当前数据自洽；`--strict` 下条数 < 5 报错 |
+| `npm run check:api-plans:reproducible` | 盘上的 `api-plans.json` 必须等于来源层产出的那一份（逐字节） |
+| `npm run check:api-plan-history` | 基线 + 事件重放逐字段等于当前 `api-plans.json`（元素级字段按 `(modelKey, variant)` 对账） |
+| `npm run selftest:api-plans` | **76 项**离线演练，含 4 条 Tooth Test（credits 被 token 化 / 输入输出价互换 / $·1M 与 $·1K 混淆 / 改名制造假新增），每条**实跑变红再复原**（CI 门禁） |
+| `npm run build` 的产物自检 | 发布数据逐字节一致；页面**从磁盘回读**再跑一遍诚实性断言（含价格六格逐格与数据对账）；无 JS 控件 |
+| `npm run verify` §20 | 真浏览器 **23 项**：行数与 ItemList 声明数 / 三列逐格 / 单位列逐行 / 0 控件 / 锚点 / 面包屑深度 / 390·360px 无溢出 / 平台 logo 真的画出来了 |
+| `npm run report:api-model-renames` | 疑似改名留档，**只报告不合并** |
+
+> **本阶段刻意不做**：模型能力排行榜 / AA 分数 / benchmark / 综合推荐 / 成本模拟器 /
+> 跨币种跨单位换算 / credits→token 折算；`/plans/api/` 也没有筛选排序控件（v1 是预渲染静态表）。
+> 专属订阅源与 `/changes/` 分栏是**独立的下一次改动**（`feeds.js` 的注册表当前是单条 spec）。
+
 ## 目录结构
 
 ```
 index.html                    前端（原生 HTML/CSS/JS，无构建；含预渲染标记与 RENDER-CORE 纯函数区）
 deals.json                    线上数据（优惠 / 福利）
 plans.json                    v2.1：AI Coding 套餐数据（见「数据契约（plans.json v1）」）
+api-plans.json                v2.5：API / Token 计费数据（见「API / Token 计费（v2.5）」）
 robots.txt                    放行搜索引擎与 AI 爬虫（GEO）
 assets/logos/
   manifest.json               厂商 logo 登记表（名称/来源/取图方式/质量）
