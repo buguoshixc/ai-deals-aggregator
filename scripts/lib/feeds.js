@@ -41,6 +41,14 @@ const audience = require('./audience');
 const landing = require('./landing');
 const history = require('./history');
 const changes = require('./changes');
+/**
+ * v2.3：套餐变化订阅源。它与 deals 的变化源**并排**，不是它的变体：
+ * 判据来自 `plan-changes.js`（纯函数），条目文本来自 `plans-page.js` 的同一句话，
+ * guid 直接用套餐变化日志的**派生事件身份**（`plan-history.eventIdOf`）。
+ */
+const planChanges = require('./plan-changes');
+const planHistoryLib = require('./plan-history');
+const plansPage = require('./plans-page');
 const { cleanText } = require('./schema');
 
 /* ------------------------------------------------------------------ */
@@ -263,6 +271,33 @@ const COLLECTION_FEED_PAGES = [
 const HOMEPAGE_FEED_IDS = ['all', 'changes', 'student', 'developer'];
 
 /**
+ * v2.3：套餐变化订阅源的身份。它属于**变化类**（`kind: 'plan-changes'`），
+ * 但事件来自套餐变化日志，与 deals 的变化日志是两份东西 —— 所以是第三种 kind，
+ * 而不是把两边的条目混进同一个源里。
+ *
+ * 路由形状 `/feed/plans/coding/changes.*` 与页面路由 `/plans/coding/` 对齐，
+ * 将来 Phase 2.5 加 `/plans/api/` 时就是并列的一份，不需要改注册表结构。
+ */
+const PLAN_CHANGE_FEED = {
+  id: 'plan-changes',
+  kind: 'plan-changes',
+  path: 'feed/plans/coding/changes.xml',
+  jsonPath: 'feed/plans/coding/changes.json',
+  title: `${FEED_BRAND} · Coding 套餐变化`,
+  description: 'AI Coding 套餐的价格、活动价、额度、模型与限制的变化。'
+    + '数据来自本站重建套餐数据时的观测记录；每条变化都能在套餐对比页找到落点。',
+  pageRoute: plansPage.PLANS_ROUTE,
+  mayBeEmpty: true,
+  homepage: false,
+  vendor: null
+};
+
+/** 页面 → 专属 Feed 的路由映射（`feedsForPage` 用；目前只有套餐对比页这一条） */
+const PAGE_FEED_ROUTES = [
+  { route: plansPage.PLANS_ROUTE, id: PLAN_CHANGE_FEED.id }
+];
+
+/**
  * 站点根 Feed 的身份（标题在这里定一次）。详情页 / 状态页 / 目录页的
  * `rel="alternate"` 都从这一份生成 —— 否则「改了注册表、忘了改模板」的漂移
  * 不会有任何东西会红。
@@ -313,7 +348,17 @@ function vendorRouteOf(slug) {
  * @param {object[]} [feeds] 已构建的 feedBundle.feeds；省略时只按注册表推导（用于自检）
  */
 function feedsForPage(page, feeds) {
-  if (!page || !page.slug) return [];
+  if (!page) return [];
+  // v2.3：按**路由**匹配的专属 Feed（套餐对比页没有 slug，只有一条固定路由）。
+  if (page.route) {
+    const entry = PAGE_FEED_ROUTES.find(item => item.route === page.route);
+    if (entry) {
+      if (!Array.isArray(feeds)) return [{ spec: { id: entry.id } }];
+      const hit = feeds.find(item => item.spec && item.spec.id === entry.id);
+      return hit ? [hit] : [];
+    }
+  }
+  if (!page.slug) return [];
   const spec = page.kind === 'vendor'
     ? { id: `vendor-${page.slug}` }
     : (COLLECTION_FEED_PAGES.find(entry => entry.pageKind === page.kind && entry.pageSlug === page.slug) || null);
@@ -543,6 +588,13 @@ function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS, ve
     changeBucket: 'all'
   });
 
+  // v2.3：套餐变化 Feed。与 deals 的两份变化源并排 —— 它订的是**套餐**的价格/额度/模型变化，
+  // 而不是优惠的出现与消失。同样**始终生成**：空是事实（这套日志的起算日之前没有可观测的变化）。
+  specs.push(Object.assign({}, PLAN_CHANGE_FEED, {
+    homePageUrl: absolute(PLAN_CHANGE_FEED.pageRoute),
+    emptyNote: FEEDS_WORDING.FEEDS_NOTES.emptyChanges
+  }));
+
   // 厂商 Feed：数据驱动，门槛见 VENDOR_THRESHOLDS。
   //
   // v1.7：分组键从**原始字符串**改成**规范厂商名**（`vendorOf(deal).name`，由调用方
@@ -700,6 +752,68 @@ function changeItems(spec, { deals, store, radar }) {
   return items;
 }
 
+/**
+ * v2.3：套餐变化 Feed 的条目。
+ *
+ * 与 deals 的变化条目同一个形状（guid / 时间 / 标签 / 正文），但身份来自**套餐变化日志**：
+ * guid 直接用日志里的派生事件身份 `eventId`（`plan-history.eventIdOf`），
+ * 因此「同一件事只有一个身份」这条保证在页面、日志与订阅源上是同一个东西。
+ *
+ * 链接指向 `/plans/coding/#plan-<id>`：套餐没有独立详情页（v2.2 的决定），
+ * 所以深链落到**那一行**上 —— 锚点存在性由构建期断言盯着（不存在就是死链）。
+ */
+function planChangeItems(spec, { planRadar = null, plans = [], providerTable = null } = {}) {
+  if (!planRadar || planRadar.availability !== 'ok') return [];
+  const plansById = new Map((plans || []).map(plan => [plan && plan.id, plan]));
+  const opts = { plansById, providerTable };
+  const T = planHistoryLib.PLAN_HISTORY_WORDING;
+  const items = planChanges.itemsOf(planRadar)
+    .filter(entry => entry.type !== 'updated')            // 记录级元信息不进订阅（与页面同一条纪律）
+    .filter(entry => typeof entry.eventId === 'string' && /^[0-9a-f]{12}$/.test(entry.eventId))
+    .map(entry => {
+      const route = `${plansPage.PLANS_ROUTE}#plan-${entry.planId}`;
+      const href = absolute(route);
+      const name = entry.titled ? `${entry.vendor ? `${entry.vendor} · ` : ''}${entry.title}` : '（已移除的套餐，无标题快照）';
+      const typeLabel = T.PLAN_HISTORY_TYPES[entry.type] || entry.type;
+      const lines = [
+        `${FEEDS_WORDING.FEEDS_LABELS.record}：${name}`,
+        `变化：${typeLabel}`,
+        plansPage.planChangeTextOf(entry, opts),
+        `${FEEDS_WORDING.FEEDS_LABELS.time}：${entry.at}`
+      ];
+      if (entry.reason) lines.push(`${FEEDS_WORDING.FEEDS_LABELS.reason}：${T.PLAN_HISTORY_END_REASONS[entry.reason] || entry.reason}`);
+      lines.push(`${FEEDS_WORDING.FEEDS_LABELS.detail}：${href}`);
+      if (entry.type === 'ended') lines.push(T.PLAN_HISTORY_NOTES.disclaimer);
+      return {
+        type: 'plan-change',
+        id: entry.eventId,
+        planId: entry.planId,
+        eventType: entry.type,
+        field: entry.field || null,
+        at: entry.at,
+        titled: Boolean(entry.titled),
+        title: `${name} — ${typeLabel}`,
+        link: href,
+        route,
+        externalUrl: null,
+        vendor: entry.vendor || '',
+        datePublished: entry.at,
+        dateModified: entry.at,
+        tags: [entry.vendor, typeLabel].filter(Boolean),
+        text: lines.join('\n')
+      };
+    });
+  items.sort((a, b) => {
+    if (a.at !== b.at) return a.at < b.at ? 1 : -1;
+    if (a.planId !== b.planId) return a.planId < b.planId ? -1 : 1;
+    if ((a.eventType || '') !== (b.eventType || '')) return a.eventType < b.eventType ? -1 : 1;
+    const af = a.field || '';
+    const bf = b.field || '';
+    return af < bf ? -1 : af > bf ? 1 : 0;
+  });
+  return items;
+}
+
 /** 把雷达条目对回日志里的那一条事件（身份由数据决定，对不上就如实留空） */
 function findEvent(store, entry) {
   for (const event of history.eventsOf(store)) {
@@ -720,13 +834,18 @@ function findEvent(store, entry) {
 
 function descriptionWithNotes(spec, { truncated = 0, asOf = null, availability = 'ok', empty = false } = {}) {
   const parts = [spec.description];
-  if (spec.kind === 'changes') {
+  const isPlanChanges = spec.kind === 'plan-changes';
+  if (spec.kind === 'changes' || isPlanChanges) {
+    const labels = isPlanChanges
+      ? planChanges.PLAN_CHANGES_WORDING.PLAN_CHANGES_LABELS
+      : CHANGES_LABELS;
+    const unavailableNote = isPlanChanges ? labels.unavailable : CHANGES_NOTES.unavailable;
     if (availability !== 'ok') {
       // 「不可用」与「没有变化」是两句不同的话：日志缺失时说「没拿到日志」，
       // 绝不拿中性描述或空态措辞去冒充「没有变化」。
-      parts.push(CHANGES_NOTES.unavailable);
+      parts.push(unavailableNote);
     } else if (empty && asOf) {
-      parts.push(`${spec.emptyNote} ${CHANGES_LABELS.since.replace('{date}', historyStartedAt(spec, asOf))}`);
+      parts.push(`${spec.emptyNote} ${labels.since.replace('{date}', historyStartedAt(spec, asOf))}`);
     }
   }
   if (truncated > 0) {
@@ -814,22 +933,35 @@ function serializeJsonFeed(spec, items, { description }) {
  * @param {string}   [params.updatedAt] `deals.json` 的 updatedAt（lastBuildDate 用，不取构建时刻）
  * @returns {{feeds:object[], stats:object, vendorSkipped:object[], vendorUnmapped:string[]}}
  */
-function buildFeeds({ deals = [], store = null, radar = null, asOf = null, updatedAt = null, availability = 'ok', vendorSlugs = VENDOR_SLUGS, vendorKeyOf = null } = {}) {
+function buildFeeds({
+  deals = [], store = null, radar = null, asOf = null, updatedAt = null, availability = 'ok',
+  vendorSlugs = VENDOR_SLUGS, vendorKeyOf = null,
+  // v2.3：套餐变化源。`planRadar` 是 `plan-changes.js` 的视图，`planAvailability` 是它的可用性。
+  planRadar = null, planAvailability = 'ok', plans = [], providerTable = null
+} = {}) {
   const resolved = resolveSpecs({ deals, store, vendorSlugs, vendorKeyOf });
   const startedAt = store && typeof store.startedAt === 'string' ? store.startedAt : null;
+  const planStartedAt = planRadar && typeof planRadar.startedAt === 'string' ? planRadar.startedAt : null;
   const specs = resolved.specs.map(spec => Object.assign({}, spec, {
-    startedAt: spec.kind === 'changes' ? (startedAt || asOf) : null
+    startedAt: spec.kind === 'changes' ? (startedAt || asOf)
+      : (spec.kind === 'plan-changes' ? (planStartedAt || asOf) : null)
   }));
 
   let truncatedTotal = 0;
   const feeds = specs.map(spec => {
     const all = spec.kind === 'changes'
       ? changeItems(spec, { deals, store, radar })
-      : collectionItems(spec, { deals, store, asOf, vendorKeyOf });
+      : (spec.kind === 'plan-changes'
+        ? planChangeItems(spec, { planRadar, plans, providerTable })
+        : collectionItems(spec, { deals, store, asOf, vendorKeyOf }));
     const items = all.slice(0, LIMITS.itemsPerFeed);
     const truncated = Math.max(0, all.length - items.length);
     truncatedTotal += truncated;
-    const description = descriptionWithNotes(spec, { truncated, asOf, availability, empty: items.length === 0 });
+    const description = descriptionWithNotes(spec, {
+      truncated, asOf,
+      availability: spec.kind === 'plan-changes' ? planAvailability : availability,
+      empty: items.length === 0
+    });
     return {
       spec,
       items,
@@ -919,7 +1051,9 @@ function unescapeXml(text) {
  */
 function validate({
   feeds = [], deals = [], store = null, pages = new Set(),
-  asOf = null, vendorSlugs = VENDOR_SLUGS, availability = 'ok', vendorKeyOf = null
+  asOf = null, vendorSlugs = VENDOR_SLUGS, availability = 'ok', vendorKeyOf = null,
+  // v2.3：套餐变化源的对账材料（套餐变化日志的事件身份 + 可用性）。
+  planEvents = [], planAvailability = 'ok'
 } = {}) {
   const problems = [];
   const warnings = [];
@@ -928,11 +1062,15 @@ function validate({
 
   const byId = new Map(deals.map(deal => [deal && deal.id, deal]));
   const eventKeys = new Set(history.eventsOf(store).map(event => history.eventKey(event)));
+  const planEventIds = new Set((planEvents || []).map(event => planHistoryLib.eventIdOf(event)));
   const allowedDates = new Set();
   for (const deal of deals) {
     if (deal && DATE_RE.test(String(deal.firstSeen || ''))) allowedDates.add(deal.firstSeen);
   }
   for (const event of history.eventsOf(store)) {
+    if (event && DATE_RE.test(String(event.at || ''))) allowedDates.add(event.at);
+  }
+  for (const event of planEvents || []) {
     if (event && DATE_RE.test(String(event.at || ''))) allowedDates.add(event.at);
   }
 
@@ -1013,7 +1151,9 @@ function validate({
       seenIds.add(item.id);
       if (!/^https:\/\//.test(item.link || '')) add('url-valid', label, `链接不是 https：${item.link}`);
       if (!(item.link || '').startsWith(SITE_URL)) add('url-valid', label, `链接不在本站：${item.link}`);
-      const route = String(item.link || '').slice(SITE_URL.length);
+      // 片段（`#plan-<id>`）指页面内的落点，不改变「哪一页」——所以按去掉片段的路由判存在性。
+      // 锚点本身是否存在由构建期断言盯着（见 build-local 的套餐变化断言）。
+      const route = String(item.link || '').slice(SITE_URL.length).split('#')[0];
       if (!pages.has(route)) add('link-exists', label, `链接指向不存在的页面：${route}`);
       if (item.externalUrl && !/^https?:\/\//.test(item.externalUrl)) {
         add('url-valid', label, `官方来源链接非法：${item.externalUrl}`);
@@ -1055,10 +1195,29 @@ function validate({
         }
       }
     }
+
+    // ⑤′ 语义：套餐变化 Feed 必须对得上**套餐变化日志**（同一份判据，另一份数据）
+    if (spec.kind === 'plan-changes') {
+      if (planAvailability !== 'ok') {
+        if (feed.items.length) add('change-event-exists', label, '套餐变化日志不可用却仍有变化条目');
+      }
+      for (const item of feed.items) {
+        if (!planEventIds.has(item.id)) {
+          add('change-event-exists', label, `${item.id} 在 plan-history.json 里找不到对应事件`);
+          continue;
+        }
+        if (item.eventType === 'updated') {
+          add('change-high-value', label, `${item.id} 是记录级元信息（updated），不该进订阅`);
+        }
+      }
+    }
   }
 
   if (availability !== 'ok' && feeds.some(feed => feed.spec.kind === 'changes' && feed.items.length)) {
     warnings.push('历史日志不可用，变化 Feed 应为空');
+  }
+  if (planAvailability !== 'ok' && feeds.some(feed => feed.spec.kind === 'plan-changes' && feed.items.length)) {
+    warnings.push('套餐变化日志不可用，套餐变化 Feed 应为空');
   }
   return { problems, warnings };
 }
@@ -1085,6 +1244,9 @@ module.exports = {
   SITE_DESCRIPTION,
   FEED_BRAND,
   ROOT_FEED,
+  PLAN_CHANGE_FEED,
+  PAGE_FEED_ROUTES,
+  planChangeItems,
   rootFeedTags,
   LIMITS,
   VENDOR_THRESHOLDS,

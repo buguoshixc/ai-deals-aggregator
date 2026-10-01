@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-10-01",
+  "baseline": {
+    "at": "2026-10-01",
+    "note": "v2.3 开工时的既有状态快照（只含被跟踪字段）。它不是创建事件——这些套餐在此之前就存在，只是此前没有变化日志。",
+    "fields": {
+      "003a3f02d7bc": {
+        "quota.type": "credits",
+        "quota.amount": 2000,
+        "quota.period": "rolling",
+        "supportedModels": [
+          {
+            "name": "GLM-5.3",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "GLM-5.3-Flash",
+            "role": "included",
+            "note": null
+          }
+        ],
+        "restrictions": [
+          {
+            "kind": "rolling_window",
+            "value": "5 小时动态刷新 + 7 天周周期",
+            "note": "额度耗尽后需等待下一个 5 小时周期恢复；系统不会继续消耗其他资源包或账户余额"
+          },
+          {
+            "kind": "fair_use",
+            "value": true,
+            "note": "官方原文：套餐支持 OpenClaw 使用，但采用次级调度与尽力交付策略，高负载下将自动触发动态排队、限流等公平使用策略"
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://docs.bigmodel.cn/cn/coding-plan/overview",
+        "source": "Official-Docs",
+        "sourceUrl": "https://docs.bigmodel.cn/cn/coding-plan/overview"
+      },
+      "057331b58bc9": {
+        "billing.regularPrice": 59,
+        "billing.currency": "CNY",
+        "quota.type": "credits",
+        "quota.amount": 2000,
+        "quota.period": "monthly",
+        "region": "cn",
+        "officialUrl": "https://help.aliyun.com/zh/lingma/billing-description",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://help.aliyun.com/zh/lingma/billing-description"
+      },
+      "154d2607b8ff": {
+        "billing.regularPrice": 99,
+        "billing.promoPrice": 70,
+        "billing.currency": "CNY",
+        "quota.type": "credits",
+        "quota.amount": 4000,
+        "quota.period": "monthly",
+        "region": "cn",
+        "officialUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing"
+      },
+      "28070842f3fa": {
+        "billing.regularPrice": 0,
+        "billing.currency": "CNY",
+        "quota.type": "credits",
+        "quota.amount": 500,
+        "quota.period": "monthly",
+        "restrictions": [
+          {
+            "kind": "concurrency",
+            "value": 2,
+            "note": "支持 2 个云端任务同时执行"
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://www.trae.cn/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://www.trae.cn/pricing"
+      },
+      "7857c6ed195b": {
+        "billing.regularPrice": 20,
+        "billing.currency": "USD",
+        "quota.type": "other",
+        "quota.description": "每个计划包含一定量的模型用量；用完后可按需计费（on-demand，事后结算）；官方定价页未公布固定额度数值与刷新周期",
+        "region": "global",
+        "officialUrl": "https://cursor.com/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://cursor.com/pricing"
+      },
+      "a6a6a374dfba": {
+        "billing.regularPrice": 49,
+        "billing.currency": "CNY",
+        "quota.type": "rate_limited",
+        "quota.period": "rolling",
+        "quota.description": "额度窗口为 5 小时固定窗口和周窗口；文本、图像、语音资源共享同一额度；官方未公布固定数值，超额可由预付积分包抵扣",
+        "supportedModels": [
+          {
+            "name": "MiniMax M2.7",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "MiniMax M3",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "图像 / 语音资源",
+            "role": "included",
+            "note": "与文本共享同一额度"
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+        "source": "Official-Docs",
+        "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan"
+      },
+      "dd5cd38ae7b7": {
+        "billing.regularPrice": 10,
+        "billing.currency": "USD",
+        "quota.type": "credits",
+        "quota.amount": 1500,
+        "quota.period": "monthly",
+        "region": "global",
+        "officialUrl": "https://docs.github.com/en/copilot/get-started/plans",
+        "source": "Official-Docs",
+        "sourceUrl": "https://docs.github.com/en/copilot/get-started/plans"
+      },
+      "ecb07e0ed88a": {
+        "billing.regularPrice": 99,
+        "billing.currency": "CNY",
+        "quota.type": "other",
+        "quota.period": "monthly",
+        "quota.description": "全部产品共用一个积分池，按实际 token 消耗扣减，每个计费周期自动刷新；官方未公布固定额度数值；Kimi Code 另有独立的每 5 小时 / 每周使用上限",
+        "restrictions": [
+          {
+            "kind": "rolling_window",
+            "value": "Kimi Code 独立 5 小时 / 每周上限",
+            "note": "官方原文：Kimi Code also has a separate 5-hour-per-week usage limit，且该限制只作用于 Kimi Code"
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://www.kimi.com/en/help/membership/membership-overview",
+        "source": "Official-Docs",
+        "sourceUrl": "https://www.kimi.com/en/help/membership/membership-overview"
+      },
+      "f04787381e3b": {
+        "billing.regularPrice": 99,
+        "billing.promoPrice": 69,
+        "billing.currency": "CNY",
+        "quota.type": "credits",
+        "quota.amount": 4000,
+        "quota.period": "monthly",
+        "supportedModels": [
+          {
+            "name": "DeepSeek-Flash",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "DeepSeek-Pro",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "GLM 5.2 / 5.3",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "Seed-2.1-Turbo",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "Seed-Code",
+            "role": "included",
+            "note": null
+          }
+        ],
+        "restrictions": [
+          {
+            "kind": "concurrency",
+            "value": 10,
+            "note": "10 个云端任务同时执行"
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://www.trae.cn/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://www.trae.cn/pricing"
+      }
+    }
+  },
+  "absence": {},
+  "anomalies": [],
+  "events": []
+}

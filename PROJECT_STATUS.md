@@ -1,6 +1,6 @@
 # AI 优惠聚合器 — 项目状态
 
-**最后更新**：2026-09-30（最新一节 **2.36 `v1.5-change-radar`**）
+**最后更新**：2026-10-01（最新一节 **2.43 `v2.3-plan-history`**）
 **项目地址**：https://buguoshixc.github.io/ai-deals-aggregator/
 **仓库**：https://github.com/buguoshixc/ai-deals-aggregator
 
@@ -3220,3 +3220,99 @@ GitHub Copilot Pro · Cursor Pro。每条都来自本次实际抓取并读到的
   （不写死色值，暗色换令牌不会假红；文字对比度另有 §13 全站探针兜底）。
 - 门禁复跑：`verify` **389 项 0 失败** · `verify:regress` **395 项 0 失败** · `selftest:plans` 182 ·
   `verify:seo` 8 · `check:ci` 35 · `validate` 通过 · 构建 ×2 逐字节一致。
+
+### 2.43 `v2.3-plan-history`：套餐的长期变化追踪（2026-10-01，分支 `v2.3-plan-history`）
+
+**起因**：2.42 之后，套餐页只回答「现在是什么套餐」。这一轮让它回答「这个套餐最近发生了什么变化」——
+新增 `scripts/data/plan-history.json`（一次性基线 + 追加事件）、套餐页的「最近变化」块与行内时间线、
+`/changes/` 的套餐分栏，以及一份独立的套餐变化订阅源。
+
+**§一 先做的分析：哪些抽象成通用框架、哪些不共享**
+
+`lib/history.js`（v1.4 的优惠日志）里真正**与业务无关**的机制被抽进新的 `lib/history-core.js`：
+确定性序列化、一次性基线 + 事件重放、链校验、「基线+事件 ⇒ 当前状态」一致性、事件身份、
+观测态裁剪、上限。`history.js` 改为**委托**（公开 API 逐字不变，deals 侧行为零变化：
+`selftest:history` 61 项与 `check:history` 全绿）。**刻意不共享**的四类东西逐条登记在
+`docs/SCHEMA-v2.3.md` §2：事件类型表、跟踪字段与措辞、「消失」的判据（plans 没有采集器）、
+数组语义与雷达分栏。内核为容纳 plans 只加了三个**通用**扩展点：
+`readField`（支持 `billing.regularPrice` 这类路径）、`compare`（按字段覆写相等判据）、
+`applyEvent` / `eventValueMatches`（元素级数组事件的重放与链校验）；
+并区分 `recordKey`（数据上是 `id`）与 `eventKeyName`（事件上是 `planId`，按题面 §四 命名）。
+**边界有牙**：`selftest:plan-history` §⑭ 静态扫描「内核里不许出现任一方的专有字段 / 事件类型」
++「两个领域层里同名的机制函数必须是转手调 `core.*` 的薄包装」；`selftest:plans` §⑪ 同步改成四句话的边界
+（deals 链路一个字都不提 plans；订阅层是**唯一**允许引用 plans 的通道，且不许自己读数据文件）。
+
+**事件与字段（题面 §二 / §三 / §四 / §五）**
+
+- 事件类型 **17 类**：题面点名的 11 类全保留，另 6 类由 schema 逼出（`promo_changed` /
+  `quota_changed` / `model_changed` / `availability_changed` / `billing_changed` / `updated`）。
+- `meaningfulPlanFields` **13 个**；`lastSeen` / `verifiedAt` / `evidence` / `derivedMetrics` /
+  两个备注字段**明确不跟踪**（逐条理由在契约 §5.2）——「人工每次回访都会刷新」的字段记进日志
+  等于每轮造 9 条假事件。
+- 一处需要判断的投影：`quota.description` 只在 `rate_limited` / `unlimited_fair_use` / `other` 上
+  是被跟踪的额度口径；量化型套餐的说明是解释性散文 ⇒ 投影为不跟踪（题面 §三 的直接要求）。
+  空白与标点差异一律不产生事件，但文字本身差一个语义就照样记（不做相似度比较）。
+- `eventId` 是**派生字段**（`verifyStore` 重算并比对，手写必红），同时是订阅源的 `<guid>`；
+  「重复运行不重复产生事件」另由链校验与 `eventKey` 幂等两道保证。
+- **时间只来自数据**：`at` 取 `plans.json` 的 `updatedAt` 前 10 位；早于该套餐上一条事件的日期时
+  **拒绝写盘并报错**（「请先更新 lastSeen」），绝不倒填。
+
+**§七 退出保护（plans 没有采集器，所以不复用来源健康）**
+
+R1 唯一写入点（`rebuild-plans.js` 成功写盘时才写日志；来源层有硬问题或 `--dry-run` 一律不写）
+· R2 连续 **2 次**成功运行未见才记 `ended` · R3 **批量熔断**（单次缺席 `>= max(3, ⌈半数⌉)` 或输出为空
+⇒ 不推进计数、不记 `ended`，只在 `anomalies[]` 留档；真实批量下架须显式 `--allow-mass-removal`）
+· R4 **周期重键**（同一次运行里月付改年付 ⇒ 立即 `ended(period_changed)` + `created(supersedes)`，
+这是 v2.1 契约点名必须显式决策的那一条）· R5 fail-closed · R6 确认期窗口由「待确认」清单点名。
+
+**展示与订阅**
+
+- `/plans/coding/`：表格**之前**的「最近变化」块（`#plan-changes`，5 条 + 起算日 + 「全部变化 →」；
+  必须放在 `#plans-compare` 之外 —— 那个容器的 innerHTML 会被 JS 整块替换）+ 每个数据行的
+  `id="plan-<id>"` 锚点 + 行内详情的「变更记录（N 条）」时间线（最近 10 条 + 「另有 N 条更早」）。
+- `/changes/`：**没有新做一页** —— 顶部加「优惠变化 / 套餐变化」锚点导航，表格后追加套餐四栏
+  （今日新增 / 最近 7 天变化 / 不再收录 / 重新出现，各 30 行上限）。
+- 订阅：`/feed/plans/coding/changes.xml|.json`（`kind: 'plan-changes'`，与 deals 的两份变化源**并排**）；
+  `<guid>` = 派生 `eventId`，`<link>` = `/plans/coding/#plan-<planId>`；构建期断言「每条深链的锚点
+  在页面上真的有落点」。**Feed 23 → 24（46 → 48 个文件）**，`/feeds/` 新增「套餐」分组。
+- 措辞**只有一处实现**（`plans-page.planChangeTextOf`）：页面块、时间线、`/changes/` 分栏与订阅源
+  说的是同一句话。
+
+**门禁**：新增两步（`Plan-history self-test` / `Plan-history verify (log consistent with plans.json)`），
+**29 → 31 步**（`GATE_STEP_NAMES` ↔ `action.yml` 同索引同步）；`--expect-checks=35` 不变。
+新增 4 个 npm 脚本：`baseline:plan-history` / `selftest:plan-history` / `check:plan-history` / `report:plan-changes`。
+
+**实测（全部本机实跑）**
+
+| 项目 | 结果 |
+|---|---|
+| `selftest:plan-history`（新） | **132 项 0 失败** |
+| `check:plan-history`（新） | exit 0 · 起算日 2026-10-01 · 基线 9 条 · 事件 0 条 · 6.8 KB / 上限 1 MB |
+| `selftest:plans` | 182 → **202 项 0 失败**（新增 §⑯：最近变化块/时间线/锚点 + 4 条牙） |
+| `selftest:feeds` | 71 → **83 项 0 失败**（新增 §九：套餐变化源 + 3 条牙） |
+| `selftest:history` / `check:history` | **61 项 0 失败** / 重放一致 —— 内核抽离后 deals 侧行为未变 |
+| `verify`（真浏览器） | 379 → **398 项 0 失败**；`verify:regress` **404 项 0 失败**（覆盖 80→80 · 卡片 50→50 · 首屏 9→9 · 页高 4589→4665px · 外部请求 0 · JS 错误 0） |
+| `build` ×2 | 全部自检通过；套餐页 / `/changes/` / 套餐变化 Feed / `plan-history.json` 两次构建 **SHA256 逐字节一致** |
+| 既有门禁 | `validate`（strict）/ `check:reproducible` / `check:plans:reproducible` / `selftest:seo` 62 / `verify:seo` 8 / `check:ci` **35** / `check:zh` / `selftest:zh` 15 / `selftest:expiry` 94 / `selftest:text` 46 / `selftest:health` 51 / `selftest:provenance` 91 / `selftest:changes` 89 / `check:feeds:reproducible` / `selftest:audience` 161 / `selftest:app-token` 67 / `fixture:test` 4 / `ai:selftest` —— 全部 exit 0 |
+
+**题面 §十三 的 5 条 Tooth Test + 2 条补牙（逐条实跑）**：顺序变化 0 事件；来源层非法 → rebuild 拒绝写盘
+（`plans.json` 与 `plan-history.json` 哈希不变）；一次缺席 5/9 → 0 条 `ended` + 熔断留档；
+同一变化跑两次 → 1 条 / 0 条且字节不变；`quota 6e9 → 3e9` → `quota_decreased`；`promoPrice null → 9.9`
+→ `promo_started`；日期倒填被拒；手写 `eventId` 必红。另有真实写盘路径上的 E2E：改价 1 条事件、
+再跑一次 0 条；只删 1 条第一次不判死、第二次确认。
+
+**体积**：`plan-history.json` 6.8 KB · `dist/plans/coding/index.html` 105.9 → **约 111 K 字符**
+（最近变化块 + 时间线 + 新增样式；工作区另有会话在改共享顶栏，两次构建之间它从 110.5 变到 111.6 K，
+这段差值不全是本阶段）· `dist/changes/index.html` 75.2 KiB · 套餐变化 Feed 1.2 KB / 0.9 KB ·
+`dist` **223** 个文件 / 974.5 KB。
+
+- **契约** `docs/SCHEMA-v2.3.md`（§2 复用/不共享 · §4 事件类型 · §5 字段与投影 · §6 Stable ID ·
+  §8 退出保护 R1–R6 · §11 页面与订阅）· **报告** `research/v2.3-plan-history-report.md`。
+- `docs/SCHEMA-v2.1.md` §10 的已知限制（月付改年付）已回填结论并指向 v2.3 §8 R4。
+- **本阶段刻意没做**：综合推荐 / 星级 / benchmark / API plan（2.5）/ Deals↔Plans 关联（2.4）/
+  独立套餐详情页 / `/plans/<id>/` / 平台页 / 汇率 / 自动采集套餐 / 把套餐变化混进优惠的变化流 /
+  页面载荷扩到历史（按套餐线性加事件会让体积不可控，另做设计再说）。
+- **本轮已推送**：分支 `v2.3-plan-history` → 合并进 `master`（用户明确要求「推送上线你自己的部分」）。
+  本阶段期间工作区里一直有另一个会话在改共享顶栏（PR #19 / #20），所以本分支**两次 rebase** 到它之后
+  才提交推送，两边互不覆盖。
+

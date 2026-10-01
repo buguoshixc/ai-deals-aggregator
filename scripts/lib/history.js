@@ -1,5 +1,5 @@
 /**
- * v1.4 优惠历史（append-only change event log）。
+ * v1.4 优惠历史（append-only change event log）—— **deals 领域层**。
  *
  * ## 这一层要回答的六个问题
  *
@@ -22,6 +22,14 @@
  * 体积对比（实测，见报告）：每日全量快照 = `deals.json` 236 KB × 2/天 ≈ 170 MB/年；
  * 本方案 = 一次性基线约 60 KB + 只记变化（当前数据规模约 KB/年）。
  *
+ * ## v2.3：机制搬进了 `lib/history-core.js`
+ *
+ * 本文件从 v2.3 起只保留 **deals 领域**的东西：跟踪哪些字段、字段变了算哪一类事件、
+ * 「来源不再列出」怎么判、以及一套中文措辞。与业务无关的机制（确定性序列化、
+ * 重放、链校验、一致性校验、上限）在 `history-core.js` 里**只有一份实现** ——
+ * Coding Plan 的变化日志（`lib/plan-history.js`）用的是同一份内核。
+ * 两份日志的机制分家是最坏的写法：分家之后两边都还是绿的。
+ *
  * ## 三条纪律
  *
  * 1. **只记「重要字段」的变化**。`description` 文案微调、`lastSeen` 每日刷新、
@@ -39,8 +47,8 @@
  * 否则一次子集运行会把其余来源的条目整片误判成「消失」。
  */
 
-const fs = require('fs');
 const path = require('path');
+const core = require('./history-core');
 const { CURATED_SOURCES } = require('./provenance');
 
 const HISTORY_FILE = path.join(__dirname, '..', 'data', 'deal-history.json');
@@ -121,7 +129,7 @@ const END_REASONS = [
 const MISS_CONFIRM_RUNS = 2;
 
 /** 事件来源：observed = 直接观测到的新值；derived = 由本站规则推导出来的值 */
-const EVENT_ORIGINS = ['observed', 'derived'];
+const EVENT_ORIGINS = core.EVENT_ORIGINS;
 
 /**
  * 上限。**超限 = 门禁红**，绝不自动截断（静默丢历史比没有历史更糟）。
@@ -136,7 +144,7 @@ const LIMITS = {
 /** 渲染层：一条记录最多注入多少条事件（全量仍在 deal-history.json 里） */
 const RENDER_LIMIT = 20;
 
-/** 观测状态（absence）保留窗口：已 ended 且离开数据集超过这么多天的条目不再保留观测态 */
+/** 观测状态（absence）保留窗口：已 ended 且离开数据集超过这么多天的条目不再保留 */
 const ABSENCE_RETENTION_DAYS = 365;
 
 const HISTORY_WORDING = {
@@ -194,165 +202,97 @@ const HISTORY_WORDING = {
   }
 };
 
+const BASELINE_NOTE = 'v1.4 开工时的既有状态快照（只含被跟踪字段）。它不是创建事件——这些记录更早就存在，只是此前没有历史。';
+
+/** deals 剖面：机制交给 `history-core.js`，这里只声明「什么算变化」 */
+const PROFILE = {
+  schemaVersion: SCHEMA_VERSION,
+  recordKey: 'id',
+  trackedFields: TRACKED_FIELDS,
+  fieldEvent: FIELD_EVENT,
+  eventTypes: EVENT_TYPES,
+  lifecycleTypes: LIFECYCLE_TYPES,
+  fieldTypes: FIELD_TYPES,
+  endReasons: END_REASONS,
+  fieldLabels: HISTORY_WORDING.HISTORY_FIELD_LABELS,
+  baselineNote: BASELINE_NOTE,
+  limits: LIMITS,
+  renderLimit: RENDER_LIMIT,
+  absenceRetentionDays: ABSENCE_RETENTION_DAYS,
+  rankTypes: { created: 0, restored: 1, ended: 2 },
+  fieldRankBase: 10,
+  // 校验报错里的容器名（措辞与 v1.4 逐字一致）
+  docLabel: '历史文档',
+  recordsLabel: 'deals.json'
+};
+
 /* ------------------------------------------------------------------ */
-/* 值归一                                                               */
+/* 值归一（转出内核，保留同名导出）                                     */
 /* ------------------------------------------------------------------ */
 
-/** 缺字段与 null 同义（v1.1 六字段「只挂有值的」） */
-function normValue(value) {
-  return value === undefined ? null : value;
-}
-
-/**
- * 确定性序列化：对象 key 排序。事件链的「值是否相同」全部走这一把尺子，
- * 因此事件的 `from` / `to` 与基线值可以逐字节比较。
- */
-function stableJson(value) {
-  const v = normValue(value);
-  if (v === null || typeof v !== 'object') return JSON.stringify(v);
-  if (Array.isArray(v)) return `[${v.map(stableJson).join(',')}]`;
-  return `{${Object.keys(v).sort().map(key => `${JSON.stringify(key)}:${stableJson(v[key])}`).join(',')}}`;
-}
-
-function sameValue(a, b) {
-  return stableJson(a) === stableJson(b);
-}
+const normValue = core.normValue;
+const stableJson = core.stableJson;
+const sameValue = core.sameValue;
 
 /** 一条记录里被跟踪字段的当前值（缺席 → null；只保留有值的，基线因此不写一堆 null） */
 function trackedValuesOf(deal) {
-  const out = {};
-  for (const field of TRACKED_FIELDS) {
-    const value = normValue(deal ? deal[field] : null);
-    if (value !== null) out[field] = value;
-  }
-  return out;
+  return core.trackedValuesOf(deal, TRACKED_FIELDS);
 }
 
 /* ------------------------------------------------------------------ */
 /* 读取 / 写入                                                          */
 /* ------------------------------------------------------------------ */
 
-const BASELINE_NOTE = 'v1.4 开工时的既有状态快照（只含被跟踪字段）。它不是创建事件——这些记录更早就存在，只是此前没有历史。';
-
 function emptyStore({ at = null } = {}) {
-  return { schemaVersion: SCHEMA_VERSION, startedAt: at, baseline: { at, note: BASELINE_NOTE, fields: {} }, absence: {}, events: [] };
+  return core.emptyStore(PROFILE, { at });
 }
+
 /**
  * 读取历史文件。
  * **不存在或损坏时不抛**：采集不该因为一份历史文件写坏就跑不动；
  * 损坏由 `check:history` 门禁拦（采集侧只告警）。
  */
 function load(file = HISTORY_FILE) {
-  if (!fs.existsSync(file)) return { store: emptyStore(), file, missing: true, broken: null };
-  try {
-    const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      return { store: emptyStore(), file, missing: false, broken: '不是 JSON 对象' };
-    }
-    return { store: parsed, file, missing: false, broken: null };
-  } catch (error) {
-    return { store: emptyStore(), file, missing: false, broken: error.message };
-  }
+  const result = core.load(file);
+  return { ...result, store: result.store || emptyStore() };
 }
 
 /** 写盘。key 顺序固定，`events` 追加式；无事发生的运行必须字节不变 */
 function save(store, file = HISTORY_FILE) {
-  fs.writeFileSync(file, `${JSON.stringify(store, null, 2)}\n`, 'utf8');
-  return store;
+  return core.save(store, file);
 }
 
 /** 从一批当前记录构造基线（一次性；只在 v1.4 开工时由 `history-baseline` 生成） */
 function baselineOf(deals, { at, note = BASELINE_NOTE } = {}) {
-  const fields = {};
-  for (const deal of deals || []) {
-    if (!deal || !deal.id) continue;
-    const values = trackedValuesOf(deal);
-    if (Object.keys(values).length) fields[deal.id] = values;
-  }
-  const sorted = {};
-  for (const id of Object.keys(fields).sort()) sorted[id] = fields[id];
-  return { at, note, fields: sorted };
+  return core.baselineOf(deals, { at, note, fields: TRACKED_FIELDS });
 }
 
 /* ------------------------------------------------------------------ */
 /* 重放（基线 + 事件 ⇒ 当前状态）                                       */
 /* ------------------------------------------------------------------ */
 
-/**
- * 重放整份日志，得到每条记录每个被跟踪字段的**当前值**。
- * 链上的每一步都约束住，因此「日志被手改」一定会与 deals.json 对不上。
- *
- * @returns {Map<string, object>} id → { field: value }
- */
 function replay(store) {
-  const state = new Map();
-  const fields = (store && store.baseline && store.baseline.fields) || {};
-  for (const id of Object.keys(fields)) state.set(id, { ...fields[id] });
-  for (const event of eventsOf(store)) {
-    if (!state.has(event.id)) state.set(event.id, {});
-    const current = state.get(event.id);
-    if (event.type === 'created') {
-      const snapshot = event.fields && typeof event.fields === 'object' ? event.fields : {};
-      state.set(event.id, { ...snapshot });
-      continue;
-    }
-    if (event.type === 'ended' || event.type === 'restored') continue;
-    if (event.to === null || event.to === undefined) delete current[event.field];
-    else current[event.field] = event.to;
-  }
-  return state;
+  return core.replay(store, PROFILE);
 }
 
 /** 由日志重建一条记录某个字段的当前值（缺席 → null） */
 function replayedValue(store, id, field) {
-  const all = replay(store);
-  const rec = all.get(id);
-  return rec && Object.prototype.hasOwnProperty.call(rec, field) ? rec[field] : null;
+  return core.replayedValue(store, id, field, PROFILE);
 }
 
 /** 一条记录最近一次生命周期事件（created / ended / restored） */
 function lastLifecycleOf(store, id) {
-  let last = null;
-  for (const event of eventsOf(store)) {
-    if (event.id !== id) continue;
-    if (LIFECYCLE_TYPES.includes(event.type)) last = event;
-  }
-  return last;
+  return core.lastLifecycleOf(store, id, PROFILE);
 }
 
-function eventsOf(store) {
-  return store && Array.isArray(store.events) ? store.events : [];
-}
+const eventsOf = core.eventsOf;
 
 /* ------------------------------------------------------------------ */
 /* 差异计算                                                             */
 /* ------------------------------------------------------------------ */
 
 function indexById(deals) {
-  const map = new Map();
-  for (const deal of deals || []) if (deal && deal.id) map.set(deal.id, deal);
-  return map;
-}
-
-/** 事件排序键：生命周期在前（created 最先），字段事件按 TRACKED_FIELDS 顺序 */
-function eventRank(event) {
-  if (event.type === 'created') return 0;
-  if (event.type === 'restored') return 1;
-  if (event.type === 'ended') return 2;
-  const at = TRACKED_FIELDS.indexOf(event.field);
-  return 10 + (at < 0 ? TRACKED_FIELDS.length : at);
-}
-
-function sortEvents(events) {
-  return [...events].sort((a, b) => {
-    if (a.id !== b.id) return a.id < b.id ? -1 : 1;
-    const ra = eventRank(a);
-    const rb = eventRank(b);
-    if (ra !== rb) return ra - rb;
-    const fa = a.field || '';
-    const fb = b.field || '';
-    return fa < fb ? -1 : fa > fb ? 1 : 0;
-  });
+  return core.indexByKey(deals, 'id');
 }
 
 /**
@@ -367,29 +307,15 @@ function sortEvents(events) {
 function diffStates(previous, next, ctx = {}) {
   const at = ctx.at;
   const before = indexById(previous);
-  const originFields = ctx.originFields instanceof Set ? ctx.originFields : new Set();
   const events = [];
   for (const deal of next || []) {
     if (!deal || !deal.id) continue;
-    const prev = before.get(deal.id);
-    if (!prev) {
-      // 新记录：created 事件同时充当它自己的基线（否则「创建后再没变过」的字段没有锚点）
-      events.push({ id: deal.id, at, type: 'created', field: null, from: null, to: null, fields: trackedValuesOf(deal) });
-      continue;
-    }
-    for (const field of TRACKED_FIELDS) {
-      const from = normValue(prev[field]);
-      const to = normValue(deal[field]);
-      if (sameValue(from, to)) continue;
-      const type = FIELD_EVENT[field];
-      if (!FIELD_TYPES.includes(type)) continue;
-      events.push({
-        id: deal.id, at, type, field, from, to,
-        origin: originFields.has(field) ? 'derived' : 'observed'
-      });
-    }
+    if (before.has(deal.id)) continue;
+    // 新记录：created 事件同时充当它自己的基线（否则「创建后再没变过」的字段没有锚点）
+    events.push({ id: deal.id, at, type: 'created', field: null, from: null, to: null, fields: trackedValuesOf(deal) });
   }
-  return sortEvents(events);
+  events.push(...core.diffFields(previous, next, { profile: PROFILE, at, originFields: ctx.originFields }));
+  return core.sortEvents(events, PROFILE);
 }
 
 /* ------------------------------------------------------------------ */
@@ -423,7 +349,7 @@ function diffStates(previous, next, ctx = {}) {
  * @returns {{store:object, stats:object}}
  */
 function record(store, params = {}) {
-  const base = normalizeStore(store);
+  const base = core.normalizeStore(store, PROFILE);
   const at = params.at;
   const runAt = params.runAt || null;
   const previous = params.previous || [];
@@ -443,13 +369,13 @@ function record(store, params = {}) {
     return vendor ? { title, vendor } : { title };
   };
 
-  const replayState = replay(base);
+  const replayState = core.replay(base, PROFILE);
   const lifecycle = new Map(); // id → 最后一次生命周期事件类型
   for (const event of eventsOf(base)) if (LIFECYCLE_TYPES.includes(event.type)) lifecycle.set(event.id, event.type);
 
   const candidates = [];
   const seen = new Set();          // 幂等去重（同一份输入重复调用不重复追加）
-  for (const event of eventsOf(base)) seen.add(eventKey(event));
+  for (const event of eventsOf(base)) seen.add(core.eventKey(event, PROFILE));
 
   // ---- ① 新增 / 字段变化 ------------------------------------------------
   for (const event of diffStates(previous, next, { at, originFields: params.derivedFields })) {
@@ -461,7 +387,7 @@ function record(store, params = {}) {
     }
     // 链校验：只有当记录的当前值确实等于 from、且 to 还不等于当前值时才是新变化。
     // 这条同时保证了「重复调用 record 同一份输入」不会追加第二条。
-    const current = replayedValueFrom(replayState, event.id, event.field);
+    const current = core.replayedValueFrom(replayState, event.id, event.field);
     if (sameValue(current, event.to)) continue;      // 已经是这个值了
     if (!sameValue(current, event.from)) continue;   // 链对不上（数据被外部改过）→ 不猜，门禁去报
     candidates.push(withRun(event, runAt));
@@ -477,7 +403,7 @@ function record(store, params = {}) {
     candidates.push({ id: deal.id, at, type: 'restored', field: null, from: null, to: null, runAt });
     // 重现后，字段若与离开时不同，按链补字段事件（from = 链上的旧值）
     for (const field of TRACKED_FIELDS) {
-      const current = replayedValueFrom(replayState, deal.id, field);
+      const current = core.replayedValueFrom(replayState, deal.id, field);
       const to = normValue(deal[field]);
       if (sameValue(current, to)) continue;
       candidates.push({
@@ -549,14 +475,14 @@ function record(store, params = {}) {
 
   // ---- ⑥ 落库：去重、排序、裁剪观测态 ------------------------------------
   const appended = [];
-  for (const event of sortEvents(candidates)) {
-    const key = eventKey(event);
+  for (const event of core.sortEvents(candidates, PROFILE)) {
+    const key = core.eventKey(event, PROFILE);
     if (seen.has(key)) continue;
     seen.add(key);
     appended.push(event);
   }
   const events = [...eventsOf(base), ...appended];
-  const absenceNext = pruneAbsence(absence, { nextIds, at });
+  const absenceNext = core.pruneAbsence(absence, { nextIds, at, retentionDays: ABSENCE_RETENTION_DAYS });
 
   const out = {
     ...base,
@@ -568,19 +494,8 @@ function record(store, params = {}) {
   return { store: out, stats: statsOf(appended, { absenceNext }) };
 }
 
-function replayedValueFrom(stateMap, id, field) {
-  const rec = stateMap.get(id);
-  return rec && Object.prototype.hasOwnProperty.call(rec, field) ? rec[field] : null;
-}
-
 function withRun(event, runAt) {
   return runAt ? { ...event, runAt } : event;
-}
-
-function eventKey(event) {
-  return [event.id, event.type, event.field || '', event.at,
-    stableJson(event.from), stableJson(event.to), event.reason || '',
-    event.type === 'created' ? stableJson(event.fields || {}) : ''].join('\u0000');
 }
 
 function statsOf(events, { absenceNext } = {}) {
@@ -590,275 +505,21 @@ function statsOf(events, { absenceNext } = {}) {
   return { appended: events.length, byType, absenceTracked: Object.keys(absenceNext || {}).length };
 }
 
-/** 观测态保留窗口：已 ended 且离开数据集超过一年的条目不再保留（避免无限增长） */
-function pruneAbsence(absence, { nextIds, at }) {
-  const out = {};
-  for (const id of Object.keys(absence).sort()) {
-    const state = absence[id];
-    if (!state) continue;
-    if (state.endedAt && !nextIds.has(id) && daysBetween(at, state.endedAt) > ABSENCE_RETENTION_DAYS) continue;
-    out[id] = state;
-  }
-  return out;
-}
-
-function daysBetween(later, earlier) {
-  const a = new Date(`${later}T00:00:00Z`).getTime();
-  const b = new Date(`${earlier}T00:00:00Z`).getTime();
-  if (!Number.isFinite(a) || !Number.isFinite(b)) return 0;
-  return Math.round((a - b) / 86400000);
-}
-
-/** 归一 store：缺段补齐、非法值回落（只清洗，报错交给 verifyStore） */
-function normalizeStore(store) {
-  const base = emptyStore({ at: (store && store.startedAt) || null });
-  if (!store || typeof store !== 'object') return base;
-  return {
-    schemaVersion: SCHEMA_VERSION,
-    startedAt: typeof store.startedAt === 'string' ? store.startedAt : null,
-    baseline: store.baseline && typeof store.baseline === 'object'
-      ? {
-        at: typeof store.baseline.at === 'string' ? store.baseline.at : null,
-        note: typeof store.baseline.note === 'string' ? store.baseline.note : BASELINE_NOTE,
-        fields: store.baseline.fields && typeof store.baseline.fields === 'object' && !Array.isArray(store.baseline.fields)
-          ? store.baseline.fields : {}
-      }
-      : base.baseline,
-    absence: store.absence && typeof store.absence === 'object' && !Array.isArray(store.absence) ? store.absence : {},
-    events: Array.isArray(store.events) ? store.events : []
-  };
-}
-
 /* ------------------------------------------------------------------ */
 /* 校验：链完整性 + 与当前状态一致                                      */
 /* ------------------------------------------------------------------ */
 
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
-const ID_RE = /^[0-9a-f]{12}$/;
-
-/**
- * 逐项校验历史文档与当前记录。返回问题清单（空 = 通过）。
- *
- * 四类问题分开，因为红的含义不同：
- *   ① 形状   —— 字段非法 / 未知字段 / 未知事件类型
- *   ② 链     —— 同一 (id, field) 上 `to` 与下一条 `from` 必须相等；生命周期必须成对
- *   ③ 一致   —— **基线 + 事件重放**的结果必须等于当前 `deals.json`
- *   ④ 上限   —— 事件数 / 文件体积
- *
- * 为什么 ③ 是本层的核心：「日志与当前状态一致」如果不可验证，日志就是一段自说自话的文本。
- */
-function verifyStore(store, deals, { today = null, bytes = null } = {}) {
-  const problems = [];
-  const doc = store;
-  if (!doc || typeof doc !== 'object' || Array.isArray(doc)) return ['历史文档不是 JSON 对象'];
-  if (doc.schemaVersion !== SCHEMA_VERSION) problems.push(`schemaVersion 应为 ${SCHEMA_VERSION}，实得 ${doc.schemaVersion}`);
-  if (!DATE_RE.test(String(doc.startedAt || ''))) problems.push(`startedAt 缺失或非法（${doc.startedAt}）`);
-  if (!doc.baseline || !DATE_RE.test(String(doc.baseline.at || ''))) problems.push('baseline.at 缺失或非法');
-  if (!doc.baseline || typeof doc.baseline.fields !== 'object' || Array.isArray(doc.baseline.fields)) {
-    problems.push('baseline.fields 不是对象');
-  }
-
-  const events = eventsOf(doc);
-  const perDeal = new Map();
-  const allIds = new Set();
-  events.forEach((event, index) => {
-    const where = `事件 #${index}`;
-    if (!event || typeof event !== 'object') { problems.push(`${where}: 不是对象`); return; }
-    if (!ID_RE.test(String(event.id || ''))) problems.push(`${where}: id 非法（${event.id}）`);
-    if (!DATE_RE.test(String(event.at || ''))) problems.push(`${where}: at 非法（${event.at}）`);
-    if (today && DATE_RE.test(String(event.at || '')) && String(event.at) > today) {
-      problems.push(`${where}: at 是未来日期（${event.at}）`);
-    }
-    if (!EVENT_TYPES.includes(event.type)) { problems.push(`${where}: 未知事件类型（${event.type}）`); return; }
-    if (LIFECYCLE_TYPES.includes(event.type)) {
-      if (event.field !== null && event.field !== undefined) problems.push(`${where}: ${event.type} 不应带 field`);
-      if (event.from !== null && event.from !== undefined) problems.push(`${where}: ${event.type} 不应带 from`);
-      if (event.to !== null && event.to !== undefined) problems.push(`${where}: ${event.type} 不应带 to`);
-      if (event.type === 'ended' && !END_REASONS.includes(event.reason)) problems.push(`${where}: ended 的 reason 非法（${event.reason}）`);
-      if (event.type === 'created' && (event.fields === null || typeof event.fields !== 'object' || Array.isArray(event.fields))) {
-        problems.push(`${where}: created 必须带 fields（它同时是这条记录的基线锚点）`);
-      }
-      for (const key of Object.keys(event.fields || {})) {
-        if (!TRACKED_FIELDS.includes(key)) problems.push(`${where}: created.fields 含未跟踪字段 ${key}`);
-      }
-      if (event.type !== 'ended' && event.reason !== undefined) problems.push(`${where}: ${event.type} 不应带 reason`);
-      // v1.5：`ended` 可带可选墓碑标签（标题 / 厂商快照）。它**不是**被跟踪的值 ——
-      // 不参与链校验、不参与重放，因此这里只校验形状，且只允许 ended 携带。
-      if (event.label !== undefined) {
-        if (event.type !== 'ended') {
-          problems.push(`${where}: ${event.type} 不应带 label（只有 ended 可以有墓碑标签）`);
-        } else if (!event.label || typeof event.label !== 'object' || Array.isArray(event.label)) {
-          problems.push(`${where}: ended 的 label 必须是对象`);
-        } else {
-          for (const key of Object.keys(event.label)) {
-            if (key !== 'title' && key !== 'vendor') problems.push(`${where}: ended.label 含未知键 ${key}`);
-          }
-          if (typeof event.label.title !== 'string' || !event.label.title.trim()) {
-            problems.push(`${where}: ended.label.title 必须是非空字符串（空标本等于没有标本）`);
-          }
-          if (event.label.vendor !== undefined && typeof event.label.vendor !== 'string') {
-            problems.push(`${where}: ended.label.vendor 必须是字符串`);
-          }
-        }
-      }
-    } else {
-      if (!TRACKED_FIELDS.includes(event.field)) { problems.push(`${where}: 未跟踪字段（${event.field}）`); return; }
-      if (FIELD_EVENT[event.field] !== event.type) {
-        problems.push(`${where}: ${event.field} 的事件类型应为 ${FIELD_EVENT[event.field]}，实得 ${event.type}`);
-      }
-      if (!('from' in event) || !('to' in event)) problems.push(`${where}: 字段事件必须同时带 from 与 to`);
-      else if (sameValue(event.from, event.to)) problems.push(`${where}: 字段事件的 from 与 to 相同（那不是一个变化）`);
-      if (event.origin !== undefined && !EVENT_ORIGINS.includes(event.origin)) {
-        problems.push(`${where}: origin 非法（${event.origin}）`);
-      }
-      if (event.reason !== undefined) problems.push(`${where}: 字段事件不应带 reason`);
-      // 墓碑标签只属于 `ended`：字段事件带它说明有人把两种事件混在一起了
-      if (event.label !== undefined) problems.push(`${where}: 字段事件不应带 label（墓碑标签只属于 ended）`);
-    }
-    allIds.add(event.id);
-    if (!perDeal.has(event.id)) perDeal.set(event.id, []);
-    perDeal.get(event.id).push(event);
-  });
-
-  // ② 链完整性 + 生命周期成对
-  const lifecycleState = new Map(); // id → 最后一次生命周期事件类型
-  for (const [id, list] of perDeal) {
-    const fieldState = new Map();
-    const baseFields = (doc.baseline && doc.baseline.fields && doc.baseline.fields[id]) || {};
-    for (const field of TRACKED_FIELDS) {
-      fieldState.set(field, Object.prototype.hasOwnProperty.call(baseFields, field) ? baseFields[field] : null);
-    }
-    let created = false;
-    let ended = false;
-    for (const event of list) {
-      if (event.type === 'created') {
-        created = true;
-        for (const field of TRACKED_FIELDS) {
-          const snapshot = event.fields || {};
-          fieldState.set(field, Object.prototype.hasOwnProperty.call(snapshot, field) ? snapshot[field] : null);
-        }
-        continue;
-      }
-      if (event.type === 'ended') {
-        if (ended) problems.push(`${id}: 连续两个 ended 之间没有 restored`);
-        ended = true;
-        continue;
-      }
-      if (event.type === 'restored') {
-        if (!ended) problems.push(`${id}: restored 之前没有 ended`);
-        ended = false;
-        continue;
-      }
-      const current = fieldState.get(event.field);
-      if (!sameValue(current, event.from)) {
-        problems.push(`${id} · ${event.field}: 链断裂（上一步是 ${short(current)}，事件的 from 是 ${short(event.from)}）`);
-      }
-      fieldState.set(event.field, event.to === undefined ? null : event.to);
-    }
-    lifecycleState.set(id, ended ? 'ended' : created ? 'created' : null);
-  }
-
-  // ②′ 覆盖「只有基线、没有事件」的 id：从 deals.json 消失却没有 ended 也要红。
-  // 只查 perDeal 会漏掉它们 —— 而它们恰恰是最容易被静默删掉的一批。
-  const baselineIds = Object.keys((doc.baseline && doc.baseline.fields) || {});
-  const knownIds = new Set([...baselineIds, ...allIds]);
-  const dealIds = new Set((deals || []).map(deal => deal && deal.id).filter(Boolean));
-  for (const id of knownIds) {
-    if (dealIds.has(id)) continue;
-    if (lifecycleState.get(id) === 'ended') continue;
-    problems.push(`${id}: 已从 deals.json 消失，但日志里没有对应的 ended 事件`);
-  }
-
-  for (const id of knownIds) {
-    const list = perDeal.get(id) || [];
-    const baseFields = (doc.baseline && doc.baseline.fields && doc.baseline.fields[id]) || {};
-    const hasCreated = list.some(event => event.type === 'created');
-    const deal = (deals || []).find(item => item && item.id === id);
-    if (!deal) continue; // 不在数据集里的由上一段负责
-    if (!hasCreated && Object.keys(baseFields).length === 0) {
-      problems.push(`${id}: 记录没有历史锚点（既不在基线里，也没有 created 事件）`);
-      continue;
-    }
-    // ③ 与当前状态一致（记录仍在数据集里就必须逐字段对上，`ended` 只表示来源不再列出）
-    const fieldState = new Map();
-    for (const field of TRACKED_FIELDS) {
-      fieldState.set(field, Object.prototype.hasOwnProperty.call(baseFields, field) ? baseFields[field] : null);
-    }
-    for (const event of list) {
-      if (event.type === 'created') {
-        for (const field of TRACKED_FIELDS) {
-          const snapshot = event.fields || {};
-          fieldState.set(field, Object.prototype.hasOwnProperty.call(snapshot, field) ? snapshot[field] : null);
-        }
-      } else if (event.type === 'ended' || event.type === 'restored') {
-        continue;
-      } else {
-        fieldState.set(event.field, event.to === undefined ? null : event.to);
-      }
-    }
-    for (const field of TRACKED_FIELDS) {
-      const expected = normValue(deal[field]);
-      const actual = fieldState.has(field) ? fieldState.get(field) : null;
-      if (!sameValue(expected, actual)) {
-        problems.push(`${id} · ${eventFieldLabel(field)}: 现状与历史不一致（文件 ${short(expected)} / 日志 ${short(actual)}）`);
-      }
-    }
-  }
-
-  // 每条当前记录都必须有锚点（基线 / created）——否则历史对它是空的，
-  // 而页面会把它渲染成「暂无变更记录」，等于用「没记录」冒充「没变化」。
-  for (const deal of deals || []) {
-    if (!deal || !deal.id) continue;
-    if (!knownIds.has(deal.id)) {
-      problems.push(`${deal.id}: 记录没有历史锚点（既不在基线里，也没有 created 事件）`);
-    }
-  }
-
-  // ④ 上限
-  if (events.length > LIMITS.eventsTotal) problems.push(`事件总数 ${events.length} 超过上限 ${LIMITS.eventsTotal}（不自动截断，需人工处置）`);
-  for (const [id, list] of perDeal) {
-    if (list.length > LIMITS.eventsPerDeal) problems.push(`${id}: 事件 ${list.length} 条超过单条上限 ${LIMITS.eventsPerDeal}`);
-  }
-  if (Number.isFinite(bytes) && bytes > LIMITS.fileBytes) {
-    problems.push(`历史文件 ${bytes} 字节超过上限 ${LIMITS.fileBytes}`);
-  }
-  return problems;
-}
-
-function short(value) {
-  const text = typeof value === 'string' ? value : JSON.stringify(value);
-  if (text === undefined) return 'null';
-  return text.length > 40 ? `${text.slice(0, 37)}…` : text;
-}
-
-function eventFieldLabel(field) {
-  return HISTORY_WORDING.HISTORY_FIELD_LABELS[field] || field;
+function verifyStore(store, deals, opts = {}) {
+  return core.verifyStore(store, deals, PROFILE, opts);
 }
 
 /* ------------------------------------------------------------------ */
 /* 渲染视图（构建期注入 dist）                                          */
 /* ------------------------------------------------------------------ */
 
-/**
- * 一条记录的有界历史视图，供 RENDER-CORE 渲染。
- * **只进 dist**：源 `deals.json` 里没有这个字段（`validateDeal` 的白名单会拒）。
- *
- * @returns {object|null} 无任何事件时返回 null（页面说「暂无变更记录」，不注入空对象）
- */
-function historyFor(store, id, { limit = RENDER_LIMIT } = {}) {
-  const events = eventsOf(store).filter(event => event.id === id);
-  if (!events.length) return null;
-  const total = events.length;
-  const shown = events.slice(-limit).map(event => ({
-    at: event.at,
-    type: event.type,
-    field: event.field === undefined ? null : event.field,
-    from: 'from' in event ? event.from : undefined,
-    to: 'to' in event ? event.to : undefined,
-    reason: event.reason,
-    origin: event.origin
-  }));
-  return { startedAt: store.startedAt, total, shown: shown.length, events: shown };
+/** 一条记录的有界历史视图，供 RENDER-CORE 渲染。**只进 dist**：源数据里没有这个字段。 */
+function historyFor(store, id, opts = {}) {
+  return core.historyFor(store, id, PROFILE, opts);
 }
 
 /** 把有界历史挂到每条记录上（构建期用；返回新数组，不改入参） */
@@ -876,26 +537,13 @@ function attachToDeals(deals, store, opts = {}) {
 /* ------------------------------------------------------------------ */
 
 function summarize(store, deals) {
-  const events = eventsOf(store);
-  const byType = {};
-  for (const type of EVENT_TYPES) byType[type] = 0;
-  for (const event of events) byType[event.type] = (byType[event.type] || 0) + 1;
-  const ids = new Set(events.map(event => event.id));
-  const withHistory = (deals || []).filter(deal => deal && ids.has(deal.id)).length;
-  return {
-    startedAt: store && store.startedAt ? store.startedAt : null,
-    baselineRecords: Object.keys((store && store.baseline && store.baseline.fields) || {}).length,
-    events: events.length,
-    byType,
-    recordsWithHistory: withHistory,
-    absenceTracked: Object.keys((store && store.absence) || {}).length,
-    bytes: Buffer.byteLength(`${JSON.stringify(store, null, 2)}\n`, 'utf8')
-  };
+  return core.summarize(store, deals, PROFILE);
 }
 
 module.exports = {
   HISTORY_FILE,
   SCHEMA_VERSION,
+  PROFILE,
   FIELD_EVENT,
   TRACKED_FIELDS,
   UNTRACKED_FIELDS,
@@ -926,7 +574,7 @@ module.exports = {
   eventsOf,
   // v1.6 订阅层用：变化条目的稳定 id 直接取这把「事件身份」尺子（lib/feeds.js 的 eventFeedId），
   // 不另写一套唯一性判据 —— 同一件事只允许有一种身份定义。
-  eventKey,
+  eventKey: event => core.eventKey(event, PROFILE),
   verifyStore,
   historyFor,
   attachToDeals,

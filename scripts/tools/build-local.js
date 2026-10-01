@@ -37,6 +37,8 @@ const secretScan = require('../lib/secret-scan');
 // 因为它必须能被离线自测直接调用 —— 这个文件一 require 就跑整条构建链。
 const plansPage = require('../lib/plans-page');
 const planSchema = require('../lib/plan-schema');
+const planHistory = require('../lib/plan-history');
+const planChanges = require('../lib/plan-changes');
 const providers = require('../lib/providers');
 
 /**
@@ -79,7 +81,7 @@ function showOut(dir) {
  */
 const PUBLIC_FILES = ['index.html', 'deals.json', 'plans.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
 /** 构建期生成、不走源码拷贝的产物 */
-const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json', 'deal-history.json'];
+const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json', 'deal-history.json', 'plan-history.json'];
 // 站点常量与 XML 转义的**唯一出处**是 lib/feeds.js（v1.6 起订阅层也要用它们）。
 const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = feeds;
 
@@ -1038,8 +1040,25 @@ function renderChangesPage(radar, indexHtml, renderCore, context = {}) {
 ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 </script>`).join('\n');
 
-  const body = renderCore.changesPageHtml(radar, '../')
-    .split('\n').map(line => `      ${line}`).join('\n');
+  const dealsBody = renderCore.changesPageHtml(radar, '../')
+    .split('\n').map(line => `        ${line}`).join('\n');
+  // v2.3：套餐变化。**不新做一页**：这一页本来就是「最近发生了什么变化」的落点，
+  // 顶部加一行锚点导航把两块分开，block 由 `plans-page.js` 渲染（与套餐页共用同一句话）。
+  const planBlock = context.planChanges
+    ? plansPage.planChangesPageBlockHtml(context.planChanges, { prefix: '../', providerTable: context.providerTable || null })
+      .split('\n').map(line => `      ${line}`).join('\n')
+    : '';
+  const jumpNav = `      <nav class="chgjump" aria-label="变化分区">
+        <a href="#deals">优惠变化</a>
+        <span aria-hidden="true">·</span>
+        <a href="#plans">套餐变化</a>
+      </nav>
+`;
+  const body = `${jumpNav}      <section class="chgdeals" id="deals" aria-label="优惠变化">
+${dealsBody}
+      </section>
+
+${planBlock}`;
 
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -1085,6 +1104,21 @@ ${style}
   .chgother > summary { cursor: pointer; font-size: 14px; font-weight: 600; color: var(--ink2); }
   .chgother > summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
   .chgother[open] > summary { margin-bottom: var(--s3); }
+  /* v2.3：套餐变化块（与 /plans/coding/ 的最近变化块共用同一套行样式）。 */
+  .chgjump { display: flex; gap: var(--s2); align-items: baseline; margin: 0 0 var(--s3); font-size: var(--fs-sm); }
+  .chgjump a { color: var(--brand); text-decoration: none; border-bottom: 1px dotted var(--line); }
+  .chgsub { margin: var(--s3) 0 0; }
+  .chgsub h3 { font-size: 13.5px; margin: 0 0 var(--s1); color: var(--ink2); }
+  .pchglist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .pchglist li { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; font-size: var(--fs-sm); }
+  .pchgwhen { color: var(--mut); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pchgwho { color: var(--ink); text-decoration: none; }
+  a.pchgwho { border-bottom: 1px dotted var(--line); }
+  .pchgtype { color: var(--deal-ink); background: var(--dealsoft); border-radius: var(--r-sm); padding: 0 var(--s1); }
+  .pchgwhat { color: var(--ink); }
+  .pchgorigin { color: var(--mut); }
+  .pchnone { color: var(--mut); font-size: var(--fs-sm); margin: 0; }
+  .chgsec.pchanges { margin-top: var(--s4); }
   @media (max-width: 760px) {
     .chgi { padding: 9px 10px; }
     .chgh { gap: 2px var(--s2); }
@@ -1155,6 +1189,11 @@ function renderPlansPage(planStore, indexHtml, context = {}) {
     prefix
   ).trim();
 
+  // v2.3：这一页**有专属订阅源**（套餐变化），必须声明它 —— 与根 Feed 并列，
+  // 而不是替换：读者既可以订全站优惠，也可以只订套餐变化。
+  const planFeed = (context.allFeeds || []).find(feed => feed.spec && feed.spec.id === feeds.PLAN_CHANGE_FEED.id)
+    || { spec: feeds.PLAN_CHANGE_FEED };
+
   const pageUrl = `${SITE_URL}${plansPage.PLANS_ROUTE}`;
   const plans = planStore.plans || [];
   const providerTable = context.providerTable || null;
@@ -1165,7 +1204,12 @@ function renderPlansPage(planStore, indexHtml, context = {}) {
 ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 </script>`).join('\n');
 
-  const body = plansPage.plansPageBody(plans, { providerTable });
+  const body = plansPage.plansPageBody(plans, {
+    providerTable,
+    planChanges: context.planChanges || null,
+    planHistoryStore: context.planHistoryStore || null,
+    prefix
+  });
 
   const css = `
   /* v2.2：筛选 / 搜索 / 排序 / 行内展开。
@@ -1202,6 +1246,20 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
   .pevfield { color: var(--mut); }
   .pev q { display: block; margin: 2px 0; }
   .pev small { color: var(--mut); }
+  /* v2.3：最近变化块与详情里的时间线。只用首页已有的设计变量，不新建视觉语言。
+     块本身是纯静态内容（无控件），因此无 JS 时同样可读 —— 这是这一页「无 JS 可读」的延续。 */
+  .pchanges { margin: 0 0 var(--s3); border: 1px solid var(--line); border-radius: var(--r); padding: var(--s3); background: var(--card); }
+  .pchanges .ph2 { margin: 0 0 var(--s2); }
+  .pchglist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .pchglist li { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; font-size: var(--fs-sm); }
+  .pchgwhen { color: var(--mut); font-variant-numeric: tabular-nums; }
+  .pchgwho { color: var(--ink); text-decoration: none; }
+  a.pchgwho { border-bottom: 1px dotted var(--line); }
+  .pchgtype { color: var(--brand); }
+  .pchgwhat { color: var(--ink); }
+  .pchgorigin { color: var(--mut); }
+  .pchnone, .pchnote { color: var(--mut); font-size: var(--fs-sm); margin: var(--s1) 0 0; }
+  .pchgtl { margin-top: 2px; }
   /* 窄屏：横滚 + 前两列固定（只有一张表、一套数据模板）。
      第一列给**确定宽度**，第二列的 left 才有确定的落点；两列用不透明底色，否则会透出滑过的单元格。
      ⚠️ .ptable 自带 overflow: hidden（桌面端圆角裁剪用的），它会成为**最近的可滚动祖先**，
@@ -1245,9 +1303,10 @@ ${plansCompareSource()}
 <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
-<!-- feed 约定：这一页自己不产出条目（订阅是「内容更新」语义，套餐表不是更新），
-     但必须能被订阅发现 —— 与首页、状态页、变化页声明同两个根 Feed。 -->
+<!-- feed 约定：与首页、状态页、变化页声明同两个根 Feed；v2.3 起另加**本页专属的
+     套餐变化源**（这一页不产出优惠条目，但它自己确实有一条变化流）。 -->
 ${feeds.rootFeedTags(prefix)}
+${feeds.feedLinkTags([planFeed], prefix)}
 ${themeScript}
 ${style}
 <style>
@@ -1381,6 +1440,13 @@ function renderFeedsPage(feedList, indexHtml, context = {}) {
       note: null
     },
     {
+      // v2.3：套餐变化是**另一份数据**（plans），所以单独一组，而不是塞进「全部与变化」。
+      key: 'plans', label: '套餐',
+      ids: [feeds.PLAN_CHANGE_FEED.id],
+      note: '套餐变化来自人工逐条核对官方页后重建的套餐数据（plans.json），'
+        + '与优惠（deals）是两份互不注入的数据；每条变化都能在<a href="../plans/coding/">套餐对比页</a>找到落点。'
+    },
+    {
       key: 'student', label: '学生',
       ids: ['student', 'china'],
       note: '按「我是谁」和「能不能在大陆用上」切；判据与 /student/、/need/china-usable/ 两页<b>同一份</b>。'
@@ -1399,8 +1465,15 @@ function renderFeedsPage(feedList, indexHtml, context = {}) {
     const json = SITE_URL + spec.jsonPath;
     const latest = feed.items.length ? (feed.items[0].dateModified || feed.items[0].datePublished) : null;
     const empty = feed.items.length === 0;
+    const changeKind = spec.kind === 'changes' || spec.kind === 'plan-changes';
+    const sinceLabels = spec.kind === 'plan-changes'
+      ? planChanges.PLAN_CHANGES_WORDING.PLAN_CHANGES_LABELS
+      : changes.CHANGES_WORDING.CHANGES_LABELS;
+    const sinceDate = spec.kind === 'plan-changes'
+      ? (context.planStartedAt || context.asOf || '未知')
+      : (context.startedAt || context.asOf || '未知');
     const countText = empty
-      ? `0 条${spec.kind === 'changes' ? `（${changes.CHANGES_WORDING.CHANGES_LABELS.since.replace('{date}', context.startedAt || context.asOf || '未知')}）` : ''}`
+      ? `0 条${changeKind ? `（${sinceLabels.since.replace('{date}', sinceDate)}）` : ''}`
       : `${feed.items.length} 条${latest ? ` · 最近一条 ${latest}` : ''}`;
     const pageLink = spec.pageRoute
       ? `<a href="../${spec.pageRoute}">看这一页</a> · `
@@ -1429,6 +1502,13 @@ ${rows.map(rowHtml).join('\n')}
     ? `<p class="snote">最近变化与最近新增现在是空的：本站的变更记录自 ${htmlEscape(context.startedAt || context.asOf || '未知')} 起算，此前没有历史。` +
       `空订阅是<b>事实</b>，不是故障 —— 一旦有新增或重要变化，它们会出现在这里。` +
       `${context.availability !== 'ok' ? '（本次构建没有拿到变更日志，因此无法确认有没有变化。）' : ''}</p>`
+    : '';
+  // v2.3：套餐变化源的空态**单独说**（它的起算日与可用性是另一份数据，不能拿 deals 的话顶上）
+  const emptyPlanFeed = feedList.filter(feed => feed.spec.kind === 'plan-changes' && !feed.items.length);
+  const emptyPlanNote = emptyPlanFeed.length
+    ? `<p class="snote">套餐变化现在是空的：这套变更记录自 ${htmlEscape(context.planStartedAt || context.asOf || '未知')} 起算，` +
+      `此前只沉淀了一份「既有状态」基线（它不是创建事件）。空订阅是<b>事实</b>，不是故障。` +
+      `${context.planAvailability !== 'ok' ? '（本次构建没有拿到套餐变更日志，因此无法确认有没有变化。）' : ''}</p>`
     : '';
   const vendorNote = vendorFeeds.length
     ? `<p class="snote">厂商订阅只给「当前收录的优惠 ≥ ${feeds.VENDOR_THRESHOLDS.minDeals} 条」或「历史变更事件 ≥ ${feeds.VENDOR_THRESHOLDS.minEvents} 条」的厂商生成：` +
@@ -1503,6 +1583,7 @@ ${jsonLdBlocks}
       <p class="snote">把下面的地址粘进任意 RSS / JSON Feed 阅读器即可订阅。本站没有账号、没有邮件列表、没有推送服务，
         也不会记录谁订阅了哪一份 —— 这些就是一个静态文件，和打开任何一个网页没有区别。</p>
       ${emptyNote}
+      ${emptyPlanNote}
 ${groupHtml}
     <section class="fsec">
       <h2>厂商订阅</h2>
@@ -2126,6 +2207,44 @@ function assemble() {
       `${row.detail ? ` · ${row.detail}` : ''}`);
   }
 
+  // ---- v2.3：套餐数据 + 套餐变化日志（在 feeds / 页面之前准备，三处共用同一份 radar）----
+  //
+  // 套餐对比页（/plans/coding/，v2.1 第二段）**始终生成**：
+  // 它回答的是「长期用什么套餐」，条数为 0 也只说明我们还没收录，而不是这一页没有价值。
+  // 数据非法会被这里拦下（与 validate.js 同一把尺子，不重写判据）：宁可不发布，
+  // 也不要把一份自相矛盾的套餐表发出去 —— 读者无法从页面上看出哪一格是错的。
+  const plansStore = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8'));
+  const providerTable = providers.load().table;
+  {
+    const result = planSchema.validatePlansStore(plansStore, { providerTable });
+    if (!result.ok) {
+      throw new Error(`plans.json 未通过数据集级校验（${result.errors.length} 项）：\n  - ${result.errors.slice(0, 5).join('\n  - ')}`);
+    }
+    const dataProblems = plansPage.assertDataHonesty(plansStore.plans);
+    if (dataProblems.length) {
+      throw new Error(`套餐数据里出现结论性词汇（${dataProblems.length} 处）：\n  - ${dataProblems.slice(0, 5).join('\n  - ')}`);
+    }
+  }
+  // 套餐变化日志与 deals 的历史层同一套纪律：
+  //   · 真值是 `scripts/data/plan-history.json`，构建期**只读**，另发一份逐字节相同的产物；
+  //   · 缺文件/损坏时照常出页，但页面必须说「没有拿到日志」（而不是「没有变化」）；
+  //   · 变化文本由 `plan-changes.js` 判据 + `plans-page.js` 的同一句话渲染，不在这里另写一套。
+  const planHistoryLoad = planHistory.load();
+  const planHistoryAvailability = planHistoryLoad.missing || planHistoryLoad.broken ? 'unavailable' : 'ok';
+  if (planHistoryAvailability !== 'ok') {
+    console.warn(`    ⚠️  套餐变化日志不可用（${planHistoryLoad.broken || '文件缺失'}）——本次产物里没有套餐变更记录，check:plan-history 会报错`);
+  } else {
+    fs.writeFileSync(path.join(OUT, 'plan-history.json'), `${JSON.stringify(planHistoryLoad.store, null, 2)}\n`, 'utf8');
+  }
+  const planRadar = planChanges.buildPlanRadar({
+    plans: plansStore.plans,
+    store: planHistoryAvailability === 'ok' ? planHistoryLoad.store : null,
+    asOf: String(plansStore.updatedAt || '').slice(0, 10),
+    availability: planHistoryAvailability
+  });
+  const planRadarStats = planChanges.summarize(planRadar);
+  const planHistoryStore = planHistoryAvailability === 'ok' ? planHistoryLoad.store : null;
+
   const feedBundle = feeds.buildFeeds({
     deals: payload.deals,
     store: historyStore.store,
@@ -2133,7 +2252,11 @@ function assemble() {
     asOf: radarAsOf,
     updatedAt: payload.updatedAt,
     availability: radarAvailability,
-    vendorKeyOf: VENDOR_KEY_OF
+    vendorKeyOf: VENDOR_KEY_OF,
+    planRadar,
+    planAvailability: planHistoryAvailability,
+    plans: plansStore.plans,
+    providerTable
   });
 
   fs.writeFileSync(path.join(OUT, 'deals.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
@@ -2299,48 +2422,57 @@ function assemble() {
   // 它**始终生成**（与「条数为 0 的按需求页不生成」不同）：这一页的价值恰恰在于
   // 「今天有没有变化」这个问题本身，而「没有变化」与「我们没查」是两种必须能读到的答案。
   // 日志不可用时也照常出页 —— 路由凭空消失比一页说明更糟。
+  //
+  // v2.3：这一页同时列出**套餐变化**（同一份 planRadar），顶部多一行锚点导航。
   const changesDir = path.join(OUT, 'changes');
   fs.mkdirSync(changesDir, { recursive: true });
   fs.writeFileSync(path.join(changesDir, 'index.html'), renderChangesPage(radar, html, renderCore, {
     // 这一页订阅「变化」本身：声明变化 Feed 而不是全量 Feed（v1.5 报告 §九-5 的遗留项）。
+    // v2.3：这一页同时列出**套餐变化**，所以那一份订阅也在这里声明（两者是两条独立的变化流）。
     changeFeedTags: feeds.feedLinkTags(
-      feedBundle.feeds.filter(feed => feed.spec.kind === 'changes' && feed.spec.id === 'changes'), '../')
+      feedBundle.feeds.filter(feed => (feed.spec.kind === 'changes' && feed.spec.id === 'changes')
+        || feed.spec.kind === 'plan-changes'), '../'),
+    planChanges: planRadar,
+    planHistoryStore,
+    providerTable
   }), 'utf8');
   console.log(`  变化雷达页: /changes/（基准日 ${radar.asOf || '未知'} · 高价值 ${changes.SECTION_ORDER
-    .reduce((sum, key) => sum + (Number(radar.totals[key]) || 0), 0)} 条 · 其他 ${radar.totals.other} 条）`);
+    .reduce((sum, key) => sum + (Number(radar.totals[key]) || 0), 0)} 条 · 其他 ${radar.totals.other} 条` +
+    ` · 套餐变化 ${planRadarStats.totals.changed + planRadarStats.totals.created + planRadarStats.totals.ended + planRadarStats.totals.restored} 条）`);
 
-  // 套餐对比页（/plans/coding/，v2.1 第二段）——同样**始终生成**。
-  //
-  // 它为什么不能像「零条目的按需求页」那样跳过：这一页回答的是「长期用什么套餐」，
-  // 条数为 0 也只说明我们还没收录，而不是这一页没有价值；路由凭空消失更糟。
-  // 数据非法会被这里拦下（与 validate.js 同一把尺子，不重写判据）：宁可不发布，
-  // 也不要把一份自相矛盾的套餐表发出去 —— 读者无法从页面上看出哪一格是错的。
-  const plansStore = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8'));
-  const providerTable = providers.load().table;
-  {
-    const result = planSchema.validatePlansStore(plansStore, { providerTable });
-    if (!result.ok) {
-      throw new Error(`plans.json 未通过数据集级校验（${result.errors.length} 项）：\n  - ${result.errors.slice(0, 5).join('\n  - ')}`);
-    }
-    const dataProblems = plansPage.assertDataHonesty(plansStore.plans);
-    if (dataProblems.length) {
-      throw new Error(`套餐数据里出现结论性词汇（${dataProblems.length} 处）：\n  - ${dataProblems.slice(0, 5).join('\n  - ')}`);
-    }
-  }
   const plansDir = path.join(OUT, 'plans', 'coding');
   fs.mkdirSync(plansDir, { recursive: true });
-  const plansHtml = renderPlansPage(plansStore, html, { providerTable });
+
+  const plansHtml = renderPlansPage(plansStore, html, {
+    providerTable,
+    planChanges: planRadar,
+    planHistoryStore,
+    allFeeds: feedBundle.feeds
+  });
   fs.writeFileSync(path.join(plansDir, 'index.html'), plansHtml, 'utf8');
   {
-    const pageProblems = plansPage.assertPageHonesty(plansHtml, plansStore.plans, { providerTable });
+    const pageProblems = plansPage.assertPageHonesty(plansHtml, plansStore.plans, {
+      providerTable, planChanges: planRadar, planHistoryStore
+    });
     if (pageProblems.length) {
       throw new Error(`套餐对比页的诚实性断言未通过（${pageProblems.length} 处）：\n  - ${pageProblems.slice(0, 5).join('\n  - ')}`);
+    }
+  }
+  {
+    const historyProblems = planHistoryStore
+      ? plansPage.assertHistoryHonesty(plansStore.plans, planHistoryStore)
+      : [];
+    if (historyProblems.length) {
+      throw new Error(`套餐变化数据里出现结论性词汇（${historyProblems.length} 处）：\n  - ${historyProblems.slice(0, 5).join('\n  - ')}`);
     }
   }
   const plansComputable = plansStore.plans
     .filter(plan => planSchema.deriveMetrics(plan)).length;
   console.log(`  套餐对比页: /plans/coding/（${plansStore.count} 条 · ${new Set(plansStore.plans.map(p => p.provider)).size} 个平台` +
     ` · 名义 Token 单价可计算 ${plansComputable} 条 · 页面 ${(plansHtml.length / 1024).toFixed(1)} KB）`);
+  console.log(`  套餐变化: ${planHistoryAvailability === 'ok' ? '可用' : '不可用（无变化日志）'} · 基准日 ${planRadar.asOf || '未知'}` +
+    ` · 今日新增 ${planRadarStats.totals.created} · 最近 ${planRadarStats.totals.changed} · 不再收录 ${planRadarStats.totals.ended}` +
+    ` · 重新出现 ${planRadarStats.totals.restored} · 元信息（不上块 / 不进订阅）${planRadarStats.totals.meta} · 最近变化块 ${planRadarStats.homeCount} 项`);
 
   const dealUrls = detailPages.map(page => `  <url>
     <loc>${page.url}</loc>
@@ -2461,7 +2593,9 @@ ${dealUrls}
         lastmod,
         asOf: radarAsOf,
         availability: radarAvailability,
-        startedAt: historyStats ? historyStats.startedAt : null
+        startedAt: historyStats ? historyStats.startedAt : null,
+        planAvailability: planHistoryAvailability,
+        planStartedAt: planRadar.startedAt
       }), 'utf8');
     console.log(`  订阅中心: /feeds/（${feedStats.count} 个 Feed，RSS + JSON Feed 各一份）`);
   }
@@ -2507,6 +2641,10 @@ ${dealUrls}
     radar,
     radarStats,
     radarAsOf,
+    // v2.3：套餐变化视图同样交给自检回读对账（页面块 ↔ 日志 ↔ 订阅源三方）
+    planRadar,
+    planRadarStats,
+    planHistoryAvailability,
     // v1.6：订阅层交给自检做**回读对账**（内存条目 ↔ RSS 回读 ↔ JSON 回读 + 语义不变量）。
     // 判据不重算：validate() 用的就是构建期这一份 feedBundle。
     feedBundle,
@@ -2587,6 +2725,20 @@ function selfCheck(built) {
       else console.log(`  ✓ plans.json: 与源文件逐字节相同（${(b.length / 1024).toFixed(1)} KB）`);
     }
 
+    // v2.3：套餐变化日志同样**逐字节**发布（读者能下载到的那一份必须与真值一致）。
+    {
+      const publishedHistory = path.join(OUT, 'plan-history.json');
+      const sourceHistory = path.join(ROOT, 'scripts', 'data', 'plan-history.json');
+      if (!fs.existsSync(publishedHistory)) fail('缺少 plan-history.json（v2.3 起它进产物）');
+      else if (!fs.existsSync(sourceHistory)) fail('缺少源 scripts/data/plan-history.json');
+      else {
+        const a = fs.readFileSync(sourceHistory, 'utf8');
+        const b = fs.readFileSync(publishedHistory, 'utf8');
+        if (a !== b) fail('dist/plan-history.json 与源脚本的日志不是逐字节相同');
+        else console.log(`  ✓ plan-history.json: 与源日志逐字节相同（${(b.length / 1024).toFixed(1)} KB）`);
+      }
+    }
+
     // 套餐对比页：**从磁盘回读**再跑一遍诚实性断言。
     //
     // 为什么不在写盘时信一次就够了：那个断言看的是内存里的字符串，
@@ -2601,8 +2753,20 @@ function selfCheck(built) {
       const diskTable = providers.load().table;
       const diskHtml = fs.readFileSync(plansPageFile, 'utf8');
       const pageProblems = [
-        ...plansPage.assertPageHonesty(diskHtml, diskPlans.plans, { providerTable: diskTable }),
-        ...plansPage.assertDataHonesty(diskPlans.plans)
+        ...plansPage.assertPageHonesty(diskHtml, diskPlans.plans, {
+          providerTable: diskTable,
+          // v2.3：从磁盘回读时同样带上变化视图与日志 —— 最近变化块与详情时间线
+          // 是这一页新增的事实面，不给它们断言等于「盘上少了也看不出来」。
+          planChanges: built.planRadar,
+          planHistoryStore: fs.existsSync(path.join(OUT, 'plan-history.json'))
+            ? JSON.parse(fs.readFileSync(path.join(OUT, 'plan-history.json'), 'utf8'))
+            : null
+        }),
+        ...plansPage.assertDataHonesty(diskPlans.plans),
+        ...(fs.existsSync(path.join(OUT, 'plan-history.json'))
+          ? plansPage.assertHistoryHonesty(diskPlans.plans,
+            JSON.parse(fs.readFileSync(path.join(OUT, 'plan-history.json'), 'utf8')))
+          : [])
       ];
       // 交互逻辑**逐字节**内联：页面上跑的那一份与 `lib/plans-compare.js` 必须是同一份字节。
       // 少了这一条，将来把内联改成"精简版"也不会有人发现 —— 而那时浏览器与自测就是两套语义了。
@@ -3047,6 +3211,47 @@ function selfCheck(built) {
       if (text.length < floor) problems.push(`changes/ 预渲染正文过短（${text.length} 字 < ${floor}）`);
       // 其它变化必须**显式列出**（不是悄悄丢掉）
       if (radar.totals.other > 0 && !noScript.includes('class="chgother"')) problems.push('有其他变化却没有列出折叠块');
+
+      // ---- v2.3：套餐变化块（同一页的第二个事实面）---------------------------------
+      //
+      // 三条：① 锚点导航与 #plans / #deals 落点都在；② 四栏标题与条数来自套餐雷达
+      // （权威表是 `plan-changes.js`）；③ 块里列出的变化条数 == 雷达条数（不许少一条）。
+      const planW = planChanges.PLAN_CHANGES_WORDING;
+      if (!page.includes('class="chgjump"')) problems.push('changes/ 缺少「优惠变化 / 套餐变化」锚点导航');
+      if (!page.includes('id="deals"') || !page.includes('id="plans"')) problems.push('changes/ 的锚点导航没有落点（#deals / #plans）');
+      if (!page.includes(`href="../feed/plans/coding/changes.xml"`)) {
+        problems.push('changes/ 没有声明套餐变化订阅源');
+      }
+      if (!noScript.includes(planW.PLAN_CHANGES_LABELS.sectionTitle)) problems.push('changes/ 缺少「套餐变化」分栏标题');
+      const planBlock = (noScript.match(/<section class="chgsec pchanges" id="plans">[\s\S]*?<\/section>/) || [])[0] || '';
+      if (!planBlock) problems.push('changes/ 缺少套餐变化块');
+      else {
+        for (const key of planChanges.PLAN_CHANGES_SECTION_ORDER) {
+          const heading = planW.PLAN_CHANGES_SECTION[key] + '（' + (Number(built.planRadar.totals[key]) || 0) + '）';
+          if (!planBlock.includes(heading)) problems.push(`套餐变化块缺少分栏标题「${heading}」`);
+        }
+        const listed = (planBlock.match(/<li>/g) || []).length;
+        const expected = planChanges.PLAN_CHANGES_SECTION_ORDER
+          .reduce((sum, key) => sum + built.planRadar.sections[key].items.length, 0);
+        if (listed !== expected) problems.push(`套餐变化块列出 ${listed} 条 ≠ 雷达 ${expected} 条`);
+        // 句子要用与渲染层同一份上下文（币种 / 额度单位从套餐记录里取），否则会写出「20 → 10」
+        const planSentenceOpts = {
+          plansById: new Map(JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8')).plans.map(p => [p.id, p])),
+          providerTable: providers.load().table
+        };
+        for (const item of planChanges.itemsOf(built.planRadar)) {
+          const sentence = plansPage.escapeHtml(plansPage.planChangeTextOf(item, planSentenceOpts));
+          if (!planBlock.includes(sentence)) problems.push(`套餐变化块缺少一条变化：「${sentence}」`);
+        }
+        if (built.planRadar.availability !== 'ok' && !planBlock.includes(planW.PLAN_CHANGES_LABELS.unavailable)) {
+          problems.push('套餐变化日志不可用时没有说清「没有拿到日志」');
+        }
+        // 深链锚点：每一条套餐变化都要能落到套餐对比页的那一行上
+        const plansPageHtml = fs.readFileSync(path.join(OUT, plansPage.PLANS_ROUTE, 'index.html'), 'utf8');
+        const anchors = [...planBlock.matchAll(/href="#plan-([0-9a-f]{12})"/g)].map(m => m[1]);
+        const dangling = anchors.filter(id => !plansPageHtml.includes(`id="plan-${id}"`));
+        if (dangling.length) problems.push(`套餐变化块里有 ${dangling.length} 条锚点没有落点（如 ${dangling[0]}）`);
+      }
     }
 
     // ④ 措辞同源：前端那份受控副本与 lib/changes.js 的权威表逐项比对
@@ -3732,10 +3937,33 @@ function selfCheck(built) {
       pages: built.pageRoutes,
       asOf: built.radarAsOf,
       availability: built.radar.availability,
+      // v2.3：套餐变化源的对账材料（事件身份来自**产物那份** plan-history.json）
+      planEvents: fs.existsSync(path.join(OUT, 'plan-history.json'))
+        ? JSON.parse(fs.readFileSync(path.join(OUT, 'plan-history.json'), 'utf8')).events
+        : [],
+      planAvailability: built.planRadar ? built.planRadar.availability : 'unavailable',
       // 厂商归属必须与页面/Feed 构建时用的是**同一个**规范名取值器，
       // 否则「扣子 Coze（字节跳动）」这类写法会被判成「不属于该厂商」。
       vendorKeyOf: VENDOR_KEY_OF
     });
+
+    // v2.3：套餐变化条目的深链锚点必须**真的在页面上**（`#plan-<id>`）。
+    // 反过来说，删掉某一行的 id 属性会让这里当场变红 —— 那是订阅里最典型的死链。
+    {
+      const planFeed = built.feedBundle.feeds.find(feed => feed.spec.kind === 'plan-changes');
+      const pageFile = path.join(OUT, plansPage.PLANS_ROUTE, 'index.html');
+      if (planFeed && fs.existsSync(pageFile)) {
+        const pageHtml = fs.readFileSync(pageFile, 'utf8');
+        const dangling = planFeed.items
+          .map(item => `#plan-${item.planId}`)
+          .filter(anchor => !pageHtml.includes(`id="${anchor.slice(1)}"`));
+        if (dangling.length) {
+          fail(`套餐变化订阅里有 ${dangling.length} 条深链没有落点（如 ${dangling[0]}）`);
+        } else if (planFeed.items.length) {
+          console.log(`  ✓ 套餐变化订阅: ${planFeed.items.length} 条条目，深链锚点全部落在套餐对比页上`);
+        }
+      }
+    }
     // 文件真的落盘了吗（含子目录）——存在的清单以注册表为准，不写死文件名
     const missingFiles = [];
     for (const feed of built.feedBundle.feeds) {
@@ -3926,6 +4154,8 @@ function selfCheck(built) {
         kind: 'plans',
         expectItemList: true,
         checkItemListMembers: false,
+        // v2.3：这一页有专属的套餐变化源，必须声明它（与根 Feed 并列）
+        feedMatch: [feeds.PLAN_CHANGE_FEED.id],
         count: JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8')).count
       })
     ].filter(Boolean);

@@ -315,6 +315,9 @@ id = sha1(`${kind}|${provider}|${planNameKey}|${billing.period}`).slice(0, 12)  
 **已知限制**：`billing.period` 进 basis ⇒ 同一套餐从月付改年付会被视作两个身份。
 Phase 2.3 做变化追踪时若遇到这种情况，必须**显式决策**（按 `ended + created` 记，或另立关系），
 不能让它变成两件没人注意到的孤立记录。
+> **Phase 2.3 已落地（2026-10-01）**：按 `ended(reason='period_changed')` + `created(supersedes: <旧 id>)`
+> 处置 —— 同一次运行里出现同 `(kind, provider, planNameKey)`、`billing.period` 不同的记录时**立即**记结束，
+> 不等缺席确认。契约见 [`SCHEMA-v2.3.md`](SCHEMA-v2.3.md) §8 R4。
 
 ---
 

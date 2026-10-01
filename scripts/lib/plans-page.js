@@ -27,6 +27,13 @@ const providersLib = require('./providers');
  * 和 `require` 进自测（离线牙的那一份）—— 一份实现两个宿主，见该文件头部注释。
  */
 const plansCompare = require('./plans-compare');
+/**
+ * v2.3：套餐变化。**判据在 `lib/plan-changes.js`（纯函数）**，这里只排版与写句子 ——
+ * 同一句话在 `/plans/coding/` 的「最近变化」、行内时间线、`/changes/` 的分栏与订阅源上
+ * 必须是同一句，所以句子只能有一处实现（`planChangeText()`）。
+ */
+const planHistory = require('./plan-history');
+const planChanges = require('./plan-changes');
 
 const PLANS_ROUTE = 'plans/coding/';
 /**
@@ -386,6 +393,9 @@ function comparePayloadScriptHtml(payload) {
  * 撑不起 9 张独立页面（6 条连模型清单都没有）。详情只做**溯源**，不复述表格。
  */
 function planDetailTemplatesHtml(plans, opts = {}) {
+  const historyStore = opts.planHistoryStore || null;
+  const plansById = new Map((plans || []).map(plan => [plan.id, plan]));
+  const changeOpts = { providerTable: opts.providerTable || null, plansById };
   return (plans || []).map(plan => {
     const official = plan.officialUrl
       ? `<a href="${escapeHtml(plan.officialUrl)}" rel="noopener">官方定价页 ↗</a>` : '';
@@ -399,6 +409,18 @@ function planDetailTemplatesHtml(plans, opts = {}) {
             <small><a href="${escapeHtml(item.sourceUrl)}" rel="noopener">出处 ↗</a> · 抓取于 ${escapeHtml(item.capturedAt)}
               · ${escapeHtml(item.lang === 'zh' ? '中文原文' : String(item.lang || ''))}</small>
           </li>`).join('');
+    // v2.3：时间线。日志缺失时如实说「没有拿到日志」，而不是「没有变化」。
+    let timeline = '';
+    if (historyStore) {
+      timeline = planTimelineHtml(
+        planHistory.timelineOf(historyStore, plan.id),
+        planHistory.historyFor(historyStore, plan.id),
+        { ...changeOpts, timelineLimit: opts.timelineLimit }
+      );
+    } else {
+      timeline = `<h3>${escapeHtml(planHistory.PLAN_HISTORY_WORDING.PLAN_HISTORY_LABELS.sectionTitle)}</h3>
+          <p class="pchnone">${escapeHtml(planHistory.PLAN_HISTORY_WORDING.PLAN_HISTORY_LABELS.unavailable)}</p>`;
+    }
     return `<template data-detail-for="${escapeHtml(plan.id)}">
         <div class="pdetailbody">
           <dl>
@@ -408,6 +430,7 @@ function planDetailTemplatesHtml(plans, opts = {}) {
             <dt>官方来源</dt><dd>${official}</dd>
           </dl>
           ${quotaDescription}
+          ${timeline}
           <h3>官方原文引文（${(plan.evidence || []).length} 条）</h3>
           <ul class="pev">${evidence}</ul>
         </div>
@@ -426,6 +449,272 @@ const EVIDENCE_FIELD_LABEL = {
 
 function evidenceFieldLabel(field) {
   return EVIDENCE_FIELD_LABEL[field] || String(field || '');
+}
+
+/* ------------------------------------------------------------------ */
+/* v2.3 变化展示：句子（唯一出处）+ 块 / 时间线 / /changes/ 分栏         */
+/* ------------------------------------------------------------------ */
+
+const REGION_LABEL = { cn: '国内', global: '国外' };
+
+/** 价格文本（与表格同一条口径：未知一律 `—`，不写 0） */
+function priceTextOf(value, currency) {
+  if (value === null || value === undefined) return UNKNOWN_NUM;
+  const symbol = CURRENCY_SYMBOL[currency] || '';
+  return `${symbol}${formatNumber(value)}`;
+}
+
+/** 数值额度文本（「30 亿 Token」这种；单位取自额度类型，与表格同一份标签表） */
+function quotaValueTextOf(value, type) {
+  if (value === null || value === undefined) return UNKNOWN_NUM;
+  const unit = QUOTA_UNIT_LABEL[type] || '';
+  return `${formatNumber(value)}${unit ? ` ${unit}` : ''}`;
+}
+
+/** 模型对象 → 「名字（受限）」（role 为 included 时不加后缀，与表格同一套写法） */
+function modelTextOf(model) {
+  if (!model || typeof model !== 'object') return UNKNOWN_NUM;
+  const role = model.role && model.role !== 'included' ? `（${MODEL_ROLE_LABEL[model.role] || model.role}）` : '';
+  return `${model.name}${role}`;
+}
+
+/** 限制条件数组的差量（按 kind 三分量），供句子与自测共用 */
+function restrictionDiffOf(from, to) {
+  const before = new Map((Array.isArray(from) ? from : []).map(item => [item.kind, item]));
+  const after = new Map((Array.isArray(to) ? to : []).map(item => [item.kind, item]));
+  let added = 0;
+  let removed = 0;
+  let changed = 0;
+  for (const [kind, item] of after) {
+    const old = before.get(kind);
+    if (!old) added++;
+    else if (!planHistory.restrictionArrayEqual([old], [item])) changed++;
+  }
+  for (const kind of before.keys()) if (!after.has(kind)) removed++;
+  return { added, removed, changed };
+}
+
+/** 事件里的一个值（`from` / `to`）→ 可读文本。plan 用来取币种 / 额度类型这些**上下文单位** */
+function planValueTextOf(field, value, plan) {
+  const billing = (plan && plan.billing) || {};
+  const quota = (plan && plan.quota) || {};
+  switch (field) {
+    case 'billing.regularPrice':
+    case 'billing.promoPrice':
+      return priceTextOf(value, billing.currency);
+    case 'billing.currency':
+      return value ? String(value) : UNKNOWN_TEXT;
+    case 'quota.type':
+      return value ? (QUOTA_TYPE_LABEL[value] || String(value)) : UNKNOWN_TEXT;
+    case 'quota.amount':
+      return quotaValueTextOf(value, quota.type);
+    case 'quota.period':
+      return value ? (QUOTA_PERIOD_LABEL[value] || String(value)) : UNKNOWN_TEXT;
+    case 'quota.description':
+      return value ? String(value) : UNKNOWN_TEXT;
+    case 'supportedModels':
+      return modelTextOf(value);
+    case 'restrictions':
+      return Array.isArray(value) ? `${value.length} 项` : UNKNOWN_NUM;
+    case 'region':
+      return value ? (REGION_LABEL[value] || String(value)) : UNKNOWN_TEXT;
+    case 'officialUrl':
+    case 'sourceUrl':
+    case 'source':
+      return value ? String(value) : UNKNOWN_TEXT;
+    default:
+      if (value === null || value === undefined) return UNKNOWN_NUM;
+      return typeof value === 'string' ? value : JSON.stringify(value);
+  }
+}
+
+/**
+ * 一条变化事件 → 「变了什么」的句子。**唯一出处**：页面、时间线、`/changes/` 与订阅源共用。
+ *
+ * 措辞纪律：只描述观测到的一对值（`原 → 新`），不写"涨价了"/"变划算了"这类判断，
+ * 也不写任何结论性词汇（`FORBIDDEN_CLAIM_WORDS` 对事件文本同样生效）。
+ */
+function planChangeTextOf(item, opts = {}) {
+  const plan = (opts.plansById && opts.plansById.get(item.planId)) || null;
+  const field = item.field || '';
+  const T = planHistory.PLAN_HISTORY_WORDING;
+  const fieldLabel = T.PLAN_HISTORY_FIELD_LABELS[field] || field || '';
+  const reason = T.PLAN_HISTORY_END_REASONS[item.reason] || item.reason || '';
+  switch (item.type) {
+    case 'created':
+      return '首次收录';
+    case 'price_changed':
+      return `正常价格 ${planValueTextOf('billing.regularPrice', item.from, plan)} → ${planValueTextOf('billing.regularPrice', item.to, plan)}`;
+    case 'promo_started':
+      return `活动价开始：${planValueTextOf('billing.promoPrice', item.to, plan)}`;
+    case 'promo_ended':
+      return `活动价结束（此前 ${planValueTextOf('billing.promoPrice', item.from, plan)}）`;
+    case 'promo_changed':
+      return `活动价 ${planValueTextOf('billing.promoPrice', item.from, plan)} → ${planValueTextOf('billing.promoPrice', item.to, plan)}`;
+    case 'billing_changed':
+      return `币种 ${planValueTextOf('billing.currency', item.from, plan)} → ${planValueTextOf('billing.currency', item.to, plan)}`;
+    case 'quota_increased':
+    case 'quota_decreased':
+      return `原始额度 ${planValueTextOf('quota.amount', item.from, plan)} → ${planValueTextOf('quota.amount', item.to, plan)}`;
+    case 'quota_changed':
+      if (field === 'quota.type') return `额度类型 ${planValueTextOf('quota.type', item.from, plan)} → ${planValueTextOf('quota.type', item.to, plan)}`;
+      if (field === 'quota.period') return `额度刷新周期 ${planValueTextOf('quota.period', item.from, plan)} → ${planValueTextOf('quota.period', item.to, plan)}`;
+      if (field === 'quota.description') return '额度说明变更';
+      return `原始额度 ${planValueTextOf('quota.amount', item.from, plan)} → ${planValueTextOf('quota.amount', item.to, plan)}`;
+    case 'model_added':
+      return `新增模型 ${modelTextOf(item.to)}`;
+    case 'model_removed':
+      return `移除模型 ${modelTextOf(item.from)}`;
+    case 'model_changed':
+      return `模型权限 ${modelTextOf(item.from)} → ${modelTextOf(item.to)}`;
+    case 'restriction_changed': {
+      const diff = restrictionDiffOf(item.from, item.to);
+      const parts = [];
+      if (diff.added) parts.push(`新增 ${diff.added} 项`);
+      if (diff.removed) parts.push(`移除 ${diff.removed} 项`);
+      if (diff.changed) parts.push(`变更 ${diff.changed} 项`);
+      return `限制条件更新（${parts.length ? parts.join(' · ') : '说明变更'}）`;
+    }
+    case 'availability_changed':
+      return `销售地区 ${planValueTextOf('region', item.from, plan)} → ${planValueTextOf('region', item.to, plan)}`;
+    case 'updated':
+      return `记录信息更新（${fieldLabel}）`;
+    case 'ended':
+      return `不再收录（${reason}）`;
+    case 'restored':
+      return '重新出现';
+    default:
+      return `${T.PLAN_HISTORY_TYPES[item.type] || item.type}${fieldLabel ? `（${fieldLabel}）` : ''}`;
+  }
+}
+
+/** 一条变化事件 → 「谁 + 变了什么」的一句纯文本（订阅源与 `title` 属性共用） */
+function planChangeSentenceOf(item, opts = {}) {
+  const provider = providerNameOf(item.vendor, opts.providerTable);
+  const who = item.titled ? `${provider ? `${provider} ` : ''}${item.title}` : '（已移除的套餐，无标题快照）';
+  return `${who} · ${planChangeTextOf(item, opts)}`;
+}
+
+function planChangeItemHtml(item, opts = {}) {
+  const T = planHistory.PLAN_HISTORY_WORDING;
+  const provider = providerNameOf(item.vendor, opts.providerTable);
+  const who = item.titled ? `${provider ? `${provider} ` : ''}${item.title}` : '（已移除的套餐，无标题快照）';
+  const typeLabel = T.PLAN_HISTORY_TYPES[item.type] || item.type;
+  const origin = item.origin === 'derived' ? `<span class="pchgorigin">（由本站规则推导）</span>` : '';
+  const link = item.planId
+    ? `<a class="pchgwho" href="#plan-${escapeHtml(item.planId)}">${escapeHtml(who)}</a>`
+    : `<span class="pchgwho">${escapeHtml(who)}</span>`;
+  return `<span class="pchgwhen"><time datetime="${escapeHtml(item.at)}">${escapeHtml(item.at)}</time></span>`
+    + `${link}<span class="pchgtype">${escapeHtml(typeLabel)}</span>`
+    + `<span class="pchgwhat">${escapeHtml(planChangeTextOf(item, opts))}</span>${origin}`;
+}
+
+/**
+ * `/plans/coding/` 顶部的「最近变化」块。
+ *
+ * **必须放在 `#plans-compare` 之外**：那个容器的 innerHTML 会被 `plans-compare.js` 整块替换，
+ * 静态内容放进去等于被抹掉（无 JS 的读者会看到空块）。
+ */
+function planChangesBlockHtml(radar, opts = {}) {
+  const W = planChanges.PLAN_CHANGES_WORDING.PLAN_CHANGES_LABELS;
+  const prefix = opts.prefix || '';
+  const items = radar && radar.availability === 'ok' ? radar.home.items : [];
+  const since = radar && radar.startedAt
+    ? W.since.replace('{date}', radar.startedAt)
+    : '';
+
+  const footer = `        <p class="pchnote">${since ? `${escapeHtml(since)} · ` : ''}<a href="${escapeHtml(`${prefix}changes/#plans`)}">${escapeHtml(W.allChanges)} →</a></p>\n`;
+  let body;
+  if (!radar || radar.availability !== 'ok') {
+    body = `        <p class="pchnone">${escapeHtml(W.unavailable)}</p>\n${footer}`;
+  } else if (!items.length) {
+    body = `        <p class="pchnone">${escapeHtml(W.empty)}</p>\n${footer}`;
+  } else {
+    body = `        <ul class="pchglist">\n`
+      + items.map(item => `          <li>${planChangeItemHtml(item, opts)}</li>`).join('\n')
+      + `\n        </ul>\n`
+      + (radar.home.truncated > 0
+        ? `        <p class="pchnote">${escapeHtml(W.homeMore.replace('{n}', String(radar.home.truncated)))}</p>\n` : '')
+      + footer;
+  }
+
+  return `      <section class="pchanges" id="plan-changes" aria-labelledby="plan-changes-h">
+        <h2 class="ph2" id="plan-changes-h">${escapeHtml(W.recentTitle)}</h2>
+${body}      </section>
+`;
+}
+
+/** `/changes/` 里的「套餐变化」分栏（四栏 + 其他变化说明） */
+function planChangesPageBlockHtml(radar, opts = {}) {
+  const W = planChanges.PLAN_CHANGES_WORDING.PLAN_CHANGES_LABELS;
+  const S = planChanges.PLAN_CHANGES_WORDING.PLAN_CHANGES_SECTION;
+  const prefix = opts.prefix || '';
+  const since = radar && radar.startedAt ? W.since.replace('{date}', radar.startedAt) : '';
+
+  if (!radar || radar.availability !== 'ok') {
+    return `<section class="chgsec pchanges" id="plans">
+        <h2>${escapeHtml(W.sectionTitle)}</h2>
+        <p class="snote chgwarn">${escapeHtml(W.unavailable)}</p>
+      </section>
+`;
+  }
+
+  const sections = planChanges.PLAN_CHANGES_SECTION_ORDER.map(key => {
+    const section = radar.sections[key];
+    const items = section.items;
+    const list = items.length
+      ? `<ul class="chglist">
+${items.map(item => `          <li>${planChangeItemHtml(item, opts)}</li>`).join('\n')}
+        </ul>`
+      : `<p class="snote">${escapeHtml(W.emptySection[key])}</p>`;
+    const truncated = section.truncated > 0
+      ? `\n        <p class="snote">${escapeHtml(W.more.replace('{n}', String(section.truncated)))}</p>` : '';
+    return `      <div class="chgsub">
+        <h3>${escapeHtml(S[key])}（${radar.totals[key]}）</h3>
+${list}${truncated}
+      </div>`;
+  }).join('\n');
+
+  const metaNote = radar.totals.meta > 0
+    ? `      <p class="snote">另有 ${radar.totals.meta} 条只影响记录元信息的变化（官方定价页 / 来源类型 / 来源地址），`
+      + `不计入上面的分栏；它们仍出现在各条套餐的变更记录里。</p>\n`
+    : '';
+
+  return `<section class="chgsec pchanges" id="plans">
+      <h2>${escapeHtml(W.sectionTitle)}</h2>
+      <p class="snote">${escapeHtml(W.plansSource.replace('{date}', radar.startedAt || '未知'))}</p>
+${sections}
+${metaNote}      <p class="snote">${escapeHtml(W.disclaimer)}</p>
+    </section>
+`;
+}
+
+/**
+ * 行内详情里的时间线（`<template>` 内，惰性：无 JS 时不渲染一个字节）。
+ *
+ * `view` 是 `planHistory.historyFor()` 的有界视图；`events` 是 `timelineOf()` 的完整列表
+ * （用于算「另有 N 条更早」）。两者都不为 null 时才会被调用。
+ */
+function planTimelineHtml(events, view, opts = {}) {
+  const L = planHistory.PLAN_HISTORY_WORDING.PLAN_HISTORY_LABELS;
+  if (!view || !view.total) {
+    return `<h3>${escapeHtml(L.sectionTitle)}</h3>
+          <p class="pchnone">${escapeHtml(L.empty)}${view && view.startedAt ? `（${escapeHtml(L.since.replace('{date}', view.startedAt))}）` : ''}</p>`;
+  }
+  const shownLimit = opts.timelineLimit || 10;
+  const list = (events || []).slice(0, shownLimit);
+  const rest = Math.max(0, (events || []).length - list.length);
+  const rows = list.map(event => `            <li><span class="pchgwhen"><time datetime="${escapeHtml(event.at)}">${escapeHtml(event.at)}</time></span>
+              <span class="pchgwhat">${escapeHtml(planChangeTextOf({
+    planId: event.planId, type: event.type, field: event.field,
+    from: 'from' in event ? event.from : null, to: 'to' in event ? event.to : null,
+    reason: event.reason, origin: event.origin
+  }, opts))}</span></li>`).join('\n');
+  return `<h3>${escapeHtml(L.sectionTitle)}（${view.total} 条）</h3>
+          <ul class="pchglist pchgtl">
+${rows}
+          </ul>${rest > 0 ? `
+          <p class="pchnote">${escapeHtml(L.more.replace('{n}', String(rest)))}</p>` : ''}`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -448,7 +737,7 @@ function renderRow(row) {
     : `<span class="pnone" title="不可比较：额度类型或口径不满足计算条件">${escapeHtml(row.unitPriceText)}</span>`;
 
   return `
-        <tr data-item="${escapeHtml(row.id)}">
+        <tr id="plan-${escapeHtml(row.id)}" data-item="${escapeHtml(row.id)}">
           <th scope="row">${escapeHtml(row.provider)}<small>${escapeHtml(row.regionText)}</small></th>
           <td>${escapeHtml(row.planName)}${official}</td>
           <td class="num">${escapeHtml(row.regularText)}${
@@ -483,6 +772,10 @@ function plansPageBody(plans, opts = {}) {
   const payload = planComparePayloadOf(plans, { providerTable });
   /** 排序档位里没有 `unit` = 本期一条都不可比较 —— 那句话必须出现在页面上，而不是靠读者猜 */
   const unitSortable = payload.dimensions.sort.some(item => item.key === 'unit');
+  // v2.3：最近变化块。**放在 #plans-compare 之外**（那个容器的 innerHTML 会被 JS 整块替换）。
+  const planChangesBlock = opts.planChanges
+    ? planChangesBlockHtml(opts.planChanges, { prefix: opts.prefix || '', providerTable, plansById: new Map(plans.map(p => [p.id, p])) })
+    : '';
 
   return `      <nav class="crumb" aria-label="面包屑"><a href="${home}">首页</a> › <span>${escapeHtml(PLANS_HEADING)}</span></nav>
 
@@ -493,6 +786,7 @@ function plansPageBody(plans, opts = {}) {
 
       <p class="snote">${escapeHtml(PLANS_DESCRIPTION)}</p>
 
+${planChangesBlock}
       <p class="snote pnoscript"><noscript>筛选、搜索与排序需要 JavaScript；未启用时，下面这张表就是全部 ${rows.length} 条套餐。</noscript></p>
 
       <!--
@@ -520,7 +814,7 @@ ${unitSortable ? '' : `      <p class="snote">${escapeHtml(NO_UNIT_SORT_NOTE)}</
 
       ${comparePayloadScriptHtml(payload)}
       <div class="ptpl" aria-hidden="true">
-${planDetailTemplatesHtml(plans, { providerTable })}
+${planDetailTemplatesHtml(plans, { providerTable, planHistoryStore: opts.planHistoryStore, timelineLimit: opts.timelineLimit })}
       </div>
 
       <h2 class="ph2">口径与说明</h2>
@@ -587,14 +881,18 @@ function plansJsonLd(plans, { siteUrl, providerTable = null } = {}) {
 /* 诚实性断言（构建期与自测**共用同一个函数**）                          */
 /* ------------------------------------------------------------------ */
 
-/** 取每一行的 HTML（`data-item` 到下一个 `data-item` 之间），用于逐行断言 */
+/** 取每一行的 HTML（`data-item` 所在行到下一行之间），用于逐行断言 */
 function rowHtmlById(html) {
   const map = new Map();
-  const chunks = String(html).split('<tr data-item="');
-  for (const chunk of chunks.slice(1)) {
-    const id = chunk.slice(0, chunk.indexOf('"'));
-    map.set(id, chunk);
-  }
+  const text = String(html);
+  const rowRe = /<tr[^>]*\bdata-item="([^"]+)"[^>]*>/g;
+  const marks = [];
+  let match;
+  while ((match = rowRe.exec(text)) !== null) marks.push({ id: match[1], start: match.index });
+  marks.forEach((mark, index) => {
+    const end = index + 1 < marks.length ? marks[index + 1].start : text.length;
+    map.set(mark.id, text.slice(mark.start, end));
+  });
   return map;
 }
 
@@ -864,10 +1162,99 @@ function assertPageHonesty(html, plans, opts = {}) {
     problems.push(`页面声明"可计算 N 条"与实际不一致（应为 ${computable} 条）`);
   }
 
+  // ⑩ v2.3：变化展示。块里的每一条都必须来自雷达，且「没有拿到日志」与「没有变化」不许混为一谈。
+  const block = (text.match(/<section class="pchanges" id="plan-changes"[\s\S]*?<\/section>/) || [])[0] || '';
+  /**
+   * 句子要用**与渲染层同一份上下文**（币种 / 额度单位 / 平台显示名都从套餐记录里取）。
+   * 少传 `plansById` 会写出「正常价格 20 → 10」（少了 `$`）—— 断言与页面就会分家。
+   */
+  const sentenceOpts = { ...opts, plansById: new Map((plans || []).map(plan => [plan.id, plan])) };
+  if (opts.planChanges) {
+    const radar = opts.planChanges;
+    const W = planChanges.PLAN_CHANGES_WORDING.PLAN_CHANGES_LABELS;
+    if (!block) {
+      problems.push('缺少「最近变化」块（#plan-changes）');
+    } else {
+      const items = radar.availability === 'ok' ? radar.home.items : [];
+      const li = (block.match(/<li>/g) || []).length;
+      if (li !== items.length) problems.push(`最近变化块 ${li} 条 ≠ 雷达 ${items.length} 条`);
+      for (const item of items) {
+        const sentence = planChangeTextOf(item, sentenceOpts);
+        if (!block.includes(escapeHtml(sentence))) {
+          problems.push(`最近变化块缺少一条变化：「${sentence}」`);
+        }
+      }
+      if (radar.availability !== 'ok') {
+        if (!block.includes(escapeHtml(W.unavailable))) problems.push('日志不可用时没有说清「没有拿到日志」');
+      } else if (!items.length) {
+        if (!block.includes(escapeHtml(W.empty))) problems.push('没有变化时没有明确空态');
+      } else if (block.includes(escapeHtml(W.unavailable))) {
+        problems.push('日志可用却写着「没有拿到日志」');
+      }
+    }
+  }
+
+  // ⑪ v2.3：每条有历史的套餐，其详情模板的时间线必须与日志逐条一致
+  if (opts.planHistoryStore) {
+    const templates = new Map([...text.matchAll(/<template data-detail-for="([^"]+)">([\s\S]*?)<\/template>/g)]
+      .map(match => [match[1], match[2]]));
+    const L = planHistory.PLAN_HISTORY_WORDING.PLAN_HISTORY_LABELS;
+    for (const plan of plans || []) {
+      const view = planHistory.historyFor(opts.planHistoryStore, plan.id);
+      const body = templates.get(plan.id);
+      if (!body) { problems.push(`${plan.planName}: 缺少详情模板（时间线无处安放）`); continue; }
+      if (!view) {
+        if (!body.includes(escapeHtml(L.empty))) problems.push(`${plan.planName}: 没有变更记录时未写「${L.empty}」`);
+        continue;
+      }
+      if (!body.includes(escapeHtml(`${L.sectionTitle}（${view.total} 条）`))) {
+        problems.push(`${plan.planName}: 时间线没有报出总条数（应为 ${view.total} 条）`);
+      }
+      for (const event of planHistory.timelineOf(opts.planHistoryStore, plan.id).slice(0, 10)) {
+        const sentence = planChangeTextOf({
+          planId: event.planId, type: event.type, field: event.field,
+          from: 'from' in event ? event.from : null, to: 'to' in event ? event.to : null,
+          reason: event.reason, origin: event.origin
+        }, sentenceOpts);
+        if (!body.includes(escapeHtml(sentence))) problems.push(`${plan.planName}: 时间线缺少「${sentence}」`);
+      }
+    }
+  }
+
   // ⑨ v2.2：交互载荷（筛选项 / 排序档位 / 搜索串）与 `plans.json` 逐字段对账，
   //    外加「预渲染标记里零控件」。载荷错的时候**表格看上去完全正常**，
   //    所以这一条必须挂在同一个函数里 —— 构建期从磁盘回读时它会再跑一遍。
   problems.push(...assertCompareHonesty(html, plans, opts));
+  return problems;
+}
+
+/**
+ * v2.3 数据层：结论性词汇也不许出现在**事件的值**里。
+ *
+ * 事件文本会原样出现在页面上（`planChangeTextOf` 把它们拼进句子），所以它们和我们写的
+ * 数据是同一类东西：套餐名改了、模型备注里塞了「最划算」，页面就会替我们做出结论。
+ */
+function assertHistoryHonesty(plans, store, opts = {}) {
+  const problems = [];
+  const scan = (planId, field, value) => {
+    if (typeof value !== 'string') return;
+    for (const word of FORBIDDEN_CLAIM_WORDS) {
+      if (value.includes(word)) problems.push(`${planId} 的变化事件 ${field} 含结论性词汇「${word}」`);
+    }
+  };
+  const walk = (planId, path, value) => {
+    if (typeof value === 'string') { scan(planId, path, value); return; }
+    if (Array.isArray(value)) { value.forEach((item, index) => walk(planId, `${path}[${index}]`, item)); return; }
+    if (value && typeof value === 'object') {
+      for (const key of Object.keys(value)) walk(planId, `${path}.${key}`, value[key]);
+    }
+  };
+  void plans; void opts;
+  for (const event of planHistory.eventsOf(store)) {
+    walk(event.planId, `${event.type}/${event.field || '-'}`, event.from);
+    walk(event.planId, `${event.type}/${event.field || '-'}`, event.to);
+    walk(event.planId, `${event.type}/${event.field || '-'}`, event.label);
+  }
   return problems;
 }
 
@@ -928,7 +1315,20 @@ module.exports = {
   plansJsonLd,
   rowHtmlById,
   cellText,
+  // v2.3 变化展示：句子只有一处实现，页面 / 时间线 / /changes/ / 订阅源共用
+  priceTextOf,
+  quotaValueTextOf,
+  modelTextOf,
+  restrictionDiffOf,
+  planValueTextOf,
+  planChangeTextOf,
+  planChangeSentenceOf,
+  planChangeItemHtml,
+  planChangesBlockHtml,
+  planChangesPageBlockHtml,
+  planTimelineHtml,
   assertPageHonesty,
   assertCompareHonesty,
-  assertDataHonesty
+  assertDataHonesty,
+  assertHistoryHonesty
 };

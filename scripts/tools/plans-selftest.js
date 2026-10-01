@@ -518,24 +518,41 @@ section('⑪ 边界：谁可以引用 plans，谁不可以');
 
 {
   // v2.1 第二段起，**构建期**合法地引用了 plans（`/plans/coding/` 就是它渲染的），
-  // 但这不等于「哪里都可以引用」。这条断言把边界写死成两句话：
-  //   ① 采集 / 合并 / 历史 / 变化 / 订阅这条 deals 链路**一个字都不许提 plans** ——
-  //      套餐数据不参与优惠采集，也不进任何 Feed；
-  //   ② 前端 `index.html` 只允许出现一个页脚占位符（`__PLANS_HREF__`），
-  //      不许直接读 plans.json —— 页面由构建期预渲染，浏览器不 fetch 套餐数据。
+  // 但这不等于「哪里都可以引用」。v2.3 又多了**一条**合法通道（订阅层里的套餐变化源），
+  // 所以边界被写成四句话：
+  //   ① deals 那半边（采集 / 合并 / 历史 / 优惠雷达 / 落地页 / SEO）**一个字都不许提 plans** ——
+  //      套餐数据不参与优惠采集，也不进优惠的任何判据；
+  //   ② 订阅层（`lib/feeds.js`）是**唯一**可以引用 plans 的地方，而且只能用来产出一份
+  //      **独立**的套餐变化源：不许直接读数据文件（plans.json / curated_plans / plan-schema），
+  //      数据一律由构建期传入 ——「谁来读文件」这件事只有一处（build-local）；
+  //   ③ 前端 `index.html` 只允许出现页脚/顶栏两个路由占位符（`__PLANS_HREF__`），
+  //      不许直接读 plans.json —— 页面由构建期预渲染，浏览器不 fetch 套餐数据；
+  //   ④ 机制内核 `lib/history-core.js` 由两份日志共用（它在 plan-history-selftest 里被静态
+  //      断言「不含任何一方的专有字段」）。
   const stripComments = source => source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
-  const forbiddenTokens = ['plans.json', 'plan-schema', 'curated_plans', 'plans-page', 'providers.json'];
+  const planTokens = ['plans.json', 'plan-schema', 'curated_plans', 'plans-page', 'providers.json',
+    'plan-history', 'plan-changes', 'PLAN_CHANGE', 'pchanges'];
 
   const dealsChain = [
     'scripts/collect.js', 'scripts/lib/store.js', 'scripts/lib/dedup.js', 'scripts/lib/history.js',
-    'scripts/lib/changes.js', 'scripts/lib/feeds.js', 'scripts/lib/seo.js', 'scripts/lib/landing.js'
+    'scripts/lib/changes.js', 'scripts/lib/seo.js', 'scripts/lib/landing.js'
   ];
   const chainHits = [];
   for (const rel of dealsChain) {
     const source = stripComments(fs.readFileSync(path.join(ROOT, rel), 'utf8'));
-    for (const token of forbiddenTokens) if (source.includes(token)) chainHits.push(`${rel} 提到了 ${token}`);
+    for (const token of planTokens) if (source.includes(token)) chainHits.push(`${rel} 提到了 ${token}`);
   }
-  check('采集 / 合并 / 历史 / 变化 / 订阅链路完全不引用 plans', chainHits.length === 0, chainHits.join(' | '));
+  check('deals 链路（采集 / 合并 / 历史 / 优惠雷达 / 落地页 / SEO）完全不引用 plans',
+    chainHits.length === 0, chainHits.join(' | '));
+
+  // ② 订阅层：允许引用 plans 的模块，但不许自己读数据文件，也不许把套餐混进优惠的判据里
+  const feedsSource = stripComments(fs.readFileSync(path.join(ROOT, 'scripts/lib/feeds.js'), 'utf8'));
+  const feedsDataHits = ['plans.json', 'curated_plans', 'plan-schema'].filter(token => feedsSource.includes(token));
+  check('订阅层不自己读套餐数据文件（plans.json / curated_plans / plan-schema 一律不出现）',
+    feedsDataHits.length === 0, feedsDataHits.join(' | '));
+  check('订阅层对 plans 的引用只有「套餐变化」这一条通道（kind = plan-changes）',
+    feedsSource.includes("kind: 'plan-changes'") && feedsSource.includes('PLAN_CHANGE_FEED') &&
+    /kind === 'plan-changes'/.test(feedsSource));
 
   const indexSource = stripComments(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8'));
   const plansHrefs = (indexSource.match(/__PLANS_HREF__/g) || []).length;
@@ -917,6 +934,114 @@ section('⑮ 本阶段的牙：这些断言必须真的会红');
     const honest = compare.sortRows(rows, 'regular', 'asc').map(row => row.id).filter(id => crossCurrency.includes(id));
     check('【牙】跨币种混排的结果与诚实排序不同（币种分组不是装饰）',
       JSON.stringify(crossCurrency) !== JSON.stringify(honest));
+  }
+}
+
+/* ================================================================== */
+
+section('⑯ 变化展示：页面上的每一条变化都必须来自日志（v2.3）');
+
+{
+  const planHistory = require('../lib/plan-history');
+  const planChanges = require('../lib/plan-changes');
+  const page = require('../lib/plans-page');
+  const store = planSchema.loadPlans(planSchema.PLANS_FILE);
+  const plans = store.plans;
+
+  // 夹具：真实套餐 + 一次改价 + 一次新增模型 ⇒ 两条价格/模型变化
+  const pricePlan = plans.find(plan => plan.billing.promoPrice === null && typeof plan.billing.regularPrice === 'number');
+  const modelPlan = plans.find(plan => !Array.isArray(plan.supportedModels));
+  const next = clone(plans).map(plan => {
+    if (pricePlan && plan.id === pricePlan.id) plan.billing.regularPrice = pricePlan.billing.regularPrice - 10;
+    if (modelPlan && plan.id === modelPlan.id) plan.supportedModels = [{ name: 'DeepSeek V4.1', role: 'included', note: null }];
+    return plan;
+  });
+  const seeded = planHistory.emptyStore({ at: '2026-10-01' });
+  seeded.baseline = planHistory.baselineOf(plans, { at: '2026-10-01' });
+  const recorded = planHistory.record(seeded, {
+    previous: plans,
+    next,
+    at: '2026-10-02',
+    runAt: '2026-10-02T00:00:00.000Z',
+    labels: new Map(plans.map(plan => [plan.id, { title: plan.planName, vendor: plan.provider }]))
+  });
+  check('夹具：改价 + 新增模型各产生一条事件', recorded.appended.length === 2,
+    `${recorded.appended.length} 条：${recorded.appended.map(e => e.type).join(',')}`);
+  check('夹具：日志与数据自洽', planHistory.verifyStore(recorded.store, next, { today: '2026-10-02' }).length === 0);
+
+  const radar = planChanges.buildPlanRadar({
+    plans: next, store: recorded.store, asOf: '2026-10-02', availability: 'ok'
+  });
+  check('雷达：两条变化都进了「最近 7 天变化」', radar.totals.changed === 2, JSON.stringify(radar.totals));
+
+  const html = page.plansPageBody(next, { planChanges: radar, planHistoryStore: recorded.store, prefix: '../../' });
+
+  check('页面级诚实性断言全部通过（含最近变化块与时间线）',
+    page.assertPageHonesty(html, next, { planChanges: radar, planHistoryStore: recorded.store }).length === 0,
+    page.assertPageHonesty(html, next, { planChanges: radar, planHistoryStore: recorded.store }).slice(0, 3).join(' | '));
+
+  const block = (html.match(/<section class="pchanges" id="plan-changes"[\s\S]*?<\/section>/) || [])[0] || '';
+  check('最近变化块里恰好两条', (block.match(/<li>/g) || []).length === 2, block.slice(0, 200));
+  check('改价那条写成「正常价格 旧 → 新」',
+    /正常价格 [^→]+→ [^<]+/.test(block) && block.includes('正常价格'), block.slice(0, 300));
+  check('模型那条写成「新增模型 DeepSeek V4.1」',
+    block.includes('新增模型 DeepSeek V4.1'), block.slice(0, 300));
+  check('块里有指向 /changes/#plans 的入口', block.includes('changes/#plans'));
+
+  // 行锚点：订阅源与最近变化块都靠它深链
+  check('每个数据行都有 #plan-<id> 锚点',
+    next.every(plan => html.includes(`id="plan-${plan.id}"`)));
+  check('锚点与 data-item 在同一行上（都指向同一条套餐）',
+    next.every(plan => html.includes(`id="plan-${plan.id}" data-item="${plan.id}"`)));
+
+  // 时间线
+  const target = next.find(plan => plan.id === (pricePlan || plans[0]).id);
+  const template = (html.match(new RegExp(`<template data-detail-for="${target.id}">([\\s\\S]*?)</template>`)) || [])[1] || '';
+  check('详情模板里有变更记录标题与总条数', template.includes('变更记录（1 条）'), template.slice(0, 300));
+  check('详情模板里的时间线写明了「正常价格 … → …」', template.includes('正常价格'), template.slice(0, 300));
+
+  // 「没有拿到日志」与「没有变化」不许混为一谈
+  const unavailable = planChanges.buildPlanRadar({ plans: next, store: null, asOf: '2026-10-02', availability: 'unavailable' });
+  const unavailableHtml = page.plansPageBody(next, { planChanges: unavailable, prefix: '../../' });
+  check('日志不可用时页面说的是「没有拿到日志」',
+    unavailableHtml.includes('没有拿到套餐变更日志') && !unavailableHtml.includes('当前没有观测到套餐变化'));
+  const emptyHtml = page.plansPageBody(next, {
+    planChanges: planChanges.buildPlanRadar({ plans: next, store: planHistory.emptyStore({ at: '2026-10-01' }), asOf: '2026-10-02' }),
+    prefix: '../../'
+  });
+  const emptyBlock = (emptyHtml.match(/<section class="pchanges" id="plan-changes"[\s\S]*?<\/section>/) || [])[0] || '';
+  check('日志可用但没有变化时说「当前没有观测到套餐变化」',
+    emptyBlock.includes('当前没有观测到套餐变化') && !emptyBlock.includes('没有拿到套餐变更日志'), emptyBlock);
+
+  // 【牙】少渲染一条变化 → 必须红
+  {
+    const broken = html.replace(/<li>[\s\S]*?<\/li>/, '');
+    check('【牙】最近变化块少一条 → 页面断言必须变红',
+      page.assertPageHonesty(broken, next, { planChanges: radar, planHistoryStore: recorded.store })
+        .some(problem => problem.includes('最近变化块')),
+      page.assertPageHonesty(broken, next, { planChanges: radar, planHistoryStore: recorded.store }).slice(0, 2).join(' | '));
+  }
+  // 【牙】事件值里塞结论性词汇 → 数据层必须红
+  {
+    const tampered = clone(recorded.store);
+    tampered.events[0].to = '性价比最高的额度';
+    check('【牙】事件值里出现「性价比」→ 变化数据层断言必须变红',
+      page.assertHistoryHonesty(next, tampered).some(problem => problem.includes('性价比')),
+      page.assertHistoryHonesty(next, tampered).join(' | '));
+  }
+  // 【牙】时间线总条数被改错 → 必须红
+  {
+    const broken = html.replace('变更记录（1 条）', '变更记录（9 条）');
+    check('【牙】时间线总条数与日志不符 → 页面断言必须变红',
+      page.assertPageHonesty(broken, next, { planChanges: radar, planHistoryStore: recorded.store })
+        .some(problem => problem.includes('时间线')),
+      page.assertPageHonesty(broken, next, { planChanges: radar, planHistoryStore: recorded.store }).slice(0, 2).join(' | '));
+  }
+  // 【牙】日志不可用却仍列着变化 → 必须红
+  {
+    const broken = unavailableHtml.replace('没有拿到套餐变更日志（plan-history.json 缺失或损坏）——这不表示「没有变化」。', '当前没有观测到套餐变化');
+    check('【牙】日志不可用却说「没有变化」→ 页面断言必须变红',
+      page.assertPageHonesty(broken, next, { planChanges: unavailable, planHistoryStore: recorded.store }).length > 0);
   }
 }
 
