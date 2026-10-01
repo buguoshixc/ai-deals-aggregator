@@ -104,6 +104,8 @@ async function waitForApp(page, timeout = 20000) {
  *   node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json
  */
 const metrics = {};
+// 首页顶栏那一枚「AI Coding 套餐对比」的现场量测，留给 §19 与套餐页的 h1 对账用
+let topPlansEntry = null;
 const jsonArg = process.argv.find(a => a.startsWith('--json='));
 const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
@@ -245,6 +247,56 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('汇总条已填充', /显示\s*\d+\s*条卡片/.test(rendered.stats), rendered.stats.slice(0, 40));
   check('顶栏汇总已填充', /\d+\s*条优惠/.test(rendered.topStat), rendered.topStat);
   console.log(`     logo key: ${rendered.tileKeys.length} 个 → ${rendered.tileKeys.join(' ')}`);
+
+  /* 顶栏那一枚「AI Coding 套餐对比」入口：v2.2 上线后按用户反馈**挪位 + 把名字写全**。
+     这一版改的就是位置与名字本身，所以断言也必须是位置与名字 ——
+     "入口还在页面上"这种断言对这一版毫无信息量（它一直在）。
+     名字是否"写全"由 §19 拿套餐页自己的 h1 对账（那个 h1 才是文案的唯一出处）。 */
+  topPlansEntry = await page.evaluate(() => {
+    const box = el => (el ? el.getBoundingClientRect() : null);
+    const nav = document.querySelector('.plansnav');
+    const seg = document.querySelector('#themeSeg');
+    const stat = document.querySelector('.topstat');
+    return {
+      text: nav ? nav.textContent.trim() : '(没有 .plansnav)',
+      href: nav ? nav.getAttribute('href') || '' : '',
+      navL: nav ? Math.round(box(nav).left) : null,
+      navR: nav ? Math.round(box(nav).right) : null,
+      segR: seg ? Math.round(box(seg).right) : null,
+      statL: stat ? Math.round(box(stat).left) : null
+    };
+  });
+  check('首页顶栏的套餐对比入口在配色切换器**右边**（几何判定，不是"还在页面上"）',
+    topPlansEntry.navL >= topPlansEntry.segR && topPlansEntry.navR <= topPlansEntry.statL,
+    `入口 ${topPlansEntry.navL}-${topPlansEntry.navR}px · 切换器右缘 ${topPlansEntry.segR}px · 汇总条左缘 ${topPlansEntry.statL}px`);
+
+  /* 761–940px：顶栏一行放不下，整页会横向滚动。
+     为什么要逐档量：/status/ 那一页的教训是"桌面绿、手机横滚，而所有静态检查都是绿的"——
+     盲点正好长在没人测的中间带。实测（本版修复前）：761px 溢出 **138px**、820px 溢出 79px；
+     而把套餐对比入口加长之前那段溢出带**本来就存在**（761px 溢出 78px）。
+     搜索框宽度一起量：把搜索框压成一条缝也能让溢出归零，那不是修好。
+     门槛 180px：实测最窄的那一档（941px 的单行布局）是 218px；一旦有人把 `.search` 的
+     min-width 放开成 0，761px 下它会缩到个位数，这条立刻红。 */
+  for (const width of [761, 820, 900, 940, 941]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.waitForTimeout(150);
+    const band = await page.evaluate(() => {
+      const box = el => (el ? el.getBoundingClientRect() : null);
+      const nav = box(document.querySelector('.plansnav'));
+      return {
+        overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        searchW: Math.round(box(document.querySelector('.search')).width),
+        headerH: Math.round(box(document.querySelector('header.top')).height),
+        navInView: Boolean(nav) && nav.width > 0 && nav.right <= window.innerWidth
+      };
+    });
+    check(`首页顶栏 ${width}px：页面不横向溢出、搜索框仍可用、入口仍在视口里`,
+      band.overflow <= 1 && band.searchW >= 180 && band.navInView,
+      `溢出 ${band.overflow}px · 搜索框 ${band.searchW}px · 顶栏高 ${band.headerH}px`);
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.reload({ waitUntil: 'load' });
+  await waitForApp(page);
 
   console.log('\n=== 3) logo 图形真的画出来了 ===');
   const logoProbe = await page.evaluate(async (keys) => {
@@ -3639,6 +3691,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     check('/plans/coding/ 能打开且恰好一个 h1',
       pt.h1Count === 1 && pt.text.length > 1200 && /套餐/.test(pt.h1),
       `h1 ${pt.h1Count} 个 · 正文 ${pt.text.length} 字 · 「${pt.h1.trim()}」`);
+    check('/plans/coding/ 的 h1 与首页顶栏入口的名字逐字一致（入口名不是另抄一份）',
+      Boolean(topPlansEntry) && topPlansEntry.text === pt.h1.trim() && topPlansEntry.href.endsWith('plans/coding/'),
+      `顶栏「${topPlansEntry ? topPlansEntry.text : '(没量到)'}」 vs h1「${pt.h1.trim()}」`);
     check('/plans/coding/ canonical 自指',
       pt.canonicalPath.endsWith('/plans/coding/') && pt.canonical.includes('buguoshixc.github.io'), pt.canonical);
     check('/plans/coding/ 行数与 plans.json 逐个对账',
