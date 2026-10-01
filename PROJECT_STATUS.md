@@ -3205,3 +3205,18 @@ GitHub Copilot Pro · Cursor Pro。每条都来自本次实际抓取并读到的
 - 门禁复跑（干净 worktree，与 CI 同一份代码）：`verify` **388 项 0 失败** ·
   `verify:regress` **394 项 0 失败** · `selftest:plans` 182 · `verify:seo` 8 · `check:ci` 35 ·
   三个 `reproducible` 全过 · 构建 ×2 逐字节一致。
+  **✅ 已上线**：PR **#19** @ `9cd420e` → `gate` success（[run 36825518261](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36825518261)）
+  → 合并 **`c021c52`** → 部署双绿。
+
+**再调整：入口改成实心品牌色药丸（同日，用户"改成实心品牌色药丸我看看效果"）**
+
+- 填充 `var(--brand)`、文字 **`var(--on-accent)`** —— 不新调色：`--on-accent` 的注释里本来就算过
+  「白字压 `#3b5bfd` 5.12:1 / 深字压 `#7c93ff` 6.85:1」，两个主题各自都对。
+- 新增 `--brand-ink`（亮 `#2348c4` / 暗 `#8fb0ff`）当 hover 一档（7.5:1 / 8.99:1）；字重 600；
+  补 `:focus-visible` 焦点环（描边款原本没有）。
+- 宽度盘点：加粗后药丸 138 → 139px；320–1920 逐档重扫**溢出全 0**，1440 顶栏仍 59px、
+  首屏完整卡片仍 **9 张**，941px 单行布局搜索框 216px（与上一版持平）。
+- 回归保护：`verify-site.js` 再加 1 条 —— 「填充 == 页面 `--brand`、文字 == `--on-accent`、字重 ≥600」
+  （不写死色值，暗色换令牌不会假红；文字对比度另有 §13 全站探针兜底）。
+- 门禁复跑：`verify` **389 项 0 失败** · `verify:regress` **395 项 0 失败** · `selftest:plans` 182 ·
+  `verify:seo` 8 · `check:ci` 35 · `validate` 通过 · 构建 ×2 逐字节一致。

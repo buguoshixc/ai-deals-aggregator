@@ -248,27 +248,50 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('顶栏汇总已填充', /\d+\s*条优惠/.test(rendered.topStat), rendered.topStat);
   console.log(`     logo key: ${rendered.tileKeys.length} 个 → ${rendered.tileKeys.join(' ')}`);
 
-  /* 顶栏那一枚「AI Coding 套餐对比」入口：v2.2 上线后按用户反馈**挪位 + 把名字写全**。
-     这一版改的就是位置与名字本身，所以断言也必须是位置与名字 ——
-     "入口还在页面上"这种断言对这一版毫无信息量（它一直在）。
-     名字是否"写全"由 §19 拿套餐页自己的 h1 对账（那个 h1 才是文案的唯一出处）。 */
+  /* 顶栏那一枚「AI Coding 套餐对比」入口：v2.2 上线后按用户反馈**挪位 + 把名字写全
+     + 改成实心品牌色药丸**。这一版改的就是位置 / 名字 / 实心这三件事本身，
+     所以断言也必须是这三件事 ——"入口还在页面上"那种断言在这一版毫无信息量（它一直在）。
+     名字是否"写全"由 §19 拿套餐页自己的 h1 对账（那个 h1 才是文案的唯一出处）；
+     实心与否则比对页面自己的 `--brand`（不写死色值，暗色主题换了令牌也不会假红）。 */
   topPlansEntry = await page.evaluate(() => {
     const box = el => (el ? el.getBoundingClientRect() : null);
     const nav = document.querySelector('.plansnav');
     const seg = document.querySelector('#themeSeg');
     const stat = document.querySelector('.topstat');
+    const style = nav ? getComputedStyle(nav) : null;
     return {
       text: nav ? nav.textContent.trim() : '(没有 .plansnav)',
       href: nav ? nav.getAttribute('href') || '' : '',
       navL: nav ? Math.round(box(nav).left) : null,
       navR: nav ? Math.round(box(nav).right) : null,
       segR: seg ? Math.round(box(seg).right) : null,
-      statL: stat ? Math.round(box(stat).left) : null
+      statL: stat ? Math.round(box(stat).left) : null,
+      bg: style ? style.backgroundColor : '',
+      fg: style ? style.color : '',
+      weight: style ? style.fontWeight : '',
+      brand: getComputedStyle(document.documentElement).getPropertyValue('--brand').trim(),
+      onAccent: getComputedStyle(document.documentElement).getPropertyValue('--on-accent').trim()
     };
   });
   check('首页顶栏的套餐对比入口在配色切换器**右边**（几何判定，不是"还在页面上"）',
     topPlansEntry.navL >= topPlansEntry.segR && topPlansEntry.navR <= topPlansEntry.statL,
     `入口 ${topPlansEntry.navL}-${topPlansEntry.navR}px · 切换器右缘 ${topPlansEntry.segR}px · 汇总条左缘 ${topPlansEntry.statL}px`);
+
+  /* 实心药丸：填充必须**逐字等于页面自己的 `--brand`**（不是"看着像蓝色"），
+     文字色必须等于 `--on-accent` —— 后者在令牌里本来就算过对比度（5.12:1 / 6.85:1），
+     而这枚药丸的文字对比度还另由 §13 的全站对比度探针兜底。 */
+  {
+    const toRgb = hex => {
+      const h = String(hex).trim().replace('#', '');
+      const full = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+      const n = parseInt(full, 16);
+      return `rgb(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255})`;
+    };
+    check('首页顶栏入口是实心品牌色药丸（填充 == 页面 --brand、文字 == --on-accent、加粗）',
+      topPlansEntry.bg === toRgb(topPlansEntry.brand) && topPlansEntry.fg === toRgb(topPlansEntry.onAccent) &&
+      Number(topPlansEntry.weight) >= 600,
+      `填充 ${topPlansEntry.bg}（--brand ${topPlansEntry.brand}）· 文字 ${topPlansEntry.fg}（--on-accent ${topPlansEntry.onAccent}）· 字重 ${topPlansEntry.weight}`);
+  }
 
   /* 761–940px：顶栏一行放不下，整页会横向滚动。
      为什么要逐档量：/status/ 那一页的教训是"桌面绿、手机横滚，而所有静态检查都是绿的"——
