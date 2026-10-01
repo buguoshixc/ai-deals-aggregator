@@ -3012,7 +3012,7 @@ GitHub Copilot Pro · Cursor Pro。每条都来自本次实际抓取并读到的
 各平台其余档位按"小而可靠"暂不扩）逐条写进报告。
 
 - **契约** `docs/SCHEMA-v2.1.md` · **报告** `research/v2.1-coding-plan-data-model-report.md`。
-  未合并、未推送。
+  **✅ 已上线（2026-10-01）**：与 2.41 第二段同批走 PR **#13** → `gate` success → 合并 **`535a25b`**。
 - **对 Phase 2.2 的判断**：**适合进入**。进入时要先解决三件事：把 `plans.json` 接进
   `PUBLIC_FILES`（或在构建期注入派生字段）；`/plans/coding/` 是新落地页家族
   （`itemsOf` 的 `match.by`、门槛分支、`textFloor`、sitemap 计数公式、SEO 描述符都要一起改，
@@ -3073,6 +3073,18 @@ GitHub Copilot Pro · Cursor Pro。每条都来自本次实际抓取并读到的
 | `check:ci` | 35 项 0 失败（门禁步骤名 `Plans self-test (data + page)` 同步改名，步数仍 29） |
 
 - **契约** `docs/SCHEMA-v2.1.md` §16 · **报告** `research/v2.1-coding-plan-data-model-report.md`
-  的「第二段」一节。未合并、未推送。
+  的「第二段」一节。
+- **✅ 已上线（2026-10-01，按用户的「合并推送」）**：分支 `v2.1-coding-plan-data-model`（两个提交：
+  代码+数据、文档）→ PR **#13** → `gate` **success**（[run 36808888838](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36808888838)）
+  → 合并 **`535a25b`**（merge commit）→ master 上 `Verify site (gate)` 与 `Deploy to GitHub Pages`
+  **双双 success**（[deploy run 36809127014](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36809127014)，
+  其 `prepublish` 跑的是与 PR 完全同一个门禁 action）。
+  走 PR 而**不是**直推的原因与 v2.0 相同：ruleset `master-gate` 要求
+  `Changes must be made through a pull request` + 必需检查 `gate`。
+  **线上冒烟实测**：`/plans/coding/` **200**（66.7 KB · 9 行 · h1 正确 · 口径文案在位 · 无禁词）·
+  `/plans.json` **200**（18 KB）· `/sitemap.xml` **200**（**111** 条 `<loc>`）· 首页 200 且页脚
+  「套餐对比」入口在线 · `/deal/2eae0e246de2/` `/vendor/zhipu/` `/category/api/` `/changes/`
+  `/status/` `/feeds/` 全部 **200**。
+  本机到该 host 这次有通路，所以冒烟是**实跑**的，不是"按上次结果推断"。
 - **Phase 2.2 还剩下的**（本段没做，且是有意留的）：筛选 / 搜索 / 排序控件、
   套餐详情页（或行内展开）、首页主入口（现在只有页脚入口）、同币种价格区间筛选。
