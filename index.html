@@ -1152,8 +1152,10 @@
       <p class="catnav" aria-label="按需求浏览">按需求浏览：<a href="__STUDENT_HREF__">学生优惠</a> · <a href="__DEVELOPER_HREF__">开发者优惠</a> · <a href="__FREEAPI_HREF__">免费 API</a></p>
       <!-- v1.7：厂商页与分类页两个枢纽 + 少量厂商入口。全部放在**已有的这一行**里，
            不新增页脚行 —— 页脚是一份共享片段，加一行会把 5 种深度的输出全部加高
-           （v1.5 的密度账）。厂商名单由构建期按落地页计划注入，源码里不留第二份清单。 -->
-      <p class="catnav" aria-label="按厂商与分类浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a><!--PRERENDER:vendorline--></p>
+           （v1.5 的密度账）。厂商名单由构建期按落地页计划注入，源码里不留第二份清单。
+           v2.1：套餐对比页也挂在这一行末尾 —— 它与「按厂商 / 分类浏览」是同一类东西
+           （长期在售的产品能力），而不是「今天的优惠」。 -->
+      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__PLANS_HREF__">套餐对比</a><!--PRERENDER:vendorline--></p>
       <!-- 变化雷达页（v1.5）与订阅中心（v1.6）共用一行：加一行页脚会把 5 种深度的
            输出全部加高，而这两条入口本来就属于同一件事（「变化」与「订阅变化」）。 -->
       <p class="catnav" aria-label="变化与订阅">优惠变化：<a href="__CHANGES_HREF__">变化雷达</a> · <a href="__FEEDS_HREF__">订阅这些优惠</a></p>

@@ -33,6 +33,11 @@ const feeds = require('../lib/feeds');
 const landing = require('../lib/landing');
 const seo = require('../lib/seo');
 const secretScan = require('../lib/secret-scan');
+// v2.1 第二段：Coding Plan 套餐页（/plans/coding/）。正文渲染住在 lib 里，
+// 因为它必须能被离线自测直接调用 —— 这个文件一 require 就跑整条构建链。
+const plansPage = require('../lib/plans-page');
+const planSchema = require('../lib/plan-schema');
+const providers = require('../lib/providers');
 
 const ROOT = path.join(__dirname, '..', '..');
 const outArg = process.argv.find(a => a.startsWith('--out='));
@@ -54,7 +59,14 @@ function showOut(dir) {
   return `${path.relative(ROOT, dir) || '.'}/`;
 }
 
-const PUBLIC_FILES = ['index.html', 'deals.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
+/**
+ * 原样拷贝到产物根的源码文件。
+ *
+ * v2.1：`plans.json` 从这一版起**发布**（此前它只是仓库里的输入数据）。
+ * 为什么现在才发：页面（`/plans/coding/`）在这一版才存在；先前发布一份没人读的数据文件，
+ * 只会让「这个站到底发布了几份数据」这件事变得含糊。发布之后它同样进产物自检。
+ */
+const PUBLIC_FILES = ['index.html', 'deals.json', 'plans.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
 /** 构建期生成、不走源码拷贝的产物 */
 const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json', 'deal-history.json'];
 // 站点常量与 XML 转义的**唯一出处**是 lib/feeds.js（v1.6 起订阅层也要用它们）。
@@ -82,7 +94,10 @@ const ROUTE_HREFS = [
   ['__FEEDS_HREF__', 'feeds/'],
   // v1.7：厂商页与分类页两个枢纽（页脚那一行）
   ['__VENDOR_HREF__', 'vendor/'],
-  ['__CATEGORY_HREF__', 'category/']
+  ['__CATEGORY_HREF__', 'category/'],
+  // v2.1 第二段：Coding Plan 套餐对比页。它是**并列的产品能力**（不是优惠入口），
+  // 所以挂在「按厂商 / 分类浏览」那一行末尾，而不是新增一行页脚。
+  ['__PLANS_HREF__', 'plans/coding/']
 ];
 /**
  * 残留占位符的扫描清单（与 ROUTE_HREFS 同源，避免两处各写一份），外加 `__PREFIX__`。
@@ -1095,10 +1110,127 @@ ${body}
 }
 
 /* ------------------------------------------------------------------ */
-/* 分类页（/student/ /developer/ /free-api/）                           */
+/* 套餐对比页（/plans/coding/，v2.1 第二段）                             */
 /* ------------------------------------------------------------------ */
 
 /**
+ * 套餐对比页。
+ *
+ * ## 为什么它是「独立路由」而不是落地页家族的一员
+ *
+ * `landing.js` 的 `planLandingPages()` 产出的每一页都是**按数据分组的家族**
+ * （一个厂商一页、一个分类一页，`itemsOf()` 用 `match.by` 决定谁属于哪一页）。
+ * 套餐对比页只有**一条**路由 `/plans/coding/`，它不分页也不需要门槛 ——
+ * 硬把它塞进那张家族表，会为了「统一」而引入一条永远只有一个成员的注册表。
+ * 所以它走的是 `/status/` `/changes/` `/feeds/` 那一条既有路径：**独立静态页**。
+ * 代价是下面四张清单（sitemap 计数、`pageRoutes`、页脚深度扫描、订阅声明扫描）
+ * 都要显式加上它 —— 而这正是「新增一条路由是一个决定，不是一次手滑」的落点。
+ *
+ * ## 页面正文不在这里
+ *
+ * 正文、列模型、诚实性断言都在 `lib/plans-page.js`（纯函数，能被离线自测直接调用）。
+ * 这一层只套壳：`<head>`、主题脚本、页头、页脚、JSON-LD。
+ */
+function renderPlansPage(planStore, indexHtml, context = {}) {
+  const prefix = '../../'; // /plans/coding/ 是两层路由
+  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
+  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
+  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
+  if (!style || !themeScript || !footerRaw) {
+    throw new Error('抽取套餐对比页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
+  }
+  const footer = resolveRouteHrefs(
+    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
+    prefix
+  ).trim();
+
+  const pageUrl = `${SITE_URL}${plansPage.PLANS_ROUTE}`;
+  const plans = planStore.plans || [];
+  const providerTable = context.providerTable || null;
+
+  // JSON-LD：一段一个对象（塞成数组时自检读到的 @type 是 undefined，既不抛错也不命中）。
+  const jsonLdBlocks = plansPage.plansJsonLd(plans, { siteUrl: SITE_URL, providerTable })
+    .map(data => `<script type="application/ld+json">
+${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
+</script>`).join('\n');
+
+  const body = plansPage.plansPageBody(plans, { providerTable });
+
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${htmlEscape(plansPage.PLANS_HEADING)} · ${htmlEscape(SITE_NAME)}</title>
+<meta name="description" content="${htmlEscape(plansPage.PLANS_DESCRIPTION)}">
+<link rel="canonical" href="${pageUrl}">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
+<!-- feed 约定：这一页自己不产出条目（订阅是「内容更新」语义，套餐表不是更新），
+     但必须能被订阅发现 —— 与首页、状态页、变化页声明同两个根 Feed。 -->
+${feeds.rootFeedTags(prefix)}
+${themeScript}
+${style}
+<style>
+  /* 只用首页已有的设计变量，不新建一套视觉语言。
+     这是一张**宽表**（11 列），所以外层必须有横滚容器：
+     /status/ 那一页的教训是「桌面端一切正常、手机上整页横滚，而所有静态检查都是绿的」。 */
+  .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+  .stop h1 { font-size: 19px; margin: 0; }
+  .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
+  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 82ch; }
+  .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
+  .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: 82ch; }
+  .plist b { color: var(--ink2); }
+  .ptable-wrap { overflow-x: auto; }
+  .ptable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  .ptable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
+  .ptable th, .ptable td { text-align: left; padding: 9px 11px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
+  .ptable thead th { border-top: 0; color: var(--mut); font-weight: 600; white-space: nowrap; }
+  .ptable tbody th { font-weight: 600; white-space: nowrap; }
+  .ptable td { min-width: 92px; }
+  .ptable small { display: block; color: var(--mut); font-weight: 400; font-size: 11.5px; margin-top: 2px; line-height: 1.5; }
+  .ptable .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ptable .num small { text-align: right; }
+  .ptable a { color: var(--brand); }
+  .ptag { margin-left: 4px; color: var(--mut); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 0 6px; font-size: 10.5px; }
+  .pnone { color: var(--mut); }
+  @media (max-width: 760px) { .ptable th, .ptable td { padding: 8px 9px; } }
+</style>
+${jsonLdBlocks}
+</head>
+<body>
+  <header class="top">
+    <div class="topin">
+      <a class="brand" href="${prefix}">
+        <span class="mark" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
+            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
+          </svg>
+        </span>
+        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
+      </a>
+      <a class="jumpback" href="${prefix}">← 返回全部优惠</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main id="main">
+${body}
+    </main>
+    ${footer}
+  </div>
+</body>
+</html>
+`;
+}
+
+/* ------------------------------------------------------------------ */
+/* 分类页（/student/ /developer/ /free-api/）                           */
+/* ------------------------------------------------------------------ *//**
  * 分类页：**一条优惠一个静态 URL 之外的第二类落地页**。
  *
  * ## 为什么要它们
@@ -2093,6 +2225,39 @@ function assemble() {
   console.log(`  变化雷达页: /changes/（基准日 ${radar.asOf || '未知'} · 高价值 ${changes.SECTION_ORDER
     .reduce((sum, key) => sum + (Number(radar.totals[key]) || 0), 0)} 条 · 其他 ${radar.totals.other} 条）`);
 
+  // 套餐对比页（/plans/coding/，v2.1 第二段）——同样**始终生成**。
+  //
+  // 它为什么不能像「零条目的按需求页」那样跳过：这一页回答的是「长期用什么套餐」，
+  // 条数为 0 也只说明我们还没收录，而不是这一页没有价值；路由凭空消失更糟。
+  // 数据非法会被这里拦下（与 validate.js 同一把尺子，不重写判据）：宁可不发布，
+  // 也不要把一份自相矛盾的套餐表发出去 —— 读者无法从页面上看出哪一格是错的。
+  const plansStore = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8'));
+  const providerTable = providers.load().table;
+  {
+    const result = planSchema.validatePlansStore(plansStore, { providerTable });
+    if (!result.ok) {
+      throw new Error(`plans.json 未通过数据集级校验（${result.errors.length} 项）：\n  - ${result.errors.slice(0, 5).join('\n  - ')}`);
+    }
+    const dataProblems = plansPage.assertDataHonesty(plansStore.plans);
+    if (dataProblems.length) {
+      throw new Error(`套餐数据里出现结论性词汇（${dataProblems.length} 处）：\n  - ${dataProblems.slice(0, 5).join('\n  - ')}`);
+    }
+  }
+  const plansDir = path.join(OUT, 'plans', 'coding');
+  fs.mkdirSync(plansDir, { recursive: true });
+  const plansHtml = renderPlansPage(plansStore, html, { providerTable });
+  fs.writeFileSync(path.join(plansDir, 'index.html'), plansHtml, 'utf8');
+  {
+    const pageProblems = plansPage.assertPageHonesty(plansHtml, plansStore.plans, { providerTable });
+    if (pageProblems.length) {
+      throw new Error(`套餐对比页的诚实性断言未通过（${pageProblems.length} 处）：\n  - ${pageProblems.slice(0, 5).join('\n  - ')}`);
+    }
+  }
+  const plansComputable = plansStore.plans
+    .filter(plan => planSchema.deriveMetrics(plan)).length;
+  console.log(`  套餐对比页: /plans/coding/（${plansStore.count} 条 · ${new Set(plansStore.plans.map(p => p.provider)).size} 个平台` +
+    ` · 名义 Token 单价可计算 ${plansComputable} 条 · 页面 ${(plansHtml.length / 1024).toFixed(1)} KB）`);
+
   const dealUrls = detailPages.map(page => `  <url>
     <loc>${page.url}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -2117,7 +2282,7 @@ function assemble() {
     <priority>${SITEMAP_PRIORITY[page.kind] || '0.8'}</priority>
   </url>`).join('\n');
   const sitemapEntries = [SITE_URL, ...directoryPages.filter(page => page.indexable).map(page => page.url),
-    `${SITE_URL}status/`, `${SITE_URL}changes/`, `${SITE_URL}feeds/`,
+    `${SITE_URL}status/`, `${SITE_URL}changes/`, `${SITE_URL}feeds/`, `${SITE_URL}${plansPage.PLANS_ROUTE}`,
     ...detailPages.map(page => page.url)];
 
   // 状态页也进 sitemap（五条既有约定的第三条，v1.1 收口补）。
@@ -2152,6 +2317,16 @@ function assemble() {
     <priority>0.6</priority>
   </url>`;
 
+  // 套餐对比页进 sitemap：priority 0.9 —— 它与分类页 / 按需求页同级，**都是入口**，
+  // 而不是详情叶子（详情页 0.7）或工具页（状态页 0.3、订阅中心 0.6）。
+  // `changefreq: weekly` 是实话：套餐不会每天变（这一点与变化页的 daily 正相反）。
+  const plansUrl = `  <url>
+    <loc>${SITE_URL}${plansPage.PLANS_ROUTE}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>`;
+
   fs.writeFileSync(path.join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -2164,6 +2339,7 @@ ${directoryUrls}
 ${statusUrl}
 ${changesUrl}
 ${feedsUrl}
+${plansUrl}
 ${dealUrls}
 </urlset>
 `, 'utf8');
@@ -2258,6 +2434,7 @@ ${dealUrls}
       'status/',
       'changes/',
       'feeds/',
+      plansPage.PLANS_ROUTE,
       ...detailPages.map(page => `deal/${encodeURIComponent(page.id)}/`),
       ...directoryPages.map(page => page.route)
     ])
@@ -2307,6 +2484,48 @@ function selfCheck(built) {
   console.log(`  deals.json: schemaVersion=${payload.schemaVersion}, count=${payload.count}, updatedAt=${payload.updatedAt}`);
   if (payload.schemaVersion !== 2) fail('schemaVersion 不是 2');
   if (payload.count !== payload.deals.length) fail('count 与 deals 长度不一致');
+
+  // ---- v2.1：发布出去的那份 plans.json，必须与源文件逐字节相同 ----
+  //
+  // 与下面 deals 那一大段是**同一个理由**（发布数据 = 源 + 声明过的变换），
+  // 但结论不同：plans 在发布链上**没有任何变换**（译文/派生字段都还不存在），
+  // 所以这里断言的是最强的那一种 —— **逐字节相等**。
+  // 一旦将来要在构建期给它注入派生字段（比如 provider 显示名），这条断言会立刻变红，
+  // 逼人把「注入什么」写下来 —— 那正是它该干的事。
+  {
+    const publishedPlans = path.join(OUT, 'plans.json');
+    const sourcePlans = path.join(ROOT, 'plans.json');
+    if (!fs.existsSync(publishedPlans)) fail('缺少 plans.json（v2.1 起它在 PUBLIC_FILES 里）');
+    else {
+      const a = fs.readFileSync(sourcePlans, 'utf8');
+      const b = fs.readFileSync(publishedPlans, 'utf8');
+      if (a !== b) fail('dist/plans.json 与源 plans.json 不是逐字节相同');
+      else console.log(`  ✓ plans.json: 与源文件逐字节相同（${(b.length / 1024).toFixed(1)} KB）`);
+    }
+
+    // 套餐对比页：**从磁盘回读**再跑一遍诚实性断言。
+    //
+    // 为什么不在写盘时信一次就够了：那个断言看的是内存里的字符串，
+    // 而读者拿到的是磁盘上的字节（写盘编码、被别的步骤改写、路径写错……
+    // 都是「内存里对、盘上不对」的形态）。这里读回来查，两边都要对得上。
+    const plansPageFile = path.join(OUT, plansPage.PLANS_ROUTE, 'index.html');
+    if (!fs.existsSync(plansPageFile)) fail(`缺少 ${plansPage.PLANS_ROUTE}index.html`);
+    else {
+      const diskPlans = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8'));
+      const diskTable = providers.load().table;
+      const pageProblems = [
+        ...plansPage.assertPageHonesty(fs.readFileSync(plansPageFile, 'utf8'), diskPlans.plans, { providerTable: diskTable }),
+        ...plansPage.assertDataHonesty(diskPlans.plans)
+      ];
+      if (pageProblems.length) fail(`套餐对比页未通过诚实性断言：${pageProblems.slice(0, 3).join('、')}`);
+      else {
+        const forbidden = plansPage.FORBIDDEN_CLAIM_WORDS.filter(word =>
+          fs.readFileSync(plansPageFile, 'utf8').includes(word));
+        if (forbidden.length) fail(`套餐对比页出现结论性词汇：${forbidden.join('、')}`);
+        else console.log(`  ✓ 套餐对比页: ${diskPlans.count} 行 · 口径文案在位 · 无结论性词汇（查了 ${plansPage.FORBIDDEN_CLAIM_WORDS.length} 个词）`);
+      }
+    }
+  }
 
   // ---- 源数据 vs 发布数据的一致性门禁（v1.0 就记着的债，v1.1 收口补上）----
   //
@@ -2916,6 +3135,9 @@ function selfCheck(built) {
       ['changes/index.html', '../'],
       // v1.6：订阅中心（同样一层深）
       ['feeds/index.html', '../'],
+      // v2.1：套餐对比页是**两层**深路由。深度写错的话，这一页的页头/页脚内链全是 404，
+      // 而页面本身看起来完全正常 —— 所以它必须进这张逐层扫描表。
+      [`${plansPage.PLANS_ROUTE}index.html`, '../../'],
       ...built.collectionPages.map(page => [`${page.slug}/index.html`, '../']),
       // v1.2 遗留的扫描盲区：按需求页是**两层**路由，却一直没进这张表 ——
       // 于是「某一层页脚的相对前缀写错」在那 10 个页面上不会被这条断言照到。
@@ -3092,12 +3314,13 @@ function selfCheck(built) {
   // 而且条数不再手写公式 —— 直接与构建期生成的那份 `sitemapEntries` 逐条对账。
   const indexableDirectories = built.directoryPages.filter(page => page.indexable);
   const expectedLocs = dealEntries.length + 1 /* 首页 */ + indexableDirectories.length + 1 /* 状态页 */
-    + 1 /* 变化雷达页 */ + 1 /* 订阅中心 */;
+    + 1 /* 变化雷达页 */ + 1 /* 订阅中心 */ + 1 /* 套餐对比页 */;
   if (sitemapLocs.length !== expectedLocs) {
     fail(`sitemap ${sitemapLocs.length} 条 ≠ 首页 1 + 可索引落地页 ${indexableDirectories.length}` +
       `（分类页 ${built.collectionPages.length} + 按需求页/别名 ${built.needPages.length} 中可索引的` +
       ` + 分类落地页 ${built.categoryPages.length} + 厂商落地页 ${built.vendorPages.length}` +
-      ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 订阅中心 1 + 详情页 ${dealEntries.length}`);
+      ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 订阅中心 1 + 套餐对比页 1` +
+      ` + 详情页 ${dealEntries.length}`);
   } else {
     const notListed = dealEntries.filter(deal => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(deal.id)}/`)));
     const directoriesNotListed = indexableDirectories.filter(page => !sitemapLocs.includes(page.url));
@@ -3108,10 +3331,11 @@ function selfCheck(built) {
     else if (!sitemapLocs.includes(`${SITE_URL}status/`)) fail('sitemap 漏了状态页 status/');
     else if (!sitemapLocs.includes(`${SITE_URL}changes/`)) fail('sitemap 漏了变化雷达页 changes/');
     else if (!sitemapLocs.includes(`${SITE_URL}feeds/`)) fail('sitemap 漏了订阅中心 feeds/');
+    else if (!sitemapLocs.includes(`${SITE_URL}${plansPage.PLANS_ROUTE}`)) fail(`sitemap 漏了套餐对比页 ${plansPage.PLANS_ROUTE}`);
     else console.log(`  ✓ sitemap: ${sitemapLocs.length} 条（首页 + ${built.collectionPages.length} 个分类页 + ` +
       `${built.needPages.length} 条按需求/别名页中可索引的部分 + ${built.categoryPages.length} 个分类落地页 + ` +
       `${built.vendorPages.length} 个厂商落地页 + ${built.hubPages.length} 个枢纽页 + 状态页 + 变化雷达页 + 订阅中心 + ` +
-      `${dealEntries.length} 个详情页；${built.aliasPages.length} 条别名页已排除）`);
+      `套餐对比页 + ${dealEntries.length} 个详情页；${built.aliasPages.length} 条别名页已排除）`);
   }
 
   // 分类页：**逐条回读对账**，而不是「文件存在就算过」。
@@ -3448,6 +3672,7 @@ function selfCheck(built) {
       ['status/index.html', '状态页', '../'],
       ['changes/index.html', '变化雷达页', '../'],
       ['feeds/index.html', '订阅中心', '../'],
+      [`${plansPage.PLANS_ROUTE}index.html`, '套餐对比页', '../../'],
       ...built.collectionPages.map(page => [`${page.slug}/index.html`, `/${page.slug}/`, '../']),
       ...built.needPages.map(page => [`${page.route}index.html`, `/${page.route}`, '../../']),
       // v1.7：新增的四类页面同样要声明订阅源（分类页/厂商页还各有自己的那一份 Feed）。
@@ -3592,7 +3817,17 @@ function selfCheck(built) {
       }),
       readPage('status/', { kind: 'status', expectItemList: false }),
       readPage('changes/', { kind: 'changes', expectItemList: true }),
-      readPage('feeds/', { kind: 'feeds', expectItemList: false })
+      readPage('feeds/', { kind: 'feeds', expectItemList: false }),
+      // v2.1：套餐对比页。ItemList 指向**各自的官方定价页**（与首页同一口径），
+      // 所以成员校验对不上（它按站内 `deal/<id>/` 判成员）—— 显式关掉那一条，
+      // 而不是为了让断言通过去伪造一个本站不存在的套餐详情页。
+      // 行数校验**保留**：ItemList 条数必须等于页面上的 `data-item` 行数。
+      readPage(`${plansPage.PLANS_ROUTE}`, {
+        kind: 'plans',
+        expectItemList: true,
+        checkItemListMembers: false,
+        count: JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8')).count
+      })
     ].filter(Boolean);
     const dealDescriptors = dealEntries.map(deal => readPage(`deal/${encodeURIComponent(deal.id)}/`, {
       kind: 'deal', expectItemList: false, itemIds: [deal.id]

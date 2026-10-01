@@ -165,6 +165,16 @@ const descriptors = [];
 const rowMismatches = [];
 const flat = m => String(m).split('/').filter(s => s && s !== '.').join('/');
 
+/**
+ * 固定静态路由 → 页面类型。
+ *
+ * `kind` 在这一层决定两件事：**ItemList 是否必须在场**、以及**可见正文下限**（`textFloor`）。
+ * 单层路由（`status/` `changes/` `feeds/`）可以由路由字符串直接推出来，但
+ * `/plans/coding/` 是两级，推出来会变成 `plans/coding` —— 那既不是任何一条 textFloor 分支，
+ * 也让 ItemList 的判定落在默认值上。**显式登记**比"碰巧能用"可靠。
+ */
+const FIXED_KINDS = { 'status/': 'status', 'changes/': 'changes', 'feeds/': 'feeds', 'plans/coding/': 'plans' };
+
 for (const route of routes) {
   const rel = route === '' ? 'index.html' : `${route}/index.html`;
   const html = fs.readFileSync(path.join(OUT, rel), 'utf8');
@@ -176,7 +186,8 @@ for (const route of routes) {
 
   let itemIds = [];
   let childRoutes = [];
-  let kind = route === '' ? 'home' : (route.startsWith('deal/') ? 'deal' : route.replace(/\/$/, ''));
+  let kind = route === '' ? 'home'
+    : (route.startsWith('deal/') ? 'deal' : (FIXED_KINDS[route] || route.replace(/\/$/, '')));
 
   if (spec) {
     kind = spec.kind;
@@ -209,11 +220,16 @@ for (const route of routes) {
     itemIds,
     childRoutes,
     summary: [], // 摘要数字由 seo.validate 按 data-summary-* 标记独立重算（这里不给「答案」）
-    count: spec ? (spec.kind === 'hub' ? childRoutes.length : itemIds.length) : itemIds.length,
+    count: spec ? (spec.kind === 'hub' ? childRoutes.length : itemIds.length)
+      : (kind === 'plans' ? rows.items.length : itemIds.length),
     pinned: Boolean(spec && spec.pinned),
     expectItemList: !['deal', 'status', 'feeds'].includes(kind),
     checkItemListRows: kind !== 'home',
-    checkItemListMembers: kind !== 'home',
+    // 首页与套餐页的 ItemList 都指向**厂商官方页**（本站的既定口径：主链接给到官方），
+    // 因此「ItemList 里的 url 必须是本页的站内条目」这条判据对它们不适用 ——
+    // 关掉的是**成员归属**，不是 ItemList 本身：在场性、声明数 == 元素数、以及
+    // 声明数 == 页面数据行数三条都照常查。
+    checkItemListMembers: kind !== 'home' && kind !== 'plans',
     feedMatch: []
   });
 }

@@ -45,6 +45,9 @@ function textFloor(kind, itemCount) {
     case 'status': return 600;
     case 'changes': return 600;
     case 'feeds': return 600;
+    // v2.1：套餐对比页是一张随条目数变长的表 —— 与集合页同一条口径（表体空掉必然低于它）。
+    // 口径文案（口径与说明那五条）本身就有一百多字，所以下限从 600 起步而不是 0。
+    case 'plans': return 600 + 60 * n;
     case 'home': return 3000;
     default: return 600 + 60 * n;
   }

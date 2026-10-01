@@ -166,10 +166,19 @@ const GATE_STEP_NAMES = [
   // v2.0 新增：采集器 fixture 回放（离线）。把解析器行为钉成契约，
   // 让"改采集器"这件事第一次有了可判定的回归判据。
   'Collector fixtures (offline replay)',
+  // v2.1 新增：Coding Plan 数据模型（plans.json）与套餐对比页的离线自测。它红的时候没有别的
+  // 步骤会替它红 —— "requests 套餐不得生成 Token 单价""限速套餐不得写固定额度"
+  // "原价未知不得填 0""改价不得换 id""三态不得与 false 混用""页面上不许出现结论性词汇"
+  // "算不出的单价必须显示成 —"这些承诺只在这一步被验证。
+  'Plans self-test (data + page)',
   'Assemble site (same path as deploy.yml)',
   // v1.6 新增：**真实连续构建**两次，逐字节比对全部 Feed 文件。自测证明的是
   // 「纯函数同输入同输出」，证明不了「构建脚本没把时钟写进产物」——两者红的含义不同。
   'Feeds reproducibility (build twice, byte-compare)',
+  // v2.1 新增：plans.json 可重建性 —— 盘上那份必须等于人工来源层产出的那一份（逐字节）。
+  // 与上一条红的含义不同：Feeds 那条问「构建产物里有没有被塞进时钟」，
+  // 这一条问「有没有人手改了派生产物 / 改了来源层却忘了重建」。
+  'Plans reproducibility (curated → plans.json, byte-compare)',
   // v1.7 新增：**只读 dist/** 的 SEO 独立验收（可索引性 / 条目集合 / sitemap 成员 /
   // Feed 清单全部现场重新推导）。它是唯一一处「输入与构建期完全不同源」的 SEO 检查。
   'SEO verification (independent, from dist/)',
