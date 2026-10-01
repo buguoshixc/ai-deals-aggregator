@@ -203,6 +203,18 @@ runs:
       shell: bash
       run: node scripts/tools/plans-selftest.js
 
+    # v2.3 新增：套餐变化日志自测（零依赖、离线、秒级）。
+    # 它盯的是这一层赖以成立的全部承诺：只记重要字段（lastSeen / verifiedAt / evidence /
+    # 量化型套餐的 description 变化 → 0 事件）、**数组顺序变化不产生事件**、
+    # 值决定类型（活动价开始/结束/换挡、额度增减 vs 口径变化、模型增删 vs 权限变化）、
+    # Stable event ID（派生值，手写必红）、**一次没见到不算下线 + 批量消失熔断**、
+    # 重复运行不重复产生事件、时间只来自数据（日期倒填被拒）、链与上限必红，
+    # 以及「机制只有一份实现」（静态扫描 history-core 的边界）。
+    # 判断标准与上面几支相同：它红的时候没有别的步骤会替它红。
+    - name: Plan-history self-test
+      shell: bash
+      run: node scripts/tools/plan-history-selftest.js
+
     # 发布产物由 build-local.js 组装（与 deploy.yml 完全同一条路径），
     # 失败即拦：能装出坏产物就不该合并、更不该发布。
     - name: Assemble site (same path as deploy.yml)
@@ -224,6 +236,16 @@ runs:
     - name: Plans reproducibility (curated → plans.json, byte-compare)
       shell: bash
       run: node scripts/tools/check-plans-reproducible.js
+
+    # v2.3 新增：套餐变化日志与当前 `plans.json` 的一致性门禁。
+    # 与上一条红的含义不同：Plans reproducibility 问的是「文件是不是来源层产出的那一份」，
+    # 这一条问的是「这份数据是怎么变过来的」——把一次性基线 + 追加事件重放一遍，
+    # 必须逐字段等于今天的 plans.json；链断裂 / 记录静默消失 / 未跟踪字段 /
+    # 手写 eventId / 观测期外的缺席都会在这里红。
+    # 没有它，「套餐变化」就是一段谁都能往里面写一条的文本，而页面与构建全绿。
+    - name: Plan-history verify (log consistent with plans.json)
+      shell: bash
+      run: node scripts/tools/check-plan-history.js
 
     # v1.7 SEO 独立验收：**只读 dist/**，把可索引性、条目集合、sitemap 成员、Feed 清单
     # 全部从产物现场重新推导一遍，再与页面上的标记逐个对账。

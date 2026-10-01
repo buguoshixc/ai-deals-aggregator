@@ -93,6 +93,8 @@ const bundle = buildWithVendor({
 /** 构建期真实生成的全部站内路由（与 build-local 的 pageRoutes 同构） */
 function pageRoutesOf(deals) {
   const pages = new Set(['', 'status/', 'changes/', 'feeds/']);
+  // v2.3：套餐对比页 —— 套餐变化 Feed 的主页指向它（缺了会把「主页指向不存在页面」判成真问题）
+  pages.add(feeds.PLAN_CHANGE_FEED.pageRoute);
   for (const deal of deals) {
     if (deal && deal.type === 'deal') pages.add(`deal/${encodeURIComponent(deal.id)}/`);
   }
@@ -315,11 +317,11 @@ section('五、排除项与空 Feed 策略');
   const emptyFlagged = new Set(verdict.problems.filter(problem => problem.code === 'not-empty')
     .map(problem => problem.feed));
   const emptyIds = synthetic.feeds.filter(feed => !feed.items.length).map(feed => feed.spec.id);
-  check('空 Feed 会被判红（除 new / changes 外）',
-    emptyIds.every(id => ['new', 'changes'].includes(id) || [...emptyFlagged].some(path => path.includes(`/${id}.`))),
+  check('空 Feed 会被判红（除 new / changes / plan-changes 外）',
+    emptyIds.every(id => ['new', 'changes', 'plan-changes'].includes(id) || [...emptyFlagged].some(path => path.includes(`/${id}.`))),
     `为空：${emptyIds.join(',')} · 判红：${[...emptyFlagged].join(',')}`);
-  check('new / changes 为空不判红（起算日之前本来就没有变化）',
-    ![...emptyFlagged].some(path => /\/(new|changes)\./.test(path)), [...emptyFlagged].join(','));
+  check('new / changes / plan-changes 为空不判红（起算日之前本来就没有变化）',
+    ![...emptyFlagged].some(path => /\/(new|changes|plan-changes)\./.test(path)), [...emptyFlagged].join(','));
   check('空的变化 Feed 在描述里如实说明起算日与「还没有变化」', (() => {
     const feed = synthetic.feeds.find(item => item.spec.id === 'changes');
     return /还没有观测到/.test(feed.description) && /起算/.test(feed.description);
@@ -478,7 +480,123 @@ section('八、Tooth Test：篡改必须红');
 }
 
 /* ------------------------------------------------------------------ */
-section('九、渲染入口与页面同源');
+section('九、套餐变化订阅源（v2.3：另一份数据的变化流）');
+
+{
+  const planSchema = require('../lib/plan-schema');
+  const planHistory = require('../lib/plan-history');
+  const planChanges = require('../lib/plan-changes');
+  const providers = require('../lib/providers');
+  const plans = planSchema.loadPlans(planSchema.PLANS_FILE).plans;
+
+  // 夹具：真实套餐 + 一次改价 + 一次新增模型 ⇒ 两条套餐变化事件
+  const clone2 = value => JSON.parse(JSON.stringify(value));
+  const pricePlan = plans.find(plan => plan.billing.promoPrice === null && typeof plan.billing.regularPrice === 'number');
+  const modelPlan = plans.find(plan => !Array.isArray(plan.supportedModels));
+  const nextPlans = clone2(plans).map(plan => {
+    if (pricePlan && plan.id === pricePlan.id) plan.billing.regularPrice = pricePlan.billing.regularPrice - 10;
+    if (modelPlan && plan.id === modelPlan.id) plan.supportedModels = [{ name: 'DeepSeek V4.1', role: 'included', note: null }];
+    return plan;
+  });
+  const planStore = planHistory.emptyStore({ at: AS_OF });
+  planStore.baseline = planHistory.baselineOf(plans, { at: AS_OF });
+  const recorded = planHistory.record(planStore, {
+    previous: plans, next: nextPlans, at: AS_OF, runAt: `${AS_OF}T00:00:00.000Z`,
+    labels: new Map(plans.map(plan => [plan.id, { title: plan.planName, vendor: plan.provider }]))
+  }).store;
+  const planRadar = planChanges.buildPlanRadar({ plans: nextPlans, store: recorded, asOf: AS_OF, availability: 'ok' });
+  const planBundle = buildWithVendor({
+    deals: payload.deals, store: historyStore.store, radar,
+    asOf: AS_OF, updatedAt: payload.updatedAt,
+    planRadar, planAvailability: 'ok', plans: nextPlans, providerTable: providers.load().table
+  });
+  const planFeed = planBundle.feeds.find(feed => feed.spec.kind === 'plan-changes');
+  const planPages = new Set(pageRoutesOf(payload.deals));
+
+  check('套餐变化 Feed 的 spec：路由 / 标题 / 主页 / 允许为空',
+    planFeed.spec.path === 'feed/plans/coding/changes.xml' &&
+    planFeed.spec.jsonPath === 'feed/plans/coding/changes.json' &&
+    planFeed.spec.pageRoute === feeds.PLAN_CHANGE_FEED.pageRoute &&
+    planFeed.spec.mayBeEmpty === true && planFeed.spec.homepage === false,
+    JSON.stringify(planFeed.spec));
+  check('套餐变化 Feed 的条目数 == 雷达里的变化条数（去掉元信息）',
+    planFeed.items.length === planChanges.itemsOf(planRadar).filter(item => item.type !== 'updated').length,
+    `${planFeed.items.length}`);
+  check('每一条的 guid == 日志里重算出来的事件身份',
+    planFeed.items.every(item => planHistory.eventsOf(recorded)
+      .some(event => planHistory.eventIdOf(event) === item.id)),
+    planFeed.items.map(item => item.id).join(','));
+  check('记录级元信息（updated）不进订阅',
+    planFeed.items.every(item => item.eventType !== 'updated'));
+  check('每条都深链到套餐对比页的那一行（#plan-<id>）',
+    planFeed.items.every(item => item.link === `${feeds.SITE_URL}${feeds.PLAN_CHANGE_FEED.pageRoute}#plan-${item.planId}`));
+  check('正文里写着变化本身（「正常价格 … → …」）',
+    planFeed.items.some(item => /正常价格/.test(item.text) && /→/.test(item.text)));
+  check('套餐变化 Feed 未篡改时 0 个问题',
+    validateWithVendor({
+      feeds: planBundle.feeds, deals: payload.deals, store: historyStore.store,
+      pages: planPages, asOf: AS_OF, planEvents: planHistory.eventsOf(recorded), planAvailability: 'ok'
+    }).problems.length === 0);
+
+  // 描述：可用但没有变化 vs 日志不可用（两句不同的话）
+  const emptyBundle = buildWithVendor({
+    deals: payload.deals, store: historyStore.store, radar, asOf: AS_OF, updatedAt: payload.updatedAt,
+    planRadar: planChanges.buildPlanRadar({ plans, store: planHistory.emptyStore({ at: AS_OF }), asOf: AS_OF }),
+    plans, providerTable: providers.load().table
+  });
+  const emptyPlanFeed = emptyBundle.feeds.find(feed => feed.spec.kind === 'plan-changes');
+  check('没有套餐变化时：条目为空，描述如实说起算日',
+    emptyPlanFeed.items.length === 0 && /还没有观测到/.test(emptyPlanFeed.description) && /起算/.test(emptyPlanFeed.description),
+    emptyPlanFeed.description);
+  const offlinePlanBundle = buildWithVendor({
+    deals: payload.deals, store: historyStore.store, radar, asOf: AS_OF, updatedAt: payload.updatedAt,
+    planRadar: planChanges.buildPlanRadar({ plans, store: null, asOf: AS_OF, availability: 'unavailable' }),
+    planAvailability: 'unavailable', plans, providerTable: providers.load().table
+  });
+  const offlinePlanFeed = offlinePlanBundle.feeds.find(feed => feed.spec.kind === 'plan-changes');
+  check('套餐变化日志不可用时：描述说「没有拿到日志」而不是「没有变化」',
+    offlinePlanFeed.items.length === 0 && /没有拿到套餐变更日志/.test(offlinePlanFeed.description) &&
+    !/还没有观测到/.test(offlinePlanFeed.description), offlinePlanFeed.description);
+
+  // 牙：篡改套餐变化条目必须红
+  const planRun = mutate => {
+    const copy = clone2(planBundle.feeds);
+    mutate(copy);
+    for (const feed of copy) {
+      feed.rss = feeds.serializeRss(feed.spec, feed.items, { updatedAt: payload.updatedAt, description: feed.description });
+      feed.json = feeds.serializeJsonFeed(feed.spec, feed.items, { description: feed.description });
+    }
+    return validateWithVendor({
+      feeds: copy, deals: payload.deals, store: historyStore.store, pages: planPages, asOf: AS_OF,
+      planEvents: planHistory.eventsOf(recorded), planAvailability: 'ok'
+    }).problems;
+  };
+  const planExpect = (problems, code) => problems.some(problem => problem.code === code);
+
+  const t6 = planRun(list => {
+    const feed = list.find(item => item.spec.kind === 'plan-changes');
+    feed.items[0].id = 'deadbeef0000';
+  });
+  check('T6 套餐变化 guid 与日志对不上 → change-event-exists 红', planExpect(t6, 'change-event-exists'), t6.map(p => p.code).join(','));
+
+  const t7 = planRun(list => {
+    const feed = list.find(item => item.spec.kind === 'plan-changes');
+    feed.items = [Object.assign({}, feed.items[0], { id: planHistory.eventIdOf({
+      planId: feed.items[0].planId, type: 'updated', field: 'officialUrl', at: AS_OF, from: 'a', to: 'b'
+    }), eventType: 'updated' })];
+  });
+  check('T7 记录级元信息混进套餐变化订阅 → change-event-exists 红（它不在日志里）',
+    planExpect(t7, 'change-event-exists'), t7.map(p => p.code).join(','));
+
+  const t8 = planRun(list => {
+    const feed = list.find(item => item.spec.kind === 'plan-changes');
+    feed.items[0].link = feeds.SITE_URL + 'plans/api/#plan-000000000000';
+  });
+  check('T8 套餐变化条目指向不存在的页面 → link-exists 红', planExpect(t8, 'link-exists'), t8.map(p => p.code).join(','));
+}
+
+/* ------------------------------------------------------------------ */
+section('十、渲染入口与页面同源');
 
 {
   const tags = feeds.feedLinkTags(bundle.feeds.filter(feed => feed.spec.homepage), '');

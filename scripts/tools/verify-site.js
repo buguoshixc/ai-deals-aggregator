@@ -3464,6 +3464,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   const changesPage = await page.evaluate(() => {
     const heads = [...document.querySelectorAll('.chgsec h2')].map(h => h.textContent.trim());
     const links = [...document.querySelectorAll('a.chgn[href]')].map(a => a.getAttribute('href'));
+    const planSection = document.getElementById('plans');
     return {
       title: document.title,
       headings: heads,
@@ -3471,21 +3472,45 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       canonical: (document.querySelector('link[rel="canonical"]') || {}).href || '',
       alternates: [...document.querySelectorAll('link[rel="alternate"]')].map(l => l.getAttribute('href') || ''),
       wrongPrefix: links.filter(href => href.startsWith('deal/')).length,
-      links
+      links,
+      // v2.3：套餐变化块
+      jumpNav: Boolean(document.querySelector('nav.chgjump')),
+      dealsAnchor: Boolean(document.getElementById('deals')),
+      planHeads: planSection ? [...planSection.querySelectorAll('.chgsub h3')].map(h => h.textContent.trim()) : [],
+      planItems: planSection ? planSection.querySelectorAll('.pchglist li').length : -1,
+      planEmpty: planSection ? /没有观测到|没有拿到套餐变更日志/.test(planSection.innerText) : false,
+      planAnchorsOk: planSection
+        ? [...planSection.querySelectorAll('a.pchgwho[href^="#plan-"]')]
+          .every(a => Boolean(document.getElementById(a.getAttribute('href').slice(1))))
+        : false
     };
   });
-  check('/changes/ 页存在且有五个分栏', changesPage.headings.length === 5, changesPage.headings.join(' | '));
-  check('/changes/ 的分栏标题与条带同源（今日新增 / 最近 7 天变化 / 即将结束 / 已结束 / 重新出现）',
-    changesPage.headings.map(text => text.replace(/（\d+）$/, '')).join(',') === '今日新增,最近 7 天变化,即将结束,已结束,重新出现',
+  check('/changes/ 页存在且分栏齐（优惠五栏 + 套餐一栏）', changesPage.headings.length === 6, changesPage.headings.join(' | '));
+  check('/changes/ 的分栏标题与判据同源（优惠五栏 + 套餐变化）',
+    changesPage.headings.map(text => text.replace(/（\d+）$/, '')).join(',') ===
+    '今日新增,最近 7 天变化,即将结束,已结束,重新出现,套餐变化',
     changesPage.headings.join(' | '));
   check('/changes/ 有「不计入高价值的其他变化」折叠块', changesPage.other);
   check('/changes/ 的 canonical 自指', changesPage.canonical.endsWith('/changes/'), changesPage.canonical);
-  check('/changes/ 声明的是**变化**订阅源（v1.6 起这一页订的是变化本身）',
-    changesPage.alternates.length === 2 &&
-    changesPage.alternates.every(href => /feed\/changes\.(xml|json)$/.test(href)),
+  check('/changes/ 声明两类**变化**订阅源（优惠变化 + 套餐变化，各一对）',
+    changesPage.alternates.length === 4 &&
+    changesPage.alternates.filter(href => /feed\/changes\.(xml|json)$/.test(href)).length === 2 &&
+    changesPage.alternates.filter(href => /feed\/plans\/coding\/changes\.(xml|json)$/.test(href)).length === 2,
     changesPage.alternates.join(' · ') || '未声明');
   check('/changes/ 的内链都带输出深度前缀（../deal/…）', changesPage.wrongPrefix === 0,
     changesPage.wrongPrefix ? `${changesPage.wrongPrefix} 条前缀错误` : `抽查 ${changesPage.links.length} 条`);
+
+  // v2.3：套餐变化分栏（锚点导航 / 四栏 / 空态 / 锚点落点）
+  check('/changes/ 有「优惠变化 / 套餐变化」锚点导航且两个锚点都有落点',
+    changesPage.jumpNav && changesPage.dealsAnchor, `导航 ${changesPage.jumpNav} · #deals ${changesPage.dealsAnchor}`);
+  check('/changes/ 套餐变化有四栏（最近 7 天变化 / 今日新增 / 不再收录 / 重新出现）',
+    changesPage.planHeads.map(text => text.replace(/（\d+）$/, '')).join(',') ===
+    '今日新增,最近 7 天变化,不再收录,重新出现',
+    changesPage.planHeads.join(' | '));
+  check('/changes/ 套餐变化每条都深链到套餐对比页的真实行（锚点有落点）',
+    changesPage.planAnchorsOk, `${changesPage.planItems} 条 · 锚点落点 ${changesPage.planAnchorsOk}`);
+  check('/changes/ 套餐变化为空时给的是明确空态（不是一片空白）',
+    changesPage.planItems > 0 || changesPage.planEmpty, `${changesPage.planItems} 条`);
 
   // 雷达行 → 单条优惠的详情页（要求 4：详情页能看单条优惠的历史）。
   // 没有可点的雷达行时如实报「本轮无样本」，并改验另一条出口（条带 → /changes/）。
@@ -3511,11 +3536,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       heads: [...document.querySelectorAll('.chgsec h2')].map(h => h.textContent.trim()),
       since: /变更记录自 \d{4}-\d{2}-\d{2} 起/.test(document.body.textContent),
       disclaimer: document.body.textContent.includes('不表示厂商已经下架或优惠已经失效'),
-      other: document.body.textContent.includes('不计入高价值的其他变化')
+      other: document.body.textContent.includes('不计入高价值的其他变化'),
+      plan: document.body.textContent.includes('套餐变化'),
+      planRows: document.querySelectorAll('#plans .pchglist li').length
     }));
     check('无 JS 时 /changes/ 五栏 + 起算日 + 免责句全部可读',
-      noJs.heads.length === 5 && noJs.since && noJs.disclaimer && noJs.other,
+      noJs.heads.length === 6 && noJs.since && noJs.disclaimer && noJs.other,
       `分栏 ${noJs.heads.length} · 起算日 ${noJs.since} · 免责句 ${noJs.disclaimer} · 折叠块 ${noJs.other}`);
+    check('无 JS 时 /changes/ 的套餐变化块也可读（构建期静态渲染）',
+      noJs.plan && noJs.planRows >= 0, `套餐变化 ${noJs.plan} · ${noJs.planRows} 条`);
     await noJsCtx.close();
   }
 
@@ -3556,7 +3585,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     headings: [...document.querySelectorAll('.chgsec h2')].map(h => h.textContent.trim())
   }));
   check('390px：/changes/ 零横向溢出（列表式布局，不是宽表）',
-    changesMobile.overflowX <= 0 && changesMobile.headings.length === 5,
+    changesMobile.overflowX <= 0 && changesMobile.headings.length === 6,
     `溢出 ${changesMobile.overflowX}px · 分栏 ${changesMobile.headings.length}`);
 
   // 回到桌面首页：后面的量测（覆盖条数）要在这个状态下取
@@ -4101,6 +4130,131 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         `每句行数 [${notes.lines.join(' ')}] · 最多 ${notes.maxLines} 行`);
     }
 
+    // ⑩ v2.3：套餐变化（最近变化块 / 行锚点 / 时间线 / 订阅源）
+    //
+    // 判据一律**现场从 plan-history.json 推导**（不硬编码条数与文案）：日志每天可能变，
+    // 硬编码会在明天变成假红。这里刻意**不重算雷达分栏**（那是 `lib/plan-changes.js` 的判据，
+    // 复刻一份就等于两套判据）——只对账三件不依赖判据的事实：
+    //   ① 块里每条的日期都真的在日志里，且条数 ≤ 上限；
+    //   ② 块里每条的 `#plan-<id>` 锚点在页面上真的有落点；
+    //   ③ 订阅源里每条的 guid 都等于日志里重算出来的事件身份。
+    {
+      await page.goto(plansRouteUrl, { waitUntil: 'load' });
+      const planData = await page.evaluate(`(async () => {
+        const history = await (await fetch(${JSON.stringify(new URL('plan-history.json', base).href)})).json();
+        const plans = await (await fetch(${JSON.stringify(new URL('plans.json', base).href)})).json();
+        return {
+          startedAt: history.startedAt || null,
+          eventIds: (history.events || []).map(e => e.eventId).filter(Boolean),
+          eventDates: [...new Set((history.events || []).map(e => e.at))].sort(),
+          events: (history.events || []).map(e => ({ planId: e.planId, type: e.type, at: e.at })),
+          planIds: (plans.plans || []).map(p => p.id),
+          block: (() => {
+            const section = document.getElementById('plan-changes');
+            if (!section) return null;
+            return {
+              items: [...section.querySelectorAll('li')].map(li => ({
+                text: (li.innerText || '').replace(/\\s+/g, ' ').trim(),
+                date: ((li.querySelector('time') || {}).getAttribute || (() => null))('datetime'),
+                anchor: (li.querySelector('a.pchgwho') || {}).getAttribute
+                  ? (li.querySelector('a.pchgwho').getAttribute('href') || '') : ''
+              })),
+              text: (section.innerText || '').replace(/\\s+/g, ' ').trim(),
+              links: [...section.querySelectorAll('a')].map(a => a.getAttribute('href') || '')
+            };
+          })(),
+          rowAnchors: [...document.querySelectorAll('.ptable tbody tr[data-item]')].map(tr => tr.id),
+          // 详情模板是惰性的：展开第一行后读到的时间线才是浏览器里真实存在的那一份
+          templates: [...document.querySelectorAll('template[data-detail-for]')]
+            .map(t => ({ id: t.getAttribute('data-detail-for'), text: (t.content.textContent || '').replace(/\\s+/g, ' ').trim() }))
+        };
+      })()`);
+
+      check('/plans/coding/ 有「最近变化」块（构建期的最近变化就在这一块里）',
+        Boolean(planData.block), planData.block ? `${planData.block.items.length} 条` : '找不到 #plan-changes');
+      if (planData.block) {
+        const datesOk = planData.block.items.every(item => planData.eventDates.includes(item.date));
+        check('/plans/coding/ 最近变化块里每条的日期都真的在变更日志里（页面不自己造事件）',
+          datesOk && planData.block.items.length <= 5,
+          `${planData.block.items.length} 条 · 日志日期 [${planData.eventDates.join(', ') || '空'}]`);
+        const anchorsOk = planData.block.items.every(item => {
+          const id = (item.anchor.match(/#plan-([0-9a-f]{12})/) || [])[1];
+          return Boolean(id) && planData.plans.includes(id);
+        });
+        check('/plans/coding/ 最近变化块每条都深链到真实存在的套餐行',
+          anchorsOk, planData.block.items.map(i => i.anchor).join(' '));
+        const emptyWording = /没有观测到套餐变化|没有拿到套餐变更日志/.test(planData.block.text);
+        check('/plans/coding/ 变化日志为空/不可用时，最近变化块给的是明确空态（不是一片空白）',
+          planData.block.items.length > 0 || emptyWording, planData.block.text.slice(0, 120));
+        check('/plans/coding/ 最近变化块有指向 /changes/ 的入口（不是孤立的一块）',
+          planData.block.links.some(href => /changes\//.test(href)), planData.block.links.join(' '));
+      }
+
+      check('/plans/coding/ 每个套餐行都有 #plan-<id> 锚点（订阅与最近变化的落点）',
+        planData.rowAnchors.length === planData.planIds.length &&
+        planData.planIds.every(id => planData.rowAnchors.includes(`plan-${id}`)),
+        `${planData.rowAnchors.length} 个锚点 / ${planData.planIds.length} 条套餐`);
+
+      // 时间线：有变化的套餐，其模板必须写出条数；无变化的写「暂无变更记录」与起算日
+      const withEvents = new Map();
+      for (const event of planData.events) {
+        withEvents.set(event.planId, (withEvents.get(event.planId) || 0) + 1);
+      }
+      const templateOf = id => (planData.templates.find(t => t.id === id) || {}).text || '';
+      const timelineProblems = [];
+      for (const id of planData.planIds) {
+        const text = templateOf(id);
+        const total = withEvents.get(id) || 0;
+        if (total > 0) {
+          if (!text.includes(`变更记录（${total} 条）`)) timelineProblems.push(`${id}: 期望 ${total} 条`);
+        } else if (!text.includes('暂无变更记录')) {
+          timelineProblems.push(`${id}: 无变化却没有「暂无变更记录」`);
+        }
+      }
+      check('/plans/coding/ 每条套餐的详情时间线与变更日志逐条对账',
+        timelineProblems.length === 0, timelineProblems.slice(0, 3).join(' · ') ||
+        `${planData.planIds.length} 条套餐（有变化 ${withEvents.size} 条）`);
+
+      // 展开第一行：时间线必须真的出现在 DOM 里（模板是惰性的，展开前一个字节都不渲染）
+      {
+        const firstId = planData.planIds[0];
+        await page.click(`.ptable [data-detail="${firstId}"]`);
+        await page.waitForSelector(`#pdetail-${firstId}`, { timeout: 5000 });
+        const detailText = await page.evaluate(() =>
+          (document.querySelector('.pdetail') || { innerText: '' }).innerText.replace(/\s+/g, ' ').trim());
+        const total = withEvents.get(firstId) || 0;
+        check('/plans/coding/ 展开详情后时间线在 DOM 里（无变化时如实写「暂无变更记录」）',
+          total > 0 ? detailText.includes(`变更记录（${total} 条）`) : detailText.includes('暂无变更记录'),
+          detailText.slice(0, 160));
+        await page.click(`.ptable [data-detail="${firstId}"]`);
+      }
+
+      // 订阅源：guid 必须等于日志里的事件身份，链接必须带页内锚点
+      const planFeed = await page.evaluate(`(async () => {
+        const res = await fetch(${JSON.stringify(new URL('feed/plans/coding/changes.xml', base).href)});
+        const xml = await res.text();
+        const doc = new DOMParser().parseFromString(xml, 'application/xml');
+        return {
+          status: res.status,
+          parserError: doc.querySelector('parsererror') ? doc.querySelector('parsererror').textContent.slice(0, 100) : null,
+          guids: [...doc.querySelectorAll('item > guid')].map(g => (g.textContent || '').trim()),
+          links: [...doc.querySelectorAll('item > link')].map(l => (l.textContent || '').trim())
+        };
+      })()`).catch(error => ({ status: -1, error: String(error), guids: [], links: [] }));
+      check('/plans/coding/ 的套餐变化订阅源可访问且良构',
+        planFeed.status === 200 && !planFeed.parserError && planFeed.error === undefined,
+        `HTTP ${planFeed.status}${planFeed.parserError ? ` · ${planFeed.parserError}` : ''}`);
+      check('套餐变化订阅源的每一条 guid 都等于日志里重算出来的事件身份',
+        planFeed.guids.every(guid => planData.eventIds.includes(guid)),
+        `${planFeed.guids.length} 条 guid（日志 ${planData.eventIds.length} 条事件）`);
+      check('套餐变化订阅源的每一条链接都落在套餐对比页的某一行上',
+        planFeed.links.every(link => {
+          const id = (link.match(/#plan-([0-9a-f]{12})$/) || [])[1];
+          return Boolean(id) && planData.rowAnchors.includes(`plan-${id}`);
+        }),
+        planFeed.links.slice(0, 2).join(' '));
+    }
+
     // ⑨ 关掉 JS：基础静态内容必须仍在，而且一个控件都不能有（无死按钮）
     {
       const noJsCtx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
@@ -4112,7 +4266,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         official: [...document.querySelectorAll('.ptable tbody a[href^="http"]')].length,
         controls: document.querySelectorAll('button, select, input').length,
         tables: document.querySelectorAll('.ptable').length,
-        h1: document.querySelectorAll('h1').length
+        h1: document.querySelectorAll('h1').length,
+        // v2.3：最近变化块与行锚点必须是**构建期静态渲染**的（无 JS 也读得到）
+        changesBlock: document.querySelectorAll('#plan-changes').length,
+        changesText: ((document.querySelector('#plan-changes') || {}).innerText || '').replace(/\s+/g, ' ').trim(),
+        rowAnchors: [...document.querySelectorAll('.ptable tbody tr[data-item]')].filter(tr => /^plan-[0-9a-f]{12}$/.test(tr.id)).length
       }));
       await noJsCtx.close();
       check('/plans/coding/ 无 JS 时仍有完整静态内容（行数 / 官方链接 / h1 / 正文）',
@@ -4120,6 +4278,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         `${plain.rows} 行 · ${plain.official} 个官方链接 · 正文 ${plain.chars} 字`);
       check('/plans/coding/ 无 JS 时页面上零个交互控件（不给"点了没反应"的暗示）',
         plain.controls === 0 && plain.tables === 1, `控件 ${plain.controls} 个`);
+      check('/plans/coding/ 无 JS 时「最近变化」块与行锚点仍在（都是构建期静态渲染）',
+        plain.changesBlock === 1 && plain.changesText.length > 10 && plain.rowAnchors === truth.length,
+        `块 ${plain.changesBlock} 个 · 块内 ${plain.changesText.length} 字 · 锚点 ${plain.rowAnchors}/${truth.length}`);
     }
 
     // 入口：首页顶栏或页脚必须有这一条（站内入链由此满足 orphan 判据）。

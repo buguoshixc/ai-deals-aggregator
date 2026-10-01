@@ -171,6 +171,10 @@ const GATE_STEP_NAMES = [
   // "原价未知不得填 0""改价不得换 id""三态不得与 false 混用""页面上不许出现结论性词汇"
   // "算不出的单价必须显示成 —"这些承诺只在这一步被验证。
   'Plans self-test (data + page)',
+  // v2.3 新增：套餐变化日志（只记重要字段 / 数组顺序不误报 / 值决定类型 / Stable event ID /
+  // 一次没见到不算下线 + 批量熔断 / 日期倒填被拒 / 机制只有一份实现）。它与 v1.4 那一支
+  // 互补：后者管优惠的历史，这一支管套餐的历史，红的含义不同。
+  'Plan-history self-test',
   'Assemble site (same path as deploy.yml)',
   // v1.6 新增：**真实连续构建**两次，逐字节比对全部 Feed 文件。自测证明的是
   // 「纯函数同输入同输出」，证明不了「构建脚本没把时钟写进产物」——两者红的含义不同。
@@ -179,6 +183,9 @@ const GATE_STEP_NAMES = [
   // 与上一条红的含义不同：Feeds 那条问「构建产物里有没有被塞进时钟」，
   // 这一条问「有没有人手改了派生产物 / 改了来源层却忘了重建」。
   'Plans reproducibility (curated → plans.json, byte-compare)',
+  // v2.3 新增：套餐变化日志与当前 plans.json 的一致性（基线 + 事件重放必须等于今天的数据）。
+  // 与上一条红的含义不同：前者问「文件是不是来源层产出的」，这一条问「这份数据是怎么变过来的」。
+  'Plan-history verify (log consistent with plans.json)',
   // v1.7 新增：**只读 dist/** 的 SEO 独立验收（可索引性 / 条目集合 / sitemap 成员 /
   // Feed 清单全部现场重新推导）。它是唯一一处「输入与构建期完全不同源」的 SEO 检查。
   'SEO verification (independent, from dist/)',
