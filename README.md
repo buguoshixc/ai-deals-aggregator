@@ -4,7 +4,8 @@
 学生 / 教师 / 非营利折扣、限时促销。数据每日自动采集两次，经校验后发布到 GitHub Pages。
 
 - 线上地址：https://buguoshixc.github.io/ai-deals-aggregator/
-- 数据文件：`deals.json`（v2 契约，见下文）
+- 数据文件：`deals.json`（v2 契约，见下文）· `plans.json`（v1 契约 —— **AI Coding 套餐**，
+  与优惠分开建模，见 [数据契约（plans.json v1）](#数据契约plansjson-v1)）
 
 ## 设计原则
 
@@ -45,7 +46,7 @@ node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 in
 （bash 是 `\`、PowerShell 是反引号），写成多行会让其中一边复制过去跑不起来。
 
 ```bash
-npm run test:strict && npm run check:reproducible && npm run check:history && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:provenance && npm run selftest:history && npm run selftest:changes && npm run selftest:audience && npm run selftest:app-token && npm run build && npm run check:ci
+npm run test:strict && npm run check:reproducible && npm run plans:rebuild --dry-run && npm run check:plans:reproducible && npm run check:history && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:provenance && npm run selftest:history && npm run selftest:changes && npm run selftest:audience && npm run selftest:app-token && npm run selftest:plans && npm run build && npm run check:ci
 ```
 
 > `migrate:audience:verify` **不需要参数**：它默认跑 `scripts/data/fixtures/` 下那对合成夹具
@@ -97,10 +98,14 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 | `/vendor/<slug>/` | 按**规范厂商名**切的聚合页（9 页，v1.7） | ✅ |
 | `/vendor/` `/category/` | 上面两类页的目录，同时是面包屑的父级（v1.7） | ✅ |
 | `/deal/<id>/` | 每条优惠一个静态页（80 页） | ✅ |
+| `/plans/coding/` | **AI Coding 套餐对比**（v2.1：9 条套餐放在一张表里比，只列事实不排名） | ✅ |
 | `/changes/` `/feeds/` `/status/` | 变化雷达 / 订阅中心 / 数据源状态 | ✅ |
 | `/feed/**`、`feed.xml`、`feed.json` | 23 份订阅 × 2 种格式 = 46 个文件 | 资源，不进 sitemap |
 
+**合计 114 个 HTML 页**（111 条可索引 + 3 条 noindex 别名），sitemap **111 条**，dist **220 个文件**。
+
 契约（URL / 门槛 / 索引策略 / 27 个检查码）见 [`docs/SCHEMA-v1.7.md`](docs/SCHEMA-v1.7.md)；
+套餐数据与套餐页的契约见 [`docs/SCHEMA-v2.1.md`](docs/SCHEMA-v2.1.md)；
 「这一版到底发了什么、哪些页为什么没发」见 [`research/v1.7-seo-expansion-report.md`](research/v1.7-seo-expansion-report.md)。
 
 ## 数据契约（deals.json v2）
@@ -176,11 +181,62 @@ npm run build
 分类枚举：对话模型 / 图像绘画 / 视频 / 音频语音 / 编程开发 / 办公效率 / API服务 / 智能体 /
 搜索研究 / 设计创意 / 教育学习 / 其他。
 
+## 数据契约（plans.json v1）
+
+**这一层回答的是另一个问题**：Deals 说"现在有什么优惠"，Plans 说"长期使用时，各平台提供什么套餐"。
+两者**语义分离**：`plans.json` 不写进 `deals.json`，字段不互相注入，判据与门禁也各自独立
+（完整契约见 [`docs/SCHEMA-v2.1.md`](docs/SCHEMA-v2.1.md)）。
+
+```
+scripts/data/curated_plans.json   # 人写事实（价格 / 额度 / 模型 / 限制 / 官方引文）
+        ↓  npm run plans:rebuild  # 归一 + 算 id + 算 derivedMetrics（不联网、不读墙上时钟）
+plans.json                        # 派生产物（当前 9 条）；构建期原样发布到 dist/plans.json
+        ↓  npm run build          # 套上站点的壳与设计变量，渲染成 /plans/coding/ 静态页
+/plans/coding/                    # 读者看到的套餐对比页（预渲染，无 JS 可读）
+```
+
+三条与本项目其它数据层同源的纪律：
+
+1. **原始事实与派生指标分开**。人工文件只写事实；`id` 与 `derivedMetrics` 一律由脚本算。
+   手工改 `plans.json`（尤其手算单价）会被 `check:plans:reproducible` 逐字节比对抓住。
+2. **不猜**。原价未知写 `null`（**不是 0**）；没有固定额度就写 `rate_limited` / `other`
+   并把口径写进 `description`（不编一个 token 数）；查过但来源没说明就写 `"unknown"`（不是 `false`）。
+3. **不为了可比性扭曲厂商计费方式**。"名义 Token 单价"只在五个条件同时成立时产出（额度确实是
+   tokens、额度周期与计费周期一致、币种可处理、当前价明确、折算不随模型变化），否则一律 `null`。
+   当前 9 条**全部为 null** —— 因为没有任何一家厂商在官方页上给出固定 Token 额度（都是积分 /
+   用量池 / 窗口限速）。这是结论，不是缺省。
+
+| 门禁 | 管什么 |
+|---|---|
+| `npm run plans:rebuild --dry-run` | 盘上的 `plans.json` 是否就是来源层产出的那一份（只报差异） |
+| `npm run check:plans:reproducible` | 同上，且不一致即 exit 1（CI 门禁） |
+| `npm run selftest:plans` | 135 项：不该算的绝不算 / id 稳定 / 三态不混 / 只认官方出处 / 可重建 / **页面上不许出现结论性词汇、未知必须显示成「未标注」或「—」**（CI 门禁） |
+| `npm run validate`（含 `--strict`） | `plans.json` 的数据合法性 + 与 `providers.json`、`vendor-slugs.json` 的一致性 |
+| `npm run build` 的产物自检 | `dist/plans.json` 与源**逐字节相同**；套餐页从磁盘回读后重跑一遍诚实性断言 |
+| `npm run verify` §19 | 真浏览器：三个数值列与 `plans.json` 逐条对账、宽表在 390/360px 不撑开整页 |
+
+> **页面上不许出现的词**只有一处出处（`lib/plans-page.js` 的 `FORBIDDEN_CLAIM_WORDS`：
+> 性价比 / 最划算 / 排行榜 / 综合评分 / TOP 1 …），构建期查我们写下的字节、真浏览器查渲染出来的
+> 文字 —— 两类页面文案的红线从此是**可失败的断言**，不再是文档里的一句话。
+
+### 添加 / 修改一个套餐
+
+```
+1) 只在 scripts/data/curated_plans.json 里改事实，并附上官方页原文引文（≥1 条，≤200 字）
+2) 平台没登记？先在 scripts/data/providers.json 加一行（key / 显示名 / slug / 别名）
+3) npm run plans:rebuild        # 写 plans.json
+4) npm run validate --strict && npm run selftest:plans && npm run check:plans:reproducible
+```
+
+> 价格 / 额度 / 官方页 / 备注怎么改都**不会换 id**（id = `sha1(kind|provider|planName|计费周期)`），
+> 所以改价在后续的 Plan History 里是一件"变化"，而不是"一条记录消失、另一条出现"。
+
 ## 目录结构
 
 ```
 index.html                    前端（原生 HTML/CSS/JS，无构建；含预渲染标记与 RENDER-CORE 纯函数区）
-deals.json                    线上数据
+deals.json                    线上数据（优惠 / 福利）
+plans.json                    v2.1：AI Coding 套餐数据（见「数据契约（plans.json v1）」）
 robots.txt                    放行搜索引擎与 AI 爬虫（GEO）
 assets/logos/
   manifest.json               厂商 logo 登记表（名称/来源/取图方式/质量）
@@ -213,6 +269,10 @@ scripts/
     provenance.js             v1.3 信息来源：有界官方引文的归一/合并/预算 + 采集事实派生（心跳 join）
     changes.js                v1.5 变化雷达：分栏/窗口/高价值判定 + 文案微调归一（纯函数、零依赖、无网络）
     dom-digest.js             v2.0 页面结构摘要（计数/标记/探针命中，**不含正文**）+ 两代跨运行快照
+    plan-schema.js            v2.1 Coding Plan 契约：枚举 / makePlan / validatePlan / deriveMetrics（唯一判据处之一）
+    plans-page.js             v2.1 套餐对比页的**正文渲染**（纯函数）：列模型 / 未知的三种写法 /
+                              结论性词汇清单 / 页面级诚实性断言（构建期与自测共用同一个函数）
+    providers.js              v2.1 Provider 归一：providers.json 的唯一读入口 + 与 vendor-slugs 的 slug 一致性
     secret-scan.js            v2.0 密钥模式扫描（产物自检 / 送模型前脱敏 / 牙测试共用同一份模式表）
   ai/                         v2.0 AI 维护层（**可选、默认关闭、永不进入采集链路**）
     provider.js               generateStructured()：AI 的唯一出口（永不 throw，失败收敛成 invalid）
@@ -240,6 +300,9 @@ scripts/
   data/
     curated_cn.json           国内人工策展（可核验的官方优惠）
     curated_global.json       国外人工策展
+    curated_plans.json        v2.1 **plans 的人工来源层**：套餐事实（价格/额度/模型/限制/官方引文）
+                               —— 只写事实，`id` 与 `derivedMetrics` 由脚本算（写在这里会报错）
+    providers.json            v2.1 **provider 归一表**：key / 显示名 / slug / 别名（未登记的平台一律硬红）
     audience-overrides.json   v1.1 **第二个人工来源**：采集侧条目的六字段声明式补充（每条带引文）
     source-health.json        采集来源的跨运行状态（每轮 collect 写入，与 deals.json 同批提交）
     source-probes.json        v2.0 每个采集器依赖的选择器/正则/关键词**声明表**（诊断用的探针）
@@ -279,6 +342,9 @@ scripts/
     fixture-test.js           v2.0 采集器 fixture 回放：解析器行为的契约（离线，CI）
     build-fixtures.js         v2.0 从真实页面剪最小 DOM 片段并生成 expected（页面改版后手工重建）
     rebuild-deals.js          v2.0 离线重放 merge 重建 deals.json（不联网；ai-apply 之后自动跑）
+    rebuild-plans.js          v2.1 离线重建 plans.json（curated_plans.json → plans.json；--dry-run 只报差异）
+    check-plans-reproducible.js  v2.1 plans 可重建门禁：盘上那份必须与来源层产出的逐字节相同（CI）
+    plans-selftest.js         v2.1 Coding Plan 自测（117 项：不该算的绝不算 / id 稳定 / 三态 / 官方出处 / 可重建，CI）
     ai-review.js              v2.0 候选审阅表（只读；把「无据的确定」单列一栏）
     ai-accept.js              v2.0 记录人工决定（只改候选文件，不碰生产数据）
     ai-apply.js               v2.0 **唯一**会写生产数据的工具：只写两个人工来源层 + 门禁 + 失败回滚
@@ -295,6 +361,7 @@ scripts/
 `docs/SCHEMA-v1.3.md`（信息来源：证据层 / 派生采集事实 / 引文上限 / 渲染与状态词）、
 `docs/SCHEMA-v1.4.md`（优惠历史：四方案决策 / 存储契约 / 什么算重要变化 / ended 的两种含义 / 上限）
 与 `docs/SCHEMA-v1.5.md`（变化雷达：分栏与窗口 / 高价值判定 / 文案微调归一 / 空态与不可用 / 上限 / 路由与门禁）。
+另有 `docs/SCHEMA-v2.1.md`（Coding Plan 数据模型：`plans.json` v1 的完整契约）。
 
 ## 采集来源策略
 

@@ -2942,3 +2942,137 @@ v1.7 把键与 `feeds.js` 的分组都切到规范名（用**注入** `vendorKey
 - **对 v2.0 的判断**：**适合进入**，唯一前置条件仍是 v1.6 报告里那条 ——
   `deal-history.json` 今天仍是 **0 事件**，而 AI 辅助维护要判断的第一件事恰恰是「什么变化值得通知人」。
   建议先跑满 3 天采集拿到真实事件样本，再进 v2.0。
+
+### 2.40 `v2.1-coding-plan-data-model`：独立的 Coding Plan 数据契约（2026-10-01，分支 `v2.1-coding-plan-data-model`）
+
+**目标**：为「AI Coding 套餐对比」建立**独立于 Deals**、可长期维护 / 可校验 / 可重建 /
+能为 Phase 2.3 History 打底的数据契约 —— **不是**把普通套餐塞进 `deals.json`。
+
+**先说结论**：新增 `plans.json`（9 条 / 8 个平台 / 国内 7）与它的人工来源层 `curated_plans.json`、
+provider 归一表 `providers.json`，两道新 CI 门禁与 117 项自测（含题面 6 条 Tooth Test + 扩充的牙）。
+**前端一个字节没改** —— 实测三次构建的 `dist/` 全树 SHA256 完全相同。
+
+**Deals 与 Plans 怎么隔离**（题面第一条设计约束）
+
+| 维度 | Deals | Plans |
+|---|---|---|
+| 文件 / schemaVersion / 数组名 | `deals.json` / 2 / `deals`（**发布**） | `plans.json` / 1 / `plans`（**不发布**） |
+| 身份字段 | `vendor`：采集来的原始串，渲染期归一 | `provider`：必须登记过的规范 key |
+| `source` 的含义 | **采集器名**（登记在 `provenance.SOURCE_TYPES`） | **页面类型**（Official-Pricing / -Docs / -Announcement） |
+| 可重建门禁 | `check-reproducible`（值必须有源） | `check-plans-reproducible`（文件必须是来源层产出的那一份） |
+
+两者唯一的共享是**判据**不是数据。登记在案的语义冲突 10 条（`period` 同名不同义、`priceLine`
+自由文本 vs 数值价格、`pricingModel` 不复用、`source` 两义、`provenance` 可信度块不引入、
+`availability` 不给 plans、`vendor` vs `provider` 两套身份空间、引文白名单参数化、
+币种不进键名、`isGarbage` 会对 2 字名字误杀）逐条写在 `docs/SCHEMA-v2.1.md` §1.2。
+
+**本阶段最重要的设计点：派生指标"宁可全 null 也不强行算"**
+
+「名义 Token 单价」只在**五个条件同时成立**时产出：额度确实是 `tokens` 且数额明确 ·
+额度周期与计费周期一致且可比较 · 币种可处理 · 当前使用价格明确 · 折算不随模型倍率变化。
+真实数据 **9 条全部为 `null`**：6 条按积分（credits）、2 条是用量池（other）、1 条按窗口限速
+（rate_limited）—— **没有任何一家厂商在官方页面上给出固定 Token 额度**。
+智谱文档页那张"可用额度参考（亿 Tokens/周）"随缓存命中率变化，按契约只能记 `credits`。
+可计算路径由夹具覆盖（60 元 / 60 亿 tokens = 1 元每亿；活动价优先；年付以年为口径）。
+
+**额度与三态**
+
+`quota.type` 8 值枚举；量纲型（tokens/credits/requests/messages/compute_units）必须有正数 `amount`，
+非量纲型（rate_limited/unlimited_fair_use）**必须没有**（写了一个数就红），`other`
+与它们都必须写 `description`；`conversionDependsOnModel` **只允许出现在 credits/other** ——
+`tokens` 上写 `true` 判红，正是"额度随模型倍率变化时必须表达为 credits，不得伪装成固定 Token"。
+限制条件用 `{kind, value, note}` 数组，三态沿用仓库既有的 `true / false / "unknown"`
+（`"unknown"` 必须带 note；`0` / `1` / `"true"` 一律拒），**为未知值填 false 是硬错误**。
+
+**身份稳定**：`id = sha1(kind|provider|planName|计费周期)[:12]` —— 价格 / 额度 / URL / 备注
+都**不进** basis，因此**改价不换 id**（有牙守着三种改法）；数据集级同时查 `id` 唯一与
+`identityKey` 唯一，同平台的同一套餐不可能有两条身份。
+
+**校验的做法**：`validatePlan()` 不重抄规则，而是用 `makePlan(plan, {fromRecord:true})`
+把盘上那条记录**重新归一一次**再逐字段比对（与 v1.3 的 `validateEvidence()` 同一手法）——
+手改 id、手算 derivedMetrics、枚举拼错、文本多个空格，全部表现为"与归一结果不一致"。
+
+**门禁与实测**
+
+| 项目 | 结果 |
+|---|---|
+| `selftest:plans` | **117 项 0 失败**（含 6 条 Tooth Test + 聚合站出处/超长引文/未来日期/空数组/三态/未登记 provider/slug 分家/updatedAt/规范序/打乱输入仍逐字节相同） |
+| `check:plans:reproducible` | exit 0；**改了来源层却没重建会红**（实跑验证） |
+| 真实数据牙齿演练 ×2 | 给 credits 套餐硬塞 Token 单价 ⇒ `validate` exit 1；改来源层不重建 ⇒ 可重建门禁 exit 1；两次都**逐字节还原** |
+| 门禁步骤 | 27 → **29 步**（新增 `Plans data self-test`、`Plans reproducibility`）；`--expect-checks=35` **不变** |
+| `npm run build` ×2 + stash 对照 | **三次 dist 全树 SHA256 相同** ⇒ 本阶段零页面影响 |
+| `verify` / `verify:regress` / `verify:seo` | **335 / 341 / 8 项，全部 0 失败**（卡片 50→50 · 首屏 9→9 · 页高 4589→4665px 在容差内） |
+| 既有 20 道门禁 | 全绿（`selftest:provenance` 仍是 91 项 —— 引文层参数化没有改变 deals 侧行为） |
+
+**初始数据集**：Trae 免费 Free / 会员 Pro · 智谱 GLM Coding Plan Lite（**原价未知 → null**）·
+Qoder CN 个人专业版 · 腾讯 CodeBuddy 标准版 · 月之暗面 Moderato · MiniMax Token Plan Plus ·
+GitHub Copilot Pro · Cursor Pro。每条都来自本次实际抓取并读到的官方页，共 **24 条官方引文**。
+**候选未采信 6 类**（百度 Comate、Anthropic Claude 的官方页取不到价格文本；智谱/MiniMax 的
+新一代套餐未列价；Cursor Pro+/Ultra 在标签页里；GLM 的**历史档位价**刻意没有引用；
+各平台其余档位按"小而可靠"暂不扩）逐条写进报告。
+
+- **契约** `docs/SCHEMA-v2.1.md` · **报告** `research/v2.1-coding-plan-data-model-report.md`。
+  未合并、未推送。
+- **对 Phase 2.2 的判断**：**适合进入**。进入时要先解决三件事：把 `plans.json` 接进
+  `PUBLIC_FILES`（或在构建期注入派生字段）；`/plans/coding/` 是新落地页家族
+  （`itemsOf` 的 `match.by`、门槛分支、`textFloor`、sitemap 计数公式、SEO 描述符都要一起改，
+  且首页页高有 15% 硬容差）；把口径文案与禁词（性价比/最划算/TOP 1）补成可失败的断言。
+
+### 2.41 `v2.1-coding-plan-data-model` 第二段：把套餐数据发布出来、做成页面（2026-10-01）
+
+**起因**：2.40 收尾时列了「进入 Phase 2.2 之前要先解决的三件事」。用户说「解决那三件事」，
+于是这一轮就是那三件事 —— 它们正好构成 Phase 2.2 的第一段（**接线**），而不是整个 2.2。
+
+| 三件事 | 怎么解决的 |
+|---|---|
+| ① 把 `plans.json` 发布出来 | 加进 `build-local.js` 的 `PUBLIC_FILES`；产物自检新增一条**逐字节**断言：`dist/plans.json` 必须等于源文件。刻意**不做任何构建期注入** —— 这一页是预渲染的，浏览器不 fetch 套餐数据，注入派生字段只会凭空多一层"发布数据 ≠ 源数据" |
+| ② `/plans/coding/` 接成一条真路由 | 走 `/status/` `/changes/` `/feeds/` 那条**独立静态页**路径（不是落地页家族：它只有一条路由、不分页、不需要门槛）。**四张清单**逐处更新：页脚占位符 `__PLANS_HREF__`、sitemap 条数公式与成员断言、`pageRoutes`、两张逐层扫描表（页脚前缀 + 订阅声明）。`seo.js` 的 `textFloor` 新增 `plans` 分支（`600 + 60×条数`） |
+| ③ 口径文案与禁词变成断言 | 唯一出处 `lib/plans-page.js` 的 `FORBIDDEN_CLAIM_WORDS` 与 `PLAN_WORDING.nominalUnitPriceNote`。**三处查同一份清单**：构建期渲染后查内存、产物自检**从磁盘回读**再查、真浏览器查渲染出来的 `innerText`。数据层（套餐名/备注/额度口径）另查一遍 |
+
+**顺带纠正了 2.40 报告里的一处设计判断**：当时写的「`landing.js` 的 `itemsOf` 的 `match.by`
+也要一起改」是**过早的一般化** —— 那是家族页才需要的机制，而 `/plans/coding/` 只有一条路由。
+真正需要改的是上表那四张清单。以本节为准。
+
+**为什么页面正文住在 `lib/plans-page.js`**：`build-local.js` 一 require 就跑整条构建链，
+自测不可能把它当库用。正文渲染做成**纯函数**（不读盘、不联网、不看时钟），
+于是构建期与离线自测调的是同一个函数、同一套诚实性断言（`assertPageHonesty`）。
+
+**这一轮新抓到的两个真问题（都是断言抓的，不是人看出来的）**
+
+1. **面包屑回站根写成了 `../`**：`/plans/coding/` 是两层路由，`../` 会解析到 `/plans/` ——
+   一个不存在的地址。构建期 SEO 的 `internal-link-exists` 当场报「站内链接指向不存在的目标：plans」。
+   改成由路由深度推导的前缀，并补了一条断言（离线 + 真浏览器各一条）把它钉住。
+2. **页面诚实性断言第一版会在正常数据上失败**：判据写成「整行里有没有 `0`」，
+   于是 `2,000` 的末位 0 被判成「原价未知却像 0」。改成**逐个数值单元格与行模型比对**，
+   既没有歧义，也比正则强 —— 它同时钉住了「未知那一格显示的到底是什么」。
+
+**页面契约**（完整见 `docs/SCHEMA-v2.1.md` §16）
+
+11 列（平台 · 套餐 · 正常价格 · 当前活动价 · 计费周期 · 可用模型 · 额度类型 · 原始额度 ·
+名义 Token 单价 · 最近更新 · 备注）；每行一个 `data-item`；JSON-LD 三段
+（CollectionPage + BreadcrumbList + ItemList，ItemList 指向各平台**官方定价页**）；
+可索引、进 sitemap（priority 0.9）、声明两个根 Feed、正文下限 1140 字（实测 2971）；
+11 列宽表放在横滚容器里，390/360px 页面级溢出 **0px**。
+
+**未知的三种写法**（H4b 在页面上的落点）：`未标注`（文本缺失）· `—`（数值缺失 /
+**不可比较**）· `未确认`（三态）。并且**「原价未知」与「确实免费」成对断言**：
+`regularPrice === null` ⇒ 必须显示 `未标注`；`regularPrice === 0` ⇒ 必须显示含 0 的数字。
+只查一半会在另一个方向漏掉（把免费档也写成"未标注"，读者就再也看不到它）。
+
+**实测（全部本机实跑）**
+
+| 项目 | 结果 |
+|---|---|
+| 页面 | `/plans/coding/` 66.7 KB · 正文 2971 字 · 9 行 · h1 恰好 1 个 · ItemList 9 = 行 9 |
+| `selftest:plans` | **135 项 0 失败**（数据层 117 + 边界扫描 3 + 页面层 15，含 4 条页面牙） |
+| `verify`（真浏览器） | **350 项 0 失败**（+15 项 §19；三列数值与 `plans.json` 逐条对账、官链、口径文案、禁词、`../../`、390/360px 零溢出） |
+| `verify:regress` | **356 项 0 失败**（卡片 50→50 · 首屏 9→9 · 页高 4589→**4665px 未变** —— 页脚那条入口没有让页面变高） |
+| `verify:seo`（独立验收） | **8 项 0 失败**（114 页 · sitemap 111 · 孤儿 0 · 无效内链 0 · dist 220 文件） |
+| 构建 | 构建期 SEO 门禁 **27 个检查码 × 114 个页面全过**；`build` ×2 页面逐字节一致；`check:feeds:reproducible` 46 个 Feed 文件逐字节一致 |
+| 既有 20 道门禁 | 全绿（`selftest:seo` 62 项、`selftest:feeds` 71 项等，项数全部未变） |
+| `check:ci` | 35 项 0 失败（门禁步骤名 `Plans self-test (data + page)` 同步改名，步数仍 29） |
+
+- **契约** `docs/SCHEMA-v2.1.md` §16 · **报告** `research/v2.1-coding-plan-data-model-report.md`
+  的「第二段」一节。未合并、未推送。
+- **Phase 2.2 还剩下的**（本段没做，且是有意留的）：筛选 / 搜索 / 排序控件、
+  套餐详情页（或行内展开）、首页主入口（现在只有页脚入口）、同币种价格区间筛选。
