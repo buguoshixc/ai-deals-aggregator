@@ -1,0 +1,470 @@
+{
+  "claude-fable-5.1": {
+    "canonicalName": "Claude Fable 5.1",
+    "developer": "Anthropic",
+    "owner": "Anthropic",
+    "family": "Claude",
+    "aliases": [],
+    "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+    "status": "active",
+    "note": null
+  },
+  "claude-haiku-4.5": {
+    "canonicalName": "Claude Haiku 4.5",
+    "developer": "Anthropic",
+    "owner": "Anthropic",
+    "family": "Claude",
+    "aliases": [],
+    "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+    "status": "active",
+    "note": null
+  },
+  "claude-opus-5.5": {
+    "canonicalName": "Claude Opus 5.5",
+    "developer": "Anthropic",
+    "owner": "Anthropic",
+    "family": "Claude",
+    "aliases": [],
+    "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+    "status": "active",
+    "note": null
+  },
+  "claude-sonnet-5.5": {
+    "canonicalName": "Claude Sonnet 5.5",
+    "developer": "Anthropic",
+    "owner": "Anthropic",
+    "family": "Claude",
+    "aliases": [],
+    "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+    "status": "active",
+    "note": null
+  },
+  "deepseek-flash": {
+    "canonicalName": "deepseek-flash",
+    "developer": "DeepSeek",
+    "owner": "DeepSeek",
+    "family": "DeepSeek",
+    "aliases": [
+      "DeepSeek-V4.1-Flash",
+      "deepseek-v4.1-flash"
+    ],
+    "officialUrl": "https://api-docs.deepseek.com/quick_start/pricing",
+    "status": "active",
+    "note": "跨平台身份合并（人工判断）：阿里云百炼官方页 Model ID = `deepseek-v4.1-flash`（见 api-plans 记录 ef4d06758403 的 evidence）；DeepSeek 官方页同一模型 = `deepseek-flash`、别名 `DeepSeek-V4.1-Flash`（见 fffbb44ac3a9）。据上述两处官方串一致（V4.1 + Flash）**判断为**同一身份；价格各留原记录。若日后证实版本不同应拆开。"
+  },
+  "deepseek-v3.2": {
+    "canonicalName": "DeepSeek-V3.2",
+    "developer": "DeepSeek",
+    "owner": "DeepSeek",
+    "family": "DeepSeek",
+    "aliases": [
+      "deepseek-ai/DeepSeek-V3.2"
+    ],
+    "officialUrl": "https://siliconflow.cn/pricing",
+    "status": "active",
+    "note": null
+  },
+  "deepseek-v4-pro": {
+    "canonicalName": "deepseek-v4-pro",
+    "developer": "DeepSeek",
+    "owner": "DeepSeek",
+    "family": "DeepSeek",
+    "aliases": [
+      "DeepSeek-V4-Pro-0813",
+      "deepseek-ai/DeepSeek-V4-Pro",
+      "deepseek-v4-pro-0813"
+    ],
+    "officialUrl": "https://api-docs.deepseek.com/quick_start/pricing",
+    "status": "active",
+    "note": null
+  },
+  "doubao-seed-2.1-pro": {
+    "canonicalName": "Doubao-Seed-2.1-pro",
+    "developer": "火山引擎",
+    "owner": "火山引擎",
+    "family": "Doubao Seed",
+    "aliases": [],
+    "officialUrl": "https://www.volcengine.com/product/ark",
+    "status": "active",
+    "note": null
+  },
+  "doubao-seed-2.1-turbo": {
+    "canonicalName": "Doubao-Seed-2.1-turbo",
+    "developer": "火山引擎",
+    "owner": "火山引擎",
+    "family": "Doubao Seed",
+    "aliases": [],
+    "officialUrl": "https://www.volcengine.com/product/ark",
+    "status": "active",
+    "note": null
+  },
+  "doubao-seed-character": {
+    "canonicalName": "Doubao-Seed-Character",
+    "developer": "火山引擎",
+    "owner": "火山引擎",
+    "family": "Doubao Seed",
+    "aliases": [],
+    "officialUrl": "https://www.volcengine.com/product/ark",
+    "status": "active",
+    "note": null
+  },
+  "doubao-seed-evolving": {
+    "canonicalName": "Doubao-Seed-Evolving",
+    "developer": "火山引擎",
+    "owner": "火山引擎",
+    "family": "Doubao Seed",
+    "aliases": [],
+    "officialUrl": "https://www.volcengine.com/product/ark",
+    "status": "active",
+    "note": null
+  },
+  "gemini-3.5-flash": {
+    "canonicalName": "Gemini 3.5 Flash",
+    "developer": "Google",
+    "owner": "Google",
+    "family": "Gemini",
+    "aliases": [],
+    "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing",
+    "status": "active",
+    "note": null
+  },
+  "gemini-3.6-flash": {
+    "canonicalName": "Gemini 3.6 Flash",
+    "developer": "Google",
+    "owner": "Google",
+    "family": "Gemini",
+    "aliases": [],
+    "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing",
+    "status": "active",
+    "note": null
+  },
+  "gemini-3.7-flash": {
+    "canonicalName": "Gemini 3.7 Flash",
+    "developer": "Google",
+    "owner": "Google",
+    "family": "Gemini",
+    "aliases": [],
+    "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing",
+    "status": "active",
+    "note": null
+  },
+  "gemini-3.8-flash": {
+    "canonicalName": "Gemini 3.8 Flash",
+    "developer": "Google",
+    "owner": "Google",
+    "family": "Gemini",
+    "aliases": [],
+    "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing",
+    "status": "active",
+    "note": null
+  },
+  "glm-4.5v": {
+    "canonicalName": "GLM-4.5V",
+    "developer": "智谱AI",
+    "owner": "智谱AI",
+    "family": "GLM",
+    "aliases": [],
+    "officialUrl": "https://open.bigmodel.cn/pricing",
+    "status": "active",
+    "note": null
+  },
+  "glm-4.6v": {
+    "canonicalName": "GLM-4.6V",
+    "developer": "智谱AI",
+    "owner": "智谱AI",
+    "family": "GLM",
+    "aliases": [],
+    "officialUrl": "https://open.bigmodel.cn/pricing",
+    "status": "active",
+    "note": null
+  },
+  "glm-4.6v-flash": {
+    "canonicalName": "GLM-4.6V-Flash",
+    "developer": "智谱AI",
+    "owner": "智谱AI",
+    "family": "GLM",
+    "aliases": [],
+    "officialUrl": "https://open.bigmodel.cn/pricing",
+    "status": "active",
+    "note": null
+  },
+  "glm-4.6v-flashx": {
+    "canonicalName": "GLM-4.6V-FlashX",
+    "developer": "智谱AI",
+    "owner": "智谱AI",
+    "family": "GLM",
+    "aliases": [],
+    "officialUrl": "https://open.bigmodel.cn/pricing",
+    "status": "active",
+    "note": null
+  },
+  "glm-4.7-flash": {
+    "canonicalName": "GLM-4.7-Flash",
+    "developer": "智谱AI",
+    "owner": "智谱AI",
+    "family": "GLM",
+    "aliases": [],
+    "officialUrl": "https://open.bigmodel.cn/pricing",
+    "status": "active",
+    "note": null
+  },
+  "glm-5.3": {
+    "canonicalName": "GLM-5.3",
+    "developer": "智谱AI",
+    "owner": "智谱AI",
+    "family": "GLM",
+    "aliases": [
+      "zai-org/GLM-5.3"
+    ],
+    "officialUrl": "https://open.bigmodel.cn/pricing",
+    "status": "active",
+    "note": null
+  },
+  "glm-5.3-flash": {
+    "canonicalName": "GLM-5.3-Flash",
+    "developer": "智谱AI",
+    "owner": "智谱AI",
+    "family": "GLM",
+    "aliases": [],
+    "officialUrl": "https://open.bigmodel.cn/pricing",
+    "status": "active",
+    "note": null
+  },
+  "glm-5v-turbo": {
+    "canonicalName": "GLM-5V-Turbo",
+    "developer": "智谱AI",
+    "owner": "智谱AI",
+    "family": "GLM",
+    "aliases": [],
+    "officialUrl": "https://open.bigmodel.cn/pricing",
+    "status": "active",
+    "note": null
+  },
+  "gpt-6-astra": {
+    "canonicalName": "gpt-6-astra",
+    "developer": "OpenAI",
+    "owner": "OpenAI",
+    "family": "GPT",
+    "aliases": [],
+    "officialUrl": "https://platform.openai.com/docs/pricing",
+    "status": "active",
+    "note": null
+  },
+  "gpt-6-luna": {
+    "canonicalName": "gpt-6-luna",
+    "developer": "OpenAI",
+    "owner": "OpenAI",
+    "family": "GPT",
+    "aliases": [],
+    "officialUrl": "https://platform.openai.com/docs/pricing",
+    "status": "active",
+    "note": null
+  },
+  "gpt-6.1-sol": {
+    "canonicalName": "gpt-6.1-sol",
+    "developer": "OpenAI",
+    "owner": "OpenAI",
+    "family": "GPT",
+    "aliases": [],
+    "officialUrl": "https://platform.openai.com/docs/pricing",
+    "status": "active",
+    "note": null
+  },
+  "gpt-live-1": {
+    "canonicalName": "gpt-live-1",
+    "developer": "OpenAI",
+    "owner": "OpenAI",
+    "family": "GPT",
+    "aliases": [],
+    "officialUrl": "https://platform.openai.com/docs/pricing",
+    "status": "active",
+    "note": null
+  },
+  "hunyuan-a13b": {
+    "canonicalName": "Hunyuan-a13b",
+    "developer": "腾讯云",
+    "owner": "腾讯云",
+    "family": "Hunyuan",
+    "aliases": [],
+    "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
+    "status": "active",
+    "note": null
+  },
+  "hunyuan-embedding": {
+    "canonicalName": "Hunyuan-embedding",
+    "developer": "腾讯云",
+    "owner": "腾讯云",
+    "family": "Hunyuan",
+    "aliases": [],
+    "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
+    "status": "active",
+    "note": null
+  },
+  "hunyuan-role-latest": {
+    "canonicalName": "Hunyuan-role-latest",
+    "developer": "腾讯云",
+    "owner": "腾讯云",
+    "family": "Hunyuan",
+    "aliases": [],
+    "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
+    "status": "active",
+    "note": null
+  },
+  "hunyuan-translation": {
+    "canonicalName": "Hunyuan-translation",
+    "developer": "腾讯云",
+    "owner": "腾讯云",
+    "family": "Hunyuan",
+    "aliases": [],
+    "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
+    "status": "active",
+    "note": null
+  },
+  "hunyuan-translation-lite": {
+    "canonicalName": "Hunyuan-translation-lite",
+    "developer": "腾讯云",
+    "owner": "腾讯云",
+    "family": "Hunyuan",
+    "aliases": [],
+    "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
+    "status": "active",
+    "note": null
+  },
+  "kimi-k2.7-code": {
+    "canonicalName": "Kimi-K2.7-Code",
+    "developer": "月之暗面",
+    "owner": "月之暗面",
+    "family": "Kimi",
+    "aliases": [
+      "moonshotai/Kimi-K2.7-Code"
+    ],
+    "officialUrl": "https://siliconflow.cn/pricing",
+    "status": "active",
+    "note": null
+  },
+  "kimi-k3": {
+    "canonicalName": "kimi-k3",
+    "developer": "月之暗面",
+    "owner": "月之暗面",
+    "family": "Kimi",
+    "aliases": [],
+    "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+    "status": "active",
+    "note": null
+  },
+  "minimax-m2.5": {
+    "canonicalName": "MiniMax-M2.5",
+    "developer": "MiniMax（稀宇科技）",
+    "owner": "MiniMax（稀宇科技）",
+    "family": "MiniMax M",
+    "aliases": [],
+    "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+    "status": "active",
+    "note": null
+  },
+  "minimax-m2.7": {
+    "canonicalName": "MiniMax-M2.7",
+    "developer": "MiniMax（稀宇科技）",
+    "owner": "MiniMax（稀宇科技）",
+    "family": "MiniMax M",
+    "aliases": [],
+    "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+    "status": "active",
+    "note": null
+  },
+  "minimax-m2.7-highspeed": {
+    "canonicalName": "MiniMax-M2.7-highspeed",
+    "developer": "MiniMax（稀宇科技）",
+    "owner": "MiniMax（稀宇科技）",
+    "family": "MiniMax M",
+    "aliases": [],
+    "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+    "status": "active",
+    "note": null
+  },
+  "minimax-m3": {
+    "canonicalName": "MiniMax-M3",
+    "developer": "MiniMax（稀宇科技）",
+    "owner": "MiniMax（稀宇科技）",
+    "family": "MiniMax M",
+    "aliases": [
+      "MiniMax/MiniMax-M3"
+    ],
+    "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+    "status": "active",
+    "note": null
+  },
+  "qwen-max": {
+    "canonicalName": "qwen-max",
+    "developer": "阿里云",
+    "owner": "阿里云",
+    "family": "Qwen",
+    "aliases": [],
+    "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+    "status": "active",
+    "note": null
+  },
+  "qwen3-max": {
+    "canonicalName": "qwen3-max",
+    "developer": "阿里云",
+    "owner": "阿里云",
+    "family": "Qwen",
+    "aliases": [
+      "qwen3-max-2026-01-23"
+    ],
+    "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+    "status": "active",
+    "note": null
+  },
+  "qwen3.8-27b": {
+    "canonicalName": "Qwen3.8-27B",
+    "developer": "阿里云",
+    "owner": "阿里云",
+    "family": "Qwen",
+    "aliases": [
+      "Qwen/Qwen3.8-27B"
+    ],
+    "officialUrl": "https://siliconflow.cn/pricing",
+    "status": "active",
+    "note": null
+  },
+  "qwen3.8-max": {
+    "canonicalName": "qwen3.8-max",
+    "developer": "阿里云",
+    "owner": "阿里云",
+    "family": "Qwen",
+    "aliases": [],
+    "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+    "status": "active",
+    "note": null
+  },
+  "step-3.5-flash": {
+    "canonicalName": "Step-3.5-Flash",
+    "developer": "阶跃星辰（StepFun）",
+    "owner": "阶跃星辰（StepFun）",
+    "family": "Step",
+    "aliases": [
+      "stepfun-ai/Step-3.5-Flash"
+    ],
+    "officialUrl": "https://siliconflow.cn/pricing",
+    "status": "active",
+    "note": null
+  },
+  "tencent-hy-vision-1.5-instruct": {
+    "canonicalName": "Tencent HY Vision 1.5 Instruct",
+    "developer": "腾讯云",
+    "owner": "腾讯云",
+    "family": "Hunyuan",
+    "aliases": [],
+    "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
+    "status": "active",
+    "note": null
+  },
+  "_note": "v3.0 Stage D 的 **Model Registry 人工来源层**：一行 = 一个模型身份（键 = slug）。它是**索引/身份层，不是价格真值层** —— 价格永远来自 api-plans.json，这里只回答\"这个模型是谁、叫什么、属于哪条产品线、在哪些平台的哪条记录里出现过\"。根目录的 models.json 是本表 + 关系层的**派生产物**（id / firstSeen / lastSeen / updatedAt / count 一律算出来，手写即红）。",
+  "_rules": "① slug 是稳定身份，取 API 侧记录里已经稳定的 modelKey（官方写法的小写形态；同一个模型在多家平台上共用同一个 modelKey 时合并成一条，例如 deepseek-v4-pro 同时出现在阿里云百炼 / DeepSeek 官方 / 硅基流动的官方定价页上）；② canonicalName 取**开发者自己平台**那条记录的官方写法（没有自家记录时取第三方记录里规范排序最前的一条），绝不改写官方写法；③ developer / owner 只允许写 providers.json 的规范显示名，或在 _developers_extra 里逐条登记过的公司；判不出来写 null —— 宁可缺失，也不要把一家没登记的公司写成看起来像身份的字符串。本条目的 owner 与 developer 相同时**逐条写同一个值**（当前数据里没有任何\"开发者 ≠ 商业权利方\"的证据；将来出现分离必须逐条改并写明依据）；④ family 取官方模型名的产品线前缀（Claude / Gemini / GPT / GLM / DeepSeek / Hunyuan / Doubao Seed / MiniMax M / Kimi / Qwen / Step），**不推断版本关系**；⑤ aliases 只收\"已确认改名 / 官方别名 / 格式差异\"，全部来自官方页面上的写法（模型 id、平台上的别名列），裸公司名（例如 MiniMax）不作为模型别名；⑥ officialUrl 写**开发者自己官方页面**上列出该模型的那一页；只有第三方平台页时写第三方那一页（事实如此）；⑦ status 只由人工依据驱动：出现在当前官方定价页且被当前记录引用 ⇒ active，官方不再列出 ⇒ 人工改成 retired，当前 44 条全部 active、0 条 retired；⑧ **_developers_extra** 是\"不在 provider 表里、但有官方依据的开发者的白名单\"，每条带出处。",
+  "_derived": "id = sha1(\"model|\" + slug) 前 12 位；firstSeen / lastSeen = 引用它的记录里最早 / 最晚的日期（没有任何引用时两个都是 null）。这三个字段**不进本表**，由 scripts/tools/rebuild-models.js 派生。",
+  "_identity": "题面 D2：模型 / 模型家族 / 版本 / Provider 上的部署别名必须分开。本表只管\"模型身份\"；同一个模型在多家平台的出现由关系层（scripts/data/model-registry-links.json）逐条写明，**禁止**任何相似度、Levenshtein 或 LLM 猜测写生产映射（lib/model-registry.js 的 candidatesOf() 只能产出候选）。",
+  "_developers_extra": {
+    "阶跃星辰（StepFun）": "不在 providers.json 里（本站还没有这家平台的身份）。依据是硅基流动官方定价页上的模型 id `stepfun-ai/Step-3.5-Flash`（官方 id 自带开发者前缀），出处：https://siliconflow.cn/pricing"
+  }
+}

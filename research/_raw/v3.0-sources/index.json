@@ -1,0 +1,1391 @@
+{
+  "generatedAt": "2026-10-01T12:35:30.180Z",
+  "browser": "msedge",
+  "sources": [
+    {
+      "slug": "volcengine-codingplan",
+      "provider": "火山方舟",
+      "stage": "C1",
+      "url": "https://ai.volcengine.com/activity/codingplan",
+      "checkedAt": "2026-10-01T12:28:00.390Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 579761,
+        "textLength": 5372,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://ai.volcengine.com/activity/codingplan",
+        "title": "方舟Coding-Plan",
+        "htmlBytes": 668900,
+        "textLength": 1673,
+        "domTextLength": 5067,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [
+          "can no read vconsoleAppInfo from window object",
+          "Failed to load resource: net::ERR_CONNECTION_CLOSED"
+        ],
+        "failedRequests": [
+          "net::ERR_ABORTED https://lf6-cdn-tos.huoshanstatic.com/obj/inspirecloud-file/baas/tt502102w0zm96mm30/49b3fee2119c6ea5_1768830773367.mp4",
+          "net::ERR_ABORTED https://lf6-cdn-tos.huoshanstatic.com/obj/inspirecloud-file/baas/tt502102w0zm96mm30/49b3fee2119c6ea5_1768830773367.mp4",
+          "net::ERR_ABORTED https://lf6-cdn-tos.huoshanstatic.com/obj/inspirecloud-file/baas/tt502102w0zm96mm30/49b3fee2119c6ea5_1768830773367.mp4"
+        ],
+        "jsOnly": false,
+        "sample": "方舟 Coding Plan模型自由，工具不限，最新支持 Deepseek-V4.1-Flash、GLM-5.3 系列、 Doubao-Seed-Evolving、Kimi-K3，限时 9.9 元起立即订阅快速开始集合主流优秀国产编程模型支持在 Deepseek-V4.1-Flash、GLM-5.3 系列、Doubao-Seed-Evolving、Kimi-K3、Kimi-K2.8-Preview 等多种模型中自由切换，或使用 Auto 模式调度。多生态兼容，无缝融入您的工具链囊括 Claude Code、Codex CLI、TRAE、OpenCode 等主流工具，现最新支持接入 OpenClaw、Hermes Agent。成本省心，编码丝滑依托字节资源保障和工程能力，更大容量，更快、更稳、更丝滑！限时 9.9 元起Coding Plan 限时特惠，名额有限，先到先得，详见折扣规则，点击查看套餐详情，不止 Coding，开启 Agent Plan限时 9.9 元起Coding Plan 限时特惠，名额有限，先到先得，详见折扣规则，点击查看套餐详情，不止 Coding，开启 Agent Plan限时 9.9 元起Coding Plan 限时特惠，名额有限，先到先得，详见折扣规则，点击查看套餐详情，不止 Coding，开启 Agent Plan限时 9.9 元起Coding Plan "
+      }
+    },
+    {
+      "slug": "volcengine-ark-subscribe",
+      "provider": "火山方舟",
+      "stage": "C1",
+      "url": "https://www.volcengine.com/product/ark",
+      "checkedAt": "2026-10-01T12:28:06.153Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 170372,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://www.volcengine.com/product/ark",
+        "title": "火山方舟-火山引擎",
+        "htmlBytes": 2430280,
+        "textLength": 4012,
+        "domTextLength": 12384,
+        "tableCount": 22,
+        "priceHits": 44,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [
+          "can no read vconsoleAppInfo from window object",
+          "can no read vconsoleAppInfo from window object",
+          "can no read vconsoleAppInfo from window object"
+        ],
+        "failedRequests": [
+          "net::ERR_ABORTED https://detect-online.volcanicengine.com/api/detect",
+          "net::ERR_ABORTED bytedance://dispatch_message/",
+          "net::ERR_CONNECTION_CLOSED https://tosv.byted.org/obj/volc-console-fe/vconsole-vendors/static/nodata.png"
+        ],
+        "jsOnly": true,
+        "sample": "优惠活动大模型产品解决方案定价更多文档控制台登录注册登录注册NEWDoubao-Seed-Evolving 模型上线，高频迭代NEWDoubao-Seedance-2.5 全新上线NEWDoubao-Seedream-5.0 全新上线NEW方舟 Agent Plan，首月 9.9 元起NEW领每日单模型最高500万免费Tokens火山方舟一站式大模型服务平台模型能力拓展 ｜ 专业算法服务 ｜ 安全可信会话无痕 ｜ 高并发算力保障模型能力拓展 ｜ 专业算法服务 ｜ 安全可信会话无痕 ｜ 高并发算力保障立即体验控制台最新活动活动方舟 Agent Plan 上线，超全模态模型模型定价查看模型定价与计费方式最新模型热门Doubao-Seed-Evolving 模型， 高频迭代接入 API查看官方文档，接入模型最新动态最新动态最新动态最新动态Seedance 2.5 模型全面开放30秒超长叙事，全模态参考扩容立即体验最新能力方舟 CLI 上线，支持 Claude Code、Cursor、TRAE 等使用指南最佳实践点击查看快速开始、提示词指南等最佳实践方案立即查看最新活动方舟 Agent Plan 上线，超全模态模型 × Harness 升级， 限时 9.9 元起立即订阅开发者专享最新福利协作奖励计划二期全面升级，免费每日领取单模型最高500万Tokens立即参与Seedance 2.5 模"
+      }
+    },
+    {
+      "slug": "qoder-pricing",
+      "provider": "Qoder CN",
+      "stage": "C1",
+      "url": "https://qoder.com/pricing",
+      "checkedAt": "2026-10-01T12:28:10.563Z",
+      "static": {
+        "ok": false,
+        "reason": "robots.txt 不允许抓取",
+        "status": null,
+        "bytes": 0,
+        "textLength": 0,
+        "tableCount": 0
+      },
+      "render": {
+        "ok": false,
+        "reason": "robots.txt 不允许抓取: https://qoder.com/pricing"
+      }
+    },
+    {
+      "slug": "qoder-docs-pricing-md",
+      "provider": "Qoder CN",
+      "stage": "C1",
+      "url": "https://docs.qoder.com/account/pricing.md",
+      "checkedAt": "2026-10-01T12:28:11.414Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 9653,
+        "textLength": 7989,
+        "tableCount": 0,
+        "priceHits": 4
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://docs.qoder.com/account/pricing.md",
+        "title": "",
+        "htmlBytes": 10002,
+        "textLength": 8269,
+        "domTextLength": 8269,
+        "tableCount": 0,
+        "priceHits": 4,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 ()"
+        ],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "> ## Documentation Index > Fetch the complete documentation index at: https://docs.qoder.com/llms.txt > Use this file to discover all available pages before exploring further. # Pricing For individual users, Qoder offers Free, Pro, Pro+ and Ultra plans. For organization purchases, compare the [Teams and Enterprise plans](/account/enterprise/pricing). Choose the plan that best matches your needs. ## **Individual Plans** The contents of each plan are as follows, and the paid plan is used as a natural monthly subscription. [Credits](https://docs.qoder.com/Credits) are used as the resource usage u"
+      }
+    },
+    {
+      "slug": "codebuddy-ai-pricing",
+      "provider": "腾讯 CodeBuddy",
+      "stage": "C1",
+      "url": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing",
+      "checkedAt": "2026-10-01T12:28:13.607Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 30223,
+        "textLength": 1262,
+        "tableCount": 4,
+        "priceHits": 11
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing",
+        "title": "定价 | 腾讯云代码助手 CodeBuddy – AI 代码编辑器",
+        "htmlBytes": 36977,
+        "textLength": 1439,
+        "domTextLength": 1303,
+        "tableCount": 4,
+        "priceHits": 11,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "Skip to contentIDEIDECLIWorkBuddyIDECLIWorkBuddy搜索🌐中文▼Menu快速导航 Sidebar Navigation 入门指南简介安装快速开始使用指南概览智能体模式概览快速开始创建任务任务管理任务对话结果查看Figma代码补全内联对话斜杠命令上下文规则检查点历史记录记忆MCP配置集成预览部署智能提交平台接入指南微信 ClawBot 接入指南（推荐）高级功能模型配置Plan 模式SubagentsSkillsHooks账号订阅定价积分用量账单发票最佳实践支持故障排除安全与隐私联系我们版本发布概览快速导航个人版套餐团队版套餐积分加量包Pro 加量包Team 加量包订阅定价 ​CodeBuddy 提供以下版本以满足用户不同的 AI 开发需求。 各版本定价如下：个人版套餐 ​方案FreePro连续包月免费$10.00 / 月连续包年—$96.00 / 年（$8.00 / 月 按年计费）基础积分 / 月1001,000加赠积分 / 月—1,000每月累计实得积分1002,000活跃赠送（限时活动）30 积分 / 天50 积分 / 天代码实时补全5,000 次 / 月（限免无限次）无限次自动任务3 个（限免 99 个）15 个（限免 99 个）模型调度Auto 调度（限免全模型可选）全模型可选新功能抢先体验—逐步开放跨文件理解✅✅注释生成代码✅✅"
+      }
+    },
+    {
+      "slug": "codebuddy-cn-pricing",
+      "provider": "腾讯 CodeBuddy",
+      "stage": "C1",
+      "url": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+      "checkedAt": "2026-10-01T12:28:17.225Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 33252,
+        "textLength": 2494,
+        "tableCount": 5,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+        "title": "定价 | 腾讯云代码助手 CodeBuddy – AI 代码编辑器",
+        "htmlBytes": 40624,
+        "textLength": 2701,
+        "domTextLength": 2534,
+        "tableCount": 5,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "Skip to contentIDEIDE插件CLIWorkBuddyWorkBuddy 小程序WorkBuddy 移动端WorkBuddy EnterpriseIDE插件CLIWorkBuddyWorkBuddy 小程序WorkBuddy 移动端WorkBuddy Enterprise搜索Menu快速导航 Sidebar Navigation 入门指南简介安装和登录快速开始使用指南概览智能体模式概览快速开始创建任务任务管理任务对话结果查看Figma代码补全内联对话斜杠命令上下文规则检查点历史记录记忆MCP配置集成预览部署智能提交平台接入指南微信 ClawBot 接入指南（推荐）高级功能模型配置Plan 模式SubagentsSkillsHooks账号定价详情积分说明套餐管理用量查看账单查看发票开具最佳实践支持故障排除安全与隐私联系我们版本发布概览快速导航个人版老用户（7月1日前的付费会员）权益过渡加量包企业版加量包定价 ​CodeBuddy 和 WorkBuddy 同一账号积分共享，无需分别订阅。2026 年 7 月 1 日起，Buddy AI（WorkBuddy、CodeBuddy 等系列产品的统称）国内个人版将迎来首次订阅升级，付费套餐从单一专业版（产品变更为标准版），扩展为「标准/高级/旗舰」三档体系。详情请参考 Buddy AI 国内个人版订阅升级公告。CodeBuddy"
+      }
+    },
+    {
+      "slug": "github-copilot-plans",
+      "provider": "GitHub",
+      "stage": "C1",
+      "url": "https://github.com/features/copilot/plans",
+      "checkedAt": "2026-10-01T12:28:20.739Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 1265271,
+        "textLength": 69608,
+        "tableCount": 0,
+        "priceHits": 21
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://github.com/features/copilot/plans",
+        "title": "GitHub Copilot · Plans & pricing · GitHub",
+        "htmlBytes": 1325315,
+        "textLength": 10332,
+        "domTextLength": 71149,
+        "tableCount": 0,
+        "priceHits": 26,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "Skip to content Dev Days are here! Join an in-person event near you to learn more about the GitHub Copilot app and Copilot CLI with your community.Find an event Navigation MenuSign inPlatformAI CODE CREATIONGitHub CopilotWrite better code with AIGitHub Copilot appDirect agents from issue to mergeMCP RegistryIntegrate external toolsDEVELOPER WORKFLOWSActionsAutomate any workflowCodespacesInstant dev environmentsIssuesPlan and track workCode ReviewManage code changesCode QualityEnforce quality at mergeAPPLICATION SECURITYGitHub Advanced SecurityFind and fix vulnerabilitiesCode securitySecure you"
+      }
+    },
+    {
+      "slug": "cursor-pricing",
+      "provider": "Cursor",
+      "stage": "C1",
+      "url": "https://cursor.com/pricing",
+      "checkedAt": "2026-10-01T12:28:30.779Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 349095,
+        "textLength": 3348,
+        "tableCount": 0,
+        "priceHits": 4
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://cursor.com/pricing",
+        "title": "Cursor · 定价",
+        "htmlBytes": 267291,
+        "textLength": 1108,
+        "domTextLength": 1674,
+        "tableCount": 0,
+        "priceHits": 2,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "跳至内容Cursor模型↓Grok评估产品↓智能体云端Grok Bot ↗移动端自动化CLI应用市场 ↗代码审查企业定价资源↓更新日志Blog文档社区帮助 ↗工作坊论坛 ↗招聘模型 →产品 →企业定价资源 →登录联系联系销售下载定价按月按年Hobby适合爱折腾的人免费包括：✓ 无需信用卡✓ 有限的智能体请求✓ Composer 访问权限试用 Cursor个人适合想尝试智能体的人$20 / mo.ProPro+UltraHobby 的所有功能，另加：✓ 智能体更高额度✓ Grok 的充足使用额度✓ 访问前沿模型✓ Grok Bot 访问权限✓ MCP、技能和钩子✓ 云端智能体✓ 按用量计费的 Bugbot获取 Pro团队版适合协作交付的团队$40 / user / mo.标准版高级版包含个人的全部功能，另加：✓ 集中式团队计费与管理✓ 适用于内部规则、技能和插件的团队应用市场✓ 具备共享团队上下文的云端智能体和自动化✓ Grok Bot 访问权限✓ 借助 Bugbot 实现智能体驱动的代码审查✓ 帮助您了解团队行为的用量分析✓ 团队级隐私模式✓ SAML/OIDC 单点登录获取团队版企业适合大型组织定制版包含团队版的所有功能，另加：✓ 汇总用量✓ 发票/采购订单结算✓ 通过 SCIM 管理席位✓ 代码库、模型和 MCP 访问控制✓ Auto-run、浏览器和网络控制✓ 审计日志和服务"
+      }
+    },
+    {
+      "slug": "trae-cn-pricing",
+      "provider": "Trae",
+      "stage": "C1",
+      "url": "https://www.trae.cn/pricing",
+      "checkedAt": "2026-10-01T12:28:37.492Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 134149,
+        "textLength": 1302,
+        "tableCount": 1,
+        "priceHits": 9
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://www.trae.cn/pricing",
+        "title": "定价 | TRAE - The Real AI Engineer",
+        "htmlBytes": 138452,
+        "textLength": 1555,
+        "domTextLength": 1411,
+        "tableCount": 1,
+        "priceHits": 9,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "邀请好友体验 TraeCode，双方各得 500 积分，最高得 3500 积分立即参与 →TraeCodeHotTraeWork企业版定价文档更新日志社区知识库登录下载中心个人方案与定价企业版选型与咨询，前往火山引擎 ↗免费 Free ¥0每月 500 积分所有功能均可免费使用支持 2 个云端任务同时执行免费使用会员 Lite 首月优惠低至¥39/月¥49包含免费版功能与积分，以及2,000 积分/月会员签到多得 3000 积分模型折扣：Seed-2.1 2.5折，GLM、Deepseek-V4.1 5折高峰期优先响应2个云端任务同时执行立即升级会员 Pro 首月优惠低至¥69/月¥99包含免费版功能与积分，以及4,000 积分/月会员签到多得 3000 积分模型折扣：Seed-2.1 2.5折，GLM、Deepseek-V4.1 5折高峰期优先响应10个云端任务同时执行立即升级会员 Pro+ 低至¥219/月¥239包含免费版功能与积分，以及12,000 积分/月会员签到多得 3000 积分模型折扣：Seed-2.1 2.5折，GLM、Deepseek-V4.1 5折高峰期优先响应10个云端任务同时执行立即升级会员 Ultra 低至¥629/月¥699包含免费版功能与积分，以及40,000 积分/月会员签到多得 3000 积分模型折扣：Seed-2.1 2.5折，GLM、Deep"
+      }
+    },
+    {
+      "slug": "zhipu-coding-plan",
+      "provider": "智谱AI",
+      "stage": "C1",
+      "url": "https://docs.bigmodel.cn/cn/coding-plan/overview",
+      "checkedAt": "2026-10-01T12:28:40.894Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 774495,
+        "textLength": 2817,
+        "tableCount": 3,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://docs.bigmodel.cn/cn/coding-plan/overview",
+        "title": "套餐概览 - 智谱AI开放文档",
+        "htmlBytes": 1226192,
+        "textLength": 2797,
+        "domTextLength": 3289,
+        "tableCount": 3,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [
+          "net::ERR_ABORTED https://cdn.bigmodel.cn/static/logo/dark.svg",
+          "net::ERR_ABORTED https://docs.bigmodel.cn/cn/coding-plan/mcp/vision-mcp-server?_rsc=kDbE8jojGyG2QPzV",
+          "net::ERR_ABORTED https://docs.bigmodel.cn/cn/coding-plan/mcp/reader-mcp-server?_rsc=kDbE8jojGyG2QPzV"
+        ],
+        "jsOnly": false,
+        "sample": "Documentation IndexFetch the complete documentation index at: /llms.txtUse this file to discover all available pages before exploring further.Skip to main content智谱AI开放文档 home pageSearch...Ctrl K控制台价格财务API Key个人中心Search...NavigationGLM Coding Plan套餐概览ModelsCoding PlanManaged Agents (Beta)API 文档资源常见问题GLM Coding Plan套餐概览使用须知常见问题团队版权益接入指南快速开始一键安装助手接入工具如何切换模型接入专属 MCP公告夜间畅用活动老用户权益说明学习资源Coding Agent 工作原理Agentic 扩展组件记忆机制常用工作流最佳实践特别权益GLM in Excel（Beta）On this page可用模型适用工具用量说明积分额度积分抵扣计算方式可用额度参考独家优势下一步GLM Coding Plan套餐概览Copy pageCopy pageCopy pageCopy page夜间畅用活动来袭：9 月 3 日至 10 月 7 日，每日 23:00～次日 09:00，套餐用"
+      }
+    },
+    {
+      "slug": "zhipu-pricing",
+      "provider": "智谱AI",
+      "stage": "C1",
+      "url": "https://bigmodel.cn/pricing",
+      "checkedAt": "2026-10-01T12:28:44.454Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 3853,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://bigmodel.cn/pricing",
+        "title": "智谱丨BigModel 平台",
+        "htmlBytes": 931829,
+        "textLength": 2548,
+        "domTextLength": 3257,
+        "tableCount": 2,
+        "priceHits": 11,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [
+          "net::ERR_ABORTED https://stats.g.doubleclick.net/g/collect?v=2&tid=G-SF8X67RPF9&cid=test&gtm=test"
+        ],
+        "jsOnly": true,
+        "sample": "研究技术报告GLM-5.3GLM-5.3-FlashGLM-5.2GLM-5.1产品模型GLM-5.3GLM-5.3-FlashGLM-5.2全部模型Coding Plan个人版套餐团队版套餐功能Managed Agents (Beta)MCP 服务模型微调知识库文档API快速开始 API文档模型概览更新日志Coding Plan套餐概览使用须知快速开始常见问题体验体验中心模型体验应用体验官方Agent工具Zcode 编程软件AutoClaw 工作软件定价产品价格API价格Coding Plan最新活动特惠专区支持常见问题错误码编程套餐账号问题API调用财务问题FAQ其他提交工单工单记录条款与协议控制台新用户注册专享2000万免费Tokens资源包120次图像和视频资源包 登录 / 注册 GLM模型全面升级邀好友实名注册得Tokens 最高可领取总计 2亿Tokens 资源包 邀你体验智谱GLM-5.3新旗舰注册即享卓越模型体验 Coding、智能体、数理推理、PPT生成等样样精通 新用户注册得 2000万 Tokens，新模型免费玩到爽！ 扫码注册模型 API 价格 按量计费，简单灵活，提供满足不同业务规模的产品方案 详细价格联系销售旗舰模型 汇集最新一代旗舰模型，涵盖高性能文本与多模态模型，全面升级推理、创作与理解能力 GLM-5.3 最新旗舰 最新旗舰模型，编程体验提升 50"
+      }
+    },
+    {
+      "slug": "minimax-token-plan",
+      "provider": "MiniMax（稀宇科技）",
+      "stage": "C1",
+      "url": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+      "checkedAt": "2026-10-01T12:28:52.422Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 507547,
+        "textLength": 1143,
+        "tableCount": 2,
+        "priceHits": 6
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+        "title": "Token Plan - MiniMax 开放平台文档中心",
+        "htmlBytes": 730516,
+        "textLength": 1166,
+        "domTextLength": 1163,
+        "tableCount": 2,
+        "priceHits": 6,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "Documentation IndexFetch the complete documentation index at: /docs/llms.txtUse this file to discover all available pages before exploring further.跳转到主要内容🎉 MiniMax H3 全新发布！新一代开放通用多模态视频模型。查看文档 ➔MiniMax 开放平台文档中心 home page简体中文搜索...Ctrl K文档定价控制台 登录 搜索...Navigation订阅套餐Token Plan开发指南APIM Plan定价更新日志产品定价定价概览API 价格按量计费语音资源包视频资源包订阅套餐Token PlanToken Plan 团队版在此页面按月订阅积分包订阅套餐Token Plan复制页面复制页面MiniMax Token Plan订阅定价复制页面复制页面Token Plan 订阅通过订阅 Key 提供套餐内月度用量额度，并开放可用资源。用量在控制台以用量进度条展示。支持的文本、图像、语音资源共享同一额度。 预付积分包价格见下方。团队版请参考 Token Plan 团队版。 ​按月订阅 去订阅 PlusMaxUltra价格¥49 /月¥119 /月¥469 /月适合场景轻量个人开发与日常试用高频编程 Agent 与多模态调"
+      }
+    },
+    {
+      "slug": "minimax-token-plan-team",
+      "provider": "MiniMax（稀宇科技）",
+      "stage": "C1",
+      "url": "https://platform.minimax.cn/docs/guides/pricing-token-plan-team",
+      "checkedAt": "2026-10-01T12:28:55.494Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 502484,
+        "textLength": 1125,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan-team",
+        "title": "Token Plan 团队版 - MiniMax 开放平台文档中心",
+        "htmlBytes": 725156,
+        "textLength": 1119,
+        "domTextLength": 1145,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 401 ()"
+        ],
+        "failedRequests": [
+          "net::ERR_ABORTED https://platform.minimax.cn/docs/pricing/overview?_rsc=PbDrpmDrkEb6XeuO"
+        ],
+        "jsOnly": false,
+        "sample": "Documentation IndexFetch the complete documentation index at: /docs/llms.txtUse this file to discover all available pages before exploring further.跳转到主要内容🎉 MiniMax H3 全新发布！新一代开放通用多模态视频模型。查看文档 ➔MiniMax 开放平台文档中心 home page简体中文搜索...Ctrl K文档定价控制台 登录 搜索...Navigation订阅套餐Token Plan 团队版开发指南APIM Plan定价更新日志产品定价定价概览API 价格按量计费语音资源包视频资源包订阅套餐Token PlanToken Plan 团队版在此页面团队共享积分按量计费订阅套餐Token Plan 团队版复制页面复制页面了解团队中 Token Plan 席位、共享积分和按量计费资源的使用方式。复制页面复制页面Token Plan团队版于2026年9月5日起暂停新增购买服务，本文档仅供已购买用户参考。 Token Plan 团队版适用于团队中的多成员协作。团队 Owner 可以购买 Token Plan 席位和积分池，成员通过各自的订阅 Key 使用被分配或共享的资源。 ​团队 团队用于多人协作： 团队 Owner 可以购买 "
+      }
+    },
+    {
+      "slug": "kimi-code",
+      "provider": "月之暗面",
+      "stage": "C1",
+      "url": "https://www.kimi.ai/code",
+      "checkedAt": "2026-10-01T12:29:01.817Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 49764,
+        "textLength": 698,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://www.kimi.ai/code",
+        "title": "Kimi Code - 搭载 Kimi K3 的 AI 编程 Agent 与 CLI 工具",
+        "htmlBytes": 50686,
+        "textLength": 683,
+        "domTextLength": 698,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [
+          "Failed to load resource: net::ERR_CERT_VERIFIER_CHANGED",
+          "Failed to load resource: net::ERR_CERT_VERIFIER_CHANGED",
+          "Failed to load resource: net::ERR_CERT_VERIFIER_CHANGED"
+        ],
+        "failedRequests": [
+          "net::ERR_CERT_VERIFIER_CHANGED https://statics.kimi.ai/kimi-web-seo/assets/Button-b5cb1CTh.js",
+          "net::ERR_CERT_VERIFIER_CHANGED https://statics.kimi.ai/kimi-web-seo/assets/kimi.loading-bi52TfRA.js",
+          "net::ERR_CERT_VERIFIER_CHANGED https://statics.kimi.ai/kimi-web-seo/assets/layerRegistry-BUsA-75R.js"
+        ],
+        "jsOnly": false,
+        "sample": "Kimi Code 会员权益 文档 控制台 K3 正式上线！最高 1M 上下文 立即体验 Kimi Code Kimi Code 现已覆盖桌面端、CLI 与 IDE 插件，轻松兼容各类开发流程，更快更稳响应请求，高效地完成编程任务 下载 Windows 版 安装 CLI 开始使用 阅读文档 一次订阅，全端畅写 桌面端 Terminal IDE 新建会话 搜索 会话 landing-page 介绍一下你自己刚刚 首屏 hero 文案打磨26m 竞品落地页调研2d kimi-code-app 左边栏交互还原2h 修复会话列表滚动抖动5h api-server 订单接口分页优化6h 鉴权中间件重构1d landing-page/介绍一下你自己 介绍一下你自己 14:10 工作过程 我是 Kimi Code，一个运行在你电脑上的 AI 编程助手，由月之暗面（Moonshot AI）开发。我能做的事情包括： 写代码、改代码：实现新功能、修 bug、重构 读懂代码库：搜索、阅读、分析现有代码 跑命令：执行测试、构建、脚本，并验证结果 查资料：联网搜索最新信息，或读取网页内容 有什么需要我做的，直接说就行。 输入消息… 下载 Windows 版 阅读文档 Kimi Code 可在以下 Kimi Code Plan 中使用 购买以上任意套餐，还会获得其他 Kimi 会员权益 产品 KimiOpen"
+      }
+    },
+    {
+      "slug": "kimi-membership-pricing",
+      "provider": "月之暗面",
+      "stage": "C1",
+      "url": "https://www.kimi.ai/membership/pricing",
+      "checkedAt": "2026-10-01T12:29:06.173Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 19027,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://www.kimi.ai/membership/pricing",
+        "title": "Kimi 价格 | 会员套餐与订阅方案",
+        "htmlBytes": 33440,
+        "textLength": 352,
+        "domTextLength": 352,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [
+          "net::ERR_BLOCKED_BY_ORB https://kimi-img.kimi.ai/prod-chat-kimi/kimi/gift-cards/free-light.png"
+        ],
+        "jsOnly": false,
+        "sample": "兑换码 我的订阅 登月计划由此奏响 升级 Kimi 会员，解锁更快模型、更高并发与更强研究能力，让思考与研究不再受限 个人版 企业版 API 按你的节奏解锁更多可能 让朋友也拥有 Kimi AI 自由 赠送朋友 Kimi 订阅解锁更快模型、更高并发与更强研究能力，让思考与研究不再受限 哪个计划更适合你 订阅计划 包年 Agent 任务并行 Agent 优先生成队列 K3 超长对话容量（支持百万 Tokens） 定制化看板 定时任务 小组件任务 项目数 项目存储空间 精选插件 集群功能 集群功能运行子任务数 梦境记忆 自进化技能 目标模式 Kimi Code Kimi Claw（云端、安卓本地和桌面端） Kimi Claw 群聊 发布带数据库的网站 支付即表示你已阅读并同意 服务条款 和 隐私政策"
+      }
+    },
+    {
+      "slug": "kimi-code-docs",
+      "provider": "月之暗面",
+      "stage": "C1",
+      "url": "https://www.kimi.com/code/docs/en/",
+      "checkedAt": "2026-10-01T12:29:10.621Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 86833,
+        "textLength": 8800,
+        "tableCount": 3,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://www.kimi.com/code/docs/en/",
+        "title": "Kimi Code Overview | Kimi Code Docs",
+        "htmlBytes": 91865,
+        "textLength": 7431,
+        "domTextLength": 8987,
+        "tableCount": 3,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "Skip to contentKimi Code DocsSearch⌘CtrlKEnglish简体中文English简体中文AppearanceMenuOn this page Sidebar Navigation Kimi CodeOverviewModel ConfigurationMembership BenefitsWhat's NewCommunity GuidelinesHelp & FeedbackFAQError ReferenceContact & FeedbackKimi Code DesktopQuick StartInterface TourGuidesProject and Session ManagementInput and ContextTask Execution and ReviewBuilt-in BrowserSettings and ExtensionsFAQ and TroubleshootingChangelogKimi Code CLIGetting startedMigrating from kimi-cliGuidesCommon use casesInteraction and inputSessions and contextUsing Kimi Code CLI in IDEsRemote ControlUsing Kim"
+      }
+    },
+    {
+      "slug": "windsurf-pricing",
+      "provider": "Windsurf",
+      "stage": "C1",
+      "url": "https://windsurf.com/pricing",
+      "checkedAt": "2026-10-01T12:29:15.232Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 623059,
+        "textLength": 3617,
+        "tableCount": 0,
+        "priceHits": 10
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://devin.ai/pricing",
+        "title": "Plans and Pricing | Devin",
+        "htmlBytes": 620518,
+        "textLength": 3695,
+        "domTextLength": 3546,
+        "tableCount": 0,
+        "priceHits": 10,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [
+          "net::ERR_ABORTED https://devin.ai/blog?_rsc=0w4Jw8pT06fj-Nuk",
+          "net::ERR_ABORTED https://devin.ai/customers?_rsc=StG8jQnf9delw8zU",
+          "net::ERR_ABORTED https://devin.ai/demo?_rsc=hug-nMlivPHcZvm4"
+        ],
+        "jsOnly": false,
+        "sample": "ProductSolutionsResourcesCustomersPricingBlogGet a demoLoginGet startedDevinPlans and PricingChoose the perfect plan for your journeySWE-2, our latest model, is now available →INDIVIDUAL PLANSFree$0DownloadLight quota to code with agentsLimited model availabilityUnlimited inline editsUnlimited Tab completionsProPOPULAR$20per monthSelect planEverything in Free, plus:Increased quotas, including access to frontier models from OpenAI, Claude, Gemini, and SpaceXAI, plus leading open source modelsFull model availabilityFree use of SWE-2 Free in Devin Desktop and CLI through October 16, 2026Access to"
+      }
+    },
+    {
+      "slug": "baidu-comate-pricing",
+      "provider": "百度智能云",
+      "stage": "C1",
+      "url": "https://comate.baidu.com/zh/pricing",
+      "checkedAt": "2026-10-01T12:29:19.986Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 22925,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://comate.baidu.com/zh/pricing",
+        "title": "Comate 价格 | 百度研发编码助手 | 免费",
+        "htmlBytes": 154531,
+        "textLength": 901,
+        "domTextLength": 1222,
+        "tableCount": 0,
+        "priceHits": 13,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+          "获取用户信息失败: 没有授权!",
+          "获取用户信息失败: 没有授权!"
+        ],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "首页价格资讯文档在线问答企业版首页价格资讯文档在线问答企业版¥138/双席位/月一次购买，同时解锁 ｜ 模型资源需单独购买¥138/双席位/月一次购买，同时解锁 ｜ 模型资源需单独购买个人版企业版*如需了解更多价格说明，请访问官方文档个人·标准版免费首次注册，赠¥10元模型额度前往下载产品功能编程智能体续写与改写Spec 模式Figma 转代码自定义智能体、技能、规则Mission 工作模式个人·专业版￥59/月含模型额度¥55/月立即购买产品功能编程智能体续写与改写Spec 模式Figma 转代码自定义智能体、技能、规则Mission 工作模式高并发支持专用推理服务模型服务官方模型无缝切换优先体验国内 SOTA 模型免费Auto-Free模式150k tokens/h （无模型额度时自动切换）服务支持7×24h智能客服推荐个人·旗舰版免费Auto-Free模式限时不限量 至12月31日 ￥199/月含模型额度¥199/月立即购买产品功能编程智能体续写与改写Spec 模式Figma 转代码自定义智能体、技能、规则Mission 工作模式优先体验新功能专属高并发支持专用推理服务模型服务官方模型无缝切换优先体验国内 SOTA 模型免费Auto-Free模式500k tokens/h 限时不限量至12月31日 （无模型额度时自动切换）限时支持10个任务并发执行专属服务支持7×24h智能客"
+      }
+    },
+    {
+      "slug": "iflytek-iflycode",
+      "provider": "科大讯飞 讯飞开放平台",
+      "stage": "C1",
+      "url": "https://www.xfyun.cn/solutions/iflycode",
+      "checkedAt": "2026-10-01T12:29:27.207Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 160827,
+        "textLength": 6337,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://www.xfyun.cn/solutions/iflycode",
+        "title": "iflycode",
+        "htmlBytes": 272312,
+        "textLength": 6614,
+        "domTextLength": 6385,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "产品能力行业方案星火大模型讯飞星火星辰MaaS星辰Agent生态合作服务支持AI开发者大赛中文站中文站国际站中东站中亚站控制台****退出登录iFlyCode智能编程助手iFlyCode是由科大讯飞自主研发的智能编程助手，它基于先进的星火认知大模型，提供代码生成、代码续写、代码解释、单元测试等能力，旨在降低开发门槛，提升软件开发效率，让“编程更轻松，创意更自由”。合作咨询产品优势应用场景产品功能产品优势基于先进的认知大模型iFlyCode基于科大讯飞的讯飞星火认知大模型，利用最新的人工智能技术提供强大的编程辅助功能全流程提效iFlyCode覆盖了软件研发的全流程，包括设计、编码、自测等阶段，通过智能编码助手显著提升各个阶段的工作效率多功能集成提供代码生成、代码续写、代码纠错、代码检查、代码解释、单元测试生成等多功能，满足不同编程阶段的需求企业级定制优化iFlyCode提供企业定制优化工具，通过预训练和SFT训练，提高代码推荐采纳率，帮助企业构建自主可控的代码库灵活的部署选项支持SaaS公有化和私有化部署，适应不同企业的需求，保障企业数据安全和提升研发效率促进产业数字化转型iFlyCode通过提升代码能力优化企业研发结构，帮助企业解决技术人员压力，推动软件产业的数字化转型和升级应用场景互联网行业iFlyCode为软件开发行业提供从设计到编码、测试的全流程辅助，帮助开发团队提升效率和代"
+      }
+    },
+    {
+      "slug": "anthropic-pricing",
+      "provider": "Anthropic",
+      "stage": "C1",
+      "url": "https://www.anthropic.com/pricing",
+      "checkedAt": "2026-10-01T12:29:30.984Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 1182601,
+        "textLength": 19908,
+        "tableCount": 9,
+        "priceHits": 66
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://claude.com/pricing",
+        "title": "Plans & Pricing | Claude by Anthropic",
+        "htmlBytes": 1183547,
+        "textLength": 7425,
+        "domTextLength": 19898,
+        "tableCount": 9,
+        "priceHits": 66,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "Skip to main contentProductProductsClaudeClaude Code@ClaudeSpecializedClaude SecurityClaude ScienceCapabilitiesArtifactsDesignConnectorsPluginsSkillsExtensionsClaude for ChromeClaude for Microsoft 365ModelsMythosFableOpusSonnetHaikuImport to ClaudeDownload appsLogin (opens in new tab)DevelopersBuild withClaude CodeClaude PlatformFor developersClaude AcademyCommunityDeveloper blogDeveloper docsConsoleEnterpriseEnterpriseOverviewClaude Code for EnterpriseClaude PlatformUse CasesAI AgentsCodingCommerceDepartmentsCustomer supportCybersecurityLegalSalesIndustriesFinancial servicesGovernmentHealthca"
+      }
+    },
+    {
+      "slug": "openai-chatgpt-pricing",
+      "provider": "OpenAI",
+      "stage": "C1",
+      "url": "https://openai.com/chatgpt/pricing/",
+      "checkedAt": "2026-10-01T12:29:40.547Z",
+      "static": {
+        "ok": false,
+        "reason": "https://openai.com/chatgpt/pricing/ 抓取失败: HTTP 403",
+        "status": null,
+        "bytes": 0,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://chatgpt.com/zh-Hans-CN/pricing/",
+        "title": "定价 | ChatGPT",
+        "htmlBytes": 991254,
+        "textLength": 3546,
+        "domTextLength": 11054,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "简介功能ChatGPT Work深入研究圆点FinancesHealth图像插件远程购物Slack 和 Teams站点空间学习模式语音语音功能（支持视频）学习ChatGPT 适用于学生大学教师教师科学与医学家长退役军人灵感运动锻炼与保健养生个人理财食谱与烹饪旅行与探索使用方式ChatGPT 中的 CanvaChatGPT 中的 SpotifyChatGPT for PowerPoint与 PDF 对话与演示文稿对话与电子表格对话适用于大学生Codex概览定价Enterprise导入到 ChatGPT开发者文档活动BusinessBusiness概览联系销售团队商家AI 解决方案适用于数据科学与分析工程财务产品管理销售与市场营销定价概览免费版GoPlusProBusinessEnterprise 版高等教育K–12 教师下载登录免费注册简介功能学习CodexBusiness定价下载ChatGPT定价查看我们的个人、Business 和 Enterprise 套餐定价个人商业与企业免费版日常任务的智能解决方案/月获取免费版无限制使用 GPT-5.6 Luna 进行文本聊天带上传功能的消息数量受限图像生成受限语音聊天数量受限有限使用深度研究记忆与上下文支持受限Codex 的有限使用桌面端 ChatGPT Work（有限使用）已有套餐？请参阅 计费帮助⁠无限制的文本聊天需遵守防滥用规范。了"
+      }
+    },
+    {
+      "slug": "google-code-assist",
+      "provider": "Google",
+      "stage": "C1",
+      "url": "https://codeassist.google/",
+      "checkedAt": "2026-10-01T12:29:56.040Z",
+      "static": {
+        "ok": false,
+        "reason": "https://codeassist.google/ 抓取失败: ECONNABORTED",
+        "status": null,
+        "bytes": 0,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://codeassist.google/",
+        "title": "Error 500 (服务器错误)!!1",
+        "htmlBytes": 1659,
+        "textLength": 37,
+        "domTextLength": 56,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "Error 500 (服务器错误)!!1500. 出现了错误。出错了，请稍后再试。 这就是我们所知道的全部信息。"
+      }
+    },
+    {
+      "slug": "aliyun-bailian-pricing",
+      "provider": "阿里云百炼",
+      "stage": "C2",
+      "url": "https://help.aliyun.com/zh/model-studio/model-pricing",
+      "checkedAt": "2026-10-01T12:31:02.330Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 1797418,
+        "textLength": 93427,
+        "tableCount": 309,
+        "priceHits": 305
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+        "title": "阿里云百炼模型价格-大模型服务平台百炼(Model Studio)-阿里云帮助中心",
+        "htmlBytes": 2487009,
+        "textLength": 60921,
+        "domTextLength": 104417,
+        "tableCount": 620,
+        "priceHits": 305,
+        "loginWall": false,
+        "captcha": true,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "大模型产品解决方案权益定价AI 应用市场伙伴服务了解阿里云查看 \"\" 全部搜索结果AI 助理文档备案控制台 官方文档大模型服务平台百炼用户指南（模型）用户指南（Agent）API参考（模型）API参考（Agent）CLI有奖调研输入文档关键字查找人工智能与机器学习人工智能平台人工智能平台 PAI智能计算灵骏模型平台与服务大模型服务平台百炼向量检索服务 DashVector智能搜索与推荐智能推荐 AIRec智能开放搜索 OpenSearchAI 原生搜索 CleverSee视觉智能文字识别视觉智能开放平台图像搜索智能视觉生产（文档停止维护）自然语言处理自然语言处理地址标准化机器翻译文档智能智能语音交互智能语音交互决策智能优化求解器AI应用数知地球 AI Earth虚拟数字人工作学习 AI 助手通义听悟角色对话智能体通义星尘企业 Agent 应用平台Agent 观测与优化 AgentLoop电商经营助手全域智能运维平台 STAROps千问办公睿译宝睿呼宝行业智能交通云控平台工业大脑自动驾驶云开发平台城市视觉智能引擎基因分析平台智慧教育平台智能科教内容生成平台智能客服伶鹊智能对话机器人智能外呼机器人智能对话分析客服工作台新零售智能助理（文档停止维护）智能双录质检Agent开发治理平台多智能体治理与协作平台 AgentTeams智能体 AgentRun智能体构建和治理平台 AgentCor"
+      }
+    },
+    {
+      "slug": "aliyun-bailian-free-quota",
+      "provider": "阿里云百炼",
+      "stage": "C2",
+      "url": "https://help.aliyun.com/zh/model-studio/new-free-quota",
+      "checkedAt": "2026-10-01T12:31:08.696Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 70972,
+        "textLength": 6494,
+        "tableCount": 0,
+        "priceHits": 1
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://help.aliyun.com/zh/model-studio/new-free-quota",
+        "title": "新人免费额度获取及用完即停开关规则-大模型服务平台百炼(Model Studio)-阿里云帮助中心",
+        "htmlBytes": 552406,
+        "textLength": 13259,
+        "domTextLength": 16121,
+        "tableCount": 0,
+        "priceHits": 1,
+        "loginWall": true,
+        "captcha": true,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "大模型产品解决方案权益定价AI 应用市场伙伴服务了解阿里云查看 \"\" 全部搜索结果AI 助理文档备案控制台注册登录 官方文档大模型服务平台百炼用户指南（模型）用户指南（Agent）API参考（模型）API参考（Agent）CLI有奖调研输入文档关键字查找人工智能与机器学习人工智能平台人工智能平台 PAI智能计算灵骏模型平台与服务大模型服务平台百炼向量检索服务 DashVector智能搜索与推荐智能推荐 AIRec智能开放搜索 OpenSearchAI 原生搜索 CleverSee视觉智能文字识别视觉智能开放平台图像搜索智能视觉生产（文档停止维护）自然语言处理自然语言处理地址标准化机器翻译文档智能智能语音交互智能语音交互决策智能优化求解器AI应用数知地球 AI Earth虚拟数字人工作学习 AI 助手通义听悟角色对话智能体通义星尘企业 Agent 应用平台Agent 观测与优化 AgentLoop电商经营助手全域智能运维平台 STAROps千问办公睿译宝睿呼宝行业智能交通云控平台工业大脑自动驾驶云开发平台城市视觉智能引擎基因分析平台智慧教育平台智能科教内容生成平台智能客服伶鹊智能对话机器人智能外呼机器人智能对话分析客服工作台新零售智能助理（文档停止维护）智能双录质检Agent开发治理平台多智能体治理与协作平台 AgentTeams智能体 AgentRun智能体构建和治理平台 Agen"
+      }
+    },
+    {
+      "slug": "volcengine-ark-pricing",
+      "provider": "火山方舟",
+      "stage": "C2",
+      "url": "https://ark.volcengine.com/region:cn-beijing/docs/ark/model-pricing?lang=zh",
+      "checkedAt": "2026-10-01T12:31:12.914Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 44973,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://ark.volcengine.com/region:cn-beijing/docs/ark/model-pricing?lang=zh",
+        "title": "火山方舟 - 文档",
+        "htmlBytes": 75861,
+        "textLength": 52,
+        "domTextLength": 47,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 401 ()",
+          "Preload error for userInfo: Error: HTTP error! status: 401 at https://ark.volcengine.com/region:cn-beijing/docs/ark/model-pricing?lang=zh:1:39850"
+        ],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "火山方舟···控制台模型广场Gallery订阅Agent/Coding Plan文档CLI登录"
+      }
+    },
+    {
+      "slug": "volcengine-docs-pricing",
+      "provider": "火山方舟",
+      "stage": "C2",
+      "url": "https://www.volcengine.com/docs/82379/1099320",
+      "checkedAt": "2026-10-01T12:31:15.820Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 11902,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://docs.volcengine.com/docs/82379/1099320",
+        "title": "",
+        "htmlBytes": 33493,
+        "textLength": 0,
+        "domTextLength": 0,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [
+          "can no read vconsoleAppInfo from window object",
+          "can no read vconsoleAppInfo from window object",
+          "can no read vconsoleAppInfo from window object"
+        ],
+        "failedRequests": [
+          "net::ERR_ABORTED https://detect-online.volcanicengine.com/api/detect"
+        ],
+        "jsOnly": false,
+        "sample": ""
+      }
+    },
+    {
+      "slug": "kimi-api-pricing",
+      "provider": "月之暗面",
+      "stage": "C2",
+      "url": "https://platform.kimi.com/docs/pricing/chat",
+      "checkedAt": "2026-10-01T12:31:22.696Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 269703,
+        "textLength": 1271,
+        "tableCount": 0,
+        "priceHits": 1
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://platform.kimi.com/docs/pricing/chat",
+        "title": "模型推理价格说明 - Kimi API 开放平台",
+        "htmlBytes": 270023,
+        "textLength": 1243,
+        "domTextLength": 1271,
+        "tableCount": 0,
+        "priceHits": 1,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "Documentation IndexFetch the complete documentation index at: /docs/llms.txtUse this file to discover all available pages before exploring further.Skip to main content🎉 Kimi K3 旗舰模型已正式发布，快来体验吧！Kimi API 开放平台 home page简体中文模型推理托管智能体 BetaAPI 参考模型与定价资源搜索...⌘K企业订阅联系销售用户中心Kimi API 开放平台 home page搜索或提问...Navigation模型推理定价模型推理价格说明模型推理定价计费说明功能定价批量推理定价联网搜索定价托管智能体定价充值与限速充值与限速模型模型列表Kimi K3 模型Kimi K2.7 Code 模型Kimi K2.6 模型模型推理定价模型推理价格说明复制页面复制页面了解 Kimi 模型推理的 token 计费单位、输入输出计费方式、缓存优惠和各模型价格入口。复制页面复制页面​模型定价 ​K3 系列模型 注：缓存写入 是指将请求前缀写入上下文缓存所产生的费用。Kimi API 对重复的请求前缀自动启用上下文缓存，缓存条目按有效期（TTL）分为 5min 和 1h 两档，不指定 TTL 时默认按 5"
+      }
+    },
+    {
+      "slug": "kimi-api-batch",
+      "provider": "月之暗面",
+      "stage": "C2",
+      "url": "https://platform.kimi.com/docs/pricing/batch",
+      "checkedAt": "2026-10-01T12:31:30.414Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 255476,
+        "textLength": 794,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://platform.kimi.com/docs/pricing/batch",
+        "title": "批量推理定价 - Kimi API 开放平台",
+        "htmlBytes": 255797,
+        "textLength": 762,
+        "domTextLength": 794,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "Documentation IndexFetch the complete documentation index at: /docs/llms.txtUse this file to discover all available pages before exploring further.Skip to main content🎉 Kimi K3 旗舰模型已正式发布，快来体验吧！Kimi API 开放平台 home page简体中文模型推理托管智能体 BetaAPI 参考模型与定价资源搜索...⌘K企业订阅联系销售用户中心Kimi API 开放平台 home page搜索或提问...Navigation功能定价批量推理定价模型推理定价计费说明功能定价批量推理定价联网搜索定价托管智能体定价充值与限速充值与限速模型模型列表Kimi K3 模型Kimi K2.7 Code 模型Kimi K2.6 模型功能定价批量推理定价复制页面复制页面查看 Kimi BatchJob 批量推理的输入、输出和缓存命中 token 价格及计费说明。复制页面复制页面​产品定价 Batch API 即批量推理 API，批量推理 API 费用为标准模型价格的 60%，适合大规模、低实时性要求的任务场景。 此处 1M = 1,000,000，表格中的价格代表每消耗 1M tokens 的价格。 ​说明 Bat"
+      }
+    },
+    {
+      "slug": "minimax-paygo",
+      "provider": "MiniMax（稀宇科技）",
+      "stage": "C2",
+      "url": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+      "checkedAt": "2026-10-01T12:31:38.686Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 605157,
+        "textLength": 4593,
+        "tableCount": 19,
+        "priceHits": 30
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+        "title": "按量计费 - MiniMax 开放平台文档中心",
+        "htmlBytes": 836560,
+        "textLength": 3540,
+        "domTextLength": 4613,
+        "tableCount": 19,
+        "priceHits": 30,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 401 ()"
+        ],
+        "failedRequests": [
+          "net::ERR_ABORTED https://platform.minimax.cn/docs/guides/models-intro?_rsc=S-3r4SC8PvXI6Qwj"
+        ],
+        "jsOnly": false,
+        "sample": "Documentation IndexFetch the complete documentation index at: /docs/llms.txtUse this file to discover all available pages before exploring further.跳转到主要内容🎉 MiniMax H3 全新发布！新一代开放通用多模态视频模型。查看文档 ➔MiniMax 开放平台文档中心 home page简体中文搜索...Ctrl K文档定价控制台 登录 搜索...NavigationAPI 价格按量计费开发指南APIM Plan定价更新日志产品定价定价概览API 价格按量计费语音资源包视频资源包订阅套餐Token PlanToken Plan 团队版在此页面语言模型语音视频音乐图像MCP服务端工具 API 价格按量计费复制页面复制页面MiniMax按量计费定价复制页面复制页面按量计费使用开放平台普通 API Key，并按实际用量消耗账户余额。积分是通过订阅 Key 使用的独立预付余额，资源覆盖范围与 Token Plan 相同。积分定价和使用规则请参考 Token Plan 定价。 ​语言模型 立即充值 标准 优先*模型输入价格 元/百万 tokens输出价格 元/百万 tokens缓存读取 元/百万 tokensMiniMax-M3≤ 512k "
+      }
+    },
+    {
+      "slug": "siliconflow-pricing",
+      "provider": "硅基流动",
+      "stage": "C2",
+      "url": "https://siliconflow.cn/pricing",
+      "checkedAt": "2026-10-01T12:31:42.124Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 706236,
+        "textLength": 3878,
+        "tableCount": 0,
+        "priceHits": 97
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://siliconflow.cn/pricing",
+        "title": "大模型 API 价格方案 - 硅基流动 SiliconFlow",
+        "htmlBytes": 705299,
+        "textLength": 2984,
+        "domTextLength": 3878,
+        "tableCount": 0,
+        "priceHits": 97,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "产品模型价格文档生态合作关于登录登录产品模型价格文档生态合作关于PRICING · 模型价格中心模型价格总览面向生产选型的模型价格页：一屏对比主流厂商与模型的输入、输出、缓存命中成本，帮助你快速判断性价比。搜索实时价格同步仅展示可用模型按厂商快速定位全部对话生图语音视频hunyuanZ-aideepseek-aimeituan-longcatKimiQwenChinaTelecomTongyi-MAIBaiduStepfun-aiinclusionAIByteDanceWanopenmossFunAudioLLMBAAIKolors对话模型厂商模型输入价格（M Tokens）输出价格（M Tokens）缓存价格（M Tokens）hunyuanHy4 previewtencent/Hy4-preview¥ 6.00¥ 18.00¥ 0.30Hunyuan-MT-7Btencent/Hunyuan-MT-7B免费免费-Hunyuan-A13B-Instructtencent/Hunyuan-A13B-Instruct费用发生时段: 9点～18点¥ 1.00费用发生时段: 9点～18点¥ 4.00-费用发生时段: 0点～9点/18点～24点¥ 0.80费用发生时段: 0点～9点/18点～24点¥ 3.20-Z-aiGLM-5.3zai-org/GLM-5.3¥ 8.00¥ 28.00¥"
+      }
+    },
+    {
+      "slug": "siliconflow-docs",
+      "provider": "硅基流动",
+      "stage": "C2",
+      "url": "https://api-docs.siliconflow.cn",
+      "checkedAt": "2026-10-01T12:31:46.046Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 143504,
+        "textLength": 5160,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://api-docs.siliconflow.cn/docs/userguide/introduction",
+        "title": "平台简介",
+        "htmlBytes": 132432,
+        "textLength": 1976,
+        "domTextLength": 1902,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [
+          "net::ERR_ABORTED https://api-docs.siliconflow.cn/docs/userguide/quickstart?_rsc=pq5c1",
+          "net::ERR_ABORTED https://api-docs.siliconflow.cn/docs/userguide/guides/function-calling?_rsc=pq5c1",
+          "net::ERR_ABORTED https://api-docs.siliconflow.cn/docs/userguide/capabilities/reasoning?_rsc=pq5c1"
+        ],
+        "jsOnly": false,
+        "sample": "搜索CtrlK使用指南平台简介快速上手对话模型开始使用流式输出推理模型Function CallingJSON 模式多模态输入前缀续写FIM 补全多模态生成图片生成视频生成语音合成功能特性模型微调批量推理Rate Limits常见问题实名认证API 请求错误排查模型问题排查财务相关发票相关账户相关场景示例API手册文本系列创建对话请求（OpenAI） POST创建对话请求（Anthropic） POST创建快速决策请求（TypeSafe） POST创建嵌入请求 POST创建重排序请求 POST图像系列创建图片生成请求 POST语音系列上传参考音频 POST创建文本转语音请求 POST获取参考音频列表 GET删除参考音频 POST创建语音转文本请求 POST视频系列创建视频生成请求 POST获取视频生成链接请求 POST批量处理获取文件列表 GET上传文件 POST获取batch任务列表 GET创建batch任务 POST获取batch任务详情 GET取消batch任务 POST平台系列获取用户模型列表 GET条款与协议更新公告更多SiliconFlow 平台SiliconFlow 官网预留实例企业级 MaaS 平台（私有化）私有化大模型服务网关AI 算力运营服务中文平台简介概述使用指南平台简介SiliconFlow 平台简介，了解硅基流动大模型云服务的核心能力与产品矩阵。概述 Si"
+      }
+    },
+    {
+      "slug": "mistral-pricing",
+      "provider": "Mistral",
+      "stage": "C2",
+      "url": "https://mistral.ai/pricing",
+      "checkedAt": "2026-10-01T12:31:49.308Z",
+      "static": {
+        "ok": false,
+        "reason": "https://mistral.ai/pricing 抓取失败: ECONNABORTED",
+        "status": null,
+        "bytes": 0,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://mistral.ai/pricing/",
+        "title": "Pricing | Mistral",
+        "htmlBytes": 478914,
+        "textLength": 6598,
+        "domTextLength": 7577,
+        "tableCount": 1,
+        "priceHits": 12,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "Get in touch Menu Products Industries Research Developers Blog Customers Company Get in touch Login StudioBuild, test, and run AI agents and apps. ForgeTrain, align, and evaluate custom AI models. VibeAI agent for long-horizon work. Vibe for codeCoding agents in the terminal, IDE, and background. AI CloudFrontier-scale infrastructure for training and inference. PricingPlans API pricing For enterprises Financial services Public sector & government Manufacturing Energy & utilities DomainsCoding Document intelligence Speech Applied AIDelivery methodology Model customization Latest models Mistral "
+      }
+    },
+    {
+      "slug": "mistral-docs-models",
+      "provider": "Mistral",
+      "stage": "C2",
+      "url": "https://docs.mistral.ai/getting-started/models/models_overview/",
+      "checkedAt": "2026-10-01T12:32:47.533Z",
+      "static": {
+        "ok": false,
+        "reason": "https://docs.mistral.ai/getting-started/models/models_overview/ 抓取失败: ECONNABORTED",
+        "status": null,
+        "bytes": 0,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://docs.mistral.ai/models",
+        "title": "Mistral Docs",
+        "htmlBytes": 1312502,
+        "textLength": 8556,
+        "domTextLength": 8117,
+        "tableCount": 2,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "Docs & APISearch docs⌘KVibeStudioInference & ModelsAdminResourcesAPI ReferenceSearch docs⌘KToggle themeReach outTry Studio HomeInferenceModelsPricingModel lifecycle policyRegional inferencePriority TierLabsPromptingSamplingAPI Reference ↗Inference & ModelsModelsModels OverviewMistral develops, or makes available, open-weight and commercial large language models. Explore the full lineup, compare benchmarks, and find the right model for your use case.Compare model capabilitiesUse the model selection guide to match models to your task, latency, and cost targets.Compare modelsFeatured ModelsCopy s"
+      }
+    },
+    {
+      "slug": "stepfun-pricing",
+      "provider": "阶跃星辰 StepFun",
+      "stage": "C2",
+      "url": "https://platform.stepfun.com/docs/pricing/details",
+      "checkedAt": "2026-10-01T12:33:49.808Z",
+      "static": {
+        "ok": false,
+        "reason": "https://platform.stepfun.com/docs/pricing/details 抓取失败: HTTP 404",
+        "status": null,
+        "bytes": 0,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://platform.stepfun.com/docs/pricing/details",
+        "title": "",
+        "htmlBytes": 109201,
+        "textLength": 0,
+        "domTextLength": 0,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 ()"
+        ],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": ""
+      }
+    },
+    {
+      "slug": "baichuan-pricing",
+      "provider": "百川智能 Baichuan",
+      "stage": "C2",
+      "url": "https://platform.baichuan-ai.com/price",
+      "checkedAt": "2026-10-01T12:33:55.242Z",
+      "static": {
+        "ok": false,
+        "reason": "https://platform.baichuan-ai.com/price 抓取失败: HTTP 404",
+        "status": null,
+        "bytes": 0,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://platform.baichuan-ai.com/price",
+        "title": "404: This page could not be found",
+        "htmlBytes": 174992,
+        "textLength": 100,
+        "domTextLength": 169,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+          "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        ],
+        "failedRequests": [
+          "net::ERR_ABORTED https://arms-retcode.aliyuncs.com/r.png?t=pv&times=1&page=%2Fprice&tag=&release=&environment=prod&begin=1790858041006&uid=mgmF0uvbpmpinknv20h46z6js0dj&dt=404%3A%20This%20page%20could%20not%20be%20found&dr=&dpr=1.00&de=utf-8&ul=en&sr=1440x900&vp=1440x900&ct=4g&sid=Rwmv3ue4pI3ibanXO0wC6ypkwXbR&pid=bc7akk1cwt%4009dd181f2a472a0&_v=1.8.31&pv_id=R9m28uhnpXjis9n5z0sw6bklInth&sampling=1&dl=https%3A%2F%2Fplatform.baichuan-ai.com%2Fprice&z=mupimyh6",
+          "net::ERR_ABORTED https://arms-retcode.aliyuncs.com/r.png?t=pv&times=1&page=%2Fprice&tag=&release=&environment=prod&begin=1790858041031&uid=mgmF0uvbpmpinknv20h46z6js0dj&dt=404%3A%20This%20page%20could%20not%20be%20found&dr=&dpr=1.00&de=utf-8&ul=en&sr=1440x900&vp=1440x900&ct=4g&sid=Rwmv3ue4pI3ibanXO0wC6ypkwXbR&pid=bc7akk1cwt%4009dd181f2a472a0&_v=1.8.31&pv_id=R9m28uhnpXjis9n5z0sw6bklInth&sampling=1&dl=https%3A%2F%2Fplatform.baichuan-ai.com%2Fprice&z=mupimyh8"
+        ],
+        "jsOnly": false,
+        "sample": "首页文档中心产品定价场景示例体验中心知识库简体中文登录✕📋参与产品调研立即填写404This page could not be found.申请体验请填写合作咨询申请体验测试，我们会安排商务尽快跟进联系我们官方邮箱Openapi@baichuan-inc.com扫码进入服务支持群使用指南 请完成安全验证    拖动滑块完成拼图"
+      }
+    },
+    {
+      "slug": "tencent-hunyuan-pricing",
+      "provider": "腾讯云 混元大模型",
+      "stage": "C2",
+      "url": "https://cloud.tencent.com/document/product/1729/97731",
+      "checkedAt": "2026-10-01T12:34:02.156Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 276517,
+        "textLength": 2221,
+        "tableCount": 2,
+        "priceHits": 2
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://cloud.tencent.com/document/product/1729/97731",
+        "title": "腾讯混元大模型 混元生文计费概述_腾讯云",
+        "htmlBytes": 643983,
+        "textLength": 2428,
+        "domTextLength": 6629,
+        "tableCount": 2,
+        "priceHits": 2,
+        "loginWall": false,
+        "captcha": true,
+        "notes": [],
+        "consoleErrors": [
+          "Access to XMLHttpRequest at 'https://yehe.woa.com/api/v1/yehe/Ping?_=1790858044980' from origin 'https://cloud.tencent.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is…",
+          "Failed to load resource: net::ERR_FAILED",
+          "Failed to load resource: the server responded with a status of 401 ()"
+        ],
+        "failedRequests": [
+          "net::ERR_FAILED https://yehe.woa.com/api/v1/yehe/Ping?_=1790858044980"
+        ],
+        "jsOnly": false,
+        "sample": "腾讯云大模型最新活动产品解决方案定价企业中心云市场开发者客户支持合作与生态了解腾讯云域名关闭搜索近期搜索热词WorkBuddyCodeBuddyTokenHub域名SSL 证书短信云服务器对象存储更多问题，派给帮你解答立即下载中国站文档备案控制台登录免费注册控制台账号信息费用中心消息中心我的工单联系客服：95716或4009 100 100转1免费注册登录搜索近期搜索热词WorkBuddyCodeBuddyTokenHub域名SSL 证书短信云服务器对象存储大模型最新活动产品推荐人工智能与机器学习计算容器与中间件存储数据库网络CDN与边缘视频服务安全大数据开发与运维云通信与企业服务办公协同微信生态物联网行业应用服务与营销解决方案行业解决方案通用解决方案微信解决方案文档定价企业中心云市场开发者客户支持合作与生态了解腾讯云登录/注册控制台国际站腾讯智能体WorkBuddy EnterpriseNEWWorkBuddyHOTCodeBuddyNEWWorkBuddy Managed AgentsNEW大模型语言模型混元语言模型（Hy4 preview）混元语言模型 ( Hy3 )GLM-5.3-FlashXKimi-K3DeepSeek-V4.1-FlashDeepSeek-V4-ProGLM-5.3-FlashGLM-5.3视觉模型Hy-Image-3.5-previewKling-V"
+      }
+    },
+    {
+      "slug": "qianfan-pricing",
+      "provider": "百度智能云",
+      "stage": "C2",
+      "url": "https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg",
+      "checkedAt": "2026-10-01T12:34:06.756Z",
+      "static": {
+        "ok": true,
+        "reason": null,
+        "status": 200,
+        "bytes": 288126,
+        "textLength": 13115,
+        "tableCount": 1,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg",
+        "title": "新用户免费额度 - 百度千帆·大模型服务及Agent开发平台",
+        "htmlBytes": 324704,
+        "textLength": 4176,
+        "domTextLength": 14681,
+        "tableCount": 1,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "文档中心百度千帆Token Plan个人版正式上线，首购5折秒杀 搜索本产品文档关键词立即试用新用户免费额度 百度千帆·大模型服务及Agent开发平台平台介绍平台简介更新动态产品公告模型服务模型更新记录平台更新记录模型版本升级及退役机制Token Plan个人版上线及Coding Plan停售公告Coding Plan 产品升级公告批量推理促销活动说明Anthropic API 返回参数input_tokens含义更新7月28日服务停服通知模型服务 V1 接口下线及迁移说明应用开发模型赠送资源下线公告Agent模型服务升级及切换公告知识库高级解析服务计费公告共享资源知识库检索计费公告工具及MCP广场官方工具下架公告工具限时体验额度到期通知教育类工具下架公告热榜类工具下架公告模型介绍快速开始-模型服务调用模型列表功能特性模型能力模型默认参数说明Token Plan 个人版Token Plan 个人版快速开始接入AI工具OpenClawClaude CodeOpenCodeCursorCodeXQwen CodeKilo CLIKilo CodeClineCherry StudioCC-SwitchHermes AgentDeepSeek HarnessZCodeCoding Plan 升级与权益调整说明Coding Plan 迁移至 Token Plan 用户授权协议使用须知Toke"
+      }
+    },
+    {
+      "slug": "openai-api-pricing",
+      "provider": "OpenAI",
+      "stage": "C2",
+      "url": "https://openai.com/api/pricing/",
+      "checkedAt": "2026-10-01T12:34:10.191Z",
+      "static": {
+        "ok": false,
+        "reason": "https://openai.com/api/pricing/ 抓取失败: HTTP 403",
+        "status": null,
+        "bytes": 0,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://openai.com/zh-Hans-CN/business/pricing/#api",
+        "title": "Business 定价 | OpenAI",
+        "htmlBytes": 827272,
+        "textLength": 9459,
+        "domTextLength": 9047,
+        "tableCount": 0,
+        "priceHits": 6,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "跳至主要内容为何选择 OpenAI产品解决方案资源客户定价体验 OpenAI联系销售团队为何选择 OpenAI产品解决方案资源客户定价联系销售团队体验 OpenAIOpenAIChatGPT定价查看我们的 Business 和 Enterprise 套餐定价ChatGPTAPIBusinessChatGPT 和 Codex一个安全的工作空间，提供公司上下文信息和灵活的席位类型，适合各种预算。开始使用（在新窗口中打开）标准席位US$20/月最适合日常工作$20/月（按年计费）。$25/月（按月计费）。高级席位US$100/月用量是标准席位的 5 倍，且无 5 小时限制$100/月（按年计费）。$125/月（按月计费）。包含内容：涵盖 ChatGPT、“ChatGPT 工作”及 Codex 的所有功能支持桌面端、网页端和移动端访问可连接至 Google Workspace、Slack、GitHub、Microsoft 365 等工具安全的工作空间，支持 SAML、SSO 和 MFA集中式计费和管理使用情况分析与支出控制默认不使用你的业务数据进行模型训练用于自定义工作流的工作空间智能体可灵活搭配不同席位类型适用于 2–200 名员工的团队。无限制使用需遵守防滥用规范。了解更多⁠⁠（在新窗口中打开）EnterpriseChatGPT 和 Codex面向大规模组织的企业级 AI、安全性及支持"
+      }
+    },
+    {
+      "slug": "gemini-api-pricing",
+      "provider": "Google",
+      "stage": "C2",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "checkedAt": "2026-10-01T12:34:22.096Z",
+      "static": {
+        "ok": false,
+        "reason": "https://ai.google.dev/gemini-api/docs/pricing 抓取失败: ECONNABORTED",
+        "status": null,
+        "bytes": 0,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://ai.google.dev/gemini-api/docs/pricing?hl=zh-cn",
+        "title": "Gemini Developer API 价格  |  Gemini API  |  Google AI for Developers",
+        "htmlBytes": 232670,
+        "textLength": 10449,
+        "domTextLength": 37498,
+        "tableCount": 88,
+        "priceHits": 198,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "跳至主要内容 / English Deutsch Español – América Latina Français Indonesia Italiano Polski Português – Brasil Shqip Tiếng Việt Türkçe Русский עברית العربيّة فارسی हिंदी বাংলা ภาษาไทย 中文 – 简体 中文 – 繁體 日本語 한국어 获取 API 密钥 实战宝典 社区 登录 文档 API 参考 Gemini API 文档 API 参考 获取 API 密钥 实战宝典 社区 开始使用 概览 开始使用 API 密钥 价格 编码代理设置 模型 所有模型 最新 Gemini 模型 Nano Banana Veo Gemini Omni Flash Lyria 3.5 和 Lyria Clip 概览Lyria RealTimeLyria 提示指南 文字转语音 概览语音设计语音复制 转写 正在使用 实时翻译 Embeddings 机器人学 概览空间推理Agentic Vision任务编排支持流式传输的机器人视频理解 核心功能 文本 图片 图片生成 🍌图片理解 视频 视频概览视频理解 文档 语音和音频 语音生成音频理解音频转写 思考型 思考型思考签名 结构化输出 函数调用 长上下文 代理 概览 快速入门 Antigravity"
+      }
+    },
+    {
+      "slug": "sensenova-pricing",
+      "provider": "商汤科技 SenseTime",
+      "stage": "C2",
+      "url": "https://platform.sensenova.cn/doc?path=/docs/API/price.md",
+      "checkedAt": "2026-10-01T12:35:26.138Z",
+      "static": {
+        "ok": false,
+        "reason": "https://platform.sensenova.cn/doc?path=/docs/API/price.md 抓取失败: HTTP 404",
+        "status": null,
+        "bytes": 0,
+        "textLength": 0,
+        "tableCount": 0,
+        "priceHits": 0
+      },
+      "render": {
+        "ok": true,
+        "finalUrl": "https://platform.sensenova.cn/doc?path=/docs/API/price.md",
+        "title": "404 Not Found",
+        "htmlBytes": 151,
+        "textLength": 26,
+        "domTextLength": 26,
+        "tableCount": 0,
+        "priceHits": 0,
+        "loginWall": false,
+        "captcha": false,
+        "notes": [],
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        ],
+        "failedRequests": [],
+        "jsOnly": false,
+        "sample": "404 Not Found nginx/1.29.2"
+      }
+    }
+  ]
+}

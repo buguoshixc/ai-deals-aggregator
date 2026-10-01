@@ -31,6 +31,8 @@ const history = require('../lib/history');
 const changes = require('../lib/changes');
 const feeds = require('../lib/feeds');
 const landing = require('../lib/landing');
+// v3.0 Stage E：厂商统一资料页（六个资料区块 + 四条诚实性断言）。
+const vendorPage = require('../lib/vendor-page');
 const seo = require('../lib/seo');
 const secretScan = require('../lib/secret-scan');
 // v2.1 第二段：Coding Plan 套餐页（/plans/coding/）。正文渲染住在 lib 里，
@@ -43,6 +45,24 @@ const planHistory = require('../lib/plan-history');
 const apiPlanSchema = require('../lib/api-plan-schema');
 const apiPlanHistory = require('../lib/api-plan-history');
 const apiPlansPage = require('../lib/api-plans-page');
+// v3.0：`/plans/` 统一资料入口（AI 套餐与 API 计费资料库）。正文渲染同样住在 lib 里，
+// 因为它要能被离线自测直接调用；这一页**不复制** /plans/coding/ 与 /plans/api/ 的表，
+// 只给计数、口径、变化与仍然有效的关联优惠（变化与关系都复用既有判据，见该文件头注释）。
+const plansHubPage = require('../lib/plans-hub-page');
+// v3.0 Stage D5/D6：模型资料索引与详情页（`/models/` 与 `/models/<slug>/`）。
+// 正文渲染住在 lib 里（可被离线自测直接调用）；身份 / 映射 / 派生时间线全部走
+// `lib/model-registry.js` 的同一份判据 —— 页面层不自己算 id，也不判"两个名字是不是同一个模型"。
+const modelsPage = require('../lib/models-page');
+const modelRegistry = require('../lib/model-registry');
+// v3.0 Stage F：历史档案（`/archive/`）。归档层是**派生视图**：三份日志的
+// baseline + events + absence（+ ended 的墓碑 label）→ 结束/恢复条目，不落新真值文件。
+const archiveLib = require('../lib/archive');
+// v3.0 Stage G：数据出口（`/docs/data/` + `/data/index.json` Manifest）。
+// 文档与 Manifest **同源对账**：endpoint 必须真实存在、schemaVersion / count / updatedAt 逐字段一致。
+const dataDocs = require('../lib/data-docs');
+// v3.0：页面类型声明表 —— 路由 → kind / 正文下限 / ItemList 要求 / sitemap priority 的唯一出处。
+// 构建期与独立门禁（tools/seo-verify.js）都读它，但**各自从 dist 解析**（执行路径不合并）。
+const pageKinds = require('../lib/page-kinds');
 const planChanges = require('../lib/plan-changes');
 const providers = require('../lib/providers');
 // v2.4：优惠 ↔ 套餐关系层。真值在 scripts/data/deal-plan-links.json，
@@ -81,6 +101,54 @@ function showOut(dir) {
 }
 
 /**
+ * `package.json` 的「文本层重复键」护栏（v3.0 D7）。
+ *
+ * ## 为什么必须有它
+ *
+ * `JSON.parse` 对重复键**静默只留最后一个**，所以「两个并行改动给同一件事起了同一个脚本名」
+ * 在构建期**没有任何东西会红** —— 后写的那个悄悄顶掉先写的那个，而两边各自看都自洽。
+ * 这不是假想：v3.0 实施期间，`selftest:models` 同时被两个成员写进 `scripts`，
+ * JSON 解析后只剩一个，是**人**发现并改名才收场的（见 STAGE-PLAN 的 D7）。
+ *
+ * ## 为什么判「文本层」而不是解析结果
+ *
+ * 判据一旦走 `JSON.parse`，重复键已经被去重 ⇒ 恒真、等于没判。所以这里读**原始文本**：
+ * 只看 `scripts` 区块里的顶层键行，逐行取键名，出现第二次即报错（附两个行号）。
+ * 刻意不引入 YAML/JSON5 解析器：只做「同一区块里同名键出现两次」这一个判断，误报面最小。
+ *
+ * 它是**硬失败**：重复键意味着「有一份脚本定义静默失效」，宁可拦住发布。
+ */
+function assertNoDuplicateScriptKeys() {
+  const file = path.join(ROOT, 'package.json');
+  const text = fs.readFileSync(file, 'utf8');
+  const lines = text.split('\n');
+  // scripts 区块：从 `"scripts": {` 到与之配对的 `}`（按缩进判：闭合行以两个空格 + } 开头）
+  const start = lines.findIndex(line => /^\s*"scripts"\s*:\s*\{\s*$/.test(line));
+  if (start === -1) throw new Error('package.json 里找不到 "scripts" 区块 —— 护栏失去作用，拒绝继续构建');
+  let end = -1;
+  for (let i = start + 1; i < lines.length; i++) {
+    if (/^\s{0,2}\}/.test(lines[i])) { end = i; break; }
+  }
+  if (end === -1) throw new Error('package.json 的 "scripts" 区块没有配对闭合 —— 护栏失去作用，拒绝继续构建');
+
+  const seen = new Map();
+  const duplicates = [];
+  for (let i = start + 1; i < end; i++) {
+    const m = lines[i].match(/^\s*"([^"]+)"\s*:/);
+    if (!m) continue;
+    const key = m[1];
+    if (seen.has(key)) duplicates.push({ key, first: seen.get(key) + 1, second: i + 1 });
+    else seen.set(key, i);
+  }
+  if (duplicates.length) {
+    const detail = duplicates.map(d => `  - "${d.key}"：第 ${d.first} 行与第 ${d.second} 行重复（JSON 只留最后一个，前者静默失效）`).join('\n');
+    throw new Error(`package.json 的 scripts 里有 ${duplicates.length} 个重复键 —— 重复键会被 JSON.parse 静默去重：\n${detail}`);
+  }
+  return seen.size;
+}
+assertNoDuplicateScriptKeys();
+
+/**
  * 原样拷贝到产物根的源码文件。
  *
  * v2.1：`plans.json` 从这一版起**发布**（此前它只是仓库里的输入数据）。
@@ -89,7 +157,7 @@ function showOut(dir) {
  */
 const PUBLIC_FILES = ['index.html', 'deals.json', 'plans.json', 'api-plans.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
 /** 构建期生成、不走源码拷贝的产物 */
-const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json', 'deal-history.json', 'plan-history.json', 'api-plan-history.json', 'deal-plan-links.json'];
+const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json', 'deal-history.json', 'plan-history.json', 'api-plan-history.json', 'deal-plan-links.json', 'models.json', 'model-registry-links.json', 'data/index.json'];
 // 站点常量与 XML 转义的**唯一出处**是 lib/feeds.js（v1.6 起订阅层也要用它们）。
 const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = feeds;
 
@@ -119,6 +187,18 @@ const ROUTE_HREFS = [
   // v2.1 第二段：Coding Plan 套餐对比页。它是**并列的产品能力**（不是优惠入口），
   // 所以挂在「按厂商 / 分类浏览」那一行末尾，而不是新增一行页脚。
   ['__PLANS_HREF__', 'plans/coding/'],
+  // v3.0 Stage B：/plans/ 资料入口（AI 套餐与 API 计费资料库）。它是上面两条的**父级**，
+  // 因此排在它们前面 —— 页脚是一份共享片段，这一行是整站唯一的「按套餐 / 计费浏览」入口。
+  // ⚠️ 占位符不许与既有占位符互为子串（`assertRouteMarkersDisjoint()` 会硬失败）：
+  // 实测 `__PLANSHUB_HREF__` 不包含 `__PLANS_HREF__`（第 7 个字符是 H 而不是 S）。
+  ['__PLANSHUB_HREF__', 'plans/'],
+  // v3.0 Stage G：数据出口（数据文档页 + /data/index.json Manifest）。
+  ['__DATA_HREF__', 'docs/data/'],
+  // v3.0 Stage F：历史档案（资料失效不等于资料删除）。
+  ['__ARCHIVE_HREF__', 'archive/'],
+  // v3.0 Stage D5：模型资料索引。与「按厂商 / 分类浏览」是同一类东西（长期存在的资料维度），
+  // 因此挂在同一行末尾；详情页由索引页给入链，不需要逐页进页脚。
+  ['__MODELS_HREF__', 'models/'],
   // v2.5：API / Token 计费对比页。与套餐对比页**并列**（一个回答"月付多少钱"，
   // 一个回答"每百万 token 多少钱"），因此同样挂在那一行末尾。
   //
@@ -1083,17 +1163,28 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     ? plansPage.planChangesPageBlockHtml(context.planChanges, { prefix: '../', providerTable: context.providerTable || null })
       .split('\n').map(line => `      ${line}`).join('\n')
     : '';
+  // v3.0 Stage H：API 价格变化。**同样不新做一页** —— 这一页的任务就是回答
+  // 「最近发生了什么变化」，而 API 计费的价格/模型/免费额度/限速变化是第三条独立的变化流
+  // （另 一份数据、另 一份日志、另 一个起算日）。块由 `api-plans-page.js` 渲染，
+  // 与 `/plans/api/` 共用同一句话（判据来自 `api-plan-history`，没有第二套变化检测）。
+  const apiPlanBlock = context.apiPlanChanges
+    ? apiPlansPage.apiPlanChangesPageBlockHtml(context.apiPlanChanges, { prefix: '../', providerTable: context.providerTable || null })
+      .split('\n').map(line => `      ${line}`).join('\n')
+    : '';
   const jumpNav = `      <nav class="chgjump" aria-label="变化分区">
         <a href="#deals">优惠变化</a>
         <span aria-hidden="true">·</span>
         <a href="#plans">套餐变化</a>
+        <span aria-hidden="true">·</span>
+        <a href="#api-plans">API 价格变化</a>
       </nav>
 `;
   const body = `${jumpNav}      <section class="chgdeals" id="deals" aria-label="优惠变化">
 ${dealsBody}
       </section>
 
-${planBlock}`;
+${planBlock}
+${apiPlanBlock}`;
 
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -1154,6 +1245,8 @@ ${style}
   .pchgorigin { color: var(--mut); }
   .pchnone { color: var(--mut); font-size: var(--fs-sm); margin: 0; }
   .chgsec.pchanges { margin-top: var(--s4); }
+  /* v3.0 Stage H：API 价格变化块（与套餐那一块同一条间隔纪律）。 */
+  .chgsec.apichanges { margin-top: var(--s4); }
   @media (max-width: 760px) {
     .chgi { padding: 9px 10px; }
     .chgh { gap: 2px var(--s2); }
@@ -1226,8 +1319,10 @@ function renderPlansPage(planStore, indexHtml, context = {}) {
 
   // v2.3：这一页**有专属订阅源**（套餐变化），必须声明它 —— 与根 Feed 并列，
   // 而不是替换：读者既可以订全站优惠，也可以只订套餐变化。
-  const planFeed = (context.allFeeds || []).find(feed => feed.spec && feed.spec.id === feeds.PLAN_CHANGE_FEED.id)
-    || { spec: feeds.PLAN_CHANGE_FEED };
+  // v3.0：这一页有专属订阅源（Coding 套餐变化），必须声明它 —— 与根 Feed 并列，而不是替换。
+  // 取法收敛到注册表：`feedsForPage` 按路由解析（此前是按 spec id 写死的）。
+  const planOwnFeeds = feeds.feedsForPage({ route: plansPage.PLANS_ROUTE }, context.allFeeds || []);
+  const planFeed = planOwnFeeds[0] || { spec: feeds.PLAN_CHANGE_FEED };
 
   const pageUrl = `${SITE_URL}${plansPage.PLANS_ROUTE}`;
   const plans = planStore.plans || [];
@@ -1457,6 +1552,12 @@ function renderApiPlansPage(apiStore, indexHtml, context = {}) {
   const plans = apiStore.plans || [];
   const providerTable = context.providerTable || null;
 
+  // v3.0 Stage H4：这一页**有自己的订阅源**（API 价格变化），必须在 `<head>` 里声明它 ——
+  // 与根 Feed 并列，而不是替换。取法与 `/plans/coding/` 一致：**都从注册表推导**
+  // （`feedsForPage` 按路由解析），不在模板里写死 spec id。
+  const apiOwnFeedTags = feeds.feedLinkTags(
+    feeds.feedsForPage({ route: apiPlansPage.API_PLANS_ROUTE }, context.allFeeds || []), prefix);
+
   const jsonLdBlocks = apiPlansPage.apiPlansJsonLd(plans, { siteUrl: SITE_URL, providerTable })
     .map(data => `<script type="application/ld+json">
 ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
@@ -1486,6 +1587,7 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
      而真浏览器那一条「没有 JS 错误、没有外部请求」的断言不会红（缺的是本地样式表，
      既不报错也不发外部请求）。这是构建期自检「模板引用的 logo key 全部已登记」查不到的那一类。 -->
 <link rel="stylesheet" href="${prefix}logos.css">
+${apiOwnFeedTags}
 ${feeds.rootFeedTags(prefix)}
 ${themeScript}
 ${style}
@@ -1581,6 +1683,286 @@ ${body}
 }
 
 /* ------------------------------------------------------------------ */
+/* /plans/ 统一资料入口（v3.0 Stage B）                                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * `/plans/` 资料入口页的套壳。
+ *
+ * 与 `renderPlansPage` / `renderApiPlansPage` 同一套「独立静态路由」的做法：
+ * `<head>`、主题脚本、页头、页脚、JSON-LD 在这里套，**正文在 `lib/plans-hub-page.js`**。
+ *
+ * 三处刻意的设计：
+ *   · `prefix = '../'`（一层路由）—— 由路由深度推导，不写死；
+ *   · 这一页是**枢纽**：ItemList 指向两个子页（`data-child`），成员对账由页面自己的
+ *     `assertItemListHonesty()` 做（`seo.js` 的成员判据按 `deal/<id>/` 判，对枢纽页不适用）；
+ *   · 这一页**没有交互脚本**、也没有大表 —— 它只给计数、口径、变化与关联优惠。
+ */
+function renderPlansHubShell(indexHtml, context = {}) {
+  const prefix = '../'; // /plans/ 是一层路由
+  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
+  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
+  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
+  if (!style || !themeScript || !footerRaw) {
+    throw new Error('抽取套餐资料入口页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
+  }
+  const footer = resolveRouteHrefs(
+    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
+    prefix
+  ).trim();
+
+  const pageUrl = `${SITE_URL}${plansHubPage.PLANS_HUB_ROUTE}`;
+  const jsonLdBlocks = plansHubPage.plansHubJsonLd({ siteUrl: SITE_URL })
+    .map(data => `<script type="application/ld+json">
+${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
+</script>`).join('\n');
+  const body = plansHubPage.renderPlansHubPage({ ...context, prefix, siteUrl: SITE_URL });
+
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${htmlEscape(plansHubPage.PLANS_HUB_HEADING)} · ${htmlEscape(SITE_NAME)}</title>
+<meta name="description" content="${htmlEscape(plansHubPage.PLANS_HUB_DESCRIPTION)}">
+<link rel="canonical" href="${pageUrl}">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
+${feeds.rootFeedTags(prefix)}
+${themeScript}
+${style}
+<style>
+  /* 只用首页与两个对比页已有的设计变量，不新建一套视觉语言。 */
+  .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+  .stop h1 { font-size: 19px; margin: 0; }
+  .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
+  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
+  .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
+  .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
+  .plist b { color: var(--ink2); }
+  /* 两个资料块：Coding 套餐与 API 计费并列，各自给计数与入口。 */
+  .phubsec { margin: 0 0 var(--s3); border: 1px solid var(--line); border-radius: var(--r); padding: var(--s3); background: var(--card); }
+  .phubsec .ph2 { margin-top: 0; }
+  .phubstats { list-style: none; margin: 0 0 var(--s2); padding: 0; display: flex; gap: var(--s3); flex-wrap: wrap; }
+  .phubstats li { display: flex; align-items: baseline; gap: 6px; font-size: var(--fs-sm); color: var(--mut); }
+  .phubl { color: var(--mut); }
+  .phubv { color: var(--ink); font-size: 15px; font-variant-numeric: tabular-nums; }
+  .phubgo { color: var(--brand); text-decoration: none; }
+  .phubgo:hover { text-decoration: underline; text-underline-offset: 2px; }
+  /* 当前相关优惠：与套餐页的「当前优惠」同一套观感（结构上只列 current）。 */
+  .phubdeals { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .phubdeal { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; font-size: var(--fs-sm); }
+  .phubwho { color: var(--ink); }
+  .phubkind { color: var(--mut); }
+  .phubtitle { color: var(--ink2); }
+  .phubpromo { color: var(--mut); }
+  .phubsave { color: var(--ok); font-weight: 600; }
+  .phubelig { color: var(--mut); }
+  .phubdeadline { color: var(--mut); }
+  .phubnone { color: var(--mut); font-size: var(--fs-sm); }
+  /* 变化块复用套餐页 / API 页的那几个 class（同一套观感、同一份句子）。 */
+  .pchanges { margin: 0 0 var(--s3); border: 1px solid var(--line); border-radius: var(--r); padding: var(--s3); background: var(--card); }
+  .pchanges .ph2 { margin: 0 0 var(--s2); }
+  .pchglist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .pchglist li { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; font-size: var(--fs-sm); }
+  .pchgwhen { color: var(--mut); font-variant-numeric: tabular-nums; }
+  .pchgwho { color: var(--ink); text-decoration: none; }
+  a.pchgwho { border-bottom: 1px dotted var(--line); }
+  .pchgtype { color: var(--brand); }
+  .pchgwhat { color: var(--ink); }
+  .pchgorigin { color: var(--mut); }
+  .pchnone, .pchnote { color: var(--mut); font-size: var(--fs-sm); margin: var(--s1) 0 0; }
+</style>
+${jsonLdBlocks}
+</head>
+<body>
+  <header class="top">
+    <div class="topin">
+      <a class="brand" href="${prefix}">
+        <span class="mark" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
+            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
+          </svg>
+        </span>
+        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
+      </a>
+      <a class="jumpback" href="${prefix}">← 返回全部优惠</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main id="main">
+${body}
+    </main>
+    ${footer}
+  </div>
+</body>
+</html>
+`;
+}
+
+/* ------------------------------------------------------------------ */
+/* /models/ 模型资料索引与详情（v3.0 Stage D5/D6）                       */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 模型页（索引 / 详情共用）的套壳。
+ *
+ * 与 `/plans/` 那一支同一套做法：正文在 lib、`<head>` / 页头 / 页脚 / JSON-LD 在这里。
+ * `prefix` 由路由段数推导，**不写死**（索引一层、详情两层）。
+ */
+function renderModelsShell({ route, title, description, body, jsonLd, prefix, extraCss = '' }, indexHtml) {
+  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
+  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
+  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
+  if (!style || !themeScript || !footerRaw) {
+    throw new Error(`抽取模型页共用片段失败（style / 主题脚本 / 页脚，${route}）——检查 index.html 里的标记是否还在`);
+  }
+  const footer = resolveRouteHrefs(
+    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
+    prefix
+  ).trim();
+  const pageUrl = `${SITE_URL}${route}`;
+  const jsonLdBlocks = jsonLd
+    .map(data => `<script type="application/ld+json">
+${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
+</script>`).join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${htmlEscape(title)} · ${htmlEscape(SITE_NAME)}</title>
+<meta name="description" content="${htmlEscape(description)}">
+<link rel="canonical" href="${pageUrl}">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
+${feeds.rootFeedTags(prefix)}
+${themeScript}
+${style}
+<style>
+  /* 只用首页已有的设计变量，不新建视觉语言。 */
+  .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+  .stop h1 { font-size: 19px; margin: 0; }
+  .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
+  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
+  .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
+  .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
+  .plist b { color: var(--ink2); }
+  .ptable-wrap { overflow-x: auto; }
+  .ptable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  .ptable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
+  .ptable th, .ptable td { text-align: left; padding: 9px 11px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
+  .ptable thead th { border-top: 0; color: var(--mut); font-weight: 600; white-space: nowrap; }
+  .ptable tbody th { font-weight: 600; white-space: nowrap; }
+  .ptable td { min-width: 72px; }
+  .ptable small { display: block; color: var(--mut); font-weight: 400; font-size: 11.5px; margin-top: 2px; line-height: 1.5; }
+  .ptable .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ptable a { color: var(--brand); }
+  .ptable tr[hidden] { display: none; }
+  .punit { white-space: nowrap; }
+  .munlinked { color: var(--mut); }
+  .minfo { display: grid; grid-template-columns: 6.5em minmax(0, 1fr); gap: 3px 10px; margin: 0 0 var(--s3); font-size: var(--fs-sm); }
+  .minfo dt { color: var(--mut); }
+  .minfo dd { margin: 0; overflow-wrap: anywhere; }
+  .mlist { margin: 0; padding-left: 1.15em; color: var(--ink2); font-size: var(--fs-sm); line-height: 1.9; }
+  .mlist small { color: var(--mut); }
+  .mstatus { margin-left: 6px; }
+  .mfilter { display: flex; gap: var(--s2); flex-wrap: wrap; align-items: center; margin: 0 0 var(--s1); }
+  .mfilter:empty { display: none; }
+  .mfl, .mfsearch { display: inline-flex; align-items: center; gap: 6px; color: var(--mut); font-size: var(--fs-sm); }
+  .mfsearch input { border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card); color: var(--ink); padding: 5px 8px; font: inherit; font-size: 12px; min-width: 16ch; }
+  .mfl select { border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card); color: var(--ink); padding: 5px 6px; font: inherit; font-size: 12px; }
+  .mcount { margin: 0 0 var(--s2); }
+  @media (max-width: 760px) {
+    .ptable-wrap { border-radius: var(--r); }
+    .ptable { overflow: visible; }
+    .ptable thead th:first-child, .ptable tbody th:first-child {
+      position: sticky; left: 0; width: 8.5em; white-space: normal; background: var(--card); z-index: 2;
+    }
+    .ptable th, .ptable td { padding: 8px 9px; }
+  }
+${extraCss}
+</style>
+${jsonLdBlocks}
+</head>
+<body>
+  <header class="top">
+    <div class="topin">
+      <a class="brand" href="${prefix}">
+        <span class="mark" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
+            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
+          </svg>
+        </span>
+        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
+      </a>
+      <a class="jumpback" href="${prefix}">← 返回全部优惠</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main id="main">
+${body}
+    </main>
+    ${footer}
+  </div>
+</body>
+</html>
+`;
+}
+
+/**
+ * `/archive/` 与档案详情页的样式（只用首页已有的设计变量）。纯追加：只在这两种页面上拼进 `<style>`。
+ */
+const ARCHIVE_PAGE_CSS = `  /* v3.0 Stage F：历史档案。 */
+  .asec { margin: 0 0 var(--s3); border: 1px solid var(--line); border-radius: var(--r); padding: var(--s3); background: var(--card); }
+  .asec .ph2 { margin: 0 0 var(--s1); }
+  .alist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .arow { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; font-size: var(--fs-sm); }
+  .atitle { color: var(--ink); text-decoration: none; border-bottom: 1px dotted var(--line); }
+  .atitle:hover { color: var(--brand); }
+  .awho { color: var(--mut); }
+  .astatus { color: var(--brand); }
+  .amark { color: var(--warn); }
+  .atimes { color: var(--mut); font-variant-numeric: tabular-nums; }
+  .anone { color: var(--mut); font-size: var(--fs-sm); line-height: 1.75; }
+  .awarn { color: var(--warn); }
+  .ainfo, .aknown { display: grid; grid-template-columns: 7.5em minmax(0, 1fr); gap: 3px 10px; margin: 0 0 var(--s3); font-size: var(--fs-sm); }
+  .ainfo dt, .aknown dt { color: var(--mut); }
+  .ainfo dd, .aknown dd { margin: 0; overflow-wrap: anywhere; }
+`;
+
+/**
+ * `/docs/data/` 的样式（只用首页已有的设计变量）。纯追加：只在这一页上拼进 `<style>`。
+ */
+const DATA_DOCS_PAGE_CSS = `  /* v3.0 Stage G：数据文档。 */
+  .dterms b { color: var(--ink); }
+  .codeblock { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: var(--s2) var(--s3); overflow-x: auto; font-size: 12px; line-height: 1.6; }
+  .codeblock code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--ink2); }
+  .ptable small[data-time-shape] { color: var(--mut); }
+`;
+
+/**
+ * 开发者显示名 → 厂商资料页路由（**只在那一页真的存在时**返回，否则 null）。 *
+ * 模型页与厂商页是两层不同的资料：模型页只在自己映射得到的那家厂商**已经有独立页面**时
+ * 才给链接 —— 指向一个不存在的 `/vendor/<slug>/` 就是死链（站内链接存在性是硬门禁）。
+ */
+function vendorHrefFor(developer, providerTable, directoryPages) {
+  const resolved = providers.resolveProvider(String(developer || ''), providerTable);
+  if (!resolved || !resolved.slug) return null;
+  const exists = (directoryPages || []).some(page => page.kind === 'vendor' && page.slug === resolved.slug);
+  return exists ? `vendor/${resolved.slug}/` : null;
+}
+
+/* ------------------------------------------------------------------ */
 /* 分类页（/student/ /developer/ /free-api/）                           */
 /* ------------------------------------------------------------------ *//**
  * 分类页：**一条优惠一个静态 URL 之外的第二类落地页**。
@@ -1649,11 +2031,14 @@ function renderFeedsPage(feedList, indexHtml, context = {}) {
       note: null
     },
     {
-      // v2.3：套餐变化是**另一份数据**（plans），所以单独一组，而不是塞进「全部与变化」。
-      key: 'plans', label: '套餐',
-      ids: [feeds.PLAN_CHANGE_FEED.id],
-      note: '套餐变化来自人工逐条核对官方页后重建的套餐数据（plans.json），'
-        + '与优惠（deals）是两份互不注入的数据；每条变化都能在<a href="../plans/coding/">套餐对比页</a>找到落点。'
+      // v2.3 / v3.0：套餐变化与 API 价格变化是**两份互不注入的数据**（plans / api-plans），
+      // 所以单独一组，而不是塞进「全部与变化」。
+      // 清单**由注册表展开**（不写死 id）：将来加第三个变化来源时，这一页不会再漏列一次。
+      key: 'plans', label: '套餐与 API 计费',
+      ids: feeds.PLAN_CHANGE_FEEDS.map(spec => spec.id),
+      note: '套餐变化来自人工逐条核对官方页后重建的套餐数据（plans.json），API 价格变化来自'
+        + '同样方式重建的 API 计费数据（api-plans.json）；两者与优惠（deals）是三份互不注入的数据。'
+        + '每条变化都能在<a href="../plans/coding/">套餐对比页</a>或<a href="../plans/api/">API 计费对比页</a>找到落点。'
     },
     {
       key: 'student', label: '学生',
@@ -1675,11 +2060,14 @@ function renderFeedsPage(feedList, indexHtml, context = {}) {
     const latest = feed.items.length ? (feed.items[0].dateModified || feed.items[0].datePublished) : null;
     const empty = feed.items.length === 0;
     const changeKind = spec.kind === 'changes' || spec.kind === 'plan-changes';
-    const sinceLabels = spec.kind === 'plan-changes'
-      ? planChanges.PLAN_CHANGES_WORDING.PLAN_CHANGES_LABELS
-      : changes.CHANGES_WORDING.CHANGES_LABELS;
+    // v3.0 Stage H：措辞与**起算日**都按来源取自己的那一份。
+    // 起算日直接读 `spec.startedAt` —— `buildFeeds` 已经按来源从各自日志的 `startedAt` 算好了；
+    // 继续用 `context.planStartedAt` 会让 API 那一条显示套餐日志的起算日（那是假话）。
+    const sinceLabels = spec.kind !== 'plan-changes'
+      ? changes.CHANGES_WORDING.CHANGES_LABELS
+      : feeds.changeWordingOf(spec);
     const sinceDate = spec.kind === 'plan-changes'
-      ? (context.planStartedAt || context.asOf || '未知')
+      ? (spec.startedAt || context.asOf || '未知')
       : (context.startedAt || context.asOf || '未知');
     const countText = empty
       ? `0 条${changeKind ? `（${sinceLabels.since.replace('{date}', sinceDate)}）` : ''}`
@@ -1712,13 +2100,27 @@ ${rows.map(rowHtml).join('\n')}
       `空订阅是<b>事实</b>，不是故障 —— 一旦有新增或重要变化，它们会出现在这里。` +
       `${context.availability !== 'ok' ? '（本次构建没有拿到变更日志，因此无法确认有没有变化。）' : ''}</p>`
     : '';
-  // v2.3：套餐变化源的空态**单独说**（它的起算日与可用性是另一份数据，不能拿 deals 的话顶上）
-  const emptyPlanFeed = feedList.filter(feed => feed.spec.kind === 'plan-changes' && !feed.items.length);
-  const emptyPlanNote = emptyPlanFeed.length
-    ? `<p class="snote">套餐变化现在是空的：这套变更记录自 ${htmlEscape(context.planStartedAt || context.asOf || '未知')} 起算，` +
-      `此前只沉淀了一份「既有状态」基线（它不是创建事件）。空订阅是<b>事实</b>，不是故障。` +
-      `${context.planAvailability !== 'ok' ? '（本次构建没有拿到套餐变更日志，因此无法确认有没有变化。）' : ''}</p>`
-    : '';
+  // v2.3 / v3.0：变化源的空态**逐条自己说**（各自的起算日与可用性是另一份数据，
+  // 不能拿 deals 的话顶上，也不能让 API 那条借用套餐的起算日）。
+  // `spec.startedAt` 与可用性都取自**它自己**那一份日志的视图。
+  const changeAvailabilityOf = spec => (typeof context.changeAvailabilityOf === 'function'
+    ? context.changeAvailabilityOf(spec)
+    : (spec.changeSource === 'api' ? context.apiPlanAvailability : context.planAvailability));
+  const emptyPlanNotes = feedList
+    .filter(feed => feed.spec.kind === 'plan-changes' && !feed.items.length)
+    .map(feed => {
+      const spec = feed.spec;
+      const unavailable = changeAvailabilityOf(spec) !== 'ok';
+      const what = spec.changeSource === 'api'
+        ? 'API 计费数据（api-plans.json）'
+        : '套餐数据（plans.json）';
+      return `<p class="snote">${htmlEscape(spec.title)}现在是空的：这套变更记录自 `
+        + `${htmlEscape(spec.startedAt || context.asOf || '未知')} 起算，`
+        + `此前只沉淀了一份「既有状态」基线（它不是创建事件）。空订阅是<b>事实</b>，不是故障。`
+        + `${unavailable ? `（本次构建没有拿到这份变化日志，因此无法确认 ${htmlEscape(what)} 有没有变化。）` : ''}</p>`;
+    })
+    .join('\n');
+  const emptyPlanNote = emptyPlanNotes;
   const vendorNote = vendorFeeds.length
     ? `<p class="snote">厂商订阅只给「当前收录的优惠 ≥ ${feeds.VENDOR_THRESHOLDS.minDeals} 条」或「历史变更事件 ≥ ${feeds.VENDOR_THRESHOLDS.minEvents} 条」的厂商生成：` +
       `只出现一两条记录的厂商单独开一个订阅没有价值。厂商改名不会改订阅地址（地址来自人工维护的 slug 表）。</p>`
@@ -1872,6 +2274,14 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
   const summary = Array.isArray(context.summary) ? context.summary : [];
   const plan = context.plan || null;
   const pageFeeds = Array.isArray(context.feedsForPage) ? context.feedsForPage : [];
+  // v3.0 Stage E：厂商资料页的追加区块（六节 + 它自己的 CSS）。
+  // 其它 kind 不传 → `extraHtml` / `extraCss` 都是空串 → 输出与 v2.x 逐字节相同
+  // （这条「纯追加」边界由 `selftest:vendor` 与 `check-reproducible` 两边钉住）。
+  const extraBundle = typeof context.extraSections === 'function'
+    ? (context.extraSections(spec) || { html: '', css: '' })
+    : { html: context.extraSections || '', css: context.extraSectionsCss || '' };
+  const extraHtml = extraBundle.html || '';
+  const extraCss = extraBundle.css || '';
 
   // 订阅声明：本页自己的 Feed（如果有）+ 站点根 Feed。两者都要 ——
   // 根 Feed 是「全部优惠」，本页 Feed 是「这一类」，读者的选择不同。
@@ -2169,6 +2579,7 @@ ${style}
   .ctable .none { color: var(--mut); }
   .ctable-wrap { overflow-x: auto; }
   @media (max-width: 760px) { .ctable th, .ctable td { padding: 8px 9px; } }
+${extraCss}
 </style>
 ${jsonLdBlocks}
 </head>
@@ -2219,6 +2630,8 @@ ${headRow}
       </div>
 
 ${topicHtml}
+
+${extraHtml}
 
       <p class="snote" style="margin-top: var(--s3)">
         ${footNote}
@@ -2393,28 +2806,11 @@ function assemble() {
     }
     return counts;
   })();
-  PLAN = landing.planLandingPages({
-    deals: payload.deals,
-    vendorKeyOf: VENDOR_KEY_OF,
-    vendorSlugs: feeds.VENDOR_SLUGS,
-    vendorThresholds: feeds.VENDOR_THRESHOLDS,
-    eventCountOf: name => vendorEventCount.get(name) || 0
-  });
-  DIRECTORY_PAGES = PLAN.pages;
-  if (PLAN.problems.length) {
-    // 门槛层的硬问题（达标厂商没登记 slug / 钉住的页面没生成 / 别名页没登记）。
-    // 刻意在这里就抛出：这些是**配置与人做的决定**不一致，不是数据波动，
-    // 继续构建只会把「某一页悄悄消失」变成线上的 404。
-    throw new Error(`落地页计划有问题（${PLAN.problems.length} 处）：\n${PLAN.problems.map(line => `  - ${line}`).join('\n')}`);
-  }
-  console.log(`  落地页计划: ${landing.statsOf(DIRECTORY_PAGES).indexable} 条可索引 + ` +
-    `${landing.statsOf(DIRECTORY_PAGES).noindex} 条别名`);
-  for (const row of PLAN.skipped) {
-    // 被跳过的页面**逐条点名**（含条数与原因）：一个入口页「悄悄消失」是没人能发现的事故。
-    console.log(`    跳过 ${row.kind}/${row.key}${row.route ? ` (${row.route})` : ''}：` +
-      `count=${row.count}${row.eventCount !== undefined ? ` events=${row.eventCount}` : ''} · ${row.reason}` +
-      `${row.detail ? ` · ${row.detail}` : ''}`);
-  }
+  // ⚠️ v3.0 Stage E：`landing.planLandingPages()` 的调用点**后移到 Model Registry 之后**
+  // （见下面「落地页计划」那一段）—— 因为它现在要 join 四份数据：
+  // plans / api-plans / providerTable / Model Registry 的派生产物。
+  // 这几行只依赖 `payload.deals` 与历史层，所以留在原地。
+
 
   // ---- v2.3：套餐数据 + 套餐变化日志（在 feeds / 页面之前准备，三处共用同一份 radar）----
   //
@@ -2489,6 +2885,116 @@ function assemble() {
       ` · 变化日志${apiPlanHistoryAvailability === 'ok' ? ` ${apiPlanHistoryLoad.store.events.length} 条事件` : '不可用'}`);
   }
 
+  // v3.0 Stage H：API 价格变化视图。与套餐那一份**共用 `buildChangeRadar` 骨架**，
+  // 差异（取哪份日志 / 哪些类型算元信息 / 首页优先级 / 措辞 / 记录展示身份）全部登记在
+  // `plan-changes.js` 的 `RADAR_SOURCES` 里 —— 这里只把三样数据交进去，不重写任何判据。
+  const apiPlanRadar = planChanges.buildApiPlanRadar({
+    plans: apiPlansStore.plans,
+    store: apiPlanHistoryStore,
+    asOf: String(apiPlansStore.updatedAt || '').slice(0, 10),
+    availability: apiPlanHistoryAvailability,
+    providerTable
+  });
+  const apiPlanRadarStats = planChanges.summarize(apiPlanRadar);
+
+  // ---- v3.0 Stage D：Model Registry（身份层 + 关系层）-----------------------------------
+  //
+  // 与 plans / api-plans **互不注入**：registry 是索引 / 身份层，不是价格真值层。
+  // 四件事按顺序做，与套餐 / API 同一条纪律：
+  //   ① 读人工来源层（`scripts/data/models.json` 是 `{slug: entry}`，键就是 slug）；
+  //   ② 用同一支判据校验（与 validate.js / check-* 工具共用 `lib/model-registry.js`）；
+  //   ③ 派生发布产物（`models.json` / `model-registry-links.json`）写进 dist；
+  //   ④ 与仓库里那份派生产物**逐字节比对** —— 两份"已发布"的文件不许漂移。
+  const modelsLoad = modelRegistry.load();
+  if (modelsLoad.missing) throw new Error(`缺少 ${path.relative(ROOT, modelRegistry.MODELS_FILE)}：模型身份层不存在（它是仓库里的源文件，不是派生产物）`);
+  if (modelsLoad.broken) throw new Error(`${path.relative(ROOT, modelRegistry.MODELS_FILE)} 解析失败：${modelsLoad.broken}`);
+  const modelsLinksLoad = modelRegistry.loadLinks();
+  if (modelsLinksLoad.missing) throw new Error(`缺少 ${path.relative(ROOT, modelRegistry.LINKS_FILE)}：模型关系层不存在（它是仓库里的源文件，显式映射只能人写）`);
+  if (modelsLinksLoad.broken) throw new Error(`${path.relative(ROOT, modelRegistry.LINKS_FILE)} 解析失败：${modelsLinksLoad.broken}`);
+  const modelsTable = modelsLoad.table;
+  const modelLinksDoc = modelsLinksLoad.doc;
+  const modelsSourceRaw = JSON.parse(fs.readFileSync(modelRegistry.MODELS_FILE, 'utf8'));
+  // 开发者允许名单 = providers.json 的规范显示名 ∪ `_developers_extra` 的键（与 validate.js /
+  // rebuild-models / check-models-reproducible 用**同一份**口径，不在这里另立一张表）。
+  const modelDevelopers = Object.values(providerTable).map(entry => String((entry && entry.name) || ''));
+  const modelsExtraDevelopers = Object.keys((modelsSourceRaw && modelsSourceRaw._developers_extra) || {});
+  {
+    const registryProblems = [
+      ...modelRegistry.validateRegistry(modelsTable, { developers: modelDevelopers, extraDevelopers: modelsExtraDevelopers }),
+      ...modelRegistry.validateLinks(modelLinksDoc, {
+        table: modelsTable, apiPlans: apiPlansStore.plans, plans: plansStore.plans
+      })
+    ];
+    if (registryProblems.length) {
+      throw new Error(`Model Registry 未通过校验（${registryProblems.length} 项）：\n  - ${registryProblems.slice(0, 8).join('\n  - ')}`);
+    }
+  }
+  const publishedModels = modelRegistry.publishedModels({
+    table: modelsTable, links: modelLinksDoc, apiPlans: apiPlansStore.plans, plans: plansStore.plans
+  });
+  const publishedModelLinksModelDoc = modelRegistry.publishedLinks(modelLinksDoc, modelsTable);
+  for (const [file, doc] of [['models.json', publishedModels], ['model-registry-links.json', publishedModelLinksModelDoc]]) {
+    fs.writeFileSync(path.join(OUT, file), modelRegistry.serialize(doc), 'utf8');
+    const shipped = path.join(ROOT, file);
+    if (fs.existsSync(shipped)) {
+      const a = fs.readFileSync(shipped, 'utf8');
+      const b = fs.readFileSync(path.join(OUT, file), 'utf8');
+      if (a !== b) throw new Error(`${file} 与仓库里那份派生产物不是逐字节相同（先跑 npm run models:rebuild）`);
+    }
+  }
+  {
+    const stats = modelRegistry.summarize(publishedModels);
+    const coverageStats = modelRegistry.coverageOf({
+      table: modelsTable, links: modelLinksDoc, apiPlans: apiPlansStore.plans, plans: plansStore.plans
+    });
+    console.log(`  模型注册表: ${stats.total} 个模型 · ${stats.developers} 个开发者 · ${stats.families} 个模型族` +
+      ` · 状态 ${Object.entries(stats.byStatus).filter(([, n]) => n).map(([k, n]) => `${k} ${n}`).join(' / ')}` +
+      ` · 关系 ${publishedModelLinksModelDoc.count} 条（API ${coverageStats.apiLinks} / Coding ${coverageStats.codingLinks}）` +
+      ` · 未映射 API modelKey ${coverageStats.unmappedModelKeys.length} 条 · 未映射套餐模型串 ${coverageStats.unmappedPlanModels.length} 条` +
+      ` · 未被引用的模型 ${coverageStats.unlinkedModels.length} 个`);
+  }
+
+  // ---- v3.0 Stage E：落地页计划（**在这里才拿得到全部 join 输入**）------------------------
+  //
+  // 为什么后移到 Model Registry 之后：厂商页的门槛从「只有优惠条数」变成三条 OR
+  // （条数 ≥2 / 历史事件 ≥3 / **至少一种非优惠资料**：Coding 套餐 · API 记录 · Registry 模型），
+  // 所以 `planLandingPages()` 现在要 join `plans` / `api-plans` / `models` / 关系层四份数据。
+  // 把调用点后移（而不是把那四份数据前移）是一次**减少重复行数**的选择：
+  // 数据层只有一份加载顺序，计划层只被算一次。
+  //
+  // 被跳过的页面**逐条点名**（含条数与原因）：一个入口页「悄悄消失」是没人能发现的事故。
+  PLAN = landing.planLandingPages({
+    deals: payload.deals,
+    vendorKeyOf: VENDOR_KEY_OF,
+    vendorSlugs: feeds.VENDOR_SLUGS,
+    vendorThresholds: feeds.VENDOR_THRESHOLDS,
+    eventCountOf: name => vendorEventCount.get(name) || 0,
+    // v3.0 Stage E：五份 join 输入（不传时行为与 v2.x 逐字节相同，由 selftest:vendor 钉住）。
+    plans: plansStore.plans,
+    apiPlans: apiPlansStore.plans,
+    providerTable,
+    // ⚠️ 传的是**派生产物**（带 slug / developer / owner），不是 `scripts/data/models.json`
+    // 的来源层键值对象 —— 页面层要用 slug 与 developer。
+    models: publishedModels.models,
+    modelLinks: modelLinksDoc.links
+  });
+  DIRECTORY_PAGES = PLAN.pages;
+  if (PLAN.problems.length) {
+    // 门槛层的硬问题（达标厂商没登记 slug / 钉住的页面没生成 / 别名页没登记）。
+    // 刻意在这里就抛出：这些是**配置与人做的决定**不一致，不是数据波动，
+    // 继续构建只会把「某一页悄悄消失」变成线上的 404。
+    throw new Error(`落地页计划有问题（${PLAN.problems.length} 处）：\n${PLAN.problems.map(line => `  - ${line}`).join('\n')}`);
+  }
+  console.log(`  落地页计划: ${landing.statsOf(DIRECTORY_PAGES).indexable} 条可索引 + ` +
+    `${landing.statsOf(DIRECTORY_PAGES).noindex} 条别名`);
+  for (const row of PLAN.skipped) {
+    console.log(`    跳过 ${row.kind}/${row.key}${row.route ? ` (${row.route})` : ''}：` +
+      `count=${row.count}${row.eventCount !== undefined ? ` events=${row.eventCount}` : ''} · ${row.reason}` +
+      `${row.dealMaterial !== undefined ? ` deals=${row.dealMaterial}` : ''}` +
+      `${row.nonDealMaterial !== undefined ? ` nonDeal=${row.nonDealMaterial}` : ''}` +
+      `${row.detail ? ` · ${row.detail}` : ''}`);
+  }
+
   // ---- v2.4：优惠 ↔ 套餐关系（Deal → Plan / Plan → Deal）--------------------------------
   //
   // 真值是人工来源层 `scripts/data/deal-plan-links.json`（deals.json 与 plans.json 都不改）。
@@ -2552,7 +3058,14 @@ function assemble() {
     planRadar,
     planAvailability: planHistoryAvailability,
     plans: plansStore.plans,
-    providerTable
+    providerTable,
+    // v3.0 Stage H：API 价格变化是**并列的第二条变化流**（各自一份日志、各自的起算日）。
+    // 不传这四项，API 那条 spec 就会按「没有拿到日志」渲染 —— 那正是 t4 里刻意避开的假话，
+    // 所以下面的产物自检会断言「日志可用时描述里不许出现『没有拿到』」。
+    apiPlanRadar,
+    apiPlanAvailability: apiPlanHistoryAvailability,
+    apiPlans: apiPlansStore.plans,
+    apiProviderTable: providerTable
   });
 
   fs.writeFileSync(path.join(OUT, 'deals.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
@@ -2676,7 +3189,24 @@ function assemble() {
     if (topic) topic.title = `「${spec.title || spec.label}」最近的变化`;
     const pageFeeds = feeds.feedsForPage(spec, feedBundle.feeds);
     const page = renderDirectoryPage(spec, matched, html, {
-      lastmod, summary, topic, plan: PLAN, feedsForPage: pageFeeds, allFeeds: feedBundle.feeds, renderCore
+      lastmod, summary, topic, plan: PLAN, feedsForPage: pageFeeds, allFeeds: feedBundle.feeds, renderCore,
+      // v3.0 Stage E：厂商页的六个资料区块（官方入口 / 优惠 / Coding 套餐 / API 计费 /
+      // 模型 / 最近变化 / 订阅）。只有 vendor 进入这个分支；其余 kind 返回空 bundle，
+      // 因此非厂商页的输出一个字节都没变（`check-reproducible` 会替我们盯着这件事）。
+      extraSections: spec.kind === 'vendor'
+        ? (vendorSpec => vendorPage.renderVendorKnowledgeBundle(vendorSpec, {
+          deals: matched,
+          plans: plansStore.plans,
+          apiPlans: apiPlansStore.plans,
+          models: publishedModels.models,
+          modelLinks: modelLinksDoc.links,
+          planHistoryStore,
+          apiPlanHistoryStore,
+          providerTable,
+          feeds: pageFeeds,
+          prefix: '../'.repeat(vendorSpec.depth || spec.depth || 1)
+        }))
+        : null
     });
     // 枢纽页列的是子页面，不是条目 —— 它的「条数」就是子页数（正文下限与摘要口径都读它）
     const pageCount = spec.kind === 'hub' ? (spec.children || []).length : matched.length;
@@ -2694,6 +3224,11 @@ function assemble() {
       // 钉住但跌破门槛的厂商页会照常生成，而它的 Feed 不会（Feed 门槛是另一道），
       // 按类型推断就会要求页面声明一份不存在的订阅源 —— 一条永远红的假警报。
       feedMatch: pageFeeds.map(feed => feed.spec.id),
+      // v3.0 Stage E：把门槛判据带下去 —— `seo.js` 的 `gate-threshold` 要用**同一条 OR**
+      // （条数 / 历史事件 / 至少一种非优惠资料）判厂商页，否则「靠非优惠资料达标」的
+      // 那几家会被判红（它们本来就是我们决定要生成的页面）。
+      eventCount: spec.eventCount || 0,
+      nonDealMaterial: Boolean(spec.nonDealMaterial),
       html: page
     });
     pageDescriptors.push(directoryPages[directoryPages.length - 1]);
@@ -2729,12 +3264,15 @@ function assemble() {
       feedBundle.feeds.filter(feed => (feed.spec.kind === 'changes' && feed.spec.id === 'changes')
         || feed.spec.kind === 'plan-changes'), '../'),
     planChanges: planRadar,
+    // v3.0 Stage H：第三条变化流（API 价格变化）也落在这一页上。
+    apiPlanChanges: apiPlanRadar,
     planHistoryStore,
     providerTable
   }), 'utf8');
   console.log(`  变化雷达页: /changes/（基准日 ${radar.asOf || '未知'} · 高价值 ${changes.SECTION_ORDER
     .reduce((sum, key) => sum + (Number(radar.totals[key]) || 0), 0)} 条 · 其他 ${radar.totals.other} 条` +
-    ` · 套餐变化 ${planRadarStats.totals.changed + planRadarStats.totals.created + planRadarStats.totals.ended + planRadarStats.totals.restored} 条）`);
+    ` · 套餐变化 ${planRadarStats.totals.changed + planRadarStats.totals.created + planRadarStats.totals.ended + planRadarStats.totals.restored} 条` +
+    ` · API 价格变化 ${apiPlanRadarStats.totals.changed + apiPlanRadarStats.totals.created + apiPlanRadarStats.totals.ended + apiPlanRadarStats.totals.restored} 条）`);
 
   const plansDir = path.join(OUT, 'plans', 'coding');
   fs.mkdirSync(plansDir, { recursive: true });
@@ -2777,7 +3315,9 @@ function assemble() {
   const apiPlansHtml = renderApiPlansPage(apiPlansStore, html, {
     providerTable,
     apiPlanHistoryStore,
-    dealLinks: dealLinksView
+    dealLinks: dealLinksView,
+    // v3.0 Stage H4：这一页要在 <head> 里声明自己那份订阅源 —— 从注册表取，不写死 id。
+    allFeeds: feedBundle.feeds
   });
   fs.writeFileSync(path.join(apiPlansDir, 'index.html'), apiPlansHtml, 'utf8');
   {
@@ -2788,6 +3328,332 @@ function assemble() {
   }
   console.log(`  API 计费页: /plans/api/（${apiPlansStore.count} 条记录 · ${apiPlansPage.apiRowsOf(apiPlansStore.plans).length} 行` +
     ` · 页面 ${(apiPlansHtml.length / 1024).toFixed(1)} KB）`);
+
+  // ---- v3.0 Stage B：/plans/ 统一资料入口 ------------------------------------------------
+  //
+  // 定位是**资料入口**，不是第三张重复大表：Coding 块与 API 块只给计数、口径与入口，
+  // 变化块复用上面已经算好的 `planRadar` 与 API 变化日志（同一份事件、同一套措辞），
+  // 当前相关优惠复用 `dealLinksView`（显式关系、已结束的拿不到 current）。
+  //
+  // 它**始终生成**：路由消失比一页说明更糟（与 /plans/coding/ /plans/api/ 同一条纪律）。
+  const plansHubHtml = renderPlansHubShell(html, {
+    plans: plansStore.plans,
+    apiPlans: apiPlansStore.plans,
+    providerTable,
+    planHistoryStore,
+    apiPlanHistoryStore,
+    dealLinks: dealLinksLoad.doc,
+    deals: payload.deals,
+    asOf: dealLinksAsOf,
+    // v3.0 Stage G 落地之后，资料入口才给出「数据文档」链接（此前是刻意不给的死链）。
+    dataDocs: true
+  });
+  fs.writeFileSync(path.join(OUT, plansHubPage.PLANS_HUB_ROUTE, 'index.html'), plansHubHtml, 'utf8');
+  {
+    const pageProblems = plansHubPage.assertPageHonesty(plansHubHtml, {
+      plans: plansStore.plans,
+      apiPlans: apiPlansStore.plans,
+      providerTable,
+      planHistoryStore,
+      apiPlanHistoryStore,
+      dealLinks: dealLinksLoad.doc,
+      deals: payload.deals,
+      asOf: dealLinksAsOf,
+      prefix: '../',
+      siteUrl: SITE_URL
+    });
+    if (pageProblems.length) {
+      throw new Error(`套餐资料入口页的诚实性断言未通过（${pageProblems.length} 处）：\n  - ${pageProblems.slice(0, 5).join('\n  - ')}`);
+    }
+  }
+  console.log(`  套餐资料入口: /plans/（Coding ${plansStore.count} 条 · API ${apiPlansStore.count} 条记录 / ` +
+    `${apiPlansPage.apiRowsOf(apiPlansStore.plans).length} 个模型计价条目 · 当前关联优惠 ${dealLinksView.counts.current} 条` +
+    ` · 页面 ${(plansHubHtml.length / 1024).toFixed(1)} KB）`);
+
+  // ---- v3.0 Stage D5/D6：/models/ 索引 + /models/<slug>/ 详情 --------------------------
+  //
+  // 生成门槛（题面 §4）：**存在真实 registry entry 且至少被一个当前或历史实体引用**。
+  // 未过门槛的**不生成**（进覆盖报告），也不进 sitemap —— 这就是 §8 第 19 条牙的页面侧。
+  // 索引页**无条件生成**（路由消失比一页说明更糟）。
+  const vendorHrefOf = developer => vendorHrefFor(developer, providerTable, DIRECTORY_PAGES);
+  const modelsCtx = {
+    links: modelLinksDoc,
+    apiPlans: apiPlansStore.plans,
+    plans: plansStore.plans,
+    deals: payload.deals,
+    dealLinks: dealLinksLoad.doc,
+    apiPlanHistoryStore,
+    providerTable,
+    asOf: dealLinksAsOf,
+    siteUrl: SITE_URL,
+    vendorHrefOf
+  };
+  const modelGates = modelsPage.modelsOf(modelsTable).map(model => modelsPage.modelPageGate(model, modelsCtx));
+  const modelRecords = modelsPage.modelsOf(publishedModels);
+  const modelRecordBySlug = new Map(modelRecords.map(model => [model.slug, model]));
+  const gatedModels = modelGates.filter(gate => gate.shouldGenerate).map(gate => modelRecordBySlug.get(gate.slug)).filter(Boolean);
+  const skippedModels = modelGates.filter(gate => !gate.shouldGenerate);
+  {
+    if (skippedModels.length) {
+      console.warn(`    ⚠️  ${skippedModels.length} 个模型未过生成门槛（不生成详情页、不进 sitemap）：` +
+        skippedModels.slice(0, 6).map(gate => `${gate.slug}（${gate.reasons.join('；')}）`).join('、') +
+        `${skippedModels.length > 6 ? ` 等 ${skippedModels.length} 个` : ''}`);
+    }
+    const coverageStats = modelRegistry.coverageOf({
+      table: modelsTable, links: modelLinksDoc, apiPlans: apiPlansStore.plans, plans: plansStore.plans
+    });
+    if (coverageStats.unmappedModelKeys.length) {
+      console.log(`    · 未映射的 API modelKey ${coverageStats.unmappedModelKeys.length} 条（记在覆盖报告里，不生成页面）`);
+    }
+  }
+  fs.mkdirSync(path.join(OUT, 'models'), { recursive: true });
+  {
+    const modelsIndexCtx = { ...modelsCtx, prefix: '../', __refCache: new Map() };
+    const indexBody = modelsPage.renderModelsIndex(modelsTable, modelsIndexCtx);
+    const indexHtml = renderModelsShell({
+      route: modelsPage.MODELS_INDEX_ROUTE,
+      title: modelsPage.MODELS_INDEX_HEADING,
+      description: modelsPage.MODELS_INDEX_DESCRIPTION,
+      body: indexBody,
+      jsonLd: modelsPage.modelsIndexJsonLd(modelsTable, modelsIndexCtx),
+      prefix: '../'
+    }, html);
+    fs.writeFileSync(path.join(OUT, modelsPage.MODELS_INDEX_ROUTE, 'index.html'), indexHtml, 'utf8');
+    const indexProblems = modelsPage.assertPageHonesty(indexHtml, {
+      kind: 'models-index', registry: modelsTable, ctx: { ...modelsIndexCtx, siteUrl: SITE_URL }
+    });
+    if (indexProblems.length) {
+      throw new Error(`模型索引页的诚实性断言未通过（${indexProblems.length} 处）：\n  - ${indexProblems.slice(0, 5).join('\n  - ')}`);
+    }
+    console.log(`  模型资料索引: /models/（${modelGates.length} 个模型 · ${gatedModels.length} 个详情页` +
+      ` · ${new Set(modelsPage.modelsOf(modelsTable).map(model => model.developer)).size} 个开发者` +
+      ` · 页面 ${(indexHtml.length / 1024).toFixed(1)} KB）`);
+  }
+  {
+    let written = 0;
+    for (const model of gatedModels) {
+      const prefix = '../../';
+      const detailCtx = { ...modelsCtx, prefix, __refCache: new Map() };
+      const route = modelsPage.modelHrefOf(model);
+      fs.mkdirSync(path.join(OUT, modelsPage.MODEL_ROUTE_PREFIX, model.slug), { recursive: true });
+      const detailHtml = renderModelsShell({
+        route,
+        title: `${modelsPage.modelNameOf(model)} · 模型资料`,
+        description: `${modelsPage.modelNameOf(model)}（${model.developer || '开发者未标注'}）在本站收录的 API 计价条目、相关套餐、相关优惠与变化记录。本站只整理事实，不做推荐。`,
+        body: modelsPage.renderModelPage(model, detailCtx),
+        jsonLd: modelsPage.modelPageJsonLd(model, detailCtx),
+        prefix
+      }, html);
+      fs.writeFileSync(path.join(OUT, route, 'index.html'), detailHtml, 'utf8');
+      const problems = modelsPage.assertPageHonesty(detailHtml, {
+        kind: 'model', model, ctx: { ...detailCtx, siteUrl: SITE_URL }
+      });
+      if (problems.length) {
+        throw new Error(`模型详情页 /${route} 的诚实性断言未通过（${problems.length} 处）：\n  - ${problems.slice(0, 5).join('\n  - ')}`);
+      }
+      written++;
+    }
+    console.log(`  模型详情页: ${written} 个（每个都在门槛内：有 registry entry 且至少被一个当前或历史实体引用）`);
+  }
+
+  // ---- v3.0 Stage F：历史档案（/archive/ + 有条件详情页）--------------------------------
+  //
+  // **归档层不落新真值文件**：三组档案全部由既有日志的 baseline + events + absence
+  // （以及 `ended` 事件上的墓碑 `label`）重建 —— `lib/archive.js` 的 `buildArchive()` 是纯函数，
+  // 不读盘、不看时钟。这里只做三件事：读三份日志（已有变量）、调 `buildArchive()`、写页面。
+  //
+  // 交付日实测：三份日志的 ended/restored 事件都是 **0 条**（deal 0 事件、plan/api 只有 created），
+  // 因此 `/archive/` **必然 0 条记录** —— 索引页仍无条件生成，三组各写一句"为什么是空的"
+  // （含事件类型分解）。ended/restored 分支由 `selftest:archive` 的合成夹具驱动。
+  // **绝不为了填满这一页而补造事件。**
+  const archiveAsOf = dealLinksAsOf || lastmod;
+  const archives = [
+    { kind: 'deal', store: historyStore.store, records: payload.deals },
+    { kind: 'plan', store: planHistoryStore, records: plansStore.plans },
+    { kind: 'api', store: apiPlanHistoryStore, records: apiPlansStore.plans }
+  ].map(({ kind, store, records }) => archiveLib.buildArchive({
+    kind,
+    baseline: store ? store.baseline : null,
+    events: (store && Array.isArray(store.events)) ? store.events : [],
+    absence: (store && store.absence) || {},
+    anomalies: (store && store.anomalies) || [],
+    records,
+    startedAt: (store && store.startedAt) || null,
+    asOf: archiveAsOf
+  }));
+  const archiveEntries = archives.flatMap(archive => archive.entries);
+  const archiveGates = archiveEntries.map(entry => archiveLib.archiveDetailGate(entry));
+  const gatedArchiveEntries = archiveEntries.filter((entry, index) => archiveGates[index].ok);
+  {
+    const integrity = archives.flatMap(archive => archiveLib.assertArchiveIntegrity(archive));
+    if (integrity.length) {
+      throw new Error(`归档层完整性断言未通过（${integrity.length} 处）：\n  - ${integrity.slice(0, 5).join('\n  - ')}`);
+    }
+    const skippedDetails = archiveGates.filter(gate => !gate.ok);
+    console.log(`  历史档案: ${archives.map(archive => `${archive.kindLabel} ${archive.entries.length} 条`).join(' · ')}` +
+      ` · 详情页门槛通过 ${gatedArchiveEntries.length} 个` +
+      `${skippedDetails.length ? ` · 留在索引页但不建独立页 ${skippedDetails.length} 个` : ''}` +
+      ` · 基准日 ${archiveAsOf || '未知'}`);
+  }
+  {
+    const archiveDir = path.join(OUT, 'archive');
+    fs.mkdirSync(archiveDir, { recursive: true });
+    const indexBody = archiveLib.renderArchiveIndex(archives, { prefix: '../', siteUrl: SITE_URL });
+    const indexHtml = renderModelsShell({
+      // 通用静态页套壳（模型页与档案页共用：head / 主题脚本 / 页头 / 页脚 / JSON-LD）
+      route: archiveLib.ARCHIVE_INDEX_ROUTE,
+      title: archiveLib.ARCHIVE_HEADING,
+      description: archiveLib.ARCHIVE_DESCRIPTION,
+      body: indexBody,
+      jsonLd: archiveLib.archiveIndexJsonLd(archives, { siteUrl: SITE_URL }),
+      prefix: '../',
+      extraCss: ARCHIVE_PAGE_CSS
+    }, html);
+    fs.writeFileSync(path.join(archiveDir, 'index.html'), indexHtml, 'utf8');
+    const problems = archiveLib.assertPageHonesty(indexHtml, { kind: 'archive-index', archives });
+    if (problems.length) {
+      throw new Error(`历史档案索引页的诚实性断言未通过（${problems.length} 处）：\n  - ${problems.slice(0, 5).join('\n  - ')}`);
+    }
+    for (const entry of gatedArchiveEntries) {
+      const route = archiveLib.archiveEntryRoute(entry);
+      fs.mkdirSync(path.join(OUT, route), { recursive: true });
+      const entryHtml = renderModelsShell({
+        route,
+        title: `${entry.title || entry.id} · ${archiveLib.ARCHIVE_HEADING}`,
+        description: `${entry.title || entry.id} 的结束 / 恢复记录：首次发现、最后有效时间、结束发现时间、最后已知内容与变化时间线。资料失效不等于资料删除。`,
+        body: archiveLib.renderArchiveEntry(entry, { prefix: '../../', siteUrl: SITE_URL }),
+        jsonLd: archiveLib.archiveEntryJsonLd(entry, { siteUrl: SITE_URL }),
+        prefix: '../../',
+        extraCss: ARCHIVE_PAGE_CSS
+      }, html);
+      fs.writeFileSync(path.join(OUT, route, 'index.html'), entryHtml, 'utf8');
+      const entryProblems = archiveLib.assertPageHonesty(entryHtml, { kind: 'archive-entry', entry });
+      if (entryProblems.length) {
+        throw new Error(`档案详情页 /${route} 的诚实性断言未通过（${entryProblems.length} 处）：\n  - ${entryProblems.slice(0, 5).join('\n  - ')}`);
+      }
+    }
+    console.log(`  历史档案页: /archive/（${archiveEntries.length} 条记录 · ${gatedArchiveEntries.length} 个详情页` +
+      ` · 页面 ${(indexHtml.length / 1024).toFixed(1)} KB）`);
+  }
+
+  // ---- v3.0 Stage G：Data Docs / 数据出口（/docs/data/ + /data/index.json）---------------
+  //
+  // 数据出口有三条硬承诺，全部可核对：
+  //   ① 文档里写出的**每个 endpoint 都必须真实存在**（构建期查产物目录，独立门禁另查 dist）；
+  //   ② 每个 schemaVersion / count / **updatedAt** 必须与磁盘逐字段一致；
+  //   ③ Manifest 条数 == 真实发布的数据集数。
+  // Manifest（`data/index.json`）**只描述数据集**（URL / 版本 / 更新时间 / 记录数 / 用途），
+  // 不复制任何数据 —— 它是"数据出口的门牌"，不是第四份数据。
+  //
+  // 时间形状显式区分（题面点名）：`deals.json` 的 updatedAt 是**真实时刻**，
+  // plans / api-plans / models / links 是**日期规范化**（当天零点），变化日志是**纯日期**。
+  const dataManifest = dataDocs.buildDatasetManifest([
+    {
+      id: 'deals', label: '优惠数据', category: 'deals', url: 'deals.json',
+      schemaVersion: payload.schemaVersion, updatedAt: payload.updatedAt,
+      count: typeof payload.count === 'number' ? payload.count : (payload.deals || []).length,
+      purpose: '当前收录的 AI 优惠与福利条目（含构建期派生的 collections / needs / history / relatedPlans）'
+    },
+    {
+      id: 'plans', label: 'Coding 套餐', category: 'coding-plans', url: 'plans.json',
+      schemaVersion: plansStore.schemaVersion, updatedAt: plansStore.updatedAt,
+      count: plansStore.count,
+      purpose: '长期在售的订阅型 / Coding 套餐（价格、额度、可用模型与限制）'
+    },
+    {
+      id: 'api-plans', label: 'API 计费记录', category: 'api-pricing', url: 'api-plans.json',
+      schemaVersion: apiPlansStore.schemaVersion, updatedAt: apiPlansStore.updatedAt,
+      count: apiPlansStore.count,
+      purpose: '按量计费的官方单价（输入 / 输出 / 缓存 / Batch / 免费额度 / credits）'
+    },
+    {
+      id: 'models', label: 'Model Registry', category: 'models', url: 'models.json',
+      schemaVersion: publishedModels.schemaVersion, updatedAt: publishedModels.updatedAt,
+      count: publishedModels.count,
+      purpose: '模型身份索引（id / slug / 开发者 / 别名 / 状态；派生 firstSeen / lastSeen）'
+    },
+    {
+      id: 'model-registry-links', label: '模型映射关系', category: 'relationships', url: 'model-registry-links.json',
+      schemaVersion: publishedModelLinksModelDoc.schemaVersion, updatedAt: publishedModelLinksModelDoc.updatedAt,
+      count: publishedModelLinksModelDoc.count,
+      purpose: '显式映射：registry 模型 ↔ api-plans 的 modelKey / Coding 套餐（每条带官方出处）'
+    },
+    {
+      id: 'deal-plan-links', label: '优惠 ↔ 套餐关系', category: 'relationships', url: 'deal-plan-links.json',
+      schemaVersion: dealLinksLoad.doc.schemaVersion,
+      updatedAt: dealPlanLinks.canonicalUpdatedAt(dealLinksLoad.doc),
+      count: (dealLinksLoad.doc.links || []).length,
+      countNote: '当前关系条数（退役记录另计）',
+      purpose: '显式确认的优惠与套餐 / API 计费记录关系（每条带官方出处）'
+    },
+    {
+      id: 'deal-history', label: '优惠变化日志', category: 'history', url: 'deal-history.json',
+      schemaVersion: historyStore.store.schemaVersion, updatedAt: historyStore.store.startedAt,
+      count: (historyStore.store.events || []).length,
+      countNote: '事件条目数（不含一次性基线）',
+      purpose: '优惠的一次性基线 + 追加事件（ended / restored / 内容变化）'
+    },
+    {
+      id: 'plan-history', label: '套餐变化日志', category: 'history', url: 'plan-history.json',
+      schemaVersion: planHistoryStore.schemaVersion, updatedAt: planHistoryStore.startedAt,
+      count: (planHistoryStore.events || []).length,
+      countNote: '事件条目数（不含一次性基线）',
+      purpose: 'Coding 套餐的一次性基线 + 追加事件（价格 / 额度 / 模型 / 限制 / 地区）'
+    },
+    {
+      id: 'api-plan-history', label: 'API 计费变化日志', category: 'history', url: 'api-plan-history.json',
+      schemaVersion: apiPlanHistoryStore.schemaVersion, updatedAt: apiPlanHistoryStore.startedAt,
+      count: (apiPlanHistoryStore.events || []).length,
+      countNote: '事件条目数（不含一次性基线）',
+      purpose: 'API 计费记录的一次性基线 + 追加事件（价格 / 模型增删 / 免费额度 / 下线恢复）'
+    }
+  ]);
+  {
+    const dir = path.join(OUT, 'data');
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'index.json'), `${JSON.stringify(dataManifest, null, 2)}\n`, 'utf8');
+    const shapeProblems = dataDocs.assertManifestShape(dataManifest);
+    if (shapeProblems.length) {
+      throw new Error(`Dataset Manifest 形状不合法（${shapeProblems.length} 处）：\n  - ${shapeProblems.slice(0, 5).join('\n  - ')}`);
+    }
+  }
+  const dataLicense = ['LICENSE', 'LICENSE.md', 'COPYING'].find(file => fs.existsSync(path.join(ROOT, file)));
+  const dataDocsCtx = {
+    manifest: dataManifest,
+    // 许可证状态**从仓库现状读**，不写死：没有就说没有，并列为"需项目所有者决定"。
+    license: dataLicense ? { status: 'present', file: dataLicense } : { status: 'absent' },
+    siteUrl: SITE_URL,
+    prefix: '../../',
+    // 三份对账的回调：构建期查的产物目录**就是刚写下的这一份**（独立门禁会另查一遍）。
+    endpointExists: url => fs.existsSync(path.join(OUT, url)),
+    actualSchemaVersions: Object.fromEntries(dataManifest.datasets.map(dataset => [dataset.id, dataset.schemaVersion])),
+    actualCounts: Object.fromEntries(dataManifest.datasets.map(dataset => [dataset.id, dataset.count])),
+    actualUpdatedAt: Object.fromEntries(dataManifest.datasets.map(dataset => [dataset.id, dataset.updatedAt]))
+  };
+  {
+    const docsDir = path.join(OUT, 'docs', 'data');
+    fs.mkdirSync(docsDir, { recursive: true });
+    const body = dataDocs.renderDataDocsPage(dataDocsCtx);
+    const docsHtml = renderModelsShell({
+      route: dataDocs.DATA_DOCS_ROUTE,
+      title: dataDocs.DATA_DOCS_HEADING,
+      description: dataDocs.DATA_DOCS_DESCRIPTION,
+      body,
+      jsonLd: dataDocs.dataDocsJsonLd(dataDocsCtx),
+      prefix: '../../',
+      extraCss: DATA_DOCS_PAGE_CSS
+    }, html);
+    fs.writeFileSync(path.join(docsDir, 'index.html'), docsHtml, 'utf8');
+    const problems = dataDocs.assertPageHonesty(docsHtml, dataDocsCtx);
+    if (problems.length) {
+      throw new Error(`数据文档页的诚实性断言未通过（${problems.length} 处）：\n  - ${problems.slice(0, 5).join('\n  - ')}`);
+    }
+    console.log(`  数据出口: /docs/data/（${dataManifest.count} 份数据集 · Manifest /data/index.json` +
+      ` · 时间形状 真实时刻 ${dataManifest.datasets.filter(d => d.updatedAtShape === 'timestamp').length} /` +
+      ` 日期规范化 ${dataManifest.datasets.filter(d => d.updatedAtShape === 'date-normalized').length} /` +
+      ` 纯日期 ${dataManifest.datasets.filter(d => d.updatedAtShape === 'date').length}` +
+      ` · License ${dataLicense || '未定（需项目所有者决定）'}）`);
+  }
 
   const dealUrls = detailPages.map(page => `  <url>
     <loc>${page.url}</loc>
@@ -2803,18 +3669,32 @@ function assemble() {
   // v1.7 起：**只有可索引的页面进 sitemap**（别名页是 noindex，进 sitemap 等于自相矛盾），
   // 优先级按类型声明，而不是统统 0.9 —— 声明要与实际用途一致（这条口径与状态页 0.3、
   // 订阅中心 0.6 是同一条）。
-  const SITEMAP_PRIORITY = { collection: '0.9', need: '0.9', category: '0.9', vendor: '0.8', hub: '0.8' };
+  // v3.0：优先级不再手写第二张表 —— 它就是 `lib/page-kinds.js` 里的声明
+  // （`sitemap.priority`），构建期与独立门禁读同一份。取值与 v1.7 起的表**逐字相同**
+  // （collection/need/category 0.9 · vendor/hub 0.8），所以这次是纯收敛、不是改判据。
   const directoryUrls = directoryPages
     .filter(page => page.indexable)
     .map(page => `  <url>
     <loc>${page.url}</loc>
     <lastmod>${lastmod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>${SITEMAP_PRIORITY[page.kind] || '0.8'}</priority>
+    <changefreq>${pageKinds.sitemapMeta(page.kind).changefreq}</changefreq>
+    <priority>${pageKinds.sitemapMeta(page.kind).priority}</priority>
   </url>`).join('\n');
   const sitemapEntries = [SITE_URL, ...directoryPages.filter(page => page.indexable).map(page => page.url),
-    `${SITE_URL}status/`, `${SITE_URL}changes/`, `${SITE_URL}feeds/`, `${SITE_URL}${plansPage.PLANS_ROUTE}`,
+    `${SITE_URL}status/`, `${SITE_URL}changes/`, `${SITE_URL}feeds/`, `${SITE_URL}${plansHubPage.PLANS_HUB_ROUTE}`,
+    `${SITE_URL}${plansPage.PLANS_ROUTE}`,
     `${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`,
+    // v3.0 Stage D5/D6：模型索引无条件进 sitemap；详情页**只有过门槛的**才进
+    // （未过门槛的不生成页面，进 sitemap 就是一条死链 —— §8 第 19 条牙）。
+    `${SITE_URL}${modelsPage.MODELS_INDEX_ROUTE}`,
+    ...gatedModels.map(model => `${SITE_URL}${modelsPage.modelHrefOf(model)}`),
+    // v3.0 Stage F：档案索引无条件进 sitemap；档案详情页**只有过门槛的实体**才进
+    // （历史 event 本身不生成页面 —— §F4）。
+    `${SITE_URL}${archiveLib.ARCHIVE_INDEX_ROUTE}`,
+    ...gatedArchiveEntries.map(entry => `${SITE_URL}${archiveLib.archiveEntryRoute(entry)}`),
+    // v3.0 Stage G：数据文档页进 sitemap（它是数据出口的门牌，不是叶子）。
+    // `/data/index.json` 与各数据集是**静态文件**，不进 sitemap（它们不是页面）。
+    `${SITE_URL}${dataDocs.DATA_DOCS_ROUTE}`,
     ...detailPages.map(page => page.url)];
 
   // 状态页也进 sitemap（五条既有约定的第三条，v1.1 收口补）。
@@ -2849,6 +3729,57 @@ function assemble() {
     <priority>0.6</priority>
   </url>`;
 
+  // v3.0 Stage F：档案索引与厂商枢纽同级（0.8 —— 它是入口，但内容随历史增长），
+  // 档案详情是追溯用的叶子（0.6，低于优惠/模型详情 0.7）。值全部取自 page-kinds 的声明。
+  const archiveIndexUrl = `  <url>
+    <loc>${SITE_URL}${archiveLib.ARCHIVE_INDEX_ROUTE}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${pageKinds.sitemapMeta('archive-index').changefreq}</changefreq>
+    <priority>${pageKinds.sitemapMeta('archive-index').priority}</priority>
+  </url>`;
+  const archiveDetailUrls = gatedArchiveEntries.map(entry => `  <url>
+    <loc>${SITE_URL}${archiveLib.archiveEntryRoute(entry)}</loc>
+    <lastmod>${String(entry.lastEffectiveAt || lastmod).slice(0, 10)}</lastmod>
+    <changefreq>${pageKinds.sitemapMeta('archive-detail').changefreq}</changefreq>
+    <priority>${pageKinds.sitemapMeta('archive-detail').priority}</priority>
+  </url>`).join('\n');
+
+  // v3.0 Stage G：数据文档页的 sitemap 声明（priority 0.6 —— 它是给"要取数据的人"的入口，
+  // 与订阅中心同级；不是读者找优惠的入口）。
+  const dataDocsUrl = `  <url>
+    <loc>${SITE_URL}${dataDocs.DATA_DOCS_ROUTE}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${pageKinds.sitemapMeta('data-docs').changefreq}</changefreq>
+    <priority>${pageKinds.sitemapMeta('data-docs').priority}</priority>
+  </url>`;
+
+  // v3.0 Stage B：/plans/ 是所有套餐与计费资料的**入口**，优先级与两个对比页同级（0.9）。
+  // 值来自 `lib/page-kinds.js` 的声明（`sitemapMeta('plans-hub')`），不再手写一遍 ——
+  // 新增页面家族时"忘了一处 priority"正是这张表要消灭的那类不一致。
+  const plansHubUrl = `  <url>
+    <loc>${SITE_URL}${plansHubPage.PLANS_HUB_ROUTE}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${pageKinds.sitemapMeta('plans-hub').changefreq}</changefreq>
+    <priority>${pageKinds.sitemapMeta('plans-hub').priority}</priority>
+  </url>`;
+
+  // v3.0 Stage D5：模型资料索引与两个计费枢纽同级（0.9，都是入口）。
+  const modelsIndexUrl = `  <url>
+    <loc>${SITE_URL}${modelsPage.MODELS_INDEX_ROUTE}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${pageKinds.sitemapMeta('models-index').changefreq}</changefreq>
+    <priority>${pageKinds.sitemapMeta('models-index').priority}</priority>
+  </url>`;
+
+  // v3.0 Stage D6：模型详情页与优惠详情页同级（0.7，都是详情叶子）。
+  // `lastmod` 用**数据日期**（模型页的最近核对日），不是构建时刻 —— 与全站同一条纪律。
+  const modelUrls = gatedModels.map(model => `  <url>
+    <loc>${SITE_URL}${modelsPage.modelHrefOf(model)}</loc>
+    <lastmod>${String(model.lastSeen || lastmod).slice(0, 10)}</lastmod>
+    <changefreq>${pageKinds.sitemapMeta('model').changefreq}</changefreq>
+    <priority>${pageKinds.sitemapMeta('model').priority}</priority>
+  </url>`).join('\n');
+
   // 套餐对比页进 sitemap：priority 0.9 —— 它与分类页 / 按需求页同级，**都是入口**，
   // 而不是详情叶子（详情页 0.7）或工具页（状态页 0.3、订阅中心 0.6）。
   // `changefreq: weekly` 是实话：套餐不会每天变（这一点与变化页的 daily 正相反）。
@@ -2881,9 +3812,15 @@ ${directoryUrls}
 ${statusUrl}
 ${changesUrl}
 ${feedsUrl}
+${plansHubUrl}
+${modelsIndexUrl}
+${archiveIndexUrl}
 ${plansUrl}
 ${apiPlansUrl}
 ${dealUrls}
+${modelUrls}
+${archiveDetailUrls}
+${dataDocsUrl}
 </urlset>
 `, 'utf8');
 
@@ -2922,7 +3859,11 @@ ${dealUrls}
         availability: radarAvailability,
         startedAt: historyStats ? historyStats.startedAt : null,
         planAvailability: planHistoryAvailability,
-        planStartedAt: planRadar.startedAt
+        planStartedAt: planRadar.startedAt,
+        // v3.0 Stage H：API 那条有自己的可用性（起算日已由 `spec.startedAt` 逐条带上）。
+        apiPlanAvailability: apiPlanHistoryAvailability,
+        changeAvailabilityOf: spec => (spec.changeSource === 'api'
+          ? apiPlanHistoryAvailability : planHistoryAvailability)
       }), 'utf8');
     console.log(`  订阅中心: /feeds/（${feedStats.count} 个 Feed，RSS + JSON Feed 各一份）`);
   }
@@ -2972,6 +3913,11 @@ ${dealUrls}
     planRadar,
     planRadarStats,
     planHistoryAvailability,
+    // v3.0 Stage H：API 价格变化视图（第三条变化流）—— 同样交给自检回读对账：
+    // `/changes/` 的 API 分栏、`/feeds/` 的那一行、订阅源的深链锚点都读它。
+    apiPlanRadar,
+    apiPlanRadarStats,
+    apiPlanHistoryAvailability,
     // v2.4：优惠 ↔ 套餐关系。自检要拿**这一份**（构建期算出来的视图）去回读对账：
     // dist/deals.json 的注入、dist/deal-plan-links.json、优惠页与套餐页上的文字都必须与它逐条一致。
     dealLinksDoc: dealLinksLoad.doc,
@@ -2982,6 +3928,22 @@ ${dealUrls}
     // 判据不重算：validate() 用的就是构建期这一份 feedBundle。
     feedBundle,
     feedStats,
+    // v3.0 Stage D5/D6：模型页的规模与门槛结果 —— sitemap 对账（详情页条数 / 未过门槛的不许进）
+    // 与产物自检都从这里取，不各算一遍。
+    modelGates,
+    modelGateSkipped: skippedModels,
+    modelDetailCount: gatedModels.length,
+    modelDetailRoutes: gatedModels.map(model => modelsPage.modelHrefOf(model)),
+    // v3.0 Stage F：档案层交给自检做回读对账 —— 索引页永远有，详情页只在门槛内。
+    archives,
+    archiveEntries,
+    archiveGates,
+    archiveAsOf,
+    archiveDetailCount: gatedArchiveEntries.length,
+    archiveDetailRoutes: gatedArchiveEntries.map(entry => archiveLib.archiveEntryRoute(entry)),
+    // v3.0 Stage G：数据出口的 Manifest（页面与自检读同一份）
+    dataManifest,
+    dataLicense: dataLicense || null,
     // 构建期真实生成的全部站内路由（含首页 '' 与刚才新增的 feeds/）——
     // Feed 里每一条站内链接都要能在这里找到，否则就是一条死链。
     pageRoutes: new Set([
@@ -2989,8 +3951,14 @@ ${dealUrls}
       'status/',
       'changes/',
       'feeds/',
+      plansHubPage.PLANS_HUB_ROUTE,
       plansPage.PLANS_ROUTE,
       apiPlansPage.API_PLANS_ROUTE,
+      modelsPage.MODELS_INDEX_ROUTE,
+      ...gatedModels.map(model => modelsPage.modelHrefOf(model)),
+      archiveLib.ARCHIVE_INDEX_ROUTE,
+      ...gatedArchiveEntries.map(entry => archiveLib.archiveEntryRoute(entry)),
+      dataDocs.DATA_DOCS_ROUTE,
       ...detailPages.map(page => `deal/${encodeURIComponent(page.id)}/`),
       ...directoryPages.map(page => page.route)
     ])
@@ -3189,6 +4157,280 @@ function selfCheck(built) {
             `价格六格逐格与数据对账 · 计费单位列逐行在位 · 免费额度与 credits 明细节 · 官方原文节 · ` +
             `无 JS 控件 · 无结论性词汇（查了 ${apiPlansPage.FORBIDDEN_CLAIM_WORDS.length} 个词）`);
         }
+      }
+    }
+  }
+
+  // ---- v3.0 Stage B：/plans/ 资料入口页（从磁盘回读对账）--------------------------------
+  //
+  // 与两个对比页同一条纪律：写盘时信一次不够，读者拿到的是盘上的字节。
+  // 回读时带的上下文必须是**盘上的那一份数据**（dist/plans.json + dist/api-plans.json +
+  // 盘上的两份日志），而不是构建期的内存对象 —— 否则「盘上的日志与页面上的计数不一致」
+  // 这类错误在自检里看不出来。
+  {
+    const hubFile = path.join(OUT, plansHubPage.PLANS_HUB_ROUTE, 'index.html');
+    if (!fs.existsSync(hubFile)) fail(`缺少 ${plansHubPage.PLANS_HUB_ROUTE}index.html`);
+    else {
+      const diskHtml = fs.readFileSync(hubFile, 'utf8');
+      const diskPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8'));
+      const diskApiPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8'));
+      const diskPlanHistory = fs.existsSync(path.join(OUT, 'plan-history.json'))
+        ? JSON.parse(fs.readFileSync(path.join(OUT, 'plan-history.json'), 'utf8')) : null;
+      const diskApiPlanHistory = fs.existsSync(path.join(OUT, 'api-plan-history.json'))
+        ? JSON.parse(fs.readFileSync(path.join(OUT, 'api-plan-history.json'), 'utf8')) : null;
+      const pageProblems = plansHubPage.assertPageHonesty(diskHtml, {
+        plans: diskPlans.plans,
+        apiPlans: diskApiPlans.plans,
+        providerTable: providers.load().table,
+        planHistoryStore: diskPlanHistory,
+        apiPlanHistoryStore: diskApiPlanHistory,
+        dealLinks: JSON.parse(fs.readFileSync(path.join(OUT, 'deal-plan-links.json'), 'utf8')),
+        deals: JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8')).deals,
+        asOf: built.dealLinksAsOf,
+        prefix: '../',
+        siteUrl: SITE_URL
+      });
+      // 「不是第三张重复大表」这条承诺要可验：这一页**不许**出现任何 <table>。
+      // 复制粘贴一张大表在视觉上完全正常 —— 只有结构断言能挡住它。
+      if (/<table[\s>]/.test(diskHtml)) {
+        pageProblems.push('资料入口页出现了 <table> —— 它不该复制 Coding / API 页的大表');
+      }
+      // 无 JS 可读：正文全部是构建期写下的静态 HTML，且不许内联交互脚本。
+      const withoutAllowedScripts = diskHtml
+        .replace(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/g, '')
+        .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '');
+      if (/<script(?![^>]*\bsrc=)[^>]*>/.test(withoutAllowedScripts)) {
+        pageProblems.push('资料入口页出现了内联脚本 —— 它是纯静态页（无 JS 也有完整内容）');
+      }
+      // JSON-LD 必须带 ItemList（两个子页），且声明数 == 元素数 == data-child 行数。
+      pageProblems.push(...plansHubPage.assertItemListHonesty(diskHtml, { siteUrl: SITE_URL }));
+      if (pageProblems.length) fail(`套餐资料入口页未通过诚实性断言：${pageProblems.slice(0, 3).join('、')}`);
+      else {
+        const forbidden = plansHubPage.FORBIDDEN_CLAIM_WORDS.filter(word => diskHtml.includes(word));
+        if (forbidden.length) fail(`套餐资料入口页出现结论性词汇：${forbidden.join('、')}`);
+        else {
+          console.log(`  ✓ 套餐资料入口页: 计数与 dist 数据逐项对账 · 两个子页入口在位 · ` +
+            `无大表（0 个 <table>）· 无内联脚本 · ItemList 2 项 == data-child 2 行 · ` +
+            `无结论性词汇（查了 ${plansHubPage.FORBIDDEN_CLAIM_WORDS.length} 个词）`);
+        }
+      }
+    }
+  }
+
+  // ---- v3.0 Stage D5/D6：模型页（从磁盘回读对账）--------------------------------
+  //
+  // 与两个对比页 / 资料入口同一条纪律：读者拿到的是盘上的字节。回读时用的数据必须是
+  // **盘上的那一份**（dist/models.json + dist/model-registry-links.json + dist/api-plans.json
+  // + dist/plans.json + dist/deal-plan-links.json），而不是构建期的内存对象。
+  {
+    const modelsIndexFile = path.join(OUT, modelsPage.MODELS_INDEX_ROUTE, 'index.html');
+    if (!fs.existsSync(modelsIndexFile)) fail(`缺少 ${modelsPage.MODELS_INDEX_ROUTE}index.html`);
+    else {
+      const diskIndexHtml = fs.readFileSync(modelsIndexFile, 'utf8');
+      const diskModels = JSON.parse(fs.readFileSync(path.join(OUT, 'models.json'), 'utf8'));
+      const diskLinks = JSON.parse(fs.readFileSync(path.join(OUT, 'model-registry-links.json'), 'utf8'));
+      const diskApiPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8'));
+      const diskPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8'));
+      const diskDeals = JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8'));
+      const diskDealLinks = JSON.parse(fs.readFileSync(path.join(OUT, 'deal-plan-links.json'), 'utf8'));
+      const diskApiHistory = fs.existsSync(path.join(OUT, 'api-plan-history.json'))
+        ? JSON.parse(fs.readFileSync(path.join(OUT, 'api-plan-history.json'), 'utf8')) : null;
+      const diskCtxBase = {
+        links: diskLinks,
+        apiPlans: diskApiPlans.plans,
+        plans: diskPlans.plans,
+        deals: diskDeals.deals,
+        dealLinks: diskDealLinks,
+        apiPlanHistoryStore: diskApiHistory,
+        providerTable: providers.load().table,
+        asOf: built.dealLinksAsOf,
+        siteUrl: SITE_URL,
+        vendorHrefOf: developer => vendorHrefFor(developer, providers.load().table, built.directoryPages)
+      };
+      const problems = modelsPage.assertPageHonesty(diskIndexHtml, {
+        kind: 'models-index',
+        registry: diskModels,
+        ctx: { ...diskCtxBase, prefix: '../', __refCache: new Map() }
+      });
+      // 内联脚本**逐字节**比对：页面上跑的那一份与 `lib/models-page.js` 里的必须同一份字节
+      // （与套餐页内联 `plans-compare.js` 是同一条纪律 —— 分家之后两边都还是绿的）。
+      if (!diskIndexHtml.includes(modelsPage.MODELS_INDEX_FILTER_SCRIPT)) {
+        problems.push('内联的筛选脚本与 lib/models-page.js 不是同一份字节');
+      }
+      // 构建期门槛：盘上不该出现未过门槛的模型页
+      const diskSlugs = new Set(diskModels.models.map(model => model.slug));
+      const untracked = built.modelGateSkipped.filter(gate => diskSlugs.has(gate.slug));
+      if (untracked.length) problems.push(`${untracked.length} 个未过门槛的模型仍在发布数据里`);
+      let detailProblems = [];
+      for (const model of diskModels.models) {
+        const route = modelsPage.modelHrefOf(model);
+        const file = path.join(OUT, route, 'index.html');
+        if (!fs.existsSync(file)) {
+          if (built.modelDetailRoutes.includes(route)) detailProblems.push(`${route}: 过了门槛却没有产物`);
+          continue;
+        }
+        const detailHtml = fs.readFileSync(file, 'utf8');
+        const pageProblems = modelsPage.assertPageHonesty(detailHtml, {
+          kind: 'model', model, ctx: { ...diskCtxBase, prefix: '../../', __refCache: new Map() }
+        });
+        detailProblems = detailProblems.concat(pageProblems.map(problem => `${route}: ${problem}`));
+      }
+      const allProblems = problems.concat(detailProblems);
+      if (allProblems.length) fail(`模型页未通过诚实性断言：${allProblems.slice(0, 3).join('、')}`);
+      else {
+        const forbidden = modelsPage.FORBIDDEN_CLAIM_WORDS.filter(word => diskIndexHtml.includes(word));
+        if (forbidden.length) fail(`模型索引页出现结论性词汇：${forbidden.join('、')}`);
+        else {
+          console.log(`  ✓ 模型页: 索引 ${diskModels.count} 行（含 ${diskModels.models.filter(m => m.aliases.length).length} 个带别名）` +
+            ` · 详情 ${built.modelDetailCount} 个（计价表逐行与映射对账 · 摊 Provider 不许凭空出现）` +
+            ` · 筛选脚本与 lib 逐字节同源 · 未过门槛 ${built.modelGateSkipped.length} 个未生成` +
+            ` · 无结论性词汇（查了 ${modelsPage.FORBIDDEN_CLAIM_WORDS.length} 个词）`);
+        }
+      }
+    }
+  }
+
+  // ---- v3.0 Stage F：历史档案（从磁盘回读对账）--------------------------------
+  //
+  // 三条牙的构建期落点：
+  //   · #9  归档只依赖事件：用**盘上的日志**重算一遍，条目集合与内存里的必须一致；
+  //   · #10 大批 ended：可疑标记与异常留档必须同时在（`assertArchiveIntegrity`）；
+  //   · #11 ended→restored 之后状态必须是 restored（同样由 integrity 重推比对）。
+  // 再加上：索引页三组齐、sitemap 成员 == 过门槛的详情页、不为历史 event 建页。
+  {
+    const archiveIndexFile = path.join(OUT, archiveLib.ARCHIVE_INDEX_ROUTE, 'index.html');
+    if (!fs.existsSync(archiveIndexFile)) fail(`缺少 ${archiveLib.ARCHIVE_INDEX_ROUTE}index.html`);
+    else {
+      const diskHtml = fs.readFileSync(archiveIndexFile, 'utf8');
+      const diskStores = {
+        deal: JSON.parse(fs.readFileSync(path.join(OUT, 'deal-history.json'), 'utf8')),
+        plan: fs.existsSync(path.join(OUT, 'plan-history.json'))
+          ? JSON.parse(fs.readFileSync(path.join(OUT, 'plan-history.json'), 'utf8')) : null,
+        api: fs.existsSync(path.join(OUT, 'api-plan-history.json'))
+          ? JSON.parse(fs.readFileSync(path.join(OUT, 'api-plan-history.json'), 'utf8')) : null
+      };
+      const diskRecords = {
+        deal: JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8')).deals,
+        plan: JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8')).plans,
+        api: JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8')).plans
+      };
+      const diskArchives = ['deal', 'plan', 'api'].map(kind => archiveLib.buildArchive({
+        kind,
+        baseline: diskStores[kind] ? diskStores[kind].baseline : null,
+        events: (diskStores[kind] && diskStores[kind].events) || [],
+        absence: (diskStores[kind] && diskStores[kind].absence) || {},
+        anomalies: (diskStores[kind] && diskStores[kind].anomalies) || [],
+        records: diskRecords[kind],
+        startedAt: diskStores[kind] ? diskStores[kind].startedAt : null,
+        asOf: built.archiveAsOf
+      }));
+      const diskEntries = diskArchives.flatMap(archive => archive.entries);
+      const problems = [
+        ...diskArchives.flatMap(archive => archiveLib.assertArchiveIntegrity(archive)),
+        ...archiveLib.assertPageHonesty(diskHtml, { kind: 'archive-index', archives: diskArchives }),
+        ...archiveLib.assertEntrySetStable(
+          { entries: diskEntries },
+          { entries: diskArchives.flatMap(archive => archiveLib.buildArchive({
+            kind: archive.kind,
+            baseline: diskStores[archive.kind] ? diskStores[archive.kind].baseline : null,
+            events: (diskStores[archive.kind] && diskStores[archive.kind].events) || [],
+            absence: (diskStores[archive.kind] && diskStores[archive.kind].absence) || {},
+            asOf: built.archiveAsOf
+          }).entries) }
+        ),
+        ...archiveLib.assertArchiveDetailRoutes(built.archiveDetailRoutes, diskEntries)
+      ];
+      const diskGates = diskEntries.map(entry => archiveLib.archiveDetailGate(entry));
+      const sitemapText = fs.readFileSync(path.join(OUT, 'sitemap.xml'), 'utf8');
+      problems.push(...archiveLib.assertArchiveSitemapEligibility({
+        sitemapRoutes: [...sitemapText.matchAll(/<loc>([^<]+)<\/loc>/g)]
+          .map(match => match[1].replace(SITE_URL, ''))
+          .filter(route => route.startsWith(archiveLib.ARCHIVE_INDEX_ROUTE)),
+        gateResults: diskGates
+      }));
+      for (const route of built.archiveDetailRoutes) {
+        const file = path.join(OUT, route, 'index.html');
+        if (!fs.existsSync(file)) { problems.push(`${route}: 缺少产物`); continue; }
+        const entryHtml = fs.readFileSync(file, 'utf8');
+        const entry = diskEntries.find(item => archiveLib.archiveEntryRoute(item) === route);
+        problems.push(...archiveLib.assertPageHonesty(entryHtml, { kind: 'archive-entry', entry })
+          .map(problem => `${route}: ${problem}`));
+      }
+      if (problems.length) fail(`历史档案未通过诚实性 / 完整性断言：${problems.slice(0, 3).join('、')}`);
+      else {
+        const forbidden = archiveLib.FORBIDDEN_CLAIM_WORDS.filter(word => diskHtml.includes(word));
+        if (forbidden.length) fail(`历史档案页出现结论性词汇：${forbidden.join('、')}`);
+        else {
+          console.log(`  ✓ 历史档案: 索引三组齐（${diskArchives.map(archive => `${archive.kindLabel} ${archive.entries.length}`).join(' / ')}）` +
+            ` · 详情页 ${built.archiveDetailCount} 个（门槛内）· 完整性重推零问题 · sitemap 成员逐个对账` +
+            ` · 无结论性词汇（查了 ${archiveLib.FORBIDDEN_CLAIM_WORDS.length} 个词）`);
+        }
+      }
+    }
+  }
+
+  // ---- v3.0 Stage G：数据出口（从磁盘回读对账）--------------------------------
+  //
+  // 三条牙的构建期落点（全部对着**盘上的文件**重算一遍）：
+  //   #12 文档里的 endpoint 不存在 → 红（查 dist 里有没有这个文件）；
+  //   #13 schemaVersion 与真实数据不一致 → 红；
+  //   #14 Manifest 条数与真实发布的数据集数不一致 → 红；
+  // 外加 updatedAt 逐字段 + **时间形状**对账（真实时刻 vs 日期规范化）。
+  {
+    const dataIndexFile = path.join(OUT, 'data', 'index.json');
+    const docsFile = path.join(OUT, dataDocs.DATA_DOCS_ROUTE, 'index.html');
+    if (!fs.existsSync(dataIndexFile)) fail('缺少 data/index.json（Dataset Manifest）');
+    else if (!fs.existsSync(docsFile)) fail(`缺少 ${dataDocs.DATA_DOCS_ROUTE}index.html`);
+    else {
+      const diskManifest = JSON.parse(fs.readFileSync(dataIndexFile, 'utf8'));
+      const docsHtml = fs.readFileSync(docsFile, 'utf8');
+      // 真实值：**从盘上各数据集文件现读**，不信内存里的那一份
+      const actual = {};
+      for (const dataset of diskManifest.datasets) {
+        const file = path.join(OUT, dataset.url);
+        if (!fs.existsSync(file)) continue;
+        const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+        actual[dataset.id] = {
+          schemaVersion: parsed.schemaVersion,
+          count: typeof parsed.count === 'number' ? parsed.count
+            : (Array.isArray(parsed.events) ? parsed.events.length
+              : (Array.isArray(parsed.links) ? parsed.links.length : null)),
+          updatedAt: parsed.updatedAt || parsed.startedAt || null
+        };
+      }
+      const problems = [
+        ...dataDocs.assertManifestShape(diskManifest),
+        ...dataDocs.assertEndpointsExist(diskManifest, url => fs.existsSync(path.join(OUT, url))),
+        ...dataDocs.assertSchemaVersions(diskManifest, Object.fromEntries(
+          Object.entries(actual).map(([id, row]) => [id, row.schemaVersion]))),
+        ...dataDocs.assertManifestCounts(diskManifest, Object.fromEntries(
+          Object.entries(actual).map(([id, row]) => [id, row.count]))),
+        ...dataDocs.assertUpdatedAt(diskManifest, Object.fromEntries(
+          Object.entries(actual).map(([id, row]) => [id, row.updatedAt]))),
+        ...dataDocs.assertPageHonesty(docsHtml, {
+          manifest: diskManifest,
+          license: built.dataLicense ? { status: 'present', file: built.dataLicense } : { status: 'absent' },
+          siteUrl: SITE_URL,
+          prefix: '../../',
+          endpointExists: url => fs.existsSync(path.join(OUT, url)),
+          actualSchemaVersions: Object.fromEntries(Object.entries(actual).map(([id, row]) => [id, row.schemaVersion])),
+          actualCounts: Object.fromEntries(Object.entries(actual).map(([id, row]) => [id, row.count])),
+          actualUpdatedAt: Object.fromEntries(Object.entries(actual).map(([id, row]) => [id, row.updatedAt]))
+        })
+      ];
+      // 发布的数据集数必须 == Manifest 条数（"多了一份没人知道的数据"同样要红）
+      const publishedDataFiles = ['deals.json', 'plans.json', 'api-plans.json', 'models.json',
+        'model-registry-links.json', 'deal-plan-links.json',
+        'deal-history.json', 'plan-history.json', 'api-plan-history.json'];
+      const missingFromManifest = publishedDataFiles.filter(file => !diskManifest.datasets.some(d => d.url === file));
+      if (missingFromManifest.length) {
+        problems.push(`有 ${missingFromManifest.length} 份已发布数据集没进 Manifest：${missingFromManifest.join('、')}`);
+      }
+      if (problems.length) fail(`数据出口未通过诚实性断言：${problems.slice(0, 3).join('、')}`);
+      else {
+        console.log(`  ✓ 数据出口: Manifest ${diskManifest.count} 份数据集（六类齐）· ${docsHtml.includes('data/index.json') ? '页面给出 Manifest 地址' : '缺 Manifest 地址'}` +
+          ` · endpoint 逐个存在 · schemaVersion / count / updatedAt 逐字段对账` +
+          ` · 时间形状 真实时刻 ${diskManifest.datasets.filter(d => d.updatedAtShape === 'timestamp').length} / 日期规范化 ${diskManifest.datasets.filter(d => d.updatedAtShape === 'date-normalized').length} / 纯日期 ${diskManifest.datasets.filter(d => d.updatedAtShape === 'date').length}`);
       }
     }
   }
@@ -3725,8 +4967,12 @@ function selfCheck(built) {
       // 三条：① 锚点导航与 #plans / #deals 落点都在；② 四栏标题与条数来自套餐雷达
       // （权威表是 `plan-changes.js`）；③ 块里列出的变化条数 == 雷达条数（不许少一条）。
       const planW = planChanges.PLAN_CHANGES_WORDING;
-      if (!page.includes('class="chgjump"')) problems.push('changes/ 缺少「优惠变化 / 套餐变化」锚点导航');
+      if (!page.includes('class="chgjump"')) problems.push('changes/ 缺少「优惠变化 / 套餐变化 / API 价格变化」锚点导航');
       if (!page.includes('id="deals"') || !page.includes('id="plans"')) problems.push('changes/ 的锚点导航没有落点（#deals / #plans）');
+      // v3.0 Stage H1：三条变化流必须**都能从导航直达**（读者要能区分它们，而不是滚到一起）。
+      for (const [href, label] of [['#deals', '优惠变化'], ['#plans', '套餐变化'], ['#api-plans', 'API 价格变化']]) {
+        if (!page.includes(`href="${href}"`)) problems.push(`changes/ 的锚点导航缺少「${label}」（${href}）`);
+      }
       if (!page.includes(`href="../feed/plans/coding/changes.xml"`)) {
         problems.push('changes/ 没有声明套餐变化订阅源');
       }
@@ -3759,6 +5005,49 @@ function selfCheck(built) {
         const anchors = [...planBlock.matchAll(/href="#plan-([0-9a-f]{12})"/g)].map(m => m[1]);
         const dangling = anchors.filter(id => !plansPageHtml.includes(`id="plan-${id}"`));
         if (dangling.length) problems.push(`套餐变化块里有 ${dangling.length} 条锚点没有落点（如 ${dangling[0]}）`);
+      }
+
+      // ---- v3.0 Stage H1：API 价格变化块（同一页的第三个事实面）-----------------------
+      //
+      // 与套餐那一段逐条对应，另外多两条这一支特有的：
+      //   · 链接**跨页**落到 `/plans/api/#plan-<id>`（这一页上没有 API 表格行）；
+      //   · 判据来自 `api-plan-history`（`built.apiPlanRadar`），没有第二套变化检测。
+      const apiW = planChanges.API_PLAN_CHANGES_WORDING;
+      if (!page.includes(`id="api-plans"`)) problems.push('changes/ 缺少 API 价格变化块的锚点落点（#api-plans）');
+      if (!page.includes(`href="../feed/plans/api/changes.xml"`)) {
+        problems.push('changes/ 没有声明 API 价格变化订阅源');
+      }
+      if (!noScript.includes(apiW.API_PLAN_CHANGES_LABELS.sectionTitle)) {
+        problems.push('changes/ 缺少「API 价格变化」分栏标题');
+      }
+      const apiBlock = (noScript.match(/<section class="chgsec apichanges" id="api-plans">[\s\S]*?<\/section>/) || [])[0] || '';
+      if (!apiBlock) problems.push('changes/ 缺少 API 价格变化块');
+      else {
+        for (const key of planChanges.PLAN_CHANGES_SECTION_ORDER) {
+          const heading = apiW.API_PLAN_CHANGES_SECTION[key] + '（' + (Number(built.apiPlanRadar.totals[key]) || 0) + '）';
+          if (!apiBlock.includes(heading)) problems.push(`API 价格变化块缺少分栏标题「${heading}」`);
+        }
+        const listedApi = (apiBlock.match(/<li>/g) || []).length;
+        const expectedApi = planChanges.PLAN_CHANGES_SECTION_ORDER
+          .reduce((sum, key) => sum + built.apiPlanRadar.sections[key].items.length, 0);
+        if (listedApi !== expectedApi) problems.push(`API 价格变化块列出 ${listedApi} 条 ≠ 雷达 ${expectedApi} 条`);
+        // 句子必须与订阅正文/`/plans/api/` 是同一句（同一个函数渲染，两边不可能分家）
+        for (const item of planChanges.itemsOf(built.apiPlanRadar)) {
+          const sentence = apiPlansPage.escapeHtml(apiPlansPage.apiPlanChangeTextOf(item));
+          if (sentence && !apiBlock.includes(sentence)) problems.push(`API 价格变化块缺少一条变化：「${sentence}」`);
+        }
+        if (built.apiPlanRadar.availability !== 'ok'
+          && !apiBlock.includes(apiW.API_PLAN_CHANGES_LABELS.unavailable)) {
+          problems.push('API 计费变化日志不可用时没有说清「没有拿到日志」');
+        }
+        // 跨页深链：每一条 API 变化都要落到 **/plans/api/** 的那一行上（不是本页锚点）
+        const apiPageHtml = fs.readFileSync(path.join(OUT, apiPlansPage.API_PLANS_ROUTE, 'index.html'), 'utf8');
+        const apiAnchors = [...apiBlock.matchAll(/href="\.\.\/plans\/api\/#plan-([0-9a-f]{12})"/g)].map(m => m[1]);
+        const apiDangling = apiAnchors.filter(id => !apiPageHtml.includes(`id="plan-${id}"`));
+        if (apiDangling.length) problems.push(`API 价格变化块里有 ${apiDangling.length} 条跨页锚点没有落点（如 ${apiDangling[0]}）`);
+        if (expectedApi > 0 && apiAnchors.length !== expectedApi) {
+          problems.push(`API 价格变化块的跨页深链 ${apiAnchors.length} 条 ≠ 变化 ${expectedApi} 条（有行没有链接）`);
+        }
       }
     }
 
@@ -3948,6 +5237,17 @@ function selfCheck(built) {
       ['changes/index.html', '../'],
       // v1.6：订阅中心（同样一层深）
       ['feeds/index.html', '../'],
+      // v3.0：/plans/ 资料入口是**一层**路由 —— 深度写错的话这一页的页头/页脚内链全是 404，
+      // 而页面本身看起来完全正常，所以它必须进这张逐层扫描表。
+      [`${plansHubPage.PLANS_HUB_ROUTE}index.html`, '../'],
+      // v3.0 Stage D5/D6：模型索引（一层）与模型详情（两层）。深度由路由段数推导。
+      [`${modelsPage.MODELS_INDEX_ROUTE}index.html`, '../'],
+      ...built.modelDetailRoutes.map(route => [`${route}index.html`, '../../']),
+      // v3.0 Stage F：档案索引（一层）与档案详情（两层）。
+      [`${archiveLib.ARCHIVE_INDEX_ROUTE}index.html`, '../'],
+      ...built.archiveDetailRoutes.map(route => [`${route}index.html`, '../../']),
+      // v3.0 Stage G：数据文档页（两层路由）。
+      [`${dataDocs.DATA_DOCS_ROUTE}index.html`, '../../'],
       // v2.1：套餐对比页是**两层**深路由。深度写错的话，这一页的页头/页脚内链全是 404，
       // 而页面本身看起来完全正常 —— 所以它必须进这张逐层扫描表。
       [`${plansPage.PLANS_ROUTE}index.html`, '../../'],
@@ -4129,13 +5429,16 @@ function selfCheck(built) {
   // 而且条数不再手写公式 —— 直接与构建期生成的那份 `sitemapEntries` 逐条对账。
   const indexableDirectories = built.directoryPages.filter(page => page.indexable);
   const expectedLocs = dealEntries.length + 1 /* 首页 */ + indexableDirectories.length + 1 /* 状态页 */
-    + 1 /* 变化雷达页 */ + 1 /* 订阅中心 */ + 1 /* 套餐对比页 */ + 1 /* API 计费页 */;
+    + 1 /* 变化雷达页 */ + 1 /* 订阅中心 */ + 1 /* 资料入口页 */ + 1 /* 套餐对比页 */ + 1 /* API 计费页 */
+    + 1 /* 模型资料索引 */ + built.modelDetailCount /* 模型详情页 */
+    + 1 /* 档案索引 */ + built.archiveDetailCount /* 档案详情页 */
+    + 1 /* 数据文档页 */;
   if (sitemapLocs.length !== expectedLocs) {
     fail(`sitemap ${sitemapLocs.length} 条 ≠ 首页 1 + 可索引落地页 ${indexableDirectories.length}` +
       `（分类页 ${built.collectionPages.length} + 按需求页/别名 ${built.needPages.length} 中可索引的` +
       ` + 分类落地页 ${built.categoryPages.length} + 厂商落地页 ${built.vendorPages.length}` +
-      ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 订阅中心 1 + 套餐对比页 1 + API 计费页 1` +
-      ` + 详情页 ${dealEntries.length}`);
+      ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 订阅中心 1 + 资料入口页 1 + 套餐对比页 1 + API 计费页 1` +
+      ` + 模型索引 1 + 模型详情页 ${built.modelDetailCount} + 档案索引 1 + 档案详情页 ${built.archiveDetailCount} + 数据文档页 1 + 详情页 ${dealEntries.length}`);
   } else {
     const notListed = dealEntries.filter(deal => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(deal.id)}/`)));
     const directoriesNotListed = indexableDirectories.filter(page => !sitemapLocs.includes(page.url));
@@ -4146,12 +5449,30 @@ function selfCheck(built) {
     else if (!sitemapLocs.includes(`${SITE_URL}status/`)) fail('sitemap 漏了状态页 status/');
     else if (!sitemapLocs.includes(`${SITE_URL}changes/`)) fail('sitemap 漏了变化雷达页 changes/');
     else if (!sitemapLocs.includes(`${SITE_URL}feeds/`)) fail('sitemap 漏了订阅中心 feeds/');
+    else if (!sitemapLocs.includes(`${SITE_URL}${plansHubPage.PLANS_HUB_ROUTE}`)) fail(`sitemap 漏了资料入口页 ${plansHubPage.PLANS_HUB_ROUTE}`);
+    else if (!sitemapLocs.includes(`${SITE_URL}${modelsPage.MODELS_INDEX_ROUTE}`)) fail(`sitemap 漏了模型资料索引 ${modelsPage.MODELS_INDEX_ROUTE}`);
+    else if (!sitemapLocs.includes(`${SITE_URL}${archiveLib.ARCHIVE_INDEX_ROUTE}`)) fail(`sitemap 漏了历史档案索引 ${archiveLib.ARCHIVE_INDEX_ROUTE}`);
+    else if (!sitemapLocs.includes(`${SITE_URL}${dataDocs.DATA_DOCS_ROUTE}`)) fail(`sitemap 漏了数据文档页 ${dataDocs.DATA_DOCS_ROUTE}`);
+    else if (built.archiveDetailRoutes.some(route => !sitemapLocs.includes(`${SITE_URL}${route}`))) {
+      const missing = built.archiveDetailRoutes.filter(route => !sitemapLocs.includes(`${SITE_URL}${route}`));
+      fail(`sitemap 漏了 ${missing.length} 个档案详情页：${missing.slice(0, 3).join('、')}`);
+    }
+    else if (built.modelGateSkipped.some(gate => sitemapLocs.includes(`${SITE_URL}${gate.route}`))) {
+      const bad = built.modelGateSkipped.filter(gate => sitemapLocs.includes(`${SITE_URL}${gate.route}`));
+      fail(`sitemap 里出现了 ${bad.length} 个**未过生成门槛**的模型页（会造成死链）：${bad.slice(0, 3).map(gate => gate.route).join('、')}`);
+    }
+    else if (built.modelDetailRoutes.some(route => !sitemapLocs.includes(`${SITE_URL}${route}`))) {
+      const missing = built.modelDetailRoutes.filter(route => !sitemapLocs.includes(`${SITE_URL}${route}`));
+      fail(`sitemap 漏了 ${missing.length} 个模型详情页：${missing.slice(0, 3).join('、')}`);
+    }
     else if (!sitemapLocs.includes(`${SITE_URL}${plansPage.PLANS_ROUTE}`)) fail(`sitemap 漏了套餐对比页 ${plansPage.PLANS_ROUTE}`);
     else if (!sitemapLocs.includes(`${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`)) fail(`sitemap 漏了 API 计费页 ${apiPlansPage.API_PLANS_ROUTE}`);
     else console.log(`  ✓ sitemap: ${sitemapLocs.length} 条（首页 + ${built.collectionPages.length} 个分类页 + ` +
       `${built.needPages.length} 条按需求/别名页中可索引的部分 + ${built.categoryPages.length} 个分类落地页 + ` +
       `${built.vendorPages.length} 个厂商落地页 + ${built.hubPages.length} 个枢纽页 + 状态页 + 变化雷达页 + 订阅中心 + ` +
-      `套餐对比页 + API 计费页 + ${dealEntries.length} 个详情页；${built.aliasPages.length} 条别名页已排除）`);
+      `资料入口页 + 套餐对比页 + API 计费页 + 模型索引 + ${built.modelDetailCount} 个模型详情页 + ` +
+      `档案索引 + ${built.archiveDetailCount} 个档案详情页 + 数据文档页 + ` +
+      `${dealEntries.length} 个详情页；${built.aliasPages.length} 条别名页已排除）`);
   }
 
   // 分类页：**逐条回读对账**，而不是「文件存在就算过」。
@@ -4430,6 +5751,56 @@ function selfCheck(built) {
     console.log(`  ✓ JSON-LD: ${foundTypes.join(' / ')}`);
   }
 
+  // ---- v3.0 Stage E：厂商资料页（**从磁盘回读**对账）------------------------------------
+  //
+  // 与其它区域的同一条纪律：不看内存里那个 HTML 字符串，而是把 `dist/vendor/<slug>/index.html`
+  // 重新读一遍，再与**盘上的** plans / api-plans / models / 关系层 / 两份变化日志逐个对账。
+  // 内存里的对象与盘上的产物必须互相印证，否则「构建期算对了、写盘写错了」不会有任何东西红。
+  {
+    const providerTableDisk = providers.load().table;
+    const problems = [
+      ...vendorPage.assertVendorSlugCanonical(built.directoryPages, { providerTable: providerTableDisk, vendorSlugs: feeds.VENDOR_SLUGS }),
+      // slug 必须来自**权威表**（不能只靠 providers.json 的隐式兜底）：补表不改变 URL，
+      // 只是把「隐式兜底」换成「显式登记」——没有这条，改 slug 表也不会有人发现。
+      ...vendorPage.assertVendorSlugDeclared(built.directoryPages, { vendorSlugs: feeds.VENDOR_SLUGS }),
+      ...vendorPage.assertVendorCandidateIdentity(built.directoryPages, { providerTable: providerTableDisk }),
+      ...vendorPage.assertNoParallelProviderRoutes(built.directoryPages)
+    ];
+    const diskApiPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8')).plans;
+    const diskPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8')).plans;
+    const diskModels = JSON.parse(fs.readFileSync(path.join(OUT, 'models.json'), 'utf8')).models;
+    const diskLinks = JSON.parse(fs.readFileSync(path.join(OUT, 'model-registry-links.json'), 'utf8')).links;
+    const diskPlanHistory = fs.existsSync(path.join(OUT, 'plan-history.json'))
+      ? JSON.parse(fs.readFileSync(path.join(OUT, 'plan-history.json'), 'utf8')) : null;
+    const diskApiHistory = fs.existsSync(path.join(OUT, 'api-plan-history.json'))
+      ? JSON.parse(fs.readFileSync(path.join(OUT, 'api-plan-history.json'), 'utf8')) : null;
+    const vendorEntries = built.directoryPages.filter(page => page.kind === 'vendor');
+    for (const spec of vendorEntries) {
+      const file = path.join(OUT, spec.route, 'index.html');
+      if (!fs.existsSync(file)) { problems.push(`${spec.route}: 缺少产物`); continue; }
+      const pageHtml = fs.readFileSync(file, 'utf8');
+      const pageDeals = landing.itemsOf(spec, JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8')).deals,
+        { vendorKeyOf: VENDOR_KEY_OF });
+      const ctx = {
+        deals: pageDeals,
+        plans: diskPlans, apiPlans: diskApiPlans, models: diskModels, modelLinks: diskLinks,
+        planHistoryStore: diskPlanHistory, apiPlanHistoryStore: diskApiHistory,
+        providerTable: providerTableDisk,
+        feeds: feeds.feedsForPage(spec, built.feedBundle.feeds),
+        prefix: '../'.repeat(spec.depth || 1),
+        siteUrl: SITE_URL
+      };
+      problems.push(...vendorPage.assertVendorPageHonesty(pageHtml, spec, ctx).map(problem => `${spec.route}: ${problem}`));
+      problems.push(...vendorPage.assertVendorApiCounts(pageHtml, spec, ctx).map(problem => `${spec.route}: ${problem}`));
+    }
+    if (problems.length) {
+      fail(`厂商资料页未通过诚实性断言（${problems.length} 处）：${problems.slice(0, 3).join('、')}`);
+    } else {
+      console.log(`  ✓ 厂商资料页: ${vendorEntries.length} 页 · slug 唯一且已登记 · 无 /provider/ 并行路由` +
+        ` · API 计数与 dist/api-plans.json 逐个对账 · 资料区块六节齐`);
+    }
+  }
+
   // 订阅产物（v1.6）：**整张注册表**做三方对账 + 语义不变量。
   //
   // 这一段替换掉 v1.0–v1.5 的「只数条目数」检查。旧检查的漏洞是结构性的：
@@ -4448,30 +5819,76 @@ function selfCheck(built) {
       pages: built.pageRoutes,
       asOf: built.radarAsOf,
       availability: built.radar.availability,
-      // v2.3：套餐变化源的对账材料（事件身份来自**产物那份** plan-history.json）
+      // v2.3 / v3.0：变化源的对账材料**逐来源分开**（事件身份来自**产物那一份**日志）。
+      // 把两份日志合成一个集合，会让「API 订阅里混进了套餐事件」这条最该报红的事静默通过。
       planEvents: fs.existsSync(path.join(OUT, 'plan-history.json'))
         ? JSON.parse(fs.readFileSync(path.join(OUT, 'plan-history.json'), 'utf8')).events
         : [],
       planAvailability: built.planRadar ? built.planRadar.availability : 'unavailable',
+      apiPlanEvents: fs.existsSync(path.join(OUT, 'api-plan-history.json'))
+        ? JSON.parse(fs.readFileSync(path.join(OUT, 'api-plan-history.json'), 'utf8')).events
+        : [],
+      apiPlanAvailability: built.apiPlanRadar ? built.apiPlanRadar.availability : 'unavailable',
       // 厂商归属必须与页面/Feed 构建时用的是**同一个**规范名取值器，
       // 否则「扣子 Coze（字节跳动）」这类写法会被判成「不属于该厂商」。
       vendorKeyOf: VENDOR_KEY_OF
     });
 
-    // v2.3：套餐变化条目的深链锚点必须**真的在页面上**（`#plan-<id>`）。
+    // v2.3 / v3.0：变化条目的深链锚点必须**真的在它自己那一页上**（`#plan-<id>`）。
     // 反过来说，删掉某一行的 id 属性会让这里当场变红 —— 那是订阅里最典型的死链。
+    //
+    // ⚠️ **逐条 feed**，不是「找第一条 kind === 'plan-changes'」：只说第一条的话，
+    // API 那条（第二条）的锚点永远不会被检查 —— 而题面牙 #16（「API Feed event 指向
+    // 不存在页面锚点」）恰恰只有这里会红：`feeds.validate()` 的 `link-exists` 只判路由存在，
+    // 片段（`#plan-<id>`）不改变「哪一页」，它照不到锚点本身。
     {
-      const planFeed = built.feedBundle.feeds.find(feed => feed.spec.kind === 'plan-changes');
-      const pageFile = path.join(OUT, plansPage.PLANS_ROUTE, 'index.html');
-      if (planFeed && fs.existsSync(pageFile)) {
+      for (const spec of feeds.PLAN_CHANGE_FEEDS) {
+        const feed = built.feedBundle.feeds.find(item => item.spec.id === spec.id);
+        const pageFile = path.join(OUT, spec.pageRoute, 'index.html');
+        if (!feed || !fs.existsSync(pageFile)) {
+          if (feed) fail(`变化订阅 ${spec.id} 的落点页面不存在：${spec.pageRoute}`);
+          continue;
+        }
+        if (!feed.items.length) {
+          console.log(`  ✓ 变化订阅 ${spec.id}: 0 条条目（这一轮没有可订阅的变化）`);
+          continue;
+        }
         const pageHtml = fs.readFileSync(pageFile, 'utf8');
-        const dangling = planFeed.items
-          .map(item => `#plan-${item.planId}`)
-          .filter(anchor => !pageHtml.includes(`id="${anchor.slice(1)}"`));
+        // 判据是**链接自己**的落点，而不是「拿 item.planId 拼一个锚点去页面上找」——
+        // 后者在有人把链接拼错（指向另一条记录、或指向 eventId）时会照常通过。
+        const pagePrefix = `${SITE_URL}${spec.pageRoute}`;
+        const dangling = feed.items
+          .map(item => String(item.link || ''))
+          .filter(link => {
+            if (!link.startsWith(pagePrefix)) return true;          // 链接不在它该在的那一页
+            const hash = link.slice(pagePrefix.length).split('#')[1] || '';
+            return !hash || !pageHtml.includes(`id="${hash}"`);      // 片段没有落点
+          });
         if (dangling.length) {
-          fail(`套餐变化订阅里有 ${dangling.length} 条深链没有落点（如 ${dangling[0]}）`);
-        } else if (planFeed.items.length) {
-          console.log(`  ✓ 套餐变化订阅: ${planFeed.items.length} 条条目，深链锚点全部落在套餐对比页上`);
+          fail(`变化订阅 ${spec.id} 里有 ${dangling.length} 条深链在 ${spec.pageRoute} 上没有落点（如 ${dangling[0]}）`);
+        } else {
+          console.log(`  ✓ 变化订阅 ${spec.id}: ${feed.items.length} 条条目，深链锚点全部落在 ${spec.pageRoute} 上`);
+        }
+      }
+    }
+
+    // v3.0 Stage H（队长 A1）：**「改了 alwaysGenerated 却忘了交视图」必须当场红**。
+    // 症状是那条 Feed 的描述里写着「没有拿到日志」，而日志其实就在盘上 —— 那是假话，
+    // 而且从产物上完全看不出来（文件在、格式对、就是描述说错了话）。
+    {
+      if (built.feedBundle.changeFeedsSkipped.length) {
+        fail(`有变化源没有被登记（未交出视图）：${built.feedBundle.changeFeedsSkipped.map(item => item.id).join('、')}`
+          + ' —— 要么补上 changeViews，要么把 spec 的 alwaysGenerated 保持为 false');
+      }
+      const availabilityOf = source => (source === 'api'
+        ? (built.apiPlanRadar ? built.apiPlanRadar.availability : 'unavailable')
+        : (built.planRadar ? built.planRadar.availability : 'unavailable'));
+      for (const spec of feeds.PLAN_CHANGE_FEEDS) {
+        const feed = built.feedBundle.feeds.find(item => item.spec.id === spec.id);
+        if (!feed || availabilityOf(spec.changeSource) !== 'ok') continue;
+        const unavailableNote = feeds.changeWordingOf(spec).unavailable;
+        if (feed.description.includes(unavailableNote)) {
+          fail(`订阅 ${spec.id} 的日志是可用状态，描述里却写着「没有拿到日志」——视图没有真的交进去`);
         }
       }
     }
@@ -4511,6 +5928,15 @@ function selfCheck(built) {
       ['status/index.html', '状态页', '../'],
       ['changes/index.html', '变化雷达页', '../'],
       ['feeds/index.html', '订阅中心', '../'],
+      [`${plansHubPage.PLANS_HUB_ROUTE}index.html`, '资料入口页', '../'],
+      // v3.0 Stage D5/D6：模型页同样声明根 Feed（订阅发现按深度逐页对账）。
+      [`${modelsPage.MODELS_INDEX_ROUTE}index.html`, '模型资料索引', '../'],
+      ...built.modelDetailRoutes.map(route => [`${route}index.html`, `/${route}`, '../../']),
+      // v3.0 Stage F：档案页同样声明根 Feed（订阅发现按深度逐页对账）。
+      [`${archiveLib.ARCHIVE_INDEX_ROUTE}index.html`, '历史档案', '../'],
+      ...built.archiveDetailRoutes.map(route => [`${route}index.html`, `/${route}`, '../../']),
+      // v3.0 Stage G：数据文档页同样声明根 Feed。
+      [`${dataDocs.DATA_DOCS_ROUTE}index.html`, '数据文档', '../../'],
       [`${plansPage.PLANS_ROUTE}index.html`, '套餐对比页', '../../'],
       ...built.collectionPages.map(page => [`${page.slug}/index.html`, `/${page.slug}/`, '../']),
       ...built.needPages.map(page => [`${page.route}index.html`, `/${page.route}`, '../../']),
@@ -4571,6 +5997,17 @@ function selfCheck(built) {
       for (const route of listed) {
         if (route.endsWith('/')) continue;
         if (!fs.existsSync(path.join(OUT, route))) problems.push(`列出的订阅地址没有文件：${route}`);
+      }
+      // v3.0 Stage H（队长 B1）：**注册表里每个变化源都必须出现在这一页上**。
+      // 分组表改成从注册表展开之后，这条断言才真正有意义：谁把某个来源从分组里漏掉
+      // （或者新加一个来源忘了接线），这里是唯一会红的地方 —— 页面看起来依然"很正常"。
+      for (const spec of feeds.PLAN_CHANGE_FEEDS) {
+        const feed = built.feedBundle.feeds.find(item => item.spec.id === spec.id);
+        if (!feed) continue;                     // 未登记（alwaysGenerated:false 且没交视图）由上面那条断言报
+        for (const rel of [spec.path, spec.jsonPath]) {
+          if (!page.includes(`href="${SITE_URL}${rel}"`)) problems.push(`没有列出变化源 ${spec.id} 的地址 ${rel}`);
+        }
+        if (!page.includes(spec.title)) problems.push(`没有列出变化源 ${spec.id} 的标题「${spec.title}」`);
       }
       const text = page.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '')
         .replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -4657,6 +6094,39 @@ function selfCheck(built) {
       readPage('status/', { kind: 'status', expectItemList: false }),
       readPage('changes/', { kind: 'changes', expectItemList: true }),
       readPage('feeds/', { kind: 'feeds', expectItemList: false }),
+      // v3.0 Stage B：/plans/ 资料入口。三个开的默认值都来自 `lib/page-kinds.js` 的声明
+      // （`plans-hub`：ItemList 在场 + 行数对账 + 成员对账关掉）。
+      // 成员对账关掉的理由与首页/对比页同源：ItemList 指向**子页**，而 `seo.js` 的成员判据
+      // 按站内 `deal/<id>/` 判 —— 这一页的成员一致性由它自己的 `assertItemListHonesty()` 查
+      // （构建期已在磁盘回读那一段跑过），这里只保留在场性与行数两条。
+      // `count` 是这一页的子页数（2），不是条目数：它决定 itemlist 行数对账的口径。
+      readPage(`${plansHubPage.PLANS_HUB_ROUTE}`, {
+        kind: 'plans-hub',
+        count: plansHubPage.PLANS_HUB_CHILDREN.length
+      }),
+      // v3.0 Stage D5：模型索引。非优惠实体页 —— ItemList 的成员是**本站的模型详情页**，
+      // 而 `seo.js` 的成员判据按站内 `deal/<id>/` 判，因此显式关掉成员对账
+      // （在场性 + 声明数 == 元素数 + 声明数 == `data-item` 行数三条照常查）。
+      // 成员一致性由页面自己的 `assertPageHonesty` 查（构建期已在写盘前后各跑一次）。
+      readPage(`${modelsPage.MODELS_INDEX_ROUTE}`, {
+        kind: 'models-index',
+        checkItemListMembers: false,
+        count: built.modelDetailCount
+      }),
+      // v3.0 Stage F：档案索引。同样是「非优惠实体页」——ItemList 成员是档案条目，
+      // 不是 `deal/<id>/`，因此显式关掉成员对账（在场性与行数照常查）。
+      readPage(`${archiveLib.ARCHIVE_INDEX_ROUTE}`, {
+        kind: 'archive-index',
+        checkItemListMembers: false,
+        count: built.archiveEntries.length
+      }),
+      // v3.0 Stage G：数据文档页。ItemList 成员是**数据集 endpoint**（静态文件），
+      // 不是站内 `deal/<id>/`，因此显式关掉成员对账；行数 = Manifest 数据集数。
+      readPage(`${dataDocs.DATA_DOCS_ROUTE}`, {
+        kind: 'data-docs',
+        checkItemListMembers: false,
+        count: built.dataManifest.count
+      }),
       // v2.1：套餐对比页。ItemList 指向**各自的官方定价页**（与首页同一口径），
       // 所以成员校验对不上（它按站内 `deal/<id>/` 判成员）—— 显式关掉那一条，
       // 而不是为了让断言通过去伪造一个本站不存在的套餐详情页。
@@ -4665,23 +6135,42 @@ function selfCheck(built) {
         kind: 'plans',
         expectItemList: true,
         checkItemListMembers: false,
-        // v2.3：这一页有专属的套餐变化源，必须声明它（与根 Feed 并列）
-        feedMatch: [feeds.PLAN_CHANGE_FEED.id],
+        // v2.3 / v3.0：这一页有专属的套餐变化源，必须声明它（与根 Feed 并列）。
+        // 判据从注册表取 —— 不再写死 spec id。
+        feedMatch: feeds.feedsForPage({ route: plansPage.PLANS_ROUTE }, built.feedBundle.feeds).map(feed => feed.spec.id),
         count: JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8')).count
       }),
       // v2.5：API 计费页。与套餐页同样：ItemList 指向**各自的官方定价页**，
       // 所以成员校验不适用（本站不为每个模型编一个详情页）；行数校验保留。
-      // 这一页**没有专属 Feed**（本阶段不新增第二个变化源，见 docs/SCHEMA-v2.5.md §9），
-      // 因此不声明 feedMatch —— 只声明与首页同一组根 Feed。
+      // v3.0 Stage H：这一页**有了自己的订阅源**（API 价格变化），因此与套餐页一样声明 feedMatch。
       readPage(`${apiPlansPage.API_PLANS_ROUTE}`, {
         kind: 'plans',
         expectItemList: true,
         checkItemListMembers: false,
+        feedMatch: feeds.feedsForPage({ route: apiPlansPage.API_PLANS_ROUTE }, built.feedBundle.feeds).map(feed => feed.spec.id),
         count: JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8')).count
       })
     ].filter(Boolean);
     const dealDescriptors = dealEntries.map(deal => readPage(`deal/${encodeURIComponent(deal.id)}/`, {
       kind: 'deal', expectItemList: false, itemIds: [deal.id]
+    })).filter(Boolean);
+    // v3.0 Stage D6：模型详情页。它是**详情叶子**（刻意没有 ItemList），而且是"非优惠实体页" ——
+    // 成员对账必须显式关掉（成员判据按 `deal/<id>/` 判，模型页上永远对不上）。
+    const modelDescriptors = built.modelDetailRoutes.map(route => readPage(route, {
+      kind: 'model',
+      expectItemList: false,
+      checkItemListRows: false,
+      checkItemListMembers: false,
+      count: 0
+    })).filter(Boolean);
+    // v3.0 Stage F：档案详情页。同属「非优惠实体页 + 详情叶子」：
+    // 没有 ItemList（在场性/行数/成员三条都显式关掉），成员一致性由页面自己的断言查。
+    const archiveDescriptors = built.archiveDetailRoutes.map(route => readPage(route, {
+      kind: 'archive-detail',
+      expectItemList: false,
+      checkItemListRows: false,
+      checkItemListMembers: false,
+      count: 0
     })).filter(Boolean);
     const directoryDescriptors = built.directoryPages.map(page => readPage(page.route, {
       kind: page.kind,
@@ -4693,9 +6182,13 @@ function selfCheck(built) {
       count: page.count,
       pinned: page.pinned,
       expectItemList: true,
-      feedMatch: page.feedMatch
+      feedMatch: page.feedMatch,
+      // v3.0 Stage E：厂商页的门槛判据（`seo.js` 按与 landing **同一条 OR** 判）。
+      // 不传这两个字段时 seo.js 的行为与 v2.x 逐字相同（只查条数）。
+      eventCount: page.eventCount,
+      nonDealMaterial: page.nonDealMaterial
     })).filter(Boolean);
-    descriptors.push(...fixed, ...dealDescriptors, ...directoryDescriptors);
+    descriptors.push(...fixed, ...dealDescriptors, ...modelDescriptors, ...archiveDescriptors, ...directoryDescriptors);
 
     const result = seo.validate(descriptors, {
       siteUrl: SITE_URL,

@@ -93,8 +93,9 @@ const bundle = buildWithVendor({
 /** 构建期真实生成的全部站内路由（与 build-local 的 pageRoutes 同构） */
 function pageRoutesOf(deals) {
   const pages = new Set(['', 'status/', 'changes/', 'feeds/']);
-  // v2.3：套餐对比页 —— 套餐变化 Feed 的主页指向它（缺了会把「主页指向不存在页面」判成真问题）
-  pages.add(feeds.PLAN_CHANGE_FEED.pageRoute);
+  // v2.3 / v3.0：**每条**变化 Feed 的主页（套餐对比页、API 计费页）都在真实产物里生成 ——
+  // 夹具缺一条就会把「主页指向不存在页面」判成真问题。清单由注册表展开，不写死。
+  for (const spec of feeds.PLAN_CHANGE_FEEDS) pages.add(spec.pageRoute);
   for (const deal of deals) {
     if (deal && deal.type === 'deal') pages.add(`deal/${encodeURIComponent(deal.id)}/`);
   }
@@ -317,11 +318,15 @@ section('五、排除项与空 Feed 策略');
   const emptyFlagged = new Set(verdict.problems.filter(problem => problem.code === 'not-empty')
     .map(problem => problem.feed));
   const emptyIds = synthetic.feeds.filter(feed => !feed.items.length).map(feed => feed.spec.id);
-  check('空 Feed 会被判红（除 new / changes / plan-changes 外）',
-    emptyIds.every(id => ['new', 'changes', 'plan-changes'].includes(id) || [...emptyFlagged].some(path => path.includes(`/${id}.`))),
+  // 「允许为空」的清单**由注册表派生**：变化类 Feed 的 id 全部来自 `PLAN_CHANGE_FEEDS`
+  // （加第三个来源时这条断言自动跟上，不需要回来改字符串数组）。
+  const changeFeedIds = feeds.PLAN_CHANGE_FEEDS.map(spec => spec.id);
+  const nullableIds = ['new', 'changes', ...changeFeedIds];
+  check('空 Feed 会被判红（除 new / changes / 各条变化 Feed 外）',
+    emptyIds.every(id => nullableIds.includes(id) || [...emptyFlagged].some(path => path.includes(`/${id}.`))),
     `为空：${emptyIds.join(',')} · 判红：${[...emptyFlagged].join(',')}`);
-  check('new / changes / plan-changes 为空不判红（起算日之前本来就没有变化）',
-    ![...emptyFlagged].some(path => /\/(new|changes|plan-changes)\./.test(path)), [...emptyFlagged].join(','));
+  check('new / changes / 变化类 Feed 为空不判红（起算日之前本来就没有变化）',
+    ![...emptyFlagged].some(path => nullableIds.some(id => path.includes(`/${id}.`))), [...emptyFlagged].join(','));
   check('空的变化 Feed 在描述里如实说明起算日与「还没有变化」', (() => {
     const feed = synthetic.feeds.find(item => item.spec.id === 'changes');
     return /还没有观测到/.test(feed.description) && /起算/.test(feed.description);
@@ -597,9 +602,268 @@ section('九、套餐变化订阅源（v2.3：另一份数据的变化流）');
 
   const t8 = planRun(list => {
     const feed = list.find(item => item.spec.kind === 'plan-changes');
-    feed.items[0].link = feeds.SITE_URL + 'plans/api/#plan-000000000000';
+    // v3.0：目标必须是一个**真的不存在**的路由。原先这里写的是 `plans/api/` —— 那时它
+    // 还不是页面；Stage H 把它建成 API 计费页之后，拿它当「不存在的页面」就恒真了。
+    feed.items[0].link = feeds.SITE_URL + 'plans/nowhere/#plan-000000000000';
   });
   check('T8 套餐变化条目指向不存在的页面 → link-exists 红', planExpect(t8, 'link-exists'), t8.map(p => p.code).join(','));
+}
+
+/* ------------------------------------------------------------------ */
+section('十一、v3.0 多 spec 注册表与「API 价格变化」订阅');
+
+{
+  const apiPlanHistory = require('../lib/api-plan-history');
+  const planHistory = require('../lib/plan-history');
+  const planChanges = require('../lib/plan-changes');
+  const providers = require('../lib/providers');
+  const providerTable = providers.load().table;
+  const clone3 = value => JSON.parse(JSON.stringify(value));
+
+  // ---- ① 注册表不变量 --------------------------------------------------
+  const specs = feeds.PLAN_CHANGE_FEEDS;
+  check('注册表是**多 spec**（套餐 + API，不是一条）',
+    Array.isArray(specs) && specs.length >= 2 && specs.some(s => s.changeSource === 'api') && specs.some(s => s.changeSource === 'plans'),
+    specs.map(s => s.id).join(','));
+  check('spec id / RSS 路径 / JSON 路径互不相同',
+    new Set(specs.map(s => s.id)).size === specs.length &&
+    new Set(specs.map(s => s.path)).size === specs.length &&
+    new Set(specs.map(s => s.jsonPath)).size === specs.length);
+  check('每个 spec 的 pageRoute / pageKind 互不相同（page.kind 与 page.route 解析不可能撞车）',
+    new Set(specs.map(s => s.pageRoute)).size === specs.length &&
+    new Set(specs.map(s => s.pageKind)).size === specs.length);
+  check('每条 spec 的 changeSource 都有条目实现（没有「登记了但没人实现」的来源）',
+    specs.every(s => Boolean(feeds.CHANGE_SOURCES[s.changeSource])));
+  check('feedsForPage 按 page.route 解析到 API 那一份',
+    feeds.feedsForPage({ route: 'plans/api/' }).map(f => f.spec.id).join(',') === 'api-plan-changes');
+  check('feedsForPage 按 page.kind 解析到 API 那一份',
+    feeds.feedsForPage({ kind: 'plans-api' }).map(f => f.spec.id).join(',') === 'api-plan-changes');
+  check('feedsForPage 按 page.route 解析到套餐那一份（老路由不回退）',
+    feeds.feedsForPage({ route: 'plans/coding/' }).map(f => f.spec.id).join(',') === 'plan-changes');
+  // 「绝不复制一份 feeds-api.js 形成两套逻辑」：这条要么是文件不存在，要么是同一份实现被抄成两份。
+  check('没有 scripts/lib/feeds-api.js（订阅逻辑只有一份实现）',
+    !fs.existsSync(path.join(ROOT, 'scripts', 'lib', 'feeds-api.js')));
+  check('两个来源共用同一份条目实现（feeds.js 里只有一个 changeItemsFor）', (() => {
+    const source = fs.readFileSync(path.join(ROOT, 'scripts', 'lib', 'feeds.js'), 'utf8');
+    return source.includes('PLAN_CHANGE_FEEDS') &&
+      (source.match(/function changeItemsFor\(/g) || []).length === 1 &&
+      !/function apiChangeItems\(/.test(source);
+  })());
+
+  // ---- ② 夹具：真实 api-plans + 一次调价 ⇒ 若干 api-plan-history 事件 ------
+  const apiPlansFile = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8'));
+  const apiBefore = clone3(apiPlansFile.plans);
+  const apiAfter = clone3(apiPlansFile.plans).map(plan => {
+    if (plan.id !== apiBefore[0].id) return plan;
+    plan.models = plan.models.map(entry => ({
+      ...entry,
+      rates: { ...entry.rates, input: (typeof entry.rates.input === 'number' ? entry.rates.input : 0) + 5 }
+    }));
+    return plan;
+  });
+  const apiStore0 = apiPlanHistory.emptyStore({ at: AS_OF });
+  apiStore0.baseline = apiPlanHistory.baselineOf(apiBefore, { at: AS_OF });
+  const apiRecorded = apiPlanHistory.record(apiStore0, {
+    previous: apiBefore, next: apiAfter, at: AS_OF, runAt: `${AS_OF}T00:00:00.000Z`
+  }).store;
+  const apiEvents = apiPlanHistory.eventsOf(apiRecorded);
+  const apiRadar = planChanges.buildApiPlanRadar({
+    plans: apiAfter, store: apiRecorded, asOf: AS_OF, availability: 'ok', providerTable
+  });
+  const emptyCodingRadar = planChanges.buildPlanRadar({
+    plans: JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8')).plans,
+    store: planHistory.emptyStore({ at: AS_OF }),
+    asOf: AS_OF,
+    availability: 'ok'
+  });
+
+  const multiOpts = {
+    deals: payload.deals, store: historyStore.store, radar,
+    asOf: AS_OF, updatedAt: payload.updatedAt,
+    planRadar: emptyCodingRadar, planAvailability: 'ok',
+    apiPlanRadar: apiRadar, apiPlanAvailability: 'ok', apiPlans: apiAfter, apiProviderTable: providerTable
+  };
+  const multiBundle = buildWithVendor(multiOpts);
+  const apiFeed = multiBundle.feeds.find(feed => feed.spec.id === 'api-plan-changes');
+  const codingFeed = multiBundle.feeds.find(feed => feed.spec.id === 'plan-changes');
+  const multiPages = new Set(pageRoutesOf(payload.deals));
+  multiPages.add('plans/api/');
+
+  check('接线后 API 价格变化 Feed 真的被登记（spec 路由 / 主页 / 允许为空）',
+    Boolean(apiFeed) &&
+    apiFeed.spec.path === 'feed/plans/api/changes.xml' &&
+    apiFeed.spec.jsonPath === 'feed/plans/api/changes.json' &&
+    apiFeed.spec.pageRoute === 'plans/api/' &&
+    apiFeed.spec.mayBeEmpty === true && apiFeed.spec.homepage === false,
+    JSON.stringify(apiFeed && apiFeed.spec));
+  check('API Feed 的条目数 == API 雷达里的变化条数（去掉元信息）',
+    apiFeed.items.length === planChanges.itemsOf(apiRadar).filter(item => item.type !== 'updated').length
+    && apiFeed.items.length > 0,
+    `${apiFeed.items.length} 条（日志 ${apiEvents.length} 条事件）`);
+
+  // ---- ③ Stable ID：guid == api-plan-history 的派生事件身份 ----------------
+  check('每一条 API 条目的 guid == apiPlanEventIdOf 重算出来的事件身份',
+    apiFeed.items.every(item => apiEvents.some(event => apiPlanHistory.apiPlanEventIdOf(event) === item.id)),
+    apiFeed.items.map(item => item.id).join(','));
+  check('GUID 两次构建逐字节相同（不是每次 build 重新生成）',
+    apiFeed.items.map(item => item.id).join(',') ===
+    buildWithVendor(multiOpts).feeds.find(feed => feed.spec.id === 'api-plan-changes').items.map(item => item.id).join(','));
+  check('记录级元信息（updated）不进 API 订阅',
+    apiFeed.items.every(item => item.eventType !== 'updated'));
+
+  // ---- ④ 不混入 Coding 套餐事件 ------------------------------------------
+  {
+    const codingEventIds = new Set(planHistory.eventsOf(
+      JSON.parse(JSON.stringify(planHistory.emptyStore({ at: AS_OF })))
+    ).map(event => planHistory.eventIdOf(event)));
+    const apiIds = new Set(apiEvents.map(event => apiPlanHistory.apiPlanEventIdOf(event)));
+    check('API 订阅的条目身份全部来自 api-plan-history，没有一个来自 plan-history',
+      apiFeed.items.every(item => apiIds.has(item.id) && !codingEventIds.has(item.id)));
+    check('两条变化 Feed 的 guid 集合不相交（同一件事不可能同时属于两份订阅）',
+      apiFeed.items.every(item => !codingFeed.items.some(other => other.id === item.id)));
+  }
+
+  // ---- ⑤ 深链落点 --------------------------------------------------------
+  check('每条都深链到 API 计费页的那一行（/plans/api/#plan-<id>）',
+    apiFeed.items.every(item => item.link === `${feeds.SITE_URL}plans/api/#plan-${item.planId}`));
+  check('正文里写着变化本身（页面与订阅共用同一句话）',
+    apiFeed.items.some(item => /\d/.test(item.text) && /→|新增|移除/.test(item.text)),
+    apiFeed.items[0] && apiFeed.items[0].text);
+
+  // ---- ⑥ 对账：未篡改时 0 个问题 -----------------------------------------
+  const multiValidateOpts = {
+    feeds: multiBundle.feeds, deals: payload.deals, store: historyStore.store, pages: multiPages,
+    asOf: AS_OF, planEvents: [], planAvailability: 'ok',
+    apiPlanEvents: apiEvents, apiPlanAvailability: 'ok'
+  };
+  const multiProblems = validateWithVendor(multiValidateOpts);
+  check('API 价格变化订阅未篡改时 0 个问题（验证器不是永远红的噪声）',
+    multiProblems.problems.length === 0, multiProblems.problems.map(p => `${p.code}:${p.detail}`).join('；'));
+  // 推荐形状（changeViews）必须与老的平铺参数等价
+  check('changeViews 形状与平铺参数等价（同一批 guid）', (() => {
+    const alt = buildWithVendor({
+      deals: payload.deals, store: historyStore.store, radar, asOf: AS_OF, updatedAt: payload.updatedAt,
+      changeViews: {
+        plans: { radar: emptyCodingRadar, availability: 'ok', records: [], providerTable },
+        api: { radar: apiRadar, availability: 'ok', records: apiAfter, providerTable }
+      }
+    });
+    const feed = alt.feeds.find(item => item.spec.id === 'api-plan-changes');
+    return Boolean(feed) && feed.items.map(item => item.id).join(',') === apiFeed.items.map(item => item.id).join(',');
+  })());
+
+  // ---- ⑦ 牙 --------------------------------------------------------------
+  const apiRun = mutate => {
+    const copy = clone3(multiBundle.feeds);
+    mutate(copy);
+    for (const feed of copy) {
+      feed.rss = feeds.serializeRss(feed.spec, feed.items, { updatedAt: payload.updatedAt, description: feed.description });
+      feed.json = feeds.serializeJsonFeed(feed.spec, feed.items, { description: feed.description });
+    }
+    return validateWithVendor(Object.assign({}, multiValidateOpts, { feeds: copy })).problems;
+  };
+  const apiExpect = (problems, code) => problems.some(problem => problem.code === code);
+
+  const t9 = apiRun(list => {
+    list.find(item => item.spec.id === 'api-plan-changes').items[0].id = 'deadbeef0000';
+  });
+  check('T9 API 变化的 guid 与 api-plan-history 对不上 → change-event-exists 红（其余条目照常过）',
+    apiExpect(t9, 'change-event-exists'), t9.map(p => p.code).join(','));
+
+  const t10 = apiRun(list => {
+    // 把一条 **Coding 套餐**事件的身份塞进 API 订阅：两份日志绝不能互相顶替
+    const feed = list.find(item => item.spec.id === 'api-plan-changes');
+    feed.items = [Object.assign({}, feed.items[0], { id: planHistory.eventIdOf({
+      planId: feed.items[0].planId, type: 'created', field: null, at: AS_OF, from: null, to: null,
+      fields: { 'billing.regularPrice': 1 }
+    }) })];
+  });
+  check('T10 Coding 套餐事件混进 API 订阅 → change-event-exists 红（不混入）',
+    apiExpect(t10, 'change-event-exists'), t10.map(p => p.code).join(','));
+
+  const t11 = apiRun(list => {
+    list.find(item => item.spec.id === 'api-plan-changes').items[0].link = feeds.SITE_URL + 'plans/not-a-page/#plan-000000000000';
+  });
+  check('T11 API 条目指向不存在的页面 → link-exists 红', apiExpect(t11, 'link-exists'), t11.map(p => p.code).join(','));
+
+  const t12 = apiRun(list => {
+    const feed = list.find(item => item.spec.id === 'api-plan-changes');
+    feed.items = [Object.assign({}, feed.items[0], {
+      id: apiPlanHistory.apiPlanEventIdOf({ planId: feed.items[0].planId, type: 'updated', field: 'officialUrl', at: AS_OF, from: 'a', to: 'b' }),
+      eventType: 'updated'
+    })];
+  });
+  check('T12 记录级元信息混进 API 订阅 → change-event-exists 红（它不在日志里）',
+    apiExpect(t12, 'change-event-exists'), t12.map(p => p.code).join(','));
+
+  // ---- ⑧ v3.0 Stage H：两条变化源**都始终生成**，但「没交视图」与「没有变化」要说成两句不同的话 ----
+  const unwired = buildWithVendor({
+    deals: payload.deals, store: historyStore.store, radar, asOf: AS_OF, updatedAt: payload.updatedAt,
+    planRadar: emptyCodingRadar, planAvailability: 'ok'
+  });
+  const unwiredApi = unwired.feeds.find(feed => feed.spec.id === 'api-plan-changes');
+  check('接线后 API 那条与套餐那条一样**始终生成**（alwaysGenerated=true）',
+    Boolean(unwiredApi) && unwired.changeFeedsSkipped.length === 0,
+    JSON.stringify(unwired.changeFeedsSkipped));
+  // 这条是 t4 里那个判断的**留守版本**：接线完成后不能再靠「不登记」来避免假话，
+  // 改成把话说对 —— 没拿到日志就说「没有拿到日志」，绝不说「还没有观测到变化」。
+  check('没交出 API 变化视图时：描述说「没有拿到日志」而不是「还没有观测到变化」',
+    Boolean(unwiredApi) && unwiredApi.items.length === 0
+    && /没有拿到 API 计费变化日志/.test(unwiredApi.description)
+    && !/还没有观测到/.test(unwiredApi.description),
+    unwiredApi && unwiredApi.description);
+  check('没交视图不影响套餐那一条（两条各自独立判断）',
+    unwired.feeds.some(feed => feed.spec.id === 'plan-changes'));
+
+  // 只登记不实现的来源（`alwaysGenerated:false` 且没交视图）仍要被记下来 ——
+  // 构建期据此断言「注册表里的来源一个都不能被漏掉」。
+  {
+    const stub = {
+      id: 'stub-changes', kind: 'plan-changes', changeSource: 'stub',
+      path: 'feed/stub.xml', jsonPath: 'feed/stub.json', title: 'x', description: 'x',
+      pageKind: 'stub', pageRoute: 'stub/', mayBeEmpty: true, homepage: false,
+      alwaysGenerated: false, vendor: null
+    };
+    feeds.PLAN_CHANGE_FEEDS.push(stub);
+    try {
+      const skipped = buildWithVendor({ deals: payload.deals, store: historyStore.store, radar, asOf: AS_OF });
+      check('alwaysGenerated=false 的来源没交视图时**不登记**，且记进 changeFeedsSkipped',
+        !skipped.feeds.some(feed => feed.spec.id === 'stub-changes')
+        && skipped.changeFeedsSkipped.some(item => item.id === 'stub-changes' && item.reason === 'no_change_view'),
+        JSON.stringify(skipped.changeFeedsSkipped));
+    } finally {
+      feeds.PLAN_CHANGE_FEEDS.pop();
+    }
+  }
+  check('注册表恢复原状（临时夹具没有留在注册表里）',
+    feeds.PLAN_CHANGE_FEEDS.length === 2 && !feeds.PLAN_CHANGE_FEEDS.some(spec => spec.id === 'stub-changes'));
+
+  // ---- ⑨ 起算日按来源取（队长 B2：**必须**用不同 `startedAt` 的夹具） -------------
+  //
+  // 真实数据上两条日志的 `startedAt` 都是 2026-10-01，所以「起算日取错来源」在真数据上
+  // 完全不可见 —— 这条牙只能靠**注入两个不同的起算日**来做，否则断言恒真。
+  {
+    const otherStart = '2026-09-15';
+    const shiftedApiRadar = planChanges.buildApiPlanRadar({
+      plans: [], store: { ...apiRecorded, events: [], startedAt: otherStart },
+      asOf: AS_OF, availability: 'ok', providerTable
+    });
+    const shifted = buildWithVendor({
+      deals: payload.deals, store: historyStore.store, radar, asOf: AS_OF, updatedAt: payload.updatedAt,
+      planRadar: emptyCodingRadar, planAvailability: 'ok',
+      apiPlanRadar: shiftedApiRadar, apiPlanAvailability: 'ok', apiPlans: [], apiProviderTable: providerTable
+    });
+    const apiFeed2 = shifted.feeds.find(feed => feed.spec.id === 'api-plan-changes');
+    const codingFeed2 = shifted.feeds.find(feed => feed.spec.id === 'plan-changes');
+    check('每条变化 Feed 的起算日 == **它自己**那份日志的 startedAt（两份日志不同时才构成证据）',
+      apiFeed2.spec.startedAt === otherStart && codingFeed2.spec.startedAt === AS_OF
+      && apiFeed2.spec.startedAt !== codingFeed2.spec.startedAt,
+      `api=${apiFeed2.spec.startedAt} · coding=${codingFeed2.spec.startedAt}`);
+    check('空态描述里的起算日取自**它自己**那一份（没有拿另一份日志的顶上）',
+      apiFeed2.items.length === 0 && apiFeed2.description.includes(otherStart)
+      && !apiFeed2.description.includes(AS_OF),
+      apiFeed2.description);
+  }
 }
 
 /* ------------------------------------------------------------------ */

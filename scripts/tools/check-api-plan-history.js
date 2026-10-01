@@ -54,6 +54,24 @@ function main() {
   const today = String(store.updatedAt || '').slice(0, 10);
   const bytes = fs.statSync(loaded.file).size;
   const problems = apiHistory.verifyStore(loaded.store, plans, { today, bytes });
+
+  // v3.0：派生字段 `eventId` 的**独立复算**。
+  //
+  // `verifyStore` 已经会重算比对（`apiValidateExtra` 调 `plan-history.eventIdProblems`），
+  // 这里再算一遍并把**样本数**印出来，理由有两条：
+  //   ① 交付日这份日志是 0 事件 —— 必须能从输出里区分「验过了、没问题」与「本轮没有样本」，
+  //      而不是把「没报错」当成「验过了」；
+  //   ② 两处必须同时报红。若哪天有人在 `apiValidateExtra` 里把这条检查摘掉，
+  //      单靠它自己不会有任何东西变红；这里的独立复算就是那条兜底。
+  const events = (loaded.store && Array.isArray(loaded.store.events)) ? loaded.store.events : [];
+  const eventsWithId = events.filter(event => event && event.eventId !== undefined);
+  const idProblems = eventsWithId
+    .filter(event => event.eventId !== apiHistory.apiPlanEventIdOf(event))
+    .map(event => `${event.planId} · ${event.at} · ${event.type}: eventId 与 apiPlanEventIdOf 重算值不一致（派生字段不得手写）`);
+  if (idProblems.length && !problems.some(problem => problem.includes('eventId'))) {
+    // 只有 verifyStore 漏报时才补位：两边都说同一件事会把同一条问题报两遍。
+    problems.push(...idProblems);
+  }
   const summary = apiHistory.summarize(loaded.store, plans);
   const absence = (loaded.store && loaded.store.absence) || {};
   const pending = Object.entries(absence)
@@ -70,6 +88,11 @@ function main() {
       plans: plans.length,
       today,
       problems,
+      eventIds: {
+        events: events.length,
+        withId: eventsWithId.length,
+        mismatches: idProblems.length
+      },
       summary,
       pending: pending.map(item => ({
         planId: item.id, misses: item.misses || 0, since: item.since || null,
@@ -85,6 +108,8 @@ function main() {
     console.log(`分类          : ${apiHistory.API_PLAN_EVENT_TYPES.map(type => `${type}=${summary.byType[type]}`).join(' · ')}`);
     console.log(`文件体积      : ${(bytes / 1024).toFixed(1)} KB / 上限 ${(apiHistory.API_PLAN_LIMITS.fileBytes / 1024).toFixed(0)} KB`);
     console.log(`事件上限      : 全库 ${apiHistory.API_PLAN_LIMITS.eventsTotal} · 单条 ${apiHistory.API_PLAN_LIMITS.eventsPerRecord}`);
+    console.log(`派生 eventId  : ${eventsWithId.length}/${events.length} 条事件带 id · 重算比对 ${idProblems.length} 处不一致`
+      + (events.length ? '' : '（本轮这份日志是 0 事件 —— 「有事件」那条断言没有样本，不是通过）'));
     if (pending.length) {
       console.log('');
       console.log(`待确认「不再收录」${pending.length} 条（连续 ${apiHistory.API_PLAN_MISS_CONFIRM_RUNS} 次重建未见才记 ended）：`);

@@ -9,7 +9,6 @@
         "a6a6a374dfba"
       ],
       "provider": "minimax",
-      "providerOverride": "采集原文的厂商串是「MiniMax（稀宇科技）」（带全角括号后缀），providers.json 的精确别名表里没有这一形态；平台身份以 providers.json 的 minimax 为准，不做子串匹配。",
       "basis": "official-plan-page",
       "evidence": [
         {

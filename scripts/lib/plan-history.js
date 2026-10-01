@@ -454,6 +454,8 @@ const PROFILE = {
   identityWithoutAxis: planIdentityWithoutPeriod,
   axisOf: plan => ((plan && plan.billing && plan.billing.period) || null),
   idRe: PLAN_ID_RE,
+  // v3.0：派生身份的推导**由 profile 声明**（写入点与 verifyStore 都读它）。
+  eventIdOf,
   docLabel: '套餐变更日志',
   recordsLabel: 'plans.json',
   passthroughKeys: ['anomalies'],
@@ -485,6 +487,36 @@ function eventIdOf(event) {
     event.type === 'created' ? (event.supersedes || '') : ''
   ].join('|');
   return sha1Hex(basis).slice(0, 12);
+}
+
+/**
+ * 派生身份的**统一入口**：写入点与校验点都必须走这里。
+ *
+ * 领域可以用 `profile.eventIdOf` 声明自己的推导（API 计费 = `api-plan-history.apiPlanEventIdOf`）；
+ * 没有声明时用本文件的缺省推导。**必须只有这一个入口** —— 一旦写入点和校验点各算一次，
+ * 「日志里的 id」与「重算的 id」就会分家，而那种分家平时完全看不出来（两边都是 12 位 hex）。
+ */
+function eventIdFor(profile, event) {
+  return profile && typeof profile.eventIdOf === 'function' ? profile.eventIdOf(event) : eventIdOf(event);
+}
+
+/**
+ * 「重算并比对」：**两条 profile 共用这一条实现**（`verifyStore` 的最后一步会走到它）。
+ *
+ * 只对**确实带了 eventId 的事件**判红：老日志里没有 `eventId` 的事件是历史事实
+ * （v2.5 的基线就是那样落盘的），不能因为「没写」就报红；但**写了一个错的**必须红 ——
+ * 这正是「派生字段不得手写」这句话唯一能被机器守住的地方。
+ */
+function eventIdProblems(events, profile) {
+  const problems = [];
+  (events || []).forEach((event, index) => {
+    if (!event || typeof event !== 'object') return;
+    if (event.eventId === undefined) return;
+    if (event.eventId !== eventIdFor(profile, event)) {
+      problems.push(`事件 #${index}: eventId 与重算值不一致（派生字段不得手写）`);
+    }
+  });
+  return problems;
 }
 
 /* ------------------------------------------------------------------ */
@@ -812,7 +844,7 @@ function record(store, params = {}) {
     const key = core.eventKey(event, profile);
     if (seen.has(key)) continue;
     seen.add(key);
-    appended.push({ ...event, eventId: eventIdOf(event) });
+    appended.push({ ...event, eventId: eventIdFor(profile, event) });
   }
 
   // ---- ④ 附加段：异常留档（有界、确定性）--------------------------------
@@ -917,18 +949,15 @@ function validateExtra(doc, plans, problems, ctx) {
     }
   }
 
-  // derived 字段：eventId 必须等于重算值（手写 ⇒ 红）
+  // derived 字段：eventId 必须等于重算值（手写 ⇒ 红）。
+  // 实现只有一份（`eventIdProblems`），API 计费那一份 profile 也调它 —— 两边不可能分家。
+  problems.push(...eventIdProblems(core.eventsOf(doc), PROFILE));
   const periodChanged = new Set();
   for (const event of core.eventsOf(doc)) {
     if (event.type === 'ended' && event.reason === 'period_changed') periodChanged.add(event.planId);
   }
   core.eventsOf(doc).forEach((event, index) => {
     const where = `事件 #${index}`;
-    if (event.eventId !== undefined) {
-      if (event.eventId !== eventIdOf(event)) {
-        problems.push(`${where}: eventId 与重算值不一致（派生字段不得手写）`);
-      }
-    }
     if (event.type !== 'created' || event.supersedes === undefined) return;
     if (!PLAN_ID_RE.test(String(event.supersedes))) {
       problems.push(`${where}: created.supersedes 非法（${event.supersedes}）`);
@@ -1057,6 +1086,9 @@ module.exports = {
   planAlreadyAt,
   planIdentityWithoutPeriod,
   eventIdOf,
+  // v3.0：派生身份的写入 / 重算两个入口（写入点走 eventIdFor，verifyStore 走 eventIdProblems）。
+  eventIdFor,
+  eventIdProblems,
   planFieldEvents,
   record,
   /**

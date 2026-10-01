@@ -1,0 +1,1500 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-01",
+  "producedBy": "source-researcher (A3 / Stage C)",
+  "note": [
+    "A3 联网取证的**已采信候选**清单，移交 registry-curator 落盘。",
+    "本文件不是生产数据：它只描述『把哪些条目追加到哪个文件』，以及每条事实的官方出处。",
+    "所有 price/额度都逐字来自 research/_raw/v3.0-sources/ 下的渲染快照（text/ 与 domtext/），",
+    "引文的 sourceUrl 一律是官方页；第三方聚合站只用于发现候选，没有一条进入本文件。",
+    "落盘顺序：① providers.json 追加 providerRegistrations；② curated_plans.json 追加 codingPlans；",
+    "③ curated_api_plans.json 追加 apiPlans；④ npm run plans:rebuild / api-plans:rebuild；",
+    "⑤ npm run check:plans:reproducible / check:api-plans:reproducible / check:plan-history / check:api-plan-history。",
+    "本文件里的每一条都已经用真实 schema 校验器试算通过（见 research/v3.0-a3-validation.md 的实跑输出）。"
+  ],
+  "providerRegistrations": [
+    {
+      "key": "aliyun",
+      "name": "阿里云百炼",
+      "slug": "aliyun-bailian",
+      "aliases": [
+        "阿里云百炼",
+        "阿里云",
+        "bailian",
+        "aliyun",
+        "model studio",
+        "阿里云 model studio"
+      ],
+      "logo": null,
+      "vendorKey": null,
+      "reason": "deals 侧已有 1 条 vendor=「阿里云」的优惠；别名「阿里云」让 B 空间的 provider 能被 A 空间精确解析（不做子串匹配）。vendorKey 由 t1 按 A 空间实际键决定，此处留 null 不代填。"
+    },
+    {
+      "key": "siliconflow",
+      "name": "硅基流动",
+      "slug": "siliconflow",
+      "aliases": [
+        "硅基流动",
+        "siliconflow",
+        "硅基流动 siliconflow",
+        "silicon flow"
+      ],
+      "logo": null,
+      "vendorKey": null,
+      "reason": "deals 侧已有 1 条 vendor=「硅基流动 SiliconFlow」的优惠。"
+    },
+    {
+      "key": "windsurf",
+      "name": "Windsurf",
+      "slug": "windsurf",
+      "aliases": [
+        "windsurf",
+        "windsurf (exafunction)",
+        "exafunction",
+        "windsurf editor"
+      ],
+      "logo": null,
+      "vendorKey": null,
+      "reason": "deals 侧已有 1 条 vendor=「Windsurf (Exafunction)」的优惠；别名逐字覆盖该原始串（含半角括号与空格）。"
+    },
+    {
+      "key": "volcengine",
+      "name": "火山引擎",
+      "slug": "volcengine",
+      "aliases": [
+        "火山引擎",
+        "火山引擎(字节跳动)",
+        "火山的引擎",
+        "火山方舟",
+        "volcengine",
+        "ark"
+      ],
+      "logo": null,
+      "vendorKey": "volcengine",
+      "reason": "本条**由 t1 登记**（AGENT-REFERENCE §2.2 建议键 volcengine）。A3 只追加两个别名：「火山方舟」（API 定价页的官方产品名，本文件的火山方舟记录 provider 写的就是它）与「ark」。若 t1 已登记同名别名，请勿重复添加。"
+    },
+    {
+      "key": "baidu",
+      "name": "百度智能云",
+      "slug": "baidu-ai-cloud",
+      "aliases": [
+        "百度智能云",
+        "百度",
+        "baidu",
+        "baidu ai cloud",
+        "百度千帆",
+        "千帆"
+      ],
+      "logo": null,
+      "vendorKey": "baidu",
+      "reason": "本条**由 t1 登记**。A3 只追加别名「百度千帆」「千帆」，因为 Comate/千帆的官方页都在百度智能云下；若已存在请勿重复添加。"
+    },
+    {
+      "key": "qoder-intl",
+      "name": "Qoder International",
+      "slug": "qoder-intl",
+      "aliases": [
+        "qoder international",
+        "qoder-intl",
+        "qoder intl",
+        "qoder 国际站"
+      ],
+      "logo": null,
+      "vendorKey": null,
+      "reason": "队长 t3 验收时的裁定：Qoder 国际站的数据（Pro+ $60 / Ultra $200 / 6,000 / 20,000 Credits）官方可验证，可以采信；但不得与 CN 站的 provider（qoder /「Qoder CN」）并表 —— CN 站与国际站是独立定价、独立域名、独立币种的两个 SKU 面。因此新建 provider `qoder-intl`：① 显示名刻意不取「Qoder」，避免同一家公司出现两个相似显示名；② vendorKey 必须是 null（A 空间没有对应厂商名，不得为此新编一个）；③ 既有 `qoder` 记录（provider 与 id）一个字都不改。validateSlugAgreement 比的是**显示名**：「Qoder International」不在 vendor-slugs.json 里，因此不会与 `qoder` 的 slug `qoder` 产生约束；别名刻意都不含裸串 `qoder`，避免占用既有 provider 的别名。"
+    }
+  ],
+  "codingPlans": [
+    {
+      "provider": "Windsurf",
+      "planName": "Pro",
+      "officialUrl": "https://windsurf.com/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://windsurf.com/pricing",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 20,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方写「$20 PER MONTH」；页面另有 Teams（$80/月 + $40/坐席/月）与 Max（$200/月）档"
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方只写「Increased quotas」「额度按日与周自动刷新」，未公布固定数值；超额部分按 API 价购买",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Pro POPULAR $20 PER MONTH Select plan EVERYTHING IN FREE, PLUS: Increased quotas",
+          "sourceUrl": "https://windsurf.com/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        },
+        {
+          "field": "quota.description",
+          "quote": "How does usage work? Each paid plan comes with a usage allowance that refreshes automatically on a daily and weekly basis.",
+          "sourceUrl": "https://windsurf.com/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ]
+    },
+    {
+      "provider": "Windsurf",
+      "planName": "Max",
+      "officialUrl": "https://windsurf.com/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://windsurf.com/pricing",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 200,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": null
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方只写「Significantly higher quotas」，未公布固定数值",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Max NEW $200 PER MONTH Select plan EVERYTHING IN PRO, PLUS: Significantly higher quotas",
+          "sourceUrl": "https://windsurf.com/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ]
+    },
+    {
+      "provider": "GitHub",
+      "planName": "Copilot Pro+",
+      "officialUrl": "https://github.com/features/copilot/plans",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://github.com/features/copilot/plans",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 39,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": null
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "官方以**美元额度**标注 AI Credits（Pro+ $70/月），未给出可直接比较的积分数值，故不折算成积分",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Pro+ For complex tasks $ 39 USD per user / month Choose Pro+ Everything in Pro and: Access to frontier models Audit logs",
+          "sourceUrl": "https://github.com/features/copilot/plans",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        },
+        {
+          "field": "quota.description",
+          "quote": "GitHub AI Credits Total GitHub AI Credits Limited chat and agent usage $15 per month $70 per month $200 per month",
+          "sourceUrl": "https://github.com/features/copilot/plans",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ]
+    },
+    {
+      "provider": "GitHub",
+      "planName": "Copilot Max",
+      "officialUrl": "https://github.com/features/copilot/plans",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://github.com/features/copilot/plans",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 100,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": null
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "官方以**美元额度**标注 AI Credits（Max $200/月），未给出可直接比较的积分数值，故不折算成积分",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Max For sustained, high-volume tasks $ 100 USD per user / month Choose Max Everything in Pro+ and: Early access to frontier models",
+          "sourceUrl": "https://github.com/features/copilot/plans",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        },
+        {
+          "field": "quota.description",
+          "quote": "Base credits Limited chat and agent usage $10 per month $39 per month $100 per month",
+          "sourceUrl": "https://github.com/features/copilot/plans",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ]
+    },
+    {
+      "provider": "百度智能云",
+      "planName": "Comate 个人专业版",
+      "officialUrl": "https://comate.baidu.com/zh/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://comate.baidu.com/zh/pricing",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 59,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方写「￥59/月 含模型额度¥55/月」——套餐价里含等值模型调用额度，不是把 59 元全部算作软件订阅费"
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "官方以**金额**表示模型额度（¥55/月），未公布 Token 或积分数值；额度按模型单价扣减",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": [
+        {
+          "name": "百度 Comate 官方模型（Auto 调度）",
+          "role": "pool",
+          "note": "官方写「官方模型无缝切换」「优先体验国内 SOTA 模型」，未逐一点名"
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "个人·专业版 ￥59/月 含模型额度¥55/月 立即购买",
+          "sourceUrl": "https://comate.baidu.com/zh/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.description",
+          "quote": "含模型额度¥55/月",
+          "sourceUrl": "https://comate.baidu.com/zh/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ]
+    },
+    {
+      "provider": "百度智能云",
+      "planName": "Comate 个人旗舰版",
+      "officialUrl": "https://comate.baidu.com/zh/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://comate.baidu.com/zh/pricing",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 199,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方写「￥199/月 含模型额度¥199/月」"
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "官方以**金额**表示模型额度（¥199/月），未公布 Token 或积分数值；额度按模型单价扣减",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": [
+        {
+          "name": "百度 Comate 官方模型（Auto 调度）",
+          "role": "pool",
+          "note": "官方写「官方模型无缝切换」「优先体验国内 SOTA 模型」，未逐一点名"
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "个人·旗舰版 免费Auto-Free模式限时不限量 至12月31日 ￥199/月 含模型额度¥199/月 立即购买",
+          "sourceUrl": "https://comate.baidu.com/zh/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ]
+    },
+    {
+      "provider": "腾讯 CodeBuddy",
+      "planName": "Team 版(月付)",
+      "officialUrl": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing",
+      "source": "Official-Docs",
+      "sourceUrl": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 40,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方写「$40.00 / 坐席 / 月」；年付 $480.00 / 坐席 / 年 是另一条 SKU（本清单不重复收）"
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 1000,
+        "period": "monthly",
+        "description": "每席位每月 1,000 积分，团队公共池共享",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Team 版（月付） $40.00 / 坐席 / 月 功能 • 每席位每月 1,000 积分，团队公共池共享",
+          "sourceUrl": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "每席位每月 1,000 积分，团队公共池共享",
+          "sourceUrl": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ]
+    },
+    {
+      "provider": "MiniMax（稀宇科技）",
+      "planName": "Token Plan Max",
+      "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+      "source": "Official-Docs",
+      "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 119,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": null
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": "rolling",
+        "description": "官方写「5 小时固定窗口和周窗口」双窗口上限，未公布固定积分数值；覆盖 M3 / M2.7 / 图像 / 语音共享同一额度",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": [
+        {
+          "name": "MiniMax M3",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "MiniMax M2.7",
+          "role": "included",
+          "note": null
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Plus Max Ultra 价格 ¥49 /月 ¥119 /月 ¥469 /月",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.description",
+          "quote": "额度窗口 5 小时固定窗口和周窗口 5 小时固定窗口和周窗口 5 小时固定窗口和周窗口",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ]
+    },
+    {
+      "provider": "MiniMax（稀宇科技）",
+      "planName": "Token Plan Ultra",
+      "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+      "source": "Official-Docs",
+      "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 469,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": null
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": "rolling",
+        "description": "官方写「5 小时固定窗口和周窗口」双窗口上限，未公布固定积分数值",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": [
+        {
+          "name": "MiniMax M3",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "MiniMax M2.7",
+          "role": "included",
+          "note": null
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Plus Max Ultra 价格 ¥49 /月 ¥119 /月 ¥469 /月",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ]
+    },
+    {
+      "provider": "腾讯 CodeBuddy",
+      "planName": "高级版",
+      "officialUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+      "source": "Official-Docs",
+      "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 199,
+        "promoPrice": 140,
+        "promoNote": "连续包月 140 元/月；年付 1,680 元/年；连续包年 1,344 元/年",
+        "note": "官方「国内个人版订阅升级公告」后的价格体系：体验版免费 / 标准版 99 / 高级版 199 / 旗舰版 999（元/月）"
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 9000,
+        "period": "monthly",
+        "description": "基础积分 4,000/月 + 加赠积分 5,000/月（限时）= 每月实得 9,000",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "版本 体验版 标准版 高级版 旗舰版 月付 免费 99 元/月 199 元/月 999 元/月",
+          "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "基础积分 / 月 500 2,000 4,000 20,000 加赠积分 / 月（限时） — 2,000 5,000 30,000 每月实得积分（限时） 500 4,000 9,000 50,000",
+          "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ]
+    },
+    {
+      "provider": "腾讯 CodeBuddy",
+      "planName": "旗舰版",
+      "officialUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+      "source": "Official-Docs",
+      "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 999,
+        "promoPrice": 700,
+        "promoNote": "连续包月 700 元/月；年付 8,400 元/年；连续包年 6,720 元/年",
+        "note": null
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 50000,
+        "period": "monthly",
+        "description": "基础积分 20,000/月 + 加赠积分 30,000/月（限时）= 每月实得 50,000",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "年付（7 折） — 840 元/年 1,680 元/年 8,400 元/年 连续包年（再享 8 折） — 672 元/年 1,344 元/年 6,720 元/年",
+          "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "每月实得积分（限时） 500 4,000 9,000 50,000",
+          "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ]
+    },
+    {
+      "provider": "Anthropic",
+      "planName": "Claude Pro",
+      "officialUrl": "https://www.anthropic.com/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://www.anthropic.com/pricing",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 20,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方写「$17 Per month with annual subscription discount ($200 billed up front). $20 if billed monthly.」——年付是另一个 SKU（$200/年），本记录只收月付"
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方只写「More usage*」并在逐功能表里对比，未公布固定数值；页尾明确「Usage limits apply.」",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": [
+        {
+          "name": "Claude 系列模型（含 Claude Code）",
+          "role": "included",
+          "note": "官方对比表逐字写「Claude Code: Pro Yes」"
+        }
+      ],
+      "restrictions": [
+        {
+          "kind": "fair_use",
+          "value": true,
+          "note": "官方写「Usage limits apply.」"
+        }
+      ],
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Pro For everyday work $17 Per month with annual subscription discount ($200 billed up front). $20 if billed monthly. Try Claude Everything in Free, plus: More usage*",
+          "sourceUrl": "https://www.anthropic.com/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        },
+        {
+          "field": "quota.description",
+          "quote": "Usage limits apply. Prices shown don’t include applicable tax. Price and plans are subject to change at Anthropic's discretion.",
+          "sourceUrl": "https://www.anthropic.com/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ]
+    },
+    {
+      "provider": "Qoder International",
+      "planName": "Pro+",
+      "officialUrl": "https://docs.qoder.com/account/pricing.md",
+      "source": "Official-Docs",
+      "sourceUrl": "https://docs.qoder.com/account/pricing.md",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 60,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方写「the paid plan is used as a natural monthly subscription」，价格列为 20 / 60 / 200 USD/mo 三档；本记录取 Pro+ 那一列"
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 6000,
+        "period": "monthly",
+        "description": "官方写「6,000 Credits / month for premium models」；积分覆盖等值于订阅费的 premium 模型资源，用尽后切到基础模型",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": [
+        {
+          "name": "premium 模型池 + 基础模型兜底",
+          "role": "pool",
+          "note": "官方写「for premium models」，未逐一点名；用尽后「switch to basic models」"
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Price | Free | 20 USD/mo | 60 USD/mo | 200 USD/mo",
+          "sourceUrl": "https://docs.qoder.com/account/pricing.md",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "- 6,000 Credits / month for premium models",
+          "sourceUrl": "https://docs.qoder.com/account/pricing.md",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ]
+    },
+    {
+      "provider": "Qoder International",
+      "planName": "Ultra",
+      "officialUrl": "https://docs.qoder.com/account/pricing.md",
+      "source": "Official-Docs",
+      "sourceUrl": "https://docs.qoder.com/account/pricing.md",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 200,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": null
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 20000,
+        "period": "monthly",
+        "description": "官方写「20,000 Credits / month for premium models」；积分覆盖等值于订阅费的 premium 模型资源，用尽后切到基础模型",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": [
+        {
+          "name": "premium 模型池 + 基础模型兜底",
+          "role": "pool",
+          "note": "官方写「for premium models」，未逐一点名；用尽后「switch to basic models」"
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Price | Free | 20 USD/mo | 60 USD/mo | 200 USD/mo",
+          "sourceUrl": "https://docs.qoder.com/account/pricing.md",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "- 20,000 Credits / month for premium models",
+          "sourceUrl": "https://docs.qoder.com/account/pricing.md",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ]
+    }
+  ],
+  "apiPlans": [
+    {
+      "provider": "阿里云百炼",
+      "planName": "模型推理按量计费(中国内地)",
+      "channel": "standard",
+      "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+      "region": "cn",
+      "pricing": {
+        "currency": "CNY",
+        "unit": "per_1M_tokens",
+        "unitNote": "官方表格表头逐字写「输入单价（每百万Token）」「输出单价（每百万Token）」，币种为人民币"
+      },
+      "models": [
+        {
+          "name": "qwen3.8-max",
+          "modelKey": "qwen3.8-max",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 12,
+            "output": 36,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": "官方表：0<Token≤1M；Batch 调用半价、上下文缓存另享折扣；同页另有国际/美国部署档，本记录只收中国内地标准档"
+        },
+        {
+          "name": "qwen3-max",
+          "modelKey": "qwen3-max",
+          "variant": "standard",
+          "aliases": [
+            "qwen3-max-2026-01-23"
+          ],
+          "rates": {
+            "input": 2.5,
+            "output": 10,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": "官方表首档 0<Token≤32K"
+        },
+        {
+          "name": "qwen3-max",
+          "modelKey": "qwen3-max",
+          "variant": "long_context",
+          "aliases": null,
+          "rates": {
+            "input": 4,
+            "output": 16,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": "官方表第二档 32K<Token≤128K；同页还有第三档 128K<Token≤256K = 7 元 / 28 元，一档一条会撞 (modelKey, variant)，故记在 note 里"
+        },
+        {
+          "name": "qwen-max",
+          "modelKey": "qwen-max",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 2.4,
+            "output": 9.6,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": "官方表写「仅非思考模式 / 无阶梯计价」"
+        },
+        {
+          "name": "glm-5.3",
+          "modelKey": "glm-5.3",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 8,
+            "output": 28,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": "百炼上的第三方模型（ZHIPU），官方表写「非思考和思考模式 / 不区分阶梯」"
+        },
+        {
+          "name": "kimi-k3",
+          "modelKey": "kimi-k3",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 20,
+            "output": 100,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": "百炼上的第三方模型（Moonshot），官方表写「仅思考模式」"
+        },
+        {
+          "name": "deepseek-v4-pro",
+          "modelKey": "deepseek-v4-pro",
+          "variant": "standard",
+          "aliases": [
+            "deepseek-v4-pro-0813"
+          ],
+          "rates": {
+            "input": 12,
+            "output": 24,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": "百炼上的第三方模型（DeepSeek）；同页另有带时间分档的 -0813 版本，本记录只收不区分时段的标准价"
+        },
+        {
+          "name": "MiniMax-M3",
+          "modelKey": "minimax-m3",
+          "variant": "standard",
+          "aliases": [
+            "MiniMax/MiniMax-M3"
+          ],
+          "rates": {
+            "input": 4.2,
+            "output": 16.8,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": "百炼上的第三方模型；官方表「非思考和思考模式」，无免费额度"
+        }
+      ],
+      "freeTier": {
+        "type": "tokens",
+        "amount": 1000000,
+        "period": "one_time",
+        "models": null,
+        "description": "官方表格「免费额度」列：多数模型 100 万 Token，有效期自开通百炼起 90 天内",
+        "conversionDependsOnModel": null
+      },
+      "limits": null,
+      "credits": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "模型 ID（Model ID） 模式 单次请求的输入Token数 输入单价（每百万Token） 输出单价（每百万Token） 思维链+回答 免费额度",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.qwen3.8-max",
+          "quote": "qwen3.8-max Batch调用半价 上下文缓存享有折扣 非思考和思考模式 0<Token≤1M 12元 36元 100万Token",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.qwen3-max",
+          "quote": "qwen3-max 当前能力等同于qwen3-max-2026-01-23 Batch调用半价 上下文缓存享有折扣 非思考和思考模式 0<Token≤32K 2.5元 10元 100万Token 32K<Token≤128K 4元 16元 128K<Token≤256K 7元 28元",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ]
+    },
+    {
+      "provider": "阿里云百炼",
+      "planName": "模型推理按量计费(闲时)",
+      "channel": "off_peak",
+      "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+      "region": "cn",
+      "pricing": {
+        "currency": "CNY",
+        "unit": "per_1M_tokens",
+        "unitNote": "与标准档同一张官方表；本记录只收「闲时」那一档，忙时价见本记录 note 与标准档记录"
+      },
+      "models": [
+        {
+          "name": "deepseek-v4.1-flash",
+          "modelKey": "deepseek-v4.1-flash",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 1,
+            "output": 4,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": "官方同一行并列两档时段价：忙时 2 元 / 8 元、闲时 1 元 / 4 元。本记录收闲时那档（与既有 deepseek off_peak 记录的建法一致）"
+        }
+      ],
+      "freeTier": null,
+      "limits": null,
+      "credits": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "models.deepseek-v4.1-flash",
+          "quote": "deepseek-v4.1-flash 上下文缓存享有折扣 忙时 2元 闲时 1元 忙时 8元 闲时 4元 100万Token",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ]
+    },
+    {
+      "provider": "MiniMax（稀宇科技）",
+      "planName": "API 按量计费",
+      "channel": "standard",
+      "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+      "source": "Official-Docs",
+      "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+      "region": "cn",
+      "pricing": {
+        "currency": "CNY",
+        "unit": "per_1M_tokens",
+        "unitNote": "官方表头逐字写「输入价格 元/百万 tokens」「输出价格 元/百万 tokens」「缓存读取 元/百万 tokens」"
+      },
+      "models": [
+        {
+          "name": "MiniMax-M3",
+          "modelKey": "minimax-m3",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 2.1,
+            "output": 8.4,
+            "cachedInput": 0.42
+          },
+          "mediaRates": null,
+          "note": "官方写「≤ 512k 输入 tokens 永久五折」：原价 4.20/16.80/0.84，五折后为 2.10/8.40/0.42（记折扣后实付价）。>512k 档见本记录 long_context 条目"
+        },
+        {
+          "name": "MiniMax-M3",
+          "modelKey": "minimax-m3",
+          "variant": "long_context",
+          "aliases": null,
+          "rates": {
+            "input": 4.2,
+            "output": 16.8,
+            "cachedInput": 0.84
+          },
+          "mediaRates": null,
+          "note": "官方写「> 512k 输入 tokens 永久五折」：原价 8.40/33.60/1.68，五折后 4.20/16.80/0.84"
+        },
+        {
+          "name": "MiniMax-M2.7",
+          "modelKey": "minimax-m2.7",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 2.1,
+            "output": 8.4,
+            "cachedInput": 0.42,
+            "cacheWrite": 2.625
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "MiniMax-M2.7-highspeed",
+          "modelKey": "minimax-m2.7-highspeed",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 4.2,
+            "output": 16.8,
+            "cachedInput": 0.42,
+            "cacheWrite": 2.625
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "MiniMax-M2.5",
+          "modelKey": "minimax-m2.5",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 2.1,
+            "output": 8.4,
+            "cachedInput": 0.21,
+            "cacheWrite": 2.625
+          },
+          "mediaRates": null,
+          "note": "官方归入「历史模型」表，仍在同一页给出价格"
+        }
+      ],
+      "freeTier": null,
+      "limits": null,
+      "credits": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "模型输入价格 元/百万 tokens输出价格 元/百万 tokens缓存读取 元/百万 tokens",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.minimax-m3",
+          "quote": "MiniMax-M3≤ 512k 输入 tokens 永久五折4.20 2.1016.80 8.400.84 0.42",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.minimax-m2.7",
+          "quote": "MiniMax-M2.72.18.40.422.625MiniMax-M2.7-highspeed4.216.80.422.625",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ]
+    },
+    {
+      "provider": "硅基流动",
+      "planName": "模型推理按量计费",
+      "channel": "standard",
+      "officialUrl": "https://siliconflow.cn/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://siliconflow.cn/pricing",
+      "region": "cn",
+      "pricing": {
+        "currency": "CNY",
+        "unit": "per_1M_tokens",
+        "unitNote": "官方表头逐字写「输入价格（M Tokens）」「输出价格（M Tokens）」「缓存价格（M Tokens）」"
+      },
+      "models": [
+        {
+          "name": "GLM-5.3",
+          "modelKey": "glm-5.3",
+          "variant": "standard",
+          "aliases": [
+            "zai-org/GLM-5.3"
+          ],
+          "rates": {
+            "input": 8,
+            "output": 28,
+            "cachedInput": 2
+          },
+          "mediaRates": null,
+          "note": "官方模型 ID 为 zai-org/GLM-5.3"
+        },
+        {
+          "name": "DeepSeek-V4-Pro",
+          "modelKey": "deepseek-v4-pro",
+          "variant": "standard",
+          "aliases": [
+            "deepseek-ai/DeepSeek-V4-Pro"
+          ],
+          "rates": {
+            "input": 12,
+            "output": 24,
+            "cachedInput": 1
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "DeepSeek-V3.2",
+          "modelKey": "deepseek-v3.2",
+          "variant": "standard",
+          "aliases": [
+            "deepseek-ai/DeepSeek-V3.2"
+          ],
+          "rates": {
+            "input": 4,
+            "output": 6,
+            "cachedInput": 0.4
+          },
+          "mediaRates": null,
+          "note": "官方另列 Pro/ 前缀的同价条目"
+        },
+        {
+          "name": "Kimi-K2.7-Code",
+          "modelKey": "kimi-k2.7-code",
+          "variant": "standard",
+          "aliases": [
+            "moonshotai/Kimi-K2.7-Code"
+          ],
+          "rates": {
+            "input": 6.5,
+            "output": 27,
+            "cachedInput": 1.3
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "Step-3.5-Flash",
+          "modelKey": "step-3.5-flash",
+          "variant": "standard",
+          "aliases": [
+            "stepfun-ai/Step-3.5-Flash"
+          ],
+          "rates": {
+            "input": 0.7,
+            "output": 2.1,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": "官方缓存列为「-」，即未提供缓存计价"
+        },
+        {
+          "name": "Qwen3.8-27B",
+          "modelKey": "qwen3.8-27b",
+          "variant": "standard",
+          "aliases": [
+            "Qwen/Qwen3.8-27B"
+          ],
+          "rates": {
+            "input": 3,
+            "output": 12,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": null
+        }
+      ],
+      "freeTier": null,
+      "limits": null,
+      "credits": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "对话模型 厂商 模型 输入价格（M Tokens） 输出价格（M Tokens） 缓存价格（M Tokens）",
+          "sourceUrl": "https://siliconflow.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.glm-5.3",
+          "quote": "Z-ai GLM-5.3 ¥ 8.00 ¥ 28.00 ¥ 2.00",
+          "sourceUrl": "https://siliconflow.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.deepseek-v4-pro",
+          "quote": "DeepSeek-V4-Pro ¥ 12.00 ¥ 24.00 ¥ 1.00",
+          "sourceUrl": "https://siliconflow.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ]
+    },
+    {
+      "provider": "火山引擎",
+      "planName": "豆包模型 API 按量计费",
+      "channel": "standard",
+      "officialUrl": "https://www.volcengine.com/product/ark",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://www.volcengine.com/product/ark",
+      "region": "cn",
+      "pricing": {
+        "currency": "CNY",
+        "unit": "per_1M_tokens",
+        "unitNote": "官方产品页逐字写「6元/百万输入tokens 30元/百万输出tokens 1.2元/百万命中tokens 0.017元/百万tokens缓存/小时」"
+      },
+      "models": [
+        {
+          "name": "Doubao-Seed-Evolving",
+          "modelKey": "doubao-seed-evolving",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 6,
+            "output": 30,
+            "cachedInput": 1.2
+          },
+          "mediaRates": [
+            {
+              "kind": "text",
+              "price": 0.017,
+              "unit": "per_1M_token_hours",
+              "note": "官方写「0.017元/百万tokens缓存/小时」——缓存存储按 token·小时计费"
+            }
+          ],
+          "note": null
+        },
+        {
+          "name": "Doubao-Seed-2.1-pro",
+          "modelKey": "doubao-seed-2.1-pro",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 6,
+            "output": 30,
+            "cachedInput": 1.2
+          },
+          "mediaRates": [
+            {
+              "kind": "text",
+              "price": 0.017,
+              "unit": "per_1M_token_hours",
+              "note": "官方写「0.017元/百万tokens缓存/小时」"
+            }
+          ],
+          "note": null
+        },
+        {
+          "name": "Doubao-Seed-2.1-turbo",
+          "modelKey": "doubao-seed-2.1-turbo",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 3,
+            "output": 15,
+            "cachedInput": 0.6
+          },
+          "mediaRates": [
+            {
+              "kind": "text",
+              "price": 0.017,
+              "unit": "per_1M_token_hours",
+              "note": "官方写「0.017元/百万tokens缓存/小时」"
+            }
+          ],
+          "note": null
+        },
+        {
+          "name": "Doubao-Seed-Character",
+          "modelKey": "doubao-seed-character",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 0.8,
+            "output": 2,
+            "cachedInput": 0.16
+          },
+          "mediaRates": [
+            {
+              "kind": "text",
+              "price": 0.017,
+              "unit": "per_1M_token_hours",
+              "note": "官方写「0.017元/百万tokens缓存/小时」"
+            }
+          ],
+          "note": "官方原文是「0.8元起/百万输入tokens 2元起/百万输出tokens」——带「起」字，本记录取页面标称的起步价，落盘时请保留这句口径说明"
+        }
+      ],
+      "freeTier": null,
+      "limits": null,
+      "credits": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "Doubao-Seed-Evolving 6元/百万输入tokens 30元/百万输出tokens 1.2元/百万命中tokens 0.017元/百万tokens缓存/小时",
+          "sourceUrl": "https://www.volcengine.com/product/ark",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.doubao-seed-2.1-pro",
+          "quote": "Doubao-Seed-2.1-pro 6元/百万输入tokens 30元/百万输出tokens 1.2元/百万命中tokens 0.017元/百万tokens缓存/小时",
+          "sourceUrl": "https://www.volcengine.com/product/ark",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.doubao-seed-2.1-turbo",
+          "quote": "Doubao-Seed-2.1-turbo 3元/百万输入tokens 15元/百万输出tokens 0.6元/百万命中tokens 0.017元/百万tokens缓存/小时",
+          "sourceUrl": "https://www.volcengine.com/product/ark",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ]
+    },
+    {
+      "provider": "腾讯云",
+      "planName": "混元生文按量计费",
+      "channel": "standard",
+      "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
+      "source": "Official-Docs",
+      "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+      "region": "cn",
+      "pricing": {
+        "currency": "CNY",
+        "unit": "per_1M_tokens",
+        "unitNote": "官方表头逐字写「刊例价（每 百万 tokens）」，每格再写「输入：X元 输出：Y元」"
+      },
+      "models": [
+        {
+          "name": "Hunyuan-a13b",
+          "modelKey": "hunyuan-a13b",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 0.5,
+            "output": 2,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "Hunyuan-role-latest",
+          "modelKey": "hunyuan-role-latest",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 2.4,
+            "output": 9.6,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": "官方页给的计费示例用的就是这个模型的 2.4/9.6"
+        },
+        {
+          "name": "Hunyuan-translation",
+          "modelKey": "hunyuan-translation",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 1.2,
+            "output": 3.6,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "Hunyuan-translation-lite",
+          "modelKey": "hunyuan-translation-lite",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 1,
+            "output": 3,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "Tencent HY Vision 1.5 Instruct",
+          "modelKey": "tencent-hy-vision-1.5-instruct",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 3,
+            "output": 9,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "Hunyuan-embedding",
+          "modelKey": "hunyuan-embedding",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 0.7,
+            "output": 0.7,
+            "cachedInput": null
+          },
+          "mediaRates": null,
+          "note": "官方同价列出输入与输出"
+        }
+      ],
+      "freeTier": {
+        "type": "tokens",
+        "amount": 1000000,
+        "period": "one_time",
+        "models": null,
+        "description": "官方写「首次开通腾讯混元大模型服务后…共100万 tokens，共享消耗。资源包有效期为1年」",
+        "conversionDependsOnModel": null
+      },
+      "limits": null,
+      "credits": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "产品名 刊例价（每 百万 tokens） Hunyuan-a13b 输入：0.5元 输出：2元",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.hunyuan-role-latest",
+          "quote": "Hunyuan-role-latest 输入：2.4元 输出：9.6元",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "freeTier",
+          "quote": "免费额度 共100万 tokens，共享消耗。资源包有效期为1年，自开通服务之日起1年内若免费资源包未使用完，则过期作废。",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ]
+    }
+  ],
+  "evidenceCapNote": "lib/provenance.js 的 MAX_EVIDENCE_ITEMS = 3：每条记录最多 3 条引文，超出会被静默丢弃（auditEvidence）。因此本文件只保留每条记录最要害的 3 条引文；逐模型完整原文引文表见 research/v3.0-adopted-candidates.md。被裁掉的引文字段：模型推理按量计费(中国内地): models.qwen-max / models.glm-5.3 / models.kimi-k3 / models.deepseek-v4-pro / models.minimax-m3 / freeTier；模型推理按量计费(闲时): ；API 按量计费: models.minimax-m2.5；模型推理按量计费: models.deepseek-v3.2 / models.kimi-k2.7-code / models.step-3.5-flash / models.qwen3.8-27b；豆包模型 API 按量计费: models.doubao-seed-character；混元生文按量计费: models.hunyuan-translation / models.hunyuan-translation-lite / models.tencent-hy-vision-1.5-instruct / models.hunyuan-embedding"
+}

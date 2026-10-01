@@ -18,6 +18,8 @@
  *                   这两个来源都能查，因此两边都跑。
  */
 
+const pageKinds = require('./page-kinds');
+
 const PROBLEM_CODES = [
   'gate-threshold', 'gate-pinned-missing', 'gate-pinned-empty',
   'alias-target-exists', 'alias-item-set', 'alias-indexable',
@@ -33,24 +35,17 @@ const PROBLEM_CODES = [
 /**
  * 每个页面类型的正文长度下限。
  *
- * 集合页沿用既有的 `600 + 60×条目数`（v1.2 定的口径：条目越多阈值越紧，
- * 表体空掉时必然低于它）；其余页面各给一个下限，与既有断言（状态页 600、
- * 变化页 600、首页 3000）同源，不另立一套标准。
+ * **v3.0：口径搬到了 `lib/page-kinds.js`**（"路由 → kind / textFloor / ItemList 要求 /
+ * sitemap priority"的唯一声明表）。这里保留同名导出，只是转发 ——
+ * 因为构建期的规则层与独立门禁（`tools/seo-verify.js`）必须读**同一份**声明，
+ * 而两者仍然各自从 dist 解析页面（共享声明 ≠ 合并执行路径）。
+ *
+ * 既有 kind 的数值一个都没改：集合页 `600 + 60×条目数`（v1.2 定的口径：条目越多阈值越紧，
+ * 表体空掉时必然低于它）、套餐页同口径、枢纽页 500+60n、详情页 500、状态/变化/订阅 600、
+ * 首页 3000。v3.0 新家族的下限见 `page-kinds.js` 里的逐条注释。
  */
 function textFloor(kind, itemCount) {
-  const n = Number(itemCount) || 0;
-  switch (kind) {
-    case 'hub': return 500 + 60 * n;
-    case 'deal': return 500;
-    case 'status': return 600;
-    case 'changes': return 600;
-    case 'feeds': return 600;
-    // v2.1：套餐对比页是一张随条目数变长的表 —— 与集合页同一条口径（表体空掉必然低于它）。
-    // 口径文案（口径与说明那五条）本身就有一百多字，所以下限从 600 起步而不是 0。
-    case 'plans': return 600 + 60 * n;
-    case 'home': return 3000;
-    default: return 600 + 60 * n;
-  }
+  return pageKinds.textFloor(kind, itemCount);
 }
 
 function decodeEntities(text) {
@@ -296,25 +291,33 @@ function validate(pages, opts = {}) {
     // ---- JSON-LD / ItemList / 面包屑 ----
     const { blocks, broken } = jsonLdBlocks(html);
     for (const message of broken) fail('itemlist-arity', route, `JSON-LD 解析失败：${message}`);
-    const expectItemList = page.expectItemList !== false;
+    // v3.0：三个开关的**默认值**来自 `page-kinds.js`（唯一声明表）。描述符显式给了就以描述符为准 ——
+    // 既有调用方（build-local / seo-selftest / seo-verify）全都显式传了，所以这里的改动是纯收敛。
+    const listRule = pageKinds.itemListRule(page.kind);
+    const expectItemList = page.expectItemList === undefined ? listRule.expect : page.expectItemList !== false;
+    const checkItemListRows = page.checkItemListRows === undefined ? listRule.checkRows : page.checkItemListRows !== false;
+    const checkItemListMembers = page.checkItemListMembers === undefined ? listRule.checkMembers : page.checkItemListMembers !== false;
     const list_ = itemListOf(blocks);
     if (!list_) {
       // 详情页/状态页/订阅中心**刻意没有** ItemList（它们不是集合页）；
-      // 集合页（分类页/需求页/分类落地页/厂商页/枢纽页/变化页）必须有。
+      // 集合页（分类页/需求页/分类落地页/厂商页/枢纽页/变化页/模型索引/档案/数据文档）必须有。
       if (expectItemList) fail('itemlist-arity', route, '没有 ItemList 结构化数据');
     } else {
-      const markers = page.kind === 'hub' ? rowMarkers(html, 'child') : rowMarkers(html, 'item');
+      const markers = (page.marker || listRule.marker) === 'child'
+        ? rowMarkers(html, 'child') : rowMarkers(html, 'item');
       if (list_.numberOfItems !== list_.elements.length) {
         fail('itemlist-arity', route, `ItemList 声明 ${list_.numberOfItems} 项，但 itemListElement 只有 ${list_.elements.length} 项`);
       }
       // 首页的卡片没有 `data-item` 标记（它用的是折叠卡，一张卡可能覆盖多条优惠），
       // 页面行数与 ItemList 条数的对应关系由首页自己那几条断言守着（卡片数/CTA 数/折叠无损）。
       // 这里只查「声明数 = 实际发出的元素数」。
-      if (page.checkItemListRows !== false && list_.elements.length !== markers) {
+      if (checkItemListRows && list_.elements.length !== markers) {
         fail('itemlist-arity', route, `ItemList 有 ${list_.elements.length} 项，页面上的数据行有 ${markers} 行`);
       }
-      if (page.checkItemListMembers !== false) {
-        const expected = new Set(page.kind === 'hub' ? (page.childRoutes || []) : (page.itemIds || []).map(id => `deal/${encodeURIComponent(id)}/`));
+      if (checkItemListMembers) {
+        const expected = new Set((page.marker || listRule.marker) === 'child'
+          ? (page.childRoutes || [])
+          : (page.itemIds || []).map(id => `deal/${encodeURIComponent(id)}/`));
         for (const element of list_.elements) {
           const rel = String(element.url || '').replace(siteUrl, '');
           if (!rel) { fail('itemlist-members', route, 'ItemList 里有一项的 url 为空'); continue; }
@@ -419,6 +422,22 @@ function validate(pages, opts = {}) {
       if (page.pinned) {
         if (!page.count) fail('gate-pinned-empty', page.route, '钉住的页面条数为 0');
         continue;
+      }
+      if (page.kind === 'vendor') {
+        /**
+         * v3.0 Stage E：厂商页的门槛是**三条 OR**（`landing.shouldGenerateLandingPage('vendor')`
+         * 是唯一实现）。这里必须读同一份判据 —— 否则"靠非优惠资料达标的厂商页"
+         * 会在 SEO 门禁里被判成「低于门槛却不该生成」，而构建期明明已经放行。
+         *
+         * 两个新字段由构建期描述符给出：
+         *   `eventCount`        —— 历史变更事件数（第二个 OR 支）
+         *   `nonDealMaterial`   —— 是否有 Coding 套餐 / API 计费 / 模型归属（第三个 OR 支）
+         * 描述符不给这两个字段时行为与 v2.x 逐字相同（只查条数）。
+         */
+        const minEvents = Number.isFinite(thresholds.vendorMinEvents) ? thresholds.vendorMinEvents : 3;
+        const viaEvents = Number(page.eventCount) >= minEvents;
+        const viaNonDeal = page.nonDealMaterial === true;
+        if (viaEvents || viaNonDeal) continue;
       }
       const min = page.kind === 'vendor' ? thresholds.vendorMinDeals : thresholds.categoryMinDeals;
       if (page.count < min) {

@@ -88,15 +88,18 @@ jobs:
       # ⑪ 未加引号的标量里不得出现「冒号 + 空格」—— 那在块上下文里是映射分隔符，GitHub 的
       #    真实 YAML 解析器会拒绝整个文件（本仓库的缩进读取器读得过去，于是本地全绿、
       #    推上去什么都不跑；2026-09-28 实测踩到过一次，用 Python 的 YAML 解析器才发现）。
-      # ⑫ 带外项数：`--expect-checks=35` 把「总项数」这个事实钉在**调用方**（本文件），因为看门狗
+      # ⑫ 带外项数：`--expect-checks=36` 把「总项数」这个事实钉在**调用方**（本文件），因为看门狗
       #    保护不了自己被删（删掉它自己时项数会静默降 1 且仍 exit 0）。这个数字是**唯一出处**：
       #    脚本命令行不带参数裸跑（本地、以及 collect/deploy 里的裸跑）时也会回来读本行。
       #    注意这条 run **必须是单行**：读取器刻意跳过 `run: |` 块标量（fail-closed）。
       #    2026-10-01 由 32 提到 35：v2.0 新增三条 ——（0）与（2）各多一个必需 workflow
       #    （ai-maintenance.yml 登记进 REQUIRED_WORKFLOWS/FROZEN_USES），以及新的（16）
       #    「AI 维护链路只手动触发、只读仓库、只出 artifact」。
+      #    2026-10-01 由 35 提到 36（v3.0 集成）：新增（17）新脚本登记制 ——
+      #    package.json 里每个 `selftest:*` 的脚本文件都必须真的出现在门禁 action 里，
+      #    堵住「写了自测、忘了接进门禁」这种**完全静默**的漂移（本地照样全绿）。
       - name: CI consistency (action / runner / node-version / engines drift)
-        run: node scripts/tools/check-ci-consistency.js --expect-checks=35
+        run: node scripts/tools/check-ci-consistency.js --expect-checks=36
 
       # 门禁本体：与 deploy.yml 的 prepublish、collect.yml 的提交前检查**同一个文件**。
       - name: Gate (validate → translation → selftests → build → real browser)

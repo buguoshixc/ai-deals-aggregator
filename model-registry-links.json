@@ -1,0 +1,1085 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-01T00:00:00+08:00",
+  "count": 63,
+  "links": [
+    {
+      "registrySlug": "claude-fable-5.1",
+      "registryModelId": "28c1baf2cc3e",
+      "apiPlanId": "4f8bae91f9f8",
+      "modelKey": "claude-fable-5.1",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.claude-fable-5.1",
+          "quote": "Claude Fable 5.1 | Base tokens: Input $10 / MTok, Output $50 / MTok | Prompt caching: 5m writes $12.50 / MTok, 1h writes $20 / MTok, Hits and refreshes $0.25 / MTok",
+          "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "claude-haiku-4.5",
+      "registryModelId": "9e4edaea528f",
+      "apiPlanId": "4f8bae91f9f8",
+      "modelKey": "claude-haiku-4.5",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.claude-haiku-4.5",
+          "quote": "Claude Haiku 4.5 | Base tokens: Input $1 / MTok, Output $5 / MTok | Prompt caching: 5m writes $1.25 / MTok, 1h writes $2 / MTok, Hits and refreshes $0.10 / MTok",
+          "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "claude-opus-5.5",
+      "registryModelId": "3297e8adcb8e",
+      "apiPlanId": "4f8bae91f9f8",
+      "modelKey": "claude-opus-5.5",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.claude-fable-5.1",
+          "quote": "Claude Fable 5.1 | Base tokens: Input $10 / MTok, Output $50 / MTok | Prompt caching: 5m writes $12.50 / MTok, 1h writes $20 / MTok, Hits and refreshes $0.25 / MTok",
+          "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "claude-sonnet-5.5",
+      "registryModelId": "6bd2c86ef81c",
+      "apiPlanId": "4f8bae91f9f8",
+      "modelKey": "claude-sonnet-5.5",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.claude-sonnet-5.5",
+          "quote": "Claude Sonnet 5.5 | Base tokens: Input $2 / MTok, Output $10 / MTok | Prompt caching: 5m writes $2.50 / MTok, 1h writes $4 / MTok, Hits and refreshes $0.20 / MTok",
+          "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "deepseek-flash",
+      "registryModelId": "899d7c20d38d",
+      "apiPlanId": "e546e8ab4c7d",
+      "modelKey": "deepseek-flash",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.deepseek-flash",
+          "quote": "PRICING: 1M INPUT TOKENS(CACHE MISS) OFF-PEAK $0.15；1M INPUT TOKENS(CACHE HIT) OFF-PEAK $0.003；1M OUTPUT TOKENS OFF-PEAK $0.6",
+          "sourceUrl": "https://api-docs.deepseek.com/quick_start/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "deepseek-flash",
+      "registryModelId": "899d7c20d38d",
+      "apiPlanId": "ef4d06758403",
+      "modelKey": "deepseek-v4.1-flash",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.deepseek-v4.1-flash",
+          "quote": "deepseek-v4.1-flash 上下文缓存享有折扣 忙时 2元 闲时 1元 忙时 8元 闲时 4元 100万Token",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "deepseek-flash",
+      "registryModelId": "899d7c20d38d",
+      "apiPlanId": "fffbb44ac3a9",
+      "modelKey": "deepseek-flash",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.deepseek-flash",
+          "quote": "PRICING: 1M INPUT TOKENS(CACHE MISS) PEAK $0.3；1M INPUT TOKENS(CACHE HIT) PEAK $0.006；1M OUTPUT TOKENS PEAK $1.2",
+          "sourceUrl": "https://api-docs.deepseek.com/quick_start/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "deepseek-v3.2",
+      "registryModelId": "20db0436efb0",
+      "apiPlanId": "6844d46deb05",
+      "modelKey": "deepseek-v3.2",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "对话模型 厂商 模型 输入价格（M Tokens） 输出价格（M Tokens） 缓存价格（M Tokens）",
+          "sourceUrl": "https://siliconflow.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "deepseek-v4-pro",
+      "registryModelId": "dc14ac8189fc",
+      "apiPlanId": "6844d46deb05",
+      "modelKey": "deepseek-v4-pro",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.deepseek-v4-pro",
+          "quote": "DeepSeek-V4-Pro ¥ 12.00 ¥ 24.00 ¥ 1.00",
+          "sourceUrl": "https://siliconflow.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "deepseek-v4-pro",
+      "registryModelId": "dc14ac8189fc",
+      "apiPlanId": "e546e8ab4c7d",
+      "modelKey": "deepseek-v4-pro",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.deepseek-v4-pro",
+          "quote": "PRICING: 1M INPUT TOKENS(CACHE MISS) OFF-PEAK $0.66；1M INPUT TOKENS(CACHE HIT) OFF-PEAK $0.022；1M OUTPUT TOKENS OFF-PEAK $1.98",
+          "sourceUrl": "https://api-docs.deepseek.com/quick_start/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "deepseek-v4-pro",
+      "registryModelId": "dc14ac8189fc",
+      "apiPlanId": "ebc4af9a71b6",
+      "modelKey": "deepseek-v4-pro",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "模型 ID（Model ID） 模式 单次请求的输入Token数 输入单价（每百万Token） 输出单价（每百万Token） 思维链+回答 免费额度",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "deepseek-v4-pro",
+      "registryModelId": "dc14ac8189fc",
+      "apiPlanId": "fffbb44ac3a9",
+      "modelKey": "deepseek-v4-pro",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.deepseek-v4-pro",
+          "quote": "PRICING: 1M INPUT TOKENS(CACHE MISS) PEAK $1.32；1M INPUT TOKENS(CACHE HIT) PEAK $0.044；1M OUTPUT TOKENS PEAK $3.96",
+          "sourceUrl": "https://api-docs.deepseek.com/quick_start/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "doubao-seed-2.1-pro",
+      "registryModelId": "ad4a1bd9c0db",
+      "apiPlanId": "a4a9addc49ca",
+      "modelKey": "doubao-seed-2.1-pro",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.doubao-seed-2.1-pro",
+          "quote": "Doubao-Seed-2.1-pro 6元/百万输入tokens 30元/百万输出tokens 1.2元/百万命中tokens 0.017元/百万tokens缓存/小时",
+          "sourceUrl": "https://www.volcengine.com/product/ark",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "doubao-seed-2.1-turbo",
+      "registryModelId": "177d21769ced",
+      "apiPlanId": "a4a9addc49ca",
+      "modelKey": "doubao-seed-2.1-turbo",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.doubao-seed-2.1-turbo",
+          "quote": "Doubao-Seed-2.1-turbo 3元/百万输入tokens 15元/百万输出tokens 0.6元/百万命中tokens 0.017元/百万tokens缓存/小时",
+          "sourceUrl": "https://www.volcengine.com/product/ark",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "doubao-seed-character",
+      "registryModelId": "936bd8e6b6a3",
+      "apiPlanId": "a4a9addc49ca",
+      "modelKey": "doubao-seed-character",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "Doubao-Seed-Evolving 6元/百万输入tokens 30元/百万输出tokens 1.2元/百万命中tokens 0.017元/百万tokens缓存/小时",
+          "sourceUrl": "https://www.volcengine.com/product/ark",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "doubao-seed-evolving",
+      "registryModelId": "cc74cb1e6674",
+      "apiPlanId": "a4a9addc49ca",
+      "modelKey": "doubao-seed-evolving",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "Doubao-Seed-Evolving 6元/百万输入tokens 30元/百万输出tokens 1.2元/百万命中tokens 0.017元/百万tokens缓存/小时",
+          "sourceUrl": "https://www.volcengine.com/product/ark",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "gemini-3.5-flash",
+      "registryModelId": "7d51116be870",
+      "apiPlanId": "a110a5bfc3f8",
+      "modelKey": "gemini-3.5-flash",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.gemini-3.5-flash",
+          "quote": "Gemini 3.5 Flash | Standard | Paid Tier, per 1M tokens in USD: Input $1.50, Output $9.00, Context caching price $0.15",
+          "sourceUrl": "https://ai.google.dev/gemini-api/docs/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "gemini-3.6-flash",
+      "registryModelId": "7c2253d11282",
+      "apiPlanId": "a110a5bfc3f8",
+      "modelKey": "gemini-3.6-flash",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "freeTier",
+          "quote": "Gemini 3.8 Flash | Standard | Free Tier: Input price Free of charge, Output price (including thinking tokens) Free of charge",
+          "sourceUrl": "https://ai.google.dev/gemini-api/docs/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "gemini-3.7-flash",
+      "registryModelId": "5fbeef06793d",
+      "apiPlanId": "a110a5bfc3f8",
+      "modelKey": "gemini-3.7-flash",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "freeTier",
+          "quote": "Gemini 3.8 Flash | Standard | Free Tier: Input price Free of charge, Output price (including thinking tokens) Free of charge",
+          "sourceUrl": "https://ai.google.dev/gemini-api/docs/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "gemini-3.8-flash",
+      "registryModelId": "7210f54e3abd",
+      "apiPlanId": "a110a5bfc3f8",
+      "modelKey": "gemini-3.8-flash",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.gemini-3.8-flash",
+          "quote": "Gemini 3.8 Flash | Standard | Paid Tier, per 1M tokens in USD: Input $0.75 through December 31, 2026. Output $3.75 through December 31, 2026.",
+          "sourceUrl": "https://ai.google.dev/gemini-api/docs/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "glm-4.5v",
+      "registryModelId": "2f7de55bd399",
+      "apiPlanId": "646f01c662e6",
+      "modelKey": "glm-4.5v",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "freeTier",
+          "quote": "智谱开放平台提供以下免费API模型：文本模型 GLM-4.7-Flash（200K上下文）：输入免费、输出免费、缓存免费；视觉模型 GLM-4.6V-Flash：输入免费、输出免费、缓存免费。以上均为API调用价格政策",
+          "sourceUrl": "https://open.bigmodel.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "glm-4.6v",
+      "registryModelId": "caad89ec08ef",
+      "apiPlanId": "646f01c662e6",
+      "modelKey": "glm-4.6v",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "freeTier",
+          "quote": "智谱开放平台提供以下免费API模型：文本模型 GLM-4.7-Flash（200K上下文）：输入免费、输出免费、缓存免费；视觉模型 GLM-4.6V-Flash：输入免费、输出免费、缓存免费。以上均为API调用价格政策",
+          "sourceUrl": "https://open.bigmodel.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "glm-4.6v-flash",
+      "registryModelId": "e51b7e69a2f8",
+      "apiPlanId": "646f01c662e6",
+      "modelKey": "glm-4.6v-flash",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "freeTier",
+          "quote": "智谱开放平台提供以下免费API模型：文本模型 GLM-4.7-Flash（200K上下文）：输入免费、输出免费、缓存免费；视觉模型 GLM-4.6V-Flash：输入免费、输出免费、缓存免费。以上均为API调用价格政策",
+          "sourceUrl": "https://open.bigmodel.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "glm-4.6v-flashx",
+      "registryModelId": "5ea04f244698",
+      "apiPlanId": "646f01c662e6",
+      "modelKey": "glm-4.6v-flashx",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "freeTier",
+          "quote": "智谱开放平台提供以下免费API模型：文本模型 GLM-4.7-Flash（200K上下文）：输入免费、输出免费、缓存免费；视觉模型 GLM-4.6V-Flash：输入免费、输出免费、缓存免费。以上均为API调用价格政策",
+          "sourceUrl": "https://open.bigmodel.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "glm-4.7-flash",
+      "registryModelId": "58be1116c88e",
+      "apiPlanId": "646f01c662e6",
+      "modelKey": "glm-4.7-flash",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "freeTier",
+          "quote": "智谱开放平台提供以下免费API模型：文本模型 GLM-4.7-Flash（200K上下文）：输入免费、输出免费、缓存免费；视觉模型 GLM-4.6V-Flash：输入免费、输出免费、缓存免费。以上均为API调用价格政策",
+          "sourceUrl": "https://open.bigmodel.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "glm-5.3",
+      "registryModelId": "40a03259a800",
+      "apiPlanId": "646f01c662e6",
+      "modelKey": "glm-5.3",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.glm-5.3",
+          "quote": "GLM-5.3 最新旗舰：上下文1M 输入单价8元 / M 输出单价28元 / M 缓存命中2元 / M 缓存存储限时免费 输入模态文本",
+          "sourceUrl": "https://open.bigmodel.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "glm-5.3",
+      "registryModelId": "40a03259a800",
+      "apiPlanId": "6844d46deb05",
+      "modelKey": "glm-5.3",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.glm-5.3",
+          "quote": "Z-ai GLM-5.3 ¥ 8.00 ¥ 28.00 ¥ 2.00",
+          "sourceUrl": "https://siliconflow.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "glm-5.3",
+      "registryModelId": "40a03259a800",
+      "apiPlanId": "ebc4af9a71b6",
+      "modelKey": "glm-5.3",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "模型 ID（Model ID） 模式 单次请求的输入Token数 输入单价（每百万Token） 输出单价（每百万Token） 思维链+回答 免费额度",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "glm-5.3-flash",
+      "registryModelId": "8b5b023d64ed",
+      "apiPlanId": "646f01c662e6",
+      "modelKey": "glm-5.3-flash",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.glm-5.3-flash",
+          "quote": "上下文1M 输入单价0.8元 / M 输出单价2.8元 / M 缓存命中0.23元 / M 缓存存储限时免费 输入模态图片、视频、文件、文本",
+          "sourceUrl": "https://open.bigmodel.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "glm-5v-turbo",
+      "registryModelId": "cbaff9b29c5c",
+      "apiPlanId": "646f01c662e6",
+      "modelKey": "glm-5v-turbo",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "freeTier",
+          "quote": "智谱开放平台提供以下免费API模型：文本模型 GLM-4.7-Flash（200K上下文）：输入免费、输出免费、缓存免费；视觉模型 GLM-4.6V-Flash：输入免费、输出免费、缓存免费。以上均为API调用价格政策",
+          "sourceUrl": "https://open.bigmodel.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "gpt-6-astra",
+      "registryModelId": "1904ddc46e7a",
+      "apiPlanId": "206f8b4bde7b",
+      "modelKey": "gpt-6-astra",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.gpt-6-astra",
+          "quote": "Standard | Short context: gpt-6-astra Input $10.00 Cached input $1.00 Cache writes $12.50 Output $50.00 | Long context: Input $20.00 Cached input $2.00 Cache writes $25.00 Output $75.00",
+          "sourceUrl": "https://platform.openai.com/docs/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "gpt-6-astra",
+      "registryModelId": "1904ddc46e7a",
+      "apiPlanId": "82c3df0bc204",
+      "modelKey": "gpt-6-astra",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.gpt-6-astra",
+          "quote": "Batch | Short context: gpt-6-astra Input $5.00 Cached input $0.50 Cache writes $6.25 Output $25.00 | Long context: Input $10.00 Cached input $1.00 Cache writes $12.50 Output $37.50",
+          "sourceUrl": "https://platform.openai.com/docs/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "gpt-6-luna",
+      "registryModelId": "3cd750512f02",
+      "apiPlanId": "206f8b4bde7b",
+      "modelKey": "gpt-6-luna",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.gpt-6-astra",
+          "quote": "Standard | Short context: gpt-6-astra Input $10.00 Cached input $1.00 Cache writes $12.50 Output $50.00 | Long context: Input $20.00 Cached input $2.00 Cache writes $25.00 Output $75.00",
+          "sourceUrl": "https://platform.openai.com/docs/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "gpt-6-luna",
+      "registryModelId": "3cd750512f02",
+      "apiPlanId": "82c3df0bc204",
+      "modelKey": "gpt-6-luna",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.gpt-6-astra",
+          "quote": "Batch | Short context: gpt-6-astra Input $5.00 Cached input $0.50 Cache writes $6.25 Output $25.00 | Long context: Input $10.00 Cached input $1.00 Cache writes $12.50 Output $37.50",
+          "sourceUrl": "https://platform.openai.com/docs/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "gpt-6.1-sol",
+      "registryModelId": "10b13c75807c",
+      "apiPlanId": "206f8b4bde7b",
+      "modelKey": "gpt-6.1-sol",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.gpt-6.1-sol",
+          "quote": "Standard | Short context: gpt-6.1-sol Input $2.00 Cached input $0.10 Cache writes $2.50 Output $10.00 | Long context: Input $4.00 Cached input $0.20 Cache writes $5.00 Output $15.00",
+          "sourceUrl": "https://platform.openai.com/docs/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "gpt-6.1-sol",
+      "registryModelId": "10b13c75807c",
+      "apiPlanId": "82c3df0bc204",
+      "modelKey": "gpt-6.1-sol",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.gpt-6.1-sol",
+          "quote": "Batch | Short context: gpt-6.1-sol Input $1.00 Cached input $0.05 Cache writes $1.25 Output $5.00 | Long context: Input $2.00 Cached input $0.10 Cache writes $2.50 Output $7.50",
+          "sourceUrl": "https://platform.openai.com/docs/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "gpt-live-1",
+      "registryModelId": "5345ec52eb04",
+      "apiPlanId": "206f8b4bde7b",
+      "modelKey": "gpt-live-1",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.gpt-live-1",
+          "quote": "GPT-Live sessions | Model gpt-live-1 | Price per minute $0.05",
+          "sourceUrl": "https://platform.openai.com/docs/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "hunyuan-a13b",
+      "registryModelId": "519400e72cff",
+      "apiPlanId": "2981d8f29020",
+      "modelKey": "hunyuan-a13b",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "产品名 刊例价（每 百万 tokens） Hunyuan-a13b 输入：0.5元 输出：2元",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "hunyuan-embedding",
+      "registryModelId": "1f641f4265e9",
+      "apiPlanId": "2981d8f29020",
+      "modelKey": "hunyuan-embedding",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "产品名 刊例价（每 百万 tokens） Hunyuan-a13b 输入：0.5元 输出：2元",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "hunyuan-role-latest",
+      "registryModelId": "6a4aff3620c7",
+      "apiPlanId": "2981d8f29020",
+      "modelKey": "hunyuan-role-latest",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.hunyuan-role-latest",
+          "quote": "Hunyuan-role-latest 输入：2.4元 输出：9.6元",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "hunyuan-translation",
+      "registryModelId": "3cc0e2163c0d",
+      "apiPlanId": "2981d8f29020",
+      "modelKey": "hunyuan-translation",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "产品名 刊例价（每 百万 tokens） Hunyuan-a13b 输入：0.5元 输出：2元",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "hunyuan-translation-lite",
+      "registryModelId": "f18e86b6b202",
+      "apiPlanId": "2981d8f29020",
+      "modelKey": "hunyuan-translation-lite",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "产品名 刊例价（每 百万 tokens） Hunyuan-a13b 输入：0.5元 输出：2元",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "kimi-k2.7-code",
+      "registryModelId": "37b07c27103b",
+      "apiPlanId": "6844d46deb05",
+      "modelKey": "kimi-k2.7-code",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "对话模型 厂商 模型 输入价格（M Tokens） 输出价格（M Tokens） 缓存价格（M Tokens）",
+          "sourceUrl": "https://siliconflow.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "kimi-k3",
+      "registryModelId": "b24a97c1562b",
+      "apiPlanId": "ebc4af9a71b6",
+      "modelKey": "kimi-k3",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "模型 ID（Model ID） 模式 单次请求的输入Token数 输入单价（每百万Token） 输出单价（每百万Token） 思维链+回答 免费额度",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "minimax-m2.5",
+      "registryModelId": "4f59533f03f5",
+      "apiPlanId": "796e0c92ecdc",
+      "modelKey": "minimax-m2.5",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "模型输入价格 元/百万 tokens输出价格 元/百万 tokens缓存读取 元/百万 tokens",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "minimax-m2.7",
+      "registryModelId": "8a13f0572a18",
+      "apiPlanId": "796e0c92ecdc",
+      "modelKey": "minimax-m2.7",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.minimax-m2.7",
+          "quote": "MiniMax-M2.72.18.40.422.625MiniMax-M2.7-highspeed4.216.80.422.625",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "minimax-m2.7-highspeed",
+      "registryModelId": "2cc4587355b4",
+      "apiPlanId": "796e0c92ecdc",
+      "modelKey": "minimax-m2.7-highspeed",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "模型输入价格 元/百万 tokens输出价格 元/百万 tokens缓存读取 元/百万 tokens",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "minimax-m3",
+      "registryModelId": "62e85e8d9cce",
+      "apiPlanId": "796e0c92ecdc",
+      "modelKey": "minimax-m3",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.minimax-m3",
+          "quote": "MiniMax-M3≤ 512k 输入 tokens 永久五折4.20 2.1016.80 8.400.84 0.42",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "minimax-m3",
+      "registryModelId": "62e85e8d9cce",
+      "apiPlanId": "ebc4af9a71b6",
+      "modelKey": "minimax-m3",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "模型 ID（Model ID） 模式 单次请求的输入Token数 输入单价（每百万Token） 输出单价（每百万Token） 思维链+回答 免费额度",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "qwen-max",
+      "registryModelId": "dc6532b3d30d",
+      "apiPlanId": "ebc4af9a71b6",
+      "modelKey": "qwen-max",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "模型 ID（Model ID） 模式 单次请求的输入Token数 输入单价（每百万Token） 输出单价（每百万Token） 思维链+回答 免费额度",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "qwen3-max",
+      "registryModelId": "93f32c907d19",
+      "apiPlanId": "ebc4af9a71b6",
+      "modelKey": "qwen3-max",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.qwen3-max",
+          "quote": "qwen3-max 当前能力等同于qwen3-max-2026-01-23 Batch调用半价 上下文缓存享有折扣 非思考和思考模式 0<Token≤32K 2.5元 10元 100万Token 32K<Token≤128K 4元 16元 128K<Token≤256K 7元 28元",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "qwen3.8-27b",
+      "registryModelId": "281a741c37b2",
+      "apiPlanId": "6844d46deb05",
+      "modelKey": "qwen3.8-27b",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "对话模型 厂商 模型 输入价格（M Tokens） 输出价格（M Tokens） 缓存价格（M Tokens）",
+          "sourceUrl": "https://siliconflow.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "qwen3.8-max",
+      "registryModelId": "59faf9eda626",
+      "apiPlanId": "ebc4af9a71b6",
+      "modelKey": "qwen3.8-max",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.qwen3.8-max",
+          "quote": "qwen3.8-max Batch调用半价 上下文缓存享有折扣 非思考和思考模式 0<Token≤1M 12元 36元 100万Token",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "step-3.5-flash",
+      "registryModelId": "08a33ff6273a",
+      "apiPlanId": "6844d46deb05",
+      "modelKey": "step-3.5-flash",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "对话模型 厂商 模型 输入价格（M Tokens） 输出价格（M Tokens） 缓存价格（M Tokens）",
+          "sourceUrl": "https://siliconflow.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "tencent-hy-vision-1.5-instruct",
+      "registryModelId": "8be8a9f12747",
+      "apiPlanId": "2981d8f29020",
+      "modelKey": "tencent-hy-vision-1.5-instruct",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "产品名 刊例价（每 百万 tokens） Hunyuan-a13b 输入：0.5元 输出：2元",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "glm-5.3",
+      "registryModelId": "40a03259a800",
+      "planId": "003a3f02d7bc",
+      "modelName": "GLM-5.3",
+      "basis": "official-plan-page",
+      "evidence": [
+        {
+          "field": "supportedModels",
+          "quote": "所有套餐均支持 GLM-5.3、GLM-5.3-Flash。",
+          "sourceUrl": "https://docs.bigmodel.cn/cn/coding-plan/overview",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "glm-5.3-flash",
+      "registryModelId": "8b5b023d64ed",
+      "planId": "003a3f02d7bc",
+      "modelName": "GLM-5.3-Flash",
+      "basis": "official-plan-page",
+      "evidence": [
+        {
+          "field": "supportedModels",
+          "quote": "所有套餐均支持 GLM-5.3、GLM-5.3-Flash。",
+          "sourceUrl": "https://docs.bigmodel.cn/cn/coding-plan/overview",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "minimax-m2.7",
+      "registryModelId": "8a13f0572a18",
+      "planId": "23d23eb57977",
+      "modelName": "MiniMax M2.7",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐的 supportedModels 里逐字写着这个模型（人工逐条确认），但该套餐的官方页引文只覆盖了价格与额度，本仓库尚未捕获模型清单那一处的原文 ⇒ 如实标成显式映射（explicit-mapping）。把没有引文的事写成一条引文才是造假。"
+    },
+    {
+      "registrySlug": "minimax-m2.7",
+      "registryModelId": "8a13f0572a18",
+      "planId": "564f0c40d9ff",
+      "modelName": "MiniMax M2.7",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐的 supportedModels 里逐字写着这个模型（人工逐条确认），但该套餐的官方页引文只覆盖了价格与额度，本仓库尚未捕获模型清单那一处的原文 ⇒ 如实标成显式映射（explicit-mapping）。把没有引文的事写成一条引文才是造假。"
+    },
+    {
+      "registrySlug": "minimax-m2.7",
+      "registryModelId": "8a13f0572a18",
+      "planId": "a6a6a374dfba",
+      "modelName": "MiniMax M2.7",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐的 supportedModels 里逐字写着这个模型（人工逐条确认），但该套餐的官方页引文只覆盖了价格与额度，本仓库尚未捕获模型清单那一处的原文 ⇒ 如实标成显式映射（explicit-mapping）。把没有引文的事写成一条引文才是造假。"
+    },
+    {
+      "registrySlug": "minimax-m3",
+      "registryModelId": "62e85e8d9cce",
+      "planId": "23d23eb57977",
+      "modelName": "MiniMax M3",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐的 supportedModels 里逐字写着这个模型（人工逐条确认），但该套餐的官方页引文只覆盖了价格与额度，本仓库尚未捕获模型清单那一处的原文 ⇒ 如实标成显式映射（explicit-mapping）。把没有引文的事写成一条引文才是造假。"
+    },
+    {
+      "registrySlug": "minimax-m3",
+      "registryModelId": "62e85e8d9cce",
+      "planId": "564f0c40d9ff",
+      "modelName": "MiniMax M3",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐的 supportedModels 里逐字写着这个模型（人工逐条确认），但该套餐的官方页引文只覆盖了价格与额度，本仓库尚未捕获模型清单那一处的原文 ⇒ 如实标成显式映射（explicit-mapping）。把没有引文的事写成一条引文才是造假。"
+    },
+    {
+      "registrySlug": "minimax-m3",
+      "registryModelId": "62e85e8d9cce",
+      "planId": "a6a6a374dfba",
+      "modelName": "MiniMax M3",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐的 supportedModels 里逐字写着这个模型（人工逐条确认），但该套餐的官方页引文只覆盖了价格与额度，本仓库尚未捕获模型清单那一处的原文 ⇒ 如实标成显式映射（explicit-mapping）。把没有引文的事写成一条引文才是造假。"
+    }
+  ]
+}

@@ -49,6 +49,12 @@ const changes = require('./changes');
 const planChanges = require('./plan-changes');
 const planHistoryLib = require('./plan-history');
 const plansPage = require('./plans-page');
+/**
+ * v3.0：API 计费变化源与套餐变化源**并排**（同一条注册表、同一份条目实现）。
+ * 它只多 require 两个模块：**没有**、也不会有一份 `feeds-api.js`。
+ */
+const apiPlanHistoryLib = require('./api-plan-history');
+const apiPlansPage = require('./api-plans-page');
 const { cleanText } = require('./schema');
 
 /* ------------------------------------------------------------------ */
@@ -133,6 +139,12 @@ const FEEDS_WORDING = {
      * 这份订阅漏了优惠（v2.3 上线后打线上 Feed 时抓到的**真实文案 bug**，已由自测钉住）。
      */
     emptyPlanChanges: '自起算日起，还没有观测到套餐的价格、活动价、额度、模型、限制或销售地区的变化。',
+    /**
+     * v3.0：API 计费变化流为空时的说明。同样**必须单独一句** —— 它的变化面是
+     * 单价 / 计费单位 / 模型计价条目 / 免费额度 / 限速 / credits，与上面两句都不重叠；
+     * 复用任何一句都会让读者以为这份订阅漏掉了另一份数据。
+     */
+    emptyApiPlanChanges: '自起算日起，还没有观测到 API 计费的单价、计费单位、模型计价条目、免费额度、限速或 credits 的变化。',
     /** 正文尾部的口径说明 */
     scope: '本订阅由本站构建期生成：没有账号、没有邮件列表、没有第三方推送服务。',
     provider: '厂商订阅收的是该厂商当前收录的优惠；想看「它最近变了什么」，订最近变化。',
@@ -277,31 +289,89 @@ const COLLECTION_FEED_PAGES = [
 const HOMEPAGE_FEED_IDS = ['all', 'changes', 'student', 'developer'];
 
 /**
- * v2.3：套餐变化订阅源的身份。它属于**变化类**（`kind: 'plan-changes'`），
- * 但事件来自套餐变化日志，与 deals 的变化日志是两份东西 —— 所以是第三种 kind，
- * 而不是把两边的条目混进同一个源里。
+ * v3.0：变化类 Feed 的注册表 —— **多 spec，不是一条**。
  *
- * 路由形状 `/feed/plans/coding/changes.*` 与页面路由 `/plans/coding/` 对齐，
- * 将来 Phase 2.5 加 `/plans/api/` 时就是并列的一份，不需要改注册表结构。
+ * 每条 spec 声明：条目来自哪一份变化日志的视图（`changeSource`）、它属于哪个页面
+ * （`pageKind` / `pageRoute`，`feedsForPage` 按这两个解析）、以及自己的空态措辞。
+ *
+ * 「谁属于这条 Feed」的判据、条目形状（guid / 时间 / 标签 / 正文）与序列化**只有一份实现**
+ * （`changeItemsFor` 与下面的序列化函数）。**绝不另建 `feeds-api.js`** ——
+ * 那会让两条变化 Feed 的 guid 规则、时间口径、空态措辞各自演化，
+ * 而「两边看起来都对、只有一边悄悄漂了」是最难被任何断言发现的一种坏法。
+ *
+ * ## `alwaysGenerated` 与「三种事实」的关系
+ *
+ *   · `true`（Coding 套餐 v2.3 起、API 计费 v3.0 Stage H 起）—— **始终生成**。
+ *     日志不可用时这份 Feed 会说「本次构建没有拿到日志」。空是事实，缺失也是事实，
+ *     两种都要能读到。
+ *   · `false`（保留给将来的来源）—— 只有调用方交出**变化视图**时才登记：
+ *     在接线之前生成一份空 Feed，会把「这条链路还没接线」说成「没有观测到变化」，
+ *     那是假话。这类被跳过的 spec 记在 `changeFeedsSkipped` 里，构建期可以断言它为空。
+ *
+ * 另外，**「没有交出视图」与「日志不可用」不能混为一谈**：前者等价于「这次构建没有
+ * 拿到这份日志的数据」，所以按 `unavailable` 渲染（说「没有拿到日志」），
+ * 而不是乐观地渲染成「还没有观测到变化」——后者是对读者的断言，而我们并没有看过。
  */
-const PLAN_CHANGE_FEED = {
-  id: 'plan-changes',
-  kind: 'plan-changes',
-  path: 'feed/plans/coding/changes.xml',
-  jsonPath: 'feed/plans/coding/changes.json',
-  title: `${FEED_BRAND} · Coding 套餐变化`,
-  description: 'AI Coding 套餐的价格、活动价、额度、模型与限制的变化。'
-    + '数据来自本站重建套餐数据时的观测记录；每条变化都能在套餐对比页找到落点。',
-  pageRoute: plansPage.PLANS_ROUTE,
-  mayBeEmpty: true,
-  homepage: false,
-  vendor: null
-};
-
-/** 页面 → 专属 Feed 的路由映射（`feedsForPage` 用；目前只有套餐对比页这一条） */
-const PAGE_FEED_ROUTES = [
-  { route: plansPage.PLANS_ROUTE, id: PLAN_CHANGE_FEED.id }
+const PLAN_CHANGE_FEEDS = [
+  {
+    id: 'plan-changes',
+    kind: 'plan-changes',
+    changeSource: 'plans',
+    path: 'feed/plans/coding/changes.xml',
+    jsonPath: 'feed/plans/coding/changes.json',
+    title: `${FEED_BRAND} · Coding 套餐变化`,
+    description: 'AI Coding 套餐的价格、活动价、额度、模型与限制的变化。'
+      + '数据来自本站重建套餐数据时的观测记录；每条变化都能在套餐对比页找到落点。',
+    // 路由形状 `/feed/plans/coding/changes.*` 与页面路由 `/plans/coding/` 对齐；
+    // API 那一份就是并列的一份（`/feed/plans/api/changes.*` ↔ `/plans/api/`）。
+    pageKind: 'plans-coding',
+    pageRoute: plansPage.PLANS_ROUTE,
+    emptyNote: FEEDS_WORDING.FEEDS_NOTES.emptyPlanChanges,
+    mayBeEmpty: true,
+    homepage: false,
+    alwaysGenerated: true,
+    vendor: null
+  },
+  {
+    id: 'api-plan-changes',
+    kind: 'plan-changes',
+    changeSource: 'api',
+    path: 'feed/plans/api/changes.xml',
+    jsonPath: 'feed/plans/api/changes.json',
+    title: `${FEED_BRAND} · API 价格变化`,
+    description: 'AI 平台 API 的单价、计费单位、模型计价条目、免费额度、限速与 credits 的变化。'
+      + '数据来自本站重建 API 计费数据时的观测记录；每条变化都能在 API 计费对比页找到落点。',
+    pageKind: 'plans-api',
+    pageRoute: apiPlansPage.API_PLANS_ROUTE,
+    emptyNote: FEEDS_WORDING.FEEDS_NOTES.emptyApiPlanChanges,
+    mayBeEmpty: true,
+    homepage: false,
+    // v3.0 Stage H：`build-local` 已经交出 API 变化视图（`changeViews.api`），
+    // 因此这一条现在与套餐那条**同样始终生成** —— 日志不可用时它会说「没有拿到日志」，
+    // 而不是把「没接线」说成「没有变化」。未交出视图时 `changeFeedsSkipped` 仍会如实记一笔。
+    alwaysGenerated: true,
+    vendor: null
+  }
 ];
+
+/**
+ * Coding 套餐变化源。v3.0 起它**是注册表里的第一条**，不再是唯一一条：
+ * 新调用方请用 `changeFeedSpecOf('plans' | 'api')` 或 `changeSpecForPage(page)`，
+ * 不要按 id 写死。这一别名保留是为了让尚未收敛的调用点（`/feeds/` 分组表等）
+ * 在接线前后都能跑，接线由阶段 J 统一完成。
+ */
+const PLAN_CHANGE_FEED = PLAN_CHANGE_FEEDS.find(spec => spec.changeSource === 'plans');
+
+/** 按 `changeSource`（`plans` / `api`）取变化 Feed 的 spec */
+function changeFeedSpecOf(changeSource) {
+  return PLAN_CHANGE_FEEDS.find(spec => spec.changeSource === changeSource) || null;
+}
+
+/**
+ * 页面 → 专属 Feed 的映射（**由注册表派生**，不再手写第二份）。
+ * 变化类页面没有 slug（只有一条固定路由），所以路由是主键。
+ */
+const PAGE_FEED_ROUTES = PLAN_CHANGE_FEEDS.map(spec => ({ route: spec.pageRoute, id: spec.id }));
 
 /**
  * 站点根 Feed 的身份（标题在这里定一次）。详情页 / 状态页 / 目录页的
@@ -342,36 +412,54 @@ function vendorRouteOf(slug) {
 }
 
 /**
- * 一个页面**自己**的订阅源（v1.7）。
+ * 一个页面**自己**的订阅源（v1.7 起；v3.0 起变化类来源也走这里）。
  *
  * v1.6 里页面→Feed 只能靠调用方硬编码 spec id（`build-local.js` 早先就是
  * `byId.get('changes')` 这么写的），而「页面上忘了声明自己的 Feed」不会有任何东西变红。
  * 这个函数让「页面**有**哪份 Feed」与「页面**声明**哪份 Feed」都从注册表推导：
+ *   · 变化类页面（`/plans/coding/`、`/plans/api/`）→ `PLAN_CHANGE_FEEDS` 里
+ *     按 **`page.route` 或 `page.kind`** 命中它的那一条；
  *   · 分类页 / 按需求页 / 分类落地页 → COLLECTION_FEED_PAGES 里指向它的那一条；
  *   · 厂商页 → `vendor-<slug>`（由厂商注册表决定，存在与不存在都以 spec 为准）。
  *
- * @param {object} page `{ kind, slug }` —— 落地页 spec 的最小切片
+ * @param {object} page `{ kind, slug, route }` —— 落地页 spec 的最小切片
  * @param {object[]} [feeds] 已构建的 feedBundle.feeds；省略时只按注册表推导（用于自检）
  */
 function feedsForPage(page, feeds) {
   if (!page) return [];
-  // v2.3：按**路由**匹配的专属 Feed（套餐对比页没有 slug，只有一条固定路由）。
-  if (page.route) {
-    const entry = PAGE_FEED_ROUTES.find(item => item.route === page.route);
-    if (entry) {
-      if (!Array.isArray(feeds)) return [{ spec: { id: entry.id } }];
-      const hit = feeds.find(item => item.spec && item.spec.id === entry.id);
-      return hit ? [hit] : [];
-    }
-  }
+  const changeSpec = changeSpecForPage(page);
+  if (changeSpec) return resolveFeedRefs([{ id: changeSpec.id }], feeds);
   if (!page.slug) return [];
   const spec = page.kind === 'vendor'
     ? { id: `vendor-${page.slug}` }
     : (COLLECTION_FEED_PAGES.find(entry => entry.pageKind === page.kind && entry.pageSlug === page.slug) || null);
-  if (!spec) return [];
-  if (!Array.isArray(feeds)) return [{ spec: { id: spec.id } }];
-  const hit = feeds.find(item => item.spec && item.spec.id === spec.id);
-  return hit ? [hit] : [];
+  return resolveFeedRefs(spec ? [{ id: spec.id }] : [], feeds);
+}
+
+/**
+ * 变化类页面 → 它那份变化 Feed 的 spec（v3.0：按 `page.route` 优先、`page.kind` 兜底）。
+ *
+ * 为什么两个键都要认：`/plans/coding/` 与 `/plans/api/` 是**独立静态页**（没有 slug），
+ * 调用方有时只拿得到路由（页脚深度扫描表），有时只拿得到 kind（SEO 描述符）。
+ * 认两个键不会产生歧义 —— 每条 spec 的 `pageRoute` / `pageKind` 都互不相同。
+ */
+function changeSpecForPage(page) {
+  if (!page) return null;
+  if (page.route) {
+    const byRoute = PLAN_CHANGE_FEEDS.find(spec => spec.pageRoute === page.route);
+    if (byRoute) return byRoute;
+  }
+  if (page.kind) {
+    const byKind = PLAN_CHANGE_FEEDS.find(spec => spec.pageKind === page.kind);
+    if (byKind) return byKind;
+  }
+  return null;
+}
+
+/** 把 `{id}` 引用解析成真实的那一份 Feed（省略 `feeds` 时只做注册表推导） */
+function resolveFeedRefs(refs, feeds) {
+  if (!Array.isArray(feeds)) return refs.map(ref => ({ spec: { id: ref.id } }));
+  return refs.map(ref => feeds.find(item => item.spec && item.spec.id === ref.id)).filter(Boolean);
 }
 
 /** 厂商 slug 表（人工维护；错误在 `validateVendorSlugs()` 与自测里报） */
@@ -542,9 +630,10 @@ function collectionSpec(base, pageKind, pageSlug, predicate) {
  * @param {object} params
  * @param {object[]} params.deals 当前记录
  * @param {object}   [params.store] 变更日志
- * @returns {{specs:object[], vendorSkipped:object[], vendorUnmapped:string[]}}
+ * @param {object}   [params.changeViews] 变化类来源的视图（见 `resolveChangeViews`）
+ * @returns {{specs:object[], vendorSkipped:object[], vendorUnmapped:string[], changeFeedsSkipped:object[]}}
  */
-function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS, vendorKeyOf = null } = {}) {
+function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS, vendorKeyOf = null, changeViews = {} } = {}) {
   const specs = [];
 
   specs.push({
@@ -594,12 +683,23 @@ function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS, ve
     changeBucket: 'all'
   });
 
-  // v2.3：套餐变化 Feed。与 deals 的两份变化源并排 —— 它订的是**套餐**的价格/额度/模型变化，
-  // 而不是优惠的出现与消失。同样**始终生成**：空是事实（这套日志的起算日之前没有可观测的变化）。
-  specs.push(Object.assign({}, PLAN_CHANGE_FEED, {
-    homePageUrl: absolute(PLAN_CHANGE_FEED.pageRoute),
-    emptyNote: FEEDS_WORDING.FEEDS_NOTES.emptyPlanChanges
-  }));
+  // v2.3 / v3.0：变化类 Feed（套餐 / API 计费）**从注册表来**，一条循环同时管两个来源。
+  // 它与 deals 的两份变化源并排 —— 它订的是「套餐 / 计费记录本身变了什么」，
+  // 而不是优惠的出现与消失。
+  const changeFeedsSkipped = [];
+  for (const changeSpec of PLAN_CHANGE_FEEDS) {
+    const view = changeViews[changeSpec.changeSource] || null;
+    if (!view && !changeSpec.alwaysGenerated) {
+      // 未接线 ⇒ **不登记**（见 PLAN_CHANGE_FEEDS 的 `alwaysGenerated` 说明：
+      // 生成一份空 Feed 会把「还没接线」说成「没有变化」，那是假话）。
+      changeFeedsSkipped.push({ id: changeSpec.id, reason: 'no_change_view' });
+      continue;
+    }
+    specs.push(Object.assign({}, changeSpec, {
+      kind: 'plan-changes',
+      homePageUrl: absolute(changeSpec.pageRoute)
+    }));
+  }
 
   // 厂商 Feed：数据驱动，门槛见 VENDOR_THRESHOLDS。
   //
@@ -649,7 +749,124 @@ function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS, ve
       slug, itemCount: items.length
     });
   }
-  return { specs, vendorSkipped, vendorUnmapped };
+  return { specs, vendorSkipped, vendorUnmapped, changeFeedsSkipped };
+}
+
+/* ------------------------------------------------------------------ */
+/* 变化类来源的适配器（**领域差异只允许写在这里**）                       */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 两个变化来源的差异**全部**收拢在这张表里：
+ *
+ *   · 事件类型 / 结束原因的措辞表（各自的权威表在 `plan-history` / `api-plan-history`）；
+ *   · 「变了什么」那句话的唯一出处（套餐走 `plans-page.planChangeTextOf`，
+ *     API 走 `api-plans-page.apiPlanChangeTextOf` —— 都是**页面用的同一个函数**）；
+ *   · 深链（套餐没有独立详情页，落到 `/plans/coding/#plan-<id>`；API 同理落 `/plans/api/`）；
+ *   · 「记录已经不在数据里」时那句如实说明。
+ *
+ * 除此之外的一切 —— 排除 `updated` 元信息、只接受 12 位 hex 的派生事件身份、
+ * 排序、标签、正文骨架、guid —— 都由 `changeItemsFor` 一份实现处理。
+ */
+const CHANGE_SOURCES = {
+  plans: {
+    key: 'plans',
+    types: () => planHistoryLib.PLAN_HISTORY_WORDING.PLAN_HISTORY_TYPES,
+    endReasons: () => planHistoryLib.PLAN_HISTORY_WORDING.PLAN_HISTORY_END_REASONS,
+    disclaimer: () => planHistoryLib.PLAN_HISTORY_WORDING.PLAN_HISTORY_NOTES.disclaimer,
+    tombstone: '（已移除的套餐，无标题快照）',
+    detailOf: (entry, ctx) => plansPage.planChangeTextOf(entry, {
+      plansById: ctx.recordsById,
+      providerTable: ctx.providerTable
+    }),
+    linkOf: entry => `${plansPage.PLANS_ROUTE}#plan-${entry.planId}`
+  },
+  api: {
+    key: 'api',
+    types: () => apiPlanHistoryLib.API_PLAN_HISTORY_WORDING.API_PLAN_HISTORY_TYPES,
+    endReasons: () => apiPlanHistoryLib.API_PLAN_HISTORY_WORDING.API_PLAN_HISTORY_END_REASONS,
+    disclaimer: () => apiPlanHistoryLib.API_PLAN_HISTORY_WORDING.API_PLAN_HISTORY_NOTES.disclaimer,
+    // 与 `/changes/` 的 API 分栏、`/plans/api/` 共用同一句话（唯一出处是日志的措辞表）。
+    tombstone: apiPlanHistoryLib.API_PLAN_HISTORY_WORDING.API_PLAN_HISTORY_LABELS.tombstone,
+    detailOf: entry => apiPlansPage.apiPlanChangeTextOf(entry),
+    linkOf: entry => `${apiPlansPage.API_PLANS_ROUTE}#plan-${entry.planId}`
+  }
+};
+
+/**
+ * 变化条目的**唯一实现**（套餐 / API 两条 Feed 共用）。
+ *
+ * 与 deals 的变化条目同一个形状（guid / 时间 / 标签 / 正文），但身份来自**变化日志的派生事件
+ * 身份**（`eventId`，12 位 hex）：因此「同一件事只有一个身份」这条保证在页面、日志与
+ * 订阅源上是同一个东西。**这里不重算事件身份**，只接受日志里已经写好的那一个 ——
+ * 订阅源重新算一遍就等于把「身份由数据决定」换成「身份由这段代码决定」。
+ *
+ * @param {object} spec   `PLAN_CHANGE_FEEDS` 里的一条
+ * @param {object} params
+ * @param {object} params.view   该来源的变化视图（`plan-changes.build*Radar` 的结果）
+ * @param {object[]} params.records 当前记录（套餐 / API 计费）
+ * @param {object} [params.providerTable]
+ */
+function changeItemsFor(spec, { view = null, records = [], providerTable = null } = {}) {
+  const source = CHANGE_SOURCES[spec.changeSource];
+  if (!source) throw new Error(`Feed ${spec.id}: 未知的变化来源 ${spec.changeSource}`);
+  if (!view || view.availability !== 'ok') return [];
+  const recordsById = new Map((records || []).map(record => [record && record.id, record]));
+  const ctx = { recordsById, providerTable };
+  const types = source.types();
+  const endReasons = source.endReasons();
+  const items = planChanges.itemsOf(view)
+    .filter(entry => entry.type !== 'updated')            // 记录级元信息不进订阅（与页面同一条纪律）
+    .filter(entry => typeof entry.eventId === 'string' && /^[0-9a-f]{12}$/.test(entry.eventId))
+    .map(entry => {
+      const route = source.linkOf(entry, ctx);
+      const href = absolute(route);
+      const name = entry.titled
+        ? `${entry.vendor ? `${entry.vendor} · ` : ''}${entry.title}`
+        : source.tombstone;
+      const typeLabel = types[entry.type] || entry.type;
+      const lines = [
+        `${FEEDS_WORDING.FEEDS_LABELS.record}：${name}`,
+        `变化：${typeLabel}`,
+        source.detailOf(entry, ctx),
+        `${FEEDS_WORDING.FEEDS_LABELS.time}：${entry.at}`
+      ];
+      if (entry.reason) lines.push(`${FEEDS_WORDING.FEEDS_LABELS.reason}：${endReasons[entry.reason] || entry.reason}`);
+      lines.push(`${FEEDS_WORDING.FEEDS_LABELS.detail}：${href}`);
+      if (entry.type === 'ended') lines.push(source.disclaimer());
+      return {
+        type: 'plan-change',
+        id: entry.eventId,
+        planId: entry.planId,
+        eventType: entry.type,
+        field: entry.field || null,
+        at: entry.at,
+        titled: Boolean(entry.titled),
+        title: `${name} — ${typeLabel}`,
+        link: href,
+        route,
+        externalUrl: null,
+        vendor: entry.vendor || '',
+        datePublished: entry.at,
+        dateModified: entry.at,
+        tags: [entry.vendor, typeLabel].filter(Boolean),
+        text: lines.join('\n')
+      };
+    });
+  items.sort((a, b) => {
+    if (a.at !== b.at) return a.at < b.at ? 1 : -1;
+    if (a.planId !== b.planId) return a.planId < b.planId ? -1 : 1;
+    if ((a.eventType || '') !== (b.eventType || '')) return a.eventType < b.eventType ? -1 : 1;
+    const af = a.field || '';
+    const bf = b.field || '';
+    return af < bf ? -1 : af > bf ? 1 : 0;
+  });
+  return items;
+}
+
+/** v2.3 兼容入口：Coding 套餐变化条目（等价于 `changeItemsFor(PLAN_CHANGE_FEED, …)`） */
+function planChangeItems(spec, { planRadar = null, plans = [], providerTable = null } = {}) {
+  return changeItemsFor(spec, { view: planRadar, records: plans, providerTable });
 }
 
 /* ------------------------------------------------------------------ */
@@ -758,68 +975,6 @@ function changeItems(spec, { deals, store, radar }) {
   return items;
 }
 
-/**
- * v2.3：套餐变化 Feed 的条目。
- *
- * 与 deals 的变化条目同一个形状（guid / 时间 / 标签 / 正文），但身份来自**套餐变化日志**：
- * guid 直接用日志里的派生事件身份 `eventId`（`plan-history.eventIdOf`），
- * 因此「同一件事只有一个身份」这条保证在页面、日志与订阅源上是同一个东西。
- *
- * 链接指向 `/plans/coding/#plan-<id>`：套餐没有独立详情页（v2.2 的决定），
- * 所以深链落到**那一行**上 —— 锚点存在性由构建期断言盯着（不存在就是死链）。
- */
-function planChangeItems(spec, { planRadar = null, plans = [], providerTable = null } = {}) {
-  if (!planRadar || planRadar.availability !== 'ok') return [];
-  const plansById = new Map((plans || []).map(plan => [plan && plan.id, plan]));
-  const opts = { plansById, providerTable };
-  const T = planHistoryLib.PLAN_HISTORY_WORDING;
-  const items = planChanges.itemsOf(planRadar)
-    .filter(entry => entry.type !== 'updated')            // 记录级元信息不进订阅（与页面同一条纪律）
-    .filter(entry => typeof entry.eventId === 'string' && /^[0-9a-f]{12}$/.test(entry.eventId))
-    .map(entry => {
-      const route = `${plansPage.PLANS_ROUTE}#plan-${entry.planId}`;
-      const href = absolute(route);
-      const name = entry.titled ? `${entry.vendor ? `${entry.vendor} · ` : ''}${entry.title}` : '（已移除的套餐，无标题快照）';
-      const typeLabel = T.PLAN_HISTORY_TYPES[entry.type] || entry.type;
-      const lines = [
-        `${FEEDS_WORDING.FEEDS_LABELS.record}：${name}`,
-        `变化：${typeLabel}`,
-        plansPage.planChangeTextOf(entry, opts),
-        `${FEEDS_WORDING.FEEDS_LABELS.time}：${entry.at}`
-      ];
-      if (entry.reason) lines.push(`${FEEDS_WORDING.FEEDS_LABELS.reason}：${T.PLAN_HISTORY_END_REASONS[entry.reason] || entry.reason}`);
-      lines.push(`${FEEDS_WORDING.FEEDS_LABELS.detail}：${href}`);
-      if (entry.type === 'ended') lines.push(T.PLAN_HISTORY_NOTES.disclaimer);
-      return {
-        type: 'plan-change',
-        id: entry.eventId,
-        planId: entry.planId,
-        eventType: entry.type,
-        field: entry.field || null,
-        at: entry.at,
-        titled: Boolean(entry.titled),
-        title: `${name} — ${typeLabel}`,
-        link: href,
-        route,
-        externalUrl: null,
-        vendor: entry.vendor || '',
-        datePublished: entry.at,
-        dateModified: entry.at,
-        tags: [entry.vendor, typeLabel].filter(Boolean),
-        text: lines.join('\n')
-      };
-    });
-  items.sort((a, b) => {
-    if (a.at !== b.at) return a.at < b.at ? 1 : -1;
-    if (a.planId !== b.planId) return a.planId < b.planId ? -1 : 1;
-    if ((a.eventType || '') !== (b.eventType || '')) return a.eventType < b.eventType ? -1 : 1;
-    const af = a.field || '';
-    const bf = b.field || '';
-    return af < bf ? -1 : af > bf ? 1 : 0;
-  });
-  return items;
-}
-
 /** 把雷达条目对回日志里的那一条事件（身份由数据决定，对不上就如实留空） */
 function findEvent(store, entry) {
   for (const event of history.eventsOf(store)) {
@@ -838,13 +993,23 @@ function findEvent(store, entry) {
 /* 序列化                                                               */
 /* ------------------------------------------------------------------ */
 
+/** 变化类 Feed 的措辞表：按来源取（套餐 / API 计费各一份，**不共用句子**） */
+function changeWordingOf(spec) {
+  return spec.changeSource === 'api'
+    ? planChanges.API_PLAN_CHANGES_WORDING.API_PLAN_CHANGES_LABELS
+    : planChanges.PLAN_CHANGES_WORDING.PLAN_CHANGES_LABELS;
+}
+
+/** 变化类 Feed 对账的那份日志文件名（报错信息要指名道姓，不能说「日志」） */
+function changeLogNameOf(spec) {
+  return spec.changeSource === 'api' ? 'api-plan-history.json' : 'plan-history.json';
+}
+
 function descriptionWithNotes(spec, { truncated = 0, asOf = null, availability = 'ok', empty = false } = {}) {
   const parts = [spec.description];
   const isPlanChanges = spec.kind === 'plan-changes';
   if (spec.kind === 'changes' || isPlanChanges) {
-    const labels = isPlanChanges
-      ? planChanges.PLAN_CHANGES_WORDING.PLAN_CHANGES_LABELS
-      : CHANGES_LABELS;
+    const labels = isPlanChanges ? changeWordingOf(spec) : CHANGES_LABELS;
     const unavailableNote = isPlanChanges ? labels.unavailable : CHANGES_NOTES.unavailable;
     if (availability !== 'ok') {
       // 「不可用」与「没有变化」是两句不同的话：日志缺失时说「没拿到日志」，
@@ -929,6 +1094,37 @@ function serializeJsonFeed(spec, items, { description }) {
 /* ------------------------------------------------------------------ */
 
 /**
+ * 把「变化类来源」的两套入参形状收敛成同一张表。
+ *
+ * 推荐形状（v3.0）：
+ *   `changeViews = { plans: {radar, availability, records, providerTable}, api: {…} }`
+ *
+ * 兼容形状（v2.3 起的老参数，仍然可用）：`planRadar` / `planAvailability` / `plans` /
+ * `providerTable`；`apiPlanRadar` / `apiPlanAvailability` / `apiPlans` / `apiProviderTable`。
+ *
+ * 为什么要有视图才登记 API 那条 Feed，见 `PLAN_CHANGE_FEEDS` 的 `alwaysGenerated`。
+ */
+function resolveChangeViews({
+  changeViews = null,
+  planRadar = null, planAvailability = 'ok', plans = [], providerTable = null,
+  apiPlanRadar = null, apiPlanAvailability = 'ok', apiPlans = [], apiProviderTable = null
+} = {}) {
+  if (changeViews) return changeViews;
+  const views = {
+    plans: { radar: planRadar, availability: planAvailability, records: plans, providerTable }
+  };
+  if (apiPlanRadar) {
+    views.api = {
+      radar: apiPlanRadar,
+      availability: apiPlanAvailability,
+      records: apiPlans,
+      providerTable: apiProviderTable || providerTable
+    };
+  }
+  return views;
+}
+
+/**
  * 构建全部 Feed（纯函数：同样的入参一定产出逐字节相同的产物）。
  *
  * @param {object}   params
@@ -937,35 +1133,60 @@ function serializeJsonFeed(spec, items, { description }) {
  * @param {object}   [params.radar]   `changes.buildRadar()` 的结果（**同一份**，不重算）
  * @param {string}   params.asOf      基准日 `YYYY-MM-DD`（数据时间）
  * @param {string}   [params.updatedAt] `deals.json` 的 updatedAt（lastBuildDate 用，不取构建时刻）
- * @returns {{feeds:object[], stats:object, vendorSkipped:object[], vendorUnmapped:string[]}}
+ * @param {object}   [params.changeViews] 变化类来源的视图（见 `resolveChangeViews`）
+ * @returns {{feeds:object[], stats:object, vendorSkipped:object[], vendorUnmapped:string[], changeFeedsSkipped:object[]}}
  */
 function buildFeeds({
   deals = [], store = null, radar = null, asOf = null, updatedAt = null, availability = 'ok',
   vendorSlugs = VENDOR_SLUGS, vendorKeyOf = null,
-  // v2.3：套餐变化源。`planRadar` 是 `plan-changes.js` 的视图，`planAvailability` 是它的可用性。
-  planRadar = null, planAvailability = 'ok', plans = [], providerTable = null
+  // v2.3 / v3.0：变化类来源。`planRadar` / `apiPlanRadar` 是 `plan-changes.js` 的视图，
+  // `*Availability` 是对应日志的可用性。
+  changeViews = null,
+  planRadar = null, planAvailability = 'ok', plans = [], providerTable = null,
+  apiPlanRadar = null, apiPlanAvailability = 'ok', apiPlans = [], apiProviderTable = null
 } = {}) {
-  const resolved = resolveSpecs({ deals, store, vendorSlugs, vendorKeyOf });
+  const views = resolveChangeViews({
+    changeViews,
+    planRadar, planAvailability, plans, providerTable,
+    apiPlanRadar, apiPlanAvailability, apiPlans, apiProviderTable
+  });
+  const resolved = resolveSpecs({ deals, store, vendorSlugs, vendorKeyOf, changeViews: views });
   const startedAt = store && typeof store.startedAt === 'string' ? store.startedAt : null;
-  const planStartedAt = planRadar && typeof planRadar.startedAt === 'string' ? planRadar.startedAt : null;
+  /** 某条变化 Feed 的起算日：**它自己那份日志**的 `startedAt`（绝不拿别人的顶上） */
+  const changeStartedAtOf = spec => {
+    const view = views[spec.changeSource] || null;
+    const radar_ = view && view.radar ? view.radar : null;
+    return radar_ && typeof radar_.startedAt === 'string' ? radar_.startedAt : null;
+  };
   const specs = resolved.specs.map(spec => Object.assign({}, spec, {
     startedAt: spec.kind === 'changes' ? (startedAt || asOf)
-      : (spec.kind === 'plan-changes' ? (planStartedAt || asOf) : null)
+      : (spec.kind === 'plan-changes' ? (changeStartedAtOf(spec) || asOf) : null)
   }));
 
   let truncatedTotal = 0;
   const feeds = specs.map(spec => {
+    const view = views[spec.changeSource] || null;
     const all = spec.kind === 'changes'
       ? changeItems(spec, { deals, store, radar })
       : (spec.kind === 'plan-changes'
-        ? planChangeItems(spec, { planRadar, plans, providerTable })
+        ? changeItemsFor(spec, {
+          view: view && view.radar ? view.radar : null,
+          records: (view && view.records) || [],
+          providerTable: view ? view.providerTable : null
+        })
         : collectionItems(spec, { deals, store, asOf, vendorKeyOf }));
     const items = all.slice(0, LIMITS.itemsPerFeed);
     const truncated = Math.max(0, all.length - items.length);
     truncatedTotal += truncated;
     const description = descriptionWithNotes(spec, {
       truncated, asOf,
-      availability: spec.kind === 'plan-changes' ? planAvailability : availability,
+      // 变化类 Feed 的可用性**只认它自己那份视图**：
+      //   · 视图对象存在 ⇒ 用调用方声明的 availability；
+      //   · 视图对象不存在 ⇒ `unavailable`（这次构建没有这份日志的数据可报），
+      //     绝不乐观地渲染成「还没有观测到变化」——那是对读者的断言，而我们并没有看过。
+      availability: spec.kind === 'plan-changes'
+        ? (view ? ((view.availability) || 'ok') : 'unavailable')
+        : availability,
       empty: items.length === 0
     });
     return {
@@ -989,7 +1210,8 @@ function buildFeeds({
       truncated: truncatedTotal
     },
     vendorSkipped: resolved.vendorSkipped,
-    vendorUnmapped: resolved.vendorUnmapped
+    vendorUnmapped: resolved.vendorUnmapped,
+    changeFeedsSkipped: resolved.changeFeedsSkipped
   };
 }
 
@@ -1058,17 +1280,30 @@ function unescapeXml(text) {
 function validate({
   feeds = [], deals = [], store = null, pages = new Set(),
   asOf = null, vendorSlugs = VENDOR_SLUGS, availability = 'ok', vendorKeyOf = null,
-  // v2.3：套餐变化源的对账材料（套餐变化日志的事件身份 + 可用性）。
-  planEvents = [], planAvailability = 'ok'
+  // v2.3 / v3.0：变化类来源的对账材料。推荐形状是 `changeViews`（与 buildFeeds 同一张表），
+  // 老的平铺参数仍然可用（`planEvents` = 产物那份 plan-history.json 的事件数组）。
+  changeViews = null,
+  planEvents = [], planAvailability = 'ok',
+  apiPlanEvents = [], apiPlanAvailability = 'ok'
 } = {}) {
   const problems = [];
   const warnings = [];
   const add = (code, feed, detail) => problems.push({ code, feed, detail });
   const keyOf = typeof vendorKeyOf === 'function' ? vendorKeyOf : (deal => String((deal && deal.vendor) || ''));
 
+  /**
+   * 变化类来源的对账材料：**每条 Feed 只拿它自己那份日志**。
+   * 把两份日志合成一个集合会让「API 订阅里混进了套餐事件」这条最该报红的事静默通过。
+   */
+  const changeMaterialOf = spec => {
+    if (changeViews) return changeViews[spec.changeSource] || {};
+    return spec.changeSource === 'api'
+      ? { events: apiPlanEvents, availability: apiPlanAvailability }
+      : { events: planEvents, availability: planAvailability };
+  };
+
   const byId = new Map(deals.map(deal => [deal && deal.id, deal]));
   const eventKeys = new Set(history.eventsOf(store).map(event => history.eventKey(event)));
-  const planEventIds = new Set((planEvents || []).map(event => planHistoryLib.eventIdOf(event)));
   const allowedDates = new Set();
   for (const deal of deals) {
     if (deal && DATE_RE.test(String(deal.firstSeen || ''))) allowedDates.add(deal.firstSeen);
@@ -1076,8 +1311,13 @@ function validate({
   for (const event of history.eventsOf(store)) {
     if (event && DATE_RE.test(String(event.at || ''))) allowedDates.add(event.at);
   }
-  for (const event of planEvents || []) {
-    if (event && DATE_RE.test(String(event.at || ''))) allowedDates.add(event.at);
+  // 两份变化日志的日期都要进来：API 变化条目的 `at` 只能来自 api-plan-history.json。
+  for (const source of Object.keys(CHANGE_SOURCES)) {
+    const material = changeViews ? (changeViews[source] || {}) : (source === 'api'
+      ? { events: apiPlanEvents } : { events: planEvents });
+    for (const event of material.events || []) {
+      if (event && DATE_RE.test(String(event.at || ''))) allowedDates.add(event.at);
+    }
   }
 
   // slug 表本身的形状（与具体 Feed 无关，报一次就够）
@@ -1202,18 +1442,30 @@ function validate({
       }
     }
 
-    // ⑤′ 语义：套餐变化 Feed 必须对得上**套餐变化日志**（同一份判据，另一份数据）
+    // ⑤′ 语义：变化类 Feed（套餐 / API 计费）必须对得上**它自己那份**变化日志
+    //     （同一份判据，两份数据）。事件身份用日志自己的派生推导重算 ——
+    //     `plan-history.eventIdOf` 与 `api-plan-history.apiPlanEventIdOf` 各自声明，feed 侧不猜。
     if (spec.kind === 'plan-changes') {
-      if (planAvailability !== 'ok') {
-        if (feed.items.length) add('change-event-exists', label, '套餐变化日志不可用却仍有变化条目');
-      }
-      for (const item of feed.items) {
-        if (!planEventIds.has(item.id)) {
-          add('change-event-exists', label, `${item.id} 在 plan-history.json 里找不到对应事件`);
-          continue;
+      const material = changeMaterialOf(spec);
+      const source = CHANGE_SOURCES[spec.changeSource] || null;
+      if (!source) {
+        add('change-event-exists', label, `未知的变化来源 ${spec.changeSource}`);
+      } else {
+        const idOf = spec.changeSource === 'api'
+          ? apiPlanHistoryLib.apiPlanEventIdOf
+          : planHistoryLib.eventIdOf;
+        const ids = new Set((material.events || []).map(event => idOf(event)));
+        if (material.availability !== 'ok') {
+          if (feed.items.length) add('change-event-exists', label, '变化日志不可用却仍有变化条目');
         }
-        if (item.eventType === 'updated') {
-          add('change-high-value', label, `${item.id} 是记录级元信息（updated），不该进订阅`);
+        for (const item of feed.items) {
+          if (!ids.has(item.id)) {
+            add('change-event-exists', label, `${item.id} 在 ${changeLogNameOf(spec)} 里找不到对应事件`);
+            continue;
+          }
+          if (item.eventType === 'updated') {
+            add('change-high-value', label, `${item.id} 是记录级元信息（updated），不该进订阅`);
+          }
         }
       }
     }
@@ -1222,8 +1474,12 @@ function validate({
   if (availability !== 'ok' && feeds.some(feed => feed.spec.kind === 'changes' && feed.items.length)) {
     warnings.push('历史日志不可用，变化 Feed 应为空');
   }
-  if (planAvailability !== 'ok' && feeds.some(feed => feed.spec.kind === 'plan-changes' && feed.items.length)) {
-    warnings.push('套餐变化日志不可用，套餐变化 Feed 应为空');
+  for (const spec of PLAN_CHANGE_FEEDS) {
+    const material = changeMaterialOf(spec);
+    const exists = feeds.some(feed => feed.spec.id === spec.id && feed.items.length);
+    if (material.availability !== 'ok' && exists) {
+      warnings.push(`${changeLogNameOf(spec)} 不可用，${spec.title} 应为空`);
+    }
   }
   return { problems, warnings };
 }
@@ -1233,7 +1489,7 @@ function validate({
 /* ------------------------------------------------------------------ */
 
 function summarize(feeds) {
-  const perKind = { collection: 0, changes: 0 };
+  const perKind = { collection: 0, changes: 0, 'plan-changes': 0 };
   let items = 0;
   const empty = [];
   for (const feed of feeds) {
@@ -1251,8 +1507,16 @@ module.exports = {
   FEED_BRAND,
   ROOT_FEED,
   PLAN_CHANGE_FEED,
-  PAGE_FEED_ROUTES,
+  PLAN_CHANGE_FEEDS,
+  changeFeedSpecOf,
+  changeSpecForPage,
+  changeWordingOf,
+  changeLogNameOf,
+  CHANGE_SOURCES,
+  changeItemsFor,
   planChangeItems,
+  resolveChangeViews,
+  PAGE_FEED_ROUTES,
   rootFeedTags,
   LIMITS,
   VENDOR_THRESHOLDS,

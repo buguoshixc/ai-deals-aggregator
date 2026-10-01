@@ -186,6 +186,23 @@ const GATE_STEP_NAMES = [
   'API-plans self-test (data + page)',
   'API-plans reproducibility (curated → api-plans.json, byte-compare)',
   'API-plan-history verify (log consistent with api-plans.json)',
+  // v3.0 新增：六个新页面家族与索引层的离线自测。它们红的含义各自独立 ——
+  // 「模型页门槛 / 厂商页 API 计数与 api-plans 现算一致 / 归档状态可从时间线重推 /
+  //  Manifest 与磁盘逐字段一致」都只在这一步被验证：构建期跑的是真数据，
+  // 验不到「某个门槛其实永远不会响」。
+  'Model-registry self-test (identity + explicit mapping)',
+  'Models-page self-test (index + detail pages)',
+  'Plans-hub self-test (/plans/)',
+  'Vendor-pages self-test (/vendor/)',
+  'Archive self-test (/archive/, synthetic ended/restored fixtures)',
+  'Data-docs self-test (/docs/data/ + /data/index.json)',
+  // v3.0 新增：索引层与关系层的可重建性（与 plans / api-plans 那两条红的含义相同）。
+  'Models reproducibility (registry → models.json, byte-compare)',
+  'Model-registry links check (explicit mapping only, no similarity)',
+  // v3.0 新增：覆盖报告（缺口清单的唯一落盘处）。
+  // 它原先不在门禁里，实测曾把 44 个模型的注册表报成「尚未落盘」而自检报 0 问题 ——
+  // 一份在撒谎的报告可以永久静默存活。接进来之后，报告与数据对不上就红。
+  'Coverage report (gap list consistent with data)',
   'Assemble site (same path as deploy.yml)',
   // v1.6 新增：**真实连续构建**两次，逐字节比对全部 Feed 文件。自测证明的是
   // 「纯函数同输入同输出」，证明不了「构建脚本没把时钟写进产物」——两者红的含义不同。
@@ -250,7 +267,10 @@ const FROZEN_ASSERTION_NAMES = [
   // v2.0：AI 维护链路必须"只读 + 只出 artifact"。这条断言存在的理由与 (13)/(15) 同类 ——
   // 「AI 不许自动 push」这句话如果只写在文档里，它会在某次"顺手让它自动提交"的改动里消失，
   // 而且消失时没有任何东西会红。
-  '(16) ai-maintenance.yml 只手动触发、只读仓库、只出 artifact（无提交/推送/发布动作）'
+  '(16) ai-maintenance.yml 只手动触发、只读仓库、只出 artifact（无提交/推送/发布动作）',
+  // v3.0（t13 集成时新增）：新脚本的**登记制** —— 写了自测却没接进门禁，
+  // 症状是完全静默（本地门禁照样绿），所以必须有一条会红的东西盯着它。
+  '(17) package.json 里的每个 selftest:* 都被门禁真的跑到（新脚本必须登记）'
 ];
 const WATCHDOG_NAME = '(W) 断言名单与冻结清单等值（删一条或改名都会红；本看门狗保护不了自己被删）';
 
@@ -805,6 +825,45 @@ check('(16) ai-maintenance.yml 只手动触发、只读仓库、只出 artifact�
   aiIssues.length === 0,
   aiIssues.length ? aiIssues.join('；')
     : 'workflow_dispatch 唯一入口 · contents: read · 文件里无 commit/push/deploy 动作 · 已接 AI 自检');
+
+/* ─────────── (17) 新脚本登记制：package.json 的每个 selftest:* 都必须真的进门禁 ─────────── */
+//
+// v3.0 新增（t13 集成时加）。为什么需要它：v3.0 一口气加了六支自测与两支可重建性检查，
+// 而「写了脚本、忘了接进门禁」的症状是**完全静默**的 —— 本地门禁照样全绿，
+// 只有人肉比对 package.json 与 action.yml 才发现。本仓对这种漂移的既有做法是**登记制**
+// （见 (0b) 与 (2)）：新增脚本必须同步登记，漏登记的当场红。
+//
+// 判据刻意选「文件路径」而不是「脚本名」：action.yml 的 run 步骤写的是
+// `node scripts/tools/xxx.js`，拿 package.json 的值解析出路径再逐字比对，
+// 不需要在两边各维护一张名字映射表（那本身就是新的漂移源）。
+const unregisteredSelftests = [];
+{
+  let selftestEntries = [];
+  try {
+    const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+    selftestEntries = Object.entries(pkg.scripts || {}).filter(([name]) => name.startsWith('selftest:'));
+  } catch (error) {
+    unregisteredSelftests.push(`读取 package.json 失败：${error.message}`);
+  }
+  let gateText = '';
+  try {
+    gateText = fs.readFileSync(path.join(ROOT, GATE_ACTION), 'utf8').split('\n').map(stripComment).join('\n');
+  } catch (error) {
+    unregisteredSelftests.push(`读取 ${GATE_ACTION} 失败：${error.message}`);
+  }
+  for (const [name, command] of selftestEntries) {
+    const file = String(command).replace(/^node\s+/, '').trim().split(/\s+/)[0];
+    if (!file) { unregisteredSelftests.push(`${name}: package.json 里的命令解析不出脚本路径`); continue; }
+    if (!gateText.includes(file)) unregisteredSelftests.push(`${name} → ${file}`);
+  }
+}
+check('(17) package.json 里的每个 selftest:* 都被门禁真的跑到（新脚本必须登记）',
+  unregisteredSelftests.length === 0,
+  unregisteredSelftests.length
+    ? `未登记：${unregisteredSelftests.join('、')}`
+      + '（新增自测必须同步两处：.github/actions/gate/action.yml 的步骤、'
+      + '本文件的 GATE_STEP_NAMES 同一索引）'
+    : `package.json 里的 selftest:* 全部出现在 ${GATE_ACTION} 里`);
 
 /* ─────────────────── (W) 看门狗：断言名单等值（不可跳过） ─────────────────── */// 刻意放在所有分支之外：删一条断言、或改任意一条断言名，都会在这里变红。
 // 固有边界：看门狗保护不了**自己**被删（那时它也不存在了）—— 如实记录，不做过度设计。

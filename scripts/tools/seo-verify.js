@@ -28,6 +28,7 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..', '..');
 const seo = require('../lib/seo');
+const pageKinds = require('../lib/page-kinds');
 const landing = require('../lib/landing');
 const feeds = require('../lib/feeds');
 
@@ -120,6 +121,16 @@ const dealsById = new Map(deals.map(deal => [deal.id, deal]));
 const asOf = String(payload.updatedAt || '').slice(0, 10);
 
 // 计划**从数据重新算一遍**（不读构建期的 PLAN）
+//
+// v3.0 Stage E：厂商页的门槛从「只有优惠条数」变成三条 OR（条数 / 历史事件 / **非优惠资料**），
+// 所以这里的重算也必须交出与构建期同样的五份 join 输入 —— 否则这个「独立门禁」会拿一份
+// **过时的计划**去判产物，把 10 个真实生成的厂商页判成「多出来的子页」（实测正是如此）。
+// 五份数据全部**从 dist 现场读**（与构建期的来源不同源，这正是这一支的价值）。
+const providerTable = require('../lib/providers').load().table;
+const plansForPlan = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8')).plans;
+const apiPlansForPlan = JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8')).plans;
+const modelsForPlan = JSON.parse(fs.readFileSync(path.join(OUT, 'models.json'), 'utf8')).models;
+const modelLinksForPlan = JSON.parse(fs.readFileSync(path.join(OUT, 'model-registry-links.json'), 'utf8')).links;
 const plan = landing.planLandingPages({
   deals,
   vendorKeyOf,
@@ -128,7 +139,12 @@ const plan = landing.planLandingPages({
   vendorThresholds: feeds.VENDOR_THRESHOLDS,
   eventCountOf: () => 0,
   pinned: landing.loadPinned(),
-  aliases: landing.loadAliases()
+  aliases: landing.loadAliases(),
+  plans: plansForPlan,
+  apiPlans: apiPlansForPlan,
+  providerTable,
+  models: modelsForPlan,
+  modelLinks: modelLinksForPlan
 });
 const specByRoute = new Map(plan.pages.map(spec => [spec.route, spec]));
 
@@ -168,12 +184,16 @@ const flat = m => String(m).split('/').filter(s => s && s !== '.').join('/');
 /**
  * 固定静态路由 → 页面类型。
  *
- * `kind` 在这一层决定两件事：**ItemList 是否必须在场**、以及**可见正文下限**（`textFloor`）。
- * 单层路由（`status/` `changes/` `feeds/`）可以由路由字符串直接推出来，但
- * `/plans/coding/` 是两级，推出来会变成 `plans/coding` —— 那既不是任何一条 textFloor 分支，
- * 也让 ItemList 的判定落在默认值上。**显式登记**比"碰巧能用"可靠。
+ * v3.0：这张表**搬进了 `lib/page-kinds.js`**（唯一声明表），本工具只读它。
+ * `kind` 在这一层决定三件事：**ItemList 是否必须在场**、**可见正文下限**（`textFloor`）、
+ * 以及**行数/成员对账用哪个标记**。单层路由（`status/` `changes/` `feeds/`）可以由路由字符串
+ * 直接推出来，但 `/plans/coding/` 与 `/plans/` 都是两级、且**含义不同** ——
+ * 从路由字符串猜会把 `/plans/` 猜成套餐对比页。**显式登记**比"碰巧能用"可靠。
+ *
+ * ⚠️ 这一层仍然**自己从 dist 解析页面 HTML**（见上面的 `rowsOf` / `itemListOf` /
+ * `listPages`）。共享的只是一份**声明**；解析路径没有、也不允许合并 ——
+ * 独立门禁的价值就在于它的输入来源与构建期不同。
  */
-const FIXED_KINDS = { 'status/': 'status', 'changes/': 'changes', 'feeds/': 'feeds', 'plans/coding/': 'plans', 'plans/api/': 'plans' };
 
 for (const route of routes) {
   const rel = route === '' ? 'index.html' : `${route}/index.html`;
@@ -186,8 +206,9 @@ for (const route of routes) {
 
   let itemIds = [];
   let childRoutes = [];
-  let kind = route === '' ? 'home'
-    : (route.startsWith('deal/') ? 'deal' : (FIXED_KINDS[route] || route.replace(/\/$/, '')));
+  // 路由 → kind 的唯一出处：固定路由表 + 动态路由模式（`models/<slug>/`、`archive/<k>/<id>/`…）。
+  // 目录页家族（collection / hub）的 kind 随数据走（`spec.kind`），因此仍以计划为准。
+  let kind = spec ? spec.kind : (pageKinds.kindOfRoute(route) || route.replace(/\/$/, ''));
 
   if (spec) {
     kind = spec.kind;
@@ -211,6 +232,13 @@ for (const route of routes) {
   }
   void crumbless;
 
+  // ItemList 的三条要求**从声明表读**（v3.0）：在场性 / 行数对账 / 成员归属。
+  // 成员归属只在"成员就是站内条目"的页面上成立：首页与对比页的 ItemList 指向**厂商官方页**
+  // （本站的既定口径：主链接给到官方），模型索引的成员判据按 `deal/<id>/` 也对不上 ——
+  // 关掉的是**成员归属**，不是 ItemList 本身：在场性、声明数 == 元素数、
+  // 以及声明数 == 页面数据行数三条都照常查。
+  const rules = pageKinds.itemListRule(kind);
+
   descriptors.push({
     route,
     html,
@@ -223,13 +251,10 @@ for (const route of routes) {
     count: spec ? (spec.kind === 'hub' ? childRoutes.length : itemIds.length)
       : (kind === 'plans' ? rows.items.length : itemIds.length),
     pinned: Boolean(spec && spec.pinned),
-    expectItemList: !['deal', 'status', 'feeds'].includes(kind),
-    checkItemListRows: kind !== 'home',
-    // 首页与套餐页的 ItemList 都指向**厂商官方页**（本站的既定口径：主链接给到官方），
-    // 因此「ItemList 里的 url 必须是本页的站内条目」这条判据对它们不适用 ——
-    // 关掉的是**成员归属**，不是 ItemList 本身：在场性、声明数 == 元素数、以及
-    // 声明数 == 页面数据行数三条都照常查。
-    checkItemListMembers: kind !== 'home' && kind !== 'plans',
+    marker: rules.marker,
+    expectItemList: rules.expect,
+    checkItemListRows: rules.checkRows,
+    checkItemListMembers: rules.checkMembers,
     feedMatch: []
   });
 }

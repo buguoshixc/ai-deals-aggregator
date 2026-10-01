@@ -246,11 +246,23 @@ function shouldGenerateLandingPage(kind, candidate = {}, ctx = {}) {
   const count = Number(candidate.count) || 0;
   const eventCount = Number(candidate.eventCount) || 0;
   const pinned = Boolean(candidate.pinned);
+  /**
+   * v3.0 Stage E：**至少一种非优惠资料**也是厂商页的达标条件。
+   *
+   * 为什么必须加这一条：`/vendor/<slug>/` 在 v3.0 升级成「厂商统一资料页」，
+   * 它同时承载优惠、Coding 套餐、API 计费与模型归属。一家**没有任何优惠**、
+   * 但有官方套餐与 API 计价的厂商（例如只有 API 计费的平台），现在是这一页的
+   * 正当内容 —— 用「优惠条数」当唯一门槛会把它整页丢在门外。
+   *
+   * 判据本身仍然只有一处：这里。`planLandingPages()` 与 `seo.js` 的 `gate-threshold`
+   * 都读同一个 `candidate.nonDealMaterial`，不各写一份"什么算非优惠资料"。
+   */
+  const nonDealMaterial = Boolean(candidate.nonDealMaterial);
 
   switch (kind) {
     case 'vendor': {
-      const eligible = count >= vendorThresholds.minDeals || eventCount >= vendorThresholds.minEvents;
-      if (eligible) return { ok: true, reason: 'eligible' };
+      const eligible = count >= vendorThresholds.minDeals || eventCount >= vendorThresholds.minEvents || nonDealMaterial;
+      if (eligible) return { ok: true, reason: nonDealMaterial && count < vendorThresholds.minDeals && eventCount < vendorThresholds.minEvents ? 'eligible-nondeal' : 'eligible' };
       if (pinned && count > 0) return { ok: true, reason: 'pinned-below-threshold' };
       if (pinned) return { ok: false, reason: 'pinned-empty' };
       return { ok: false, reason: 'below-threshold' };
@@ -306,6 +318,75 @@ function itemKeyOf(ids) {
 }
 
 /* ------------------------------------------------------------------ */
+/* v3.0 Stage E：厂商的非优惠资料（join，不 duplicate）                  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 一家厂商的**非优惠资料**：Coding 套餐 / API 计费记录 / Model Registry 归属。
+ *
+ * 全部按**显式关系 join**：
+ *   · 套餐与 API 记录按 `record.provider === providerKey`（provider key 由显示名精确查到）；
+ *   · 模型归属按 registry 的 `developer` / `owner` **逐字相等**，或该模型经关系层
+ *     映射到这家厂商的某条 API 记录（`modelLinks.registrySlug → apiPlanId`，两跳全显式）。
+ * 不做任何文本推断、不猜别名（别名解析的入口只有 `providers.json`）。
+ *
+ * @returns {{providerKey:string|null, planIds:string[], apiPlanIds:string[], modelSlugs:string[], codingPlans:number, apiRecords:number, models:number, nonDeal:boolean}}
+ */
+function vendorMaterialOf({ vendorName, providerTable = {}, plans = [], apiPlans = [], models = [], modelLinks = [] } = {}) {
+  const name = String(vendorName || '');
+  const empty = {
+    providerKey: null, planIds: [], apiPlanIds: [], modelSlugs: [],
+    codingPlans: 0, apiRecords: 0, models: 0, nonDeal: false,
+    // v3.0 Stage E / R5：`/vendor/<slug>/` 的**身份键是 A 空间厂商名**。
+    // provider 的 `vendorKey === null` 表示它在 A 空间没有厂商名（实测：trae / qoder /
+    // codebuddy / qoder-intl）—— 为它们建路由就必须新编一个 A 空间身份、或者改身份键，
+    // 两者都不接受。它们的资料走 `/plans/coding/` 与 `/plans/` 枢纽。
+    hasVendorIdentity: false
+  };
+  if (!name) return empty;
+  // 显示名 → provider key：**精确相等**（providers.json 的 name 唯一，由 validate 保证）
+  let providerKey = null;
+  let providerEntry = null;
+  for (const [key, entry] of Object.entries(providerTable || {})) {
+    if (entry && String(entry.name || '') === name) { providerKey = key; providerEntry = entry; break; }
+  }
+  if (!providerKey) return empty;
+  const hasVendorIdentity = Boolean(providerEntry && providerEntry.vendorKey);
+
+  const ownPlans = (plans || []).filter(plan => plan && plan.provider === providerKey);
+  const ownApiPlans = (apiPlans || []).filter(plan => plan && plan.provider === providerKey);
+  const apiPlanIds = ownApiPlans.map(plan => plan.id);
+  const apiPlanIdSet = new Set(apiPlanIds);
+
+  const modelSlugs = new Set();
+  for (const model of models || []) {
+    if (!model) continue;
+    if (String(model.developer || '') === name || String(model.owner || '') === name) {
+      if (model.slug) modelSlugs.add(String(model.slug));
+    }
+  }
+  for (const link of modelLinks || []) {
+    if (!link) continue;
+    const slug = String(link.registrySlug || '');
+    if (!slug) continue;
+    if (link.apiPlanId && apiPlanIdSet.has(link.apiPlanId)) modelSlugs.add(slug);
+  }
+
+  const material = {
+    providerKey,
+    hasVendorIdentity,
+    planIds: ownPlans.map(plan => plan.id),
+    apiPlanIds,
+    modelSlugs: [...modelSlugs].sort(),
+    codingPlans: ownPlans.length,
+    apiRecords: ownApiPlans.length,
+    models: modelSlugs.size
+  };
+  material.nonDeal = material.codingPlans > 0 || material.apiRecords > 0 || material.models > 0;
+  return material;
+}
+
+/* ------------------------------------------------------------------ */
 /* 规划：一次性产出全部落地页 + 被跳过项                                 */
 /* ------------------------------------------------------------------ */
 
@@ -326,6 +407,14 @@ function planLandingPages(options = {}) {
   const eventCountOf = options.eventCountOf || (() => 0);
   const vendorThresholds = options.vendorThresholds || { minDeals: 2, minEvents: 3 };
   const categoryMinDeals = Number.isFinite(options.categoryMinDeals) ? options.categoryMinDeals : CATEGORY_MIN_DEALS;
+  // v3.0 Stage E：厂商资料页的四份 join 输入。**全部可选** —— 不传时行为与 v2.x 逐字节相同
+  // （这一段是纯追加：老调用方什么都不会变）。
+  const plans = options.plans || [];
+  const apiPlans = options.apiPlans || [];
+  const providerTable = options.providerTable || {};
+  const models = Array.isArray(options.models) ? options.models
+    : ((options.models && Array.isArray(options.models.models)) ? options.models.models : []);
+  const modelLinks = options.modelLinks || [];
   const ctx = { vendorThresholds, categoryMinDeals };
 
   const pages = [];
@@ -409,46 +498,109 @@ function planLandingPages(options = {}) {
     categoryPages.push(page);
   }
 
-  // ③ 厂商页：规范厂商名分组，门槛复用订阅那一套
+  // ③ 厂商页：规范厂商名分组，门槛复用订阅那一套；v3.0 起再加「至少一种非优惠资料」
+  //
+  // 候选厂商 = ① 有优惠的（A 空间显示名）∪ ② providers.json 里**有非优惠资料**的（B 空间）。
+  // 第 ② 类以前根本进不了这张表（它们没有优惠），因此 `/vendor/<slug>/` 那时只能是优惠页；
+  // 现在它们是「厂商统一资料页」的正当内容（判据在 `vendorMaterialOf()`，全部显式 join）。
+  //
+  // ⚠️ R5（队长 2026-10-01 修正）：第 ② 类**只收「在 A 空间有厂商名」的** provider
+  // （`vendorKey !== null`）。`/vendor/<slug>/` 的身份键是 A 空间厂商名；给一个没有 A 空间
+  // 厂商名的 provider 建路由，就必须新编一个厂商身份或改身份键 —— 两者都不接受。
+  // 实测 trae / qoder / codebuddy / qoder-intl 属于这一类，它们的资料走 /plans/coding/ 与 /plans/。
   const vendorCounts = new Map();
   for (const deal of dealPool) {
     const name = vendorKeyOf(deal);
     if (!name) continue;
     vendorCounts.set(name, (vendorCounts.get(name) || 0) + 1);
   }
+  const materialByVendor = new Map();
+  const noIdentity = [];
+  for (const [key, entry] of Object.entries(providerTable)) {
+    const name = String((entry && entry.name) || '');
+    if (!name) continue;
+    const material = vendorMaterialOf({ vendorName: name, providerTable, plans, apiPlans, models, modelLinks });
+    materialByVendor.set(name, material);
+    if (!material.nonDeal) continue;
+    if (!material.hasVendorIdentity) {
+      // 有资料、但**没有 A 空间厂商名**：不生成路由、也不当成门槛不达标 —— 单独记一条
+      // `no-vendor-identity`，报告里读得懂"为什么这一家没有 /vendor/ 页面"。
+      noIdentity.push({
+        kind: 'vendor', key: name, providerKey: key, route: null,
+        count: vendorCounts.get(name) || 0, eventCount: eventCountOf(name) || 0,
+        reason: 'no-vendor-identity',
+        detail: `provider「${key}」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，`
+          + `为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。`
+          + `（Coding 套餐 ${material.codingPlans} 条 / API 记录 ${material.apiRecords} 条 / 模型 ${material.models} 个）`
+      });
+      continue;
+    }
+    if (!vendorCounts.has(name)) vendorCounts.set(name, 0);
+  }
   const vendorPages = [];
   const vendorNames = [...vendorCounts.keys()].sort((a, b) => (vendorCounts.get(b) - vendorCounts.get(a)) || a.localeCompare(b, 'zh'));
   for (const name of vendorNames) {
     const count = vendorCounts.get(name);
-    const slug = vendorSlugs[name];
+    const material = materialByVendor.get(name) || vendorMaterialOf({ vendorName: name });
+    // 规范 slug：优先 deals 侧登记表；没有时退回 providers.json 里那一份。
+    // 两份**同名条目**必须逐字相同（`providers.validateSlugAgreement` 是那条硬断言），
+    // 因此这里不是"取一个能用的"，而是"同一家公司只有一个 slug"。
+    const providerEntry = Object.values(providerTable).find(entry => entry && String(entry.name || '') === name) || null;
+    const slug = vendorSlugs[name] || (providerEntry && providerEntry.slug) || null;
     const eventCount = eventCountOf(name) || 0;
-    const eligible = count >= vendorThresholds.minDeals || eventCount >= vendorThresholds.minEvents;
+    const eligible = count >= vendorThresholds.minDeals || eventCount >= vendorThresholds.minEvents || material.nonDeal;
     const route = slug ? `vendor/${slug}/` : null;
     if (!eligible) {
       skipped.push({ kind: 'vendor', key: name, route, count, eventCount, reason: 'below-threshold' });
       continue;
     }
     if (!slug) {
-      problems.push(`厂商「${name}」已达标（有效优惠 ${count} 条 / 历史事件 ${eventCount} 条）但没有登记 slug —— 请在 scripts/data/vendor-slugs.json 加一行，建议值 "${suggestSlug(name)}"`);
+      const why = material.nonDeal
+        ? `有非优惠资料（Coding 套餐 ${material.codingPlans} 条 / API 记录 ${material.apiRecords} 条 / 模型 ${material.models} 个）`
+        : `有效优惠 ${count} 条 / 历史事件 ${eventCount} 条`;
+      // 措辞刻意不写 provider 登记表的文件名：`plans-selftest` 有一条"deals 链路完全不引用
+      // plans / provider 层"的静态扫描，而 `landing.js` 属于 deals 链路。这里只需要给出
+      // 可执行的下一步，不需要（也不应该）让这一层知道另一层的文件名。
+      problems.push(`厂商「${name}」已达标（${why}）但没有登记 slug —— 请在厂商 slug 表（scripts/data/vendor-slugs.json）加一行，或确认 provider 登记表里这一家有 slug，建议值 "${suggestSlug(name)}"`);
       continue;
     }
     const pinned = pinnedRoutes.has(route);
-    const gate = shouldGenerateLandingPage('vendor', { key: name, count, eventCount, pinned }, ctx);
+    const gate = shouldGenerateLandingPage('vendor', {
+      key: name, count, eventCount, pinned, nonDealMaterial: material.nonDeal
+    }, ctx);
     if (!gate.ok) {
       skipped.push({ kind: 'vendor', key: name, route, count, eventCount, reason: gate.reason });
       continue;
     }
+    // 只有**没有优惠**、靠非优惠资料达标的厂商才换标题与首段说明 ——
+    // 已有 9 家厂商页的 title / heading / why 逐字节不变（纯追加的边界就在这里）。
+    const nonDealOnly = count === 0;
+    const title = nonDealOnly ? `${name} 的 AI 资料` : `${name} 的 AI 优惠`;
+    const heading = nonDealOnly ? `${name}：套餐、API 计费与模型资料` : `${name} 的 AI 优惠与免费额度`;
+    const description = nonDealOnly
+      ? `${name} 在本站收录的 Coding 套餐、API 计费记录、模型归属与最近变化。所有内容来自已有数据关系（join），不复制生产事实。`
+      : `${name} 当前收录的 AI 优惠与免费额度：逐条标注福利类型、领取门槛与是否中国大陆可用，并给出该厂商最近的变化。`;
+    const why = [
+      `这一页收的是<b>登记在册的同一家厂商</b>的条目：厂商名按站内厂商归一规则合并（同一个公司的不同写法会落到同一页），当前有效优惠 ${count} 条。`,
+      '条数只统计<b>当前有效优惠</b>（未过期的 type=deal 条目）；工具条目不计入，也不会把「没查到」写成「没有」。',
+      '页面上的每一个数字都来自当前数据；没有依据的字段写「尚未确认」，不写成「不可用」。'
+    ];
+    if (material.nonDeal) {
+      // ⚠️ t13 跨范围修复（阻断级）：这里原本写的是 `**join**` —— Markdown 记号会被**逐字**
+      // 渲染给读者（`.snote` 是纯 HTML 容器），并被构建期的「作者正文无 Markdown 记号」
+      // 门禁当场判红。强调一律用 `<b>`，去掉记号后可见文本一个字都没变。
+      why.push(`这一页还<b>关联</b>了该厂商的非优惠资料：Coding 套餐 ${material.codingPlans} 条、`
+        + `API 计费记录 ${material.apiRecords} 条（模型计价条目按记录展开）、`
+        + `Model Registry 归属模型 ${material.models} 个。它们全部来自既有数据关系的显式匹配，本站不复制一份「厂商数据」。`);
+    }
     vendorPages.push({
       kind: 'vendor', key: name, slug, route, depth: depthOf(route), indexable: true, pinned,
-      title: `${name} 的 AI 优惠`,
-      heading: `${name} 的 AI 优惠与免费额度`,
-      description: `${name} 当前收录的 AI 优惠与免费额度：逐条标注福利类型、领取门槛与是否中国大陆可用，并给出该厂商最近的变化。`,
-      why: [
-        `这一页收的是<b>登记在册的同一家厂商</b>的条目：厂商名按站内厂商归一规则合并（同一个公司的不同写法会落到同一页），当前有效优惠 ${count} 条。`,
-        '条数只统计<b>当前有效优惠</b>（未过期的 type=deal 条目）；工具条目不计入，也不会把「没查到」写成「没有」。',
-        '页面上的每一个数字都来自当前数据；没有依据的字段写「尚未确认」，不写成「不可用」。'
-      ],
-      match: { by: 'vendor', value: name }, count, eventCount
+      title, heading, description, why,
+      match: { by: 'vendor', value: name }, count, eventCount,
+      // v3.0 Stage E：资料页 join 的输入（渲染层只读这些键，不重新判据）。
+      material,
+      nonDealMaterial: material.nonDeal,
+      providerKey: material.providerKey
     });
   }
 
@@ -503,6 +655,11 @@ function planLandingPages(options = {}) {
     ...hubPages.filter(page => page.key === 'vendor'),
     ...vendorPages
   ];
+
+  // R5：没有 A 空间厂商名的 provider 逐条记进 `skipped`（reason=no-vendor-identity），
+  // 报告与构建日志因此能回答「为什么这一家没有 /vendor/ 页面」——
+  // 这比让它悄悄消失、或者硬造一个身份要好。
+  skipped.push(...noIdentity);
 
   // ⑥ 钉住的页面必须都生成，且不能是空页
   const generatedRoutes = new Set(ordered.map(page => page.route));
@@ -699,6 +856,7 @@ module.exports = {
   loadAliases,
   validateSlugTable,
   shouldGenerateLandingPage,
+  vendorMaterialOf,
   itemsOf,
   itemKeyOf,
   planLandingPages,

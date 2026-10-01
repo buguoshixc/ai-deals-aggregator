@@ -1,8 +1,269 @@
 {
   "schemaVersion": 1,
   "updatedAt": "2026-10-01T00:00:00+08:00",
-  "count": 7,
+  "count": 13,
   "plans": [
+    {
+      "id": "ebc4af9a71b6",
+      "kind": "api",
+      "provider": "aliyun",
+      "planName": "模型推理按量计费(中国内地)",
+      "channel": "standard",
+      "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+      "region": "cn",
+      "pricing": {
+        "currency": "CNY",
+        "unit": "per_1M_tokens",
+        "unitNote": "官方表格表头逐字写「输入单价（每百万Token）」「输出单价（每百万Token）」，币种为人民币"
+      },
+      "models": [
+        {
+          "name": "deepseek-v4-pro",
+          "modelKey": "deepseek-v4-pro",
+          "variant": "standard",
+          "aliases": [
+            "deepseek-v4-pro-0813"
+          ],
+          "rates": {
+            "input": 12,
+            "output": 24,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "百炼上的第三方模型（DeepSeek）；同页另有带时间分档的 -0813 版本，本记录只收不区分时段的标准价"
+        },
+        {
+          "name": "glm-5.3",
+          "modelKey": "glm-5.3",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 8,
+            "output": 28,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "百炼上的第三方模型（ZHIPU），官方表写「非思考和思考模式 / 不区分阶梯」"
+        },
+        {
+          "name": "kimi-k3",
+          "modelKey": "kimi-k3",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 20,
+            "output": 100,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "百炼上的第三方模型（Moonshot），官方表写「仅思考模式」"
+        },
+        {
+          "name": "MiniMax-M3",
+          "modelKey": "minimax-m3",
+          "variant": "standard",
+          "aliases": [
+            "MiniMax/MiniMax-M3"
+          ],
+          "rates": {
+            "input": 4.2,
+            "output": 16.8,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "百炼上的第三方模型；官方表「非思考和思考模式」，无免费额度"
+        },
+        {
+          "name": "qwen-max",
+          "modelKey": "qwen-max",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 2.4,
+            "output": 9.6,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "官方表写「仅非思考模式 / 无阶梯计价」"
+        },
+        {
+          "name": "qwen3-max",
+          "modelKey": "qwen3-max",
+          "variant": "long_context",
+          "aliases": null,
+          "rates": {
+            "input": 4,
+            "output": 16,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "官方表第二档 32K<Token≤128K；同页还有第三档 128K<Token≤256K = 7 元 / 28 元，一档一条会撞 (modelKey, variant)，故记在 note 里"
+        },
+        {
+          "name": "qwen3-max",
+          "modelKey": "qwen3-max",
+          "variant": "standard",
+          "aliases": [
+            "qwen3-max-2026-01-23"
+          ],
+          "rates": {
+            "input": 2.5,
+            "output": 10,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "官方表首档 0<Token≤32K"
+        },
+        {
+          "name": "qwen3.8-max",
+          "modelKey": "qwen3.8-max",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 12,
+            "output": 36,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "官方表：0<Token≤1M；Batch 调用半价、上下文缓存另享折扣；同页另有国际/美国部署档，本记录只收中国内地标准档"
+        }
+      ],
+      "freeTier": {
+        "type": "tokens",
+        "amount": 1000000,
+        "period": "one_time",
+        "models": null,
+        "description": "官方表格「免费额度」列：多数模型 100 万 Token，有效期自开通百炼起 90 天内",
+        "conversionDependsOnModel": null
+      },
+      "limits": null,
+      "credits": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "模型 ID（Model ID） 模式 单次请求的输入Token数 输入单价（每百万Token） 输出单价（每百万Token） 思维链+回答 免费额度",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.qwen3-max",
+          "quote": "qwen3-max 当前能力等同于qwen3-max-2026-01-23 Batch调用半价 上下文缓存享有折扣 非思考和思考模式 0<Token≤32K 2.5元 10元 100万Token 32K<Token≤128K 4元 16元 128K<Token≤256K 7元 28元",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.qwen3.8-max",
+          "quote": "qwen3.8-max Batch调用半价 上下文缓存享有折扣 非思考和思考模式 0<Token≤1M 12元 36元 100万Token",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {}
+    },
+    {
+      "id": "ef4d06758403",
+      "kind": "api",
+      "provider": "aliyun",
+      "planName": "模型推理按量计费(闲时)",
+      "channel": "off_peak",
+      "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+      "region": "cn",
+      "pricing": {
+        "currency": "CNY",
+        "unit": "per_1M_tokens",
+        "unitNote": "与标准档同一张官方表；本记录只收「闲时」那一档，忙时价见本记录 note 与标准档记录"
+      },
+      "models": [
+        {
+          "name": "deepseek-v4.1-flash",
+          "modelKey": "deepseek-v4.1-flash",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 1,
+            "output": 4,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "官方同一行并列两档时段价：忙时 2 元 / 8 元、闲时 1 元 / 4 元。本记录收闲时那档（与既有 deepseek off_peak 记录的建法一致）"
+        }
+      ],
+      "freeTier": null,
+      "limits": null,
+      "credits": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "models.deepseek-v4.1-flash",
+          "quote": "deepseek-v4.1-flash 上下文缓存享有折扣 忙时 2元 闲时 1元 忙时 8元 闲时 4元 100万Token",
+          "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {}
+    },
     {
       "id": "4f8bae91f9f8",
       "kind": "api",
@@ -500,6 +761,146 @@
       "derivedMetrics": {}
     },
     {
+      "id": "796e0c92ecdc",
+      "kind": "api",
+      "provider": "minimax",
+      "planName": "API 按量计费",
+      "channel": "standard",
+      "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+      "source": "Official-Docs",
+      "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+      "region": "cn",
+      "pricing": {
+        "currency": "CNY",
+        "unit": "per_1M_tokens",
+        "unitNote": "官方表头逐字写「输入价格 元/百万 tokens」「输出价格 元/百万 tokens」「缓存读取 元/百万 tokens」"
+      },
+      "models": [
+        {
+          "name": "MiniMax-M2.5",
+          "modelKey": "minimax-m2.5",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 2.1,
+            "output": 8.4,
+            "cachedInput": 0.21,
+            "cacheWrite": 2.625,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "官方归入「历史模型」表，仍在同一页给出价格"
+        },
+        {
+          "name": "MiniMax-M2.7-highspeed",
+          "modelKey": "minimax-m2.7-highspeed",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 4.2,
+            "output": 16.8,
+            "cachedInput": 0.42,
+            "cacheWrite": 2.625,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "MiniMax-M2.7",
+          "modelKey": "minimax-m2.7",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 2.1,
+            "output": 8.4,
+            "cachedInput": 0.42,
+            "cacheWrite": 2.625,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "MiniMax-M3",
+          "modelKey": "minimax-m3",
+          "variant": "long_context",
+          "aliases": null,
+          "rates": {
+            "input": 4.2,
+            "output": 16.8,
+            "cachedInput": 0.84,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "官方写「> 512k 输入 tokens 永久五折」：原价 8.40/33.60/1.68，五折后 4.20/16.80/0.84"
+        },
+        {
+          "name": "MiniMax-M3",
+          "modelKey": "minimax-m3",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 2.1,
+            "output": 8.4,
+            "cachedInput": 0.42,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "官方写「≤ 512k 输入 tokens 永久五折」：原价 4.20/16.80/0.84，五折后为 2.10/8.40/0.42（记折扣后实付价）。>512k 档见本记录 long_context 条目"
+        }
+      ],
+      "freeTier": null,
+      "limits": null,
+      "credits": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "模型输入价格 元/百万 tokens输出价格 元/百万 tokens缓存读取 元/百万 tokens",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.minimax-m2.7",
+          "quote": "MiniMax-M2.72.18.40.422.625MiniMax-M2.7-highspeed4.216.80.422.625",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.minimax-m3",
+          "quote": "MiniMax-M3≤ 512k 输入 tokens 永久五折4.20 2.1016.80 8.400.84 0.42",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {}
+    },
+    {
       "id": "206f8b4bde7b",
       "kind": "api",
       "provider": "openai",
@@ -835,6 +1236,491 @@
           "sourceUrl": "https://platform.openai.com/docs/pricing",
           "capturedAt": "2026-10-01",
           "lang": "en"
+        }
+      ],
+      "derivedMetrics": {}
+    },
+    {
+      "id": "6844d46deb05",
+      "kind": "api",
+      "provider": "siliconflow",
+      "planName": "模型推理按量计费",
+      "channel": "standard",
+      "officialUrl": "https://siliconflow.cn/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://siliconflow.cn/pricing",
+      "region": "cn",
+      "pricing": {
+        "currency": "CNY",
+        "unit": "per_1M_tokens",
+        "unitNote": "官方表头逐字写「输入价格（M Tokens）」「输出价格（M Tokens）」「缓存价格（M Tokens）」"
+      },
+      "models": [
+        {
+          "name": "DeepSeek-V3.2",
+          "modelKey": "deepseek-v3.2",
+          "variant": "standard",
+          "aliases": [
+            "deepseek-ai/DeepSeek-V3.2"
+          ],
+          "rates": {
+            "input": 4,
+            "output": 6,
+            "cachedInput": 0.4,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "官方另列 Pro/ 前缀的同价条目"
+        },
+        {
+          "name": "DeepSeek-V4-Pro",
+          "modelKey": "deepseek-v4-pro",
+          "variant": "standard",
+          "aliases": [
+            "deepseek-ai/DeepSeek-V4-Pro"
+          ],
+          "rates": {
+            "input": 12,
+            "output": 24,
+            "cachedInput": 1,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "GLM-5.3",
+          "modelKey": "glm-5.3",
+          "variant": "standard",
+          "aliases": [
+            "zai-org/GLM-5.3"
+          ],
+          "rates": {
+            "input": 8,
+            "output": 28,
+            "cachedInput": 2,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "官方模型 ID 为 zai-org/GLM-5.3"
+        },
+        {
+          "name": "Kimi-K2.7-Code",
+          "modelKey": "kimi-k2.7-code",
+          "variant": "standard",
+          "aliases": [
+            "moonshotai/Kimi-K2.7-Code"
+          ],
+          "rates": {
+            "input": 6.5,
+            "output": 27,
+            "cachedInput": 1.3,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "Qwen3.8-27B",
+          "modelKey": "qwen3.8-27b",
+          "variant": "standard",
+          "aliases": [
+            "Qwen/Qwen3.8-27B"
+          ],
+          "rates": {
+            "input": 3,
+            "output": 12,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "Step-3.5-Flash",
+          "modelKey": "step-3.5-flash",
+          "variant": "standard",
+          "aliases": [
+            "stepfun-ai/Step-3.5-Flash"
+          ],
+          "rates": {
+            "input": 0.7,
+            "output": 2.1,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "官方缓存列为「-」，即未提供缓存计价"
+        }
+      ],
+      "freeTier": null,
+      "limits": null,
+      "credits": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "对话模型 厂商 模型 输入价格（M Tokens） 输出价格（M Tokens） 缓存价格（M Tokens）",
+          "sourceUrl": "https://siliconflow.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.deepseek-v4-pro",
+          "quote": "DeepSeek-V4-Pro ¥ 12.00 ¥ 24.00 ¥ 1.00",
+          "sourceUrl": "https://siliconflow.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.glm-5.3",
+          "quote": "Z-ai GLM-5.3 ¥ 8.00 ¥ 28.00 ¥ 2.00",
+          "sourceUrl": "https://siliconflow.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {}
+    },
+    {
+      "id": "2981d8f29020",
+      "kind": "api",
+      "provider": "tencent",
+      "planName": "混元生文按量计费",
+      "channel": "standard",
+      "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
+      "source": "Official-Docs",
+      "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+      "region": "cn",
+      "pricing": {
+        "currency": "CNY",
+        "unit": "per_1M_tokens",
+        "unitNote": "官方表头逐字写「刊例价（每 百万 tokens）」，每格再写「输入：X元 输出：Y元」"
+      },
+      "models": [
+        {
+          "name": "Hunyuan-a13b",
+          "modelKey": "hunyuan-a13b",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 0.5,
+            "output": 2,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "Hunyuan-embedding",
+          "modelKey": "hunyuan-embedding",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 0.7,
+            "output": 0.7,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "官方同价列出输入与输出"
+        },
+        {
+          "name": "Hunyuan-role-latest",
+          "modelKey": "hunyuan-role-latest",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 2.4,
+            "output": 9.6,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": "官方页给的计费示例用的就是这个模型的 2.4/9.6"
+        },
+        {
+          "name": "Hunyuan-translation-lite",
+          "modelKey": "hunyuan-translation-lite",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 1,
+            "output": 3,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "Hunyuan-translation",
+          "modelKey": "hunyuan-translation",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 1.2,
+            "output": 3.6,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": null
+        },
+        {
+          "name": "Tencent HY Vision 1.5 Instruct",
+          "modelKey": "tencent-hy-vision-1.5-instruct",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 3,
+            "output": 9,
+            "cachedInput": null,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": null,
+          "note": null
+        }
+      ],
+      "freeTier": {
+        "type": "tokens",
+        "amount": 1000000,
+        "period": "one_time",
+        "models": null,
+        "description": "官方写「首次开通腾讯混元大模型服务后…共100万 tokens，共享消耗。资源包有效期为1年」",
+        "conversionDependsOnModel": null
+      },
+      "limits": null,
+      "credits": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "产品名 刊例价（每 百万 tokens） Hunyuan-a13b 输入：0.5元 输出：2元",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "freeTier",
+          "quote": "免费额度 共100万 tokens，共享消耗。资源包有效期为1年，自开通服务之日起1年内若免费资源包未使用完，则过期作废。",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.hunyuan-role-latest",
+          "quote": "Hunyuan-role-latest 输入：2.4元 输出：9.6元",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {}
+    },
+    {
+      "id": "a4a9addc49ca",
+      "kind": "api",
+      "provider": "volcengine",
+      "planName": "豆包模型 API 按量计费",
+      "channel": "standard",
+      "officialUrl": "https://www.volcengine.com/product/ark",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://www.volcengine.com/product/ark",
+      "region": "cn",
+      "pricing": {
+        "currency": "CNY",
+        "unit": "per_1M_tokens",
+        "unitNote": "官方产品页逐字写「6元/百万输入tokens 30元/百万输出tokens 1.2元/百万命中tokens 0.017元/百万tokens缓存/小时」"
+      },
+      "models": [
+        {
+          "name": "Doubao-Seed-2.1-pro",
+          "modelKey": "doubao-seed-2.1-pro",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 6,
+            "output": 30,
+            "cachedInput": 1.2,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": [
+            {
+              "kind": "text",
+              "price": 0.017,
+              "unit": "per_1M_token_hours",
+              "note": "官方写「0.017元/百万tokens缓存/小时」"
+            }
+          ],
+          "note": null
+        },
+        {
+          "name": "Doubao-Seed-2.1-turbo",
+          "modelKey": "doubao-seed-2.1-turbo",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 3,
+            "output": 15,
+            "cachedInput": 0.6,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": [
+            {
+              "kind": "text",
+              "price": 0.017,
+              "unit": "per_1M_token_hours",
+              "note": "官方写「0.017元/百万tokens缓存/小时」"
+            }
+          ],
+          "note": null
+        },
+        {
+          "name": "Doubao-Seed-Character",
+          "modelKey": "doubao-seed-character",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 0.8,
+            "output": 2,
+            "cachedInput": 0.16,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": [
+            {
+              "kind": "text",
+              "price": 0.017,
+              "unit": "per_1M_token_hours",
+              "note": "官方写「0.017元/百万tokens缓存/小时」"
+            }
+          ],
+          "note": "官方原文是「0.8元起/百万输入tokens 2元起/百万输出tokens」——带「起」字，本记录取页面标称的起步价，落盘时请保留这句口径说明"
+        },
+        {
+          "name": "Doubao-Seed-Evolving",
+          "modelKey": "doubao-seed-evolving",
+          "variant": "standard",
+          "aliases": null,
+          "rates": {
+            "input": 6,
+            "output": 30,
+            "cachedInput": 1.2,
+            "cacheWrite": null,
+            "cacheWriteLong": null,
+            "reasoning": null,
+            "batchInput": null,
+            "batchOutput": null
+          },
+          "mediaRates": [
+            {
+              "kind": "text",
+              "price": 0.017,
+              "unit": "per_1M_token_hours",
+              "note": "官方写「0.017元/百万tokens缓存/小时」——缓存存储按 token·小时计费"
+            }
+          ],
+          "note": null
+        }
+      ],
+      "freeTier": null,
+      "limits": null,
+      "credits": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "pricing.unit",
+          "quote": "Doubao-Seed-Evolving 6元/百万输入tokens 30元/百万输出tokens 1.2元/百万命中tokens 0.017元/百万tokens缓存/小时",
+          "sourceUrl": "https://www.volcengine.com/product/ark",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.doubao-seed-2.1-pro",
+          "quote": "Doubao-Seed-2.1-pro 6元/百万输入tokens 30元/百万输出tokens 1.2元/百万命中tokens 0.017元/百万tokens缓存/小时",
+          "sourceUrl": "https://www.volcengine.com/product/ark",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "models.doubao-seed-2.1-turbo",
+          "quote": "Doubao-Seed-2.1-turbo 3元/百万输入tokens 15元/百万输出tokens 0.6元/百万命中tokens 0.017元/百万tokens缓存/小时",
+          "sourceUrl": "https://www.volcengine.com/product/ark",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
         }
       ],
       "derivedMetrics": {}

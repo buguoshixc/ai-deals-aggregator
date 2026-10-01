@@ -17,6 +17,15 @@ research/_raw/**/shots/
 # 兜底：shots/ 之外散落的截图同样不入库（证据只留结构与报告，图可重拍）
 research/_raw/**/*.png
 
+# v3.0 取证现场（research/_raw/v3.0-sources/）的**原始第三方快照**：不入库。
+# 理由与上面 shots/ 完全相同：① 是第三方正文，版权纪律不入库；② 约 21 MB，与仓库历史不成比例；
+# ③ 是可由 probe.js 重新生成的派生物。**唯一的证据**（官方 URL + 检查日期 + 实测数字 + 失败原因）
+# 已落在 index.json（离线索引，含 40 个来源）与 research/v3.0-source-candidates.{md,json} 里。
+# 见 research/_raw/v3.0-sources/README.md。
+research/_raw/v3.0-sources/html/
+research/_raw/v3.0-sources/text/
+research/_raw/v3.0-sources/domtext/
+
 # DSH 会话的残留探针：临时诊断脚本，会读本机 ~/.dsh/.credentials.yaml，
 # 文件自己写着 Safe to delete——不属于本项目源码，不入库
 .vision-probe.mjs
