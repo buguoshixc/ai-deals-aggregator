@@ -3987,6 +3987,42 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.waitForTimeout(150);
 
+    // ⑧.5 底部的「口径与说明」必须**占满正文宽度**，而且真的按这个宽度排。
+    //      线上出过一次：`.plist/.snote` 写着 `max-width: 82ch`（12px 字体下 ≈530px，而正文容器 1380px），
+    //      宽屏上整段缩成左边一条窄柱、每句话被切在词中间（「…本页照原样列 / 出」）。
+    //      这里量的是**渲染结果**，两条各管一件事：
+    //      ① 盒子宽度 ≈ 表格宽度（同一条正文容器，谁也不许自己收窄）；
+    //      ② 每一句的行数不超过 2 行 —— 只量盒子宽度的话，"盒子很宽但每行只写一半就换行"
+    //         仍然能绿；而恢复成 82ch 时这些句子会变成 2~3 行，②立刻变红。
+    {
+      const notes = await page.evaluate(() => {
+        const box = el => (el ? el.getBoundingClientRect() : null);
+        const table = document.querySelector('.ptable');
+        const list = document.querySelector('.plist');
+        const tail = document.querySelector('.plist + .snote');
+        const items = list ? [...list.querySelectorAll('li')] : [];
+        const lh = list ? parseFloat(getComputedStyle(list).lineHeight) : 0;
+        const linesOf = li => Math.max(1, Math.round(box(li).height / lh));
+        return {
+          table: table ? Math.round(box(table).width) : 0,
+          list: list ? Math.round(box(list).width) : 0,
+          tail: tail ? Math.round(box(tail).width) : 0,
+          items: items.length,
+          lines: items.map(linesOf),
+          maxLines: items.length ? Math.max(...items.map(linesOf)) : 0,
+          clipped: items.filter(li => li.scrollWidth > li.clientWidth + 1).length,
+          maxWidth: [list, tail].map(el => (el ? getComputedStyle(el).maxWidth : '')).join(' / ')
+        };
+      });
+      check('/plans/coding/ 口径与说明占满正文宽度（不再被 82ch 压成一条窄柱）',
+        notes.items >= 9 && notes.list >= notes.table - 2 && notes.tail >= notes.table - 2 && notes.clipped === 0,
+        `${notes.items} 条 · 列表 ${notes.list}px / 末尾段 ${notes.tail}px / 表格 ${notes.table}px · ` +
+        `裁切 ${notes.clipped} 条 · max-width=${notes.maxWidth}`);
+      check('/plans/coding/ 口径与说明按正文宽度排版（每句 ≤ 2 行，窄柱时是 2~3 行）',
+        notes.items >= 9 && notes.maxLines <= 2,
+        `每句行数 [${notes.lines.join(' ')}] · 最多 ${notes.maxLines} 行`);
+    }
+
     // ⑨ 关掉 JS：基础静态内容必须仍在，而且一个控件都不能有（无死按钮）
     {
       const noJsCtx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });

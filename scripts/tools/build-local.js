@@ -1257,9 +1257,15 @@ ${style}
   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .stop h1 { font-size: 19px; margin: 0; }
   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 82ch; }
+  /* ⚠️ 这一页底部的口径文案**不收窄**（v2.2 上线后的修复）。
+     早先按"长文段 82ch 更好读"写了个上限，但 ch 量的是 "0" 的宽度（12px 字体下约 6px），
+     于是 82ch ≈ 490px —— 正文容器有 1400px，整段只占左边 1/3，句子还被切在词中间
+     （「…本页照原样列 / 出，不互相换算」），正文右侧留下一条巨大的空白。
+     口径说明是**必须读完才能理解这一页**的内容，宽度就该跟随正文容器；
+     想要收窄的是"可选的长文"，不是它。 */
+  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
   .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
-  .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: 82ch; }
+  .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
   .plist b { color: var(--ink2); }
   .ptable-wrap { overflow-x: auto; }
   .ptable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
