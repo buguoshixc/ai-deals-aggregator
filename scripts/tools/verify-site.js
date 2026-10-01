@@ -3633,12 +3633,40 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       : [];
     const eventIds = new Set(historyEvents.map(event => event.eventId).filter(Boolean));
     const feedPaths = ['feed/plans/api/changes.xml', 'feed/plans/api/changes.json'];
-    // ⚠️ 必须用**绝对 URL**：当前页面在 `/changes/`，相对路径会解析成 `/changes/feed/...`（404），
-    // 而那两条 404 会顺带把「没有 JS 错误」那条断言也带红 —— 一个自己的失误伪装成两个问题。
+    // ⚠️ 必须取到**当前被验收那一份站点**的根，而不是 `location.origin + '/'`。
+    //
+    // 这一条曾经写错、并在**线上冒烟时**才暴露：本站是 GitHub 项目页，线上地址带一级子路径
+    // （`/ai-deals-aggregator/`），而 `location.origin + '/'` 会把它丢掉 ⇒ 请求
+    // `https://buguoshixc.github.io/feed/plans/api/changes.xml` ⇒ 404。
+    // 更糟的是那两条 404 会**顺带把「没有 JS 错误」也带红** —— 一个自己的失误伪装成两个问题
+    // （这条注释原本就写在这里警告过，但实现没跟上；现在实现与警告一致）。
+    //
+    // 判据：canonical 与当前路径**共享第一段**时，那一段就是站点前缀（子路径部署）。
+    // 这个判据在两种验收模式下都成立：
+    //   · 本地验收（`verify-site.js` 默认）：当前在 `127.0.0.1/...`，canonical 指向生产域，
+    //     第一段不同 ⇒ 前缀取 `/` ⇒ 取的就是本地服务上的那份产物；
+    //   · 线上验收（`--url=`）：当前与 canonical 都在同一子路径下 ⇒ 前缀取该子路径。
+    // 因此它**永远取当前被验收的那一份**，不会退化成"本地验收却去 fetch 生产站点"。
+    // 已知限制：站点若部署在根路径且页面有 ≥3 段（本仓不存在这种情形），回退为父目录。
+    // 注意：`page.evaluate` 的函数体**只在浏览器上下文里执行**，拿不到 Node 侧的变量，
+    // 所以 `feedBaseHref` 的逻辑必须**内联**在下面这个函数里（不能引用外面的同名函数）。
     const probe = await page.evaluate(async (paths) => {
       const out = {};
+      const seg = p => String(p || '').split('/').filter(Boolean);
+      const cur = new URL(location.href);
+      const canonicalHref = (document.querySelector('link[rel="canonical"]') || {}).href || '';
+      let feedBase;
+      try {
+        const canon = new URL(canonicalHref);
+        const curSegs = seg(cur.pathname);
+        const canonSegs = seg(canon.pathname);
+        const prefix = (curSegs.length && canonSegs.length && curSegs[0] === canonSegs[0]) ? `/${curSegs[0]}/` : '/';
+        feedBase = cur.origin + prefix;
+      } catch (error) {
+        feedBase = new URL('.', location.href).href;
+      }
       for (const p of paths) {
-        const response = await fetch(new URL(p, location.origin + '/').href);
+        const response = await fetch(new URL(p, feedBase).href);
         out[p] = { ok: response.ok, status: response.status, body: await response.text() };
       }
       return out;
