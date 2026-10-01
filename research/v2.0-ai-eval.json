@@ -1,0 +1,718 @@
+{
+  "generatedAt": "2026-10-01T01:47:56Z",
+  "provider": "mock",
+  "mode": "mock",
+  "goldens": {
+    "extraction": {
+      "file": "scripts\\data\\ai-eval\\extraction.golden.json",
+      "builtAt": "2026-09-30T17:38:44Z",
+      "items": 6,
+      "note": "金标准来源：deals.json 中带六字段的记录（v1.1 人工策展确认值），不是模型输出，也不是另一轮判断。 记录由写死的 id 清单选定（共 6 条），与 extraction.mocks.json 的键一一对应；构建期会断言这件事。 评测输入 = extract.recordText(deal) 截到 --max-chars 上限，即我们已提交的记录文本本身。 gold 只记录记录里真实存在的字段；缺失的键一律视为 unknown（三态语义）。"
+    },
+    "dedup": {
+      "file": "scripts\\data\\ai-eval\\dedup.golden.json",
+      "builtAt": "2026-09-30T17:38:44Z",
+      "pairs": 30,
+      "labelingRule": "same vendor（厂商名相同）AND same product（标题里的产品名词逐字相同）AND same benefit（优惠文案逐字相同或都为空）→ same_offer； same vendor AND same product 但 benefit 不同（如免费额度 vs 学生折扣）→ same_product_different_offer； same vendor，product 不同 → same_vendor； 没有共同厂商 / 产品 / URL / benefit → unrelated； 信息不足以判断 → uncertain。"
+    },
+    "translation": {
+      "file": "scripts\\data\\ai-eval\\translation.golden.json",
+      "builtAt": "2026-09-30T17:38:44Z",
+      "pairs": 63,
+      "note": "来源：scripts/data/translations_zh.json 里人工核准的译文。 en 取 entry.src[field]（译文**当初照着写的那段英文**），不是记录当前的英文： 若用当前英文，原文漂移会被算成守卫误报，而那不是误报。 terms 取 translate.termsOf(deal)（厂商名里的拉丁词），来自 deals.json。 drift 列的是「快照英文 ≠ 记录当前英文」的对，它们不影响本臂结论，但要让人看见。"
+    }
+  },
+  "arms": {
+    "extraction": {
+      "mode": "mock",
+      "goldenItems": 6,
+      "ran": 6,
+      "skipped": 0,
+      "fixtureMissing": [],
+      "maxChars": 1200,
+      "fields": {
+        "audience": {
+          "support": 6,
+          "truePositive": 2,
+          "falsePositive": 0,
+          "falseNegative": 4,
+          "goldUnknown": 0,
+          "precision": 1,
+          "recall": 0.3333
+        },
+        "benefitType": {
+          "support": 6,
+          "truePositive": 2,
+          "falsePositive": 1,
+          "falseNegative": 4,
+          "goldUnknown": 0,
+          "precision": 0.6667,
+          "recall": 0.3333
+        },
+        "eligibilityDetail": {
+          "support": 12,
+          "truePositive": 4,
+          "falsePositive": 0,
+          "falseNegative": 8,
+          "goldUnknown": 12,
+          "precision": 1,
+          "recall": 0.3333
+        },
+        "claimRequirements": {
+          "support": 12,
+          "truePositive": 0,
+          "falsePositive": 3,
+          "falseNegative": 12,
+          "goldUnknown": 6,
+          "precision": 0,
+          "recall": 0
+        },
+        "availability": {
+          "support": 6,
+          "truePositive": 0,
+          "falsePositive": 0,
+          "falseNegative": 6,
+          "goldUnknown": 0,
+          "precision": null,
+          "recall": 0
+        }
+      },
+      "overall": {
+        "goldLeaves": 42,
+        "truePositive": 8,
+        "falsePositive": 4,
+        "falseNegative": 34,
+        "precision": 0.6667,
+        "recall": 0.1905,
+        "gatedRecall": 0.1667
+      },
+      "unknownAccuracy": {
+        "goldUnknownLeaves": 18,
+        "aiAlsoUnknown": 15,
+        "rate": 0.8333
+      },
+      "falseCertaintyRate": {
+        "goldUnknownLeaves": 18,
+        "aiGaveValue": 3,
+        "rate": 0.1667
+      },
+      "missingEvidence": 4,
+      "schemaOk": 5,
+      "schemaRejected": 1,
+      "invalidReasons": {
+        "enum_invalid": 1
+      },
+      "items": [
+        {
+          "id": "xf-2eae0e246de2",
+          "dealId": "2eae0e246de2",
+          "status": "accepted",
+          "goldLeaves": 7,
+          "goldUnknown": 3,
+          "predictedLeaves": 4,
+          "rejectedFields": [],
+          "flags": [],
+          "invalidReason": null,
+          "invalidDetail": null,
+          "inputChars": 1294
+        },
+        {
+          "id": "xf-9c12f13df3ba",
+          "dealId": "9c12f13df3ba",
+          "status": "invalid",
+          "goldLeaves": 7,
+          "goldUnknown": 3,
+          "predictedLeaves": 0,
+          "rejectedFields": [],
+          "flags": [],
+          "invalidReason": "enum_invalid",
+          "invalidDetail": "$.audience[0]: 必须是 \"student\"/\"developer\"/\"educator\"/\"education\"/\"general\"/\"other\" 之一，实际 \"students\"; $.benefitType[0]: 必须是 \"free_subscription\"/\"free_credits\"/\"free_api\"/\"free_model\"/\"discount\"/\"trial\"/\"student_plan\"/\"developer_credit\"/\"other\" 之一，实际 \"free_stuff\"",
+          "inputChars": 1291
+        },
+        {
+          "id": "xf-ebd47f6d2522",
+          "dealId": "ebd47f6d2522",
+          "status": "rejected_by_rules",
+          "goldLeaves": 7,
+          "goldUnknown": 3,
+          "predictedLeaves": 2,
+          "rejectedFields": [
+            "audience",
+            "benefitType"
+          ],
+          "flags": [],
+          "invalidReason": null,
+          "invalidDetail": null,
+          "inputChars": 1298
+        },
+        {
+          "id": "xf-62e3166acec0",
+          "dealId": "62e3166acec0",
+          "status": "rejected_by_rules",
+          "goldLeaves": 7,
+          "goldUnknown": 3,
+          "predictedLeaves": 1,
+          "rejectedFields": [
+            "claimRequirements"
+          ],
+          "flags": [],
+          "invalidReason": null,
+          "invalidDetail": null,
+          "inputChars": 1266
+        },
+        {
+          "id": "xf-f22e3cd094ad",
+          "dealId": "f22e3cd094ad",
+          "status": "accepted",
+          "goldLeaves": 7,
+          "goldUnknown": 3,
+          "predictedLeaves": 1,
+          "rejectedFields": [],
+          "flags": [],
+          "invalidReason": null,
+          "invalidDetail": null,
+          "inputChars": 1310
+        },
+        {
+          "id": "xf-5dedb9455508",
+          "dealId": "5dedb9455508",
+          "status": "rejected_by_rules",
+          "goldLeaves": 7,
+          "goldUnknown": 3,
+          "predictedLeaves": 4,
+          "rejectedFields": [
+            "claimRequirements"
+          ],
+          "flags": [
+            "unsupported_false"
+          ],
+          "invalidReason": null,
+          "invalidDetail": null,
+          "inputChars": 1280
+        }
+      ]
+    },
+    "dedup": {
+      "mode": "mock",
+      "goldenPairs": 30,
+      "ran": 4,
+      "skipped": 26,
+      "fixtureMissing": [
+        "62e3166acec0~6798f78de5ce",
+        "78384299b660~c4ab5c5d8101",
+        "8b2e8d64f11f~9c12f13df3ba",
+        "e384895f5935~e65f54470862",
+        "62e3166acec0~e7e8f538456c",
+        "62e3166acec0~ebd47f6d2522",
+        "e7e8f538456c~ebd47f6d2522",
+        "9c12f13df3ba~ad1d0c83909d",
+        "2eae0e246de2~ad1d0c83909d",
+        "6798f78de5ce~e7e8f538456c",
+        "6798f78de5ce~ebd47f6d2522",
+        "017bdbc04e70~8b609cb05116",
+        "4c7952115477~5c38e515a3ae",
+        "4d4bcb5b6829~bf156583e97c",
+        "78384299b660~8b609cb05116",
+        "8814355d59e1~e384895f5935",
+        "45ead69d60cc~d6aaee8c7379",
+        "7f8c32f6a327~d6aaee8c7379",
+        "2eae0e246de2~8b2e8d64f11f",
+        "4d4bcb5b6829~8814355d59e1",
+        "4d4bcb5b6829~e384895f5935",
+        "8b609cb05116~c4ab5c5d8101",
+        "bf156583e97c~e384895f5935",
+        "017bdbc04e70~c4ab5c5d8101",
+        "2db62eb1a8a0~8dada3205ed8",
+        "8814355d59e1~e65f54470862"
+      ],
+      "coverage": 0.1333,
+      "labelingRule": "same vendor（厂商名相同）AND same product（标题里的产品名词逐字相同）AND same benefit（优惠文案逐字相同或都为空）→ same_offer； same vendor AND same product 但 benefit 不同（如免费额度 vs 学生折扣）→ same_product_different_offer； same vendor，product 不同 → same_vendor； 没有共同厂商 / 产品 / URL / benefit → unrelated； 信息不足以判断 → uncertain。",
+      "matrix": {
+        "same_offer": {
+          "same_offer": 0,
+          "same_product_different_offer": 0,
+          "same_vendor": 0,
+          "unrelated": 0,
+          "uncertain": 0,
+          "invalid": 0
+        },
+        "same_product_different_offer": {
+          "same_offer": 0,
+          "same_product_different_offer": 0,
+          "same_vendor": 0,
+          "unrelated": 0,
+          "uncertain": 0,
+          "invalid": 0
+        },
+        "same_vendor": {
+          "same_offer": 2,
+          "same_product_different_offer": 1,
+          "same_vendor": 1,
+          "unrelated": 0,
+          "uncertain": 0,
+          "invalid": 0
+        },
+        "unrelated": {
+          "same_offer": 0,
+          "same_product_different_offer": 0,
+          "same_vendor": 0,
+          "unrelated": 0,
+          "uncertain": 0,
+          "invalid": 0
+        },
+        "uncertain": {
+          "same_offer": 0,
+          "same_product_different_offer": 0,
+          "same_vendor": 0,
+          "unrelated": 0,
+          "uncertain": 0,
+          "invalid": 0
+        }
+      },
+      "accuracy": 0.25,
+      "correct": 1,
+      "counted": 4,
+      "invalidResponses": 0,
+      "dangerousSameVendorAsSameOffer": 2,
+      "existingDeterministic": {
+        "wouldMergeShortlistPairs": 0,
+        "duplicateAliasGroupsInStore": 0,
+        "detail": "现有确定性去重按 aliasKey(normalizeTitle(title)) 合并；本臂只发现、不合并（dedup.js 不导出任何 merge 符号）"
+      },
+      "pairs": [
+        {
+          "pair": "8583e9860d88~c3d6bd34ebfe",
+          "gold": "same_vendor",
+          "predicted": "same_vendor",
+          "reason": "同厂商 Getsolved，但一条是整站入口、一条是 AI Detector 这个具体产品"
+        },
+        {
+          "pair": "45ead69d60cc~7f8c32f6a327",
+          "gold": "same_vendor",
+          "predicted": "same_product_different_offer",
+          "reason": "同厂商同系列的两个图像模型，各有一套免费额度记录"
+        },
+        {
+          "pair": "62e3166acec0~6798f78de5ce",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（62e3166acec0~6798f78de5ce）"
+        },
+        {
+          "pair": "78384299b660~c4ab5c5d8101",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（78384299b660~c4ab5c5d8101）"
+        },
+        {
+          "pair": "8b2e8d64f11f~9c12f13df3ba",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（8b2e8d64f11f~9c12f13df3ba）"
+        },
+        {
+          "pair": "e384895f5935~e65f54470862",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（e384895f5935~e65f54470862）"
+        },
+        {
+          "pair": "62e3166acec0~e7e8f538456c",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（62e3166acec0~e7e8f538456c）"
+        },
+        {
+          "pair": "62e3166acec0~ebd47f6d2522",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（62e3166acec0~ebd47f6d2522）"
+        },
+        {
+          "pair": "e7e8f538456c~ebd47f6d2522",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（e7e8f538456c~ebd47f6d2522）"
+        },
+        {
+          "pair": "2eae0e246de2~9c12f13df3ba",
+          "gold": "same_vendor",
+          "predicted": "same_offer",
+          "reason": "同厂商、同一官方页、优惠文案逐字相同（赠送 100万 Tokens）"
+        },
+        {
+          "pair": "9c12f13df3ba~ad1d0c83909d",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（9c12f13df3ba~ad1d0c83909d）"
+        },
+        {
+          "pair": "2eae0e246de2~ad1d0c83909d",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（2eae0e246de2~ad1d0c83909d）"
+        },
+        {
+          "pair": "6798f78de5ce~e7e8f538456c",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（6798f78de5ce~e7e8f538456c）"
+        },
+        {
+          "pair": "6798f78de5ce~ebd47f6d2522",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（6798f78de5ce~ebd47f6d2522）"
+        },
+        {
+          "pair": "017bdbc04e70~8b609cb05116",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（017bdbc04e70~8b609cb05116）"
+        },
+        {
+          "pair": "4c7952115477~5c38e515a3ae",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（4c7952115477~5c38e515a3ae）"
+        },
+        {
+          "pair": "4d4bcb5b6829~bf156583e97c",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（4d4bcb5b6829~bf156583e97c）"
+        },
+        {
+          "pair": "78384299b660~8b609cb05116",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（78384299b660~8b609cb05116）"
+        },
+        {
+          "pair": "8814355d59e1~e384895f5935",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（8814355d59e1~e384895f5935）"
+        },
+        {
+          "pair": "45ead69d60cc~d6aaee8c7379",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（45ead69d60cc~d6aaee8c7379）"
+        },
+        {
+          "pair": "7f8c32f6a327~d6aaee8c7379",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（7f8c32f6a327~d6aaee8c7379）"
+        },
+        {
+          "pair": "5dedb9455508~df1210f69a39",
+          "gold": "same_vendor",
+          "predicted": "same_offer",
+          "reason": "同厂商、同属官方免费模型列表，但分别是图像与视频模型，信息不足以确定是否同一优惠"
+        },
+        {
+          "pair": "2eae0e246de2~8b2e8d64f11f",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（2eae0e246de2~8b2e8d64f11f）"
+        },
+        {
+          "pair": "4d4bcb5b6829~8814355d59e1",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（4d4bcb5b6829~8814355d59e1）"
+        },
+        {
+          "pair": "4d4bcb5b6829~e384895f5935",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（4d4bcb5b6829~e384895f5935）"
+        },
+        {
+          "pair": "8b609cb05116~c4ab5c5d8101",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（8b609cb05116~c4ab5c5d8101）"
+        },
+        {
+          "pair": "bf156583e97c~e384895f5935",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（bf156583e97c~e384895f5935）"
+        },
+        {
+          "pair": "017bdbc04e70~c4ab5c5d8101",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（017bdbc04e70~c4ab5c5d8101）"
+        },
+        {
+          "pair": "2db62eb1a8a0~8dada3205ed8",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（2db62eb1a8a0~8dada3205ed8）"
+        },
+        {
+          "pair": "8814355d59e1~e65f54470862",
+          "gold": "same_vendor",
+          "predicted": "skipped",
+          "reason": "fixture 缺少录制响应（8814355d59e1~e65f54470862）"
+        }
+      ]
+    },
+    "translation": {
+      "humanPairs": 63,
+      "falsePositives": 0,
+      "falsePositiveDetail": [],
+      "mutationTotal": 10,
+      "mutationApplicable": 10,
+      "mutationCaught": 10,
+      "mutationMissed": 0,
+      "missedIds": [],
+      "mutationOnRealCorpus": 8,
+      "mutationSynthetic": 2,
+      "detectionRate": 1,
+      "mutations": [
+        {
+          "id": "m01-number-deleted",
+          "mutation": "删掉译文里的一个数字",
+          "expectedCode": "number_missing",
+          "acceptableCodes": [
+            "number_missing"
+          ],
+          "applicable": true,
+          "synthetic": false,
+          "detail": "删掉数字 15",
+          "pair": {
+            "dealId": "3c8a9a6a9ee9",
+            "field": "discountInfo"
+          },
+          "mutated": "Replit 定价页列出了付费套餐的年付优惠。其文档中也出现过学生折扣，例如 Replit Core 前六个月每月减 $。",
+          "mutatedEn": null,
+          "caught": true,
+          "actualCodes": [
+            "number_missing"
+          ]
+        },
+        {
+          "id": "m02-number-changed",
+          "mutation": "把译文里的一个数字 +1",
+          "expectedCode": "number_missing",
+          "acceptableCodes": [
+            "number_missing",
+            "number_invented"
+          ],
+          "applicable": true,
+          "synthetic": false,
+          "detail": "15 → 16",
+          "pair": {
+            "dealId": "3c8a9a6a9ee9",
+            "field": "discountInfo"
+          },
+          "mutated": "Replit 定价页列出了付费套餐的年付优惠。其文档中也出现过学生折扣，例如 Replit Core 前六个月每月减 $16。",
+          "mutatedEn": null,
+          "caught": true,
+          "actualCodes": [
+            "number_missing",
+            "number_invented"
+          ]
+        },
+        {
+          "id": "m03-currency-swapped",
+          "mutation": "把译文里的 $ 换成 ¥",
+          "expectedCode": "currency_missing",
+          "acceptableCodes": [
+            "currency_missing"
+          ],
+          "applicable": true,
+          "synthetic": false,
+          "detail": "$ → ¥",
+          "pair": {
+            "dealId": "3c8a9a6a9ee9",
+            "field": "discountInfo"
+          },
+          "mutated": "Replit 定价页列出了付费套餐的年付优惠。其文档中也出现过学生折扣，例如 Replit Core 前六个月每月减 ¥15。",
+          "mutatedEn": null,
+          "caught": true,
+          "actualCodes": [
+            "currency_missing",
+            "currency_invented"
+          ]
+        },
+        {
+          "id": "m04-term-dropped",
+          "mutation": "删掉译文里某个专有名词的全部出现处",
+          "expectedCode": "term_missing",
+          "acceptableCodes": [
+            "term_missing"
+          ],
+          "applicable": true,
+          "synthetic": false,
+          "detail": "删掉专有名词 Replit（全部出现处）",
+          "pair": {
+            "dealId": "3c8a9a6a9ee9",
+            "field": "discountInfo"
+          },
+          "mutated": " 定价页列出了付费套餐的年付优惠。其文档中也出现过学生折扣，例如  Core 前六个月每月减 $15。",
+          "mutatedEn": null,
+          "caught": true,
+          "actualCodes": [
+            "term_missing"
+          ]
+        },
+        {
+          "id": "m05-url-rewritten",
+          "mutation": "改写译文里的 URL/域名",
+          "expectedCode": "url_changed",
+          "acceptableCodes": [
+            "url_changed"
+          ],
+          "applicable": true,
+          "synthetic": false,
+          "detail": "cursor.com → example-eval.invalid",
+          "pair": {
+            "dealId": "9c553dd82d2d",
+            "field": "description"
+          },
+          "mutated": "先用免费档；如需升级，只在 example-eval.invalid 官方渠道购买。",
+          "mutatedEn": null,
+          "caught": true,
+          "actualCodes": [
+            "url_changed",
+            "term_missing"
+          ]
+        },
+        {
+          "id": "m06-negation-deleted",
+          "mutation": "制造否定错位（英文原文失去否定 / 译文凭空多出否定结论）",
+          "expectedCode": "negation_lost",
+          "acceptableCodes": [
+            "negation_lost",
+            "negation_invented"
+          ],
+          "applicable": true,
+          "synthetic": true,
+          "reason": "人造中英对：英文原文的 No 被删掉，译文反而多出一个否定词「不」（\"不需要绑定信用卡\"）——这就是否定错位，guard 会以 negation_lost 或 negation_invented 报出来。",
+          "pair": {
+            "dealId": "(synthetic)",
+            "field": "(synthetic)"
+          },
+          "mutated": "不需要绑定信用卡。",
+          "mutatedEn": "credit card needed.",
+          "caught": true,
+          "actualCodes": [
+            "negation_invented"
+          ]
+        },
+        {
+          "id": "m07-trial-as-free",
+          "mutation": "给试用类原文的译文插入「免费」",
+          "expectedCode": "trial_as_free",
+          "acceptableCodes": [
+            "trial_as_free"
+          ],
+          "applicable": true,
+          "synthetic": true,
+          "reason": "人造中英对：原文是 14 天试用，中文把「体验」改写成「免费」——就是把力度放大。当前 63 对人工译文里没有 trial 类文案，所以这条规则只能用人造用例验。",
+          "pair": {
+            "dealId": "(synthetic)",
+            "field": "(synthetic)"
+          },
+          "mutated": "立即开始 14 天体验。（免费）",
+          "mutatedEn": null,
+          "caught": true,
+          "actualCodes": [
+            "trial_as_free"
+          ]
+        },
+        {
+          "id": "m08-permanent-invented",
+          "mutation": "给没有长期表述的原文的译文插入「长期有效」",
+          "expectedCode": "permanent_invented",
+          "acceptableCodes": [
+            "permanent_invented"
+          ],
+          "applicable": true,
+          "synthetic": false,
+          "detail": "插入「长期有效」",
+          "pair": {
+            "dealId": "06bc1d631f62",
+            "field": "description"
+          },
+          "mutated": "为视频做口型同步与声音克隆。，长期有效",
+          "mutatedEn": null,
+          "caught": true,
+          "actualCodes": [
+            "permanent_invented"
+          ]
+        },
+        {
+          "id": "m09-cap-flattened",
+          "mutation": "把译文里的「最高/上限」删掉",
+          "expectedCode": "cap_flattened",
+          "acceptableCodes": [
+            "cap_flattened"
+          ],
+          "applicable": true,
+          "synthetic": false,
+          "detail": "删掉「最多」",
+          "pair": {
+            "dealId": "4a875a435019",
+            "field": "discountInfo"
+          },
+          "mutated": "Canva 非营利计划为符合条件的注册非营利组织免费提供 Canva Pro 功能与协作工具， 50 个席位，超出的非营利席位按折扣价购买。Canva 教育版对符合条件的 K-12 教师与学生免费。",
+          "mutatedEn": null,
+          "caught": true,
+          "actualCodes": [
+            "cap_flattened"
+          ]
+        },
+        {
+          "id": "m10-date-invented",
+          "mutation": "给没有日期的原文的译文插入「2027 年」",
+          "expectedCode": "date_invented",
+          "acceptableCodes": [
+            "date_invented"
+          ],
+          "applicable": true,
+          "synthetic": false,
+          "detail": "插入「2027 年」",
+          "pair": {
+            "dealId": "06bc1d631f62",
+            "field": "description"
+          },
+          "mutated": "为视频做口型同步与声音克隆。（2027 年）",
+          "mutatedEn": null,
+          "caught": true,
+          "actualCodes": [
+            "number_invented",
+            "date_invented"
+          ]
+        }
+      ],
+      "drift": []
+    }
+  },
+  "limitations": [
+    "本机没有 API key：臂 1（字段提取）与臂 2（疑似重复）默认跑的是 scripts/data/ai-eval/*.mocks.json 里手写的录制响应，",
+    "因此它们**不测模型质量**，只测评测工装（输入构造 / schema 校验 / 候选规则 / 指标计算）这条链路通不通。",
+    "臂 3（译文守卫）不调用任何模型：它用人工核准译文测守卫误报率、用程序化篡改测检出率，**是真测量**。",
+    "臂 2 的 mock 覆盖率为 4/30（fixture 只覆盖 5 类关系，其余 26 对没有响应、被跳过）；",
+    "即 30 对金标准的标签是完整的，但 mock 模式下只有一部分被真正判定过。",
+    "任何人想引用\"AI 提取准确率 N 成 / 去重准确率 N 成\"，必须等有 API key 后用 --live 重跑；本文件里臂 1/2 的数字不可当作模型分数。",
+    "臂 1 的金标准是 deals.json 里 v1.1 人工策展的六字段，输入是记录自身文本（extract.recordText）：",
+    "两者同源，指标只说明\"能否从我们已提交的文本里复原我们已确认的值\"，不说明它面对当天官方页面的表现。",
+    "臂 2 的金标准按固定规则人工标注：same vendor（厂商名相同）AND same product（标题里的产品名词逐字相同）AND same benefit（优惠文案逐字相同或都为空）→ same_offer； same vendor AND same product 但 benefit 不同（如免费额度 vs 学生折扣）→ same_product_different_offer； same vendor，product 不同 → same_vendor； 没有共同厂商 / 产品 / URL / benefit → unrelated； 信息不足以判断 → uncertain。",
+    "入围对全部集中在同厂商不同产品的记录上（30 对里 30 对 same_vendor），矩阵严重不平衡，",
+    "\"整体准确率\"这个总分在这里几乎没有信息量；真正可看的是 same_vendor → same_offer 这个危险错误计数与矩阵本身。",
+    "臂 1 的 falseCertaintyRate 把\"断言了但没有同名引文\"的叶子也算进 AI 给出的值：",
+    "因为这些正是\"模型在没有证据时说了确定的话\"，若先把它们丢掉再统计，指标会恒为 0 而失去意义。",
+    "过闸后的 recall（gatedRecall）另行报出，两个数字不混用。",
+    "臂 3 的 10 条篡改里有 2 条在当前人工译文语料里没有落点，改用一对人造中英文本验证规则本身；",
+    "它们在输出里标了 synthetic，不与\"真人译文的误报率\"混算。",
+    "本次评测期间 scripts/ai/translate-guard.js 正被另一条并行改动修改（number_missing 的百分比豁免与否定双向判据都是运行中出现的），",
+    "所以臂 3 的数字绑定在**运行当时的守卫版本**上；换版本后应重跑，不要跨版本比较读数。"
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": null,
+  "note": "每个来源保留两代页面结构摘要（**不含页面正文**）。由 npm run collect 写盘，与 source-health.json 同批入库。用途：AI 诊断与人工排查「昨天 td=42、今天 td=0」这类变化。删掉它不影响任何数据推导，只会让下一次采集变成「首次抓取」。",
+  "sources": []
+}
