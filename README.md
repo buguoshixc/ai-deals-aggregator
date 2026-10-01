@@ -132,6 +132,13 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 
 **合计 115 个 HTML 页**（112 条可索引 + 3 条 noindex 别名），sitemap **112 条**，dist **227 个文件**。
 
+> ⚠️ 上表是 **v1.7 的 URL 地图快照**（v2.x 的行随后追加，标题未改），其中 `/vendor/<slug>/` 的 9 页、
+> `/plans/coding/` 的 9 条套餐、`/plans/api/` 的 7 条记录、`/feed/**` 的 24 份订阅与「合计」一行
+> **都已经不是当前值**。v3.0 实测：**dist 173 个 HTML 页 / 170 条可索引 / sitemap 170 条 / 290 个文件**，
+> 厂商页 **19**、套餐 **23** 条、API 计费 **13** 条 / **67** 个计价条目、订阅 **25** 份（×2 = 50 文件）。
+> 当前契约与完整地图见 [`docs/SCHEMA-v3.0.md`](docs/SCHEMA-v3.0.md) 与
+> [`research/v3.0-ai-deals-knowledge-base-report.md`](research/v3.0-ai-deals-knowledge-base-report.md)。
+
 契约（URL / 门槛 / 索引策略 / 27 个检查码）见 [`docs/SCHEMA-v1.7.md`](docs/SCHEMA-v1.7.md)；
 套餐数据与套餐页的契约见 [`docs/SCHEMA-v2.1.md`](docs/SCHEMA-v2.1.md)；
 API / Token 计费的契约见 [`docs/SCHEMA-v2.5.md`](docs/SCHEMA-v2.5.md)；

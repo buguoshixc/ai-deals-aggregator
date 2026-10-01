@@ -136,8 +136,8 @@
 | D8 | `deepseek-flash` 与阿里云 `deepseek-v4.1-flash` 的合并**依据待补**：归一形态并不相等，属"用 registry alias 连两个不同串"，需要阿里云官方页能对上 V4.1 版本的证据；补不出则拆成两条身份 | 队长在 t6 验收时提出 | **已收口**：note 写明"人工判断"+两处官方串（附记录 id）+ 撤回口，符合题面 D4「明确人工确认依据」⇒ **接受合并**，只要求把「⇒ 同一身份」改成判断口吻（已改，230 字）。作为**唯一一条人工判断型跨平台身份合并**进报告供抽查 | 已闭环 |
 | D9 | 工具在**并发编辑窗口**里会读到半成品而**伪造红**（队长实测两次：`deal-plan-links.js` 瞬态崩溃、`validate`/`zh-todo` 假红） | 队长实测 | **最终验收必须在冻结提交上跑**（t14 验收契约已如此要求）；队长自己的运行器还出过"把 `x.js --flag` 当单个文件名"的 bug，已修 | 已闭环 |
 | D10 | **t8 的 build-local 六步接线未执行**（`t8` 只交模块+断言+接线说明，依 DAG 归属 **t13**） | `pages-builder` 在 t8 交付 | **已由 t13 完成**：五份 join 输入、`renderDirectoryPage` 的 `extraSections`、vendor 分支 + `eventCount`/`nonDealMaterial`、SEO 描述符两字段、`selfCheck` 的 `assertVendorSlugDeclared/Honesty/ApiCounts/CandidateIdentity` 全部在位；产物 **19** 家人链。**注意：数字是 19 家，不是 18**（详见 R5 修正） | 已闭环 |
-| D11 | `verify-site.js` 尚无 `/models/` 与 `/vendor/` 真浏览器分节 | `t7`/`t8` 交接 | **已由 `t12` 完成**：`verify-site.js` 新增 §21–§25（含 `/models/`、厂商页六节、跨页深链分节）；真浏览器 **642 项 0 失败**、回归 **648 项 0 失败** | 已闭环 |
-| D12 | `gate/action.yml` 尚未登记 6 支新自测 | `t2`/`t6`/`t8` 交接 | **已由 t13 完成**：`action.yml` 共 **43 步**，含 Model-registry / Models-page / Plans-hub / Vendor-pages / Archive / Data-docs 自测 + Models reproducibility + Model-registry links check；`check:ci` **35 条断言 + 1 看门狗 = 36**，`--expect-checks=36` | 已闭环 |
+| D11 | `verify-site.js` 尚无 `/models/` 与 `/vendor/` 真浏览器分节 | `t7`/`t8` 交接 | **已由 `t12` 完成**：`verify-site.js` 新增 §21–§25（含 `/models/`、厂商页六节、跨页深链分节）；冻结提交实测：真浏览器 **651 项 0 失败**、回归 **657 项 0 失败** | 已闭环 |
+| D12 | `gate/action.yml` 尚未登记 6 支新自测 | `t2`/`t6`/`t8` 交接 | **已由 t13 完成**：`action.yml` 共 **44 步**（含后补的 `Coverage report`，位于 `Assemble site` 之前），含 Model-registry / Models-page / Plans-hub / Vendor-pages / Archive / Data-docs 自测 + Models reproducibility + Model-registry links check；`check:ci` **35 条断言 + 1 看门狗 = 36**，`--expect-checks=36`；独立审查员复算 action.yml 44 步与 `GATE_STEP_NAMES` 44 条**逐索引 0 差异** | 已闭环 |
 
 ---
 
