@@ -26,11 +26,26 @@
  * 2. **纯函数、离线、零依赖**：同 `(plans, store, asOf, availability)` 一定产出同一份结果，
  *    不读盘、不联网、不看时钟、不改入参。
  * 3. **缺失与「没有变化」分开说**：日志缺失/损坏时页面必须说「没有拿到日志」，而不是「没有变化」。
+ *
+ * ## v3.0：第二个来源（API 计费），**共用一份分栏骨架**
+ *
+ * 题面 Stage H 要点名「让用户可以区分优惠变化 / Coding 套餐变化 / API 价格变化」。
+ * 本文件因此从「一个来源」变成「两个来源 + 一份实现」：
+ *
+ *   · `buildPlanRadar()` —— 套餐（`plan-history.json`，v2.3 起）；
+ *   · `buildApiPlanRadar()` —— API 计费（`api-plan-history.json`，v3.0 起）；
+ *   · 两者都是 `buildChangeRadar(params, source)` 的薄封装，差异**全部**登记在 `RADAR_SOURCES` 里
+ *     （取哪份日志 / 哪些类型算元信息 / 首页优先级 / 措辞 / 记录展示身份）。
+ *
+ * **不建立第二套变化检测**：事件本身由 `api-plan-history.js` 的差异计算产出，
+ * 这里只负责「取出来给人看」。分栏循环里**没有**任何按来源分叉的 if ——
+ * 一旦分叉，两份视图的窗口、上限与排序就会各自演化，而那种漂移两边看起来都正常。
  */
 
 'use strict';
 
 const planHistory = require('./plan-history');
+const apiPlanHistory = require('./api-plan-history');
 const changes = require('./changes');
 
 /** 窗口。与 deals 的雷达同口径（7 天 / 30 天），但**不是同一个常量** —— 两页可以各自调整 */
@@ -94,6 +109,79 @@ const PLAN_CHANGES_WORDING = {
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+/* ------------------------------------------------------------------ */
+/* 第二个来源：API 计费（v3.0）                                          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * API 计费的「记录级元信息」：与套餐同一条纪律 —— 官方定价页地址 / 来源类型 / 来源地址
+ * 变了不等于「价格变了」，所以只在时间线里出现，**不进「最近变化」块、不进订阅源**。
+ *
+ * 判据不是在这儿新写的：`API_PLAN_FIELD_EVENT_TYPES` 里只有这三个字段映射到 `updated`，
+ * 所以「元信息事件」在 API 这份日志里就等于 `type === 'updated'`。
+ */
+const API_PLAN_META_FIELD_TYPES = ['updated'];
+
+/**
+ * `/plans/api/` 顶部「最近变化」块的取用优先级（桶内按时间倒序）。
+ *
+ * 顺序表达的是**读者最该先看到什么**：单价涨跌 → 模型计价条目增减/口径 → 免费额度与
+ * credits → 限速 → 单位/币种/限制/地区 → 生命周期。与套餐那一份**分开列**：
+ * 两边的类型表本来就不相交（API 没有 `promo_*`，套餐没有 `price_*`）。
+ */
+const API_PLAN_HOME_PRIORITY = [
+  'price_increased', 'price_decreased',
+  'model_added', 'model_removed', 'model_changed',
+  'free_tier_changed', 'credits_changed', 'limits_changed',
+  'unit_changed', 'currency_changed', 'restriction_changed', 'availability_changed',
+  'created', 'ended', 'restored'
+];
+
+/**
+ * API 计费变化视图的措辞。
+ *
+ * **能复用的一律复用**：`since` / `unavailable` / `from` / `to` / 免责句都已经在
+ * `api-plan-history.js` 的措辞表里（那也是 `/plans/api/` 页面用的同一份），这里只覆盖
+ * 「分栏标题 / 空态 / 本页摘要」这些**只有 /changes/ 这一层才需要**的槽位 ——
+ * 抄一份句子就会立刻出现「同一件事两种说法」。
+ */
+const API_PLAN_CHANGES_LABELS = Object.assign(
+  {},
+  apiPlanHistory.API_PLAN_HISTORY_WORDING.API_PLAN_HISTORY_LABELS,
+  {
+    sectionTitle: 'API 价格变化',
+    anchor: 'api-plans',
+    recentTitle: '最近变化',
+    allChanges: '全部变化',
+    homeMore: '另有 {n} 条更早的变化',
+    more: '另有 {n} 条未显示',
+    empty: '当前没有观测到 API 价格变化',
+    // 分栏空态：**逐栏说清是什么没有变化**。复用套餐那几句会让读者以为这份读数漏了套餐。
+    emptySection: {
+      created: '截至基准日，没有观测到首次收录的 API 计费记录。',
+      changed: '最近 7 天内没有观测到单价、计费单位、模型计价条目、免费额度、限速或 credits 的变化。',
+      ended: '自起算日起，没有观测到不再收录的 API 计费记录。',
+      restored: '没有观测到重新出现的 API 计费记录。'
+    },
+    plansSource: 'API 价格变化来自本站重建 API 计费数据时的观测记录；变更记录自 {date} 起。',
+    disclaimer: apiPlanHistory.API_PLAN_HISTORY_WORDING.API_PLAN_HISTORY_NOTES.disclaimer
+  }
+);
+
+const API_PLAN_CHANGES_WORDING = {
+  API_PLAN_CHANGES_SECTION: PLAN_CHANGES_WORDING.PLAN_CHANGES_SECTION,
+  API_PLAN_CHANGES_LABELS
+};
+
+/**
+ * 平台键 → 显示名。**只读调用方交进来的表**：本模块是离线纯函数，
+ * 不读盘、不联网（缺表时回落到键本身，而不是偷偷 `providers.load()`）。
+ */
+function providerNameOf(key, table) {
+  const entry = table && table[key];
+  return (entry && entry.name) || key;
+}
+
 /** 确定性排序：新的在前，同一天按 planId / 类型 / 字段收敛（保证两次构建字节相同） */
 function compareByRecency(a, b) {
   if (a.at !== b.at) return a.at < b.at ? 1 : -1;
@@ -103,17 +191,68 @@ function compareByRecency(a, b) {
 }
 
 /**
- * 由套餐变化日志 + 当前记录算出套餐变化视图。
+ * 视图来源（v3.0：**两个来源共用一份分栏骨架**）。
+ *
+ * 分栏骨架 —— 窗口、分栏顺序、每栏上限、确定性排序、「最近变化」块的优先级取用 ——
+ * 只有一份实现（`buildChangeRadar`）。来源之间只允许有四样差异：
+ *
+ *   1. 事件从哪份日志取（`eventsOf`）；
+ *   2. 哪些事件类型属于「记录级元信息」（`metaFieldTypes`）；
+ *   3. 首页优先级块取用顺序（`homePriority`）；
+ *   4. 措辞表与「这条记录现在叫什么」（`wording` / `identityOf`）。
+ *
+ * **不许**再加第五样差异：一旦某个来源在分栏循环里分叉，就会出现两套判据，
+ * 而「两边看起来都对、只有一边悄悄漂了」是最坏的坏法。
+ */
+const RADAR_SOURCES = {
+  plans: {
+    key: 'plans',
+    eventsOf: store => planHistory.eventsOf(store),
+    metaFieldTypes: PLAN_META_FIELD_TYPES,
+    homePriority: PLAN_HOME_PRIORITY,
+    wording: PLAN_CHANGES_WORDING,
+    identityOf(id, event, byId) {
+      const plan = byId.get(id) || null;
+      const label = event && event.label && typeof event.label === 'object' ? event.label : null;
+      const title = (plan && plan.planName) || (label && label.title) || null;
+      const vendor = (plan && plan.provider) || (label && label.vendor) || '';
+      return { title: title ? String(title) : null, vendor: vendor ? String(vendor) : '', titled: Boolean(title) };
+    }
+  },
+  api: {
+    key: 'api',
+    eventsOf: store => apiPlanHistory.eventsOf(store),
+    metaFieldTypes: API_PLAN_META_FIELD_TYPES,
+    homePriority: API_PLAN_HOME_PRIORITY,
+    wording: API_PLAN_CHANGES_WORDING,
+    identityOf(id, event, byId, { providerTable = null } = {}) {
+      const plan = byId.get(id) || null;
+      const label = event && event.label && typeof event.label === 'object' ? event.label : null;
+      const title = (plan && plan.planName) || (label && label.title) || null;
+      // 平台用**显示名**（`providers.json` 的表：openai → OpenAI）——页面上就是这么写的，
+      // 订阅源里写内部键会让同一个东西在页面与订阅里叫两个名字。
+      const vendor = plan ? providerNameOf(plan.provider, providerTable) : ((label && label.vendor) || '');
+      return { title: title ? String(title) : null, vendor: vendor ? String(vendor) : '', titled: Boolean(title) };
+    }
+  }
+};
+
+/**
+ * 由一个变化日志 + 当前记录算出变化视图（**两个来源共用的唯一实现**）。
  *
  * @param {object}   params
- * @param {object[]} params.plans       当前 `plans.json` 的记录（只读）
- * @param {object}   params.store       `plan-history.json` 解析后的对象（只读）
- * @param {string}   params.asOf        基准日 `YYYY-MM-DD`（**数据时间**，不是构建时刻）
+ * @param {object[]} params.plans       当前记录（`plans.json` 或 `api-plans.json` 的 `plans`，只读）
+ * @param {object}   params.store        对应的变化日志（只读）
+ * @param {string}   params.asOf         基准日 `YYYY-MM-DD`（**数据时间**，不是构建时刻）
  * @param {string}   [params.availability] `'ok'` / `'unavailable'`
- * @param {object}   [params.limits]    覆盖默认上限（自测用）
+ * @param {object}   [params.limits]     覆盖默认上限（自测用）
+ * @param {object}   [params.providerTable] 平台键 → 记录的表（API 侧取显示名用）
+ * @param {string}   sourceKey           `RADAR_SOURCES` 的键
  * @returns {object}
  */
-function buildPlanRadar({ plans = [], store = null, asOf = null, availability = 'ok', limits = null } = {}) {
+function buildChangeRadar({ plans = [], store = null, asOf = null, availability = 'ok', limits = null, providerTable = null } = {}, sourceKey) {
+  const source = RADAR_SOURCES[sourceKey];
+  if (!source) throw new Error(`未知的变化视图来源：${sourceKey}`);
   const cfg = Object.assign({}, PLAN_CHANGES_WINDOWS, PLAN_CHANGES_LIMITS, limits || {});
   const dateOk = DATE_RE.test(String(asOf || ''));
   const storeOk = Boolean(store) && Array.isArray(store.events);
@@ -123,15 +262,17 @@ function buildPlanRadar({ plans = [], store = null, asOf = null, availability = 
   const byId = new Map();
   for (const plan of plans || []) if (plan && plan.id) byId.set(plan.id, plan);
 
+  const events = source.eventsOf(store);
+
   const base = {
     availability: state,
     asOf: dateOk ? asOf : null,
     startedAt,
     windows: { recentDays: cfg.recentDays, endedDays: cfg.endedDays },
     coverage: {
+      // 名字沿用 plans 的槽位（消费方读的是这两个键），意思是「当前记录数 / 有历史的记录数」。
       plansTotal: (plans || []).length,
-      plansWithHistory: planHistory.eventsOf(store).length
-        ? new Set(planHistory.eventsOf(store).map(event => event.planId)).size : 0
+      plansWithHistory: events.length ? new Set(events.map(event => event.planId)).size : 0
     },
     totals: { created: 0, changed: 0, ended: 0, restored: 0, meta: 0 },
     sections: {
@@ -145,14 +286,8 @@ function buildPlanRadar({ plans = [], store = null, asOf = null, availability = 
   };
   if (state !== 'ok') return base;
 
-  /** 一条套餐的展示身份：优先当前数据，其次 `ended` 事件上的快照，最后如实说没有 */
-  const identityOf = (id, event) => {
-    const plan = byId.get(id) || null;
-    const label = event && event.label && typeof event.label === 'object' ? event.label : null;
-    const title = (plan && plan.planName) || (label && label.title) || null;
-    const vendor = (plan && plan.provider) || (label && label.vendor) || '';
-    return { title: title ? String(title) : null, vendor: vendor ? String(vendor) : '', titled: Boolean(title) };
-  };
+  /** 一条记录的展示身份：优先当前数据，其次 `ended` 事件上的快照，最后如实说没有 */
+  const identityOf = (id, event) => source.identityOf(id, event, byId, { providerTable });
 
   const itemOf = (event, kind) => Object.assign({
     kind,
@@ -171,11 +306,11 @@ function buildPlanRadar({ plans = [], store = null, asOf = null, availability = 
   const recentFrom = changes.addDays(asOf, -(cfg.recentDays - 1));   // asOf-6 在内
   const endedFrom = changes.addDays(asOf, -(cfg.endedDays - 1));     // asOf-29 在内
 
-  for (const event of planHistory.eventsOf(store)) {
+  for (const event of events) {
     if (!event || typeof event !== 'object') continue;
     if (typeof event.at !== 'string' || !DATE_RE.test(event.at)) continue;   // 脏事件不渲染
     const diff = changes.daysBetween(event.at, asOf);
-    // 未来日期（diff > 0）先由 check:plan-history 拦下（它会报「at 是未来日期」），
+    // 未来日期（diff > 0）先由 check:*-history 拦下（它会报「at 是未来日期」），
     // 这里只是不渲染 —— 雷达不拿未来的事当已发生。
     if (diff === null || diff > 0) continue;
 
@@ -190,7 +325,7 @@ function buildPlanRadar({ plans = [], store = null, asOf = null, availability = 
       else all.changed.push(itemOf(event, 'created'));   // 过去 6 天内首次收录 ⇒ 并进「最近 7 天变化」
       continue;
     }
-    if (PLAN_META_FIELD_TYPES.includes(event.type)) {
+    if (source.metaFieldTypes.includes(event.type)) {
       all.metadata.push(itemOf(event, 'changed'));
       continue;
     }
@@ -224,10 +359,10 @@ function buildPlanRadar({ plans = [], store = null, asOf = null, availability = 
   const poolOf = type => all.changed.filter(item => item.type === type)
     .concat(type === 'created' ? all.created : [], type === 'ended' ? all.ended : [],
       type === 'restored' ? all.restored : []);
-  for (const type of PLAN_HOME_PRIORITY) pools[type] = poolOf(type);
+  for (const type of source.homePriority) pools[type] = poolOf(type);
   const home = [];
   const used = new Set();
-  for (const type of PLAN_HOME_PRIORITY) {
+  for (const type of source.homePriority) {
     for (const item of pools[type] || []) {
       if (home.length >= cfg.homeItems) break;
       const key = `${item.planId}\u0000${item.type}\u0000${item.field || ''}\u0000${item.at}`;
@@ -240,6 +375,42 @@ function buildPlanRadar({ plans = [], store = null, asOf = null, availability = 
   base.home = { items: home, truncated: Math.max(0, base.totals.changed + base.totals.created + base.totals.ended + base.totals.restored - home.length) };
 
   return base;
+}
+
+/**
+ * 由套餐变化日志 + 当前记录算出套餐变化视图（`/plans/coding/`、`/changes/` 的套餐分栏、
+ * `feed/plans/coding/changes.*` 都读它）。
+ *
+ * @param {object}   params
+ * @param {object[]} params.plans       当前 `plans.json` 的记录（只读）
+ * @param {object}   params.store       `plan-history.json` 解析后的对象（只读）
+ * @param {string}   params.asOf        基准日 `YYYY-MM-DD`（**数据时间**，不是构建时刻）
+ * @param {string}   [params.availability] `'ok'` / `'unavailable'`
+ * @param {object}   [params.limits]    覆盖默认上限（自测用）
+ * @returns {object}
+ */
+function buildPlanRadar(params = {}) {
+  return buildChangeRadar(params, 'plans');
+}
+
+/**
+ * 由 API 计费变化日志 + 当前记录算出 API 计费变化视图（v3.0 的第二个来源）。
+ *
+ * 与 `buildPlanRadar` **同一个实现、同一套分栏**，差异只在判据表与措辞（见 `RADAR_SOURCES`）。
+ * **不建立第二套变化检测**：事件本身来自 `api-plan-history.js`（`record` 的差异计算），
+ * 这里只做「取出来给人看」。
+ *
+ * @param {object}   params
+ * @param {object[]} params.plans       当前 `api-plans.json` 的记录（只读）
+ * @param {object}   params.store       `api-plan-history.json` 解析后的对象（只读）
+ * @param {string}   params.asOf        基准日 `YYYY-MM-DD`
+ * @param {string}   [params.availability] `'ok'` / `'unavailable'`
+ * @param {object}   [params.limits]    覆盖默认上限（自测用）
+ * @param {object}   [params.providerTable] 平台键 → 记录的表（取显示名用）
+ * @returns {object}
+ */
+function buildApiPlanRadar(params = {}) {
+  return buildChangeRadar(params, 'api');
 }
 
 /** 一句话摘要（日志 / 报告用） */
@@ -278,7 +449,15 @@ module.exports = {
   PLAN_META_FIELD_TYPES,
   PLAN_HOME_PRIORITY,
   PLAN_CHANGES_WORDING,
+  // v3.0：第二个来源（API 计费）。分栏骨架与套餐共用 `buildChangeRadar`，
+  // 两个来源的差异全部登记在 `RADAR_SOURCES` 里。
+  API_PLAN_META_FIELD_TYPES,
+  API_PLAN_HOME_PRIORITY,
+  API_PLAN_CHANGES_WORDING,
+  RADAR_SOURCES,
+  buildChangeRadar,
   buildPlanRadar,
+  buildApiPlanRadar,
   summarize,
   itemsOf
 };

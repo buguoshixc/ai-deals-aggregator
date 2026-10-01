@@ -1,6 +1,37 @@
 # AI 优惠聚合器 — 项目状态
 
-**最后更新**：2026-10-01（最新一节 **2.45 `v2.5-api-token-plans`：API / Token 计费对比**，已上线）
+**最后更新**：2026-10-02（最新一节 **v3.0 `v3.0-ai-deals-knowledge-base`：结构化资料库**，已交付待验收）
+
+---
+
+## 0. v3.0 状态（2026-10-02）
+
+> **一句话现状**：站点从「优惠 + 套餐 + API 价格页面集合」升级为
+> **AI 优惠 / 套餐 / API 计费 / 模型 / 厂商 / 历史变化的结构化资料库**。
+> 新增六个入口：`/plans/`（枢纽）· `/models/` 与 `/models/<slug>/` · 统一 `/vendor/<slug>/` 资料页 ·
+> `/archive/` · `/docs/data/` + `/data/index.json` · `/feed/plans/api/changes.{xml,json}`。
+
+| 维度 | v2.5（基点） | v3.0（实测） |
+|---|---|---|
+| 可索引页面 | 115 页 | **170 页**（`seo-verify` 的 `indexable URLs`；dist 共 173 页 = 170 + 3 条 noindex 别名）（+ 模型索引 + 44 模型详情 + 档案索引 + 数据文档） |
+| sitemap | 112 条 | **170 条** |
+| 厂商页 | 9 | **19**（身份门：只有 A 空间有厂商名的 provider 才建路由） |
+| Feed | 24 | **25**（+ API 价格变化） |
+| 数据 | deals 134 / plans 9 / api-plans 7 条 · 37 个模型计价条目 | deals 134 / plans 23 / api-plans 13 条 · **67** 个模型计价条目 · **44** 个 registry 模型 · **63** 条显式映射 |
+| 门禁 | 31 步 | **42 步**（+6 自测 +2 可重建性 +`coverage-report` +第二遍 build）· check:ci **36/36** 断言 |
+| 真浏览器验收 | 440 项 | **651 项 0 失败**（回归比对 **657 项 0 失败**） |
+| 订阅可复现 | 2 次构建逐字节一致 | 同左，**且整个 dist 树**（290 文件）两次构建逐字节一致 |
+
+**已知限制（如实记录）**：三份变化日志交付日的事件数分别是 deal 0 / plan 14 / api 6 ⇒
+`/archive/` **必然 0 条记录**（ended/restored 分支由 `selftest:archive` 的合成夹具驱动）；
+数据许可证**未定**（仓库无 `LICENSE` 文件，需项目所有者决定）；
+`deals.json` 里 `GPT Image`（`gptimage-2-5.com`）与 `ChatGPT Plus`（`chatgpt.com/veterans-claim`）
+两条**来源是第三方目录站、未见官方定价页**——保留但如实标注，是否下架需项目所有者决定
+（详见 `research/v3.0-ai-deals-knowledge-base-report.md` §18）。
+
+---
+
+**历史一节**：2026-10-01（**2.45 `v2.5-api-token-plans`：API / Token 计费对比**，已上线）
 **项目地址**：https://buguoshixc.github.io/ai-deals-aggregator/
 **仓库**：https://github.com/buguoshixc/ai-deals-aggregator
 

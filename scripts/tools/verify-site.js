@@ -54,19 +54,23 @@ const MIME = {
  *  `deal/<id>/`，早先这里直接对目录返回 404，于是「本地 404、线上正常」的假失败。 */
 function serve(dir) {
   return new Promise(resolve => {
+    // 记下每一条 404 的路径：浏览器只会把 "Failed to load resource: 404" 记成一条 console 错误，
+    // **不带路径**。没有这张表，「整轮 1 个 JS 错误」就只能靠猜（实测踩过）。
+    const notFound = [];
     const server = http.createServer((req, res) => {
       const urlPath = decodeURIComponent(req.url.split('?')[0]);
       const rel = urlPath === '/' ? 'index.html' : urlPath.replace(/^\/+/, '');
       let file = path.join(dir, rel);
       if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
       if (!file.startsWith(dir) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
+        notFound.push(urlPath);
         res.writeHead(404).end('not found');
         return;
       }
       res.writeHead(200, { 'content-type': MIME[path.extname(file).toLowerCase()] || 'application/octet-stream' });
       fs.createReadStream(file).pipe(res);
     });
-    server.listen(0, '127.0.0.1', () => resolve({ server, port: server.address().port }));
+    server.listen(0, '127.0.0.1', () => resolve({ server, port: server.address().port, notFound }));
   });
 }
 
@@ -112,6 +116,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
 (async () => {
   let server = null;
   let base;
+  /** 本地静态服务上的 404 路径（浏览器只记 "Failed to load resource"，不带路径） */
+  let httpNotFound = [];
   if (urlArg) {
     base = urlArg.slice(6);
     if (!base.endsWith('/')) base += '/';
@@ -123,6 +129,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     }
     const started = await serve(DIR);
     server = started.server;
+    httpNotFound = started.notFound;
     base = `http://127.0.0.1:${started.port}/`;
   }
   const browser = await chromium.launch({ executablePath: EDGE, headless: !process.argv.includes('--keep') });
@@ -141,8 +148,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   const errors = [];
   const failedRequests = [];
   const externalRequests = [];
-  page.on('pageerror', e => errors.push(e.message));
-  page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  // 记录错误时**带上当时那一页的 URL**：只记 message 时，"整轮 1 个 JS 错误"这种
+  // 回归失败完全没有线索（实测：某一节之外的导航报一条 console error，
+  // 每一节的"本节 0 错误"都是绿的，只有整轮计数是 1 —— 没有 URL 就只能靠猜）。
+  page.on('pageerror', e => errors.push(`${page.url()} :: ${e.message}`));
+  page.on('console', m => { if (m.type() === 'error') errors.push(`${page.url()} :: ${m.text()}`); });
   page.on('requestfailed', r => failedRequests.push(r.url()));
   page.on('request', r => { if (!r.url().startsWith(base) && !r.url().startsWith('data:')) externalRequests.push(r.url()); });
 
@@ -1592,6 +1602,28 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     /没有账号|不需要账号/.test(feedsPage.text) && /没有邮件列表/.test(feedsPage.text));
   check('/feeds/ 明说变化订阅为空是事实（起算日）',
     /起算|记录自/.test(feedsPage.text));
+  // v3.0 Stage H4：注册表里的**每一条变化流**都必须在订阅中心上被列出，
+  // 且 RSS / JSON Feed 两个地址都在（H4 要求「订阅中心一致」）。
+  for (const spec of feedsLib.PLAN_CHANGE_FEEDS) {
+    const hasTitle = feedsPage.text.includes(spec.title);
+    const hasRss = feedsPage.listed.some(href => href.endsWith(spec.path));
+    const hasJson = feedsPage.listed.some(href => href.endsWith(spec.jsonPath));
+    check(`/feeds/ 列出了「${spec.title}」的 RSS 与 JSON Feed`,
+      hasTitle && hasRss && hasJson,
+      `标题 ${hasTitle} · RSS ${hasRss} · JSON ${hasJson}`);
+  }
+  // 空态那一行的起算日取自**它自己**那份日志：只有真的为空时才写出来，
+  // 所以这里只断言「为空的那条变化流写出了起算日」。
+  // （「起算日取错来源」这条牙由 `feeds-selftest` 用**注入不同 startedAt 的夹具**钉住 ——
+  //   真实数据上两条日志的 startedAt 相同，在这里写断言会恒真、等于没有牙。）
+  check('/feeds/ 为空的变化流那一行写出了起算日',
+    feedsLib.PLAN_CHANGE_FEEDS.every(spec => {
+      const idx = feedsPage.text.indexOf(spec.title);
+      if (idx < 0) return false;
+      const row = feedsPage.text.slice(idx, idx + 260);
+      if (!/0 条/.test(row)) return true;                    // 非空行不写起算日，不算错
+      return /变更记录自 \d{4}-\d{2}-\d{2} 起/.test(row);
+    }), feedsPage.text.slice(0, 120));
 
   console.log('\n=== 15) 独立详情页 ===');
   // 14b 把浏览器带到了 /feeds/，这一节要从首页取样 —— 显式回首页，
@@ -3465,6 +3497,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     const heads = [...document.querySelectorAll('.chgsec h2')].map(h => h.textContent.trim());
     const links = [...document.querySelectorAll('a.chgn[href]')].map(a => a.getAttribute('href'));
     const planSection = document.getElementById('plans');
+    // v3.0 Stage H：第三条变化流（API 价格变化）。
+    const apiSection = document.getElementById('api-plans');
     return {
       title: document.title,
       headings: heads,
@@ -3479,38 +3513,162 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       planHeads: planSection ? [...planSection.querySelectorAll('.chgsub h3')].map(h => h.textContent.trim()) : [],
       planItems: planSection ? planSection.querySelectorAll('.pchglist li').length : -1,
       planEmpty: planSection ? /没有观测到|没有拿到套餐变更日志/.test(planSection.innerText) : false,
-      planAnchorsOk: planSection
-        ? [...planSection.querySelectorAll('a.pchgwho[href^="#plan-"]')]
-          .every(a => Boolean(document.getElementById(a.getAttribute('href').slice(1))))
-        : false
+      // v3.0：套餐变化行的链接有两种合法落点 —— 页内锚点（本页真的有那一条），
+      // 或跨页深链到 `/plans/coding/#plan-<id>`（套餐对比页真的有那一行）。
+      // 只数 `href^="#plan-"` 是不够的：那一版在「页面改用跨页深链」之后会**恒真**
+      // （空集合的 `every()` 返回 true），等于门禁自己消失了。
+      planLinkHrefs: planSection ? [...planSection.querySelectorAll('a.pchgwho[href]')].map(a => a.getAttribute('href')) : [],
+      planInPageIds: planSection ? [...planSection.querySelectorAll('[id^="plan-"]')].map(el => el.id) : [],
+      // v3.0 Stage H1：API 价格变化块（同样逐条验证落点）
+      jumpLinks: [...document.querySelectorAll('nav.chgjump a[href]')].map(a => a.getAttribute('href')),
+      apiAnchor: Boolean(document.getElementById('api-plans')),
+      apiHeads: apiSection ? [...apiSection.querySelectorAll('.chgsub h3')].map(h => h.textContent.trim()) : [],
+      apiItems: apiSection ? apiSection.querySelectorAll('.chglist li').length : -1,
+      apiEmpty: apiSection ? /没有观测到|没有拿到 API 计费变化日志/.test(apiSection.innerText) : false,
+      apiUnavailable: apiSection ? apiSection.innerText.includes('没有拿到 API 计费变化日志') : false,
+      apiLinkHrefs: apiSection ? [...apiSection.querySelectorAll('a.pchgwho[href]')].map(a => a.getAttribute('href')) : []
     };
   });
-  check('/changes/ 页存在且分栏齐（优惠五栏 + 套餐一栏）', changesPage.headings.length === 6, changesPage.headings.join(' | '));
-  check('/changes/ 的分栏标题与判据同源（优惠五栏 + 套餐变化）',
+  check('/changes/ 页存在且分栏齐（优惠五栏 + 套餐一栏 + API 一栏）', changesPage.headings.length === 7, changesPage.headings.join(' | '));
+  check('/changes/ 的分栏标题与判据同源（优惠五栏 + 套餐变化 + API 价格变化）',
     changesPage.headings.map(text => text.replace(/（\d+）$/, '')).join(',') ===
-    '今日新增,最近 7 天变化,即将结束,已结束,重新出现,套餐变化',
+    '今日新增,最近 7 天变化,即将结束,已结束,重新出现,套餐变化,API 价格变化',
     changesPage.headings.join(' | '));
   check('/changes/ 有「不计入高价值的其他变化」折叠块', changesPage.other);
   check('/changes/ 的 canonical 自指', changesPage.canonical.endsWith('/changes/'), changesPage.canonical);
-  check('/changes/ 声明两类**变化**订阅源（优惠变化 + 套餐变化，各一对）',
-    changesPage.alternates.length === 4 &&
-    changesPage.alternates.filter(href => /feed\/changes\.(xml|json)$/.test(href)).length === 2 &&
-    changesPage.alternates.filter(href => /feed\/plans\/coding\/changes\.(xml|json)$/.test(href)).length === 2,
-    changesPage.alternates.join(' · ') || '未声明');
+  // v3.0 Stage H4：声明的变化订阅源 = 优惠变化那一对 + **注册表里每一条变化流各一对**。
+  // 判据从注册表派生（不写死 4/6）：加第三条变化流时这一页的声明数自动跟上，漏一条则红。
+  {
+    const expectedPairs = 1 + feedsLib.PLAN_CHANGE_FEEDS.length;
+    const perFeed = [['feed/changes.(xml|json)', '优惠变化']].concat(
+      feedsLib.PLAN_CHANGE_FEEDS.map(spec => [
+        spec.path.replace(/[.]/g, '\\.').replace(/\//g, '\\/') + '|' + spec.jsonPath.replace(/[.]/g, '\\.').replace(/\//g, '\\/'),
+        spec.id
+      ]));
+    const bad = perFeed.filter(([pattern]) => {
+      const re = new RegExp(`(${pattern})$`);
+      return changesPage.alternates.filter(href => re.test(href)).length !== 2;
+    }).map(([, label]) => label);
+    check('/changes/ 声明了每一条变化流各一对订阅源（优惠变化 + 注册表里的每一条）',
+      changesPage.alternates.length === expectedPairs * 2 && bad.length === 0,
+      `共 ${changesPage.alternates.length} 条（期望 ${expectedPairs * 2}）${bad.length ? ` · 缺/多：${bad.join(',')}` : ''} · ` +
+      changesPage.alternates.join(' · '));
+  }
   check('/changes/ 的内链都带输出深度前缀（../deal/…）', changesPage.wrongPrefix === 0,
     changesPage.wrongPrefix ? `${changesPage.wrongPrefix} 条前缀错误` : `抽查 ${changesPage.links.length} 条`);
 
-  // v2.3：套餐变化分栏（锚点导航 / 四栏 / 空态 / 锚点落点）
-  check('/changes/ 有「优惠变化 / 套餐变化」锚点导航且两个锚点都有落点',
-    changesPage.jumpNav && changesPage.dealsAnchor, `导航 ${changesPage.jumpNav} · #deals ${changesPage.dealsAnchor}`);
+  // v2.3 / v3.0：变化分栏（锚点导航 / 每条流的四栏 / 空态 / 锚点落点）
+  check('/changes/ 有「优惠变化 / 套餐变化 / API 价格变化」锚点导航且三个锚点都有落点',
+    changesPage.jumpNav && changesPage.dealsAnchor && changesPage.apiAnchor &&
+    ['#deals', '#plans', '#api-plans'].every(href => changesPage.jumpLinks.includes(href)),
+    `导航链接 ${changesPage.jumpLinks.join(',')} · #deals ${changesPage.dealsAnchor} · #api-plans ${changesPage.apiAnchor}`);
   check('/changes/ 套餐变化有四栏（最近 7 天变化 / 今日新增 / 不再收录 / 重新出现）',
     changesPage.planHeads.map(text => text.replace(/（\d+）$/, '')).join(',') ===
     '今日新增,最近 7 天变化,不再收录,重新出现',
     changesPage.planHeads.join(' | '));
-  check('/changes/ 套餐变化每条都深链到套餐对比页的真实行（锚点有落点）',
-    changesPage.planAnchorsOk, `${changesPage.planItems} 条 · 锚点落点 ${changesPage.planAnchorsOk}`);
+  check('/changes/ API 价格变化有四栏（最近 7 天变化 / 今日新增 / 不再收录 / 重新出现）',
+    changesPage.apiHeads.map(text => text.replace(/（\d+）$/, '')).join(',') ===
+    '今日新增,最近 7 天变化,不再收录,重新出现',
+    changesPage.apiHeads.join(' | '));
+  {
+    // v3.0：逐条验证落点，而不是数一数 `#plan-` 前缀。跨页深链必须真的落到
+    // `/plans/coding/` 上那一行（套餐对比页的 `id="plan-<id>"`）。
+    const hrefs = changesPage.planLinkHrefs || [];
+    const codingHtml = fs.existsSync(path.join(DIR, 'plans', 'coding', 'index.html'))
+      ? fs.readFileSync(path.join(DIR, 'plans', 'coding', 'index.html'), 'utf8')
+      : '';
+    const codingIds = new Set([...codingHtml.matchAll(/id="(plan-[^"]+)"/g)].map(m => m[1]));
+    const missing = [];
+    for (const href of hrefs) {
+      const hash = href.split('#')[1] || '';
+      if (href.startsWith('#plan-')) {
+        if (!(changesPage.planInPageIds || []).includes(hash)) missing.push(`${href}（页内没有落点）`);
+      } else if (/plans\/coding\/#plan-/.test(href)) {
+        if (!codingIds.has(hash)) missing.push(`${href}（套餐对比页没有这一行）`);
+      } else {
+        missing.push(`${href}（既不是页内锚点，也没有指向套餐对比页）`);
+      }
+    }
+    check('/changes/ 套餐变化每条都深链到套餐对比页的真实行（锚点有落点）',
+      hrefs.length ? missing.length === 0 : changesPage.planEmpty,
+      `${changesPage.planItems} 条 · 链接 ${hrefs.length} 条 · ${missing.slice(0, 2).join('、') || '全部有落点'}`);
+  }
   check('/changes/ 套餐变化为空时给的是明确空态（不是一片空白）',
     changesPage.planItems > 0 || changesPage.planEmpty, `${changesPage.planItems} 条`);
+
+  // v3.0 Stage H1：API 价格变化的**跨页**深链必须逐条落到 `/plans/api/` 的真实行上。
+  // 只数 `#plan-` 前缀会恒真（这一页自己没有 API 表格行），所以判据是「逐条回读落点」。
+  {
+    const hrefs = changesPage.apiLinkHrefs || [];
+    const apiHtml = fs.existsSync(path.join(DIR, 'plans', 'api', 'index.html'))
+      ? fs.readFileSync(path.join(DIR, 'plans', 'api', 'index.html'), 'utf8')
+      : '';
+    const apiIds = new Set([...apiHtml.matchAll(/id="(plan-[^"]+)"/g)].map(m => m[1]));
+    const missing = [];
+    for (const href of hrefs) {
+      const hash = href.split('#')[1] || '';
+      if (/plans\/api\/#plan-/.test(href)) {
+        if (!apiIds.has(hash)) missing.push(`${href}（API 计费页没有这一行）`);
+      } else {
+        missing.push(`${href}（不是指向 API 计费页的跨页深链）`);
+      }
+    }
+    check('/changes/ API 价格变化每条都深链到 API 计费页的真实行（跨页锚点有落点）',
+      hrefs.length ? missing.length === 0 : changesPage.apiEmpty,
+      `${changesPage.apiItems} 条 · 链接 ${hrefs.length} 条 · ${missing.slice(0, 2).join('、') || '全部有落点'}`);
+  }
+  check('/changes/ API 价格变化为空时给的是明确空态（不是一片空白）',
+    changesPage.apiItems > 0 || changesPage.apiEmpty, `${changesPage.apiItems} 条`);
+  // 「没拿到日志」与「没有变化」是两句不同的话 —— 日志可用时**不许**出现前者。
+  check('/changes/ API 价格变化块没有在日志可用时说「没有拿到日志」',
+    !changesPage.apiUnavailable, changesPage.apiUnavailable ? '描述写错了（日志其实可用）' : '措辞正确');
+
+  // v3.0 Stage H2：API 价格变化订阅源本身（RSS + JSON Feed）必须能取到，
+  // 且 guid **逐条等于**产物那份 `api-plan-history.json` 的派生事件身份 ——
+  // 「不能每次 build 重新生成」这条承诺只有在这里能被独立复核。
+  {
+    const historyFile = path.join(DIR, 'api-plan-history.json');
+    const historyEvents = fs.existsSync(historyFile)
+      ? (JSON.parse(fs.readFileSync(historyFile, 'utf8')).events || [])
+      : [];
+    const eventIds = new Set(historyEvents.map(event => event.eventId).filter(Boolean));
+    const feedPaths = ['feed/plans/api/changes.xml', 'feed/plans/api/changes.json'];
+    // ⚠️ 必须用**绝对 URL**：当前页面在 `/changes/`，相对路径会解析成 `/changes/feed/...`（404），
+    // 而那两条 404 会顺带把「没有 JS 错误」那条断言也带红 —— 一个自己的失误伪装成两个问题。
+    const probe = await page.evaluate(async (paths) => {
+      const out = {};
+      for (const p of paths) {
+        const response = await fetch(new URL(p, location.origin + '/').href);
+        out[p] = { ok: response.ok, status: response.status, body: await response.text() };
+      }
+      return out;
+    }, feedPaths);
+    const xml = (probe[feedPaths[0]] || {}).body || '';
+    const jsonFeed = (probe[feedPaths[1]] || {}).body || '';
+    let jsonGuids = [];
+    try { jsonGuids = (JSON.parse(jsonFeed).items || []).map(item => item.id); } catch (error) { jsonGuids = null; }
+    const xmlGuids = [...xml.matchAll(/<guid[^>]*>([^<]+)<\/guid>/g)].map(m => m[1]);
+    check('API 价格变化订阅源可取（RSS + JSON Feed 各一份，HTTP 200）',
+      probe[feedPaths[0]].ok && probe[feedPaths[1]].ok,
+      `HTTP ${probe[feedPaths[0]].status} / ${probe[feedPaths[1]].status}`);
+    check('API 价格变化订阅的 guid 逐条等于日志里的派生事件身份（不是每次 build 重新生成）',
+      Array.isArray(jsonGuids) && jsonGuids.length === eventIds.size && jsonGuids.length > 0
+      && jsonGuids.every(id => eventIds.has(id))
+      && JSON.stringify(xmlGuids) === JSON.stringify(jsonGuids),
+      `JSON ${Array.isArray(jsonGuids) ? jsonGuids.length : 'n/a'} 条 / RSS ${xmlGuids.length} 条 / 日志 ${eventIds.size} 条`);
+    check('API 价格变化订阅的链接全部指向 /plans/api/#plan-<id>（跨页深链，不是本页锚点）',
+      xmlGuids.length > 0 && feedsLib.parseRssItems(xml)
+        .every(item => /\/plans\/api\/#plan-[0-9a-f]{12}$/.test(String(item.link || ''))),
+      `${xmlGuids.length} 条`);
+    check('API 价格变化订阅里没有混入 Coding 套餐事件（两份日志的身份空间不相交）',
+      (() => {
+        const planFile = path.join(DIR, 'plan-history.json');
+        const planIds = new Set(fs.existsSync(planFile)
+          ? (JSON.parse(fs.readFileSync(planFile, 'utf8')).events || []).map(event => event.eventId).filter(Boolean)
+          : []);
+        return Array.isArray(jsonGuids) && jsonGuids.every(id => !planIds.has(id));
+      })(), Array.isArray(jsonGuids) ? jsonGuids.join(',') : 'n/a');
+  }
 
   // 雷达行 → 单条优惠的详情页（要求 4：详情页能看单条优惠的历史）。
   // 没有可点的雷达行时如实报「本轮无样本」，并改验另一条出口（条带 → /changes/）。
@@ -3538,13 +3696,18 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       disclaimer: document.body.textContent.includes('不表示厂商已经下架或优惠已经失效'),
       other: document.body.textContent.includes('不计入高价值的其他变化'),
       plan: document.body.textContent.includes('套餐变化'),
-      planRows: document.querySelectorAll('#plans .pchglist li').length
+      planRows: document.querySelectorAll('#plans .pchglist li').length,
+      // v3.0 Stage H：API 价格变化块同样必须无 JS 可读
+      api: document.body.textContent.includes('API 价格变化'),
+      apiRows: document.querySelectorAll('#api-plans .chglist li').length
     }));
     check('无 JS 时 /changes/ 五栏 + 起算日 + 免责句全部可读',
-      noJs.heads.length === 6 && noJs.since && noJs.disclaimer && noJs.other,
+      noJs.heads.length === 7 && noJs.since && noJs.disclaimer && noJs.other,
       `分栏 ${noJs.heads.length} · 起算日 ${noJs.since} · 免责句 ${noJs.disclaimer} · 折叠块 ${noJs.other}`);
     check('无 JS 时 /changes/ 的套餐变化块也可读（构建期静态渲染）',
       noJs.plan && noJs.planRows >= 0, `套餐变化 ${noJs.plan} · ${noJs.planRows} 条`);
+    check('无 JS 时 /changes/ 的 API 价格变化块也可读（构建期静态渲染）',
+      noJs.api && noJs.apiRows >= 0, `API 价格变化 ${noJs.api} · ${noJs.apiRows} 条`);
     await noJsCtx.close();
   }
 
@@ -3585,7 +3748,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     headings: [...document.querySelectorAll('.chgsec h2')].map(h => h.textContent.trim())
   }));
   check('390px：/changes/ 零横向溢出（列表式布局，不是宽表）',
-    changesMobile.overflowX <= 0 && changesMobile.headings.length === 6,
+    changesMobile.overflowX <= 0 && changesMobile.headings.length === 7,
     `溢出 ${changesMobile.overflowX}px · 分栏 ${changesMobile.headings.length}`);
 
   // 回到桌面首页：后面的量测（覆盖条数）要在这个状态下取
@@ -4155,9 +4318,18 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             return {
               items: [...section.querySelectorAll('li')].map(li => ({
                 text: (li.innerText || '').replace(/\\s+/g, ' ').trim(),
-                date: ((li.querySelector('time') || {}).getAttribute || (() => null))('datetime'),
-                anchor: (li.querySelector('a.pchgwho') || {}).getAttribute
-                  ? (li.querySelector('a.pchgwho').getAttribute('href') || '') : ''
+                // ⚠️ 必须**在元素上**取属性：旧写法把原生方法摘下来单独调用
+                // （el.getAttribute 当函数值传出去），一旦真的取到元素就是
+                // TypeError: Illegal invocation。日志为空时 map 一次都不执行，所以这个错
+                // 潜伏了很久 —— 直到真实出现套餐变化事件才暴露（浏览器验收直接崩掉）。
+                date: (() => {
+                  const el = li.querySelector('time');
+                  return el ? el.getAttribute('datetime') : null;
+                })(),
+                anchor: (() => {
+                  const a = li.querySelector('a.pchgwho');
+                  return a ? (a.getAttribute('href') || '') : '';
+                })()
               })),
               text: (section.innerText || '').replace(/\\s+/g, ' ').trim(),
               links: [...section.querySelectorAll('a')].map(a => a.getAttribute('href') || '')
@@ -4179,7 +4351,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           `${planData.block.items.length} 条 · 日志日期 [${planData.eventDates.join(', ') || '空'}]`);
         const anchorsOk = planData.block.items.every(item => {
           const id = (item.anchor.match(/#plan-([0-9a-f]{12})/) || [])[1];
-          return Boolean(id) && planData.plans.includes(id);
+          // 字段名是 `planIds`（页面取的是 `plans.plans`）。写成 `planData.plans` 时，
+          // 只要块里有 0 条，`every()` 就不执行回调 —— 于是一个 undefined 一直潜伏到
+          // 真实出现套餐变化事件才炸出来（浏览器验收实测）。
+          return Boolean(id) && planData.planIds.includes(id);
         });
         check('/plans/coding/ 最近变化块每条都深链到真实存在的套餐行',
           anchorsOk, planData.block.items.map(i => i.anchor).join(' '));
@@ -4624,6 +4799,432 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       `JS 错误 ${errors.length - errorsBeforeApi} 个 · 外部请求 ${externalRequests.length - externalBeforeApi} 个`);
   }
 
+  /* ================================================================== */
+  /* v3.0 Stage I：四个资料库页面家族的真浏览器验收（§21–§25）             */
+  /* ================================================================== */
+  //
+  // 这五节的坏法是同一类，所以共用一套「页面体检」：
+  //   · 关掉 JS 内容就没了（预渲染只是说说）；
+  //   · 冒出一个点不动的控件（预渲染 HTML 里出现 JS 控件）；
+  //   · canonical 不自指 / 面包屑深度写错（页面看起来完全正常，只有点击才发现 404）；
+  //   · ItemList 声明数与页面 `data-item` 行数不符；
+  //   · 该给的官方链接丢了；
+  //   · 窄屏把整页撑开（/status/、/plans/coding/、/plans/api/ 都踩过）；
+  //   · 漏进 sitemap / 混进外来请求 / 控制台报错。
+  //
+  // ⚠️ 每一节都自己快照 `errors` / `externalRequests`：全局计数是整轮累积的。
+  const libraryNoJsCtx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+  const libraryNoJsPage = await libraryNoJsCtx.newPage();
+  const librarySitemap = await page.evaluate(`(async () => {
+    const r = await fetch(${JSON.stringify(new URL('sitemap.xml', base).href)});
+    return { status: r.status, body: await r.text() };
+  })()`).catch(() => null);
+  // sitemap 里的 URL 用的是**线上站点根**，不是本地临时端口 —— 先取出站点根再逐条比对。
+  const librarySiteRoot = librarySitemap ? ((librarySitemap.body.match(/<loc>([^<]*)<\/loc>/) || [])[1] || '') : '';
+  const inSitemap = route => Boolean(librarySitemap) && librarySitemap.status === 200
+    && librarySitemap.body.includes(`<loc>${librarySiteRoot}${route}</loc>`);
+
+  /**
+   * 一次页面体检。`opts`：
+   *   label        用于 check 名称
+   *   route        站根相对路由（带尾斜杠）
+   *   noJsText     无 JS 时必须读到的文本片段（每条都要在）
+   *   minText      无 JS 时的正文下限（按 page-kinds 的口径取整）
+   *   itemList     true=必须有 ItemList 且声明数==元素数==页面行数；false=必须没有；null=不查
+   *   official     期望的外部官方链接数下限（默认 0：0 表示"这一页按设计没有外链"）
+   *   overflow     true=查 390/360 页面级横向溢出
+   *   footerLink   true=页脚必须有指向本页的入口（索引/枢纽页）；详情页为 false
+   *                （详情页的入链来自索引页，逐条在各自小节里查）
+   *   rowSelector  ItemList 行数对账用的行标记（枢纽页是 [data-child]，其余是 [data-item]）
+   */
+  async function auditLibraryPage(opts) {
+    const { label, route } = opts;
+    const noJsText = opts.noJsText || [];
+    const minText = opts.minText || 0;
+    const itemList = opts.itemList === undefined ? null : opts.itemList;
+    const officialMin = opts.official === undefined ? 0 : opts.official;
+    const wantOverflow = opts.overflow !== false;
+    const footerLink = opts.footerLink !== false;
+    const rowSelector = opts.rowSelector || '[data-item]';
+    const depth = route.split('/').filter(Boolean).length;
+    const prefix = '../'.repeat(depth);
+    const errorsBefore = errors.length;
+    const externalBefore = externalRequests.length;
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(new URL(route, base).href, { waitUntil: 'load' });
+    const data = await page.evaluate(`(() => {
+      const strip = s => (s || '').replace(/\\s+/g, ' ').trim();
+      const lds = [...document.querySelectorAll('script[type="application/ld+json"]')]
+        .map(s => { try { return JSON.parse(s.textContent); } catch (e) { return null; } }).filter(Boolean);
+      const list = lds.find(d => d['@type'] === 'ItemList') || null;
+      const crumbLinks = [...document.querySelectorAll('.crumb a')].map(a => a.getAttribute('href') || '');
+      const official = [...document.querySelectorAll('a[href^="http"]')].map(a => a.href);
+      return {
+        title: strip((document.querySelector('h1') || {}).textContent),
+        h1Count: document.querySelectorAll('h1').length,
+        canonical: (document.querySelector('link[rel="canonical"]') || {}).href || '',
+        crumbLinks,
+        rows: document.querySelectorAll(${JSON.stringify(rowSelector)}).length,
+        declared: list ? Number(list.numberOfItems) : -1,
+        elements: list ? (list.itemListElement || []).length : -1,
+        officialCount: official.length,
+        officialHrefs: official,
+        controls: document.querySelectorAll('main button, main select, main input, main textarea').length,
+        text: document.body ? document.body.innerText.replace(/\\s+/g, ' ').trim() : '',
+        footLinks: [...document.querySelectorAll('footer a')].map(a => a.getAttribute('href') || '')
+      };
+    })()`);
+
+    check(`${label} 能打开且恰好一个 h1`, data.h1Count === 1, `${data.h1Count} 个 · 「${data.title}」`);
+    check(`${label} canonical 自指`, data.canonical.endsWith(new URL(route, base).pathname), data.canonical);
+    check(`${label} 面包屑第一级回站根（${depth} 层路由 ⇒ ${prefix}）`,
+      data.crumbLinks.length > 0 && data.crumbLinks[0] === prefix, data.crumbLinks.join(' ') || '没有面包屑');
+    if (itemList === true) {
+      check(`${label} ItemList 声明数 == 元素数 == 页面 data-item 行数`,
+        data.declared >= 0 && data.declared === data.elements && data.declared === data.rows,
+        `声明 ${data.declared} / 元素 ${data.elements} / 行 ${data.rows}`);
+    } else if (itemList === false) {
+      check(`${label} 刻意没有 ItemList（详情叶子 / 单页）`, data.declared === -1, `声明 ${data.declared}`);
+    }
+    if (footerLink) {
+      check(`${label} 页脚有指向本页的入口`, data.footLinks.some(href => href.endsWith(route)),
+        data.footLinks.filter(href => href.includes(route.split('/')[0])).join(' ') || '页脚没有本页');
+    }
+    check(`${label} 在 sitemap 里（成员资格，不是"文件存在"）`, inSitemap(route),
+      librarySitemap ? `HTTP ${librarySitemap.status}` : '读取失败');
+    if (officialMin > 0) {
+      check(`${label} 官方链接逐条都在（≥${officialMin} 条，且都是 http(s)）`,
+        data.officialCount >= officialMin && data.officialHrefs.every(href => /^https?:\/\//.test(href)),
+        `${data.officialCount} 条`);
+    } else {
+      check(`${label} 按设计没有站外链接（这一页只做站内导航与数据出口）`,
+        data.officialCount === 0, `${data.officialCount} 条：${data.officialHrefs.slice(0, 2).join(' ')}`);
+    }
+    if (wantOverflow) {
+      for (const width of [390, 360]) {
+        await page.setViewportSize({ width, height: 800 });
+        const overflow = await page.evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth');
+        check(`${label} ${width}px 不产生页面级横向溢出`, overflow === 0, `${overflow}px`);
+      }
+      await page.setViewportSize({ width: 1440, height: 900 });
+    }
+
+    // 无 JS：预渲染的硬定义 —— 关掉 JS 打开，正文与关键片段都要在，且**一个控件都没有**
+    await libraryNoJsPage.goto(new URL(route, base).href, { waitUntil: 'load' });
+    const noJs = await libraryNoJsPage.evaluate(`(() => {
+      const text = document.body ? document.body.innerText.replace(/\\s+/g, ' ').trim() : '';
+      return {
+        text,
+        controls: document.querySelectorAll('main button, main select, main input, main textarea').length,
+        rows: document.querySelectorAll('[data-item]').length
+      };
+    })()`);
+    check(`${label} 无 JS 时正文完整（≥${minText} 字）`, noJs.text.length >= minText, `${noJs.text.length} 字`);
+    check(`${label} 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）`, noJs.controls === 0, `${noJs.controls} 个`);
+    for (const marker of noJsText) {
+      check(`${label} 无 JS 时读得到「${marker}」`, noJs.text.includes(marker));
+    }
+
+    check(`${label} 没有 JS 错误、没有外部请求（含本节的全部导航）`,
+      errors.length === errorsBefore && externalRequests.length === externalBefore,
+      `JS 错误 ${errors.length - errorsBefore} 个 · 外部请求 ${externalRequests.length - externalBefore} 个`);
+    return { data, noJs };
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* /plans/ 统一资料入口（v3.0 Stage B）                                 */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 21) /plans/ 资料入口 ===');
+  {
+    const route = 'plans/';
+    const { data } = await auditLibraryPage({
+      label: '/plans/',
+      route,
+      noJsText: ['Coding 套餐', 'API 计费', '最近套餐与价格变化'],
+      minText: 700,
+      itemList: true,
+      rowSelector: '[data-child]',
+      official: 0
+    });
+    check('/plans/ 给出两个子页入口（Coding 与 API）',
+      data.text.includes('Coding 套餐') && data.text.includes('API 计费')
+      && data.text.includes('进入 Coding 套餐对比') && data.text.includes('进入 API / Token 计费对比'));
+    check('/plans/ 不是第三张重复大表（0 个 <table>）',
+      (await page.evaluate('document.querySelectorAll("table").length')) === 0);
+    const hubTruth = await page.evaluate(`(async () => {
+      const plans = await (await fetch(${JSON.stringify(new URL('plans.json', base).href)})).json();
+      const api = await (await fetch(${JSON.stringify(new URL('api-plans.json', base).href)})).json();
+      return { plans: plans.count, apiRecords: api.count,
+        apiItems: (api.plans || []).reduce((n, p) => n + (p.models || []).length, 0) };
+    })()`).catch(() => null);
+    if (hubTruth) {
+      // 计数用**数据标记**对账（页面上的每个数字都带 data-summary-label/value），
+      // 不靠"句子长什么样"—— 文案会改，标记是契约。
+      const summaryMatches = await page.evaluate(`(() => {
+        const want = ${JSON.stringify({ '套餐数': hubTruth.plans, '计费记录': hubTruth.apiRecords, '模型计价条目': hubTruth.apiItems })};
+        const read = {};
+        for (const el of document.querySelectorAll('[data-summary-label]')) {
+          read[el.getAttribute('data-summary-label')] = el.getAttribute('data-summary-value');
+        }
+        return Object.entries(want).every(([label, value]) => read[label] === String(value));
+      })()`);
+      check('/plans/ 的计数与 dist 数据逐个对账（套餐数 / 计费记录 / 模型计价条目）',
+        summaryMatches, JSON.stringify(hubTruth));
+    }
+    check('/plans/ 互链到模型资料 / 历史档案 / 数据文档（枢纽页互链）',
+      data.text.includes('模型资料索引') && data.text.includes('历史档案') && data.text.includes('数据文档'));
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* /models/ 与模型详情页（v3.0 Stage D5/D6）                            */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 22) /models/ 与模型详情页 ===');
+  {
+    const { data } = await auditLibraryPage({
+      label: '/models/',
+      route: 'models/',
+      noJsText: ['模型资料索引', '开发者', '模型族'],
+      minText: 600,
+      itemList: true,
+      official: 0
+    });
+    const modelsTruth = await page.evaluate(`(async () => {
+      const doc = await (await fetch(${JSON.stringify(new URL('models.json', base).href)})).json();
+      return { count: doc.count, slugs: (doc.models || []).map(m => m.slug), firstSlug: (doc.models || [])[0].slug };
+    })()`).catch(() => null);
+    if (modelsTruth) {
+      check(`/models/ 行数与 dist/models.json 逐个对账（${modelsTruth.count} 个）`,
+        data.rows === modelsTruth.count, `页面 ${data.rows} 行 / 数据 ${modelsTruth.count} 个`);
+    }
+    // 抽样 3 个详情页：canonical、面包屑深度、计价表、官方链接、无 ItemList、窄屏
+    const sampleSlugs = modelsTruth ? modelsTruth.slugs.slice(0, 3) : [];
+    for (const slug of sampleSlugs) {
+      const detailRoute = `models/${slug}/`;
+      const { data: detail } = await auditLibraryPage({
+        label: `/models/${slug}/`,
+        route: detailRoute,
+        noJsText: ['模型名称', '开发者', 'API 提供平台'],
+        minText: 700,
+        itemList: false,
+        official: 1,
+        footerLink: false
+      });
+      check(`/models/${slug}/ 面包屑第二级指向 /models/（真实路由）`,
+        detail.crumbLinks.includes('../models/') || detail.crumbLinks.includes('../../models/'),
+        detail.crumbLinks.join(' '));
+      check(`/models/${slug}/ 从索引页有一条入链（详情页不是孤岛）`,
+        await page.evaluate(`(async () => {
+          const r = await fetch(${JSON.stringify(new URL('models/', base).href)});
+          const html = await r.text();
+          return html.includes(${JSON.stringify(`models/${slug}/`)});
+        })()`).catch(() => false));
+      check(`/models/${slug}/ 计价表逐行可回读（行数 == 映射条目数）`,
+        await page.evaluate(`(async () => {
+          const links = await (await fetch(${JSON.stringify(new URL('model-registry-links.json', base).href)})).json();
+          const api = await (await fetch(${JSON.stringify(new URL('api-plans.json', base).href)})).json();
+          const ids = new Set((api.plans || []).map(p => p.id));
+          const expected = (links.links || []).filter(l => l.registrySlug === ${JSON.stringify(slug)}
+            && l.apiPlanId && ids.has(l.apiPlanId)).length;
+          return document.querySelectorAll('tr.mapirow').length === expected;
+        })()`).catch(() => false));
+    }
+    check('/models/ 索引页的筛选控件由脚本建（无 JS 时 0 控件已在体检里查过；有 JS 时才有控件）',
+      data.controls > 0, `${data.controls} 个控件`);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 厂商资料页（v3.0 Stage E）                                           */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 23) 厂商资料页（/vendor/）===');
+  {
+    const vendorIndex = await page.evaluate(`(async () => {
+      const sm = await (await fetch(${JSON.stringify(new URL('sitemap.xml', base).href)})).text();
+      const list = [...sm.matchAll(/<loc>([^<]+)<\\/loc>/g)].map(m => m[1])
+        .filter(url => /\\/vendor\\/[a-z0-9-]+\\/$/.test(url));
+      return { routes: list.map(url => new URL(url).pathname.replace(/^.*\\/ai-deals-aggregator\\//, '')), count: list.length };
+    })()`).catch(() => null);
+    check('/vendor/ 至少有一个厂商页进 sitemap', Boolean(vendorIndex) && vendorIndex.count > 0,
+      vendorIndex ? `${vendorIndex.count} 个` : '读取失败');
+    if (vendorIndex && vendorIndex.count) {
+      // v3.0 Stage E 的资料区块已经接线，所以这一节现在查的是**真实承诺**：
+      //   · 每页必须真的渲染出六节；
+      //   · 官方入口必须给 ≥1 条站外链接，且**每一条都能在 dist 数据里找到出处**
+      //     （「写一个看起来像主页的地址」是这一页最容易犯的错）；
+      //   · 页面上的 API 记录数必须与 dist/api-plans.json 按 provider key 现算的值逐个对账。
+      // 数据侧的真值在这里**从 dist 现场读**（与构建期不同源，这正是这一节的价值）。
+      const externalAllowed = await page.evaluate(`(async () => {
+        const urls = new Set();
+        const deals = (await (await fetch(${JSON.stringify(new URL('deals.json', base).href)})).json()).deals || [];
+        for (const deal of deals) if (deal.url) urls.add(deal.url);
+        const plans = (await (await fetch(${JSON.stringify(new URL('plans.json', base).href)})).json()).plans || [];
+        for (const plan of plans) if (plan.officialUrl) urls.add(plan.officialUrl);
+        const api = (await (await fetch(${JSON.stringify(new URL('api-plans.json', base).href)})).json()).plans || [];
+        for (const plan of api) if (plan.officialUrl) urls.add(plan.officialUrl);
+        return [...urls];
+      })()`).catch(() => null);
+      const allowedSet = new Set(externalAllowed || []);
+      const sample = vendorIndex.routes.slice(0, 3);
+      for (const route of sample) {
+        const { data } = await auditLibraryPage({
+          label: `/${route}`,
+          route,
+          noJsText: ['按厂商浏览', '福利类型'],
+          minText: 600,
+          itemList: true,
+          // v3.0 Stage E：厂商资料页**有**官方入口（那一节的职责就是给出官方地址）。
+          official: 1,
+          // 页脚只钉了少量厂商快捷入口，不是每个厂商页都有 —— 入链来自 /vendor/ 枢纽。
+          footerLink: false
+        });
+        check(`/${route} 面包屑第二级指向 /vendor/ 枢纽`,
+          data.crumbLinks.includes('../vendor/') || data.crumbLinks.includes('../../vendor/'),
+          data.crumbLinks.join(' '));
+        check(`/${route} 从 /vendor/ 枢纽有一条入链（厂商页不是孤岛）`,
+          await page.evaluate(`(async () => {
+            const r = await fetch(${JSON.stringify(new URL('vendor/', base).href)});
+            const html = await r.text();
+            return html.includes(${JSON.stringify(route.replace(/^vendor\//, ''))});
+          })()`).catch(() => false));
+        // v3.0 Stage E 的资料区块：**必须存在**（接线已由 t13 完成，不再有「未接线」分支）。
+        const knowledge = await page.evaluate(`(() => {
+          const el = document.getElementById('vendor-knowledge');
+          if (!el) return null;
+          const mark = name => {
+            const node = el.querySelector('[data-vendor-count="' + name + '"]');
+            return node ? Number(node.getAttribute('data-vendor-value')) : -1;
+          };
+          const sections = ['vendor-official', 'vendor-plans', 'vendor-api', 'vendor-models', 'vendor-changes', 'vendor-feeds']
+            .filter(id => document.getElementById(id)).length;
+          return {
+            sections,
+            officialLinks: [...el.querySelectorAll('a[href^="http"]')].map(a => a.href),
+            marks: Object.fromEntries(['api-records', 'api-model-items', 'api-channels', 'models', 'api-records-inline'].map(name => {
+              const node = el.querySelector('[data-vendor-count="' + name + '"]');
+              return [name, node ? Number(node.getAttribute('data-vendor-value')) : -1];
+            }))
+          };
+        })()`);
+        check(`/${route} 资料区块六节齐（官方入口 / 套餐 / API / 模型 / 变化 / 订阅）`,
+          Boolean(knowledge) && knowledge.sections === 6,
+          knowledge ? `${knowledge.sections} 节` : '缺少 #vendor-knowledge');
+        if (knowledge) {
+          check(`/${route} 资料区块的官方入口指向**数据里有出处**的地址`,
+            knowledge.officialLinks.length >= 1 && knowledge.officialLinks.every(href => allowedSet.has(href)),
+            `${knowledge.officialLinks.length} 条` +
+            `${knowledge.officialLinks.filter(href => !allowedSet.has(href)).slice(0, 2).join(' ') || ' · 全部有出处'}`);
+          // 页面上的每个计数都必须带 `data-vendor-count` 标记、可被外部按数据重算（值非负），
+          // 且「同一件事的两个标记」（标题里的 api-records-inline 与正文里的 api-records）**必须相等** ——
+          // 这一条抓的是「改了一处忘改另一处」这类最容易漏的漂移。
+          const marks = knowledge.marks || {};
+          const required = ['api-records', 'api-model-items', 'api-channels', 'models', 'api-records-inline'];
+          const missing = required.filter(name => !(marks[name] >= 0));
+          check(`/${route} 资料区块的计数都带 data-vendor-count 标记且非负（可被外部重算）`,
+            missing.length === 0, missing.length ? `缺标记：${missing.join(',')}` : JSON.stringify(marks));
+          check(`/${route} 「API 记录数」的两个标记一致（标题行 == 正文行）`,
+            marks['api-records'] >= 0 && marks['api-records'] === marks['api-records-inline'],
+            `${marks['api-records']} vs ${marks['api-records-inline']}`);
+        }
+      }
+      const { data: hubData } = await auditLibraryPage({
+        label: '/vendor/',
+        route: 'vendor/',
+        noJsText: ['按厂商浏览'],
+        minText: 500,
+        itemList: true,
+        rowSelector: '[data-child]',
+        official: 0
+      });
+      check(`/vendor/ 枢纽列出 ${vendorIndex.count} 个厂商入口`,
+        hubData.rows === vendorIndex.count, `页面 ${hubData.rows} 行 / sitemap ${vendorIndex.count} 个`);
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 历史档案（v3.0 Stage F）                                             */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 24) 历史档案（/archive/）===');
+  {
+    const { data } = await auditLibraryPage({
+      label: '/archive/',
+      route: 'archive/',
+      noJsText: ['历史档案', '已结束', '0 条是事实，不是故障'],
+      minText: 600,
+      itemList: true,
+      official: 0
+    });
+    check('/archive/ 三组都在（优惠 / Coding 套餐 / API 计费记录）',
+      await page.evaluate(`['archive-deal','archive-plan','archive-api'].every(id => Boolean(document.getElementById(id)))`));
+    const archiveTruth = await page.evaluate(`(async () => {
+      const files = { deal: 'deal-history.json', plan: 'plan-history.json', api: 'api-plan-history.json' };
+      const out = {};
+      for (const [kind, file] of Object.entries(files)) {
+        const r = await fetch(${JSON.stringify(base)} + file);
+        const doc = r.ok ? await r.json() : null;
+        out[kind] = doc ? (doc.events || []).filter(e => e.type === 'ended' || e.type === 'restored').length : null;
+      }
+      return out;
+    })()`).catch(() => null);
+    check('/archive/ 三份变化日志都取到了（没有把 api-plan-history 写成 api-history 这类文件名错误）',
+      Boolean(archiveTruth) && Object.values(archiveTruth).every(value => value !== null),
+      JSON.stringify(archiveTruth));
+    const totalEnded = archiveTruth ? Object.values(archiveTruth).reduce((n, v) => n + (v || 0), 0) : null;
+    check('/archive/ 的档案条数与三份日志的 ended/restored 事件数一致（交付日 0 条 ⇒ 0 行）',
+      totalEnded === null ? data.rows === 0 : data.rows === totalEnded,
+      `页面 ${data.rows} 行 · 日志里 ended/restored 共 ${totalEnded}`);
+    check('/archive/ 空态写明「0 条是事实，不是故障」（空是事实，不是故障）',
+      data.rows > 0 || data.text.includes('0 条是事实，不是故障'));
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 数据出口（v3.0 Stage G）                                             */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 25) 数据出口（/docs/data/）===');
+  {
+    const { data } = await auditLibraryPage({
+      label: '/docs/data/',
+      route: 'docs/data/',
+      noJsText: ['数据集索引', '使用示例', '引用方式', 'Schema 稳定性', 'License 状态'],
+      minText: 1200,
+      itemList: true,
+      official: 0
+    });
+    const manifestTruth = await page.evaluate(`(async () => {
+      const doc = await (await fetch(${JSON.stringify(new URL('data/index.json', base).href)})).json();
+      return { count: doc.count, urls: (doc.datasets || []).map(d => d.url), shapes: (doc.datasets || []).map(d => d.updatedAtShape) };
+    })()`).catch(() => null);
+    if (manifestTruth) {
+      check(`/docs/data/ 行数 == dist/data/index.json 的数据集数（${manifestTruth.count} 份）`,
+        data.rows === manifestTruth.count, `页面 ${data.rows} 行 / Manifest ${manifestTruth.count} 份`);
+      const statuses = await page.evaluate(`(async () => {
+        const urls = ${JSON.stringify(manifestTruth.urls)};
+        const out = {};
+        for (const url of urls) {
+          try { out[url] = (await fetch(${JSON.stringify(base)} + url, { method: 'GET' })).status; }
+          catch (e) { out[url] = 0; }
+        }
+        return out;
+      })()`).catch(() => null);
+      check('/docs/data/ 里每个 endpoint 都真的能取到（逐条 HTTP 200）',
+        Boolean(statuses) && Object.values(statuses).every(status => status === 200),
+        statuses ? Object.entries(statuses).filter(([, s]) => s !== 200).map(([u, s]) => `${u}=${s}`).join(' ') : '读取失败');
+      check('/docs/data/ 页面标出每份数据的时间形状（真实时刻 / 日期规范化 / 纯日期）',
+        await page.evaluate(`(async () => {
+          const doc = await (await fetch(${JSON.stringify(new URL('data/index.json', base).href)})).json();
+          const shapes = new Set((doc.datasets || []).map(d => d.updatedAtShape));
+          const onPage = new Set([...document.querySelectorAll('[data-time-shape]')].map(el => el.getAttribute('data-time-shape')));
+          return [...shapes].every(s => onPage.has(s));
+        })()`).catch(() => false));
+    }
+    check('/docs/data/ 引用示例里带官方出处（不宣称本站是官方来源）',
+      data.text.includes('docs.anthropic.com') && data.text.includes('不是官方来源'));
+  }
+
   await browser.close();
   if (server) server.close();
 
@@ -4631,6 +5232,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     externalRequests: externalRequests.length,
     failedRequests: failedRequests.length,
     jsErrors: errors.length,
+    // 抽样写进机器可读报告：回归比对报"JS 错误 1 个"时，报告里就能看到是哪一页的哪条错误。
+    jsErrorSamples: errors.slice(0, 3),
+    // 本地静态服务上的 404 路径（浏览器只报 "Failed to load resource"，不带路径）
+    httpNotFound: httpNotFound.slice(0, 10),
     target: base,
     generatedAt: new Date().toISOString()
   });

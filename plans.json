@@ -1,8 +1,275 @@
 {
   "schemaVersion": 1,
   "updatedAt": "2026-10-01T00:00:00+08:00",
-  "count": 9,
+  "count": 23,
   "plans": [
+    {
+      "id": "536e6b211045",
+      "kind": "coding",
+      "provider": "anthropic",
+      "planName": "Claude Pro",
+      "officialUrl": "https://www.anthropic.com/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://www.anthropic.com/pricing",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 20,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方写「$17 Per month with annual subscription discount ($200 billed up front). $20 if billed monthly.」——年付是另一个 SKU（$200/年），本记录只收月付"
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方只写「More usage*」并在逐功能表里对比，未公布固定数值；页尾明确「Usage limits apply.」",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": [
+        {
+          "name": "Claude 系列模型（含 Claude Code）",
+          "role": "included",
+          "note": "官方对比表逐字写「Claude Code: Pro Yes」"
+        }
+      ],
+      "restrictions": [
+        {
+          "kind": "fair_use",
+          "value": true,
+          "note": "官方写「Usage limits apply.」"
+        }
+      ],
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Pro For everyday work $17 Per month with annual subscription discount ($200 billed up front). $20 if billed monthly. Try Claude Everything in Free, plus: More usage*",
+          "sourceUrl": "https://www.anthropic.com/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        },
+        {
+          "field": "quota.description",
+          "quote": "Usage limits apply. Prices shown don’t include applicable tax. Price and plans are subject to change at Anthropic's discretion.",
+          "sourceUrl": "https://www.anthropic.com/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "c968fb5a3c55",
+      "kind": "coding",
+      "provider": "baidu",
+      "planName": "Comate 个人专业版",
+      "officialUrl": "https://comate.baidu.com/zh/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://comate.baidu.com/zh/pricing",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 59,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方写「￥59/月 含模型额度¥55/月」——套餐价里含等值模型调用额度，不是把 59 元全部算作软件订阅费"
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "官方以**金额**表示模型额度（¥55/月），未公布 Token 或积分数值；额度按模型单价扣减",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": [
+        {
+          "name": "百度 Comate 官方模型（Auto 调度）",
+          "role": "pool",
+          "note": "官方写「官方模型无缝切换」「优先体验国内 SOTA 模型」，未逐一点名"
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "个人·专业版 ￥59/月 含模型额度¥55/月 立即购买",
+          "sourceUrl": "https://comate.baidu.com/zh/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.description",
+          "quote": "含模型额度¥55/月",
+          "sourceUrl": "https://comate.baidu.com/zh/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "b176967fc6bb",
+      "kind": "coding",
+      "provider": "baidu",
+      "planName": "Comate 个人旗舰版",
+      "officialUrl": "https://comate.baidu.com/zh/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://comate.baidu.com/zh/pricing",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 199,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方写「￥199/月 含模型额度¥199/月」"
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "官方以**金额**表示模型额度（¥199/月），未公布 Token 或积分数值；额度按模型单价扣减",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": [
+        {
+          "name": "百度 Comate 官方模型（Auto 调度）",
+          "role": "pool",
+          "note": "官方写「官方模型无缝切换」「优先体验国内 SOTA 模型」，未逐一点名"
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "个人·旗舰版 免费Auto-Free模式限时不限量 至12月31日 ￥199/月 含模型额度¥199/月 立即购买",
+          "sourceUrl": "https://comate.baidu.com/zh/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "67bcc6127599",
+      "kind": "coding",
+      "provider": "codebuddy",
+      "planName": "Team 版(月付)",
+      "officialUrl": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing",
+      "source": "Official-Docs",
+      "sourceUrl": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 40,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方写「$40.00 / 坐席 / 月」；年付 $480.00 / 坐席 / 年 是另一条 SKU（本清单不重复收）"
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 1000,
+        "period": "monthly",
+        "description": "每席位每月 1,000 积分，团队公共池共享",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Team 版（月付） $40.00 / 坐席 / 月 功能 • 每席位每月 1,000 积分，团队公共池共享",
+          "sourceUrl": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "每席位每月 1,000 积分，团队公共池共享",
+          "sourceUrl": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "041e537ddecb",
+      "kind": "coding",
+      "provider": "codebuddy",
+      "planName": "旗舰版",
+      "officialUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+      "source": "Official-Docs",
+      "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 999,
+        "promoPrice": 700,
+        "promoNote": "连续包月 700 元/月；年付 8,400 元/年；连续包年 6,720 元/年",
+        "note": null
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 50000,
+        "period": "monthly",
+        "description": "基础积分 20,000/月 + 加赠积分 30,000/月（限时）= 每月实得 50,000",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "年付（7 折） — 840 元/年 1,680 元/年 8,400 元/年 连续包年（再享 8 折） — 672 元/年 1,344 元/年 6,720 元/年",
+          "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "每月实得积分（限时） 500 4,000 9,000 50,000",
+          "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
     {
       "id": "154d2607b8ff",
       "kind": "coding",
@@ -51,6 +318,56 @@
         {
           "field": "quota.description",
           "quote": "CodeBuddy 和 WorkBuddy 同一账号积分共享，无需分别订阅。",
+          "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "db4787ff0069",
+      "kind": "coding",
+      "provider": "codebuddy",
+      "planName": "高级版",
+      "officialUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+      "source": "Official-Docs",
+      "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 199,
+        "promoPrice": 140,
+        "promoNote": "连续包月 140 元/月；年付 1,680 元/年；连续包年 1,344 元/年",
+        "note": "官方「国内个人版订阅升级公告」后的价格体系：体验版免费 / 标准版 99 / 高级版 199 / 旗舰版 999（元/月）"
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 9000,
+        "period": "monthly",
+        "description": "基础积分 4,000/月 + 加赠积分 5,000/月（限时）= 每月实得 9,000",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "版本 体验版 标准版 高级版 旗舰版 月付 免费 99 元/月 199 元/月 999 元/月",
+          "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "基础积分 / 月 500 2,000 4,000 20,000 加赠积分 / 月（限时） — 2,000 5,000 30,000 每月实得积分（限时） 500 4,000 9,000 50,000",
           "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
           "capturedAt": "2026-10-01",
           "lang": "zh"
@@ -111,6 +428,106 @@
       }
     },
     {
+      "id": "f41052b6ba53",
+      "kind": "coding",
+      "provider": "github",
+      "planName": "Copilot Max",
+      "officialUrl": "https://github.com/features/copilot/plans",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://github.com/features/copilot/plans",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 100,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": null
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "官方以**美元额度**标注 AI Credits（Max $200/月），未给出可直接比较的积分数值，故不折算成积分",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Max For sustained, high-volume tasks $ 100 USD per user / month Choose Max Everything in Pro+ and: Early access to frontier models",
+          "sourceUrl": "https://github.com/features/copilot/plans",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        },
+        {
+          "field": "quota.description",
+          "quote": "Base credits Limited chat and agent usage $10 per month $39 per month $100 per month",
+          "sourceUrl": "https://github.com/features/copilot/plans",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "13d44de29acc",
+      "kind": "coding",
+      "provider": "github",
+      "planName": "Copilot Pro+",
+      "officialUrl": "https://github.com/features/copilot/plans",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://github.com/features/copilot/plans",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 39,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": null
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "官方以**美元额度**标注 AI Credits（Pro+ $70/月），未给出可直接比较的积分数值，故不折算成积分",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Pro+ For complex tasks $ 39 USD per user / month Choose Pro+ Everything in Pro and: Access to frontier models Audit logs",
+          "sourceUrl": "https://github.com/features/copilot/plans",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        },
+        {
+          "field": "quota.description",
+          "quote": "GitHub AI Credits Total GitHub AI Credits Limited chat and agent usage $15 per month $70 per month $200 per month",
+          "sourceUrl": "https://github.com/features/copilot/plans",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
       "id": "dd5cd38ae7b7",
       "kind": "coding",
       "provider": "github",
@@ -154,6 +571,67 @@
           "sourceUrl": "https://docs.github.com/en/copilot/get-started/plans",
           "capturedAt": "2026-10-01",
           "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "23d23eb57977",
+      "kind": "coding",
+      "provider": "minimax",
+      "planName": "Token Plan Max",
+      "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+      "source": "Official-Docs",
+      "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 119,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": null
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": "rolling",
+        "description": "官方写「5 小时固定窗口和周窗口」双窗口上限，未公布固定积分数值；覆盖 M3 / M2.7 / 图像 / 语音共享同一额度",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": [
+        {
+          "name": "MiniMax M2.7",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "MiniMax M3",
+          "role": "included",
+          "note": null
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Plus Max Ultra 价格 ¥49 /月 ¥119 /月 ¥469 /月",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.description",
+          "quote": "额度窗口 5 小时固定窗口和周窗口 5 小时固定窗口和周窗口 5 小时固定窗口和周窗口",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
         }
       ],
       "derivedMetrics": {
@@ -234,6 +712,60 @@
       }
     },
     {
+      "id": "564f0c40d9ff",
+      "kind": "coding",
+      "provider": "minimax",
+      "planName": "Token Plan Ultra",
+      "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+      "source": "Official-Docs",
+      "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 469,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": null
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": "rolling",
+        "description": "官方写「5 小时固定窗口和周窗口」双窗口上限，未公布固定积分数值",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": [
+        {
+          "name": "MiniMax M2.7",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "MiniMax M3",
+          "role": "included",
+          "note": null
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Plus Max Ultra 价格 ¥49 /月 ¥119 /月 ¥469 /月",
+          "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
       "id": "ecb07e0ed88a",
       "kind": "coding",
       "provider": "moonshot",
@@ -288,6 +820,118 @@
           "field": "restrictions",
           "quote": "Kimi Code also has a separate 5-hour-per-week usage limit. This limit applies only to Kimi Code and does not affect other membership features.",
           "sourceUrl": "https://www.kimi.com/en/help/membership/membership-overview",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "e1cbd20766b9",
+      "kind": "coding",
+      "provider": "qoder-intl",
+      "planName": "Pro+",
+      "officialUrl": "https://docs.qoder.com/account/pricing.md",
+      "source": "Official-Docs",
+      "sourceUrl": "https://docs.qoder.com/account/pricing.md",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 60,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方写「the paid plan is used as a natural monthly subscription」，价格列为 20 / 60 / 200 USD/mo 三档；本记录取 Pro+ 那一列"
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 6000,
+        "period": "monthly",
+        "description": "官方写「6,000 Credits / month for premium models」；积分覆盖等值于订阅费的 premium 模型资源，用尽后切到基础模型",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": [
+        {
+          "name": "premium 模型池 + 基础模型兜底",
+          "role": "pool",
+          "note": "官方写「for premium models」，未逐一点名；用尽后「switch to basic models」"
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Price | Free | 20 USD/mo | 60 USD/mo | 200 USD/mo",
+          "sourceUrl": "https://docs.qoder.com/account/pricing.md",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "- 6,000 Credits / month for premium models",
+          "sourceUrl": "https://docs.qoder.com/account/pricing.md",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "8092ab8f694e",
+      "kind": "coding",
+      "provider": "qoder-intl",
+      "planName": "Ultra",
+      "officialUrl": "https://docs.qoder.com/account/pricing.md",
+      "source": "Official-Docs",
+      "sourceUrl": "https://docs.qoder.com/account/pricing.md",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 200,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": null
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 20000,
+        "period": "monthly",
+        "description": "官方写「20,000 Credits / month for premium models」；积分覆盖等值于订阅费的 premium 模型资源，用尽后切到基础模型",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": [
+        {
+          "name": "premium 模型池 + 基础模型兜底",
+          "role": "pool",
+          "note": "官方写「for premium models」，未逐一点名；用尽后「switch to basic models」"
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Price | Free | 20 USD/mo | 60 USD/mo | 200 USD/mo",
+          "sourceUrl": "https://docs.qoder.com/account/pricing.md",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "- 20,000 Credits / month for premium models",
+          "sourceUrl": "https://docs.qoder.com/account/pricing.md",
           "capturedAt": "2026-10-01",
           "lang": "en"
         }
@@ -492,6 +1136,99 @@
           "sourceUrl": "https://www.trae.cn/pricing",
           "capturedAt": "2026-10-01",
           "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "1538943e3816",
+      "kind": "coding",
+      "provider": "windsurf",
+      "planName": "Max",
+      "officialUrl": "https://windsurf.com/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://windsurf.com/pricing",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 200,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": null
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方只写「Significantly higher quotas」，未公布固定数值",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Max NEW $200 PER MONTH Select plan EVERYTHING IN PRO, PLUS: Significantly higher quotas",
+          "sourceUrl": "https://windsurf.com/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "a7e02583ff72",
+      "kind": "coding",
+      "provider": "windsurf",
+      "planName": "Pro",
+      "officialUrl": "https://windsurf.com/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://windsurf.com/pricing",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 20,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方写「$20 PER MONTH」；页面另有 Teams（$80/月 + $40/坐席/月）与 Max（$200/月）档"
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方只写「Increased quotas」「额度按日与周自动刷新」，未公布固定数值；超额部分按 API 价购买",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-01",
+      "lastSeen": "2026-10-01",
+      "verified": true,
+      "verifiedAt": "2026-10-01",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Pro POPULAR $20 PER MONTH Select plan EVERYTHING IN FREE, PLUS: Increased quotas",
+          "sourceUrl": "https://windsurf.com/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
+        },
+        {
+          "field": "quota.description",
+          "quote": "How does usage work? Each paid plan comes with a usage allowance that refreshes automatically on a daily and weekly basis.",
+          "sourceUrl": "https://windsurf.com/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "en"
         }
       ],
       "derivedMetrics": {

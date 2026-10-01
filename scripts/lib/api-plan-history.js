@@ -137,6 +137,12 @@ const API_PLAN_HISTORY_WORDING = {
     more: '另有 {n} 条更早的记录未在此显示',
     from: '原',
     to: '新',
+    /**
+     * v3.0：记录已不在当前数据里、又没有留下标题快照时的那句话。
+     * **唯一出处** —— `/changes/` 的 API 分栏、`/plans/api/` 与 API 订阅的正文都读它；
+     * 各写一份就会立刻出现「同一件事两种说法」。
+     */
+    tombstone: '（已移除的计费记录，无标题快照）',
     unavailable: '本次构建没有拿到 API 计费变化日志（api-plan-history.json 缺失或损坏）——这不表示「没有变化」。'
   },
   API_PLAN_HISTORY_TYPES: {
@@ -496,6 +502,38 @@ function renameCandidatesOf(previous, next) {
 }
 
 /* ------------------------------------------------------------------ */
+/* 事件身份（派生字段）                                                  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * API 计费变化事件的派生身份（v3.0 补的缺口）。
+ *
+ * ## 为什么之前"没有"这件事是缺口
+ *
+ * 写入内核（`plan-history.recordWithProfile`）一直会给事件打上 `eventId`，但
+ * `api-plan-history` 这一侧**没有任何地方能重算它**：`verifyStore` 走的是
+ * `API_PROFILE.validateExtra`，而那里此前不检查 `eventId`。于是「同一条事件只有一个身份」
+ * 这条保证在 API 计费这份日志上只存在于**写入的瞬间**，事后手改、外部工具重写、
+ * 或换一份推导公式，都不会有任何东西变红。
+ *
+ * ## 为什么基（basis）与 `plan-history.eventIdOf` **逐字相同**
+ *
+ * 事件身份是**日志内核**的性质，不是领域判据：两份日志共用 `history-core` 的事件键、
+ * 链校验、重放与写入内核，那么「身份怎么算」也必须共用同一条推导 —— 领域差异体现在
+ * 事件**内容**（字段表 / 事件类型表 / 重标识轴）上，不体现在哈希基上。
+ *
+ * 反过来说，如果这里另写一套基，那么写入点（内核按 `profile.eventIdOf` 打的）与
+ * 校验点（本函数重算的）就会算出两个不同的值 —— 而两个值都是 12 位 hex，
+ * 这种分家在人工检查里根本看不出来。
+ *
+ * @param {object} event 日志里的一条事件（`{planId, at, type, field, from, to, reason, ...}`）
+ * @returns {string} 12 位十六进制的稳定身份
+ */
+function apiPlanEventIdOf(event) {
+  return planHistory.eventIdOf(event);
+}
+
+/* ------------------------------------------------------------------ */
 /* Profile                                                             */
 /* ------------------------------------------------------------------ */
 
@@ -531,6 +569,11 @@ const API_PROFILE = {
   axisOf: plan => (plan && plan.channel) || null,
   axisChangeReason: 'channel_changed',
   idRe: API_PLAN_ID_RE,
+  /**
+   * v3.0：派生 eventId 的推导由 profile 声明。写入点（内核）与重算点（`apiValidateExtra`）
+   * 都读这一个函数，因此「日志里的 id」与「重算的 id」不可能分家。
+   */
+  eventIdOf: apiPlanEventIdOf,
   docLabel: 'API 计费变更日志',
   recordsLabel: 'api-plans.json',
   passthroughKeys: ['anomalies'],
@@ -572,6 +615,11 @@ function apiValidateExtra(doc, plans, problems) {
       problems.push(`${where}: sameRates 必须是非空数组（没有相同项就不该判为疑似改名）`);
     }
   });
+
+  // 派生字段：`eventId` 必须等于重算值（手写 / 外部工具改写 ⇒ 红）。
+  // 实现与 plans 那一边**共用同一条**（`plan-history.eventIdProblems`），
+  // 因此「哪些事件必须带 id」「怎么重算」这两件事只有一份说法。
+  problems.push(...planHistory.eventIdProblems(core.eventsOf(doc), API_PROFILE));
 }
 
 /* ------------------------------------------------------------------ */
@@ -687,6 +735,8 @@ module.exports = {
   API_PLAN_BASELINE_NOTE,
   API_PLAN_COMPARE,
   API_PROFILE,
+  // v3.0：API 计费变化事件的派生身份（写入点与 verifyStore 共用同一个推导）。
+  apiPlanEventIdOf,
   readApiField,
   modelEntryKeyOf,
   modelMapOf,

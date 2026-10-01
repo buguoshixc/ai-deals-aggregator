@@ -6,6 +6,33 @@
 - 线上地址：https://buguoshixc.github.io/ai-deals-aggregator/
 - 数据文件：`deals.json`（v2 契约，见下文）· `plans.json`（v1 契约 —— **AI Coding 套餐**，
   与优惠分开建模，见 [数据契约（plans.json v1）](#数据契约plansjson-v1)）
+- v3.0 起还发布：`api-plans.json`（API 计费）· `models.json`（模型身份索引）·
+  `model-registry-links.json`（模型 ↔ 计费条目的显式关系）· `data/index.json`（数据集清单 Manifest）
+
+## v3.0：从「三个页面集合」到「结构化资料库」
+
+v3.0（`v3.0-ai-deals-knowledge-base`）把站点从「优惠 + 套餐 + API 价格页面集合」升级为
+**AI 优惠 / 套餐 / API 计费 / 模型 / 厂商 / 历史变化的结构化资料库**。六个新入口：
+
+| 入口 | 回答什么问题 | 数据来源 |
+|---|---|---|
+| `/plans/` | 长期用什么、按量花多少（枢纽页） | `plans.json` + `api-plans.json` |
+| `/models/` 与 `/models/<slug>/` | 这个模型在本站都有哪些事实（计价条目 / 套餐 / 优惠 / 变化） | `models.json` + 关系层 + 三份真值 |
+| `/vendor/<slug>/` | 这一家厂商的全部资料（优惠 / 套餐 / API / 模型 / 变化 / 订阅） | 既有数据的显式 join |
+| `/archive/` | 消失过的东西去哪了（**资料消失 ≠ 资料删除**） | 三份变化日志重放 |
+| `/docs/data/` | 这些数据怎么用、能不能引用 | `/data/index.json` 清单 |
+| `/feed/plans/api/changes.xml|json` | API 价格变化可以订阅 | `api-plan-history.json` |
+
+四条 v3.0 才有的纪律（都有可失败断言盯着）：
+
+1. **判据只有一处**：模型身份、厂商门槛、归档状态、Manifest 数字都各只有一个实现模块，
+   页面 / Feed / 自测 / 门禁全部调用它。
+2. **数字可重算**：页面上的每个计数都带 `data-*` 标记，构建期**从盘上现读**再对账。
+3. **「没查到」与「没有」是两句不同的话**：`null` / `unknown` / `unavailable` 各说各的。
+4. **不替用户做判断**：不排序、不推荐、不折价、不做成本计算器；只把事实整理到足以让用户自己判断。
+
+新增契约见 [`docs/SCHEMA-v3.0.md`](docs/SCHEMA-v3.0.md)（v3.0 只写新增/改动，既有契约引用旧文档）。
+交付报告与阶段台账见 [`research/v3.0-ai-deals-knowledge-base-report.md`](research/v3.0-ai-deals-knowledge-base-report.md)。
 
 ## 设计原则
 
@@ -104,6 +131,13 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 | `/feed/**`、`feed.xml`、`feed.json` | 24 份订阅 × 2 种格式 = 48 个文件 | 资源，不进 sitemap |
 
 **合计 115 个 HTML 页**（112 条可索引 + 3 条 noindex 别名），sitemap **112 条**，dist **227 个文件**。
+
+> ⚠️ 上表是 **v1.7 的 URL 地图快照**（v2.x 的行随后追加，标题未改），其中 `/vendor/<slug>/` 的 9 页、
+> `/plans/coding/` 的 9 条套餐、`/plans/api/` 的 7 条记录、`/feed/**` 的 24 份订阅与「合计」一行
+> **都已经不是当前值**。v3.0 实测：**dist 173 个 HTML 页 / 170 条可索引 / sitemap 170 条 / 290 个文件**，
+> 厂商页 **19**、套餐 **23** 条、API 计费 **13** 条 / **67** 个计价条目、订阅 **25** 份（×2 = 50 文件）。
+> 当前契约与完整地图见 [`docs/SCHEMA-v3.0.md`](docs/SCHEMA-v3.0.md) 与
+> [`research/v3.0-ai-deals-knowledge-base-report.md`](research/v3.0-ai-deals-knowledge-base-report.md)。
 
 契约（URL / 门槛 / 索引策略 / 27 个检查码）见 [`docs/SCHEMA-v1.7.md`](docs/SCHEMA-v1.7.md)；
 套餐数据与套餐页的契约见 [`docs/SCHEMA-v2.1.md`](docs/SCHEMA-v2.1.md)；

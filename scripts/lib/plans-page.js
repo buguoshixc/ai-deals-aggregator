@@ -620,14 +620,26 @@ function planChangeSentenceOf(item, opts = {}) {
   return `${who} · ${planChangeTextOf(item, opts)}`;
 }
 
+/**
+ * 一条套餐变化 → 一行 HTML。
+ *
+ * `opts.planHref(item)` 决定"谁变了"那段文字链到哪里：
+ *   · 缺省是**页内锚点** `#plan-<id>`（`/plans/coding/` 的表格行就带这个 id，落点在同一个页面里）；
+ *   · 在**别的页面**上复用这一块时必须传它 —— `/changes/` 与 `/plans/` 的资料入口上并没有
+ *     那些表格行，页内锚点会变成 19 条点不动的死链（真浏览器验收实测：`/changes/` 14 条 +
+ *     资料入口 5 条），而这在页面上看不出来，只有"锚点是否有落点"这条断言能抓到。
+ */
 function planChangeItemHtml(item, opts = {}) {
   const T = planHistory.PLAN_HISTORY_WORDING;
   const provider = providerNameOf(item.vendor, opts.providerTable);
   const who = item.titled ? `${provider ? `${provider} ` : ''}${item.title}` : '（已移除的套餐，无标题快照）';
   const typeLabel = T.PLAN_HISTORY_TYPES[item.type] || item.type;
   const origin = item.origin === 'derived' ? `<span class="pchgorigin">（由本站规则推导）</span>` : '';
-  const link = item.planId
-    ? `<a class="pchgwho" href="#plan-${escapeHtml(item.planId)}">${escapeHtml(who)}</a>`
+  const planHref = typeof opts.planHref === 'function'
+    ? opts.planHref(item)
+    : (item.planId ? `#plan-${item.planId}` : null);
+  const link = planHref
+    ? `<a class="pchgwho" href="${escapeHtml(planHref)}">${escapeHtml(who)}</a>`
     : `<span class="pchgwho">${escapeHtml(who)}</span>`;
   return `<span class="pchgwhen"><time datetime="${escapeHtml(item.at)}">${escapeHtml(item.at)}</time></span>`
     + `${link}<span class="pchgtype">${escapeHtml(typeLabel)}</span>`
@@ -687,9 +699,15 @@ function planChangesPageBlockHtml(radar, opts = {}) {
   const sections = planChanges.PLAN_CHANGES_SECTION_ORDER.map(key => {
     const section = radar.sections[key];
     const items = section.items;
+    // 这一块渲染在 **/changes/** 上，页面上没有套餐表格行 —— 链接必须跨页落到
+    // `/plans/coding/#plan-<id>`（这是本函数与 `/plans/coding/` 顶部那一块的唯一差别）。
+    const itemOpts = {
+      ...opts,
+      planHref: item => (item.planId ? `${prefix}plans/coding/#plan-${item.planId}` : null)
+    };
     const list = items.length
       ? `<ul class="chglist">
-${items.map(item => `          <li>${planChangeItemHtml(item, opts)}</li>`).join('\n')}
+${items.map(item => `          <li>${planChangeItemHtml(item, itemOpts)}</li>`).join('\n')}
         </ul>`
       : `<p class="snote">${escapeHtml(W.emptySection[key])}</p>`;
     const truncated = section.truncated > 0

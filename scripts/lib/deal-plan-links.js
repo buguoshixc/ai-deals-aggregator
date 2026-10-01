@@ -274,7 +274,11 @@ function lifecycleOfDeal(dealId, ctx) {
 function lifecycleOfPlan(planId, ctx) {
   if (ctx && typeof ctx.planLifecycleOf === 'function') return lifecycleTypeOf(ctx.planLifecycleOf(planId));
   if (ctx && ctx.apiPlanHistoryStore) {
-    const fromApi = lifecycleTypeOf(historyCore.lastLifecycleOf(ctx.apiPlanHistoryStore, planId, apiPlanHistory.PROFILE));
+    // v3.0：api-plan-history 的 profile 常量在补 eventId 派生时改名成 API_PROFILE
+    // （写入点与重算点都按 profile 声明走）。这里跟着改，否则整条 validate 会崩在
+    // 「Cannot read properties of undefined (reading 'eventKeyName')」——
+    // 那是崩溃不是断言失败，会把门禁变成不可读的红。
+    const fromApi = lifecycleTypeOf(historyCore.lastLifecycleOf(ctx.apiPlanHistoryStore, planId, apiPlanHistory.API_PROFILE));
     if (fromApi) return fromApi;
   }
   if (ctx && ctx.planHistoryStore) {

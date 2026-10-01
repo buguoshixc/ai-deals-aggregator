@@ -242,7 +242,11 @@ section('③ provider 归一与显式 override');
   const redundant = fixture({ links: [link({ providerOverride: '多余的理由' })] });
   check('认得出却多写 override → 报错（override 只能是必要的例外）', hasError(redundant.result, '不需要 providerOverride'));
 
-  const unresolvedDeal = deal({ id: DEAL_MISSING, vendor: 'MiniMax（稀宇科技）' });
+  // v3.0 A1：这里原来拿「MiniMax（稀宇科技）」当"认不出来的原始串"——A1 把该形态
+  // 补进了 providers.json 的别名（全角括号经 NFKC 归一后精确相等），于是它现在是**认得出**的。
+  // 断言意图一个字不改（认不出又没写 override ⇒ 报红），反例换成一个确实没登记的平台；
+  // 「认得出」那一侧由下面 fullWidth 那条正向断言接手（见同一 section 的末尾）。
+  const unresolvedDeal = deal({ id: DEAL_MISSING, vendor: 'Unregistered Labs' });
   const noOverride = fixture({
     deals: [unresolvedDeal],
     plans: [plan({ id: PLAN_MINIMAX, provider: 'minimax', planName: 'Token Plan Plus' })],
@@ -263,10 +267,22 @@ section('③ provider 归一与显式 override');
     plans: [plan({ id: PLAN_MINIMAX, provider: 'minimax', planName: 'Token Plan Plus' })],
     links: [link({
       dealId: DEAL_MISSING, planIds: [PLAN_MINIMAX], provider: 'minimax',
-      providerOverride: '采集原文带全角括号后缀，别名表里没有该形态；平台身份以 providers.json 为准。'
+      providerOverride: '采集原文的厂商串在 providers.json 的精确别名表里没有登记；平台身份以套餐侧为准。'
     })]
   });
   check('明确的 override → 通过', withOverride.result.errors.length === 0, JSON.stringify(withOverride.result.errors));
+
+  // v3.0 A1 正向断言：真实的「MiniMax（稀宇科技）」必须被认成 minimax —— scripts/data/deal-plan-links.json
+  // 里那条 providerOverride 就是靠它消灭的；这条断言守着"别让它悄悄退化回认不出"。
+  const fullWidth = fixture({
+    deals: [deal({ id: DEAL_MISSING, vendor: 'MiniMax（稀宇科技）' })],
+    plans: [plan({ id: PLAN_MINIMAX, provider: 'minimax', planName: 'Token Plan Plus' })],
+    links: [link({ dealId: DEAL_MISSING, planIds: [PLAN_MINIMAX], provider: 'minimax' })]
+  });
+  check('v3.0 A1：全角括号形态「MiniMax（稀宇科技）」被精确别名认成 minimax（不需要 override）',
+    fullWidth.result.errors.length === 0, JSON.stringify(fullWidth.result.errors));
+  check('v3.0 A1：真实关系表里已经没有 providerOverride（多余的 override 会让「为什么特殊」失去意义）',
+    links.load().doc.links.every(record => !Object.prototype.hasOwnProperty.call(record, 'providerOverride')));
 }
 
 /* ================================================================== */

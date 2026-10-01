@@ -375,9 +375,7 @@ function apiChangesBlockHtml(store, plans, { limit = 12 } = {}) {
     const title = plan ? `${providerNameOf(plan.provider)} · ${plan.planName}` : `${event.planId}（已不在当前数据里）`;
     const type = W.API_PLAN_HISTORY_TYPES[event.type] || event.type;
     const field = event.field ? (W.API_PLAN_HISTORY_FIELD_LABELS[event.field] || event.field) : '';
-    const detail = event.type === 'ended'
-      ? (W.API_PLAN_HISTORY_END_REASONS[event.reason] || event.reason || '')
-      : fieldsDiffText(event);
+    const detail = apiPlanChangeTextOf(event);
     return `        <li><span class="pchgwhen">${escapeHtml(event.at)}</span>`
       + `<span class="pchgwho">${escapeHtml(title)}</span>`
       + `<span class="pchgtype">${escapeHtml(type)}</span>`
@@ -387,10 +385,115 @@ function apiChangesBlockHtml(store, plans, { limit = 12 } = {}) {
 
   return `      <h2 class="ph2" id="api-changes">最近变化</h2>
       <p class="snote">以下是本站重建 API 计费数据时留下的观测记录（最多 ${limit} 条）。`
-    + `「不再收录」表示人工来源层不再列出它，**不表示厂商已经下架**。</p>
+    + `「不再收录」表示人工来源层不再列出它，<b>不表示厂商已经下架</b>。</p>
       <ul class="pchglist">
 ${items}
       </ul>`;
+}
+
+/**
+ * 一条 API 计费变化 → 一行 HTML（v3.0 Stage H）。
+ *
+ * 与套餐那一支（`plans-page.planChangeItemHtml`）**同一套 class**，因此 `/changes/` 上
+ * 两块的视觉语言是同一套，不新增 CSS 词汇。
+ *
+ * `opts.planHref(item)` 决定「哪条记录变了」那段文字链到哪里：
+ *   · 缺省是页内锚点 `#plan-<id>`（`/plans/api/` 的表格行带这个 id）；
+ *   · 渲染在**别的页面**上（`/changes/`）时必须传它 —— 那里没有 API 表格行，
+ *     页内锚点会变成点不动的死链。
+ */
+function apiPlanChangeItemHtml(item, opts = {}) {
+  const W = require('./api-plan-history').API_PLAN_HISTORY_WORDING;
+  const who = item.titled
+    ? `${item.vendor ? `${item.vendor} · ` : ''}${item.title}`
+    : W.API_PLAN_HISTORY_LABELS.tombstone;
+  const typeLabel = W.API_PLAN_HISTORY_TYPES[item.type] || item.type;
+  const href = typeof opts.planHref === 'function'
+    ? opts.planHref(item)
+    : (item.planId ? `#plan-${item.planId}` : null);
+  const link = href
+    ? `<a class="pchgwho" href="${escapeHtml(href)}">${escapeHtml(who)}</a>`
+    : `<span class="pchgwho">${escapeHtml(who)}</span>`;
+  return `<span class="pchgwhen"><time datetime="${escapeHtml(item.at)}">${escapeHtml(item.at)}</time></span>`
+    + `${link}<span class="pchgtype">${escapeHtml(typeLabel)}</span>`
+    + `<span class="pchgwhat">${escapeHtml(apiPlanChangeTextOf(item))}</span>`;
+}
+
+/**
+ * `/changes/` 的 **API 价格变化**分栏（v3.0 Stage H1）。
+ *
+ * 与套餐那一支结构逐项对应（同一套 class、同一套四栏、同样的空态与截断说明），
+ * 差别只有两处，且两处都是**数据事实**而不是排版偏好：
+ *   · 判据来自 `api-plan-history.json`（`plan-changes.buildApiPlanRadar()`），
+ *     **不新建第二套变化检测**；
+ *   · 链接跨页落到 `/plans/api/#plan-<id>` —— API 计费记录的表格行在那一页上。
+ *
+ * @param {object} radar `plan-changes.buildApiPlanRadar()` 的结果
+ * @param {object} [opts] `{ prefix, providerTable }`
+ */
+function apiPlanChangesPageBlockHtml(radar, opts = {}) {
+  const planChanges = require('./plan-changes');
+  const W = planChanges.API_PLAN_CHANGES_WORDING.API_PLAN_CHANGES_LABELS;
+  const S = planChanges.API_PLAN_CHANGES_WORDING.API_PLAN_CHANGES_SECTION;
+  const prefix = opts.prefix || '';
+
+  if (!radar || radar.availability !== 'ok') {
+    return `<section class="chgsec apichanges" id="api-plans">
+      <h2>${escapeHtml(W.sectionTitle)}</h2>
+      <p class="snote chgwarn">${escapeHtml(W.unavailable)}</p>
+    </section>
+`;
+  }
+
+  // 渲染在 **/changes/** 上：页面上没有 API 表格行，链接必须跨页落到 `/plans/api/`。
+  const itemOpts = {
+    ...opts,
+    planHref: item => (item.planId ? `${prefix}plans/api/#plan-${item.planId}` : null)
+  };
+  const sections = planChanges.PLAN_CHANGES_SECTION_ORDER.map(key => {
+    const section = radar.sections[key];
+    const items = section.items;
+    const list = items.length
+      ? `<ul class="chglist">
+${items.map(item => `          <li>${apiPlanChangeItemHtml(item, itemOpts)}</li>`).join('\n')}
+        </ul>`
+      : `<p class="snote">${escapeHtml(W.emptySection[key])}</p>`;
+    const truncated = section.truncated > 0
+      ? `\n        <p class="snote">${escapeHtml(W.more.replace('{n}', String(section.truncated)))}</p>` : '';
+    return `      <div class="chgsub">
+        <h3>${escapeHtml(S[key])}（${radar.totals[key]}）</h3>
+${list}${truncated}
+      </div>`;
+  }).join('\n');
+
+  const metaNote = radar.totals.meta > 0
+    ? `      <p class="snote">另有 ${radar.totals.meta} 条只影响记录元信息的变化（官方定价页 / 来源类型 / 来源地址），`
+      + `不计入上面的分栏；它们仍出现在各条计费记录的变化记录里。</p>\n`
+    : '';
+
+  return `<section class="chgsec apichanges" id="api-plans">
+      <h2>${escapeHtml(W.sectionTitle)}</h2>
+      <p class="snote">${escapeHtml(W.plansSource.replace('{date}', radar.startedAt || '未知'))}</p>
+${sections}
+${metaNote}      <p class="snote">${escapeHtml(W.disclaimer)}</p>
+    </section>
+`;
+}
+
+/**
+ * 一条 API 计费变化事件 → 「变了什么」的句子。**唯一出处**：`/plans/api/` 的「最近变化」块、
+ * `/changes/` 的 API 分栏与 `feed/plans/api/changes.*` 的正文都读它 ——
+ * 同一件事在页面与订阅源里必须是同一句话（复制一份就会漂）。
+ *
+ * 「不再收录」事件说**原因**而不是值差：它没有 from/to，而且原因才是读者要知道的那件事。
+ */
+function apiPlanChangeTextOf(event) {
+  const W = require('./api-plan-history').API_PLAN_HISTORY_WORDING;
+  if (!event || typeof event !== 'object') return '';
+  if (event.type === 'ended') {
+    return W.API_PLAN_HISTORY_END_REASONS[event.reason] || event.reason || '';
+  }
+  return fieldsDiffText(event);
 }
 
 /** 事件的新旧值 → 一句人话（只描述数值本身，不做任何加减与结论） */
@@ -719,6 +822,10 @@ module.exports = {
   apiRowTextsOf,
   apiPlansPageBody,
   apiChangesBlockHtml,
+  apiPlanChangeTextOf,
+  apiPlanChangeItemHtml,
+  apiPlanChangesPageBlockHtml,
+  fieldsDiffText,
   dealLinksBlockHtml,
   apiPlansJsonLd,
   priceText,

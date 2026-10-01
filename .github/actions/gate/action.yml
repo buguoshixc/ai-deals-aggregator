@@ -247,6 +247,56 @@ runs:
       shell: bash
       run: node scripts/tools/check-api-plan-history.js
 
+    # ---- v3.0 新增：六个新页面家族与索引层，各自的离线自测 -------------------------------
+    #
+    # 判断标准与前面每一支相同：**它红的时候没有别的步骤会替它红**。
+    # 例如「模型页只有在有 registry entry 且被引用时才生成」这条门槛、
+    # 「厂商页的 API 计数必须与 api-plans 现算一致」、「/archive/ 的状态必须能从时间线重推」、
+    # 「Manifest 的 count / updatedAt 必须与磁盘逐字段一致」—— 都只在这一步被验证。
+    - name: Model-registry self-test (identity + explicit mapping)
+      shell: bash
+      run: node scripts/tools/models-selftest.js
+
+    - name: Models-page self-test (index + detail pages)
+      shell: bash
+      run: node scripts/tools/models-page-selftest.js
+
+    - name: Plans-hub self-test (/plans/)
+      shell: bash
+      run: node scripts/tools/planshub-selftest.js
+
+    - name: Vendor-pages self-test (/vendor/)
+      shell: bash
+      run: node scripts/tools/vendor-page-selftest.js
+
+    - name: Archive self-test (/archive/, synthetic ended/restored fixtures)
+      shell: bash
+      run: node scripts/tools/archive-selftest.js
+
+    - name: Data-docs self-test (/docs/data/ + /data/index.json)
+      shell: bash
+      run: node scripts/tools/data-docs-selftest.js
+
+    # v3.0 新增：索引层与关系层的可重建性（与 plans / api-plans 那两条红的含义相同）。
+    - name: Models reproducibility (registry → models.json, byte-compare)
+      shell: bash
+      run: node scripts/tools/check-models-reproducible.js
+
+    - name: Model-registry links check (explicit mapping only, no similarity)
+      shell: bash
+      run: node scripts/tools/check-model-registry-links.js
+
+    # v3.0 新增：覆盖报告进门禁（独立完成度审查员指出的缺口）。
+    #
+    # 为什么必须进来：这份报告是「缺口清单」的**唯一**落盘处（有 Deals 无 Plans、有 Plans 无 Deals、
+    # 有 API Pricing 无 Registry 映射、重要候选未采信），而它原先**不在任何门禁里**。
+    # 实测后果：它内部把「来源层形状」当「派生层形状」读，于是把 44 个模型的注册表报成
+    # 「尚未落盘（Stage D 未完成）」，**自检仍报 0 处问题** —— 一份在撒谎的报告可以永久静默存活。
+    # 修好之后把它接进门禁：报告与数据对不上就红，避免同类假报告再次无声发生。
+    - name: Coverage report (gap list consistent with data)
+      shell: bash
+      run: node scripts/tools/coverage-report.js
+
     # 发布产物由 build-local.js 组装（与 deploy.yml 完全同一条路径），
     # 失败即拦：能装出坏产物就不该合并、更不该发布。
     - name: Assemble site (same path as deploy.yml)

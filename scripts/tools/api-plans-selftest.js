@@ -475,6 +475,129 @@ function eventsOf(before, after, extra = {}) {
 }
 
 /* ================================================================== */
+section('⑥′ 派生事件身份 eventId（v3.0 补的缺口：写入点打点 + 重算比对）');
+/* ================================================================== */
+
+{
+  const before = build().plan;
+  const after = build({ models: withModel(0, { rates: { input: 9, output: 28, cachedInput: 2 } }) }).plan;
+  const recorded = eventsOf(before, after);
+  const events = apiHistory.eventsOf(recorded.store);
+
+  check('写入点给每条事件打上 eventId（12 位十六进制，派生字段）',
+    events.length > 0 && events.every(event => /^[0-9a-f]{12}$/.test(String(event.eventId || ''))),
+    JSON.stringify(events.map(event => event.eventId)));
+
+  check('apiPlanEventIdOf 是纯函数：同一条事件两次计算 ⇒ 同一个身份',
+    events.every(event => apiHistory.apiPlanEventIdOf(event) === apiHistory.apiPlanEventIdOf({ ...event })));
+
+  check('落库的 eventId 逐条等于重算值（写入点与校验点用同一个推导，不可能分家）',
+    events.every(event => event.eventId === apiHistory.apiPlanEventIdOf(event)));
+
+  check('事件内容不同 ⇒ 身份不同（改一个单价数字就换一个身份）',
+    apiHistory.apiPlanEventIdOf(events[0])
+    !== apiHistory.apiPlanEventIdOf({
+      ...events[0],
+      to: { ...events[0].to, rates: { ...events[0].to.rates, input: 12345 } }
+    }));
+
+  check('事件日期不同 ⇒ 身份不同',
+    apiHistory.apiPlanEventIdOf(events[0]) !== apiHistory.apiPlanEventIdOf({ ...events[0], at: '2026-10-03' }));
+
+  check('干净日志的 verifyStore 不报 eventId 问题（负例不误报）',
+    !apiHistory.verifyStore(recorded.store, [after], { today: '2026-10-02' })
+      .some(problem => problem.includes('eventId')));
+
+  const handwritten = JSON.parse(JSON.stringify(recorded.store));
+  handwritten.events[0].eventId = 'deadbeef0000';
+  const handwrittenProblems = apiHistory.verifyStore(handwritten, [after], { today: '2026-10-02' });
+  check('【牙】手写 / 篡改 eventId ⇒ verifyStore 报「派生字段不得手写」',
+    handwrittenProblems.some(problem => problem.includes('eventId') && problem.includes('不得手写')),
+    JSON.stringify(handwrittenProblems.slice(0, 2)));
+
+  // 「没写」与「写错」是两件事：老日志里没有 eventId 的事件不能因为「没写」被判红，
+  // 但**写了一个错的**必须红 —— 否则这条派生字段纪律等于不存在。
+  const withoutId = JSON.parse(JSON.stringify(recorded.store));
+  delete withoutId.events[0].eventId;
+  check('历史事件没带 eventId 时不判红（只有写了一个错的才红）',
+    !apiHistory.verifyStore(withoutId, [after], { today: '2026-10-02' })
+      .some(problem => problem.includes('eventId')));
+
+  // 机制只有一份：API 侧的派生**只声明一次**，且直接复用内核那条基（不另写一套哈希基，
+  // 否则写入点与校验点会算出两个都在 12 位 hex 形状里的不同值）。
+  const apiSource = fs.readFileSync(path.join(__dirname, '..', 'lib', 'api-plan-history.js'), 'utf8');
+  check('API 侧的事件身份推导只有一处，且与写入内核同源（不另写哈希基）',
+    apiSource.includes('function apiPlanEventIdOf(event)')
+    && apiSource.includes('return planHistory.eventIdOf(event);')
+    && !/createHash|sha1Hex/.test(apiSource));
+  check('派生字段的「重算并比对」只有一份实现（两条 profile 共用 plan-history.eventIdProblems）',
+    fs.readFileSync(path.join(__dirname, '..', 'lib', 'plan-history.js'), 'utf8').includes('function eventIdProblems(events, profile)')
+    && apiSource.includes('planHistory.eventIdProblems(core.eventsOf(doc), API_PROFILE)'));
+}
+
+/* ================================================================== */
+section('⑥″ API 变化视图（/changes/ 的 API 分栏，订阅源的输入）');
+/* ================================================================== */
+
+{
+  const planChanges = require('../lib/plan-changes');
+
+  const before = build().plan;
+  const after = JSON.parse(JSON.stringify(before));
+  // 三件事：一次调价（models）、一次计费单位变化（pricing.unit）、一次元信息变化（officialUrl）
+  after.models = after.models.map(entry => ({
+    ...entry,
+    rates: { ...entry.rates, input: (typeof entry.rates.input === 'number' ? entry.rates.input : 0) + 5 }
+  }));
+  after.pricing = { ...after.pricing, unit: 'per_1K_tokens' };
+  after.officialUrl = 'https://open.bigmodel.cn/pricing/v2';
+  const recordedStore = eventsOf(before, after).store;
+  const rawTypes = apiHistory.eventsOf(recordedStore).map(event => event.type);
+
+  const radar = planChanges.buildApiPlanRadar({
+    plans: [after], store: recordedStore, asOf: '2026-10-02', availability: 'ok', providerTable: PROVIDER_TABLE
+  });
+
+  check('夹具确实产出了三类事件（价格 / 单位 / 元信息）—— 断言才有样本',
+    rawTypes.includes('price_increased') && rawTypes.includes('unit_changed') && rawTypes.includes('updated'),
+    JSON.stringify(rawTypes));
+  check('API 分栏：可用时 availability=ok，窗口与套餐同口径',
+    radar.availability === 'ok' && radar.windows.recentDays === 7 && radar.windows.endedDays === 30);
+  check('API 分栏：实质变化进「最近 7 天变化」，记录级元信息进 other.metadata',
+    radar.totals.changed === rawTypes.filter(type => type !== 'updated').length
+    && radar.totals.meta === 1 && radar.other.metadata.length === 1
+    && radar.sections.changed.items.every(item => item.type !== 'updated'),
+    JSON.stringify(radar.totals));
+  check('API 分栏：每条条目都带**日志里的**派生事件身份（订阅的 guid 直接用它）',
+    radar.sections.changed.items.every(item => typeof item.eventId === 'string'
+      && apiHistory.eventsOf(recordedStore).some(event => apiHistory.apiPlanEventIdOf(event) === item.eventId)));
+  check('API 分栏：记录标题取当前数据，平台用显示名（不是内部键 zhipu）',
+    radar.sections.changed.items.every(item => item.title === '演练用 API 计费'
+      && item.vendor === PROVIDER_TABLE.zhipu.name && item.titled === true),
+    JSON.stringify(radar.sections.changed.items.map(item => `${item.vendor}/${item.title}`)));
+  check('API 分栏：同一份输入两次构建逐字节相同（纯函数）',
+    JSON.stringify(radar) === JSON.stringify(planChanges.buildApiPlanRadar({
+      plans: [after], store: recordedStore, asOf: '2026-10-02', availability: 'ok', providerTable: PROVIDER_TABLE
+    })));
+  check('API 分栏：「最近变化」块按 API 自己的优先级取（单价涨跌排在计费单位之前）',
+    radar.home.items.length > 0 && radar.home.items[0].type === 'price_increased',
+    JSON.stringify(radar.home.items.map(item => item.type)));
+
+  const unavailable = planChanges.buildApiPlanRadar({
+    plans: [after], store: null, asOf: '2026-10-02', availability: 'unavailable', providerTable: PROVIDER_TABLE
+  });
+  check('API 分栏：日志不可用时分栏全空、totals 归零（不拿「空」冒充「没有变化」的数据）',
+    unavailable.availability === 'unavailable'
+    && unavailable.sections.changed.items.length === 0 && unavailable.totals.changed === 0
+    && unavailable.home.items.length === 0);
+
+  // 「分栏骨架只有一份实现」：两个来源的差异必须全部登记在 RADAR_SOURCES 里。
+  check('套餐与 API 两个来源共用一份分栏实现（差异只登记在 RADAR_SOURCES）',
+    Object.keys(planChanges.RADAR_SOURCES).sort().join(',') === 'api,plans'
+    && !/function buildApiPlanRadar[\s\S]{0,400}?sections\.created = /.test(fs.readFileSync(path.join(__dirname, '..', 'lib', 'plan-changes.js'), 'utf8')));
+}
+
+/* ================================================================== */
 section('⑦ 优惠 ↔ API 计费记录（Deal Linking）');
 /* ================================================================== */
 

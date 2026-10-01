@@ -1235,9 +1235,11 @@
            （v1.5 的密度账）。厂商名单由构建期按落地页计划注入，源码里不留第二份清单。
            v2.1：套餐对比页也挂在这一行末尾 —— 它与「按厂商 / 分类浏览」是同一类东西
            （长期在售的产品能力），而不是「今天的优惠」。 -->
-      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__PLANS_HREF__">套餐对比</a> · <a href="__APIPLAN_HREF__">API 计费对比</a><!--PRERENDER:vendorline--></p>
+      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__MODELS_HREF__">模型资料</a> · <a href="__PLANSHUB_HREF__">套餐与 API 计费</a> · <a href="__ARCHIVE_HREF__">历史档案</a> · <a href="__PLANS_HREF__">套餐对比</a> · <a href="__APIPLAN_HREF__">API 计费对比</a> · <a href="__DATA_HREF__">开放数据</a><!--PRERENDER:vendorline--></p>
       <!-- 变化雷达页（v1.5）与订阅中心（v1.6）共用一行：加一行页脚会把 5 种深度的
-           输出全部加高，而这两条入口本来就属于同一件事（「变化」与「订阅变化」）。 -->
+           输出全部加高，而这两条入口本来就属于同一件事（「变化」与「订阅变化」）。
+           v3.0 Stage I：四个资料库入口（模型资料 / 套餐与计费 / 历史档案 / 开放数据）**全部**
+           挂在上面那一行里，**不新增页脚行** —— 这一行保持 v1.6 的形状不变。 -->
       <p class="catnav" aria-label="变化与订阅">优惠变化：<a href="__CHANGES_HREF__">变化雷达</a> · <a href="__FEEDS_HREF__">订阅这些优惠</a></p>
       <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span> · <a href="__STATUS_HREF__">数据源状态</a></p>
       <p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p>
@@ -1562,6 +1564,23 @@
       for (const rule of MODEL_LOGO_RULES) if (rule[1] === key) return rule[2];
       for (const rule of VENDOR_RULES) if (rule[3] === key) return rule[2];
       return key;
+    }
+
+    /**
+     * A 空间（deal 侧厂商键）→ 规范显示名。返回**有序的 {key, name} 对**。
+     *
+     * 为什么需要这个访问器：`providers.json` 的 `vendorKey` 指的正是这一套键空间，而
+     * `VENDOR_RULES` 是顶层 `const`，在 `lib/render-core.js` 的沙箱里**不会**挂到 context 上 ——
+     * 少了它，两套身份空间的一致性就只能靠人眼看。`lib/providers.js` 的
+     * `validateVendorKeyAgreement()` 用它断言「每个非 null vendorKey 取回的显示名
+     * 逐字等于 providers.json 的 name」（v3.0 A1：把 moonshotai/moonshot 那一类裂缝变成硬红）。
+     *
+     * 刻意返回键/名对而不是 Map：重复键会因此暴露出来（Map 会静默折叠），
+     * 而「A 空间里同一个键挂着两个显示名」本身就是必须报红的身份裂缝。
+     * 这里只暴露键与显示名，正则不外泄：精确相等的判据属于 lib/providers.js。
+     */
+    function vendorKeyNames() {
+      return VENDOR_RULES.map(rule => ({ key: rule[1], name: rule[2] }));
     }
 
     /** 厂商归一：命中规则用规范名，否则原样返回（绝不给没有规则的条目硬套一个厂商） */

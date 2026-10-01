@@ -196,5 +196,365 @@
   },
   "absence": {},
   "anomalies": [],
-  "events": []
+  "events": [
+    {
+      "planId": "041e537ddecb",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 999,
+        "billing.promoPrice": 700,
+        "billing.currency": "CNY",
+        "quota.type": "credits",
+        "quota.amount": 50000,
+        "quota.period": "monthly",
+        "region": "cn",
+        "officialUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+        "source": "Official-Docs",
+        "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "e34576f7969a"
+    },
+    {
+      "planId": "13d44de29acc",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 39,
+        "billing.currency": "USD",
+        "quota.type": "other",
+        "quota.period": "monthly",
+        "quota.description": "官方以**美元额度**标注 AI Credits（Pro+ $70/月），未给出可直接比较的积分数值，故不折算成积分",
+        "region": "global",
+        "officialUrl": "https://github.com/features/copilot/plans",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://github.com/features/copilot/plans"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "1446043c4889"
+    },
+    {
+      "planId": "1538943e3816",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 200,
+        "billing.currency": "USD",
+        "quota.type": "rate_limited",
+        "quota.description": "官方只写「Significantly higher quotas」，未公布固定数值",
+        "region": "global",
+        "officialUrl": "https://windsurf.com/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://windsurf.com/pricing"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "c52f18d2c315"
+    },
+    {
+      "planId": "23d23eb57977",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 119,
+        "billing.currency": "CNY",
+        "quota.type": "rate_limited",
+        "quota.period": "rolling",
+        "quota.description": "官方写「5 小时固定窗口和周窗口」双窗口上限，未公布固定积分数值；覆盖 M3 / M2.7 / 图像 / 语音共享同一额度",
+        "supportedModels": [
+          {
+            "name": "MiniMax M2.7",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "MiniMax M3",
+            "role": "included",
+            "note": null
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+        "source": "Official-Docs",
+        "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "83e3c817955f"
+    },
+    {
+      "planId": "536e6b211045",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 20,
+        "billing.currency": "USD",
+        "quota.type": "rate_limited",
+        "quota.description": "官方只写「More usage*」并在逐功能表里对比，未公布固定数值；页尾明确「Usage limits apply.」",
+        "supportedModels": [
+          {
+            "name": "Claude 系列模型（含 Claude Code）",
+            "role": "included",
+            "note": "官方对比表逐字写「Claude Code: Pro Yes」"
+          }
+        ],
+        "restrictions": [
+          {
+            "kind": "fair_use",
+            "value": true,
+            "note": "官方写「Usage limits apply.」"
+          }
+        ],
+        "region": "global",
+        "officialUrl": "https://www.anthropic.com/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://www.anthropic.com/pricing"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "02b3bb67f05e"
+    },
+    {
+      "planId": "564f0c40d9ff",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 469,
+        "billing.currency": "CNY",
+        "quota.type": "rate_limited",
+        "quota.period": "rolling",
+        "quota.description": "官方写「5 小时固定窗口和周窗口」双窗口上限，未公布固定积分数值",
+        "supportedModels": [
+          {
+            "name": "MiniMax M2.7",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "MiniMax M3",
+            "role": "included",
+            "note": null
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+        "source": "Official-Docs",
+        "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "56dc63fc9185"
+    },
+    {
+      "planId": "67bcc6127599",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 40,
+        "billing.currency": "USD",
+        "quota.type": "credits",
+        "quota.amount": 1000,
+        "quota.period": "monthly",
+        "region": "global",
+        "officialUrl": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing",
+        "source": "Official-Docs",
+        "sourceUrl": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "9d33acc43afd"
+    },
+    {
+      "planId": "8092ab8f694e",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 200,
+        "billing.currency": "USD",
+        "quota.type": "credits",
+        "quota.amount": 20000,
+        "quota.period": "monthly",
+        "supportedModels": [
+          {
+            "name": "premium 模型池 + 基础模型兜底",
+            "role": "pool",
+            "note": "官方写「for premium models」，未逐一点名；用尽后「switch to basic models」"
+          }
+        ],
+        "region": "global",
+        "officialUrl": "https://docs.qoder.com/account/pricing.md",
+        "source": "Official-Docs",
+        "sourceUrl": "https://docs.qoder.com/account/pricing.md"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "11998d53faad"
+    },
+    {
+      "planId": "a7e02583ff72",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 20,
+        "billing.currency": "USD",
+        "quota.type": "rate_limited",
+        "quota.description": "官方只写「Increased quotas」「额度按日与周自动刷新」，未公布固定数值；超额部分按 API 价购买",
+        "region": "global",
+        "officialUrl": "https://windsurf.com/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://windsurf.com/pricing"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "99bf4c357329"
+    },
+    {
+      "planId": "b176967fc6bb",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 199,
+        "billing.currency": "CNY",
+        "quota.type": "other",
+        "quota.period": "monthly",
+        "quota.description": "官方以**金额**表示模型额度（¥199/月），未公布 Token 或积分数值；额度按模型单价扣减",
+        "supportedModels": [
+          {
+            "name": "百度 Comate 官方模型（Auto 调度）",
+            "role": "pool",
+            "note": "官方写「官方模型无缝切换」「优先体验国内 SOTA 模型」，未逐一点名"
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://comate.baidu.com/zh/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://comate.baidu.com/zh/pricing"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "48bd1dfceae6"
+    },
+    {
+      "planId": "c968fb5a3c55",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 59,
+        "billing.currency": "CNY",
+        "quota.type": "other",
+        "quota.period": "monthly",
+        "quota.description": "官方以**金额**表示模型额度（¥55/月），未公布 Token 或积分数值；额度按模型单价扣减",
+        "supportedModels": [
+          {
+            "name": "百度 Comate 官方模型（Auto 调度）",
+            "role": "pool",
+            "note": "官方写「官方模型无缝切换」「优先体验国内 SOTA 模型」，未逐一点名"
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://comate.baidu.com/zh/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://comate.baidu.com/zh/pricing"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "bbda4db41e4f"
+    },
+    {
+      "planId": "db4787ff0069",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 199,
+        "billing.promoPrice": 140,
+        "billing.currency": "CNY",
+        "quota.type": "credits",
+        "quota.amount": 9000,
+        "quota.period": "monthly",
+        "region": "cn",
+        "officialUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+        "source": "Official-Docs",
+        "sourceUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "163afbfbde51"
+    },
+    {
+      "planId": "e1cbd20766b9",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 60,
+        "billing.currency": "USD",
+        "quota.type": "credits",
+        "quota.amount": 6000,
+        "quota.period": "monthly",
+        "supportedModels": [
+          {
+            "name": "premium 模型池 + 基础模型兜底",
+            "role": "pool",
+            "note": "官方写「for premium models」，未逐一点名；用尽后「switch to basic models」"
+          }
+        ],
+        "region": "global",
+        "officialUrl": "https://docs.qoder.com/account/pricing.md",
+        "source": "Official-Docs",
+        "sourceUrl": "https://docs.qoder.com/account/pricing.md"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "0c80cb52e305"
+    },
+    {
+      "planId": "f41052b6ba53",
+      "at": "2026-10-01",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 100,
+        "billing.currency": "USD",
+        "quota.type": "other",
+        "quota.period": "monthly",
+        "quota.description": "官方以**美元额度**标注 AI Credits（Max $200/月），未给出可直接比较的积分数值，故不折算成积分",
+        "region": "global",
+        "officialUrl": "https://github.com/features/copilot/plans",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://github.com/features/copilot/plans"
+      },
+      "runAt": "2026-10-01T12:56:31.522Z",
+      "eventId": "b50eda0b6c10"
+    }
+  ]
 }

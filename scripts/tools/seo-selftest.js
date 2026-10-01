@@ -383,11 +383,38 @@ section('四、注册表与产物的一致性（用真实数据）');
   });
 
   check('计划里没有问题（违规在构建期就直接抛错）', plan.problems.length === 0, plan.problems.join('；'));
-  check('slug 表：厂商键全部是**规范显示名**（不是采集时的原始字符串）', (() => {
-    const canonical = new Set(payload.deals.map(deal => vendorKeyOf(deal)));
-    const bad = Object.keys(feeds.VENDOR_SLUGS).filter(name => !canonical.has(name));
+  // v3.0 Stage E（D13，队长收紧一格）：`/vendor/<slug>/` 的**身份来源只有 A 空间**
+  // （RENDER-CORE 的 `vendorKeyNames()`）。所以这张 slug 表的键的合法集合就是 A 空间规范名：
+  // 逐字属于它 ⇒ 合法；采集来的原始串（「火山引擎（字节跳动）」）不在其中 ⇒ 红。
+  //
+  // 为什么不再并列 provider 的 name 集合（我上一版那样写）：① 与"身份来源只有 A 空间"自相矛盾
+  // ——同一句话里引用了 `vendorKeyNames()`，却把 provider 的全部 name 一起放行，等于没用上 `vendorKey`；
+  // ② 实测 19 个键**全部**落在 A 空间，第二个集合纯属多余。Stage E 起厂商页多出来的那批
+  // （例如 DeepSeek：只有 api-plans 记录、0 条 deal）本来就是靠 A 空间键（`vendorKey`）拿到资格的。
+  const aSpaceNames = new Set(renderCore.vendorKeyNames().map(pair => pair.name));
+  check('slug 表：厂商键全部是 A 空间的**规范显示名**（不是采集时的原始字符串）', (() => {
+    const bad = Object.keys(feeds.VENDOR_SLUGS).filter(name => !aSpaceNames.has(name));
     return bad.length === 0;
-  })(), Object.keys(feeds.VENDOR_SLUGS).filter(name => !new Set(payload.deals.map(vendorKeyOf)).has(name)).join(', '));
+  })(), Object.keys(feeds.VENDOR_SLUGS).filter(name => !aSpaceNames.has(name)).join(', '));
+  // 姊妹断言（队长要求，补上另一半判据）：**A 空间是厂商页身份的唯一来源** ⇒ 一个 provider
+  // 只有在 A 空间有名（name 逐字属于 A 空间规范名）时才有 `/vendor/` 路由资格；name 不在 A 空间里的
+  // provider 必须 `vendorKey === null`（"没有厂商名 ⇒ 不参与厂商身份空间"）。两个说法同时成立才算对。
+  check('provider 的 name 不在 A 空间规范名里 ⇒ 它的 vendorKey 必须是 null（无厂商名就不参与 /vendor/ 身份空间）', (() => {
+    const providerTable = require('../lib/providers').load().table;
+    const stray = Object.values(providerTable).filter(entry => {
+      const name = String((entry && entry.name) || '');
+      return name && !aSpaceNames.has(name) && entry.vendorKey !== null;
+    });
+    return stray.length === 0;
+  })(), (() => {
+    const providerTable = require('../lib/providers').load().table;
+    return Object.entries(providerTable)
+      .filter(([, entry]) => {
+        const name = String((entry && entry.name) || '');
+        return name && !aSpaceNames.has(name) && entry.vendorKey !== null;
+      })
+      .map(([key, entry]) => `${key}(${entry.name}, vendorKey=${entry.vendorKey})`).join(', ');
+  })());
   check('slug 表与分类 slug 表的形状合法且全局唯一',
     landing.validateSlugTable(feeds.VENDOR_SLUGS, '厂商').length === 0 &&
     landing.validateSlugTable(landing.loadCategorySlugs(), '分类').length === 0,

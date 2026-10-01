@@ -1,5 +1,25 @@
 # 下一步：现在的状态，以及还需要你点头的事
 
+> **2026-10-02 最新一轮：`v3.0-ai-deals-knowledge-base` —— 结构化资料库（已交付，待独立验收）**
+> 交付：`/plans/` 枢纽 · `/models/` + 44 个模型详情页 · 厂商页 9→**19**（统一资料页，六个资料区块）·
+> `/archive/`（0 条，如实空态）· `/docs/data/` + `/data/index.json` Manifest（9 份数据集）·
+> `/feed/plans/api/changes.{xml,json}` + `/changes/` 三条变化流（优惠 / 套餐 / API 价格）·
+> `docs/SCHEMA-v3.0.md` · `research/v3.0-ai-deals-knowledge-base-report.md`。
+> 门禁 31 → **39** 步；check:ci 35 → **36** 条断言（新增「新脚本必须登记进门禁」）；
+> 真浏览器 440 → **657 项 0 失败**（含 `--compare` 回归）；20 条 Tooth Test 逐条实跑变红并逐字节还原。
+>
+> **还需要你点头的三件事（都不是技术问题）**：
+> ① **数据许可证**：仓库没有任何 `LICENSE` / `COPYING` 文件。`/docs/data/` 页与报告都写成
+>    「未定 —— 需项目所有者决定」，**本仓不擅自选一个**。你要不要给这份数据加一个许可证（如 CC BY 4.0）？
+> ② **`/archive/` 交付日为空**：三份日志里 deal 事件 0 条、plan 14 条（全是 created）、api 6 条（全是 created），
+>    因此 `ended` / `restored` 两条分支上线时**没有真实样本**，只由合成夹具驱动。
+>    这会在第一次真正有资料下线时自动生效 —— 不需要现在造数据（造数据是禁止项）。
+> ③ **`/provider/` 与 `/vendor/` 的二选一已经做过**：继续用 `/vendor/<slug>/`（不迁移、不新增并行路由）。
+>    如果有朝一日要改，`assertNoParallelProviderRoutes()` 会先红 —— 那时再谈迁移。
+>
+> **v3.0 之后最值得投入的方向**（详见报告 §20）：把「未映射」的 11 条套餐模型串收干净、
+> 给 `/archive/` 攒出真实样本、以及把 API 计费的单位换算**明确地不做**这件事写得更显眼。
+
 > **2026-10-01 最新一轮：`v2.5-api-token-plans` —— API / Token 计费对比（已上线）**
 > 题面要求先回答「是否应该设计 `BasePlan + CodingPlan + ApiPlan`」。结论：**要 BasePlan，
 > 但它是「共享判据」而不是「共享记录形状」** —— 不建混合表，`plans.json` 与 `plan-history.json`

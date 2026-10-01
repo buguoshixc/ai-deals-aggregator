@@ -29,6 +29,8 @@ const planHistory = require('./lib/plan-history');
 // lib/api-plan-schema.js 与 lib/api-plan-history.js 里各写一份，这里只跑起来。
 const apiPlanSchema = require('./lib/api-plan-schema');
 const apiPlanHistory = require('./lib/api-plan-history');
+// v3.0 Stage D：Model Registry（身份/索引层）。判据只在 lib/model-registry.js 一处。
+const modelRegistry = require('./lib/model-registry');
 
 const ROOT = path.join(__dirname, '..');
 const DEALS_FILE = path.join(ROOT, 'deals.json');
@@ -789,6 +791,105 @@ function checkIndex() {
   if (!/rel="canonical"|og:title/.test(html)) warn('index.html 缺少 SEO meta（og:title 等）');
 }
 
+/* ---------------- v3.0 A1 身份层：三套身份空间的交叉门禁 ---------------- */
+
+/**
+ * v3.0 A1：三套身份空间的交叉门禁（**硬断言**，`npm run validate` 就是它的量具）。
+ *
+ * 三套空间（见 docs/v3.0/AGENT-REFERENCE.md §2.2）：
+ *   A. deals 侧厂商键 —— `index.html` RENDER-CORE 的 `VENDOR_RULES`（第 2 槽位键 / 第 3 槽位显示名）
+ *   B. provider 键    —— `scripts/data/providers.json`（key / name / vendorKey）
+ *   C. 显示名 → slug  —— `scripts/data/vendor-slugs.json` ∪ `providers.json[].slug`
+ *
+ * 两条判据都**只做精确相等**（禁子串/正则），判据本身只在 `scripts/lib/providers.js` 里写一份：
+ *   ① 同名显示名上的 slug 必须逐字相同（`validateSlugAgreement`，v3.0 补了"取不到就报红"，
+ *      免得 vendor-slugs.json 缺失时两边一个都不比、检查静默变绿）；
+ *   ② 每个非 null 的 `vendorKey`，从 A 空间取回的显示名必须逐字等于 B 空间的 `name`
+ *      （`validateVendorKeyAgreement`，v3.0 新增 —— 这条把「同一家公司两个键」变红）；
+ *   ③ 每条真实 vendor 串在两套空间里的归属必须一致：A 归到 X，B 解析出的 provider 的
+ *      `vendorKey` 就必须正好是 X（`validateVendorSpaceAgreement`，v3.0 补 —— 这条把
+ *      「往 aliases 里塞一条看起来像的串」变红；队长裁决 `chatgpt`→openai、
+ *      `notebooklm`→google 之后，它就是那条准入判据的常驻化版本）。
+ *
+ * ⚠️ `VENDOR_RULES` 是顶层 `const`，在 `lib/render-core.js` 的沙箱里**不会**挂到 context 上，
+ * 所以只能经 RENDER-CORE 的 `vendorKeyNames()`（纯函数、只读常量、不碰 DOM）去读；
+ * 取值器不见了同样是硬错误 —— 取不到 A 空间的意思是"这条检查没做"，不是"通过了"。
+ * 只读：不动任何文件。
+ *
+ * @param {object[]} deals 当前 deals 记录（用来取真实出现过的 vendor 原始串）
+ */
+function checkIdentitySpaces(deals = []) {
+  const providerLoad = providers.load();
+  // providers.json 缺失/坏文件在 checkPlansFile() / checkApiPlansFile() 里已经报过，这里不重复
+  if (providerLoad.missing || providerLoad.broken) return;
+
+  providers.validateSlugAgreement(providerLoad.table, providers.loadVendorSlugs())
+    .forEach(message => error(`身份空间 B↔C: ${message}`));
+
+  let core = null;
+  try {
+    core = require('./lib/render-core').load();
+  } catch (e) {
+    error(`身份空间 A↔B: 无法从 index.html 求值 RENDER-CORE（${e.message}）`);
+    return;
+  }
+  if (typeof core.vendorKeyNames !== 'function') {
+    error('身份空间 A↔B: index.html 的 RENDER-CORE 没有导出 vendorKeyNames() —— A 空间的键/名表取不到，交叉断言会假绿');
+    return;
+  }
+  providers.validateVendorKeyAgreement(providerLoad.table, core.vendorKeyNames())
+    .forEach(message => error(`身份空间 A↔B: ${message}`));
+
+  // ③ 真实 vendor 串的归属一致性（原始串来自 deals.json，A 空间取值器来自 RENDER-CORE）
+  const rawVendors = (Array.isArray(deals) ? deals : [])
+    .map(deal => String((deal && deal.vendor) || ''))
+    .filter(Boolean);
+  providers.validateVendorSpaceAgreement(
+    providerLoad.table,
+    core.vendorKeyNames(),
+    rawVendors,
+    raw => {
+      const vendor = core.vendorOf({ vendor: raw });
+      return vendor && vendor.key ? vendor.key : null;
+    }
+  ).forEach(message => error(`身份空间 A↔B: ${message}`));
+}
+
+/* ---------------- v3.0 Stage D：Model Registry ---------------- */
+
+/**
+ * v3.0 Stage D：**Model Registry 的数据门禁**。
+ *
+ * 判据全在 `lib/model-registry.js`（身份唯一 · 别名唯一 · 映射指向真实存在的记录 ·
+ * 引文逐字来自被引用记录），这里只负责把它跑起来并把结论并进同一份 error 账 ——
+ * 与 checkPlansFile / checkApiPlansFile 同一分工。
+ *
+ * `firstSeen` / `lastSeen` 由引用方派生，手写即红；没有映射的 modelKey / 套餐模型串
+ * **不是错误**（那是事实陈述，逐条打印在 `check-model-registry-links` 与覆盖报告里）。
+ */
+function checkModelRegistryFile() {
+  const modelsLoad = modelRegistry.load();
+  const linksLoad = modelRegistry.loadLinks();
+  if (modelsLoad.missing) { error(`缺少 ${path.relative(ROOT, modelRegistry.MODELS_FILE)}：Model Registry 的人工来源层不存在`); return null; }
+  if (modelsLoad.broken) { error(`${path.relative(ROOT, modelRegistry.MODELS_FILE)} 解析失败：${modelsLoad.broken}`); return null; }
+  if (linksLoad.missing) { error(`缺少 ${path.relative(ROOT, modelRegistry.LINKS_FILE)}：Model Registry 的关系层不存在`); return null; }
+  if (linksLoad.broken) { error(`${path.relative(ROOT, modelRegistry.LINKS_FILE)} 解析失败：${linksLoad.broken}`); return null; }
+
+  const providerLoad = providers.load();
+  const developers = Object.values(providerLoad.table).map(entry => String((entry && entry.name) || ''));
+  const extraDevelopers = Object.keys((modelsLoad.doc && modelsLoad.doc._developers_extra) || {});
+  const apiPlansDoc = readJson(API_PLANS_FILE, 'api-plans.json');
+  const plansDoc = readJson(PLANS_FILE, 'plans.json');
+  const apiPlans = apiPlansDoc && Array.isArray(apiPlansDoc.plans) ? apiPlansDoc.plans : [];
+  const plans = plansDoc && Array.isArray(plansDoc.plans) ? plansDoc.plans : [];
+
+  modelRegistry.validateRegistry(modelsLoad.table, { developers, extraDevelopers })
+    .forEach(message => error(`Model Registry: ${message}`));
+  modelRegistry.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans })
+    .forEach(message => error(`Model Registry 关系层: ${message}`));
+  return modelRegistry.coverageOf({ table: modelsLoad.table, links: linksLoad.doc, apiPlans, plans });
+}
+
 /* ---------------- 主流程 ---------------- */
 
 function main() {
@@ -801,6 +902,11 @@ function main() {
   checkApiPlanHistoryFile();
   const { stats: dealLinkStats } = checkDealPlanLinks({ strict });
   checkIndex();
+  // v3.0 A1：身份层的交叉门禁。放在这里是因为它同时需要三个数据集（deals / providers / 前端规则表），
+  // 而上面那些单数据集的门禁各自都看不到这条裂缝。
+  checkIdentitySpaces(deals);
+  // v3.0 Stage D：Model Registry 的身份层 + 关系层（未映射的 modelKey 不是错误，只是事实）
+  const modelCoverage = checkModelRegistryFile();
   if (strict) checkVerifiedGuard();
   if (strict) checkOngoingGuard();
   if (strict) checkAudienceGuard();
@@ -851,6 +957,14 @@ function main() {
       ` · 覆盖 ${dealLinkStats.plansWithCurrent}/${dealLinkStats.plans} 条套餐` +
       `（当前 ${dealLinkStats.currentRows} 行 / 历史 ${dealLinkStats.historyRows} 行）` +
       ` · 人工判断 ${dealLinkStats.editorial} 条 · 基准日 ${dealLinkStats.asOf || '未知'}`);
+  }
+  // v3.0 Stage D：Model Registry。「未映射 N 条」也打印 —— 它是事实陈述，不是故障；
+  // 0 与 N 在日志里必须长得不一样（与"受众字段落空/官方引文落空"同一条纪律）。
+  if (modelCoverage) {
+    console.log(`模型（models）  : ${modelCoverage.models} 条 · 被显式映射引用 ${modelCoverage.linkedModels} 条` +
+      ` · API 映射 ${modelCoverage.apiLinks} 条 / Coding 映射 ${modelCoverage.codingLinks} 条`);
+    console.log(`  未映射        : API modelKey ${modelCoverage.unmappedModelKeys.length} 条 · 套餐模型串 ${modelCoverage.unmappedPlanModels.length} 条` +
+      `（逐条见 npm run check:model-registry-links）`);
   }
   // 有值时它已经在上面作为**错误**报过并 exit 1 了，所以这行只在 0 的时候看得见 ——
   // 「0 也打印」的意思正是让「没检查」与「检查了、干净」在日志里长得不一样。

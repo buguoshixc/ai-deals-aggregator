@@ -660,9 +660,18 @@ section('⑮ 真实数据不变量');
     const plans = Array.isArray(store.plans) ? store.plans : [];
     const bytes = fs.statSync(loaded.file).size;
     const today = String(store.updatedAt || '').slice(0, 10);
-    check('真实日志有基线锚点（全覆盖当前套餐）',
-      Object.keys(loaded.store.baseline.fields).length === plans.length,
-      `${Object.keys(loaded.store.baseline.fields).length} / ${plans.length}`);
+    // v3.0 Stage C 数据扩充（9→23 条）之后，这条断言的**原口径**（baseline.fields 的键数 ==
+    // 当前套餐数）只有"数据集自基线以来没变过"时才是真的：baseline 是**基线那一刻**的快照，
+    // 之后新增的套餐由 `created` 事件锚定。断言意图不变（每条当前套餐都必须有锚点，
+    // 不许有"来历不明"的记录），改成**逐条按 id 检查**——比原来只看数量更严。
+    const baselineAnchored = new Set(Object.keys(loaded.store.baseline.fields || {}));
+    const createdAnchored = new Set((loaded.store.events || [])
+      .filter(event => event && event.type === 'created')
+      .map(event => String(event.planId || '')));
+    const anchored = plans.filter(plan => baselineAnchored.has(plan.id) || createdAnchored.has(plan.id));
+    check('真实日志有基线锚点（每条当前套餐都在基线里、或被 created 事件锚定）',
+      anchored.length === plans.length,
+      `${anchored.length} / ${plans.length}（基线 ${baselineAnchored.size} 条 + created 事件 ${createdAnchored.size} 条）`);
     check('真实日志与真实 plans.json 一致',
       ph.verifyStore(loaded.store, plans, { today, bytes }).length === 0,
       ph.verifyStore(loaded.store, plans, { today, bytes }).slice(0, 3).join(' | '));

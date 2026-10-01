@@ -23,6 +23,10 @@ const planSchema = require('../lib/plan-schema');
 const providers = require('../lib/providers');
 const provenance = require('../lib/provenance');
 const landing = require('../lib/landing');
+// v3.0 A1：身份层要读 deals 侧 A 空间（RENDER-CORE 的 VENDOR_RULES）。
+// `VENDOR_RULES` 是顶层 const，在沙箱里不会挂到 context 上，所以只能经
+// `vendorKeyNames()` 这个纯函数取值器读（只读常量、不碰 DOM）。
+const renderCore = require('../lib/render-core');
 
 let passed = 0;
 const failures = [];
@@ -391,6 +395,293 @@ section('⑦ Provider 归一：未登记一律红，两边 slug 不许分家');
     `${providers.SLUG_RE} vs ${landing.SLUG_RE}`);
 }
 
+/* ------------------------------------------------------------------ */
+
+section('⑦b v3.0 A1 身份层：A 空间冻结表 + vendorKey 恒等式 + /vendor/ 路由不变');
+
+/**
+ * A 空间（index.html RENDER-CORE 的 `VENDOR_RULES`）的**冻结期望表**：
+ * `[厂商键, 显示名]`，顺序就是规则表里的顺序（第 2 / 第 3 槽位）。
+ *
+ * 为什么冻结而不是"看着对就行"：这两个字段一起决定 `/vendor/<slug>/` 这个 URL ——
+ * 显示名是 `scripts/data/vendor-slugs.json` 的键，厂商键是 deals 侧筛选 / 折叠的身份。
+ * 任何一处漂移（改键名、改显示名、插一条、删一条）都必须有人**停下来**看会不会破 URL。
+ * v3.0 之前这里没人守：`AGENT-REFERENCE.md` §2.2 的 `moonshotai`/`moonshot` 误报就是
+ * 靠人眼读规则表读错了槽位读出来的（实测 A 键一直是 `moonshot`，`moonshotai` 是 logo 键）。
+ *
+ * 确实要加厂商 / 改名时：先跑 `npm run build` 看 `/vendor/` 路由集合变了没有，变了就在
+ * `scripts/data/landing-aliases.json` 登记旧路由 → 新路由，然后**同步更新这张表和
+ * `FROZEN_VENDOR_SLUGS`**。冻结表不是"不许改"，是"改之前必须有人看过 URL"。
+ */
+const FROZEN_VENDOR_KEYS = [
+  ['baidu', '百度智能云'],
+  ['volcengine', '火山引擎'],
+  ['coze', '扣子 Coze'],
+  ['tencent', '腾讯云'],
+  ['zhipu', '智谱AI'],
+  ['iflytek', '科大讯飞'],
+  ['modelscope', '魔搭 ModelScope'],
+  ['aliyun', '阿里云'],
+  ['moonshot', '月之暗面'],
+  ['siliconflow', '硅基流动'],
+  ['stepfun', '阶跃星辰'],
+  ['sensetime', '商汤科技'],
+  ['baichuan', '百川智能'],
+  ['deepseek', 'DeepSeek'],
+  ['ai360', '360智脑'],
+  ['github', 'GitHub'],
+  ['microsoft', 'Microsoft'],
+  ['google', 'Google'],
+  ['anthropic', 'Anthropic'],
+  ['openai', 'OpenAI'],
+  ['perplexity', 'Perplexity'],
+  ['canva', 'Canva'],
+  ['cursor', 'Cursor'],
+  ['replit', 'Replit'],
+  ['zapier', 'Zapier'],
+  ['make', 'Make'],
+  ['notion', 'Notion'],
+  ['figma', 'Figma'],
+  ['elevenlabs', 'ElevenLabs'],
+  ['runway', 'Runway'],
+  ['aws', 'AWS'],
+  ['windsurf', 'Windsurf'],
+  ['groq', 'Groq'],
+  ['n8n', 'n8n'],
+  ['cohere', 'Cohere'],
+  ['recraft', 'Recraft'],
+  ['midjourney', 'Midjourney'],
+  ['ideogram', 'Ideogram'],
+  ['leonardo', 'Leonardo AI'],
+  ['krea', 'KREA'],
+  ['xai', 'xAI'],
+  ['huggingface', 'Hugging Face'],
+  ['mistral', 'Mistral'],
+  ['together', 'Together AI'],
+  ['minimax', 'MiniMax（稀宇科技）']
+];
+
+/**
+ * deals 侧的 slug 表（显示名 → slug）的冻结期望表。slug 是**已经发布出去的 URL**。
+ *
+ * v3.0 Stage E（D13）：本表从 9 条扩到 **19 条** —— 厂商页的候选集合在 Stage E 扩大到
+ * 「有优惠的 A 空间厂商名 ∪ 在 A 空间有厂商名且有非优惠资料的 provider」，后者的 slug
+ * 以前只能从 providers.json 隐式兜底。补表**不新增、不改名任何路由**（补表前后的
+ * `/vendor/` route 集合逐条比对完全相同，证据见 t6 交付说明与 research/_raw/v3.0-gate/）；
+ * 它只是把"隐式兜底"变成"权威表显式登记"，好让只读 dist 的独立门禁有表可对。
+ * 值逐字等于 providers.json 里同名条目的 slug（validateSlugAgreement 守着这条）。
+ * `vendorKey === null` 的 4 家（Trae / Qoder CN / 腾讯 CodeBuddy / Qoder International）**不在此表**。
+ */
+const FROZEN_VENDOR_SLUGS = {
+  '百度智能云': 'baidu-ai-cloud',
+  '智谱AI': 'zhipu',
+  '火山引擎': 'volcengine',
+  '扣子 Coze': 'coze',
+  'GitHub': 'github',
+  '科大讯飞': 'iflytek',
+  'Microsoft': 'microsoft',
+  'Notion': 'notion',
+  'MiniMax（稀宇科技）': 'minimax',
+  '月之暗面': 'moonshot',
+  'Cursor': 'cursor',
+  'OpenAI': 'openai',
+  'Anthropic': 'anthropic',
+  'Google': 'google',
+  'DeepSeek': 'deepseek',
+  '阿里云': 'aliyun',
+  '硅基流动': 'siliconflow',
+  '腾讯云': 'tencent-cloud',
+  'Windsurf': 'windsurf'
+};
+
+/** 逐条比对 A 空间的 `[键, 显示名]` 序列（顺序也算）；返回漂移列表（空 = 未漂移） */
+function vendorTableDrift(actual, expected) {
+  const drift = [];
+  if (actual.length !== expected.length) drift.push(`条数 ${actual.length} ≠ 冻结表 ${expected.length}`);
+  for (let i = 0; i < Math.min(actual.length, expected.length); i++) {
+    const got = [actual[i].key, actual[i].name];
+    const want = [expected[i][0], expected[i][1]];
+    if (got[0] !== want[0] || got[1] !== want[1]) {
+      drift.push(`第 ${i + 1} 条：${JSON.stringify(got)} ≠ 冻结 ${JSON.stringify(want)}`);
+    }
+  }
+  return drift;
+}
+
+/** 逐条比对 slug 表（两侧键集合的并集都要看：多一行、少一行、改值都算漂移） */
+function vendorSlugDrift(actual, expected) {
+  const drift = [];
+  const names = [...new Set([...Object.keys(actual), ...Object.keys(expected)])].sort();
+  for (const name of names) {
+    if (actual[name] !== expected[name]) drift.push(`${name}: ${JSON.stringify(actual[name])} ≠ 冻结 ${JSON.stringify(expected[name])}`);
+  }
+  return drift;
+}
+
+{
+  const core = renderCore.load();
+  const vendorKeys = core.vendorKeyNames();
+  const table = providers.load().table;
+  const slugs = providers.loadVendorSlugs();
+  const pairs = providers.vendorKeyPairs(vendorKeys);
+
+  check('RENDER-CORE 导出了 A 空间的键/名取值器（只读常量、不碰 DOM）',
+    typeof core.vendorKeyNames === 'function' && pairs.length > 0);
+  check('A 空间里没有重复厂商键（同一个键挂两个显示名 ⇒ 身份自己就分裂了）',
+    new Set(pairs.map(pair => pair.key)).size === pairs.length,
+    pairs.map(pair => pair.key).filter((key, i, all) => all.indexOf(key) !== i).join(' | '));
+
+  const keyDrift = vendorTableDrift(pairs, FROZEN_VENDOR_KEYS);
+  check('VENDOR_RULES 的 [厂商键, 显示名] 序列与冻结表逐条相同（漂移即红，见本文件 FROZEN_VENDOR_KEYS）',
+    keyDrift.length === 0, keyDrift.slice(0, 5).join(' | '));
+
+  const slugDrift = vendorSlugDrift(slugs, FROZEN_VENDOR_SLUGS);
+  check('vendor-slugs.json 与冻结表逐条相同（slug 是已发布的 URL，改名会破链接）',
+    slugDrift.length === 0, slugDrift.slice(0, 5).join(' | '));
+
+  // 硬断言 ①（v3.0 A1 扩展）：同一显示名上的 slug 必须逐字相同；vendor-slugs 取不到东西不许假绿
+  check('硬断言 ①：providers.json[].name 与 vendor-slugs.json 同名条目的 slug 逐字相同',
+    providers.validateSlugAgreement(table, slugs).length === 0,
+    providers.validateSlugAgreement(table, slugs).join(' | '));
+  check('硬断言 ①：vendor-slugs.json 为空 → 报红（缺文件/坏文件不是通过）',
+    providers.validateSlugAgreement(table, {}).length > 0 &&
+    providers.validateSlugAgreement(table, {}).some(p => p.includes('假绿')));
+
+  // 硬断言 ②（v3.0 A1 新增）：每个非 null vendorKey 从 VENDOR_RULES 取回的显示名 == providers.json[].name
+  check('硬断言 ②：每个非 null vendorKey 从 VENDOR_RULES 取回的显示名逐字等于 providers.json[].name',
+    providers.validateVendorKeyAgreement(table, vendorKeys).length === 0,
+    providers.validateVendorKeyAgreement(table, vendorKeys).join(' | '));
+  check('硬断言 ②：A 空间取不到键/名表 → 报红（取不到不是通过）',
+    providers.validateVendorKeyAgreement(table, []).length > 0 &&
+    providers.validateVendorKeyAgreement(table, []).some(p => p.includes('假绿')));
+
+  // 真实数据：A1 补齐的 6 家必须在表里、且 vendorKey 能取回同名显示名
+  const NEW_SIX = { baidu: '百度智能云', volcengine: '火山引擎', coze: '扣子 Coze', iflytek: '科大讯飞', microsoft: 'Microsoft', notion: 'Notion' };
+  const sixMissing = [];
+  for (const [key, name] of Object.entries(NEW_SIX)) {
+    const entry = table[key];
+    if (!entry || entry.name !== name) { sixMissing.push(`${key} 缺失或显示名不是「${name}」`); continue; }
+    if (providers.vendorKeyOf(key, table) !== key) sixMissing.push(`${key} 的 vendorKey 不是 ${key}`);
+    if (providers.vendorDisplayNameFrom(vendorKeys, entry.vendorKey) !== name) sixMissing.push(`${key} 的 vendorKey 取不回「${name}」`);
+  }
+  check('A1 补齐的 6 家（baidu / volcengine / coze / iflytek / microsoft / notion）在表里且 vendorKey 闭环',
+    sixMissing.length === 0, sixMissing.join(' | '));
+  check('provider-only 的三家（trae / qoder / codebuddy）显式写 vendorKey=null',
+    ['trae', 'qoder', 'codebuddy'].every(key => Object.prototype.hasOwnProperty.call(table[key] || {}, 'vendorKey') && table[key].vendorKey === null));
+  check('每条 provider 都显式写了 vendorKey 字段（缺席 = 静默退化，必须写出来）',
+    Object.values(table).every(entry => Object.prototype.hasOwnProperty.call(entry, 'vendorKey')));
+
+  /* ---- 牙：全部在内存里污染，不碰盘 ---- */
+
+  // ① 最要紧的一颗：把 vendorKey 写成 logo 资产键（AGENT-REFERENCE §2.2 误报的形态）
+  const logoKeyAsVendorKey = clone(table);
+  logoKeyAsVendorKey.moonshot.vendorKey = 'moonshotai';
+  const poison1 = providers.validateVendorKeyAgreement(logoKeyAsVendorKey, vendorKeys);
+  check('【牙】vendorKey 写成 logo 资产键 moonshotai → 硬断言 ② 报红',
+    poison1.length > 0 && poison1.some(p => p.includes('moonshotai')), poison1.join(' | '));
+
+  // ② 指向 A 空间里不存在的键
+  const ghostKey = clone(table);
+  ghostKey.moonshot.vendorKey = 'kimi';
+  const poison2 = providers.validateVendorKeyAgreement(ghostKey, vendorKeys);
+  check('【牙】vendorKey 指向 A 空间里不存在的键 → 硬断言 ② 报红',
+    poison2.length > 0 && poison2.some(p => p.includes('不存在')), poison2.join(' | '));
+
+  // ③ A 空间显示名与 provider 的 name 分家（同一家公司两个名字）
+  const splitName = clone(table);
+  splitName.google.name = '谷歌';
+  const poison3 = providers.validateVendorKeyAgreement(splitName, vendorKeys);
+  check('【牙】VENDOR_RULES 显示名与 providers.json 的 name 分家 → 硬断言 ② 报红',
+    poison3.length > 0 && poison3.some(p => p.includes('名字不同')), poison3.join(' | '));
+
+  // ④ 两条 provider 抢同一个 A 空间键
+  const twoOwners = clone(table);
+  twoOwners.notion.vendorKey = 'microsoft';
+  const poison4 = providers.validateProviderTable(twoOwners);
+  check('【牙】两条 provider 抢同一个 A 空间键 → validateProviderTable 报红',
+    poison4.some(p => p.includes('已被') && p.includes('vendorKey')), poison4.join(' | '));
+
+  // ⑤ 缺 vendorKey 字段（看起来"没约束"，实际是身份没登记）
+  const noField = clone(table);
+  delete noField.notion.vendorKey;
+  check('【牙】provider 缺 vendorKey 字段 → 报红',
+    providers.validateProviderTable(noField).some(p => p.includes('缺少 vendorKey')));
+
+  // ⑥ 规范显示名认不回自己（v2.4 那条 providerOverride 的根因）
+  const unresolvableName = clone(table);
+  unresolvableName.minimax.aliases = ['minimax', '稀宇科技', '海螺ai', '海螺 ai'];
+  check('【牙】显示名归一后不在 aliases 里（认不回自己）→ 报红',
+    providers.validateProviderTable(unresolvableName).some(p => p.includes('认回自己')));
+
+  // ⑦ 冻结表自身：改一个显示名（漂移）必须被同一条比对函数抓住
+  const drifted = clone(pairs);
+  drifted[8].name = 'Moonshot';
+  check('【牙】A 空间键/名表漂移（显示名被改）→ 冻结比对报红',
+    vendorTableDrift(drifted, FROZEN_VENDOR_KEYS).length > 0,
+    vendorTableDrift(drifted, FROZEN_VENDOR_KEYS).join(' | '));
+  check('【牙】冻结比对能抓出少一条 / 多一条',
+    vendorTableDrift(pairs.slice(1), FROZEN_VENDOR_KEYS).some(m => m.includes('条数')) &&
+    vendorTableDrift(pairs.concat([{ key: 'ghost', name: 'Ghost' }]), FROZEN_VENDOR_KEYS).some(m => m.includes('条数')));
+  check('【牙】slug 冻结比对能抓出改值 / 多一行',
+    vendorSlugDrift({ ...slugs, zhipu: 'zhipu-ai' }, FROZEN_VENDOR_SLUGS).length > 0 &&
+    vendorSlugDrift({ ...slugs, '新厂商': 'new-vendor' }, FROZEN_VENDOR_SLUGS).length > 0);
+
+  /* ---- A1 效果：87 个 deal 原始串的解析率（真实数据，不是估计） ---- */
+  const dealsDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
+  const dealList = Array.isArray(dealsDoc.deals) ? dealsDoc.deals : [];
+  const distinct = [...new Set(dealList.map(deal => String(deal.vendor || '')))];
+  const resolved = distinct.filter(raw => providers.resolveProvider(raw, table));
+  check('A1 后 deals 侧厂商串的解析率（去重后）> 6 个（改前实测 6/87）',
+    resolved.length > 6, `${resolved.length}/${distinct.length}`);
+  check('6 家的全部原始写法都能解析（含全角括号形态）',
+    ['百度智能云', '火山引擎', '火山引擎（字节跳动）', '扣子 Coze（字节跳动）', '科大讯飞 讯飞开放平台', 'Microsoft', 'Notion', 'MiniMax（稀宇科技）', '海螺AI（MiniMax）']
+      .every(raw => {
+        const hit = providers.resolveProvider(raw, table);
+        return hit && hit.key;
+      }));
+  check('不靠子串/正则：明显的另一个平台不许被并进来（Kreado AI ≠ KREA，Vercel 仍未登记）',
+    providers.resolveProvider('Kreado AI', table) === null &&
+    providers.resolveProvider('Verla', table) === null);
+
+  /* ---- v3.0 A1 硬断言 ③：两套空间对同一条真实 vendor 串的归属必须一致 ---- */
+  const aKeyOf = raw => {
+    const vendor = core.vendorOf({ vendor: raw });
+    return vendor && vendor.key ? vendor.key : null;
+  };
+  check('硬断言 ③：每条真实 deal vendor 串，A 空间归到的键 == B 空间解析出的 provider 的 vendorKey',
+    providers.validateVendorSpaceAgreement(table, vendorKeys, distinct, aKeyOf).length === 0,
+    providers.validateVendorSpaceAgreement(table, vendorKeys, distinct, aKeyOf).slice(0, 3).join(' | '));
+  check('硬断言 ③：没有输入时不许假绿（vendor 串为空 / A 空间取值器缺失都报红）',
+    providers.validateVendorSpaceAgreement(table, vendorKeys, [], aKeyOf).some(p => p.includes('假绿')) &&
+    providers.validateVendorSpaceAgreement(table, vendorKeys, distinct, null).some(p => p.includes('取值器')));
+
+  // 队长裁决（t3 落盘时定的）：批准 `chatgpt`→openai、`notebooklm`→google（依据是官方域名）；
+  // 否决 `chatgpt plus`、`gpt image`。「批准 2 条」不等于「顺带并进第 3 条」—— 证明就在这两个 null 上。
+  check('队长裁决：chatgpt → openai、notebooklm → google（两条都按官方域名批准）',
+    providers.resolveProvider('ChatGPT', table) && providers.resolveProvider('ChatGPT', table).key === 'openai' &&
+    providers.resolveProvider('NotebookLM', table) && providers.resolveProvider('NotebookLM', table).key === 'google');
+  check('队长裁决：chatgpt plus / gpt image 仍解析不出来（被否决的两条没有被顺带并进来）',
+    providers.resolveProvider('ChatGPT Plus', table) === null &&
+    providers.resolveProvider('GPT Image', table) === null);
+
+  // 牙：把 `chatgpt` 从 openai 挪到 google（A 空间把它归到 openai）→ 硬断言 ③ 必须红。
+  // 注意必须**先从 openai 摘掉**：resolveProvider 命中第一个含该别名的条目，
+  // 两边都留着时它仍会解析成 openai，这条牙就变成了恒真。
+  const stolenAlias = clone(table);
+  stolenAlias.openai.aliases = stolenAlias.openai.aliases.filter(alias => alias !== 'chatgpt');
+  stolenAlias.google.aliases = stolenAlias.google.aliases.filter(alias => alias !== 'notebooklm').concat(['chatgpt']);
+  const stolen = providers.validateVendorSpaceAgreement(stolenAlias, vendorKeys, distinct, aKeyOf);
+  check('【牙】把 A 空间归到 openai 的串挪进 google 的别名 → 硬断言 ③ 报红',
+    stolen.length > 0 && stolen.some(p => p.includes('归属不同')), stolen.slice(0, 2).join(' | '));
+
+  // 牙：provider 的 vendorKey 写成 null（B 空间却认得它，A 空间也有归属）→ 硬断言 ③ 必须红
+  const nulledKey = clone(table);
+  nulledKey.microsoft.vendorKey = null;
+  const nulled = providers.validateVendorSpaceAgreement(nulledKey, vendorKeys, distinct, aKeyOf);
+  check('【牙】provider 的 vendorKey 写成 null（A 空间却把它归到某厂商）→ 硬断言 ③ 报红',
+    nulled.length > 0 && nulled.some(p => p.includes('归属不同')), nulled.slice(0, 2).join(' | '));
+}
+
 /* ================================================================== */
 
 section('⑧ 日期、顶层形状与数据集级判据');
@@ -487,8 +778,23 @@ section('⑩ 真实数据不变量');
   check(`真实的 plans.json 通过数据集级校验（${store.count} 条）`, result.ok, result.errors.slice(0, 5).join(' | '));
 
   const stats = planSchema.summarize(store);
-  check('条目数在 5–10 之间（题面 §十三：先建立小而可靠的数据集）',
-    stats.total >= 5 && stats.total <= 10, String(stats.total));
+  // v3.0 Stage C 数据扩充（队长验收）把 Coding 套餐从 9 条扩到 23 条，原来的「条目数在 5–10 之间」
+  // 是按 9 条数据集定的**油表**，现在必然恒红 —— 恒红的断言不是门禁而是噪音，所以换成两条：
+  //   ① 全局上限 count <= 60：防"数据集无止境膨胀"这个真实失效模式；
+  //   ② **新增**单家上限：每家 provider 的套餐数 <= 6（实测 23 条 / 12 家 / 单家最大 4 = codebuddy），
+  //      防"某一家误把多个 SKU 灌成几十条"—— 这正是本次扩充会触发的失效模式；
+  //   ③ 下限 count >= 5 **一个字没放松**。
+  // 为什么不是"把 10 调成 60"：那只是抬高容差、不多引入任何一条新判据；换成"全局上限 + 单家上限"
+  // 比原口径更严（原本只看总数，现在某一家灌水也红），并把两个边界各自实跑变红过一次。
+  check('条目数 >= 5（下限不放松；题面 §十三：先建立小而可靠的数据集）',
+    stats.total >= 5, String(stats.total));
+  check('条目数 <= 60（全局上限：防数据集无止境膨胀）',
+    stats.total <= 60, String(stats.total));
+  const plansPerProvider = new Map();
+  for (const plan of store.plans) plansPerProvider.set(plan.provider, (plansPerProvider.get(plan.provider) || 0) + 1);
+  const worstProvider = [...plansPerProvider.entries()].sort((a, b) => b[1] - a[1])[0] || ['(无)', 0];
+  check('单家 provider 的套餐数 <= 6（新增的牙：防一家把多个 SKU 灌成几十条）',
+    worstProvider[1] <= 6, `${worstProvider[0]} ${worstProvider[1]} 条 · 共 ${plansPerProvider.size} 家`);
   check('每一条都有官方引文', stats.evidenceItems >= stats.total, `${stats.evidenceItems} / ${stats.total}`);
   check('每条记录的 provider 都能在 providers.json 里反查到',
     store.plans.every(plan => providers.resolveProvider(plan.provider) && providers.resolveProvider(plan.provider).key === plan.provider));
@@ -727,9 +1033,19 @@ const compare = require('../lib/plans-compare');
   const hay = id => payload.rows.find(row => row.id === id).search;
   const findByName = text => payload.rows.filter(row =>
     compare.matches(row, Object.assign(compare.emptyState(), { q: text }), payload.dimensions.price));
+  // v3.0 Stage C：`github` 真实新增了 Copilot Pro+ / Copilot Max，`copilot` 现在正确地命中 3 条。
+  // 原来那句 `=== 1` 绑的是旧数据规模（当时 GitHub 只有 Pro 一条），数据扩充后它变成假牙 ——
+  // 改法是**把口径改对并补一条更强的**，而不是把数字从 1 调到 3：
+  //   ① 命中数 >= 1（这条断言本来要守的是"搜索能按平台别名命中"）；
+  //   ② 每一行都必须真的与 copilot 相关 —— 载荷行里没有 planName，所以守卫写成
+  //      provider === 'github'（copilot 就是 github 的平台别名），防它退化成"随便什么词都能命中"。
+  const copilotRows = findByName('copilot');
   check('搜索覆盖平台中文显示名与别名（智谱 / 灵码 / copilot）',
-    findByName('智谱').length > 0 && findByName('灵码').length > 0 && findByName('copilot').length === 1,
-    `智谱 ${findByName('智谱').length} · 灵码 ${findByName('灵码').length} · copilot ${findByName('copilot').length}`);
+    findByName('智谱').length > 0 && findByName('灵码').length > 0 && copilotRows.length >= 1,
+    `智谱 ${findByName('智谱').length} · 灵码 ${findByName('灵码').length} · copilot ${copilotRows.length}`);
+  check('copilot 命中的每一行都真的属于 github（防宽匹配退化成"什么词都能命中"）',
+    copilotRows.length > 0 && copilotRows.every(row => row.provider === 'github'),
+    copilotRows.map(row => `${row.provider}/${row.id}`).join(' · '));
   check('搜索覆盖模型名，且大小写与全角都能搜到',
     findByName('glm').length >= 2 && JSON.stringify(findByName('ｇｌｍ').map(row => row.id)) === JSON.stringify(findByName('glm').map(row => row.id)),
     `glm ${findByName('glm').length} 条`);
