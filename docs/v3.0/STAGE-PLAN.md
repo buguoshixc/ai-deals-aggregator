@@ -126,13 +126,13 @@
 
 | # | 发现 | 来源 | 处置 | 状态 |
 |---|---|---|---|---|
-| D1 | `deals.json` 里 `GPT Image` 的 `url` 是 `https://gptimage-2-5.com/`、`ChatGPT Plus` 的是 `https://chatgpt.com/veterans-claim`，两条来源都是第三方目录站（`aitools.fyi` / `Layer3Labs`），URL 不像任何官方定价页 ⇒ **疑似非官方来源条目** | `registry-curator` 在 t1 判别名时顺手发现 | 不在 t1 范围改。在 Stage C（`t3`）或报告 §18「已知限制」里核实：有官方依据则登记，没有则按既有纪律**不写生产事实**并如实登记 | 待核实 |
+| D1 | `deals.json` 里 `GPT Image` 的 `url` 是 `https://gptimage-2-5.com/`、`ChatGPT Plus` 的是 `https://chatgpt.com/veterans-claim`，两条来源都是第三方目录站（`aitools.fyi` / `Layer3Labs`），URL 不像任何官方定价页 ⇒ **疑似非官方来源条目** | `registry-curator` 在 t1 判别名时顺手发现 | 不在 t1 范围改。在 Stage C（`t3`）或报告 §18「已知限制」里核实：有官方依据则登记，没有则按既有纪律**不写生产事实**并如实登记 | **已处置**：两条来源经核实**确为第三方目录站、未见官方定价页**；决定为**保留但如实标注**（既有生产事实不单方面删除，也不沉默），是否下架列为「需项目所有者决定」——已写进报告 §18 第 6 条 |
 | D2 | ~~题面 §16 列出的 7 个脚本名与实际 `package.json` 不一致~~ **⇒ 已证伪（队长早期审计误判，勿沿用）** | 队长基线审计；由 `completeness-auditor` 与队长用脚本**双重复核**推翻 | **实测：题面 §16 的 31 个 `npm run` 脚本名在当前 `package.json` 里全部存在，`npm test` 也存在。** 根因：队长早期用 `Select-String` 粗略提取题面脚本名并靠印象比对。**最终报告必须写"实测无差异"** | 已闭环（结论翻转） |
-| D3 | 仓库无 `LICENSE`/`COPYING` 文件 | 队长基线审计 | 报告 §10 列为"需项目所有者决定"，**不擅自决定** | 待写入报告 |
-| D4 | 三份 History 均 0 事件 ⇒ `/archive/` 与 API 变化 Feed 交付日为空 | 队长基线审计 | 如实交付 + 明确文案；Archive 的 ended/restored 分支仅由合成夹具驱动；报告 §18 写明 | 待写入报告 |
+| D3 | 仓库无 `LICENSE`/`COPYING` 文件 | 队长基线审计 | 报告 §10 列为"需项目所有者决定"，**不擅自决定** | 已闭环（报告 §10 + `/docs/data/` 均已写明） |
+| D4 | 三份 History 均 0 事件 ⇒ `/archive/` 与 API 变化 Feed 交付日为空 | 队长基线审计 | 如实交付 + 明确文案；Archive 的 ended/restored 分支仅由合成夹具驱动；报告 §18 写明 | 已闭环（交付日 deal/plan/api 的 `ended`/`restored` 仍各 0；plan 14 / api 6 条均为 `created`；`/archive/` 写明"0 条是事实，不是故障"） |
 | D5 | 真浏览器回归基线页高是 4589px，而当前真实页高 4665px ⇒ 容差上限 5277px，**仅剩 612px 余量** | 队长基线门禁 | **禁止新增页脚整行**；新入口只能挤进已有行 | 已作为硬约束下发 |
 | D6 | `VENDOR_RULES` 的 A 空间是 **45 条**，但两版审计正则都数成 44（正则字面量含 `]`/`/` 导致提前收尾） | `registry-curator` 两次更正 | 已写进 `AGENT-REFERENCE.md` 勘误块；以 `t1` 的 `FROZEN_VENDOR_KEYS` 为准 | 已闭环 |
-| D7 | **`package.json` 的重复键能静默存活**：JSON 解析只留最后一个，两个成员撞名（`selftest:models`）在构建期**没有任何东西会红** | `registry-curator` 在 t6 撞到并改名 | `t13` 补一条断言：`scripts` 键在**文本层**不得重复（不能用 `JSON.parse` 判，它已经去重了） | 待 t13 落地 |
+| D7 | **`package.json` 的重复键能静默存活**：JSON 解析只留最后一个，两个成员撞名（`selftest:models`）在构建期**没有任何东西会红** | `registry-curator` 在 t6 撞到并改名 | `t13` 补一条断言：`scripts` 键在**文本层**不得重复（不能用 `JSON.parse` 判，它已经去重了） | **已闭环**：落在 `build-local.js` 的 `assertNoDuplicateScriptKeys()`（读原始文本、在 `scripts` 区块内查重；找不到区块直接抛错=护栏自证）。独立审查员复跑：注入重复键 `"selftest:seo"` → **`exit=1`** 且报出"第 72 行与第 73 行重复"；还原后 **sha256 逐字节一致**、复跑 `exit=0` |
 | D8 | `deepseek-flash` 与阿里云 `deepseek-v4.1-flash` 的合并**依据待补**：归一形态并不相等，属"用 registry alias 连两个不同串"，需要阿里云官方页能对上 V4.1 版本的证据；补不出则拆成两条身份 | 队长在 t6 验收时提出 | **已收口**：note 写明"人工判断"+两处官方串（附记录 id）+ 撤回口，符合题面 D4「明确人工确认依据」⇒ **接受合并**，只要求把「⇒ 同一身份」改成判断口吻（已改，230 字）。作为**唯一一条人工判断型跨平台身份合并**进报告供抽查 | 已闭环 |
 | D9 | 工具在**并发编辑窗口**里会读到半成品而**伪造红**（队长实测两次：`deal-plan-links.js` 瞬态崩溃、`validate`/`zh-todo` 假红） | 队长实测 | **最终验收必须在冻结提交上跑**（t14 验收契约已如此要求）；队长自己的运行器还出过"把 `x.js --flag` 当单个文件名"的 bug，已修 | 已闭环 |
 | D10 | **t8 的 build-local 六步接线未执行**（`t8` 只交模块+断言+接线说明，依 DAG 归属 **t13**） | `pages-builder` 在 t8 交付 | **已由 t13 完成**：五份 join 输入、`renderDirectoryPage` 的 `extraSections`、vendor 分支 + `eventCount`/`nonDealMaterial`、SEO 描述符两字段、`selfCheck` 的 `assertVendorSlugDeclared/Honesty/ApiCounts/CandidateIdentity` 全部在位；产物 **19** 家人链。**注意：数字是 19 家，不是 18**（详见 R5 修正） | 已闭环 |
