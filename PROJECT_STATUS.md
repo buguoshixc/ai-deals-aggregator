@@ -2366,6 +2366,45 @@ v1.7 SEO，所以我这一侧的数字必须重测而不是直接沿用：
 
 **B. 下一步**：有 key 后跑一次真实评测并回填指标；`v2.1` 再议是否把"AI 协助"标注到页面上。
 
+#### ⑪ 上线（2026-10-01，按用户「推送」）
+
+**推 master 被 ruleset 拒绝**（这不是故障，是规则生效了）：
+
+```text
+remote: - Changes must be made through a pull request.
+remote: - Required status check "gate" is expected.
+ ! [remote rejected] master -> master (push declined due to repository rule violations)
+```
+
+所以改走 PR（此前几次「快进推 master」的做法在**这条规则下已经不可用**，后来人不必再试）：
+
+| 步骤 | 结果 |
+|---|---|
+| 推送版本分支 | `v2.0-ai-assisted-maintenance`（= 合并提交 `b078664`，基于 `origin/master d8640a9`）→ 远端新建分支成功 |
+| 开 PR | [#11](https://github.com/buguoshixc/ai-deals-aggregator/pull/11)，76 个文件、5 个提交 |
+| PR 上的 `gate` | ✅ **success**（约 2.5 分钟，真跑完整门禁，含真浏览器验收） |
+| 合并 | `merge` 方式 → `9bf46f9`（保留合并提交，与仓库既有习惯一致） |
+| 上线链（master push） | ✅ `gate`(verify.yml) / `prepublish` / `build` / `deploy` **四段全绿** |
+
+**线上冒烟（本机直连抓线上，不拿工作流绿灯当结论）**：
+
+```text
+200  378,164 B  /
+200  288,567 B  /deals.json        → count=134 · updatedAt=2026-10-01T01:42:06+08:00 · schemaVersion=2
+200   70,984 B  /changes/          （v1.5 变化雷达页）
+200   79,884 B  /feeds/            （v1.6 订阅中心）
+200   21,845 B  /sitemap.xml
+200      747 B  /robots.txt
+首页标记：站点主标题 ✓ · 「变更记录」✓ · 「订阅」✓ · `data-facet="fav"`（v1.1 收藏入口）✓
+```
+
+**一处如实说明**：v2.0 **没有前端改动**，所以线上产物与合并前**应当是同一份内容**
+（本机 `dist` 946.0 KB 与上线前同量级）—— 线上冒烟验的是「合并与发布没有破坏任何东西」，
+不是「线上多出了 v2.0 的东西」。要验 v2.0 本身，看 ⑨ 的门禁与 `npm run ai:*`。
+
+> 本地与远端现已一致：`master = origin/master = 9bf46f9`。
+> 工作树里那个未跟踪文件 `AI_DEALS_AGGREGATOR_ROADMAP_AND_PROMPTS.md` 不是本轮产物，**未动**。
+
 ---
 
 ## 三、命令速查
