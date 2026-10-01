@@ -4301,6 +4301,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     const linksDoc = readDist('deal-plan-links.json');
     const dealsDoc = readDist('deals.json');
     const plansDoc = readDist('plans.json');
+    const apiPlansDoc = fs.existsSync(path.join(DIR, 'api-plans.json')) ? readDist('api-plans.json') : { plans: [] };
     const historyDoc = fs.existsSync(path.join(DIR, 'deal-history.json')) ? readDist('deal-history.json') : { events: [] };
     const asOf = [String(dealsDoc.updatedAt || '').slice(0, 10), String(plansDoc.updatedAt || '').slice(0, 10)]
       .filter(Boolean).sort().pop();
@@ -4314,6 +4315,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       return true;
     };
     const planIdsByDeal = new Map((linksDoc.links || []).map(link => [link.dealId, link.planIds || []]));
+    // v2.5：关系可以指向 API 计费记录，所以浏览器侧也要知道**每条 planId 属于哪一类**，
+    // 否则「链接必须是 ../../plans/coding/」这条断言会在一条 api 关系上变红（而那是对的页面）。
+    const apiPlanIds = new Set((apiPlansDoc.plans || []).map(plan => plan.id));
+    const routeOfPlanId = planId => (apiPlanIds.has(planId) ? 'plans/api/' : 'plans/coding/');
     const currentPairs = new Set();
     for (const link of linksDoc.links || []) {
       if (!isCurrentDeal(link.dealId)) continue;
@@ -4360,7 +4365,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       check('/plans/coding/ 「当前优惠」只出现在当前关系上，空态写明「暂无当前优惠」',
         problems.length === 0, problems.slice(0, 3).join(' '));
       const shown = new Set(block.rows.flatMap(row => row.currentDeals.map(dealId => `${dealId}\u0000${row.planId}`)));
-      const missing = [...currentPairs].filter(pair => !shown.has(pair));
+      // v2.5：这一页只渲染 Coding 记录的行（API 记录在 /plans/api/）。所以「漏了一条关系」的对照
+      // 也必须按 kind 收敛 —— 否则一组 API 关系会被判成"套餐页漏了"，而那一页本来就不该有它。
+      const missing = [...currentPairs]
+        .filter(pair => !apiPlanIds.has(pair.split('\u0000')[1]))
+        .filter(pair => !shown.has(pair));
       check('/plans/coding/ 每一条当前关系都出现在页面上（漏一条就是"关系丢了"）',
         missing.length === 0, missing.join(' '));
       check('/plans/coding/ 已结束的优惠没有以「当前优惠」形态出现（Tooth #4 的浏览器侧）',
@@ -4376,9 +4385,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     }
 
     const anchors = new Set(block ? block.rows.map(row => `plan-${row.planId}`) : []);
-    const planTitleOf = planId => {
-      const plan = (plansDoc.plans || []).find(item => item.id === planId);
-      return plan ? plan.planName : '';
+    // v2.5：API 计费记录的锚点在**另一页**上（`/plans/api/` 的每一行也有 `#plan-<id>`）。
+    const apiAnchors = new Set((apiPlansDoc.plans || []).map(plan => `plan-${plan.id}`));
+    const titleOfPlanId = planId => {
+      const plan = (plansDoc.plans || []).find(item => item.id === planId)
+        || (apiPlansDoc.plans || []).find(item => item.id === planId);
+      return plan ? (plan.planName || '') : '';
     };
     const linkedDealId = (linksDoc.links || []).map(link => link.dealId).find(id => dealsById.has(id)) || null;
     const unlinkedDealId = (dealsDoc.deals || []).map(deal => deal.id)
@@ -4400,14 +4412,17 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         const expected = planIdsByDeal.get(linkedDealId) || [];
         check('/deal/<id>/ 关联块列出的套餐与关系表一致',
           JSON.stringify(dealBlock.planIds) === JSON.stringify(expected), JSON.stringify(dealBlock.planIds));
-        check('/deal/<id>/ 每条套餐都链到套餐页的行锚点，且锚点真的落在那一页上',
-          dealBlock.hrefs.length > 0 &&
-          dealBlock.hrefs.every(href => /^\.\.\/\.\.\/plans\/coding\/#plan-[0-9a-f]{12}$/.test(href)) &&
-          dealBlock.hrefs.every(href => anchors.has(href.split('#')[1])),
+        // 每行有**两个**指向同一锚点的链接（标题 + 查看链接），所以按集合比而不是按下标比。
+        const expectedHrefs = expected.map(planId => `../../${routeOfPlanId(planId)}#plan-${planId}`);
+        const gotHrefs = [...new Set(dealBlock.hrefs)];
+        check('/deal/<id>/ 每条记录都链到它所在那一页的行锚点，且锚点在那一页上真实存在',
+          gotHrefs.length > 0 &&
+          JSON.stringify(gotHrefs.slice().sort()) === JSON.stringify(expectedHrefs.slice().sort()) &&
+          gotHrefs.every(href => anchors.has(href.split('#')[1]) || apiAnchors.has(href.split('#')[1])),
           dealBlock.hrefs.join(' '));
-        check('/deal/<id>/ 关联块写出套餐名与「查看套餐对比 →」',
-          expected.every(planId => dealBlock.text.includes(planTitleOf(planId))) &&
-          dealBlock.text.includes('查看套餐对比'));
+        check('/deal/<id>/ 关联块写出记录名与查看链接（两类记录各有自己的措辞）',
+          expected.every(planId => dealBlock.text.includes(titleOfPlanId(planId))) &&
+          (dealBlock.text.includes('查看套餐对比') || dealBlock.text.includes('查看 API 计费对比')));
       }
     }
     if (unlinkedDealId) {
@@ -4415,6 +4430,166 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       const extra = await page.evaluate(() => document.querySelectorAll('.dplans').length);
       check('/deal/<id>/ 没有关系的优惠页一个字节都不多（不渲染关联块）', extra === 0, `${extra} 个 .dplans`);
     }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* API / Token 计费页（/plans/api/，v2.5）                              */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 20) API / Token 计费页（/plans/api/）===');
+
+  /**
+   * 为什么这一段必须存在：这一页的坏法全都是「页面上看起来正常」的坏法 ——
+   *   · 把输入价渲染到输出价那一列（两列都是价格、都带币种，只有逐格对账才发现）；
+   *   · 把 `$/1K` 的数字当成 `$/1M`（少一个单位列，读者就会拿两个口径去比）；
+   *   · 把 credits 折算成 token（页面上会多出一个数字，而它没有官方依据）；
+   *   · 宽表在窄屏把整页撑开（/status/ 与 /plans/coding/ 都踩过）。
+   * 构建期那几条断言查的是我们写下的字节，这里查的是**浏览器渲染出来的文字**。
+   */
+  {
+    const apiRoute = 'plans/api/';
+    await page.goto(new URL(apiRoute, base).href, { waitUntil: 'load' });
+    const ap = await page.evaluate(() => ({
+      h1: (document.querySelector('h1') || {}).textContent || '',
+      h1Count: document.querySelectorAll('h1').length,
+      canonicalPath: (() => { try { return new URL((document.querySelector('link[rel="canonical"]') || {}).href).pathname; } catch (e) { return ''; } })(),
+      rows: document.querySelectorAll('.ptable tbody tr[data-item]').length,
+      // 五个价格格按列取：输入 / 输出 / 缓存命中（单位列不是 .num）
+      numeric: [...document.querySelectorAll('.ptable tbody tr[data-item]')].map(tr =>
+        [...tr.querySelectorAll('td.num')].map(td => (td.innerText || '').replace(/\s+/g, ' ').trim().split('\n')[0])),
+      units: [...document.querySelectorAll('.ptable tbody td.punit')].map(td => (td.innerText || '').replace(/\s+/g, ' ').trim()),
+      // 模型名取第一个子节点（`<small>` 里的「计费产品 · 通道」不算模型名的一部分）
+      models: [...document.querySelectorAll('.ptable tbody tr[data-item] th')].map(th =>
+        (th.childNodes[0] && th.childNodes[0].textContent ? th.childNodes[0].textContent : '').trim()),
+      officialLinks: [...document.querySelectorAll('.ptable tbody a[href^="http"]')].map(a => a.href),
+      controls: document.querySelectorAll('.ptable button, .ptable select, .ptable input, .ptable a.pdetbtn').length,
+      // 只取**记录锚点**：优惠关系块的容器 `id="plan-deals"` 与它的每一行 `plan-deals-<id>`
+      // 也以 plan- 开头，必须一起排除（否则锚点数永远比记录数多 8 个）。
+      anchors: [...document.querySelectorAll('[id^="plan-"]')]
+        .map(el => el.id).filter(id => id !== 'plan-deals' && !id.startsWith('plan-deals-')),
+      declared: (() => {
+        const ld = [...document.querySelectorAll('script[type="application/ld+json"]')]
+          .map(s => { try { return JSON.parse(s.textContent); } catch (e) { return null; } }).filter(Boolean);
+        const list = ld.find(d => d['@type'] === 'ItemList');
+        return list ? Number(list.numberOfItems) : -1;
+      })(),
+      crumbs: [...document.querySelectorAll('.crumb a')].map(a => a.getAttribute('href') || ''),
+      footLinks: [...document.querySelectorAll('footer a')].map(a => a.getAttribute('href') || ''),
+      cross: [...document.querySelectorAll('a[href$="plans/coding/"]')].length,
+      text: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim() : ''
+    }));
+
+    const apiTruth = await page.evaluate(`(async () => {
+      const doc = await (await fetch(${JSON.stringify(new URL('api-plans.json', base).href)})).json();
+      const rows = [];
+      for (const plan of doc.plans || []) {
+        for (const entry of plan.models || []) {
+          rows.push({
+            planId: plan.id,
+            model: entry.name,
+            unit: plan.pricing && plan.pricing.unit ? (plan.pricing.currency + ' / ' + plan.pricing.unit) : null,
+            currency: plan.pricing ? plan.pricing.currency : null,
+            input: entry.rates ? entry.rates.input : null,
+            output: entry.rates ? entry.rates.output : null,
+            cached: entry.rates ? entry.rates.cachedInput : null,
+            officialUrl: plan.officialUrl
+          });
+        }
+      }
+      return { rows, recordIds: (doc.plans || []).map(plan => plan.id) };
+    })()`).catch(() => null);
+
+    const truthRows = apiTruth ? apiTruth.rows : null;
+    const symbol = { CNY: '¥', USD: '$', HKD: 'HK$', EUR: '€', JPY: '¥', GBP: '£', SGD: 'S$' };
+    const priceText = (value, currency) => {
+      if (value === null || value === undefined) return '—';
+      if (value === 0) return '免费';
+      const symbolText = symbol[currency] || '';
+      const [int, frac] = String(value).split('.');
+      const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return `${symbolText}${frac ? `${grouped}.${frac}` : grouped}`;
+    };
+
+    check('/plans/api/ 能打开且恰好一个 h1',
+      ap.h1Count === 1 && ap.text.length > 1200 && /API/.test(ap.h1),
+      `h1 ${ap.h1Count} 个 · 正文 ${ap.text.length} 字 · 「${ap.h1.trim()}」`);
+    check('/plans/api/ canonical 自指',
+      ap.canonicalPath.endsWith('/plans/api/'), ap.canonicalPath);
+    check('/plans/api/ 行数与 api-plans.json 逐个对账',
+      Boolean(truthRows) && ap.rows === truthRows.length && ap.models.join('|') === truthRows.map(row => row.model).join('|'),
+      `页面 ${ap.rows} 行 / 数据 ${truthRows ? truthRows.length : '未读到'}`);
+    check('/plans/api/ ItemList 声明数 == 行数（且是 CollectionPage + BreadcrumbList + ItemList）',
+      ap.declared === ap.rows, `声明 ${ap.declared} / 行 ${ap.rows}`);
+
+    // 逐格对账：输入价 / 输出价 / 缓存命中输入**必须是数据里的那三个数**
+    // （这是 Tooth #2 的浏览器侧：把输入与输出渲染反了，只有逐格比才发现）
+    let mismatch = [];
+    if (truthRows) {
+      truthRows.forEach((row, i) => {
+        const cells = ap.numeric[i] || [];
+        const expect = [priceText(row.input, row.currency), priceText(row.output, row.currency), priceText(row.cached, row.currency)];
+        if (JSON.stringify(cells) !== JSON.stringify(expect)) {
+          mismatch.push(`第 ${i + 1} 行 ${row.model}：页面 ${JSON.stringify(cells)} / 数据 ${JSON.stringify(expect)}`);
+        }
+      });
+    }
+    check('/plans/api/ 输入价 / 输出价 / 缓存命中输入 三列逐格与数据对账（互换输入输出必红）',
+      Boolean(truthRows) && mismatch.length === 0, mismatch.slice(0, 2).join('；'));
+
+    // 单位列：逐行可见，且口径文字与数据一致
+    const unitLabel = { per_1M_tokens: '每 100 万 tokens', per_1K_tokens: '每 1000 tokens', per_1M_characters: '每 100 万字符' };
+    const unitMismatch = truthRows
+      ? truthRows.map((row, i) => {
+        if (!row.unit) return null;
+        const want = `${row.currency} / ${unitLabel[row.unit.split('/ ').pop()]}`;
+        const got = ap.units[i] || '';
+        return got === want ? null : `第 ${i + 1} 行：页面「${got}」/ 数据「${want}」`;
+      }).filter(Boolean)
+      : ['未读到数据'];
+    check('/plans/api/ 每一行都写出「计费单位」，且与数据一致（$ / 1M 与 $ / 1K 不会被混为一谈）',
+      ap.units.length === ap.rows && unitMismatch.length === 0, unitMismatch.slice(0, 2).join('；'));
+
+    check('/plans/api/ 每行都给官方定价页链接，且指向数据里的那个地址',
+      Boolean(truthRows) && ap.officialLinks.length === truthRows.length, `${ap.officialLinks.length} 个`);
+    check('/plans/api/ 没有任何交互控件（v1 是预渲染静态表，无 JS 也给不出"点了没反应"的暗示）',
+      ap.controls === 0, `${ap.controls} 个`);
+    // 锚点：每条**记录**一个（不是每行一个）—— 订阅源与深链的落点必须在浏览器里真的存在。
+    const expectedAnchors = apiTruth ? apiTruth.recordIds.map(id => `plan-${id}`).sort() : null;
+    check('/plans/api/ 每条记录都有 #plan-<id> 锚点（记录数 == 锚点数）',
+      Boolean(expectedAnchors) && JSON.stringify(ap.anchors.slice().sort()) === JSON.stringify(expectedAnchors),
+      `${ap.anchors.length} 个锚点：${ap.anchors.join(' ')}`);
+    check('/plans/api/ 面包屑回站根（两层路由必须用 ../../，不是 ../）',
+      ap.crumbs.length > 0 && ap.crumbs.every(href => !href.startsWith('../') || href.startsWith('../../')), ap.crumbs.join(' '));
+    check('/plans/api/ 页脚有指向本页的入口', ap.footLinks.some(href => href.endsWith('plans/api/')),
+      ap.footLinks.filter(href => href.includes('plans')).join(' '));
+    check('/plans/api/ 与 Coding 套餐页互相可达（并列的产品能力，不是孤岛）', ap.cross > 0);
+    check('/plans/api/ 写着「单位不换算」与「credits 不是 token」两类口径',
+      ap.text.includes('不做换算') && ap.text.includes('credits 是预付费额度'));
+    check('/plans/api/ 页面上没有结论性词汇（不做价值判断）',
+      !['性价比', '最划算', '最超值', '最值得买', '排行榜', '综合评分', '推荐指数'].some(word => ap.text.includes(word)));
+
+    // 窄屏：宽表必须在容器内横滚，不许把整页撑开（沿用 /plans/coding/ 的同一条口径）
+    for (const width of [390, 360]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(new URL(apiRoute, base).href, { waitUntil: 'load' });
+      const mobile = await page.evaluate(() => ({
+        overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        tables: document.querySelectorAll('.ptable').length
+      }));
+      check(`/plans/api/ ${width}px 不产生页面级横向溢出（11 列宽表应在容器内横滚）`,
+        mobile.overflow <= 0, `溢出 ${mobile.overflow}px`);
+      check(`/plans/api/ ${width}px 只有一个表格（移动端不维护第二套数据模板）`, mobile.tables === 1);
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+
+    // 入口：首页顶栏（宽屏）或页脚必须有这一条
+    await page.goto(base, { waitUntil: 'load' });
+    const homeApiLink = await page.evaluate(() =>
+      [...document.querySelectorAll('header.top a, footer a')].some(a => (a.getAttribute('href') || '').endsWith('plans/api/')));
+    check('首页顶栏或页脚有「API / Token 计费对比」入口（这一页不是孤儿页）', homeApiLink);
+    await page.goto(new URL('sitemap.xml', base).href, { waitUntil: 'load' });
+    const sitemapText = await page.evaluate(() => document.body ? document.body.innerText : '');
+    check('/plans/api/ 在 sitemap 里', sitemapText.includes('plans/api/'));
   }
 
   await browser.close();

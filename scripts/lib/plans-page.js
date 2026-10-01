@@ -834,24 +834,33 @@ function planDealsRowHtml(row, opts = {}) {
 /**
  * 整块。放在表格之后、`#plans-compare` 之外 —— 因此 JS 替换筛选容器时不会把它一起抹掉。
  *
+ * v2.5：视图里的行现在同时含 Coding 套餐与 API 计费记录（`planDealsView()` 合并了两个 store），
+ * 所以这里按 `opts.kind`（缺省 `coding`）**只渲染属于本页的那一半** ——
+ * 不筛的话，套餐页会多出 7 行 API 记录，而 `assertPlanDealsBlock` 会当场报行数不符。
+ *
  * @param {object} view `lib/deal-plan-links.js` 的 `planDealsView()` 产物
  */
 function planDealsBlockHtml(view, opts = {}) {
   if (!view || !Array.isArray(view.rows)) return '';
   const prefix = opts.prefix || '';
+  const kind = opts.kind || 'coding';
   const home = opts.home || PLANS_HOME_HREF;
   const note = escapeHtml(PLAN_DEALS_WORDING.note).replace(
     'deal-plan-links.json',
     `<a href="${escapeHtml(`${home}deal-plan-links.json`)}">deal-plan-links.json</a>`
   );
-  const rows = view.rows.map(row => planDealsRowHtml(row, { prefix })).join('\n');
-  const sum = `共 ${view.counts.plans} 条套餐 · 当前有优惠 ${view.counts.withCurrent} 条` +
-    ` · 历史关联 ${view.counts.history} 条 · 数据基准日 ${view.asOf || UNKNOWN_TEXT}`;
-  return `      <section class="pplandeals" id="${PLAN_DEALS_WORDING.sectionId}">
-        <h2 class="ph2">${escapeHtml(PLAN_DEALS_WORDING.heading)}</h2>
+  const rows = view.rows.filter(row => (row.planKind || 'coding') === kind);
+  const body = rows.map(row => planDealsRowHtml(row, { prefix })).join('\n');
+  const unit = opts.unit || '条套餐';
+  const withCurrent = rows.filter(row => row.current.length).length;
+  const history = rows.reduce((sum, row) => sum + row.history.length, 0);
+  const sum = `共 ${rows.length} ${unit} · 当前有优惠 ${withCurrent} 条` +
+    ` · 历史关联 ${history} 条 · 数据基准日 ${view.asOf || UNKNOWN_TEXT}`;
+  return `      <section class="pplandeals" id="plan-deals">
+        <h2 class="ph2">${escapeHtml(opts.heading || PLAN_DEALS_WORDING.heading)}</h2>
         <p class="snote">${note}</p>
         <ul class="pdlist">
-${rows}
+${body}
         </ul>
         <p class="pdsum">${escapeHtml(sum)}</p>
       </section>`;
@@ -889,19 +898,23 @@ function assertPlanDealsBlock(html, view, opts = {}) {
     return problems;
   }
   const prefix = opts.prefix || PLANS_HOME_HREF;
+  const kind = opts.kind || 'coding';
+  // v2.5：视图含两类记录，这一页只认自己那一半（与 `planDealsBlockHtml` 的筛选同源）。
+  const rows = view.rows.filter(row => (row.planKind || 'coding') === kind);
+  const unit = opts.unit || '条套餐';
   const ids = [...block.matchAll(/<li id="plan-deals-([0-9a-f]{12})"/g)].map(match => match[1]);
-  if (ids.length !== view.rows.length) {
-    problems.push(`#plan-deals 的行数 ${ids.length} ≠ 套餐数 ${view.rows.length}`);
-  } else if (JSON.stringify(ids) !== JSON.stringify(view.rows.map(row => row.planId))) {
-    problems.push('#plan-deals 的套餐顺序与表内规范序不一致');
+  if (ids.length !== rows.length) {
+    problems.push(`#plan-deals 的行数 ${ids.length} ≠ ${unit.replace('条', '')}数 ${rows.length}`);
+  } else if (JSON.stringify(ids) !== JSON.stringify(rows.map(row => row.planId))) {
+    problems.push('#plan-deals 的记录顺序与表内规范序不一致');
   }
 
   const currentDealIds = new Set();
-  for (const row of view.rows) {
+  for (const row of rows) {
     const chunk = planDealsRowOf(block, row.planId);
-    if (!chunk) { problems.push(`#plan-deals 缺少套餐 ${row.planId} 的一行`); continue; }
+    if (!chunk) { problems.push(`#plan-deals 缺少记录 ${row.planId} 的一行`); continue; }
     if (!chunk.includes(`href="#plan-${row.planId}"`)) {
-      problems.push(`${row.planId}: 优惠行没有链回套餐行的锚点 #plan-${row.planId}`);
+      problems.push(`${row.planId}: 优惠行没有链回记录行的锚点 #plan-${row.planId}`);
     }
     const hasNone = chunk.includes('<span class="pdnone">');
     if (!row.current.length && !hasNone) {
@@ -934,7 +947,9 @@ function assertPlanDealsBlock(html, view, opts = {}) {
     problems.push(`#plan-deals 把已结束的关联 ${wrong.join('、')} 当成当前优惠（给了「${PLAN_DEALS_WORDING.viewDeal}」链接）`);
   }
 
-  const sum = `共 ${view.counts.plans} 条套餐 · 当前有优惠 ${view.counts.withCurrent} 条 · 历史关联 ${view.counts.history} 条`;
+  const withCurrent = rows.filter(row => row.current.length).length;
+  const history = rows.reduce((sum, row) => sum + row.history.length, 0);
+  const sum = `共 ${rows.length} ${unit} · 当前有优惠 ${withCurrent} 条 · 历史关联 ${history} 条`;
   if (!block.includes(escapeHtml(sum))) {
     problems.push(`#plan-deals 的计数行与实际不一致（应为「${sum}」）`);
   }

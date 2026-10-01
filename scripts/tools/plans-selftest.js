@@ -360,10 +360,13 @@ section('⑦ Provider 归一：未登记一律红，两边 slug 不许分家');
     return resolved ? resolved.key : null;
   });
   check('同一平台的多种写法落到同一个 key', new Set(sameKey).size === 1 && sameKey[0] === 'zhipu', JSON.stringify(sameKey));
-  check('未登记的平台返回 null（不许原样放行）', providers.resolveProvider('OpenAI', table) === null);
-  check('未登记时给出建议 key', providers.suggestProviderSlug('OpenAI') === 'openai', providers.suggestProviderSlug('OpenAI'));
+  // v2.5：这条断言原来拿 'OpenAI' 当"未登记"的例子 —— 而 API 计费层把 OpenAI 正式登记了
+  // （见 providers.json 的 _v25_note）。断言**意图不变**（未登记一律硬红），换一个确实没登记的
+  // 名字：拿已登记的名字当反例，会让这条牙在没有任何人注意的情况下变成恒真/恒假。
+  check('未登记的平台返回 null（不许原样放行）', providers.resolveProvider('NoSuchVendor', table) === null);
+  check('未登记时给出建议 key', providers.suggestProviderSlug('NoSuchVendor') === 'nosuchvendor', providers.suggestProviderSlug('NoSuchVendor'));
   rejects('未登记的 provider → 判红并给出建议 key',
-    rawTokens({ provider: 'OpenAI' }), '未在 providers.json 登记');
+    rawTokens({ provider: 'NoSuchVendor' }), '未在 providers.json 登记');
 }
 {
   const problems = providers.validateProviderTable(providers.load().table);

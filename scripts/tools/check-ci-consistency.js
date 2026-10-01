@@ -179,6 +179,13 @@ const GATE_STEP_NAMES = [
   // 已结束不得显示成「当前优惠」/ 节省金额四道门 / 派生值不落盘 / 候选报告没有写生产关系的路径）。
   // 与上一支互补：那一支管套餐自身怎么变，这一支管优惠与套餐之间那条显式关系对不对。
   'Deal-plan-links self-test',
+  // v2.5 新增：API / Token 计费（api-plans.json）的数据契约、页面与变化日志。
+  // 它红的时候没有别的步骤会替它红 —— "单位必须显式且不换算""credits 不得被折算成 token"
+  // "输入价与输出价不得互换""改名不得制造假新增但必须被检测"这些承诺只在这一步被验证；
+  // 另外两条（可重建性、日志一致性）红的含义与 plans 那两条同构，只是换了一份数据。
+  'API-plans self-test (data + page)',
+  'API-plans reproducibility (curated → api-plans.json, byte-compare)',
+  'API-plan-history verify (log consistent with api-plans.json)',
   'Assemble site (same path as deploy.yml)',
   // v1.6 新增：**真实连续构建**两次，逐字节比对全部 Feed 文件。自测证明的是
   // 「纯函数同输入同输出」，证明不了「构建脚本没把时钟写进产物」——两者红的含义不同。

@@ -407,7 +407,21 @@ function planAlreadyAt(field, current, to, event) {
   return Boolean(found) && modelSame(found, to);
 }
 
-/** plans 剖面：机制交给 `history-core.js`，这里只声明「什么算变化」 */
+/**
+ * plans 剖面：机制交给 `history-core.js`，这里只声明「什么算变化」。
+ *
+ * v2.5：`record()` 改成**按 profile 参数化**（`params.profile`，缺省就是这一份），
+ * 于是 API 计费（`lib/api-plan-history.js`）可以复用同一个写入内核而不复制它的算法。
+ * 为此把原先散在 `record()` 里的模块级常量与两个领域函数收进这份剖面：
+ *
+ *   · 阈值：`massMissingMin` / `massMissingRatio` / `missConfirmRuns` / `anomalyLimit`；
+ *   · 领域判据：`fieldEvents`（逐字段差异怎么算）· `identityWithoutAxis`（重键时的
+ *     "除轴之外的身份"）· `axisOf`（身份轴上的那个值：plans 是 `billing.period`）·
+ *     `alreadyAt`（"当前值已经是事件的 to 了吗"）。
+ *
+ * **profile 一旦传进来，`record()` 不再读任何模块级常量** —— 否则 API 那一份会静默地用
+ * plans 的阈值，而账面上看起来完全正常（这正是最坏的一种坏法）。
+ */
 const PROFILE = {
   schemaVersion: PLAN_SCHEMA_VERSION,
   // 数据记录的字段是 `id`（plans.json 契约），事件上刻意写成 `planId`（题面 §四 的事件结构）。
@@ -426,12 +440,19 @@ const PROFILE = {
   renderLimit: PLAN_RENDER_LIMIT,
   absenceRetentionDays: PLAN_ABSENCE_RETENTION_DAYS,
   missConfirmRuns: PLAN_MISS_CONFIRM_RUNS,
+  massMissingMin: PLAN_MASS_MISSING_MIN,
+  massMissingRatio: PLAN_MASS_MISSING_RATIO,
+  anomalyLimit: PLAN_ANOMALY_LIMIT,
   rankTypes: { created: 0, restored: 1, ended: 2 },
   fieldRankBase: 10,
   readField,
   compare: PLAN_COMPARE,
   applyEvent: applyPlanEvent,
   eventValueMatches: planEventValueMatches,
+  alreadyAt: planAlreadyAt,
+  fieldEvents: planFieldEvents,
+  identityWithoutAxis: planIdentityWithoutPeriod,
+  axisOf: plan => ((plan && plan.billing && plan.billing.period) || null),
   idRe: PLAN_ID_RE,
   docLabel: '套餐变更日志',
   recordsLabel: 'plans.json',
@@ -560,7 +581,21 @@ function planFieldEvents(plan, prevValues, { at, originFields = null, runAt = nu
  *          `problems` 非空时调用方**必须拒绝写盘**（链已不同步 / 日期倒填）
  */
 function record(store, params = {}) {
-  const base = core.normalizeStore(store, PROFILE);
+  // v2.5：profile 从参数取（缺省 = plans 自己这一份）。传进来之后就**不再读任何模块级常量** ——
+  // 见 PROFILE 的注释：静默沿用 plans 的阈值比抛错更难查。
+  const profile = params.profile || PROFILE;
+  const trackedFields = profile.trackedFields;
+  const lifecycleTypes = profile.lifecycleTypes;
+  const massMissingMin = Number.isFinite(profile.massMissingMin) ? profile.massMissingMin : PLAN_MASS_MISSING_MIN;
+  const massMissingRatio = Number.isFinite(profile.massMissingRatio) ? profile.massMissingRatio : PLAN_MASS_MISSING_RATIO;
+  const missConfirmRuns = Number.isFinite(profile.missConfirmRuns) ? profile.missConfirmRuns : PLAN_MISS_CONFIRM_RUNS;
+  const anomalyLimit = Number.isFinite(profile.anomalyLimit) ? profile.anomalyLimit : PLAN_ANOMALY_LIMIT;
+  const fieldEvents = typeof profile.fieldEvents === 'function' ? profile.fieldEvents : planFieldEvents;
+  const alreadyAt = typeof profile.alreadyAt === 'function' ? profile.alreadyAt : planAlreadyAt;
+  const identityWithoutAxis = typeof profile.identityWithoutAxis === 'function' ? profile.identityWithoutAxis : planIdentityWithoutPeriod;
+  const axisOf = typeof profile.axisOf === 'function' ? profile.axisOf : (plan => ((plan && plan.billing && plan.billing.period) || null));
+
+  const base = core.normalizeStore(store, profile);
   const at = params.at;
   const runAt = params.runAt || null;
   const previous = params.previous || [];
@@ -569,7 +604,7 @@ function record(store, params = {}) {
   const problems = [];
 
   if (!DATE_RE.test(String(at || ''))) {
-    return { store: base, stats: emptyStats(base), problems: [`数据日期非法（${at}）—— at 必须来自 plans.json 的 updatedAt`], missing: [] };
+    return { store: base, stats: emptyStats(base, profile), problems: [`数据日期非法（${at}）—— at 必须来自 plans.json 的 updatedAt`], missing: [] };
   }
 
   const labelOf = id => {
@@ -582,12 +617,12 @@ function record(store, params = {}) {
     return null;
   };
 
-  const replayState = core.replay(base, PROFILE);
+  const replayState = core.replay(base, profile);
   const lifecycle = new Map();
   for (const event of core.eventsOf(base)) {
-    if (PLAN_LIFECYCLE_TYPES.includes(event.type)) lifecycle.set(event.planId, event.type);
+    if (lifecycleTypes.includes(event.type)) lifecycle.set(event.planId, event.type);
   }
-  const seen = new Set(core.eventsOf(base).map(event => core.eventKey(event, PROFILE)));
+  const seen = new Set(core.eventsOf(base).map(event => core.eventKey(event, profile)));
 
   const beforeById = core.indexByKey(previous, 'id');
   const nextById = core.indexByKey(next, 'id');
@@ -601,8 +636,8 @@ function record(store, params = {}) {
 
   // ---- R3 批量熔断：可疑的输入不推进任何计数、不记任何 ended -----------------
   const overRatio = missingIds.length >= Math.max(
-    PLAN_MASS_MISSING_MIN,
-    Math.ceil(knownTotal * PLAN_MASS_MISSING_RATIO)
+    massMissingMin,
+    Math.ceil(knownTotal * massMissingRatio)
   );
   const emptied = next.length === 0 && knownTotal > 0;
   const override = params.allowMassRemoval === true;
@@ -614,17 +649,20 @@ function record(store, params = {}) {
 
   // ---- R4 周期重键：旧记录 → 新记录（同一次运行里出现的同身份不同周期）--------
   const periodChangedOf = new Map(); // 旧 planId → 新的记录
-  if (!blocked) {
+  if (!blocked && typeof identityWithoutAxis === 'function') {
     const byIdentity = new Map();
-    for (const plan of next) byIdentity.set(planIdentityWithoutPeriod(plan), plan);
+    for (const plan of next) {
+      const identity = identityWithoutAxis(plan);
+      if (identity) byIdentity.set(identity, plan);
+    }
     for (const id of missingIds) {
       const prev = beforeById.get(id);
       if (!prev || lifecycle.get(id) === 'ended') continue;
-      const sibling = byIdentity.get(planIdentityWithoutPeriod(prev));
+      const sibling = byIdentity.get(identityWithoutAxis(prev));
       if (!sibling) continue;
-      const prevPeriod = prev.billing && prev.billing.period;
-      const nextPeriod = sibling.billing && sibling.billing.period;
-      if (prevPeriod && nextPeriod && prevPeriod !== nextPeriod) periodChangedOf.set(id, sibling);
+      const prevAxis = axisOf(prev);
+      const nextAxis = axisOf(sibling);
+      if (prevAxis && nextAxis && prevAxis !== nextAxis) periodChangedOf.set(id, sibling);
     }
   }
 
@@ -640,7 +678,7 @@ function record(store, params = {}) {
       // 若它是这次「周期重键」产生的新身份，下面会补上 `supersedes` 指针。
       candidates.push({
         planId: plan.id, at, type: 'created', field: null, from: null, to: null,
-        fields: core.trackedValuesOf(plan, PLAN_TRACKED_FIELDS, PROFILE),
+        fields: core.trackedValuesOf(plan, trackedFields, profile),
         ...(runAt ? { runAt } : {})
       });
       continue;
@@ -652,17 +690,17 @@ function record(store, params = {}) {
         candidates.push({ planId: plan.id, at, type: 'restored', field: null, from: null, to: null, ...(runAt ? { runAt } : {}) });
       }
       const prevValues = {};
-      for (const field of PLAN_TRACKED_FIELDS) {
+      for (const field of trackedFields) {
         const value = core.replayedValueFrom(replayState, plan.id, field);
         if (value !== null) prevValues[field] = value;
       }
-      candidates.push(...planFieldEvents(plan, prevValues, { at, originFields: params.originFields, runAt }));
+      candidates.push(...fieldEvents(plan, prevValues, { at, originFields: params.originFields, runAt }));
       continue;
     }
 
     // 一直在 → 与上一份发布逐字段比对（链校验在下面统一做）
-    const prevValues = core.trackedValuesOf(prev, PLAN_TRACKED_FIELDS, PROFILE);
-    candidates.push(...planFieldEvents(plan, prevValues, { at, originFields: params.originFields, runAt }));
+    const prevValues = core.trackedValuesOf(prev, trackedFields, profile);
+    candidates.push(...fieldEvents(plan, prevValues, { at, originFields: params.originFields, runAt }));
   }
 
   // 周期重键产生的**新记录**（上一份发布里没有它，走的是 created 分支）——
@@ -725,14 +763,14 @@ function record(store, params = {}) {
     if (sibling) {
       candidates.push({
         planId: id, at, type: 'ended', field: null, from: null, to: null,
-        reason: 'period_changed', firstMissedAt, ...(label ? { label } : {}), ...(runAt ? { runAt } : {})
+        reason: profile.axisChangeReason || 'period_changed', firstMissedAt, ...(label ? { label } : {}), ...(runAt ? { runAt } : {})
       });
       absence[id] = { misses: state.misses || 0, since: firstMissedAt, endedAt: at, ...(label ? { label } : {}) };
       continue;
     }
 
     const misses = (state.misses || 0) + 1;
-    if (misses >= PLAN_MISS_CONFIRM_RUNS) {
+    if (misses >= missConfirmRuns) {
       candidates.push({
         planId: id, at, type: 'ended', field: null, from: null, to: null,
         reason: 'source_no_longer_lists', firstMissedAt, ...(label ? { label } : {}), ...(runAt ? { runAt } : {})
@@ -748,11 +786,11 @@ function record(store, params = {}) {
 
   // ---- ③ 链校验：只有当记录当前值确实等于 from、且 to 还不是当前值时才是新变化 --
   const appended = [];
-  for (const event of core.sortEvents(candidates, PROFILE)) {
+  for (const event of core.sortEvents(candidates, profile)) {
     if (event.type !== 'created' && event.type !== 'ended' && event.type !== 'restored') {
       const current = core.replayedValueFrom(replayState, event.planId, event.field);
-      if (planAlreadyAt(event.field, current, event.to, event)) continue;   // 已经是这个值
-      if (!planEventValueMatches(event.field, current, event.from, event)) {
+      if (alreadyAt(event.field, current, event.to, event)) continue;   // 已经是这个值
+      if (!core.eventValueMatches(profile, event.field, current, event.from, event)) {
         problems.push(`${event.planId} · ${event.field}: 链对不上（日志里是 ${core.stableJson(current)}，`
           + `这次要记的 from 是 ${core.stableJson(event.from)}）—— 日志与 plans.json 已经不同步，拒绝写盘`);
         continue;
@@ -771,7 +809,7 @@ function record(store, params = {}) {
         + ' —— 请先把这个套餐的 lastSeen 更新到核对当天，再重建（不猜日期）');
       continue;
     }
-    const key = core.eventKey(event, PROFILE);
+    const key = core.eventKey(event, profile);
     if (seen.has(key)) continue;
     seen.add(key);
     appended.push({ ...event, eventId: eventIdOf(event) });
@@ -789,19 +827,26 @@ function record(store, params = {}) {
       ...(override ? { override: true } : {})
     });
   }
-  const anomaliesNext = anomalies.slice(-PLAN_ANOMALY_LIMIT);
+  // v2.5：领域侧可以追加自己的有界异常（API 计费用它留档 `possible_rename`）。
+  // 由 profile 提供、在**同一处**裁剪，因此两种数据的上限是同一条纪律。
+  if (typeof profile.extraAnomalies === 'function') {
+    for (const item of profile.extraAnomalies({ store: base, previous, next, at, missingIds, stats: { knownTotal } }) || []) {
+      if (item && typeof item === 'object') anomalies.push(item);
+    }
+  }
+  const anomaliesNext = anomalies.slice(-anomalyLimit);
 
   const nextIds = new Set(next.map(plan => plan.id));
   const out = {
     ...base,
     baseline: base.baseline,
-    absence: core.pruneAbsence(absence, { nextIds, at, retentionDays: PLAN_ABSENCE_RETENTION_DAYS }),
+    absence: core.pruneAbsence(absence, { nextIds, at, retentionDays: profile.absenceRetentionDays }),
     anomalies: anomaliesNext,
     events: [...core.eventsOf(base), ...appended]
   };
 
   const byType = {};
-  for (const type of PLAN_EVENT_TYPES) byType[type] = 0;
+  for (const type of profile.eventTypes) byType[type] = 0;
   for (const event of appended) byType[event.type] = (byType[event.type] || 0) + 1;
 
   return {
@@ -823,9 +868,9 @@ function record(store, params = {}) {
   };
 }
 
-function emptyStats(store) {
+function emptyStats(store, profile = PROFILE) {
   const byType = {};
-  for (const type of PLAN_EVENT_TYPES) byType[type] = 0;
+  for (const type of profile.eventTypes) byType[type] = 0;
   return {
     appended: 0, byType,
     absenceTracked: Object.keys((store && store.absence) || {}).length,
@@ -1014,6 +1059,12 @@ module.exports = {
   eventIdOf,
   planFieldEvents,
   record,
+  /**
+   * v2.5：`record()` 的显式别名 —— 调用方（API 计费变化日志）必须**显式**说明自己用的是
+   * 哪一份 profile，而不是靠"参数里恰好带了 profile"这种隐式约定。
+   * 两份日志共用同一个写入内核（阈值、熔断、链校验、异常留档全都只有一份实现）。
+   */
+  recordWithProfile: record,
   replay,
   eventsOf,
   verifyStore,

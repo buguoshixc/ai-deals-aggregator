@@ -270,6 +270,16 @@
     .plansnav:hover { background: var(--brand-ink); border-color: var(--brand-ink); }
     /* 焦点环用 --brand：药丸本身已经是品牌色，深色主题下 --brand 是浅蓝，在深底上看得见 */
     .plansnav:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    /* v2.5：第二枚药丸（API / Token 计费对比）。
+       ⚠️ 顶栏是**不折行**的 flex 行，而上面那一条注释已经把 761–1920px 的宽度账算过一遍
+       （第一枚药丸加了约 80px）。再加一枚会让 761–1100px 这段产生页面级横向溢出 ——
+       所以它**只在放得下的宽度出现**：窄屏时入口仍在页脚「按厂商 / 分类浏览」那一行，
+       不会出现"点了没反应"或"被裁掉一半"的形态。
+       ⚠️ 这段注释会被构建期逐字抽进每一个页面，所以这里**不能写出路由占位符的字面量**：
+       占位符只在页脚被按输出深度解析，写进 CSS 注释会让它原样出现在所有输出里，
+       而产物自检的扫描面正是「占位符形态的残留」。 */
+    .plansnav-api { display: none; }
+    @media (min-width: 1100px) { .plansnav-api { display: inline-block; } }
 
     .search {
       flex: 1; max-width: 440px; display: flex; align-items: center; gap: var(--s2);
@@ -1095,8 +1105,12 @@
         <button type="button" data-theme-value="dark" aria-pressed="false">深色</button>
       </div>
       <!-- 套餐对比入口：紧跟配色切换器（DOM 顺序 = 视觉顺序 = Tab 顺序），
-           名字与 /plans/coding/ 的 h1 逐字一致（`PLANS_HEADING`）。 -->
+           名字与 /plans/coding/ 的 h1 逐字一致（`PLANS_HEADING`）。
+           v2.5：API / Token 计费入口紧跟在它后面 —— 两者是**并列**的产品能力
+           （一个回答"月付多少钱"，一个回答"每百万 token 多少钱"），
+           名字同样与 /plans/api/ 的 h1 逐字一致（`API_PLANS_HEADING`）。 -->
       <a class="plansnav" href="__PLANS_HREF__" title="对比各平台长期在售的 AI Coding 套餐">AI Coding 套餐对比</a>
+      <a class="plansnav plansnav-api" href="__APIPLAN_HREF__" title="对比各平台按量计费的 API / Token 官方单价">API / Token 计费对比</a>
       <div class="topstat" id="topStat"><!--PRERENDER:topstat--></div>
     </div>
   </header>
@@ -1221,7 +1235,7 @@
            （v1.5 的密度账）。厂商名单由构建期按落地页计划注入，源码里不留第二份清单。
            v2.1：套餐对比页也挂在这一行末尾 —— 它与「按厂商 / 分类浏览」是同一类东西
            （长期在售的产品能力），而不是「今天的优惠」。 -->
-      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__PLANS_HREF__">套餐对比</a><!--PRERENDER:vendorline--></p>
+      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__PLANS_HREF__">套餐对比</a> · <a href="__APIPLAN_HREF__">API 计费对比</a><!--PRERENDER:vendorline--></p>
       <!-- 变化雷达页（v1.5）与订阅中心（v1.6）共用一行：加一行页脚会把 5 种深度的
            输出全部加高，而这两条入口本来就属于同一件事（「变化」与「订阅变化」）。 -->
       <p class="catnav" aria-label="变化与订阅">优惠变化：<a href="__CHANGES_HREF__">变化雷达</a> · <a href="__FEEDS_HREF__">订阅这些优惠</a></p>
@@ -3546,14 +3560,31 @@
       unknown: '未标注'
     };
 
-    /** 事实行：`[标签, 值字段, 币种字段]`。与套餐对比表的列同名同序，读者不必两处对照 */
-    const PLAN_LINK_FACTS = [
-      ['正常价格', 'regularText', 'regularCode'],
-      ['当前活动价', 'promoText', 'promoCode'],
-      ['计费周期', 'periodText', null],
-      ['额度', 'quotaText', null],
-      ['主要模型', 'modelsText', null]
-    ];
+    /**
+     * 事实行：`[标签, 值字段, 币种字段]`。与对应表格的列同名同序，读者不必两处对照。
+     *
+     * v2.5：**按 kind 分两套**。同一个字段名在两类记录上含义不同 ——
+     * `regularText` 在套餐上是「正常价格 ¥99/月」，在 API 计费上是「智谱AI · 模型 API 按量计费」；
+     * `periodText` 是「每月」还是「USD / 每 100 万 tokens」。用同一套标签渲染，
+     * 页面上会写着「计费周期：USD / 每 100 万 tokens」—— **看起来完全正常，但是错的**。
+     */
+    const PLAN_LINK_FACTS = {
+      coding: [
+        ['正常价格', 'regularText', 'regularCode'],
+        ['当前活动价', 'promoText', 'promoCode'],
+        ['计费周期', 'periodText', null],
+        ['额度', 'quotaText', null],
+        ['主要模型', 'modelsText', null]
+      ],
+      api: [
+        ['计费产品', 'regularText', null],
+        ['计费单位', 'periodText', null],
+        ['免费额度 / credits', 'quotaText', null],
+        ['覆盖模型', 'modelsText', null]
+      ]
+    };
+    const PLAN_LINK_GO = { coding: '查看套餐对比 →', api: '查看 API 计费对比 →' };
+    const PLAN_LINK_ROUTE = { coding: 'plans/coding/', api: 'plans/api/' };
 
     function relatedPlanStatusOf(item) {
       if (item.planStatus === 'removed') return { text: PLAN_LINK_WORDING.planGone, ended: true };
@@ -3566,9 +3597,10 @@
     function relatedPlanHtml(item, prefix) {
       if (!item || !item.planId) return '';
       const id = String(item.planId);
-      const href = (prefix || '') + 'plans/coding/#plan-' + encodeURIComponent(id);
+      const kind = item.planKind === 'api' ? 'api' : 'coding';
+      const href = (prefix || '') + PLAN_LINK_ROUTE[kind] + '#plan-' + encodeURIComponent(id);
       const status = relatedPlanStatusOf(item);
-      const facts = PLAN_LINK_FACTS.map(pair => {
+      const facts = PLAN_LINK_FACTS[kind].map(pair => {
         const value = item[pair[1]] ? item[pair[1]] : PLAN_LINK_WORDING.unknown;
         const code = pair[2] && item[pair[2]] ? item[pair[2]] : null;
         return '<div><dt>' + escapeHtml(pair[0]) + '</dt><dd>' + escapeHtml(value) +
@@ -3579,11 +3611,11 @@
           (item.eligible ? escapeHtml(PLAN_LINK_WORDING.eligible) : '') + '</p>'
         : '';
       const savings = item.savingsText ? '<p class="dpl-save">' + escapeHtml(item.savingsText) + '</p>' : '';
-      return '<li class="dpl" data-plan-id="' + escapeAttr(id) + '">' +
+      return '<li class="dpl" data-plan-id="' + escapeAttr(id) + '" data-plan-kind="' + escapeAttr(kind) + '">' +
         '<a class="dpl-who" href="' + escapeAttr(href) + '">' + escapeHtml(item.title || id) + '</a>' +
         '<span class="dpl-status' + (status.ended ? ' ended' : '') + '">' + escapeHtml(status.text) + '</span>' +
         '<dl class="dpl-facts">' + facts + '</dl>' + promo + savings +
-        '<a class="dpl-go" href="' + escapeAttr(href) + '">' + escapeHtml(PLAN_LINK_WORDING.go) + '</a>' +
+        '<a class="dpl-go" href="' + escapeAttr(href) + '">' + escapeHtml(PLAN_LINK_GO[kind]) + '</a>' +
         '</li>';
     }
 

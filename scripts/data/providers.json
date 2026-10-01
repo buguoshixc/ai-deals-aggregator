@@ -50,5 +50,30 @@
     "slug": "cursor",
     "aliases": ["cursor", "cursor ai", "anysphere"],
     "logo": "cursor"
+  },
+  "_v25_note": "以下 4 家是 v2.5（API 计费）新登记的 provider。它们**只出现在 api-plans.json**里，不影响 plans.json 的 8 家；登记在这里的理由与上面一样：身份必须显式（未登记一律硬红），而不是让同一家平台在数据里分裂成两个 key。",
+  "openai": {
+    "name": "OpenAI",
+    "slug": "openai",
+    "aliases": ["openai", "open ai"],
+    "logo": "openai"
+  },
+  "anthropic": {
+    "name": "Anthropic",
+    "slug": "anthropic",
+    "aliases": ["anthropic", "claude"],
+    "logo": "anthropic"
+  },
+  "google": {
+    "name": "Google",
+    "slug": "google",
+    "aliases": ["google", "google ai", "gemini", "google deepmind"],
+    "logo": "google"
+  },
+  "deepseek": {
+    "name": "DeepSeek",
+    "slug": "deepseek",
+    "aliases": ["deepseek", "深度求索", "deepseek ai"],
+    "logo": "deepseek"
   }
 }

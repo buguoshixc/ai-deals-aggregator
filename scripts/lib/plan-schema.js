@@ -188,7 +188,18 @@ function planNameKeyOf(planName) {
  */
 function makePlanId({ kind, provider, planName, period }) {
   const basis = `${kind}|${provider}|${planNameKeyOf(planName)}|${period}`;
-  return crypto.createHash('sha1').update(basis).digest('hex').slice(0, 12);
+  return idFromBasis(basis);
+}
+
+/**
+ * v2.5：id 的**通用构造**（`sha1(basis)` 前 12 位）。
+ *
+ * 为什么单开一个而不是让 API 自己 `crypto.createHash`：id 的**长度与字符集**
+ * （`/^[0-9a-f]{12}$/`）是两种数据共用的纪律，共用同一个函数才不会在某一支里
+ * 悄悄变成 16 位或大写。`makePlanId()` 现在就是它的一层薄封装（basis 逐字不变）。
+ */
+function idFromBasis(basis) {
+  return crypto.createHash('sha1').update(String(basis)).digest('hex').slice(0, 12);
 }
 
 /** 数据集内的身份键：重复即数据错误（同 provider + 同 planName + 同 period） */
@@ -993,6 +1004,7 @@ module.exports = {
   normalizePlanName,
   planNameKeyOf,
   makePlanId,
+  idFromBasis,
   identityKeyOf,
   deriveMetrics,
   deriveMetricsWithReason,
@@ -1007,5 +1019,38 @@ module.exports = {
   buildStore,
   assertValidStore,
   writePlans,
-  summarize
+  summarize,
+  /**
+   * v2.5：**BasePlan 共享原语**的唯一入口（`BasePlan + CodingPlan + ApiPlan` 里的那一层）。
+   *
+   * 这些判据两类套餐逐字共用（严格文本/URL 归一、数值范围、日期关系、id 通用构造、
+   * 币种与限制条件枚举），所以它们**只能有一份实现**：API 计费的契约
+   * （`lib/api-plan-schema.js`）从这里 require，不另抄一份 —— 抄一份的后果是两边的
+   * 长度上限/URL 判据慢慢分家，而两边看起来都"有依据"。
+   *
+   * 刻意**不**放进来的：`billing` / `quota` / `supportedModels` / `deriveMetrics` /
+   * `identityKeyOf` —— 那几件事两种数据的语义确实不同（见 `docs/SCHEMA-v2.5.md` §2）。
+   */
+  BASE_PLAN: {
+    normalizePlanName,
+    planNameKeyOf,
+    idFromBasis,
+    strictText,
+    strictUrl,
+    numberOrNull,
+    dateProblems,
+    normalizeRestrictions,
+    canonicalUpdatedAt,
+    CURRENCIES,
+    RESTRICTION_KINDS,
+    RESTRICTION_VALUE_TYPE,
+    PLAN_SOURCE_TYPES,
+    MAX_NOTE,
+    MAX_PLAN_NAME,
+    MAX_PRICE,
+    MAX_RESTRICTIONS,
+    MAX_RESTRICTION_NOTE,
+    MAX_RESTRICTION_TEXT,
+    MAX_RESTRICTION_NUMBER
+  }
 };
