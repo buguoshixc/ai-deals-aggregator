@@ -22,6 +22,11 @@
 
 const planSchema = require('./plan-schema');
 const providersLib = require('./providers');
+/**
+ * 筛选 / 搜索 / 排序 / 行内展开的**纯逻辑**。它同时被内联进页面（读者手里的那一份）
+ * 和 `require` 进自测（离线牙的那一份）—— 一份实现两个宿主，见该文件头部注释。
+ */
+const plansCompare = require('./plans-compare');
 
 const PLANS_ROUTE = 'plans/coding/';
 /**
@@ -40,6 +45,25 @@ const PLANS_DESCRIPTION = '把各平台长期在售的 AI Coding 套餐放在一
 const UNKNOWN_TEXT = '未标注';
 const UNKNOWN_NUM = '—';
 const UNKNOWN_TRI = '未确认';
+
+/**
+ * 列模型（顺序即列序）。**`<thead>` 与载荷里的 `columns` 共用这一份**：
+ * 「详情行 colspan == 表头列数」这条断言因此不可能因为"加了列却忘了改另一处"而失真。
+ * v2.2 一行都没加 —— 筛选项与「详情」按钮都在**已有的单元格里**，不新增第 12 列。
+ */
+const PLANS_COLUMNS = ['平台', '套餐', '正常价格', '当前活动价', '计费周期', '可用模型',
+  '额度类型', '原始额度', '名义 Token 单价', '最近更新', '备注'];
+
+const SORT_LABEL = {
+  default: '默认顺序', regular: '正常月费', promo: '活动价',
+  unit: '名义 Token 单价', updated: '最近更新'
+};
+
+/** 控件行末尾那句事实（本期没有任何一条能折算成名义 Token 单价时显示） */
+const NO_UNIT_SORT_NOTE = '本期没有一条套餐的额度是固定 Token，名义 Token 单价与它的排序不适用。';
+
+/** 模型维度里「未标注」那一档的保留键（不是模型名，不会与真实模型名撞车） */
+const MODEL_NONE_KEY = plansCompare.MODEL_NONE_KEY;
 
 /**
  * 页面上**不许出现**的结论性词汇。唯一出处。
@@ -62,7 +86,13 @@ const PLANS_NOTES = [
   'Token 额度不一定完全可比：额度随模型倍率变化时，我们把它记成「积分」而不是固定 Token（否则就是把不可比的东西写成可比）。',
   '「名义 Token 单价」只在能算的时候才算 —— 需要额度确实是 Token、额度周期与计费周期一致、币种可处理、当前价明确、且折算不随模型变化。算不出的一律显示「—」，不填 0，也不参与任何排序。',
   '价格与额度以官方页面为准：表中每条都链到该平台的官方定价页，本站只做收录与整理。',
-  '「最近更新」是我们最后一次人工对照官方页的日期，不是官方承诺不变的日期。'
+  '「最近更新」是我们最后一次人工对照官方页的日期，不是官方承诺不变的日期。',
+  // v2.2：筛选 / 搜索 / 排序 / 展开 —— 四条口径。为什么必须写在页面上：这些控件会改变
+  // 读者看到的子集，而"筛掉的为什么被筛掉"如果不说，筛选就变成了替读者做判断。
+  '筛选、搜索与排序都**只在你自己的浏览器里生效**：它们不改变这一页的地址，也不生成新的页面 —— 地址栏里永远是这一页，看到的永远是下面这张表的子集。',
+  '价格区间只按**正常月费**筛，而且**不跨币种**：每一档都写着币种（如「¥50–99（CNY）」），我们没有汇率，也不打算用一个假汇率把美元和人民币放进同一个区间。原价未标注、以及非月付的套餐，在价格区间生效时不出现。',
+  '排序里「不可比较」的一律排在**可比较项之后**，正序倒序都不越过它 —— 没有活动价、算不出名义 Token 单价的套餐，绝不会因为"看起来是 0"而排到最前面。价格排序还**按币种分组**（组内排序），不跨币种互相比较。',
+  '搜索覆盖平台名与常见别名、套餐名、模型名，以及页面上显示的额度类型与地区；中文显示值也能搜到（例如「智谱」「灵码」）。'
 ];
 
 const CURRENCY_SYMBOL = { CNY: '¥', USD: '$', HKD: 'HK$', EUR: '€', JPY: '¥', GBP: '£', SGD: 'S$' };
@@ -215,6 +245,190 @@ function plansRows(plans, opts = {}) {
 }
 
 /* ------------------------------------------------------------------ */
+/* 交互载荷（v2.2）：构建期算好的机器键，浏览器只负责比对与搬运          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 搜索 haystack：**只由页面上真实显示的值 + 平台别名**组成。
+ *
+ * 为什么别名也进：读者知道的是「智谱」「灵码」「copilot」，而页面上显示的是
+ * 「智谱AI」「Qoder CN」「GitHub」—— 只搜显示值会让这类查询全部落空。
+ * 别名表来自 `providers.json`（同一份归一表），所以这里不会出现第二个身份空间。
+ *
+ * 两边的规范化都由 `plansCompare.normalize` 做（NFKC + 折叠空白 + 小写）：
+ * 全角空格、大小写、中日韩兼容字符都能搜到，且匹配方式是**子串**，不做模糊。
+ */
+function searchHaystackOf(plan, opts = {}) {
+  const table = opts.providerTable || providersLib.load().table;
+  const entry = table[plan.provider] || {};
+  const quota = plan.quota || {};
+  const parts = [
+    plan.provider,
+    entry.name || '',
+    ...(Array.isArray(entry.aliases) ? entry.aliases : []),
+    plan.planName,
+    ...(Array.isArray(plan.supportedModels) ? plan.supportedModels.map(model => model.name) : []),
+    QUOTA_TYPE_LABEL[quota.type] || '',
+    plan.region === 'cn' ? '国内' : plan.region === 'global' ? '国外' : ''
+  ];
+  return plansCompare.normalize(distinctInOrder(parts.map(part => String(part).trim())).join(' '));
+}
+
+/**
+ * 载荷的一行。**只放机器键**：显示文本留在表格单元格里，不进载荷（不制造第二份可见事实）。
+ *
+ * `unit` 的 fail-closed 与 `planRowOf` 逐字同源：只有 `quota.type === 'tokens'`
+ * **且** `derivedMetrics.nominalUnitPrice` 非空时才给出数字。数据层已经保证过这件事，
+ * 这一行挡的是"数据被绕过"的那一种 —— 把 requests / 限速 / 积分显示成 Token 单价，
+ * 是这一页最坏的错，而它现在就差一个 `data-*` 或一个 JSON 字段的距离。
+ */
+function planCompareRowOf(plan, index, opts = {}) {
+  const billing = plan.billing || {};
+  const quota = plan.quota || {};
+  const rawMetric = plan.derivedMetrics ? plan.derivedMetrics.nominalUnitPrice : null;
+  const metric = quota.type === 'tokens' ? rawMetric : null;
+  const models = Array.isArray(plan.supportedModels) ? plan.supportedModels.map(model => model.name) : [];
+  return {
+    id: plan.id,
+    index,
+    provider: plan.provider,
+    region: plan.region || null,
+    quotaType: quota.type || null,
+    period: billing.period || null,
+    currency: billing.currency || null,
+    regular: typeof billing.regularPrice === 'number' ? billing.regularPrice : null,
+    promo: typeof billing.promoPrice === 'number' ? billing.promoPrice : null,
+    unit: metric ? metric.price : null,
+    unitCurrency: metric ? metric.currency : null,
+    models,
+    modelsMissing: !Array.isArray(plan.supportedModels),
+    updated: plan.lastSeen || null,
+    search: searchHaystackOf(plan, opts)
+  };
+}
+
+/** 选项清单的去重（保持传入顺序 = 规范序） */
+function distinctInOrder(values) {
+  const seen = new Set();
+  const out = [];
+  for (const value of values) {
+    if (value === null || value === undefined || value === '') continue;
+    if (seen.has(value)) continue;
+    seen.add(value);
+    out.push(value);
+  }
+  return out;
+}
+
+/**
+ * 整份交互载荷。
+ *
+ * 三项刻意的设计：
+ *   ① **选项清单只含真的命中 ≥1 行的值**（零计数的入口不渲染，与首页 `facetBarHtml` 同源）；
+ *   ② 排序档位里 `unit` 只在真的存在可比行时出现 —— 本期 0 条可计算，所以它不在列表里，
+ *      页面因此不会出现一个"点了什么都不会变"的排序按钮；
+ *   ③ 币种顺序、模型顺序、平台顺序**全部来自规范序**（`plans.json` 的数组顺序），
+ *      不用对象键序、不用 Set 迭代序 —— 产物必须逐字节可复现。
+ */
+function planComparePayloadOf(plans, opts = {}) {
+  const table = opts.providerTable || providersLib.load().table;
+  const rows = (plans || []).map((plan, index) => planCompareRowOf(plan, index, { providerTable: table }));
+
+  const providerKeys = distinctInOrder(rows.map(row => row.provider));
+  const modelKeys = distinctInOrder(rows.reduce((all, row) => all.concat(row.models), []));
+  const quotaKeys = planSchema.QUOTA_TYPES.filter(type => rows.some(row => row.quotaType === type));
+  const regionKeys = ['cn', 'global'].filter(region => rows.some(row => row.region === region));
+  const hasMissingModels = rows.some(row => row.modelsMissing);
+  const hasPromo = rows.some(row => typeof row.promo === 'number');
+  const hasNoPromo = rows.some(row => typeof row.promo !== 'number');
+
+  const priceBuckets = plansCompare.priceBucketsOf(rows, { symbols: CURRENCY_SYMBOL })
+    .map(bucket => ({
+      key: bucket.key, label: bucket.label, currency: bucket.currency,
+      period: bucket.period, min: bucket.min, max: bucket.max
+    }));
+
+  return {
+    schema: 1,
+    core: plansCompare.CORE_VERSION,
+    count: rows.length,
+    columns: PLANS_COLUMNS.length,
+    dimensions: {
+      provider: providerKeys.map(key => ({ key, label: providerNameOf(key, table) })),
+      model: modelKeys.map(key => ({ key, label: key }))
+        .concat(hasMissingModels ? [{ key: MODEL_NONE_KEY, label: '模型未标注' }] : []),
+      price: priceBuckets,
+      quotaType: quotaKeys.map(key => ({ key, label: QUOTA_TYPE_LABEL[key] || key })),
+      region: regionKeys.map(key => ({ key, label: key === 'cn' ? '国内' : '国外' })),
+      promo: (hasPromo ? [{ key: 'yes', label: '有活动价' }] : [])
+        .concat(hasNoPromo ? [{ key: 'no', label: '无活动价' }] : []),
+      sort: plansCompare.sortsOf(rows).map(key => ({ key, label: SORT_LABEL[key] || key }))
+    },
+    rows
+  };
+}
+
+/** JSON 进 `<script>` 的唯一安全写法：`<` 一律转义，杜绝 `</script` 提前收尾 */
+function jsonForScript(value) {
+  return JSON.stringify(value).replace(/</g, '\\u003c');
+}
+
+function comparePayloadScriptHtml(payload) {
+  return `<script type="application/json" id="plans-compare-data">${jsonForScript(payload)}</script>`;
+}
+
+/**
+ * 逐行的详情模板（`<template>` 内容是**惰性**的：无 JS 时一个字节都不渲染，
+ * 所以不存在"点了没反应的详情按钮"，也不需要 `hidden` 那类假隐藏）。
+ *
+ * 为什么详情放在这里而不是做成 `/plans/<id>/`：表里已经有 11 列事实，
+ * 剩下能说的只有"这条事实是什么时候、从哪个官方页核对的"—— 全部证据都在 `plans.json` 里，
+ * 撑不起 9 张独立页面（6 条连模型清单都没有）。详情只做**溯源**，不复述表格。
+ */
+function planDetailTemplatesHtml(plans, opts = {}) {
+  return (plans || []).map(plan => {
+    const official = plan.officialUrl
+      ? `<a href="${escapeHtml(plan.officialUrl)}" rel="noopener">官方定价页 ↗</a>` : '';
+    const sourceLabel = planSchema.PLAN_SOURCE_TYPES[plan.source] || plan.source || UNKNOWN_TEXT;
+    const quotaDescription = plan.quota && plan.quota.description
+      ? `<p>${escapeHtml(plan.quota.description)}</p>` : '';
+    const evidence = (plan.evidence || []).map(item => `
+          <li>
+            <span class="pevfield">${escapeHtml(evidenceFieldLabel(item.field))}</span>
+            <q>${escapeHtml(item.quote)}</q>
+            <small><a href="${escapeHtml(item.sourceUrl)}" rel="noopener">出处 ↗</a> · 抓取于 ${escapeHtml(item.capturedAt)}
+              · ${escapeHtml(item.lang === 'zh' ? '中文原文' : String(item.lang || ''))}</small>
+          </li>`).join('');
+    return `<template data-detail-for="${escapeHtml(plan.id)}">
+        <div class="pdetailbody">
+          <dl>
+            <dt>首次收录</dt><dd>${escapeHtml(plan.firstSeen || UNKNOWN_TEXT)}</dd>
+            <dt>最近核对</dt><dd>${escapeHtml(plan.verifiedAt || UNKNOWN_TEXT)}</dd>
+            <dt>来源类型</dt><dd>${escapeHtml(sourceLabel)}</dd>
+            <dt>官方来源</dt><dd>${official}</dd>
+          </dl>
+          ${quotaDescription}
+          <h3>官方原文引文（${(plan.evidence || []).length} 条）</h3>
+          <ul class="pev">${evidence}</ul>
+        </div>
+      </template>`;
+  }).join('\n');
+}
+
+/** 证据字段的可读名（详情里"这条引文是在证明哪个字段"） */
+const EVIDENCE_FIELD_LABEL = {
+  planName: '套餐名', 'billing.regularPrice': '正常价格', 'billing.promoPrice': '活动价',
+  'billing.period': '计费周期', 'billing.currency': '币种', 'billing.note': '备注',
+  'billing.promoNote': '活动价说明', 'quota.type': '额度类型', 'quota.amount': '额度数值',
+  'quota.period': '额度周期', 'quota.description': '额度说明', supportedModels: '可用模型',
+  restrictions: '限制条件', region: '地区', officialUrl: '官方地址'
+};
+
+function evidenceFieldLabel(field) {
+  return EVIDENCE_FIELD_LABEL[field] || String(field || '');
+}
+
+/* ------------------------------------------------------------------ */
 /* 正文 HTML                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -260,11 +474,15 @@ function renderRow(row) {
  * @param {{providerTable?:object}} [opts]
  */
 function plansPageBody(plans, opts = {}) {
+  const providerTable = opts.providerTable || providersLib.load().table;
   const rows = plansRows(plans, opts);
   const home = opts.homeHref || PLANS_HOME_HREF;
   const computable = rows.filter(row => row.unitPriceComputable).length;
   const withPromo = rows.filter(row => row.promoText !== UNKNOWN_NUM).length;
   const providerCount = new Set(rows.map(row => row.providerKey)).size;
+  const payload = planComparePayloadOf(plans, { providerTable });
+  /** 排序档位里没有 `unit` = 本期一条都不可比较 —— 那句话必须出现在页面上，而不是靠读者猜 */
+  const unitSortable = payload.dimensions.sort.some(item => item.key === 'unit');
 
   return `      <nav class="crumb" aria-label="面包屑"><a href="${home}">首页</a> › <span>${escapeHtml(PLANS_HEADING)}</span></nav>
 
@@ -275,28 +493,34 @@ function plansPageBody(plans, opts = {}) {
 
       <p class="snote">${escapeHtml(PLANS_DESCRIPTION)}</p>
 
+      <p class="snote pnoscript"><noscript>筛选、搜索与排序需要 JavaScript；未启用时，下面这张表就是全部 ${rows.length} 条套餐。</noscript></p>
+
+      <!--
+        控件容器：**静态 HTML 里是空的**。整块由 scripts/lib/plans-compare.js 建出来，
+        因此无 JS 时页面上一个"点了没反应"的筛选控件都不存在（与首页 G11 同一条纪律）。
+        数据载荷与逐行详情模板都在表格下面，同样只在有 JS 时才被读走。
+      -->
+      <div class="pctl" id="plans-compare" role="group" aria-label="筛选与排序"></div>
+${unitSortable ? '' : `      <p class="snote">${escapeHtml(NO_UNIT_SORT_NOTE)}</p>\n`}
       <div class="ptable-wrap">
       <table class="ptable">
         <caption>共 ${rows.length} 条套餐 · 有活动价 ${withPromo} 条 · 名义 Token 单价可计算 ${computable} 条
           （算不出的显示「${UNKNOWN_NUM}」，不填 0、不参与排序）</caption>
         <thead>
           <tr>
-            <th scope="col">平台</th>
-            <th scope="col">套餐</th>
-            <th scope="col" class="num">正常价格</th>
-            <th scope="col" class="num">当前活动价</th>
-            <th scope="col">计费周期</th>
-            <th scope="col">可用模型</th>
-            <th scope="col">额度类型</th>
-            <th scope="col">原始额度</th>
-            <th scope="col" class="num">名义 Token 单价</th>
-            <th scope="col">最近更新</th>
-            <th scope="col">备注</th>
+            ${PLANS_COLUMNS.map((label, index) => index === 2 || index === 3 || index === 8
+    ? `<th scope="col" class="num">${escapeHtml(label)}</th>`
+    : `<th scope="col">${escapeHtml(label)}</th>`).join('\n            ')}
           </tr>
         </thead>
         <tbody>${rows.map(renderRow).join('')}
         </tbody>
       </table>
+      </div>
+
+      ${comparePayloadScriptHtml(payload)}
+      <div class="ptpl" aria-hidden="true">
+${planDetailTemplatesHtml(plans, { providerTable })}
       </div>
 
       <h2 class="ph2">口径与说明</h2>
@@ -380,6 +604,186 @@ function cellText(markup) {
 }
 
 /**
+ * 只保留**标记**：摘掉 `<script>` / `<style>` / 注释。
+ *
+ * 为什么断言必须走这一条：`assertPageHonesty` 现在既被 `plansPageBody()` 的输出调用，
+ * 也被构建期**从磁盘回读整页**调用 —— 而整页里内联了 `plans-compare.js` 的源码，
+ * 源码本身含有 `'<button'`、`data-facet` 这些字面量。不摘脚本就会报出
+ * 「预渲染 HTML 里有死控件」这类**假红**（这个项目在 seo.js 里已经吃过一次同款教训）。
+ */
+function markupOnly(html) {
+  return String(html || '')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<!--[\s\S]*?-->/g, ' ');
+}
+
+/** 从页面里取交互载荷（`<script type="application/json" id="plans-compare-data">`） */
+function comparePayloadOf(html) {
+  const match = String(html || '').match(
+    /<script type="application\/json" id="plans-compare-data">([\s\S]*?)<\/script>/
+  );
+  if (!match) return { payload: null, error: '找不到数据载荷 #plans-compare-data' };
+  try {
+    return { payload: JSON.parse(match[1].replace(/\\u003c/g, '<')), error: null };
+  } catch (error) {
+    return { payload: null, error: `数据载荷不是合法 JSON：${error.message}` };
+  }
+}
+
+/**
+ * 交互载荷的诚实性：**载荷里的每一个键都必须能在 `plans.json` 里找到出处**。
+ *
+ * 为什么值得单独一套断言：这一层是"页面的第二个事实来源"。表格单元格已经逐格对过账，
+ * 而筛选 / 排序读的是载荷 —— 载荷错了，读者看到的子集就是错的，而**表格看上去完全正常**。
+ * 所以这里对的是同一份真值（`plans.json`），并且 `unit` 走**和渲染层同一条 fail-closed**。
+ */
+function assertCompareHonesty(html, plans, opts = {}) {
+  const problems = [];
+  const raw = String(html || '');
+  const markup = markupOnly(raw);
+  const { payload, error } = comparePayloadOf(raw);
+  if (!payload) { problems.push(error); return problems; }
+
+  const rows = plansRows(plans, opts);
+  const planById = new Map((plans || []).map(plan => [plan.id, plan]));
+  const payloadById = new Map();
+
+  // ① 行数三处对账：载荷 / 表格 / plans.json
+  if (!Array.isArray(payload.rows)) { problems.push('载荷缺少 rows 数组'); return problems; }
+  for (const row of payload.rows) {
+    if (payloadById.has(row.id)) problems.push(`载荷里 ${row.id} 出现两次`);
+    payloadById.set(row.id, row);
+  }
+  const domRows = rowHtmlById(markup);
+  if (payload.rows.length !== rows.length) problems.push(`载荷 ${payload.rows.length} 行 ≠ plans.json ${rows.length} 条`);
+  if (domRows.size !== rows.length) problems.push(`表格 ${domRows.size} 行 ≠ plans.json ${rows.length} 条`);
+  if (payload.count !== rows.length) problems.push(`载荷 count=${payload.count} ≠ plans.json ${rows.length} 条`);
+  if (payload.columns !== PLANS_COLUMNS.length) problems.push(`载荷 columns=${payload.columns} ≠ 列模型 ${PLANS_COLUMNS.length}`);
+  const thCount = (markup.match(/<th scope="col"/g) || []).length;
+  if (thCount !== PLANS_COLUMNS.length) {
+    problems.push(`表头 ${thCount} 列 ≠ 列模型 ${PLANS_COLUMNS.length}（详情行的 colspan 取自载荷 columns，两处会静默错位）`);
+  }
+
+  // ② 逐行逐字段对账
+  for (const row of rows) {
+    const plan = planById.get(row.id);
+    const item = payloadById.get(row.id);
+    if (!item) { problems.push(`载荷缺少 ${row.id}（${row.provider} ${row.planName}）`); continue; }
+    const billing = plan.billing || {};
+    const quota = plan.quota || {};
+    const expect = {
+      provider: plan.provider,
+      region: plan.region || null,
+      quotaType: quota.type || null,
+      period: billing.period || null,
+      currency: billing.currency || null,
+      regular: typeof billing.regularPrice === 'number' ? billing.regularPrice : null,
+      promo: typeof billing.promoPrice === 'number' ? billing.promoPrice : null,
+      updated: plan.lastSeen || null
+    };
+    for (const [field, value] of Object.entries(expect)) {
+      if (item[field] !== value) {
+        problems.push(`${row.planName}: 载荷 ${field}=${JSON.stringify(item[field])} ≠ plans.json ${JSON.stringify(value)}`);
+      }
+    }
+    const modelNames = Array.isArray(plan.supportedModels) ? plan.supportedModels.map(model => model.name) : [];
+    if (JSON.stringify(item.models) !== JSON.stringify(modelNames)) {
+      problems.push(`${row.planName}: 载荷模型清单与 plans.json 不一致`);
+    }
+    if (item.modelsMissing !== !Array.isArray(plan.supportedModels)) {
+      problems.push(`${row.planName}: 载荷 modelsMissing 与 plans.json 不一致`);
+    }
+
+    // ③ 单价的 fail-closed：非 tokens 额度**不许**出现数字，tokens 的必须等于派生值
+    const metric = quota.type === 'tokens' && plan.derivedMetrics ? plan.derivedMetrics.nominalUnitPrice : null;
+    if (metric) {
+      if (item.unit !== metric.price || item.unitCurrency !== metric.currency) {
+        problems.push(`${row.planName}: 载荷单价 ${item.unit}/${item.unitCurrency} ≠ 派生值 ${metric.price}/${metric.currency}`);
+      }
+    } else if (item.unit !== null) {
+      problems.push(`${row.planName}: 额度类型 ${quota.type} 不可比较，载荷却带了单价 ${item.unit}`);
+    }
+    if (item.index !== rows.indexOf(row)) problems.push(`${row.planName}: 载荷 index=${item.index} ≠ 规范序 ${rows.indexOf(row)}`);
+
+    // ④ 搜索 haystack 必须覆盖「平台上显示的那个名字」「套餐名」「每一个模型名」
+    const providerLabel = providerNameOf(plan.provider, opts.providerTable || providersLib.load().table);
+    for (const need of [providerLabel, plan.planName].concat(modelNames)) {
+      const needle = plansCompare.normalize(need);
+      if (needle && !String(item.search || '').includes(needle)) {
+        problems.push(`${row.planName}: 搜索串里搜不到「${need}」`);
+      }
+    }
+  }
+
+  // ⑤ 选项清单与行键必须互相成立（"筛完之后出现不匹配套餐"的静态对应物）
+  const dimensions = payload.dimensions || {};
+  const keysOf = dimension => (dimensions[dimension] || []).map(item => item.key);
+  for (const [dimension, field] of [['provider', 'provider'], ['region', 'region'], ['quotaType', 'quotaType']]) {
+    const allowed = new Set(keysOf(dimension));
+    for (const row of payload.rows) {
+      if (row[field] && !allowed.has(row[field])) {
+        problems.push(`载荷行 ${row.id} 的 ${field}=${row[field]} 不在 ${dimension} 选项清单里（筛选会漏掉它）`);
+      }
+    }
+    for (const key of allowed) {
+      if (!payload.rows.some(row => row[field] === key)) {
+        problems.push(`${dimension} 选项「${key}」没有任何一行匹配（零计数入口不该渲染）`);
+      }
+    }
+  }
+  const modelKeys = new Set(keysOf('model'));
+  for (const row of payload.rows) {
+    for (const name of row.models || []) {
+      if (!modelKeys.has(name)) problems.push(`载荷行 ${row.id} 的模型「${name}」不在模型选项清单里`);
+    }
+    if (row.modelsMissing && !modelKeys.has(MODEL_NONE_KEY)) {
+      problems.push(`载荷行 ${row.id} 没有模型清单，却不存在「${MODEL_NONE_KEY}」这一档`);
+    }
+  }
+  for (const bucket of dimensions.price || []) {
+    if (!payload.rows.some(row => plansCompare.matches(row, Object.assign(plansCompare.emptyState(), { price: bucket.key }), dimensions.price))) {
+      problems.push(`价格档「${bucket.label}」没有任何一行匹配（零计数入口不该渲染）`);
+    }
+  }
+  const sortKeys = keysOf('sort');
+  const expectedSorts = plansCompare.sortsOf(payload.rows);
+  if (JSON.stringify(sortKeys) !== JSON.stringify(expectedSorts)) {
+    problems.push(`排序档位 [${sortKeys.join(', ')}] ≠ 应当可用的 [${expectedSorts.join(', ')}]`);
+  }
+  for (const item of dimensions.sort || []) {
+    if (!SORT_LABEL[item.key]) problems.push(`排序档位「${item.key}」没有标签`);
+  }
+  if (sortKeys.indexOf('unit') < 0 && !markup.includes(escapeHtml(NO_UNIT_SORT_NOTE))) {
+    problems.push('本期没有可比较的名义 Token 单价，却没有在页面上说明为什么没有这个排序');
+  }
+
+  // ⑥ 每一条套餐恰好一个详情模板，且模板里的引文逐条等于 plans.json
+  const templates = [...markup.matchAll(/<template data-detail-for="([^"]+)">([\s\S]*?)<\/template>/g)];
+  if (templates.length !== rows.length) {
+    problems.push(`详情模板 ${templates.length} 个 ≠ 套餐数 ${rows.length}`);
+  }
+  const templateById = new Map(templates.map(m => [m[1], m[2]]));
+  for (const plan of plans || []) {
+    const body = templateById.get(plan.id);
+    if (!body) { problems.push(`${plan.planName}: 缺少详情模板`); continue; }
+    if (!body.includes(plan.officialUrl)) problems.push(`${plan.planName}: 详情模板里没有官方定价页链接`);
+    for (const item of plan.evidence || []) {
+      if (!body.includes(escapeHtml(item.quote))) problems.push(`${plan.planName}: 详情模板缺少引文「${item.quote.slice(0, 20)}…」`);
+      if (!body.includes(`href="${escapeHtml(item.sourceUrl)}"`)) problems.push(`${plan.planName}: 引文缺少可点的出处链接 ${item.sourceUrl}`);
+    }
+  }
+
+  // ⑦ 预渲染的标记里**一个控件都不能有**（无 JS 时的死控件）。与首页 G11 同一条纪律：
+  //    载荷与模板是惰性的，控件整块由 JS 建 —— 所以这里连 `<button` 都不该出现。
+  const deadControls = ['<button', '<select', '<input', 'data-facet=', 'data-sort=', 'data-reset'];
+  for (const token of deadControls) {
+    if (markup.includes(token)) problems.push(`预渲染 HTML 里出现了交互控件「${token}」（无 JS 时是死控件）`);
+  }
+  return problems;
+}
+
+/**
  * 页面级诚实性断言。返回问题列表（空 = 通过）。
  *
  * 这就是题面第三条要求的那件事：把「不许出现结论性词汇」「未知必须显式写出」
@@ -387,7 +791,7 @@ function cellText(markup) {
  */
 function assertPageHonesty(html, plans, opts = {}) {
   const problems = [];
-  const text = String(html);
+  const text = markupOnly(String(html));
   const rows = plansRows(plans, opts);
   const byId = rowHtmlById(text);
 
@@ -459,11 +863,16 @@ function assertPageHonesty(html, plans, opts = {}) {
   if (!text.includes(`名义 Token 单价可计算 ${computable} 条`)) {
     problems.push(`页面声明"可计算 N 条"与实际不一致（应为 ${computable} 条）`);
   }
+
+  // ⑨ v2.2：交互载荷（筛选项 / 排序档位 / 搜索串）与 `plans.json` 逐字段对账，
+  //    外加「预渲染标记里零控件」。载荷错的时候**表格看上去完全正常**，
+  //    所以这一条必须挂在同一个函数里 —— 构建期从磁盘回读时它会再跑一遍。
+  problems.push(...assertCompareHonesty(html, plans, opts));
   return problems;
 }
 
-/** 数据层：结论性词汇也不许出现在**我们写的数据**里（套餐名 / 备注 / 额度口径） */
-function assertDataHonesty(plans) {
+/** 数据层：结论性词汇也不许出现在**我们写的数据**里（套餐名 / 备注 / 额度口径 / 搜索串） */
+function assertDataHonesty(plans, opts = {}) {
   const problems = [];
   const scan = (plan, field, value) => {
     if (typeof value !== 'string') return;
@@ -476,6 +885,8 @@ function assertDataHonesty(plans) {
     scan(plan, 'billing.note', plan.billing && plan.billing.note);
     scan(plan, 'billing.promoNote', plan.billing && plan.billing.promoNote);
     scan(plan, 'quota.description', plan.quota && plan.quota.description);
+    // 搜索串里含平台别名，而别名也是"我们写下的字"—— 进得了搜索框就进得了页面语料
+    scan(plan, '搜索串', searchHaystackOf(plan, opts));
   }
   return problems;
 }
@@ -496,15 +907,28 @@ module.exports = {
   QUOTA_TYPE_LABEL,
   MODEL_ROLE_LABEL,
   RESTRICTION_LABEL,
+  PLANS_COLUMNS,
+  SORT_LABEL,
+  MODEL_NONE_KEY,
+  NO_UNIT_SORT_NOTE,
   escapeHtml,
   formatNumber,
   providerNameOf,
   planRowOf,
   plansRows,
+  searchHaystackOf,
+  planCompareRowOf,
+  planComparePayloadOf,
+  planDetailTemplatesHtml,
+  comparePayloadScriptHtml,
+  comparePayloadOf,
+  jsonForScript,
+  markupOnly,
   plansPageBody,
   plansJsonLd,
   rowHtmlById,
   cellText,
   assertPageHonesty,
+  assertCompareHonesty,
   assertDataHonesty
 };

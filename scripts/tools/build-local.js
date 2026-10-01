@@ -39,6 +39,17 @@ const plansPage = require('../lib/plans-page');
 const planSchema = require('../lib/plan-schema');
 const providers = require('../lib/providers');
 
+/**
+ * 套餐对比页的交互逻辑**源码**（逐字节内联进页面）。
+ *
+ * 为什么读文件而不是 require 它的导出：浏览器拿到的那一份必须与离线自测
+ * `require` 的那一份是同一份字节。读源码内联 = 结构上不可能分家；
+ * 构建期自检还会拿它对内置产物里的那一份再比一次。
+ */
+function plansCompareSource() {
+  return fs.readFileSync(path.join(__dirname, '..', 'lib', 'plans-compare.js'), 'utf8');
+}
+
 const ROOT = path.join(__dirname, '..', '..');
 const outArg = process.argv.find(a => a.startsWith('--out='));
 /** 最终输出目录。--out 语义不变：用户给什么路径，产物最终就落在什么路径上。 */
@@ -1156,6 +1167,72 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 
   const body = plansPage.plansPageBody(plans, { providerTable });
 
+  const css = `
+  /* v2.2：筛选 / 搜索 / 排序 / 行内展开。
+     控件整块由 JS（scripts/lib/plans-compare.js，源码逐字节内联在页面底部）建出来，
+     所以无 JS 时这些规则没有作用对象，也不存在"点了没反应"的死控件。 */
+  .pnoscript { margin: 0 0 var(--s2); }
+  .pctl { display: flex; flex-direction: column; gap: var(--s1); margin: 0 0 var(--s2); }
+  .pctl:empty { display: none; }
+  .pcrow { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+  .pclb { color: var(--mut); font-size: var(--fs-sm); }
+  .pchips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .pclab { display: inline-flex; align-items: center; gap: 6px; color: var(--mut); font-size: var(--fs-sm); }
+  .psearch {
+    display: inline-flex; align-items: center; gap: 6px; padding: 0 8px;
+    border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card);
+  }
+  .psearch input { border: 0; outline: 0; background: 0; padding: 6px 0; font: inherit; font-size: 12px; color: var(--ink); min-width: 10ch; }
+  .pctail .pstatus { color: var(--mut); font-size: var(--fs-sm); margin-right: auto; }
+  .pdetbtn {
+    margin-left: 6px; font: inherit; font-size: 11.5px; color: var(--brand); background: none;
+    border: 1px solid var(--line); border-radius: var(--r-pill); padding: 0 8px; cursor: pointer;
+  }
+  .pdetbtn:hover { border-color: var(--brand); }
+  /* hidden 必须真的不显示：作者级声明会盖掉 UA 样式表里的 [hidden]{display:none} */
+  .ptable tr[hidden] { display: none; }
+  .pdetail td { background: var(--bg); }
+  .pdetailbody { max-width: 72ch; }
+  .pdetailbody dl { display: grid; grid-template-columns: 5.5em minmax(0, 1fr); gap: 2px 8px; margin: 0 0 var(--s2); }
+  .pdetailbody dt { color: var(--mut); }
+  .pdetailbody dd { margin: 0; }
+  .pdetailbody h3 { font-size: 13px; margin: var(--s2) 0 var(--s1); }
+  .pev { margin: 0; padding-left: 1.1em; }
+  .pev li { margin-bottom: var(--s2); }
+  .pevfield { color: var(--mut); }
+  .pev q { display: block; margin: 2px 0; }
+  .pev small { color: var(--mut); }
+  /* 窄屏：横滚 + 前两列固定（只有一张表、一套数据模板）。
+     第一列给**确定宽度**，第二列的 left 才有确定的落点；两列用不透明底色，否则会透出滑过的单元格。
+     ⚠️ .ptable 自带 overflow: hidden（桌面端圆角裁剪用的），它会成为**最近的可滚动祖先**，
+     于是粘性单元格相对它定位、而滚动的却是外层容器 —— 实测滚动 300px 后首列 left = -283px（等于没粘住）。
+     窄屏必须让表格不裁剪，把圆角交给外层。 */
+  @media (max-width: 760px) {
+    .ptable-wrap { border-radius: var(--r); }
+    .ptable { overflow: visible; }
+    /* 窄屏把每一组 chip 收成**一行横滑**（与首页筛选条 .facetsin 同一条既有做法）：
+       8 个平台 + 3 个额度类型 + 2 个地区折行后会把控件区撑到 440px，表格因此掉到首屏之外。
+       不做"横滑容器里藏入口"那套：这一组的每一项仍是一次横滑就能看到。 */
+    .pchips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .pchips::-webkit-scrollbar { display: none; }
+    .pctl .f { padding: 3px 9px; }
+    .ptable thead th:first-child, .ptable tbody th:first-child {
+      position: sticky; left: 0; width: 6.5em; white-space: normal; background: var(--card); z-index: 2;
+    }
+    .ptable thead th:nth-child(2), .ptable tbody td:nth-child(2) {
+      position: sticky; left: 6.5em; background: var(--card); z-index: 2;
+      box-shadow: 1px 0 0 var(--line); max-width: 10em; white-space: normal; overflow-wrap: anywhere;
+    }
+    /* 详情行**刻意不粘**：它的单元格 colspan=11（比滚动视口宽得多），粘性元素无法同时满足
+       两个方向的约束，浏览器因此整体不位移（实测滚动 300px 后 left = -283px，等于没粘）。
+       与其留一条看起来在粘、实际没粘的规则，不如把这件事写在这里。 */
+  }
+`;
+  const compareScript = `<script>
+/* scripts/lib/plans-compare.js —— 逐字节内联（离线自测 require 的也是同一份） */
+${plansCompareSource()}
+</script>`;
+
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -1198,7 +1275,7 @@ ${style}
   .ptag { margin-left: 4px; color: var(--mut); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 0 6px; font-size: 10.5px; }
   .pnone { color: var(--mut); }
   @media (max-width: 760px) { .ptable th, .ptable td { padding: 8px 9px; } }
-</style>
+${css}</style>
 ${jsonLdBlocks}
 </head>
 <body>
@@ -1223,6 +1300,7 @@ ${body}
     </main>
     ${footer}
   </div>
+${compareScript}
 </body>
 </html>
 `;
@@ -2511,18 +2589,34 @@ function selfCheck(built) {
     const plansPageFile = path.join(OUT, plansPage.PLANS_ROUTE, 'index.html');
     if (!fs.existsSync(plansPageFile)) fail(`缺少 ${plansPage.PLANS_ROUTE}index.html`);
     else {
-      const diskPlans = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8'));
+      // 真值取**发布出去的那一份**（`dist/plans.json`）而不是仓库里的源：这一页的载荷是
+      // 页面自己的派生数据，它必须与"读者能下载到的那份数据集"一致（v2.1 已断言 dist 与源逐字节相同）。
+      const diskPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8'));
       const diskTable = providers.load().table;
+      const diskHtml = fs.readFileSync(plansPageFile, 'utf8');
       const pageProblems = [
-        ...plansPage.assertPageHonesty(fs.readFileSync(plansPageFile, 'utf8'), diskPlans.plans, { providerTable: diskTable }),
+        ...plansPage.assertPageHonesty(diskHtml, diskPlans.plans, { providerTable: diskTable }),
         ...plansPage.assertDataHonesty(diskPlans.plans)
       ];
+      // 交互逻辑**逐字节**内联：页面上跑的那一份与 `lib/plans-compare.js` 必须是同一份字节。
+      // 少了这一条，将来把内联改成"精简版"也不会有人发现 —— 而那时浏览器与自测就是两套语义了。
+      if (!diskHtml.includes(plansCompareSource())) {
+        pageProblems.push('内联的交互脚本与 scripts/lib/plans-compare.js 不是同一份字节');
+      }
+      const templateCount = (diskHtml.match(/<template data-detail-for="/g) || []).length;
+      if (templateCount !== diskPlans.plans.length) {
+        pageProblems.push(`详情模板 ${templateCount} 个 ≠ 套餐 ${diskPlans.plans.length} 条`);
+      }
       if (pageProblems.length) fail(`套餐对比页未通过诚实性断言：${pageProblems.slice(0, 3).join('、')}`);
       else {
-        const forbidden = plansPage.FORBIDDEN_CLAIM_WORDS.filter(word =>
-          fs.readFileSync(plansPageFile, 'utf8').includes(word));
+        const forbidden = plansPage.FORBIDDEN_CLAIM_WORDS.filter(word => diskHtml.includes(word));
         if (forbidden.length) fail(`套餐对比页出现结论性词汇：${forbidden.join('、')}`);
-        else console.log(`  ✓ 套餐对比页: ${diskPlans.count} 行 · 口径文案在位 · 无结论性词汇（查了 ${plansPage.FORBIDDEN_CLAIM_WORDS.length} 个词）`);
+        else {
+          const payload = plansPage.comparePayloadOf(diskHtml).payload;
+          console.log(`  ✓ 套餐对比页: ${diskPlans.count} 行 · 载荷 ${payload.rows.length} 行 / ` +
+            `${payload.dimensions.provider.length} 平台选项 / 排序 ${[...payload.dimensions.sort.map(s => s.key)].join('+')} · ` +
+            `详情模板 ${templateCount} 个（内容与引文逐条对账）· 口径文案在位 · 无结论性词汇（查了 ${plansPage.FORBIDDEN_CLAIM_WORDS.length} 个词）`);
+        }
       }
     }
   }
