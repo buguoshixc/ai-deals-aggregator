@@ -3409,4 +3409,31 @@ API 记录没有 `billing`，所以任何 `promo` 都不产生"节省金额"。�
 变化源的注册表当前是单条 spec，扩成两条要动 `feeds.js` 的注册表与 `/feeds/` 页面的回链断言，
 不该塞进本轮）。
 
+**上线记录**
+
+- **第一次合并（PR #24，commit `983effe`）：gate 通过，但 Deploy 失败** —— 失败在回归比对
+  `回归：JS 错误仍为 0 — 1 个`。这是本轮**唯一一次**由 CI 而不是本地抓到的缺陷，值得记下来：
+  根因是我在 `verify-site` §20 里写了 `page.goto('sitemap.xml')`，而 XML 文档没有
+  `<link rel="icon">`，浏览器于是去要 `/favicon.ico` → **404** → Chromium 记一条控制台错误；
+  这一节又**独独没有做错误计数的前后快照**（其余每一节都有），于是那条错误被记到整轮的账上，
+  而所有逐页断言都是 0。**修法不是调松门禁**：sitemap 改用页面内 `fetch()` 读，并补上
+  `errorsBeforeApi` / `externalBeforeApi` 快照与一条「本节 0 错误 0 外部请求」断言。
+- **同一轮顺带抓到第二个缺陷**：`/plans/api/` 写了 `data-logo` 却既没引用 `logos.css`、
+  类名又不是 `lg`（`logos.css` 的选择器是 `.lg[data-logo="key"]`）⇒ 每一行的 logo 位是**空方块**。
+  这类坏法**既不报错也不发外部请求**，构建期"logo key 全部已登记"也查不到（它查的是被引用的
+  key 有没有图形，不查有没有加载那份 CSS）。修法：引用 `logos.css` + 类名改回 `lg`，
+  并给 §20 加一条**量出来**的断言（背景图非 `none`、尺寸非零）。
+- **第二次合并（PR #25，commit `0409663` → 合并 `9f36a0a`）：** `gate` **success**（run 36838963689）→
+  `Deploy to GitHub Pages` **success**（run 36839340026）。
+- **线上冒烟**（真浏览器 + 直接打线上地址，`npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/`）：
+  **440 项 0 失败**，含新增的 §20 共 23 项（`/plans/api/` 37 行与 `api-plans.json` 逐个对账 ·
+  ItemList 声明数 == 行数 · **输入/输出/缓存命中三列逐格对账** · 计费单位列逐行 ·
+  7 个记录锚点 · 0 控件 · 与套餐页互链 · 390/360px 无页面级溢出 · sitemap 成员资格 ·
+  本节 0 错误 0 外部请求 · **logo 背景图解析到线上 `logos/anthropic.svg`**）。
+  另直接打线上：`/plans/api/` **200**（131.3 KB）· `/api-plans.json` **200**（37.2 KB）·
+  `/api-plan-history.json` **200**（28.4 KB）· `/plans/coding/` **200** · `/sitemap.xml` **200**。
+- **记一条反复踩的坑**：CSS 注释里写反引号会把 JS 模板字符串提前截断（本轮踩了两次，
+  症状是构建报 `… .lg is not a function` —— 离原因很远；上一次是注释里写了路由占位符的字面量）。
+  两处注释里都已标注这条约束。
+
 
