@@ -4448,6 +4448,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
    */
   {
     const apiRoute = 'plans/api/';
+    // ⚠️ 每一节都必须自己快照错误计数：全局 `errors` 是**整轮累积**的，
+    // 少了这一对快照，本节引入的任何一条控制台错误都会悄悄记到整轮的账上
+    //（实测踩过：本节曾经 `page.goto('sitemap.xml')`，XML 文档没有 favicon 声明，
+    //  浏览器去要 /favicon.ico 得到 404 ⇒ 一条控制台错误 ⇒ 回归比对「JS 错误仍为 0」变红）。
+    const errorsBeforeApi = errors.length;
+    const externalBeforeApi = externalRequests.length;
     await page.goto(new URL(apiRoute, base).href, { waitUntil: 'load' });
     const ap = await page.evaluate(() => ({
       h1: (document.querySelector('h1') || {}).textContent || '',
@@ -4568,6 +4574,23 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     check('/plans/api/ 页面上没有结论性词汇（不做价值判断）',
       !['性价比', '最划算', '最超值', '最值得买', '排行榜', '综合评分', '推荐指数'].some(word => ap.text.includes(word)));
 
+    // 平台列真的画出了 logo：这一页写了 `data-logo`，就必须引用 logos.css。
+    // 缺样式表的表现是"每一行的 logo 位是一个空方块"—— 既不报错也不发外部请求，
+    // 所以必须**量出来**（背景图真的有、尺寸真的非零），而不是相信模板里有那个属性。
+    // ⚠️ 必须在**还停在这一页**时量：下面的宽度循环与末尾的首页导航都会换页面。
+    const logoStat = await page.evaluate(() => {
+      // 选择器与 `logos.css` 的规则选择器**同一个**（`.lg[data-logo]`）——
+      // 用自造的类名去查，查到的永远是自己写的那个空壳。
+      const first = document.querySelector('.ptable .lg[data-logo]');
+      if (!first) return { present: false };
+      const rect = first.getBoundingClientRect();
+      const bg = getComputedStyle(first).backgroundImage;
+      return { present: true, key: first.getAttribute('data-logo'), w: Math.round(rect.width), h: Math.round(rect.height), bg };
+    });
+    check('/plans/api/ 平台列的 logo 真的画出来了（引用了 logos.css，不是空方块）',
+      logoStat.present && logoStat.w > 0 && logoStat.h > 0 && logoStat.bg && logoStat.bg !== 'none',
+      JSON.stringify(logoStat));
+
     // 窄屏：宽表必须在容器内横滚，不许把整页撑开（沿用 /plans/coding/ 的同一条口径）
     for (const width of [390, 360]) {
       await page.setViewportSize({ width, height: 900 });
@@ -4587,9 +4610,18 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     const homeApiLink = await page.evaluate(() =>
       [...document.querySelectorAll('header.top a, footer a')].some(a => (a.getAttribute('href') || '').endsWith('plans/api/')));
     check('首页顶栏或页脚有「API / Token 计费对比」入口（这一页不是孤儿页）', homeApiLink);
-    await page.goto(new URL('sitemap.xml', base).href, { waitUntil: 'load' });
-    const sitemapText = await page.evaluate(() => document.body ? document.body.innerText : '');
-    check('/plans/api/ 在 sitemap 里', sitemapText.includes('plans/api/'));
+    // sitemap **用 fetch 读**，不 goto：goto 一个 XML 文档会让浏览器去要 /favicon.ico（404），
+    // 而那一条会被记成"JS 错误"。其余各节读 Feed / JSON 也都是 fetch。
+    const sitemapHit = await page.evaluate(`(async () => {
+      const r = await fetch(${JSON.stringify(new URL('sitemap.xml', base).href)});
+      return { status: r.status, body: await r.text() };
+    })()`).catch(() => null);
+    check('/plans/api/ 在 sitemap 里（成员资格，不是"文件存在"）',
+      Boolean(sitemapHit) && sitemapHit.status === 200 && sitemapHit.body.includes('plans/api/'),
+      sitemapHit ? `HTTP ${sitemapHit.status}` : '读取失败');
+    check('/plans/api/ 没有 JS 错误、没有外部请求（含本节的全部导航）',
+      errors.length === errorsBeforeApi && externalRequests.length === externalBeforeApi,
+      `JS 错误 ${errors.length - errorsBeforeApi} 个 · 外部请求 ${externalRequests.length - externalBeforeApi} 个`);
   }
 
   await browser.close();

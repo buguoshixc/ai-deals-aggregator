@@ -1481,6 +1481,11 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
+<!-- v2.5：这一页的「平台」列会写 data-logo 属性，所以必须引用 logos.css ——
+     漏了它的表现是**每一行的 logo 位是一个空方块**（页面看起来只是"有点空"），
+     而真浏览器那一条「没有 JS 错误、没有外部请求」的断言不会红（缺的是本地样式表，
+     既不报错也不发外部请求）。这是构建期自检「模板引用的 logo key 全部已登记」查不到的那一类。 -->
+<link rel="stylesheet" href="${prefix}logos.css">
 ${feeds.rootFeedTags(prefix)}
 ${themeScript}
 ${style}
@@ -1504,7 +1509,11 @@ ${style}
   .ptable .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .ptable a { color: var(--brand); }
   .pvname { margin-left: 2px; }
-  .plogo { display: inline-block; width: 14px; height: 14px; vertical-align: -2px; background-size: contain; background-repeat: no-repeat; background-position: center; }
+  /* 平台列里的 logo 用**首页那一套** class="lg"（图形来自 logos.css）：
+     只把尺寸与那套"叠放"用的负外边距收掉，其余（圆角 / 描边 / 白底）保持品牌图形的既有观感。
+     ⚠️ 这段文字在 JS 模板字符串里，所以**不许出现反引号**：[点号] + [lg] 那种写法会把模板提前截断，
+     症状是构建报 "… .lg is not a function" —— 离原因很远，实测踩过两次。 */
+  .ptable .lg { width: 16px; height: 16px; margin: 0 5px 0 0; border: 0; box-shadow: none; border-radius: 3px; vertical-align: -3px; }
   .punit { white-space: nowrap; }
   .pnone { color: var(--mut); }
   .pfree { min-width: 148px; }

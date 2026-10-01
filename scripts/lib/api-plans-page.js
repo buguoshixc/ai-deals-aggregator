@@ -246,9 +246,19 @@ function numCell(value, currency) {
   return `<td class="${cls}">${escapeHtml(text)}</td>`;
 }
 
+/**
+ * 平台 logo。
+ *
+ * ⚠️ 类名必须是 `lg` —— 它是 `logos.css` 里那条 `.lg[data-logo="key"]{background-image:…}`
+ * 的**唯一**匹配条件（图形、配色、内缩全在那一份 CSS 里，模板只写属性）。
+ * 自造一个类名（曾经写成 `plogo`）的表现是：属性在、尺寸在、**图不在** ——
+ * 页面看起来只是"logo 位有点空"，而构建期与"无外部请求"的断言都不会红。
+ * 真浏览器那一条 `verify-site` §20 会把背景图量出来，专门挡这种坏法。
+ */
 function logoHtml(row) {
   if (!row.logo) return '';
-  return `<span class="plogo" data-logo="${escapeHtml(row.logo)}" aria-hidden="true"></span>`;
+  return `<span class="lg" data-logo="${escapeHtml(row.logo)}" role="img"`
+    + ` aria-label="${escapeHtml(`${row.provider} 标识`)}"></span>`;
 }
 
 function rowHtml(row) {
