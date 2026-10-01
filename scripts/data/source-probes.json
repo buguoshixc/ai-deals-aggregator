@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "note": [
+    "每个采集器依赖的「结构探针」声明表（v2.0）。",
+    "用途：页面结构摘要（scripts/lib/dom-digest.js）按这些探针统计命中次数，",
+    "于是「这个源今天为什么 0 条」有了可比对的数字（昨天 td=42，今天 td=0）。",
+    "纪律与 provenance.SOURCE_TYPES 相同：注册的采集器一个都不能少，文件里也不能有没人用的条目，",
+    "对不上就由 npm run selftest:ai 报红 —— 否则某个源坏掉时才发现「它根本没有探针可比」。",
+    "改探针**不需要改采集器代码**；反过来，采集器改了选择器而这里没跟上，自检会红。"
+  ],
+  "probes": {
+    "cn_qianfan": {
+      "url": "https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg",
+      "keywords": ["免费", "赠送", "Tokens", "有效期", "新用户"],
+      "selectors": ["table", "table tr", "table td"],
+      "regexes": [{ "name": "token-grant", "pattern": "赠送", "flags": "g" }]
+    },
+    "cn_aliyun": {
+      "url": "https://help.aliyun.com/zh/model-studio/new-free-quota",
+      "keywords": ["免费额度", "新用户", "有效期", "模型"],
+      "selectors": ["table", "table tr", "table td", "body"],
+      "regexes": [{ "name": "free-quota", "pattern": "免费额度", "flags": "g" }]
+    },
+    "cn_zhipu": {
+      "url": "https://docs.bigmodel.cn/cn/guide/start/model-overview",
+      "keywords": ["免费", "模型", "额度"],
+      "selectors": ["table", "table tr", "table td"],
+      "regexes": [{ "name": "free-word", "pattern": "免费", "flags": "g" }]
+    },
+    "layer3labs": {
+      "url": "https://www.layer3labs.io/ai-discounts",
+      "keywords": ["Provider", "discount", "Best for", "How to get"],
+      "selectors": ["table", "table tr", "table td", "a[href^=\"http\"]"],
+      "regexes": [{ "name": "deal-table-header", "pattern": "provider[\\s\\S]{0,60}(deal|discount)", "flags": "gi" }]
+    },
+    "aitools": {
+      "url": "https://aitools.fyi/",
+      "keywords": ["tool", "free", "discount"],
+      "selectors": ["script#__NEXT_DATA__[type=\"application/json\"]", "a[href*=\"/tool/\"]"],
+      "regexes": [{ "name": "next-data", "pattern": "__NEXT_DATA__", "flags": "g" }]
+    },
+    "futurepedia": {
+      "url": "https://www.futurepedia.io/",
+      "keywords": ["free", "deal", "discount", "pricing"],
+      "selectors": ["a[href*=\"utm_source=futurepedia\"]", "meta[name=\"description\"]", "span"],
+      "regexes": [{ "name": "deal-word", "pattern": "deal|discount|free", "flags": "gi" }]
+    },
+    "futuretools": {
+      "url": "https://www.futuretools.io/",
+      "keywords": ["free", "deal", "discount"],
+      "selectors": ["a[href^=\"/tools/\"]", "a[href^=\"/go/\"]"],
+      "regexes": [{ "name": "deal-word", "pattern": "deal|discount|free", "flags": "gi" }]
+    },
+    "cn_zhipu_pricing": {
+      "url": "https://bigmodel.cn/pricing",
+      "keywords": ["免费", "Tokens", "资源包", "新用户注册专享"],
+      "selectors": ["table", "table tr", "table td"],
+      "regexes": [
+        { "name": "new-user-package", "pattern": "新用户注册专享\\s*([\\d.]+万)\\s*免费\\s*Tokens\\s*资源包", "flags": "g" }
+      ]
+    },
+    "cn_volc_ark": {
+      "url": "https://www.volcengine.com/product/ark",
+      "keywords": ["免费", "额度", "Token", "活动"],
+      "selectors": ["table", "table tr", "div"],
+      "regexes": [{ "name": "free-word", "pattern": "免费", "flags": "g" }]
+    }
+  }
+}

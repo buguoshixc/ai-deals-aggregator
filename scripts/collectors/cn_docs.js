@@ -25,8 +25,14 @@ const { cleanText } = require('../lib/schema');
 
 const QIANFAN_URL = 'https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg';
 
-async function collectQianfan() {
-  const html = await getText(QIANFAN_URL, { timeout: 25000 });
+/**
+ * 纯解析：从 HTML 得到条目。**不碰网络**。
+ *
+ * v2.0 起把"抓取"与"解析"分开，是为了让 `scripts/data/fixtures/` 能把**最小的真实 DOM 片段**
+ * 钉成测试输入：解析逻辑一改，fixture 立刻红。没有这一步，AI 生成的 collector 补丁
+ * 就没有任何可验证的判据（改了之后跑什么？跑真实页面等于把测试建立在别人的可用性上）。
+ */
+function parseQianfan(html) {
   const $ = cheerio.load(html);
   const items = [];
 
@@ -60,6 +66,11 @@ async function collectQianfan() {
   });
 
   return items.slice(0, 20);
+}
+
+async function collectQianfan() {
+  const html = await getText(QIANFAN_URL, { timeout: 25000 });
+  return parseQianfan(html);
 }
 
 /* ------------------------------------------------------------------ */
@@ -162,7 +173,7 @@ async function collectZhipu() {
 }
 
 module.exports = [
-  { id: 'cn_qianfan', name: '百度千帆', region: 'cn', collect: collectQianfan },
+  { id: 'cn_qianfan', name: '百度千帆', region: 'cn', collect: collectQianfan, parse: parseQianfan, fixture: 'cn_qianfan.deals' },
   { id: 'cn_aliyun', name: '阿里云百炼', region: 'cn', collect: collectAliyun },
   { id: 'cn_zhipu', name: '智谱AI', region: 'cn', collect: collectZhipu }
 ];

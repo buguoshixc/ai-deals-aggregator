@@ -17,6 +17,7 @@ const { chromium } = require('playwright-core');
 const cheerio = require('cheerio');
 const { isAllowedByRobots, DEFAULT_UA } = require('./http');
 const { cleanText } = require('./schema');
+const domDigest = require('./dom-digest');
 
 /** 优先 Edge（Windows 自带）→ Chrome → playwright 自带 chromium（Linux/CI 场景） */
 const CHANNELS = ['msedge', 'chrome', 'bundled'];
@@ -180,6 +181,9 @@ async function render(page, url, options = {}) {
   if (settleWait) await page.waitForTimeout(settleWait);
 
   const html = await page.content();
+  // 无头来源的网络出口不经过 lib/http.js，所以摘要要在这一处单独挂一次。
+  // 与 http.js 的那个挂钩是同一件事：入口只有两个，摘要只挂这两个。
+  if (domDigest.isCapturing()) domDigest.note(page.url(), html);
   const text = await page.evaluate(() =>
     document.body ? document.body.innerText.replace(/\s+/g, ' ').trim() : ''
   );

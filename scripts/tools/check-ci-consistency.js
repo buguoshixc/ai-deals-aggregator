@@ -74,10 +74,17 @@ const WF_DIR = path.join(ROOT, '.github', 'workflows');
 /* ────────────────────────── 冻结口径（唯一事实来源） ────────────────────────── */
 
 /** 必需 workflow：**写死**这份清单并要求逐个存在（不能只依赖 readdirSync 的结果集） */
-const REQUIRED_WORKFLOWS = ['collect.yml', 'deploy.yml', 'probe-sources.yml', 'verify.yml'];
+const REQUIRED_WORKFLOWS = ['ai-maintenance.yml', 'collect.yml', 'deploy.yml', 'probe-sources.yml', 'verify.yml'];
 
 /** 每个必需 workflow 的 uses 冻结集合（含主版本；SHA 钉死的等价写法见 parseUses 的 allowed） */
 const FROZEN_USES = {
+  // AI 维护层：只读仓库 + 上传 artifact。**刻意没有 pages / deploy 相关动作** ——
+  // 这条链路的产物永远只是候选，不发布任何东西（见 (16) 断言）。
+  'ai-maintenance.yml': [
+    'actions/checkout@v5',
+    'actions/setup-node@v5',
+    'actions/upload-artifact@v5'
+  ],
   // 三个 workflow 都调用同一个复合 action（门禁的唯一实现）——本地引用按逐字相等匹配。
   'collect.yml': ['actions/checkout@v5', 'actions/setup-node@v5', './.github/actions/gate'],
   'deploy.yml': [
@@ -152,6 +159,13 @@ const GATE_STEP_NAMES = [
   // 而是"它红的时候有没有别的步骤会替它红"——没有，所以必须进来。
   'Audience self-test',
   'App-token self-test',
+  // v2.0 新增：AI 层边界自检（离线）。它红的时候没有别的步骤会替它红 ——
+  // 「没有证据的断言进不来」「非法枚举进不来」「AI 挂了确定性链路不变」
+  // 「候选里的密钥会被扫出来」「去重模块根本没有合并能力」全都只在这一步被验证。
+  'AI layer self-test',
+  // v2.0 新增：采集器 fixture 回放（离线）。把解析器行为钉成契约，
+  // 让"改采集器"这件事第一次有了可判定的回归判据。
+  'Collector fixtures (offline replay)',
   'Assemble site (same path as deploy.yml)',
   // v1.6 新增：**真实连续构建**两次，逐字节比对全部 Feed 文件。自测证明的是
   // 「纯函数同输入同输出」，证明不了「构建脚本没把时钟写进产物」——两者红的含义不同。
@@ -173,6 +187,7 @@ const GATE_CALLERS = ['collect.yml', 'deploy.yml', 'verify.yml'];
  * 增删断言时同步改这里 —— 于是「断言集合变了」这件事在 diff 里一眼可见。
  */
 const FROZEN_ASSERTION_NAMES = [
+  '(0) 必需 workflow 存在：ai-maintenance.yml',
   '(0) 必需 workflow 存在：collect.yml',
   '(0) 必需 workflow 存在：deploy.yml',
   '(0) 必需 workflow 存在：probe-sources.yml',
@@ -180,6 +195,7 @@ const FROZEN_ASSERTION_NAMES = [
   '(0b) 磁盘上的 workflow 集合 == 必需清单（互为子集；未登记的新文件也硬红）',
   '(1) 必需 workflow 的 uses 没有 v1..v4 旧代引用（按主版本比较，含 @v4.1.1 这类点分写法）',
   '(1b) 必需 workflow 的 uses 没有浮动引用（@main / @master / 裸分支名；按 SHA 钉死是允许且推荐的）',
+  '(2) ai-maintenance.yml 的 uses 集合等于冻结集合',
   '(2) collect.yml 的 uses 集合等于冻结集合',
   '(2) deploy.yml 的 uses 集合等于冻结集合',
   '(2) probe-sources.yml 的 uses 集合等于冻结集合',
@@ -203,7 +219,11 @@ const FROZEN_ASSERTION_NAMES = [
   '(12) deploy.yml 的发布链必须先过门禁：prepublish 无 job 级 if、build 依赖它、deploy 依赖 build',
   '(13) collect.yml 的门禁步骤排在提交步骤之前',
   '(14) workflow 与复合 action 里没有「未加引号的标量含『冒号+空格』」（真实 YAML 会拒绝，本文件的缩进读取器读得过去）',
-  '(15) collect.yml 的推送用专用 GitHub App 身份（github-actions 不能被加进 ruleset 绕过名单）'
+  '(15) collect.yml 的推送用专用 GitHub App 身份（github-actions 不能被加进 ruleset 绕过名单）',
+  // v2.0：AI 维护链路必须"只读 + 只出 artifact"。这条断言存在的理由与 (13)/(15) 同类 ——
+  // 「AI 不许自动 push」这句话如果只写在文档里，它会在某次"顺手让它自动提交"的改动里消失，
+  // 而且消失时没有任何东西会红。
+  '(16) ai-maintenance.yml 只手动触发、只读仓库、只出 artifact（无提交/推送/发布动作）'
 ];
 const WATCHDOG_NAME = '(W) 断言名单与冻结清单等值（删一条或改名都会红；本看门狗保护不了自己被删）';
 
@@ -711,6 +731,53 @@ check('(15) collect.yml 的推送用专用 GitHub App 身份（github-actions �
   collectAuthIssues.length === 0,
   collectAuthIssues.length ? collectAuthIssues.join('；')
     : 'App token 换取排在推送之前 · checkout 不持久化凭据 · 提交带 [skip ci] 防双链发布');
+
+/* ─────────── (16) AI 维护链路：只手动触发、只读仓库、只出 artifact ─────────── */
+//
+// 「AI 只能提出候选」这条红线，如果只写在 docs/AI-MAINTENANCE-v2.0.md 里，
+// 它会在某次"顺手让它自动提交候选"的改动里悄悄消失，而且消失时没有任何东西会红。
+// 所以把三件事钉在这里：触发方式、权限、以及**整份文件里不许出现任何写仓库的动作**。
+const aiIssues = [];
+{
+  const aiFile = 'ai-maintenance.yml';
+  const aiPath = path.join(WF_DIR, aiFile);
+  const aiRaw = fs.existsSync(aiPath) ? fs.readFileSync(aiPath, 'utf8') : '';
+  const aiText = aiRaw.split('\n').map(stripComment).join('\n');
+
+  // ① 触发方式：只允许 workflow_dispatch（没有 schedule / push / workflow_run）
+  const aiEntries = wf[aiFile] || [];
+  const aiTriggers = aiEntries
+    .filter(e => e.path[0] === 'on' && e.path.length === 2 && e.key === null)
+    .map(e => String(e.value).trim())
+    .concat(aiEntries.filter(e => e.path[0] === 'on' && e.path.length === 2 && e.key).map(e => e.key));
+  const triggerSet = new Set(aiTriggers.filter(Boolean));
+  if (!triggerSet.has('workflow_dispatch')) aiIssues.push('on: 里没有 workflow_dispatch');
+  for (const forbidden of ['schedule', 'push', 'pull_request', 'workflow_run']) {
+    if (triggerSet.has(forbidden)) aiIssues.push(`on: 里出现了 ${forbidden} —— AI 维护只能手动触发`);
+  }
+
+  // ② 权限：contents 必须是 read（write 意味着它能推仓库）
+  const permEntries = aiEntries.filter(e => e.path[0] === 'permissions');
+  const contentsPerm = permEntries.find(e => e.path[e.path.length - 1] === 'contents');
+  if (!contentsPerm) aiIssues.push('没有显式声明 permissions.contents');
+  else if (String(contentsPerm.value).trim() !== 'read') aiIssues.push(`permissions.contents=${contentsPerm.value}（必须是 read）`);
+  if (permEntries.some(e => /write/.test(String(e.value)))) aiIssues.push('permissions 里出现了 write');
+
+  // ③ 整份文件里不许有任何会改动仓库的动作
+  for (const forbidden of ['git add', 'git commit', 'git push', 'git remote set-url', 'persist-credentials: true']) {
+    if (aiText.includes(forbidden)) aiIssues.push(`文件里出现了「${forbidden}」`);
+  }
+  // ④ 也不许发布任何东西（页面 / 部署动作一律不允许出现在这条链路上）
+  for (const forbidden of ['deploy-pages', 'upload-pages-artifact', 'configure-pages', 'contents: write']) {
+    if (aiText.includes(forbidden)) aiIssues.push(`文件里出现了发布相关动作「${forbidden}」`);
+  }
+  // ⑤ 它必须真的接上了 AI 自检：没有自检的 AI 链路等于裸奔
+  if (!aiText.includes('scripts/tools/ai-selftest.js')) aiIssues.push('没有在跑 AI 层自检');
+}
+check('(16) ai-maintenance.yml 只手动触发、只读仓库、只出 artifact（无提交/推送/发布动作）',
+  aiIssues.length === 0,
+  aiIssues.length ? aiIssues.join('；')
+    : 'workflow_dispatch 唯一入口 · contents: read · 文件里无 commit/push/deploy 动作 · 已接 AI 自检');
 
 /* ─────────────────── (W) 看门狗：断言名单等值（不可跳过） ─────────────────── */// 刻意放在所有分支之外：删一条断言、或改任意一条断言名，都会在这里变红。
 // 固有边界：看门狗保护不了**自己**被删（那时它也不存在了）—— 如实记录，不做过度设计。

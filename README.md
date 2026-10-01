@@ -212,6 +212,25 @@ scripts/
       curated.js                人工策展数据加载
     provenance.js             v1.3 信息来源：有界官方引文的归一/合并/预算 + 采集事实派生（心跳 join）
     changes.js                v1.5 变化雷达：分栏/窗口/高价值判定 + 文案微调归一（纯函数、零依赖、无网络）
+    dom-digest.js             v2.0 页面结构摘要（计数/标记/探针命中，**不含正文**）+ 两代跨运行快照
+    secret-scan.js            v2.0 密钥模式扫描（产物自检 / 送模型前脱敏 / 牙测试共用同一份模式表）
+  ai/                         v2.0 AI 维护层（**可选、默认关闭、永不进入采集链路**）
+    provider.js               generateStructured()：AI 的唯一出口（永不 throw，失败收敛成 invalid）
+    providers/                openai-compat / anthropic / mock（回放）/ fail（故障注入，仅自检用）
+    schemas.js                候选 JSON Schema（枚举全部从 lib/audience.js 等生产单一出处派生）
+    json-schema.js            零依赖的受限 JSON Schema 校验器
+    candidates.js             候选信封 + 确定性规则 R1–R5（没有同名引文的断言进不来）
+    cache.js                  缓存（key 只由 task/promptVersion/provider/model/inputHash 决定）
+    usage.js / pricing.js     用量与成本记账（金额未知时报「未知」而不是 0）
+    redact.js                 送模型前的 DOM 清洗 / 正文提取 / 截断 / 脱敏
+    extract.js                能力 1：优惠字段提取候选（逐字段引文）
+    dedup.js                  能力 2：疑似重复候选（**不导出任何合并/写入符号**）
+    translate.js              能力 3：翻译草稿（只写 candidates 文件）
+    translate-guard.js        译文确定性守卫（数字/币种/URL/专名/否定/不放大力度）
+    diagnose.js               能力 4：采集器 DOM drift 诊断候选（永不改采集器）
+    patch.js                  能力 5：采集器补丁候选（只出 diff，自证=应用+跑 fixture）
+    audit.js                  能力 6：数据质量审计候选（只报警，要求给出可收敛的确定性规则）
+    maintenance.js            唯一 CLI：--task=extract|dedup|translate|diagnose|audit|patch
   collectors/
     index.js                  注册表
     cn_docs.js                国内：百度千帆免费额度表 / 阿里云百炼 / 智谱免费模型
@@ -223,13 +242,20 @@ scripts/
     curated_global.json       国外人工策展
     audience-overrides.json   v1.1 **第二个人工来源**：采集侧条目的六字段声明式补充（每条带引文）
     source-health.json        采集来源的跨运行状态（每轮 collect 写入，与 deals.json 同批提交）
-    fixtures/                 migrate-audience-verify 的合成夹具（before/after 成对，逐分支覆盖）
+    source-probes.json        v2.0 每个采集器依赖的选择器/正则/关键词**声明表**（诊断用的探针）
+    source-snapshots.json     v2.0 每个来源两代页面结构摘要（每轮 collect 写入，**不含正文**）
+    ai-pricing.json           v2.0 AI 价目表（人工维护；未复核的条目不参与成本估算）
+    ai-applied-log.json       v2.0 AI 候选被人工采纳的账（可追溯；由 ai-apply 追加）
+    translations_zh.candidates.json  v2.0 AI 翻译草稿（**不是**译文覆盖层，落地要人点）
+    ai-eval/                  v2.0 评测金标集与回放夹具（extraction / dedup / translation）
+    fixtures/                 采集器最小 DOM 片段：migrate-audience-verify 的合成夹具
+                              + v2.0 的 `*.deals/`、`*.list/`（page.min.html + expected.json + PROVENANCE.md）
     translations_zh.json      国外英文文案的人工中文译文（键为 deal.id，含原文指纹 src）
     backfill-cards.js         一次性补齐卡片字段的映射记录（新增条目时作写法参考）
     aliases.json              产品别名表（跨源去重）
     official_urls.json        聚合站条目 → 官方页映射
   tools/                      采集器调试工具与发布产物组装
-    build-local.js            校验 → 组装 dist/ → 预渲染 → 自检（本地与 CI 同一路径）
+    build-local.js            校验 → 组装 dist/ → 预渲染 → 自检（含 v2.0 产物密钥扫描；本地与 CI 同一路径）
     verify-site.js            真浏览器验收：密度/裁切/hover/筛选/弹层/译文折叠/移动端/分类页/按需求页/状态页（dev，需 playwright-core）
     check-mobile-chrome.js    390px 下逐控件量裁切/越出视口/横向溢出（含 nav.needs 入口行）
     check-reproducible.js     可重建性门禁：文件里不许有「没有任何源」的值（五个判据，CI）
@@ -249,6 +275,16 @@ scripts/
                               门槛分支 + slug/钉住/别名三张表的不变量，CI）
     seo-verify.js             v1.7 SEO 独立验收（**只读 dist/**，与构建期输入完全不同源，CI）
     seo-report.js             落地页人读报告（页面清单 / 未成页的主题与原因 / 索引策略 / slug 契约）
+    ai-selftest.js            v2.0 AI 层边界自检（六颗主牙 + 结构性牙；离线、零依赖，CI）
+    fixture-test.js           v2.0 采集器 fixture 回放：解析器行为的契约（离线，CI）
+    build-fixtures.js         v2.0 从真实页面剪最小 DOM 片段并生成 expected（页面改版后手工重建）
+    rebuild-deals.js          v2.0 离线重放 merge 重建 deals.json（不联网；ai-apply 之后自动跑）
+    ai-review.js              v2.0 候选审阅表（只读；把「无据的确定」单列一栏）
+    ai-accept.js              v2.0 记录人工决定（只改候选文件，不碰生产数据）
+    ai-apply.js               v2.0 **唯一**会写生产数据的工具：只写两个人工来源层 + 门禁 + 失败回滚
+    ai-usage.js               v2.0 用量与成本报表（token 真实、金额未知时报「未知」）
+    ai-eval.js                v2.0 评测：金标集三臂 + 译文守卫篡改测试
+    zh-apply-candidates.js    v2.0 AI 翻译草稿落地（用当前英文重跑守卫 + 门禁 + 回滚）
     zh-todo.js                中文翻译待办与脚手架（--json / --scaffold 盖原文指纹 / --orphans）
     zh-selftest.js            中文译文门禁演练（自恢复，验证坏译文真的会被拦下）
     tier-report.js            分档与厂商归一报告（调规则时先看它）
@@ -714,18 +750,60 @@ hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排�
   `<meta name="robots" content="index, follow, max-image-preview:large">`。
 - `robots.txt` 显式放行主流 AI 爬虫（GEO 意图声明）。
 
+## AI 维护层（v2.0 · 可选，默认关闭）
+
+**它不是聊天机器人，也不在采集链路上。** 它做的事是降低*后台维护*的人工成本：
+给采集器坏掉时一个可读的诊断、给人工标注一份带引文的候选、给疑似重复一张候选表、
+给待译文案一份草稿。全部产出都是**候选**，落地必须有人点。
+
+三条纪律（由 `scripts/tools/ai-selftest.js` 与 CI 断言守着，不靠人记）：
+
+```text
+① 采集链路不引用 AI 层           → collect.js / store.js / dedup.js 里不许出现 scripts/ai
+② AI 从不上生产数据              → 只写 curated_*.json 与 audience-overrides.json（两个已有人工来源层）
+③ 无 key / 超时 / 非法 JSON 一律跳过 → 退出码 0，站点照常采集、照常构建、照常发布
+```
+
+日常用法：
+
+```bash
+npm run ai:review                       # 看候选（只读；「无据的确定」单列一栏）
+npm run ai:accept -- --id=<id> --note="…"   # 记录人工决定
+npm run ai:apply  -- --id=<id>          # 落地（写人工来源层 → 离线重建 deals.json → validate --strict；红了回滚）
+
+npm run ai:diagnose                     # 采集器坏了：两代结构摘要 + 探针命中 + 源码 → 候选原因
+npm run ai:extract -- --limit=10        # 优惠字段提取候选（逐字段引文）
+npm run ai:dedup                        # 疑似重复候选（结构上无法自动合并）
+npm run ai:translate                    # 翻译草稿 → scripts/data/translations_zh.candidates.json
+npm run ai:audit                        # 数据质量审计候选（要求给出可收敛的确定性规则）
+npm run ai:patch -- --source=<id>       # 采集器补丁候选（只出 diff；自证=应用+跑 fixture）
+npm run ai:usage                        # 用量与成本
+npm run ai:selftest && npm run fixture:test   # 边界自检与解析器契约（离线，CI 里也跑）
+```
+
+模型与密钥：只从环境变量 / GitHub Secret 读（`AI_PROVIDER` / `AI_MODEL` / `AI_API_KEY` / `AI_BASE_URL`），
+**绝不进仓库、前端、Pages 或生成产物**（`build-local.js` 的产物自检会扫 `sk-` / `Bearer` / 私钥等模式）。
+`AI_PROVIDER=off`（默认）时所有 AI 命令都打印「没有可用的 AI provider」并正常退出。
+线上跑法见 `.github/workflows/ai-maintenance.yml`（只 `workflow_dispatch`、`contents: read`、只出 artifact）。
+
+契约与红线：`docs/AI-MAINTENANCE-v2.0.md`；本轮的成本审计与落点依据：`research/v2.0-maintenance-cost-audit.md`。
+
 ## 自动化与部署
 
-**门禁的步骤实现只有一处**：`.github/actions/gate/action.yml`（复合 action，**21 步**）——
+**门禁的步骤实现只有一处**：`.github/actions/gate/action.yml`（复合 action，**27 步**）——
 `npm ci → validate --strict → 可重建性门禁 → 历史门禁 → 迁移验收比对 → 译文门禁 → 译文演练
 → 活动期限演练 → 文本清洗演练 → 健康演练 → 信息来源演练 → 历史记录演练 → 变化雷达演练
-→ 受众字段演练 → 采集机器人身份演练 → 组装产物 → 准备浏览器
+→ 订阅演练 → SEO 演练 → 受众字段演练 → 采集机器人身份演练 → AI 层边界自检 → 采集器 fixture 回放
+→ 组装产物 → 订阅可复现（连构两次逐字节比对）→ SEO 独立验收（只读 dist/）→ 准备浏览器
 → 浏览器可用性判定 → 真浏览器验收 → 回归比对 → 结论`。
 三条 workflow 共用它，没有第二套测试链。
+（v2.0 的 `ai-maintenance.yml` **刻意不共用**：它不在采集/发布链上，只跑离线自检与候选生成 ——
+让"可选能力"挤进门禁，等于把 AI 的可用性变成站点的可用性。）
 
 > 步骤的**顺序与数量**是一份冻结契约（`check-ci-consistency.js` 的 `GATE_STEP_NAMES`）：
 > 谁把真浏览器验收、回归比对或译文门禁从门禁里拿掉，`npm run check:ci` 立刻红。
-> 所以上面这句「21 步」不是抄来的，是被断言钉住的。
+> 所以上面这句「27 步」不是抄来的，是被断言钉住的（v2.0 的两步 —— AI 层边界自检与采集器
+> fixture 回放 —— 两者都离线、零依赖、不读任何 API key）。
 
 - `.github/workflows/verify.yml`（**必需检查名 `gate`**）：`pull_request` / `push`(master) /
   手动。步骤是 checkout → setup-node → 一致性门禁（单行 `run:`，`--expect-checks=N` 是项数的
@@ -741,7 +819,8 @@ hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排�
 - `.github/workflows/collect.yml`：cron **名义**上是每天北京时间 08:00 / 20:00（`0 0 * * *` / `0 12 * * *`
   = UTC 00:00 / 12:00）采集 → 校验 → **提交前的完整门禁** → 有变化才提交
   `deals.json` + `scripts/data/source-health.json` + `scripts/data/zh-pending.json`
-  （三份一起走：数据本身，以及两份跨运行状态）。门禁排在 `git push` **之前**：数据有问题
+  + `scripts/data/source-snapshots.json`（v2.0 起第四份：页面结构摘要，**不含正文**）。
+  四份一起走：数据本身，以及三份跨运行状态。门禁排在 `git push` **之前**：数据有问题
   就根本不入库（机器人提交一进 master 就会被 deploy 的 workflow_run 接走）。
   采集步骤为 `node scripts/collect.js --headless`（静态来源 + 无头来源），前面会安装 playwright 自带
   chromium（这一步失败不阻断采集本身，但会让无头来源在健康表里判成 `headless_unavailable`，
@@ -755,6 +834,10 @@ hover 前后卡片高/logo 簇宽/标题宽是否一致、弹层、筛选、排�
   所以别把「08:00 / 20:00」当成实际更新时间。
 - `.github/workflows/probe-sources.yml`：**手动触发**的只读探针，验证 Actions 出口 IP 能否访问/渲染
   智谱活动页与火山方舟（厂商风控或镜像变更后用它复检）。
+- `.github/workflows/ai-maintenance.yml`（v2.0）：**只手动触发**的 AI 维护任务。
+  `contents: read`，跑离线自检 → 跑一个 `--task=` → 上传候选与用量 artifact。
+  **没有 `git commit` / `git push` / 任何发布动作** —— 这一条由 `check-ci-consistency.js`
+  的 (16) 断言守着：谁给它加上提交能力，CI 立刻红。候选入不入库，由人在本地审阅后决定。
 - 采集与发布分离，保证线上产物可复现。
 
 > ⚠️ **为什么部署还要监听 `workflow_run`**

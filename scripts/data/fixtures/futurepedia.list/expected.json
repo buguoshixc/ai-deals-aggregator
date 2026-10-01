@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "source": "futurepedia",
+  "sourceName": "Futurepedia",
+  "fixture": "futurepedia.list",
+  "sourceUrl": "https://www.futurepedia.io/",
+  "capturedAt": "2026-10-01",
+  "trimmed": "前 6 个 `a[href*=\"/tool/\"]` 卡片（保留其可见文本）",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 3,
+  "items": [
+    {
+      "title": "ChatGPT",
+      "pageUrl": "https://www.futurepedia.io/tool/chatgpt"
+    },
+    {
+      "title": "Claude",
+      "pageUrl": "https://www.futurepedia.io/tool/claude"
+    },
+    {
+      "title": "HubSpot AEO Sensor",
+      "pageUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor"
+    }
+  ]
+}

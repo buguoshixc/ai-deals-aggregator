@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "source": "layer3labs",
+  "sourceName": "Layer3Labs",
+  "fixture": "layer3labs.deals",
+  "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+  "capturedAt": "2026-10-01",
+  "trimmed": "第一张「Provider | Current deal | Best for | How to get it」表（含表头与全部数据行）",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 13,
+  "items": [
+    {
+      "title": "ChatGPT / OpenAI",
+      "url": "https://openai.com/chatgpt/pricing/",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "source": "Layer3Labs",
+      "discountInfo": "Free ChatGPT tier; annual billing available for Business and Enterprise plans. No standing public student or nonprofit discount was listed on the official pricing page when checked.",
+      "description": "Use the free plan or choose annual billing from the official pricing page.",
+      "eligibility": "Individuals, teams already standardizing on ChatGPT, businesses comparing seat costs.",
+      "category": ""
+    },
+    {
+      "title": "Claude / Anthropic",
+      "url": "https://www.anthropic.com/pricing",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "source": "Layer3Labs",
+      "discountInfo": "Claude for Nonprofits advertises discounted access up to 75%. Anthropic also notes discounted seats for active scientific labs at academic institutions and nonprofit research organizations.",
+      "description": "Apply or contact Anthropic through the nonprofit, science, or sales path.",
+      "eligibility": "Nonprofits, research labs, mission-driven teams, academic science groups.",
+      "category": ""
+    },
+    {
+      "title": "Google Gemini",
+      "url": "https://gemini.google/students/",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "source": "Layer3Labs",
+      "discountInfo": "Free Gemini access remains available. Google AI Pro student offers vary by country; the U.S. student offer page says the previous student offer ended March 11, 2026.",
+      "description": "Check the official Gemini student and subscription pages for your region.",
+      "eligibility": "Students checking regional offers, Google Workspace users, people who want a free AI assistant.",
+      "category": ""
+    },
+    {
+      "title": "Microsoft Copilot / Microsoft 365",
+      "url": "https://www.microsoft.com/en-us/store/b/education",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "source": "Layer3Labs",
+      "discountInfo": "Microsoft advertises student savings on Microsoft 365 plans with Copilot included, including a 50% student discount on its education discount page.",
+      "description": "Verify with a college email through Microsoft student pricing.",
+      "eligibility": "College students, Microsoft 365 users, teams already working in Word, Excel, PowerPoint, and Outlook.",
+      "category": ""
+    },
+    {
+      "title": "GitHub Copilot",
+      "url": "https://github.com/features/copilot/plans",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "source": "Layer3Labs",
+      "discountInfo": "Verified students on GitHub Education get free Copilot access. GitHub also documents free Copilot Pro access paths for verified teachers and qualifying open-source maintainers.",
+      "description": "Apply for GitHub Education verification, then enable Copilot from GitHub.",
+      "eligibility": "Students, teachers, open-source maintainers, developers.",
+      "category": ""
+    },
+    {
+      "title": "Perplexity",
+      "url": "https://www.perplexity.ai/help-center/en/articles/12590157-what-is-education-pro.html",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "source": "Layer3Labs",
+      "discountInfo": "Education Pro is offered to verified students and educators at a discount. Perplexity also says promo codes are distributed through official partners and channels.",
+      "description": "Verify student or educator status, or use partner promotions from official channels.",
+      "eligibility": "Students, educators, research-heavy users, people comparing AI search tools.",
+      "category": ""
+    },
+    {
+      "title": "Canva",
+      "url": "https://www.canva.com/canva-for-nonprofits/",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "source": "Layer3Labs",
+      "discountInfo": "Canva Nonprofits gives eligible registered nonprofits free Canva Pro features and collaboration tools for up to 50 users; additional nonprofit seats are discounted. Canva Education is free for eligible K-12 educators and students.",
+      "description": "Apply through Canva Nonprofits or Canva Education eligibility verification.",
+      "eligibility": "Nonprofits, schools, K-12 teachers, design and marketing teams.",
+      "category": ""
+    },
+    {
+      "title": "Notion AI / Notion",
+      "url": "https://www.notion.com/product/notion-for-education",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "source": "Layer3Labs",
+      "discountInfo": "Notion Plus is free for individual students and educators with eligible school emails. Student organizations can apply for a free Plus workspace with unlimited members.",
+      "description": "Sign up with an eligible school email or apply as a verified student organization.",
+      "eligibility": "Students, educators, student clubs, small knowledge-base teams.",
+      "category": ""
+    },
+    {
+      "title": "Cursor",
+      "url": "https://cursor.com/pricing",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "source": "Layer3Labs",
+      "discountInfo": "Cursor says anyone can start free. Its student page points students toward campus and online event promotions; its pricing page warns that third-party Cursor subscriptions are unauthorized.",
+      "description": "Use the free plan and buy only through cursor.com if upgrading.",
+      "eligibility": "Students watching for campus promos, developers testing AI coding tools.",
+      "category": ""
+    },
+    {
+      "title": "Replit",
+      "url": "https://replit.com/pricing",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "source": "Layer3Labs",
+      "discountInfo": "Replit pricing lists annual savings on paid plans. Its docs have also listed student discounts such as $15 off per month for the first six months of Replit Core.",
+      "description": "Check Replit pricing and student signup paths before subscribing.",
+      "eligibility": "Students, solo builders, app builders using Replit Agent.",
+      "category": ""
+    },
+    {
+      "title": "Zapier",
+      "url": "https://zapier.com/pricing",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "source": "Layer3Labs",
+      "discountInfo": "Zapier offers annual billing savings and says nonprofits get 15% off any paid plan, excluding pay-per-task charges.",
+      "description": "Choose annual billing or apply through Zapier for Nonprofits.",
+      "eligibility": "Nonprofits, small businesses automating repetitive tasks.",
+      "category": ""
+    },
+    {
+      "title": "Make",
+      "url": "https://www.make.com/en/pricing",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "source": "Layer3Labs",
+      "discountInfo": "Make advertises a 12-month free license for eligible NGOs through its NGO program.",
+      "description": "Apply through Make for NGOs.",
+      "eligibility": "NGOs, nonprofits, operations teams building workflow automation.",
+      "category": ""
+    },
+    {
+      "title": "ChatGPT Plus for Veterans (OpenAI)",
+      "url": "https://chatgpt.com/veterans-claim",
+      "sourceUrl": "https://www.layer3labs.io/ai-discounts",
+      "source": "Layer3Labs",
+      "discountInfo": "OpenAI, working with SheerID for verification, offers one full year of free ChatGPT Plus to eligible veterans and transitioning servicemembers, alongside example chats and a getting-started guide for job search, benefits, and relocation…",
+      "description": "Verify military or veteran status through SheerID at the official claim page.",
+      "eligibility": "Veterans and active-duty servicemembers preparing to separate from the military.",
+      "category": ""
+    }
+  ]
+}

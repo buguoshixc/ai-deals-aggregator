@@ -1,0 +1,18 @@
+{
+  "_note": "手写 fixture：不是模型输出，也不是真实录制。只用来证明评测工装能跑通（见 ai-eval.js 文件头）。键 = 金标准 item 的 id（xf-<dealId>）。",
+  "_label": "plumbing fixture（工装夹具）——mock 模式下臂 1 的指标不测模型质量",
+  "_cases": {
+    "all-correct": "xf-2eae0e246de2：三个断言（audience/benefitType/eligibilityDetail）全对且各有同名引文 → accepted",
+    "wrong-enum": "xf-9c12f13df3ba：audience=['students'] / benefitType=['free_stuff'] 不是合法枚举 → provider 层以 enum_invalid 拒掉",
+    "no-evidence": "xf-ebd47f6d2522：值抄对了但 evidence 为空 → 候选规则 R1 拒掉全部断言，missingEvidence 有数",
+    "false-certainty": "xf-62e3166acec0：金标准 unknown 的 creditCardRequired 被写成 false 且无引文 → falseCertainty + R1 拒绝",
+    "overclaim-with-quote": "xf-f22e3cd094ad：同样写 false，但给了带否定线索的引文 → 过确定性规则（可能标 needs_human），是真实的过度自信",
+    "missing-evidence-partial": "xf-5dedb9455508：两个字段有引文、claimRequirements 没有 → 部分断言进候选、部分被 R1 拒掉"
+  },
+  "xf-2eae0e246de2": "{\"audience\":[\"developer\"],\"benefitType\":[\"free_credits\",\"free_api\"],\"eligibilityDetail\":{\"identityVerificationRequired\":true,\"newUserOnly\":true},\"evidence\":[{\"field\":\"audience\",\"quote\":\"百度千帆大模型平台新用户免费额度\"},{\"field\":\"benefitType\",\"quote\":\"首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月\"},{\"field\":\"eligibilityDetail\",\"quote\":\"千帆平台新用户（需实名认证）\"}],\"confidence\":{\"audience\":0.9,\"benefitType\":0.9,\"eligibilityDetail\":0.9}}",
+  "xf-9c12f13df3ba": "{\"audience\":[\"students\"],\"benefitType\":[\"free_stuff\"],\"eligibilityDetail\":{\"studentRequired\":true},\"evidence\":[{\"field\":\"audience\",\"quote\":\"百度千帆大模型平台新用户免费额度\"},{\"field\":\"eligibilityDetail\",\"quote\":\"千帆平台新用户（需实名认证）\"}],\"confidence\":{\"audience\":0.5}}",
+  "xf-ebd47f6d2522": "{\"audience\":[\"developer\"],\"benefitType\":[\"free_credits\",\"free_api\"],\"evidence\":[],\"confidence\":{\"audience\":0.8}}",
+  "xf-62e3166acec0": "{\"claimRequirements\":{\"creditCardRequired\":false},\"confidence\":{\"creditCardRequired\":0.6}}",
+  "xf-f22e3cd094ad": "{\"claimRequirements\":{\"creditCardRequired\":false},\"evidence\":[{\"field\":\"claimRequirements\",\"quote\":\"智谱开放平台（bigmodel.cn）注册并创建 API Key 后可直接调用，无需单独领取额度。\"}],\"confidence\":{\"creditCardRequired\":0.7}}",
+  "xf-5dedb9455508": "{\"benefitType\":[\"free_model\",\"free_api\"],\"eligibilityDetail\":{\"identityVerificationRequired\":true,\"newUserOnly\":false},\"claimRequirements\":{\"creditCardRequired\":false},\"evidence\":[{\"field\":\"benefitType\",\"quote\":\"官方模型列表标注为免费模型，调用价格 0 元\"},{\"field\":\"eligibilityDetail\",\"quote\":\"所有注册开发者（需实名认证开通）\"}],\"confidence\":{\"benefitType\":0.85}}"
+}

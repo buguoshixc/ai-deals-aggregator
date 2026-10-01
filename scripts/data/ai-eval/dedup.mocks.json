@@ -1,0 +1,16 @@
+{
+  "_note": "手写 fixture：不是模型输出，也不是真实录制。只用来证明臂 2 的工装能跑通（见 ai-eval.js 文件头）。键 = dedup.pairKey(a,b)（两个 dealId 排序后用 ~ 连接）。",
+  "_label": "plumbing fixture（工装夹具）——mock 模式下臂 2 的指标不测模型质量",
+  "_cases": {
+    "df-01-same-vendor": "Getsolved 整站入口 vs Getsolved AI Detector：同厂商、不同产品。夹具故意答对（same_vendor）",
+    "df-02-same-offer": "百度千帆同一页上的两个模型记录，优惠文案逐字相同：按标注规则算同一优惠",
+    "df-03-same-product-different-offer": "火山 Doubao-Seedream 图像生成免费额度：同厂商同产品线、文案不同（4.5 写 200 张、4.0 写 200 张），按标题里的产品名不同归为不同产品",
+    "df-04-unrelated": "Google Gemini vs Canva：厂商、产品、URL、优惠四项全无交集",
+    "df-05-dangerous": "同厂商同产品线的两个智谱模型：真实答案按标注规则是 same_vendor，夹具**故意答成 same_offer**，用来验证「最危险的错误」计数真的会亮"
+  },
+  "8583e9860d88~c3d6bd34ebfe": "{\"relation\":\"same_vendor\",\"confidence\":0.8,\"reason\":\"同厂商 Getsolved，但一条是整站入口、一条是 AI Detector 这个具体产品\",\"evidence\":[\"same vendor: Getsolved\",\"different product\"]}",
+  "2eae0e246de2~9c12f13df3ba": "{\"relation\":\"same_offer\",\"confidence\":0.75,\"reason\":\"同厂商、同一官方页、优惠文案逐字相同（赠送 100万 Tokens）\",\"evidence\":[\"same official URL\",\"same benefit: 100万 Tokens\"]}",
+  "45ead69d60cc~7f8c32f6a327": "{\"relation\":\"same_product_different_offer\",\"confidence\":0.6,\"reason\":\"同厂商同系列的两个图像模型，各有一套免费额度记录\",\"evidence\":[\"same vendor: 火山引擎\",\"different model: Seedream-4.5 vs 4.0\"]}",
+  "4a875a435019~c789f0a090bf": "{\"relation\":\"unrelated\",\"confidence\":0.95,\"reason\":\"一个是 Google 的学生优惠页，一个是 Canva 的非营利组织计划，厂商与产品都不同\",\"evidence\":[\"different vendor\",\"different product\"]}",
+  "5dedb9455508~df1210f69a39": "{\"relation\":\"same_offer\",\"confidence\":0.55,\"reason\":\"同厂商、同属官方免费模型列表，但分别是图像与视频模型，信息不足以确定是否同一优惠\",\"evidence\":[\"same vendor: 智谱AI\",\"same benefit text: 官方模型列表标注为免费模型\"]}"
+}

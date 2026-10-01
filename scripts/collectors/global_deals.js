@@ -24,6 +24,11 @@ function headerLooksLikeDealTable(text) {
 
 async function collectLayer3Labs() {
   const html = await getText(PAGE_URL, { timeout: 20000 });
+  return parseLayer3Labs(html);
+}
+
+/** 纯解析（不碰网络）：v2.0 起与抓取分开，便于用最小 DOM 片段做 fixture 测试 */
+function parseLayer3Labs(html) {
   const $ = cheerio.load(html);
   const items = [];
 
@@ -70,6 +75,8 @@ module.exports = [
     id: 'layer3labs',
     name: 'Layer3Labs',
     region: 'global',
-    collect: collectLayer3Labs
+    collect: collectLayer3Labs,
+    parse: parseLayer3Labs,
+    fixture: 'layer3labs.deals'
   }
 ];

@@ -163,6 +163,20 @@
 | N4 不裁切 | ✅ | 既有断言（每张卡最后一个元素底边不越界）继续通过 |
 | S2/S3 续（2.29） | ✅ | 新增的收藏入口是 `<button data-facet="fav" aria-pressed>`（与其它 facet 同一套状态表达）；对比弹层与收藏视图的断言一律量**几何**（`display` / `getBoundingClientRect` / `:modal`）而不只量 `open` 属性；收藏视图里取消收藏会让卡片消失，焦点因此兜底到入口（键盘用户不会被扔回页首） |
 
+### v2.0 AI 辅助维护（2026-10-01 · 分支 `v2.0-ai-assisted-maintenance`）
+
+这一轮**没有动前端一个字节**（`verify --compare` 六项回归全过、产物 743.3 KB 与基线同量级）。
+按本规范「诚实性红线」（第 8 节）的口径，它对**内容侧规范**的补充是：
+
+| 规则 | 状态 | 怎么验的 / 实测值 |
+|---|---|---|
+| 「官方没写」不许变成确定结论 | ✅ 加强 | 这条原先是人的纪律；v2.0 把它变成**候选层的结构性规则**：没有同名逐字引文的断言一律 `invalid`（`ai-selftest` 牙 1）。无据的 `false` 降级 `needs_human` 并在审阅表单列（牙 3） |
+| 三态只能是 true / false / "unknown" | ✅ 加强 | 候选 schema 与生产契约同源（枚举从 `lib/audience.js` 派生，不复制字面量）；`null` 与字符串 `"true"` 已被断言拒绝（牙 2b/2c） |
+| 不许给自己盖有效性章 | ✅ 不变 | `provenance.STAMP_PATTERNS` 与 `classify` 的「长期有效」判据被 `ai/audit.js` **复用**而非重写；译文守卫另有 `permanent_invented`（原文没有长期/永久表述时，译文里不许出现「长期有效/永久」） |
+| AI 产物不得进入发布产物 | ✅ 新增 | 产物自检新增密钥扫描（`sk-` / `Bearer` / PEM 私钥等 14 类模式，命中即构建失败）；实测：dist 干净扫描 0 命中，注入一个 `sk-` 形状串后同一次调用报出 |
+| AI 参与痕迹要可追溯 | ✅ 新增 | `scripts/data/ai-applied-log.json` 记 provider / model / promptVersion / inputHash / 候选 id / 人工 note。**deal 记录本身不加字段、不上前端** —— 契约不变，是否在前端标注留给下一轮 |
+| 维护动作要说得出"改了什么" | ✅ 新增 | `ai-apply` 落地后自动跑离线重建并跑 `validate --strict`，红了**整批回滚**；`rebuild-deals.js` 保持盘上键序，避免出现"改一个字段、45 条记录重排"的不可读 diff |
+
 ### v1.2 按需求找优惠（2026-09-29 · 分支 `v1.2-intent-first-home`）
 
 首页新增一行「按需求找优惠」入口 + 10 条 `/need/<slug>/` 静态落地页。完整报告见

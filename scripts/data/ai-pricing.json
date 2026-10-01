@@ -1,0 +1,28 @@
+{
+  "_note": [
+    "AI 成本估算的**价目表**（人工维护，与 deals 数据无关）。",
+    "为什么单独一个文件：价格是**外部事实**，会变，而且我们不愿意在代码里写死一个可能过期的数字。",
+    "单位：美元 / 100 万 token。",
+    "只有 verified=true 的条目会被用来估算成本；其余一律按「成本未知」记账（token 数照记）。",
+    "想临时用未复核的价目，设 AI_ALLOW_UNVERIFIED_PRICING=1 —— 报表里会标明这些是未复核的估算。"
+  ],
+  "_template": {
+    "模型名（与 API 返回的 model 字段一致或为其前缀）": {
+      "in": 0.0,
+      "out": 0.0,
+      "verified": false,
+      "asOf": "YYYY-MM-DD",
+      "source": "官方价目页 URL"
+    }
+  },
+  "_entries": {
+    "gpt-4o-mini": {
+      "in": 0.15,
+      "out": 0.6,
+      "verified": false,
+      "asOf": "2026-10-01",
+      "source": "https://openai.com/api/pricing/",
+      "why_unverified": "本轮实现时未能联网复核价目，留在这里只是给出**条目形状**，不参与默认估算"
+    }
+  }
+}

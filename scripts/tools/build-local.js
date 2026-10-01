@@ -32,6 +32,7 @@ const changes = require('../lib/changes');
 const feeds = require('../lib/feeds');
 const landing = require('../lib/landing');
 const seo = require('../lib/seo');
+const secretScan = require('../lib/secret-scan');
 
 const ROOT = path.join(__dirname, '..', '..');
 const outArg = process.argv.find(a => a.startsWith('--out='));
@@ -2272,6 +2273,21 @@ function selfCheck(built) {
     const ok = fs.existsSync(path.join(OUT, file));
     console.log(`  ${ok ? '✓' : '✗'} ${file}`);
     if (!ok) failed++;
+  }
+
+  // ---- 密钥扫描（v2.0）----
+  // 为什么放在"产物自检"而不是某个 AI 脚本里：**发布出去的那一份**才是最后一道防线。
+  // 候选文件、缓存、账本都在 gitignore 的 .ai-cache/ 里，但一个手滑把 key 拼进
+  // 生成产物（或者把带 key 的调试串留在数据里），从这里漏出去就是永久的、公开的。
+  // 扫的是整个暂存目录而不是固定清单：将来新增产物文件自动纳入，不需要记得改清单。
+  {
+    const hits = secretScan.scanFiles([OUT]);
+    if (hits.length) {
+      fail(`产物里出现疑似密钥（${hits.length} 个文件）：` +
+        hits.map(item => `${path.relative(OUT, item.file)}[${[...new Set(item.hits.map(h => h.id))].join(',')}]`).join(' / '));
+    } else {
+      console.log('  ✓ 密钥扫描：产物里没有 API key / token / 私钥形状的串');
+    }
   }
 
   // logo 资产：目录存在、文件数与 manifest 对得上、CSS 里每条规则都有对应文件

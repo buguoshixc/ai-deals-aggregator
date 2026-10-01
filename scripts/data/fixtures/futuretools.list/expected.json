@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "source": "futuretools",
+  "sourceName": "Futuretools",
+  "fixture": "futuretools.list",
+  "sourceUrl": "https://www.futuretools.io/",
+  "capturedAt": "2026-10-01",
+  "trimmed": "前 6 个 `a[href^=\"/tools/\"]` 卡片（保留其 p.text-sm / p.text-xs 子节点）",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 6,
+  "items": [
+    {
+      "title": "Ankon AI",
+      "category": "Generative Video",
+      "pageUrl": "https://futuretools.io/tools/ankon-ai-kos341"
+    },
+    {
+      "title": "Cliphi",
+      "category": "Social Media",
+      "pageUrl": "https://futuretools.io/tools/cliphi-w0gfbv"
+    },
+    {
+      "title": "Star By Face",
+      "category": "AI Detection",
+      "pageUrl": "https://futuretools.io/tools/star-by-face"
+    },
+    {
+      "title": "ChatGPT",
+      "category": "Chat · Generative Code",
+      "pageUrl": "https://futuretools.io/tools/chatgpt-openai"
+    },
+    {
+      "title": "Klarent",
+      "category": "Automation & Agents · Generative Code",
+      "pageUrl": "https://futuretools.io/tools/klarent-15bc54ee"
+    },
+    {
+      "title": "Copilot 3D",
+      "category": "Generative Art",
+      "pageUrl": "https://futuretools.io/tools/copilot-3d"
+    }
+  ]
+}

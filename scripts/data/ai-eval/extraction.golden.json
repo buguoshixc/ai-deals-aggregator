@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "builtAt": "2026-09-30T17:38:44Z",
+  "note": "金标准来源：deals.json 中带六字段的记录（v1.1 人工策展确认值），不是模型输出，也不是另一轮判断。 记录由写死的 id 清单选定（共 6 条），与 extraction.mocks.json 的键一一对应；构建期会断言这件事。 评测输入 = extract.recordText(deal) 截到 --max-chars 上限，即我们已提交的记录文本本身。 gold 只记录记录里真实存在的字段；缺失的键一律视为 unknown（三态语义）。",
+  "items": [
+    {
+      "id": "xf-2eae0e246de2",
+      "dealId": "2eae0e246de2",
+      "title": "ERNIE-4.5-Turbo-128K 新用户免费额度",
+      "sourceUrl": "https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg",
+      "region": "cn",
+      "gold": {
+        "audience": [
+          "developer"
+        ],
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "availability": {
+          "chinaUsable": true
+        }
+      }
+    },
+    {
+      "id": "xf-9c12f13df3ba",
+      "dealId": "9c12f13df3ba",
+      "title": "ERNIE-4.5-Turbo-32K 新用户免费额度",
+      "sourceUrl": "https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg",
+      "region": "cn",
+      "gold": {
+        "audience": [
+          "developer"
+        ],
+        "benefitType": [
+          "free_credits",
+          "free_api"
+        ],
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": true
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "availability": {
+          "chinaUsable": true
+        }
+      }
+    },
+    {
+      "id": "xf-ebd47f6d2522",
+      "dealId": "ebd47f6d2522",
+      "title": "GLM-4.7-Flash 免费模型",
+      "sourceUrl": "https://docs.bigmodel.cn/cn/guide/models/free/glm-4.7-flash",
+      "region": "cn",
+      "gold": {
+        "audience": [
+          "developer"
+        ],
+        "benefitType": [
+          "free_model",
+          "free_api"
+        ],
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "availability": {
+          "chinaUsable": true
+        }
+      }
+    },
+    {
+      "id": "xf-62e3166acec0",
+      "dealId": "62e3166acec0",
+      "title": "GLM-4V-Flash 免费模型",
+      "sourceUrl": "https://docs.bigmodel.cn/cn/guide/models/free/glm-4v-flash",
+      "region": "cn",
+      "gold": {
+        "audience": [
+          "developer"
+        ],
+        "benefitType": [
+          "free_model",
+          "free_api"
+        ],
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "availability": {
+          "chinaUsable": true
+        }
+      }
+    },
+    {
+      "id": "xf-f22e3cd094ad",
+      "dealId": "f22e3cd094ad",
+      "title": "GLM-4.1V-Thinking-Flash 免费模型",
+      "sourceUrl": "https://docs.bigmodel.cn/cn/guide/models/free/glm-4.1v-thinking-flash",
+      "region": "cn",
+      "gold": {
+        "audience": [
+          "developer"
+        ],
+        "benefitType": [
+          "free_model",
+          "free_api"
+        ],
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "availability": {
+          "chinaUsable": true
+        }
+      }
+    },
+    {
+      "id": "xf-5dedb9455508",
+      "dealId": "5dedb9455508",
+      "title": "CogView-3-Flash 免费模型",
+      "sourceUrl": "https://docs.bigmodel.cn/cn/guide/models/free/cogview-3-flash",
+      "region": "cn",
+      "gold": {
+        "audience": [
+          "developer"
+        ],
+        "benefitType": [
+          "free_model",
+          "free_api"
+        ],
+        "eligibilityDetail": {
+          "identityVerificationRequired": true,
+          "newUserOnly": false
+        },
+        "claimRequirements": {
+          "manualApplication": false,
+          "accountRequired": true
+        },
+        "availability": {
+          "chinaUsable": true
+        }
+      }
+    }
+  ]
+}
