@@ -3148,7 +3148,21 @@ GitHub Copilot Pro · Cursor Pro。每条都来自本次实际抓取并读到的
 
 - **契约** `docs/SCHEMA-v2.1.md` §17（页面交互契约）· **报告**
   `research/v2.2-coding-plan-compare-report.md`。
-- **未合并、未推送** —— 等你点头。
+- **✅ 已上线（2026-10-01，按用户的「推送上线」）**：分支 `v2.2-coding-plan-compare`
+  （提交 `122c272`，rebase 到 `cf3bf13` 之后）→ PR **#15** → `gate` **success**
+  （[run 36820257952](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36820257952)）
+  → 合并 **`18f782b`**（merge commit）→ master 上 `Verify site (gate)` 与
+  `Deploy to GitHub Pages` **双双 success**
+  （[deploy run 36820258045](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/36820258045)）。
+  **线上冒烟实测（真浏览器打线上地址，不是按上次结果推断）**：`/plans/coding/` **200**
+  （133,710 字节，与本地 `dist/` 产物同源）· 载荷 1 段、详情模板 9 个、**占位符残留 0** ·
+  初始「显示 9 / 共 9 条套餐」· 平台筛选现场与线上 `plans.json` 对账一致（codebuddy 1/1）·
+  搜索「灵码」命中 1 条 · 月费升序 `¥0 ¥49 ¥59 ¥99 ¥99 ¥99 $10 $20 未标注`（不可比较恒在末尾 +
+  币种分组）· 详情 `colspan 11/11` 且含官方链接 · 390px 溢出 0px、平台列 16 / 套餐列 94、只有一张表 ·
+  **无 JS 时 9 行 / 9 个官方链接 / 0 个控件 / 正文 3352 字** · **线上 JS 错误 0** ·
+  首页顶栏「套餐对比」入口 1 个、页脚 2 个 · `sitemap.xml` **111** 条 `<loc>` ·
+  `/plans.json` `/changes/` `/status/` `/feeds/` `/vendor/zhipu/` `/category/api/` `/feed.xml`
+  全部 **200**。
 - **本阶段刻意没做**（题面 §15）：综合推荐 / 星级评分 / benchmark / 模型能力排行 / API plan /
   价格预测 / AI 推荐套餐；另加：筛选组合 URL、独立 plan 详情页、平台页（`providers.json` 里的
   `slug` 继续闲置）、汇率与跨币种比较、`plans.json` 数据扩充、全站导航改造。
