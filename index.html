@@ -65,6 +65,7 @@
       --ring: rgba(15, 23, 42, .07);
 
       --brand: #3b5bfd;
+      --brand-ink: #2348c4;   /* 实心品牌色块的 hover 一档（白字压它 7.5:1） */
       --deal: #d92d4b;
       --deal-ink: #9f1239;   /* 玫红底（--dealsoft）上的文字：--deal 本身只有 4.32:1 */
       --dealsoft: #fff1f4;
@@ -149,6 +150,7 @@
       --ring: rgba(255, 255, 255, .07);
 
       --brand: #7c93ff;
+      --brand-ink: #8fb0ff;   /* 实心品牌色块的 hover 一档（--on-accent 深字压它 8.99:1） */
       --deal: #ff6b81;
       --deal-ink: #ff8f9f;
       --dealsoft: #2a1418;
@@ -186,7 +188,7 @@
         color-scheme: dark;
         --bg: #0b0d10; --card: #14171c; --ink: #e8ecf2; --ink2: #b6bec9; --mut: #8d97a5;
         --mut-deco: #6b7280; --line: #242a33; --line2: #1c2129; --ring: rgba(255, 255, 255, .07);
-        --brand: #7c93ff; --deal: #ff6b81; --deal-ink: #ff8f9f; --dealsoft: #2a1418;
+        --brand: #7c93ff; --brand-ink: #8fb0ff; --deal: #ff6b81; --deal-ink: #ff8f9f; --dealsoft: #2a1418;
         --cn: #3ddc97; --cnbg: #10231d; --gl: #8fb0ff; --glbg: #141c33; --ok: #3ddc97; --warn: #ffab6b;
         --t1: #3ddc97; --t2: #b18cff; --t3: #7aa2ff; --t4: #ffab6b; --t5: #8d97a5;
         --t1-ink: #3ddc97; --t2-ink: #b18cff;
@@ -252,14 +254,22 @@
            而且是 flex 行里紧跟 .seg 的一项 —— 视觉上独立成块，不与品牌抢位。
          · **名字**：从「套餐对比」改成与页面 h1 同名的「AI Coding 套餐对比」
            （`PLANS_HEADING`，唯一出处），点之前就知道点进去是什么。
+         · **实心药丸**：描边款在顶栏里跟旁边那三枚控件长得太像，改成实心品牌色。
+           填充 `--brand`、文字 `--on-accent` —— 这两个令牌的对比度在设计令牌里**本来就算过**
+           （亮色主题白字压 #3b5bfd = 5.12:1；暗色主题深字压 #7c93ff = 6.85:1，
+           后者原本就写在 `--on-accent` 的注释里）。所以这里不需要新色，只需要不回退。
+           hover 走 `--brand-ink`（品牌色再深/再浅一档，两档都算过）。
          · ⚠️ 宽度比原来多约 80px：顶栏是**不折行**的 flex 行，所以要守住"任何宽度都不横向溢出"。
            实测 761–1920px 逐档量过（见 verify-site.js §19 的宽度扫描）。 */
     .plansnav {
-      flex: none; font-size: var(--fs-md); color: var(--brand); text-decoration: none; white-space: nowrap;
-      border: 1px solid var(--line); border-radius: var(--r-sm); padding: 6px 12px;
-      transition: border-color var(--t-fast) var(--e-std), color var(--t-fast) var(--e-std);
+      flex: none; font-size: var(--fs-md); font-weight: 600; text-decoration: none; white-space: nowrap;
+      background: var(--brand); color: var(--on-accent);
+      border: 1px solid var(--brand); border-radius: var(--r-sm); padding: 6px 12px;
+      transition: background-color var(--t-fast) var(--e-std), border-color var(--t-fast) var(--e-std);
     }
-    .plansnav:hover { border-color: var(--brand); color: var(--brand); }
+    .plansnav:hover { background: var(--brand-ink); border-color: var(--brand-ink); }
+    /* 焦点环用 --brand：药丸本身已经是品牌色，深色主题下 --brand 是浅蓝，在深底上看得见 */
+    .plansnav:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
     .search {
       flex: 1; max-width: 440px; display: flex; align-items: center; gap: var(--s2);
