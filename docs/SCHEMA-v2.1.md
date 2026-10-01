@@ -486,3 +486,80 @@ AI（`scripts/ai/**`）**完全没有参与**本阶段的数据判定：`curated
 所以正常数据上这一行没有作用 —— 它挡的是"数据被绕过"的那一种：
 把 requests / 限速 / 用量池显示成一个 Token 单价，是这一页**最坏**的错（读者会拿它去比"谁更便宜"），
 而多加一个条件的代价只有一行。`plans-selftest` 有一条牙专门验它。
+
+---
+
+## 17. 页面交互契约（v2.2）
+
+v2.1 的页面是**预渲染的静态表**；v2.2 在同一张表上加了筛选 / 搜索 / 排序 / 行内展开。
+数据契约（`plans.json`）**一个字节都没改** —— 这一节记的是"页面怎么用这份数据"。
+
+### 17.1 三条不变的承诺
+
+1. **静态表仍是全部内容**。无 JS 时：9 行 11 列、每条一个官方链接、正文 3352 字，且页面上
+   **零个** `button` / `select` / `input`（控件整块由 JS 建，不给"点了没反应"的暗示）。
+2. **一套数据模板**。桌面与手机是同一张 `.ptable`（真浏览器断言 `document.querySelectorAll('.ptable').length === 1`）；
+   窄屏靠横滚 + 前两列 sticky，不另做卡片视图。
+3. **不为筛选组合生成 URL**。状态只活在内存里，`location.search` 始终为空。
+
+### 17.2 交互载荷（页面自己的第二事实来源）
+
+```html
+<script type="application/json" id="plans-compare-data">{…}</script>
+```
+
+| 字段 | 含义 |
+|---|---|
+| `schema` / `core` | 载荷版本 / `plans-compare.js` 的 `CORE_VERSION` |
+| `count` / `columns` | 行数 / 列数（详情行 `colspan` 取自它，与 `<th>` 数逐一对账） |
+| `dimensions` | 七个维度：`provider` / `model` / `price` / `quotaType` / `region` / `promo` / `sort`，每项 `{key,label}`（`price` 另带 `currency/period/min/max`） |
+| `rows[]` | `id · index · provider · region · quotaType · period · currency · regular · promo · unit · unitCurrency · models · modelsMissing · updated · search` |
+
+- **只放机器键**：显示文本留在表格单元格里，不进载荷（不制造第二份可见事实）。
+- 选项清单**只含有命中的档位**（零计数入口不渲染，与首页 `facetBarHtml` 同源）。
+- 搜索 `search` = 平台 key + 显示名 + **别名**（`providers.json`）+ 套餐名 + 模型名 +
+  额度类型标签 + 地区标签，统一走 `normalize()`（NFKC + 折叠空白 + 小写），**子串**匹配、按空白切词 AND。
+- `unit` 的 fail-closed 与 `pg.planRowOf` 同源：只有 `quota.type === 'tokens'` 且
+  `derivedMetrics.nominalUnitPrice` 非空才有数字。
+- 载荷在构建期与 `dist/plans.json` **逐字段对账**；`dist/plans.json` 与源逐字节相同的旧断言不变。
+
+### 17.3 筛选与排序规则
+
+| 维度 | 规则 |
+|---|---|
+| 平台 / 地区 / 额度类型 | 全等 |
+| 模型 | 模型名精确命中；保留键 `__none` = 「模型未标注」（`supportedModels` 为 null） |
+| 价格区间 | **只按正常月费**，同币种 + 同周期 + `regular` 落在半开区间 `[min,max)`；原价未标注或非月付的行不入选 |
+| 活动价 | `yes` = `promoPrice` 非 null；`no` = 为 null |
+| 搜索 | 见上（子串 + 切词 AND） |
+
+- 价格阶梯是**声明式常量**（`PRICE_LADDER`，本页唯一的任意值）：`CNY:[0,50,100,200]`、
+  `USD:[0,10,20,50]`、`HKD:[0,50,100,200]`、`EUR/GBP:[0,10,20,50]`、`SGD:[0,10,50,100]`、
+  `JPY:[0,1000,3000,10000]`；末档开区间；只对存在的币种生成、只保留有命中的档位。
+- **排序**（`default` / `regular` / `promo` / `unit` / `updated`）：
+  ① `null` 恒在可比较项之后，`asc`/`desc` 都不越过（绝不折算成 0）；
+  ② 价格排序与 `unit` 排序**按币种分组**，组序 = 该币种在规范序里首次出现的位置，`dir` 反转也不互换；
+  ③ 恒为全序且稳定（平局按 `index`）；
+  ④ `unit` 只在真有可比行时才作为档位出现（本期 0 条 ⇒ 页面不给这个按钮，改为一句话说明原因）。
+- 计数语义与首页 `facetModel` 一致：按钮上的数字 = 「点下去会看到多少条」（其余维度保持当前状态）。
+
+### 17.4 详情：行内展开，不做独立详情页
+
+`<template data-detail-for="<plan id>">` 承装每条套餐的溯源（首次收录 / 最近核对 / 来源类型 /
+官方定价页 / 额度说明 / 每条官方原文引文的出处与抓取日期）。`<template>` 内容**惰性**：
+无 JS 时一个字节都不渲染，所以既没有死按钮，也不需要 `hidden` 那类假隐藏。
+**不生成 `/plans/<id>/`**：表里已有 11 列事实，剩下能说的只有"这条事实是什么时候、从哪个官方页核对的"，
+撑不起 9 张独立页面（其中 6 条连模型清单都没有）。
+
+### 17.5 断言落在哪
+
+| 位置 | 查什么 |
+|---|---|
+| `plans-selftest` ⑬ | 载荷逐字段等于 `plans.json`、选项与行键互相对账、模型未标注档、`columns == <th>` 数 |
+| `plans-selftest` ⑭ | 筛选 / 排序语义（含"把 null 当 0"的对照实现、币种分组、`rawTokens` 型夹具证明 `unit` 排序活着） |
+| `plans-selftest` ⑮ | 七条牙：硬塞单价 / 换价 / 删行 / 非法平台键 / 预渲染塞控件 / null 当 0 / 跨币种混排 —— 每条都实跑变红 |
+| 构建期产物自检 | **从磁盘回读**整页再跑一遍（v2.1 的位置），另加"内联脚本 == `lib/plans-compare.js` 字节"与详情模板计数 |
+| `verify-site` §19 | 真浏览器：8 个平台逐个对账、"有/无活动价"、模型未标注、3 类额度、4 档价格（含币种不得混）、
+4 个搜索词、两种排序方向（含不可比较恒在末尾）、详情展开/收起、390/360px sticky 与溢出、粘性列链接可点、
+无 JS 时 0 控件、筛选不改地址 |
+

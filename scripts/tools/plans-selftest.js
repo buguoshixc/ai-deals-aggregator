@@ -538,11 +538,13 @@ section('⑪ 边界：谁可以引用 plans，谁不可以');
   check('采集 / 合并 / 历史 / 变化 / 订阅链路完全不引用 plans', chainHits.length === 0, chainHits.join(' | '));
 
   const indexSource = stripComments(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8'));
-  check('前端 index.html 只用页脚占位符引用套餐页（不直接读 plans.json）',
-    indexSource.includes('__PLANS_HREF__') &&
-    !indexSource.includes('plans.json') && !indexSource.includes('curated_plans') &&
-    (indexSource.match(/__PLANS_HREF__/g) || []).length === 1,
-    `占位符 ${(indexSource.match(/__PLANS_HREF__/g) || []).length} 个`);
+  const plansHrefs = (indexSource.match(/__PLANS_HREF__/g) || []).length;
+  check('前端 index.html 只用路由占位符引用套餐页（不直接读 plans.json）',
+    plansHrefs === 2 &&
+    !indexSource.includes('plans.json') && !indexSource.includes('curated_plans'),
+    // v2.2 起是**两处**：共享页脚那一行（每一种深度都解析）+ 顶栏那一枚并列入口。
+    // 数量写死是刻意的 —— 多出第三处时应该有人停下来想一下它是不是又一条要维护的入链。
+    `占位符 ${plansHrefs} 个（页脚 + 顶栏）`);
 
   // 正向：构建期**必须**引用它，否则上面那些"不许引用"的断言会因为"整条线根本不存在"而假绿
   const buildSource = stripComments(fs.readFileSync(path.join(ROOT, 'scripts/tools/build-local.js'), 'utf8'));
@@ -632,6 +634,289 @@ section('⑫ 套餐页：页面上的数字必须是数据里的数字');
     check('【牙】数据里出现「性价比」→ 数据层断言必须变红',
       page.assertDataHonesty(tampered).some(problem => problem.includes('性价比')),
       page.assertDataHonesty(tampered).join(' | '));
+  }
+}
+
+/* ================================================================== */
+
+section('⑬ 交互载荷：构建期算出来的每一个键都要有出处');
+
+const compare = require('../lib/plans-compare');
+
+{
+  const store = planSchema.loadPlans(planSchema.PLANS_FILE);
+  const plans = store.plans;
+  const page = require('../lib/plans-page');
+  const html = page.plansPageBody(plans);
+  const payload = page.comparePayloadOf(html).payload;
+
+  check('载荷能被解析出来，且带 schema / core 版本',
+    Boolean(payload) && payload.schema === 1 && typeof payload.core === 'string',
+    payload ? `schema=${payload.schema} core=${payload.core}` : '读不到载荷');
+  check('载荷行数 == 表格行数 == plans.json 条数',
+    payload.rows.length === page.rowHtmlById(html).size && payload.rows.length === plans.length,
+    `${payload.rows.length} / ${page.rowHtmlById(html).size} / ${plans.length}`);
+  check('载荷 columns == 列模型长度 == 表头列数',
+    payload.columns === page.PLANS_COLUMNS.length &&
+    (html.match(/<th scope="col"/g) || []).length === page.PLANS_COLUMNS.length,
+    `columns=${payload.columns} 列模型=${page.PLANS_COLUMNS.length} 表头=${(html.match(/<th scope="col"/g) || []).length}`);
+
+  // 逐条对账 + 单价的 fail-closed（这层错了，表格看上去完全正常）
+  check('载荷逐字段等于 plans.json，且交互层断言本身无问题',
+    page.assertCompareHonesty(html, plans).length === 0,
+    page.assertCompareHonesty(html, plans).slice(0, 3).join(' | '));
+
+  // 选项清单只含有命中的档位（零计数入口不渲染）
+  const hitCount = (dimension, value) => payload.rows.filter(row =>
+    compare.matches(row, Object.assign(compare.emptyState(), { [dimension]: value }), payload.dimensions.price)).length;
+  const zeroOptions = [];
+  for (const dimension of ['provider', 'region', 'quotaType', 'model']) {
+    for (const item of payload.dimensions[dimension]) {
+      if (!hitCount(dimension, item.key)) zeroOptions.push(`${dimension}:${item.key}`);
+    }
+  }
+  for (const bucket of payload.dimensions.price) {
+    if (!hitCount('price', bucket.key)) zeroOptions.push(`price:${bucket.key}`);
+  }
+  check('所有筛选档位都至少命中 1 行（没有点了空空如也的入口）', zeroOptions.length === 0, zeroOptions.join(' | '));
+
+  // 排序档位：unit 只在真有可比行时出现 —— 本阶段的真实数据里 0 条可计算
+  const sortKeys = payload.dimensions.sort.map(item => item.key);
+  const unitRows = payload.rows.filter(row => typeof row.unit === 'number').length;
+  check('排序档位与「有没有可比项」一致（不可比较时不给这个排序）',
+    sortKeys.includes('unit') === (unitRows > 0),
+    `unit 可比较 ${unitRows} 条 / 档位 [${sortKeys.join(', ')}]`);
+  check('本期真实数据里名义 Token 单价 0 条可计算，页面上写明了原因',
+    unitRows === 0 && html.includes(page.NO_UNIT_SORT_NOTE),
+    `可比较 ${unitRows} 条`);
+
+  // 价格档：同币种 + 半开区间 + 只认正常月费
+  const cnyBucket = payload.dimensions.price.find(bucket => bucket.key === 'CNY-50-100');
+  const cnyHits = payload.rows.filter(row =>
+    compare.matches(row, Object.assign(compare.emptyState(), { price: 'CNY-50-100' }), payload.dimensions.price));
+  check('价格档只命中同币种、同周期、原价落在 [min,max) 里的行',
+    Boolean(cnyBucket) && cnyHits.length > 0 && cnyHits.every(row =>
+      row.currency === 'CNY' && row.period === 'monthly' && row.regular >= 50 && row.regular < 100),
+    `命中 ${cnyHits.length} 行`);
+  check('价格档不会把原价未标注 / 非月付的行捞进来',
+    cnyHits.every(row => typeof row.regular === 'number') &&
+    payload.rows.filter(row => row.regular === null).every(row =>
+      !compare.matches(row, Object.assign(compare.emptyState(), { price: 'CNY-50-100' }), payload.dimensions.price)));
+
+  // 搜索：中文显示值、平台别名、模型名都要覆盖
+  const hay = id => payload.rows.find(row => row.id === id).search;
+  const findByName = text => payload.rows.filter(row =>
+    compare.matches(row, Object.assign(compare.emptyState(), { q: text }), payload.dimensions.price));
+  check('搜索覆盖平台中文显示名与别名（智谱 / 灵码 / copilot）',
+    findByName('智谱').length > 0 && findByName('灵码').length > 0 && findByName('copilot').length === 1,
+    `智谱 ${findByName('智谱').length} · 灵码 ${findByName('灵码').length} · copilot ${findByName('copilot').length}`);
+  check('搜索覆盖模型名，且大小写与全角都能搜到',
+    findByName('glm').length >= 2 && JSON.stringify(findByName('ｇｌｍ').map(row => row.id)) === JSON.stringify(findByName('glm').map(row => row.id)),
+    `glm ${findByName('glm').length} 条`);
+  check('搜索是子串匹配、不做模糊（搜一个不存在的词得到 0 条）', findByName('zzz-不存在').length === 0);
+
+  // 详情模板：每条一个，引文逐条对上
+  const templates = [...html.matchAll(/<template data-detail-for="([^"]+)"/g)].map(m => m[1]);
+  check('每条套餐恰好一个详情模板',
+    templates.length === plans.length && plans.every(plan => templates.includes(plan.id)),
+    `${templates.length} 个 / ${plans.length} 条`);
+
+  // 无 JS 时的死控件：预渲染的标记里一个控件都不能有
+  const markup = page.markupOnly(html);
+  check('预渲染标记里零交互控件（无 JS 时不给可点暗示）',
+    !/<button|<select|<input|data-facet=|data-sort=|data-reset/.test(markup));
+  check('<noscript> 明确说出"没有 JS 时看到的就是全部"', /<noscript>[\s\S]*全部 \d+ 条套餐/.test(html));
+}
+
+/* ================================================================== */
+
+section('⑭ 筛选 / 排序语义（require 浏览器里的同一份 core）');
+
+{
+  const page = require('../lib/plans-page');
+  const store = planSchema.loadPlans(planSchema.PLANS_FILE);
+  const plans = store.plans;
+  const payload = page.planComparePayloadOf(plans);
+  const rows = payload.rows;
+  const buckets = payload.dimensions.price;
+  const state = patch => Object.assign(compare.emptyState(), patch);
+
+  // ---- 命中判定 ----
+  const trae = rows.filter(row => row.provider === 'trae');
+  check('平台维度只命中该平台', compare.filterRows(rows, state({ provider: 'trae' }), buckets).length === trae.length,
+    `${compare.filterRows(rows, state({ provider: 'trae' }), buckets).length} vs ${trae.length}`);
+  check('「模型未标注」档只命中 supportedModels 为空的行',
+    compare.filterRows(rows, state({ model: compare.MODEL_NONE_KEY }), buckets)
+      .every(row => row.modelsMissing === true));
+  check('模型档只命中清单里真的列了该模型的行',
+    compare.filterRows(rows, state({ model: 'GLM-5.3' }), buckets).every(row => row.models.includes('GLM-5.3')));
+  check('活动价档是二分的：有 / 无互补且合起来是全集',
+    compare.filterRows(rows, state({ promo: 'yes' }), buckets).length +
+    compare.filterRows(rows, state({ promo: 'no' }), buckets).length === rows.length);
+  check('地区档只命中该地区', compare.filterRows(rows, state({ region: 'cn' }), buckets)
+    .every(row => row.region === 'cn'));
+  check('多个维度是 AND（Trae + 有活动价 只剩 1 条）',
+    compare.filterRows(rows, state({ provider: 'trae', promo: 'yes' }), buckets).length === 1);
+  check('筛选不会改变行的内容（只按载荷键判定）',
+    JSON.stringify(compare.filterRows(rows, state({ provider: 'trae' }), buckets)) === JSON.stringify(trae));
+
+  // ---- 计数语义：点下去会看到多少条 ----
+  const before = compare.filterRows(rows, state({}), buckets).length;
+  check('计数与"点下去会看到多少条"一致（空状态下等于全集）',
+    compare.countFor(rows, state({}), buckets, 'provider', 'trae') === trae.length && before === rows.length);
+  check('已选中那一档的计数恰好等于当前结果数',
+    compare.countFor(rows, state({ provider: 'trae' }), buckets, 'provider', 'trae') ===
+    compare.filterRows(rows, state({ provider: 'trae' }), buckets).length);
+
+  // ---- 排序：不可比较恒在末尾，且方向反转不越过 ----
+  const lastIsNull = (list, field) => {
+    const flags = list.map(row => typeof row[field] === 'number');
+    return flags.indexOf(false) === -1 || flags.lastIndexOf(true) < flags.indexOf(false);
+  };
+  for (const sort of ['regular', 'promo', 'unit']) {
+    for (const dir of ['asc', 'desc']) {
+      const list = compare.sortRows(rows, sort, dir);
+      check(`排序 ${sort}/${dir}：不可比较项全部排在可比较项之后`,
+        lastIsNull(list, sort === 'unit' ? 'unit' : sort), `${sort}/${dir}`);
+    }
+  }
+  check('排序返回新数组，且不改动传入的数组与行对象',
+    compare.sortRows(rows, 'regular', 'desc') !== rows &&
+    rows.every((row, index) => row.index === index) &&
+    JSON.stringify(compare.sortRows(rows, 'regular', 'desc').map(row => row.id).slice().sort()) ===
+    JSON.stringify(rows.map(row => row.id).slice().sort()));
+
+  // ---- 价格排序不跨币种 ----
+  const byRegularAsc = compare.sortRows(rows, 'regular', 'asc');
+  const comparableCurrencies = byRegularAsc.filter(row => typeof row.regular === 'number').map(row => row.currency);
+  const firstSeen = [];
+  for (const currency of comparableCurrencies) if (!firstSeen.includes(currency)) firstSeen.push(currency);
+  check('正常月费排序按币种分组（不跨币种比大小）',
+    JSON.stringify(comparableCurrencies) === JSON.stringify(
+      comparableCurrencies.slice().sort((a, b) => firstSeen.indexOf(a) - firstSeen.indexOf(b))),
+    comparableCurrencies.join(','));
+  check('最近更新排序默认最新在前，且全序稳定',
+    compare.sortRows(rows, 'updated', 'desc').map(row => row.updated)
+      .every((value, index, all) => index === 0 || all[index - 1] >= value));
+  check('默认排序恒等于规范序（不受任何状态影响）',
+    JSON.stringify(compare.sortRows(rows, 'default', 'asc').map(row => row.id)) ===
+    JSON.stringify(compare.sortRows(rows, 'default', 'desc').map(row => row.id)) &&
+    compare.sortRows(rows, 'default', 'asc').every((row, index) => row.index === index));
+
+  // ---- 与"把 null 当成 0"的对照实现逐项比对：两者必须给出不同的顺序 ----
+  {
+    const coerce = (list, field, dir) => list.slice().sort((a, b) => {
+      const va = typeof a[field] === 'number' ? a[field] : 0;
+      const vb = typeof b[field] === 'number' ? b[field] : 0;
+      return (va - vb) * (dir === 'desc' ? -1 : 1) || a.index - b.index;
+    }).map(row => row.id);
+    const honest = compare.sortRows(rows, 'regular', 'asc').map(row => row.id);
+    check('【牙】"把不可比较当 0"的实现会给出不同顺序（诚实实现可被区分）',
+      JSON.stringify(honest) !== JSON.stringify(coerce(rows, 'regular', 'asc')));
+    check('诚实实现里"原价未知"的行排在任何有价行之后',
+      honest.indexOf(rows.find(row => row.regular === null).id) > honest.findIndex(id =>
+        typeof rows.find(row => row.id === id).regular === 'number'));
+  }
+
+  // ---- 用一条人造的 tokens 行证明：可比较的行真的会参与排序，且排在不可比较项之前 ----
+  //      （真实数据 0 条可计算，所以这条路径必须用夹具证明它活着 —— 否则
+  //       "unit 排序"就是一段从没跑过、谁也不知道对不对的代码。）
+  {
+    const withUnit = JSON.parse(JSON.stringify(rows));
+    withUnit.push({
+      id: 'ffffffffffff', index: withUnit.length, provider: 'zhipu', region: 'cn', quotaType: 'tokens',
+      period: 'monthly', currency: 'CNY', regular: 60, promo: null, unit: 10, unitCurrency: 'CNY',
+      models: [], modelsMissing: true, updated: '2026-10-01', search: 'zhipu 智谱'
+    });
+    const list = compare.sortRows(withUnit, 'unit', 'asc');
+    check('有可比单价的行会参与「名义 Token 单价」排序并排在最前',
+      list[0].id === 'ffffffffffff' && compare.sortsOf(withUnit).includes('unit'));
+    check('可比较的行出现后，排序档位里才出现 unit',
+      !compare.sortsOf(rows).includes('unit') && compare.sortsOf(withUnit).includes('unit'));
+  }
+
+  // ---- 三维组合不会再造出第四个状态 ----
+  check('状态默认值 = 全部空 + default/asc，且 isDefault 只认它',
+    compare.isDefault(compare.emptyState()) && !compare.isDefault(state({ promo: 'yes' })) &&
+    !compare.isDefault(state({ sort: 'regular' })));
+  check('activeCount 把搜索也算作一项', compare.activeCount(state({ q: 'glm', promo: 'yes' })) === 2);
+}
+
+/* ================================================================== */
+
+section('⑮ 本阶段的牙：这些断言必须真的会红');
+
+{
+  const page = require('../lib/plans-page');
+  const store = planSchema.loadPlans(planSchema.PLANS_FILE);
+  const plans = store.plans;
+  const html = page.plansPageBody(plans);
+  const payload = page.comparePayloadOf(html).payload;
+
+  /** 把载荷改掉再塞回页面，然后看断言是否变红（返回问题列表） */
+  const withPayload = mutate => {
+    const next = JSON.parse(JSON.stringify(payload));
+    mutate(next);
+    const swapped = html.replace(
+      /<script type="application\/json" id="plans-compare-data">[\s\S]*?<\/script>/,
+      `<script type="application/json" id="plans-compare-data">${page.jsonForScript(next)}</script>`
+    );
+    return page.assertCompareHonesty(swapped, plans);
+  };
+
+  // 牙 1：给一条 credits 套餐硬塞单价
+  {
+    const problems = withPayload(next => { next.rows[0].unit = 0.0248; next.rows[0].unitCurrency = 'CNY'; });
+    check('【牙】给 credits 套餐硬塞名义 Token 单价 → 变红',
+      problems.some(p => p.includes('不可比较')), problems.slice(0, 2).join(' | '));
+  }
+  // 牙 2：正常价与活动价互换
+  {
+    const problems = withPayload(next => {
+      const row = next.rows.find(item => typeof item.promo === 'number');
+      const regular = row.regular; row.regular = row.promo; row.promo = regular;
+    });
+    check('【牙】把正常价格与活动价互换 → 变红',
+      problems.some(p => p.includes('regular')), problems.slice(0, 2).join(' | '));
+  }
+  // 牙 3：载荷少一行（页面显示条数与数据不一致）
+  {
+    const problems = withPayload(next => { next.rows.pop(); next.count = next.rows.length; });
+    check('【牙】载荷少一行（页面上报的条数与 plans.json 不一致）→ 变红',
+      problems.some(p => p.includes('≠ plans.json')), problems.slice(0, 2).join(' | '));
+  }
+  // 牙 4：某行的 provider 不在选项清单里 → 筛完会出现"不该出现的套餐"
+  {
+    const problems = withPayload(next => { next.rows[0].provider = 'not-registered'; });
+    check('【牙】某行的平台键不在筛选选项清单里 → 变红',
+      problems.some(p => p.includes('不在 provider 选项清单')), problems.slice(0, 2).join(' | '));
+  }
+  // 牙 5：往预渲染标记里塞一个筛选控件（无 JS 时的死按钮）
+  {
+    const problems = page.assertCompareHonesty(
+      html.replace('<div class="pctl" id="plans-compare"', '<button data-facet="provider" class="f"></button><div class="pctl" id="plans-compare"'),
+      plans);
+    check('【牙】预渲染标记里塞进筛选控件 → 变红',
+      problems.some(p => p.includes('死控件')), problems.slice(0, 2).join(' | '));
+  }
+  // 牙 6：把不可比较项当成 0（对照实现必须给出不同顺序）
+  {
+    const rows = page.planComparePayloadOf(plans).rows;
+    const coerce = rows.slice().sort((a, b) =>
+      ((typeof a.regular === 'number' ? a.regular : 0) - (typeof b.regular === 'number' ? b.regular : 0)) || a.index - b.index)
+      .map(row => row.id);
+    const honest = compare.sortRows(rows, 'regular', 'asc').map(row => row.id);
+    check('【牙】把不可比较项当 0 排 → 与诚实排序结果不同（这条判据分得清两者）',
+      JSON.stringify(coerce) !== JSON.stringify(honest));
+  }
+  // 牙 7：价格档不按币种分组 → 该断言会红（用一个跨币种实现对照）
+  {
+    const rows = page.planComparePayloadOf(plans).rows;
+    const crossCurrency = rows.filter(row => typeof row.regular === 'number')
+      .sort((a, b) => a.regular - b.regular).map(row => row.id);
+    const honest = compare.sortRows(rows, 'regular', 'asc').map(row => row.id).filter(id => crossCurrency.includes(id));
+    check('【牙】跨币种混排的结果与诚实排序不同（币种分组不是装饰）',
+      JSON.stringify(crossCurrency) !== JSON.stringify(honest));
   }
 }
 

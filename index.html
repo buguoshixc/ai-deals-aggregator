@@ -240,11 +240,22 @@
     .btxt h1.bt em { font-style: normal; color: var(--deal); }
     .btxt small { font-size: var(--fs-xs); color: var(--mut); letter-spacing: .6px; font-weight: 500; }
 
+    /* v2.2：顶栏里的「套餐对比」——并列的产品能力入口（不是优惠主入口）。
+       为什么放顶栏：页脚那一行本来就有一条，但那一行在 5.9 屏之后；顶栏是 flex 行里的一个元素，
+       在 1440×900 下**不增加任何高度**（首屏完整卡片仍是 9 张，v1.5 的密度账余量只有 1px）。
+       视觉沿用内页「← 返回全部优惠」那一枚（.jumpback），只是不要它的 margin-left:auto
+       —— 顶栏里已经有一个 .topstat 用 auto 边距占住右侧，两个 auto 会把空白劈成两半。 */
+    .plansnav {
+      flex: none; font-size: var(--fs-md); color: var(--brand); text-decoration: none; white-space: nowrap;
+      border: 1px solid var(--line); border-radius: var(--r-sm); padding: 6px 12px;
+      transition: border-color var(--t-fast) var(--e-std), color var(--t-fast) var(--e-std);
+    }
+    .plansnav:hover { border-color: var(--brand); color: var(--brand); }
+
     .search {
       flex: 1; max-width: 440px; display: flex; align-items: center; gap: var(--s2);
       border: 1px solid var(--line); border-radius: var(--r-sm); padding: 0 12px; background: var(--bg);
-    }
-    .search:focus-within { border-color: var(--brand); background: var(--card); box-shadow: 0 0 0 3px rgba(59, 91, 253, .12); }
+    }    .search:focus-within { border-color: var(--brand); background: var(--card); box-shadow: 0 0 0 3px rgba(59, 91, 253, .12); }
     .search input { border: 0; outline: 0; background: 0; flex: 1; padding: 8px 0; font: inherit; font-size: 13px; color: var(--ink); }
     .search input::placeholder { color: var(--mut); }
 
@@ -1022,6 +1033,7 @@
         </span>
         <span class="btxt"><h1 class="bt">AI <em>优惠</em>聚合器</h1><small>真实优惠 · 每日更新</small></span>
       </a>
+      <a class="plansnav" href="__PLANS_HREF__" title="对比各平台长期在售的 AI Coding 套餐">套餐对比</a>
       <label class="search">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c94a6" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input type="search" id="searchInput" placeholder="搜索模型、厂商或优惠内容…" aria-label="搜索模型、厂商或优惠内容">

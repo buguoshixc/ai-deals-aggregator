@@ -3712,11 +3712,307 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.waitForTimeout(200);
 
-    // 入口：首页页脚必须有这一条（它是这一页唯一的站内入链来源，orphan 判据由此满足）。
+    /* ---------------------------------------------------------------- */
+    /* v2.2：筛选 / 搜索 / 排序 / 行内展开（真浏览器）                     */
+    /* ---------------------------------------------------------------- */
+
+    /**
+     * 为什么这一段必须在真浏览器里跑：上一段（v2.1）验的是"表里的数字与数据一致"，
+     * 而这一版新增的东西**只有在 JS 跑起来之后才存在** —— 控件是 JS 建的、
+     * 子集是 JS 筛的、行序是 JS 搬的。构建期的断言看的是我们写下的字节，
+     * 看不到"点了以后到底剩下哪几行"。
+     *
+     * 判据一律**现场从 plans.json 推导**（不硬编码条数与平台名）：数据每天可能变，
+     * 硬编码会在明天变成假红；而"点了 Trae 之后可见集合 == 数据里 provider=trae 的集合"
+     * 这句话在任何数据下都成立。
+     */
+    await page.goto(plansRouteUrl, { waitUntil: 'load' });
+    await page.waitForSelector('.pctl .f[data-facet]', { timeout: 10000 });
+
+    const truth = await page.evaluate(`(async () => {
+      const doc = await (await fetch(${JSON.stringify(new URL('plans.json', base).href)})).json();
+      return (doc.plans || []).map(p => ({
+        id: p.id, provider: p.provider, region: p.region, quotaType: p.quota.type,
+        period: p.billing.period, currency: p.billing.currency,
+        regular: p.billing.regularPrice, promo: p.billing.promoPrice,
+        officialUrl: p.officialUrl,
+        models: Array.isArray(p.supportedModels) ? p.supportedModels.map(m => m.name) : [],
+        modelsMissing: !Array.isArray(p.supportedModels),
+        unit: p.derivedMetrics && p.derivedMetrics.nominalUnitPrice ? p.derivedMetrics.nominalUnitPrice.price : null
+      }));
+    })()`);
+
+    const visibleIds = () => page.evaluate(() =>
+      [...document.querySelectorAll('.ptable tbody tr[data-item]')]
+        .filter(tr => !tr.hidden).map(tr => tr.getAttribute('data-item')));
+    const domIds = () => page.evaluate(() =>
+      [...document.querySelectorAll('.ptable tbody tr[data-item]')].map(tr => tr.getAttribute('data-item')));
+    const statusText = () => page.evaluate(() => (document.querySelector('.pstatus') || {}).textContent || '');
+    const clickFacet = (facet, value) => page.click(`.pctl button[data-facet="${facet}"][data-value="${value}"]`);
+    const resetFilters = () => page.click('.pctl [data-reset]');
+    const idsWhere = predicate => truth.filter(predicate).map(row => row.id).sort();
+    const sorted = list => list.slice().sort();
+
+    check('/plans/coding/ 有 JS 时出现筛选控件（无 JS 时那一块是空的）',
+      (await page.evaluate(() => document.querySelectorAll('.pctl [data-facet]').length)) > 0);
+    check('/plans/coding/ 初始状态：全部行可见，状态行数字与数据一致',
+      (await visibleIds()).length === truth.length &&
+      (await statusText()).includes(`显示 ${truth.length} / 共 ${truth.length} 条套餐`),
+      await statusText());
+
+    // ① 平台：每一个 chip 点下去，可见集合必须恰好等于数据里该平台的行
+    {
+      const mismatched = [];
+      const providers = [...new Set(truth.map(row => row.provider))];
+      for (const provider of providers) {
+        await clickFacet('provider', provider);
+        const visible = sorted(await visibleIds());
+        const expected = idsWhere(row => row.provider === provider);
+        if (JSON.stringify(visible) !== JSON.stringify(expected)) {
+          mismatched.push(`${provider}: 页面 ${visible.length} / 数据 ${expected.length}`);
+        }
+      }
+      await resetFilters();
+      check(`/plans/coding/ 平台筛选：${providers.length} 个 chip 的可见集合都等于数据`,
+        mismatched.length === 0, mismatched.slice(0, 3).join(' · ') || `${providers.length} 个平台逐个对账通过`);
+    }
+
+    // ② 活动价 / 模型未标注 / 地区 / 额度类型
+    {
+      await clickFacet('promo', 'yes');
+      const withPromo = sorted(await visibleIds());
+      check('/plans/coding/ 「有活动价」只剩有活动价的行（正常价与活动价没有混为一谈）',
+        JSON.stringify(withPromo) === JSON.stringify(idsWhere(row => typeof row.promo === 'number')),
+        `${withPromo.length} 行`);
+      await clickFacet('promo', 'no');
+      check('/plans/coding/ 「无活动价」只剩没有活动价的行',
+        JSON.stringify(sorted(await visibleIds())) === JSON.stringify(idsWhere(row => typeof row.promo !== 'number')));
+      await resetFilters();
+
+      await page.selectOption('.pctl select[data-facet="model"]', '__none');
+      check('/plans/coding/ 「模型未标注」只剩 supportedModels 为空的行',
+        JSON.stringify(sorted(await visibleIds())) === JSON.stringify(idsWhere(row => row.modelsMissing)));
+      await resetFilters();
+
+      await clickFacet('region', 'cn');
+      check('/plans/coding/ 地区筛选只剩该地区的行',
+        JSON.stringify(sorted(await visibleIds())) === JSON.stringify(idsWhere(row => row.region === 'cn')));
+      await resetFilters();
+
+      const quotaTypes = [...new Set(truth.map(row => row.quotaType))];
+      const quotaMismatch = [];
+      for (const quotaType of quotaTypes) {
+        await clickFacet('quotaType', quotaType);
+        if (JSON.stringify(sorted(await visibleIds())) !== JSON.stringify(idsWhere(row => row.quotaType === quotaType))) {
+          quotaMismatch.push(quotaType);
+        }
+      }
+      await resetFilters();
+      check('/plans/coding/ 额度类型筛选逐个对账', quotaMismatch.length === 0, quotaMismatch.join(' · ') || `${quotaTypes.length} 类`);
+    }
+
+    // ③ 价格区间：同币种 + 半开区间，且绝不把原价未标注的行捞进来
+    {
+      const buckets = await page.evaluate(() => {
+        const raw = JSON.parse(document.getElementById('plans-compare-data').textContent);
+        return raw.dimensions.price;
+      });
+      const mismatch = [];
+      for (const bucket of buckets) {
+        await page.selectOption('.pctl select[data-facet="price"]', bucket.key);
+        const visible = await visibleIds();
+        const expected = truth.filter(row => row.currency === bucket.currency && row.period === bucket.period &&
+          typeof row.regular === 'number' && row.regular >= bucket.min &&
+          (bucket.max === null || row.regular < bucket.max)).map(row => row.id);
+        if (JSON.stringify(sorted(visible)) !== JSON.stringify(sorted(expected))) {
+          mismatch.push(`${bucket.label}: 页面 ${visible.length} / 数据 ${expected.length}`);
+        }
+        // 页面上每一条可见行的价格币种都必须等于该档位的币种（不跨币种）
+        const currencies = await page.evaluate(() => [...document.querySelectorAll('.ptable tbody tr[data-item]')]
+          .filter(tr => !tr.hidden)
+          .map(tr => (tr.querySelectorAll('td.num small')[0] || {}).textContent || ''));
+        if (currencies.some(text => text.trim() !== bucket.currency)) {
+          mismatch.push(`${bucket.label}: 混进了 ${bucket.currency} 之外的行`);
+        }
+      }
+      await resetFilters();
+      check(`/plans/coding/ 价格区间（同币种 + 半开区间）逐个对账，选项 ${buckets.length} 档`,
+        mismatch.length === 0, mismatch.slice(0, 3).join(' · ') || '全部一致');
+    }
+
+    // ④ 搜索：中文显示值、平台别名、模型名
+    {
+      const cases = [
+        ['灵码', row => row.provider === 'qoder'],
+        ['copilot', row => row.provider === 'github'],
+        ['智谱', row => row.provider === 'zhipu'],
+        ['GLM', row => row.provider === 'zhipu' || row.models.some(name => /glm/i.test(name))]
+      ];
+      const mismatch = [];
+      for (const [query, predicate] of cases) {
+        await page.fill('.pctl input[data-facet="q"]', query);
+        const visible = sorted(await visibleIds());
+        const expected = idsWhere(predicate);
+        if (JSON.stringify(visible) !== JSON.stringify(expected)) {
+          mismatch.push(`「${query}」: 页面 ${visible.length} / 数据 ${expected.length}`);
+        }
+      }
+      await page.fill('.pctl input[data-facet="q"]', '');
+      await page.waitForTimeout(50);
+      check('/plans/coding/ 搜索覆盖中文显示值 / 平台别名 / 模型名（逐词对账）',
+        mismatch.length === 0, mismatch.slice(0, 3).join(' · ') || `${cases.length} 个词逐个通过`);
+      check('/plans/coding/ 筛选与搜索都不改地址（不为筛选组合生成 URL）',
+        await page.evaluate(() => location.search === ''), await page.evaluate(() => location.href));
+    }
+
+    // ⑤ 排序：属性判定（不可比较恒在末尾；同币种内有序；币种组序不反转）
+    {
+      const props = () => page.evaluate(() => {
+        const trs = [...document.querySelectorAll('.ptable tbody tr[data-item]')].filter(tr => !tr.hidden);
+        const raw = JSON.parse(document.getElementById('plans-compare-data').textContent);
+        const byId = new Map(raw.rows.map(row => [row.id, row]));
+        return trs.map(tr => {
+          const row = byId.get(tr.getAttribute('data-item'));
+          return { id: row.id, regular: row.regular, currency: row.currency, updated: row.updated };
+        });
+      });
+      const nullsLast = (list, field) => {
+        const flags = list.map(row => typeof row[field] === 'number');
+        return flags.indexOf(false) === -1 || flags.lastIndexOf(true) < flags.indexOf(false);
+      };
+
+      await page.click('.pctl [data-sort="regular"]');
+      const asc = await props();
+      const ascOrdered = asc.filter(row => typeof row.regular === 'number');
+      const sameCurrencyAsc = ascOrdered.every((row, index) => index === 0 || row.currency !== ascOrdered[index - 1].currency ||
+        ascOrdered[index - 1].regular <= row.regular);
+      check('/plans/coding/ 正常月费排序：不可比较（原价未标注）恒在末尾，同币种内升序',
+        nullsLast(asc, 'regular') && sameCurrencyAsc && asc.length === truth.length,
+        asc.map(row => `${row.currency || '—'}${row.regular === null ? '—' : row.regular}`).join(' '));
+
+      await page.click('.pctl [data-sort="regular"]');
+      const desc = await props();
+      const descOrdered = desc.filter(row => typeof row.regular === 'number');
+      const sameCurrencyDesc = descOrdered.every((row, index) => index === 0 || row.currency !== descOrdered[index - 1].currency ||
+        descOrdered[index - 1].regular >= row.regular);
+      check('/plans/coding/ 反向排序时不可比较项**仍然**在末尾（不会被顶到最前）',
+        nullsLast(desc, 'regular') && sameCurrencyDesc,
+        desc.map(row => `${row.currency || '—'}${row.regular === null ? '—' : row.regular}`).join(' '));
+
+      await page.click('.pctl [data-sort="updated"]');
+      const byDate = await props();
+      check('/plans/coding/ 最近更新排序：日期非递增（最新在前）',
+        byDate.every((row, index) => index === 0 || byDate[index - 1].updated >= row.updated));
+
+      await resetFilters();
+      check('/plans/coding/ 清除筛选回到规范序（行序与数据一致）',
+        JSON.stringify(await domIds()) === JSON.stringify(truth.map(row => row.id)));
+    }
+
+    // ⑥ 名义 Token 单价：0 条可比较 ⇒ 不给这个排序，且页面写明原因
+    {
+      const hasUnit = truth.some(row => typeof row.unit === 'number');
+      const unitButton = await page.evaluate(() =>
+        [...document.querySelectorAll('.pctl [data-sort]')].some(b => b.getAttribute('data-sort') === 'unit'));
+      check('/plans/coding/ 「名义 Token 单价」排序只在真有可比行时才出现',
+        unitButton === hasUnit, `数据里可比 ${truth.filter(row => typeof row.unit === 'number').length} 条 / 按钮 ${unitButton}`);
+      const numericUnits = await page.evaluate(() =>
+        [...document.querySelectorAll('.ptable tbody tr[data-item]')].filter(tr => !tr.hidden)
+          .map(tr => (tr.querySelectorAll('td.num')[2] || {}).textContent || '')
+          .filter(text => /\d/.test(text)).length);
+      check('/plans/coding/ 可见行里没有任何一格单价格是数字（不可比较一律「—」）',
+        numericUnits === 0, `${numericUnits} 格带数字`);
+    }
+
+    // ⑦ 行内展开详情：官方溯源
+    {
+      const first = truth[0];
+      await page.click(`.ptable [data-detail="${first.id}"]`);
+      const detail = await page.evaluate(() => {
+        const row = document.querySelector('tr.pdetail');
+        if (!row) return null;
+        const button = document.querySelector(`.ptable [data-detail="${row.id.replace('pdetail-', '')}"]`);
+        return {
+          colspan: row.firstChild.colSpan,
+          columns: document.querySelectorAll('.ptable thead th').length,
+          links: [...row.querySelectorAll('a')].map(a => a.href),
+          expanded: button ? button.getAttribute('aria-expanded') : null
+        };
+      });
+      check('/plans/coding/ 点「详情」展开出该行的官方溯源（colspan == 表头列数，链接可点）',
+        Boolean(detail) && detail.colspan === detail.columns &&
+        detail.links.some(href => href === first.officialUrl) && detail.expanded === 'true',
+        detail ? `colspan ${detail.colspan}/${detail.columns} · ${detail.links.length} 个链接 · aria-expanded=${detail.expanded}` : '没有展开');
+      await page.click(`.ptable [data-detail="${first.id}"]`);
+      check('/plans/coding/ 再点一次收起详情',
+        (await page.evaluate(() => document.querySelectorAll('tr.pdetail').length)) === 0);
+    }
+
+    // ⑧ 移动端：筛选 + 展开之后仍不溢出，关键列钉在视口里，官方链接仍可点
+    for (const width of [390, 360]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.waitForTimeout(150);
+      await page.click('.ptable [data-detail]');
+      const mobile = await page.evaluate(() => {
+        const wrap = document.querySelector('.ptable-wrap');
+        wrap.scrollLeft = 300;
+        const row = document.querySelector('.ptable tbody tr[data-item]');
+        const th = row.querySelector('th');
+        // ⚠️ 用 children[1]（含 <th> 的那一列之后的第一格）而不是 querySelectorAll('td')[1]：
+        //    后者跳过 <th>，取到的是**正常价格**那一格（不粘），断言会以"列没粘住"的形式假红。
+        const td = row.children[1];
+        const link = td.querySelector('a');
+        const box = element => element.getBoundingClientRect();
+        const linkBox = link ? box(link) : null;
+        const top = linkBox ? document.elementFromPoint((linkBox.left + linkBox.right) / 2, linkBox.top + 3) : null;
+        return {
+          docOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          wrapLeft: Math.round(box(wrap).left),
+          thLeft: Math.round(box(th).left),
+          tdLeft: Math.round(box(td).left),
+          detailOpen: Boolean(document.querySelector('tr.pdetail')),
+          linkOnTop: Boolean(top && (top === link || link.contains(top))),
+          tables: document.querySelectorAll('.ptable').length
+        };
+      });
+      check(`/plans/coding/ ${width}px 筛选 + 展开详情后仍无页面级横向溢出`,
+        mobile.docOverflow <= 1, `溢出 ${mobile.docOverflow}px`);
+      check(`/plans/coding/ ${width}px 横滚后「平台 / 套餐」两列仍钉在视口里（详情行同时是展开状态）`,
+        mobile.thLeft >= mobile.wrapLeft - 1 && mobile.tdLeft > mobile.thLeft && mobile.detailOpen,
+        `容器 ${mobile.wrapLeft} · 平台 ${mobile.thLeft} · 套餐 ${mobile.tdLeft} · 详情展开=${mobile.detailOpen}`);
+      check(`/plans/coding/ ${width}px 只有一个表格（移动端不维护第二套数据模板）`, mobile.tables === 1);
+      check(`/plans/coding/ ${width}px 粘性列里的官方链接仍是可点的最上层元素`, mobile.linkOnTop);
+      await page.click('.ptable [data-detail]');
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.waitForTimeout(150);
+
+    // ⑨ 关掉 JS：基础静态内容必须仍在，而且一个控件都不能有（无死按钮）
+    {
+      const noJsCtx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
+      const noJsPage = await noJsCtx.newPage();
+      await noJsPage.goto(plansRouteUrl, { waitUntil: 'load' });
+      const plain = await noJsPage.evaluate(() => ({
+        rows: document.querySelectorAll('.ptable tbody tr[data-item]').length,
+        chars: document.body.innerText.replace(/\s+/g, ' ').trim().length,
+        official: [...document.querySelectorAll('.ptable tbody a[href^="http"]')].length,
+        controls: document.querySelectorAll('button, select, input').length,
+        tables: document.querySelectorAll('.ptable').length,
+        h1: document.querySelectorAll('h1').length
+      }));
+      await noJsCtx.close();
+      check('/plans/coding/ 无 JS 时仍有完整静态内容（行数 / 官方链接 / h1 / 正文）',
+        plain.rows === truth.length && plain.official === truth.length && plain.h1 === 1 && plain.chars > 1200,
+        `${plain.rows} 行 · ${plain.official} 个官方链接 · 正文 ${plain.chars} 字`);
+      check('/plans/coding/ 无 JS 时页面上零个交互控件（不给"点了没反应"的暗示）',
+        plain.controls === 0 && plain.tables === 1, `控件 ${plain.controls} 个`);
+    }
+
+    // 入口：首页顶栏或页脚必须有这一条（站内入链由此满足 orphan 判据）。
     await page.goto(base, { waitUntil: 'load' });
     const homePlansLink = await page.evaluate(() =>
-      [...document.querySelectorAll('footer a')].some(a => (a.getAttribute('href') || '').endsWith('plans/coding/')));
-    check('首页页脚有「套餐对比」入口（这一页不是孤儿页）', homePlansLink);
+      [...document.querySelectorAll('header.top a, footer a')].some(a => (a.getAttribute('href') || '').endsWith('plans/coding/')));
+    check('首页顶栏或页脚有「套餐对比」入口（这一页不是孤儿页）', homePlansLink);
   }
 
   await browser.close();

@@ -98,7 +98,7 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 | `/vendor/<slug>/` | 按**规范厂商名**切的聚合页（9 页，v1.7） | ✅ |
 | `/vendor/` `/category/` | 上面两类页的目录，同时是面包屑的父级（v1.7） | ✅ |
 | `/deal/<id>/` | 每条优惠一个静态页（80 页） | ✅ |
-| `/plans/coding/` | **AI Coding 套餐对比**（v2.1：9 条套餐放在一张表里比，只列事实不排名） | ✅ |
+| `/plans/coding/` | **AI Coding 套餐对比**（v2.2：9 条套餐一张表，可筛选 / 搜索 / 排序 / 逐行展开溯源；只列事实不排名） | ✅ |
 | `/changes/` `/feeds/` `/status/` | 变化雷达 / 订阅中心 / 数据源状态 | ✅ |
 | `/feed/**`、`feed.xml`、`feed.json` | 23 份订阅 × 2 种格式 = 46 个文件 | 资源，不进 sitemap |
 
@@ -191,9 +191,16 @@ npm run build
 scripts/data/curated_plans.json   # 人写事实（价格 / 额度 / 模型 / 限制 / 官方引文）
         ↓  npm run plans:rebuild  # 归一 + 算 id + 算 derivedMetrics（不联网、不读墙上时钟）
 plans.json                        # 派生产物（当前 9 条）；构建期原样发布到 dist/plans.json
-        ↓  npm run build          # 套上站点的壳与设计变量，渲染成 /plans/coding/ 静态页
-/plans/coding/                    # 读者看到的套餐对比页（预渲染，无 JS 可读）
+        ↓  npm run build          # 套上站点的壳与设计变量 + 内联交互脚本，渲染成 /plans/coding/
+/plans/coding/                    # 读者看到的套餐对比页（预渲染的静态表 + 渐进增强的筛选/搜索/排序/展开）
 ```
+
+**v2.2 的交互层**（筛选 / 搜索 / 排序 / 行内展开）住在 `scripts/lib/plans-compare.js`：
+它既然是浏览器脚本、又能被 `require` 进自测，所以构建期把它**逐字节内联**进页面 ——
+页面上跑的那一份与离线牙里跑的那一份结构上是同一份。页面自己的"第二事实来源"是
+`<script type="application/json" id="plans-compare-data">` 里的载荷，构建期与 `dist/plans.json`
+**逐字段对账**；无 JS 时那整块控件不存在（`<noscript>` 说明"看到的就是全部 9 条"）。
+完整契约见 [`docs/SCHEMA-v2.1.md`](docs/SCHEMA-v2.1.md) §17。
 
 三条与本项目其它数据层同源的纪律：
 
@@ -210,10 +217,10 @@ plans.json                        # 派生产物（当前 9 条）；构建期�
 |---|---|
 | `npm run plans:rebuild --dry-run` | 盘上的 `plans.json` 是否就是来源层产出的那一份（只报差异） |
 | `npm run check:plans:reproducible` | 同上，且不一致即 exit 1（CI 门禁） |
-| `npm run selftest:plans` | 135 项：不该算的绝不算 / id 稳定 / 三态不混 / 只认官方出处 / 可重建 / **页面上不许出现结论性词汇、未知必须显示成「未标注」或「—」**（CI 门禁） |
+| `npm run selftest:plans` | 182 项：不该算的绝不算 / id 稳定 / 三态不混 / 只认官方出处 / 可重建 / **页面上不许出现结论性词汇、未知必须显示成「未标注」或「—」** / v2.2 的载荷对账与筛选排序语义（含 7 条牙）（CI 门禁） |
 | `npm run validate`（含 `--strict`） | `plans.json` 的数据合法性 + 与 `providers.json`、`vendor-slugs.json` 的一致性 |
-| `npm run build` 的产物自检 | `dist/plans.json` 与源**逐字节相同**；套餐页从磁盘回读后重跑一遍诚实性断言 |
-| `npm run verify` §19 | 真浏览器：三个数值列与 `plans.json` 逐条对账、宽表在 390/360px 不撑开整页 |
+| `npm run build` 的产物自检 | `dist/plans.json` 与源**逐字节相同**；套餐页从磁盘回读后重跑一遍诚实性断言（含载荷逐字段对账、内联脚本字节比对） |
+| `npm run verify` §19 | 真浏览器：三个数值列与 `plans.json` 逐条对账、宽表在 390/360px 不撑开整页；v2.2 起另加筛选/搜索/排序/展开的行为对账与"无 JS 时零控件" |
 
 > **页面上不许出现的词**只有一处出处（`lib/plans-page.js` 的 `FORBIDDEN_CLAIM_WORDS`：
 > 性价比 / 最划算 / 排行榜 / 综合评分 / TOP 1 …），构建期查我们写下的字节、真浏览器查渲染出来的
@@ -273,6 +280,8 @@ scripts/
     plans-page.js             v2.1 套餐对比页的**正文渲染**（纯函数）：列模型 / 未知的三种写法 /
                               结论性词汇清单 / 页面级诚实性断言（构建期与自测共用同一个函数）
     providers.js              v2.1 Provider 归一：providers.json 的唯一读入口 + 与 vendor-slugs 的 slug 一致性
+    plans-compare.js          v2.2 套餐对比页的**交互逻辑**（筛选/搜索/排序/展开）：纯函数 + 一个 init()，
+                              双宿主（浏览器逐字节内联 / 自测 require 同一份字节）；不含任何结论性文案
     secret-scan.js            v2.0 密钥模式扫描（产物自检 / 送模型前脱敏 / 牙测试共用同一份模式表）
   ai/                         v2.0 AI 维护层（**可选、默认关闭、永不进入采集链路**）
     provider.js               generateStructured()：AI 的唯一出口（永不 throw，失败收敛成 invalid）
@@ -344,7 +353,8 @@ scripts/
     rebuild-deals.js          v2.0 离线重放 merge 重建 deals.json（不联网；ai-apply 之后自动跑）
     rebuild-plans.js          v2.1 离线重建 plans.json（curated_plans.json → plans.json；--dry-run 只报差异）
     check-plans-reproducible.js  v2.1 plans 可重建门禁：盘上那份必须与来源层产出的逐字节相同（CI）
-    plans-selftest.js         v2.1 Coding Plan 自测（117 项：不该算的绝不算 / id 稳定 / 三态 / 官方出处 / 可重建，CI）
+    plans-selftest.js         v2.1/v2.2 Coding Plan 自测（182 项：不该算的绝不算 / id 稳定 / 三态 / 官方出处 /
+                              可重建 / 载荷逐字段对账 / 筛选排序语义 / 7 条牙，CI）
     ai-review.js              v2.0 候选审阅表（只读；把「无据的确定」单列一栏）
     ai-accept.js              v2.0 记录人工决定（只改候选文件，不碰生产数据）
     ai-apply.js               v2.0 **唯一**会写生产数据的工具：只写两个人工来源层 + 门禁 + 失败回滚
