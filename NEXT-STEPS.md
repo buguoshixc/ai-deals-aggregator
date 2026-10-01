@@ -95,6 +95,9 @@
 > 完整报告：`research/v2.0-ai-assisted-maintenance-report.md`；
 > 前置的成本审计：`research/v2.0-maintenance-cost-audit.md`；契约：`docs/AI-MAINTENANCE-v2.0.md`。
 > 合并态记录见 `PROJECT_STATUS.md` 2.39 的 ⑨ 节。
+> **✅ 已上线（2026-10-01）**：直接推 master 被 ruleset 拒绝（`Changes must be made through a
+> pull request` + `Required status check "gate"`），改走 PR：#11 gate 绿 → 合并 `9bf46f9` →
+> deploy 链（prepublish/build/deploy）全绿 → 线上冒烟 6 条全 200。记录见 2.39 的 ⑪ 节。
 >
 > **2026-09-29 新增一轮：`v1.2-intent-first-home`（分支 `v1.2-intent-first-home`，隔离工作树）**
 > —— 目标：**把首页从「数据库筛选器」升级成「按用户真实需求找优惠」**。
