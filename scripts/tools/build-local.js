@@ -38,6 +38,11 @@ const secretScan = require('../lib/secret-scan');
 const plansPage = require('../lib/plans-page');
 const planSchema = require('../lib/plan-schema');
 const planHistory = require('../lib/plan-history');
+// v2.5：API / Token 计费（api-plans.json + /plans/api/）。与 Coding 套餐**互不注入**：
+// 两份数据、两条路由、两套判据，只有 BasePlan 的共享原语与 history-core 内核是同一份。
+const apiPlanSchema = require('../lib/api-plan-schema');
+const apiPlanHistory = require('../lib/api-plan-history');
+const apiPlansPage = require('../lib/api-plans-page');
 const planChanges = require('../lib/plan-changes');
 const providers = require('../lib/providers');
 // v2.4：优惠 ↔ 套餐关系层。真值在 scripts/data/deal-plan-links.json，
@@ -82,9 +87,9 @@ function showOut(dir) {
  * 为什么现在才发：页面（`/plans/coding/`）在这一版才存在；先前发布一份没人读的数据文件，
  * 只会让「这个站到底发布了几份数据」这件事变得含糊。发布之后它同样进产物自检。
  */
-const PUBLIC_FILES = ['index.html', 'deals.json', 'plans.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
+const PUBLIC_FILES = ['index.html', 'deals.json', 'plans.json', 'api-plans.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
 /** 构建期生成、不走源码拷贝的产物 */
-const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json', 'deal-history.json', 'plan-history.json', 'deal-plan-links.json'];
+const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json', 'deal-history.json', 'plan-history.json', 'api-plan-history.json', 'deal-plan-links.json'];
 // 站点常量与 XML 转义的**唯一出处**是 lib/feeds.js（v1.6 起订阅层也要用它们）。
 const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = feeds;
 
@@ -113,8 +118,35 @@ const ROUTE_HREFS = [
   ['__CATEGORY_HREF__', 'category/'],
   // v2.1 第二段：Coding Plan 套餐对比页。它是**并列的产品能力**（不是优惠入口），
   // 所以挂在「按厂商 / 分类浏览」那一行末尾，而不是新增一行页脚。
-  ['__PLANS_HREF__', 'plans/coding/']
+  ['__PLANS_HREF__', 'plans/coding/'],
+  // v2.5：API / Token 计费对比页。与套餐对比页**并列**（一个回答"月付多少钱"，
+  // 一个回答"每百万 token 多少钱"），因此同样挂在那一行末尾。
+  //
+  // ⚠️ 占位符刻意叫 `__APIPLAN_HREF__` 而不是 `__APIPLANS_HREF__`：
+  // 后者**包含** `__PLANS_HREF__` 这个子串，而 `resolveRouteHrefs()` 是逐条 `split/join` 的 ——
+  // 先替换 `__PLANS_HREF__` 会把 `__APIPLANS_HREF__` 打碎成 `plans/coding/` + 尾巴，
+  // 于是新占位符**永远替换不掉**，症状是"每一个输出都残留一个占位符"（117 个文件同时报错）。
+  // 下面的 `assertRouteMarkersDisjoint()` 把这条约束变成构建期硬失败，避免下一个人踩同一坑。
+  ['__APIPLAN_HREF__', 'plans/api/']
 ];
+
+/**
+ * 占位符之间**不许互为子串**（上面那条注释解释过为什么）。
+ *
+ * 单独写成一个函数并在模块加载时执行：这种错法的症状离原因很远
+ * （"某个页脚链接替换不掉"看起来像页脚模板的问题），而检查它的成本只有几行。
+ */
+function assertRouteMarkersDisjoint() {
+  for (const [a] of ROUTE_HREFS) {
+    for (const [b] of ROUTE_HREFS) {
+      if (a === b) continue;
+      if (b.includes(a)) {
+        throw new Error(`路由占位符 ${a} 是 ${b} 的子串 —— 逐条 split/join 的替换会让后者永远替换不掉（请改用不互相包含的占位符名）`);
+      }
+    }
+  }
+}
+assertRouteMarkersDisjoint();
 /**
  * 残留占位符的扫描清单（与 ROUTE_HREFS 同源，避免两处各写一份），外加 `__PREFIX__`。
  *
@@ -1395,6 +1427,151 @@ ${compareScript}
 }
 
 /* ------------------------------------------------------------------ */
+/* API / Token 计费对比页（/plans/api/，v2.5）                          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * API 计费对比页。
+ *
+ * 与套餐页同一套「独立静态路由」的做法（理由见 `renderPlansPage` 的注释），
+ * 但**没有交互脚本**：这一版是一张预渲染的静态表 —— 题面 §七 明确"第一版只提供…
+ * 不要一开始实现复杂 workload calculator"，而筛选/排序控件是"替读者挑子集"的能力，
+ * 在没有稳定的比较口径之前不该先做。
+ *
+ * 代价同样落在四张清单上（sitemap 计数、`pageRoutes`、页脚深度扫描、SEO 页面类型表）。
+ */
+function renderApiPlansPage(apiStore, indexHtml, context = {}) {
+  const prefix = '../../'; // /plans/api/ 同样是两层路由
+  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
+  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
+  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
+  if (!style || !themeScript || !footerRaw) {
+    throw new Error('抽取 API 计费页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
+  }
+  const footer = resolveRouteHrefs(
+    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
+    prefix
+  ).trim();
+
+  const pageUrl = `${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`;
+  const plans = apiStore.plans || [];
+  const providerTable = context.providerTable || null;
+
+  const jsonLdBlocks = apiPlansPage.apiPlansJsonLd(plans, { siteUrl: SITE_URL, providerTable })
+    .map(data => `<script type="application/ld+json">
+${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
+</script>`).join('\n');
+
+  const body = apiPlansPage.apiPlansPageBody(plans, {
+    providerTable,
+    historyStore: context.apiPlanHistoryStore || null,
+    dealLinks: context.dealLinks || null,
+    prefix
+  });
+
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${htmlEscape(apiPlansPage.API_PLANS_HEADING)} · ${htmlEscape(SITE_NAME)}</title>
+<meta name="description" content="${htmlEscape(apiPlansPage.API_PLANS_DESCRIPTION)}">
+<link rel="canonical" href="${pageUrl}">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
+${feeds.rootFeedTags(prefix)}
+${themeScript}
+${style}
+<style>
+  /* 只用首页已有的设计变量，不新建一套视觉语言。 */
+  .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+  .stop h1 { font-size: 19px; margin: 0; }
+  .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
+  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
+  .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
+  .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
+  .plist b { color: var(--ink2); }
+  .ptable-wrap { overflow-x: auto; }
+  .ptable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  .ptable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
+  .ptable th, .ptable td { text-align: left; padding: 9px 11px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
+  .ptable thead th { border-top: 0; color: var(--mut); font-weight: 600; white-space: nowrap; }
+  .ptable tbody th { font-weight: 600; white-space: nowrap; }
+  .ptable td { min-width: 84px; }
+  .ptable small { display: block; color: var(--mut); font-weight: 400; font-size: 11.5px; margin-top: 2px; line-height: 1.5; }
+  .ptable .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ptable a { color: var(--brand); }
+  .pvname { margin-left: 2px; }
+  .plogo { display: inline-block; width: 14px; height: 14px; vertical-align: -2px; background-size: contain; background-repeat: no-repeat; background-position: center; }
+  .punit { white-space: nowrap; }
+  .pnone { color: var(--mut); }
+  .pfree { min-width: 148px; }
+  .pdate { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .pftlist { margin: 0; padding-left: 1.15em; color: var(--ink2); font-size: var(--fs-sm); line-height: 1.75; }
+  .pftlist li { margin-bottom: var(--s2); }
+  .pftdesc { color: var(--mut); }
+  .pevd { margin: 0 0 var(--s2); border: 1px solid var(--line); border-radius: var(--r); padding: var(--s2) var(--s3); background: var(--card); }
+  .pevd summary { cursor: pointer; font-size: var(--fs-sm); color: var(--ink2); }
+  .pev { margin: var(--s2) 0 0; padding-left: 1.1em; }
+  .pev li { margin-bottom: var(--s2); }
+  .pevfield { color: var(--mut); }
+  .pev q { display: block; margin: 2px 0; }
+  .pev small { color: var(--mut); }
+  .pchglist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .pchglist li { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; font-size: var(--fs-sm); }
+  .pchgwhen { color: var(--mut); font-variant-numeric: tabular-nums; }
+  .pchgwho { color: var(--ink); }
+  .pchgtype { color: var(--brand); }
+  .pchgwhat { color: var(--ink2); }
+  .pchgorigin { color: var(--mut); }
+  /* 窄屏：容器内横滚 + 前两列固定（只有一张表、一套数据模板）。
+     与套餐页同一条教训：.ptable 自带的 overflow:hidden 会成为最近的可滚动祖先，
+     所以窄屏必须让它不裁剪、把圆角交给外层。 */
+  @media (max-width: 760px) {
+    .ptable-wrap { border-radius: var(--r); }
+    .ptable { overflow: visible; }
+    .ptable thead th:first-child, .ptable tbody td:first-child {
+      position: sticky; left: 0; width: 6.5em; white-space: normal; background: var(--card); z-index: 2;
+    }
+    .ptable thead th:nth-child(2), .ptable tbody th:nth-child(2) {
+      position: sticky; left: 6.5em; background: var(--card); z-index: 2;
+      box-shadow: 1px 0 0 var(--line); max-width: 10em; white-space: normal; overflow-wrap: anywhere;
+    }
+    .ptable th, .ptable td { padding: 8px 9px; }
+  }
+</style>
+${jsonLdBlocks}
+</head>
+<body>
+  <header class="top">
+    <div class="topin">
+      <a class="brand" href="${prefix}">
+        <span class="mark" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
+            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
+          </svg>
+        </span>
+        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
+      </a>
+      <a class="jumpback" href="${prefix}">← 返回全部优惠</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main id="main">
+${body}
+    </main>
+    ${footer}
+  </div>
+</body>
+</html>
+`;
+}
+
+/* ------------------------------------------------------------------ */
 /* 分类页（/student/ /developer/ /free-api/）                           */
 /* ------------------------------------------------------------------ *//**
  * 分类页：**一条优惠一个静态 URL 之外的第二类落地页**。
@@ -2268,6 +2445,41 @@ function assemble() {
   const planRadarStats = planChanges.summarize(planRadar);
   const planHistoryStore = planHistoryAvailability === 'ok' ? planHistoryLoad.store : null;
 
+  // ---- v2.5：API / Token 计费数据 + 变化日志 -------------------------------------------
+  //
+  // 与上面的套餐（plans）**并列且互不注入**：两份数据、两条路由、两套判据。
+  // 共享的只有 BasePlan 的判据原语与 `history-core` 的写入内核（见 docs/SCHEMA-v2.5.md §2）。
+  // 数据非法在这里拦下（与 validate.js 同一把尺子），宁可不发布也不发一份自相矛盾的价目表。
+  const apiPlansStore = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8'));
+  {
+    const result = apiPlanSchema.validateApiPlansStore(apiPlansStore, { providerTable });
+    if (!result.ok) {
+      throw new Error(`api-plans.json 未通过数据集级校验（${result.errors.length} 项）：\n  - ${result.errors.slice(0, 5).join('\n  - ')}`);
+    }
+    const dataProblems = apiPlansPage.assertDataHonesty(apiPlansStore.plans);
+    if (dataProblems.length) {
+      throw new Error(`API 计费数据里出现结论性词汇（${dataProblems.length} 处）：\n  - ${dataProblems.slice(0, 5).join('\n  - ')}`);
+    }
+  }
+  const apiPlanHistoryLoad = apiPlanHistory.load();
+  const apiPlanHistoryAvailability = apiPlanHistoryLoad.missing || apiPlanHistoryLoad.broken ? 'unavailable' : 'ok';
+  if (apiPlanHistoryAvailability !== 'ok') {
+    console.warn(`    ⚠️  API 计费变化日志不可用（${apiPlanHistoryLoad.broken || '文件缺失'}）——本次产物里没有 API 价格变更记录，check:api-plan-history 会报错`);
+  } else {
+    fs.writeFileSync(path.join(OUT, 'api-plan-history.json'), `${JSON.stringify(apiPlanHistoryLoad.store, null, 2)}\n`, 'utf8');
+  }
+  const apiPlanHistoryStore = apiPlanHistoryAvailability === 'ok' ? apiPlanHistoryLoad.store : null;
+  {
+    const historyProblems = apiPlansPage.assertHistoryHonesty(apiPlansStore.plans, apiPlanHistoryStore);
+    if (historyProblems.length) {
+      throw new Error(`API 计费变化日志里有说不清的东西（${historyProblems.length} 处）：\n  - ${historyProblems.slice(0, 5).join('\n  - ')}`);
+    }
+    const stats = apiPlanSchema.summarize(apiPlansStore);
+    console.log(`  API 计费: ${stats.total} 条记录 · ${stats.providers} 个平台 · ${stats.models} 个模型计价条目` +
+      ` · 国内 ${stats.cn} / 国外 ${stats.global} · 免费额度 ${stats.withFreeTier} 条 · credits ${stats.withCredits} 条` +
+      ` · 变化日志${apiPlanHistoryAvailability === 'ok' ? ` ${apiPlanHistoryLoad.store.events.length} 条事件` : '不可用'}`);
+  }
+
   // ---- v2.4：优惠 ↔ 套餐关系（Deal → Plan / Plan → Deal）--------------------------------
   //
   // 真值是人工来源层 `scripts/data/deal-plan-links.json`（deals.json 与 plans.json 都不改）。
@@ -2283,15 +2495,20 @@ function assemble() {
   }
   const dealLinksAsOf = dealPlanLinks.asOfOf({
     dealsUpdatedAt: payload.updatedAt,
-    plansUpdatedAt: plansStore.updatedAt
+    plansUpdatedAt: plansStore.updatedAt,
+    apiPlansUpdatedAt: apiPlansStore.updatedAt
   });
   const dealLinksCtx = {
     deals: payload.deals,
     plans: plansStore.plans,
+    // v2.5：id 空间是**合并**的（关系表格式一个字没改）—— 两个 store 的 id basis 都含 kind，
+    // 因此一条 relationship 指向 api 记录时也解析得到，且 provider 一致性照常校验。
+    apiPlans: apiPlansStore.plans,
     asOf: dealLinksAsOf,
     providerTable,
     dealHistoryStore: historyStore.store,
     planHistoryStore,
+    apiPlanHistoryStore,
     strict: true
   };
   const dealLinksCheck = dealPlanLinks.validate(dealLinksLoad.doc, dealLinksCtx);
@@ -2545,6 +2762,24 @@ function assemble() {
     ` · 今日新增 ${planRadarStats.totals.created} · 最近 ${planRadarStats.totals.changed} · 不再收录 ${planRadarStats.totals.ended}` +
     ` · 重新出现 ${planRadarStats.totals.restored} · 元信息（不上块 / 不进订阅）${planRadarStats.totals.meta} · 最近变化块 ${planRadarStats.homeCount} 项`);
 
+  // ---- v2.5：API / Token 计费对比页 ----------------------------------------------------
+  const apiPlansDir = path.join(OUT, 'plans', 'api');
+  fs.mkdirSync(apiPlansDir, { recursive: true });
+  const apiPlansHtml = renderApiPlansPage(apiPlansStore, html, {
+    providerTable,
+    apiPlanHistoryStore,
+    dealLinks: dealLinksView
+  });
+  fs.writeFileSync(path.join(apiPlansDir, 'index.html'), apiPlansHtml, 'utf8');
+  {
+    const pageProblems = apiPlansPage.assertPageHonesty(apiPlansHtml, apiPlansStore.plans, { providerTable });
+    if (pageProblems.length) {
+      throw new Error(`API 计费对比页的诚实性断言未通过（${pageProblems.length} 处）：\n  - ${pageProblems.slice(0, 5).join('\n  - ')}`);
+    }
+  }
+  console.log(`  API 计费页: /plans/api/（${apiPlansStore.count} 条记录 · ${apiPlansPage.apiRowsOf(apiPlansStore.plans).length} 行` +
+    ` · 页面 ${(apiPlansHtml.length / 1024).toFixed(1)} KB）`);
+
   const dealUrls = detailPages.map(page => `  <url>
     <loc>${page.url}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -2570,6 +2805,7 @@ function assemble() {
   </url>`).join('\n');
   const sitemapEntries = [SITE_URL, ...directoryPages.filter(page => page.indexable).map(page => page.url),
     `${SITE_URL}status/`, `${SITE_URL}changes/`, `${SITE_URL}feeds/`, `${SITE_URL}${plansPage.PLANS_ROUTE}`,
+    `${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`,
     ...detailPages.map(page => page.url)];
 
   // 状态页也进 sitemap（五条既有约定的第三条，v1.1 收口补）。
@@ -2614,6 +2850,16 @@ function assemble() {
     <priority>0.9</priority>
   </url>`;
 
+  // v2.5：API 计费页与套餐对比页**同级**（0.9，都是入口）。`changefreq: weekly` 同样是实话：
+  // 官方价格表不会每天改；但它确实比套餐更容易变，所以未来若要做"价格变动"提示，
+  // 判据是 `api-plan-history.json` 的事件，而不是把这个频率调到 daily。
+  const apiPlansUrl = `  <url>
+    <loc>${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>`;
+
   fs.writeFileSync(path.join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -2627,6 +2873,7 @@ ${statusUrl}
 ${changesUrl}
 ${feedsUrl}
 ${plansUrl}
+${apiPlansUrl}
 ${dealUrls}
 </urlset>
 `, 'utf8');
@@ -2734,6 +2981,7 @@ ${dealUrls}
       'changes/',
       'feeds/',
       plansPage.PLANS_ROUTE,
+      apiPlansPage.API_PLANS_ROUTE,
       ...detailPages.map(page => `deal/${encodeURIComponent(page.id)}/`),
       ...directoryPages.map(page => page.route)
     ])
@@ -2868,6 +3116,74 @@ function selfCheck(built) {
     }
   }
 
+  // ---- v2.5：发布出去的那份 api-plans.json 同样必须与源文件逐字节相同 ----
+  //
+  // 与 plans 同一条纪律：这一层在发布链上**没有任何变换**，所以断言的是最强的那一种。
+  // 一旦将来要在构建期给它注入派生字段（比如模型显示名映射），这条断言会立刻变红。
+  {
+    const publishedApiPlans = path.join(OUT, 'api-plans.json');
+    const sourceApiPlans = path.join(ROOT, 'api-plans.json');
+    if (!fs.existsSync(publishedApiPlans)) fail('缺少 api-plans.json（v2.5 起它在 PUBLIC_FILES 里）');
+    else {
+      const a = fs.readFileSync(sourceApiPlans, 'utf8');
+      const b = fs.readFileSync(publishedApiPlans, 'utf8');
+      if (a !== b) fail('dist/api-plans.json 与源 api-plans.json 不是逐字节相同');
+      else console.log(`  ✓ api-plans.json: 与源文件逐字节相同（${(b.length / 1024).toFixed(1)} KB）`);
+    }
+
+    const publishedApiHistory = path.join(OUT, 'api-plan-history.json');
+    const sourceApiHistory = path.join(ROOT, 'scripts', 'data', 'api-plan-history.json');
+    if (!fs.existsSync(publishedApiHistory)) fail('缺少 api-plan-history.json（v2.5 起它进产物）');
+    else if (!fs.existsSync(sourceApiHistory)) fail('缺少源 scripts/data/api-plan-history.json');
+    else {
+      const a = fs.readFileSync(sourceApiHistory, 'utf8');
+      const b = fs.readFileSync(publishedApiHistory, 'utf8');
+      if (a !== b) fail('dist/api-plan-history.json 与源脚本的日志不是逐字节相同');
+      else console.log(`  ✓ api-plan-history.json: 与源日志逐字节相同（${(b.length / 1024).toFixed(1)} KB）`);
+    }
+
+    // API 计费页：**从磁盘回读**再跑一遍诚实性断言（与套餐页同一个理由）。
+    const apiPlansPageFile = path.join(OUT, apiPlansPage.API_PLANS_ROUTE, 'index.html');
+    if (!fs.existsSync(apiPlansPageFile)) fail(`缺少 ${apiPlansPage.API_PLANS_ROUTE}index.html`);
+    else {
+      const diskApiPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8'));
+      const diskApiHistory = fs.existsSync(path.join(OUT, 'api-plan-history.json'))
+        ? JSON.parse(fs.readFileSync(path.join(OUT, 'api-plan-history.json'), 'utf8'))
+        : null;
+      const diskHtml = fs.readFileSync(apiPlansPageFile, 'utf8');
+      const pageProblems = [
+        ...apiPlansPage.assertPageHonesty(diskHtml, diskApiPlans.plans, { providerTable: providers.load().table }),
+        ...apiPlansPage.assertDataHonesty(diskApiPlans.plans),
+        ...apiPlansPage.assertHistoryHonesty(diskApiPlans.plans, diskApiHistory),
+        // v2.4 那一支的断言对 API 计费页同样适用（只筛 kind=api 的行）：
+        // 「已结束的关联被当成当前优惠」在这一页同样是必须挡住的事。
+        ...plansPage.assertPlanDealsBlock(diskHtml, built.dealLinksView, {
+          kind: 'api', unit: '条 API 计费记录', prefix: '../../'
+        })
+      ];
+      // 这一页**刻意没有交互脚本**（v1 是预渲染静态表）—— 断言它真的没有，
+      // 而不是"以后顺手加了筛选控件也没人知道"。JSON-LD 与主题脚本都是**内联**的，
+      // 所以必须按 type/内容排除，而不是按"有没有 src"排除。
+      const withoutAllowedScripts = diskHtml
+        .replace(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/g, '')
+        .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '');
+      if (/<script(?![^>]*\bsrc=)[^>]*>/.test(withoutAllowedScripts)) {
+        pageProblems.push('API 计费页出现了内联脚本 —— v1 是预渲染静态表（无 JS 控件）');
+      }
+      if (pageProblems.length) fail(`API 计费页未通过诚实性断言：${pageProblems.slice(0, 3).join('、')}`);
+      else {
+        const forbidden = apiPlansPage.FORBIDDEN_CLAIM_WORDS.filter(word => diskHtml.includes(word));
+        if (forbidden.length) fail(`API 计费页出现结论性词汇：${forbidden.join('、')}`);
+        else {
+          const rows = apiPlansPage.apiRowsOf(diskApiPlans.plans, { providerTable: providers.load().table });
+          console.log(`  ✓ API 计费页: ${diskApiPlans.count} 条记录 / ${rows.length} 行 · ` +
+            `价格六格逐格与数据对账 · 计费单位列逐行在位 · 免费额度与 credits 明细节 · 官方原文节 · ` +
+            `无 JS 控件 · 无结论性词汇（查了 ${apiPlansPage.FORBIDDEN_CLAIM_WORDS.length} 个词）`);
+        }
+      }
+    }
+  }
+
   // ---- v2.4：优惠 ↔ 套餐关系（从磁盘回读对账）--------------------------------
   //
   // 这一层的坏法全都是「页面看起来正常」：注入漏了 → 有关系的那几条优惠页少一块；
@@ -2931,9 +3247,13 @@ function selfCheck(built) {
       const page = fs.readFileSync(file, 'utf8');
       if (!page.includes('关联的正常套餐')) problems.push(`${dealId} 的详情页没有「关联的正常套餐」块`);
       for (const row of rows) {
-        if (!page.includes(`data-plan-id="${row.planId}"`)) problems.push(`${dealId} 的详情页缺少套餐 ${row.planId} 的一行`);
-        if (!page.includes(`href="../../plans/coding/#plan-${row.planId}"`)) {
-          problems.push(`${dealId} 的详情页指向套餐 ${row.planId} 的链接缺失或深度前缀不是 ../../`);
+        if (!page.includes(`data-plan-id="${row.planId}"`)) problems.push(`${dealId} 的详情页缺少记录 ${row.planId} 的一行`);
+        // v2.5：链接目标按 kind 分派（Coding 套餐 → /plans/coding/，API 计费记录 → /plans/api/），
+        // 与 RENDER-CORE 的 `PLAN_LINK_ROUTE` 是同一张表的两个落点。
+        const route = row.planKind === 'api' ? apiPlansPage.API_PLANS_ROUTE : plansPage.PLANS_ROUTE;
+        if (!page.includes(`data-plan-kind="${row.planKind === 'api' ? 'api' : 'coding'}"`)
+          || !page.includes(`href="../../${route}#plan-${row.planId}"`)) {
+          problems.push(`${dealId} 的详情页指向记录 ${row.planId} 的链接缺失或深度前缀不是 ../../（应为 ${route}）`);
         }
       }
     }
@@ -2946,11 +3266,18 @@ function selfCheck(built) {
         break;
       }
     }
-    // 锚点落点：套餐页上必须真有 `id="plan-<planId>"`（否则关联链接是一条死锚点）
+    // 锚点落点：记录必须真在**它所在的那一页**上有 `id="plan-<planId>"`（否则关联链接是一条死锚点）。
+    // v2.5：锚点分属两页 —— Coding 记录在 /plans/coding/，API 计费记录在 /plans/api/。
+    // 不按 kind 分流的话，一行 API 记录会被要求出现在套餐页上，而那是永远不成立的。
+    const apiPlansPageHtmlForAnchors = fs.existsSync(path.join(OUT, apiPlansPage.API_PLANS_ROUTE, 'index.html'))
+      ? fs.readFileSync(path.join(OUT, apiPlansPage.API_PLANS_ROUTE, 'index.html'), 'utf8')
+      : '';
     for (const row of built.dealLinksView.rows) {
       if (!row.current.length && !row.history.length) continue;
-      if (!plansPageHtml.includes(`id="plan-${row.planId}"`)) {
-        problems.push(`套餐页缺少套餐 ${row.planId} 的行锚点（关联链接会指向不存在的锚点）`);
+      const host = (row.planKind === 'api') ? apiPlansPageHtmlForAnchors : plansPageHtml;
+      const where = (row.planKind === 'api') ? '/plans/api/' : '/plans/coding/';
+      if (!host.includes(`id="plan-${row.planId}"`)) {
+        problems.push(`${where} 缺少记录 ${row.planId} 的行锚点（关联链接会指向不存在的锚点）`);
       }
     }
 
@@ -3615,6 +3942,8 @@ function selfCheck(built) {
       // v2.1：套餐对比页是**两层**深路由。深度写错的话，这一页的页头/页脚内链全是 404，
       // 而页面本身看起来完全正常 —— 所以它必须进这张逐层扫描表。
       [`${plansPage.PLANS_ROUTE}index.html`, '../../'],
+      // v2.5：API 计费页同样是两层深路由，深度写错的话这一页的页头/页脚内链全是 404。
+      [`${apiPlansPage.API_PLANS_ROUTE}index.html`, '../../'],
       ...built.collectionPages.map(page => [`${page.slug}/index.html`, '../']),
       // v1.2 遗留的扫描盲区：按需求页是**两层**路由，却一直没进这张表 ——
       // 于是「某一层页脚的相对前缀写错」在那 10 个页面上不会被这条断言照到。
@@ -3791,12 +4120,12 @@ function selfCheck(built) {
   // 而且条数不再手写公式 —— 直接与构建期生成的那份 `sitemapEntries` 逐条对账。
   const indexableDirectories = built.directoryPages.filter(page => page.indexable);
   const expectedLocs = dealEntries.length + 1 /* 首页 */ + indexableDirectories.length + 1 /* 状态页 */
-    + 1 /* 变化雷达页 */ + 1 /* 订阅中心 */ + 1 /* 套餐对比页 */;
+    + 1 /* 变化雷达页 */ + 1 /* 订阅中心 */ + 1 /* 套餐对比页 */ + 1 /* API 计费页 */;
   if (sitemapLocs.length !== expectedLocs) {
     fail(`sitemap ${sitemapLocs.length} 条 ≠ 首页 1 + 可索引落地页 ${indexableDirectories.length}` +
       `（分类页 ${built.collectionPages.length} + 按需求页/别名 ${built.needPages.length} 中可索引的` +
       ` + 分类落地页 ${built.categoryPages.length} + 厂商落地页 ${built.vendorPages.length}` +
-      ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 订阅中心 1 + 套餐对比页 1` +
+      ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 订阅中心 1 + 套餐对比页 1 + API 计费页 1` +
       ` + 详情页 ${dealEntries.length}`);
   } else {
     const notListed = dealEntries.filter(deal => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(deal.id)}/`)));
@@ -3809,10 +4138,11 @@ function selfCheck(built) {
     else if (!sitemapLocs.includes(`${SITE_URL}changes/`)) fail('sitemap 漏了变化雷达页 changes/');
     else if (!sitemapLocs.includes(`${SITE_URL}feeds/`)) fail('sitemap 漏了订阅中心 feeds/');
     else if (!sitemapLocs.includes(`${SITE_URL}${plansPage.PLANS_ROUTE}`)) fail(`sitemap 漏了套餐对比页 ${plansPage.PLANS_ROUTE}`);
+    else if (!sitemapLocs.includes(`${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`)) fail(`sitemap 漏了 API 计费页 ${apiPlansPage.API_PLANS_ROUTE}`);
     else console.log(`  ✓ sitemap: ${sitemapLocs.length} 条（首页 + ${built.collectionPages.length} 个分类页 + ` +
       `${built.needPages.length} 条按需求/别名页中可索引的部分 + ${built.categoryPages.length} 个分类落地页 + ` +
       `${built.vendorPages.length} 个厂商落地页 + ${built.hubPages.length} 个枢纽页 + 状态页 + 变化雷达页 + 订阅中心 + ` +
-      `套餐对比页 + ${dealEntries.length} 个详情页；${built.aliasPages.length} 条别名页已排除）`);
+      `套餐对比页 + API 计费页 + ${dealEntries.length} 个详情页；${built.aliasPages.length} 条别名页已排除）`);
   }
 
   // 分类页：**逐条回读对账**，而不是「文件存在就算过」。
@@ -4329,6 +4659,16 @@ function selfCheck(built) {
         // v2.3：这一页有专属的套餐变化源，必须声明它（与根 Feed 并列）
         feedMatch: [feeds.PLAN_CHANGE_FEED.id],
         count: JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8')).count
+      }),
+      // v2.5：API 计费页。与套餐页同样：ItemList 指向**各自的官方定价页**，
+      // 所以成员校验不适用（本站不为每个模型编一个详情页）；行数校验保留。
+      // 这一页**没有专属 Feed**（本阶段不新增第二个变化源，见 docs/SCHEMA-v2.5.md §9），
+      // 因此不声明 feedMatch —— 只声明与首页同一组根 Feed。
+      readPage(`${apiPlansPage.API_PLANS_ROUTE}`, {
+        kind: 'plans',
+        expectItemList: true,
+        checkItemListMembers: false,
+        count: JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8')).count
       })
     ].filter(Boolean);
     const dealDescriptors = dealEntries.map(deal => readPage(`deal/${encodeURIComponent(deal.id)}/`, {

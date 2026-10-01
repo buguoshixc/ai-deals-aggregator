@@ -173,7 +173,7 @@ const flat = m => String(m).split('/').filter(s => s && s !== '.').join('/');
  * `/plans/coding/` 是两级，推出来会变成 `plans/coding` —— 那既不是任何一条 textFloor 分支，
  * 也让 ItemList 的判定落在默认值上。**显式登记**比"碰巧能用"可靠。
  */
-const FIXED_KINDS = { 'status/': 'status', 'changes/': 'changes', 'feeds/': 'feeds', 'plans/coding/': 'plans' };
+const FIXED_KINDS = { 'status/': 'status', 'changes/': 'changes', 'feeds/': 'feeds', 'plans/coding/': 'plans', 'plans/api/': 'plans' };
 
 for (const route of routes) {
   const rel = route === '' ? 'index.html' : `${route}/index.html`;

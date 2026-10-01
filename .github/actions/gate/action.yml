@@ -225,6 +225,28 @@ runs:
       shell: bash
       run: node scripts/tools/deal-plan-links-selftest.js
 
+    # v2.5 新增：API / Token 计费自测（零依赖、离线、秒级）。
+    # 它盯的是这一层**与订阅套餐不同的那些承诺**：单位永远显式且全仓没有换算路径
+    # （把每千换成每百万会让两个口径不同的数字看起来可比）、**credits 是钱不是 token**
+    # （结构上写不进 token 数量，页面上也不折算）、输入价与输出价分列（渲染层互换会被逐格对账抓住）、
+    # 模型改名保持 modelKey 时产生零事件而换 modelKey 时必须被检测出来，以及这四条都**实跑变红**。
+    # 判断标准与上面几支相同：它红的时候没有别的步骤会替它红。
+    - name: API-plans self-test (data + page)
+      shell: bash
+      run: node scripts/tools/api-plans-selftest.js
+
+    # v2.5 新增：api-plans.json 可重建性（人工来源层 → 派生文件，逐字节）。
+    # 与 plans 那一条红的含义相同：问的是「有没有人手改了派生产物 / 改了来源层却忘了重建」。
+    - name: API-plans reproducibility (curated → api-plans.json, byte-compare)
+      shell: bash
+      run: node scripts/tools/check-api-plans-reproducible.js
+
+    # v2.5 新增：API 计费变化日志与当前数据的一致性（基线 + 事件重放必须等于今天的数据）。
+    # 与 plan-history 那一条红的含义相同，只是换了一份数据与一套判据。
+    - name: API-plan-history verify (log consistent with api-plans.json)
+      shell: bash
+      run: node scripts/tools/check-api-plan-history.js
+
     # 发布产物由 build-local.js 组装（与 deploy.yml 完全同一条路径），
     # 失败即拦：能装出坏产物就不该合并、更不该发布。
     - name: Assemble site (same path as deploy.yml)

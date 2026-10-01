@@ -1,0 +1,868 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-10-01",
+  "baseline": {
+    "at": "2026-10-01",
+    "note": "v2.5 开工时的既有状态快照（只含被跟踪字段）。它不是创建事件——这些 API 计费记录在此之前就存在，只是此前没有变化日志。",
+    "fields": {
+      "206f8b4bde7b": {
+        "pricing.currency": "USD",
+        "pricing.unit": "per_1M_tokens",
+        "models": [
+          {
+            "name": "gpt-6-astra",
+            "modelKey": "gpt-6-astra",
+            "variant": "long_context",
+            "aliases": null,
+            "rates": {
+              "input": 20,
+              "output": 75,
+              "cachedInput": 2,
+              "cacheWrite": 25,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "Standard / Long context"
+          },
+          {
+            "name": "gpt-6-astra",
+            "modelKey": "gpt-6-astra",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 10,
+              "output": 50,
+              "cachedInput": 1,
+              "cacheWrite": 12.5,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "Standard / Short context"
+          },
+          {
+            "name": "gpt-6-luna",
+            "modelKey": "gpt-6-luna",
+            "variant": "long_context",
+            "aliases": null,
+            "rates": {
+              "input": 0.2,
+              "output": 0.75,
+              "cachedInput": 0.02,
+              "cacheWrite": 0.25,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "Standard / Long context"
+          },
+          {
+            "name": "gpt-6-luna",
+            "modelKey": "gpt-6-luna",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 0.1,
+              "output": 0.5,
+              "cachedInput": 0.01,
+              "cacheWrite": 0.125,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "Standard / Short context"
+          },
+          {
+            "name": "gpt-6.1-sol",
+            "modelKey": "gpt-6.1-sol",
+            "variant": "long_context",
+            "aliases": null,
+            "rates": {
+              "input": 4,
+              "output": 15,
+              "cachedInput": 0.2,
+              "cacheWrite": 5,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "Standard / Long context"
+          },
+          {
+            "name": "gpt-6.1-sol",
+            "modelKey": "gpt-6.1-sol",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 2,
+              "output": 10,
+              "cachedInput": 0.1,
+              "cacheWrite": 2.5,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "Standard / Short context"
+          },
+          {
+            "name": "gpt-live-1",
+            "modelKey": "gpt-live-1",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": null,
+              "output": null,
+              "cachedInput": null,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": [
+              {
+                "kind": "audio",
+                "price": 0.05,
+                "unit": "per_minute",
+                "note": "官方 GPT-Live sessions 表：Price per minute"
+              }
+            ],
+            "note": "官方按分钟计价，没有 token 单价条目"
+          }
+        ],
+        "region": "global",
+        "officialUrl": "https://platform.openai.com/docs/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://platform.openai.com/docs/pricing"
+      },
+      "4f8bae91f9f8": {
+        "pricing.currency": "USD",
+        "pricing.unit": "per_1M_tokens",
+        "models": [
+          {
+            "name": "Claude Fable 5.1",
+            "modelKey": "claude-fable-5.1",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 10,
+              "output": 50,
+              "cachedInput": 0.25,
+              "cacheWrite": 12.5,
+              "cacheWriteLong": 20,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "缓存写入两档：5 分钟写入 1.25 倍输入价、1 小时写入 2 倍输入价；缓存命中 0.025 倍输入价（官方 Cache operation 表逐字写明）"
+          },
+          {
+            "name": "Claude Haiku 4.5",
+            "modelKey": "claude-haiku-4.5",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 1,
+              "output": 5,
+              "cachedInput": 0.1,
+              "cacheWrite": 1.25,
+              "cacheWriteLong": 2,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": null
+          },
+          {
+            "name": "Claude Opus 5.5",
+            "modelKey": "claude-opus-5.5",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 4,
+              "output": 20,
+              "cachedInput": 0.2,
+              "cacheWrite": 5,
+              "cacheWriteLong": 8,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "缓存命中为 0.05 倍输入价（官方 Cache operation 表）"
+          },
+          {
+            "name": "Claude Sonnet 5.5",
+            "modelKey": "claude-sonnet-5.5",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 2,
+              "output": 10,
+              "cachedInput": 0.2,
+              "cacheWrite": 2.5,
+              "cacheWriteLong": 4,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": null
+          }
+        ],
+        "region": "global",
+        "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing"
+      },
+      "646f01c662e6": {
+        "pricing.currency": "CNY",
+        "pricing.unit": "per_1M_tokens",
+        "models": [
+          {
+            "name": "GLM-4.5V",
+            "modelKey": "glm-4.5v",
+            "variant": "long_context",
+            "aliases": null,
+            "rates": {
+              "input": 4,
+              "output": 12,
+              "cachedInput": null,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方按输入长度分档：[32K,64K) 档"
+          },
+          {
+            "name": "GLM-4.5V",
+            "modelKey": "glm-4.5v",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 2,
+              "output": 6,
+              "cachedInput": null,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方按输入长度分档：[0,32K) 档"
+          },
+          {
+            "name": "GLM-4.6V-FlashX",
+            "modelKey": "glm-4.6v-flashx",
+            "variant": "long_context",
+            "aliases": null,
+            "rates": {
+              "input": 0.3,
+              "output": 3,
+              "cachedInput": null,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方按输入长度分档：[32K,128K) 档"
+          },
+          {
+            "name": "GLM-4.6V-FlashX",
+            "modelKey": "glm-4.6v-flashx",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 0.15,
+              "output": 1.5,
+              "cachedInput": null,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方按输入长度分档：[0,32K) 档"
+          },
+          {
+            "name": "GLM-4.6V-Flash",
+            "modelKey": "glm-4.6v-flash",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 0,
+              "output": 0,
+              "cachedInput": 0,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方 FAQ 逐字写明：GLM-4.6V-Flash 输入免费、输出免费、缓存免费"
+          },
+          {
+            "name": "GLM-4.6V",
+            "modelKey": "glm-4.6v",
+            "variant": "long_context",
+            "aliases": null,
+            "rates": {
+              "input": 2,
+              "output": 6,
+              "cachedInput": null,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方按输入长度分档：[32K,128K) 档"
+          },
+          {
+            "name": "GLM-4.6V",
+            "modelKey": "glm-4.6v",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 1,
+              "output": 3,
+              "cachedInput": null,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方按输入长度分档：[0,32K) 档"
+          },
+          {
+            "name": "GLM-4.7-Flash",
+            "modelKey": "glm-4.7-flash",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 0,
+              "output": 0,
+              "cachedInput": 0,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方 FAQ 逐字写明：GLM-4.7-Flash（200K 上下文）输入免费、输出免费、缓存免费。0 是「官方明说免费」，不是「未知」"
+          },
+          {
+            "name": "GLM-5.3-Flash",
+            "modelKey": "glm-5.3-flash",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 0.8,
+              "output": 2.8,
+              "cachedInput": 0.23,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "上下文 1M；输入模态：图片、视频、文件、文本"
+          },
+          {
+            "name": "GLM-5.3",
+            "modelKey": "glm-5.3",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 8,
+              "output": 28,
+              "cachedInput": 2,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "上下文 1M；输入模态：文本；缓存存储官方标注「限时免费」（属限时活动，未记为固定单价）"
+          },
+          {
+            "name": "GLM-5V-Turbo",
+            "modelKey": "glm-5v-turbo",
+            "variant": "long_context",
+            "aliases": null,
+            "rates": {
+              "input": 7,
+              "output": 26,
+              "cachedInput": null,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方按输入长度分档：此条为 [32K+) 档"
+          },
+          {
+            "name": "GLM-5V-Turbo",
+            "modelKey": "glm-5v-turbo",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 5,
+              "output": 22,
+              "cachedInput": null,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方按输入长度分档：此条为 [0,32K) 档"
+          }
+        ],
+        "freeTier.type": "models",
+        "freeTier.models": [
+          "glm-4.6v-flash",
+          "glm-4.7-flash"
+        ],
+        "freeTier.description": "官方长期提供的免费 API 模型：文本模型 GLM-4.7-Flash（200K 上下文）与视觉模型 GLM-4.6V-Flash，输入 / 输出 / 缓存均为免费。这是官方 FAQ 里写明的常规能力，不是限时活动",
+        "restrictions": [
+          {
+            "kind": "rate_limit",
+            "value": "输入长度分档计价",
+            "note": "官方定价页写明：当输入或输出长度超过一定阈值（如 32K tokens）时会进入更高档单价；本表用 variant=long_context 的独立条目表达"
+          },
+          {
+            "kind": "region_restriction",
+            "value": "中国大陆",
+            "note": "智谱开放平台面向中国大陆提供服务"
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://open.bigmodel.cn/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://open.bigmodel.cn/pricing"
+      },
+      "82c3df0bc204": {
+        "pricing.currency": "USD",
+        "pricing.unit": "per_1M_tokens",
+        "models": [
+          {
+            "name": "gpt-6-astra",
+            "modelKey": "gpt-6-astra",
+            "variant": "long_context",
+            "aliases": null,
+            "rates": {
+              "input": 10,
+              "output": 37.5,
+              "cachedInput": 1,
+              "cacheWrite": 12.5,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "Batch / Long context"
+          },
+          {
+            "name": "gpt-6-astra",
+            "modelKey": "gpt-6-astra",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 5,
+              "output": 25,
+              "cachedInput": 0.5,
+              "cacheWrite": 6.25,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "Batch / Short context（官方价格为 Standard 的一半）"
+          },
+          {
+            "name": "gpt-6-luna",
+            "modelKey": "gpt-6-luna",
+            "variant": "long_context",
+            "aliases": null,
+            "rates": {
+              "input": 0.1,
+              "output": 0.375,
+              "cachedInput": 0.01,
+              "cacheWrite": 0.125,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "Batch / Long context"
+          },
+          {
+            "name": "gpt-6-luna",
+            "modelKey": "gpt-6-luna",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 0.05,
+              "output": 0.25,
+              "cachedInput": 0.005,
+              "cacheWrite": 0.0625,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "Batch / Short context"
+          },
+          {
+            "name": "gpt-6.1-sol",
+            "modelKey": "gpt-6.1-sol",
+            "variant": "long_context",
+            "aliases": null,
+            "rates": {
+              "input": 2,
+              "output": 7.5,
+              "cachedInput": 0.1,
+              "cacheWrite": 2.5,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "Batch / Long context"
+          },
+          {
+            "name": "gpt-6.1-sol",
+            "modelKey": "gpt-6.1-sol",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 1,
+              "output": 5,
+              "cachedInput": 0.05,
+              "cacheWrite": 1.25,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "Batch / Short context"
+          }
+        ],
+        "restrictions": [
+          {
+            "kind": "rate_limit",
+            "value": "批处理（Batch）通道",
+            "note": "官方把 Batch 单列一张价格表；批处理通常异步返回，时延与标准档不同，本站只记录价格事实"
+          }
+        ],
+        "region": "global",
+        "officialUrl": "https://platform.openai.com/docs/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://platform.openai.com/docs/pricing"
+      },
+      "a110a5bfc3f8": {
+        "pricing.currency": "USD",
+        "pricing.unit": "per_1M_tokens",
+        "models": [
+          {
+            "name": "Gemini 3.5 Flash",
+            "modelKey": "gemini-3.5-flash",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 1.5,
+              "output": 9,
+              "cachedInput": 0.15,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": [
+              {
+                "kind": "other",
+                "price": 1,
+                "unit": "per_1M_token_hours",
+                "note": "上下文缓存存储价：$1.00 / 1,000,000 tokens per hour (storage price)"
+              }
+            ],
+            "note": null
+          },
+          {
+            "name": "Gemini 3.6 Flash",
+            "modelKey": "gemini-3.6-flash",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 0.75,
+              "output": 3.75,
+              "cachedInput": 0.075,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方同样标注 2027-01-01 起调整为输入 $1.50、输出 $7.50"
+          },
+          {
+            "name": "Gemini 3.7 Flash",
+            "modelKey": "gemini-3.7-flash",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 0.75,
+              "output": 3.75,
+              "cachedInput": 0.075,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": [
+              {
+                "kind": "other",
+                "price": 0.5,
+                "unit": "per_1M_token_hours",
+                "note": "上下文缓存存储价（与 3.8 Flash 同表同值）"
+              }
+            ],
+            "note": "官方同样标注 2027-01-01 起调整为输入 $1.50、输出 $7.50"
+          },
+          {
+            "name": "Gemini 3.8 Flash",
+            "modelKey": "gemini-3.8-flash",
+            "variant": "standard",
+            "aliases": null,
+            "rates": {
+              "input": 0.75,
+              "output": 3.75,
+              "cachedInput": 0.075,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": [
+              {
+                "kind": "other",
+                "price": 0.5,
+                "unit": "per_1M_token_hours",
+                "note": "上下文缓存存储价，官方逐字：$0.50 / 1,000,000 tokens per hour (storage price) through December 31, 2026"
+              }
+            ],
+            "note": "官方标注调价：输入 $1.50、输出 $7.50「starting January 1, 2027」。本站只记录当前生效价，调价原文见本节末的官方引文"
+          }
+        ],
+        "freeTier.type": "models",
+        "freeTier.models": [
+          "gemini-3.5-flash",
+          "gemini-3.6-flash",
+          "gemini-3.7-flash",
+          "gemini-3.8-flash"
+        ],
+        "freeTier.description": "官方定价页的 Free Tier 列：这四个模型在免费档下的输入价与输出价均为 Free of charge（免费档的速率限制与「用于改进产品」条款由官方单独规定）",
+        "restrictions": [
+          {
+            "kind": "fair_use",
+            "value": true,
+            "note": "官方 Free Tier 列写明 Used to improve our products: Yes（免费档的数据会被用于改进产品），付费档为 No"
+          }
+        ],
+        "region": "global",
+        "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://ai.google.dev/gemini-api/docs/pricing"
+      },
+      "e546e8ab4c7d": {
+        "pricing.currency": "USD",
+        "pricing.unit": "per_1M_tokens",
+        "models": [
+          {
+            "name": "deepseek-flash",
+            "modelKey": "deepseek-flash",
+            "variant": "standard",
+            "aliases": [
+              "DeepSeek-V4.1-Flash"
+            ],
+            "rates": {
+              "input": 0.15,
+              "output": 0.6,
+              "cachedInput": 0.003,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方表格 OFF-PEAK 行（低峰时段）"
+          },
+          {
+            "name": "deepseek-v4-pro",
+            "modelKey": "deepseek-v4-pro",
+            "variant": "standard",
+            "aliases": [
+              "DeepSeek-V4-Pro-0813"
+            ],
+            "rates": {
+              "input": 0.66,
+              "output": 1.98,
+              "cachedInput": 0.022,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方表格 OFF-PEAK 行（低峰时段）"
+          }
+        ],
+        "limits": [
+          {
+            "kind": "concurrency",
+            "value": 2500,
+            "appliesTo": [
+              "deepseek-flash"
+            ],
+            "note": "官方表格 Concurrency Limit 列（与标准档相同）"
+          },
+          {
+            "kind": "concurrency",
+            "value": 500,
+            "appliesTo": [
+              "deepseek-v4-pro"
+            ],
+            "note": "官方表格 Concurrency Limit 列（与标准档相同）"
+          }
+        ],
+        "restrictions": [
+          {
+            "kind": "rate_limit",
+            "value": "低峰时段（OFF-PEAK）价格",
+            "note": "官方定价页把同一张表分成 PEAK / OFF-PEAK 两行；具体时段以官方公告为准，本站不推断"
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://api-docs.deepseek.com/quick_start/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://api-docs.deepseek.com/quick_start/pricing"
+      },
+      "fffbb44ac3a9": {
+        "pricing.currency": "USD",
+        "pricing.unit": "per_1M_tokens",
+        "models": [
+          {
+            "name": "deepseek-flash",
+            "modelKey": "deepseek-flash",
+            "variant": "standard",
+            "aliases": [
+              "DeepSeek-V4.1-Flash"
+            ],
+            "rates": {
+              "input": 0.3,
+              "output": 1.2,
+              "cachedInput": 0.006,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方表格 PEAK 行；同一模型另有低峰时段（OFF-PEAK）价格，见「API 按量计费（低峰时段）」那条记录。上下文长度 1M，最大输出 384K"
+          },
+          {
+            "name": "deepseek-v4-pro",
+            "modelKey": "deepseek-v4-pro",
+            "variant": "standard",
+            "aliases": [
+              "DeepSeek-V4-Pro-0813"
+            ],
+            "rates": {
+              "input": 1.32,
+              "output": 3.96,
+              "cachedInput": 0.044,
+              "cacheWrite": null,
+              "cacheWriteLong": null,
+              "reasoning": null,
+              "batchInput": null,
+              "batchOutput": null
+            },
+            "mediaRates": null,
+            "note": "官方表格 PEAK 行；上下文长度 1M，支持思考模式"
+          }
+        ],
+        "limits": [
+          {
+            "kind": "concurrency",
+            "value": 2500,
+            "appliesTo": [
+              "deepseek-flash"
+            ],
+            "note": "官方表格 Concurrency Limit 列"
+          },
+          {
+            "kind": "concurrency",
+            "value": 500,
+            "appliesTo": [
+              "deepseek-v4-pro"
+            ],
+            "note": "官方表格 Concurrency Limit 列"
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://api-docs.deepseek.com/quick_start/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://api-docs.deepseek.com/quick_start/pricing"
+      }
+    }
+  },
+  "absence": {},
+  "anomalies": [],
+  "events": []
+}

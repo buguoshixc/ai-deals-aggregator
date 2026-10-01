@@ -1,6 +1,6 @@
 {
-  "_note": "优惠政策 ↔ Coding 套餐之间的**人工确认**关系。deals.json 与 plans.json 一个字节都不改：它们是派生产物且字段集封闭，关系属于人工来源层（与 providers.json / vendor-slugs.json 同类）。本文件只写事实与出处；节省金额、updatedAt、count、relatedPlans 一律由构建期推导，手写即校验错误。",
-  "_rules": "① planIds 每一条都必须存在于 plans.json，dealId 必须存在于 deals.json（deal 被下架后要把它整条移进 retired[]，快照字段不许省）；② provider 必须等于每个关联套餐的 provider，且当 providers.json 认不出 deal.vendor 这个原始串时必须写明 providerOverride；③ promo 只在官方页给出了可比较的价格时才写，且必须同币种、同周期、appliesTo 标注资格范围；④ 引文必须是官方页原文（聚合站出处与未来日期一律拒收）。记录按 dealId 升序、planIds 升序排列；basis 枚举见 docs/SCHEMA-v2.4.md。",
+  "_note": "优惠政策 ↔ Coding 套餐 / API 计费记录之间的**人工确认**关系。deals.json、plans.json 与 api-plans.json 一个字节都不改：它们是派生产物且字段集封闭，关系属于人工来源层（与 providers.json / vendor-slugs.json 同类）。本文件只写事实与出处；节省金额、updatedAt、count、relatedPlans 一律由构建期推导，手写即校验错误。v2.5 起 planIds 的 id 空间是 Coding 套餐 ∪ API 计费记录（两个 store 的 id basis 都含 kind，不会撞），关系表格式未变。",
+  "_rules": "① planIds 每一条都必须存在于 plans.json 或 api-plans.json，dealId 必须存在于 deals.json（deal 被下架后要把它整条移进 retired[]，快照字段不许省）；② provider 必须等于每条关联记录的 provider，且当 providers.json 认不出 deal.vendor 这个原始串时必须写明 providerOverride；③ promo 只在官方页给出了可比较的价格时才写，且必须同币种、同周期、appliesTo 标注资格范围 —— API 计费记录没有 billing，任何 promo 都不产生节省金额；④ 引文必须是官方页原文（聚合站出处与未来日期一律拒收）。记录按 dealId 升序、planIds 升序排列；basis 枚举见 docs/SCHEMA-v2.4.md。",
   "schemaVersion": 1,
   "links": [
     {
@@ -55,6 +55,31 @@
       }
     },
     {
+      "dealId": "97d21ff73d3e",
+      "planIds": [
+        "646f01c662e6"
+      ],
+      "provider": "zhipu",
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "relation",
+          "quote": "新用户注册专享 2000万免费Tokens资源包120次图像和视频资源包",
+          "sourceUrl": "https://open.bigmodel.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        },
+        {
+          "field": "relation",
+          "quote": "新用户注册得 2000万 Tokens，新模型免费玩到爽！",
+          "sourceUrl": "https://open.bigmodel.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "confirmedAt": "2026-10-01"
+    },
+    {
       "dealId": "df8ec56faa17",
       "planIds": [
         "dd5cd38ae7b7"
@@ -68,6 +93,24 @@
           "sourceUrl": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-students",
           "capturedAt": "2026-10-01",
           "lang": "en"
+        }
+      ],
+      "confirmedAt": "2026-10-01"
+    },
+    {
+      "dealId": "ebd47f6d2522",
+      "planIds": [
+        "646f01c662e6"
+      ],
+      "provider": "zhipu",
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "relation",
+          "quote": "免费的API模型：文本模型 GLM-4.7-Flash（200K上下文）：输入免费、输出免费、缓存免费",
+          "sourceUrl": "https://open.bigmodel.cn/pricing",
+          "capturedAt": "2026-10-01",
+          "lang": "zh"
         }
       ],
       "confirmedAt": "2026-10-01"

@@ -35,8 +35,10 @@ const path = require('path');
 const providersLib = require('./providers');
 const provenance = require('./provenance');
 const plansPage = require('./plans-page');
+const apiPlansPage = require('./api-plans-page');
 const history = require('./history');
 const planHistory = require('./plan-history');
+const apiPlanHistory = require('./api-plan-history');
 const historyCore = require('./history-core');
 
 const LINKS_FILE = path.join(__dirname, '..', 'data', 'deal-plan-links.json');
@@ -147,7 +149,17 @@ function canonicalUpdatedAt(doc) {
 const RELATED_PLAN_FIELDS = [
   'planId', 'title', 'regularText', 'regularCode', 'promoText', 'promoCode',
   'periodText', 'quotaText', 'modelsText', 'promoLine', 'eligible', 'savingsText',
-  'linkStatus', 'planStatus'
+  'linkStatus', 'planStatus',
+  /**
+   * v2.5：被关联记录属于哪一类（`coding` / `api`）。
+   *
+   * 为什么必须显式带上它（而不是让渲染层去猜）：同一个字段名在两类记录上含义不同 ——
+   * `regularText` 在套餐上是「正常价格 ¥99/月」，在 API 计费上是「智谱AI · 模型 API 按量计费」；
+   * `periodText` 是「每月」还是「USD / 每 100 万 tokens」；`quotaText` 是套餐额度还是免费额度。
+   * 少了这一个字段，优惠页会把两种东西按同一套标签渲染（**看起来完全正常**，
+   * 但「额度」那一行会写着一个计费单位）。这是本层唯一一次契约变更，登记在此。
+   */
+  'planKind'
 ];
 
 /**
@@ -157,8 +169,8 @@ const RELATED_PLAN_FIELDS = [
  * 分成两个基准日会让优惠页与套餐页对同一条关系给出不同结论（而两边看起来都「有依据」）。
  * 不读墙上时钟：同一天两次构建产物逐字节相同。
  */
-function asOfOf({ dealsUpdatedAt = null, plansUpdatedAt = null } = {}) {
-  const dates = [dealsUpdatedAt, plansUpdatedAt]
+function asOfOf({ dealsUpdatedAt = null, plansUpdatedAt = null, apiPlansUpdatedAt = null } = {}) {
+  const dates = [dealsUpdatedAt, plansUpdatedAt, apiPlansUpdatedAt]
     .map(value => String(value || '').slice(0, 10))
     .filter(value => DATE_RE.test(value))
     .sort();
@@ -223,12 +235,21 @@ function publishedDoc(doc) {
 /* 状态：只看数据 + asOf（无墙上时钟）                                   */
 /* ------------------------------------------------------------------ */
 
+/**
+ * 关系层看到的「套餐 id 空间」= Coding 套餐 ∪ API 计费记录。
+ *
+ * v2.5 加进 `ctx.apiPlans` 之后**关系表格式一个字没改**：两个 store 的 id basis 都含 `kind`
+ * （`coding|…` / `api|…`），因此 id 不会撞；`provider` 一致性、状态、节省金额四道门照常适用。
+ * 这样做的理由见 `docs/SCHEMA-v2.5.md` §8：优惠（例如「新用户送 500 万 tokens」）关联的
+ * 往往是**厂商级**的 API 计费产品，而不是某个模型的某一档价格。
+ */
 function mapsOf(ctx) {
   const deals = Array.isArray(ctx && ctx.deals) ? ctx.deals : [];
   const plans = Array.isArray(ctx && ctx.plans) ? ctx.plans : [];
+  const apiPlans = Array.isArray(ctx && ctx.apiPlans) ? ctx.apiPlans : [];
   return {
     dealsById: new Map(deals.filter(Boolean).map(deal => [deal.id, deal])),
-    plansById: new Map(plans.filter(Boolean).map(plan => [plan.id, plan]))
+    plansById: new Map([...plans, ...apiPlans].filter(Boolean).map(plan => [plan.id, plan]))
   };
 }
 
@@ -252,6 +273,10 @@ function lifecycleOfDeal(dealId, ctx) {
 
 function lifecycleOfPlan(planId, ctx) {
   if (ctx && typeof ctx.planLifecycleOf === 'function') return lifecycleTypeOf(ctx.planLifecycleOf(planId));
+  if (ctx && ctx.apiPlanHistoryStore) {
+    const fromApi = lifecycleTypeOf(historyCore.lastLifecycleOf(ctx.apiPlanHistoryStore, planId, apiPlanHistory.PROFILE));
+    if (fromApi) return fromApi;
+  }
   if (ctx && ctx.planHistoryStore) {
     return lifecycleTypeOf(historyCore.lastLifecycleOf(ctx.planHistoryStore, planId, planHistory.PROFILE));
   }
@@ -302,6 +327,9 @@ function isCurrentRelation(dealStatus, planStatus) {
  * @returns {{amount:number, currency:string, period:string}|null}
  */
 function savingsOf(plan, promo) {
+  // 第 1 道门同时挡住了 API 计费记录：它们**没有 `billing`**（价格是 `pricing` + 逐模型 `rates`），
+  // 因此「节省多少」在结构上算不出来 —— 这正是对的：`promo.price` 是一个订阅价，
+  // 与「每百万 token 的单价」之间没有任何减法是有意义的。
   if (!plan || !plan.billing || !promo) return null;
   if (promo.appliesTo !== 'all') return null;
   const billing = plan.billing;
@@ -326,6 +354,13 @@ function savingsTextOf(savings) {
 
 /** 套餐记录 → 展示文本。**复用套餐表的同一套格式化**，不在这里重写价格/额度口径 */
 function planTextsOf(plan, ctx) {
+  // v2.5：按 `kind` 分派。API 计费记录的「价格 / 周期 / 额度 / 模型」是另一套语义，
+  // 复用套餐表的那四个字段会让优惠页把「USD / 每 100 万 tokens」写成「额度」。
+  // 判据只有这一处，`rowsOfLink()` 与两个页面都从这里取。
+  if (plan && plan.kind === 'api') {
+    const texts = apiPlansPage.apiRowTextsOf(plan, ctx);
+    return texts;
+  }
   const row = plansPage.planRowOf(plan, { providerTable: (ctx && ctx.providerTable) || null });
   return {
     providerKey: row.providerKey,
@@ -372,6 +407,7 @@ function rowsOfLink(link, ctx) {
       planEndReason: planStatus.reason,
       current: isCurrentRelation(dealStatus.status, planStatus.status),
       title: texts ? texts.title : null,
+      planKind: (plan && plan.kind) || 'coding',
       providerName: texts ? texts.providerName : null,
       providerKey: texts ? texts.providerKey : link.provider,
       planName: texts ? texts.planName : null,
@@ -418,15 +454,20 @@ function dealView(doc, ctx) {
 }
 
 /**
- * 套餐页用：**每一条套餐都有一行**（当前有优惠 / 暂无当前优惠 / 有历史关联），
- * 顺序与套餐表一致（调用方传入的 plans 顺序 = plans.json 的规范序）。
+ * 套餐页 / API 计费页用：**每一条记录都有一行**（当前有优惠 / 暂无当前优惠 / 有历史关联），
+ * 顺序与记录表一致（调用方传入的 plans 顺序 = 各自 store 的规范序）。
+ *
+ * v2.5：记录集合 = `ctx.plans` ∪ `ctx.apiPlans`（先 Coding 再 API，各自保持规范序）。
+ * 两个页面各自只渲染属于自己那一半的行 —— 这一支只管"把关系挂到记录上"。
  */
 function planDealsView(doc, ctx) {
-  const plans = Array.isArray(ctx && ctx.plans) ? ctx.plans : [];
+  const plans = [...(Array.isArray(ctx && ctx.plans) ? ctx.plans : []),
+    ...(Array.isArray(ctx && ctx.apiPlans) ? ctx.apiPlans : [])];
   const byPlan = new Map(plans.map(plan => {
     const texts = planTextsOf(plan, ctx);
     return [plan.id, {
       planId: plan.id,
+      planKind: (plan.kind) || 'coding',
       title: texts.title,
       providerName: texts.providerName,
       planName: texts.planName,
@@ -648,7 +689,7 @@ function validate(doc, ctx = {}) {
     for (const planId of link.planIds || []) {
       const plan = plansById.get(planId);
       if (!plan) {
-        errors.push(`${where}: planId ${planId} 在 plans.json 里不存在（关系必须指向真实存在的套餐）`);
+        errors.push(`${where}: planId ${planId} 在 plans.json / api-plans.json 里都不存在（关系必须指向真实存在的记录）`);
         continue;
       }
       if (plan.provider !== link.provider) {

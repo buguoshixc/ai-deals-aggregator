@@ -25,10 +25,15 @@ const providers = require('./lib/providers');
 const dealPlanLinks = require('./lib/deal-plan-links');
 const history = require('./lib/history');
 const planHistory = require('./lib/plan-history');
+// v2.5：API / Token 计费数据模型。与 plans 的分工刻意对称 —— 判据只在
+// lib/api-plan-schema.js 与 lib/api-plan-history.js 里各写一份，这里只跑起来。
+const apiPlanSchema = require('./lib/api-plan-schema');
+const apiPlanHistory = require('./lib/api-plan-history');
 
 const ROOT = path.join(__dirname, '..');
 const DEALS_FILE = path.join(ROOT, 'deals.json');
 const PLANS_FILE = path.join(ROOT, 'plans.json');
+const API_PLANS_FILE = path.join(ROOT, 'api-plans.json');
 const INDEX_FILE = path.join(ROOT, 'index.html');
 const CURATED_FILES = [
   path.join(__dirname, 'data', 'curated_cn.json'),
@@ -450,6 +455,68 @@ function checkPlansFile() {
 }
 
 /**
+ * v2.5 API 计费（`api-plans.json` + `curated_api_plans.json`）的数据门禁。
+ *
+ * 与 `checkPlansFile()` 同一条分工：只把 `lib/api-plan-schema.js` 的判据跑起来，
+ * 并把**入口对账**（人工来源层里"写了却没生效"的引文）翻成硬错误。
+ *
+ * 只读：不动任何文件。
+ */
+function checkApiPlansFile() {
+  const store = readJson(API_PLANS_FILE, 'api-plans.json');
+
+  const providerLoad = providers.load();
+  if (providerLoad.missing) error('scripts/data/providers.json 不存在（API 计费的 provider 必须登记，否则身份会分裂）');
+  if (providerLoad.broken) error(`providers.json 无法解析：${providerLoad.broken}`);
+
+  let stats = null;
+  if (store) {
+    const result = apiPlanSchema.validateApiPlansStore(store, { providerTable: providerLoad.table });
+    result.errors.forEach(message => error(message));
+    stats = apiPlanSchema.summarize(store);
+  }
+
+  try {
+    const curated = apiPlanSchema.loadCuratedApiPlans({ providerTable: providerLoad.table });
+    curated.problems.forEach(item => {
+      error(`curated_api_plans.json[${item.index === null ? '-' : item.index}] ${item.planName || '(无套餐名)'}: ${item.reason}`);
+    });
+    curated.evidenceDropped.forEach(item => {
+      error(`curated_api_plans.json[${item.index}] ${item.planName}: evidence 写了却没生效 —— ${item.reason}`);
+    });
+  } catch (e) {
+    error(`curated_api_plans.json 读取失败：${e.message}`);
+  }
+
+  return { stats };
+}
+
+/**
+ * v2.5 API 计费变化日志守卫：`api-plan-history.json` 必须与当前 `api-plans.json` 自洽。
+ *
+ * 只读。与 `check:api-plan-history` 同源（判据在 lib），这里只是让 `npm run validate`
+ * 也把这件事算进同一份账 —— 免得有人只跑 validate 就以为全绿。
+ */
+function checkApiPlanHistoryFile() {
+  const store = readJson(API_PLANS_FILE, 'api-plans.json');
+  const plans = store && Array.isArray(store.plans) ? store.plans : [];
+  const loaded = apiPlanHistory.load();
+  if (loaded.missing) {
+    warn('缺少 scripts/data/api-plan-history.json：API 计费变化层还没有基线（首次启用请跑 npm run baseline:api-plan-history）');
+    return { stats: null };
+  }
+  if (loaded.broken) {
+    error(`api-plan-history.json 解析失败：${loaded.broken}`);
+    return { stats: null };
+  }
+  const today = String((store && store.updatedAt) || '').slice(0, 10);
+  const bytes = fs.statSync(loaded.file).size;
+  const problems = apiPlanHistory.verifyStore(loaded.store, plans, { today, bytes });
+  problems.forEach(message => error(`api-plan-history.json: ${message}`));
+  return { stats: apiPlanHistory.summarize(loaded.store, plans) };
+}
+
+/**
  * v2.4 优惠 ↔ 套餐关系守卫。
  *
  * 只读：不动任何文件。它问的是三件事：
@@ -473,22 +540,29 @@ function checkDealPlanLinks({ strict = false } = {}) {
 
   const dealsDoc = readJson(DEALS_FILE, 'deals.json');
   const plansDoc = readJson(PLANS_FILE, 'plans.json');
+  const apiPlansDoc = readJson(API_PLANS_FILE, 'api-plans.json');
   const deals = dealsDoc && Array.isArray(dealsDoc.deals) ? dealsDoc.deals : [];
   const plans = plansDoc && Array.isArray(plansDoc.plans) ? plansDoc.plans : [];
+  const apiPlans = apiPlansDoc && Array.isArray(apiPlansDoc.plans) ? apiPlansDoc.plans : [];
   const providerLoad = providers.load();
   const dealHistoryLoad = history.load();
   const planHistoryLoad = planHistory.load();
+  const apiPlanHistoryLoad = apiPlanHistory.load();
 
   const result = dealPlanLinks.validate(linksLoad.doc, {
     deals,
     plans,
+    // v2.5：id 空间合并（Coding 套餐 ∪ API 计费记录）—— 关系表格式未变。
+    apiPlans,
     asOf: dealPlanLinks.asOfOf({
       dealsUpdatedAt: dealsDoc && dealsDoc.updatedAt,
-      plansUpdatedAt: plansDoc && plansDoc.updatedAt
+      plansUpdatedAt: plansDoc && plansDoc.updatedAt,
+      apiPlansUpdatedAt: apiPlansDoc && apiPlansDoc.updatedAt
     }),
     providerTable: providerLoad.table,
     dealHistoryStore: dealHistoryLoad.missing || dealHistoryLoad.broken ? null : dealHistoryLoad.store,
     planHistoryStore: planHistoryLoad.missing || planHistoryLoad.broken ? null : planHistoryLoad.store,
+    apiPlanHistoryStore: apiPlanHistoryLoad.missing || apiPlanHistoryLoad.broken ? null : apiPlanHistoryLoad.store,
     strict
   });
   result.errors.forEach(message => error(message));
@@ -722,6 +796,9 @@ function main() {
   const { stats, deals } = checkDealsFile();
   const curatedStats = checkCurated();
   const { stats: planStats } = checkPlansFile();
+  // v2.5：API 计费两件（数据 + 变化日志）。与 plans 并联，互不注入。
+  const { stats: apiPlanStats } = checkApiPlansFile();
+  checkApiPlanHistoryFile();
   const { stats: dealLinkStats } = checkDealPlanLinks({ strict });
   checkIndex();
   if (strict) checkVerifiedGuard();
@@ -754,6 +831,19 @@ function main() {
     console.log(`  名义 Token 单价: 可计算 ${planStats.computable} 条 · 不可计算 ${planStats.total - planStats.computable} 条` +
       (reasons ? `（按额度类型：${reasons}）` : ''));
     console.log(`  官方引文    : ${planStats.evidenceItems} 条 · updatedAt ${planStats.updatedAt}`);
+  }
+  // v2.5：API 计费（api-plans）与 Coding 套餐同样分开打印 —— 两者是两份数据。
+  if (apiPlanStats) {
+    const unitMix = Object.entries(apiPlanStats.byUnit).map(([unit, n]) => `${unit} ${n}`).join(' · ');
+    const channelMix = Object.entries(apiPlanStats.byChannel).map(([ch, n]) => `${ch} ${n}`).join(' · ');
+    console.log(`API 计费（api-plans）: ${apiPlanStats.total} 条 · ${apiPlanStats.providers} 个平台 · ${apiPlanStats.models} 个模型计价条目 · 国内 ${apiPlanStats.cn} / 国外 ${apiPlanStats.global}`);
+    console.log(`  计费单位    : ${unitMix}`);
+    console.log(`  计费通道    : ${channelMix}`);
+    console.log(`  免费额度/credits: 带免费额度 ${apiPlanStats.withFreeTier} 条（其中官方明说"没有" ${apiPlanStats.freeTierNone} 条）` +
+      ` · 带 credits ${apiPlanStats.withCredits} 条 · 带速率限制 ${apiPlanStats.withLimits} 条 · 非 token 计费项 ${apiPlanStats.mediaRates} 条`);
+    // 「派生指标 0 条」也要打印，而且要说清这是结论：本阶段不做成本模拟器。
+    console.log(`  派生指标    : 全部为 {}（本阶段不产出任何派生单价：混合单价需要工作负载假设）`);
+    console.log(`  官方引文    : ${apiPlanStats.evidence} 条 · updatedAt ${apiPlanStats.updatedAt}`);
   }
   // v2.4：关系层。**0 条也打印** —— 「一条都没确认」与「这一层没跑」在日志里必须长得不一样。
   if (dealLinkStats) {
@@ -806,6 +896,8 @@ function main() {
     // 但少于 5 条就没有比较价值（题面 §十三）。上限不在这里卡：MAX_PLANS 是结构上限，
     // 而"别一次采几十个平台"是人的判断，不该写成一条会误伤的门禁。
     if (planStats && planStats.total < 5) error(`[strict] plans 条数 ${planStats.total} < 5`);
+    // v2.5：api-plans 的下限与 plans 同一条理由 —— 宁可少收也不凑数，但少于 5 条没有比较价值。
+    if (apiPlanStats && apiPlanStats.total < 5) error(`[strict] api-plans 条数 ${apiPlanStats.total} < 5`);
   }
 
   if (warnings.length) {

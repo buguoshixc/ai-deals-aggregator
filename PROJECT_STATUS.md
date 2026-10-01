@@ -3322,3 +3322,91 @@ R1 唯一写入点（`rebuild-plans.js` 成功写盘时才写日志；来源层�
   `FEEDS_NOTES.emptyPlanChanges` 并加一条牙（`selftest:feeds` §九：套餐空态必须说套餐的变化面，
   且不许出现「优惠内容 / 领取条件 / 有效期」）。这正是「上线后打产物」而不是「本地看构建日志」抓到的。
 
+---
+
+### 2.45 `v2.5-api-token-plans`：API / Token 计费对比（2026-10-01，分支 `v2.5-api-token-plans`）
+
+**契约**：`docs/SCHEMA-v2.5.md`（实现与它不一致时以它为准）。
+
+**先分析再动手（题面 §一 要求先回答 BasePlan 的问题）**：结论是**要 BasePlan，但它是「共享判据」
+而不是「共享记录形状」** —— 实现上不建混合表，`plans.json` 一个字节没动。
+逐维度对照表与「为什么不把 `kind:'api'` 塞进 `plans.json`」的五条理由见契约 §2；
+最要紧的一条是：**那个文件的字段集是封闭的**（白名单 + 归一器重跑逐字段比对），
+混合之后 coding 的每条字段都要变成按 kind 分支，而它正被 202 项自测与线上用户用着。
+
+**记录粒度**（题面 §四）的关键判断：题面提示身份是 `provider / model / pricing variant`，
+**价格的身份确实是三元组，但记录不是** —— 记录 = provider × 计费产品，模型价格是记录内的元素，
+身份 `(modelKey, variant)`。理由是可判定的：若记录 = provider × model，
+题面 §十 想要的厂商级赠送（「新用户送 500 万 tokens」）会撞上 `planIdsPerLink = 8` 的上限，
+而 provider 级事实（免费额度 / credits / 限速 / 单位）per-model 存储会在几十行里漂移、
+一变就产生 N 条假事件。
+
+**这一层与订阅套餐真正不同的三件事**（也是自测里三条牙的落点）：
+
+| 维度 | 做法 |
+|---|---|
+| **单位** | `pricing.unit` 是记录级**必填枚举**（`per_1M_tokens` / `per_1K_tokens` / `per_1M_characters`）；页面上每个价格旁边有币种，每行有「计费单位」列。**全仓没有任何单位换算代码** —— 自测有一条静态扫描钉住 `api-plan-schema.js` 里没有 `1e3`/`1000 *` 这种常数乘法，也没有 `convertUnit` 这类函数名 |
+| **credits** | 字段白名单里**没有任何 token 字段**，且额外拒绝键名含 `token` 的键 ⇒「$10 credits = 500 万 tokens」**根本没有地方可写**；页面也不折算。`derivedMetrics` 恒为 `{}`（混合单价需要工作负载假设、credits→token 需要选定模型，两者都是成本计算器的事） |
+| **模型改名** | 显示名 `name` 不进被跟踪字段 ⇒ **只改显示名产生零事件**；换 `modelKey` 会变成 `model_removed`+`model_added`，并由「同记录 + 同时增删 + 单价有完全相同项」判据留档为 `possible_rename`。**检测不等于自动合并**：本仓没有合并 modelKey 的代码路径，修法只有人工写 `aliases` |
+
+**数据（5 家平台，全部逐字取自官方页；查不到就不收）**：智谱 `open.bigmodel.cn/pricing`（12 个模型计价条目，
+含 `[0,32K)`/`[32K+)` 分档与 2 个免费模型）· DeepSeek `api-docs.deepseek.com/quick_start/pricing`
+（PEAK / OFF-PEAK **两个通道**，同一模型两套价，正好验证 `channel` 轴）· OpenAI
+（Standard / Batch 两个通道 × Short/Long context 两个变体，外加一个**按分钟计价**的 `mediaRates` 条目）·
+Anthropic（`cacheWrite` 与 `cacheWriteLong` 两档写缓存价，官方同时公布 5 分钟与 1 小时）·
+Google Gemini（Free Tier 免费档 + 上下文缓存**按百万 token·小时**计的存储价 + 2027 年调价原文写在备注里）。
+共 **7 条记录 / 37 个模型计价条目 / 19 条官方引文**，国内 3 条、国外 4 条，3 种计费通道。
+
+> **候选未采信（一条都没写进数据）**：阿里云百炼、火山方舟、月之暗面、MiniMax、硅基流动、Mistral。
+> 前五家的定价表要么是 JS 分页/按模型切换（渲染后也只拿到当前选中模型的值），要么根本没有可提取的
+> token 单价表；Mistral 的 `/pricing` 已改成订阅套餐页。按本仓「没有逐字官方原文就不收录」的红线，
+> 它们**只能记成候选未采信**，不为凑家数编数据。
+
+**变化追踪**：复用 `history-core` 内核 —— v2.5 把 `plan-history.js` 的 `record()` **按 profile 参数化**
+（`recordWithProfile`），API 那一份只提供 profile + 措辞 + 薄封装（16 类事件、15 个被跟踪字段）。
+硬验收：**重构后 `plans.json` 与 `plan-history.json` 逐字节不变**（`git diff` 为空），
+`selftest:plan-history` 132 项、`check:plan-history`、`selftest:plans` 202 项全绿。
+
+**优惠 ↔ 计费记录**：关系表**格式一个字没改**，只是 id 空间变成合并的（两个 store 的 id basis 都含 `kind`）。
+注入 `dist/deals.json` 的字段新增 `planKind`（本层唯一一次契约变更，理由见契约 §14）；
+API 记录没有 `billing`，所以任何 `promo` 都不产生"节省金额"。新增 2 条真实关系
+（智谱「2000 万免费 Tokens 资源包」→ API 计费记录；「GLM-4.7-Flash 免费模型」→ 同一条记录），
+优惠页与 API 计费页**双向深链**。
+
+**页面 `/plans/api/`**：11 列预渲染静态表（平台 · 模型 · 变体 · **计费单位** · 输入价 · 输出价 ·
+缓存命中输入 · 其他计费维度 · 免费额度 / credits · 最近更新 · 官方来源），**零控件**（v1 不做筛选排序），
+另有「免费额度与 credits（厂商级事实）」明细节、「最近变化」块（同样是构建期静态渲染）、
+官方原文 `<details>` 与口径说明九条。
+
+**三个抓出来的真缺陷（都是"跑出来"而不是"读代码"发现的）**：
+
+1. **占位符互为子串**：新占位符本来叫 `__APIPLANS_HREF__`，而它**包含** `__PLANS_HREF__`；
+   `resolveRouteHrefs()` 是逐条 `split/join`，先替换短的那个会把长占位符打碎 ⇒
+   **117 个输出同时残留占位符**。改成 `__APIPLAN_HREF__`，并在模块加载时加一条
+   `assertRouteMarkersDisjoint()`（占位符之间不许互为子串）把这条约束变成构建期硬失败。
+2. **CSS 注释里的占位符字面量**：顶栏药丸的注释里写了占位符名，而 `<style>` 会被构建期
+   **逐字抽进每一个页面**、又**不经过页脚那套按深度解析** ⇒ 所有页面残留一个"占位符形态"的字符串。
+   连注释里的示例写法（`__XXX_HREF__`）都会命中产物自检的扫描正则。
+3. **套餐页的关系块多出 7 行**：`planDealsView()` 合并两个 store 之后，套餐页那一块会渲染出
+   API 记录的行（行数与断言不符）。修法是 `planDealsBlockHtml`/`assertPlanDealsBlock` 按 `kind` 过滤
+   ——**判据只有一处**，两个页面共用，不给"两边各写一套"留口子。
+
+**验证**（全部实跑）：
+
+| 检查 | 结果 |
+|---|---|
+| `npm test` / `test:strict` | 通过（新增 API 计费统计行：7 条 · 5 个平台 · 37 个条目 · 国内 3 / 国外 4） |
+| `selftest:api-plans` | **76 项 0 失败**（含 4 条 Tooth Test，逐条实跑变红再复原） |
+| `selftest:plans` / `selftest:plan-history` / `selftest:deal-plan-links` | 202 / 132 / 78 项，**0 失败**（第 1 条是既有断言拿 `OpenAI` 当"未登记"的例子，现在它被正式登记了，换成确实没登记的名字，断言意图不变） |
+| `check:api-plans:reproducible` / `check:api-plan-history` | 逐字节一致 / 基线+事件重放 == 当前数据 |
+| `npm run build` | 产物自检全过（`dist/api-plans.json` 与源逐字节相同；API 计费页从磁盘回读再跑一遍断言） |
+| `npm run verify` | **438 项 0 失败**（新增 §20 共 23 项：行数 / ItemList / **三列逐格对账** / 单位列逐行 / 0 控件 / 锚点 / canonical / 面包屑深度 / 页脚入口 / 互链 / 390·360px 无溢出 / sitemap） |
+| `check:ci` / `seo-verify` / `check:feeds:reproducible` / `check:zh` | 全过（门禁步骤 31 → **34** 步；`--expect-checks=35` 不变） |
+
+**本阶段刻意没做**（登记在契约 §17）：模型能力排行榜 / AA 分数 / benchmark / 综合推荐 / 最值得买 /
+自动模型推荐 / 成本模拟器 / 跨币种跨单位换算 / credits→token 折算 / 模型注册表 / `/plans/` hub 页 /
+`/plans/api/` 的筛选排序控件 / **专属订阅源与 `/changes/` 分栏扩展**（后两条是独立的一次改动：
+变化源的注册表当前是单条 spec，扩成两条要动 `feeds.js` 的注册表与 `/feeds/` 页面的回链断言，
+不该塞进本轮）。
+
+

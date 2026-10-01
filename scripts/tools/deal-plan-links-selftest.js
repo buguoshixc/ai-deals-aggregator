@@ -213,7 +213,7 @@ section('② 引用完整性（关系必须指向真实存在的记录）');
 /* ================================================================== */
 {
   const missingPlan = fixture({ links: [link({ planIds: [PLAN_B] })] });
-  check('planId 指向不存在的套餐 → 报错', hasError(missingPlan.result, '在 plans.json 里不存在'),
+  check('planId 指向不存在的套餐 → 报错', hasError(missingPlan.result, '里都不存在'),
     JSON.stringify(missingPlan.result.errors.slice(0, 1)));
 
   const missingDeal = fixture({ links: [link({ dealId: DEAL_MISSING })] });
@@ -545,18 +545,33 @@ section('⑨ 真实仓库数据自洽');
   if (!loaded.missing && !loaded.broken) {
     const dealsDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
     const plansDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8'));
+    // v2.5：真实关系表现在也覆盖 API 计费记录（「新用户送 2000 万 tokens」这类厂商级优惠），
+    // 所以 id 空间与构建期/validate 期一样是**合并**的 —— 三处必须传同一组 ctx，
+    // 否则会出现「selftest 绿、validate 红」这种最迷惑人的分叉。
+    const apiPlansDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8'));
+    const planHistoryLib = require('../lib/plan-history');
+    const apiPlanHistoryLib = require('../lib/api-plan-history');
+    const planHistoryLoad = planHistoryLib.load();
+    const apiPlanHistoryLoad = apiPlanHistoryLib.load();
     const ctx = {
       deals: dealsDoc.deals,
       plans: plansDoc.plans,
-      asOf: links.asOfOf({ dealsUpdatedAt: dealsDoc.updatedAt, plansUpdatedAt: plansDoc.updatedAt }),
+      apiPlans: apiPlansDoc.plans,
+      asOf: links.asOfOf({
+        dealsUpdatedAt: dealsDoc.updatedAt,
+        plansUpdatedAt: plansDoc.updatedAt,
+        apiPlansUpdatedAt: apiPlansDoc.updatedAt
+      }),
       providerTable: PROVIDER_TABLE,
+      planHistoryStore: planHistoryLoad.missing || planHistoryLoad.broken ? null : planHistoryLoad.store,
+      apiPlanHistoryStore: apiPlanHistoryLoad.missing || apiPlanHistoryLoad.broken ? null : apiPlanHistoryLoad.store,
       strict: true
     };
     const result = links.validate(loaded.doc, ctx);
     check('真实关系表在 strict 下零 error', result.errors.length === 0, JSON.stringify(result.errors.slice(0, 3)));
     const view = links.planDealsView(loaded.doc, ctx);
-    check('真实关系表：每条套餐各一行，覆盖数与关系数一致',
-      view.rows.length === plansDoc.plans.length &&
+    check('真实关系表：每条记录各一行（Coding 套餐 ∪ API 计费），覆盖数与关系数一致',
+      view.rows.length === plansDoc.plans.length + apiPlansDoc.plans.length &&
       view.counts.current === result.stats.currentRows &&
       view.counts.links === result.stats.links,
       JSON.stringify(view.counts));
@@ -579,7 +594,7 @@ section('⑩ 牙齿测试（四条，逐条实跑：把东西弄坏 → 断言�
   // #1 relatedPlanIds 指向不存在 ID → 红
   const tooth1 = fixture({ links: [link({ planIds: ['deadbeef0000'] })] });
   check('#1 planId 指向不存在的套餐 → 校验当场报错', tooth1.result.errors.length > 0 &&
-    hasError(tooth1.result, '在 plans.json 里不存在'), JSON.stringify(tooth1.result.errors.slice(0, 1)));
+    hasError(tooth1.result, '里都不存在'), JSON.stringify(tooth1.result.errors.slice(0, 1)));
 
   // #2 USD plan 与 CNY deal 直接计算节省 → 红
   const usdPlan = plan();

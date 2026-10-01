@@ -38,6 +38,10 @@ const CONFIDENCE_ORDER = { high: 0, medium: 1, low: 2 };
 function main() {
   const dealsDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
   const plansDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8'));
+  // v2.5：候选面同时覆盖 API 计费记录（「新用户送 500 万 tokens」这类优惠天然指向厂商级 API 产品）。
+  // 候选报告**仍然只产出报告**：它没有任何写生产关系的代码路径（自测里有一条断言钉住这一点）。
+  const apiPlansPath = path.join(ROOT, 'api-plans.json');
+  const apiPlansDoc = fs.existsSync(apiPlansPath) ? JSON.parse(fs.readFileSync(apiPlansPath, 'utf8')) : { plans: [], updatedAt: null };
   const providerTable = providers.load().table;
 
   const loaded = links.load();
@@ -48,7 +52,7 @@ function main() {
     }
   }
 
-  const candidates = links.candidatesOf(dealsDoc.deals, plansDoc.plans, { providerTable })
+  const candidates = links.candidatesOf(dealsDoc.deals, plansDoc.plans.concat(apiPlansDoc.plans || []), { providerTable })
     .map(item => Object.assign({}, item, { alreadyLinked: linkedPairs.has(`${item.dealId}\u0000${item.planId}`) }))
     .sort((a, b) => {
       if (a.alreadyLinked !== b.alreadyLinked) return a.alreadyLinked ? 1 : -1;
@@ -61,7 +65,8 @@ function main() {
   const payload = {
     generatedAt: links.asOfOf({
       dealsUpdatedAt: dealsDoc.updatedAt,
-      plansUpdatedAt: plansDoc.updatedAt
+      plansUpdatedAt: plansDoc.updatedAt,
+      apiPlansUpdatedAt: apiPlansDoc.updatedAt
     }),
     note: '相似度候选，**只供人工 review**。生产关系的真值是 scripts/data/deal-plan-links.json，'
       + '只能由人编辑（每条要写 provider / basis / 官方出处 / 确认日期）。本文件由 '
