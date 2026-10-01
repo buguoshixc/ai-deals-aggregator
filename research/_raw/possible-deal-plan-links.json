@@ -1,0 +1,294 @@
+{
+  "generatedAt": "2026-10-01",
+  "note": "相似度候选，**只供人工 review**。生产关系的真值是 scripts/data/deal-plan-links.json，只能由人编辑（每条要写 provider / basis / 官方出处 / 确认日期）。本文件由 scripts/tools/deal-plan-link-candidates.js 生成，不会被任何构建或采集流程读取。",
+  "rules": [
+    "vendor-alias",
+    "url-host",
+    "title-mention"
+  ],
+  "counts": {
+    "candidates": 22,
+    "alreadyLinked": 3,
+    "byConfidence": {
+      "high": 10,
+      "medium": 6,
+      "low": 6
+    }
+  },
+  "candidates": [
+    {
+      "dealId": "5dedb9455508",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "CogView-3-Flash 免费模型",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "vendor-alias",
+        "url-host"
+      ],
+      "confidence": "high",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "62e3166acec0",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "GLM-4V-Flash 免费模型",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "vendor-alias",
+        "url-host"
+      ],
+      "confidence": "high",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "6798f78de5ce",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "GLM-4.6V-Flash 免费模型",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "vendor-alias",
+        "url-host"
+      ],
+      "confidence": "high",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "9c553dd82d2d",
+      "planId": "7857c6ed195b",
+      "dealTitle": "Cursor",
+      "planTitle": "Cursor Pro",
+      "provider": "cursor",
+      "rules": [
+        "vendor-alias",
+        "url-host"
+      ],
+      "confidence": "high",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "df1210f69a39",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "CogVideoX-Flash 免费模型",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "vendor-alias",
+        "url-host"
+      ],
+      "confidence": "high",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "e7e8f538456c",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "GLM-4.5-Flash 免费模型",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "vendor-alias",
+        "url-host"
+      ],
+      "confidence": "high",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "ebd47f6d2522",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "GLM-4.7-Flash 免费模型",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "vendor-alias",
+        "url-host"
+      ],
+      "confidence": "high",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "f22e3cd094ad",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "GLM-4.1V-Thinking-Flash 免费模型",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "vendor-alias",
+        "url-host"
+      ],
+      "confidence": "high",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "1688614d6669",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "智谱AI 邀请好友注册赠送 Tokens 资源包",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "vendor-alias"
+      ],
+      "confidence": "medium",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "219f6fca7f31",
+      "planId": "dd5cd38ae7b7",
+      "dealTitle": "GitHub Student Developer Pack 学生开发者工具包",
+      "planTitle": "GitHub Pro",
+      "provider": "github",
+      "rules": [
+        "vendor-alias"
+      ],
+      "confidence": "medium",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "97d21ff73d3e",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "vendor-alias"
+      ],
+      "confidence": "medium",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "adcb6471a512",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "智谱AI Batch API 批量调用五折",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "vendor-alias"
+      ],
+      "confidence": "medium",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "e4bd8003b3d6",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "GLM-5.3-Flash 限时五折",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "vendor-alias"
+      ],
+      "confidence": "medium",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "ead998e58cd9",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "智谱AI 上下文缓存存储限时免费",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "vendor-alias"
+      ],
+      "confidence": "medium",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "6869e7866510",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "讯飞星火 Spark Lite 轻量级大模型免费使用",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "title-mention"
+      ],
+      "confidence": "low",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "b4d87c02f4d9",
+      "planId": "a6a6a374dfba",
+      "dealTitle": "MiniMax MiniMax-M3 按量计费永久五折",
+      "planTitle": "MiniMax（稀宇科技） Token Plan Plus",
+      "provider": "minimax",
+      "rules": [
+        "url-host"
+      ],
+      "confidence": "low",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "d6aaee8c7379",
+      "planId": "003a3f02d7bc",
+      "dealTitle": "Doubao-Seedream-5.0-lite 免费额度",
+      "planTitle": "智谱AI Lite",
+      "provider": "zhipu",
+      "rules": [
+        "title-mention"
+      ],
+      "confidence": "low",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "e237cab7c007",
+      "planId": "057331b58bc9",
+      "dealTitle": "阿里云百炼 新用户免费额度",
+      "planTitle": "Qoder CN 个人专业版(Pro)",
+      "provider": "qoder",
+      "rules": [
+        "url-host"
+      ],
+      "confidence": "low",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "e63402b5cc83",
+      "planId": "ecb07e0ed88a",
+      "dealTitle": "Kimi 开放平台 新用户 15 元代金券",
+      "planTitle": "月之暗面 Moderato",
+      "provider": "moonshot",
+      "rules": [
+        "url-host"
+      ],
+      "confidence": "low",
+      "alreadyLinked": false
+    },
+    {
+      "dealId": "8e7b0fd03e73",
+      "planId": "dd5cd38ae7b7",
+      "dealTitle": "GitHub Copilot 教师与开源维护者免费 Pro",
+      "planTitle": "GitHub Pro",
+      "provider": "github",
+      "rules": [
+        "vendor-alias",
+        "url-host"
+      ],
+      "confidence": "high",
+      "alreadyLinked": true
+    },
+    {
+      "dealId": "df8ec56faa17",
+      "planId": "dd5cd38ae7b7",
+      "dealTitle": "GitHub Copilot 学生免费（Copilot Student）",
+      "planTitle": "GitHub Pro",
+      "provider": "github",
+      "rules": [
+        "vendor-alias",
+        "url-host"
+      ],
+      "confidence": "high",
+      "alreadyLinked": true
+    },
+    {
+      "dealId": "7691c150c8e5",
+      "planId": "a6a6a374dfba",
+      "dealTitle": "MiniMax 开放平台 Token Plan 好友邀请 受邀人 9 折",
+      "planTitle": "MiniMax（稀宇科技） Token Plan Plus",
+      "provider": "minimax",
+      "rules": [
+        "url-host"
+      ],
+      "confidence": "low",
+      "alreadyLinked": true
+    }
+  ]
+}

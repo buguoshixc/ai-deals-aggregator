@@ -20,6 +20,11 @@ const provenance = require('./lib/provenance');
 // 这里只负责把它跑起来、把结论并进同一份 error/warn 账，不重抄任何一条规则。
 const planSchema = require('./lib/plan-schema');
 const providers = require('./lib/providers');
+// v2.4：优惠 ↔ 套餐关系层。判据（引用完整性 / provider 归一 / 状态 / promo 形状）全在
+// lib/deal-plan-links.js 一处，这里只把两个数据集与两份历史传进去、把结论并进同一份 error/warn 账。
+const dealPlanLinks = require('./lib/deal-plan-links');
+const history = require('./lib/history');
+const planHistory = require('./lib/plan-history');
 
 const ROOT = path.join(__dirname, '..');
 const DEALS_FILE = path.join(ROOT, 'deals.json');
@@ -445,6 +450,53 @@ function checkPlansFile() {
 }
 
 /**
+ * v2.4 优惠 ↔ 套餐关系守卫。
+ *
+ * 只读：不动任何文件。它问的是三件事：
+ *   ① **引用完整性**：每条关系的 dealId / planId 都必须真实存在（指向不存在的 id = 一条死关系）；
+ *   ② **provider 一致或明确 override**：套餐侧必须一致；deals 侧的原始厂商串被 providers.json
+ *      认不出来时必须写明 `providerOverride`（不做子串匹配，宁要一次显式登记）；
+ *   ③ **状态**：`links` 里的优惠已经结束（过期 / 历史层记过 ended / 记录被下架）时，
+ *      `--strict` 下报错 —— 要求人把它移进 `retired[]`，而不是让一条「当前优惠」永远挂着。
+ */
+function checkDealPlanLinks({ strict = false } = {}) {
+  const linksLoad = dealPlanLinks.load();
+  const relative = path.relative(ROOT, dealPlanLinks.LINKS_FILE);
+  if (linksLoad.missing) {
+    error(`缺少 ${relative}：优惠与套餐的关系层不存在（它是仓库里的源文件）`);
+    return { stats: null };
+  }
+  if (linksLoad.broken) {
+    error(`${relative} 解析失败：${linksLoad.broken}`);
+    return { stats: null };
+  }
+
+  const dealsDoc = readJson(DEALS_FILE, 'deals.json');
+  const plansDoc = readJson(PLANS_FILE, 'plans.json');
+  const deals = dealsDoc && Array.isArray(dealsDoc.deals) ? dealsDoc.deals : [];
+  const plans = plansDoc && Array.isArray(plansDoc.plans) ? plansDoc.plans : [];
+  const providerLoad = providers.load();
+  const dealHistoryLoad = history.load();
+  const planHistoryLoad = planHistory.load();
+
+  const result = dealPlanLinks.validate(linksLoad.doc, {
+    deals,
+    plans,
+    asOf: dealPlanLinks.asOfOf({
+      dealsUpdatedAt: dealsDoc && dealsDoc.updatedAt,
+      plansUpdatedAt: plansDoc && plansDoc.updatedAt
+    }),
+    providerTable: providerLoad.table,
+    dealHistoryStore: dealHistoryLoad.missing || dealHistoryLoad.broken ? null : dealHistoryLoad.store,
+    planHistoryStore: planHistoryLoad.missing || planHistoryLoad.broken ? null : planHistoryLoad.store,
+    strict
+  });
+  result.errors.forEach(message => error(message));
+  result.warnings.forEach(message => warn(message));
+  return { stats: result.stats };
+}
+
+/**
  * v1.3 信息来源守卫（只在 --strict 下跑）。
  *
  * 三件事：
@@ -670,6 +722,7 @@ function main() {
   const { stats, deals } = checkDealsFile();
   const curatedStats = checkCurated();
   const { stats: planStats } = checkPlansFile();
+  const { stats: dealLinkStats } = checkDealPlanLinks({ strict });
   checkIndex();
   if (strict) checkVerifiedGuard();
   if (strict) checkOngoingGuard();
@@ -701,6 +754,13 @@ function main() {
     console.log(`  名义 Token 单价: 可计算 ${planStats.computable} 条 · 不可计算 ${planStats.total - planStats.computable} 条` +
       (reasons ? `（按额度类型：${reasons}）` : ''));
     console.log(`  官方引文    : ${planStats.evidenceItems} 条 · updatedAt ${planStats.updatedAt}`);
+  }
+  // v2.4：关系层。**0 条也打印** —— 「一条都没确认」与「这一层没跑」在日志里必须长得不一样。
+  if (dealLinkStats) {
+    console.log(`优惠 ↔ 套餐  : ${dealLinkStats.links} 条当前关系 · 历史（retired）${dealLinkStats.retired} 条` +
+      ` · 覆盖 ${dealLinkStats.plansWithCurrent}/${dealLinkStats.plans} 条套餐` +
+      `（当前 ${dealLinkStats.currentRows} 行 / 历史 ${dealLinkStats.historyRows} 行）` +
+      ` · 人工判断 ${dealLinkStats.editorial} 条 · 基准日 ${dealLinkStats.asOf || '未知'}`);
   }
   // 有值时它已经在上面作为**错误**报过并 exit 1 了，所以这行只在 0 的时候看得见 ——
   // 「0 也打印」的意思正是让「没检查」与「检查了、干净」在日志里长得不一样。

@@ -215,6 +215,16 @@ runs:
       shell: bash
       run: node scripts/tools/plan-history-selftest.js
 
+    # v2.4 新增：优惠 ↔ 套餐关系自测（零依赖、离线、秒级）。
+    # 它盯的是这一层赖以成立的承诺：关系必须指向**真实存在**的记录（不存在的 id 硬红）、
+    # provider 必须一致或有明确 override（认得出却多写 override 也要红）、状态只看数据与基准日
+    # （同数据换基准日结论随之变化 → 证明没读墙上时钟）、**已结束的优惠永远不能显示成「当前优惠」**、
+    # 节省金额四道门（同套餐/同币种/同周期/全员可享）缺一不可、派生值不得落盘、
+    # 候选报告没有任何写生产关系的代码路径。判断标准与上面几支相同：它红的时候没有别的步骤会替它红。
+    - name: Deal-plan-links self-test
+      shell: bash
+      run: node scripts/tools/deal-plan-links-selftest.js
+
     # 发布产物由 build-local.js 组装（与 deploy.yml 完全同一条路径），
     # 失败即拦：能装出坏产物就不该合并、更不该发布。
     - name: Assemble site (same path as deploy.yml)

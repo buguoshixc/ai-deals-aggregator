@@ -4290,6 +4290,133 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     check('首页顶栏或页脚有「套餐对比」入口（这一页不是孤儿页）', homePlansLink);
   }
 
+  // ⑪ v2.4：优惠 ↔ 套餐（Deal → Plan / Plan → Deal）真实浏览器对账
+  //
+  // 判据**现场从产物重算**：读 `dist/deal-plan-links.json` + `dist/deals.json` + `dist/plans.json`
+  // （外加 deal-history 的 ended 事件），自己判断"哪些关系算当前"，再与页面上的 DOM 逐条对账。
+  // 刻意不硬编码条数与文案（数据每天都在变，硬编码第二天就变成假红），也不 require 构建期的
+  // 判据模块 —— 这一节的价值正是"用另一条路算一遍"。
+  {
+    const readDist = rel => JSON.parse(fs.readFileSync(path.join(DIR, rel), 'utf8'));
+    const linksDoc = readDist('deal-plan-links.json');
+    const dealsDoc = readDist('deals.json');
+    const plansDoc = readDist('plans.json');
+    const historyDoc = fs.existsSync(path.join(DIR, 'deal-history.json')) ? readDist('deal-history.json') : { events: [] };
+    const asOf = [String(dealsDoc.updatedAt || '').slice(0, 10), String(plansDoc.updatedAt || '').slice(0, 10)]
+      .filter(Boolean).sort().pop();
+    const dealsById = new Map((dealsDoc.deals || []).map(deal => [deal.id, deal]));
+    const endedIds = new Set((historyDoc.events || []).filter(event => event.type === 'ended').map(event => event.id));
+    const isCurrentDeal = dealId => {
+      const deal = dealsById.get(dealId);
+      if (!deal) return false;
+      if (endedIds.has(dealId)) return false;
+      if (deal.expiresAt && asOf && String(deal.expiresAt) < asOf) return false;
+      return true;
+    };
+    const planIdsByDeal = new Map((linksDoc.links || []).map(link => [link.dealId, link.planIds || []]));
+    const currentPairs = new Set();
+    for (const link of linksDoc.links || []) {
+      if (!isCurrentDeal(link.dealId)) continue;
+      for (const planId of link.planIds || []) currentPairs.add(`${link.dealId}\u0000${planId}`);
+    }
+
+    // 这一节独立于上面那个 `{}` 块（`plansRouteUrl` 在那里是块级作用域），所以自己构造地址。
+    const plansDealsUrl = new URL('plans/coding/', base).href;
+    await page.goto(plansDealsUrl, { waitUntil: 'load' });
+    const block = await page.evaluate(`(() => {
+      const section = document.getElementById('plan-deals');
+      if (!section) return null;
+      return {
+        rows: [...section.querySelectorAll('li[id^="plan-deals-"]')].map(li => ({
+          planId: (li.id.match(/^plan-deals-([0-9a-f]{12})$/) || [])[1] || '',
+          who: (li.querySelector('a.pdwho') || {}).getAttribute ? li.querySelector('a.pdwho').getAttribute('href') : '',
+          none: Boolean(li.querySelector('span.pdnone')),
+          currentDeals: [...li.querySelectorAll('a.pdgo:not(.pdgo-hist)')]
+            .map(a => (a.getAttribute('href') || '').match(/deal\\/([0-9a-f]{12})\\//))
+            .filter(Boolean).map(m => m[1]),
+          history: li.querySelectorAll('span.pdhist').length
+        })),
+        text: (section.innerText || '').replace(/\\s+/g, ' ').trim()
+      };
+    })()`);
+    check('/plans/coding/ 有优惠 ↔ 套餐块 #plan-deals（构建期静态渲染，无 JS 也读得到）',
+      Boolean(block), block ? `${block.rows.length} 行` : '找不到 #plan-deals');
+    if (block) {
+      check('/plans/coding/ 关联块逐条列出全部套餐，顺序与表内一致',
+        block.rows.length === plansDoc.plans.length &&
+        block.rows.every((row, index) => row.planId === plansDoc.plans[index].id),
+        `${block.rows.length} 行 / ${plansDoc.plans.length} 条套餐`);
+      check('/plans/coding/ 关联块每行都链回真实的套餐行锚点',
+        block.rows.every(row => row.who === `#plan-${row.planId}`),
+        block.rows.map(row => row.who).slice(0, 3).join(' '));
+      const problems = [];
+      for (const row of block.rows) {
+        for (const dealId of row.currentDeals) {
+          if (!currentPairs.has(`${dealId}\u0000${row.planId}`)) problems.push(`把已结束的 ${dealId} 当成当前优惠`);
+        }
+        if (!row.currentDeals.length && !row.none) problems.push(`${row.planId} 没有当前优惠却没写「暂无当前优惠」`);
+        if (row.currentDeals.length && row.none) problems.push(`${row.planId} 既有当前优惠又写着「暂无当前优惠」`);
+      }
+      check('/plans/coding/ 「当前优惠」只出现在当前关系上，空态写明「暂无当前优惠」',
+        problems.length === 0, problems.slice(0, 3).join(' '));
+      const shown = new Set(block.rows.flatMap(row => row.currentDeals.map(dealId => `${dealId}\u0000${row.planId}`)));
+      const missing = [...currentPairs].filter(pair => !shown.has(pair));
+      check('/plans/coding/ 每一条当前关系都出现在页面上（漏一条就是"关系丢了"）',
+        missing.length === 0, missing.join(' '));
+      check('/plans/coding/ 已结束的优惠没有以「当前优惠」形态出现（Tooth #4 的浏览器侧）',
+        block.rows.flatMap(row => row.currentDeals).filter(dealId => !isCurrentDeal(dealId)).length === 0);
+      const servedLinks = await page.evaluate(`(async () => {
+        const response = await fetch(${JSON.stringify(new URL('deal-plan-links.json', base).href)});
+        return { status: response.status, body: await response.text() };
+      })()`);
+      let servedOk = false;
+      try { servedOk = JSON.stringify(JSON.parse(servedLinks.body).links) === JSON.stringify(linksDoc.links); } catch (error) { servedOk = false; }
+      check('dist/deal-plan-links.json 可下载且与源表一致（关系可被外部核对）',
+        servedLinks.status === 200 && servedOk, `HTTP ${servedLinks.status}`);
+    }
+
+    const anchors = new Set(block ? block.rows.map(row => `plan-${row.planId}`) : []);
+    const planTitleOf = planId => {
+      const plan = (plansDoc.plans || []).find(item => item.id === planId);
+      return plan ? plan.planName : '';
+    };
+    const linkedDealId = (linksDoc.links || []).map(link => link.dealId).find(id => dealsById.has(id)) || null;
+    const unlinkedDealId = (dealsDoc.deals || []).map(deal => deal.id)
+      .find(id => !(linksDoc.links || []).some(link => link.dealId === id)) || null;
+    if (linkedDealId) {
+      await page.goto(new URL(`deal/${linkedDealId}/`, base).href, { waitUntil: 'load' });
+      const dealBlock = await page.evaluate(`(() => {
+        const el = document.querySelector('.dplans');
+        if (!el) return null;
+        return {
+          planIds: [...el.querySelectorAll('li.dpl')].map(li => li.getAttribute('data-plan-id') || ''),
+          hrefs: [...el.querySelectorAll('a.dpl-who, a.dpl-go')].map(a => a.getAttribute('href') || ''),
+          text: (el.innerText || '').replace(/\\s+/g, ' ').trim()
+        };
+      })()`);
+      check(`/deal/${linkedDealId}/ 有关系 → 渲染出「关联的正常套餐」块`,
+        Boolean(dealBlock), dealBlock ? dealBlock.text.slice(0, 60) : '找不到 .dplans');
+      if (dealBlock) {
+        const expected = planIdsByDeal.get(linkedDealId) || [];
+        check('/deal/<id>/ 关联块列出的套餐与关系表一致',
+          JSON.stringify(dealBlock.planIds) === JSON.stringify(expected), JSON.stringify(dealBlock.planIds));
+        check('/deal/<id>/ 每条套餐都链到套餐页的行锚点，且锚点真的落在那一页上',
+          dealBlock.hrefs.length > 0 &&
+          dealBlock.hrefs.every(href => /^\.\.\/\.\.\/plans\/coding\/#plan-[0-9a-f]{12}$/.test(href)) &&
+          dealBlock.hrefs.every(href => anchors.has(href.split('#')[1])),
+          dealBlock.hrefs.join(' '));
+        check('/deal/<id>/ 关联块写出套餐名与「查看套餐对比 →」',
+          expected.every(planId => dealBlock.text.includes(planTitleOf(planId))) &&
+          dealBlock.text.includes('查看套餐对比'));
+      }
+    }
+    if (unlinkedDealId) {
+      await page.goto(new URL(`deal/${unlinkedDealId}/`, base).href, { waitUntil: 'load' });
+      const extra = await page.evaluate(() => document.querySelectorAll('.dplans').length);
+      check('/deal/<id>/ 没有关系的优惠页一个字节都不多（不渲染关联块）', extra === 0, `${extra} 个 .dplans`);
+    }
+  }
+
   await browser.close();
   if (server) server.close();
 
