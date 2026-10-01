@@ -548,6 +548,13 @@ section('九、套餐变化订阅源（v2.3：另一份数据的变化流）');
   check('没有套餐变化时：条目为空，描述如实说起算日',
     emptyPlanFeed.items.length === 0 && /还没有观测到/.test(emptyPlanFeed.description) && /起算/.test(emptyPlanFeed.description),
     emptyPlanFeed.description);
+  // v2.3 上线后打线上 Feed 抓到的**真实文案 bug**：空态复用了优惠那一句，于是这份订阅
+  // 对着读者说「还没有观测到优惠内容、领取条件或有效期的变化」—— 套餐根本没有这两个面。
+  // 这条牙钉住「套餐的空态必须说套餐的事」，复用 deals 的句子会当场红。
+  check('套餐变化的空态写的是**套餐**的变化面（不复用优惠那句）',
+    emptyPlanFeed.description.includes('套餐的价格、活动价、额度、模型、限制或销售地区') &&
+    !/优惠内容|领取条件|有效期/.test(emptyPlanFeed.description),
+    emptyPlanFeed.description);
   const offlinePlanBundle = buildWithVendor({
     deals: payload.deals, store: historyStore.store, radar, asOf: AS_OF, updatedAt: payload.updatedAt,
     planRadar: planChanges.buildPlanRadar({ plans, store: null, asOf: AS_OF, availability: 'unavailable' }),

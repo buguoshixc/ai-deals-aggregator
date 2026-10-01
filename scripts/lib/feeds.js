@@ -127,6 +127,12 @@ const FEEDS_WORDING = {
     /** 变化流为空时的说明（起算日由渲染层补）：**空是事实，不是故障** */
     emptyNew: '自起算日起，还没有观测到首次收录的条目。',
     emptyChanges: '自起算日起，还没有观测到优惠内容、领取条件或有效期的变化。',
+    /**
+     * 套餐变化流为空时的说明。**必须单独一句**：套餐的变化面是价格 / 活动价 / 额度 / 模型 /
+     * 限制 / 销售地区，与优惠的「领取条件 / 有效期」是两回事 —— 复用上面那句会让读者以为
+     * 这份订阅漏了优惠（v2.3 上线后打线上 Feed 时抓到的**真实文案 bug**，已由自测钉住）。
+     */
+    emptyPlanChanges: '自起算日起，还没有观测到套餐的价格、活动价、额度、模型、限制或销售地区的变化。',
     /** 正文尾部的口径说明 */
     scope: '本订阅由本站构建期生成：没有账号、没有邮件列表、没有第三方推送服务。',
     provider: '厂商订阅收的是该厂商当前收录的优惠；想看「它最近变了什么」，订最近变化。',
@@ -592,7 +598,7 @@ function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS, ve
   // 而不是优惠的出现与消失。同样**始终生成**：空是事实（这套日志的起算日之前没有可观测的变化）。
   specs.push(Object.assign({}, PLAN_CHANGE_FEED, {
     homePageUrl: absolute(PLAN_CHANGE_FEED.pageRoute),
-    emptyNote: FEEDS_WORDING.FEEDS_NOTES.emptyChanges
+    emptyNote: FEEDS_WORDING.FEEDS_NOTES.emptyPlanChanges
   }));
 
   // 厂商 Feed：数据驱动，门槛见 VENDOR_THRESHOLDS。

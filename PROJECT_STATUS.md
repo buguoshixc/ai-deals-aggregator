@@ -3289,9 +3289,9 @@ R1 唯一写入点（`rebuild-plans.js` 成功写盘时才写日志；来源层�
 | `selftest:plan-history`（新） | **132 项 0 失败** |
 | `check:plan-history`（新） | exit 0 · 起算日 2026-10-01 · 基线 9 条 · 事件 0 条 · 6.8 KB / 上限 1 MB |
 | `selftest:plans` | 182 → **202 项 0 失败**（新增 §⑯：最近变化块/时间线/锚点 + 4 条牙） |
-| `selftest:feeds` | 71 → **83 项 0 失败**（新增 §九：套餐变化源 + 3 条牙） |
+| `selftest:feeds` | 71 → **84 项 0 失败**（新增 §九：套餐变化源 + 3 条牙 + 「套餐空态不许复用优惠那句」） |
 | `selftest:history` / `check:history` | **61 项 0 失败** / 重放一致 —— 内核抽离后 deals 侧行为未变 |
-| `verify`（真浏览器） | 379 → **398 项 0 失败**；`verify:regress` **404 项 0 失败**（覆盖 80→80 · 卡片 50→50 · 首屏 9→9 · 页高 4589→4665px · 外部请求 0 · JS 错误 0） |
+| `verify`（真浏览器） | 379 → **406 项 0 失败**；`verify:regress` **412 项 0 失败**（覆盖 80→80 · 卡片 50→50 · 首屏 9→9 · 页高 4589→4665px · 外部请求 0 · JS 错误 0） |
 | `build` ×2 | 全部自检通过；套餐页 / `/changes/` / 套餐变化 Feed / `plan-history.json` 两次构建 **SHA256 逐字节一致** |
 | 既有门禁 | `validate`（strict）/ `check:reproducible` / `check:plans:reproducible` / `selftest:seo` 62 / `verify:seo` 8 / `check:ci` **35** / `check:zh` / `selftest:zh` 15 / `selftest:expiry` 94 / `selftest:text` 46 / `selftest:health` 51 / `selftest:provenance` 91 / `selftest:changes` 89 / `check:feeds:reproducible` / `selftest:audience` 161 / `selftest:app-token` 67 / `fixture:test` 4 / `ai:selftest` —— 全部 exit 0 |
 
@@ -3312,7 +3312,13 @@ R1 唯一写入点（`rebuild-plans.js` 成功写盘时才写日志；来源层�
 - **本阶段刻意没做**：综合推荐 / 星级 / benchmark / API plan（2.5）/ Deals↔Plans 关联（2.4）/
   独立套餐详情页 / `/plans/<id>/` / 平台页 / 汇率 / 自动采集套餐 / 把套餐变化混进优惠的变化流 /
   页面载荷扩到历史（按套餐线性加事件会让体积不可控，另做设计再说）。
-- **本轮已推送**：分支 `v2.3-plan-history` → 合并进 `master`（用户明确要求「推送上线你自己的部分」）。
-  本阶段期间工作区里一直有另一个会话在改共享顶栏（PR #19 / #20），所以本分支**两次 rebase** 到它之后
-  才提交推送，两边互不覆盖。
+- **✅ 已上线**：分支 `v2.3-plan-history` → PR **#21** → `gate` **success** → 合并 **`0f2efa5`** →
+  `prepublish` / `build` / `deploy` **全绿**。线上冒烟（真浏览器 + 直接打线上地址）：
+  `/plans/coding/` **200**（136.5 KB · 最近变化块 / 9 个 `#plan-<id>` 锚点 / 空态文案 / 套餐变化源声明都在）·
+  `/changes/` **200**（76.2 KB · 锚点导航 / 套餐四栏 / 两条变化源）· `/feed/plans/coding/changes.xml` **200**（良构）·
+  `/plan-history.json` **200**（6.8 KB，与源逐字节相同）· `/feeds/` **200**（列出套餐变化源）。
+- **上线后修复（同日）**：打线上 Feed 时发现套餐变化源的**空态复用了优惠那一句**
+  （「还没有观测到优惠内容、领取条件或有效期的变化」——套餐根本没有这两个面）。修法是新增
+  `FEEDS_NOTES.emptyPlanChanges` 并加一条牙（`selftest:feeds` §九：套餐空态必须说套餐的变化面，
+  且不许出现「优惠内容 / 领取条件 / 有效期」）。这正是「上线后打产物」而不是「本地看构建日志」抓到的。
 
