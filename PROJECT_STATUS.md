@@ -1,8 +1,14 @@
 # AI 优惠聚合器 — 项目状态
 
-**最后更新**：2026-10-01（最新一节 **2.43 `v2.3-plan-history`**）
+**最后更新**：2026-10-01（最新一节 **2.45 `v2.5-api-token-plans`：API / Token 计费对比**，已上线）
 **项目地址**：https://buguoshixc.github.io/ai-deals-aggregator/
 **仓库**：https://github.com/buguoshixc/ai-deals-aggregator
+
+> **一句话现状**：站点从「优惠聚合器」长成了**三件事**——① 优惠（现在有什么福利）·
+> ② 套餐与 API 计费对比（长期用哪个、每百万 token 多少钱）· ③ 变化追踪（最近变了什么）。
+> 三条产品线各有独立的数据契约、独立的可重建门禁与独立的历史日志：
+> `deals.json`（v2，134 条）· `plans.json`（v1，9 条 Coding 套餐）· `api-plans.json`（v1，7 条 API 计费记录 / 37 个模型计价条目）。
+> 三者互不注入，只用**显式关系表** `deal-plan-links.json` 相连。
 
 ---
 
@@ -15,17 +21,23 @@
 |---|---|---|
 | 网站可访问 | ✅ GitHub Pages | ✅ 不变（仍是静态站，零构建） |
 | 数据契约 | 裸数组，`discount` 字段语义混装 | v2 契约（`type` / `region` / `pricingModel` / `discountInfo` / `validity`），有校验 |
-| 真实优惠 | 11 条（13.6%） | **71 条**（占全部条目 59%） |
-| 国内数据 | 0 条 | **51 条**（厂商官方免费额度与免费模型） |
+| 真实优惠 | 11 条（13.6%） | **80 条**（总条目 134 条；见 §四 的当前快照） |
+| 国内数据 | 0 条 | **60 条**（厂商官方免费额度与免费模型） |
 | 垃圾数据 | 15 条（CSS / 导航文本） | **0 条**（正则拦截 + 否定语境识别，校验不过不发布） |
 | 默认视图 | 全部条目混在一起 | 只显示真实优惠，「全部工具」独立 Tab |
-| 默认视图密度 | 同一张官方表格摊成 N 张几乎相同的卡片（千帆 17 张卡共用 1 个落地页） | **折叠为一张卡片**：71 条优惠 → 53 张卡片（见 2.10） |
+| 默认视图密度 | 同一张官方表格摊成 N 张几乎相同的卡片（千帆 17 张卡共用 1 个落地页） | **折叠为一张卡片**：80 条优惠 → 50 张卡片（见 2.10 / 2.30） |
 | 落地页 | 26 条指向聚合站同一页 | 优惠条目 100% 指向厂商官方页，聚合站降级为署名 |
 | 自动化 | 采集与部署互相耦合，构建期抓取 | 采集 / 发布职责分离，发布不再依赖网络抓取 |
 | JS 渲染的公开页 | 一律放弃，只能人工策展 | 无头浏览器采集，火山方舟/智谱活动页已自动化（CI 每天 2 次） |
 | 质量门禁 | 无 | `npm test`（零依赖）+ strict 内容指标，部署前强制 |
 | 卡片信息层级 | 标题 + 段落文字，需逐字阅读 | 价格阶梯 / 频率标签 / 特性 chip / 数据更新日期 / 全宽 CTA（可扫读） |
 | 可发现性 | 纯 JS 渲染，爬虫看到「加载数据中…」 | 发布产物含完整静态正文 + canonical / hreflang / og / 4 段 JSON-LD / FAQ / og 图 |
+| 问题回答范围 | 只有「现在有什么优惠」 | 三问都答：**优惠** · **长期用哪个套餐 / 每百万 token 多少钱** · **最近变了什么**（见下） |
+| 套餐数据（v2.1–v2.4） | 无 | **9 条 Coding 套餐**（`plans.json` v1）→ [`/plans/coding/`](https://buguoshixc.github.io/ai-deals-aggregator/plans/coding/) 一张 11 列表 |
+| API 计费数据（v2.5） | 无 | **7 条计费记录 / 37 个模型计价条目 / 5 家平台**（`api-plans.json` v1）→ [`/plans/api/`](https://buguoshixc.github.io/ai-deals-aggregator/plans/api/) |
+| 变化追踪 | 无 | `deal-history` + `plan-history` + **`api-plan-history`** 三份追加式日志；`/changes/` 收敛优惠与套餐两条流 |
+| 优惠 ↔ 长期产品 | 无 | **显式关系表** `deal-plan-links.json`（5 条当前关系），优惠页与两个套餐页**双向深链**；关系**只由人写**，工具只出候选报告 |
+| 门禁规模 | 无 | 34 步 CI 门禁 · 离线自测 **202 + 132 + 78 + 76** 项 · 真浏览器 **446 项**（线上 440 项） |
 
 ---
 
@@ -2418,10 +2430,11 @@ npm run collect:headless      # 额外启用无头来源并写盘（需本机 Ed
 npm test                # 数据 + 前端校验（零依赖）
 npm run test:strict     # 附加内容质量指标
 npm run build           # 本地复现发布产物（含预渲染 + logo 资产）并自检
-npm run verify          # 真浏览器验收（当前 124 项断言；加 --compare 为 129 项。分支 2.18 落地时是 69 项——当时值；需 playwright-core + 本机 Edge）
+npm run verify          # 真浏览器验收（**当前 446 项**；加 --compare 含 6 项回归比对。需 playwright-core + 本机 Edge）
+npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/   # 直接打线上（部署后当冒烟用，线上 440 项）
 npm run verify:shots    # 同上，并把截图写到 mockups/.preview/
 npm run verify:baseline # 把当前指标（卡片数/首屏密度/页高/请求数）写成回归基线
-npm run verify:regress  # 与基线比回归：密度不得降、页高/请求不得涨（124 + 5 项断言）
+npm run verify:regress  # 与基线比回归：密度不得降、页高/请求不得涨、JS 错误必须仍为 0
 npm run report:tier     # 分档分布 + 每张卡命中的判据 + 判据读到的原文
 npm run report:vendor   # 厂商归一报告（多少种脏写法归到了同一家）
 npm run todo:zh         # 中文翻译待办（--json / --scaffold 盖原文指纹 / --orphans）
@@ -2433,6 +2446,25 @@ npm run selftest:history # v1.4 历史演练：噪音抑制 / 锚点 / 链 / 来
 npm run history:audit   # v1.4 历史 × git 版本交叉校验（离线；不进 CI —— 浅克隆与历史重写不适合当闸门）
 npm run history:baseline # 一次性历史基线（已存在或已有事件时**拒绝重跑**）
 npm run fetch:logos     # 从厂商官网抓品牌图标，补进 assets/logos/
+
+# v2.1–v2.4 Coding 套餐：数据 / 页面 / 变化 / 关联（全部离线、不联网）
+npm run plans:rebuild            # 人工来源层 curated_plans.json → plans.json（写盘前跑完整数据集校验）
+npm run check:plans:reproducible # 盘上的 plans.json 必须等于来源层产出的那一份（逐字节）
+npm run selftest:plans           # 数据契约 + 对比页演练（**202 项**，含全部牙）
+npm run baseline:plan-history    # 一次性套餐变化基线（已有事件时拒绝重跑）
+npm run selftest:plan-history    # 套餐变化日志演练（**132 项**：只记重要字段 / 值决定类型 / 熔断 / 链）
+npm run check:plan-history       # 基线 + 事件重放必须等于当前 plans.json
+npm run report:plan-changes      # 「最近变化」视图的分栏与条数报告
+npm run selftest:deal-plan-links # 优惠 ↔ 套餐关系演练（**78 项**，含 Tooth #4 的浏览器侧）
+npm run report:deal-plan-links   # 候选关联报告（**只供人工 review**，没有任何写生产关系的路径）
+
+# v2.5 API / Token 计费：与上面并列的另一份数据（同样离线、不联网）
+npm run api-plans:rebuild            # curated_api_plans.json → api-plans.json
+npm run check:api-plans:reproducible # 逐字节可重建性门禁
+npm run selftest:api-plans           # 契约 + 页面 + 变化 + 关系演练（**76 项**，含 4 条 Tooth Test）
+npm run baseline:api-plan-history    # 一次性 API 计费变化基线
+npm run check:api-plan-history       # 基线 + 事件重放必须等于当前 api-plans.json
+npm run report:api-model-renames     # 疑似模型改名留档（**只报告，不自动合并**）
 
 # v2.0 AI 维护层（可选，默认关闭；不开 AI 时这些命令也会正常退出）
 npm run ai:selftest     # AI 层边界自检（六颗主牙 + 结构性牙；离线、零依赖，CI 里也跑）
@@ -2535,6 +2567,24 @@ Layer3Labs 9 · **人工策展（国内）18** · 智谱AI 7 · 智谱AI活动�
 分类分布：API服务 36 · 对话模型 27 · **图像绘画 20** · 办公效率 9 · **视频 9** · 编程开发 8 ·
 音频语音 7 · 智能体 5 · 其他 4 · 教育学习 3 · 设计创意 3 · 搜索研究 1。
 
+### 套餐与 API 计费（v2.1–v2.5，与上面的 deals 是**三份独立数据**）
+
+| 数据集 | 文件 | 当前规模 | 页面 | 变化日志 |
+|---|---|---|---|---|
+| Coding 套餐 | `plans.json`（v1） | **9 条 · 8 个平台**（国内 7 / 国外 2） | [`/plans/coding/`](https://buguoshixc.github.io/ai-deals-aggregator/plans/coding/) | `scripts/data/plan-history.json` |
+| API 计费 | `api-plans.json`（v1） | **7 条记录 · 5 个平台 · 37 个模型计价条目**（国内 3 / 国外 4） | [`/plans/api/`](https://buguoshixc.github.io/ai-deals-aggregator/plans/api/) | `scripts/data/api-plan-history.json` |
+| 优惠 ↔ 长期产品 | `scripts/data/deal-plan-links.json` | **5 条当前关系**（覆盖 3 条记录 / 历史 0 条） | 优惠页与两个套餐页双向深链 | 由上面的日志回答 |
+
+**API 计费明细**（v2.5，全部逐字取自官方页，2026-10-01 核对）：
+
+- **计费通道**：`standard` 5 条 · `off_peak` 1 条（DeepSeek 的 PEAK / OFF-PEAK 是官方同一张表的两行）· `batch` 1 条（OpenAI Batch）。
+- **计费单位**：7 条全部是 `per_1M_tokens`（`per_1K_tokens` 只有夹具覆盖，真实数据里还没有样本 —— 见 §五 后续 3）。
+- **平台**：智谱（12 个模型计价条目，含 `[0,32K)` / `[32K+)` 分档与 2 个免费模型）· DeepSeek（2 条记录 = 两个时段档）· OpenAI（2 条记录 = Standard / Batch，每条含 Short / Long context 两个变体 + 一个按分钟计价的条目）· Anthropic（4 个模型，含 `cacheWrite` 与 `cacheWriteLong` 两档）· Google（4 个模型 + Free Tier + 按百万 token·小时计的缓存存储价）。
+- **免费额度 / credits**：带 `freeTier` 2 条（智谱的免费模型档、Google 的 Free Tier）；**带 `credits` 0 条** —— 本阶段没有任何厂商在官方页给出可逐字引用的预付费额度包，按「没有官方原文就不写」的红线一律留 `null`（结构、校验与页面都已经就绪，见契约 §10）。
+- **非 token 计费项** 4 条（按分钟 / 按百万 token·小时计）。
+- **`derivedMetrics` 全部为 `{}`**（这是结论不是缺省：混合单价需要工作负载假设，credits→token 需要选定模型）。
+- **候选未采信（一条未写入）**：阿里云百炼 / 火山方舟 / 月之暗面 / MiniMax / 硅基流动 / Mistral —— 定价表要么是 JS 分页或按模型切换（渲染后只拿到当前选中模型），要么已改成订阅套餐页。
+
 ---
 
 ## 五、已知边界与后续可做
@@ -2619,6 +2669,22 @@ Layer3Labs 9 · **人工策展（国内）18** · 智谱AI 7 · 智谱AI活动�
 23. **英文覆盖（属 C）**：`hreflang` 结构已预留（`zh-CN` + `x-default` 自指）。**注意这是持续成本**——
     每条新数据都要有人写英文译文，与现在的中文译文覆盖层是同样的工作量；建议先做首页 + 20 条高价值条目。
 
+**v2.5（API / Token 计费）留下的后续**，按价值排序：
+
+1. **API 计费的专属订阅源 + `/changes/` 分栏**（本轮刻意没做，契约 §17 已登记）。
+   现在 `api-plans.json` 有完整的变化日志与页内「最近变化」块，但**没有进 Feed，也没进 `/changes/`**：
+   `feeds.js` 的 `PLAN_CHANGE_FEED` 是**单条 spec**，扩成两条要动注册表、`PAGE_FEED_ROUTES`、
+   `/feeds/` 页面的回链断言与 `selftest:feeds` 的计数。独立一次改动，不该塞进数据层那一轮。
+2. **补国内 API 源**（最有价值的一件）：阿里云百炼 / 火山方舟需要按模型分页抓取或人工策展；
+   `per_1K_tokens` 口径目前只有夹具覆盖，国内厂商是这个口径的主要来源。
+3. **API 成本计算器**（题面 §八 明确留到后续）：用户输入 input/output tokens 与请求数比较成本。
+   两条硬约束：① 结果是**计算值**不是套餐额度，必须在界面上写明；
+   ② credits→token 的估算同样要有「选定模型 + 选定单价 + 明确扣减条件」三个条件。
+4. **`/plans/` 枢纽页**：现在 `/plans/coding/` 与 `/plans/api/` 靠互相深链 + 页脚入口，
+   入口继续变多时值得有一个并列枢纽（代价是新增一条路由与它的四张清单）。
+5. **模型改名的半自动登记**：现在 `report:api-model-renames` 只报告。可以做的是
+   **候选建议**（把「疑似改名」渲染成一条可粘贴的 `aliases` 片段），但仍然不允许工具直接写生产数据。
+
 ---
 
 ## 六、技术栈
@@ -2633,13 +2699,22 @@ Layer3Labs 9 · **人工策展（国内）18** · 智谱AI 7 · 智谱AI活动�
 - **预渲染**：`scripts/lib/render-core.js` 用 `vm` 沙箱抽出主页面里的 RENDER-CORE 纯函数区求值
   （构建期与浏览器端共用同一份模板）；默认视图由唯一的 `cardsFor(deals, DEFAULT_FILTERS)` 产出：
   **过滤 → 折叠同源 → 打档位 → 排序**
-- **真浏览器验收**：playwright-core + 本机 Edge（或 `DSH_EDGE` 指向的内核），**124 项**断言
-  （`scripts/tools/verify-site.js`；无 `--compare` 时 124 项，带基线回归的 `verify:regress` 129 项；
-  文件里 130 个 `check()` 调用点 = 124 常跑 + 5 回归 + 1 条仅基线文件缺失时执行的失败分支）。
+- **真浏览器验收**：playwright-core + 本机 Edge（或 `DSH_EDGE` 指向的内核），**446 项**断言
+  （`scripts/tools/verify-site.js`；带基线回归的 `--compare` 同一批 446 项 = 440 + 6 回归。
+  每一节都必须自己做**错误计数的前后快照** —— 全局 `errors` 是整轮累积的，
+  缺快照的后果是"本节引入的控制台错误记到整轮账上、逐页断言却全绿"，实测踩过一次，见 2.45 上线记录）。
   收藏/对比相关的断言一律量**几何**（`display` / `getBoundingClientRect` / `:modal`），不只量 DOM 状态——见 2.29 ①
 - **OG 分享图**：Node 内置 `zlib` 手写 PNG 编码 + 内置 5×7 点阵字模（零外部依赖）
-- **部署**：GitHub Actions → GitHub Pages
-- **存储**：静态 `deals.json`（v2 契约，前端新增的档位/logo 均为**派生**，不写回数据）
+- **部署**：GitHub Actions → GitHub Pages（`master` 受**规则集**保护：必须走 PR + 必需检查 `gate`，
+  直推会被 `GH013` 拒绝 —— 每次上线的固定动作是「推分支 → 建 PR → 等 gate → 合并 → 等 Deploy → 线上冒烟」）
+- **存储**：三份静态数据 + 三份追加式日志（全部是**派生产物**，入仓且逐字节可重建）：
+  `deals.json`（v2）· `plans.json`（v1）· `api-plans.json`（v1），各自的来源层是
+  `scripts/data/curated_*.json`；前端新增的档位 / logo / 译文均为**派生**，不写回数据。
+  **三份数据互不注入**，只由 `scripts/data/deal-plan-links.json` 这一张显式关系表相连
+- **变化日志内核**：`scripts/lib/history-core.js` 是**按 profile 参数化**的通用内核，
+  三份日志（deals / plans / api-plans）各有自己的 profile 与判据，**机制只有一份实现**
+  （v2.5 把 `plan-history.js` 的 `record()` 参数化为 `recordWithProfile` 就是为了这一条，
+  硬验收是重构后 `plans.json` 与 `plan-history.json` 逐字节不变）
 
 ---
 
