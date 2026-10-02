@@ -939,6 +939,14 @@
       "note": null
     },
     {
+      "registrySlug": "deepseek-flash",
+      "planId": "f04787381e3b",
+      "modelName": "DeepSeek-Flash",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "人工判断（explicit-mapping）：Trae 官方折扣表逐字写「DeepSeek-Flash」；registry 的 deepseek-flash 的 canonicalName 本身就是 deepseek-flash，别名列里写着 DeepSeek-V4.1-Flash —— 两者只差写法。Trae 官方页没有把它与 registry 写在同一处，所以不编引文，如实标成显式映射。"
+    },
+    {
       "registrySlug": "glm-5.3",
       "planId": "003a3f02d7bc",
       "modelName": "GLM-5.3",

@@ -19,7 +19,7 @@
 | 真值层 | `deals.json` / `plans.json` / `api-plans.json` + 三份 `scripts/data/*-history.json` | **契约与字节不动**（v3.0 全程未改字段集），不做超级 Entity 表 |
 | 人工来源层 | `scripts/data/curated_*.json`、`providers.json`、`vendor-slugs.json`、`deal-plan-links.json`、**新增** `models.json`、`model-registry-links.json` | 追加式扩展；一律「人工写、机器校验」 |
 | 索引层 | **新** `scripts/data/models.json` → 派生产物 `models.json` | 只回答「模型身份」，**不是价格真值** |
-| 关系层 | **新** `scripts/data/model-registry-links.json` → 派生产物（注入 `registryModelId`） | 显式映射；**禁止相似度 / LLM 猜** |
+| 关系层 | **新** `scripts/data/model-registry-links.json` → 派生产物（注入 `registryModelId`）；**新** `scripts/data/model-registry-gaps.json`（套餐侧处置登记，**不发布**） | 显式映射；**禁止相似度 / LLM 猜**；映射不上必须逐条写明理由 |
 | 归档层 | 由 `baseline + events + absence + tombstone` 派生 | **不落新真值文件** |
 | 出口层 | `/data/index.json`（Dataset Manifest，只描述数据集） | 文档与 Manifest **同源对账** |
 
@@ -93,8 +93,55 @@
 | `planId` + `modelName` | 必须真实存在于 `plans.json` 的该套餐 `supportedModels` 里 |
 | `registrySlug` | 必须存在于 `models.json` |
 
-**判据**：`scripts/lib/model-registry.js` 的 `validateLinks()`。禁止任何相似度匹配；
-「映射不上」是**允许**的结果，进覆盖报告（`npm run report:coverage`），不写生产映射。
+**判据**：`scripts/lib/model-registry.js` 的 `validateLinks()`。禁止任何相似度匹配。
+
+「映射不上」在 **API 侧**是**允许**的结果：进覆盖报告（`npm run report:coverage`）的缺口 3，不写生产映射。
+**套餐侧（Coding）不是**：`plans.json` 的 `supportedModels[].name` 是自由文本，它只有两种结局 ——
+映射进关系层，或进 `model-registry-gaps.json` 声明「不对应单一模型身份」。
+
+### 2.1 套餐侧处置登记（`scripts/data/model-registry-gaps.json`）
+
+```jsonc
+{
+  "schemaVersion": 1,
+  "declarations": [
+    {
+      "planId": "f04787381e3b",           // 必须真实存在
+      "modelName": "Seed-Code",           // 必须**逐字**等于该套餐 supportedModels 里的名字
+      "role": "included",                 // 必须逐字等于那一条的 role（从数据抄来的对照值）
+      "reason": "off-registry-model",      // 见下表
+      "sourceUrl": "https://www.trae.cn/pricing",  // 必须是该套餐自己的 officialUrl / sourceUrl
+      "note": "官方折扣表逐字写「Seed-Code」；registry 里没有这个身份 …"
+    }
+  ],
+  "_note": "…", "_rules": "…"            // 人工维护说明（不参与判据）
+}
+```
+
+| `reason` | 含义 |
+|---|---|
+| `pool` | 官方只给模型池 / 自动调度，未逐一点名（**要求该条 `role === "pool"`**） |
+| `series` | 官方只给产品线系列名，未落到版本 |
+| `multi-model` | 一个字符串里写了不止一个模型 |
+| `off-registry-model` | 官方点名了单一模型，但该写法在 registry 里没有精确身份 |
+| `non-text-resource` | 图像 / 语音等非文本资源，不是文本模型身份 |
+
+- **这张表永远不写 `registrySlug`**（写了就是未知字段 → 红）。它的存在只为回答「为什么**没有**映射」。
+- **判据**：`validateGaps()`。`modelName` / `role` 逐字对账；`reason` 与 `role` 互为充要；
+  `sourceUrl` 必须是该套餐自己的官方页；`note` 必填 ≤ 240 字（note 里引用官方原文时必须**逐字来自该记录自己的文字**，
+  不许新造引文）；与关系层冲突即红；规范序；不许重复。
+- **声明必须真的是「映射不上」**：`validateGaps()` 拿 `normalizedIndexOf(table)` 反查 ——
+  `modelName` 归一后若精确落到某个 registry 身份（slug / 别名），这条就该去写映射，
+  拿声明绕过映射即红（与候选规则 `planCandidatesOf()` 同一支归一索引）。
+  因此调用方**必须把 registry 表传进来**；不传（table 为空）却有声明 ⇒ 红 —— 判不了就不是通过。
+- **完整性是硬门禁**：`validatePlanModelCoverage()` 规定，`plans.json` 里任何一条模型串若
+  **既没有映射、又没有声明** ⇒ 红。六处都会停：`scripts/validate.js --strict`（门禁第 01 步）、
+  `build-local.js`（构建期）、`npm run models:rebuild`、`npm run check:models:reproducible`、
+  `npm run check:model-registry-links`、`npm run report:coverage`。
+  「没判过」不许被当成「不需要判」——那种漏判不会有任何报错，只会在覆盖报告里安静地少一行。
+- **本表不发布**：根目录没有它的派生产物（它是一张过程留痕，不是站点数据）。
+- **反证**：变异电池 `#22`（摘掉 `validateGaps`）与 `#24`（把一条声明改成 registry 里真实存在的别名
+  `zai-org/GLM-5.3`，走 `check-model-registry-links.js` 端到端）都必须当场变红。
 
 ---
 

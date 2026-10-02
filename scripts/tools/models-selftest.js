@@ -39,8 +39,10 @@ const DEVELOPERS = Object.values(providerTable).map(entry => String((entry && en
 
 const modelsLoad = reg.load();
 const linksLoad = reg.loadLinks();
+const gapsLoad = reg.loadGaps();
 const table = modelsLoad.table;
 const links = linksLoad.doc;
+const gaps = gapsLoad.doc;
 const EXTRA = Object.keys((modelsLoad.doc && modelsLoad.doc._developers_extra) || {});
 const ctx = { developers: DEVELOPERS, extraDevelopers: EXTRA };
 const linkCtx = { table, apiPlans, plans };
@@ -59,13 +61,14 @@ section('① 真实数据自洽');
   const linkProblems = reg.validateLinks(links, linkCtx);
   check(`真实的 model-registry-links.json 通过关系校验（${reg.linksList(links).length} 条）`, linkProblems.length === 0, linkProblems.slice(0, 5).join(' | '));
 
-  const coverage = reg.coverageOf({ table, links, apiPlans, plans });
+  const coverage = reg.coverageOf({ table, links, gaps, apiPlans, plans });
   check('每个 registry 模型都至少被一条显式映射引用（未映射的不生成页面）',
     coverage.unlinkedModels.length === 0, coverage.unlinkedModels.join(' | '));
   check('没有任何 API modelKey 未映射（覆盖报告里的 0 是结论，不是没算）',
     coverage.unmappedModelKeys.length === 0,
     coverage.unmappedModelKeys.slice(0, 5).map(item => `${item.provider}/${item.modelKey}`).join(' | '));
-  console.log(`    未映射的套餐模型串：${coverage.unmappedPlanModels.length} 条（如实登记，见 check-model-registry-links 的输出）`);
+  console.log(`    套餐模型串：${coverage.planModelStrings} 条 = 已映射 ${coverage.planModelStrings - coverage.unmappedPlanModels.length - coverage.declaredPlanModels.length}` +
+    ` + 已声明"不对应单一模型身份" ${coverage.declaredPlanModels.length} + 未判 ${coverage.unmappedPlanModels.length}（逐条见 check-model-registry-links 的输出）`);
 
   const published = reg.publishedModels({ table, links, apiPlans, plans });
   const badTimeline = published.models.filter(model => model.firstSeen && model.lastSeen && model.firstSeen > model.lastSeen);
@@ -266,6 +269,140 @@ section('④ 可重建与身份稳定性');
 }
 
 /* ================================================================== */
+
+section('⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结局）');
+
+{
+  const gapCtx = { plans, links, table };
+  const covCtx = { table, links, gaps, apiPlans, plans };
+  const coverage = reg.coverageOf(covCtx);
+
+  // 真数据自洽：19 条模型串 = 已映射 + 已声明 + 未判(0)
+  check(`真实数据：套餐模型串 ${coverage.planModelStrings} 条 = 已映射 ${coverage.planModelStrings - coverage.unmappedPlanModels.length - coverage.declaredPlanModels.length} + 已声明 ${coverage.declaredPlanModels.length} + 未判 ${coverage.unmappedPlanModels.length}，且未判必须是 0`,
+    coverage.planModelStrings > 0
+    && coverage.planModelStrings === (coverage.planModelStrings - coverage.unmappedPlanModels.length - coverage.declaredPlanModels.length) + coverage.declaredPlanModels.length + coverage.unmappedPlanModels.length
+    && coverage.unmappedPlanModels.length === 0,
+    coverage.unmappedPlanModels.map(item => `${item.planId}/${item.modelName}`).join(' | '));
+  check('真实数据：真实 model-registry-gaps.json 通过处置校验',
+    reg.validateGaps(gaps, gapCtx).length === 0, reg.validateGaps(gaps, gapCtx).slice(0, 3).join(' | '));
+  check('真实数据：套餐侧覆盖完整性 0 处问题',
+    reg.validatePlanModelCoverage(covCtx).length === 0, reg.validatePlanModelCoverage(covCtx).slice(0, 3).join(' | '));
+  // 每一条声明都必须能逐字对回套餐 supportedModels（role 也要对得上）
+  const mismatched = reg.declarationsList(gaps).filter(declaration => {
+    const plan = plans.find(item => item.id === declaration.planId);
+    const entry = plan && (plan.supportedModels || []).find(item => item.name === declaration.modelName);
+    return !entry || entry.role !== declaration.role;
+  });
+  check('真实数据：每条声明的 (planId, modelName, role) 都逐字对得回套餐数据',
+    mismatched.length === 0, mismatched.map(item => `${item.planId}/${item.modelName}`).join(' | '));
+
+  const mappedPlanModels = new Set(reg.linksList(links).filter(link => link.planId).map(link => `${link.planId}\u0000${link.modelName}`));
+  check('真实数据：套餐侧每一条被映射的串都真的在套餐里逐字存在（与 validateLinks 同一判据）',
+    [...mappedPlanModels].every(key => {
+      const [planId, modelName] = key.split('\u0000');
+      const plan = plans.find(item => item.id === planId);
+      return Boolean(plan && (plan.supportedModels || []).some(item => item.name === modelName));
+    }), [...mappedPlanModels].join(' | '));
+
+  // ---- 牙 #21：覆盖完整性（"既没映射也没声明"必须红）----
+  const dropOne = clone(gaps);
+  dropOne.declarations = dropOne.declarations.filter(declaration => declaration.modelName !== 'Seed-Code');
+  check('【牙 #21】删掉一条声明 → 那一串立刻变成"既没有映射也没有声明"并报红',
+    hasProblem(reg.validatePlanModelCoverage({ table, links, gaps: dropOne, apiPlans, plans }), '既没有 registry 映射'),
+    reg.validatePlanModelCoverage({ table, links, gaps: dropOne, apiPlans, plans }).slice(0, 1).join(' | '));
+  const noGapsAtAll = { schemaVersion: 1, declarations: [] };
+  check(`【牙 #21】处置登记表清空 → 未判条数等于全部未映射串数（${coverage.declaredPlanModels.length} 条）`,
+    reg.validatePlanModelCoverage({ table, links, gaps: noGapsAtAll, apiPlans, plans }).length === coverage.declaredPlanModels.length);
+  const renamedPlanString = clone(plans);
+  renamedPlanString.find(item => item.id === 'f04787381e3b').supportedModels
+    .find(item => item.name === 'Seed-Code').name = 'Seed-Code-v2';
+  check('【牙 #21】套餐里新增/改名一条模型串却没有声明 → 红（不许悄悄多出一行）',
+    hasProblem(reg.validatePlanModelCoverage({ table, links, gaps, apiPlans, plans: renamedPlanString }), 'Seed-Code-v2'));
+  check('【牙 #21】plans 为空 → 红（覆盖完整性无从判定，不是通过）',
+    reg.validatePlanModelCoverage({ table, links, gaps, apiPlans, plans: [] }).length === 1);
+
+  // ---- 牙 #22：处置登记自身的判据 ----
+  const roleWrong = clone(gaps);
+  roleWrong.declarations.find(declaration => declaration.planId === 'c968fb5a3c55').role = 'included';
+  check('【牙 #22】role 与套餐里那一条不一致（抄错对照值）→ 红',
+    hasProblem(reg.validateGaps(roleWrong, gapCtx), 'role'), reg.validateGaps(roleWrong, gapCtx).slice(0, 1).join(' | '));
+  const reasonNotPool = clone(gaps);
+  reasonNotPool.declarations.find(declaration => declaration.planId === 'c968fb5a3c55').reason = 'series';
+  check('【牙 #22】记录 role=pool 却把 reason 写成 series → 红（pool 与 role 必须互为充要）',
+    hasProblem(reg.validateGaps(reasonNotPool, gapCtx), 'reason 就必须是 pool'));
+  const poolOnIncluded = clone(gaps);
+  poolOnIncluded.declarations.find(declaration => declaration.planId === '536e6b211045').reason = 'pool';
+  check('【牙 #22】记录 role=included 却拿 pool 兜底 → 红（官方没说它是模型池）',
+    hasProblem(reg.validateGaps(poolOnIncluded, gapCtx), '不许用 pool 兜底'));
+  const badReason = clone(gaps);
+  badReason.declarations[0].reason = 'whatever';
+  check('【牙 #22】reason 不在枚举里 → 红（没有"其它"垃圾桶）',
+    hasProblem(reg.validateGaps(badReason, gapCtx), 'reason 非法'));
+  const nameTypo = clone(gaps);
+  nameTypo.declarations[0].modelName = `${nameTypo.declarations[0].modelName}X`;
+  check('【牙 #22】modelName 不是逐字引用套餐里的名字 → 红',
+    hasProblem(reg.validateGaps(nameTypo, gapCtx), 'supportedModels'));
+  const urlWrong = clone(gaps);
+  urlWrong.declarations[0].sourceUrl = 'https://example.com/x';
+  check('【牙 #22】sourceUrl 不是该套餐自己的官方页 → 红',
+    hasProblem(reg.validateGaps(urlWrong, gapCtx), '自己的官方页'));
+  const slugInGaps = clone(gaps);
+  slugInGaps.declarations[0].registrySlug = 'claude-opus-5.5';
+  check('【牙 #22】处置登记里偷写 registrySlug（想绕过映射）→ 红（它是未知字段）',
+    hasProblem(reg.validateGaps(slugInGaps, gapCtx), '未知字段 registrySlug'));
+  const shadow = clone(gaps);
+  shadow.declarations.push({
+    planId: 'f04787381e3b', modelName: 'DeepSeek-Flash', role: 'included', reason: 'off-registry-model',
+    sourceUrl: 'https://www.trae.cn/pricing', note: '故意与关系层里已有的映射冲突'
+  });
+  check('【牙 #22】同一串既在关系层有映射、又在登记表里声明 → 红（一件事不能有两种结局）',
+    hasProblem(reg.validateGaps(shadow, gapCtx), '已经在关系层里有映射'));
+  const unorderedGaps = clone(gaps);
+  unorderedGaps.declarations = unorderedGaps.declarations.reverse();
+  check('【牙 #22】登记表顺序不是规范序 → 红（打乱输入仍必须得到同一串字节）',
+    hasProblem(reg.validateGaps(unorderedGaps, gapCtx), '规范序'));
+  const emptyNote = clone(gaps);
+  emptyNote.declarations[0].note = '   ';
+  check('【牙 #22】声明不写理由 → 红（这张表存的就是理由）',
+    hasProblem(reg.validateGaps(emptyNote, gapCtx), '必须写 note'));
+
+  // ---- 独立审查员 2026-10-02 抓到的洞（已修）：声明表里不许放"其实能对上"的串 ----
+  // 原来 validateGaps 不接收 registry 表，于是"能精确落到某个 registry 身份的串"被声明成
+  // "不对应单一模型身份"时，两个 lib 级判据都不响（只有本文件的漏网之鱼检查会响）。
+  const matchablePlans = clone(plans);
+  matchablePlans.find(item => item.id === '003a3f02d7bc').supportedModels
+    .push({ name: 'zai-org/GLM-5.3', role: 'included', note: null });
+  const declareMatchable = clone(gaps);
+  declareMatchable.declarations = reg.sortDeclarations(declareMatchable.declarations.concat([{
+    planId: '003a3f02d7bc', modelName: 'zai-org/GLM-5.3', role: 'included', reason: 'off-registry-model',
+    sourceUrl: 'https://docs.bigmodel.cn/cn/coding-plan/overview', note: '故意把一条能精确对上的串声明成"对不上"'
+  }]));
+  check('【牙 #22】把一条归一后**能精确落到 registry 身份**的串声明成"对不上" → 红（能对上的必须去写映射）',
+    hasProblem(reg.validateGaps(declareMatchable, { plans: matchablePlans, links, table }), '精确落到 registry 身份'),
+    reg.validateGaps(declareMatchable, { plans: matchablePlans, links, table }).slice(0, 1).join(' | '));
+  check('【牙 #22】没传 registry 表（table 为空）却有声明 → 红（判不了"是不是能对上"就不是通过）',
+    hasProblem(reg.validateGaps(gaps, { plans, links }), '没有拿到 registry 表'));
+
+  // ---- 候选由规则发现，不靠人凭印象挑 ----
+  const planCandidates = reg.planCandidatesOf({ table, plans });
+  check('套餐侧候选是"归一后精确相等"的规则产物（每条都带 status=candidate，且没有生产字段）',
+    planCandidates.length > 0 && planCandidates.every(item => item.status === 'candidate' && item.registrySlug && !item.evidence),
+    planCandidates.map(item => `${item.modelName}→${item.registrySlug}`).join(' | '));
+  // 漏网之鱼检查：凡是规则能精确对上的串，必须已经落在关系层里（否则就是"能对上却没写"）
+  const mappedCodingPair = new Set(reg.linksList(links).filter(link => link.planId).map(link => `${link.planId}\u0000${link.modelName}`));
+  const unlinkedCandidates = planCandidates.filter(item => !mappedCodingPair.has(`${item.planId}\u0000${item.modelName}`));
+  check('凡是规则能精确对上的套餐串，都已经写进了关系层（没有"能对上却没写"的漏网之鱼）',
+    unlinkedCandidates.length === 0, unlinkedCandidates.map(item => `${item.planId}/${item.modelName}`).join(' | '));
+  check('反向：候选由规则算出，与关系层无关（拿掉 trae/DeepSeek-Flash 那条映射，候选照样出现）',
+    (() => {
+      const withoutTrae = reg.linksList(links).filter(link => !(link.planId === 'f04787381e3b' && link.modelName === 'DeepSeek-Flash'));
+      const stillFound = reg.planCandidatesOf({ table, plans })
+        .some(item => item.planId === 'f04787381e3b' && item.modelName === 'DeepSeek-Flash' && item.registrySlug === 'deepseek-flash');
+      const wouldCountAsMissing = stillFound && !new Set(withoutTrae.filter(link => link.planId).map(link => `${link.planId}\u0000${link.modelName}`))
+        .has('f04787381e3b\u0000DeepSeek-Flash');
+      return stillFound && wouldCountAsMissing;
+    })());
+}
 
 console.log('');
 if (failures.length) {

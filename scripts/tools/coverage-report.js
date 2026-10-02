@@ -50,6 +50,7 @@ const PLANS_FILE = path.join(ROOT, 'plans.json');
 const API_PLANS_FILE = path.join(ROOT, 'api-plans.json');
 const MODELS_FILE = overrideOf('models') || path.join(ROOT, 'scripts', 'data', 'models.json');
 const REGISTRY_LINKS_FILE = overrideOf('links') || path.join(ROOT, 'scripts', 'data', 'model-registry-links.json');
+const REGISTRY_GAPS_FILE = overrideOf('gaps') || path.join(ROOT, 'scripts', 'data', 'model-registry-gaps.json');
 const CANDIDATES_FILE = overrideOf('candidates') || path.join(ROOT, 'research', 'v3.0-source-candidates.json');
 const CANDIDATES_MD = overrideOf('candidates-md') || path.join(ROOT, 'research', 'v3.0-source-candidates.md');
 
@@ -194,6 +195,16 @@ function main() {
   const relations = relationsOf(registryLinksLoaded.doc);
   const linksMissing = relations === null;
 
+  // v3.0 修订（套餐侧）：`plans.json` 的模型串是自由文本，结局只有"映射"或"显式声明不对应单一模型身份"。
+  // 本报告原先**只统计 API 侧**，套餐侧那 11 条串在报告里一个字都没有 —— 于是"缺口"看起来比实际小。
+  // 现在两处都读，并把"既没映射也没声明"当成**报告自身的硬问题**（不是安静的一行）。
+  const registryGapsLoaded = registry.loadGaps(REGISTRY_GAPS_FILE);
+  if (registryGapsLoaded.missing) {
+    problems.push('缺少 scripts/data/model-registry-gaps.json —— 套餐侧模型串的处置登记表不存在，覆盖完整性无从判定。');
+  } else if (registryGapsLoaded.broken) {
+    problems.push(`scripts/data/model-registry-gaps.json 解析失败：${registryGapsLoaded.broken}`);
+  }
+
   const mappedApiKeys = new Set();
   if (!linksMissing) {
     for (const link of relations) {
@@ -215,6 +226,28 @@ function main() {
         name: model.name
       });
     }
+  }
+
+  /* ---------------- 套餐侧覆盖（Coding 套餐模型串） ---------------- */
+  const planCoverage = registry.coverageOf({
+    table: registryLoaded.table,
+    links: registryLinksLoaded.doc,
+    gaps: registryGapsLoaded.doc,
+    apiPlans,
+    plans
+  });
+  // 关系层两条读数必须一致：本报告自己数的 API 未映射 ↔ lib 数的 API 未映射。
+  // 不一致说明"报告"和"门禁"看的不是同一份关系层 —— 那正是最该当场报红的事。
+  if (planCoverage.unmappedModelKeys.length !== unmappedModels.length) {
+    problems.push(`报告层与 lib/model-registry.js 对"未映射 API modelKey"的读数不一致（报告 ${unmappedModels.length} / lib ${planCoverage.unmappedModelKeys.length}）—— 两处看的不是同一份关系层。`);
+  }
+  if (registryGapsLoaded.doc) {
+    problems.push(...registry.validateGaps(registryGapsLoaded.doc, { plans, links: registryLinksLoaded.doc, table: registryLoaded.table }));
+  }
+  if (!linksMissing && registryGapsLoaded.doc && !registryMissing) {
+    problems.push(...registry.validatePlanModelCoverage({
+      table: registryLoaded.table, links: registryLinksLoaded.doc, gaps: registryGapsLoaded.doc, apiPlans, plans
+    }));
   }
 
   /* ---------------- 候选未采信 ---------------- */
@@ -311,6 +344,8 @@ function main() {
     kv('registry 映射条数', relations.length);
   }
   kv('已映射 API 模型条目', modelPricingItems - apiWithoutRegistryMapping, `共 ${modelPricingItems} 条`);
+  kv('已映射 Coding 模型串', planCoverage.planModelStrings - planCoverage.unmappedPlanModels.length - planCoverage.declaredPlanModels.length, `共 ${planCoverage.planModelStrings} 条；关系层里 Coding 映射 ${planCoverage.codingLinks} 条`);
+  kv('已声明"不对应单一模型身份"', planCoverage.declaredPlanModels.length, '模型池 / 系列名 / 一个串多个模型 / registry 没有的身份 / 图像语音资源（逐条见缺口 5 下方）');
   line('');
 
   line('── 缺口 1：有 Deals 无 Plans 的 provider ────────────────────────────');
@@ -341,6 +376,23 @@ function main() {
       line(`      失败原因：${row.failedReason}`);
     }
   }
+  line('');
+
+  line('── 缺口 5：Coding 套餐模型串既无映射也未声明 ────────────────────────');
+  // 这一格必须是空的：任何一条串"既没有映射、又没有处置登记"都由报告自检报红（见上方 problems），
+  // 所以它在这里永远显示「（无）」。留着它是为了让读者看得见"这一格被检查过"，而不是看不见。
+  if (!planCoverage.unmappedPlanModels.length) line('  （无）');
+  planCoverage.unmappedPlanModels
+    .slice()
+    .sort((a, b) => [a.provider, a.planId, a.modelName].join('|').localeCompare([b.provider, b.planId, b.modelName].join('|')))
+    .forEach(row => line(`  · ${providers.providerNameOf(row.provider, providerTable)} / ${row.modelName}（套餐 ${row.planId}）`));
+  line('');
+  line('── 已声明"不对应单一模型身份"的套餐模型串（有理由的缺口，不是漏判）──');
+  if (!planCoverage.declaredPlanModels.length) line('  （无）');
+  planCoverage.declaredPlanModels
+    .slice()
+    .sort((a, b) => [a.provider, a.planId, a.modelName].join('|').localeCompare([b.provider, b.planId, b.modelName].join('|')))
+    .forEach(row => line(`  · ${providers.providerNameOf(row.provider, providerTable)} / ${row.modelName}（套餐 ${row.planId}）→ ${row.reason}（记录里的 role=${row.role}）`));
   line('');
 
   line('── 已采信并移交 registry-curator 落盘的候选 ─────────────────────────');
@@ -383,9 +435,21 @@ function main() {
       registry: {
         registryPresent: !registryMissing,
         linksPresent: !linksMissing,
-        unmappedModels
+        gapsPresent: !registryGapsLoaded.missing && !registryGapsLoaded.broken,
+        unmappedModels,
+        planModelStrings: planCoverage.planModelStrings,
+        mappedPlanModelCount: planCoverage.planModelStrings - planCoverage.unmappedPlanModels.length - planCoverage.declaredPlanModels.length,
+        unmappedPlanModels: planCoverage.unmappedPlanModels,
+        declaredPlanModels: planCoverage.declaredPlanModels
       },
-      gaps: { dealsWithoutPlans, plansWithoutDeals, unmappedModelCount: unmappedModels.length, notAdoptedProviders },
+      gaps: {
+        dealsWithoutPlans,
+        plansWithoutDeals,
+        unmappedModelCount: unmappedModels.length,
+        unmappedPlanModelCount: planCoverage.unmappedPlanModels.length,
+        declaredPlanModelCount: planCoverage.declaredPlanModels.length,
+        notAdoptedProviders
+      },
       candidates: { total: candidates.length, adopted: adopted.length, notAdopted: notAdopted.length }
     };
     console.log('\nJSON:');

@@ -31,6 +31,7 @@ function main() {
   const problems = [];
   const modelsLoad = reg.load();
   const linksLoad = reg.loadLinks();
+  const gapsLoad = reg.loadGaps();
   const providerTable = providers.load().table;
   const apiPlans = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8')).plans || [];
   const plans = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8')).plans || [];
@@ -45,8 +46,14 @@ function main() {
     ...(modelsLoad.broken ? [`models.json 无法解析：${modelsLoad.broken}`] : []),
     ...(linksLoad.missing ? ['scripts/data/model-registry-links.json 不存在'] : []),
     ...(linksLoad.broken ? [`model-registry-links.json 无法解析：${linksLoad.broken}`] : []),
+    ...(gapsLoad.missing ? ['scripts/data/model-registry-gaps.json 不存在（套餐侧模型串的处置登记表）'] : []),
+    ...(gapsLoad.broken ? [`model-registry-gaps.json 无法解析：${gapsLoad.broken}`] : []),
     ...reg.validateRegistry(modelsLoad.table, { developers, extraDevelopers }),
-    ...reg.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans })
+    ...reg.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans }),
+    ...reg.validateGaps(gapsLoad.doc, { plans, links: linksLoad.doc, table: modelsLoad.table }),
+    ...reg.validatePlanModelCoverage({
+      table: modelsLoad.table, links: linksLoad.doc, gaps: gapsLoad.doc, apiPlans, plans
+    })
   ];
   if (sourceProblems.length) {
     problems.push(`来源层/关系层不合法（${sourceProblems.length} 处，先跑 npm run models:rebuild 看明细）`);
