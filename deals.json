@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-10-02T02:08:51+08:00",
+  "updatedAt": "2026-10-02T12:14:02+08:00",
   "count": 134,
   "deals": [
     {
@@ -3188,32 +3188,6 @@
       }
     },
     {
-      "id": "7f3607d92aa5",
-      "title": "Genmo Mochi-1",
-      "vendor": "Genmo Mochi",
-      "url": "https://genmo.ai/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/genmo",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "视频",
-      "description": "Create videos from text with AI",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-10-02",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "用 AI 把文字生成视频。"
-      }
-    },
-    {
       "id": "06bc1d631f62",
       "title": "Sync.so",
       "vendor": "Sync.so",
@@ -3237,6 +3211,32 @@
       "verifiedAt": null,
       "zh": {
         "description": "为视频做口型同步与声音克隆。"
+      }
+    },
+    {
+      "id": "7f3607d92aa5",
+      "title": "Genmo Mochi-1",
+      "vendor": "Genmo Mochi",
+      "url": "https://genmo.ai/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/genmo",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "视频",
+      "description": "Create videos from text with AI",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-10-02",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "用 AI 把文字生成视频。"
       }
     },
     {
