@@ -105,13 +105,19 @@ check(`registry 载入 ${models.length} 个模型（slug 为键的人工来源�
   models.length === Object.keys(modelsTable).length && models.length > 0);
 check('registry 与关系层都通过同一支判据校验',
   modelRegistry.validateRegistry(modelsTable, { developers: modelDevelopers, extraDevelopers }).length === 0
-  && modelRegistry.validateLinks(linksDoc, { table: modelsTable, apiPlans, plans }).length === 0);
+  && modelRegistry.validateLinks(linksDoc, { table: modelsTable, apiPlans, plans }).length === 0
+  && modelRegistry.validateGaps(modelRegistry.loadGaps().doc, { plans, links: linksDoc, table: modelsTable }).length === 0
+  && modelRegistry.validatePlanModelCoverage({
+    table: modelsTable, links: linksDoc, gaps: modelRegistry.loadGaps().doc, apiPlans, plans
+  }).length === 0);
 check(`全部 ${models.length} 个模型都被显式引用（门槛内 ${gated.length} 个）`,
   gated.length === models.length && gates.every(gate => gate.references > 0));
 {
-  const coverage = modelRegistry.coverageOf({ table: modelsTable, links: linksDoc, apiPlans, plans });
-  check(`覆盖：未映射 API modelKey ${coverage.unmappedModelKeys.length} 条 · 未映射套餐模型串 ${coverage.unmappedPlanModels.length} 条（后者只进候选报告）`,
+  const gapsDoc = modelRegistry.loadGaps().doc;
+  const coverage = modelRegistry.coverageOf({ table: modelsTable, links: linksDoc, gaps: gapsDoc, apiPlans, plans });
+  check(`覆盖：未映射 API modelKey ${coverage.unmappedModelKeys.length} 条 · 套餐模型串未判 ${coverage.unmappedPlanModels.length} 条（已声明不对应单一模型身份 ${coverage.declaredPlanModels.length} 条）`,
     coverage.unmappedModelKeys.length === 0
+    && coverage.unmappedPlanModels.length === 0
     && coverage.apiLinks + coverage.codingLinks === publishedLinks.count
     && coverage.linkedModels === coverage.models);
 }

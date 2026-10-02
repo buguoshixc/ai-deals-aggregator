@@ -42,28 +42,32 @@ function flag(name) {
 function context() {
   const modelsLoad = reg.load();
   const linksLoad = reg.loadLinks();
+  const gapsLoad = reg.loadGaps();
   const providerTable = providers.load().table;
   const apiPlans = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8')).plans || [];
   const plans = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8')).plans || [];
   const developers = Object.values(providerTable).map(entry => String((entry && entry.name) || ''));
   const extraDevelopers = Object.keys((modelsLoad.doc && modelsLoad.doc._developers_extra) || {});
-  return { modelsLoad, linksLoad, apiPlans, plans, developers, extraDevelopers };
+  return { modelsLoad, linksLoad, gapsLoad, apiPlans, plans, developers, extraDevelopers };
 }
 
 function main() {
   const dryRun = flag('dry-run');
   const allowEmpty = flag('allow-empty');
-  const { modelsLoad, linksLoad, apiPlans, plans, developers, extraDevelopers } = context();
+  const { modelsLoad, linksLoad, gapsLoad, apiPlans, plans, developers, extraDevelopers } = context();
 
   console.log('离线重建 Model Registry（不联网、不读墙上时钟）');
   console.log(`  来源层：${path.relative(ROOT, reg.MODELS_FILE)}（${Object.keys(modelsLoad.table).length} 条）`);
   console.log(`  关系层：${path.relative(ROOT, reg.LINKS_FILE)}（${reg.linksList(linksLoad.doc).length} 条）`);
+  console.log(`  处置登记：${path.relative(ROOT, reg.GAPS_FILE)}（${reg.declarationsList(gapsLoad.doc).length} 条）`);
 
   const problems = [];
   if (modelsLoad.missing) problems.push('scripts/data/models.json 不存在');
   if (modelsLoad.broken) problems.push(`scripts/data/models.json 无法解析：${modelsLoad.broken}`);
   if (linksLoad.missing) problems.push('scripts/data/model-registry-links.json 不存在');
   if (linksLoad.broken) problems.push(`scripts/data/model-registry-links.json 无法解析：${linksLoad.broken}`);
+  if (gapsLoad.missing) problems.push('scripts/data/model-registry-gaps.json 不存在（套餐侧模型串的处置登记表）');
+  if (gapsLoad.broken) problems.push(`scripts/data/model-registry-gaps.json 无法解析：${gapsLoad.broken}`);
   if (problems.length) {
     console.error(`\n❌ ${problems.length} 处硬问题，拒绝写盘：`);
     problems.forEach(item => console.error(`  - ${item}`));
@@ -72,12 +76,16 @@ function main() {
 
   const registryProblems = reg.validateRegistry(modelsLoad.table, { developers, extraDevelopers });
   const linkProblems = reg.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans });
-  if (registryProblems.length || linkProblems.length) {
-    console.error(`\n❌ 来源层/关系层有 ${registryProblems.length + linkProblems.length} 处问题，拒绝写盘：`);
-    [...registryProblems, ...linkProblems].slice(0, 40).forEach(item => console.error(`  - ${item}`));
+  const gapProblems = reg.validateGaps(gapsLoad.doc, { plans, links: linksLoad.doc, table: modelsLoad.table });
+  const coverageProblems = reg.validatePlanModelCoverage({
+    table: modelsLoad.table, links: linksLoad.doc, gaps: gapsLoad.doc, apiPlans, plans
+  });
+  if (registryProblems.length || linkProblems.length || gapProblems.length || coverageProblems.length) {
+    console.error(`\n❌ 来源层/关系层有 ${registryProblems.length + linkProblems.length + gapProblems.length + coverageProblems.length} 处问题，拒绝写盘：`);
+    [...registryProblems, ...linkProblems, ...gapProblems, ...coverageProblems].slice(0, 40).forEach(item => console.error(`  - ${item}`));
     return 1;
   }
-  console.log('  ✓ 数据集级校验通过（身份唯一 · 别名唯一 · 映射存在 · 引文逐字来自记录）');
+  console.log('  ✓ 数据集级校验通过（身份唯一 · 别名唯一 · 映射存在 · 引文逐字来自记录 · 套餐侧每一串都已判过）');
 
   const models = reg.publishedModels({ table: modelsLoad.table, links: linksLoad.doc, apiPlans, plans });
   const links = reg.publishedLinks(linksLoad.doc, modelsLoad.table);
@@ -93,11 +101,13 @@ function main() {
     return 1;
   }
 
-  const coverage = reg.coverageOf({ table: modelsLoad.table, links: linksLoad.doc, apiPlans, plans });
+  const coverage = reg.coverageOf({ table: modelsLoad.table, links: linksLoad.doc, gaps: gapsLoad.doc, apiPlans, plans });
   console.log(`  · 覆盖：${coverage.linkedModels}/${coverage.models} 个模型被显式引用 · API 链接 ${coverage.apiLinks} 条 · Coding 链接 ${coverage.codingLinks} 条`);
   console.log(`  · 未映射的 API modelKey：${coverage.unmappedModelKeys.length} 条` +
     (coverage.unmappedModelKeys.length ? `（${coverage.unmappedModelKeys.slice(0, 5).map(item => `${item.provider}/${item.modelKey}`).join(' · ')}${coverage.unmappedModelKeys.length > 5 ? ' …' : ''}）` : ''));
-  console.log(`  · 未映射的套餐模型串：${coverage.unmappedPlanModels.length} 条（覆盖报告里逐条列出，不是失败）`);
+  console.log(`  · 套餐模型串：${coverage.planModelStrings} 条（已映射 ${coverage.planModelStrings - coverage.unmappedPlanModels.length - coverage.declaredPlanModels.length} · 已声明不对应单一模型身份 ${coverage.declaredPlanModels.length} · 未判 ${coverage.unmappedPlanModels.length}）`);
+  coverage.declaredPlanModels.slice(0, 10).forEach(item => console.log(`      · ${item.provider} / ${item.modelName}（套餐 ${item.planId}）→ ${item.reason}`));
+  if (coverage.declaredPlanModels.length > 10) console.log(`      … 另有 ${coverage.declaredPlanModels.length - 10} 条`);
   console.log(`  · updatedAt（全部派生 lastSeen 的最大值）→ ${models.updatedAt}`);
 
   const modelsChanged = previousModels !== modelsText;

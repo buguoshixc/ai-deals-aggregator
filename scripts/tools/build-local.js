@@ -2911,6 +2911,12 @@ function assemble() {
   const modelsLinksLoad = modelRegistry.loadLinks();
   if (modelsLinksLoad.missing) throw new Error(`缺少 ${path.relative(ROOT, modelRegistry.LINKS_FILE)}：模型关系层不存在（它是仓库里的源文件，显式映射只能人写）`);
   if (modelsLinksLoad.broken) throw new Error(`${path.relative(ROOT, modelRegistry.LINKS_FILE)} 解析失败：${modelsLinksLoad.broken}`);
+  // v3.0 修订：套餐侧那些"不对应单一模型身份"的模型串（模型池 / 系列名 / 一个串多个模型 /
+  // registry 没有的身份 / 图像语音资源）必须在处置登记表里逐条给出理由。缺了它，构建就直接停 ——
+  // 因为"一串都没漏判"是**构建的前提**，不是构建之后由报告顺手提一句的事。
+  const modelsGapsLoad = modelRegistry.loadGaps();
+  if (modelsGapsLoad.missing) throw new Error(`缺少 ${path.relative(ROOT, modelRegistry.GAPS_FILE)}：套餐侧模型串的处置登记表不存在（每一串都要人工判一次，判不了也必须写明理由）`);
+  if (modelsGapsLoad.broken) throw new Error(`${path.relative(ROOT, modelRegistry.GAPS_FILE)} 解析失败：${modelsGapsLoad.broken}`);
   const modelsTable = modelsLoad.table;
   const modelLinksDoc = modelsLinksLoad.doc;
   const modelsSourceRaw = JSON.parse(fs.readFileSync(modelRegistry.MODELS_FILE, 'utf8'));
@@ -2923,6 +2929,12 @@ function assemble() {
       ...modelRegistry.validateRegistry(modelsTable, { developers: modelDevelopers, extraDevelopers: modelsExtraDevelopers }),
       ...modelRegistry.validateLinks(modelLinksDoc, {
         table: modelsTable, apiPlans: apiPlansStore.plans, plans: plansStore.plans
+      }),
+      ...modelRegistry.validateGaps(modelsGapsLoad.doc, { plans: plansStore.plans, links: modelLinksDoc, table: modelsTable }),
+      // 覆盖完整性：任何一条套餐模型串"既没映射也没声明"都在这里停住（不许静默留空）
+      ...modelRegistry.validatePlanModelCoverage({
+        table: modelsTable, links: modelLinksDoc, gaps: modelsGapsLoad.doc,
+        apiPlans: apiPlansStore.plans, plans: plansStore.plans
       })
     ];
     if (registryProblems.length) {
@@ -2945,12 +2957,13 @@ function assemble() {
   {
     const stats = modelRegistry.summarize(publishedModels);
     const coverageStats = modelRegistry.coverageOf({
-      table: modelsTable, links: modelLinksDoc, apiPlans: apiPlansStore.plans, plans: plansStore.plans
+      table: modelsTable, links: modelLinksDoc, gaps: modelsGapsLoad.doc, apiPlans: apiPlansStore.plans, plans: plansStore.plans
     });
     console.log(`  模型注册表: ${stats.total} 个模型 · ${stats.developers} 个开发者 · ${stats.families} 个模型族` +
       ` · 状态 ${Object.entries(stats.byStatus).filter(([, n]) => n).map(([k, n]) => `${k} ${n}`).join(' / ')}` +
       ` · 关系 ${publishedModelLinksModelDoc.count} 条（API ${coverageStats.apiLinks} / Coding ${coverageStats.codingLinks}）` +
-      ` · 未映射 API modelKey ${coverageStats.unmappedModelKeys.length} 条 · 未映射套餐模型串 ${coverageStats.unmappedPlanModels.length} 条` +
+      ` · 未映射 API modelKey ${coverageStats.unmappedModelKeys.length} 条` +
+      ` · 套餐模型串 ${coverageStats.planModelStrings} 条（已映射 ${coverageStats.planModelStrings - coverageStats.unmappedPlanModels.length - coverageStats.declaredPlanModels.length} / 已声明不对应单一模型身份 ${coverageStats.declaredPlanModels.length} / 未判 ${coverageStats.unmappedPlanModels.length}）` +
       ` · 未被引用的模型 ${coverageStats.unlinkedModels.length} 个`);
   }
 
@@ -3400,7 +3413,7 @@ function assemble() {
         `${skippedModels.length > 6 ? ` 等 ${skippedModels.length} 个` : ''}`);
     }
     const coverageStats = modelRegistry.coverageOf({
-      table: modelsTable, links: modelLinksDoc, apiPlans: apiPlansStore.plans, plans: plansStore.plans
+      table: modelsTable, links: modelLinksDoc, gaps: modelsGapsLoad.doc, apiPlans: apiPlansStore.plans, plans: plansStore.plans
     });
     if (coverageStats.unmappedModelKeys.length) {
       console.log(`    · 未映射的 API modelKey ${coverageStats.unmappedModelKeys.length} 条（记在覆盖报告里，不生成页面）`);

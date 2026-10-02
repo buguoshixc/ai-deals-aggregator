@@ -864,16 +864,23 @@ function checkIdentitySpaces(deals = []) {
  * 引文逐字来自被引用记录），这里只负责把它跑起来并把结论并进同一份 error 账 ——
  * 与 checkPlansFile / checkApiPlansFile 同一分工。
  *
- * `firstSeen` / `lastSeen` 由引用方派生，手写即红；没有映射的 modelKey / 套餐模型串
- * **不是错误**（那是事实陈述，逐条打印在 `check-model-registry-links` 与覆盖报告里）。
+ * `firstSeen` / `lastSeen` 由引用方派生，手写即红。
+ *
+ * v3.0 修订：**API 侧**没有映射的 modelKey 仍然不是错误（事实陈述）；
+ * **套餐侧**不是 —— `plans.json` 的 `supportedModels[].name` 必须有结局：
+ * 落进关系层，或落进 `scripts/data/model-registry-gaps.json` 声明"不对应单一模型身份"。
+ * 两者都没有 ⇒ 错误（这是 `--strict` 第一步就该拦住的事）。
  */
 function checkModelRegistryFile() {
   const modelsLoad = modelRegistry.load();
   const linksLoad = modelRegistry.loadLinks();
+  const gapsLoad = modelRegistry.loadGaps();
   if (modelsLoad.missing) { error(`缺少 ${path.relative(ROOT, modelRegistry.MODELS_FILE)}：Model Registry 的人工来源层不存在`); return null; }
   if (modelsLoad.broken) { error(`${path.relative(ROOT, modelRegistry.MODELS_FILE)} 解析失败：${modelsLoad.broken}`); return null; }
   if (linksLoad.missing) { error(`缺少 ${path.relative(ROOT, modelRegistry.LINKS_FILE)}：Model Registry 的关系层不存在`); return null; }
   if (linksLoad.broken) { error(`${path.relative(ROOT, modelRegistry.LINKS_FILE)} 解析失败：${linksLoad.broken}`); return null; }
+  if (gapsLoad.missing) { error(`缺少 ${path.relative(ROOT, modelRegistry.GAPS_FILE)}：套餐侧模型串的处置登记表不存在`); return null; }
+  if (gapsLoad.broken) { error(`${path.relative(ROOT, modelRegistry.GAPS_FILE)} 解析失败：${gapsLoad.broken}`); return null; }
 
   const providerLoad = providers.load();
   const developers = Object.values(providerLoad.table).map(entry => String((entry && entry.name) || ''));
@@ -887,7 +894,14 @@ function checkModelRegistryFile() {
     .forEach(message => error(`Model Registry: ${message}`));
   modelRegistry.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans })
     .forEach(message => error(`Model Registry 关系层: ${message}`));
-  return modelRegistry.coverageOf({ table: modelsLoad.table, links: linksLoad.doc, apiPlans, plans });
+  modelRegistry.validateGaps(gapsLoad.doc, { plans, links: linksLoad.doc, table: modelsLoad.table })
+    .forEach(message => error(`Model Registry 处置登记: ${message}`));
+  modelRegistry.validatePlanModelCoverage({
+    table: modelsLoad.table, links: linksLoad.doc, gaps: gapsLoad.doc, apiPlans, plans
+  }).forEach(message => error(`Model Registry 覆盖: ${message}`));
+  return modelRegistry.coverageOf({
+    table: modelsLoad.table, links: linksLoad.doc, gaps: gapsLoad.doc, apiPlans, plans
+  });
 }
 
 /* ---------------- 主流程 ---------------- */
@@ -960,11 +974,16 @@ function main() {
   }
   // v3.0 Stage D：Model Registry。「未映射 N 条」也打印 —— 它是事实陈述，不是故障；
   // 0 与 N 在日志里必须长得不一样（与"受众字段落空/官方引文落空"同一条纪律）。
+  // v3.0 修订：套餐侧改叫"未判"，并同时打印"已声明不对应单一模型身份"的数 ——
+  // 「判过、结论是不该映射」与「根本没判过」在日志里必须长得不一样（后者已经是错误）。
   if (modelCoverage) {
+    const mappedPlanModels = modelCoverage.planModelStrings - modelCoverage.unmappedPlanModels.length - modelCoverage.declaredPlanModels.length;
     console.log(`模型（models）  : ${modelCoverage.models} 条 · 被显式映射引用 ${modelCoverage.linkedModels} 条` +
       ` · API 映射 ${modelCoverage.apiLinks} 条 / Coding 映射 ${modelCoverage.codingLinks} 条`);
-    console.log(`  未映射        : API modelKey ${modelCoverage.unmappedModelKeys.length} 条 · 套餐模型串 ${modelCoverage.unmappedPlanModels.length} 条` +
-      `（逐条见 npm run check:model-registry-links）`);
+    console.log(`  未映射        : API modelKey ${modelCoverage.unmappedModelKeys.length} 条（事实陈述）`);
+    console.log(`  套餐模型串    : ${modelCoverage.planModelStrings} 条 = 已映射 ${mappedPlanModels} + 已声明不对应单一模型身份 ${modelCoverage.declaredPlanModels.length}` +
+      ` + 未判 ${modelCoverage.unmappedPlanModels.length}` +
+      `（逐条见 npm run check:model-registry-links；未判必须是 0）`);
   }
   // 有值时它已经在上面作为**错误**报过并 exit 1 了，所以这行只在 0 的时候看得见 ——
   // 「0 也打印」的意思正是让「没检查」与「检查了、干净」在日志里长得不一样。

@@ -6,6 +6,10 @@
  * `scripts/data/models.json` 是**人工来源层**（形态与 `providers.json` 一致：`_` 开头的说明键 +
  * 以 slug 为键的条目）；根目录的 `models.json` 是**派生产物**（`{schemaVersion, updatedAt, count, models}`）。
  * `scripts/data/model-registry-links.json` 是关系层（显式映射）→ 根目录 `model-registry-links.json` 是它的派生产物。
+ * `scripts/data/model-registry-gaps.json` 是**关系层的补充**：把"**不对应单一模型身份**"的套餐模型串
+ * （模型池 / 系列名 / 一个串里多个模型 / registry 里没有的身份 / 图像语音资源）逐条登记下来，
+ * 连理由一起留档。它**不发布**、不写 `registrySlug` —— 它的存在只是为了让"套餐侧一串都没漏判"
+ * 变成一条硬门禁（`validatePlanModelCoverage()`），而不是覆盖报告里一个安静的数字。
  *
  * **Model Registry 是索引 / 身份层，不是价格真值层**：价格永远来自 `api-plans.json`，
  * 这一层只回答"这个模型是谁、叫什么、属于哪条产品线、在哪些平台的哪条记录里出现过"。
@@ -36,6 +40,7 @@ const provenance = require('./provenance');
 const ROOT = path.join(__dirname, '..', '..');
 const MODELS_FILE = path.join(__dirname, '..', 'data', 'models.json');
 const LINKS_FILE = path.join(__dirname, '..', 'data', 'model-registry-links.json');
+const GAPS_FILE = path.join(__dirname, '..', 'data', 'model-registry-gaps.json');
 const PUBLISHED_MODELS_FILE = path.join(ROOT, 'models.json');
 const PUBLISHED_LINKS_FILE = path.join(ROOT, 'model-registry-links.json');
 
@@ -64,6 +69,23 @@ const PUBLISHED_MODEL_KEY_ORDER = ['id', 'slug', 'canonicalName', 'developer', '
 /** 关系层两种记录的字段与顺序（API 侧 / Coding 侧） */
 const API_LINK_KEY_ORDER = ['registrySlug', 'apiPlanId', 'modelKey', 'variant', 'basis', 'evidence', 'note'];
 const CODING_LINK_KEY_ORDER = ['registrySlug', 'planId', 'modelName', 'basis', 'evidence', 'note'];
+
+/**
+ * 套餐侧模型串"**不对应单一模型身份**"的理由枚举（见 `scripts/data/model-registry-gaps.json`）。
+ *
+ * 这张表是**处置登记**，不是映射：能落到一个 registry 身份上的字符串必须去写映射，
+ * 写进这张表就是错的（`validateGaps()` 会拿关系层来查这一点）。
+ * 每个 code 都对应一种**可判定的缺失**，不是一个"其它"垃圾桶：
+ *   · `pool`               官方只给模型池 / 自动调度，未逐一点名（且该条的 role 必须是 `pool`）
+ *   · `series`             官方只给产品线系列名，未落到版本
+ *   · `multi-model`        一个字符串里写了不止一个模型
+ *   · `off-registry-model` 官方点名了单一模型，但该写法在 registry 里没有精确身份
+ *   · `non-text-resource`  图像 / 语音等非文本资源，不是文本模型身份
+ */
+const GAP_REASONS = ['pool', 'series', 'multi-model', 'off-registry-model', 'non-text-resource'];
+
+/** 处置登记的字段与顺序（`registrySlug` 故意不在其中：这张表永远不写映射） */
+const GAP_KEY_ORDER = ['planId', 'modelName', 'role', 'reason', 'sourceUrl', 'note'];
 
 /** 来源层里出现即错误的派生字段（它们只能算出来） */
 const DERIVED_KEYS = ['id', 'registryModelId', 'firstSeen', 'lastSeen', 'updatedAt', 'count'];
@@ -149,6 +171,17 @@ function loadLinks(file = LINKS_FILE) {
   return loaded;
 }
 
+/** 套餐侧处置登记的来源文件（形态与关系层同一条纪律：`_` 说明键 + schemaVersion + 一个数组） */
+function loadGaps(file = GAPS_FILE) {
+  const loaded = readJson(file);
+  if (loaded.missing || loaded.broken) return { ...loaded, doc: null };
+  const doc = loaded.doc;
+  if (!doc || typeof doc !== 'object' || Array.isArray(doc)) {
+    return { ...loaded, doc: null, broken: '顶层必须是对象（{schemaVersion, declarations}）' };
+  }
+  return loaded;
+}
+
 /* ------------------------------------------------------------------ */
 /* 索引                                                                */
 /* ------------------------------------------------------------------ */
@@ -230,6 +263,27 @@ function linksList(linksDoc) {
   if (Array.isArray(linksDoc)) return linksDoc;
   if (linksDoc && Array.isArray(linksDoc.links)) return linksDoc.links;
   return [];
+}
+
+/** 接受 `{declarations:[...]}` 或裸数组 */
+function declarationsList(gapsDoc) {
+  if (Array.isArray(gapsDoc)) return gapsDoc;
+  if (gapsDoc && Array.isArray(gapsDoc.declarations)) return gapsDoc.declarations;
+  return [];
+}
+
+/** 处置登记的规范序键：先 planId，再 modelName */
+function orderKeyOfDeclaration(declaration) {
+  if (!declaration) return '';
+  return `${declaration.planId}\u0000${declaration.modelName}`;
+}
+
+function sortDeclarations(declarations) {
+  return [...(Array.isArray(declarations) ? declarations : [])].sort((a, b) => {
+    const ak = orderKeyOfDeclaration(a);
+    const bk = orderKeyOfDeclaration(b);
+    return ak < bk ? -1 : ak > bk ? 1 : 0;
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -533,6 +587,143 @@ function sortLinks(links) {
 }
 
 /* ------------------------------------------------------------------ */
+/* 校验：套餐侧模型串的处置登记 + 覆盖完整性                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 处置登记校验（`scripts/data/model-registry-gaps.json`）。判据：
+ *   · 顶层形状 / schemaVersion / 未知字段（`registrySlug` 在这里是**未知字段**：本表永远不写映射）；
+ *   · `modelName` 必须**逐字**等于该套餐 `supportedModels` 里已经写下的名字；
+ *   · `role` 必须逐字等于那一条的 `role`（它是从数据抄来的对照值，抄错即红）；
+ *   · **声明必须真的是"映射不上"**：`modelName` 归一后若精确落到某个 registry 身份（slug / 别名），
+ *     这条就该去写映射 —— 拿"不对应单一模型身份"绕过映射即红（与 `planCandidatesOf()` 同一支索引）；
+ *   · `reason` 只能取 `GAP_REASONS`；`reason==='pool'` 与记录 `role==='pool'` 必须**互为充要**；
+ *   · `sourceUrl` 必须是该套餐自己的官方页（`officialUrl` 或 `sourceUrl`）；
+ *   · `note` 必须写清"为什么不能对应单一模型身份"（不许留空、不许超长）；
+ *   · 同一个 (planId, modelName) 不许既在本表里、又在关系层里有映射（自相矛盾）；
+ *   · 规范序 + 不许重复。
+ *
+ * **完整性不在这里判**：一条串"既没映射也没声明"由 `validatePlanModelCoverage()` 报红 ——
+ * 只有那里同时看得到关系层与本表。反过来，这里判的"声明其实能对上"是**本表自己的合法性**。
+ */
+function validateGaps(doc, { plans = [], links = {}, table = {} } = {}) {
+  const errors = [];
+  if (!doc || typeof doc !== 'object' || Array.isArray(doc)) return ['model-registry-gaps.json 必须是一个对象'];
+  if (doc.schemaVersion !== MODEL_SCHEMA_VERSION) {
+    errors.push(`schemaVersion 应为 ${MODEL_SCHEMA_VERSION}，实际 ${doc.schemaVersion}`);
+  }
+  for (const key of keyOrderOf(doc)) {
+    if (['schemaVersion', 'declarations'].includes(key)) continue;
+    errors.push(`顶层未知字段 ${key}（允许：schemaVersion / declarations / _ 开头的说明键）`);
+  }
+  const declarations = declarationsList(doc);
+  if (!Array.isArray(doc.declarations)) errors.push('declarations 必须是数组');
+  if (declarations.length > LIMITS.linksTotal) errors.push(`处置条数 ${declarations.length} 超过上限 ${LIMITS.linksTotal}`);
+
+  const mappedCoding = new Set();
+  for (const link of linksList(links)) {
+    if (link && link.planId !== undefined && link.modelName !== undefined) {
+      mappedCoding.add(`${link.planId}\u0000${link.modelName}`);
+    }
+  }
+
+  // 没有 registry 表就判不了"这条声明是不是其实能对上" ⇒ 不许假绿。
+  // （独立审查员 2026-10-02 抓到：不传 table 时，declarations 里写一条能对上的名字会静默通过。）
+  const normalized = normalizedIndexOf(table);
+  if (!normalized.size && declarations.length) {
+    errors.push(`没有拿到 registry 表（table 为空），无法判定这 ${declarations.length} 条声明是不是"其实能对上" —— 这不是通过`);
+  }
+
+  const seen = new Set();
+  declarations.forEach((declaration, index) => {
+    const where = `declarations[${index}] ${declaration && declaration.planId ? declaration.planId : '(无 planId)'}`;
+    if (!declaration || typeof declaration !== 'object' || Array.isArray(declaration)) {
+      errors.push(`${where}: 必须是对象`);
+      return;
+    }
+    keyOrderProblem(declaration, GAP_KEY_ORDER, where, errors);
+
+    const plan = (plans || []).find(item => item && item.id === declaration.planId);
+    let entry = null;
+    if (!plan) {
+      errors.push(`${where}: planId ${declaration.planId} 不存在（处置只能针对真实存在的套餐）`);
+    } else {
+      entry = (plan.supportedModels || []).find(item => item && item.name === declaration.modelName) || null;
+      if (!entry) {
+        errors.push(`${where}: modelName「${declaration.modelName}」不在套餐 ${plan.id} 的 supportedModels 里（本表只能逐字引用套餐已经写下的名字）`);
+      } else if (declaration.role !== entry.role) {
+        errors.push(`${where}: role「${declaration.role}」与套餐 ${plan.id} 里那一条的 role「${entry.role}」不一致（role 是从数据抄来的对照值，不许自己改）`);
+      }
+    }
+
+    if (!GAP_REASONS.includes(declaration.reason)) {
+      errors.push(`${where}: reason 非法（${declaration.reason}），允许 ${GAP_REASONS.join(' / ')}`);
+    } else if (entry) {
+      // pool 与记录 role 互为充要：池子必须写成 pool；写成 pool 的那一条，记录的 role 就必须是 pool。
+      if (declaration.reason === 'pool' && entry.role !== 'pool') {
+        errors.push(`${where}: reason=pool 但套餐里那一条的 role 是「${entry.role}」—— 官方没有说它是模型池，不许用 pool 兜底`);
+      }
+      if (declaration.reason !== 'pool' && entry.role === 'pool') {
+        errors.push(`${where}: 套餐里那一条的 role 是 pool，reason 就必须是 pool（实得 ${declaration.reason}）`);
+      }
+    }
+
+    if (plan) {
+      if (!isHttpUrl(declaration.sourceUrl)) {
+        errors.push(`${where}: sourceUrl 必须是 http(s)`);
+      } else if (provenance.isAggregatorUrl(declaration.sourceUrl)) {
+        errors.push(`${where}: sourceUrl 指向聚合站（${declaration.sourceUrl}）—— 处置只能针对官方页`);
+      } else if (declaration.sourceUrl !== plan.officialUrl && declaration.sourceUrl !== plan.sourceUrl) {
+        errors.push(`${where}: sourceUrl「${declaration.sourceUrl}」不是套餐 ${plan.id} 自己的官方页（${plan.officialUrl} / ${plan.sourceUrl}）`);
+      }
+    }
+
+    if (typeof declaration.note !== 'string' || !declaration.note.trim()) {
+      errors.push(`${where}: 必须写 note 说明"为什么这串不能对应单一模型身份"（这张表存的是理由，不是一个空表头）`);
+    } else if (declaration.note.length > MAX_NOTE_LENGTH) {
+      errors.push(`${where}: note 超过 ${MAX_NOTE_LENGTH} 字`);
+    }
+
+    const pair = `${declaration.planId}\u0000${declaration.modelName}`;
+    if (seen.has(pair)) errors.push(`${where}: 同一个 (planId, modelName) 在本表里重复`);
+    seen.add(pair);
+    if (mappedCoding.has(pair)) {
+      errors.push(`${where}: (${declaration.planId}, ${declaration.modelName}) 已经在关系层里有映射 —— 一件事不能既"已映射"又"声明不对应单一模型身份"`);
+    }
+    // "其实能对上"也必须红：与 planCandidatesOf() 用同一支归一索引，所以候选规则能算出来的串
+    // 不许以"不对应单一模型身份"的名义留在这里。声明表只能装**真的对不上**的串。
+    const exactHit = normalized.get(normalizeText(declaration.modelName));
+    if (exactHit) {
+      errors.push(`${where}: modelName「${declaration.modelName}」归一后精确落到 registry 身份「${exactHit}」—— 能对上的串必须去关系层写映射，不许用"不对应单一模型身份"绕过（候选规则 planCandidatesOf() 正是这么算的）`);
+    }
+  });
+
+  const sorted = sortDeclarations(declarations);
+  if (JSON.stringify(declarations.map(orderKeyOfDeclaration)) !== JSON.stringify(sorted.map(orderKeyOfDeclaration))) {
+    errors.push('declarations 的记录顺序不是规范序（应先按 planId，再按 modelName）');
+  }
+  return errors;
+}
+
+/**
+ * 覆盖完整性（**硬门禁**）：`plans.json` 里每一个模型串都必须有结局 ——
+ * 落进关系层（显式映射）**或**落进处置登记表（明确不对应单一模型身份）。
+ * 两者都没有 ⇒ 红。把"没判过"当成"不需要判"是这一层最要防的事：
+ * 它不会有任何报错，只会在覆盖报告里安静地多出一行。
+ */
+function validatePlanModelCoverage({ table = {}, links = {}, gaps = {}, apiPlans = [], plans = [] } = {}) {
+  const problems = [];
+  if (!Array.isArray(plans) || !plans.length) {
+    return ['plans 为空 —— 套餐侧覆盖完整性无从判定（这不是通过）'];
+  }
+  const coverage = coverageOf({ table, links, apiPlans, plans, gaps });
+  coverage.unmappedPlanModels.forEach(item => {
+    problems.push(`套餐 ${item.planId}（${item.provider}）的模型串「${item.modelName}」既没有 registry 映射（model-registry-links.json），也没有在 model-registry-gaps.json 里声明理由 —— 每一串都必须人工判一次（禁止静默留空）`);
+  });
+  return problems;
+}
+
+/* ------------------------------------------------------------------ */
 /* 派生产物                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -604,8 +795,13 @@ function publishedLinks(doc, table) {
 /**
  * 覆盖报告：哪些 modelKey / 套餐模型串还没有 registry 映射（**这是事实陈述，不是失败**）。
  * 与 `candidatesOf()` 一起，构成"检查过但没收录"的过程留痕。
+ *
+ * v3.0 修订（套餐侧）：`plans.json` 的模型串是自由文本，结局只有两种 —— 映射或**显式声明**
+ * "不对应单一模型身份"（`gaps`）。`unmappedPlanModels` 因此是"**两处都没有**"的串，
+ * 它必须是空的（由 `validatePlanModelCoverage()` 判红）；已经声明的那些单独列在
+ * `declaredPlanModels` 里，连理由一起报出来，不再混进"未映射"里假装成同一个数。
  */
-function coverageOf({ table = {}, links = {}, apiPlans = [], plans = [] } = {}) {
+function coverageOf({ table = {}, links = {}, gaps = {}, apiPlans = [], plans = [] } = {}) {
   const list = linksList(links);
   const mappedApi = new Set();
   const mappedCoding = new Set();
@@ -616,6 +812,11 @@ function coverageOf({ table = {}, links = {}, apiPlans = [], plans = [] } = {}) 
     if (link.planId) mappedCoding.add(`${link.planId}\u0000${link.modelName}`);
     if (link.registrySlug && table[link.registrySlug]) linkedSlugs.add(link.registrySlug);
   }
+  const declaredCoding = new Map();
+  for (const declaration of declarationsList(gaps)) {
+    if (!declaration) continue;
+    declaredCoding.set(`${declaration.planId}\u0000${declaration.modelName}`, declaration);
+  }
   const unmappedModelKeys = [];
   for (const plan of apiPlans) {
     for (const entry of (plan.models || [])) {
@@ -624,10 +825,22 @@ function coverageOf({ table = {}, links = {}, apiPlans = [], plans = [] } = {}) 
     }
   }
   const unmappedPlanModels = [];
+  const declaredPlanModels = [];
+  let planModelStrings = 0;
   for (const plan of plans) {
     for (const entry of (plan.supportedModels || [])) {
+      planModelStrings += 1;
       const key = `${plan.id}\u0000${entry.name}`;
-      if (!mappedCoding.has(key)) unmappedPlanModels.push({ planId: plan.id, provider: plan.provider, modelName: entry.name });
+      const declaration = declaredCoding.get(key);
+      if (mappedCoding.has(key)) continue;
+      if (declaration) {
+        declaredPlanModels.push({
+          planId: plan.id, provider: plan.provider, modelName: entry.name,
+          role: entry.role, reason: declaration.reason, note: declaration.note
+        });
+      } else {
+        unmappedPlanModels.push({ planId: plan.id, provider: plan.provider, modelName: entry.name });
+      }
     }
   }
   const unlinkedModels = Object.keys(table).filter(slug => !linkedSlugs.has(slug));
@@ -638,7 +851,9 @@ function coverageOf({ table = {}, links = {}, apiPlans = [], plans = [] } = {}) 
     apiLinks: list.filter(link => link && link.apiPlanId).length,
     codingLinks: list.filter(link => link && link.planId).length,
     unmappedModelKeys,
-    unmappedPlanModels
+    planModelStrings,
+    unmappedPlanModels,
+    declaredPlanModels
   };
 }
 
@@ -649,11 +864,21 @@ function coverageOf({ table = {}, links = {}, apiPlans = [], plans = [] } = {}) 
  * slug / 别名归一后逐字比较。没有 Levenshtein、没有子串、没有 LLM。
  * 输出永远带 `status: 'candidate'`；本模块**没有任何函数**能把它写成 link。
  */
-function candidatesOf({ table = {}, apiPlans = [] } = {}) {
+/**
+ * 归一后的**精确**索引：`normalizeText(slug|alias) → slug`。
+ * 只有这一个索引，`candidatesOf()`（API 侧）与 `planCandidatesOf()`（套餐侧）共用同一支规则，
+ * 免得两边各写一份、慢慢长出差异。
+ */
+function normalizedIndexOf(table) {
   const { bySlug, byAlias } = indexOf(table);
   const normalized = new Map();
   for (const slug of bySlug.keys()) normalized.set(normalizeText(slug), slug);
   for (const [alias, slug] of byAlias) if (!normalized.has(normalizeText(alias))) normalized.set(normalizeText(alias), slug);
+  return normalized;
+}
+
+function candidatesOf({ table = {}, apiPlans = [] } = {}) {
+  const normalized = normalizedIndexOf(table);
 
   const out = [];
   for (const plan of apiPlans) {
@@ -672,6 +897,33 @@ function candidatesOf({ table = {}, apiPlans = [] } = {}) {
     }
   }
   return out.sort((a, b) => (a.apiPlanId + a.modelKey < b.apiPlanId + b.modelKey ? -1 : 1));
+}
+
+/**
+ * **套餐侧候选**（`plans.json` 的 `supportedModels[].name` × registry）。
+ *
+ * 与 `candidatesOf()` 同一支判据、同一个索引：只做归一后的**精确相等**，没有 Levenshtein、
+ * 没有子串、没有 LLM。输出永远带 `status: 'candidate'`，本模块**没有任何函数**能把它写成映射 ——
+ * 它只负责让"哪些串其实一眼就能对上"这件事**由规则发现**，而不是靠人凭印象去挑。
+ */
+function planCandidatesOf({ table = {}, plans = [] } = {}) {
+  const normalized = normalizedIndexOf(table);
+  const out = [];
+  for (const plan of plans) {
+    for (const entry of (plan.supportedModels || [])) {
+      const hit = normalized.get(normalizeText(entry.name));
+      if (!hit) continue;
+      out.push({
+        status: 'candidate',
+        rule: 'normalized-name-exact',
+        registrySlug: hit,
+        planId: plan.id,
+        modelName: entry.name,
+        note: '归一后精确相等（NFKC + 折叠空白 + 小写），只作人工 review 用；写生产映射必须人工逐条确认'
+      });
+    }
+  }
+  return out.sort((a, b) => (a.planId + a.modelName < b.planId + b.modelName ? -1 : 1));
 }
 
 /* ------------------------------------------------------------------ */
@@ -709,6 +961,23 @@ function assertValidLinks(doc, ctx = {}) {
   return doc;
 }
 
+function assertValidGaps(doc, ctx = {}) {
+  const problems = validateGaps(doc, ctx);
+  if (problems.length) {
+    throw new Error(`model-registry-gaps.json 不合法（${problems.length} 处）：\n  - ${problems.join('\n  - ')}`);
+  }
+  return doc;
+}
+
+/** 覆盖完整性断言：任何一条套餐模型串"既没映射也没声明"都在这里停住 */
+function assertPlanModelCoverage(ctx = {}) {
+  const problems = validatePlanModelCoverage(ctx);
+  if (problems.length) {
+    throw new Error(`套餐侧模型串覆盖不完整（${problems.length} 处）：\n  - ${problems.join('\n  - ')}`);
+  }
+  return true;
+}
+
 /** 序列化：2 空格缩进 + 末尾换行（与其它派生产物同一套字节纪律） */
 function serialize(doc) {
   return `${JSON.stringify(doc, null, 2)}\n`;
@@ -718,16 +987,19 @@ module.exports = {
   ROOT,
   MODELS_FILE,
   LINKS_FILE,
+  GAPS_FILE,
   PUBLISHED_MODELS_FILE,
   PUBLISHED_LINKS_FILE,
   MODEL_SCHEMA_VERSION,
   SLUG_RE,
   MODEL_STATUS,
   LINK_BASIS,
+  GAP_REASONS,
   ENTRY_KEY_ORDER,
   PUBLISHED_MODEL_KEY_ORDER,
   API_LINK_KEY_ORDER,
   CODING_LINK_KEY_ORDER,
+  GAP_KEY_ORDER,
   DERIVED_KEYS,
   LIMITS,
   MAX_ALIASES,
@@ -740,24 +1012,34 @@ module.exports = {
   keyOrderOf,
   load,
   loadLinks,
+  loadGaps,
   linksList,
+  declarationsList,
   indexOf,
+  normalizedIndexOf,
   resolveSlug,
   apiTargetOf,
   codingTargetOf,
   timelineOf,
   validateRegistry,
   validateLinks,
+  validateGaps,
+  validatePlanModelCoverage,
   orderKeyOfLink,
+  orderKeyOfDeclaration,
   sortLinks,
+  sortDeclarations,
   modelRecordOf,
   canonicalUpdatedAt,
   publishedModels,
   publishedLinks,
   coverageOf,
   candidatesOf,
+  planCandidatesOf,
   summarize,
   assertValidRegistry,
   assertValidLinks,
+  assertValidGaps,
+  assertPlanModelCoverage,
   serialize
 };

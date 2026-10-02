@@ -1,0 +1,87 @@
+{
+  "_note": "v3.0 Stage D 补充层：**套餐侧模型串的处置登记表**。`plans.json` 的 `supportedModels[].name` 是自由文本，两种结局只有两种，都必须显式写下来 —— ① 落进 `scripts/data/model-registry-links.json`（能对应单一模型身份）；② 落进本表（明确**不对应单一模型身份**，逐条给理由）。本表只登记「为什么没有映射」，**永远不写 registrySlug**：任何能落到一个 registry 身份上的字符串都必须去写映射，写进本表就是错的。`plans.json` 一个字节都不改（`name` / `role` 都是它自己的事实）。",
+  "_rules": "① 每条恰好是 (planId + modelName)；② modelName 必须**逐字**等于该套餐 `supportedModels` 里已经写下的名字（大小写、空格、斜杠都不许动）；③ role 必须逐字等于该套餐那一条的 `role`（`pool` / `included`）—— 它是从数据抄来的对照值，抄错即红；④ reason 只能取 `pool`（官方只给模型池 / 自动调度，未逐一点名，**且记录的 role 必须是 pool**）/ `series`（官方只给产品线系列名，未落到版本）/ `multi-model`（一个字符串里写了不止一个模型）/ `off-registry-model`（官方点名了单一模型，但该写法在 registry 里没有精确身份）/ `non-text-resource`（图像 / 语音等非文本资源）之一；⑤ sourceUrl 必须等于该套餐自己的 `officialUrl` 或 `sourceUrl`（处置只能针对这条记录自己的官方页）；⑥ note 必须写清「为什么这串不能对应单一模型身份」，不许留空；note 里引用官方原文时必须**逐字来自该套餐记录自己已有的文字**（不许新造引文 —— 本表不制造第二事实来源）；⑦ 同一个 (planId, modelName) 不许既在本表里、又在关系层里有映射（那是自相矛盾）；⑧ **完整性是硬门禁**：`plans.json` 里任何一个模型串，若既没有映射、又不在本表里 ⇒ 红（不许静默留空，也不许把「没判过」当成「不需要判」）；⑨ **声明必须真的是「映射不上」**：`modelName` 归一后若精确落到某个 registry 身份（slug / 别名），这条就该去写映射 —— 拿「不对应单一模型身份」绕过映射即红（与候选规则 `planCandidatesOf()` 用同一支归一索引；判这件事需要 registry 表，所以调用方必须把表传进来，不传即红）。",
+  "schemaVersion": 1,
+  "declarations": [
+    {
+      "planId": "536e6b211045",
+      "modelName": "Claude 系列模型（含 Claude Code）",
+      "role": "included",
+      "reason": "series",
+      "sourceUrl": "https://www.anthropic.com/pricing",
+      "note": "记录写的是整条产品线：官方对比表逐字写「Claude Code: Pro Yes」，没有落到具体版本。registry 的 Claude 家族有 4 个身份（Fable / Opus / Sonnet / Haiku）；把「系列」挂到其中任意一个就是编造 ⇒ 不写映射。"
+    },
+    {
+      "planId": "8092ab8f694e",
+      "modelName": "premium 模型池 + 基础模型兜底",
+      "role": "pool",
+      "reason": "pool",
+      "sourceUrl": "https://docs.qoder.com/account/pricing.md",
+      "note": "官方原文只写「for premium models」与「switch to basic models」，给出的是池子的边界而不是模型名单；记录的 role 就是 pool ⇒ 不对应单一模型身份。"
+    },
+    {
+      "planId": "a6a6a374dfba",
+      "modelName": "图像 / 语音资源",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+      "note": "官方原文「支持的文本、图像、语音资源共享同一额度」——图像 / 语音资源不是文本模型身份，registry 只收文本模型 ⇒ 不写映射。"
+    },
+    {
+      "planId": "b176967fc6bb",
+      "modelName": "百度 Comate 官方模型（Auto 调度）",
+      "role": "pool",
+      "reason": "pool",
+      "sourceUrl": "https://comate.baidu.com/zh/pricing",
+      "note": "官方原文「官方模型无缝切换」「优先体验国内 SOTA 模型」，从头到尾没有点名任何一个模型；记录的 role 就是 pool ⇒ 不对应单一模型身份。"
+    },
+    {
+      "planId": "c968fb5a3c55",
+      "modelName": "百度 Comate 官方模型（Auto 调度）",
+      "role": "pool",
+      "reason": "pool",
+      "sourceUrl": "https://comate.baidu.com/zh/pricing",
+      "note": "官方原文「官方模型无缝切换」「优先体验国内 SOTA 模型」，从头到尾没有点名任何一个模型；记录的 role 就是 pool ⇒ 不对应单一模型身份。"
+    },
+    {
+      "planId": "e1cbd20766b9",
+      "modelName": "premium 模型池 + 基础模型兜底",
+      "role": "pool",
+      "reason": "pool",
+      "sourceUrl": "https://docs.qoder.com/account/pricing.md",
+      "note": "官方原文只写「for premium models」与「switch to basic models」，给出的是池子的边界而不是模型名单；记录的 role 就是 pool ⇒ 不对应单一模型身份。"
+    },
+    {
+      "planId": "f04787381e3b",
+      "modelName": "DeepSeek-Pro",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://www.trae.cn/pricing",
+      "note": "官方折扣表逐字写「DeepSeek-Pro」，没有版本号；registry 里的 DeepSeek pro 身份是 deepseek-v4-pro（官方 id 带版本）。按名字前缀合并属于「相似度猜身份」，被禁止 ⇒ 宁可缺失，不写映射。"
+    },
+    {
+      "planId": "f04787381e3b",
+      "modelName": "GLM 5.2 / 5.3",
+      "role": "included",
+      "reason": "multi-model",
+      "sourceUrl": "https://www.trae.cn/pricing",
+      "note": "官方折扣表逐字写「GLM 5.2 / 5.3」：一个字符串里写了两个版本，且 5.2 不在 registry（只有 glm-5.3）⇒ 一个字符串无法对应单一模型身份。"
+    },
+    {
+      "planId": "f04787381e3b",
+      "modelName": "Seed-2.1-Turbo",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://www.trae.cn/pricing",
+      "note": "官方折扣表逐字写「Seed-2.1-Turbo」；registry 里最接近的是 doubao-seed-2.1-turbo（火山引擎官方 id 带 Doubao 前缀），而 Trae 官方页没有写出发行方 ⇒ 不按名字相似合并。"
+    },
+    {
+      "planId": "f04787381e3b",
+      "modelName": "Seed-Code",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://www.trae.cn/pricing",
+      "note": "官方折扣表逐字写「Seed-Code」；registry 里没有这个身份，也不允许拿别的 Seed 条目按名字相似合并 ⇒ 不写映射。"
+    }
+  ]
+}

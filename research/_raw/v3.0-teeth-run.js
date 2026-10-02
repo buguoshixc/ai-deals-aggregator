@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * v3.0 题面 §8 的 20 条 Tooth Test —— 逐条实跑的**变异电池**。
+ * v3.0 题面 §8 的 20 条 Tooth Test —— 逐条实跑的**变异电池**（另加 v3.0 修订新增的 #21–#24：
+ * 套餐侧模型串覆盖完整性 + 处置登记表判据 + 门禁工具本体的漏判 + 用声明绕过映射）。
  *
  * 每条牙由两半组成，缺一不可：
  *   · **违规夹具**：自测里构造出一个"坏"的输入（两半都在各阶段自测里，见每条的 `fixture` 字段）；
@@ -158,6 +159,32 @@ const TEETH = [
     patch: '\n{ const __v = module.exports.validate; module.exports.validate = (d, o) => { const r = __v(d, o);'
       + ' return Object.assign({}, r, { problems: (r.problems || []).filter(p => p.code !== \'orphan\') }); }; }\n',
     cmd: ['node', ['scripts/tools/seo-selftest.js']], expect: 'orphan'
+  },
+  {
+    id: '21', tooth: '（v3.0 修订）套餐模型串"既没映射也没声明"被静默放过',
+    fixture: 'selftest:model-registry 的【牙 #21】违规夹具（删掉一条声明 / 声明表清空 / 套餐里多出一串）',
+    file: 'scripts/lib/model-registry.js', patch: neuter('validatePlanModelCoverage'),
+    cmd: ['node', ['scripts/tools/models-selftest.js']], expect: '【牙 #21】'
+  },
+  {
+    id: '22', tooth: '（v3.0 修订）处置登记表里的 role / reason / 名字对不上数据',
+    fixture: 'selftest:model-registry 的【牙 #22】违规夹具（role 抄错 / reason 与 role 不互为充要 / reason 非法 / 名字不逐字 / 出处不对 / 偷写 registrySlug / 与映射冲突 / 非规范序 / 不写理由）',
+    file: 'scripts/lib/model-registry.js', patch: neuter('validateGaps'),
+    cmd: ['node', ['scripts/tools/models-selftest.js']], expect: '【牙 #22】'
+  },
+  {
+    id: '23', tooth: '（v3.0 修订）套餐模型串漏判在**门禁工具本身**上必须当场变红',
+    fixture: '把 scripts/data/model-registry-gaps.json 里那条 Seed-Code 声明的名字改坏 ⇒ 它既对不回套餐、又让 Seed-Code 变成未判',
+    file: 'scripts/data/model-registry-gaps.json',
+    patch: { from: '"modelName": "Seed-Code",', to: '"modelName": "Seed-Code-Typo",' },
+    cmd: ['node', ['scripts/tools/check-model-registry-links.js']], expect: '既没有 registry 映射'
+  },
+  {
+    id: '24', tooth: '（v3.0 修订 / 独立审查员抓到）用"不对应单一模型身份"绕过映射：声明一条**能精确对上**的串',
+    fixture: '把 Seed-Code 声明的名字换成 registry 里真实存在的别名 zai-org/GLM-5.3 ⇒ 它归一后精确落到身份 glm-5.3，声明表不许收它',
+    file: 'scripts/data/model-registry-gaps.json',
+    patch: { from: '"modelName": "Seed-Code",', to: '"modelName": "zai-org/GLM-5.3",' },
+    cmd: ['node', ['scripts/tools/check-model-registry-links.js']], expect: '精确落到 registry 身份'
   }
 ];
 
@@ -208,7 +235,7 @@ for (const entry of TEETH) {
   });
 }
 
-console.log('\n=== v3.0 题面 §8 二十条 Tooth Test：变异实跑结果 ===\n');
+console.log('\n=== v3.0 Tooth Test（题面 §8 的 20 条 + v3.0 修订的 #21–#24）：变异实跑结果 ===\n');
 for (const row of rows) {
   console.log(`#${row.id} ${row.tooth}`);
   console.log(`   污染方式: ${row.how}`);
