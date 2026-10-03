@@ -15,12 +15,18 @@
  *
  *  | 条件                                   | 状态     | 说明 |
  *  |---|---|---|
+ *  | 无头来源 + 本轮浏览器没起来              | failed   | 页面根本没渲染，不能报 healthy（reason=headless_unavailable）；**排在「采集器抛异常」之前** |
  *  | 采集器抛异常                            | failed   | consecutiveFailures+1；lastSuccessAt 不动 |
- *  | 无头来源 + 本轮浏览器没起来              | failed   | 页面根本没渲染，不能报 healthy（reason=headless_unavailable） |
  *  | 成功且 cur>0，prev>0，cur < prev×0.5    | degraded | 条数骤降（reason=sharp_drop） |
  *  | 成功且 cur=0（prev>0，或 prev=0 有历史） | degraded | 零产出（reason=zero_output）；连续 3 次 → failed |
  *  | 成功且 cur=0 且从未产出过                | degraded | reason=zero_output_baseline（不是 failed：规则匹配不到≠服务坏了） |
  *  | 其余                                    | healthy  | 连续失败/连续零产出清零 |
+ *
+ * 为什么「浏览器没起来」必须排在「采集器抛异常」**前面**：内核不可用时 `withPage()` 必然抛错
+ * （lib/browser.js 的 launch() 先探测内核，探测失败即抛 NO_BROWSER），于是两条同时成立。
+ * 若先判抛异常，六类情形里的「Headless 浏览器不可用」就永远被折叠成 collector_error，
+ * `/status/` 与 CI Summary 再也分不清「等 runner 装内核」与「改采集器规则」（P2-15）。
+ * 账仍然照实记：这一轮采集器确实抛了错 ⇒ 连续失败 +1、lastSuccessAt 不前进。
  *
  * 两个刻意的取舍：
  *  · **单次零产出不算 failed**。国内厂商的活动页本来就可能长期没有新内容，规则匹配不到
@@ -51,6 +57,9 @@ const REASON_LABEL = {
   sharp_drop: '条数骤降'
 };
 
+/** 无头来源这一轮到底发生了什么的原文（/status/ 的 reason 只给短标签，这句进日志与 lastError） */
+const HEADLESS_UNAVAILABLE_ERROR = '无头浏览器不可用，该来源本轮没能渲染任何页面';
+
 function nowIso(now = new Date()) {
   return new Date(now).toISOString();
 }
@@ -79,10 +88,73 @@ function write(doc, file = HEALTH_FILE) {
 }
 
 /**
+ * 「这个无头来源本轮有没有条件渲染页面」——把浏览器探测结论与采集器错误码翻译成
+ * `evaluate` 需要的 `headlessReady` 输入。返回 true / false / null（null = 本轮拿不到结论）。
+ *
+ * 为什么这件事要单独一个函数、并且放在**生产与自测共用的这一处**（而不是内联在 collect.js 里）：
+ * P2-15 的形态正是「判定公式写在生产接线里、断言在别处复制了一份」，两边各自看都自洽，
+ * 而真实链路的组合矩阵里 `headless_unavailable` 出现 0 次。只要断言与被断言的判定是
+ * **同一个函数对象**，改坏任何一边都不可能只红一边。
+ *
+ * 判据（顺序即优先级）：
+ *   1. 不是无头来源 → null（这一路输入对它不适用）；
+ *   2. 采集器抛出的错误码就是 NO_BROWSER → false（launch() 的直接证据：连内核都没起来）；
+ *   3. 本轮探测过内核 → 以探测结论为准（ok===true ⇒ true，否则 false）；
+ *   4. 没探测过 → null。**不许**把「没探过」当成「不可用」：那是无凭据的状态声明。
+ *
+ * @param {object} params
+ * @param {boolean} params.isHeadless         该来源是不是无头来源
+ * @param {object|null} params.browserStatus  lib/browser.js getLaunchStatus() 的快照
+ * @param {string|null} params.errorCode      采集器本次抛出的原始错误码（collect.js 在 catch 处留的）
+ */
+function headlessReady({ isHeadless = false, browserStatus = null, errorCode = null } = {}) {
+  if (!isHeadless) return null;
+  if (String(errorCode || '') === 'NO_BROWSER') return false;
+  if (browserStatus && browserStatus.attempted === true) return browserStatus.ok === true;
+  return null;
+}
+
+/**
+ * 采集报告行 + 浏览器探测结论 → `build()` 的 attempts 输入（**生产接线的唯一实现**）。
+ *
+ * 每一列都照实映射，不做二次解释：
+ *   · kind      —— 注册表里的 headless 标记（只对**本轮真的跑了的**来源有意义）；
+ *   · ok/error  —— 采集器这一轮有没有抛错；
+ *   · headlessReady —— 见上面的 headlessReady()。
+ *
+ * @param {object} params
+ * @param {object[]} params.rows             report.list() 的行
+ * @param {Set|string[]} params.headlessIds  本轮跑了的无头来源 id
+ * @param {object|null} params.browserStatus browser.getLaunchStatus() 快照
+ * @param {Map|object|null} params.errorCodes 来源 id → 采集器抛出的原始错误码
+ */
+function attemptsFromReport({ rows = [], headlessIds = [], browserStatus = null, errorCodes = null } = {}) {
+  const headless = headlessIds instanceof Set ? headlessIds : new Set(headlessIds || []);
+  const codes = errorCodes instanceof Map ? errorCodes : new Map(Object.entries(errorCodes || {}));
+  return rows.map(row => {
+    const isHeadless = headless.has(row.sourceId);
+    return {
+      source: row.sourceId,
+      name: row.name,
+      region: row.region,
+      kind: isHeadless ? 'headless' : 'static',
+      ok: !row.error,
+      error: row.error || null,
+      valid: row.valid,
+      produced: row.produced,
+      deals: row.deals,
+      ms: row.ms,
+      headlessReady: headlessReady({ isHeadless, browserStatus, errorCode: codes.get(row.sourceId) || null })
+    };
+  });
+}
+
+/**
  * 单源状态推进（纯函数）。
  *
  * @param {object|null} previous 上一次的记录（首次运行传 null）
  * @param {object} attempt 本次尝试：{ source, name, region, kind, ok, error, valid, produced, deals, ms, headlessReady }
+ *   `headlessReady` 是三态：true/false = 本轮真的探到了；null/缺省 = 本轮没有结论（不参与判定）。
  * @param {Date|string} now
  * @returns {object} 新的记录
  */
@@ -107,19 +179,13 @@ function evaluate({ previous = null, attempt, now = new Date() } = {}) {
     reason: null,
     lastError: null,
     lastDurationMs: Number.isFinite(attempt.ms) ? attempt.ms : null,
-    headlessReady: kind === 'headless' ? Boolean(attempt.headlessReady) : null
+    // 三态：true / false 是**本轮真的探到了**的结论；null 表示本轮拿不到结论
+    // （例如这个来源本轮根本没跑）。不许把「没探过」写成 false —— 那等于凭空空口
+    // 宣称「浏览器不可用」，与把「没探过」写成 true 一样是伪造。
+    headlessReady: kind === 'headless'
+      ? (typeof attempt.headlessReady === 'boolean' ? attempt.headlessReady : null)
+      : null
   };
-
-  // ① 采集器抛异常
-  if (!attempt.ok) {
-    return {
-      ...base,
-      consecutiveFailures: base.consecutiveFailures + 1,
-      status: STATUS.failed,
-      reason: 'collector_error',
-      lastError: String(attempt.error || '未知错误').split('\n')[0].slice(0, 200)
-    };
-  }
 
   const cur = Number.isFinite(attempt.valid) ? attempt.valid : 0;
   const next = {
@@ -130,13 +196,39 @@ function evaluate({ previous = null, attempt, now = new Date() } = {}) {
     consecutiveFailures: 0
   };
 
-  // ② 无头来源但本轮浏览器没起来：页面没渲染，谈不上「健康」
+  // ① 无头来源但本轮浏览器起不来：**优先级高于「采集器抛异常」**（理由见文件头）。
+  //    两种子情形分开记账，别把「这一轮其实什么都没渲染出来」记成成功：
+  //    · 采集器也抛了错（真实链路：内核不可用 ⇒ withPage 必然抛）→ 与 collector_error 同一套账
+  //      （连续失败 +1、lastSuccessAt 停在上一轮、条数保持上次的值）；
+  //    · 采集器没抛错却报「浏览器不可用」（人工构造/上游自行吞错）→ 沿用原来的成功路径记账。
   if (kind === 'headless' && attempt.headlessReady === false) {
+    const alsoFailed = attempt.error ? `（采集器同时报错：${String(attempt.error).split('\n')[0]}）` : '';
+    const lastError = `${HEADLESS_UNAVAILABLE_ERROR}${alsoFailed}`.slice(0, 200);
+    if (!attempt.ok) {
+      return {
+        ...base,
+        consecutiveFailures: base.consecutiveFailures + 1,
+        status: STATUS.failed,
+        reason: 'headless_unavailable',
+        lastError
+      };
+    }
     return {
       ...next,
       status: STATUS.failed,
       reason: 'headless_unavailable',
-      lastError: '无头浏览器不可用，该来源本轮没能渲染任何页面'
+      lastError
+    };
+  }
+
+  // ② 采集器抛异常
+  if (!attempt.ok) {
+    return {
+      ...base,
+      consecutiveFailures: base.consecutiveFailures + 1,
+      status: STATUS.failed,
+      reason: 'collector_error',
+      lastError: String(attempt.error || '未知错误').split('\n')[0].slice(0, 200)
     };
   }
 
@@ -240,12 +332,15 @@ module.exports = {
   SCHEMA_VERSION,
   ZERO_OUTPUT_FAIL_AFTER,
   SHARP_DROP_RATIO,
+  HEADLESS_UNAVAILABLE_ERROR,
   STATUS,
   STATUS_LABEL,
   REASON_LABEL,
   emptyDoc,
   load,
   write,
+  headlessReady,
+  attemptsFromReport,
   evaluate,
   build,
   summarize,
