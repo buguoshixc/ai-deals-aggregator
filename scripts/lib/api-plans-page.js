@@ -62,8 +62,10 @@ const API_PLANS_NOTES = [
   + '按图 / 秒 / 分钟等非 token 口径计费的项写在「其他计费维度」列里，并各自带单位。',
   '`0` 只表示**官方明说免费**（渲染成「免费」）；官方没有公布的那一项写「—」，'
   + '两者含义不同，绝不互相顶替。',
-  '「免费额度」只记**官方长期提供**的免费能力（例如免费的 Flash 模型、官方免费档）。'
-  + '**限时活动与新用户赠送属于优惠**，不写在这一列 —— 它们在[首页]()的优惠里，并通过显式关系与本页互链。',
+  '「免费额度」栏**逐条标注性质**：**长期提供**（官方长期提供的免费档 / 免费模型）、'
+  + '**新用户赠送**（首次开通 / 新注册的赠送）、**限时赠送**（活动期内的赠品）。'
+  + '只有标为「长期提供」的才是长期免费能力；后两类**不是** —— 它们是官方的一次性或限时赠送，'
+  + '本站照原样收录并标注（它们的优惠形态属于优惠（Deals）；若本站有对应条目，会以显式关系互链）。',
   '**credits 是预付费额度（钱），不是 token 数量**。本页不把「充 $10 得 10 credits」折算成任何 token 数 ——'
   + '那不是套餐的原始额度，而是需要「选定模型 + 选定单价 + 明确扣减条件」才能算出的**计算值**。'
   + '需要这类估算请等待后续的 API 成本计算器。',
@@ -186,6 +188,40 @@ function modelsTextOf(plan) {
   return keys.length > 6 ? `${keys.slice(0, 6).join('、')} 等 ${keys.length} 个模型` : keys.join('、');
 }
 
+/**
+ * 「免费额度」的性质措辞（**唯一出处** = `apiSchema.FREE_TIER_STABILITY_LABEL`）。
+ *
+ * 为什么渲染层必须把它印出来（P1-11 / `F-r2-api-005`）：审计实测的形态是
+ * 「一次性赠送被读者读成长期免费能力」—— 页面口径写着「只记官方长期提供的免费能力」，
+ * 而数据里混着 `period:'one_time'` 的新用户赠送。两个修法都要落在**同一个地方**：
+ * 数据层从此必填 `stability`（缺省即错误），渲染层则每一档都带自己的名字，
+ * 而且赠送 / 限时那两档**明说「非长期能力」**（不是靠少说一句话来实现的）。
+ *
+ * 返回 `null` = 数据缺性质（schema 已把它判红；渲染层退化成不加前后缀，不编一个档位）。
+ */
+function freeTierNatureWrap(free, core) {
+  const stability = free && free.stability;
+  const label = apiSchema.FREE_TIER_STABILITY_LABEL[stability];
+  if (!label) return core;
+  // 长期档：把性质词放进短语本身（「长期提供的免费模型」）；赠送档：缀在末尾并**明说非长期**。
+  // 两档的措辞形状不同，是为了让「这一条到底是不是长期能力」在单元格里一眼可读。
+  if (stability === 'standing') return `${label}的${core}`;
+  return `${core}（${label}，非长期能力）`;
+}
+
+/** 免费额度单元格的**核心短语**（不含性质词）：性质由 `freeTierNatureWrap` 加。 */
+function freeTierCoreTextOf(free, nameOf) {
+  if (free.type === 'none') return `官方明说无免费额度${free.description ? `（${free.description}）` : ''}`;
+  if (free.type === 'models') return `免费模型：${(free.models || []).map(nameOf).join('、')}`;
+  if (free.type === 'tokens' || free.type === 'credits' || free.type === 'requests') {
+    // 单位词只从 schema 的 `FREE_TIER_UNIT_LABEL` 取 —— 这里曾经是一个本地三元表达式
+    // （第三份手写单位表），"tokens 被印成 credits" 那种缺陷正是它带来的。
+    const unit = apiSchema.FREE_TIER_UNIT_LABEL[free.type] || free.type;
+    return `免费额度 ${plansPage.formatNumber(free.amount)} ${unit}${free.period ? ` / ${free.period}` : ''}`;
+  }
+  return free.description || free.type;
+}
+
 /** 「免费额度 / credits」单元格的短文本（完整句子在页面下方的明细节里） */
 function freeTierShortText(plan) {
   const parts = [];
@@ -194,14 +230,7 @@ function freeTierShortText(plan) {
     const entry = ((plan && plan.models) || []).find(item => item.modelKey === key);
     return entry ? entry.name : key;
   };
-  if (free) {
-    if (free.type === 'none') parts.push(`官方明说无免费额度${free.description ? `（${free.description}）` : ''}`);
-    else if (free.type === 'models') parts.push(`免费模型：${free.models.map(nameOf).join('、')}`);
-    else if (free.type === 'tokens' || free.type === 'credits' || free.type === 'requests') {
-      const unit = free.type === 'tokens' ? 'tokens' : free.type === 'credits' ? 'credits' : '次请求';
-      parts.push(`免费额度 ${plansPage.formatNumber(free.amount)} ${unit}${free.period ? ` / ${free.period}` : ''}`);
-    } else parts.push(free.description || free.type);
-  }
+  if (free) parts.push(freeTierNatureWrap(free, freeTierCoreTextOf(free, nameOf)));
   for (const item of (plan && plan.credits) || []) {
     parts.push(`credits：付 ${CURRENCY_SYMBOL[item.currency] || ''}${plansPage.formatNumber(item.pay)} 得 ${plansPage.formatNumber(item.gets)} ${item.unit}`);
   }
@@ -293,7 +322,11 @@ function freeTierSectionHtml(plans) {
       }[free.type] || free.type;
       const amount = free.amount === null || free.amount === undefined ? '' : ` ${plansPage.formatNumber(free.amount)}`;
       const period = free.period ? `（刷新周期：${free.period}）` : '';
-      lines.push(`<li><b>${escapeHtml(providerNameOf(plan.provider))} · ${escapeHtml(plan.planName)}</b>：${escapeHtml(type)}${escapeHtml(amount)}${escapeHtml(period)}`
+      // 性质摆在最前面（与上表那一列同一个词表）：读者先看到「新用户赠送」「限时赠送」，
+      // 再看到额度和官方条件 —— 「它不是长期能力」这件事不靠读者自己推断。
+      const nature = apiSchema.FREE_TIER_STABILITY_LABEL[free.stability] || null;
+      const heading = nature ? `${nature} · ${type}` : type;
+      lines.push(`<li><b>${escapeHtml(providerNameOf(plan.provider))} · ${escapeHtml(plan.planName)}</b>：${escapeHtml(heading)}${escapeHtml(amount)}${escapeHtml(period)}`
         + (free.models ? ` —— 覆盖模型：${escapeHtml(free.models.join('、'))}` : '')
         + `${free.description ? `<br><span class="pftdesc">${escapeHtml(free.description)}</span>` : ''}</li>`);
     }
@@ -309,7 +342,8 @@ function freeTierSectionHtml(plans) {
   }
   if (!items.length) return '';
   return `      <h2 class="ph2" id="api-free">免费额度与 credits（厂商级事实）</h2>
-      <p class="snote">这一节把上表那一列的短文本展开。<b>免费额度是官方长期提供的</b>；限时活动与新用户赠送不在这里（它们是优惠）。</p>
+      <p class="snote">这一节把上表那一列的短文本展开，并逐条写明<b>性质</b>：长期提供的免费能力 / 新用户赠送 / 限时赠送。
+      只有「长期提供」才是长期免费能力；后两类是一次性或限时赠送，官方条件写在每条的说明里。</p>
       <ul class="pftlist">
 ${items.map(item => `        ${item}`).join('\n')}
       </ul>`;
@@ -481,11 +515,27 @@ ${metaNote}      <p class="snote">${escapeHtml(W.disclaimer)}</p>
 }
 
 /**
+ * 生命周期事件（`created` / `restored`）**没有 from/to**：它们描述的是「这条记录在数据集里的
+ * 状态变化」，不是某个字段的新旧值。
+ *
+ * 为什么必须单列（T07 的非空 E2E 抓到的生产可见缺陷）：旧实现把这类事件也塞进
+ * `fieldsDiffText` 的「新增：{to}」模板，两侧都缺席时 `to` 被渲染成占位符 —— 页面上出现
+ * 「首次收录 · **新增：—**」（生产 6 处、合成非空态 9 处）：类型列已经说了「首次收录」，
+ * 旁边再写一句「新增：—」既不构成一句话，也在暗示"新增了某个东西"。
+ */
+const LIFECYCLE_CHANGE_TEXT = {
+  created: '本条记录首次进入数据集（此前没有它的观测记录）',
+  restored: '本条记录重新出现（此前记为不再收录）'
+};
+
+/**
  * 一条 API 计费变化事件 → 「变了什么」的句子。**唯一出处**：`/plans/api/` 的「最近变化」块、
  * `/changes/` 的 API 分栏与 `feed/plans/api/changes.*` 的正文都读它 ——
  * 同一件事在页面与订阅源里必须是同一句话（复制一份就会漂）。
  *
  * 「不再收录」事件说**原因**而不是值差：它没有 from/to，而且原因才是读者要知道的那件事。
+ * 生命周期事件同理（见 `LIFECYCLE_CHANGE_TEXT`）；**任何事件都不许渲染成空**——
+ * `/changes/` 的「变了什么」格没有"空"这个形态，空值只会表现成一句假话。
  */
 function apiPlanChangeTextOf(event) {
   const W = require('./api-plan-history').API_PLAN_HISTORY_WORDING;
@@ -493,7 +543,11 @@ function apiPlanChangeTextOf(event) {
   if (event.type === 'ended') {
     return W.API_PLAN_HISTORY_END_REASONS[event.reason] || event.reason || '';
   }
-  return fieldsDiffText(event);
+  if (LIFECYCLE_CHANGE_TEXT[event.type]) return LIFECYCLE_CHANGE_TEXT[event.type];
+  const text = fieldsDiffText(event);
+  if (text) return text;
+  // 兜底：认得出类型就说类型名，认不出才退回类型原串（绝不返回空串）
+  return W.API_PLAN_HISTORY_TYPES[event.type] || event.type;
 }
 
 /** 事件的新旧值 → 一句人话（只描述数值本身，不做任何加减与结论） */
@@ -515,7 +569,11 @@ function fieldsDiffText(event) {
     return parts.join('；');
   }
   if (event.field === 'pricing.unit') return `${event.from || UNKNOWN_TEXT} → ${event.to || UNKNOWN_TEXT}`;
-  if (event.from === null || event.from === undefined) return `新增：${shortValue(event.to)}`;
+  // 两侧都缺席 ⇒ 模板拼不出句子（旧实现拼出「新增：—」）。交给调用方按事件类型说语义。
+  if (event.from === null || event.from === undefined) {
+    if (event.to === null || event.to === undefined) return '';
+    return `新增：${shortValue(event.to)}`;
+  }
   if (event.to === null || event.to === undefined) return `移除：${shortValue(event.from)}`;
   return `${shortValue(event.from)} → ${shortValue(event.to)}`;
 }
@@ -736,6 +794,83 @@ function assertPageHonesty(html, plans, opts = {}) {
       expectCell(5, priceText(row.rates.output, row.currency), '输出价');
       expectCell(6, priceText(row.rates.cachedInput, row.currency), '缓存命中输入');
       expectCell(9, row.lastSeen, '最近更新');
+
+      // 第 8 列（免费额度 / credits）的**性质**对账（P1-11 / `F-r2-api-005`）：
+      // 期望值从**数据**重算（只借唯一词表取词，不调用 `freeTierShortText`），
+      // 所以「渲染层把一次性赠送写成长期能力」与「长期能力丢了标注」两个方向都会红。
+      const free = row.plan && row.plan.freeTier;
+      if (free) {
+        const standingWord = apiSchema.FREE_TIER_STABILITY_LABEL.standing;
+        const label = apiSchema.FREE_TIER_STABILITY_LABEL[free.stability];
+        // credits 是**另一段**（`；credits：…`）：免费额度的单位词只在第一段里对账，
+        // 否则「有 credits 的记录」会被误判成"把 tokens 标成了 credits"。
+        const freePart = cells[8].split('；credits：')[0];
+        if (free.type === 'none') {
+          if (cells[8].includes(standingWord) || cells[8].includes('长期免费')) {
+            problems.push(`${where}: 「官方明说没有免费额度」的单元格里出现长期能力字样：「${cells[8]}」`);
+          }
+        } else if (!label) {
+          problems.push(`${where}: 免费额度没有 stability —— 页面无法说明它是不是长期能力（数据层判据已要求必填）`);
+        } else if (!cells[8].includes(label)) {
+          problems.push(`${where}: 免费额度的单元格「${cells[8]}」没有印出性质「${label}」（数据里就是这么标的）`);
+        } else if (free.stability !== 'standing'
+          && (cells[8].includes(standingWord) || cells[8].includes('长期免费'))) {
+          problems.push(`${where}: stability=${free.stability}（${label}）的免费额度被渲染成长期能力：「${cells[8]}」`
+            + ' —— 一次性 / 限时赠送绝不是长期免费能力');
+        } else if (free.stability === 'standing' && cells[8].includes('非长期能力')) {
+          problems.push(`${where}: stability=standing 的免费额度被标成了「非长期能力」：「${cells[8]}」`);
+        }
+        // 数额单位词必须与 `freeTier.type` 一致（P1-10 / F-r2-api-004：tokens 额度被标成 credits）：
+        // 唯一词表是 schema.FREE_TIER_UNIT_LABEL，期望值从**数据**取，不调用 freeTierShortText。
+        const unitWord = apiSchema.FREE_TIER_UNIT_LABEL[free.type];
+        if (unitWord && free.type !== 'none') {
+          if (!freePart.includes(unitWord)) {
+            problems.push(`${where}: 免费额度是 type=${free.type}，格子里却没有单位词「${unitWord}」：「${freePart}」`);
+          }
+          for (const [otherType, otherWord] of Object.entries(apiSchema.FREE_TIER_UNIT_LABEL)) {
+            if (otherType === free.type || otherWord === unitWord) continue;
+            if (freePart.includes(otherWord)) {
+              problems.push(`${where}: 免费额度是 type=${free.type}（单位词「${unitWord}」），`
+                + `格子里却出现了「${otherWord}」—— 类型词必须与 freeTier.type 同源`);
+            }
+          }
+        }
+      }
+
+      // 第 7 列（其他计费维度）逐项对账：数字 + 单位 + 标签三件都在，且**单位来自数据的 unit 字段**。
+      // 期望值按数据的 TOKEN_RATE_KEYS / mediaRates 独立拼装（不调用 otherRatesTextOf）。
+      const expectedOther = [
+        ...apiSchema.TOKEN_RATE_KEYS
+          .filter(key => key !== 'input' && key !== 'output' && key !== 'cachedInput'
+            && row.rates && row.rates[key] !== null && row.rates[key] !== undefined)
+          .map(key => `${apiSchema.TOKEN_RATE_LABEL[key]} ${priceText(row.rates[key], row.currency)}`),
+        ...(row.mediaRates || []).map(media => `${apiSchema.MEDIA_RATE_LABEL[media.kind] || media.kind} `
+          + `${priceText(media.price, row.currency)} / ${apiSchema.MEDIA_RATE_UNIT_LABEL[media.unit] || media.unit}`)
+      ];
+      for (const text of expectedOther) {
+        if (!cells[7].includes(text)) {
+          problems.push(`${where}: 「其他计费维度」格「${cells[7]}」缺少按数据应为「${text}」的那一项`
+            + '（单位必须原样来自数据的 unit 字段，不能在渲染层重写）');
+        }
+      }
+      // 单位计数对账：错位（把 per_image 印成 per_second）会让假单位多出来、真单位少下去，两种都红
+      const mediaUnitCounts = new Map();
+      for (const media of row.mediaRates || []) mediaUnitCounts.set(media.unit, (mediaUnitCounts.get(media.unit) || 0) + 1);
+      for (const [unit, expectedCount] of mediaUnitCounts) {
+        const unitLabel = apiSchema.MEDIA_RATE_UNIT_LABEL[unit] || unit;
+        const actual = cells[7].split(unitLabel).length - 1;
+        if (actual !== expectedCount) {
+          problems.push(`${where}: 「其他计费维度」格里「${unitLabel}」出现 ${actual} 次，数据里是 ${expectedCount} 条`
+            + ' —— 单位与数据不一致（错位 / 串位）');
+        }
+      }
+      for (const unit of apiSchema.MEDIA_RATE_UNITS) {
+        if (mediaUnitCounts.has(unit)) continue;
+        const unitLabel = apiSchema.MEDIA_RATE_UNIT_LABEL[unit];
+        if (unitLabel && cells[7].includes(unitLabel)) {
+          problems.push(`${where}: 「其他计费维度」格出现了数据里没有的单位「${unitLabel}」`);
+        }
+      }
     });
   }
 
@@ -748,6 +883,19 @@ function assertPageHonesty(html, plans, opts = {}) {
   // credits 绝不能被折算成 token：页面上不许出现"credits ... 可购 X token"这类句子
   if (/credits[^<]{0,40}(可购|可购买|约\s*[\d.]+\s*(万|亿)?\s*(token|Token|tokens))/.test(text)) {
     problems.push('页面把 credits 折算成了 token 数量 —— credits 是钱，不是额度');
+  }
+
+  // 变化块里不许出现**空的 from/to 占位**（T07 非空 E2E 抓到的生产可见缺陷）：
+  // 生命周期事件（created / restored）没有 from/to，套进「新增：{to}」模板就成了「新增：—」
+  // （生产 6 处、合成非空态 9 处）。合法形态里 `新增：X` / `移除：X` 的 X 一定是真值，
+  // 而「— → —」只可能来自两侧都缺席 —— 三种形态都是占位，一律判红。
+  const placeholders = [
+    ...(text.match(/(新增|移除)[:：]\s*—(?![0-9])/g) || []),
+    ...(text.match(/—\s*→|→\s*—/g) || [])
+  ];
+  if (placeholders.length) {
+    problems.push(`变化块里出现了空的 from/to 占位 ${placeholders.length} 处（「${placeholders[0]}」）`
+      + ' —— 没有 from/to 的事件（首次收录 / 重新出现 / 不再收录）必须按真实语义说');
   }
 
   // 官方来源链接：每行都要有，且指向数据里的那个地址
@@ -802,6 +950,15 @@ function assertHistoryHonesty(plans, store) {
     }
     for (const word of FORBIDDEN_CLAIM_WORDS) {
       if (String(event.type).includes(word)) problems.push(`事件类型里出现结论性词汇「${word}」`);
+    }
+    // 每一条事件都必须能被说成**一句话**：空文案 = /changes/ 上的空白「变了什么」格；
+    // 空 from/to 占位 = 「首次收录 · 新增：—」那句假话（T07 非空 E2E 抓到的形态）。
+    const text = apiPlanChangeTextOf(event);
+    if (!text) {
+      problems.push(`事件 ${event.type}（${event.planId || event.id || '-'}）渲染成空文案 —— 「变了什么」没有"空"这个形态`);
+    }
+    if (/(新增|移除)[:：]\s*—(?![0-9])/.test(text) || /—\s*→|→\s*—/.test(text)) {
+      problems.push(`事件 ${event.type}（${event.planId || event.id || '-'}）渲染成空 from/to 占位「${text}」`);
     }
   }
   return problems;

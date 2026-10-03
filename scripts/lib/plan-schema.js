@@ -95,6 +95,85 @@ const RESTRICTION_VALUE_TYPE = {
   new_user_only: 'boolean'
 };
 
+/* ------------------------------------------------------------------ */
+/* 三态契约（§10.4 / P2-12：unknown 不等于 false）                      */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 三态契约**只覆盖题面明确要求三态语义的字段**，不做全仓"三态化"：
+ *
+ *   · 计划侧 —— `restrictions[].value` 的三个字面量 `true / false / "unknown"`
+ *     （本文件，下面这张表 + `normalizeRestrictions()`）；
+ *   · API 侧 —— `freeTier.conversionDependsOnModel` 的 `true / false / null`
+ *     （`api-plan-schema.js`，同样的形状：`null` = 未知，**不是** false）。
+ *
+ * 其余字段各自保持原语义（`quota.amount: null` = 未公布、`billing.regularPrice: null`
+ * = 未标注……），不因为这条契约被顺手改写。
+ *
+ * 三态的真正难点不是"类型对不对"（那是最容易的一半），而是**不许把查不到说成"否"**：
+ * `unknown` 与 `false` 都是合法字面量，所以在类型层面"来源层把 unknown 降级成 false"
+ * 永远看不出来 —— 审计 F-r2-plans-002 / F-mutation-006 就是这么一条：
+ * 改来源层 + 整链重建，rebuild / validate / 可重建全部 exit 0。
+ * 因此判据落在**取值与它自己的记述是否同向**上（见 `restrictionWitnessProblems()`）：
+ * 说 `false` 就必须给出官方否定表述，说 `"unknown"` 就必须写出"查过但来源没说明"。
+ */
+const TRISTATE_UNKNOWN = 'unknown';
+
+/** 三态字面量的**唯一**清单（计划侧）。0 / 1 / "true" / null / 缺字段一律不在其中。 */
+const RESTRICTION_TRISTATE = [true, false, TRISTATE_UNKNOWN];
+
+/**
+ * 见证词表：把一个三态取值"兑现"回官方原文的最小判据。
+ * 中文用子串（CJK 不需要词边界），拉丁文用 `\b` 词边界（避免 `no` 命中 `nothing` 里的 `no`… 之类）。
+ */
+const RESTRICTION_FALSE_WITNESS = {
+  words: ['无需', '不需', '不需要', '没有', '不含', '不提供', '不支持', '不允许', '不可以', '不必',
+    '非必需', '非必须', '不必填', '可省略', '免填', '不限制', '没有任何'],
+  patterns: [/\b(?:no|not|never|without|none|n\/a)\b/i]
+};
+
+const RESTRICTION_UNKNOWN_WITNESS = {
+  words: ['未说明', '未提及', '未披露', '未标注', '未明确', '未列出', '未给出', '未注明', '未写', '未见',
+    '查无', '不明', '未知', '没有说明', '无从判断'],
+  patterns: [/\b(?:unknown|unspecified|not specified|unclear|undisclosed|no mention)\b/i]
+};
+
+function hasWitness(text, table) {
+  const value = String(text || '');
+  if (!value) return false;
+  if (table.words.some(word => value.includes(word))) return true;
+  return table.patterns.some(pattern => pattern.test(value));
+}
+
+/** 见证词表的人类可读摘要（错误信息里直接列出来，读者不必翻源码） */
+function witnessHint(table, limit = 4) {
+  return `${table.words.slice(0, limit).join(' / ')} …（或英文对应表述）`;
+}
+
+/**
+ * 取值与记述的同向性判据 —— **本文件是这条判据的唯一实现**。
+ *
+ * @returns {string[]} 问题列表（空 = 通过）
+ */
+function restrictionWitnessProblems(value, note, where) {
+  const problems = [];
+  const text = String(note === null || note === undefined ? '' : note).trim();
+  if (value === false) {
+    if (!text) {
+      problems.push(`${where}: value=false 必须写 note 给出官方否定表述 —— 「查不到」不是「否」，把 unknown 写成 false 才会落进这一条`);
+    } else if (!hasWitness(text, RESTRICTION_FALSE_WITNESS)) {
+      problems.push(`${where}: value=false 的 note 里没有官方否定表述（应出现 ${witnessHint(RESTRICTION_FALSE_WITNESS)}）`
+        + ' —— 说"不是 / 不需要"必须能在官方原文上兑现；只想说「没查到」就写 "unknown"');
+    }
+  } else if (value === TRISTATE_UNKNOWN) {
+    if (!hasWitness(text, RESTRICTION_UNKNOWN_WITNESS)) {
+      problems.push(`${where}: value="unknown" 的 note 里没有写出「查过但来源没说明」（应出现 ${witnessHint(RESTRICTION_UNKNOWN_WITNESS)}）`
+        + ' —— unknown 是"查过、没找到"，不是一个万能挡箭牌');
+    }
+  }
+  return problems;
+}
+
 /**
  * 来源类型。**登记制**：未登记一律硬红。第三方套餐对比站不在表里 ——
  * 它们只能用来发现候选（题面 §十二），不能作为生产事实来源。
@@ -517,13 +596,16 @@ function normalizeRestrictions(value, problems) {
     // 三态：true / false / "unknown" 三个**字面量**，0 / 1 / "true" 一律不接受。
     // "unknown" 的意思是「查过、来源没说明」，与"没写这条限制"不是一回事，
     // 所以它必须带 note 说明依据（沿用仓库「inferred 必须带 note」的既有纪律）。
+    //
+    // **缺字段不许被当成 false**：`value` 缺席 ⇒ 直接报红，而不是补一个 false 进去。
+    // 这条"缺席 ≠ false"是 §10.4 的核心 —— 派生路径、渲染路径、重建路径三处都按它走。
     if (rawValue === undefined) {
-      problems.push(`${where}.value 缺失（三态至少要明确写出 true / false / "unknown"）`);
+      problems.push(`${where}.value 缺失（三态至少要明确写出 true / false / "unknown"）—— 缺字段不得被当成 false`);
       return;
     }
-    if (rawValue === 'unknown') {
+    if (rawValue === TRISTATE_UNKNOWN) {
       if (!note) problems.push(`${where}: value="unknown" 时必须用 note 说明「查过但来源没说明」的依据`);
-      value_ = 'unknown';
+      value_ = TRISTATE_UNKNOWN;
     } else if (RESTRICTION_VALUE_TYPE[kind] === 'boolean') {
       if (typeof rawValue !== 'boolean') {
         problems.push(`${where}(kind=${kind}).value 必须是 true / false / "unknown"（得到 ${JSON.stringify(rawValue)}）`);
@@ -541,6 +623,9 @@ function normalizeRestrictions(value, problems) {
       if (!text) return;
       value_ = text;
     }
+
+    // 取值与记述同向（unknown 不得落 false）：判据只有 `restrictionWitnessProblems()` 一处
+    problems.push(...restrictionWitnessProblems(value_, note, where));
 
     out.push({ kind, value: value_, note });
   });
@@ -980,6 +1065,12 @@ module.exports = {
   MODEL_ROLES,
   RESTRICTION_KINDS,
   RESTRICTION_VALUE_TYPE,
+  TRISTATE_UNKNOWN,
+  RESTRICTION_TRISTATE,
+  RESTRICTION_FALSE_WITNESS,
+  RESTRICTION_UNKNOWN_WITNESS,
+  restrictionWitnessProblems,
+  hasWitness,
   PLAN_SOURCE_TYPES,
   PLANS_EVIDENCE_FIELDS,
   RECORD_FIELDS,
@@ -1044,6 +1135,9 @@ module.exports = {
     CURRENCIES,
     RESTRICTION_KINDS,
     RESTRICTION_VALUE_TYPE,
+    TRISTATE_UNKNOWN,
+    RESTRICTION_TRISTATE,
+    restrictionWitnessProblems,
     PLAN_SOURCE_TYPES,
     MAX_NOTE,
     MAX_PLAN_NAME,

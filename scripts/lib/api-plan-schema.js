@@ -105,6 +105,13 @@ const TOKEN_RATE_LABEL = {
   batchOutput: '批处理输出'
 };
 
+/** 免费额度类型 → 数额单位词（**唯一出处**：单元格与明细节都读它，不再有第三份手写三元表达式） */
+const FREE_TIER_UNIT_LABEL = {
+  tokens: 'tokens',
+  credits: 'credits',
+  requests: '次请求'
+};
+
 /** 非 token 维度：**每条自带单位**（所以「每张图 $0.04」不可能被塞进 token 单位字段） */
 const MEDIA_RATE_KINDS = ['image', 'audio', 'video', 'text', 'other'];
 const MEDIA_RATE_UNITS = [
@@ -134,6 +141,49 @@ const MODEL_VARIANT_LABEL = {
 const FREE_TIER_TYPES = [
   'tokens', 'credits', 'requests', 'models', 'rate_limited', 'unlimited_fair_use', 'none', 'other'
 ];
+/**
+ * 「这份免费额度是什么性质」—— 题面 §六 / §7.3 的分工落到**数据**上（P1-11 / `F-r2-api-005`）。
+ *
+ *   `standing`     官方**长期提供**的免费能力（长期免费档 / 长期免费模型）→ Plan capability
+ *   `new_user`     新用户赠送（首次开通 / 新注册赠送）→ 优惠（Deals）
+ *   `promotional`  限时赠送（活动期内的赠品）→ 优惠（Deals）
+ *
+ * 为什么必须是**必填**枚举，而不是一句可选注释：缺省值会被渲染层与读者读成「长期能力」，
+ * 而「限时赠品被记成 Plan 的能力」正是这条 P1 的形态（生产 `aliyun` / `tencent` 两条
+ * `period:'one_time'` 的赠送被收进 `freeTier`，同时页面口径写着「只记官方长期提供的免费能力」）。
+ * 后两档**不是**长期能力，但也不是「不许出现在 API 计费记录里」——它们是这条记录上的真实事实，
+ * 如实记下并把性质标出来，比丢掉它们更诚实。
+ */
+const FREE_TIER_STABILITY = ['standing', 'new_user', 'promotional'];
+/** 性质的中文措辞（**唯一出处**：渲染层的单元格 / 明细节与自测都取这一份） */
+const FREE_TIER_STABILITY_LABEL = {
+  standing: '长期提供',
+  new_user: '新用户赠送',
+  promotional: '限时赠送'
+};
+/** 周期性刷新周期：赠送 / 限时额度**不得**写成周期性（那会被读成「每月都有」的长期能力） */
+const FREE_TIER_RECURRING_PERIODS = ['monthly', 'yearly', 'weekly', 'daily', 'hourly', 'rolling'];
+
+/**
+ * `freeTier.conversionDependsOnModel` 的三态契约（§10.4 / P2-12，API 侧）。
+ *
+ * 语义（**只有两个已知值 + 一个未知状态**）：
+ *   `true`  额度按各模型当前单价扣减（官方明说随模型换算）
+ *   `false` 官方明说不随模型换算
+ *   `null`  **未说明** —— 这是"查过、来源没说"的那个状态，**不是** false
+ *
+ * 为什么把它写成表：`null` 与 `false` 在 JSON 里长得完全不一样，但在"随手写
+ * `value || false`"的代码里长得一模一样 —— 而 `null` 被读成 `false` 就是
+ * 把「官方没说」说成了「官方说不是」。判据在 `normalizeFreeTier()`：
+ * 缺字段 / 显式 null 一律落成 `null`（不得落成 `false`）；`type=credits` 时
+ * 连 `null` 都不接受（必须明确回答）—— 与 `stability` 的必填同一条纪律。
+ */
+const FREE_TIER_CONVERSION_TRISTATE = [true, false, null];
+/**
+ * 赠送 / 限时额度的 `description` 必须写清官方条件（谁送、什么时候失效）。
+ * 这是**结构性证据绑定**：分类不能只由一个枚举撑着，必须能在官方原文的那句话上兑现。
+ */
+const FREE_TIER_CONDITION_RE = /赠送|新人|新用户|首次|限时|活动|有效期|到期|过期|天内|日起|试用/;
 /** 有固定数值的类型 */
 const FREE_TIER_QUANTIFIED = ['tokens', 'credits', 'requests'];
 /** 没有固定数值的类型：`amount` 必须是 null（不得把限速伪装成固定额度） */
@@ -167,7 +217,7 @@ const DERIVED_FIELDS = ['id', 'derivedMetrics'];
 
 const MODEL_FIELDS = ['name', 'modelKey', 'variant', 'aliases', 'rates', 'mediaRates', 'note'];
 const MEDIA_RATE_FIELDS = ['kind', 'price', 'unit', 'note'];
-const FREE_TIER_FIELDS = ['type', 'amount', 'period', 'models', 'description', 'conversionDependsOnModel'];
+const FREE_TIER_FIELDS = ['type', 'stability', 'amount', 'period', 'models', 'description', 'conversionDependsOnModel'];
 const LIMIT_FIELDS = ['kind', 'value', 'appliesTo', 'note'];
 const CREDIT_FIELDS = ['pay', 'currency', 'gets', 'unit', 'usageNote', 'expires', 'description'];
 const PRICING_FIELDS = ['currency', 'unit', 'unitNote'];
@@ -196,7 +246,10 @@ const API_EVIDENCE_FIELDS = [
  */
 const API_WORDING = {
   unitNote: '表中每一个价格都是「该行「计费单位」列所写的单位」的单价，本站不做任何单位换算。',
-  freeTierScope: '「免费额度」只记官方长期提供的免费能力；限时活动与新用户赠送属于优惠（Deals），不在这一列。',
+  freeTierScope: '「免费额度」栏**逐条标注性质**：长期提供（官方长期提供的免费档 / 免费模型）· '
+    + '新用户赠送（首次开通 / 新注册的赠送）· 限时赠送（活动期内的赠品）。'
+    + '只有标为「长期提供」的才是长期免费能力；后两类**不是** —— 它们是官方的一次性或限时赠送，'
+    + '本站照原样收录并标注（它们的优惠形态属于 Deals）。',
   creditsNote: 'credits 是预付费额度（钱），不是 token 数量。本站不把它折算成任何 token 数 —— '
     + '那不是套餐的原始额度，而是需要选定模型与单价才能算出的**计算值**。',
   priceUnknown: '官方页面未标注该项，留空（不是 0）',
@@ -518,6 +571,22 @@ function normalizeFreeTier(value, problems, models) {
   const type = FREE_TIER_TYPES.includes(value.type) ? value.type : null;
   if (!type) problems.push(`freeTier.type 非法(${value.type})：只接受 ${FREE_TIER_TYPES.join(' / ')}`);
 
+  // 性质（P1-11）：必填枚举 + 与 period / description 的互斥判据。
+  // 「缺省」在这里是**错误**而不是默认值 —— 缺省会被读成「长期能力」。
+  let stability = null;
+  const rawStability = value.stability;
+  if (type === 'none') {
+    if (rawStability !== null && rawStability !== undefined) {
+      problems.push('freeTier：type=none（官方明说没有免费额度）时 stability 必须是 null'
+        + ' —— 「没有」没有性质可标，给它一个档位等于把「没有」说成「有」的某一种');
+    }
+  } else if (FREE_TIER_STABILITY.includes(rawStability)) {
+    stability = rawStability;
+  } else {
+    problems.push(`freeTier.stability 非法(${JSON.stringify(rawStability)})：必须写明这份额度的性质（${FREE_TIER_STABILITY.join(' / ')}）`
+      + ' —— 缺省会被读成「长期能力」，那正是「限时/新用户赠送被记成 Plan 能力」的形态');
+  }
+
   const amount = numberOrNull(value.amount, 'freeTier.amount', problems, {
     min: 0, max: planSchema.MAX_QUOTA_AMOUNT, exclusiveMin: true
   });
@@ -538,6 +607,26 @@ function normalizeFreeTier(value, problems, models) {
   const description = strictText(value.description, 'freeTier.description', B.MAX_NOTE, problems);
   if (type && FREE_TIER_DESCRIPTION_REQUIRED.includes(type) && !description) {
     problems.push(`freeTier：type=${type} 必须用 description 写明口径`);
+  }
+
+  // 性质与 period：长期能力不能是「一次性」，赠送/限时也不能写成周期性刷新。
+  // 两个方向都会让读者把它读成长期能力（一次性被读成"一直有"、每月被读成"每月都送"）。
+  if (stability === 'standing' && period === 'one_time') {
+    problems.push('freeTier：stability=standing（长期提供）与 period=one_time（一次性）自相矛盾'
+      + ' —— 一次性赠送不是长期能力，请改成 new_user / promotional 或修正 period');
+  }
+  if (stability && stability !== 'standing' && period && FREE_TIER_RECURRING_PERIODS.includes(period)) {
+    problems.push(`freeTier：stability=${stability}（${FREE_TIER_STABILITY_LABEL[stability]}）不得写成周期性刷新（period=${period}）`
+      + ' —— 赠送 / 限时额度写成每月或每年会被读成长期能力');
+  }
+  // 性质与官方条件：分类必须由官方原文里的那句话支撑（结构性证据绑定）。
+  if (stability && stability !== 'standing') {
+    if (!description) {
+      problems.push(`freeTier：stability=${stability} 必须用 description 写明官方条件（谁送、有效期到什么时候）`);
+    } else if (!FREE_TIER_CONDITION_RE.test(description)) {
+      problems.push(`freeTier：stability=${stability} 的 description 里没有写明赠送 / 时限条件`
+        + '（应出现「首次 / 新人 / 新用户 / 赠送 / 限时 / 有效期 / 天内」之一）—— 分类必须能在官方原文上兑现');
+    }
   }
 
   let freeModels = null;
@@ -567,16 +656,20 @@ function normalizeFreeTier(value, problems, models) {
 
   let conversionDependsOnModel = null;
   const raw = value.conversionDependsOnModel;
+  // 三态（§10.4）：true / false / null。**缺字段与显式 null 都落成 null（未知），绝不落成 false** ——
+  // 「官方没说」与「官方说不是」必须能被区分，否则 `freeTier.conversionDependsOnModel` 上
+  // 就复现了 P2-12 那条"来源层把 unknown 降级为 false"的形态。
   if (raw !== null && raw !== undefined) {
-    if (typeof raw !== 'boolean') problems.push('freeTier.conversionDependsOnModel 必须是布尔或 null');
-    else if (type === 'credits' || type === 'other') conversionDependsOnModel = raw;
+    if (typeof raw !== 'boolean') {
+      problems.push(`freeTier.conversionDependsOnModel 必须是布尔或 null（三态：${FREE_TIER_CONVERSION_TRISTATE.map(v => JSON.stringify(v)).join(' / ')}）`);
+    } else if (type === 'credits' || type === 'other') conversionDependsOnModel = raw;
     else problems.push(`freeTier.conversionDependsOnModel 只允许出现在 credits / other 上（type=${type}）`);
   }
   if (type === 'credits' && conversionDependsOnModel === null) {
-    problems.push('freeTier：type=credits 必须明确 conversionDependsOnModel');
+    problems.push('freeTier：type=credits 必须明确 conversionDependsOnModel（true / false 二选一；null = 未说明，不算回答）');
   }
 
-  return { type, amount, period, models: freeModels, description, conversionDependsOnModel };
+  return { type, stability, amount, period, models: freeModels, description, conversionDependsOnModel };
 }
 
 /* -------------------------------- limits ------------------------------- */
@@ -730,14 +823,269 @@ function normalizeCredits(value, problems) {
 }
 
 /* ------------------------------------------------------------------ */
-/* 引文字段（含逐模型动态展开）                                          */
+/* 引文字段（含逐模型 / 逐变体 / 逐维度动态展开）                          */
 /* ------------------------------------------------------------------ */
 
-/** 记录级基础字段 + `models.<modelKey>`（模型价格只能靠这两个字面对上账） */
+/**
+ * 记录级基础字段 + 逐模型 / 逐变体 / **逐维度** 的字段绑定（§10.1–10.3）。
+ *
+ * 这是**追加式**的：旧形态 `models.<modelKey>` 原样保留（存量 35 条引文全用它），
+ * 新形态只是**多出**更精确的键，让「这条原文证的是哪一个数字」可以被机器对账：
+ *
+ *   · `models.<modelKey>`                             —— 旧形态：这条原文属于哪个模型
+ *   · `models.<modelKey>.<variant>`                   —— 精确到变体（标准档 / 长上下文是两个价）
+ *   · `models.<modelKey>[.<variant>].rates.<dim>`     —— 精确到**维度**（input / output / cachedInput / …）
+ *   · `rates.<dim>`                                   —— 记录级维度见证（价格表整列）
+ *   · `mediaRates.<unit>`                             —— 非 token 计费项（第 7 列）的单位见证
+ *
+ * 为什么必须能绑定到**维度**：P1-7 的形态是「来源层把 input 与 output 对调，五道门禁全绿、
+ * 页面照常渲染」—— `models.<key>` 只说"这段原文属于这个模型"，说不出"哪个数字是输入价"。
+ * 维度绑定让「引文里的数字顺序」成为判据（见 `evidenceBindingProblems`）：
+ * 官方表格永远是「输入价在前、输出价在后」，对调会让数据与引文的顺序相反。
+ */
 function apiEvidenceFieldsOf(plan) {
   const models = (plan && Array.isArray(plan.models)) ? plan.models : [];
+  // 前两段**逐字保持旧顺序**（基础字段 → `models.<modelKey>` 按 modelKey 升序）：
+  // 这份清单同时是 `normalizeEvidence` 的**排序键**（sortAndCap 按字段序排引文），
+  // 把新形态插在前面会让存量引文的顺序漂移 —— 那是没有理由的生产数据 diff。
   const keys = [...new Set(models.map(entry => entry && entry.modelKey).filter(Boolean))].sort();
-  return [...API_EVIDENCE_FIELDS, ...keys.map(key => `models.${key}`)];
+  const fields = [...API_EVIDENCE_FIELDS, ...keys.map(key => `models.${key}`)];
+  // 追加的新形态（只多出可用键，不改变旧键的位置）
+  for (const entry of models) {
+    if (!entry || !entry.modelKey) continue;
+    const key = entry.modelKey;
+    if (entry.variant) fields.push(`models.${key}.${entry.variant}`);
+    for (const dim of TOKEN_RATE_KEYS) {
+      if (entry.rates && entry.rates[dim] !== null && entry.rates[dim] !== undefined) {
+        fields.push(`models.${key}.rates.${dim}`);
+        if (entry.variant) fields.push(`models.${key}.${entry.variant}.rates.${dim}`);
+      }
+    }
+    for (const media of entry.mediaRates || []) {
+      if (media && media.unit) fields.push(`models.${key}.mediaRates.${media.unit}`);
+    }
+  }
+  // 记录级维度见证：整张价格表的「输入价 / 输出价」列（例：表头引文 + 表体引文成对使用）
+  for (const dim of TOKEN_RATE_KEYS) fields.push(`rates.${dim}`);
+  for (const unit of MEDIA_RATE_UNITS) fields.push(`mediaRates.${unit}`);
+  return [...new Set(fields)];
+}
+
+/* ------------------------------------------------------------------ */
+/* 证据绑定判据（引文 ↔ 数字 / 单位）                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 一个数值在引文里出现的**位置**（找不到返回 -1）。名字就是判据：
+ *
+ *   · 逐个比对 JSON 数字的字面形态（`8` / `0.8` / `8.4`），并补一个「补零到两位小数」的形态
+ *     （`8.4` → `8.40`）—— 官方表格常常把价格对齐成两位小数。
+ *   · **前导边界**：数字前面不能是数字或小数点，否则 `8` 会命中 `28` 里的那个 8。
+ *     **尾随不设边界**：真实引文里数字是**粘连**的（`2.1016.80` = 2.10 与 16.80），
+ *     设了尾随边界就会把真值判成"没出现"，而那会让判据在真实数据上变成假红。
+ *
+ * 为什么用「位置」而不是布尔：P1-7 的对调只有**顺序**能证伪。官方表格的列序是固定的
+ * （输入价在输出价之前），所以「引文里输入值出现在输出值之前」是一条来自原文的判据，
+ * 不是关于价格大小的经验规则。
+ */
+function quoteIndexOfNumber(quote, value) {
+  const text = String(quote === null || quote === undefined ? '' : quote);
+  if (!text || typeof value !== 'number' || !Number.isFinite(value)) return -1;
+  const literal = String(value);
+  const forms = [literal];
+  if (/^\d+\.\d$/.test(literal)) forms.push(`${literal}0`);
+  let best = -1;
+  for (const form of forms) {
+    const literal = form.replace(/\./g, '\\.');
+    // 先按「前导不是数字/小数点」找（避免把 `28` 里的 8 当成价格 8）；
+    // 找不到再放宽 —— 官方引文里的数字是**粘连**的（`2.1016.80`），有边界的写法会漏掉真值。
+    let at = -1;
+    for (const pattern of [`(?:^|[^0-9.])${literal}`, literal]) {
+      const match = new RegExp(pattern, 'g').exec(text);
+      if (!match) continue;
+      at = pattern.startsWith('(?:^') ? match.index + (match[0].length - form.length) : match.index;
+      break;
+    }
+    if (at >= 0 && (best < 0 || at < best)) best = at;
+  }
+  return best;
+}
+
+/** 单位词两条：百万 / 千。**只看引文里写出来的单位，不看数字大小**（那是被禁止的经验规则） */
+const UNIT_TOKEN_MILLION = /(每\s*百万|每百万|百万\s*tokens?|\/\s*M\b|元\s*\/\s*M|per\s*1\s*M|1M\s*tokens?|100\s*万\s*tokens?|每\s*100\s*万)/i;
+const UNIT_TOKEN_THOUSAND = /(每\s*千|每千|\/\s*K\b|元\s*\/\s*K|per\s*1\s*K|1K\s*tokens?|每\s*1000)/i;
+
+/** 一段文本点名的单位（`million` / `thousand` / `both` / null） */
+function namedUnitOf(text) {
+  const value = String(text === null || text === undefined ? '' : text);
+  const million = UNIT_TOKEN_MILLION.test(value);
+  const thousand = UNIT_TOKEN_THOUSAND.test(value);
+  if (million && thousand) return 'both';
+  if (million) return 'million';
+  if (thousand) return 'thousand';
+  return null;
+}
+
+/**
+ * 去掉引文里的**模型名 / 变体名**再找数字。
+ *
+ * 为什么必须去：官方引文总是以模型名开头，而模型名自带版本号 ——
+ * `deepseek-v4.1-flash 上下文缓存享有折扣 忙时 2元 闲时 1元…` 里的 `4` 会被当成"价格 4"，
+ * 于是「输入价 1 应在输出价 4 之前」这条判据在**真实引文**上变成假红。
+ * 名字是身份，不是价格；去掉它之后剩下的数字才是价格与档位边界。
+ */
+function stripModelNames(quote, models) {
+  let text = String(quote === null || quote === undefined ? '' : quote);
+  const names = [];
+  for (const model of models || []) {
+    if (!model) continue;
+    for (const raw of [model.modelKey, model.name, ...(Array.isArray(model.aliases) ? model.aliases : [])]) {
+      const value = String(raw === null || raw === undefined ? '' : raw).trim();
+      if (value.length >= 3) names.push(value);
+    }
+  }
+  names.sort((a, b) => b.length - a.length);
+  for (const name of new Set(names)) {
+    text = text.split(name).join(' ');
+    // 大小写不同也去掉（引文里的显示名与数据里的写法可能只差大小写）
+    const lower = name.toLowerCase();
+    if (lower !== name) {
+      let index = text.toLowerCase().indexOf(lower);
+      while (index >= 0) {
+        text = `${text.slice(0, index)} ${text.slice(index + name.length)}`;
+        index = text.toLowerCase().indexOf(lower);
+      }
+    }
+  }
+  return text;
+}
+
+/** 记录级单位属于哪一类（用于与引文点名的单位对账） */
+function unitClassOf(unit) {
+  if (unit === 'per_1M_tokens' || unit === 'per_1M_characters') return 'million';
+  if (unit === 'per_1K_tokens') return 'thousand';
+  return null;
+}
+
+/** 证据项绑定的字段 → 解析出 {modelKey, variant, dim, mediaUnit, rec}（解析不出返回 null） */
+function parseEvidenceBinding(field, variants) {
+  const text = String(field || '');
+  const dims = TOKEN_RATE_KEYS.join('|');
+  let match = new RegExp(`^models\\.(.+)\\.(${variants.join('|')})\\.rates\\.(${dims})$`).exec(text);
+  if (match) return { kind: 'rate', modelKey: match[1], variant: match[2], dim: match[3] };
+  match = new RegExp(`^models\\.(.+)\\.rates\\.(${dims})$`).exec(text);
+  if (match) return { kind: 'rate', modelKey: match[1], variant: null, dim: match[2] };
+  match = new RegExp(`^rates\\.(${dims})$`).exec(text);
+  if (match) return { kind: 'rate', modelKey: null, variant: null, dim: match[1] };
+  match = /^models\.(.+)\.mediaRates\.([a-z0-9_]+)$/.exec(text);
+  if (match) return { kind: 'media', modelKey: match[1], mediaUnit: match[2] };
+  match = /^mediaRates\.([a-z0-9_]+)$/.exec(text);
+  if (match) return { kind: 'media', modelKey: null, mediaUnit: match[1] };
+  match = new RegExp(`^models\\.(.+)\\.(${variants.join('|')})$`).exec(text);
+  if (match) return { kind: 'model', modelKey: match[1], variant: match[2] };
+  match = /^models\.(.+)$/.exec(text);
+  if (match) return { kind: 'model', modelKey: match[1], variant: null };
+  return null;
+}
+
+/**
+ * 证据绑定判据（§10.1–10.3 的机器判据）。**只读**：输入是归一后的记录。
+ *
+ * 三条判据，都来自「官方原文本身就是判据」这一个方向（不用 input<output、不用数字大小推单位）：
+ *
+ *   B1 维度绑定必须非空转：绑了 `…rates.input` 就必须在引文里找到这个模型的输入价。
+ *      绑一个维度却读不到那个数字 = 这条绑定什么都没证，**不许静默放行**。
+ *   B2 顺序判据（P1-7 的牙）：模型的输入值与输出值**都**出现在引文里时，
+ *      输入值必须在输出值**之前** —— 官方表格的列序是固定的（输入价在前）。
+ *      来源层把 input/output 对调后，数据与引文的顺序相反 ⇒ 红。
+ *      只出现一侧时不作顺序断言（避免把"只引了输出价"的合法引文判红）。
+ *   B3 单位见证与一致性（P1-8 的牙）：引文或 `pricing.unitNote` 只要点名了单位，
+ *      就必须与记录级 `pricing.unit` 同类（万元≠千元）；而每条记录都必须**有**单位见证
+ *      （引文点名 / `pricing.unit` 引文 / 人工在 `pricing.unitNote` 写清出处），
+ *      否则红 —— "无法自动证明"不等于"不用证明"。
+ *
+ * @param {{models?:Array, evidence?:Array, pricing?:object}} record 归一后的记录
+ * @returns {string[]} 问题列表（空 = 通过）
+ */
+function evidenceBindingProblems(record) {
+  const problems = [];
+  const models = (record && Array.isArray(record.models)) ? record.models : [];
+  const evidence = (record && Array.isArray(record.evidence)) ? record.evidence : [];
+  const unit = record && record.pricing ? record.pricing.unit : null;
+  const unitClass = unitClassOf(unit);
+  const variants = MODEL_VARIANTS;
+
+  for (const item of evidence) {
+    const named = namedUnitOf(item.quote);
+    // 找数字前先去掉模型名（名字里的版本号不是价格 —— 见 stripModelNames）
+    const quote = stripModelNames(item.quote, models);
+
+    // B3：引文点名的单位必须与记录级 unit 同类（对**每一条**引文都成立，含 pricing.unit 本身）
+    if (named && unitClass && named !== 'both' && named !== unitClass) {
+      problems.push(`evidence「${item.field}」的引文点名了「${named === 'thousand' ? '每千' : '每百万'}」，`
+        + `而记录级 pricing.unit=${unit}（${named === 'thousand' ? '每千' : '每百万'}）—— `
+        + '单位是数据字段，不是从引文推断的，两者矛盾即红');
+    }
+
+    const binding = parseEvidenceBinding(item.field, variants);
+    if (!binding) continue;
+
+    // 定位这条引文证的记录：**同一个 modelKey 可以有多个变体**
+    //（glm-5.3 同时有 long_context 与 standard），所以不能只取第一条 ——
+    // 那次踩坑的表现是「绑定了 input 却拿另一条变体的价去对账」。
+    const boundEntries = binding.modelKey
+      ? models.filter(model => model.modelKey === binding.modelKey
+        && (!binding.variant || model.variant === binding.variant))
+      : [];
+    const targeted = binding.modelKey ? boundEntries : models;
+
+    // B1 / B2：与数字对账（只对能定位到模型的绑定做）
+    if (binding.kind === 'media') continue;
+    if (binding.kind === 'rate') {
+      const candidates = targeted.filter(model => model.rates && model.rates[binding.dim] !== null && model.rates[binding.dim] !== undefined);
+      if (!candidates.length) {
+        problems.push(`evidence「${item.field}」绑定了一个**没有值**的维度（${binding.dim}）`
+          + ' —— 绑定指向不存在的证据（写了却没生效）');
+        continue;
+      }
+      if (!candidates.some(model => quoteIndexOfNumber(quote, model.rates[binding.dim]) >= 0)) {
+        problems.push(`evidence「${item.field}」绑定了 ${binding.dim} 维度，但引文里找不到该值`
+          + `（${candidates.map(model => model.rates[binding.dim]).join(' / ')}）—— 空转的维度绑定等于没证`);
+      }
+    }
+    // B2：输入值必须先于输出值出现（两者都在引文里时）
+    const orderCandidates = targeted;
+    for (const model of orderCandidates) {
+      if (!model.rates) continue;
+      const input = model.rates.input;
+      const output = model.rates.output;
+      if (typeof input !== 'number' || typeof output !== 'number' || input === output) continue;
+      const atInput = quoteIndexOfNumber(quote, input);
+      const atOutput = quoteIndexOfNumber(quote, output);
+      if (atInput < 0 || atOutput < 0) continue;            // 只出现一侧：不作顺序断言
+      if (atInput > atOutput) {
+        problems.push(`evidence「${item.field}」里 ${output} 出现在 ${input} 之前，`
+          + `而 ${model.modelKey} 的数据说输入价 ${input}、输出价 ${output}`
+          + ' —— 官方表格的列序是「输入价在前」；数据与引文顺序相反（input/output 被对调过？）');
+      }
+    }
+  }
+
+  // B3 后半：单位必须有见证（缺失即红，不许静默放行）
+  const unitNote = record && record.pricing ? record.pricing.unitNote : null;
+  const hasUnitEvidence = evidence.some(item => item.field === 'pricing.unit');
+  const namedInQuotes = evidence.map(item => namedUnitOf(item.quote)).filter(Boolean).length > 0;
+  const namedInNote = Boolean(namedUnitOf(unitNote));
+  if (!hasUnitEvidence && !namedInQuotes && !namedInNote) {
+    problems.push(`pricing.unit=${unit || '(缺失)'} 没有任何单位见证：引文里没点名单位、没有 pricing.unit 引文、`
+      + 'pricing.unitNote 也没写 —— 单位是价格事实的一部分，"没证据"不许静默放行'
+      + '（补一条官方引文，或在 pricing.unitNote 里写清这个单位是从官方哪一处读来的）');
+  }
+  if (unitNote && namedUnitOf(unitNote) && unitClass && namedUnitOf(unitNote) !== 'both' && namedUnitOf(unitNote) !== unitClass) {
+    problems.push(`pricing.unitNote 点名了「${namedUnitOf(unitNote) === 'thousand' ? '每千' : '每百万'}」，`
+      + `与 pricing.unit=${unit} 矛盾`);
+  }
+  return problems;
 }
 
 /* ------------------------------------------------------------------ */
@@ -838,6 +1186,9 @@ function makeApiPlan(raw = {}, opts = {}) {
     problems.push(`evidence 缺失：每条 API 计费记录至少要有一条来自官方页的原文引文`
       + `（字段只能取 ${evidenceFields.join(' / ')}）`);
   }
+  // 证据绑定判据（§10.1–10.3）：引文 ↔ 数字（维度 / 顺序）与单位见证。放在归一之后 ——
+  // 它们看的是**归一后的引文**，与页面、订阅源读到的是同一份。
+  problems.push(...evidenceBindingProblems({ models, evidence, pricing }));
 
   if (problems.length) return { ok: false, plan: null, problems };
 
@@ -1149,6 +1500,12 @@ module.exports = {
   MODEL_VARIANTS,
   MODEL_VARIANT_LABEL,
   FREE_TIER_TYPES,
+  FREE_TIER_STABILITY,
+  FREE_TIER_STABILITY_LABEL,
+  FREE_TIER_CONVERSION_TRISTATE,
+  FREE_TIER_RECURRING_PERIODS,
+  FREE_TIER_CONDITION_RE,
+  FREE_TIER_UNIT_LABEL,
   FREE_TIER_QUANTIFIED,
   FREE_TIER_AMOUNTLESS,
   FREE_TIER_DESCRIPTION_REQUIRED,
@@ -1183,6 +1540,13 @@ module.exports = {
   deriveApiMetricsWithReason,
   derivedMetricsOf,
   apiEvidenceFieldsOf,
+  // §10.1–10.3：证据绑定判据与它的两个纯助手（自测直接驱动它们，不靠"跑一遍构建看看"）
+  evidenceBindingProblems,
+  quoteIndexOfNumber,
+  namedUnitOf,
+  parseEvidenceBinding,
+  UNIT_TOKEN_MILLION,
+  UNIT_TOKEN_THOUSAND,
   makeApiPlan,
   apiPlanDiffs,
   validateApiPlan,
