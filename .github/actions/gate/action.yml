@@ -257,26 +257,6 @@ runs:
       shell: bash
       run: node scripts/tools/models-selftest.js
 
-    - name: Models-page self-test (index + detail pages)
-      shell: bash
-      run: node scripts/tools/models-page-selftest.js
-
-    - name: Plans-hub self-test (/plans/)
-      shell: bash
-      run: node scripts/tools/planshub-selftest.js
-
-    - name: Vendor-pages self-test (/vendor/)
-      shell: bash
-      run: node scripts/tools/vendor-page-selftest.js
-
-    - name: Archive self-test (/archive/, synthetic ended/restored fixtures)
-      shell: bash
-      run: node scripts/tools/archive-selftest.js
-
-    - name: Data-docs self-test (/docs/data/ + /data/index.json)
-      shell: bash
-      run: node scripts/tools/data-docs-selftest.js
-
     # v3.0 新增：索引层与关系层的可重建性（与 plans / api-plans 那两条红的含义相同）。
     - name: Models reproducibility (registry → models.json, byte-compare)
       shell: bash
@@ -303,6 +283,35 @@ runs:
       shell: bash
       run: node scripts/tools/build-local.js
 
+    # ---- 产物依赖的五个页面自测：**排在 Assemble site 之后** -----------------------------
+    #
+    # 为什么顺序变了（§10.9 / P2-10 / P2-26）：这五节都要读 `dist/` 现场，而它们原先排在
+    # 构建**之前** —— CI 的干净检出里 `dist/` 不存在（dist/ 是 gitignore 的），于是这五节
+    # 全部走「缺产物 ⇒ 跳过并计 ✓」那个出口：同一份代码在本地与 CI 的项数不同，而这些牙
+    # 在 CI 里**一次都没跑过**。现在：先构建，再让它们在**明确的产物**上跑，并显式传
+    # `--dir=dist`（不是让每个测试自己猜"构建应该存在吗"）；缺产物一律非 0 —— 只有本地
+    # 诊断才加 `--allow-missing-dist`（会打印 OPTIONAL DIAGNOSTIC）。
+    # 这个调用形态与顺序由 `check-ci-consistency` 的 (10)/(17) 守着。
+    - name: Models-page self-test (index + detail pages)
+      shell: bash
+      run: node scripts/tools/models-page-selftest.js --dir=dist
+
+    - name: Plans-hub self-test (/plans/)
+      shell: bash
+      run: node scripts/tools/planshub-selftest.js --dir=dist
+
+    - name: Vendor-pages self-test (/vendor/)
+      shell: bash
+      run: node scripts/tools/vendor-page-selftest.js --dir=dist
+
+    - name: Archive self-test (/archive/, synthetic ended/restored fixtures)
+      shell: bash
+      run: node scripts/tools/archive-selftest.js --dir=dist
+
+    - name: Data-docs self-test (/docs/data/ + /data/index.json)
+      shell: bash
+      run: node scripts/tools/data-docs-selftest.js --dir=dist
+
     # v1.6 订阅可复现：**真实连续构建**两次，逐字节比对全部 36 个 Feed 文件。
     # 为什么自测之外还要这一支：自测证明的是「纯函数同输入同输出」，证明不了
     # 「构建脚本没把时钟/路径写进产物」。这里跑的是与发布完全同一条路径，
@@ -310,7 +319,7 @@ runs:
     # 交付报告里的 10 次实证：node scripts/tools/check-feeds-reproducible.js --runs=10
     - name: Feeds reproducibility (build twice, byte-compare)
       shell: bash
-      run: node scripts/tools/check-feeds-reproducible.js
+      run: node scripts/tools/check-feeds-reproducible.js --dir=dist
 
     # v2.1 新增：plans.json 可重建性 —— 盘上那份必须等于人工来源层产出的那一份（逐字节）。
     # 与上一条红的含义不同：Feeds 那条问的是「构建产物里有没有被塞进时钟」，

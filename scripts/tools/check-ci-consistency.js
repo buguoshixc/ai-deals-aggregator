@@ -43,6 +43,29 @@
  *    它将来会被设成**必需检查**，而必需检查一旦被 path 过滤，PR 只改别的目录时 workflow 根本不触发，
  *    检查既不是红也不是绿，而是**永久 pending** —— 分支保护会把 PR 卡死，且没人能从红绿看出原因。
  *
+ * ── 门禁**强度**本身的守卫（P1-2 / P1-3，2026-10-04 补齐；都不新增断言名，见下） ────────
+ *  审计实测过：只冻结步骤**名**时，把 SEO / 真浏览器 / 各 selftest 的 `run:` 换成 `echo skipped`、
+ *  给步骤加 `continue-on-error: true`、或把 `allow_degraded_run` 硬编码成 `'true'`，36/36 照样全绿
+ *  —— 也就是「绿色」不等于「验过」。补齐的三处判据**折进既有断言**（沿用名字与总项数 36，
+ *  因为 `--expect-checks=36` 是被调用方钉住的口径，加断言就等于改口径）：
+ *   · (10) 追加：**步骤体指纹**（`GATE_STEP_RUN`：规范化后逐字比对，先剥注释）、
+ *     步骤级 `if:` 的键值与存在性（`if: false` 这种静默跳过必须红）、
+ *     以及 action 里**不许出现 `continue-on-error` 步骤键**；
+ *   · (10) 追加：**真实执行** action.yml 里"浏览器可用性判定"那段 shell（6 组输入）——
+ *     判据是行为：浏览器不可用 + 非逐字 `'true'` ⇒ exit 1；逐字 `'true'` ⇒ exit 0 且
+ *     必须留下 `::warning` 与 Summary 里「没有做真浏览器验收」的明确记录；
+ *   · (11) 追加：把每个调用方的 `with.allow_degraded_run` **按触发事件真的求值**（不是 grep
+ *     字符串）：PR / push / schedule / workflow_run 与 workflow_dispatch 的「默认（未勾选）」
+ *     都必须解析成 `'false'`；只有人工 workflow_dispatch **显式勾选**允许 `'true'`（而且必须
+ *     真的解析成 `'true'`，逃生口不能被堵死）；deploy.yml 任何事件都不许降级；
+ *   · (17) 追加：产物依赖步骤必须显式 `--dir=dist` 且排在 `Assemble site` **之后**
+ *     （§10.9 / P2-26：原先它们排在构建前，CI 干净检出里没有 dist/ ⇒ 这些牙一次都没跑过）。
+ *  反过来的边界也如实写在这里：`GATE_STEP_RUN` 是**逐步骤**的指纹，不是整文件 SHA（§13.10 禁止）；
+ *  改注释、改缩进不做判据；真正想改步骤体时，必须同时在冻结表里改一次 —— 那正是"门禁强度变了"
+ *  应该被看见的时刻。运行判定的 shell 需要一个 POSIX bash：CI 上是 `bash`，Windows 上用
+ *  Git for Windows 的 bash（**刻意不用 PATH 里的 `bash`**：那里是 WSL 启动器，会挂住），
+ *  也可以用 `DSH_BASH=<path>` 指定；找不到 ⇒ 判红（fail-closed），不会静默跳过。
+ *
  * ── 看门狗、带外项数与它们各自的边界（如实记录，不做过度设计） ───────────────────────
  *  末尾的「(W) 断言名单与冻结清单等值」断言：**删掉任意一条断言**、或**把任意一条断言改名**，
  *  都会在这里变红（比"只比数量"更强）。它有一条**保护不了自己的固有边界**：如果被删的是最后一条
@@ -59,6 +82,9 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
+// 只多一个内置模块：`spawnSync` 用来**真实执行** action.yml 里"浏览器可用性判定"那一步的
+// shell（P1-3 的判据是行为，不是字符串）。仍然是零外部依赖，npm ci 之前就能跑。
+const { spawnSync } = require('child_process');
 
 const rootArg = process.argv.find(a => a.startsWith('--root='));
 const ROOT = rootArg ? path.resolve(rootArg.slice('--root='.length)) : path.join(__dirname, '..', '..');
@@ -191,11 +217,6 @@ const GATE_STEP_NAMES = [
   //  Manifest 与磁盘逐字段一致」都只在这一步被验证：构建期跑的是真数据，
   // 验不到「某个门槛其实永远不会响」。
   'Model-registry self-test (identity + explicit mapping)',
-  'Models-page self-test (index + detail pages)',
-  'Plans-hub self-test (/plans/)',
-  'Vendor-pages self-test (/vendor/)',
-  'Archive self-test (/archive/, synthetic ended/restored fixtures)',
-  'Data-docs self-test (/docs/data/ + /data/index.json)',
   // v3.0 新增：索引层与关系层的可重建性（与 plans / api-plans 那两条红的含义相同）。
   'Models reproducibility (registry → models.json, byte-compare)',
   'Model-registry links check (explicit mapping only, no similarity)',
@@ -204,8 +225,21 @@ const GATE_STEP_NAMES = [
   // 一份在撒谎的报告可以永久静默存活。接进来之后，报告与数据对不上就红。
   'Coverage report (gap list consistent with data)',
   'Assemble site (same path as deploy.yml)',
+  // v3.0 P2-26 / §10.9：**产物依赖的五个页面自测排在构建之后**（顺序即前置）。
+  // 原先它们排在 Assemble site 之前，而 CI 的干净检出里 `dist/` 根本不存在（dist/ 是
+  // gitignore 的），于是这五节全部走「缺产物 ⇒ 跳过并计 ✓」那个出口：同一份代码，
+  // 本地与 CI 的项数不同，而这些牙在 CI 里**一次都没响过**。
+  // 现在：先构建，再用 `--dir=dist` 把这些步骤显式钉在刚产出的那份产物上。
+  // 谁把它们挪回构建之前、或把 `--dir=dist` 去掉，(10)/(17) 立刻红。
+  'Models-page self-test (index + detail pages)',
+  'Plans-hub self-test (/plans/)',
+  'Vendor-pages self-test (/vendor/)',
+  'Archive self-test (/archive/, synthetic ended/restored fixtures)',
+  'Data-docs self-test (/docs/data/ + /data/index.json)',
   // v1.6 新增：**真实连续构建**两次，逐字节比对全部 Feed 文件。自测证明的是
   // 「纯函数同输入同输出」，证明不了「构建脚本没把时钟写进产物」——两者红的含义不同。
+  // §10.9：它同样依赖参考产物（原先缺产物就静默退化成"只自比对"），所以也排在
+  // Assemble site 之后并显式 `--dir=dist`。
   'Feeds reproducibility (build twice, byte-compare)',
   // v2.1 新增：plans.json 可重建性 —— 盘上那份必须等于人工来源层产出的那一份（逐字节）。
   // 与上一条红的含义不同：Feeds 那条问「构建产物里有没有被塞进时钟」，
@@ -223,6 +257,256 @@ const GATE_STEP_NAMES = [
   'Regression verify (baseline compare)',
   'Gate conclusion'
 ];
+
+/**
+ * 门禁步骤**体**的冻结指纹（P1-2 / `F-gate-001`）。
+ *
+ * 为什么冻结的是「规范化后的 run 体」而不是文件 SHA：
+ *   · 整文件 SHA 会连注释、缩进、换行的无意义改动一起锁死，也会让"看一眼就知道该改哪"变成
+ *     "重算一个哈希"，本仓库明确不要这一种（§13.10）；
+ *   · 只冻结步骤**名**（本轮之前的状态）则完全挡不住「名字不变、run 换成 `echo skipped`」——
+ *     审计实测：把 SEO / 真浏览器 / 各 selftest 的 run 换成 echo，36/36 照样全绿。
+ *
+ * 规范化规则（与 `.qc-gate/gen-bodies.js` 生成器一致，改这里必须同步那边）：
+ *   ① **先剥整行注释**（§BS-10：`action.yml` 的注释里就出现过 `continue-on-error` 字样，
+ *      裸 grep 会误红；所以注释一律不参与判据）；
+ *   ② 行内空白折叠成一个空格、去掉行首尾空白；③ 丢空行；④ 块标量按最小公共缩进 dedent。
+ *
+ * 于是：`run: node scripts/tools/seo-verify.js` → `echo skipped` 立刻红（体不等）；
+ * 给步骤加 `continue-on-error: true` 也红（键存在性在下面单独查）；改注释不红。
+ */
+const GATE_STEP_RUN = {
+  "Install dependencies":
+    "npm ci",
+  "Validate data (strict)":
+    "node scripts/validate.js --strict",
+  "Reproducibility gate (no value without a source)":
+    "node scripts/tools/check-reproducible.js",
+  "History verify (log consistent with deals.json)":
+    "node scripts/tools/history-verify.js",
+  "Migration verifier (audience provenance backfill)":
+    "node scripts/tools/migrate-audience-verify.js",
+  "Translation gate (drift blocks, pending ages out)":
+    "node scripts/tools/zh-todo.js --check",
+  "Translation self-test":
+    "node scripts/tools/zh-selftest.js",
+  "Expiry self-test":
+    "node scripts/tools/expiry-selftest.js",
+  "Text / cleanText self-test":
+    "node scripts/tools/text-selftest.js",
+  "Source-health self-test":
+    "node scripts/tools/health-selftest.js",
+  "Provenance self-test":
+    "node scripts/tools/provenance-selftest.js",
+  "Deal-history self-test":
+    "node scripts/tools/history-selftest.js",
+  "Change-radar self-test":
+    "node scripts/tools/changes-selftest.js",
+  "Feeds self-test":
+    "node scripts/tools/feeds-selftest.js",
+  "SEO self-test":
+    "node scripts/tools/seo-selftest.js",
+  "Audience self-test":
+    "node scripts/tools/audience-selftest.js",
+  "App-token self-test":
+    "node scripts/tools/app-token-selftest.js",
+  "AI layer self-test":
+    "node scripts/tools/ai-selftest.js",
+  "Collector fixtures (offline replay)":
+    "node scripts/tools/fixture-test.js",
+  "Plans self-test (data + page)":
+    "node scripts/tools/plans-selftest.js",
+  "Plan-history self-test":
+    "node scripts/tools/plan-history-selftest.js",
+  "Deal-plan-links self-test":
+    "node scripts/tools/deal-plan-links-selftest.js",
+  "API-plans self-test (data + page)":
+    "node scripts/tools/api-plans-selftest.js",
+  "API-plans reproducibility (curated → api-plans.json, byte-compare)":
+    "node scripts/tools/check-api-plans-reproducible.js",
+  "API-plan-history verify (log consistent with api-plans.json)":
+    "node scripts/tools/check-api-plan-history.js",
+  "Model-registry self-test (identity + explicit mapping)":
+    "node scripts/tools/models-selftest.js",
+  "Models reproducibility (registry → models.json, byte-compare)":
+    "node scripts/tools/check-models-reproducible.js",
+  "Model-registry links check (explicit mapping only, no similarity)":
+    "node scripts/tools/check-model-registry-links.js",
+  "Coverage report (gap list consistent with data)":
+    "node scripts/tools/coverage-report.js",
+  "Assemble site (same path as deploy.yml)":
+    "node scripts/tools/build-local.js",
+  "Models-page self-test (index + detail pages)":
+    "node scripts/tools/models-page-selftest.js --dir=dist",
+  "Plans-hub self-test (/plans/)":
+    "node scripts/tools/planshub-selftest.js --dir=dist",
+  "Vendor-pages self-test (/vendor/)":
+    "node scripts/tools/vendor-page-selftest.js --dir=dist",
+  "Archive self-test (/archive/, synthetic ended/restored fixtures)":
+    "node scripts/tools/archive-selftest.js --dir=dist",
+  "Data-docs self-test (/docs/data/ + /data/index.json)":
+    "node scripts/tools/data-docs-selftest.js --dir=dist",
+  "Feeds reproducibility (build twice, byte-compare)":
+    "node scripts/tools/check-feeds-reproducible.js --dir=dist",
+  "Plans reproducibility (curated → plans.json, byte-compare)":
+    "node scripts/tools/check-plans-reproducible.js",
+  "Plan-history verify (log consistent with plans.json)":
+    "node scripts/tools/check-plan-history.js",
+  "SEO verification (independent, from dist/)":
+    "node scripts/tools/seo-verify.js",
+  "Prepare browser for the real-browser gate":
+    "set +e # 安装/探测失败都要走到\"明确报错\"分支，不中途退出（默认的 bash -e 会）"
+ + '\n' + "set -uo pipefail"
+ + '\n' + "PW_VERSION=$(node -p \"require('playwright-core/package.json').version\")"
+ + '\n' + "echo \"playwright-core 版本: $PW_VERSION\""
+ + '\n' + "npx --yes \"playwright@$PW_VERSION\" install --with-deps chromium \\"
+ + '\n' + "|| echo \"::warning title=chromium 安装失败::npx playwright install chromium 未成功，继续探测系统自带浏览器\""
+ + '\n' + "PW_EXE=$(node -e \"process.stdout.write(require('playwright-core').chromium.executablePath())\" 2>/dev/null || true)"
+ + '\n' + "EXE=\"\""
+ + '\n' + "for cand in \"${PW_EXE:-}\" /usr/bin/microsoft-edge /usr/bin/google-chrome \\"
+ + '\n' + "/usr/bin/google-chrome-stable /usr/bin/chromium /usr/bin/chromium-browser /snap/bin/chromium; do"
+ + '\n' + "if [ -n \"$cand\" ] && [ -x \"$cand\" ]; then EXE=\"$cand\"; break; fi"
+ + '\n' + "done"
+ + '\n' + "if [ -n \"$EXE\" ]; then"
+ + '\n' + "echo \"browser_available=true\" >> \"$GITHUB_OUTPUT\""
+ + '\n' + "echo \"executable=$EXE\" >> \"$GITHUB_OUTPUT\""
+ + '\n' + "echo \"浏览器可执行文件: $EXE\""
+ + '\n' + "else"
+ + '\n' + "echo \"browser_available=false\" >> \"$GITHUB_OUTPUT\""
+ + '\n' + "echo \"executable=\" >> \"$GITHUB_OUTPUT\""
+ + '\n' + "echo \"没有找到可用的浏览器可执行文件\""
+ + '\n' + "fi"
+ + '\n' + "{"
+ + '\n' + "echo \"### 真浏览器验收 · 浏览器准备\""
+ + '\n' + "echo \"\""
+ + '\n' + "if [ -n \"$EXE\" ]; then"
+ + '\n' + "echo \"- 可执行文件：\\`$EXE\\`\""
+ + '\n' + "echo \"- 结论：✅ 浏览器就绪，verify-site.js 会**真实执行**。\""
+ + '\n' + "else"
+ + '\n' + "echo \"- playwright-core 期望路径：\\`${PW_EXE:-<空>}\\`（不存在或不可执行）\""
+ + '\n' + "echo \"- 已逐个探测：playwright chromium、microsoft-edge、google-chrome、chromium（/usr/bin 与 /snap/bin）\""
+ + '\n' + "echo \"- 结论：⚠️ **没有可用的浏览器可执行文件**。这一步本身不判死，\""
+ + '\n' + "echo \" 下一步「浏览器可用性判定」会按明确规则处理——默认**直接失败**，绝不静默变绿。\""
+ + '\n' + "fi"
+ + '\n' + "} >> \"$GITHUB_STEP_SUMMARY\""
+ + '\n' + "exit 0",
+  "Browser availability decision (never silent)":
+    "set -uo pipefail"
+ + '\n' + "AVAIL='${{ steps.browser.outputs.browser_available }}'"
+ + '\n' + "EXE='${{ steps.browser.outputs.executable }}'"
+ + '\n' + "ALLOW='${{ inputs.allow_degraded_run }}'"
+ + '\n' + "if [ \"$AVAIL\" = \"true\" ]; then"
+ + '\n' + "echo \"mode=full\" >> \"$GITHUB_OUTPUT\""
+ + '\n' + "echo \"浏览器可用（$EXE）→ 真浏览器验收将执行\""
+ + '\n' + "{"
+ + '\n' + "echo \"\""
+ + '\n' + "echo \"- 判定：**真浏览器验收将执行**（verify-site.js + 回归比对，可执行文件 \\`$EXE\\`）\""
+ + '\n' + "} >> \"$GITHUB_STEP_SUMMARY\""
+ + '\n' + "exit 0"
+ + '\n' + "fi"
+ + '\n' + "if [ \"$ALLOW\" = \"true\" ]; then"
+ + '\n' + "echo \"mode=degraded\" >> \"$GITHUB_OUTPUT\""
+ + '\n' + "echo \"::warning title=降级运行：本次没有做真浏览器验收::没有可用的浏览器可执行文件；因显式 allow_degraded_run=true，只跑静态门禁\""
+ + '\n' + "{"
+ + '\n' + "echo \"\""
+ + '\n' + "echo \"### ⚠️ 降级运行：本次**没有做真浏览器验收**\""
+ + '\n' + "echo \"\""
+ + '\n' + "echo \"没有找到可用浏览器，且这次**显式**允许降级（人工触发）。\""
+ + '\n' + "echo \"被跳过的是 verify-site.js 的真浏览器断言（横向溢出 / 内容裁切 / 弹层 / 键盘无障碍 / 对比 / 390px…）。\""
+ + '\n' + "echo \"静态门禁（strict 校验、译文门禁、各个 selftest、产物自检）已照常执行。\""
+ + '\n' + "echo \"\""
+ + '\n' + "echo \"=> **这个绿灯不包含真浏览器验收**，不要当成完整门禁的依据。\""
+ + '\n' + "} >> \"$GITHUB_STEP_SUMMARY\""
+ + '\n' + "exit 0"
+ + '\n' + "fi"
+ + '\n' + "echo \"mode=none\" >> \"$GITHUB_OUTPUT\""
+ + '\n' + "echo \"::error title=真浏览器验收无法执行::没有可用的浏览器可执行文件，且本次没有显式允许降级——门禁明确失败（不静默变绿）\""
+ + '\n' + "{"
+ + '\n' + "echo \"\""
+ + '\n' + "echo \"### ❌ 真浏览器验收**没有执行** —— 明确失败\""
+ + '\n' + "echo \"\""
+ + '\n' + "echo \"没有找到可用的浏览器可执行文件（playwright chromium 与系统自带 chrome/edge 都不可用），\""
+ + '\n' + "echo \"而本次没有显式允许降级，所以这里**直接失败**，而不是给一个「没有验证过」的绿灯。\""
+ + '\n' + "echo \"\""
+ + '\n' + "echo \"处理办法：\""
+ + '\n' + "echo \"1. 重跑本 job（多数情况是 npx 拉内核时的网络抖动）；\""
+ + '\n' + "echo \"2. 确认 runner 镜像里有 google-chrome / microsoft-edge；\""
+ + '\n' + "echo \"3. 确实只需要静态门禁时，人工 \\`workflow_dispatch\\` 并勾选 \\`allow_degraded_run\\`，\""
+ + '\n' + "echo \" Summary 会留下「未做真浏览器验收」的明确记录。\""
+ + '\n' + "} >> \"$GITHUB_STEP_SUMMARY\""
+ + '\n' + "exit 1",
+  "Real-browser acceptance (verify-site.js)":
+    "node scripts/tools/verify-site.js",
+  "Regression verify (baseline compare)":
+    "node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json",
+  "Gate conclusion":
+    "{"
+ + '\n' + "echo \"\""
+ + '\n' + "echo \"### 门禁结论\""
+ + '\n' + "echo \"\""
+ + '\n' + "if [ \"${{ steps.decision.outputs.mode }}\" = \"full\" ]; then"
+ + '\n' + "echo \"- 静态门禁 + **真浏览器验收 + 回归比对**都跑了\""
+ + '\n' + "elif [ \"${{ steps.decision.outputs.mode }}\" = \"degraded\" ]; then"
+ + '\n' + "echo \"- ⚠️ 只跑了静态门禁（**未做真浏览器验收**，显式降级）\""
+ + '\n' + "else"
+ + '\n' + "echo \"- ❌ 真浏览器验收没有执行（见上一条注解与 Summary 顶部原因）\""
+ + '\n' + "fi"
+ + '\n' + "echo \"- 触发事件：\\`${{ github.event_name }}\\` @ \\`${{ github.ref }}\\`\""
+ + '\n' + "} >> \"$GITHUB_STEP_SUMMARY\"",
+};
+
+/** 步骤级 `if:` 的冻结值（含键**存在性**：`if: false` 这类"静默跳过"必须红） */
+const GATE_STEP_IF = {
+  "Real-browser acceptance (verify-site.js)": "steps.decision.outputs.mode == 'full'",
+  "Regression verify (baseline compare)": "steps.decision.outputs.mode == 'full'",
+  "Gate conclusion": "always()",
+};
+
+/**
+ * 产物依赖步骤的**调用形态**（§10.9 / P2-26）：必须显式 `--dir=dist`，且排在构建之后。
+ * 判据是「这一步问了哪个目录」，不是「文件里出现过 --dir」——所以按步骤体内的命令解析。
+ */
+const GATE_ARTIFACT_STEPS = [
+  ['Models-page self-test (index + detail pages)', 'models-page-selftest.js'],
+  ['Plans-hub self-test (/plans/)', 'planshub-selftest.js'],
+  ['Vendor-pages self-test (/vendor/)', 'vendor-page-selftest.js'],
+  ['Archive self-test (/archive/, synthetic ended/restored fixtures)', 'archive-selftest.js'],
+  ['Data-docs self-test (/docs/data/ + /data/index.json)', 'data-docs-selftest.js'],
+  ['Feeds reproducibility (build twice, byte-compare)', 'check-feeds-reproducible.js']
+];
+/** 它们的前置：这一步必须先出现 */
+const GATE_BUILD_STEP = 'Assemble site (same path as deploy.yml)';
+/** 产物依赖步骤必须显式指到的目录（与 action.yml 里 `--dir=dist` 一致） */
+const GATE_ARTIFACT_DIR = 'dist';
+
+/** 默认的 `allow_degraded_run` 输入名（三个调用方与复合 action 共用同一个名字） */
+const DEGRADED_INPUT = 'allow_degraded_run';
+
+/**
+ * 「浏览器不可用」时判定步骤的行为矩阵（**真实执行**那段 shell，不是读字符串）。
+ * `allow` 覆盖了「只有逐字 'true' 才放行」这条：`TRUE` / `yes` / 空 都必须仍然失败。
+ */
+const DECISION_CASES = [
+  { avail: 'true', allow: 'false', exit: 0, mode: 'full', expect: [], forbid: ['::error', '::warning'] },
+  { avail: 'false', allow: 'false', exit: 1, mode: 'none', expect: ['::error'], forbid: [] },
+  { avail: 'false', allow: '', exit: 1, mode: 'none', expect: ['::error'], forbid: ['::warning'] },
+  { avail: 'false', allow: 'TRUE', exit: 1, mode: 'none', expect: ['::error'], forbid: ['::warning'] },
+  { avail: 'false', allow: 'yes', exit: 1, mode: 'none', expect: ['::error'], forbid: ['::warning'] },
+  // 合法的**人工**降级：必须 exit 0，且必须留下明确记录（warning 注解 + Summary 原文）
+  { avail: 'false', allow: 'true', exit: 0, mode: 'degraded', expect: ['::warning', '没有做真浏览器验收'], forbid: ['::error'] }
+];
+
+/** 三个调用方各自的触发面（判据：必需路径必须解析成严格；只有人工 workflow_dispatch 能降级） */
+const CALLER_EVENT_MATRIX = {
+  'verify.yml': ['pull_request', 'push', 'workflow_dispatch'],
+  'collect.yml': ['schedule', 'workflow_dispatch'],
+  'deploy.yml': ['push', 'workflow_run', 'workflow_dispatch']
+};
+/** 无人值守 / 必需路径：这些事件上解析出的值必须是 'false'（不得静默降级） */
+const STRICT_ONLY_EVENTS = ['pull_request', 'push', 'schedule', 'workflow_run'];
+/** 发布链：**任何**事件都不许降级（含人工 workflow_dispatch） */
+const NEVER_DEGRADE_WORKFLOWS = ['deploy.yml'];
+
 /** 三个调用方：都必须恰好调用一次门禁 action */
 const GATE_CALLERS = ['collect.yml', 'deploy.yml', 'verify.yml'];
 
@@ -312,7 +596,12 @@ function parseWorkflow(text) {
       if (value === '') value = null;
       while (stack.length && stack[stack.length - 1].indent >= indent) stack.pop();
       entries.push({ indent, key: kv[1], value, path: [...stack.map(e => e.key), kv[1]] });
-      if (rawValue === undefined || isBlockScalar) stack.push({ indent, key: kv[1] });
+      // 「这个键下面还有嵌套块」的判据：没有值、是块标量，**或者"值"只是一个行尾注释**
+      // （`workflow_dispatch:      # 手动触发` 这种写法在 YAML 里同样是父键 ——
+      //   实测坑：collect.yml 那一行原先不会被压栈，于是它的 inputs 被错挂到 on: 下面）。
+      const hasScalarValue = !isBlockScalar && rawValue !== undefined
+        && stripComment(rawValue).trim() !== '';
+      if (!hasScalarValue) stack.push({ indent, key: kv[1] });
       if (isBlockScalar) blockIndent = indent;
       continue;
     }
@@ -608,6 +897,188 @@ const gateStepNames = gateEntries
   .filter(e => e.key === 'name' && e.path[0] === 'runs' && e.path.includes('steps'))
   .map(e => String(e.value).replace(/^['"]|['"]$/g, ''));
 
+/* ────────── P1-2 / P1-3 的判据工具：步骤体冻结 + 降级语义的真实执行 ────────── */
+
+/**
+ * 按步解析 action.yml **原文**：返回每个步骤的 { name, id, ifValue, hasContinueOnError, runBody }。
+ *
+ * 为什么不复用上面的 `parseWorkflow`：那个缩进读取器按设计**整体跳过块标量**（`run: |` 的内容），
+ * 而这里要判的恰恰是块标量里的 body。两者互补：结构（键 / 路径）走 `parseWorkflow`，
+ * 体走这里。注释一律先剥掉（§BS-10：action.yml 的注释里就出现过 `continue-on-error` 字样）。
+ */
+function parseGateStepsRaw(text) {
+  const lines = String(text).replace(/\r\n?/g, '\n').split('\n');
+  const steps = [];
+  let current = null;
+  let runBlock = null;
+  for (const raw of lines) {
+    const indent = (raw.match(/^[ \t]*/) || [''])[0].replace(/\t/g, '  ').length;
+    const trimmed = raw.trim();
+    if (runBlock) {
+      if (trimmed === '') { current.runLines.push(''); continue; }
+      if (indent > runBlock.indent) {
+        if (runBlock.base === null) runBlock.base = indent;
+        current.runLines.push(raw.slice(runBlock.base).replace(/\s+$/, ''));
+        continue;
+      }
+      runBlock = null;
+    }
+    const stepStart = /^-\s+name:\s*(.+)$/.exec(trimmed);
+    if (stepStart) {
+      current = { name: stepStart[1].trim(), id: null, ifValue: null, hasContinueOnError: false, runLines: [], runInline: null };
+      steps.push(current);
+      continue;
+    }
+    if (!current) continue;
+    const kv = /^([A-Za-z0-9_-]+):\s*(.*)$/.exec(trimmed);
+    if (!kv) continue;
+    const key = kv[1];
+    const rawValue = kv[2];
+    const value = stripComment(rawValue).trim().replace(/^(['"])([\s\S]*)\1$/, '$2');
+    if (key === 'id') current.id = value;
+    else if (key === 'if') current.ifValue = value;
+    else if (key === 'continue-on-error') current.hasContinueOnError = true;
+    else if (key === 'run') {
+      if (/^[|>][-+]?$/.test(rawValue.trim())) { runBlock = { indent, base: null }; current.runLines = []; }
+      else current.runInline = value;
+    }
+  }
+  return steps.map(step => ({
+    name: step.name,
+    id: step.id,
+    ifValue: step.ifValue,
+    hasContinueOnError: step.hasContinueOnError,
+    runBody: step.runInline !== null ? step.runInline : step.runLines.join('\n')
+  }));
+}
+
+/** run 体的规范化（= GATE_STEP_RUN 的生成规则）：剥整行注释 → 折叠空白 → 丢空行 */
+function normalizeRunBody(body) {
+  return String(body === null || body === undefined ? '' : body).split('\n')
+    .map(line => line.trim())
+    .filter(line => line && !line.startsWith('#'))
+    .map(line => line.replace(/\s+/g, ' '))
+    .join('\n');
+}
+
+/**
+ * 找一个**能用的 POSIX bash**（用来真实执行判定步骤的 shell）。
+ *
+ * ⚠️ Windows 上刻意**不**用 PATH 里的 `bash`：那里通常是 `C:\Windows\system32\bash.exe`
+ * （WSL 启动器），没装发行版时会直接挂住或报错 —— 本机实测过。
+ * 优先 Git for Windows 自带的 bash；也可以用 `DSH_BASH=<path>` 显式指定。
+ * CI（ubuntu-24.04）上就是 `bash`。找不到 ⇒ 判据报红（fail-closed），不会静默跳过。
+ */
+function findPosixBash() {
+  if (process.env.DSH_BASH) return fs.existsSync(process.env.DSH_BASH) ? process.env.DSH_BASH : null;
+  if (process.platform === 'win32') {
+    const candidates = [
+      path.join('C:', 'Program Files', 'Git', 'bin', 'bash.exe'),
+      path.join('C:', 'Program Files', 'Git', 'usr', 'bin', 'bash.exe'),
+      path.join('C:', 'Program Files (x86)', 'Git', 'bin', 'bash.exe'),
+      path.join(process.env.LOCALAPPDATA || '', 'Programs', 'Git', 'bin', 'bash.exe')
+    ];
+    return candidates.find(candidate => candidate && fs.existsSync(candidate)) || null;
+  }
+  return 'bash';
+}
+
+/**
+ * **真实执行** action.yml 里某一步的 shell（目前只用于"浏览器可用性判定"）。
+ *
+ * GitHub 会在执行前把 `${{ … }}` 替换掉；这里做同样的事：把每个 `${{ expr }}` 换成
+ * 一个同名环境变量的展开（`GH_STEPS_BROWSER_OUTPUTS_BROWSER_AVAILABLE` 之类），
+ * 于是**被测的就是那段真 shell**，只是输入由调用方给。
+ *
+ * 步骤体里的 `exit 0/1` 用子 shell `( … )` 圈住，退出码带出来；
+ * `GITHUB_OUTPUT` / `GITHUB_STEP_SUMMARY` 指向临时文件，读完即删（不往仓库里写东西）。
+ */
+function runDecisionBody(body, { avail, allow }) {
+  const bash = findPosixBash();
+  if (!bash) {
+    return { error: '找不到可用的 POSIX bash（Windows 请装 Git for Windows，或设 DSH_BASH=<bash 路径>）' };
+  }
+  // GitHub 会先把 `${{ … }}` 替换成取值；这里做同样的事，但**只认这三个已登记的表达式**
+  // （判定步骤的全部输入）。出现别的表达式 ⇒ fail-closed：本判据不知道怎么喂它，
+  // 绝不"跳过这一条"。
+  const unknown = [];
+  const known = {
+    'steps.browser.outputs.browser_available': avail,
+    'steps.browser.outputs.executable': '/usr/bin/true',
+    'inputs.allow_degraded_run': allow
+  };
+  const prepared = String(body).replace(/\$\{\{\s*([^}]*?)\s*\}\}/g, (whole, expr) => {
+    const key = expr.trim();
+    if (Object.prototype.hasOwnProperty.call(known, key)) return known[key];
+    unknown.push(key);
+    return whole;
+  });
+  if (unknown.length) {
+    return { error: `判定步骤里出现未登记的表达式：${[...new Set(unknown)].join('、')}（判据不知道怎么喂它 —— fail-closed，请在 runDecisionBody 的 known 表里登记）` };
+  }
+  const driver = [
+    'set -uo pipefail',
+    'OUT=$(mktemp); SUM=$(mktemp)',
+    'export GITHUB_OUTPUT="$OUT" GITHUB_STEP_SUMMARY="$SUM"',
+    '(',
+    prepared,
+    ')',
+    'rc=$?',
+    'printf "===RC %s\\n" "$rc"',
+    'printf "===OUT\\n"; cat "$OUT" 2>/dev/null',
+    'printf "===SUM\\n"; cat "$SUM" 2>/dev/null',
+    'rm -f "$OUT" "$SUM"',
+    'exit 0'
+  ].join('\n');
+  const env = {
+    ...process.env,
+    GH_STEPS_BROWSER_OUTPUTS_BROWSER_AVAILABLE: avail,
+    GH_STEPS_BROWSER_OUTPUTS_EXECUTABLE: '/usr/bin/true',
+    GH_INPUTS_ALLOW_DEGRADED_RUN: allow
+  };
+  const result = spawnSync(bash, [], { input: driver, env, encoding: 'utf8', timeout: 30000, maxBuffer: 8 * 1024 * 1024 });
+  if (result.error) return { error: `执行 ${bash} 失败：${result.error.message}` };
+  const stdout = String(result.stdout || '');
+  const rcMatch = /===RC (\d+)/.exec(stdout);
+  const afterOut = stdout.split('===OUT\n')[1] || '';
+  const outBody = afterOut.split('===SUM\n')[0] || '';
+  const summary = (afterOut.split('===SUM\n')[1] || '');
+  return {
+    rc: rcMatch ? Number(rcMatch[1]) : null,
+    mode: (/^mode=(\S+)/m.exec(outBody) || [])[1] || null,
+    text: stdout,
+    stderr: String(result.stderr || ''),
+    out: outBody,
+    summary
+  };
+}
+
+/** `${{ … }}` → 里面的表达式；不是表达式就按字面量原样返回 */
+function expressionOf(value) {
+  const text = String(value === null || value === undefined ? '' : value).trim();
+  const match = /^\$\{\{([\s\S]*)\}\}$/.exec(text);
+  return match ? match[1].trim() : text;
+}
+
+/**
+ * 求值一个 GitHub Actions 表达式（只用于 `with.<input>` 的取值）。
+ *
+ * 为什么可以真的求值：GitHub 的 `&&` / `||` / `!` 与 JS 同义，`inputs` 上下文是普通对象 ——
+ * 非 workflow_dispatch 事件上 `inputs` 不存在，官方语义就是"取不到 ⇒ 空"，与 `{}` 一致。
+ * 于是「PR / push 上这个开关解析成什么」是**算出来的**，不是 grep 出来的字符串。
+ * 字符白名单是保守的：出现别的形状（函数调用之类）一律拒绝求值并判红 —— fail-closed。
+ */
+function evalGithubExpr(expr, context) {
+  const allowed = /^[\sA-Za-z0-9_.'"!&|=()+\-*<>?:,[\]]*$/;
+  if (!allowed.test(expr)) return { error: `表达式含未允许的字符，拒绝求值：${expr}` };
+  try {
+    const fn = new Function('inputs', 'github', `"use strict"; return (${expr});`);
+    return { value: fn((context && context.inputs) || {}, (context && context.github) || {}) };
+  } catch (error) {
+    return { error: `表达式求值失败：${error.message}（${expr}）` };
+  }
+}
+
 // (10) 步骤序列（顺序 + 数量）逐项冻结：谁把真浏览器验收、回归比对、或译文门禁
 // 从门禁里拿掉，这条立刻红 —— 这是本次重构最需要盯住的东西。
 const stepDiff = [];
@@ -616,11 +1087,83 @@ for (let i = 0; i < Math.max(gateStepNames.length, GATE_STEP_NAMES.length); i++)
   const expected = GATE_STEP_NAMES[i];
   if (actual !== expected) stepDiff.push(`#${i + 1} 期望「${expected || '(无)'}」实得「${actual || '(无)'}」`);
 }
+
+// (10) 的第二部分（P1-2 / F-gate-001）：**步骤体**的语义冻结。
+// 只冻结名字是不够的 —— 审计实测：名字不动、把 SEO / 真浏览器 / 各 selftest 的 `run:` 换成
+// `echo skipped`，36/36 照样全绿。这里按**规范化后的 run 体**逐字比对（先剥注释），
+// 并对步骤级 `if:` 做键级冻结（`if: false` 这种"静默跳过"同样必须红）。
+const gateRawSteps = (() => {
+  try { return parseGateStepsRaw(fs.readFileSync(gatePath, 'utf8')); } catch { return []; }
+})();
+const bodyProblems = [];
+const ifProblems = [];
+const continueOnErrorSteps = [];
+for (const step of gateRawSteps) {
+  const expected = GATE_STEP_RUN[step.name];
+  const actual = normalizeRunBody(step.runBody);
+  if (expected === undefined) bodyProblems.push(`${step.name}: 冻结表里没有这个步骤（新增/改名必须登记指纹）`);
+  else if (!actual) bodyProblems.push(`${step.name}: run 体是空的（步骤被掏空了）`);
+  else if (actual !== expected) {
+    bodyProblems.push(`${step.name}: run 体与冻结指纹不一致（实得「${actual.slice(0, 48)}…」）`);
+  }
+  if (step.hasContinueOnError) continueOnErrorSteps.push(step.name);
+}
+for (const [name, expected] of Object.entries(GATE_STEP_IF)) {
+  const step = gateRawSteps.find(item => item.name === name);
+  if (!step) { ifProblems.push(`${name}: 步骤不见了`); continue; }
+  if (step.ifValue !== expected) {
+    ifProblems.push(`${name}: if 期望「${expected}」实得「${step.ifValue === null ? '(无)' : step.ifValue}」`);
+  }
+}
+for (const step of gateRawSteps) {
+  if (step.ifValue !== null && GATE_STEP_IF[step.name] === undefined) {
+    ifProblems.push(`${step.name}: 多了一个未冻结的 if：${step.ifValue}`);
+  }
+}
+
+// (10) 的第三部分（P1-3 / F-gate-002）：**真实执行**判定步骤，按行为断言降级语义。
+// 判据不是"文件里写着 allow_degraded_run=false"，而是：把那段 shell 跑起来，
+// 浏览器不可用 + 非逐字 'true' ⇒ 必须 exit 1；浏览器不可用 + 逐字 'true' ⇒ exit 0 且
+// **留下明确记录**（::warning 注解 + Summary 里写明"没有做真浏览器验收"）。
+const decisionStep = gateRawSteps.find(step => step.name === 'Browser availability decision (never silent)');
+const decisionProblems = [];
+if (!decisionStep) {
+  decisionProblems.push('找不到「浏览器可用性判定」步骤（它是"绝不静默变绿"的唯一落点）');
+} else {
+  for (const testCase of DECISION_CASES) {
+    const label = `可用=${testCase.avail} 允许=${testCase.allow === '' ? '(空)' : testCase.allow}`;
+    const run = runDecisionBody(decisionStep.runBody, testCase);
+    if (run.error) { decisionProblems.push(`${label}: ${run.error}`); continue; }
+    if (run.rc !== testCase.exit) decisionProblems.push(`${label}: 退出码 ${run.rc} ≠ 期望 ${testCase.exit}`);
+    if (run.mode !== testCase.mode) decisionProblems.push(`${label}: mode=${run.mode === null ? '(无)' : run.mode} ≠ 期望 ${testCase.mode}`);
+    for (const needle of testCase.expect) {
+      if (!run.text.includes(needle)) decisionProblems.push(`${label}: 缺少必须留下的记录「${needle}」`);
+    }
+    for (const needle of testCase.forbid) {
+      if (run.text.includes(needle)) decisionProblems.push(`${label}: 不该出现「${needle}」`);
+    }
+  }
+}
+{
+  const actionDefault = gateEntries.find(e => e.path.join('.') === `inputs.${DEGRADED_INPUT}.default`);
+  const actionDefaultValue = actionDefault ? String(actionDefault.value).replace(/^(['"])([\s\S]*)\1$/, '$2') : null;
+  if (!actionDefault) decisionProblems.push(`action.yml 里没有 inputs.${DEGRADED_INPUT}.default`);
+  else if (actionDefaultValue !== 'false') {
+    decisionProblems.push(`action.yml 的 inputs.${DEGRADED_INPUT}.default = ${JSON.stringify(actionDefaultValue)}（必须是 'false'）`);
+  }
+}
+
 check('(10) gate 复合 action 存在且步骤名序列等于冻结清单',
-  !gateParseError && stepDiff.length === 0,
+  !gateParseError && stepDiff.length === 0 && bodyProblems.length === 0
+  && ifProblems.length === 0 && continueOnErrorSteps.length === 0 && decisionProblems.length === 0,
   gateParseError ? `读取 ${GATE_ACTION} 失败：${gateParseError}`
     : stepDiff.length ? stepDiff.slice(0, 4).join('；')
-      : `${GATE_ACTION} 共 ${gateStepNames.length} 步，逐项一致`);
+      : bodyProblems.length ? `步骤体变了：${bodyProblems.slice(0, 3).join('；')}`
+        : ifProblems.length ? `步骤级 if 漂移：${ifProblems.slice(0, 3).join('；')}`
+          : continueOnErrorSteps.length ? `这些步骤带 continue-on-error（门禁不许静默放过）：${continueOnErrorSteps.join('、')}`
+            : decisionProblems.length ? `降级语义：${decisionProblems.slice(0, 3).join('；')}`
+              : `${GATE_ACTION} 共 ${gateStepNames.length} 步：名字序列 / run 体指纹 / 步骤级 if / 无 continue-on-error 全过；`
+                + `降级判定真实执行 ${DECISION_CASES.length} 组（只有逐字 'true' 才降级且留痕）`);
 
 // (10b) 复合 action 的每个 run 步骤都必须显式给出 shell —— 这是 GitHub 的硬要求，
 // 少一个就是「本地看着没问题、推上去直接 parse 失败」。
@@ -642,12 +1185,73 @@ check('(10c) gate 复合 action 不含任何第三方 uses（门禁里不引入�
 
 // (11) 三个调用方各恰好一次：少了 = 那条链路没有门禁；多了 = 同一份门禁被跑两遍
 // （既浪费，也说明有人把门禁复制成了两套）。
+//
+// 第二部分（P1-3 / F-gate-002）：**降级输入按真实表达式求值**。
+// 之前这里只数调用次数，于是把 `verify.yml` / `collect.yml` 的
+// `${{ inputs.allow_degraded_run && 'true' || 'false' }}` 硬编码成 `'true'`、或把 deploy.yml 的
+// `'false'` 改成 `'true'`，36/36 照样全绿（审计实测）。现在按**每个触发事件**把那个表达式
+// 真的算一遍：PR / push / schedule / workflow_run，以及 workflow_dispatch 的「默认（未勾选）」
+// 都必须解析成 'false'；只有人工 workflow_dispatch **显式勾选**才允许 'true'（而且必须真的
+// 解析成 'true' —— 逃生口不能被堵死）；发布链（deploy.yml）任何事件都不许降级。
 const gateCallDetail = GATE_CALLERS.map(f =>
   `${f}:${usesEntries(wf[f] || []).filter(e => parseUses(e.value).kind === 'local' &&
     parseUses(e.value).raw === GATE_ACTION_REF).length}`);
 const gateCallsOk = gateCallDetail.every(item => item.endsWith(':1'));
+
+const degradedProblems = [];
+const degradedDetail = [];
+for (const file of GATE_CALLERS) {
+  const entries = wf[file] || [];
+  if (!Object.prototype.hasOwnProperty.call(wf, file)) { degradedProblems.push(`${file}: 文件不存在`); continue; }
+  const withEntries = entries.filter(e => e.key === DEGRADED_INPUT && e.path.includes('steps') && e.path.includes('with'));
+  if (withEntries.length !== 1) {
+    degradedProblems.push(`${file}: with.${DEGRADED_INPUT} 出现 ${withEntries.length} 次（期望恰好 1 次，与 uses 调用一一对应）`);
+    continue;
+  }
+  const rawValue = String(withEntries[0].value);
+  const triggers = new Set(entries
+    .filter(e => e.path[0] === 'on' && e.path.length === 2)
+    .map(e => e.key || String(e.value).trim()));
+  for (const event of CALLER_EVENT_MATRIX[file]) {
+    if (!triggers.has(event)) degradedProblems.push(`${file}: on: 里没有 ${event}（必需门禁路径的触发面不许被拿掉）`);
+  }
+  const defaultEntry = entries.find(e => e.path.join('.') === `on.workflow_dispatch.inputs.${DEGRADED_INPUT}.default`);
+  const declaredDefault = defaultEntry
+    ? String(defaultEntry.value).replace(/^(['"])([\s\S]*)\1$/, '$2') : 'false';
+  if (triggers.has('workflow_dispatch') && !NEVER_DEGRADE_WORKFLOWS.includes(file) && !defaultEntry) {
+    degradedProblems.push(`${file}: workflow_dispatch 允许降级，但 inputs.${DEGRADED_INPUT} 没有声明 default（手工降级必须是一个显式、带默认值的输入）`);
+  }
+  if (defaultEntry && declaredDefault !== 'false') {
+    degradedProblems.push(`${file}: inputs.${DEGRADED_INPUT}.default = ${JSON.stringify(declaredDefault)}（必须默认 false —— 不勾选就是不降级）`);
+  }
+  for (const event of CALLER_EVENT_MATRIX[file]) {
+    const contexts = event === 'workflow_dispatch'
+      ? [
+        { label: '默认（未勾选）', inputs: { [DEGRADED_INPUT]: declaredDefault === 'true' }, manual: false },
+        { label: '显式勾选降级', inputs: { [DEGRADED_INPUT]: true }, manual: true }
+      ]
+      : [{ label: '上下文不存在', inputs: {}, manual: false }];
+    for (const context of contexts) {
+      const evaluated = evalGithubExpr(expressionOf(rawValue), { inputs: context.inputs });
+      const where = `${file} @ ${event}${event === 'workflow_dispatch' ? `（${context.label}）` : ''}`;
+      if (evaluated.error) { degradedProblems.push(`${where}: ${evaluated.error}`); continue; }
+      const resolved = String(evaluated.value);
+      degradedDetail.push(`${where.replace(`${file} @ `, '')}=${resolved}`);
+      if (NEVER_DEGRADE_WORKFLOWS.includes(file) && resolved !== 'false') {
+        degradedProblems.push(`${where}: 解析成 ${resolved} —— 发布链任何事件都不许降级（它必须写死 'false'）`);
+      } else if (!NEVER_DEGRADE_WORKFLOWS.includes(file) && context.manual && resolved !== 'true') {
+        degradedProblems.push(`${where}: 解析成 ${resolved} —— 人工显式降级这条逃生口被堵死了（合法的降级必须仍然可用）`);
+      } else if (!context.manual && resolved !== 'false') {
+        degradedProblems.push(`${where}: 解析成 ${resolved} —— 必需路径不得静默降级（只有人工 workflow_dispatch 显式勾选才允许 'true'）`);
+      }
+    }
+  }
+}
+
 check('(11) collect.yml / deploy.yml / verify.yml 各恰好调用一次门禁 action',
-  gateCallsOk, gateCallDetail.join('、'));
+  gateCallsOk && degradedProblems.length === 0,
+  degradedProblems.length ? degradedProblems.slice(0, 4).join('；')
+    : `${gateCallDetail.join('、')}；降级输入按真实表达式求值 —— ${degradedDetail.join(' · ')}`);
 
 // (12) 发布链必须「先过门禁再发布」。三件事一起看：
 //   · prepublish **没有** job 级 if（被跳过的 job 报 Success，等于没跑却算过）；
@@ -856,14 +1460,39 @@ const unregisteredSelftests = [];
     if (!file) { unregisteredSelftests.push(`${name}: package.json 里的命令解析不出脚本路径`); continue; }
     if (!gateText.includes(file)) unregisteredSelftests.push(`${name} → ${file}`);
   }
+
+  // (17) 的第二部分（§10.9 / P2-26）：**产物依赖步骤的调用形态与顺序**。
+  // 判据是「这一步问了哪个目录、排在谁后面」，不是「文件里出现过 --dir」：
+  //   · run 体里必须真的跑那个脚本，且显式给出 `--dir=dist`（产物由 Assemble site 产出）；
+  //   · 必须排在「Assemble site」之后 —— 否则干净检出里 dist/ 不存在，fail-closed 会把
+  //     整条门禁打红（这回是**正确**地红，但顺序本身就该是前置，而不是让测试猜）。
+  const rawSteps = (() => {
+    try { return parseGateStepsRaw(fs.readFileSync(path.join(ROOT, GATE_ACTION), 'utf8')); } catch { return []; }
+  })();
+  const bodyByName = new Map(rawSteps.map(step => [step.name, normalizeRunBody(step.runBody)]));
+  const indexByName = new Map(gateStepNames.map((name, index) => [name, index]));
+  const buildIndex = indexByName.get(GATE_BUILD_STEP);
+  for (const [stepName, script] of GATE_ARTIFACT_STEPS) {
+    const body = bodyByName.get(stepName);
+    if (body === undefined) { unregisteredSelftests.push(`门禁里没有步骤「${stepName}」`); continue; }
+    if (!body.includes(script)) { unregisteredSelftests.push(`${stepName}: run 体里没有 ${script}`); continue; }
+    if (!body.includes(`--dir=${GATE_ARTIFACT_DIR}`)) {
+      unregisteredSelftests.push(`${stepName}: 没有显式 --dir=${GATE_ARTIFACT_DIR}（产物依赖步骤必须钉住它读哪份产物）`);
+    }
+    const index = indexByName.get(stepName);
+    if (buildIndex === undefined || index === undefined || index < buildIndex) {
+      unregisteredSelftests.push(`${stepName}: 排在「${GATE_BUILD_STEP}」之前（产物依赖步骤必须在构建之后）`);
+    }
+  }
 }
 check('(17) package.json 里的每个 selftest:* 都被门禁真的跑到（新脚本必须登记）',
   unregisteredSelftests.length === 0,
   unregisteredSelftests.length
-    ? `未登记：${unregisteredSelftests.join('、')}`
-      + '（新增自测必须同步两处：.github/actions/gate/action.yml 的步骤、'
-      + '本文件的 GATE_STEP_NAMES 同一索引）'
-    : `package.json 里的 selftest:* 全部出现在 ${GATE_ACTION} 里`);
+    ? `${unregisteredSelftests.slice(0, 4).join('、')}`
+      + '（新增自测必须同步三处：.github/actions/gate/action.yml 的步骤、本文件的 GATE_STEP_NAMES 与 '
+      + 'GATE_STEP_RUN 指纹；产物依赖步骤还要带 --dir=dist 并排在 Assemble site 之后）'
+    : `package.json 里的 selftest:* 全部出现在 ${GATE_ACTION} 里；`
+      + `${GATE_ARTIFACT_STEPS.length} 个产物依赖步骤都显式 --dir=${GATE_ARTIFACT_DIR} 且排在「${GATE_BUILD_STEP}」之后`);
 
 /* ─────────────────── (W) 看门狗：断言名单等值（不可跳过） ─────────────────── */// 刻意放在所有分支之外：删一条断言、或改任意一条断言名，都会在这里变红。
 // 固有边界：看门狗保护不了**自己**被删（那时它也不存在了）—— 如实记录，不做过度设计。

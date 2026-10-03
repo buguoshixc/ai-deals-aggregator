@@ -1600,8 +1600,20 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   }
   check('/feeds/ 明说不需要账号（无 JS 时也读得到）',
     /没有账号|不需要账号/.test(feedsPage.text) && /没有邮件列表/.test(feedsPage.text));
-  check('/feeds/ 明说变化订阅为空是事实（起算日）',
-    /起算|记录自/.test(feedsPage.text));
+  // 变化流**为空**时，页面必须明说「这是空态 + 起算日」（不是一片空白）；
+  // **非空**时同一句话换成「N 条 + 最近一条日期」——两种状态都必须说清，只是说的内容不同。
+  // 只看「有没有起算句」会在非空时永远红，只看「有没有条数」会在空态漏掉「我们没查到」这句话。
+  {
+    const changeItems = feedProbe.targets['feed/changes.xml'] ? feedProbe.targets['feed/changes.xml'].items : 0;
+    const countLine = new RegExp(`最近变化\\s*${changeItems}\\s*条`);
+    check(`/feeds/ 的变化订阅按当前状态说清（空 ⇒ 起算日 / 非空 ⇒ 条数与最近一条日期）`,
+      changeItems > 0
+        ? countLine.test(feedsPage.text) && /最近一条\s*\d{4}-\d{2}-\d{2}/.test(feedsPage.text)
+        : /起算|记录自/.test(feedsPage.text),
+      changeItems > 0
+        ? `变化 ${changeItems} 条 · 页面写的是「最近变化 … 条 + 最近一条 …」`
+        : `变化流为空 · 页面写的是起算日`);
+  }
   // v3.0 Stage H4：注册表里的**每一条变化流**都必须在订阅中心上被列出，
   // 且 RSS / JSON Feed 两个地址都在（H4 要求「订阅中心一致」）。
   for (const spec of feedsLib.PLAN_CHANGE_FEEDS) {
@@ -3511,7 +3523,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       jumpNav: Boolean(document.querySelector('nav.chgjump')),
       dealsAnchor: Boolean(document.getElementById('deals')),
       planHeads: planSection ? [...planSection.querySelectorAll('.chgsub h3')].map(h => h.textContent.trim()) : [],
-      planItems: planSection ? planSection.querySelectorAll('.pchglist li').length : -1,
+      // `/changes/` 上的套餐变化块用的是 `.chglist`（与优惠那一支同一个类名）；
+      // `.pchglist` 是 `/plans/coding/` 顶部那一块的类名 —— 写错选择器时**非空也数到 0**，
+      // 于是「明确空态」那条断言在真的有条目时反而红（口径与 API 那一支 :apiItems 对齐）。
+      planItems: planSection ? planSection.querySelectorAll('.chglist li').length : -1,
       planEmpty: planSection ? /没有观测到|没有拿到套餐变更日志/.test(planSection.innerText) : false,
       // v3.0：套餐变化行的链接有两种合法落点 —— 页内锚点（本页真的有那一条），
       // 或跨页深链到 `/plans/coding/#plan-<id>`（套餐对比页真的有那一行）。
@@ -5056,14 +5071,55 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     });
     const modelsTruth = await page.evaluate(`(async () => {
       const doc = await (await fetch(${JSON.stringify(new URL('models.json', base).href)})).json();
-      return { count: doc.count, slugs: (doc.models || []).map(m => m.slug), firstSlug: (doc.models || [])[0].slug };
+      const linksDoc = await (await fetch(${JSON.stringify(new URL('model-registry-links.json', base).href)})).json();
+      const apiDoc = await (await fetch(${JSON.stringify(new URL('api-plans.json', base).href)})).json();
+      const planById = new Map((apiDoc.plans || []).map(plan => [plan.id, plan]));
+      // 一条 API 映射认领的**真实计价条目**：variant 为 null/空 ⇒ 该 modelKey 在该记录里的
+      // **全部真实变体**（口径与 scripts/tools/registry-join-audit.js 逐字一致：
+      // 一条真实计价条目 = 一行；页面渲染走的是同一条展开）。
+      const expectedBySlug = {};
+      const groupCount = {};
+      for (const link of (linksDoc.links || [])) {
+        if (!link || !link.registrySlug || !link.apiPlanId || !link.modelKey) continue;
+        const plan = planById.get(link.apiPlanId);
+        if (!plan) continue;
+        const entries = (plan.models || []).filter(item => item && item.modelKey === link.modelKey);
+        const wildcard = link.variant === null || link.variant === undefined || link.variant === '';
+        const picked = wildcard ? entries : entries.filter(item => item.variant === link.variant);
+        for (const entry of picked) {
+          expectedBySlug[link.registrySlug] = (expectedBySlug[link.registrySlug] || 0) + 1;
+          const pair = link.apiPlanId + '|' + link.modelKey;
+          groupCount[pair] = (groupCount[pair] || 0) + 1;
+        }
+      }
+      const multiPairs = Object.keys(groupCount).filter(key => groupCount[key] > 1);
+      const multiVariantSlugs = Object.keys(expectedBySlug).filter(slug => (linksDoc.links || []).some(link =>
+        link.registrySlug === slug && link.apiPlanId && multiPairs.includes(link.apiPlanId + '|' + link.modelKey)));
+      return {
+        count: doc.count,
+        slugs: (doc.models || []).map(m => m.slug),
+        firstSlug: (doc.models || [])[0].slug,
+        expectedBySlug,
+        multiVariantSlugs,
+        expectedTotal: Object.values(expectedBySlug).reduce((n, v) => n + v, 0)
+      };
     })()`).catch(() => null);
     if (modelsTruth) {
       check(`/models/ 行数与 dist/models.json 逐个对账（${modelsTruth.count} 个）`,
         data.rows === modelsTruth.count, `页面 ${data.rows} 行 / 数据 ${modelsTruth.count} 个`);
     }
-    // 抽样 3 个详情页：canonical、面包屑深度、计价表、官方链接、无 ItemList、窄屏
-    const sampleSlugs = modelsTruth ? modelsTruth.slugs.slice(0, 3) : [];
+    // 抽样：除了「数据里最前的 3 个」，**必须**覆盖至少一个多变体模型页 ——
+    // 否则「一条真实计价条目 = 一行」的展开口径就在测一个碰不到的场景（T06 实测：
+    // 原先抽到的 claude-* 全不是多变体，于是全量 9/44 页的行数不一致长期假绿）。
+    const baseSample = modelsTruth ? modelsTruth.slugs.slice(0, 3) : [];
+    const multiSample = modelsTruth ? modelsTruth.multiVariantSlugs.slice(0, 3) : [];
+    const sampleSlugs = [...new Set([...multiSample, ...baseSample])]
+      .filter(slug => modelsTruth && modelsTruth.slugs.includes(slug)).slice(0, 6);
+    check('/models/ 抽样覆盖多变体模型页（数据里有几个就至少抽一个）',
+      !modelsTruth || multiSample.length === 0 || sampleSlugs.some(slug => multiSample.includes(slug)),
+      modelsTruth
+        ? `数据里多变体 slug ${multiSample.length} 个（${multiSample.slice(0, 3).join(', ') || '无'}）· 抽样 ${sampleSlugs.length} 个`
+        : '取不到 models.json');
     for (const slug of sampleSlugs) {
       const detailRoute = `models/${slug}/`;
       const { data: detail } = await auditLibraryPage({
@@ -5084,15 +5140,19 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           const html = await r.text();
           return html.includes(${JSON.stringify(`models/${slug}/`)});
         })()`).catch(() => false));
-      check(`/models/${slug}/ 计价表逐行可回读（行数 == 映射条目数）`,
-        await page.evaluate(`(async () => {
-          const links = await (await fetch(${JSON.stringify(new URL('model-registry-links.json', base).href)})).json();
-          const api = await (await fetch(${JSON.stringify(new URL('api-plans.json', base).href)})).json();
-          const ids = new Set((api.plans || []).map(p => p.id));
-          const expected = (links.links || []).filter(l => l.registrySlug === ${JSON.stringify(slug)}
-            && l.apiPlanId && ids.has(l.apiPlanId)).length;
-          return document.querySelectorAll('tr.mapirow').length === expected;
-        })()`).catch(() => false));
+      {
+        // 期望值 = **展开后**的真实计价条目数（不是 link 条数）：一个 `variant: null`
+        // 的映射在一份多变体记录上认领的是全部真实变体，页面为此发多行。
+        // 旧口径（link 条数）在全量下 9/44 页都对不上，只是原先抽样的三个 slug 恰好
+        // 都不是多变体模型，所以从未红过。
+        const expectedRows = modelsTruth && modelsTruth.expectedBySlug
+          ? (modelsTruth.expectedBySlug[slug] || 0) : -1;
+        const actualRows = await page.evaluate('document.querySelectorAll("tr.mapirow").length');
+        check(`/models/${slug}/ 计价表逐行可回读（行数 == 展开后的真实计价条目数）`,
+          expectedRows >= 0 && actualRows === expectedRows,
+          `页面 ${actualRows} 行 · 展开期望 ${expectedRows} 条` +
+          (modelsTruth && modelsTruth.multiVariantSlugs.includes(slug) ? '（多变体模型页）' : ''));
+      }
     }
     check('/models/ 索引页的筛选控件由脚本建（无 JS 时 0 控件已在体检里查过；有 JS 时才有控件）',
       data.controls > 0, `${data.controls} 个控件`);
@@ -5212,10 +5272,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
   console.log('\n=== 24) 历史档案（/archive/）===');
   {
-    const { data } = await auditLibraryPage({
+    const { data, noJs } = await auditLibraryPage({
       label: '/archive/',
       route: 'archive/',
-      noJsText: ['历史档案', '已结束', '0 条是事实，不是故障'],
+      // 「0 条是事实，不是故障」只在**空档案**时出现 —— 它不是无条件文案，
+      // 因此不能当作无 JS 的固定探针（非空档案页读不到它是正确的）。
+      // 空 / 非空两种状态的判据见下面那两条。
+      noJsText: ['历史档案', '已结束'],
       minText: 600,
       itemList: true,
       official: 0
@@ -5228,7 +5291,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       for (const [kind, file] of Object.entries(files)) {
         const r = await fetch(${JSON.stringify(base)} + file);
         const doc = r.ok ? await r.json() : null;
-        out[kind] = doc ? (doc.events || []).filter(e => e.type === 'ended' || e.type === 'restored').length : null;
+        // 档案条目是**按记录**的：同一记录的 ended + restored 是两条事件、**一个条目**
+        // （条目身份 = (kind, id)）。所以期望值取唯一记录数，不取事件数 ——
+        // 后者在非空数据上必然大于行数，那不是页面错，是判据错。
+        out[kind] = doc ? new Set((doc.events || [])
+          .filter(e => e.type === 'ended' || e.type === 'restored')
+          .map(e => e.planId || e.id)).size : null;
       }
       return out;
     })()`).catch(() => null);
@@ -5236,11 +5304,17 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       Boolean(archiveTruth) && Object.values(archiveTruth).every(value => value !== null),
       JSON.stringify(archiveTruth));
     const totalEnded = archiveTruth ? Object.values(archiveTruth).reduce((n, v) => n + (v || 0), 0) : null;
-    check('/archive/ 的档案条数与三份日志的 ended/restored 事件数一致（交付日 0 条 ⇒ 0 行）',
+    check('/archive/ 的档案条数与三份日志里 ended/restored 的**唯一记录数**一致（空 ⇒ 0 行）',
       totalEnded === null ? data.rows === 0 : data.rows === totalEnded,
-      `页面 ${data.rows} 行 · 日志里 ended/restored 共 ${totalEnded}`);
+      `页面 ${data.rows} 行 · 日志里 ended/restored 覆盖 ${totalEnded} 条记录`);
     check('/archive/ 空态写明「0 条是事实，不是故障」（空是事实，不是故障）',
       data.rows > 0 || data.text.includes('0 条是事实，不是故障'));
+    // 无 JS 也要读到**当前状态该有的那句话**：空档案 ⇒ 空态说明；非空 ⇒ 分组与条目。
+    check('/archive/ 无 JS 时读到当前状态该说的话（空 ⇒ 空态说明 / 非空 ⇒ 分组计数）',
+      data.rows > 0
+        ? noJs.text.includes('已结束') && /\d+\s*条/.test(noJs.text)
+        : noJs.text.includes('0 条是事实，不是故障'),
+      `页面 ${data.rows} 行 · 无 JS 正文 ${noJs.text.length} 字`);
   }
 
   /* ------------------------------------------------------------------ */
