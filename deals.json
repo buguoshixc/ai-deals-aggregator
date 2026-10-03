@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-10-03T01:34:24+08:00",
+  "updatedAt": "2026-10-03T11:56:44+08:00",
   "count": 134,
   "deals": [
     {
@@ -3240,51 +3240,6 @@
       }
     },
     {
-      "id": "e3af28ce5ca1",
-      "title": "Emergent.sh",
-      "vendor": "Emergent.sh",
-      "url": "https://emergent.sh/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/emergent-sh",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "编程开发",
-      "description": "An IDE for code migration from legacy to modern frameworks through coding agents.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-10-03",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "sourceUrl": "https://futuretools.io/tools/emergent-sh",
-        "contrib": {
-          "audience": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "description 原文「An IDE for code migration from legacy to modern frameworks through coding agents」→ developer（推断）"
-          }
-        }
-      },
-      "zh": {
-        "description": "用编码智能体把遗留代码迁移到现代框架的 IDE。"
-      }
-    },
-    {
       "id": "f9720295b45d",
       "title": "AutoDraw",
       "vendor": "AutoDraw",
@@ -3360,6 +3315,77 @@
       "verifiedAt": null,
       "zh": {
         "description": "从长视频中剪出片段的工具。"
+      }
+    },
+    {
+      "id": "cbfce04c5556",
+      "title": "Motionleap",
+      "vendor": "Motionleap",
+      "url": "https://apps.apple.com/us/app/motionleap-by-lightricks/id1381206010",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/motionleap",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "An App to animate still images with effects.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-10-03",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "给静态照片加上动效的 App。"
+      }
+    },
+    {
+      "id": "e3af28ce5ca1",
+      "title": "Emergent.sh",
+      "vendor": "Emergent.sh",
+      "url": "https://emergent.sh/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/emergent-sh",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "编程开发",
+      "description": "An IDE for code migration from legacy to modern frameworks through coding agents.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-10-03",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "provenance": {
+        "credibility": "curated",
+        "sourceUrl": "https://futuretools.io/tools/emergent-sh",
+        "contrib": {
+          "audience": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "description 原文「An IDE for code migration from legacy to modern frameworks through coding agents」→ developer（推断）"
+          }
+        }
+      },
+      "zh": {
+        "description": "用编码智能体把遗留代码迁移到现代框架的 IDE。"
       }
     },
     {
@@ -3528,32 +3554,6 @@
       "verifiedAt": null,
       "zh": {
         "description": "制作多语言视频的工具。"
-      }
-    },
-    {
-      "id": "cbfce04c5556",
-      "title": "Motionleap",
-      "vendor": "Motionleap",
-      "url": "https://apps.apple.com/us/app/motionleap-by-lightricks/id1381206010",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/motionleap",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "An App to animate still images with effects.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-10-03",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "给静态照片加上动效的 App。"
       }
     },
     {
