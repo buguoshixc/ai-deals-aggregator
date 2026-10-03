@@ -767,6 +767,122 @@ console.log('\n=== 9) 按需求找优惠（v1.2）：注册表与判据 ===');
     dealRecords.filter(d => au.needsOf(d).some(slug => !known.has(slug))).map(d => d.id).join(', '));
 }
 
+/* ================================================================== */
+console.log('\n=== 10) 断言依据的档位（t7：第三方收录 / 推断不得写成「官方页面明写」）===');
+
+/**
+ * 为什么这一节必须存在（审计 `F-r1-identity-001` / `F-r1-identity-003`）：
+ * 「断言依据」那一行的措辞原先只读 `basis` —— `source` 恒等于「官方页面明写」。
+ * 于是两件事同时发生，而**构建全绿、页面上看起来完全正常**：
+ *   ① `sourceType='directory'`（第三方目录站收录）的 14 条记录，29 处字段级依据取自目录站的
+ *      收录文案，却印成「官方页面明写」—— 同一块表里还写着「来源类型：第三方目录站收录」；
+ *   ② 数据层声明为推断的字段（`basis:'source' + derived:'inferred'`，24 处）同样印成
+ *      「官方页面明写」，而 `SOURCE_BASIS.inferred` 那一档因此永远命中不了。
+ * 判据的正本在 `lib/provenance.js` 的 `basisWordingKey()`；这里拿 RENDER-CORE 的**真实求值**
+ * 逐格比对，并钉住两条红线：`directory`/`unknown` 档与 inferred 字段的页面上
+ * 「官方页面明写」出现次数必须是 0。
+ */
+{
+  const provenanceLib = require('../lib/provenance');
+  const wording = au.parseWordingBlock(au.extractWordingBlock(fs.readFileSync(INDEX_FILE, 'utf8')));
+  check('措辞块里 SOURCE_BASIS 有 `collected` 档（第三方收录页原文）',
+    Boolean(wording && wording.SOURCE_BASIS && wording.SOURCE_BASIS.collected), JSON.stringify(wording && wording.SOURCE_BASIS));
+
+  const countOf = (text, needle) => String(text).split(needle).length - 1;
+  const renderBasis = (entry, sourceType) => core.sourceBlockHtml({
+    title: 'Basis Probe',
+    url: 'https://example.com/p',
+    source: 'Probe Source',
+    sourceFacts: {
+      sourceType,
+      method: 'static',
+      lastSuccessState: 'known',
+      lastSuccessAt: '2026-09-29T13:04:54.254Z',
+      healthStatus: 'healthy'
+    },
+    provenance: { credibility: 'curated', fields: { audience: entry } }
+  });
+  const tierOf = block => Object.keys(wording.SOURCE_BASIS)
+    .find(key => block.includes(wording.SOURCE_BASIS[key])) || '(无档位)';
+  const CASE = [
+    ['官方直采 + 页面明写', { basis: 'source', derived: 'stated' }, 'official', 'source'],
+    ['人工策展 + 页面明写', { basis: 'source', derived: 'stated' }, 'curated', 'source'],
+    ['第三方目录站收录 + 页面明写', { basis: 'source', derived: 'stated' }, 'directory', 'collected'],
+    ['来源身份不明 + 页面明写', { basis: 'source', derived: 'stated' }, 'unknown', 'collected'],
+    ['官方直采 + 数据层声明推断', { basis: 'source', derived: 'inferred', note: '（推断）' }, 'official', 'inferred'],
+    ['第三方目录站 + 数据层声明推断', { basis: 'source', derived: 'inferred', note: '（推断）' }, 'directory', 'inferred'],
+    ['basis 直接写 inferred', { basis: 'inferred', note: '（推断）' }, 'directory', 'inferred'],
+    ['官方条款原文', { basis: 'documented', derived: 'stated' }, 'official', 'documented'],
+    ['第三方目录站 + 官方条款原文', { basis: 'documented' }, 'directory', 'documented'],
+    ['没有任何依据声明', {}, 'official', 'none']
+  ];
+  for (const [name, entry, sourceType, key] of CASE) {
+    const block = renderBasis(entry, sourceType);
+    const expected = wording.SOURCE_BASIS[key];
+    check(`档位：${name} → 「${expected}」`, block.includes(expected),
+      `实得「${tierOf(block)}」：${block.slice(block.indexOf('dsrc-basis'), block.indexOf('dsrc-basis') + 220)}`);
+  }
+
+  // 红线①：directory / unknown 档的记录页面上「官方页面明写」出现次数必须是 0
+  for (const sourceType of ['directory', 'unknown']) {
+    const block = renderBasis({ basis: 'source', derived: 'stated' }, sourceType);
+    check(`红线：sourceType=${sourceType} 的记录页面「官方页面明写」计数 = 0`,
+      countOf(block, wording.SOURCE_BASIS.source) === 0, `计数 ${countOf(block, wording.SOURCE_BASIS.source)}`);
+    check(`红线：sourceType=${sourceType} 时改说「${wording.SOURCE_BASIS.collected}」`,
+      block.includes(wording.SOURCE_BASIS.collected));
+  }
+  // 红线②：声明为推断的字段一律按「由官方原文推断」，不得出现「官方页面明写」
+  for (const entry of [{ basis: 'inferred', note: '（推断）' }, { basis: 'source', derived: 'inferred', note: '（推断）' }]) {
+    for (const sourceType of ['official', 'curated', 'directory', 'unknown']) {
+      const block = renderBasis(entry, sourceType);
+      check(`红线：inferred 字段（sourceType=${sourceType}，${JSON.stringify(Object.keys(entry))}）不出「官方页面明写」`,
+        countOf(block, wording.SOURCE_BASIS.source) === 0 && block.includes(wording.SOURCE_BASIS.inferred),
+        `官方页面明写 ${countOf(block, wording.SOURCE_BASIS.source)} 次 · ${block.slice(block.indexOf('dsrc-basis'), block.indexOf('dsrc-basis') + 200)}`);
+    }
+  }
+  // 红线③：官方直采且**不是**推断的档位一处不减（不得靠删词把页面改安静）
+  const officialBlock = renderBasis({ basis: 'source', derived: 'stated' }, 'official');
+  check('红线：sourceType=official 且 non-inferred 仍印「官方页面明写」（不得删词抹平）',
+    countOf(officialBlock, wording.SOURCE_BASIS.source) === 1, `计数 ${countOf(officialBlock, wording.SOURCE_BASIS.source)}`);
+
+  // 逐格：RENDER-CORE 的真实求值必须与 lib 的判据同结果（两份实现不许分家）
+  const GRID = [];
+  for (const basis of ['source', 'documented', 'inferred', undefined]) {
+    for (const derived of ['stated', 'inferred', undefined]) {
+      for (const sourceType of ['official', 'curated', 'directory', 'unknown']) {
+        GRID.push([{ basis, derived, note: '（推断）' }, sourceType]);
+      }
+    }
+  }
+  const drift = GRID.filter(([entry, sourceType]) =>
+    tierOf(renderBasis(entry, sourceType)) !== provenanceLib.basisWordingKey(entry, sourceType));
+  check(`lib 判据与 RENDER-CORE 渲染逐格一致（${GRID.length} 格）`, drift.length === 0,
+    drift.slice(0, 3).map(([entry, sourceType]) =>
+      `${JSON.stringify(entry)}/${sourceType}：lib ${provenanceLib.basisWordingKey(entry, sourceType)} vs 渲染 ${tierOf(renderBasis(entry, sourceType))}`).join(' | '));
+
+  // 牙⑤：前端把新档删掉 → 同源比对必须立刻红（新档自动获得漂移守护）
+  const bentBlock = html.replace('"collected":"第三方收录页原文（非官方页直引）",', '');
+  check('牙⑤ 前端删掉 SOURCE_BASIS.collected → checkWordingContract 立刻红',
+    !au.checkWordingContract(bentBlock).ok && /SOURCE_BASIS\.collected/.test(au.checkWordingContract(bentBlock).reasons.join(' ')),
+    au.checkWordingContract(bentBlock).reasons.slice(0, 2).join(' | '));
+
+  // 牙⑥：顶层 `sourceUrl` 那一行的标签必须是中性的「收录渠道」（P3-11 / Prompt §7.1：
+  // sourceUrl 可能是第三方目录站，标成「原始出处」会被读成"官方原始出处"）。
+  // 空态措辞必须跟着标签走 —— 否则同一行里出现两个名字（旧词与新词并存）。
+  check('牙⑥ 顶层 sourceUrl 的标签是「收录渠道」（不是「原始出处」）',
+    wording.SOURCE_LABELS.origin === '收录渠道', wording.SOURCE_LABELS.origin);
+  check('牙⑥ 该行的空态措辞与标签同词（「未署名收录渠道」）',
+    wording.SOURCE_NOTES.noOrigin === `未署名${wording.SOURCE_LABELS.origin}`, wording.SOURCE_NOTES.noOrigin);
+  const bentOrigin = html.replace('"origin":"收录渠道"', '"origin":"原始出处"');
+  check('牙⑥ 前端把标签改回「原始出处」→ checkWordingContract 立刻红',
+    !au.checkWordingContract(bentOrigin).ok && /SOURCE_LABELS\.origin/.test(au.checkWordingContract(bentOrigin).reasons.join(' ')),
+    au.checkWordingContract(bentOrigin).reasons.slice(0, 2).join(' | '));
+  const bentNoOrigin = html.replace('"noOrigin":"未署名收录渠道"', '"noOrigin":"未署名原始出处"');
+  check('牙⑥ 前端把空态改回「未署名原始出处」→ 同一条比对立刻红',
+    !au.checkWordingContract(bentNoOrigin).ok && /SOURCE_NOTES\.noOrigin/.test(au.checkWordingContract(bentNoOrigin).reasons.join(' ')),
+    au.checkWordingContract(bentNoOrigin).reasons.slice(0, 2).join(' | '));
+}
+
 /* ------------------------------------------------------------------ */
 console.log(`\n${failures.length ? '❌' : '✅'} 受众字段自测：${pass} 项通过，${failures.length} 项失败`);
 if (failures.length) {

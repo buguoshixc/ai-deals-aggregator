@@ -401,6 +401,53 @@ function lastSuccessReason(facts) {
   return '';
 }
 
+/* ------------------------------------------------------------------ */
+/* 断言依据的档位（「官方页面明写」vs「由官方原文推断」vs「第三方收录页原文」）  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 字段级依据（`provenance.fields[field]`）该按哪一档措辞渲染 —— 返回
+ * `SOURCE_BASIS` 的键（`source` / `documented` / `inferred` / `collected` / `none`）。
+ *
+ * **同时读三个轴**，只看 `basis` 是审计里那条 P1 的根因：
+ *
+ * | 轴 | 取值 | 说的是什么 |
+ * |---|---|---|
+ * | `basis` | source / documented / inferred | 我们是怎么拿到这个字段值的 |
+ * | `derived` | stated / inferred | 这个值是不是从原文推出来的（与 basis 是两个入口） |
+ * | `sourceFacts.sourceType` | official / directory / curated / unknown | 这条记录的来源身份 |
+ *
+ * 三条判据：
+ *   ① 任一轴说「这是推的」（`basis==='inferred'` **或** `derived==='inferred'`）→ `inferred`。
+ *      数据层一直在写 `basis:'source' + derived:'inferred'`（`audience-overrides.js` 的
+ *      inferredFields），旧渲染层只认 basis，于是 24 处自己声明为推断的字段被印成
+ *      「官方页面明写」（审计 `F-r1-identity-003`）。
+ *   ② `basis==='documented'` → `documented`（依据官方条款原文）。
+ *   ③ `basis==='source'` 时**还要问是哪一页写着**：`official`（厂商官方页直采）与
+ *      `curated`（人工策展，值由人逐条从官方页转录）照旧 `source`；
+ *      `directory`（第三方目录站收录）与 `unknown`（来源没登记 / 匹配不到）只能 `collected`
+ *      ——「来源类型：第三方目录站收录」和「适用人群：官方页面明写」不能同时印在同一张表里
+ *      （审计 `F-r1-identity-001`：14 条 / 29 处）。
+ *
+ * `sourceType` 缺席（老产物没有 `sourceFacts`）按 `unknown` 处理：来源身份不明时不替它声称官方。
+ *
+ * ⚠️ 这份实现是**正本**；`index.html` 的 `sourceBlockHtml` 里有一份最小副本（RENDER-CORE
+ * 在 vm 沙箱里跑，不能 require 本模块）。两份实现的逐格一致性由 `provenance-selftest`
+ * 用 RENDER-CORE 的**真实求值**比对（不是比对源码文本）。
+ *
+ * @param {{basis?:string, derived?:string}|null|undefined} entry
+ * @param {string|null|undefined} sourceType
+ * @returns {'source'|'documented'|'inferred'|'collected'|'none'}
+ */
+function basisWordingKey(entry, sourceType) {
+  const basis = entry && typeof entry === 'object' ? entry.basis : undefined;
+  const derived = entry && typeof entry === 'object' ? entry.derived : undefined;
+  if (basis === 'inferred' || derived === 'inferred') return 'inferred';
+  if (basis === 'documented') return 'documented';
+  if (basis !== 'source') return 'none';
+  return sourceType === 'official' || sourceType === 'curated' ? 'source' : 'collected';
+}
+
 module.exports = {
   AGGREGATOR_HOSTS,
   MAX_EVIDENCE_QUOTE_LENGTH,
@@ -426,5 +473,6 @@ module.exports = {
   buildSourceIndex,
   sourceTypeOf,
   factsFor,
-  lastSuccessReason
+  lastSuccessReason,
+  basisWordingKey
 };
