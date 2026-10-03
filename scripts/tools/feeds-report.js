@@ -25,10 +25,15 @@ const radar = changes.buildRadar({
   deals: payload.deals, store: store.store, asOf,
   availability: store.missing || store.broken ? 'unavailable' : 'ok'
 });
+// 规范厂商名取值器与 build-local / feeds-selftest 用**同一个**（RENDER-CORE 的 `vendorOf().name`）。
+// 不传它就会拿原始字符串去查规范名键的 slug 表 —— 报告里的厂商分组会与真实产物对不上，
+// 而「报告说 23 份、页面上 25 份」这种差异最容易把人带偏。
+const renderCore = require('../lib/render-core').load(path.join(ROOT, 'index.html'));
 const bundle = feeds.buildFeeds({
   deals: payload.deals, store: store.store, radar, asOf,
   updatedAt: payload.updatedAt,
-  availability: store.missing || store.broken ? 'unavailable' : 'ok'
+  availability: store.missing || store.broken ? 'unavailable' : 'ok',
+  vendorKeyOf: deal => renderCore.vendorOf(deal).name
 });
 const stats = feeds.summarize(bundle.feeds);
 
@@ -39,10 +44,17 @@ console.log(`厂商门槛：当前有效优惠 ≥ ${feeds.VENDOR_THRESHOLDS.min
 if (bundle.vendorUnmapped.length) console.log(`未映射 slug 的厂商：${bundle.vendorUnmapped.join('、')}`);
 if (bundle.vendorSkipped.length) console.log(`够门槛但当前 0 条、未生成的厂商：${bundle.vendorSkipped.map(r => r.vendor).join('、')}`);
 
-for (const kind of ['collection', 'changes']) {
+// 三类 Feed 全部列出来。原先只列 collection 与 changes，`plan-changes`（套餐 / API 计费变化）
+// 明明在产物里，人读报告里却看不到 —— 与 P3-4 同型的「有产出、报告里没有」。
+const KIND_LABELS = {
+  collection: '优惠 Feed（当前有哪些符合这个条件的优惠）',
+  changes: '变化 Feed（最近发生了什么）',
+  'plan-changes': '套餐 / API 计费变化 Feed（那两份记录本身变了什么）'
+};
+for (const kind of ['collection', 'changes', 'plan-changes']) {
   const rows = bundle.feeds.filter(feed => feed.spec.kind === kind);
   if (!rows.length) continue;
-  console.log(`\n—— ${kind === 'collection' ? '优惠 Feed（当前有哪些符合这个条件的优惠）' : '变化 Feed（最近发生了什么）'} ——`);
+  console.log(`\n—— ${KIND_LABELS[kind] || kind} ——`);
   for (const feed of rows) {
     const head = `${feed.spec.id.padEnd(18)} ${String(feed.items.length).padStart(4)} 条  ${feed.spec.path}`;
     console.log(head);
@@ -59,6 +71,24 @@ for (const kind of ['collection', 'changes']) {
       console.log(`   空：${feed.description.split('。').slice(-2).join('。')}`);
     }
   }
+}
+
+console.log('\n—— /feeds/ 汇总页的分组（**从注册表派生**，页面只是把它摊开）——');
+{
+  // 这一节回答的是 P3-4 那个问题：「哪一份订阅不会出现在总入口上」。
+  // 判据只有一处（lib/feeds.js 的 pageGroups），所以这里打印的就是页面上的分组。
+  const plan = feeds.pageGroups(bundle.feeds);
+  for (const group of plan.groups) {
+    const ids = group.feeds.map(feed => feed.spec.id);
+    console.log(`  ${group.label.padEnd(14)} ${ids.length} 份${ids.length ? `：${ids.join('、')}` : '（本组当前为空）'}`);
+  }
+  if (plan.ungrouped.length) {
+    console.log(`  ⚠️  没分组的 public Feed（会从总入口静默消失）：${plan.ungrouped.map(f => f.spec.id).join('、')}`);
+  }
+  const hidden = bundle.feeds.filter(feed => !feeds.isPublicSpec(feed.spec)).map(feed => feed.spec.id);
+  if (hidden.length) console.log(`  ⚠️  hidden/internal 却仍被生成（隐藏不能当 ignore list 用）：${hidden.join('、')}`);
+  console.log(`  public ${plan.publicCount} 份 · 总入口列出 ${plan.listed.length} 份`);
+  console.log('  产物级的双向对账在 `node scripts/tools/build-local.js`（构建自检）与 `check-feeds-reproducible` 里。');
 }
 
 console.log('\n—— 提示 ——');

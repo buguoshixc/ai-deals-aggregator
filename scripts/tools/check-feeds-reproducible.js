@@ -30,11 +30,21 @@ const crypto = require('crypto');
 const { execFileSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..', '..');
+const feeds = require('../lib/feeds');
 const runArg = process.argv.find(arg => arg.startsWith('--runs='));
 const RUNS = Math.max(2, Number((runArg || '--runs=2').slice(7)) || 2);
 const outArg = process.argv.find(arg => arg.startsWith('--out='));
 const TMP = path.join(ROOT, outArg ? outArg.slice(6) : 'dist.feeds-repro');
-const BUILT = path.join(ROOT, 'dist');
+/**
+ * 参考产物目录（默认 `<repo>/dist`）与 fail-closed 开关（§10.9 · P2-10 / BS-8）。
+ *
+ * 原先参考产物缺失时会静默退化成「只做自比对」——那让 CI 里这一步少掉一半判据而全绿。
+ * 现在：缺 Feed 产物 ⇒ **非 0**；只有显式 `--allow-missing-dist` 才允许退化成自比对
+ * （会打印 OPTIONAL DIAGNOSTIC）。门禁 action 把这一步排在 `Assemble site` 之后。
+ */
+const dirArg = process.argv.find(arg => arg.startsWith('--dir='));
+const ALLOW_MISSING_DIST = process.argv.includes('--allow-missing-dist');
+const BUILT = path.resolve(ROOT, dirArg ? dirArg.slice('--dir='.length) : 'dist');
 
 let failed = 0;
 function fail(message) { console.log(`  ✗ ${message}`); failed++; }
@@ -135,17 +145,55 @@ function collectXml(dir) {
   return out;
 }
 
+/**
+ * P3-4 的第二道独立探针：**只看产物**，不问注册表。
+ *
+ *   ① 产物里存在的每一个 Feed 文件（`feed/**` + 站点根的 `feed.xml` / `feed.json`）
+ *      都必须出现在 `/feeds/` 汇总页上；
+ *   ② 页面上列出的每一个订阅地址都必须有对应的产物文件。
+ *
+ * 为什么放在这里而不是只放 build-local 的自检里：分类 Feed 那一组曾经「文件都在、
+ * 总入口看不见」，而「连续构建逐字节一致」这条门禁**全绿** —— 可复现性对
+ * 「有产出、无总览入口」是盲的。两条独立判据指向同一件事，谁坏了另一个都会红。
+ */
+function checkFeedsPageCoverage(dir) {
+  const problems = [];
+  const pageFile = path.join(dir, 'feeds', 'index.html');
+  if (!fs.existsSync(pageFile)) return ['缺少 feeds/index.html（订阅总入口没有产出）'];
+  const page = fs.readFileSync(pageFile, 'utf8');
+  const listed = new Set();
+  for (const match of page.matchAll(/href="([^"]+)"/g)) {
+    const href = match[1];
+    if (href.startsWith(feeds.SITE_URL)) listed.add(href.slice(feeds.SITE_URL.length));
+    else if (href.startsWith('../')) listed.add(href.slice(3));
+  }
+  for (const item of feedFiles(dir)) {
+    if (!listed.has(item.rel)) problems.push(`产物里的 Feed 文件没有出现在 /feeds/ 上：${item.rel}`);
+  }
+  for (const rel of listed) {
+    if (!/^feed.*\.(xml|json)$/.test(rel)) continue;
+    if (!fs.existsSync(path.join(dir, rel))) problems.push(`/feeds/ 列出的订阅地址没有文件：${rel}`);
+  }
+  return problems;
+}
+
 console.log(`\n=== 订阅可复现门禁：连续构建 ${RUNS} 次，逐字节比对 ===`);
 console.log(`  临时输出目录：${path.relative(ROOT, TMP)}（用完即删）`);
 
 const reference = (() => {
   const built = feedFiles(BUILT);
-  return built.length ? { label: 'dist/（上一次构建的产物）', files: built, hash: fingerprint(built) } : null;
+  return built.length ? { label: `${path.relative(ROOT, BUILT) || '.'}/（上一次构建的产物）`, files: built, hash: fingerprint(built) } : null;
 })();
 if (reference) {
   console.log(`  基线：${reference.label} —— ${reference.files.length} 个 Feed 文件`);
+} else if (ALLOW_MISSING_DIST) {
+  console.log(`  ⚠️ OPTIONAL DIAGNOSTIC（--allow-missing-dist）：${path.relative(ROOT, BUILT) || '.'}/ 里没有 Feed 文件，` +
+    '本轮只做「连续构建逐字节一致」自比对（不做「与本产物一致」比对）');
 } else {
-  console.log('  基线：dist/ 里没有 Feed 文件（先跑一次 npm run build）——本轮只做自比对');
+  // §10.9 / P2-10 / BS-8：参考产物缺失时**不再**静默退化成"只自比对"。
+  // 门禁把这一步排在 Assemble site 之后（dist/ 必然存在）；独立跑法缺产物即红。
+  fail(`缺少必需产物：参考产物 ${path.relative(ROOT, BUILT) || '.'}/ 里没有任何 Feed 文件` +
+    `（先跑 npm run build，或用 --dir=<构建输出> 指到那份产物；只有显式 --allow-missing-dist 才允许只做自比对）`);
 }
 
 let first = null;
@@ -164,6 +212,13 @@ try {
       const wall = checkNoWallClock(TMP);
       if (wall.length) fail(`构建时刻泄进产物：${wall.slice(0, 3).join('；')}`);
       else ok('时间字段全部是「数据日期的北京时间零点」（没有把「现在几点」写进产物）');
+      const coverage = checkFeedsPageCoverage(TMP);
+      if (coverage.length) {
+        fail(`/feeds/ 与订阅产物双向覆盖不一致：${coverage.slice(0, 3).join('；')}` +
+          `${coverage.length > 3 ? `（等 ${coverage.length} 处）` : ''}`);
+      } else {
+        ok('订阅产物与 /feeds/ 双向覆盖一致（产物里每个 Feed 文件都在汇总页上，页面每个地址都有文件）');
+      }
       if (reference && reference.hash !== hash) {
         const diff = reference.files.filter((item, index) => !first.files[index] || first.files[index].hash !== item.hash)
           .map(item => item.rel);

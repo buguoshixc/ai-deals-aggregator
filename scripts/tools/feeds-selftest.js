@@ -882,6 +882,124 @@ section('十、渲染入口与页面同源');
 }
 
 /* ------------------------------------------------------------------ */
+section('十二、/feeds/ 汇总页与注册表的双向对账（P3-4 回归钉）');
+
+{
+  const plan = feeds.pageGroups(bundle.feeds);
+  const groupedIds = new Set(plan.listed.map(feed => feed.spec.id));
+
+  // ① 注册表 → 分组计划：登记的每一份 public Feed 都必须在分组里（漏一个 = 从总入口消失）
+  const registeredPublic = [
+    ...feeds.COLLECTION_FEED_PAGES.filter(entry => feeds.isPublicSpec(entry)).map(entry => entry.id),
+    ...feeds.PLAN_CHANGE_FEEDS.filter(spec => feeds.isPublicSpec(spec)).map(spec => spec.id),
+    'all', 'new', 'changes'
+  ];
+  check('注册表里登记的每一份 public Feed 都落进了汇总页的分组',
+    registeredPublic.every(id => groupedIds.has(id)),
+    registeredPublic.filter(id => !groupedIds.has(id)).join(','));
+  check('本轮注册表里没有「hidden/internal 却仍被生成」的 Feed（隐藏必须与不生成绑定）',
+    bundle.feeds.every(feed => feeds.isPublicSpec(feed.spec)),
+    bundle.feeds.filter(feed => !feeds.isPublicSpec(feed.spec)).map(feed => feed.spec.id).join(','));
+  check('没有一个 public Feed 是「没分组」的（否则它会从 /feeds/ 静默消失）',
+    plan.ungrouped.length === 0, plan.ungrouped.map(feed => feed.spec.id).join(','));
+  check('分组计划不重不漏（分组里的 Feed 数 == public Feed 数）',
+    plan.listed.length === plan.publicCount && new Set(plan.listed.map(f => f.spec.id)).size === plan.listed.length,
+    `listed=${plan.listed.length} public=${plan.publicCount}`);
+
+  // ② P3-4 本体：5 个分类 Feed 必须出现在「按分类」组里（它们曾经整组漏掉）
+  const categoryGroup = plan.groups.find(group => group.key === 'category');
+  const categoryIds = (categoryGroup ? categoryGroup.feeds.map(feed => feed.spec.id) : []).sort();
+  check('5 个分类 Feed 全在「按分类」组里（P3-4：它们曾经整组不在 /feeds/ 上）',
+    categoryIds.join(',') === 'category-agent,category-api,category-audio,category-chat,category-image',
+    categoryIds.join(','));
+
+  // ③ 双向断言本身：合成一个「由分组计划渲染出来的页面」，两个方向都要能红。
+  //    这里刻意用**可见性被固定成 public** 的夹具：这几条牙测的是 checker 的灵敏度，
+  //    不该因为注册表真的被改坏（比如某条被标成 hidden）而连带变红 —— 那种红属于 ①。
+  const fixture = bundle.feeds.map(feed => ({ ...feed, spec: { ...feed.spec, hidden: false, internal: false } }));
+  const fixturePlan = feeds.pageGroups(fixture);
+  const syntheticPage = (ids, extra = '') => [
+    ...ids.map(id => {
+      const feed = fixture.find(item => item.spec.id === id);
+      return feed
+        ? `<li><b>${feed.spec.title}</b><a href="${feeds.SITE_URL}${feed.spec.path}">RSS</a>`
+          + `<a href="${feeds.SITE_URL}${feed.spec.jsonPath}">JSON</a></li>`
+        : '';
+    }),
+    extra
+  ].join('\n');
+  const allIds = fixturePlan.listed.map(feed => feed.spec.id);
+  const clean = feeds.checkFeedsPage({ feedList: fixture, page: syntheticPage(allIds) });
+  check('合成的完整页面零问题（断言不是恒红）', clean.problems.length === 0, clean.problems.slice(0, 2).join('；'));
+
+  const missingOne = feeds.checkFeedsPage({ feedList: fixture, page: syntheticPage(allIds.filter(id => id !== 'category-api')) });
+  check('方向①（注册表 → 页面）：抽掉一份 Feed ⇒ 必须红',
+    missingOne.problems.some(text => /category-api/.test(text)), missingOne.problems.slice(0, 1).join('；'));
+
+  const extraOne = feeds.checkFeedsPage({
+    feedList: fixture,
+    page: syntheticPage(allIds, `<a href="${feeds.SITE_URL}feed/ghost.xml">RSS</a>`)
+  });
+  check('方向②（页面 → 注册表）：页面上多一条注册表没有的订阅 ⇒ 必须红',
+    extraOne.problems.some(text => /没有对应的 public Feed：feed\/ghost\.xml/.test(text)), extraOne.problems.slice(0, 1).join('；'));
+
+  const hiddenButGenerated = feeds.checkFeedsPage({
+    feedList: fixture.map(feed => (feed.spec.id === 'category-api'
+      ? { ...feed, spec: { ...feed.spec, hidden: true } }
+      : feed)),
+    page: syntheticPage(allIds)
+  });
+  check('方向③（hidden 不许当 ignore list）：仍被生成的 Feed 标成 hidden ⇒ 必须红',
+    hiddenButGenerated.problems.some(text => /hidden\/internal 的 Feed 仍在生成：category-api/.test(text)),
+    hiddenButGenerated.problems.slice(0, 1).join('；'));
+
+  const ungrouped = feeds.checkFeedsPage({
+    feedList: fixture.map(feed => (feed.spec.id === 'category-api'
+      ? { ...feed, spec: { ...feed.spec, listGroup: 'nowhere' } }
+      : feed)),
+    page: syntheticPage(allIds)
+  });
+  check('方向④：public Feed 没有分组 ⇒ 必须红',
+    ungrouped.problems.some(text => /没有分组/.test(text)), ungrouped.problems.slice(0, 1).join('；'));
+
+  // ④ 可见性的默认值：不写就是 public（默认安全方向）
+  check('默认 public；只有 hidden / internal 才是例外',
+    feeds.isPublicSpec({ id: 'x' }) === true &&
+    feeds.isPublicSpec({ id: 'x', hidden: true }) === false &&
+    feeds.isPublicSpec({ id: 'x', internal: true }) === false);
+  check('publicFeeds() 按同一判据过滤',
+    feeds.publicFeeds([{ spec: { id: 'a' } }, { spec: { id: 'b', hidden: true } }]).map(f => f.spec.id).join(',') === 'a');
+
+  // ⑤ URL 形态冻结：这一版只补汇总页，既有订阅地址一个都不许改
+  const EXPECTED_PATHS = {
+    all: 'feed.xml', changes: 'feed/changes.xml', new: 'feed/new.xml',
+    'plan-changes': 'feed/plans/coding/changes.xml', 'api-plan-changes': 'feed/plans/api/changes.xml',
+    student: 'feed/student.xml', developer: 'feed/developer.xml', 'free-api': 'feed/free-api.xml',
+    'free-tokens': 'feed/free-tokens.xml', 'ai-coding': 'feed/ai-coding.xml', china: 'feed/china.xml',
+    'category-api': 'feed/category-api.xml', 'category-chat': 'feed/category-chat.xml',
+    'category-audio': 'feed/category-audio.xml', 'category-image': 'feed/category-image.xml',
+    'category-agent': 'feed/category-agent.xml'
+  };
+  const pathDrift = Object.entries(EXPECTED_PATHS).filter(([id, path]) => {
+    const spec = bundle.feeds.map(feed => feed.spec).find(item => item.id === id);
+    return !spec || spec.path !== path || spec.jsonPath !== path.replace(/\.xml$/, '.json');
+  }).map(([id]) => id);
+  check('既有 Feed 的 URL 形态被冻结（只补汇总页，不动任何订阅地址）', pathDrift.length === 0, pathDrift.join(','));
+  check('没有新增 /feed/api.xml 或 /feed/coding.xml（Prompt §13.1 明确禁止）',
+    !bundle.feeds.some(feed => ['feed/api.xml', 'feed/api.json', 'feed/coding.xml', 'feed/coding.json']
+      .includes(feed.spec.path) || ['feed/api.xml', 'feed/api.json', 'feed/coding.xml', 'feed/coding.json']
+      .includes(feed.spec.jsonPath)));
+
+  // ⑥ 结构：渲染层不再有第二份清单（否则「注册表唯一来源」只是口号）
+  const buildSource = fs.readFileSync(path.join(ROOT, 'scripts', 'tools', 'build-local.js'), 'utf8');
+  const renderBody = (buildSource.match(/function renderFeedsPage\([\s\S]*?\n}\n/) || [''])[0]
+    .replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+  check('汇总页渲染层从注册表取分组（调用 feeds.pageGroups）', /feeds\.pageGroups\(/.test(renderBody));
+  check('汇总页渲染层不再手写 Feed id 清单（没有 ids: [...] 这种第二份清单）',
+    renderBody.length > 0 && !/\bids\s*:\s*\[/.test(renderBody));
+}
+
+/* ------------------------------------------------------------------ */
 console.log(`\n=== v1.6 订阅层演练：${passed} 项通过，${failures.length} 项失败 ===`);
 if (failures.length) {
   for (const item of failures) console.log(`  ✗ ${item.name}${item.detail ? ` —— ${item.detail}` : ''}`);
