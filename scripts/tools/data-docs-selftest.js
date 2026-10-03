@@ -25,6 +25,49 @@ const pageKinds = require('../lib/page-kinds');
 const ROOT = path.join(__dirname, '..', '..');
 const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
 
+/**
+ * 产物目录：默认 `dist/`，可用 `--dir=dist.qc-gate` 指到别的构建输出。
+ *
+ * 为什么要有这个参数（F-v3-export-002）：原先把 `dist` 写死，于是审计/分支成员用
+ * `--out=dist.audit-*` 构建出来的产物**永远不会**被这一步检查 —— 它检查的始终是另一份目录。
+ * 有了参数，同一份自测既能验默认发布产物，也能验任意一次构建的现场。
+ */
+const dirArg = process.argv.find(arg => arg.startsWith('--dir='));
+/**
+ * `--allow-missing-dist`：**只有显式声明为可选诊断时**才允许「缺产物 ⇒ 跳过」。
+ * 默认（门禁与本地一样）缺产物 ⇒ **非 0** —— 见下面 `requireDist()`。
+ */
+const ALLOW_MISSING_DIST = process.argv.includes('--allow-missing-dist');
+const DIST = path.resolve(ROOT, dirArg ? dirArg.slice('--dir='.length) : 'dist');
+
+/** 必需的产物缺失时：显式允许 → OPTIONAL DIAGNOSTIC（通过）；否则记红并返回 false */
+function requireDist(what, marker) {
+  const file = path.join(DIST, marker);
+  if (fs.existsSync(file)) return true;
+  if (ALLOW_MISSING_DIST) {
+    check(`⚠️ OPTIONAL DIAGNOSTIC（--allow-missing-dist）：跳过 ${what} 的现场检查（缺 ${marker}）`, true);
+    return false;
+  }
+  check(`缺少必需产物：${what} —— 找不到 ${path.relative(ROOT, file) || file}` +
+    `（先跑 npm run build，或用 --dir=<构建输出> 指到那份产物；只有显式 --allow-missing-dist 才允许跳过）`, false);
+  return false;
+}
+
+/** 产物内全部文件的相对路径（方向 2 的扫描输入：读盘，不读任何清单） */
+function listFiles(dir) {
+  const out = [];
+  const walk = (abs, rel) => {
+    for (const entry of fs.readdirSync(abs, { withFileTypes: true })) {
+      const nextRel = rel ? `${rel}/${entry.name}` : entry.name;
+      const nextAbs = path.join(abs, entry.name);
+      if (entry.isDirectory()) walk(nextAbs, nextRel);
+      else out.push(nextRel);
+    }
+  };
+  if (fs.existsSync(dir)) walk(dir, '');
+  return out.sort();
+}
+
 let passed = 0;
 const failures = [];
 
@@ -46,90 +89,44 @@ function exists(rel) {
 }
 
 /* ------------------------------------------------------------------ */
-/* 从仓库真实文件构造 Manifest（发布位置 → 仓库内的真值文件）             */
+/* 数据集清单：**唯一注册表**（`lib/data-docs.js` 的 `PUBLIC_DATASETS`）  */
 /* ------------------------------------------------------------------ */
+//
+// 这里原本有 SOURCE_OF / ESSENTIAL / CATEGORY_OF 三张硬编码清单 —— 与构建期那份数据集数组
+// 各写一份，正是 P2-25（`F-v3-export-001`）说的「清单各自漂移」。现在：
+//   · 有哪些数据集、属于哪一类、发布地址是什么、真值文件在哪，全部读注册表；
+//   · 本文件只保留**取值**逻辑（怎么从真值文件里读出 schemaVersion / updatedAt / count）——
+//     那是"怎么验证"，不是"清单"，按 id 分支写在这里。
+const REGISTRY = docs.PUBLIC_DATASETS;
 
-const SOURCE_OF = {
-  'deals.json': 'deals.json',
-  'plans.json': 'plans.json',
-  'api-plans.json': 'api-plans.json',
-  'deal-plan-links.json': 'scripts/data/deal-plan-links.json',
-  'deal-history.json': 'scripts/data/deal-history.json',
-  'plan-history.json': 'scripts/data/plan-history.json',
-  'api-plan-history.json': 'scripts/data/api-plan-history.json',
-  // v3.0：模型两份数据集的**发布位置**是仓库根目录的派生产物（带 schemaVersion/updatedAt/count），
-  // 不是 `scripts/data/` 里的人工来源层（那两份是 `{slug: entry}` / `{links:[]}`，没有版本与计数）。
-  // 混用会让 Manifest 写出 schemaVersion=null —— 这正是"文档与真实数据不一致"要红的那一类。
-  'models.json': 'models.json',
-  'model-registry-links.json': 'model-registry-links.json'
-};
-
-/** 必需的七份公开数据（v2.5 起就在线上 200） */
-const ESSENTIAL = ['deals.json', 'plans.json', 'api-plans.json', 'deal-plan-links.json',
-  'deal-history.json', 'plan-history.json', 'api-plan-history.json'];
-
-/** v3.0：每份数据集属于哪一类（六类必须齐 —— 与构建期同一套口径） */
-const CATEGORY_OF = {
-  'deals.json': 'deals',
-  'plans.json': 'coding-plans',
-  'api-plans.json': 'api-pricing',
-  'models.json': 'models',
-  'model-registry-links.json': 'relationships',
-  'deal-plan-links.json': 'relationships',
-  'deal-history.json': 'history',
-  'plan-history.json': 'history',
-  'api-plan-history.json': 'history'
-};
-
-function datasetOf(url) {
-  const source = SOURCE_OF[url];
-  if (!source || !exists(source)) return null;
-  const payload = readJson(source);
-  const category = CATEGORY_OF[url];
-  if (url === 'deal-plan-links.json') {
-    return {
-      id: 'deal-plan-links', label: '优惠 ↔ 套餐关系', url, category,
-      schemaVersion: payload.schemaVersion,
-      // `updatedAt` 与 `count` 在这份文件里是**构建期派生**的（手写即校验错误），
-      // 因此这里用同一支库函数现算，而不是自己写一个日期。
-      updatedAt: dealPlanLinks.canonicalUpdatedAt(payload),
-      count: (payload.links || []).length, countNote: '当前关系条数（退役记录另计）',
-      purpose: '显式确认的优惠与套餐 / API 计费记录关系'
-    };
+/** 注册表 + 真值文件 → 用于对账的数据集描述（缺真值文件返回 null，由调用方如实报红） */
+function datasetOf(entry) {
+  if (!entry.source || !exists(entry.source)) return null;
+  const payload = readJson(entry.source);
+  const base = { ...entry, schemaVersion: payload.schemaVersion };
+  if (entry.id === 'deal-plan-links') {
+    // `updatedAt` 与 `count` 在这份文件里是**构建期派生**的（手写即校验错误），
+    // 因此这里用同一支库函数现算，而不是自己写一个日期。
+    return { ...base, updatedAt: dealPlanLinks.canonicalUpdatedAt(payload), count: (payload.links || []).length };
   }
-  if (/-history\.json$/.test(url)) {
-    return {
-      id: url.replace('.json', ''), label: '变化日志', url, category,
-      schemaVersion: payload.schemaVersion, updatedAt: payload.startedAt || null,
-      count: (payload.events || []).length, countNote: '事件条目数（不含一次性基线）',
-      purpose: '一次性基线 + 追加事件的变化日志'
-    };
+  if (/-history\.json$/.test(entry.url)) {
+    return { ...base, updatedAt: payload.startedAt || null, count: (payload.events || []).length };
   }
-  if (url === 'model-registry-links.json') {
-    return {
-      id: 'model-registry-links', label: '模型映射关系', url, category,
-      schemaVersion: payload.schemaVersion, updatedAt: payload.updatedAt || null,
-      count: (payload.links || []).length, countNote: '显式映射条数',
-      purpose: 'registry 模型与 api-plans 记录 / 套餐 / 优惠的显式映射'
-    };
+  if (entry.id === 'model-registry-links') {
+    return { ...base, updatedAt: payload.updatedAt || null, count: (payload.links || []).length };
   }
-  const listKey = url === 'models.json' ? 'models' : (url === 'deals.json' ? 'deals' : 'plans');
+  const listKey = entry.url === 'models.json' ? 'models' : (entry.url === 'deals.json' ? 'deals' : 'plans');
   const list = Array.isArray(payload[listKey]) ? payload[listKey] : [];
   return {
-    id: url.replace('.json', ''), label: url === 'models.json' ? '模型注册表' : (url === 'deals.json' ? '优惠' : '套餐 / API 计费'),
-    url, category,
-    schemaVersion: payload.schemaVersion,
+    ...base,
     updatedAt: payload.updatedAt || null,
-    count: typeof payload.count === 'number' ? payload.count : list.length,
-    countNote: null,
-    purpose: url === 'models.json' ? '模型身份索引（索引层，不是价格真值）'
-      : url === 'api-plans.json' ? 'API / Token 按量计费的官方单价'
-        : url === 'plans.json' ? '长期在售的 Coding 订阅套餐' : 'AI 优惠与福利'
+    count: typeof payload.count === 'number' ? payload.count : list.length
   };
 }
 
-const urls = ESSENTIAL.concat(['models.json', 'model-registry-links.json'].filter(url => exists(SOURCE_OF[url])));
-const datasets = urls.map(datasetOf).filter(Boolean);
+const missingSources = REGISTRY.filter(entry => !entry.source || !exists(entry.source))
+  .map(entry => `${entry.id} → ${entry.source}`);
+const datasets = REGISTRY.map(datasetOf).filter(Boolean);
 const manifest = docs.buildDatasetManifest(datasets);
 
 const actualSchemaVersions = {};
@@ -141,7 +138,12 @@ for (const dataset of datasets) {
   actualUpdatedAt[dataset.id] = dataset.updatedAt;
 }
 
-const endpointExists = url => Boolean(SOURCE_OF[url]) && exists(SOURCE_OF[url]);
+// endpoint 的"存在性"判据来自注册表：注册表同时声明了发布地址与真值文件，这里不再另写一张表。
+const SOURCE_BY_URL = new Map(REGISTRY.map(entry => [entry.url, entry.source]));
+const endpointExists = url => {
+  const source = SOURCE_BY_URL.get(url);
+  return Boolean(source) && exists(source);
+};
 const licensePresent = ['LICENSE', 'LICENSE.md', 'COPYING'].some(file => exists(file));
 const license = licensePresent
   ? { status: 'present', file: ['LICENSE', 'LICENSE.md', 'COPYING'].find(file => exists(file)) }
@@ -164,6 +166,9 @@ section('① Manifest：形状与可复现');
 
 check(`Manifest 覆盖 ${datasets.length} 份真实数据集`,
   manifest.count === datasets.length && manifest.datasets.length === datasets.length);
+check(`唯一注册表 PUBLIC_DATASETS 声明了 ${REGISTRY.length} 份数据集，且每一份真值文件都在仓库里`,
+  missingSources.length === 0 && datasets.length === REGISTRY.length && REGISTRY.length === manifest.count,
+  missingSources.length ? `缺真值文件：${missingSources.join('；')}` : `${REGISTRY.length} 份`);
 check('Manifest 自身形状零问题', docs.assertManifestShape(manifest).length === 0,
   docs.assertManifestShape(manifest).slice(0, 2).join('；'));
 check('Manifest 两次构建逐字节相同（按 id 排序）',
@@ -347,11 +352,13 @@ section('⑨ 真实产物：/docs/data/ 与 /data/index.json（接线后才有�
 /* ================================================================== */
 
 {
-  const DIST = path.join(ROOT, 'dist');
-  const manifestFile = path.join(DIST, 'data', 'index.json');
-  const docsFile = path.join(DIST, 'docs', 'data', 'index.html');
-  if (!fs.existsSync(manifestFile) || !fs.existsSync(docsFile)) {
-    check('/docs/data/ 或 /data/index.json 尚未接线 —— 本节按「如实跳过」处理（先跑 npm run build）', true);
+  const manifestFile = path.join(DIST, docs.MANIFEST_URL);
+  const docsFile = path.join(DIST, docs.DATA_DOCS_ROUTE, 'index.html');
+  // §10.9 / P2-10：**缺产物不再「跳过并计 ✓」**。门禁把这一步排在 Assemble site 之后
+  // 并显式传 `--dir=dist`；独立/本地跑法缺产物即红，除非显式 --allow-missing-dist。
+  if (!requireDist('dist 现场的 Dataset Manifest', docs.MANIFEST_URL) ||
+      !requireDist('/docs/data/ 数据文档页', path.join(docs.DATA_DOCS_ROUTE, 'index.html'))) {
+    // 已记红（或显式 OPTIONAL DIAGNOSTIC）：下面的现场对账没有输入可跑。
   } else {
     const diskManifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
     const docsHtml = fs.readFileSync(docsFile, 'utf8');
@@ -391,7 +398,80 @@ section('⑨ 真实产物：/docs/data/ 与 /data/index.json（接线后才有�
       !Array.isArray(diskManifest) && diskManifest.datasets.every(dataset =>
         !Array.isArray(dataset) && Object.keys(dataset).every(key =>
           ['id', 'label', 'category', 'url', 'schemaVersion', 'updatedAt', 'updatedAtShape', 'count', 'countNote', 'purpose', 'format'].includes(key))));
+    // ---- 方向 2（§10.7）：产物里的**每个** JSON 都必须被某个注册表认领 ----
+    const coverage = docs.assertArtifactCoverage(listFiles(DIST), diskManifest);
+    check(`dist 现场：方向 2 扫描 ${coverage.counts.json} 个 JSON，未认领 ${coverage.counts.unclassified} 个`,
+      coverage.problems.length === 0, coverage.problems.slice(0, 3).join('；'));
+    check('dist 现场：覆盖统计对得上（公开数据集 == Manifest 条数 · Manifest 1 个 · 豁免项逐个在场）',
+      coverage.counts.datasets === diskManifest.datasets.length
+      && coverage.counts.manifest === 1
+      && coverage.counts.internal === docs.INTERNAL_ARTIFACTS.length
+      && coverage.counts.feeds > 0,
+      docs.artifactCoverageSummary(coverage.counts));
   }
+}
+
+/* ================================================================== */
+section('⑩ P2-25 方向 2：唯一注册表 + 产物 JSON 认领（含变异牙）');
+/* ================================================================== */
+
+{
+  check('注册表形状零问题（唯一注册表自己也被校验）', docs.assertDatasetRegistryShape().length === 0,
+    docs.assertDatasetRegistryShape().slice(0, 2).join('；'));
+  check('注册表每一类都有数据集（六类齐 · 与 Manifest 同一口径）',
+    docs.DATASET_CATEGORIES.every(category => REGISTRY.some(entry => entry.category === category.key)));
+  check('注册表按 emit 分派：拷贝类进 PUBLIC_FILES、生成类进 GENERATED_FILES（两处都不再手写清单）',
+    docs.datasetCopyUrls().every(url => exists(url))
+    && docs.datasetGeneratedUrls().length + docs.datasetCopyUrls().length === REGISTRY.length);
+  check('source-health.json 的豁免是"写明理由"的，不是静默白名单',
+    docs.classifyJsonArtifact('source-health.json').kind === 'internal'
+    && docs.INTERNAL_ARTIFACTS.every(row => row.path && row.reason && row.owner && row.documentedAt)
+    && docs.INTERNAL_ARTIFACTS.every(row => !docs.datasetUrls().includes(row.path)));
+  check('Feed 家族的归类带得出注册表归属（换的是另一份注册表，不是没人管）',
+    docs.classifyJsonArtifact('feed/vendor/x.json').kind === 'feed'
+    && /lib\/feeds\.js/.test(docs.classifyJsonArtifact('feed.json').reason));
+
+  // 变异电池：全部在**纯函数**层做（注入文件清单 / 伪造 Manifest），不写盘。
+  const realFiles = REGISTRY.map(entry => entry.url)
+    .concat([docs.MANIFEST_URL, 'feed.json', 'feed/vendor/x.json', 'source-health.json', 'sitemap.xml']);
+  const clean = docs.assertArtifactCoverage(realFiles, manifest);
+  check('【防恒红】干净文件清单 → 零问题（先证明这条扫描在真实口径下会绿）',
+    clean.problems.length === 0, clean.problems.slice(0, 2).join('；'));
+
+  const stray = docs.assertArtifactCoverage(realFiles.concat(['experimental-feed.json']), manifest);
+  check('【牙】产物里新增一份未登记的公开 JSON（dist/experimental-feed.json）→ 红，且点名文件与下一步',
+    stray.problems.some(problem => problem.includes('experimental-feed.json') && problem.includes('PUBLIC_DATASETS')),
+    stray.problems.slice(0, 2).join('；'));
+
+  const strayDeep = docs.assertArtifactCoverage(realFiles.concat(['archive/extra.json']), manifest);
+  check('【牙】子目录里新增未登记 JSON 同样红（扫描是全树，不是只看产物根）',
+    strayDeep.problems.some(problem => problem.includes('archive/extra.json')));
+
+  const dropped = docs.assertArtifactCoverage(realFiles, docs.buildDatasetManifest(datasets.filter(d => d.id !== 'models')));
+  check('【牙】注册表有、Manifest 少一份（models）→ 注册表↔Manifest 双向红',
+    dropped.problems.some(problem => problem.includes('models.json')), dropped.problems.slice(0, 2).join('；'));
+
+  const ghostManifest = docs.buildDatasetManifest(datasets.concat([{
+    id: 'ghost', url: 'ghost.json', category: 'deals', schemaVersion: 1, updatedAt: '2026-10-01', count: 0, purpose: '演练用'
+  }]));
+  check('【牙】Manifest 里出现注册表外的数据集 → 红（Manifest 不许绕过唯一注册表）',
+    docs.assertArtifactCoverage(realFiles.concat(['ghost.json']), ghostManifest).problems
+      .some(problem => problem.includes('ghost.json') && problem.includes('PUBLIC_DATASETS')));
+
+  const noHealth = realFiles.filter(file => file !== 'source-health.json');
+  check('【牙】豁免项在产物里不存在（过期豁免）→ 红',
+    docs.assertArtifactCoverage(noHealth, manifest).problems.some(problem => problem.includes('过期豁免')));
+
+  const feedDeclared = ['feed.json', 'feed/vendor/x.json'];
+  check('【防恒红】Feed 产出清单与产物里的 Feed 文件一致 → 零问题',
+    docs.assertArtifactCoverage(realFiles, manifest, { feedFiles: feedDeclared }).problems.length === 0,
+    docs.assertArtifactCoverage(realFiles, manifest, { feedFiles: feedDeclared }).problems.slice(0, 2).join('；'));
+  check('【牙】feed 目录里出现注册表没产出的 JSON → 红（结构性豁免不成立）',
+    docs.assertArtifactCoverage(realFiles.concat(['feed/stray.json']), manifest, { feedFiles: feedDeclared })
+      .problems.some(problem => problem.includes('feed/stray.json')));
+  check('【牙】Feed 注册表声明产出、产物里却没有 → 红',
+    docs.assertArtifactCoverage(realFiles, manifest, { feedFiles: feedDeclared.concat(['feed/ghost.json']) })
+      .problems.some(problem => problem.includes('feed/ghost.json')));
 }
 
 /* ================================================================== */

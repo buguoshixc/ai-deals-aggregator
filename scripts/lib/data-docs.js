@@ -28,6 +28,8 @@ const plansPage = require('./plans-page');
 const pageKinds = require('./page-kinds');
 
 const DATA_DOCS_ROUTE = 'docs/data/';
+/** Dataset Manifest 的**唯一出处**（构建期落盘、自测扫描、页面链接都读它） */
+const MANIFEST_URL = 'data/index.json';
 const DATA_DOCS_HEADING = '数据文档与公开数据集';
 const DATA_DOCS_DESCRIPTION = '本站的页面背后是一组可以长期维护、可追溯的公开数据：'
   + '优惠、Coding 套餐、API 计费、模型身份、关系层与三份变化日志。'
@@ -213,6 +215,104 @@ const DATASET_CATEGORIES = [
 ];
 
 const DATASET_CATEGORY_KEYS = DATASET_CATEGORIES.map(item => item.key);
+
+/**
+ * 公开数据集的**唯一注册表**（v3.0 §10.7 / P2-25 `F-v3-export-001`）。
+ *
+ * 每一份"从 dist 发布出去、面向外部消费者"的稳态 JSON 数据集在这里登记**一次**。
+ * 下面四件事全部从这一份派生，不再各写一份清单：
+ *
+ *   · **Dataset Manifest**（`data/index.json`）：构建期只交出运行期的 schemaVersion / updatedAt / count；
+ *   · **构建拷贝与落盘**：`build-local.js` 的 `PUBLIC_FILES`（`copy` / `rewrite`）与
+ *     `GENERATED_FILES`（`generated`）都由这里派生；
+ *   · **Data Docs**：`/docs/data/` 的数据集索引表（经 Manifest，逐行 `data-item` 对账）；
+ *   · **Dataset verify**：自测与产物扫描（原先 `data-docs-selftest.js` 里那份硬编码的
+ *     `SOURCE_OF` / `ESSENTIAL` / `CATEGORY_OF` 已删，改为读这一份）。
+ *
+ * `emit` = 这一份怎么进产物：
+ *   · `copy`      仓库根的同名文件原样拷贝；
+ *   · `rewrite`   先拷贝、随后由构建期重新序列化（`deals.json` 要贴中文覆盖层与派生字段）；
+ *   · `generated` 构建期直接生成（不进源码拷贝清单）。
+ *
+ * `source` = **仓库内的真值文件**（发布位置 ≠ 真值文件：`models.json` 的真值是仓库根那份
+ * 派生产物 `{schemaVersion, updatedAt, count, models}`，不是 `scripts/data/models.json`）。
+ * 自测从这里现读值与 Manifest 逐字段对账。
+ *
+ * ⚠️ 新增一份公开数据集 = 在这里加一行（并在构建期给出它的取值）。
+ * 漏登记会被 `assertArtifactCoverage()` 在**每一次构建**与自测里当场扫出来 ——
+ * 这就是"公开稳定 dataset → 必须进 Manifest"这个方向上的牙。
+ */
+const PUBLIC_DATASETS = [
+  {
+    id: 'deals', label: '优惠数据', category: 'deals', url: 'deals.json',
+    emit: 'rewrite', source: 'deals.json',
+    purpose: '当前收录的 AI 优惠与福利条目（含构建期派生的 collections / needs / history / relatedPlans）'
+  },
+  {
+    id: 'plans', label: 'Coding 套餐', category: 'coding-plans', url: 'plans.json',
+    emit: 'copy', source: 'plans.json',
+    purpose: '长期在售的订阅型 / Coding 套餐（价格、额度、可用模型与限制）'
+  },
+  {
+    id: 'api-plans', label: 'API 计费记录', category: 'api-pricing', url: 'api-plans.json',
+    emit: 'copy', source: 'api-plans.json',
+    purpose: '按量计费的官方单价（输入 / 输出 / 缓存 / Batch / 免费额度 / credits）'
+  },
+  {
+    id: 'models', label: 'Model Registry', category: 'models', url: 'models.json',
+    emit: 'generated', source: 'models.json',
+    purpose: '模型身份索引（id / slug / 开发者 / 别名 / 状态；派生 firstSeen / lastSeen）'
+  },
+  {
+    id: 'model-registry-links', label: '模型映射关系', category: 'relationships', url: 'model-registry-links.json',
+    emit: 'generated', source: 'model-registry-links.json',
+    purpose: '显式映射：registry 模型 ↔ api-plans 的 modelKey / Coding 套餐（每条带官方出处）'
+  },
+  {
+    id: 'deal-plan-links', label: '优惠 ↔ 套餐关系', category: 'relationships', url: 'deal-plan-links.json',
+    emit: 'generated', source: 'scripts/data/deal-plan-links.json',
+    countNote: '当前关系条数（退役记录另计）',
+    purpose: '显式确认的优惠与套餐 / API 计费记录关系（每条带官方出处）'
+  },
+  {
+    id: 'deal-history', label: '优惠变化日志', category: 'history', url: 'deal-history.json',
+    emit: 'generated', source: 'scripts/data/deal-history.json',
+    countNote: '事件条目数（不含一次性基线）',
+    purpose: '优惠的一次性基线 + 追加事件（ended / restored / 内容变化）'
+  },
+  {
+    id: 'plan-history', label: '套餐变化日志', category: 'history', url: 'plan-history.json',
+    emit: 'generated', source: 'scripts/data/plan-history.json',
+    countNote: '事件条目数（不含一次性基线）',
+    purpose: 'Coding 套餐的一次性基线 + 追加事件（价格 / 额度 / 模型 / 限制 / 地区）'
+  },
+  {
+    id: 'api-plan-history', label: 'API 计费变化日志', category: 'history', url: 'api-plan-history.json',
+    emit: 'generated', source: 'scripts/data/api-plan-history.json',
+    countNote: '事件条目数（不含一次性基线）',
+    purpose: 'API 计费记录的一次性基线 + 追加事件（价格 / 模型增删 / 免费额度 / 下线恢复）'
+  }
+];
+
+/** `emit` 的合法取值（注册表形状校验读它） */
+const DATASET_EMIT_KINDS = ['copy', 'rewrite', 'generated'];
+
+/** 注册表 → 条目视图（构建期与自测共用，不再各自 `filter` / 抄一份清单） */
+function publicDatasets() {
+  return PUBLIC_DATASETS.map(entry => ({ ...entry }));
+}
+/** 注册表里全部公开数据集的发布地址 */
+function datasetUrls() {
+  return PUBLIC_DATASETS.map(entry => entry.url);
+}
+/** 需要从源码拷贝进产物的数据集（`rewrite` 也先拷贝一次） */
+function datasetCopyUrls() {
+  return PUBLIC_DATASETS.filter(entry => entry.emit === 'copy' || entry.emit === 'rewrite').map(entry => entry.url);
+}
+/** 构建期直接生成的数据集 */
+function datasetGeneratedUrls() {
+  return PUBLIC_DATASETS.filter(entry => entry.emit === 'generated').map(entry => entry.url);
+}
 
 /**
  * `updatedAt` 的**时间形状**。本站两种形状并存，Manifest 必须显式区分（题面 §G 点名）：
@@ -401,6 +501,209 @@ function assertManifestCounts(manifest, actual) {
     }
   }
   return problems;
+}
+
+/* ------------------------------------------------------------------ */
+/* 方向 2：产物里的每个 JSON 都必须被某个注册表认领（§10.7）              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Feed 家族的产物路径判据（**结构性规则**，唯一出处在这里）。
+ *
+ * 为什么这一族可以整体排除在"数据集"之外，而不是逐个列文件名：
+ *   · 它们的**注册表**是 `lib/feeds.js`（`buildFeeds()` 的 `feeds[].spec.path` / `spec.jsonPath`），
+ *     构建期由那一份注册表落盘 —— 构建自检还会把实际产出的文件与注册表**双向对账**
+ *     （`assertArtifactCoverage()` 的 `feedFiles` 分支 + `feeds.checkFeedsPage()`）；
+ *   · 它们与 `/feeds/` 汇总页的双向覆盖由 `check-feeds-reproducible.js` 独立再查一遍
+ *     （产物里每个 Feed 文件都必须出现在页面上、页面上每个地址都必须有文件）。
+ * 因此"Feed 文件没被当作数据集登记"不是豁免了一个没人管的角落，而是**换了另一个注册表与另一条门禁**。
+ * 路径外的 JSON（例如 `dist/xyz.json`）仍然会被下面的扫描当场判红。
+ */
+const FEED_ARTIFACT_RE = /^feed(?:\.(?:xml|json)|\/)/;
+
+/**
+ * **不是数据集的公开产物**（`source-health.json`）：允许留在产物里不进 Manifest，
+ * 但必须逐条写明理由、归属与它到底在哪份文档里被承认过。
+ *
+ * 这里刻意不做成"通配白名单"：每一项都要有 `path` + `reason`（少一个 `assertDatasetRegistryShape()` 就报红），
+ * 且声明过的文件必须在产物里真实存在（过期豁免同样报红）。
+ */
+const INTERNAL_ARTIFACTS = [
+  {
+    path: 'source-health.json',
+    reason: '站点**运维观测**产物：`/status/` 页面的机器可读形态（每轮 collect 写入的跨运行心跳）'
+      + '——它是"运行状态"，不是可供引用的公开数据集（不属六类，字段随运维需要增减），'
+      + '因此不进 Dataset Manifest，也不出现在 `/docs/data/` 的数据集索引里。',
+    owner: 'scripts/lib/health.js（scripts/data/source-health.json）+ build-local.js 的 /status/ 渲染',
+    documentedAt: '/status/ 页面（直接链着它）· README「数据源状态」一节'
+  }
+];
+
+/**
+ * 把一个产物内路径归类。**返回值只有这四种**，没有"其他"这种含糊状态：
+ *   · `manifest`  —— Manifest 自身（`data/index.json`）；
+ *   · `feed`      —— Feed 家族（见 `FEED_ARTIFACT_RE` 的说明）；
+ *   · `internal`  —— `INTERNAL_ARTIFACTS` 里逐条写明理由的运维/内部产物；
+ *   · `unclassified` —— **没有被任何注册表认领**，调用方必须判红（要么登记进
+ *     `PUBLIC_DATASETS`，要么写进 `INTERNAL_ARTIFACTS` 并说明理由）。
+ */
+function classifyJsonArtifact(rel) {
+  const text = String(rel === null || rel === undefined ? '' : rel).replace(/\\/g, '/');
+  if (text === MANIFEST_URL) return { kind: 'manifest', reason: 'Dataset Manifest 自身' };
+  if (FEED_ARTIFACT_RE.test(text)) {
+    return { kind: 'feed', reason: 'Feed 产物（注册表：lib/feeds.js；覆盖门禁：check-feeds-reproducible.js）' };
+  }
+  const internal = INTERNAL_ARTIFACTS.find(row => row.path === text);
+  if (internal) return { kind: 'internal', reason: internal.reason, entry: internal };
+  return { kind: 'unclassified', reason: '没有任何注册表认领它' };
+}
+
+/**
+ * 注册表自身的形状校验（唯一注册表只有在它自己也被校验时才可信）。
+ *
+ * 抓的都是"登记写错了"这一类：重复 id / 重复 url、未知类别、非法 `emit`、
+ * 缺 `source` / `purpose`、把 Manifest 自身登记成数据集、豁免项缺理由或与数据集重名。
+ */
+function assertDatasetRegistryShape() {
+  const problems = [];
+  const ids = new Set();
+  const urls = new Set();
+  for (const entry of PUBLIC_DATASETS) {
+    const where = `PUBLIC_DATASETS ${entry.id || '(无 id)'}`;
+    if (!entry.id) problems.push('有一条注册项没有 id');
+    else if (ids.has(entry.id)) problems.push(`${where}: id 重复`);
+    ids.add(entry.id);
+    if (!entry.url) problems.push(`${where}: 缺少 url（发布地址必须写出来）`);
+    else if (urls.has(entry.url)) problems.push(`${where}: url 重复（${entry.url}）`);
+    else if (entry.url === MANIFEST_URL) problems.push(`${where}: url 不能是 Manifest 自身（${MANIFEST_URL}）`);
+    else if (entry.url.startsWith('/') || entry.url.includes('..')) {
+      problems.push(`${where}: url 必须是产物内的相对路径（实得 ${entry.url}）`);
+    }
+    urls.add(entry.url);
+    if (!DATASET_CATEGORY_KEYS.includes(entry.category)) {
+      problems.push(`${where}: category「${entry.category}」不是六个已知类别之一`);
+    }
+    if (!DATASET_EMIT_KINDS.includes(entry.emit)) {
+      problems.push(`${where}: emit「${entry.emit}」不是 ${DATASET_EMIT_KINDS.join(' / ')} 之一`);
+    }
+    if (!entry.source) problems.push(`${where}: 缺少 source（自测要从仓库内的真值文件读值）`);
+    if (!entry.purpose) problems.push(`${where}: 缺少 purpose（Manifest 会写出这一份是干什么用的）`);
+  }
+  for (const row of INTERNAL_ARTIFACTS) {
+    const where = `INTERNAL_ARTIFACTS ${row.path || '(无 path)'}`;
+    if (!row.path) problems.push('有一条豁免项没有 path');
+    if (!row.reason) problems.push(`${where}: 豁免必须写明理由（否则就是静默豁免）`);
+    if (row.path === MANIFEST_URL) problems.push(`${where}: Manifest 自身不需要豁免`);
+    if (urls.has(row.path)) problems.push(`${where}: 既登记为公开数据集又声明豁免，二者只能选一个`);
+  }
+  // 六个类别都必须有真实数据集（与 Manifest 那条断言同口径，早一步在这里报出来）
+  for (const key of DATASET_CATEGORY_KEYS) {
+    if (!PUBLIC_DATASETS.some(entry => entry.category === key)) {
+      problems.push(`PUBLIC_DATASETS 里没有任何「${DATASET_CATEGORIES.find(item => item.key === key).label}」数据集`);
+    }
+  }
+  return problems;
+}
+
+/**
+ * 用**唯一注册表** + 运行期取值构造 Manifest。
+ *
+ * 构建期不再手写数据集数组：这里按注册表逐条取值，缺值即报（`missingValues`）——
+ * "注册表说有这份数据、构建却没交出它的版本/时间/条数"是构建期错误，不是可以跳过的项。
+ *
+ * @param {object|Map} values `{datasetId: {schemaVersion, updatedAt, count, countNote?}}`
+ * @returns {{manifest: object, missingValues: string[]}}
+ */
+function buildManifestFromRegistry(values = {}) {
+  const table = values instanceof Map ? values : new Map(Object.entries(values || {}));
+  const missingValues = [];
+  const datasets = [];
+  for (const entry of PUBLIC_DATASETS) {
+    const value = table.get(entry.id);
+    if (!value) { missingValues.push(entry.id); continue; }
+    datasets.push({ ...entry, ...value });
+  }
+  return { manifest: buildDatasetManifest(datasets), missingValues };
+}
+
+/**
+ * §10.7 的**方向 2**：从产物现场扫描 JSON，逐个要求"被某个注册表认领"。
+ *
+ * 判据（全部可复现，不依赖任何硬编码的 9 文件清单）：
+ *   ① 产物里每个 `*.json` 都必须是 Manifest 自身 / Feed 家族 / `INTERNAL_ARTIFACTS` 豁免项，
+ *      或**已登记的公开数据集**；四类都不是 → 红（附带"该登记到哪里"的下一步提示）；
+ *   ② Manifest 里出现的每一份都必须在 `PUBLIC_DATASETS` 里（Manifest 不许绕过注册表）；
+ *   ③ `PUBLIC_DATASETS` 里的每一份都必须在 Manifest 里（注册表与 Manifest 不许分家）；
+ *   ④ 豁免项必须在产物里真实存在（过期豁免同样红）；
+ *   ⑤ 调用方若交出 Feed 注册表的产出清单（`ctx.feedFiles`，构建期从 `feedBundle` 来），
+ *      则与结构性 Feed 判据**双向**对账：feed 家族里的文件必须在注册表产出清单里，反之亦然。
+ *
+ * @param {string[]} files 产物内全部文件的相对路径（POSIX 或反斜杠都可）
+ * @param {object} manifest 现场回读的 Manifest
+ * @param {{feedFiles?: string[]}} [ctx]
+ * @returns {{problems: string[], counts: object}}
+ */
+function assertArtifactCoverage(files, manifest, ctx = {}) {
+  const problems = [];
+  const counts = { manifest: 0, feeds: 0, internal: 0, datasets: 0, unclassified: 0, json: 0 };
+  const manifestUrls = new Set(((manifest && manifest.datasets) || []).map(dataset => dataset.url));
+  const registryUrls = new Set(PUBLIC_DATASETS.map(entry => entry.url));
+  const present = new Set();
+  for (const raw of files || []) present.add(String(raw).replace(/\\/g, '/'));
+  // fail-closed：扫描输入为空时**不许**判绿 —— 否则"拿不到产物列表"会退化成"没有未认领项"。
+  if (!present.size) {
+    return {
+      problems: ['产物扫描没有拿到任何文件（输入为空时不许判绿：先确认产物目录真的存在、真的被读到了）'],
+      counts
+    };
+  }
+  for (const rel of present) {
+    if (!/\.json$/i.test(rel)) continue;
+    counts.json++;
+    const cls = classifyJsonArtifact(rel);
+    if (cls.kind === 'manifest') { counts.manifest++; continue; }
+    if (cls.kind === 'feed') { counts.feeds++; continue; }
+    if (cls.kind === 'internal') { counts.internal++; continue; }
+    if (manifestUrls.has(rel)) { counts.datasets++; continue; }
+    counts.unclassified++;
+    if (registryUrls.has(rel)) {
+      problems.push(`已登记的公开数据集 ${rel} 没有出现在 Manifest 里（注册表与 Manifest 分家了）`);
+    } else {
+      problems.push(`产物里的 JSON 没有被任何注册表认领：${rel}` +
+        ` —— 公开数据集请登记进 lib/data-docs.js 的 PUBLIC_DATASETS（Manifest 与 /docs/data/ 会一起更新）；` +
+        `内部/运维产物请登记进 INTERNAL_ARTIFACTS 并写明理由`);
+    }
+  }
+  for (const url of manifestUrls) {
+    if (!registryUrls.has(url)) problems.push(`Manifest 里登记了 ${url}，但它不在 PUBLIC_DATASETS 注册表里（Manifest 必须由注册表派生）`);
+  }
+  for (const entry of PUBLIC_DATASETS) {
+    if (!manifestUrls.has(entry.url)) problems.push(`PUBLIC_DATASETS 登记了 ${entry.url}，但 Manifest 里没有它`);
+  }
+  for (const row of INTERNAL_ARTIFACTS) {
+    if (!present.has(row.path)) problems.push(`INTERNAL_ARTIFACTS 声明的 ${row.path} 在产物里不存在（过期豁免要删掉）`);
+  }
+  if (Array.isArray(ctx.feedFiles) && ctx.feedFiles.length) {
+    const declared = new Set(ctx.feedFiles.map(path_ => String(path_).replace(/\\/g, '/')));
+    for (const rel of present) {
+      if (classifyJsonArtifact(rel).kind !== 'feed') continue;
+      if (!declared.has(rel)) problems.push(`feed 家族里的 ${rel} 不在 Feed 注册表的产出清单里（Feed 由 lib/feeds.js 管理）`);
+    }
+    for (const rel of declared) {
+      if (!present.has(rel)) problems.push(`Feed 注册表声明产出的 ${rel} 不在产物里`);
+    }
+  }
+  return { problems, counts };
+}
+
+/** 覆盖统计 → 一行可核对的摘要（构建期与自测共用同一句话术） */
+function artifactCoverageSummary(counts = {}) {
+  const unclaimed = counts.unclassified || 0;
+  return `产物 JSON ${counts.json || 0} 个：公开数据集 ${counts.datasets || 0}` +
+    ` · Feed ${counts.feeds || 0}（lib/feeds.js）` +
+    ` · Manifest ${counts.manifest || 0}` +
+    ` · 声明豁免 ${counts.internal || 0}（${INTERNAL_ARTIFACTS.map(row => row.path).join('、') || '无'}）` +
+    ` · 未认领 ${unclaimed}${unclaimed ? '（必须登记进 PUBLIC_DATASETS 或写进 INTERNAL_ARTIFACTS）' : ''}`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -695,6 +998,7 @@ function assertDeclared() {
 
 module.exports = {
   DATA_DOCS_ROUTE,
+  MANIFEST_URL,
   DATA_DOCS_HEADING,
   DATA_DOCS_DESCRIPTION,
   DATA_DOCS_NOTES,
@@ -703,6 +1007,18 @@ module.exports = {
   CITATION_RULES,
   DATASET_CATEGORIES,
   DATASET_CATEGORY_KEYS,
+  PUBLIC_DATASETS,
+  DATASET_EMIT_KINDS,
+  INTERNAL_ARTIFACTS,
+  publicDatasets,
+  datasetUrls,
+  datasetCopyUrls,
+  datasetGeneratedUrls,
+  classifyJsonArtifact,
+  assertDatasetRegistryShape,
+  buildManifestFromRegistry,
+  assertArtifactCoverage,
+  artifactCoverageSummary,
   TIME_SHAPE_LABEL,
   MANIFEST_SCHEMA_VERSION,
   FORBIDDEN_CLAIM_WORDS,
