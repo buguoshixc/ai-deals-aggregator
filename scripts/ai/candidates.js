@@ -32,6 +32,13 @@ const STATUS = {
 };
 
 /**
+ * **人工决定**的取值（`review.decision`）。它与上面的 `status` 是两套词，刻意分开写：
+ * 决定是 `accept` / `reject`，状态是 `accepted` / `rejected` —— 把两套词混用正是那种
+ * 「看起来对、跑起来恒假」的写法（`'accept' !== 'accepted'`），所以这里给它一个具名常量。
+ */
+const DECISION = { accept: 'accept', reject: 'reject' };
+
+/**
  * 否定线索：`false` 断言必须能在引文里找到这类词，否则降级给人看。
  *
  * 刻意**不收**「免费」：免费额度/免费试用经常仍然要求绑卡，把「免费」当成
@@ -270,6 +277,103 @@ function partition(list) {
 }
 
 /* ------------------------------------------------------------------ */
+/* 「人工已接受」的唯一判据 + 候选信封的读写闸门                        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 生成时记下的三道机器门（schema / enum / evidence）。落地前再核一遍，缺一不可。
+ *
+ * `audienceAudit` **刻意不算门**：它是审核提示（`n/a` 表示该任务不适用），不是 schema/domain 判据；
+ * 把它当门会让一批本来合法的候选永远落不了地。
+ */
+const DETERMINISTIC_GATES = ['schema', 'enum', 'evidence'];
+
+/** 返回没过门的项（人话列表）；空数组 = 三关全过 */
+function deterministicFailures(item) {
+  const det = item && item.deterministic;
+  if (!det || typeof det !== 'object' || Array.isArray(det)) return ['deterministic=missing'];
+  return DETERMINISTIC_GATES
+    .filter(gate => det[gate] !== 'pass')
+    .map(gate => `${gate}=${det[gate] === undefined ? 'missing' : det[gate]}`);
+}
+
+/**
+ * 「这条候选可以被落地吗」——**红线就在这里，而且只在这里**（P1-1 / M17 的根因是它散落在
+ * `ai-apply.js` 的一个行内 filter 里、没有任何门禁守着）。三个条件同时成立才算数：
+ *
+ *   ① `review.decision === 'accept'` —— 有人显式点过（accept 只能由 `ai-accept.js` 写下）；
+ *   ② `status === 'accepted'`        —— 状态与决定一致（手改的半截状态不算）；
+ *   ③ 机器门全过                     —— schema / enum / evidence 三关（既有 invariants）。
+ *
+ * 谁要落地候选，必须调这个函数（`ai-apply.js` 的写入路由就是这么做的，`ai-selftest` 会红）。
+ */
+function isAcceptedCandidate(item) {
+  if (!item || typeof item !== 'object') return false;
+  if (!item.review || item.review.decision !== DECISION.accept) return false;
+  if (item.status !== STATUS.accepted) return false;
+  return deterministicFailures(item).length === 0;
+}
+
+/** 候选信封里所有「已接受且过门」的候选（顺序保持文件里的顺序） */
+function acceptedOf(payload) {
+  const list = payload && Array.isArray(payload.candidates) ? payload.candidates : [];
+  return list.filter(isAcceptedCandidate);
+}
+
+/**
+ * 人点了 accept、但机器门没过（状态不一致 / 三道门缺一关）。
+ * 落地工具必须**点名拒绝**这些 —— 静默丢掉等于让人以为"已经落地了"。
+ */
+function acceptedButUnverified(payload) {
+  const list = payload && Array.isArray(payload.candidates) ? payload.candidates : [];
+  return list.filter(item =>
+    item && typeof item === 'object' && item.review && item.review.decision === DECISION.accept &&
+    !isAcceptedCandidate(item));
+}
+
+/**
+ * 这是不是一个**候选信封**（而不是生产真值文件被误当成候选、或半截 JSON）。
+ * 判据刻意窄：顶层 `task` 字符串 + `candidates` 数组 + 每条候选有字符串 `id` 与 `review` 字段。
+ */
+function isCandidateEnvelope(doc) {
+  if (!doc || typeof doc !== 'object' || Array.isArray(doc)) return false;
+  if (typeof doc.task !== 'string' || !doc.task) return false;
+  if (!Array.isArray(doc.candidates)) return false;
+  return doc.candidates.every(item =>
+    item && typeof item === 'object' && !Array.isArray(item) &&
+    typeof item.id === 'string' && item.id &&
+    item.review !== undefined);
+}
+
+/** 生成/审核工具的 `--out` / `--file` 落点：相对仓库根解析后过白名单（见 cache.assertAiOutputPath） */
+function resolveOutputPath(value, { label = 'AI 生成物' } = {}) {
+  return cache.assertAiOutputPath(path.resolve(cache.ROOT, value), { label });
+}
+
+/**
+ * 读候选文件（**严格版**：落点白名单 + 信封形状）。`ai-accept` / `ai-apply` 用它，
+ * 于是 `--file=deals.json` 这类"把生产真值当候选读"的调用会被明确拒掉。
+ * 旧的 `readCandidates` 保留原语义，供只读的审阅/诊断工具继续用。
+ */
+function readCandidatesStrict(file) {
+  const abs = cache.assertAiOutputPath(path.resolve(file), { label: '候选文件' });
+  if (!fs.existsSync(abs)) throw new Error(`候选文件不存在：${path.relative(cache.ROOT, abs) || abs}`);
+  let parsed;
+  try {
+    parsed = JSON.parse(fs.readFileSync(abs, 'utf8'));
+  } catch (error) {
+    throw new Error(`候选文件不是合法 JSON：${path.relative(cache.ROOT, abs)}（${error.message}）`);
+  }
+  if (!isCandidateEnvelope(parsed)) {
+    throw new Error(
+      `拒绝：${path.relative(cache.ROOT, abs) || abs} 不是候选信封（需要顶层 task + candidates[]，` +
+      '每条候选带 id 与 review；生产真值文件不许当候选读）'
+    );
+  }
+  return parsed;
+}
+
+/* ------------------------------------------------------------------ */
 /* 落盘                                                                */
 /* ------------------------------------------------------------------ */
 
@@ -278,10 +382,30 @@ function candidatesPath(task, stamp) {
   return path.join(cache.candidatesDir(), name);
 }
 
-function writeCandidates(file, payload) {
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
-  return file;
+/**
+ * 写候选文件（**唯一实现**）。三件事都在这里，绕不过去：
+ *   ① 落点白名单 + 生产真值硬拒绝（`cache.assertAiOutputPath`）；
+ *   ② 形状：必须是候选信封（不然写出去的是一份没人认得出的东西）；
+ *   ③ `cause==='generation'` 时，**不许产出已经带人工决定的候选** ——
+ *      「generation 不得隐式 accept」是结构性的：生成侧连写都写不出去，而不是靠约定。
+ */
+function writeCandidates(file, payload, { cause = 'review' } = {}) {
+  const abs = cache.assertAiOutputPath(path.resolve(file), { label: '候选文件' });
+  if (!isCandidateEnvelope(payload)) {
+    throw new Error('拒绝写入：这不是候选信封（需要顶层 task + candidates[]，每条候选带 id 与 review）');
+  }
+  if (cause === 'generation') {
+    const decided = payload.candidates.filter(item => item.review && item.review.decision);
+    if (decided.length) {
+      throw new Error(
+        `生成路径不许产出「已经下过人工决定」的候选（${decided.length} 条带 review.decision）——` +
+        'accept / reject 只能由 scripts/tools/ai-accept.js 显式记录'
+      );
+    }
+  }
+  fs.mkdirSync(path.dirname(abs), { recursive: true });
+  fs.writeFileSync(abs, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  return abs;
 }
 
 function readCandidates(file) {
@@ -302,22 +426,83 @@ function latestCandidatesFile(task = null) {
   return files[0] || null;
 }
 
+/* ------------------------------------------------------------------ */
+/* 等价 Gate：候选信封不许出现在生产真值里                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 生产真值清单（**只读**，供门禁扫描用）。判据与 `cache.PROTECTED_*` 同源，另外点名三份 history
+ * 与几个人工来源层文件 —— 它们正是 `--out` 能被误写进去的那几个，也是"AI 输出绕过
+ * validator/review/accept 变成读者看到的事实"唯一的入口。
+ */
+function productionTruthFiles() {
+  return [
+    ...cache.PROTECTED_FILES.map(rel => path.join(cache.ROOT, rel)),
+    ...['deal-history.json', 'plan-history.json', 'api-plan-history.json', 'curated_cn.json',
+      'curated_global.json', 'curated_plans.json', 'curated_api_plans.json',
+      'audience-overrides.json', 'translations_zh.json', 'ai-applied-log.json']
+      .map(name => path.join(cache.ROOT, 'scripts', 'data', name))
+  ];
+}
+
+/**
+ * 生产真值里有没有**候选信封**（= 有人把 AI 输出手工复制进生产数据）。
+ *
+ * 为什么要有它，即使 `validate --strict` 已经会拦：validator 拦的是"数据不合契约"，
+ * 它给出的理由是一串 schema 报错；这条门说的是**这件事本身**（AI 输出绕过 accept 成了生产真值）。
+ * 两者是不同层面的判据，出问题时前者告诉你数据坏了，后者告诉你红线被踩了。
+ *
+ * @returns {string[]} 命中的文件（相对仓库根的路径）；空数组 = 干净
+ */
+function productionTruthEnvelopes(files = productionTruthFiles()) {
+  const hits = [];
+  for (const file of files) {
+    if (!fs.existsSync(file)) continue;
+    let text;
+    try {
+      text = fs.readFileSync(file, 'utf8');
+    } catch (error) {
+      continue;
+    }
+    if (!text.trim().startsWith('{')) continue;
+    let doc;
+    try {
+      doc = JSON.parse(text);
+    } catch (error) {
+      continue;
+    }
+    if (isCandidateEnvelope(doc)) hits.push(path.relative(cache.ROOT, file) || file);
+  }
+  return hits;
+}
+
 /** 不允许自动落地的关系：重复候选里只有 same_offer 值得人去看，而且永远不能自动合并 */
 const NEVER_AUTO_MERGE = ['same_offer', 'same_product_different_offer', 'same_vendor', 'uncertain', 'unrelated'];
 
 module.exports = {
   STATUS,
+  DECISION,
   NEVER_AUTO_MERGE,
   NEGATION_CUES,
+  DETERMINISTIC_GATES,
   shortId,
   leafAssertions,
   assertsSomething,
   checkDeterministic,
+  deterministicFailures,
+  isAcceptedCandidate,
+  acceptedOf,
+  acceptedButUnverified,
+  isCandidateEnvelope,
+  resolveOutputPath,
+  readCandidatesStrict,
   makeCandidate,
   buildFromResult,
   partition,
   candidatesPath,
   writeCandidates,
   readCandidates,
-  latestCandidatesFile
+  latestCandidatesFile,
+  productionTruthFiles,
+  productionTruthEnvelopes
 };

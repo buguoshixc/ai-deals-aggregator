@@ -17,6 +17,14 @@
  *   --fresh          先清掉该任务的缓存目录（不清 usage 账本）
  *   --budget=1.0     运行级成本上限（美元）；用尽后剩余单元标 skipped
  *   --json           额外打印一份机器可读摘要
+ *   --out=<路径>     候选文件的落点（默认 `.ai-cache/candidates/<task>-<时间戳>.json`）。
+ *                    **只允许 `.ai-cache/**` 或 `research/**`**：生产真值（deals.json /
+ *                    plans.json / api-plans.json / models.json / model-registry-links.json /
+ *                    scripts/data/** …）是硬拒绝清单，`../` 穿越同样被拒（见 lib 里的 assertAiOutputPath）。
+ *
+ * **本任务只产候选，不写任何生产真值**：生成的候选一律 `review.decision === null`，
+ * 落盘时还会被结构性地再核一遍（`writeCandidates(..., { cause: 'generation' })`）。
+ * 生产数据只有一条路：人跑 `ai-accept` 记录决定 → 再跑 `ai-apply` 落地。
  *
  * **退出码语义**：AI 层面的任何失败（无 key、超时、非法 JSON、预算用尽）都是 **0**；
  * 只有「我们自己写错了」（未知任务、模块缺失、坏参数）才是 1。
@@ -86,7 +94,21 @@ async function main() {
   const dryRun = flag('dry-run');
   const useCache = !flag('no-cache');
   const budget = option('budget') != null ? Number(option('budget')) : Number(process.env.AI_MAX_COST_USD || 1.0);
-  const outFile = option('out') || candidates.candidatesPath(taskName, stampCN());
+
+  // `--out` 是**生成物**的落点：先过白名单再干别的活。顺序是刻意的 ——
+  // 非法落点要在创建任何目录、读数据、调模型（会花钱）之前就被拒掉，
+  // 而且失败必须是 exit≠0（静默改道等于没拒绝）。
+  let outFile;
+  try {
+    outFile = option('out')
+      ? candidates.resolveOutputPath(option('out'), { label: '候选文件' })
+      : candidates.candidatesPath(taskName, stampCN());
+  } catch (error) {
+    console.error(`❌ 拒绝写出候选文件：${error.message}`);
+    console.error('   AI 生成物只允许落在 .ai-cache/**（默认）或 research/**；deals.json 等生产真值一律拒绝。');
+    process.exit(1);
+  }
+
   const conf = provider.resolveConfig({ provider: option('provider'), model: option('model') });
 
   const storeDoc = store.loadStore();
@@ -242,7 +264,14 @@ async function main() {
     skipped,
     candidates: collected
   };
-  candidates.writeCandidates(outFile, payload);
+  // cause:'generation' ⇒ 这一步还会拒绝「已经带人工决定」的候选（见 candidates.writeCandidates）：
+  // 生成侧连写都写不出去，implicit accept 在结构上不可能。
+  try {
+    candidates.writeCandidates(outFile, payload, { cause: 'generation' });
+  } catch (error) {
+    console.error(`❌ 拒绝写出候选文件：${error.message}`);
+    return 1;
+  }
 
   console.log('');
   console.log(`候选文件：${path.relative(cache.ROOT, outFile)}`);

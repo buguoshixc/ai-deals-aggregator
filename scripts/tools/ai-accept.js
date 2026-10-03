@@ -15,6 +15,12 @@
  * 需要 `--allow-unsupported` 的情形：候选被标了 `needs_human`（例如判了 `false` 但引文里
  * 没有否定线索）。那意味着**看的人要自己给出依据** —— 所以这个开关刻意长、刻意难打，
  * 而且会把 note 记进账里。
+ *
+ * 两道入口纪律（P1-1 / P2-14 的守卫）：
+ *   · `--file` 只接受**候选文件**：落点必须在 `.ai-cache/**` 或 `research/**`（白名单），
+ *     内容必须是候选信封 —— `--file=deals.json` 这类调用会被明确拒掉（exit 1）；
+ *   · 记录 accept 之前，用与生成时**同一套**规则重算机器门（schema / enum / evidence）：
+ *     人同意的是"这条候选"，不是一个形状已经被改坏的东西。
  */
 
 'use strict';
@@ -36,7 +42,6 @@ function flag(name) {
 
 function main() {
   const id = option('id');
-  const file = path.resolve(ROOT, option('file') || candidates.latestCandidatesFile(option('task')) || '');
   const note = option('note');
   const reject = flag('reject');
   const allowUnsupported = flag('allow-unsupported');
@@ -46,7 +51,25 @@ function main() {
     return 1;
   }
 
-  const payload = candidates.readCandidates(file);
+  let file;
+  try {
+    file = option('file')
+      ? candidates.resolveOutputPath(option('file'), { label: '候选文件' })
+      : candidates.latestCandidatesFile(option('task'));
+    if (!file) throw new Error('没有找到候选文件：先跑一次 node scripts/ai/maintenance.js --task=…');
+  } catch (error) {
+    console.error(`❌ ${error.message}`);
+    return 1;
+  }
+
+  let payload;
+  try {
+    payload = candidates.readCandidatesStrict(file);
+  } catch (error) {
+    console.error(`❌ ${error.message}`);
+    return 1;
+  }
+
   const hits = payload.candidates.filter(item => item.id === id || item.id.startsWith(id));
   if (!hits.length) {
     console.error(`候选文件 ${path.relative(ROOT, file)} 里没有 id 以 ${id} 开头的候选`);
@@ -64,6 +87,25 @@ function main() {
     candidates.writeCandidates(file, payload);
     console.log(`已记录：拒绝 ${item.id}（${note || '未写说明'}）`);
     return 0;
+  }
+
+  // 机器门（schema / enum / evidence）：生成时记下的结论 + 用同一套规则重算一遍。
+  // 重算的意义：候选文件是**可以被人手改**的（它就是给人看的），所以"生成时过了"这句话
+  // 必须在记 accept 的这一刻仍然成立。任何一处改动都会在这里被抓住。
+  const recheck = candidates.checkDeterministic(item.candidate, {
+    task: item.task,
+    evidence: item.evidence,
+    confidence: item.confidence
+  });
+  const gateProblems = [
+    ...candidates.deterministicFailures(item).map(text => `生成时记录未过门：${text}`),
+    ...recheck.errors
+  ];
+  if (gateProblems.length) {
+    console.error(`拒绝接受 ${item.id}：机器门未通过，不能进入生产。`);
+    gateProblems.forEach(text => console.error(`  ✗ ${text}`));
+    console.error('  （要放弃这条就用 --reject 记下拒绝；要修复就改候选或重跑生成。）');
+    return 1;
   }
 
   if (item.status === 'needs_human' && !allowUnsupported) {
