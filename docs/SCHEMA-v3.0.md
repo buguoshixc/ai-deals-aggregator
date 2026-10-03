@@ -79,8 +79,8 @@
 ```jsonc
 {
   "links": [
-    { "registrySlug": "glm-5.3", "basis": "api",     "apiPlanId": "646f01c662e6", "modelKey": "glm-5.3", "variant": "standard", "evidence": "官方定价页逐字" },
-    { "registrySlug": "glm-5.3", "basis": "coding",  "planId": "154d2607b8ff", "modelName": "GLM-5.3", "evidence": "套餐 supportedModels 原文" }
+    { "registrySlug": "glm-5.3", "basis": "official-pricing-page", "apiPlanId": "646f01c662e6", "modelKey": "glm-5.3", "variant": "standard", "evidence": [ { "field": "models.glm-5.3", "quote": "官方定价页逐字…" } ] },
+    { "registrySlug": "glm-5.3", "basis": "official-plan-page", "planId": "154d2607b8ff", "modelName": "GLM-5.3", "evidence": [ { "field": "supportedModels.GLM-5.3", "quote": "套餐 supportedModels 原文…" } ] }
   ],
   "_rules": { … }   // 人工维护说明（不参与判据）
 }
@@ -88,16 +88,25 @@
 
 | 字段 | 含义 |
 |---|---|
-| `basis` | `api`（指向 `api-plans.json` 的计价条目）或 `coding`（指向 `plans.json` 的 `supportedModels`） |
+| `basis` | 取值只有四个（`scripts/lib/model-registry.js` 的 `LINK_BASIS`）：`official-pricing-page` / `official-plan-page` / `official-model-id` / `explicit-mapping`。**不是** `api` / `coding` —— 「指向 API 计费还是套餐」由**字段形状**决定（有 `apiPlanId` 就是 API 侧，有 `planId` 就是 Coding 侧）。`explicit-mapping` 要求 `evidence` 为空数组且必须写 `note`（说明为什么没有官方引文）。 |
+| `evidence` | 非 `explicit-mapping` 时**必填**（逐字引文数组，形状见 §10 证据字段域）；`explicit-mapping` 时必须为空数组 |
 | `apiPlanId` + `modelKey` (+ `variant`) | 必须**真实存在**于 `api-plans.json`（红：牙 #3） |
 | `planId` + `modelName` | 必须真实存在于 `plans.json` 的该套餐 `supportedModels` 里 |
 | `registrySlug` | 必须存在于 `models.json` |
 
 **判据**：`scripts/lib/model-registry.js` 的 `validateLinks()`。禁止任何相似度匹配。
 
-「映射不上」在 **API 侧**是**允许**的结果：进覆盖报告（`npm run report:coverage`）的缺口 3，不写生产映射。
-**套餐侧（Coding）不是**：`plans.json` 的 `supportedModels[].name` 是自由文本，它只有两种结局 ——
-映射进关系层，或进 `model-registry-gaps.json` 声明「不对应单一模型身份」。
+**两侧都必须「有结局」**（2026-10-03 按 §10.6 收紧；本节旧版曾写「API 侧映射不上是允许的」，**已作废**）：
+
+- **API 侧**：任何一条真实计价条目（`apiPlanId + modelKey + variant`）**若没有被任何映射认领，是硬失败** ——
+  `npm run check:model-registry-links` 与 `models-selftest` 都会红（删掉一条必需的 registry→API 映射即触发；
+  对应审计 M09 的「抓不到」场景已在收口中修掉）。`variant: null` 的通配映射只为它**真实展开到的**条目负责。
+- **套餐侧（Coding）**：`plans.json` 的 `supportedModels[].name` 是自由文本，只有两种结局 ——
+  映射进关系层，或进 `model-registry-gaps.json` 声明「不对应单一模型身份」。Coding 侧**不允许静默留空**。
+
+> 覆盖报告（`npm run report:coverage`）的缺口 3 **不再是「允许的结果」**，而是「必须处理的清单」：
+> 自 2026-10-03 起按**展开后的计价条目**记账（当前 13 条记录 / **67** 个计价条目），
+> 通配映射不再把整组算成已覆盖；未认领条目会逐条点名。
 
 ### 2.1 套餐侧处置登记（`scripts/data/model-registry-gaps.json`）
 
@@ -270,3 +279,30 @@
 | 新增数据集 | `models.json` / `model-registry-links.json` / `data/index.json` 都是**新增**端点，不改既有端点语义 |
 | Schema 稳定性口径 | 见 `/docs/data/` 页：Additive 变更 → minor；字段语义/类型变更 → 需要提升 `schemaVersion` 并写明迁移方式；**不承诺永久兼容** |
 | 数据许可证 | **未定**（仓库无 LICENSE 文件）—— 需项目所有者决定，本仓不擅自决定 |
+
+---
+
+## 10. 质量收口后的硬约束（2026-10-04 · T21 汇总，**当前有效**）
+
+本节是 2026-10-03/04 那轮质量收口（quality-closure-post-audit）之后**新增/收紧**的契约汇总，
+每一项都指向唯一判据实现；下游写代码时以本节为准。判据一律「只有一处实现」，文档不复制实现。
+
+| # | 硬约束 | 唯一判据 / 位置 |
+|---|---|---|
+| ① | **`officialDomains` 必填**：`providers.json` 里每个 provider 必须登记官方域白名单 | `scripts/lib/providers*.js` / `scripts/validate.js`（缺即红） |
+| ② | **URL 必须落在官方域登记内**：`officialUrl` / `sourceUrl` / `evidence[].sourceUrl` 三者都要过官方域校验 | 同上；§7.2 的官方域守卫 |
+| ③ | **deals 侧声称官方依据时**，其来源域必须在 `scripts/data/official_urls.json` 的 `_officialDomains` 登记 | `scripts/lib/official.js` + 采集/校验链 |
+| ④ | **措辞判据是三轴**：`basis` + `derived` + `sourceType` 三者共同决定页面措辞（第三方目录站 / 人工推断 / 结构化派生不得写成「官方页面明写」） | `scripts/lib/provenance.js` + `scripts/lib/audience-overrides.js`（渲染层引用同一判据） |
+| ⑤ | **四个 URL 角色语义固定**：`officialUrl`（厂商官方页）、`url`（本站/入口地址）、`sourceUrl`（记录自述来源）、`evidence[].sourceUrl`（引文出处）。四者**不得互相顶替**；同一记录出现两个来源 URL 时按各自角色分别呈现 | 各 schema + `/docs/data/` 与详情页渲染 |
+| ⑥ | **三态契约**：`true / false / null(未知)`；**缺字段与显式 `null` 都落成 null，绝不落成 false**；`type=credits` 时必须明确回答。套餐侧 `restrictions[].value` 的 `false` / `"unknown"` 必须与 `note` 的记述同向（`restrictionWitnessProblems()`） | `scripts/lib/api-plan-schema.js`（`FREE_TIER_CONVERSION_TRISTATE`）+ `scripts/lib/plan-schema.js` |
+| ⑦ | **`freeTier.stability` 三档必填**：`standing` / `new_user` / `promotional`（缺省即红，不许默认成 standing） | `scripts/lib/api-plan-schema.js`（`FREE_TIER_STABILITY`） |
+| ⑧ | **证据字段域是追加式扩展**：`models.<key>[.<variant>][.rates.<dim>]` / `rates.<dim>` / `mediaRates.<unit>`；**模型级绑定同时是引文排序键**，不得改动其位置与语义 | `scripts/lib/api-plans-page.js` + `api-plans-selftest` |
+| ⑨ | **Feed 可见性**：`isPublicSpec` 默认 `public`，`hidden/internal` 是例外，且 **`hidden` 必须与「不生成产物」绑定**（不许当 ignore list）；`/feeds/` 的分组与行由**注册表派生**（`feeds.pageGroups()` / `feedsForPage()`），不得再手写清单 | `scripts/lib/feeds.js` + `feeds-selftest`（双向断言） |
+
+**数字现行值（2026-10-04 重算）**：重算脚本与逐条命令见
+`research/quality-closure/RECLASSIFIED_FINDINGS.md` §0.2「当前数字重算表」。现行值：
+deals **134**（deal 80 / tool 54）· plans **23** · api-plans **13** 条 / **67** 个计价条目 / **10** provider ·
+models **44** · registry 映射 **64**（API 55 + Coding 9）· gaps 声明 **10** ·
+Feed **24 份**（×2 = **48** 文件；`/feeds/` 列出 48 个地址，含 category-* 10 个）·
+HTML 页 **173** · sitemap **170** · 构建产物 **290** 文件 · 门禁步骤 **44** / 断言 **36** ·
+历史事件 deal 0 / plan 14 / api-plan 6。

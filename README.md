@@ -23,6 +23,12 @@ v3.0（`v3.0-ai-deals-knowledge-base`）把站点从「优惠 + 套餐 + API 价
 | `/docs/data/` | 这些数据怎么用、能不能引用 | `/data/index.json` 清单 |
 | `/feed/plans/api/changes.xml|json` | API 价格变化可以订阅 | `api-plan-history.json` |
 
+> **端点命名易踩坑（审计 P3-28，2026-10-04 补文档说明；未新增任何页面/路由）**：
+> ① Manifest 的**真实地址是 `/data/index.json`**（目录 + 文件名），`/data-index.json` 在线上是 404；
+> ② `model-registry-gaps.json` **不发布**（它是套餐侧处置登记，属关系层补充，只存在于 `scripts/data/`），
+> 因此线上取 `/model-registry-gaps.json` 一定 404 —— 这是**有意不发布**，不是缺文件。
+> 已发布的数据端点以 `/data/index.json` 的 `datasets[].url` 为准（构建期 `assertArtifactCoverage` 双向对账）。
+
 四条 v3.0 才有的纪律（都有可失败断言盯着）：
 
 1. **判据只有一处**：模型身份、厂商门槛、归档状态、Manifest 数字都各只有一个实现模块，
@@ -135,7 +141,11 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 > ⚠️ 上表是 **v1.7 的 URL 地图快照**（v2.x 的行随后追加，标题未改），其中 `/vendor/<slug>/` 的 9 页、
 > `/plans/coding/` 的 9 条套餐、`/plans/api/` 的 7 条记录、`/feed/**` 的 24 份订阅与「合计」一行
 > **都已经不是当前值**。v3.0 实测：**dist 173 个 HTML 页 / 170 条可索引 / sitemap 170 条 / 290 个文件**，
-> 厂商页 **19**、套餐 **23** 条、API 计费 **13** 条 / **67** 个计价条目、订阅 **25** 份（×2 = 50 文件）。
+> 厂商页 **19**、套餐 **23** 条、API 计费 **13 条 / 67 个计价条目**、订阅 **24 份（×2 = 48 文件）**。
+> （订阅一行按 **2026-10-04 重算**：`Get-ChildItem -Recurse -File dist/feed` = 48 文件 = 24 份 Feed，含 T12 新增的
+> 5 个 `category-*`；`/feeds/` 页列出 48 个地址。旧文写「25 份（×2 = 50 文件）」是 v3.0 当时读数。）
+> 全部现行数字（deals 134 / plans 23 / api-plans 13·67 / models 44 / 映射 64 / 页 173 / sitemap 170 / dist 290 等）
+> 与逐条重算命令见 [`research/quality-closure/RECLASSIFIED_FINDINGS.md`](research/quality-closure/RECLASSIFIED_FINDINGS.md) §0.2。
 > 当前契约与完整地图见 [`docs/SCHEMA-v3.0.md`](docs/SCHEMA-v3.0.md) 与
 > [`research/v3.0-ai-deals-knowledge-base-report.md`](research/v3.0-ai-deals-knowledge-base-report.md)。
 

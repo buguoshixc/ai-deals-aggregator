@@ -175,6 +175,27 @@ maxLength / minLength / maximum / minimum`。
 - **不变量**：`collect.js / store.js / build` 一律不读 `.ai-cache/`，
   AI 产出永远不进入 `deals.json` 的推导链（否则会破坏 `check-reproducible`）。
 
+### 七之二、落点白名单与「人工 accept」三条件（2026-10-04 补，对应审计 P1-1 / P2-14）
+
+> 本节是质量收口新增的硬约束。旧版没有任何路径校验：实测 `node scripts/ai/maintenance.js --task=translate --provider=off --out=deals.json`
+> **exit 0 且直接把生产真值覆盖成候选信封**；`ai-apply.js` 的 accept 判定也只有一行行内 `filter`，
+> 把那一行改成恒真后 `ai-selftest` 与 `validate --strict` 照绿（审计 M17：20 条变异里唯一没被抓到的一条）。
+
+- **落点白名单**（唯一实现 `assertAiOutputPath`，在 `scripts/lib/cache.js`；`--out` / `--file` / `--dir` 一律先过它）：
+  - 只允许 `.ai-cache/**`（含 `AI_CACHE_DIR` 覆盖）与 `research/**`；
+  - 硬拒绝 12 份生产真值与源码/证据路径：`deals.json` / `plans.json` / `api-plans.json` / `models.json` /
+    `model-registry-links.json` / `index.html`、`scripts/data/**`、`.git/**`、`research/audit/**`；
+  - `path.resolve` + 逐级 `realpath` 双重归一 ⇒ `..`、`../deals.json`、符号链接都无效；拒绝即 **exit 1**（在干活之前）。
+- **accept 三条件**（唯一实现 `candidates.isAcceptedCandidate` / `acceptedOf` / `acceptedButUnverified`，在 `scripts/lib/candidates.js`）：
+  ① 有人工 `review.decision === 'accept'`；② 候选状态与决定一致；③ 生成时那一套机器门（schema / domain / 既有 invariants）重算通过。
+  **`ai-apply` 不再自带第二份判定**（行内 filter 已删除）；人点了 accept 但门没过会被**点名拒绝**。
+- **生成侧写不出**人工决定：`writeCandidates(file, payload, { cause: 'generation' })` 拒绝任何带 `review.decision` 的候选
+  ⇒ 「AI 隐式 accept」在结构上不可能发生。
+- **`ai-review.js` 的非严格 `readCandidates` 属设计**（只读展示给人看，不做落地判定）；落地路径一律走
+  `readCandidatesStrict`（`--file` 只接受真正的候选文件）。
+- 常驻牙：`ai-selftest` 63 项（原 37 项）—— 牙7「生成侧写不了生产」/ 牙8「必须人工 accept + 唯一判据 + 静态扫描」/
+  牙9「候选信封进了生产真值必须报警」；端到端走真实 CLI 而不是复制公式。
+
 ## 八、Prompt 版本
 
 每个任务必须有 `promptVersion`，否则 AI 输出变化无法追踪：

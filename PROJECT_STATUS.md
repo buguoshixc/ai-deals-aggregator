@@ -16,11 +16,15 @@
 | 可索引页面 | 115 页 | **170 页**（`seo-verify` 的 `indexable URLs`；dist 共 173 页 = 170 + 3 条 noindex 别名）（+ 模型索引 + 44 模型详情 + 档案索引 + 数据文档） |
 | sitemap | 112 条 | **170 条** |
 | 厂商页 | 9 | **19**（身份门：只有 A 空间有厂商名的 provider 才建路由） |
-| Feed | 24 | **25**（+ API 价格变化） |
-| 数据 | deals 134 / plans 9 / api-plans 7 条 · 37 个模型计价条目 | deals 134 / plans 23 / api-plans 13 条 · **67** 个模型计价条目 · **44** 个 registry 模型 · **63** 条显式映射 |
-| 门禁 | 31 步 | **42 步**（+6 自测 +2 可重建性 +`coverage-report` +第二遍 build）· check:ci **36/36** 断言 |
+| Feed | 24 | **25**（+ API 价格变化）→ **2026-10-04 重算：24 份 · ×2 = 48 文件**（含 T12 新增的 5 个 `category-*` = 10 文件；`/feeds/` 列出 48 个地址。v3.0 当时记 25，口径未复现，以重算值为准） |
+| 数据 | deals 134 / plans 9 / api-plans 7 条 · 37 个模型计价条目 | deals 134 / plans 23 / api-plans 13 条 · **67** 个模型计价条目 · **44** 个 registry 模型 · **64** 条显式映射（API 55 + Coding 9；**2026-10-04 重算**，v3.0 当时记 63 —— 审计 P3-23「63/64 并存」已按重算收口） |
+| 门禁 | 31 步 | **42 步**（+6 自测 +2 可重建性 +`coverage-report` +第二遍 build）· check:ci **36/36** 断言（**2026-10-04 重算**：`grep -c "\- name:" .github/actions/gate/action.yml` = **44**；步骤内部拆分口径见 `check-ci-consistency`） |
 | 真浏览器验收 | 440 项 | **651 项 0 失败**（回归比对 **657 项 0 失败**） |
 | 订阅可复现 | 2 次构建逐字节一致 | 同左，**且整个 dist 树**（290 文件）两次构建逐字节一致 |
+
+> **数字口径（2026-10-04）**：上表「v3.0（实测）」列里被本行括注的数字已按当前 HEAD 重算；
+> 完整现行数字与逐条重算命令见 `research/quality-closure/RECLASSIFIED_FINDINGS.md` §0.2「当前数字重算表」。
+> 表中未加括注的 v3.0 读数属**当时快照**，保留原值（§E 历史快照纪律）。
 
 **已知限制（如实记录）**：三份变化日志交付日的事件数分别是 deal 0 / plan 14 / api 6 ⇒
 `/archive/` **必然 0 条记录**（ended/restored 分支由 `selftest:archive` 的合成夹具驱动）；
@@ -2611,7 +2615,7 @@ Layer3Labs 9 · **人工策展（国内）18** · 智谱AI 7 · 智谱AI活动�
 - **计费通道**：`standard` 5 条 · `off_peak` 1 条（DeepSeek 的 PEAK / OFF-PEAK 是官方同一张表的两行）· `batch` 1 条（OpenAI Batch）。
 - **计费单位**：7 条全部是 `per_1M_tokens`（`per_1K_tokens` 只有夹具覆盖，真实数据里还没有样本 —— 见 §五 后续 3）。
 - **平台**：智谱（12 个模型计价条目，含 `[0,32K)` / `[32K+)` 分档与 2 个免费模型）· DeepSeek（2 条记录 = 两个时段档）· OpenAI（2 条记录 = Standard / Batch，每条含 Short / Long context 两个变体 + 一个按分钟计价的条目）· Anthropic（4 个模型，含 `cacheWrite` 与 `cacheWriteLong` 两档）· Google（4 个模型 + Free Tier + 按百万 token·小时计的缓存存储价）。
-- **免费额度 / credits**：带 `freeTier` 2 条（智谱的免费模型档、Google 的 Free Tier）；**带 `credits` 0 条** —— 本阶段没有任何厂商在官方页给出可逐字引用的预付费额度包，按「没有官方原文就不写」的红线一律留 `null`（结构、校验与页面都已经就绪，见契约 §10）。
+- **免费额度 / credits**：带 `freeTier` **4 条**（**2026-10-04 重算**；本段 v2.5 当时记 2 条 = 智谱的免费模型档、Google 的 Free Tier）：`standing` 2 条（google、zhipu，`type:'models'`）+ `new_user` 2 条（aliyun、tencent，`type:'tokens'` / 一次性 100 万 tokens）；**带 `credits` 0 条**（13/13 为 `null`）—— 没有任何厂商在官方页给出可逐字引用的预付费额度包，按「没有官方原文就不写」的红线一律留 `null`（结构、校验与页面都已经就绪，见契约 §10；`freeTier.stability` 现为**三档必填**，见 `SCHEMA-v2.5.md` §8）。
 - **非 token 计费项** 4 条（按分钟 / 按百万 token·小时计）。
 - **`derivedMetrics` 全部为 `{}`**（这是结论不是缺省：混合单价需要工作负载假设，credits→token 需要选定模型）。
 - **候选未采信（一条未写入）**：阿里云百炼 / 火山方舟 / 月之暗面 / MiniMax / 硅基流动 / Mistral —— 定价表要么是 JS 分页或按模型切换（渲染后只拿到当前选中模型），要么已改成订阅套餐页。
