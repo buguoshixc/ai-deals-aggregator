@@ -5,6 +5,10 @@
  * 它演练的不是"代码跑得通"，而是**这套身份层赖以成立的承诺**（题面 Stage D + §8 的牙）：
  *
  *   · 身份靠显式映射：同名 ≠ 同一模型；alias 不许指向两个模型；modelKey 改名只能进候选、不许自动 merge；
+ *   · **一条 source pricing identity 至多归属一个 registry model**（③b）：判据是 link 展开后的
+ *     `(apiPlanId, modelKey, variant)` 集合 —— `variant: null` 展开成该 modelKey 在记录里的全部真实变体，
+ *     所以"通配 null 指向甲、显式 standard 指向乙"必红，而认领集合不相交的合法不同变体分属两个 slug 是允许的；
+ *     删掉一条必需的 registry→API 映射、手写来源层里重复的顶层 slug 键也都在这里变红；
  *   · 派生字段不可手写：id / firstSeen / lastSeen 只能由构建期算出来；
  *   · 引文不许新造：链接的引文必须逐字来自被引用记录自己的官方引文；
  *   · 可重建：打乱来源层键序仍得到同一串字节；
@@ -176,6 +180,239 @@ section('② 题面 §8 的 5 条 Model Registry 牙');
   nullOk['ghost-dev-model'] = Object.assign({}, clone(nullOk['glm-5.3']), { canonicalName: 'Ghost Dev Model', developer: null, owner: null });
   check('【牙 #5】反向：开发者判不出来时写 null 是合法的（不是一律禁止缺字段）',
     !hasProblem(reg.validateRegistry(nullOk, ctx), '不在允许的开发者名单里'));
+}
+
+/* ================================================================== */
+
+section('③b source pricing identity：一条计价条目至多归属一个 registry 模型（P0 常驻牙）');
+
+{
+  // 这一节的判据对象是**展开后的 identity 集合** `(apiPlanId, modelKey, variant)`，不是三元组字面量。
+  // 背景（审计 F-v3-registry-002 / P0-1）：原来的冲突键把 `variant: null` 记成 `(all)`、把 `"standard"`
+  // 记成 `standard`，于是同一 `(planId, modelKey)` 的"通配映射"与"显式 standard 映射"能各自归属不同
+  // registry 模型而 11 道门禁全放行。这里的每一条牙都必须真的会红。
+  const sourceLinks = reg.linksList(links);
+  const withLinks = list => ({ schemaVersion: 1, links: reg.sortLinks(list) });
+  const cloneLink = link => clone(link);
+  const allLinks = () => sourceLinks.map(cloneLink);
+
+  // ---- 身份定义必须从当前 API schema 推导（不是针对 null/standard 打补丁）----
+  const multiVariantLink = sourceLinks.find(link => link.apiPlanId === 'ebc4af9a71b6' && link.modelKey === 'qwen3-max');
+  const multiClaim = reg.sourcePricingIdentitiesOf(multiVariantLink, apiPlans);
+  check('通配映射（variant=null）展开成该 modelKey 在**这条记录**里的全部真实 variant（qwen3-max: standard + long_context）',
+    multiClaim.expanded === true && multiClaim.unresolved === false
+    && JSON.stringify(multiClaim.identities.map(item => item.variant).sort()) === JSON.stringify(['long_context', 'standard']),
+    JSON.stringify(multiClaim.identities));
+  check('身份键 = planId + modelKey + 记录内真实 variant（键里不许出现 None/undefined/(all) 的字面折叠）',
+    multiClaim.identities.every(item => reg.sourcePricingIdentityKey(item) === `${item.apiPlanId}\u0000${item.modelKey}\u0000${item.variant}`));
+  const singleVariantLink = sourceLinks.find(link => link.apiPlanId === '4f8bae91f9f8');
+  const singleClaim = reg.sourcePricingIdentitiesOf(singleVariantLink, apiPlans);
+  check('只有 standard 的记录里，通配展开只有 1 条（通配不是"永远多条"，更不是整组已覆盖）',
+    singleClaim.identities.length === 1 && singleClaim.identities[0].variant === 'standard',
+    JSON.stringify(singleClaim.identities));
+  const noMatch = reg.sourcePricingIdentitiesOf({ apiPlanId: 'ebc4af9a71b6', modelKey: 'no-such-key', variant: null }, apiPlans);
+  check('通配映射匹配不到任何真实 variant ⇒ unresolved=true（调用方据此报红，不许静默通过）',
+    noMatch.unresolved === true && noMatch.identities.length === 0);
+
+  // ---- Tooth 1：同 modelKey 下 null 与 'standard' 按真实 schema 是同一个 pricing identity ----
+  // 判据：一条通配 null 映射 + 一条显式 standard 映射指向**两个** registry model ⇒ 必红。
+  // 这是审计里"合法追加一条 variant=null / variant=standard 就能绕过"的原始形态。
+  const tooth1a = allLinks();
+  tooth1a.push({
+    registrySlug: 'glm-5.3', apiPlanId: '4f8bae91f9f8', modelKey: 'claude-fable-5.1', variant: null,
+    basis: 'explicit-mapping', evidence: [], note: '牙：通配映射与已存在的显式 standard 映射撞同一条 identity'
+  });
+  check('【Tooth 1】已有一条显式 standard 映射，再追加一条通配 null 映射到另一个 slug → 红（null 展开后就含 standard）',
+    hasProblem(reg.validateLinks(withLinks(tooth1a), linkCtx), '已经映射到'),
+    reg.validateLinks(withLinks(tooth1a), linkCtx).slice(0, 1).join(' | '));
+  const tooth1b = allLinks();
+  tooth1b.push({
+    registrySlug: 'glm-5.3', apiPlanId: 'ebc4af9a71b6', modelKey: 'qwen3-max', variant: 'long_context',
+    basis: 'explicit-mapping', evidence: [], note: '牙：显式变体落在别人已认领的通配覆盖里'
+  });
+  check('【Tooth 1】已有一条通配 null 映射，再追加一条显式 long_context 映射到另一个 slug → 红（通配已认领该变体）',
+    hasProblem(reg.validateLinks(withLinks(tooth1b), linkCtx), '已经映射到'),
+    reg.validateLinks(withLinks(tooth1b), linkCtx).slice(0, 1).join(' | '));
+
+  // ---- Tooth 2：完全相同的 apiPlanId + modelKey + variant 映射到两个 registry model ----
+  const tooth2 = allLinks();
+  tooth2.push({
+    registrySlug: 'glm-5.3', apiPlanId: 'ebc4af9a71b6', modelKey: 'qwen3-max', variant: 'standard',
+    basis: 'explicit-mapping', evidence: [], note: '牙：同一条 identity 两个 owner'
+  });
+  check('【Tooth 2】同一条 (apiPlanId, modelKey, variant) 映射到两个 registry model → 红',
+    hasProblem(reg.validateLinks(withLinks(tooth2), linkCtx), '已经映射到 glm-5.3'),
+    reg.validateLinks(withLinks(tooth2), linkCtx).slice(0, 1).join(' | '));
+  // 反向：指向**同一个** slug 的完全重复记录由规范序 + 重复记录判据拦住（不是靠 identity 归属）
+  const tooth2dup = allLinks();
+  tooth2dup.push(clone(sourceLinks.find(link => link.apiPlanId === 'ebc4af9a71b6' && link.modelKey === 'qwen3-max')));
+  check('【Tooth 2】反向：完全重复的一条记录（同一 slug）→ 红（重复记录判据）',
+    hasProblem(reg.validateLinks({ schemaVersion: 1, links: tooth2dup }, linkCtx), '重复记录'),
+    reg.validateLinks({ schemaVersion: 1, links: tooth2dup }, linkCtx).slice(0, 2).join(' | '));
+
+  // ---- Tooth 3：同一 registry model 映射多个不同 Provider → 允许 ----
+  const tooth3 = allLinks();
+  const providersOfSlug = list => new Set(list
+    .filter(link => link.apiPlanId && link.registrySlug === 'deepseek-v4-pro')
+    .map(link => (apiPlans.find(plan => plan.id === link.apiPlanId) || {}).provider));
+  check(`【Tooth 3】同一个 registry model 认领多个不同 Provider 的记录 → 绿（${[...providersOfSlug(tooth3)].join(' / ')}）`,
+    providersOfSlug(tooth3).size > 1 && reg.validateLinks(withLinks(tooth3), linkCtx).length === 0,
+    reg.validateLinks(withLinks(tooth3), linkCtx).slice(0, 2).join(' | '));
+  const crossProvider = {
+    schemaVersion: 1, links: [
+      { registrySlug: 'deepseek-v4-pro', apiPlanId: 'ebc4af9a71b6', modelKey: 'deepseek-v4-pro', variant: 'standard', basis: 'explicit-mapping', evidence: [], note: '牙：跨 provider 认领' },
+      { registrySlug: 'deepseek-v4-pro', apiPlanId: 'fffbb44ac3a9', modelKey: 'deepseek-v4-pro', variant: null, basis: 'explicit-mapping', evidence: [], note: '牙：跨 provider 认领' }
+    ]
+  };
+  check('【Tooth 3】同一 slug 同时认领 aliyun 与 deepseek 的记录 → 绿（认领集合不相交，只有"没写全"的完整性提示）',
+    !hasProblem(reg.validateLinks(crossProvider, linkCtx), '已经映射到')
+    && reg.validateLinks(crossProvider, linkCtx).every(problem => problem.includes('既没有 registry 映射')),
+    reg.validateLinks(crossProvider, linkCtx).filter(problem => !problem.includes('既没有 registry 映射')).join(' | '));
+
+  // ---- Tooth 4：同一 modelKey 的合法不同 variant，若认领集合**不相交** → 正确保留 ----
+  const splitLinks = allLinks()
+    .filter(link => !(link.apiPlanId === 'ebc4af9a71b6' && link.modelKey === 'qwen3-max')); // 先撤掉通配那条
+  splitLinks.push({
+    registrySlug: 'qwen3-max', apiPlanId: 'ebc4af9a71b6', modelKey: 'qwen3-max', variant: 'standard',
+    basis: 'explicit-mapping', evidence: [], note: '牙：显式 standard 归 qwen3-max'
+  });
+  splitLinks.push({
+    registrySlug: 'glm-5.3', apiPlanId: 'ebc4af9a71b6', modelKey: 'qwen3-max', variant: 'long_context',
+    basis: 'explicit-mapping', evidence: [], note: '牙：显式 long_context 归 glm-5.3'
+  });
+  const splitCtx = { ...linkCtx, plans };
+  check('【Tooth 4】同 modelKey 的两个不同 variant 分别归属两个 slug（认领集合不相交：{standard} ∩ {long_context} = ∅）→ 绿',
+    reg.validateLinks(withLinks(splitLinks), splitCtx).length === 0,
+    reg.validateLinks(withLinks(splitLinks), splitCtx).slice(0, 2).join(' | '));
+  // 反向：不相交 = 两条映射真的指向不同 variant；把其中一条改成另一条的变体就撞车
+  const collide = splitLinks.map(link => (link.variant === 'long_context'
+    ? Object.assign({}, link, { variant: 'standard', note: '牙：改成与另一条同一个 identity' })
+    : link));
+  check('【Tooth 4】反向：把 long_context 改成 standard（认领集合相交）→ 红',
+    hasProblem(reg.validateLinks(withLinks(collide), splitCtx), '已经映射到'),
+    reg.validateLinks(withLinks(collide), splitCtx).slice(0, 1).join(' | '));
+  // 反向：同一 slug 的通配 + 显式冗余认领 → 红（冗余映射什么都没认领）
+  const redundant = allLinks();
+  redundant.push({
+    registrySlug: 'qwen3-max', apiPlanId: 'ebc4af9a71b6', modelKey: 'qwen3-max', variant: 'standard',
+    basis: 'explicit-mapping', evidence: [], note: '牙：通配已认领 standard，这条什么都没认领'
+  });
+  check('【Tooth 4】同一 slug 上"通配 + 显式"的冗余重复认领 → 红（冗余映射不许伪装成更细的粒度）',
+    hasProblem(reg.validateLinks(withLinks(redundant), linkCtx), '冗余映射'),
+    reg.validateLinks(withLinks(redundant), linkCtx).slice(0, 1).join(' | '));
+
+  // ---- Tooth 5：生产数据的当前结论（0 冲突、0 多 owner、两边覆盖完整）----
+  const ownership = new Map();
+  const owners = new Map();
+  let duplicateOwner = 0;
+  let multiOwner = 0;
+  for (const link of reg.linksList(links)) {
+    for (const identity of reg.sourcePricingIdentitiesOf(link, apiPlans).identities) {
+      const idKey = reg.sourcePricingIdentityKey(identity);
+      if (ownership.has(idKey) && ownership.get(idKey) !== link.registrySlug) duplicateOwner += 1;
+      else ownership.set(idKey, link.registrySlug);
+      if (!owners.has(idKey)) owners.set(idKey, new Set());
+      owners.get(idKey).add(link.registrySlug);
+    }
+  }
+  for (const slugs of owners.values()) if (slugs.size > 1) multiOwner += 1;
+  check('【Tooth 5】production：duplicate source pricing identity owner = 0 且 multi-owner = 0'
+    + `（${ownership.size} 条被认领的计价条目）`,
+    duplicateOwner === 0 && multiOwner === 0, `duplicate=${duplicateOwner} multi=${multiOwner}`);
+  const productionCoverage = reg.coverageOf({ table, links, gaps, apiPlans, plans });
+  check('【Tooth 5】production：计价条目按展开记账后仍然全覆盖（未认领 0 条），且 no 通配虚高',
+    productionCoverage.unmappedModelKeys.length === 0
+    && productionCoverage.mappedApiEntries === productionCoverage.apiPricingItems
+    && productionCoverage.apiPricingItems > productionCoverage.apiLinks,
+    JSON.stringify(productionCoverage.unmappedModelKeys.slice(0, 3)));
+
+  // ---- coverageOf() 的 mappedApi 必须按展开条目记账：通配映射不得虚高覆盖率 ----
+  const partialLinks = {
+    schemaVersion: 1, links: [{
+      registrySlug: 'qwen3-max', apiPlanId: 'ebc4af9a71b6', modelKey: 'qwen3-max', variant: 'standard',
+      basis: 'explicit-mapping', evidence: [], note: '只认领 1 条'
+    }]
+  };
+  const partialCoverage = reg.coverageOf({
+    table, links: partialLinks, gaps: { schemaVersion: 1, declarations: [] }, apiPlans, plans
+  });
+  check(`coverageOf()：只认领 1 条显式映射时，覆盖记 1 条、未认领 ${productionCoverage.apiPricingItems - 1} 条（不按 (planId, modelKey) 整组算）`,
+    partialCoverage.mappedApiEntries === 1
+    && partialCoverage.apiPricingItems === productionCoverage.apiPricingItems
+    && partialCoverage.unmappedModelKeys.length === productionCoverage.apiPricingItems - 1,
+    JSON.stringify({ mapped: partialCoverage.mappedApiEntries, items: partialCoverage.apiPricingItems, unmapped: partialCoverage.unmappedModelKeys.length }));
+  const wildcardCoverage = reg.coverageOf({
+    table,
+    links: { schemaVersion: 1, links: sourceLinks.filter(link => link.apiPlanId === 'ebc4af9a71b6' && link.modelKey === 'qwen3-max') },
+    gaps: { schemaVersion: 1, declarations: [] }, apiPlans, plans
+  });
+  check('coverageOf()：同一条通配映射只记它真实展开到的条目数（2 条），不把整条记录算成已覆盖',
+    wildcardCoverage.mappedApiEntries === 2 && wildcardCoverage.unmappedModelKeys.length === productionCoverage.apiPricingItems - 2,
+    JSON.stringify({ mapped: wildcardCoverage.mappedApiEntries, unmapped: wildcardCoverage.unmappedModelKeys.length }));
+
+  // ---- §10.6：删掉一条必需的 registry→API 映射必须被**门禁脚本**抓住（审计 M09）----
+  const m09 = {
+    schemaVersion: 1,
+    links: allLinks().filter(link => !(link.apiPlanId === '4f8bae91f9f8' && link.modelKey === 'claude-fable-5.1'))
+  };
+  const m09Problems = reg.validateLinks(m09, linkCtx);
+  check('【M09 / §10.6】删掉一条必需的 registry→API 映射 → 红（check-model-registry-links 必须 exit≠0，不再靠自测替它红）',
+    hasProblem(m09Problems, '既没有 registry 映射'), m09Problems.slice(0, 1).join(' | '));
+  check('【M09 / §10.6】同一次删除里，registry 模型 claude-fable-5.1 也不再被任何映射引用（两条读数一致）',
+    reg.coverageOf({ table, links: m09, gaps, apiPlans, plans }).unlinkedModels.includes('claude-fable-5.1'));
+  check('【M09 / §10.6】API 侧完整性与 Coding 侧同级：两侧都由 lib 判据报"既没有映射也没有处置"，且真实数据 0 处',
+    reg.validateLinks(links, linkCtx).length === 0
+    && reg.validatePlanModelCoverage({ table, links, gaps, apiPlans, plans }).length === 0
+    && reg.validateLinks(m09, linkCtx).some(problem => problem.includes('每一条都必须人工判一次')));
+
+  // ---- 手写来源层的重复顶层 slug 键：JSON.parse 会静默吃掉，必须从原文扫 ----
+  const duplicateSource = '{\n  "_note": "x",\n  "glm-5.3": { "canonicalName": "GLM-5.3" },\n'
+    + '  "glm-5.3": { "canonicalName": "GLM-5.3 改名后" },\n  "other": { "canonicalName": "Other" }\n}\n';
+  const duplicateKeys = reg.duplicateTopLevelKeys(duplicateSource);
+  check('原文扫描：手写 models.json 里重复的顶层 slug 键被扫出来（JSON.parse 只会留最后一条）',
+    duplicateKeys.length === 1 && duplicateKeys[0] === '"glm-5.3"', JSON.stringify(duplicateKeys));
+  check('原文扫描：只有**顶层**的重复键算数（嵌套对象里的同名键 / 字符串值里的冒号不算）',
+    reg.duplicateTopLevelKeys('{"a":{"b":1,"b":2},"c":"x: { \\"a\\": 1 }"}').length === 0,
+    JSON.stringify(reg.duplicateTopLevelKeys('{"a":{"b":1,"b":2},"c":"x: { \\"a\\": 1 }"}')));
+  check('validateRegistry：拿到 duplicateKeys 时必红（同一个 slug = 同一个 registry 身份，不许出现两条）',
+    reg.validateRegistry(clone(table), Object.assign({}, ctx, { duplicateKeys: ['"glm-5.3"'] }))
+      .some(problem => problem.includes('顶层键 "glm-5.3" 重复出现')));
+  check('validateRegistry：真实来源层原文里 0 个重复顶层键（不是靠 parse 结果"看不见"）',
+    (reg.load().duplicateKeys || []).length === 0, JSON.stringify(reg.load().duplicateKeys));
+
+  /**
+   * F-T19-1 常驻牙：**两个入口必须真的把 `duplicateKeys` 传下去**。
+   *
+   * 为什么这条牙必须存在：`validateRegistry` 拿到 `duplicateKeys` 时一定报红（上一条已证），
+   * 但「拿到」取决于调用点有没有传。漏传的形态是**假绿**：同形态的
+   * `check-model-registry-links` / `models-selftest` 红、`rebuild-models` 拒绝写盘，
+   * 而 `validate --strict` 打印「✅ 校验通过」（T19 评审实测）。
+   * 这里直接读两个入口的**源码文本**，把「传参还在不在」变成一条可证的断言 ——
+   * 谁把参数删掉，这条牙当场红。
+   */
+  const callSites = [
+    ['scripts/validate.js', path.join(ROOT, 'scripts', 'validate.js')],
+    ['scripts/tools/check-models-reproducible.js', path.join(ROOT, 'scripts', 'tools', 'check-models-reproducible.js')]
+  ];
+  for (const [label, file] of callSites) {
+    const source = fs.readFileSync(file, 'utf8');
+    const call = source.match(/validateRegistry\([\s\S]{0,200}?\)/);
+    check(`【F-T19-1 常驻牙】${label} 的 validateRegistry(...) 传了 duplicateKeys（漏传 = 重复顶层键假绿）`,
+      Boolean(call) && /duplicateKeys\s*:\s*modelsLoad\.duplicateKeys/.test(call[0]),
+      call ? call[0].replace(/\s+/g, ' ').slice(0, 120) : '（找不到 validateRegistry( 调用）');
+  }
+
+  // ---- duplicate canonical identity / alias collision：名字空间的唯一性 ----
+  const canonicalClash = clone(table);
+  canonicalClash['ghost-canonical'] = Object.assign({}, clone(canonicalClash['glm-5.3']), { canonicalName: '幽灵模型' });
+  canonicalClash['ghost-canonical-2'] = Object.assign({}, clone(canonicalClash['glm-5.3']), { canonicalName: '幽灵模型' });
+  check('duplicate canonical identity：两条模型写同一个 canonicalName → 红',
+    hasProblem(reg.validateRegistry(canonicalClash, ctx), '同名不等于同一模型'));
+  const aliasClashBoth = clone(table);
+  aliasClashBoth['ghost-alias'] = Object.assign({}, clone(aliasClashBoth['glm-5.3']), { canonicalName: '幽灵模型 A', aliases: ['Ghost/Alias'] });
+  aliasClashBoth['ghost-alias-2'] = Object.assign({}, clone(aliasClashBoth['glm-5.3']), { canonicalName: '幽灵模型 B', aliases: ['Ghost/Alias'] });
+  check('alias collision：同一个 alias 指向两个 registry 模型 → 红（同一个别名只能是同一个身份）',
+    hasProblem(reg.validateRegistry(aliasClashBoth, ctx), '同一个别名只能指向一个模型'));
 }
 
 /* ================================================================== */

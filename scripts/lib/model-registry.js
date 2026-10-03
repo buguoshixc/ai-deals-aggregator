@@ -25,6 +25,18 @@
  *    与 `plans.json` 的 `derivedMetrics` 同一条纪律。
  * 3. **可重建**：同一份来源层永远得到同一串字节（键序固定、按 slug 规范排序、不读墙上时钟）。
  *
+ * ## source pricing identity（唯一性的判据对象）
+ *
+ * 一条映射**认领**的不是"一个 modelKey 字符串"，而是**计价条目的身份集合**：
+ * `(apiPlanId, modelKey, variant)`，其中 variant 是**当前 API schema 里那一条真实写着的值**
+ * （`api-plan-schema.js` MATERIALIZE 后 `variant` 恒为具体字符串；解析层对 `null/undefined`
+ * 的默认是 `standard`，本模块**不重做**那次默认，也不做"默认值折叠"）。
+ *
+ * `variant: null`（通配）的语义是"**这条记录里该 modelKey 的全部真实变体**"，所以展开后
+ * 通配 `null` 与显式 `standard` 指向**同一个** identity —— 一条 source pricing identity
+ * 至多归属 1 个 registry model（`validateLinks()` 的硬门禁），
+ * 而**认领集合不相交**的合法不同变体分属两个 registry model 是允许的（§8 牙 #4）。
+ *
  * 判据只写在这里：`validate.js`、`rebuild-models.js`、`check-models-reproducible.js`、
  * `check-model-registry-links.js`、`models-selftest.js` 全部调用它，不各写一份。
  */
@@ -132,6 +144,101 @@ function keyOrderOf(object) {
 }
 
 /* ------------------------------------------------------------------ */
+/* source pricing identity（唯一性的判据对象）                          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 记录内某个 `modelKey` 的**真实** pricing entry 列表（顺序 = 记录里写着的顺序）。
+ *
+ * 身份一律**从当前 api schema 推导**，不写死 `standard` / `long_context` 之类字面量：
+ * `api-plans.json` 里 `variant` 是每个计价条目自己的字段，这里只认它。
+ * 返回的条目里可能带 `modelKey` / `variant` 以外的字段（rates 等），调用方只读这两项。
+ */
+function pricingEntriesOf(plan, modelKey) {
+  const key = String(modelKey === null || modelKey === undefined ? '' : modelKey);
+  return (plan && Array.isArray(plan.models) ? plan.models : [])
+    .filter(item => item && String(item.modelKey) === key);
+}
+
+/** 记录内某个 `modelKey` 的真实 variant 列表（去重、保持记录顺序） */
+function realVariantsOf(plan, modelKey) {
+  const seen = new Set();
+  for (const entry of pricingEntriesOf(plan, modelKey)) {
+    if (entry.variant === null || entry.variant === undefined) continue;
+    seen.add(String(entry.variant));
+  }
+  return [...seen];
+}
+
+/** variant 是否"未限定"（通配）。注意：schema 里的 `null` 与"字段没写"同义。 */
+function isWildcardVariant(variant) {
+  return variant === null || variant === undefined || variant === '';
+}
+
+/**
+ * 一个 identity 的规范键：`planId \u0000 modelKey \u0000 variant`。
+ * variant 是**展开后那个真实变体原文**——不做默认值折叠（`standard` 就是 `standard`，
+ * 缺 variant 的条目同样落成 `standard`，两者只有一个键）。
+ */
+function sourcePricingIdentityKey(identity) {
+  const item = identity && typeof identity === 'object' ? identity : {};
+  const planId = item.apiPlanId !== undefined && item.apiPlanId !== null ? item.apiPlanId : item.planId;
+  const modelKey = item.modelKey !== undefined ? item.modelKey : item.name;
+  const variant = isWildcardVariant(item.variant) ? '(all)' : item.variant;
+  return `${planId}\u0000${modelKey}\u0000${variant}`;
+}
+
+/** identity 的简短可读形式（错误信息用） */
+function describeSourcePricingIdentity(identity) {
+  return `(${identity.apiPlanId}, ${identity.modelKey}, ${identity.variant})`;
+}
+
+/**
+ * **一条 link 认领的全部 source pricing identity**（本模块唯一的口径实现）。
+ *
+ * 返回 `{ identities, expanded, unresolved }`：
+ *   · `identities` 展开后的 identity 数组（统一按 `(planId, modelKey, variant)` 规范键去重，
+ *     顺序保持记录里的 variant 顺序）—— 冲突、覆盖率、任何"这条映射认领了什么"都读它，
+ *     不再读三元组字面量 `${apiPlanId}\u0000${modelKey}\u0000${link.variant}`；
+ *   · `expanded` 是否来自通配展开（`variant: null/undefined`）；
+ *   · `unresolved` 通配展开**一条真实 variant 都没匹配到**（记录里没有这个 modelKey，
+ *     或该 modelKey 没有任何真实 variant）⇒ 由 `validateLinks()` 报红，绝不静默放行。
+ *
+ * 通配语义 = **该记录中这个 `modelKey` 的全部真实变体**；`apiPlanId` / `modelKey` 找不到记录时
+ * 返回空集合（"指向不存在的记录"由 `validateLinks()` 单独报红，两者不互相掩盖）。
+ */
+function sourcePricingIdentitiesOf(link, apiPlans) {
+  const source = link && typeof link === 'object' ? link : {};
+  const plan = (apiPlans || []).find(item => item && item.id === source.apiPlanId) || null;
+  if (!plan) return { identities: [], expanded: false, unresolved: false };
+
+  const key = String(source.modelKey === null || source.modelKey === undefined ? '' : source.modelKey);
+  if (!key) return { identities: [], expanded: false, unresolved: false };
+
+  const variants = realVariantsOf(plan, key);
+  if (isWildcardVariant(source.variant)) {
+    const identities = [];
+    const seen = new Set();
+    for (const variant of variants) {
+      const identity = { apiPlanId: plan.id, modelKey: key, variant };
+      const idKey = sourcePricingIdentityKey(identity);
+      if (seen.has(idKey)) continue;
+      seen.add(idKey);
+      identities.push(identity);
+    }
+    return { identities, expanded: true, unresolved: variants.length === 0 };
+  }
+
+  // 显式 variant：即使那个变体在这条记录里并不存在，也把它当作一条 identity 返回（"认领了什么"
+  // 与"这条认领站不站得住"是两件事，后者由 validateLinks 拿真实 variant 表判红）。
+  return {
+    identities: [{ apiPlanId: plan.id, modelKey: key, variant: source.variant }],
+    expanded: false,
+    unresolved: variants.length === 0
+  };
+}
+
+/* ------------------------------------------------------------------ */
 /* 读盘（永不 throw：缺失/坏文件由调用方决定怎么办）                     */
 /* ------------------------------------------------------------------ */
 
@@ -140,24 +247,72 @@ function readJson(file) {
   try {
     raw = fs.readFileSync(file, 'utf8');
   } catch (error) {
-    if (error.code === 'ENOENT') return { doc: null, file, missing: true, broken: null };
+    if (error.code === 'ENOENT') return { doc: null, file, missing: true, broken: null, raw: null };
     throw new Error(`${file} 读取失败: ${error.message}`);
   }
   try {
-    return { doc: JSON.parse(raw), file, missing: false, broken: null };
+    return { doc: JSON.parse(raw), file, missing: false, broken: null, raw };
   } catch (error) {
-    return { doc: null, file, missing: false, broken: `不是合法 JSON：${error.message}` };
+    return { doc: null, file, missing: false, broken: `不是合法 JSON：${error.message}`, raw };
   }
+}
+
+/**
+ * 手写 JSON 里**重复的顶层键**。
+ *
+ * 为什么需要它：`JSON.parse` 对重复键是"后者覆盖前者"，**一声不响**。于是来源层里写了两遍
+ * 同一个 slug 时，前一条被静默吃掉，任何门禁都不会红 —— 而那正是"同一条身份被两个人各写一遍、
+ * 系统只认后一个"的事故形状（审计 F-v3-registry-004 / M 层 duplicate-slug 变异：check exit 0）。
+ *
+ * 判定只在**顶层**（深度 1）做：更深的重复键不在身份层的判据范围里，顶层 slug 才是身份键。
+ * 返回重复键的**原文**（去重后按出现顺序），非对象/解析失败时返回空数组（那种情况由 broken 报）。
+ */
+function duplicateTopLevelKeys(rawText) {
+  const text = String(rawText === null || rawText === undefined ? '' : rawText);
+  if (!text.trim()) return [];
+  const keys = [];
+  const seen = new Set();
+  const duplicates = [];
+  let depth = 0;
+  let index = 0;
+  while (index < text.length) {
+    const char = text[index];
+    if (char === '"') {
+      // 读一整段 JSON 字符串（含转义），顺带判断它是不是"深度 1 的键"
+      let end = index + 1;
+      while (end < text.length) {
+        if (text[end] === '\\') { end += 2; continue; }
+        if (text[end] === '"') break;
+        end += 1;
+      }
+      if (end >= text.length) break;
+      const literal = text.slice(index, end + 1);
+      let after = end + 1;
+      while (after < text.length && /\s/.test(text[after])) after += 1;
+      if (depth === 1 && text[after] === ':') keys.push(literal);
+      index = end + 1;
+      continue;
+    }
+    if (char === '{' || char === '[') depth += 1;
+    else if (char === '}' || char === ']') depth -= 1;
+    index += 1;
+  }
+  for (const literal of keys) {
+    if (seen.has(literal)) {
+      if (!duplicates.includes(literal)) duplicates.push(literal);
+    } else seen.add(literal);
+  }
+  return duplicates;
 }
 
 /** registry 来源层：`{_note, _rules, <slug>: {...}}` */
 function load(file = MODELS_FILE) {
   const loaded = readJson(file);
-  if (loaded.missing || loaded.broken) return { ...loaded, table: {} };
+  if (loaded.missing || loaded.broken) return { ...loaded, table: {}, duplicateKeys: [] };
   if (!loaded.doc || typeof loaded.doc !== 'object' || Array.isArray(loaded.doc)) {
-    return { ...loaded, doc: null, table: {}, broken: '顶层必须是对象（键 = 模型 slug）' };
+    return { ...loaded, doc: null, table: {}, broken: '顶层必须是对象（键 = 模型 slug）', duplicateKeys: [] };
   }
-  return { ...loaded, table: withoutMeta(loaded.doc) };
+  return { ...loaded, table: withoutMeta(loaded.doc), duplicateKeys: duplicateTopLevelKeys(loaded.raw) };
 }
 
 /** 关系层来源文件 */
@@ -219,10 +374,15 @@ function resolveSlug(value, table) {
 
 /** API 侧链接 → 被引用的记录（找不到返回 null，由校验层报红） */
 function apiTargetOf(link, apiPlans) {
-  const plan = (apiPlans || []).find(item => item && item.id === link.apiPlanId) || null;
+  const source = link && typeof link === 'object' ? link : {};
+  const plan = (apiPlans || []).find(item => item && item.id === source.apiPlanId) || null;
   if (!plan) return null;
-  const entry = (plan.models || []).find(item => item && item.modelKey === link.modelKey
-    && (!link.variant || item.variant === link.variant)) || null;
+  // 变体匹配与 `sourcePricingIdentitiesOf()` 共用同一支判据（通配 = 该 modelKey 在记录里的全部真实变体）
+  const { identities } = sourcePricingIdentitiesOf(source, apiPlans);
+  const wanted = new Set(identities.map(identity => sourcePricingIdentityKey(identity)));
+  const entry = (plan.models || []).find(item => item && wanted.has(sourcePricingIdentityKey({
+    apiPlanId: plan.id, modelKey: item.modelKey, variant: item.variant
+  }))) || null;
   return entry ? { plan, entry } : null;
 }
 
@@ -294,12 +454,19 @@ function sortDeclarations(declarations) {
  * registry 来源层自检。返回问题列表（空 = 通过）。
  *
  * @param {object} table 去掉 `_` 元信息后的 slug → 条目
- * @param {{extraDevelopers?:string[]}} [opts] `_developers_extra` 的键（不在 providers.json 里的开发者）
+ * @param {{extraDevelopers?:string[], duplicateKeys?:string[]}} [opts]
+ *        `_developers_extra` 的键（不在 providers.json 里的开发者）；
+ *        `duplicateKeys` 手写 JSON 里重复的**顶层 slug 键**原文（`load()` 从原文扫出来，
+ *        `JSON.parse` 看不见它们 —— 前一条被静默覆盖）
  */
 function validateRegistry(table, opts = {}) {
   const problems = [];
   if (!table || typeof table !== 'object' || Array.isArray(table)) {
     return ['models.json 必须是一个对象（键 = 模型 slug）'];
+  }
+  // 重复顶层 slug：`JSON.parse` 只留下最后一个，所以判据必须来自**原文**（load() 的 duplicateKeys）。
+  for (const key of (opts.duplicateKeys || [])) {
+    problems.push(`models.json 的顶层键 ${key} 重复出现 —— 同一个 slug（= 同一个 registry 身份）只能有一条；JSON.parse 会静默只留最后一条，前一条根本进不了判据`);
   }
   const slugs = Object.keys(table);
   if (!slugs.length) problems.push('models.json 里没有任何模型');
@@ -462,7 +629,15 @@ function evidenceProblems(evidence, record, where, errors) {
  *   · registrySlug 必须存在（牙 #2/#4：指向不存在的模型 ⇒ 红）；
  *   · API 侧：apiPlanId + modelKey 必须存在，variant 必须真的是该记录的 variant；
  *   · Coding 侧：planId + modelName 必须存在（自由文本 name 逐字相等）；
- *   · 同一 (apiPlanId, modelKey, variant) 不得映射到两个 registry 模型；
+ *   · **一条 source pricing identity 至多归属 1 个 registry model**：
+ *     判据对象是 `sourcePricingIdentitiesOf()` 展开后的 identity 集合
+ *     （`variant: null` 展开成该 modelKey 在该记录里的全部真实 variant），
+ *     不是三元组字面量 —— 所以"通配 `null` 一条 + 显式 `standard` 一条指向两个 slug"必红，
+ *     而认领集合**不相交**的合法不同变体分属两个 slug 是允许的；
+ *   · 通配展开一条真实 variant 都没匹配到 ⇒ 红（不许"什么都没认领"还静默通过）；
+ *   · 同一 slug 的显式/通配重复认领 ⇒ 红（冗余映射会让人误以为关系层比实际细）；
+ *   · **API 侧完整性**：每一条计价条目（真实 identity）都必须被某条映射认领 ——
+ *     与 Coding 侧的"每个模型串都必须有结局"同一原则（没有"未判"这一格）；
  *   · basis 合法；有引文类 basis 必须有引文，explicit-mapping 必须没有引文且有 note。
  */
 function validateLinks(doc, { table = {}, apiPlans = [], plans = [] } = {}) {
@@ -483,8 +658,11 @@ function validateLinks(doc, { table = {}, apiPlans = [], plans = [] } = {}) {
     errors.push(`关系层一条映射都没有，而 models.json 里有 ${Object.keys(table).length} 个模型 —— 这不是"干净"，是关系层没写（没有映射的模型不会被任何页面引用）`);
   }
 
+  // identity → 认领它的 slug（展开后的**唯一**归属表）
   const seenApi = new Map();
   const seenCoding = new Map();
+  // 通配展开覆盖表：identity → { slug, source }（用于抓"同一 slug 的冗余重复认领"）
+  const wildcardCoverage = new Map();
 
   links.forEach((link, index) => {
     const where = `links[${index}] ${link && (link.registrySlug || '(无 slug)')}`;
@@ -512,18 +690,38 @@ function validateLinks(doc, { table = {}, apiPlans = [], plans = [] } = {}) {
       if (!plan) {
         errors.push(`${where}: apiPlanId ${link.apiPlanId} 不存在（映射指向了不存在的 API 计费记录）`);
       } else {
-        const variants = new Set((plan.models || []).map(item => item && item.variant));
+        const entry = (plan.models || []).find(item => item && item.modelKey === link.modelKey);
         record = plan;
-        if (!(plan.models || []).some(item => item && item.modelKey === link.modelKey)) {
+        if (!entry) {
           errors.push(`${where}: modelKey「${link.modelKey}」在记录 ${plan.id} 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）`);
-        } else if (link.variant !== null && !variants.has(link.variant)) {
+        } else if (!isWildcardVariant(link.variant)
+          && !(plan.models || []).some(item => item && item.modelKey === link.modelKey && item.variant === link.variant)) {
           errors.push(`${where}: variant「${link.variant}」不是记录 ${plan.id} 里的 variant`);
         }
       }
-      const triple = `${link.apiPlanId}\u0000${link.modelKey}\u0000${link.variant === null ? '(all)' : link.variant}`;
-      if (seenApi.has(triple) && seenApi.get(triple) !== slug) {
-        errors.push(`${where}: (${link.apiPlanId}, ${link.modelKey}, ${link.variant}) 已经映射到 ${seenApi.get(triple)} —— 同一条价格记录不许映射到两个 registry 模型`);
-      } else seenApi.set(triple, slug);
+
+      // 唯一性判据：展开后的 identity 集合（不是三元组字面量）
+      const claims = sourcePricingIdentitiesOf(link, apiPlans);
+      if (claims.unresolved) {
+        errors.push(`${where}: 通配映射（variant=${link.variant === undefined ? '未写' : 'null'}）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过`);
+      }
+      claims.identities.forEach(identity => {
+        const idKey = sourcePricingIdentityKey(identity);
+        if (seenApi.has(idKey) && seenApi.get(idKey) !== slug) {
+          errors.push(`${where}: source pricing identity ${describeSourcePricingIdentity(identity)}（记录 ${identity.apiPlanId} · modelKey ${identity.modelKey} · variant ${identity.variant}）已经映射到 ${seenApi.get(idKey)} —— 同一条价格记录不许映射到两个 registry 模型`);
+        } else {
+          seenApi.set(idKey, slug);
+        }
+        // 同一 slug 的冗余重复认领：显式变体落在自己（或更早）的通配覆盖里
+        const covered = wildcardCoverage.get(idKey);
+        if (covered && covered.slug === slug && (covered.source < index || !claims.expanded)) {
+          errors.push(`${where}: ${describeSourcePricingIdentity(identity)} 已经由 links[${covered.source}]（通配 variant=null）认领到同一个 registry 模型 ${slug} —— 冗余映射（它没有认领任何新条目）`);
+        }
+      });
+      if (claims.expanded) {
+        const item = { slug, source: index };
+        claims.identities.forEach(identity => wildcardCoverage.set(sourcePricingIdentityKey(identity), item));
+      }
     } else {
       const plan = (plans || []).find(item => item && item.id === link.planId);
       if (!plan) {
@@ -559,6 +757,24 @@ function validateLinks(doc, { table = {}, apiPlans = [], plans = [] } = {}) {
       }
     }
   });
+
+  // API 侧完整性：每一条计价条目都必须被一条映射认领（与 Coding 侧"每一串都必须有结局"同级）。
+  // 只在 registry 表非空时判 —— 空表会让"未映射"变成 67 条噪音，掩盖真正的那条错。
+  if (Object.keys(table || {}).length) {
+    const uncovered = [];
+    for (const plan of (apiPlans || [])) {
+      for (const entry of (plan && plan.models) || []) {
+        if (!entry) continue;
+        const identity = { apiPlanId: plan.id, modelKey: entry.modelKey, variant: entry.variant };
+        if (!seenApi.has(sourcePricingIdentityKey(identity))) {
+          uncovered.push(describeSourcePricingIdentity(identity));
+        }
+      }
+    }
+    if (uncovered.length) {
+      errors.push(`API 侧 ${uncovered.length} 条计价条目（source pricing identity）既没有 registry 映射、也没有任何处置：${uncovered.slice(0, 5).join(' · ')}${uncovered.length > 5 ? ' …' : ''} —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）`);
+    }
+  }
 
   // 规范序：打乱人工输入仍必须得到同一串字节
   const sorted = sortLinks(links);
@@ -793,8 +1009,15 @@ function publishedLinks(doc, table) {
 /* ------------------------------------------------------------------ */
 
 /**
- * 覆盖报告：哪些 modelKey / 套餐模型串还没有 registry 映射（**这是事实陈述，不是失败**）。
+ * 覆盖报告：哪些 source pricing identity / 套餐模型串还没有 registry 映射。
  * 与 `candidatesOf()` 一起，构成"检查过但没收录"的过程留痕。
+ *
+ * v3.0 修订（API 侧记账口径，2026-10-03）：`mappedApi` 曾经按 `${apiPlanId}\u0000${modelKey}`
+ * 记一条 link 就算"整组已映射"—— `variant: null` 的通配映射会把该 modelKey 的**全部**变体
+ * 一次性算成已覆盖，于是"展开后其实只认领了 1 条"的映射也能虚高覆盖率。现在改成
+ * **按展开后的真实计价条目记账**（`sourcePricingIdentitiesOf()` 的 identity 集合），
+ * 一条计价条目 = 一行，通配只能盖住它真实展开到的那些行。
+ * `unmappedModelKeys` 因此逐行列出（带 `variant`），它是"**两处都没有**"的条目。
  *
  * v3.0 修订（套餐侧）：`plans.json` 的模型串是自由文本，结局只有两种 —— 映射或**显式声明**
  * "不对应单一模型身份"（`gaps`）。`unmappedPlanModels` 因此是"**两处都没有**"的串，
@@ -808,7 +1031,12 @@ function coverageOf({ table = {}, links = {}, gaps = {}, apiPlans = [], plans = 
   const linkedSlugs = new Set();
   for (const link of list) {
     if (!link) continue;
-    if (link.apiPlanId) mappedApi.add(`${link.apiPlanId}\u0000${link.modelKey}`);
+    if (link.apiPlanId) {
+      // 展开记账：通配映射只为它真实展开到的计价条目负责（不再按 (planId, modelKey) 整组算过）
+      for (const identity of sourcePricingIdentitiesOf(link, apiPlans).identities) {
+        mappedApi.add(sourcePricingIdentityKey(identity));
+      }
+    }
     if (link.planId) mappedCoding.add(`${link.planId}\u0000${link.modelName}`);
     if (link.registrySlug && table[link.registrySlug]) linkedSlugs.add(link.registrySlug);
   }
@@ -820,8 +1048,11 @@ function coverageOf({ table = {}, links = {}, gaps = {}, apiPlans = [], plans = 
   const unmappedModelKeys = [];
   for (const plan of apiPlans) {
     for (const entry of (plan.models || [])) {
-      const key = `${plan.id}\u0000${entry.modelKey}`;
-      if (!mappedApi.has(key)) unmappedModelKeys.push({ apiPlanId: plan.id, provider: plan.provider, modelKey: entry.modelKey });
+      const identity = { apiPlanId: plan.id, modelKey: entry.modelKey, variant: entry.variant };
+      if (mappedApi.has(sourcePricingIdentityKey(identity))) continue;
+      unmappedModelKeys.push({
+        apiPlanId: plan.id, provider: plan.provider, modelKey: entry.modelKey, variant: entry.variant
+      });
     }
   }
   const unmappedPlanModels = [];
@@ -850,6 +1081,9 @@ function coverageOf({ table = {}, links = {}, gaps = {}, apiPlans = [], plans = 
     unlinkedModels,
     apiLinks: list.filter(link => link && link.apiPlanId).length,
     codingLinks: list.filter(link => link && link.planId).length,
+    // API 侧按**展开条目**记账的三项：总条目 / 已被认领 / 未映射（后者逐行在 unmappedModelKeys 里）
+    apiPricingItems: apiPlans.reduce((total, plan) => total + ((plan && plan.models) || []).length, 0),
+    mappedApiEntries: mappedApi.size,
     unmappedModelKeys,
     planModelStrings,
     unmappedPlanModels,
@@ -1010,6 +1244,7 @@ module.exports = {
   normalizeText,
   modelIdOf,
   keyOrderOf,
+  duplicateTopLevelKeys,
   load,
   loadLinks,
   loadGaps,
@@ -1018,6 +1253,12 @@ module.exports = {
   indexOf,
   normalizedIndexOf,
   resolveSlug,
+  pricingEntriesOf,
+  realVariantsOf,
+  isWildcardVariant,
+  sourcePricingIdentityKey,
+  sourcePricingIdentitiesOf,
+  describeSourcePricingIdentity,
   apiTargetOf,
   codingTargetOf,
   timelineOf,

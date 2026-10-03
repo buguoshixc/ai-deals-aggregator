@@ -15,6 +15,11 @@
  *   有 API Pricing 无 Model Registry 映射的模型 ·
  *   重要候选但尚未采信的 provider
  *
+ * 缺口 3 的口径（2026-10-03）：按**展开后的计价条目** `(apiPlanId, modelKey, variant)` 数，
+ * 通配映射（`variant: null`）只为它真实展开到的条目负责，不把整组算成已覆盖。
+ * 它与 Coding 侧的"每一串都必须有结局"是**同一条原则**：任何一条计价条目没有被映射认领
+ * ⇒ `validateLinks()` 报红 ⇒ 本报告自检问题非 0（报告不许比门禁好看）。
+ *
  * 真实数据原则：缺口按盘上事实输出，**空就报空**（例如 Model Registry 还没落盘时，
  * 报告会明确说"注册表层不存在"，而不是把 0 当成"全都映射好了"）。
  * 候选未采信来自 `research/v3.0-source-candidates.json`（A3 的联网取证登记表），
@@ -207,15 +212,21 @@ function main() {
 
   const mappedApiKeys = new Set();
   if (!linksMissing) {
+    // 按**展开后的计价条目**记账（与 lib/model-registry.js 的 coverageOf() 同一口径）：
+    // `variant: null` 的通配映射只为它真实展开到的 `(apiPlanId, modelKey, variant)` 负责，
+    // 不把该 modelKey 的整组一次性算成已覆盖。
     for (const link of relations) {
-      if (link && link.apiPlanId && link.modelKey) mappedApiKeys.add(`${link.apiPlanId}::${link.modelKey}`);
+      if (!link || !link.apiPlanId || !link.modelKey) continue;
+      for (const identity of registry.sourcePricingIdentitiesOf(link, apiPlans).identities) {
+        mappedApiKeys.add(`${identity.apiPlanId}::${identity.modelKey}::${identity.variant}`);
+      }
     }
   }
 
   const unmappedModels = [];
   for (const plan of apiPlans) {
     for (const model of (Array.isArray(plan.models) ? plan.models : [])) {
-      if (mappedApiKeys.has(`${plan.id}::${model.modelKey}`)) continue;
+      if (mappedApiKeys.has(`${plan.id}::${model.modelKey}::${model.variant}`)) continue;
       unmappedModels.push({
         provider: plan.provider,
         providerName: providers.providerNameOf(plan.provider, providerTable),
@@ -223,6 +234,7 @@ function main() {
         planName: plan.planName,
         channel: plan.channel,
         modelKey: model.modelKey,
+        variant: model.variant,
         name: model.name
       });
     }
@@ -238,11 +250,19 @@ function main() {
   });
   // 关系层两条读数必须一致：本报告自己数的 API 未映射 ↔ lib 数的 API 未映射。
   // 不一致说明"报告"和"门禁"看的不是同一份关系层 —— 那正是最该当场报红的事。
+  // 两边现在都按**展开后的计价条目**记账（`(planId, modelKey, variant)`），口径逐字相同：
+  // 报告侧 `planId::modelKey::variant` ↔ lib 侧 `planId\u0000modelKey\u0000variant`。
   if (planCoverage.unmappedModelKeys.length !== unmappedModels.length) {
-    problems.push(`报告层与 lib/model-registry.js 对"未映射 API modelKey"的读数不一致（报告 ${unmappedModels.length} / lib ${planCoverage.unmappedModelKeys.length}）—— 两处看的不是同一份关系层。`);
+    problems.push(`报告层与 lib/model-registry.js 对"未映射计价条目"的读数不一致（报告 ${unmappedModels.length} / lib ${planCoverage.unmappedModelKeys.length}）—— 两处看的不是同一份关系层。`);
   }
   if (registryGapsLoaded.doc) {
     problems.push(...registry.validateGaps(registryGapsLoaded.doc, { plans, links: registryLinksLoaded.doc, table: registryLoaded.table }));
+  }
+  // 关系层判据本身也在这里跑一遍（与 check-model-registry-links / validate --strict / 构建期同一支）：
+  // 一条 source pricing identity 两个 owner、冗余重复认领、API 侧有计价条目没人认领 —— 都是**报告不可信**，
+  // 不能只在别处红而报告照样打印一个好看的数字。
+  if (!linksMissing) {
+    problems.push(...registry.validateLinks(registryLinksLoaded.doc, { table: registryLoaded.table, apiPlans, plans }));
   }
   if (!linksMissing && registryGapsLoaded.doc && !registryMissing) {
     problems.push(...registry.validatePlanModelCoverage({
@@ -343,7 +363,7 @@ function main() {
   } else {
     kv('registry 映射条数', relations.length);
   }
-  kv('已映射 API 模型条目', modelPricingItems - apiWithoutRegistryMapping, `共 ${modelPricingItems} 条`);
+  kv('已映射 API 计价条目', modelPricingItems - apiWithoutRegistryMapping, `共 ${modelPricingItems} 条（按展开后的 (planId, modelKey, variant) 记账，通配映射不整组算过）`);
   kv('已映射 Coding 模型串', planCoverage.planModelStrings - planCoverage.unmappedPlanModels.length - planCoverage.declaredPlanModels.length, `共 ${planCoverage.planModelStrings} 条；关系层里 Coding 映射 ${planCoverage.codingLinks} 条`);
   kv('已声明"不对应单一模型身份"', planCoverage.declaredPlanModels.length, '模型池 / 系列名 / 一个串多个模型 / registry 没有的身份 / 图像语音资源（逐条见缺口 5 下方）');
   line('');
@@ -361,8 +381,8 @@ function main() {
   line('── 缺口 3：有 API Pricing 无 Model Registry 映射的模型 ──────────────');
   if (!unmappedModels.length) line('  （无）');
   unmappedModels
-    .sort((a, b) => [a.provider, a.planId, a.modelKey].join('|').localeCompare([b.provider, b.planId, b.modelKey].join('|')))
-    .forEach(row => line(`  · ${row.providerName} / ${row.planName}（${row.channel}） → ${row.modelKey}（${row.name}）`));
+    .sort((a, b) => [a.provider, a.planId, a.modelKey, a.variant].join('|').localeCompare([b.provider, b.planId, b.modelKey, b.variant].join('|')))
+    .forEach(row => line(`  · ${row.providerName} / ${row.planName}（${row.channel}） → ${row.modelKey} · ${row.variant}（${row.name}）`));
   line('');
 
   line('── 缺口 4：重要候选但尚未采信的 provider ────────────────────────────');

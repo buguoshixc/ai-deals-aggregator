@@ -48,7 +48,10 @@ function main() {
     ...(linksLoad.broken ? [`model-registry-links.json 无法解析：${linksLoad.broken}`] : []),
     ...(gapsLoad.missing ? ['scripts/data/model-registry-gaps.json 不存在（套餐侧模型串的处置登记表）'] : []),
     ...(gapsLoad.broken ? [`model-registry-gaps.json 无法解析：${gapsLoad.broken}`] : []),
-    ...reg.validateRegistry(modelsLoad.table, { developers, extraDevelopers }),
+    // F-T19-1：与 validate --strict 同一条传参 —— 重复顶层 slug 键是 `JSON.parse` 看不见的
+    // （它静默只留最后一条），必须把 `load()` 从原文扫出来的 `duplicateKeys` 传进判据，
+    // 否则这里也会假绿（同形态的 check-model-registry-links / models-selftest 是红的）。
+    ...reg.validateRegistry(modelsLoad.table, { developers, extraDevelopers, duplicateKeys: modelsLoad.duplicateKeys }),
     ...reg.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans }),
     ...reg.validateGaps(gapsLoad.doc, { plans, links: linksLoad.doc, table: modelsLoad.table }),
     ...reg.validatePlanModelCoverage({
