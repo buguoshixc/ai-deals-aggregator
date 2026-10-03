@@ -1,0 +1,199 @@
+{
+  "gold": "D:\\qc-t18\\wt",
+  "results": [
+    {
+      "id": "c1-true-to-unknown-legal",
+      "note": "true → \"unknown\" 带见证 ⇒ 合法",
+      "expect": {
+        "validate-strict": 0,
+        "plans-reproducible": 0,
+        "rebuild-plans": 0
+      },
+      "extra": {
+        "rebuildExit": 0
+      },
+      "changed": {
+        "src": true,
+        "pub": true
+      },
+      "gates": [
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 0,
+          "hits": [
+            "限制条件三态: 6 条（true 1 · false 0 · unknown 1） · 来源层↔派生产物逐条同值 23/23 · 含 \"unknown\" 的套餐 1 条",
+            "免费额度/credits: 带免费额度 4 条（其中官方明说\"没有\" 0 条） · 带 credits 0 条 · 带速率限制 2 条 · 非 token 计费项 8 条"
+          ]
+        },
+        {
+          "name": "plans-selftest",
+          "command": "node scripts/tools/plans-selftest.js",
+          "exitCode": 0,
+          "hits": [
+            "✓ 额度周期与计费周期不一致时不产出单价",
+            "✓ 不可比较时该值为 null（额度周期与计费周期不一致）"
+          ]
+        },
+        {
+          "name": "plans-reproducible",
+          "command": "node scripts/tools/check-plans-reproducible.js",
+          "exitCode": 0,
+          "hits": []
+        },
+        {
+          "name": "rebuild-plans",
+          "command": "node scripts/tools/rebuild-plans.js",
+          "exitCode": 0,
+          "hits": []
+        }
+      ]
+    },
+    {
+      "id": "c2-true-to-false-no-witness",
+      "note": "true → false 而 note 不动 ⇒ 必红",
+      "expect": {
+        "validate-strict": "nonzero",
+        "plans-reproducible": "nonzero",
+        "rebuild-plans": "nonzero"
+      },
+      "changed": {
+        "src": true,
+        "pub": false
+      },
+      "gates": [
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 1,
+          "hits": [
+            "限制条件三态: 6 条（true 2 · false 0 · unknown 0） · 来源层↔派生产物逐条同值 22/22 · 含 \"unknown\" 的套餐 0 条",
+            "免费额度/credits: 带免费额度 4 条（其中官方明说\"没有\" 0 条） · 带 credits 0 条 · 带速率限制 2 条 · 非 token 计费项 8 条"
+          ]
+        },
+        {
+          "name": "plans-selftest",
+          "command": "node scripts/tools/plans-selftest.js",
+          "exitCode": 1,
+          "hits": [
+            "✓ 额度周期与计费周期不一致时不产出单价",
+            "✓ 不可比较时该值为 null（额度周期与计费周期不一致）"
+          ]
+        },
+        {
+          "name": "plans-reproducible",
+          "command": "node scripts/tools/check-plans-reproducible.js",
+          "exitCode": 1,
+          "hits": []
+        },
+        {
+          "name": "rebuild-plans",
+          "command": "node scripts/tools/rebuild-plans.js",
+          "exitCode": 1,
+          "hits": [
+            "❌ 人工来源层有 1 处问题，拒绝写盘：",
+            "- #2 Lite restrictions[1]: value=false 的 note 里没有官方否定表述（应出现 无需 / 不需 / 不需要 / 没有 …（或英文对应表述）） —— 说\"不是 / 不需要\"必须能在官方原文上兑现；只想说「没查到」就写 \"unknown\""
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c3-unknown-with-wrong-witness",
+      "note": "\"unknown\" 但 note 是肯定式记述 ⇒ 必红",
+      "expect": {
+        "validate-strict": "nonzero",
+        "rebuild-plans": "nonzero"
+      },
+      "changed": {
+        "src": true,
+        "pub": false
+      },
+      "gates": [
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 1,
+          "hits": [
+            "限制条件三态: 6 条（true 2 · false 0 · unknown 0） · 来源层↔派生产物逐条同值 22/22 · 含 \"unknown\" 的套餐 0 条",
+            "免费额度/credits: 带免费额度 4 条（其中官方明说\"没有\" 0 条） · 带 credits 0 条 · 带速率限制 2 条 · 非 token 计费项 8 条"
+          ]
+        },
+        {
+          "name": "plans-selftest",
+          "command": "node scripts/tools/plans-selftest.js",
+          "exitCode": 1,
+          "hits": [
+            "✓ 额度周期与计费周期不一致时不产出单价",
+            "✓ 不可比较时该值为 null（额度周期与计费周期不一致）"
+          ]
+        },
+        {
+          "name": "plans-reproducible",
+          "command": "node scripts/tools/check-plans-reproducible.js",
+          "exitCode": 1,
+          "hits": []
+        },
+        {
+          "name": "rebuild-plans",
+          "command": "node scripts/tools/rebuild-plans.js",
+          "exitCode": 1,
+          "hits": [
+            "❌ 人工来源层有 1 处问题，拒绝写盘：",
+            "- #2 Lite restrictions[1]: value=\"unknown\" 的 note 里没有写出「查过但来源没说明」（应出现 未说明 / 未提及 / 未披露 / 未标注 …（或英文对应表述）） —— unknown 是\"查过、没找到\"，不是一个万能挡箭牌"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c4-handedit-derived",
+      "note": "手改仓根 plans.json（派生层）⇒ 必红",
+      "expect": {
+        "plans-reproducible": "nonzero",
+        "plans-selftest": "nonzero"
+      },
+      "changed": {
+        "src": false,
+        "pub": true
+      },
+      "gates": [
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 1,
+          "hits": [
+            "限制条件三态: 6 条（true 1 · false 0 · unknown 1） · 来源层↔派生产物逐条同值 22/23 · 含 \"unknown\" 的套餐 0 条",
+            "免费额度/credits: 带免费额度 4 条（其中官方明说\"没有\" 0 条） · 带 credits 0 条 · 带速率限制 2 条 · 非 token 计费项 8 条"
+          ]
+        },
+        {
+          "name": "plans-selftest",
+          "command": "node scripts/tools/plans-selftest.js",
+          "exitCode": 1,
+          "hits": [
+            "✓ 额度周期与计费周期不一致时不产出单价",
+            "✓ 不可比较时该值为 null（额度周期与计费周期不一致）"
+          ]
+        },
+        {
+          "name": "plans-reproducible",
+          "command": "node scripts/tools/check-plans-reproducible.js",
+          "exitCode": 1,
+          "hits": [
+            "盘上：[{\"kind\":\"fair_use\",\"value\":\"unknown\",\"note\":\"（T18 变异）查过官方页与文档，来源未说明这一条；该限制官方没有给出可判定的说法\"}]",
+            "- plans.json 与人工来源层的产出不一致（1 处差异）—— 手改过 plans.json，或改了 curated_plans.json 没重建"
+          ]
+        },
+        {
+          "name": "rebuild-plans",
+          "command": "node scripts/tools/rebuild-plans.js",
+          "exitCode": 0,
+          "hits": [
+            "旧：[{\"kind\":\"fair_use\",\"value\":\"unknown\",\"note\":\"（T18 变异）查过官方页与文档，来源未说明这一条；该限制官方没有给出可判定的说法\"}]"
+          ]
+        }
+      ]
+    }
+  ],
+  "c1Value": "unknown",
+  "failures": []
+}

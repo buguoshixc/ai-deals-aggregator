@@ -1,0 +1,279 @@
+{
+  "root": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\quality-closure-post-audit",
+  "ranAt": "2026-10-03T18:22:30.181Z",
+  "results": [
+    {
+      "name": "validate --strict",
+      "command": "node scripts/validate.js --strict",
+      "exitCode": 0,
+      "ms": 175,
+      "summary": [
+        "✅ 校验通过（strict 模式）"
+      ]
+    },
+    {
+      "name": "check-ci-consistency --expect-checks=36",
+      "command": "node scripts/tools/check-ci-consistency.js --expect-checks=36",
+      "exitCode": 0,
+      "ms": 1167,
+      "summary": [
+        "✓ (1b) 必需 workflow 的 uses 没有浮动引用（@main / @master / 裸分支名；按 SHA 钉死是允许且推荐的） — 未发现浮动引用（SHA 钉死的写法同样视为通过）",
+        "✅ CI 口径检查 36 项，失败 0 项"
+      ]
+    },
+    {
+      "name": "check-reproducible",
+      "command": "node scripts/tools/check-reproducible.js",
+      "exitCode": 0,
+      "ms": 101,
+      "summary": [
+        "✅ deals.json 可重建：值全部有源，且管线对它是幂等的（再跑一遍采集不会改动它）。"
+      ]
+    },
+    {
+      "name": "history-verify",
+      "command": "node scripts/tools/history-verify.js",
+      "exitCode": 0,
+      "ms": 80,
+      "summary": [
+        "✅ 历史可重建：基线 + 事件重放逐字段等于当前 deals.json，且生命周期成对。"
+      ]
+    },
+    {
+      "name": "check-plans-reproducible",
+      "command": "node scripts/tools/check-plans-reproducible.js",
+      "exitCode": 0,
+      "ms": 73,
+      "summary": [
+        "✅ plans.json 可重建性通过：与 curated_plans.json 的产出逐字节一致"
+      ]
+    },
+    {
+      "name": "check-api-plans-reproducible",
+      "command": "node scripts/tools/check-api-plans-reproducible.js",
+      "exitCode": 0,
+      "ms": 86,
+      "summary": [
+        "✅ api-plans.json 可重建性通过：与 curated_api_plans.json 的产出逐字节一致"
+      ]
+    },
+    {
+      "name": "check-models-reproducible",
+      "command": "node scripts/tools/check-models-reproducible.js",
+      "exitCode": 0,
+      "ms": 71,
+      "summary": [
+        "✅ Model Registry 可重建性通过：models.json 与 model-registry-links.json 都与来源层逐字节一致"
+      ]
+    },
+    {
+      "name": "check-model-registry-links",
+      "command": "node scripts/tools/check-model-registry-links.js",
+      "exitCode": 0,
+      "ms": 77,
+      "summary": [
+        "✅ Model Registry 关系层通过：每条映射都指向真实存在的记录与模型，一条 source pricing identity 至多归属一个 registry 模型，引文逐字来自记录本身；API 与 Coding 两侧每一个模型身份都已判过"
+      ]
+    },
+    {
+      "name": "check-api-plan-history",
+      "command": "node scripts/tools/check-api-plan-history.js",
+      "exitCode": 0,
+      "ms": 78,
+      "summary": [
+        "✅ API 计费变化可重建：基线 + 事件重放逐字段等于当前 api-plans.json，且生命周期成对。"
+      ]
+    },
+    {
+      "name": "check-plan-history",
+      "command": "node scripts/tools/check-plan-history.js",
+      "exitCode": 0,
+      "ms": 76,
+      "summary": [
+        "✅ 套餐变化可重建：基线 + 事件重放逐字段等于当前 plans.json，且生命周期成对。"
+      ]
+    },
+    {
+      "name": "models-selftest",
+      "command": "node scripts/tools/models-selftest.js",
+      "exitCode": 0,
+      "ms": 105,
+      "summary": [
+        "✓ 【牙 #22】没传 registry 表（table 为空）却有声明 → 红（判不了\"是不是能对上\"就不是通过）",
+        "✅ === v3.0 Model Registry 演练：90 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "models-page-selftest --dir=dist",
+      "command": "node scripts/tools/models-page-selftest.js --dir=dist",
+      "exitCode": 0,
+      "ms": 407,
+      "summary": [
+        "✓ 未映射模型：门槛不通过（没有任何显式引用）",
+        "=== v3.0 Model Registry 页面演练：75 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "api-plans-selftest",
+      "command": "node scripts/tools/api-plans-selftest.js",
+      "exitCode": 0,
+      "ms": 233,
+      "summary": [
+        "✓ 对照：同一中性形状补上 stability=standing → 通过（证明上一条红的是\"缺 stability\"本身）",
+        "=== v2.5 API / Token 计费演练：175 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "plans-selftest",
+      "command": "node scripts/tools/plans-selftest.js",
+      "exitCode": 0,
+      "ms": 457,
+      "summary": [
+        "✓ 页面级诚实性断言全部通过（含最近变化块与时间线）",
+        "✅ === v2.1 Coding Plan 数据模型演练：264 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "ai-selftest",
+      "command": "node scripts/tools/ai-selftest.js",
+      "exitCode": 0,
+      "ms": 3008,
+      "summary": [
+        "AI 自检 63 项 · 失败 0",
+        "✅ AI 层边界完好：候选不合格就进不来，AI 挂掉不影响确定性链路，"
+      ]
+    },
+    {
+      "name": "data-docs-selftest --dir=dist",
+      "command": "node scripts/tools/data-docs-selftest.js --dir=dist",
+      "exitCode": 0,
+      "ms": 127,
+      "summary": [
+        "=== v3.0 数据出口演练：57 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "feeds-selftest",
+      "command": "node scripts/tools/feeds-selftest.js",
+      "exitCode": 0,
+      "ms": 399,
+      "summary": [
+        "✓ 裸 & 被抓到（RSS 里一个裸 & 就能让整份 feed 解析失败）",
+        "=== v1.6 订阅层演练：131 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "health-selftest",
+      "command": "node scripts/tools/health-selftest.js",
+      "exitCode": 0,
+      "ms": 554,
+      "summary": [
+        "✅ 数据源健康自测：72 项通过，0 项失败"
+      ]
+    },
+    {
+      "name": "provenance-selftest",
+      "command": "node scripts/tools/provenance-selftest.js",
+      "exitCode": 0,
+      "ms": 102,
+      "summary": [
+        "✅ provenance 自测：114 项通过，0 项失败"
+      ]
+    },
+    {
+      "name": "archive-selftest --dir=dist",
+      "command": "node scripts/tools/archive-selftest.js --dir=dist",
+      "exitCode": 0,
+      "ms": 102,
+      "summary": [
+        "=== v3.0 历史档案演练：69 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "seo-verify --dir=dist",
+      "command": "node scripts/tools/seo-verify.js --dir=dist",
+      "exitCode": 0,
+      "ms": 459,
+      "summary": [
+        "✅ SEO 验收 11 项，失败 0 项"
+      ]
+    },
+    {
+      "name": "coverage-report",
+      "command": "node scripts/tools/coverage-report.js",
+      "exitCode": 0,
+      "ms": 101,
+      "summary": [
+        "失败原因：qoder.com 的 robots.txt 对本路径 Disallow，静态抓取与无头渲染两条路都被拒（遵守 robots，不做绕过）。改用官方文档站 docs.qoder.com/account/pricing.md。",
+        "✅ 覆盖报告自检通过（0 处问题）。"
+      ]
+    },
+    {
+      "name": "deal-plan-links-selftest",
+      "command": "node scripts/tools/deal-plan-links-selftest.js",
+      "exitCode": 0,
+      "ms": 127,
+      "summary": [
+        "✓ 套餐页：断言在正确的块上通过",
+        "=== v2.4 优惠 ↔ 套餐关系演练：80 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "audience-selftest",
+      "command": "node scripts/tools/audience-selftest.js",
+      "exitCode": 0,
+      "ms": 116,
+      "summary": [
+        "✅ 受众字段自测：191 项通过，0 项失败"
+      ]
+    },
+    {
+      "name": "changes-selftest",
+      "command": "node scripts/tools/changes-selftest.js",
+      "exitCode": 0,
+      "ms": 86,
+      "summary": [
+        "=== v1.5 变化雷达演练：101 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "build-local",
+      "command": "node scripts/tools/build-local.js",
+      "exitCode": 0,
+      "ms": 1900,
+      "summary": [
+        "✅ 产物自检通过",
+        "✅ 构建完成 → dist/（自检全过，已从暂存目录就位）"
+      ]
+    },
+    {
+      "name": "MY join-audit --dist=dist",
+      "command": "node research/quality-closure/verify-work/join-audit.cjs --dist=dist",
+      "exitCode": 0,
+      "ms": 93,
+      "summary": [
+        "✅ 四项计数全 0，且行身份 / 价格 / 单位 / 通道 / 变体 / 来源链接 / canonical 逐项对账通过"
+      ]
+    },
+    {
+      "name": "MY browser-matrix --dist=dist",
+      "command": "node research/quality-closure/verify-work/browser-matrix.cjs --dist=dist",
+      "exitCode": 0,
+      "ms": 20608,
+      "summary": [
+        "models/glm-4.5v/   8/8 通过",
+        "✅ 浏览器矩阵全过（横向溢出 / console / 失败请求 / 站内链接与锚点 / canonical / 面包屑 / 来源外链）"
+      ]
+    },
+    {
+      "name": "verify-site --dir=dist（真浏览器）",
+      "command": "node scripts/tools/verify-site.js --dir=dist",
+      "exitCode": 0,
+      "ms": 65922,
+      "summary": [
+        "✓ /plans/coding/ 搜索覆盖中文显示值 / 平台别名 / 模型名（逐词对账） — 4 个词逐个通过",
+        "✅ 验收 703 项，失败 0 项"
+      ]
+    }
+  ]
+}

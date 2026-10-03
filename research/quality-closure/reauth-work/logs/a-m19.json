@@ -1,0 +1,22 @@
+{
+  "mutation": "M19 形状：glm-4.5v 两行三格价格对调（data-item / data-variant / 行数 / 单位文案全不变）",
+  "target": "dist/models/glm-4.5v/index.html",
+  "productionGate": {
+    "command": "node scripts/tools/models-page-selftest.js --dir=dist",
+    "exit": 1,
+    "failureLines": [
+      "  ✗ 逐格对账：44 个模型页 · 67 条计价条目 · 536 个格，**全部**等于数据里那一条 —— glm-4.5v (646f01c662e6, glm-4.5v, long_context): 格「输入价」渲染为 \"¥2\"，按数据应为 \"¥4\" ｜ glm-4.5v (646f01c662e6, glm-4.5v, long_context): 格「输出价」渲染为 \"¥6\"，按数据应为 \"¥12\" ｜ glm-4.5v (646f01c662e6, glm-4.5v, standard): 格「输入价」渲染为 \"¥4\"，按数据应为 \"¥2\" ｜ glm-4.5v (646f01c662e6, glm-4.5v, standard): 格「输出价」渲染为 \"¥12\"，按数据应为 \"¥6\"",
+      "  ✓ 逐格对账覆盖 = api-plans 全部计价条目（67/67，0 豁免；44 个 slug 逐页有产物）",
+      "  ✓ 合成夹具：逐格对账在干净样本上零问题（判据不是恒红）",
+      "  ✓ 【对照】把 standard 行的「输入价」与「输出价」对调 → 逐格对账必须点名该条目与该格"
+    ],
+    "cellNaming": [
+      "  ✗ 逐格对账：44 个模型页 · 67 条计价条目 · 536 个格，**全部**等于数据里那一条 —— glm-4.5v (646f01c662e6, glm-4.5v, long_context): 格「输入价」渲染为 \"¥2\"，按数据应为 \"¥4\" ｜ glm-4.5v (646f01c662e6, glm-4.5v, long_context): 格「输出价」渲染为 \"¥6\"，按数据应为 \"¥12\" ｜ glm-4.5v (646f01c662e6, glm-4.5v, standard): 格「输入价」渲染为 \"¥4\"，按数据应为 \"¥2\" ｜ glm-4.5v (646f01c662e6, glm-4.5v, standard): 格「输出价」渲染为 \"¥12\"，按数据应为 \"¥6\""
+    ]
+  },
+  "myIndependentJoin": {
+    "command": "node research/quality-closure/verify-work/join-audit.cjs --dist=dist",
+    "exit": 1
+  },
+  "verdict": "CAUGHT-BY-PRODUCTION-GATE-AND-NAMED"
+}

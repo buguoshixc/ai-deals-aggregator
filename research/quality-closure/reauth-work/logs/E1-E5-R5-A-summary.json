@@ -1,0 +1,41 @@
+{
+  "note": "E1/E4/E5/R5/A 的观测值（从 console 输出抄录；每次变异后都用 gold 文件级恢复并复核 sha256 逐字节一致）",
+  "A": {
+    "mutation": "模型页 glm-4.5v 两行三格价格对调（data-item/data-variant/行数/单位文案不变）",
+    "productionGate": "node scripts/tools/models-page-selftest.js --dir=dist",
+    "exit": 1,
+    "failureLine": "✗ 逐格对账：44 个模型页 · 67 条计价条目 · 536 个格，**全部**等于数据里那一条 —— glm-4.5v (646f01c662e6, glm-4.5v, long_context): 格「输入价」渲染为 \"¥2\"，按数据应为 \"¥4\" ｜ 格「输出价」渲染为 \"¥6\"，按数据应为 \"¥12\" …",
+    "verdict": "CAUGHT-BY-PRODUCTION-GATE-AND-NAMED"
+  },
+  "R5": {
+    "mutation": "现场 dist/plans/api/index.html 第一行输入价 → ¥999999",
+    "shaBefore": "41c2fcd9a138",
+    "shaAfter": "3205f7bea07d",
+    "verifySiteExit": 1,
+    "failureLine": "✗ /plans/api/ 输入价 / 输出价 / 缓存命中输入 三列逐格与数据对账（互换输入输出必红） — 第 1 行 deepseek-v4-pro：页面 [\"¥999999\",\"¥24\",\"—\"] / 数据 [\"¥12\",\"¥24\",\"—\"]",
+    "otherGates": "api-plans-selftest=0 · models-page-selftest=0 · seo-verify=0 · data-docs-selftest=0 · MY join-audit=0",
+    "restoredByteExact": true
+  },
+  "E1": {
+    "mutation": "现场 dist/plans/api/index.html 第 8 列 pfree 格改成 credits 版本",
+    "verifySiteExit": 0,
+    "conclusion": "现场篡改第 8 列不被 verify-site 抓（它只逐格对账三列价格 + 单位列）",
+    "restoredByteExact": true
+  },
+  "E4": {
+    "mutation": "同上（第 8 列篡改）后跑 build-local",
+    "shaBefore": "41c2fcd9a1",
+    "shaAfter": "3b588adefa",
+    "buildLocalExit": 0,
+    "restoredByteExact": true
+  },
+  "E5": {
+    "question": "手改 dist 第 8 列后跑 build-local：是「重建覆盖（自愈）」还是「重检漏掉」？",
+    "goldSha": "41c2fcd9a138",
+    "before": "41c2fcd9a138",
+    "mutated": "3b588adefa8f",
+    "afterBuild": "41c2fcd9a138",
+    "buildExit": 0,
+    "verdict": "SELF-HEALED（重建覆盖，产物回到数据真值）"
+  }
+}

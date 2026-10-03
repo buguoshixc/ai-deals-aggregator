@@ -1,0 +1,795 @@
+{
+  "summary": {
+    "dist": "dist",
+    "routes": [
+      "/",
+      "changes/",
+      "archive/",
+      "feeds/",
+      "plans/api/",
+      "models/glm-4.5v/"
+    ],
+    "viewports": [
+      "360",
+      "390",
+      "768",
+      "desktop"
+    ],
+    "jsModes": [
+      true,
+      false
+    ],
+    "checks": 48,
+    "failures": []
+  },
+  "results": [
+    {
+      "route": "/",
+      "viewport": "360",
+      "js": true,
+      "url": "http://127.0.0.1:63976/",
+      "metrics": {
+        "scrollWidth": 360,
+        "clientWidth": 360,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/",
+        "breadcrumb": false,
+        "anchors": 172,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "/",
+      "viewport": "360",
+      "js": false,
+      "url": "http://127.0.0.1:63976/",
+      "metrics": {
+        "scrollWidth": 360,
+        "clientWidth": 360,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/",
+        "breadcrumb": false,
+        "anchors": 172,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "/",
+      "viewport": "390",
+      "js": true,
+      "url": "http://127.0.0.1:63976/",
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/",
+        "breadcrumb": false,
+        "anchors": 172,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "/",
+      "viewport": "390",
+      "js": false,
+      "url": "http://127.0.0.1:63976/",
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/",
+        "breadcrumb": false,
+        "anchors": 172,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "/",
+      "viewport": "768",
+      "js": true,
+      "url": "http://127.0.0.1:63976/",
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/",
+        "breadcrumb": false,
+        "anchors": 172,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "/",
+      "viewport": "768",
+      "js": false,
+      "url": "http://127.0.0.1:63976/",
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/",
+        "breadcrumb": false,
+        "anchors": 172,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "/",
+      "viewport": "desktop",
+      "js": true,
+      "url": "http://127.0.0.1:63976/",
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/",
+        "breadcrumb": false,
+        "anchors": 172,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "/",
+      "viewport": "desktop",
+      "js": false,
+      "url": "http://127.0.0.1:63976/",
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/",
+        "breadcrumb": false,
+        "anchors": 172,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "changes/",
+      "viewport": "360",
+      "js": true,
+      "url": "http://127.0.0.1:63976/changes/",
+      "metrics": {
+        "scrollWidth": 360,
+        "clientWidth": 360,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/changes/",
+        "breadcrumb": true,
+        "anchors": 47,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "changes/",
+      "viewport": "360",
+      "js": false,
+      "url": "http://127.0.0.1:63976/changes/",
+      "metrics": {
+        "scrollWidth": 360,
+        "clientWidth": 360,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/changes/",
+        "breadcrumb": true,
+        "anchors": 47,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "changes/",
+      "viewport": "390",
+      "js": true,
+      "url": "http://127.0.0.1:63976/changes/",
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/changes/",
+        "breadcrumb": true,
+        "anchors": 47,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "changes/",
+      "viewport": "390",
+      "js": false,
+      "url": "http://127.0.0.1:63976/changes/",
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/changes/",
+        "breadcrumb": true,
+        "anchors": 47,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "changes/",
+      "viewport": "768",
+      "js": true,
+      "url": "http://127.0.0.1:63976/changes/",
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/changes/",
+        "breadcrumb": true,
+        "anchors": 47,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "changes/",
+      "viewport": "768",
+      "js": false,
+      "url": "http://127.0.0.1:63976/changes/",
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/changes/",
+        "breadcrumb": true,
+        "anchors": 47,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "changes/",
+      "viewport": "desktop",
+      "js": true,
+      "url": "http://127.0.0.1:63976/changes/",
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/changes/",
+        "breadcrumb": true,
+        "anchors": 47,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "changes/",
+      "viewport": "desktop",
+      "js": false,
+      "url": "http://127.0.0.1:63976/changes/",
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/changes/",
+        "breadcrumb": true,
+        "anchors": 47,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "archive/",
+      "viewport": "360",
+      "js": true,
+      "url": "http://127.0.0.1:63976/archive/",
+      "metrics": {
+        "scrollWidth": 360,
+        "clientWidth": 360,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/archive/",
+        "breadcrumb": true,
+        "anchors": 29,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "archive/",
+      "viewport": "360",
+      "js": false,
+      "url": "http://127.0.0.1:63976/archive/",
+      "metrics": {
+        "scrollWidth": 360,
+        "clientWidth": 360,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/archive/",
+        "breadcrumb": true,
+        "anchors": 29,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "archive/",
+      "viewport": "390",
+      "js": true,
+      "url": "http://127.0.0.1:63976/archive/",
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/archive/",
+        "breadcrumb": true,
+        "anchors": 29,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "archive/",
+      "viewport": "390",
+      "js": false,
+      "url": "http://127.0.0.1:63976/archive/",
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/archive/",
+        "breadcrumb": true,
+        "anchors": 29,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "archive/",
+      "viewport": "768",
+      "js": true,
+      "url": "http://127.0.0.1:63976/archive/",
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/archive/",
+        "breadcrumb": true,
+        "anchors": 29,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "archive/",
+      "viewport": "768",
+      "js": false,
+      "url": "http://127.0.0.1:63976/archive/",
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/archive/",
+        "breadcrumb": true,
+        "anchors": 29,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "archive/",
+      "viewport": "desktop",
+      "js": true,
+      "url": "http://127.0.0.1:63976/archive/",
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/archive/",
+        "breadcrumb": true,
+        "anchors": 29,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "archive/",
+      "viewport": "desktop",
+      "js": false,
+      "url": "http://127.0.0.1:63976/archive/",
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/archive/",
+        "breadcrumb": true,
+        "anchors": 29,
+        "externals": 1
+      },
+      "ok": true
+    },
+    {
+      "route": "feeds/",
+      "viewport": "360",
+      "js": true,
+      "url": "http://127.0.0.1:63976/feeds/",
+      "metrics": {
+        "scrollWidth": 360,
+        "clientWidth": 360,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/feeds/",
+        "breadcrumb": true,
+        "anchors": 100,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "feeds/",
+      "viewport": "360",
+      "js": false,
+      "url": "http://127.0.0.1:63976/feeds/",
+      "metrics": {
+        "scrollWidth": 360,
+        "clientWidth": 360,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/feeds/",
+        "breadcrumb": true,
+        "anchors": 100,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "feeds/",
+      "viewport": "390",
+      "js": true,
+      "url": "http://127.0.0.1:63976/feeds/",
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/feeds/",
+        "breadcrumb": true,
+        "anchors": 100,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "feeds/",
+      "viewport": "390",
+      "js": false,
+      "url": "http://127.0.0.1:63976/feeds/",
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/feeds/",
+        "breadcrumb": true,
+        "anchors": 100,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "feeds/",
+      "viewport": "768",
+      "js": true,
+      "url": "http://127.0.0.1:63976/feeds/",
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/feeds/",
+        "breadcrumb": true,
+        "anchors": 100,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "feeds/",
+      "viewport": "768",
+      "js": false,
+      "url": "http://127.0.0.1:63976/feeds/",
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/feeds/",
+        "breadcrumb": true,
+        "anchors": 100,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "feeds/",
+      "viewport": "desktop",
+      "js": true,
+      "url": "http://127.0.0.1:63976/feeds/",
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/feeds/",
+        "breadcrumb": true,
+        "anchors": 100,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "feeds/",
+      "viewport": "desktop",
+      "js": false,
+      "url": "http://127.0.0.1:63976/feeds/",
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/feeds/",
+        "breadcrumb": true,
+        "anchors": 100,
+        "externals": 51
+      },
+      "ok": true
+    },
+    {
+      "route": "plans/api/",
+      "viewport": "360",
+      "js": true,
+      "url": "http://127.0.0.1:63976/plans/api/",
+      "metrics": {
+        "scrollWidth": 360,
+        "clientWidth": 360,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/plans/api/",
+        "breadcrumb": true,
+        "anchors": 111,
+        "externals": 68
+      },
+      "ok": true
+    },
+    {
+      "route": "plans/api/",
+      "viewport": "360",
+      "js": false,
+      "url": "http://127.0.0.1:63976/plans/api/",
+      "metrics": {
+        "scrollWidth": 360,
+        "clientWidth": 360,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/plans/api/",
+        "breadcrumb": true,
+        "anchors": 111,
+        "externals": 68
+      },
+      "ok": true
+    },
+    {
+      "route": "plans/api/",
+      "viewport": "390",
+      "js": true,
+      "url": "http://127.0.0.1:63976/plans/api/",
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/plans/api/",
+        "breadcrumb": true,
+        "anchors": 111,
+        "externals": 68
+      },
+      "ok": true
+    },
+    {
+      "route": "plans/api/",
+      "viewport": "390",
+      "js": false,
+      "url": "http://127.0.0.1:63976/plans/api/",
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/plans/api/",
+        "breadcrumb": true,
+        "anchors": 111,
+        "externals": 68
+      },
+      "ok": true
+    },
+    {
+      "route": "plans/api/",
+      "viewport": "768",
+      "js": true,
+      "url": "http://127.0.0.1:63976/plans/api/",
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/plans/api/",
+        "breadcrumb": true,
+        "anchors": 111,
+        "externals": 68
+      },
+      "ok": true
+    },
+    {
+      "route": "plans/api/",
+      "viewport": "768",
+      "js": false,
+      "url": "http://127.0.0.1:63976/plans/api/",
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/plans/api/",
+        "breadcrumb": true,
+        "anchors": 111,
+        "externals": 68
+      },
+      "ok": true
+    },
+    {
+      "route": "plans/api/",
+      "viewport": "desktop",
+      "js": true,
+      "url": "http://127.0.0.1:63976/plans/api/",
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/plans/api/",
+        "breadcrumb": true,
+        "anchors": 111,
+        "externals": 68
+      },
+      "ok": true
+    },
+    {
+      "route": "plans/api/",
+      "viewport": "desktop",
+      "js": false,
+      "url": "http://127.0.0.1:63976/plans/api/",
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/plans/api/",
+        "breadcrumb": true,
+        "anchors": 111,
+        "externals": 68
+      },
+      "ok": true
+    },
+    {
+      "route": "models/glm-4.5v/",
+      "viewport": "360",
+      "js": true,
+      "url": "http://127.0.0.1:63976/models/glm-4.5v/",
+      "metrics": {
+        "scrollWidth": 360,
+        "clientWidth": 360,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/models/glm-4.5v/",
+        "breadcrumb": true,
+        "anchors": 32,
+        "externals": 4
+      },
+      "ok": true
+    },
+    {
+      "route": "models/glm-4.5v/",
+      "viewport": "360",
+      "js": false,
+      "url": "http://127.0.0.1:63976/models/glm-4.5v/",
+      "metrics": {
+        "scrollWidth": 360,
+        "clientWidth": 360,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/models/glm-4.5v/",
+        "breadcrumb": true,
+        "anchors": 32,
+        "externals": 4
+      },
+      "ok": true
+    },
+    {
+      "route": "models/glm-4.5v/",
+      "viewport": "390",
+      "js": true,
+      "url": "http://127.0.0.1:63976/models/glm-4.5v/",
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/models/glm-4.5v/",
+        "breadcrumb": true,
+        "anchors": 32,
+        "externals": 4
+      },
+      "ok": true
+    },
+    {
+      "route": "models/glm-4.5v/",
+      "viewport": "390",
+      "js": false,
+      "url": "http://127.0.0.1:63976/models/glm-4.5v/",
+      "metrics": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/models/glm-4.5v/",
+        "breadcrumb": true,
+        "anchors": 32,
+        "externals": 4
+      },
+      "ok": true
+    },
+    {
+      "route": "models/glm-4.5v/",
+      "viewport": "768",
+      "js": true,
+      "url": "http://127.0.0.1:63976/models/glm-4.5v/",
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/models/glm-4.5v/",
+        "breadcrumb": true,
+        "anchors": 32,
+        "externals": 4
+      },
+      "ok": true
+    },
+    {
+      "route": "models/glm-4.5v/",
+      "viewport": "768",
+      "js": false,
+      "url": "http://127.0.0.1:63976/models/glm-4.5v/",
+      "metrics": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/models/glm-4.5v/",
+        "breadcrumb": true,
+        "anchors": 32,
+        "externals": 4
+      },
+      "ok": true
+    },
+    {
+      "route": "models/glm-4.5v/",
+      "viewport": "desktop",
+      "js": true,
+      "url": "http://127.0.0.1:63976/models/glm-4.5v/",
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/models/glm-4.5v/",
+        "breadcrumb": true,
+        "anchors": 32,
+        "externals": 4
+      },
+      "ok": true
+    },
+    {
+      "route": "models/glm-4.5v/",
+      "viewport": "desktop",
+      "js": false,
+      "url": "http://127.0.0.1:63976/models/glm-4.5v/",
+      "metrics": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": null,
+        "canonical": "https://buguoshixc.github.io/ai-deals-aggregator/models/glm-4.5v/",
+        "breadcrumb": true,
+        "anchors": 32,
+        "externals": 4
+      },
+      "ok": true
+    }
+  ]
+}

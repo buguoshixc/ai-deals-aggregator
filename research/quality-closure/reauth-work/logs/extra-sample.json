@@ -1,0 +1,36 @@
+{
+  "S1": {
+    "command": "battery --only=M11,M12,MM17",
+    "exit": 0,
+    "hits": []
+  },
+  "S2": {
+    "command": "battery --only=M03（要求面）",
+    "exit": 0,
+    "hits": []
+  },
+  "R3": {
+    "skipped": "no-directory-record"
+  },
+  "R4": {
+    "mutation": "产物 /plans/api/ 第一行第三个价格格改成 ¥999999",
+    "shaBefore": "41c2fcd9a1380db01540a0f76718fc12841d5ef3ee6c93afece9c24a54ff5070",
+    "gates": [
+      {
+        "name": "api-plans-selftest（默认读 dist）",
+        "exit": 0,
+        "hits": [
+          "✓ 【牙】引文点名「每百万」而 pricing.unit=per_1K_tokens → 红（单位枚举翻转必须有判据）",
+          "✓ 【牙·反向】引文点名「每千」而 pricing.unit=per_1M_tokens → 也红（两个方向都有牙）",
+          "✓ 【牙】单位没有任何见证（引文不点名、无 pricing.unit 引文、unitNote 空）→ 红（不许静默放行）"
+        ]
+      },
+      {
+        "name": "MY join-audit（模型页数值维度，不含 API 页）",
+        "exit": 0,
+        "hits": []
+      }
+    ],
+    "restoredByteExact": true
+  }
+}

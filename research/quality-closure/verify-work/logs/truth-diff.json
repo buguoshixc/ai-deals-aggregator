@@ -1,0 +1,175 @@
+{
+  "baseline": "research\\quality-closure\\BASELINE.md",
+  "auditBase": "1c024db",
+  "frozenRows": [
+    {
+      "rel": "deals.json",
+      "frozenSha256": "3ba148dbc640e1b2afc68e9d7e4cfd6fed87b6151f796fd67e399b91826dd301",
+      "currentSha256": "3ba148dbc640e1b2afc68e9d7e4cfd6fed87b6151f796fd67e399b91826dd301",
+      "size": 241698,
+      "frozenSize": 241698,
+      "same": true
+    },
+    {
+      "rel": "plans.json",
+      "frozenSha256": "a72c91efea82b843141dfa9994f11a81ed38e2d2ca31c3c218fa31b15cb70938",
+      "currentSha256": "a72c91efea82b843141dfa9994f11a81ed38e2d2ca31c3c218fa31b15cb70938",
+      "size": 45904,
+      "frozenSize": 45904,
+      "same": true
+    },
+    {
+      "rel": "api-plans.json",
+      "frozenSha256": "962fc9c4ef8bddd99d92819141f563bbb1f8febbe3779ff6cf87f8b36a81ee46",
+      "currentSha256": "19cd8af73a746d909a447c4afd09f198f8664892b69710f968e48e5c3ed479ec",
+      "size": 66504,
+      "frozenSize": 66091,
+      "same": false
+    },
+    {
+      "rel": "models.json",
+      "frozenSha256": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b",
+      "currentSha256": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b",
+      "size": 18693,
+      "frozenSize": 18693,
+      "same": true
+    },
+    {
+      "rel": "model-registry-links.json",
+      "frozenSha256": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+      "currentSha256": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+      "size": 39441,
+      "frozenSize": 39441,
+      "same": true
+    },
+    {
+      "rel": "scripts/data/model-registry-gaps.json",
+      "frozenSha256": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+      "currentSha256": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+      "size": 6728,
+      "frozenSize": 6728,
+      "same": true
+    },
+    {
+      "rel": "scripts/data/deal-history.json",
+      "frozenSha256": "6c9909d991973f8ced083658ad939bc5949dbe85a7ee23374a5ed610a2242829",
+      "currentSha256": "6c9909d991973f8ced083658ad939bc5949dbe85a7ee23374a5ed610a2242829",
+      "size": 88821,
+      "frozenSize": 88821,
+      "same": true
+    },
+    {
+      "rel": "scripts/data/plan-history.json",
+      "frozenSha256": "67dbc7f141a4f891c0ef125788dbc02d948b18fd397a95d2ff669c6d8bb27b7a",
+      "currentSha256": "67dbc7f141a4f891c0ef125788dbc02d948b18fd397a95d2ff669c6d8bb27b7a",
+      "size": 18839,
+      "frozenSize": 18839,
+      "same": true
+    },
+    {
+      "rel": "scripts/data/api-plan-history.json",
+      "frozenSha256": "56685dd589dc348b63ee90193e8d44c4771c7f875202a83d9169f79a17f0ecf5",
+      "currentSha256": "56685dd589dc348b63ee90193e8d44c4771c7f875202a83d9169f79a17f0ecf5",
+      "size": 50954,
+      "frozenSize": 50954,
+      "same": true
+    }
+  ],
+  "changedFiles": [
+    "api-plans.json"
+  ],
+  "fieldDiffs": [
+    {
+      "file": "deals.json",
+      "added": 0,
+      "removed": 0,
+      "fieldCount": {
+        "lastSeen": 127
+      },
+      "topLevelKeys": [
+        "updatedAt",
+        "deals"
+      ]
+    },
+    {
+      "file": "api-plans.json",
+      "addedPlans": 0,
+      "removedPlans": 0,
+      "identityAdded": 0,
+      "identityRemoved": 0,
+      "fieldChanges": {
+        "freeTier": 4,
+        "pricing": 1
+      },
+      "stabilityAdded": 4
+    },
+    {
+      "file": "plans.json",
+      "changedPaths": [],
+      "changedPathCount": 0
+    },
+    {
+      "file": "models.json",
+      "changedPaths": [],
+      "changedPathCount": 0
+    },
+    {
+      "file": "model-registry-links.json",
+      "changedPaths": [],
+      "changedPathCount": 0
+    },
+    {
+      "file": "scripts/data/models.json",
+      "changedPaths": [],
+      "changedPathCount": 0
+    },
+    {
+      "file": "scripts/data/model-registry-links.json",
+      "changedPaths": [],
+      "changedPathCount": 0
+    },
+    {
+      "file": "scripts/data/model-registry-gaps.json",
+      "changedPaths": [],
+      "changedPathCount": 0
+    }
+  ],
+  "changeList": [
+    "api-plans.json                      |  8 +++--",
+    " scripts/data/curated_api_plans.json |  8 +++--",
+    " scripts/data/official_urls.json     | 22 ++++++++++++",
+    " scripts/data/providers.json         | 70 +++++++++++++++++++++++++------------",
+    " 4 files changed, 81 insertions(+), 27 deletions(-)"
+  ],
+  "rebuilds": [
+    {
+      "name": "api-plans",
+      "command": "node scripts/tools/rebuild-api-plans.js",
+      "exitCode": 0,
+      "identical": true
+    },
+    {
+      "name": "plans",
+      "command": "node scripts/tools/rebuild-plans.js",
+      "exitCode": 0,
+      "identical": true
+    },
+    {
+      "name": "models",
+      "command": "node scripts/tools/rebuild-models.js",
+      "exitCode": 0,
+      "identical": true
+    }
+  ],
+  "notes": [
+    "冻结清单 9 份：SAME 8 份 · DIFF 1 份（api-plans.json）",
+    "本轮 vs HEAD 的真值层/来源层 diff --stat：",
+    "    api-plans.json                      |  8 +++--",
+    "     scripts/data/curated_api_plans.json |  8 +++--",
+    "     scripts/data/official_urls.json     | 22 ++++++++++++",
+    "     scripts/data/providers.json         | 70 +++++++++++++++++++++++++------------",
+    "     4 files changed, 81 insertions(+), 27 deletions(-)",
+    "独立重建（沙箱）：api-plans exit 0 逐字节一致 · plans exit 0 逐字节一致 · models exit 0 逐字节一致"
+  ],
+  "failures": []
+}
