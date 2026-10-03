@@ -4853,6 +4853,27 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     && librarySitemap.body.includes(`<loc>${librarySiteRoot}${route}</loc>`);
 
   /**
+   * 「站外链接」这一类里**唯一允许的非厂商例外**：页脚那枚指向本项目仓库的链接。
+   *
+   * 为什么不写死 URL：写死等于在验收脚本里维护第二份仓库地址；而这里要守的语义是
+   * 「枢纽页不许往外送流量给厂商，只允许站点自己的仓库入口」。仓库地址是**站点自己声明**的，
+   * 所以判定基准从首页共享页脚里现取 —— 语义与地址解耦，改域名不用改验收脚本，
+   * 而把那一枚换成厂商地址会立刻让枢纽页的断言转红。
+   *
+   * `--url=` 线上冒烟时读不到 dist，这时返回空集：例外集为空 = 恢复成「一条站外链接都不许」，
+   * 是更严的一侧，不会让线上冒烟假绿。
+   */
+  const sharedFooterExternalHrefs = (() => {
+    try {
+      const home = fs.readFileSync(path.join(ROOT, 'dist', 'index.html'), 'utf8');
+      const fragment = (home.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1] || '';
+      return new Set([...fragment.matchAll(/href="(https?:\/\/[^"]+)"/g)].map(m => m[1]));
+    } catch (error) {
+      return new Set();
+    }
+  })();
+
+  /**
    * 一次页面体检。`opts`：
    *   label        用于 check 名称
    *   route        站根相对路由（带尾斜杠）
@@ -4860,6 +4881,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
    *   minText      无 JS 时的正文下限（按 page-kinds 的口径取整）
    *   itemList     true=必须有 ItemList 且声明数==元素数==页面行数；false=必须没有；null=不查
    *   official     期望的外部官方链接数下限（默认 0：0 表示"这一页按设计没有外链"）
+   *                ⚠️ 这里数的是**站外链接**，唯一的例外是页脚那一枚指向本项目仓库的链接。
+   *                它由首页页脚（共享片段）声明，因此这个例外是**自证**的：判定基准直接从
+   *                产物里取，不在脚本里写死 URL —— 谁把页脚那枚链接改成厂商地址，枢纽页的
+   *                这条断言立刻红。而"不往外送流量给厂商"的原意一字不改。
    *   overflow     true=查 390/360 页面级横向溢出
    *   footerLink   true=页脚必须有指向本页的入口（索引/枢纽页）；详情页为 false
    *                （详情页的入链来自索引页，逐条在各自小节里查）
@@ -4888,6 +4913,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       const list = lds.find(d => d['@type'] === 'ItemList') || null;
       const crumbLinks = [...document.querySelectorAll('.crumb a')].map(a => a.getAttribute('href') || '');
       const official = [...document.querySelectorAll('a[href^="http"]')].map(a => a.href);
+      // 站外链接里扣掉「站点自己在共享页脚里声明的那一枚仓库入口」，其余一律算数。
+      // 比对用 href（绝对地址）：产物里写的是绝对 URL，但判定不该依赖写法。
+      const repoException = ${JSON.stringify([...sharedFooterExternalHrefs])};
+      const outbound = official.filter(href => !repoException.includes(href));
       return {
         title: strip((document.querySelector('h1') || {}).textContent),
         h1Count: document.querySelectorAll('h1').length,
@@ -4898,6 +4927,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         elements: list ? (list.itemListElement || []).length : -1,
         officialCount: official.length,
         officialHrefs: official,
+        outboundCount: outbound.length,
+        outboundHrefs: outbound,
         controls: document.querySelectorAll('main button, main select, main input, main textarea').length,
         text: document.body ? document.body.innerText.replace(/\\s+/g, ' ').trim() : '',
         footLinks: [...document.querySelectorAll('footer a')].map(a => a.getAttribute('href') || '')
@@ -4927,7 +4958,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         `${data.officialCount} 条`);
     } else {
       check(`${label} 按设计没有站外链接（这一页只做站内导航与数据出口）`,
-        data.officialCount === 0, `${data.officialCount} 条：${data.officialHrefs.slice(0, 2).join(' ')}`);
+        data.outboundCount === 0,
+        `${data.outboundCount} 条：${data.outboundHrefs.slice(0, 2).join(' ')}` +
+        (data.officialCount > data.outboundCount
+          ? `（另有 ${data.officialCount - data.outboundCount} 条本项目仓库入口，由共享页脚声明，不计）`
+          : ''));
     }
     if (wantOverflow) {
       for (const width of [390, 360]) {

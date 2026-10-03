@@ -1241,7 +1241,12 @@
            v3.0 Stage I：四个资料库入口（模型资料 / 套餐与计费 / 历史档案 / 开放数据）**全部**
            挂在上面那一行里，**不新增页脚行** —— 这一行保持 v1.6 的形状不变。 -->
       <p class="catnav" aria-label="变化与订阅">优惠变化：<a href="__CHANGES_HREF__">变化雷达</a> · <a href="__FEEDS_HREF__">订阅这些优惠</a></p>
-      <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span> · <a href="__STATUS_HREF__">数据源状态</a></p>
+      <!-- v2.x：仓库入口挂在「数据源状态」同一行末尾，**不新增页脚行** ——
+           页脚是一份共享片段，多一行会把 5 种深度的输出全部加高（v1.5 的密度账），
+           实测 1440/1280/1024/760px 下这一行仍是 1 行 23px、页高不变。
+           写绝对 URL 而不是路由占位符：它指向 GitHub 本身，与产物落在哪个子路径无关。
+           措辞用「GitHub 仓库」而不是「开源仓库」：仓库没有 LICENSE，不替维护者声明授权。 -->
+      <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span> · <a href="__STATUS_HREF__">数据源状态</a> · <a href="https://github.com/buguoshixc/ai-deals-aggregator" target="_blank" rel="noopener noreferrer">GitHub 仓库</a></p>
       <p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p>
       <p>本站不收录付费推广位，排序与推荐理由不出售。</p>
       <p>厂商 logo 版权归各厂商所有，仅作标识用途。</p>
