@@ -199,6 +199,123 @@ function compareByRecency(a, b) {
 }
 
 /* ------------------------------------------------------------------ */
+/* 记录级代表事件（ItemList 与页面行标记的唯一出处）                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 「一个记录只出现一次」时，取哪一条事件当代表 —— 数字越大越强。
+ *
+ * 排序理由（与 `HOME_PRIORITY` 同一条思路：生命周期 > 字段变化 > 状态量）：
+ *   · `created`（今天）最强：新东西是最强的理由；
+ *   · `ended` / `restored` 次之：它们改变「这条还在不在」；
+ *   · 过去 6 天内的 `created` 与字段变化再次之（字段变化内部按 HOME_PRIORITY 的顺序）；
+ *   · `endingSoon` 是**状态量**（由 `expiresAt` 现算，不对应任何事件），
+ *     「其他变化」（文案微调 / 元信息）最弱。
+ *
+ * 强度只用来**挑一条**（挑的是哪一行带 `data-item`、ItemList 的名字取谁），
+ * 不改变任何分栏的条数与内容 —— 弱事件照样出现在页面上，只是不重复占用 ItemList 的一个位置。
+ */
+const ITEM_STRENGTH = {
+  created: 60,
+  ended: 55,
+  restored: 50,
+  created_recent: 45,
+  benefit_changed: 40,
+  expiry_changed: 39,
+  eligibility_changed: 38,
+  field_changed: 37,
+  endingSoon: 20,
+  other: 10
+};
+
+/** 一条雷达条目（含它来自哪个桶）的强度 */
+function strengthOf(item, bucket) {
+  if (!item) return ITEM_STRENGTH.other;
+  if (bucket === 'cosmetic' || bucket === 'metadata') return ITEM_STRENGTH.other;
+  if (item.kind === 'endingSoon') return ITEM_STRENGTH.endingSoon;
+  if (item.kind === 'created') return ITEM_STRENGTH.created;
+  if (item.kind === 'ended') return ITEM_STRENGTH.ended;
+  if (item.kind === 'restored') return ITEM_STRENGTH.restored;
+  // kind === 'changed'：可能是过去 6 天内的 created、某个被跟踪字段的变化，或认不出的类型
+  if (item.type === 'created') return ITEM_STRENGTH.created_recent;
+  if (Object.prototype.hasOwnProperty.call(ITEM_STRENGTH, item.type)) return ITEM_STRENGTH[item.type];
+  return ITEM_STRENGTH.field_changed;
+}
+
+/**
+ * `/changes/` 页面上行的**渲染顺序**（与 RENDER-CORE 的 `changesPageHtml` 逐项一致）。
+ *
+ * 为什么判据层要知道渲染顺序：行标记（`data-item`）必须落在**某一行的 HTML 上**，
+ * 而「哪一行」只能按文档顺序定位。与其在构建期另写一套「第几行」的推算，
+ * 不如这里给出一份顺序、由构建期回读页面逐行核对（不一致就构建失败）——
+ * 判据与渲染分家时，红的是构建，不是读者的页面。
+ */
+function renderOrderOf(radar) {
+  if (!radar) return [];
+  const out = [];
+  for (const key of SECTION_ORDER) {
+    const section = radar.sections && radar.sections[key];
+    for (const item of (section && section.items) || []) out.push({ item, bucket: key });
+  }
+  const other = radar.other || {};
+  const rest = [].concat(
+    (other.cosmetic || []).map(item => ({ item, bucket: 'cosmetic' })),
+    (other.metadata || []).map(item => ({ item, bucket: 'metadata' }))
+  );
+  // 「其他变化」在页面上是一个折叠块，块内顺序由 RENDER-CORE 现排（时间倒序 → id 升序）
+  rest.sort((a, b) => {
+    const x = a.item; const y = b.item;
+    return x.at === y.at ? (x.id < y.id ? -1 : x.id > y.id ? 1 : 0) : (x.at < y.at ? 1 : -1);
+  });
+  for (const entry of rest) out.push(entry);
+  return out;
+}
+
+/**
+ * ItemList 与页面行标记读的**同一次**集合：每个记录恰好一条（取最强事件），
+ * 且只收**真有详情页**的（`href` 非空）—— 给「已离开数据集」的条目发一个不存在的 URL
+ * 就是在结构化数据里造死链。
+ *
+ * @returns {{id, name, href, kind, type, at, field, occurrence, strength}[]}
+ *   `occurrence` = 该记录在渲染顺序里的第几次出现（0 起）—— 页面行标记按它落点。
+ */
+function itemListRecords(radar) {
+  const order = renderOrderOf(radar);
+  const occurrences = new Map();   // id → 已经见过几次
+  const chosen = new Map();        // id → { record, strength, at }
+  order.forEach((entry, index) => {
+    const item = entry.item;
+    if (!item || !item.id) return;
+    const occurrence = occurrences.get(item.id) || 0;
+    occurrences.set(item.id, occurrence + 1);
+    if (!item.href) return;        // 没有详情页 ⇒ 不进 ItemList（也不带行标记）
+    const strength = strengthOf(item, entry.bucket);
+    const at = typeof item.at === 'string' ? item.at : '';
+    const current = chosen.get(item.id);
+    // 同强度取更近的一条；再同则取渲染顺序在前的（确定性）
+    if (current && (current.strength > strength
+      || (current.strength === strength && current.at >= at))) return;
+    chosen.set(item.id, {
+      record: {
+        id: item.id,
+        name: item.titled && item.title ? String(item.title) : CHANGES_WORDING.CHANGES_LABELS.tombstone,
+        href: item.href,
+        kind: item.kind,
+        type: item.type === undefined ? null : item.type,
+        at: at || null,
+        field: item.field === undefined ? null : item.field,
+        occurrence,
+        strength
+      },
+      strength,
+      at,
+      index
+    });
+  });
+  return [...chosen.values()].sort((a, b) => a.index - b.index).map(entry => entry.record);
+}
+
+/* ------------------------------------------------------------------ */
 /* 主入口                                                               */
 /* ------------------------------------------------------------------ */
 
@@ -426,10 +543,13 @@ module.exports = {
   LOW_VALUE_FIELD_TYPES,
   HOME_PRIORITY,
   COSMETIC_FIELDS,
+  ITEM_STRENGTH,
   cosmeticText,
   isCosmetic,
   daysBetween,
   addDays,
   buildRadar,
+  renderOrderOf,
+  itemListRecords,
   summarize
 };
