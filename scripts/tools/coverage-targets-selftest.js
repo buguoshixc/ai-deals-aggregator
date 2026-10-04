@@ -47,6 +47,31 @@ function check(name, ok, detail) {
   else { failures.push(name); console.log(`  ✗ ${name}${detail ? ` —— ${detail}` : ''}`); }
 }
 
+/**
+ * 【临时诊断】平台相关的失败需要 CI 侧的**原始字节**才能定位，而 CI 里无法交互式调试，
+ * 所以把决定 `jsonOf()` 成败的那几步打进日志（每段有上限，不会淹掉日志）。
+ * 定位到根因后本函数连同调用点在修复合入前移除。
+ */
+function diagnoseJsonExtraction(stdout) {
+  const marker = '\nJSON:\n';
+  const at = stdout.indexOf(marker);
+  const rest = at < 0 ? '' : stdout.slice(at + marker.length);
+  const end = rest.lastIndexOf('\n✅');
+  const cut = end < 0 ? rest : rest.slice(0, end);
+  const clamp = (s, n) => (s.length <= n ? s : `${s.slice(0, n)}…(+${s.length - n})`);
+  const codes = s => JSON.stringify(Array.from(s.slice(0, 12)).map(c => c.codePointAt(0)));
+  let parsed = 'not-attempted';
+  try { JSON.parse(cut); parsed = 'ok'; } catch (error) { parsed = `THROW: ${error.message}`; }
+  console.log('    ── 【诊断】jsonOf 分解 ──');
+  console.log(`    stdout: 字符 ${stdout.length} · 字节 ${Buffer.byteLength(stdout, 'utf8')} · 含 CR=${stdout.includes('\r')}`);
+  console.log(`    marker '\\nJSON:\\n' 位置: ${at}`);
+  console.log(`    切割点 '\\n✅' lastIndexOf: ${end}  ⇒ 待解析段 ${cut.length} 字符`);
+  console.log(`    待解析段首码位: ${codes(cut)}`);
+  console.log(`    JSON.parse: ${parsed}`);
+  console.log(`    末尾 80 字符: ${clamp(JSON.stringify(stdout.slice(-80)), 400)}`);
+  if (at >= 0) console.log(`    marker 前 60 字符: ${clamp(JSON.stringify(stdout.slice(Math.max(0, at - 60), at)), 300)}`);
+}
+
 function section(title) {
   console.log(`\n${title}`);
 }
@@ -564,6 +589,12 @@ try {
     `status ${iso1.status}/${iso2.status}；问题 ${isoProblems.length} 处：${isoProblems.slice(0, 2).join('；')}`);
   check('（隔离上游）两次运行逐字节一致', iso1.stdout === iso2.stdout && iso1.stdout.length > 0);
   check('（隔离上游）JSON 可解析', Boolean(payload1) && Boolean(payload2));
+  if (!payload1 || !payload2) {
+    // 【临时诊断】只在失败时打印；定位后移除。
+    console.log(`    第 1 次: status=${iso1.status} stderr 前 300 字符=${JSON.stringify(iso1.stderr.slice(0, 300))}`);
+    diagnoseJsonExtraction(iso1.stdout);
+    console.log(`    第 2 次与第 1 次 stdout 逐字节一致: ${iso1.stdout === iso2.stdout}`);
+  }
 
   if (payload1) {
     const topKeys = Object.keys(payload1);
