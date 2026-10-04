@@ -1,0 +1,381 @@
+[
+  {
+    "id": "jetbrains-buy",
+    "url": "https://www.jetbrains.com/ai-ides/buy/",
+    "status": 200,
+    "finalUrl": "https://www.jetbrains.com/ai-ides/buy/",
+    "bytes": 48267,
+    "elapsedMs": 304,
+    "missing": [
+      "US $10.00",
+      "US $20.00",
+      "US $30.00",
+      "US $8.33"
+    ],
+    "probes": [
+      {
+        "probe": "JetBrains AI Pro",
+        "hit": true
+      },
+      {
+        "probe": "JetBrains AI Ultimate",
+        "hit": true
+      },
+      {
+        "probe": "US $10.00",
+        "hit": false
+      },
+      {
+        "probe": "US $20.00",
+        "hit": false
+      },
+      {
+        "probe": "US $30.00",
+        "hit": false
+      },
+      {
+        "probe": "US $8.33",
+        "hit": false
+      }
+    ]
+  },
+  {
+    "id": "replit-pricing",
+    "url": "https://replit.com/pricing",
+    "status": 200,
+    "finalUrl": "https://replit.com/pricing",
+    "bytes": 269069,
+    "elapsedMs": 1489,
+    "missing": [],
+    "probes": [
+      {
+        "probe": "$20",
+        "hit": true
+      },
+      {
+        "probe": "$18",
+        "hit": true
+      },
+      {
+        "probe": "$100",
+        "hit": true
+      },
+      {
+        "probe": "$90",
+        "hit": true
+      },
+      {
+        "probe": "Core",
+        "hit": true
+      },
+      {
+        "probe": "Pro",
+        "hit": true
+      }
+    ]
+  },
+  {
+    "id": "codeassist",
+    "url": "https://codeassist.google/",
+    "error": "TypeError: fetch failed",
+    "elapsedMs": 10602
+  },
+  {
+    "id": "aws-q-pricing",
+    "url": "https://aws.amazon.com/q/developer/pricing/",
+    "status": 200,
+    "finalUrl": "https://aws.amazon.com/q/developer/pricing/",
+    "bytes": 409389,
+    "elapsedMs": 698,
+    "missing": [],
+    "probes": [
+      {
+        "probe": "50 agentic requests",
+        "hit": true
+      },
+      {
+        "probe": "4,000 lines of code",
+        "hit": true
+      },
+      {
+        "probe": "$19",
+        "hit": true
+      },
+      {
+        "probe": "perpetual Free Tier",
+        "hit": true
+      },
+      {
+        "probe": "0.003",
+        "hit": true
+      }
+    ]
+  },
+  {
+    "id": "aws-q-overview",
+    "url": "https://aws.amazon.com/q/developer/",
+    "status": 200,
+    "finalUrl": "https://aws.amazon.com/q/developer/",
+    "bytes": 488408,
+    "elapsedMs": 386,
+    "missing": [],
+    "probes": [
+      {
+        "probe": "April 30, 2027",
+        "hit": true
+      },
+      {
+        "probe": "discontinue support",
+        "hit": true
+      },
+      {
+        "probe": "Kiro",
+        "hit": true
+      }
+    ]
+  },
+  {
+    "id": "xfyun-codingplan",
+    "url": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+    "status": 200,
+    "finalUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+    "bytes": 116436,
+    "elapsedMs": 570,
+    "missing": [],
+    "probes": [
+      {
+        "probe": "30,000",
+        "hit": true
+      },
+      {
+        "probe": "90,000",
+        "hit": true
+      },
+      {
+        "probe": "6,000",
+        "hit": true
+      },
+      {
+        "probe": "45,000",
+        "hit": true
+      },
+      {
+        "probe": "999",
+        "hit": true
+      },
+      {
+        "probe": "199",
+        "hit": true
+      }
+    ]
+  },
+  {
+    "id": "stepfun-step-plan",
+    "url": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+    "status": 200,
+    "finalUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+    "bytes": 849560,
+    "elapsedMs": 1012,
+    "missing": [],
+    "probes": [
+      {
+        "probe": "40000M",
+        "hit": true
+      },
+      {
+        "probe": "400M",
+        "hit": true
+      },
+      {
+        "probe": "1600M",
+        "hit": true
+      },
+      {
+        "probe": "8000M",
+        "hit": true
+      },
+      {
+        "probe": "1M Credit",
+        "hit": true
+      },
+      {
+        "probe": "699",
+        "hit": true
+      },
+      {
+        "probe": "1889",
+        "hit": true
+      },
+      {
+        "probe": "6666",
+        "hit": true
+      }
+    ]
+  },
+  {
+    "id": "cerebras-pricing",
+    "url": "https://www.cerebras.ai/pricing",
+    "status": 200,
+    "finalUrl": "https://www.cerebras.ai/pricing",
+    "bytes": 238418,
+    "elapsedMs": 1654,
+    "missing": [],
+    "probes": [
+      {
+        "probe": "0.35",
+        "hit": true
+      },
+      {
+        "probe": "0.75",
+        "hit": true
+      },
+      {
+        "probe": "0.99",
+        "hit": true
+      },
+      {
+        "probe": "1.49",
+        "hit": true
+      },
+      {
+        "probe": "Developer",
+        "hit": true
+      }
+    ]
+  },
+  {
+    "id": "fireworks-pricing",
+    "url": "https://docs.fireworks.ai/serverless/pricing.md",
+    "status": 200,
+    "finalUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+    "bytes": 5136,
+    "elapsedMs": 615,
+    "missing": [],
+    "probes": [
+      {
+        "probe": "Ember-1",
+        "hit": true
+      },
+      {
+        "probe": "Kimi K3",
+        "hit": true
+      },
+      {
+        "probe": "GLM 5.3",
+        "hit": true
+      },
+      {
+        "probe": "1.4",
+        "hit": true
+      },
+      {
+        "probe": "4.4",
+        "hit": true
+      }
+    ]
+  },
+  {
+    "id": "groq-models",
+    "url": "https://console.groq.com/docs/models",
+    "status": 403,
+    "finalUrl": "https://console.groq.com/docs/models",
+    "bytes": 33,
+    "elapsedMs": 916,
+    "missing": [
+      "0.15",
+      "0.60",
+      "0.075",
+      "0.30",
+      "gpt-oss-120b"
+    ],
+    "probes": [
+      {
+        "probe": "0.15",
+        "hit": false
+      },
+      {
+        "probe": "0.60",
+        "hit": false
+      },
+      {
+        "probe": "0.075",
+        "hit": false
+      },
+      {
+        "probe": "0.30",
+        "hit": false
+      },
+      {
+        "probe": "gpt-oss-120b",
+        "hit": false
+      }
+    ]
+  },
+  {
+    "id": "together-models",
+    "url": "https://docs.together.ai/docs/serverless/models.md",
+    "status": 403,
+    "finalUrl": "https://docs.together.ai/docs/serverless/models.md",
+    "bytes": 4571,
+    "elapsedMs": 2253,
+    "missing": [
+      "Inkling",
+      "Kimi K3",
+      "4.05",
+      "0.17"
+    ],
+    "probes": [
+      {
+        "probe": "Inkling",
+        "hit": false
+      },
+      {
+        "probe": "Kimi K3",
+        "hit": false
+      },
+      {
+        "probe": "4.05",
+        "hit": false
+      },
+      {
+        "probe": "0.17",
+        "hit": false
+      }
+    ]
+  },
+  {
+    "id": "deepseek-updates",
+    "url": "https://api-docs.deepseek.com/updates",
+    "status": 200,
+    "finalUrl": "https://api-docs.deepseek.com/updates/",
+    "bytes": 48079,
+    "elapsedMs": 571,
+    "missing": [],
+    "probes": [
+      {
+        "probe": "2025-12-01",
+        "hit": true
+      },
+      {
+        "probe": "DeepSeek-V3.2",
+        "hit": true
+      },
+      {
+        "probe": "DeepSeek-V4-Pro",
+        "hit": true
+      },
+      {
+        "probe": "DeepSeek-V4.1-Flash",
+        "hit": true
+      },
+      {
+        "probe": "2026-08-13",
+        "hit": true
+      },
+      {
+        "probe": "2026-09-10",
+        "hit": true
+      }
+    ]
+  }
+]

@@ -295,13 +295,21 @@ function identityFold(value) {
  * `zai-org.glm-5.3` → [`zai-org.glm-5.3`, `glm-5.3`]；`qwen.qwen3.8-27b` → [`qwen.qwen3.8-27b`, `qwen3.8-27b`, `8-27b`]。
  *
  * 为什么要后缀：托管平台的 `modelKey` 常带厂商命名空间（`vendor.model`），而 registry 的身份是
- * **不含命名空间**的裸名 —— 只比整串会漏掉"其实就是同一个模型"的那些写法（牙 #反绕过正是要抓它）。
- * 只按 `/` 与 `.` 切分（**不切 `-`**）：`-` 是名字本身的一部分（`gpt-oss-120b`），切了会造出
- * `oss120b` 这种不存在的身份。
+ * **不含命名空间**的裸名 —— 只比整串会漏掉"其实就是同一个模型"的那些写法（反绕过牙正是要抓它）。
+ *
+ * 切分集 = `modelKey` schema（`[a-z0-9._-]`）里**全部可能当命名空间分隔符**的字符：`/`（多级命名空间）、
+ * `.` / `．`（全角点）、**`_`**、**`-`**（T26-F1：`zai_org_glm-5.3` / `zai-org_glm-5.3` / `zai-org-glm-5.3`
+ * 这三种拼法原先探不到，而它们都是 schema 允许的 shape）。切宽了确实会造出 `oss120b` / `120b`
+ * 这类"碎尾段"，但**尾段一律走 `identityFold` 折叠精确相等**（不是相似度、不是子串包含），
+ * 所以只有"抹掉分隔符后**逐字**等于某个 registry 身份"才会命中 —— 碎尾段的命中同样是真实发现，
+ * 不是噪音（真实数据上的结论必须与切分前一致：7 条命中 / 12 条声明 0 命中，有复算脚本钉住）。
+ *
+ * 反过来说：`MODEL_KEY_RE` 已经拒收的拼法（冒号、井号、反斜杠、中文方括号等）**不需要**额外规则 ——
+ * 那些字符进不了 modelKey，为它们加切分只会引入不可能发生的分支。
  */
 function namespaceSuffixes(value) {
   const text = String(value === null || value === undefined ? '' : value);
-  const parts = text.split(/[/．.]/).filter(part => part !== '');
+  const parts = text.split(/[/．._-]/).filter(part => part !== '');
   const out = [];
   for (let start = 0; start < parts.length; start += 1) {
     const tail = parts.slice(start).join('.');

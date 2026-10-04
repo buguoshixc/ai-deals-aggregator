@@ -1,0 +1,82 @@
+[
+  {
+    "name": "逐字等于 registry slug「glm-5.3」⇒ 红（点名折叠命中）",
+    "ok": true,
+    "detail": "declarations[0] API 侧 aaaaaaaaaaaa: modelKey「glm-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系"
+  },
+  {
+    "name": "命名空间前缀「zai-org.glm-5.3」⇒ 红（点名折叠命中）",
+    "ok": true,
+    "detail": "declarations[0] API 侧 aaaaaaaaaaaa: modelKey「zai-org.glm-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能"
+  },
+  {
+    "name": "分隔符折叠「glm-5p3」⇒ 红（点名折叠命中）",
+    "ok": true,
+    "detail": "declarations[0] API 侧 aaaaaaaaaaaa: name「GLM 5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射"
+  },
+  {
+    "name": "registry 别名原文「zai-org/GLM-5.3」⇒ 红（点名折叠命中）",
+    "ok": true,
+    "detail": "declarations[0] API 侧 aaaaaaaaaaaa: modelKey「zai-org/GLM-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能"
+  },
+  {
+    "name": "点号命名空间（后缀命中）「zai-org.glm-5.3」⇒ 红（点名折叠命中）",
+    "ok": true,
+    "detail": "declarations[0] API 侧 aaaaaaaaaaaa: modelKey「zai-org.glm-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能"
+  },
+  {
+    "name": "对照组：真 off-registry 键「ember-1」⇒ 绿（对照组）",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "name": "对照组：真 off-registry 键（带命名空间）「vendor.ember-9」⇒ 绿（对照组）",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "name": "name「Kimi K3」折叠命中 registry ⇒ 红",
+    "ok": true,
+    "detail": "declarations[0] API 侧 aaaaaaaaaaaa: name「Kimi K3」折叠后精确落到 registry 身份「kimi-k3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapp"
+  },
+  {
+    "name": "name「Ember 9」对不上任何身份 ⇒ 绿（对照组）",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "name": "不传 table（声明表非空）⇒ 红「没有拿到 registry 表」",
+    "ok": true,
+    "detail": "没有拿到 registry 表（table 为空），无法判定这 1 条声明是不是\"其实能对上\" —— 这不是通过"
+  },
+  {
+    "name": "不传 apiPlans（有 API 侧声明）⇒ 红「没有拿到 apiPlans」",
+    "ok": true,
+    "detail": "有 1 条 API 侧声明却没有拿到 apiPlans，无法判定它们指向的计价条目是否存在 —— 这不是通过"
+  },
+  {
+    "name": "对照组：输入齐全 + 真 off-registry 键 ⇒ 绿",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "name": "validateLinks 空表：不产 API 完整性错（设计如此，文档已写明）",
+    "ok": true,
+    "detail": "空表 1 条 / 非空表 1 条"
+  },
+  {
+    "name": "validateLinks 非空表 + 未覆盖的条目 ⇒ 红（点名两个出口文件）",
+    "ok": true,
+    "detail": "API 侧 7 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：(aaaaaaaaaaaa, zai-org/"
+  },
+  {
+    "name": "identity 合法但 reason 非法的声明：validateLinks 视其为\"已覆盖\"（红在 validateGaps 一侧）",
+    "ok": true,
+    "detail": "links 1 条（应只剩\"关系层没写\"那一条）/ gaps 1 条"
+  },
+  {
+    "name": "关系层为空而 registry 非空 ⇒ 红（\"这不是干净，是没写\"）",
+    "ok": true,
+    "detail": "关系层一条映射都没有，而 models.json 里有 2 个模型 —— 这不是\"干净\"，是关系层没写（没有映射的模型不会被任何页面引用）"
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "A": {
+    "build": 0,
+    "repro": 0,
+    "validate": 0,
+    "evidenceFailures": 0
+  },
+  "B": {
+    "validate": 0,
+    "repro": 1,
+    "evidenceFailures": 0
+  },
+  "C": {
+    "validate": 0,
+    "repro": 1,
+    "evidenceFailures": 0
+  },
+  "conclusion": true
+}

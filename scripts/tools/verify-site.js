@@ -1649,14 +1649,32 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   // 所以这里只断言「为空的那条变化流写出了起算日」。
   // （「起算日取错来源」这条牙由 `feeds-selftest` 用**注入不同 startedAt 的夹具**钉住 ——
   //   真实数据上两条日志的 startedAt 相同，在这里写断言会恒真、等于没有牙。）
-  check('/feeds/ 为空的变化流那一行写出了起算日',
-    feedsLib.PLAN_CHANGE_FEEDS.every(spec => {
+  //
+  // 「这一行是不是 0 条」的判据是 `lib/feeds.js` 的 `isZeroCountRow()`（**唯一出处**）。
+  // 这里刻意不再写 `/0 条/`：那是**子串**匹配，`10 条` / `80 条` / `100 条` 全都命中 ——
+  // t28 的 T28-F1 就是这么来的（API 价格变化长到 10 条之后，两条变化流都被当成空态、
+  // 都被要求写起算日 ⇒ 门禁自造假红）。判据改成数字边界后，只有真的说「0 条」的行才进空态分支。
+  {
+    const rowsOf = spec => {
       const idx = feedsPage.text.indexOf(spec.title);
-      if (idx < 0) return false;
-      const row = feedsPage.text.slice(idx, idx + 260);
-      if (!/0 条/.test(row)) return true;                    // 非空行不写起算日，不算错
-      return /变更记录自 \d{4}-\d{2}-\d{2} 起/.test(row);
-    }), feedsPage.text.slice(0, 120));
+      if (idx < 0) return null;
+      // 窗口右界取**下一条变化流标题**的下标（没有就退回 260 字符上限）：
+      // 固定长度窗口会把邻行的文案框进来，两条相邻空行时甚至能借到邻行的起算日。
+      const next = feedsLib.PLAN_CHANGE_FEEDS
+        .map(other => feedsPage.text.indexOf(other.title, idx + spec.title.length))
+        .filter(hit => hit >= 0)
+        .sort((a, b) => a - b)[0];
+      const end = Math.min(next === undefined ? idx + 260 : next, idx + 260);
+      return feedsPage.text.slice(idx, end);
+    };
+    const rows = feedsLib.PLAN_CHANGE_FEEDS.map(spec => ({ spec, row: rowsOf(spec) }));
+    const problems = rows.filter(({ row }) => row === null || !feedsLib.changeRowIsHonest(row));
+    check('/feeds/ 为空的变化流那一行写出了起算日',
+      problems.length === 0 && rows.every(({ row }) => row !== null),
+      rows.map(({ spec, row }) => row === null
+        ? `${spec.title}: 页面里找不到标题`
+        : `${spec.title}: 说 0 条=${feedsLib.isZeroCountRow(row)} · 有起算日=${feedsLib.hasChangeStartDate(row)}`).join(' | '));
+  }
 
   console.log('\n=== 15) 独立详情页 ===');
   // 14b 把浏览器带到了 /feeds/，这一节要从首页取样 —— 显式回首页，

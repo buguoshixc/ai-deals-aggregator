@@ -1652,7 +1652,7 @@
       "regularPrice": 10,
       "promoPrice": null,
       "promoNote": null,
-      "note": "官方购买页内嵌商品目录 JSON 同时给出两组价：**个人** US $10.00/月（年付 US $100.00，合 US $8.33/月）、**商业** US $20.00/月（年付 US $200.00，合 US $16.67/月）。本条收**个人档月付**（schema 的身份里没有 audience 维度，另开会变成两条同名记录）；商业档价与年付价见本条 note。"
+      "note": "官方购买页内嵌商品目录 JSON 同时给出两组价：**个人** US $10.00/月（年付 US $100.00，合 US $8.33/月）、**商业** US $20.00/月（年付 US $200.00，合 US $16.67/月）。复核限制：本环境只能取到 CNY 版（页面自报 iso=CNY），USD 金额取自页内 code=AIP/AIPU 商品目录 JSON、不可服务端复核。"
     },
     "quota": {
       "type": "rate_limited",
@@ -1674,6 +1674,13 @@
         "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
         "capturedAt": "2026-10-04",
         "lang": "en"
+      },
+      {
+        "field": "billing.regularPrice",
+        "quote": "\"currency\": {\"symbol\": \"CNY\", \"isPrefix\": false, \"iso\": \"CNY\"}, \"countryCode\": \"CN\", \"countryName\": \"China Mainland\"",
+        "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
+        "capturedAt": "2026-10-04",
+        "lang": "en"
       }
     ]
   },
@@ -1690,7 +1697,7 @@
       "regularPrice": 30,
       "promoPrice": null,
       "promoNote": null,
-      "note": "官方同一商品目录 JSON：个人 US $30.00/月（年付 US $300.00，合 US $25.00/月）、商业 US $60.00/月（年付 US $600.00，合 US $50.00/月）⇒ 收个人档月付。商品码 IDESPR-AIU（捆绑、仅商业档、仅年付 $720.00）不收。"
+      "note": "官方同一商品目录 JSON：个人 US $30.00/月（年付 US $300.00，合 US $25.00/月）、商业 US $60.00/月（年付 US $600.00，合 US $50.00/月）⇒ 收个人档月付。复核限制：本环境只能取到 CNY 版（页面自报 iso=CNY），USD 金额取自页内 code=AIP/AIPU 商品目录 JSON、不可服务端复核。"
     },
     "quota": {
       "type": "rate_limited",
@@ -1709,6 +1716,13 @@
       {
         "field": "billing.regularPrice",
         "quote": "\"code\": \"AIPU\" … \"prices\": {\"personal\": {\"monthly\": [\"US $30.00\"]}, \"commercial\": {\"monthly\": [\"US $60.00\"]}} … \"name\": \"JetBrains AI Ultimate\"",
+        "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
+        "capturedAt": "2026-10-04",
+        "lang": "en"
+      },
+      {
+        "field": "billing.regularPrice",
+        "quote": "\"currency\": {\"symbol\": \"CNY\", \"isPrefix\": false, \"iso\": \"CNY\"}, \"countryCode\": \"CN\", \"countryName\": \"China Mainland\"",
         "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
         "capturedAt": "2026-10-04",
         "lang": "en"
@@ -1746,7 +1760,7 @@
     "evidence": [
       {
         "field": "billing.regularPrice",
-        "quote": "Core $20 / $18 / month, billed annually — ✔ AI integrations ✔ Up to 30 hours of chat on Free Mode ✔ Up to 60 projects on Free Mode ✔ $20 towards most powerful models ✔ Plan mode ✔ Unlimited workspaces",
+        "quote": "Core\n$20\n$18\n/ month, billed annually",
         "sourceUrl": "https://replit.com/pricing",
         "capturedAt": "2026-10-04",
         "lang": "en"
@@ -1784,7 +1798,7 @@
     "evidence": [
       {
         "field": "billing.regularPrice",
-        "quote": "Pro $100 / $90 / month, billed annually — ✔ 10 parallel agents ✔ Premium Support ✔ Even more Free Mode usage ✔ $100 towards most powerful models ✔ Up to 15 collaborators",
+        "quote": "Pro\n$100\n$90\n/ month, billed annually",
         "sourceUrl": "https://replit.com/pricing",
         "capturedAt": "2026-10-04",
         "lang": "en"
@@ -1904,7 +1918,7 @@
     "evidence": [
       {
         "field": "billing.regularPrice",
-        "quote": "Amazon Q Developer offers a perpetual Free Tier with monthly limits … Free — 50 agentic requests per month ; 1,000 lines of code per month",
+        "quote": "Amazon Q Developer offers a perpetual Free Tier with monthly limits available to users logged in as an AWS Identity and Access Management (IAM) user or AWS Builder ID user.",
         "sourceUrl": "https://aws.amazon.com/q/developer/pricing/",
         "capturedAt": "2026-10-04",
         "lang": "en"
@@ -1948,7 +1962,7 @@
     "evidence": [
       {
         "field": "billing.regularPrice",
-        "quote": "Pro Tier: Expanded limits $19/mo. per user ; Pro — 4,000 lines of code per month per user pooled at account level. Extra lines of code available at $.003 per line of code submitted.",
+        "quote": "Pro Tier: Expanded limits $19/mo. per user",
         "sourceUrl": "https://aws.amazon.com/q/developer/pricing/",
         "capturedAt": "2026-10-04",
         "lang": "en"

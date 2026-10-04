@@ -1177,6 +1177,50 @@ function changeLogNameOf(spec) {
   return spec.changeSource === 'api' ? 'api-plan-history.json' : 'plan-history.json';
 }
 
+/* ------------------------------------------------------------------ */
+/* 空态判据（唯一出处）：一行到底是不是「0 条」                          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 这一行（一段页面文本）说的条数**是不是 0**。判据按**数字边界**，不是子串。
+ *
+ * 为什么必须按边界（t28 的 T28-F1 / t31）：`/0 条/` 是**子串**匹配，`10 条` / `20 条` / `30 条` /
+ * `80 条` / `100 条` / `1,000 条` 全都命中 —— 于是"条数以 0 结尾的**非空**行"被当成空态，
+ * 进而被要求写出「变更记录自 … 起」，门禁自己在真实数据上判红（数据一长大就暴露：
+ * API 价格变化的条数变成 10 条的那一天起，这条断言就恒红）。
+ *
+ * 口径（**唯一出处**，页面断言与自测都读它，不许各自再写一份正则）：
+ *   · `0 条` 前面**不能是数字**（`(?<!\d)`）——挡住 `10 条` / `100 条` / `1,000 条` 这类尾数 0；
+ *   · `0 条` 后面**不能紧跟数字**——挡住 `0 条1` 这种粘连的脏文案。
+ * 只判"有没有说 0 条"，不判其它数字（`28 条` 与 `9 条` 一样都是非空）。
+ *
+ * @param {string} text 一行（或一段）页面文本
+ * @returns {boolean} true = 这一行声称 0 条（空态）
+ */
+const ZERO_COUNT_ROW_RE = /(?<!\d)0 条(?!\d)/;
+
+function isZeroCountRow(text) {
+  return ZERO_COUNT_ROW_RE.test(String(text === null || text === undefined ? '' : text));
+}
+
+/** 空态行必须写出的那句话：「变更记录自 YYYY-MM-DD 起」（起算日的形状是契约） */
+const CHANGE_START_DATE_RE = /变更记录自 \d{4}-\d{2}-\d{2} 起/;
+
+function hasChangeStartDate(text) {
+  return CHANGE_START_DATE_RE.test(String(text === null || text === undefined ? '' : text));
+}
+
+/**
+ * **空态诚实性**（`/feeds/` 那一行）：非空行不要求写起算日；**空态行必须写出起算日**。
+ *
+ * 这道牙存在的理由：变化流为空时，页面必须说清"我们是从哪一天开始记的"——
+ * 只写「0 条」而不写起算日，读者分不清「真的没变化」与「我们刚开始记」。
+ * t31 修的是**假红**（把非空行误判成空态），这条判据就是修完之后**必须保住的原意**。
+ */
+function changeRowIsHonest(text) {
+  return isZeroCountRow(text) ? hasChangeStartDate(text) : true;
+}
+
 function descriptionWithNotes(spec, { truncated = 0, asOf = null, availability = 'ok', empty = false } = {}) {
   const parts = [spec.description];
   const isPlanChanges = spec.kind === 'plan-changes';
@@ -1684,6 +1728,12 @@ module.exports = {
   changeSpecForPage,
   changeWordingOf,
   changeLogNameOf,
+  // t31：空态判据（唯一出处）—— 「这一行是不是 0 条」按数字边界判，不是子串
+  ZERO_COUNT_ROW_RE,
+  CHANGE_START_DATE_RE,
+  isZeroCountRow,
+  hasChangeStartDate,
+  changeRowIsHonest,
   CHANGE_SOURCES,
   changeItemsFor,
   planChangeItems,

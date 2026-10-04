@@ -946,8 +946,21 @@ function main() {
         declaredPlanModels: planCoverage.declaredPlanModels,
         // ---- t25 新增：**追加在既有键之后**（旧键的名字与顺序一个都没动）----
         // A / B / C 是上面那条方程的三个加数：计价条目 = mappedApiEntries + declaredApiEntries + 未判。
-        // `declaredApiEntries` 记的是**展开后覆盖的计价条目数**（方程的 B，记账用）；
-        // `declaredApiEntryRows` 是声明本身的逐条留档（当前无通配声明 ⇒ 两者相等；有通配声明时会分叉，记账一律读前者）。
+        //
+        // ⚠️ 跨层命名对照（t29 写死在组装处：两层的词刚好**交叉**，别靠回读两个文件的实现去猜）：
+        //   · 报告 `registry.declaredApiEntries`（**数**：展开后被处置声明覆盖的计价条目数 = 方程的 B）
+        //       = lib `coverageOf().declaredApiIdentities`（Set `declaredApi` 的 size）
+        //       = `planCoverage.declaredApiIdentities` = 本文件上方的 `declaredApiIdentityCount`
+        //   · 报告 `registry.declaredApiEntryRows`（**数组**：声明本身逐条留档）
+        //       = lib `coverageOf().declaredApiEntries`（声明行数组）
+        //       = `planCoverage.declaredApiEntries` = 本文件上方的 `declaredApiRows`
+        //   · 报告 `gaps.declaredApiEntryCount`（**数**：声明行数）= `declaredApiRows.length`
+        //       —— 它等于 rows 的长度，**不是**方程里的 B（B 是通配展开之后的条目数；无通配声明时两者才相等）
+        //   · 报告 `registry.mappedApiEntries`（**数**：展开后被映射认领的计价条目数 = 方程的 A）
+        //       = lib `coverageOf().mappedApiEntries`
+        //   为什么只写对照、不重命名：改名要牵动冻结键、白名单与下游引用（t20/t21/t28 的证据都按现名引用），
+        //   而误读不会静默 —— 本文件上方那条「报告层与 lib/model-registry.js 对"已处置声明的 API 计价条目"
+        //   的读数不一致」的交叉断言，会在两处读数分家时当场判红。
         mappedApiEntries,
         declaredApiEntries: declaredApiIdentityCount,
         declaredApiEntryRows: declaredApiRows

@@ -56,6 +56,17 @@
 `firstSeen` / `lastSeen`（由引用方派生）、`registryModelId`（发布时注入）、`updatedAt` / `count`。
 理由：派生值一旦能手写，就一定会出现「页面上是一个数、重算出来是另一个数」。
 
+### 1.4 `modelRole` 里两处**政策选择**（t32 · F5：如实承认，不写成官方事实）
+
+模型角色枚举（`MODEL_ROLES`）的取值判据是「官方页面 / 官方模型名上的能力标记」。但下面两条**不是官方明示**，而是本仓库的政策选择，登记在此以免被读成官方事实：
+
+| registrySlug | 落盘 role | 官方能证到什么 | 政策判断（本仓库选择） |
+| --- | --- | --- | --- |
+| `deepseek-flash` | `vision` | 官方定价页 `Vision` 行为 ✓、Change Log 逐字 "native multimodal visual understanding" | 官方明示支持图像理解，**按 `vision` 收**（若严格只认「官方自称 VLM」则应写 `general`） |
+| `minimax-m3` | `vision` | 官方发布页逐字「面向 Agent 推理、工具调用、代码、**多模态 Chat 输入**和长上下文任务」 | 「多模态输入」不等于「图像理解」，本轮**按含视觉输入收 `vision`**（保守写法是 `general`） |
+
+两条都与其余 42 条采用**同一套判据**（逐条一致，没有对某一家的特例）；若日后要改成严格口径，必须**同时**改这两条与本文档，并重跑 `selftest:model-freshness` 的档位断言。
+
 ### 1.2 发布产物（`dist/models.json` 与仓根 `models.json`，逐字节相同）
 
 `{ schemaVersion, updatedAt, count, models: [ { id, slug, canonicalName, developer, owner, family, aliases, officialUrl, status, note, firstSeen, lastSeen, apiReferences, planReferences } ] }`
@@ -195,6 +206,8 @@ API 侧的键是结构化的（指到一条真实计价条目），所以**只�
   note / 重复记账 / 反绕过 `vendor.glm-5.3`+`GLM 5.3` / 删一条声明后复红 / 覆盖率记账）。
 
 ---
+
+- **`audio` 角色保留但没有身份（t32 · F7）**：身份层的 `MODEL_ROLES` 里有 `audio`，但**当前 registry 里没有任何音频模型身份**。因此 `plans.json` 里出现的音频字符串（例如 StepFun Step Plan 的 `stepaudio-2.5-asr` / `-chat` / `-realtime` / `-tts`）一律按 **`non-text-resource`** 处置 —— 理由：该表的判据是「这一串还能不能落到**一个文本模型身份**上」，与「它是不是某种模型角色」是两件事；音频资源在 registry 里没有身份可落，所以出口是资源类型而不是角色。将来若要收录音频身份，必须做一次有意识的口径变更（新增身份 + 把这些声明改成映射），并同步改本节。
 
 ## 3. Provider Page（`/vendor/<slug>/` 升级为厂商统一资料页）
 

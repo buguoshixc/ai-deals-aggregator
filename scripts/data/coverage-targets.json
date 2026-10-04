@@ -106,7 +106,7 @@
         }
       ],
       "rulings": [],
-      "note": "本条记录的**时效事实**：官方产品页逐字公告 2027-04-30 起停止支持 Amazon Q Developer IDE 插件并建议改用 Kiro ⇒ 使用者在页面上必须能看到这条，不能只显示价格。"
+      "note": "时效事实：官方公告 2027-04-30 停止支持 Amazon Q Developer IDE 插件并建议改用 Kiro（详见 research/coverage-expansion-v1-t32-evidence-caveats.md）。"
     },
     {
       "provider": "baichuan",

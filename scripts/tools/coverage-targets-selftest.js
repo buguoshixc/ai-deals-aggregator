@@ -472,7 +472,19 @@ const LEGACY_CONTRACT = {
   candidates: ['total', 'adopted', 'notAdopted']
 };
 const LEGACY_TOP_LEVEL = ['generatedAt', 'deals', 'coding', 'api', 'registry', 'gaps', 'candidates'];
-/** 追加键白名单：报告新增键必须**逐个登记在这里**（本轮 = t25 新增的 API 侧处置键） */
+/**
+ * 追加键白名单：报告新增键必须**逐个登记在这里**（本轮 = t25 新增的 API 侧处置键）。
+ *
+ * 语义锚点（t29 补：下一个改契约的人不必回读全部代码）——白名单里 API 侧各键**锚在 lib 的哪个读数**上：
+ *   · `registry.mappedApiEntries`     = lib `coverageOf().mappedApiEntries`（**数**：展开后被映射认领的计价条目数 = 方程的 A）
+ *   · `registry.declaredApiEntries`   = lib `coverageOf().declaredApiIdentities`（**数**：展开后被处置声明覆盖的计价条目数 = 方程的 B）
+ *   · `registry.declaredApiEntryRows` = lib `coverageOf().declaredApiEntries`（**数组**：声明本身逐条留档，长度 = 声明条数）
+ *   · `gaps.declaredApiEntryCount`    = 上面的 `declaredApiEntryRows.length`（**数**；**不是**方程的 B）
+ * ⚠️ 陷阱：lib 的 `declaredApiEntries`（数组）与报告的 `registry.declaredApiEntries`（数）**同名不同义**；
+ *    报告层那个冻结键名已经占了"数"的位置，所以"声明行数组"只能另起一名 `declaredApiEntryRows`。
+ *    两层的词是**交叉**的：报告 `registry.declaredApiEntries`（数）↔ lib `declaredApiIdentities`（数）、
+ *    报告 `registry.declaredApiEntryRows`（数组）↔ lib `declaredApiEntries`（数组）。
+ */
 const APPENDED_KEY_WHITELIST = {
   deals: [],
   coding: [],

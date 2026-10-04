@@ -1,0 +1,20 @@
+M25 verdict=NOT_CAUGHT
+applied={"file":"D:\\t17-mutation\\cases\\w3-M25\\scripts\\lib\\coverage-targets.js","mode":"replaceOnce","anchor":"const PRECEDENCE = ['NOT_APPLICABLE', 'DEFERRED', 'UNVERIFIA"}
+targetsChanged=["scripts/lib/coverage-targets.js"]
+restore=[{"path":"scripts/lib/coverage-targets.js","shaBefore":"e66c56b384523dd73e666646d9a5e54b82c2ec892120ea0ce9014d2acb3acb59","shaAfter":"e66c56b384523dd73e666646d9a5e54b82c2ec892120ea0ce9014d2acb3acb59","byteExact":true}]
+
+--- coverage-targets-selftest exit=0 2144ms
+   · ✓ 真实盘面：COVERED 的格子必须真的有记录（不许空口算覆盖）
+   · ✓ 真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉
+   · ② 七态派生（夹具：每种状态都必须真的能派出来）
+   · ③ 牙（每一条变异都必须让 validateTargets 报红）
+   · ✓ 【反证牙】冻结契约规则：把旧键顺序打乱 ⇒ 必须报问题
+   · ✓ 【反证牙】冻结契约规则：删掉一个旧键 ⇒ 必须报问题
+
+--- report-coverage exit=0 88ms
+   · ✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」
+   · 声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）
+
+=== PRECEDENCE 定义与用法 ===
+  const PRECEDENCE = ['NOT_APPLICABLE', 'DEFERRED', 'UNVERIFIABLE', 'BLOCKED_SOURCE', 'PARTIAL', 'COVERED', 'MISSING'];
+  PRECEDENCE,

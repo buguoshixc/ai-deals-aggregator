@@ -1,0 +1,384 @@
+[
+  {
+    "url": "https://ai.google.dev/gemini-api/docs/pricing",
+    "owners": "api:google",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 0,
+    "via": "failed",
+    "error": "TypeError: fetch failed",
+    "second": "TypeError: fetch failed"
+  },
+  {
+    "url": "https://api-docs.deepseek.com/quick_start/pricing",
+    "owners": "api:deepseek",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://api-docs.deepseek.com/quick_start/pricing/",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://aws.amazon.com/q/developer/pricing/",
+    "owners": "plan:aws",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://aws.amazon.com/q/developer/pricing/",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://cloud.tencent.com/document/product/1729/97731",
+    "owners": "api:tencent",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://cloud.tencent.com/document/product/1729/97731",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://codeassist.google/",
+    "owners": "plan:google",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 0,
+    "via": "failed",
+    "error": "TypeError: fetch failed",
+    "second": "TypeError: fetch failed"
+  },
+  {
+    "url": "https://comate.baidu.com/zh/pricing",
+    "owners": "plan:baidu",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://comate.baidu.com/zh/pricing",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://console.groq.com/docs/models",
+    "owners": "api:groq",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 403,
+    "finalUrl": "https://console.groq.com/docs/models",
+    "via": "GET",
+    "headStatus": 403
+  },
+  {
+    "url": "https://cursor.com/pricing",
+    "owners": "plan:cursor",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://cursor.com/pricing",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+    "owners": "api:anthropic",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://claude.com/app-unavailable-in-region",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://docs.bigmodel.cn/cn/coding-plan/overview",
+    "owners": "plan:zhipu",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://docs.bigmodel.cn/cn/coding-plan/overview",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://docs.fireworks.ai/serverless/pricing.md",
+    "owners": "api:fireworks",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://docs.github.com/en/copilot/get-started/plans",
+    "owners": "plan:github",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://docs.github.com/en/copilot/get-started/plans",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://docs.qoder.com/account/pricing.md",
+    "owners": "plan:qoder-intl",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://docs.qoder.com/account/pricing.md",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://docs.together.ai/docs/serverless/models.md",
+    "owners": "api:together",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 403,
+    "finalUrl": "https://docs.together.ai/docs/serverless/models.md",
+    "via": "GET",
+    "headStatus": 403
+  },
+  {
+    "url": "https://github.com/features/copilot/plans",
+    "owners": "plan:github",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 0,
+    "via": "failed",
+    "error": "TypeError: fetch failed",
+    "second": "TypeError: fetch failed"
+  },
+  {
+    "url": "https://help.aliyun.com/zh/lingma/billing-description",
+    "owners": "plan:qoder",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://help.aliyun.com/zh/lingma/billing-description",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://help.aliyun.com/zh/model-studio/model-pricing",
+    "owners": "api:aliyun",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://open.bigmodel.cn/pricing",
+    "owners": "api:zhipu",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://open.bigmodel.cn/pricing",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+    "owners": "api:minimax",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+    "owners": "plan:minimax",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://platform.minimax.cn/docs/guides/pricing-token-plan",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://platform.openai.com/docs/pricing",
+    "owners": "api:openai",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 403,
+    "finalUrl": "https://platform.openai.com/docs/pricing",
+    "via": "GET",
+    "headStatus": 403
+  },
+  {
+    "url": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+    "owners": "plan:stepfun",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://replit.com/pricing",
+    "owners": "plan:replit",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://replit.com/pricing",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://siliconflow.cn/pricing",
+    "owners": "api:siliconflow",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://siliconflow.cn/pricing",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://windsurf.com/pricing",
+    "owners": "plan:windsurf",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://devin.ai/pricing",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://www.anthropic.com/pricing",
+    "owners": "plan:anthropic",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://claude.com/pricing",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://www.cerebras.ai/pricing",
+    "owners": "api:cerebras",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://www.cerebras.ai/pricing",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing",
+    "owners": "plan:codebuddy",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://www.codebuddy.ai/docs/zh/ide/Account/pricing",
+    "via": "GET",
+    "headStatus": 404
+  },
+  {
+    "url": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+    "owners": "plan:codebuddy",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://www.codebuddy.cn/docs/ide/Account/pricing",
+    "via": "GET",
+    "headStatus": 404
+  },
+  {
+    "url": "https://www.jetbrains.com/ai-ides/buy/",
+    "owners": "plan:jetbrains",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://www.jetbrains.com/ai-ides/buy/",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://www.kimi.com/en/help/membership/membership-overview",
+    "owners": "plan:moonshot",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://www.kimi.com/en/help/membership/membership-overview",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://www.trae.cn/pricing",
+    "owners": "plan:trae",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://www.trae.cn/pricing",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://www.volcengine.com/product/ark",
+    "owners": "api:volcengine",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://www.volcengine.com/product/ark",
+    "via": "HEAD"
+  },
+  {
+    "url": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+    "owners": "plan:iflytek",
+    "kinds": [
+      "officialUrl",
+      "sourceUrl"
+    ],
+    "status": 200,
+    "finalUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+    "via": "HEAD"
+  }
+]

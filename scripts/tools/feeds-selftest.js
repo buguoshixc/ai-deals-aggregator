@@ -1000,6 +1000,81 @@ section('十二、/feeds/ 汇总页与注册表的双向对账（P3-4 回归钉�
 }
 
 /* ------------------------------------------------------------------ */
+section('十三、空态判据（t31 / T28-F1）：按数字边界判「0 条」，空态原意不许被削掉');
+/* ------------------------------------------------------------------ */
+
+{
+  // 这一节修的是**门禁自身的假红**：`/feeds/` 那条断言原先用裸 `/0 条/`（**子串**匹配），
+  // `10 条` / `20 条` / `30 条` / `80 条` / `100 条` / `1,000 条` 全都命中 ⇒ 非空行被当成空态、
+  // 被要求写出「变更记录自 … 起」⇒ 真实数据上判红（API 价格变化长到 10 条之后才暴露）。
+  // 修法是把判据收进 `lib/feeds.js` 的具名函数（数字边界，唯一出处）。
+  // **但空态原意必须一起钉住**：真为空时仍然必须写起算日，否则「修假红」就变成了「拆掉牙」。
+
+  // ---- ① 判据本身：数字边界 ----
+  const ZERO_ROWS = [
+    ['行首', '0 条'],
+    ['行尾', '最近变化 0 条'],
+    ['前接标点', '（0 条）'],
+    ['真实空态行', 'AI Deals Radar · Coding 套餐变化 0 条（变更记录自 2026-09-30 起）']
+  ];
+  const NON_ZERO_ROWS = [
+    ['10 条', '10 条'], ['20 条', '20 条'], ['30 条', '30 条'], ['80 条', '80 条'],
+    ['100 条', '100 条'], ['1,000 条', '1,000 条'], ['28 条', '28 条'], ['9 条', '9 条'],
+    ['真实非空行（10 条）', 'AI Deals Radar · API 价格变化 10 条 · 最近一条 2026-10-04']
+  ];
+  console.log('    逐组结果（拼法 → isZeroCountRow）：');
+  for (const [label, text] of [...ZERO_ROWS.map(([l, t]) => [`空态·${l}`, t]), ...NON_ZERO_ROWS]) {
+    console.log(`      ${String(feeds.isZeroCountRow(text)).padEnd(5)} ${label.padEnd(20)} 「${text.slice(0, 52)}」`);
+  }
+  check('【判据】真空态行判为 0 条（行首 / 行尾 / 前接标点 / 带起算日的完整行，四种拼法都要命中）',
+    ZERO_ROWS.every(([, text]) => feeds.isZeroCountRow(text)),
+    ZERO_ROWS.filter(([, text]) => !feeds.isZeroCountRow(text)).map(([label]) => label).join(' | '));
+  check('【对照组·真牙】条数以 0 结尾的**非空**行一律不是空态（10 / 20 / 30 / 80 / 100 / 1,000 条）',
+    NON_ZERO_ROWS.every(([, text]) => !feeds.isZeroCountRow(text)),
+    NON_ZERO_ROWS.filter(([, text]) => feeds.isZeroCountRow(text)).map(([label]) => label).join(' | '));
+  // 缺陷可复现：旧写法（裸子串）把这 6 种「条数以 0 结尾」的非空拼法**全部**判成空态。
+  // （`28 条` / `9 条` 是同一组里的对照：旧写法也判对，说明差别只在"尾数是不是 0"。）
+  const ZERO_ENDING = ['10 条', '20 条', '30 条', '80 条', '100 条', '1,000 条'];
+  check('【回归钉】旧写法（裸 /0 条/ 子串）把这 6 种「条数以 0 结尾」的非空拼法全判成空态 —— 缺陷可复现，牙不是凭空加的',
+    ZERO_ENDING.every(text => /0 条/.test(text)) && ZERO_ENDING.every(text => feeds.isZeroCountRow(text) === false),
+    `旧写法命中 ${ZERO_ENDING.filter(text => /0 条/.test(text)).length}/6`);
+  check('【边界】`0 条` 后面紧跟数字 / 没有空格 ⇒ 不算空态（不把脏文案误判成空态）',
+    !feeds.isZeroCountRow('0 条1') && !feeds.isZeroCountRow('0条') && !feeds.isZeroCountRow('100 条')
+    && feeds.isZeroCountRow('0 条（变更记录自 2026-09-30 起）'));
+
+  // ---- ② 空态诚实性（原意）：空态必须写起算日 ----
+  const EMPTY_WITH_START = 'AI Deals Radar · Coding 套餐变化 0 条（变更记录自 2026-09-30 起）';
+  const EMPTY_NO_START = 'AI Deals Radar · Coding 套餐变化 0 条';
+  const NONEMPTY_TEN = 'AI Deals Radar · API 价格变化 10 条 · 最近一条 2026-10-04';
+  check('【原意】空态行 + 起算日 ⇒ 通过（对照组：这一条证明判据不是恒红）',
+    feeds.changeRowIsHonest(EMPTY_WITH_START) === true);
+  check('【原意·不许被削】空态行**缺**起算日 ⇒ 必须判失败（这道牙存在的理由）',
+    feeds.changeRowIsHonest(EMPTY_NO_START) === false);
+  check('【假红已修】非空行（10 条，条数以 0 结尾）⇒ 不进空态分支、不要求起算日',
+    feeds.isZeroCountRow(NONEMPTY_TEN) === false && feeds.changeRowIsHonest(NONEMPTY_TEN) === true);
+  check('【对照组】非空行即便写了起算日也通过（非空行写不写起算日都不算错）',
+    feeds.changeRowIsHonest(`${NONEMPTY_TEN}（变更记录自 2026-09-30 起）`) === true);
+
+  // ---- ③ 现场夹具：真实产物的两行（28 条 / 10 条），旧判据假红、新判据通过 ----
+  const REAL_ROW_CODING = 'AI Deals Radar · Coding 套餐变化 28 条 · 最近一条 2026-10-04 AI Coding 套餐的价格、活动价、额度、模型与限制的变化。';
+  const REAL_ROW_API = 'AI Deals Radar · API 价格变化 10 条 · 最近一条 2026-10-04 AI 平台 API 的单价、计费单位、模型计价条目、免费额度、限速与 credits 的变化。';
+  check('【现场夹具】两条真实变化流（28 条 / 10 条）在新判据下都不进空态分支 ⇒ T28-F1 的假红消失',
+    [REAL_ROW_CODING, REAL_ROW_API].every(row => feeds.isZeroCountRow(row) === false && feeds.changeRowIsHonest(row) === true));
+  check('【现场夹具·对照】同一窗口里**真的**出现「0 条」时，仍然要求起算日',
+    feeds.changeRowIsHonest(`${REAL_ROW_CODING} 该日志共 0 条事件（变更记录自 2026-09-30 起）`) === true
+    && feeds.changeRowIsHonest(`${REAL_ROW_CODING} 该日志共 0 条事件`) === false);
+
+  // ---- ④ 单一出处 + 页面验收里那道牙还在 ----
+  const verifySource = fs.readFileSync(path.join(ROOT, 'scripts', 'tools', 'verify-site.js'), 'utf8');
+  check('【单一出处】页面验收里不再有裸 `/0 条/` 子串判据（只允许存在于解释这件事的注释里）',
+    !/\/0 条\//.test(verifySource.replace(/(^|[^:])\/\/.*$/gm, '$1')));
+  check('【单一出处】页面验收改调 lib/feeds.js 的具名判据，而不是自己再写一份正则',
+    /feedsLib\.changeRowIsHonest\(/.test(verifySource));
+  check('【原意还在】页面验收仍然走「空态 ⇒ 必须有起算日」这条判据（判据函数仍然会否掉无起算日的空态行）',
+    feeds.changeRowIsHonest('0 条') === false && /hasChangeStartDate\(/.test(verifySource));
+}
+
+/* ------------------------------------------------------------------ */
 console.log(`\n=== v1.6 订阅层演练：${passed} 项通过，${failures.length} 项失败 ===`);
 if (failures.length) {
   for (const item of failures) console.log(`  ✗ ${item.name}${item.detail ? ` —— ${item.detail}` : ''}`);

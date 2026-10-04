@@ -20,11 +20,15 @@
 'use strict';
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..', '..');
 const reg = require('../lib/model-registry');
 const providers = require('../lib/providers');
+// `MODEL_KEY_RE` 是 modelKey 的 schema 判据（`[a-z0-9][a-z0-9._-]{1,59}`）：
+// T26-F1 的切分集必须覆盖它允许的分隔符，而它拒收的拼法不需要额外规则 —— 两件事都由下面的牙钉住。
+const apiSchema = require('../lib/api-plan-schema');
 
 let passed = 0;
 const failures = [];
@@ -940,6 +944,50 @@ section('⑦ API 侧处置登记（gaps 双侧化）：出口、反绕过与覆�
   foldToothControl.declarations[0].note = '演练对照：这条折叠后对不上任何 registry 身份';
   check('【API 处置·反绕过牙·对照绿】同形状但折叠后对不上任何身份 → 绿',
     reg.validateGaps(foldToothControl, { plans, links, table, apiPlans: [Object.assign({}, toothApiPlans[0], { models: [{ modelKey: 'vendor.no-such-identity', name: 'Nothing Here', variant: 'standard' }] })] }).length === 0);
+
+  /* ---- T26-F1：后缀切分必须覆盖 modelKey schema 允许的**全部分隔符形状** ----
+   * 切分集现为 `[/．._-]`（补 `_` 与 `-`），尾段仍走 **identityFold 折叠精确相等**（不是相似度、不是子串包含）。
+   *
+   * fixture 的 `name` 故意写成「ACME Model X」——它折叠后对不上任何 registry 身份，
+   * 于是红只可能来自 **modelKey 那条路**（不许靠官方显示名蹭过判据）。
+   *   · `zai_org_glm-5.3` / `zai-org_glm-5.3` / `zai-org-glm-5.3`：审查 t26 点名的三种写法（真实 registry 里
+   *     `glm-5.3` 有别名 `zai-org/GLM-5.3`，所以整串折叠本来也能命中；这里证明它们**必须红**）；
+   *   · `acme_glm-5.3` / `acme-glm-5.3`：命名空间**不在任何 registry 别名里** ⇒ 只有补齐切分集才能探到，
+   *     这正是 T26-F1 的漏洞形状（复算脚本 research/_raw/t30/probe-suffix-splitting.cjs 证明修补前 0 命中）。 */
+  const separatorFixtures = [
+    { modelKey: 'zai_org_glm-5.3', label: '下划线命名空间 zai_org_glm-5.3（t26 点名形状）' },
+    { modelKey: 'zai-org_glm-5.3', label: '连字符+下划线 zai-org_glm-5.3（t26 点名形状）' },
+    { modelKey: 'acme_glm-5.3', label: '下划线命名空间 acme_glm-5.3（命名空间不在任何别名里 ⇒ 只能靠切分）' },
+    { modelKey: 'acme-glm-5.3', label: '连字符命名空间 acme-glm-5.3（同上）' }
+  ];
+  separatorFixtures.forEach(fixture => {
+    const fixturePlanId = 'ffffffffffff';
+    const fixturePlans = [{
+      id: fixturePlanId, provider: '演练', officialUrl: 'https://example.com/', sourceUrl: 'https://example.com/',
+      models: [{ modelKey: fixture.modelKey, name: 'ACME Model X', variant: 'standard' }]
+    }];
+    const fixtureDoc = {
+      schemaVersion: 2,
+      declarations: [{
+        apiPlanId: fixturePlanId, modelKey: fixture.modelKey, variant: 'standard', reason: 'off-registry-model',
+        sourceUrl: 'https://example.com/', note: `演练：${fixture.label} 折叠后其实能对上 glm-5.3`
+      }]
+    };
+    const fixtureProblems = reg.validateGaps(fixtureDoc, { plans, links, table, apiPlans: fixturePlans });
+    check(`【T26-F1】${fixture.label} 作为 API 侧声明 modelKey → 红且点名 glm-5.3`,
+      hasProblem(fixtureProblems, 'registry 身份「glm-5.3」'), fixtureProblems.slice(0, 1).join(' | '));
+  });
+  check('【T26-F1·对照】fixture 的官方显示名「ACME Model X」本身对不上任何 registry 身份（红只可能来自 modelKey 那条路）',
+    reg.foldedHitsOf('ACME Model X', reg.foldedIndexOf(table)).length === 0);
+  const realOffRegistryKey = 'openai.gpt-oss-120b';
+  const realOffRegistryEntry = apiPlans.find(plan => plan.id === '036c5f09561e').models
+    .find(model => model.modelKey === realOffRegistryKey);
+  check('【T26-F1·对照绿】真实 off-registry 键（openai.gpt-oss-120b / GPT OSS 120B）在切分集补齐后仍然 0 命中',
+    reg.foldedHitsOf(realOffRegistryKey, reg.foldedIndexOf(table)).length === 0
+    && reg.foldedHitsOf(realOffRegistryEntry.name, reg.foldedIndexOf(table)).length === 0);
+  check('【T26-F1】切分集只需覆盖 schema 允许的分隔符：MODEL_KEY_RE 拒收冒号/井号/反斜杠/中文方括号等拼法（那些不是风险，不为它们加规则）',
+    ['a:b', 'a#b', 'a\\b', 'a【b】', 'a b'].every(sample => !apiSchema.MODEL_KEY_RE.test(sample))
+    && ['zai_org_glm-5.3', 'zai-org_glm-5.3', 'zai-org-glm-5.3', 'openai.gpt-oss-120b'].every(sample => apiSchema.MODEL_KEY_RE.test(sample)));
   // ---- ⑩ 删掉一条声明 → validateLinks 复红（有声明则绿）----
   const dropDeclaration = clone(gaps);
   dropDeclaration.declarations = dropDeclaration.declarations
@@ -995,6 +1043,59 @@ section('⑦ API 侧处置登记（gaps 双侧化）：出口、反绕过与覆�
       return reg.foldedHitsOf(declaration.modelKey, reg.foldedIndexOf(table)).length === 0
         && (!entry || reg.foldedHitsOf(entry.name, reg.foldedIndexOf(table)).length === 0);
     }));
+}
+
+/* ================================================================== */
+
+section('⑧ 机器牙：validateLinks 与 validateGaps 必须成对调用（T26-F2）');
+
+{
+  // 为什么需要这条牙：API 侧「有结局」是由 `validateLinks()` 记的（它把处置声明算成结局），
+  // 而"这条结局合不合法"（apiPlanId 是否存在 / modelKey 是否真实 / reason 是否白名单 / 引文来源）
+  // 全在 `validateGaps()` 里。**只调前者**，任何声明都能当结局用 —— 抽屉会被打开。
+  // 这条耦合此前只靠"每个入口都成对调用"的约定（当时 6/6），没有机器牙钉住；这里把它变成断言。
+  const entryPairProblems = rootDir => {
+    const problems = [];
+    const scanned = [];
+    const files = [path.join(rootDir, 'scripts', 'validate.js')];
+    const toolsDir = path.join(rootDir, 'scripts', 'tools');
+    if (fs.existsSync(toolsDir)) {
+      for (const name of fs.readdirSync(toolsDir).sort()) {
+        if (name.endsWith('.js')) files.push(path.join(toolsDir, name));
+      }
+    }
+    for (const file of files) {
+      if (!fs.existsSync(file)) continue;
+      const source = fs.readFileSync(file, 'utf8');
+      if (!/validateLinks\(/.test(source)) continue;
+      const rel = path.relative(rootDir, file).split(path.sep).join('/');
+      scanned.push(rel);
+      if (!/validateGaps\(/.test(source)) problems.push(rel);
+    }
+    return { problems, scanned };
+  };
+
+  const productionPairs = entryPairProblems(ROOT);
+  check(`源码级机器牙：${productionPairs.scanned.length} 个调用 validateLinks 的生产入口都同时调用 validateGaps（有结局 ≠ 结局合法）`,
+    productionPairs.problems.length === 0 && productionPairs.scanned.length >= 6,
+    productionPairs.problems.join(' | ') || `${productionPairs.scanned.join(' · ')}`);
+
+  // 反证：TEMP 副本里摘掉一个入口的 validateGaps 调用 ⇒ 必红且点名该文件（判据不是恒绿）
+  const pairProbeRoot = fs.mkdtempSync(path.join(os.tmpdir(), 't30-pair-'));
+  try {
+    fs.mkdirSync(path.join(pairProbeRoot, 'scripts', 'tools'), { recursive: true });
+    fs.copyFileSync(path.join(ROOT, 'scripts', 'validate.js'), path.join(pairProbeRoot, 'scripts', 'validate.js'));
+    const victimRel = 'check-model-registry-links.js';
+    const victimSource = fs.readFileSync(path.join(ROOT, 'scripts', 'tools', victimRel), 'utf8')
+      .split('\n').filter(line => !line.includes('validateGaps(')).join('\n');
+    fs.writeFileSync(path.join(pairProbeRoot, 'scripts', 'tools', victimRel), victimSource);
+    const brokenPairs = entryPairProblems(pairProbeRoot);
+    check('源码级机器牙·反证：TEMP 副本里摘掉一个入口的 validateGaps 调用 → 必红且点名该文件',
+      brokenPairs.problems.length === 1 && brokenPairs.problems[0] === `scripts/tools/${victimRel}`,
+      JSON.stringify(brokenPairs.problems));
+  } finally {
+    fs.rmSync(pairProbeRoot, { recursive: true, force: true });
+  }
 }
 
 console.log('');

@@ -1,0 +1,47 @@
+## A) URL 盘点与域名归属
+  唯一 URL 数：34
+  域名归属不符（host 不在该 provider 的 officialDomains）：0
+
+## B) 全部 officialUrl / sourceUrl 可达性（HEAD，失败再 GET）
+  ✗   0 https://ai.google.dev/gemini-api/docs/pricing  [api:google] failed TypeError: fetch failed
+  ✓ 200 https://api-docs.deepseek.com/quick_start/pricing  [api:deepseek] HEAD → https://api-docs.deepseek.com/quick_start/pricing/
+  ✓ 200 https://aws.amazon.com/q/developer/pricing/  [plan:aws] HEAD
+  ✓ 200 https://cloud.tencent.com/document/product/1729/97731  [api:tencent] HEAD
+  ✗   0 https://codeassist.google/  [plan:google] failed TypeError: fetch failed
+  ✓ 200 https://comate.baidu.com/zh/pricing  [plan:baidu] HEAD
+  ✗ 403 https://console.groq.com/docs/models  [api:groq] GET
+  ✓ 200 https://cursor.com/pricing  [plan:cursor] HEAD
+  ✓ 200 https://docs.anthropic.com/en/docs/about-claude/pricing  [api:anthropic] HEAD → https://claude.com/app-unavailable-in-region
+  ✓ 200 https://docs.bigmodel.cn/cn/coding-plan/overview  [plan:zhipu] HEAD
+  ✓ 200 https://docs.fireworks.ai/serverless/pricing.md  [api:fireworks] HEAD
+  ✓ 200 https://docs.github.com/en/copilot/get-started/plans  [plan:github] HEAD
+  ✓ 200 https://docs.qoder.com/account/pricing.md  [plan:qoder-intl] HEAD
+  ✗ 403 https://docs.together.ai/docs/serverless/models.md  [api:together] GET
+  ✗   0 https://github.com/features/copilot/plans  [plan:github] failed TypeError: fetch failed
+  ✓ 200 https://help.aliyun.com/zh/lingma/billing-description  [plan:qoder] HEAD
+  ✓ 200 https://help.aliyun.com/zh/model-studio/model-pricing  [api:aliyun] HEAD
+  ✓ 200 https://open.bigmodel.cn/pricing  [api:zhipu] HEAD
+  ✓ 200 https://platform.minimax.cn/docs/guides/pricing-paygo  [api:minimax] HEAD
+  ✓ 200 https://platform.minimax.cn/docs/guides/pricing-token-plan  [plan:minimax] HEAD
+  ✗ 403 https://platform.openai.com/docs/pricing  [api:openai] GET
+  ✓ 200 https://platform.stepfun.com/docs/zh/step-plan/overview  [plan:stepfun] HEAD
+  ✓ 200 https://replit.com/pricing  [plan:replit] HEAD
+  ✓ 200 https://siliconflow.cn/pricing  [api:siliconflow] HEAD
+  ✓ 200 https://windsurf.com/pricing  [plan:windsurf] HEAD → https://devin.ai/pricing
+  ✓ 200 https://www.anthropic.com/pricing  [plan:anthropic] HEAD → https://claude.com/pricing
+  ✓ 200 https://www.cerebras.ai/pricing  [api:cerebras] HEAD
+  ✓ 200 https://www.codebuddy.ai/docs/zh/ide/Account/pricing  [plan:codebuddy] GET
+  ✓ 200 https://www.codebuddy.cn/docs/ide/Account/pricing  [plan:codebuddy] GET
+  ✓ 200 https://www.jetbrains.com/ai-ides/buy/  [plan:jetbrains] HEAD
+  ✓ 200 https://www.kimi.com/en/help/membership/membership-overview  [plan:moonshot] HEAD
+  ✓ 200 https://www.trae.cn/pricing  [plan:trae] HEAD
+  ✓ 200 https://www.volcengine.com/product/ark  [api:volcengine] HEAD
+  ✓ 200 https://www.xfyun.cn/doc/spark/CodingPlan.html  [plan:iflytek] HEAD
+
+  合计 34 条 URL：可达 28 · 不可达/受限 6
+    ✗ 0 https://ai.google.dev/gemini-api/docs/pricing [api:google] TypeError: fetch failed
+    ✗ 0 https://codeassist.google/ [plan:google] TypeError: fetch failed
+    ✗ 403 https://console.groq.com/docs/models [api:groq] 
+    ✗ 403 https://docs.together.ai/docs/serverless/models.md [api:together] 
+    ✗ 0 https://github.com/features/copilot/plans [plan:github] TypeError: fetch failed
+    ✗ 403 https://platform.openai.com/docs/pricing [api:openai] 

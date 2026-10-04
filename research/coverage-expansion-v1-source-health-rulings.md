@@ -144,17 +144,35 @@ const absenceEligibleSources = rows
   约 100 条），则它满足主题关 ⇒ 可作为**受限来源**重新评估（需要新的采集器规则 + 探针声明）；
 - `toolify.ai` / `ai-bot.cn`：只有出现「官方优惠口径」的版块（例如专门的 deals/discount 栏目）才重新评估。
 
-## 6. 本轮对生产文件的副作用（必须报备）
+## 6. 本轮的取证方式与文件变化（t32 逐字复核后的更正）
 
-- `scripts/data/source-health.json`：**按任务要求更新**为本轮真实观测（9/9 healthy、futurepedia
-  `consecutiveFailures` 归零、`lastSuccessAt` 推进）。这是健康层的真值文件，不更新就无法「如实记录」。
+**更正记录（t32 复核）**：本节原先写的是「`scripts/data/source-health.json`：按任务要求更新为本轮真实观测」。
+t15 的审查（F6）据此判定这句与事实不符，并主张「该文件与 a4dd40f 逐字节相同、9/9 healthy 是基线既有值」。
+t32 在 2026-10-04 现场逐字比对后确认：**这句原话是对的，t15 的 F6 前提是反的**，依据如下（两条都可当场复现）：
+
+| 事实 | 取值 | 复现方式 |
+| --- | --- | --- |
+| a4dd40f（= 任务基线）里的 source-health.json | `generatedAt = 2026-10-04T04:28:23.566Z`，状态普查 **healthy 8 / failed 1**；futurepedia `consecutiveFailures = 9`、`lastError = "https://www.futurepedia.io/ 抓取失败: HTTP 403"` | `git show a4dd40f:scripts/data/source-health.json` |
+| 盘上现行文件 | `generatedAt = 2026-10-04T10:34:24.731Z`，状态普查 **healthy 9**（futurepedia `consecutiveFailures=0`、`lastSuccessAt` 推进到 2026-10-04） | 直接读 `scripts/data/source-health.json` |
+| 两份是否相同 | **不相同**（磁盘 sha256 `23b52bea…` ≠ a4dd40f 版本 `fea444fb…`） | `Get-FileHash` 两处对比 |
+
+⇒ 因此本轮**确实更新过** `scripts/data/source-health.json`（t13 的真跑采集写的），
+「9/9 healthy」不是基线既有值（基线是 8 healthy / 1 failed）。**这两个数字与失败传播规则（§3）都不受影响**：
+`retire = 0` 的结论保留；futurepedia 的 403 仍是环境归因（§2）。
+
+文件变化清单（与上面同一批真跑采集的副作用）：
+
+- `scripts/data/source-health.json`：由真跑采集写为本轮观测（8/1 → 9/9 healthy，futurepedia
+  `consecutiveFailures` 归零、`lastSuccessAt` 推进）。健康层只有一份真值，不写它就无法「如实记录真实 health」。
 - `scripts/data/source-snapshots.json`：新增本轮 9 个来源的结构摘要（既有机制，自动）。
 - `scripts/data/zh-pending.json`：本轮采集新增 1 条待译字段（既有机制，自动）。
 - `deals.json`：`updatedAt` 与 79 处 `lastSeen` 刷新为 `2026-10-04`（**没有条目被增删或改写**：
   合并结果 `新采 114 + 既有 135 + 策展 32 → 去重 146 → 修剪前 135 → 最终 135`，修剪明细全 0，
   历史事件 0 条）。这是真跑一次采集的固有副作用。
 - `scripts/data/deal-history.json`：**零改动**（这正是 §3 要证明的事）。
-
+- `scripts/data/source-snapshots.json`：新增本轮 9 个来源的结构摘要（既有机制，自动）。
+- `scripts/data/zh-pending.json`：本轮采集新增 1 条待译字段（既有机制，自动）。
+- `deals.json`：`updatedAt` 与 79 处 `lastSeen` 刷新为 `2026-10-04`（**没有条目被增删或改写**：
 ## 7. 与下游的关系
 
 - t15（数据质量独立审查）可以按本文件的 §4 逐条复核「裁决是否有实测支撑」，并按 §2.1 复跑归因实验；
