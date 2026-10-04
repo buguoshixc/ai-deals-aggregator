@@ -68,6 +68,12 @@ const providers = require('../lib/providers');
 // v2.4：优惠 ↔ 套餐关系层。真值在 scripts/data/deal-plan-links.json，
 // 这里只读、只校验、只派生（注入 dist/deals.json + 发布 dist/deal-plan-links.json）。
 const dealPlanLinks = require('../lib/deal-plan-links');
+// private-analytics-v1：私有站点分析（Cloudflare Web Analytics）。
+// 定义只有一处 —— `lib/analytics.js` 的 ANALYTICS-GUARD 区块就是浏览器里跑的那段源码；
+// 「这一页要不要统计」只有一处声明 —— `lib/analytics-routes.js` 的 ROUTE_RULES。
+// 构建期做三件事：按路由注入 beacon / 断言每页 exactly 1 / 断言产物里不留占位符。
+const analytics = require('../lib/analytics');
+const analyticsRoutes = require('../lib/analytics-routes');
 
 /**
  * 套餐对比页的交互逻辑**源码**（逐字节内联进页面）。
@@ -344,6 +350,52 @@ function resolveRouteHrefs(html, prefix) {
   // 动态路由（厂商页 / 分类页）的深度前缀：源码里写 __PREFIX__vendor/<slug>/，
   // 由这里按输出深度解析 —— 写死相对路径在详情页那一层必然错。
   return out.split('__PREFIX__').join(prefix);
+}
+
+/**
+ * 页面 HTML 的**唯一收尾动作**（private-analytics-v1）：解析路由占位符 + 注入分析 bootstrap。
+ *
+ * ## 为什么它配得上「唯一」这两个字
+ *
+ * P1 §7 禁止逐页手写 `<script>`，目标是「Beacon 的定义只有一处，所有正式发布 HTML 从这一处派生」。
+ * 本文件里页面 HTML 的生成路径有五条（首页骨架 / 详情页 / 状态页 / 变化页 / 各资料页渲染器），
+ * 但它们**已经**收敛在一件事上：抽取共享片段时都要调一次 `resolveRouteHrefs()` 按输出深度
+ * 解析页面里的占位符。分析注入就挂在这条既有收尾路径上 —— 于是「新页面族从同一处派生 beacon」
+ * 不是因为大家记得改，而是**没有别的出口**。
+ *
+ * ## 三件必须在同一处发生的事
+ *
+ *   ① 路由占位符解析（既有行为，逐字不变）；
+ *   ② 分析占位符按**该页路由**解析成 beacon 或注释（`lib/analytics.js` 是唯一实现）；
+ *   ③ 收尾断言：残留占位符 = 0，且 bootstrap 数 == 该页应有值（trackable 1 / excluded 0）。
+ *
+ * ③ 是这套设计真正值钱的地方：漏注入、注入两次、绕过共享页脚、偷偷改 token 或删掉
+ * Production Guard —— 任何一种都在**构建期**就红，而不是等到线上少了一半数据才发现。
+ *
+ * ⚠️ 一个页面**恰好调用一次**。页脚标记在源码里只出现一次，因此「解析两次」只可能来自
+ * 有人把同一个页面拼了两遍 —— 那种情况下计数断言会报 2，正是我们想要的。
+ *
+ * @param {string} html 含占位符的 HTML 片段
+ * @param {string} route 该页的站根相对路由（首页是空串）—— 必须是**显式**的，不许猜
+ * @param {string} prefix 该输出的深度前缀（'' / '../' / '../../'）
+ * @param {string} [where] 出错时点名用的位置描述（渲染器名）
+ */
+function finalizePage(html, route, prefix, where = '') {
+  const resolved = resolveRouteHrefs(html, prefix);
+  const decision = analyticsRoutes.classifyRoute(route);
+  if (!decision.known) {
+    // 「没有任何规则声明过这个路由」= 新增页面族忘了登记统计范围。
+    // 静默不统计正是这一层最危险的失效方式，所以这里硬失败并给出登记位置。
+    throw new Error(`分析统计范围里没有登记路由 ${analytics.describeRoute(decision.route)}`
+      + `${where ? `（${where}）` : ''} —— 请把这一族加进 scripts/lib/analytics-routes.js 的 ROUTE_RULES`);
+  }
+  const out = analytics.inject(resolved, decision);
+  const verdict = analytics.assertPageHtml(out, decision);
+  if (!verdict.ok) {
+    throw new Error(`分析注入自检失败 ${analytics.describeRoute(decision.route)}`
+      + `${where ? `（${where}）` : ''}：${verdict.problems.join('；')}`);
+  }
+  return out;
 }
 
 /**
@@ -682,10 +734,10 @@ function writeDetailPages(payload, indexHtml, renderCore, plan) {
   if (!style || !themeScript || !footerRaw) {
     throw new Error('抽取详情页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
   }
-  const footer = resolveRouteHrefs(
-    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    '../../'
-  ).trim();
+  // 页脚在这条路径上**每页解析一次**（而不是提前解析成一份共用）：
+  // 分析注入要按该页自己的路由判「要不要统计」，所以路由必须是这一页的。
+  // 除分析占位符外，这段的解析结果与「提前解析一次」逐字相同。
+  const footerTemplate = footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>');
 
   const themeSeg = `<div class="seg" id="themeSeg" role="group" aria-label="配色主题">
         <button type="button" data-theme-value="auto" aria-pressed="true">跟随系统</button>
@@ -736,6 +788,8 @@ function writeDetailPages(payload, indexHtml, renderCore, plan) {
     const vendor = renderCore.vendorOf(deal);
     const tier = renderCore.tierOf(deal);
     const pageUrl = `${SITE_URL}deal/${encodeURIComponent(deal.id)}/`;
+    // 这一页自己的页脚：路由显式给（`deal/<id>/`），分析注入因此按本页路由判定。
+    const footer = finalizePage(footerTemplate, `deal/${deal.id}/`, '../../', 'writeDetailPages/footer').trim();
     const title = `${deal.title} — 官方优惠与免费额度 | ${SITE_NAME}`;
     const desc = (() => {
       // 描述：厂商 + 标题 + 优惠原文。**为什么要带标题前缀**：80 个详情页里有 17 条
@@ -886,16 +940,18 @@ ${vendorPage
  *    与「连续两次 build 产物一致」的规矩冲突；无 JS 时读到的仍是完整信息。
  *  · 数据缺失（还没有过一次成功采集）时生成一页说明，而不是让构建失败。
  */
-function renderStatusPage(healthDoc, indexHtml) {
+function renderStatusPage(healthDoc, indexHtml, route = 'status/') {
   const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
   const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
   const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
   if (!style || !themeScript || !footerRaw) {
     throw new Error('抽取状态页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
   }
-  const footer = resolveRouteHrefs(
+  const footer = finalizePage(
     footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    '../'
+    route,
+    '../',
+    'renderStatusPage/footer'
   ).trim();
   const summary = health.summarize(healthDoc);
   const rows = summary.rows;
@@ -1153,9 +1209,11 @@ function renderChangesPage(radar, indexHtml, renderCore, context = {}) {
   if (!style || !themeScript || !footerRaw) {
     throw new Error('抽取变化雷达页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
   }
-  const footer = resolveRouteHrefs(
+  const footer = finalizePage(
     footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    '../'
+    'changes/',
+    '../',
+    'renderChangesPage/footer'
   ).trim();
 
   const W = changes.CHANGES_WORDING;
@@ -1381,9 +1439,11 @@ function renderPlansPage(planStore, indexHtml, context = {}) {
   if (!style || !themeScript || !footerRaw) {
     throw new Error('抽取套餐对比页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
   }
-  const footer = resolveRouteHrefs(
+  const footer = finalizePage(
     footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    prefix
+    plansPage.PLANS_ROUTE,
+    prefix,
+    'renderPlansPage/footer'
   ).trim();
 
   // v2.3：这一页**有专属订阅源**（套餐变化），必须声明它 —— 与根 Feed 并列，
@@ -1612,9 +1672,11 @@ function renderApiPlansPage(apiStore, indexHtml, context = {}) {
   if (!style || !themeScript || !footerRaw) {
     throw new Error('抽取 API 计费页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
   }
-  const footer = resolveRouteHrefs(
+  const footer = finalizePage(
     footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    prefix
+    apiPlansPage.API_PLANS_ROUTE,
+    prefix,
+    'renderApiPlansPage/footer'
   ).trim();
 
   const pageUrl = `${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`;
@@ -1775,9 +1837,11 @@ function renderPlansHubShell(indexHtml, context = {}) {
   if (!style || !themeScript || !footerRaw) {
     throw new Error('抽取套餐资料入口页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
   }
-  const footer = resolveRouteHrefs(
+  const footer = finalizePage(
     footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    prefix
+    plansHubPage.PLANS_HUB_ROUTE,
+    prefix,
+    'renderPlansHubShell/footer'
   ).trim();
 
   const pageUrl = `${SITE_URL}${plansHubPage.PLANS_HUB_ROUTE}`;
@@ -1890,9 +1954,11 @@ function renderModelsShell({ route, title, description, body, jsonLd, prefix, ex
   if (!style || !themeScript || !footerRaw) {
     throw new Error(`抽取模型页共用片段失败（style / 主题脚本 / 页脚，${route}）——检查 index.html 里的标记是否还在`);
   }
-  const footer = resolveRouteHrefs(
+  const footer = finalizePage(
     footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    prefix
+    route,
+    prefix,
+    'renderModelsShell/footer'
   ).trim();
   const pageUrl = `${SITE_URL}${route}`;
   const jsonLdBlocks = jsonLd
@@ -2080,9 +2146,11 @@ function renderFeedsPage(feedList, indexHtml, context = {}) {
   if (!style || !themeScript || !footerRaw) {
     throw new Error('抽取订阅中心共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
   }
-  const footer = resolveRouteHrefs(
+  const footer = finalizePage(
     footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    '../'
+    'feeds/',
+    '../',
+    'renderFeedsPage/footer'
   ).trim();
 
   const W = feeds.FEEDS_WORDING;
@@ -2325,9 +2393,11 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
   if (!style || !themeScript || !footerRaw) {
     throw new Error(`抽取目录页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在`);
   }
-  const footer = resolveRouteHrefs(
+  const footer = finalizePage(
     footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    prefix
+    spec.route || `${spec.slug}/`,
+    prefix,
+    'renderDirectoryPage/footer'
   ).trim();
 
   // v1.7：页面类型。`hub` 列子页面、`alias` 是 noindex 的旧地址，其余列条目。
@@ -3221,7 +3291,7 @@ function assemble() {
   // （首页 `status/`、详情页 `../../status/`、状态页自己 `../status/`），
   // 所以源码里只有一处占位符，各自在写出前替换。这里先只处理**首页那一份**，
   // 详情页与状态页的替换在各自的写出函数里做（它们拿到的是同一份含占位符的 html）。
-  fs.writeFileSync(indexFile, resolveRouteHrefs(html, ''), 'utf8');
+  fs.writeFileSync(indexFile, finalizePage(html, '', '', 'index.html'), 'utf8');
 
   // OG 分享图。
   // 画完立刻自检（og-image.selfCheck）：点阵字模没有自动换行，排版一变文字就会被静默裁掉，
@@ -4245,7 +4315,11 @@ function selfCheck(built) {
       // 这一页**刻意没有交互脚本**（v1 是预渲染静态表）—— 断言它真的没有，
       // 而不是"以后顺手加了筛选控件也没人知道"。JSON-LD 与主题脚本都是**内联**的，
       // 所以必须按 type/内容排除，而不是按"有没有 src"排除。
-      const withoutAllowedScripts = diskHtml
+      //
+      // private-analytics-v1：页脚里的分析 bootstrap 也是内联的，同样要排除 ——
+      // 它是**全站共享页脚的一部分**（不是这一页的交互控件），且它加载的是外部观测脚本、
+      // 不改变页面行为。排除它之后，这条断言仍然守着「这一页自己没有内联脚本」这件事。
+      const withoutAllowedScripts = analytics.stripBootstrap(diskHtml)
         .replace(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/g, '')
         .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '');
       if (/<script(?![^>]*\bsrc=)[^>]*>/.test(withoutAllowedScripts)) {
@@ -4300,7 +4374,8 @@ function selfCheck(built) {
         pageProblems.push('资料入口页出现了 <table> —— 它不该复制 Coding / API 页的大表');
       }
       // 无 JS 可读：正文全部是构建期写下的静态 HTML，且不许内联交互脚本。
-      const withoutAllowedScripts = diskHtml
+      // （分析 bootstrap 与主题脚本、JSON-LD 一样属于**允许的共享内联段**，见上一处的说明。）
+      const withoutAllowedScripts = analytics.stripBootstrap(diskHtml)
         .replace(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/g, '')
         .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '');
       if (/<script(?![^>]*\bsrc=)[^>]*>/.test(withoutAllowedScripts)) {

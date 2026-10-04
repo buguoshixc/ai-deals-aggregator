@@ -312,6 +312,20 @@ runs:
       shell: bash
       run: node scripts/tools/data-docs-selftest.js --dir=dist
 
+    # private-analytics-v1 新增：私有站点分析（Cloudflare Web Analytics）的独立门禁。
+    # 它红的时候没有别的步骤会替它红 —— 构建期那一遍的输入是「构建过程自己记下来的描述符」，
+    # 而这一支**只读 dist/** 现场：自己推导路由、自己数 `data-dsh-analytics`、把
+    # `lib/analytics.js` 的 guard 区块拿进 vm 沙箱真的执行一遍真值表。
+    # 覆盖的是本轮全部红线：每页 exactly 1 个 bootstrap（多一个/少一个都红）、
+    # localhost / 127.0.0.1 / file:// / 同域其它项目必须禁用、
+    # 注入内容与唯一配置源逐字节一致、产物里不许有 traffic.json / analytics.json、
+    # 不许出现别的分析 provider、仓库里不许有 Cloudflare **账户**凭据
+    # （合法的 browser Site Token 刻意不被算作泄密）。
+    # 另含 8 种定向篡改的牙测试：任何一种篡改没被扫出来，这一步就红。
+    - name: Analytics self-test (bootstrap count / production guard / provider)
+      shell: bash
+      run: node scripts/tools/analytics-selftest.js --dir=dist
+
     # v1.6 订阅可复现：**真实连续构建**两次，逐字节比对全部 36 个 Feed 文件。
     # 为什么自测之外还要这一支：自测证明的是「纯函数同输入同输出」，证明不了
     # 「构建脚本没把时钟/路径写进产物」。这里跑的是与发布完全同一条路径，

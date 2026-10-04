@@ -26,6 +26,9 @@ const ROOT = path.join(__dirname, '..', '..');
 // 而不是把一个数字写死在断言里 —— 写死的后果是每加一份分类 Feed 都要来改一次验收脚本。
 const feedsLib = require('../lib/feeds');
 const landingsLib = require('../lib/landing');
+// private-analytics-v1：外部请求白名单与页面判定都取自**唯一实现**（lib/analytics.js）——
+// 这里不重写一份 origin 表，也不 grep token 字符串：判据只有一处，改了那边这一支跟着变。
+const analytics = require('../lib/analytics');
 
 /**
  * 某个落地页**应该**声明几条 `rel="alternate"`：站点根 Feed 对（2 条）
@@ -148,13 +151,31 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   const errors = [];
   const failedRequests = [];
   const externalRequests = [];
+  /**
+   * private-analytics-v1：分析（Cloudflare Web Analytics）请求的**单独账本**。
+   *
+   * 为什么不是「有外部请求就不检查了」（P1 §15 点名禁止的改法）：外部请求仍然逐条判来源 ——
+   * 只有 `lib/analytics.js` 的 `ANALYTICS.allowedOrigins`（脚本 origin + 上报 origin 两条）
+   * 才被允许，其余一律照旧计进 `externalRequests` 并判红。
+   *
+   * 两条账本各自回答一个不同的问题：
+   *   · `analyticsRequests` = 这次真的把统计发出去了吗？（**本地必须是 0**，`--url=` 线上应当 > 0）；
+   *   · `externalRequests` = 有没有出现白名单之外的外部请求？
+   */
+  const analyticsRequests = [];
+  const forbiddenRequests = [];
   // 记录错误时**带上当时那一页的 URL**：只记 message 时，"整轮 1 个 JS 错误"这种
   // 回归失败完全没有线索（实测：某一节之外的导航报一条 console error，
   // 每一节的"本节 0 错误"都是绿的，只有整轮计数是 1 —— 没有 URL 就只能靠猜）。
   page.on('pageerror', e => errors.push(`${page.url()} :: ${e.message}`));
   page.on('console', m => { if (m.type() === 'error') errors.push(`${page.url()} :: ${m.text()}`); });
   page.on('requestfailed', r => failedRequests.push(r.url()));
-  page.on('request', r => { if (!r.url().startsWith(base) && !r.url().startsWith('data:')) externalRequests.push(r.url()); });
+  page.on('request', r => {
+    const url = r.url();
+    if (url.startsWith(base) || url.startsWith('data:')) return;
+    if (analytics.isAllowedExternalRequest(url)) analyticsRequests.push(url);
+    else { externalRequests.push(url); forbiddenRequests.push(url); }
+  });
 
   console.log('\n=== 1) 无 JS：预渲染骨架 ===');
   await page.route('**/deals.json', route => route.abort());   // 断掉数据，只看静态 HTML
@@ -5362,11 +5383,110 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       data.text.includes('docs.anthropic.com') && data.text.includes('不是官方来源'));
   }
 
+  /* ------------------------------------------------------------------ */
+  /* 私有站点分析（private-analytics-v1）                                 */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 26) 私有分析（Production Guard / 覆盖 / 端点）===');
+  {
+    // 抽样页覆盖 P1 §21 点名的全部类型：首页 / 两个计费页 / 模型索引 / 某个模型详情 /
+    // 厂商落地页 / 变化雷达页。**每条断言都在真浏览器里量**，不读源码字符串。
+    const modelFile = (() => {
+      const dir = path.join(DIR, 'models');
+      if (!fs.existsSync(dir)) return null;
+      const entry = fs.readdirSync(dir, { withFileTypes: true }).find(item => item.isDirectory());
+      return entry ? `models/${entry.name}/` : null;
+    })();
+    const vendorFile = (() => {
+      const dir = path.join(DIR, 'vendor');
+      if (!fs.existsSync(dir)) return null;
+      const entry = fs.readdirSync(dir, { withFileTypes: true }).find(item => item.isDirectory());
+      return entry ? `vendor/${entry.name}/` : null;
+    })();
+    const samples = ['', 'plans/api/', 'plans/coding/', 'models/', modelFile, vendorFile, 'changes/']
+      .filter(route => route !== null);
+
+    const live = Boolean(urlArg);
+    const rows = [];
+    for (const route of samples) {
+      const before = { errors: errors.length, analytics: analyticsRequests.length, forbidden: forbiddenRequests.length };
+      await page.goto(`${base}${route}`, { waitUntil: 'networkidle' });
+      // 真实资源的请求记录（比只看 network 事件更硬：它证明**浏览器真的没去取**那个脚本）
+      const observed = await page.evaluate(() => {
+        const entries = performance.getEntriesByType('resource').map(item => item.name);
+        return {
+          bootstraps: document.querySelectorAll('script[data-dsh-analytics]').length,
+          cloudflare: entries.filter(name => /cloudflareinsights\.com/.test(name)),
+          placeholder: document.documentElement.outerHTML.includes('ANALYTICS:BOOTSTRAP'),
+          beaconElement: document.querySelectorAll('script[type="module"][src*="beacon.min.js"]').length,
+          text: (document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0)
+        };
+      });
+      rows.push({
+        route, ...observed,
+        newErrors: errors.length - before.errors,
+        newAnalytics: analyticsRequests.length - before.analytics,
+        newForbidden: forbiddenRequests.length - before.forbidden
+      });
+    }
+
+    check(`抽样 ${rows.length} 个页面在真实 DOM 里各有一个 analytics bootstrap（含 noindex / 深层路由）`,
+      rows.every(row => row.bootstraps === 1),
+      rows.map(row => `${row.route || '/'}=${row.bootstraps}`).join(' · '));
+
+    check('抽样页面里没有残留的分析占位符（页面 HTML 里不会露出模板标记）',
+      rows.every(row => row.placeholder === false),
+      rows.filter(row => row.placeholder).map(row => row.route || '/').join('、') || '0 个');
+
+    check('抽样页面正文都有内容（分析注入没有把正文吃掉）',
+      rows.every(row => row.text > 200),
+      rows.map(row => `${row.route || '/'}:${row.text}`).join(' · '));
+
+    if (live) {
+      // 线上（`--url=`）：**应当**看到 Cloudflare 的 beacon 请求，而且只允许出现在白名单 origin 上。
+      const beacon = analyticsRequests.filter(url => url.includes('beacon.min.js'));
+      const others = analyticsRequests.filter(url => !url.includes('beacon.min.js'));
+      check('线上：至少一个页面真的加载了 Cloudflare beacon 脚本',
+        beacon.length > 0,
+        beacon.length
+          ? `观测到 ${beacon.length} 次 beacon 脚本请求`
+          : 'ℹ️ 未观测到 beacon 请求（可能是广告拦截器 / 网络故障 / Production Guard 判错——请人工看 DevTools 的 Network）');
+      check('线上：beacon 请求的 URL 精确等于配置里的脚本地址 + token 查询串',
+        beacon.every(url => url === `${analytics.ANALYTICS.beaconScriptUrl}?token=${analytics.ANALYTICS.siteToken}`),
+        beacon.slice(0, 2).join(' · ') || '（没有观测到，上一项已说明）');
+      check('线上：beacon 元素在页面里是 module + data-cf-beacon（与官方 snippet 同形）',
+        rows.every(row => row.beaconElement >= 1 || row.bootstraps === 1),
+        rows.map(row => `${row.route || '/'}:module=${row.beaconElement}`).join(' · '));
+      check('线上：分析请求只发往白名单 origin（没有其它外部请求混进来）',
+        others.length === 0 && rows.every(row => row.newForbidden === 0),
+        others.slice(0, 3).join(' · ') || '全部落在允许的两个 origin 上');
+      console.log(`     线上观测：分析请求 ${analyticsRequests.length} 次 `
+        + `（beacon 脚本 ${beacon.length} · 上报端点 ${others.length}）`);
+    } else {
+      // 本地：**本轮的强制要求** —— 一个 Cloudflare 请求都不许有。
+      check('本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取）',
+        rows.every(row => row.cloudflare.length === 0),
+        rows.filter(row => row.cloudflare.length).map(row => `${row.route || '/'}:${row.cloudflare.length}`).join(' · ') || '全部 0');
+      check('本地：网络层同样 0 次分析请求（guard 在插入 <script> 之前就返回了）',
+        rows.every(row => row.newAnalytics === 0) && analyticsRequests.length === 0,
+        `本轮累计 ${analyticsRequests.length} 次`);
+      check('本地：抽样页面没有新增 JS 错误（Analytics 失败不得影响产品）',
+        rows.every(row => row.newErrors === 0),
+        rows.filter(row => row.newErrors).map(row => `${row.route || '/'}:${row.newErrors}`).join(' · ') || '全部 0');
+      check('本地：没有出现白名单之外的外部请求',
+        rows.every(row => row.newForbidden === 0) && forbiddenRequests.length === 0,
+        forbiddenRequests.slice(0, 3).join(' · ') || '0 个');
+    }
+  }
+
   await browser.close();
   if (server) server.close();
 
   Object.assign(metrics, {
     externalRequests: externalRequests.length,
+    // private-analytics-v1：分析请求单列一项。**本地必须是 0**（Production Guard 的现场证据），
+    // 线上 `--url=` 时应当 > 0。它不进回归比对：本地恒 0，而线上与本地本来就不可比。
+    analyticsRequests: analyticsRequests.length,
     failedRequests: failedRequests.length,
     jsErrors: errors.length,
     // 抽样写进机器可读报告：回归比对报"JS 错误 1 个"时，报告里就能看到是哪一页的哪条错误。

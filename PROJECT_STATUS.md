@@ -1,6 +1,33 @@
 # AI 优惠聚合器 — 项目状态
 
-**最后更新**：2026-10-02（最新一节 **v3.0 `v3.0-ai-deals-knowledge-base`：结构化资料库**，已交付待验收）
+**最后更新**：2026-10-04（最新一节 **private-analytics-v1：私有站点分析**，分支 `private-analytics-v1`，已本地交付待合入）
+
+---
+
+## 0.1 private-analytics-v1 状态（2026-10-04）
+
+> **一句话现状**：生产站接入了 **Cloudflare Web Analytics**（Browser Beacon），
+> 维护者可以在 Cloudflare Dashboard 私下看到访问与性能趋势；访客看不到任何统计，
+> 访问数据不进仓库，本地测试一个请求都不发。
+
+| 维度 | 实测 |
+|---|---|
+| 基线 | `origin/master` = `45b7b47`（2026-10-04 12:31 CST），worktree `.worktrees/private-analytics-v1` |
+| 覆盖率 | **173 / 173** 个发布 HTML 各 **exactly 1** 个 bootstrap（0 个残留占位符、0 个重复注入） |
+| 本地零上报 | `127.0.0.1` 真浏览器实测：Cloudflare 请求 **0**（含真实资源计时 `performance.getEntriesByType('resource')`）· JS 错误 0 |
+| 唯一实现 | Beacon 定义与 Production Guard 都只在 `scripts/lib/analytics.js`；浏览器 / 构建期 / 门禁读同一份字节 |
+| 页面集合 | HTML 173 · sitemap 170 · dist 文件 290 · Feed 48 · Manifest 9 —— 与基线逐字节相同（除注入的 beacon 段） |
+| 业务数据 | Deals / Plans / API Plans / Models / Registry / History **一个字节都没改** |
+| 门禁 | `check-ci-consistency` 37 项全过（新增 (18) 私有分析门禁步骤）· `selftest:analytics` 31 项全过（含 8 种篡改牙测试）· `verify-site` 709 项 0 失败 |
+| 部署 | **未部署**：按约定推分支 + 开 PR（不合并）。线上 Smoke 与 Dashboard 验收标记 `OWNER VERIFICATION REQUIRED` |
+
+边界（逐条有门禁盯着）：不加后端 / 数据库 / 账号 · 不迁托管与 DNS · 无公开统计页（无 `/stats/`）·
+无 `traffic.json` / `analytics.json` · 不调 Cloudflare Analytics API · 无 Cloudflare 账户凭据 ·
+不建本站访客身份（无 Cookie / localStorage ID / 指纹 / IP hash）· 无自定义事件 · 页面视觉零变化。
+
+关闭方式：`scripts/lib/analytics.js` 里 `enabled: false`（一行）。完整说明见
+[docs/PRIVATE-ANALYTICS-v1.md](docs/PRIVATE-ANALYTICS-v1.md)，实测记录见
+`research/private-analytics-v1-report.md`。
 
 ---
 

@@ -1251,6 +1251,19 @@
       <p>本站不收录付费推广位，排序与推荐理由不出售。</p>
       <p>厂商 logo 版权归各厂商所有，仅作标识用途。</p>
     </footer>
+
+    <!-- 分析（Cloudflare Web Analytics）的**唯一注入点**。
+         这一段是共享页脚的一部分，因此站内每一种页面深度都从同一处派生 beacon ——
+         逐页手写脚本标签会立刻分叉（P1 §7 禁止）。
+         占位符由 build-local.js 的 finalizePage() 按路由解析：trackable 页面注入官方 beacon，
+         其它情况什么都不注入；残留占位符或注入数 != 1 都会让构建失败。
+         本地（127.0.0.1 / localhost / file://）运行时一个请求都不发，见
+         docs/PRIVATE-ANALYTICS-v1.md 与 scripts/lib/analytics.js。
+         ⚠️ 这一段里**不许**出现尖括号标签字面量（`script` 这类）：validate.js 会扫
+         index.html 的内联脚本段，注释里的标签字面量会被它当成一段真脚本去解析。
+         ⚠️ 也**不许**出现第二个 HTML 注释结束符：注释会提前闭合，后面的说明文字会
+         作为可见文本泄漏到每一个页面的页脚里（本轮实测踩过一次，靠全量产物对账抓到）。 -->
+    <!--ANALYTICS:BOOTSTRAP-->
     <!--SHARED:footer:END-->
   </div>
 

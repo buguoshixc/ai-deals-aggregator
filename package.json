@@ -78,6 +78,7 @@
     "selftest:vendor": "node scripts/tools/vendor-page-selftest.js",
     "selftest:archive": "node scripts/tools/archive-selftest.js",
     "selftest:data-docs": "node scripts/tools/data-docs-selftest.js",
+    "selftest:analytics": "node scripts/tools/analytics-selftest.js --dir=dist",
     "rebuild": "node scripts/tools/rebuild-deals.js",
     "fixture:test": "node scripts/tools/fixture-test.js",
     "fixture:build": "node scripts/tools/build-fixtures.js",
