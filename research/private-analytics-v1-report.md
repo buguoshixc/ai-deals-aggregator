@@ -227,8 +227,29 @@ Plan 页、Model 页都不读它的结果。真浏览器实测（本地 7 个抽
 另外两条**同源但独立**的可复现门禁也在门禁里跑过并全绿：
 
 - `Feeds reproducibility (build twice, byte-compare) → --dir=dist`：**2 次构建，全部逐字节一致**；
-- 全量产物对账（基线 vs 本轮）：**290 vs 290 个文件，无增无删；173 个 HTML 的差异
-  逐字只等于「注入的 beacon 段」，其余 117 个非 HTML 文件逐字节相同**。
+- **全量产物逐字节对账**（基线 `45b7b47` 的独立 worktree 构建 vs 本轮最终产物）：
+
+  ```
+  基线文件 290 · 本轮文件 290
+  只存在于基线：（无）      只存在于本轮：（无）
+  逐字节比对：HTML 173 个 · 非 HTML 117 个
+  归一后仍不同的文件：0 个（除分析注入外，产物完全一致）
+  页脚泄漏检查：0 / 173 个页面有问题
+  ```
+
+  ——「归一」只抹掉分析注入本身（`<script data-dsh-analytics=…>` 段、源码模板注释、
+  占位符、以及占位符那一行留下的空白）；**其余每一个字节都必须相同**，包括 117 个
+  非 HTML 文件（deals / plans / api-plans / models / registry-links / feed / sitemap /
+  Manifest / logos / og-image …）。
+
+> **对账抓到过一个真缺陷（如实记录）**。第一轮对账报出 173 个 HTML 全部有差异，
+> 定位在 `</footer>` 之后：我写在 `index.html` 共享页脚里的说明注释**多了一个 HTML
+> 注释结束符**，注释提前闭合，后半段说明文字作为**可见文本**泄漏进了每一个页面。
+> **既有断言一条都没抓到它** —— bootstrap 仍是 1 个、没有占位符残留、没有 JS 错误、
+> 正文长度与页高都在容差内。抓住它的是这条**全量逐字节对账**。
+> 修法：合成一个注释块，并把两条约束写进注释本身（不许标签字面量、不许第二个结束符）；
+> 修复后重跑完整门禁 22 步全绿，并新增一条页脚泄漏检查（`</footer>` 到 `</div>` 之间
+> 除注释与 bootstrap 外无可见文本）。提交：`3ce18c6`。
 
 构建期不做的事（逐条确认）：不请求 Cloudflare API · 不请求 Dashboard · 不读墙上时钟 ·
 不下载远端 JS 写进 dist · 不生成随机 ID。beacon 的 JS 由**浏览器运行时**从 Cloudflare 加载。
@@ -402,7 +423,7 @@ Network 面板确认。**不会**通过往仓库里加 Analytics API Token 来�
 | 项 | 值 |
 |---|---|
 | 分支 | `private-analytics-v1`（已推送，跟踪 `origin/private-analytics-v1`） |
-| 提交 | `623fce7` `feat(analytics): 接入私有站点分析 Cloudflare Web Analytics（private-analytics-v1）` |
+| 提交 | `623fce7`（实现）· `59340a5`（报告与验收指标）· **`3ce18c6`（页脚注释修复，当前 HEAD）** |
 | 基线 | `45b7b47`（`origin/master`） |
 | PR | https://github.com/buguoshixc/ai-deals-aggregator/pull/36 |
 | Required CI | 见 PR 页面（**未运行在线 Smoke**，因为未合并） |
