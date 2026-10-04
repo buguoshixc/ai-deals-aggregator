@@ -439,11 +439,32 @@ check('load() 从**原文**扫出重复键并交给校验收口',
 
 section('④ 端到端：report:coverage（文本 + deterministic JSON）');
 
+/**
+ * 跑一次报告并取回它的 stdout。
+ *
+ * 为什么**不再**用 `spawnSync({encoding:'utf8'})` 直接读 stdout：报告在 `--json` 下的 stdout
+ * 约 218 KB，超过管道缓冲；父进程若没及时排空管道，子进程已经写到管道里的尾巴会**静默丢失**
+ * （实测 CI(Linux/Node 24.21) 只拿到 152,627 字符 / 185,186 字节，且正好切在一个多字节字符中间）。
+ * 截断的 JSON 解析必然失败，于是「（隔离上游）JSON 可解析」在 CI 红、在本机绿 —— 那是一条
+ * **与产品无关、只与取数方式有关**的假红。
+ *
+ * 改成让子进程把 stdout 直接写进**文件**（fd 重定向，不经管道），再整份读回：取到的字节
+ * 与子进程真正写出的字节完全一致，不受管道缓冲影响。stderr 仍走管道（它很小，用于报错）。
+ */
 function runReport(args) {
-  const result = spawnSync(process.execPath, [REPORT, ...args], {
-    cwd: ROOT, encoding: 'utf8', maxBuffer: 128 * 1024 * 1024
-  });
-  return { status: result.status, stdout: result.stdout || '', stderr: result.stderr || '' };
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'coverage-report-stdout-'));
+  const stdoutFile = path.join(dir, 'stdout.txt');
+  const fd = fs.openSync(stdoutFile, 'w');
+  let result;
+  try {
+    result = spawnSync(process.execPath, [REPORT, ...args], {
+      cwd: ROOT, encoding: 'utf8', maxBuffer: 128 * 1024 * 1024, stdio: ['ignore', fd, 'pipe']
+    });
+  } finally {
+    fs.closeSync(fd);
+  }
+  const stdout = fs.existsSync(stdoutFile) ? fs.readFileSync(stdoutFile, 'utf8') : '';
+  return { status: result.status, stdout, stderr: result.stderr || '' };
 }
 
 function jsonOf(stdout) {
