@@ -374,6 +374,9 @@ scripts/
     http.js                   UA / 超时 / 重试 / 并发限流 / robots.txt
     browser.js                无头浏览器渲染（可选能力，仅 --headless 时加载）
     render-core.js            从 index.html 抽取 RENDER-CORE 并在无 DOM 沙箱求值
+    analytics.js              private-analytics-v1：私有分析的唯一配置源 + 唯一 beacon 定义
+                               （ANALYTICS-GUARD 区块就是浏览器里跑的那段源码；见 docs/PRIVATE-ANALYTICS-v1.md）
+    analytics-routes.js       统计范围声明：路由 → 要不要统计（每条带理由；新增页面族必须登记）
     zh.js                     中文译文覆盖层：英文散文判定 / 原文指纹校验 / 贴到条目上
     logos.js                  logo 资产装配：manifest → dist/logos/ + dist/logos.css
     og-image.js               零依赖 OG 分享图生成（手写 PNG 编码 + 点阵字模）
@@ -1141,7 +1144,15 @@ App 页面下载的私钥是 **PKCS#1**（`-----BEGIN RSA PRIVATE KEY-----`，�
 
 ## 隐私声明
 
-本项目仅供个人使用，不收集任何用户访问数据。
+本项目不收集、也不存储任何用户访问数据；站点**不建立本站的访客身份**（无 Cookie 追踪、
+无 localStorage 访客 ID、无指纹、无 IP hash）。
+
+运营观测：生产站使用 **Cloudflare Web Analytics** 观察页面访问与性能趋势。统计结果仅由
+项目维护者查看，**不作为公开数据集发布，也不会写入本仓库**（站点没有公开统计页面）。
+浏览器侧的 Web Analytics Site Token 是**浏览器标识符**而非账户凭据；本仓库不含任何
+Cloudflare 账户 API 凭据，本轮也不调用 Cloudflare Analytics API。
+完整边界、Production Guard 判据（本地 / localhost / 同域其它项目一律不发）与一行关闭方式见
+[docs/PRIVATE-ANALYTICS-v1.md](docs/PRIVATE-ANALYTICS-v1.md)。
 
 ## 已知边界
 

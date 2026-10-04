@@ -33,7 +33,24 @@ const PATTERNS = [
   { id: 'aws-key', re: /\bAKIA[0-9A-Z]{16}\b/g, why: 'AWS access key id' },
   { id: 'slack-token', re: /\bxox[baprs]-[A-Za-z0-9-]{10,}/g, why: 'Slack token' },
   { id: 'bearer', re: /\bBearer\s+[A-Za-z0-9._~+/-]{20,}=*/g, why: 'Authorization 头里的令牌' },
-  { id: 'private-key', re: /-----BEGIN [A-Z ]*PRIVATE KEY-----/g, why: 'PEM 私钥' }
+  { id: 'private-key', re: /-----BEGIN [A-Z ]*PRIVATE KEY-----/g, why: 'PEM 私钥' },
+
+  /* ---------------- private-analytics-v1：Cloudflare **账户凭据** ---------------- */
+  //
+  // 为什么必须把两类东西分开：本轮的 Browser Beacon Site Token 会随 HTML 发给每一个访客，
+  // **它不是密钥**，也读不到任何分析数据 —— 它进仓库是设计的一部分
+  // （见 docs/PRIVATE-ANALYTICS-v1.md 的 Credentials 一节）。
+  // 这里扫的是**另一类东西**：能改账户配置、能读全账号分析数据的 API Token / Global API Key。
+  //
+  // 口径与上面几条一致：**只在「名字带上了值」时报红**（`NAME = 值`），裸名字不报 ——
+  // 否则文档里合法讨论「不要提交 CLOUDFLARE_API_TOKEN」这句话本身就会变成假警报，
+  // 而报警一多就没人看了（本文件头部那条纪律）。
+  { id: 'cloudflare-api-token', re: /\bCLOUDFLARE_API_TOKEN\s*[:=]\s*\S+/g, why: 'Cloudflare 账户 API Token 被写进了文件' },
+  { id: 'cloudflare-cf-token', re: /\bCF_API_TOKEN\s*[:=]\s*\S+/g, why: 'Cloudflare 账户 API Token（CF_API_TOKEN 简写）被写进了文件' },
+  { id: 'cloudflare-global-key', re: /\bGLOBAL_API_KEY\s*[:=]\s*\S+/g, why: 'Cloudflare Global API Key（账户级凭据，权限最大）被写进了文件' },
+  { id: 'cloudflare-auth-key-header', re: /\bX-Auth-Key\s*[:=]\s*\S+/g, why: 'Cloudflare Global API Key 的请求头（X-Auth-Key）带上了值' },
+  { id: 'cloudflare-auth-email', re: /\bX-Auth-Email\s*[:=]\s*\S+@\S+/g, why: 'Cloudflare 账户邮箱 + Key 的组合出现在文件里' },
+  { id: 'cloudflare-account-id', re: /\bCLOUDFLARE_ACCOUNT_ID\s*[:=]\s*\S+/g, why: 'Cloudflare 账户 ID 被写进了文件（本轮不需要任何账户级标识）' }
 ];
 
 /** 命中片段只留这么多个字符，其余用 … 顶掉 */

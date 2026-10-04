@@ -107,8 +107,15 @@ jobs:
       #    的 --dir 与顺序），因为 `--expect-checks` 是被调用方钉住的口径，加断言就等于改口径。
       #    下面 `with.allow_degraded_run` 的取值不是靠 grep 字符串守的：(11) 会把它按触发事件
       #    **真的求值** —— 改成硬编码 'true' 会立刻让 check-ci 变红（PR / push 必须解析成 'false'）。
+      #    2026-10-04（private-analytics-v1）由 36 提到 **37**：门禁新增一步
+      #    「Analytics self-test (bootstrap count / production guard / provider)」，
+      #    它同时登记进 GATE_STEP_NAMES / GATE_STEP_RUN / GATE_ARTIFACT_STEPS 三处。
+      #    这一步是**真的多了一个断言项**（不是折进既有断言）：私有分析的红线
+      #    —— 每页 exactly 1 个 bootstrap / localhost 与 127.0.0.1 零上报 /
+      #    Production Guard 判据只有一份实现 / Cloudflare 账户凭据不许进仓库 ——
+      #    没有任何既有步骤会替它红，所以它必须自己占一项。
       - name: CI consistency (action / runner / node-version / engines drift)
-        run: node scripts/tools/check-ci-consistency.js --expect-checks=36
+        run: node scripts/tools/check-ci-consistency.js --expect-checks=37
 
       # 门禁本体：与 deploy.yml 的 prepublish、collect.yml 的提交前检查**同一个文件**。
       - name: Gate (validate → translation → selftests → build → real browser)

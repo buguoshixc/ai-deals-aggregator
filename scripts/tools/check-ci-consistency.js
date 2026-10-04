@@ -236,6 +236,10 @@ const GATE_STEP_NAMES = [
   'Vendor-pages self-test (/vendor/)',
   'Archive self-test (/archive/, synthetic ended/restored fixtures)',
   'Data-docs self-test (/docs/data/ + /data/index.json)',
+  // private-analytics-v1 新增：私有站点分析（Cloudflare Web Analytics）的独立门禁。
+  // 它同样依赖产物（读 dist/ 现场推导路由与 bootstrap 数），所以也排在 Assemble site 之后，
+  // 并在下面的 GATE_ARTIFACT_STEPS 里被逐项钉住「显式 --dir=dist」。
+  'Analytics self-test (bootstrap count / production guard / provider)',
   // v1.6 新增：**真实连续构建**两次，逐字节比对全部 Feed 文件。自测证明的是
   // 「纯函数同输入同输出」，证明不了「构建脚本没把时钟写进产物」——两者红的含义不同。
   // §10.9：它同样依赖参考产物（原先缺产物就静默退化成"只自比对"），所以也排在
@@ -346,6 +350,8 @@ const GATE_STEP_RUN = {
     "node scripts/tools/archive-selftest.js --dir=dist",
   "Data-docs self-test (/docs/data/ + /data/index.json)":
     "node scripts/tools/data-docs-selftest.js --dir=dist",
+  "Analytics self-test (bootstrap count / production guard / provider)":
+    "node scripts/tools/analytics-selftest.js --dir=dist",
   "Feeds reproducibility (build twice, byte-compare)":
     "node scripts/tools/check-feeds-reproducible.js --dir=dist",
   "Plans reproducibility (curated → plans.json, byte-compare)":
@@ -472,6 +478,9 @@ const GATE_ARTIFACT_STEPS = [
   ['Vendor-pages self-test (/vendor/)', 'vendor-page-selftest.js'],
   ['Archive self-test (/archive/, synthetic ended/restored fixtures)', 'archive-selftest.js'],
   ['Data-docs self-test (/docs/data/ + /data/index.json)', 'data-docs-selftest.js'],
+  // private-analytics-v1 新增：分析门禁同样是产物依赖步骤 —— 它读 dist/ 现场推导路由与
+  // bootstrap 数，因此必须显式 `--dir=dist` 且排在「Assemble site」之后。
+  ['Analytics self-test (bootstrap count / production guard / provider)', 'analytics-selftest.js'],
   ['Feeds reproducibility (build twice, byte-compare)', 'check-feeds-reproducible.js']
 ];
 /** 它们的前置：这一步必须先出现 */
@@ -554,7 +563,15 @@ const FROZEN_ASSERTION_NAMES = [
   '(16) ai-maintenance.yml 只手动触发、只读仓库、只出 artifact（无提交/推送/发布动作）',
   // v3.0（t13 集成时新增）：新脚本的**登记制** —— 写了自测却没接进门禁，
   // 症状是完全静默（本地门禁照样绿），所以必须有一条会红的东西盯着它。
-  '(17) package.json 里的每个 selftest:* 都被门禁真的跑到（新脚本必须登记）'
+  '(17) package.json 里的每个 selftest:* 都被门禁真的跑到（新脚本必须登记）',
+  // private-analytics-v1 新增：私有分析门禁这一步必须**真的存在、真的指到 dist、
+  // 而且断言名里那三件事都还在**（措辞即契约）。
+  // 为什么要单列一条：本轮的核心承诺是「Analytics 覆盖 / Production Guard / provider 形状」，
+  // 而这三件事没有任何别的断言会替它们红 —— 把这一步删掉、或换成一句 `echo ok`、
+  // 或把 `--dir` 去掉，门禁都会照常全绿，而线上会悄悄变成「一半页面没有统计」或
+  // 「localhost 也在上报」。上面 (10) 的步骤体指纹只能证明「步骤体没变」，
+  // 证明不了「它还在、还指着产物、还声明着那三件事」——两者红的含义不同。
+  '(18) 私有分析的产物门禁步骤存在、指向 dist、且声明了覆盖 / guard / provider 三件事'
 ];
 const WATCHDOG_NAME = '(W) 断言名单与冻结清单等值（删一条或改名都会红；本看门狗保护不了自己被删）';
 
@@ -1494,8 +1511,52 @@ check('(17) package.json 里的每个 selftest:* 都被门禁真的跑到（新�
     : `package.json 里的 selftest:* 全部出现在 ${GATE_ACTION} 里；`
       + `${GATE_ARTIFACT_STEPS.length} 个产物依赖步骤都显式 --dir=${GATE_ARTIFACT_DIR} 且排在「${GATE_BUILD_STEP}」之后`);
 
-/* ─────────────────── (W) 看门狗：断言名单等值（不可跳过） ─────────────────── */// 刻意放在所有分支之外：删一条断言、或改任意一条断言名，都会在这里变红。
-// 固有边界：看门狗保护不了**自己**被删（那时它也不存在了）—— 如实记录，不做过度设计。
+/* ─────────── (18) 私有分析的产物门禁：步骤还在、指着 dist、措辞即契约 ─────────── */
+//
+// private-analytics-v1 的红线是「覆盖 / Production Guard / provider 形状」。
+// 这三件事没有任何别的断言会替它们红（见 FROZEN_ASSERTION_NAMES 里的理由）。
+// 判据刻意分两层：**存在性 + 指向**（脚本路径、--dir=dist）与**措辞**（三件事的关键词）。
+// 这样既抓得住「把这一步删了」，也抓得住「留着名字但换成 echo ok / 去掉 --dir」。
+const ANALYTICS_GATE_STEP = 'Analytics self-test (bootstrap count / production guard / provider)';
+const analyticsGateIssues = [];
+{
+  const raw = (() => {
+    try { return parseGateStepsRaw(fs.readFileSync(path.join(ROOT, GATE_ACTION), 'utf8')); } catch { return []; }
+  })();
+  const step = raw.find(item => item.name === ANALYTICS_GATE_STEP);
+  if (!step) {
+    analyticsGateIssues.push(`${GATE_ACTION} 里没有步骤「${ANALYTICS_GATE_STEP}」`);
+  } else {
+    const body = normalizeRunBody(step.runBody);
+    if (!body.includes('scripts/tools/analytics-selftest.js')) {
+      analyticsGateIssues.push('这一步没有跑 scripts/tools/analytics-selftest.js');
+    }
+    if (!body.includes(`--dir=${GATE_ARTIFACT_DIR}`)) {
+      analyticsGateIssues.push(`这一步没有显式 --dir=${GATE_ARTIFACT_DIR}（它会去读一份不知道是哪份的产物）`);
+    }
+    // 「声明了哪三件事」的判据是**步骤名 + 步骤体**合起来看：
+    // 名字说不清楚这一步为什么存在，体（命令行）说不出它验了什么 ——
+    // 两者合起来才是这一步的契约（单看体只有一条 `node … --dir=dist`，什么也看不出来）。
+    const declaration = `${step.name}\n${body}`.toLowerCase();
+    for (const [label, needle] of [['页面覆盖', 'bootstrap'], ['生产守卫', 'production guard'], ['provider 形状', 'provider']]) {
+      if (!declaration.includes(needle)) {
+        analyticsGateIssues.push(`步骤名与步骤体里都没有声明「${label}」（措辞即契约：这三件事是这一步存在的理由）`);
+      }
+    }
+    // 它必须排在 Assemble site 之后（产物依赖）——(17) 已经查过，这里再查一次是因为
+    // 「排错顺序」的后果是「干净检出里 dist/ 不存在」，而那会让人以为是测试坏了。
+    const names = gateStepNames;
+    if (names.indexOf(ANALYTICS_GATE_STEP) < names.indexOf(GATE_BUILD_STEP)) {
+      analyticsGateIssues.push(`它排在「${GATE_BUILD_STEP}」之前（干净检出里那时还没有 dist/）`);
+    }
+  }
+}
+check('(18) 私有分析的产物门禁步骤存在、指向 dist、且声明了覆盖 / guard / provider 三件事',
+  analyticsGateIssues.length === 0,
+  analyticsGateIssues.length ? analyticsGateIssues.join('；')
+    : `「${ANALYTICS_GATE_STEP}」在位 · 跑 analytics-selftest.js 且显式 --dir=${GATE_ARTIFACT_DIR} · 排在「${GATE_BUILD_STEP}」之后`);
+
+/* ─────────────────── (W) 看门狗：断言名单等值（不可跳过） ─────────────────── */// 刻意放在所有分支之外：删一条断言、或改任意一条断言名，都会在这里变红。// 固有边界：看门狗保护不了**自己**被删（那时它也不存在了）—— 如实记录，不做过度设计。
 const observedNames = results.map(r => r.name);
 const missingNames = FROZEN_ASSERTION_NAMES.filter(n => !observedNames.includes(n));
 const extraNames = observedNames.filter(n => !FROZEN_ASSERTION_NAMES.includes(n) && n !== WATCHDOG_NAME);

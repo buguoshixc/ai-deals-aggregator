@@ -42,6 +42,9 @@ const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
 const dirArg = process.argv.find(arg => arg.startsWith('--dir='));
 const ALLOW_MISSING_DIST = process.argv.includes('--allow-missing-dist');
 const DIST = path.resolve(ROOT, dirArg ? dirArg.slice('--dir='.length) : 'dist');
+// private-analytics-v1：产物里那份共享的分析 bootstrap 用**唯一实现**剥离
+// （不在这里重写一份正则 —— 判据只有一处，改了那边这里跟着变）。
+const analyticsLib = require('../lib/analytics');
 
 /** 必需的产物缺失时：显式允许 → OPTIONAL DIAGNOSTIC（通过）；否则记红并返回 false */
 function requireDist(what, marker) {
@@ -312,7 +315,13 @@ function distProblems(distDir, overrides = {}) {
   }
 
   // ③ 不是第三张重复大表，也不是死控件页
-  if (/<table[\s>]/.test(html)) problems.push('出现了 <table>（不该复制 Coding / API 页的大表）');  const withoutAllowedScripts = html
+  if (/<table[\s>]/.test(html)) problems.push('出现了 <table>（不该复制 Coding / API 页的大表）');
+  //
+  // private-analytics-v1：页脚里的分析 bootstrap 是**全站共享页脚的一部分**（内联，
+  // 但加载的是外部观测脚本、不改变页面行为），因此与「主题脚本 / JSON-LD」同属允许的共享内联段。
+  // 剥掉它之后这条断言仍然守着原来那件事：**这一页自己没有内联交互脚本**。
+  // 剥离用的是唯一实现（`lib/analytics.js` 的 `stripBootstrap()`），不在这里重写一份正则。
+  const withoutAllowedScripts = analyticsLib.stripBootstrap(html)
     .replace(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/g, '')
     .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '');
   if (/<script(?![^>]*\bsrc=)[^>]*>/.test(withoutAllowedScripts)) problems.push('出现了内联脚本');
