@@ -1,5 +1,17 @@
 {
   "_note": "coverage-expansion-v1 t10：现有 44 条 Model Registry 模型的 currentness 调查（modelRole / releasedAt / releaseEvidence / freshnessGroup）。本文件是**调查结论**，不是生产来源层；生产迁移见 t12。",
+  "_roleVocabularyProvenance": "本文件里的 `modelRole` 是 **t10 调查阶段的能力口径**（llm / vlm / multimodal-llm / retrieval-embedding / translation / translation-lite / roleplay / code-specialist / small-fast-variant）。**生产身份层最终采用了另一套更小的词表**（model-registry.js 的 MODEL_ROLES：general / fast / reasoning / coding / vision / embedding / audio / realtime / translation / other），由 t2 的迁移脚本在 2026-10-04 18:27 对 44 条完成归一（脚本 scripts/tmp-migrate-registry-v2.cjs；对账 scripts/tools/model-role-vocabulary-selftest.js）。因此本文件与 scripts/data/models.json 的 modelRole **不是同一套词表，且不需要相等**：两边各自是「调查口径」与「身份层口径」的事实记录。映射见 _roleVocabularyMapping。",
+  "_roleVocabularyMapping": {
+    "llm": ["general"],
+    "small-fast-variant": ["fast"],
+    "code-specialist": ["coding"],
+    "vlm": ["vision"],
+    "multimodal-llm": ["vision"],
+    "retrieval-embedding": ["embedding"],
+    "translation": ["translation"],
+    "translation-lite": ["translation"],
+    "roleplay": ["other"]
+  },
   "_rules": [
     "releasedAt 只允许两种值：开发商官方页面上的精确日期（YYYY-MM-DD），或 null。",
     "禁止用版本号/别名里内嵌的数字推日期（例如 qwen3-max-2026-01-23、DeepSeek-V4-Pro-0813 的内嵌日期一律不采信——0813 那条的日期另有官方日志原文依据，属交叉印证而非依据来源）。",
