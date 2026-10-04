@@ -9,6 +9,27 @@
   "reviewedAt": "2026-10-04",
   "targets": [
     {
+      "provider": "ai360",
+      "tier": "long-tail",
+      "role": "model-developer",
+      "intent": "360 智脑开放平台自研模型（360zhinao 系列）的官方优惠、按量计费与模型身份",
+      "applicabilityNote": "coding 不适用：官方只有「第三方工具接入」文档（CC Switch + Claude Code / Codex），没有自营编码订阅套餐。",
+      "dimensionIntent": {
+        "deals": "360 智脑官方活动 / 新用户额度（只收官方来源）",
+        "coding": "自营编码订阅套餐（官方只有第三方工具的接入文档，没有自营 Coding 套餐）",
+        "api": "360zhinao 自研模型按量计费（¥/1M tokens）",
+        "models": "360zhinao 自研当前模型"
+      },
+      "currentTargets": [
+        {
+          "dimension": "api",
+          "modelKey": "360zhinao-turbo-llm-geo"
+        }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
       "provider": "aliyun",
       "tier": "core",
       "role": "model-developer",
@@ -21,9 +42,18 @@
         "models": "通义千问系列当前主力模型"
       },
       "currentTargets": [
-        { "dimension": "deals", "source": "阿里云百炼" },
-        { "dimension": "models", "registrySlug": "qwen3-max" },
-        { "dimension": "models", "registrySlug": "qwen3.8-max" }
+        {
+          "dimension": "deals",
+          "source": "阿里云百炼"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "qwen3-max"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "qwen3.8-max"
+        }
       ],
       "rulings": [],
       "note": null
@@ -41,8 +71,60 @@
         "models": "Claude 当前主力模型"
       },
       "currentTargets": [
-        { "dimension": "models", "registrySlug": "claude-opus-5.5" },
-        { "dimension": "models", "registrySlug": "claude-sonnet-5.5" }
+        {
+          "dimension": "models",
+          "registrySlug": "claude-opus-5.5"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "claude-sonnet-5.5"
+        }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "aws",
+      "tier": "major",
+      "role": "coding-product",
+      "intent": "Amazon Q Developer 订阅档位的官方价格与停支公告",
+      "applicabilityNote": "deals/api/models 不适用（本轮）：① 没有专门覆盖 AWS 官方优惠的采集来源；② Bedrock 按量价目表本轮未取证（研究只覆盖 Q Developer）⇒ 该维度只留意图、不写 target，复查条件=有一轮研究取到 Bedrock 官方价目页并可逐字引用；③ AWS 是托管平台，Bedrock 上的模型身份归各自发行方。",
+      "dimensionIntent": {
+        "deals": null,
+        "coding": "Amazon Q Developer Free / Pro 档位",
+        "api": null,
+        "models": null
+      },
+      "currentTargets": [
+        {
+          "dimension": "coding",
+          "planName": "Amazon Q Developer Pro"
+        }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "baichuan",
+      "tier": "major",
+      "role": "model-developer",
+      "intent": "百川智能开放平台的官方优惠、按量计费与当前模型身份",
+      "applicabilityNote": "coding 不适用：官方公开面（platform.baichuan-ai.com/prices）只有按量计费、搜索增强、知识库与 Embeddings 价目，没有任何编程/订阅套餐。",
+      "dimensionIntent": {
+        "deals": "百川智能官方活动 / 新用户额度（只收官方来源）",
+        "coding": "编程订阅套餐（官方公开面只有按量、知识库与 Embeddings，没有 Coding 订阅）",
+        "api": "百川 M 系列按量计费（元/千 tokens，输入输出分明）",
+        "models": "Baichuan-M 系列当前主力模型"
+      },
+      "currentTargets": [
+        {
+          "dimension": "api",
+          "modelKey": "Baichuan-M3"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "Baichuan-M3-Plus"
+        }
       ],
       "rulings": [],
       "note": null
@@ -60,7 +142,10 @@
         "models": "文心 / ERNIE 当前主力模型"
       },
       "currentTargets": [
-        { "dimension": "deals", "source": "百度千帆" }
+        {
+          "dimension": "deals",
+          "source": "百度千帆"
+        }
       ],
       "rulings": [],
       "note": null
@@ -133,8 +218,14 @@
         "models": "DeepSeek 当前主力模型"
       },
       "currentTargets": [
-        { "dimension": "models", "registrySlug": "deepseek-flash" },
-        { "dimension": "models", "registrySlug": "deepseek-v4-pro" }
+        {
+          "dimension": "models",
+          "registrySlug": "deepseek-flash"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "deepseek-v4-pro"
+        }
       ],
       "rulings": [],
       "note": null
@@ -168,8 +259,14 @@
         "models": "Gemini 当前主力模型"
       },
       "currentTargets": [
-        { "dimension": "models", "registrySlug": "gemini-3.7-flash" },
-        { "dimension": "models", "registrySlug": "gemini-3.8-flash" }
+        {
+          "dimension": "models",
+          "registrySlug": "gemini-3.7-flash"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "gemini-3.8-flash"
+        }
       ],
       "rulings": [],
       "note": null
@@ -233,8 +330,14 @@
         "models": "MiniMax 当前主力模型"
       },
       "currentTargets": [
-        { "dimension": "models", "registrySlug": "minimax-m2.7" },
-        { "dimension": "models", "registrySlug": "minimax-m3" }
+        {
+          "dimension": "models",
+          "registrySlug": "minimax-m2.7"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "minimax-m3"
+        }
       ],
       "rulings": [],
       "note": null
@@ -252,8 +355,14 @@
         "models": "Kimi 当前主力模型"
       },
       "currentTargets": [
-        { "dimension": "models", "registrySlug": "kimi-k2.7-code" },
-        { "dimension": "models", "registrySlug": "kimi-k3" }
+        {
+          "dimension": "models",
+          "registrySlug": "kimi-k2.7-code"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "kimi-k3"
+        }
       ],
       "rulings": [],
       "note": null
@@ -287,8 +396,14 @@
         "models": "OpenAI 当前主力模型"
       },
       "currentTargets": [
-        { "dimension": "models", "registrySlug": "gpt-6-luna" },
-        { "dimension": "models", "registrySlug": "gpt-6.1-sol" }
+        {
+          "dimension": "models",
+          "registrySlug": "gpt-6-luna"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "gpt-6.1-sol"
+        }
       ],
       "rulings": [],
       "note": null
@@ -326,6 +441,55 @@
       "note": "CN 站与国际站是独立定价、独立币种的两个 SKU 面，并表会造出「同一张表里两套货币」的假象，因此各自一行。"
     },
     {
+      "provider": "replit",
+      "tier": "major",
+      "role": "coding-product",
+      "intent": "Replit Core / Pro 订阅档位的官方价格与额度口径",
+      "applicabilityNote": "deals/api/models 不适用：① 没有任何一路采集来源覆盖 Replit 官方优惠（deals.json 的 source 只有 11 个）⇒ 不写 deals target；② 官方没有公开的按量 API 价目；③ 它不发行自己的模型身份。",
+      "dimensionIntent": {
+        "deals": null,
+        "coding": "Replit Core / Pro 订阅档位",
+        "api": null,
+        "models": null
+      },
+      "currentTargets": [
+        {
+          "dimension": "coding",
+          "planName": "Replit Core"
+        }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "sensetime",
+      "tier": "major",
+      "role": "model-developer",
+      "intent": "商汤科技日日新（SenseNova）与大装置的官方优惠、按量计费、Token Plan 与当前模型身份",
+      "applicabilityNote": null,
+      "dimensionIntent": {
+        "deals": "商汤官方活动 / 新用户额度（只收官方来源）",
+        "coding": "Token Plan 订阅档位（当前只有公测免费档有官方价）",
+        "api": "大装置日日新 V6.x 线按量计费与 SenseNova 当前线的公开口径",
+        "models": "SenseNova 当前主力模型（含大装置线）"
+      },
+      "currentTargets": [
+        {
+          "dimension": "api",
+          "modelKey": "SenseNova-V6.5-Pro"
+        }
+      ],
+      "rulings": [
+        {
+          "dimension": "models",
+          "decision": "deferred",
+          "reason": "日日新当前线（6.8 Flash Lite / U1.5 Lite）在官网有模型页与文案，但还没有登记进 Model Registry（registry 里本轮没有任何商汤模型）⇒ 本维度本轮不写 currentTargets，等模型身份登记后补",
+          "revisitBy": "当 scripts/data/models.json 里出现第一个 Sensetime 归属的 registrySlug 时"
+        }
+      ],
+      "note": null
+    },
+    {
       "provider": "siliconflow",
       "tier": "major",
       "role": "inference-platform",
@@ -342,6 +506,31 @@
       "note": null
     },
     {
+      "provider": "stepfun",
+      "tier": "major",
+      "role": "model-developer",
+      "intent": "阶跃星辰（StepFun）开放平台的官方优惠、API 按量计费、Step Plan 订阅与当前模型身份",
+      "applicabilityNote": null,
+      "dimensionIntent": {
+        "deals": "阶跃星辰官方活动 / 新用户额度（只收官方来源）",
+        "coding": "Step Plan 订阅档位（Credit 月池，官方页共四档）",
+        "api": "StepFun 开放平台按 token 计费的公开价目（文本 / 多模态 / 语音）",
+        "models": "Step 系列当前主力模型（旗舰基模与 Flash 档）"
+      },
+      "currentTargets": [
+        {
+          "dimension": "api",
+          "modelKey": "step-3.7-flash"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "step-5-preview"
+        }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
       "provider": "tencent",
       "tier": "core",
       "role": "model-developer",
@@ -354,7 +543,10 @@
         "models": "混元当前主力模型"
       },
       "currentTargets": [
-        { "dimension": "models", "registrySlug": "hunyuan-a13b" }
+        {
+          "dimension": "models",
+          "registrySlug": "hunyuan-a13b"
+        }
       ],
       "rulings": [],
       "note": null
@@ -388,9 +580,18 @@
         "models": "豆包当前主力模型"
       },
       "currentTargets": [
-        { "dimension": "deals", "source": "火山方舟" },
-        { "dimension": "models", "registrySlug": "doubao-seed-2.1-pro" },
-        { "dimension": "models", "registrySlug": "doubao-seed-2.1-turbo" }
+        {
+          "dimension": "deals",
+          "source": "火山方舟"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "doubao-seed-2.1-pro"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "doubao-seed-2.1-turbo"
+        }
       ],
       "rulings": [],
       "note": null
@@ -424,11 +625,26 @@
         "models": "GLM 当前主力模型"
       },
       "currentTargets": [
-        { "dimension": "deals", "source": "智谱AI" },
-        { "dimension": "deals", "source": "智谱AI活动页" },
-        { "dimension": "models", "registrySlug": "glm-4.7-flash" },
-        { "dimension": "models", "registrySlug": "glm-5.3" },
-        { "dimension": "models", "registrySlug": "glm-5.3-flash" }
+        {
+          "dimension": "deals",
+          "source": "智谱AI"
+        },
+        {
+          "dimension": "deals",
+          "source": "智谱AI活动页"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "glm-4.7-flash"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "glm-5.3"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "glm-5.3-flash"
+        }
       ],
       "rulings": [],
       "note": null

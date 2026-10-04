@@ -555,6 +555,328 @@
       },
       "runAt": "2026-10-01T12:56:31.522Z",
       "eventId": "b50eda0b6c10"
+    },
+    {
+      "planId": "0a66f3117162",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 99,
+        "billing.currency": "CNY",
+        "quota.type": "credits",
+        "quota.amount": 1600000000,
+        "quota.period": "monthly",
+        "supportedModels": [
+          {
+            "name": "step-3.5-flash",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-3.5-flash-2603",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-3.7-flash",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-5-preview",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-router-v1",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-asr",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-chat",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-realtime",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-tts",
+            "role": "included",
+            "note": null
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+        "source": "Official-Docs",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview"
+      },
+      "runAt": "2026-10-04T11:19:28.690Z",
+      "eventId": "8dfe327cdb20"
+    },
+    {
+      "planId": "2281d41b3a26",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 699,
+        "billing.currency": "CNY",
+        "quota.type": "credits",
+        "quota.amount": 40000000000,
+        "quota.period": "monthly",
+        "supportedModels": [
+          {
+            "name": "step-3.5-flash",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-3.5-flash-2603",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-3.7-flash",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-5-preview",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-router-v1",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-asr",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-chat",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-realtime",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-tts",
+            "role": "included",
+            "note": null
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+        "source": "Official-Docs",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview"
+      },
+      "runAt": "2026-10-04T11:19:28.690Z",
+      "eventId": "a34bfab7962e"
+    },
+    {
+      "planId": "383ed55706fc",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 199,
+        "billing.currency": "CNY",
+        "quota.type": "credits",
+        "quota.amount": 8000000000,
+        "quota.period": "monthly",
+        "supportedModels": [
+          {
+            "name": "step-3.5-flash",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-3.5-flash-2603",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-3.7-flash",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-5-preview",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-router-v1",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-asr",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-chat",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-realtime",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-tts",
+            "role": "included",
+            "note": null
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+        "source": "Official-Docs",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview"
+      },
+      "runAt": "2026-10-04T11:19:28.690Z",
+      "eventId": "5b6a1d357665"
+    },
+    {
+      "planId": "5939e9bc26e7",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 999,
+        "billing.promoPrice": 699,
+        "billing.currency": "CNY",
+        "quota.type": "requests",
+        "quota.amount": 30000,
+        "quota.period": "monthly",
+        "region": "cn",
+        "officialUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+        "source": "Official-Docs",
+        "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html"
+      },
+      "runAt": "2026-10-04T11:19:28.690Z",
+      "eventId": "059a49f83503"
+    },
+    {
+      "planId": "753c01b2b1b9",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 199,
+        "billing.currency": "CNY",
+        "quota.type": "requests",
+        "quota.amount": 90000,
+        "quota.period": "monthly",
+        "restrictions": [
+          {
+            "kind": "rate_limit",
+            "value": "6000 次 / 5 小时",
+            "note": "5 小时流控：周期 5 小时、滑动步长 1 小时、每个整点刷新（官方原文）；另有周流控与月流控"
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+        "source": "Official-Docs",
+        "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html"
+      },
+      "runAt": "2026-10-04T11:19:28.690Z",
+      "eventId": "055cf80a458e"
+    },
+    {
+      "planId": "ef931b98b927",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 49,
+        "billing.currency": "CNY",
+        "quota.type": "credits",
+        "quota.amount": 400000000,
+        "quota.period": "monthly",
+        "supportedModels": [
+          {
+            "name": "step-3.5-flash",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-3.5-flash-2603",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-3.7-flash",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-5-preview",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "step-router-v1",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-asr",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-chat",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-realtime",
+            "role": "included",
+            "note": null
+          },
+          {
+            "name": "stepaudio-2.5-tts",
+            "role": "included",
+            "note": null
+          }
+        ],
+        "region": "cn",
+        "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+        "source": "Official-Docs",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview"
+      },
+      "runAt": "2026-10-04T11:19:28.690Z",
+      "eventId": "37ee48446d3f"
     }
   ]
 }

@@ -23,7 +23,11 @@
     },
     "supportedModels": null,
     "restrictions": [
-      { "kind": "concurrency", "value": 2, "note": "支持 2 个云端任务同时执行" }
+      {
+        "kind": "concurrency",
+        "value": 2,
+        "note": "支持 2 个云端任务同时执行"
+      }
     ],
     "firstSeen": "2026-10-01",
     "lastSeen": "2026-10-01",
@@ -69,14 +73,38 @@
       "conversionDependsOnModel": true
     },
     "supportedModels": [
-      { "name": "GLM 5.2 / 5.3", "role": "included", "note": null },
-      { "name": "Seed-2.1-Turbo", "role": "included", "note": null },
-      { "name": "Seed-Code", "role": "included", "note": null },
-      { "name": "DeepSeek-Flash", "role": "included", "note": null },
-      { "name": "DeepSeek-Pro", "role": "included", "note": null }
+      {
+        "name": "GLM 5.2 / 5.3",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "Seed-2.1-Turbo",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "Seed-Code",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "DeepSeek-Flash",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "DeepSeek-Pro",
+        "role": "included",
+        "note": null
+      }
     ],
     "restrictions": [
-      { "kind": "concurrency", "value": 10, "note": "10 个云端任务同时执行" }
+      {
+        "kind": "concurrency",
+        "value": 10,
+        "note": "10 个云端任务同时执行"
+      }
     ],
     "firstSeen": "2026-10-01",
     "lastSeen": "2026-10-01",
@@ -129,8 +157,16 @@
       "conversionDependsOnModel": true
     },
     "supportedModels": [
-      { "name": "GLM-5.3", "role": "included", "note": null },
-      { "name": "GLM-5.3-Flash", "role": "included", "note": null }
+      {
+        "name": "GLM-5.3",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "GLM-5.3-Flash",
+        "role": "included",
+        "note": null
+      }
     ],
     "restrictions": [
       {
@@ -357,9 +393,21 @@
       "conversionDependsOnModel": null
     },
     "supportedModels": [
-      { "name": "MiniMax M3", "role": "included", "note": null },
-      { "name": "MiniMax M2.7", "role": "included", "note": null },
-      { "name": "图像 / 语音资源", "role": "included", "note": "与文本共享同一额度" }
+      {
+        "name": "MiniMax M3",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "MiniMax M2.7",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "图像 / 语音资源",
+        "role": "included",
+        "note": "与文本共享同一额度"
+      }
     ],
     "restrictions": null,
     "firstSeen": "2026-10-01",
@@ -1144,6 +1192,450 @@
         "sourceUrl": "https://docs.qoder.com/account/pricing.md",
         "capturedAt": "2026-10-01",
         "lang": "en"
+      }
+    ]
+  },
+  {
+    "provider": "阶跃星辰",
+    "planName": "Step Plan · Flash Mini",
+    "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+    "source": "Official-Docs",
+    "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+    "region": "cn",
+    "billing": {
+      "period": "monthly",
+      "currency": "CNY",
+      "regularPrice": 49,
+      "promoPrice": null,
+      "promoNote": null,
+      "note": "官方月付价；同一页另有季付 / 年付（¥129/¥456 等），本轮只落月付档（季付与年付是同一 SKU 的另一个周期，落进来会变成两条价格不同的同档记录）"
+    },
+    "quota": {
+      "type": "credits",
+      "amount": 400000000,
+      "period": "monthly",
+      "description": "官方 Credit 月池 400M；官方明写「1M Credit = ¥1（100 万 Credit 对应 ¥1 的模型用量）」，月内任意时段消耗、月末清零不结转",
+      "conversionDependsOnModel": false
+    },
+    "supportedModels": [
+      {
+        "name": "step-5-preview",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-3.7-flash",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-3.5-flash",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-3.5-flash-2603",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-realtime",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-chat",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-tts",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-asr",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-router-v1",
+        "role": "included",
+        "note": null
+      }
+    ],
+    "restrictions": null,
+    "firstSeen": "2026-10-04",
+    "lastSeen": "2026-10-04",
+    "verified": true,
+    "verifiedAt": "2026-10-04",
+    "evidence": [
+      {
+        "field": "billing.regularPrice",
+        "quote": "| **Flash Mini** | 入门体验 AI 的用户 | 400M | ¥49 | ¥129 | ¥456 |",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+        "capturedAt": "2026-10-04",
+        "lang": "zh"
+      },
+      {
+        "field": "quota.amount",
+        "quote": "Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+        "capturedAt": "2026-10-04",
+        "lang": "zh"
+      }
+    ]
+  },
+  {
+    "provider": "阶跃星辰",
+    "planName": "Step Plan · Flash Plus",
+    "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+    "source": "Official-Docs",
+    "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+    "region": "cn",
+    "billing": {
+      "period": "monthly",
+      "currency": "CNY",
+      "regularPrice": 99,
+      "promoPrice": null,
+      "promoNote": null,
+      "note": "官方月付价；同一页另有季付 / 年付（¥129/¥456 等），本轮只落月付档（季付与年付是同一 SKU 的另一个周期，落进来会变成两条价格不同的同档记录）"
+    },
+    "quota": {
+      "type": "credits",
+      "amount": 1600000000,
+      "period": "monthly",
+      "description": "官方 Credit 月池 1600M；官方明写「1M Credit = ¥1（100 万 Credit 对应 ¥1 的模型用量）」，月内任意时段消耗、月末清零不结转",
+      "conversionDependsOnModel": false
+    },
+    "supportedModels": [
+      {
+        "name": "step-5-preview",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-3.7-flash",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-3.5-flash",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-3.5-flash-2603",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-realtime",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-chat",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-tts",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-asr",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-router-v1",
+        "role": "included",
+        "note": null
+      }
+    ],
+    "restrictions": null,
+    "firstSeen": "2026-10-04",
+    "lastSeen": "2026-10-04",
+    "verified": true,
+    "verifiedAt": "2026-10-04",
+    "evidence": [
+      {
+        "field": "billing.regularPrice",
+        "quote": "| **Flash Plus** | 日常使用 AI 提效的用户 | 1600M | ¥99 | ¥269 | ¥936 |",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+        "capturedAt": "2026-10-04",
+        "lang": "zh"
+      },
+      {
+        "field": "quota.amount",
+        "quote": "Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+        "capturedAt": "2026-10-04",
+        "lang": "zh"
+      }
+    ]
+  },
+  {
+    "provider": "阶跃星辰",
+    "planName": "Step Plan · Flash Pro",
+    "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+    "source": "Official-Docs",
+    "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+    "region": "cn",
+    "billing": {
+      "period": "monthly",
+      "currency": "CNY",
+      "regularPrice": 199,
+      "promoPrice": null,
+      "promoNote": null,
+      "note": "官方月付价；同一页另有季付 / 年付（¥129/¥456 等），本轮只落月付档（季付与年付是同一 SKU 的另一个周期，落进来会变成两条价格不同的同档记录）"
+    },
+    "quota": {
+      "type": "credits",
+      "amount": 8000000000,
+      "period": "monthly",
+      "description": "官方 Credit 月池 8000M；官方明写「1M Credit = ¥1（100 万 Credit 对应 ¥1 的模型用量）」，月内任意时段消耗、月末清零不结转",
+      "conversionDependsOnModel": false
+    },
+    "supportedModels": [
+      {
+        "name": "step-5-preview",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-3.7-flash",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-3.5-flash",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-3.5-flash-2603",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-realtime",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-chat",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-tts",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-asr",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-router-v1",
+        "role": "included",
+        "note": null
+      }
+    ],
+    "restrictions": null,
+    "firstSeen": "2026-10-04",
+    "lastSeen": "2026-10-04",
+    "verified": true,
+    "verifiedAt": "2026-10-04",
+    "evidence": [
+      {
+        "field": "billing.regularPrice",
+        "quote": "| **Flash Pro** | 高频使用 AI 的深度用户 | 8000M | ¥199 | ¥539 | ¥1860 |",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+        "capturedAt": "2026-10-04",
+        "lang": "zh"
+      },
+      {
+        "field": "quota.amount",
+        "quote": "Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+        "capturedAt": "2026-10-04",
+        "lang": "zh"
+      }
+    ]
+  },
+  {
+    "provider": "阶跃星辰",
+    "planName": "Step Plan · Flash Max",
+    "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+    "source": "Official-Docs",
+    "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+    "region": "cn",
+    "billing": {
+      "period": "monthly",
+      "currency": "CNY",
+      "regularPrice": 699,
+      "promoPrice": null,
+      "promoNote": null,
+      "note": "官方月付价；同一页另有季付 / 年付（¥129/¥456 等），本轮只落月付档（季付与年付是同一 SKU 的另一个周期，落进来会变成两条价格不同的同档记录）"
+    },
+    "quota": {
+      "type": "credits",
+      "amount": 40000000000,
+      "period": "monthly",
+      "description": "官方 Credit 月池 40000M；官方明写「1M Credit = ¥1（100 万 Credit 对应 ¥1 的模型用量）」，月内任意时段消耗、月末清零不结转",
+      "conversionDependsOnModel": false
+    },
+    "supportedModels": [
+      {
+        "name": "step-5-preview",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-3.7-flash",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-3.5-flash",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-3.5-flash-2603",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-realtime",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-chat",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-tts",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "stepaudio-2.5-asr",
+        "role": "included",
+        "note": null
+      },
+      {
+        "name": "step-router-v1",
+        "role": "included",
+        "note": null
+      }
+    ],
+    "restrictions": null,
+    "firstSeen": "2026-10-04",
+    "lastSeen": "2026-10-04",
+    "verified": true,
+    "verifiedAt": "2026-10-04",
+    "evidence": [
+      {
+        "field": "billing.regularPrice",
+        "quote": "| **Flash Max** | 高强度使用 AI 的专业用户 | 40000M | ¥699 | ¥1889 | ¥6666 |",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+        "capturedAt": "2026-10-04",
+        "lang": "zh"
+      },
+      {
+        "field": "quota.amount",
+        "quote": "Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+        "capturedAt": "2026-10-04",
+        "lang": "zh"
+      }
+    ]
+  },
+  {
+    "provider": "科大讯飞",
+    "planName": "讯飞星辰 MaaS · Astron Coding Plan 高效版",
+    "officialUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+    "source": "Official-Docs",
+    "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+    "region": "cn",
+    "billing": {
+      "period": "monthly",
+      "currency": "CNY",
+      "regularPrice": 199,
+      "promoPrice": null,
+      "promoNote": null,
+      "note": "官方表「高效版 ¥199 / 月」（实际下单金额以讯飞星辰 MaaS 平台套餐订阅页面展示为准 —— 官方页原文如此标注）"
+    },
+    "quota": {
+      "type": "requests",
+      "amount": 90000,
+      "period": "monthly",
+      "description": "官方按**请求次数**三档流控：每 5 小时最多约 6,000 次；每周最多约 45,000 次；每订阅月最多约 90,000 次"
+    },
+    "supportedModels": null,
+    "restrictions": [
+      {
+        "kind": "rate_limit",
+        "value": "6000 次 / 5 小时",
+        "note": "5 小时流控：周期 5 小时、滑动步长 1 小时、每个整点刷新（官方原文）；另有周流控与月流控"
+      }
+    ],
+    "firstSeen": "2026-10-04",
+    "lastSeen": "2026-10-04",
+    "verified": true,
+    "verifiedAt": "2026-10-04",
+    "evidence": [
+      {
+        "field": "billing.regularPrice",
+        "quote": "| **高效版** | ¥199 / 月 | [讯飞星辰 MaaS 平台套餐订阅页面]展示为准 | 每 5 小时：最多约 6,000 次请求；每周：最多约 45,000 次请求；每订阅月：最多约 90,000 次请求 |",
+        "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+        "capturedAt": "2026-10-04",
+        "lang": "zh"
+      }
+    ]
+  },
+  {
+    "provider": "科大讯飞",
+    "planName": "讯飞星辰 MaaS · Astron Coding Plan 速通版",
+    "officialUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+    "source": "Official-Docs",
+    "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+    "region": "cn",
+    "billing": {
+      "period": "monthly",
+      "currency": "CNY",
+      "regularPrice": 999,
+      "promoPrice": 699,
+      "promoNote": "限时首月优惠：¥699 / 月",
+      "note": "官方表「速通版 ¥999 / 月，限时首月优惠：¥699 / 月」"
+    },
+    "quota": {
+      "type": "requests",
+      "amount": 30000,
+      "period": "monthly",
+      "description": "官方按请求次数：每订阅月最多约 30,000 次"
+    },
+    "supportedModels": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-04",
+    "lastSeen": "2026-10-04",
+    "verified": true,
+    "verifiedAt": "2026-10-04",
+    "evidence": [
+      {
+        "field": "billing.regularPrice",
+        "quote": "| **速通版** | ¥999 / 月，限时首月优惠：¥699 / 月 | [讯飞星辰 MaaS 平台套餐订阅页面]展示为准 | 每订阅月：最多约 30,000 次请求 |",
+        "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+        "capturedAt": "2026-10-04",
+        "lang": "zh"
       }
     ]
   }

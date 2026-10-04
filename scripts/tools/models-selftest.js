@@ -755,12 +755,17 @@ section('⑥ v2 来源层字段（schemaVersion 2）：角色 / 发布日期证�
     reg.validateRegistry(thirdParty, v2Ctx).slice(0, 1).join(' | '));
 
   // ---- 牙：developer 没有官方域登记时，"声称官方"无法兑现 ----
+  // ⚠️ 这一条以前拿「阶跃星辰（StepFun）」当反例（当时它只在 `_developers_extra`）。
+  // 该家在本轮已成为正式 provider（providers.json 里有身份与 officialDomains），
+  // 于是这条断言变成"过时"而不是"变绿"：判据仍要守，但反例必须换成一个
+  // **确实没有官方域登记**的开发者名。断言强度不变。
   const unregisteredDev = clone(table);
+  unregisteredDev['step-3.5-flash'].developer = 'Unknown Vendor X';
   unregisteredDev['step-3.5-flash'].releasedAt = '2026-04-01';
   unregisteredDev['step-3.5-flash'].releaseEvidence = [{
     field: 'releasedAt', quote: '官方原文片段', sourceUrl: 'https://www.stepfun.com/news', capturedAt: '2026-10-04'
   }];
-  check('【v2】developer 在 providers.json 里没有官方域登记（阶跃星辰只在 _developers_extra）→ 红（要么登记官方域，要么 releasedAt 留 null）',
+  check('【v2】developer 没有官方域登记（Unknown Vendor X 既不在 providers.json 也不在 _developers_extra）→ 红（要么登记官方域，要么 releasedAt 留 null）',
     hasProblem(reg.validateRegistry(unregisteredDev, v2Ctx), '没有官方域登记'));
 
   // ---- 牙：引文形态封闭（field 只能是 releasedAt / 未知键即红 / capturedAt 必填）----

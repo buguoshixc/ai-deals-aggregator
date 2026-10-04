@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "updatedAt": "2026-10-01T00:00:00+08:00",
-  "count": 64,
+  "count": 68,
   "links": [
     {
       "registrySlug": "claude-fable-5.1",
@@ -1089,6 +1089,42 @@
       "basis": "explicit-mapping",
       "evidence": [],
       "note": "套餐的 supportedModels 里逐字写着这个模型（人工逐条确认），但该套餐的官方页引文只覆盖了价格与额度，本仓库尚未捕获模型清单那一处的原文 ⇒ 如实标成显式映射（explicit-mapping）。把没有引文的事写成一条引文才是造假。"
+    },
+    {
+      "registrySlug": "step-3.5-flash",
+      "registryModelId": "08a33ff6273a",
+      "planId": "0a66f3117162",
+      "modelName": "step-3.5-flash",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐 supportedModels 里逐字写的就是 registry 的既有身份 step-3.5-flash（归一后精确相等）；依据是 Step Plan 官方页的 supportedModels 表本身，而该套餐记录没有为这一串单独写官方引文（引文只允许复制记录已有的，不许新造）⇒ 走 explicit-mapping 出口。"
+    },
+    {
+      "registrySlug": "step-3.5-flash",
+      "registryModelId": "08a33ff6273a",
+      "planId": "2281d41b3a26",
+      "modelName": "step-3.5-flash",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐 supportedModels 里逐字写的就是 registry 的既有身份 step-3.5-flash（归一后精确相等）；依据是 Step Plan 官方页的 supportedModels 表本身，而该套餐记录没有为这一串单独写官方引文（引文只允许复制记录已有的，不许新造）⇒ 走 explicit-mapping 出口。"
+    },
+    {
+      "registrySlug": "step-3.5-flash",
+      "registryModelId": "08a33ff6273a",
+      "planId": "383ed55706fc",
+      "modelName": "step-3.5-flash",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐 supportedModels 里逐字写的就是 registry 的既有身份 step-3.5-flash（归一后精确相等）；依据是 Step Plan 官方页的 supportedModels 表本身，而该套餐记录没有为这一串单独写官方引文（引文只允许复制记录已有的，不许新造）⇒ 走 explicit-mapping 出口。"
+    },
+    {
+      "registrySlug": "step-3.5-flash",
+      "registryModelId": "08a33ff6273a",
+      "planId": "ef931b98b927",
+      "modelName": "step-3.5-flash",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐 supportedModels 里逐字写的就是 registry 的既有身份 step-3.5-flash（归一后精确相等）；依据是 Step Plan 官方页的 supportedModels 表本身，而该套餐记录没有为这一串单独写官方引文（引文只允许复制记录已有的，不许新造）⇒ 走 explicit-mapping 出口。"
     }
   ]
 }

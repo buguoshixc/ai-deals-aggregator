@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-10-01T00:00:00+08:00",
+  "updatedAt": "2026-10-04T00:00:00+08:00",
   "count": 44,
   "models": [
     {
@@ -894,8 +894,8 @@
       "id": "08a33ff6273a",
       "slug": "step-3.5-flash",
       "canonicalName": "Step-3.5-Flash",
-      "developer": "阶跃星辰（StepFun）",
-      "owner": "阶跃星辰（StepFun）",
+      "developer": "阶跃星辰",
+      "owner": "阶跃星辰",
       "family": "Step",
       "aliases": [
         "stepfun-ai/Step-3.5-Flash"
@@ -907,7 +907,7 @@
       "releaseEvidence": [],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
-      "lastSeen": "2026-10-01",
+      "lastSeen": "2026-10-04",
       "catalogStatus": "unknown",
       "catalogReason": "group-has-no-dated-model",
       "note": null

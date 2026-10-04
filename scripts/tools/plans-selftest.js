@@ -700,7 +700,21 @@ const FROZEN_VENDOR_SLUGS = {
   '阿里云': 'aliyun',
   '硅基流动': 'siliconflow',
   '腾讯云': 'tencent-cloud',
-  'Windsurf': 'windsurf'
+  'Windsurf': 'windsurf',
+  /* coverage-expansion-v1 / t11 修订（**新增路由**，不是改名，逐条登记原因）：
+   * 这 6 家原先只能靠 landing.js 的 `vendorSlugs[name] || providerEntry.slug` 隐式兜底；
+   * t11 把身份正式落进 providers.json 后，按 v3.0 Stage E 的纪律**显式补表**（值逐字等于
+   * providers.json 里同名条目的 slug，由 validateSlugAgreement 与 assertVendorSlugDeclared 双重把守）：
+   *   · 阶跃星辰 / 商汤科技 / 百川智能 / 360智脑 → 第一方开发者（官方定价页与记录均已落盘）
+   *   · Replit → A 空间已有厂商键；Coding 套餐候选 adopted
+   *   · AWS → A 空间厂商键 `aws`；Amazon Q Developer 候选 adopted
+   * 冻结表的本意是「改 URL 前必须有人看过」——这里是**新增**，既有路由一个字节未改。 */
+  '阶跃星辰': 'stepfun',
+  '商汤科技': 'sensetime',
+  '百川智能': 'baichuan',
+  '360智脑': 'ai360',
+  'Replit': 'replit',
+  'AWS': 'aws'
 };
 
 /** 逐条比对 A 空间的 `[键, 显示名]` 序列（顺序也算）；返回漂移列表（空 = 未漂移） */

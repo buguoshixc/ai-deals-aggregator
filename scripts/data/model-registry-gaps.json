@@ -4,6 +4,198 @@
   "schemaVersion": 2,
   "declarations": [
     {
+      "planId": "0a66f3117162",
+      "modelName": "step-3.5-flash-2603",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方点名的单一模型，是 step-3.5-flash 的 2603 版本号写法；registry 的 step-3.5-flash 没有版本后缀 ⇒ 不能凭版本号后缀认定同一身份（禁止用命名差异猜同一模型）。"
+    },
+    {
+      "planId": "0a66f3117162",
+      "modelName": "step-3.7-flash",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方点名的单一模型（Flash 档），registry 里没有精确身份（registry 目前只有 step-3.5-flash）。"
+    },
+    {
+      "planId": "0a66f3117162",
+      "modelName": "step-5-preview",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方点名的单一模型（Step 5 Preview，1M 上下文、原生多模态输入），但 registry 里还没有登记这个身份 ⇒ 处置为「点名了但对不上精确身份」。等 registry 补登 Step 5 之后再改成映射。"
+    },
+    {
+      "planId": "0a66f3117162",
+      "modelName": "step-router-v1",
+      "role": "included",
+      "reason": "series",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方是**自动路由**能力（按任务路由到不同模型），不是某一个模型身份；没有落到版本。"
+    },
+    {
+      "planId": "0a66f3117162",
+      "modelName": "stepaudio-2.5-asr",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "语音识别（ASR）资源（非文本模型身份）。"
+    },
+    {
+      "planId": "0a66f3117162",
+      "modelName": "stepaudio-2.5-chat",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "语音对话资源（非文本模型身份）。"
+    },
+    {
+      "planId": "0a66f3117162",
+      "modelName": "stepaudio-2.5-realtime",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "实时语音资源（非文本模型身份）。"
+    },
+    {
+      "planId": "0a66f3117162",
+      "modelName": "stepaudio-2.5-tts",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "语音合成（TTS）资源（非文本模型身份）。"
+    },
+    {
+      "planId": "2281d41b3a26",
+      "modelName": "step-3.5-flash-2603",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方点名的单一模型，是 step-3.5-flash 的 2603 版本号写法；registry 的 step-3.5-flash 没有版本后缀 ⇒ 不能凭版本号后缀认定同一身份（禁止用命名差异猜同一模型）。"
+    },
+    {
+      "planId": "2281d41b3a26",
+      "modelName": "step-3.7-flash",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方点名的单一模型（Flash 档），registry 里没有精确身份（registry 目前只有 step-3.5-flash）。"
+    },
+    {
+      "planId": "2281d41b3a26",
+      "modelName": "step-5-preview",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方点名的单一模型（Step 5 Preview，1M 上下文、原生多模态输入），但 registry 里还没有登记这个身份 ⇒ 处置为「点名了但对不上精确身份」。等 registry 补登 Step 5 之后再改成映射。"
+    },
+    {
+      "planId": "2281d41b3a26",
+      "modelName": "step-router-v1",
+      "role": "included",
+      "reason": "series",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方是**自动路由**能力（按任务路由到不同模型），不是某一个模型身份；没有落到版本。"
+    },
+    {
+      "planId": "2281d41b3a26",
+      "modelName": "stepaudio-2.5-asr",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "语音识别（ASR）资源（非文本模型身份）。"
+    },
+    {
+      "planId": "2281d41b3a26",
+      "modelName": "stepaudio-2.5-chat",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "语音对话资源（非文本模型身份）。"
+    },
+    {
+      "planId": "2281d41b3a26",
+      "modelName": "stepaudio-2.5-realtime",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "实时语音资源（非文本模型身份）。"
+    },
+    {
+      "planId": "2281d41b3a26",
+      "modelName": "stepaudio-2.5-tts",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "语音合成（TTS）资源（非文本模型身份）。"
+    },
+    {
+      "planId": "383ed55706fc",
+      "modelName": "step-3.5-flash-2603",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方点名的单一模型，是 step-3.5-flash 的 2603 版本号写法；registry 的 step-3.5-flash 没有版本后缀 ⇒ 不能凭版本号后缀认定同一身份（禁止用命名差异猜同一模型）。"
+    },
+    {
+      "planId": "383ed55706fc",
+      "modelName": "step-3.7-flash",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方点名的单一模型（Flash 档），registry 里没有精确身份（registry 目前只有 step-3.5-flash）。"
+    },
+    {
+      "planId": "383ed55706fc",
+      "modelName": "step-5-preview",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方点名的单一模型（Step 5 Preview，1M 上下文、原生多模态输入），但 registry 里还没有登记这个身份 ⇒ 处置为「点名了但对不上精确身份」。等 registry 补登 Step 5 之后再改成映射。"
+    },
+    {
+      "planId": "383ed55706fc",
+      "modelName": "step-router-v1",
+      "role": "included",
+      "reason": "series",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方是**自动路由**能力（按任务路由到不同模型），不是某一个模型身份；没有落到版本。"
+    },
+    {
+      "planId": "383ed55706fc",
+      "modelName": "stepaudio-2.5-asr",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "语音识别（ASR）资源（非文本模型身份）。"
+    },
+    {
+      "planId": "383ed55706fc",
+      "modelName": "stepaudio-2.5-chat",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "语音对话资源（非文本模型身份）。"
+    },
+    {
+      "planId": "383ed55706fc",
+      "modelName": "stepaudio-2.5-realtime",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "实时语音资源（非文本模型身份）。"
+    },
+    {
+      "planId": "383ed55706fc",
+      "modelName": "stepaudio-2.5-tts",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "语音合成（TTS）资源（非文本模型身份）。"
+    },
+    {
       "planId": "536e6b211045",
       "modelName": "Claude 系列模型（含 Claude Code）",
       "role": "included",
@@ -50,6 +242,70 @@
       "reason": "pool",
       "sourceUrl": "https://docs.qoder.com/account/pricing.md",
       "note": "官方原文只写「for premium models」与「switch to basic models」，给出的是池子的边界而不是模型名单；记录的 role 就是 pool ⇒ 不对应单一模型身份。"
+    },
+    {
+      "planId": "ef931b98b927",
+      "modelName": "step-3.5-flash-2603",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方点名的单一模型，是 step-3.5-flash 的 2603 版本号写法；registry 的 step-3.5-flash 没有版本后缀 ⇒ 不能凭版本号后缀认定同一身份（禁止用命名差异猜同一模型）。"
+    },
+    {
+      "planId": "ef931b98b927",
+      "modelName": "step-3.7-flash",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方点名的单一模型（Flash 档），registry 里没有精确身份（registry 目前只有 step-3.5-flash）。"
+    },
+    {
+      "planId": "ef931b98b927",
+      "modelName": "step-5-preview",
+      "role": "included",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方点名的单一模型（Step 5 Preview，1M 上下文、原生多模态输入），但 registry 里还没有登记这个身份 ⇒ 处置为「点名了但对不上精确身份」。等 registry 补登 Step 5 之后再改成映射。"
+    },
+    {
+      "planId": "ef931b98b927",
+      "modelName": "step-router-v1",
+      "role": "included",
+      "reason": "series",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "官方是**自动路由**能力（按任务路由到不同模型），不是某一个模型身份；没有落到版本。"
+    },
+    {
+      "planId": "ef931b98b927",
+      "modelName": "stepaudio-2.5-asr",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "语音识别（ASR）资源（非文本模型身份）。"
+    },
+    {
+      "planId": "ef931b98b927",
+      "modelName": "stepaudio-2.5-chat",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "语音对话资源（非文本模型身份）。"
+    },
+    {
+      "planId": "ef931b98b927",
+      "modelName": "stepaudio-2.5-realtime",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "实时语音资源（非文本模型身份）。"
+    },
+    {
+      "planId": "ef931b98b927",
+      "modelName": "stepaudio-2.5-tts",
+      "role": "included",
+      "reason": "non-text-resource",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "note": "语音合成（TTS）资源（非文本模型身份）。"
     },
     {
       "planId": "f04787381e3b",

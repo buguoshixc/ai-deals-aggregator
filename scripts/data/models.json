@@ -636,8 +636,8 @@
   },
   "step-3.5-flash": {
     "canonicalName": "Step-3.5-Flash",
-    "developer": "阶跃星辰（StepFun）",
-    "owner": "阶跃星辰（StepFun）",
+    "developer": "阶跃星辰",
+    "owner": "阶跃星辰",
     "family": "Step",
     "aliases": [
       "stepfun-ai/Step-3.5-Flash"
@@ -667,8 +667,5 @@
   "_note": "v3.0 Stage D 的 **Model Registry 人工来源层**：一行 = 一个模型身份（键 = slug）。它是**索引/身份层，不是价格真值层** —— 价格永远来自 api-plans.json，这里只回答\"这个模型是谁、叫什么、属于哪条产品线、在哪些平台的哪条记录里出现过\"。根目录的 models.json 是本表 + 关系层的**派生产物**（id / firstSeen / lastSeen / updatedAt / count 一律算出来，手写即红）。",
   "_rules": "① slug 是稳定身份，取 API 侧记录里已经稳定的 modelKey（官方写法的小写形态；同一个模型在多家平台上共用同一个 modelKey 时合并成一条，例如 deepseek-v4-pro 同时出现在阿里云百炼 / DeepSeek 官方 / 硅基流动的官方定价页上）；② canonicalName 取**开发者自己平台**那条记录的官方写法（没有自家记录时取第三方记录里规范排序最前的一条），绝不改写官方写法；③ developer / owner 只允许写 providers.json 的规范显示名，或在 _developers_extra 里逐条登记过的公司；判不出来写 null —— 宁可缺失，也不要把一家没登记的公司写成看起来像身份的字符串。本条目的 owner 与 developer 相同时**逐条写同一个值**（当前数据里没有任何\"开发者 ≠ 商业权利方\"的证据；将来出现分离必须逐条改并写明依据）；④ family 取官方模型名的产品线前缀（Claude / Gemini / GPT / GLM / DeepSeek / Hunyuan / Doubao Seed / MiniMax M / Kimi / Qwen / Step），**不推断版本关系**；⑤ aliases 只收\"已确认改名 / 官方别名 / 格式差异\"，全部来自官方页面上的写法（模型 id、平台上的别名列），裸公司名（例如 MiniMax）不作为模型别名；⑥ officialUrl 写**开发者自己官方页面**上列出该模型的那一页；只有第三方平台页时写第三方那一页（事实如此）；⑦ status 只由人工依据驱动：出现在当前官方定价页且被当前记录引用 ⇒ active，官方不再列出 ⇒ 人工改成 retired，当前 44 条全部 active、0 条 retired；⑧ **_developers_extra** 是\"不在 provider 表里、但有官方依据的开发者的白名单\"，每条带出处。⑨ **v2 新增 `modelRole`**：口径 = 官方页面 / 官方模型名上的能力标记（判不出来写 null，绝不按版本号或\"看起来像旗舰\"猜）。本表用**最小枚举** `general / fast / reasoning / coding / vision / embedding / audio / realtime / translation / other`（与 `lib/model-freshness.js` 的 `MODEL_ROLES` 逐字相同，不一致由自测当场报红）。t10 调查（research/_raw/coverage-expansion-v1/currentness.json）的细词表通过**写死的投影表**落盘（投影只做能力位，不把档位信息塞进角色名）：`llm→general` · `small-fast-variant→fast` · `reasoning→reasoning` · `code-specialist→coding` · `vlm→vision` · `multimodal-llm→vision` · `retrieval-embedding→embedding` · `translation→translation` · `translation-lite→translation` · `roleplay→other`。⑩ **v2 新增 `releasedAt` / `releaseEvidence`（互为充要）**：有日期就必须有\"官方逐字引文 + 官方域出处 + capturedAt\"（引文形态与 deals / plans / links 同一套：field / quote / sourceUrl / capturedAt，field 恒为 releasedAt）；查不到官方一手日期一律 `null` + `[]` —— **禁止**用版本号 / 别名里的数字推断日期，**禁止**拿第三方托管平台的发布时间顶替开发商的发布证据。⑪ `freshnessGroup` 是人工显式分组覆盖，非空时必须写 `note` 说明\"为什么这条需要单独一组\"。",
   "_derived": "id = sha1(\"model|\" + slug) 前 12 位；firstSeen / lastSeen = 引用它的记录里最早 / 最晚的日期（没有任何引用时两个都是 null）。这三个字段**不进本表**，由 scripts/tools/rebuild-models.js 派生。 v2 追加：`catalogStatus` / `catalogReason`（目录状态 current / aging / legacy / historical / unknown）由 `lib/model-freshness.js` 按 modelRole 分档 + 同比较组的发布日期**派生**，来源层手写即红；接线入口是 `publishedModels({…, catalog})`，构建期由 scripts/tools/rebuild-models.js 接线。",
-  "_identity": "题面 D2：模型 / 模型家族 / 版本 / Provider 上的部署别名必须分开。本表只管\"模型身份\"；同一个模型在多家平台的出现由关系层（scripts/data/model-registry-links.json）逐条写明，**禁止**任何相似度、Levenshtein 或 LLM 猜测写生产映射（lib/model-registry.js 的 candidatesOf() 只能产出候选）。",
-  "_developers_extra": {
-    "阶跃星辰（StepFun）": "不在 providers.json 里（本站还没有这家平台的身份）。依据是硅基流动官方定价页上的模型 id `stepfun-ai/Step-3.5-Flash`（官方 id 自带开发者前缀），出处：https://siliconflow.cn/pricing"
-  }
+  "_identity": "题面 D2：模型 / 模型家族 / 版本 / Provider 上的部署别名必须分开。本表只管\"模型身份\"；同一个模型在多家平台的出现由关系层（scripts/data/model-registry-links.json）逐条写明，**禁止**任何相似度、Levenshtein 或 LLM 猜测写生产映射（lib/model-registry.js 的 candidatesOf() 只能产出候选）。"
 }
