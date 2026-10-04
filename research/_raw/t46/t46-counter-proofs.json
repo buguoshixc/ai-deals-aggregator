@@ -1,0 +1,39 @@
+{
+  "generatedFrom": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-expansion-v1",
+  "cases": 5,
+  "passed": 5,
+  "failed": 0,
+  "guardDrift": [],
+  "results": [
+    {
+      "id": "C1",
+      "claim": "对照绿：未改任何输入 ⇒ exit 0，且 JSON 的逐档计数 == 直接过滤 models.json，文本那一行与 JSON 逐档一致",
+      "status": "passed",
+      "evidence": "exit 0；文本「current 3 · aging 0 · legacy 1 · historical 0 · unknown 40（和 44）」；JSON {\"current\":3,\"aging\":0,\"legacy\":1,\"historical\":0,\"unknown\":40} sum=44"
+    },
+    {
+      "id": "P1",
+      "claim": "少一个模型（43 ≠ 44）⇒ 必红，且点名「五态普查不闭合」并给出两侧数字",
+      "status": "passed",
+      "evidence": "exit 1；- R4 五态普查不闭合：五态之和 43（current 3 · aging 0 · legacy 1 · historical 0 · unknown 39（和 43））≠ registry 模型数 44（scripts/data/models.json 的条目数）—— 普查必须把每一个 registry 模型恰好分"
+    },
+    {
+      "id": "P2",
+      "claim": "出现词表外的 catalogStatus（retired）⇒ 必红，且点名「不在词表里」并列出该值",
+      "status": "passed",
+      "evidence": "exit 1；- R4 五态普查：发布产物 models.json 里有 1 个 catalogStatus 不在词表里（retired） —— 词表的唯一出处是 lib/model-freshness.js 的 CATALOG_STATUSES；未知值不许静默并进 unknown，也不许在报告里自己加一档。"
+    },
+    {
+      "id": "P3",
+      "claim": "某条缺 catalogStatus 字段 ⇒ 必红（\"(字段缺失)\" 也算词表外，不许静默并进 unknown）",
+      "status": "passed",
+      "evidence": "exit 1；- R4 五态普查：发布产物 models.json 里有 1 个 catalogStatus 不在词表里（(字段缺失)） —— 词表的唯一出处是 lib/model-freshness.js 的 CATALOG_STATUSES；未知值不许静默并进 unknown，也不许在报告里自己加一档。"
+    },
+    {
+      "id": "P4",
+      "claim": "候选登记表换成 2 条 ⇒ candidates.rows 逐条跟着输入走（url / 检查日期 / 未采信原因都在）",
+      "status": "passed",
+      "evidence": "exit 0；rows=[[\"https://example.com/a\",\"2026-10-01\",false],[\"https://example.com/b\",\"2026-10-02\",true]]"
+    }
+  ]
+}

@@ -32,6 +32,7 @@ const { spawnSync } = require('child_process');
 const ct = require('../lib/coverage-targets');
 const providers = require('../lib/providers');
 const registry = require('../lib/model-registry');
+const freshnessLib = require('../lib/model-freshness');
 const { load: loadRenderCore } = require('../lib/render-core');
 const dataDocs = require('../lib/data-docs');
 
@@ -469,17 +470,29 @@ const LEGACY_CONTRACT = {
     'mappedPlanModelCount', 'unmappedPlanModels', 'declaredPlanModels'],
   gaps: ['dealsWithoutPlans', 'plansWithoutDeals', 'unmappedModelCount', 'unmappedPlanModelCount',
     'declaredPlanModelCount', 'notAdoptedProviders'],
-  candidates: ['total', 'adopted', 'notAdopted']
+  candidates: ['total', 'adopted', 'notAdopted'],
+  // t46 起把 v2 那一块也冻住：`coverageTargets` 是**新键**，但它自己内部的键序同样只许"追加在既有键之后"
+  // （R4 五态普查就是追加在 `freshness` 之后的）。嵌套节用点分路径寻址（见 `valueAt()`）。
+  coverageTargets: ['file', 'present', 'schemaVersion', 'reviewedAt', 'validationProblemCount', 'validationProblems',
+    'stateOrder', 'states', 'universe', 'dimensions', 'rows', 'missingTargets', 'partialTargets', 'deferred',
+    'unverifiable', 'notApplicable', 'blockedBySourceHealth', 'currentModels', 'sourceHealth', 'freshness'],
+  'coverageTargets.sourceHealth': ['declaredSources', 'unhealthyDeclaredSources', 'blockedTargets']
 };
 const LEGACY_TOP_LEVEL = ['generatedAt', 'deals', 'coding', 'api', 'registry', 'gaps', 'candidates'];
 /**
- * 追加键白名单：报告新增键必须**逐个登记在这里**（本轮 = t25 新增的 API 侧处置键）。
+ * 追加键白名单：报告新增键必须**逐个登记在这里**（t25 = API 侧处置键；t46 = R4 五态普查 + 候选明细 + 来源宇宙）。
  *
- * 语义锚点（t29 补：下一个改契约的人不必回读全部代码）——白名单里 API 侧各键**锚在 lib 的哪个读数**上：
+ * 语义锚点（t29 补；t46 追加）——白名单里各键**锚在哪个读数**上：
  *   · `registry.mappedApiEntries`     = lib `coverageOf().mappedApiEntries`（**数**：展开后被映射认领的计价条目数 = 方程的 A）
  *   · `registry.declaredApiEntries`   = lib `coverageOf().declaredApiIdentities`（**数**：展开后被处置声明覆盖的计价条目数 = 方程的 B）
  *   · `registry.declaredApiEntryRows` = lib `coverageOf().declaredApiEntries`（**数组**：声明本身逐条留档，长度 = 声明条数）
  *   · `gaps.declaredApiEntryCount`    = 上面的 `declaredApiEntryRows.length`（**数**；**不是**方程的 B）
+ *   · `coverageTargets.catalogStatusCensus` = 五态普查：词表 = lib `CATALOG_STATUSES`、逐条值 = 发布产物
+ *       `models.json` 的 `catalogStatus`、计数 = lib `censusOf()`；`sum` **必须等于** `currentModels.registryModels`
+ *   · `candidates.rows`               = 候选来源审查的**逐条明细**（url / checkedAt / 是否采信 / 失败原因），
+ *       排序 = provider → url → checkedAt → slug 的 code-unit 序
+ *   · `coverageTargets.sourceHealth.{registryRowCount,registryRows,registryOnlySources}` = R8 的来源宇宙对照
+ *       （注册表几行 / 本节收几行 / 差集是哪几个）
  * ⚠️ 陷阱：lib 的 `declaredApiEntries`（数组）与报告的 `registry.declaredApiEntries`（数）**同名不同义**；
  *    报告层那个冻结键名已经占了"数"的位置，所以"声明行数组"只能另起一名 `declaredApiEntryRows`。
  *    两层的词是**交叉**的：报告 `registry.declaredApiEntries`（数）↔ lib `declaredApiIdentities`（数）、
@@ -491,8 +504,15 @@ const APPENDED_KEY_WHITELIST = {
   api: [],
   registry: ['mappedApiEntries', 'declaredApiEntries', 'declaredApiEntryRows'],
   gaps: ['declaredApiEntryCount'],
-  candidates: []
+  candidates: ['rows'],
+  coverageTargets: ['catalogStatusCensus'],
+  'coverageTargets.sourceHealth': ['registryRowCount', 'registryRows', 'registryOnlySources']
 };
+
+/** 点分路径取值（契约表里的嵌套节用 `a.b.c` 寻址）；取不到 ⇒ undefined（由契约判据判"缺键"） */
+function valueAt(node, dotted) {
+  return String(dotted).split('.').reduce((current, key) => (current === null || current === undefined ? undefined : current[key]), node);
+}
 
 /** 冻结契约判据：返回问题列表（空 = 通过）。**只有这一处实现**，反证牙也调它。 */
 function contractProblems(actualKeys, legacyKeys, whitelist) {
@@ -553,11 +573,14 @@ try {
       `顶层键：${topKeys.join(',')}`);
     check('generatedAt 仍是顶层字符串日期', typeof payload1.generatedAt === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(payload1.generatedAt));
     for (const [section_, keys] of Object.entries(LEGACY_CONTRACT)) {
-      const actual = Object.keys(payload1[section_] || {});
+      const actual = Object.keys(valueAt(payload1, section_) || {});
       const problems = contractProblems(actual, keys, APPENDED_KEY_WHITELIST[section_] || []);
       check(`冻结契约（旧键前缀 + 追加键白名单）：${section_}`, problems.length === 0,
         problems.join('；') || `实得 ${actual.join(',')}`);
     }
+    check('【反证牙】点分路径取值器：嵌套取得到、缺一层给 undefined（否则嵌套节会静默变成"空对象 ⇒ 全缺"而报红）',
+      valueAt({ a: { b: { c: 1 } } }, 'a.b.c') === 1 && valueAt({ a: {} }, 'a.b.c') === undefined
+      && valueAt(null, 'a.b') === undefined);
     // 端到端反证：拿**这一轮真实的 payload** 把键序打乱 / 删掉一个旧键，同一条规则必须红。
     const shuffledRegistry = Object.keys(payload1.registry || {}).slice().reverse();
     check('【反证牙·端到端】真实 payload 的 registry 键序被打乱 ⇒ 同一条契约规则报红',
@@ -598,6 +621,63 @@ try {
     check('freshness 块如实反映模块状态（ok / broken / missing 三选一）',
       ['ok', 'broken', 'missing'].includes(cov.freshness.status));
 
+    /* ---- t46 / F1（§41 第 4 条）：Current / Aging / Legacy / Historical / Unknown 五态普查 ---- */
+    const census = cov.catalogStatusCensus;
+    const publishedModels = readJson('models.json').models;
+    check('t46：coverageTargets.catalogStatusCensus 存在，且词表就是 lib 的 CATALOG_STATUSES（判据层单一出处）',
+      Boolean(census) && JSON.stringify(census.statusOrder) === JSON.stringify(freshnessLib.CATALOG_STATUSES),
+      JSON.stringify(census && census.statusOrder));
+    check('t46：五态每一档都与发布产物 models.json 的 catalogStatus 直接过滤一致（不是报告自算的另一份数字）',
+      Boolean(census) && census.landed
+      && freshnessLib.CATALOG_STATUSES.every(status => census.counts[status]
+        === publishedModels.filter(model => model.catalogStatus === status).length)
+      && Object.keys(census.counts).join(',') === freshnessLib.CATALOG_STATUSES.join(','),
+      JSON.stringify(census && census.counts));
+    check('t46：五态之和 == registry 模型数 == 发布产物模型数（不闭合即报告自检非 0）',
+      Boolean(census) && census.landed && census.sum === census.registryModels
+      && census.registryModels === cov.currentModels.registryModels
+      && census.registryModels === publishedModels.length
+      && cov.currentModels.registryModels === Object.keys(registryTable).length,
+      `sum=${census && census.sum} / registryModels=${census && census.registryModels} / 发布产物 ${publishedModels.length} / registry 表 ${Object.keys(registryTable).length}`);
+    check('t46：没有词表外的 catalogStatus 值（未知值不许静默并进 unknown，也不许自己加一档）',
+      Boolean(census) && census.statusesOutsideWordList.length === 0,
+      JSON.stringify(census && census.statusesOutsideWordList));
+    const censusLine = /current (\d+) · aging (\d+) · legacy (\d+) · historical (\d+) · unknown (\d+)（和 (\d+)）/.exec(iso1.stdout);
+    const censusTextNumbers = censusLine ? [1, 2, 3, 4, 5, 6].map(index => Number(censusLine[index])) : null;
+    check('t46：文本那一行的五态读数与 JSON 的 counts 逐档一致，且「（和 N）」== sum（文本/JSON 不许各说各话）',
+      Boolean(censusLine) && Boolean(census) && census.landed
+      && freshnessLib.CATALOG_STATUSES.every((status, index) => censusTextNumbers[index] === census.counts[status])
+      && censusTextNumbers[5] === census.sum,
+      censusLine ? censusLine[0] : '文本里没有五态普查行');
+
+    /* ---- t46 / F2（§42）：候选来源审查的明细同步进 JSON ---- */
+    const candidateRows = payload1.candidates.rows;
+    check('t46：candidates.rows 逐条带 url / 检查日期 / 是否采信 / 失败原因（这三样此前在 JSON 里各 0 次）',
+      Array.isArray(candidateRows) && candidateRows.length === payload1.candidates.total
+      && candidateRows.every(row => typeof row.url === 'string' && /^https?:/.test(row.url)
+        && typeof row.checkedAt === 'string' && row.checkedAt.length > 0
+        && typeof row.decision === 'string' && row.flags && typeof row.flags === 'object')
+      && candidateRows.filter(row => row.adopted === true).length === payload1.candidates.adopted
+      && candidateRows.filter(row => row.decision === 'not_adopted').length === payload1.candidates.notAdopted
+      && candidateRows.filter(row => row.failedReason).length >= payload1.candidates.notAdopted,
+      `rows=${Array.isArray(candidateRows) ? candidateRows.length : '(缺)'} / url=${Array.isArray(candidateRows) ? candidateRows.filter(row => /^https?:/.test(String(row.url))).length : 0}`
+      + ` / checkedAt=${Array.isArray(candidateRows) ? candidateRows.filter(row => row.checkedAt).length : 0}`
+      + ` / failedReason=${Array.isArray(candidateRows) ? candidateRows.filter(row => row.failedReason).length : 0}`);
+    check('t46：candidates.rows 排序稳定（两次运行逐字节相同）',
+      Array.isArray(candidateRows) && JSON.stringify(payload1.candidates.rows) === JSON.stringify(payload2.candidates.rows));
+
+    /* ---- t46 / F5（R8）：来源宇宙对照 —— 注册表几行 / 本节收几行 / 差集是哪几个 ---- */
+    const sh = cov.sourceHealth;
+    const declaredHealthNames = sh.declaredSources.map(row => row.name);
+    const healthRegistry = readJson('scripts/data/source-health.json').sources;
+    check('t46：sourceHealth 追加了来源宇宙对照，且注册表行数 == source-health.json 的实际行数',
+      sh.registryRowCount === sh.registryRows.length && sh.registryRowCount === healthRegistry.length,
+      `registryRowCount=${sh.registryRowCount} / registryRows=${sh.registryRows.length} / 文件 ${healthRegistry.length} 行`);
+    check('t46：差集 == 注册表 ∖ 本节已列（两项相加恰好等于注册表行数，不多不少）',
+      sh.registryOnlySources.every(name => sh.registryRows.includes(name))
+      && sh.registryOnlySources.length + declaredHealthNames.filter(name => sh.registryRows.includes(name)).length === sh.registryRowCount,
+      `差集 ${JSON.stringify(sh.registryOnlySources)} / 本节已列 ${JSON.stringify(declaredHealthNames)}`);
+
     // t25：报告必须把 API 侧处置如实暴露出来（三者和必须等于计价条目总数，逐项在 JSON 里可核）。
     const reg = payload1.registry || {};
     const gap = payload1.gaps || {};
@@ -612,6 +692,32 @@ try {
     check('（隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON', false,
       `报告退出码 ${iso1.status}；上游自检问题 ${isoProblems.length} 处：${isoProblems.slice(0, 3).join('；')}`);
   }
+
+  /* ---- t46 反证牙（验收 ②）：五态普查的两条不变量，构造违反它的输入 ⇒ 报告自检必红 ---- */
+  //
+  // 为什么这两条必须动态跑报告而不是纯函数驱动：判据长在 `main()` 里（报告是 CLI，没有导出面），
+  // 唯一能证明「这条不变量真的有牙」的方式就是喂一份**被改坏**的发布产物给它。用 `--published-models=`
+  // （报告自带的验证开关）而不是改盘上的 `models.json`：反证不许碰生产数据。
+  const publishedDoc = readJson('models.json');
+  const shortDoc = Object.assign({}, publishedDoc, {
+    count: publishedDoc.models.length - 1,
+    models: publishedDoc.models.slice(0, -1)
+  });
+  const shortFile = path.join(tmpDir, 't46-published-models-short.json');
+  fs.writeFileSync(shortFile, `${JSON.stringify(shortDoc, null, 2)}\n`);
+  const shortRun = runReport([`--published-models=${shortFile}`]);
+  check('【反证牙】发布产物少一个模型（五态之和 ≠ registry 模型数）⇒ 报告自检非 0，并点名「五态普查不闭合」',
+    shortRun.status !== 0 && shortRun.stderr.includes('五态普查不闭合'),
+    `exit ${shortRun.status}；${(shortRun.stderr.split('\n').find(line => line.includes('普查')) || '(没有点到普查)').trim().slice(0, 120)}`);
+
+  const bogusDoc = clone(publishedDoc);
+  bogusDoc.models[bogusDoc.models.length - 1].catalogStatus = 'retired';   // retired 不是目录状态（lib 的封闭枚举里没有它）
+  const bogusFile = path.join(tmpDir, 't46-published-models-bogus-status.json');
+  fs.writeFileSync(bogusFile, `${JSON.stringify(bogusDoc, null, 2)}\n`);
+  const bogusRun = runReport([`--published-models=${bogusFile}`]);
+  check('【反证牙】出现词表外的 catalogStatus（retired）⇒ 报告自检非 0，并点名「不在词表里」',
+    bogusRun.status !== 0 && bogusRun.stderr.includes('不在词表里'),
+    `exit ${bogusRun.status}；${(bogusRun.stderr.split('\n').find(line => line.includes('词表')) || '(没有点到词表)').trim().slice(0, 120)}`);
 } finally {
   try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch (error) { /* 临时目录清不掉不影响判据 */ }
 }

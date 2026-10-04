@@ -403,6 +403,32 @@ function main() {
   const notAdopted = candidates.filter(candidate => candidate && candidate.decision === 'not_adopted');
   const adopted = candidates.filter(candidate => candidate && candidate.decision === 'adopted');
   const notAdoptedProviders = uniqSorted(notAdopted.map(candidate => candidate.provider));
+  // §42「机器可读输出也要同步」（t46 / F2）——候选来源审查的**明细**同步进 JSON。
+  // 此前 JSON 只有 3 个计数（40/13/21）与 13 个厂商显示名：URL、检查日期、未采信原因**一个都还原不出**，
+  // 而这三样正是这条旧能力的全部内容（文本侧本来就有）。字段名沿用登记表的字段名，不另起一套词。
+  // 排序用 **code-unit 序**（与 lib 的规范序判据同一支比较方式，不用 localeCompare），两次运行逐字节一致。
+  const candidateOrderKey = row => [row.provider, row.url, row.checkedAt, row.slug]
+    .map(value => String(value === null || value === undefined ? '' : value)).join('\u0000');
+  const candidateRows = candidates
+    .filter(candidate => candidate && typeof candidate === 'object')
+    .map(candidate => ({
+      provider: candidate.provider === undefined ? null : candidate.provider,
+      slug: candidate.slug === undefined ? null : candidate.slug,
+      url: candidate.url === undefined ? null : candidate.url,
+      checkedAt: candidate.checkedAt === undefined ? null : candidate.checkedAt,
+      decision: candidate.decision === undefined ? null : candidate.decision,
+      adopted: candidate.decision === 'adopted',
+      flags: {
+        isJs: candidate.isJs === true,
+        requiresLogin: candidate.requiresLogin === true,
+        dynamicPagination: candidate.dynamicPagination === true,
+        pageOffline: candidate.pageOffline === true,
+        incomplete: candidate.incomplete === true
+      },
+      failedReason: candidate.failedReason === undefined ? null : candidate.failedReason,
+      adoptedReason: candidate.adoptedReason === undefined ? null : candidate.adoptedReason
+    }))
+    .sort((a, b) => (candidateOrderKey(a) < candidateOrderKey(b) ? -1 : candidateOrderKey(a) > candidateOrderKey(b) ? 1 : 0));
 
   /* ---------------- 交叉缺口 ---------------- */
   const dealsWithoutPlans = uniqSorted([...dealProviderKeys].filter(key => !planProviderKeys.has(key)));
@@ -545,6 +571,12 @@ function main() {
   });
   const unhealthyDeclaredSources = sourceHealthRows.filter(row => row.health && row.health.status !== 'healthy');
   const blockedRows = derived.blocked;
+  // R8 的「来源宇宙」对照（t46 / F5）：本节列的是**意图层声明过的 deals source**（= 挂在 target 上的那些），
+  // 而 `scripts/data/source-health.json` 的注册表更宽。不把两个宇宙的差显式写出来，读者会把本节
+  // 读成"全站来源都被这张表看住了"——变坏但不属于任何 target 的采集源不在本节里，那是口径边界不是漏报。
+  const sourceHealthRegistryNames = Object.keys(facts.sourceHealth).sort();
+  const declaredSourceNameSet = new Set(sourceHealthRows.map(row => row.name));
+  const sourceHealthRegistryOnly = sourceHealthRegistryNames.filter(name => !declaredSourceNameSet.has(name));
 
   /* ---------------- Freshness 阈值与理由（v2） ---------------- */
   const freshnessPath = path.join(__dirname, '..', 'lib', 'model-freshness.js');
@@ -564,6 +596,8 @@ function main() {
         catalogStatuses: null,
         defaultVisible: null,
         defaultHidden: null,
+        // R4 五态普查用的计数器（lib 里的唯一实现）；层没落盘 ⇒ null，由报告如实报「分不出」。
+        censusOf: null,
         note: 'freshness 单一策略层尚未落盘（scripts/lib/model-freshness.js 不存在）：本报告**不**判定 currentness ——'
           + ' unknown release dates 与 legacy/historical 一律如实标成"层未落盘"，绝不用 0 冒充（0 个 legacy 与"分不出 legacy"是两件事）。'
       };
@@ -581,6 +615,8 @@ function main() {
         catalogStatuses: mod.CATALOG_STATUSES === undefined ? null : mod.CATALOG_STATUSES,
         defaultVisible: mod.DEFAULT_VISIBLE_CATALOG_STATUSES === undefined ? null : mod.DEFAULT_VISIBLE_CATALOG_STATUSES,
         defaultHidden: mod.DEFAULT_HIDDEN_CATALOG_STATUSES === undefined ? null : mod.DEFAULT_HIDDEN_CATALOG_STATUSES,
+        // R4 五态普查的计数器：只借 lib 的 `censusOf()`（与 entry 的判据同源），报告不自己写一份计数。
+        censusOf: typeof mod.censusOf === 'function' ? mod.censusOf : null,
         note: '阈值与理由的唯一出处是 scripts/lib/model-freshness.js 的 MODEL_FRESHNESS_POLICY（按 modelRole 分档）；'
           + '本报告只读它，不另写一份。"默认展示哪一档"同理只读该模块的 DEFAULT_VISIBLE_CATALOG_STATUSES。'
       };
@@ -595,10 +631,72 @@ function main() {
         catalogStatuses: null,
         defaultVisible: null,
         defaultHidden: null,
+        censusOf: null,
         note: 'freshness 策略模块在盘上但**读不出来**（本轮不判定 currentness；这不是"没有 legacy"）。'
       };
     }
   })();
+
+  /* ---------------- R4（§41 第 4 条）目录状态五态普查 ---------------- */
+  //
+  // 题面点名的条目是 Current / Aging / Legacy / Historical / Unknown model counts。此前报告里
+  // **一个都不是普查**：unknown 用 `unknown release dates`（releasedAt 口径，数值 40 与
+  // catalogStatus=unknown 的 40 相同纯属巧合）、legacy + historical 被合并成一行「仍在产物里」、
+  // current / aging / historical 三档全文没有任何计数行。
+  //
+  // 判据层的**唯一出处**（报告不重算口径，只做三件事：取词表、取逐条值、调 lib 的计数器）：
+  //   · 词表  = `lib/model-freshness.js` 的 `CATALOG_STATUSES`（上面 freshness.catalogStatuses 就是它）
+  //   · 逐条值 = 发布产物 `models.json` 的 `catalogStatus`（**派生字段**：`lib/model-registry.js`
+  //     把它列在 `DERIVED_KEYS` 里，来源层 `scripts/data/models.json` 手写即红 —— 所以只能读发布侧）
+  //   · 计数  = `lib/model-freshness.js` 的 `censusOf()`（与 entry 的判据同源，报告不另写一份）
+  // 相位差纪律（与本文件别处一致）：整层没落盘 ⇒ 如实报「分不出」，绝不用 0 冒充。
+  const catalogStatusWordList = Array.isArray(freshness.catalogStatuses) ? freshness.catalogStatuses : null;
+  const catalogStatusCensus = (() => {
+    const base = {
+      landed: false,
+      statusOrder: catalogStatusWordList,
+      counts: null,
+      sum: null,
+      registryModels: registryEntries.length,
+      statusesOutsideWordList: [],
+      reason: null
+    };
+    if (!catalogStatusLanded) {
+      return Object.assign(base, { reason: '发布产物 models.json 里没有一个条目带 catalogStatus（freshness 派生层尚未落盘）——"分不出"与"五个 0"是两件事。' });
+    }
+    if (!catalogStatusWordList || typeof freshness.censusOf !== 'function') {
+      return Object.assign(base, { reason: 'lib/model-freshness.js 没有给出词表或 censusOf()，普查没有判据层可依（不当成 0）。' });
+    }
+    const statusesOutsideWordList = uniqSorted(publishedModels
+      .map(model => (model && model.catalogStatus === undefined ? null : (model ? model.catalogStatus : null)))
+      .filter(status => status === null || !catalogStatusWordList.includes(status))
+      .map(status => (status === null ? '(字段缺失)' : String(status))));
+    const census = freshness.censusOf(publishedModels);
+    const counts = {};
+    for (const status of catalogStatusWordList) counts[status] = census.byStatus[status] || 0;
+    return {
+      landed: true,
+      statusOrder: catalogStatusWordList,
+      counts,
+      sum: census.total,
+      registryModels: registryEntries.length,
+      statusesOutsideWordList,
+      reason: null
+    };
+  })();
+  const censusReading = catalogStatusCensus.landed
+    ? catalogStatusCensus.statusOrder.map(status => `${status} ${catalogStatusCensus.counts[status]}`).join(' · ')
+      + `（和 ${catalogStatusCensus.sum}）`
+    : null;
+  if (catalogStatusCensus.landed && catalogStatusCensus.statusesOutsideWordList.length) {
+    problems.push(`R4 五态普查：发布产物 models.json 里有 ${catalogStatusCensus.statusesOutsideWordList.length} 个 catalogStatus 不在词表里（${catalogStatusCensus.statusesOutsideWordList.join('、')}）`
+      + ' —— 词表的唯一出处是 lib/model-freshness.js 的 CATALOG_STATUSES；未知值不许静默并进 unknown，也不许在报告里自己加一档。');
+  }
+  if (catalogStatusCensus.landed && catalogStatusCensus.sum !== catalogStatusCensus.registryModels) {
+    problems.push(`R4 五态普查不闭合：五态之和 ${catalogStatusCensus.sum}（${censusReading}）≠ registry 模型数 ${catalogStatusCensus.registryModels}`
+      + '（scripts/data/models.json 的条目数）—— 普查必须把每一个 registry 模型恰好分到一档；'
+      + '不等说明发布产物与来源层不同步（跑 build 或检查 models.json），或有一档被漏掉。');
+  }
 
   /* ---------------- v2 汇总（文本与 JSON 共用同一批数字） ---------------- */
   const targetSummaries = derived.targets.map(target => {
@@ -798,7 +896,7 @@ function main() {
     }
   }
   line('');
-  line('── 分维度覆盖（provider × 维度 · 派生七态 · v2）──────────────────────');
+  line('── 分维度覆盖 / Provider coverage by dimension（provider × 维度 · 派生七态 · v2）──');
   for (const dimension of coverageTargets.DIMENSIONS) {
     const counts = dimensionStateCounts[dimension];
     line(`  ${coverageTargets.DIMENSION_LABEL[dimension]}（${dimension}）：${
@@ -810,7 +908,7 @@ function main() {
     line(`    ${String(row.provider).padEnd(13)}${coverageTargets.DIMENSIONS.map(dimension => String(row.states[dimension]).padEnd(16)).join('')}`);
   }
   line('');
-  line('── 真缺口：MISSING targets（可覆盖、未延期、来源健康，但盘上一条记录都没有）──');
+  line('── 真缺口 / Missing Current Targets：MISSING targets（可覆盖、未延期、来源健康，但盘上一条记录都没有）──');
   if (!derived.missing.length) line('  （无）');
   for (const row of derived.missing) {
     line(`  · ${row.providerName || row.provider}（${row.provider}） ${coverageTargets.DIMENSION_LABEL[row.dimension]}：声明的 current target ${row.declared} 条 / 盘上 ${row.present} 条 —— ${row.reason}`);
@@ -825,13 +923,13 @@ function main() {
     }
   }
   line('');
-  line('── 有理由的缺口 ①：DEFERRED（人工裁决延期 —— **永不算 MISSING**）────');
+  line('── 有理由的缺口 ① / Deferred Complexity Providers：DEFERRED（人工裁决延期 —— **永不算 MISSING**）──');
   if (!derived.deferred.length) line('  （无）');
   for (const row of derived.deferred) {
     line(`  · ${row.providerName || row.provider}（${row.provider}） ${coverageTargets.DIMENSION_LABEL[row.dimension]}：${row.reason}`);
   }
   line('');
-  line('── 有理由的缺口 ②：UNVERIFIABLE（查过，官方来源不可核）──────────────');
+  line('── 有理由的缺口 ② / Unverifiable Providers：UNVERIFIABLE（查过，官方来源不可核）──');
   if (!derived.unverifiable.length) line('  （无）');
   for (const row of derived.unverifiable) {
     line(`  · ${row.providerName || row.provider}（${row.provider}） ${coverageTargets.DIMENSION_LABEL[row.dimension]}：${row.reason}`);
@@ -871,12 +969,29 @@ function main() {
     line('  legacy / historical 保留：**分不出** —— 发布产物 models.json 里没有一个条目带 catalogStatus（freshness 派生层尚未落盘）。');
     line('                           "0 个 legacy"与"分不出 legacy"是两件事，这里如实报后者。');
   }
+  // §41 第 4 条（R4）的五态普查：一档一行、五档俱全，和必须等于 registry 模型数（不等即报告自检非 0）。
+  // 这一行是**普查**，与上面两行不同口径的读数各说各的：`unknown release dates` 是 releasedAt 口径
+  // （它的 40 与 catalogStatus=unknown 的 40 相同纯属巧合）、`legacy / historical 保留` 是"仍在产物里"。
+  if (catalogStatusCensus.landed) {
+    kv('catalogStatus 普查', censusReading, `五态和必须 == registry 模型数 ${catalogStatusCensus.registryModels}（不等 ⇒ 报告自检非 0）`);
+    line('      口径：词表 = lib/model-freshness.js 的 CATALOG_STATUSES · 逐条值 = 发布产物 models.json 的 catalogStatus（派生字段，来源层手写即红）· 计数 = 同模块的 censusOf()');
+    line('      复算：node -e "const m=require(\'./models.json\').models;const c={};for(const v of m)c[v.catalogStatus]=(c[v.catalogStatus]||0)+1;console.log(c)"');
+  } else {
+    line(`  catalogStatus 普查：**分不出** —— ${catalogStatusCensus.reason}`);
+    line('                        五个 0 与"分不出"是两件事；这里如实报后者，也不拿 releasedAt 口径顶替。');
+  }
   kv('来源层 status=retired', retiredInSource.length, retiredInSource.slice(0, 8).join(', ') || '（无）');
   kv('归属不到 Target provider 的 registry 模型', registryDevelopersWithoutProvider.length, '这些模型从覆盖宇宙里够不到（models.json 允许 _developers_extra，所以不是报告自身的问题）');
   registryDevelopersWithoutProvider.forEach(item => line(`      · ${item.slug}（developer=${item.developer === null ? '(空)' : item.developer} / owner=${item.owner === null ? '(空)' : item.owner}）`));
   line('');
   line('── Source Health impact（v2）────────────────────────────────────────');
   kv('声明的来源数', sourceHealthRows.length, '意图层里写过的 deals source（source-health 的 name 或 deals.json 出现过的 source）');
+  // R8 的来源宇宙对照（t46 / F5）：把「注册表几行」与「本节收了几行」的差显式写出来，
+  // 免得这一节被读成"全站来源总表"。
+  line(`  · 来源宇宙对照：scripts/data/source-health.json 注册表共 ${sourceHealthRegistryNames.length} 行；`
+    + `其中挂在 target 上的 ${declaredSourceNameSet.size} 行（= 本节所列）；`
+    + `差集 ${sourceHealthRegistryOnly.length} 行（${sourceHealthRegistryOnly.join(' / ') || '（无）'} —— 不属于任何 target，`
+    + '但仍在全站采集链上：它们变坏不会出现在这一节里，那是口径边界，不是漏报）');
   if (!sourceHealthRows.length) line('  （意图层还没有声明任何 deals 来源）');
   for (const row of sourceHealthRows) {
     const health = row.health
@@ -975,7 +1090,15 @@ function main() {
         // ---- t25 新增：**追加在既有键之后** ----
         declaredApiEntryCount: declaredApiRows.length
       },
-      candidates: { total: candidates.length, adopted: adopted.length, notAdopted: notAdopted.length },
+      candidates: {
+        total: candidates.length,
+        adopted: adopted.length,
+        notAdopted: notAdopted.length,
+        // ---- t46 新增：**追加在既有键之后**（旧键 total/adopted/notAdopted 的名字与顺序一个都没动）----
+        // §42「机器可读输出也要同步」：候选来源审查的逐条明细（URL / 检查日期 / 是否采信 / 未采信原因）。
+        // 以前只有计数 —— 拿 JSON 还原不出任何一条候选来源。排序：provider → url → checkedAt → slug（code-unit 序）。
+        rows: candidateRows
+      },
       // ---- v2（coverage-expansion-v1）：全部进**新键**，旧键一个字都不动 ----
       coverageTargets: {
         file: 'scripts/data/coverage-targets.json',
@@ -1036,7 +1159,12 @@ function main() {
         sourceHealth: {
           declaredSources: sourceHealthRows,
           unhealthyDeclaredSources: unhealthyDeclaredSources.map(row => row.name),
-          blockedTargets: derived.blocked.map(cellPayload)
+          blockedTargets: derived.blocked.map(cellPayload),
+          // ---- t46 新增：**追加在既有键之后**（F5 / R8 的来源宇宙对照，文本与 JSON 同源）----
+          // 本节看的是「挂在 target 上的来源」；注册表更宽，差集在 JSON 里也必须看得见。
+          registryRowCount: sourceHealthRegistryNames.length,
+          registryRows: sourceHealthRegistryNames,
+          registryOnlySources: sourceHealthRegistryOnly
         },
         freshness: {
           status: freshness.status,
@@ -1049,6 +1177,19 @@ function main() {
           defaultVisible: freshness.defaultVisible,
           defaultHidden: freshness.defaultHidden,
           note: freshness.note
+        },
+        // ---- t46 新增：**追加在既有键之后**（§41 第 4 条 R4 的五态普查；旧键一律不动位）----
+        // 形态仿 `dimensions`（一个按档位分键的计数对象），并且把「谁和谁比」写进同一个键里：
+        // 词表来自 lib（statusOrder）、逐条值来自发布产物 models.json、和必须等于 registry 模型数。
+        catalogStatusCensus: {
+          landed: catalogStatusCensus.landed,
+          statusOrder: catalogStatusCensus.statusOrder,
+          counts: catalogStatusCensus.counts,
+          sum: catalogStatusCensus.sum,
+          registryModels: catalogStatusCensus.registryModels,
+          statusesOutsideWordList: catalogStatusCensus.statusesOutsideWordList,
+          source: '发布产物 models.json 的 catalogStatus（派生字段，来源层禁写）；词表与 censusOf() 来自 scripts/lib/model-freshness.js',
+          reason: catalogStatusCensus.reason
         }
       }
     };

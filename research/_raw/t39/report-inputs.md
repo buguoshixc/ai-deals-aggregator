@@ -244,3 +244,29 @@ node scripts/tools/coverage-report.js --json
 
 **t39 现场核对结果**：两次 `--json` 均为 **96854 bytes**、sha256 `02dc435cc940c4912f814e30c2a0048ab349fca916dd366b8c3ab127c744f727`（**逐字节一致**）；
 `coverage-report --json` 两次 stdout sha256 均为 `7e50e31df838c966…`（同上）。
+
+---
+
+## §L（t46 append-only 口径更正）L169 的「JSON 段 sha256」不可复现 —— 原文一字未动
+
+> **本节纪律**：上面 L169 那一行（含 `72b2bab384489e1a…`）**原样保留**，不改、不删。本节只做两件事：
+> ① 说明那个数字为什么不能当基线引用；② 给出可复跑的口径与当前值。依据 = t45 §4.1（在同一份 stdout 上试了
+> **31 种**「JSON 段」定义，无一命中该前缀）+ t46 现场复算。
+
+- **不可复现**：`72b2bab384489e1a…` 既不是载荷块、也不是任何常见的子对象 / 编码 / 拼接形式（t45 §4.1 逐条列出）。
+  因此它**不构成 determinism 基线**：t20 与后续报告**不得引用它**（引用一个没有定义的数字，等于把不可复现的东西写进结论）。
+- **该引什么**（两种口径，**必须连定义一起写**）：
+  1. **stdout sha256**（推荐）：两次 `node scripts/tools/coverage-report.js --json` 的**完整 stdout 字节**的 sha256。
+  2. **载荷段 sha256**：从 stdout 里按**括号配对**切出**第 2 个** JSON 块（顶层同时含 `registry` 与 `api` 的那个；
+     第 1 个是 freshness 策略快照）的**原文**的 sha256。切法与 t45 `extract-payload.cjs` / t39 `collect.cjs` 同口径。
+- **值会随报告内容变** —— 引值时必须连**内容版本**一起引：
+
+| 内容版本 | stdout sha256 | 载荷段 sha256 |
+| --- | --- | --- |
+| t25 / t39 / t45 记录的那一版（t46 之前） | `7e50e31df838c9667adf36aa741dd7a6d89b851f2ef64b1ce7a096fc61aeb751` | `7dd8cc8f0847bb7d0bb98ec57145f9f9ea5e5716fb290158f58a2044715eff7f` |
+| **t46 之后（当前）**：文本 + JSON 新增五态普查行 / 四个 §41 条目英文名 / R8 来源宇宙对照 / 候选明细进 JSON | `ff039fa40a804a2d5e5a9004509670e3eb9babfd6db33723f2b6e3b5beab9dcf` | `5288c615e4fc39fa4850db4630b4315e1b226febd21775ff673071ff0f04be77` |
+
+  （两次运行 stdout 逐字节一致 = `true`；218443 B → 218443 B。）
+- **L246 那句「两次 stdout sha256 均为 `7e50e31d…`」仍然成立，但描述的是 t46 之前那一版输出**：
+  那一版的自检结论（两次逐字节一致、0 处问题）与当前版本一致；值不同只是因为报告内容按 t46 的验收要求变多了。
+- **复跑**：`node research/_raw/t46/hashes-and-readings.cjs`（两条口径各算一次 + 五态普查 / 候选明细 / 来源宇宙的读数，机器可读加 `--json`）。
