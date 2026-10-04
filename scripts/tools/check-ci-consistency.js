@@ -46,8 +46,9 @@
  * ── 门禁**强度**本身的守卫（P1-2 / P1-3，2026-10-04 补齐；都不新增断言名，见下） ────────
  *  审计实测过：只冻结步骤**名**时，把 SEO / 真浏览器 / 各 selftest 的 `run:` 换成 `echo skipped`、
  *  给步骤加 `continue-on-error: true`、或把 `allow_degraded_run` 硬编码成 `'true'`，36/36 照样全绿
- *  —— 也就是「绿色」不等于「验过」。补齐的三处判据**折进既有断言**（沿用名字与总项数 36，
- *  因为 `--expect-checks=36` 是被调用方钉住的口径，加断言就等于改口径）：
+ *  —— 也就是「绿色」不等于「验过」。补齐的三处判据**折进既有断言**（沿用名字与当时的总项数 36，
+ *  因为 `--expect-checks` 是被调用方钉住的口径，加断言就等于改口径；**现值 38**，
+ *  唯一出处是 verify.yml 的调用行）：
  *   · (10) 追加：**步骤体指纹**（`GATE_STEP_RUN`：规范化后逐字比对，先剥注释）、
  *     步骤级 `if:` 的键值与存在性（`if: false` 这种静默跳过必须红）、
  *     以及 action 里**不许出现 `continue-on-error` 步骤键**；
@@ -71,7 +72,7 @@
  *  都会在这里变红（比"只比数量"更强）。它有一条**保护不了自己的固有边界**：如果被删的是最后一条
  *  或这条看门狗本身，就没有东西还能报出来了 —— reviewer 明确记为 info（不是 blocker），这里只如实写明。
  *  为了**减少**（不是消除）这条边界，末尾的 (E) 用「实跑项数 == 期望项数」从**外部**钉住总项数。
- *  期望项数的**唯一出处是 verify.yml 的调用行**（gate 步骤里的 `--expect-checks=24`）：
+ *  期望项数的**唯一出处是 verify.yml 的调用行**（gate 步骤里的 `--expect-checks=38`）：
  *   · CI 里由 verify.yml 显式传入；命令行显式传 `--expect-checks=<N>` 时以传入值为准（兼容旧用法）；
  *   · **不带参数（本地裸跑）时同样从 verify.yml 读那个数字** —— 所以本地也一样受这条边界保护：
  *     删掉末尾那条看门狗，本地裸跑同样会红（此前这里只打印一行"本轮无人守护"，是个静默降级的口子）；
@@ -224,6 +225,18 @@ const GATE_STEP_NAMES = [
   // 它原先不在门禁里，实测曾把 44 个模型的注册表报成「尚未落盘」而自检报 0 问题 ——
   // 一份在撒谎的报告可以永久静默存活。接进来之后，报告与数据对不上就红。
   'Coverage report (gap list consistent with data)',
+  // coverage-expansion-v1 新增四步（都不依赖 dist，所以排在 Assemble site 之前）。
+  // 登记制：新步骤必须同时改**三处** —— action.yml 的步骤、本清单、GATE_STEP_RUN 指纹；
+  // 另外 package.json 的新脚本名也要登记（(17) 会逐个核对 selftest:*）。
+  //   · Coverage Target 层：来源层只许写意图，七态一律派生；"我声称覆盖了"与"盘上真的有"
+  //     混成一格的后果是缺口看起来永远比实际小，而报告 0 问题。
+  //   · 角色词表：同一枚举出现过三套词表，名字对不上档位的症状是整批模型静默掉进兜底档。
+  //   · 新鲜度分支：五种 catalogStatus 都要真的能派出来，unknown 绝不自动等于 legacy。
+  //   · 阈值灵敏度：±90 天扰动下有比较组整组掉到 0 个默认可见状态时，没有任何别的步骤会报红。
+  'Coverage-targets self-test (intent layer + seven derived states)',
+  'Model-role vocabulary self-test (registry ↔ freshness contract)',
+  'Freshness self-test (catalogStatus branches)',
+  'Freshness threshold sensitivity (±90 days, baseline invariants)',
   'Assemble site (same path as deploy.yml)',
   // v3.0 P2-26 / §10.9：**产物依赖的五个页面自测排在构建之后**（顺序即前置）。
   // 原先它们排在 Assemble site 之前，而 CI 的干净检出里 `dist/` 根本不存在（dist/ 是
@@ -338,6 +351,14 @@ const GATE_STEP_RUN = {
     "node scripts/tools/check-model-registry-links.js",
   "Coverage report (gap list consistent with data)":
     "node scripts/tools/coverage-report.js",
+  "Coverage-targets self-test (intent layer + seven derived states)":
+    "node scripts/tools/coverage-targets-selftest.js",
+  "Model-role vocabulary self-test (registry ↔ freshness contract)":
+    "node scripts/tools/model-role-vocabulary-selftest.js",
+  "Freshness self-test (catalogStatus branches)":
+    "node scripts/tools/model-freshness-selftest.js",
+  "Freshness threshold sensitivity (±90 days, baseline invariants)":
+    "node scripts/tools/model-freshness-sensitivity.js",
   "Assemble site (same path as deploy.yml)":
     "node scripts/tools/build-local.js",
   "Models-page self-test (index + detail pages)":
@@ -571,7 +592,13 @@ const FROZEN_ASSERTION_NAMES = [
   // 或把 `--dir` 去掉，门禁都会照常全绿，而线上会悄悄变成「一半页面没有统计」或
   // 「localhost 也在上报」。上面 (10) 的步骤体指纹只能证明「步骤体没变」，
   // 证明不了「它还在、还指着产物、还声明着那三件事」——两者红的含义不同。
-  '(18) 私有分析的产物门禁步骤存在、指向 dist、且声明了覆盖 / guard / provider 三件事'
+  '(18) 私有分析的产物门禁步骤存在、指向 dist、且声明了覆盖 / guard / provider 三件事',
+  // t27 新增（补 t14-F3 的另一半）：**反向登记制**。
+  // (17) 守的是「package.json 的每个 selftest:* 都被门禁跑到」；这一条守**反方向** ——
+  // 自测文件已在盘上、却没有任何被门禁跑到的 script 指向它 ⇒ 它一次都不会执行，且完全静默
+  // （t7 的 D5 探针实测：删掉 package.json 的 selftest 登记、action.yml 步骤不动时检查器 exit 0）。
+  // 与 (0b)「未登记的新 workflow 一律硬红」是同一条原则：**登记制必须双向都有人守**。
+  '(19) 每个 scripts/tools/*selftest*.js 都有被门禁真的跑到的 script 指向（反向登记制）'
 ];
 const WATCHDOG_NAME = '(W) 断言名单与冻结清单等值（删一条或改名都会红；本看门狗保护不了自己被删）';
 
@@ -1510,6 +1537,117 @@ check('(17) package.json 里的每个 selftest:* 都被门禁真的跑到（新�
       + 'GATE_STEP_RUN 指纹；产物依赖步骤还要带 --dir=dist 并排在 Assemble site 之后）'
     : `package.json 里的 selftest:* 全部出现在 ${GATE_ACTION} 里；`
       + `${GATE_ARTIFACT_STEPS.length} 个产物依赖步骤都显式 --dir=${GATE_ARTIFACT_DIR} 且排在「${GATE_BUILD_STEP}」之后`);
+
+/* ─────────── (19) 反向登记制：每个 *selftest*.js 都要有「门禁真的跑到」的 script 指向 ─────────── */
+//
+// 为什么需要它（t14-F3 独立审查报出 / t7 的 D5 探针实测）：
+//   (17) 只守**一个方向** —— 「package.json 的每个 selftest:* 都被门禁跑到」。
+//   反方向当时没人守：**自测文件已经落盘、却没有出现在 package.json 的登记链上**
+//   （被删掉、或写了新自测忘了登记）。action.yml 的步骤还在，检查器照样 exit 0。
+//   真实后果（本轮实测过）：coverage-targets-selftest.js 与 model-freshness-selftest.js
+//   两个文件已在盘上，package.json 里却一条都没有 ⇒ 这两支自测**一次都不会被执行**，
+//   而且完全静默 —— 这正是"有牙却不在门禁里"的那一类。
+//
+// 判据（从门禁**真正执行的东西**出发，不是拿文件名猜）：
+//   ① 取 action.yml 每个步骤的 run 体（去注释 + 规范化）＝「门禁实际跑到的命令集合」；
+//   ② package.json 每条 script 解析出脚本路径；该路径出现在某个 run 体里 = 「被门禁跑到的 script」。
+//      带参数不影响判定：analytics 那条写的是 `--dir=dist`，这里比的是**路径**不是整条命令；
+//   ③ 扫描 `scripts/tools/*selftest*.js`，每个文件都必须被至少一条这样的 script 指向；
+//      一条都没有 ⇒ 红并点名文件（若有 script 指向它、但门禁 run 体里看不见，也把 script 名点出来）。
+//
+// 例外只能是**显式白名单**（SELFTEST_FILE_EXEMPTIONS），每条 = 文件名 + 理由，并且：
+//   · 白名单里的文件必须**真实存在**（写一个不存在的文件 ⇒ 红：删了文件却留下豁免，豁免本身也要被守）；
+//   · **不许用通配**（宽 glob 等于没有白名单 —— 它会把将来所有同类文件一起放过）；
+//   · 理由不能空（"不适用"是一个需要理由的断言）；
+//   · 反向自证：豁免的文件必须仍然命中 `*selftest*.js`（否则说明这条豁免过期了，请删掉）。
+const SELFTEST_FILE_EXEMPTIONS = [
+  // 形状：{ file: 'scripts/tools/xxx-selftest.js', reason: '为什么它不该独立跑（例如它是被别的自测 require 的共享 helper）' }
+  // 当前**为空**：26 个 *selftest*.js 全部被门禁跑到的 script 指向，没有需要豁免的。
+];
+const reverseRegistrationProblems = [];
+let selftestFileCount = 0;
+let selftestReachedCount = 0;
+{
+  let selftestFiles = [];
+  try {
+    selftestFiles = fs.readdirSync(path.join(ROOT, 'scripts', 'tools'))
+      .filter(f => /selftest/i.test(f) && f.endsWith('.js')).sort();
+  } catch (error) {
+    reverseRegistrationProblems.push(`读取 scripts/tools 失败：${error.message}`);
+  }
+  selftestFileCount = selftestFiles.length;
+
+  // ① 门禁真正执行的命令集合（按步骤 run 体，去注释 + 规范化）
+  const gateBodies = (() => {
+    try {
+      return parseGateStepsRaw(fs.readFileSync(path.join(ROOT, GATE_ACTION), 'utf8'))
+        .map(step => normalizeRunBody(step.runBody));
+    } catch { return []; }
+  })();
+  if (!gateBodies.length) {
+    reverseRegistrationProblems.push(`读不到 ${GATE_ACTION} 的步骤 run 体 —— 无法判定"门禁到底跑到了什么"（fail-closed，不静默跳过）`);
+  }
+
+  // ② package.json 的每条 script → 脚本路径 → 是否被门禁跑到
+  const scriptEntries = (() => {
+    try { return Object.entries(JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8')).scripts || {}); }
+    catch (error) { reverseRegistrationProblems.push(`读取 package.json 失败：${error.message}`); return []; }
+  })();
+  const ownersOfFile = new Map();
+  const reachedFiles = new Set();
+  for (const [name, command] of scriptEntries) {
+    const file = String(command).replace(/^node\s+/, '').trim().split(/\s+/)[0];
+    if (!file) continue;
+    const reached = gateBodies.some(body => body.includes(file));
+    if (reached) reachedFiles.add(file);
+    if (!ownersOfFile.has(file)) ownersOfFile.set(file, []);
+    ownersOfFile.get(file).push({ name, reached });
+  }
+
+  // ③ 白名单自证（存在 / 非通配 / 有理由 / 未过期）
+  const exempt = new Map();
+  for (const entry of SELFTEST_FILE_EXEMPTIONS) {
+    const file = String((entry && entry.file) || '').trim();
+    const reason = String((entry && entry.reason) || '').trim();
+    if (!file) { reverseRegistrationProblems.push('白名单里有条目缺 file 字段'); continue; }
+    if (/[*?[\]]/.test(file)) {
+      reverseRegistrationProblems.push(`白名单不许用通配：${file}（豁免必须逐文件写清，否则等于没有白名单）`);
+      continue;
+    }
+    if (!reason) { reverseRegistrationProblems.push(`白名单 ${file} 没有写理由（"不适用"是一个需要理由的断言）`); continue; }
+    if (!fs.existsSync(path.join(ROOT, file))) {
+      reverseRegistrationProblems.push(`白名单里的文件不存在：${file}（删了文件却留着豁免 —— 豁免本身也必须被守着）`);
+      continue;
+    }
+    exempt.set(file, reason);
+  }
+
+  // ④ 逐个 selftest 文件判定（豁免只按**逐文件**匹配，不做前缀/通配）
+  for (const f of selftestFiles) {
+    const rel = `scripts/tools/${f}`;
+    if (exempt.has(rel)) continue;
+    if (reachedFiles.has(rel)) { selftestReachedCount += 1; continue; }
+    const owners = (ownersOfFile.get(rel) || []).filter(o => o.name);
+    reverseRegistrationProblems.push(owners.length
+      ? `${rel}（有 npm script 指向它：${owners.map(o => o.name).join('、')}，但门禁的步骤 run 体里看不到这个脚本）`
+      : `${rel}（package.json 里没有任何 script 指向它 ⇒ 它一次都不会被门禁执行）`);
+  }
+
+  // ⑤ 反向自证：豁免必须仍然命中 `*selftest*.js`（否则这条豁免已经过期）
+  for (const file of exempt.keys()) {
+    if (!selftestFiles.includes(path.basename(file))) {
+      reverseRegistrationProblems.push(`白名单 ${file} 已不再是 *selftest*.js（豁免过期了，请删掉它）`);
+    }
+  }
+}
+check('(19) 每个 scripts/tools/*selftest*.js 都有被门禁真的跑到的 script 指向（反向登记制）',
+  reverseRegistrationProblems.length === 0,
+  reverseRegistrationProblems.length
+    ? `${reverseRegistrationProblems.slice(0, 4).join('；')}`
+      + '（自测文件落盘之后必须同步两处：package.json 的 script 名，以及 .github/actions/gate/action.yml '
+      + '里真的跑它的那一步；确实不该独立跑的文件请写进本文件的 SELFTEST_FILE_EXEMPTIONS 并写明理由）'
+    : `扫了 ${selftestFileCount} 个 *selftest*.js：${selftestReachedCount} 个被门禁跑到的 script 指向`
+      + `，逐文件匹配的豁免 ${SELFTEST_FILE_EXEMPTIONS.length} 条（每条都已自证：文件存在、非通配、有理由、仍命中 glob）`);
 
 /* ─────────── (18) 私有分析的产物门禁：步骤还在、指着 dist、措辞即契约 ─────────── */
 //
