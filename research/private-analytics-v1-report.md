@@ -380,55 +380,89 @@ browser verify、没有允许 console error。本轮唯一「放宽」的地方�
 
 ## 12. Online Smoke
 
-**未运行**（尚未部署）。
+**已运行**（PR #36 合并 → `deploy.yml` 全链成功后）。
 
-原因：本轮按约定**推分支 + 开 PR，不合并**——`deploy.yml` 只在 `master` 的 push 或
-`Collect AI Deals` 的 `workflow_run` 上触发，因此线上仍是旧版本，此时打线上看到的
-不会是本轮产物，跑出来的结果没有意义。
+### 12.0 部署与线上冒烟实测
 
-PR 已创建：**https://github.com/buguoshixc/ai-deals-aggregator/pull/36**（CI 结果见 §12.1）。
+| 步骤 | 结果 |
+|---|---|
+| 合并 | PR #36 → `origin/master` = **`8a0f90d`** `Merge pull request #36 from buguoshixc/private-analytics-v1` |
+| `deploy.yml` | **success** —— [run 37184242590](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/37184242590)：`prepublish`（含完整 gate）→ `build` → `deploy` 三个 job 全绿 |
+| 部署时间 | 2026-10-04 06:55:40Z → 06:59:10Z（约 3.5 分钟） |
+| 线上 HTML 快检 | `HTTP 200` · bootstrap 计数 **1** · 无残留占位符 · token / beacon 地址 / guard 都在 |
+| **线上冒烟** | `node scripts/tools/verify-site.js --url=https://buguoshixc.github.io/ai-deals-aggregator/` → **✅ 验收 709 项，失败 0 项** |
 
-合并后请运行（这是**唯一**需要在部署后做的机器验证）：
+线上第 26 节的实测输出：
+
+```
+  ✓ 抽样 7 个页面在真实 DOM 里各有一个 analytics bootstrap（含 noindex / 深层路由）
+      — /=1 · plans/api/=1 · plans/coding/=1 · models/=1 · models/claude-fable-5.1/=1 · vendor/aliyun/=1 · changes/=1
+  ✓ 抽样页面里没有残留的分析占位符 — 0 个
+  ✓ 抽样页面正文都有内容（分析注入没有把正文吃掉）
+  ✓ 线上：至少一个页面真的加载了 Cloudflare beacon 脚本（授权地址，不带查询串） — 观测到 111 次 beacon 脚本请求
+  ✓ 线上：上报只发往官方 RUM 端点 cloudflareinsights.com/cdn-cgi/rum — 观测到 131 次 RUM 上报
+  ✓ 线上：beacon 元素在页面里是 module + data-cf-beacon（与官方 snippet 同形） — 7/7 页 module=1
+  ✓ 线上：分析请求**只**落在两个官方地址上（没有别的外部请求混进来） — 全部落在允许的两个 origin 上
+     线上观测：分析请求 242 次（beacon 脚本 111 · RUM 上报 131 · 其它 0）
+
+✅ 验收 709 项，失败 0 项
+```
+
+机器可读结果：`research/_raw/private-analytics-v1/verify-online.json`
+（`externalRequests` = **0**（白名单之外一个都没有）· `analyticsRequests` = 242 ·
+`jsErrors` = **0** · `httpNotFound` = **0**）。
+
+### 12.1 首次线上冒烟当场证伪了两条**我自己写错的**断言（如实记录）
+
+第一次线上运行报 **2 项失败**，两条都是**断言写错了，不是产品错了**：
+
+| 我原来的断言 | 线上真实行为 | 处置 |
+|---|---|---|
+| beacon 请求 URL 必须等于 `…/beacon.min.js?token=<siteToken>` | 真实请求是 `…/beacon.min.js`（**不带**查询串）—— token 在脚本元素的 `data-cf-beacon` 属性里，这正是官方 snippet 的形状 | 改成断言「等于配置里的脚本地址」（允许后续带查询串） |
+| 「分析请求只发往白名单 origin」把 `cloudflareinsights.com/cdn-cgi/rum` 当成异常 | 那**正是**官方文档里「未走 Cloudflare 代理的站点」的上报端点，是**预期行为** | 改成断言「上报命中官方 RUM 端点」，并把「没有别的外部请求」单独判 |
+
+**价值**：这两条只有在真站上才能被证伪（本地 guard 生效 ⇒ 一个请求都没有，
+无论如何都跑不到这两个分支）。也就是说「本地全绿」**结构上不可能**发现它们 ——
+这正是 P1 §28 要求部署后必须做线上验证的原因。修的是**断言**，产品一行未改。
+
+### 12.2 复跑要求（对维护者）
+
+本次线上冒烟的**结果以部署 `8a0f90d` 为准**。断言修正属于 CI 工具（不会改变任何发布 HTML），
+随后的维护性 PR 只改 `scripts/tools/verify-site.js`，由同一条 `gate` 验证；合并后
+`deploy.yml` 会再跑一次全链，届时可用同一条命令复跑：
 
 ```bash
 node scripts/tools/verify-site.js --url=https://buguoshixc.github.io/ai-deals-aggregator/
 ```
 
-该命令在本轮新增了第 26 节的**线上分支**，会断言：
-
-1. 抽样 7 个页面各恰好 1 个 bootstrap（`/`、`/plans/api/`、`/plans/coding/`、`/models/`、
-   任一 model detail、`/vendor/`、`/changes/`）；
-2. 至少一个页面真的加载了 `beacon.min.js`，且请求 URL **精确等于**
-   `https://static.cloudflareinsights.com/beacon.min.js?token=<配置里的 Site Token>`；
-3. 分析请求只发往白名单的两个 origin，其它外部请求仍然判红；
-4. 每页核心 JS 无错误；正文完整；页面视觉与布局与本地一致；
-5. GitHub Pages 项目子路径（`/ai-deals-aggregator/`）没有被处理错 —— canonical 自指、
-   页脚相对路径、`logos.css` / `favicon.svg` 全部按 2 层深度解析。
+命令会断言：抽样 7 页各恰好 1 个 bootstrap · 无残留占位符 · 正文完整 ·
+beacon 脚本从授权地址加载 · 上报只去官方 RUM 端点 · 白名单之外零外部请求 ·
+每页核心 JS 无错误 · canonical / 页脚 / 资源路径在 `/ai-deals-aggregator/` 子路径下全部正确。
 
 **未观测到 beacon 时的处置**：不立即判失败（广告拦截器 / 网络 / 版本差异都可能），
-第 26 节会打印 `ℹ️ 未观测到 beacon 请求（可能是广告拦截器…）`，由人工看 DevTools 的
-Network 面板确认。**不会**通过往仓库里加 Analytics API Token 来排查（P1 §29）。
+第 26 节会打印 `ℹ️ 未观测到 beacon 请求…`，由人工看 DevTools 的 Network 面板确认。
+**不会**通过往仓库里加 Analytics API Token 来排查（P1 §29）。
 
-### 12.1 已运行的相关 CI 结果
+### 12.3 CI 结果
 
-| 检查 | 状态 |
+| 检查 | 结果 |
 |---|---|
-| PR #36 的 `gate`（verify.yml，PR 路径） | 见 https://github.com/buguoshixc/ai-deals-aggregator/pull/36/checks |
+| PR #36 的 `gate`（verify.yml，PR 路径） | **pass** —— [run 37181844813](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/37181844813/job/111375826596)（3m8s，最终提交 `1307190`）；此前 `623fce7` / `59340a5` 两次同样 success |
+| 合并态 `deploy.yml` 的 `prepublish`（同一个 gate action） | **success** —— [run 37184242590](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/37184242590) |
+| `deploy` job | **success**（GitHub Pages 发布完成） |
 
-> 记录方式：本轮结束时该 check 处于 `pending`（提交后不久查询）。
-> **不写「应该通过」**——请以 PR 页面上的实际结论为准。
-
-### 12.2 部署信息（如实记录）
+### 12.4 部署信息
 
 | 项 | 值 |
 |---|---|
-| 分支 | `private-analytics-v1`（已推送，跟踪 `origin/private-analytics-v1`） |
-| 提交 | `623fce7`（实现）· `59340a5`（报告与验收指标）· **`3ce18c6`（页脚注释修复，当前 HEAD）** |
-| 基线 | `45b7b47`（`origin/master`） |
-| PR | https://github.com/buguoshixc/ai-deals-aggregator/pull/36 |
-| Required CI | 见 PR 页面（**未运行在线 Smoke**，因为未合并） |
-| Deploy | **未运行**（未合并，因此 `deploy.yml` 未触发） |
-| 线上 Smoke | **未运行**（同上） |
+| 分支 | `private-analytics-v1` → 已合并进 `master` |
+| 提交 | `623fce7`（实现）· `59340a5`（报告）· `3ce18c6`（页脚注释修复）· `237496a`（对账记录）· `1307190`（CI 结果补记） |
+| 合并提交 | **`8a0f90d`**（`master`） |
+| PR | https://github.com/buguoshixc/ai-deals-aggregator/pull/36（已合并） |
+| Required CI | **pass** |
+| Deploy | **success** |
+| 线上 Smoke | **已运行 · 709 项 0 失败** |
+| Cloudflare Dashboard | 见 §13（`OWNER VERIFICATION REQUIRED`） |
 
 ---
 
