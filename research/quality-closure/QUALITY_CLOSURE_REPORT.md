@@ -567,9 +567,37 @@ T23 在提交态独立重跑 **39/40 node 步骤 + 回归比对，全部 exit 0*
 
 ## 21. Online Smoke
 
-**未运行。**
+**已运行（2026-10-04，用户明确授权「推送上线」之后）。**
 
-本轮没有线上验证授权，也没有对线上站点发起任何请求；**不写「应该正常」**，也不把本地 `dist/` 的绿灯当作线上结论。合并/发布前的线上冒烟必须由人来授权并单独执行。
+收口轮内未运行；推送上线后按下述路径执行，并全部通过：
+
+| 步骤 | 结果 |
+|---|---|
+| PR #32（`quality-closure-post-audit` → `master`） | 分支 `gate` 检查：run 37171970378 · **success**（2m42s） |
+| 合并 | merge commit `ba0e0f23710b4a191230da0313ae166cb139f6cb` |
+| master `Verify site (gate)`（push 触发） | run 37172126751 · **success**（2m44s） |
+| master `Deploy to GitHub Pages`（push 触发，先跑 prepublish 全套门禁） | run 37172126798 · **success**（4m44s，`prepublish` → `build` → `deploy` 三段全绿） |
+| Pages 站点 | `https://buguoshixc.github.io/ai-deals-aggregator/`（`status=built` · `build_type=workflow`） |
+| **线上冒烟** `node scripts/tools/verify-site.js --url=https://buguoshixc.github.io/ai-deals-aggregator/` | **703 项 0 失败**（真浏览器，逐条 HTTP 200 快照） |
+
+线上内容抽查（部署后对线上站点直接取回）：
+
+| 检查 | 结果 |
+|---|---|
+| 首页 / `/feeds/` / `/models/glm-4.5v/` / `/plans/api/` / `/docs/data/` / `sitemap.xml` / `data/index.json` | 全部 **200** |
+| `/feeds/` 列出的订阅地址 | **48**（= 本地口径 24 份 × 2） |
+| `/models/glm-4.5v/` 计价行 | **2 行**（`data-variant` = `standard` / `long_context`）—— 多变体修复线上生效 |
+| `/plans/api/` | 明确标注 per 1M，未出现单位混用 |
+| `sitemap.xml` | **170** 条 |
+| `data/index.json`（Manifest） | **9** 份数据集 |
+| `/feed/api.xml` | **404**（§13 红线：该 Feed 不得存在） |
+
+### 顺带发现（**合并前就存在**，不属于本轮改动）
+
+`master` 上的计划采集自 **2026-10-03 15:47Z** 起连续失败：`Collect AI Deals` run 37134505706 在 gate 步骤 exit 1，直接原因是构建自检
+`✗ SEO[itemlist-arity] changes/：ItemList 声明 1 项，但 itemListElement 只有 0 项` —— **正是本轮修复的 P1-4（`/changes/` 非空路径）**，采集侧一产生历史事件就把构建打红，进而 `dist/deals.json` 不存在、job 失败，并由 `workflow_run` 连累那次 deploy 也失败（run 37134604743，11s，按设计「上游采集未通过 → 拒绝发布」）。
+
+本轮的 P1-4 修复（合成非空历史端到端夹具 + itemlist 判据收口）针对的就是这条路径；**但真实采集链路上的确认需要再跑一次 `Collect AI Deals`**（该 workflow 会写入并推送数据，属独立授权范围，本轮未触发）。
 
 ---
 
@@ -694,7 +722,12 @@ P0 × 1 全部落在 FIXED；P1 12 条 = FIXED 5 + GUARDRAIL_ADDED 7。逐条证
 适合继续开发新功能
 ```
 
-**唯一保留条件**：本轮的真浏览器验收与门禁是**本地**执行的（Edge headless、Git for Windows bash、没有真实 GitHub Actions runner），线上冒烟**未运行**。合并 / 发布前应由 CI 在提交态 `3edb9cf` 上把完整 40 步再跑一遍，并由人授权执行线上冒烟。
+**原保留条件（两条）均已在 2026-10-04 满足**：
+
+1. CI 在提交态重跑完整门禁 —— 已满足：PR #32 的分支 `gate`（run 37171970378）、`master` 的 `Verify site (gate)`（run 37172126751）、以及发布链自己的 `prepublish`（同一 gate action，`allow_degraded_run='false'`，run 37172126798）**三段全绿**；
+2. 线上冒烟 —— 已满足：部署后 `verify-site.js --url=` 对线上站点 **703 项 0 失败**（§21）。
+
+**仍未覆盖的一件事**：真实采集链路的确认（`Collect AI Deals` 自 2026-10-03 起因本轮修复的 P1-4 失败，需要再跑一次该 workflow 才能确认修复在采集现场生效）。它写入并推送生产数据，属独立授权范围，本轮未触发。
 
 ---
 
