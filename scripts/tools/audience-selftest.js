@@ -429,6 +429,7 @@ const conflictRound = merge(
 );
 const conflictContrib = (conflictRound.provenance && conflictRound.provenance.contrib &&
   conflictRound.provenance.contrib.eligibilityDetail) || [];
+// 此数字锚在本地夹具上，不随生产数据漂移（两档 = 上面 `merge(collectedSide, plainCurator)` 两边各记一档）。
 check('④′ 逐键冲突时落败一侧**也**记入 contrib（两档：collected + curated）',
   conflictContrib.length === 2 && conflictContrib.includes('collected') && conflictContrib.includes('curated'),
   `${conflictContrib.length} 档 = ${JSON.stringify(conflictContrib)}`);

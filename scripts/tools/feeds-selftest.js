@@ -818,6 +818,11 @@ section('十一、v3.0 多 spec 注册表与「API 价格变化」订阅');
   // 只登记不实现的来源（`alwaysGenerated:false` 且没交视图）仍要被记下来 ——
   // 构建期据此断言「注册表里的来源一个都不能被漏掉」。
   {
+    // 「恢复原状」的期望是**进入夹具前的注册表快照**，不是数字 2：
+    // `PLAN_CHANGE_FEEDS` 是注册表，新增/删除一条变化流是产品的合法演进（本轮 API 侧就刚加过一条），
+    // 而这里真正要证明的是「临时夹具没有留下、也没有顶掉/换序任何一条既有 spec」——
+    // 那是一条关系，不是一次计数。数字写死的那一版在注册表增删时会假红，且报错只有两个裸数字。
+    const registryBefore = feeds.PLAN_CHANGE_FEEDS.slice();
     const stub = {
       id: 'stub-changes', kind: 'plan-changes', changeSource: 'stub',
       path: 'feed/stub.xml', jsonPath: 'feed/stub.json', title: 'x', description: 'x',
@@ -834,9 +839,20 @@ section('十一、v3.0 多 spec 注册表与「API 价格变化」订阅');
     } finally {
       feeds.PLAN_CHANGE_FEEDS.pop();
     }
+
+    const registryAfter = feeds.PLAN_CHANGE_FEEDS.slice();
+    const addedSpecs = registryAfter.filter(spec => !registryBefore.includes(spec));
+    const removedSpecs = registryBefore.filter(spec => !registryAfter.includes(spec));
+    const reorderedSpecs = registryAfter.length === registryBefore.length
+      ? registryAfter.filter((spec, index) => spec !== registryBefore[index])
+      : [];
+    const idList = list => JSON.stringify((list || []).map(spec => spec.id));
+    check('注册表恢复原状：夹具跑完后的 feeds.PLAN_CHANGE_FEEDS 与**进入夹具前的快照**同一批、同一序（没留下、没顶掉、没换序）',
+      addedSpecs.length === 0 && removedSpecs.length === 0 && reorderedSpecs.length === 0
+      && registryAfter.length === registryBefore.length,
+      `实际 feeds.PLAN_CHANGE_FEEDS=${idList(registryAfter)} / 期望（进入夹具前的注册表快照）=${idList(registryBefore)}`
+      + `；差异 [夹具后多出: ${idList(addedSpecs)} / 夹具后少了: ${idList(removedSpecs)} / 位置被换: ${idList(reorderedSpecs)}]`);
   }
-  check('注册表恢复原状（临时夹具没有留在注册表里）',
-    feeds.PLAN_CHANGE_FEEDS.length === 2 && !feeds.PLAN_CHANGE_FEEDS.some(spec => spec.id === 'stub-changes'));
 
   // ---- ⑨ 起算日按来源取（队长 B2：**必须**用不同 `startedAt` 的夹具） -------------
   //
@@ -870,9 +886,39 @@ section('十一、v3.0 多 spec 注册表与「API 价格变化」订阅');
 section('十、渲染入口与页面同源');
 
 {
-  const tags = feeds.feedLinkTags(bundle.feeds.filter(feed => feed.spec.homepage), '');
-  check('首页订阅发现恰好 8 条（4 个选择 × 2 种格式），不是几十个',
-    (tags.match(/rel="alternate"/g) || []).length === 8);
+  const homepageFeeds = bundle.feeds.filter(feed => feed.spec.homepage);
+  const tags = feeds.feedLinkTags(homepageFeeds, '');
+
+  // 首页订阅发现的判据以前是 `(tags.match(/rel="alternate"/g)).length === 8`（4 个选择 × 2 种格式）。
+  // 那是「本轮注册表里恰好有 4 个 homepage 选择」这个快照：新增/移除任何一个 homepage 订阅都会假红，
+  // 而页面其实完全正确。这里改成**同源对账**：
+  //   ① 注册表侧的 `HOMEPAGE_FEED_IDS`（`spec.homepage` 的唯一出处）与产物里 `spec.homepage=true` 的
+  //      那批 Feed 必须是同一批（id 集合相等）；
+  //   ② tag 里的 href 集合 == 由那批 Feed 的 `spec.path`（RSS）+ `spec.jsonPath`（JSON）派生的集合，
+  //      且每个地址只出现一次。
+  // 条数关系没有丢：集合相等 ⇒「tag 地址数 == homepage Feed 数 × 2」，只是两个因子都由数据现算。
+  const declaredHomepageIds = [...feeds.HOMEPAGE_FEED_IDS];
+  const producedHomepageIds = homepageFeeds.map(feed => feed.spec.id);
+  const missingHomepageIds = declaredHomepageIds.filter(id => !producedHomepageIds.includes(id));
+  const extraHomepageIds = producedHomepageIds.filter(id => !declaredHomepageIds.includes(id));
+  check('首页订阅发现：注册表 HOMEPAGE_FEED_IDS 与产物里 spec.homepage=true 的 Feed 是同一批（两侧同源，不写条数）',
+    missingHomepageIds.length === 0 && extraHomepageIds.length === 0,
+    `实际（产物 bundle.feeds 里 spec.homepage=true 的 id）${JSON.stringify(producedHomepageIds)}`
+    + ` / 期望（注册表 feeds.HOMEPAGE_FEED_IDS）${JSON.stringify(declaredHomepageIds)}`
+    + `；差异 [注册表里有、产物里没有: ${missingHomepageIds.join(',') || '无'}`
+    + ` / 产物里有、注册表里没有: ${extraHomepageIds.join(',') || '无'}]`);
+
+  const expectedHomepageHrefs = homepageFeeds.flatMap(feed => [feed.spec.path, feed.spec.jsonPath]);
+  const tagHrefs = [...tags.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
+  const missingTagHrefs = expectedHomepageHrefs.filter(href => !tagHrefs.includes(href));
+  const extraTagHrefs = tagHrefs.filter(href => !expectedHomepageHrefs.includes(href));
+  const duplicatedTagHrefs = [...new Set(tagHrefs.filter((href, index) => tagHrefs.indexOf(href) !== index))];
+  check('首页订阅发现：tag 里的地址集合 == 由那批 Feed 的 spec.path + spec.jsonPath 派生的集合（集合相等，且每个地址只出现一次）',
+    missingTagHrefs.length === 0 && extraTagHrefs.length === 0 && duplicatedTagHrefs.length === 0,
+    `实际 tag 里的 href（${tagHrefs.length} 个）${JSON.stringify(tagHrefs)}`
+    + ` / 期望（${producedHomepageIds.length} 个 homepage Feed × 两个格式 = ${expectedHomepageHrefs.length} 个）${JSON.stringify(expectedHomepageHrefs)}`
+    + `；差异 [少: ${missingTagHrefs.join(',') || '无'} / 多: ${extraTagHrefs.join(',') || '无'} / 重复: ${duplicatedTagHrefs.join(',') || '无'}]`);
+
   check('首页订阅发现里的每个地址都指向真实存在的 Feed',
     [...tags.matchAll(/href="([^"]+)"/g)].every(m => bundle.feeds.some(feed =>
       feed.spec.path === m[1] || feed.spec.jsonPath === m[1])));

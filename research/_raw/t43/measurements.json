@@ -1,0 +1,196 @@
+{
+  "measuredAt": "2026-10-04T13:34:57.585Z",
+  "note": "全部数字由 research/_raw/t43/measure.cjs 现场读取（基线 a4dd40f 用 git show 对照）",
+  "measured": {
+    "head": "e437e9f5f178a44a68509fdcbfa327e486ea57c2",
+    "branch": "coverage-expansion-v1",
+    "baseline": "a4dd40f",
+    "commitsAheadOfBaseline": 16,
+    "providersNow": 34,
+    "providersBaseline": 23,
+    "plansNow": 37,
+    "plansBaseline": 23,
+    "plansProvidersNow": 18,
+    "apiPlansNow": 17,
+    "apiPlansBaseline": 13,
+    "apiPricingItemsNow": 93,
+    "coverageTargetsNow": 34,
+    "coverageTargetsBaseline": 0,
+    "registryModelsNow": 44,
+    "catalogStatusDistribution": "{\"unknown\":40,\"current\":3,\"legacy\":1}",
+    "agingPlusHistorical": 0,
+    "modelsWithOfficialReleasedAt": 4,
+    "modelsWithReleaseEvidence": 4,
+    "linksNow": 82,
+    "linksApiNow": 69,
+    "linksCodingNow": 13,
+    "linksBaseline": 64,
+    "gapsNow": 54,
+    "gapsApiNow": 12,
+    "gapsCodingNow": 42,
+    "gapsBaseline": 10,
+    "apiLinksAddedVsBaseline": 14,
+    "actionYmlStepsNow": 49,
+    "actionYmlStepsBaseline": 45,
+    "expectChecks": "38",
+    "workflowsNow": 5,
+    "citationLinksWithoutNamedModel": 30,
+    "citationLinksWithoutNamedModelSha256": "f1ae30f9fba1ae18006a7cc8bef93f0a7bde8b214b340aa15e07ac2526550c89",
+    "citationLinksWithEvidenceTotal": 59,
+    "residualRegisterExists": true,
+    "residualRegisterSha256": "b8b055223e7575874b10f69a68095bcf849e1b0208085d830fd64b9c1c27ed71",
+    "residualRegisterRowIds": 0,
+    "residualHasSection41": true,
+    "residualHasSection42": true,
+    "residualHasSection43": true,
+    "reviewT26Exists": true,
+    "reviewT26VerdictPass": true,
+    "reviewT15Exists": true,
+    "mutationCaseCount": 27,
+    "mutationBatteryKeys": "battery,repo,sandbox,workers,windowStart,runAt,host,sharedTree,sharedTreeUnchanged,sharedGuarded,counts,results",
+    "sitemapLocalLocCount": 173,
+    "vendorPageCountLocal": 22,
+    "vendorAwsReplitStepfunPresent": "aws=true replit=true stepfun=true",
+    "feedXmlCountLocal": 24
+  },
+  "claimComparison": [
+    {
+      "key": "providersNow",
+      "claim": 34,
+      "measured": 34,
+      "match": true
+    },
+    {
+      "key": "providersBaseline",
+      "claim": 23,
+      "measured": 23,
+      "match": true
+    },
+    {
+      "key": "plansNow",
+      "claim": 37,
+      "measured": 37,
+      "match": true
+    },
+    {
+      "key": "plansBaseline",
+      "claim": 23,
+      "measured": 23,
+      "match": true
+    },
+    {
+      "key": "apiPlansNow",
+      "claim": 17,
+      "measured": 17,
+      "match": true
+    },
+    {
+      "key": "apiPlansBaseline",
+      "claim": 13,
+      "measured": 13,
+      "match": true
+    },
+    {
+      "key": "coverageTargetsNow",
+      "claim": 34,
+      "measured": 34,
+      "match": true
+    },
+    {
+      "key": "coverageTargetsBaseline",
+      "claim": 0,
+      "measured": 0,
+      "match": true
+    },
+    {
+      "key": "registryModelsNow",
+      "claim": 44,
+      "measured": 44,
+      "match": true
+    },
+    {
+      "key": "agingPlusHistorical",
+      "claim": 0,
+      "measured": 0,
+      "match": true
+    },
+    {
+      "key": "modelsWithOfficialReleasedAt",
+      "claim": 4,
+      "measured": 4,
+      "match": true
+    },
+    {
+      "key": "linksNow",
+      "claim": 82,
+      "measured": 82,
+      "match": true
+    },
+    {
+      "key": "linksApiNow",
+      "claim": 69,
+      "measured": 69,
+      "match": true
+    },
+    {
+      "key": "linksCodingNow",
+      "claim": 13,
+      "measured": 13,
+      "match": true
+    },
+    {
+      "key": "gapsNow",
+      "claim": 54,
+      "measured": 54,
+      "match": true
+    },
+    {
+      "key": "gapsApiNow",
+      "claim": 12,
+      "measured": 12,
+      "match": true
+    },
+    {
+      "key": "gapsCodingNow",
+      "claim": 42,
+      "measured": 42,
+      "match": true
+    },
+    {
+      "key": "apiLinksAddedVsBaseline",
+      "claim": 14,
+      "measured": 14,
+      "match": true
+    },
+    {
+      "key": "actionYmlStepsNow",
+      "claim": 49,
+      "measured": 49,
+      "match": true
+    },
+    {
+      "key": "actionYmlStepsBaseline",
+      "claim": 45,
+      "measured": 45,
+      "match": true
+    },
+    {
+      "key": "expectChecks",
+      "claim": 38,
+      "measured": "38",
+      "match": true
+    },
+    {
+      "key": "citationLinksWithoutNamedModel",
+      "claim": 34,
+      "measured": 30,
+      "match": false
+    },
+    {
+      "key": "residualRegisterRowIds",
+      "claim": 34,
+      "measured": 0,
+      "match": false
+    }
+  ]
+}

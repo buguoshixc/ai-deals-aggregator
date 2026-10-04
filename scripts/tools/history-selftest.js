@@ -279,6 +279,7 @@ section('⑧ 渲染视图有界');
     store = history.record(store, { previous: [prev], next: [next], ...run({ runAt: `2026-09-30T${String(i).padStart(2, '0')}:00:00.000Z` }) }).store;
     prev = next;
   }
+  // 此数字锚在本地夹具上，不随生产数据漂移（30 就是上面那个 `for (let i = 0; i < 30; i++)` 循环的次数）。
   check('连续 30 次变化 → 30 条事件（链式）', history.eventsOf(store).length === 30,
     `实得 ${history.eventsOf(store).length}`);
   const view = history.historyFor(store, ID_A, { limit: 5 });

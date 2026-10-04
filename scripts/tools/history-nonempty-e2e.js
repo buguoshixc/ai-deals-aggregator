@@ -4,11 +4,22 @@
  *
  * ## 它解决什么
  *
- * 生产的三份变化日志里，`deal-history.json` 的事件是 **0 条**，`plan-history` / `api-plan-history`
- * 只有 `created`。「变化雷达 / 变化订阅 / 套餐变化 / API 价格变化 / 历史档案」这一整套
+ * 生产的三份变化日志里，**实质变化**（价格 / 额度 / 优惠 / 新增模型）几乎没有：留下的几乎只有
+ * `created` 这一类锚点事件。「变化雷达 / 变化订阅 / 套餐变化 / API 价格变化 / 历史档案」这一整套
  * **非空渲染分支**因此在生产上恒不被走到 —— 上一轮审计里 `/changes/` 的 P1
  * （`F-r1-history-ai-001`：只要有 1 条变化，产物自检必失败）与 Archive 详情页的 P1
  * （`F-r1-history-ai-002`：每页 24/27 相对引用死链）都是这么藏住的。
+ *
+ * ## 判据的形态：**不从「生产日志当前有几条事件」这个快照出发**（t44）
+ *
+ * 这份夹具早期把「基线是空的」当成了默认事实（`out.events = []`、`live.length < 3` 就抛错）。
+ * 数据一长（`deal-history.json` 出现第 1 条 `created`、`deals[]` 的构成变化），这两处都会
+ * 变成**假红**：页面与数据都对，夹具却报「记录没有历史锚点」「记录只有 N 条」。
+ * 现在的形态是关系式的：
+ *   · 既有事件一律**保留**（它们是记录的锚点，抹掉等于伪造「这条记录没有历史」）；
+ *   · 需要造事件的那几条记录，从「**还没有被既有事件锚定**的 `type=deal` 记录」里按 id 取；
+ *   · 取不够 3 条（生命周期 / 今日首次收录 / 最近 6 天内首次收录 各一条）时
+ *     **不是抛错**，而是打印「本轮样本不足，跳过并说明原因」并把这批断言记成**显式跳过**（见 `skip()`）。
  *
  * 这个脚本在一份**完全临时的工作区**（默认 `../qc-e2e`，即以冻结提交 detach 的第二个
  * worktree）里造一份**能过 `check:history` / `check:plan-history` / `check:api-plan-history`
@@ -149,6 +160,21 @@ function check(name, ok, detail = '') {
   }
 }
 
+/**
+ * **显式跳过**：既不是通过，也不是静默略过（「0 与没跑过必须看起来不一样」）。
+ *
+ * 只有一种情况会走到这里：合成夹具的**样本不足**（当前数据里凑不出它需要的那几条可比记录）。
+ * 那种情况下「断言通过」是假话（根本没有样本）、「抛错」是假红（数据没错，是夹具没料）——
+ * 所以第三条路是：把原因打印出来、把它记进 `skips`、并在汇总里报出条数。跳过会被计入
+ * `checks`（判定点总数不因跳过而缩水），失败退出码不受它影响。
+ */
+const skips = [];
+function skip(name, reason) {
+  checks++;
+  skips.push({ name, reason });
+  console.log(`  ⏭ 跳过：${name} —— ${reason}`);
+}
+
 function section(title) {
   console.log(`\n${title}`);
 }
@@ -182,23 +208,112 @@ function chronological(events) {
 }
 
 /* ------------------------------------------------------------------ */
-/* 合成历史：三份日志，各覆盖 schema 允许的事件类型                        */
+/* /changes/ 分栏读数（纯函数：判据的唯一出处，也供反证夹具直接驱动）         */
 /* ------------------------------------------------------------------ */
 
+/**
+ * 从 `/changes/` 的 HTML 里读分栏：`<h2>标题（计数）</h2>` 是分栏头，**下一个 h2 之前**是这一栏的正文。
+ *
+ * 为什么要有这支出：生产态那三条断言原先写死了「优惠变化一定是空的」，数据一长就假红。
+ * 改成关系式之后，「某个分栏为 0 ⇔ 正文写出它自己那句「没有观测到…」」这条关系必须能被
+ * **构造出来的输入**顶红一次（反证），而唯一的做法是让判据本身是纯函数 ——
+ * 否则只能靠改产品代码去撞它，而那种改法会先撞上 build-local 自己的产物自检，
+ * 反证就变成了「证明了别的东西会红」。
+ *
+ * @param {string} html `/changes/index.html` 的文本（或任何同形的片段）
+ * @returns {{headings:object[], countOf:function, bodyOf:function, wordingDrift:function}}
+ */
+function changesSectionsOf(html) {
+  const text = String(html || '');
+  const headings = [...text.matchAll(/<h2>([^<]*)（(\d+)）<\/h2>/g)]
+    .map(m => ({ title: m[1], count: Number(m[2]), index: m.index, text: m[0] }));
+  const hitOf = title => headings.find(row => row.title === title);
+  const countOf = title => {
+    const hit = hitOf(title);
+    return hit ? hit.count : -1;
+  };
+  const bodyOf = title => {
+    const hit = hitOf(title);
+    if (!hit) return '';
+    const next = headings.find(row => row.index > hit.index);
+    return text.slice(hit.index + hit.text.length, next ? next.index : text.length);
+  };
+  /** 无差异 ⇒ `null`；有差异 ⇒ 一句点名分栏与两侧读数的话 */
+  const wordingDrift = title => {
+    const count = countOf(title);
+    const said = bodyOf(title).includes('没有观测到');
+    return (count === 0) === said ? null
+      : `${title}：分栏计数=${count}（${count === 0 ? '空' : '非空'}）而正文${said ? '写了' : '没写'}「没有观测到…」`;
+  };
+  return { headings, countOf, bodyOf, wordingDrift };
+}
+
+/* ------------------------------------------------------------------ */
+/* 合成历史：三份日志，各覆盖 schema 允许的事件类型                        */
+/* ------------------------------------------------------------------ */
 /**
  * 造一份**非空**的 `deal-history.json`。
  *
  * 便民约定（三份日志共用）：一个记录的事件按**时间顺序**写入（`created` 在最前），
  * 因此链校验与重放的顺序就是文件的顺序 —— 生产写入路径也是追加式的。
+ *
+ * 两条关系式纪律（t44；此前是两处写死的快照假设，数据一长就假红）：
+ *   ① 既有事件**保留**（`kept`）。它们是记录的锚点：抹掉它们等于伪造「这条记录没有历史」，
+ *      `history.verifyStore()` 会（正确地）判「记录没有历史锚点」。所以合成事件是**追加**，
+ *      不是「清空重造」—— 夹具不该对「冻结日志里现在有几条事件」有意见。
+ *   ② 需要造事件的记录，从「**还没有被既有事件锚定**的 `type=deal` 记录」里按 id 取（见
+ *      `dealSeedCandidates`）：对一条已经有 `created` 的记录再补一个 `created`，造出来的是
+ *      一份自相矛盾的日志 —— 那是夹具的错，不是数据的错。
  */
+
+/** 非空 deal 夹具需要的可比记录数：生命周期最全的一条 / 今日首次收录 / 最近 6 天内首次收录 */
+const DEAL_FIXTURE_SEEDS = 3;
+
+/**
+ * 可以拿来造事件的 `deal` 记录（**纯函数**，只吃数组）：`type === 'deal'` ∧ 有标题 ∧ 还没有被
+ * 既有事件锚定，按 id 升序。判据里的每一项都点名了对象，不在函数里读文件、不读时钟。
+ */
+function dealSeedCandidates(deals, anchoredIds = []) {
+  const anchored = new Set(anchoredIds || []);
+  return (deals || [])
+    .filter(deal => deal && deal.type === 'deal' && deal.title)
+    .filter(deal => !anchored.has(deal.id))
+    .sort(byId);
+}
+
+/**
+ * 样本够不够造非空 deal 夹具：够 ⇒ `null`；不够 ⇒ **原因对象**（不抛错）。
+ *
+ * 这是 `history-nonempty-e2e` 里唯一一处「样本不足」的判据，它由数据现算：
+ * 需要多少条（`DEAL_FIXTURE_SEEDS`）、实际能拿到几条、为什么（点名数据对象与判据），
+ * 全部写进返回值，调用方据此打印「本轮样本不足，跳过并说明原因」并**显式跳过**，
+ * 而不是抛一个看起来像内容缺陷的错、也不是把没跑过的断言当成通过。
+ */
+function dealSeedShortage(deals, anchoredIds = []) {
+  const candidates = dealSeedCandidates(deals, anchoredIds);
+  if (candidates.length >= DEAL_FIXTURE_SEEDS) return null;
+  return {
+    object: 'deals.json 的 deals[]（判据：记录存在 ∧ type === "deal" ∧ title 非空 ∧ 未被冻结日志里的既有事件锚定）',
+    actual: candidates.length,
+    required: DEAL_FIXTURE_SEEDS,
+    reason: `本轮样本不足，跳过并说明原因：deals.json 里可用来造事件的 type=deal 记录只有 ${candidates.length} 条`
+      + `（${candidates.map(deal => deal.id).join(', ') || '一条也没有'}），`
+      + `而合成非空夹具需要 ≥${DEAL_FIXTURE_SEEDS} 条（生命周期最全 / 今日首次收录 / 最近 6 天内首次收录 各一条）；`
+      + '依赖这几条记录的断言本轮不参与判定（它们没有变成「通过」）'
+  };
+}
+
 function buildDealFixture({ history, store, deals, asOf }) {
   const out = JSON.parse(JSON.stringify(store));
-  out.events = [];
+  // 既有事件**保留**（见上面 ①）：`deal-history.json` 现在有 1 条 `created`，它是那条记录的锚点。
+  const kept = Array.isArray(out.events) ? out.events.slice() : [];
   out.absence = {};
   const tracked = deal => history.trackedValuesOf(deal);
 
-  const live = deals.filter(deal => deal && deal.type === 'deal' && deal.title).sort(byId);
-  if (live.length < 3) throw new Error(`deals.json 里 type=deal 的记录只有 ${live.length} 条，夹具需要 ≥3 条`);
+  const shortage = dealSeedShortage(deals, kept.map(event => event.id));
+  if (shortage) return { skipped: true, shortage, store: null, expect: { keptEvents: kept.length, shortage } };
+
+  const live = dealSeedCandidates(deals, kept.map(event => event.id));
   const lifecycle = live[0];        // 生命周期最全的一条：created / benefit_changed / ended / restored
   const createdToday = live[1];     // 今日首次收录
   const createdRecent = live[2];    // 过去 6 天内首次收录（进「最近 7 天变化」）
@@ -263,7 +378,8 @@ function buildDealFixture({ history, store, deals, asOf }) {
     runAt: `${dayBefore(asOf, 4)}T00:00:00.000Z`
   });
 
-  out.events = chronological(events);
+  // 既有事件 + 合成事件（见上面 ①）：顺序按 `at` 升序，同一时刻保持原顺序（既有的在前）
+  out.events = chronological(kept.concat(events));
   const problems = history.verifyStore(out, deals, { bytes: null });
   if (problems.length) throw new Error(`合成 deal-history 自身没过 verifyStore：\n  - ${problems.slice(0, 6).join('\n  - ')}`);
   // 基线仍是「按 id 升序」的规范形状（加进去的那条墓碑也要在正确的位置上）
@@ -276,7 +392,9 @@ function buildDealFixture({ history, store, deals, asOf }) {
       lifecycleId: lifecycle.id,
       createdTodayId: createdToday.id,
       createdRecentId: createdRecent.id,
-      goneId
+      goneId,
+      // 既有事件数由**冻结日志**现算（不是「生产上一定是 0 条」这个快照）
+      keptEvents: kept.length
     }
   };
 }
@@ -592,8 +710,12 @@ function main() {
   let planFixture = null;
   let apiFixture = null;
   if (state === 'pristine') {
-    // 生产态：把三份日志**还原成冻结提交里的那一份**（deal 0 事件 / plan 14 created / api 6 created），
-    // 然后跑同一套命令与「空态不变量」。两种状态同一份代码都要绿。
+    // 生产态：把三份日志**还原成冻结提交里的那一份**，然后跑同一套命令与「空态不变量」。
+    // 两种状态同一份代码都要绿。
+    //
+    // 判据是**同源对账**（还原后的文件 == 冻结提交里那一份，逐字节），不是「deal 0 / plan 14 / api 6」
+    // 这组数字：那组数字是某一天的日志规模，采集一跑就会变（本轮 deal 就从 0 条长到 1 条），
+    // 写死它等于让「生产态」这一半在数据长大时假红。条数仍然打印出来当**读数**。
     for (const file of HISTORY_FILES) {
       fs.writeFileSync(path.join(target, 'scripts', 'data', file), gitShow(target, `scripts/data/${file}`), 'utf8');
     }
@@ -602,9 +724,12 @@ function main() {
       plan: pristineHistory('plan-history.json').events.length,
       api: pristineHistory('api-plan-history.json').events.length
     };
-    check('生产态的历史已还原成冻结提交那一份（deal 0 / plan 14 / api 6）',
-      counts.deal === 0 && counts.plan === 14 && counts.api === 6,
-      JSON.stringify(counts));
+    const restoreDrift = HISTORY_FILES.filter(file => fs.readFileSync(path.join(target, 'scripts', 'data', file), 'utf8')
+      !== gitShow(target, `scripts/data/${file}`));
+    check('生产态：夹具里的三份历史与冻结提交那一份**逐字节相同**（还原是同源对账，不是「条数 == 某天的快照」）',
+      restoreDrift.length === 0,
+      `实际有差异的文件 deals/plans/api = [${restoreDrift.join(', ')}] / 期望（冻结提交 HEAD:scripts/data/…）逐字节相同；`
+      + `读数：deal ${counts.deal} 条 / plan ${counts.plan} 条 / api ${counts.api} 条`);
     console.log(`  deal-history: ${counts.deal} 条事件 · plan-history: ${counts.plan} 条 · api-plan-history: ${counts.api} 条`);
   } else {
     dealFixture = buildDealFixture({
@@ -621,7 +746,16 @@ function main() {
       apiPlans: apiPlansDoc.plans, asOf: asOfApi
     });
 
-    writeJson(path.join(target, 'scripts', 'data', 'deal-history.json'), dealFixture.store);
+    if (dealFixture.skipped) {
+      // **显式跳过**（不是静默、不是恒真、也不是崩栈）：样本不足时把夹具工作区里的 deal 历史
+      // 还原成冻结提交那一份（有定义的输入），打印原因，并把依赖它的那批断言记成 skip。
+      fs.writeFileSync(path.join(target, 'scripts', 'data', 'deal-history.json'),
+        gitShow(target, 'scripts/data/deal-history.json'), 'utf8');
+      console.log(`  ⏭ ${dealFixture.shortage.reason}`);
+      console.log(`  ⏭ 跳过对象：${dealFixture.shortage.object}（实际 ${dealFixture.shortage.actual} / 需要 ${dealFixture.shortage.required}）`);
+    } else {
+      writeJson(path.join(target, 'scripts', 'data', 'deal-history.json'), dealFixture.store);
+    }
     writeJson(path.join(target, 'scripts', 'data', 'plan-history.json'), planFixture.store);
     writeJson(path.join(target, 'scripts', 'data', 'api-plan-history.json'), apiFixture.store);
     for (const [file, before] of dataBefore) {
@@ -629,8 +763,12 @@ function main() {
       check(`夹具没有改写当前数据 ${file}（合成历史只走「事件」这一条通道）`, before === after);
     }
     console.log(`  基准日 ${asOf}`);
-    console.log(`  deal-history: ${dealFixture.store.events.length} 条事件（生命周期记录 ${dealFixture.expect.lifecycleId} · ` +
-      `今日新增 ${dealFixture.expect.createdTodayId} · 墓碑 ${dealFixture.expect.goneId}）`);
+    if (dealFixture.skipped) {
+      console.log(`  deal-history: 未合成（${dealFixture.shortage.reason.slice(0, 60)}…）`);
+    } else {
+      console.log(`  deal-history: ${dealFixture.store.events.length} 条事件（其中既有事件 ${dealFixture.expect.keptEvents} 条 · ` +
+        `生命周期记录 ${dealFixture.expect.lifecycleId} · 今日新增 ${dealFixture.expect.createdTodayId} · 墓碑 ${dealFixture.expect.goneId}）`);
+    }
     console.log(`  plan-history: ${planFixture.store.events.length} 条事件（${planFixture.expect.lifecycleId}）`);
     console.log(`  api-plan-history: ${apiFixture.store.events.length} 条事件（${apiFixture.expect.lifecycleId}` +
       ` · 新增模型 ${apiFixture.expect.addedModelKey}）`);
@@ -675,7 +813,13 @@ function main() {
 
   if (buildCode === 0) {
     const isEmptyState = state === 'pristine';
-    section(`④ Changes：ItemList ↔ 页面行 ↔ 链接 三份集合对账（${isEmptyState ? '生产态 · 空变化' : '合成态 · 非空变化'}）`);
+    // 合成态但 deal 夹具被**显式跳过**（样本不足）时，优惠这一侧的产物就是「没有事件」的形态：
+    // 依赖那几条合成记录的断言不参与判定（记成 skip，不是 pass），而「优惠变化为空」这件事
+    // 仍然要如实断言成空态（见 ④″）。
+    const dealSyntheticSkipped = !isEmptyState && Boolean(dealFixture && dealFixture.skipped);
+    const dealSkipReason = dealSyntheticSkipped ? dealFixture.shortage.reason : '';
+    section(`④ Changes：ItemList ↔ 页面行 ↔ 链接 三份集合对账（${isEmptyState ? '生产态 · 空变化'
+      : (dealSyntheticSkipped ? '合成态 · 样本不足（deal 侧显式跳过）' : '合成态 · 非空变化')}）`);
     const changesRoute = 'changes/';
     const changesHtml = fs.readFileSync(routeFile(dist, changesRoute), 'utf8');
     const list = itemListOfPage(changesHtml);
@@ -704,21 +848,46 @@ function main() {
       check('ItemList 成员都是本站详情页 URL（没有死链）',
         elementIds.every(id => dealLinks.has(id)), elementIds.filter(id => !dealLinks.has(id)).slice(0, 3).join(','));
     }
-    const headings = [...changesHtml.matchAll(/<h2>([^<]*)（(\d+)）<\/h2>/g)].map(m => ({ title: m[1], count: Number(m[2]) }));
-    const sectionCount = title => {
-      const hit = headings.find(row => row.title === title);
-      return hit ? hit.count : -1;
-    };
+    // `index` / `text` 留着：下面要用「标题在 HTML 里的位置」切出**该分栏自己的正文**，
+    // 免得拿整页去判「有没有写空态话」（整页判会把别处的空态话算到这一栏头上）。
+    // `/changes/` 的分栏读数与「措辞 ⇔ 计数」关系都走同一支纯函数（详见 `changesSectionsOf()`）：
+    // 判据的实现只有一处，反证夹具可以直接拿构造出来的 HTML 驱动它，而不用去改产品代码。
+    const changesSections = changesSectionsOf(changesHtml);
+    const headings = changesSections.headings;
+    const sectionCount = changesSections.countOf;
     if (isEmptyState) {
-      check('空态：ItemList 0 项、页面 0 个 data-item 行、页面上没有 deal 链接（三份集合同时为 0）',
-        elementIds.length === 0 && dataItems.length === 0 && dealLinks.size === 0,
+      // 生产态的判据同样必须是**关系式**的。t44 之前这三条写死了「优惠变化一定是空的」
+      //（当时的 `deal-history.json` 是 0 条事件），数据一长出第 1 条 `created` 就假红：
+      // 页面、产物全都对，报出来的却像内容缺陷。现在改成三条不变量，在「真的空」与
+      // 「只有零星事件」两种情形下都成立，而且都点名了数据对象：
+      //   ① 三份集合要么同时为空、要么同时非空（不允许「有行没列表」这类单侧形态）；
+      //   ② 五个分栏都在场（不是整块消失）；
+      //   ③ **措辞 ⇔ 计数**：某个分栏为 0 ⇔ 页面写出它自己那句「没有观测到…」。
+      check('生产态/稀疏态：ItemList 成员集合、页面 data-item 行集合、deal 详情链接三者要么同时为空、要么同时非空（没有单侧形态）',
+        (elementIds.length === 0) === (dataItems.length === 0) && (elementIds.length > 0) === (dealLinks.size > 0),
         `ItemList ${elementIds.length} / 行 ${dataItems.length} / 链接 ${dealLinks.size}`);
-      check('空态：五个分栏都写着（0），而不是整块消失',
-        ['今日新增', '最近 7 天变化', '即将结束', '已结束', '重新出现'].every(title => sectionCount(title) === 0),
-        headings.map(row => `${row.title}=${row.count}`).join(' · '));
-      check('空态：页面用「没有观测到」如实说清，而不是留白',
-        (changesHtml.match(/没有观测到/g) || []).length >= 3
-        && changesHtml.includes('截至基准日，没有观测到首次收录的条目'));
+      const sectionTitles = ['今日新增', '最近 7 天变化', '即将结束', '已结束', '重新出现'];
+      check('生产态/稀疏态：五个分栏都在场（不是整块消失）',
+        sectionTitles.every(title => sectionCount(title) >= 0),
+        sectionTitles.map(title => `${title}=${sectionCount(title)}`).join(' · '));
+      // 措辞 ⇔ 计数：判据是页面自己的两处读数之间的关系（分栏计数 与 该分栏正文里的空态话），
+      // 不写死「一定是 0 条」，也不依赖「冻结日志里有没有事件」这个快照。
+      // 关系的实现抽在 `changesSectionsOf()` 里（纯函数、可被反证夹具直接驱动）。
+      const wordingDrift = ['今日新增', '最近 7 天变化', '已结束', '重新出现']
+        .map(title => changesSections.wordingDrift(title)).filter(Boolean);
+      check('生产态/稀疏态：每个分栏的「计数 == 0 ⇔ 正文写出该分栏的空态话」互相自洽（措辞与计数同源）',
+        wordingDrift.length === 0,
+        `分栏读数 ${headings.map(row => `${row.title}=${row.count}`).join(' · ')}；差异 [${wordingDrift.join(' | ') || '无'}]`);
+    } else if (dealSyntheticSkipped) {
+      // 样本不足 ⇒ **显式跳过**这几条（它们依赖 dealFixture.expect 里那几条合成记录）：
+      // 打印原因 + 记进 skips + 在汇总里报条数。它们既不算通过、也不算失败。
+      skip('ItemList 非空（合成历史真的走到了非空渲染分支）', dealSkipReason);
+      skip('已离开数据集的记录：页面上有行但没有链接，也不进 ItemList', dealSkipReason);
+      skip('同一个记录的多个分栏出现只占 ItemList 一个位置', dealSkipReason);
+      skip('五个优惠分栏都被走到（今日新增 / 最近 7 天变化 / 已结束 / 重新出现 计数 > 0）', dealSkipReason);
+      check('样本不足时，deal 侧的四条断言以**显式跳过**记账（既不静默略过、也不伪装成通过）',
+        skips.length >= 4 && skips.every(row => row.reason.includes('本轮样本不足，跳过并说明原因')),
+        `skips=${JSON.stringify(skips.map(row => row.name))}`);
     } else {
       check('ItemList 非空（合成历史真的走到了非空渲染分支）', elementIds.length > 0, `${elementIds.length} 项`);
       const gone = dealFixture.expect.goneId;
@@ -768,7 +937,9 @@ function main() {
       }
     }
 
-    section(`④′ Archive（${isEmptyState ? '生产态：0 条是事实' : '合成态：索引非空 + 详情页引用可解析'}）`);
+    section(`④′ Archive（${isEmptyState ? '生产态：0 条是事实'
+      : (dealSyntheticSkipped ? '合成态：plan/api 索引非空 + 详情页引用可解析（deal 侧样本不足）'
+        : '合成态：索引非空 + 详情页引用可解析')}）`);
     const archiveIndex = 'archive/';
     const archiveHtml = fs.readFileSync(routeFile(dist, archiveIndex), 'utf8');
     const detailRoutes = [...new Set([...archiveHtml.matchAll(/href="[^"]*?archive\/([a-z]+)\/([^/"]+)\/"/g)]
@@ -779,9 +950,18 @@ function main() {
       check('生产态：索引页明说「0 条是事实，不是故障」', archiveHtml.includes('0 条是事实，不是故障'));
     } else {
       check('/archive/ 索引页列出至少 1 个详情页（三组里至少一组非空）', detailRoutes.length > 0, detailRoutes.slice(0, 3).join(' '));
-      check('/archive/ 三组（优惠 / Coding 套餐 / API 计费）都出现过',
-        ['deal', 'plan', 'api'].every(kind => detailRoutes.some(route => route.startsWith(`archive/${kind}/`))),
-        detailRoutes.join(' '));
+      if (dealSyntheticSkipped) {
+        // deal 侧没有 ended/restored（样本不足），所以「三组都出现过」这一条本轮不成立 —— 显式跳过，
+        // 并要求剩下两组确实在场（否则「跳过」会变成掩盖 plan/api 侧真缺陷的借口）。
+        skip('/archive/ 三组（优惠 / Coding 套餐 / API 计费）都出现过（deal 组依赖样本不足的优惠侧事件）', dealSkipReason);
+        check('样本不足只跳过 deal 那一组：plan / api 两组仍然必须在场',
+          ['plan', 'api'].every(kind => detailRoutes.some(route => route.startsWith(`archive/${kind}/`))),
+          `实际档案详情页 ${JSON.stringify(detailRoutes.slice(0, 6))}`);
+      } else {
+        check('/archive/ 三组（优惠 / Coding 套餐 / API 计费）都出现过',
+          ['deal', 'plan', 'api'].every(kind => detailRoutes.some(route => route.startsWith(`archive/${kind}/`))),
+          detailRoutes.join(' '));
+      }
       let missingRefs = 0;
       let totalRefs = 0;
       const refExamples = [];
@@ -797,18 +977,35 @@ function main() {
         missingRefs === 0, `${missingRefs} 条缺失 / 共 ${totalRefs} 条 · ${refExamples.slice(0, 3).join(' / ')}`);
     }
 
-    section(`④″ Feed：RSS + JSON Feed（${isEmptyState ? '优惠变化为空是事实；套餐/API 变化非空' : '三条变化流都非空'}）`);
+    section(`④″ Feed：RSS + JSON Feed（${isEmptyState ? '优惠变化为空是事实；套餐/API 变化非空'
+      : (dealSyntheticSkipped ? '优惠变化为空是样本不足的事实；套餐/API 变化非空' : '三条变化流都非空')}）`);
     for (const [label, routeBase] of [
       ['优惠变化', 'feed/changes'],
       ['套餐变化', 'feed/plans/coding/changes'],
       ['API 价格变化', 'feed/plans/api/changes']
     ]) {
       const pair = parseFeedPair(dist, routeBase);
-      const expectEmpty = isEmptyState && label === '优惠变化';
-      check(`${label}：RSS 与 JSON 都在且${expectEmpty ? '如实地为空（0 条）' : '有条目'}`,
-        Boolean(pair.xml) && Boolean(pair.json)
-        && (expectEmpty ? pair.xmlIds.length === 0 && pair.jsonIds.length === 0 : pair.xmlIds.length > 0),
-        `RSS ${pair.xmlIds.length} 条 / JSON ${pair.jsonIds.length} 条`);
+      if (label === '优惠变化') {
+        // 优惠变化流的判据改成**两个产物之间的同源关系**：流里有没有条目 ⇔ /changes/ 页面上四个
+        // 事件分栏（今日新增 / 最近 7 天变化 / 已结束 / 重新出现 —— 正是这条流取条目的那四栏）合计是否为 0。
+        // t44 之前这里写死「生产态 ⇒ 0 条」——那是「冻结日志里恰好 0 条事件」的快照，
+        // 数据长出第 1 条事件之后就成了假红（流里 1 条、页面上也有 1 条，两边都对）。
+        // 判据不写死数字，也不重算窗口：窗口口径、分栏上限都由页面/流自己体现 ——
+        // 只要求两处**同时为空或同时非空**，并且流里的条目数不得超过页面合计（不许凭空多）。
+        const eventSectionTotal = ['今日新增', '最近 7 天变化', '已结束', '重新出现']
+          .reduce((sum, title) => sum + Math.max(0, sectionCount(title)), 0);
+        check(`${label}：RSS 与 JSON 都在，且「流里有没有条目」与 /changes/ 四个事件分栏的合计是否为空互相一致（两个产物同源）`,
+          Boolean(pair.xml) && Boolean(pair.json)
+          && (pair.xmlIds.length === 0) === (eventSectionTotal === 0)
+          && pair.xmlIds.length <= eventSectionTotal
+          && pair.xmlIds.length === pair.jsonIds.length,
+          `RSS ${pair.xmlIds.length} 条 / JSON ${pair.jsonIds.length} 条`
+          + ` / /changes/ 四个事件分栏合计 ${eventSectionTotal}（${['今日新增', '最近 7 天变化', '已结束', '重新出现'].map(title => `${title}=${sectionCount(title)}`).join(' · ')}）`);
+      } else {
+        check(`${label}：RSS 与 JSON 都在且有条目`,
+          Boolean(pair.xml) && Boolean(pair.json) && pair.xmlIds.length > 0,
+          `RSS ${pair.xmlIds.length} 条 / JSON ${pair.jsonIds.length} 条`);
+      }
       check(`${label}：RSS 与 JSON 条目数一致（两侧同源）`,
         pair.xmlIds.length === pair.jsonIds.length,
         `${pair.xmlIds.length} / ${pair.jsonIds.length}`);
@@ -837,17 +1034,29 @@ function main() {
   section('=== 退出码汇总 ===');
   for (const row of codes) console.log(`  ${row.code === 0 ? '✓' : '✗'} ${row.label}: exit ${row.code}  (${row.command})`);
   console.log(`\n=== 端到端夹具（${state === 'pristine' ? '生产态 · 空变化' : '合成态 · 非空变化'}）：` +
-    `${checks} 项断言，${failures.length} 项失败；` +
+    `${checks} 项判定点，${failures.length} 项失败，${skips.length} 项**显式跳过**（样本不足，上面逐条打印了原因）；` +
     `validate/build/seo/browser 退出码 ${codes.filter(row => row.code === 0).length}/${codes.length} 为 0 ===`);
   for (const failure of failures) console.log(`  ✗ ${failure.name}${failure.detail ? ` —— ${failure.detail}` : ''}`);
+  // 「跑过并且通过」与「跳过」必须看起来不一样：跳过逐条打印，且刻意用与 ✓ 不同的记号。
+  for (const row of skips) console.log(`  ⏭ 未判定（显式跳过）${row.name} —— ${row.reason}`);
   const badCodes = codes.filter(row => row.code !== 0);
   if (failures.length || badCodes.length) process.exit(1);
   return checks;
 }
 
-try {
-  main();
-} catch (error) {
-  console.error(`\n❌ 夹具执行失败：${error && error.stack ? error.stack : error}`);
-  process.exit(1);
+/**
+ * 入口守卫：作为 CLI 跑时行为与以前**完全一样**（`node scripts/tools/history-nonempty-e2e.js`）；
+ * 被 `require()` 时**不执行**夹具，只暴露纯函数与常量给反证夹具
+ * （`research/_raw/t44/`：`dealSeedShortage` 的「样本不足 ⇒ 跳过」必须能被单独驱动，
+ * 否则那条判据只能靠真去删生产数据来验 —— 那既不可重复，也不该做）。
+ */
+if (require.main === module) {
+  try {
+    main();
+  } catch (error) {
+    console.error(`\n❌ 夹具执行失败：${error && error.stack ? error.stack : error}`);
+    process.exit(1);
+  }
 }
+
+module.exports = { dealSeedShortage, dealSeedCandidates, DEAL_FIXTURE_SEEDS, buildDealFixture, changesSectionsOf };

@@ -190,6 +190,7 @@ const synthetic = archiveLib.buildArchive({
   asOf: '2026-10-01'
 });
 
+// 此数字锚在本地夹具上，不随生产数据漂移（`lifecycleEvents` 就在上面几行就地构造：两条链）。
 check('两条生命周期链都被重建（A 恢复、B 结束）',
   synthetic.entries.length === 2
   && synthetic.counts.ended === 1 && synthetic.counts.restored === 1,
@@ -288,6 +289,7 @@ section('④ 牙 #9：当前资料消失，档案不消失');
   const withoutRecords = archiveLib.buildArchive({
     kind: 'deal', baseline, events: lifecycleEvents, asOf: '2026-10-01'
   });
+  // 此数字锚在本地夹具上，不随生产数据漂移（同一个 `lifecycleEvents`，两条链 ⇒ 两条档案）。
   check('去掉 records 后两条档案仍在（档案只依赖事件）',
     withoutRecords.entries.length === 2
     && archiveLib.assertEntrySetStable(synthetic, withoutRecords).length === 0);

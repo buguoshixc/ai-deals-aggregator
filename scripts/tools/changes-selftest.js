@@ -147,6 +147,7 @@ section('② 覆盖不变量（窗口内的事件一条不漏）');
   ];
   const dup = seen.length - new Set(seen.map(i => `${i.id}@${i.at}@${i.type}@${i.field || ''}`)).size;
   check('分栏之间不重叠（同一条事件不会出现在两处）', dup === 0, `重复 ${dup} 条`);
+  // 此数字锚在本地夹具上，不随生产数据漂移（`events` 就是上面那张就地构造的事件表：1 条元信息 + 1 条文案微调）。
   check('「其他变化」只收元信息与文案微调', r.totals.other === 2 && r.other.metadata.length === 1 && r.other.cosmetic.length === 1);
 }
 
@@ -155,6 +156,7 @@ section('③ 普通文案改写不是重大变化');
 
 {
   const cosmetic = radarOf([event({ from: '新用户 100 万 tokens', to: '新用户  100 万 tokens ' })]);
+  // 此数字锚在本地夹具上，不随生产数据漂移（这里只喂了 1 条事件）。
   check('只差空白 → 计入 other.cosmetic', cosmetic.totals.other === 1 && cosmetic.other.cosmetic.length === 1);
   check('只差空白 → **不**进「最近 7 天变化」', cosmetic.totals.changed === 0);
   check('只差空白 → **不**上首页', cosmetic.home.items.length === 0);
@@ -283,6 +285,8 @@ section('⑧ 上限、确定性与纯函数');
   const many = Array.from({ length: 31 }, (_, i) => event({ at: day(-(i % 7)), to: `v${i}` }));
   const r = changes.buildRadar({ deals: [deal()], store: { startedAt: AS_OF, events: many }, asOf: AS_OF, limits: { itemsPerSection: 30 } });
   check('分栏上限 30：31 条 → 30 条 + truncated 1', r.sections.changed.items.length === 30 && r.sections.changed.truncated === 1);
+  // 此数字锚在本地夹具上，不随生产数据漂移（`31` 就是上一行 `Array.from({ length: 31 }, …)` 造出来的条数，
+  // 这条断言要证的是「加上限不改变总数」，不是「生产上恰好有 31 条」）。
   check('上限不改变总数（不删数据）', r.totals.changed === 31);
 
   const tiny = changes.buildRadar({ deals: [deal()], store: { startedAt: AS_OF, events: many }, asOf: AS_OF, limits: { itemsPerSection: 2 } });

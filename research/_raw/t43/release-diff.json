@@ -1,0 +1,116 @@
+{
+  "measuredAt": "2026-10-04T13:38:38.574Z",
+  "base": "https://buguoshixc.github.io/ai-deals-aggregator/",
+  "routes": {
+    "sitemap.xml": {
+      "liveLocCount": 170,
+      "localLocCount": 173,
+      "addedRoutes": [
+        "vendor/aws/",
+        "vendor/replit/",
+        "vendor/stepfun/"
+      ],
+      "removedRoutes": []
+    },
+    "/": {
+      "liveCards": 0,
+      "localCards": 0,
+      "liveBytes": 399740,
+      "localBytes": 399740
+    },
+    "/models/": {
+      "liveDataItem": 44,
+      "localDataItem": 44,
+      "liveDataModel": 0,
+      "localDataModel": 44,
+      "liveShowLegacy": 0,
+      "localShowLegacy": 1,
+      "liveBytes": 122543,
+      "localBytes": 143263
+    },
+    "/plans/coding/": {
+      "liveDataItem": 23,
+      "localDataItem": 37,
+      "liveDataModel": 0,
+      "localDataModel": 0,
+      "liveShowLegacy": 0,
+      "localShowLegacy": 0,
+      "liveBytes": 200329,
+      "localBytes": 252650
+    },
+    "/plans/api/": {
+      "liveDataItem": 67,
+      "localDataItem": 93,
+      "liveDataModel": 0,
+      "localDataModel": 0,
+      "liveShowLegacy": 0,
+      "localShowLegacy": 0,
+      "liveBytes": 178965,
+      "localBytes": 207838
+    },
+    "/feeds/": {
+      "liveDataItem": 0,
+      "localDataItem": 0,
+      "liveDataModel": 0,
+      "localDataModel": 0,
+      "liveShowLegacy": 0,
+      "localShowLegacy": 0,
+      "liveBytes": 97268,
+      "localBytes": 97269
+    },
+    "/models/deepseek-v3.2/": {
+      "liveReleaseDateMarker": 0,
+      "localReleaseDateMarker": 1,
+      "liveBytes": 85140,
+      "localBytes": 86155
+    }
+  },
+  "vendorPagesLocal": {
+    "count": 22,
+    "slugs": [
+      "aliyun",
+      "anthropic",
+      "aws",
+      "baidu-ai-cloud",
+      "coze",
+      "cursor",
+      "deepseek",
+      "github",
+      "google",
+      "iflytek",
+      "microsoft",
+      "minimax",
+      "moonshot",
+      "notion",
+      "openai",
+      "replit",
+      "siliconflow",
+      "stepfun",
+      "tencent-cloud",
+      "volcengine",
+      "windsurf",
+      "zhipu"
+    ]
+  },
+  "vendorPagesLive": [
+    "vendor/aliyun/",
+    "vendor/anthropic/",
+    "vendor/baidu-ai-cloud/",
+    "vendor/coze/",
+    "vendor/cursor/",
+    "vendor/deepseek/",
+    "vendor/github/",
+    "vendor/google/",
+    "vendor/iflytek/",
+    "vendor/microsoft/",
+    "vendor/minimax/",
+    "vendor/moonshot/",
+    "vendor/notion/",
+    "vendor/openai/",
+    "vendor/siliconflow/",
+    "vendor/tencent-cloud/",
+    "vendor/volcengine/",
+    "vendor/windsurf/",
+    "vendor/zhipu/"
+  ]
+}
