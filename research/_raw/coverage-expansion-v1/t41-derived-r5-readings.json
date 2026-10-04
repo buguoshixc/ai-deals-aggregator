@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-04T13:38:06.391Z",
-  "head": "e437e9f5f178a44a68509fdcbfa327e486ea57c2",
+  "generatedAt": "2026-10-04T14:05:34.826Z",
+  "head": "118a95ca444d70fbd43e7d7cd583303d4089b30b",
   "judgement": "派生式：对 providers.json 里每个 vendorKey === null 的身份，逐条要求 (a) 恰好 1 条 no-vendor-identity 记录且不带路由 (b) 计划层无页 (c) vendor-slugs.json 无登记 (d) dist/vendor/ 目录集合 == 计划 slug 集合",
   "counts": {
     "providersTotal": 34,
