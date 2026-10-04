@@ -1,0 +1,64 @@
+=== M17 verify.yml：allow_degraded_run 的所有出现 ===
+  24: #   workflow_dispatch       手动跑（另有仅手动可用的 allow_degraded_run 开关）
+  40:       allow_degraded_run:
+  108:       #    下面 `with.allow_degraded_run` 的取值不是靠 grep 字符串守的：(11) 会把它按触发事件
+  133:           allow_degraded_run: ${{ inputs.allow_degraded_run && 'true' || 'false' }}
+  首次出现行号: 40（上下文）
+    34:   workflow_dispatch:
+    35:     # 只给手动触发用的降级开关：浏览器实在装不上时，仍可跑静态门禁，
+    36:     # 但会在 Summary 与注解里**明确写出「本次没有做真浏览器验收」**。
+    37:     # inputs 上下文只存在于 workflow_dispatch —— 也就是说 **PR / push 永远走严格路径**，
+    38:     # 不可能靠它把一条必需检查糊成绿色。
+    39:     inputs:
+    40:       allow_degraded_run:
+    41:         description: '浏览器不可用时仍跑静态门禁（会在 Summary 明确记「未做真浏览器验收」）'
+    42:         type: boolean
+    43:         default: false
+    44: 
+    45: # 与 probe-sources.yml 同款最小权限：本 workflow 只读仓库、不写任何东西。
+    46: permissions:
+    47:   contents: read
+    48: 
+    49: # 同一 ref 上新的运行取代旧的：被取代的那次报的是 **cancelled**，不在 success / skipped / neutral 之列。
+
+=== M22 detail page：前 40 个数值格候选 ===
+  文件: dist/models/glm-4.5v/index.html  bytes=71377
+  ">数字<" 型匹配数（前 40）：5
+    … /pricing ↗</a> · <a href="../../vendor/zhipu/">该厂商的资料页 →</a></dd> <dt>首次收录</dt><dd>2026-10-01<small>本站第一次看到它的日子，不是它的发布时间</
+    … t>首次收录</dt><dd>2026-10-01<small>本站第一次看到它的日子，不是它的发布时间</small></dd> <dt>最近核对</dt><dd>2026-10-01</dd> <dt>记录 id</dt><
+    … 子，不是它的发布时间</small></dd> <dt>最近核对</dt><dd>2026-10-01</dd> <dt>记录 id</dt><dd>2f7de55bd399</dd> </dl> <h
+    …  <td class="punit">CNY / 每 100 万 tokens</td> <td><time datetime="2026-10-01">2026-10-01</time></td> <td><a
+    …  <td class="punit">CNY / 每 100 万 tokens</td> <td><time datetime="2026-10-01">2026-10-01</time></td> <td><a
+  price 相关 class/属性抽样：
+
+=== M23 历史文件结构 ===
+  scripts/data/plan-history.json: 顶层键 schemaVersion, startedAt, baseline, absence, anomalies, events
+    baseline: 对象 3 键
+    absence: 对象 0 键
+    anomalies: 数组 0 项；样本 []
+    events: 数组 28 项；样本 [{"planId":"041e537ddecb","at":"2026-10-01","type":"created","field":null,"from":null,"to":null,"fields":{"billing.regularPrice":999,"billing.promoPrice":700,"billing.currency":"CNY","quota.type":"credits","quota.amount":50000,"quota.period":"monthly","region":"cn","officialUrl":"https://www.codebud
+  scripts/data/deal-history.json: 顶层键 schemaVersion, startedAt, baseline, absence, events
+    baseline: 对象 3 键
+    absence: 对象 0 键
+    events: 数组 1 项；样本 [{"id":"4a4f4777ffbc","at":"2026-10-04","type":"created","field":null,"from":null,"to":null,"fields":{"type":"tool","category":"办公效率","region":"global","source":"Futuretools","sourceUrl":"https://futuretools.io/tools/flowrite","verified":false},"runAt":"2026-10-04T03:07:44.127Z"}]
+  scripts/data/api-plan-history.json: 顶层键 schemaVersion, startedAt, baseline, absence, anomalies, events
+    baseline: 对象 3 键
+    absence: 对象 0 键
+    anomalies: 数组 0 项；样本 []
+    events: 数组 10 项；样本 [{"planId":"2981d8f29020","at":"2026-10-01","type":"created","field":null,"from":null,"to":null,"fields":{"pricing.currency":"CNY","pricing.unit":"per_1M_tokens","models":[{"name":"Hunyuan-a13b","modelKey":"hunyuan-a13b","variant":"standard","aliases":null,"rates":{"input":0.5,"output":2,"cachedInpu
+
+=== M24 provenance-selftest 的 check 定义 ===
+function check(name, ok, detail = '') {
+  if (ok) { pass++; return; }
+  failures.push(`${name}${detail ? ' — ' + detail : ''}`);
+}
+
+function checkEqual(name, actual, expected) {
+  check(name, actual === expected, `期望 ${JSON.stringify(expected)}，实得 ${JSON.stringify(actual)}`);
+}
+
+const TODAY = '2026-09-30';
+const goodQuote = {
+  field: 'discountInfo',
+  quote: '官方原话：年付五折',
+  sourceUrl: 'https://exa

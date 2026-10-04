@@ -1,0 +1,389 @@
+数据覆盖报告（v3.0 Stage C4 / 题面 §C4 · coverage-expansion-v1 v2）
+======================================================================
+生成日期            : 2026-10-04
+deals.json.updatedAt: 2026-10-04T18:34:24+08:00
+plans.json.updatedAt: 2026-10-04T00:00:00+08:00
+api-plans.json      : 2026-10-04T00:00:00+08:00
+
+── Deals ────────────────────────────────────────────────────────────
+  provider 数（仅 type=deal）        31   只数 type=deal 的 80 行归一后的厂商键（不含未识别）；type=tool 的 55 行不进 provider universe
+  工具行厂商数（对照，不计入）                 52   type=tool 共 55 行；它们的厂商串同样带 vendor 原始串，但没有归一规则、也没有套餐/计费侧身份
+  当前优惠数                          80   type=deal 且未过期（过期 0 条）
+  工具条目数                          55   type=tool，不计入"当前优惠数"
+
+── Coding Plans ─────────────────────────────────────────────────────
+  provider 数                     18
+  plan 数                         37
+
+── API Pricing ──────────────────────────────────────────────────────
+  provider 数                     14
+  pricing records                17   api-plans.json 的记录条数
+  model pricing items            93   去重 modelKey 66 个
+
+── Model Registry ───────────────────────────────────────────────────
+  registry 模型数                   44   来源层 scripts/data/models.json 的模型条目数
+  registry 映射条数                  82
+  已映射认领 API 计价条目                 81   按展开后的 (planId, modelKey, variant) 记账：通配映射只算它真实展开到的条目
+  已处置声明的 API 计价条目                12   model-registry-gaps.json 的 API 侧声明展开后覆盖的条目（当前 12 条声明 · reason=off-registry-model）
+  未判 API 计价条目                     0   既没有映射、也没有处置声明（必须为 0；不为 0 时本报告自检非 0，与 validateLinks 同一口径）
+  API 侧记账：计价条目 93 条 = 已映射认领 81 + 已处置声明 12 + 未判 0
+  已映射 Coding 模型串                 13   共 55 条；关系层里 Coding 映射 13 条
+  已声明"不对应单一模型身份"（套餐侧）            42   模型池 / 系列名 / 一个串多个模型 / registry 没有的身份 / 图像语音资源（逐条见缺口 5 下方）
+  已声明"不对应单一模型身份"（API 侧）          12   reason=off-registry-model（逐条见缺口 5 下方的 API 侧清单；与套餐侧是两个出口、同一本账）
+
+── 缺口 1：有 Deals 无 Plans 的 provider ────────────────────────────
+  · ai360（360智脑）
+  · aliyun（阿里云）
+  · baichuan（百川智能）
+  · canva（canva）
+  · coze（扣子 Coze）
+  · elevenlabs（elevenlabs）
+  · figma（figma）
+  · microsoft（Microsoft）
+  · modelscope（modelscope）
+  · notion（Notion）
+  · openai（OpenAI）
+  · perplexity（perplexity）
+  · runway（runway）
+  · sensetime（商汤科技）
+  · siliconflow（硅基流动）
+  · tencent（腾讯云）
+  · volcengine（火山引擎）
+  · zapier（zapier）
+
+── 缺口 2：有 Plans 无 Deals 的 provider ────────────────────────────
+  · codebuddy（腾讯 CodeBuddy）   4 条套餐
+  · jetbrains（JetBrains）   2 条套餐
+  · qoder（Qoder CN）   1 条套餐
+  · qoder-intl（Qoder International）   2 条套餐
+  · trae（Trae）   2 条套餐
+
+── 缺口 3：有 API Pricing 既无映射、也无处置声明的计价条目（未判）──
+  （口径：计价条目 93 条 − 映射认领 81 − 处置声明 12 = 未判 0；不为 0 时报告自检非 0）
+  （无）
+
+── 缺口 4：重要候选但尚未采信的 provider ────────────────────────────
+  · 百川智能 Baichuan   1 个来源未采信
+      https://platform.baichuan-ai.com/price
+      检查日期 2026-10-01 · JS=false 登录=false 动态分页=false 已下线=true 信息不全=true
+      失败原因：platform.baichuan-ai.com/price 返回 HTTP 404，渲染后是 Next.js 的「404: This page could not be found」页。
+  · 火山方舟   3 个来源未采信
+      https://ai.volcengine.com/activity/codingplan
+      检查日期 2026-10-01 · JS=true 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：渲染后 Lite / Pro 两档的价格区块仍是「价格查询中...」，档位价格由异步接口下发；页面只有营销文案「限时 9.9 元起」与档位权益描述。拿不到可核对的固定档价，不收录。
+      https://ark.volcengine.com/region:cn-beijing/docs/ark/model-pricing?lang=zh
+      检查日期 2026-10-01 · JS=true 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：方舟控制台文档站的定价页渲染后正文只有 47 字符（「火山方舟 控制台 模型广场 …」导航壳）；静态抓取 0 字符。价格文档在控制台内是 JS 应用，未渲染出正文。
+      https://www.volcengine.com/docs/82379/1099320
+      检查日期 2026-10-01 · JS=true 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：docs.volcengine.com 会跨域重定向；直接请求后渲染正文 0 字符，静态也是空壳。
+  · 阶跃星辰 StepFun   1 个来源未采信
+      https://platform.stepfun.com/docs/pricing/details
+      检查日期 2026-10-01 · JS=false 登录=false 动态分页=false 已下线=true 信息不全=true
+      失败原因：platform.stepfun.com/docs/pricing/details 返回 HTTP 404；渲染后标题为空、正文 0 字符。该官方定价页已下线或改版。
+  · 科大讯飞 讯飞开放平台   1 个来源未采信
+      https://www.xfyun.cn/solutions/iflycode
+      检查日期 2026-10-01 · JS=false 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：渲染后 6,614 字符、0 张表、0 处价格命中——该页是 iFlyCode 的解决方案介绍，没有订阅价格。
+  · 商汤科技 SenseTime   1 个来源未采信
+      https://platform.sensenova.cn/doc?path=/docs/API/price.md
+      检查日期 2026-10-01 · JS=false 登录=false 动态分页=false 已下线=true 信息不全=true
+      失败原因：platform.sensenova.cn 的定价文档路径返回 HTTP 404（渲染后是 404 Not Found 页）。
+  · 月之暗面   5 个来源未采信
+      https://www.kimi.ai/code
+      检查日期 2026-10-01 · JS=true 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：渲染后正文只有 683 字符，套餐区块停在标题「Kimi Code is available in the following plans」，套餐卡与价格没有挂载出来。
+      https://www.kimi.ai/membership/pricing
+      检查日期 2026-10-01 · JS=true 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：渲染后正文仅 352 字符，价格区未挂载；页面标题正常（「Kimi 价格 | 会员套餐与订阅方案」）说明页面存在，但价格由前端异步注入且未等到。
+      https://www.kimi.com/code/docs/en/
+      检查日期 2026-10-01 · JS=false 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：官方文档说明 Kimi Code 包含在 Kimi 会员权益中、并列出 Desktop / CLI / VS Code 三种形态，但**没有会员档位与价格**。
+      https://platform.kimi.com/docs/pricing/chat
+      检查日期 2026-10-01 · JS=true 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：渲染后 1,243 字符，只有计费概念说明与 K3/K2 系列的**小节标题**，模型价格表的行没有渲染出来（表格由异步资源下发）。
+      https://platform.kimi.com/docs/pricing/batch
+      检查日期 2026-10-01 · JS=true 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：同 kimi-api-pricing：渲染后 762 字符，批量推理价目表没有渲染出行。
+  · 智谱AI   1 个来源未采信
+      https://docs.bigmodel.cn/cn/coding-plan/overview
+      检查日期 2026-10-01 · JS=false 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：官方套餐文档页只给出 Lite / Pro / Max 三档的积分额度（每 5 小时 2,000 / 12,000 / 28,000，每周 10,000 / 60,000 / 140,000）与抵扣系数，**没有任何价格**；价格页 bigmodel.cn/pricing 渲染后只有 API 按量价与 FAQ，没有 Coding 套餐价。新增档位缺官方价格，不收录。
+  · Cursor   1 个来源未采信
+      https://cursor.com/pricing
+      检查日期 2026-10-01 · JS=false 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：页面只把 Pro $20 与团队版 $40/user 渲染进正文；Pro+ / Ultra 的价格在页签里，首屏没有渲染出来（渲染后正文仅 1,108 字符、2 处价格命中）。Pro 已在生产数据里，没有新增可采信事实。
+  · Google   1 个来源未采信
+      https://codeassist.google/
+      检查日期 2026-10-01 · JS=false 登录=false 动态分页=false 已下线=true 信息不全=true
+      失败原因：codeassist.google 官方页当前返回 HTTP 500 错误页（渲染后正文 37 字符），官方页不可用。
+  · MiniMax（稀宇科技）   1 个来源未采信
+      https://platform.minimax.cn/docs/guides/pricing-token-plan-team
+      检查日期 2026-10-01 · JS=false 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：官方团队版页渲染后仅 1,119 字符、0 张表、0 处价格命中——页面本身没有给出团队版价格，不收录。
+  · Mistral   2 个来源未采信
+      https://mistral.ai/pricing
+      检查日期 2026-10-01 · JS=true 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：静态抓取被拒（ECONNABORTED，axios 连接层失败）；渲染成功但落到的是 Vibe **订阅页**（Free / Pro $14.99 / Team $24.99），API 价目表在另一个页签，本页只在 FAQ 里举了「Mistral Large $0.5/M in、$1.5/M out」一例，不成表。
+      https://docs.mistral.ai/getting-started/models/models_overview/
+      检查日期 2026-10-01 · JS=true 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：官方模型总览页只有模型清单、版本号与许可证，没有价格（定价是 /pricing 的另一个页签）。静态同样 ECONNABORTED。
+  · OpenAI   2 个来源未采信
+      https://openai.com/chatgpt/pricing/
+      检查日期 2026-10-01 · JS=false 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：静态抓取被拒（HTTP 403）；渲染后 3,546 字符、0 处价格命中。个人版价格不在这一页（页面导向 ChatGPT.com）。
+      https://openai.com/api/pricing/
+      检查日期 2026-10-01 · JS=false 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：openai.com/api/pricing 静态被拒（HTTP 403）；渲染后实际落到「Business 定价」页（标准席位 US$20/月、高级席位 US$100/月，年付价），不是 API token 价目表。API 价已有 openai 记录，本轮没有新增可采信条目。
+  · Qoder CN   1 个来源未采信
+      https://qoder.com/pricing
+      检查日期 2026-10-01 · JS=false 登录=false 动态分页=false 已下线=false 信息不全=true
+      失败原因：qoder.com 的 robots.txt 对本路径 Disallow，静态抓取与无头渲染两条路都被拒（遵守 robots，不做绕过）。改用官方文档站 docs.qoder.com/account/pricing.md。
+
+── 缺口 5：Coding 套餐模型串既无映射也未声明 ────────────────────────
+  （无）
+
+── 已声明"不对应单一模型身份"的套餐模型串（有理由的缺口，不是漏判）──
+  · Anthropic / Claude 系列模型（含 Claude Code）（套餐 536e6b211045）→ series（记录里的 role=included）
+  · 百度智能云 / 百度 Comate 官方模型（Auto 调度）（套餐 b176967fc6bb）→ pool（记录里的 role=pool）
+  · 百度智能云 / 百度 Comate 官方模型（Auto 调度）（套餐 c968fb5a3c55）→ pool（记录里的 role=pool）
+  · MiniMax（稀宇科技） / 图像 / 语音资源（套餐 a6a6a374dfba）→ non-text-resource（记录里的 role=included）
+  · Qoder International / premium 模型池 + 基础模型兜底（套餐 8092ab8f694e）→ pool（记录里的 role=pool）
+  · Qoder International / premium 模型池 + 基础模型兜底（套餐 e1cbd20766b9）→ pool（记录里的 role=pool）
+  · 阶跃星辰 / step-3.5-flash-2603（套餐 0a66f3117162）→ off-registry-model（记录里的 role=included）
+  · 阶跃星辰 / step-3.7-flash（套餐 0a66f3117162）→ off-registry-model（记录里的 role=included）
+  · 阶跃星辰 / step-5-preview（套餐 0a66f3117162）→ off-registry-model（记录里的 role=included）
+  · 阶跃星辰 / step-router-v1（套餐 0a66f3117162）→ series（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-asr（套餐 0a66f3117162）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-chat（套餐 0a66f3117162）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-realtime（套餐 0a66f3117162）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-tts（套餐 0a66f3117162）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / step-3.5-flash-2603（套餐 2281d41b3a26）→ off-registry-model（记录里的 role=included）
+  · 阶跃星辰 / step-3.7-flash（套餐 2281d41b3a26）→ off-registry-model（记录里的 role=included）
+  · 阶跃星辰 / step-5-preview（套餐 2281d41b3a26）→ off-registry-model（记录里的 role=included）
+  · 阶跃星辰 / step-router-v1（套餐 2281d41b3a26）→ series（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-asr（套餐 2281d41b3a26）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-chat（套餐 2281d41b3a26）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-realtime（套餐 2281d41b3a26）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-tts（套餐 2281d41b3a26）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / step-3.5-flash-2603（套餐 383ed55706fc）→ off-registry-model（记录里的 role=included）
+  · 阶跃星辰 / step-3.7-flash（套餐 383ed55706fc）→ off-registry-model（记录里的 role=included）
+  · 阶跃星辰 / step-5-preview（套餐 383ed55706fc）→ off-registry-model（记录里的 role=included）
+  · 阶跃星辰 / step-router-v1（套餐 383ed55706fc）→ series（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-asr（套餐 383ed55706fc）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-chat（套餐 383ed55706fc）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-realtime（套餐 383ed55706fc）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-tts（套餐 383ed55706fc）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / step-3.5-flash-2603（套餐 ef931b98b927）→ off-registry-model（记录里的 role=included）
+  · 阶跃星辰 / step-3.7-flash（套餐 ef931b98b927）→ off-registry-model（记录里的 role=included）
+  · 阶跃星辰 / step-5-preview（套餐 ef931b98b927）→ off-registry-model（记录里的 role=included）
+  · 阶跃星辰 / step-router-v1（套餐 ef931b98b927）→ series（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-asr（套餐 ef931b98b927）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-chat（套餐 ef931b98b927）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-realtime（套餐 ef931b98b927）→ non-text-resource（记录里的 role=included）
+  · 阶跃星辰 / stepaudio-2.5-tts（套餐 ef931b98b927）→ non-text-resource（记录里的 role=included）
+  · Trae / DeepSeek-Pro（套餐 f04787381e3b）→ off-registry-model（记录里的 role=included）
+  · Trae / GLM 5.2 / 5.3（套餐 f04787381e3b）→ multi-model（记录里的 role=included）
+  · Trae / Seed-2.1-Turbo（套餐 f04787381e3b）→ off-registry-model（记录里的 role=included）
+  · Trae / Seed-Code（套餐 f04787381e3b）→ off-registry-model（记录里的 role=included）
+
+── 已声明"不对应单一模型身份"的 API 计价条目（有理由的缺口，不是漏判）──
+  · Cerebras（cerebras） / 61aa6c3ed3ff → gpt-oss-120b · standard → off-registry-model
+  · Fireworks AI（fireworks） / 929a1f3ec46c → ember-1 · standard → off-registry-model
+  · Fireworks AI（fireworks） / 929a1f3ec46c → gpt-oss-120b · standard → off-registry-model
+  · Fireworks AI（fireworks） / 929a1f3ec46c → nemotron-3-ultra-nvfp4 · standard → off-registry-model
+  · Fireworks AI（fireworks） / 929a1f3ec46c → nemotron-lightning-3p5-30b-a3b · standard → off-registry-model
+  · Groq（groq） / 036c5f09561e → meta-llama.prompt-guard-2-22m · standard → off-registry-model
+  · Groq（groq） / 036c5f09561e → meta-llama.prompt-guard-2-86m · standard → off-registry-model
+  · Groq（groq） / 036c5f09561e → openai.gpt-oss-120b · standard → off-registry-model
+  · Groq（groq） / 036c5f09561e → openai.gpt-oss-20b · standard → off-registry-model
+  · Groq（groq） / 036c5f09561e → openai.gpt-oss-safeguard-20b · standard → off-registry-model
+  · Together AI（together） / 8a26562011f2 → openai.gpt-oss-120b · standard → off-registry-model
+  · Together AI（together） / 8a26562011f2 → thinkingmachines.inkling · standard → off-registry-model
+
+── 已采信并移交 registry-curator 落盘的候选 ─────────────────────────
+  · 火山方舟  https://www.volcengine.com/product/ark   2026-10-01
+  · Qoder CN  https://docs.qoder.com/account/pricing.md   2026-10-01
+  · 腾讯 CodeBuddy  https://www.codebuddy.ai/docs/zh/ide/Account/pricing   2026-10-01
+  · 腾讯 CodeBuddy  https://www.codebuddy.cn/docs/ide/Account/pricing   2026-10-01
+  · GitHub  https://github.com/features/copilot/plans   2026-10-01
+  · MiniMax（稀宇科技）  https://platform.minimax.cn/docs/guides/pricing-token-plan   2026-10-01
+  · Windsurf  https://windsurf.com/pricing   2026-10-01
+  · 百度智能云  https://comate.baidu.com/zh/pricing   2026-10-01
+  · Anthropic  https://www.anthropic.com/pricing   2026-10-01
+  · 阿里云百炼  https://help.aliyun.com/zh/model-studio/model-pricing   2026-10-01
+  · MiniMax（稀宇科技）  https://platform.minimax.cn/docs/guides/pricing-paygo   2026-10-01
+  · 硅基流动  https://siliconflow.cn/pricing   2026-10-01
+  · 腾讯云 混元大模型  https://cloud.tencent.com/document/product/1729/97731   2026-10-01
+
+── Target Provider Universe（覆盖意图层 · v2）───────────────────────
+  Target 行数                      34   scripts/data/coverage-targets.json 的人工意图行数（身份层与意图层双向对账）
+  providers.json 身份数             34   缺一行即报告红：身份层与意图层不许分家
+  有数据的 Target                    34   四个维度里至少一格有盘上记录
+  一条数据都没有的 Target                 0   意图已立、事实为零（这些行的每一格都必须是 MISSING / DEFERRED / UNVERIFIABLE / NOT_APPLICABLE 之一）
+  tier 分布：core=11（核心） · major=18（重要） · long-tail=5（长尾）
+  role 分布：model-developer=15 · inference-platform=6 · coding-product=10 · tool-vendor=3 · directory=0
+  reviewedAt：2026-10-04
+  逐行：
+    · ai360        360智脑            long-tail model-developer   MISSING         适用维度 4/4 · 已覆盖 1/4
+    · aliyun       阿里云              core      model-developer   COVERED         适用维度 3/4 · 已覆盖 3/4
+    · anthropic    Anthropic        core      model-developer   COVERED         适用维度 4/4 · 已覆盖 4/4
+    · aws          AWS              major     coding-product    COVERED         适用维度 2/4 · 已覆盖 2/4
+    · baichuan     百川智能             major     model-developer   MISSING         适用维度 4/4 · 已覆盖 1/4
+    · baidu        百度智能云            core      model-developer   MISSING         适用维度 4/4 · 已覆盖 2/4
+    · cerebras     Cerebras         long-tail inference-platform COVERED         适用维度 1/4 · 已覆盖 1/4
+    · codebuddy    腾讯 CodeBuddy     major     coding-product    COVERED         适用维度 1/4 · 已覆盖 1/4
+    · coze         扣子 Coze          long-tail tool-vendor       UNVERIFIABLE    适用维度 2/4 · 已覆盖 1/4
+    · cursor       Cursor           major     coding-product    COVERED         适用维度 2/4 · 已覆盖 2/4
+    · deepseek     DeepSeek         core      model-developer   MISSING         适用维度 3/4 · 已覆盖 2/4
+    · fireworks    Fireworks AI     major     inference-platform COVERED         适用维度 1/4 · 已覆盖 1/4
+    · github       GitHub           major     coding-product    COVERED         适用维度 2/4 · 已覆盖 2/4
+    · google       Google           core      model-developer   COVERED         适用维度 4/4 · 已覆盖 4/4
+    · groq         Groq             major     inference-platform COVERED         适用维度 1/4 · 已覆盖 1/4
+    · iflytek      科大讯飞             major     model-developer   MISSING         适用维度 4/4 · 已覆盖 1/4
+    · jetbrains    JetBrains        major     coding-product    COVERED         适用维度 1/4 · 已覆盖 1/4
+    · microsoft    Microsoft        long-tail tool-vendor       MISSING         适用维度 3/4 · 已覆盖 1/4
+    · minimax      MiniMax（稀宇科技）    core      model-developer   COVERED         适用维度 4/4 · 已覆盖 4/4
+    · moonshot     月之暗面             core      model-developer   MISSING         适用维度 4/4 · 已覆盖 3/4
+    · notion       Notion           long-tail tool-vendor       COVERED         适用维度 1/4 · 已覆盖 1/4
+    · openai       OpenAI           core      model-developer   MISSING         适用维度 4/4 · 已覆盖 3/4
+    · qoder        Qoder CN         major     coding-product    COVERED         适用维度 1/4 · 已覆盖 1/4
+    · qoder-intl   Qoder International major     coding-product    COVERED         适用维度 1/4 · 已覆盖 1/4
+    · replit       Replit           major     coding-product    PARTIAL         适用维度 1/4 · 已覆盖 0/4
+    · sensetime    商汤科技             major     model-developer   MISSING         适用维度 4/4 · 已覆盖 1/4
+    · siliconflow  硅基流动             major     inference-platform COVERED         适用维度 2/4 · 已覆盖 2/4
+    · stepfun      阶跃星辰             major     model-developer   MISSING         适用维度 4/4 · 已覆盖 3/4
+    · tencent      腾讯云              core      model-developer   COVERED         适用维度 3/4 · 已覆盖 3/4
+    · together     Together AI      major     inference-platform COVERED         适用维度 1/4 · 已覆盖 1/4
+    · trae         Trae             major     coding-product    COVERED         适用维度 1/4 · 已覆盖 1/4
+    · volcengine   火山引擎             core      inference-platform COVERED         适用维度 3/4 · 已覆盖 3/4
+    · windsurf     Windsurf         major     coding-product    COVERED         适用维度 2/4 · 已覆盖 2/4
+    · zhipu        智谱AI             core      model-developer   COVERED         适用维度 4/4 · 已覆盖 4/4
+
+── 分维度覆盖（provider × 维度 · 派生七态 · v2）──────────────────────
+  Deals 优惠（deals）：COVERED=23 · PARTIAL=0 · MISSING=1 · DEFERRED=0 · UNVERIFIABLE=0 · NOT_APPLICABLE=10 · BLOCKED_SOURCE=0
+  Coding 套餐（coding）：COVERED=16 · PARTIAL=1 · MISSING=5 · DEFERRED=0 · UNVERIFIABLE=1 · NOT_APPLICABLE=11 · BLOCKED_SOURCE=0
+  API 计费（api）：COVERED=14 · PARTIAL=0 · MISSING=7 · DEFERRED=1 · UNVERIFIABLE=1 · NOT_APPLICABLE=11 · BLOCKED_SOURCE=0
+  模型身份（models）：COVERED=11 · PARTIAL=0 · MISSING=4 · DEFERRED=1 · UNVERIFIABLE=0 · NOT_APPLICABLE=18 · BLOCKED_SOURCE=0
+  矩阵（列顺序 deals / coding / api / models）：
+    provider     deals           coding          api             models          
+    ai360        COVERED         MISSING         MISSING         MISSING         
+    aliyun       COVERED         NOT_APPLICABLE  COVERED         COVERED         
+    anthropic    COVERED         COVERED         COVERED         COVERED         
+    aws          COVERED         COVERED         NOT_APPLICABLE  NOT_APPLICABLE  
+    baichuan     COVERED         MISSING         MISSING         MISSING         
+    baidu        COVERED         COVERED         MISSING         MISSING         
+    cerebras     NOT_APPLICABLE  NOT_APPLICABLE  COVERED         NOT_APPLICABLE  
+    codebuddy    NOT_APPLICABLE  COVERED         NOT_APPLICABLE  NOT_APPLICABLE  
+    coze         COVERED         NOT_APPLICABLE  UNVERIFIABLE    NOT_APPLICABLE  
+    cursor       COVERED         COVERED         NOT_APPLICABLE  NOT_APPLICABLE  
+    deepseek     MISSING         NOT_APPLICABLE  COVERED         COVERED         
+    fireworks    NOT_APPLICABLE  NOT_APPLICABLE  COVERED         NOT_APPLICABLE  
+    github       COVERED         COVERED         NOT_APPLICABLE  NOT_APPLICABLE  
+    google       COVERED         COVERED         COVERED         COVERED         
+    groq         NOT_APPLICABLE  NOT_APPLICABLE  COVERED         NOT_APPLICABLE  
+    iflytek      COVERED         UNVERIFIABLE    MISSING         MISSING         
+    jetbrains    NOT_APPLICABLE  COVERED         NOT_APPLICABLE  NOT_APPLICABLE  
+    microsoft    COVERED         MISSING         DEFERRED        NOT_APPLICABLE  
+    minimax      COVERED         COVERED         COVERED         COVERED         
+    moonshot     COVERED         COVERED         MISSING         COVERED         
+    notion       COVERED         NOT_APPLICABLE  NOT_APPLICABLE  NOT_APPLICABLE  
+    openai       COVERED         MISSING         COVERED         COVERED         
+    qoder        NOT_APPLICABLE  COVERED         NOT_APPLICABLE  NOT_APPLICABLE  
+    qoder-intl   NOT_APPLICABLE  COVERED         NOT_APPLICABLE  NOT_APPLICABLE  
+    replit       NOT_APPLICABLE  PARTIAL         NOT_APPLICABLE  NOT_APPLICABLE  
+    sensetime    COVERED         MISSING         MISSING         DEFERRED        
+    siliconflow  COVERED         NOT_APPLICABLE  COVERED         NOT_APPLICABLE  
+    stepfun      COVERED         COVERED         MISSING         COVERED         
+    tencent      COVERED         NOT_APPLICABLE  COVERED         COVERED         
+    together     NOT_APPLICABLE  NOT_APPLICABLE  COVERED         NOT_APPLICABLE  
+    trae         NOT_APPLICABLE  COVERED         NOT_APPLICABLE  NOT_APPLICABLE  
+    volcengine   COVERED         NOT_APPLICABLE  COVERED         COVERED         
+    windsurf     COVERED         COVERED         NOT_APPLICABLE  NOT_APPLICABLE  
+    zhipu        COVERED         COVERED         COVERED         COVERED         
+
+── 真缺口：MISSING targets（可覆盖、未延期、来源健康，但盘上一条记录都没有）──
+  · 360智脑（ai360） Coding 套餐：声明的 current target 0 条 / 盘上 0 条 —— 可覆盖、未延期、来源健康，但盘上一条记录都没有
+  · 360智脑（ai360） API 计费：声明的 current target 1 条 / 盘上 0 条 —— 声明的 1 条 current target 一条都没兑现，且该维度没有任何记录
+  · 360智脑（ai360） 模型身份：声明的 current target 0 条 / 盘上 0 条 —— 可覆盖、未延期、来源健康，但盘上一条记录都没有
+  · 百川智能（baichuan） Coding 套餐：声明的 current target 0 条 / 盘上 0 条 —— 可覆盖、未延期、来源健康，但盘上一条记录都没有
+  · 百川智能（baichuan） API 计费：声明的 current target 2 条 / 盘上 0 条 —— 声明的 2 条 current target 一条都没兑现，且该维度没有任何记录
+  · 百川智能（baichuan） 模型身份：声明的 current target 0 条 / 盘上 0 条 —— 可覆盖、未延期、来源健康，但盘上一条记录都没有
+  · 百度智能云（baidu） API 计费：声明的 current target 0 条 / 盘上 0 条 —— 可覆盖、未延期、来源健康，但盘上一条记录都没有
+  · 百度智能云（baidu） 模型身份：声明的 current target 0 条 / 盘上 0 条 —— 可覆盖、未延期、来源健康，但盘上一条记录都没有
+  · DeepSeek（deepseek） Deals 优惠：声明的 current target 0 条 / 盘上 0 条 —— 可覆盖、未延期、来源健康，但盘上一条记录都没有
+  · 科大讯飞（iflytek） API 计费：声明的 current target 0 条 / 盘上 0 条 —— 可覆盖、未延期、来源健康，但盘上一条记录都没有
+  · 科大讯飞（iflytek） 模型身份：声明的 current target 0 条 / 盘上 0 条 —— 可覆盖、未延期、来源健康，但盘上一条记录都没有
+  · Microsoft（microsoft） Coding 套餐：声明的 current target 0 条 / 盘上 0 条 —— 可覆盖、未延期、来源健康，但盘上一条记录都没有
+  · 月之暗面（moonshot） API 计费：声明的 current target 0 条 / 盘上 0 条 —— 可覆盖、未延期、来源健康，但盘上一条记录都没有
+  · OpenAI（openai） Coding 套餐：声明的 current target 0 条 / 盘上 0 条 —— 可覆盖、未延期、来源健康，但盘上一条记录都没有
+  · 商汤科技（sensetime） Coding 套餐：声明的 current target 0 条 / 盘上 0 条 —— 可覆盖、未延期、来源健康，但盘上一条记录都没有
+  · 商汤科技（sensetime） API 计费：声明的 current target 1 条 / 盘上 0 条 —— 声明的 1 条 current target 一条都没兑现，且该维度没有任何记录
+  · 阶跃星辰（stepfun） API 计费：声明的 current target 2 条 / 盘上 0 条 —— 声明的 2 条 current target 一条都没兑现，且该维度没有任何记录
+
+── PARTIAL targets（声明了一部分，只兑现了一部分）────────────────────
+  · Replit（replit） Coding 套餐：0/1 条兑现 —— 声明的 1 条 current target 一条都没兑现，但该维度另有 2 条记录
+      ✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」
+
+── 有理由的缺口 ①：DEFERRED（人工裁决延期 —— **永不算 MISSING**）────
+  · Microsoft（microsoft） API 计费：人工裁决延期：Azure OpenAI 按区域分档、按币种定价，口径与第一方 API 价不同，需要先裁决怎么表达再收（复查条件：当 API 层决定支持区域分档定价，或明确裁决不纳入 Azure 时复查）
+  · 商汤科技（sensetime） 模型身份：人工裁决延期：日日新当前线（6.8 Flash Lite / U1.5 Lite）在官网有模型页与文案，但还没有登记进 Model Registry（registry 里本轮没有任何商汤模型）⇒ 本维度本轮不写 currentTargets，等模型身份登记后补（复查条件：当 scripts/data/models.json 里出现第一个 Sensetime 归属的 registrySlug 时）
+
+── 有理由的缺口 ②：UNVERIFIABLE（查过，官方来源不可核）──────────────
+  · 扣子 Coze（coze） API 计费：人工裁决不可核：本轮没有找到扣子官方公开的 API 按量计费价目页（站内只有订阅档位），核不出可诚实表达的定价
+  · 科大讯飞（iflytek） Coding 套餐：人工裁决不可核：本轮没有找到科大讯飞官方公开的编程订阅套餐价目页（只有 API 计费与消费端会员），核不实它在 coding 维度是否有可覆盖的对象
+
+── 有理由的缺口 ③：NOT_APPLICABLE（这家在这一维度没有可覆盖的东西）──
+  · 阿里云（aliyun）不适用：Coding 套餐
+  · AWS（aws）不适用：API 计费 / 模型身份
+  · Cerebras（cerebras）不适用：Deals 优惠 / Coding 套餐 / 模型身份
+  · 腾讯 CodeBuddy（codebuddy）不适用：Deals 优惠 / API 计费 / 模型身份
+  · 扣子 Coze（coze）不适用：Coding 套餐 / 模型身份
+  · Cursor（cursor）不适用：API 计费 / 模型身份
+  · DeepSeek（deepseek）不适用：Coding 套餐
+  · Fireworks AI（fireworks）不适用：Deals 优惠 / Coding 套餐 / 模型身份
+  · GitHub（github）不适用：API 计费 / 模型身份
+  · Groq（groq）不适用：Deals 优惠 / Coding 套餐 / 模型身份
+  · JetBrains（jetbrains）不适用：Deals 优惠 / API 计费 / 模型身份
+  · Microsoft（microsoft）不适用：模型身份
+  · Notion（notion）不适用：Coding 套餐 / API 计费 / 模型身份
+  · Qoder CN（qoder）不适用：Deals 优惠 / API 计费 / 模型身份
+  · Qoder International（qoder-intl）不适用：Deals 优惠 / API 计费 / 模型身份
+  · Replit（replit）不适用：Deals 优惠 / API 计费 / 模型身份
+  · 硅基流动（siliconflow）不适用：Coding 套餐 / 模型身份
+  · 腾讯云（tencent）不适用：Coding 套餐
+  · Together AI（together）不适用：Deals 优惠 / Coding 套餐 / 模型身份
+  · Trae（trae）不适用：Deals 优惠 / API 计费 / 模型身份
+  · 火山引擎（volcengine）不适用：Coding 套餐
+  · Windsurf（windsurf）不适用：API 计费 / 模型身份
+
+── 有理由的缺口 ④：BLOCKED_SOURCE（声明的来源全坏，且盘上无记录）────
+  （无）
+
+── Current Model Coverage（v2）──────────────────────────────────────
+  声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）
+  unknown release dates          40   registry 共 44 个模型里 releasedAt 为空/缺的（逐条：claude-fable-5.1, claude-haiku-4.5, claude-opus-5.5, claude-sonnet-5.5, doubao-seed-2.1-pro, doubao-seed-2.1-turbo, doubao-seed-character, doubao-seed-evolving …）
+  legacy / historical 保留          1   仍在 registry 与发布产物里（未删除）：deepseek-v3.2(legacy)
+  来源层 status=retired              0   （无）
+  归属不到 Target provider 的 registry 模型      0   这些模型从覆盖宇宙里够不到（models.json 允许 _developers_extra，所以不是报告自身的问题）
+
+── Source Health impact（v2）────────────────────────────────────────
+  声明的来源数                          5   意图层里写过的 deals source（source-health 的 name 或 deals.json 出现过的 source）
+  · 阿里云百炼  healthy（连续失败 0）  影响：aliyun 的 deals
+  · 百度千帆  healthy（连续失败 0）  影响：baidu 的 deals
+  · 火山方舟  healthy（连续失败 0）  影响：volcengine 的 deals
+  · 智谱AI  healthy（连续失败 0）  影响：zhipu 的 deals
+  · 智谱AI活动页  healthy（连续失败 0）  影响：zhipu 的 deals
+
+── Freshness 阈值与理由（v2）────────────────────────────────────────
+  策略来源：scripts/lib/model-freshness.js
+  阈值与理由的唯一出处是 scripts/lib/model-freshness.js 的 MODEL_FRESHNESS_POLICY（按 modelRole 分档）；本报告只读它，不另写一份。"默认展示哪一档"同理只读该模块的 DEFAULT_VISIBLE_CATALOG_STATUSES。
+  策略指纹：v1;default=conversational;conversational=120/240;infrastructure=365/730;multimodal=180/365
+  MODEL_FRESHNESS_POLICY：{"schemaVersion":1,"unit":"days","defaultTier":"conversational","tiers":{"conversational":{"tier":"conversational","modelRoles":["general","fast","reasoning","coding"],"currentWindowDays":120,"agingWindowDays":240},"multimodal":{"tier":"multimodal","modelRoles":["vision","audio","realtime"],"currentWindowDays":180,"agingWindowDays":365},"infrastructure":{"tier":"infrastructure","modelRoles":["embedding","translation","other"],"currentWindowDays":365,"agingWindowDays":730}}}
+  默认展示：current / aging / unknown　默认隐藏：legacy / historical
+
+──────────────────────────────────────────────────────────────────────
+候选登记表：40 条（已采信 13 / 未采信 21）
+报告自检问题：0 处
+
+✅ 覆盖报告自检通过（0 处问题）。

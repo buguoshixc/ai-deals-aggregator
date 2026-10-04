@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-01T00:00:00+08:00",
-  "count": 23,
+  "updatedAt": "2026-10-04T00:00:00+08:00",
+  "count": 37,
   "plans": [
     {
       "id": "536e6b211045",
@@ -58,6 +58,111 @@
           "quote": "Usage limits apply. Prices shown don’t include applicable tax. Price and plans are subject to change at Anthropic's discretion.",
           "sourceUrl": "https://www.anthropic.com/pricing",
           "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "9cdc922f1407",
+      "kind": "coding",
+      "provider": "aws",
+      "planName": "Amazon Q Developer Free Tier",
+      "officialUrl": "https://aws.amazon.com/q/developer/pricing/",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://aws.amazon.com/q/developer/pricing/",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 0,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方逐字 `perpetual Free Tier`（长期免费）⇒ $0 是「官方明说免费」而不是「价格未知」（与既有 trae 免费版同口径）。时效事实（官方产品页逐字公告）：2027-04-30 起 AWS 将停止支持 Amazon Q Developer IDE 插件，官方建议改用 Kiro。完整引文与出处见本条 evidence（字段 billing.note）。"
+      },
+      "quota": {
+        "type": "requests",
+        "amount": 50,
+        "period": "monthly",
+        "description": "官方逐字 50 agentic requests per month；另有 1,000 lines of code per month（用于 Java 升级，单位是「行」）写在 restrictions 里，不塞进 amount。",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": [
+        {
+          "kind": "account_required",
+          "value": true,
+          "note": "官方逐字：available to users logged in as an AWS Identity and Access Management (IAM) user or AWS Builder ID user."
+        }
+      ],
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Amazon Q Developer offers a perpetual Free Tier with monthly limits available to users logged in as an AWS Identity and Access Management (IAM) user or AWS Builder ID user.",
+          "sourceUrl": "https://aws.amazon.com/q/developer/pricing/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "7f63541ead64",
+      "kind": "coding",
+      "provider": "aws",
+      "planName": "Amazon Q Developer Pro",
+      "officialUrl": "https://aws.amazon.com/q/developer/pricing/",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://aws.amazon.com/q/developer/pricing/",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 19,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方逐字 $19/mo. per user、charged per user, per month（首月按天折算）。时效事实（官方产品页逐字公告）：2027-04-30 起 AWS 将停止支持 Amazon Q Developer IDE 插件，官方建议改用 Kiro。完整引文与出处见本条 evidence（字段 billing.note）。"
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "额度单位是**提交的行数（LOC）**，不是 token/积分/请求数 ⇒ 按 other 记并写明口径、不折算。官方逐字：4,000 lines of code per month per user pooled at account level; extra lines at $.003 per LOC submitted.",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": [
+        {
+          "kind": "account_required",
+          "value": true,
+          "note": "官方逐字：allocations aggregated at the AWS payer-account level every month；超额 $0.003/LOC。"
+        }
+      ],
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Pro Tier: Expanded limits $19/mo. per user",
+          "sourceUrl": "https://aws.amazon.com/q/developer/pricing/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        },
+        {
+          "field": "restrictions",
+          "quote": "On April 30, 2027, AWS will discontinue support for Amazon Q Developer IDE plugins. For capabilities similar to Amazon Q Developer IDE plugins, explore Kiro to access the latest models and features.",
+          "sourceUrl": "https://aws.amazon.com/q/developer/",
+          "capturedAt": "2026-10-04",
           "lang": "en"
         }
       ],
@@ -578,6 +683,284 @@
       }
     },
     {
+      "id": "7d2b06f8e311",
+      "kind": "coding",
+      "provider": "google",
+      "planName": "Gemini Code Assist Enterprise",
+      "officialUrl": "https://codeassist.google/",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://codeassist.google/",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 54,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方两组价：年付预付 US $45/user/month、无年付承诺 US $54/user/month ⇒ 收月付 $54。同页另有「Enterprise membership … $75 per developer per month」是另一件商品（企业会员包），与本档不是同一件事，只认 $54。"
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方未给固定额度数值 ⇒ rate_limited，不写数字。",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Price per user with no annual upfront commitment — $0/user/month | $22.80/user/month | $54/user/month",
+          "sourceUrl": "https://codeassist.google/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "55fcf3e3b735",
+      "kind": "coding",
+      "provider": "google",
+      "planName": "Gemini Code Assist Standard",
+      "officialUrl": "https://codeassist.google/",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://codeassist.google/",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 22.8,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方两组价并列：年付预付 US $19/user/month、无年付承诺 US $22.80/user/month ⇒ 收无年付承诺的月付 $22.80，年付 $19 见 note。受众逐字：Individual student, hobbyist, open source, and freelance developers。"
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方本档权益列没有可核对的固定额度数值（只有功能清单与 Gemini CLI 的「generous free tier with high usage limits」这类措辞）⇒ rate_limited 并保留官方口径，**不写数字**。",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Price per user with no annual upfront commitment — $0/user/month | $22.80/user/month | $54/user/month",
+          "sourceUrl": "https://codeassist.google/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "5939e9bc26e7",
+      "kind": "coding",
+      "provider": "iflytek",
+      "planName": "讯飞星辰 MaaS · Astron Coding Plan 速通版",
+      "officialUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+      "source": "Official-Docs",
+      "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 999,
+        "promoPrice": 699,
+        "promoNote": "限时首月优惠：¥699 / 月",
+        "note": "官方表「速通版 ¥999 / 月，限时首月优惠：¥699 / 月」"
+      },
+      "quota": {
+        "type": "requests",
+        "amount": 30000,
+        "period": "monthly",
+        "description": "官方按请求次数：每订阅月最多约 30,000 次",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "| **速通版** | ¥999 / 月，限时首月优惠：¥699 / 月 | [讯飞星辰 MaaS 平台套餐订阅页面]展示为准 | 每订阅月：最多约 30,000 次请求 |",
+          "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+          "capturedAt": "2026-10-04",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "753c01b2b1b9",
+      "kind": "coding",
+      "provider": "iflytek",
+      "planName": "讯飞星辰 MaaS · Astron Coding Plan 高效版",
+      "officialUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+      "source": "Official-Docs",
+      "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 199,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方表「高效版 ¥199 / 月」（实际下单金额以讯飞星辰 MaaS 平台套餐订阅页面展示为准 —— 官方页原文如此标注）"
+      },
+      "quota": {
+        "type": "requests",
+        "amount": 90000,
+        "period": "monthly",
+        "description": "官方按**请求次数**三档流控：每 5 小时最多约 6,000 次；每周最多约 45,000 次；每订阅月最多约 90,000 次",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": [
+        {
+          "kind": "rate_limit",
+          "value": "6000 次 / 5 小时",
+          "note": "5 小时流控：周期 5 小时、滑动步长 1 小时、每个整点刷新（官方原文）；另有周流控与月流控"
+        }
+      ],
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "| **高效版** | ¥199 / 月 | [讯飞星辰 MaaS 平台套餐订阅页面]展示为准 | 每 5 小时：最多约 6,000 次请求；每周：最多约 45,000 次请求；每订阅月：最多约 90,000 次请求 |",
+          "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+          "capturedAt": "2026-10-04",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "3d40bba3e537",
+      "kind": "coding",
+      "provider": "jetbrains",
+      "planName": "JetBrains AI Pro",
+      "officialUrl": "https://www.jetbrains.com/ai-ides/buy/",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 10,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方购买页内嵌商品目录 JSON 同时给出两组价：**个人** US $10.00/月（年付 US $100.00，合 US $8.33/月）、**商业** US $20.00/月（年付 US $200.00，合 US $16.67/月）。复核限制：本环境只能取到 CNY 版（页面自报 iso=CNY），USD 金额取自页内 code=AIP/AIPU 商品目录 JSON、不可服务端复核。"
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方该页只给价格与服务档位，未公布可核对的固定额度数值 ⇒ 按 rate_limited 记，不写数字。",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "\"code\": \"AIP\" … \"prices\": {\"personal\": {\"yearlyPerMonth\": [\"US $8.33\"], \"monthly\": [\"US $10.00\"]}, \"commercial\": {\"monthly\": [\"US $20.00\"]}} … \"name\": \"JetBrains AI Pro\"",
+          "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        },
+        {
+          "field": "billing.regularPrice",
+          "quote": "\"currency\": {\"symbol\": \"CNY\", \"isPrefix\": false, \"iso\": \"CNY\"}, \"countryCode\": \"CN\", \"countryName\": \"China Mainland\"",
+          "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "6713bb49d876",
+      "kind": "coding",
+      "provider": "jetbrains",
+      "planName": "JetBrains AI Ultimate",
+      "officialUrl": "https://www.jetbrains.com/ai-ides/buy/",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 30,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方同一商品目录 JSON：个人 US $30.00/月（年付 US $300.00，合 US $25.00/月）、商业 US $60.00/月（年付 US $600.00，合 US $50.00/月）⇒ 收个人档月付。复核限制：本环境只能取到 CNY 版（页面自报 iso=CNY），USD 金额取自页内 code=AIP/AIPU 商品目录 JSON、不可服务端复核。"
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方未公布可核对的固定额度数值 ⇒ rate_limited，不写数字。",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "\"code\": \"AIPU\" … \"prices\": {\"personal\": {\"monthly\": [\"US $30.00\"]}, \"commercial\": {\"monthly\": [\"US $60.00\"]}} … \"name\": \"JetBrains AI Ultimate\"",
+          "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        },
+        {
+          "field": "billing.regularPrice",
+          "quote": "\"currency\": {\"symbol\": \"CNY\", \"isPrefix\": false, \"iso\": \"CNY\"}, \"countryCode\": \"CN\", \"countryName\": \"China Mainland\"",
+          "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
       "id": "23d23eb57977",
       "kind": "coding",
       "provider": "minimax",
@@ -990,6 +1373,476 @@
           "quote": "自 2026 年 6 月 20 日起，通过 Qoder CN（全家桶）个人版订阅的 Credits 可在 Desktop、JetBrains 插件、QoderWork、Qoder CLI、QoderWake、Mobile 间共享使用",
           "sourceUrl": "https://help.aliyun.com/zh/lingma/billing-description",
           "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "415f82fc8938",
+      "kind": "coding",
+      "provider": "replit",
+      "planName": "Core",
+      "officialUrl": "https://replit.com/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://replit.com/pricing",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 20,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方定价页顶部标注 Yearly「Up to 10% off」；Core 卡片直出 $20 / $18 / month, billed annually。本条收**月付 $20**，年付 $18/月 见本条 note。"
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "官方卡片逐字：$20 towards most powerful models（每月 $20 抵用于最强模型）+ Up to 30 hours of chat on Free Mode + Up to 60 projects on Free Mode。额度以**金额**表示、官方未给 token / 积分数值 ⇒ 按 other 记并写明口径，**不折算**。",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Core $20 $18 / month, billed annually",
+          "sourceUrl": "https://replit.com/pricing",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "4f9af31d0d58",
+      "kind": "coding",
+      "provider": "replit",
+      "planName": "Pro",
+      "officialUrl": "https://replit.com/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://replit.com/pricing",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 100,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方卡片 Pro $100 / $90 / month, billed annually。本条收月付 $100，年付 $90/月 见本条 note。Enterprise 档官方写 Custom ⇒ 不是固定档价，**不收**；页面上没有 Free 档 ⇒ 不为它新建 regularPrice=0 的记录。"
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "官方卡片逐字：$100 towards most powerful models + 10 parallel agents + Even more Free Mode usage + Up to 15 collaborators + Invite up to 50 viewers + Database rollback up to 28 days。金额口径 ⇒ other，不折算。",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Pro $100 $90 / month, billed annually",
+          "sourceUrl": "https://replit.com/pricing",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "2281d41b3a26",
+      "kind": "coding",
+      "provider": "stepfun",
+      "planName": "Step Plan · Flash Max",
+      "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "source": "Official-Docs",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 699,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方月付价；同一页另有季付 / 年付（¥129/¥456 等），本轮只落月付档（季付与年付是同一 SKU 的另一个周期，落进来会变成两条价格不同的同档记录）"
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 40000000000,
+        "period": "monthly",
+        "description": "官方 Credit 月池 40000M；官方明写「1M Credit = ¥1（100 万 Credit 对应 ¥1 的模型用量）」，月内任意时段消耗、月末清零不结转",
+        "conversionDependsOnModel": false
+      },
+      "supportedModels": [
+        {
+          "name": "step-3.5-flash",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-3.5-flash-2603",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-3.7-flash",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-5-preview",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-router-v1",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-asr",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-chat",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-realtime",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-tts",
+          "role": "included",
+          "note": null
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "| **Flash Max** | 高强度使用 AI 的专业用户 | 40000M | ¥699 | ¥1889 | ¥6666 |",
+          "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+          "capturedAt": "2026-10-04",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）",
+          "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+          "capturedAt": "2026-10-04",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "ef931b98b927",
+      "kind": "coding",
+      "provider": "stepfun",
+      "planName": "Step Plan · Flash Mini",
+      "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "source": "Official-Docs",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 49,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方月付价；同一页另有季付 / 年付（¥129/¥456 等），本轮只落月付档（季付与年付是同一 SKU 的另一个周期，落进来会变成两条价格不同的同档记录）"
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 400000000,
+        "period": "monthly",
+        "description": "官方 Credit 月池 400M；官方明写「1M Credit = ¥1（100 万 Credit 对应 ¥1 的模型用量）」，月内任意时段消耗、月末清零不结转",
+        "conversionDependsOnModel": false
+      },
+      "supportedModels": [
+        {
+          "name": "step-3.5-flash",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-3.5-flash-2603",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-3.7-flash",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-5-preview",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-router-v1",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-asr",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-chat",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-realtime",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-tts",
+          "role": "included",
+          "note": null
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "| **Flash Mini** | 入门体验 AI 的用户 | 400M | ¥49 | ¥129 | ¥456 |",
+          "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+          "capturedAt": "2026-10-04",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）",
+          "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+          "capturedAt": "2026-10-04",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "0a66f3117162",
+      "kind": "coding",
+      "provider": "stepfun",
+      "planName": "Step Plan · Flash Plus",
+      "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "source": "Official-Docs",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 99,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方月付价；同一页另有季付 / 年付（¥129/¥456 等），本轮只落月付档（季付与年付是同一 SKU 的另一个周期，落进来会变成两条价格不同的同档记录）"
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 1600000000,
+        "period": "monthly",
+        "description": "官方 Credit 月池 1600M；官方明写「1M Credit = ¥1（100 万 Credit 对应 ¥1 的模型用量）」，月内任意时段消耗、月末清零不结转",
+        "conversionDependsOnModel": false
+      },
+      "supportedModels": [
+        {
+          "name": "step-3.5-flash",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-3.5-flash-2603",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-3.7-flash",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-5-preview",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-router-v1",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-asr",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-chat",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-realtime",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-tts",
+          "role": "included",
+          "note": null
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "| **Flash Plus** | 日常使用 AI 提效的用户 | 1600M | ¥99 | ¥269 | ¥936 |",
+          "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+          "capturedAt": "2026-10-04",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）",
+          "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+          "capturedAt": "2026-10-04",
+          "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "383ed55706fc",
+      "kind": "coding",
+      "provider": "stepfun",
+      "planName": "Step Plan · Flash Pro",
+      "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "source": "Official-Docs",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+      "region": "cn",
+      "billing": {
+        "period": "monthly",
+        "currency": "CNY",
+        "regularPrice": 199,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方月付价；同一页另有季付 / 年付（¥129/¥456 等），本轮只落月付档（季付与年付是同一 SKU 的另一个周期，落进来会变成两条价格不同的同档记录）"
+      },
+      "quota": {
+        "type": "credits",
+        "amount": 8000000000,
+        "period": "monthly",
+        "description": "官方 Credit 月池 8000M；官方明写「1M Credit = ¥1（100 万 Credit 对应 ¥1 的模型用量）」，月内任意时段消耗、月末清零不结转",
+        "conversionDependsOnModel": false
+      },
+      "supportedModels": [
+        {
+          "name": "step-3.5-flash",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-3.5-flash-2603",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-3.7-flash",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-5-preview",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "step-router-v1",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-asr",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-chat",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-realtime",
+          "role": "included",
+          "note": null
+        },
+        {
+          "name": "stepaudio-2.5-tts",
+          "role": "included",
+          "note": null
+        }
+      ],
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "| **Flash Pro** | 高频使用 AI 的深度用户 | 8000M | ¥199 | ¥539 | ¥1860 |",
+          "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+          "capturedAt": "2026-10-04",
+          "lang": "zh"
+        },
+        {
+          "field": "quota.amount",
+          "quote": "Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）",
+          "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+          "capturedAt": "2026-10-04",
           "lang": "zh"
         }
       ],

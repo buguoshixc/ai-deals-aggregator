@@ -1,0 +1,26 @@
+{
+  "_note": "t30 / T26-F1 的 fixture：modelKey schema（^[a-z0-9][a-z0-9._-]{1,59}$）允许的全部分隔符形状。切分集原为 [/．.]，T26-F1 起补 _ 与 -。",
+  "_rule": "尾段一律走 identityFold 折叠精确相等（NFKC → 去末尾（…）/(…) → 去空白与 - . _ / → 小写），不引入相似度 / 编辑距离 / 子串包含。",
+  "_honestyNote": "t26 点名的三种 zai 形状在**真实 registry** 上即使不切分也能命中 —— 因为 glm-5.3 的别名 `zai-org/GLM-5.3` 整串折叠后恰好相等（missedBeforeFix=false 如实记录）。切分漏洞真正暴露的形状是「命名空间不在任何 registry 别名里」的那些（acme_* / vendor_*），它们修补前 0 命中、修补后命中。两类都留在这里，免得把「别名恰好覆盖」误读成「切分本来够用」。",
+  "fixtures": [
+    { "modelKey": "zai_org_glm-5.3", "name": "ACME Model X", "expectedSlug": "glm-5.3", "missedBeforeFix": false, "shape": "下划线命名空间（t26 点名形状）", "why": "真实 registry 里 glm-5.3 的别名 zai-org/GLM-5.3 使整串折叠即可命中；切分补齐后仍命中" },
+    { "modelKey": "zai-org_glm-5.3", "name": "ACME Model X", "expectedSlug": "glm-5.3", "missedBeforeFix": false, "shape": "连字符 + 下划线混合（t26 点名形状）", "why": "同上" },
+    { "modelKey": "zai-org-glm-5.3", "name": "ACME Model X", "expectedSlug": "glm-5.3", "missedBeforeFix": false, "shape": "全连字符命名空间（t26 点名形状）", "why": "同上" },
+    { "modelKey": "zai-org.glm-5.3", "name": "ACME Model X", "expectedSlug": "glm-5.3", "missedBeforeFix": false, "shape": "点命名空间（原实现已覆盖）", "why": "同上" },
+    { "modelKey": "acme_glm-5.3", "name": "ACME Model X", "expectedSlug": "glm-5.3", "missedBeforeFix": true, "shape": "下划线命名空间（不在任何别名里）", "why": "命名空间不是任何 registry 别名的一部分 ⇒ 只能靠后缀切分；修补前 0 命中，这就是 T26-F1 的漏洞形状" },
+    { "modelKey": "acme-glm-5.3", "name": "ACME Model X", "expectedSlug": "glm-5.3", "missedBeforeFix": true, "shape": "连字符命名空间（不在任何别名里）", "why": "同上" }
+  ],
+  "nonModelKeyShapes": {
+    "_note": "`/` 不是 modelKey 的合法字符（MODEL_KEY_RE 只允许 [a-z0-9._-]），它是 registry **别名**的写法（如 `zai-org/GLM-5.3`）。切分集保留 `/` 只为兼容「探测值里带斜杠」的形状（别名、官方显示名里的 modelId），不是因为 modelKey 需要它 —— 所以这不是「为 schema 拒收的拼法加规则」。",
+    "examples": [{ "value": "acme/glm-5.3", "expectedSlug": "glm-5.3" }]
+  },
+  "controls": [
+    { "modelKey": "openai.gpt-oss-120b", "name": "GPT OSS 120B", "expectedSlug": null, "why": "真实 off-registry 键：schema 合法、registry 里确实没有身份 ⇒ 必须 0 命中（不许被新切分规则误伤）" },
+    { "modelKey": "nemotron-lightning-3p5-30b-a3b", "name": "NVIDIA Nemotron 3.5 Lightning 30B A3B", "expectedSlug": null, "why": "切 `-` 会产生 a3b / 30b 这类碎尾段；折叠后仍不等于任何 registry 身份 ⇒ 必须 0 命中" },
+    { "modelKey": "ACME Model X", "name": "ACME Model X", "expectedSlug": null, "why": "fixture 用的官方显示名本身对不上任何身份（selftest 里靠这条保证「红只来自 modelKey 那条路」）" }
+  ],
+  "rejectedShapes": {
+    "_note": "MODEL_KEY_RE 拒收的拼法（冒号 / 井号 / 反斜杠 / 中文方括号 / 空格）根本进不了 modelKey ⇒ 不需要为它们加切分规则。",
+    "samples": ["a:b", "a#b", "a\\b", "a【b】", "a b"]
+  }
+}

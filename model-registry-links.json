@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 1,
-  "updatedAt": "2026-10-01T00:00:00+08:00",
-  "count": 64,
+  "schemaVersion": 2,
+  "updatedAt": "2026-10-04T00:00:00+08:00",
+  "count": 82,
   "links": [
     {
       "registrySlug": "claude-fable-5.1",
@@ -74,6 +74,26 @@
         }
       ],
       "note": null
+    },
+    {
+      "registrySlug": "deepseek-flash",
+      "registryModelId": "899d7c20d38d",
+      "apiPlanId": "8a26562011f2",
+      "modelKey": "deepseek-ai.v4.1-flash",
+      "variant": "standard",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "provider 官方显示名「DeepSeek V4.1 Flash」折叠后 = registry 别名 `DeepSeek-V4.1-Flash`；本记录引文未点名该模型 ⇒ 显式映射，不新造引文。"
+    },
+    {
+      "registrySlug": "deepseek-flash",
+      "registryModelId": "899d7c20d38d",
+      "apiPlanId": "929a1f3ec46c",
+      "modelKey": "deepseek-v4p1-flash",
+      "variant": "standard",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "官方显示名「DeepSeek V4.1 Flash」= registry 别名 `DeepSeek-V4.1-Flash`；官方 modelId 里的 `p1` 是该平台拼法，映射依据是**官方显示名**而不是版本号相似；引文未点名它 ⇒ 显式映射。"
     },
     {
       "registrySlug": "deepseek-flash",
@@ -164,6 +184,16 @@
         }
       ],
       "note": null
+    },
+    {
+      "registrySlug": "deepseek-v4-pro",
+      "registryModelId": "dc14ac8189fc",
+      "apiPlanId": "8a26562011f2",
+      "modelKey": "deepseek-ai.v4-pro-0813",
+      "variant": "standard",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "provider 官方显示名「DeepSeek V4 Pro 0813」折叠后 = registry 别名 `deepseek-v4-pro-0813`（该身份 releasedAt=2026-08-13，与 0813 同日）；本记录只有一条 pricing.currency 引文、未点名该模型 ⇒ 显式映射，不新造引文。"
     },
     {
       "registrySlug": "deepseek-v4-pro",
@@ -492,6 +522,34 @@
     {
       "registrySlug": "glm-5.3",
       "registryModelId": "40a03259a800",
+      "apiPlanId": "8a26562011f2",
+      "modelKey": "zai-org.glm-5.3",
+      "variant": "standard",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "modelKey 去掉命名空间前缀后与 slug `glm-5.3` 逐字相等（官方写法对官方写法）；本记录引文未点名 GLM ⇒ 显式映射，不新造引文。"
+    },
+    {
+      "registrySlug": "glm-5.3",
+      "registryModelId": "40a03259a800",
+      "apiPlanId": "929a1f3ec46c",
+      "modelKey": "glm-5p3",
+      "variant": "standard",
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.currency",
+          "quote": "(USD per 1M tokens)",
+          "sourceUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "note": "该记录的官方引文里逐字出现「GLM 5.3」⇒ 用引文类 basis；引文整条逐字照抄自该记录自己的 evidence（field/quote/sourceUrl 相同），不新造引文。"
+    },
+    {
+      "registrySlug": "glm-5.3",
+      "registryModelId": "40a03259a800",
       "apiPlanId": "ebc4af9a71b6",
       "modelKey": "glm-5.3",
       "variant": null,
@@ -524,6 +582,26 @@
         }
       ],
       "note": null
+    },
+    {
+      "registrySlug": "glm-5.3-flash",
+      "registryModelId": "8b5b023d64ed",
+      "apiPlanId": "8a26562011f2",
+      "modelKey": "zai-org.glm-5.3-flash",
+      "variant": "standard",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "modelKey 去掉命名空间前缀后与 slug `glm-5.3-flash` 逐字相等（官方写法对官方写法）；本记录引文未点名 GLM ⇒ 显式映射，不新造引文。"
+    },
+    {
+      "registrySlug": "glm-5.3-flash",
+      "registryModelId": "8b5b023d64ed",
+      "apiPlanId": "929a1f3ec46c",
+      "modelKey": "glm-5p3-flash",
+      "variant": "standard",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "官方显示名「GLM 5.3 Flash」= canonicalName `GLM-5.3-Flash`；本记录引文只抄到「GLM 5.3」那一行、没有逐字抄 Flash 行 ⇒ 显式映射，不新造引文。"
     },
     {
       "registrySlug": "glm-5v-turbo",
@@ -780,6 +858,42 @@
     {
       "registrySlug": "kimi-k3",
       "registryModelId": "b24a97c1562b",
+      "apiPlanId": "8a26562011f2",
+      "modelKey": "moonshotai.kimi-k3",
+      "variant": "standard",
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.currency",
+          "quote": "Input pricing (per 1M tokens)",
+          "sourceUrl": "https://docs.together.ai/docs/serverless/models.md",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "note": "该记录官方引文逐字出现「Kimi K3」⇒ 用引文类 basis；引文整条照抄自记录自己的 evidence，不新造引文。"
+    },
+    {
+      "registrySlug": "kimi-k3",
+      "registryModelId": "b24a97c1562b",
+      "apiPlanId": "929a1f3ec46c",
+      "modelKey": "kimi-k3",
+      "variant": "standard",
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.currency",
+          "quote": "(USD per 1M tokens)",
+          "sourceUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "note": "该记录官方引文逐字出现「Kimi K3」⇒ 用引文类 basis；引文整条照抄自记录自己的 evidence，不新造引文。"
+    },
+    {
+      "registrySlug": "kimi-k3",
+      "registryModelId": "b24a97c1562b",
       "apiPlanId": "ebc4af9a71b6",
       "modelKey": "kimi-k3",
       "variant": null,
@@ -870,6 +984,26 @@
     {
       "registrySlug": "minimax-m3",
       "registryModelId": "62e85e8d9cce",
+      "apiPlanId": "8a26562011f2",
+      "modelKey": "minimaxai.m3",
+      "variant": "standard",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "provider 官方显示名「MiniMax M3」折叠后 = registry slug `minimax-m3`（= canonicalName / 别名 `MiniMax/MiniMax-M3`）；本记录引文未点名该模型 ⇒ 显式映射，不新造引文。"
+    },
+    {
+      "registrySlug": "minimax-m3",
+      "registryModelId": "62e85e8d9cce",
+      "apiPlanId": "929a1f3ec46c",
+      "modelKey": "minimax-m3",
+      "variant": "standard",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "官方 modelKey `minimax-m3` 与 slug 逐字相等；本记录引文未点名 MiniMax ⇒ 显式映射，不新造引文。"
+    },
+    {
+      "registrySlug": "minimax-m3",
+      "registryModelId": "62e85e8d9cce",
       "apiPlanId": "ebc4af9a71b6",
       "modelKey": "minimax-m3",
       "variant": null,
@@ -924,6 +1058,34 @@
     {
       "registrySlug": "qwen3.8-27b",
       "registryModelId": "281a741c37b2",
+      "apiPlanId": "036c5f09561e",
+      "modelKey": "qwen.qwen3.8-27b",
+      "variant": "standard",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "modelKey 去掉命名空间前缀 `qwen.` 后与 slug `qwen3.8-27b` 逐字相等；本记录引文未点名 Qwen ⇒ 显式映射，不新造引文。"
+    },
+    {
+      "registrySlug": "qwen3.8-27b",
+      "registryModelId": "281a741c37b2",
+      "apiPlanId": "61aa6c3ed3ff",
+      "modelKey": "qwen3.8-27b",
+      "variant": "standard",
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "pricing.currency",
+          "quote": "[OPENAI]GPT OSS 120B | ~3000 tokens/s | $0.35/M tokens | $0.75/M tokens",
+          "sourceUrl": "https://www.cerebras.ai/pricing",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "note": "该记录官方引文逐字出现「Qwen 3.8 27B」⇒ 用引文类 basis；引文整条照抄自记录自己的 evidence，不新造引文。"
+    },
+    {
+      "registrySlug": "qwen3.8-27b",
+      "registryModelId": "281a741c37b2",
       "apiPlanId": "6844d46deb05",
       "modelKey": "qwen3.8-27b",
       "variant": null,
@@ -938,6 +1100,16 @@
         }
       ],
       "note": null
+    },
+    {
+      "registrySlug": "qwen3.8-max",
+      "registryModelId": "59faf9eda626",
+      "apiPlanId": "929a1f3ec46c",
+      "modelKey": "qwen3p8-max",
+      "variant": "standard",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "官方显示名「Qwen 3.8 Max」= registry slug/canonicalName `qwen3.8-max`；本记录引文未点名该模型 ⇒ 显式映射，不新造引文。"
     },
     {
       "registrySlug": "qwen3.8-max",
@@ -1089,6 +1261,42 @@
       "basis": "explicit-mapping",
       "evidence": [],
       "note": "套餐的 supportedModels 里逐字写着这个模型（人工逐条确认），但该套餐的官方页引文只覆盖了价格与额度，本仓库尚未捕获模型清单那一处的原文 ⇒ 如实标成显式映射（explicit-mapping）。把没有引文的事写成一条引文才是造假。"
+    },
+    {
+      "registrySlug": "step-3.5-flash",
+      "registryModelId": "08a33ff6273a",
+      "planId": "0a66f3117162",
+      "modelName": "step-3.5-flash",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐 supportedModels 里逐字写的就是 registry 的既有身份 step-3.5-flash（归一后精确相等）；依据是 Step Plan 官方页的 supportedModels 表本身，而该套餐记录没有为这一串单独写官方引文（引文只允许复制记录已有的，不许新造）⇒ 走 explicit-mapping 出口。"
+    },
+    {
+      "registrySlug": "step-3.5-flash",
+      "registryModelId": "08a33ff6273a",
+      "planId": "2281d41b3a26",
+      "modelName": "step-3.5-flash",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐 supportedModels 里逐字写的就是 registry 的既有身份 step-3.5-flash（归一后精确相等）；依据是 Step Plan 官方页的 supportedModels 表本身，而该套餐记录没有为这一串单独写官方引文（引文只允许复制记录已有的，不许新造）⇒ 走 explicit-mapping 出口。"
+    },
+    {
+      "registrySlug": "step-3.5-flash",
+      "registryModelId": "08a33ff6273a",
+      "planId": "383ed55706fc",
+      "modelName": "step-3.5-flash",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐 supportedModels 里逐字写的就是 registry 的既有身份 step-3.5-flash（归一后精确相等）；依据是 Step Plan 官方页的 supportedModels 表本身，而该套餐记录没有为这一串单独写官方引文（引文只允许复制记录已有的，不许新造）⇒ 走 explicit-mapping 出口。"
+    },
+    {
+      "registrySlug": "step-3.5-flash",
+      "registryModelId": "08a33ff6273a",
+      "planId": "ef931b98b927",
+      "modelName": "step-3.5-flash",
+      "basis": "explicit-mapping",
+      "evidence": [],
+      "note": "套餐 supportedModels 里逐字写的就是 registry 的既有身份 step-3.5-flash（归一后精确相等）；依据是 Step Plan 官方页的 supportedModels 表本身，而该套餐记录没有为这一串单独写官方引文（引文只允许复制记录已有的，不许新造）⇒ 走 explicit-mapping 出口。"
     }
   ]
 }

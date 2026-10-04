@@ -509,6 +509,82 @@ console.log('=== ⑧ 断言依据档位（t7：第三方收录 / 推断不得写
 }
 
 /* ------------------------------------------------------------------ */
+/* ⑩ t35 / M24：引文自称牙（quote 里不许出现元自称）                     */
+/* ------------------------------------------------------------------ */
+//
+// ⚠️ 这一节测的是**判据本身 + 接线 + 盘面现场**，它**不**回答"盘上真实引文是不是忠于官方页"。
+// 那个问题没有离线门禁：把 deals.json 里真实记录 4987c183fc1a 的引文改成编造文本，
+// 本文件（以及任何第三方门禁）照样全绿 —— t17 的独立实验，见
+// docs/DESIGN-RULES.md §8 的 H10 边界说明与 research/_raw/t35/M24-BOUNDARY.md。
+// **0 命中 ≠ 已验真**：这条牙关的是"改写件自称逐字"那一种形态（t15-F1/F2）。
+
+console.log('=== ⑩ 引文自称牙（t35 / M24） ===');
+
+const validateModule = require('../validate.js');
+
+check('M24：扫描器已从 scripts/validate.js 导出（牙不是没人读的死代码）',
+  typeof validateModule.scanQuoteSelfClaims === 'function');
+check('M24：判据形态至少 5 种（逐字 / 一字不差 / 原文照录 / 原文如此 / verbatim 各族）',
+  Array.isArray(validateModule.QUOTE_SELF_CLAIM_PATTERNS) && validateModule.QUOTE_SELF_CLAIM_PATTERNS.length >= 5,
+  `实得 ${(validateModule.QUOTE_SELF_CLAIM_PATTERNS || []).length}`);
+check('M24：扫描清单覆盖三份发布数据（deals / plans / api-plans）与策展 + 三份历史 + 身份关系层',
+  Array.isArray(validateModule.QUOTE_SELF_CLAIM_FILES)
+  && ['deals.json', 'plans.json', 'api-plans.json'].every(label => validateModule.QUOTE_SELF_CLAIM_FILES.some(entry => entry.label === label))
+  && validateModule.QUOTE_SELF_CLAIM_FILES.length >= 10,
+  `实得 ${(validateModule.QUOTE_SELF_CLAIM_FILES || []).length} 篇`);
+
+// —— 必须有牙：t15-F1/F2 的真实失败措辞（commit af92d5d 的 `-` 行）必须被抓，并点名路径 ——
+const MUST_FLAG = [
+  ['（Developer 档逐字）', '逐字'],
+  ['价目表逐字照录：$0.15 / $0.60', '逐字'],
+  ['本条与官方页一字不差', '一字不差'],
+  ['原文照录：Input $0.15 / Output $0.60', '原文照录'],
+  ['原文如此', '原文如此'],
+  ['verbatim from the pricing table', 'verbatim'],
+  ['Word-for-word from the docs page', 'word-for-word']
+];
+MUST_FLAG.forEach(([text, expect]) => {
+  const scanned = validateModule.scanQuoteSelfClaims({ records: [{ evidence: [{ quote: text }] }] }, 'fixture');
+  const named = scanned.problems.some(problem => problem.includes('fixture records[0].evidence[0].quote') && problem.includes(expect));
+  check(`M24 牙：quote 含「${expect}」⇒ 报问题并点名字段路径`,
+    scanned.problems.length > 0 && named, scanned.problems.slice(0, 1).join(' | ') || '没有报问题');
+});
+
+// —— 必须放行：判据边界（判不准的词不写成牙；正常引文不许误伤）——
+const MUST_PASS = [
+  ['$0.35 / $0.75 per 1M tokens（USD）', '正常价格文本（含中文括号）'],
+  ['PRICE PER 1M TOKENS — GPT OSS 120B $0.15 / $0.60', '正常英文价目表片段'],
+  ['以官方原文为准', '「官方原文」可能出现在官方页正文里（内容歧义）⇒ 按边界不纳入'],
+  ['官方原话：年付五折', '「官方原话」同上；本文件 ① 节的合法引文夹具就是这一条']
+];
+MUST_PASS.forEach(([text, why]) => {
+  const scanned = validateModule.scanQuoteSelfClaims({ evidence: [{ quote: text }] }, 'fixture');
+  check(`M24 边界：${why} ⇒ 放行`, scanned.problems.length === 0, scanned.problems.slice(0, 1).join(' | '));
+});
+check('M24：没有 quote 的文档 ⇒ 0 条 quote / 0 问题（分母为 0 不是"扫过了"）',
+  JSON.stringify(validateModule.scanQuoteSelfClaims({ records: [{ title: 'x' }] }, 'fixture')) === JSON.stringify({ quotes: 0, problems: [] }));
+
+// —— 接线：扫描器必须在 --strict 的守卫里被调用，且问题必须进同一份 error 账 ——
+const validateSource = fs.readFileSync(path.join(ROOT, 'scripts', 'validate.js'), 'utf8');
+const guardStart = validateSource.indexOf('function checkProvenanceGuard()');
+const guardBody = validateSource.slice(guardStart, validateSource.indexOf('function checkOfficialDomainGuard()'));
+check('M24 接线：扫描器在 checkProvenanceGuard()（--strict 路径）里被调用',
+  guardStart >= 0 && /scanQuoteSelfClaims\(/.test(guardBody));
+check('M24 接线：命中问题走 error()（与其它门禁同一份 exit 1 账）',
+  /scanned\.problems\.forEach\(problem => error\(problem\)\)/.test(guardBody));
+
+// —— 现场：真实盘面的读数（0 也要打印 —— "跑了、干净"与"没跑"必须长得不一样）——
+const liveRows = validateModule.QUOTE_SELF_CLAIM_FILES
+  .filter(entry => fs.existsSync(entry.file))
+  .map(entry => ({ label: entry.label, ...validateModule.scanQuoteSelfClaims(JSON.parse(fs.readFileSync(entry.file, 'utf8')), entry.label) }));
+const liveQuotes = liveRows.reduce((sum, row) => sum + row.quotes, 0);
+const liveHits = liveRows.reduce((sum, row) => sum + row.problems.length, 0);
+check(`M24 现场：真实盘面 ${liveRows.length} 篇文件 / ${liveQuotes} 条 quote 全部 0 命中`,
+  liveRows.length >= 10 && liveQuotes > 0 && liveHits === 0, `hits=${liveHits}`);
+console.log(`   现场读数：${liveQuotes} 条 quote / ${liveRows.length} 篇文件 · ${liveHits} 命中` +
+  '（它只回答"引文有没有自称"，不回答"引文是不是真的"——见 H10 边界）');
+
+/* ------------------------------------------------------------------ */
 
 console.log(`\n${failures.length ? '❌' : '✅'} provenance 自测：${pass} 项通过，${failures.length} 项失败`);
 if (failures.length) {

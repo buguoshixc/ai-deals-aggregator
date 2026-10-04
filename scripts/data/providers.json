@@ -1,4 +1,146 @@
 {
+  "ai360": {
+    "name": "360智脑",
+    "slug": "ai360",
+    "aliases": [
+      "360智脑",
+      "360 智脑"
+    ],
+    "logo": "ai360",
+    "vendorKey": "ai360",
+    "officialDomains": [
+      "360.com"
+    ]
+  },
+  "baichuan": {
+    "name": "百川智能",
+    "slug": "baichuan",
+    "aliases": [
+      "百川智能",
+      "baichuan"
+    ],
+    "logo": "baichuan",
+    "vendorKey": "baichuan",
+    "officialDomains": [
+      "baichuan-ai.com"
+    ]
+  },
+  "stepfun": {
+    "name": "阶跃星辰",
+    "slug": "stepfun",
+    "aliases": [
+      "阶跃星辰",
+      "stepfun"
+    ],
+    "logo": "stepfun",
+    "vendorKey": "stepfun",
+    "officialDomains": [
+      "stepfun.com"
+    ]
+  },
+  "sensetime": {
+    "name": "商汤科技",
+    "slug": "sensetime",
+    "aliases": [
+      "商汤科技",
+      "sensetime"
+    ],
+    "logo": "sensetime",
+    "vendorKey": "sensetime",
+    "officialDomains": [
+      "sensetime.com"
+    ]
+  },
+  "replit": {
+    "name": "Replit",
+    "slug": "replit",
+    "aliases": [
+      "replit"
+    ],
+    "logo": "replit",
+    "vendorKey": "replit",
+    "officialDomains": [
+      "replit.com"
+    ]
+  },
+  "aws": {
+    "name": "AWS",
+    "slug": "aws",
+    "aliases": [
+      "aws",
+      "amazon web services"
+    ],
+    "logo": "aws",
+    "vendorKey": "aws",
+    "officialDomains": [
+      "aws.amazon.com"
+    ]
+  },
+  "jetbrains": {
+    "name": "JetBrains",
+    "slug": "jetbrains",
+    "aliases": [
+      "jetbrains",
+      "jetbrains ai",
+      "jetbrains ai pro",
+      "jetbrains ai ultimate"
+    ],
+    "logo": "jetbrains",
+    "vendorKey": null,
+    "officialDomains": [
+      "jetbrains.com"
+    ]
+  },
+  "groq": {
+    "name": "Groq",
+    "slug": "groq",
+    "aliases": [
+      "groq"
+    ],
+    "logo": "groq",
+    "vendorKey": null,
+    "officialDomains": [
+      "groq.com"
+    ]
+  },
+  "together": {
+    "name": "Together AI",
+    "slug": "together",
+    "aliases": [
+      "together ai",
+      "together"
+    ],
+    "logo": "together",
+    "vendorKey": null,
+    "officialDomains": [
+      "together.ai"
+    ]
+  },
+  "fireworks": {
+    "name": "Fireworks AI",
+    "slug": "fireworks",
+    "aliases": [
+      "fireworks ai",
+      "fireworks"
+    ],
+    "logo": "fireworks",
+    "vendorKey": null,
+    "officialDomains": [
+      "fireworks.ai"
+    ]
+  },
+  "cerebras": {
+    "name": "Cerebras",
+    "slug": "cerebras",
+    "aliases": [
+      "cerebras"
+    ],
+    "logo": "cerebras",
+    "vendorKey": null,
+    "officialDomains": [
+      "cerebras.ai"
+    ]
+  },
   "_note": "plans.json 的 Provider 归一表。与 deals 侧的厂商归一（index.html 的 RENDER-CORE 里 VENDOR_RULES / vendorOf()）是**两套身份空间**：deals 的 vendor 是采集来的原始串、渲染期归一；plans 的 provider 必须在这里登记，未登记一律构建期硬红 —— 这样才能保证「同一家平台不会在 Plans 里分裂成多个身份」。",
   "_keying": "键是 key（稳定机器标识，直接进 plan.id）；name 是规范显示名（只用于展示，改名不会改 id）；slug 用于 Phase 2.2 的路由，与 scripts/data/vendor-slugs.json 同一套形状与唯一性判据；vendorKey 是这家公司在 **A 空间**（index.html RENDER-CORE 的 VENDOR_RULES）里的厂商键，在 deals 侧没有身份的公司写 null。",
   "_rule": "key 与 slug 必须匹配 ^[a-z0-9][a-z0-9-]*$ 且各自全局唯一；aliases 必须**已经是归一形态**（NFKC + 去首尾空白 + 折叠空白 + 转小写），匹配方式是**精确相等**（刻意不做子串/正则匹配：子串匹配会出「krea 命中 Kreado」那类误并）；name 与 vendor-slugs.json 的某个键相同时，两边的 slug 必须相同；vendorKey 必须是 null 或匹配同一套形状、全局唯一，且从 VENDOR_RULES 取回的显示名必须**逐字等于 name**（判据：scripts/lib/providers.js 的 validateVendorKeyAgreement）。",
@@ -9,189 +151,356 @@
   "zhipu": {
     "name": "智谱AI",
     "slug": "zhipu",
-    "aliases": ["智谱ai", "智谱", "zhipu", "bigmodel", "glm"],
+    "aliases": [
+      "智谱ai",
+      "智谱",
+      "zhipu",
+      "bigmodel",
+      "glm"
+    ],
     "logo": "zhipu",
     "vendorKey": "zhipu",
-    "officialDomains": ["bigmodel.cn"]
+    "officialDomains": [
+      "bigmodel.cn"
+    ]
   },
   "trae": {
     "name": "Trae",
     "slug": "trae",
-    "aliases": ["trae", "trae cn", "traecn", "trae.cn", "trae.ai"],
+    "aliases": [
+      "trae",
+      "trae cn",
+      "traecn",
+      "trae.cn",
+      "trae.ai"
+    ],
     "logo": null,
     "vendorKey": null,
-    "officialDomains": ["trae.cn"]
+    "officialDomains": [
+      "trae.cn"
+    ]
   },
   "qoder": {
     "name": "Qoder CN",
     "slug": "qoder",
-    "aliases": ["qoder", "qoder cn", "qodercn", "灵码", "通义灵码", "lingma"],
+    "aliases": [
+      "qoder",
+      "qoder cn",
+      "qodercn",
+      "灵码",
+      "通义灵码",
+      "lingma"
+    ],
     "logo": null,
     "vendorKey": null,
-    "officialDomains": ["help.aliyun.com", "qoder.com"]
+    "officialDomains": [
+      "help.aliyun.com",
+      "qoder.com"
+    ]
   },
   "codebuddy": {
     "name": "腾讯 CodeBuddy",
     "slug": "codebuddy",
-    "aliases": ["codebuddy", "腾讯 codebuddy", "腾讯codebuddy", "腾讯云代码助手"],
+    "aliases": [
+      "codebuddy",
+      "腾讯 codebuddy",
+      "腾讯codebuddy",
+      "腾讯云代码助手"
+    ],
     "logo": null,
     "vendorKey": null,
-    "officialDomains": ["codebuddy.ai", "codebuddy.cn"]
+    "officialDomains": [
+      "codebuddy.ai",
+      "codebuddy.cn"
+    ]
   },
   "moonshot": {
     "name": "月之暗面",
     "slug": "moonshot",
-    "aliases": ["月之暗面", "kimi", "moonshot", "moonshot ai", "月之暗面 moonshot ai(kimi)"],
+    "aliases": [
+      "月之暗面",
+      "kimi",
+      "moonshot",
+      "moonshot ai",
+      "月之暗面 moonshot ai(kimi)"
+    ],
     "logo": "moonshotai",
     "vendorKey": "moonshot",
-    "officialDomains": ["kimi.com"]
+    "officialDomains": [
+      "kimi.com"
+    ]
   },
   "minimax": {
     "name": "MiniMax（稀宇科技）",
     "slug": "minimax",
-    "aliases": ["minimax", "稀宇科技", "海螺ai", "海螺 ai", "minimax(稀宇科技)", "海螺ai(minimax)"],
+    "aliases": [
+      "minimax",
+      "稀宇科技",
+      "海螺ai",
+      "海螺 ai",
+      "minimax(稀宇科技)",
+      "海螺ai(minimax)"
+    ],
     "logo": null,
     "vendorKey": "minimax",
-    "officialDomains": ["minimax.cn", "hailuoai.com"]
+    "officialDomains": [
+      "minimax.cn",
+      "hailuoai.com"
+    ]
   },
   "github": {
     "name": "GitHub",
     "slug": "github",
-    "aliases": ["github", "github copilot", "copilot"],
+    "aliases": [
+      "github",
+      "github copilot",
+      "copilot"
+    ],
     "logo": "github",
     "vendorKey": "github",
-    "officialDomains": ["github.com"]
+    "officialDomains": [
+      "github.com"
+    ]
   },
   "cursor": {
     "name": "Cursor",
     "slug": "cursor",
-    "aliases": ["cursor", "cursor ai", "anysphere"],
+    "aliases": [
+      "cursor",
+      "cursor ai",
+      "anysphere"
+    ],
     "logo": "cursor",
     "vendorKey": "cursor",
-    "officialDomains": ["cursor.com"]
+    "officialDomains": [
+      "cursor.com"
+    ]
   },
   "_v25_note": "以下 4 家是 v2.5（API 计费）新登记的 provider。它们**只出现在 api-plans.json**里，不影响 plans.json 的 8 家；登记在这里的理由与上面一样：身份必须显式（未登记一律硬红），而不是让同一家平台在数据里分裂成两个 key。",
   "openai": {
     "name": "OpenAI",
     "slug": "openai",
-    "aliases": ["openai", "open ai", "chatgpt"],
+    "aliases": [
+      "openai",
+      "open ai",
+      "chatgpt"
+    ],
     "logo": "openai",
     "vendorKey": "openai",
-    "officialDomains": ["openai.com", "chatgpt.com"]
+    "officialDomains": [
+      "openai.com",
+      "chatgpt.com"
+    ]
   },
   "anthropic": {
     "name": "Anthropic",
     "slug": "anthropic",
-    "aliases": ["anthropic", "claude"],
+    "aliases": [
+      "anthropic",
+      "claude"
+    ],
     "logo": "anthropic",
     "vendorKey": "anthropic",
-    "officialDomains": ["anthropic.com", "claude.com"]
+    "officialDomains": [
+      "anthropic.com",
+      "claude.com"
+    ]
   },
   "google": {
     "name": "Google",
     "slug": "google",
-    "aliases": ["google", "google ai", "gemini", "google deepmind", "google gemini", "notebooklm"],
+    "aliases": [
+      "google",
+      "google ai",
+      "gemini",
+      "google deepmind",
+      "google gemini",
+      "notebooklm"
+    ],
     "logo": "google",
     "vendorKey": "google",
-    "officialDomains": ["google.com", "ai.google.dev", "gemini.google", "blog.google"]
+    "officialDomains": [
+      "google.com",
+      "ai.google.dev",
+      "gemini.google",
+      "blog.google",
+      "codeassist.google"
+    ]
   },
   "deepseek": {
     "name": "DeepSeek",
     "slug": "deepseek",
-    "aliases": ["deepseek", "深度求索", "deepseek ai"],
+    "aliases": [
+      "deepseek",
+      "深度求索",
+      "deepseek ai"
+    ],
     "logo": "deepseek",
     "vendorKey": "deepseek",
-    "officialDomains": ["deepseek.com"]
+    "officialDomains": [
+      "deepseek.com"
+    ]
   },
   "_vendor_pages_note": "v3.0 A1（身份层）：以下 6 家在 deals 侧**已经有 /vendor/ 落地页**（scripts/data/vendor-slugs.json 里有 slug、名下有 ≥2 条有效优惠），却在 providers.json 里**没有身份** —— 后果是这些厂商页拿不到套餐 / API 计费 / 模型三个区块（t8 Stage E）。这里**只登记身份**（key / name / slug / 别名 / A 空间 vendorKey），不新增任何套餐或计费记录，也不改 deals.json：登记的依据只有两条，都可核：① A 空间（index.html 的 VENDOR_RULES）里已有这家公司的键与显示名；② vendor-slugs.json 里已有这个显示名 → slug。slug 一律与 vendor-slugs.json 逐字相同（validateSlugAgreement 会断言）。",
   "baidu": {
     "name": "百度智能云",
     "slug": "baidu-ai-cloud",
-    "aliases": ["百度智能云", "百度千帆", "千帆"],
+    "aliases": [
+      "百度智能云",
+      "百度千帆",
+      "千帆"
+    ],
     "logo": "baidu",
     "vendorKey": "baidu",
-    "officialDomains": ["baidu.com"]
+    "officialDomains": [
+      "baidu.com"
+    ]
   },
   "volcengine": {
     "name": "火山引擎",
     "slug": "volcengine",
-    "aliases": ["火山引擎", "火山引擎(字节跳动)", "火山方舟", "方舟", "ark"],
+    "aliases": [
+      "火山引擎",
+      "火山引擎(字节跳动)",
+      "火山方舟",
+      "方舟",
+      "ark"
+    ],
     "logo": "volcengine",
     "vendorKey": "volcengine",
-    "officialDomains": ["volcengine.com"]
+    "officialDomains": [
+      "volcengine.com"
+    ]
   },
   "coze": {
     "name": "扣子 Coze",
     "slug": "coze",
-    "aliases": ["扣子 coze", "扣子 coze(字节跳动)"],
+    "aliases": [
+      "扣子 coze",
+      "扣子 coze(字节跳动)"
+    ],
     "logo": "coze",
     "vendorKey": "coze",
-    "officialDomains": ["coze.cn"]
+    "officialDomains": [
+      "coze.cn"
+    ]
   },
   "iflytek": {
     "name": "科大讯飞",
     "slug": "iflytek",
-    "aliases": ["科大讯飞", "科大讯飞 讯飞开放平台"],
+    "aliases": [
+      "科大讯飞",
+      "科大讯飞 讯飞开放平台"
+    ],
     "logo": "iflytek",
     "vendorKey": "iflytek",
-    "officialDomains": ["xfyun.cn"]
+    "officialDomains": [
+      "xfyun.cn"
+    ]
   },
   "microsoft": {
     "name": "Microsoft",
     "slug": "microsoft",
-    "aliases": ["microsoft"],
+    "aliases": [
+      "microsoft"
+    ],
     "logo": "microsoft",
     "vendorKey": "microsoft",
-    "officialDomains": ["microsoft.com"]
+    "officialDomains": [
+      "microsoft.com"
+    ]
   },
   "notion": {
     "name": "Notion",
     "slug": "notion",
-    "aliases": ["notion"],
+    "aliases": [
+      "notion"
+    ],
     "logo": "notion",
     "vendorKey": "notion",
-    "officialDomains": ["notion.com"]
+    "officialDomains": [
+      "notion.com"
+    ]
   },
   "_v30_note_a3": "v3.0 A3（t3 数据扩充）要落盘的 4 家新平台身份，**只登记身份、不含任何套餐/计费记录**（记录由 t3 写进 curated_plans / curated_api_plans）。定 key 的判据只有一条，写在 _aliases_v3 里：**A 空间有这家公司的键就用那个键**（否则 provider-only 才自造 key + vendorKey=null）。t3 原建议的 key `hunyuan` 改成了 `tencent` —— 因为 A 空间的 /腾讯|混元|hunyuan/i 归到键 `tencent`、显示名「腾讯云」；若另立 `hunyuan`，同一家公司在两套空间里就又变成两个键（正是 A1 要消灭的裂缝）。t3 记录里的 provider 串「腾讯混元」用别名接住即可，落盘后 plans/api-plans 的 provider 会归一成 `tencent`。",
   "aliyun": {
     "name": "阿里云",
     "slug": "aliyun",
-    "aliases": ["阿里云", "阿里云百炼", "百炼", "通义", "通义千问", "qwen", "dashscope", "aliyun"],
+    "aliases": [
+      "阿里云",
+      "阿里云百炼",
+      "百炼",
+      "通义",
+      "通义千问",
+      "qwen",
+      "dashscope",
+      "aliyun"
+    ],
     "logo": "alibabacloud",
     "vendorKey": "aliyun",
-    "officialDomains": ["aliyun.com"]
+    "officialDomains": [
+      "aliyun.com"
+    ]
   },
   "siliconflow": {
     "name": "硅基流动",
     "slug": "siliconflow",
-    "aliases": ["硅基流动", "硅基流动 siliconflow", "siliconflow"],
+    "aliases": [
+      "硅基流动",
+      "硅基流动 siliconflow",
+      "siliconflow"
+    ],
     "logo": "siliconflow",
     "vendorKey": "siliconflow",
-    "officialDomains": ["siliconflow.cn"]
+    "officialDomains": [
+      "siliconflow.cn"
+    ]
   },
   "tencent": {
     "name": "腾讯云",
     "slug": "tencent-cloud",
-    "aliases": ["腾讯云", "腾讯云 混元大模型", "腾讯混元", "混元", "hunyuan", "tencent"],
+    "aliases": [
+      "腾讯云",
+      "腾讯云 混元大模型",
+      "腾讯混元",
+      "混元",
+      "hunyuan",
+      "tencent"
+    ],
     "logo": "tencent-cloud",
     "vendorKey": "tencent",
-    "officialDomains": ["tencent.com"]
+    "officialDomains": [
+      "tencent.com"
+    ]
   },
   "windsurf": {
     "name": "Windsurf",
     "slug": "windsurf",
-    "aliases": ["windsurf", "windsurf (exafunction)", "exafunction"],
+    "aliases": [
+      "windsurf",
+      "windsurf (exafunction)",
+      "exafunction"
+    ],
     "logo": "windsurf",
     "vendorKey": "windsurf",
-    "officialDomains": ["windsurf.com"]
+    "officialDomains": [
+      "windsurf.com"
+    ]
   },
   "_qoder_intl_note": "队长对 Qoder 国际站的裁定（A3 复核时定的，逐条登记在案）：CN 站与国际站是**独立定价、独立域名、独立币种**的两个 SKU 面，并表会造出「同一张表里两套货币」的假象，所以新建 provider `qoder-intl`。三条纪律：① 显示名刻意**不取**「Qoder」，避开与既有 provider `qoder`（显示名「Qoder CN」）的相似显示名；② `vendorKey` 必须是 **null**（A 空间没有这家公司的厂商名，不得为了让某家有厂商页而新编一个 A 空间键）；③ 既有 `qoder` 记录（provider 与 id）一个字都不改。validateSlugAgreement 比的是**显示名**：「Qoder International」不在 vendor-slugs.json 里，因此不会与 `qoder` 的 slug `qoder` 产生约束；别名刻意都不含裸串 `qoder`，不占用既有 provider 的别名。",
   "qoder-intl": {
     "name": "Qoder International",
     "slug": "qoder-intl",
-    "aliases": ["qoder international", "qoder-intl", "qoder intl", "qoder 国际站"],
+    "aliases": [
+      "qoder international",
+      "qoder-intl",
+      "qoder intl",
+      "qoder 国际站"
+    ],
     "logo": null,
     "vendorKey": null,
-    "officialDomains": ["qoder.com"]
+    "officialDomains": [
+      "qoder.com"
+    ]
   }
 }

@@ -1,0 +1,216 @@
+{
+  "results": [
+    {
+      "id": "C0",
+      "title": "未变异的副本：validate --strict 必须绿",
+      "expectRed": false,
+      "status": 0,
+      "red": false,
+      "fragmentHit": true,
+      "matched": [],
+      "detail": "- 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名） | - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）",
+      "note": ""
+    },
+    {
+      "id": "F1",
+      "title": "命名空间前缀：声明 zai-org.glm-5.3（去掉 zai-org. 就是 registry 的 glm-5.3）",
+      "expectRed": true,
+      "status": 1,
+      "red": true,
+      "fragmentHit": true,
+      "matched": [
+        "- Model Registry 处置登记: declarations[8] API 侧 8a26562011f2: modelKey「zai-org.glm-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过",
+        "- Model Registry 处置登记: declarations[8] API 侧 8a26562011f2: name「GLM-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过"
+      ],
+      "detail": "- 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名） | - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）",
+      "note": "删掉该条映射，改成 API 侧处置声明"
+    },
+    {
+      "id": "F2",
+      "title": "命名空间后缀：声明 qwen.qwen3.8-27b（后缀 qwen3.8-27b 就是 registry 身份）",
+      "expectRed": true,
+      "status": 1,
+      "red": true,
+      "fragmentHit": true,
+      "matched": [
+        "- Model Registry 处置登记: declarations[5] API 侧 036c5f09561e: modelKey「qwen.qwen3.8-27b」折叠后精确落到 registry 身份「qwen3.8-27b」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过",
+        "- Model Registry 处置登记: declarations[5] API 侧 036c5f09561e: name「Qwen 3.8 27B」折叠后精确落到 registry 身份「qwen3.8-27b」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过"
+      ],
+      "detail": "- 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名） | - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）",
+      "note": "删掉该条映射，改成 API 侧处置声明"
+    },
+    {
+      "id": "F3",
+      "title": "分隔符折叠：声明 glm-5p3（折叠后 == registry 的 glm-5.3）",
+      "expectRed": true,
+      "status": 1,
+      "red": true,
+      "fragmentHit": true,
+      "matched": [
+        "- Model Registry 处置登记: declarations[9] API 侧 929a1f3ec46c: name「GLM 5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过",
+        "- Model Registry 处置登记: declarations[9] API 侧 929a1f3ec46c: name「GLM 5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过"
+      ],
+      "detail": "- 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名） | - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）",
+      "note": "删掉该条映射，改成 API 侧处置声明"
+    },
+    {
+      "id": "F4",
+      "title": "大小写 + 全角 + NFKC：把官方显示名改成「ＫＩＭＩ　Ｋ３」",
+      "expectRed": true,
+      "status": 1,
+      "red": true,
+      "fragmentHit": true,
+      "matched": [
+        "- Model Registry 处置登记: declarations[8] API 侧 929a1f3ec46c: name「ＫＩＭＩ　Ｋ３」折叠后精确落到 registry 身份「kimi-k3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过",
+        "- Model Registry 处置登记: declarations[8] API 侧 929a1f3ec46c: name「ＫＩＭＩ　Ｋ３」折叠后精确落到 registry 身份「kimi-k3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过"
+      ],
+      "detail": "- 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名） | - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）",
+      "note": "只改记录自己的官方显示名（modelKey 仍是 ember-1）"
+    },
+    {
+      "id": "F5",
+      "title": "官方显示名带末尾括注：「Kimi K3（官方 modelId: fireworks/kimi-k3）」",
+      "expectRed": true,
+      "status": 1,
+      "red": true,
+      "fragmentHit": true,
+      "matched": [
+        "- Model Registry 处置登记: declarations[8] API 侧 929a1f3ec46c: name「Kimi K3（官方 modelId: fireworks/kimi-k3）」折叠后精确落到 registry 身份「kimi-k3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过",
+        "- Model Registry 处置登记: declarations[8] API 侧 929a1f3ec46c: name「Kimi K3（官方 modelId: fireworks/kimi-k3）」折叠后精确落到 registry 身份「kimi-k3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过"
+      ],
+      "detail": "- 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名） | - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）",
+      "note": "只改官方显示名（末尾括注应被折叠规则抹掉后命中）"
+    },
+    {
+      "id": "F6",
+      "title": "registry 别名命中：把声明改成 registry 别名原文 zai-org/GLM-5.3",
+      "expectRed": true,
+      "status": 1,
+      "red": true,
+      "fragmentHit": true,
+      "matched": [
+        "- Model Registry 处置登记: declarations[8] API 侧 929a1f3ec46c: modelKey「zai-org/GLM-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过",
+        "- Model Registry 处置登记: declarations[8] API 侧 929a1f3ec46c: modelKey「zai-org/GLM-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过"
+      ],
+      "detail": "- 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名） | - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）",
+      "note": "记录条目与声明同步改名成 registry 别名原文"
+    },
+    {
+      "id": "F7",
+      "title": "通配 variant 掩盖：一个变体仍被映射，声明却写 variant=null",
+      "expectRed": true,
+      "status": 1,
+      "red": true,
+      "fragmentHit": true,
+      "matched": [
+        "- Model Registry 处置登记: declarations[6] API 侧 646f01c662e6: source pricing identity (646f01c662e6, glm-4.5v, long_context) 已经在关系层里有映射 —— 一件事不能既\"已映射\"又\"声明不对应单一模型身份\"",
+        "- Model Registry 处置登记: declarations[6] API 侧 646f01c662e6: source pricing identity (646f01c662e6, glm-4.5v, long_context) 已经在关系层里有映射 —— 一件事不能既\"已映射\"又\"声明不对应单一模型身份\""
+      ],
+      "detail": "- 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名） | - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）",
+      "note": "通配声明展开后包含已被映射的 long_context"
+    },
+    {
+      "id": "F8",
+      "title": "同一 modelKey 多 variant：standard 已被通配映射认领，再显式声明 standard",
+      "expectRed": true,
+      "status": 1,
+      "red": true,
+      "fragmentHit": true,
+      "matched": [
+        "- Model Registry 处置登记: declarations[6] API 侧 646f01c662e6: source pricing identity (646f01c662e6, glm-4.5v, standard) 已经在关系层里有映射 —— 一件事不能既\"已映射\"又\"声明不对应单一模型身份\"",
+        "- Model Registry 处置登记: declarations[6] API 侧 646f01c662e6: source pricing identity (646f01c662e6, glm-4.5v, standard) 已经在关系层里有映射 —— 一件事不能既\"已映射\"又\"声明不对应单一模型身份\""
+      ],
+      "detail": "- 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名） | - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）",
+      "note": "声明一条已被通配映射认领的 identity"
+    },
+    {
+      "id": "F9",
+      "title": "官方显示名直命 registry slug：把声明条目的显示名改成「GLM-5.3」",
+      "expectRed": true,
+      "status": 1,
+      "red": true,
+      "fragmentHit": true,
+      "matched": [
+        "- Model Registry 处置登记: declarations[8] API 侧 929a1f3ec46c: name「GLM-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过",
+        "- Model Registry 处置登记: declarations[8] API 侧 929a1f3ec46c: name「GLM-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过"
+      ],
+      "detail": "- 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名） | - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）",
+      "note": "modelKey 不变（仍对不上），只有官方显示名能对上"
+    },
+    {
+      "id": "F10",
+      "title": "冒号命名空间前缀：新增条目 zai-org:GLM-5.3（与 registry 的 glm-5.3 只差分隔符）并声明它",
+      "expectRed": true,
+      "status": 1,
+      "red": true,
+      "fragmentHit": false,
+      "matched": [],
+      "detail": "- 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名） | - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）",
+      "note": "对照 \"能对上就必须写映射\"：这一条其实是 glm-5.3"
+    },
+    {
+      "id": "F11",
+      "title": "空格命名空间前缀：（隔离显示名）新增条目 zai-org GLM-5.3 并声明它",
+      "expectRed": true,
+      "status": 1,
+      "red": true,
+      "fragmentHit": true,
+      "matched": [
+        "- Model Registry 处置登记: declarations[12] API 侧 929a1f3ec46c: modelKey「zai-org GLM-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过",
+        "- Model Registry 处置登记: declarations[12] API 侧 929a1f3ec46c: modelKey「zai-org GLM-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过"
+      ],
+      "detail": "- 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名） | - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）",
+      "note": "空格分隔的命名空间前缀"
+    },
+    {
+      "id": "C1",
+      "title": "对照组（与身份无关的改动）：把一条真 off-registry 声明的 note 改写一遍",
+      "expectRed": false,
+      "status": 0,
+      "red": false,
+      "fragmentHit": true,
+      "matched": [],
+      "detail": "- 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名） | - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）",
+      "note": "只改 note 措辞"
+    }
+  ],
+  "wiring": [
+    {
+      "label": "validate --strict",
+      "status": 1,
+      "red": true,
+      "fragment": true
+    },
+    {
+      "label": "check:models:reproducible",
+      "status": 1,
+      "red": true,
+      "fragment": false
+    },
+    {
+      "label": "check:model-registry-links",
+      "status": 1,
+      "red": true,
+      "fragment": true
+    },
+    {
+      "label": "report:coverage",
+      "status": 1,
+      "red": true,
+      "fragment": true
+    },
+    {
+      "label": "selftest:model-registry",
+      "status": 1,
+      "red": true,
+      "fragment": true
+    },
+    {
+      "label": "build-local",
+      "status": 1,
+      "red": true,
+      "fragment": true
+    }
+  ],
+  "verdict": false
+}

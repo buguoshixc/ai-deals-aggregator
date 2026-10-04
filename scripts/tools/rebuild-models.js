@@ -36,6 +36,50 @@ const path = require('path');
 const reg = require('../lib/model-registry');
 const providers = require('../lib/providers');
 
+/**
+ * 新鲜度层（`scripts/lib/model-freshness.js`）：**catalogStatus 的唯一判据来源**。
+ *
+ * 为什么接线在这里而不是写进 `model-registry.js`：身份层回答"这个模型是谁"，
+ * 目录状态回答"谁值得默认展示" —— 后者是**策略层**的结论。身份层已经把入口留成参数
+ * `catalog`（见 `catalogEntryOf()`），由本工具把两层接起来：换策略不必动身份层，
+ * 身份层也永远不会自作主张地"猜"新鲜度。
+ *
+ * 缺模块时不抛错：`publishedModels()` 会把每条落成 `catalogStatus: 'unknown'`（默认可见，
+ * 失败方向保守）。但**这件事必须大声打出来** —— 静默降级会让整站目录默认值悄悄变化。
+ */
+function loadFreshness() {
+  try {
+    return { mod: require('../lib/model-freshness'), problem: null };
+  } catch (error) {
+    return { mod: null, problem: String((error && error.message) || error) };
+  }
+}
+
+/** 来源层表 → 新鲜度层的入参（只传它认的字段，不整表塞过去） */
+function freshnessInputs(table) {
+  const models = Object.keys(table || {}).sort().map(slug => {
+    const entry = table[slug];
+    return {
+      slug,
+      developer: entry.developer === undefined ? null : entry.developer,
+      family: entry.family === undefined ? null : entry.family,
+      modelRole: entry.modelRole === undefined ? null : entry.modelRole,
+      releasedAt: entry.releasedAt === undefined ? null : entry.releasedAt,
+      status: entry.status === undefined ? null : entry.status,
+      freshnessGroup: entry.freshnessGroup === undefined ? null : entry.freshnessGroup
+    };
+  });
+  return { models };
+}
+
+/** 五态计数（含 0：0 是结论，不是缺省） */
+function catalogCensus(report) {
+  const census = {};
+  for (const status of reg.MODEL_CATALOG_STATUS) census[status] = 0;
+  for (const entry of report.entries) census[entry.catalogStatus] = (census[entry.catalogStatus] || 0) + 1;
+  return census;
+}
+
 const ROOT = path.join(__dirname, '..', '..');
 
 function flag(name) {
@@ -78,8 +122,8 @@ function main() {
   }
 
   const registryProblems = reg.validateRegistry(modelsLoad.table, { developers, extraDevelopers, duplicateKeys: modelsLoad.duplicateKeys });
-  const linkProblems = reg.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans });
-  const gapProblems = reg.validateGaps(gapsLoad.doc, { plans, links: linksLoad.doc, table: modelsLoad.table });
+  const linkProblems = reg.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans, gaps: gapsLoad.doc });
+  const gapProblems = reg.validateGaps(gapsLoad.doc, { plans, links: linksLoad.doc, table: modelsLoad.table, apiPlans });
   const coverageProblems = reg.validatePlanModelCoverage({
     table: modelsLoad.table, links: linksLoad.doc, gaps: gapsLoad.doc, apiPlans, plans
   });
@@ -90,7 +134,24 @@ function main() {
   }
   console.log('  ✓ 数据集级校验通过（身份唯一 · 别名唯一 · 映射存在 · 一条计价条目至多归属一个 registry 模型 · 引文逐字来自记录 · API 与套餐两侧每一串都已判过）');
 
-  const models = reg.publishedModels({ table: modelsLoad.table, links: linksLoad.doc, apiPlans, plans });
+  const freshness = loadFreshness();
+  const catalogReport = freshness.mod ? freshness.mod.deriveCatalog(freshnessInputs(modelsLoad.table)) : null;
+  if (freshness.mod) {
+    if (catalogReport.invariantViolations.length) {
+      console.error(`\n❌ 新鲜度层报出 ${catalogReport.invariantViolations.length} 条硬不变量违规，拒绝写盘：`);
+      catalogReport.invariantViolations.slice(0, 20).forEach(item => console.error(`  - [${item.code}] ${item.detail}`));
+      return 1;
+    }
+    if (catalogReport.duplicates.length || catalogReport.invalidInputs.length) {
+      console.error('\n❌ 新鲜度层入参有问题（slug 重复 / 记录非法），拒绝写盘：');
+      [...catalogReport.duplicates, ...catalogReport.invalidInputs].slice(0, 20).forEach(item => console.error(`  - ${JSON.stringify(item)}`));
+      return 1;
+    }
+  } else {
+    console.warn(`\n⚠️  scripts/lib/model-freshness.js 不可用（${freshness.problem}）—— 本次重建的 catalogStatus 全部落成 'unknown'（默认可见）。这是**降级**，不是正常状态。`);
+  }
+
+  const models = reg.publishedModels({ table: modelsLoad.table, links: linksLoad.doc, apiPlans, plans, catalog: catalogReport });
   const links = reg.publishedLinks(linksLoad.doc, modelsLoad.table);
 
   const modelsText = reg.serialize(models);
@@ -114,6 +175,20 @@ function main() {
   coverage.declaredPlanModels.slice(0, 10).forEach(item => console.log(`      · ${item.provider} / ${item.modelName}（套餐 ${item.planId}）→ ${item.reason}`));
   if (coverage.declaredPlanModels.length > 10) console.log(`      … 另有 ${coverage.declaredPlanModels.length - 10} 条`);
   console.log(`  · updatedAt（全部派生 lastSeen 的最大值）→ ${models.updatedAt}`);
+
+  if (catalogReport) {
+    const census = catalogCensus(catalogReport);
+    console.log(`  · 目录状态分布（catalogStatus，策略 ${catalogReport.policyDigest}）：` +
+      reg.MODEL_CATALOG_STATUS.map(status => `${status}=${census[status]}`).join(' · '));
+    console.log(`      · 比较组 ${catalogReport.groups.length} 个 · 默认可见（current+aging+unknown）` +
+      `${census.current + census.aging + census.unknown} 条 · 默认隐藏（legacy+historical）${census.legacy + census.historical} 条`);
+    const noDate = catalogReport.entries.filter(entry => entry.catalogReason === 'release-date-missing').length;
+    const noDatedGroup = catalogReport.entries.filter(entry => entry.catalogReason === 'group-has-no-dated-model').length;
+    console.log(`      · 判不了（unknown，**默认保留展示**，绝不静默隐藏）：本组无任何带日期记录 ${noDatedGroup} 条 · 本条缺发布日期 ${noDate} 条`);
+    // 降级标记：整表都没有 published 侧字段时也照实说
+    const landed = models.models.filter(model => model.catalogStatus !== undefined).length;
+    console.log(`      · 已接线：${landed}/${models.count} 条派生产物带 catalogStatus`);
+  }
 
   const modelsChanged = previousModels !== modelsText;
   const previousLinks = fs.existsSync(reg.PUBLISHED_LINKS_FILE) ? fs.readFileSync(reg.PUBLISHED_LINKS_FILE, 'utf8') : null;

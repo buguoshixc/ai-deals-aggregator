@@ -1,0 +1,274 @@
+[
+  {
+    "registrySlug": "claude-fable-5.1",
+    "apiPlanId": "4f8bae91f9f8",
+    "modelKey": "claude-fable-5.1",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "claude-haiku-4.5",
+    "apiPlanId": "4f8bae91f9f8",
+    "modelKey": "claude-haiku-4.5",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "claude-opus-5.5",
+    "apiPlanId": "4f8bae91f9f8",
+    "modelKey": "claude-opus-5.5",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "claude-sonnet-5.5",
+    "apiPlanId": "4f8bae91f9f8",
+    "modelKey": "claude-sonnet-5.5",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "deepseek-flash",
+    "apiPlanId": "e546e8ab4c7d",
+    "modelKey": "deepseek-flash",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "deepseek-flash",
+    "apiPlanId": "fffbb44ac3a9",
+    "modelKey": "deepseek-flash",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "deepseek-v3.2",
+    "apiPlanId": "6844d46deb05",
+    "modelKey": "deepseek-v3.2",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "deepseek-v4-pro",
+    "apiPlanId": "e546e8ab4c7d",
+    "modelKey": "deepseek-v4-pro",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "deepseek-v4-pro",
+    "apiPlanId": "ebc4af9a71b6",
+    "modelKey": "deepseek-v4-pro",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "deepseek-v4-pro",
+    "apiPlanId": "fffbb44ac3a9",
+    "modelKey": "deepseek-v4-pro",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "doubao-seed-character",
+    "apiPlanId": "a4a9addc49ca",
+    "modelKey": "doubao-seed-character",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "gemini-3.5-flash",
+    "apiPlanId": "a110a5bfc3f8",
+    "modelKey": "gemini-3.5-flash",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "gemini-3.6-flash",
+    "apiPlanId": "a110a5bfc3f8",
+    "modelKey": "gemini-3.6-flash",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "gemini-3.7-flash",
+    "apiPlanId": "a110a5bfc3f8",
+    "modelKey": "gemini-3.7-flash",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "gemini-3.8-flash",
+    "apiPlanId": "a110a5bfc3f8",
+    "modelKey": "gemini-3.8-flash",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "glm-4.5v",
+    "apiPlanId": "646f01c662e6",
+    "modelKey": "glm-4.5v",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "glm-4.6v-flashx",
+    "apiPlanId": "646f01c662e6",
+    "modelKey": "glm-4.6v-flashx",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "glm-5.3-flash",
+    "apiPlanId": "646f01c662e6",
+    "modelKey": "glm-5.3-flash",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "glm-5.3",
+    "apiPlanId": "ebc4af9a71b6",
+    "modelKey": "glm-5.3",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "glm-5v-turbo",
+    "apiPlanId": "646f01c662e6",
+    "modelKey": "glm-5v-turbo",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "gpt-6-luna",
+    "apiPlanId": "206f8b4bde7b",
+    "modelKey": "gpt-6-luna",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "gpt-6-luna",
+    "apiPlanId": "82c3df0bc204",
+    "modelKey": "gpt-6-luna",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "hunyuan-embedding",
+    "apiPlanId": "2981d8f29020",
+    "modelKey": "hunyuan-embedding",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "hunyuan-translation-lite",
+    "apiPlanId": "2981d8f29020",
+    "modelKey": "hunyuan-translation-lite",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "hunyuan-translation",
+    "apiPlanId": "2981d8f29020",
+    "modelKey": "hunyuan-translation",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "kimi-k2.7-code",
+    "apiPlanId": "6844d46deb05",
+    "modelKey": "kimi-k2.7-code",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "kimi-k3",
+    "apiPlanId": "ebc4af9a71b6",
+    "modelKey": "kimi-k3",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "minimax-m2.5",
+    "apiPlanId": "796e0c92ecdc",
+    "modelKey": "minimax-m2.5",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "minimax-m2.7-highspeed",
+    "apiPlanId": "796e0c92ecdc",
+    "modelKey": "minimax-m2.7-highspeed",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "minimax-m3",
+    "apiPlanId": "ebc4af9a71b6",
+    "modelKey": "minimax-m3",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "qwen-max",
+    "apiPlanId": "ebc4af9a71b6",
+    "modelKey": "qwen-max",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "qwen3.8-27b",
+    "apiPlanId": "6844d46deb05",
+    "modelKey": "qwen3.8-27b",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "step-3.5-flash",
+    "apiPlanId": "6844d46deb05",
+    "modelKey": "step-3.5-flash",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  },
+  {
+    "registrySlug": "tencent-hy-vision-1.5-instruct",
+    "apiPlanId": "2981d8f29020",
+    "modelKey": "tencent-hy-vision-1.5-instruct",
+    "variant": null,
+    "basis": "official-pricing-page",
+    "quotes": 1
+  }
+]

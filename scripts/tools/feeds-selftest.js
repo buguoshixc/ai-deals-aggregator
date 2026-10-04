@@ -818,6 +818,11 @@ section('十一、v3.0 多 spec 注册表与「API 价格变化」订阅');
   // 只登记不实现的来源（`alwaysGenerated:false` 且没交视图）仍要被记下来 ——
   // 构建期据此断言「注册表里的来源一个都不能被漏掉」。
   {
+    // 「恢复原状」的期望是**进入夹具前的注册表快照**，不是数字 2：
+    // `PLAN_CHANGE_FEEDS` 是注册表，新增/删除一条变化流是产品的合法演进（本轮 API 侧就刚加过一条），
+    // 而这里真正要证明的是「临时夹具没有留下、也没有顶掉/换序任何一条既有 spec」——
+    // 那是一条关系，不是一次计数。数字写死的那一版在注册表增删时会假红，且报错只有两个裸数字。
+    const registryBefore = feeds.PLAN_CHANGE_FEEDS.slice();
     const stub = {
       id: 'stub-changes', kind: 'plan-changes', changeSource: 'stub',
       path: 'feed/stub.xml', jsonPath: 'feed/stub.json', title: 'x', description: 'x',
@@ -834,9 +839,20 @@ section('十一、v3.0 多 spec 注册表与「API 价格变化」订阅');
     } finally {
       feeds.PLAN_CHANGE_FEEDS.pop();
     }
+
+    const registryAfter = feeds.PLAN_CHANGE_FEEDS.slice();
+    const addedSpecs = registryAfter.filter(spec => !registryBefore.includes(spec));
+    const removedSpecs = registryBefore.filter(spec => !registryAfter.includes(spec));
+    const reorderedSpecs = registryAfter.length === registryBefore.length
+      ? registryAfter.filter((spec, index) => spec !== registryBefore[index])
+      : [];
+    const idList = list => JSON.stringify((list || []).map(spec => spec.id));
+    check('注册表恢复原状：夹具跑完后的 feeds.PLAN_CHANGE_FEEDS 与**进入夹具前的快照**同一批、同一序（没留下、没顶掉、没换序）',
+      addedSpecs.length === 0 && removedSpecs.length === 0 && reorderedSpecs.length === 0
+      && registryAfter.length === registryBefore.length,
+      `实际 feeds.PLAN_CHANGE_FEEDS=${idList(registryAfter)} / 期望（进入夹具前的注册表快照）=${idList(registryBefore)}`
+      + `；差异 [夹具后多出: ${idList(addedSpecs)} / 夹具后少了: ${idList(removedSpecs)} / 位置被换: ${idList(reorderedSpecs)}]`);
   }
-  check('注册表恢复原状（临时夹具没有留在注册表里）',
-    feeds.PLAN_CHANGE_FEEDS.length === 2 && !feeds.PLAN_CHANGE_FEEDS.some(spec => spec.id === 'stub-changes'));
 
   // ---- ⑨ 起算日按来源取（队长 B2：**必须**用不同 `startedAt` 的夹具） -------------
   //
@@ -870,9 +886,39 @@ section('十一、v3.0 多 spec 注册表与「API 价格变化」订阅');
 section('十、渲染入口与页面同源');
 
 {
-  const tags = feeds.feedLinkTags(bundle.feeds.filter(feed => feed.spec.homepage), '');
-  check('首页订阅发现恰好 8 条（4 个选择 × 2 种格式），不是几十个',
-    (tags.match(/rel="alternate"/g) || []).length === 8);
+  const homepageFeeds = bundle.feeds.filter(feed => feed.spec.homepage);
+  const tags = feeds.feedLinkTags(homepageFeeds, '');
+
+  // 首页订阅发现的判据以前是 `(tags.match(/rel="alternate"/g)).length === 8`（4 个选择 × 2 种格式）。
+  // 那是「本轮注册表里恰好有 4 个 homepage 选择」这个快照：新增/移除任何一个 homepage 订阅都会假红，
+  // 而页面其实完全正确。这里改成**同源对账**：
+  //   ① 注册表侧的 `HOMEPAGE_FEED_IDS`（`spec.homepage` 的唯一出处）与产物里 `spec.homepage=true` 的
+  //      那批 Feed 必须是同一批（id 集合相等）；
+  //   ② tag 里的 href 集合 == 由那批 Feed 的 `spec.path`（RSS）+ `spec.jsonPath`（JSON）派生的集合，
+  //      且每个地址只出现一次。
+  // 条数关系没有丢：集合相等 ⇒「tag 地址数 == homepage Feed 数 × 2」，只是两个因子都由数据现算。
+  const declaredHomepageIds = [...feeds.HOMEPAGE_FEED_IDS];
+  const producedHomepageIds = homepageFeeds.map(feed => feed.spec.id);
+  const missingHomepageIds = declaredHomepageIds.filter(id => !producedHomepageIds.includes(id));
+  const extraHomepageIds = producedHomepageIds.filter(id => !declaredHomepageIds.includes(id));
+  check('首页订阅发现：注册表 HOMEPAGE_FEED_IDS 与产物里 spec.homepage=true 的 Feed 是同一批（两侧同源，不写条数）',
+    missingHomepageIds.length === 0 && extraHomepageIds.length === 0,
+    `实际（产物 bundle.feeds 里 spec.homepage=true 的 id）${JSON.stringify(producedHomepageIds)}`
+    + ` / 期望（注册表 feeds.HOMEPAGE_FEED_IDS）${JSON.stringify(declaredHomepageIds)}`
+    + `；差异 [注册表里有、产物里没有: ${missingHomepageIds.join(',') || '无'}`
+    + ` / 产物里有、注册表里没有: ${extraHomepageIds.join(',') || '无'}]`);
+
+  const expectedHomepageHrefs = homepageFeeds.flatMap(feed => [feed.spec.path, feed.spec.jsonPath]);
+  const tagHrefs = [...tags.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
+  const missingTagHrefs = expectedHomepageHrefs.filter(href => !tagHrefs.includes(href));
+  const extraTagHrefs = tagHrefs.filter(href => !expectedHomepageHrefs.includes(href));
+  const duplicatedTagHrefs = [...new Set(tagHrefs.filter((href, index) => tagHrefs.indexOf(href) !== index))];
+  check('首页订阅发现：tag 里的地址集合 == 由那批 Feed 的 spec.path + spec.jsonPath 派生的集合（集合相等，且每个地址只出现一次）',
+    missingTagHrefs.length === 0 && extraTagHrefs.length === 0 && duplicatedTagHrefs.length === 0,
+    `实际 tag 里的 href（${tagHrefs.length} 个）${JSON.stringify(tagHrefs)}`
+    + ` / 期望（${producedHomepageIds.length} 个 homepage Feed × 两个格式 = ${expectedHomepageHrefs.length} 个）${JSON.stringify(expectedHomepageHrefs)}`
+    + `；差异 [少: ${missingTagHrefs.join(',') || '无'} / 多: ${extraTagHrefs.join(',') || '无'} / 重复: ${duplicatedTagHrefs.join(',') || '无'}]`);
+
   check('首页订阅发现里的每个地址都指向真实存在的 Feed',
     [...tags.matchAll(/href="([^"]+)"/g)].every(m => bundle.feeds.some(feed =>
       feed.spec.path === m[1] || feed.spec.jsonPath === m[1])));
@@ -997,6 +1043,81 @@ section('十二、/feeds/ 汇总页与注册表的双向对账（P3-4 回归钉�
   check('汇总页渲染层从注册表取分组（调用 feeds.pageGroups）', /feeds\.pageGroups\(/.test(renderBody));
   check('汇总页渲染层不再手写 Feed id 清单（没有 ids: [...] 这种第二份清单）',
     renderBody.length > 0 && !/\bids\s*:\s*\[/.test(renderBody));
+}
+
+/* ------------------------------------------------------------------ */
+section('十三、空态判据（t31 / T28-F1）：按数字边界判「0 条」，空态原意不许被削掉');
+/* ------------------------------------------------------------------ */
+
+{
+  // 这一节修的是**门禁自身的假红**：`/feeds/` 那条断言原先用裸 `/0 条/`（**子串**匹配），
+  // `10 条` / `20 条` / `30 条` / `80 条` / `100 条` / `1,000 条` 全都命中 ⇒ 非空行被当成空态、
+  // 被要求写出「变更记录自 … 起」⇒ 真实数据上判红（API 价格变化长到 10 条之后才暴露）。
+  // 修法是把判据收进 `lib/feeds.js` 的具名函数（数字边界，唯一出处）。
+  // **但空态原意必须一起钉住**：真为空时仍然必须写起算日，否则「修假红」就变成了「拆掉牙」。
+
+  // ---- ① 判据本身：数字边界 ----
+  const ZERO_ROWS = [
+    ['行首', '0 条'],
+    ['行尾', '最近变化 0 条'],
+    ['前接标点', '（0 条）'],
+    ['真实空态行', 'AI Deals Radar · Coding 套餐变化 0 条（变更记录自 2026-09-30 起）']
+  ];
+  const NON_ZERO_ROWS = [
+    ['10 条', '10 条'], ['20 条', '20 条'], ['30 条', '30 条'], ['80 条', '80 条'],
+    ['100 条', '100 条'], ['1,000 条', '1,000 条'], ['28 条', '28 条'], ['9 条', '9 条'],
+    ['真实非空行（10 条）', 'AI Deals Radar · API 价格变化 10 条 · 最近一条 2026-10-04']
+  ];
+  console.log('    逐组结果（拼法 → isZeroCountRow）：');
+  for (const [label, text] of [...ZERO_ROWS.map(([l, t]) => [`空态·${l}`, t]), ...NON_ZERO_ROWS]) {
+    console.log(`      ${String(feeds.isZeroCountRow(text)).padEnd(5)} ${label.padEnd(20)} 「${text.slice(0, 52)}」`);
+  }
+  check('【判据】真空态行判为 0 条（行首 / 行尾 / 前接标点 / 带起算日的完整行，四种拼法都要命中）',
+    ZERO_ROWS.every(([, text]) => feeds.isZeroCountRow(text)),
+    ZERO_ROWS.filter(([, text]) => !feeds.isZeroCountRow(text)).map(([label]) => label).join(' | '));
+  check('【对照组·真牙】条数以 0 结尾的**非空**行一律不是空态（10 / 20 / 30 / 80 / 100 / 1,000 条）',
+    NON_ZERO_ROWS.every(([, text]) => !feeds.isZeroCountRow(text)),
+    NON_ZERO_ROWS.filter(([, text]) => feeds.isZeroCountRow(text)).map(([label]) => label).join(' | '));
+  // 缺陷可复现：旧写法（裸子串）把这 6 种「条数以 0 结尾」的非空拼法**全部**判成空态。
+  // （`28 条` / `9 条` 是同一组里的对照：旧写法也判对，说明差别只在"尾数是不是 0"。）
+  const ZERO_ENDING = ['10 条', '20 条', '30 条', '80 条', '100 条', '1,000 条'];
+  check('【回归钉】旧写法（裸 /0 条/ 子串）把这 6 种「条数以 0 结尾」的非空拼法全判成空态 —— 缺陷可复现，牙不是凭空加的',
+    ZERO_ENDING.every(text => /0 条/.test(text)) && ZERO_ENDING.every(text => feeds.isZeroCountRow(text) === false),
+    `旧写法命中 ${ZERO_ENDING.filter(text => /0 条/.test(text)).length}/6`);
+  check('【边界】`0 条` 后面紧跟数字 / 没有空格 ⇒ 不算空态（不把脏文案误判成空态）',
+    !feeds.isZeroCountRow('0 条1') && !feeds.isZeroCountRow('0条') && !feeds.isZeroCountRow('100 条')
+    && feeds.isZeroCountRow('0 条（变更记录自 2026-09-30 起）'));
+
+  // ---- ② 空态诚实性（原意）：空态必须写起算日 ----
+  const EMPTY_WITH_START = 'AI Deals Radar · Coding 套餐变化 0 条（变更记录自 2026-09-30 起）';
+  const EMPTY_NO_START = 'AI Deals Radar · Coding 套餐变化 0 条';
+  const NONEMPTY_TEN = 'AI Deals Radar · API 价格变化 10 条 · 最近一条 2026-10-04';
+  check('【原意】空态行 + 起算日 ⇒ 通过（对照组：这一条证明判据不是恒红）',
+    feeds.changeRowIsHonest(EMPTY_WITH_START) === true);
+  check('【原意·不许被削】空态行**缺**起算日 ⇒ 必须判失败（这道牙存在的理由）',
+    feeds.changeRowIsHonest(EMPTY_NO_START) === false);
+  check('【假红已修】非空行（10 条，条数以 0 结尾）⇒ 不进空态分支、不要求起算日',
+    feeds.isZeroCountRow(NONEMPTY_TEN) === false && feeds.changeRowIsHonest(NONEMPTY_TEN) === true);
+  check('【对照组】非空行即便写了起算日也通过（非空行写不写起算日都不算错）',
+    feeds.changeRowIsHonest(`${NONEMPTY_TEN}（变更记录自 2026-09-30 起）`) === true);
+
+  // ---- ③ 现场夹具：真实产物的两行（28 条 / 10 条），旧判据假红、新判据通过 ----
+  const REAL_ROW_CODING = 'AI Deals Radar · Coding 套餐变化 28 条 · 最近一条 2026-10-04 AI Coding 套餐的价格、活动价、额度、模型与限制的变化。';
+  const REAL_ROW_API = 'AI Deals Radar · API 价格变化 10 条 · 最近一条 2026-10-04 AI 平台 API 的单价、计费单位、模型计价条目、免费额度、限速与 credits 的变化。';
+  check('【现场夹具】两条真实变化流（28 条 / 10 条）在新判据下都不进空态分支 ⇒ T28-F1 的假红消失',
+    [REAL_ROW_CODING, REAL_ROW_API].every(row => feeds.isZeroCountRow(row) === false && feeds.changeRowIsHonest(row) === true));
+  check('【现场夹具·对照】同一窗口里**真的**出现「0 条」时，仍然要求起算日',
+    feeds.changeRowIsHonest(`${REAL_ROW_CODING} 该日志共 0 条事件（变更记录自 2026-09-30 起）`) === true
+    && feeds.changeRowIsHonest(`${REAL_ROW_CODING} 该日志共 0 条事件`) === false);
+
+  // ---- ④ 单一出处 + 页面验收里那道牙还在 ----
+  const verifySource = fs.readFileSync(path.join(ROOT, 'scripts', 'tools', 'verify-site.js'), 'utf8');
+  check('【单一出处】页面验收里不再有裸 `/0 条/` 子串判据（只允许存在于解释这件事的注释里）',
+    !/\/0 条\//.test(verifySource.replace(/(^|[^:])\/\/.*$/gm, '$1')));
+  check('【单一出处】页面验收改调 lib/feeds.js 的具名判据，而不是自己再写一份正则',
+    /feedsLib\.changeRowIsHonest\(/.test(verifySource));
+  check('【原意还在】页面验收仍然走「空态 ⇒ 必须有起算日」这条判据（判据函数仍然会否掉无起算日的空态行）',
+    feeds.changeRowIsHonest('0 条') === false && /hasChangeStartDate\(/.test(verifySource));
 }
 
 /* ------------------------------------------------------------------ */

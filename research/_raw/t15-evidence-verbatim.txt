@@ -1,0 +1,98 @@
+## A) 新增套餐记录（14 条）的 evidence 逐字性
+
+· aws / Amazon Q Developer Free Tier (9cdc922f1407)
+   **部分命中** Amazon Q Developer Free Tier billing.regularPrice @ https://aws.amazon.com/q/developer/pricing/
+      ✓ "Amazon Q Developer offers a perpetual Free Tier with monthly limits"
+      ✗ "Free — 50 agentic requests per month ; 1,000 lines of code per month"
+
+· aws / Amazon Q Developer Pro (7f63541ead64)
+   **未命中** Amazon Q Developer Pro billing.regularPrice @ https://aws.amazon.com/q/developer/pricing/
+      ✗ "Pro Tier: Expanded limits $19/mo. per user ; Pro — 4,000 lines of code per month per user pooled at account le"
+   **未命中** Amazon Q Developer Pro restrictions @ https://aws.amazon.com/q/developer/
+      ✓ "On April 30, 2027, AWS will discontinue support for Amazon Q Developer IDE plugins. For capabilities similar t"
+
+· google / Gemini Code Assist Enterprise (7d2b06f8e311)
+   [?] Gemini Code Assist Enterprise billing.regularPrice @ https://codeassist.google/ —— 本环境未能抓到该页（无法复核）
+
+· google / Gemini Code Assist Standard (55fcf3e3b735)
+   [?] Gemini Code Assist Standard billing.regularPrice @ https://codeassist.google/ —— 本环境未能抓到该页（无法复核）
+
+· iflytek / 讯飞星辰 MaaS · Astron Coding Plan 速通版 (5939e9bc26e7)
+   **未命中** 讯飞星辰 MaaS · Astron Coding Plan 速通版 billing.regularPrice @ https://www.xfyun.cn/doc/spark/CodingPlan.html
+      ✗ "| **速通版** | ¥999 / 月，限时首月优惠：¥699 / 月 | [讯飞星辰 MaaS 平台套餐订阅页面]展示为准 | 每订阅月：最多约 30,000 次请求 |"
+
+· iflytek / 讯飞星辰 MaaS · Astron Coding Plan 高效版 (753c01b2b1b9)
+   **未命中** 讯飞星辰 MaaS · Astron Coding Plan 高效版 billing.regularPrice @ https://www.xfyun.cn/doc/spark/CodingPlan.html
+      ✗ "| **高效版** | ¥199 / 月 | [讯飞星辰 MaaS 平台套餐订阅页面]展示为准 | 每 5 小时：最多约 6,000 次请求；每周：最多约 45,000 次请求；每订阅月：最多约 90,000 次请求 |"
+
+· jetbrains / JetBrains AI Pro (3d40bba3e537)
+   **部分命中** JetBrains AI Pro billing.regularPrice @ https://www.jetbrains.com/ai-ides/buy/
+      ✓ "\"code\": \"AIP\""
+      ✗ "\"prices\": {\"personal\": {\"yearlyPerMonth\": [\"US $8.33\"], \"monthly\": [\"US $10.00\"]}, \"commercial\": {\"monthly\": ["
+      ✓ "\"name\": \"JetBrains AI Pro\""
+
+· jetbrains / JetBrains AI Ultimate (6713bb49d876)
+   **部分命中** JetBrains AI Ultimate billing.regularPrice @ https://www.jetbrains.com/ai-ides/buy/
+      ✓ "\"code\": \"AIPU\""
+      ✗ "\"prices\": {\"personal\": {\"monthly\": [\"US $30.00\"]}, \"commercial\": {\"monthly\": [\"US $60.00\"]}}"
+      ✓ "\"name\": \"JetBrains AI Ultimate\""
+
+· replit / Core (415f82fc8938)
+   **未命中** Core billing.regularPrice @ https://replit.com/pricing
+      ✗ "Core $20 / $18 / month, billed annually — ✔ AI integrations ✔ Up to 30 hours of chat on Free Mode ✔ Up to 60 p"
+
+· replit / Pro (4f9af31d0d58)
+   **未命中** Pro billing.regularPrice @ https://replit.com/pricing
+      ✗ "Pro $100 / $90 / month, billed annually — ✔ 10 parallel agents ✔ Premium Support ✔ Even more Free Mode usage ✔"
+
+· stepfun / Step Plan · Flash Max (2281d41b3a26)
+   **未命中** Step Plan · Flash Max billing.regularPrice @ https://platform.stepfun.com/docs/zh/step-plan/overview
+      ✗ "| **Flash Max** | 高强度使用 AI 的专业用户 | 40000M | ¥699 | ¥1889 | ¥6666 |"
+   **部分命中** Step Plan · Flash Max quota.amount @ https://platform.stepfun.com/docs/zh/step-plan/overview
+      ✓ "Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）"
+
+· stepfun / Step Plan · Flash Mini (ef931b98b927)
+   **未命中** Step Plan · Flash Mini billing.regularPrice @ https://platform.stepfun.com/docs/zh/step-plan/overview
+      ✗ "| **Flash Mini** | 入门体验 AI 的用户 | 400M | ¥49 | ¥129 | ¥456 |"
+   **部分命中** Step Plan · Flash Mini quota.amount @ https://platform.stepfun.com/docs/zh/step-plan/overview
+      ✓ "Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）"
+
+· stepfun / Step Plan · Flash Plus (0a66f3117162)
+   **未命中** Step Plan · Flash Plus billing.regularPrice @ https://platform.stepfun.com/docs/zh/step-plan/overview
+      ✗ "| **Flash Plus** | 日常使用 AI 提效的用户 | 1600M | ¥99 | ¥269 | ¥936 |"
+   **部分命中** Step Plan · Flash Plus quota.amount @ https://platform.stepfun.com/docs/zh/step-plan/overview
+      ✓ "Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）"
+
+· stepfun / Step Plan · Flash Pro (383ed55706fc)
+   **未命中** Step Plan · Flash Pro billing.regularPrice @ https://platform.stepfun.com/docs/zh/step-plan/overview
+      ✗ "| **Flash Pro** | 高频使用 AI 的深度用户 | 8000M | ¥199 | ¥539 | ¥1860 |"
+   **部分命中** Step Plan · Flash Pro quota.amount @ https://platform.stepfun.com/docs/zh/step-plan/overview
+      ✓ "Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）"
+
+## B) 新增 API 记录（4 条）的 evidence 逐字性
+
+· cerebras / undefined (61aa6c3ed3ff)
+   **未命中** undefined pricing.currency @ https://www.cerebras.ai/pricing
+      ✗ "$X.XX/M tokens（每百万 token）—— GPT OSS 120B $0.35 / $0.75；Qwen 3.8 27B $0.99 / $1.49（Developer 档逐字）"
+
+· fireworks / undefined (929a1f3ec46c)
+   **未命中** undefined pricing.currency @ https://docs.fireworks.ai/serverless/pricing.md
+      ✗ "(USD per 1M tokens) —— Model | Standard | Priority；Ember-1 3 / 15；Kimi K3 3 / 15；GLM 5.3 1.4 / 4.4（官方 serverle"
+
+· groq / undefined (036c5f09561e)
+   **未命中** undefined pricing.currency @ https://console.groq.com/docs/models
+      ✗ "PRICE PER 1M TOKENS — GPT OSS 120B $0.15 / $0.60；GPT OSS 20B $0.075 / $0.30（官方 Supported Models 页逐字）"
+
+· together / undefined (8a26562011f2)
+   **未命中** undefined pricing.currency @ https://docs.together.ai/docs/serverless/models.md
+      ✗ "Input pricing (per 1M tokens) / Cached input pricing (per 1M tokens) / Output pricing (per 1M tokens) —— Inkli"
+
+## C) 既有记录的 evidence（抽样：4 条带日期模型的最新证据）
+   **未命中** undefined pricing.currency @ https://www.cerebras.ai/pricing
+      ✗ "$X.XX/M tokens（每百万 token）—— GPT OSS 120B $0.35 / $0.75；Qwen 3.8 27B $0.99 / $1.49（Developer 档逐字）"
+   **未命中** undefined pricing.currency @ https://docs.fireworks.ai/serverless/pricing.md
+      ✗ "(USD per 1M tokens) —— Model | Standard | Priority；Ember-1 3 / 15；Kimi K3 3 / 15；GLM 5.3 1.4 / 4.4（官方 serverle"
+   **未命中** undefined pricing.currency @ https://console.groq.com/docs/models
+      ✗ "PRICE PER 1M TOKENS — GPT OSS 120B $0.15 / $0.60；GPT OSS 20B $0.075 / $0.30（官方 Supported Models 页逐字）"
+
+## 统计：共 26 条引文 —— 逐字命中 0 · 部分命中 7 · 未命中 17 · 无法复核（本环境抓不到页面）2

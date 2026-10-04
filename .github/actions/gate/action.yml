@@ -277,6 +277,48 @@ runs:
       shell: bash
       run: node scripts/tools/coverage-report.js
 
+    # coverage-expansion-v1 新增：Coverage Target 层（覆盖意图层）与 report:coverage v2 的自测。
+    # 这一层最该防的只有一件事：**"我声称覆盖了"与"盘上真的有"混成一格**。所以来源层只许写意图
+    # （tier / role / 七态一律派生）。本步逐段钉住四件事：
+    #   ① 真实文件与事实快照对账（provider / registrySlug / 来源必须真实存在、不许手写状态、
+    #      不许重复键、身份层与意图层双向对账）；
+    #   ② 七态派生逐条演练（DEFERRED / UNVERIFIABLE / NOT_APPLICABLE / BLOCKED_SOURCE **永不算 MISSING**）；
+    #   ③ 牙：provider 不存在、registrySlug 不存在、来源编造、身份层少一行、缺复查条件……逐条必须红；
+    #   ④ 端到端契约：report:coverage --json 两次逐字节一致、旧 JSON 键一个不少。
+    # 判断标准与上面每一支相同：**它红的时候没有别的步骤会替它红**。
+    - name: Coverage-targets self-test (intent layer + seven derived states)
+      shell: bash
+      run: node scripts/tools/coverage-targets-selftest.js
+
+    # coverage-expansion-v1 新增：模型角色词表与派生状态的**契约守卫**（离线、秒级、零依赖）。
+    # 为什么必须有它（真实事故，不是假想）：同一个枚举在本轮出现过**三套词表**
+    # （题面 10 值 / 调研阶段的 9 值 / 被抄进 registry 的那一套），而档位表按另一套名字匹配。
+    # 症状完全静默：角色名对不上档位 ⇒ 整批模型掉进兜底档 ⇒ 慢周期模型（embedding / translation）
+    # 被过早判成 legacy ⇒ 默认隐藏，而所有页面、报告、构建照常全绿。
+    - name: Model-role vocabulary self-test (registry ↔ freshness contract)
+      shell: bash
+      run: node scripts/tools/model-role-vocabulary-selftest.js
+
+    # coverage-expansion-v1 新增：新鲜度判据（catalogStatus）的**分支自测**（离线、不读墙上时钟、
+    # 不依赖任何生产数据文件 —— 数据还没迁移完的时候它就该能跑）。
+    # 逐条钉住 current / aging / legacy / historical / unknown 每一种真的能派出来，
+    # 以及四条硬不变量：跨 modelRole / family / developer 的记录绝不互相淘汰、
+    # freshnessGroup 只影响写了它的那一条、每个比较组至少有一条默认可见、
+    # **unknown 绝不自动等于 legacy**。这些承诺没有别的步骤会替它验。
+    - name: Freshness self-test (catalogStatus branches)
+      shell: bash
+      run: node scripts/tools/model-freshness-selftest.js
+
+    # coverage-expansion-v1 新增：阈值灵敏度（±90 天扰动）—— 照妖镜式的检查，不是"再跑一遍策略"。
+    # 120/240、180/365、365/730 三档是**候选值**不是拍板值；这一步回答两件事：
+    #   ① 哪些模型会换档（current ↔ aging ↔ legacy）；
+    #   ② 有没有比较组整组掉到 0 个默认可见状态 —— 那等于整族从默认目录里消失，
+    #      而**不会有任何门禁报红**（legacy / historical 本来就是设计成隐藏的）。
+    # 退出码 0 = 基线不变量成立（扰动结果只是"数据"）；1 = 基线自相矛盾（不变量违规 / 重复 slug / 非法输入）。
+    - name: Freshness threshold sensitivity (±90 days, baseline invariants)
+      shell: bash
+      run: node scripts/tools/model-freshness-sensitivity.js
+
     # 发布产物由 build-local.js 组装（与 deploy.yml 完全同一条路径），
     # 失败即拦：能装出坏产物就不该合并、更不该发布。
     - name: Assemble site (same path as deploy.yml)

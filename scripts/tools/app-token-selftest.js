@@ -91,6 +91,7 @@ check('换了 now 就换一个 payload（不是硬编码常量）',
 const literal = privateKey.replace(/\n/g, '\\n');
 const normalized = normalizePrivateKey(literal);
 check('字面量 \\n 会被还原成真换行', normalized.key === privateKey.trim(), '还原结果与原文不一致');
+// 此数字锚在本地夹具上，不随生产数据漂移（`literal` 就是上一行就地造的那一个私钥字面量 ⇒ 恰好 1 条说明）。
 check('还原这件事会明确告知（不静默改数据）', normalized.notes.length === 1, `实得 ${normalized.notes.length} 条说明`);
 check('正常 PEM 不产生多余说明', normalizePrivateKey(privateKey).notes.length === 0);
 

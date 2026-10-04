@@ -20,11 +20,15 @@
 'use strict';
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..', '..');
 const reg = require('../lib/model-registry');
 const providers = require('../lib/providers');
+// `MODEL_KEY_RE` 是 modelKey 的 schema 判据（`[a-z0-9][a-z0-9._-]{1,59}`）：
+// T26-F1 的切分集必须覆盖它允许的分隔符，而它拒收的拼法不需要额外规则 —— 两件事都由下面的牙钉住。
+const apiSchema = require('../lib/api-plan-schema');
 
 let passed = 0;
 const failures = [];
@@ -49,7 +53,12 @@ const links = linksLoad.doc;
 const gaps = gapsLoad.doc;
 const EXTRA = Object.keys((modelsLoad.doc && modelsLoad.doc._developers_extra) || {});
 const ctx = { developers: DEVELOPERS, extraDevelopers: EXTRA };
-const linkCtx = { table, apiPlans, plans };
+// API 侧完整性（每一条计价条目都要有结局）同时看两个出口文件 ⇒ `validateLinks` 必须拿到 gaps；
+// `validateGaps` 反过来必须拿到 apiPlans。生产调用点（validate / rebuild / check-* / build-local /
+// page-selftest / coverage-report）传的是同一组入参，这里少一个就会假绿。
+const linkCtx = { table, apiPlans, plans, gaps };
+const codingDeclarationsOf = doc => reg.declarationsList(doc).filter(declaration => declaration && declaration.planId !== undefined);
+const apiDeclarationsOf = doc => reg.declarationsList(doc).filter(declaration => declaration && declaration.apiPlanId !== undefined);
 
 function hasProblem(problems, needle) {
   return problems.some(problem => String(problem).includes(needle));
@@ -135,25 +144,25 @@ section('② 题面 §8 的 5 条 Model Registry 牙');
     hasProblem(reg.validateRegistry(slugClash, ctx), '与某个 registry slug 冲突'));
 
   // 牙 #3：mapping 指向不存在 api plan / modelKey（以及不存在的 planId / modelName）→ 红
-  const ghostPlan = { schemaVersion: 1, links: [Object.assign({}, clone(reg.linksList(links)[0]), { apiPlanId: 'ffffffffffff' })] };
+  const ghostPlan = { schemaVersion: 2, links: [Object.assign({}, clone(reg.linksList(links)[0]), { apiPlanId: 'ffffffffffff' })] };
   check('【牙 #3】映射指向不存在的 apiPlanId → 红',
     hasProblem(reg.validateLinks(ghostPlan, linkCtx), '不存在'));
-  const ghostKey = { schemaVersion: 1, links: [Object.assign({}, clone(reg.linksList(links)[0]), { modelKey: 'no-such-model-key' })] };
+  const ghostKey = { schemaVersion: 2, links: [Object.assign({}, clone(reg.linksList(links)[0]), { modelKey: 'no-such-model-key' })] };
   check('【牙 #3】映射指向不存在的 modelKey → 红',
     hasProblem(reg.validateLinks(ghostKey, linkCtx), 'modelKey'));
   const codingLink = reg.linksList(links).find(link => link.planId);
-  const ghostPlanId = { schemaVersion: 1, links: [Object.assign({}, clone(codingLink), { planId: 'ffffffffffff' })] };
+  const ghostPlanId = { schemaVersion: 2, links: [Object.assign({}, clone(codingLink), { planId: 'ffffffffffff' })] };
   check('【牙 #3】Coding 映射指向不存在的 planId → 红',
     hasProblem(reg.validateLinks(ghostPlanId, linkCtx), 'planId'));
-  const ghostModelName = { schemaVersion: 1, links: [Object.assign({}, clone(codingLink), { modelName: '不存在的模型' })] };
+  const ghostModelName = { schemaVersion: 2, links: [Object.assign({}, clone(codingLink), { modelName: '不存在的模型' })] };
   check('【牙 #3】Coding 映射的 modelName 不在套餐里 → 红',
     hasProblem(reg.validateLinks(ghostModelName, linkCtx), 'supportedModels'));
-  const ghostSlug = { schemaVersion: 1, links: [Object.assign({}, clone(reg.linksList(links)[0]), { registrySlug: 'no-such-slug' })] };
+  const ghostSlug = { schemaVersion: 2, links: [Object.assign({}, clone(reg.linksList(links)[0]), { registrySlug: 'no-such-slug' })] };
   check('【牙 #3】映射指向不存在的 registrySlug → 红',
     hasProblem(reg.validateLinks(ghostSlug, linkCtx), '不在 models.json 里'));
 
   // 牙 #4：modelKey 改名被工具直接自动 merge → 红（+ 结构上不允许自动 merge）
-  const renamed = { schemaVersion: 1, links: reg.linksList(links).map(link => Object.assign({}, clone(link))) };
+  const renamed = { schemaVersion: 2, links: reg.linksList(links).map(link => Object.assign({}, clone(link))) };
   renamed.links = renamed.links.map(link => (link.apiPlanId === '646f01c662e6' && link.modelKey === 'glm-5.3'
     ? Object.assign({}, link, { modelKey: 'glm-5.4-renamed' })
     : link));
@@ -192,7 +201,7 @@ section('③b source pricing identity：一条计价条目至多归属一个 reg
   // 记成 `standard`，于是同一 `(planId, modelKey)` 的"通配映射"与"显式 standard 映射"能各自归属不同
   // registry 模型而 11 道门禁全放行。这里的每一条牙都必须真的会红。
   const sourceLinks = reg.linksList(links);
-  const withLinks = list => ({ schemaVersion: 1, links: reg.sortLinks(list) });
+  const withLinks = list => ({ schemaVersion: 2, links: reg.sortLinks(list) });
   const cloneLink = link => clone(link);
   const allLinks = () => sourceLinks.map(cloneLink);
 
@@ -247,8 +256,8 @@ section('③b source pricing identity：一条计价条目至多归属一个 reg
   const tooth2dup = allLinks();
   tooth2dup.push(clone(sourceLinks.find(link => link.apiPlanId === 'ebc4af9a71b6' && link.modelKey === 'qwen3-max')));
   check('【Tooth 2】反向：完全重复的一条记录（同一 slug）→ 红（重复记录判据）',
-    hasProblem(reg.validateLinks({ schemaVersion: 1, links: tooth2dup }, linkCtx), '重复记录'),
-    reg.validateLinks({ schemaVersion: 1, links: tooth2dup }, linkCtx).slice(0, 2).join(' | '));
+    hasProblem(reg.validateLinks({ schemaVersion: 2, links: tooth2dup }, linkCtx), '重复记录'),
+    reg.validateLinks({ schemaVersion: 2, links: tooth2dup }, linkCtx).slice(0, 2).join(' | '));
 
   // ---- Tooth 3：同一 registry model 映射多个不同 Provider → 允许 ----
   const tooth3 = allLinks();
@@ -259,7 +268,7 @@ section('③b source pricing identity：一条计价条目至多归属一个 reg
     providersOfSlug(tooth3).size > 1 && reg.validateLinks(withLinks(tooth3), linkCtx).length === 0,
     reg.validateLinks(withLinks(tooth3), linkCtx).slice(0, 2).join(' | '));
   const crossProvider = {
-    schemaVersion: 1, links: [
+    schemaVersion: 2, links: [
       { registrySlug: 'deepseek-v4-pro', apiPlanId: 'ebc4af9a71b6', modelKey: 'deepseek-v4-pro', variant: 'standard', basis: 'explicit-mapping', evidence: [], note: '牙：跨 provider 认领' },
       { registrySlug: 'deepseek-v4-pro', apiPlanId: 'fffbb44ac3a9', modelKey: 'deepseek-v4-pro', variant: null, basis: 'explicit-mapping', evidence: [], note: '牙：跨 provider 认领' }
     ]
@@ -320,21 +329,27 @@ section('③b source pricing identity：一条计价条目至多归属一个 reg
     + `（${ownership.size} 条被认领的计价条目）`,
     duplicateOwner === 0 && multiOwner === 0, `duplicate=${duplicateOwner} multi=${multiOwner}`);
   const productionCoverage = reg.coverageOf({ table, links, gaps, apiPlans, plans });
-  check('【Tooth 5】production：计价条目按展开记账后仍然全覆盖（未认领 0 条），且 no 通配虚高',
+  check('【Tooth 5】production：计价条目按展开记账后仍然全覆盖（映射 + 处置 + 未判 = 总条目，未判 0），且 no 通配虚高',
     productionCoverage.unmappedModelKeys.length === 0
-    && productionCoverage.mappedApiEntries === productionCoverage.apiPricingItems
-    && productionCoverage.apiPricingItems > productionCoverage.apiLinks,
-    JSON.stringify(productionCoverage.unmappedModelKeys.slice(0, 3)));
+    && productionCoverage.mappedApiEntries + productionCoverage.declaredApiIdentities === productionCoverage.apiPricingItems
+    && productionCoverage.mappedApiEntries > productionCoverage.apiLinks,
+    JSON.stringify({
+      unmapped: productionCoverage.unmappedModelKeys.length,
+      mapped: productionCoverage.mappedApiEntries,
+      declared: productionCoverage.declaredApiIdentities,
+      apiLinks: productionCoverage.apiLinks,
+      items: productionCoverage.apiPricingItems
+    }));
 
   // ---- coverageOf() 的 mappedApi 必须按展开条目记账：通配映射不得虚高覆盖率 ----
   const partialLinks = {
-    schemaVersion: 1, links: [{
+    schemaVersion: 2, links: [{
       registrySlug: 'qwen3-max', apiPlanId: 'ebc4af9a71b6', modelKey: 'qwen3-max', variant: 'standard',
       basis: 'explicit-mapping', evidence: [], note: '只认领 1 条'
     }]
   };
   const partialCoverage = reg.coverageOf({
-    table, links: partialLinks, gaps: { schemaVersion: 1, declarations: [] }, apiPlans, plans
+    table, links: partialLinks, gaps: { schemaVersion: 2, declarations: [] }, apiPlans, plans
   });
   check(`coverageOf()：只认领 1 条显式映射时，覆盖记 1 条、未认领 ${productionCoverage.apiPricingItems - 1} 条（不按 (planId, modelKey) 整组算）`,
     partialCoverage.mappedApiEntries === 1
@@ -343,8 +358,8 @@ section('③b source pricing identity：一条计价条目至多归属一个 reg
     JSON.stringify({ mapped: partialCoverage.mappedApiEntries, items: partialCoverage.apiPricingItems, unmapped: partialCoverage.unmappedModelKeys.length }));
   const wildcardCoverage = reg.coverageOf({
     table,
-    links: { schemaVersion: 1, links: sourceLinks.filter(link => link.apiPlanId === 'ebc4af9a71b6' && link.modelKey === 'qwen3-max') },
-    gaps: { schemaVersion: 1, declarations: [] }, apiPlans, plans
+    links: { schemaVersion: 2, links: sourceLinks.filter(link => link.apiPlanId === 'ebc4af9a71b6' && link.modelKey === 'qwen3-max') },
+    gaps: { schemaVersion: 2, declarations: [] }, apiPlans, plans
   });
   check('coverageOf()：同一条通配映射只记它真实展开到的条目数（2 条），不把整条记录算成已覆盖',
     wildcardCoverage.mappedApiEntries === 2 && wildcardCoverage.unmappedModelKeys.length === productionCoverage.apiPricingItems - 2,
@@ -352,7 +367,7 @@ section('③b source pricing identity：一条计价条目至多归属一个 reg
 
   // ---- §10.6：删掉一条必需的 registry→API 映射必须被**门禁脚本**抓住（审计 M09）----
   const m09 = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     links: allLinks().filter(link => !(link.apiPlanId === '4f8bae91f9f8' && link.modelKey === 'claude-fable-5.1'))
   };
   const m09Problems = reg.validateLinks(m09, linkCtx);
@@ -427,24 +442,24 @@ section('③ 派生字段、引文与"没有输入不许假绿"');
     hasProblem(problem, '派生字段 id') && hasProblem(problem, '派生字段 firstSeen'), problem.slice(0, 3).join(' | '));
 
   const sourceLinks = reg.linksList(links);
-  const withId = { schemaVersion: 1, links: sourceLinks.map(link => Object.assign({}, clone(link))) };
+  const withId = { schemaVersion: 2, links: sourceLinks.map(link => Object.assign({}, clone(link))) };
   withId.links[0].registryModelId = 'deadbeefcafe';
   check('来源关系层里手写 registryModelId → 红（它是发布时注入的派生字段）',
     hasProblem(reg.validateLinks(withId, linkCtx), '派生字段'));
 
-  const invented = { schemaVersion: 1, links: sourceLinks.map(link => Object.assign({}, clone(link))) };
+  const invented = { schemaVersion: 2, links: sourceLinks.map(link => Object.assign({}, clone(link))) };
   invented.links[0].evidence = [{ field: 'models.编造的字段', quote: '编造的引文', sourceUrl: 'https://example.com/x', capturedAt: '2026-10-01', lang: 'zh' }];
   check('凭空写一条引文（不在被引用记录的 evidence 里）→ 红',
     hasProblem(reg.validateLinks(invented, linkCtx), '不是被引用记录自己的官方引文'));
 
-  const explicitWithEvidence = { schemaVersion: 1, links: sourceLinks.map(link => Object.assign({}, clone(link))) };
+  const explicitWithEvidence = { schemaVersion: 2, links: sourceLinks.map(link => Object.assign({}, clone(link))) };
   const codingIndex = explicitWithEvidence.links.findIndex(link => link.basis === 'explicit-mapping');
   explicitWithEvidence.links[codingIndex].evidence = [];
   explicitWithEvidence.links[codingIndex].note = null;
   check('basis=explicit-mapping 却不写 note → 红（"没有引文"也必须说出来）',
     hasProblem(reg.validateLinks(explicitWithEvidence, linkCtx), '必须写 note'));
 
-  const noEvidence = { schemaVersion: 1, links: sourceLinks.map(link => Object.assign({}, clone(link))) };
+  const noEvidence = { schemaVersion: 2, links: sourceLinks.map(link => Object.assign({}, clone(link))) };
   noEvidence.links[0].evidence = [];
   check('引文类 basis 却没有引文 → 红',
     hasProblem(reg.validateLinks(noEvidence, linkCtx), '要求至少一条官方引文'));
@@ -452,14 +467,14 @@ section('③ 派生字段、引文与"没有输入不许假绿"');
   const emptyTable = reg.validateRegistry({}, ctx);
   check('空 registry → 红（"什么都没有"不是通过）', hasProblem(emptyTable, '没有任何模型'));
   check('registry 里有模型、关系层却一条映射都没有 → 红（"没写"不是"干净"）',
-    hasProblem(reg.validateLinks({ schemaVersion: 1, links: [] }, { table, apiPlans, plans }), '关系层没写'));
+    hasProblem(reg.validateLinks({ schemaVersion: 2, links: [] }, { table, apiPlans, plans }), '关系层没写'));
   check('空表 + 空关系层 → 红（模型一个都不存在 / registry 为空）',
     reg.validateRegistry({}, ctx).length > 0);
 
   const wrongVersion = { schemaVersion: 99, links: sourceLinks.map(link => clone(link)) };
   check('schemaVersion 不对 → 红', hasProblem(reg.validateLinks(wrongVersion, linkCtx), 'schemaVersion'));
 
-  const unordered = { schemaVersion: 1, links: [...sourceLinks].reverse().map(link => clone(link)) };
+  const unordered = { schemaVersion: 2, links: [...sourceLinks].reverse().map(link => clone(link)) };
   check('关系层顺序不是规范序 → 红（打乱输入仍必须得到同一串字节）',
     hasProblem(reg.validateLinks(unordered, linkCtx), '规范序'));
 }
@@ -510,7 +525,7 @@ section('④ 可重建与身份稳定性');
 section('⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结局）');
 
 {
-  const gapCtx = { plans, links, table };
+  const gapCtx = { plans, links, table, apiPlans };
   const covCtx = { table, links, gaps, apiPlans, plans };
   const coverage = reg.coverageOf(covCtx);
 
@@ -524,14 +539,22 @@ section('⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结�
     reg.validateGaps(gaps, gapCtx).length === 0, reg.validateGaps(gaps, gapCtx).slice(0, 3).join(' | '));
   check('真实数据：套餐侧覆盖完整性 0 处问题',
     reg.validatePlanModelCoverage(covCtx).length === 0, reg.validatePlanModelCoverage(covCtx).slice(0, 3).join(' | '));
-  // 每一条声明都必须能逐字对回套餐 supportedModels（role 也要对得上）
-  const mismatched = reg.declarationsList(gaps).filter(declaration => {
+  // 每一条**Coding 侧**声明都必须能逐字对回套餐 supportedModels（role 也要对得上）；
+  // API 侧声明的问题是另一支判据（apiPlanId / modelKey / variant 必须真实存在），见 ⑦ 节。
+  const mismatched = codingDeclarationsOf(gaps).filter(declaration => {
     const plan = plans.find(item => item.id === declaration.planId);
     const entry = plan && (plan.supportedModels || []).find(item => item.name === declaration.modelName);
     return !entry || entry.role !== declaration.role;
   });
-  check('真实数据：每条声明的 (planId, modelName, role) 都逐字对得回套餐数据',
+  check('真实数据：每条 Coding 侧声明的 (planId, modelName, role) 都逐字对得回套餐数据',
     mismatched.length === 0, mismatched.map(item => `${item.planId}/${item.modelName}`).join(' | '));
+  check('真实数据：每条 API 侧声明的 (apiPlanId, modelKey, variant) 都逐字对得回 api-plans 记录',
+    apiDeclarationsOf(gaps).every(declaration => {
+      const plan = apiPlans.find(item => item.id === declaration.apiPlanId);
+      const entry = plan && (plan.models || []).find(item => item.modelKey === declaration.modelKey && item.variant === declaration.variant);
+      return Boolean(entry);
+    }),
+    apiDeclarationsOf(gaps).map(item => `${item.apiPlanId}/${item.modelKey}`).join(' | '));
 
   const mappedPlanModels = new Set(reg.linksList(links).filter(link => link.planId).map(link => `${link.planId}\u0000${link.modelName}`));
   check('真实数据：套餐侧每一条被映射的串都真的在套餐里逐字存在（与 validateLinks 同一判据）',
@@ -547,7 +570,7 @@ section('⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结�
   check('【牙 #21】删掉一条声明 → 那一串立刻变成"既没有映射也没有声明"并报红',
     hasProblem(reg.validatePlanModelCoverage({ table, links, gaps: dropOne, apiPlans, plans }), '既没有 registry 映射'),
     reg.validatePlanModelCoverage({ table, links, gaps: dropOne, apiPlans, plans }).slice(0, 1).join(' | '));
-  const noGapsAtAll = { schemaVersion: 1, declarations: [] };
+  const noGapsAtAll = { schemaVersion: 2, declarations: [] };
   check(`【牙 #21】处置登记表清空 → 未判条数等于全部未映射串数（${coverage.declaredPlanModels.length} 条）`,
     reg.validatePlanModelCoverage({ table, links, gaps: noGapsAtAll, apiPlans, plans }).length === coverage.declaredPlanModels.length);
   const renamedPlanString = clone(plans);
@@ -572,19 +595,21 @@ section('⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结�
   check('【牙 #22】记录 role=included 却拿 pool 兜底 → 红（官方没说它是模型池）',
     hasProblem(reg.validateGaps(poolOnIncluded, gapCtx), '不许用 pool 兜底'));
   const badReason = clone(gaps);
-  badReason.declarations[0].reason = 'whatever';
+  // API 侧声明在规范序里排在前面，所以"随便挑一条"必须显式挑 **Coding 侧** 的那一条
+  badReason.declarations.find(declaration => declaration.planId !== undefined).reason = 'whatever';
   check('【牙 #22】reason 不在枚举里 → 红（没有"其它"垃圾桶）',
     hasProblem(reg.validateGaps(badReason, gapCtx), 'reason 非法'));
   const nameTypo = clone(gaps);
-  nameTypo.declarations[0].modelName = `${nameTypo.declarations[0].modelName}X`;
+  const nameTypoTarget = nameTypo.declarations.find(declaration => declaration.planId !== undefined);
+  nameTypoTarget.modelName = `${nameTypoTarget.modelName}X`;
   check('【牙 #22】modelName 不是逐字引用套餐里的名字 → 红',
     hasProblem(reg.validateGaps(nameTypo, gapCtx), 'supportedModels'));
   const urlWrong = clone(gaps);
-  urlWrong.declarations[0].sourceUrl = 'https://example.com/x';
+  urlWrong.declarations.find(declaration => declaration.planId !== undefined).sourceUrl = 'https://example.com/x';
   check('【牙 #22】sourceUrl 不是该套餐自己的官方页 → 红',
     hasProblem(reg.validateGaps(urlWrong, gapCtx), '自己的官方页'));
   const slugInGaps = clone(gaps);
-  slugInGaps.declarations[0].registrySlug = 'claude-opus-5.5';
+  slugInGaps.declarations.find(declaration => declaration.planId !== undefined).registrySlug = 'claude-opus-5.5';
   check('【牙 #22】处置登记里偷写 registrySlug（想绕过映射）→ 红（它是未知字段）',
     hasProblem(reg.validateGaps(slugInGaps, gapCtx), '未知字段 registrySlug'));
   const shadow = clone(gaps);
@@ -599,7 +624,7 @@ section('⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结�
   check('【牙 #22】登记表顺序不是规范序 → 红（打乱输入仍必须得到同一串字节）',
     hasProblem(reg.validateGaps(unorderedGaps, gapCtx), '规范序'));
   const emptyNote = clone(gaps);
-  emptyNote.declarations[0].note = '   ';
+  emptyNote.declarations.find(declaration => declaration.planId !== undefined).note = '   ';
   check('【牙 #22】声明不写理由 → 红（这张表存的就是理由）',
     hasProblem(reg.validateGaps(emptyNote, gapCtx), '必须写 note'));
 
@@ -615,20 +640,24 @@ section('⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结�
     sourceUrl: 'https://docs.bigmodel.cn/cn/coding-plan/overview', note: '故意把一条能精确对上的串声明成"对不上"'
   }]));
   check('【牙 #22】把一条归一后**能精确落到 registry 身份**的串声明成"对不上" → 红（能对上的必须去写映射）',
-    hasProblem(reg.validateGaps(declareMatchable, { plans: matchablePlans, links, table }), '精确落到 registry 身份'),
-    reg.validateGaps(declareMatchable, { plans: matchablePlans, links, table }).slice(0, 1).join(' | '));
+    hasProblem(reg.validateGaps(declareMatchable, { plans: matchablePlans, links, table, apiPlans }), '精确落到 registry 身份'),
+    reg.validateGaps(declareMatchable, { plans: matchablePlans, links, table, apiPlans }).slice(0, 1).join(' | '));
   check('【牙 #22】没传 registry 表（table 为空）却有声明 → 红（判不了"是不是能对上"就不是通过）',
-    hasProblem(reg.validateGaps(gaps, { plans, links }), '没有拿到 registry 表'));
+    hasProblem(reg.validateGaps(gaps, { plans, links, apiPlans }), '没有拿到 registry 表'));
 
   // ---- 候选由规则发现，不靠人凭印象挑 ----
   const planCandidates = reg.planCandidatesOf({ table, plans });
   check('套餐侧候选是"归一后精确相等"的规则产物（每条都带 status=candidate，且没有生产字段）',
     planCandidates.length > 0 && planCandidates.every(item => item.status === 'candidate' && item.registrySlug && !item.evidence),
     planCandidates.map(item => `${item.modelName}→${item.registrySlug}`).join(' | '));
-  // 漏网之鱼检查：凡是规则能精确对上的串，必须已经落在关系层里（否则就是"能对上却没写"）
+  // 漏网之鱼检查：**归一后精确相等**（normalized-name-exact）这一类候选必须已经落在关系层里。
+  // 折叠类候选（normalized-name-folded / normalized-namespace-suffix）比 exact 宽松得多，
+  // 只作人工 review 提示；它们"能对上却没写"的硬判据在 lib 侧（validateGaps 的反绕过牙）与
+  // 下面 ⑦ 节的"API 侧每个折叠命中都必须有映射或声明"两条上，不在这里重复。
+  const exactPlanCandidates = planCandidates.filter(item => item.rule === 'normalized-name-exact');
   const mappedCodingPair = new Set(reg.linksList(links).filter(link => link.planId).map(link => `${link.planId}\u0000${link.modelName}`));
-  const unlinkedCandidates = planCandidates.filter(item => !mappedCodingPair.has(`${item.planId}\u0000${item.modelName}`));
-  check('凡是规则能精确对上的套餐串，都已经写进了关系层（没有"能对上却没写"的漏网之鱼）',
+  const unlinkedCandidates = exactPlanCandidates.filter(item => !mappedCodingPair.has(`${item.planId}\u0000${item.modelName}`));
+  check('凡是归一后**精确**能对上的套餐串，都已经写进了关系层（没有"能对上却没写"的漏网之鱼）',
     unlinkedCandidates.length === 0, unlinkedCandidates.map(item => `${item.planId}/${item.modelName}`).join(' | '));
   check('反向：候选由规则算出，与关系层无关（拿掉 trae/DeepSeek-Flash 那条映射，候选照样出现）',
     (() => {
@@ -639,6 +668,434 @@ section('⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结�
         .has('f04787381e3b\u0000DeepSeek-Flash');
       return stillFound && wouldCountAsMissing;
     })());
+}
+
+/* ================================================================== */
+
+section('⑥ v2 来源层字段（schemaVersion 2）：角色 / 发布日期证据 / 分组覆盖');
+
+{
+  const providerDoc = providers.load().doc;
+  const v2Ctx = {
+    developers: DEVELOPERS,
+    extraDevelopers: EXTRA,
+    providers: providerDoc,
+    duplicateKeys: modelsLoad.duplicateKeys
+  };
+  const v2Keys = ['modelRole', 'releasedAt', 'releaseEvidence', 'freshnessGroup'];
+  const entries = Object.entries(table);
+  const hostOf = url => {
+    const match = /^https?:\/\/([^/?#]+)/.exec(String(url || ''));
+    return match ? match[1].toLowerCase() : '';
+  };
+
+  check('真实数据：每条都写出了 v2 四字段（值可以诚实为 null / []，字段本身不许省）',
+    entries.every(([, entry]) => v2Keys.every(key => Object.prototype.hasOwnProperty.call(entry, key))),
+    entries.filter(([, entry]) => !v2Keys.every(key => Object.prototype.hasOwnProperty.call(entry, key)))
+      .map(([slug]) => slug).join(' | '));
+  check(`真实数据：modelRole 全部落在 MODEL_ROLES（${reg.MODEL_ROLES.join(' / ')}）或 null 里`,
+    entries.every(([, entry]) => entry.modelRole === null || reg.MODEL_ROLES.includes(entry.modelRole)),
+    entries.filter(([, entry]) => entry.modelRole !== null && !reg.MODEL_ROLES.includes(entry.modelRole))
+      .map(([slug, entry]) => `${slug}=${entry.modelRole}`).join(' | '));
+  check('真实数据：releasedAt 与 releaseEvidence 互为充要（有日期必须有官方证据；有证据必须有日期）',
+    entries.every(([, entry]) => (entry.releasedAt !== null) === (Array.isArray(entry.releaseEvidence) && entry.releaseEvidence.length > 0)),
+    entries.filter(([, entry]) => (entry.releasedAt !== null) !== (Array.isArray(entry.releaseEvidence) && entry.releaseEvidence.length > 0))
+      .map(([slug]) => slug).join(' | '));
+  check('真实数据：有发布日的条目，引文都带 field=releasedAt + quote + capturedAt（形态与 deals / plans / links 的引文同一套）',
+    entries.every(([, entry]) => (entry.releaseEvidence || []).every(item => item.field === 'releasedAt'
+      && typeof item.quote === 'string' && item.quote.trim().length > 0
+      && reg.isRealReleaseDate(item.capturedAt))),
+    entries.flatMap(([slug, entry]) => (entry.releaseEvidence || [])
+      .filter(item => item.field !== 'releasedAt' || typeof item.quote !== 'string' || !reg.isRealReleaseDate(item.capturedAt))
+      .map(() => slug)).join(' | '));
+  check('真实数据：有发布日的条目，出处都落在该 developer 在 providers.json 登记的官方域上（第三方平台顶替不了发布证据）',
+    entries.every(([, entry]) => {
+      const evidence = entry.releaseEvidence || [];
+      if (!evidence.length) return true;
+      const domains = reg.developerDomainsOf(providerDoc).get(String(entry.developer || '')) || [];
+      const host = hostOf(evidence[0].sourceUrl);
+      return domains.some(domain => host === domain || host.endsWith(`.${domain}`));
+    }),
+    entries.filter(([, entry]) => {
+      const evidence = entry.releaseEvidence || [];
+      if (!evidence.length) return false;
+      const domains = reg.developerDomainsOf(providerDoc).get(String(entry.developer || '')) || [];
+      const host = hostOf(evidence[0].sourceUrl);
+      return !domains.some(domain => host === domain || host.endsWith(`.${domain}`));
+    }).map(([slug]) => slug).join(' | '));
+  check('真实数据：写了 freshnessGroup 的那几条都有 note（理由写在表里，不是偷偷把比较组改小）',
+    entries.every(([, entry]) => !entry.freshnessGroup || (typeof entry.note === 'string' && entry.note.trim())));
+
+  // ---- 牙：v1 旧条目形状（少字段）必须当场红：来源层没有版本头，这就是它的"版本拒收" ----
+  const missingRole = clone(table);
+  delete missingRole['glm-5.3'].modelRole;
+  check('【v2】删掉 modelRole（schemaVersion 1 的旧条目形状）→ 红',
+    hasProblem(reg.validateRegistry(missingRole, v2Ctx), '缺少 v2 字段 modelRole'),
+    reg.validateRegistry(missingRole, v2Ctx).slice(0, 1).join(' | '));
+  const missingEvidence = clone(table);
+  delete missingEvidence['glm-5.3'].releaseEvidence;
+  check('【v2】删掉 releaseEvidence（"没有证据"也要显式写 []）→ 红',
+    hasProblem(reg.validateRegistry(missingEvidence, v2Ctx), '缺少 v2 字段 releaseEvidence'));
+
+  // ---- 牙：派生字段一律不许手写 ----
+  const handwrittenCatalog = clone(table);
+  handwrittenCatalog['glm-5.3'].catalogStatus = 'current';
+  handwrittenCatalog['glm-5.3'].catalogReason = 'looks-current';
+  check('【v2】手写 catalogStatus / catalogReason → 红（它们是派生字段，判据在 model-freshness.js）',
+    hasProblem(reg.validateRegistry(handwrittenCatalog, v2Ctx), '派生字段 catalogStatus')
+    && hasProblem(reg.validateRegistry(handwrittenCatalog, v2Ctx), '派生字段 catalogReason'));
+
+  // ---- 牙：modelRole 是闭环枚举，自造值即红 ----
+  const weirdRole = clone(table);
+  weirdRole['glm-5.3'].modelRole = 'flagship';
+  check('【v2】modelRole 自造值（不在最小枚举里）→ 红（同一个状态不许有两个词）',
+    hasProblem(reg.validateRegistry(weirdRole, v2Ctx), 'modelRole 非法'));
+
+  // ---- 牙：真实日期校验（不接受"约 2026 年 8 月"这类假精度）----
+  const fakeDate = clone(table);
+  fakeDate['glm-5.3'].releasedAt = '2026-02-30';
+  fakeDate['glm-5.3'].releaseEvidence = [clone(table['deepseek-flash'].releaseEvidence[0])];
+  check('【v2】releasedAt=2026-02-30（日历里不存在的日期）→ 红',
+    hasProblem(reg.validateRegistry(fakeDate, v2Ctx), '真实日期'));
+  const roughDate = clone(table);
+  roughDate['glm-5.3'].releasedAt = '约 2026 年 8 月';
+  roughDate['glm-5.3'].releaseEvidence = [clone(table['deepseek-flash'].releaseEvidence[0])];
+  check('【v2】releasedAt="约 2026 年 8 月" → 红（假精度）',
+    hasProblem(reg.validateRegistry(roughDate, v2Ctx), '真实日期'));
+
+  // ---- 牙：互为充要的两个方向 ----
+  const dateNoEvidence = clone(table);
+  dateNoEvidence['glm-5.3'].releasedAt = '2026-01-01';
+  check('【v2】写了 releasedAt 却不给官方证据 → 红',
+    hasProblem(reg.validateRegistry(dateNoEvidence, v2Ctx), '互为充要'));
+  const evidenceNoDate = clone(table);
+  evidenceNoDate['glm-5.3'].releaseEvidence = [clone(table['deepseek-flash'].releaseEvidence[0])];
+  check('【v2】给了官方证据却不写 releasedAt → 红（互为充要的另一半）',
+    hasProblem(reg.validateRegistry(evidenceNoDate, v2Ctx), '互为充要'));
+
+  // ---- 牙：第三方托管平台的"发布时间"不是开发商的发布证据 ----
+  const thirdParty = clone(table);
+  thirdParty['kimi-k3'].releasedAt = '2026-01-23';
+  thirdParty['kimi-k3'].releaseEvidence = [{
+    field: 'releasedAt', quote: '官方原文片段', sourceUrl: 'https://siliconflow.cn/pricing', capturedAt: '2026-10-04'
+  }];
+  check('【v2】出处是第三方托管平台（siliconflow.cn 不在月之暗面的官方域登记上）→ 红',
+    hasProblem(reg.validateRegistry(thirdParty, v2Ctx), '不在 developer'),
+    reg.validateRegistry(thirdParty, v2Ctx).slice(0, 1).join(' | '));
+
+  // ---- 牙：developer 没有官方域登记时，"声称官方"无法兑现 ----
+  // ⚠️ 这一条以前拿「阶跃星辰（StepFun）」当反例（当时它只在 `_developers_extra`）。
+  // 该家在本轮已成为正式 provider（providers.json 里有身份与 officialDomains），
+  // 于是这条断言变成"过时"而不是"变绿"：判据仍要守，但反例必须换成一个
+  // **确实没有官方域登记**的开发者名。断言强度不变。
+  const unregisteredDev = clone(table);
+  unregisteredDev['step-3.5-flash'].developer = 'Unknown Vendor X';
+  unregisteredDev['step-3.5-flash'].releasedAt = '2026-04-01';
+  unregisteredDev['step-3.5-flash'].releaseEvidence = [{
+    field: 'releasedAt', quote: '官方原文片段', sourceUrl: 'https://www.stepfun.com/news', capturedAt: '2026-10-04'
+  }];
+  check('【v2】developer 没有官方域登记（Unknown Vendor X 既不在 providers.json 也不在 _developers_extra）→ 红（要么登记官方域，要么 releasedAt 留 null）',
+    hasProblem(reg.validateRegistry(unregisteredDev, v2Ctx), '没有官方域登记'));
+
+  // ---- 牙：引文形态封闭（field 只能是 releasedAt / 未知键即红 / capturedAt 必填）----
+  const wrongField = clone(table);
+  wrongField['glm-5.3'].releasedAt = '2026-01-01';
+  wrongField['glm-5.3'].releaseEvidence = [Object.assign(clone(table['deepseek-flash'].releaseEvidence[0]), { field: 'note' })];
+  check('【v2】引文的 field 不是 releasedAt → 红（这组引文只证明发布日期）',
+    hasProblem(reg.validateRegistry(wrongField, v2Ctx), 'field 必须是 releasedAt'));
+  const unknownEvidenceKey = clone(table);
+  unknownEvidenceKey['glm-5.3'].releasedAt = '2026-01-01';
+  const withExtraKey = clone(table['deepseek-flash'].releaseEvidence[0]);
+  withExtraKey.httpStatus = 200;
+  unknownEvidenceKey['glm-5.3'].releaseEvidence = [withExtraKey];
+  check('【v2】引文里多写一个键（httpStatus）→ 红（研究细节不进身份层，形态必须封闭）',
+    hasProblem(reg.validateRegistry(unknownEvidenceKey, v2Ctx), '未知字段 httpStatus'));
+  const noCaptured = clone(table);
+  noCaptured['glm-5.3'].releasedAt = '2026-01-01';
+  noCaptured['glm-5.3'].releaseEvidence = [{
+    field: 'releasedAt', quote: '官方原文片段', sourceUrl: 'https://api-docs.deepseek.com/updates'
+  }];
+  check('【v2】引文缺 capturedAt → 红（"哪天看到的"是这条证据能被复核的前提）',
+    hasProblem(reg.validateRegistry(noCaptured, v2Ctx), '缺少 capturedAt'));
+
+  // ---- 牙：freshnessGroup 非空必须带 note ----
+  const groupNoNote = clone(table);
+  groupNoNote['glm-5.3'].freshnessGroup = 'glm-only';
+  groupNoNote['glm-5.3'].note = null;
+  check('【v2】freshnessGroup 非空却不写 note → 红（没有理由的分组 = 把比较组偷偷改小）',
+    hasProblem(reg.validateRegistry(groupNoNote, v2Ctx), '必须写 note'));
+
+  // ---- 牙：来源层条目键序漂移 ----
+  const reordered = clone(table);
+  const original = reordered['glm-5.3'];
+  const rebuilt = {};
+  for (const key of ['canonicalName', 'developer', 'owner', 'family', 'aliases', 'officialUrl', 'modelRole', 'status', 'releasedAt', 'releaseEvidence', 'freshnessGroup', 'note']) {
+    rebuilt[key] = original[key];
+  }
+  reordered['glm-5.3'] = rebuilt;
+  check('【v2】来源层条目键序漂移（modelRole 跑到 status 之前）→ 红（键序也是契约）',
+    hasProblem(reg.validateRegistry(reordered, v2Ctx), '字段顺序不是规范序'));
+
+  // ---- 两份派生产物：schemaVersion 2 + catalogStatus 真的接上了线 ----
+  const publishedDoc = JSON.parse(fs.readFileSync(reg.PUBLISHED_MODELS_FILE, 'utf8'));
+  check('派生产物 models.json：schemaVersion 2，且每条都带 catalogStatus / catalogReason（派生，不是手写）',
+    publishedDoc.schemaVersion === 2
+    && publishedDoc.models.every(model => reg.MODEL_CATALOG_STATUS.includes(model.catalogStatus)
+      && Object.prototype.hasOwnProperty.call(model, 'catalogReason')));
+  check('派生产物 models.json：catalogStatus 已经和新鲜度层接线（至少一条不是 unknown），unknown 一律默认可见',
+    publishedDoc.models.some(model => model.catalogStatus !== 'unknown'),
+    JSON.stringify(publishedDoc.models.reduce((census, model) => {
+      census[model.catalogStatus] = (census[model.catalogStatus] || 0) + 1;
+      return census;
+    }, {})));
+  const publishedLinksDoc = JSON.parse(fs.readFileSync(reg.PUBLISHED_LINKS_FILE, 'utf8'));
+  check('派生产物 model-registry-links.json：schemaVersion 2',
+    publishedLinksDoc.schemaVersion === 2);
+}
+
+/* ================================================================== */
+
+section('⑦ API 侧处置登记（gaps 双侧化）：出口、反绕过与覆盖率记账');
+
+{
+  const apiCtx = { plans, links, table, apiPlans };
+  const apiDecl = apiDeclarationsOf(gaps);
+  check(`真实数据：API 侧声明 ${apiDecl.length} 条，reason 全部是 off-registry-model、sourceUrl 全部取自该记录自己的官方页`,
+    apiDecl.length === 12 && apiDecl.every(declaration => declaration.reason === 'off-registry-model'
+      && (() => {
+        const plan = apiPlans.find(item => item.id === declaration.apiPlanId);
+        return plan && (declaration.sourceUrl === plan.officialUrl || declaration.sourceUrl === plan.sourceUrl);
+      })()));
+  check('真实数据：没有任何声明"两侧都写"（每条恰好属于一侧）',
+    reg.declarationsList(gaps).every(declaration => (declaration.planId !== undefined) !== (declaration.apiPlanId !== undefined)));
+  check('真实数据：真实 gaps 通过双侧校验（0 处问题）',
+    reg.validateGaps(gaps, apiCtx).length === 0, reg.validateGaps(gaps, apiCtx).slice(0, 2).join(' | '));
+
+  // ---- ① apiPlanId 不存在 ----
+  const ghostApiPlan = clone(gaps);
+  ghostApiPlan.declarations.find(d => d.apiPlanId !== undefined).apiPlanId = 'ffffffffffff';
+  check('【API 处置】apiPlanId 不存在 → 红（错误信息里点名「apiPlanId 不存在」并写出那个 id）',
+    hasProblem(reg.validateGaps(ghostApiPlan, apiCtx), 'apiPlanId 不存在')
+    && hasProblem(reg.validateGaps(ghostApiPlan, apiCtx), 'ffffffffffff'));
+  // ---- ② modelKey 不存在 ----
+  const ghostModelKey = clone(gaps);
+  ghostModelKey.declarations.find(d => d.apiPlanId !== undefined).modelKey = 'no-such-model-key';
+  check('【API 处置】modelKey 不在该记录里 → 红',
+    hasProblem(reg.validateGaps(ghostModelKey, apiCtx), '不在记录'));
+  // ---- ②b variant 不是真实变体 ----
+  const ghostVariant = clone(gaps);
+  ghostVariant.declarations.find(d => d.apiPlanId !== undefined).variant = 'no-such-variant';
+  check('【API 处置】variant 不是该 modelKey 的真实变体 → 红',
+    hasProblem(reg.validateGaps(ghostVariant, apiCtx), '真实变体'));
+  // ---- ③ 两侧都写（exactly-one）----
+  const bothSides = clone(gaps);
+  Object.assign(bothSides.declarations.find(d => d.apiPlanId !== undefined), { planId: 'f04787381e3b', modelName: 'Seed-Code' });
+  check('【API 处置】一条声明两侧都写 → 红（与 links 的 exactly-one 同形）',
+    hasProblem(reg.validateGaps(bothSides, apiCtx), '必须**恰好**是 Coding 侧'));
+  // ---- ④ 键序错 ----
+  const wrongOrder = clone(gaps);
+  const orderTarget = wrongOrder.declarations.find(d => d.apiPlanId !== undefined);
+  const rebuilt = {};
+  for (const key of ['modelKey', 'apiPlanId', 'variant', 'reason', 'sourceUrl', 'note']) rebuilt[key] = orderTarget[key];
+  Object.keys(orderTarget).forEach(key => delete orderTarget[key]);
+  Object.assign(orderTarget, rebuilt);
+  check('【API 处置】API 侧键序不是规范序 → 红',
+    hasProblem(reg.validateGaps(wrongOrder, apiCtx), '字段顺序不是规范序'));
+  // ---- ⑤ reason 非 off-registry-model（套餐侧的词不许给结构化键兜底）----
+  const poolReason = clone(gaps);
+  poolReason.declarations.find(d => d.apiPlanId !== undefined).reason = 'pool';
+  check('【API 处置】API 侧 reason=pool（套餐侧概念）→ 红并写出允许值',
+    hasProblem(reg.validateGaps(poolReason, apiCtx), 'API 侧 reason 非法'));
+  // ---- ⑥ sourceUrl 不是记录自己的官方页 ----
+  const wrongUrl = clone(gaps);
+  wrongUrl.declarations.find(d => d.apiPlanId !== undefined).sourceUrl = 'https://example.com/whatever';
+  check('【API 处置】sourceUrl 不是该 API 记录自己的官方页 → 红',
+    hasProblem(reg.validateGaps(wrongUrl, apiCtx), '不是 API 记录'));
+  // ---- ⑦ note 空 ----
+  const emptyApiNote = clone(gaps);
+  emptyApiNote.declarations.find(d => d.apiPlanId !== undefined).note = '   ';
+  check('【API 处置】note 留空 → 红（这张表存的就是理由）',
+    hasProblem(reg.validateGaps(emptyApiNote, apiCtx), '必须写 note'));
+  // ---- ⑧ 与 link 重复记账 ----
+  const doubleBooked = clone(gaps);
+  Object.assign(doubleBooked.declarations.find(d => d.apiPlanId !== undefined), {
+    apiPlanId: '929a1f3ec46c', modelKey: 'kimi-k3', variant: 'standard',
+    sourceUrl: 'https://docs.fireworks.ai/serverless/pricing.md'
+  });
+  check('【API 处置】同一条计价条目既被 link 认领、又在这里声明"对不上" → 红（双向检查）',
+    hasProblem(reg.validateGaps(doubleBooked, apiCtx), '已经在关系层里有映射'));
+  // ---- ⑨ 反绕过牙：折叠后其实能对上 ----
+  const toothApiPlans = [{
+    id: 'ffffffffffff', provider: '演练', officialUrl: 'https://example.com/', sourceUrl: 'https://example.com/',
+    models: [{ modelKey: 'vendor.glm-5.3', name: 'GLM 5.3', variant: 'standard' }]
+  }];
+  const foldTooth = {
+    schemaVersion: 2,
+    declarations: [{
+      apiPlanId: 'ffffffffffff', modelKey: 'vendor.glm-5.3', variant: 'standard', reason: 'off-registry-model',
+      sourceUrl: 'https://example.com/', note: '演练：这条折叠后其实能对上 glm-5.3'
+    }]
+  };
+  check('【API 处置·反绕过牙】modelKey「vendor.glm-5.3」+ 官方显示名「GLM 5.3」→ 红且点名 glm-5.3',
+    hasProblem(reg.validateGaps(foldTooth, { plans, links, table, apiPlans: toothApiPlans }), 'registry 身份「glm-5.3」'),
+    reg.validateGaps(foldTooth, { plans, links, table, apiPlans: toothApiPlans }).slice(0, 1).join(' | '));
+  const foldToothControl = clone(foldTooth);
+  foldToothControl.declarations[0].modelKey = 'vendor.no-such-identity';
+  foldToothControl.declarations[0].note = '演练对照：这条折叠后对不上任何 registry 身份';
+  check('【API 处置·反绕过牙·对照绿】同形状但折叠后对不上任何身份 → 绿',
+    reg.validateGaps(foldToothControl, { plans, links, table, apiPlans: [Object.assign({}, toothApiPlans[0], { models: [{ modelKey: 'vendor.no-such-identity', name: 'Nothing Here', variant: 'standard' }] })] }).length === 0);
+
+  /* ---- T26-F1：后缀切分必须覆盖 modelKey schema 允许的**全部分隔符形状** ----
+   * 切分集现为 `[/．._-]`（补 `_` 与 `-`），尾段仍走 **identityFold 折叠精确相等**（不是相似度、不是子串包含）。
+   *
+   * fixture 的 `name` 故意写成「ACME Model X」——它折叠后对不上任何 registry 身份，
+   * 于是红只可能来自 **modelKey 那条路**（不许靠官方显示名蹭过判据）。
+   *   · `zai_org_glm-5.3` / `zai-org_glm-5.3` / `zai-org-glm-5.3`：审查 t26 点名的三种写法（真实 registry 里
+   *     `glm-5.3` 有别名 `zai-org/GLM-5.3`，所以整串折叠本来也能命中；这里证明它们**必须红**）；
+   *   · `acme_glm-5.3` / `acme-glm-5.3`：命名空间**不在任何 registry 别名里** ⇒ 只有补齐切分集才能探到，
+   *     这正是 T26-F1 的漏洞形状（复算脚本 research/_raw/t30/probe-suffix-splitting.cjs 证明修补前 0 命中）。 */
+  const separatorFixtures = [
+    { modelKey: 'zai_org_glm-5.3', label: '下划线命名空间 zai_org_glm-5.3（t26 点名形状）' },
+    { modelKey: 'zai-org_glm-5.3', label: '连字符+下划线 zai-org_glm-5.3（t26 点名形状）' },
+    { modelKey: 'acme_glm-5.3', label: '下划线命名空间 acme_glm-5.3（命名空间不在任何别名里 ⇒ 只能靠切分）' },
+    { modelKey: 'acme-glm-5.3', label: '连字符命名空间 acme-glm-5.3（同上）' }
+  ];
+  separatorFixtures.forEach(fixture => {
+    const fixturePlanId = 'ffffffffffff';
+    const fixturePlans = [{
+      id: fixturePlanId, provider: '演练', officialUrl: 'https://example.com/', sourceUrl: 'https://example.com/',
+      models: [{ modelKey: fixture.modelKey, name: 'ACME Model X', variant: 'standard' }]
+    }];
+    const fixtureDoc = {
+      schemaVersion: 2,
+      declarations: [{
+        apiPlanId: fixturePlanId, modelKey: fixture.modelKey, variant: 'standard', reason: 'off-registry-model',
+        sourceUrl: 'https://example.com/', note: `演练：${fixture.label} 折叠后其实能对上 glm-5.3`
+      }]
+    };
+    const fixtureProblems = reg.validateGaps(fixtureDoc, { plans, links, table, apiPlans: fixturePlans });
+    check(`【T26-F1】${fixture.label} 作为 API 侧声明 modelKey → 红且点名 glm-5.3`,
+      hasProblem(fixtureProblems, 'registry 身份「glm-5.3」'), fixtureProblems.slice(0, 1).join(' | '));
+  });
+  check('【T26-F1·对照】fixture 的官方显示名「ACME Model X」本身对不上任何 registry 身份（红只可能来自 modelKey 那条路）',
+    reg.foldedHitsOf('ACME Model X', reg.foldedIndexOf(table)).length === 0);
+  const realOffRegistryKey = 'openai.gpt-oss-120b';
+  const realOffRegistryEntry = apiPlans.find(plan => plan.id === '036c5f09561e').models
+    .find(model => model.modelKey === realOffRegistryKey);
+  check('【T26-F1·对照绿】真实 off-registry 键（openai.gpt-oss-120b / GPT OSS 120B）在切分集补齐后仍然 0 命中',
+    reg.foldedHitsOf(realOffRegistryKey, reg.foldedIndexOf(table)).length === 0
+    && reg.foldedHitsOf(realOffRegistryEntry.name, reg.foldedIndexOf(table)).length === 0);
+  check('【T26-F1】切分集只需覆盖 schema 允许的分隔符：MODEL_KEY_RE 拒收冒号/井号/反斜杠/中文方括号等拼法（那些不是风险，不为它们加规则）',
+    ['a:b', 'a#b', 'a\\b', 'a【b】', 'a b'].every(sample => !apiSchema.MODEL_KEY_RE.test(sample))
+    && ['zai_org_glm-5.3', 'zai-org_glm-5.3', 'zai-org-glm-5.3', 'openai.gpt-oss-120b'].every(sample => apiSchema.MODEL_KEY_RE.test(sample)));
+  // ---- ⑩ 删掉一条声明 → validateLinks 复红（有声明则绿）----
+  const dropDeclaration = clone(gaps);
+  dropDeclaration.declarations = dropDeclaration.declarations
+    .filter(declaration => !(declaration.apiPlanId === '929a1f3ec46c' && declaration.modelKey === 'ember-1'));
+  check('【API 处置】删掉一条 API 侧声明 → validateLinks 复红（两处都没有）；留着则绿',
+    reg.validateLinks(links, { table, apiPlans, plans, gaps: dropDeclaration }).some(problem => problem.includes('既没有 registry 映射'))
+    && reg.validateLinks(links, linkCtx).length === 0,
+    reg.validateLinks(links, { table, apiPlans, plans, gaps: dropDeclaration }).slice(0, 1).join(' | '));
+  // ---- ⑪ coverageOf 记账 ----
+  const apiCoverage = reg.coverageOf({ table, links, gaps, apiPlans, plans });
+  check('【API 处置】coverageOf：declaredApiEntries 逐条留档（12 条 · 带 provider）+ unmappedModelKeys 归零 + 三者和 == 总条目',
+    apiCoverage.declaredApiEntries.length === 12
+    && apiCoverage.unmappedModelKeys.length === 0
+    && apiCoverage.mappedApiEntries + apiCoverage.declaredApiIdentities + apiCoverage.unmappedModelKeys.length === apiCoverage.apiPricingItems
+    && apiCoverage.declaredApiEntries.every(entry => entry.provider && entry.apiPlanId && entry.modelKey
+      && entry.reason === 'off-registry-model' && entry.note),
+    JSON.stringify({
+      declared: apiCoverage.declaredApiEntries.length,
+      unmapped: apiCoverage.unmappedModelKeys.length,
+      mapped: apiCoverage.mappedApiEntries,
+      identities: apiCoverage.declaredApiIdentities,
+      items: apiCoverage.apiPricingItems
+    }));
+  // ---- ⑫ 同一支折叠规则也用于产候选：API 侧每个折叠命中都必须有映射或声明 ----
+  const foldedCandidates = reg.candidatesOf({ table, apiPlans });
+  const foldedRules = new Set(foldedCandidates.map(item => item.rule));
+  check('【API 处置】candidatesOf 的规则名里同时有 normalized-name-exact / normalized-name-folded / normalized-namespace-suffix',
+    ['normalized-name-exact', 'normalized-name-folded', 'normalized-namespace-suffix'].every(rule => foldedRules.has(rule)),
+    [...foldedRules].join(' / '));
+  const mappedApiKeys = new Set();
+  for (const link of reg.linksList(links)) {
+    if (link.apiPlanId === undefined) continue;
+    for (const identity of reg.sourcePricingIdentitiesOf(link, apiPlans).identities) mappedApiKeys.add(reg.sourcePricingIdentityKey(identity));
+  }
+  const declaredApiKeys = new Set();
+  for (const declaration of apiDecl) {
+    for (const identity of reg.sourcePricingIdentitiesOf(declaration, apiPlans).identities) declaredApiKeys.add(reg.sourcePricingIdentityKey(identity));
+  }
+  const foldedWithoutOutcome = foldedCandidates.filter(item => {
+    const plan = apiPlans.find(entry => entry.id === item.apiPlanId);
+    const target = plan && (plan.models || []).find(model => model.modelKey === item.modelKey);
+    if (!target) return false;
+    return !mappedApiKeys.has(reg.sourcePricingIdentityKey({ apiPlanId: item.apiPlanId, modelKey: item.modelKey, variant: target.variant }))
+      && !declaredApiKeys.has(reg.sourcePricingIdentityKey({ apiPlanId: item.apiPlanId, modelKey: item.modelKey, variant: target.variant }));
+  });
+  check('【API 处置】每个折叠命中的计价条目都有结局（映射或声明），没有"能对上却没写、也没声明"的漏网之鱼',
+    foldedWithoutOutcome.length === 0,
+    foldedWithoutOutcome.slice(0, 5).map(item => `${item.apiPlanId}/${item.modelKey}(${item.rule})`).join(' | '));
+  check('【API 处置·对照】真实数据里 12 条声明在折叠索引下 0 命中（7 条能对上的已经去写了映射）',
+    apiDecl.every(declaration => {
+      const plan = apiPlans.find(item => item.id === declaration.apiPlanId);
+      const entry = plan && (plan.models || []).find(model => model.modelKey === declaration.modelKey);
+      return reg.foldedHitsOf(declaration.modelKey, reg.foldedIndexOf(table)).length === 0
+        && (!entry || reg.foldedHitsOf(entry.name, reg.foldedIndexOf(table)).length === 0);
+    }));
+}
+
+/* ================================================================== */
+
+section('⑧ 机器牙：validateLinks 与 validateGaps 必须成对调用（T26-F2）');
+
+{
+  // 为什么需要这条牙：API 侧「有结局」是由 `validateLinks()` 记的（它把处置声明算成结局），
+  // 而"这条结局合不合法"（apiPlanId 是否存在 / modelKey 是否真实 / reason 是否白名单 / 引文来源）
+  // 全在 `validateGaps()` 里。**只调前者**，任何声明都能当结局用 —— 抽屉会被打开。
+  // 这条耦合此前只靠"每个入口都成对调用"的约定（当时 6/6），没有机器牙钉住；这里把它变成断言。
+  const entryPairProblems = rootDir => {
+    const problems = [];
+    const scanned = [];
+    const files = [path.join(rootDir, 'scripts', 'validate.js')];
+    const toolsDir = path.join(rootDir, 'scripts', 'tools');
+    if (fs.existsSync(toolsDir)) {
+      for (const name of fs.readdirSync(toolsDir).sort()) {
+        if (name.endsWith('.js')) files.push(path.join(toolsDir, name));
+      }
+    }
+    for (const file of files) {
+      if (!fs.existsSync(file)) continue;
+      const source = fs.readFileSync(file, 'utf8');
+      if (!/validateLinks\(/.test(source)) continue;
+      const rel = path.relative(rootDir, file).split(path.sep).join('/');
+      scanned.push(rel);
+      if (!/validateGaps\(/.test(source)) problems.push(rel);
+    }
+    return { problems, scanned };
+  };
+
+  const productionPairs = entryPairProblems(ROOT);
+  check(`源码级机器牙：${productionPairs.scanned.length} 个调用 validateLinks 的生产入口都同时调用 validateGaps（有结局 ≠ 结局合法）`,
+    productionPairs.problems.length === 0 && productionPairs.scanned.length >= 6,
+    productionPairs.problems.join(' | ') || `${productionPairs.scanned.join(' · ')}`);
+
+  // 反证：TEMP 副本里摘掉一个入口的 validateGaps 调用 ⇒ 必红且点名该文件（判据不是恒绿）
+  const pairProbeRoot = fs.mkdtempSync(path.join(os.tmpdir(), 't30-pair-'));
+  try {
+    fs.mkdirSync(path.join(pairProbeRoot, 'scripts', 'tools'), { recursive: true });
+    fs.copyFileSync(path.join(ROOT, 'scripts', 'validate.js'), path.join(pairProbeRoot, 'scripts', 'validate.js'));
+    const victimRel = 'check-model-registry-links.js';
+    const victimSource = fs.readFileSync(path.join(ROOT, 'scripts', 'tools', victimRel), 'utf8')
+      .split('\n').filter(line => !line.includes('validateGaps(')).join('\n');
+    fs.writeFileSync(path.join(pairProbeRoot, 'scripts', 'tools', victimRel), victimSource);
+    const brokenPairs = entryPairProblems(pairProbeRoot);
+    check('源码级机器牙·反证：TEMP 副本里摘掉一个入口的 validateGaps 调用 → 必红且点名该文件',
+      brokenPairs.problems.length === 1 && brokenPairs.problems[0] === `scripts/tools/${victimRel}`,
+      JSON.stringify(brokenPairs.problems));
+  } finally {
+    fs.rmSync(pairProbeRoot, { recursive: true, force: true });
+  }
 }
 
 console.log('');

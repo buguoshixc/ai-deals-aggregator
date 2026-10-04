@@ -1,9 +1,29 @@
 #!/usr/bin/env node
 /**
- * 数据覆盖报告（v3.0 Stage C4 / 题面 §C4）。
+ * 数据覆盖报告（v3.0 Stage C4 / 题面 §C4；coverage-expansion-v1 起为 **v2**）。
  *
  * 这个脚本回答的是「我们现在到底覆盖了什么、缺口在哪里」——它是**只读报告**，
  * 不改任何数据、不联网、不读墙上时钟（今天只用于显示，不参与判定）。
+ *
+ * ## v2（coverage-expansion-v1）：从「盘上有什么」升级到「意图 vs 事实」
+ *
+ * v1 只能对**已经出现的数据**做除法：一家平台一条记录都没有时，它在报告里根本不存在。
+ * v2 把 `scripts/data/coverage-targets.json`（唯一权威的覆盖意图层）读进来，由
+ * `scripts/lib/coverage-targets.js` 派生七态（COVERED / PARTIAL / MISSING / DEFERRED /
+ * UNVERIFIABLE / NOT_APPLICABLE / BLOCKED_SOURCE，**DEFERRED 永不算 MISSING**），并新增：
+ *
+ *   · Target Provider Universe（意图层的宇宙 + 身份层↔意图层双向对账）；
+ *   · provider × 维度的分维度覆盖矩阵；
+ *   · 真缺口清单（MISSING）与"有理由的缺口"清单（deferred / unverifiable /
+ *     not-applicable / blocked-by-source-health）；
+ *   · Current Model Coverage（声明的 current target 模型是否真的在 registry 里归属这家、
+ *     unknown release dates、legacy/historical 保留情况）；
+ *   · Source Health impact（声明的来源与 `scripts/data/source-health.json` 对账）；
+ *   · Freshness 阈值与理由（策略模块落盘时读它的常量，没落盘就如实说"没落盘"）。
+ *
+ * **旧口径一个字都不改**：旧的五类交叉缺口、旧的 JSON 键全部保留（新内容进新的键），
+ * 免得下游（CI、审阅、报告）因为一次升级而看不见原来的数字。
+ * `--json` 两次运行逐字节一致（所有新数组都按确定性顺序输出）。
  *
  * 题面 §C4 要求至少输出：
  *   Deals : provider 数 · 当前优惠数
@@ -38,6 +58,7 @@ const path = require('path');
 const { load: loadRenderCore } = require('../lib/render-core');
 const providers = require('../lib/providers');
 const registry = require('../lib/model-registry');
+const coverageTargets = require('../lib/coverage-targets');
 const { todayCN } = require('../lib/schema');
 
 const ROOT = path.join(__dirname, '..', '..');
@@ -58,6 +79,14 @@ const REGISTRY_LINKS_FILE = overrideOf('links') || path.join(ROOT, 'scripts', 'd
 const REGISTRY_GAPS_FILE = overrideOf('gaps') || path.join(ROOT, 'scripts', 'data', 'model-registry-gaps.json');
 const CANDIDATES_FILE = overrideOf('candidates') || path.join(ROOT, 'research', 'v3.0-source-candidates.json');
 const CANDIDATES_MD = overrideOf('candidates-md') || path.join(ROOT, 'research', 'v3.0-source-candidates.md');
+/** 覆盖**意图层**（v2 新增，唯一权威；内部维护层，不发布）。`--targets=` 只用于验证报告本身。 */
+const TARGETS_FILE = overrideOf('targets') || path.join(ROOT, 'scripts', 'data', 'coverage-targets.json');
+/** 发布产物 `models.json`（派生形状）：`catalogStatus` / `catalogReason` 只可能在这里（来源层禁写派生字段） */
+const PUBLISHED_MODELS_FILE = overrideOf('published-models') || path.join(ROOT, 'models.json');
+/** 数据源健康心跳（`BLOCKED_SOURCE` 与 Source Health impact 的唯一出处） */
+const SOURCE_HEALTH_FILE = overrideOf('source-health') || path.join(ROOT, 'scripts', 'data', 'source-health.json');
+/** Freshness 单一策略模块（t4 落盘后才有；没有就如实说"没落盘"，绝不假装 0 个 unknown） */
+const FRESHNESS_MODULE = '../lib/model-freshness';
 
 /** 题面 §C3 要求候选登记表逐条给出的字段 —— 少一个字段这条记录就不算留档 */
 const CANDIDATE_REQUIRED_FIELDS = [
@@ -144,6 +173,14 @@ function main() {
 
   const dealProviderKeys = new Set([...dealVendorCount.keys()].filter(key => key !== '(未识别)'));
 
+  // t14-F4：`deals.providers` 的口径必须写明是**仅 type=deal**。
+  // 为什么要有这一行对照：deals 里还有 `type=tool` 的行（工具目录），它们同样带 vendor 原始串，
+  // 但**不进 provider universe**（那些串没有归一规则、也没有套餐/计费侧的身份）。
+  // 只写一个 "provider 数" 而不说分母是什么，读者会把它与"deals 里出现过的所有厂商"混为一谈。
+  const toolVendorKeys = new Set(toolRows
+    .map(deal => (core.vendorOf(deal) || {}).key)
+    .filter(key => key && key !== '(未识别)'));
+
   /* ---------------- Coding Plans ---------------- */
   const plans = Array.isArray(plansDoc.plans) ? plansDoc.plans : [];
   const planProviderCount = new Map();
@@ -199,6 +236,17 @@ function main() {
   if (registryLinksLoaded.broken) problems.push(`scripts/data/model-registry-links.json 解析失败：${registryLinksLoaded.broken}`);
   const relations = relationsOf(registryLinksLoaded.doc);
   const linksMissing = relations === null;
+  // 牙（T14-F1，独立审查抓到）：**关系层读不到时必须判红**，不能只在正文写一句
+  // 「映射覆盖按 0 计算」然后 exit 0。
+  // 为什么：本报告是「缺口清单」的唯一落盘处，而"关系层整个没了"与"确实一条映射都没有"
+  // 会导出完全相同的数字（未映射 = 全部）。兄弟分支（models.json 读不出、gaps 缺失）都已判红，
+  // 唯独这一条只用来跳过校验 —— 于是**删掉整个关系层文件，报告照样绿**（实测过），
+  // 那等于这份报告随时可能在一份残缺的盘面上说"全覆盖"。
+  if (linksMissing && !registryLinksLoaded.missing && !registryLinksLoaded.broken) {
+    problems.push('scripts/data/model-registry-links.json 存在、也能解析，却读不出任何映射数组 —— 禁止把"读不懂这份关系层"当成"没有映射"（那会让缺口数字看起来等于全部，而报告仍然绿）。');
+  } else if (registryLinksLoaded.missing) {
+    problems.push('缺少 scripts/data/model-registry-links.json —— 关系层不存在，API 侧与套餐侧的映射覆盖都无从判定（这不是"0 条映射"，是"这份报告没有分母"）。');
+  }
 
   // v3.0 修订（套餐侧）：`plans.json` 的模型串是自由文本，结局只有"映射"或"显式声明不对应单一模型身份"。
   // 本报告原先**只统计 API 侧**，套餐侧那 11 条串在报告里一个字都没有 —— 于是"缺口"看起来比实际小。
@@ -223,10 +271,25 @@ function main() {
     }
   }
 
+  // API 侧处置声明覆盖的计价条目（`model-registry-gaps.json` 的 **API 侧**声明）：
+  // 自 coverage-expansion-v1 起，"未映射"的语义是「**映射与处置都没有**」——
+  // 声明过的条目**有结局**（结局是"对不上任何 registry 身份"），不该再被算成"未判"。
+  // 这里只做减法，**不动任何输出结构**（新口径的逐条留档走 lib 的 coverageOf().declaredApiEntries）。
+  const declaredApiKeys = new Set();
+  if (registryGapsLoaded.doc && !registryGapsLoaded.broken) {
+    for (const declaration of registry.declarationsList(registryGapsLoaded.doc)) {
+      if (!declaration || declaration.apiPlanId === undefined || declaration.modelKey === undefined) continue;
+      for (const identity of registry.sourcePricingIdentitiesOf(declaration, apiPlans).identities) {
+        declaredApiKeys.add(`${identity.apiPlanId}::${identity.modelKey}::${identity.variant}`);
+      }
+    }
+  }
+
   const unmappedModels = [];
   for (const plan of apiPlans) {
     for (const model of (Array.isArray(plan.models) ? plan.models : [])) {
-      if (mappedApiKeys.has(`${plan.id}::${model.modelKey}::${model.variant}`)) continue;
+      const identityKey = `${plan.id}::${model.modelKey}::${model.variant}`;
+      if (mappedApiKeys.has(identityKey) || declaredApiKeys.has(identityKey)) continue;
       unmappedModels.push({
         provider: plan.provider,
         providerName: providers.providerNameOf(plan.provider, providerTable),
@@ -255,14 +318,57 @@ function main() {
   if (planCoverage.unmappedModelKeys.length !== unmappedModels.length) {
     problems.push(`报告层与 lib/model-registry.js 对"未映射计价条目"的读数不一致（报告 ${unmappedModels.length} / lib ${planCoverage.unmappedModelKeys.length}）—— 两处看的不是同一份关系层。`);
   }
+
+  /* ---------------- API 侧处置（t25：把"结局"如实记进方程） ---------------- */
+  //
+  // t23 起 `model-registry-gaps.json` 有了 **API 侧**声明（`apiPlanId` + `modelKey` + `variant` +
+  // `reason=off-registry-model`），于是计价条目的结局变成三种、而且必须**三种相加等于总数**：
+  //
+  //     计价条目 N 条 = 已映射认领 A + 已处置声明 B + 未判 C
+  //
+  // 这份报告以前只有 A 与 C 两个数（B 没有出口），于是"处置过的条目"被悄悄算进了 A：
+  // 一个声明过"对不上任何 registry 身份"的条目，看起来和"有一条真实映射"完全一样。
+  // 现在 B 单独成一格，且 **C 不为 0 时报告自检必须非 0**（与 validateLinks 同一口径：不许比门禁好看）。
+  //
+  // 记账口径：A / B / C 一律按**展开后的计价条目**（`(planId, modelKey, variant)`）数，
+  // 通配（`variant: null`）只为它真实展开到的条目负责 —— 与 lib 的 `coverageOf()` 逐字相同。
+  const apiPricingEntries = planCoverage.apiPricingItems;
+  const mappedApiEntries = planCoverage.mappedApiEntries;
+  const declaredApiIdentityCount = planCoverage.declaredApiIdentities;
+  const unmappedApiEntries = planCoverage.unmappedModelKeys.length;
+  const apiDispositionOrder = (row) => [
+    row.provider === null || row.provider === undefined ? '' : row.provider,
+    row.apiPlanId === null || row.apiPlanId === undefined ? '' : row.apiPlanId,
+    row.modelKey === null || row.modelKey === undefined ? '' : row.modelKey,
+    row.variant === null || row.variant === undefined ? '' : row.variant
+  ].join('\u0000');
+  const declaredApiRows = [...planCoverage.declaredApiEntries]
+    .sort((a, b) => (apiDispositionOrder(a) < apiDispositionOrder(b) ? -1 : apiDispositionOrder(a) > apiDispositionOrder(b) ? 1 : 0));
+  // 三条读数逐项对账（报告自己的独立记账 ↔ lib 的唯一判据）：对不上就是"报告看的"和"门禁看的"分家了。
+  if (mappedApiEntries !== mappedApiKeys.size) {
+    problems.push(`报告层与 lib/model-registry.js 对"已映射 API 计价条目"的读数不一致（报告 ${mappedApiKeys.size} / lib ${mappedApiEntries}）—— 两处看的不是同一份关系层。`);
+  }
+  if (declaredApiIdentityCount !== declaredApiKeys.size) {
+    problems.push(`报告层与 lib/model-registry.js 对"已处置声明的 API 计价条目"的读数不一致（报告 ${declaredApiKeys.size} / lib ${declaredApiIdentityCount}）—— 两处看的不是同一份处置登记表。`);
+  }
+  const apiEquationTotal = mappedApiEntries + declaredApiIdentityCount + unmappedApiEntries;
+  if (apiEquationTotal !== apiPricingEntries) {
+    problems.push(`API 侧记账不闭合：计价条目 ${apiPricingEntries} 条 ≠ 已映射认领 ${mappedApiEntries} + 已处置声明 ${declaredApiIdentityCount} + 未判 ${unmappedApiEntries}（= ${apiEquationTotal}）—— 三个数必须把每一条计价条目恰好分完，否则报告在自说自话。`);
+  }
+  if (unmappedApiEntries > 0) {
+    // 与 validateLinks 同一口径：每一条计价条目都必须有结局（映射 **或** 处置声明）。
+    const sample = planCoverage.unmappedModelKeys.slice(0, 3)
+      .map(row => `(${row.apiPlanId}, ${row.modelKey}, ${row.variant})`).join(' · ');
+    problems.push(`API 侧还有 ${unmappedApiEntries} 条计价条目既没有 registry 映射、也没有在 model-registry-gaps.json 里声明处置 —— 每一条都必须人工判一次（映射或"不对应单一模型身份"，禁止静默留空）：${sample}${unmappedApiEntries > 3 ? ' …' : ''}`);
+  }
   if (registryGapsLoaded.doc) {
-    problems.push(...registry.validateGaps(registryGapsLoaded.doc, { plans, links: registryLinksLoaded.doc, table: registryLoaded.table }));
+    problems.push(...registry.validateGaps(registryGapsLoaded.doc, { plans, links: registryLinksLoaded.doc, table: registryLoaded.table, apiPlans }));
   }
   // 关系层判据本身也在这里跑一遍（与 check-model-registry-links / validate --strict / 构建期同一支）：
   // 一条 source pricing identity 两个 owner、冗余重复认领、API 侧有计价条目没人认领 —— 都是**报告不可信**，
   // 不能只在别处红而报告照样打印一个好看的数字。
   if (!linksMissing) {
-    problems.push(...registry.validateLinks(registryLinksLoaded.doc, { table: registryLoaded.table, apiPlans, plans }));
+    problems.push(...registry.validateLinks(registryLinksLoaded.doc, { table: registryLoaded.table, apiPlans, plans, gaps: registryGapsLoaded.doc }));
   }
   if (!linksMissing && registryGapsLoaded.doc && !registryMissing) {
     problems.push(...registry.validatePlanModelCoverage({
@@ -297,11 +403,39 @@ function main() {
   const notAdopted = candidates.filter(candidate => candidate && candidate.decision === 'not_adopted');
   const adopted = candidates.filter(candidate => candidate && candidate.decision === 'adopted');
   const notAdoptedProviders = uniqSorted(notAdopted.map(candidate => candidate.provider));
+  // §42「机器可读输出也要同步」（t46 / F2）——候选来源审查的**明细**同步进 JSON。
+  // 此前 JSON 只有 3 个计数（40/13/21）与 13 个厂商显示名：URL、检查日期、未采信原因**一个都还原不出**，
+  // 而这三样正是这条旧能力的全部内容（文本侧本来就有）。字段名沿用登记表的字段名，不另起一套词。
+  // 排序用 **code-unit 序**（与 lib 的规范序判据同一支比较方式，不用 localeCompare），两次运行逐字节一致。
+  const candidateOrderKey = row => [row.provider, row.url, row.checkedAt, row.slug]
+    .map(value => String(value === null || value === undefined ? '' : value)).join('\u0000');
+  const candidateRows = candidates
+    .filter(candidate => candidate && typeof candidate === 'object')
+    .map(candidate => ({
+      provider: candidate.provider === undefined ? null : candidate.provider,
+      slug: candidate.slug === undefined ? null : candidate.slug,
+      url: candidate.url === undefined ? null : candidate.url,
+      checkedAt: candidate.checkedAt === undefined ? null : candidate.checkedAt,
+      decision: candidate.decision === undefined ? null : candidate.decision,
+      adopted: candidate.decision === 'adopted',
+      flags: {
+        isJs: candidate.isJs === true,
+        requiresLogin: candidate.requiresLogin === true,
+        dynamicPagination: candidate.dynamicPagination === true,
+        pageOffline: candidate.pageOffline === true,
+        incomplete: candidate.incomplete === true
+      },
+      failedReason: candidate.failedReason === undefined ? null : candidate.failedReason,
+      adoptedReason: candidate.adoptedReason === undefined ? null : candidate.adoptedReason
+    }))
+    .sort((a, b) => (candidateOrderKey(a) < candidateOrderKey(b) ? -1 : candidateOrderKey(a) > candidateOrderKey(b) ? 1 : 0));
 
   /* ---------------- 交叉缺口 ---------------- */
   const dealsWithoutPlans = uniqSorted([...dealProviderKeys].filter(key => !planProviderKeys.has(key)));
   const plansWithoutDeals = uniqSorted([...planProviderKeys].filter(key => !dealProviderKeys.has(key)));
-  const apiWithoutRegistryMapping = unmappedModels.length;
+  // （t25：原来这里还有一个 `apiWithoutRegistryMapping = unmappedModels.length`，只被旧的
+  //  "已映射 API 计价条目" 那一行用；现在那一行换成了 A / B / C 三个读数 + 方程，
+  //  该变量已无出口 —— 删掉它，免得留一个没人读的中间量让后来者以为是判据。）
 
   /* ---------------- 一致性自检（红 = 报告不可信） ---------------- */
   if (Number.isFinite(plansDoc.count) && plansDoc.count !== plans.length) {
@@ -321,13 +455,316 @@ function main() {
     }
   }
 
+  /* ---------------- Coverage Target 层（v2：意图 vs 事实） ---------------- */
+  //
+  // 之前报告只能对**盘上已有的数据**做除法：一家平台一条记录都没有时，它在报告里根本不存在。
+  // 这一段把覆盖**意图层**（scripts/data/coverage-targets.json，唯一权威）读进来，由
+  // lib/coverage-targets.js 派生七态。意图层坏了 / 不在盘上 ⇒ 报告当场红：
+  // "要覆盖什么"没有了，下面的"覆盖到了哪里"就只是一堆计数，不是覆盖结论。
+  const targetsLoaded = coverageTargets.load(TARGETS_FILE);
+  const targetsDoc = targetsLoaded.doc;
+  if (targetsLoaded.missing) {
+    problems.push('缺少 scripts/data/coverage-targets.json —— 覆盖意图层（"我们打算覆盖什么"）不在盘上，覆盖结论无从判定（不许把"没有意图层"当成"没有缺口"）。');
+  } else if (targetsLoaded.broken) {
+    problems.push(`scripts/data/coverage-targets.json 解析失败：${targetsLoaded.broken}`);
+  }
+
+  // 发布产物 models.json（派生形状）：`catalogStatus` / `catalogReason` 只可能在这里 ——
+  // 来源层 scripts/data/models.json 里出现派生字段是**校验错误**，所以这两项必须从产物读。
+  const publishedModelsLoaded = readJson(PUBLISHED_MODELS_FILE, 'models.json（派生产物）');
+  const publishedModels = publishedModelsLoaded && Array.isArray(publishedModelsLoaded.models)
+    ? publishedModelsLoaded.models
+    : [];
+
+  const sourceHealthLoaded = readJson(SOURCE_HEALTH_FILE, 'scripts/data/source-health.json');
+  const sourceHealthDoc = sourceHealthLoaded && typeof sourceHealthLoaded === 'object' && !Array.isArray(sourceHealthLoaded)
+    ? sourceHealthLoaded
+    : null;
+  if (!sourceHealthDoc) {
+    problems.push('缺少 scripts/data/source-health.json —— Source Health impact 与 BLOCKED_SOURCE 判定没有输入（缺输入不是通过）。');
+  }
+
+  const facts = coverageTargets.buildFacts({
+    providerTable,
+    deals,
+    dealVendorOf: deal => core.vendorOf(deal),
+    today,
+    plans,
+    apiPlans,
+    modelsTable: registryLoaded.table,
+    publishedModels,
+    sourceHealthDoc
+  });
+  const knownSources = uniqSorted([...Object.keys(facts.sourceHealth), ...facts.dealSources]);
+  const targetProblems = targetsDoc
+    ? coverageTargets.validateTargets(targetsDoc, {
+      providerTable,
+      modelsTable: registryLoaded.table,
+      knownSources,
+      duplicateKeys: targetsLoaded.duplicateKeys
+    })
+    : [];
+  problems.push(...targetProblems);
+  const derived = coverageTargets.deriveTargets(targetsDoc || { targets: [] }, facts);
+
+  /* ---------------- Current Model Coverage（v2） ---------------- */
+  const registryEntries = Object.entries(registryLoaded.table || {});
+  // 相位差纪律（本项目有实测教训）：字段**一条都没有** = 那一层还没落盘，不许当成"全部未知"报数。
+  const releasedAtLanded = registryEntries.some(([, entry]) => entry && entry.releasedAt !== undefined);
+  const catalogStatusLanded = publishedModels.some(model => model && model.catalogStatus !== undefined);
+  const modelDimensionRows = derived.rows.filter(row => row.dimension === 'models');
+  const declaredModelItems = modelDimensionRows
+    .reduce((list, row) => list.concat(row.items.map(item => ({
+      provider: row.provider,
+      providerName: row.providerName,
+      slug: item.value,
+      resolved: item.resolved,
+      reason: item.reason
+    }))), [])
+    .sort((a, b) => `${a.provider}\u0000${a.slug}`.localeCompare(`${b.provider}\u0000${b.slug}`));
+  const modelSlugsOfProvider = provider => {
+    const row = facts.dimensions.models.byProvider[provider];
+    return row ? [...row.slugs].sort() : [];
+  };
+  const unknownReleaseDates = releasedAtLanded
+    ? registryEntries
+      .filter(([, entry]) => !entry || entry.releasedAt === null || entry.releasedAt === undefined)
+      .map(([slug]) => slug).sort()
+    : null;
+  const legacyOrHistorical = catalogStatusLanded
+    ? publishedModels
+      .filter(model => model && ['legacy', 'historical'].includes(model.catalogStatus))
+      .map(model => ({ slug: model.slug, catalogStatus: model.catalogStatus, catalogReason: model.catalogReason || null }))
+      .sort((a, b) => String(a.slug).localeCompare(String(b.slug)))
+    : null;
+  const retiredInSource = registryEntries
+    .filter(([, entry]) => entry && entry.status === 'retired')
+    .map(([slug]) => slug).sort();
+  // registry 模型归属的开发者没有对应 provider 身份 ⇒ 这些模型**从覆盖宇宙里够不到**。
+  // 不是报告自身的问题（models.json 允许 `_developers_extra`），但必须列出来而不是安静地消失。
+  // 归属由 lib/coverage-targets.js 的 buildFacts() 算一次（`facts.dimensions.models.bySlug[].provider`），
+  // 这里不再自己按名字找一遍 —— 那样会多出第二份归属判据。
+  const registryDevelopersWithoutProvider = registryEntries
+    .map(([slug]) => {
+      const info = facts.dimensions.models.bySlug[slug];
+      if (!info || info.provider) return null;
+      return { slug, developer: info.developer === undefined ? null : info.developer, owner: info.owner === undefined ? null : info.owner };
+    })
+    .filter(Boolean)
+    .sort((a, b) => String(a.slug).localeCompare(String(b.slug)));
+
+  /* ---------------- Source Health impact（v2） ---------------- */
+  const declaredSourceNames = uniqSorted(derived.rows.reduce((list, row) => list.concat(row.sources.map(source => source.name)), []));
+  const sourceHealthRows = declaredSourceNames.map(name => {
+    const health = facts.sourceHealth[name] || null;
+    const rows = derived.rows.filter(row => row.sources.some(source => source.name === name));
+    return {
+      name,
+      health,
+      status: health ? health.status : 'unregistered',
+      reason: health ? health.reason : null,
+      consecutiveFailures: health ? health.consecutiveFailures : null,
+      observedDeals: facts.dealSources.includes(name),
+      targets: uniqSorted(rows.map(row => row.provider)),
+      dimensions: uniqSorted(rows.map(row => row.dimension))
+    };
+  });
+  const unhealthyDeclaredSources = sourceHealthRows.filter(row => row.health && row.health.status !== 'healthy');
+  const blockedRows = derived.blocked;
+  // R8 的「来源宇宙」对照（t46 / F5）：本节列的是**意图层声明过的 deals source**（= 挂在 target 上的那些），
+  // 而 `scripts/data/source-health.json` 的注册表更宽。不把两个宇宙的差显式写出来，读者会把本节
+  // 读成"全站来源都被这张表看住了"——变坏但不属于任何 target 的采集源不在本节里，那是口径边界不是漏报。
+  const sourceHealthRegistryNames = Object.keys(facts.sourceHealth).sort();
+  const declaredSourceNameSet = new Set(sourceHealthRows.map(row => row.name));
+  const sourceHealthRegistryOnly = sourceHealthRegistryNames.filter(name => !declaredSourceNameSet.has(name));
+
+  /* ---------------- Freshness 阈值与理由（v2） ---------------- */
+  const freshnessPath = path.join(__dirname, '..', 'lib', 'model-freshness.js');
+  //
+  // 三种结局**必须分开报**：文件不在盘上（层未落盘）≠ 文件在盘上但读不出来（坏了）≠ 读得出策略。
+  // 这里刻意 catch 住 require 失败：本报告要能在一份策略模块正在改写的仓库里照常跑出别的数字 ——
+  // 但那件事会在文本与 JSON 里**显式写出来**，不是静默降级（静默降级正是这一层最该防的事）。
+  const freshness = (() => {
+    if (!fs.existsSync(freshnessPath)) {
+      return {
+        status: 'missing',
+        available: false,
+        module: 'scripts/lib/model-freshness.js',
+        error: null,
+        policy: null,
+        policyDigest: null,
+        catalogStatuses: null,
+        defaultVisible: null,
+        defaultHidden: null,
+        // R4 五态普查用的计数器（lib 里的唯一实现）；层没落盘 ⇒ null，由报告如实报「分不出」。
+        censusOf: null,
+        note: 'freshness 单一策略层尚未落盘（scripts/lib/model-freshness.js 不存在）：本报告**不**判定 currentness ——'
+          + ' unknown release dates 与 legacy/historical 一律如实标成"层未落盘"，绝不用 0 冒充（0 个 legacy 与"分不出 legacy"是两件事）。'
+      };
+    }
+    try {
+      const mod = require(freshnessPath);
+      const policy = mod.MODEL_FRESHNESS_POLICY === undefined ? null : mod.MODEL_FRESHNESS_POLICY;
+      return {
+        status: 'ok',
+        available: true,
+        module: 'scripts/lib/model-freshness.js',
+        error: null,
+        policy,
+        policyDigest: typeof mod.policyDigestOf === 'function' && policy ? mod.policyDigestOf(policy) : null,
+        catalogStatuses: mod.CATALOG_STATUSES === undefined ? null : mod.CATALOG_STATUSES,
+        defaultVisible: mod.DEFAULT_VISIBLE_CATALOG_STATUSES === undefined ? null : mod.DEFAULT_VISIBLE_CATALOG_STATUSES,
+        defaultHidden: mod.DEFAULT_HIDDEN_CATALOG_STATUSES === undefined ? null : mod.DEFAULT_HIDDEN_CATALOG_STATUSES,
+        // R4 五态普查的计数器：只借 lib 的 `censusOf()`（与 entry 的判据同源），报告不自己写一份计数。
+        censusOf: typeof mod.censusOf === 'function' ? mod.censusOf : null,
+        note: '阈值与理由的唯一出处是 scripts/lib/model-freshness.js 的 MODEL_FRESHNESS_POLICY（按 modelRole 分档）；'
+          + '本报告只读它，不另写一份。"默认展示哪一档"同理只读该模块的 DEFAULT_VISIBLE_CATALOG_STATUSES。'
+      };
+    } catch (error) {
+      return {
+        status: 'broken',
+        available: false,
+        module: 'scripts/lib/model-freshness.js',
+        error: String((error && error.message) || error),
+        policy: null,
+        policyDigest: null,
+        catalogStatuses: null,
+        defaultVisible: null,
+        defaultHidden: null,
+        censusOf: null,
+        note: 'freshness 策略模块在盘上但**读不出来**（本轮不判定 currentness；这不是"没有 legacy"）。'
+      };
+    }
+  })();
+
+  /* ---------------- R4（§41 第 4 条）目录状态五态普查 ---------------- */
+  //
+  // 题面点名的条目是 Current / Aging / Legacy / Historical / Unknown model counts。此前报告里
+  // **一个都不是普查**：unknown 用 `unknown release dates`（releasedAt 口径，数值 40 与
+  // catalogStatus=unknown 的 40 相同纯属巧合）、legacy + historical 被合并成一行「仍在产物里」、
+  // current / aging / historical 三档全文没有任何计数行。
+  //
+  // 判据层的**唯一出处**（报告不重算口径，只做三件事：取词表、取逐条值、调 lib 的计数器）：
+  //   · 词表  = `lib/model-freshness.js` 的 `CATALOG_STATUSES`（上面 freshness.catalogStatuses 就是它）
+  //   · 逐条值 = 发布产物 `models.json` 的 `catalogStatus`（**派生字段**：`lib/model-registry.js`
+  //     把它列在 `DERIVED_KEYS` 里，来源层 `scripts/data/models.json` 手写即红 —— 所以只能读发布侧）
+  //   · 计数  = `lib/model-freshness.js` 的 `censusOf()`（与 entry 的判据同源，报告不另写一份）
+  // 相位差纪律（与本文件别处一致）：整层没落盘 ⇒ 如实报「分不出」，绝不用 0 冒充。
+  const catalogStatusWordList = Array.isArray(freshness.catalogStatuses) ? freshness.catalogStatuses : null;
+  const catalogStatusCensus = (() => {
+    const base = {
+      landed: false,
+      statusOrder: catalogStatusWordList,
+      counts: null,
+      sum: null,
+      registryModels: registryEntries.length,
+      statusesOutsideWordList: [],
+      reason: null
+    };
+    if (!catalogStatusLanded) {
+      return Object.assign(base, { reason: '发布产物 models.json 里没有一个条目带 catalogStatus（freshness 派生层尚未落盘）——"分不出"与"五个 0"是两件事。' });
+    }
+    if (!catalogStatusWordList || typeof freshness.censusOf !== 'function') {
+      return Object.assign(base, { reason: 'lib/model-freshness.js 没有给出词表或 censusOf()，普查没有判据层可依（不当成 0）。' });
+    }
+    const statusesOutsideWordList = uniqSorted(publishedModels
+      .map(model => (model && model.catalogStatus === undefined ? null : (model ? model.catalogStatus : null)))
+      .filter(status => status === null || !catalogStatusWordList.includes(status))
+      .map(status => (status === null ? '(字段缺失)' : String(status))));
+    const census = freshness.censusOf(publishedModels);
+    const counts = {};
+    for (const status of catalogStatusWordList) counts[status] = census.byStatus[status] || 0;
+    return {
+      landed: true,
+      statusOrder: catalogStatusWordList,
+      counts,
+      sum: census.total,
+      registryModels: registryEntries.length,
+      statusesOutsideWordList,
+      reason: null
+    };
+  })();
+  const censusReading = catalogStatusCensus.landed
+    ? catalogStatusCensus.statusOrder.map(status => `${status} ${catalogStatusCensus.counts[status]}`).join(' · ')
+      + `（和 ${catalogStatusCensus.sum}）`
+    : null;
+  if (catalogStatusCensus.landed && catalogStatusCensus.statusesOutsideWordList.length) {
+    problems.push(`R4 五态普查：发布产物 models.json 里有 ${catalogStatusCensus.statusesOutsideWordList.length} 个 catalogStatus 不在词表里（${catalogStatusCensus.statusesOutsideWordList.join('、')}）`
+      + ' —— 词表的唯一出处是 lib/model-freshness.js 的 CATALOG_STATUSES；未知值不许静默并进 unknown，也不许在报告里自己加一档。');
+  }
+  if (catalogStatusCensus.landed && catalogStatusCensus.sum !== catalogStatusCensus.registryModels) {
+    problems.push(`R4 五态普查不闭合：五态之和 ${catalogStatusCensus.sum}（${censusReading}）≠ registry 模型数 ${catalogStatusCensus.registryModels}`
+      + '（scripts/data/models.json 的条目数）—— 普查必须把每一个 registry 模型恰好分到一档；'
+      + '不等说明发布产物与来源层不同步（跑 build 或检查 models.json），或有一档被漏掉。');
+  }
+
+  /* ---------------- v2 汇总（文本与 JSON 共用同一批数字） ---------------- */
+  const targetSummaries = derived.targets.map(target => {
+    const cells = coverageTargets.DIMENSIONS.map(dimension => target.dimensions[dimension]);
+    return {
+      provider: target.provider,
+      name: target.name,
+      tier: target.tier,
+      role: target.role,
+      intent: target.intent,
+      overall: target.overall,
+      withData: cells.some(cell => cell.present > 0),
+      states: cells.reduce((acc, cell) => { acc[cell.dimension] = cell.state; return acc; }, {}),
+      coveredDimensions: cells.filter(cell => cell.state === 'COVERED').length,
+      applicableDimensions: cells.filter(cell => cell.state !== 'NOT_APPLICABLE').length
+    };
+  });
+  const summaryOf = provider => targetSummaries.find(row => row.provider === provider) || { tier: null, role: null };
+  const countBy = (list, keyOf) => {
+    const out = {};
+    for (const item of list) {
+      const key = keyOf(item);
+      if (key === null || key === undefined) continue;
+      out[key] = (out[key] || 0) + 1;
+    }
+    return out;
+  };
+  const tierCounts = countBy(targetSummaries, row => row.tier);
+  const roleCounts = countBy(targetSummaries, row => row.role);
+  const dimensionStateCounts = {};
+  for (const dimension of coverageTargets.DIMENSIONS) {
+    dimensionStateCounts[dimension] = {};
+    for (const state of coverageTargets.STATE_ORDER) {
+      dimensionStateCounts[dimension][state] = derived.rows.filter(row => row.dimension === dimension && row.state === state).length;
+    }
+  }
+  const rowPayload = derived.rows.map(row => ({
+    provider: row.provider,
+    name: row.providerName,
+    tier: summaryOf(row.provider).tier,
+    role: summaryOf(row.provider).role,
+    dimension: row.dimension,
+    state: row.state,
+    present: row.present,
+    currentPresent: row.currentPresent,
+    declared: row.declared,
+    resolved: row.resolved,
+    reason: row.reason
+  }));
+  const cellPayload = row => ({
+    provider: row.provider,
+    name: row.providerName,
+    dimension: row.dimension,
+    state: row.state,
+    declared: row.declared,
+    present: row.present,
+    resolved: row.resolved,
+    reason: row.reason,
+    items: row.items.map(item => ({ value: item.value, resolved: item.resolved, reason: item.reason }))
+  });
+
   /* ---------------- 输出 ---------------- */
   const out = [];
   const line = text => out.push(text);
   const kv = (label, value, note) => line(`  ${String(label).padEnd(26)} ${String(value).padStart(6)}${note ? `   ${note}` : ''}`);
 
   line('======================================================================');
-  line('数据覆盖报告（v3.0 Stage C4 / 题面 §C4）');
+  line('数据覆盖报告（v3.0 Stage C4 / 题面 §C4 · coverage-expansion-v1 v2）');
   line('======================================================================');
   line(`生成日期            : ${today}`);
   line(`deals.json.updatedAt: ${dealsDoc.updatedAt}`);
@@ -336,7 +773,8 @@ function main() {
   line('');
 
   line('── Deals ────────────────────────────────────────────────────────────');
-  kv('provider 数', dealVendorRows.length, 'deals 侧归一后的厂商键数（不含未识别）');
+  kv('provider 数（仅 type=deal）', dealVendorRows.length, `只数 type=deal 的 ${dealRows.length} 行归一后的厂商键（不含未识别）；type=tool 的 ${toolRows.length} 行不进 provider universe`);
+  kv('工具行厂商数（对照，不计入）', toolVendorKeys.size, `type=tool 共 ${toolRows.length} 行；它们的厂商串同样带 vendor 原始串，但没有归一规则、也没有套餐/计费侧身份`);
   kv('当前优惠数', currentDeals.length, `type=deal 且未过期（过期 ${expiredDeals.length} 条）`);
   kv('工具条目数', toolRows.length, 'type=tool，不计入"当前优惠数"');
   line('');
@@ -363,9 +801,15 @@ function main() {
   } else {
     kv('registry 映射条数', relations.length);
   }
-  kv('已映射 API 计价条目', modelPricingItems - apiWithoutRegistryMapping, `共 ${modelPricingItems} 条（按展开后的 (planId, modelKey, variant) 记账，通配映射不整组算过）`);
+  // API 侧与 Coding 侧**对称**：都有"已映射"与"已声明不对应单一模型身份"两个出口。
+  // 三个数必须把每一条计价条目恰好分完（见上方 apiEquationTotal 的闭合断言）。
+  kv('已映射认领 API 计价条目', mappedApiEntries, '按展开后的 (planId, modelKey, variant) 记账：通配映射只算它真实展开到的条目');
+  kv('已处置声明的 API 计价条目', declaredApiIdentityCount, `model-registry-gaps.json 的 API 侧声明展开后覆盖的条目（当前 ${declaredApiRows.length} 条声明 · reason=off-registry-model）`);
+  kv('未判 API 计价条目', unmappedApiEntries, '既没有映射、也没有处置声明（必须为 0；不为 0 时本报告自检非 0，与 validateLinks 同一口径）');
+  line(`  API 侧记账：计价条目 ${apiPricingEntries} 条 = 已映射认领 ${mappedApiEntries} + 已处置声明 ${declaredApiIdentityCount} + 未判 ${unmappedApiEntries}`);
   kv('已映射 Coding 模型串', planCoverage.planModelStrings - planCoverage.unmappedPlanModels.length - planCoverage.declaredPlanModels.length, `共 ${planCoverage.planModelStrings} 条；关系层里 Coding 映射 ${planCoverage.codingLinks} 条`);
-  kv('已声明"不对应单一模型身份"', planCoverage.declaredPlanModels.length, '模型池 / 系列名 / 一个串多个模型 / registry 没有的身份 / 图像语音资源（逐条见缺口 5 下方）');
+  kv('已声明"不对应单一模型身份"（套餐侧）', planCoverage.declaredPlanModels.length, '模型池 / 系列名 / 一个串多个模型 / registry 没有的身份 / 图像语音资源（逐条见缺口 5 下方）');
+  kv('已声明"不对应单一模型身份"（API 侧）', declaredApiRows.length, 'reason=off-registry-model（逐条见缺口 5 下方的 API 侧清单；与套餐侧是两个出口、同一本账）');
   line('');
 
   line('── 缺口 1：有 Deals 无 Plans 的 provider ────────────────────────────');
@@ -378,7 +822,8 @@ function main() {
   plansWithoutDeals.forEach(key => line(`  · ${key}（${providers.providerNameOf(key, providerTable)}）   ${planProviderCount.get(key).count} 条套餐`));
   line('');
 
-  line('── 缺口 3：有 API Pricing 无 Model Registry 映射的模型 ──────────────');
+  line('── 缺口 3：有 API Pricing 既无映射、也无处置声明的计价条目（未判）──');
+  line(`  （口径：计价条目 ${apiPricingEntries} 条 − 映射认领 ${mappedApiEntries} − 处置声明 ${declaredApiIdentityCount} = 未判 ${unmappedApiEntries}；不为 0 时报告自检非 0）`);
   if (!unmappedModels.length) line('  （无）');
   unmappedModels
     .sort((a, b) => [a.provider, a.planId, a.modelKey, a.variant].join('|').localeCompare([b.provider, b.planId, b.modelKey, b.variant].join('|')))
@@ -414,11 +859,164 @@ function main() {
     .sort((a, b) => [a.provider, a.planId, a.modelName].join('|').localeCompare([b.provider, b.planId, b.modelName].join('|')))
     .forEach(row => line(`  · ${providers.providerNameOf(row.provider, providerTable)} / ${row.modelName}（套餐 ${row.planId}）→ ${row.reason}（记录里的 role=${row.role}）`));
   line('');
+  line('── 已声明"不对应单一模型身份"的 API 计价条目（有理由的缺口，不是漏判）──');
+  // 与套餐侧同一件事的另一半：声明过的计价条目**有结局**（结局 = 对不上任何 registry 身份），
+  // 所以它们不在"未判"里、也不在"已映射"里 —— 它们是第三格。
+  if (!declaredApiRows.length) line('  （无）');
+  for (const row of declaredApiRows) {
+    const who = row.provider === null || row.provider === undefined
+      ? `（provider 读不出：记录 ${row.apiPlanId} 不在 api-plans.json 里）`
+      : `${providers.providerNameOf(row.provider, providerTable)}（${row.provider}）`;
+    const variant = row.variant === null || row.variant === undefined ? '(通配)' : row.variant;
+    line(`  · ${who} / ${row.apiPlanId} → ${row.modelKey} · ${variant} → ${row.reason}`);
+  }
+  line('');
 
   line('── 已采信并移交 registry-curator 落盘的候选 ─────────────────────────');
   if (!adopted.length) line('  （无）');
   for (const row of adopted) {
     line(`  · ${row.provider}  ${row.url}   ${row.checkedAt}${row.notes ? `   ${row.notes}` : ''}`);
+  }
+  line('');
+
+  line('── Target Provider Universe（覆盖意图层 · v2）───────────────────────');
+  if (targetsLoaded.missing) {
+    line('  scripts/data/coverage-targets.json 不在盘上 —— 没有"要覆盖什么"，下面的分维度覆盖无法判定（**不是"没有缺口"**）。');
+  } else {
+    kv('Target 行数', derived.targets.length, 'scripts/data/coverage-targets.json 的人工意图行数（身份层与意图层双向对账）');
+    kv('providers.json 身份数', Object.keys(providerTable).length, '缺一行即报告红：身份层与意图层不许分家');
+    kv('有数据的 Target', targetSummaries.filter(row => row.withData).length, '四个维度里至少一格有盘上记录');
+    kv('一条数据都没有的 Target', targetSummaries.filter(row => !row.withData).length, '意图已立、事实为零（这些行的每一格都必须是 MISSING / DEFERRED / UNVERIFIABLE / NOT_APPLICABLE 之一）');
+    line(`  tier 分布：${coverageTargets.TIERS.map(tier => `${tier}=${tierCounts[tier] || 0}（${coverageTargets.TIER_LABEL[tier]}）`).join(' · ')}`);
+    line(`  role 分布：${coverageTargets.ROLES.map(role => `${role}=${roleCounts[role] || 0}`).join(' · ')}`);
+    line(`  reviewedAt：${targetsDoc && targetsDoc.reviewedAt ? targetsDoc.reviewedAt : '（未写）'}`);
+    line('  逐行：');
+    for (const row of targetSummaries) {
+      line(`    · ${String(row.provider).padEnd(12)} ${String(row.name || '').padEnd(16)} ${String(row.tier).padEnd(9)} ${String(row.role).padEnd(17)} ${row.overall.padEnd(15)} 适用维度 ${row.applicableDimensions}/4 · 已覆盖 ${row.coveredDimensions}/4`);
+    }
+  }
+  line('');
+  line('── 分维度覆盖 / Provider coverage by dimension（provider × 维度 · 派生七态 · v2）──');
+  for (const dimension of coverageTargets.DIMENSIONS) {
+    const counts = dimensionStateCounts[dimension];
+    line(`  ${coverageTargets.DIMENSION_LABEL[dimension]}（${dimension}）：${
+      coverageTargets.STATE_ORDER.map(state => `${state}=${counts[state]}`).join(' · ')}`);
+  }
+  line('  矩阵（列顺序 ' + coverageTargets.DIMENSIONS.join(' / ') + '）：');
+  line(`    ${'provider'.padEnd(13)}${coverageTargets.DIMENSIONS.map(dimension => dimension.padEnd(16)).join('')}`);
+  for (const row of targetSummaries) {
+    line(`    ${String(row.provider).padEnd(13)}${coverageTargets.DIMENSIONS.map(dimension => String(row.states[dimension]).padEnd(16)).join('')}`);
+  }
+  line('');
+  line('── 真缺口 / Missing Current Targets：MISSING targets（可覆盖、未延期、来源健康，但盘上一条记录都没有）──');
+  if (!derived.missing.length) line('  （无）');
+  for (const row of derived.missing) {
+    line(`  · ${row.providerName || row.provider}（${row.provider}） ${coverageTargets.DIMENSION_LABEL[row.dimension]}：声明的 current target ${row.declared} 条 / 盘上 ${row.present} 条 —— ${row.reason}`);
+  }
+  line('');
+  line('── PARTIAL targets（声明了一部分，只兑现了一部分）────────────────────');
+  if (!derived.partial.length) line('  （无）');
+  for (const row of derived.partial) {
+    line(`  · ${row.providerName || row.provider}（${row.provider}） ${coverageTargets.DIMENSION_LABEL[row.dimension]}：${row.resolved}/${row.declared} 条兑现 —— ${row.reason}`);
+    for (const item of row.items) {
+      if (!item.resolved) line(`      ✗ ${item.value}：${item.reason}`);
+    }
+  }
+  line('');
+  line('── 有理由的缺口 ① / Deferred Complexity Providers：DEFERRED（人工裁决延期 —— **永不算 MISSING**）──');
+  if (!derived.deferred.length) line('  （无）');
+  for (const row of derived.deferred) {
+    line(`  · ${row.providerName || row.provider}（${row.provider}） ${coverageTargets.DIMENSION_LABEL[row.dimension]}：${row.reason}`);
+  }
+  line('');
+  line('── 有理由的缺口 ② / Unverifiable Providers：UNVERIFIABLE（查过，官方来源不可核）──');
+  if (!derived.unverifiable.length) line('  （无）');
+  for (const row of derived.unverifiable) {
+    line(`  · ${row.providerName || row.provider}（${row.provider}） ${coverageTargets.DIMENSION_LABEL[row.dimension]}：${row.reason}`);
+  }
+  line('');
+  line('── 有理由的缺口 ③：NOT_APPLICABLE（这家在这一维度没有可覆盖的东西）──');
+  const notApplicableByProvider = new Map();
+  for (const row of derived.notApplicable) {
+    if (!notApplicableByProvider.has(row.provider)) notApplicableByProvider.set(row.provider, []);
+    notApplicableByProvider.get(row.provider).push(row.dimension);
+  }
+  if (!notApplicableByProvider.size) line('  （无）');
+  for (const [provider, dimensions] of notApplicableByProvider) {
+    line(`  · ${providers.providerNameOf(provider, providerTable)}（${provider}）不适用：${dimensions.map(dimension => coverageTargets.DIMENSION_LABEL[dimension]).join(' / ')}`);
+  }
+  line('');
+  line('── 有理由的缺口 ④：BLOCKED_SOURCE（声明的来源全坏，且盘上无记录）────');
+  if (!blockedRows.length) line('  （无）');
+  for (const row of blockedRows) {
+    line(`  · ${row.providerName || row.provider}（${row.provider}） ${coverageTargets.DIMENSION_LABEL[row.dimension]}：${row.reason}`);
+  }
+  line('');
+  line('── Current Model Coverage（v2）──────────────────────────────────────');
+  kv('声明的 current target 模型', declaredModelItems.length, `兑现 ${declaredModelItems.filter(item => item.resolved).length} 条（registrySlug 必须存在，指向不存在的模型一律红）`);
+  for (const item of declaredModelItems.filter(row => !row.resolved)) {
+    line(`  ✗ ${item.providerName || item.provider}（${item.provider}） → ${item.slug}：${item.reason}`);
+  }
+  if (releasedAtLanded) {
+    kv('unknown release dates', unknownReleaseDates.length, `registry 共 ${registryEntries.length} 个模型里 releasedAt 为空/缺的（逐条：${unknownReleaseDates.slice(0, 8).join(', ') || '（无）'}${unknownReleaseDates.length > 8 ? ' …' : ''}）`);
+  } else {
+    line('  unknown release dates：**读不出** —— scripts/data/models.json 里没有一个条目带 releasedAt 字段（Model Registry v2 尚未落盘）。');
+    line('                       不许把"字段整层缺席"当成"全部未知"报一个数字。');
+  }
+  if (catalogStatusLanded) {
+    kv('legacy / historical 保留', legacyOrHistorical.length, `仍在 registry 与发布产物里（未删除）：${legacyOrHistorical.map(row => `${row.slug}(${row.catalogStatus})`).join(', ') || '（无）'}`);
+  } else {
+    line('  legacy / historical 保留：**分不出** —— 发布产物 models.json 里没有一个条目带 catalogStatus（freshness 派生层尚未落盘）。');
+    line('                           "0 个 legacy"与"分不出 legacy"是两件事，这里如实报后者。');
+  }
+  // §41 第 4 条（R4）的五态普查：一档一行、五档俱全，和必须等于 registry 模型数（不等即报告自检非 0）。
+  // 这一行是**普查**，与上面两行不同口径的读数各说各的：`unknown release dates` 是 releasedAt 口径
+  // （它的 40 与 catalogStatus=unknown 的 40 相同纯属巧合）、`legacy / historical 保留` 是"仍在产物里"。
+  if (catalogStatusCensus.landed) {
+    kv('catalogStatus 普查', censusReading, `五态和必须 == registry 模型数 ${catalogStatusCensus.registryModels}（不等 ⇒ 报告自检非 0）`);
+    line('      口径：词表 = lib/model-freshness.js 的 CATALOG_STATUSES · 逐条值 = 发布产物 models.json 的 catalogStatus（派生字段，来源层手写即红）· 计数 = 同模块的 censusOf()');
+    line('      复算：node -e "const m=require(\'./models.json\').models;const c={};for(const v of m)c[v.catalogStatus]=(c[v.catalogStatus]||0)+1;console.log(c)"');
+  } else {
+    line(`  catalogStatus 普查：**分不出** —— ${catalogStatusCensus.reason}`);
+    line('                        五个 0 与"分不出"是两件事；这里如实报后者，也不拿 releasedAt 口径顶替。');
+  }
+  kv('来源层 status=retired', retiredInSource.length, retiredInSource.slice(0, 8).join(', ') || '（无）');
+  kv('归属不到 Target provider 的 registry 模型', registryDevelopersWithoutProvider.length, '这些模型从覆盖宇宙里够不到（models.json 允许 _developers_extra，所以不是报告自身的问题）');
+  registryDevelopersWithoutProvider.forEach(item => line(`      · ${item.slug}（developer=${item.developer === null ? '(空)' : item.developer} / owner=${item.owner === null ? '(空)' : item.owner}）`));
+  line('');
+  line('── Source Health impact（v2）────────────────────────────────────────');
+  kv('声明的来源数', sourceHealthRows.length, '意图层里写过的 deals source（source-health 的 name 或 deals.json 出现过的 source）');
+  // R8 的来源宇宙对照（t46 / F5）：把「注册表几行」与「本节收了几行」的差显式写出来，
+  // 免得这一节被读成"全站来源总表"。
+  line(`  · 来源宇宙对照：scripts/data/source-health.json 注册表共 ${sourceHealthRegistryNames.length} 行；`
+    + `其中挂在 target 上的 ${declaredSourceNameSet.size} 行（= 本节所列）；`
+    + `差集 ${sourceHealthRegistryOnly.length} 行（${sourceHealthRegistryOnly.join(' / ') || '（无）'} —— 不属于任何 target，`
+    + '但仍在全站采集链上：它们变坏不会出现在这一节里，那是口径边界，不是漏报）');
+  if (!sourceHealthRows.length) line('  （意图层还没有声明任何 deals 来源）');
+  for (const row of sourceHealthRows) {
+    const health = row.health
+      ? `${row.health.status}${row.health.reason ? `/${row.health.reason}` : ''}（连续失败 ${row.health.consecutiveFailures}）`
+      : 'unregistered（不在 source-health.json 里）';
+    line(`  · ${row.name}  ${health}  影响：${row.targets.join(', ')} 的 ${row.dimensions.join('/')}`);
+  }
+  if (unhealthyDeclaredSources.length) {
+    line(`  ⚠️ 不健康的声明来源 ${unhealthyDeclaredSources.length} 个：${unhealthyDeclaredSources.map(row => `${row.name}(${row.status})`).join('、')} —— 对应格子在无记录时判 BLOCKED_SOURCE，不判 MISSING。`);
+  }
+  line('');
+  line('── Freshness 阈值与理由（v2）────────────────────────────────────────');
+  if (freshness.status === 'ok') {
+    line(`  策略来源：${freshness.module}`);
+    line(`  ${freshness.note}`);
+    if (freshness.policyDigest) line(`  策略指纹：${freshness.policyDigest}`);
+    line(`  MODEL_FRESHNESS_POLICY：${JSON.stringify(freshness.policy)}`);
+    line(`  默认展示：${(freshness.defaultVisible || []).join(' / ') || '（模块未导出）'}　默认隐藏：${(freshness.defaultHidden || []).join(' / ') || '（模块未导出）'}`);
+  } else if (freshness.status === 'broken') {
+    line(`  策略来源：${freshness.module}（**在盘上但读不出来**）`);
+    line(`  读取错误：${freshness.error}`);
+    line(`  ${freshness.note}`);
+  } else {
+    line(`  策略来源：${freshness.module}（**尚未落盘**）`);
+    line(`  ${freshness.note}`);
   }
   line('');
 
@@ -460,7 +1058,27 @@ function main() {
         planModelStrings: planCoverage.planModelStrings,
         mappedPlanModelCount: planCoverage.planModelStrings - planCoverage.unmappedPlanModels.length - planCoverage.declaredPlanModels.length,
         unmappedPlanModels: planCoverage.unmappedPlanModels,
-        declaredPlanModels: planCoverage.declaredPlanModels
+        declaredPlanModels: planCoverage.declaredPlanModels,
+        // ---- t25 新增：**追加在既有键之后**（旧键的名字与顺序一个都没动）----
+        // A / B / C 是上面那条方程的三个加数：计价条目 = mappedApiEntries + declaredApiEntries + 未判。
+        //
+        // ⚠️ 跨层命名对照（t29 写死在组装处：两层的词刚好**交叉**，别靠回读两个文件的实现去猜）：
+        //   · 报告 `registry.declaredApiEntries`（**数**：展开后被处置声明覆盖的计价条目数 = 方程的 B）
+        //       = lib `coverageOf().declaredApiIdentities`（Set `declaredApi` 的 size）
+        //       = `planCoverage.declaredApiIdentities` = 本文件上方的 `declaredApiIdentityCount`
+        //   · 报告 `registry.declaredApiEntryRows`（**数组**：声明本身逐条留档）
+        //       = lib `coverageOf().declaredApiEntries`（声明行数组）
+        //       = `planCoverage.declaredApiEntries` = 本文件上方的 `declaredApiRows`
+        //   · 报告 `gaps.declaredApiEntryCount`（**数**：声明行数）= `declaredApiRows.length`
+        //       —— 它等于 rows 的长度，**不是**方程里的 B（B 是通配展开之后的条目数；无通配声明时两者才相等）
+        //   · 报告 `registry.mappedApiEntries`（**数**：展开后被映射认领的计价条目数 = 方程的 A）
+        //       = lib `coverageOf().mappedApiEntries`
+        //   为什么只写对照、不重命名：改名要牵动冻结键、白名单与下游引用（t20/t21/t28 的证据都按现名引用），
+        //   而误读不会静默 —— 本文件上方那条「报告层与 lib/model-registry.js 对"已处置声明的 API 计价条目"
+        //   的读数不一致」的交叉断言，会在两处读数分家时当场判红。
+        mappedApiEntries,
+        declaredApiEntries: declaredApiIdentityCount,
+        declaredApiEntryRows: declaredApiRows
       },
       gaps: {
         dealsWithoutPlans,
@@ -468,9 +1086,112 @@ function main() {
         unmappedModelCount: unmappedModels.length,
         unmappedPlanModelCount: planCoverage.unmappedPlanModels.length,
         declaredPlanModelCount: planCoverage.declaredPlanModels.length,
-        notAdoptedProviders
+        notAdoptedProviders,
+        // ---- t25 新增：**追加在既有键之后** ----
+        declaredApiEntryCount: declaredApiRows.length
       },
-      candidates: { total: candidates.length, adopted: adopted.length, notAdopted: notAdopted.length }
+      candidates: {
+        total: candidates.length,
+        adopted: adopted.length,
+        notAdopted: notAdopted.length,
+        // ---- t46 新增：**追加在既有键之后**（旧键 total/adopted/notAdopted 的名字与顺序一个都没动）----
+        // §42「机器可读输出也要同步」：候选来源审查的逐条明细（URL / 检查日期 / 是否采信 / 未采信原因）。
+        // 以前只有计数 —— 拿 JSON 还原不出任何一条候选来源。排序：provider → url → checkedAt → slug（code-unit 序）。
+        rows: candidateRows
+      },
+      // ---- v2（coverage-expansion-v1）：全部进**新键**，旧键一个字都不动 ----
+      coverageTargets: {
+        file: 'scripts/data/coverage-targets.json',
+        present: !targetsLoaded.missing && !targetsLoaded.broken,
+        schemaVersion: coverageTargets.SCHEMA_VERSION,
+        reviewedAt: targetsDoc && targetsDoc.reviewedAt ? targetsDoc.reviewedAt : null,
+        validationProblemCount: targetProblems.length,
+        validationProblems: targetProblems,
+        stateOrder: coverageTargets.STATE_ORDER,
+        states: derived.states,
+        universe: {
+          declared: derived.targets.length,
+          providersRegistered: Object.keys(providerTable).length,
+          withData: targetSummaries.filter(row => row.withData).length,
+          withoutAnyData: targetSummaries.filter(row => !row.withData).map(row => row.provider),
+          undeclaredProviders: Object.keys(providerTable).filter(provider => !targetSummaries.some(row => row.provider === provider)),
+          tiers: tierCounts,
+          roles: roleCounts,
+          providers: targetSummaries.map(row => ({
+            provider: row.provider,
+            name: row.name,
+            tier: row.tier,
+            role: row.role,
+            overall: row.overall,
+            withData: row.withData,
+            applicableDimensions: row.applicableDimensions,
+            coveredDimensions: row.coveredDimensions,
+            states: row.states,
+            intent: row.intent
+          }))
+        },
+        dimensions: dimensionStateCounts,
+        rows: rowPayload,
+        missingTargets: derived.missing.map(cellPayload),
+        partialTargets: derived.partial.map(cellPayload),
+        deferred: derived.deferred.map(cellPayload),
+        unverifiable: derived.unverifiable.map(cellPayload),
+        notApplicable: derived.notApplicable.map(cellPayload),
+        blockedBySourceHealth: derived.blocked.map(cellPayload),
+        currentModels: {
+          declaredTargets: declaredModelItems.length,
+          resolvedTargets: declaredModelItems.filter(item => item.resolved).length,
+          declared: declaredModelItems,
+          unresolved: declaredModelItems.filter(item => !item.resolved),
+          registryModels: registryEntries.length,
+          modelsByProvider: Object.fromEntries(
+            Object.keys(providerTable)
+              .map(provider => [provider, modelSlugsOfProvider(provider)])
+              .filter(([, slugs]) => slugs.length)
+          ),
+          unknownReleaseDates,
+          releasedAtLanded,
+          legacyOrHistorical,
+          legacyOrHistoricalLanded: catalogStatusLanded,
+          retiredInSource,
+          registryDevelopersWithoutProvider
+        },
+        sourceHealth: {
+          declaredSources: sourceHealthRows,
+          unhealthyDeclaredSources: unhealthyDeclaredSources.map(row => row.name),
+          blockedTargets: derived.blocked.map(cellPayload),
+          // ---- t46 新增：**追加在既有键之后**（F5 / R8 的来源宇宙对照，文本与 JSON 同源）----
+          // 本节看的是「挂在 target 上的来源」；注册表更宽，差集在 JSON 里也必须看得见。
+          registryRowCount: sourceHealthRegistryNames.length,
+          registryRows: sourceHealthRegistryNames,
+          registryOnlySources: sourceHealthRegistryOnly
+        },
+        freshness: {
+          status: freshness.status,
+          available: freshness.available,
+          module: freshness.module,
+          error: freshness.error,
+          policy: freshness.policy,
+          policyDigest: freshness.policyDigest,
+          catalogStatuses: freshness.catalogStatuses,
+          defaultVisible: freshness.defaultVisible,
+          defaultHidden: freshness.defaultHidden,
+          note: freshness.note
+        },
+        // ---- t46 新增：**追加在既有键之后**（§41 第 4 条 R4 的五态普查；旧键一律不动位）----
+        // 形态仿 `dimensions`（一个按档位分键的计数对象），并且把「谁和谁比」写进同一个键里：
+        // 词表来自 lib（statusOrder）、逐条值来自发布产物 models.json、和必须等于 registry 模型数。
+        catalogStatusCensus: {
+          landed: catalogStatusCensus.landed,
+          statusOrder: catalogStatusCensus.statusOrder,
+          counts: catalogStatusCensus.counts,
+          sum: catalogStatusCensus.sum,
+          registryModels: catalogStatusCensus.registryModels,
+          statusesOutsideWordList: catalogStatusCensus.statusesOutsideWordList,
+          source: '发布产物 models.json 的 catalogStatus（派生字段，来源层禁写）；词表与 censusOf() 来自 scripts/lib/model-freshness.js',
+          reason: catalogStatusCensus.reason
+        }
+      }
     };
     console.log('\nJSON:');
     console.log(JSON.stringify(payload, null, 2));

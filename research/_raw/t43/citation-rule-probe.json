@@ -1,0 +1,248 @@
+{
+  "register": {
+    "count": 34,
+    "sha256": "b9d97c444e7e59d0d90b2855165a1bc67422b2d0dc573805569d2cc5e6c6f696"
+  },
+  "variants": [
+    {
+      "rule": "归一=raw · name=用 · slug=用 · explicit-mapping=不算",
+      "count": 30,
+      "sha256": "f1ae30f9fba1ae18006a7cc8bef93f0a7bde8b214b340aa15e07ac2526550c89",
+      "sample": [
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding",
+        "2981d8f29020|hunyuan-translation-lite|hunyuan-translation-lite"
+      ]
+    },
+    {
+      "rule": "归一=raw · name=用 · slug=用 · explicit-mapping=算",
+      "count": 40,
+      "sha256": "b90737e647eba5bea4d5c2c174270c19ff685007acd308138905651b8001002f",
+      "sample": [
+        "036c5f09561e|qwen.qwen3.8-27b|qwen3.8-27b",
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding"
+      ]
+    },
+    {
+      "rule": "归一=raw · name=用 · slug=不用 · explicit-mapping=不算",
+      "count": 30,
+      "sha256": "f1ae30f9fba1ae18006a7cc8bef93f0a7bde8b214b340aa15e07ac2526550c89",
+      "sample": [
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding",
+        "2981d8f29020|hunyuan-translation-lite|hunyuan-translation-lite"
+      ]
+    },
+    {
+      "rule": "归一=raw · name=用 · slug=不用 · explicit-mapping=算",
+      "count": 40,
+      "sha256": "b90737e647eba5bea4d5c2c174270c19ff685007acd308138905651b8001002f",
+      "sample": [
+        "036c5f09561e|qwen.qwen3.8-27b|qwen3.8-27b",
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding"
+      ]
+    },
+    {
+      "rule": "归一=raw · name=不用 · slug=用 · explicit-mapping=不算",
+      "count": 49,
+      "sha256": "7875794ce0978c3035c425482dfc6be9aa5fc49e11027d5f20281af3ab197843",
+      "sample": [
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-a13b|hunyuan-a13b",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding"
+      ]
+    },
+    {
+      "rule": "归一=raw · name=不用 · slug=用 · explicit-mapping=算",
+      "count": 59,
+      "sha256": "08c0e4410de648eaa66c5730ac523b53b5005ebc536fe9b2f57d95fac0ea4340",
+      "sample": [
+        "036c5f09561e|qwen.qwen3.8-27b|qwen3.8-27b",
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-a13b|hunyuan-a13b"
+      ]
+    },
+    {
+      "rule": "归一=raw · name=不用 · slug=不用 · explicit-mapping=不算",
+      "count": 49,
+      "sha256": "7875794ce0978c3035c425482dfc6be9aa5fc49e11027d5f20281af3ab197843",
+      "sample": [
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-a13b|hunyuan-a13b",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding"
+      ]
+    },
+    {
+      "rule": "归一=raw · name=不用 · slug=不用 · explicit-mapping=算",
+      "count": 59,
+      "sha256": "08c0e4410de648eaa66c5730ac523b53b5005ebc536fe9b2f57d95fac0ea4340",
+      "sample": [
+        "036c5f09561e|qwen.qwen3.8-27b|qwen3.8-27b",
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-a13b|hunyuan-a13b"
+      ]
+    },
+    {
+      "rule": "归一=norm · name=用 · slug=用 · explicit-mapping=不算",
+      "count": 30,
+      "sha256": "f1ae30f9fba1ae18006a7cc8bef93f0a7bde8b214b340aa15e07ac2526550c89",
+      "sample": [
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding",
+        "2981d8f29020|hunyuan-translation-lite|hunyuan-translation-lite"
+      ]
+    },
+    {
+      "rule": "归一=norm · name=用 · slug=用 · explicit-mapping=算",
+      "count": 40,
+      "sha256": "b90737e647eba5bea4d5c2c174270c19ff685007acd308138905651b8001002f",
+      "sample": [
+        "036c5f09561e|qwen.qwen3.8-27b|qwen3.8-27b",
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding"
+      ]
+    },
+    {
+      "rule": "归一=norm · name=用 · slug=不用 · explicit-mapping=不算",
+      "count": 30,
+      "sha256": "f1ae30f9fba1ae18006a7cc8bef93f0a7bde8b214b340aa15e07ac2526550c89",
+      "sample": [
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding",
+        "2981d8f29020|hunyuan-translation-lite|hunyuan-translation-lite"
+      ]
+    },
+    {
+      "rule": "归一=norm · name=用 · slug=不用 · explicit-mapping=算",
+      "count": 40,
+      "sha256": "b90737e647eba5bea4d5c2c174270c19ff685007acd308138905651b8001002f",
+      "sample": [
+        "036c5f09561e|qwen.qwen3.8-27b|qwen3.8-27b",
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding"
+      ]
+    },
+    {
+      "rule": "归一=norm · name=不用 · slug=用 · explicit-mapping=不算",
+      "count": 35,
+      "sha256": "ed0238a6cc33f7f1c61b8d92bd91778436a806e1d51d9eb51b04052c50aa92ad",
+      "sample": [
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding",
+        "2981d8f29020|hunyuan-translation-lite|hunyuan-translation-lite"
+      ]
+    },
+    {
+      "rule": "归一=norm · name=不用 · slug=用 · explicit-mapping=算",
+      "count": 45,
+      "sha256": "ed2ce42f731dced34521a015d9d0a016617cc1357bbe2a0ec24749df3669a0ba",
+      "sample": [
+        "036c5f09561e|qwen.qwen3.8-27b|qwen3.8-27b",
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding"
+      ]
+    },
+    {
+      "rule": "归一=norm · name=不用 · slug=不用 · explicit-mapping=不算",
+      "count": 35,
+      "sha256": "ed0238a6cc33f7f1c61b8d92bd91778436a806e1d51d9eb51b04052c50aa92ad",
+      "sample": [
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding",
+        "2981d8f29020|hunyuan-translation-lite|hunyuan-translation-lite"
+      ]
+    },
+    {
+      "rule": "归一=norm · name=不用 · slug=不用 · explicit-mapping=算",
+      "count": 45,
+      "sha256": "ed2ce42f731dced34521a015d9d0a016617cc1357bbe2a0ec24749df3669a0ba",
+      "sample": [
+        "036c5f09561e|qwen.qwen3.8-27b|qwen3.8-27b",
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding"
+      ]
+    },
+    {
+      "rule": "归一=fold · name=用 · slug=用 · explicit-mapping=不算",
+      "count": 30,
+      "sha256": "f1ae30f9fba1ae18006a7cc8bef93f0a7bde8b214b340aa15e07ac2526550c89",
+      "sample": [
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding",
+        "2981d8f29020|hunyuan-translation-lite|hunyuan-translation-lite"
+      ]
+    },
+    {
+      "rule": "归一=fold · name=用 · slug=用 · explicit-mapping=算",
+      "count": 40,
+      "sha256": "b90737e647eba5bea4d5c2c174270c19ff685007acd308138905651b8001002f",
+      "sample": [
+        "036c5f09561e|qwen.qwen3.8-27b|qwen3.8-27b",
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding"
+      ]
+    },
+    {
+      "rule": "归一=fold · name=用 · slug=不用 · explicit-mapping=不算",
+      "count": 30,
+      "sha256": "f1ae30f9fba1ae18006a7cc8bef93f0a7bde8b214b340aa15e07ac2526550c89",
+      "sample": [
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding",
+        "2981d8f29020|hunyuan-translation-lite|hunyuan-translation-lite"
+      ]
+    },
+    {
+      "rule": "归一=fold · name=用 · slug=不用 · explicit-mapping=算",
+      "count": 40,
+      "sha256": "b90737e647eba5bea4d5c2c174270c19ff685007acd308138905651b8001002f",
+      "sample": [
+        "036c5f09561e|qwen.qwen3.8-27b|qwen3.8-27b",
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding"
+      ]
+    },
+    {
+      "rule": "归一=fold · name=不用 · slug=用 · explicit-mapping=不算",
+      "count": 30,
+      "sha256": "f1ae30f9fba1ae18006a7cc8bef93f0a7bde8b214b340aa15e07ac2526550c89",
+      "sample": [
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding",
+        "2981d8f29020|hunyuan-translation-lite|hunyuan-translation-lite"
+      ]
+    },
+    {
+      "rule": "归一=fold · name=不用 · slug=用 · explicit-mapping=算",
+      "count": 40,
+      "sha256": "b90737e647eba5bea4d5c2c174270c19ff685007acd308138905651b8001002f",
+      "sample": [
+        "036c5f09561e|qwen.qwen3.8-27b|qwen3.8-27b",
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding"
+      ]
+    },
+    {
+      "rule": "归一=fold · name=不用 · slug=不用 · explicit-mapping=不算",
+      "count": 30,
+      "sha256": "f1ae30f9fba1ae18006a7cc8bef93f0a7bde8b214b340aa15e07ac2526550c89",
+      "sample": [
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding",
+        "2981d8f29020|hunyuan-translation-lite|hunyuan-translation-lite"
+      ]
+    },
+    {
+      "rule": "归一=fold · name=不用 · slug=不用 · explicit-mapping=算",
+      "count": 40,
+      "sha256": "b90737e647eba5bea4d5c2c174270c19ff685007acd308138905651b8001002f",
+      "sample": [
+        "036c5f09561e|qwen.qwen3.8-27b|qwen3.8-27b",
+        "206f8b4bde7b|gpt-6-luna|gpt-6-luna",
+        "2981d8f29020|hunyuan-embedding|hunyuan-embedding"
+      ]
+    }
+  ]
+}

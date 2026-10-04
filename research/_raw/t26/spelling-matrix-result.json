@@ -1,0 +1,272 @@
+[
+  {
+    "group": "modelKey 侧：应当命中（漏了就是真缺陷）",
+    "name": "逐字 slug",
+    "modelKey": "glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "modelKey 侧：应当命中（漏了就是真缺陷）",
+    "name": "命名空间 . 前缀",
+    "modelKey": "zai-org.glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "modelKey 侧：应当命中（漏了就是真缺陷）",
+    "name": "命名空间 / 前缀",
+    "modelKey": "zai-org/glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "modelKey 侧：应当命中（漏了就是真缺陷）",
+    "name": "命名空间 _ 前缀",
+    "modelKey": "zai-org_glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "modelKey 侧：应当命中（漏了就是真缺陷）",
+    "name": "命名空间 空格 前缀",
+    "modelKey": "zai-org glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "modelKey 侧：应当命中（漏了就是真缺陷）",
+    "name": "命名空间 - 前缀",
+    "modelKey": "zai-org-glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "modelKey 侧：应当命中（漏了就是真缺陷）",
+    "name": "全角句点",
+    "modelKey": "zai-org．glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "modelKey 侧：应当命中（漏了就是真缺陷）",
+    "name": "全角斜杠",
+    "modelKey": "zai-org／glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "modelKey 侧：应当命中（漏了就是真缺陷）",
+    "name": "大小写",
+    "modelKey": "GLM-5.3",
+    "displayName": "Mystery Model X",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "modelKey 侧：应当命中（漏了就是真缺陷）",
+    "name": "全角字母",
+    "modelKey": "ＧＬＭ－５．３",
+    "displayName": "Mystery Model X",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "modelKey 侧：应当命中（漏了就是真缺陷）",
+    "name": "别名原文",
+    "modelKey": "zai-org/GLM-5.3",
+    "displayName": "Mystery Model X",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "官方显示名侧：应当命中",
+    "name": "显示名 = slug",
+    "modelKey": "mystery-1",
+    "displayName": "GLM 5.3",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "官方显示名侧：应当命中",
+    "name": "显示名带半角括注",
+    "modelKey": "mystery-1",
+    "displayName": "GLM 5.3 (official modelId: glm-5.3)",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "官方显示名侧：应当命中",
+    "name": "显示名带全角括注",
+    "modelKey": "mystery-1",
+    "displayName": "GLM 5.3（官方 modelId: glm-5.3）",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "官方显示名侧：应当命中",
+    "name": "显示名大小写/全角",
+    "modelKey": "mystery-1",
+    "displayName": "ＧＬＭ－５．３",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "官方显示名侧：应当命中",
+    "name": "显示名带命名空间",
+    "modelKey": "mystery-1",
+    "displayName": "zai-org/GLM-5.3",
+    "hit": true,
+    "expectHit": true,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "可疑拼法（命中=已覆盖；绿灯=门禁的一条缝）",
+    "name": "冒号命名空间",
+    "modelKey": "zai-org:GLM-5.3",
+    "displayName": "Mystery Model X",
+    "hit": false,
+    "expectHit": false,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "可疑拼法（命中=已覆盖；绿灯=门禁的一条缝）",
+    "name": "中间点命名空间",
+    "modelKey": "zai-org·glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": false,
+    "expectHit": false,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "可疑拼法（命中=已覆盖；绿灯=门禁的一条缝）",
+    "name": "全角冒号命名空间",
+    "modelKey": "zai-org：glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": false,
+    "expectHit": false,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "可疑拼法（命中=已覆盖；绿灯=门禁的一条缝）",
+    "name": "井号命名空间",
+    "modelKey": "zai-org#glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": false,
+    "expectHit": false,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "可疑拼法（命中=已覆盖；绿灯=门禁的一条缝）",
+    "name": "双冒号命名空间",
+    "modelKey": "zai-org::glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": false,
+    "expectHit": false,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "可疑拼法（命中=已覆盖；绿灯=门禁的一条缝）",
+    "name": "反斜杠命名空间",
+    "modelKey": "zai-org\\glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": false,
+    "expectHit": false,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "可疑拼法（命中=已覆盖；绿灯=门禁的一条缝）",
+    "name": "竖线命名空间",
+    "modelKey": "zai-org|glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": false,
+    "expectHit": false,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "可疑拼法（命中=已覆盖；绿灯=门禁的一条缝）",
+    "name": "逗号命名空间",
+    "modelKey": "zai-org,glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": false,
+    "expectHit": false,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "可疑拼法（命中=已覆盖；绿灯=门禁的一条缝）",
+    "name": "波浪线命名空间",
+    "modelKey": "zai-org~glm-5.3",
+    "displayName": "Mystery Model X",
+    "hit": false,
+    "expectHit": false,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "可疑拼法（命中=已覆盖；绿灯=门禁的一条缝）",
+    "name": "末尾中文方括号（modelKey）",
+    "modelKey": "glm-5.3【官方】",
+    "displayName": "Mystery Model X",
+    "hit": false,
+    "expectHit": false,
+    "ok": true,
+    "other": 0
+  },
+  {
+    "group": "可疑拼法（命中=已覆盖；绿灯=门禁的一条缝）",
+    "name": "末尾星号（modelKey）",
+    "modelKey": "glm-5.3*",
+    "displayName": "Mystery Model X",
+    "hit": false,
+    "expectHit": false,
+    "ok": true,
+    "other": 0
+  }
+]

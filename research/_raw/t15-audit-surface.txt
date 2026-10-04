@@ -1,0 +1,762 @@
+
+## 1) providers：34（基线 23）
+  新增 ai360: {"name":"360智脑","slug":"ai360","aliases":["360智脑","360 智脑"],"logo":"ai360","vendorKey":"ai360","officialDomains":["360.com"]}
+  新增 baichuan: {"name":"百川智能","slug":"baichuan","aliases":["百川智能","baichuan"],"logo":"baichuan","vendorKey":"baichuan","officialDomains":["baichuan-ai.com"]}
+  新增 stepfun: {"name":"阶跃星辰","slug":"stepfun","aliases":["阶跃星辰","stepfun"],"logo":"stepfun","vendorKey":"stepfun","officialDomains":["stepfun.com"]}
+  新增 sensetime: {"name":"商汤科技","slug":"sensetime","aliases":["商汤科技","sensetime"],"logo":"sensetime","vendorKey":"sensetime","officialDomains":["sensetime.com"]}
+  新增 replit: {"name":"Replit","slug":"replit","aliases":["replit"],"logo":"replit","vendorKey":"replit","officialDomains":["replit.com"]}
+  新增 aws: {"name":"AWS","slug":"aws","aliases":["aws","amazon web services"],"logo":"aws","vendorKey":"aws","officialDomains":["aws.amazon.com"]}
+  新增 jetbrains: {"name":"JetBrains","slug":"jetbrains","aliases":["jetbrains","jetbrains ai","jetbrains ai pro","jetbrains ai ultimate"],"logo":"jetbrains","vendorKey":null,"officialDomains":["jetbrains.com"]}
+  新增 groq: {"name":"Groq","slug":"groq","aliases":["groq"],"logo":"groq","vendorKey":null,"officialDomains":["groq.com"]}
+  新增 together: {"name":"Together AI","slug":"together","aliases":["together ai","together"],"logo":"together","vendorKey":null,"officialDomains":["together.ai"]}
+  新增 fireworks: {"name":"Fireworks AI","slug":"fireworks","aliases":["fireworks ai","fireworks"],"logo":"fireworks","vendorKey":null,"officialDomains":["fireworks.ai"]}
+  新增 cerebras: {"name":"Cerebras","slug":"cerebras","aliases":["cerebras"],"logo":"cerebras","vendorKey":null,"officialDomains":["cerebras.ai"]}
+  变更 google:
+    before {"name":"Google","slug":"google","aliases":["google","google ai","gemini","google deepmind","google gemini","notebooklm"],"logo":"google","vendorKey":"google","officialDomains":["google.com","ai.google.dev","gemini.google","blog.google"]}
+    after  {"name":"Google","slug":"google","aliases":["google","google ai","gemini","google deepmind","google gemini","notebooklm"],"logo":"google","vendorKey":"google","officialDomains":["google.com","ai.google.dev","gemini.google","blog.google","codeassist.google"]}
+
+## 2) coverage-targets：34（基线 0）
+  新增 target ai360: intent="360 智脑开放平台自研模型（360zhinao 系列）的官方优惠、按量计费与模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target baichuan: intent="百川智能开放平台的官方优惠、按量计费与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target stepfun: intent="阶跃星辰（StepFun）开放平台的官方优惠、API 按量计费、Step Plan 订阅与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target sensetime: intent="商汤科技日日新（SenseNova）与大装置的官方优惠、按量计费、Token Plan 与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target replit: intent="Replit Core / Pro 订阅档位的官方价格与额度口径" · reviewedAt=2026-10-04 · note=""
+  新增 target aws: intent="Amazon Q Developer 的订阅档位、超额计价与已宣布的停支时效" · reviewedAt=2026-10-04 · note="本条记录的**时效事实**：官方产品页逐字公告 2027-04-30 起停止支持 Amazon Q Developer IDE 插件并建议改用 Kiro ⇒ 使用者在页面上必须能看到这条，不能只显示价格。"
+  新增 target jetbrains: intent="JetBrains AI 订阅档位（AI Pro / AI Ultimate）的官方价格与服务档位" · reviewedAt=2026-10-04 · note=""
+  新增 target groq: intent="Groq 托管推理的官方按量计费（计价主体是 Groq，不是模型发行方）与速率限制" · reviewedAt=2026-10-04 · note=""
+  新增 target together: intent="Together AI Serverless 的官方按量计费与逐模型 cached input 价" · reviewedAt=2026-10-04 · note=""
+  新增 target fireworks: intent="Fireworks AI Serverless 的官方按量计费（Standard 与 Priority 两个通道）" · reviewedAt=2026-10-04 · note=""
+  新增 target cerebras: intent="Cerebras Inference Developer 档的官方按量计费与一次性赠送额度" · reviewedAt=2026-10-04 · note=""
+  新增 target zhipu: intent="智谱AI 开放平台（GLM / BigModel）的优惠、套餐、按量计费与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target trae: intent="Trae 的会员档位与官方优惠" · reviewedAt=2026-10-04 · note=""
+  新增 target qoder: intent="Qoder CN 的编程套餐档位与官方优惠" · reviewedAt=2026-10-04 · note=""
+  新增 target codebuddy: intent="腾讯 CodeBuddy 的编程套餐档位与官方优惠" · reviewedAt=2026-10-04 · note=""
+  新增 target moonshot: intent="月之暗面 Kimi 的套餐、开放平台定价与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target minimax: intent="MiniMax（稀宇科技）的套餐、API 定价与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target github: intent="GitHub Copilot 订阅档位与官方优惠" · reviewedAt=2026-10-04 · note=""
+  新增 target cursor: intent="Cursor 的订阅档位与官方优惠" · reviewedAt=2026-10-04 · note=""
+  新增 target openai: intent="OpenAI 的订阅、官方 API 定价与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target anthropic: intent="Anthropic Claude 的订阅、官方 API 定价与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target google: intent="Google（Gemini / Vertex / Gemini Code Assist）的优惠、订阅、API 定价与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target deepseek: intent="DeepSeek 官方 API 定价、优惠与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target baidu: intent="百度智能云千帆（文心 / ERNIE）的优惠、API 定价与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target volcengine: intent="火山引擎方舟（豆包）的优惠、按量计费与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target coze: intent="扣子 Coze 的官方优惠、付费档位与 API 计费（若有公开价）" · reviewedAt=2026-10-04 · note=""
+  新增 target iflytek: intent="科大讯飞星火（讯飞开放平台）的优惠、API 定价与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target microsoft: intent="Microsoft Copilot 系列订阅的官方价格与优惠" · reviewedAt=2026-10-04 · note=""
+  新增 target notion: intent="Notion 官方优惠与订阅档位" · reviewedAt=2026-10-04 · note=""
+  新增 target aliyun: intent="阿里云百炼（通义千问）的官方优惠、按量计费与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target siliconflow: intent="硅基流动托管平台的官方优惠与按量计费" · reviewedAt=2026-10-04 · note=""
+  新增 target tencent: intent="腾讯云混元的官方优惠、按量计费与当前模型身份" · reviewedAt=2026-10-04 · note=""
+  新增 target windsurf: intent="Windsurf 的订阅档位与官方优惠" · reviewedAt=2026-10-04 · note=""
+  新增 target qoder-intl: intent="Qoder 国际站的订阅档位（独立定价、独立币种）" · reviewedAt=2026-10-04 · note="CN 站与国际站是独立定价、独立币种的两个 SKU 面，并表会造出「同一张表里两套货币」的假象，因此各自一行。"
+  provider↔target 双向对账：targets 里不属于 provider 表的 = (无)
+
+## 3) 新增套餐记录：14（plans 23 → 37）
+  · 9cdc922f1407 aws | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://aws.amazon.com/q/developer/pricing/
+      sourceUrl  =https://aws.amazon.com/q/developer/pricing/
+      quota={"type":"requests","amount":50,"period":"monthly","description":"官方逐字 50 agentic requests per month；另有 1,000 lines of code per month（用于 Java 升级，单位是「行」）写在 restrictions 里，不塞进 amount。","conversionDependsOnModel":null} restrictions=[{"kind":"account_required","value":true,"note":"官方逐字：available to users logged in as an AWS Identity and Access Management (IAM) user or AWS Builder ID user."}]
+      supportedModels=
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://aws.amazon.com/q/developer/pricing/ capturedAt=2026-10-04 quote="Amazon Q Developer offers a perpetual Free Tier with monthly limits … Free — 50 agentic requests per month ; 1,000 lines of code per month"
+      note=""
+  · 7f63541ead64 aws | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://aws.amazon.com/q/developer/pricing/
+      sourceUrl  =https://aws.amazon.com/q/developer/pricing/
+      quota={"type":"other","amount":null,"period":"monthly","description":"额度单位是**提交的行数（LOC）**，不是 token/积分/请求数 ⇒ 按 other 记并写明口径、不折算。官方逐字：4,000 lines of code per month per user pooled at account level; extra lines at $.003 per LOC submitted.","conversionDependsOnModel":null} restrictions=[{"kind":"account_required","value":true,"note":"官方逐字：allocations aggregated at the AWS payer-account level every month；超额 $0.003/LOC。"}]
+      supportedModels=
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://aws.amazon.com/q/developer/pricing/ capturedAt=2026-10-04 quote="Pro Tier: Expanded limits $19/mo. per user ; Pro — 4,000 lines of code per month per user pooled at account level. Extra lines of code available at $.003 per line of code submitted."
+      evidence field=restrictions sourceUrl=https://aws.amazon.com/q/developer/ capturedAt=2026-10-04 quote="On April 30, 2027, AWS will discontinue support for Amazon Q Developer IDE plugins. For capabilities similar to Amazon Q Developer IDE plugins, explore Kiro to access the latest models and features."
+      note=""
+  · 7d2b06f8e311 google | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://codeassist.google/
+      sourceUrl  =https://codeassist.google/
+      quota={"type":"rate_limited","amount":null,"period":null,"description":"官方未给固定额度数值 ⇒ rate_limited，不写数字。","conversionDependsOnModel":null} restrictions=null
+      supportedModels=
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://codeassist.google/ capturedAt=2026-10-04 quote="Price per user with no annual upfront commitment — $0/user/month | $22.80/user/month | $54/user/month"
+      note=""
+  · 55fcf3e3b735 google | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://codeassist.google/
+      sourceUrl  =https://codeassist.google/
+      quota={"type":"rate_limited","amount":null,"period":null,"description":"官方本档权益列没有可核对的固定额度数值（只有功能清单与 Gemini CLI 的「generous free tier with high usage limits」这类措辞）⇒ rate_limited 并保留官方口径，**不写数字**。","conversionDependsOnModel":null} restrictions=null
+      supportedModels=
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://codeassist.google/ capturedAt=2026-10-04 quote="Price per user with no annual upfront commitment — $0/user/month | $22.80/user/month | $54/user/month"
+      note=""
+  · 5939e9bc26e7 iflytek | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://www.xfyun.cn/doc/spark/CodingPlan.html
+      sourceUrl  =https://www.xfyun.cn/doc/spark/CodingPlan.html
+      quota={"type":"requests","amount":30000,"period":"monthly","description":"官方按请求次数：每订阅月最多约 30,000 次","conversionDependsOnModel":null} restrictions=null
+      supportedModels=
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://www.xfyun.cn/doc/spark/CodingPlan.html capturedAt=2026-10-04 quote="| **速通版** | ¥999 / 月，限时首月优惠：¥699 / 月 | [讯飞星辰 MaaS 平台套餐订阅页面]展示为准 | 每订阅月：最多约 30,000 次请求 |"
+      note=""
+  · 753c01b2b1b9 iflytek | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://www.xfyun.cn/doc/spark/CodingPlan.html
+      sourceUrl  =https://www.xfyun.cn/doc/spark/CodingPlan.html
+      quota={"type":"requests","amount":90000,"period":"monthly","description":"官方按**请求次数**三档流控：每 5 小时最多约 6,000 次；每周最多约 45,000 次；每订阅月最多约 90,000 次","conversionDependsOnModel":null} restrictions=[{"kind":"rate_limit","value":"6000 次 / 5 小时","note":"5 小时流控：周期 5 小时、滑动步长 1 小时、每个整点刷新（官方原文）；另有周流控与月流控"}]
+      supportedModels=
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://www.xfyun.cn/doc/spark/CodingPlan.html capturedAt=2026-10-04 quote="| **高效版** | ¥199 / 月 | [讯飞星辰 MaaS 平台套餐订阅页面]展示为准 | 每 5 小时：最多约 6,000 次请求；每周：最多约 45,000 次请求；每订阅月：最多约 90,000 次请求 |"
+      note=""
+  · 3d40bba3e537 jetbrains | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://www.jetbrains.com/ai-ides/buy/
+      sourceUrl  =https://www.jetbrains.com/ai-ides/buy/
+      quota={"type":"rate_limited","amount":null,"period":null,"description":"官方该页只给价格与服务档位，未公布可核对的固定额度数值 ⇒ 按 rate_limited 记，不写数字。","conversionDependsOnModel":null} restrictions=null
+      supportedModels=
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://www.jetbrains.com/ai-ides/buy/ capturedAt=2026-10-04 quote="\"code\": \"AIP\" … \"prices\": {\"personal\": {\"yearlyPerMonth\": [\"US $8.33\"], \"monthly\": [\"US $10.00\"]}, \"commercial\": {\"monthly\": [\"US $20.00\"]}} … \"name\": \"JetBrains AI Pro\""
+      note=""
+  · 6713bb49d876 jetbrains | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://www.jetbrains.com/ai-ides/buy/
+      sourceUrl  =https://www.jetbrains.com/ai-ides/buy/
+      quota={"type":"rate_limited","amount":null,"period":null,"description":"官方未公布可核对的固定额度数值 ⇒ rate_limited，不写数字。","conversionDependsOnModel":null} restrictions=null
+      supportedModels=
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://www.jetbrains.com/ai-ides/buy/ capturedAt=2026-10-04 quote="\"code\": \"AIPU\" … \"prices\": {\"personal\": {\"monthly\": [\"US $30.00\"]}, \"commercial\": {\"monthly\": [\"US $60.00\"]}} … \"name\": \"JetBrains AI Ultimate\""
+      note=""
+  · 415f82fc8938 replit | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://replit.com/pricing
+      sourceUrl  =https://replit.com/pricing
+      quota={"type":"other","amount":null,"period":"monthly","description":"官方卡片逐字：$20 towards most powerful models（每月 $20 抵用于最强模型）+ Up to 30 hours of chat on Free Mode + Up to 60 projects on Free Mode。额度以**金额**表示、官方未给 token / 积分数值 ⇒ 按 other 记并写明口径，**不折算**。","conversionDependsOnModel":true} restrictions=null
+      supportedModels=
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://replit.com/pricing capturedAt=2026-10-04 quote="Core $20 / $18 / month, billed annually — ✔ AI integrations ✔ Up to 30 hours of chat on Free Mode ✔ Up to 60 projects on Free Mode ✔ $20 towards most powerful models ✔ Plan mode ✔ Unlimited workspaces"
+      note=""
+  · 4f9af31d0d58 replit | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://replit.com/pricing
+      sourceUrl  =https://replit.com/pricing
+      quota={"type":"other","amount":null,"period":"monthly","description":"官方卡片逐字：$100 towards most powerful models + 10 parallel agents + Even more Free Mode usage + Up to 15 collaborators + Invite up to 50 viewers + Database rollback up to 28 days。金额口径 ⇒ other，不折算。","conversionDependsOnModel":true} restrictions=null
+      supportedModels=
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://replit.com/pricing capturedAt=2026-10-04 quote="Pro $100 / $90 / month, billed annually — ✔ 10 parallel agents ✔ Premium Support ✔ Even more Free Mode usage ✔ $100 towards most powerful models ✔ Up to 15 collaborators"
+      note=""
+  · 2281d41b3a26 stepfun | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://platform.stepfun.com/docs/zh/step-plan/overview
+      sourceUrl  =https://platform.stepfun.com/docs/zh/step-plan/overview
+      quota={"type":"credits","amount":40000000000,"period":"monthly","description":"官方 Credit 月池 40000M；官方明写「1M Credit = ¥1（100 万 Credit 对应 ¥1 的模型用量）」，月内任意时段消耗、月末清零不结转","conversionDependsOnModel":false} restrictions=null
+      supportedModels=step-3.5-flash[included] · step-3.5-flash-2603[included] · step-3.7-flash[included] · step-5-preview[included] · step-router-v1[included] · stepaudio-2.5-asr[included] · stepaudio-2.5-chat[included] · stepaudio-2.5-realtime[included] · stepaudio-2.5-tts[included]
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://platform.stepfun.com/docs/zh/step-plan/overview capturedAt=2026-10-04 quote="| **Flash Max** | 高强度使用 AI 的专业用户 | 40000M | ¥699 | ¥1889 | ¥6666 |"
+      evidence field=quota.amount sourceUrl=https://platform.stepfun.com/docs/zh/step-plan/overview capturedAt=2026-10-04 quote="Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）"
+      note=""
+  · ef931b98b927 stepfun | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://platform.stepfun.com/docs/zh/step-plan/overview
+      sourceUrl  =https://platform.stepfun.com/docs/zh/step-plan/overview
+      quota={"type":"credits","amount":400000000,"period":"monthly","description":"官方 Credit 月池 400M；官方明写「1M Credit = ¥1（100 万 Credit 对应 ¥1 的模型用量）」，月内任意时段消耗、月末清零不结转","conversionDependsOnModel":false} restrictions=null
+      supportedModels=step-3.5-flash[included] · step-3.5-flash-2603[included] · step-3.7-flash[included] · step-5-preview[included] · step-router-v1[included] · stepaudio-2.5-asr[included] · stepaudio-2.5-chat[included] · stepaudio-2.5-realtime[included] · stepaudio-2.5-tts[included]
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://platform.stepfun.com/docs/zh/step-plan/overview capturedAt=2026-10-04 quote="| **Flash Mini** | 入门体验 AI 的用户 | 400M | ¥49 | ¥129 | ¥456 |"
+      evidence field=quota.amount sourceUrl=https://platform.stepfun.com/docs/zh/step-plan/overview capturedAt=2026-10-04 quote="Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）"
+      note=""
+  · 0a66f3117162 stepfun | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://platform.stepfun.com/docs/zh/step-plan/overview
+      sourceUrl  =https://platform.stepfun.com/docs/zh/step-plan/overview
+      quota={"type":"credits","amount":1600000000,"period":"monthly","description":"官方 Credit 月池 1600M；官方明写「1M Credit = ¥1（100 万 Credit 对应 ¥1 的模型用量）」，月内任意时段消耗、月末清零不结转","conversionDependsOnModel":false} restrictions=null
+      supportedModels=step-3.5-flash[included] · step-3.5-flash-2603[included] · step-3.7-flash[included] · step-5-preview[included] · step-router-v1[included] · stepaudio-2.5-asr[included] · stepaudio-2.5-chat[included] · stepaudio-2.5-realtime[included] · stepaudio-2.5-tts[included]
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://platform.stepfun.com/docs/zh/step-plan/overview capturedAt=2026-10-04 quote="| **Flash Plus** | 日常使用 AI 提效的用户 | 1600M | ¥99 | ¥269 | ¥936 |"
+      evidence field=quota.amount sourceUrl=https://platform.stepfun.com/docs/zh/step-plan/overview capturedAt=2026-10-04 quote="Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）"
+      note=""
+  · 383ed55706fc stepfun | undefined | undefined undefined/undefined audience=undefined
+      officialUrl=https://platform.stepfun.com/docs/zh/step-plan/overview
+      sourceUrl  =https://platform.stepfun.com/docs/zh/step-plan/overview
+      quota={"type":"credits","amount":8000000000,"period":"monthly","description":"官方 Credit 月池 8000M；官方明写「1M Credit = ¥1（100 万 Credit 对应 ¥1 的模型用量）」，月内任意时段消耗、月末清零不结转","conversionDependsOnModel":false} restrictions=null
+      supportedModels=step-3.5-flash[included] · step-3.5-flash-2603[included] · step-3.7-flash[included] · step-5-preview[included] · step-router-v1[included] · stepaudio-2.5-asr[included] · stepaudio-2.5-chat[included] · stepaudio-2.5-realtime[included] · stepaudio-2.5-tts[included]
+      description=""
+      evidence field=billing.regularPrice sourceUrl=https://platform.stepfun.com/docs/zh/step-plan/overview capturedAt=2026-10-04 quote="| **Flash Pro** | 高频使用 AI 的深度用户 | 8000M | ¥199 | ¥539 | ¥1860 |"
+      evidence field=quota.amount sourceUrl=https://platform.stepfun.com/docs/zh/step-plan/overview capturedAt=2026-10-04 quote="Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）"
+      note=""
+
+## 4) 新增 API 记录：4（api-plans 13 → 17）
+  · 61aa6c3ed3ff cerebras | undefined | https://www.cerebras.ai/pricing | sourceUrl=https://www.cerebras.ai/pricing | firstSeen 2026-10-04 → lastSeen 2026-10-04
+      providerIsPlatform=undefined | models=2
+      note=""
+      evidence field=pricing.currency sourceUrl=https://www.cerebras.ai/pricing capturedAt=2026-10-04 quote="$X.XX/M tokens（每百万 token）—— GPT OSS 120B $0.35 / $0.75；Qwen 3.8 27B $0.99 / $1.49（Developer 档逐字）"
+      model gpt-oss-120b variant="standard" rates={"input":0.35,"output":0.75,"cachedInput":null,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model qwen3.8-27b variant="standard" rates={"input":0.99,"output":1.49,"cachedInput":null,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+  · 929a1f3ec46c fireworks | undefined | https://docs.fireworks.ai/serverless/pricing.md | sourceUrl=https://docs.fireworks.ai/serverless/pricing.md | firstSeen 2026-10-04 → lastSeen 2026-10-04
+      providerIsPlatform=undefined | models=10
+      note=""
+      evidence field=pricing.currency sourceUrl=https://docs.fireworks.ai/serverless/pricing.md capturedAt=2026-10-04 quote="(USD per 1M tokens) —— Model | Standard | Priority；Ember-1 3 / 15；Kimi K3 3 / 15；GLM 5.3 1.4 / 4.4（官方 serverless pricing 页逐字）"
+      model deepseek-v4p1-flash variant="standard" rates={"input":0.3,"output":1.2,"cachedInput":0.006,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model ember-1 variant="standard" rates={"input":3,"output":15,"cachedInput":0.3,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model glm-5p3-flash variant="standard" rates={"input":0.15,"output":0.5,"cachedInput":0.03,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model glm-5p3 variant="standard" rates={"input":1.4,"output":4.4,"cachedInput":0.26,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model gpt-oss-120b variant="standard" rates={"input":0.15,"output":0.6,"cachedInput":0.015,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model kimi-k3 variant="standard" rates={"input":3,"output":15,"cachedInput":0.3,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model minimax-m3 variant="standard" rates={"input":0.3,"output":1.2,"cachedInput":0.06,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model nemotron-3-ultra-nvfp4 variant="standard" rates={"input":0.6,"output":2.4,"cachedInput":0.12,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model nemotron-lightning-3p5-30b-a3b variant="standard" rates={"input":0.05,"output":0.2,"cachedInput":0.01,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model qwen3p8-max variant="standard" rates={"input":2,"output":6,"cachedInput":0.25,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+  · 036c5f09561e groq | undefined | https://console.groq.com/docs/models | sourceUrl=https://console.groq.com/docs/models | firstSeen 2026-10-04 → lastSeen 2026-10-04
+      providerIsPlatform=undefined | models=6
+      note=""
+      evidence field=pricing.currency sourceUrl=https://console.groq.com/docs/models capturedAt=2026-10-04 quote="PRICE PER 1M TOKENS — GPT OSS 120B $0.15 / $0.60；GPT OSS 20B $0.075 / $0.30（官方 Supported Models 页逐字）"
+      model meta-llama.prompt-guard-2-22m variant="standard" rates={"input":0.03,"output":0.03,"cachedInput":null,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model meta-llama.prompt-guard-2-86m variant="standard" rates={"input":0.04,"output":0.04,"cachedInput":null,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model openai.gpt-oss-120b variant="standard" rates={"input":0.15,"output":0.6,"cachedInput":null,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model openai.gpt-oss-20b variant="standard" rates={"input":0.075,"output":0.3,"cachedInput":null,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model openai.gpt-oss-safeguard-20b variant="standard" rates={"input":0.075,"output":0.3,"cachedInput":null,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model qwen.qwen3.8-27b variant="standard" rates={"input":0.29,"output":0.59,"cachedInput":null,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+  · 8a26562011f2 together | undefined | https://docs.together.ai/docs/serverless/models.md | sourceUrl=https://docs.together.ai/docs/serverless/models.md | firstSeen 2026-10-04 → lastSeen 2026-10-04
+      providerIsPlatform=undefined | models=8
+      note=""
+      evidence field=pricing.currency sourceUrl=https://docs.together.ai/docs/serverless/models.md capturedAt=2026-10-04 quote="Input pricing (per 1M tokens) / Cached input pricing (per 1M tokens) / Output pricing (per 1M tokens) —— Inkling 1 / 0.17 / 4.05；Kimi K3 3 / 0.3 / 15（官方 serverless models 页逐字列头与两行）"
+      model deepseek-ai.v4-pro-0813 variant="standard" rates={"input":1.32,"output":3.96,"cachedInput":0.13,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model deepseek-ai.v4.1-flash variant="standard" rates={"input":0.3,"output":1.2,"cachedInput":0.006,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model minimaxai.m3 variant="standard" rates={"input":0.3,"output":1.2,"cachedInput":0.06,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model moonshotai.kimi-k3 variant="standard" rates={"input":3,"output":15,"cachedInput":0.3,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model openai.gpt-oss-120b variant="standard" rates={"input":0.15,"output":0.6,"cachedInput":null,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model thinkingmachines.inkling variant="standard" rates={"input":1,"output":4.05,"cachedInput":0.17,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model zai-org.glm-5.3-flash variant="standard" rates={"input":0.15,"output":0.5,"cachedInput":0.03,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+      model zai-org.glm-5.3 variant="standard" rates={"input":1.4,"output":4.4,"cachedInput":0.26,"cacheWrite":null,"cacheWriteLong":null,"reasoning":null,"batchInput":null,"batchOutput":null} modelNote=""
+
+## 5) models.json 变更
+  变更 claude-fable-5.1:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 claude-haiku-4.5:
+    modelRole: undefined → "fast"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 claude-opus-5.5:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 claude-sonnet-5.5:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 deepseek-flash:
+    lastSeen: "2026-10-01" → "2026-10-04"
+    modelRole: undefined → "vision"
+    releasedAt: undefined → "2026-09-10"
+    releaseEvidence: undefined → [{"field":"releasedAt","quote":"「### DeepSeek-V4.1-Flash Release / Today, we officially release the DeepSeek-V4.1-Flash model. It is the smallest model in our new architecture family, with native multimodal visual understanding.」","sourceUrl":"https://api-docs.deepseek.com/updates","capturedAt":"2026-10-04"}]
+    freshnessGroup: undefined → "current-mainline"
+    catalogStatus: undefined → "current"
+    catalogReason: undefined → "group-newest-within-current-window"
+  变更 deepseek-v3.2:
+    modelRole: undefined → "general"
+    releasedAt: undefined → "2025-12-01"
+    releaseEvidence: undefined → [{"field":"releasedAt","quote":"「## Date: 2025-12-01 / ### DeepSeek-V3.2 / Both `deepseek-chat` and `deepseek-reasoner` have been upgraded to DeepSeek-V3.2.」","sourceUrl":"https://api-docs.deepseek.com/updates","capturedAt":"2026-10-04"}]
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "legacy"
+    catalogReason: undefined → "outranked-beyond-aging-window"
+  变更 deepseek-v4-pro:
+    lastSeen: "2026-10-01" → "2026-10-04"
+    modelRole: undefined → "general"
+    releasedAt: undefined → "2026-08-13"
+    releaseEvidence: undefined → [{"field":"releasedAt","quote":"「### DeepSeek-V4-Pro Update / The GA release of DeepSeek-V4-Pro has been rolled out on the APP, Web, and API.」","sourceUrl":"https://api-docs.deepseek.com/updates","capturedAt":"2026-10-04"}]
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "current"
+    catalogReason: undefined → "group-newest-within-current-window"
+  变更 doubao-seed-2.1-pro:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 doubao-seed-2.1-turbo:
+    modelRole: undefined → "fast"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 doubao-seed-character:
+    modelRole: undefined → "other"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 doubao-seed-evolving:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 gemini-3.5-flash:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 gemini-3.6-flash:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 gemini-3.7-flash:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 gemini-3.8-flash:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 glm-4.5v:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 glm-4.6v:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 glm-4.6v-flash:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 glm-4.6v-flashx:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 glm-4.7-flash:
+    modelRole: undefined → "fast"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 glm-5.3:
+    lastSeen: "2026-10-01" → "2026-10-04"
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 glm-5.3-flash:
+    lastSeen: "2026-10-01" → "2026-10-04"
+    modelRole: undefined → "fast"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 glm-5v-turbo:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 gpt-6-astra:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 gpt-6-luna:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 gpt-6.1-sol:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 gpt-live-1:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 hunyuan-a13b:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 hunyuan-embedding:
+    modelRole: undefined → "embedding"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 hunyuan-role-latest:
+    modelRole: undefined → "other"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 hunyuan-translation:
+    modelRole: undefined → "translation"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 hunyuan-translation-lite:
+    modelRole: undefined → "translation"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 kimi-k2.7-code:
+    modelRole: undefined → "coding"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 kimi-k3:
+    lastSeen: "2026-10-01" → "2026-10-04"
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 minimax-m2.5:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 minimax-m2.7:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 minimax-m2.7-highspeed:
+    modelRole: undefined → "fast"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 minimax-m3:
+    lastSeen: "2026-10-01" → "2026-10-04"
+    modelRole: undefined → "vision"
+    releasedAt: undefined → "2026-06-01"
+    releaseEvidence: undefined → [{"field":"releasedAt","quote":"「## 2026 年 6 月 1 日 / ## MiniMax M3 / 全新语言模型 MiniMax-M3 正式发布，面向 Agent 推理、工具调用、代码、多模态 Chat 输入和长上下文任务。」","sourceUrl":"https://platform.minimax.cn/docs/release-notes/models","capturedAt":"2026-10-04"}]
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "current"
+    catalogReason: undefined → "group-newest-within-current-window"
+  变更 qwen-max:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 qwen3-max:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 qwen3.8-27b:
+    lastSeen: "2026-10-01" → "2026-10-04"
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 qwen3.8-max:
+    lastSeen: "2026-10-01" → "2026-10-04"
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 step-3.5-flash:
+    developer: "阶跃星辰（StepFun）" → "阶跃星辰"
+    owner: "阶跃星辰（StepFun）" → "阶跃星辰"
+    lastSeen: "2026-10-01" → "2026-10-04"
+    modelRole: undefined → "fast"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+  变更 tencent-hy-vision-1.5-instruct:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+    catalogStatus: undefined → "unknown"
+    catalogReason: undefined → "group-has-no-dated-model"
+
+## 6) scripts/data/models.json 变更
+   键数 44 → 44
+  变更 claude-fable-5.1:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 claude-haiku-4.5:
+    modelRole: undefined → "fast"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 claude-opus-5.5:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 claude-sonnet-5.5:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 deepseek-flash:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → "2026-09-10"
+    releaseEvidence: undefined → [{"field":"releasedAt","quote":"「### DeepSeek-V4.1-Flash Release / Today, we officially release the DeepSeek-V4.1-Flash model. It is the smallest model in our new architecture family, with native multimodal visual understanding.」","sourceUrl":"https://api-docs.deepseek.com/updates","capturedAt":"2026-10-04"}]
+    freshnessGroup: undefined → "current-mainline"
+  变更 deepseek-v3.2:
+    modelRole: undefined → "general"
+    releasedAt: undefined → "2025-12-01"
+    releaseEvidence: undefined → [{"field":"releasedAt","quote":"「## Date: 2025-12-01 / ### DeepSeek-V3.2 / Both `deepseek-chat` and `deepseek-reasoner` have been upgraded to DeepSeek-V3.2.」","sourceUrl":"https://api-docs.deepseek.com/updates","capturedAt":"2026-10-04"}]
+    freshnessGroup: undefined → null
+  变更 deepseek-v4-pro:
+    modelRole: undefined → "general"
+    releasedAt: undefined → "2026-08-13"
+    releaseEvidence: undefined → [{"field":"releasedAt","quote":"「### DeepSeek-V4-Pro Update / The GA release of DeepSeek-V4-Pro has been rolled out on the APP, Web, and API.」","sourceUrl":"https://api-docs.deepseek.com/updates","capturedAt":"2026-10-04"}]
+    freshnessGroup: undefined → null
+  变更 doubao-seed-2.1-pro:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 doubao-seed-2.1-turbo:
+    modelRole: undefined → "fast"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 doubao-seed-character:
+    modelRole: undefined → "other"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 doubao-seed-evolving:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 gemini-3.5-flash:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 gemini-3.6-flash:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 gemini-3.7-flash:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 gemini-3.8-flash:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 glm-4.5v:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 glm-4.6v:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 glm-4.6v-flash:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 glm-4.6v-flashx:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 glm-4.7-flash:
+    modelRole: undefined → "fast"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 glm-5.3:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 glm-5.3-flash:
+    modelRole: undefined → "fast"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 glm-5v-turbo:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 gpt-6-astra:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 gpt-6-luna:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 gpt-6.1-sol:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 gpt-live-1:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 hunyuan-a13b:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 hunyuan-embedding:
+    modelRole: undefined → "embedding"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 hunyuan-role-latest:
+    modelRole: undefined → "other"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 hunyuan-translation:
+    modelRole: undefined → "translation"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 hunyuan-translation-lite:
+    modelRole: undefined → "translation"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 kimi-k2.7-code:
+    modelRole: undefined → "coding"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 kimi-k3:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 minimax-m2.5:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 minimax-m2.7:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 minimax-m2.7-highspeed:
+    modelRole: undefined → "fast"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 minimax-m3:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → "2026-06-01"
+    releaseEvidence: undefined → [{"field":"releasedAt","quote":"「## 2026 年 6 月 1 日 / ## MiniMax M3 / 全新语言模型 MiniMax-M3 正式发布，面向 Agent 推理、工具调用、代码、多模态 Chat 输入和长上下文任务。」","sourceUrl":"https://platform.minimax.cn/docs/release-notes/models","capturedAt":"2026-10-04"}]
+    freshnessGroup: undefined → null
+  变更 qwen-max:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 qwen3-max:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 qwen3.8-27b:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 qwen3.8-max:
+    modelRole: undefined → "general"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 step-3.5-flash:
+    developer: "阶跃星辰（StepFun）" → "阶跃星辰"
+    owner: "阶跃星辰（StepFun）" → "阶跃星辰"
+    modelRole: undefined → "fast"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null
+  变更 tencent-hy-vision-1.5-instruct:
+    modelRole: undefined → "vision"
+    releasedAt: undefined → null
+    releaseEvidence: undefined → []
+    freshnessGroup: undefined → null

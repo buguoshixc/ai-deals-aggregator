@@ -1,0 +1,443 @@
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Optimizely -->
+<script type="text/javascript">
+    window.optimizely = window.optimizely || [];
+
+        function checkConsent() {
+        var hasAnalyticsConsent = false;
+
+        // Find the cookiehub cookie
+        var cookieMatch = document.cookie.match(/cookiehub=([^;]+)/);
+        var cookiehubValue = cookieMatch ? cookieMatch[1] : null;
+
+        if (cookiehubValue) {
+            try {
+                // Decode base64 and parse JSON
+                var jsonString = atob(cookiehubValue);
+                var consentData = JSON.parse(jsonString);
+
+                /*
+                 * Category to purpose mapping for reference:
+                 * Category 1: necessary
+                 * Category 2: preferences
+                 * Category 3: analytics
+                 * Category 4: marketing
+                 * Category 5: uncategorized
+                 */
+
+                // Check for analytics consent (category 3)
+               if (consentData.allAllowed === true ||
+                    (Array.isArray(consentData.categories) && consentData.categories.indexOf(3) !== -1)) {
+                    hasAnalyticsConsent = true;
+                }
+
+            } catch (error) {
+                console.error('Error processing cookiehub consent:', error);
+            }
+        }
+
+        // Set Optimizely based on consent status
+        if (hasAnalyticsConsent) {
+            window.optimizely.push({type: "sendEvents"});
+            clearInterval(pollInterval);
+        } else {
+            window.optimizely.push({type: "holdEvents"});
+        }
+    }
+
+    // Set up polling (will stop after consent is granted)
+    var pollInterval = setInterval(checkConsent, 500);
+
+    // Check consent initially
+    checkConsent();
+    </script>
+
+<script src="https://resources.jetbrains.com/storage/optly/26613100737.js">
+    // www.jetbrains.com
+</script>
+<!-- End Optimizely --><!-- Error reporting -->
+<script>(function(){
+  window.reportError = function(msg, file, line, col, err, isUnhandledRejection){};
+  var prevOnError = window.onerror;
+  var onError = function(msg, file, line, col, err) {
+    reportError(msg, file, line, col, err, false);
+    prevOnError && prevOnError.apply(window, arguments);
+    return false;
+  };
+  window.onerror = onError;
+  // Setup reporting for unhandled Promise rejection errors
+  window.addEventListener("unhandledrejection", function(e) {
+    if (!e.reason) return;
+    var l = getSrcLocation(e.reason);
+    reportError(e.reason.message, l.file, l.line, l.col, e.reason, true);
+  });
+  // Setup reporting for console.error and console.warn calls
+  patchConsole('error');
+  patchConsole('warn');
+  // Utility functions
+  function patchConsole(fnName) {
+    var fn = console[fnName];
+    console[fnName] = function() {
+      fn.apply(console, arguments);
+      var l; try {
+        throw new Error('_');
+      } catch (err) {
+        l = getSrcLocation(err, 1);
+      }
+      var msg = 'console.' + fnName + ': ' + Array.prototype.join.call(arguments, ' ');
+      reportError(msg, l.file, l.line, l.col, undefined, false);
+    };
+  }
+  function getSrcLocation(err, sd) {
+    var s = err && err.stack;
+    var l = s && s.split("\n")[1 + (sd|0)];
+    var r = l && (/^\s*at [^(]*\((.*?):(\d+)(:\d+)?\)$/.exec(l) || /^\s*at (.*?):(\d+)(:\d+)?$/.exec(l));
+    return r ? {file: r[1], line: r[2], col: r[3]} : {};
+  }
+})();</script>
+<!-- Error reporting --><!-- Google Tag Manager -->
+<script>(function() {
+  // Initialize Tag Manager queue
+  window.dataLayer = window.dataLayer || [];
+  window.gtmLoaded = false;
+  // Setup reporting for errors that occurred before Tag Manager initialized
+  var prevReportError = window.reportError;
+  var reportError = function(msg, file, line, col, err, isUnhandledRejection) {
+    if (!window.gtmLoaded || isUnhandledRejection) {
+      // Reproduce the behavior of the Tag Manager error handler
+      window.dataLayer.push(makeEvt(msg, file, line));
+    }
+    prevReportError && prevReportError.apply(window, arguments);
+  };
+  window.reportError = reportError;
+  // Utility functions
+  function makeEvt(msg, file, line) {
+    return {
+      event: "gtm.pageError", "gtm.errorMessage": msg,
+      "gtm.errorUrl": file, "gtm.errorLineNumber": line
+    };
+  }
+})();</script>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;j.addEventListener(
+    'load', function(){window.gtmLoaded=true});f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5P98');</script>
+<!-- End Google Tag Manager -->
+<title>JetBrains AI Plans & Pricing</title>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, maximum-scale=1">
+
+
+<link rel="icon" href="/favicon.ico?r=1234" type="image/x-icon"><!-- 48×48 -->
+<link rel="icon" href="/icon.svg?r=1234" type="image/svg+xml" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?r=1234" sizes="180x180"><!-- 180×180 -->
+<link rel="icon" href="/icon-512.png?r=1234" type="image/png" sizes="512x512">
+<link rel="manifest" href="/site.webmanifest" crossorigin="use-credentials">
+
+<meta name="apple-mobile-web-app-title" content="JetBrains">
+<meta name="application-name" content="JetBrains">
+<meta name="msapplication-TileColor" content="#000000">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://www.jetbrains.com/ai-ides/buy/"/><!-- .505-->
+<meta class="local" content="JetBrains AI subscription: Choose the best plan for you and your team." name="description">
+<meta class="local" content="https://resources.jetbrains.com/storage/products/ai-ides/img/meta/preview.png" name="image">
+
+
+    <link rel="alternate" hreflang="x-default" href="https://www.jetbrains.com/ai-ides/buy/" />
+
+                        <link rel="alternate" hreflang="en" href="https://www.jetbrains.com/ai-ides/buy/" />
+                                                            <link rel="alternate" hreflang="en-CN" href="https://www.jetbrains.com.cn/en-us/ai-ides/buy/" />
+                                                                        <link rel="alternate" hreflang="de" href="https://www.jetbrains.com/de-de/ai-ides/buy/" />
+                                                                                                    <link rel="alternate" hreflang="es" href="https://www.jetbrains.com/es-es/ai-ides/buy/" />
+                                                                                                    <link rel="alternate" hreflang="fr" href="https://www.jetbrains.com/fr-fr/ai-ides/buy/" />
+                                                                                                    <link rel="alternate" hreflang="ja" href="https://www.jetbrains.com/ja-jp/ai-ides/buy/" />
+                                                                                                    <link rel="alternate" hreflang="ko" href="https://www.jetbrains.com/ko-kr/ai-ides/buy/" />
+                                                                                                    <link rel="alternate" hreflang="ru" href="https://www.jetbrains.com/ru-ru/ai-ides/buy/" />
+                                                                                                    <link rel="alternate" hreflang="zh-Hans" href="https://www.jetbrains.com/zh-cn/ai-ides/buy/" />
+                                            <link rel="alternate" hreflang="zh-CN" href="https://www.jetbrains.com.cn/ai-ides/buy/" />
+                                                                                        <link rel="alternate" hreflang="pt-BR" href="https://www.jetbrains.com/pt-br/ai-ides/buy/" />
+                                                                                
+
+
+<link rel="preconnect" href="https://resources.jetbrains.com" crossorigin>
+
+<script>
+    var productsData = {"currency": {"symbol": "CNY", "isPrefix": false, "iso": "CNY"}, "countryCode": "CN", "countryName": "China Mainland", "vatInfoUrl": "https://www.jetbrains.com/shop/static/html/vat.html", "ALL": {"code": "ALL", "links": {"personal": {"yearly": {"buy": "https://www.jetbrains.com/shop/buy?item=P:N:ALL:Y", "quote": "https://www.jetbrains.com/shop/quote?item=P:N:ALL:Y"}, "monthly": {"buy": "https://www.jetbrains.com/shop/buy?item=P:N:ALL:M", "quote": "https://www.jetbrains.com/shop/quote?item=P:N:ALL:M"}}, "commercial": {"yearly": {"buy": "https://www.jetbrains.com/shop/buy?item=C:N:ALL:Y", "quote": "https://www.jetbrains.com/shop/quote?item=C:N:ALL:Y"}, "monthly": {"buy": "https://www.jetbrains.com/shop/buy?item=C:N:ALL:M", "quote": "https://www.jetbrains.com/shop/quote?item=C:N:ALL:M"}}}, "prices": {"personal": {"yearly": ["2,500.00\u2009CNY", "2,000.00\u2009CNY", "1,500.00\u2009CNY"], "yearlyPerMonth": ["208.33\u2009CNY", "166.67\u2009CNY", "125.00\u2009CNY"], "monthly": ["250.00\u2009CNY"]}, "commercial": {"yearly": ["8,080.00\u2009CNY"], "yearlyPerMonth": ["673.33\u2009CNY"], "monthly": ["808.00\u2009CNY"]}}, "disc_prices": {"personal": {"yearly": ["0", "0", "0"], "monthly": ["0"]}, "commercial": {"yearly": ["0"], "monthly": ["0"]}}, "percent": {"personal": {"yearly": [0, 20, 40], "monthly": [0]}, "commercial": {"yearly": [0], "monthly": [0]}}, "name": "All Products Pack"}, "AIP": {"code": "AIP", "links": {"personal": {"yearly": {"buy": "https://www.jetbrains.com/shop/buy?item=P:N:AIP:Y", "quote": "https://www.jetbrains.com/shop/quote?item=P:N:AIP:Y"}, "monthly": {"buy": "https://www.jetbrains.com/shop/buy?item=P:N:AIP:M", "quote": "https://www.jetbrains.com/shop/quote?item=P:N:AIP:M"}}, "commercial": {"yearly": {"buy": "https://www.jetbrains.com/shop/buy?item=C:N:AIP:Y", "quote": "https://www.jetbrains.com/shop/quote?item=C:N:AIP:Y"}, "monthly": {"buy": "https://www.jetbrains.com/shop/buy?item=C:N:AIP:M", "quote": "https://www.jetbrains.com/shop/quote?item=C:N:AIP:M"}}}, "prices": {"personal": {"yearly": ["825.00\u2009CNY"], "yearlyRestricted": true, "yearlyPerMonth": ["68.75\u2009CNY"], "monthly": ["82.00\u2009CNY"], "monthlyRestricted": true}, "commercial": {"yearly": ["1,650.00\u2009CNY"], "yearlyRestricted": true, "yearlyPerMonth": ["137.50\u2009CNY"], "monthly": ["165.00\u2009CNY"], "monthlyRestricted": true}}, "disc_prices": {"personal": {"yearly": ["0"], "monthly": ["0"]}, "commercial": {"yearly": ["0"], "monthly": ["0"]}}, "percent": {"personal": {"yearly": [0], "monthly": [0]}, "commercial": {"yearly": [0], "monthly": [0]}}, "name": "JetBrains AI Pro", "group": "AI"}, "AIPU": {"code": "AIPU", "links": {"personal": {"yearly": {"buy": "https://www.jetbrains.com/shop/buy?item=P:N:AIPU:Y", "quote": "https://www.jetbrains.com/shop/quote?item=P:N:AIPU:Y"}, "monthly": {"buy": "https://www.jetbrains.com/shop/buy?item=P:N:AIPU:M", "quote": "https://www.jetbrains.com/shop/quote?item=P:N:AIPU:M"}}, "commercial": {"yearly": {"buy": "https://www.jetbrains.com/shop/buy?item=C:N:AIPU:Y", "quote": "https://www.jetbrains.com/shop/quote?item=C:N:AIPU:Y"}, "monthly": {"buy": "https://www.jetbrains.com/shop/buy?item=C:N:AIPU:M", "quote": "https://www.jetbrains.com/shop/quote?item=C:N:AIPU:M"}}}, "prices": {"personal": {"yearly": ["2,500.00\u2009CNY"], "yearlyRestricted": true, "yearlyPerMonth": ["208.33\u2009CNY"], "monthly": ["247.50\u2009CNY"], "monthlyRestricted": true}, "commercial": {"yearly": ["5,000.00\u2009CNY"], "yearlyRestricted": true, "yearlyPerMonth": ["416.67\u2009CNY"], "monthly": ["495.00\u2009CNY"], "monthlyRestricted": true}}, "disc_prices": {"personal": {"yearly": ["0"], "monthly": ["0"]}, "commercial": {"yearly": ["0"], "monthly": ["0"]}}, "percent": {"personal": {"yearly": [0], "monthly": [0]}, "commercial": {"yearly": [0], "monthly": [0]}}, "name": "JetBrains AI Ultimate", "group": "AI"}, "IDESPR-AIU": {"code": "IDESPR-AIU", "links": {}, "prices": {"commercial": {"yearly": ["5,940.00\u2009CNY"], "yearlyPerMonth": ["495.00\u2009CNY"]}}, "disc_prices": {"commercial": {"yearly": ["0"]}}, "percent": {"commercial": {"yearly": [0]}}, "name": "JetBrains IDE Services On-Premises Prepaid", "group": "IDES"}, "DUL": {"code": "DUL", "links": {"personal": {"yearly": {"buy": "https://www.jetbrains.com/shop/buy?item=P:N:DUL:Y", "quote": "https://www.jetbrains.com/shop/quote?item=P:N:DUL:Y"}, "monthly": {"buy": "https://www.jetbrains.com/shop/buy?item=P:N:DUL:M", "quote": "https://www.jetbrains.com/shop/quote?item=P:N:DUL:M"}}, "commercial": {"yearly": {"buy": "https://www.jetbrains.com/shop/buy?item=C:N:DUL:Y", "quote": "https://www.jetbrains.com/shop/quote?item=C:N:DUL:Y"}, "monthly": {"buy": "https://www.jetbrains.com/shop/buy?item=C:N:DUL:M", "quote": "https://www.jetbrains.com/shop/quote?item=C:N:DUL:M"}}}, "prices": {"personal": {"yearly": ["1,810.00\u2009CNY", "1,448.00\u2009CNY", "1,086.00\u2009CNY"], "yearlyPerMonth": ["150.83\u2009CNY", "120.67\u2009CNY", "90.50\u2009CNY"], "monthly": ["181.00\u2009CNY"]}, "commercial": {"yearly": ["5,020.00\u2009CNY"], "yearlyPerMonth": ["418.33\u2009CNY"], "monthly": ["502.00\u2009CNY"]}}, "disc_prices": {"personal": {"yearly": ["0", "0", "0"], "monthly": ["0"]}, "commercial": {"yearly": ["0"], "monthly": ["0"]}}, "percent": {"personal": {"yearly": [0, 20, 40], "monthly": [0]}, "commercial": {"yearly": [0], "monthly": [0]}}, "name": "dotUltimate"}};
+</script>
+<script>
+    var bannerInfo = {
+        showBanner: "",
+        discountPercent: null
+    };
+</script>
+
+<script>
+    default_site_language = 'en-us';
+    var current_lang = 'en-us';
+                var i18n_info = {"current_lang": "en-us", "languages": [{"canonical": "en", "code": "en-us", "label": "English", "page_translated": true, "url": "/ai-ides/buy/"}, {"canonical": "de", "code": "de-de", "label": "Deutsch", "page_translated": true, "url": "/de-de/ai-ides/buy/"}, {"canonical": "es", "code": "es-es", "label": "Espa\u00f1ol", "page_translated": true, "url": "/es-es/ai-ides/buy/"}, {"canonical": "fr", "code": "fr-fr", "label": "Fran\u00e7ais", "page_translated": true, "url": "/fr-fr/ai-ides/buy/"}, {"canonical": "ja", "code": "ja-jp", "label": "\u65e5\u672c\u8a9e", "page_translated": true, "url": "/ja-jp/ai-ides/buy/"}, {"canonical": "ko", "code": "ko-kr", "label": "\ud55c\uad6d\uc5b4", "page_translated": true, "url": "/ko-kr/ai-ides/buy/"}, {"canonical": "ru", "code": "ru-ru", "label": "\u0420\u0443\u0441\u0441\u043a\u0438\u0439", "page_translated": true, "url": "/ru-ru/ai-ides/buy/"}, {"canonical": "zh-Hans", "code": "zh-cn", "label": "\u7b80\u4f53\u4e2d\u6587", "page_translated": true, "url": "/zh-cn/ai-ides/buy/"}, {"canonical": "pt-BR", "code": "pt-br", "label": "Portugu\u00eas do Brasil", "page_translated": true, "url": "/pt-br/ai-ides/buy/"}]};
+            var navigationMenu = {"primary": {"items": [{"title": "Products", "id": "products", "banners": [{"isActive": false, "title": "JetBrains Air", "description": "One system for building software with agents", "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/air/air.svg", "actionLabel": "Learn more", "url": "/air/", "isUrlShouldBeLocalized": false, "bgColor": "#AC9894", "bgImageSrc": "/img/banners-menu-main/bg-air.png", "horizontalBgImageSrc": "/img/banners-menu-main/bg-air-horizontal.png", "cleaned_url": "/air/"}], "suggestions": [{"isActive": false, "url": "/products/", "isUrlShouldBeLocalized": true, "title": "Not sure which tool is best for you?", "description": "Whichever technologies you use, there's a JetBrains tool to match", "actionLabel": "Find your tool", "cleaned_url": "/products/"}], "submenu": {"layout": "4 inline inline 2 inline", "columns": [{"title": "JETBRAINS IDEs", "mobileLayout": "forceTwoColumns", "layout": "5 6", "subColumns": [{"items": [{"isActive": false, "title": "All&nbsp;IDEs", "url": "/ides/", "isUrlShouldBeLocalized": true, "cleaned_url": "/ides/"}, {"isActive": false, "title": "CLion", "url": "/clion/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/clion/clion.svg", "cleaned_url": "/clion/"}, {"isActive": false, "title": "DataGrip", "url": "/datagrip/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/datagrip/datagrip.svg", "cleaned_url": "/datagrip/"}, {"isActive": false, "title": "GoLand", "url": "/go/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/goland/goland.svg", "cleaned_url": "/go/"}, {"isActive": false, "title": "IntelliJ&nbsp;IDEA", "url": "/idea/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/intellij-idea/intellij-idea.svg", "cleaned_url": "/idea/"}, {"isActive": false, "title": "PhpStorm", "url": "/phpstorm/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/phpstorm/phpstorm.svg", "cleaned_url": "/phpstorm/"}]}, {"items": [{"isActive": false, "title": "PyCharm", "url": "/pycharm/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/pycharm/pycharm.svg", "cleaned_url": "/pycharm/"}, {"isActive": false, "title": "Rider", "url": "/rider/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/rider/rider.svg", "cleaned_url": "/rider/"}, {"isActive": false, "title": "RubyMine", "url": "/ruby/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/rubymine/rubymine.svg", "cleaned_url": "/ruby/"}, {"isActive": false, "title": "RustRover", "url": "/rust/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/rustrover/rustrover.svg", "cleaned_url": "/rust/"}, {"isActive": false, "title": "WebStorm", "url": "/webstorm/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/webstorm/webstorm.svg", "cleaned_url": "/webstorm/"}, {"isActive": false, "title": "Toolbox&nbsp;App", "url": "/toolbox-app/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/toolbox/toolbox.svg", "cleaned_url": "/toolbox-app/"}]}]}, {"title": "AI TOOLS", "items": [{"isActive": false, "title": "AI\u00a0in\u00a0IDEs", "url": "/ai-ides/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/ai/ai.svg", "cleaned_url": "/ai-ides/"}, {"isActive": false, "title": "Junie", "url": "https://junie.jetbrains.com/", "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/junie/junie.svg", "cleaned_url": "https://junie.jetbrains.com/"}, {"isActive": false, "title": "Air", "url": "/air/", "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/air/air.svg", "cleaned_url": "/air/"}, {"isActive": false, "title": "ACP", "url": "/acp/", "isUrlShouldBeLocalized": true, "cleaned_url": "/acp/"}, {"isActive": false, "title": "Mellum", "url": "/mellum/", "isUrlShouldBeLocalized": true, "cleaned_url": "/mellum/"}]}, {"title": ".NET & VISUAL STUDIO", "items": [{"isActive": false, "title": "Rider", "url": "/rider/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/rider/rider.svg", "cleaned_url": "/rider/"}, {"isActive": false, "title": "ReSharper", "url": "/resharper/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/resharper/resharper.svg", "cleaned_url": "/resharper/"}, {"isActive": false, "title": "ReSharper\u00a0C\u2060+\u2060+", "url": "/resharper-cpp/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/resharper-cpp/resharper-cpp.svg", "cleaned_url": "/resharper-cpp/"}, {"isActive": false, "title": "dotCover", "url": "/dotcover/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/dotcover/dotcover.svg", "cleaned_url": "/dotcover/"}, {"isActive": false, "title": "dotMemory", "url": "/dotmemory/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/dotmemory/dotmemory.svg", "cleaned_url": "/dotmemory/"}, {"isActive": false, "title": "dotPeek", "url": "/decompiler/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/dotpeek/dotpeek.svg", "cleaned_url": "/decompiler/"}, {"isActive": false, "title": "dotTrace", "url": "/profiler/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/dottrace/dottrace.svg", "cleaned_url": "/profiler/"}, {"isActive": false, "title": ".NET Tools Plugins", "url": "https://plugins.jetbrains.com/search?isFeaturedSearch=true&products=resharper&products=rider", "cleaned_url": "https://plugins.jetbrains.com/search?isFeaturedSearch=true&products=resharper&products=rider"}]}, {"title": "TEAM TOOLS", "hasSeparator": true, "items": [{"isActive": false, "title": "TeamCity", "url": "/teamcity/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/teamcity/teamcity.svg", "cleaned_url": "/teamcity/"}, {"isActive": false, "title": "Datalore", "url": "/datalore/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/datalore/datalore.svg", "cleaned_url": "/datalore/"}, {"isActive": false, "title": "YouTrack", "url": "/youtrack/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/youtrack/youtrack.svg", "cleaned_url": "/youtrack/"}, {"isActive": false, "title": "Qodana", "url": "/qodana/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/qodana/qodana.svg", "cleaned_url": "/qodana/"}, {"isActive": false, "title": "Databao", "url": "/databao/", "isUrlShouldBeLocalized": true, "cleaned_url": "/databao/"}]}, {"title": "LANGUAGES & FRAMEWORKS", "hasSeparator": true, "items": [{"isActive": false, "title": "Kotlin", "url": "https://kotlinlang.org/", "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/kotlin/kotlin.svg", "cleaned_url": "https://kotlinlang.org/"}, {"isActive": false, "title": "Koog", "url": "/koog/", "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/kotlin/kotlin.svg", "cleaned_url": "/koog/"}, {"isActive": false, "title": "Ktor", "url": "https://ktor.io/", "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/ktor/ktor.svg", "cleaned_url": "https://ktor.io/"}, {"isActive": false, "title": "Exposed", "url": "/exposed/", "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/exposed/exposed.svg", "cleaned_url": "/exposed/"}, {"isActive": false, "title": "MPS", "url": "/mps/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/mps/mps.svg", "cleaned_url": "/mps/"}, {"isActive": false, "title": "Compose Multiplatform", "url": "https://kotlinlang.org/compose-multiplatform/", "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/compose-multiplatform/compose-multiplatform.svg", "cleaned_url": "https://kotlinlang.org/compose-multiplatform/"}]}]}, "priority": 3}, {"title": "For Business", "id": "for-business", "banners": [{"isActive": false, "title": "AI for teams and organizations", "description": "One system for managing AI across every team", "actionLabel": "Learn more", "url": "/agentic-software-development/", "isUrlShouldBeLocalized": true, "logoSrc": "/img/banners-menu-main/jetbrains.svg", "bgColor": "#0082C9", "bgGradient": "linear-gradient(117deg, #0082C9 0%, #5A4ED0 100%)", "cleaned_url": "/agentic-software-development/"}, {"isActive": false, "title": "All Products Pack", "description": "Get all JetBrains desktop tools including 10&nbsp;IDEs,<br />2&nbsp;profilers, and 3&nbsp;extensions", "actionLabel": "Learn more", "url": "/all/", "isUrlShouldBeLocalized": true, "logoSrc": "/img/banners-menu-main/sale.svg", "bgColor": "#FF318C", "bgGradient": "linear-gradient(293.2deg, rgb(253 13 122) 13.45%, rgb(252 100 67) 73.57%, rgb(248 158 7) 100%)", "cleaned_url": "/all/"}], "submenu": {"columns": [{"title": "OFFERS FOR YOUR ORGANIZATION", "layout": "4 4 4", "subColumns": [{"items": [{"isActive": false, "title": "JetBrains Tools for Business", "url": "/business/", "isUrlShouldBeLocalized": true, "description": "Professional AI-powered IDEs for your development teams", "cleaned_url": "/business/"}, {"isActive": false, "title": "All Products Pack", "url": "/all/", "isUrlShouldBeLocalized": true, "description": "All JetBrains developer tools in one subscription", "cleaned_url": "/all/"}, {"isActive": false, "title": "dotUltimate", "url": "/dotnet/business/", "isUrlShouldBeLocalized": true, "description": "Complete developer toolkit for .NET and game development", "cleaned_url": "/dotnet/business/"}]}, {"items": [{"isActive": false, "title": "AI for teams and organizations", "url": "/agentic-software-development/", "isUrlShouldBeLocalized": true, "description": "One system for agentic software development", "cleaned_url": "/agentic-software-development/"}]}]}]}, "priority": 2}, {"title": "Education", "id": "education", "banners": [{"isActive": false, "title": "JetBrains Academy", "description": "Jump-start your career with essential developer skills", "actionLabel": "Discover more", "url": "/academy/", "isUrlShouldBeLocalized": true, "logoSrc": "${RESOURCES_URL_PLACEHOLDER}/storage/logos/web/jetbrains-academy/jetbrains-academy.svg", "bgColor": "#B01DF6", "bgGradient": "linear-gradient(335.07deg, #636CEA 0%, #834CEF 40.63%, #771F89 100%)", "cleaned_url": "/academy/"}], "submenu": {"columns": [{"title": "LEARN", "layout": "12 12 12", "subColumns": [{"items": [{"isActive": false, "title": "Course catalog", "url": "https://academy.jetbrains.com/", "isUrlShouldBeLocalized": false, "description": "130+ courses to learn programming, AI, data science, and more", "cleaned_url": "https://academy.jetbrains.com/"}, {"isActive": false, "title": "University programs", "url": "/education/university-programs/", "isUrlShouldBeLocalized": true, "description": "Study in Europe with JetBrains scholarships", "cleaned_url": "/education/university-programs/"}, {"isActive": false, "title": "Internships", "url": "/careers/internships/", "isUrlShouldBeLocalized": true, "description": "Apply now to join our team", "cleaned_url": "/careers/internships/"}, {"isActive": false, "title": "For teams", "url": "/academy/organizations/", "isUrlShouldBeLocalized": true, "description": "Project-based learning to upskill your team", "cleaned_url": "/academy/organizations/"}]}]}, {"title": "TEACH", "layout": "12 12 12", "subColumns": [{"items": [{"isActive": false, "title": "Teaching with JetBrains IDEs", "url": "/academy/teaching/", "isUrlShouldBeLocalized": true, "description": "Create courses for the next generation of developers", "cleaned_url": "/academy/teaching/"}, {"isActive": false, "title": "Kotlin for education", "url": "https://kotlinlang.org/education/", "description": "Teach computer science with Kotlin", "cleaned_url": "https://kotlinlang.org/education/"}]}]}, {"title": "FREE LICENSES", "layout": "11 11 11", "hasSeparator": true, "items": [{"isActive": false, "title": "For students", "url": "/academy/student-pack/", "isUrlShouldBeLocalized": true, "cleaned_url": "/academy/student-pack/"}, {"isActive": false, "title": "For teachers", "url": "/academy/teacher-pack/#get-started", "isUrlShouldBeLocalized": true, "cleaned_url": "/academy/teacher-pack/#get-started"}, {"isActive": false, "title": "For educational institutions", "url": "/academy/teacher-pack/", "isUrlShouldBeLocalized": true, "cleaned_url": "/academy/teacher-pack/"}]}, {"title": "COMMUNITY", "layout": "11 11 11", "hasSeparator": true, "items": [{"isActive": false, "title": "ICPC collaboration", "url": "/icpc/", "isUrlShouldBeLocalized": true, "description": "Events, news, and offers", "cleaned_url": "/icpc/"}]}]}, "priority": 1}, {"title": "Solutions", "id": "solutions", "banners": [{"isActive": false, "title": "AI for teams and organizations", "description": "One system for managing AI across every team", "actionLabel": "Learn more", "url": "/agentic-software-development/", "isUrlShouldBeLocalized": true, "logoSrc": "/img/banners-menu-main/jetbrains.svg", "bgColor": "#0082C9", "bgGradient": "linear-gradient(117deg, #0082C9 0%, #5A4ED0 100%)", "cleaned_url": "/agentic-software-development/"}, {"isActive": false, "title": "JetBrains for Data", "description": "Feel the difference in every data task", "actionLabel": "Discover more", "url": "/jetbrains-for-data/", "isUrlShouldBeLocalized": true, "bgColor": "#000", "bgImageSrc": "/img/banners-menu-main/jb-for-data.svg", "horizontalBgImageSrc": "/img/banners-menu-main/jb-for-data-horizontal.svg", "cleaned_url": "/jetbrains-for-data/"}], "submenu": {"columns": [{"title": "BY INDUSTRY & TECHNOLOGY", "layout": "4 4 4", "subColumns": [{"items": [{"isActive": false, "title": "Remote Development", "url": "/remote-development/", "isUrlShouldBeLocalized": true, "description": "Tools for remote development for you and your team", "cleaned_url": "/remote-development/"}, {"isActive": false, "title": "Game Development", "url": "/gamedev/", "isUrlShouldBeLocalized": true, "description": "Tools for game development for any platform", "cleaned_url": "/gamedev/"}, {"isActive": false, "title": "DevOps", "url": "/devops/", "isUrlShouldBeLocalized": true, "description": "Tools and integrations for any infrastructure", "cleaned_url": "/devops/"}]}, {"items": [{"isActive": false, "title": "JetBrains AI Solutions", "url": "/ai/", "isUrlShouldBeLocalized": true, "description": "AI-powered developer tooling", "cleaned_url": "/ai/"}, {"isActive": false, "title": "JetBrains for Data", "url": "/jetbrains-for-data/", "isUrlShouldBeLocalized": true, "description": "Intelligent tools for your entire data workflow", "cleaned_url": "/jetbrains-for-data/"}, {"isActive": false, "title": "Multiplatform Development", "url": "https://kotlinlang.org/multiplatform/", "description": "Flexible cross-platform development with Kotlin", "cleaned_url": "https://kotlinlang.org/multiplatform/"}]}, {"items": [{"isActive": false, "title": "JetBrains Kotlin Ecosystem", "url": "/kotlin-ecosystem/", "isUrlShouldBeLocalized": true, "description": "Unified tech stack to build for your target platforms", "cleaned_url": "/kotlin-ecosystem/"}, {"isActive": false, "title": "Automotive Development", "url": "/automotive/", "isUrlShouldBeLocalized": true, "description": "Tools for automotive development for any platform", "cleaned_url": "/automotive/"}]}]}]}, "priority": 0}, {"title": "Support", "id": "support", "banners": [{"isActive": false, "title": "Download and Install", "actionLabel": "Download and Install", "url": "/products/", "isUrlShouldBeLocalized": true, "logoSrc": "/img/banners-menu-main/download.svg", "bgColor": "#6B57FF", "bgGradient": "linear-gradient(294.91deg, #FF318C -50.1%, #6B57FF 97.43%)", "cleaned_url": "/products/"}, {"isActive": false, "title": "Contact us", "actionLabel": "Contact us", "url": "/company/contacts/", "isUrlShouldBeLocalized": true, "logoSrc": "/img/banners-menu-main/message.svg", "bgColor": "#21D789", "bgGradient": "linear-gradient(283.8deg, #087CFA 5.73%, #21D789 100%)", "cleaned_url": "/company/contacts/"}], "submenu": {"columns": [{"title": "PRODUCT & TECHNICAL SUPPORT", "layout": "12", "subColumns": [{"items": [{"isActive": false, "title": "Support Center", "url": "/support/", "isUrlShouldBeLocalized": true, "cleaned_url": "/support/"}, {"isActive": false, "title": "Product Documentation", "url": "/help/", "isUrlShouldBeLocalized": true, "cleaned_url": "/help/"}, {"isActive": false, "title": "Livestreams", "url": "/company/livestreams/", "isUrlShouldBeLocalized": true, "cleaned_url": "/company/livestreams/"}, {"isActive": false, "title": "Newsletters", "url": "/resources/newsletters/", "isUrlShouldBeLocalized": true, "cleaned_url": "/resources/newsletters/"}, {"isActive": false, "title": "Early Access", "url": "/resources/eap/", "isUrlShouldBeLocalized": true, "cleaned_url": "/resources/eap/"}, {"isActive": false, "title": "Blog", "url": "https://blog.jetbrains.com/", "isUrlShouldBeLocalized": true, "cleaned_url": "https://blog.jetbrains.com/"}]}]}, {"title": "FREQUENT TASKS", "hasSeparator": true, "items": [{"isActive": false, "title": "Manage your account", "url": "https://account.jetbrains.com/profile-details", "cleaned_url": "https://account.jetbrains.com/profile-details"}, {"isActive": false, "title": "Manage your licenses", "url": "https://account.jetbrains.com/licenses", "cleaned_url": "https://account.jetbrains.com/licenses"}, {"isActive": false, "title": "Contact Sales", "url": "/support/sales/", "isUrlShouldBeLocalized": true, "cleaned_url": "/support/sales/"}, {"isActive": false, "title": "Licensing FAQ", "url": "https://sales.jetbrains.com", "isUrlShouldBeLocalized": true, "cleaned_url": "https://sales.jetbrains.com"}]}]}, "priority": 2}, {"isActive": false, "title": "Pricing", "id": "store", "url": "/store/?section=personal&billing=yearly", "isUrlShouldBeLocalized": true, "priority": 3, "cleaned_url": "/store/?section=personal&billing=yearly"}, {"isActive": false, "id": "login", "title": "Login", "url": "https://account.jetbrains.com", "isMobileOnly": true, "cleaned_url": "https://account.jetbrains.com"}]}, "secondary": {"isActive": true, "id": "partners", "url": "/ai-ides/", "title": "AI in IDEs", "isThemeDark": true, "items": [{"isActive": false, "title": "What\u2019s new", "url": "https://lp.jetbrains.com/ai-assistant-whatsnew/", "cleaned_url": "https://lp.jetbrains.com/ai-assistant-whatsnew/"}, {"isActive": false, "title": "FAQ", "url": "https://lp.jetbrains.com/ai-ides-faq/", "cleaned_url": "https://lp.jetbrains.com/ai-ides-faq/"}, {"isActive": true, "title": "Pricing", "url": "/ai-ides/buy/", "cleaned_url": "/ai-ides/buy/"}], "cleaned_url": "/ai-ides/"}};
+    
+    var is_layout_adaptive = false;
+        is_layout_adaptive = true;
+    
+    var disable_language_picker = false;
+    
+    var localized_domains = [{"defaultLanguage": "en", "domain": "blog.jetbrains.com", "locales": {"de-de": "de", "en-us": "en", "es-es": "es", "fr-fr": "fr", "ja-jp": "ja", "ko-kr": "ko", "pt-br": "pt-br", "ru-ru": "ru", "zh-cn": "zh-hans"}, "pathsLocalization": false, "suffixDefault": false}, {"defaultLanguage": "en-us", "domain": "lp.jetbrains.com", "locales": {"de-de": "de-de", "en-us": "en-us", "es-es": "es-es", "fr-fr": "fr-fr", "ja-jp": "ja-jp", "ko-kr": "ko-kr", "pt-br": "pt-br", "ru-ru": "ru-ru", "zh-cn": "zh-cn"}, "pathsLocalization": true, "suffixDefault": false}, {"defaultLanguage": "en-us", "domain": "sales.jetbrains.com", "locales": {"de-de": "de", "en-us": "en-gb", "es-es": "es", "fr-fr": "fr", "ja-jp": "ja", "ko-kr": "ko", "pt-br": "pt-br", "ru-ru": "ru", "zh-cn": "zh-cn"}, "pathsLocalization": true, "prefixPath": "hc", "suffixDefault": true}];
+
+    var english_only_url_prefixes = [];
+    
+    var is_landing_view = false;
+    
+    var theme = 'light';
+</script>
+
+<script></script>
+
+
+
+        <link href="/_assets/common.85b218eee357a8290b75.css" rel="stylesheet" type="text/css">
+<link href="/_assets/default-page.1d4fa59b0b842be5c92f.css" rel="stylesheet" type="text/css">
+<link href="/_assets/ai-ides/buy/index.entry.7cda5b376f72389137f9.css" rel="stylesheet" type="text/css">
+<script src="/_assets/common.b9689be3396b0b6d5857.js" type="text/javascript"></script>
+<script src="/_assets/default-page.011c2916d5558abbe843.js" type="text/javascript"></script>
+<script src="/_assets/ai-ides/buy/index.entry.dcc0d341b0d14c33c6b4.js" type="text/javascript"></script>
+
+                         
+<!-- Social Media tag Starts -->
+<!-- Open Graph data -->
+<meta property="og:title" content="JetBrains AI Plans & Pricing"/>
+
+<meta property="og:description" content="JetBrains AI subscription: Choose the best plan for you and your team."/>
+<meta property="og:image" content="https://resources.jetbrains.com/storage/products/ai-ides/img/meta/preview.png"/>
+
+<meta property="og:site_name" content="JetBrains"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://www.jetbrains.com/ai-ides/buy/"/>
+<!-- Social Media tag Ends -->
+
+
+            </head>
+
+<body class="nojs  body-adaptive page-color-orchid-purple wt-primary-map">
+
+        <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5P98" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<script>
+/*! modernizr 3.2.0 (Custom Build) | MIT *
+ * http://modernizr.com/download/?-flexbox-flexboxtweener !*/
+!function(e,n,t){function r(e,n){return typeof e===n}function o(){var e,n,t,o,i,s,l;for(var f in v)if(v.hasOwnProperty(f)){if(e=[],n=v[f],n.name&&(e.push(n.name.toLowerCase()),n.options&&n.options.aliases&&n.options.aliases.length))for(t=0;t<n.options.aliases.length;t++)e.push(n.options.aliases[t].toLowerCase());for(o=r(n.fn,"function")?n.fn():n.fn,i=0;i<e.length;i++)s=e[i],l=s.split("."),1===l.length?Modernizr[l[0]]=o:(!Modernizr[l[0]]||Modernizr[l[0]]instanceof Boolean||(Modernizr[l[0]]=new Boolean(Modernizr[l[0]])),Modernizr[l[0]][l[1]]=o),C.push((o?"":"no-")+l.join("-"))}}function i(e,n){return!!~(""+e).indexOf(n)}function s(e){return e.replace(/([a-z])-([a-z])/g,function(e,n,t){return n+t.toUpperCase()}).replace(/^-/,"")}function l(e,n){return function(){return e.apply(n,arguments)}}function f(e,n,t){var o;for(var i in e)if(e[i]in n)return t===!1?e[i]:(o=n[e[i]],r(o,"function")?l(o,t||n):o);return!1}function a(e){return e.replace(/([A-Z])/g,function(e,n){return"-"+n.toLowerCase()}).replace(/^ms-/,"-ms-")}function u(){return"function"!=typeof n.createElement?n.createElement(arguments[0]):b?n.createElementNS.call(n,"http://www.w3.org/2000/svg",arguments[0]):n.createElement.apply(n,arguments)}function d(){var e=n.body;return e||(e=u(b?"svg":"body"),e.fake=!0),e}function p(e,t,r,o){var i,s,l,f,a="modernizr",p=u("div"),c=d();if(parseInt(r,10))for(;r--;)l=u("div"),l.id=o?o[r]:a+(r+1),p.appendChild(l);return i=u("style"),i.type="text/css",i.id="s"+a,(c.fake?c:p).appendChild(i),c.appendChild(p),i.styleSheet?i.styleSheet.cssText=e:i.appendChild(n.createTextNode(e)),p.id=a,c.fake&&(c.style.background="",c.style.overflow="hidden",f=_.style.overflow,_.style.overflow="hidden",_.appendChild(c)),s=t(p,e),c.fake?(c.parentNode.removeChild(c),_.style.overflow=f,_.offsetHeight):p.parentNode.removeChild(p),!!s}function c(n,r){var o=n.length;if("CSS"in e&&"supports"in e.CSS){for(;o--;)if(e.CSS.supports(a(n[o]),r))return!0;return!1}if("CSSSupportsRule"in e){for(var i=[];o--;)i.push("("+a(n[o])+":"+r+")");return i=i.join(" or "),p("@supports ("+i+") { #modernizr { position: absolute; } }",function(e){return"absolute"==getComputedStyle(e,null).position})}return t}function m(e,n,o,l){function f(){d&&(delete E.style,delete E.modElem)}if(l=r(l,"undefined")?!1:l,!r(o,"undefined")){var a=c(e,o);if(!r(a,"undefined"))return a}for(var d,p,m,h,y,v=["modernizr","tspan"];!E.style;)d=!0,E.modElem=u(v.shift()),E.style=E.modElem.style;for(m=e.length,p=0;m>p;p++)if(h=e[p],y=E.style[h],i(h,"-")&&(h=s(h)),E.style[h]!==t){if(l||r(o,"undefined"))return f(),"pfx"==n?h:!0;try{E.style[h]=o}catch(g){}if(E.style[h]!=y)return f(),"pfx"==n?h:!0}return f(),!1}function h(e,n,t,o,i){var s=e.charAt(0).toUpperCase()+e.slice(1),l=(e+" "+x.join(s+" ")+s).split(" ");return r(n,"string")||r(n,"undefined")?m(l,n,o,i):(l=(e+" "+S.join(s+" ")+s).split(" "),f(l,n,t))}function y(e,n,r){return h(e,t,t,n,r)}var v=[],g={_version:"3.2.0",_config:{classPrefix:"",enableClasses:!0,enableJSClass:!0,usePrefixes:!0},_q:[],on:function(e,n){var t=this;setTimeout(function(){n(t[e])},0)},addTest:function(e,n,t){v.push({name:e,fn:n,options:t})},addAsyncTest:function(e){v.push({name:null,fn:e})}},Modernizr=function(){};Modernizr.prototype=g,Modernizr=new Modernizr;var C=[],w="Moz O ms Webkit",x=g._config.usePrefixes?w.split(" "):[];g._cssomPrefixes=x;var S=g._config.usePrefixes?w.toLowerCase().split(" "):[];g._domPrefixes=S;var _=n.documentElement,b="svg"===_.nodeName.toLowerCase(),z={elem:u("modernizr")};Modernizr._q.push(function(){delete z.elem});var E={style:z.elem.style};Modernizr._q.unshift(function(){delete E.style}),g.testAllProps=h,g.testAllProps=y,Modernizr.addTest("flexbox",y("flexBasis","1px",!0)),Modernizr.addTest("flexboxtweener",y("flexAlign","end",!0)),o(),delete g.addTest,delete g.addAsyncTest;for(var P=0;P<Modernizr._q.length;P++)Modernizr._q[P]();e.Modernizr=Modernizr}(window,document);
+
+if (!Modernizr.flexbox && !Modernizr.flexboxtweener) {
+
+  var $body = $('body');
+
+  var nodesClasses = {
+    wrapper: 'not-supported-browser',
+    container: 'not-supported-browser__container',
+
+    title: 'not-supported-browser__title',
+    content: 'not-supported-browser__content',
+    logo: 'not-supported-browser__logo'
+  };
+
+  var nodes = {
+    wrapper: $('<div class="' + nodesClasses.wrapper + '"></div>'),
+    title: $('<div class="' + nodesClasses.title + '">Sorry, your browser is not fully supported</div>'),
+    content: $('<div class="' + nodesClasses.content + '">There may be some issues with pages layout in your current browser.<br/>Please use an alternate browser until we resolve the issues.<br/>Thank you.</div>'),
+    container: $('<div class="' + nodesClasses.container + '"></div>'),
+    logo: $('<div class="' + nodesClasses.logo + '"><svg class="sprite-img _jetbrains" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="#jetbrains"></use></svg></div>')
+  };
+
+  $body.addClass('overflow-hidden');
+
+
+  nodes.content
+    .prepend(nodes.title)
+    .prepend(nodes.logo);
+
+  nodes.container
+    .append(nodes.content);
+
+  nodes.wrapper
+    .append(nodes.container)
+    .appendTo($body);
+}
+</script>
+<div class="page">
+    
+    <div class="page__header ">
+                    <div class="page__header-language-suggestion" id="language-suggest-bar"></div>
+<div class="page__header-country-suggestion" id="country-suggest-bar"></div>
+
+
+<div class="site-header-container" id="js-site-header-container">
+    <div class="site-header-stub site-header-stub--adaptive">
+        <div class="wt-container site-header-stub__inner">
+            <div class="site-header-stub__menu-main-skeleton-text" style="min-width: 69px"></div>
+            <div class="site-header-stub__menu-main-skeleton-text" style="min-width: 81px"></div>
+            <div class="site-header-stub__menu-main-skeleton-text" style="min-width: 46px"></div>
+            <div class="site-header-stub__menu-main-skeleton-button"></div>
+            <div class="site-header-stub__menu-main-skeleton-button"></div>
+        </div>
+    </div>
+</div>
+
+
+
+  <div class="menu-second _theme-dark" id="js-menu-second">
+    <div class="wt-container">
+        <div id="js-menu-second-mobile-wrapper" class="menu-second-mobile-wrapper wt-display-none wt-display-md-block">
+            <div id="js-menu-second-mobile">
+                <div class="menu-second-mobile wt-row wt-row_column-gap-size_m wt-row_align-items_center wt-row_justify-content_space-between _theme-dark">
+                    <div class="wt-col-inline menu-second-skeleton-text-2" style="width: 120px"></div>
+                    <div class="wt-col-inline menu-second-skeleton-button" style="width: 80px"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="js-menu-second-desktop"
+             class="menu-second-desktop wt-row wt-row_column-gap-size_s wt-row_align-items_center wt-row_justify-content_space-between wt-row_flex-wrap_nowrap wt-row-sm_flex-wrap_wrap">
+            <div class="wt-col-inline menu-second-title-box-wrapper">
+                <a class="menu-second-title-box"
+                   href="/ai-ides/">
+                    
+                    <span class="menu-second-title-box__title wt-h3  wt-h3_theme_dark ">AI in IDEs</span>
+                </a>
+            </div>
+
+            <div class="wt-col-auto-fill">
+                <div class="wt-row wt-row_justify-content_flex-end wt-row_align-items_center wt-row_column-gap-size_0">
+                                            
+                                                                                <div class="wt-col-inline menu-item menu-second-skeleton-text-2 menu-second__link"></div>
+                                                                    
+                                                                                <div class="wt-col-inline menu-item menu-second-skeleton-text-2 menu-second__link"></div>
+                                                                    
+                                                                                <div class="wt-col-inline menu-item menu-second-skeleton-text-2 menu-second__link"></div>
+                                            
+                    <div class="wt-col-inline menu-second__buttons">
+                        
+                                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+   /* site header stub height is needed to avoid Cumulative Layout Shift (CLS), which is a Web Vital */
+  .site-header-stub {
+    height: var(--wt-site-header-height, 72px);
+    background-color: var(--wt-site-header-bg, var(--rs-color-black));
+  }
+
+  @media (max-width: 1000px) {
+    .site-header-stub--adaptive {
+      height: var(--wt-mobile-site-header-height, 48px);
+    }
+  }
+</style>
+
+            </div>
+
+    <div class="page__content " data-js-crawler="content-root">
+        <div id="announce-placeholder" data-product-name="default"></div>
+        
+<div id="ai-ides-buy" class="ai-ides-buy-page"></div>
+    </div>
+
+            <div class="page__footer" id="footer-container">
+    <footer class="footer" id="footer"></footer>
+</div>
+    </div>
+
+<script>
+(function () {
+  function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
+
+  function updateQueryStringParameter(uri, key, value) {
+    var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+    if (uri.match(re)) {
+      return uri.replace(re, '$1' + key + "=" + value + '$2');
+    }
+    else {
+      return uri + separator + key + "=" + value;
+    }
+  }
+
+  var downloadLink = document.getElementById("download-link");
+  if (downloadLink != null) {
+    var platform = getParameterByName('platform');
+    platform = platform != null ? platform : "windows";
+    var href = downloadLink.getAttribute("href");
+    var code = getParameterByName("code");
+
+    if(code != null) {
+      href = updateQueryStringParameter(href, "code", code)
+    }
+    href = updateQueryStringParameter(href, "platform", platform);
+    downloadLink.setAttribute("href", href);
+  }
+})();
+</script><script>
+(function() {
+  var STORAGE_KEY_NAME = 'firefoxDisappearedSVGWorkaround';
+  var STORAGE_KEY_VALUE = '1';
+
+  var isFirefox = /firefox/i.test(navigator.userAgent);
+  if (!isFirefox || isFirefox && sessionStorage.getItem(STORAGE_KEY_NAME) === STORAGE_KEY_VALUE) {
+    return;
+  }
+
+  var arrayFrom = function (arrayLike) {
+    return Array.prototype.slice.call(arrayLike, 0);
+  };
+
+  function workaround() {
+    var uses = document.querySelectorAll('.page svg use');
+    var badNodesCount = 0;
+
+    arrayFrom(uses).forEach(function (node) {
+      var rect = node.getBoundingClientRect();
+      if (rect.width === 0 && rect.height === 0)
+        badNodesCount++;
+    });
+
+    if (badNodesCount === uses.length) {
+      sessionStorage.setItem(STORAGE_KEY_NAME, STORAGE_KEY_VALUE);
+      if (typeof dataLayer !== 'undefined')
+        dataLayer.push({'firefoxDisappearedSVGWorkaround': STORAGE_KEY_VALUE});
+
+      window.location.replace(window.location.href);
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', workaround);
+
+})();
+</script>          <link href="/_assets/banner-rotator.entry.7bbffcac47c9bf4f4e76.css" rel="stylesheet" type="text/css">
+      <script src="/_assets/banner-rotator.entry.b8883aee5c13b448b644.js" type="text/javascript"></script>
+  </body>
+</html>

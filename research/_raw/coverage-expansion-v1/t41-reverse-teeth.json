@@ -1,0 +1,55 @@
+{
+  "copy": "C:\\Users\\星澈\\AppData\\Local\\Temp\\t41-copy-215933",
+  "at": "2026-10-04T13:59:42.006Z",
+  "variants": [
+    {
+      "id": "A",
+      "promise": "null 身份（Groq）在 vendor-slugs.json 里有登记 ⇒ 计划层为它生成页 + 登记表不该有它 ⇒ 必红",
+      "mutation": "scripts/data/vendor-slugs.json += {\"Groq\":\"groq\"} → build-local → dist/vendor/groq/ 真的被建出来",
+      "exit": 1,
+      "reds": [
+        "✗ 【R5】9 个没有 A 空间厂商名的身份：逐条有 skip 记录，且计划 / 磁盘 / 登记表里都没有它的路由（JetBrains / Groq / Together AI / Fireworks AI / Cerebras / Trae / Qoder CN / 腾讯 CodeBuddy / Qoder International） —— Groq: vendor-slugs.json 里不该有它的登记",
+        "✗ 【R5】9 个没有 A 空间厂商名的身份：逐条有 skip 记录，且计划 / 磁盘 / 登记表里都没有它的路由（JetBrains / Groq / Together AI / Fireworks AI / Cerebras / Trae / Qoder CN / 腾讯 CodeBuddy / Qoder International）"
+      ],
+      "summary": "=== v3.0 厂商统一资料页演练：56 项通过，1 项失败 ===",
+      "sawR5Red": true,
+      "tail": "=== v3.0 厂商统一资料页演练：56 项通过，1 项失败 ===\n失败项：\n  ✗ 【R5】9 个没有 A 空间厂商名的身份：逐条有 skip 记录，且计划 / 磁盘 / 登记表里都没有它的路由（JetBrains / Groq / Together AI / Fireworks AI / Cerebras / Trae / Qoder CN / 腾讯 CodeBuddy / Qoder International）"
+    },
+    {
+      "id": "B",
+      "promise": "对照组：撤销变异后同一副本 ⇒ 必须绿（证明变体 A 的红来自变异，不是副本本身有病）",
+      "mutation": "恢复 vendor-slugs.json → 重建",
+      "exit": 0,
+      "reds": [],
+      "summary": "=== v3.0 厂商统一资料页演练：57 项通过，0 项失败 ===",
+      "sawR5Red": false,
+      "tail": "  ✓ dist 里没有 /provider/ 目录（方案 A 只保留 /vendor/<slug>/）\n  ✓ dist 现场：22 个厂商页的资料区块与数据逐项对账\n=== v3.0 厂商统一资料页演练：57 项通过，0 项失败 ==="
+    },
+    {
+      "id": "C",
+      "promise": "有 A 空间身份且已达标的 provider 在磁盘上缺了目录 ⇒ 必红（少一个也不许静默）",
+      "mutation": "删掉 dist/vendor/zhipu/（该身份有 vendorKey，不属于 null 身份）",
+      "exit": 1,
+      "reds": [
+        "✗ 【R5】9 个没有 A 空间厂商名的身份：逐条有 skip 记录，且计划 / 磁盘 / 登记表里都没有它的路由（JetBrains / Groq / Together AI / Fireworks AI / Cerebras / Trae / Qoder CN / 腾讯 CodeBuddy / Qoder International） —— 计划里有页、磁盘上没有：zhipu",
+        "✗ 【R5】dist/vendor/ 磁盘目录集合 == 计划里的 22 个 slug（多一个目录就是给谁建了路由） —— 磁盘 21 个 / 计划 22 个",
+        "✗ dist 现场：22 个厂商页的资料区块与数据逐项对账 —— vendor/zhipu/: 缺少产物",
+        "✗ 【R5】9 个没有 A 空间厂商名的身份：逐条有 skip 记录，且计划 / 磁盘 / 登记表里都没有它的路由（JetBrains / Groq / Together AI / Fireworks AI / Cerebras / Trae / Qoder CN / 腾讯 CodeBuddy / Qoder International）",
+        "✗ 【R5】dist/vendor/ 磁盘目录集合 == 计划里的 22 个 slug（多一个目录就是给谁建了路由）",
+        "✗ dist 现场：22 个厂商页的资料区块与数据逐项对账"
+      ],
+      "summary": "=== v3.0 厂商统一资料页演练：54 项通过，3 项失败 ===",
+      "sawR5Red": true,
+      "tail": "  ✗ 【R5】9 个没有 A 空间厂商名的身份：逐条有 skip 记录，且计划 / 磁盘 / 登记表里都没有它的路由（JetBrains / Groq / Together AI / Fireworks AI / Cerebras / Trae / Qoder CN / 腾讯 CodeBuddy / Qoder International）\n  ✗ 【R5】dist/vendor/ 磁盘目录集合 == 计划里的 22 个 slug（多一个目录就是给谁建了路由）\n  ✗ dist 现场：22 个厂商页的资料区块与数据逐项对账"
+    }
+  ],
+  "variantABuild": {
+    "exit": 0,
+    "tail": "✅ 产物自检通过 | ✅ 构建完成 → dist/（自检全过，已从暂存目录就位）",
+    "groqDirExists": false
+  },
+  "variantBBuild": {
+    "exit": 0,
+    "groqDirExists": false
+  }
+}

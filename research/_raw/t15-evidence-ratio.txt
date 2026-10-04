@@ -1,0 +1,45 @@
+## 引文 vs 官方页原文：最长公共片段（越接近引文长度 = 越逐字）
+  [PARAPHRASE]  0.5 引文 113字 / 最长命中  57字 · aws/Amazon Q Developer Free Tier · billing.regularPrice
+        最长命中片段："amazonqdeveloperoffersaperpetualfreetierwithmonthlylimits"
+  [NEAR] 0.72 引文 148字 / 最长命中 107字 · aws/Amazon Q Developer Pro · billing.regularPrice
+        最长命中片段："4,000linesofcodepermonthperuserpooledataccountlevel.extralinesofcodeavailableat$.003perlin"
+  [VERBATIM] 0.99 引文 167字 / 最长命中 166字 · aws/Amazon Q Developer Pro · restrictions
+        最长命中片段："onapril30,2027,awswilldiscontinuesupportforamazonqdeveloperideplugins.forcapabilitiessimil"
+  [?] google/Gemini Code Assist Enterprise billing.regularPrice —— 本环境抓不到该页
+  [?] google/Gemini Code Assist Standard billing.regularPrice —— 本环境抓不到该页
+  [PARAPHRASE] 0.37 引文  62字 / 最长命中  23字 · iflytek/讯飞星辰 MaaS · Astron Coding Plan 速通版 · billing.regularPrice
+        最长命中片段："速通版¥999/月，限时首月优惠：¥699/月"
+  [PARAPHRASE] 0.67 引文  81字 / 最长命中  54字 · iflytek/讯飞星辰 MaaS · Astron Coding Plan 高效版 · billing.regularPrice
+        最长命中片段："展示为准每5小时：最多约6,000次请求；每周：最多约45,000次请求；每订阅月：最多约90,000次请求"
+  [FABRICATED?] 0.19 引文 150字 / 最长命中  29字 · jetbrains/JetBrains AI Pro · billing.regularPrice
+        最长命中片段："\"prices\":{\"personal\":{\"yearly"
+  [FABRICATED?] 0.22 引文 127字 / 最长命中  28字 · jetbrains/JetBrains AI Ultimate · billing.regularPrice
+        最长命中片段："\"name\":\"jetbrainsaiultimate\""
+  [FABRICATED?] 0.18 引文 159字 / 最长命中  28字 · replit/Core · billing.regularPrice
+        最长命中片段："$20towardsmostpowerfulmodels"
+  [FABRICATED?] 0.21 引文 137字 / 最长命中  29字 · replit/Pro · billing.regularPrice
+        最长命中片段："$100towardsmostpowerfulmodels"
+  [VERBATIM]    1 引文  40字 / 最长命中  40字 · stepfun/Step Plan · Flash Max · billing.regularPrice
+        最长命中片段："flashmax高强度使用ai的专业用户40000m¥699¥1889¥6666"
+  [VERBATIM]    1 引文  47字 / 最长命中  47字 · stepfun/Step Plan · Flash Max · quota.amount
+        最长命中片段："credit与支付金额按1mcredit=¥1换算（即100万credit对应¥1的模型用量）"
+  [VERBATIM]    1 引文  33字 / 最长命中  33字 · stepfun/Step Plan · Flash Mini · billing.regularPrice
+        最长命中片段："flashmini入门体验ai的用户400m¥49¥129¥456"
+  [VERBATIM]    1 引文  47字 / 最长命中  47字 · stepfun/Step Plan · Flash Mini · quota.amount
+        最长命中片段："credit与支付金额按1mcredit=¥1换算（即100万credit对应¥1的模型用量）"
+  [VERBATIM]    1 引文  36字 / 最长命中  36字 · stepfun/Step Plan · Flash Plus · billing.regularPrice
+        最长命中片段："flashplus日常使用ai提效的用户1600m¥99¥269¥936"
+  [VERBATIM]    1 引文  47字 / 最长命中  47字 · stepfun/Step Plan · Flash Plus · quota.amount
+        最长命中片段："credit与支付金额按1mcredit=¥1换算（即100万credit对应¥1的模型用量）"
+  [VERBATIM]    1 引文  37字 / 最长命中  37字 · stepfun/Step Plan · Flash Pro · billing.regularPrice
+        最长命中片段："flashpro高频使用ai的深度用户8000m¥199¥539¥1860"
+  [VERBATIM]    1 引文  47字 / 最长命中  47字 · stepfun/Step Plan · Flash Pro · quota.amount
+        最长命中片段："credit与支付金额按1mcredit=¥1换算（即100万credit对应¥1的模型用量）"
+  [FABRICATED?] 0.12 引文  82字 / 最长命中  10字 · api:cerebras/undefined · pricing.currency
+        最长命中片段："gptoss120b"
+  [FABRICATED?] 0.21 引文 100字 / 最长命中  21字 · api:fireworks/undefined · pricing.currency
+        最长命中片段："modelstandardpriority"
+  [?] api:groq/undefined pricing.currency —— 本环境抓不到该页
+  [?] api:together/undefined pricing.currency —— 本环境抓不到该页
+
+## 统计：{"PARAPHRASE":3,"NEAR":1,"VERBATIM":9,"NO_FETCH":4,"FABRICATED?":6}

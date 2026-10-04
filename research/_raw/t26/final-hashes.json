@@ -1,0 +1,55 @@
+{
+  "head": "413a9f809c8cce0f3ea04cc24010a7fc96fe6c81",
+  "files": {
+    "scripts/lib/model-registry.js": {
+      "sha256": "7158433F3221F5457102AF6976CB93016ED9A6A9BCD5AE398E3570CE9799D04D",
+      "before": "7158433F3221F5457102AF6976CB93016ED9A6A9BCD5AE398E3570CE9799D04D",
+      "unchanged": true
+    },
+    "scripts/data/model-registry-gaps.json": {
+      "sha256": "8BAC901BEC1E3856DE1F3B7B71DEC2F6FACD5FD586A9A806D3D49D5A9273BB69",
+      "before": "8BAC901BEC1E3856DE1F3B7B71DEC2F6FACD5FD586A9A806D3D49D5A9273BB69",
+      "unchanged": true
+    },
+    "scripts/data/model-registry-links.json": {
+      "sha256": "116BAD28C1D2687A2364B8C778825A44DE2AB1E8C5935BB2C56B835308162460",
+      "before": "116BAD28C1D2687A2364B8C778825A44DE2AB1E8C5935BB2C56B835308162460",
+      "unchanged": true
+    },
+    "models.json": {
+      "sha256": "09D6872C02ABB108717131302801812043D4AE554189F0AE767E9C6255FBC495",
+      "before": "09D6872C02ABB108717131302801812043D4AE554189F0AE767E9C6255FBC495",
+      "unchanged": true
+    },
+    "scripts/tools/models-selftest.js": {
+      "sha256": "D7B13286FABBB02E7926AEF6D92A52391DA961CA0B56EEA7ADECBCEA829C5DA0",
+      "before": "D7B13286FABBB02E7926AEF6D92A52391DA961CA0B56EEA7ADECBCEA829C5DA0",
+      "unchanged": true
+    },
+    "scripts/validate.js": {
+      "sha256": "7EE3CEA9EC6B234C18A0614148013D083E553BFC37D07E210666C0902848115E",
+      "before": "7EE3CEA9EC6B234C18A0614148013D083E553BFC37D07E210666C0902848115E",
+      "unchanged": true
+    },
+    "api-plans.json": {
+      "sha256": "EC1BA02C3218DC63EC7525BAD2BCE39B1AB6DB7EBFDB791189DBED0C12BEF379",
+      "before": null,
+      "unchanged": null
+    },
+    "model-registry-links.json": {
+      "sha256": "109F32799016C52CF67C3A5E2C2E4E34DFDDEF5DCA21B49845913614DCF952D9",
+      "before": null,
+      "unchanged": null
+    },
+    "scripts/data/models.json": {
+      "sha256": "E7C82AE086744911E4C5937109B40C4583C91FF2034A1EE61667479111335B27",
+      "before": null,
+      "unchanged": null
+    },
+    "scripts/tools/coverage-report.js": {
+      "sha256": "908CC5490DA0B9D256935EEB528566E9AB7A9716BA31B38417349B6B9ED1506B",
+      "before": null,
+      "unchanged": null
+    }
+  }
+}

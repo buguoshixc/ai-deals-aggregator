@@ -1,0 +1,189 @@
+{
+  "generatedFrom": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-expansion-v1",
+  "sandbox": "C:\\Users\\星澈\\AppData\\Local\\Temp\\t44-sandbox-Y1WNZA",
+  "cases": 18,
+  "passed": 18,
+  "failed": 0,
+  "guardDrift": [],
+  "results": [
+    {
+      "id": "control:scripts/tools/feeds-selftest.js",
+      "claim": "对照绿：未变异的沙箱里该自测 exit 0",
+      "kind": "control",
+      "command": "node scripts/tools/feeds-selftest.js",
+      "code": 0,
+      "status": "passed",
+      "evidence": "=== v1.6 订阅层演练：145 项通过，0 项失败 ==="
+    },
+    {
+      "id": "control:scripts/tools/data-docs-selftest.js",
+      "claim": "对照绿：未变异的沙箱里该自测 exit 0",
+      "kind": "control",
+      "command": "node scripts/tools/data-docs-selftest.js",
+      "code": 0,
+      "status": "passed",
+      "evidence": "=== v3.0 数据出口演练：58 项通过，0 项失败 ==="
+    },
+    {
+      "id": "control:scripts/tools/api-plans-selftest.js",
+      "claim": "对照绿：未变异的沙箱里该自测 exit 0",
+      "kind": "control",
+      "command": "node scripts/tools/api-plans-selftest.js",
+      "code": 0,
+      "status": "passed",
+      "evidence": "=== v2.5 API / Token 计费演练：176 项通过，0 项失败 ==="
+    },
+    {
+      "id": "control:history-nonempty-e2e --prepare-only",
+      "claim": "对照绿：样本充足时不跳过（合成 deal 夹具真的造出来了）",
+      "kind": "control",
+      "command": "node scripts/tools/history-nonempty-e2e.js --root=<fixture> --no-sync --prepare-only",
+      "code": 0,
+      "status": "passed",
+      "evidence": "deal-history: 8 条事件（其中既有事件 1 条 · 生命周期记录 017bdbc04e70 · 今日新增 0273d8b23412 · 墓碑 deadbeef0001）"
+    },
+    {
+      "id": "C1a",
+      "claim": "feeds-selftest:839 注册表恢复原状 —— 「夹具忘了把 stub 弹出去」必须红，且点名注册表与多出来的 spec",
+      "kind": "counter-proof",
+      "file": "scripts/tools/feeds-selftest.js",
+      "mutation": "去掉 finally 里的 pop",
+      "command": "node scripts/tools/feeds-selftest.js",
+      "status": "passed",
+      "evidence": "命中「✗ 注册表恢复原状」 · 命中「feeds.PLAN_CHANGE_FEEDS」 · 命中「多出」 · 命中「stub-changes」 · exit 1"
+    },
+    {
+      "id": "C1b",
+      "claim": "feeds-selftest:839 —— **同一批 spec 只是换了顺序**也要红（旧判据 `length === 2 && 没有 stub` 在这一步会放行）",
+      "kind": "counter-proof",
+      "file": "scripts/tools/feeds-selftest.js",
+      "mutation": "夹具把注册表转了一位（集合不变、顺序变了）",
+      "command": "node scripts/tools/feeds-selftest.js",
+      "status": "passed",
+      "evidence": "命中「✗ 注册表恢复原状」 · 命中「位置被换」 · exit 1"
+    },
+    {
+      "id": "C2a",
+      "claim": "feeds-selftest:875 —— 注册表合法增删一个首页订阅：**旧判据（=== 8）假红、新判据全绿**",
+      "kind": "counter-proof",
+      "file": "scripts/lib/feeds.js",
+      "mutation": "首页订阅从 4 个合法地减到 3 个 + inject: 把旧判据原样放回来当对照组",
+      "command": "node scripts/tools/feeds-selftest.js",
+      "status": "passed",
+      "evidence": "命中「✗ 【反证·旧判据】首页订阅发现恰好 8 条」 · 命中「✓ 首页订阅发现：注册表 HOMEPAGE_FEED_IDS 与产物里 spec.homepage=true 的 Feed 是同一批」 · 命中「✓ 首页订阅发现：tag 里的地址集合 == 由那批 Feed 的 spec.path + spec.jsonPath 派生的集合」 · exit 1"
+    },
+    {
+      "id": "C2b",
+      "claim": "feeds-selftest:875 —— 产物少渲染一种格式（JSON 那条 tag 掉线）必须红，并点名缺哪个地址",
+      "kind": "counter-proof",
+      "file": "scripts/lib/feeds.js",
+      "mutation": "feedLinkTags 少渲染一条",
+      "command": "node scripts/tools/feeds-selftest.js",
+      "status": "passed",
+      "evidence": "命中「✗ 首页订阅发现：tag 里的地址集合」 · 命中「少:」 · 命中「.json」 · exit 1"
+    },
+    {
+      "id": "C3a",
+      "claim": "data-docs-selftest:186 —— 类别表里多一个**没有数据集**的类别必须红，并点名是哪一个",
+      "kind": "counter-proof",
+      "file": "scripts/lib/data-docs.js",
+      "mutation": "表里多声明一个空类别",
+      "command": "node scripts/tools/data-docs-selftest.js",
+      "status": "passed",
+      "evidence": "命中「✗ 类别表与 Manifest 的类别」 · 命中「表里有、Manifest 没有: ghost-category」 · exit 1"
+    },
+    {
+      "id": "C3b",
+      "claim": "data-docs-selftest:186 —— 合法地新增「一个类别 + 一份数据集」：**旧判据（length === 6）假红、新判据全绿**",
+      "kind": "counter-proof",
+      "file": "scripts/lib/data-docs.js",
+      "mutation": "新增第 7 个类别 + 新增一份用该类别的新数据集 + inject: 把旧判据原样放回来当对照组",
+      "command": "node scripts/tools/data-docs-selftest.js",
+      "status": "passed",
+      "evidence": "命中「✗ 【反证·旧判据】六个类别齐全」 · 命中「✓ 类别表与 Manifest 的类别**双向相等**」 · 命中「✓ 注册表 PUBLIC_DATASETS 声明的 category 全部落在类别表里」 · exit 1"
+    },
+    {
+      "id": "C4a",
+      "claim": "api-plans-selftest:1038 —— 记录里多一次元信息变化（officialUrl + sourceUrl 同时改）：**旧判据（meta === 1）假红、新判据全绿**",
+      "kind": "counter-proof",
+      "file": "scripts/tools/api-plans-selftest.js",
+      "mutation": "夹具里多一条元信息变化 + inject: 把旧判据原样放回来当对照组",
+      "command": "node scripts/tools/api-plans-selftest.js",
+      "status": "passed",
+      "evidence": "命中「✗ 【反证·旧判据】radar.totals.meta === 1」 · 命中「✓ API 分栏：实质变化进「最近 7 天变化」，记录级元信息进 other.metadata」 · 命中「✓ API 分栏：other.metadata 每条条目的 field 与日志里元信息事件的 field 逐一对应」 · exit 1"
+    },
+    {
+      "id": "C4b",
+      "claim": "api-plans-selftest:1038 —— 元信息事件被放进「最近 7 天变化」栏（计数与日志不再自洽）必须红，并点名两侧来源",
+      "kind": "counter-proof",
+      "file": "scripts/lib/plan-changes.js",
+      "mutation": "把元信息事件塞进 changed 栏",
+      "command": "node scripts/tools/api-plans-selftest.js",
+      "status": "passed",
+      "evidence": "命中「✗ API 分栏：实质变化进「最近 7 天变化」」 · 命中「实际 radar.totals=」 · 命中「期望（由这份日志的 type 现算」 · 命中「放错栏的条目」 · exit 1"
+    },
+    {
+      "id": "C5a",
+      "claim": "history-nonempty-e2e:201 —— `dealSeedShortage` 由数据现算：0/1/2 条 ⇒ 给出「本轮样本不足」的原因对象（点名 deals.json 与两侧数字），3 条 ⇒ null",
+      "kind": "counter-proof",
+      "file": "scripts/tools/history-nonempty-e2e.js",
+      "mutation": "unit",
+      "command": "（进程内调用纯函数）",
+      "code": 0,
+      "status": "passed",
+      "evidence": "exit 0"
+    },
+    {
+      "id": "C5b",
+      "claim": "history-nonempty-e2e:201 —— 把「需要的条数」抬到数据达不到（等价于真跑采集后跌破阈值）：**不抛错**，打印「本轮样本不足，跳过并说明原因」并 exit 0",
+      "kind": "counter-proof",
+      "file": "scripts/tools/history-nonempty-e2e.js",
+      "mutation": "把阈值抬到数据达不到（模拟「本轮样本不足」）",
+      "command": "node scripts/tools/history-nonempty-e2e.js --root=@FIXTURE --no-sync --prepare-only",
+      "status": "passed",
+      "evidence": "命中「本轮样本不足，跳过并说明原因」 · 命中「deals.json 里可用来造事件的 type=deal 记录只有 80 条」 · 命中「跳过对象：deals.json 的 deals[]」 · exit 0"
+    },
+    {
+      "id": "C6a",
+      "claim": "history-nonempty-e2e —— 把既有事件**抹掉重造**（t44 之前的写法）在今天的冻结日志上就是红的：点名 `记录没有历史锚点`",
+      "kind": "counter-proof",
+      "file": "scripts/tools/history-nonempty-e2e.js",
+      "mutation": "恢复「清空重造」的旧写法",
+      "command": "node scripts/tools/history-nonempty-e2e.js --root=@FIXTURE --no-sync --prepare-only",
+      "status": "passed",
+      "evidence": "命中「夹具执行失败」 · 命中「记录没有历史锚点」 · 命中「4a4f4777ffbc」 · exit 1"
+    },
+    {
+      "id": "C7a",
+      "claim": "history-nonempty-e2e（pristine）—— 把「逐字节对账」换回「deal 0 / plan 14 / api 6」这组字面量：同一份冻结日志上新判据绿、旧判据红",
+      "kind": "counter-proof",
+      "file": "scripts/tools/history-nonempty-e2e.js",
+      "mutation": "inject: 把旧判据原样放回来当对照组",
+      "command": "node scripts/tools/history-nonempty-e2e.js --state=pristine --root=@FIXTURE --no-sync --prepare-only",
+      "status": "passed",
+      "evidence": "命中「✗ 【反证·旧判据】生产态的历史已还原成冻结提交那一份」 · 命中「✓ 生产态：夹具里的三份历史与冻结提交那一份**逐字节相同**」 · exit 0"
+    },
+    {
+      "id": "C7b",
+      "claim": "history-nonempty-e2e（生产态/稀疏态）—— 「措辞 ⇔ 计数」：构造「计数 0 但正文没写空态话」的页面 ⇒ 必红；反方向（非 0 却写了）也红；写对了 ⇒ 绿",
+      "kind": "counter-proof",
+      "file": "scripts/tools/history-nonempty-e2e.js",
+      "mutation": "unit",
+      "command": "（进程内调用纯函数）",
+      "code": 0,
+      "status": "passed",
+      "evidence": "exit 0"
+    },
+    {
+      "id": "C7c",
+      "claim": "history-nonempty-e2e（生产态/稀疏态）—— 「五个分栏都在场」：构造少了「即将结束」那一栏的页面 ⇒ 该栏读数 -1（必红）；五栏齐 ⇒ 全 ≥ 0（对照绿）",
+      "kind": "counter-proof",
+      "file": "scripts/tools/history-nonempty-e2e.js",
+      "mutation": "unit",
+      "command": "（进程内调用纯函数）",
+      "code": 0,
+      "status": "passed",
+      "evidence": "exit 0"
+    }
+  ]
+}

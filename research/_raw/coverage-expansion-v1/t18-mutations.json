@@ -1,0 +1,105 @@
+{
+  "generatedAt": "2026-10-04T13:16:02.904Z",
+  "head": "9f27836a75d4131ca6a0d2b5e35f242b8b520aae",
+  "cases": [
+    {
+      "id": "M1",
+      "promise": "删掉 scripts/data/model-registry-links.json ⇒ 覆盖报告必须红（t14-F1/t25）",
+      "expect": "red",
+      "controlExit": 0,
+      "mutantExit": 1,
+      "ok": true,
+      "controlTail": "候选登记表：40 条（已采信 13 / 未采信 21） ⏎ 报告自检问题：0 处 ⏎ ✅ 覆盖报告自检通过（0 处问题）。",
+      "mutantTail": "❌ 覆盖报告自检失败： ⏎   - 缺少 scripts/data/model-registry-links.json —— 关系层不存在，API 侧与套餐侧的映射覆盖都无从判定（这不是\"0 条映射\"，是\"这份报告没有分母\"）。 ⏎   - API 侧还有 81 条计价条目既没有 registry 映射、也没有在 model-registry-gaps.json 里声明处置 —— 每一条都必须人工判一次（映射或\"不对应单一模型身份\"，禁止静默留空）：(ebc4af9a71b6, deepseek-v4-pro, standard) · (ebc4af9a71b6, glm-5.3, standard) · (ebc4af9a71b6, kimi-k3, standard) …"
+    },
+    {
+      "id": "M3",
+      "promise": "删掉 gaps 里一条 API 处置声明 ⇒ 覆盖报告必须红（t23/t25 的反方向）",
+      "expect": "red",
+      "controlExit": 0,
+      "mutantExit": 1,
+      "ok": true,
+      "controlTail": "候选登记表：40 条（已采信 13 / 未采信 21） ⏎ 报告自检问题：0 处 ⏎ ✅ 覆盖报告自检通过（0 处问题）。",
+      "mutantTail": "❌ 覆盖报告自检失败： ⏎   - API 侧还有 1 条计价条目既没有 registry 映射、也没有在 model-registry-gaps.json 里声明处置 —— 每一条都必须人工判一次（映射或\"不对应单一模型身份\"，禁止静默留空）：(036c5f09561e, meta-llama.prompt-guard-2-22m, standard) ⏎   - API 侧 1 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：(036c5f09561e, meta-llama.prompt-guard-2-22m, standard) —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）"
+    },
+    {
+      "id": "M2",
+      "promise": "/models/ 索引里 slug+详情链接改名 ⇒ 页面自测必须红（t14-F2）",
+      "expect": "red",
+      "controlExit": 0,
+      "mutantExit": 1,
+      "ok": true,
+      "controlTail": "  ✓ 【对照】整行删掉（少一条计价条目）→ 行数对账 + 该条目点名 ⏎   ✓ 【对照】真实页面（deepseek-flash）上把两格数值改成占位 → 必须点名 8a26562011f2|deepseek-ai.v4.1-flash|standard ⏎ === v3.0 Model Registry 页面演练：115 项通过，0 项失败 ===",
+      "mutantTail": "=== v3.0 Model Registry 页面演练：114 项通过，1 项失败 === ⏎ 失败项： ⏎   ✗ dist 现场：索引 / 详情 / 发布数据集 / sitemap / canonical 全部对得上"
+    },
+    {
+      "id": "M6",
+      "promise": "删掉产物 /data/index.json ⇒ 数据文档自测必须红",
+      "expect": "red",
+      "controlExit": 0,
+      "mutantExit": 1,
+      "ok": true,
+      "controlTail": "  ✓ 【牙】feed 目录里出现注册表没产出的 JSON → 红（结构性豁免不成立） ⏎   ✓ 【牙】Feed 注册表声明产出、产物里却没有 → 红 ⏎ === v3.0 数据出口演练：57 项通过，0 项失败 ===",
+      "mutantTail": "=== v3.0 数据出口演练：52 项通过，1 项失败 === ⏎ 失败项： ⏎   ✗ 缺少必需产物：dist 现场的 Dataset Manifest —— 找不到 C:\\Users\\星澈\\AppData\\Local\\Temp\\t18-m-site\\data\\index.json（先跑 npm run build，或用 --dir=<构建输出> 指到那份产物；只有显式 --allow-missing-dist 才允许跳过）"
+    },
+    {
+      "id": "M4",
+      "promise": "摘掉 package.json 的 selftest:freshness（action.yml 不动）⇒ (19) 反向登记制必须红（t27）",
+      "expect": "red",
+      "controlExit": 0,
+      "mutantExit": 1,
+      "ok": true,
+      "controlTail": "✅ CI 口径检查 38 项，失败 0 项",
+      "mutantTail": "  ✗ (19) 每个 scripts/tools/*selftest*.js 都有被门禁真的跑到的 script 指向（反向登记制） — scripts/tools/model-freshness-selftest.js（package.json 里没有任何 script 指向它 ⇒ 它一次都不会被门禁执行）（自测文件落盘之后必须同步两处：package.json 的 script 名，以及 .github/actions/gate/action.yml 里真的跑它的那一步；确实不该独立跑的文件请写进本文件的 SELFTEST_FILE_EXEMPTIONS 并写明理由） ⏎ ❌ CI 口径检查 38 项，失败 1 项"
+    },
+    {
+      "id": "M5",
+      "promise": "给门禁某一步加 continue-on-error: true ⇒ (10) 静态跳过必须红",
+      "expect": "red",
+      "controlExit": 0,
+      "mutantExit": 1,
+      "ok": true,
+      "controlTail": "✅ CI 口径检查 38 项，失败 0 项",
+      "mutantTail": "  ✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — 这些步骤带 continue-on-error（门禁不许静默放过）：Feeds self-test ⏎ ❌ CI 口径检查 38 项，失败 1 项"
+    }
+  ],
+  "guardedFiles": [
+    {
+      "file": "scripts/data/model-registry-links.json",
+      "before": "3214dc1e6a69373a",
+      "after": "3214dc1e6a69373a",
+      "same": true
+    },
+    {
+      "file": "scripts/data/model-registry-gaps.json",
+      "before": "8bac901bec1e3856",
+      "after": "8bac901bec1e3856",
+      "same": true
+    },
+    {
+      "file": "package.json",
+      "before": "1894e6334b849b68",
+      "after": "1894e6334b849b68",
+      "same": true
+    },
+    {
+      "file": ".github/actions/gate/action.yml",
+      "before": "d1c4b0df6900edf8",
+      "after": "d1c4b0df6900edf8",
+      "same": true
+    },
+    {
+      "file": "dist/models/index.html",
+      "before": "3f88534f1a83bb01",
+      "after": "3f88534f1a83bb01",
+      "same": true
+    },
+    {
+      "file": "dist/data/index.json",
+      "before": "48ee21b09702ed60",
+      "after": "48ee21b09702ed60",
+      "same": true
+    }
+  ],
+  "sharedTreeIntact": true
+}

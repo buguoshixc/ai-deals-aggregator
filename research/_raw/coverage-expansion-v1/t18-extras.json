@@ -1,0 +1,1820 @@
+{
+  "generatedAt": "2026-10-04T14:01:13.500Z",
+  "head": "118a95ca444d70fbd43e7d7cd583303d4089b30b",
+  "trackedCount": 758,
+  "reconciliation": {
+    "baseline": "a4dd40f",
+    "trackedChanged": 214,
+    "untrackedNew": 6,
+    "files": [
+      {
+        "status": "M",
+        "file": ".github/actions/gate/action.yml",
+        "bytes": 35555,
+        "lastCommit": "6849e52 chore(gate): 登记 4 项新自测 + 补「有 selftest 文件却没登记」的反向牙",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": ".github/workflows/verify.yml",
+        "bytes": 10229,
+        "lastCommit": "6849e52 chore(gate): 登记 4 项新自测 + 补「有 selftest 文件却没登记」的反向牙",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "README.md",
+        "bytes": 93709,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "api-plans.json",
+        "bytes": 83793,
+        "lastCommit": "af92d5d fix(data): t33 收口 F1/F2 API 侧 —— 4 条引文改官方逐字片段 + 同步 4 条链接抄件（只改 quote 行）",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "deals.json",
+        "bytes": 242373,
+        "lastCommit": "6cea0d9 chore(data): 采集器运行产生的数据更新（本轮会话期间自动触发） [skip ci]",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "docs/DESIGN-RULES.md",
+        "bytes": 44671,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "docs/SCHEMA-v3.0.md",
+        "bytes": 29587,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "model-registry-links.json",
+        "bytes": 48852,
+        "lastCommit": "af92d5d fix(data): t33 收口 F1/F2 API 侧 —— 4 条引文改官方逐字片段 + 同步 4 条链接抄件（只改 quote 行）",
+        "commitCount": 4,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "models.json",
+        "bytes": 28906,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 3,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "package.json",
+        "bytes": 6751,
+        "lastCommit": "6849e52 chore(gate): 登记 4 项新自测 + 补「有 selftest 文件却没登记」的反向牙",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "plans.json",
+        "bytes": 76781,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 3,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/baseline.json",
+        "bytes": 15941,
+        "lastCommit": "d1303fc docs(baseline): 记录 t13 真跑采集后的健康读数变化（抓取前 8/1 → 抓取后 9/9）",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/coding.json",
+        "bytes": 46232,
+        "lastCommit": "cbae005 docs(research): 12 家目标 Provider 的四路调查产物（t8 + t9）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/currentness.json",
+        "bytes": 55838,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 3,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/diag2-teeth.cjs",
+        "bytes": 2199,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/diag3-folded-tooth.cjs",
+        "bytes": 3015,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/diag4-evidence-mention.cjs",
+        "bytes": 1853,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/extract-t11-facts.cjs",
+        "bytes": 3726,
+        "lastCommit": "7cf42fb feat(coverage): t11 数据落盘第一批（6 家新 provider + 6 条 Coding 套餐）+ 修两条真红",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/firstparty.json",
+        "bytes": 108083,
+        "lastCommit": "cbae005 docs(research): 12 家目标 Provider 的四路调查产物（t8 + t9）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/freshness-lib-broken-snapshot.js",
+        "bytes": 42963,
+        "lastCommit": "5ca8a40 feat(coverage-expansion-v1): Coverage 维护层 + Model Currentness 系统（注册表 v2 / 新鲜度策略 / 覆盖报告 v2 / 页面 Current 化）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/inference.json",
+        "bytes": 82264,
+        "lastCommit": "cbae005 docs(research): 12 家目标 Provider 的四路调查产物（t8 + t9）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/migrate-currentness.cjs",
+        "bytes": 13439,
+        "lastCommit": "5ca8a40 feat(coverage-expansion-v1): Coverage 维护层 + Model Currentness 系统（注册表 v2 / 新鲜度策略 / 覆盖报告 v2 / 页面 Current 化）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/migrate-registry-v2.cjs",
+        "bytes": 10428,
+        "lastCommit": "5ca8a40 feat(coverage-expansion-v1): Coverage 维护层 + Model Currentness 系统（注册表 v2 / 新鲜度策略 / 覆盖报告 v2 / 页面 Current 化）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/probe-discovery-candidates.cjs",
+        "bytes": 3800,
+        "lastCommit": "5ca8a40 feat(coverage-expansion-v1): Coverage 维护层 + Model Currentness 系统（注册表 v2 / 新鲜度策略 / 覆盖报告 v2 / 页面 Current 化）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/probe-discovery-denoised.cjs",
+        "bytes": 5245,
+        "lastCommit": "5ca8a40 feat(coverage-expansion-v1): Coverage 维护层 + Model Currentness 系统（注册表 v2 / 新鲜度策略 / 覆盖报告 v2 / 页面 Current 化）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/probe-discovery-words.cjs",
+        "bytes": 2890,
+        "lastCommit": "5ca8a40 feat(coverage-expansion-v1): Coverage 维护层 + Model Currentness 系统（注册表 v2 / 新鲜度策略 / 覆盖报告 v2 / 页面 Current 化）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/probe-futurepedia.cjs",
+        "bytes": 3310,
+        "lastCommit": "5ca8a40 feat(coverage-expansion-v1): Coverage 维护层 + Model Currentness 系统（注册表 v2 / 新鲜度策略 / 覆盖报告 v2 / 页面 Current 化）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/provider-review.md",
+        "bytes": 20605,
+        "lastCommit": "cbae005 docs(research): 12 家目标 Provider 的四路调查产物（t8 + t9）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t11-add-api-records.cjs",
+        "bytes": 23703,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t11-add-coding-plans.cjs",
+        "bytes": 9108,
+        "lastCommit": "7cf42fb feat(coverage): t11 数据落盘第一批（6 家新 provider + 6 条 Coding 套餐）+ 修两条真红",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t11-add-coverage-targets.cjs",
+        "bytes": 21257,
+        "lastCommit": "7cf42fb feat(coverage): t11 数据落盘第一批（6 家新 provider + 6 条 Coding 套餐）+ 修两条真红",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t11-add-identities.cjs",
+        "bytes": 15356,
+        "lastCommit": "7cf42fb feat(coverage): t11 数据落盘第一批（6 家新 provider + 6 条 Coding 套餐）+ 修两条真红",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t11-declare-api-gaps.cjs",
+        "bytes": 6603,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t11-declare-new-plan-gaps.cjs",
+        "bytes": 9049,
+        "lastCommit": "7cf42fb feat(coverage): t11 数据落盘第一批（6 家新 provider + 6 条 Coding 套餐）+ 修两条真红",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t18-digest.cjs",
+        "bytes": 2955,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t18-extras.cjs",
+        "bytes": 7713,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t18-extras.json",
+        "bytes": 69304,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": "M r"
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t18-full-gate-report.md",
+        "bytes": 23963,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": "M r"
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t18-gate-results.json",
+        "bytes": 54036,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": "M r"
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t18-gate-runner.cjs",
+        "bytes": 18741,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t18-mutations.cjs",
+        "bytes": 9262,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t18-mutations.json",
+        "bytes": 6126,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t18-post-analysis.cjs",
+        "bytes": 4454,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t18-recompute.cjs",
+        "bytes": 5768,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t18-recompute.json",
+        "bytes": 1856,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t18-shell-steps.cjs",
+        "bytes": 8729,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t18-shell-steps.json",
+        "bytes": 4818,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t23-land-api-dispositions.cjs",
+        "bytes": 25309,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t24-land-coding-plans.cjs",
+        "bytes": 20907,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t24-restore-api-records.cjs",
+        "bytes": 7115,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t24-restore-inference-providers.cjs",
+        "bytes": 4049,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t24-restore-inference-targets.cjs",
+        "bytes": 6550,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t41-derived-r5-readings.cjs",
+        "bytes": 6343,
+        "lastCommit": "118a95c fix(gate): vendor-page-selftest 的 R5 写死计数改派生式（T18-F1，收口）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/t41-derived-r5-readings.json",
+        "bytes": 11495,
+        "lastCommit": "118a95c fix(gate): vendor-page-selftest 的 R5 写死计数改派生式（T18-F1，收口）",
+        "commitCount": 1,
+        "uncommitted": "M r"
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/verify-currentness-deliverable.cjs",
+        "bytes": 11322,
+        "lastCommit": "da30281 docs(research): t10 收口 —— currentness 词表口径审计 + 只读复核脚本",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/coverage-expansion-v1/verify-currentness-migration.cjs",
+        "bytes": 11712,
+        "lastCommit": "5ca8a40 feat(coverage-expansion-v1): Coverage 维护层 + Model Currentness 系统（注册表 v2 / 新鲜度策略 / 覆盖报告 v2 / 页面 Current 化）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-audit-surface.txt",
+        "bytes": 52723,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-context-clean.txt",
+        "bytes": 53616,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-context.txt",
+        "bytes": 54200,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-currentness-audit.txt",
+        "bytes": 20699,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-evidence-ratio.txt",
+        "bytes": 4359,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-evidence-verbatim.txt",
+        "bytes": 7274,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-extract.txt",
+        "bytes": 74020,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-quote-review.md",
+        "bytes": 8879,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-source-health-base.json",
+        "bytes": 9368,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-audit.txt",
+        "bytes": 3482,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/aws-q-overview.txt",
+        "bytes": 488408,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/aws-q-pricing.txt",
+        "bytes": 409389,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/cerebras-pricing.txt",
+        "bytes": 238418,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/deepseek-updates.txt",
+        "bytes": 48079,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/fireworks-pricing.txt",
+        "bytes": 5136,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/groq-models.txt",
+        "bytes": 33,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/jetbrains-buy.txt",
+        "bytes": 48267,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/jetbrains-intl-us.txt",
+        "bytes": 48267,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/jetbrains-quote-api.txt",
+        "bytes": 276339,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/jetbrains-store-json.txt",
+        "bytes": 41769,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/jetbrains-us-cookie.txt",
+        "bytes": 48267,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/reachability.json",
+        "bytes": 8893,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/replit-pricing.txt",
+        "bytes": 269069,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/stepfun-step-plan.txt",
+        "bytes": 849560,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/summary.json",
+        "bytes": 7050,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/together-models.txt",
+        "bytes": 4571,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t15-url-verify/xfyun-codingplan.txt",
+        "bytes": 116436,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/MUTATION-RESULTS.md",
+        "bytes": 17910,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/diag/diag-anchors.cjs",
+        "bytes": 3016,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/diag/diag-anchors.txt",
+        "bytes": 4435,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/diag/diag-anomalies.cjs",
+        "bytes": 1100,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/diag/diag-anomalies.txt",
+        "bytes": 3543,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/diag/diag-m25.cjs",
+        "bytes": 1653,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/diag/diag-m25.txt",
+        "bytes": 1453,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/diag/diag-shared-integrity.cjs",
+        "bytes": 2863,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/logs/battery.json",
+        "bytes": 122311,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 3,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/mutation-battery.cjs",
+        "bytes": 16450,
+        "lastCommit": "af92d5d fix(data): t33 收口 F1/F2 API 侧 —— 4 条引文改官方逐字片段 + 同步 4 条链接抄件（只改 quote 行）",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/mutation-cases.cjs",
+        "bytes": 23757,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/probe-provenance-teeth.cjs",
+        "bytes": 4720,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/probe-provenance-teeth.txt",
+        "bytes": 1334,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t17/report.cjs",
+        "bytes": 9964,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t25/diff-comment-only.cjs",
+        "bytes": 5440,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t25/mutate-drop-api-disposition.cjs",
+        "bytes": 5303,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t25/naming-caveat.md",
+        "bytes": 4617,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t25/recount-api-accounting.cjs",
+        "bytes": 12953,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t26/adversarial-fixtures.cjs",
+        "bytes": 15901,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t26/basis-audit.cjs",
+        "bytes": 4558,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t26/derivation-audit.cjs",
+        "bytes": 6373,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t26/diff-vs-head.cjs",
+        "bytes": 3251,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t26/final-hashes.json",
+        "bytes": 2177,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t26/fixtures-result.json",
+        "bytes": 14678,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t26/recompute.cjs",
+        "bytes": 13359,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t26/report.md",
+        "bytes": 19828,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t26/spelling-matrix-result.json",
+        "bytes": 7025,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t26/spelling-matrix.cjs",
+        "bytes": 5936,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t26/unit-probes-result.json",
+        "bytes": 3876,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t26/unit-probes.cjs",
+        "bytes": 8479,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t27/reverse-registration-drill.js",
+        "bytes": 8888,
+        "lastCommit": "6849e52 chore(gate): 登记 4 项新自测 + 补「有 selftest 文件却没登记」的反向牙",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t28/arbitrate-unnamed-citations.js",
+        "bytes": 6758,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t28/close-loop-mutations.js",
+        "bytes": 6762,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t28/probe-36-52-reading.js",
+        "bytes": 3777,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t28/probe-old-readings-battery.js",
+        "bytes": 3976,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t28/residual-counts.js",
+        "bytes": 2131,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t28/unnamed-citations.json",
+        "bytes": 6473,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t28/verify-site-current.json",
+        "bytes": 129239,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t28/verify-site-fresh.json",
+        "bytes": 129239,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t28/verify-site-t34.json",
+        "bytes": 129109,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t28/verify-site.json",
+        "bytes": 129239,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t30/probe-suffix-splitting.cjs",
+        "bytes": 7388,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t30/separator-fixtures.json",
+        "bytes": 3684,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t31/causality-ab-result-inflight.json",
+        "bytes": 266,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t31/causality-ab-result.json",
+        "bytes": 266,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t31/causality-ab.cjs",
+        "bytes": 6278,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t31/report.md",
+        "bytes": 7076,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t31/repro-zero-count-substring.cjs",
+        "bytes": 4788,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t31/sweep.md",
+        "bytes": 4510,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t32/apply-t32-doc-fixes.cjs",
+        "bytes": 9499,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t32/fix-verbatim-quotes.cjs",
+        "bytes": 7901,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t32/prove-index-drift-guard.cjs",
+        "bytes": 4830,
+        "lastCommit": "af92d5d fix(data): t33 收口 F1/F2 API 侧 —— 4 条引文改官方逐字片段 + 同步 4 条链接抄件（只改 quote 行）",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t32/sync-link-evidence.cjs",
+        "bytes": 3992,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t32/t32-evidence-caveats.md",
+        "bytes": 4379,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t35-probe/scan-selfclaim-quotes.cjs",
+        "bytes": 1860,
+        "lastCommit": "9f27836 test(research): 引文自称扫描脚本（t35 的前提证据：真实数据 0 命中）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t35/M24-BOUNDARY.md",
+        "bytes": 4330,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t35/inject-selfclaim-counter.cjs",
+        "bytes": 5881,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t35/m26-m25-replay.cjs",
+        "bytes": 5267,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t35/sandbox.cjs",
+        "bytes": 2347,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t35/scan-selfclaim-quotes.cjs",
+        "bytes": 5814,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t36/t36-selfcheck.cjs",
+        "bytes": 5563,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t36/t36-selfcheck.txt",
+        "bytes": 1784,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t37/evidence.md",
+        "bytes": 11531,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t37/t19-runbook.md",
+        "bytes": 11714,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t38/baseline-diff.cjs",
+        "bytes": 4616,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t38/inventory.cjs",
+        "bytes": 8968,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t38/section87-precheck.md",
+        "bytes": 29011,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t38/site-facts.cjs",
+        "bytes": 5582,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t39/collect.cjs",
+        "bytes": 24595,
+        "lastCommit": "568e881 docs(research): 报告素材盘点（t39）+ 线上旧版基线对照物（t40）+ 写死期望全仓清扫（t42）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t39/report-inputs.md",
+        "bytes": 20882,
+        "lastCommit": "568e881 docs(research): 报告素材盘点（t39）+ 线上旧版基线对照物（t40）+ 写死期望全仓清扫（t42）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t39/verify-determinism.cjs",
+        "bytes": 2012,
+        "lastCommit": "568e881 docs(research): 报告素材盘点（t39）+ 线上旧版基线对照物（t40）+ 写死期望全仓清扫（t42）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t40/README.md",
+        "bytes": 7087,
+        "lastCommit": "568e881 docs(research): 报告素材盘点（t39）+ 线上旧版基线对照物（t40）+ 写死期望全仓清扫（t42）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t40/compare-live.cjs",
+        "bytes": 17188,
+        "lastCommit": "568e881 docs(research): 报告素材盘点（t39）+ 线上旧版基线对照物（t40）+ 写死期望全仓清扫（t42）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t40/live-baseline.json",
+        "bytes": 4425,
+        "lastCommit": "568e881 docs(research): 报告素材盘点（t39）+ 线上旧版基线对照物（t40）+ 写死期望全仓清扫（t42）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t40/make-selftest-after.cjs",
+        "bytes": 2492,
+        "lastCommit": "568e881 docs(research): 报告素材盘点（t39）+ 线上旧版基线对照物（t40）+ 写死期望全仓清扫（t42）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t40/selftest/after-deployed.json",
+        "bytes": 4448,
+        "lastCommit": "568e881 docs(research): 报告素材盘点（t39）+ 线上旧版基线对照物（t40）+ 写死期望全仓清扫（t42）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t40/selftest/after-version-only.json",
+        "bytes": 4447,
+        "lastCommit": "568e881 docs(research): 报告素材盘点（t39）+ 线上旧版基线对照物（t40）+ 写死期望全仓清扫（t42）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t40/selftest/poll-probe.json",
+        "bytes": 4425,
+        "lastCommit": "568e881 docs(research): 报告素材盘点（t39）+ 线上旧版基线对照物（t40）+ 写死期望全仓清扫（t42）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t42/hardcoded-expectations.md",
+        "bytes": 14385,
+        "lastCommit": "568e881 docs(research): 报告素材盘点（t39）+ 线上旧版基线对照物（t40）+ 写死期望全仓清扫（t42）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/_raw/t42/scan.cjs",
+        "bytes": 13240,
+        "lastCommit": "568e881 docs(research): 报告素材盘点（t39）+ 线上旧版基线对照物（t40）+ 写死期望全仓清扫（t42）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/coverage-expansion-v1-data-quality-review.md",
+        "bytes": 21454,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/coverage-expansion-v1-model-currentness.md",
+        "bytes": 34526,
+        "lastCommit": "5ca8a40 feat(coverage-expansion-v1): Coverage 维护层 + Model Currentness 系统（注册表 v2 / 新鲜度策略 / 覆盖报告 v2 / 页面 Current 化）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/coverage-expansion-v1-provider-review.md",
+        "bytes": 35677,
+        "lastCommit": "cbae005 docs(research): 12 家目标 Provider 的四路调查产物（t8 + t9）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/coverage-expansion-v1-residual-register.md",
+        "bytes": 44497,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 4,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "research/coverage-expansion-v1-source-health-rulings.md",
+        "bytes": 18418,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/data/api-plan-history.json",
+        "bytes": 67065,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "scripts/data/coverage-targets.json",
+        "bytes": 33549,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 4,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/data/curated_api_plans.json",
+        "bytes": 63325,
+        "lastCommit": "af92d5d fix(data): t33 收口 F1/F2 API 侧 —— 4 条引文改官方逐字片段 + 同步 4 条链接抄件（只改 quote 行）",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/data/curated_plans.json",
+        "bytes": 68353,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 3,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/data/model-registry-gaps.json",
+        "bytes": 26359,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 3,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/data/model-registry-links.json",
+        "bytes": 46975,
+        "lastCommit": "af92d5d fix(data): t33 收口 F1/F2 API 侧 —— 4 条引文改官方逐字片段 + 同步 4 条链接抄件（只改 quote 行）",
+        "commitCount": 4,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/data/models.json",
+        "bytes": 23668,
+        "lastCommit": "7cf42fb feat(coverage): t11 数据落盘第一批（6 家新 provider + 6 条 Coding 套餐）+ 修两条真红",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/data/official_urls.json",
+        "bytes": 3290,
+        "lastCommit": "7cf42fb feat(coverage): t11 数据落盘第一批（6 家新 provider + 6 条 Coding 套餐）+ 修两条真红",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/data/plan-history.json",
+        "bytes": 34130,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/data/providers.json",
+        "bytes": 15672,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/data/source-health.json",
+        "bytes": 4503,
+        "lastCommit": "6cea0d9 chore(data): 采集器运行产生的数据更新（本轮会话期间自动触发） [skip ci]",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/data/source-snapshots.json",
+        "bytes": 76263,
+        "lastCommit": "6cea0d9 chore(data): 采集器运行产生的数据更新（本轮会话期间自动触发） [skip ci]",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/data/vendor-slugs.json",
+        "bytes": 2957,
+        "lastCommit": "7cf42fb feat(coverage): t11 数据落盘第一批（6 家新 provider + 6 条 Coding 套餐）+ 修两条真红",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/data/zh-pending.json",
+        "bytes": 131,
+        "lastCommit": "6cea0d9 chore(data): 采集器运行产生的数据更新（本轮会话期间自动触发） [skip ci]",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "scripts/lib/coverage-targets.js",
+        "bytes": 46106,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/lib/feeds.js",
+        "bytes": 85903,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "scripts/lib/model-freshness.js",
+        "bytes": 42490,
+        "lastCommit": "5ca8a40 feat(coverage-expansion-v1): Coverage 维护层 + Model Currentness 系统（注册表 v2 / 新鲜度策略 / 覆盖报告 v2 / 页面 Current 化）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/lib/model-registry.js",
+        "bytes": 104077,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 3,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/lib/models-page.js",
+        "bytes": 82468,
+        "lastCommit": "3201a1a docs(models-page): 写清目录状态的三条硬承诺与「无 JS 时全部列出」的计数文案",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/lib/plans-compare.js",
+        "bytes": 25241,
+        "lastCommit": "7cf42fb feat(coverage): t11 数据落盘第一批（6 家新 provider + 6 条 Coding 套餐）+ 修两条真红",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/api-plans-selftest.js",
+        "bytes": 79286,
+        "lastCommit": null,
+        "commitCount": 0,
+        "uncommitted": "M s"
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/app-token-selftest.js",
+        "bytes": 17275,
+        "lastCommit": null,
+        "commitCount": 0,
+        "uncommitted": "M s"
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/archive-selftest.js",
+        "bytes": 37139,
+        "lastCommit": null,
+        "commitCount": 0,
+        "uncommitted": "M s"
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/audience-selftest.js",
+        "bytes": 59093,
+        "lastCommit": null,
+        "commitCount": 0,
+        "uncommitted": "M s"
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/build-local.js",
+        "bytes": 405025,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/changes-selftest.js",
+        "bytes": 30566,
+        "lastCommit": null,
+        "commitCount": 0,
+        "uncommitted": "M s"
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/check-ci-consistency.js",
+        "bytes": 116533,
+        "lastCommit": "6849e52 chore(gate): 登记 4 项新自测 + 补「有 selftest 文件却没登记」的反向牙",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/check-model-registry-links.js",
+        "bytes": 9200,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/check-models-reproducible.js",
+        "bytes": 8492,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/coverage-report.js",
+        "bytes": 64333,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 4,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "scripts/tools/coverage-targets-selftest.js",
+        "bytes": 38583,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 3,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/data-docs-selftest.js",
+        "bytes": 32078,
+        "lastCommit": null,
+        "commitCount": 0,
+        "uncommitted": "M s"
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/feeds-selftest.js",
+        "bytes": 69667,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 1,
+        "uncommitted": "M s"
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/history-nonempty-e2e.js",
+        "bytes": 57540,
+        "lastCommit": null,
+        "commitCount": 0,
+        "uncommitted": "M s"
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/history-selftest.js",
+        "bytes": 21106,
+        "lastCommit": null,
+        "commitCount": 0,
+        "uncommitted": "M s"
+      },
+      {
+        "status": "A",
+        "file": "scripts/tools/model-freshness-selftest.js",
+        "bytes": 32256,
+        "lastCommit": "5ca8a40 feat(coverage-expansion-v1): Coverage 维护层 + Model Currentness 系统（注册表 v2 / 新鲜度策略 / 覆盖报告 v2 / 页面 Current 化）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "scripts/tools/model-freshness-sensitivity.js",
+        "bytes": 15017,
+        "lastCommit": "5ca8a40 feat(coverage-expansion-v1): Coverage 维护层 + Model Currentness 系统（注册表 v2 / 新鲜度策略 / 覆盖报告 v2 / 页面 Current 化）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "A",
+        "file": "scripts/tools/model-role-vocabulary-selftest.js",
+        "bytes": 6409,
+        "lastCommit": "5ca8a40 feat(coverage-expansion-v1): Coverage 维护层 + Model Currentness 系统（注册表 v2 / 新鲜度策略 / 覆盖报告 v2 / 页面 Current 化）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/models-page-selftest.js",
+        "bytes": 88867,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 3,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/models-selftest.js",
+        "bytes": 76943,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 4,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/plans-selftest.js",
+        "bytes": 100707,
+        "lastCommit": "7cf42fb feat(coverage): t11 数据落盘第一批（6 家新 provider + 6 条 Coding 套餐）+ 修两条真红",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/provenance-selftest.js",
+        "bytes": 39476,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/rebuild-models.js",
+        "bytes": 13408,
+        "lastCommit": "aea3e70 feat(coverage): API 侧处置出口 + 4 家推理平台定价 + 8 条国际 Coding 套餐",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/vendor-page-selftest.js",
+        "bytes": 33954,
+        "lastCommit": "118a95c fix(gate): vendor-page-selftest 的 R5 写死计数改派生式（T18-F1，收口）",
+        "commitCount": 1,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/tools/verify-site.js",
+        "bytes": 353377,
+        "lastCommit": "5657fd8 fix(gate)+docs(research): 修 verify-site 假红、加固反绕过牙、收口 t15 的 F3–F8（检查点）",
+        "commitCount": 2,
+        "uncommitted": null
+      },
+      {
+        "status": "M",
+        "file": "scripts/validate.js",
+        "bytes": 74508,
+        "lastCommit": "e437e9f feat(gate)+docs(research): 引文自称牙 + 死常量处置 + 残余登记表 §4.3 + 部署预检与 §87 预映射 + 全量 Gate 报告",
+        "commitCount": 2,
+        "uncommitted": null
+      }
+    ],
+    "untrackedList": [
+      "research/_raw/coverage-expansion-v1/t41-derived-r5-readings.md",
+      "research/_raw/coverage-expansion-v1/t41-doc.cjs",
+      "research/_raw/coverage-expansion-v1/t41-reverse-teeth.cjs",
+      "research/_raw/coverage-expansion-v1/t41-reverse-teeth.json",
+      "research/_raw/t43/",
+      "research/_raw/t45/"
+    ]
+  },
+  "checkCi": {
+    "bare": {
+      "exit": 0,
+      "summary": "✓ (E) 实跑项数 == --expect-checks=38（期望值来自 verify.yml 的 gate 调用行；数字钉在调用方，与看门狗互相独立） ⏎ ✅ CI 口径检查 38 项，失败 0 项"
+    },
+    "pin38": {
+      "exit": 0,
+      "summary": "✓ (E) 实跑项数 == --expect-checks=38（期望值来自 命令行 --expect-checks=38；数字钉在调用方，与看门狗互相独立） ⏎ ✅ CI 口径检查 38 项，失败 0 项"
+    },
+    "pin37": {
+      "exit": 1,
+      "summary": "❌ CI 口径检查 38 项，失败 1 项 ⏎    ✗ (E) 实跑项数 == 外部钉住的 --expect-checks — 实跑 38 项 ≠ 钉住 37 项（期望值来自 命令行 --expect-checks=37）（新增/删除断言后请同步 verify.yml 的 --expect-checks 数字与 FROZEN_ASSERTION_NAMES）"
+    },
+    "verifyYmlPin": "38",
+    "actionSteps": 49
+  },
+  "inventory": {
+    "html": 176,
+    "files": 293,
+    "byDir": {
+      "archive": 1,
+      "category": 6,
+      "changes": 1,
+      "deal": 80,
+      "developer": 1,
+      "docs": 1,
+      "feeds": 1,
+      "free-api": 1,
+      "(root)": 1,
+      "models": 45,
+      "need": 10,
+      "plans": 3,
+      "status": 1,
+      "student": 1,
+      "vendor": 23
+    },
+    "baseline": {
+      "html": 173,
+      "files": 290,
+      "sitemap": 170,
+      "feeds": 50
+    },
+    "sitemap": 173,
+    "feeds": 51,
+    "dealDetailPages": 80,
+    "vendorPages": 23,
+    "modelPages": 45,
+    "dealPagesInSitemap": 80,
+    "missingDealPages": [],
+    "manifestKeys": [
+      "schemaVersion",
+      "updatedAt",
+      "count",
+      "datasets"
+    ],
+    "manifestFileBytes": 4124,
+    "deltaHtml": 3,
+    "deltaSitemap": 3
+  },
+  "staticTree": {
+    "trackedFiles": 758,
+    "changedDuringRun": [],
+    "static": true,
+    "headStable": true,
+    "note": "窗口 = 本脚本执行期间；队友提交或我自己的产出会出现在 changedDuringRun 里（如实列出）"
+  },
+  "headAfter": "118a95ca444d70fbd43e7d7cd583303d4089b30b",
+  "statusAfter": [
+    "M research/_raw/coverage-expansion-v1/t18-extras.json",
+    " M research/_raw/coverage-expansion-v1/t18-full-gate-report.md",
+    " M research/_raw/coverage-expansion-v1/t18-gate-results.json",
+    " M research/_raw/coverage-expansion-v1/t41-derived-r5-readings.json",
+    " M scripts/tools/api-plans-selftest.js",
+    " M scripts/tools/app-token-selftest.js",
+    " M scripts/tools/archive-selftest.js",
+    " M scripts/tools/audience-selftest.js",
+    " M scripts/tools/changes-selftest.js",
+    " M scripts/tools/data-docs-selftest.js",
+    " M scripts/tools/feeds-selftest.js",
+    " M scripts/tools/history-nonempty-e2e.js",
+    " M scripts/tools/history-selftest.js",
+    "?? research/_raw/coverage-expansion-v1/t41-derived-r5-readings.md",
+    "?? research/_raw/coverage-expansion-v1/t41-doc.cjs",
+    "?? research/_raw/coverage-expansion-v1/t41-reverse-teeth.cjs",
+    "?? research/_raw/coverage-expansion-v1/t41-reverse-teeth.json",
+    "?? research/_raw/t43/",
+    "?? research/_raw/t45/"
+  ]
+}

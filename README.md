@@ -25,7 +25,8 @@ v3.0（`v3.0-ai-deals-knowledge-base`）把站点从「优惠 + 套餐 + API 价
 
 > **端点命名易踩坑（审计 P3-28，2026-10-04 补文档说明；未新增任何页面/路由）**：
 > ① Manifest 的**真实地址是 `/data/index.json`**（目录 + 文件名），`/data-index.json` 在线上是 404；
-> ② `model-registry-gaps.json` **不发布**（它是套餐侧处置登记，属关系层补充，只存在于 `scripts/data/`），
+> ② `model-registry-gaps.json` **不发布**（它是**双侧**处置登记 —— Coding 侧 `planId + modelName`、
+> API 侧 `apiPlanId + modelKey`，属关系层补充，只存在于 `scripts/data/`），
 > 因此线上取 `/model-registry-gaps.json` 一定 404 —— 这是**有意不发布**，不是缺文件。
 > 已发布的数据端点以 `/data/index.json` 的 `datasets[].url` 为准（构建期 `assertArtifactCoverage` 双向对账）。
 

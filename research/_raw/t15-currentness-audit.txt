@@ -1,0 +1,117 @@
+## 0) currentness 文件的词表映射与规则（原文照抄，便于审计复核）
+  modelRoleVocabulary: {"llm":"通用文本生成/推理对话模型","vlm":"视觉理解（图像/视频输入）模型","multimodal_llm":"支持多模态输入的通用模型（无专门视觉后缀，官方原文明确含多模态 Chat 输入）","retrieval_embedding":"向量化/嵌入模型","translation":"翻译专用模型","translation_lite":"翻译专用模型的 lite 档","roleplay":"角色扮演模型","code_specialist":"代码专用模型","small_fast_variant":"同代低延迟/小尺寸档（Flash / Turbo / highspeed / lite 等口径）"}
+  _roleVocabularyMapping: {"llm":["general"],"small-fast-variant":["fast"],"code-specialist":["coding"],"vlm":["vision"],"multimodal-llm":["vision"],"retrieval-embedding":["embedding"],"translation":["translation"],"translation-lite":["translation"],"roleplay":["other"]}
+  _roleVocabularyProvenance: "本文件里的 `modelRole` 是 **t10 调查阶段的能力口径**（llm / vlm / multimodal-llm / retrieval-embedding / translation / translation-lite / roleplay / code-specialist / small-fast-variant）。**生产身份层最终采用了另一套更小的词表**（model-registry.js 的 MODEL_ROLES：general / fast / reasoning / coding / vision / embedding / audio / realtime / translation / other），由 t2 的迁移脚本在 2026-10-04 18:27 对 44 条完成归一（脚本 scripts/tmp-migrate-registry-v2.cjs；对账 scripts/tools/model-role-vocabulary-selftest.js）。因此本文件与 scripts/data/models.json 的 modelRole **不是同一套词表，且不需要相等**：两边各自是「调查口径」与「身份层口径」的事实记录。映射见 _roleVocabularyMapping。"
+  releaseEvidenceSchema: {"releasedAt":"YYYY-MM-DD | null","releasedAtScope":"这个日期到底是什么口径（release / GA / 官方日志最早出现 / 升级到）","releaseEvidence":{"sourceUrl":"开发商官方 URL（或官方文档域名）","capturedAt":"本次抓取时间（Asia/Shanghai）","httpStatusPlusQuote":"HTTP 状态 + 官方逐字引文（verbatim，原语言原标点）"},"checkedAt":"本条的核查时间","checkedUrls":"本条核查过的 URL 列表","checkedOutcome":"核查到的结论（含「给了 200 但正文里没有日期」这类否定结论）"}
+  capturedAt: 2026-10-04T18:26:00+08:00 · baselineSha: a4dd40fc66ea612f327036f5ba3d98cbff46c288
+  scope: {"registryModels":44,"investigated":44,"releasedAtNonNull":4,"releasedAtNull":40,"releasedAtStrictReleaseAnnouncement":3,"releasedAtStrictReleaseAnnouncementNote":"deepseek-flash 2026-09-10 / deepseek-v4-pro 2026-08-13 / minimax-m3 2026-06-01 —— 官方原文口径就是「release / 正式发布 / GA release」","releasedAtOtherOfficialDate":1,"releasedAtOtherOfficialDateNote":"deepseek-v3.2 2025-12-01 —— 官方 Change Log 最早出现该模
+## 1) currentness 行数与键集合
+  currentness rows: 44 · registry 模型: 44
+  missing in currentness: (none)
+  extra in currentness: (none)
+
+## 2) 带发布日期的模型（releasedAt 证据）
+  · deepseek-flash releasedAt=2026-09-10 role=vlm confidence=high
+      roleBasis="官方 Change Log 原文「with native multimodal visual understanding」+ 定价页 Vision 行 = ✓（同页 deepseek-v4-pro 的 Vision = Not supported）"
+      evidence sourceUrl=https://api-docs.deepseek.com/updates capturedAt=2026-10-04T18:26:00+08:00 field=undefined quote="「## Date: 2026-09-10 / ### DeepSeek-V4.1-Flash Release / Today, we officially release the DeepSeek-V4.1-Flash model. It is the smallest model in our new architecture family, with native multimodal visual understanding.」；"
+               matchedBy="原文逐字出现的模型名 DeepSeek-V4.1-Flash 与 API 模型名 deepseek-flash，均出现在注册表 aliases 中" httpStatus=200 crossCheck="定价页「| MODEL | deepseek-flash(1) | … | MODEL VERSION | DeepSeek-V4.1-Flash |」"
+  · deepseek-v3.2 releasedAt=2025-12-01 role=llm confidence=medium（日期是一手官方，但口径为「升级到」而非「发布」；已在 releasedAtScope 写明，不做假精度）
+      roleBasis="官方 Change Log 把 V3.2 作为 deepseek-chat / deepseek-reasoner 的后端（对话+推理），无多模态证据"
+      evidence sourceUrl=https://api-docs.deepseek.com/updates capturedAt=2026-10-04T18:26:00+08:00 field=undefined quote="「## Date: 2025-12-01 / ### DeepSeek-V3.2 / Both `deepseek-chat` and `deepseek-reasoner` have been upgraded to DeepSeek-V3.2.」"
+               matchedBy="原文逐字出现 DeepSeek-V3.2" httpStatus=200 crossCheck="定价页当前价目表已无 deepseek-v3.2 行（现在只有 deepseek-flash / deepseek-v4-pro）；siliconflow（第三方）仍在售 DeepSeek-V3.2 —— 第三方不用于日期"
+  · deepseek-v4-pro releasedAt=2026-08-13 role=llm confidence=high
+      roleBasis="官方定价页 Vision 行 = Not supported；Change Log 通篇是 agent/代码/推理基准 → 纯文本通用模型"
+      evidence sourceUrl=https://api-docs.deepseek.com/updates capturedAt=2026-10-04T18:26:00+08:00 field=undefined quote="「## Date: 2026-08-13 / ### DeepSeek-V4-Pro Update / The GA release of DeepSeek-V4-Pro has been rolled out on the APP, Web, and API. The API calling method remains unchanged — simply set the model name to `deepseek-v4-pro"
+               matchedBy="原文逐字出现 DeepSeek-V4-Pro 与 API 模型名 `deepseek-v4-pro`" httpStatus=200 crossCheck="别名里的 `DeepSeek-V4-Pro-0813` / `-0813` 内嵌 08-13，与官方日志日期一致——但**日期依据取自日志原文，不是取版本号**（版本号只作交叉印证）"
+  · minimax-m3 releasedAt=2026-06-01 role=multimodal-llm confidence=high
+      roleBasis="官方发布页原文「面向 Agent 推理、工具调用、代码、多模态 Chat 输入和长上下文任务」→ 支持多模态输入的通用模型（非纯文本，也无专门 V 后缀）"
+      evidence sourceUrl=https://platform.minimax.cn/docs/release-notes/models capturedAt=2026-10-04T18:26:00+08:00 field=undefined quote="「## 2026 年 6 月 1 日 / ## MiniMax M3 / 全新语言模型 MiniMax-M3 正式发布，面向 Agent 推理、工具调用、代码、多模态 Chat 输入和长上下文任务。」"
+               matchedBy="原文逐字出现 MiniMax-M3，与注册表 slug/canonicalName 一致" httpStatus=200 crossCheck="官方按量计费页 MiniMax-M3 位于当前主表（含「≤ 512k 输入 tokens 永久五折」）"
+
+## 3) role 判定：与官方名/说明的一致性抽查（全部 44 条）
+  · claude-fable-5.1               role=general      family=Claude         dev=Anthropic        basis="claude.com 官方导航把 Fable 列为与 Opus/Sonnet/Haiku 并列的模型系列；无 embedding/翻译等专用能力证据 → 通用对话模型"
+  · claude-haiku-4.5               role=fast         family=Claude         dev=Anthropic        basis="官方系列页把 Haiku 定位为与 Opus/Sonnet 并列的最小档系列（同一命名体系下的轻量档）"
+  · claude-opus-5.5                role=general      family=Claude         dev=Anthropic        basis="官方 Opus 系列为旗舰通用模型（claude.com Models → Opus）"
+  · claude-sonnet-5.5              role=general      family=Claude         dev=Anthropic        basis="官方 Sonnet 系列为通用主力模型（claude.com Models → Sonnet）"
+  · deepseek-flash                 role=vision       family=DeepSeek       dev=DeepSeek         basis="官方 Change Log 原文「with native multimodal visual understanding」+ 定价页 Vision 行 = ✓（同页 deepseek-v4-pro 的 Vision = Not suppor"
+  · deepseek-v3.2                  role=general      family=DeepSeek       dev=DeepSeek         basis="官方 Change Log 把 V3.2 作为 deepseek-chat / deepseek-reasoner 的后端（对话+推理），无多模态证据"
+  · deepseek-v4-pro                role=general      family=DeepSeek       dev=DeepSeek         basis="官方定价页 Vision 行 = Not supported；Change Log 通篇是 agent/代码/推理基准 → 纯文本通用模型"
+  · doubao-seed-2.1-pro            role=general      family=Doubao Seed    dev=火山引擎             basis="注册表 officialUrl 指向火山方舟产品页；「pro」档为通用旗舰档（仅命名档位，未据“…2.1”推断日期）"
+  · doubao-seed-2.1-turbo          role=fast         family=Doubao Seed    dev=火山引擎             basis="「turbo」档 = 同代低延迟档（仅档位命名）"
+  · doubao-seed-character          role=other        family=Doubao Seed    dev=火山引擎             basis="模型名「Character」+ 注册表 family「Doubao Seed」：角色扮演向场景模型（角色扮演是能力定位，不涉及发布日期）"
+  · doubao-seed-evolving           role=general      family=Doubao Seed    dev=火山引擎             basis="「Evolving」为持续演进档命名；无专用能力证据"
+  · gemini-3.5-flash               role=general      family=Gemini         dev=Google           basis="Gemini Flash 系列为低延迟通用档；无多模态专用证据（不作为 vlm 断言）"
+  · gemini-3.6-flash               role=general      family=Gemini         dev=Google           basis="同上（Flash 档）"
+  · gemini-3.7-flash               role=general      family=Gemini         dev=Google           basis="同上（Flash 档）"
+  · gemini-3.8-flash               role=general      family=Gemini         dev=Google           basis="同上（Flash 档）"
+  · glm-4.5v                       role=vision       family=GLM            dev=智谱AI             basis="模型名后缀「V」= 视觉理解档（GLM-4.5V / 4.6V / 5V-Turbo 同族），与 GLM-5.3（纯文本档）区分"
+  · glm-4.6v                       role=vision       family=GLM            dev=智谱AI             basis="同上（V 档）"
+  · glm-4.6v-flash                 role=vision       family=GLM            dev=智谱AI             basis="V 档 + Flash 低延迟档"
+  · glm-4.6v-flashx                role=vision       family=GLM            dev=智谱AI             basis="V 档 + FlashX 加速档"
+  · glm-4.7-flash                  role=fast         family=GLM            dev=智谱AI             basis="纯文本 Flash 档（无 V 后缀）"
+  · glm-5.3                        role=general      family=GLM            dev=智谱AI             basis="无 V 后缀 → 纯文本档（同族 GLM-5.3-Flash 同）"
+  · glm-5.3-flash                  role=fast         family=GLM            dev=智谱AI             basis="GLM-5.3 的 Flash 低延迟档"
+  · glm-5v-turbo                   role=vision       family=GLM            dev=智谱AI             basis="V 档 + Turbo 档"
+  · gpt-6-astra                    role=general      family=GPT            dev=OpenAI           basis="注册表 family=GPT；无专用能力证据"
+  · gpt-6-luna                     role=general      family=GPT            dev=OpenAI           basis="同上"
+  · gpt-6.1-sol                    role=general      family=GPT            dev=OpenAI           basis="同上"
+  · gpt-live-1                     role=general      family=GPT            dev=OpenAI           basis="同上（「live」为产品档命名）"
+  · hunyuan-a13b                   role=general      family=Hunyuan        dev=腾讯云              basis="腾讯官方计费页产品名表内、按生文 token 计费（输入0.5/输出2元每百万）→ 通用生文模型"
+  · hunyuan-embedding              role=embedding    family=Hunyuan        dev=腾讯云              basis="官方计费页把 Hunyuan-embedding 单独一行、按输入/输出 0.7元每百万 tokens 计费，且免费额度单列 → 向量化（嵌入）模型，非生文"
+  · hunyuan-role-latest            role=other        family=Hunyuan        dev=腾讯云              basis="模型名「role」+ 官方计费页把它作为主推产品名之一（2.4/9.6元每百万）→ 角色扮演模型；「latest」是官方命名的一部分"
+  · hunyuan-translation            role=translation  family=Hunyuan        dev=腾讯云              basis="模型名 + 官方计费页单列（1.2/3.6元每百万）→ 翻译专用模型"
+  · hunyuan-translation-lite       role=translation  family=Hunyuan        dev=腾讯云              basis="翻译模型的 lite 档（官方单列 1/3元每百万）"
+  · kimi-k2.7-code                 role=coding       family=Kimi           dev=月之暗面             basis="模型名「-Code」+ 月之暗面代码向档"
+  · kimi-k3                        role=general      family=Kimi           dev=月之暗面             basis="无专用后缀 → 通用对话模型"
+  · minimax-m2.5                   role=general      family=MiniMax M      dev=MiniMax（稀宇科技）    basis="MiniMax M 系列为通用语言模型（官方按量计费页语言模型组）"
+  · minimax-m2.7                   role=general      family=MiniMax M      dev=MiniMax（稀宇科技）    basis="同上"
+  · minimax-m2.7-highspeed         role=fast         family=MiniMax M      dev=MiniMax（稀宇科技）    basis="官方价目表内 highspeed 档（4.2/16.8元，为标准价 2 倍）→ 同代加速档"
+  · minimax-m3                     role=vision       family=MiniMax M      dev=MiniMax（稀宇科技）    basis="官方发布页原文「面向 Agent 推理、工具调用、代码、多模态 Chat 输入和长上下文任务」→ 支持多模态输入的通用模型（非纯文本，也无专门 V 后缀）"
+  · qwen-max                       role=general      family=Qwen           dev=阿里云              basis="通义千问 Max 档为通用旗舰对话模型（阿里云百炼价格页）"
+  · qwen3-max                      role=general      family=Qwen           dev=阿里云              basis="同上（无 V 后缀 → 文本档）"
+  · qwen3.8-27b                    role=general      family=Qwen           dev=阿里云              basis="开源尺寸档（27B）通用模型；注册表 officialUrl 为第三方"
+  · qwen3.8-max                    role=general      family=Qwen           dev=阿里云              basis="Max 旗舰档（无 V 后缀）"
+  · step-3.5-flash                 role=fast         family=Step           dev=阶跃星辰             basis="StepFun Flash 低延迟档；注册表 officialUrl 为第三方"
+  · tencent-hy-vision-1.5-instruct role=vision       family=Hunyuan        dev=腾讯云              basis="官方计费页产品名「Tencent HY Vision 1.5 Instruct」+ 按生文 token 价（3/9元）→ 视觉理解模型"
+
+## 4) freshnessGroup 与 catalogStatus
+  · deepseek-flash: freshnessGroup="current-mainline" catalogStatus=current catalogReason=group-newest-within-current-window releasedAt="2026-09-10"
+  · deepseek-v3.2: freshnessGroup=null catalogStatus=legacy catalogReason=outranked-beyond-aging-window releasedAt="2025-12-01"
+  · deepseek-v4-pro: freshnessGroup=null catalogStatus=current catalogReason=group-newest-within-current-window releasedAt="2026-08-13"
+  · minimax-m3: freshnessGroup=null catalogStatus=current catalogReason=group-newest-within-current-window releasedAt="2026-06-01"
+  currentness 里声明 freshnessGroup 的行：deepseek-flash=current-mainline("官方同页明文「The previous-generation models V4 Flash and V4 Flash Vision Exp have been")
+
+## 5) 来源健康裁决（healthy → retired / unavailable）
+  # coverage-expansion-v1 · Source Health 裁决与 collector 扩张纪律（t13）
+  - 任务：t13 [source-health] — 检查全部 collector 的真实 health 与长期失败来源，逐条裁决 repair / headless migration / keep-degraded / retire；如实记录且「source failure ≠ 历史 Deals ended」；新增 discovery source 必须证明「真实有产出 / 质量足够 / 不重
+  | futurepedia 当前状态 | baseline：`statusCensus { healthy: 8, failed: 1 }` | 抓取前盘上= `failed`；**本轮 live 真跑成功**（见 §2），盘上现为 `healthy`，9/9 来源全部 `healthy` |
+  > 纪律：不把「旧报告的 8」或「本轮的 9」写进任何生产数据；本轮只在 `source-health.json` 的本轮观测值里如实记录（那是健康层的真值：它记的就是「上次跑的时候怎样」）。
+  ## 2. futurepedia HTTP 403：裁决 `keep-degraded`（不是 repair、不是 headless migration、不是 retire）
+  `上次 7 / 本次 7 / 增减 0`，健康层把它从 `failed` 改判 `healthy`、`consecutiveFailures` 归零、
+  ### 2.3 裁决与理由
+  - **裁决：`keep-degraded`**（保留来源、保留代码、不去修头、不迁移无头、不退役）。
+  - 理由 3（失败不伤数据）：它只占 7/114 条（≈6%），且缺失的后果由健康层与历史层的纪律兜住（§3）。
+  .filter(row => row && row.status === 'healthy' && !row.stale && Number(row.lastItemCount) > 0)
+  即：**本轮心跳 `healthy` + 不是上一轮遗留（stale）+ 确实跑出了条目**。而 `scripts/lib/history.js`
+  本轮真跑（含 futurepedia 从 failed 转 healthy 的那一次）实测：
+  ## 4. 九个 collector 的逐条裁决
+  | # | source | kind | 区域 | 本轮实测产出 | 本轮健康 | 裁决 | 理由（判据来自盘上/本轮实测） |
+  | 1 | `cn_qianfan`（百度千帆） | static | cn | 17 | healthy | **keep** | 200 且 17 条，含逐模型「新用户免费额度 + 100万 Tokens + 有效期 3 个月」原文口径；有探针声明（`table/tr/td` + `赠送` 正则）可观测 |
+  | 2 | `cn_aliyun`（阿里云百炼） | static | cn | 1 | healthy | **keep**（产出偏低，留观察） | 200 但只 1 条 —— 静态抓取只拿到价格页标题体（本轮 t10 取证同样只拿到标题体 + 截断正文）。**不新增修复动作**：它是「产出少」不是「抓不到」，且它的价值主要在 API 定价侧（由 curated/api-plans 路径覆盖）。
+  | 3 | `cn_zhipu`（智谱AI） | static | cn | 7 | healthy | **keep** | 200 且 7 条；探针指向 `docs.bigmodel.cn` 文档页（与采集器实际抓的页面不同源亦不冲突：探针只用于结构摘要比对） |
+  | 4 | `layer3labs` | static | global | 13 | healthy | **keep** | 200 且 13 条；有 `deal-table-header` 正则探针，是「表格型优惠清单」里可观测性最好的来源 |
+  | 5 | `aitools` | static | global | 15 | healthy | **keep** | 200 且 15 条，走 `__NEXT_DATA__` 内嵌 JSON（不依赖渲染） |
+  | 6 | `futurepedia` | static | global | 7 | **failed → healthy** | **keep-degraded** | 见 §2。环境归因的 403；本环境 200 + 7 条；不修头、不迁无头、不退役 |
+  | 7 | `futuretools` | static | global | 38 | healthy | **keep**（信号弱，已在注册表注释里如实标注） | 200 且 38 条（本轮 11.0s）；但它是**目录型**来源：38 条里 `discount` 全为空串，剥脚本后优惠词**零命中**，注册表注释已写「真实优惠信号弱」。裁决据此不升级为「核心来源」 |
+  | 8 | `cn_zhipu_pricing`（智谱AI活动页） | **headless** | cn | 4 | healthy | **keep** | 渲染后 4 条，来自官方活动页逐字规则（新用户 100 万 Tokens / 邀好友 / GLM-5.3-Flash 限时五折 / Batch 五折 / 缓存免费）；本轮耗时 **7.1s**（盘上记录 22.6s，属正常波动）。`pla
+  | 9 | `cn_volc_ark`（火山方舟） | **headless** | cn | 12 | healthy | **keep** | 渲染后 12 条，来自官方「免费额度」表 + 两条活动原文；`warnZeroProduction()` 在零产出时打印标题/DOM 长度/等待项/控制台错误，可观测性完整 |
+  **没有一条裁决是 `retire`**：退役需要「官方页下线或长期零产出且无信号」的证据，本轮 9/9 都有产出。
+  **没有一条裁决是 `repair`**：没有一条来源存在「本环境可复现的抓取缺陷」——唯一失败的 futurepedia
+  **没有一条裁决是 `headless migration`**：两条本来就是 headless 且都健康；futurepedia 的静态路径
+  ### 4.1 健康可观测性（新增来源的准入前提之一）本轮复核
+  任务给的准入四条是「真实有产出 / 质量足够 / 不重复 / 健康可观测」。本轮对四个候选逐条取证
+  - `scripts/data/source-health.json`：**按任务要求更新**为本轮真实观测（9/9 healthy、futurepedia
+  `consecutiveFailures` 归零、`lastSuccessAt` 推进）。这是健康层的真值文件，不更新就无法「如实记录」。
+  - t15（数据质量独立审查）可以按本文件的 §4 逐条复核「裁决是否有实测支撑」，并按 §2.1 复跑归因实验；
+
+## 6) provider-review 里的 not-adopted / 判据

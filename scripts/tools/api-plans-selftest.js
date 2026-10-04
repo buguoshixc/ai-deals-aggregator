@@ -857,6 +857,7 @@ function eventsOf(before, after, extra = {}) {
   const types = rekeyed.appended.map(e => e.type).sort();
   check('【牙】未登记的改名（换 modelKey）→ model_removed + model_added 同时出现',
     types.includes('model_added') && types.includes('model_removed'), JSON.stringify(types));
+  // 此数字锚在本地夹具上，不随生产数据漂移（这两条记录就地由 `build()` 造：一次改 modelKey ⇒ 恰好 1 个疑似改名）。
   check('【牙】同一运行里的"新增 + 移除且单价有相同项"→ 写出 possible_rename 异常（**检测不等于自动合并**）',
     rekeyed.renameCandidates.length === 1
     && rekeyed.renameCandidates[0].removed === 'glm-5.3|standard'
@@ -1033,11 +1034,46 @@ section('⑥″ API 变化视图（/changes/ 的 API 分栏，订阅源的输入
     JSON.stringify(rawTypes));
   check('API 分栏：可用时 availability=ok，窗口与套餐同口径',
     radar.availability === 'ok' && radar.windows.recentDays === 7 && radar.windows.endedDays === 30);
-  check('API 分栏：实质变化进「最近 7 天变化」，记录级元信息进 other.metadata',
-    radar.totals.changed === rawTypes.filter(type => type !== 'updated').length
-    && radar.totals.meta === 1 && radar.other.metadata.length === 1
-    && radar.sections.changed.items.every(item => item.type !== 'updated'),
-    JSON.stringify(radar.totals));
+  // 「分栏计数」与「事件字段」的自洽关系：期望**不写字面量**，而是从这份日志的 `type` 现算。
+  // 元信息事件的判据只有一处（`planChanges.API_PLAN_META_FIELD_TYPES`，API 侧声明 `'updated'`，
+  // 见 lib/plan-changes.js 的 API_PLAN_META_FIELD_TYPES 与 API_PLAN_FIELD_EVENT_TYPES 的映射），
+  // 所以这里把日志分成「实质变化 / 元信息」两侧，再要求每一侧的**计数与条目**都等于自己那一侧。
+  // 为什么不再写 `meta === 1 && metadata.length === 1`：那是「记录里当前只有一次元信息变化」的
+  // 快照 —— 数据里多一次元信息变化（例如同时改了 officialUrl 与 sourceUrl）就会假红，
+  // 而分栏其实完全正确。关系式写法在那种情形下仍然成立，且关系被破坏时（计数与日志不一致、
+  // 或条目进错了栏）照样红，错误信息还点名了两侧来源。
+  const apiMetaFieldTypes = planChanges.API_PLAN_META_FIELD_TYPES;
+  const logMetaTypes = rawTypes.filter(type => apiMetaFieldTypes.includes(type));
+  const logChangedTypes = rawTypes.filter(type => !apiMetaFieldTypes.includes(type));
+  const changedItems = radar.sections.changed.items;
+  const metadataItems = radar.other.metadata;
+  // 条目数 + 截断数 == 计数（分栏上限存在时也要自洽；这里是 lib 的 capInto 恒等式）
+  const changedAccounting = changedItems.length + radar.sections.changed.truncated === radar.totals.changed;
+  const metaAccounting = metadataItems.length + radar.other.truncated === radar.totals.meta;
+  const changedTypeDrift = changedItems.filter(item => apiMetaFieldTypes.includes(item.type)).map(item => item.type);
+  const metadataTypeDrift = metadataItems.filter(item => !apiMetaFieldTypes.includes(item.type)).map(item => item.type);
+  check('API 分栏：实质变化进「最近 7 天变化」，记录级元信息进 other.metadata（计数与事件字段自洽，期望由日志 type 现算）',
+    radar.totals.changed === logChangedTypes.length
+    && radar.totals.meta === logMetaTypes.length
+    && changedAccounting && metaAccounting
+    && changedTypeDrift.length === 0 && metadataTypeDrift.length === 0,
+    `实际 radar.totals=${JSON.stringify(radar.totals)}`
+    + `（sections.changed.items ${changedItems.length} 条 + truncated ${radar.sections.changed.truncated} / other.metadata ${metadataItems.length} 条 + truncated ${radar.other.truncated}）`
+    + ` / 期望（由这份日志的 type 现算，元信息类型表 planChanges.API_PLAN_META_FIELD_TYPES=${JSON.stringify(apiMetaFieldTypes)}）`
+    + ` changed=${logChangedTypes.length}${JSON.stringify(logChangedTypes)} · meta=${logMetaTypes.length}${JSON.stringify(logMetaTypes)}`
+    + `；放错栏的条目 [进了「最近 7 天变化」的元信息: ${JSON.stringify(changedTypeDrift)}`
+    + ` / 进了 other.metadata 的实质变化: ${JSON.stringify(metadataTypeDrift)}]`);
+
+  // 只对上「条数」还不够：条目必须还是**日志里那些事件**（同一条元信息变化，不是随便一条）。
+  // field 是这一层的身份字段，逐一对应 ⇒ 两侧看的是同一批事件。
+  const logMetaFields = apiHistory.eventsOf(recordedStore)
+    .filter(event => apiMetaFieldTypes.includes(event.type)).map(event => event.field);
+  const itemMetaFields = metadataItems.map(item => item.field);
+  check('API 分栏：other.metadata 每条条目的 field 与日志里元信息事件的 field 逐一对应（不只是条数相等）',
+    itemMetaFields.length === logMetaFields.length
+    && logMetaFields.every(field => itemMetaFields.includes(field)),
+    `实际 other.metadata 的 field=${JSON.stringify(itemMetaFields)}`
+    + ` / 期望（日志里 type ∈ ${JSON.stringify(apiMetaFieldTypes)} 的那几条事件的 field）${JSON.stringify(logMetaFields)}`);
   check('API 分栏：每条条目都带**日志里的**派生事件身份（订阅的 guid 直接用它）',
     radar.sections.changed.items.every(item => typeof item.eventId === 'string'
       && apiHistory.eventsOf(recordedStore).some(event => apiHistory.apiPlanEventIdOf(event) === item.eventId)));

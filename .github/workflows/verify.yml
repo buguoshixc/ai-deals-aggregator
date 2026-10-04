@@ -92,7 +92,7 @@ jobs:
       # ⑪ 未加引号的标量里不得出现「冒号 + 空格」—— 那在块上下文里是映射分隔符，GitHub 的
       #    真实 YAML 解析器会拒绝整个文件（本仓库的缩进读取器读得过去，于是本地全绿、
       #    推上去什么都不跑；2026-09-28 实测踩到过一次，用 Python 的 YAML 解析器才发现）。
-      # ⑫ 带外项数：`--expect-checks=36` 把「总项数」这个事实钉在**调用方**（本文件），因为看门狗
+      # ⑫ 带外项数：`--expect-checks=38` 把「总项数」这个事实钉在**调用方**（本文件），因为看门狗
       #    保护不了自己被删（删掉它自己时项数会静默降 1 且仍 exit 0）。这个数字是**唯一出处**：
       #    脚本命令行不带参数裸跑（本地、以及 collect/deploy 里的裸跑）时也会回来读本行。
       #    注意这条 run **必须是单行**：读取器刻意跳过 `run: |` 块标量（fail-closed）。
@@ -114,8 +114,15 @@ jobs:
       #    —— 每页 exactly 1 个 bootstrap / localhost 与 127.0.0.1 零上报 /
       #    Production Guard 判据只有一份实现 / Cloudflare 账户凭据不许进仓库 ——
       #    没有任何既有步骤会替它红，所以它必须自己占一项。
+      #    2026-10-04（t27）由 37 提到 **38**：新增（19）**反向登记制** —— 每个
+      #    `scripts/tools/*selftest*.js` 都必须被**门禁真的跑到的** npm script 指向。
+      #    为什么：上面那条（17）只守一个方向（package.json 的 selftest:* 都被门禁跑到）；
+      #    反方向当时没人守 —— 自测文件已落盘却从 package.json 的登记链上被摘掉，
+      #    它一次都不会执行，而检查器照样 exit 0（t7 的 D5 探针实测过；t14 独立审查
+      #    也把它记为 T14-F3）。它和 (0b)「未登记的新 workflow 一律硬红」是同一条原则：
+      #    登记制必须**双向**都有人守。豁免只能是逐文件 + 写明理由的白名单（当前为空）。
       - name: CI consistency (action / runner / node-version / engines drift)
-        run: node scripts/tools/check-ci-consistency.js --expect-checks=37
+        run: node scripts/tools/check-ci-consistency.js --expect-checks=38
 
       # 门禁本体：与 deploy.yml 的 prepublish、collect.yml 的提交前检查**同一个文件**。
       - name: Gate (validate → translation → selftests → build → real browser)

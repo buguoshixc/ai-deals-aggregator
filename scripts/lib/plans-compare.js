@@ -230,10 +230,23 @@
     }
 
     if (sort === 'updated') {
-      return list.sort((a, b) => {
-        if (a.updated !== b.updated) return a.updated < b.updated ? order : -order;
+      // ⚠️ `updated` 是 `plan.lastSeen || null` —— 确实存在**没有 lastSeen 的计划**。
+      // 之前直接 `a.updated !== b.updated` 比大小：`'2026-10-04' < null` 在 JS 里是 **false**
+      // （null 被转成 0），于是"未知更新时间的行"会被排到**最新**的位置 —— 一行没有时间信息的
+      // 计划冒充"最近更新"，而降序时它还在最前面。
+      // 与 `regular` / `promo` 同一套处理：**不可比较的行永远排在可比行之后，且不随 dir 反转**。
+      const comparable = list.filter(row => typeof row.updated === 'string' && row.updated !== '');
+      const rest = list.filter(row => !(typeof row.updated === 'string' && row.updated !== '')).sort(byIndex);
+      comparable.sort((a, b) => {
+        // 语义：`dir='desc'` ⇒ **最新在前**（`updated` 越大越靠前）。
+        // 原实现写反了方向（`desc` 反而把最旧的排在前面、`asc` 把最新的排在前面），
+        // 与本节开头三条性质里的 ③ 以及测试「最近更新排序默认最新在前」直接矛盾 ——
+        // 那两条一直是红的，只是本轮新增计划后 `lastSeen` 出现并列才被暴露出来。
+        // 方向判据统一成 `(a < b ? -1 : 1) * order`，不再手写三元分支。
+        if (a.updated !== b.updated) return (a.updated < b.updated ? -1 : 1) * order;
         return byIndex(a, b);
       });
+      return comparable.concat(rest);
     }
 
     return list.sort(byIndex);

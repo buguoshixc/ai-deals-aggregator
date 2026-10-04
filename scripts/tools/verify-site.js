@@ -1649,14 +1649,32 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   // 所以这里只断言「为空的那条变化流写出了起算日」。
   // （「起算日取错来源」这条牙由 `feeds-selftest` 用**注入不同 startedAt 的夹具**钉住 ——
   //   真实数据上两条日志的 startedAt 相同，在这里写断言会恒真、等于没有牙。）
-  check('/feeds/ 为空的变化流那一行写出了起算日',
-    feedsLib.PLAN_CHANGE_FEEDS.every(spec => {
+  //
+  // 「这一行是不是 0 条」的判据是 `lib/feeds.js` 的 `isZeroCountRow()`（**唯一出处**）。
+  // 这里刻意不再写 `/0 条/`：那是**子串**匹配，`10 条` / `80 条` / `100 条` 全都命中 ——
+  // t28 的 T28-F1 就是这么来的（API 价格变化长到 10 条之后，两条变化流都被当成空态、
+  // 都被要求写起算日 ⇒ 门禁自造假红）。判据改成数字边界后，只有真的说「0 条」的行才进空态分支。
+  {
+    const rowsOf = spec => {
       const idx = feedsPage.text.indexOf(spec.title);
-      if (idx < 0) return false;
-      const row = feedsPage.text.slice(idx, idx + 260);
-      if (!/0 条/.test(row)) return true;                    // 非空行不写起算日，不算错
-      return /变更记录自 \d{4}-\d{2}-\d{2} 起/.test(row);
-    }), feedsPage.text.slice(0, 120));
+      if (idx < 0) return null;
+      // 窗口右界取**下一条变化流标题**的下标（没有就退回 260 字符上限）：
+      // 固定长度窗口会把邻行的文案框进来，两条相邻空行时甚至能借到邻行的起算日。
+      const next = feedsLib.PLAN_CHANGE_FEEDS
+        .map(other => feedsPage.text.indexOf(other.title, idx + spec.title.length))
+        .filter(hit => hit >= 0)
+        .sort((a, b) => a - b)[0];
+      const end = Math.min(next === undefined ? idx + 260 : next, idx + 260);
+      return feedsPage.text.slice(idx, end);
+    };
+    const rows = feedsLib.PLAN_CHANGE_FEEDS.map(spec => ({ spec, row: rowsOf(spec) }));
+    const problems = rows.filter(({ row }) => row === null || !feedsLib.changeRowIsHonest(row));
+    check('/feeds/ 为空的变化流那一行写出了起算日',
+      problems.length === 0 && rows.every(({ row }) => row !== null),
+      rows.map(({ spec, row }) => row === null
+        ? `${spec.title}: 页面里找不到标题`
+        : `${spec.title}: 说 0 条=${feedsLib.isZeroCountRow(row)} · 有起算日=${feedsLib.hasChangeStartDate(row)}`).join(' | '));
+  }
 
   console.log('\n=== 15) 独立详情页 ===');
   // 14b 把浏览器带到了 /feeds/，这一节要从首页取样 —— 显式回首页，
@@ -5116,18 +5134,138 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       const multiPairs = Object.keys(groupCount).filter(key => groupCount[key] > 1);
       const multiVariantSlugs = Object.keys(expectedBySlug).filter(slug => (linksDoc.links || []).some(link =>
         link.registrySlug === slug && link.apiPlanId && multiPairs.includes(link.apiPlanId + '|' + link.modelKey)));
+      // coverage-expansion-v1：默认可见性**在这一层按数据现算**（不写死集合、不读页面自报的数）。
+      // 期望值只从 dist/models.json 的 catalogStatus 推：current / aging / unknown 默认展示，
+      // legacy / historical 默认隐藏。枚举外的值按页面同一条口径回落到 unknown（展示）。
+      const DEFAULT_VISIBLE_STATUSES = ['current', 'aging', 'unknown'];
+      const catalogRows = (doc.models || []).map(model => ({
+        slug: model.slug,
+        catalogStatus: model.catalogStatus || 'unknown',
+        releasedAt: model.releasedAt || null,
+        officialUrl: model.officialUrl || ''
+      }));
+      const visibleRows = catalogRows.filter(row => DEFAULT_VISIBLE_STATUSES.includes(row.catalogStatus));
+      const hiddenRows = catalogRows.filter(row => !DEFAULT_VISIBLE_STATUSES.includes(row.catalogStatus));
+      const counts = {};
+      for (const row of catalogRows) counts[row.catalogStatus] = (counts[row.catalogStatus] || 0) + 1;
+      // 旧型号抽查要挑一个「确实有站外官方链接」的：详情页的站外链接断言要求 ≥1 条，
+      // 挑错了会把「这一条恰好没有官方页」误判成页面缺陷。
+      const hiddenSample = hiddenRows.find(row => row.officialUrl || (expectedBySlug[row.slug] || 0) > 0);
       return {
         count: doc.count,
         slugs: (doc.models || []).map(m => m.slug),
         firstSlug: (doc.models || [])[0].slug,
         expectedBySlug,
         multiVariantSlugs,
-        expectedTotal: Object.values(expectedBySlug).reduce((n, v) => n + v, 0)
+        expectedTotal: Object.values(expectedBySlug).reduce((n, v) => n + v, 0),
+        catalog: {
+          counts,
+          visibleCount: visibleRows.length,
+          hiddenCount: hiddenRows.length,
+          visibleSlugs: visibleRows.map(row => row.slug),
+          hiddenSlugs: hiddenRows.map(row => row.slug),
+          datedCount: catalogRows.filter(row => row.releasedAt).length,
+          hiddenSampleSlug: hiddenSample ? hiddenSample.slug : null
+        }
       };
     })()`).catch(() => null);
     if (modelsTruth) {
-      check(`/models/ 行数与 dist/models.json 逐个对账（${modelsTruth.count} 个）`,
-        data.rows === modelsTruth.count, `页面 ${data.rows} 行 / 数据 ${modelsTruth.count} 个`);
+      // 静态表 == registry 的**全部**模型。`data-item` 只标"这一行同时有详情页"，
+      // 因此它不再等于表里的行数 —— 两条口径分开量，谁也不许吞行。
+      const tableRows = await page.evaluate('document.querySelectorAll("#models-table tbody tr[data-model]").length');
+      const itemRows = await page.evaluate('document.querySelectorAll("#models-table tbody tr[data-item]").length');
+      check(`/models/ 静态表行数 == dist/models.json 全部模型数（${modelsTruth.count} 个）`,
+        tableRows === modelsTruth.count, `页面 ${tableRows} 行 / 数据 ${modelsTruth.count} 个`);
+      check('/models/ 有详情页的行（data-item）== ItemList 声明数 == 元素数（成员口径没被默认隐藏改掉）',
+        itemRows === data.declared && data.declared === data.elements,
+        `data-item ${itemRows} / 声明 ${data.declared} / 元素 ${data.elements}`);
+      // 默认隐藏的模型**仍然是成员**：藏的是首屏，不是身份/路由/ItemList 成员资格。
+      if (modelsTruth.catalog.hiddenCount) {
+        const indexHtmlText = await page.evaluate(`(async () => (await fetch(${JSON.stringify(new URL('models/', base).href)})).text())()`).catch(() => '');
+        const missingRoutes = modelsTruth.catalog.hiddenSlugs.filter(slug => (modelsTruth.expectedBySlug[slug] || 0) > 0
+          && !String(indexHtmlText).includes(`models/${encodeURIComponent(slug)}/`));
+        check(`/models/ 默认隐藏的旧型号详情页仍在索引页里（${modelsTruth.catalog.hiddenCount} 个隐藏模型）`,
+          missingRoutes.length === 0, missingRoutes.slice(0, 3).join(' ') || '全部仍有入链');
+      }
+
+      // ---- 默认可见性：真浏览器实测（初始 / 展开 / 收回，三次都量真实 DOM）----
+      const readVisibility = () => page.evaluate(`(() => {
+        const rows = Array.prototype.slice.call(document.querySelectorAll('#models-table tbody tr[data-model]'));
+        const toggle = document.getElementById('models-show-legacy');
+        const counter = document.getElementById('models-count');
+        return {
+          total: rows.length,
+          visible: rows.filter(row => !row.hidden).length,
+          hidden: rows.filter(row => row.hidden).length,
+          hasToggle: Boolean(toggle),
+          toggleChecked: Boolean(toggle && toggle.checked),
+          counter: counter ? counter.textContent.replace(/\\s+/g, ' ').trim() : ''
+        };
+      })()`);
+      const initial = await readVisibility();
+      check(`/models/ 初始可见行数 == current+aging+unknown 的行数（${modelsTruth.catalog.visibleCount} 行）`,
+        initial.visible === modelsTruth.catalog.visibleCount,
+        `可见 ${initial.visible} / 期望 ${modelsTruth.catalog.visibleCount}（默认隐藏 ${initial.hidden}）· ${initial.counter}`);
+      check('/models/ 默认隐藏的行数 == legacy/historical 的行数（多藏一个都是错的）',
+        initial.hidden === modelsTruth.catalog.hiddenCount,
+        `隐藏 ${initial.hidden} / 期望 ${modelsTruth.catalog.hiddenCount} · 目录状态分布 ${JSON.stringify(modelsTruth.catalog.counts)}`);
+      check('/models/ 有「显示旧型号」入口（默认藏起来的东西必须点得到）', initial.hasToggle,
+        initial.hasToggle ? 'ok' : '缺少 #models-show-legacy');
+      check('/models/ 计数行如实报出「显示 X / N」',
+        initial.counter.includes(`显示 ${initial.visible} / ${initial.total} 个模型`), initial.counter);
+
+      await page.check('#models-show-legacy');
+      const expanded = await readVisibility();
+      check(`/models/ 勾选「显示旧型号」后可见行数 == 全部 ${modelsTruth.count} 行（一行都不删）`,
+        expanded.toggleChecked && expanded.visible === modelsTruth.count,
+        `可见 ${expanded.visible} / 全部 ${modelsTruth.count} · ${expanded.counter}`);
+      await page.uncheck('#models-show-legacy');
+      const restored = await readVisibility();
+      check('/models/ 取消勾选后回到默认可见集合（隐藏是即时开关，不是一次性吞掉）',
+        !restored.toggleChecked && restored.visible === initial.visible,
+        `可见 ${restored.visible} / 初始 ${initial.visible}`);
+
+      // ---- 无 JS：静态表一行不少、一行不隐藏、一个控件都没有 ----
+      await libraryNoJsPage.goto(new URL('models/', base).href, { waitUntil: 'load' });
+      const noJsModels = await libraryNoJsPage.evaluate(`(() => {
+        const rows = Array.prototype.slice.call(document.querySelectorAll('#models-table tbody tr[data-model]'));
+        return {
+          total: rows.length,
+          hidden: rows.filter(row => row.hidden).length,
+          hiddenAttr: document.querySelectorAll('#models-table tbody tr[hidden]').length,
+          controls: document.querySelectorAll('main input, main select, main button, main textarea').length
+        };
+      })()`);
+      check(`/models/ 无 JS 时静态表仍是全部 ${modelsTruth.count} 行、且没有一行预先隐藏（No-JS 完整）`,
+        noJsModels.total === modelsTruth.count && noJsModels.hidden === 0 && noJsModels.hiddenAttr === 0,
+        `行 ${noJsModels.total} / hidden ${noJsModels.hidden} / hidden 属性 ${noJsModels.hiddenAttr}`);
+      check('/models/ 无 JS 时一个控件都没有（「显示旧型号」入口也整块由脚本建）',
+        noJsModels.controls === 0, `${noJsModels.controls} 个控件`);
+
+      // ---- 旧型号（默认隐藏）的详情页仍然存在：这是"藏首屏"与"删页面"的分界 ----
+      if (modelsTruth.catalog.hiddenSampleSlug) {
+        const hiddenSlug = modelsTruth.catalog.hiddenSampleSlug;
+        const { data: hiddenDetail } = await auditLibraryPage({
+          label: `/models/${hiddenSlug}/（默认隐藏的旧型号）`,
+          route: `models/${hiddenSlug}/`,
+          noJsText: ['发布时间', '目录状态', 'API 提供平台'],
+          minText: 700,
+          itemList: false,
+          official: 1,
+          footerLink: false
+        });
+        check(`/models/${hiddenSlug}/ 旧型号的详情页照常生成、仍在 sitemap、无 JS 读得到发布时间与目录状态`,
+          hiddenDetail.crumbLinks.includes('../models/') || hiddenDetail.crumbLinks.includes('../../models/'),
+          hiddenDetail.crumbLinks.join(' '));
+        check(`/models/${hiddenSlug}/ 详情页标出的目录状态确实属于默认隐藏集合`,
+          await page.evaluate(`(() => {
+            const el = document.querySelector('[data-catalog-status]');
+            const value = el ? el.getAttribute('data-catalog-status') : '';
+            return ${JSON.stringify(['legacy', 'historical'])}.indexOf(value) !== -1;
+          })()`).catch(() => false));
+      } else {
+        console.log('  ℹ️  本轮没有 legacy / historical 模型 —— 旧型号详情页抽查如实跳过（不造数据）');
+      }
     }
     // 抽样：除了「数据里最前的 3 个」，**必须**覆盖至少一个多变体模型页 ——
     // 否则「一条真实计价条目 = 一行」的展开口径就在测一个碰不到的场景（T06 实测：

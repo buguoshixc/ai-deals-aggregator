@@ -1,0 +1,2690 @@
+{
+  "battery": "t17 mutation / tooth test battery",
+  "repo": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-expansion-v1",
+  "sandbox": "D:\\t17-mutation",
+  "workers": 6,
+  "windowStart": "2026-10-04T12:50:08.758Z",
+  "runAt": "2026-10-04T12:51:02.233Z",
+  "host": {
+    "platform": "win32",
+    "release": "10.0.26100",
+    "cpus": 14
+  },
+  "sharedTree": {
+    "note": "电池只在仓库外沙箱里变异。判据是「所有用例的变异目标文件在用例执行窗口内逐字节未变」——这直接证明电池没写共享树；GUARDED 里其余文件的差异可能来自队友的正常提交（都会被逐条列出）",
+    "mutationTargetsUnchanged": true,
+    "unchangedDuringCases": true,
+    "changedDuringCases": [],
+    "guarded": [
+      "scripts/data/models.json",
+      "scripts/data/model-registry-links.json",
+      "scripts/data/model-registry-gaps.json",
+      "scripts/data/providers.json",
+      "scripts/data/coverage-targets.json",
+      "scripts/data/api-plans.json",
+      "scripts/data/plans.json",
+      "scripts/data/curated_api_plans.json",
+      "scripts/data/curated_plans.json",
+      "scripts/lib/model-freshness.js",
+      "models.json",
+      "model-registry-links.json",
+      "api-plans.json",
+      "plans.json",
+      "dist/models/index.html",
+      "package.json"
+    ],
+    "mutationTargets": [
+      "scripts/data/models.json",
+      "scripts/data/model-registry-links.json",
+      "scripts/data/model-registry-gaps.json",
+      "scripts/lib/model-registry.js",
+      "scripts/data/curated_plans.json",
+      "scripts/data/curated_api_plans.json",
+      "scripts/data/coverage-targets.json",
+      ".github/workflows/verify.yml",
+      "scripts/lib/health.js",
+      "dist/models/index.html",
+      "dist/models/glm-4.5v/index.html",
+      "dist/models/glm-4.6v/index.html",
+      "dist/models/deepseek-v4-pro/index.html",
+      "dist/models/kimi-k3/index.html",
+      "scripts/data/plan-history.json",
+      "scripts/tools/provenance-selftest.js",
+      "scripts/lib/coverage-targets.js"
+    ],
+    "baselineCapturedBeforeSetup": {
+      "scripts/data/models.json": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+      "scripts/data/model-registry-links.json": "3214dc1e6a69373af7339fb5e836bd4fc82fa1b61fd087abfe956ff0a411a9da",
+      "scripts/data/model-registry-gaps.json": "8bac901bec1e3856de1f3b7b71dec2f6facd5fd586a9a806d3d49d5a9273bb69",
+      "scripts/data/providers.json": "07d216b4965043c95084eb2aa1910d2eb9f1f12e751c01a255d30f8e7ca5f121",
+      "scripts/data/coverage-targets.json": "e55012b7c29b0a32362bbd58c7fc19aba860c989b7971477c8e2340844ec3d60",
+      "scripts/data/api-plans.json": null,
+      "scripts/data/plans.json": null,
+      "scripts/data/curated_api_plans.json": "c02e693c7317eb781e1aa846670bc4184c61fe51cb070610def552b3e29d2736",
+      "scripts/data/curated_plans.json": "6e33481ac86cabf5cc1394bcecd2ac1cdadefdda93a7d60d0e4ca205f73b5bb4",
+      "scripts/lib/model-freshness.js": "090838265d9ae29d223c1e9b53b126a563ea4f64440a3e100d6314c9d56afa10",
+      "models.json": "09d6872c02abb108717131302801812043d4ae554189f0ae767e9c6255fbc495",
+      "model-registry-links.json": "0cc76d6524e4d2360ea65bb27dfaf74abce0e7a61ecc010bb0a607121c261a67",
+      "api-plans.json": "bf8c697486e50c5a2ab4261bf19213c1ec571e23a17eaa4900dec9b04a5c1bc9",
+      "plans.json": "bcc00ba014a3929c2b3e68cc8e84aff231f937c3d3fe28929b116bb74f27cf54",
+      "dist/models/index.html": "3f88534f1a83bb019f9eb7f186e78a4224399d2d323e06e67579174a78e556ac",
+      "package.json": "1894e6334b849b68600aaa5e66fc3ca8ef9508b86862707b7a4f4a21958b771e"
+    },
+    "windowBaseline": {
+      "scripts/data/models.json": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+      "scripts/data/model-registry-links.json": "3214dc1e6a69373af7339fb5e836bd4fc82fa1b61fd087abfe956ff0a411a9da",
+      "scripts/data/model-registry-gaps.json": "8bac901bec1e3856de1f3b7b71dec2f6facd5fd586a9a806d3d49d5a9273bb69",
+      "scripts/data/providers.json": "07d216b4965043c95084eb2aa1910d2eb9f1f12e751c01a255d30f8e7ca5f121",
+      "scripts/data/coverage-targets.json": "e55012b7c29b0a32362bbd58c7fc19aba860c989b7971477c8e2340844ec3d60",
+      "scripts/data/api-plans.json": null,
+      "scripts/data/plans.json": null,
+      "scripts/data/curated_api_plans.json": "c02e693c7317eb781e1aa846670bc4184c61fe51cb070610def552b3e29d2736",
+      "scripts/data/curated_plans.json": "6e33481ac86cabf5cc1394bcecd2ac1cdadefdda93a7d60d0e4ca205f73b5bb4",
+      "scripts/lib/model-freshness.js": "090838265d9ae29d223c1e9b53b126a563ea4f64440a3e100d6314c9d56afa10",
+      "models.json": "09d6872c02abb108717131302801812043d4ae554189f0ae767e9c6255fbc495",
+      "model-registry-links.json": "0cc76d6524e4d2360ea65bb27dfaf74abce0e7a61ecc010bb0a607121c261a67",
+      "api-plans.json": "bf8c697486e50c5a2ab4261bf19213c1ec571e23a17eaa4900dec9b04a5c1bc9",
+      "plans.json": "bcc00ba014a3929c2b3e68cc8e84aff231f937c3d3fe28929b116bb74f27cf54",
+      "dist/models/index.html": "3f88534f1a83bb019f9eb7f186e78a4224399d2d323e06e67579174a78e556ac",
+      "package.json": "1894e6334b849b68600aaa5e66fc3ca8ef9508b86862707b7a4f4a21958b771e",
+      "scripts/lib/model-registry.js": "7acfb2353d24b30a9edbdb4bee6df519f4170949da20c0d0fad757a36fef64ec",
+      ".github/workflows/verify.yml": "7fd395e2ad40e261b41e513ae5d44571b6a6eb296625316cdd82a7cf7cc28184",
+      "scripts/lib/health.js": "bf8278b01378301ec4f66e2df1a0534323c2cca1a32ab63875aa1d33bdc837f4",
+      "dist/models/glm-4.5v/index.html": "78d3f6c5facc7d49bbd35167ee1dbc7cc540f03021a52bde86e6c516a307fc1e",
+      "dist/models/glm-4.6v/index.html": "cffa17e27f86058456366d35509cff250f2d874daa596cc781873a5d5800d42a",
+      "dist/models/deepseek-v4-pro/index.html": "7ed2c81153027b66648408272c7fa6ca07efea3c0b44854645fb6b38fc3c1a62",
+      "dist/models/kimi-k3/index.html": "a38af0fac352cc74d7629f5ebd9a665edde509efb923a2c004a20466ce2e7bb6",
+      "scripts/data/plan-history.json": "667a048176671a243e3862d2e538534e6231f74741e3d42c2bd61c139417f1b8",
+      "scripts/tools/provenance-selftest.js": "fe9b0e107f2c0d2ea00c3dd1410380cd1397856ae2d38f60ceafe7326ba7395f",
+      "scripts/lib/coverage-targets.js": "e66c56b384523dd73e666646d9a5e54b82c2ec892120ea0ce9014d2acb3acb59"
+    },
+    "windowAfter": {
+      "scripts/data/models.json": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+      "scripts/data/model-registry-links.json": "3214dc1e6a69373af7339fb5e836bd4fc82fa1b61fd087abfe956ff0a411a9da",
+      "scripts/data/model-registry-gaps.json": "8bac901bec1e3856de1f3b7b71dec2f6facd5fd586a9a806d3d49d5a9273bb69",
+      "scripts/data/providers.json": "07d216b4965043c95084eb2aa1910d2eb9f1f12e751c01a255d30f8e7ca5f121",
+      "scripts/data/coverage-targets.json": "e55012b7c29b0a32362bbd58c7fc19aba860c989b7971477c8e2340844ec3d60",
+      "scripts/data/api-plans.json": null,
+      "scripts/data/plans.json": null,
+      "scripts/data/curated_api_plans.json": "c02e693c7317eb781e1aa846670bc4184c61fe51cb070610def552b3e29d2736",
+      "scripts/data/curated_plans.json": "6e33481ac86cabf5cc1394bcecd2ac1cdadefdda93a7d60d0e4ca205f73b5bb4",
+      "scripts/lib/model-freshness.js": "090838265d9ae29d223c1e9b53b126a563ea4f64440a3e100d6314c9d56afa10",
+      "models.json": "09d6872c02abb108717131302801812043d4ae554189f0ae767e9c6255fbc495",
+      "model-registry-links.json": "0cc76d6524e4d2360ea65bb27dfaf74abce0e7a61ecc010bb0a607121c261a67",
+      "api-plans.json": "bf8c697486e50c5a2ab4261bf19213c1ec571e23a17eaa4900dec9b04a5c1bc9",
+      "plans.json": "bcc00ba014a3929c2b3e68cc8e84aff231f937c3d3fe28929b116bb74f27cf54",
+      "dist/models/index.html": "3f88534f1a83bb019f9eb7f186e78a4224399d2d323e06e67579174a78e556ac",
+      "package.json": "1894e6334b849b68600aaa5e66fc3ca8ef9508b86862707b7a4f4a21958b771e",
+      "scripts/lib/model-registry.js": "7acfb2353d24b30a9edbdb4bee6df519f4170949da20c0d0fad757a36fef64ec",
+      ".github/workflows/verify.yml": "7fd395e2ad40e261b41e513ae5d44571b6a6eb296625316cdd82a7cf7cc28184",
+      "scripts/lib/health.js": "bf8278b01378301ec4f66e2df1a0534323c2cca1a32ab63875aa1d33bdc837f4",
+      "dist/models/glm-4.5v/index.html": "78d3f6c5facc7d49bbd35167ee1dbc7cc540f03021a52bde86e6c516a307fc1e",
+      "dist/models/glm-4.6v/index.html": "cffa17e27f86058456366d35509cff250f2d874daa596cc781873a5d5800d42a",
+      "dist/models/deepseek-v4-pro/index.html": "7ed2c81153027b66648408272c7fa6ca07efea3c0b44854645fb6b38fc3c1a62",
+      "dist/models/kimi-k3/index.html": "a38af0fac352cc74d7629f5ebd9a665edde509efb923a2c004a20466ce2e7bb6",
+      "scripts/data/plan-history.json": "667a048176671a243e3862d2e538534e6231f74741e3d42c2bd61c139417f1b8",
+      "scripts/tools/provenance-selftest.js": "fe9b0e107f2c0d2ea00c3dd1410380cd1397856ae2d38f60ceafe7326ba7395f",
+      "scripts/lib/coverage-targets.js": "e66c56b384523dd73e666646d9a5e54b82c2ec892120ea0ce9014d2acb3acb59"
+    }
+  },
+  "sharedTreeUnchanged": true,
+  "sharedGuarded": [
+    "scripts/data/models.json",
+    "scripts/data/model-registry-links.json",
+    "scripts/data/model-registry-gaps.json",
+    "scripts/data/providers.json",
+    "scripts/data/coverage-targets.json",
+    "scripts/data/api-plans.json",
+    "scripts/data/plans.json",
+    "scripts/data/curated_api_plans.json",
+    "scripts/data/curated_plans.json",
+    "scripts/lib/model-freshness.js",
+    "models.json",
+    "model-registry-links.json",
+    "api-plans.json",
+    "plans.json",
+    "dist/models/index.html",
+    "package.json"
+  ],
+  "counts": {
+    "total": 27,
+    "caught": 24,
+    "notCaught": 0,
+    "knownNotCaught": 2,
+    "green": 1,
+    "applyError": 0,
+    "unexpectedRed": 0,
+    "restoreFailed": 0
+  },
+  "results": [
+    {
+      "id": "M00",
+      "title": "对照组：不修改任何文件，全部门禁必须绿",
+      "group": "对照",
+      "expected": "全绿（否则\"红\"不可解释）",
+      "targets": [
+        "scripts/data/models.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w0-M00",
+      "startedAt": "2026-10-04T12:50:10.092Z",
+      "shaBefore": {
+        "scripts/data/models.json": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27"
+      },
+      "applied": {
+        "note": "(对照，无变异)"
+      },
+      "shaMutated": {
+        "scripts/data/models.json": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27"
+      },
+      "targetsChanged": [],
+      "gates": [
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 0,
+          "durationMs": 7047,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）"
+          ]
+        },
+        {
+          "id": "check-models-reproducible",
+          "script": "scripts/tools/check-models-reproducible.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 108,
+          "assertions": [
+            "✅ Model Registry 可重建性通过：models.json 与 model-registry-links.json 都与来源层逐字节一致",
+            "44 个模型 · 82 条映射 · updatedAt=2026-10-04T00:00:00+08:00"
+          ]
+        },
+        {
+          "id": "check-model-registry-links",
+          "script": "scripts/tools/check-model-registry-links.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 80,
+          "assertions": [
+            "✅ Model Registry 关系层通过：每条映射都指向真实存在的记录与模型，一条 source pricing identity 至多归属一个 registry 模型，引文逐字来自记录本身；API 与 Coding 两侧每一个模型身份都已判过",
+            "映射：API 69 条 · Coding 13 条 · 被引用的模型 44/44",
+            "计价条目（展开后）：93 条 = 已被映射认领 81 条 + 未认领 0 条",
+            "套餐模型串：55 条 = 已映射 13 条 + 已声明\"不对应单一模型身份\" 42 条 + 未判 0 条",
+            "· anthropic / Claude 系列模型（含 Claude Code）（套餐 536e6b211045）→ series",
+            "· baidu / 百度 Comate 官方模型（Auto 调度）（套餐 c968fb5a3c55）→ pool"
+          ]
+        },
+        {
+          "id": "models-selftest",
+          "script": "scripts/tools/models-selftest.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 745,
+          "assertions": [
+            "✓ basis=explicit-mapping 却不写 note → 红（\"没有引文\"也必须说出来）",
+            "✓ 关系层顺序不是规范序 → 红（打乱输入仍必须得到同一串字节）",
+            "⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结局）",
+            "✓ 真实数据：套餐模型串 55 条 = 已映射 13 + 已声明 42 + 未判 0，且未判必须是 0",
+            "✓ 【牙 #22】role 与套餐里那一条不一致（抄错对照值）→ 红",
+            "✓ 【牙 #22】记录 role=pool 却把 reason 写成 series → 红（pool 与 role 必须互为充要）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 5678,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        },
+        {
+          "id": "models-page-selftest",
+          "script": "scripts/tools/models-page-selftest.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 3739,
+          "assertions": [
+            "✓ 目录状态词表与判据层（model-freshness）逐字同源（两处不一致 = 两个真相）",
+            "✓ 【变异】把发布时间的官方证据链接摘掉 → 断言变红（这句话必须有出处）",
+            "✓ 独立重算：9 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）",
+            "独立 join（dist）：模型 44 · 页 44 · 期望行 81（api-plans 真实计价条目 93）· missing 0 · extra 0 · duplicate 0 · multi-owner 0",
+            "✓ §17 独立 join：期望行数 == api-plans 计价条目 − 已声明\"不对应单一模型身份\"的条目（每条都要有结局：要么一行、要么一条声明）",
+            "✓ §17 交叉对账：每个已发布模型页的 mapirow 行数 == 独立 join 的展开期望（逐页）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 92,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        },
+        {
+          "id": "provenance-selftest",
+          "script": "scripts/tools/provenance-selftest.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 1988,
+          "assertions": [
+            "=== ⑨ 官方域判据（t7：evidence/officialUrl 必须兑现到官方来源登记）==="
+          ]
+        },
+        {
+          "id": "health-selftest",
+          "script": "scripts/tools/health-selftest.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 2088,
+          "assertions": [
+            "=== 1) 你列的四种情形 ===",
+            "=== 2) 异常、陡降、恢复 ===",
+            "=== 3) 整份文档与「本轮没跑的来源」 ===",
+            "=== 4) 汇总与相对时间 ===",
+            "=== 5) 真实接线：无头来源 × 浏览器可用性（P2-15 回归钉） ===",
+            "=== 6) 端到端接线：真跑一次采集（--dry-run，不写任何文件） ==="
+          ]
+        },
+        {
+          "id": "data-docs-selftest",
+          "script": "scripts/tools/data-docs-selftest.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 5594,
+          "assertions": [
+            "✓ 【牙】同一个错误在页面断言里也会变红（模板与 Manifest 不一致）",
+            "⑤ 牙 #13：schemaVersion 与真实数据不一致",
+            "⑥ 牙 #14：Dataset Manifest 数量与真实数据不一致",
+            "✓ 【牙】updatedAt 与磁盘不一致 → assertUpdatedAt 变红"
+          ]
+        },
+        {
+          "id": "coverage-targets-selftest",
+          "script": "scripts/tools/coverage-targets-selftest.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 3949,
+          "assertions": [
+            "✓ 真实盘面：COVERED 的格子必须真的有记录（不许空口算覆盖）",
+            "✓ 真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉",
+            "② 七态派生（夹具：每种状态都必须真的能派出来）",
+            "③ 牙（每一条变异都必须让 validateTargets 报红）",
+            "✓ 【反证牙】冻结契约规则：把旧键顺序打乱 ⇒ 必须报问题",
+            "✓ 【反证牙】冻结契约规则：删掉一个旧键 ⇒ 必须报问题"
+          ]
+        },
+        {
+          "id": "plans-selftest",
+          "script": "scripts/tools/plans-selftest.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 6016,
+          "assertions": [
+            "✓ 每条 provider 都显式写了 vendorKey 字段（缺席 = 静默退化，必须写出来）",
+            "✓ count 与 plans 长度不一致 → 判红",
+            "✓ 【对照】插入一处真实读取（path.join + readFileSync）→ 必须报红",
+            "✓ 【对照】插入一处真实读取（模板串 + JSON.parse）→ 必须报红",
+            "✓ 【对照】require('./plan-schema') → 必须报红",
+            "✓ 【对照】把文件名拼成两段（'plans' + '.json'）→ 必须报红"
+          ]
+        },
+        {
+          "id": "api-plans-selftest",
+          "script": "scripts/tools/api-plans-selftest.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 4670,
+          "assertions": [
+            "✓ 对照组：带 mediaRates 的页面 0 问题",
+            "✓ 赠送额度缺 description → 红（分类必须由官方条件支撑）",
+            "✓ 【牙】type=credits 缺 conversionDependsOnModel → 红（换算条件必须显式）",
+            "✓ 对照组：未变异的页面 0 问题",
+            "✓ 生产页面：没有任何一条赠送 / 限时额度被印成长期能力（计数必须为 0）",
+            "✓ 干净日志的 verifyStore 不报 eventId 问题（负例不误报）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/models.json",
+          "shaBefore": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+          "shaAfter": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [],
+      "greenGates": [
+        "validate-strict",
+        "check-models-reproducible",
+        "check-model-registry-links",
+        "models-selftest",
+        "report-coverage",
+        "models-page-selftest",
+        "report-coverage",
+        "provenance-selftest",
+        "health-selftest",
+        "data-docs-selftest",
+        "coverage-targets-selftest",
+        "plans-selftest",
+        "api-plans-selftest"
+      ],
+      "verdict": "GREEN(PASS)",
+      "finishedAt": "2026-10-04T12:50:51.903Z"
+    },
+    {
+      "id": "M01",
+      "title": "重复顶层 slug：models.json 里再写一遍 glm-5.3（后者静默覆盖前者）",
+      "group": "A registry",
+      "expected": "身份层「重复顶层键」牙 + 派生/校验层",
+      "targets": [
+        "scripts/data/models.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w1-M01",
+      "startedAt": "2026-10-04T12:50:11.528Z",
+      "shaBefore": {
+        "scripts/data/models.json": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w1-M01\\scripts\\data\\models.json",
+        "mode": "duplicateTopLevelKey",
+        "slug": "glm-5.3",
+        "blockBytes": 370
+      },
+      "shaMutated": {
+        "scripts/data/models.json": "d9ffabb9431f6c1a06cada2b117b0fdb6dff60d75d14cb41667369ae7395835e"
+      },
+      "targetsChanged": [
+        "scripts/data/models.json"
+      ],
+      "gates": [
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 1,
+          "durationMs": 5601,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "❌ 校验失败，共 1 项："
+          ]
+        },
+        {
+          "id": "check-models-reproducible",
+          "script": "scripts/tools/check-models-reproducible.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 107,
+          "assertions": [
+            "❌ Model Registry 可重建性失败："
+          ]
+        },
+        {
+          "id": "check-model-registry-links",
+          "script": "scripts/tools/check-model-registry-links.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 80,
+          "assertions": [
+            "❌ Model Registry 关系层有 1 处硬问题：",
+            "✗ models.json 的顶层键 \"glm-5.3\" 重复出现 —— 同一个 slug（= 同一个 registry 身份）只能有一条；JSON.parse 会静默只留最后一条，前一条根本进不了判据"
+          ]
+        },
+        {
+          "id": "models-selftest",
+          "script": "scripts/tools/models-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 743,
+          "assertions": [
+            "✗ validateRegistry：真实来源层原文里 0 个重复顶层键（不是靠 parse 结果\"看不见\"） —— [\"\\\"glm-5.3\\\"\"]",
+            "✓ basis=explicit-mapping 却不写 note → 红（\"没有引文\"也必须说出来）",
+            "✓ 关系层顺序不是规范序 → 红（打乱输入仍必须得到同一串字节）",
+            "⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结局）",
+            "✓ 真实数据：套餐模型串 55 条 = 已映射 13 + 已声明 42 + 未判 0，且未判必须是 0",
+            "✓ 【牙 #22】role 与套餐里那一条不一致（抄错对照值）→ 红"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 125,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/models.json",
+          "shaBefore": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+          "shaAfter": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "validate-strict=1",
+        "check-models-reproducible=1",
+        "check-model-registry-links=1",
+        "models-selftest=1"
+      ],
+      "greenGates": [
+        "report-coverage"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:18.206Z"
+    },
+    {
+      "id": "M02",
+      "title": "手写派生字段：来源层给一条记录塞 catalogStatus",
+      "group": "A registry",
+      "expected": "schema「派生字段不得手写」",
+      "targets": [
+        "scripts/data/models.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w2-M02",
+      "startedAt": "2026-10-04T12:50:12.917Z",
+      "shaBefore": {
+        "scripts/data/models.json": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w2-M02\\scripts\\data\\models.json",
+        "mode": "editJson",
+        "note": "deepseek-v4-pro.catalogStatus = current"
+      },
+      "shaMutated": {
+        "scripts/data/models.json": "08d4077f64c19fd7d79d769c636bc5ae6bd96e4898850f2c4579315b98924a58"
+      },
+      "targetsChanged": [
+        "scripts/data/models.json"
+      ],
+      "gates": [
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 1,
+          "durationMs": 4208,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "❌ 校验失败，共 1 项："
+          ]
+        },
+        {
+          "id": "check-models-reproducible",
+          "script": "scripts/tools/check-models-reproducible.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 107,
+          "assertions": [
+            "❌ Model Registry 可重建性失败："
+          ]
+        },
+        {
+          "id": "check-model-registry-links",
+          "script": "scripts/tools/check-model-registry-links.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 79,
+          "assertions": [
+            "❌ Model Registry 关系层有 1 处硬问题：",
+            "✗ models.json 的 deepseek-v4-pro: 出现派生字段 catalogStatus —— 它只能由构建期算出来，不得手写"
+          ]
+        },
+        {
+          "id": "models-selftest",
+          "script": "scripts/tools/models-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 803,
+          "assertions": [
+            "✓ basis=explicit-mapping 却不写 note → 红（\"没有引文\"也必须说出来）",
+            "✓ 关系层顺序不是规范序 → 红（打乱输入仍必须得到同一串字节）",
+            "⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结局）",
+            "✓ 真实数据：套餐模型串 55 条 = 已映射 13 + 已声明 42 + 未判 0，且未判必须是 0",
+            "✓ 【牙 #22】role 与套餐里那一条不一致（抄错对照值）→ 红",
+            "✓ 【牙 #22】记录 role=pool 却把 reason 写成 series → 红（pool 与 role 必须互为充要）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 1930,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/models.json",
+          "shaBefore": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+          "shaAfter": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "validate-strict=1",
+        "check-models-reproducible=1",
+        "check-model-registry-links=1",
+        "models-selftest=1"
+      ],
+      "greenGates": [
+        "report-coverage"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:20.070Z"
+    },
+    {
+      "id": "M03",
+      "title": "非法 modelRole：把一条改成词表外的 role",
+      "group": "A registry",
+      "expected": "角色枚举校验 + 词汇表对账",
+      "targets": [
+        "scripts/data/models.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w3-M03",
+      "startedAt": "2026-10-04T12:50:14.358Z",
+      "shaBefore": {
+        "scripts/data/models.json": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w3-M03\\scripts\\data\\models.json",
+        "mode": "editJson",
+        "note": "glm-4.6v.modelRole = 'vision-language-ultra'"
+      },
+      "shaMutated": {
+        "scripts/data/models.json": "39c452ddb36a57af89f2f740a541caa4d5b1dcc1fbf70bc80f6272f4225ff7d8"
+      },
+      "targetsChanged": [
+        "scripts/data/models.json"
+      ],
+      "gates": [
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 1,
+          "durationMs": 2763,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "❌ 校验失败，共 1 项："
+          ]
+        },
+        {
+          "id": "check-models-reproducible",
+          "script": "scripts/tools/check-models-reproducible.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 106,
+          "assertions": [
+            "应为：\"vision-language-ultra\"",
+            "❌ Model Registry 可重建性失败：",
+            "- models.json 与来源层的产出不一致（1 处差异）—— 手改过产物，或改了来源层没重建"
+          ]
+        },
+        {
+          "id": "check-model-registry-links",
+          "script": "scripts/tools/check-model-registry-links.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 79,
+          "assertions": [
+            "❌ Model Registry 关系层有 1 处硬问题：",
+            "✗ models.json 的 glm-4.6v: modelRole 非法（\"vision-language-ultra\"），允许 null 或 general / fast / reasoning / coding / vision / embedding / audio / realtime / translation / other"
+          ]
+        },
+        {
+          "id": "models-selftest",
+          "script": "scripts/tools/models-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 813,
+          "assertions": [
+            "✓ basis=explicit-mapping 却不写 note → 红（\"没有引文\"也必须说出来）",
+            "✓ 关系层顺序不是规范序 → 红（打乱输入仍必须得到同一串字节）",
+            "⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结局）",
+            "✓ 真实数据：套餐模型串 55 条 = 已映射 13 + 已声明 42 + 未判 0，且未判必须是 0",
+            "✓ 【牙 #22】role 与套餐里那一条不一致（抄错对照值）→ 红",
+            "✓ 【牙 #22】记录 role=pool 却把 reason 写成 series → 红（pool 与 role 必须互为充要）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 1919,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        },
+        {
+          "id": "model-role-vocabulary-selftest",
+          "script": "scripts/tools/model-role-vocabulary-selftest.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 5609,
+          "assertions": [
+            "=== 模型角色 / 目录状态枚举契约守卫 ===",
+            "✓ model-registry.js 的 MODEL_ROLES 逐字等于题面 §16 的 10 值",
+            "✓ model-freshness.js 的 MODEL_ROLES 与 model-registry.js 逐字相同（两个真相 = 零个真相）",
+            "✓ 档位表 tiers[].modelRoles 的并集 == 契约枚举（不多不少）",
+            "✓ 档位表里没有重复挂同一个角色（重复 = 分档判据不唯一）",
+            "✓ cover：model-registry.js 的 MODEL_CATALOG_STATUS 与 model-freshness.js 的 CATALOG_STATUSES 逐字相同"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/models.json",
+          "shaBefore": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+          "shaAfter": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "validate-strict=1",
+        "check-models-reproducible=1",
+        "check-model-registry-links=1",
+        "models-selftest=1"
+      ],
+      "greenGates": [
+        "report-coverage",
+        "model-role-vocabulary-selftest"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:25.671Z"
+    },
+    {
+      "id": "M04",
+      "title": "alias 撞 slug：把某条 alias 改成另一个模型的身份",
+      "group": "A registry",
+      "expected": "别名唯一性牙",
+      "targets": [
+        "scripts/data/models.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w4-M04",
+      "startedAt": "2026-10-04T12:50:15.704Z",
+      "shaBefore": {
+        "scripts/data/models.json": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w4-M04\\scripts\\data\\models.json",
+        "mode": "editJson",
+        "note": "deepseek-flash.aliases += 'glm-5.3'"
+      },
+      "shaMutated": {
+        "scripts/data/models.json": "c37618b8c54ff4df2a996ac5204efffcba29f10fff7b3059b1c809cea3d79482"
+      },
+      "targetsChanged": [
+        "scripts/data/models.json"
+      ],
+      "gates": [
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 1,
+          "durationMs": 1410,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "❌ 校验失败，共 1 项："
+          ]
+        },
+        {
+          "id": "check-models-reproducible",
+          "script": "scripts/tools/check-models-reproducible.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 106,
+          "assertions": [
+            "应为：[\"DeepSeek-V4.1-Flash\",\"deepseek-v4.1-flash\",\"glm-5.3\"]",
+            "❌ Model Registry 可重建性失败：",
+            "- models.json 与来源层的产出不一致（1 处差异）—— 手改过产物，或改了来源层没重建"
+          ]
+        },
+        {
+          "id": "check-model-registry-links",
+          "script": "scripts/tools/check-model-registry-links.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 77,
+          "assertions": [
+            "❌ Model Registry 关系层有 1 处硬问题：",
+            "✗ models.json 的 deepseek-flash: alias「glm-5.3」与某个 registry slug 冲突 —— 别名与 slug 在同一个名字空间里，不能撞"
+          ]
+        },
+        {
+          "id": "models-selftest",
+          "script": "scripts/tools/models-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 803,
+          "assertions": [
+            "✓ basis=explicit-mapping 却不写 note → 红（\"没有引文\"也必须说出来）",
+            "✓ 关系层顺序不是规范序 → 红（打乱输入仍必须得到同一串字节）",
+            "⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结局）",
+            "✓ 真实数据：套餐模型串 55 条 = 已映射 13 + 已声明 42 + 未判 0，且未判必须是 0",
+            "✓ 【牙 #22】role 与套餐里那一条不一致（抄错对照值）→ 红",
+            "✓ 【牙 #22】记录 role=pool 却把 reason 写成 series → 红（pool 与 role 必须互为充要）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 3790,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/models.json",
+          "shaBefore": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+          "shaAfter": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "validate-strict=1",
+        "check-models-reproducible=1",
+        "check-model-registry-links=1",
+        "models-selftest=1"
+      ],
+      "greenGates": [
+        "report-coverage"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:21.913Z"
+    },
+    {
+      "id": "M05",
+      "title": "releasedAt 改第三方域证据：日期不变、引文 URL 换成聚合站",
+      "group": "A registry",
+      "expected": "官方域/引文来源门禁",
+      "targets": [
+        "scripts/data/models.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w5-M05",
+      "startedAt": "2026-10-04T12:50:17.107Z",
+      "shaBefore": {
+        "scripts/data/models.json": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w5-M05\\scripts\\data\\models.json",
+        "mode": "editJson",
+        "note": "deepseek-v3.2.releaseEvidence[].sourceUrl → aitools.fyi"
+      },
+      "shaMutated": {
+        "scripts/data/models.json": "97d7eedc74317be479bb60ed189b22012f76e992ef77fa15717eb405af1c9a2b"
+      },
+      "targetsChanged": [
+        "scripts/data/models.json"
+      ],
+      "gates": [
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 1,
+          "durationMs": 536,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "❌ 校验失败，共 1 项："
+          ]
+        },
+        {
+          "id": "check-models-reproducible",
+          "script": "scripts/tools/check-models-reproducible.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 129,
+          "assertions": [
+            "应为：[{\"field\":\"releasedAt\",\"quote\":\"「## Date: 2025-12-01 / ### DeepSeek-V3.2 / Both `deepseek-chat` and",
+            "❌ Model Registry 可重建性失败：",
+            "- models.json 与来源层的产出不一致（1 处差异）—— 手改过产物，或改了来源层没重建"
+          ]
+        },
+        {
+          "id": "check-model-registry-links",
+          "script": "scripts/tools/check-model-registry-links.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 86,
+          "assertions": [
+            "❌ Model Registry 关系层有 1 处硬问题：",
+            "✗ models.json 的 deepseek-v3.2 releaseEvidence[0]: 出处是聚合站（https://aitools.fyi/deepseek）—— 发布日期证据只收开发商官方页"
+          ]
+        },
+        {
+          "id": "models-selftest",
+          "script": "scripts/tools/models-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 2175,
+          "assertions": [
+            "✓ basis=explicit-mapping 却不写 note → 红（\"没有引文\"也必须说出来）",
+            "✓ 关系层顺序不是规范序 → 红（打乱输入仍必须得到同一串字节）",
+            "⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结局）",
+            "✓ 真实数据：套餐模型串 55 条 = 已映射 13 + 已声明 42 + 未判 0，且未判必须是 0",
+            "✓ 【牙 #22】role 与套餐里那一条不一致（抄错对照值）→ 红",
+            "✓ 【牙 #22】记录 role=pool 却把 reason 写成 series → 红（pool 与 role 必须互为充要）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 3724,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/models.json",
+          "shaBefore": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+          "shaAfter": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "validate-strict=1",
+        "check-models-reproducible=1",
+        "check-model-registry-links=1",
+        "models-selftest=1"
+      ],
+      "greenGates": [
+        "report-coverage"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:23.783Z"
+    },
+    {
+      "id": "M06",
+      "title": "去掉一条 identity 的 API 映射（关系层少一条记录）",
+      "group": "A registry",
+      "expected": "身份唯一性/完整性牙 + 覆盖报告",
+      "targets": [
+        "scripts/data/model-registry-links.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w1-M06",
+      "startedAt": "2026-10-04T12:50:20.031Z",
+      "shaBefore": {
+        "scripts/data/model-registry-links.json": "116bad28c1d2687a2364b8c778825a44de2ab1e8c5935bb2c56b835308162460"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w1-M06\\scripts\\data\\model-registry-links.json",
+        "mode": "editJson",
+        "note": "links 82 → 81（删 glm-5.3 的一条 API 映射）"
+      },
+      "shaMutated": {
+        "scripts/data/model-registry-links.json": "699b9bcb17f663c463f9de2d5fdd22e3261e65f13c4e952e1898297d083c183b"
+      },
+      "targetsChanged": [
+        "scripts/data/model-registry-links.json"
+      ],
+      "gates": [
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 1,
+          "durationMs": 3727,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "❌ 校验失败，共 1 项：",
+            "- Model Registry 关系层: API 侧 1 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：(646f01c662e6, glm-5.3, standard) —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）"
+          ]
+        },
+        {
+          "id": "check-models-reproducible",
+          "script": "scripts/tools/check-models-reproducible.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 3731,
+          "assertions": [
+            "❌ Model Registry 可重建性失败：",
+            "- model-registry-links.json 与来源层的产出不一致（手改过产物，或改了来源层没重建）"
+          ]
+        },
+        {
+          "id": "check-model-registry-links",
+          "script": "scripts/tools/check-model-registry-links.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 78,
+          "assertions": [
+            "❌ Model Registry 关系层有 1 处硬问题：",
+            "✗ API 侧 1 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：(646f01c662e6, glm-5.3, standard) —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）",
+            "✗ 未认领的计价条目（删掉一条映射就补回来；每一条都必须有结局）："
+          ]
+        },
+        {
+          "id": "models-selftest",
+          "script": "scripts/tools/models-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 1994,
+          "assertions": [
+            "✓ 真实数据：releasedAt 与 releaseEvidence 互为充要（有日期必须有官方证据；有证据必须有日期）",
+            "✓ 【v2】引文里多写一个键（httpStatus）→ 红（研究细节不进身份层，形态必须封闭）",
+            "✗ 【API 处置】删掉一条 API 侧声明 → validateLinks 复红（两处都没有）；留着则绿 —— API 侧 2 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：(929a1f3ec46c, ember-1, standard) · (646f01c662e6, glm-5.3, standa",
+            "✗ 【API 处置】coverageOf：declaredApiEntries 逐条留档（12 条 · 带 provider）+ unmappedModelKeys 归零 + 三者和 == 总条目 —— {\"declared\":12,\"unmapped\":1,\"mapped\":80,\"identities\":12,\"items\":93}",
+            "✗ 【API 处置】每个折叠命中的计价条目都有结局（映射或声明），没有\"能对上却没写、也没声明\"的漏网之鱼 —— 646f01c662e6/glm-5.3(normalized-name-exact)",
+            "⑧ 机器牙：validateLinks 与 validateGaps 必须成对调用（T26-F2）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 2099,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）",
+            "❌ 覆盖报告自检失败：",
+            "- API 侧还有 1 条计价条目既没有 registry 映射、也没有在 model-registry-gaps.json 里声明处置 —— 每一条都必须人工判一次（映射或\"不对应单一模型身份\"，禁止静默留空）：(646f01c662e6, glm-5.3, standard)",
+            "- API 侧 1 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：(646f01c662e6, glm-5.3, standard) —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/model-registry-links.json",
+          "shaBefore": "116bad28c1d2687a2364b8c778825a44de2ab1e8c5935bb2c56b835308162460",
+          "shaAfter": "116bad28c1d2687a2364b8c778825a44de2ab1e8c5935bb2c56b835308162460",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "validate-strict=1",
+        "check-models-reproducible=1",
+        "check-model-registry-links=1",
+        "models-selftest=1",
+        "report-coverage=1"
+      ],
+      "greenGates": [],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:31.679Z"
+    },
+    {
+      "id": "M07",
+      "title": "一条 pricing identity 映射到两个 registry 模型（通配覆盖第二条）",
+      "group": "A registry",
+      "expected": "「同一条价格记录不许映射到两个模型」牙",
+      "targets": [
+        "scripts/data/model-registry-links.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w2-M07",
+      "startedAt": "2026-10-04T12:50:21.885Z",
+      "shaBefore": {
+        "scripts/data/model-registry-links.json": "116bad28c1d2687a2364b8c778825a44de2ab1e8c5935bb2c56b835308162460"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w2-M07\\scripts\\data\\model-registry-links.json",
+        "mode": "editJson",
+        "note": "复制 646f01c662e6/glm-5.3 → glm-5.3-flash（variant=null）"
+      },
+      "shaMutated": {
+        "scripts/data/model-registry-links.json": "9d14a2e4e7baeb79a168a5fbff15b638439c3fd370e36e71655c8f5e5447ec5f"
+      },
+      "targetsChanged": [
+        "scripts/data/model-registry-links.json"
+      ],
+      "gates": [
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 1,
+          "durationMs": 1866,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "❌ 校验失败，共 2 项："
+          ]
+        },
+        {
+          "id": "check-models-reproducible",
+          "script": "scripts/tools/check-models-reproducible.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 3740,
+          "assertions": [
+            "❌ Model Registry 可重建性失败：",
+            "- model-registry-links.json 与来源层的产出不一致（手改过产物，或改了来源层没重建）"
+          ]
+        },
+        {
+          "id": "check-model-registry-links",
+          "script": "scripts/tools/check-model-registry-links.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 78,
+          "assertions": [
+            "❌ Model Registry 关系层有 2 处硬问题：",
+            "✗ links[82] glm-5.3-flash: source pricing identity (646f01c662e6, glm-5.3, standard)（记录 646f01c662e6 · modelKey glm-5.3 · variant standard）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型",
+            "✗ links 的记录顺序不是规范序（应先按 registrySlug，再按 apiPlanId/planId，再按 modelKey/modelName）"
+          ]
+        },
+        {
+          "id": "models-selftest",
+          "script": "scripts/tools/models-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 1985,
+          "assertions": [
+            "✓ 【牙 #22】role 与套餐里那一条不一致（抄错对照值）→ 红",
+            "✓ 【牙 #22】记录 role=pool 却把 reason 写成 series → 红（pool 与 role 必须互为充要）",
+            "✓ 【牙 #22】登记表顺序不是规范序 → 红（打乱输入仍必须得到同一串字节）",
+            "✓ 【牙 #22】把一条归一后**能精确落到 registry 身份**的串声明成\"对不上\" → 红（能对上的必须去写映射）",
+            "✓ 真实数据：releasedAt 与 releaseEvidence 互为充要（有日期必须有官方证据；有证据必须有日期）",
+            "✓ 【v2】引文里多写一个键（httpStatus）→ 红（研究细节不进身份层，形态必须封闭）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 125,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）",
+            "❌ 覆盖报告自检失败："
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/model-registry-links.json",
+          "shaBefore": "116bad28c1d2687a2364b8c778825a44de2ab1e8c5935bb2c56b835308162460",
+          "shaAfter": "116bad28c1d2687a2364b8c778825a44de2ab1e8c5935bb2c56b835308162460",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "validate-strict=1",
+        "check-models-reproducible=1",
+        "check-model-registry-links=1",
+        "models-selftest=1",
+        "report-coverage=1"
+      ],
+      "greenGates": [],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:29.702Z"
+    },
+    {
+      "id": "M08",
+      "title": "删掉一条 API 侧处置声明（计价条目既无映射也无处置）",
+      "group": "A registry",
+      "expected": "「未判计价条目」牙（t23/t25 的口径）",
+      "targets": [
+        "scripts/data/model-registry-gaps.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w4-M08",
+      "startedAt": "2026-10-04T12:50:23.741Z",
+      "shaBefore": {
+        "scripts/data/model-registry-gaps.json": "8bac901bec1e3856de1f3b7b71dec2f6facd5fd586a9a806d3d49d5a9273bb69"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w4-M08\\scripts\\data\\model-registry-gaps.json",
+        "mode": "editJson",
+        "note": "declarations 54 → 53（删 036c5f09561e/meta-llama.prompt-guard-2-22m）"
+      },
+      "shaMutated": {
+        "scripts/data/model-registry-gaps.json": "1633cdf610cf35c44d2182d158d93ab1ebadd6a31f891ef8508cb5cc78bfb086"
+      },
+      "targetsChanged": [
+        "scripts/data/model-registry-gaps.json"
+      ],
+      "gates": [
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 1,
+          "durationMs": 3740,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "❌ 校验失败，共 1 项：",
+            "- Model Registry 关系层: API 侧 1 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：(036c5f09561e, meta-llama.prompt-guard-2-22m, standard) —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）"
+          ]
+        },
+        {
+          "id": "check-models-reproducible",
+          "script": "scripts/tools/check-models-reproducible.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 109,
+          "assertions": [
+            "❌ Model Registry 可重建性失败："
+          ]
+        },
+        {
+          "id": "check-model-registry-links",
+          "script": "scripts/tools/check-model-registry-links.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 1963,
+          "assertions": [
+            "❌ Model Registry 关系层有 1 处硬问题：",
+            "✗ API 侧 1 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：(036c5f09561e, meta-llama.prompt-guard-2-22m, standard) —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）",
+            "✗ 未认领的计价条目（删掉一条映射就补回来；每一条都必须有结局）："
+          ]
+        },
+        {
+          "id": "models-selftest",
+          "script": "scripts/tools/models-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 2091,
+          "assertions": [
+            "✓ 【牙 #22】登记表顺序不是规范序 → 红（打乱输入仍必须得到同一串字节）",
+            "✓ 【牙 #22】把一条归一后**能精确落到 registry 身份**的串声明成\"对不上\" → 红（能对上的必须去写映射）",
+            "✓ 真实数据：releasedAt 与 releaseEvidence 互为充要（有日期必须有官方证据；有证据必须有日期）",
+            "✓ 【v2】引文里多写一个键（httpStatus）→ 红（研究细节不进身份层，形态必须封闭）",
+            "✗ 真实数据：API 侧声明 11 条，reason 全部是 off-registry-model、sourceUrl 全部取自该记录自己的官方页",
+            "✗ 【API 处置】删掉一条 API 侧声明 → validateLinks 复红（两处都没有）；留着则绿 —— API 侧 2 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：(929a1f3ec46c, ember-1, standard) · (036c5f09561e, meta-llama.prom"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 3764,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）",
+            "❌ 覆盖报告自检失败：",
+            "- API 侧还有 1 条计价条目既没有 registry 映射、也没有在 model-registry-gaps.json 里声明处置 —— 每一条都必须人工判一次（映射或\"不对应单一模型身份\"，禁止静默留空）：(036c5f09561e, meta-llama.prompt-guard-2-22m, standard)",
+            "- API 侧 1 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：(036c5f09561e, meta-llama.prompt-guard-2-22m, standard) —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/model-registry-gaps.json",
+          "shaBefore": "8bac901bec1e3856de1f3b7b71dec2f6facd5fd586a9a806d3d49d5a9273bb69",
+          "shaAfter": "8bac901bec1e3856de1f3b7b71dec2f6facd5fd586a9a806d3d49d5a9273bb69",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "validate-strict=1",
+        "check-models-reproducible=1",
+        "check-model-registry-links=1",
+        "models-selftest=1",
+        "report-coverage=1"
+      ],
+      "greenGates": [],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:35.427Z"
+    },
+    {
+      "id": "M09",
+      "title": "API 侧处置改成\"能对上的身份\"（拿不对应单一模型身份绕过映射）",
+      "group": "A registry",
+      "expected": "「能对上的串必须去写映射」牙",
+      "targets": [
+        "scripts/data/model-registry-gaps.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w5-M09",
+      "startedAt": "2026-10-04T12:50:25.646Z",
+      "shaBefore": {
+        "scripts/data/model-registry-gaps.json": "8bac901bec1e3856de1f3b7b71dec2f6facd5fd586a9a806d3d49d5a9273bb69"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w5-M09\\scripts\\data\\model-registry-gaps.json",
+        "mode": "editJson",
+        "note": "第一条 API 处置的 modelKey → glm-5.3"
+      },
+      "shaMutated": {
+        "scripts/data/model-registry-gaps.json": "fb0066fed35477ffe0feb50177eebd9218b444ee5bda23c0f89ae943cc286466"
+      },
+      "targetsChanged": [
+        "scripts/data/model-registry-gaps.json"
+      ],
+      "gates": [
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 1,
+          "durationMs": 1832,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "❌ 校验失败，共 4 项：",
+            "- Model Registry 关系层: API 侧 1 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：(036c5f09561e, meta-llama.prompt-guard-2-22m, standard) —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）",
+            "- Model Registry 处置登记: declarations[0] API 侧 036c5f09561e: modelKey「glm-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过"
+          ]
+        },
+        {
+          "id": "check-models-reproducible",
+          "script": "scripts/tools/check-models-reproducible.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 118,
+          "assertions": [
+            "❌ Model Registry 可重建性失败："
+          ]
+        },
+        {
+          "id": "check-model-registry-links",
+          "script": "scripts/tools/check-model-registry-links.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 1953,
+          "assertions": [
+            "❌ Model Registry 关系层有 4 处硬问题：",
+            "✗ API 侧 1 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：(036c5f09561e, meta-llama.prompt-guard-2-22m, standard) —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）",
+            "✗ declarations[0] API 侧 036c5f09561e: modelKey「glm-5.3」不在记录 036c5f09561e 里（处置只能指向该记录真实写着的计价条目）",
+            "✗ declarations[0] API 侧 036c5f09561e: 通配 variant=null 在记录 036c5f09561e 里一条真实变体都没匹配到 —— 它什么都没声明，不许静默通过",
+            "✗ declarations[0] API 侧 036c5f09561e: modelKey「glm-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过",
+            "✗ 未认领的计价条目（删掉一条映射就补回来；每一条都必须有结局）："
+          ]
+        },
+        {
+          "id": "models-selftest",
+          "script": "scripts/tools/models-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 2100,
+          "assertions": [
+            "✓ 【v2】引文里多写一个键（httpStatus）→ 红（研究细节不进身份层，形态必须封闭）",
+            "✗ 真实数据：真实 gaps 通过双侧校验（0 处问题） —— declarations[0] API 侧 036c5f09561e: modelKey「glm-5.3」不在记录 036c5f09561e 里（处置只能指向该记录真实写着的计价条目） | declarations[0] API 侧 036c5f09561e: 通配 variant=null 在记录 036c5f09561e 里一条真实变体都没匹配到 —— 它什么都没声明，不许静默通过",
+            "✗ 【API 处置】删掉一条 API 侧声明 → validateLinks 复红（两处都没有）；留着则绿 —— API 侧 2 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：(929a1f3ec46c, ember-1, standard) · (036c5f09561e, meta-llama.prom",
+            "✗ 【API 处置】coverageOf：declaredApiEntries 逐条留档（12 条 · 带 provider）+ unmappedModelKeys 归零 + 三者和 == 总条目 —— {\"declared\":12,\"unmapped\":1,\"mapped\":81,\"identities\":12,\"items\":93}",
+            "✗ 【API 处置·对照】真实数据里 12 条声明在折叠索引下 0 命中（7 条能对上的已经去写了映射）",
+            "⑧ 机器牙：validateLinks 与 validateGaps 必须成对调用（T26-F2）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 1913,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）",
+            "❌ 覆盖报告自检失败：",
+            "- API 侧记账不闭合：计价条目 93 条 ≠ 已映射认领 81 + 已处置声明 12 + 未判 1（= 94）—— 三个数必须把每一条计价条目恰好分完，否则报告在自说自话。",
+            "- API 侧还有 1 条计价条目既没有 registry 映射、也没有在 model-registry-gaps.json 里声明处置 —— 每一条都必须人工判一次（映射或\"不对应单一模型身份\"，禁止静默留空）：(036c5f09561e, meta-llama.prompt-guard-2-22m, standard)",
+            "- declarations[0] API 侧 036c5f09561e: modelKey「glm-5.3」折叠后精确落到 registry 身份「glm-5.3」（规则 normalized-name-folded）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用\"不对应单一模型身份\"绕过"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/model-registry-gaps.json",
+          "shaBefore": "8bac901bec1e3856de1f3b7b71dec2f6facd5fd586a9a806d3d49d5a9273bb69",
+          "shaAfter": "8bac901bec1e3856de1f3b7b71dec2f6facd5fd586a9a806d3d49d5a9273bb69",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "validate-strict=1",
+        "check-models-reproducible=1",
+        "check-model-registry-links=1",
+        "models-selftest=1",
+        "report-coverage=1"
+      ],
+      "greenGates": [],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:33.587Z"
+    },
+    {
+      "id": "M10",
+      "title": "身份层加一个不在档位表里的角色（词汇表对账应红）",
+      "group": "A registry",
+      "expected": "角色词汇表契约守卫",
+      "targets": [
+        "scripts/lib/model-registry.js"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w3-M10",
+      "startedAt": "2026-10-04T12:50:27.466Z",
+      "shaBefore": {
+        "scripts/lib/model-registry.js": "7acfb2353d24b30a9edbdb4bee6df519f4170949da20c0d0fad757a36fef64ec"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w3-M10\\scripts\\lib\\model-registry.js",
+        "mode": "replaceOnce",
+        "anchor": "'general', 'fast', 'reasoning', 'coding', 'vision',"
+      },
+      "shaMutated": {
+        "scripts/lib/model-registry.js": "dc1259baf4aedcc1a4d540e71b00a93fe0e4e9a4ced5ef8d469bfc2f8966c044"
+      },
+      "targetsChanged": [
+        "scripts/lib/model-registry.js"
+      ],
+      "gates": [
+        {
+          "id": "model-role-vocabulary-selftest",
+          "script": "scripts/tools/model-role-vocabulary-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 113,
+          "assertions": [
+            "✗ model-registry.js 的 MODEL_ROLES 逐字等于题面 §16 的 10 值 —— 实得 [\"general\",\"fast\",\"reasoning\",\"coding\",\"vision\",\"vision-language-ultra\",\"embedding\",\"audio\",\"realtime\",\"translation\",\"other\"]",
+            "✗ model-freshness.js 的 MODEL_ROLES 与 model-registry.js 逐字相同（两个真相 = 零个真相） —— registry=[\"general\",\"fast\",\"reasoning\",\"coding\",\"vision\",\"vision-language-ultra\",\"embedding\",\"audio\",\"realtime\",\"translation\",\"other\"] / freshness=[\"general\",\"fast\"",
+            "❌ 枚举契约守卫：5 项通过，2 项失败",
+            "✗ model-registry.js 的 MODEL_ROLES 逐字等于题面 §16 的 10 值 —— 实得 [\"general\",\"fast\",\"reasoning\",\"coding\",\"vision\",\"vision-language-ultra\",\"embedding\",\"audio\",\"realtime\",\"translation\",\"other\"]",
+            "✗ model-freshness.js 的 MODEL_ROLES 与 model-registry.js 逐字相同（两个真相 = 零个真相） —— registry=[\"general\",\"fast\",\"reasoning\",\"coding\",\"vision\",\"vision-language-ultra\",\"embedding\",\"audio\",\"realtime\",\"translation\",\"other\"] / freshness=[\"general\",\"fast\""
+          ]
+        },
+        {
+          "id": "model-freshness-selftest",
+          "script": "scripts/tools/model-freshness-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 61,
+          "assertions": [
+            "❌ 新鲜度判据自测：98 项通过，2 项失败"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/lib/model-registry.js",
+          "shaBefore": "7acfb2353d24b30a9edbdb4bee6df519f4170949da20c0d0fad757a36fef64ec",
+          "shaAfter": "7acfb2353d24b30a9edbdb4bee6df519f4170949da20c0d0fad757a36fef64ec",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "model-role-vocabulary-selftest=1",
+        "model-freshness-selftest=1"
+      ],
+      "greenGates": [],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:27.667Z"
+    },
+    {
+      "id": "M11",
+      "title": "手写派生字段：来源层给套餐塞 derivedMetrics",
+      "group": "B plans",
+      "expected": "「派生字段不得手写」牙",
+      "targets": [
+        "scripts/data/curated_plans.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w3-M11",
+      "startedAt": "2026-10-04T12:50:29.539Z",
+      "shaBefore": {
+        "scripts/data/curated_plans.json": "e5e53bc6a6360460c8a93e1e7ab86cb1d6447095b382aa7fdb0603009882962d"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w3-M11\\scripts\\data\\curated_plans.json",
+        "mode": "editJson",
+        "note": "(首条).derivedMetrics = {…}"
+      },
+      "shaMutated": {
+        "scripts/data/curated_plans.json": "9cf5d56caf3978aada7c01071e9f0d296a0155a932d2692640b2bb21de9ee292"
+      },
+      "targetsChanged": [
+        "scripts/data/curated_plans.json"
+      ],
+      "gates": [
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 1,
+          "durationMs": 2096,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "❌ 校验失败，共 3 项："
+          ]
+        },
+        {
+          "id": "plans-selftest",
+          "script": "scripts/tools/plans-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 5602,
+          "assertions": [
+            "✓ 每条 provider 都显式写了 vendorKey 字段（缺席 = 静默退化，必须写出来）",
+            "✓ count 与 plans 长度不一致 → 判红",
+            "✗ 人工来源层本身没有问题 —— [{\"index\":0,\"planName\":\"免费 Free\",\"reason\":\"未知字段 derivedMetrics\"},{\"index\":0,\"planName\":\"免费 Free\",\"reason\":\"derivedMetrics 是派生字段，不能写在人工来源层（由 makePlan 算出来）\"}]",
+            "✗ plans.json 与 curated_plans.json 的产出逐字节一致",
+            "✓ 【对照】插入一处真实读取（path.join + readFileSync）→ 必须报红",
+            "✓ 【对照】插入一处真实读取（模板串 + JSON.parse）→ 必须报红"
+          ]
+        },
+        {
+          "id": "check-plans-reproducible",
+          "script": "scripts/tools/check-plans-reproducible.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 64,
+          "assertions": [
+            "❌ plans.json 可重建性失败："
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 141,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/curated_plans.json",
+          "shaBefore": "e5e53bc6a6360460c8a93e1e7ab86cb1d6447095b382aa7fdb0603009882962d",
+          "shaAfter": "e5e53bc6a6360460c8a93e1e7ab86cb1d6447095b382aa7fdb0603009882962d",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "validate-strict=1",
+        "plans-selftest=1",
+        "check-plans-reproducible=1"
+      ],
+      "greenGates": [
+        "report-coverage"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:37.463Z"
+    },
+    {
+      "id": "M12",
+      "title": "billing 单位错位：per_1M 证据配 per_1K 定价单位",
+      "group": "B plans",
+      "expected": "价格单位同类牙",
+      "targets": [
+        "scripts/data/curated_api_plans.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w2-M12",
+      "startedAt": "2026-10-04T12:50:31.628Z",
+      "shaBefore": {
+        "scripts/data/curated_api_plans.json": "17748f512c5a7ae2f96dc4c5767ef52e07c9200420f01ac4b1f7dcf64f3289ab"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w2-M12\\scripts\\data\\curated_api_plans.json",
+        "mode": "editJson",
+        "note": "(首条) pricing.unit → per_1K_tokens"
+      },
+      "shaMutated": {
+        "scripts/data/curated_api_plans.json": "5723129f2a5951133e88df2a6892aaa1d03e57432bf389e0ebc314b9b4cbfbd1"
+      },
+      "targetsChanged": [
+        "scripts/data/curated_api_plans.json"
+      ],
+      "gates": [
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 1,
+          "durationMs": 1923,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "❌ 校验失败，共 1 项："
+          ]
+        },
+        {
+          "id": "api-plans-selftest",
+          "script": "scripts/tools/api-plans-selftest.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 3707,
+          "assertions": [
+            "✓ 对照组：带 mediaRates 的页面 0 问题",
+            "✓ 赠送额度缺 description → 红（分类必须由官方条件支撑）",
+            "✓ 【牙】type=credits 缺 conversionDependsOnModel → 红（换算条件必须显式）",
+            "✓ 对照组：未变异的页面 0 问题",
+            "✓ 生产页面：没有任何一条赠送 / 限时额度被印成长期能力（计数必须为 0）",
+            "✓ 干净日志的 verifyStore 不报 eventId 问题（负例不误报）"
+          ]
+        },
+        {
+          "id": "check-api-plans-reproducible",
+          "script": "scripts/tools/check-api-plans-reproducible.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 70,
+          "assertions": [
+            "❌ api-plans.json 可重建性失败："
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 2017,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/curated_api_plans.json",
+          "shaBefore": "17748f512c5a7ae2f96dc4c5767ef52e07c9200420f01ac4b1f7dcf64f3289ab",
+          "shaAfter": "17748f512c5a7ae2f96dc4c5767ef52e07c9200420f01ac4b1f7dcf64f3289ab",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "validate-strict=1",
+        "check-api-plans-reproducible=1"
+      ],
+      "greenGates": [
+        "api-plans-selftest",
+        "report-coverage"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:39.370Z"
+    },
+    {
+      "id": "M13",
+      "title": "第三方证据标成官方：聚合站 URL 写成官方定价页引文",
+      "group": "B plans",
+      "expected": "官方域/出处牙",
+      "targets": [
+        "scripts/data/curated_api_plans.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w1-M13",
+      "startedAt": "2026-10-04T12:50:33.544Z",
+      "shaBefore": {
+        "scripts/data/curated_api_plans.json": "17748f512c5a7ae2f96dc4c5767ef52e07c9200420f01ac4b1f7dcf64f3289ab"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w1-M13\\scripts\\data\\curated_api_plans.json",
+        "mode": "editJson",
+        "note": "(首条) evidence[0].sourceUrl → futurepedia.io"
+      },
+      "shaMutated": {
+        "scripts/data/curated_api_plans.json": "979cf804552fa9458e4453a171fd97761cb397a2d742822b60451e14cce5f658"
+      },
+      "targetsChanged": [
+        "scripts/data/curated_api_plans.json"
+      ],
+      "gates": [
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 1,
+          "durationMs": 3704,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "❌ 校验失败，共 1 项："
+          ]
+        },
+        {
+          "id": "api-plans-selftest",
+          "script": "scripts/tools/api-plans-selftest.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 3936,
+          "assertions": [
+            "✓ 对照组：带 mediaRates 的页面 0 问题",
+            "✓ 赠送额度缺 description → 红（分类必须由官方条件支撑）",
+            "✓ 【牙】type=credits 缺 conversionDependsOnModel → 红（换算条件必须显式）",
+            "✓ 对照组：未变异的页面 0 问题",
+            "✓ 生产页面：没有任何一条赠送 / 限时额度被印成长期能力（计数必须为 0）",
+            "✓ 干净日志的 verifyStore 不报 eventId 问题（负例不误报）"
+          ]
+        },
+        {
+          "id": "check-api-plans-reproducible",
+          "script": "scripts/tools/check-api-plans-reproducible.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 6028,
+          "assertions": [
+            "❌ api-plans.json 可重建性失败："
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 6468,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/curated_api_plans.json",
+          "shaBefore": "17748f512c5a7ae2f96dc4c5767ef52e07c9200420f01ac4b1f7dcf64f3289ab",
+          "shaAfter": "17748f512c5a7ae2f96dc4c5767ef52e07c9200420f01ac4b1f7dcf64f3289ab",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "validate-strict=1",
+        "check-api-plans-reproducible=1"
+      ],
+      "greenGates": [
+        "api-plans-selftest",
+        "report-coverage"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:53.706Z"
+    },
+    {
+      "id": "M14",
+      "title": "覆盖目标少一行（provider 表有、targets 没有）",
+      "group": "C targets",
+      "expected": "目标层完整性/双向对账牙",
+      "targets": [
+        "scripts/data/coverage-targets.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w5-M14",
+      "startedAt": "2026-10-04T12:50:35.401Z",
+      "shaBefore": {
+        "scripts/data/coverage-targets.json": "16f55ba0197be64b707c07945a57b8ca4514777d8909415f4b9dadf3bddbd19b"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w5-M14\\scripts\\data\\coverage-targets.json",
+        "mode": "editJson",
+        "note": "targets 34 → 33（删 jetbrains）"
+      },
+      "shaMutated": {
+        "scripts/data/coverage-targets.json": "c64f194acb02dc6720aecec2694a536572fa94be9e914452618462e4a906e6a2"
+      },
+      "targetsChanged": [
+        "scripts/data/coverage-targets.json"
+      ],
+      "gates": [
+        {
+          "id": "coverage-targets-selftest",
+          "script": "scripts/tools/coverage-targets-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 1856,
+          "assertions": [
+            "✗ 真实文件通过全部硬校验（0 处问题，实际 1 处） —— scripts/data/providers.json 的 jetbrains 在 coverage-targets.json 里没有任何一行意图 —— 身份层与意图层分家了（缺一行就是这家平台没人宣称要覆盖）",
+            "✗ 意图层与身份层双向对上：providers.json 每一个 provider 都有一行 —— jetbrains",
+            "✓ 真实盘面：COVERED 的格子必须真的有记录（不许空口算覆盖）",
+            "✓ 真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉",
+            "② 七态派生（夹具：每种状态都必须真的能派出来）",
+            "③ 牙（每一条变异都必须让 validateTargets 报红）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 93,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）",
+            "❌ 覆盖报告自检失败："
+          ]
+        },
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 0,
+          "durationMs": 3850,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/coverage-targets.json",
+          "shaBefore": "16f55ba0197be64b707c07945a57b8ca4514777d8909415f4b9dadf3bddbd19b",
+          "shaAfter": "16f55ba0197be64b707c07945a57b8ca4514777d8909415f4b9dadf3bddbd19b",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "coverage-targets-selftest=1",
+        "report-coverage=1"
+      ],
+      "greenGates": [
+        "validate-strict"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:41.220Z"
+    },
+    {
+      "id": "M15",
+      "title": "覆盖目标挂到一个不存在的 provider",
+      "group": "C targets",
+      "expected": "目标层「provider 必须存在」牙",
+      "targets": [
+        "scripts/data/coverage-targets.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w4-M15",
+      "startedAt": "2026-10-04T12:50:37.235Z",
+      "shaBefore": {
+        "scripts/data/coverage-targets.json": "16f55ba0197be64b707c07945a57b8ca4514777d8909415f4b9dadf3bddbd19b"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w4-M15\\scripts\\data\\coverage-targets.json",
+        "mode": "editJson",
+        "note": "targets[0].provider → not-a-provider"
+      },
+      "shaMutated": {
+        "scripts/data/coverage-targets.json": "00c9baaffd8b7c49aa21b0a39e19cb4f5fa2a35a0463fe1a7d12f324e485ff4b"
+      },
+      "targetsChanged": [
+        "scripts/data/coverage-targets.json"
+      ],
+      "gates": [
+        {
+          "id": "coverage-targets-selftest",
+          "script": "scripts/tools/coverage-targets-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 3958,
+          "assertions": [
+            "✗ 真实文件通过全部硬校验（0 处问题，实际 3 处） —— targets[0] not-a-provider: provider「not-a-provider」不在 scripts/data/providers.json 里 —— 覆盖意图必须挂在真实存在的身份上（先登记 provider，或改掉这个名字）；scripts/data/providers.json 的 ai360 在 coverage-targets.json 里没有任何一行意图 —— 身份层与意图层分家了",
+            "✗ 意图层与身份层双向对上：providers.json 每一个 provider 都有一行 —— ai360",
+            "✓ 真实盘面：COVERED 的格子必须真的有记录（不许空口算覆盖）",
+            "✓ 真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉",
+            "② 七态派生（夹具：每种状态都必须真的能派出来）",
+            "③ 牙（每一条变异都必须让 validateTargets 报红）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 1984,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）",
+            "❌ 覆盖报告自检失败：",
+            "- targets[0] not-a-provider: provider「not-a-provider」不在 scripts/data/providers.json 里 —— 覆盖意图必须挂在真实存在的身份上（先登记 provider，或改掉这个名字）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/coverage-targets.json",
+          "shaBefore": "16f55ba0197be64b707c07945a57b8ca4514777d8909415f4b9dadf3bddbd19b",
+          "shaAfter": "16f55ba0197be64b707c07945a57b8ca4514777d8909415f4b9dadf3bddbd19b",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "coverage-targets-selftest=1",
+        "report-coverage=1"
+      ],
+      "greenGates": [],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:43.196Z"
+    },
+    {
+      "id": "M16",
+      "title": "覆盖目标字段缺失（删掉 intent）",
+      "group": "C targets",
+      "expected": "目标层必填字段牙",
+      "targets": [
+        "scripts/data/coverage-targets.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w3-M16",
+      "startedAt": "2026-10-04T12:50:39.342Z",
+      "shaBefore": {
+        "scripts/data/coverage-targets.json": "16f55ba0197be64b707c07945a57b8ca4514777d8909415f4b9dadf3bddbd19b"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w3-M16\\scripts\\data\\coverage-targets.json",
+        "mode": "editJson",
+        "note": "targets[0].intent 删除（原值 360 智脑开放平台自研模型（360zhinao 系列）的官方优惠、按量计费与模…）"
+      },
+      "shaMutated": {
+        "scripts/data/coverage-targets.json": "f7caa25cf91706ae3778411af3f471c6e430f1012344c80249619088403552cd"
+      },
+      "targetsChanged": [
+        "scripts/data/coverage-targets.json"
+      ],
+      "gates": [
+        {
+          "id": "coverage-targets-selftest",
+          "script": "scripts/tools/coverage-targets-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 7878,
+          "assertions": [
+            "✗ 真实文件通过全部硬校验（0 处问题，实际 1 处） —— targets[0] ai360: intent 不能为空（一句话写清\"这家平台我们要覆盖什么\"）",
+            "✓ 真实盘面：COVERED 的格子必须真的有记录（不许空口算覆盖）",
+            "✓ 真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉",
+            "② 七态派生（夹具：每种状态都必须真的能派出来）",
+            "③ 牙（每一条变异都必须让 validateTargets 报红）",
+            "✓ 【反证牙】冻结契约规则：把旧键顺序打乱 ⇒ 必须报问题"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 106,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）",
+            "❌ 覆盖报告自检失败："
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/coverage-targets.json",
+          "shaBefore": "16f55ba0197be64b707c07945a57b8ca4514777d8909415f4b9dadf3bddbd19b",
+          "shaAfter": "16f55ba0197be64b707c07945a57b8ca4514777d8909415f4b9dadf3bddbd19b",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "coverage-targets-selftest=1",
+        "report-coverage=1"
+      ],
+      "greenGates": [],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:47.348Z"
+    },
+    {
+      "id": "M17",
+      "title": "生产门禁静默降级：把 gate 的 allow_degraded_run 传参改成恒真表达式",
+      "group": "D gate",
+      "expected": "「必需路径不得静默降级」牙（(11) 按触发事件求值）",
+      "targets": [
+        ".github/workflows/verify.yml"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w2-M17",
+      "startedAt": "2026-10-04T12:50:41.180Z",
+      "shaBefore": {
+        ".github/workflows/verify.yml": "7fd395e2ad40e261b41e513ae5d44571b6a6eb296625316cdd82a7cf7cc28184"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w2-M17\\.github\\workflows\\verify.yml",
+        "mode": "replaceOnce",
+        "anchor": "allow_degraded_run: ${{ inputs.allow_degraded_run && 'true' "
+      },
+      "shaMutated": {
+        ".github/workflows/verify.yml": "6863314219667b0eab1724b5abc56b2724adfbfb1aadd8203fdddeda07095cf8"
+      },
+      "targetsChanged": [
+        ".github/workflows/verify.yml"
+      ],
+      "gates": [
+        {
+          "id": "check-ci-consistency",
+          "script": "scripts/tools/check-ci-consistency.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 3969,
+          "assertions": [
+            "✗ (11) collect.yml / deploy.yml / verify.yml 各恰好调用一次门禁 action — verify.yml @ pull_request: 解析成 true —— 必需路径不得静默降级（只有人工 workflow_dispatch 显式勾选才允许 'true'）；verify.yml @ push: 解析成 true —— 必需路径不得静默降级（只有人工 workflow_dispatch 显式勾选才允许 'true'）；verify",
+            "✓ (12) deploy.yml 的发布链必须先过门禁：prepublish 无 job 级 if、build 依赖它、deploy 依赖 build — prepublish(无 if) → build(needs=[\"prepublish\"]) → deploy(needs=[\"build\"])",
+            "✓ (17) package.json 里的每个 selftest:* 都被门禁真的跑到（新脚本必须登记） — package.json 里的 selftest:* 全部出现在 .github/actions/gate/action.yml 里；7 个产物依赖步骤都显式 --dir=dist 且排在「Assemble site (same path as deploy.yml)」之后",
+            "✓ (E) 实跑项数 == --expect-checks=38（期望值来自 verify.yml 的 gate 调用行；数字钉在调用方，与看门狗互相独立）",
+            "❌ CI 口径检查 38 项，失败 1 项",
+            "✗ (11) collect.yml / deploy.yml / verify.yml 各恰好调用一次门禁 action — verify.yml @ pull_request: 解析成 true —— 必需路径不得静默降级（只有人工 workflow_dispatch 显式勾选才允许 'true'）；verify.yml @ push: 解析成 true —— 必需路径不得静默降级（只有人工 workflow_dispatch 显式勾选才允许 'true'）；verify"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": ".github/workflows/verify.yml",
+          "shaBefore": "7fd395e2ad40e261b41e513ae5d44571b6a6eb296625316cdd82a7cf7cc28184",
+          "shaAfter": "7fd395e2ad40e261b41e513ae5d44571b6a6eb296625316cdd82a7cf7cc28184",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "check-ci-consistency=1"
+      ],
+      "greenGates": [],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:45.170Z"
+    },
+    {
+      "id": "M18",
+      "title": "健康层：无头来源不可用却仍标 healthy（改判定分支）",
+      "group": "D gate",
+      "expected": "健康组合矩阵牙",
+      "targets": [
+        "scripts/lib/health.js"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w5-M18",
+      "startedAt": "2026-10-04T12:50:43.168Z",
+      "shaBefore": {
+        "scripts/lib/health.js": "bf8278b01378301ec4f66e2df1a0534323c2cca1a32ab63875aa1d33bdc837f4"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w5-M18\\scripts\\lib\\health.js",
+        "mode": "replaceOnce",
+        "anchor": "headlessReady === false"
+      },
+      "shaMutated": {
+        "scripts/lib/health.js": "80d602a7c38c3bde537fd35b55c71c021d11f9bf62134641ec7ac1fe62b7fdda"
+      },
+      "targetsChanged": [
+        "scripts/lib/health.js"
+      ],
+      "gates": [
+        {
+          "id": "health-selftest",
+          "script": "scripts/tools/health-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 4057,
+          "assertions": [
+            "❌ 数据源健康自测：65 项通过，7 项失败",
+            "- ⑤ 浏览器不可用的无头来源判 failed（即便「成功返回 12 条」） — 期望 \"failed\"，实得 \"healthy\"",
+            "- ⑤ 理由是 headless_unavailable — 期望 \"headless_unavailable\"，实得 null",
+            "- A3 …⇒ reason=headless_unavailable（修复前这里是 collector_error） — 期望 \"headless_unavailable\"，实得 \"collector_error\"",
+            "- B1 内核不可用 + 采集器没抛错 ⇒ 同样 failed/headless_unavailable — 期望 \"failed/headless_unavailable\"，实得 \"degraded/zero_output_baseline\""
+          ]
+        },
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 0,
+          "durationMs": 2612,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/lib/health.js",
+          "shaBefore": "bf8278b01378301ec4f66e2df1a0534323c2cca1a32ab63875aa1d33bdc837f4",
+          "shaAfter": "bf8278b01378301ec4f66e2df1a0534323c2cca1a32ab63875aa1d33bdc837f4",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "health-selftest=1"
+      ],
+      "greenGates": [
+        "validate-strict"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:49.861Z"
+    },
+    {
+      "id": "M19",
+      "title": "静态 HTML 丢行：/models/ 索引删掉一整行（No-JS 下少一个模型）",
+      "group": "E page",
+      "expected": "页面静态表与 registry 的行集合对账",
+      "targets": [
+        "dist/models/index.html"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w4-M19",
+      "startedAt": "2026-10-04T12:50:45.062Z",
+      "shaBefore": {
+        "dist/models/index.html": "3f88534f1a83bb019f9eb7f186e78a4224399d2d323e06e67579174a78e556ac"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w4-M19\\dist\\models\\index.html",
+        "mode": "drop-html-row",
+        "slug": "claude-fable-5.1"
+      },
+      "shaMutated": {
+        "dist/models/index.html": "557666f6e3a1e11cc27b3ccd8b963c92a7bfd378577026685e40ef3dd9e3d4eb"
+      },
+      "targetsChanged": [
+        "dist/models/index.html"
+      ],
+      "gates": [
+        {
+          "id": "models-page-selftest",
+          "script": "scripts/tools/models-page-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 4690,
+          "assertions": [
+            "✓ 目录状态词表与判据层（model-freshness）逐字同源（两处不一致 = 两个真相）",
+            "✓ 【变异】把发布时间的官方证据链接摘掉 → 断言变红（这句话必须有出处）",
+            "✓ 独立重算：9 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）",
+            "独立 join（dist）：模型 44 · 页 44 · 期望行 81（api-plans 真实计价条目 93）· missing 0 · extra 0 · duplicate 0 · multi-owner 0",
+            "✓ §17 独立 join：期望行数 == api-plans 计价条目 − 已声明\"不对应单一模型身份\"的条目（每条都要有结局：要么一行、要么一条声明）",
+            "✓ §17 交叉对账：每个已发布模型页的 mapirow 行数 == 独立 join 的展开期望（逐页）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 5700,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "dist/models/index.html",
+          "shaBefore": "3f88534f1a83bb019f9eb7f186e78a4224399d2d323e06e67579174a78e556ac",
+          "shaAfter": "3f88534f1a83bb019f9eb7f186e78a4224399d2d323e06e67579174a78e556ac",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "models-page-selftest=1"
+      ],
+      "greenGates": [
+        "report-coverage"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:55.600Z"
+    },
+    {
+      "id": "M20",
+      "title": "No-JS 丢行：删掉「显示旧型号」筛选脚本块（No-JS 语义被破坏）",
+      "group": "E page",
+      "expected": "页面脚本存在性/No-JS 断言",
+      "targets": [
+        "dist/models/index.html"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w2-M20",
+      "startedAt": "2026-10-04T12:50:47.161Z",
+      "shaBefore": {
+        "dist/models/index.html": "3f88534f1a83bb019f9eb7f186e78a4224399d2d323e06e67579174a78e556ac"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w2-M20\\dist\\models\\index.html",
+        "mode": "drop-script-block",
+        "bytes": 117878
+      },
+      "shaMutated": {
+        "dist/models/index.html": "cbd64986d2d593f08b6aa5f71268c55e0153c0a77e9ca796c4d53b73db0353c7"
+      },
+      "targetsChanged": [
+        "dist/models/index.html"
+      ],
+      "gates": [
+        {
+          "id": "models-page-selftest",
+          "script": "scripts/tools/models-page-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 8321,
+          "assertions": [
+            "✓ 目录状态词表与判据层（model-freshness）逐字同源（两处不一致 = 两个真相）",
+            "✓ 【变异】把发布时间的官方证据链接摘掉 → 断言变红（这句话必须有出处）",
+            "✓ 独立重算：9 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）",
+            "独立 join（dist）：模型 44 · 页 44 · 期望行 81（api-plans 真实计价条目 93）· missing 0 · extra 0 · duplicate 0 · multi-owner 0",
+            "✓ §17 独立 join：期望行数 == api-plans 计价条目 − 已声明\"不对应单一模型身份\"的条目（每条都要有结局：要么一行、要么一条声明）",
+            "✓ §17 交叉对账：每个已发布模型页的 mapirow 行数 == 独立 join 的展开期望（逐页）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 1816,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "dist/models/index.html",
+          "shaBefore": "3f88534f1a83bb019f9eb7f186e78a4224399d2d323e06e67579174a78e556ac",
+          "shaAfter": "3f88534f1a83bb019f9eb7f186e78a4224399d2d323e06e67579174a78e556ac",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "models-page-selftest=1"
+      ],
+      "greenGates": [
+        "report-coverage"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:57.416Z"
+    },
+    {
+      "id": "M21",
+      "title": "filter 默认全显：把 showHidden 的默认判定改成恒真",
+      "group": "E page",
+      "expected": "默认隐藏集合牙（页面/独立 join）",
+      "targets": [
+        "dist/models/index.html"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w3-M21",
+      "startedAt": "2026-10-04T12:50:49.747Z",
+      "shaBefore": {
+        "dist/models/index.html": "3f88534f1a83bb019f9eb7f186e78a4224399d2d323e06e67579174a78e556ac"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w3-M21\\dist\\models\\index.html",
+        "mode": "replaceOnce",
+        "anchor": "var showHidden = Boolean(toggle && toggle.checked) || catalo"
+      },
+      "shaMutated": {
+        "dist/models/index.html": "1966010e854e55736c7213a42eedb7ce95ca2c578ab5bbb2594ffb326e9689c6"
+      },
+      "targetsChanged": [
+        "dist/models/index.html"
+      ],
+      "gates": [
+        {
+          "id": "models-page-selftest",
+          "script": "scripts/tools/models-page-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 5697,
+          "assertions": [
+            "✓ 目录状态词表与判据层（model-freshness）逐字同源（两处不一致 = 两个真相）",
+            "✓ 【变异】把发布时间的官方证据链接摘掉 → 断言变红（这句话必须有出处）",
+            "✓ 独立重算：9 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）",
+            "独立 join（dist）：模型 44 · 页 44 · 期望行 81（api-plans 真实计价条目 93）· missing 0 · extra 0 · duplicate 0 · multi-owner 0",
+            "✓ §17 独立 join：期望行数 == api-plans 计价条目 − 已声明\"不对应单一模型身份\"的条目（每条都要有结局：要么一行、要么一条声明）",
+            "✓ §17 交叉对账：每个已发布模型页的 mapirow 行数 == 独立 join 的展开期望（逐页）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 4708,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "dist/models/index.html",
+          "shaBefore": "3f88534f1a83bb019f9eb7f186e78a4224399d2d323e06e67579174a78e556ac",
+          "shaAfter": "3f88534f1a83bb019f9eb7f186e78a4224399d2d323e06e67579174a78e556ac",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "models-page-selftest=1"
+      ],
+      "greenGates": [
+        "report-coverage"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:51:00.303Z"
+    },
+    {
+      "id": "M22",
+      "title": "逐格单位错位：详情页把价格单位改成「每 1000 tokens」（数值不动）",
+      "group": "E page",
+      "expected": "逐格单位/数值对账（本轮新增牙；全绿即 NOT_CAUGHT 发现）",
+      "targets": [
+        "dist/models/glm-4.5v/index.html",
+        "dist/models/glm-4.6v/index.html",
+        "dist/models/deepseek-v4-pro/index.html",
+        "dist/models/kimi-k3/index.html"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w5-M22",
+      "startedAt": "2026-10-04T12:50:51.724Z",
+      "shaBefore": {
+        "dist/models/glm-4.5v/index.html": "78d3f6c5facc7d49bbd35167ee1dbc7cc540f03021a52bde86e6c516a307fc1e",
+        "dist/models/glm-4.6v/index.html": "cffa17e27f86058456366d35509cff250f2d874daa596cc781873a5d5800d42a",
+        "dist/models/deepseek-v4-pro/index.html": "7ed2c81153027b66648408272c7fa6ca07efea3c0b44854645fb6b38fc3c1a62",
+        "dist/models/kimi-k3/index.html": "a38af0fac352cc74d7629f5ebd9a665edde509efb923a2c004a20466ce2e7bb6"
+      },
+      "applied": {
+        "mode": "rewrite-price-unit",
+        "slugs": [
+          "glm-4.5v",
+          "glm-4.6v",
+          "deepseek-v4-pro",
+          "kimi-k3"
+        ]
+      },
+      "shaMutated": {
+        "dist/models/glm-4.5v/index.html": "eb604ae787610c1dc286f7fd926fd518c509485dd4a4789c6b182ba5a9a15f8a",
+        "dist/models/glm-4.6v/index.html": "60644788fb0e968610578c5b55ad63409c9830e4c18ba91f655bc77f72dfa432",
+        "dist/models/deepseek-v4-pro/index.html": "1dbff55a67f2d73d1917f08f46ec0e80f564e994c93905bde17bbcd06dd17d03",
+        "dist/models/kimi-k3/index.html": "9c05ace925d6c5b3cb7d165b7dfd67d1f29bc6a0596b45b99dbac37cee0fdec6"
+      },
+      "targetsChanged": [
+        "dist/models/glm-4.5v/index.html",
+        "dist/models/glm-4.6v/index.html",
+        "dist/models/deepseek-v4-pro/index.html",
+        "dist/models/kimi-k3/index.html"
+      ],
+      "gates": [
+        {
+          "id": "models-page-selftest",
+          "script": "scripts/tools/models-page-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 3644,
+          "assertions": [
+            "✓ 目录状态词表与判据层（model-freshness）逐字同源（两处不一致 = 两个真相）",
+            "✓ 【变异】把发布时间的官方证据链接摘掉 → 断言变红（这句话必须有出处）",
+            "✓ 独立重算：9 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）",
+            "独立 join（dist）：模型 44 · 页 44 · 期望行 81（api-plans 真实计价条目 93）· missing 0 · extra 0 · duplicate 0 · multi-owner 0",
+            "✓ §17 独立 join：期望行数 == api-plans 计价条目 − 已声明\"不对应单一模型身份\"的条目（每条都要有结局：要么一行、要么一条声明）",
+            "✓ §17 交叉对账：每个已发布模型页的 mapirow 行数 == 独立 join 的展开期望（逐页）"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 3635,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "dist/models/glm-4.5v/index.html",
+          "shaBefore": "78d3f6c5facc7d49bbd35167ee1dbc7cc540f03021a52bde86e6c516a307fc1e",
+          "shaAfter": "78d3f6c5facc7d49bbd35167ee1dbc7cc540f03021a52bde86e6c516a307fc1e",
+          "byteExact": true
+        },
+        {
+          "path": "dist/models/glm-4.6v/index.html",
+          "shaBefore": "cffa17e27f86058456366d35509cff250f2d874daa596cc781873a5d5800d42a",
+          "shaAfter": "cffa17e27f86058456366d35509cff250f2d874daa596cc781873a5d5800d42a",
+          "byteExact": true
+        },
+        {
+          "path": "dist/models/deepseek-v4-pro/index.html",
+          "shaBefore": "7ed2c81153027b66648408272c7fa6ca07efea3c0b44854645fb6b38fc3c1a62",
+          "shaAfter": "7ed2c81153027b66648408272c7fa6ca07efea3c0b44854645fb6b38fc3c1a62",
+          "byteExact": true
+        },
+        {
+          "path": "dist/models/kimi-k3/index.html",
+          "shaBefore": "a38af0fac352cc74d7629f5ebd9a665edde509efb923a2c004a20466ce2e7bb6",
+          "shaAfter": "a38af0fac352cc74d7629f5ebd9a665edde509efb923a2c004a20466ce2e7bb6",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "models-page-selftest=1"
+      ],
+      "greenGates": [
+        "report-coverage"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:50:59.308Z"
+    },
+    {
+      "id": "M23",
+      "title": "改写已落盘的历史（套餐历史加一条伪造 created 事件）",
+      "group": "F history",
+      "expected": "历史不可改写牙（套餐/API 历史校验）",
+      "targets": [
+        "scripts/data/plan-history.json"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w0-M23",
+      "startedAt": "2026-10-04T12:50:53.678Z",
+      "shaBefore": {
+        "scripts/data/plan-history.json": "667a048176671a243e3862d2e538534e6231f74741e3d42c2bd61c139417f1b8"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w0-M23\\scripts\\data\\plan-history.json",
+        "mode": "editJson",
+        "note": "events 28 → 29（伪造一条 created）"
+      },
+      "shaMutated": {
+        "scripts/data/plan-history.json": "2768ef76f1cacdfb0beb5292d46ce5c0f22c022f75c33bcbee30890ace2c55c0"
+      },
+      "targetsChanged": [
+        "scripts/data/plan-history.json"
+      ],
+      "gates": [
+        {
+          "id": "check-plan-history",
+          "script": "scripts/tools/check-plan-history.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 1837,
+          "assertions": [
+            "❌ 套餐变化日志与当前状态不一致：2 处。",
+            "「现状与历史不一致」= 有人改了 plans.json 而没走 npm run plans:rebuild（日志只能由它写）。"
+          ]
+        },
+        {
+          "id": "check-api-plan-history",
+          "script": "scripts/tools/check-api-plan-history.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 5217,
+          "assertions": [
+            "派生 eventId  : 10/10 条事件带 id · 重算比对 0 处不一致"
+          ]
+        },
+        {
+          "id": "plan-history-selftest",
+          "script": "scripts/tools/plan-history-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 588,
+          "assertions": [
+            "✓ 现状与历史不一致 ⇒ 红（改了 plans.json 却没走重建路径）",
+            "✗ 真实日志与真实 plans.json 一致 —— 事件 #28: id 非法（t17-forged） | t17-forged: 已从 plans.json 消失，但日志里没有对应的 ended 事件",
+            "✗ 真实日志与真实 plans.json 一致 —— 事件 #28: id 非法（t17-forged） | t17-forged: 已从 plans.json 消失，但日志里没有对应的 ended 事件"
+          ]
+        },
+        {
+          "id": "validate-strict",
+          "script": "scripts/validate.js",
+          "args": [
+            "--strict"
+          ],
+          "exitCode": 0,
+          "durationMs": 469,
+          "assertions": [
+            "套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/data/plan-history.json",
+          "shaBefore": "667a048176671a243e3862d2e538534e6231f74741e3d42c2bd61c139417f1b8",
+          "shaAfter": "667a048176671a243e3862d2e538534e6231f74741e3d42c2bd61c139417f1b8",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "check-plan-history=1",
+        "plan-history-selftest=1"
+      ],
+      "greenGates": [
+        "check-api-plan-history",
+        "validate-strict"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:51:01.809Z"
+    },
+    {
+      "id": "M24",
+      "title": "把 provenance 自测的牙拔掉（失败不再入 failures 队列 ⇒ 自测恒绿）",
+      "group": "G selftest",
+      "expected": "**留档的已知盲区**：provenance-selftest 的牙是合成夹具牙，拔掉后无第三方门禁能抓（见 probe-provenance-teeth.cjs 的 T1：连\"把真实引文改成编造文本\"它也 114/114 绿）",
+      "targets": [
+        "scripts/tools/provenance-selftest.js"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w1-M24",
+      "startedAt": "2026-10-04T12:50:55.501Z",
+      "shaBefore": {
+        "scripts/tools/provenance-selftest.js": "fe9b0e107f2c0d2ea00c3dd1410380cd1397856ae2d38f60ceafe7326ba7395f"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w1-M24\\scripts\\tools\\provenance-selftest.js",
+        "mode": "replaceOnce",
+        "anchor": "  if (ok) { pass++; return; }\n  failures.push(`${name}${deta"
+      },
+      "shaMutated": {
+        "scripts/tools/provenance-selftest.js": "8b5452f118fbe79fe127828e3a5497b7b44f8b13778750dda4ba7ae5c95fb99a"
+      },
+      "targetsChanged": [
+        "scripts/tools/provenance-selftest.js"
+      ],
+      "gates": [
+        {
+          "id": "provenance-selftest",
+          "script": "scripts/tools/provenance-selftest.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 4249,
+          "assertions": [
+            "=== ⑨ 官方域判据（t7：evidence/officialUrl 必须兑现到官方来源登记）==="
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/tools/provenance-selftest.js",
+          "shaBefore": "fe9b0e107f2c0d2ea00c3dd1410380cd1397856ae2d38f60ceafe7326ba7395f",
+          "shaAfter": "fe9b0e107f2c0d2ea00c3dd1410380cd1397856ae2d38f60ceafe7326ba7395f",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [],
+      "greenGates": [
+        "provenance-selftest"
+      ],
+      "verdict": "NOT_CAUGHT(KNOWN)",
+      "finishedAt": "2026-10-04T12:50:59.781Z"
+    },
+    {
+      "id": "M25",
+      "title": "把「延期不算漏了」的真实判定改掉（deriveDimension 里给 DEFERRED 加一条 MISSING 短路）",
+      "group": "C targets",
+      "expected": "DEFERRED 永不算 MISSING（覆盖目标层的关键牙 —— 它守的是真实分支，不是常量表）",
+      "targets": [
+        "scripts/lib/coverage-targets.js"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w4-M25",
+      "startedAt": "2026-10-04T12:50:57.331Z",
+      "shaBefore": {
+        "scripts/lib/coverage-targets.js": "e66c56b384523dd73e666646d9a5e54b82c2ec892120ea0ce9014d2acb3acb59"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w4-M25\\scripts\\lib\\coverage-targets.js",
+        "mode": "replaceOnce",
+        "anchor": "    return cell(STATES.DEFERRED, ruling.decision ==="
+      },
+      "shaMutated": {
+        "scripts/lib/coverage-targets.js": "8b28a6ccb3bff18dbff7ee365f7d0b4638a2c4906401986ead3e0bcdfdfcd4da"
+      },
+      "targetsChanged": [
+        "scripts/lib/coverage-targets.js"
+      ],
+      "gates": [
+        {
+          "id": "coverage-targets-selftest",
+          "script": "scripts/tools/coverage-targets-selftest.js",
+          "args": [],
+          "exitCode": 1,
+          "durationMs": 3408,
+          "assertions": [
+            "✓ 真实盘面：COVERED 的格子必须真的有记录（不许空口算覆盖）",
+            "✗ 真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉",
+            "② 七态派生（夹具：每种状态都必须真的能派出来）",
+            "✗ 【关键牙】DEFERRED 永不算 MISSING：beta.api 延期且盘上无记录 ⇒ DEFERRED —— 实得 MISSING",
+            "✗ 【关键牙】schema-not-supported 同样归 DEFERRED（当前 schema 表达不了 ≠ 漏了） —— 实得 MISSING",
+            "✗ MISSING / DEFERRED 的优先级：延期盖过\"盘上无记录\""
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 578,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/lib/coverage-targets.js",
+          "shaBefore": "e66c56b384523dd73e666646d9a5e54b82c2ec892120ea0ce9014d2acb3acb59",
+          "shaAfter": "e66c56b384523dd73e666646d9a5e54b82c2ec892120ea0ce9014d2acb3acb59",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [
+        "coverage-targets-selftest=1"
+      ],
+      "greenGates": [
+        "report-coverage"
+      ],
+      "verdict": "CAUGHT",
+      "finishedAt": "2026-10-04T12:51:01.347Z"
+    },
+    {
+      "id": "M26",
+      "title": "改掉没人读的 PRECEDENCE 常量（文档化顺序 vs 真实分支）",
+      "group": "C targets",
+      "expected": "**留档的已知盲区**：PRECEDENCE 只被定义与导出、没有任何生产者读取它 ⇒ 改它不动任何行为，没有门禁该红（真实判定在 deriveDimension 的 if 链里）",
+      "targets": [
+        "scripts/lib/coverage-targets.js"
+      ],
+      "sandbox": "D:\\t17-mutation\\cases\\w2-M26",
+      "startedAt": "2026-10-04T12:50:59.145Z",
+      "shaBefore": {
+        "scripts/lib/coverage-targets.js": "e66c56b384523dd73e666646d9a5e54b82c2ec892120ea0ce9014d2acb3acb59"
+      },
+      "applied": {
+        "file": "D:\\t17-mutation\\cases\\w2-M26\\scripts\\lib\\coverage-targets.js",
+        "mode": "replaceOnce",
+        "anchor": "const PRECEDENCE = ['NOT_APPLICABLE', 'DEFERRED', 'UNVERIFIA"
+      },
+      "shaMutated": {
+        "scripts/lib/coverage-targets.js": "dd580f302cbd731ce3c53bcd310ff39db8c71e50734100cfd6bf1134674b2fa8"
+      },
+      "targetsChanged": [
+        "scripts/lib/coverage-targets.js"
+      ],
+      "gates": [
+        {
+          "id": "coverage-targets-selftest",
+          "script": "scripts/tools/coverage-targets-selftest.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 1590,
+          "assertions": [
+            "✓ 真实盘面：COVERED 的格子必须真的有记录（不许空口算覆盖）",
+            "✓ 真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉",
+            "② 七态派生（夹具：每种状态都必须真的能派出来）",
+            "③ 牙（每一条变异都必须让 validateTargets 报红）",
+            "✓ 【反证牙】冻结契约规则：把旧键顺序打乱 ⇒ 必须报问题",
+            "✓ 【反证牙】冻结契约规则：删掉一个旧键 ⇒ 必须报问题"
+          ]
+        },
+        {
+          "id": "report-coverage",
+          "script": "scripts/tools/coverage-report.js",
+          "args": [],
+          "exitCode": 0,
+          "durationMs": 95,
+          "assertions": [
+            "✗ Replit Core：plans.json 里没有这家 provider 的套餐「Replit Core」",
+            "声明的 current target 模型          20   兑现 20 条（registrySlug 必须存在，指向不存在的模型一律红）"
+          ]
+        }
+      ],
+      "restore": [
+        {
+          "path": "scripts/lib/coverage-targets.js",
+          "shaBefore": "e66c56b384523dd73e666646d9a5e54b82c2ec892120ea0ce9014d2acb3acb59",
+          "shaAfter": "e66c56b384523dd73e666646d9a5e54b82c2ec892120ea0ce9014d2acb3acb59",
+          "byteExact": true
+        }
+      ],
+      "allRestored": true,
+      "failingGates": [],
+      "greenGates": [
+        "coverage-targets-selftest",
+        "report-coverage"
+      ],
+      "verdict": "NOT_CAUGHT(KNOWN)",
+      "finishedAt": "2026-10-04T12:51:00.859Z"
+    }
+  ]
+}

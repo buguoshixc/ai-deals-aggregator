@@ -1,0 +1,401 @@
+{
+  "generatedAt": "2026-10-04T14:05:34.826Z",
+  "head": "118a95ca444d70fbd43e7d7cd583303d4089b30b",
+  "judgement": "派生式：对 providers.json 里每个 vendorKey === null 的身份，逐条要求 (a) 恰好 1 条 no-vendor-identity 记录且不带路由 (b) 计划层无页 (c) vendor-slugs.json 无登记 (d) dist/vendor/ 目录集合 == 计划 slug 集合",
+  "counts": {
+    "providersTotal": 34,
+    "nullIdentity": 9,
+    "identity": 25,
+    "vendorPages": 22,
+    "plannedSlugs": 22,
+    "diskVendorDirs": 22
+  },
+  "nullIdentityRows": [
+    {
+      "name": "JetBrains",
+      "skipRows": 1,
+      "skipRoute": null,
+      "hasPage": false,
+      "pageRoute": null,
+      "declaredInVendorSlugs": false,
+      "detail": "provider「jetbrains」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 2 条 / API 记录 0 条 / 模型"
+    },
+    {
+      "name": "Groq",
+      "skipRows": 1,
+      "skipRoute": null,
+      "hasPage": false,
+      "pageRoute": null,
+      "declaredInVendorSlugs": false,
+      "detail": "provider「groq」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 0 条 / API 记录 1 条 / 模型 1 个）"
+    },
+    {
+      "name": "Together AI",
+      "skipRows": 1,
+      "skipRoute": null,
+      "hasPage": false,
+      "pageRoute": null,
+      "declaredInVendorSlugs": false,
+      "detail": "provider「together」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 0 条 / API 记录 1 条 / 模型 "
+    },
+    {
+      "name": "Fireworks AI",
+      "skipRows": 1,
+      "skipRoute": null,
+      "hasPage": false,
+      "pageRoute": null,
+      "declaredInVendorSlugs": false,
+      "detail": "provider「fireworks」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 0 条 / API 记录 1 条 / 模型"
+    },
+    {
+      "name": "Cerebras",
+      "skipRows": 1,
+      "skipRoute": null,
+      "hasPage": false,
+      "pageRoute": null,
+      "declaredInVendorSlugs": false,
+      "detail": "provider「cerebras」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 0 条 / API 记录 1 条 / 模型 "
+    },
+    {
+      "name": "Trae",
+      "skipRows": 1,
+      "skipRoute": null,
+      "hasPage": false,
+      "pageRoute": null,
+      "declaredInVendorSlugs": false,
+      "detail": "provider「trae」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 2 条 / API 记录 0 条 / 模型 0 个）"
+    },
+    {
+      "name": "Qoder CN",
+      "skipRows": 1,
+      "skipRoute": null,
+      "hasPage": false,
+      "pageRoute": null,
+      "declaredInVendorSlugs": false,
+      "detail": "provider「qoder」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 1 条 / API 记录 0 条 / 模型 0 个"
+    },
+    {
+      "name": "腾讯 CodeBuddy",
+      "skipRows": 1,
+      "skipRoute": null,
+      "hasPage": false,
+      "pageRoute": null,
+      "declaredInVendorSlugs": false,
+      "detail": "provider「codebuddy」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 4 条 / API 记录 0 条 / 模型"
+    },
+    {
+      "name": "Qoder International",
+      "skipRows": 1,
+      "skipRoute": null,
+      "hasPage": false,
+      "pageRoute": null,
+      "declaredInVendorSlugs": false,
+      "detail": "provider「qoder-intl」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 2 条 / API 记录 0 条 / 模"
+    }
+  ],
+  "pageRows": [
+    {
+      "name": "百度智能云",
+      "slug": "baidu-ai-cloud",
+      "route": "vendor/baidu-ai-cloud/",
+      "diskDirPresent": true,
+      "count": 17,
+      "nonDealMaterial": true,
+      "codingPlans": 2,
+      "apiRecords": 0,
+      "models": 0
+    },
+    {
+      "name": "火山引擎",
+      "slug": "volcengine",
+      "route": "vendor/volcengine/",
+      "diskDirPresent": true,
+      "count": 13,
+      "nonDealMaterial": true,
+      "codingPlans": 0,
+      "apiRecords": 1,
+      "models": 4
+    },
+    {
+      "name": "智谱AI",
+      "slug": "zhipu",
+      "route": "vendor/zhipu/",
+      "diskDirPresent": true,
+      "count": 12,
+      "nonDealMaterial": true,
+      "codingPlans": 1,
+      "apiRecords": 1,
+      "models": 8
+    },
+    {
+      "name": "扣子 Coze",
+      "slug": "coze",
+      "route": "vendor/coze/",
+      "diskDirPresent": true,
+      "count": 4,
+      "nonDealMaterial": false,
+      "codingPlans": 0,
+      "apiRecords": 0,
+      "models": 0
+    },
+    {
+      "name": "GitHub",
+      "slug": "github",
+      "route": "vendor/github/",
+      "diskDirPresent": true,
+      "count": 3,
+      "nonDealMaterial": true,
+      "codingPlans": 3,
+      "apiRecords": 0,
+      "models": 0
+    },
+    {
+      "name": "MiniMax（稀宇科技）",
+      "slug": "minimax",
+      "route": "vendor/minimax/",
+      "diskDirPresent": true,
+      "count": 3,
+      "nonDealMaterial": true,
+      "codingPlans": 3,
+      "apiRecords": 1,
+      "models": 4
+    },
+    {
+      "name": "科大讯飞",
+      "slug": "iflytek",
+      "route": "vendor/iflytek/",
+      "diskDirPresent": true,
+      "count": 2,
+      "nonDealMaterial": true,
+      "codingPlans": 2,
+      "apiRecords": 0,
+      "models": 0
+    },
+    {
+      "name": "Microsoft",
+      "slug": "microsoft",
+      "route": "vendor/microsoft/",
+      "diskDirPresent": true,
+      "count": 2,
+      "nonDealMaterial": false,
+      "codingPlans": 0,
+      "apiRecords": 0,
+      "models": 0
+    },
+    {
+      "name": "Notion",
+      "slug": "notion",
+      "route": "vendor/notion/",
+      "diskDirPresent": true,
+      "count": 2,
+      "nonDealMaterial": false,
+      "codingPlans": 0,
+      "apiRecords": 0,
+      "models": 0
+    },
+    {
+      "name": "阿里云",
+      "slug": "aliyun",
+      "route": "vendor/aliyun/",
+      "diskDirPresent": true,
+      "count": 1,
+      "nonDealMaterial": true,
+      "codingPlans": 0,
+      "apiRecords": 2,
+      "models": 9
+    },
+    {
+      "name": "硅基流动",
+      "slug": "siliconflow",
+      "route": "vendor/siliconflow/",
+      "diskDirPresent": true,
+      "count": 1,
+      "nonDealMaterial": true,
+      "codingPlans": 0,
+      "apiRecords": 1,
+      "models": 6
+    },
+    {
+      "name": "阶跃星辰",
+      "slug": "stepfun",
+      "route": "vendor/stepfun/",
+      "diskDirPresent": true,
+      "count": 1,
+      "nonDealMaterial": true,
+      "codingPlans": 4,
+      "apiRecords": 0,
+      "models": 1
+    },
+    {
+      "name": "腾讯云",
+      "slug": "tencent-cloud",
+      "route": "vendor/tencent-cloud/",
+      "diskDirPresent": true,
+      "count": 1,
+      "nonDealMaterial": true,
+      "codingPlans": 0,
+      "apiRecords": 1,
+      "models": 6
+    },
+    {
+      "name": "月之暗面",
+      "slug": "moonshot",
+      "route": "vendor/moonshot/",
+      "diskDirPresent": true,
+      "count": 1,
+      "nonDealMaterial": true,
+      "codingPlans": 1,
+      "apiRecords": 0,
+      "models": 2
+    },
+    {
+      "name": "Anthropic",
+      "slug": "anthropic",
+      "route": "vendor/anthropic/",
+      "diskDirPresent": true,
+      "count": 1,
+      "nonDealMaterial": true,
+      "codingPlans": 1,
+      "apiRecords": 1,
+      "models": 4
+    },
+    {
+      "name": "AWS",
+      "slug": "aws",
+      "route": "vendor/aws/",
+      "diskDirPresent": true,
+      "count": 1,
+      "nonDealMaterial": true,
+      "codingPlans": 2,
+      "apiRecords": 0,
+      "models": 0
+    },
+    {
+      "name": "Cursor",
+      "slug": "cursor",
+      "route": "vendor/cursor/",
+      "diskDirPresent": true,
+      "count": 1,
+      "nonDealMaterial": true,
+      "codingPlans": 1,
+      "apiRecords": 0,
+      "models": 0
+    },
+    {
+      "name": "Google",
+      "slug": "google",
+      "route": "vendor/google/",
+      "diskDirPresent": true,
+      "count": 1,
+      "nonDealMaterial": true,
+      "codingPlans": 2,
+      "apiRecords": 1,
+      "models": 4
+    },
+    {
+      "name": "OpenAI",
+      "slug": "openai",
+      "route": "vendor/openai/",
+      "diskDirPresent": true,
+      "count": 1,
+      "nonDealMaterial": true,
+      "codingPlans": 0,
+      "apiRecords": 2,
+      "models": 4
+    },
+    {
+      "name": "Replit",
+      "slug": "replit",
+      "route": "vendor/replit/",
+      "diskDirPresent": true,
+      "count": 1,
+      "nonDealMaterial": true,
+      "codingPlans": 2,
+      "apiRecords": 0,
+      "models": 0
+    },
+    {
+      "name": "Windsurf",
+      "slug": "windsurf",
+      "route": "vendor/windsurf/",
+      "diskDirPresent": true,
+      "count": 1,
+      "nonDealMaterial": true,
+      "codingPlans": 2,
+      "apiRecords": 0,
+      "models": 0
+    },
+    {
+      "name": "DeepSeek",
+      "slug": "deepseek",
+      "route": "vendor/deepseek/",
+      "diskDirPresent": true,
+      "count": 0,
+      "nonDealMaterial": true,
+      "codingPlans": 0,
+      "apiRecords": 2,
+      "models": 3
+    }
+  ],
+  "disk": {
+    "dirs": [
+      "aliyun",
+      "anthropic",
+      "aws",
+      "baidu-ai-cloud",
+      "coze",
+      "cursor",
+      "deepseek",
+      "github",
+      "google",
+      "iflytek",
+      "microsoft",
+      "minimax",
+      "moonshot",
+      "notion",
+      "openai",
+      "replit",
+      "siliconflow",
+      "stepfun",
+      "tencent-cloud",
+      "volcengine",
+      "windsurf",
+      "zhipu"
+    ],
+    "plannedSlugs": [
+      "aliyun",
+      "anthropic",
+      "aws",
+      "baidu-ai-cloud",
+      "coze",
+      "cursor",
+      "deepseek",
+      "github",
+      "google",
+      "iflytek",
+      "microsoft",
+      "minimax",
+      "moonshot",
+      "notion",
+      "openai",
+      "replit",
+      "siliconflow",
+      "stepfun",
+      "tencent-cloud",
+      "volcengine",
+      "windsurf",
+      "zhipu"
+    ],
+    "equal": true,
+    "orphan": [],
+    "missing": []
+  },
+  "reverseDirection": {
+    "identityWithMaterialButNoPage": []
+  },
+  "sha256": {
+    "scripts/data/providers.json": "07d216b4965043c95084eb2aa1910d2eb9f1f12e751c01a255d30f8e7ca5f121",
+    "scripts/data/vendor-slugs.json": "459e0b4a77d4f60191c2e649b6e87b4577eb6cbc0bdc9b73a413a19ccc2b787e",
+    "dist/vendor 目录清单": "98651e70cbe0bc421d720558eb64460f6dc35f36e7ed8aa1c4ecc8bcf2e05d71"
+  }
+}

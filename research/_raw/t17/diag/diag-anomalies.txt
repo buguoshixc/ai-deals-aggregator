@@ -1,0 +1,43 @@
+
+===================== M17 生产门禁静默降级：verify.yml 的 allow_degraded_run 改成字面量 true
+verdict: NOT_CAUGHT  error: (none)
+applied: {"file":"D:\\t17-mutation\\cases\\w5-M17\\.github\\workflows\\verify.yml","mode":"degrade-guard-to-literal","before":"description: '浏览器不可用时仍跑静态门禁（会在 Summary 明确记「未做真浏览器验收」）'","after":"${{ inputs.allow_degraded_run || 'true' }}"}
+targetsChanged: [".github/workflows/verify.yml"]
+restore: [{"path":".github/workflows/verify.yml","shaBefore":"7fd395e2ad40e261b41e513ae5d44571b6a6eb296625316cdd82a7cf7cc28184","shaAfter":"7fd395e2ad40e261b41e513ae5d44571b6a6eb296625316cdd82a7cf7cc28184","byteExact":true}]
+
+  --- gate check-ci-consistency exit=0 11173ms
+      · ✓ (12) deploy.yml 的发布链必须先过门禁：prepublish 无 job 级 if、build 依赖它、deploy 依赖 build — prepublish(无 if) → build(needs=["prepublish"]) → deploy(needs=["build"])
+      · ✓ (17) package.json 里的每个 selftest:* 都被门禁真的跑到（新脚本必须登记） — package.json 里的 selftest:* 全部出现在 .github/actions/gate/action.yml 里；7 个产物依赖步骤都显式 --dir=dist 且排在「Assemble site (same path as deploy.yml)」之后
+      · ✓ (E) 实跑项数 == --expect-checks=38（期望值来自 verify.yml 的 gate 调用行；数字钉在调用方，与看门狗互相独立）
+
+===================== M22 逐格数值错位：详情页把 Input/Output 两格价格互换
+verdict: ERROR  error: Error: 详情页里找不到两个数值格
+applied: undefined
+targetsChanged: undefined
+restore: undefined
+
+===================== M23 改写已落盘的历史（套餐历史加一条伪造 created 事件）
+verdict: NOT_CAUGHT  error: (none)
+applied: {"file":"D:\\t17-mutation\\cases\\w3-M23\\scripts\\data\\plan-history.json","mode":"editJson","note":"events 追加一条 created 事件"}
+targetsChanged: ["scripts/data/plan-history.json"]
+restore: [{"path":"scripts/data/plan-history.json","shaBefore":"667a048176671a243e3862d2e538534e6231f74741e3d42c2bd61c139417f1b8","shaAfter":"667a048176671a243e3862d2e538534e6231f74741e3d42c2bd61c139417f1b8","byteExact":true}]
+
+  --- gate history-verify exit=0 2257ms
+      · === 优惠历史（deal-history.json）===
+      · 起算日        : 2026-09-30
+      · 基线记录      : 134
+      · 事件          : 1 条 · 涉及 1 条记录 · 观测态 0 条
+      · 分类          : created=1 · updated=0 · benefit_changed=0 · eligibility_changed=0 · expiry_changed=0 · ended=0 · restored=0
+      · 文件体积      : 87.2 KB / 上限 1024 KB
+
+  --- gate validate-strict exit=0 1275ms
+      · 套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）
+
+===================== M24 把 provenance 自测的牙拔掉（断言改成恒真）
+verdict: NOT_CAUGHT  error: (none)
+applied: {"file":"D:\\t17-mutation\\cases\\w5-M24\\scripts\\tools\\provenance-selftest.js","mode":"neuter-check-helper"}
+targetsChanged: ["scripts/tools/provenance-selftest.js"]
+restore: [{"path":"scripts/tools/provenance-selftest.js","shaBefore":"fe9b0e107f2c0d2ea00c3dd1410380cd1397856ae2d38f60ceafe7326ba7395f","shaAfter":"fe9b0e107f2c0d2ea00c3dd1410380cd1397856ae2d38f60ceafe7326ba7395f","byteExact":true}]
+
+  --- gate provenance-selftest exit=0 1325ms
+      · === ⑨ 官方域判据（t7：evidence/officialUrl 必须兑现到官方来源登记）===

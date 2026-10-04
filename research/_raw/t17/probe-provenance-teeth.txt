@@ -1,0 +1,21 @@
+探测副本：D:\t17-mutation\cases\t17-probe
+实验目标记录：4987c183fc1a
+原始引文："平台有权根据自身运营需求和营销需要，针对新用户等不特定人群赠与体验券或代金券（具体名称以上线时为准）。体验券和代金券等可用于平台上360智脑大模型API调用消耗使用。"
+
+[T0 基线] provenance-selftest exit=0
+  最后一行：✅ provenance 自测：114 项通过，0 项失败
+
+[T1 假引文] provenance-selftest exit=0  **仍然绿 ⇒ 没有对真实数据的牙**
+    unknown   0 条 / 0 处字段：0 → 0（移出 0 处 = 声明为推断 0 + 第三方收录 0）
+    合计：322 → 273（减少 49 处 = 第三方收录 25 + 声明为推断 24）；official 档正确档位 150 处原样保留
+  inferred 字段：28 处（24 → 28 处按「由官方原文推断」渲染）
+=== ⑨ 官方域判据（t7：evidence/officialUrl 必须兑现到官方来源登记）===
+
+✅ provenance 自测：114 项通过，0 项失败
+
+[T2 拔牙后] provenance-selftest exit=0（应为 0：变异生效且没有任何门禁能抓它）
+  最后一行：✅ provenance 自测：114 项通过，0 项失败
+
+[恢复核对] deals.json byteExact=true dc0c50d5cc32 / dc0c50d5cc32
+
+[恢复核对] scripts/tools/provenance-selftest.js byteExact=true fe9b0e107f2c / fe9b0e107f2c

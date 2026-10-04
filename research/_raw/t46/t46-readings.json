@@ -1,0 +1,116 @@
+{
+  "command": "node scripts/tools/coverage-report.js --json",
+  "contentVersion": "HEAD 之后未提交的工作区（t46 改动）",
+  "exitCodes": [
+    0,
+    0
+  ],
+  "stdoutBytes": 218443,
+  "stdoutSha256": "ff039fa40a804a2d5e5a9004509670e3eb9babfd6db33723f2b6e3b5beab9dcf",
+  "stdoutBytesSecond": 218443,
+  "stdoutSha256Second": "ff039fa40a804a2d5e5a9004509670e3eb9babfd6db33723f2b6e3b5beab9dcf",
+  "twoRunsIdentical": true,
+  "payloadBytes": 179383,
+  "payloadSha256": "5288c615e4fc39fa4850db4630b4315e1b226febd21775ff673071ff0f04be77",
+  "payloadDefinition": "从 stdout 按括号配对切出的第 2 个 JSON 块（顶层含 registry+api）的原文",
+  "topLevelKeys": [
+    "generatedAt",
+    "deals",
+    "coding",
+    "api",
+    "registry",
+    "gaps",
+    "candidates",
+    "coverageTargets"
+  ],
+  "coverageTargetsKeys": [
+    "file",
+    "present",
+    "schemaVersion",
+    "reviewedAt",
+    "validationProblemCount",
+    "validationProblems",
+    "stateOrder",
+    "states",
+    "universe",
+    "dimensions",
+    "rows",
+    "missingTargets",
+    "partialTargets",
+    "deferred",
+    "unverifiable",
+    "notApplicable",
+    "blockedBySourceHealth",
+    "currentModels",
+    "sourceHealth",
+    "freshness",
+    "catalogStatusCensus"
+  ],
+  "census": {
+    "landed": true,
+    "statusOrder": [
+      "current",
+      "aging",
+      "legacy",
+      "historical",
+      "unknown"
+    ],
+    "counts": {
+      "current": 3,
+      "aging": 0,
+      "legacy": 1,
+      "historical": 0,
+      "unknown": 40
+    },
+    "sum": 44,
+    "registryModels": 44,
+    "statusesOutsideWordList": [],
+    "source": "发布产物 models.json 的 catalogStatus（派生字段，来源层禁写）；词表与 censusOf() 来自 scripts/lib/model-freshness.js",
+    "reason": null
+  },
+  "censusTextLine": "current 3 · aging 0 · legacy 1 · historical 0 · unknown 40（和 44）",
+  "candidates": {
+    "keys": [
+      "total",
+      "adopted",
+      "notAdopted",
+      "rows"
+    ],
+    "total": 40,
+    "adopted": 13,
+    "notAdopted": 21,
+    "rows": 40,
+    "rowsWithUrl": 40,
+    "rowsWithCheckedAt": 40,
+    "rowsWithFailedReason": 27
+  },
+  "sourceHealth": {
+    "keys": [
+      "declaredSources",
+      "unhealthyDeclaredSources",
+      "blockedTargets",
+      "registryRowCount",
+      "registryRows",
+      "registryOnlySources"
+    ],
+    "declared": 5,
+    "registryRowCount": 9,
+    "registryOnlySources": [
+      "Futurepedia",
+      "Futuretools",
+      "Layer3Labs",
+      "aitools.fyi"
+    ]
+  },
+  "recompute": {
+    "契约命令_scripts_data_models": {
+      "undefined": 44
+    },
+    "发布产物_models": {
+      "unknown": 40,
+      "current": 3,
+      "legacy": 1
+    },
+    "发布产物_models_sum": 44
+  }
+}

@@ -181,9 +181,42 @@ check('每个 endpoint 在仓库里都真实存在', docs.assertEndpointsExist(m
   docs.assertEndpointsExist(manifest, endpointExists).slice(0, 2).join('；'));
 check('updatedAt 与真实文件逐字段一致（含时间形状）', docs.assertUpdatedAt(manifest, actualUpdatedAt).length === 0,
   docs.assertUpdatedAt(manifest, actualUpdatedAt).slice(0, 2).join('；'));
-check('六个类别齐全（deals / coding plans / api pricing / models / relationships / history）',
-  docs.DATASET_CATEGORIES.every(category => manifest.datasets.some(dataset => dataset.category === category.key))
-  && docs.DATASET_CATEGORIES.length === 6);
+// 类别在**两侧**各有一份声明：`DATASET_CATEGORIES`（数据文档页的类别表，唯一出处）与
+// Manifest 里每个 dataset 的 `category`（由 `PUBLIC_DATASETS` 派生）。
+//
+// 选的是**集合相等**（双向包含），理由：两个方向各自都是一种真实缺陷 ——
+//   ① 表里声明了、Manifest 里没有 ⇒ 页面上会出现一个空类别（"这一类数据集"实际不存在）；
+//   ② Manifest 里有、表里没有 ⇒ 页面的类别单元格只能印原始 key（`datasetRowsHtml` 的回退），
+//      读者看到的是 `api-pricing` 这种内部标识，而不是「API 计费」。
+// 为什么不再写 `DATASET_CATEGORIES.length === 6`：6 是这张表**当天的大小**，不是契约 ——
+// 新增一个公开数据集/类别是产品的合法演进，字面量会让门禁在那一天假红；
+// 而真正要守的两条关系（两个方向）在这里都还在，而且报错点名了差在哪一项。
+// 计数关系也没丢：集合相等 + 表内 key 唯一 ⇒ 「Manifest 里的类别数 == 表里声明的类别数」。
+const declaredCategoryKeys = docs.DATASET_CATEGORIES.map(category => category.key);
+const manifestCategoryKeys = [...new Set(manifest.datasets.map(dataset => dataset.category))];
+const categoriesWithoutDatasets = declaredCategoryKeys.filter(key => !manifestCategoryKeys.includes(key));
+const datasetsWithUndeclaredCategories = manifestCategoryKeys.filter(key => !declaredCategoryKeys.includes(key));
+const duplicatedCategoryKeys = declaredCategoryKeys.filter((key, index) => declaredCategoryKeys.indexOf(key) !== index);
+check('类别表与 Manifest 的类别**双向相等**：表里声明的每一类都真有数据集，且 Manifest 里没有表外的类别',
+  categoriesWithoutDatasets.length === 0 && datasetsWithUndeclaredCategories.length === 0
+  && duplicatedCategoryKeys.length === 0 && declaredCategoryKeys.length > 0,
+  `实际（manifest.datasets 的 category 集合，${manifestCategoryKeys.length} 类）${JSON.stringify(manifestCategoryKeys)}`
+  + ` / 期望（docs.DATASET_CATEGORIES 声明的 key，${declaredCategoryKeys.length} 类）${JSON.stringify(declaredCategoryKeys)}`
+  + `；差异 [表里有、Manifest 没有: ${categoriesWithoutDatasets.join(',') || '无'}`
+  + ` / Manifest 有、表里没有: ${datasetsWithUndeclaredCategories.join(',') || '无'}`
+  + ` / 表里重复的 key: ${duplicatedCategoryKeys.join(',') || '无'}]`);
+
+// 同一条关系在**注册表**这一侧也要成立：`PUBLIC_DATASETS` 是 Manifest 的来源，它写的类别
+// 必须在类别表里（否则 `buildDatasetManifest` 会原样带过去，而页面只能印原始 key）。
+// 这一条与上面那条是**两个不同的观察点**（注册表 ↔ 类别表 / Manifest ↔ 类别表）：
+// 上面那条红了说明派生链断在中间，这一条红了说明源头就不认识这个类别。
+const registryCategoryDrift = [...new Set(docs.PUBLIC_DATASETS.map(entry => entry.category))]
+  .filter(key => !declaredCategoryKeys.includes(key));
+check('注册表 PUBLIC_DATASETS 声明的 category 全部落在类别表里（注册表 ↔ 类别表 同源对账）',
+  registryCategoryDrift.length === 0,
+  `实际（PUBLIC_DATASETS 用到的类别）${JSON.stringify([...new Set(docs.PUBLIC_DATASETS.map(entry => entry.category))])}`
+  + ` / 期望（DATASET_CATEGORIES 的 key）${JSON.stringify(declaredCategoryKeys)}`
+  + `；差异 [表里没有: ${registryCategoryDrift.join(',') || '无'}]`);
 check('两种时间形状都被真实数据覆盖：deals 是真实时刻，plans/api/models 是日期规范化',
   docs.timeShapeOf(manifest.datasets.find(d => d.id === 'deals').updatedAt) === 'timestamp'
   && ['plans', 'api-plans', 'models'].every(id => docs.timeShapeOf(manifest.datasets.find(d => d.id === id).updatedAt) === 'date-normalized')
