@@ -35,6 +35,21 @@
  * 于是更便宜的那档价格在页面上根本不存在。
  * 对账口径与 `scripts/tools/registry-join-audit.js`（独立 join，不 require 本文件）一致。
  *
+ * ## 目录状态与「默认不占首屏」（coverage-expansion-v1）
+ *
+ * 索引表列出 registry 的**全部**模型（`data-model` 一行一个，静态 HTML 里一行都不少），
+ * 但 `catalogStatus` 为 `legacy` / `historical` 的条目**默认不占据首屏**：本层只把默认隐藏集合
+ * 当作**构建期参数**交给内联筛选脚本（`buildModelsIndexFilterScript({ defaultHiddenStatus })`），
+ * 由脚本在运行时设 `row.hidden`。三条硬承诺都有断言：
+ *
+ *   1. 静态表行数 == registry 全部模型数，且预渲染 HTML 里没有一行带 `hidden`（No-JS 完整）；
+ *   2. 默认隐藏集合**从页面原文读回来**与判据层的 `DEFAULT_HIDDEN_CATALOG_STATUSES` 逐字对账；
+ *   3. 详情页路由 / sitemap 成员资格与 `catalogStatus` **无关** —— 换一个目录状态重算门槛，
+ *      结论必须一字不变（藏的是首屏，不是身份）。
+ *
+ * 中性用词来自 `model-freshness.CATALOG_STATUS_LABEL`（页面不另写一份词表）；
+ * 「已下线」只允许来自 `status=retired`，目录状态任何一档都不借用它。
+ *
  * ## 纯函数
  *
  * 不读盘、不联网、不看时钟：registry、映射、`api-plans.json`、日志都由调用方传入。
@@ -835,7 +850,7 @@ ${notes}
       </ul>
 
 ${emptyState}      <div id="models-filter" class="mfilter" aria-label="筛选模型"></div>
-      <p class="snote mcount" id="models-count">显示 ${rows.length} / ${rows.length} 个模型${hiddenCount ? `（旧型号 ${hiddenCount} 个默认不占首屏，可用「显示旧型号」查看）` : ''}</p>
+      <p class="snote mcount" id="models-count">显示 ${rows.length} / ${rows.length} 个模型${hiddenCount ? `（无 JS 时全部列出；有 JS 时旧型号 ${hiddenCount} 个默认不占首屏，可勾选「显示旧型号」查看）` : ''}</p>
 
       <div class="ptable-wrap">
       <table class="ptable" id="models-table">
