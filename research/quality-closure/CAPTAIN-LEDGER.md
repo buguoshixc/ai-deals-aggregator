@@ -377,3 +377,9 @@
 - 未做：push / PR / 部署 / 线上冒烟（均无授权）。主工作区全程未触碰。
 - 24 个任务（t1–t25，含中途新增 t25）全部 terminal；成员全部 idle。
 - 环境备注：`core.autocrlf=true` ⇒ 报告里的 sha256 按**提交内容（LF）**计；在 Windows 全新检出（CRLF）上重算会不同。harness pwsh 受执行策略限制，.ps1 需 `-ExecutionPolicy Bypass` 且含中文的脚本必须带 UTF-8 BOM。
+## 推送上线（用户授权「推送上线」）— 2026-10-04
+- **PR #32** `quality-closure-post-audit` → `master`：分支 `gate` 检查 run **37171970378 success**（2m42s）→ 合并 merge commit **`ba0e0f23710b4a191230da0313ae166cb139f6cb`**。
+- master 侧：`Verify site (gate)` run **37172126751 success**（2m44s）· `Deploy to GitHub Pages` run **37172126798 success**（4m44s；`prepublish`〔同一 gate action，`allow_degraded_run='false'`〕→ `build` → `deploy` 三段全绿）· Pages `status=built` / `build_type=workflow`。
+- **线上冒烟（部署后真浏览器）**：`node scripts/tools/verify-site.js --url=https://buguoshixc.github.io/ai-deals-aggregator/` → **703 项 0 失败**。线上抽查：首页 / `/feeds/` / `/models/glm-4.5v/` / `/plans/api/` / `/docs/data/` / `sitemap.xml` / `data/index.json` 全 200；`/feeds/` 列出 **48** 地址；`/models/glm-4.5v/` **2 行**（standard / long_context）；`sitemap.xml` **170**；Manifest **9** 份；**`/feed/api.xml` 404**（§13 红线成立）。
+- **顺带发现（合并前就存在，非本轮引入）**：`Collect AI Deals` 自 **2026-10-03 15:47Z** 起失败（run 37134505706，gate 步骤 exit 1），直接原因是构建自检 `✗ SEO[itemlist-arity] changes/：ItemList 声明 1 项，但 itemListElement 只有 0 项` —— **正是本轮修复的 P1-4**；它又导致 `dist/deals.json` 不存在、并由 `workflow_run` 连累那次 deploy 失败（run 37134604743）。真实采集链路的确认需要再跑一次 `Collect AI Deals`（会写数据并推送，属独立授权范围，**本轮未触发**）。
+- T24 报告的两条保留条件现已满足（CI 三段全绿 + 线上冒烟 703/0）；报告 §21 与 §26 已按实况改写并随本次提交更新到 master。
