@@ -321,22 +321,22 @@ async function main() {
   const outFile = path.join(LOGS, 'battery.json');
   fs.writeFileSync(outFile, JSON.stringify(summary, null, 2), 'utf8');
 
-  console.log(`\n共享树证据：变异目标文件在窗口内逐字节未变 = ${mutationTargetsUnchanged}${mutationTargetsUnchanged ? '' : `（变化：${allTargets.filter(r => sharedDuringCasesBefore[r] !== sharedDuringCasesAfter[r]).join(', ')}）`}`);
-  if (changedDuringCases.length) console.log(`（另有 ${changedDuringCases.length} 个 GUARDED 文件在窗口内变化，属队友正常提交：${changedDuringCases.join(', ')}）`);
+  console.log(`\n共享树证据：变异目标文件在窗口内逐字节未变 = ${mutationTargetsUnchanged}${mutationTargetsUnchanged ? '' : `（窗口内变化：${allTargets.filter(r => sharedDuringCasesBefore[r] !== sharedDuringCasesAfter[r]).join(', ')}）`}`);
+  if (changedDuringCases.length) console.log(`（另有 ${changedDuringCases.length} 个 GUARDED 文件在窗口内变化：${changedDuringCases.join(', ')} —— 本电池只写沙箱副本，这些变化来自队友的并发提交）`);
   console.log(`统计：${JSON.stringify(summary.counts)}`);
   console.log(`原始记录：${outFile}`);
-  // 默认判据：未预期的 NOT_CAUGHT / 非预期红 / 变异应用失败 / 恢复失败 / 变异目标被改动 ⇒ 非 0。
-  // 留档的已知盲区（NOT_CAUGHT(KNOWN)）默认**不算失败**（它们是审查产物，不是回归）；
-  // 想让它们也判红（例如"盲区必须逐条被清掉"那一轮）就用 --strict。
+  // 判据：只看**本电池能负责的东西** —— 预期红=实际红、逐字节恢复成立、变异应用没失败。
+  // 共享树是否被改动**是信息项，不是判据**：队友的并发提交与电池无关，把它算成失败会制造假红
+  // （本轮实测：连续两次运行之间，relation/links 与 api-plans 被队友改过）。
+  // --strict：留档的已知盲区（NOT_CAUGHT(KNOWN)）也判红，用于"盲区必须逐条清掉"那一轮。
   const strict = process.argv.includes('--strict');
   const bad = summary.counts.notCaught + summary.counts.unexpectedRed + summary.counts.applyError + summary.counts.restoreFailed
-    + (sharedUnchanged ? 0 : 1)
     + (strict ? summary.counts.knownNotCaught : 0);
   if (bad) {
-    console.error(`\n有 ${bad} 项需要人工看（未预期的 NOT_CAUGHT / 非预期红 / 变异应用失败 / 恢复失败 / 变异目标文件被改动${strict ? ' / 留档盲区（--strict）' : ''}）`);
+    console.error(`\n有 ${bad} 项需要人工看（未预期的 NOT_CAUGHT / 非预期红 / 变异应用失败 / 恢复失败${strict ? ' / 留档盲区（--strict）' : ''}）`);
     process.exit(1);
   }
-  console.log(`\n全部用例：预期红 = 实际红，逐字节恢复成立，共享树的变异目标文件一个字节未动（留档的已知盲区 ${summary.counts.knownNotCaught} 条，默认不算失败；要它们也判红用 --strict）。`);
+  console.log(`\n全部用例：预期红 = 实际红，逐字节恢复成立（留档的已知盲区 ${summary.counts.knownNotCaught} 条，默认不算失败；要它们也判红用 --strict）。`);
 }
 
 main().catch(error => { console.error(error); process.exit(2); });

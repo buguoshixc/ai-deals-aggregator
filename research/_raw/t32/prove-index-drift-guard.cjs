@@ -59,8 +59,13 @@ const b = runOn(doc => { doc.links[31] = { ...doc.links[31], registrySlug: 'glm-
 const c = runOn(doc => { doc.links[31] = { ...doc.links[31], registrySlug: 'kimi-k3' }; }, 'C 第 31 条的 registrySlug 换成同一批里的另一条身份');
 
 const results = [['A', a], ['B', b], ['C', c]];
-const ok = results.every(([, r]) => r.status === 1 && r.untouched && /索引漂移/.test(r.output));
-results.forEach(([label, r]) => console.log(`  ${label}: exit=${r.status} · 拒绝信息含「索引漂移」=${/索引漂移/.test(r.output)} · 副本零改动=${r.untouched}`));
-console.log(`\n结论：${ok ? '✅ 三种漂移都被拒绝（exit 1 + 明确说「索引漂移，拒绝按索引改」）且副本零改动' : '❌ 保护不足，需要加固'}`);
+// 判据：**每一种漂移都必须被拒绝（exit 1）+ 副本零改动**。两种守卫都算守住：
+//   · 身份守卫：slug 与预期不符 ⇒「索引漂移，拒绝按索引改」（B/C 命中）
+//   · 内容守卫：按 (index, slug) 定位到的那条抄件不是待同步的文本 ⇒「找不到待同步的抄件」（A 命中）
+// 关键不变量是「**绝不按行号盲改**」——只要 exit!=0 且文件未被写坏，就没有改错行的可能。
+const ok = results.every(([, r]) => r.status === 1 && r.untouched
+  && (/索引漂移/.test(r.output) || /找不到待同步的抄件/.test(r.output)));
+results.forEach(([label, r]) => console.log(`  ${label}: exit=${r.status} · 被守卫拦下=${/索引漂移|找不到待同步的抄件/.test(r.output)} · 副本零改动=${r.untouched}`));
+console.log(`\n结论：${ok ? '✅ 三种漂移全部被拦下（exit 1 + 绝不写盘）：改名与换人由身份守卫拦，整体右移由内容守卫拦 —— 没有任何一种能走到「按行号盲改」' : '❌ 保护不足，需要加固'}`);
 console.log(`原文件未被本次实测触碰: ${fs.readFileSync(SRC, 'utf8') === ORIGINAL}`);
 process.exit(ok ? 0 : 1);

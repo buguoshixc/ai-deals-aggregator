@@ -451,7 +451,7 @@
       "evidence": [
         {
           "field": "pricing.currency",
-          "quote": "$X.XX/M tokens（每百万 token）—— GPT OSS 120B $0.35 / $0.75；Qwen 3.8 27B $0.99 / $1.49（Developer 档逐字）",
+          "quote": "[OPENAI]GPT OSS 120B | ~3000 tokens/s | $0.35/M tokens | $0.75/M tokens",
           "sourceUrl": "https://www.cerebras.ai/pricing",
           "capturedAt": "2026-10-04",
           "lang": "en"
@@ -880,7 +880,7 @@
       "evidence": [
         {
           "field": "pricing.currency",
-          "quote": "(USD per 1M tokens) —— Model | Standard | Priority；Ember-1 3 / 15；Kimi K3 3 / 15；GLM 5.3 1.4 / 4.4（官方 serverless pricing 页逐字）",
+          "quote": "(USD per 1M tokens)",
           "sourceUrl": "https://docs.fireworks.ai/serverless/pricing.md",
           "capturedAt": "2026-10-04",
           "lang": "en"
@@ -1186,7 +1186,7 @@
       "evidence": [
         {
           "field": "pricing.currency",
-          "quote": "PRICE PER 1M TOKENS — GPT OSS 120B $0.15 / $0.60；GPT OSS 20B $0.075 / $0.30（官方 Supported Models 页逐字）",
+          "quote": "PRICE PER 1M TOKENS",
           "sourceUrl": "https://console.groq.com/docs/models",
           "capturedAt": "2026-10-04",
           "lang": "en"
@@ -2182,7 +2182,7 @@
       "evidence": [
         {
           "field": "pricing.currency",
-          "quote": "Input pricing (per 1M tokens) / Cached input pricing (per 1M tokens) / Output pricing (per 1M tokens) —— Inkling 1 / 0.17 / 4.05；Kimi K3 3 / 0.3 / 15（官方 serverless models 页逐字列头与两行）",
+          "quote": "Input pricing (per 1M tokens)",
           "sourceUrl": "https://docs.together.ai/docs/serverless/models.md",
           "capturedAt": "2026-10-04",
           "lang": "en"

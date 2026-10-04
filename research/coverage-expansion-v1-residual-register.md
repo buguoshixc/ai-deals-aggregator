@@ -8,8 +8,10 @@
 > 1. **每一条「已关闭」都必须附上关闭它的那次反证**（命令 + 退出码），不许写「已修复」而无证据；
 > 2. 每条都必须写清**可见性** —— 从哪里能自己看见它（产物路径或命令），而不是"有人说"。
 >
-> 产出者：ci-gate-engineer（t28，attempt 1）· 基线 a4dd40f · 本表随工作区数据变化而重算，
-> 仲裁类数字（§2）带清单 sha256，可复核。
+> 产出者：ci-gate-engineer（t28 首版，attempt 1；**t34 更新**）· 基线 a4dd40f ·
+> 本表随工作区数据变化而重算，仲裁类数字（§2）带清单 sha256，可复核。
+> **最后更新：t34（2026-10-04）** —— 改了什么、为什么、引用了哪条证据，逐条见 **§6 变更记录**；
+> 历史条目一律 append 式更新，**不静默改写**。
 
 ---
 
@@ -81,7 +83,8 @@ provider 数（仅 type=deal）        31   只数 type=deal 的 80 行归一后
 > 行计数为浏览器内 `tr[hidden]` / `getBoundingClientRect` 实测值而非字符串匹配。
 > 证据文件：`research/_raw/t28/verify-site.json`（陈旧 dist）、`research/_raw/t28/verify-site-fresh.json`（新构建）、
 > `research/_raw/t28/verify-site-run.log` 与 `verify-site-fresh.log`（人读全文）。
-> **注意**：整套验收 735 项里有 1 项红，**与本节无关但真实存在** —— 见残余 (j)。
+> **注意（t34 更新）**：当时整套验收 735 项里有 1 项红（与本节无关）；那条红已在 t34 定位为
+> **判据层的假红**并由 t31 修复 —— 复跑 **735 项 0 失败 exit 0**。详见残余 (j) 与 §6。
 
 ---
 
@@ -100,17 +103,42 @@ provider 数（仅 type=deal）        31   只数 type=deal 的 80 行归一后
 | (g) | `releasedAt` 引文有 **400 字上限** | `MAX_RELEASE_QUOTE = 400`（≈2~4 句官方原话）：允许完整一条官方条目，**拒绝整页复制** | 这是**有意的**例外（版权纪律），不是缺陷；代价是超长官方条目被截断 | 保持登记（有意） | `scripts/lib/model-registry.js:238-240`（注释写明理由） |
 | (h) | `checkedAt` / `checkedUrls` / `checkedOutcome` 为什么留着 | 「查不到的必须留 null，并写清 `checkedAt` + 已核查的官方 URL + 该页面为什么给不出日期」⇒ **「查过没日期」必须能与「从未查过」分开** | 少这三个字段，"40 条 unknown"就分不出"查了没结论"与"还没人查" | 保持登记（有意） | `research/_raw/coverage-expansion-v1/currentness.json` → `releaseEvidenceSchema` 与 `_rules` |
 | (i) | **平台 vs 模型发行方的展示需求**：同一个 `modelKey` 出现在 N 个 provider 记录里 | api-plans 共 **66** 个不同 `modelKey`，其中 **7** 个出现在 >1 个 provider 记录（`deepseek-v4-pro×3`、`glm-5.3×3`、`minimax-m3×3`、`kimi-k3×2`、`gpt-oss-120b×2`、`qwen3.8-27b×2`；重复度分布 `{2:4, 3:3}`） | 注册表是"一个模型一条身份"，但读者要**按平台比价** ⇒ 需要"同一身份 × N 平台"的视图；当前只能从 API 计价页逐条读 | 保持登记 | `node research/_raw/t28/residual-counts.js`（本表数字即它算出） |
-| (j) | **真实浏览器验收有 1 项红**：`/feeds/ 为空的变化流那一行写出了起算日` | `verify-site.js` 全套 **735 项，失败 1 项**，在**三份不同的产物**上各测一次都红：任务开始时的陈旧 `dist/`、t28 新构建 `t28site.building`、以及任务期间被队友刷新后的当前 `dist/` ⇒ 与构建时机、与 t23/t25 的数据落盘都无关 | 当前分支在真浏览器验收里**不是全绿**；t18 全量 Gate 会在这里红。与 /models/ 及本轮四条 finding **无关** | **未关闭**（需修复或由 t18 明示裁决） | `node scripts/tools/verify-site.js --dir=<构建>`；三份日志：`research/_raw/t28/verify-site-run.log`（陈旧 dist）、`verify-site-fresh.log`（新构建）、`verify-site-current.log`（当前 dist） |
+| (j) | ~~真实浏览器验收有 1 项红~~ → **已定位为「判据层假红」并修复**：`/feeds/ 为空的变化流那一行写出了起算日` | 根因**不在页面，在验收判据**：`scripts/tools/verify-site.js` 当时用 **`/0 条/` 子串匹配**判「这一行是不是空态」，而 **`10 条` / `80 条` / `100 条` 全都命中** —— 当前「API 价格变化」那一行正好是 **`10 条`** ⇒ 两条变化流都被当成空态、都被要求写起算日 ⇒ **门禁自造假红**（页面写的一切都对）。判据已换成 `lib/feeds.js` 的**具名函数** `isZeroCountRow()`（数字边界，唯一出处） | 当时让 t28 的 Verify 命令非 0，并会让 t18 全量 Gate 假红 | **已定位 / 修复在途（t31）** —— 本轮复跑**已 735/0**（修复代码已在盘上生效；t31 台账状态仍 in_progress） | `node scripts/tools/verify-site.js --dir=dist` → **735 项 0 失败 exit 0**（`research/_raw/t28/verify-site-t34.json`、`%TEMP%\t34-verify.log`）；**保住原意的夹具**：`node scripts/tools/feeds-selftest.js` → **144 项通过 0 失败**，第十三节「按数字边界判 0 条」逐组：`0 条` / `最近变化 0 条` / `（0 条）` / 真实空态行 → **true**，`10/20/30/80/100 条` → **false**；代码：`scripts/lib/feeds.js` 的 `isZeroCountRow` / `hasChangeStartDate`，注释见 `verify-site.js:1650-1676` |
 
-### 关于 (j) 的补充边界
+### 关于 (j) 的补充边界（t34 改写：从「未归因的 blocker」到「已定位的假红」）
 
-- 它不是"新引入"的：**三份不同的产物**（t23/t25 落盘之前的陈旧 `dist/`、t28 新构建、队友刷新后的当前 `dist/`）
-  各测一次，**报的都是同一条** ⇒ 与构建时机无关、与本轮数据/页面改动无关；
-- 它**不在**本轮四条 finding 的范围内，本任务不修它（t28 只做核验与登记）；
-- 它必须由 t20/t21 如实披露，并由 t18 决定"修、还是记成有意裁决"。
-- 另记一条过程事实：本节的对照读数在本次任务期间被队友的产物刷新改变过一次 ——
-  `models-page-selftest.js --dir=dist` 在任务中段还是红（根 `models.json` 与 `dist/models.json` 不一致），
-  任务末尾已转绿（115/115）。**这不是 F2 的关闭证据**；F2 的关闭证据始终是 §0 表里那三组定向变异。
+- **它不是页面缺陷，是判据缺陷**：页面写的一切都对（只有真的空态行才写起算日）；
+  错的是验收脚本拿 `/0 条/` 这个**子串**当语义 —— `10 条` 里就含 `0 条`。
+  （这类"子串冒充语义"是本轮反复出现的同一族错误，纪律见 §4。）
+- **它当时确实在三份产物上都红**（t23/t25 落盘前的陈旧 `dist/`、t28 新构建、队友刷新后的当前 `dist/`），
+  所以当时被记成"与构建时机无关"是**对的**；但"与构建无关"**不等于**"与判据无关"——
+  这正是本轮把 (j) 从"红"一路追到"假红"的原因。
+- **处置归属 t31，不是 t28**（t28 只做核验与登记、无修复权）：抽出具名判据 `isZeroCountRow()`
+  作为**唯一出处** + 在 `selftest:feeds` 里用夹具保住"空态必须有起算日"的原意
+  （`true` 四组 / `false` 五组）+ 真跑 735/0。t34 复跑确认：
+  `verify-site.js` **735/0 exit 0**、`feeds-selftest.js` **144/144 exit 0**，
+  且 §22 的 /models/ 读数与首版逐条相同。
+- 另记一条过程事实（历史，保留）：t28 期间队友刷新过 `dist/` 与根 `models.json`，
+  `models-page-selftest.js --dir=dist` 由红转绿（115/115）。**这不是 F2 的关闭证据**；
+  F2 的关闭证据始终是 §0 里那三组定向变异。
+
+---
+
+## §1B 本轮新增闭环条目（t23 / t25 / t27 / t29 / t30 / t31 / t32 / t33）
+
+> 五列口径与 §1 相同。这些条目在本表**首版（t28）时还不存在或尚未收敛**，由 **t34 补入**。
+> 「已关闭」都附了关闭它的命令或产物；**未收口的明确写「在途」**，不粉饰。
+
+| 条目 | 现象 | 判据 | 影响 | 状态 | 可见性 |
+|---|---|---|---|---|---|
+| **t23** | API 侧计价条目**没有出口**：19 条伪造声明 + 81 条未认领 ⇒ 27 项红；处置登记只认套餐侧 | 处置登记**双侧化**（`API_GAP_KEY_ORDER` / `API_GAP_REASONS(['off-registry-model'])` / exactly-one / API 侧存在性与 sourceUrl 与 note / 双向重复记账 / `identityFold`+命名空间后缀**反绕过牙** / 侧别规范序）；`validateLinks` 接 gaps：**未认领 = 展开条目 − 映射 − 处置**，错误信息点名两个出口文件 | 覆盖完整性无从判定 —— 报告只能"看起来"全覆盖 | **已关闭** | `research/_raw/coverage-expansion-v1/t23-land-api-dispositions.cjs`（幂等·自带断言，第二次跑「已是目标状态」）；`node scripts/validate.js --strict` exit 0；`models-selftest` 134/134；盘上读数：links 82 = API 69 + Coding 13 · declarations 54 = Coding 42 + API 12 · 未认领 0 |
+| **t25** | 报告不暴露 API 侧处置；冻结 JSON 契约无前缀守卫；t14-F4 的口径标签缺失 | A/B/C 三读数与 `lib` 的 `coverageOf()` **逐项对账**（对不上即红）+ 闭合断言（A+B+C == 计价条目总数）+ **C ≠ 0 即报告自检非 0**；JSON 契约升级为**旧键前缀逐字逐序 + 追加键恰等于显式白名单** | 处置做了却看不见；冻结契约会被静默改形 | **已关闭** | `node scripts/tools/coverage-report.js`：方程行 `计价条目 93 条 = 已映射认领 81 + 已处置声明 12 + 未判 0`、API 侧处置逐条 12 行、`provider 数（仅 type=deal）` + 对照行；`coverage-targets-selftest` 96/96；独立第二条路径 `research/_raw/t25/recount-api-accounting.cjs`、变异 `mutate-drop-api-disposition.cjs`（删 1 条声明 ⇒ 报告层与门禁层**双双点名**） |
+| **t27** | `(17)` 只守单向：**删掉 package.json 的 selftest 登记而 action.yml 步骤还在时不红**（t7 的 D5 探针实测） | 新增 `(19)` **反向登记制**：从 action.yml 的步骤 run 体出发判「这条 script 是否真的被门禁跑到」；豁免只能逐文件 + 写理由 + 文件必须存在 + **禁止通配** | 自测文件已落盘却一次都不执行，且完全静默（t14-F3 的成因） | **已关闭** | `node scripts/tools/check-ci-consistency.js` → **38 项 0 失败 exit 0**；`--expect-checks=37` → **exit 1**（外部钉住仍有牙）；`research/_raw/t27/reverse-registration-drill.js` → 10/10（含「摘登记必红」与「合法豁免绿」） |
+| **t29** | 报告 JSON 键与 `lib` 的 `coverageOf()` 读数**跨层同名不同义**（两层的 `declaredApiEntries` 一个指数、一个指数组） | **只加注释**消解：把逐键对照写死在 JSON 组装处；判据要求 diff **每一行 +/- 都是注释行**（键名/白名单/读数逻辑/断言强度零改动） | 下一个人按名字读键会读反，而误读可能静默 | **已关闭**（只加注释） | `scripts/tools/coverage-report.js:947-963` 的对照注释块 + `coverage-targets-selftest.js:475-487` 的语义锚点；证明工具 `research/_raw/t25/diff-comment-only.cjs`（31 行 +/- **全是注释**）；`report --json` 两次 stdout sha256 均 `7e50e31df838c966…`（与改动前**同值**） |
+| **t30** | T26-F1/F2：命名空间后缀切分集漏 `_`/`-`；`validateLinks`/`validateGaps` 是否**成对调用**没有机器守卫 | 切分集 `[/．.]` → **`[/．._-]`**（对齐 `modelKey` schema `^[a-z0-9][a-z0-9._-]{1,59}$` 允许的 `{., _, -}`），尾段仍走 `identityFold` **折叠精确相等**（不引入相似度/编辑距离/子串包含）；`models-selftest` 新增 ⑧ 节**源码级成对调用牙** | 反绕过后缀切分可被绕过；单边调用会静默漏掉一侧校验 | **已关闭** | `research/_raw/t30/probe-suffix-splitting.cjs` + `separator-fixtures.json`：**`acme_glm-5.3` / `acme-glm-5.3` 修补前 0 命中、修补后命中 `glm-5.3`**（真实数据结论不变：7 条各命中 1 个 identity、12 条声明 0 命中）；成对牙实测 8 个入口，副本里摘掉一处即红 |
+| **t31** | 残余 (j)：`/feeds/` 空态判据用子串匹配 ⇒ 门禁自造假红 | 抽出具名判据 `isZeroCountRow()`（数字边界，唯一出处）+ 在 `selftest:feeds` 里用夹具保住"空态必须有起算日"的原意 + 真跑 735/0 | 真浏览器验收非 0；t18 全量 Gate 假红 | **已定位 / 修复在途（t31）** —— 本轮复跑**已 735/0** | `node scripts/tools/verify-site.js --dir=dist` → **735/0 exit 0**；`node scripts/tools/feeds-selftest.js` → **144/144**（第十三节数字边界夹具）；详见 (j) 行 |
+| **t32** | t15 的 F1–F8（引文逐字化、jetbrains 证据可复现性、t13 报告如实纠正） | **数值一字不动** + 引文逐字 + **不可复核必须明写**（不许写「已复核」） | 引文不是逐字 ⇒ 证据链断；把不可复核写成已复核 ⇒ 假证据 | **部分关闭**：F3–F8 六条已闭合（含 **F3 的「不可服务端复核」标注**、**F6 的现场更正**），**F1/F2 的 API 侧一半因需要 out-of-scope 连带改动而未闭合**（t32 台账 findings 记 `T32-B1[blocker]`） | `research/coverage-expansion-v1-data-quality-review.md` §5（**append-only** 补充）；`research/_raw/t32/t32-evidence-caveats.md`（含 jetbrains 页面自报 `iso=CNY` / `countryCode CN` ⇒ 无可复现路径）；`plans.json` 两条 billing.note 写明「不可服务端复核」 |
+| **t33** | t32 留下的 F1/F2 **API 侧**：引文逐字化 + 同步 4 条链接抄件 | 窄例外：**只同步 quote**（不改身份、不改数值） | 引文非逐字 ⇒ 同 t32 | **在途**（台账 in_progress） | t33 台账（`changedPaths` 待落地后可见） |
 
 ---
 
@@ -174,20 +202,62 @@ provider 数（仅 type=deal）        31   只数 type=deal 的 80 行归一后
 | `research/_raw/t28/unnamed-citations.json` | 仲裁清单（sha256 的载体） |
 | `research/_raw/t28/probe-old-readings-battery.js` / `probe-36-52-reading.js` | 15 组变体 + HEAD/当前两个快照的对照测算 |
 | `research/_raw/t28/residual-counts.js` | (b)(i) 等计数 |
-| `research/_raw/t28/verify-site.json` / `verify-site-fresh.json` / 两份 `.log` | 真实浏览器验收的机器可读 + 人读全文 |
+| `research/_raw/t28/verify-site.json` / `verify-site-fresh.json` / `verify-site-current.json` / 三份 `.log` | 真实浏览器验收的机器可读 + 人读全文（含 (j) 假红的三次观测） |
+| `research/_raw/t28/verify-site-t34.json` + `%TEMP%\t34-verify.log` | **t34 复跑**的真浏览器结果：**735 项 0 失败 exit 0** —— (j) 关闭的直接证据 |
 
-四条验收命令：
+验收命令（可自行复跑）：
 
 ```
 node scripts/tools/coverage-report.js                          # 正常态 exit 0（副本删关系层后 exit 1）
 node scripts/tools/models-page-selftest.js --dir=<产物副本>      # 正常态 exit 0（三种索引变异均 exit 1）
-node scripts/tools/verify-site.js --dir=<构建>                  # 真浏览器；§22 全绿（全套 1 项红见 (j)）
+node scripts/tools/verify-site.js --dir=<构建>                  # 真浏览器：§22 全绿；整套现在 735/0（(j) 的假红已由 t31 修复）
+node scripts/tools/feeds-selftest.js                            # 144/144；(j) 的「空态必须有起算日」原意由第十三节的数字边界夹具保住
 node research/_raw/t28/arbitrate-unnamed-citations.js           # 34 条 + sha256
+git show a4dd40f:scripts/data/source-health.json                # §4.1 的对照物：基线必然是 healthy 8 / failed 1
 ```
 
 ---
 
-## §4 边界声明（本任务没有做什么）
+## §4 被证伪的审查发现与证据更正
+
+> 本节记录**审查侧的错误**：本轮有一条审查发现被**现场证伪**、一条的**举例被更正**。
+> 它们留在表里，是因为"审查员也会错" —— 而且这条恰好错在**最容易被误用的那类判据**上
+> （"拿两份文件比字节"）。t20/t21 引用时应连**纪律**一起引用，不要只留结论。
+
+### §4.1 T15-F6 —— **被证伪**（审查员拿错了对照物）
+
+| | |
+|---|---|
+| 原主张 | `scripts/data/source-health.json` 与基线 a4dd40f **逐字节相同**；9/9 healthy 是**基线既有值**（并据此说 t13 的「已更新 source-health.json」不成立） |
+| 实测 | **主张不成立**：基线是 **healthy 8 / failed 1**，现行才是 **9/9 healthy**，两份**文本 sha256 不同** |
+| 复现命令 | `git show a4dd40f:scripts/data/source-health.json`（**对照物 = 该 blob**，不是盘上文件、也不是另一份报告） |
+| 读数（t34 独立复算） | **基线**：`generatedAt=2026-10-04T04:28:23.566Z` · 9 条 · `{healthy:8, failed:1}` · 非 healthy = `futurepedia`（`status=failed` · `consecutiveFailures=9` · `lastError=https://www.futurepedia.io/ 抓取失败: HTTP 403`）· 文本 sha256(前16) **`0a59b3a8c460d53b`**<br>**现行**：`generatedAt=2026-10-04T10:34:24.731Z` · 9 条 · `{healthy:9}` · 文本 sha256(前16) **`23b52beace92299c`** |
+| 结论 | **t13 报告原句「已更新 source-health.json」为真**；F6 的前提是反的。该条已由 t32 在**不改数值**的前提下现场更正，本表只做登记（原始报告是历史证据，不追溯改写） |
+| 发现路径 | **换一份对照物重算** —— t32 收口时用 `git show a4dd40f:…` 取基线 blob 复算，得到 healthy 8 / failed 1，与"逐字节相同"直接冲突 |
+
+**由此得出的纪律（t20/t21 引用时请一并引用）**：
+
+1. **引文/字节类判据必须附两样东西**：① **复现命令**；② **对照物标识**（哪一个 blob / 哪一次构建 / 哪一个快照）。
+   只说"与基线相同/不同"而不说清**跟谁比、怎么比**，等于没有判据。
+2. **哈希必须连算法与口径一起写**：同一个"哈希不同"的结论，用**文本 sha256**、**git blob SHA-1**、
+   或经 PowerShell 重定向（可能带 BOM/CRLF）算出来的值**互不相同**。本表的读数是
+   **文件字节的 sha256（取前 16 位）**，基线那一份取自 `git show` 的原样输出。
+3. **"没有差异"是最需要证据的一句话**：它天然不可自证 —— 必须给出对照物与命令，否则应当写成「未核对」。
+4. 这三条与 §0/§1 的"每条已关闭都要附反证"是同一条纪律的两种面孔：**结论可以很短，判据不行**。
+
+### §4.2 T26-F1 —— **举例更正，结论不变**
+
+| | |
+|---|---|
+| 原报告举例 | 用 `zai_org_glm-5.3` 三例说明"命名空间后缀切分漏 `_`" |
+| 更正 | 那三例在**真实 registry** 上**修补前就能命中** —— 因为 `glm-5.3` 的别名 `zai-org/GLM-5.3` **整串折叠后恰好相等**（走的是**别名路径**，不是切分路径）。它们是**巧合**，**不得再作为漏洞证据引用** |
+| 真正暴露漏洞的证据 | **t30 的 `acme` 型 fixture**：`acme_glm-5.3` / `acme-glm-5.3` —— 命名空间**不在任何 registry 别名里**，**修补前 0 命中、修补后命中 `glm-5.3`** |
+| 结论 | **不变**：切分集应对齐 `modelKey` schema `^[a-z0-9][a-z0-9._-]{1,59}$` 允许的 `{., _, -}`（t30 已把切分集改为 `[/．._-]`） |
+| 可见性 | `research/_raw/t30/probe-suffix-splitting.cjs` + `research/_raw/t30/separator-fixtures.json`；**两类 fixture 都留着** —— 免得后人把"别名恰好覆盖"读成"切分本来够用" |
+
+---
+
+## §5 边界声明（t28 首版的边界；t34 只改本表一份文件）
 
 - 只读生产文件；**所有变异都在 `%TEMP%` 副本上做**，共享 worktree 逐字未变
   （`close-loop-mutations.js` 对 `scripts/data/model-registry-links.json`、
