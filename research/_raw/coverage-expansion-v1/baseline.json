@@ -213,5 +213,19 @@
     }
   ],
 
-  "reconciliationRule": "本轮任何「改造后 vs 基线」的对账，分子取同一命令在同一口径下的新度量，分母取本文件的值；若某个数字与 expectChecks=37 / gateStepCount=45 对不上（例如照抄任务书里的 36 / 41），以本文件为准并记一次偏差。"
+  "reconciliationRule": "本轮任何「改造后 vs 基线」的对账，分子取同一命令在同一口径下的新度量，分母取本文件的值；若某个数字与 expectChecks=37 / gateStepCount=45 对不上（例如照抄任务书里的 36 / 41），以本文件为准并记一次偏差。",
+
+  "postBaselineRuns": [
+    {
+      "id": "R1",
+      "at": "2026-10-04T18:34+08:00",
+      "what": "t13（Source Health 裁决）按要求**真跑**全部 9 个 collector 取证，因此改写了机器生成的数据文件",
+      "filesTouched": ["scripts/data/source-health.json", "scripts/data/source-snapshots.json", "scripts/data/zh-pending.json", "deals.json"],
+      "healthBefore": { "healthy": 8, "failed": 1, "futurepedia": "failed，HTTP 403，consecutiveFailures=9" },
+      "healthAfter": { "healthy": 9, "failed": 0, "futurepedia": "healthy，产出 7 条，失败计数归零" },
+      "dealsImpact": "条目 135 → 135，无增删改写；仅 updatedAt 与 lastSeen 刷新（逐条比对：非易变字段改动 0）。见提交 6cea0d9（按仓库惯例与功能改动分开提交，带 [skip ci]）",
+      "dealHistoryImpact": "deal-history.json **零字节改动** —— 与「source failure ≠ 历史 Deals ended」的代码判据（collect.js 的资格过滤 + history.js 第 445 行硬闸门 + MISS_CONFIRM_RUNS=2）互为印证",
+      "note": "本文件上方的 sourceHealth 段是**抓取前**的基线读数；对账时请按这两个读数分别引用，不要混用。t13 的逐条裁决见 research/coverage-expansion-v1-source-health-rulings.md。"
+    }
+  ]
 }
