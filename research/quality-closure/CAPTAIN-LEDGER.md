@@ -383,3 +383,9 @@
 - **线上冒烟（部署后真浏览器）**：`node scripts/tools/verify-site.js --url=https://buguoshixc.github.io/ai-deals-aggregator/` → **703 项 0 失败**。线上抽查：首页 / `/feeds/` / `/models/glm-4.5v/` / `/plans/api/` / `/docs/data/` / `sitemap.xml` / `data/index.json` 全 200；`/feeds/` 列出 **48** 地址；`/models/glm-4.5v/` **2 行**（standard / long_context）；`sitemap.xml` **170**；Manifest **9** 份；**`/feed/api.xml` 404**（§13 红线成立）。
 - **顺带发现（合并前就存在，非本轮引入）**：`Collect AI Deals` 自 **2026-10-03 15:47Z** 起失败（run 37134505706，gate 步骤 exit 1），直接原因是构建自检 `✗ SEO[itemlist-arity] changes/：ItemList 声明 1 项，但 itemListElement 只有 0 项` —— **正是本轮修复的 P1-4**；它又导致 `dist/deals.json` 不存在、并由 `workflow_run` 连累那次 deploy 失败（run 37134604743）。真实采集链路的确认需要再跑一次 `Collect AI Deals`（会写数据并推送，属独立授权范围，**本轮未触发**）。
 - T24 报告的两条保留条件现已满足（CI 三段全绿 + 线上冒烟 703/0）；报告 §21 与 §26 已按实况改写并随本次提交更新到 master。
+## 真实采集链路重跑（用户授权「再跑一遍」）— 2026-10-04
+- 手动触发 `Collect AI Deals`（workflow_dispatch，`allow_degraded_run` 未勾选 ⇒ 'false'）：run **37173084387 success**（3m49s）；此前失败的 `Gate (validate → translation → selftests → build → real browser)` 步骤 **✓**。
+- 采集提交：**`1b87844`** `chore(data): 更新优惠数据、来源健康与变更记录 2026-10-04 11:09 CST [skip ci]`；deals **134 → 135**；**deal-history 事件 0 → 1**（生产上首次非空历史）；source-health / source-snapshots / zh-pending 同步更新。
+- `workflow_run` 自动发布：run **37173274046 success**（prepublish → build → deploy）⇒「采集 → 自动发布」链路恢复。
+- 线上复核：`/changes/` 200（JSON-LD ItemList 1 / ListItem 2 自洽；分栏「今日新增（1）」「今日新增（14）」正常）；`deals.json` 135 条 · updatedAt 2026-10-04T11:07:44+08:00 · `deal-history.json` 1 个事件；第二次线上冒烟 `verify-site --url=` **702 项 0 失败**（比首次少 1 项，断言项数随数据变化，两次均 0 失败）。
+- 结论：P1-4 是本轮唯一「生产现场复现 → 修复 → 生产现场转绿」的完整闭环；§26 的三项收尾条件（CI 提交态全门禁、线上冒烟、真实采集链路）**全部关闭**。
