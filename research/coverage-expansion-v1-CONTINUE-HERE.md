@@ -38,10 +38,15 @@ CI(Linux/Node 24.21) 实测只取回 **152,627 字符 / 185,186 字节**（本�
 
 ### 仍需人工知道的三件事
 
-1. **验收产物已在版本库、但尚未进 `master`**：`a400936`（36 个文件）在分支 `coverage-expansion-v1` 上；
-   `master` 停在 `d444dcd7`。若要让验收文档进 master，走一条 `docs(research)` 的小 PR 即可（同一条门禁链）。
+1. **验收产物已进 `master`**：`a400936`（36 文件）+ `25bc6a9`（交班手册状态节）经 **PR #39** 合并，
+   merge SHA **`ff86368e6d12d1ef57b2f51aa2c957c01d2a9ed8`**（2026-10-04T18:14:51Z）；
+   该 PR 的 `gate` = pass（run `37223403525`），master push 的 gate（run `37223683280`）与
+   Deploy（run `37223683354`）**双双 success**，第二次部署后线上复测：7 条路由全 200 ·
+   `data-model=44` · `data-item=44` · `models-show-legacy=1` · `data-release-date=1` ·
+   状态分布 `unknown 40 / current 3 / legacy 1`。
 2. **团队尚未 delete/archive**：`coverage-expansion-v1` 的 8 成员全 `idle`；t19/t22 仍是 `in_progress`。
-   按纪律应在确认无未完工作后归档（本会话的 AgentTeams 工具不接管该团队，需由原队长会话处理）。
+   按纪律应在确认无未完工作后归档；**本会话的 AgentTeams 工具不接管该团队**（`agent_teams_status`
+   返回 "you do not lead or belong to any active team"），需由原队长会话或 Web 端处理。
 3. **两条变异盲区必须与「CAUGHT 24/27」一起引**（见 `coverage-expansion-v1-acceptance.md` §6）：
    ①「测试改自己」构造上接不住；②真实引文忠于官方页**没有离线门禁**。禁止写「真实引文已逐条验真」。
 
