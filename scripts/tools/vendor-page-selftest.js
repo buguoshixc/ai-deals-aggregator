@@ -134,16 +134,26 @@ section('① 真实数据：join 出来的资料区块与断言');
 
 check(`真实数据上厂商页从 ${basePlan.pages.filter(p => p.kind === 'vendor').length} 个增到 ${vendorPages.length} 个（非优惠资料 + A 空间身份，R5）`,
   vendorPages.length > basePlan.pages.filter(page => page.kind === 'vendor').length);
+/**
+ * 候选集合判据（纯函数，t41 从内联 IIFE 提出来，**判据一字未变**）：
+ *   · 有 A 空间身份（vendorKey 非 null）**且**达标的 provider 必须有页；
+ *   · 页面不许超出 A 空间身份集合。
+ * 提出来是为了能对「有身份却没页」这个方向做反证（原来只能对真实数据整块判真/假，无法单独反证）。
+ */
+function candidateSetProblems(pages) {
+  const problems = [];
+  const identityProviders = Object.entries(providerTable)
+    .filter(([, entry]) => entry && entry.vendorKey).map(([, entry]) => String(entry.name));
+  const expected = identityProviders.filter(name => {
+    const material = landing.vendorMaterialOf({ vendorName: name, providerTable, plans, apiPlans, models, modelLinks });
+    return material.nonDeal || pages.some(page => page.key === name);
+  });
+  for (const name of expected) if (!pages.some(page => page.key === name)) problems.push(`${name}: 有 A 空间身份且达标，却没有厂商页`);
+  for (const page of pages) if (!identityProviders.includes(page.key)) problems.push(`${page.key}: 页面存在，但不在 A 空间身份集合里`);
+  return problems;
+}
 check('候选集合 == 「有 A 空间厂商名 且 达标」的 provider 集合（不再多、不再少）',
-  (() => {
-    const identityProviders = Object.entries(providerTable).filter(([, entry]) => entry && entry.vendorKey).map(([, entry]) => String(entry.name));
-    const expected = identityProviders.filter(name => {
-      const material = landing.vendorMaterialOf({ vendorName: name, providerTable, plans, apiPlans, models, modelLinks });
-      return material.nonDeal || vendorPages.some(page => page.key === name);
-    });
-    return expected.every(name => vendorPages.some(page => page.key === name))
-      && vendorPages.every(page => identityProviders.includes(page.key));
-  })());
+  candidateSetProblems(vendorPages).length === 0, candidateSetProblems(vendorPages).slice(0, 2).join('；'));
 check('三种资料类型都被真实数据覆盖（Coding 套餐 / API 记录 / 模型归属）',
   vendorPages.some(page => page.material.codingPlans > 0)
   && vendorPages.some(page => page.material.apiRecords > 0)
@@ -253,12 +263,104 @@ section('③ 牙 #6：同一 provider 两个 canonical slug');
   const good = vendorPage.assertVendorSlugCanonical(vendorPages, { providerTable, vendorSlugs: feeds.VENDOR_SLUGS });
   check('真实数据上 slug 唯一且与两份登记表一致（断言不是恒红）', good.length === 0, good.slice(0, 2).join('；'));
 
-  // R5（队长裁定）：只有「在 A 空间有厂商名」的 provider 才建 /vendor/ 路由
-  const skippedNoIdentity = extPlan.skipped.filter(row => row.reason === 'no-vendor-identity');
-  check(`【R5】没有 A 空间厂商名的 provider 不建路由、逐条记 skip（${skippedNoIdentity.map(row => row.key).join(' / ') || '无'}）`,
-    skippedNoIdentity.length === 4
-    && ['Trae', 'Qoder CN', 'Qoder International', '腾讯 CodeBuddy'].every(name => skippedNoIdentity.some(row => row.key === name))
-    && skippedNoIdentity.every(row => !vendorPages.some(page => page.key === row.key)));
+  // ── R5（队长裁定；t41 改为**派生式**判据）──────────────────────────────
+  // 只有「在 A 空间有厂商名」的 provider 才建 /vendor/ 路由。
+  //
+  // **判据的对象是关系，不是数字**：对 providers.json 里每一个 `vendorKey === null` 的身份，逐条要求
+  //   (a) `extPlan.skipped` 里有且**恰好一条** `no-vendor-identity` 记录，且该记录不带路由；
+  //   (b) 计划层**没有**它的厂商页；
+  //   (c) `scripts/data/vendor-slugs.json` 里**没有**以它为键的登记（否则 slug 会绕开身份检查）；
+  //   (d) 产物层 `dist/vendor/` 的目录集合**恰好等于**计划里的 slug 集合 —— 多一个目录
+  //       （= 给谁建了计划外的路由）就红，少一个也红。
+  //
+  // ⚠️ 为什么不再写死计数（t18 的 T18-F1）：旧判据写死 `skippedNoIdentity.length === 4` + 4 个名字；
+  // t11/t24 把 `vendorKey: null` 的身份从 4 家加到 9 家之后它就红了，而产品完全正常
+  // （这 9 家在 dist/vendor/ 里一个路由都没有）。这与 verify-site 那条 `/0 条/` 假红是同一类失败形态：
+  // **判据钉在历史快照上，而不是钉在关系上**。
+  const slugOfRoute = route => String(route || '').replace(/^vendor\//, '').replace(/\/$/, '');
+  const plannedSlugsOf = pages => pages.map(page => slugOfRoute(page.route)).sort();
+  const nullIdentityNames = Object.entries(providerTable)
+    .filter(([, entry]) => entry && !entry.vendorKey).map(([, entry]) => String(entry.name));
+
+  /** 派生式判据本体（纯函数：既能判真实数据，也能用合成输入做两侧反证） */
+  function nullIdentityProblemsOf({ names, skipped, pages, dirs, slugs }) {
+    const problems = [];
+    const planned = plannedSlugsOf(pages);
+    for (const name of names) {
+      const rows = skipped.filter(row => row.reason === 'no-vendor-identity' && row.key === name);
+      if (rows.length !== 1) problems.push(`${name}: 期望恰好 1 条 no-vendor-identity 记录，实得 ${rows.length}`);
+      else if (rows[0].route) problems.push(`${name}: skip 记录不该带路由（route=${rows[0].route}）`);
+      const page = pages.find(p => p.key === name);
+      if (page) problems.push(`${name}: 竟然生成了厂商页（${page.route}）`);
+      if (slugs && Object.prototype.hasOwnProperty.call(slugs, name)) problems.push(`${name}: vendor-slugs.json 里不该有它的登记`);
+    }
+    if (dirs) {
+      const orphan = dirs.filter(d => !planned.includes(d));
+      if (orphan.length) problems.push(`dist/vendor/ 里有计划外的路由目录：${orphan.join(' / ')}`);
+      const missing = planned.filter(s => !dirs.includes(s));
+      if (missing.length) problems.push(`计划里有页、磁盘上没有：${missing.join(' / ')}`);
+    }
+    return problems;
+  }
+
+  const diskVendorDirs = fs.existsSync(path.join(DIST, 'vendor'))
+    ? fs.readdirSync(path.join(DIST, 'vendor'), { withFileTypes: true }).filter(e => e.isDirectory()).map(e => e.name).sort()
+    : null;
+  if (diskVendorDirs === null) requireDist('dist/vendor/** 的路由目录集合', 'vendor');
+
+  const r5Problems = nullIdentityProblemsOf({
+    names: nullIdentityNames,
+    skipped: extPlan.skipped,
+    pages: vendorPages,
+    dirs: diskVendorDirs,
+    slugs: feeds.VENDOR_SLUGS,
+  });
+  check(`【R5】${nullIdentityNames.length} 个没有 A 空间厂商名的身份：逐条有 skip 记录，且计划 / 磁盘 / 登记表里都没有它的路由`
+    + `（${nullIdentityNames.join(' / ')}）`,
+    r5Problems.length === 0, r5Problems.slice(0, 3).join('；'));
+
+  check(`【R5】dist/vendor/ 磁盘目录集合 == 计划里的 ${plannedSlugsOf(vendorPages).length} 个 slug（多一个目录就是给谁建了路由）`,
+    diskVendorDirs !== null && JSON.stringify(diskVendorDirs) === JSON.stringify(plannedSlugsOf(vendorPages)),
+    diskVendorDirs === null ? '（本轮没有 dist/vendor/，缺产物已在上面如实记红）'
+      : `磁盘 ${diskVendorDirs.length} 个 / 计划 ${plannedSlugsOf(vendorPages).length} 个`);
+
+  check('【R5 牙】没有 A 空间厂商名的身份却被建了路由 → 红（计划层有页 + 登记表有登记，两处各自报）',
+    (() => {
+      const problems = nullIdentityProblemsOf({
+        names: ['Trae'],
+        skipped: extPlan.skipped,
+        pages: [...vendorPages, { kind: 'vendor', key: 'Trae', slug: 'trae', route: 'vendor/trae/' }],
+        dirs: [...plannedSlugsOf(vendorPages), 'trae'],
+        slugs: { ...feeds.VENDOR_SLUGS, Trae: 'trae' },
+      });
+      // 必须是**各自**报出来，而不是一条兜底：
+      return problems.some(p => p.includes('竟然生成了厂商页'))
+        && problems.some(p => p.includes('不该有它的登记'));
+    })());
+  check('【R5 牙】磁盘上多出一个计划外的路由目录 → 红（产物层独立于计划层判定）',
+    nullIdentityProblemsOf({
+      names: [],
+      skipped: extPlan.skipped,
+      pages: vendorPages,
+      dirs: [...plannedSlugsOf(vendorPages), 'ghost-vendor'],
+      slugs: feeds.VENDOR_SLUGS,
+    }).some(problem => problem.includes('计划外的路由目录：ghost-vendor')));
+  check('【R5 牙】计划里有页、磁盘上却缺目录 → 红（少一个也不许静默）',
+    nullIdentityProblemsOf({
+      names: [],
+      skipped: extPlan.skipped,
+      pages: vendorPages,
+      dirs: plannedSlugsOf(vendorPages).slice(1),
+      slugs: feeds.VENDOR_SLUGS,
+    }).some(problem => problem.includes('计划里有页、磁盘上没有')));
+  check('【R5 牙】有 A 空间身份且达标的 provider 却没有页 → 红（原方向不许被删弱）',
+    (() => {
+      const target = vendorPages.find(page => page.nonDealMaterial)
+        || vendorPages.find(page => landing.vendorMaterialOf({ vendorName: page.key, providerTable, plans, apiPlans, models, modelLinks }).nonDeal);
+      if (!target) return false;
+      return candidateSetProblems(vendorPages.filter(page => page !== target))
+        .some(problem => problem.startsWith(target.key + ':'));
+    })());
   check('【R5】候选厂商名全部在 A 空间有身份（vendorKey 非 null）',
     vendorPage.assertVendorCandidateIdentity(vendorPages, { providerTable }).length === 0);
 
