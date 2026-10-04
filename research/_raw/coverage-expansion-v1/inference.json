@@ -1,0 +1,827 @@
+{
+  "_note": "coverage-expansion-v1 t9（research-inference）：Groq / Together AI / Fireworks AI / Cerebras 四家**推理托管平台**的官方定价调查。本文件是**调查结论**，不是生产来源层；生产落盘（curated_api_plans / providers.json / official_urls.json）由 t11 负责，本文件只给判据与逐条事实。",
+  "_scope": [
+    "只查「按量计费（API / Token）」的官方定价页与官方文档；不查排行榜、不查第三方对比站（那类只用于发现候选）。",
+    "计价单位与 cache / batch / priority / 区域等**维度**逐家列出，并逐条判定能否被当前 api-plan-schema v1 诚实表达。",
+    "hosted model owner ≠ pricing provider：托管平台页上卖的模型大多不是它自己的（openai/gpt-oss、meta-llama、moonshotai/Kimi、zai-org/GLM、Qwen…）——这一条必须写清楚，否则注册表会把模型身份与计价身份混成一个。"
+  ],
+  "_rules": [
+    "价钱只能用**取到的官方原文**支撑；取不到的写 null 并写清 checkedUrls 与失败原因（HTTP 状态 / 跨源跳转 / 客户端渲染 / robots）。",
+    "**不派生**：官方只写「比标准价低 X%」而没有独立价目表的维度，一律记 null + 派生说明，绝不自己乘一遍写进 rates（那是本仓 §6 单位/数值红线的同一条纪律）。",
+    "单位必须逐条写明是「每百万 token」还是别的；本文件不做任何单位换算（每千 ↔ 每百万）。",
+    "抓取时间为 Asia/Shanghai；HTTP 状态与逐字引文一并留档。"
+  ],
+  "versionName": "coverage-expansion-v1",
+  "task": "t9 research-inference",
+  "worktree": ".worktrees/coverage-expansion-v1",
+  "baselineSha": "a4dd40fc66ea612f327036f5ba3d98cbff46c288",
+  "capturedAt": "2026-10-04T18:40:00+08:00",
+  "schemaUnderTest": {
+    "file": "scripts/lib/api-plan-schema.js",
+    "recordFields": ["id", "kind", "provider", "planName", "channel", "officialUrl", "source", "sourceUrl", "region", "pricing", "models", "freeTier", "limits", "credits", "restrictions", "firstSeen", "lastSeen", "verified", "verifiedAt", "evidence", "derivedMetrics"],
+    "apiUnits": ["per_1M_tokens", "per_1K_tokens", "per_1M_characters"],
+    "tokenRateKeys": ["input", "output", "cachedInput", "cacheWrite", "cacheWriteLong", "reasoning", "batchInput", "batchOutput"],
+    "mediaRateUnits": ["per_image", "per_second", "per_minute", "per_1M_characters", "per_request", "per_1M_token_hours"],
+    "modelVariants": ["standard", "batch", "long_context", "fine_tuned", "priority", "other"],
+    "apiChannels": ["standard", "batch", "flex", "priority", "fast", "ultrafast", "off_peak", "fine_tuned", "other"],
+    "structuralRedLines": [
+      "全仓没有任何单位换算代码路径（每千 ↔ 每百万、元 ↔ 美元都不换算）。",
+      "派生值一律拒绝：官方只给换算规则/折扣比例的维度，不能自己乘出来写进 rates。",
+      "pricing.unit 是记录级单值：一条记录里所有 token 数字必须同单位同币种。"
+    ]
+  },
+  "providerDecisions": {
+    "groq": {
+      "verdict": "adopt",
+      "pricingProviderKey": "groq",
+      "pricingProviderNameSuggestion": "Groq",
+      "vendorKeySuggestion": null,
+      "vendorKeyReason": "deals 侧（index.html VENDOR_RULES）与 provider-slugs 都没有这家公司——provider-only 公司按本仓既有纪律 vendorKey 必须显式 null，不得为它新编一个 A 空间键。",
+      "officialDomainsSuggestion": ["groq.com", "console.groq.com"],
+      "schemaVerdict": "partial（可诚实表达的部分：per_1M_tokens 的 input / output + limits + freeTier；不可表达的部分见 deferredSchema）",
+      "recordsProposed": 2,
+      "recordsProposedNote": "两条：① channel=standard（production + preview 模型的全部公开单价，一张表）；② channel=other，planName「批量处理（Batch）」，只放「官方明写 50% 折扣」这句原文并把 batchInput/batchOutput 留 null —— 折扣比例是**派生规则**，不是官方逐模型给出的价目表。",
+      "identityCaution": "provider 必须写 groq（计价主体 = Groq 自己），**不得**把模型写进 provider 字段：openai/gpt-oss-120b 的 provider 是 groq，OpenAI 只是模型发行方。"
+    },
+    "together": {
+      "verdict": "adopt",
+      "pricingProviderKey": "together",
+      "pricingProviderNameSuggestion": "Together AI",
+      "vendorKeySuggestion": null,
+      "vendorKeyReason": "同 groq：A 空间无此公司，显式 null。",
+      "officialDomainsSuggestion": ["together.ai", "docs.together.ai"],
+      "schemaVerdict": "partial",
+      "recordsProposed": 1,
+      "recordsProposedNote": "一条 channel=standard 的「Serverless 按量计费」：官方文档站的 Chat models 表**逐模型直出** Input / Cached input / Output 三列（per 1M tokens）。batch 不进第二条记录：官方口径是「up to 50% off」+ 只点名 2 个模型，且没有逐模型批次价目表 —— 派生值，记 null 并在 note 写明。",
+      "identityCaution": "另有一条**平台自研模型**（together/Tev1-4B-experimental）：这一条的成立依据必须是「Together AI 自己发布并自己定价」，而不是「页面上出现的模型都归 Together」。"
+    },
+    "fireworks": {
+      "verdict": "adopt",
+      "pricingProviderKey": "fireworks",
+      "pricingProviderNameSuggestion": "Fireworks AI",
+      "vendorKeySuggestion": null,
+      "vendorKeyReason": "同 groq：A 空间无此公司，显式 null。",
+      "officialDomainsSuggestion": ["fireworks.ai", "docs.fireworks.ai"],
+      "schemaVerdict": "partial",
+      "recordsProposed": 2,
+      "recordsProposedNote": "两条：① channel=standard（Standard 模式逐模型 input / cached input / output）；② channel=priority（官方同一张表里**独立列出**的 Priority 单价——这是 channel 枚举里 priority 的正当用法）。batch 不进记录（官方只写「50% off serverless per-token prices」，是派生规则）。",
+      "identityCaution": "Fireworks 自己的模型是 firework/ember-1（provider 仍是 fireworks）；其余为托管第三方模型（Kimi / DeepSeek / GLM / Qwen / MiniMax / OpenAI OSS / NVIDIA）。"
+    },
+    "cerebras": {
+      "verdict": "adopt-with-deferral",
+      "pricingProviderKey": "cerebras",
+      "pricingProviderNameSuggestion": "Cerebras",
+      "vendorKeySuggestion": null,
+      "vendorKeyReason": "同 groq：A 空间无此公司，显式 null。",
+      "officialDomainsSuggestion": ["cerebras.ai", "inference-docs.cerebras.ai"],
+      "schemaVerdict": "partial-with-documented-gap",
+      "recordsProposed": 1,
+      "recordsProposedNote": "一条 channel=standard，models[] 只有官方 Developer Tier 表里**公开逐模型定价的两个**（gpt-oss-120b / qwen3.8-27b）。官方明写这两条是「* For development, evaluation, and experimentation; not intended for production use.」——这句必须进记录 note，否则读者会把它读成生产价。",
+      "identityCaution": "Cerebras 官方自家的模型一个都没有（它的推理服务全部跑第三方开放权重模型）。",
+      "blockingObservation": "官方定价页的完整 Tier 对照表（Developer / Enterprise 之外是否有 Pro 档、以及各档价格）落在 Next.js 的 BAILOUT_TO_CLIENT_SIDE_RENDERING 区域里，服务端 HTML 里只有表头与 Tier 名称，取不到数值。已取的三个表格行是页面上真实存在的『Developer Tier Pricing』表内容。"
+    }
+  },
+  "providers": {
+    "groq": {
+      "displayName": "Groq",
+      "officialPricingPages": [
+        {
+          "url": "https://console.groq.com/docs/models",
+          "httpStatus": 200,
+          "contentLength": 369843,
+          "role": "**事实来源**：官方文档站「Supported Models」页，Production / Preview / Deprecated 三张表逐模型给出「PRICE PER 1M TOKENS」列（input / output）与速率限制列。",
+          "verbatim": "PRODUCTION MODELS — GPT OSS 120B openai/gpt-oss-120b $0.15 input $0.60 output · GPT OSS 20B openai/gpt-oss-20b $0.075 input $0.30 output · Whisper whisper-large-v3 $0.111 per hour · Whisper Large V3 Turbo whisper-large-v3-turbo $0.04 per hour",
+          "capturedAt": "2026-10-04T18:31:00+08:00"
+        },
+        {
+          "url": "https://console.groq.com/docs/pricing",
+          "httpStatus": 404,
+          "role": "**旧定价页已不存在**：HTTP 404（页面返回 docs 应用的 NotFound 壳，31,092 字节）。任何把 groq 的 officialUrl 写成这个 URL 的方案都会指向一个 404。",
+          "capturedAt": "2026-10-04T18:31:00+08:00"
+        },
+        {
+          "url": "https://groq.com/pricing",
+          "httpStatus": 308,
+          "locationHeader": "/",
+          "role": "**营销站已取消定价页**：308 永久重定向回站点根 `/`，响应体只有 “Redirecting...”。groq.com/robots.txt 的 sitemap（48 条 URL，2026-10-02 更新）里也没有任何 pricing 路径。",
+          "capturedAt": "2026-10-04T18:12:00+08:00"
+        },
+        {
+          "url": "https://console.groq.com/docs/batch",
+          "httpStatus": 200,
+          "contentLength": 533958,
+          "role": "Batch 定价口径的原文出处。",
+          "verbatim": "Batch processing lets you run thousands of API requests at scale by submitting your workload as an asynchronous batch of requests to Groq with 50% lower cost, no impact to your standard rate limits, and 24-hour to 7 day processing window. … Pricing is at a 50% cost discount compared to synchronous API pricing. **The batch discount does not stack with [cache] discounts. All batch tokens are billed at the 50% batch rate regardless of cache status.**",
+          "capturedAt": "2026-10-04T18:51:00+08:00"
+        },
+        {
+          "url": "https://console.groq.com/docs/prompt-caching",
+          "httpStatus": 200,
+          "role": "cache 维度口径的原文出处。",
+          "verbatim": "Prompt caching is provided at no additional cost. There is a 50% discount for cached input tokens. … Supported Models: openai/gpt-oss-20b, openai/gpt-oss-120b, openai/gpt-oss-safeguard-20b",
+          "capturedAt": "2026-10-04T18:34:00+08:00"
+        },
+        {
+          "url": "https://console.groq.com/docs/flex-processing",
+          "httpStatus": 200,
+          "role": "flex 服务档口径。",
+          "verbatim": "Flex Processing is a service tier optimized for high-throughput workloads … This tier offers significantly higher rate limits while maintaining the same pricing as on-demand processing. … available … to paid customers only with 10x higher rate limits compared to on-demand processing. Pricing matches the on-demand tier.",
+          "capturedAt": "2026-10-04T18:34:00+08:00"
+        },
+        {
+          "url": "https://console.groq.com/docs/performance-tier",
+          "httpStatus": 200,
+          "role": "Performance 档（**非按量**，是预留吞吐）。",
+          "verbatim": "Performance is delivered as provisioned throughput: you purchase input and output capacity bundles and pay for that provisioned capacity rather than per-token usage. Reach out to inquire about pricing.",
+          "capturedAt": "2026-10-04T18:34:00+08:00"
+        }
+      ],
+      "unit": "USD per 1M tokens（表格列头逐字为 “PRICE PER 1M TOKENS”）；Whisper 两条是 per hour；Orpheus TTS 两条是 per 1M characters。",
+      "modelOwnerVsPricingProvider": {
+        "pricingProvider": "groq",
+        "hostedModelOwners": [
+          { "ownerInModelId": "openai", "models": ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "openai/gpt-oss-safeguard-20b"] },
+          { "ownerInModelId": "meta-llama", "models": ["meta-llama/llama-prompt-guard-2-22m", "meta-llama/llama-prompt-guard-2-86m"] },
+          { "ownerInModelId": "qwen", "models": ["qwen/qwen3.8-27b"] },
+          { "ownerInModelId": "minimaxai", "models": ["minimaxai/minimax-m2.7"] },
+          { "ownerInModelId": "canopylabs", "models": ["canopylabs/orpheus-v1-english", "canopylabs/orpheus-arabic-saudi"] },
+          { "ownerInModelId": "(no vendor prefix, Groq-hosted Meta model)", "models": ["llama-3.1-8b-instant", "llama-3.3-70b-versatile"] }
+        ],
+        "ruling": "**provider 一律写 groq**。模型 id 里的 openai / meta-llama / qwen / minimaxai / canopylabs 是**模型发行方**，不是这条记录的计价主体；把 provider 写成 openai 会让「OpenAI 官方 API 的价」与「Groq 托管同一模型的价」在同一份数据里合成一条身份 —— 那正是本仓「两套身份空间不合并」要防的事。模型发行方只作为 `models[].aliases` 或 note 里的口径出现。"
+      },
+      "publishedRates": {
+        "channel": "standard",
+        "currency": "USD",
+        "unit": "per_1M_tokens",
+        "productionModels": [
+          { "modelId": "openai/gpt-oss-120b", "displayName": "GPT OSS 120B", "input": 0.15, "output": 0.6, "cachedInputPublished": null, "speedTokensPerSec": 500, "limits": "250K TPM / 1K RPM", "contextWindow": 131072, "maxCompletionTokens": 65536, "availability": "自服务" },
+          { "modelId": "openai/gpt-oss-20b", "displayName": "GPT OSS 20B", "input": 0.075, "output": 0.3, "cachedInputPublished": null, "speedTokensPerSec": 1000, "limits": "250K TPM / 1K RPM", "contextWindow": 131072, "maxCompletionTokens": 65536, "availability": "自服务" },
+          { "modelId": "whisper-large-v3", "displayName": "Whisper", "input": null, "output": null, "mediaRatePublished": { "price": 0.111, "unitText": "per hour", "kind": "audio" }, "limits": "200K ASH / 300 RPM", "availability": "自服务" },
+          { "modelId": "whisper-large-v3-turbo", "displayName": "Whisper Large V3 Turbo", "input": null, "output": null, "mediaRatePublished": { "price": 0.04, "unitText": "per hour", "kind": "audio" }, "limits": "400K ASH / 400 RPM", "availability": "自服务" },
+          { "modelId": "llama-3.1-8b-instant", "displayName": "Llama 3.1 8B", "input": null, "output": null, "priceCellText": "Contact Sales", "limits": "Contact Sales", "contextWindow": 131072, "maxCompletionTokens": 131072, "availability": "Enterprise" },
+          { "modelId": "llama-3.3-70b-versatile", "displayName": "Llama 3.3 70B", "input": null, "output": null, "priceCellText": "Contact Sales", "limits": "Contact Sales", "contextWindow": 131072, "maxCompletionTokens": 32768, "availability": "Enterprise" }
+        ],
+        "previewModels": [
+          { "modelId": "qwen/qwen3.8-27b", "displayName": "Qwen/Qwen3.8-27B", "input": 0.8, "output": 4.0, "speedTokensPerSec": 450, "limits": "250K TPM / 1K RPM", "contextWindow": 131072, "maxCompletionTokens": 16384, "availability": "Preview（官方：仅供评估，不应在生产使用）" },
+          { "modelId": "openai/gpt-oss-safeguard-20b", "displayName": "Safety GPT OSS 20B", "input": 0.075, "output": 0.3, "speedTokensPerSec": 1000, "limits": "150K TPM / 1K RPM", "contextWindow": 131072, "maxCompletionTokens": 65536, "availability": "Preview" },
+          { "modelId": "meta-llama/llama-prompt-guard-2-22m", "displayName": "Llama Prompt Guard 2 22M", "input": 0.03, "output": 0.03, "limits": "30K TPM / 100 RPM", "contextWindow": 512, "maxCompletionTokens": 512, "availability": "Preview" },
+          { "modelId": "meta-llama/llama-prompt-guard-2-86m", "displayName": "Prompt Guard 2 86M", "input": 0.04, "output": 0.04, "limits": "30K TPM / 100 RPM", "contextWindow": 512, "maxCompletionTokens": 512, "availability": "Preview" },
+          { "modelId": "canopylabs/orpheus-v1-english", "displayName": "Canopy Labs Orpheus V1 English", "input": null, "output": null, "mediaRatePublished": { "price": 22.0, "unitText": "per 1M characters", "kind": "audio" }, "limits": "50K TPM / 250 RPM", "contextWindow": 4000, "availability": "Preview" },
+          { "modelId": "canopylabs/orpheus-arabic-saudi", "displayName": "Canopy Labs Orpheus Arabic Saudi", "input": null, "output": null, "mediaRatePublished": { "price": 40.0, "unitText": "per 1M characters", "kind": "audio" }, "limits": "50K TPM / 250 RPM", "contextWindow": 4000, "availability": "Preview" },
+          { "modelId": "minimaxai/minimax-m2.7", "displayName": "MiniMax M2.7", "input": null, "output": null, "priceCellText": "Contact Sales", "limits": "Contact Sales", "contextWindow": 196608, "maxCompletionTokens": 131072, "availability": "Enterprise" }
+        ],
+        "deprecatedModels": {
+          "note": "官方同一页有第三张「Deprecated Models」表；本轮**没有**逐行读取它的价格（任务范围是当前可售定价），t11 若要收录需另行核对。"
+        }
+      },
+      "dimensions": {
+        "cache": {
+          "publishedRule": "50% discount for cached input tokens；无 cache write 费用；cache 自动生效、2 小时未用自动过期；cached tokens 不计入速率限制。",
+          "applicableModels": ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "openai/gpt-oss-safeguard-20b"],
+          "schemaVerdict": "**derived-not-published**：官方只给折扣比例，没有给出任何一个模型的 cached input 单价。按本仓「不派生」红线，`cachedInput` 必须写 null，折扣口径与适用范围写进 models[].note 与 evidence。",
+          "warning": "不要为了填满这一列而把 input×0.5 写进 rates —— 那正是 §6 要防的「看起来完全可比、读者据此得出的结论是错的」。"
+        },
+        "batch": {
+          "publishedRule": "50% cost discount vs synchronous API pricing；不与 cache 折扣叠加；所有 batch token 按 50% 批次价计费（无论 cache 状态）。",
+          "schemaVerdict": "**derived-not-published**：官方没有逐模型批次价目表。`batchInput` / `batchOutput` 写 null，把两句原文写进 evidence + restrictions.note。",
+          "structuralNote": "这一条同时是**结构性**的：若把 batch 记成 input×0.5，schema 里 `cachedInput` 那一列会让读者以为 batch 记录上还存在缓存价 —— 而官方明说 batch 下 cache 不生效（「regardless of cache status」）。折扣规则与 schema 的形状在这里是冲突的。"
+        },
+        "flex": {
+          "publishedRule": "Pricing matches the on-demand tier（仅速率限制 ×10）。",
+          "schemaVerdict": "**可诚实表达**：价格与 standard 相同，因此**不另开记录**（另开会在页面上出现两条数字完全相同的行，读者会以为漏了区别）；写成 `restrictions` 的一条 note（kind=rate_limit）+ 说明。schema 里 `flex` 这个 channel 值刻意**不用**在这里：「flex = 另一张价目表」而这里官方明说价格一样。"
+        },
+        "priority": {
+          "publishedRule": "无。Groq 的档位名是 Flex / Performance，没有 priority 价目表。",
+          "schemaVerdict": "n/a"
+        },
+        "region": {
+          "publishedRule": "官方模型页没有按区域分价的列。",
+          "schemaVerdict": "region=global（与既有 openai / google / anthropic 记录同口径）。"
+        },
+        "audio": {
+          "publishedRule": "Whisper：per hour（$0.111 / $0.04）；Orpheus TTS：per 1M characters（$22 / $40）。",
+          "schemaVerdict": "**per_1M_characters 可表达**（mediaRates.unit 有这一档，且 pricing.unit 也可取 per_1M_characters —— 但同一条记录里不能混 token 与字符两种记录级单位，见 deferredSchema）。**per hour 不可表达**：mediaRates 的单位枚举里没有 per_hour。"
+        }
+      },
+      "freeTier": {
+        "publishedRule": "官方模型页的速率限制列标题逐字是「RATE LIMITS (DEVELOPER PLAN)」——即表里的 TPM/RPM 是付费 Developer 档；免费档的限制另一处规定。billing-faqs 页有「You'll lose access to Developer tier benefits (priority support, unlimited requests, etc.)」这类档位描述，但**本轮没有取到免费档的逐模型限额数值**。",
+        "schemaVerdict": "freeTier 建议写 null（= 没查到），**不得**写 {type:'none'}（官方没说没有免费额度）。"
+      },
+      "limits": {
+        "schemaVerdict": "可表达：`limits[]` 支持 rpm / tpm（appliesTo 指到具体 modelKey）。逐模型的 250K TPM / 1K RPM 这类数字直接进 limits。注意 ASH（audio seconds per hour）与『/100 RPM』等非 rpm/tpm 维度**进不了**（见 deferredSchema）。"
+      }
+    },
+    "together": {
+      "displayName": "Together AI",
+      "officialPricingPages": [
+        {
+          "url": "https://docs.together.ai/docs/serverless/models.md",
+          "httpStatus": 200,
+          "contentLength": 16604,
+          "role": "**事实来源**：官方文档站（Mintlify 的 .md 形式）。Chat models 表列头逐字为 `Organization | Model name | API model string | Context length | Input pricing (per 1M tokens) | Cached input pricing (per 1M tokens) | Output pricing (per 1M tokens) | Quantization | Function calling | Structured outputs`。",
+          "capturedAt": "2026-10-04T18:29:00+08:00",
+          "note": "同一份内容的 HTML 版（/docs/serverless/models）是 540,182 字节的渲染壳，正文由客户端挂载；`www.together.ai/pricing` 同样是壳（正文 514 行里没有任何价格）。**只有 .md 端点是逐字可引的。**"
+        },
+        {
+          "url": "https://docs.together.ai/docs/serverless/overview.md",
+          "httpStatus": 200,
+          "role": "计费口径总说明。",
+          "verbatim": "Per-model rates are in the catalog tables, and on together.ai/pricing. … If you don't need real-time responses, some models are discounted up to 50% when run with batch workloads. … Cached input discounts: Select serverless chat models bill cached input tokens at a steep discount. … Only models with a value in the Cached input pricing column support cached input billing. Models without a cached price bill all input tokens at the standard rate.",
+          "capturedAt": "2026-10-04T18:29:00+08:00"
+        },
+        {
+          "url": "https://docs.together.ai/docs/inference/batch/overview.md",
+          "httpStatus": 200,
+          "role": "batch 折扣口径与**被点名模型**。",
+          "verbatim": "You get **up to 50% off** serverless rates and a separate rate limit pool … ### Discounted models — Selected serverless models run at 50% off batch rates: `meta-llama/Llama-3.3-70B-Instruct-Turbo`, `openai/whisper-large-v3`. Models not listed run at standard rates.",
+          "capturedAt": "2026-10-04T18:31:00+08:00"
+        },
+        {
+          "url": "https://docs.together.ai/docs/serverless/models",
+          "httpStatus": 200,
+          "contentLength": 540182,
+          "role": "渲染壳，正文需 JS 挂载 —— 记下来是为了说明「为什么事实来源是 .md 而不是页面」。",
+          "capturedAt": "2026-10-04T18:29:00+08:00"
+        },
+        {
+          "url": "https://docs.together.ai/docs/serverless/models.md（第一次尝试，经 web_fetch）",
+          "httpStatus": 403,
+          "role": "**同一 URL 两次抓取结果不同（这一条要如实留档）**：经 web_fetch 代理时被 Cloudflare 挡下（“Sorry, you have been blocked / Cloudflare Ray ID a45365e4882eaebe”），而直接从本机 HttpClient 取同一个 .md 得到 200。",
+          "capturedAt": "2026-10-04T18:20:00+08:00"
+        }
+      ],
+      "unit": "USD per 1M tokens（列头逐字 «Input pricing (per 1M tokens)» / «Cached input pricing (per 1M tokens)» / «Output pricing (per 1M tokens)»）。Vision models 表只有 Input / Output 两列。Image / Video / Audio 是逐项另计（per image / per megapixel / per video / per 1M chars / per audio min）。",
+      "modelOwnerVsPricingProvider": {
+        "pricingProvider": "together",
+        "hostedModelOwners": [
+          { "organizationColumnValue": "Thinking Machines", "model": "thinkingmachines/Inkling" },
+          { "organizationColumnValue": "Minimax", "model": "MiniMaxAI/MiniMax-M3" },
+          { "organizationColumnValue": "Qwen", "models": ["Qwen/Qwen3.8-2.4T-A95B", "Qwen/Qwen3.7-Max", "Qwen/Qwen3.6-Plus", "Qwen/Qwen3.5-9B", "Qwen/Qwen3.7-Plus", "Qwen/Qwen3.8-Flash", "Qwen/Qwen-Image"] },
+          { "organizationColumnValue": "Moonshot", "model": "moonshotai/Kimi-K3" },
+          { "organizationColumnValue": "Z.ai", "models": ["zai-org/GLM-5.3", "zai-org/GLM-5.3-Flash", "zai-org/GLM-5.2"] },
+          { "organizationColumnValue": "OpenAI", "model": "openai/gpt-oss-120b" },
+          { "organizationColumnValue": "DeepSeek", "models": ["deepseek-ai/DeepSeek-V4-Flash-0731", "deepseek-ai/DeepSeek-V4-Pro-0813", "deepseek-ai/DeepSeek-V4.1-Flash"] },
+          { "organizationColumnValue": "Meta", "models": ["meta-llama/Llama-3.3-70B-Instruct-Turbo", "meta-models/Muse-Glimmer-30B"] },
+          { "organizationColumnValue": "Together AI", "model": "together/Tev1-4B-experimental", "note": "**唯一一条平台自研**：organization 列写的就是 Together AI 自己。" }
+        ],
+        "ruling": "provider 一律写 together。官方表格自带 `Organization` 列，**这张列恰恰是「模型发行方」而不是「计价方」**——把它当成 provider 会把 Kimi K3 在 Moonshot 官方 API 的价与在 Together 托管的价合并成一条身份。建议 t11 在 models[].note 里保留 `Organization` 列原文（它是官方事实，且解释得清为什么同一 modelKey 会在多个平台各有一条记录）。"
+      },
+      "publishedRates": {
+        "channel": "standard",
+        "currency": "USD",
+        "unit": "per_1M_tokens",
+        "chatModels": [
+          { "modelId": "thinkingmachines/Inkling", "displayName": "Inkling", "input": 1.0, "cachedInput": 0.17, "output": 4.05, "contextLength": 524288 },
+          { "modelId": "moonshotai/Kimi-K3", "displayName": "Kimi K3", "input": 3.0, "cachedInput": 0.3, "output": 15.0, "contextLength": 1048576 },
+          { "modelId": "zai-org/GLM-5.3", "displayName": "GLM-5.3", "input": 1.4, "cachedInput": 0.26, "output": 4.4, "contextLength": 1048575 },
+          { "modelId": "zai-org/GLM-5.3-Flash", "displayName": "GLM-5.3 Flash", "input": 0.15, "cachedInput": 0.03, "output": 0.5, "contextLength": 1048575 },
+          { "modelId": "zai-org/GLM-5.2", "displayName": "GLM-5.2", "input": 1.4, "cachedInput": 0.26, "output": 4.4, "contextLength": 1048575 },
+          { "modelId": "openai/gpt-oss-120b", "displayName": "GPT-OSS 120B", "input": 0.15, "cachedInput": null, "output": 0.6, "contextLength": 131072, "note": "官方 Cached input 列是 `-`（不提供缓存计价）" },
+          { "modelId": "deepseek-ai/DeepSeek-V4-Pro-0813", "displayName": "DeepSeek V4 Pro 0813", "input": 1.32, "cachedInput": 0.13, "output": 3.96, "contextLength": 1048576 },
+          { "modelId": "deepseek-ai/DeepSeek-V4.1-Flash", "displayName": "DeepSeek V4.1 Flash", "input": 0.3, "cachedInput": 0.006, "output": 1.2, "contextLength": 1000000 },
+          { "modelId": "deepseek-ai/DeepSeek-V4-Flash-0731", "displayName": "DeepSeek-V4-Flash-0731", "input": 0.14, "cachedInput": 0.03, "output": 0.28, "contextLength": 1048576 },
+          { "modelId": "MiniMaxAI/MiniMax-M3", "displayName": "Minimax M3", "input": 0.3, "cachedInput": 0.06, "output": 1.2, "contextLength": 524288 },
+          { "modelId": "meta-llama/Llama-3.3-70B-Instruct-Turbo", "displayName": "Llama 3.3 70B Instruct Turbo", "input": 1.04, "cachedInput": null, "output": 1.04, "contextLength": 131072, "note": "输入输出同价；官方 Cached input 列是 `-`" },
+          { "modelId": "Qwen/Qwen3.8-2.4T-A95B", "displayName": "Qwen3.8-2.4T-A95B", "input": 2.0, "cachedInput": 0.5, "output": 6.0 },
+          { "modelId": "Qwen/Qwen3.7-Max", "displayName": "Qwen3.7 Max", "input": 1.5, "cachedInput": 0.5, "output": 4.5 },
+          { "modelId": "Qwen/Qwen3.6-Plus", "displayName": "Qwen3.6 Plus", "input": 0.5, "cachedInput": null, "output": 3.0, "contextLength": 1000000 },
+          { "modelId": "Qwen/Qwen3.7-Plus", "displayName": "Qwen3.7 Plus", "input": 0.32, "cachedInput": null, "output": 1.28, "contextLength": 1000000 },
+          { "modelId": "Qwen/Qwen3.5-9B", "displayName": "Qwen3.5 9B", "input": 0.17, "cachedInput": null, "output": 0.25, "contextLength": 262144 },
+          { "modelId": "Qwen/Qwen3.8-Flash", "displayName": "Qwen3.8 Flash", "input": 0.09, "cachedInput": null, "output": 0.282, "contextLength": 1000000 },
+          { "modelId": "meta-models/Muse-Glimmer-30B", "displayName": "Muse Glimmer 30B", "input": 0.35, "cachedInput": 0.04, "output": 1.5, "contextLength": 131072 },
+          { "modelId": "together/Tev1-4B-experimental", "displayName": "Tev1 4B Experimental", "input": 0.042, "cachedInput": null, "output": 0, "contextLength": 32768, "note": "官方 Output 列逐字是 **Free** —— 这是「官方明说免费」（rates 写 0），不是「未知」（写 null）" },
+          { "modelId": "Prism-ML/Ternary-Bonsai-27B", "displayName": "Ternary Bonsai 27B", "input": 0, "cachedInput": null, "output": 0, "contextLength": 262144, "note": "官方 Input / Output 两列逐字都是 **Free** ⇒ rates 写 0 + 可进 freeTier(type=models, stability=standing)" }
+        ],
+        "visionModelsDuplicated": "Vision models 表里 Qwen3.5 9B / Minimax M3 / Kimi K3 三条的 input/output 与 Chat 表逐字相同（没有缓存列）—— **不要为它们再开一条 modelKey**，同一 (modelKey, variant) 在记录内只能有一条。",
+        "imageModels": [
+          { "modelId": "black-forest-labs/FLUX.1.1-pro", "unitColumn": "megapixel", "price": 0.04, "outputPerDollar": "25 megapixels" },
+          { "modelId": "black-forest-labs/FLUX.1-kontext-max", "unitColumn": "megapixel", "price": 0.08, "outputPerDollar": "12 megapixels" },
+          { "modelId": "black-forest-labs/FLUX.2-max", "unitColumn": "megapixel", "price": 0.07, "unitNote": "at 50 steps" },
+          { "modelId": "google/gemini-3-pro-image", "unitColumn": "image", "price": 0.134, "priceNote": "at 1K or 2K（4K 约 $0.24）" },
+          { "modelId": "google/flash-image-2.5", "unitColumn": "image", "price": 0.039, "priceNote": "官方逐字 $0.039+（varies）" },
+          { "modelId": "ideogram/ideogram-4.0", "unitColumn": "image", "price": 0.06 },
+          { "modelId": "openai/gpt-image-2", "unitColumn": "image", "price": 0.053 },
+          { "modelId": "stabilityai/stable-diffusion-xl-base-1.0", "unitColumn": "image", "price": 0.0019 }
+        ],
+        "videoModels": [
+          { "modelId": "ByteDance/Seedance-1.0-pro", "pricePerVideo": 0.57, "resolutionDuration": "1080p / 5s" },
+          { "modelId": "Minimax/hailuo-02", "pricePerVideo": 0.49, "resolutionDuration": "768p / 10s" },
+          { "modelId": "minimax/video-01-director", "pricePerVideo": 0.28, "resolutionDuration": "720p / 5s" },
+          { "modelId": "pixverse/pixverse-v5", "pricePerVideo": 0.3, "resolutionDuration": "1080p / 5s" }
+        ],
+        "audioModels": [
+          { "modelId": "canopylabs/orpheus-3b-0.1-ft", "modality": "Text-to-Speech", "priceText": "$15.00 per 1M chars" },
+          { "modelId": "hexgrad/Kokoro-82M", "modality": "Text-to-Speech", "priceText": "$4.00 per 1M chars" },
+          { "modelId": "cartesia/sonic-3", "modality": "Text-to-Speech", "priceText": "$65.00 per 1M chars" },
+          { "modelId": "openai/whisper-large-v3", "modality": "Speech-to-Text", "priceText": "$0.0015 per audio min" },
+          { "modelId": "nvidia/parakeet-tdt-0.6b-v3", "modality": "Speech-to-Text", "priceText": "$0.0015 per audio min" }
+        ],
+        "embeddingRerankModeration": "官方逐字：There are currently no embedding models offered via serverless. / no rerank models offered via serverless / no moderation models offered via serverless."
+      },
+      "dimensions": {
+        "cache": {
+          "publishedRule": "逐模型给出 Cached input pricing 列（不是统一折扣）。官方另写：只有该列有值的模型支持缓存计价；没有值的模型**全部输入 token 按标准价计费**。",
+          "schemaVerdict": "**可诚实表达**：`cachedInput` 是逐模型字段，正好对上「有的模型有、有的没有」。没有值的写 null（官方语义就是「按标准价」，不是 0）。"
+        },
+        "batch": {
+          "publishedRule": "「up to 50% off」+ 被点名只有两个模型（meta-llama/Llama-3.3-70B-Instruct-Turbo、openai/whisper-large-v3）；其余模型按标准价。dedicated model inference 的用量**不享**批次折扣。",
+          "schemaVerdict": "**derived-not-published**（与 Groq 同类但更危险）：折扣是「up to」的概数，且官方明确只有两个模型 50%。若把整张表乘 0.5 写进 batchInput/batchOutput，就是把「up to」写成了「is」。建议 batchInput/batchOutput 全 null + note 保留两句原文与那两个模型名；若要为 Llama-3.3-70B 单开一条 channel=batch 记录，也必须先说明「0.52 = 1.04 × 0.5 是本站在官方比例上算出来的**派生值**」——而按本仓红线，**不建议**这么做。"
+        },
+        "priority": { "publishedRule": "官方 serverless 定价页只有 Standard 一档（无 Priority 列）。", "schemaVerdict": "n/a" },
+        "region": { "publishedRule": "官方表格没有按区域分价的列。", "schemaVerdict": "region=global。注意自家有 Dedicated / GPU Clusters / Provisioned Throughput 三种**非按量**产品线，都不属于本层。" },
+        "image": {
+          "publishedRule": "两种计价：Unit=image（**pass-through 的是供应商自己的每请求收费**，官方逐字「Prices for models billed by `image` are estimates, not rates … varies with the resolution, quality, and other parameters you send」）与 Unit=megapixel（$0.04/MP 这类**费率**，且有公开公式 Cost = MP × Price per MP × (Steps ÷ Default Steps)，多于默认步数才加成、少于不降）。",
+          "schemaVerdict": "**megapixel 不可表达**（枚举里没有 per_megapixel；换成 per_image 就等于把「按面积×步数」的费率说成了每张固定价）。**Unit=image 的那批也不该写成固定单价**：官方自己说是 estimate 不是 rate。Video 的 `Price per video` 同理（有 resolution/duration 前提）。"
+        },
+        "audio": {
+          "publishedRule": "TTS：per 1M chars（$4 / $15 / $65）；STT：$0.0015 per audio min。",
+          "schemaVerdict": "**per_1M_characters 与 per_minute 都可表达**（mediaRates.unit 两档都在）。STT 的 $0.0015/min 如果要收，要用 mediaRates.unit=per_minute（**不得**换算成 per second 或其他单位）。"
+        }
+      },
+      "freeTier": {
+        "publishedRule": "Chat 表里 Prism-ML/Ternary-Bonsai-27B 的 Input 与 Output 两列逐字都是「Free」；together/Tev1-4B-experimental 的 Output 列也是「Free」（Input 为 $0.042）。",
+        "schemaVerdict": "`freeTier` 可表达：type=models、stability=standing、models=[ternary-bonsai-27b]（该 modelKey 必须真的在本记录的 models 里）。**Tev1 那条不要并进 freeTier.models**：它只有输出免费、输入收费，性质是「部分维度免费」而不是「免费模型」——写进 freeTier.models 会被读成整模型免费。这一点要写进 note。"
+      },
+      "limits": {
+        "schemaVerdict": "官方逐模型限额另在 rate-limits 页（本轮只取到概述）；batch 的限额是**任务级**（50,000 requests/batch、100 MB/file、30B tokens enqueued per model）——那些不是 rpm/tpm，进不了 limits。"
+      }
+    },
+    "fireworks": {
+      "displayName": "Fireworks AI",
+      "officialPricingPages": [
+        {
+          "url": "https://docs.fireworks.ai/serverless/pricing.md",
+          "httpStatus": 200,
+          "role": "**事实来源**：官方 serverless 定价页（.md 端点可逐字引）。表列头逐字：`Model | Standard | Priority`，并写 “In each **Standard** or **Priority** cell, prices are **input / cached input / output** (USD per 1M tokens), in that order.”",
+          "capturedAt": "2026-10-04T18:22:00+08:00"
+        },
+        {
+          "url": "https://docs.fireworks.ai/guides/batch-inference.md",
+          "httpStatus": 200,
+          "role": "batch 折扣口径（**关键：batch 与 cache 是叠加的**）。",
+          "verbatim": "Process large volumes of requests asynchronously at **50% off** Serverless per-token prices. … Batch jobs automatically use prompt caching for additional 50% cost savings on cached tokens.",
+          "capturedAt": "2026-10-04T18:33:00+08:00"
+        },
+        {
+          "url": "https://docs.fireworks.ai/serverless/serverless-modes.md",
+          "httpStatus": 200,
+          "role": "Standard / Priority / Fast 三模式的定义。",
+          "verbatim": "Standard is the default mode. … Priority tier is for workloads that require higher reliability during peak traffic periods, at a higher price point. … Fast is a high-speed mode … at a higher price point. Fast variants aim for **100+ tokens per second** of generated throughput. It is not a different model and the quality of the model remains the same.",
+          "capturedAt": "2026-10-04T18:33:00+08:00"
+        },
+        {
+          "url": "https://docs.fireworks.ai/guides/prompt-caching.md",
+          "httpStatus": 200,
+          "role": "cache 折扣口径的原文（**逐模型不同**）。",
+          "verbatim": "For serverless models, cached prompt tokens are discounted compared to regular prompt tokens. The default discount is 50%, but the exact discount varies by model. Check the Model Library for model-specific cached token pricing.",
+          "capturedAt": "2026-10-04T18:33:00+08:00"
+        },
+        {
+          "url": "https://docs.fireworks.ai/serverless/us-only-serverless.md",
+          "httpStatus": 200,
+          "role": "US-only 部署与**1.5 倍区域溢价**。",
+          "verbatim": "US-only Serverless serves inference exclusively from the US … Available models: Kimi K3 (accounts/fireworks/routers/kimi-k3-us), DeepSeek V4.1 Flash, GLM 5.3, GLM 5.3 Flash … ## Pricing — Beginning September 1, 2026, launched US-only models are priced at **1.5x the base model serverless prices**. Kimi K3 (US) already includes this premium.",
+          "capturedAt": "2026-10-04T18:35:00+08:00"
+        },
+        {
+          "url": "https://docs.fireworks.ai/serverless/reserved-throughput.md",
+          "httpStatus": 200,
+          "role": "Reserved Throughput（**非按量**：按美元/分钟预留）。",
+          "verbatim": "You purchase Reserved Throughput as a reserved dollar-per-minute amount. Each minute, your eligible usage is priced and deducted from that amount. Any usage above the reserved amount is charged at standard Serverless pricing.",
+          "capturedAt": "2026-10-04T18:35:00+08:00"
+        }
+      ],
+      "unit": "USD per 1M tokens（逐字 “(USD per 1M tokens)”）。Embeddings 单独一张表，也是 per 1M input tokens。",
+      "modelOwnerVsPricingProvider": {
+        "pricingProvider": "fireworks",
+        "hostedModelOwners": [
+          { "model": "fireworks/ember-1", "owner": "Fireworks AI（自研）" },
+          { "model": "fireworks/kimi-k3", "owner": "Moonshot" },
+          { "model": "fireworks/deepseek-v4p1-flash", "owner": "DeepSeek" },
+          { "model": "fireworks/glm-5p3 / glm-5p3-flash", "owner": "Z.ai" },
+          { "model": "fireworks/qwen3p8-max", "owner": "Qwen" },
+          { "model": "fireworks/minimax-m3", "owner": "MiniMax" },
+          { "model": "fireworks/gpt-oss-120b", "owner": "OpenAI" },
+          { "model": "fireworks/nemotron-*", "owner": "NVIDIA" }
+        ],
+        "ruling": "provider 写 fireworks。注意官方 model id 的命名空间前缀就是 `fireworks/…`（**不是**模型发行方）—— 这一点与 Groq（id 前缀是发行方 openai/、meta-llama/）刚好相反，容易混淆，写数据时要按官方 id 原样保留并另在 note 写明发行方。"
+      },
+      "publishedRates": {
+        "standardChannel": {
+          "channel": "standard",
+          "currency": "USD",
+          "unit": "per_1M_tokens",
+          "models": [
+            { "modelId": "fireworks/ember-1", "displayName": "Ember-1", "input": 3.0, "cachedInput": 0.3, "output": 15.0 },
+            { "modelId": "fireworks/kimi-k3", "displayName": "Kimi K3", "input": 3.0, "cachedInput": 0.3, "output": 15.0, "note": "官方同表另有两行 Fast 与 (US) 变体，见 deferredSchema" },
+            { "modelId": "fireworks/deepseek-v4p1-flash", "displayName": "DeepSeek V4.1 Flash", "input": 0.3, "cachedInput": 0.006, "output": 1.2 },
+            { "modelId": "fireworks/glm-5p3", "displayName": "GLM 5.3", "input": 1.4, "cachedInput": 0.26, "output": 4.4 },
+            { "modelId": "fireworks/glm-5p3-flash", "displayName": "GLM 5.3 Flash", "input": 0.15, "cachedInput": 0.03, "output": 0.5 },
+            { "modelId": "fireworks/qwen3p8-max", "displayName": "Qwen 3.8 Max", "input": 2.0, "cachedInput": 0.25, "output": 6.0 },
+            { "modelId": "fireworks/minimax-m3", "displayName": "MiniMax M3", "input": 0.3, "cachedInput": 0.06, "output": 1.2 },
+            { "modelId": "fireworks/gpt-oss-120b", "displayName": "OpenAI GPT OSS 120B", "input": 0.15, "cachedInput": 0.015, "output": 0.6 },
+            { "modelId": "fireworks/nemotron-lightning-3p5-30b-a3b", "displayName": "NVIDIA Nemotron 3.5 Lightning 30B A3B", "input": 0.05, "cachedInput": 0.01, "output": 0.2 },
+            { "modelId": "fireworks/nemotron-3-ultra-nvfp4", "displayName": "NVIDIA Nemotron 3 Ultra (Preview)", "input": 0.6, "cachedInput": 0.12, "output": 2.4 }
+          ],
+          "sizeBasedBaseModels": {
+            "note": "官方对**没有逐条列出的** text/vision 模型按参数量与架构定价，且**输入输出同价、没有独立缓存价**。这是「按模型尺寸档定价」而不是逐模型价目表 —— 能不能进 models[] 需要一条明确决定（见 deferredSchema）。",
+            "rows": [
+              { "criterion": "Less than 4B parameters", "usdPer1MTokens": 0.1 },
+              { "criterion": "4B – 16B parameters", "usdPer1MTokens": 0.2 },
+              { "criterion": "More than 16B parameters", "usdPer1MTokens": 0.9 },
+              { "criterion": "MoE up to 56B parameters (e.g. Mixtral 8x7B)", "usdPer1MTokens": 0.5 },
+              { "criterion": "MoE 56.1B – 176B parameters (e.g. DBRX, Mixtral 8x22B)", "usdPer1MTokens": 1.2 }
+            ]
+          },
+          "embeddings": {
+            "note": "官方逐字：Embeddings are billed per 1M input tokens. 表列头 `Base model parameter count | $ / 1M input tokens`。",
+            "rows": [
+              { "criterion": "up to 150M", "usdPer1MInputTokens": 0.008 },
+              { "criterion": "150M – 350M", "usdPer1MInputTokens": 0.016 },
+              { "criterion": "Qwen3 8B", "usdPer1MInputTokens": 0.1 }
+            ]
+          }
+        },
+        "priorityChannel": {
+          "channel": "priority",
+          "note": "官方**同一张表里独立列出的 Priority 单价**；官方逐字 “— in the Priority column means Priority is not available for that model. This pricing table is the source of truth for Priority availability.” 因此 channel=priority 是本仓枚举里 priority 的正当落点（不是从标准价推的倍数）。",
+          "models": [
+            { "modelId": "fireworks/ember-1", "input": 3.75, "cachedInput": 0.375, "output": 18.75 },
+            { "modelId": "fireworks/kimi-k3", "input": 3.75, "cachedInput": 0.375, "output": 18.75 },
+            { "modelId": "fireworks/deepseek-v4p1-flash", "input": 0.375, "cachedInput": 0.0075, "output": 1.5 },
+            { "modelId": "fireworks/glm-5p3", "input": 1.75, "cachedInput": 0.325, "output": 5.5 },
+            { "modelId": "fireworks/glm-5p3-flash", "input": 0.1875, "cachedInput": 0.0375, "output": 0.625 },
+            { "modelId": "fireworks/qwen3p8-max", "input": 3.0, "cachedInput": 0.375, "output": 9.0 },
+            { "modelId": "fireworks/minimax-m3", "input": 0.45, "cachedInput": 0.09, "output": 1.8 },
+            { "modelId": "fireworks/gpt-oss-120b", "input": 0.18, "cachedInput": 0.018, "output": 0.72 },
+            { "modelId": "fireworks/nemotron-lightning-3p5-30b-a3b", "input": 0.0625, "cachedInput": 0.0125, "output": 0.25 },
+            { "modelId": "fireworks/nemotron-3-ultra-nvfp4", "input": 0.75, "cachedInput": 0.15, "output": 3.0 },
+            { "modelId": "fireworks/kimi-k3 (US)", "input": 5.625, "cachedInput": 0.5625, "output": 28.125 }
+          ],
+          "notAvailablePriority": ["fireworks/kimi-k3 (Fast)", "fireworks/glm-5p3 (Fast)"]
+        }
+      },
+      "dimensions": {
+        "cache": {
+          "publishedRule": "逐模型给出 cached input 列；默认折扣 50% 但**逐模型不同**。",
+          "schemaVerdict": "**可诚实表达**：`cachedInput` 逐模型填官方列（都是明写的单价，不是派生值）。"
+        },
+        "batch": {
+          "publishedRule": "50% off Serverless per-token prices；且 batch 自动用 prompt caching，**cached tokens 再省 50%**（两层折扣叠加）。",
+          "schemaVerdict": "**derived-not-published**，但比 Groq/Together 更微妙：官方给了两条规则（-50%、缓存再 -50%），而 schema 的 batchInput/batchOutput 只能装一个数、且 batch 记录上还带着 cachedInput 这一列 —— 三层关系（batch × cache）在 schema 形状里无处安放。结论：batchInput/batchOutput 写 null + 把两条原文与叠加关系写进 note/restrictions。"
+        },
+        "fast": {
+          "publishedRule": "官方表里 Fast 变体是**相邻的独立行**（例：Kimi K3 Fast $4.50 / $0.45 / $22.50；GLM 5.3 Fast $2.10 / $0.39 / $6.60），且 Priority 列是 `—`。",
+          "schemaVerdict": "**不可表达**：`variant` 枚举没有 `fast`（channel 有 fast，但 channel 进 id basis，为每个模型开一条 fast 记录会把「同一模型的两个速度档」变成两条 provider 级记录，与「models 元素级追踪」的设计相悖）。归属 deferredSchema。"
+        },
+        "usOnly": {
+          "publishedRule": "US-only 用**不同 model id**（accounts/fireworks/routers/kimi-k3-us）+ 独立 base_url（https://us.api.fireworks.ai），自 2026-09-01 起按 base 价 ×1.5；Kimi K3 (US) 已含溢价（$4.50/$0.45/$22.50 正是 $3.00/$0.30/$15.00 的 1.5 倍）。",
+          "schemaVerdict": "**不可表达为诚实事实**：这里有两种可能写法，都不干净 —— ① 用 `variant=other` 装 US 变体（枚举里有 other，但 other 是「语义在 note 里」的兜底，会让同一 modelKey 出现两条变体，页面显示「其他」）；② 同 1.5 倍是**官方给出的倍数**，自己乘出来的 4.50 是派生值。归属 deferredSchema，建议本轮只写 note。",
+          "regressionRisk": "注意 Kimi K3 (US) 的 4.50 恰好是 3.00×1.5 —— 这个数字**同时**出现在官方表里（是官方自己算好写出来的）与「派生」两个身份里。若收它，evidence 必须引官方那一行原文（“Kimi K3 (US) $4.50 / $0.45 / $22.50”），不能说「按 1.5 倍算得」。"
+        },
+        "region": { "publishedRule": "没有按区域分价的列（US-only 是**独立 SKU**面，不是同一模型的价格列）。", "schemaVerdict": "region=global。EU-only 需联系销售（无价）。" },
+        "reservedThroughput": { "publishedRule": "按美元/分钟预留，超出部分按标准 serverless 价。", "schemaVerdict": "**不可表达**（不是按量计费，且没有固定单价）。归属 deferredSchema。" },
+        "fineTuning": { "publishedRule": "有独立的 fine-tuning / training 定价面（官方 llms.txt 里有 cost-estimator 等页）。", "schemaVerdict": "本层不收（`fine_tuned` 变体在这个 schema 里指的是**推理**微调模型价，不是训练价）。若 t11 想收，需要先明确口径，本轮不展开。" }
+      },
+      "freeTier": {
+        "publishedRule": "本轮取到的 serverless pricing 页里**没有** free tier 段落（也无 free 模型行）。",
+        "schemaVerdict": "freeTier 写 null（= 没查到），**不得**写 {type:'none'}。"
+      },
+      "limits": { "schemaVerdict": "官方有独立的 Serverless Rate Limits 页（adaptive rate limits），本轮未逐条取值；limits 建议留 null 或另派一次调查，不要凭印象填。" }
+    },
+    "cerebras": {
+      "displayName": "Cerebras",
+      "officialPricingPages": [
+        {
+          "url": "https://www.cerebras.ai/pricing",
+          "httpStatus": 200,
+          "contentLength": 238390,
+          "role": "**官方定价页**。服务端 HTML 里可逐字取到的部分：Tier 对照表（Product Tier / Developer* / Enterprise / …）、两处表结构与 **3 行 Developer Tier Pricing 表**。",
+          "verbatim": "Developer Tier Pricing — `Model | Speed | Input | Output` ；`[OPENAI]GPT OSS 120B | ~3000 tokens/s | $$0.35/M tokens | $$0.75/M tokens` ；`[QWEN]Qwen 3.8 27B | ~1,850 tokens/s | $$0.99/M tokens | $$1.49/M tokens`（`$$` 是 Sanity 富文本里 `$` 的转义写法）",
+          "capturedAt": "2026-10-04T18:21:00+08:00",
+          "note": "页面在自己的 RSC 流里把价格表标为 `<!--$!--><template data-dgst=\"BAILOUT_TO_CLIENT_SIDE_RENDERING\"></template><!--/$-->` —— 这说明**完整的 Tier 定价表是客户端渲染的**，服务端只留下上面那三行。"
+        },
+        {
+          "url": "https://www.cerebras.ai/pricing（Tier 对照表逐字）",
+          "httpStatus": 200,
+          "role": "档位与计费方式的服务端原文。",
+          "verbatim": "Product Tier … Developer* / Exploration workloads （✓ World's fastest inference ✓ Leading open-weight models ✓ Leading price performance / − Production-ready capacity / − Best priority, higher rate limits, and enhanced latency options / − Customize model weights / Models: GPT OSS 120b, Qwen 3.8 27B） … Enterprise / Production workloads （✓✓ for the same rows, and Pricing: Contact us for a quote） … Pricing 行：Developer = “Self-serve pay-as-you-go with free $5 credit to start ***”；Enterprise = “Contact us for a quote”。脚注：* For development, evaluation, and experimentation; not intended for production use. ** Available by agreement. *** Add a valid payment method to receive a one-time $5 promotional credit. The credit expires 30 days after activation.",
+          "capturedAt": "2026-10-04T18:21:00+08:00"
+        },
+        {
+          "url": "https://www.cerebras.ai/pricing（完整 Tier 价格）",
+          "httpStatus": 200,
+          "role": "**取不到**：完整 Tier 对照表的价格单元格在客户端渲染区域。服务端 HTML 里只有表头与档位名（Developer*、Enterprise），没有任何档位价格数字。",
+          "capturedAt": "2026-10-04T18:21:00+08:00"
+        },
+        {
+          "url": "https://inference-docs.cerebras.ai/models/choose-a-model",
+          "httpStatus": 200,
+          "role": "官方模型目录（**无价格**）。",
+          "verbatim": "All models listed below are available through **Dedicated Inference** for enterprise workloads with reserved capacity. A subset is also accessible through **Shared Inference** with no additional setup.",
+          "capturedAt": "2026-10-04T18:22:00+08:00",
+          "note": "该页把所有模型按类别列出（Kimi K2.7 Code / Kimi K2.6 / GLM 5.1 / MiniMax M2.5 / Qwen 3.8 27B _(Public)_ / Gemma 4 31B / GPT OSS 120B _(Public)_ …），并明确只有标 _(Public)_ 的走 Shared Inference。**Dedicated Inference 是预留容量、非按量**，其价目取不到（→ Enterprise「Contact us for a quote」）。"
+        },
+        {
+          "url": "https://inference-docs.cerebras.ai/support/pricing",
+          "httpStatus": "cross-origin-redirect",
+          "role": "**跨源跳转**：该路径跨源跳回 https://www.cerebras.ai（web_fetch 拒绝自动跨源跳转）。官方文档侧栏的 Pricing 链接本身也直接指向 https://www.cerebras.ai/pricing —— 即**文档站没有独立的定价页**。",
+          "capturedAt": "2026-10-04T18:22:00+08:00"
+        }
+      ],
+      "unit": "官方页面的价格单元格逐字是 `$X.XX/M tokens`（每百万 token）。**注意**：同一行里「Input / Output」是两个独立单元格，都是使这个单位。",
+      "modelOwnerVsPricingProvider": {
+        "pricingProvider": "cerebras",
+        "hostedModelOwners": [
+          { "model": "GPT OSS 120B", "owner": "OpenAI", "cellPrefix": "[OPENAI]" },
+          { "model": "Qwen 3.8 27B", "owner": "Qwen", "cellPrefix": "[QWEN]" }
+        ],
+        "ruling": "provider 写 cerebras。官方的表格单元格里**自带 `[OPENAI]` / `[QWEN]` 前缀**来表示发行方 —— 这是官方自己在页面上区分「谁的模型 / 谁在卖」，正好印证「hosted model owner ≠ pricing provider」这条判据。建议把这个前缀原样留在 note 里。"
+      },
+      "publishedRates": {
+        "channel": "standard",
+        "currency": "USD",
+        "unit": "per_1M_tokens",
+        "tier": "Developer*（官方脚注：For development, evaluation, and experimentation; not intended for production use）",
+        "models": [
+          { "modelId": "gpt-oss-120b", "displayName": "GPT OSS 120B", "ownerLabel": "[OPENAI]", "input": 0.35, "cachedInput": null, "output": 0.75, "speed": "~3000 tokens/s" },
+          { "modelId": "qwen3.8-27b", "displayName": "Qwen 3.8 27B", "ownerLabel": "[QWEN]", "input": 0.99, "cachedInput": null, "output": 1.49, "speed": "~1,850 tokens/s" }
+        ],
+        "otherModelsNotPriced": {
+          "note": "官方「Choose a Model」页点名的其余模型（Kimi K2.7 Code / Kimi K2.6 / GLM 5.1 / MiniMax M2.5 / Gemma 4 31B 等）**都没有公开单价**：它们只在 Dedicated Inference 下提供，价格走 Enterprise quote。**不得**把它们的 rates 写 0 或 null 后仍收进 models[]（schema 要求「一条模型条目至少要有一个价格事实」，没有价格事实就不该收进来）。"
+        }
+      },
+      "dimensions": {
+        "cache": {
+          "publishedRule": "官方定价页的 Developer Tier 表里**没有缓存列**；官方文档另有 Prompt Caching 能力页（本轮未取到它的计价口径）。",
+          "schemaVerdict": "`cachedInput` 写 null。**不得**因为「别家有、它也一定有」而填值。"
+        },
+        "batch": { "publishedRule": "官方定价页没有 batch 档，本轮未取到 batch 计价口径。", "schemaVerdict": "`batchInput`/`batchOutput` 写 null。" },
+        "priority": { "publishedRule": "Tier 对照表里 Enterprise 档才勾选 “Best priority, higher rate limits, and enhanced latency options”（✓ ** 表示 by agreement），Developer 档是 `-`。", "schemaVerdict": "没有独立价目表 ⇒ 不建 priority 记录。" },
+        "region": { "publishedRule": "没有区域分价列；官方另有 AWS Marketplace / OpenRouter / HuggingFace / Vercel 四个**第三方分发**入口。", "schemaVerdict": "region=global。第三方分发入口上的价**不是** Cerebras 官方价，不得取用（且那样会把计价主体写成分发平台）。" },
+        "dedicatedProvisioned": { "publishedRule": "Dedicated Inference = reserved capacity，价走 Enterprise quote。", "schemaVerdict": "**不可表达**（非按量）。归属 deferredSchema。" }
+      },
+      "freeTier": {
+        "publishedRule": "Developer 档逐字 “Self-serve pay-as-you-go with free $5 credit to start ***”，脚注逐字 “*** Add a valid payment method to receive a **one-time $5 promotional credit**. The credit expires 30 days after activation. You will not be charged or automatically enrolled in paid usage. API and Playground access will pause when the credit expires or is exhausted unless you separately purchase PayGo credits.”",
+        "schemaVerdict": "**进不了 `freeTier` 的主流形态**，两种写法都不干净：① 写成 credits（$5, one_time）会撞 `FREE_TIER_STABILITY` 的互斥判据 —— stability 只能是 standing/new_user/promotional，而 $5 是「一次性促销 credit」⇒ 应写 `stability=promotional` + description 里带「限时/赠送/天内」条件词（官方原文有「one-time」「expires 30 days after activation」，可兑现）；② 但这**更像 Deals（优惠）而不是 Plan 能力** ——「加一张有效支付方式才送、30 天过期」正是本仓 §八 划给 Deals 的那一类。**建议**：freeTier 写 null，把这条 $5 credit 作为**优惠候选**交给 deals 侧（或用 deal-plan-links 关联），并在 note 里写明为什么不算 freeTier。",
+        "counterArgument": "反面意见也记下来：官方确实把它写在「Pricing」行里，且 PayGo 用户不买 credit 也能用 Free 档（“API and Playground access will pause when the credit expires … unless you separately purchase PayGo credits” 暗示存在一个不付费就能用的档）。但本轮**没有取到**那个免付费档的额度/速率数值，所以不能据此声称有长期免费额度。"
+      },
+      "limits": { "schemaVerdict": "官方有独立的 Rate Limits 文档页（inference-docs.cerebras.ai/support/rate-limits），本轮未取值；limits 留 null 或另派一次调查。" }
+    }
+  },
+  "schemaExpressibility": {
+    "_legend": {
+      "expressible": "当前 api-plan-schema v1 能**逐字**表达（官方明写了这个数/这个枚举值）。",
+      "expressible_with_note": "能装进字段，但必须靠 note/evidence 才能不被误读。",
+      "deferred-schema": "当前 schema **装不下或装进去就是撒谎** —— 进 DEFERRED_SCHEMA，本轮不落盘。"
+    },
+    "expressible": [
+      { "dimension": "per-token input / output（四家全部）", "lands": "pricing.unit=per_1M_tokens + models[].rates.input/output", "evidence": "四家官方页都是 per 1M tokens 的 input/output 列" },
+      { "dimension": "逐模型 cached input（Together / Fireworks）", "lands": "models[].rates.cachedInput", "evidence": "两家官方表里都有独立的 Cached input 列且逐模型不同 ⇒ 不是派生" },
+      { "dimension": "Priority 档价（Fireworks）", "lands": "channel=priority（第二条记录）", "evidence": "官方同一张表里独立列出 Priority 单元格，并声明该表就是 Priority 可用性的唯一出处" },
+      { "dimension": "速率限制 rpm/tpm（Groq 表格列）", "lands": "limits[]", "evidence": "官方列头 RATE LIMITS (DEVELOPER PLAN) 直出 250K TPM / 1K RPM" },
+      { "dimension": "per 1M characters（Groq Orpheus TTS / Together TTS）", "lands": "mediaRates[].unit=per_1M_characters", "evidence": "官方原文 per 1M chars / per 1M characters" },
+      { "dimension": "per minute 音频（Together STT $0.0015/audio min）", "lands": "mediaRates[].unit=per_minute", "evidence": "官方原文 per audio min" },
+      { "dimension": "官方明说免费的输出（Together Tev1 Output=Free、Ternary Bonsai=Free）", "lands": "rates 写 0 + freeTier(type=models)", "evidence": "官方列值逐字 Free ⇒ 0 的语义是「官方明说免费」，与 null「没给」严格区分" }
+    ],
+    "expressible_with_note": [
+      { "dimension": "Groq flex 档（价格与标准相同）", "handling": "**不另开记录**，写成 restrictions(kind=rate_limit) 的 note；理由：另开会产生两条数字完全相同的记录。**不使用** channel=flex（那个值的语义是「官方单独列了一张表」）。" },
+      { "dimension": "Groq Enterprise-only 模型（Llama 3.1 8B / 3.3 70B / MiniMax M2.7）", "handling": "价格单元格逐字 “Contact Sales” ⇒ rates 全 null 且**不要收进 models[]**（schema：没有价格事实的模型不该收进来）。但「这三个模型在 Groq 上只对企业开放」是读者需要的事实 ⇒ 写进记录级 restrictions 或 note。**不得**写 0 或写「未知」当价格。" },
+      { "dimension": "Cerebras Developer 档「不得用于生产」的脚注", "handling": "必须写进记录 note 与 restrictions；否则页面上这条价格会被读成生产价。" },
+      { "dimension": "Cerebras 只有 2 个模型有公开单价、其余走 Enterprise quote", "handling": "同上：模型清单与额度走 note/restrictions，不塞进 models[]。" },
+      { "dimension": "Together 的 Organization 列（模型发行方）", "handling": "留在 models[].note；provider 仍是 together。" }
+    ],
+    "deferredSchema": [
+      {
+        "id": "DEFER-INF-01",
+        "dimension": "mediaRates 缺 per_hour 单位",
+        "providers": ["groq", "together"],
+        "officialText": "Groq：whisper-large-v3 $0.111 per hour / whisper-large-v3-turbo $0.04 per hour；Together：video 表以「Price per video」计价、STT 以 per audio min 计价（per hour 类目在四家里确实存在）。",
+        "whyNotExpressible": "MEDIA_RATE_UNITS 只有 per_image / per_second / per_minute / per_1M_characters / per_request / per_1M_token_hours，**没有 per_hour**。写成 per_minute 需要把 $0.111 除以 60 —— 那是本仓明令禁止的单位换算。",
+        "decision": "本轮**不落盘** Groq 的 Whisper 两条（mediaRates 记不下、也不许换算）。若要收，需先加 per_hour 到 MEDIA_RATE_UNITS + 页面单位文案 + 自测夹具。",
+        "impactIfSkipped": "Groq 记录里只有 GPT OSS / Qwen / Prompt Guard 四个 token 模型；Whisper 与 Orpheus 的语音计费在站上不可见。"
+      },
+      {
+        "id": "DEFER-INF-02",
+        "dimension": "记录级 pricing.unit 是单值，一条记录装不下「token + 字符」两类计价",
+        "providers": ["groq"],
+        "officialText": "Groq 同一张 Supported Models 表里同时有 per 1M tokens（GPT OSS）、per hour（Whisper）、per 1M characters（Orpheus）三类计价。",
+        "whyNotExpressible": "`pricing.unit` 是**记录级单值**，且有硬判据：「有 token 价就必须有单位；一个 token 价都没有时单位必须是 null」。把字符计价与 token 计价混进一条记录，unit 只能选一个。",
+        "decision": "Groq 落盘时**只收 token 计价的模型**；Orpheus 的 per 1M chars 单独处理（要么另开一条「语音计费」记录、unit=per_1M_characters 且不含任何 token 模型 —— 但 schema 又要求 models 非空且「至少一个价格事实」，可行；要么本轮不进）。**建议 t11 另开一条记录**：planName「语音模型按量计费」、channel=standard、pricing.unit=per_1M_characters、models 只放 Orpheus 两条。"
+      },
+      {
+        "id": "DEFER-INF-03",
+        "dimension": "batch 折扣只有比例、没有独立价目表（Groq / Together / Fireworks 三家）",
+        "providers": ["groq", "together", "fireworks"],
+        "officialText": "Groq：“50% cost discount compared to synchronous API pricing … does not stack with [cache] discounts. All batch tokens are billed at the 50% batch rate regardless of cache status.”；Together：“up to 50% off serverless rates”，且**只点名 2 个模型**；Fireworks：“50% off Serverless per-token prices”，且 batch 下 cached tokens **再省 50%**。",
+        "whyNotExpressible": "schema 的 `batchInput`/`batchOutput` 是**逐模型单价字段**，而三家都没有逐模型批次价目表。自己乘 0.5 写进去就是派生值（本仓红线）。更硬的冲突：Fireworks 的 batch 与 cache **叠加**、Groq 的 batch 与 cache **不叠加** —— 同一个 schema 形状（batch 记录里仍带 cachedInput 列）无法区分这两种关系。",
+        "decision": "三家一律 `batchInput`/`batchOutput` = null，折扣规则进 note/restrictions + evidence。**不为 batch 建记录**（除非将来 schema 支持「折扣规则」这种值形态）。",
+        "impactIfSkipped": "站上不出现「批处理便宜一半」这类最有购买价值的数字 —— 这是**刻意的**：宁可少一个数字，也不写一个按比例算出来的数字。"
+      },
+      {
+        "id": "DEFER-INF-04",
+        "dimension": "cache 只有折扣比例、没有单价（Groq）",
+        "providers": ["groq"],
+        "officialText": "“Prompt caching is provided at no additional cost. There is a 50% discount for cached input tokens.”",
+        "whyNotExpressible": "`cachedInput` 是单价字段；官方只给比例。对比：Together 与 Fireworks 都是**逐模型明写缓存单价**（可表达）—— 这一条只针对 Groq。",
+        "decision": "Groq 的 `cachedInput` 一律 null；折扣比例、适用模型（三个 gpt-oss）与「cache 不计入速率限制」写进 note。"
+      },
+      {
+        "id": "DEFER-INF-05",
+        "dimension": "Fast / US-only 这类「同一模型的另一档价」缺 variant 与身份位",
+        "providers": ["fireworks"],
+        "officialText": "Fireworks 定价表里 Kimi K3 Fast = $4.50/$0.45/$22.50、GLM 5.3 Fast = $2.10/$0.39/$6.60（Priority 列为 —）；US-only 侧 “priced at 1.5x the base model serverless prices”，Kimi K3 (US) = $4.50/$0.45/$22.50、DeepSeek V4.1 Flash (US) = $0.45/$0.009/$1.80、GLM 5.3 (US) = $2.10/$0.39/$6.60、GLM 5.3 Flash (US) = $0.225/$0.045/$0.75。",
+        "whyNotExpressible": "① `variant` 枚举没有 fast（standard/batch/long_context/fine_tuned/priority/other 里 `other` 是兜底但语义是「其他」，且 `priority` 与 US-only 的语义都不对）；② channel=fast 存在，但 channel 进 id basis ⇒ 会为每个模型产生一条 provider 级记录，与「models 元素级追踪」的设计相悖，且会把「同一模型的第二档价」显示成两条独立产品记录；③ US-only 是**合规 SKU**（独立 model id + 独立 base_url），也不该塞进同一 modelKey 的变体里。",
+        "decision": "本轮 Fireworks 只落 standard 与 priority 两条记录；Fast / US-only 的价格写进 models[].note（**当 note 里的官方原文**，不当 rates 里的一等数字）。要真正收进来需要一次 schema 变更（新增 variant=fast 与/或把 deploy 维度显式化）。"
+      },
+      {
+        "id": "DEFER-INF-06",
+        "dimension": "按参数量/架构分档的兜底定价（没有逐模型条目）",
+        "providers": ["fireworks"],
+        "officialText": "“For any text or vision model not listed individually, pricing is set by parameter count and architecture. These size-based prices apply uniformly to input and output (no separate cached-input rate): Less than 4B $0.10 / 4B–16B $0.20 / More than 16B $0.90 / MoE up to 56B $0.50 / MoE 56.1B–176B $1.20”，embeddings 另有 up to 150M $0.008 / 150M–350M $0.016 / Qwen3 8B $0.10。",
+        "whyNotExpressible": "schema 的 models[] 条目必须绑定一个**具体的 (modelKey, variant)**，而这几行是「没有名字的尺寸档」。硬塞成 modelKey=`less-than-4b` 之类会把「分类规则」伪装成一个模型身份，之后 history 层会把它当模型增删来追踪。",
+        "decision": "不进 models[]；把原表写进记录 note（它回答「页面没列的长尾模型怎么计价」）。"
+      },
+      {
+        "id": "DEFER-INF-07",
+        "dimension": "per megapixel 图像费率（Together）",
+        "providers": ["together"],
+        "officialText": "“Unit: megapixel，$0.04 / $0.07 / $0.08” + 公开公式 “Cost = MP × Price per MP × (Steps ÷ Default Steps)”。",
+        "whyNotExpressible": "MEDIA_RATE_UNITS 没有 per_megapixel；最接近的 per_image 指「每张」，而这是「每百万像素 × 步数」—— 换算/近似都会把费率说成固定单价。",
+        "decision": "本轮不收 Together 的图像/视频计费；只在 note 里写明「另有按张/按像素/按视频的计价面，且官方自称其中一类是 estimate 不是 rate」。"
+      },
+      {
+        "id": "DEFER-INF-08",
+        "dimension": "「estimate 而不是 rate」的 pass-through 计费（Together Unit=image）",
+        "providers": ["together"],
+        "officialText": "“Prices for models billed by `image` are **estimates, not rates**. These models pass through the provider's own per-request charge, which varies with the resolution, quality, and other parameters you send.”",
+        "whyNotExpressible": "schema 的 mediaRates 要求「非 token 计费项必须给出明确单价」，且页面上会渲染成一个明确数字。官方自己说这个数字不确定 ⇒ 写进去就是把 estimate 冒充成 rate。",
+        "decision": "不收；写进 note 作为「为什么这一家的图像价没有进站」的判据。"
+      },
+      {
+        "id": "DEFER-INF-09",
+        "dimension": "非按量产品线（预留/专有容量）",
+        "providers": ["groq", "fireworks", "cerebras", "together"],
+        "officialText": "Groq Performance tier：“you purchase input and output capacity bundles and pay for that provisioned capacity rather than per-token usage. Reach out to inquire about pricing.”；Fireworks Reserved Throughput：“a reserved dollar-per-minute amount”；Cerebras Dedicated Inference：Enterprise “Contact us for a quote”；Together：Provisioned Throughput / Dedicated Model Inference / GPU Clusters 三条独立产品线。",
+        "whyNotExpressible": "这一层的数据模型是「按量单价」（pricing.unit + models[].rates）。预留容量是**合同价/容量包**，没有可比的单位与单价。",
+        "decision": "四家的这些产品线一律不进 api-plans（也不进 plans.json —— 它们不是 Coding 订阅）。若要让读者知道「这家另有企业档」，只能写在 note 或站内说明里。"
+      },
+      {
+        "id": "DEFER-INF-10",
+        "dimension": "Groq 的 ASH（audio seconds per hour）限制维度",
+        "providers": ["groq"],
+        "officialText": "模型页 Whisper 行的速率限制列逐字 “200K ASH / 300 RPM”。",
+        "whyNotExpressible": "LIMIT_KINDS 只有 rpm / tpm / rpd / tpd / concurrency。ASH 不在其中，且它**不是** tpm 或 rpm 的近似。",
+        "decision": "只把 RPM 那一半写进 limits；ASH 写进 note。**不得**把 ASH 当作 tpm 填。"
+      },
+      {
+        "id": "DEFER-INF-11",
+        "dimension": "Cerebras 完整 Tier 价目表取不到（客户端渲染）",
+        "providers": ["cerebras"],
+        "officialText": "页面在自己的 RSC 流里标注该区块为 BAILOUT_TO_CLIENT_SIDE_RENDERING；服务端 HTML 只有 Developer / Enterprise 两个档位名与勾选矩阵。",
+        "whyNotExpressible": "不是 schema 的问题，是**证据问题**：档位价格数字取不到就不能写（本仓「官方页已确认但没有可采信事实」的处置纪律）。",
+        "decision": "Cerebras 只落 Developer 档那两个模型的 per-token 价（服务端可逐字取到）；「是否还有 Pro 档、Enterprise 怎样计价」如实写「取不到」。"
+      },
+      {
+        "id": "DEFER-INF-12",
+        "dimension": "企业档/联系销售的价格单元格（Groq Llama·MiniMax；Cerebras 其余模型）",
+        "providers": ["groq", "cerebras"],
+        "officialText": "Groq 价格单元格与限制单元格逐字 “Contact Sales”；Cerebras “Contact us for a quote”。",
+        "whyNotExpressible": "数字不存在（不是 0、也不是「未知的某个数」）。schema 的 rates null 语义是「官方没给这一项」，与「官方说要去谈」不是同一件事。",
+        "decision": "这些模型不进 models[]；「仅企业档/需联系销售」写进记录 note 或 restrictions。"
+      }
+    ],
+    "counts": {
+      "inferenceProviders": 4,
+      "expressibleDimensions": 7,
+      "expressibleWithNote": 5,
+      "deferredSchemaItems": 12
+    }
+  },
+  "crossProviderFindings": [
+    {
+      "id": "X-1",
+      "finding": "四家的计价主体都是**托管平台自己**，而页面上卖的模型几乎全部是别人的 —— provider 字段必须写平台 key，模型发行方只进 note/alias。",
+      "evidence": [
+        "Groq 的 model id 前缀是发行方（openai/gpt-oss-120b、meta-llama/llama-prompt-guard-2-22m、canopylabs/orpheus-v1-english）——**前缀不是 provider**。",
+        "Cerebras 在表格单元格里自带 [OPENAI] / [QWEN] 前缀。",
+        "Together 官方表有独立的 Organization 列（Thinking Machines / Minimax / Qwen / Moonshot / Z.ai / OpenAI / DeepSeek / Meta / Together AI）。",
+        "Fireworks 的 model id 前缀是 `fireworks/`（平台自己的命名空间，不是发行方）——**与 Groq 相反**。"
+      ],
+      "consequence": "同一 modelKey（如 kimi-k3 / glm-5.3）会**在多条 provider 记录里各出现一次**，这是正确的（价格事实按平台分别成立）；把 provider 写成发行方会把 Moonshot 官方价与 Together/Fireworks/Cerebras 托管价合并，读者会以为同一价格适用于所有平台。",
+      "actionForT11": "落盘时逐条确认 provider=平台 key；models[].note 保留官方原样的发行方证据（Organization 列 / [OPENAI] 前缀 / id 前缀）。"
+    },
+    {
+      "id": "X-2",
+      "finding": "「cache 便宜多少」在四家里有**三种互不相同的官方形态**，用同一个 cachedInput 字段装它们会丢掉区别。",
+      "evidence": [
+        "Together / Fireworks：**逐模型明写**缓存单价（可直接填）。",
+        "Groq：只给「50% discount」，且只对 3 个模型；缓存不计入速率限制。",
+        "Cerebras：定价表里**没有**缓存列（文档有 Prompt Caching 能力，但价目无此项）。"
+      ],
+      "consequence": "若统一按「有 cache 列就填、没有就空」处理，Groq 那三个模型会显示缓存价空白（其实官方给了比例），而 Cerebras 会显示空白（官方确实没给价）。两者在页面上长得一样，语义不同 ⇒ 必须在 note 里区分「官方给了比例」与「官方没给」。"
+    },
+    {
+      "id": "X-3",
+      "finding": "「batch 便宜多少」是本次四家**共同**的不可表达点，而且四家的规则互相冲突（叠加 / 不叠加 / up to / 只对两个模型）。",
+      "evidence": [
+        "Groq：50%，**不与 cache 叠加**，batch 下所有 token 都按 50% 计。",
+        "Fireworks：50%，**与 prompt caching 叠加**（cached tokens 再省 50%）。",
+        "Together：**up to** 50%，且只有 2 个模型 50%，其余按标准价。",
+        "Cerebras：定价页无 batch 档。"
+      ],
+      "consequence": "任何「batchInput = input × 0.5」的写法都会把四家说成同一个规则；实际上一家叠加、一家不叠加、一家是「最多」。**这一条本身就是一个值得写进最终报告的结论**：不是我们懒，是折扣规则在 schema 里没有能诚实承载的形状。"
+    },
+    {
+      "id": "X-4",
+      "finding": "三家平台里出现的「另一档价」形态各不相同：Groq=flex（同价）、Fireworks=priority（独立价）/Fast（独立价）/US-only（×1.5）、Together=无。",
+      "evidence": ["见各 provider 的 dimensions 小节。"],
+      "consequence": "「渠道/档位」这一维度在四家里根本不是同一件事。schema 的 channel 枚举（standard/batch/flex/priority/fast/ultrafast/off_peak/fine_tuned/other）恰好只装得下 Fireworks 的 priority 一种，其余都进 deferredSchema。"
+    },
+    {
+      "id": "X-5",
+      "finding": "两家平台的**官方定价页 URL 已经不可用**，必须按实际可用的页面登记 officialUrl。",
+      "evidence": [
+        "Groq：groq.com/pricing → 308 回首页；console.groq.com/docs/pricing → 404。事实来源是 console.groq.com/docs/models。",
+        "Cerebras：文档站侧栏的 Pricing 直接跨源跳到 cerebras.ai/pricing；inference-docs.cerebras.ai/support/pricing 不独立存在。",
+        "Together：www.together.ai/pricing 是 JS 空壳（正文无价）——事实来源是 docs.together.ai 的 .md 端点。",
+        "Fireworks：docs.fireworks.ai/serverless/pricing.md 正常可用。"
+      ],
+      "actionForT11": "officialUrl/sourceUrl 逐家按上表填；**不要把 groq.com/pricing 或 console.groq.com/docs/pricing 写进任何 officialUrl**（会 404/重定向）。同时把「可用的 .md / docs 端点」写进 sourceUrl。"
+    }
+  ],
+  "recommendedRecordsForT11": [
+    {
+      "provider": "groq",
+      "planNameSuggestion": "模型推理按量计费",
+      "channel": "standard",
+      "officialUrl": "https://console.groq.com/docs/models",
+      "source": "Official-Docs",
+      "region": "global",
+      "pricing": { "currency": "USD", "unit": "per_1M_tokens" },
+      "modelKeys": ["gpt-oss-120b", "gpt-oss-20b", "qwen3.8-27b", "gpt-oss-safeguard-20b", "llama-prompt-guard-2-22m", "llama-prompt-guard-2-86m"],
+      "notesMustCarry": ["cache 折扣是 50% 的比例（无单价）", "batch 折扣 50% 且不与 cache 叠加", "flex 与标准同价", "Llama 3.1 8B / 3.3 70B / MiniMax M2.7 仅企业档（Contact Sales）", "Whisper / Orpheus 的 per hour 与 per 1M characters 未收（见 DEFER-INF-01/02）"]
+    },
+    {
+      "provider": "groq",
+      "planNameSuggestion": "语音模型按量计费",
+      "channel": "standard",
+      "officialUrl": "https://console.groq.com/docs/models",
+      "pricing": { "currency": "USD", "unit": "per_1M_characters" },
+      "modelKeys": ["canopylabs/orpheus-v1-english", "canopylabs/orpheus-arabic-saudi"],
+      "optional": true,
+      "condition": "仅当接受「一条只有 mediaRates、没有 token 单价」的记录（schema 允许：unit 必须为 null 当且仅当一个 token 价都没有 —— 注意此时 pricing.unit 必须是 null，字符单位走 mediaRates[].unit=per_1M_characters）。",
+      "risk": "两条 Orpheus 的 per 1M characters 与 pricing.unit=per_1M_characters 的关系需要在落盘时确认判据（records 级 unit 描述 token 维度）。**若判据不允许，这两条一律不收。**"
+    },
+    {
+      "provider": "together",
+      "planNameSuggestion": "Serverless 按量计费",
+      "channel": "standard",
+      "officialUrl": "https://docs.together.ai/docs/serverless/models.md",
+      "source": "Official-Docs",
+      "region": "global",
+      "pricing": { "currency": "USD", "unit": "per_1M_tokens" },
+      "modelKeys": ["inkling", "kimi-k3", "glm-5.3", "glm-5.3-flash", "gpt-oss-120b", "deepseek-v4-pro-0813", "deepseek-v4.1-flash", "minimax-m3", "llama-3.3-70b-instruct-turbo", "ternary-bonsai-27b"],
+      "notesMustCarry": ["batch 是 up to 50% 且只点名 2 个模型", "cached input 逐模型（没有该列的模型全部输入按标准价）", "图像/视频/音频另计且部分官方自称 estimate", "Organization 列是发行方不是计价方"]
+    },
+    {
+      "provider": "fireworks",
+      "planNameSuggestion": "Serverless 按量计费",
+      "channel": "standard",
+      "officialUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+      "source": "Official-Docs",
+      "region": "global",
+      "pricing": { "currency": "USD", "unit": "per_1M_tokens" },
+      "modelKeys": ["ember-1", "kimi-k3", "deepseek-v4.1-flash", "glm-5.3", "glm-5.3-flash", "qwen3.8-max", "minimax-m3", "gpt-oss-120b", "nemotron-3.5-lightning-30b-a3b", "nemotron-3-ultra"],
+      "notesMustCarry": ["batch 50% 且与缓存叠加", "Fast / US-only 未收（见 DEFER-INF-05）", "按参数量分档的兜底价与 embedding 价未收（见 DEFER-INF-06）", "Reserved Throughput 是非按量产品"]
+    },
+    {
+      "provider": "fireworks",
+      "planNameSuggestion": "Serverless 优先档（Priority）",
+      "channel": "priority",
+      "officialUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+      "source": "Official-Docs",
+      "region": "global",
+      "pricing": { "currency": "USD", "unit": "per_1M_tokens" },
+      "modelKeys": ["ember-1", "kimi-k3", "deepseek-v4.1-flash", "glm-5.3", "glm-5.3-flash", "qwen3.8-max", "minimax-m3", "gpt-oss-120b", "nemotron-3.5-lightning-30b-a3b", "nemotron-3-ultra"],
+      "notesMustCarry": ["Kimi K3 Fast 与 GLM 5.3 Fast 无 Priority（官方 —）", "US-only 那几行不在这条记录里"]
+    },
+    {
+      "provider": "cerebras",
+      "planNameSuggestion": "推理按量计费（Developer 档）",
+      "channel": "standard",
+      "officialUrl": "https://www.cerebras.ai/pricing",
+      "source": "Official-Pricing",
+      "region": "global",
+      "pricing": { "currency": "USD", "unit": "per_1M_tokens" },
+      "modelKeys": ["gpt-oss-120b", "qwen3.8-27b"],
+      "notesMustCarry": ["官方脚注：For development, evaluation, and experimentation; not intended for production use", "其余模型只在 Dedicated Inference（Enterprise quote）", "完整 Tier 价目表客户端渲染、取不到", "$5 one-time promotional credit 属优惠不属 freeTier"]
+    }
+  ],
+  "coverageSignalsForCoverageTargets": [
+    "新增 4 家 provider-only 推理平台（groq / together / fireworks / cerebras），四家在 deals 侧都没有身份 ⇒ 按 A1 纪律 vendorKey=null，且**不建 /vendor/ 页**（沿用 t3 已确立的 provider-only 门槛）。",
+    "四家合计**新增 6 条 API 计费记录**的候选（groq 2 可选、together 1、fireworks 2、cerebras 1）；若 t11 全落，records 13 → 19。",
+    "四家官方**都没有** Coding 订阅套餐（Groq / Together / Fireworks / Cerebras 都是按量 API + 企业合同），因此不产生 codingPlans 记录。",
+    "「hosted model owner ≠ pricing provider」这一条会产生一个**新的覆盖指标候选**：同一 modelKey 出现在 N 个 provider 记录里 —— 这是正确的，但需要页面能把「平台」与「模型发行方」两列分开显示，否则读者会把托管价当成发行方的官方价。"
+  ]
+}

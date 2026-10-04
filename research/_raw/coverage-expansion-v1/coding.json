@@ -1,0 +1,472 @@
+{
+  "_note": "coverage-expansion-v1 t9（research-inference）：6 个**国际侧 Coding 套餐候选**的准入调查（JetBrains AI / Replit / Gemini Code Assist / Amazon Q Developer / Tabnine / Claude Code）。本文件是**调查结论**，不是生产来源层；落盘（curated_plans / providers.json / official_urls.json）由 t11 负责。",
+  "_scope": [
+    "逐家回答「有没有可售的 Coding 套餐档位」与「官方页上有没有可核对的固定档价」——这两问都必须用官方原文兑现。",
+    "准入判据采用与本仓既有 curated_plans 完全相同的两条：① 官方页直出**固定档价**（不是「起」、不是「联系销售」、不是 JS 未挂载）；② 该档位是**面向个人开发者的编码产品订阅**，不是企业席位合同、不是 API 按量、不是积分包。",
+    "官方页不可用 / 被收购 / 无法取到固定档价的，一律**未采信**并逐条写明卡在哪一步。"
+  ],
+  "_rules": [
+    "价钱只能用取到的官方原文支撑；取不到的写 null 并写清 URL 与失败原因。",
+    "「从 $X 起」「Custom」「Contact us」一律不算固定档价，不得写进 regularPrice。",
+    "第三方对比站只用于发现候选，不得作为价格依据。",
+    "抓取时间为 Asia/Shanghai；HTTP 状态、最终 URL 与逐字引文一并留档。"
+  ],
+  "versionName": "coverage-expansion-v1",
+  "task": "t9 research-inference",
+  "worktree": ".worktrees/coverage-expansion-v1",
+  "baselineSha": "a4dd40fc66ea612f327036f5ba3d98cbff46c288",
+  "capturedAt": "2026-10-04T19:02:00+08:00",
+  "admissionCriteria": {
+    "baseline": {
+      "planCount": 23,
+      "providers": 12,
+      "providerKeys": ["anthropic", "baidu", "codebuddy", "cursor", "github", "minimax", "moonshot", "qoder", "qoder-intl", "trae", "windsurf", "zhipu"],
+      "source": "plans.json（count=23）+ scripts/data/providers.json",
+      "note": "这 12 家里**没有** jetbrains / replit / amazonq / codeassist(gemini) / tabnine；claude 侧已有 anthropic 的「Claude Pro」记录。"
+    },
+    "criteria": [
+      {
+        "id": "A1",
+        "name": "官方页直出固定档价",
+        "rule": "该档位的价格在官方页面上是一个确定的数字（可逐字引用），不是「From $X」「Contact Sales」「Custom」；不是由 JS 异步注入而未挂载的值；不是第三方页面转述的值。",
+        "why": "本仓既有 23 条记录全部满足这一条；zhipu Lite 那条是**唯一**的例外，它的处理方式是 regularPrice=null 并在 note 里写明「官方只给额度不给价格，价格未知留空，不是 0」——**那不是「准入」，是「如实留空后的容忍」**，新增记录不应主动制造这种形态。"
+      },
+      {
+        "id": "A2",
+        "name": "面向个人开发者的编码产品订阅",
+        "rule": "该档位是一份可自行购买的编码工具/助手订阅（个人可结账）。企业席位合同、按人数报价的 Enterprise 档、纯 API 按量计费、纯积分充值包都不算。",
+        "why": "v3.0 §6.2 已裁定 provider-only 平台不建 /vendor/ 页；套餐页的读者是个人开发者，「$X/坐席/年 需联系销售」对他们不是可购买信息。"
+      },
+      {
+        "id": "A3",
+        "name": "身份可显式登记且不与既有 provider 撞",
+        "rule": "officialDomains 落在官方域；若该产品属于既有 provider（google / anthropic / aws…）则**优先并入既有 provider**；只有「同一家公司两个独立 SKU 面」才新立 provider，且必须逐条登记理由（v3.0 A3 的 qoder-intl 先例）。",
+        "why": "providers.json 的 aliases 是精确匹配、全局唯一；未登记一律硬红。"
+      }
+    ],
+    "verdictVocabulary": {
+      "adopt": "满足 A1+A2+A3，建议 t11 落盘为 codingPlans 记录。",
+      "adopt-partial": "部分档位满足；建议只收满足的那几档，并写明未收哪几档与为什么。",
+      "already-covered": "官方页已核对，但事实已在生产数据/既有 provider 记录里，无新增可采信事实。",
+      "not-adopted": "官方页存在但拿不到可核对的固定档价（或产品已并入别家 / 官方页不可用）。",
+      "blocked-by-identity": "事实齐备、只缺身份层决定（必须给 captain 裁定，不得自行新立 provider）。"
+    }
+  },
+  "candidates": {
+    "jetbrains-ai": {
+      "label": "JetBrains AI",
+      "verdict": "adopt",
+      "oneLine": "官方购买页的服务端 JSON 里逐字给出 AI Pro 与 AI Ultimate 的个人/商业 × 年付/月付四组价格 —— 事实最硬的一家，建议新增 provider `jetbrains`。",
+      "identity": {
+        "status": "new-provider-required",
+        "recommendedProviderKey": "jetbrains",
+        "displayNameSuggestion": "JetBrains",
+        "aliasesSuggestion": ["jetbrains", "jetbrains ai", "jetbrains ai pro", "jetbrains ai ultimate", "intellij idea"],
+        "officialDomainsSuggestion": ["jetbrains.com", "www.jetbrains.com"],
+        "vendorKeySuggestion": null,
+        "vendorKeyReason": "deals 侧（index.html 的 RENDER-CORE VENDOR_RULES）没有这家公司 —— 与 t3 已确立的 provider-only 纪律一致：vendorKey 必须显式 null，不得为它新编 A 空间键。",
+        "vendorPageNote": "按 v3.0 §6.2，provider-only 平台**不建** /vendor/ 页；JetBrains 的资料去处是 /plans/coding/ 与 /plans/ 枢纽页。",
+        "collisionCheck": "providers.json 现有 23 条 key 里没有 jetbrains；vendor-slugs.json 也无。alias 建议都含裸串 jetbrains，不占既有别家的别名。"
+      },
+      "sources": [
+        {
+          "url": "https://www.jetbrains.com/ai-ides/buy/",
+          "httpStatus": 200,
+          "contentLength": 49492,
+          "role": "**事实来源**：页面 title 逐字「JetBrains AI Plans & Pricing」，且服务端 HTML 内嵌完整的商品目录 JSON（含 code / prices / yearlyPerMonth / monthly / commercial / personal 分层）。",
+          "verbatim": "\"code\": \"AIP\" … \"prices\": {\"personal\": {\"yearly\": [\"US $100.00\"], \"yearlyPerMonth\": [\"US $8.33\"], \"monthly\": [\"US $10.00\"]}, \"commercial\": {\"yearly\": [\"US $200.00\"], \"yearlyPerMonth\": [\"US $16.67\"], \"monthly\": [\"US $20.00\"]}} … \"name\": \"JetBrains AI Pro\", \"group\": \"AI\"",
+          "capturedAt": "2026-10-04T18:37:00+08:00",
+          "note": "JSON 里的 `US\\u00a0$100.00` 是「US + 不换行空格 + $100.00」；引文按可读形态写，落盘时不要带 \\u00a0。"
+        },
+        {
+          "url": "https://www.jetbrains.com/ai-ides/buy/",
+          "httpStatus": 200,
+          "role": "AI Ultimate 与「捆绑 IDE」档。",
+          "verbatim": "\"code\": \"AIPU\" … \"prices\": {\"personal\": {\"yearly\": [\"US $300.00\"], \"yearlyPerMonth\": [\"US $25.00\"], \"monthly\": [\"US $30.00\"]}, \"commercial\": {\"yearly\": [\"US $600.00\"], \"yearlyPerMonth\": [\"US $50.00\"], \"monthly\": [\"US $60.00\"]}} … \"name\": \"JetBrains AI Ultimate\", \"group\": \"AI\"；以及 \"code\": \"IDESPR-AIU\" … \"prices\": {\"commercial\": {\"yearly\": [\"US $720.00\"], \"yearlyPerMonth\": [\"US $60.00\"]}}（仅商业档、无个人档）",
+          "capturedAt": "2026-10-04T18:37:00+08:00"
+        },
+        {
+          "url": "https://www.jetbrains.com/ai/",
+          "httpStatus": 200,
+          "contentLength": 180423,
+          "role": "产品定位页（**没有价格**，只有叙述）。",
+          "verbatim": "The JetBrains AI ecosystem combines trusted developer tooling and deep code intelligence with top-tier models and agents from leading AI providers.",
+          "capturedAt": "2026-10-04T18:36:00+08:00",
+          "note": "**不要**用这一页当 officialUrl（正文里一个价格数字都没有）。"
+        },
+        {
+          "url": "https://www.jetbrains.com/products/compare/?product=ai-pro&product=ai",
+          "httpStatus": 200,
+          "contentLength": 40207,
+          "role": "产品对比页（本轮未用于取价）。",
+          "capturedAt": "2026-10-04T18:36:00+08:00"
+        }
+      ],
+      "publishedPlans": [
+        {
+          "planNameSuggestion": "JetBrains AI Pro",
+          "priceLines": [
+            { "audience": "personal", "period": "monthly", "currency": "USD", "regularPrice": 10.0, "evidenceKey": "AIP.prices.personal.monthly" },
+            { "audience": "personal", "period": "yearly", "currency": "USD", "regularPrice": 100.0, "perMonthIfAnnual": 8.33, "evidenceKey": "AIP.prices.personal.yearly" },
+            { "audience": "commercial", "period": "monthly", "currency": "USD", "regularPrice": 20.0, "evidenceKey": "AIP.prices.commercial.monthly" },
+            { "audience": "commercial", "period": "yearly", "currency": "USD", "regularPrice": 200.0, "perMonthIfAnnual": 16.67, "evidenceKey": "AIP.prices.commercial.yearly" }
+          ],
+          "recommendation": "**收月付、商业与个人各一条？——建议只收一条并写清口径。** 理由：schema 的身份是 `sha1(coding|provider|planNameKey|billing.period)`，**没有 audience 维度**。官方这里「个人 vs 商业」是两条价、两个商品码（P:N:AIP / C:N:AIP）。既有 23 条里也有同类情况（github Copilot Pro 的 note 写了「免费给部分用户」；windsurf Pro 的 note 写了 Teams 档）——**既有先例是：把个人档写进记录、把另一档写进 note**。",
+          "suggestedRecord": { "planName": "JetBrains AI Pro", "billing.period": "monthly", "billing.currency": "USD", "billing.regularPrice": 10, "billing.note": "官方同一商品页逐字给出两组价：个人 US $10.00/月（年付 US $100.00，合 US $8.33/月）、商业 US $20.00/月（年付 US $200.00，合 US $16.67/月）。本条收**个人档月付**；商业档价见 note，不另开记录（schema 无 audience 维度，另开会产生两条同名记录）。" }
+        },
+        {
+          "planNameSuggestion": "JetBrains AI Ultimate",
+          "priceLines": [
+            { "audience": "personal", "period": "monthly", "currency": "USD", "regularPrice": 30.0 },
+            { "audience": "personal", "period": "yearly", "currency": "USD", "regularPrice": 300.0, "perMonthIfAnnual": 25.0 },
+            { "audience": "commercial", "period": "monthly", "currency": "USD", "regularPrice": 60.0 },
+            { "audience": "commercial", "period": "yearly", "currency": "USD", "regularPrice": 600.0, "perMonthIfAnnual": 50.0 }
+          ],
+          "suggestedRecord": { "planName": "JetBrains AI Ultimate", "billing.period": "monthly", "billing.currency": "USD", "billing.regularPrice": 30, "billing.note": "个人 US $30.00/月（年付 US $300.00，合 US $25.00/月）；商业 US $60.00/月（年付 US $600.00，合 US $50.00/月）。本条收个人档月付。" }
+        },
+        {
+          "planNameSuggestion": "JetBrains AI Ultimate + IDEs（商业档捆绑）",
+          "priceLines": [
+            { "audience": "commercial", "period": "yearly", "currency": "USD", "regularPrice": 720.0, "perMonthIfAnnual": 60.0, "note": "商品码 IDESPR-AIU，**只有商业档、只有年付**" }
+          ],
+          "recommendation": "**不收**。理由：① 只有商业档（违反 A2 的「个人可购买」精神）；② 只有年付，而 schema 的 period 枚举要能表达「年付」——既有记录里年付一律写成 note（如 anthropic Claude Pro 的「$17 Per month with annual subscription discount ($200 billed up front)」写在 note 里，记录本身收月付）。这一档两条都不占，收进来只会制造一条读者买不到的记录。"
+        }
+      ],
+      "quotaAndLimits": {
+        "found": false,
+        "detail": "本轮取到的服务端 HTML 里的商品目录 JSON **只有价格**，没有额度/积分数字；AI 额度（官方称 AI credits / AI Assistant 配额）在帮助文档与产品页里，本次未取到可引的数值。",
+        "ruling": "quota 必须如实写：`{type:'other'|'rate_limited', amount:null, description:'官方…'}` —— **不得**因为别家有 credits 就猜一个数。落盘时请 t11 再核一次 https://www.jetbrains.com/help/idea/ai-assistant-in-jetbrains-ides.html（本轮 200，13,011 字节，但正文里没有价格/额度数值）。",
+        "checkedUrl": "https://www.jetbrains.com/help/idea/ai-assistant.html",
+        "checkedFinalUrl": "https://www.jetbrains.com/help/idea/ai-assistant-in-jetbrains-ides.html",
+        "checkedHttpStatus": 200
+      },
+      "caveats": [
+        "价格以 US 区展示（JSON 里的 `US $`）；其他区域由同一页的币种切换决定，本轮只取到 US 面。",
+        "`taxed_prices` 是同页给出的含税值（如 personal yearly US $105.00），**不要**把它当 regularPrice（那是含 5% 税的展示值）。",
+        "`percent` 数组里 personal yearly 有 [0, 20, 40] 三档（All Products Pack 的多年折扣）——AI Pro / AI Ultimate 的 percent 都是 [0]，即无折扣。"
+      ]
+    },
+    "replit": {
+      "label": "Replit",
+      "verdict": "adopt-partial",
+      "oneLine": "官方定价页直出 Core $20/月 与 Pro $100/月（年付 $18 / $90）；Enterprise 是 Custom（不收）。建议新增 provider `replit` 并落 2 条记录。",
+      "identity": {
+        "status": "new-provider-required（**已在 A 空间有身份**）",
+        "recommendedProviderKey": "replit",
+        "displayNameSuggestion": "Replit",
+        "aliasesSuggestion": ["replit"],
+        "officialDomainsSuggestion": ["replit.com"],
+        "vendorKeySuggestion": "replit",
+        "vendorKeyReason": "**与前三家不同**：`scripts/data/official_urls.json` 的 `_officialDomains` 里已有 `\"replit\": [\"replit.com\"]`（deals 侧有身份），`scripts/data/aliases.json` 里 `\"replit\": \"replit\"`，`assets/logos/manifest.json` 里也有 replit logo，且 deals.json 第 2403 行有一条 url = https://replit.com/pricing 的 deal。⇒ A 空间键已存在，`vendorKey` 必须写 `replit` 而**不是** null，且必须能在 VENDOR_RULES 里取回同名显示名（validateVendorKeyAgreement 会断言）。**t11 落盘前请先用 providers.js 的 resolveProvider/vendorKeyOf 与 A 空间键表核对一次**（本文件只做调查，不写生产表）。",
+        "crossCheck": "baseline.json 的 measuredFacts.dealsVendorsWithoutPlansList 里**含 replit** —— 即「有 deals、没有 plans」的 23 家之一。落盘后这条缺口应减少 1。"
+      },
+      "sources": [
+        {
+          "url": "https://replit.com/pricing",
+          "httpStatus": 200,
+          "contentLength": 269034,
+          "role": "**事实来源**：官方定价页，预渲染的档位卡直出价格（无需 JS 即可读到）。",
+          "verbatim": "Choose the best plan for you. Monthly | Yearly （Up to 10% off） — **Core** $20 / $18 / month, billed annually — ✔ AI integrations ✔ Up to 30 hours of chat on Free Mode ✔ Up to 60 projects on Free Mode ✔ $20 towards most powerful models ✔ Plan mode ✔ Unlimited workspaces ；**Pro** $100 / $90 / month, billed annually — ✔ 10 parallel agents ✔ Premium Support ✔ Everything in Core plus: ✔ Even more Free Mode usage to chat and create ✔ $100 towards most powerful models ✔ Up to 15 collaborators ✔ Invite up to 50 viewers ✔ Database rollback up to 28 days ；**Enterprise** Custom — Enterprise-grade security and control ✔ Custom seat limits ✔ SSO/SAML ✔ Advanced privacy controls ✔ Single-tenant environments ✔ Static outbound IPs",
+          "capturedAt": "2026-10-04T18:36:00+08:00"
+        },
+        {
+          "url": "https://replit.com/pricing（FAQ 区）",
+          "httpStatus": 200,
+          "role": "**回答正文未在服务端 HTML 里**（折叠项只有问题文本）。",
+          "verbatim": "Frequently asked questions — What are all the features included in these plans? / How do credits work? / What happens when I run out of credits? / What comes with my subscription? / What plan is best for me? / What is Effort-Based Pricing (pay-as-you-go)? / How can I control what I spend on Replit? / How can I see how much I'm spending? / Do you offer invoicing instead of credit card payments? / Do you offer annual plans at a discount?",
+          "capturedAt": "2026-10-04T18:36:00+08:00",
+          "note": "官方 FAQ 明确提到 credits 与 **Effort-Based Pricing (pay-as-you-go)** 两种计费形态，但**答案文本本轮取不到**（页面里 `credits` 只出现 3 次，全在问题与脚本里）。⇒ quota 只能按卡片上直出的文字写（见下），不得凭 FAQ 标题推测。"
+        },
+        {
+          "url": "https://docs.replit.com/legal-and-security-info/billing",
+          "httpStatus": 404,
+          "role": "该文档路径不存在（返回 119,305 字节的 docs 应用壳）。",
+          "capturedAt": "2026-10-04T19:00:00+08:00"
+        }
+      ],
+      "publishedPlans": [
+        {
+          "planNameSuggestion": "Core",
+          "billing": { "period": "monthly", "currency": "USD", "regularPrice": 20, "note": "官方同卡另给年付 “$18 / month, billed annually”（页面顶部标注 Yearly “Up to 10% off”）。本条收月付 $20；年付 $18/月 写进 note。" },
+          "quotaSuggestion": {
+            "type": "other",
+            "amount": null,
+            "period": "monthly",
+            "description": "官方卡片逐字：$20 towards most powerful models（每月 $20 抵用于最强模型）+ Up to 30 hours of chat on Free Mode + Up to 60 projects on Free Mode。额度以**金额**表示，官方未公布 token / 积分数值 ⇒ 按 other 记并写明口径（与 baidu Comate「额度以金额表示」同一处置）。",
+            "conversionDependsOnModel": true
+          },
+          "restrictionsSuggestion": [
+            { "kind": "fair_use", "value": true, "note": "官方 FAQ 有 “What is Effort-Based Pricing (pay-as-you-go)?” 与 “What happens when I run out of credits?” 两条问题，但正文本轮取不到 ⇒ 不据此写任何额度规则。" }
+          ]
+        },
+        {
+          "planNameSuggestion": "Pro",
+          "billing": { "period": "monthly", "currency": "USD", "regularPrice": 100, "note": "年付 “$90 / month, billed annually” 写进 note。" },
+          "quotaSuggestion": {
+            "type": "other",
+            "amount": null,
+            "period": "monthly",
+            "description": "官方卡片逐字：$100 towards most powerful models + Even more Free Mode usage + 10 parallel agents + Up to 15 collaborators + Invite up to 50 viewers + Database rollback up to 28 days。",
+            "conversionDependsOnModel": true
+          }
+        }
+      ],
+      "notAdopted": [
+        { "planName": "Enterprise", "reason": "官方价逐字 **Custom**（A1 不满足）；且是 SSO/SAML、单租户、静态出网 IP 的企业席位合同（A2 不满足）。" }
+      ],
+      "caveats": [
+        "页面上**没有 Free 档**（既没有 $0 档位卡，也没有 “Free” 作为档位名）：Free 只作为「Free Mode 的使用小时数/项目数」出现在 Core 的功能行里。⇒ **不得**凭「免费模式」新开一条 regularPrice=0 的记录。",
+        "「Effort-Based Pricing」这个官方口径只以 FAQ 问题形式出现，本轮没有取到它的定义。若 t11 想要，需要另派一次针对 docs.replit.com 的调查（本轮那条 URL 是 404，正确路径未知）。"
+      ]
+    },
+    "gemini-code-assist": {
+      "label": "Gemini Code Assist",
+      "verdict": "adopt-partial",
+      "oneLine": "官方页直出 Standard / Enterprise 两档、年付与无年付两组价（个人档 Standard $19 或 $22.80）；建议**并入既有 provider `google`**，不新立 provider。",
+      "identity": {
+        "status": "existing-provider",
+        "providerKey": "google",
+        "displayName": "Google",
+        "officialDomainsAlreadyRegistered": ["google.com", "ai.google.dev", "gemini.google", "blog.google"],
+        "actionNeeded": "**必须把 codeassist.google 登记进 google 的 officialDomains**，否则 officialDomainProblems() 会把本条记录的 officialUrl 判红（该 URL 不在已登记域里）。这是一条 **providers.json 的修改**，属 t11 的 in-scope 范围（本文件只给判据）。",
+        "vendorKeySuggestion": "google",
+        "vendorKeyReason": "既有 provider google 的 vendorKey 已是 google（A 空间有这家公司）。",
+        "doNotCreate": "**不要**新立 provider `codeassist` / `gemini` / `gca` —— 官方页自带 “Google Cloud” 标识与 Google 署名，且 providers.json 里 google 的 aliases 已含 `gemini`。新立会把同一家公司在身份层分裂成两个 key（正是 A1 条纪律要防的事）。"
+      },
+      "sources": [
+        {
+          "url": "https://codeassist.google/",
+          "httpStatus": 200,
+          "contentLength": 1600749,
+          "role": "**事实来源**：官方定价页（v3.0 C1 曾记为「官方页 HTTP 500、不可用」——**本轮翻案：页面对本环境返回 200 且价格可读**）。",
+          "verbatim": "**Price per user per month with an annual upfront commitment** — $0/user/month | $19/user/month | $45/user/month ；**Price per user with no annual upfront commitment** — $0/user/month | $22.80/user/month | $54/user/month ；Standard 与 Enterprise 的受众逐字：Individual student, hobbyist, open source, and freelance developers … Premium membership: The premium membership is a subscription priced at **$299 per year**. It includes Gemini Code Assist Standard, over $1,000 in Google Cloud credits, hands-on labs, a certification voucher, access to expert consultations, and more. … Enterprise membership: The enterprise membership is a subscription for organizations priced at **$75 per developer per month**. It includes Gemini Code Assist Enterprise, hands-on labs, and a risk-managed sandbox environment for development.",
+          "capturedAt": "2026-10-04T18:36:00+08:00",
+          "note": "页面另有 Gemini CLI 段落：「Gemini Code Assist gives you access to Gemini CLI, an open source AI agent … While Gemini CLI provides a generous free tier with high usage limits for individual developers, you can supercharge your experience by using a Gemini Code Assist license.」"
+        },
+        {
+          "url": "https://developers.google.com/gemini-code-assist/docs/overview",
+          "httpStatus": 200,
+          "contentLength": 57815,
+          "role": "官方文档概述（本轮用于身份/域名核对，未取到价格表）。",
+          "capturedAt": "2026-10-04T18:36:00+08:00"
+        },
+        {
+          "url": "https://codeassist.google/（v3.0 的旧结论）",
+          "httpStatus": 500,
+          "role": "**历史对照**：v3.0 source-candidates 第 22 条记的是「官方页当前返回 HTTP 500 错误页（渲染后正文 37 字符），官方页不可用」。本轮实测 200。⇒ 这是本轮的**第四个翻案**（与 v3.0 §三 的阿里云/硅基流动/腾讯混元同类），建议写进最终报告的「翻案」小节。",
+          "capturedAt": "2026-10-01（旧）vs 2026-10-04T18:36（本轮 200）"
+        }
+      ],
+      "publishedPlans": [
+        {
+          "planNameSuggestion": "Gemini Code Assist Standard",
+          "billing": { "period": "monthly", "currency": "USD", "regularPrice": 22.8, "note": "官方**两组价并列**：年付预付 US $19/user/month、无年付承诺 US $22.80/user/month。本条收**无年付承诺的月付 $22.80**；年付 $19 写进 note。理由见下 §priceSelection。" },
+          "audienceVerbatim": "Individual student, hobbyist, open source, and freelance developers",
+          "quotaSuggestion": { "type": "rate_limited", "amount": null, "period": null, "description": "官方页在本档的权益列里**没有给出可核对的固定额度数值**（只有功能清单与 Gemini CLI 的「generous free tier with high usage limits」这类措辞）⇒ 按 rate_limited 记并把官方口径写进 description；**不得**写一个数字。", "conversionDependsOnModel": null }
+        },
+        {
+          "planNameSuggestion": "Gemini Code Assist Enterprise",
+          "billing": { "period": "monthly", "currency": "USD", "regularPrice": 54, "note": "年付预付 US $45/user/month、无年付承诺 US $54/user/month。**注意两个「企业价」**：官方卡上这一档是 $45/$54，而同页另一处逐字写 “Enterprise membership: … priced at **$75 per developer per month**” —— 两者**不是同一件事**（前者是 Gemini Code Assist Enterprise 的 per-user 订阅价，后者是「企业会员包」含实训/沙箱等的价）。落盘时**必须**在 note 里引清是哪一处，否则 $54 与 $75 会互相矛盾。" },
+          "audienceVerbatim": "（Enterprise 档卡片未给 audience 行；同页另有 “Enterprise membership … for organizations”）",
+          "adoptionCaveat": "A2 判据：Enterprise 档是否算「面向个人开发者的编码订阅」？—— 官方把它列在与 Standard 并列的 per-user-per-month 价目里（不是 Custom、不是 Contact Sales），**因此价格本身满足 A1**。但受众是组织。建议 t11 **两条都收**并在 note 写明受众，或只收 Standard 并在 note 写 Enterprise 价（二选一，需与既有先例一致：既有 23 条里 windsurf / codebuddy 都收了 Teams 档，故「收」有先例）。",
+          "quotaSuggestion": { "type": "rate_limited", "amount": null, "period": null, "description": "同上，官方未给固定额度数值。", "conversionDependsOnModel": null }
+        }
+      ],
+      "notAdopted": [
+        { "planName": "Premium membership（$299/年）", "reason": "它是**捆绑包**（含 Gemini Code Assist Standard + $1,000 Google Cloud credits + 实训 + 认证券），价格单位为「年」且属会员包而非纯编码订阅；且同一 Standard 能力已由 $19/$22.80 那两条记录覆盖。收它会与 Standard 记录形成部分重复的权益。若要收，需先定一条「捆绑包算不算 codingPlan」的判据（本轮不自行决定）。" },
+        { "planName": "Enterprise membership（$75/developer/month）", "reason": "见上 §publishedPlans 的 adoptionCaveat —— 与 $45/$54 那档是两件事，收两条会重复；建议只在 note 里引原文。" },
+        { "planName": "Gemini CLI 的 free tier", "reason": "官方措辞是「generous free tier with high usage limits」，**没有固定额度数值**且没有档价 ⇒ 不构成一条 codingPlan 记录（也没有 regularPrice=0 的档位卡）。" }
+      ],
+      "priceSelection": {
+        "rule": "同一档位官方给了「年付预付」与「无年付承诺」两组价时，收**无年付承诺的那组**作为 regularPrice，年付价写进 note。",
+        "precedent": "既有记录同口径：anthropic Claude Pro 收 $20（月付），把「$17 Per month with annual subscription discount ($200 billed up front)」写进 note；github Copilot / windsurf 亦同。",
+        "warning": "**不要**把 $19 当 regularPrice —— 它是年付预付折算价，把它当月付价会让「$22.80 与 $19 差 20%」这个事实消失。"
+      }
+    },
+    "amazon-q-developer": {
+      "label": "Amazon Q Developer",
+      "verdict": "adopt-partial",
+      "verdictNote": "**并附带一条时效风险**：官方已在产品页公告 2027-04-30 起停止支持 Amazon Q Developer IDE 插件（逐字引文见 sources）。",
+      "oneLine": "官方定价页直出 Free（$0）与 Pro（$19/月/用户）两档；但官方同页公告「2027-04-30 AWS 将停止支持 Amazon Q Developer IDE 插件，请改用 Kiro」。建议**并入既有 provider `aws`**，收 2 条并把停支公告写进 note。",
+      "identity": {
+        "status": "existing-provider（deals 侧已有身份）",
+        "providerKey": "aws",
+        "displayName": "AWS",
+        "officialDomainsAlreadyRegistered": ["amazon.com"],
+        "actionNeeded": "**必须把 aws.amazon.com 登记进 aws 的 officialDomains**（当前是 `\"aws\": [\"amazon.com\"]`，而 officialUrl 会用 `https://aws.amazon.com/q/developer/pricing/`）。两个选择，需 t11 明确取一：① 把 `aws.amazon.com` 加进该 provider 的 officialDomains；② 用落在 `amazon.com` 上的等价 URL（**需先实测 200 才可用**）。本文件建议 ①（`aws.amazon.com` 是官方域，且官方帮助文档也在 docs.aws.amazon.com）。",
+        "vendorKeySuggestion": "aws",
+        "vendorKeyReason": "deals 侧已有 vendor（baseline 的 dealsVendorsWithoutPlansList 里含 aws）。",
+        "doNotCreate": "**不要**新立 provider `amazonq` / `q-developer` —— 官方价目与条款都在 aws.amazon.com 域、署名 AWS。"
+      },
+      "sources": [
+        {
+          "url": "https://aws.amazon.com/q/developer/pricing/",
+          "httpStatus": 200,
+          "contentLength": 408692,
+          "role": "**事实来源**：官方定价页。",
+          "verbatim": "**Pro Tier: Expanded limits $19/mo. per user** … **Free** — 50 agentic requests per month ；1,000 lines of code per month … **Pro** — Everything included in the Free tier, with 4,000 lines of code per month per user pooled at account level. Extra lines of code available at $.003 per line of code submitted. … Amazon Q Developer offers a **perpetual Free Tier** with monthly limits available to users logged in as an AWS Identity and Access Management (IAM) user or AWS Builder ID user. Free Tier limits in the IDE are available only to Builder ID users. … The monthly subscription fee for Amazon Q Developer Pro is charged **per user, per month**. … The subscription fee is pro-rated for the first month …",
+          "capturedAt": "2026-10-04T18:36:00+08:00"
+        },
+        {
+          "url": "https://aws.amazon.com/q/developer/",
+          "httpStatus": 200,
+          "contentLength": 487686,
+          "role": "产品页（含**停支公告**）",
+          "verbatim": "**On April 30, 2027, AWS will discontinue support for Amazon Q Developer IDE plugins. For capabilities similar to Amazon Q Developer IDE plugins, explore Kiro to access the latest models and features, including agentic coding, chat and MCP support.** … The Amazon Q Developer perpetual Free Tier gives you 50 agentic chat interactions per month. You can also transform up to 1,000 lines of code per month.",
+          "capturedAt": "2026-10-04T18:38:00+08:00"
+        },
+        {
+          "url": "https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/q-dev-what-is.html",
+          "httpStatus": 200,
+          "contentLength": 2237,
+          "role": "官方用户指南首页（很短，2,237 字节；本轮未从中取到价格，用于确认 aws 官方文档域存在）。",
+          "capturedAt": "2026-10-04T18:38:00+08:00"
+        }
+      ],
+      "publishedPlans": [
+        {
+          "planNameSuggestion": "Amazon Q Developer Free Tier",
+          "billing": { "period": "monthly", "currency": "USD", "regularPrice": 0, "note": "官方逐字 “perpetual Free Tier”（长期免费），$0 是「官方明说免费」而不是「价格未知」（与既有 trae 免费版的处置同口径）。" },
+          "quotaSuggestion": { "type": "requests", "amount": 50, "period": "monthly", "description": "官方逐字：50 agentic requests per month（另有 1,000 lines of code per month 用于 Java 升级，单位是「行」不是请求/额度 ⇒ 写进 description 或 restrictions，不要塞进 amount）。", "conversionDependsOnModel": null },
+          "restrictionsSuggestion": [
+            { "kind": "other", "value": "需登录为 IAM 用户或 AWS Builder ID 用户", "note": "官方逐字：available to users logged in as an AWS Identity and Access Management (IAM) user or AWS Builder ID user. Free Tier limits in the IDE are available only to Builder ID users. Free Tier limits apply at the account level when logged in as an IAM user, or at the user level for AWS Builder ID users." }
+          ]
+        },
+        {
+          "planNameSuggestion": "Amazon Q Developer Pro",
+          "billing": { "period": "monthly", "currency": "USD", "regularPrice": 19, "note": "官方逐字 “$19/mo. per user” 与 “charged per user, per month”；首月按天折算（pro-rated）。" },
+          "quotaSuggestion": { "type": "other", "amount": null, "period": "monthly", "description": "官方逐字：Everything included in the Free tier, with 4,000 lines of code per month per user pooled at account level. Extra lines of code available at $.003 per line of code submitted. —— 额度单位是**提交的行数**（LOC），不是 token / 积分 / 请求数 ⇒ 必须按 other 记并写明「LOC 口径」（与 baidu Comate「额度以金额表示」同一条处置纪律）。", "conversionDependsOnModel": null },
+          "restrictionsSuggestion": [
+            { "kind": "other", "value": "4,000 LOC/月/用户，按 AWS payer account 汇总", "note": "官方逐字：These allocations are aggregated at the AWS payer-account level every month. … Usage that exceeds this allocation is charged $0.003 per LOC submitted.（超额是**按量后付费**，单位是每行 —— 不是套餐额度）" },
+            { "kind": "other", "value": "订阅需激活动作才计费", "note": "官方逐字：Signing in to Amazon Q chat in the console or other AWS pages, signing in to Amazon Q chat in an IDE, or downloading the toolkit will not incur the subscription fee. The activation occurs when you perform activities with Amazon Q Developer…（即「装了不一定计费」）" }
+          ]
+        }
+      ],
+      "notAdopted": [
+        { "planName": "Amazon Q Developer transformation 的 $0.003/LOC 超额计价", "reason": "它是**按量后付费**的超额单价，不是订阅档位；而 api-plans 那一层是「按量计费」的正确去处。但它也不是模型的 token 价（单位是「行」），**两层都装不下** ⇒ 本轮如实记录在 note/restrictions，不进任何 store。" },
+        { "planName": "Kiro（官方建议的替代品）", "reason": "**超出本任务范围**（本次点名的 6 家里没有 Kiro）。但这条「官方建议改用 Kiro」是一个**覆盖缺口信号**：亚马逊侧的下一代 agentic 编码产品是 Kiro，建议 commander 另派一次调查（本文件只登记线索，不展开）。" }
+      ],
+      "caveats": [
+        "**时效风险（必须写进 note 与最终报告）**：官方逐字「On April 30, 2027, AWS will discontinue support for Amazon Q Developer IDE plugins」。既有的 23 条记录里没有「已宣布停支」的先例，因此本轮**不**据此刻意改述措辞——建议 t11 把公告原文放 note，让页面保留事实而不是我们下结论。",
+        "Free Tier 的「50 agentic requests」在页面上同时出现两种措辞（“50 agentic requests per month” 与 “50 agentic chat interactions per month”）—— 落盘时请**两处都引**或引更完整的那一处，避免只引一句被读成另一种计费单位。"
+      ]
+    },
+    "tabnine": {
+      "label": "Tabnine",
+      "verdict": "not-adopted",
+      "oneLine": "tabnine.com/pricing **已不再存在**：整站 302/重定向到 Tricentis 的「联系我们」表单页（Tabnine 已被 Tricentis 收购）。官方侧找不到可核对的独立档价 ⇒ 本轮未采信。",
+      "identity": {
+        "status": "new-provider-required-but-blocked",
+        "recommendedProviderKey": "tabnine",
+        "displayNameSuggestion": "Tabnine",
+        "officialDomainsSuggestion": ["tabnine.com"],
+        "vendorKeySuggestion": null,
+        "vendorKeyReason": "A 空间没有这家公司；且因为**没有可采信事实**，本轮不建议为它做任何身份登记（providers.json 的纪律是「登记的身份必须被至少一条真实记录用上」）。",
+        "ruling": "**不登记 provider、不建记录。** 若将来 Tricentis 重新公布固定档价，再按 A1/A2/A3 走一遍。"
+      },
+      "sources": [
+        {
+          "url": "https://www.tabnine.com/pricing/",
+          "httpStatus": 200,
+          "finalUrl": "https://www.tricentis.com/contact-us?utm_source=www.tabnine.com&utm_medium=referral&utm_campaign=redirect",
+          "role": "**跳过 302 到竞品公司**：请求 tabnine.com/pricing 最终落到 tricentis.com/contact-us 的联系表单页（带 utm_source=www.tabnine.com 的重定向标记）。",
+          "verbatim": "（最终页面是 Tricentis 的营销/联系页；正文里 “Go deeper on agentic quality engineering” 之类，**没有任何 Tabnine 档价**）",
+          "capturedAt": "2026-10-04T18:36:00+08:00"
+        },
+        {
+          "url": "https://www.tabnine.com/robots.txt",
+          "httpStatus": 200,
+          "role": "核实该域仍以 tabnine.com 应答（robots 取到，说明域本身还在服务）。",
+          "capturedAt": "2026-10-04T18:39:00+08:00"
+        }
+      ],
+      "publishedPlans": [],
+      "notAdopted": [
+        { "planName": "（全部）", "reason": "官方定价页不存在（302 → Tricentis 联系页）。**不得**用第三方对比站上的 Tabnine 价格顶替（那会把第三方转述当官方事实，正是本仓硬红的那一类）。" }
+      ],
+      "caveats": [
+        "「Tabnine 已被 Tricentis 收购」这一点是**从官方重定向 URL 的 utm 参数与最终域推断的**（utm_campaign=redirect、utm_source=www.tabnine.com）—— 本文件只写「官方把定价页重定向到 Tricentis 联系页」这个**可核对事实**，不写「已被收购」（没有取到官方公告原文）。若 t11 想在页面上写收购，必须另找官方公告（本任务范围内没找到）。",
+        "需要二次确认的建议：让 t11 或后续调查再试一次 https://www.tabnine.com/ 首页（本轮只试了 /pricing/），看首页是否仍作为产品页存在 —— 若首页存在但**没有定价入口**，结论不变（A1 不满足）。"
+      ]
+    },
+    "claude-code": {
+      "label": "Claude Code",
+      "verdict": "already-covered",
+      "oneLine": "Claude Code **不是一个独立套餐**：它是 Claude Pro / Max 订阅里的一项权益，而 Claude Pro 已在生产数据里（plans.json 的 anthropic「Claude Pro」$20，note 引了官方逐字「Claude Code: Pro Yes」）。本轮取到 Max 仍是「From $100」（无固定档价）⇒ **无新增可采信事实，不新增记录**。",
+      "identity": {
+        "status": "existing-provider",
+        "providerKey": "anthropic",
+        "displayName": "Anthropic",
+        "officialDomainsAlreadyRegistered": ["anthropic.com", "claude.com"],
+        "actionNeeded": "**无**（claude.com 已在官方域登记里，且既有 Claude Pro 记录的 officialUrl 写的是 anthropic.com/pricing）。",
+        "ruling": "**不要**为 Claude Code 新立 provider 或新开编码套餐记录 —— 那会与既有 anthropic「Claude Pro」记录形成同一商品的两条身份。"
+      },
+      "sources": [
+        {
+          "url": "https://claude.com/pricing",
+          "httpStatus": 200,
+          "contentLength": 1188572,
+          "role": "**事实来源**（官方定价页；注意 anthropic.com/pricing 会跨源跳到 claude.com，与 t10 currentness.json 的 sourceLedger 记录一致）。",
+          "verbatim": "Free | $0 | Free for everyone ；Pro | $17 | Per month with annual subscription discount ($200 billed up front). $20 if billed monthly. ；Max | From $100 | Per month ；Monthly and annual ；Team：$20 / $25 if billed monthly ；$100 / $125 if billed monthly ；US$20/seat/month, billed annually. Usage cost scales with model and task.",
+          "capturedAt": "2026-10-04T18:36:00+08:00"
+        },
+        {
+          "url": "plans.json（既有生产记录）",
+          "httpStatus": "n/a",
+          "role": "**已有事实**：anthropic「Claude Pro」id=536e6b211045、billing.period=monthly、USD 20、quota.type=rate_limited（官方只写 “More usage*” 加页尾 “Usage limits apply.”）、supportedModels 逐字「Claude 系列模型（含 Claude Code）」、note 引官方对比表「Claude Code: Pro Yes」。",
+          "verbatim": "「Claude Code: Pro Yes」（既有记录的 supportedModels.note 引文）",
+          "capturedAt": "2026-10-01（生产数据）"
+        }
+      ],
+      "publishedPlans": [],
+      "notAdopted": [
+        { "planName": "Claude Max", "reason": "**与 v3.0 C1 同一结论**：官方只写 “From $100 Per month” 并区分 5x / 20x 用量档，没有给出各档固定单价 ⇒ A1 不满足（“From $X” 不是固定档价）。**不新增记录。**", "crossRef": "research/v3.0-source-candidates.md 第 20 条备注已记同一判据。" },
+        { "planName": "Claude Team", "reason": "官方 $20/seat/月（年付）/$25（月付）—— 是**团队席位**产品；且既有 anthropic 记录已覆盖 Pro。若 t11 想收 Team，需先与既有 windsurf/codebuddy 收 Teams 档的先例对齐（本轮不自行决定，只登记事实）。" }
+      ],
+      "caveats": [
+        "**这一家的「已覆盖」结论是内容性的而不是惰性的**：Claude Code 的价值事实（「Pro 档就含 Claude Code」）**已经**在既有记录的 supportedModels 里，并带官方引文。本轮重新核对官方页确认 ① Pro 仍是 $20 月付 / $17 年付折算、② Max 仍是 “From $100” —— 结论不变。",
+        "既有记录的 officialUrl 是 https://www.anthropic.com/pricing，而该 URL **当前跨源跳转到 claude.com**（本轮实测 + t10 的 sourceLedger 记录）。t10 已按 captain 裁定处理过 anthropic URL 迁移（见 quality-closure CAPTAIN-LEDGER 第 166 行 ②：新址无法确认为定价页则不改数据、只写处置理由）。**本文件不重复处理**，只标注这一事实与本轮结论的关系（不影响「已覆盖」判定）。"
+      ]
+    }
+  },
+  "summary": {
+    "candidates": 6,
+    "adopt": 1,
+    "adoptPartial": 2,
+    "alreadyCovered": 1,
+    "notAdopted": 1,
+    "blockedByIdentity": 0,
+    "newRecordsProposedUpperBound": 8,
+    "newRecordsProposedMinimal": 4,
+    "newRecordsProposedNote": "**4 = 只收每条最硬的那一档**（JetBrains AI Pro、Replit Core、Gemini Code Assist Standard、Amazon Q Pro）；**8 = 上界**（再加 JetBrains AI Ultimate、Replit Pro、Gemini Code Assist Enterprise、Amazon Q Free）。两者都成立取决于两条判据与既有先例的对齐（见 newRecordsNote）。",
+    "newRecordsBreakdown": {
+      "jetbrains": 2,
+      "replit": 2,
+      "geminiCodeAssist": 2,
+      "amazonQ": 2,
+      "tabnine": 0,
+      "claudeCode": 0
+    },
+    "newRecordsNote": "上表是**上界**：其中 ① Gemini Code Assist 的 Enterprise 档与 ② Amazon Q 的 Free Tier 是否收，取决于「组织档算不算」「$0 档算不算」两条判据与既有先例的对齐（本文件已把两方的理由与先例都写清）。**若 8 条全收**：plans.json 的 provider 从 12 → 15（新增 jetbrains / replit / aws 三家），记录 23 → 31。**若只收最硬的 4 条**：provider 仍从 12 → 15，记录 23 → 27。",
+    "providerTableChanges": [
+      { "change": "新增 provider `jetbrains`（name 建议「JetBrains」、slug `jetbrains`、vendorKey **null**、aliases 含裸串 jetbrains、officialDomains 含 www.jetbrains.com）" },
+      { "change": "新增 provider `replit`（slug `replit`、vendorKey **replit**、officialDomains 含 replit.com）——**注意 vendorKey 不是 null**，A 空间已有这家公司" },
+      { "change": "**不新增** provider：Gemini Code Assist 归 `google`、Amazon Q Developer 归 `aws`、Tabnine 不登记、Claude Code 归 `anthropic`" },
+      { "change": "providers.json 的 `google` 需加官方域 `codeassist.google`（否则 officialDomainProblems() 会把新记录的 officialUrl 判红）" },
+      { "change": "providers.json 的 `aws` 需加官方域 `aws.amazon.com`（或改用落在 amazon.com 上的等价 URL，需先实测 200）" }
+    ],
+    "coverageTargetImplications": [
+      "国际侧 Coding 候选的覆盖从「12 家 provider / 23 条」扩到「15 家 / 27–31 条」（见 summary.newRecordsNote 的两种口径）。",
+      "**新增一类覆盖信号**：`已宣布停支的产品`（Amazon Q Developer IDE 插件 2027-04-30 停支）。既有 coverage-targets 词汇里没有这一类，建议 commander 决定是否单列。",
+      "**新增一类「官方页从不可用变为可用」的翻案**（Gemini Code Assist：v3.0 记 500、本轮实测 200）。v3.0 §三 已有一张翻案表，建议本轮把这一条附上（连同 v3.0 记的另 3 条）。",
+      "**Tabnine 是「候选消失」的第一例**（定价页重定向到别家）。覆盖体系需要一个「曾经是候选、现在没有官方定价面」的登记位，否则下一轮会有人再去查一遍 tabnine.com/pricing。"
+    ]
+  },
+  "reusableJudgements": [
+    "「From $X」「Custom」「Contact us」不是固定档价（Claude Max / Replit Enterprise / Gemini Premium 的 Enterprise membership 都据此不收）。",
+    "同一档位有「年付预付」与「无年付承诺」两组价时：收无年付承诺的月付价，年付价进 note（与既有 anthropic Claude Pro 同口径）。",
+    "同一档位有 audience（个人/商业）两组价而 schema 无 audience 维度时：收个人档，商业档进 note（与既有 github Copilot Pro / windsurf 同口径）。",
+    "额度单位是「钱」或「行数」而不是「token / 积分 / 请求数」时：quota.type=other + description 写清单位，**不得**折算（与既有 baidu Comate 同口径）。",
+    "官方明说 $0 / Free 的档位可以收，regularPrice 写 0（「确实免费」与「价格未知」必须区分；既有 trae 免费版同口径）。"
+  ]
+}

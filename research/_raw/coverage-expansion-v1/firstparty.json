@@ -1,0 +1,1020 @@
+{
+  "_meta": {
+    "task": "t8",
+    "attemptId": "4a4bd17d-3193-418c-bd08-67cf30147d75",
+    "author": "research-firstparty",
+    "version": "coverage-expansion-v1",
+    "branch": "coverage-expansion-v1",
+    "baselineSha": "a4dd40fc66ea612f327036f5ba3d98cbff46c288",
+    "capturedAt": "2026-10-04T19:10:00+08:00",
+    "timezone": "Asia/Shanghai",
+    "scope": "8 家 first-party 开发者（xAI / Mistral / Cohere / 科大讯飞 / 百川 / 阶跃星辰 / 商汤 / 360）的官方页面可访问性、API Pricing 是否公开、当前主力模型系列、Current Target Models、releasedAt 官方证据、现有 schema 能否诚实表达价格；另含中国侧 Coding 套餐候选。",
+    "hardRules": [
+      "只用开发商官方来源（官方定价页 / 官方文档 / 官方新闻 / 官方发布动态）。第三方托管平台（Bedrock、Vercel AI Gateway、OpenRouter）、聚合比价站（benchlm、futureagi、llm-stats）、新闻媒体一律只当线索，不作 releasedAt 或价格的出处。",
+      "查不到就写 null + 检查结论，禁止用版本号猜日期、禁止把文档更新日当作模型发布日、禁止假精度。",
+      "价格一律原样记录官方单位与币种，再单独裁决现有 schema 能否诚实表达；表达不了就记 gap，不硬塞、不换算、不合并。",
+      "本文件是调查产物，不是生产数据：不写 scripts/data/**、不写 plans.json / api-plans.json / models.json。"
+    ],
+    "deliverablePaths": [
+      "research/coverage-expansion-v1-provider-review.md",
+      "research/_raw/coverage-expansion-v1/firstparty.json"
+    ]
+  },
+
+  "schemaCapability": {
+    "_note": "裁决依据来自仓库当前代码，不是猜的：scripts/lib/api-plan-schema.js 与 scripts/lib/plan-schema.js 的枚举。",
+    "apiPlan": {
+      "units": ["per_1M_tokens", "per_1K_tokens", "per_1M_characters"],
+      "tokenRateKeys": ["input", "output", "cachedInput", "cacheWrite", "cacheWriteLong", "reasoning", "batchInput", "batchOutput"],
+      "mediaRateKinds": ["image", "audio", "video", "text", "other"],
+      "mediaRateUnits": ["per_image", "per_second", "per_minute", "per_1M_characters", "per_request", "per_1M_token_hours"],
+      "channels": ["standard", "batch", "flex", "priority", "fast", "ultrafast", "off_peak", "fine_tuned", "other"],
+      "variants": ["standard", "batch", "long_context", "fine_tuned", "priority", "other"],
+      "currencies": ["CNY", "USD", "HKD", "EUR", "JPY", "GBP", "SGD"],
+      "unitWitnessRule": "引文或 pricing.unitNote 点名的单位必须与 pricing.unit 同类（每千 ↔ per_1K_tokens，每百万 ↔ per_1M_tokens / per_1M_characters）；矛盾即红。",
+      "noBlendedRate": true,
+      "noPerHour": true,
+      "noPerGbPerDay": true,
+      "noPerSeatOrPerVoice": true
+    },
+    "plan": {
+      "planKinds": ["coding"],
+      "billingPeriods": ["monthly", "yearly", "one_time", "usage_based", "other"],
+      "comparablePeriods": ["monthly", "yearly"],
+      "noQuarterly": true,
+      "currencies": ["CNY", "USD", "HKD", "EUR", "JPY", "GBP", "SGD"],
+      "quotaTypes": ["tokens", "credits", "requests", "messages", "rate_limited", "unlimited_fair_use", "compute_units", "other"],
+      "quotaPeriods": ["monthly", "yearly", "weekly", "daily", "hourly", "rolling", "one_time", "other"],
+      "restrictionKinds": ["concurrency", "rate_limit", "per_day_cap", "rolling_window", "output_limit", "fair_use", "region_restriction", "account_required", "invite_only", "new_user_only"],
+      "quotaIsSingleObject": true,
+      "modelRoles": ["included", "limited", "pool", "family"]
+    },
+    "consequencesForThisRound": [
+      "一份套餐只用「一个 quota 对象 + 一个 period」表达；多窗口（每 5 小时 / 每周 / 每月）只能选一个规范窗口、其余写进 description 或 restrictions（仓库既有先例：智谱 Lite 把双窗口写进 description）。",
+      "季度价没有对应 period：季付价只能进 note/promoNote，或另立 one_time 记录，不能伪装成 monthly。",
+      "输入+输出同价的「打包价」没有字段：不许把它拆成 input=output=X（那是两条官方没说过的事实）。",
+      "按小时 / 按 GB·天 / 按音色 没有单位：一律不换算、不进数据。",
+      "按「万字符」计费只有 per_1M_characters 可用，属需要 ×100 换算的口径变化；换算版必须带 unitNote 说明换算来源，否则不进数据。"
+    ]
+  },
+
+  "verdictLegend": {
+    "adopted": "官方公开、单位可被现有 schema 原样诚实表达、可以做进生产数据。",
+    "partial": "官方公开但只有一部分能被诚实表达（或价格公开而发布时间无官方证据、或必须换算/挑选规范窗口）。",
+    "unverifiable": "本环境无法从官方来源取得可引用的原文（页面不可达或正文不可抽取），因此不下任何结论。",
+    "deferred": "官方来源存在但本轮刻意不做（身份空间、聚合身份污染、或没有对应产品面），并写明为什么不做的理由。",
+    "schema_not_supported": "官方事实明确，但现有 schema 没有任何字段能诚实表达；记 gap，不硬塞、不换算、不合并。"
+  },
+
+  "existingCoverageAtBaseline": {
+    "_note": "本轮调查的起点：这些身份已经存在，重复登记等于造第二套身份。",
+    "providersJsonKeys": ["zhipu", "trae", "qoder", "codebuddy", "moonshot", "minimax", "github", "cursor", "openai", "anthropic", "google", "deepseek", "baidu", "volcengine", "coze", "iflytek", "microsoft", "notion", "aliyun", "siliconflow", "tencent", "windsurf", "qoder-intl"],
+    "apiPlansProviders": ["aliyun", "anthropic", "deepseek", "google", "minimax", "openai", "siliconflow", "tencent", "volcengine", "zhipu"],
+    "plansProviders": ["anthropic", "baidu", "codebuddy", "cursor", "github", "minimax", "moonshot", "qoder", "qoder-intl", "trae", "windsurf", "zhipu"],
+    "dealsSideOnlyOfficialDomains": {
+      "_source": "scripts/data/official_urls.json 的 _officialDomains（A 空间独有公司）",
+      "ai360": ["360.com"],
+      "baichuan": ["baichuan-ai.com"],
+      "sensetime": ["sensetime.com"],
+      "stepfun": ["stepfun.com"]
+    },
+    "implication": "本次 8 家里，xai / mistral / cohere 三家在仓库里连身份都没有；iflytek 已有 providers.json 身份（officialDomains=[\"xfyun.cn\"]）；baichuan / stepfun / sensetime / ai360 只有 deals 侧官方域登记、没有 providers.json 身份。任何要进 plans.json / api-plans.json 的记录，必须先在 providers.json 登记身份（t11 的活）。"
+  },
+
+  "vendors": [
+    {
+      "id": "xai",
+      "displayName": "xAI",
+      "role": "first-party-developer",
+      "isFirstPartyDeveloper": true,
+      "officialDomainsCandidate": ["x.ai"],
+      "identityStatus": "仓库里完全没有身份（providers.json / official_urls.json 均无）",
+      "access": [
+        { "url": "https://x.ai/", "httpStatus": null, "reachableFromTool": false, "error": "TypeError: fetch failed" },
+        { "url": "https://x.ai/api", "httpStatus": null, "reachableFromTool": false, "error": "TypeError: fetch failed" },
+        { "url": "https://docs.x.ai/", "httpStatus": null, "reachableFromTool": false, "error": "TypeError: fetch failed" },
+        { "url": "https://docs.x.ai/docs/models", "httpStatus": null, "reachableFromTool": false, "error": "TypeError: fetch failed（4 次尝试，含 .md 变体）" },
+        { "url": "https://docs.x.ai/docs/overview", "httpStatus": null, "reachableFromTool": false, "error": "TypeError: fetch failed" }
+      ],
+      "apiPricing": {
+        "public": "unknown",
+        "note": "搜索索引里存在 docs.x.ai/overview 与 docs.x.ai 的页面标题（Grok API Documentation），但本环境对 x.ai 全域（含 docs 子域）的抓取一律失败，拿不到任何可引用的官方原文。"
+      },
+      "currentTargetModels": [],
+      "currentTargetModelsNote": "不写。搜索命中的 Grok 4.6（AWS Bedrock 模型卡）与 Grok 5（多个第三方博客）都不是开发商官方来源，按本任务纪律不得作为 identity 或 releasedAt 依据。",
+      "releasedAtEvidence": [],
+      "codingCandidates": [],
+      "priceExpressiveness": [
+        {
+          "lineItem": "（整家）",
+          "verdict": "unverifiable",
+          "note": "官方页面不可达 ⇒ 连「API Pricing 是否公开」这个问题都无法回答。"
+        }
+      ],
+      "ruling": "unverifiable",
+      "rulingReason": "官方域 x.ai / docs.x.ai 在本环境完全不可达（fetch failed，非 HTTP 状态码），零官方原文可引；按硬纪律不得用 Bedrock 模型卡或第三方博客替代。",
+      "coverageRecommendation": "defer-until-reachable",
+      "gaps": [
+        { "id": "xai-access-1", "severity": "medium", "problem": "官方域不可达，无法完成「官方页面可访问性 / 定价是否公开 / 当前主力模型」三项裁决。", "requiredFix": "在可访问 x.ai 的网络出口各重跑一次 https://docs.x.ai/docs/models 与 https://x.ai/api；若仍不可达，在本轮 coverage-targets 里记 DEFERRED 并写明「官方来源不可达 ≠ 不存在该厂商」。", "resolved": false }
+      ],
+      "handoffToDataIntegrator": {
+        "addToProvidersJson": false,
+        "addToCoverageTargets": false,
+        "reason": "无任何 adopted 事实可落盘；建议 coverage-targets 记 DEFERRED（而非 MISSING），并写明官方来源在本环境不可达。"
+      }
+    },
+
+    {
+      "id": "mistral",
+      "displayName": "Mistral AI",
+      "role": "first-party-developer",
+      "isFirstPartyDeveloper": true,
+      "officialDomainsCandidate": ["mistral.ai"],
+      "identityStatus": "仓库里完全没有身份",
+      "access": [
+        { "url": "https://mistral.ai/pricing", "httpStatus": null, "reachableFromTool": false, "error": "TypeError: fetch failed（多次）" },
+        { "url": "https://mistral.ai/pricing/", "httpStatus": null, "reachableFromTool": false, "error": "TypeError: fetch failed" },
+        { "url": "https://mistral.ai/en/pricing", "httpStatus": null, "reachableFromTool": false, "error": "TypeError: fetch failed" },
+        { "url": "https://mistral.ai/products/la-plateforme", "httpStatus": null, "reachableFromTool": false, "error": "TypeError: fetch failed" },
+        { "url": "https://docs.mistral.ai/", "httpStatus": null, "reachableFromTool": false, "error": "TypeError: fetch failed" },
+        { "url": "https://docs.mistral.ai/getting-started/models/models_overview", "httpStatus": null, "reachableFromTool": false, "error": "TypeError: fetch failed（含 .md 变体）" }
+      ],
+      "apiPricing": {
+        "public": "unknown",
+        "note": "搜索命中 benchlm.ai「Mistral API Pricing (September 2026)」、Future AGI、Vercel AI Gateway 等第三方页面，但没有任何官方页面的原文可引。"
+      },
+      "currentTargetModels": [],
+      "currentTargetModelsNote": "不写。第三方页面提到的 Mistral Large 3 / Medium 3.5 均非官方来源。",
+      "releasedAtEvidence": [],
+      "codingCandidates": [],
+      "priceExpressiveness": [
+        { "lineItem": "（整家）", "verdict": "unverifiable", "note": "官方页面不可达。" }
+      ],
+      "ruling": "unverifiable",
+      "rulingReason": "mistral.ai 与 docs.mistral.ai 在本环境全部 fetch failed（6 个 URL 变体），零官方原文；按纪律不得引第三方比价站。",
+      "coverageRecommendation": "defer-until-reachable",
+      "gaps": [
+        { "id": "mistral-access-1", "severity": "medium", "problem": "官方域不可达，三项裁决（可访问性 / 定价公开性 / 当前主力模型）全部无法完成。", "requiredFix": "换网络出口重跑 https://mistral.ai/pricing 与 https://docs.mistral.ai/getting-started/models/models_overview；仍不可达则记 DEFERRED。", "resolved": false }
+      ],
+      "handoffToDataIntegrator": {
+        "addToProvidersJson": false,
+        "addToCoverageTargets": false,
+        "reason": "无 adopted 事实；建议记 DEFERRED 并注明来源不可达。"
+      }
+    },
+
+    {
+      "id": "cohere",
+      "displayName": "Cohere",
+      "role": "first-party-developer",
+      "isFirstPartyDeveloper": true,
+      "officialDomainsCandidate": ["cohere.com", "docs.cohere.com"],
+      "identityStatus": "仓库里完全没有身份",
+      "access": [
+        { "url": "https://cohere.com/pricing", "httpStatus": 200, "reachableFromTool": true, "note": "HTTP 200，但抽取到的正文只有导航与一句首页 banner，价格表在抽取窗口之外/由前端渲染，取不到。" },
+        { "url": "https://docs.cohere.com/docs/models", "httpStatus": 200, "reachableFromTool": true, "note": "HTTP 200，正文同样被导航占满，模型清单与价格不可抽取。" },
+        { "url": "https://docs.cohere.com/docs/command-a", "httpStatus": 200, "reachableFromTool": true, "note": "HTTP 200：官方文档里存在 /docs/command-a 这条路由（反证：官方不存在按模型分列的定价路由）。" },
+        { "url": "https://cohere.com/pricing/command-a", "httpStatus": 404, "reachableFromTool": true, "error": "HTTP 404" }
+      ],
+      "apiPricing": {
+        "public": "unknown",
+        "blocker": "官方定价页可达但价格表不可抽取；无法给出任何官方数字。",
+        "officialQuotes": [
+          {
+            "field": "product-banner",
+            "quote": "Embed 5 is here: state-of-the-art retrieval - now available in Pro and Fast tiers.",
+            "sourceUrl": "https://cohere.com/pricing",
+            "capturedAt": "2026-10-04",
+            "lang": "en"
+          }
+        ]
+      },
+      "currentTargetModels": [
+        {
+          "name": "Command A",
+          "family": "Command",
+          "evidenceType": "route-exists",
+          "evidence": { "quote": "官方文档路由 https://docs.cohere.com/docs/command-a 返回 HTTP 200（Cohere 官方域）", "sourceUrl": "https://docs.cohere.com/docs/command-a", "capturedAt": "2026-10-04" },
+          "note": "只能证明「官方文档里有这一页」，不能证明它是当前主力，也没有价格与发布日期。"
+        },
+        {
+          "name": "Embed 5",
+          "family": "Embed",
+          "evidenceType": "official-banner",
+          "evidence": { "quote": "Embed 5 is here: state-of-the-art retrieval - now available in Pro and Fast tiers.", "sourceUrl": "https://cohere.com/pricing", "capturedAt": "2026-10-04" },
+          "note": "官方首页 banner 原文；说明 Embed 5 存在且分 Pro / Fast 两档，但没有单价、没有日期。"
+        }
+      ],
+      "releasedAtEvidence": [],
+      "codingCandidates": [],
+      "priceExpressiveness": [
+        { "lineItem": "（整家 API 定价）", "verdict": "unverifiable", "note": "定价页 200 但表体抽取不到；不猜数字。" }
+      ],
+      "ruling": "unverifiable",
+      "rulingReason": "官方定价页与文档页都返回 200，但本工具只能取到导航，价格表与模型清单均不可抽取；identity 仅能到「官方文档存在 /docs/command-a + 首页 banner 提及 Embed 5 与 Pro/Fast 分层」，不足以落盘任何价格。",
+      "coverageRecommendation": "defer-until-extractable",
+      "gaps": [
+        { "id": "cohere-extract-1", "severity": "medium", "problem": "官方价格表不可抽取（页面由前端渲染），既不能说公开也不能说不公开。", "requiredFix": "换抓取方式（真实浏览器 / 官方 API 文档站内的定价页）重取 https://cohere.com/pricing；取到之前不得为 Cohere 落任何价格记录。", "resolved": false }
+      ],
+      "handoffToDataIntegrator": {
+        "addToProvidersJson": false,
+        "addToCoverageTargets": false,
+        "reason": "无价格、无日期、identity 只有路由存在性；建议 coverage-targets 记 DEFERRED（未验证），并写明「页面可达但正文不可抽取」。"
+      }
+    },
+
+    {
+      "id": "iflytek",
+      "displayName": "科大讯飞",
+      "role": "first-party-developer",
+      "isFirstPartyDeveloper": true,
+      "officialDomainsCandidate": ["xfyun.cn"],
+      "identityStatus": "providers.json 已有 `iflytek`（name=科大讯飞，slug=iflytek，vendorKey=iflytek，officialDomains=[\"xfyun.cn\"]）",
+      "access": [
+        { "url": "https://www.xfyun.cn/doc/spark/HTTP%E8%B0%83%E7%94%A8%E6%96%87%E6%A1%A3.html", "httpStatus": 200, "reachableFromTool": true, "note": "星火 HTTP 接口文档（语言模型版本表）。" },
+        { "url": "https://www.xfyun.cn/doc/spark/X1http.html", "httpStatus": 200, "reachableFromTool": true, "note": "Spark-X2 HTTP 文档，页面自述「文档更新时间：2026.02.09」。" },
+        { "url": "https://www.xfyun.cn/doc/spark/BillingDescription.html", "httpStatus": 200, "reachableFromTool": true, "note": "星辰 MaaS 计费说明：明确不公布静态价目表。" },
+        { "url": "https://www.xfyun.cn/doc/spark/CodingPlan.html", "httpStatus": 200, "reachableFromTool": true, "note": "Astron Coding Plan 官方文档 v2.3（最后更新 2026年7月22日）。" },
+        { "url": "https://www.xfyun.cn/doc/spark/TokenPlan.html", "httpStatus": 200, "reachableFromTool": true, "note": "Astron Token Plan 官方文档（含按积分/百万 token 的模型清单）。" },
+        { "url": "https://xinghuo.xfyun.cn/sparkapi", "httpStatus": 200, "reachableFromTool": true, "note": "产品页只返回标题（前端渲染），价格不可抽取。" },
+        { "url": "https://maas.xfyun.cn/modelSquare/", "httpStatus": 200, "reachableFromTool": true, "note": "MaaS 模型广场只返回标题（前端渲染）。" }
+      ],
+      "apiPricing": {
+        "public": false,
+        "officialStatement": {
+          "quote": "模型价格 请以 https://training.xfyun.cn/account 以及实际购买页价格为准。",
+          "sourceUrl": "https://www.xfyun.cn/doc/spark/BillingDescription.html",
+          "capturedAt": "2026-10-04",
+          "lang": "zh"
+        },
+        "note": "常规星火 API 的单价不发布在公开静态价目表上（指向登录后的账户页与下单页）。因此「现价多少」不可核；能核的只有产品页/文档里的版本与能力。"
+      },
+      "currentTargetModels": [
+        {
+          "name": "Spark-X2.5",
+          "modelKeyCandidate": "spark-x2.5",
+          "family": "Spark",
+          "modelRoleCandidate": "flagship-reasoning",
+          "contextWindow": "256K",
+          "selfDescription": "星火自研",
+          "evidence": { "quote": "| Spark-X2.5 | 256K | 星火自研 | 320 | 48 | 1200 | 1200 |", "sourceUrl": "https://www.xfyun.cn/doc/spark/TokenPlan.html", "capturedAt": "2026-10-04" }
+        },
+        {
+          "name": "Spark-X2",
+          "modelKeyCandidate": "spark-x",
+          "family": "Spark",
+          "modelRoleCandidate": "flagship-reasoning",
+          "contextWindow": "输入 64K / 输出 128K",
+          "selfDescription": "星火深度推理模型",
+          "evidence": { "quote": "公告说明： 星火深度推理模型X2已上线；X2能力介绍：上下文长度增大：输入64K、输出128K；支持FunctionCall功能", "sourceUrl": "https://www.xfyun.cn/doc/spark/X1http.html", "capturedAt": "2026-10-04" }
+        },
+        {
+          "name": "Spark-X2-Flash",
+          "modelKeyCandidate": "xsparkx2flash",
+          "family": "Spark",
+          "modelRoleCandidate": "fast",
+          "evidence": { "quote": "| Spark-X2-Flash | xsparkx2flash | 1 |", "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html", "capturedAt": "2026-10-04" },
+          "note": "抵扣系数表里的 modelId 与名称；Token Plan 里也以 spark-x2.5 / xsparkx2flash 两个自研条目出现。"
+        },
+        {
+          "name": "Spark X2 Agent",
+          "modelKeyCandidate": "xsparkx2agent",
+          "family": "Spark",
+          "modelRoleCandidate": "agent",
+          "evidence": { "quote": "v2.2 | 2026-07-10 | 无忧版下线。上线最新模型Spark X2 Agent，面向Agent场景优化效果，完全基于全国产算力训练和推理的全新星火300B-A30B MoE模型", "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html", "capturedAt": "2026-10-04" },
+          "note": "在 Token Plan 文档里标注为「已下线」，在 Coding Plan 文档里仍可配置 —— 两个套餐面的上下架状态不同，落盘前必须按面分别判定。"
+        }
+      ],
+      "legacyModels": [
+        { "name": "Spark 4.0 Ultra / Max / Max-32K / Pro / Pro-128K / Lite", "evidence": { "quote": "星火当前有Lite、Pro、Pro-128K、Max、Max-32K和4.0 Ultra六个版本的语言模型，各版本独立计量tokens。", "sourceUrl": "https://www.xfyun.cn/doc/spark/HTTP%E8%B0%83%E7%94%A8%E6%96%87%E6%A1%A3.html", "capturedAt": "2026-10-04" } },
+        { "name": "Spark Max", "statusNote": "官方下线公告", "evidence": { "quote": "Max版本套餐将于26年3月10日下线，后端服务将升级为Ultra版本，授权用量与Ultra合并", "sourceUrl": "https://www.xfyun.cn/doc/spark/HTTP%E8%B0%83%E7%94%A8%E6%96%87%E6%A1%A3.html", "capturedAt": "2026-10-04" } },
+        { "name": "Spark Ultra", "statusNote": "能力升级（非下线）", "evidence": { "quote": "公告说明： Ultra版本已升级至X1.5 快思考模式，FunctionCall 效果显著提升", "sourceUrl": "https://www.xfyun.cn/doc/spark/HTTP%E8%B0%83%E7%94%A8%E6%96%87%E6%A1%A3.html", "capturedAt": "2026-10-04" } }
+      ],
+      "releasedAtEvidence": [
+        {
+          "model": "Spark X2 Agent",
+          "releasedAt": "2026-07-10",
+          "evidence": { "quote": "v2.2 | 2026-07-10 | 无忧版下线。上线最新模型Spark X2 Agent，面向Agent场景优化效果，完全基于全国产算力训练和推理的全新星火300B-A30B MoE模型，智能体和代码等能力显著提升；上线Auto智能路由模式", "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html", "capturedAt": "2026-10-04" },
+          "note": "官方文档版本记录里明确写出的上线日期，可用。"
+        },
+        {
+          "model": "Spark-X2",
+          "releasedAt": null,
+          "onOrBefore": "2026-02-09",
+          "evidence": { "quote": "文档更新时间：2026.02.09；公告说明： 星火深度推理模型X2已上线", "sourceUrl": "https://www.xfyun.cn/doc/spark/X1http.html", "capturedAt": "2026-10-04" },
+          "note": "官方只说「已上线」并给出文档更新时间。文档更新日不是发布日，所以 releasedAt=null，只登记「不晚于 2026-02-09 已上线」这条可核事实。"
+        },
+        {
+          "model": "Spark-X2.5",
+          "releasedAt": null,
+          "evidence": null,
+          "note": "Token Plan 官方文档列出了 Spark-X2.5（星火自研、256K），但没有发布日期；搜索命中的 ifeng/ithome 报道属媒体，按纪律不作依据。"
+        },
+        {
+          "model": "Spark X2 Agent 之外的套餐面日期",
+          "releasedAt": "2026-04-09",
+          "evidence": { "quote": "| v2.0 | 2026-04-09 | 焕新版上线。入门版更新为无忧版，不限制请求次数，更新支持模型；专业版与高效版由tokens日流控更新为请求次数周期性流控，囊括更多模型。", "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html", "capturedAt": "2026-10-04" },
+          "note": "这是套餐改版的官方日期，不是模型发布日；登记以免被误当成 releasedAt。"
+        }
+      ],
+      "codingCandidates": [
+        {
+          "candidateId": "cn-iflytek-astron-coding-plan",
+          "name": "讯飞星辰 MaaS · Astron Coding Plan",
+          "kind": "coding-subscription",
+          "providerKey": "iflytek",
+          "officialUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
+          "productUrl": "https://maas.xfyun.cn/packageSubscription",
+          "region": "cn",
+          "currency": "CNY",
+          "billingPeriod": "monthly",
+          "tiers": [
+            { "name": "高效版", "regularPrice": 199, "period": "monthly", "quotaText": "每 5 小时：最多约 6,000 次请求；每周：最多约 45,000 次请求；每订阅月：最多约 90,000 次请求", "status": "在售" },
+            { "name": "速通版", "regularPrice": 999, "promoPrice": 699, "promoNote": "限时首月优惠：¥699 / 月", "period": "monthly", "quotaText": "每订阅月：最多约 30,000 次请求", "status": "在售（2026-07-23 上线）" },
+            { "name": "专业版", "regularPrice": 39, "period": "monthly", "status": "已下线", "quotaText": "每 5 小时：最多约 1,200 次请求；每周：最多约 9,000 次请求；每订阅月：最多约 18,000 次请求" },
+            { "name": "无忧版", "regularPrice": 19, "period": "monthly", "status": "已下线", "quotaText": "请求次数不限" }
+          ],
+          "quarterlyTiers": [
+            { "name": "高效版", "regularPrice": 538, "note": "¥538 / 季（日常折扣 9 折）" },
+            { "name": "速通版", "regularPrice": 2997, "promoPrice": 2697, "note": "¥2997 / 季，限时 ¥2697 / 季" }
+          ],
+          "evidence": [
+            { "field": "tiers.高效版.regularPrice", "quote": "| **高效版** | ¥199 / 月 | [讯飞星辰 MaaS 平台套餐订阅页面]展示为准 | 每 5 小时：最多约 6,000 次请求；每周：最多约 45,000 次请求；每订阅月：最多约 90,000 次请求 |", "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html", "capturedAt": "2026-10-04", "lang": "zh" },
+            { "field": "tiers.速通版.regularPrice", "quote": "| **速通版** | ¥999 / 月，限时首月优惠：¥699 / 月 | [……]展示为准 | 每订阅月：最多约 30,000 次请求 |", "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html", "capturedAt": "2026-10-04", "lang": "zh" },
+            { "field": "flowControl", "quote": "**流控方式**：流控方式调整为 **请求次数** 维度 | **5 小时流控** | 周期为5小时，滑动步长1小时，每个整点刷新。 | **周流控** | 周期为7日，滑动步长1日，每次日 08:00:00（UTC+8）重置。 | **月流控** | 按套餐订单完成支付的时间为开始时间，31天后为套餐失效时间", "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html", "capturedAt": "2026-10-04", "lang": "zh" },
+            { "field": "offPeakCoefficient", "quote": "高峰时段：工作日 08:00–22:00，计费系数 1.0；波谷时段：夜间时段22:00–次日08:00、周末全天、节假日全天（涵盖端午、中秋、国庆等节日），计费系数 0.8", "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html", "capturedAt": "2026-10-04", "lang": "zh" },
+            { "field": "restrictions.scope", "quote": "Coding Plan 额度仅限在 **编程工具**（如 Claude Code、Open Code、Cursor、OpenClaw 等）的交互式编码场景中使用。 禁止将 Coding Plan 的 API Key 用于：自动化脚本、批量任务；自建应用后端或服务端；任何非交互式、非编程工具场景的调用", "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html", "capturedAt": "2026-10-04", "lang": "zh" },
+            { "field": "supportedModels", "quote": "整合了星火和GLM、Kimi 、MiniMax、DeepSeek、Qwen等开源热门模型（受开源协议等法律责任限制，支持模型以讯飞星辰MaaS平台实际上架为准）", "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html", "capturedAt": "2026-10-04", "lang": "zh" }
+          ],
+          "supportedModelsFromOfficialModelTable": [
+            { "name": "Spark X2 Agent", "modelId": "xsparkx2agent", "deductionCoefficient": 2 },
+            { "name": "Spark X2", "modelId": "xsparkx2", "deductionCoefficient": 2 },
+            { "name": "Spark-X2-Flash", "modelId": "xsparkx2flash", "deductionCoefficient": 1 },
+            { "name": "DeepSeek-V4-Pro", "modelId": "xopdeepseekv4pro", "deductionCoefficient": 5 },
+            { "name": "DeepSeek-V4-Flash", "modelId": "xopdeepseekv4flash", "deductionCoefficient": 2 },
+            { "name": "DeepSeek-V3.2", "modelId": "xopdeepseekv32", "deductionCoefficient": 2 },
+            { "name": "GLM-5.2", "modelId": "xopglm52", "deductionCoefficient": 5 },
+            { "name": "Kimi-K2.7-Code", "modelId": "xopkimi27code", "deductionCoefficient": 5 },
+            { "name": "MiniMax-M2.5", "modelId": "xminimaxm25", "deductionCoefficient": 2 },
+            { "name": "GLM-4.7-Flash", "modelId": "xopglmv47flash", "deductionCoefficient": 1 }
+          ],
+          "schemaVerdict": "partial",
+          "schemaNotes": [
+            "billing.period=monthly + currency=CNY + regularPrice/promoPrice/promoNote 能原样表达 高效版 与 速通版（含限时首月价）。",
+            "季度价（¥538 / ¥2997 / ¥2697 / 季）没有 quarterly period ⇒ 只能进 note 或另立 one_time 记录，不能当 monthly。",
+            "三窗口请求额度（5h/周/月）只能用一个 quota 对象 ⇒ 需选一个规范窗口（建议 rolling 或 monthly）+ 其余写进 description；智谱 Lite 的既有先例就是这么写的。",
+            "波谷系数 0.8 与模型抵扣系数表没有字段 ⇒ 分别落到 restrictions（kind=rate_limit，value 为文本）与 quota.conversionDependsOnModel=true + description。",
+            "只允许编程工具交互式使用（禁止脚本/服务端）→ restrictions kind=rate_limit 文本，或用 region_restriction 不合适；不要新造 kind。"
+          ],
+          "ruling": "adopted",
+          "rulingReason": "官方文档（xfyun.cn 官方域）逐条给出档位、价格、流控窗口、抵扣系数与使用限制，价格单位为 CNY/月，可被 plans.json 诚实表达（多窗口与系数按上述 partial 方式处理）。"
+        },
+        {
+          "candidateId": "cn-iflytek-astron-token-plan",
+          "name": "讯飞星辰 MaaS · Astron Token Plan",
+          "kind": "token-subscription(team-seat)",
+          "providerKey": "iflytek",
+          "officialUrl": "https://www.xfyun.cn/doc/spark/TokenPlan.html",
+          "productUrl": "https://maas.xfyun.cn/tokenPlan/subscription",
+          "region": "cn",
+          "currency": "CNY",
+          "billingPeriod": "monthly",
+          "tiers": [
+            { "name": "标准成员", "regularPrice": 200, "unit": "元/成员/月", "credits": 20000, "tpm": "200w", "promoNote": "限时 8 折 160 元（即日起至2026年7月2日）" },
+            { "name": "高级成员", "regularPrice": 600, "unit": "元/成员/月", "credits": 60000, "tpm": "300w", "promoNote": "限时 7 折 420 元" },
+            { "name": "尊享成员", "regularPrice": 2000, "unit": "元/成员/月", "credits": 200000, "tpm": "500w", "promoNote": "限时 6 折 1200 元" }
+          ],
+          "evidence": [
+            { "field": "tiers", "quote": "| 标准成员 | 200 | 20000 | 200w | 8折，160元 | | 高级成员 | 600 | 60000 | 300w | 7折，420元 | | 尊享成员 | 2000 | 200000 | 500w | 6折，1200元 |", "sourceUrl": "https://www.xfyun.cn/doc/spark/TokenPlan.html", "capturedAt": "2026-10-04", "lang": "zh" },
+            { "field": "creditRules", "quote": "消耗积分 = 非缓存输入Token数(百万) × 输入积分 + 缓存命中Token数(百万) × 缓存命中积分 + 输出Token数(百万) × 输出积分 + 思考Token数(百万) × 思考积分（如有思考模式） 实际消耗积分 = 消耗积分 × 时段系数", "sourceUrl": "https://www.xfyun.cn/doc/spark/TokenPlan.html", "capturedAt": "2026-10-04", "lang": "zh" },
+            { "field": "modelPointsTable", "quote": "| Spark-X2.5 | 256K | 星火自研 | 320 | 48 | 1200 | 1200 | | Spark-X2-Flash | 256K | 星火自研 | 100 | 20 | 200 | 200 | | GLM-5.2 | 1M | 首发尝鲜 | 800 | 200 | 2800 | 2800 |", "sourceUrl": "https://www.xfyun.cn/doc/spark/TokenPlan.html", "capturedAt": "2026-10-04", "lang": "zh" },
+            { "field": "offPeak", "quote": "错峰更省： 周一至周五（08:00-22:00以外的时段），周六周日（全天全时段），积分消耗享 0.8 倍系数", "sourceUrl": "https://www.xfyun.cn/doc/spark/TokenPlan.html", "capturedAt": "2026-10-04", "lang": "zh" }
+          ],
+          "schemaVerdict": "partial",
+          "schemaNotes": [
+            "按成员计价（元/成员/月）在 plans.json 里没有「按席位」维度 ⇒ 200/600/2000 只能当「该档位月费」写，并在 note 里写明是按成员；否则会误导成整租价格。",
+            "积分额度可直接落 quota.type=credits + amount + period=monthly。",
+            "按模型分列的「积分/百万 token」表（Spark-X2.5 320/48/1200/1200 等）在 API schema 里没有对应载体：那是积分口径而非币种单价，且 API 定价记录的 pricing.currency 只接受法定币种 ⇒ schema_not_supported，记 gap，不换算成元。"
+          ],
+          "ruling": "partial",
+          "rulingReason": "套餐价与积分额度可诚实表达（含按席位的口径说明），但官方那张按模型分列的积分单价表在现有 schema 里无处安放。"
+        }
+      ],
+      "priceExpressiveness": [
+        { "lineItem": "常规星火 API（Spark-X2 / X2.5 / Flash 等）", "officialText": "模型价格 请以 https://training.xfyun.cn/account 以及实际购买页价格为准。", "officialUnit": "未公开", "schemaMapping": null, "verdict": "unverifiable", "note": "官方明确不公开发布静态单价 ⇒ 不是 schema 表达力问题，是来源不存在。" },
+        { "lineItem": "Coding Plan 月费", "officialText": "高效版 ¥199/月；速通版 ¥999/月（限时首月 ¥699）", "officialUnit": "CNY / month", "schemaMapping": "plans.billing{period:'monthly',currency:'CNY',regularPrice,promoPrice,promoNote}", "verdict": "adopted", "note": null },
+        { "lineItem": "Coding Plan 季费", "officialText": "高效版 ¥538/季；速通版 ¥2997/季（限时 ¥2697/季）", "officialUnit": "CNY / quarter", "schemaMapping": null, "verdict": "schema_not_supported", "note": "BILLING_PERIODS 无 quarterly；且月度可比口径下折算会引入本站自己的除法。" },
+        { "lineItem": "Coding Plan 三窗口请求额度", "officialText": "每 5 小时：最多约 6,000 次请求；每周：最多约 45,000 次请求；每订阅月：最多约 90,000 次请求", "officialUnit": "requests / window", "schemaMapping": "quota{type:'requests',period:<一个窗口>,amount}", "verdict": "partial", "note": "一个 quota 对象装不下三个窗口；另两窗写 description / restrictions(kind=rolling_window)。" },
+        { "lineItem": "模型抵扣系数", "officialText": "Spark X2 Agent 抵扣系数 2、GLM-5.2 5、DeepSeek-V4-Pro 5……", "officialUnit": "系数", "schemaMapping": "quota.conversionDependsOnModel=true + description", "verdict": "partial", "note": "没有逐模型系数表字段；不要新造字段。" },
+        { "lineItem": "波谷系数 0.8", "officialText": "波谷时段……计费系数 0.8", "officialUnit": "系数", "schemaMapping": "restrictions{kind:'rate_limit',value:'波谷时段（夜间/周末/节假日）计费系数 0.8'}", "verdict": "partial", "note": null },
+        { "lineItem": "Token Plan 按模型积分单价", "officialText": "Spark-X2.5 输入 320 / 缓存命中 48 / 输出 1200 / 思考 1200（积分/百万 Token）", "officialUnit": "积分 / 1M tokens", "schemaMapping": null, "verdict": "schema_not_supported", "note": "积分不是法定币种，API schema 的 pricing.currency 只接受 CNY/USD/…；不换算成元。" }
+      ],
+      "ruling": "partial",
+      "rulingReason": "官方公开的是套餐（Coding Plan / Token Plan）而不是常规 API 单价：套餐可落 plans.json（多窗口与系数按 partial 方式处理），常规 API 定价官方明确不公开，按模型积分单价表 schema 装不下。",
+      "coverageRecommendation": "adopt-coding-plans; api-pricing-deferred",
+      "gaps": [
+        { "id": "iflytek-price-1", "severity": "medium", "problem": "星火常规 API 单价不公开：官方计费说明把价格指向登录后的账户页与下单页。", "requiredFix": "本轮不为讯飞普通 API 计费落任何行；在 coverage 报告里记「官方不公开」而不是「缺失」或「0」。", "resolved": false },
+        { "id": "iflytek-schema-1", "severity": "medium", "problem": "Coding Plan 的三窗口请求额度只有一个 quota 对象可用。", "requiredFix": "落盘时选一个规范窗口（建议 rolling）+ description 写全三窗，并在 unitNote/note 里注明其余窗口的官方原文。", "resolved": false },
+        { "id": "iflytek-schema-2", "severity": "low", "problem": "季度价无 period 可载。", "requiredFix": "季付价只进 note / promoNote；若要独立记录，用 one_time + note 说明周期。", "resolved": false }
+      ],
+      "handoffToDataIntegrator": {
+        "addToProvidersJson": false,
+        "providerKeyExists": "iflytek",
+        "addToPlansJson": true,
+        "plansToAdd": ["Astron Coding Plan · 高效版（¥199/月）", "Astron Coding Plan · 速通版（¥999/月，首月 ¥699）", "Astron Token Plan · 标准/高级/尊享成员（按成员计价，note 必须写明席位口径）"],
+        "addToApiPlans": false,
+        "reason": "官方 API 单价不公开，不得落盘；Coding/Token Plan 可落 plans.json。"
+      }
+    },
+
+    {
+      "id": "baichuan",
+      "displayName": "百川智能",
+      "role": "first-party-developer",
+      "isFirstPartyDeveloper": true,
+      "officialDomainsCandidate": ["baichuan-ai.com"],
+      "identityStatus": "只有 official_urls.json 的 _officialDomains 里有 baichuan -> [\"baichuan-ai.com\"]（deals 侧独有）；providers.json 里没有身份",
+      "access": [
+        { "url": "https://platform.baichuan-ai.com/prices", "httpStatus": 200, "reachableFromTool": true, "note": "官方价格说明页，正文可完整抽取（含 token 表、搜索增强、知识库、Embeddings）。" },
+        { "url": "https://www.baichuan-ai.com/", "httpStatus": 200, "reachableFromTool": true, "note": "只返回标题（前端渲染）。" },
+        { "url": "https://www.baichuan-ai.com/news", "httpStatus": 404, "reachableFromTool": true, "error": "HTTP 404" },
+        { "url": "https://www.baichuan-ai.com/models", "httpStatus": 404, "reachableFromTool": true, "error": "HTTP 404" }
+      ],
+      "apiPricing": {
+        "public": true,
+        "officialUrl": "https://platform.baichuan-ai.com/prices",
+        "currency": "CNY",
+        "unit": "元/千tokens",
+        "rows": [
+          { "model": "Baichuan-M3-Plus", "context": "32k", "inputPer1K": 0.005, "outputPer1K": 0.009, "note": "调用过程会自动触发「医疗搜索」并单独计费（0.03元/次）" },
+          { "model": "Baichuan-M3", "context": "32k", "inputPer1K": 0.01, "outputPer1K": 0.03, "note": null },
+          { "model": "Baichuan-M2-Plus", "context": "32k", "inputPer1K": 0.01, "outputPer1K": 0.03, "note": "包含对话全流程节点产生的 Token 总数；自动触发医疗搜索另行计费" },
+          { "model": "Baichuan-M2", "context": "32k", "inputPer1K": 0.002, "outputPer1K": 0.02, "note": null },
+          { "model": "Baichuan4-Turbo", "context": "32k", "blendedPer1K": 0.015, "note": "官方原文「包含输入和输出」" },
+          { "model": "Baichuan4-Air", "context": "32k", "blendedPer1K": 0.00098, "note": "包含输入和输出" },
+          { "model": "Baichuan4", "context": "32k", "blendedPer1K": 0.1, "note": "包含输入和输出" },
+          { "model": "Baichuan3-Turbo", "context": "32k", "blendedPer1K": 0.012, "note": "包含输入和输出" },
+          { "model": "Baichuan3-Turbo-128k", "context": "128k", "blendedPer1K": 0.024, "note": "包含输入和输出" },
+          { "model": "Baichuan2-Turbo", "context": "32k", "blendedPer1K": 0.008, "note": "包含输入和输出" },
+          { "model": "Baichuan2-53B", "context": "32k", "blendedPer1K": 0.01, "timeWindow": "00:00 ~ 8:00", "note": "同一模型另一时段 8:00~24:00 为 0.02元/千tokens" },
+          { "model": "Baichuan2-53B", "context": "32k", "blendedPer1K": 0.02, "timeWindow": "8:00 ~ 24:00", "note": null },
+          { "model": "Baichuan-Text-Embedding", "context": "-", "inputPer1K": 0.0005, "note": "知识库 API 与向量化模型同价" }
+        ],
+        "nonTokenCharges": [
+          { "item": "搜索增强服务", "price": 0.03, "unit": "元/次", "note": "开启 web_search 后自动判定调用次数" },
+          { "item": "医疗搜索", "price": 0.03, "unit": "元/次", "note": "调用 Baichuan-M3-Plus / Baichuan-M2-Plus 对话会自动触发" },
+          { "item": "文件存储（知识库）", "price": 1.5, "unit": "元/GB/天", "note": "单用户限制 5G 存储" },
+          { "item": "Assistants API", "price": null, "unit": "限时免费", "note": null }
+        ],
+        "evidence": [
+          { "field": "models.Baichuan-M3-Plus", "quote": "模型调用 Baichuan-M3-Plus | 32k | 00:00 ~ 24:00 | 输入：0.005元/千tokens 输出：0.009元/千tokens | 包括对话全流程节点产生的Token总数 此外，调用过程会自动触发\"医疗搜索\"并单独计费见下表", "sourceUrl": "https://platform.baichuan-ai.com/prices", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "models.Baichuan-M3", "quote": "模型调用 Baichuan-M3 | 32k | 00:00 ~ 24:00 | 输入：0.01元/千tokens 输出：0.03元/千tokens", "sourceUrl": "https://platform.baichuan-ai.com/prices", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "models.Baichuan4-Turbo", "quote": "模型调用 Baichuan4-Turbo | 32k | 00:00 ~ 24:00 | 0.015元/千tokens | 包含输入和输出", "sourceUrl": "https://platform.baichuan-ai.com/prices", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "models.Baichuan2-53B", "quote": "模型调用 Baichuan2-53B | 32k | 00:00 ~ 8:00 | 0.01元/千tokens | 包含输入和输出 | 8:00 ~ 24:00 | 0.02元/千tokens", "sourceUrl": "https://platform.baichuan-ai.com/prices", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "knowledgeBase", "quote": "模型调用 Baichuan-Text-Embedding | 00:00 ~ 24:00 | 0.0005元/千tokens；文件存储 | 00:00 ~ 24:00 | 1.5元/GB/天", "sourceUrl": "https://platform.baichuan-ai.com/prices", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "retirement", "quote": "百川大模型 Baichuan2-Turbo-192k 已于2024年08月16日下线， 调用 Baichuan2-Turbo-192k 将会路由到Baichuan3-Turbo-128k。", "sourceUrl": "https://platform.baichuan-ai.com/prices", "capturedAt": "2026-10-04", "lang": "zh" }
+        ]
+      },
+      "currentTargetModels": [
+        { "name": "Baichuan-M3-Plus", "family": "Baichuan-M", "modelRoleCandidate": "flagship-medical", "evidence": "官方价格表当前在售最贵/最强 M 系列条目（输入 0.005 / 输出 0.009 元/千tokens，32k）" },
+        { "name": "Baichuan-M3", "family": "Baichuan-M", "modelRoleCandidate": "flagship-medical-previous", "evidence": "官方价格表在售条目（0.01 / 0.03 元/千tokens）" },
+        { "name": "Baichuan-M2-Plus", "family": "Baichuan-M", "modelRoleCandidate": "previous-gen", "evidence": "官方价格表在售条目" },
+        { "name": "Baichuan-M2", "family": "Baichuan-M", "modelRoleCandidate": "previous-gen", "evidence": "官方价格表在售条目" },
+        { "name": "Baichuan4-Turbo / Baichuan4-Air / Baichuan4 / Baichuan3-Turbo(-128k) / Baichuan2-Turbo / Baichuan2-53B", "family": "Baichuan4 / Baichuan3 / Baichuan2", "modelRoleCandidate": "legacy-on-price-page", "evidence": "官方价格页仍在列，但均为打包价；尚无官方上下架声明能把它们判成 retired。" }
+      ],
+      "releasedAtEvidence": [
+        { "model": "Baichuan-M3-Plus / Baichuan-M3 / Baichuan-M2(-Plus) / Baichuan4 系列", "releasedAt": null, "evidence": null, "note": "官方价格页不含发布日期；官方站 /news 与 /models 均 404。搜索命中的 techweb / 36氪 / 广州花城 / DoNews 等报道（如「2026-01-13 开源 M3」「2026-01-22 M3 Plus」）是媒体，按纪律不作 releasedAt 依据。" },
+        { "model": "Baichuan2-Turbo-192k", "releasedAt": null, "retiredAt": "2024-08-16", "evidence": { "quote": "百川大模型 Baichuan2-Turbo-192k 已于2024年08月16日下线， 调用 Baichuan2-Turbo-192k 将会路由到Baichuan3-Turbo-128k。", "sourceUrl": "https://platform.baichuan-ai.com/prices", "capturedAt": "2026-10-04" }, "note": "这是官方给出的下线日，不是发布日；登记以免与 releasedAt 混淆。" }
+      ],
+      "codingCandidates": [],
+      "codingCandidatesNote": "官方公开面上没有 Coding/Token 订阅套餐（价格页只有按量与知识库/Embeddings 计费）。搜索未命中任何官方套餐页 ⇒ 本轮不作为中国侧 Coding 候选。",
+      "priceExpressiveness": [
+        { "lineItem": "Baichuan-M3-Plus / M3 / M2-Plus / M2（输入价 + 输出价）", "officialUnit": "元/千tokens", "schemaMapping": "pricing{currency:'CNY',unit:'per_1K_tokens'} + models[].rates{input,output}", "verdict": "adopted", "note": "引文点名「每千」与 per_1K_tokens 同类，单位见证成立；可原样落盘。" },
+        { "lineItem": "Baichuan-Text-Embedding", "officialUnit": "元/千tokens", "schemaMapping": "pricing{currency:'CNY',unit:'per_1K_tokens'} + rates{input}", "verdict": "partial", "note": "schema 能表达，但当前 registry 里没有 Baichuan 的 embedding 模型条目，落盘前要决定是否新增该模型身份（属 coverage target 决定，不属本次调查结论）。" },
+        { "lineItem": "Baichuan4 / 4-Turbo / 4-Air / Baichuan3-Turbo(-128k) / Baichuan2-Turbo（打包价「包含输入和输出」）", "officialUnit": "元/千tokens（输入+输出合并）", "schemaMapping": null, "verdict": "schema_not_supported", "note": "TOKEN_RATE_KEYS 里没有 blended 一项。把它写成 input=output=X 会造出两条官方从未说过的事实；写成只有 input 又会把输出价说成「没公布」。记 gap，不落盘。" },
+        { "lineItem": "Baichuan2-53B 分时段价（00:00-8:00 = 0.01；8:00-24:00 = 0.02）", "officialUnit": "元/千tokens", "schemaMapping": "两条记录 + channel:'standard' / 'off_peak' + restrictions 说明时段", "verdict": "partial", "note": "仓库已有 DeepSeek PEAK/OFF-PEAK 双记录先例，可照做；但时段文本必须写清（禁止把时段当已知常识）。" },
+        { "lineItem": "搜索增强服务 / 医疗搜索（0.03元/次）", "officialUnit": "元/次", "schemaMapping": "mediaRates{kind:'other',unit:'per_request'}", "verdict": "partial", "note": "单位可表达，但 API 计费的 rates/mediaRates 绑定在「模型条目」上；官方这里是「服务/工具调用」而不是模型 ⇒ 需要先决定是否新增非模型条目，或干脆不落。" },
+        { "lineItem": "文件存储 1.5元/GB/天", "officialUnit": "元/GB/天", "schemaMapping": null, "verdict": "schema_not_supported", "note": "MEDIA_RATE_UNITS 没有 per_GB / per_day；不换算。" }
+      ],
+      "ruling": "partial",
+      "rulingReason": "官方价格页公开且可抽取，M 系列的输入/输出按千 tokens 计价可被 per_1K_tokens 原样表达（adopted）；但打包价（含输入输出）没有字段、非 token 计费（元/次、元/GB/天）没有单位、且所有模型的 releasedAt 都没有官方证据。",
+      "coverageRecommendation": "adopt-m-series-api-plans; record-blended-and-nontoken-as-gaps",
+      "gaps": [
+        { "id": "baichuan-schema-1", "severity": "high", "problem": "官方 6 个在售条目是「包含输入和输出」的打包价，schema 无 blended 字段。", "requiredFix": "本轮只落 M 系列四条（输入/输出分明）；打包价条目在 coverage 报告里记 schema_not_supported 并给出建议（新增 blended 键或在 note 里原样保留官方表述），禁止拆成 input=output。", "resolved": false },
+        { "id": "baichuan-schema-2", "severity": "medium", "problem": "搜索增强/医疗搜索按次、文件存储按 GB·天，均无官方单位可映射。", "requiredFix": "不落盘；记 gap。", "resolved": false },
+        { "id": "baichuan-date-1", "severity": "medium", "problem": "M3 / M3-Plus 无官方发布日期（官方站无新闻页；媒体日期不可用）。", "requiredFix": "releasedAt=null + checkedAt 结论；不要用媒体日期补。", "resolved": false }
+      ],
+      "handoffToDataIntegrator": {
+        "addToProvidersJson": true,
+        "providerKeyCandidate": "baichuan",
+        "providerSlugCandidate": "baichuan",
+        "providerNameCandidate": "百川智能",
+        "vendorKeyCandidate": "baichuan",
+        "officialDomainsCandidate": ["baichuan-ai.com"],
+        "addToApiPlans": true,
+        "apiPlansToAdd": ["Baichuan-M3-Plus（CNY per_1K_tokens：0.005 / 0.009）", "Baichuan-M3（0.01 / 0.03）", "Baichuan-M2-Plus（0.01 / 0.03）", "Baichuan-M2（0.002 / 0.02）"],
+        "addToPlansJson": false,
+        "reason": "有 adopted 的 API 计费事实可落；Coding 套餐无可落对象。"
+      }
+    },
+
+    {
+      "id": "stepfun",
+      "displayName": "阶跃星辰 StepFun",
+      "role": "first-party-developer",
+      "isFirstPartyDeveloper": true,
+      "officialDomainsCandidate": ["stepfun.com"],
+      "identityStatus": "只有 official_urls.json 的 _officialDomains 里有 stepfun -> [\"stepfun.com\"]；providers.json 里没有身份（但 registry 已有模型 step-3.5-flash，developer=阶跃星辰（StepFun））",
+      "access": [
+        { "url": "https://platform.stepfun.com/docs/zh/guides/pricing/details", "httpStatus": 200, "reachableFromTool": true, "note": "官方定价与限速页（.md 变体同样 200，正文完整）。" },
+        { "url": "https://platform.stepfun.com/docs/zh/step-plan/overview", "httpStatus": 200, "reachableFromTool": true, "note": "Step Plan 官方文档（订阅档位、Credit 换算、加油包、支持模型）。" },
+        { "url": "https://platform.stepfun.com/docs/zh/guides/model-migration", "httpStatus": 200, "reachableFromTool": true, "note": "模型生命周期与下线（官方日期）。" },
+        { "url": "https://platform.stepfun.com/docs/zh/guides/models/step-5-preview", "httpStatus": 200, "reachableFromTool": true, "note": "旗舰模型页。" },
+        { "url": "https://platform.stepfun.com/docs/zh/guides/models/step-3.7-flash", "httpStatus": 200, "reachableFromTool": true, "note": "模型页，含单价表。" },
+        { "url": "https://platform.stepfun.com/docs/llms.txt", "httpStatus": 200, "reachableFromTool": true, "note": "官方文档索引，可用于确认页面集合。" }
+      ],
+      "apiPricing": {
+        "public": true,
+        "officialUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
+        "currency": "CNY",
+        "unit": "元 / 1M tokens",
+        "tokenRows": [
+          { "model": "step-5-preview", "inputPer1M": 7, "cachedInputPer1M": 0.35, "outputPer1M": 20, "tier": "多模态推理大模型" },
+          { "model": "step-3.7-flash", "inputPer1M": 1.35, "cachedInputPer1M": 0.27, "outputPer1M": 8.1, "tier": "多模态推理大模型" },
+          { "model": "step-3.5-flash", "inputPer1M": 0.7, "cachedInputPer1M": 0.14, "outputPer1M": 2.1, "tier": "推理大模型（已在 registry）" },
+          { "model": "step-3.5-flash-2603", "inputPer1M": 0.7, "cachedInputPer1M": 0.14, "outputPer1M": 2.1, "tier": "推理大模型" },
+          { "model": "step-1o-turbo-vision", "inputPer1M": 2.5, "cachedInputPer1M": 0.5, "outputPer1M": 8, "tier": "视觉大模型（图像按 token 计量，默认每图 169 tokens）" },
+          { "model": "stepaudio-2.5-realtime", "inputPer1M": 10, "cachedInputPer1M": 2, "outputPer1M": 70, "tier": "语音（按 Token）" },
+          { "model": "stepaudio-2.5-chat", "inputPer1M": 10, "cachedInputPer1M": 2, "outputPer1M": 25, "tier": "语音（按 Token）" },
+          { "model": "step-1o-audio", "inputPer1M": 25, "cachedInputPer1M": 5, "outputPer1M": 60, "tier": "语音（按 Token）" },
+          { "model": "step-audio-2", "inputPer1M": 10, "cachedInputPer1M": 2, "outputPer1M": 70, "tier": "语音（按 Token）" },
+          { "model": "step-audio-r1.5", "inputPer1M": 10, "cachedInputPer1M": 2, "outputPer1M": 105, "tier": "语音（按 Token）" }
+        ],
+        "freeOrUnpricedRows": [
+          { "model": "stepaudio-3-realtime-preview", "status": "限时免费" },
+          { "model": "stepaudio-3-chat-preview", "status": "限时免费" },
+          { "model": "stepaudio-3-gen-preview", "status": "限时免费" },
+          { "model": "stepaudio-3-music-preview", "status": "限时免费" }
+        ],
+        "nonTokenRows": [
+          { "item": "stepaudio-3-tts", "price": 2.5, "unit": "元/万字符" },
+          { "item": "stepaudio-2.5-tts", "price": 5.8, "unit": "元/万字符" },
+          { "item": "step-tts-2", "price": 2.8, "unit": "元/万字符" },
+          { "item": "step-tts-mini", "price": 0.9, "unit": "元/万字符" },
+          { "item": "语音复刻（stepaudio-3-tts / stepaudio-2.5-tts / step-tts-2 / step-tts-mini）", "price": 9.9, "unit": "元/音色" },
+          { "item": "stepaudio-3-asr-max", "price": 2.8, "unit": "元/小时" },
+          { "item": "stepaudio-2.5-asr", "price": 0.15, "unit": "元/小时" },
+          { "item": "stepaudio-2.5-asr-stream", "price": 1.2, "unit": "元/小时" },
+          { "item": "stepaudio-2-asr-pro", "price": 2, "unit": "元/小时" },
+          { "item": "step-asr", "price": 0.9, "unit": "元/小时" },
+          { "item": "step-asr-1.1", "price": 2.2, "unit": "元/小时" },
+          { "item": "step-asr-1.1-stream", "price": 2.6, "unit": "元/小时" },
+          { "item": "step-2x-large", "price": 0.1, "unit": "元/张", "statusNote": "2026-10-10 下线" },
+          { "item": "step-image-edit-2", "price": 0.02, "unit": "元/张", "statusNote": "2026-10-10 下线" },
+          { "item": "互联网搜索", "price": 0.04, "unit": "元/次" },
+          { "item": "文搜图", "price": 0.12, "unit": "元/次" },
+          { "item": "文件存储", "price": 0.5, "unit": "元/GB/天" }
+        ],
+        "evidence": [
+          { "field": "models.step-5-preview", "quote": "| `step-5-preview` | 1M tokens | 7 元 | 0.35 元 | 20 元 |", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "models.step-3.7-flash", "quote": "| `step-3.7-flash` | 1M tokens | 1.35 元 | 0.27 元 | 8.1 元 |", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "models.step-3.5-flash", "quote": "| `step-3.5-flash` | 1M tokens | 0.7 元 | 0.14 元 | 2.1 元 |", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "models.step-1o-turbo-vision", "quote": "| `step-1o-turbo-vision` | 1M tokens | 2.5 元 | 0.5 元 | 8 元 |", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "unitHeader", "quote": "### 多模态推理大模型的定价表 | 模型 | 计费单位 | 输入价格（缓存未命中） | 输入价格（缓存命中） | 输出价格 |", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "nonToken.tts", "quote": "| `stepaudio-3-tts` | 文本转语音模型 | 2.5 元 / 万字符 | | `stepaudio-2.5-tts` | 基于语境理解的文本转语音模型 | 5.8 元/万字符 |", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "nonToken.asr", "quote": "| `stepaudio-3-asr-max` | 语音识别模型 | 2.8 元 / 小时 | | `stepaudio-2.5-asr` | 语音识别模型 | 0.15 元/小时 |", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "nonToken.image", "quote": "| `step-2x-large` | 0.1 元 | | `step-image-edit-2` | 0.02 元 | （此处以生成图片的张数计量和收费）", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "nonToken.valueAdded", "quote": "| 互联网搜索 | 0.04 元 | | 文搜图 | 0.12 元 | | 文件存储 | 0.5 元/GB/天 |", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "cacheRule", "quote": "计费说明：未命中缓存的输入 token（包括首次写入缓存的内容）按未命中价格计费；已命中缓存的输入 token 按缓存命中价格计费。", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details", "capturedAt": "2026-10-04", "lang": "zh" }
+        ]
+      },
+      "currentTargetModels": [
+        { "name": "Step 5 Preview", "modelKeyCandidate": "step-5-preview", "family": "Step", "modelRoleCandidate": "flagship-base", "contextWindow": "1M tokens（最大输出 64k）", "status": "在售", "evidence": { "quote": "**Step 5 Preview 是 StepFun 面向真实任务的新一代旗舰基模**，重点覆盖编程与专业知识工作。模型原生支持文本、图片和视频输入，提供 **1M tokens 上下文窗口**", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/models/step-5-preview", "capturedAt": "2026-10-04" } },
+        { "name": "Step 3.7 Flash", "modelKeyCandidate": "step-3.7-flash", "family": "Step", "modelRoleCandidate": "flagship-multimodal-reasoning", "contextWindow": "256K tokens", "status": "在售", "evidence": { "quote": "阶跃星辰的旗舰多模态推理模型。基于 198B 总参数 / 11B 激活参数的稀疏 MoE 架构，原生支持图片和视频理解。", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/models/step-3.7-flash", "capturedAt": "2026-10-04" } },
+        { "name": "Step 3.5 Flash", "modelKeyCandidate": "step-3.5-flash", "family": "Step", "modelRoleCandidate": "reasoning-agent", "contextWindow": "256K tokens", "status": "在售（registry 已有）", "evidence": { "quote": "旗舰级推理模型，专为智能体构建而生。推理深度比肩顶尖闭源模型，同时具备极速响应与稳定可靠的工具调用能力。", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/models/overview", "capturedAt": "2026-10-04" } },
+        { "name": "Step 3.5 Flash 2603", "modelKeyCandidate": "step-3.5-flash-2603", "family": "Step", "modelRoleCandidate": "agent-optimized", "contextWindow": "256K tokens", "status": "在售", "evidence": { "quote": "基于 `step-3.5-flash` 针对高频 Agent 场景优化……对 Coding 与 Agent 框架兼容性也做了专项优化。", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/models/overview", "capturedAt": "2026-10-04" } },
+        { "name": "Step-1o Turbo Vision", "modelKeyCandidate": "step-1o-turbo-vision", "family": "Step", "modelRoleCandidate": "vision", "contextWindow": "32K", "status": "在售", "evidence": { "quote": "典型应用场景有社媒发帖文案创作、AI 问答助手、图片与视频理解等。单次请求限制输入最多60张图片，总大小控制在20M 以内", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/models/overview", "capturedAt": "2026-10-04" } },
+        { "name": "StepAudio 3 Realtime / StepAudio 2.5 Chat / StepAudio 3 TTS / StepAudio 2.5 ASR / Step-TTS-Mini / Step-1o Audio", "family": "StepAudio", "modelRoleCandidate": "audio-family", "status": "在售（部分 preview 限时免费）", "evidence": { "quote": "面向实时互动的全双工语音旗舰……适合智能座舱、智能终端、客服和情感陪伴等场景。", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/models/overview", "capturedAt": "2026-10-04" } },
+        { "name": "Step Router V1", "modelKeyCandidate": "step-router-v1", "family": "Step", "modelRoleCandidate": "router", "status": "在售（Step Plan 内）", "evidence": { "quote": "`step-router-v1`：智能路由模型，按任务复杂度自动调度", "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview", "capturedAt": "2026-10-04" } }
+      ],
+      "legacyModels": [
+        { "name": "step-3 / step-1-8k / step-1-32k / step-1v-8k / step-1v-32k / step-2-mini / step-1o-vision-32k / step-2-16k / step-1x-medium", "retiredAt": "2026-07-08", "evidence": { "quote": "为持续优化模型能力与服务体验，以下模型已于 **2026 年 07 月 08 日** 正式下线并停止推理服务。", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/model-migration", "capturedAt": "2026-10-04" } },
+        { "name": "step-2x-large / step-image-edit-2", "retiringAt": "2026-10-10", "evidence": { "quote": "`step-2x-large`、`step-image-edit-2` 将于 2026 年 10 月 10 日下线，文生图、图生图、图片编辑接口将同步停止服务", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details", "capturedAt": "2026-10-04" } }
+      ],
+      "releasedAtEvidence": [
+        { "model": "step-5-preview / step-3.7-flash / step-3.5-flash-2603 / step-1o-turbo-vision / stepaudio-*", "releasedAt": null, "evidence": null, "note": "官方模型页与定价页都不含发布日期；官方生命周期页只给下线日期。搜索命中的 cnstock / sohu 报道（如「阶跃发布并开源生产级高效率Agent模型Step 3.7 Flash」）是媒体，按纪律不作依据。step-3.5-flash-2603 的名字里含 2603，属版本号猜测，同样不作依据。" },
+        { "model": "（下线日期，供 currentness 用）", "releasedAt": null, "retiredAt": "2026-07-08", "evidence": { "quote": "为持续优化模型能力与服务体验，以下模型已于 **2026 年 07 月 08 日** 正式下线并停止推理服务。", "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/model-migration", "capturedAt": "2026-10-04" } }
+      ],
+      "codingCandidates": [
+        {
+          "candidateId": "cn-stepfun-step-plan",
+          "name": "Step Plan",
+          "kind": "coding-subscription(credit-pool)",
+          "providerKey": "stepfun",
+          "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+          "region": "cn",
+          "currency": "CNY",
+          "creditConversion": "1M Credit = ¥1（100 万 Credit 对应 ¥1 的模型用量）",
+          "tiers": [
+            { "name": "Flash Mini", "monthlyCredits": 400000000, "monthly": 49, "quarterly": 129, "yearly": 456 },
+            { "name": "Flash Plus", "monthlyCredits": 1600000000, "monthly": 99, "quarterly": 269, "yearly": 936 },
+            { "name": "Flash Pro", "monthlyCredits": 8000000000, "monthly": 199, "quarterly": 539, "yearly": 1860 },
+            { "name": "Flash Max", "monthlyCredits": 40000000000, "monthly": 699, "quarterly": 1889, "yearly": 6666 }
+          ],
+          "topUps": [
+            { "name": "小油包", "price": 49, "credits": 400000000, "period": "30 天（独立周期）" },
+            { "name": "大油包", "price": 99, "credits": 1600000000, "period": "30 天（独立周期）" }
+          ],
+          "supportedModels": ["step-5-preview", "step-3.7-flash", "step-3.5-flash", "step-3.5-flash-2603", "stepaudio-2.5-realtime", "stepaudio-2.5-chat", "stepaudio-2.5-tts", "stepaudio-2.5-asr", "step-router-v1"],
+          "evidence": [
+            { "field": "tiers", "quote": "| **Flash Mini** | 入门体验 AI 的用户 | 400M | ¥49 | ¥129 | ¥456 | | **Flash Plus** | 日常使用 AI 提效的用户 | 1600M | ¥99 | ¥269 | ¥936 | | **Flash Pro** | 高频使用 AI 的深度用户 | 8000M | ¥199 | ¥539 | ¥1860 | | **Flash Max** | 高强度使用 AI 的专业用户 | 40000M | ¥699 | ¥1889 | ¥6666 |", "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview", "capturedAt": "2026-10-04", "lang": "zh" },
+            { "field": "creditRule", "quote": "Credit 与支付金额按 **1M Credit = ¥1** 换算（即 100 万 Credit 对应 ¥1 的模型用量）……订阅后，Credit 一次性发放至当月「月池」，**月内任意时段消耗，月末清零、不结转至下一周期**。", "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview", "capturedAt": "2026-10-04", "lang": "zh" },
+            { "field": "topUps", "quote": "| 小油包 | ¥49 | 400M | | 大油包 | ¥99 | 1600M | ……加油包仅向已订阅 Step Plan 的用户开放，周期单独 30 天", "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview", "capturedAt": "2026-10-04", "lang": "zh" },
+            { "field": "noLadderLimit", "quote": "Step Plan 不适用开放平台按累计充值金额划分的[阶梯限速]，用量由所订阅档位的月度 Credit 额度管理。", "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview", "capturedAt": "2026-10-04", "lang": "zh" }
+          ],
+          "schemaVerdict": "partial",
+          "schemaNotes": [
+            "月付价 + 月发 Credit 可直接落 billing{period:'monthly',currency:'CNY',regularPrice} + quota{type:'credits',amount,period:'monthly'}。",
+            "季付/年付：年付可落 billing.period='yearly'；季付无 period ⇒ 只能进 note。注意年付 Credit 仍按月发放（官方原文），不能写成 one_time。",
+            "加油包是独立 30 天周期、且仅对已订阅用户开放 ⇒ 若落盘应另立记录并用 restrictions(kind='account_required' 或 invite_only 不合适) + note 表达准入；不要并进主档位。",
+            "Credit 的「1M Credit = ¥1」是官方明写的换算，可作 unitNote；但不要据此把 Credit 折算成 token 单价（官方没给逐模型 token 价）。"
+          ],
+          "ruling": "adopted",
+          "rulingReason": "官方文档给出四档月付价、Credit 额度、换算规则与准入条件，价格单位 CNY/月，可被 plans.json 诚实表达（季付按 partial 处理）。"
+        }
+      ],
+      "priceExpressiveness": [
+        { "lineItem": "文本/多模态/语音按 token 计费（step-5-preview、step-3.7-flash、step-3.5-flash(-2603)、step-1o-turbo-vision、stepaudio-*）", "officialUnit": "元 / 1M tokens（输入缓存未命中、输入缓存命中、输出）", "schemaMapping": "pricing{currency:'CNY',unit:'per_1M_tokens'} + rates{input,cachedInput,output}", "verdict": "adopted", "note": "官方表头就是「1M tokens」三列，与 per_1M_tokens 同类；缓存未命中→input、缓存命中→cachedInput，语义一致。官方没有「缓存写入」单价 ⇒ cacheWrite 必须留 null（不是 0）。" },
+        { "lineItem": "TTS 按字符（2.5 / 5.8 / 2.8 / 0.9 元/万字符）", "officialUnit": "元/万字符", "schemaMapping": "mediaRates{unit:'per_1M_characters'}", "verdict": "partial", "note": "现有字符单位只有「每百万字符」，官方是「每万字符」⇒ 需要 ×100 换算并写 unitNote；引文里的「万字符」既不被判为每千也不被判为每百万，所以换算说明必须写在 unitNote 里，否则单位见证不成立。" },
+        { "lineItem": "ASR 按小时（2.8 / 0.15 / 1.2 / 2 / 0.9 / 2.2 / 2.6 元/小时）", "officialUnit": "元/小时", "schemaMapping": null, "verdict": "schema_not_supported", "note": "MEDIA_RATE_UNITS 没有 per_hour；折算成 per_minute 会引入 2.8/60 这类无限小数 ⇒ 不换算、不落盘。" },
+        { "lineItem": "图片按张（step-2x-large 0.1 元/张；step-image-edit-2 0.02 元/张）", "officialUnit": "元/张", "schemaMapping": "mediaRates{kind:'image',unit:'per_image'}", "verdict": "adopted", "note": "两模型均于 2026-10-10 下线，落盘时应写明状态，避免默认展示已下线模型。" },
+        { "lineItem": "增值能力按次（互联网搜索 0.04 元/次、文搜图 0.12 元/次）", "officialUnit": "元/次", "schemaMapping": "mediaRates{unit:'per_request'}", "verdict": "partial", "note": "单位可表达但绑定在「模型条目」上；官方这里是能力调用，需要先决定是否新增条目。" },
+        { "lineItem": "文件存储 0.5 元/GB/天；语音复刻 9.9 元/音色", "officialUnit": "元/GB/天、元/音色", "schemaMapping": null, "verdict": "schema_not_supported", "note": "无对应单位。" },
+        { "lineItem": "Step Plan 季付", "officialUnit": "CNY / quarter", "schemaMapping": null, "verdict": "schema_not_supported", "note": "BILLING_PERIODS 无 quarterly。" },
+        { "lineItem": "限时免费预览（stepaudio-3-realtime-preview 等）", "officialUnit": "限时免费", "schemaMapping": "freeTier（stability='promotional'）或不落", "verdict": "partial", "note": "限时活动按仓库既有分工属 Deals 侧（FREE_TIER_STABILITY 有 promotional），API 计费的 freeTier 只装长期稳定免费；不要写成 price=0。" }
+      ],
+      "ruling": "adopted",
+      "rulingReason": "本轮 8 家里唯一「官方定价 + 官方订阅套餐都公开、可抽取、且大部分能被现有 schema 原样表达」的一家：token 表按百万 tokens、图片按张、Step Plan 按月 Credit 都可落盘；按小时/按 GB·天/季度价按 schema_not_supported 记 gap。",
+      "coverageRecommendation": "adopt-api-plans + adopt-coding-plan",
+      "gaps": [
+        { "id": "stepfun-schema-1", "severity": "medium", "problem": "7 个 ASR 模型按「元/小时」计费，schema 无 per_hour。", "requiredFix": "不落盘、记 gap；不要折算成 per_minute（会造出无限小数）。", "resolved": false },
+        { "id": "stepfun-schema-2", "severity": "low", "problem": "TTS 按「万字符」，现有单位只有「每百万字符」。", "requiredFix": "若落盘必须 ×100 并写 unitNote 说明官方原文单位；否则不落。", "resolved": false },
+        { "id": "stepfun-date-1", "severity": "medium", "problem": "全部在售模型无官方发布日期。", "requiredFix": "releasedAt=null；只登记官方给出的下线日（2026-07-08 / 2026-10-10）。", "resolved": false }
+      ],
+      "handoffToDataIntegrator": {
+        "addToProvidersJson": true,
+        "providerKeyCandidate": "stepfun",
+        "providerSlugCandidate": "stepfun",
+        "providerNameCandidate": "阶跃星辰",
+        "vendorKeyCandidate": "stepfun",
+        "officialDomainsCandidate": ["stepfun.com"],
+        "addToApiPlans": true,
+        "apiPlansToAdd": ["step-5-preview", "step-3.7-flash", "step-3.5-flash", "step-3.5-flash-2603", "step-1o-turbo-vision", "stepaudio-2.5-realtime", "stepaudio-2.5-chat", "step-1o-audio", "step-audio-2", "step-audio-r1.5"],
+        "addToPlansJson": true,
+        "plansToAdd": ["Step Plan · Flash Mini/Plus/Pro/Max（CNY/月 + 月发 Credit）"],
+        "reason": "定价与套餐都是官方公开且可抽取；是这 8 家里最该优先落盘的一家。"
+      }
+    },
+
+    {
+      "id": "sensetime",
+      "displayName": "商汤科技",
+      "role": "first-party-developer",
+      "isFirstPartyDeveloper": true,
+      "officialDomainsCandidate": ["sensetime.com", "sensecore.cn", "sensenova.cn"],
+      "identityStatus": "只有 official_urls.json 的 _officialDomains 里有 sensetime -> [\"sensetime.com\"]；providers.json 里没有身份（registry 里也没有商汤模型）",
+      "access": [
+        { "url": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing", "httpStatus": 200, "reachableFromTool": true, "note": "大装置「日日新大模型 · 模型调用计费」（Tokens 按量后付费）正文完整。" },
+        { "url": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/release", "httpStatus": 200, "reachableFromTool": true, "note": "官方发布动态（含 V6.5 系列发布日期）。" },
+        { "url": "https://www.sensenova.cn/models", "httpStatus": 200, "reachableFromTool": true, "note": "日日新官网当前产品面（6.8 Flash Lite / U1.5 Lite）。" },
+        { "url": "https://www.sensenova.cn/token-plan", "httpStatus": 200, "reachableFromTool": true, "note": "Token Plan 页（公测免费档 + 付费档即将上线）。" },
+        { "url": "https://www.sensetime.com/hk/news/sensenova-u1-5-lite-token-plan-20260911-1741", "httpStatus": 200, "reachableFromTool": true, "note": "官方新闻（商汤官网域）：U1.5 Lite 接入 Token Plan。" },
+        { "url": "https://platform.sensenova.cn/docs", "httpStatus": 200, "reachableFromTool": true, "note": "只返回标题（前端渲染），模型清单与价格不可抽取。" }
+      ],
+      "apiPricing": {
+        "public": "partial",
+        "officialUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
+        "currency": "CNY",
+        "unit": "元/千tokens",
+        "note": "大装置页公开的是 V6.x 线的按量价；日日新官网当前主推的 6.8 Flash Lite / U1 Fast 没有公开按量价目表（只有 Token Plan 公测免费档）。两个产品面的模型名互不重叠，必须分别判定。",
+        "tokenRows": [
+          { "model": "SenseNova-V6.5-Pro", "inputPer1K": 0.003, "outputPer1K": 0.009, "note": "融合模态大模型（最新一版）" },
+          { "model": "SenseNova-V6.5-Turbo", "inputPer1K": 0.0015, "outputPer1K": 0.0045, "note": null },
+          { "model": "SenseNova-V6-Pro", "inputPer1K": 0.003, "outputPer1K": 0.009, "note": null },
+          { "model": "SenseNova-V6-Turbo", "inputPer1K": 0.0015, "outputPer1K": 0.0045, "note": null },
+          { "model": "SenseNova-V6-Reasoner", "inputPer1K": 0.004, "outputPer1K": 0.016, "note": null },
+          { "model": "SenseChat-Vision", "inputPer1K": 0.01, "outputPer1K": 0.06, "note": "商量图文多模态" },
+          { "model": "SenseChat-Character-Pro", "blendedPer1K": 0.015, "note": "官方原文「输入tokens、输出tokens | 0.015元/千tokens」" },
+          { "model": "SenseChat-Character", "blendedPer1K": 0.012, "note": "同上，打包价" }
+        ],
+        "nonTokenRows": [
+          { "model": "SenseNova-V6-Omni", "price": 0.2, "unit": "元/分钟" },
+          { "model": "SenseNova-Audio-Fusion-0603", "price": 3.5, "unit": "元/万字符" },
+          { "model": "nova-tts-1", "price": null, "unit": "限时免费体验" }
+        ],
+        "evidence": [
+          { "field": "models.SenseNova-V6.5-Pro", "quote": "| SenseNova-V6.5-Pro模型调用 | 输入tokens | 0.003元/千tokens | 输出tokens | 0.009元/千tokens |", "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "models.SenseNova-V6.5-Turbo", "quote": "| SenseNova-V6.5-Turbo模型调用 | 输入tokens | 0.0015元/千tokens | 输出tokens | 0.0045元/千tokens |", "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "models.SenseNova-V6-Reasoner", "quote": "| SenseNova-V6-Reasoner模型调用 | 输入tokens | 0.004元/千tokens | 输出tokens | 0.016元/千tokens |", "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "models.SenseNova-V6-Omni", "quote": "| SenseNova-V6-Omni模型调用 | 分钟 | 0.2元/分钟 |", "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "models.SenseNova-Audio-Fusion-0603", "quote": "| SenseNova-Audio-Fusion-0603模型调用 | 输入字符数 | 3.5元/万字符 |", "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "models.SenseChat-Character-Pro", "quote": "| SenseChat-Character-Pro模型调用 | 输入tokens、输出tokens | 0.015元/千tokens |", "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing", "capturedAt": "2026-10-04", "lang": "zh" },
+          { "field": "priceCutBanner", "quote": "2月28日起，日日新大模型全面降价，个别模型百万tokens调用量不超过1元，欢迎广大用户前来调用！", "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing", "capturedAt": "2026-10-04", "lang": "zh" }
+        ]
+      },
+      "currentTargetModels": [
+        { "name": "SenseNova 6.8 Flash Lite", "family": "SenseNova 6.x", "modelRoleCandidate": "current-lightweight-agent", "surface": "sensenova.cn（当前产品面）", "evidence": { "quote": "SenseNova 6.8 Flash Lite 是能够交付真实复杂任务的轻量级多模态智能体模型", "sourceUrl": "https://www.sensenova.cn/models", "capturedAt": "2026-10-04" } },
+        { "name": "SenseNova U1.5 Lite", "family": "SenseNova U", "modelRoleCandidate": "current-image-gen-edit", "surface": "sensenova.cn", "evidence": { "quote": "SenseNova U1.5 Lite 是新一代生成与编辑一体图片创作模型", "sourceUrl": "https://www.sensenova.cn/models", "capturedAt": "2026-10-04" } },
+        { "name": "SenseNova-V6.5-Pro / SenseNova-V6.5-Turbo", "family": "SenseNova V6.x", "modelRoleCandidate": "current-on-sensecore-price-page", "surface": "sensecore.cn（大装置）", "evidence": { "quote": "【模型更新】发布最新版本日日新-融合模态模型SenseNova-V6.5-Pro、SenseNova-V6.5-Turbo", "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/release", "capturedAt": "2026-10-04" } },
+        { "name": "SenseNova-V6-Reasoner / V6-Pro / V6-Turbo / V6-Omni", "family": "SenseNova V6.x", "modelRoleCandidate": "previous-in-family", "surface": "sensecore.cn", "evidence": { "quote": "【模型更新】发布最新版本日日新-融合模态模型SenseNova-V6-Pro、SenseNova-V6-Reasoner、SenseNova-V6-Turbo", "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/release", "capturedAt": "2026-10-04" } },
+        { "name": "SenseChat-Vision / SenseChat-Character(-Pro) / SenseNova-Audio-Fusion-0603 / nova-tts-1", "family": "SenseChat / SenseNova-Audio", "modelRoleCandidate": "specialized", "surface": "sensecore.cn", "evidence": { "quote": "| SenseChat-Vision模型调用 | 输入tokens | 0.01元/千tokens | 输出tokens | 0.06元/千tokens |", "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing", "capturedAt": "2026-10-04" } }
+      ],
+      "releasedAtEvidence": [
+        { "model": "SenseNova-V6.5-Pro / SenseNova-V6.5-Turbo", "releasedAt": "2025-07-23", "evidence": { "quote": "### **release-202507** `2025.07.23` ## **【模型更新】发布最新版本日日新-融合模态模型SenseNova-V6.5-Pro、SenseNova-V6.5-Turbo**", "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/release", "capturedAt": "2026-10-04" }, "note": "官方发布动态里的日期，可用。" },
+        { "model": "SenseNova-V6-Pro / V6-Reasoner / V6-Turbo", "releasedAt": "2025-04-09", "evidence": { "quote": "### **release-202504** `2025.04.09` ## **【模型更新】发布最新版本日日新-融合模态模型SenseNova-V6-Pro、SenseNova-V6-Reasoner、SenseNova-V6-Turbo**", "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/release", "capturedAt": "2026-10-04" } },
+        { "model": "SenseNova-V6-Omni", "releasedAt": "2025-04-09", "evidence": { "quote": "## **【模型更新】发布最新版本日日新-融合模态模型SenseNova-V6-Omni**（位于 release-202504 `2025.04.09` 段内）", "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/release", "capturedAt": "2026-10-04" }, "note": "该标题挂在 release-202504 段下（页面未给它单独日期）；登记段日期，不另造精度。" },
+        { "model": "SenseNova 6.8 Flash Lite", "releasedAt": null, "evidence": null, "note": "官方产品页没有任何日期；发布动态页最新一条是 2025.07.23，未覆盖 6.8 线（说明大装置发布动态页不是日日新当前产品面的发布渠道）。" },
+        { "model": "SenseNova U1.5 Lite", "releasedAt": null, "evidence": { "quote": "免費體驗、便捷接入！日日新 U1.5 Lite 接入 Token Plan（商湯科技2026/08/25）", "sourceUrl": "https://www.sensetime.com/hk/news/sensenova-u1-5-lite-token-plan-20260911-1741", "capturedAt": "2026-10-04" }, "note": "官方新闻只说明「2026/08/25 接入 Token Plan」，不是模型发布日；URL slug 里是 20260911，两者不一致 ⇒ releasedAt 一律 null，只登记这条接入事实。" }
+      ],
+      "codingCandidates": [
+        {
+          "candidateId": "cn-sensetime-token-plan",
+          "name": "SenseNova Token Plan",
+          "kind": "agent/token-subscription(公测免费)",
+          "providerKey": "sensetime",
+          "officialUrl": "https://www.sensenova.cn/token-plan",
+          "region": "cn",
+          "currency": "CNY",
+          "tiers": [
+            { "name": "Free · 公测", "regularPrice": 0, "period": "monthly", "quota": "60,000 积分 / 5 小时（特殊模型除外）", "models": ["SenseNova 6.8 Flash Lite", "SenseNova U1 Fast"], "status": "在售（限时放量）" },
+            { "name": "Lite / Pro", "regularPrice": null, "status": "即将上线（付费档位即将推出）", "note": "官方页面只写「即将上线」，没有价格 ⇒ 不许猜价。" }
+          ],
+          "evidence": [
+            { "field": "tiers.Free", "quote": "公测期完全免费开放，付费档位即将上线 | ### Free · 公测 限时放量 ¥ 0/月 …… 60,000 积分 / 5 小时i特殊模型除外，具体参考文档说明。 | **SenseNova 6.8 Flash Lite** 与 **SenseNova U1 Fast** …… 最多 **20 个 API Key**", "sourceUrl": "https://www.sensenova.cn/token-plan", "capturedAt": "2026-10-04", "lang": "zh" },
+            { "field": "tiers.Paid", "quote": "### Lite / Pro 即将上线 付费档位即将推出", "sourceUrl": "https://www.sensenova.cn/token-plan", "capturedAt": "2026-10-04", "lang": "zh" },
+            { "field": "u15lite-public-beta", "quote": "免費配額：每 5 小時 1,500 次請求，公測期間完全免費！ 模型 ID：sensenova-u1.5-lite", "sourceUrl": "https://www.sensetime.com/hk/news/sensenova-u1-5-lite-token-plan-20260911-1741", "capturedAt": "2026-10-04", "lang": "zh" }
+          ],
+          "schemaVerdict": "partial",
+          "schemaNotes": [
+            "免费档可落 billing{period:'monthly',currency:'CNY',regularPrice:0}（0 = 官方明写确实免费）+ quota{type:'credits',amount:60000,period:'rolling'}。",
+            "付费档只有「即将上线」，无价 ⇒ 本轮不落任何付费记录（不得写 regularPrice:null 的假档位，除非同时写清「官方未公布价格」。仓库既有先例：智谱 Lite 就是 currency/regularPrice 全 null + note 说明）。",
+            "「特殊模型除外」是额度例外条款 ⇒ 只能进 quota.description，别当成已知的模型白名单。"
+          ],
+          "ruling": "partial",
+          "rulingReason": "官方公开的只有公测免费档与「付费档即将上线」；免费档可诚实表达，付费档无价可落。"
+        }
+      ],
+      "priceExpressiveness": [
+        { "lineItem": "SenseNova-V6.5-Pro / V6.5-Turbo / V6-Pro / V6-Turbo / V6-Reasoner（输入+输出分明）", "officialUnit": "元/千tokens", "schemaMapping": "pricing{currency:'CNY',unit:'per_1K_tokens'} + rates{input,output}", "verdict": "adopted", "note": "引文点名「每千」与 per_1K_tokens 同类。" },
+        { "lineItem": "SenseChat-Vision", "officialUnit": "元/千tokens", "schemaMapping": "同上", "verdict": "adopted", "note": null },
+        { "lineItem": "SenseChat-Character(-Pro)（输入tokens、输出tokens 同价）", "officialUnit": "元/千tokens（合并）", "schemaMapping": null, "verdict": "schema_not_supported", "note": "打包价，无 blended 字段；不拆成 input=output。" },
+        { "lineItem": "SenseNova-V6-Omni 0.2元/分钟", "officialUnit": "元/分钟", "schemaMapping": "mediaRates{kind:'audio'|'other',unit:'per_minute'}", "verdict": "adopted", "note": "per_minute 在 MEDIA_RATE_UNITS 里；kind 需人工裁（实时音视频交互，建议 audio）。" },
+        { "lineItem": "SenseNova-Audio-Fusion-0603 3.5元/万字符", "officialUnit": "元/万字符", "schemaMapping": "mediaRates{unit:'per_1M_characters'}", "verdict": "partial", "note": "需要 ×100 换算 + unitNote；否则不落。" },
+        { "lineItem": "Token Plan 免费档", "officialUnit": "CNY / 月 = 0", "schemaMapping": "plans.billing{period:'monthly',currency:'CNY',regularPrice:0} + quota credits", "verdict": "adopted", "note": null },
+        { "lineItem": "Token Plan 付费档（Lite / Pro）", "officialUnit": "未公布", "schemaMapping": null, "verdict": "deferred", "note": "官方只写「即将上线」；本轮不落。若落盘，必须 currency/regularPrice 全 null + note 写明官方未公布价格（智谱 Lite 先例）。" }
+      ],
+      "ruling": "partial",
+      "rulingReason": "两个产品面都要分别看：大装置面公开了 V6.x 的按量价（多为 adopted，打包价与万字符按 gap 处理）并给出官方发布日；日日新当前面（6.8 Flash Lite / U1.5 Lite）只有免费 Token Plan、没有公开按量价、也没有发布日期。",
+      "coverageRecommendation": "adopt-sensecore-v6x-api-plans + adopt-token-plan-free-tier; current-line(6.8/U1.5) 记 current 但价格 DEFERRED",
+      "gaps": [
+        { "id": "sensetime-schema-1", "severity": "medium", "problem": "SenseChat-Character(-Pro) 是打包价，无字段。", "requiredFix": "不落盘、记 gap。", "resolved": false },
+        { "id": "sensetime-schema-2", "severity": "low", "problem": "3.5元/万字符需要换算成 per_1M_characters。", "requiredFix": "落盘必须写 unitNote 说明官方原文单位与换算；否则不落。", "resolved": false },
+        { "id": "sensetime-surface-1", "severity": "high", "problem": "同一家公司有两个产品面（sensecore.cn 的 V6.x 与 sensenova.cn 的 6.8/U1.5），模型名互不重叠，价格与发布日期只有前者有。", "requiredFix": "coverage-targets 必须把「当前目标模型」按面写清；不能把 6.8 Flash Lite 当成 V6.5 的升级版直接替换（没有官方对照声明）。", "resolved": false },
+        { "id": "sensetime-date-1", "severity": "medium", "problem": "6.8 Flash Lite / U1.5 Lite 无官方发布日期。", "requiredFix": "releasedAt=null；只登记 U1.5 Lite 于官方新闻所述日期接入 Token Plan 这条事实。", "resolved": false }
+      ],
+      "handoffToDataIntegrator": {
+        "addToProvidersJson": true,
+        "providerKeyCandidate": "sensetime",
+        "providerSlugCandidate": "sensetime",
+        "providerNameCandidate": "商汤科技",
+        "vendorKeyCandidate": "sensetime",
+        "officialDomainsCandidate": ["sensetime.com", "sensecore.cn", "sensenova.cn"],
+        "officialDomainsNote": "providers.json 的 officialDomains 是白名单且必须被真实记录用到；这 3 个域都要在记录里出现才准登记（否则就是自我声明）。",
+        "addToApiPlans": true,
+        "apiPlansToAdd": ["SenseNova-V6.5-Pro", "SenseNova-V6.5-Turbo", "SenseNova-V6-Pro", "SenseNova-V6-Turbo", "SenseNova-V6-Reasoner", "SenseChat-Vision", "SenseNova-V6-Omni（per_minute）"],
+        "addToPlansJson": true,
+        "plansToAdd": ["SenseNova Token Plan · Free 公测（¥0/月，60,000 积分/5 小时）"],
+        "reason": "大装置面有官方公开价与官方发布日期；Token Plan 免费档可落。付费档与打包价保持不落。"
+      }
+    },
+
+    {
+      "id": "ai360",
+      "displayName": "360（360智脑开放平台）",
+      "role": "first-party-developer + platform-aggregator(同一站点两个身份面)",
+      "isFirstPartyDeveloper": true,
+      "officialDomainsCandidate": ["360.com"],
+      "identityStatus": "只有 official_urls.json 的 _officialDomains 里有 ai360 -> [\"360.com\"]；providers.json 里没有身份",
+      "access": [
+        { "url": "https://ai.360.com/open/zh/models", "httpStatus": 200, "reachableFromTool": true, "note": "模型广场；服务端渲染出「共 94 个模型」与筛选面（模型作者含 360智脑/阿里巴巴/小米/月之暗面；供应商含 360智脑/百度文心/硅基流动/贵州移动），但正文很快被可用性图表占满。" },
+        { "url": "https://ai.360.com/open/zh/models?search=360zhinao", "httpStatus": 200, "reachableFromTool": true, "note": "按 360zhinao 搜索得 12 个模型；只抽出第一张卡的完整价格。" },
+        { "url": "https://ai.360.com/open/zh/models/360zhinao/360zhinao-pro", "httpStatus": 200, "reachableFromTool": true, "note": "模型详情页只返回标题（前端渲染），正文不可抽取。" },
+        { "url": "https://ai.360.com/open/zh/models/360zhinao/360zhinao-turbo-llm-geo", "httpStatus": 200, "reachableFromTool": true, "note": "同上。" },
+        { "url": "https://ai.360.com/open/zh/creators/360zhinao", "httpStatus": 200, "reachableFromTool": true, "note": "作者页只返回标题（前端渲染）。" },
+        { "url": "https://ai.360.com/docs", "httpStatus": 200, "reachableFromTool": true, "note": "官方文档（Apifox 站）：模型列表 GET /v1/models 标注「开发中」，模型详情 GET 也在「模型发现」下。" }
+      ],
+      "apiPricing": {
+        "public": "partial",
+        "note": "模型广场按模型公开价格（¥/1M tokens），但页面由前端渲染，本工具只能抽到筛选后第一张卡；360 自研 360zhinao 系列至少 2 个（pro / turbo-llm-geo）存在，只有 turbo-llm-geo 抽到了完整价目。",
+        "rows": [
+          {
+            "model": "360zhinao/360zhinao-turbo-llm-geo",
+            "author": "360智脑",
+            "inputPer1M": 1,
+            "outputPer1M": 2,
+            "cacheWritePer1M": 1.25,
+            "cacheReadPer1M": 0.1,
+            "context": 116000,
+            "maxOutput": 16000,
+            "description": "业务内部专用模型",
+            "providers": ["360智脑", "alibaba（通义）", "tencent（腾讯）"],
+            "evidence": {
+              "quote": "360zhinao/360zhinao-turbo-llm-geo …… 业务内部专用模型 输入价格:¥1 / 1M tokens 输出价格:¥2 / 1M tokens 缓存写入价格:¥1.25 / 1M tokens 缓存读取价格:¥0.1 / 1M tokens 上下文:116,000 最大输出:16,000",
+              "sourceUrl": "https://ai.360.com/open/zh/models?search=360zhinao",
+              "capturedAt": "2026-10-04",
+              "lang": "zh"
+            }
+          },
+          {
+            "model": "360zhinao/360zhinao-pro",
+            "author": "360智脑",
+            "pricing": "未能抽取（详情页前端渲染）",
+            "evidence": { "quote": "官方模型详情路由存在（HTTP 200）：https://ai.360.com/open/zh/models/360zhinao/360zhinao-pro", "sourceUrl": "https://ai.360.com/open/zh/models/360zhinao/360zhinao-pro", "capturedAt": "2026-10-04" }
+          }
+        ],
+        "thirdPartyModelsOnSamePlaza": {
+          "note": "这是身份污染的重点：同一模型广场里还有 360 品牌化路由的第三方模型（例如搜索命中的 /open/zh/models/qwen-plus-360gpt-pro、/open/zh/models/deepseek-v3-360gpt-pro）以及明确属于别家的模型（作者：阿里巴巴 / 小米 / 月之暗面；供应商：百度文心 / 硅基流动 / 贵州移动）。",
+          "examples": ["https://ai.360.com/open/zh/models/qwen-plus-360gpt-pro", "https://ai.360.com/open/zh/models/deepseek-v3-360gpt-pro", "https://ai.360.com/open/zh/models/xiaomi/mimo-v2.6-pro"],
+          "rule": "这些都不能登记成 360 的 first-party 模型，也不能把它们的价格挂到 360 名下；本轮的 360 目标模型只限 360zhinao/* 自研族。"
+        }
+      },
+      "currentTargetModels": [
+        { "name": "360zhinao-turbo-llm-geo", "modelKeyCandidate": "360zhinao-turbo-llm-geo", "family": "360zhinao", "modelRoleCandidate": "first-party", "evidence": { "quote": "360zhinao/360zhinao-turbo-llm-geo …… [360智脑](/open/zh/creators/360zhinao)", "sourceUrl": "https://ai.360.com/open/zh/models?search=360zhinao", "capturedAt": "2026-10-04" } },
+        { "name": "360zhinao-pro", "modelKeyCandidate": "360zhinao-pro", "family": "360zhinao", "modelRoleCandidate": "first-party(推测旗舰)", "evidence": { "quote": "官方模型页存在：https://ai.360.com/open/zh/models/360zhinao/360zhinao-pro（HTTP 200）", "sourceUrl": "https://ai.360.com/open/zh/models/360zhinao/360zhinao-pro", "capturedAt": "2026-10-04" }, "note": "只能证明该页存在；价格与定位未抽到，不许按名字推测「pro 就是旗舰」。" }
+      ],
+      "releasedAtEvidence": [
+        { "model": "360zhinao/*", "releasedAt": null, "evidence": null, "note": "模型广场与文档页都没有发布日期；官方文档的「模型列表」接口还标着「开发中」。搜索命中的旧闻（360 智脑演示）与本轮身份无关，且属媒体。" }
+      ],
+      "codingCandidates": [],
+      "codingCandidatesNote": "官方公开面上没有 Coding 订阅套餐（知识库里有 CC Switch + Claude Code / Codex 的配置文档，但那是「接第三方工具」，不是 360 自己卖编码套餐）。本轮不作为中国侧 Coding 候选。",
+      "priceExpressiveness": [
+        { "lineItem": "360zhinao-turbo-llm-geo（输入/输出/缓存写/缓存读，¥/1M tokens）", "officialUnit": "¥ / 1M tokens", "schemaMapping": "pricing{currency:'CNY',unit:'per_1M_tokens'} + rates{input,output,cacheWrite,cachedInput}", "verdict": "adopted", "note": "字段一一对应：输入→input、输出→output、缓存写入→cacheWrite、缓存读取→cachedInput；官方原样给出 1M tokens 单位，无需换算。" },
+        { "lineItem": "360zhinao-pro 等其他 360zhinao 模型的价目", "officialUnit": "未知", "schemaMapping": null, "verdict": "unverifiable", "note": "详情页前端渲染，本工具抽不到；listing 页只透了第一张卡。" },
+        { "lineItem": "平台转售的第三方模型价格", "officialUnit": "¥ / 1M tokens", "schemaMapping": "（形式上可表达）", "verdict": "deferred", "note": "能表达但不应登记：价格提供方是 360 平台而非模型的开发商，挂到 360 名下会造成 hosted-owner ≠ pricing-provider 的身份污染。" }
+      ],
+      "ruling": "partial",
+      "rulingReason": "360 自研 360zhinao 族确实存在且价格按 ¥/1M tokens 公开（可诚实表达，1 条已抽到全文）；但模型广场是「自研 + 第三方转售」混排、详情页前端渲染导致枚举不全、无官方发布日期、也无 Coding 套餐。",
+      "coverageRecommendation": "adopt-360zhinao-turbo-llm-geo(单条) + defer-其余 360zhinao + explicitly-exclude-third-party-routes",
+      "gaps": [
+        { "id": "ai360-identity-1", "severity": "high", "problem": "同一站点混排自研与转售模型，且有 360 品牌化的第三方路由（qwen-plus-360gpt-pro / deepseek-v3-360gpt-pro）。", "requiredFix": "只为 360zhinao/* 建 first-party 身份与价格；转售模型一律不登记到 ai360 名下，并在 coverage 报告里写明这条排除纪律。", "resolved": false },
+        { "id": "ai360-extract-1", "severity": "medium", "problem": "模型广场与详情页前端渲染，无法枚举 12 个 360zhinao 模型的价格。", "requiredFix": "换真实浏览器抓取或等官方 /v1/models（文档标注开发中）可用后重跑；在此之前只落已抽到的那一条。", "resolved": false },
+        { "id": "ai360-date-1", "severity": "medium", "problem": "无任何官方发布日期。", "requiredFix": "releasedAt=null + checkedAt 结论。", "resolved": false }
+      ],
+      "handoffToDataIntegrator": {
+        "addToProvidersJson": true,
+        "providerKeyCandidate": "ai360",
+        "providerSlugCandidate": "ai360",
+        "providerNameCandidate": "360智脑",
+        "vendorKeyCandidate": "ai360",
+        "officialDomainsCandidate": ["360.com"],
+        "addToApiPlans": true,
+        "apiPlansToAdd": ["360zhinao-turbo-llm-geo（CNY per_1M_tokens：1 / 2，cacheWrite 1.25，cachedInput 0.1）"],
+        "addToPlansJson": false,
+        "reason": "只有 1 条自研价格证据完整；其余保持未验证。"
+      }
+    }
+  ],
+
+  "codingCandidatesSummary": {
+    "_note": "本任务负责的中国侧 Coding 套餐候选（国际侧 6 家由 research-inference / t9 负责）。",
+    "adopted": [
+      { "candidateId": "cn-stepfun-step-plan", "provider": "阶跃星辰", "priceAnchor": "¥49 / ¥99 / ¥199 / ¥699 每月（Credit 月池）", "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview" },
+      { "candidateId": "cn-iflytek-astron-coding-plan", "provider": "科大讯飞", "priceAnchor": "高效版 ¥199/月；速通版 ¥999/月（限时首月 ¥699）", "officialUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html" }
+    ],
+    "partial": [
+      { "candidateId": "cn-iflytek-astron-token-plan", "provider": "科大讯飞", "priceAnchor": "标准 200 / 高级 600 / 尊享 2000 元·成员/月", "reason": "按成员计价无字段；按模型积分单价表无载体。", "officialUrl": "https://www.xfyun.cn/doc/spark/TokenPlan.html" },
+      { "candidateId": "cn-sensetime-token-plan", "provider": "商汤科技", "priceAnchor": "Free 公测 ¥0/月（60,000 积分/5 小时）；付费档即将上线、无价", "reason": "付费档无官方价格；免费档可落。", "officialUrl": "https://www.sensenova.cn/token-plan" }
+    ],
+    "deferred": [
+      { "provider": "百川智能", "reason": "官方公开面没有 Coding/Token 订阅套餐（价格页只有按量、知识库、Embeddings）。" },
+      { "provider": "360", "reason": "官方只有第三方工具的接入文档（CC Switch + Claude Code / Codex），没有自营编码套餐。" },
+      { "provider": "xAI / Mistral / Cohere", "reason": "官方域不可达或正文不可抽取，连有没有套餐都无法判定。" }
+    ],
+    "alreadyCoveredInPlansJson": {
+      "note": "为避免重复登记，落盘前必须对照 baseline 的 plans 身份：现有 12 家是 anthropic / baidu / codebuddy / cursor / github / minimax / moonshot / qoder / qoder-intl / trae / windsurf / zhipu。",
+      "newProvidersNeeded": ["iflytek（providers.json 已有身份，但 plans 里还没有记录）", "stepfun（需先在 providers.json 建身份）", "sensetime（需先在 providers.json 建身份）"]
+    }
+  },
+
+  "crossCuttingFindings": [
+    {
+      "id": "X-1",
+      "severity": "high",
+      "finding": "8 家里 3 家的官方定价面在本环境不可达/不可抽取：x.ai 与 mistral.ai 全域 fetch failed（无 HTTP 状态），cohere.com 可达但价格表抽不出（正文被前端渲染吃掉）。",
+      "impact": "这不是「没有定价」，而是「本轮无法核」；若把它们写成 MISSING 或 0，就是假完成。",
+      "requiredAction": "coverage-targets 里对这 3 家记 DEFERRED/UNVERIFIED 并写明具体 URL 与失败形态；报告中区分「官方不公开」与「官方不可达」。"
+    },
+    {
+      "id": "X-2",
+      "severity": "high",
+      "finding": "多家官方价目表是「输入+输出打包价」（百川 6 条、商汤 SenseChat-Character 2 条、讯飞/StepFun 无此形态），而 api-plan-schema 的 TOKEN_RATE_KEYS 没有任何 blended 键。",
+      "impact": "把打包价写成 input=output=X 会造出两条官方没说过的事实；写成只有 input 会把输出价说成未公布。两种都是撒谎。",
+      "requiredAction": "本轮不落这些条目，记 schema gap；若团队决定扩展 schema，需在 SCHEMA 文档里新增明确语义（例如 blendedInputOutput）并配牙。"
+    },
+    {
+      "id": "X-3",
+      "severity": "high",
+      "finding": "非 token/非百万 token 的计费单位普遍存在且多数无字段：元/小时（StepFun 7 个 ASR）、元/GB·天（百川 1.5、StepFun 0.5）、元/音色（StepFun 9.9）、元/万字符（StepFun 4 个 TTS、商汤 1 个）。",
+      "impact": "MEDIA_RATE_UNITS 只有 per_image / per_second / per_minute / per_1M_characters / per_request / per_1M_token_hours。",
+      "requiredAction": "元/小时与元/GB·天直接记 schema_not_supported（不换算）；元/万字符若落盘必须 ×100 并写 unitNote；元/音色不落。"
+    },
+    {
+      "id": "X-4",
+      "severity": "medium",
+      "finding": "发布日（releasedAt）在 8 家里只有商汤与讯飞拿到了官方日期（商汤 V6.5=2025-07-23、V6 系=2025-04-09；讯飞 Spark X2 Agent=2026-07-10），其余一律 null。",
+      "impact": "freshness/catalogStatus 依赖 releasedAt；null 只能是 unknown，不能推成 legacy。",
+      "requiredAction": "data-integrator 落盘时 releasedAt=null 必须配「查过但官方没给」的结论；三家里（xAI/Mistral/Cohere）连模型身份都不全，不应进 registry。"
+    },
+    {
+      "id": "X-5",
+      "severity": "medium",
+      "finding": "360 智脑开放平台与讯飞星辰 MaaS 都是「自研 + 转售第三方模型」的聚合面；360 还有 360 品牌化的第三方路由（qwen-plus-360gpt-pro、deepseek-v3-360gpt-pro）。",
+      "impact": "aggregator/hosted-owner ≠ pricing-provider；把转售模型挂到 360/讯飞名下会造成身份污染，并让「谁是自己家的模型」这条 coverage 主张失真。",
+      "requiredAction": "只为自研族建 first-party 目标（360: 360zhinao/*；讯飞: Spark 系列）；转售模型一律不进这两家的 first-party 目标集。"
+    },
+    {
+      "id": "X-6",
+      "severity": "medium",
+      "finding": "季度价没有 period：Step Plan 季付（¥129/269/539/1889）与讯飞 Coding Plan 季付（¥538/¥2997）都无法原样表达；BILLING_PERIODS 只有 monthly / yearly / one_time / usage_based / other。",
+      "impact": "伪装成 monthly 会污染价格排序与「按可比周期」的页面逻辑（COMPARABLE_BILLING_PERIODS 只有 monthly / yearly）。",
+      "requiredAction": "季付价只进 note/promoNote；不要生成 'monthly' 记录。"
+    },
+    {
+      "id": "X-7",
+      "severity": "medium",
+      "finding": "多窗口额度（5 小时 / 周 / 月）在讯飞 Coding Plan 与智谱式套餐里是常态，而 quota 是单对象单 period。",
+      "impact": "只落一个窗口会丢掉另外两个官方事实；全塞进 description 又不结构化。",
+      "requiredAction": "按仓库既有先例：选一个规范窗口进 quota，其余用 restrictions(kind='rolling_window'/'per_day_cap') 或 description 承载，并在 note 里注明官方原文。"
+    },
+    {
+      "id": "X-8",
+      "severity": "low",
+      "finding": "身份层缺口：baichuan / stepfun / sensetime / ai360 只有 deals 侧 official_urls 登记，providers.json 里没有身份；xai / mistral / cohere 连官方域登记都没有。",
+      "impact": "本次要落的 plans/api-plans 记录会因「provider 未登记一律构建期硬红」而无法构建。",
+      "requiredAction": "t11 在落任何记录前，先在 providers.json 登记 stepfun / sensetime / ai360（key/slug/vendorKey 与 A 空间一致），百川的 vendorKey=baichuan 已有 A 空间键。"
+    },
+    {
+      "id": "X-9",
+      "severity": "low",
+      "finding": "免费/限时免费在多家出现不同性质：StepFun preview 模型「限时免费」、百川 Assistants API「限时免费」、商汤 nova-tts-1「限时免费体验」、SenseNova Token Plan「公测期完全免费」（限时放量）。",
+      "impact": "把它们写成 price=0 会把限时活动说成长期定价。",
+      "requiredAction": "长期免费的用 freeTier(stability='standing')，限时的留在 Deals 侧（stability='promotional'）或干脆不落；不要写 price=0。"
+    }
+  ],
+
+  "notAdopted": [
+    { "item": "xAI 任何记录", "reason": "官方来源不可达，零 evidence。" },
+    { "item": "Mistral 任何记录", "reason": "官方来源不可达，零 evidence。" },
+    { "item": "Cohere 任何记录", "reason": "价格表不可抽取，零价格 evidence。" },
+    { "item": "百川打包价条目（Baichuan4 / 4-Turbo / 4-Air / 3-Turbo / 3-Turbo-128k / 2-Turbo）", "reason": "schema 无 blended 键。" },
+    { "item": "百川 搜索增强 / 医疗搜索 / 文件存储", "reason": "单位与载体都不匹配。" },
+    { "item": "商汤 SenseChat-Character(-Pro)", "reason": "打包价。" },
+    { "item": "StepFun ASR（元/小时）/ 文件存储 / 音色复刻", "reason": "无对应单位。" },
+    { "item": "讯飞常规 API 定价", "reason": "官方明确不公开静态价目表。" },
+    { "item": "讯飞 Token Plan 按模型积分单价表", "reason": "积分不是法定币种，API schema 装不下。" },
+    { "item": "360 平台上的第三方模型（qwen / deepseek / 小米 / 月之暗面 等）", "reason": "pricing provider 是 360 平台，不是模型开发商；登记会造成身份污染。" }
+  ],
+
+  "handoffPackage": {
+    "forT11DataIntegration": {
+      "newProvidersJsonEntriesNeeded": [
+        { "key": "stepfun", "name": "阶跃星辰", "slug": "stepfun", "vendorKey": "stepfun", "officialDomains": ["stepfun.com"] },
+        { "key": "sensetime", "name": "商汤科技", "slug": "sensetime", "vendorKey": "sensetime", "officialDomains": ["sensetime.com", "sensecore.cn", "sensenova.cn"] },
+        { "key": "ai360", "name": "360智脑", "slug": "ai360", "vendorKey": "ai360", "officialDomains": ["360.com"] },
+        { "key": "baichuan", "name": "百川智能", "slug": "baichuan", "vendorKey": "baichuan", "officialDomains": ["baichuan-ai.com"] }
+      ],
+      "identityAlreadyExists": { "iflytek": { "slug": "iflytek", "officialDomains": ["xfyun.cn"] } },
+      "apiPlansAdoptedCount": 24,
+      "apiPlansAdoptedBreakdown": { "stepfun": 12, "baichuan": 4, "sensetime": 7, "ai360": 1 },
+      "plansAdoptedRecordsEstimate": "≥7 条：stepfun Step Plan 四档月付（4）+ 讯飞 Astron Coding Plan 在售两档（2）+ 商汤 Token Plan 免费档（1）；若把 Step Plan 年付另立 period='yearly' 记录则再 +4。",
+      "warning": "officialDomains 是白名单且「每一条登记都必须被真实记录用到」：商汤的 3 个域、360 的 360.com、讯飞的 xfyun.cn 都要在对应记录的 officialUrl / sourceUrl / evidence.sourceUrl 里真的出现。"
+    },
+    "forCoverageTargetsLayer": {
+      "tierSuggestion": {
+        "tier1_adoptNow": ["stepfun", "sensetime", "baichuan", "iflytek", "ai360"],
+        "tier2_unverifiedThisRound": ["xai", "mistral", "cohere"]
+      },
+      "currentTargetsSuggestion": {
+        "stepfun": ["step-5-preview", "step-3.7-flash", "step-3.5-flash", "step-3.5-flash-2603", "step-1o-turbo-vision"],
+        "sensetime": ["SenseNova 6.8 Flash Lite（当前面，无公开价）", "SenseNova U1.5 Lite（当前面，无公开价）", "SenseNova-V6.5-Pro / V6.5-Turbo（大装置面，有价有日期）"],
+        "baichuan": ["Baichuan-M3-Plus", "Baichuan-M3", "Baichuan-M2-Plus", "Baichuan-M2"],
+        "iflytek": ["Spark-X2.5", "Spark-X2", "Spark-X2-Flash", "Spark X2 Agent"],
+        "ai360": ["360zhinao-turbo-llm-geo", "360zhinao-pro"],
+        "xai": [],
+        "mistral": [],
+        "cohere": []
+      },
+      "note": "coverage-targets 只写 intent / applicability / tier / current targets / 人工裁决理由；覆盖面（COVERED/PARTIAL/MISSING）必须由派生逻辑算，别手写。"
+    }
+  }
+}
