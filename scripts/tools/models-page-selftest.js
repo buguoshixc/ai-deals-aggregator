@@ -10,6 +10,12 @@
  *   #5  Model Page 展示不存在的 Provider → 红（表格逐行回读对账）；
  *   外加 #18 详情页 canonical 唯一、#19 未过门槛的模型页进 sitemap。
  *
+ * v3.0 T25 追加第 ⑨ 节：**逐格数值对账**（关闭 T20 的 N2）。T20 的 M19 证明
+ * 「把某条记录的数值与相邻格对调」时行身份、行数、单位文案全都对得上，自带的门禁全绿
+ * —— 缺的那一层是「每一格是否等于数据里那一条」。⑨ 用**独立第二实现**补上它：
+ * 期望值自己从 `api-plans.json` 与关系层原文展开，实际值从渲染产物逐格读，
+ * **不调用 models-page.js 的任何计算函数**（只读它渲染出来的 HTML）。
+ *
  * registry / 映射 / 计价条目全部来自**仓库里的真实文件**（不是硬编码样例）：
  * `scripts/data/models.json`（`{slug: entry}`）+ `scripts/data/model-registry-links.json`
  * + `api-plans.json` + `plans.json` + `deal-plan-links.json` + `api-plan-history.json`。
@@ -18,17 +24,66 @@
 'use strict';
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const modelsPage = require('../lib/models-page');
 const modelRegistry = require('../lib/model-registry');
 const apiPlansPage = require('../lib/api-plans-page');
+const apiSchema = require('../lib/api-plan-schema');
+const plansPageLib = require('../lib/plans-page');
 const providers = require('../lib/providers');
 const pageKinds = require('../lib/page-kinds');
+// §17 独立 join 对账：**它自己遍历 api-plans + links 原文**，不 require 被测判据。
+// 让它的结果参与断言，页面自证就失效了（P1-12 正是"实现与期望同源"漏掉的）。
+const joinAudit = require('./registry-join-audit');
 
 const ROOT = path.join(__dirname, '..', '..');
 const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
-const DIST = path.join(ROOT, 'dist');
+
+/**
+ * 产物目录与 fail-closed 前置（§10.9 · P2-10 / P2-26）。
+ *
+ * §17 独立 join 对账与第 ⑧ 节都要**从构建产物回读**页面。原先的写法是
+ * 「候选目录里第一个存在 `models/` 的；都没有 ⇒ 跳过并计 ✓」—— 而门禁在构建**之前**跑，
+ * 于是这两节在 CI 里永远绿（同一 commit 项数还会随环境在 27/32 之间变）。
+ *
+ * 六个产物依赖工具现在用同一套协议：
+ *   · `--dir=<path>`            显式指定产物目录（默认 `<repo>/dist`；`QC_DIST` 仍被尊重，便于并行会话）；
+ *   · 缺少必需产物 ⇒ **非 0**，并给出「先 build / 用 --dir 指到别的产物」的下一步；
+ *   · 只有显式 `--allow-missing-dist` 才允许跳过，且会被标成 `⚠️ OPTIONAL DIAGNOSTIC`。
+ *
+ * 刻意**删掉**了原先写死的 `dist.qc-registry` 候选：那让默认跑法偷偷去读另一个任务的产物目录
+ * （本地绿、CI 红），与「本地与 CI 行为一致」直接冲突。要验别的产物就显式 `--dir=`。
+ */
+const dirArg = process.argv.find(arg => arg.startsWith('--dir='));
+const ALLOW_MISSING_DIST = process.argv.includes('--allow-missing-dist');
+const DIST = path.resolve(ROOT, dirArg ? dirArg.slice('--dir='.length)
+  : (process.env.QC_DIST || path.join(ROOT, 'dist')));
+
+/** 必需的产物缺失时：显式允许 → OPTIONAL DIAGNOSTIC（通过）；否则记红并返回 false */
+function requireDist(what, marker) {
+  const file = path.join(DIST, marker);
+  if (fs.existsSync(file)) return true;
+  if (ALLOW_MISSING_DIST) {
+    check(`⚠️ OPTIONAL DIAGNOSTIC（--allow-missing-dist）：跳过 ${what} 的现场检查（缺 ${marker}）`, true);
+    return false;
+  }
+  check(`缺少必需产物：${what} —— 找不到 ${path.relative(ROOT, file) || file}` +
+    `（先跑 npm run build，或用 --dir=<构建输出> 指到那份产物；只有显式 --allow-missing-dist 才允许跳过）`, false);
+  return false;
+}
+
+/** 一组必需产物：整个 dist 缺失时只记一条红；否则逐个点名缺了哪个 */
+function requireDistFiles(what, markers) {
+  if (!fs.existsSync(DIST)) return requireDist(what, markers[0]);
+  let ok = true;
+  for (const marker of markers) {
+    if (fs.existsSync(path.join(DIST, marker))) continue;
+    ok = requireDist(what, marker) && ok;
+  }
+  return ok;
+}
 
 let passed = 0;
 const failures = [];
@@ -95,6 +150,11 @@ function detailPageOf(model, extra = {}) {
   const jsonLd = modelsPage.modelPageJsonLd(model, detailCtx)
     .map(data => `<script type="application/ld+json">${JSON.stringify(data)}</script>`).join('');
   return { html, jsonLd, ctx: detailCtx };
+}
+
+/** 引用（每次用干净缓存，避免跨断言串味） */
+function detectorRefs(model) {
+  return modelsPage.modelReferencesOf(model, { ...ctx, prefix: '../../', __refCache: new Map() });
 }
 
 /* ================================================================== */
@@ -179,6 +239,64 @@ const ranked = gated.map(gate => models.find(model => model.slug === gate.slug))
   check('详情页刻意没有 ItemList（详情叶子，不是集合页）', !/ItemList/.test(html + jsonLd));
 }
 
+/* ------------------------------------------------------------------ */
+/* ③-pre F-v3-registry-001 / P1-12：多变体不许吞行                        */
+/* ------------------------------------------------------------------ */
+
+{
+  // 真实数据里「一条通配映射覆盖多个真实 variant」的那 9 个模型页必须**一个计价条目一行**。
+  // 期望集合**自己算**（api-plans 原文 + links 原文展开），不借 modelReferencesOf —— 后者正是被测判据。
+  const expectedRowsBySlug = new Map();
+  const planById = new Map(apiPlans.filter(plan => plan && plan.id).map(plan => [plan.id, plan]));
+  for (const link of modelRegistry.linksList(linksDoc)) {
+    if (!link || link.apiPlanId === undefined) continue;
+    const plan = planById.get(link.apiPlanId);
+    if (!plan) continue;
+    const entries = (plan.models || []).filter(item => item && item.modelKey === link.modelKey);
+    const wildcard = link.variant === null || link.variant === undefined || link.variant === '';
+    const picked = wildcard ? entries : entries.filter(item => item.variant === link.variant);
+    if (!picked.length) continue;
+    if (!expectedRowsBySlug.has(link.registrySlug)) expectedRowsBySlug.set(link.registrySlug, []);
+    for (const entry of picked) {
+      expectedRowsBySlug.get(link.registrySlug).push({ plan, entry });
+    }
+  }
+  const affected = [...expectedRowsBySlug.entries()]
+    .filter(([, list]) => list.length > new Set(list.map(({ plan, entry }) => `${plan.id}|${entry.modelKey}`)).size);
+  check(`独立重算：${affected.length} 个 registry 模型存在"一条映射覆盖多个真实 variant"（应为 9 个）`,
+    affected.length === 9, affected.map(([slug]) => slug).join(' | '));
+  const affectedSlugs = affected.map(([slug]) => slug).sort();
+
+  const shortPages = [];
+  const wrongPrice = [];
+  for (const slug of affectedSlugs) {
+    const model = models.find(item => item.slug === slug);
+    const { html } = detailPageOf(model);
+    const expected = expectedRowsBySlug.get(slug);
+    const rowCount = (html.match(/class="mapirow"/g) || []).length;
+    if (rowCount !== expected.length) shortPages.push(`${slug}: ${rowCount} ≠ ${expected.length}`);
+    for (const { entry } of expected) {
+      const price = String(apiPlansPage.priceText(entry.rates ? entry.rates.input : null, 'CNY'));
+      const priceUsd = String(apiPlansPage.priceText(entry.rates ? entry.rates.input : null, 'USD'));
+      if (!html.includes(price) && !html.includes(priceUsd)) {
+        wrongPrice.push(`${slug}: ${entry.modelKey}/${entry.variant} input ${price}/${priceUsd} 没出现在页面上`);
+      }
+    }
+  }
+  check(`受影响的 ${affectedSlugs.length} 个模型页每个都是"一个计价条目一行"（无吞行）`,
+    shortPages.length === 0, shortPages.join(' · '));
+  check('受影响页上每个变体的价格各自正确（例：glm-4.5v 同时有 standard ¥2/¥6 与 long_context ¥4/¥12）',
+    wrongPrice.length === 0, wrongPrice.slice(0, 4).join(' · '));
+  {
+    const glm = models.find(item => item.slug === 'glm-4.5v');
+    const { html } = detailPageOf(glm);
+    check('glm-4.5v 页同时出现 standard ¥2（input）与 long_context ¥4（input），且两行 identity 不同',
+      html.includes('data-item="646f01c662e6|glm-4.5v|standard"')
+      && html.includes('data-item="646f01c662e6|glm-4.5v|long_context"')
+      && html.includes('¥2') && html.includes('¥4'));
+  }
+}
+
 {
   const withCoding = ranked.find(item => item.refs.codingPlans.length);
   if (withCoding) {
@@ -209,6 +327,60 @@ const ranked = gated.map(gate => models.find(model => model.slug === gate.slug))
 }
 
 /* ================================================================== */
+/* ③b §17 独立 join 对账参与断言（自证失效）                              */
+/* ================================================================== */
+
+{
+  const audit = joinAudit.runJoinAudit({ dist: DIST });
+  if (audit.pages === 0 && !requireDist('§17 独立 join 的模型页', path.join('models', 'index.html'))) {
+    // 缺产物：已记红（或显式 OPTIONAL DIAGNOSTIC），下面没有现场可对账。
+  } else if (audit.pages === 0) {
+    check(`§17 独立 join：产物目录 ${audit.dist}/models/ 下一个模型详情页都没有（索引页在、详情页 0 个）`, false);
+  } else {
+  console.log(`    独立 join（${audit.dist}）：模型 ${audit.models} · 页 ${audit.pages} · 期望行 ${audit.expectedRows}`
+    + `（api-plans 真实计价条目 ${audit.pricingItems}）· missing ${audit.counts.missing} · extra ${audit.counts.extra}`
+    + ` · duplicate ${audit.counts.duplicate} · multi-owner ${audit.counts.multiOwner}`);
+  check('§17 独立 join：44 个模型 missing / extra / duplicate source identity / multi-owner 四项计数全为 0',
+    audit.models === 44 && audit.counts.missing === 0 && audit.counts.extra === 0
+    && audit.counts.duplicate === 0 && audit.counts.multiOwner === 0,
+    JSON.stringify(audit.counts));
+  check('§17 独立 join：期望行数 == api-plans 真实计价条目数（一条 pricing item = 一行）',
+    audit.expectedRows === audit.pricingItems, `${audit.expectedRows} vs ${audit.pricingItems}`);
+  check(`§17 独立 join：受影响口径独立重算为 ${audit.multiVariantGroups} 组 / ${audit.affectedSlugs.length} 个 slug`,
+    audit.multiVariantGroups === 12 && audit.affectedSlugs.length === 9, audit.affectedSlugs.join(' | '));
+  // 交叉对账：产物的行数必须等于独立 join 的期望（逐页），且**不借被测判据**
+  const expectedBySlug = audit.expectedBySlug;
+  const mismatched = [];
+  for (const [slug, list] of expectedBySlug) {
+    const file = path.join(DIST, 'models', slug, 'index.html');
+    const expectedCount = new Set(list).size;
+    if (!expectedCount) continue;
+    if (!fs.existsSync(file)) { mismatched.push(`${slug}: 缺页面`); continue; }
+    const count = (fs.readFileSync(file, 'utf8').match(/class="mapirow"/g) || []).length;
+    if (count !== expectedCount) mismatched.push(`${slug}: ${count} ≠ ${expectedCount}`);
+  }
+  check('§17 交叉对账：每个已发布模型页的 mapirow 行数 == 独立 join 的展开期望（逐页）',
+    mismatched.length === 0, mismatched.slice(0, 5).join(' · '));
+  // 反向：独立 join 必须真的会对缺行变红（把一页的行删掉一条，audit 立刻报 missing）
+  const sample = [...expectedBySlug.entries()].find(([, list]) => list.length >= 2);
+  if (sample) {
+    const [slug, list] = sample;
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'qc-join-'));
+    fs.mkdirSync(path.join(tmp, 'models', slug), { recursive: true });
+    const source = fs.readFileSync(path.join(DIST, 'models', slug, 'index.html'), 'utf8');
+    // 整页照搬，只删掉第一条 mapirow 行
+    const dropped = source.replace(/<tr class="mapirow"[\s\S]*?<\/tr>/, '');
+    fs.writeFileSync(path.join(tmp, 'models', slug, 'index.html'), dropped);
+    const broken = joinAudit.runJoinAudit({ dist: tmp });
+    check(`§17 牙：人为删掉一行（${slug}）⇒ 独立 join 报 missing>0（对账不是恒绿的摆设）`,
+      broken.counts.missing > 0, JSON.stringify(broken.counts));
+    fs.rmSync(tmp, { recursive: true, force: true });
+  } else check('§17 牙：没有多变体样本（如实跳过）', true);
+  }
+}
+
+/* ================================================================== */
+
 section('④ 牙 #1 / #2 / #4：同名不合并、别名唯一、改名不自动 merge');
 /* ================================================================== */
 
@@ -315,9 +487,10 @@ section('⑤ 牙 #3 / #5：映射指向不存在的记录、页面展示不存�
   const refs = ranked[0].refs;
   const { html, ctx: detailCtx } = detailPageOf(detailModel);
   const row = refs.apiItems[0];
+  const rowId = `${row.plan.id}|${row.entry.modelKey}|${row.entry.variant}`;
 
-  const ghostRow = `<tr class="mapirow" data-item="${row.plan.id}" data-plan="${row.plan.id}"`
-    + ` data-model-key="${row.entry.modelKey}" data-provider="ghost-provider">`
+  const ghostRow = `<tr class="mapirow" data-item="${rowId}" data-plan="${row.plan.id}"`
+    + ` data-model-key="${row.entry.modelKey}" data-variant="${row.entry.variant}" data-provider="ghost-provider">`
     + `<th scope="row">Ghost</th><td>x</td><td>y</td><td class="num">1</td><td class="num">1</td>`
     + `<td class="num">1</td><td class="punit">USD / 每 100 万 tokens</td><td>2026-10-01</td><td>—</td></tr>`;
   const polluted = html.replace('</tbody>', `${ghostRow}</tbody>`);
@@ -326,6 +499,7 @@ section('⑤ 牙 #3 / #5：映射指向不存在的记录、页面展示不存�
       .some(problem => problem.includes('Provider') || problem.includes('行')));
 
   const phantomRow = ghostRow.replace(new RegExp(row.plan.id, 'g'), 'deadbeef0000')
+    .replace(`data-item="${rowId}"`, 'data-item="deadbeef0000|phantom-model|standard"')
     .replace(`data-model-key="${row.entry.modelKey}"`, 'data-model-key="phantom-model"')
     .replace('data-provider="ghost-provider"', 'data-provider="phantom"');
   const polluted2 = html.replace('</tbody>', `${phantomRow}</tbody>`);
@@ -333,10 +507,40 @@ section('⑤ 牙 #3 / #5：映射指向不存在的记录、页面展示不存�
     modelsPage.assertPageHonesty(polluted2, { kind: 'model', model: detailModel, ctx: detailCtx })
       .some(problem => problem.includes('凭空')));
 
+  // 多变体互不冒充：把同一记录里的 standard 行改写成 long_context（价格不变）⇒ 必红。
+  // 刻意**不借 `ranked[0]`**（它往往是多变体以外的高引用模型，样本会随机"如实跳过"）：
+  // 直接挑一个"同一记录里带两个真实 variant"的模型页，样本必须存在。
+  const swapModel = models.find(model => detectorRefs(model).apiItems
+    .some(item => detectorRefs(model).apiItems.some(other => other.plan.id === item.plan.id && other.entry.variant !== item.entry.variant)));
+  if (swapModel) {
+    const swapRefs = detectorRefs(swapModel);
+    const swapRow = swapRefs.apiItems.find(item => swapRefs.apiItems
+      .some(other => other.plan.id === item.plan.id && other.entry.variant !== item.entry.variant));
+    const other = swapRefs.apiItems.find(item => item.plan.id === swapRow.plan.id && item.entry.variant !== swapRow.entry.variant);
+    const swapHtml = detailPageOf(swapModel).html;
+    const swapRowId = `${swapRow.plan.id}|${swapRow.entry.modelKey}|${swapRow.entry.variant}`;
+    const swapped = swapHtml
+      .replace(`data-item="${swapRowId}"`, `data-item="${swapRow.plan.id}|${swapRow.entry.modelKey}|${other.entry.variant}"`)
+      .replace(`data-variant="${swapRow.entry.variant}"`, `data-variant="${other.entry.variant}"`);
+    check(`【牙 #5】同一记录里把一个 variant 的行冒充成另一个 variant → 红（${swapModel.slug}：${swapRow.entry.variant} → ${other.entry.variant}）`,
+      swapped !== swapHtml
+      && modelsPage.assertPageHonesty(swapped, {
+        kind: 'model', model: swapModel, ctx: detailPageOf(swapModel).ctx
+      }).length > 0);
+  } else check('【牙 #5】全部模型页都没有同记录的多变体样本（如实跳过）', true);
+
   const withoutRow = html.replace(/<tr class="mapirow"[\s\S]*?<\/tr>/, '');
   check('【牙 #5】少渲染一行（同一模型在多个平台没列全）→ 红',
     modelsPage.assertPageHonesty(withoutRow, { kind: 'model', model: detailModel, ctx: detailCtx })
       .some(problem => problem.includes('行')));
+
+  // 行身份漂移：把一行退回"只有 planId"的旧结构（去掉 data-variant）⇒ 必须红，
+  // 否则解析器会静默少读一行，把"结构变了"伪装成"行数少了"。
+  const drifted = html.replace(`data-item="${rowId}" data-plan="${row.plan.id}"`, `data-item="${row.plan.id}" data-plan="${row.plan.id}"`)
+    .replace(` data-variant="${row.entry.variant}"`, '');
+  check('【牙 #5】行身份退回旧结构（data-item 只有 planId、没有 data-variant）→ 红',
+    drifted !== html
+    && modelsPage.assertPageHonesty(drifted, { kind: 'model', model: detailModel, ctx: detailCtx }).length > 0);
 }
 
 /* ================================================================== */
@@ -450,7 +654,8 @@ function distProblems(overrides = {}) {
   return problems;
 }
 
-if (fs.existsSync(path.join(DIST, 'models', 'index.html'))) {
+const DIST_MODELS_OK = requireDistFiles('dist 现场 /models/', [path.join('models', 'index.html'), 'sitemap.xml']);
+if (DIST_MODELS_OK) {
   const base = distProblems();
   check('dist 现场：索引 / 详情 / 发布数据集 / sitemap / canonical 全部对得上',
     base.length === 0, base.slice(0, 3).join('；'));
@@ -479,8 +684,365 @@ if (fs.existsSync(path.join(DIST, 'models', 'index.html'))) {
   check('发布数据集 dist/models.json 与仓库里那份派生产物逐字节相同',
     fs.existsSync(dealsArtifact)
     && fs.readFileSync(dealsArtifact, 'utf8') === `${JSON.stringify(publishedModels, null, 2)}\n`);
-} else {
-  check('构建产物不存在时**跳过** dist 现场检查（先跑 npm run build）', true);
+}
+// 缺产物不在这里「跳过并计 ✓」：requireDistFiles() 要么已记红，要么是显式 OPTIONAL DIAGNOSTIC。
+
+/* ================================================================== */
+/* ⑨ 逐格对账：每一格都必须等于数据里那一条（独立第二实现 · T25 / T20-N2） */
+/* ================================================================== */
+
+/**
+ * ## 这一节补的是哪一层
+ *
+ * T20 的 M19：把某条计价记录的**数值与相邻格对调**（行身份 `data-item` 没变、行数没变、
+ * 单位文案结构也没变）时，仓库自带门禁**全部保持绿色**，只有 verifier 自写的独立 join 抓到。
+ * 缺的那一层是「**每一格**是否等于数据里那一条」。⑨ 把它补上。
+ *
+ * ## 判据是独立第二实现（不自证）
+ *
+ *   · **期望值自己算**：只读 `api-plans.json` 与 `scripts/data/model-registry-links.json` 的**原文**，
+ *     按 `(apiPlanId, modelKey, 记录内真实 variant)` 展开 —— 与 §17 同一口径：
+ *     `variant: null` 认领该 modelKey 在**这条记录**里的全部真实 variant（不是一个模型一行）；
+ *   · **实际值从渲染产物读**：`<产物>/models/<slug>/index.html` 的 `<tr class="mapirow">` 逐格；
+ *   · **不调用 models-page.js 的任何计算函数**（`apiPricingRowOf` / `modelReferencesOf` /
+ *     `apiTargetsOf` / `modelPageGate` … 一个都不用），只读它渲染出来的 HTML
+ *     ⇒ 渲染层与判据不可能"同源同错"。
+ *
+ * ## 覆盖与灵敏度
+ *
+ * 产物里**每一条**计价条目（0 豁免，含多变体展开后的每一行）；另加一个**合成多变体夹具**
+ * 与三条就地灵敏度对照（换格 / 空格 / 删行），对照与干净样本成对断言 ⇒ 判据不可能恒绿也不可能恒红。
+ */
+const CELL_LABELS = {
+  // 独立副本（**不是**从被测模块取）：词表变了必须在这里显式同步，下面有与原表的漂移对照
+  channel: { standard: '标准', batch: '批处理', flex: '弹性', priority: '优先', fast: '快速', ultrafast: '极速', off_peak: '低峰时段', fine_tuned: '微调', other: '其他' },
+  unit: { per_1M_tokens: '每 100 万 tokens', per_1K_tokens: '每 1000 tokens', per_1M_characters: '每 100 万字符' },
+  variant: { standard: '标准', batch: '批处理', long_context: '长上下文', fine_tuned: '微调', priority: '优先', other: '其他' },
+  currency: { CNY: '¥', USD: '$', HKD: 'HK$', EUR: '€', JPY: '¥', GBP: '£', SGD: 'S$' },
+  unknownNum: '—',
+  unknownText: '未标注'
+};
+
+/** 独立的价格数字格式：千分位、不用 toLocaleString（产物必须可复现） */
+function cellNumberText(value) {
+  const text = String(value);
+  if (!/^-?\d+(\.\d+)?$/.test(text)) return text;
+  const [int, frac] = text.split('.');
+  const sign = int.startsWith('-') ? '-' : '';
+  const digits = sign ? int.slice(1) : int;
+  return `${sign}${digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}${frac ? `.${frac}` : ''}`;
+}
+
+/** 独立的价格文本：`null` → 「—」；`0` → 「免费」；其余带币种符号（两套缺值口径分得开） */
+function cellPriceText(value, currency) {
+  if (value === null || value === undefined) return CELL_LABELS.unknownNum;
+  if (value === 0) return '免费';
+  return `${CELL_LABELS.currency[currency] || ''}${cellNumberText(value)}`;
+}
+
+/** 独立的单位文本：`USD / 每 100 万 tokens`；记录没写单位 ⇒ 「未标注」 */
+function cellUnitText(plan) {
+  const pricing = (plan && plan.pricing) || {};
+  if (!pricing.unit) return CELL_LABELS.unknownText;
+  return `${pricing.currency || CELL_LABELS.unknownText} / ${CELL_LABELS.unit[pricing.unit] || pricing.unit}`;
+}
+
+function unescapeCell(text) {
+  return String(text)
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+    .replace(/&#39;/g, '\'').replace(/&amp;/g, '&');
+}
+
+function cellTextOf(cellHtml) {
+  return unescapeCell(String(cellHtml).replace(/<[^>]*>/g, '')).trim();
+}
+
+/** 产物页面 → 一张逐格读出来的计价表（读不出结构时字段为 null，由调用方报"结构漂移"） */
+function readMapiTable(html) {
+  const rows = [];
+  const rowRe = /<tr class="mapirow"([^>]*)>([\s\S]*?)<\/tr>/g;
+  let match;
+  while ((match = rowRe.exec(String(html))) !== null) {
+    const attrs = match[1];
+    const body = match[2];
+    const attr = name => {
+      const hit = attrs.match(new RegExp(`${name}="([^"]*)"`));
+      return hit ? unescapeCell(hit[1]) : null;
+    };
+    const th = (body.match(/<th scope="row">([\s\S]*?)<\/th>/) || [])[1];
+    const tds = [...body.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map(item => item[1]);
+    const timeTag = body.match(/<time datetime="([^"]*)">([\s\S]*?)<\/time>/) || [];
+    const href = (body.match(/<a href="([^"]*)"/) || [])[1];
+    const at = index => (tds[index] === undefined ? null : cellTextOf(tds[index]));
+    rows.push({
+      identity: `${attr('data-plan')}|${attr('data-model-key')}|${attr('data-variant')}`,
+      item: attr('data-item'),
+      planId: attr('data-plan'),
+      modelKey: attr('data-model-key'),
+      variant: attr('data-variant'),
+      providerKey: attr('data-provider'),
+      provider: th === undefined ? null : cellTextOf(th),
+      channel: at(0),
+      variantLabel: at(1),
+      input: at(2),
+      output: at(3),
+      cache: at(4),
+      unit: at(5),
+      lastSeen: timeTag[2] === undefined ? at(6) : cellTextOf(timeTag[2]),
+      lastSeenAttr: timeTag[1] === undefined ? null : timeTag[1],
+      officialHref: href === undefined ? null : unescapeCell(href),
+      officialText: at(7),
+      cellCount: tds.length
+    });
+  }
+  return rows;
+}
+
+/** 期望行：自己从原文展开（§17 口径）—— 一条真实计价条目 = 一个期望行 */
+function cellExpectationsFor(rawLinks, rawApiPlans, providerNames) {
+  const planById = new Map(rawApiPlans.filter(plan => plan && plan.id).map(plan => [plan.id, plan]));
+  const bySlug = new Map();
+  for (const link of rawLinks) {
+    if (!link || typeof link !== 'object' || link.apiPlanId === undefined) continue;
+    const plan = planById.get(link.apiPlanId);
+    if (!plan) continue;
+    const entries = (plan.models || []).filter(entry => entry && entry.modelKey === link.modelKey);
+    const wildcard = link.variant === null || link.variant === undefined || link.variant === '';
+    const picked = wildcard ? entries : entries.filter(entry => entry.variant === link.variant);
+    if (!picked.length) continue;
+    if (!bySlug.has(link.registrySlug)) bySlug.set(link.registrySlug, []);
+    for (const entry of picked) {
+      const rates = entry.rates || {};
+      const pricing = plan.pricing || {};
+      bySlug.get(link.registrySlug).push({
+        identity: `${plan.id}|${entry.modelKey}|${entry.variant}`,
+        planId: plan.id,
+        modelKey: entry.modelKey,
+        variant: entry.variant,
+        providerKey: plan.provider,
+        cells: {
+          provider: providerNames.get(plan.provider) || plan.provider,
+          channel: CELL_LABELS.channel[plan.channel] || plan.channel || CELL_LABELS.unknownText,
+          variantLabel: CELL_LABELS.variant[entry.variant] || entry.variant || CELL_LABELS.unknownText,
+          input: cellPriceText(rates.input, pricing.currency),
+          output: cellPriceText(rates.output, pricing.currency),
+          cache: cellPriceText(rates.cachedInput, pricing.currency),
+          unit: cellUnitText(plan),
+          lastSeen: plan.lastSeen || CELL_LABELS.unknownNum
+        },
+        officialUrl: plan.officialUrl || null,
+        note: entry.note || null
+      });
+    }
+  }
+  return bySlug;
+}
+
+/** 逐格对账（一页）：每条问题都点名 (planId, modelKey, variant) + 哪一格 + 期望/实际 */
+function cellProblemsOfPage(slug, html, expectedRows) {
+  const problems = [];
+  const rows = readMapiTable(html);
+  const byIdentity = new Map(rows.map(row => [row.identity, row]));
+  const expectedIdentities = new Set(expectedRows.map(row => row.identity));
+  if (rows.length !== expectedRows.length) {
+    problems.push(`${slug}: 计价表 ${rows.length} 行 ≠ 数据里 ${expectedRows.length} 条计价条目`);
+  }
+  for (const row of rows) {
+    if (!expectedIdentities.has(row.identity)) problems.push(`${slug}: 页面出现数据里没有的行 ${row.identity}`);
+  }
+  for (const expected of expectedRows) {
+    const where = `(${expected.planId}, ${expected.modelKey}, ${expected.variant})`;
+    const actual = byIdentity.get(expected.identity);
+    if (!actual) {
+      problems.push(`${slug}: 计价条目 ${where} 没有渲染成行（一个真实计价条目在页面上不存在）`);
+      continue;
+    }
+    if (actual.item !== expected.identity) {
+      problems.push(`${slug} ${where}: 行身份 data-item=${JSON.stringify(actual.item)}，应为 ${JSON.stringify(expected.identity)}`);
+    }
+    if (actual.providerKey !== expected.providerKey) {
+      problems.push(`${slug} ${where}: 行上的 data-provider=${JSON.stringify(actual.providerKey)}，按数据应为 ${JSON.stringify(expected.providerKey)}`);
+    }
+    if (actual.cellCount !== 8) {
+      problems.push(`${slug} ${where}: 该行有 ${actual.cellCount} 个 <td>，计价表应为 8 个（结构漂移）`);
+    }
+    for (const [name, label] of Object.entries(CELL_FIELD_LABELS)) {
+      if (actual[name] !== expected.cells[name]) {
+        problems.push(`${slug} ${where}: 格「${label}」渲染为 ${JSON.stringify(actual[name])}，按数据应为 ${JSON.stringify(expected.cells[name])}`);
+      }
+    }
+    if (actual.lastSeenAttr !== expected.cells.lastSeen) {
+      problems.push(`${slug} ${where}: 格「Last Seen」的 <time datetime> 为 ${JSON.stringify(actual.lastSeenAttr)}，按数据应为 ${JSON.stringify(expected.cells.lastSeen)}`);
+    }
+    if (expected.officialUrl) {
+      if (actual.officialHref !== expected.officialUrl) {
+        problems.push(`${slug} ${where}: 格「官方定价页」链接为 ${JSON.stringify(actual.officialHref)}，按数据应为 ${JSON.stringify(expected.officialUrl)}`);
+      }
+    } else if (String(actual.officialText || '') !== CELL_LABELS.unknownNum) {
+      problems.push(`${slug} ${where}: 记录没有 officialUrl 时该格应为「${CELL_LABELS.unknownNum}」，实得 ${JSON.stringify(actual.officialText)}`);
+    }
+    if (expected.note && !String(actual.officialText || '').includes(expected.note)) {
+      problems.push(`${slug} ${where}: 格「官方定价页」没有带上该条目的 note（缺 ${JSON.stringify(expected.note)}）`);
+    }
+  }
+  return problems;
+}
+
+/** 逐格字段 → 中文格名（失败信息里点名到"哪一格"） */
+const CELL_FIELD_LABELS = {
+  provider: 'Provider', channel: '计费通道', variantLabel: 'Variant',
+  input: '输入价', output: '输出价', cache: 'Cache 价', unit: 'Unit（币种 + 文案）', lastSeen: 'Last Seen'
+};
+
+if (DIST_MODELS_OK) {
+  const rawLinksPath = path.join(ROOT, 'scripts', 'data', 'model-registry-links.json');
+  const cellRawLinks = JSON.parse(fs.readFileSync(rawLinksPath, 'utf8')).links;
+  const cellRawApiPlans = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8')).plans;
+  const rawProviders = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'data', 'providers.json'), 'utf8'));
+  const providerNames = new Map(Object.entries(rawProviders)
+    .filter(([key]) => !key.startsWith('_'))
+    .map(([key, entry]) => [key, String((entry && entry.name) || key)]));
+
+  // 独立副本与既有契约表的漂移对照：词表/格式变了必须显式同步这里（否则 ⑨ 会静默变成"另一套口径"）
+  check('独立副本与契约表一致（计费通道 / 单位 / 变体词表）',
+    JSON.stringify(CELL_LABELS.channel) === JSON.stringify(apiSchema.API_CHANNEL_LABEL)
+    && JSON.stringify(CELL_LABELS.unit) === JSON.stringify(apiSchema.API_UNIT_LABEL)
+    && JSON.stringify(CELL_LABELS.variant) === JSON.stringify(apiSchema.MODEL_VARIANT_LABEL),
+    '词表漂移：请把新词同步进 models-page-selftest.js 的 CELL_LABELS');
+  check('独立副本与契约表一致（币种符号 / 数字格式 / 缺值字面量）',
+    JSON.stringify(CELL_LABELS.currency) === JSON.stringify(plansPageLib.CURRENCY_SYMBOL)
+    && cellNumberText(1234567.5) === plansPageLib.formatNumber(1234567.5)
+    && CELL_LABELS.unknownNum === modelsPage.UNKNOWN_NUM
+    && CELL_LABELS.unknownText === modelsPage.UNKNOWN_TEXT);
+
+  // 自证禁令的机器化：⑨ 这一段里**一个计算函数都不许出现**（只允许渲染入口 + 常量 + 读产物）
+  {
+    const ownSource = fs.readFileSync(__filename, 'utf8');
+    const sectionSource = ownSource.slice(ownSource.indexOf('⑨ 逐格对账'));
+    const forbidden = ['apiPricingRowOf', 'apiRowOf', 'apiTargetsOf', 'modelReferencesOf', 'modelPageGate',
+      'modelReferenceOfCached']
+      .filter(name => new RegExp(`modelsPage\\.${name}\\b`).test(sectionSource));
+    check('⑨ 的判据不借 models-page 的计算函数自证（只调用渲染入口 renderModelPage / 读产物）',
+      forbidden.length === 0, `出现了：${forbidden.join(' · ')}`);
+    check('⑨ 明确调用了渲染入口（而不是自己拼 HTML —— 那样就不是在检查真实渲染层）',
+      /modelsPage\.renderModelPage\(/.test(sectionSource));
+  }
+
+  const cellExpectations = cellExpectationsFor(cellRawLinks, cellRawApiPlans, providerNames);
+  const cellItemTotal = cellRawApiPlans.reduce((sum, plan) => sum + ((plan && plan.models) || []).length, 0);
+  let cellRowsChecked = 0;
+  let cellPagesChecked = 0;
+  const cellCoverageProblems = [];
+  const cellValueProblems = [];
+  for (const [slug, expectedRows] of cellExpectations) {
+    const file = path.join(DIST, 'models', slug, 'index.html');
+    if (!fs.existsSync(file)) {
+      cellCoverageProblems.push(`${slug}: 缺少详情页产物 ${path.relative(ROOT, file)}（逐格对账无从谈起）`);
+      continue;
+    }
+    cellPagesChecked += 1;
+    cellRowsChecked += expectedRows.length;
+    cellValueProblems.push(...cellProblemsOfPage(slug, fs.readFileSync(file, 'utf8'), expectedRows));
+  }
+  check(`逐格对账：${cellPagesChecked} 个模型页 · ${cellRowsChecked} 条计价条目 · ${cellRowsChecked * Object.keys(CELL_FIELD_LABELS).length} 个格，**全部**等于数据里那一条`,
+    cellValueProblems.length === 0, cellValueProblems.slice(0, 4).join(' ｜ ').slice(0, 600));
+  check(`逐格对账覆盖 = api-plans 全部计价条目（${cellRowsChecked}/${cellItemTotal}，0 豁免；${cellExpectations.size} 个 slug 逐页有产物）`,
+    cellRowsChecked === cellItemTotal && cellCoverageProblems.length === 0
+    && cellPagesChecked === cellExpectations.size && cellItemTotal > 0,
+    cellCoverageProblems.slice(0, 3).join(' ｜ '));
+
+  // ---- 合成多变体夹具：判据不只对生产数据有效 ----
+  const synthPlan = {
+    id: 'sy0000000001', kind: 'api', provider: 'zhipu', planName: '合成多变体记录', channel: 'standard',
+    officialUrl: 'https://example.com/pricing', source: 'Official-Pricing', sourceUrl: 'https://example.com/pricing',
+    region: 'cn', pricing: { currency: 'CNY', unit: 'per_1M_tokens', unitNote: null },
+    models: [
+      {
+        name: 'synth-x', modelKey: 'synth-x', variant: 'standard', aliases: null,
+        rates: { input: 1, output: 2, cachedInput: null, cacheWrite: null, cacheWriteLong: null, reasoning: null, batchInput: null, batchOutput: null },
+        mediaRates: null, note: null
+      },
+      {
+        name: 'synth-x', modelKey: 'synth-x', variant: 'long_context', aliases: null,
+        rates: { input: 3, output: 4, cachedInput: 5, cacheWrite: null, cacheWriteLong: null, reasoning: null, batchInput: null, batchOutput: null },
+        mediaRates: null, note: '合成夹具：长上下文档'
+      }
+    ],
+    firstSeen: '2026-10-01', lastSeen: '2026-10-01', verified: true, verifiedAt: '2026-10-01', evidence: []
+  };
+  const synthTable = {
+    'synth-model': {
+      canonicalName: '合成模型', developer: '智谱AI', owner: '智谱AI', family: '合成',
+      aliases: [], officialUrl: null, status: 'active', note: null
+    }
+  };
+  const synthLinks = {
+    schemaVersion: 1,
+    links: [{
+      registrySlug: 'synth-model', apiPlanId: 'sy0000000001', modelKey: 'synth-x', variant: null,
+      basis: 'explicit-mapping', evidence: [], note: '合成夹具：通配映射认领两个变体'
+    }]
+  };
+  const synthModel = modelsPage.modelsOf(synthTable)[0];
+  const synthCtx = {
+    ...ctx, links: synthLinks, apiPlans: [synthPlan], plans: [], deals: [],
+    dealLinks: null, apiPlanHistoryStore: null, __refCache: new Map(), prefix: '../../'
+  };
+  const synthHtml = modelsPage.renderModelPage(synthModel, synthCtx);
+  const synthExpected = cellExpectationsFor(synthLinks.links, [synthPlan], providerNames).get('synth-model') || [];
+  const synthProblems = cellProblemsOfPage('synth-model', synthHtml, synthExpected);
+  check(`合成多变体夹具：通配映射认领 2 个真实变体 ⇒ 2 行、逐格全对（${synthExpected.map(row => row.variant).join(' + ')}）`,
+    synthExpected.length === 2 && synthProblems.length === 0, synthProblems.slice(0, 3).join(' ｜ '));
+  check('合成夹具：cache=5 → 「¥5」、cache=null → 「—」（「免费 / 已公布 / 未公布」三套口径分得开）',
+    synthHtml.includes('<td class="num">¥5</td>') && synthHtml.includes('<td class="num">—</td>'));
+  check('合成夹具：逐格对账在干净样本上零问题（判据不是恒红）', synthProblems.length === 0);
+
+  // ---- 就地灵敏度对照：换相邻格 / 空格 / 删行（只污染内存里的 HTML 副本，不碰任何文件） ----
+  const swapCells = html => html.replace(
+    /(<td class="num">)¥1(<\/td>\s*<td class="num">)¥2(<\/td>)/,
+    '$1¥2$2¥1$3'
+  );
+  const swappedHtml = swapCells(synthHtml);
+  const swappedProblems = cellProblemsOfPage('synth-model', swappedHtml, synthExpected);
+  check('【对照】把 standard 行的「输入价」与「输出价」对调 → 逐格对账必须点名该条目与该格',
+    swappedHtml !== synthHtml
+    && swappedProblems.some(problem => problem.includes('(sy0000000001, synth-x, standard)')
+      && problem.includes('输入价') && problem.includes('¥2') && problem.includes('¥1')),
+    swappedProblems.slice(0, 2).join(' ｜ '));
+  const blankedHtml = synthHtml.replace(/(<td class="num">)¥3(<\/td>)/, '$1$2');
+  const blankedProblems = cellProblemsOfPage('synth-model', blankedHtml, synthExpected);
+  check('【对照】把 long_context 的「输入价」整格置空（行仍在、行数不变）→ 必须点名该格（期望 ¥3、实际空）',
+    blankedHtml !== synthHtml
+    && blankedProblems.some(problem => problem.includes('(sy0000000001, synth-x, long_context)')
+      && problem.includes('输入价') && problem.includes('""')),
+    blankedProblems.slice(0, 2).join(' ｜ '));
+  const removedCellHtml = synthHtml.replace(/<td class="num">¥3<\/td>/, '');
+  const removedCellProblems = cellProblemsOfPage('synth-model', removedCellHtml, synthExpected);
+  check('【对照】把 long_context 的「输入价」整格**删掉**（行仍在、行数不变）→ 必须点名该格（期望 ¥3、实际空）与列数漂移',
+    removedCellHtml !== synthHtml
+    && removedCellProblems.some(problem => problem.includes('(sy0000000001, synth-x, long_context)') && problem.includes('输入价'))
+    && removedCellProblems.some(problem => problem.includes('7 个 <td>')),
+    removedCellProblems.slice(0, 2).join(' ｜ '));
+  const droppedRowHtml = synthHtml.replace(/<tr class="mapirow"(?:(?!<\/tr>)[\s\S])*long_context[\s\S]*?<\/tr>/, '');
+  const droppedProblems = cellProblemsOfPage('synth-model', droppedRowHtml, synthExpected);
+  check('【对照】整行删掉（少一条计价条目）→ 行数对账 + 该条目点名',
+    droppedRowHtml !== synthHtml && droppedProblems.length > 0
+    && droppedProblems.some(problem => problem.includes('计价表 1 行 ≠ 数据里 2 条')),
+    droppedProblems.slice(0, 2).join(' ｜ '));
+  // 真实页面上的同一条对照（证明判据在真实产物结构上也可用，而不是只认得合成夹具）
+  {
+    const sampleSlug = [...cellExpectations.keys()].find(slug => (cellExpectations.get(slug) || []).length >= 2);
+    const sampleRows = cellExpectations.get(sampleSlug) || [];
+    const realHtml = fs.readFileSync(path.join(DIST, 'models', sampleSlug, 'index.html'), 'utf8');
+    const firstRow = sampleRows[0];
+    const target = new RegExp(`(<td class="num">)${firstRow.cells.input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(</td>\\s*<td class="num">)${firstRow.cells.output.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(</td>)`);
+    const dirtyReal = realHtml.replace(target, '$1DIRTY$2DIRTY$3');
+    const dirtyRealProblems = cellProblemsOfPage(sampleSlug, dirtyReal, sampleRows);
+    check(`【对照】真实页面（${sampleSlug}）上把两格数值改成占位 → 必须点名 ${firstRow.identity}`,
+      dirtyReal !== realHtml && dirtyRealProblems.length >= 2
+      && dirtyRealProblems.some(problem => problem.includes(`(${firstRow.planId}, ${firstRow.modelKey}, ${firstRow.variant})`)),
+      dirtyRealProblems.slice(0, 2).join(' ｜ '));
+  }
 }
 
 /* ================================================================== */

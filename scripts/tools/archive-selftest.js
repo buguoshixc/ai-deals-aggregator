@@ -24,6 +24,39 @@ const pageKinds = require('../lib/page-kinds');
 const ROOT = path.join(__dirname, '..', '..');
 const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
 
+/* ------------------------------------------------------------------ */
+/* 产物目录与 fail-closed 前置（§10.9 · P2-10 / P2-26）                  */
+/* ------------------------------------------------------------------ */
+//
+// 本工具最后一节必须读**构建产物**（`<dist>/archive/index.html`）。原先是
+// 「产物不存在 ⇒ 跳过并计 ✓」—— 而门禁在构建之前跑，`dist/` 根本不存在，
+// 于是这一步在 CI 里**永远是绿的**：同一份代码、同一个 commit，项数随环境变。
+//
+// 六个产物依赖工具现在用同一套协议：
+//   · `--dir=<path>`            显式指定产物目录（默认 `<repo>/dist`）；
+//   · 缺少必需产物 ⇒ **非 0**，并给出「先 build / 用 --dir 指到别的产物」的下一步；
+//   · 只有显式 `--allow-missing-dist` 才允许跳过，且会被标成
+//     `⚠️ OPTIONAL DIAGNOSTIC` —— 那是给本地诊断的口子，门禁里不传。
+//
+// 「产物该不该存在」不由本工具猜：门禁 action 把这一节排在 `Assemble site` 之后，
+// 并把 `--dir=dist` 显式传进来（`check-ci-consistency` 的 (17) 守着这个调用形态）。
+const dirArg = process.argv.find(arg => arg.startsWith('--dir='));
+const ALLOW_MISSING_DIST = process.argv.includes('--allow-missing-dist');
+const DIST = path.resolve(ROOT, dirArg ? dirArg.slice('--dir='.length) : 'dist');
+
+/** 必需的产物缺失时：显式允许 → 记一条 OPTIONAL DIAGNOSTIC（通过）；否则记红并返回 false */
+function requireDist(what, marker) {
+  const file = path.join(DIST, marker);
+  if (fs.existsSync(file)) return true;
+  if (ALLOW_MISSING_DIST) {
+    check(`⚠️ OPTIONAL DIAGNOSTIC（--allow-missing-dist）：跳过 ${what} 的现场检查（缺 ${marker}）`, true);
+    return false;
+  }
+  check(`缺少必需产物：${what} —— 找不到 ${path.relative(ROOT, file) || file}` +
+    `（先跑 npm run build，或用 --dir=<构建输出> 指到那份产物；只有显式 --allow-missing-dist 才允许跳过）`, false);
+  return false;
+}
+
 let passed = 0;
 const failures = [];
 
@@ -339,7 +372,9 @@ section('⑦ 详情页与页码声明');
 
 {
   const entry = synthetic.entries.find(item => item.id === 'aaaaaaaaaaa1');
-  const html = archiveLib.renderArchiveEntry(entry, { prefix: '../../' });
+  // 前缀**不再由测试自己写死**：测试与构建读的是同一个判据（`archiveEntryPrefix()`）——
+  // 两处各写一份 `'../../'` 正是上一轮那份 24/27 死链长期没被发现的原因。
+  const html = archiveLib.renderArchiveEntry(entry, { prefix: archiveLib.archiveEntryPrefix(entry) });
   const problems = archiveLib.assertPageHonesty(html, { kind: 'archive-entry', entry });
   check('详情页六项必备信息齐全（状态/首次/最后有效/结束发现/最后已知/时间线）',
     problems.length === 0, problems.slice(0, 2).join('；'));
@@ -363,6 +398,139 @@ check('pageKinds 声明了档案详情路由模式',
   pageKinds.kindOfRoute('archive/api/4f8bae91f9f8/') === 'archive-detail');
 check('未登记的档案路由会被审计报出来',
   pageKinds.auditRouteKinds(['archive/', 'archivex/']).join(',') === 'archivex/');
+
+/* ================================================================== */
+section('⑦′ 详情页的相对引用：每条都必须解析到真实目标（前缀由路由深度派生）');
+/* ================================================================== */
+
+{
+  // 这一节是 P1-5（F-r1-history-ai-002）的**常驻牙**。详情页原先写死 `'../../'`（2 层），
+  // 而 `archive/<kind>/<id>/` 是 3 层 —— 27 条相对引用里 24 条解析到 `archive/…` 下
+  // 根本不存在的东西（favicon / feed / 面包屑 / 全站导航全中）。生产一条 ended/restored
+  // 都没有，所以它一次也没被构建照到；只有合成 ended 记录才走得进这个分支。
+  //
+  // 三条一起守：
+  //   ① 前缀一律由 `archiveEntryPrefix()` / `routePrefixOf()` 按路由深度给出（唯一实现）；
+  //   ② 页面里每条相对引用都带**该页深度**的前缀（3 层页面 ⇒ `../../../…`）；
+  //   ③ 把每条相对引用按页面路由**解析**一遍，落点必须是已声明的路由或静态文件
+  //      （判据来自 `page-kinds.js` 的声明表与路由模式，不复制渲染层的前缀算式）。
+  const seo = require('../lib/seo');
+  const STATIC_FILES = new Set(['favicon.svg', 'feed.xml', 'feed.json', 'robots.txt', 'icon.png', 'og-image.png', 'sitemap.xml']);
+  const declaredRoutes = new Set(Object.keys(pageKinds.FIXED_ROUTE_KINDS));
+  // `/vendor/` 与 `/category/` 是**枢纽页**（kind='hub'，由落地页计划按数据生成），
+  // 因此不在固定路由声明表里；它们是真实存在的页面（产物里 `vendor/index.html` /
+  // `category/index.html` 都在）。这里只登记「档案页会链到的这两个根」，
+  // 它们的死链由产物级门禁（seo-verify 的 internal-link-exists）继续盯着。
+  const HUB_ROOTS = new Set(['vendor/', 'category/']);
+  const routeExists = route => {
+    if (route === '' || declaredRoutes.has(route) || HUB_ROOTS.has(route)) return true;
+    if (STATIC_FILES.has(route) || /^logos\/[^/]+\.svg$/.test(route)) return true;
+    return pageKinds.ROUTE_PATTERNS.some(pattern => pattern.re.test(route));
+  };
+
+  // 三种 kind 各一条（deal / plan / api）—— 详情路由的形状必须逐类都对
+  const planEntry = archiveLib.buildArchive({
+    kind: 'plan',
+    baseline: { at: '2026-09-01', fields: { ppppppppppp1: { 'billing.regularPrice': 100 } } },
+    events: [{ planId: 'ppppppppppp1', at: '2026-09-12', type: 'ended', reason: 'withdrawn', label: { title: '演练套餐 P', vendor: '演练厂商' } }],
+    asOf: '2026-10-01'
+  }).entries[0];
+  const apiEntry = archiveLib.buildArchive({
+    kind: 'api',
+    baseline: { at: '2026-09-01', fields: { qqqqqqqqqqq1: { 'pricing.unit': 'per_1M_tokens' } } },
+    events: [{ planId: 'qqqqqqqqqqq1', at: '2026-09-13', type: 'ended', reason: 'withdrawn', label: { title: '演练 API 记录 Q', vendor: '演练厂商' } }],
+    asOf: '2026-10-01'
+  }).entries[0];
+  const fixtureEntries = [synthetic.entries[0], planEntry, apiEntry];
+  const archivesForIndex = [synthetic, archiveLib.buildArchive({
+    kind: 'plan',
+    baseline: { at: '2026-09-01', fields: { ppppppppppp1: { 'billing.regularPrice': 100 } } },
+    events: [{ planId: 'ppppppppppp1', at: '2026-09-12', type: 'ended', reason: 'withdrawn', label: { title: '演练套餐 P', vendor: '演练厂商' } }],
+    asOf: '2026-10-01'
+  }), archiveLib.buildArchive({
+    kind: 'api',
+    baseline: { at: '2026-09-01', fields: { qqqqqqqqqqq1: { 'pricing.unit': 'per_1M_tokens' } } },
+    events: [{ planId: 'qqqqqqqqqqq1', at: '2026-09-13', type: 'ended', reason: 'withdrawn', label: { title: '演练 API 记录 Q', vendor: '演练厂商' } }],
+    asOf: '2026-10-01'
+  })];
+
+  check('三种 kind 的详情路由都是 3 层，前缀由路由深度派生（../../../）',
+    fixtureEntries.length === 3 && fixtureEntries.every(entry =>
+      archiveLib.archiveEntryRoute(entry).split('/').filter(Boolean).length === 3
+      && archiveLib.archiveEntryPrefix(entry) === '../../../'
+      && archiveLib.routePrefixOf(archiveLib.archiveEntryRoute(entry)) === '../../../'),
+    fixtureEntries.map(entry => `${archiveLib.archiveEntryRoute(entry)} ⇒ ${archiveLib.archiveEntryPrefix(entry)}`).join(' · '));
+  check('索引页前缀同样由唯一实现给出（archive/ ⇒ ../）',
+    archiveLib.routePrefixOf(archiveLib.ARCHIVE_INDEX_ROUTE) === '../');
+
+  const pages = [
+    { route: archiveLib.ARCHIVE_INDEX_ROUTE, prefix: '../', html: archiveLib.renderArchiveIndex(archivesForIndex, { prefix: '../' }) },
+    ...fixtureEntries.map(entry => ({
+      route: archiveLib.archiveEntryRoute(entry),
+      prefix: archiveLib.archiveEntryPrefix(entry),
+      html: archiveLib.renderArchiveEntry(entry, { prefix: archiveLib.archiveEntryPrefix(entry) })
+    }))
+  ];
+
+  const refProblems = [];
+  const prefixProblems = [];
+  let refCount = 0;
+  for (const page of pages) {
+    for (const match of page.html.matchAll(/(?:href|src)="([^"]+)"/g)) {
+      const href = match[1];
+      if (!href || href.startsWith('#') || /^(https?:|mailto:|data:)/i.test(href)) continue;
+      refCount++;
+      // ② 该页的每条相对引用都必须带这一层的深度前缀
+      if (!href.startsWith(page.prefix)) prefixProblems.push(`${page.route} 的 ${href} 没有按 ${page.prefix || '(空)'} 起头`);
+    }
+    // ③ 解析后的落点必须真实存在：**解析用独立实现**（`lib/seo.js` 的 internalLinks
+    //    按页面路由算深度），判据 = 声明表 + 路由模式 + 静态文件。
+    for (const link of seo.internalLinks(page.html, page.route)) {
+      const target = seo.normalizeRoute(link);
+      if (!routeExists(target)) refProblems.push(`${page.route} → ${target}`);
+    }
+  }
+  check(`三个详情页 + 索引页的 ${refCount} 条相对引用全部解析到已声明路由或静态文件`,
+    refProblems.length === 0, refProblems.slice(0, 3).join('；'));
+  check('每条相对引用都带该页深度前缀（详情页 3 层 ⇒ ../../../…）',
+    prefixProblems.length === 0, prefixProblems.slice(0, 3).join('；'));
+
+  // ① 没有「猜错的默认值」这条路：不传前缀直接抛错
+  let throwsWithoutPrefix = false;
+  try { archiveLib.renderArchiveEntry(fixtureEntries[0], {}); } catch (error) { throwsWithoutPrefix = /ctx\.prefix/.test(String(error.message)); }
+  check('【牙】详情页渲染不带前缀 → 直接抛错（默认值不再可能猜错层级）', throwsWithoutPrefix);
+  let rejectsBadShape = false;
+  try { archiveLib.renderArchiveEntry(fixtureEntries[0], { prefix: '../archive/' }); } catch (error) { rejectsBadShape = /非法/.test(String(error.message)); }
+  check('【牙】前缀不是「若干层 ../」的形状 → 直接抛错', rejectsBadShape);
+
+  // 【牙】把前缀改回缺陷原形 `'../../'`：② + ③ 两条都必须立刻红。
+  // ⚠️ 这条牙**故意自己再算一遍深度**（不复用被测的 `archiveEntryPrefix()`）：
+  // helper 一旦被改坏，复用它的断言会跟着一起移位 —— 那正是「两处各写一份、一起错」的
+  // 老坑。独立算出来的期望值才是牙。
+  const depthPrefixOf = route => '../'.repeat(route.split('/').filter(Boolean).length);
+  const brokenPages = fixtureEntries.map(entry => ({
+    route: archiveLib.archiveEntryRoute(entry),
+    expected: depthPrefixOf(archiveLib.archiveEntryRoute(entry)),
+    html: archiveLib.renderArchiveEntry(entry, { prefix: '../../' })
+  }));
+  const brokenPrefix = [];
+  const brokenRefs = [];
+  for (const page of brokenPages) {
+    for (const match of page.html.matchAll(/(?:href|src)="([^"]+)"/g)) {
+      const href = match[1];
+      if (!href || href.startsWith('#') || /^(https?:|mailto:|data:)/i.test(href)) continue;
+      if (!href.startsWith(page.expected)) brokenPrefix.push(`${page.route} 的 ${href}（应为 ${page.expected}…）`);
+    }
+    for (const link of seo.internalLinks(page.html, page.route)) {
+      const target = seo.normalizeRoute(link);
+      if (!routeExists(target)) brokenRefs.push(`${page.route} → ${target}`);
+    }
+  }
+  check('【牙】前缀改回 \'../../\' → 相对引用不再带该页深度前缀', brokenPrefix.length > 0,
+    `${brokenPrefix.length} 条（如 ${brokenPrefix[0] || ''}）`);
+  check('【牙】前缀改回 \'../../\' → 解析后指向 `archive/…` 下不存在的目标', brokenRefs.length > 0,
+    `${brokenRefs.length} 条（如 ${brokenRefs[0] || ''}）`);
+}
 
 /* ================================================================== */
 section('⑧ 详情页门槛与 sitemap 资格（题面 §4 / §F4）');
@@ -441,10 +609,9 @@ section('⑩ 真实产物（接线后才有；未接线时如实跳过）');
 /* ================================================================== */
 
 {
-  const DIST = path.join(ROOT, 'dist');
   const distIndex = path.join(DIST, 'archive', 'index.html');
-  if (!fs.existsSync(distIndex)) {
-    check('构建产物不存在或 /archive/ 尚未接线 —— 本节按「如实跳过」处理（先跑 npm run build）', true);
+  if (!requireDist('dist 现场 /archive/', path.join('archive', 'index.html'))) {
+    // 缺产物已经不在这里「跳过并计 ✓」了：requireDist 要么已记红，要么是显式 OPTIONAL DIAGNOSTIC。
   } else {
     const html = fs.readFileSync(distIndex, 'utf8');
     const diskStores = {

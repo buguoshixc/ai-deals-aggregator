@@ -1,0 +1,76 @@
+{
+  "mutation": "dist/plans/api/index.html 第一行输入价 → ¥999999",
+  "shaBefore": "41c2fcd9a1380db01540a0f76718fc12841d5ef3ee6c93afece9c24a54ff5070",
+  "shaAfter": "3205f7bea07df4ad73dc748f476f27c70abff4c908f86e576a130adc3238a361",
+  "restoredByteExact": true,
+  "caught": [
+    {
+      "name": "verify-site --dir=dist（真浏览器）",
+      "command": "node scripts/tools/verify-site.js --dir=dist",
+      "exit": 1,
+      "ms": 68592,
+      "hits": [
+        "✓ /status/ 行数与状态标签与 source-health.json 逐个对账 — 页面 9 行 / 数据 9 个 · 标签 [✅ 正常 ❌ 失败]",
+        "✓ 没有加载失败 — 0 个"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "api-plans-selftest",
+      "command": "node scripts/tools/api-plans-selftest.js",
+      "exit": 0,
+      "ms": 981,
+      "hits": [
+        "✓ 【牙】关系声明的 provider 与 API 记录的 provider 不一致 → 红",
+        "=== v2.5 API / Token 计费演练：175 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "models-page-selftest --dir=dist",
+      "command": "node scripts/tools/models-page-selftest.js --dir=dist",
+      "exit": 0,
+      "ms": 1285,
+      "hits": [
+        "✓ 【对照】把 long_context 的「输入价」整格**删掉**（行仍在、行数不变）→ 必须点名该格（期望 ¥3、实际空）与列数漂移",
+        "=== v3.0 Model Registry 页面演练：75 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "seo-verify --dir=dist",
+      "command": "node scripts/tools/seo-verify.js --dir=dist",
+      "exit": 0,
+      "ms": 3392,
+      "hits": [
+        "✅ SEO 验收 11 项，失败 0 项"
+      ]
+    },
+    {
+      "name": "data-docs-selftest --dir=dist",
+      "command": "node scripts/tools/data-docs-selftest.js --dir=dist",
+      "exit": 0,
+      "ms": 151,
+      "hits": [
+        "✓ 【牙】同一个错误在页面断言里也会变红（模板与 Manifest 不一致）",
+        "⑤ 牙 #13：schemaVersion 与真实数据不一致"
+      ]
+    },
+    {
+      "name": "verify-site --dir=dist（真浏览器）",
+      "command": "node scripts/tools/verify-site.js --dir=dist",
+      "exit": 1,
+      "ms": 68592,
+      "hits": [
+        "✓ /status/ 行数与状态标签与 source-health.json 逐个对账 — 页面 9 行 / 数据 9 个 · 标签 [✅ 正常 ❌ 失败]",
+        "✓ 没有加载失败 — 0 个"
+      ]
+    },
+    {
+      "name": "MY join-audit --dist=dist",
+      "command": "node research/quality-closure/verify-work/join-audit.cjs --dist=dist",
+      "exit": 0,
+      "ms": 88,
+      "hits": []
+    }
+  ]
+}

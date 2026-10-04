@@ -119,6 +119,25 @@ function vendorViewOf(spec, ctx = {}) {
   const codingPlans = providerKey ? plans.filter(plan => plan && plan.provider === providerKey) : [];
   const apiRecords = providerKey ? apiPlans.filter(plan => plan && plan.provider === providerKey) : [];
   const apiPlanIds = new Set(apiRecords.map(plan => plan.id));
+  const apiPlansById = new Map(apiPlans.filter(plan => plan && plan.id).map(plan => [plan.id, plan]));
+
+  /**
+   * 一条 API 映射**认领的真实计价条目数**（F-v3-registry-001 / P1-12）。
+   *
+   * 旧口径把 `link` 当条目数：一条 `variant: null` 的映射记成 1，而它其实覆盖
+   * 该 `modelKey` 在这条记录里的全部真实变体（真实数据里有 12 组 `standard + long_context`）。
+   * 于是厂商页上「在这一家的计价条目 N 条」比模型页实际列出的行数少 —— 同一个事实两个数字。
+   * 这里**独立重算**（只读 api-plans 的 `models[].variant`，不 require 模型页/registry 的判据）：
+   * 通配 link 数它真实展开到的条目，显式 link 数 1（变体不存在时数 0，不虚增）。
+   */
+  const apiItemCountOf = link => {
+    const plan = apiPlansById.get(link.apiPlanId) || null;
+    if (!plan || !apiPlanIds.has(plan.id)) return 0;
+    const entries = (plan.models || []).filter(item => item && item.modelKey === link.modelKey);
+    if (!entries.length) return 0;
+    if (link.variant === null || link.variant === undefined || link.variant === '') return entries.length;
+    return entries.filter(item => item.variant === link.variant).length;
+  };
 
   // 模型归属：developer/owner 逐字相等（Registry 自己的字段），或关系层把模型连到本厂商的 API 记录。
   const ownModels = models.filter(model => model
@@ -132,7 +151,8 @@ function vendorViewOf(spec, ctx = {}) {
     .map(model => {
       const refs = modelLinks.filter(link => link
         && (String(link.registrySlug || '') === String(model.slug) || String(link.registryModelId || '') === String(model.id)));
-      const itemCount = refs.filter(link => link.apiPlanId && apiPlanIds.has(link.apiPlanId)).length;
+      // 计价**条目**数（展开后），不是映射条数：一条通配映射覆盖它真实展开到的全部变体
+      const itemCount = refs.filter(link => link.apiPlanId).reduce((sum, link) => sum + apiItemCountOf(link), 0);
       return {
         slug: String(model.slug || ''),
         id: String(model.id || ''),

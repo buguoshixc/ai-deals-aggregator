@@ -1,0 +1,230 @@
+{
+  "gitBash": "C:\\Program Files\\Git\\bin\\bash.exe",
+  "dist": "dist.qc-verify",
+  "emptyDir": "D:\\qc-t18\\empty-dist",
+  "tools": [
+    "archive",
+    "data-docs",
+    "models-page",
+    "planshub",
+    "vendor-page",
+    "feeds-reproducible"
+  ],
+  "runs": [
+    {
+      "phase": "A-empty-dist",
+      "name": "archive",
+      "command": "node scripts/tools/archive-selftest.js \"--dir=D:\\qc-t18\\empty-dist\"",
+      "exitCode": 1
+    },
+    {
+      "phase": "A-empty-dist",
+      "name": "data-docs",
+      "command": "node scripts/tools/data-docs-selftest.js \"--dir=D:\\qc-t18\\empty-dist\"",
+      "exitCode": 1
+    },
+    {
+      "phase": "A-empty-dist",
+      "name": "models-page",
+      "command": "node scripts/tools/models-page-selftest.js \"--dir=D:\\qc-t18\\empty-dist\"",
+      "exitCode": 1
+    },
+    {
+      "phase": "A-empty-dist",
+      "name": "planshub",
+      "command": "node scripts/tools/planshub-selftest.js \"--dir=D:\\qc-t18\\empty-dist\"",
+      "exitCode": 1
+    },
+    {
+      "phase": "A-empty-dist",
+      "name": "vendor-page",
+      "command": "node scripts/tools/vendor-page-selftest.js \"--dir=D:\\qc-t18\\empty-dist\"",
+      "exitCode": 1
+    },
+    {
+      "phase": "A-empty-dist",
+      "name": "feeds-reproducible",
+      "command": "node scripts/tools/check-feeds-reproducible.js \"--dir=D:\\qc-t18\\empty-dist\"",
+      "exitCode": 1
+    },
+    {
+      "phase": "B-allow-missing",
+      "name": "archive",
+      "command": "node scripts/tools/archive-selftest.js \"--dir=D:\\qc-t18\\empty-dist\" --allow-missing-dist",
+      "exitCode": 0,
+      "marked": true
+    },
+    {
+      "phase": "B-allow-missing",
+      "name": "data-docs",
+      "command": "node scripts/tools/data-docs-selftest.js \"--dir=D:\\qc-t18\\empty-dist\" --allow-missing-dist",
+      "exitCode": 0,
+      "marked": true
+    },
+    {
+      "phase": "B-allow-missing",
+      "name": "models-page",
+      "command": "node scripts/tools/models-page-selftest.js \"--dir=D:\\qc-t18\\empty-dist\" --allow-missing-dist",
+      "exitCode": 0,
+      "marked": true
+    },
+    {
+      "phase": "B-allow-missing",
+      "name": "planshub",
+      "command": "node scripts/tools/planshub-selftest.js \"--dir=D:\\qc-t18\\empty-dist\" --allow-missing-dist",
+      "exitCode": 0,
+      "marked": true
+    },
+    {
+      "phase": "B-allow-missing",
+      "name": "vendor-page",
+      "command": "node scripts/tools/vendor-page-selftest.js \"--dir=D:\\qc-t18\\empty-dist\" --allow-missing-dist",
+      "exitCode": 0,
+      "marked": true
+    },
+    {
+      "phase": "B-allow-missing",
+      "name": "feeds-reproducible",
+      "command": "node scripts/tools/check-feeds-reproducible.js \"--dir=D:\\qc-t18\\empty-dist\" --allow-missing-dist",
+      "exitCode": 0,
+      "marked": true
+    },
+    {
+      "phase": "C-real-dist",
+      "name": "archive",
+      "command": "node scripts/tools/archive-selftest.js \"--dir=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\quality-closure-post-audit\\dist.qc-verify\"",
+      "exitCode": 0
+    },
+    {
+      "phase": "C-real-dist",
+      "name": "data-docs",
+      "command": "node scripts/tools/data-docs-selftest.js \"--dir=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\quality-closure-post-audit\\dist.qc-verify\"",
+      "exitCode": 0
+    },
+    {
+      "phase": "C-real-dist",
+      "name": "models-page",
+      "command": "node scripts/tools/models-page-selftest.js \"--dir=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\quality-closure-post-audit\\dist.qc-verify\"",
+      "exitCode": 0
+    },
+    {
+      "phase": "C-real-dist",
+      "name": "planshub",
+      "command": "node scripts/tools/planshub-selftest.js \"--dir=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\quality-closure-post-audit\\dist.qc-verify\"",
+      "exitCode": 0
+    },
+    {
+      "phase": "C-real-dist",
+      "name": "vendor-page",
+      "command": "node scripts/tools/vendor-page-selftest.js \"--dir=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\quality-closure-post-audit\\dist.qc-verify\"",
+      "exitCode": 0
+    },
+    {
+      "phase": "C-real-dist",
+      "name": "feeds-reproducible",
+      "command": "node scripts/tools/check-feeds-reproducible.js \"--dir=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\quality-closure-post-audit\\dist.qc-verify\"",
+      "exitCode": 0
+    },
+    {
+      "phase": "D-check-ci",
+      "name": "bare",
+      "command": "node scripts/tools/check-ci-consistency.js",
+      "exitCode": 0,
+      "bash": "C:\\Program Files\\Git\\bin\\bash.exe"
+    },
+    {
+      "phase": "E-degraded-expr",
+      "name": "self-eval",
+      "exitCode": 0,
+      "detail": []
+    }
+  ],
+  "ciCases": [
+    {
+      "id": "f1-rename-step",
+      "note": "只改步骤 name（语义没变）→ 允许",
+      "expect": 0,
+      "exitCode": 1,
+      "yamlChanged": true,
+      "tail": [
+        "  ✓ (3b) 全部 workflow 的 runs-on 都不是浮动标签（按取值判，不按字符串判） — 未发现 *-latest 取值（注释里提到它不算漂移）",
+        "  ✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — #30 期望「Assemble site (same path as deploy.yml)」实得「Assemble site (T18 改名，语义不变)」",
+        "  ✗ (17) package.json 里的每个 selftest:* 都被门禁真的跑到（新脚本必须登记） — Models-page self-test (index + detail pages): 排在「Assemble site (same path as deploy.yml)」之前（产物依赖步骤必须在构建之后）、Plans-hub self-test (/plans/): 排在「Assemble site (same path as deploy.yml)」之前（产物依赖步骤必须在构建之后）、Vendor-pages self-test (/vendor/): 排在「Assemble site (same path as deploy.yml)」之前（产物依赖步骤必须在构建之后）、Archive self-test (/archive/, synthetic ended/restored fixtures): 排在「Assemble site (same path as deploy.yml)」之前（产物依赖步骤必须在构建之后）（新增自测必须同步三处：.github/actions/gate/action.yml 的步骤、本文件的 GATE_STEP_NAMES 与 GATE_STEP_RUN 指纹；产物依赖步骤还要带 --dir=dist 并排在 Assemble site 之后）"
+      ]
+    },
+    {
+      "id": "f2-change-step-body",
+      "note": "把真浏览器验收步骤体换成 echo skipped → 必红",
+      "expect": "nonzero",
+      "exitCode": 1,
+      "yamlChanged": true,
+      "tail": [
+        "  ✓ (3b) 全部 workflow 的 runs-on 都不是浮动标签（按取值判，不按字符串判） — 未发现 *-latest 取值（注释里提到它不算漂移）",
+        "  ✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — 步骤体变了：Real-browser acceptance (verify-site.js): run 体与冻结指纹不一致（实得「echo skipped-t18…」）",
+        "  ✓ (W) 断言名单与冻结清单等值（删一条或改名都会红；本看门狗保护不了自己被删） — 实跑 35 条 = 冻结清单 35 条 + 本看门狗"
+      ]
+    },
+    {
+      "id": "f3-browser-decision-implementation",
+      "note": "浏览器可用性判定的失败分支 exit 1 → exit 0 → 必红",
+      "expect": "nonzero",
+      "exitCode": 1,
+      "yamlChanged": true,
+      "tail": [
+        "  ✓ (3b) 全部 workflow 的 runs-on 都不是浮动标签（按取值判，不按字符串判） — 未发现 *-latest 取值（注释里提到它不算漂移）",
+        "  ✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — 步骤体变了：Browser availability decision (never silent): run 体与冻结指纹不一致（实得「set -uo pipefail",
+        "  ✓ (W) 断言名单与冻结清单等值（删一条或改名都会红；本看门狗保护不了自己被删） — 实跑 35 条 = 冻结清单 35 条 + 本看门狗"
+      ]
+    },
+    {
+      "id": "f4-drop-dir-flag",
+      "note": "去掉某产物依赖步骤的 --dir=dist → 必红",
+      "expect": "nonzero",
+      "exitCode": 1,
+      "yamlChanged": true,
+      "tail": [
+        "  ✓ (3b) 全部 workflow 的 runs-on 都不是浮动标签（按取值判，不按字符串判） — 未发现 *-latest 取值（注释里提到它不算漂移）",
+        "  ✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — 步骤体变了：Data-docs self-test (/docs/data/ + /data/index.json): run 体与冻结指纹不一致（实得「node scripts/tools/data-docs-selftest.js…」）",
+        "  ✗ (17) package.json 里的每个 selftest:* 都被门禁真的跑到（新脚本必须登记） — Data-docs self-test (/docs/data/ + /data/index.json): 没有显式 --dir=dist（产物依赖步骤必须钉住它读哪份产物）（新增自测必须同步三处：.github/actions/gate/action.yml 的步骤、本文件的 GATE_STEP_NAMES 与 GATE_STEP_RUN 指纹；产物依赖步骤还要带 --dir=dist 并排在 Assemble site 之后）"
+      ]
+    },
+    {
+      "id": "f5-continue-on-error",
+      "note": "给某个步骤加 continue-on-error: true → 必红",
+      "expect": "nonzero",
+      "exitCode": 0,
+      "yamlChanged": false,
+      "tail": [
+        "  ✓ (3b) 全部 workflow 的 runs-on 都不是浮动标签（按取值判，不按字符串判） — 未发现 *-latest 取值（注释里提到它不算漂移）",
+        "  ✓ (W) 断言名单与冻结清单等值（删一条或改名都会红；本看门狗保护不了自己被删） — 实跑 35 条 = 冻结清单 35 条 + 本看门狗"
+      ]
+    },
+    {
+      "id": "f6-degraded-always-true",
+      "note": "verify.yml 的 allow_degraded_run 恒 true → 必红",
+      "expect": "nonzero",
+      "exitCode": 1,
+      "yamlChanged": false,
+      "tail": [
+        "  ✓ (3b) 全部 workflow 的 runs-on 都不是浮动标签（按取值判，不按字符串判） — 未发现 *-latest 取值（注释里提到它不算漂移）",
+        "  ✗ (11) collect.yml / deploy.yml / verify.yml 各恰好调用一次门禁 action — verify.yml @ pull_request: 解析成 true —— 必需路径不得静默降级（只有人工 workflow_dispatch 显式勾选才允许 'true'）；verify.yml @ push: 解析成 true —— 必需路径不得静默降级（只有人工 workflow_dispatch 显式勾选才允许 'true'）；verify.yml @ workflow_dispatch（默认（未勾选））: 解析成 true —— 必需路径不得静默降级（只有人工 workflow_dispatch 显式勾选才允许 'true'）",
+        "  ✓ (W) 断言名单与冻结清单等值（删一条或改名都会红；本看门狗保护不了自己被删） — 实跑 35 条 = 冻结清单 35 条 + 本看门狗"
+      ]
+    }
+  ],
+  "notes": [
+    "A: archive 缺产物 exit 1 :: ✓ 完整性断言在正确产物上为零问题",
+    "A: data-docs 缺产物 exit 1 :: ⑨ 真实产物：/docs/data/ 与 /data/index.json（接线后才有；未接线时如实跳过）",
+    "A: models-page 缺产物 exit 1 :: ✓ 派生产物两次构建逐字节相同（不读墙上时钟）",
+    "A: planshub 缺产物 exit 1 :: ⑤ 真实产物：/plans/ 在站上真的成立（构建后才有；构建前跳过）",
+    "A: vendor-page 缺产物 exit 1 :: ⑧ 真实产物（接线后才有；未接线时如实跳过）",
+    "A: feeds-reproducible 缺产物 exit 1 :: ✗ 缺少必需产物：参考产物 ..\\..\\..\\..\\..\\..\\qc-t18\\empty-dist/ 里没有任何 Feed 文件（先跑 npm run build，或用 --dir=<构建输出> 指到那份产物；只有显式 ",
+    "A 6/6 缺产物非 0 · B 全部 --allow-missing-dist 通过且带标记 · C 全部对真实产物 green",
+    "D: check-ci-consistency（DSH_BASH=C:\\Program Files\\Git\\bin\\bash.exe）exit 0 · 项数 36",
+    "E: allow_degraded_run 表达式自求值 3 文件 × 6 事件全部符合语义（只有人工 dispatch 勾选为 true；deploy 恒 false）"
+  ],
+  "failures": [
+    "F: f1-rename-step 期望 exit 0，实测 1（只改步骤 name（语义没变）→ 允许）",
+    "F: f5-continue-on-error 期望非 0，实测 0（给某个步骤加 continue-on-error: true → 必红）"
+  ]
+}

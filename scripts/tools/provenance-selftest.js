@@ -283,6 +283,232 @@ const states = ['na', 'unknown', 'unavailable'].map(key => wording.SOURCE_STATE[
 checkEqual('三个缺失状态各有各的说法', new Set(states).size, 3);
 
 /* ------------------------------------------------------------------ */
+/* ⑧ 断言依据的档位：lib 判据 vs 真实渲染（全库逐条）                    */
+/* ------------------------------------------------------------------ */
+
+console.log('=== ⑧ 断言依据档位（t7：第三方收录 / 推断不得写成「官方页面明写」）===');
+
+/**
+ * 审计 `F-r1-identity-001`（14 条 / 29 处第三方目录站内容被写成「官方页面明写」）与
+ * `F-r1-identity-003`（24 处声明为推断的字段按官方渲染）的共同根因是：
+ * 「断言依据」只读 `basis`。判据的正本在 `provenance.basisWordingKey()`，
+ * 而 RENDER-CORE 里有一份最小副本（沙箱不能 require）——这里用**全库真实数据**把两份
+ * 实现逐条对账：期望档位由 lib 判据算，实际档位由 `sourceBlockHtml` 的真实求值数出来。
+ *
+ * 为什么必须用真实数据而不是只有夹具：这类漂移的形态是「页面上看起来完全正常」，
+ * 夹具表只覆盖你想到的组合；88 条带字段级依据的记录 + 326 处字段是现成的对照物。
+ */
+{
+  const healthDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'data', 'source-health.json'), 'utf8'));
+  const healthIndex = provenance.buildSourceIndex(healthDoc);
+  const allDeals = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8')).deals;
+  const countOf = (text, needle) => String(text).split(needle).length - 1;
+  const officialWord = wording.SOURCE_BASIS.source;
+
+  // 基线自证：没有 sourceFacts 时来源类型是「未知」，不是官方（否则下面整张表都没意义）
+  checkEqual('sourceType 判据：未登记来源 → unknown',
+    provenance.factsFor({ source: '未曾登记的来源' }, { index: healthIndex }).sourceType, 'unknown');
+
+  const buckets = new Map();       // sourceType → {records, fields, before, after}
+  const inferred = { fields: 0, before: 0, after: 0 };
+  const mismatches = [];
+  // 「官方档位一处不靠删词抹平」的逐处留痕：从官方档移出去的每一处都必须能说出理由
+  const unjustifiedDowngrades = [];
+  const newOfficialClaims = [];
+  for (const deal of allDeals) {
+    const facts = provenance.factsFor(deal, { index: healthIndex });
+    const fields = deal.provenance && deal.provenance.fields ? deal.provenance.fields : null;
+    if (!fields) continue;
+    const bucket = buckets.get(facts.sourceType) || { records: 0, fields: 0, before: 0, after: 0, movedInferred: 0, movedSourceType: 0 };
+    bucket.records++;
+    let expectedAfter = 0;
+    let inferredFields = 0;
+    for (const [field, entry] of Object.entries(fields)) {
+      bucket.fields++;
+      const key = provenance.basisWordingKey(entry, facts.sourceType);
+      const beforeKey = entry && entry.basis === 'source' ? 'source'
+        : entry && entry.basis === 'documented' ? 'documented'
+          : entry && entry.basis === 'inferred' ? 'inferred' : 'none';
+      if (beforeKey === 'source') bucket.before++;                      // 旧规则：只认 basis
+      if (key === 'source') { bucket.after++; expectedAfter++; }
+      if (key === 'inferred') inferredFields++;
+      if (beforeKey === 'source' && key !== 'source') {
+        const why = key === 'inferred' ? '声明为推断'
+          : (facts.sourceType === 'directory' || facts.sourceType === 'unknown') ? `来源类型 ${facts.sourceType}（第三方收录）` : null;
+        if (key === 'inferred') bucket.movedInferred++;
+        else if (why) bucket.movedSourceType++;
+        else unjustifiedDowngrades.push(`${deal.id}.${field}: ${beforeKey} → ${key}`);
+      }
+      if (beforeKey !== 'source' && key === 'source') newOfficialClaims.push(`${deal.id}.${field}: ${beforeKey} → source`);
+      if (entry && (entry.basis === 'inferred' || entry.derived === 'inferred')) {
+        inferred.fields++;
+        if (entry.basis === 'source') inferred.before++;
+        if (key === 'inferred') inferred.after++;
+      }
+    }
+    buckets.set(facts.sourceType, bucket);
+
+    // 真实求值：把这份 deal（含派生 sourceFacts）过一遍渲染器，数它实际印了几次「官方页面明写」
+    const block = renderCore.sourceBlockHtml({ ...deal, sourceFacts: facts });
+    const actual = countOf(block, officialWord);
+    if (actual !== expectedAfter) {
+      mismatches.push(`${deal.id}（${deal.source}/${facts.sourceType}）期望 ${expectedAfter} 处，渲染出 ${actual} 处`);
+    }
+    if (inferredFields && block.includes(officialWord) && actual !== expectedAfter) {
+      mismatches.push(`${deal.id}: inferred 字段与「${officialWord}」同时出现`);
+    }
+  }
+  check(`全库逐条对账：${allDeals.filter(d => d.provenance && d.provenance.fields).length} 条记录、${[...buckets.values()].reduce((s, b) => s + b.fields, 0)} 处字段的渲染档位与 lib 判据一致`,
+    mismatches.length === 0, mismatches.slice(0, 3).join(' | '));
+  check('红线：从「官方档」移出的每一处都能说出理由（声明为推断 / 来源类型是第三方收录）—— 不得靠删词抹平',
+    unjustifiedDowngrades.length === 0, unjustifiedDowngrades.slice(0, 3).join(' | '));
+  check('红线：没有任何字段从非官方档被**新**写成「官方页面明写」',
+    newOfficialClaims.length === 0, newOfficialClaims.slice(0, 3).join(' | '));
+
+  const dirBucket = buckets.get('directory') || { records: 0, fields: 0, before: 0, after: 0, movedInferred: 0, movedSourceType: 0 };
+  const unknownBucket = buckets.get('unknown') || { records: 0, fields: 0, before: 0, after: 0, movedInferred: 0, movedSourceType: 0 };
+  const officialBucket = buckets.get('official') || { records: 0, fields: 0, before: 0, after: 0, movedInferred: 0, movedSourceType: 0 };
+  const curatedBucket = buckets.get('curated') || { records: 0, fields: 0, before: 0, after: 0, movedInferred: 0, movedSourceType: 0 };
+  check('红线：sourceType=directory 的记录页面「官方页面明写」计数 = 0',
+    dirBucket.after === 0, `before ${dirBucket.before} → after ${dirBucket.after}`);
+  check('红线：sourceType=unknown 的记录页面「官方页面明写」计数 = 0',
+    unknownBucket.after === 0, `before ${unknownBucket.before} → after ${unknownBucket.after}`);
+  check('红线：声明为推断的字段一律按「由官方原文推断」（0 处按官方渲染）',
+    inferred.after === inferred.fields, `${inferred.fields} 处里只有 ${inferred.after} 处按推断渲染`);
+  // 「正确档位不减少」的可核形式：official / curated 两档**一处不减**（after 即正确档位），
+  // 而这两档里所有移出的处数都被上面的「必须能说出理由」钉死为「声明为推断」或「第三方收录」。
+  check('红线：官方直采（official）的正确档位一处不减（after 即该档正确档位）',
+    officialBucket.after > 0 && officialBucket.movedSourceType === 0,
+    `official ${officialBucket.before} → ${officialBucket.after}，其中按第三方理由移出 ${officialBucket.movedSourceType} 处`);
+  check('红线：人工策展（curated）档的「官方页面明写」一处不减（before === after）',
+    curatedBucket.before === curatedBucket.after,
+    `curated ${curatedBucket.before} → ${curatedBucket.after}`);
+
+  console.log('  官方页面明写（before → after，按记录 sourceType 分档）：');
+  for (const type of ['official', 'curated', 'directory', 'unknown']) {
+    const b = buckets.get(type) || { records: 0, fields: 0, before: 0, after: 0, movedInferred: 0, movedSourceType: 0 };
+    console.log(`    ${type.padEnd(9)} ${b.records} 条 / ${b.fields} 处字段：${b.before} → ${b.after}` +
+      `（移出 ${b.before - b.after} 处 = 声明为推断 ${b.movedInferred} + 第三方收录 ${b.movedSourceType}）`);
+  }
+  const totalBefore = ['official', 'curated', 'directory', 'unknown'].reduce((s, t) => s + (buckets.get(t) || { before: 0 }).before, 0);
+  const totalAfter = ['official', 'curated', 'directory', 'unknown'].reduce((s, t) => s + (buckets.get(t) || { after: 0 }).after, 0);
+  console.log(`    合计：${totalBefore} → ${totalAfter}（减少 ${totalBefore - totalAfter} 处 = 第三方收录 ${dirBucket.movedSourceType + unknownBucket.movedSourceType}` +
+    ` + 声明为推断 ${officialBucket.movedInferred + curatedBucket.movedInferred + dirBucket.movedInferred + unknownBucket.movedInferred}）；` +
+    `official 档正确档位 ${officialBucket.after} 处原样保留`);
+  console.log(`  inferred 字段：${inferred.fields} 处（${inferred.before} → ${inferred.after} 处按「${wording.SOURCE_BASIS.inferred}」渲染）`);
+
+/* ------------------------------------------------------------------ */
+/* ⑨ 官方域判据：登记表 + 兑现 + 变异电池                              */
+/* ------------------------------------------------------------------ */
+
+  console.log('=== ⑨ 官方域判据（t7：evidence/officialUrl 必须兑现到官方来源登记）===');
+  const official = require('../lib/official');
+  const providersDoc = {
+    alpha: { name: 'Alpha', slug: 'alpha', aliases: ['alpha'], logo: null, vendorKey: 'alphakey', officialDomains: ['alpha.example'] },
+    beta: { name: 'Beta', slug: 'beta', aliases: ['beta'], logo: null, vendorKey: 'betakey', officialDomains: ['beta.example'] }
+  };
+  const officialUrlsDoc = { _comment: 'fixture', _officialDomains: { 'solo product': ['solo.example'] } };
+  const vendorKeys = [
+    { key: 'alphakey', name: 'Alpha' }, { key: 'betakey', name: 'Beta' }, { key: 'solo product', name: 'Solo' }
+  ];
+  const sourceTypesDoc = { 'Alpha Source': 'official', Curated: 'curated', Futuretools: 'directory' };
+  const FIXTURE = {
+    providers: providersDoc,
+    officialUrls: officialUrlsDoc,
+    deals: [
+      { id: 'd-alpha', url: 'https://alpha.example/pricing', source: 'Alpha Source', __key: 'alphakey',
+        provenance: { sourceUrl: 'https://alpha.example/pricing', fields: { audience: { basis: 'source', derived: 'stated' } } } },
+      { id: 'd-dir', url: 'https://solo.example/deal', source: 'Futuretools', __key: 'solo product',
+        provenance: { sourceUrl: 'https://futuretools.io/tools/sample', fields: { audience: { basis: 'source', derived: 'stated' } } } },
+      { id: 'd-solo', url: 'https://solo.example/other', source: 'Curated', __key: 'solo product',
+        provenance: { sourceUrl: 'https://solo.example/other', fields: { audience: { basis: 'source', derived: 'stated' } } } }
+    ],
+    plans: [
+      { id: 'pl-alpha', provider: 'alpha', officialUrl: 'https://alpha.example/plans', sourceUrl: 'https://alpha.example/plans', evidence: [{ sourceUrl: 'https://alpha.example/plans/x' }] },
+      { id: 'pl-beta', provider: 'beta', officialUrl: 'https://beta.example/plans', sourceUrl: 'https://beta.example/plans', evidence: [{ sourceUrl: 'https://beta.example/plans/x' }] }
+    ],
+    apiPlans: [],
+    registryLinks: [{ registrySlug: 'm1', planId: 'pl-alpha', basis: 'official-plan-page', evidence: [{ sourceUrl: 'https://alpha.example/plans' }] }],
+    vendorKeys,
+    vendorKeyOfDeal: deal => deal.__key,
+    sourceTypes: sourceTypesDoc
+  };
+  const runGuard = patch => official.officialDomainProblems({ ...FIXTURE, ...patch });
+  const clone = () => JSON.parse(JSON.stringify(FIXTURE));
+  const hits = (problems, re) => problems.some(message => re.test(message));
+
+  check('官方域夹具基线：0 问题（对照组成立，红色确实来自变异）', runGuard().length === 0, runGuard().slice(0, 3).join(' | '));
+
+  // P3-11（`F-r1-identity-004`）：同一条记录的两个「来源 URL」是**两个角色**，不同不是错误。
+  // 顶层 sourceUrl 是收录渠道（可以是目录站），provenance.sourceUrl 是断言依据出处（声称官方
+  // 就必须是官方域）。这条正向断言钉住「不把两个 URL 合并成一个」：真正合法的形态必须放行。
+  const splitRoles = clone();
+  splitRoles.deals.find(d => d.id === 'd-alpha').sourceUrl = 'https://futuretools.io/tools/sample';
+  check('P3-11：顶层 sourceUrl 指向目录站、而依据出处指向官方域 → 不报错（两个 URL 各司其职，不合并）',
+    runGuard(splitRoles).length === 0, runGuard(splitRoles).slice(0, 2).join(' | '));
+
+  // 变异 M1：把一条 directory 来源的记录标成「官方直采」，而它的依据出处仍在第三方目录站
+  //         （这正是验收里那条变异：第三方发现来源不得被提升成官方证据）
+  const m1 = clone();
+  m1.deals.find(d => d.id === 'd-dir').source = 'Alpha Source';
+  const p1 = runGuard(m1);
+  check('变异 M1：directory 记录被标成 official（依据出处仍在目录站）→ 报红', p1.length > 0, '变异没被抓住');
+  check('变异 M1：报的是那条记录（d-dir）', hits(p1, /d-dir/), p1.slice(0, 2).join(' | '));
+
+  // 变异 M2：给一条官方直采记录挂上目录站出处的「官方原文片段」
+  const m2 = clone();
+  m2.deals.find(d => d.id === 'd-alpha').evidence = [{ field: 'audience', quote: 'q', sourceUrl: 'https://futuretools.io/tools/x', capturedAt: '2026-01-01' }];
+  const p2 = runGuard(m2);
+  check('变异 M2：引文出处是第三方目录站 → 报红', hits(p2, /evidence\[0\].*第三方目录站|目录站/), p2.slice(0, 2).join(' | '));
+
+  // 变异 M3：把第三方目录站登记成官方域（黑名单混进白名单）
+  const m3 = clone();
+  m3.providers.alpha.officialDomains = ['alpha.example', 'futuretools.io'];
+  const p3 = runGuard(m3);
+  check('变异 M3：把聚合站/目录站登记成官方域 → 报红', hits(p3, /第三方目录站|聚合站/), p3.slice(0, 2).join(' | '));
+
+  // 变异 M4：provider 没有官方域登记（声称官方却兑现不出）
+  const m4 = clone();
+  delete m4.providers.alpha.officialDomains;
+  const p4 = runGuard(m4);
+  check('变异 M4：provider 缺 officialDomains → 报红', hits(p4, /officialDomains/), p4.slice(0, 2).join(' | '));
+
+  // 变异 M5：把某 provider 的官方页落到别家域上
+  const m5 = clone();
+  m5.plans[0].officialUrl = 'https://beta.example/plans';
+  const p5 = runGuard(m5);
+  check('变异 M5：计划 officialUrl 落到别家官方域 → 报红', hits(p5, /pl-alpha.*officialUrl|officialUrl.*不在/), p5.slice(0, 2).join(' | '));
+
+  // 变异 M6：模型映射的官方引文落到别家域
+  const m6 = clone();
+  m6.registryLinks[0].evidence[0].sourceUrl = 'https://beta.example/plans';
+  check('变异 M6：模型映射引文落到别家官方域 → 报红', hits(runGuard(m6), /模型映射/), runGuard(m6).slice(0, 2).join(' | '));
+
+  // 变异 M7：deals 侧登记键不是任何记录会产出的键（幽灵登记）
+  const m7 = clone();
+  m7.officialUrls._officialDomains.ghost = ['ghost.example'];
+  check('变异 M7：登记键兑现不到任何记录 → 报红', hits(runGuard(m7), /ghost/), runGuard(m7).slice(0, 2).join(' | '));
+
+  // 变异 M8：同一家公司两处登记（provider 的 vendorKey 又出现在 deals 侧）
+  const m8 = clone();
+  m8.officialUrls._officialDomains.alphakey = ['alpha.example'];
+  check('变异 M8：同一家公司两处登记 → 报红（两处登记就是两个真相）', hits(runGuard(m8), /同一家公司/), runGuard(m8).slice(0, 2).join(' | '));
+
+  // 变异 M9：登记项不是裸 host（写成整条 URL）
+  const m9 = clone();
+  m9.providers.beta.officialDomains = ['https://beta.example/plans'];
+  check('变异 M9：登记项不是裸 host → 报红', hits(runGuard(m9), /不是归一形态|裸 host/), runGuard(m9).slice(0, 2).join(' | '));
+
+  // 变异 M10：僵尸登记（登记的域没有任何真实出处用到）
+  const m10 = clone();
+  m10.providers.beta.officialDomains = ['beta.example', 'never-used.example'];
+  check('变异 M10：僵尸登记 → 报红（用不上的登记等于一句自我声明）', hits(runGuard(m10), /never-used\.example/), runGuard(m10).slice(0, 2).join(' | '));
+
+  // 复原：夹具回到基线（对照组成立的最后一环）
+  check('复原后回到绿', runGuard().length === 0, runGuard().slice(0, 2).join(' | '));
+}
+
+/* ------------------------------------------------------------------ */
 
 console.log(`\n${failures.length ? '❌' : '✅'} provenance 自测：${pass} 项通过，${failures.length} 项失败`);
 if (failures.length) {

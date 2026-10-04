@@ -1,0 +1,192 @@
+{
+  "action": ".github\\actions\\gate\\action.yml",
+  "steps": [
+    {
+      "i": 1,
+      "name": "Install dependencies"
+    },
+    {
+      "i": 2,
+      "name": "Validate data (strict)"
+    },
+    {
+      "i": 3,
+      "name": "Reproducibility gate (no value without a source)"
+    },
+    {
+      "i": 4,
+      "name": "History verify (log consistent with deals.json)"
+    },
+    {
+      "i": 5,
+      "name": "Migration verifier (audience provenance backfill)"
+    },
+    {
+      "i": 6,
+      "name": "Translation gate (drift blocks, pending ages out)"
+    },
+    {
+      "i": 7,
+      "name": "Translation self-test"
+    },
+    {
+      "i": 8,
+      "name": "Expiry self-test"
+    },
+    {
+      "i": 9,
+      "name": "Text / cleanText self-test"
+    },
+    {
+      "i": 10,
+      "name": "Source-health self-test"
+    },
+    {
+      "i": 11,
+      "name": "Provenance self-test"
+    },
+    {
+      "i": 12,
+      "name": "Deal-history self-test"
+    },
+    {
+      "i": 13,
+      "name": "Change-radar self-test"
+    },
+    {
+      "i": 14,
+      "name": "Feeds self-test"
+    },
+    {
+      "i": 15,
+      "name": "SEO self-test"
+    },
+    {
+      "i": 16,
+      "name": "Audience self-test"
+    },
+    {
+      "i": 17,
+      "name": "App-token self-test"
+    },
+    {
+      "i": 18,
+      "name": "AI layer self-test"
+    },
+    {
+      "i": 19,
+      "name": "Collector fixtures (offline replay)"
+    },
+    {
+      "i": 20,
+      "name": "Plans self-test (data + page)"
+    },
+    {
+      "i": 21,
+      "name": "Plan-history self-test"
+    },
+    {
+      "i": 22,
+      "name": "Deal-plan-links self-test"
+    },
+    {
+      "i": 23,
+      "name": "API-plans self-test (data + page)"
+    },
+    {
+      "i": 24,
+      "name": "API-plans reproducibility (curated → api-plans.json, byte-compare)"
+    },
+    {
+      "i": 25,
+      "name": "API-plan-history verify (log consistent with api-plans.json)"
+    },
+    {
+      "i": 26,
+      "name": "Model-registry self-test (identity + explicit mapping)"
+    },
+    {
+      "i": 27,
+      "name": "Models reproducibility (registry → models.json, byte-compare)"
+    },
+    {
+      "i": 28,
+      "name": "Model-registry links check (explicit mapping only, no similarity)"
+    },
+    {
+      "i": 29,
+      "name": "Coverage report (gap list consistent with data)"
+    },
+    {
+      "i": 30,
+      "name": "Assemble site (same path as deploy.yml)"
+    },
+    {
+      "i": 31,
+      "name": "Models-page self-test (index + detail pages)"
+    },
+    {
+      "i": 32,
+      "name": "Plans-hub self-test (/plans/)"
+    },
+    {
+      "i": 33,
+      "name": "Vendor-pages self-test (/vendor/)"
+    },
+    {
+      "i": 34,
+      "name": "Archive self-test (/archive/, synthetic ended/restored fixtures)"
+    },
+    {
+      "i": 35,
+      "name": "Data-docs self-test (/docs/data/ + /data/index.json)"
+    },
+    {
+      "i": 36,
+      "name": "Feeds reproducibility (build twice, byte-compare)"
+    },
+    {
+      "i": 37,
+      "name": "Plans reproducibility (curated → plans.json, byte-compare)"
+    },
+    {
+      "i": 38,
+      "name": "Plan-history verify (log consistent with plans.json)"
+    },
+    {
+      "i": 39,
+      "name": "SEO verification (independent, from dist/)"
+    },
+    {
+      "i": 40,
+      "name": "Prepare browser for the real-browser gate"
+    },
+    {
+      "i": 41,
+      "name": "Browser availability decision (never silent)"
+    },
+    {
+      "i": 42,
+      "name": "Real-browser acceptance (verify-site.js)"
+    },
+    {
+      "i": 43,
+      "name": "Regression verify (baseline compare)"
+    },
+    {
+      "i": 44,
+      "name": "Gate conclusion"
+    }
+  ],
+  "notes": [
+    "action.yml 去注释后无 continue-on-error 步骤键（注释里提到该词不算）",
+    "真浏览器步骤只在判定为 full 时执行",
+    "判定步骤三条分支齐（full / degraded（仅显式允许）/ fail-closed exit 1）",
+    "verify.yml: allow_degraded_run = ${{ inputs.allow_degraded_run && 'true' || 'false' }}",
+    "collect.yml: allow_degraded_run = ${{ inputs.allow_degraded_run && 'true' || 'false' }}\n\n      # 译文状态：门禁本身已经是硬检查，这里把清单写进 Summary，\n      # 点开就能看到「哪几条要人管、最老多少天」，不必翻日志。\n      - name: Translation status (advisory summary)\n        if: always()\n        continue-on-error: true\n        run: |\n          {\n            echo \"### 中文译文状态\"\n            echo '```'\n            node",
+    "deploy.yml: allow_degraded_run = 'false'\n\n  build:\n    # 采集任务失败时（例如 strict 门禁没过）不发布，保留线上上一份好数据。\n    # 这一行是**逐字冻结**的：check-ci-consistency.js 的断言 (7b) 会比对它的完整文本。\n    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'\n    needs: prepublish\n    # 钉死 runner 版本而不是浮动标签：镜像换代（2026-10-19 起 latest 迁 Ubuntu 26）\n    # 不跟着漂，与 collect.ym",
+    "步骤总数 44 · Assemble site 在第 30 步",
+    "产物依赖步骤位置：Archive self-test@34 · Data-docs self-test@35 · Models-page self-test@31 · Plans-hub self-test@32 · Vendor-pages self-test@33 · Feeds reproducibility@36"
+  ],
+  "failures": []
+}

@@ -457,6 +457,92 @@ function checkPlansFile() {
 }
 
 /**
+ * §10.4 / P2-12：`restrictions[].value` 的**三态契约**独立对账。
+ *
+ * 为什么需要一条独立判据（schema 已经查过字面量了）：schema 只能查到"类型对不对"，
+ * 而 `unknown` 与 `false` **都合法** —— 所以"来源层把 unknown 降级成 false"在类型层面
+ * 永远看不出来（审计 F-mutation-006 ≡ F-r2-plans-002：改来源层 + 整链重建，
+ * rebuild / validate / 可重建全 exit 0）。这里补的是**重建不变量**：
+ *
+ *   ① **三态字面量普查**：盘上每一条 restriction 的 value 必须落在三态/该 kind 的合法形状里，
+ *      不许出现 `null`、缺 `value`、`"unknown"` 与 boolean 混用（独立于 schema 再数一遍）；
+ *   ② **来源层 ↔ 派生产物 逐条同值**：同一条套餐（按 id 配对）的 `restrictions` 必须
+ *      **逐字节相同** —— 重建不得把 `"unknown"` 落成 `false`、不得把缺席补成 `false`、
+ *      不得把 `false` 洗成 `null`。这是"重建路径不得改语义"的机器可核形态，
+ *      且它**不依赖 rebuild 函数本身**（同源盲区的正解：换了实现也照样对账）。
+ *
+ * 只读，不写盘。
+ */
+function checkPlanTriStateContract() {
+  const store = readJson(PLANS_FILE, 'plans.json');
+  if (!store || !Array.isArray(store.plans)) return; // 形状问题 checkPlansFile() 已经报过
+
+  // ① 三态字面量普查（独立重算，不看 schema 的结论）
+  const allowed = planSchema.RESTRICTION_TRISTATE;
+  let restrictions = 0;
+  const census = { true: 0, false: 0, unknown: 0 };
+  for (const plan of store.plans) {
+    for (const item of (Array.isArray(plan.restrictions) ? plan.restrictions : [])) {
+      restrictions += 1;
+      if (!item || !Object.prototype.hasOwnProperty.call(item, 'value')) {
+        error(`plans.json ${plan.id}（${plan.planName}）的 restrictions 有一条缺 value —— 三态必须显式写出，缺字段不得被当成 false`);
+        continue;
+      }
+      if (item.value === true) census.true += 1;
+      else if (item.value === false) census.false += 1;
+      else if (item.value === planSchema.TRISTATE_UNKNOWN) census.unknown += 1;
+      else if (typeof item.value === 'number') { /* number kind：合法 */ }
+      else if (typeof item.value === 'string') { /* text kind：合法 */ }
+      else {
+        error(`plans.json ${plan.id}（${plan.planName}）的 restrictions[${item.kind}].value = ${JSON.stringify(item.value)} 不在三态里`
+          + `（只接受 ${allowed.map(value => JSON.stringify(value)).join(' / ')}，或该 kind 的数值 / 文本）`);
+      }
+      // 取值与记述同向：判据与 schema 同一份实现（这里只是把它跑在**盘上**的数据上）
+      planSchema.restrictionWitnessProblems(item.value, item.note, `plans.json ${plan.id} restrictions[${item.kind}]`)
+        .forEach(message => error(message));
+    }
+  }
+
+  // ② 来源层 ↔ 派生产物：同一条套餐的 restrictions 必须逐字节相同
+  let curated;
+  try {
+    curated = planSchema.loadCuratedPlans({ providerTable: providers.load().table });
+  } catch (e) {
+    error(`三态对账读不到 curated_plans.json：${e.message}`);
+    return;
+  }
+  const byId = new Map();
+  for (const plan of curated.plans) byId.set(plan.id, plan);
+  let compared = 0;
+  let matched = 0;
+  let unknownKept = 0;
+  for (const plan of store.plans) {
+    const source = byId.get(plan.id);
+    if (!source) {
+      error(`plans.json ${plan.id}（${plan.planName}）在 curated_plans.json 里找不到对应记录 —— 无法对账三态（重建是从来源层来的，配不上就是身份漂了）`);
+      continue;
+    }
+    compared += 1;
+    const stored = JSON.stringify(plan.restrictions === undefined ? null : plan.restrictions);
+    const canonical = JSON.stringify(source.restrictions === undefined ? null : source.restrictions);
+    if (stored !== canonical) {
+      error(`§10.4 重建改变了 restrictions 三态：${plan.id}（${plan.planName}）来源层 ${clipTri(canonical)} → 盘上 ${clipTri(stored)}`
+        + ' —— 重建不得把 unknown 落成 false、不得把缺席补成 false');
+    } else matched += 1;
+    if (canonical.includes('"unknown"')) unknownKept += 1;
+  }
+  if (curated.plans.length !== compared) {
+    error(`curated_plans.json 有 ${curated.plans.length} 条、plans.json 有 ${store.plans.length} 条，只有 ${compared} 条能配上 id —— 三态对账必须逐条覆盖`);
+  }
+  return { restrictions, census, compared, matched, unknownKept };
+}
+
+function clipTri(text) {
+  const value = String(text);
+  return value.length > 90 ? `${value.slice(0, 87)}…` : value;
+}
+
+/**
  * v2.5 API 计费（`api-plans.json` + `curated_api_plans.json`）的数据门禁。
  *
  * 与 `checkPlansFile()` 同一条分工：只把 `lib/api-plan-schema.js` 的判据跑起来，
@@ -656,6 +742,79 @@ function checkProvenanceGuard() {
   if (new Set(texts).size !== texts.length) {
     error(`信息来源守卫：三个缺失状态的措辞有重复（${JSON.stringify(texts)}）——「不适用 / 未知 / 不可用」是三种不同的事实`);
   }
+}
+
+/**
+ * 官方域守卫（只在 `--strict` 下跑）。
+ *
+ * t7 新增：在 4 个聚合站的**黑名单**（`provenance.AGGREGATOR_HOSTS`）之外补一张**白名单** ——
+ * 「官方域登记」。黑名单只能挡住那 4 个站：一个 URL 只要不落在它们里，就能被标成「官方」。
+ * 这一层要求**声称 official 的出处必须落在显式登记的官方域上**：
+ *
+ *   ① 登记表形态：裸 host、不得是第三方目录站/聚合站（第三方 discovery source 不得被提升成
+ *      官方域）、必须被至少一条真实记录用到（用不上的登记 = 一句自我声明）；
+ *   ② 计划侧：plans / api-plans 的 `officialUrl`、`sourceUrl`、`evidence[].sourceUrl` 必须落在
+ *      该 provider 的官方域里；
+ *   ③ 关系层：模型映射（`model-registry-links.json`）的官方引文同理；
+ *   ④ deals：`evidence[].sourceUrl` 必须是官方域；**页面上印出「官方页面明写」的记录**
+ *      （档位判据与渲染层同源：`provenance.basisWordingKey`）其依据出处必须能兑现出官方域；
+ *      来源登记为「厂商官方页直采」的记录，其依据/引文出处不得是第三方目录站。
+ *
+ * 判据只写在 `lib/official.js` 的 `officialDomainProblems()` 一处，这里只负责把四个数据集与
+ * A 空间取值器喂进去、把结论并进同一份 error 账（与 checkPlansFile / checkModelRegistryFile
+ * 同一分工）。只读：不动任何数据文件，也不发网络请求。
+ */
+let renderCoreCache = null;
+function renderCoreOrNull() {
+  if (renderCoreCache) return renderCoreCache;
+  try {
+    renderCoreCache = require('./lib/render-core').load();
+  } catch (e) {
+    error(`官方域守卫：无法从 index.html 求值 RENDER-CORE（${e.message}）—— deals 侧的身份对不上官方域登记`);
+    renderCoreCache = null;
+  }
+  return renderCoreCache;
+}
+
+function checkOfficialDomainGuard() {
+  const official = require('./lib/official');
+  // 静默读取：这些文件缺失/坏掉在 checkDealsFile / checkPlansFile / checkApiPlansFile /
+  // checkModelRegistryFile 里已经各自报过红，这里再报一遍只会把错误账翻倍。
+  // 缺任何一个输入就直接不跑 —— 而**那一次运行本来就是红的**，所以不构成假绿。
+  const quiet = file => {
+    try {
+      return JSON.parse(fs.readFileSync(file, 'utf8'));
+    } catch (e) {
+      return null;
+    }
+  };
+  const providersDoc = quiet(path.join(__dirname, 'data', 'providers.json'));
+  const officialUrlsDoc = quiet(path.join(__dirname, 'data', 'official_urls.json'));
+  const dealsDoc = quiet(DEALS_FILE);
+  const plansDoc = quiet(PLANS_FILE);
+  const apiPlansDoc = quiet(API_PLANS_FILE);
+  const linksDoc = quiet(modelRegistry.LINKS_FILE);
+  if (!providersDoc || !officialUrlsDoc || !dealsDoc || !plansDoc || !apiPlansDoc || !linksDoc) return;
+
+  const core = renderCoreOrNull();
+  if (!core || typeof core.vendorOf !== 'function' || typeof core.vendorKeyNames !== 'function') {
+    error('官方域守卫：RENDER-CORE 没有导出 vendorOf() / vendorKeyNames() —— A 空间取值器缺失，deals 侧的官方域对账会假绿');
+    return;
+  }
+
+  official.officialDomainProblems({
+    providers: providersDoc,
+    officialUrls: officialUrlsDoc,
+    deals: Array.isArray(dealsDoc.deals) ? dealsDoc.deals : [],
+    plans: Array.isArray(plansDoc.plans) ? plansDoc.plans : [],
+    apiPlans: Array.isArray(apiPlansDoc.plans) ? apiPlansDoc.plans : [],
+    registryLinks: Array.isArray(linksDoc.links) ? linksDoc.links : [],
+    vendorKeys: core.vendorKeyNames(),
+    vendorKeyOfDeal: deal => {
+      const vendor = core.vendorOf(deal);
+      return vendor && vendor.key ? vendor.key : null;
+    }
+  }).forEach(message => error(`官方域守卫：${message}`));
 }
 
 /* ---------------- 门禁自身的守卫 ---------------- */
@@ -890,7 +1049,10 @@ function checkModelRegistryFile() {
   const apiPlans = apiPlansDoc && Array.isArray(apiPlansDoc.plans) ? apiPlansDoc.plans : [];
   const plans = plansDoc && Array.isArray(plansDoc.plans) ? plansDoc.plans : [];
 
-  modelRegistry.validateRegistry(modelsLoad.table, { developers, extraDevelopers })
+  // F-T19-1：`duplicateKeys` 必须传下去 —— `JSON.parse` 对重复顶层 slug **静默只留最后一条**，
+  // 判据只能来自 `load()` 从原文扫出来的那份清单。漏传的后果是：同形态的
+  // check-model-registry-links / models-selftest 红、rebuild-models 拒绝写盘，而 validate --strict 假绿。
+  modelRegistry.validateRegistry(modelsLoad.table, { developers, extraDevelopers, duplicateKeys: modelsLoad.duplicateKeys })
     .forEach(message => error(`Model Registry: ${message}`));
   modelRegistry.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans })
     .forEach(message => error(`Model Registry 关系层: ${message}`));
@@ -911,6 +1073,8 @@ function main() {
   const { stats, deals } = checkDealsFile();
   const curatedStats = checkCurated();
   const { stats: planStats } = checkPlansFile();
+  // §10.4 / P2-12：三态契约的**独立**对账（重建/渲染/派生三条路径不得把 unknown 变成 false）
+  const triState = checkPlanTriStateContract();
   // v2.5：API 计费两件（数据 + 变化日志）。与 plans 并联，互不注入。
   const { stats: apiPlanStats } = checkApiPlansFile();
   checkApiPlanHistoryFile();
@@ -925,6 +1089,7 @@ function main() {
   if (strict) checkOngoingGuard();
   if (strict) checkAudienceGuard();
   if (strict) checkProvenanceGuard();
+  if (strict) checkOfficialDomainGuard();
 
   console.log('=== 数据校验 ===');
   if (stats) {
@@ -951,6 +1116,12 @@ function main() {
     console.log(`  名义 Token 单价: 可计算 ${planStats.computable} 条 · 不可计算 ${planStats.total - planStats.computable} 条` +
       (reasons ? `（按额度类型：${reasons}）` : ''));
     console.log(`  官方引文    : ${planStats.evidenceItems} 条 · updatedAt ${planStats.updatedAt}`);
+  }
+  // §10.4：三态分布**连同 0 一起打印** —— 「三态有没有被降级」与「这一层没跑」在日志里必须长得不一样。
+  if (triState && triState.restrictions) {
+    console.log(`  限制条件三态: ${triState.restrictions} 条（true ${triState.census.true} · false ${triState.census.false} · unknown ${triState.census.unknown}）` +
+      ` · 来源层↔派生产物逐条同值 ${triState.matched}/${triState.compared}` +
+      ` · 含 "unknown" 的套餐 ${triState.unknownKept} 条`);
   }
   // v2.5：API 计费（api-plans）与 Coding 套餐同样分开打印 —— 两者是两份数据。
   if (apiPlanStats) {

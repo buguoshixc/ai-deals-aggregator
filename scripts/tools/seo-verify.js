@@ -89,7 +89,9 @@ function listFiles() {
 }
 
 function itemListOf(html) {
-  for (const m of strip(html).matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+  // ⚠️ 不先 `strip()`：那个函数会把 `<script>` 整段摘掉（它服务的是「数可见标记」的调用方），
+  // 而 JSON-LD 恰恰住在 `<script>` 里 —— 走 strip 的话这里恒返回 null（历史上正是如此）。
+  for (const m of String(html).matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
     try {
       const data = JSON.parse(m[1]);
       if (data['@type'] === 'ItemList') return data;
@@ -260,6 +262,55 @@ for (const route of routes) {
 }
 check('每个落地页的可见数据行 == 按 dist/deals.json 重新算出的条目集合',
   rowMismatches.length === 0, rowMismatches.slice(0, 4).join('；'));
+
+/* ------------------------------------------------------------------ */
+/* ②′ 变化页的 ItemList：产物内自洽（判据不复制雷达，但也绝不真空）         */
+/* ------------------------------------------------------------------ */
+
+/**
+ * `changes/` 的**成员集合**由构建期的 `lib/changes.js` 判据决定（一个记录只出现一次、
+ * 取最强事件、不可链接的条目不入列表），`page-kinds.js` 因此对这一页声明
+ * `checkMembers: false` —— 独立门禁只读产物，**不建立第二份雷达判据**。
+ *
+ * 但「不查成员归属」不等于「什么都不查」。下面三条只读产物本身，任何一条坏了都说明
+ * 页面自相矛盾，且都能被「删一个成员 / 改一个数字 / 删一行」这类变异抓住：
+ *   ① 成员按 id 唯一（同一个记录不许占两个位置）；
+ *   ② 每个成员的 URL 在产物里**真实存在**（结构化数据里不许有死链）；
+ *   ③ 声明数 == 元素数 == 页面 `data-item` 行数（三份数同一份事实）。
+ */
+{
+  const route = 'changes/';
+  const rel = `${route}index.html`;
+  const html = fs.existsSync(path.join(OUT, rel)) ? fs.readFileSync(path.join(OUT, rel), 'utf8') : '';
+  const list = itemListOf(html);
+  const markers = rowsOf(html).items;
+  const members = list && Array.isArray(list.itemListElement) ? list.itemListElement : [];
+  const routesSet = new Set(routes);
+  const memberRoutes = members.map(element => {
+    const href = String((element && (element.url || element.item)) || '');
+    return href.startsWith(feeds.SITE_URL) ? href.slice(feeds.SITE_URL.length) : href;
+  });
+  const memberIds = memberRoutes.map(relRoute => {
+    const match = relRoute.match(/^deal\/([^/]+)\/$/);
+    return match ? decodeURIComponent(match[1]) : '';
+  });
+  const dangling = memberRoutes.filter(relRoute => {
+    const target = decodeURIComponent(relRoute);
+    return !relRoute || (!routesSet.has(target) && !files.has(target));
+  });
+
+  check('changes/ ItemList 成员按 id 唯一（一个记录不许占两个位置）',
+    Boolean(list) && memberIds.every(Boolean) && new Set(memberIds).size === memberIds.length,
+    list ? `${members.length} 项 · 重复 ${members.length - new Set(memberIds).size} 个` : '没有 ItemList');
+  check('changes/ ItemList 的每个成员 URL 都指向真实存在的页面（结构化数据里没有死链）',
+    Boolean(list) && dangling.length === 0 && memberIds.every(Boolean),
+    list
+      ? `成员 ${members.length} 项 · 死链 ${dangling.length} 条${dangling.length ? `（${dangling.slice(0, 2).join(' ')}）` : ''}`
+      : '没有 ItemList');
+  check('changes/ ItemList 声明数 == 元素数 == 页面 data-item 行数',
+    Boolean(list) && Number(list.numberOfItems) === members.length && members.length === markers.length,
+    list ? `声明 ${list.numberOfItems} / 元素 ${members.length} / 行 ${markers.length}` : '没有 ItemList');
+}
 
 /* ------------------------------------------------------------------ */
 /* ③ 规则层（与构建期同一份规则，输入完全不同源）                        */

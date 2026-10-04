@@ -1,0 +1,27 @@
+'use strict';
+/** 复现并捕获 verify-site 对「/plans/api/ 现场价格格错位」的判红原文 */
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+const { spawnSync } = require('child_process');
+const DIR = 'D:\\qc-t23\\extra\\R5-api-page';
+const GOLD = 'D:\\qc-t23\\gold';
+const page = path.join(DIR, 'dist/plans/api/index.html');
+const goldPage = path.join(GOLD, 'dist/plans/api/index.html');
+const sha = f => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
+const before = sha(page);
+const html = fs.readFileSync(page, 'utf8');
+const row = html.match(/<tr data-item="[^"]*"[\s\S]*?<\/tr>/)[0];
+fs.writeFileSync(page, html.replace(row, row.replace(/(<td class="num">)([^<]*)(<\/td>)/, '$1¥999999$3')));
+console.log('变异已施加 · sha', before.slice(0, 10), '→', sha(page).slice(0, 10));
+const r = spawnSync('node scripts/tools/verify-site.js --dir=dist', { cwd: DIR, shell: true, encoding: 'utf8', maxBuffer: 128 * 1024 * 1024 });
+const out = `${r.stdout || ''}\n${r.stderr || ''}`;
+console.log('verify-site exit =', r.status);
+const bad = out.split('\n').filter(l => l.includes('✗'));
+console.log('✗ 行数 =', bad.length);
+bad.slice(0, 12).forEach(l => console.log('   ' + l.trim().slice(0, 240)));
+const tail = out.split('\n').filter(Boolean).slice(-6);
+console.log('--- 尾部 ---');
+tail.forEach(l => console.log('   ' + l.trim().slice(0, 200)));
+fs.copyFileSync(goldPage, page);
+console.log('恢复逐字节 =', sha(page) === before);

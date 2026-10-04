@@ -1,0 +1,937 @@
+{
+  "summary": {
+    "dist": "dist.qc-verify",
+    "prefix": "/ai-deals-aggregator",
+    "httpRequests": 229,
+    "non200": 0,
+    "routesChecked": 171,
+    "feedChecked": 18,
+    "jsonEndpoints": 7,
+    "notes": [
+      "sitemap 路由 170 条 · 实际取回 171 个页面",
+      "Feed：根 2 个 + 家族文件 48 个（抽样取回 16 个）",
+      "必需路径 33 个（含 assets 抽样 17 个、JSON endpoint 抽样 7 个）",
+      "JSON endpoint 7 个全部 200 且可解析",
+      "静态资源：logos/ 49 个 + 根资产 5 个全部存在"
+    ],
+    "failures": []
+  },
+  "fetchAll": [
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/student/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/developer/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/free-api/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/need/edu-identity/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/need/no-card/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/need/china-usable/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/need/free-tier/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/need/free-tokens/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/need/ai-coding/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/need/free-model/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/category/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/category/api/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/category/chat/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/category/audio/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/category/image/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/category/agent/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/baidu-ai-cloud/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/volcengine/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/zhipu/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/coze/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/github/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/minimax/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/iflytek/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/microsoft/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/notion/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/aliyun/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/siliconflow/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/tencent-cloud/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/moonshot/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/anthropic/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/cursor/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/google/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/openai/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/windsurf/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/vendor/deepseek/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/status/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/changes/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feeds/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/plans/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/archive/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/plans/coding/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/plans/api/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/2eae0e246de2/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/9c12f13df3ba/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/ad1d0c83909d/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/8b2e8d64f11f/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/4d4bcb5b6829/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/bf156583e97c/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/8814355d59e1/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/e384895f5935/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/e65f54470862/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/9180073deef1/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/017bdbc04e70/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/8b609cb05116/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/78384299b660/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/c4ab5c5d8101/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/5c38e515a3ae/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/4c7952115477/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/a1255b2fbae2/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/e237cab7c007/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/ebd47f6d2522/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/e7e8f538456c/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/6798f78de5ce/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/f22e3cd094ad/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/62e3166acec0/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/5dedb9455508/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/df1210f69a39/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/c05dc74bfd78/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/4a875a435019/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/9c553dd82d2d/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/3c8a9a6a9ee9/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/6013b80f266f/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/c971e33a9cd0/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/97d21ff73d3e/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/1688614d6669/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/adcb6471a512/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/ead998e58cd9/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/1888ab62bd67/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/d6aaee8c7379/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/45ead69d60cc/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/7f8c32f6a327/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/47a4c57f3a15/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/57847fbcc1ed/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/2db62eb1a8a0/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/8dada3205ed8/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/407572a1e046/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/4e659666cbb2/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/4caf88e30671/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/c694e7c5f125/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/e4bd8003b3d6/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/913211f6d165/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/65f0bdd295ac/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/6869e7866510/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/833a9889bfb7/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/e63402b5cc83/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/0c30d79a5016/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/d8d0ba522315/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/bcba406ed9ff/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/c59299cdc88e/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/f578493037d4/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/df8ec56faa17/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/8e7b0fd03e73/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/219f6fca7f31/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/42c65c0d8d9d/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/6644f3b43bdb/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/514a84a1064a/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/e4f7271cf7dc/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/5253b5ed77b1/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/c25b0ed788e3/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/aacd5856bba2/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/4bda0ebbb091/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/b75b42583ad8/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/c433fee91818/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/176234a80147/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/b8f11a235591/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/e91f65960877/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/0273d8b23412/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/4987c183fc1a/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/7691c150c8e5/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/b4d87c02f4d9/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/1c057c22422c/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deal/b56f33b3d4f3/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/claude-fable-5.1/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/claude-haiku-4.5/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/claude-opus-5.5/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/claude-sonnet-5.5/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/deepseek-flash/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/deepseek-v3.2/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/deepseek-v4-pro/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/doubao-seed-2.1-pro/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/doubao-seed-2.1-turbo/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/doubao-seed-character/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/doubao-seed-evolving/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/gemini-3.5-flash/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/gemini-3.6-flash/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/gemini-3.7-flash/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/gemini-3.8-flash/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/glm-4.5v/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/glm-4.6v/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/glm-4.6v-flash/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/glm-4.6v-flashx/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/glm-4.7-flash/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/glm-5.3/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/glm-5.3-flash/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/glm-5v-turbo/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/gpt-6-astra/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/gpt-6-luna/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/gpt-6.1-sol/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/gpt-live-1/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/hunyuan-a13b/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/hunyuan-embedding/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/hunyuan-role-latest/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/hunyuan-translation/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/hunyuan-translation-lite/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/kimi-k2.7-code/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/kimi-k3/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/minimax-m2.5/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/minimax-m2.7/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/minimax-m2.7-highspeed/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/minimax-m3/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/qwen-max/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/qwen3-max/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/qwen3.8-27b/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/qwen3.8-max/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/step-3.5-flash/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/tencent-hy-vision-1.5-instruct/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/docs/data/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed.xml",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/ai-coding.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/category-agent.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/category-api.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/category-audio.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/category-chat.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/category-image.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/changes.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/china.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/ai-coding.xml",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/category-agent.xml",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/category-api.xml",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/category-audio.xml",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/category-chat.xml",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/category-image.xml",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/changes.xml",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feed/china.xml",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/archive/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/changes/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/plans/api/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/feeds/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/glm-4.5v/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models/gpt-6-astra/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/sitemap.xml",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/docs/data/",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/data/index.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/api-plans.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deals.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/model-registry-links.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/plans.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/source-health.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/favicon.svg",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/robots.txt",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/og-image.png",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/icon.png",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/logos.css",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/logos/ai360.png",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/logos/alibabacloud.svg",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/logos/anthropic.svg",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/logos/aws.png",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/logos/baichuan.png",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/logos/baidu.svg",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/logos/canva.png",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/logos/cohere.png",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/logos/coze.svg",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/logos/cursor.svg",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/logos/deepseek.svg",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/logos/dify.svg",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/api-plans.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/data/index.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/deals.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/model-registry-links.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/models.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/plans.json",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:56504/ai-deals-aggregator/source-health.json",
+      "status": 200
+    }
+  ]
+}

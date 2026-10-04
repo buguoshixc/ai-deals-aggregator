@@ -78,7 +78,7 @@
     "pricing": {
       "currency": "USD",
       "unit": "per_1M_tokens",
-      "unitNote": "官方定价页同一张表的 OFF-PEAK 行，单位与币种与标准档一致"
+      "unitNote": "官方定价页同一张表的 OFF-PEAK 行；单位为每百万 tokens（与该页表头 1M INPUT TOKENS / 1M OUTPUT TOKENS 一致）、币种为美元"
     },
     "models": [
       {
@@ -255,6 +255,7 @@
     ],
     "freeTier": {
       "type": "models",
+      "stability": "standing",
       "amount": null,
       "period": null,
       "models": ["glm-4.7-flash", "glm-4.6v-flash"],
@@ -645,6 +646,7 @@
     ],
     "freeTier": {
       "type": "models",
+      "stability": "standing",
       "amount": null,
       "period": null,
       "models": ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.5-flash"],
@@ -811,10 +813,11 @@
     ],
     "freeTier": {
       "type": "tokens",
+      "stability": "new_user",
       "amount": 1000000,
       "period": "one_time",
       "models": null,
-      "description": "官方表格「免费额度」列：多数模型 100 万 Token，有效期自开通百炼起 90 天内",
+      "description": "官方「新人免费额度」规则页（help.aliyun.com/zh/model-studio/new-free-quota）：首次开通百炼自动发放新人专属免费额度，有效期为 90 天（自开通 / 模型发布 / 申请通过之日起算，以较晚者为准）；定价表「免费额度」列写多数模型 100 万 Token",
       "conversionDependsOnModel": null
     },
     "limits": null,
@@ -1368,6 +1371,7 @@
     ],
     "freeTier": {
       "type": "tokens",
+      "stability": "new_user",
       "amount": 1000000,
       "period": "one_time",
       "models": null,

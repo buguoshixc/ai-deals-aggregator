@@ -268,22 +268,188 @@ function checkXmlWellFormed(xml) {
  * 复用它，Feed 的条目集合与页面表格的行数就被同一条判据锁在一起。
  */
 const COLLECTION_FEED_PAGES = [
-  { id: 'student', pageKind: 'collection', pageSlug: 'student' },
-  { id: 'developer', pageKind: 'collection', pageSlug: 'developer' },
-  { id: 'free-api', pageKind: 'collection', pageSlug: 'free-api' },
-  { id: 'free-tokens', pageKind: 'need', pageSlug: 'free-tokens' },
-  { id: 'ai-coding', pageKind: 'need', pageSlug: 'ai-coding' },
-  { id: 'china', pageKind: 'need', pageSlug: 'china-usable' },
+  { id: 'student', pageKind: 'collection', pageSlug: 'student', listGroup: 'student' },
+  { id: 'developer', pageKind: 'collection', pageSlug: 'developer', listGroup: 'developer' },
+  { id: 'free-api', pageKind: 'collection', pageSlug: 'free-api', listGroup: 'developer' },
+  { id: 'free-tokens', pageKind: 'need', pageSlug: 'free-tokens', listGroup: 'developer' },
+  { id: 'ai-coding', pageKind: 'need', pageSlug: 'ai-coding', listGroup: 'developer' },
+  { id: 'china', pageKind: 'need', pageSlug: 'china-usable', listGroup: 'student' },
   // v1.7：分类落地页各自一份订阅。只登记**真的会生成页面**的分类
   // （门槛与人工允许表在 lib/landing.js 的 CATEGORY_PAGES）；多登记一个，
   // Feed 会照常生成但页面不存在 —— 那种「订阅有、页面无」的不一致由
   // /feeds/ 页面的回链与 selftest:seo 一起盯着。
-  { id: 'category-api', pageKind: 'category', pageSlug: 'api' },
-  { id: 'category-chat', pageKind: 'category', pageSlug: 'chat' },
-  { id: 'category-audio', pageKind: 'category', pageSlug: 'audio' },
-  { id: 'category-image', pageKind: 'category', pageSlug: 'image' },
-  { id: 'category-agent', pageKind: 'category', pageSlug: 'agent' }
+  //
+  // ⚠️ 这一组（`listGroup: 'category'`）曾经整组漏在 /feeds/ 汇总页之外（P3-4）：
+  // 订阅文件都在、分类页的 `rel="alternate"` 也都在，唯独唯一的订阅总入口看不见它们。
+  // 现在 /feeds/ 的分组表由 `pageGroups()` **从注册表派生**，页面渲染层不再手写 id 清单；
+  // 「注册表里 public 的 Feed → 页面上必须有它」这条断言住在 `checkFeedsPage()` 里（双向）。
+  { id: 'category-api', pageKind: 'category', pageSlug: 'api', listGroup: 'category' },
+  { id: 'category-chat', pageKind: 'category', pageSlug: 'chat', listGroup: 'category' },
+  { id: 'category-audio', pageKind: 'category', pageSlug: 'audio', listGroup: 'category' },
+  { id: 'category-image', pageKind: 'category', pageSlug: 'image', listGroup: 'category' },
+  { id: 'category-agent', pageKind: 'category', pageSlug: 'agent', listGroup: 'category' }
 ];
+
+/**
+ * `/feeds/` 汇总页的分组表（**顺序即页面顺序**）。
+ *
+ * 为什么这张表在**注册表所在的文件**里，而不是页面渲染层：`/feeds/` 曾经按一张手写的
+ * id 清单渲染（`['student','china']` 之类），于是「注册表里有、页面没列」这件事
+ * 在页面上和在自检里都看不出来 —— 唯一的总入口静默漏掉了 5 个分类 Feed（P3-4）。
+ * 现在每条 spec 自己声明 `listGroup`，这里只管**分组顺序与文案**；
+ * 页面渲染层只负责把 `pageGroups()` 的结果摊开。
+ *
+ * 新增一条 Feed 时必须选一个组（漏了会被 `checkFeedsPage()` 报成「没有分组」），
+ * 这就是「注册表 → 页面」那个方向不会再漏的机制。
+ */
+const FEED_LIST_GROUPS = [
+  {
+    key: 'core',
+    label: '全部与变化',
+    note: null
+  },
+  {
+    // v2.3 / v3.0：套餐变化与 API 价格变化是**两份互不注入的数据**（plans / api-plans），
+    // 所以单独一组，而不是塞进「全部与变化」。清单由注册表展开，不写死 id。
+    key: 'plans',
+    label: '套餐与 API 计费',
+    note: '套餐变化来自人工逐条核对官方页后重建的套餐数据（plans.json），API 价格变化来自'
+      + '同样方式重建的 API 计费数据（api-plans.json）；两者与优惠（deals）是三份互不注入的数据。'
+      + '每条变化都能在<a href="../plans/coding/">套餐对比页</a>或<a href="../plans/api/">API 计费对比页</a>找到落点。'
+  },
+  {
+    key: 'student',
+    label: '学生',
+    note: '按「我是谁」和「能不能在大陆用上」切；判据与 /student/、/need/china-usable/ 两页<b>同一份</b>。'
+  },
+  {
+    key: 'developer',
+    label: '开发者',
+    note: '按福利类型与用途切；与目录页、按需求页共用同一套判据，所以订阅里的条数与页面上的行数不可能分头变化。'
+  },
+  {
+    key: 'category',
+    label: '按分类',
+    note: '按站点的分类落地页切（/category/api/ 等五页）；判据与那五页<b>同一份</b>，'
+      + '所以这一组里每份订阅的条数与分类页表格的行数不可能分头变化。'
+  },
+  {
+    // 厂商那一段在页面上单独渲染（带门槛说明），但成员判定同样走 listGroup，不再由
+    // 「spec.vendor 有没有值」这类第二套口径决定。
+    key: 'vendor',
+    label: '厂商订阅',
+    note: null
+  }
+];
+
+/**
+ * Feed 的可见性：**默认 public**（必须出现在 `/feeds/` 汇总页上）。
+ *
+ * `hidden: true` / `internal: true` 是唯一的例外，而且它有一条硬约束（`checkFeedsPage` 报红）：
+ * **被隐藏的 Feed 不许继续生成**。理由：Feed 的地址一旦生成（文件在磁盘上、分类页的
+ * `rel="alternate"` 也还指着它），「故意不在汇总页列出」就退化成了 P3-4 那个缺陷本身 ——
+ * 有产出、无总览入口。换句话说：这个开关是「这份订阅不属于公开产品」的声明，
+ * 不是让汇总页少列几行的**手写 ignore list**。
+ */
+function isPublicSpec(spec) {
+  if (!spec) return false;
+  return spec.hidden !== true && spec.internal !== true;
+}
+
+/** 必须是 public 的那些 spec（顺序保持注册表顺序） */
+function publicSpecs(specs = []) {
+  return (specs || []).filter(isPublicSpec);
+}
+
+/** 必须是 public 的那些 Feed（已构建的 feed 对象，顺序保持传入顺序） */
+function publicFeeds(feedList = []) {
+  return (feedList || []).filter(feed => isPublicSpec(feed && feed.spec));
+}
+
+/**
+ * `/feeds/` 页面应当长什么样：**从注册表派生**（页面渲染层不写第二份清单）。
+ *
+ * @param {object[]} feedList 已构建的 feed 列表（只含**已生成**的那些）
+ * @returns {{groups:object[], ungrouped:object[], listed:object[], publicCount:number}}
+ */
+function pageGroups(feedList = []) {
+  const listed = publicFeeds(feedList);
+  const groups = FEED_LIST_GROUPS.map(group => Object.assign({}, group, { feeds: [] }));
+  const byKey = new Map(groups.map(group => [group.key, group]));
+  const ungrouped = [];
+  for (const feed of listed) {
+    const group = byKey.get(feed.spec && feed.spec.listGroup);
+    if (!group) { ungrouped.push(feed); continue; }
+    group.feeds.push(feed);
+  }
+  return { groups, ungrouped, listed, publicCount: listed.length };
+}
+
+/**
+ * `/feeds/` 与注册表的**双向对账**（唯一实现，纯函数：只吃字符串与数组）。
+ *
+ * 四个方向，缺一不可：
+ *   ① 注册表 → 页面：每一份**已生成且 public** 的 Feed，两个地址（RSS + JSON）与标题都必须出现在页面上；
+ *   ② 页面 → 注册表：页面上每一个站内订阅地址都必须指向注册表里某一份 public 的 Feed
+ *      （「页面上多了一条没人认识的订阅」与「少了一条」同样是缺陷）；
+ *   ③ hidden/internal **必须与「不生成」绑定**：一条 Feed 仍在生成（文件在、页面还在声明它）
+ *      却不在汇总页上 —— 这正是 P3-4 的形态，直接报红，不给「手写 ignore list」留口子；
+ *   ④ public 的 Feed 必须落进一个已知分组（`pageGroups().ungrouped` 为空）——
+ *      否则它会从页面上静默消失，而 ①② 也会因为「页面真的没有它」而各自自洽。
+ *
+ * @param {object} params
+ * @param {object[]} params.feedList 已构建的 feed 列表
+ * @param {string}   params.page     `/feeds/index.html` 的文本
+ * @param {string}   [params.siteUrl] 站根（默认本栈的 SITE_URL）
+ * @returns {{problems:string[], publicCount:number, listedCount:number}}
+ */
+function checkFeedsPage({ feedList = [], page = '', siteUrl = SITE_URL } = {}) {
+  const problems = [];
+  const text = String(page || '');
+
+  // 页面上的站内路由：绝对 URL 去掉站根；`../x` 相对路径按站根还原（/feeds/ 只深一层）
+  const listedRoutes = new Set();
+  for (const match of text.matchAll(/href="([^"]+)"/g)) {
+    const href = match[1];
+    if (href.startsWith(siteUrl)) listedRoutes.add(href.slice(siteUrl.length));
+    else if (href.startsWith('../')) listedRoutes.add(href.slice(3));
+  }
+
+  const publicList = publicFeeds(feedList);
+  const hiddenGenerated = (feedList || []).filter(feed => feed && feed.spec && !isPublicSpec(feed.spec));
+  for (const feed of hiddenGenerated) {
+    problems.push(`hidden/internal 的 Feed 仍在生成：${feed.spec.id}（隐藏不能当汇总页的 ignore list 用；`
+      + '要么把它做成 public，要么让它真的不产出文件）');
+  }
+
+  const plan = pageGroups(feedList);
+  for (const feed of plan.ungrouped) {
+    problems.push(`public Feed 没有分组，会从 /feeds/ 上静默消失：${feed.spec.id}（在 FEED_LIST_GROUPS 里给它一个 listGroup）`);
+  }
+
+  for (const feed of publicList) {
+    for (const rel of [feed.spec.path, feed.spec.jsonPath]) {
+      if (!listedRoutes.has(rel)) problems.push(`注册表里的 public Feed 没有出现在 /feeds/：${feed.spec.id} → ${rel}`);
+    }
+    if (!text.includes(xmlEscape(feed.spec.title)) && !text.includes(feed.spec.title)) {
+      problems.push(`/feeds/ 上没有列出 ${feed.spec.id} 的标题「${feed.spec.title}」`);
+    }
+  }
+
+  const known = new Set();
+  for (const feed of publicList) { known.add(feed.spec.path); known.add(feed.spec.jsonPath); }
+  for (const rel of listedRoutes) {
+    if (!/^feed.*\.(xml|json)$/.test(rel)) continue;          // 非 Feed 链接（分类页、对比页……）不参与
+    if (!known.has(rel)) problems.push(`/feeds/ 上列出的订阅地址在注册表里没有对应的 public Feed：${rel}`);
+  }
+
+  return {
+    problems,
+    publicCount: publicList.length,
+    listedCount: [...listedRoutes].filter(rel => /^feed.*\.(xml|json)$/.test(rel)).length
+  };
+}
+
 
 /** 首页 `<head>` 上暴露哪四个订阅选择（其余集中放在 /feeds/ 页） */
 const HOMEPAGE_FEED_IDS = ['all', 'changes', 'student', 'developer'];
@@ -330,7 +496,8 @@ const PLAN_CHANGE_FEEDS = [
     mayBeEmpty: true,
     homepage: false,
     alwaysGenerated: true,
-    vendor: null
+    vendor: null,
+    listGroup: 'plans'
   },
   {
     id: 'api-plan-changes',
@@ -350,7 +517,8 @@ const PLAN_CHANGE_FEEDS = [
     // 因此这一条现在与套餐那条**同样始终生成** —— 日志不可用时它会说「没有拿到日志」，
     // 而不是把「没接线」说成「没有变化」。未交出视图时 `changeFeedsSkipped` 仍会如实记一笔。
     alwaysGenerated: true,
-    vendor: null
+    vendor: null,
+    listGroup: 'plans'
   }
 ];
 
@@ -640,7 +808,8 @@ function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS, ve
     id: 'all', kind: 'collection', path: ROOT_FEED.path, jsonPath: ROOT_FEED.jsonPath,
     title: ROOT_FEED.title, description: SITE_DESCRIPTION,
     homePageUrl: SITE_URL, pageRoute: '', predicate: null,
-    mayBeEmpty: false, homepage: HOMEPAGE_FEED_IDS.includes('all'), vendor: null
+    mayBeEmpty: false, homepage: HOMEPAGE_FEED_IDS.includes('all'), vendor: null,
+    listGroup: 'core'
   });
 
   for (const entry of COLLECTION_FEED_PAGES) {
@@ -655,7 +824,10 @@ function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS, ve
     if (typeof predicate !== 'function') throw new Error(`Feed ${entry.id}: 找不到谓词实现`);
     specs.push(collectionSpec({
       id: entry.id, path: `feed/${entry.id}.xml`, jsonPath: `feed/${entry.id}.json`,
-      mayBeEmpty: false, homepage: HOMEPAGE_FEED_IDS.includes(entry.id), vendor: null
+      mayBeEmpty: false, homepage: HOMEPAGE_FEED_IDS.includes(entry.id), vendor: null,
+      // 可见性从注册表条目原样带过来（默认 public）——见 `isPublicSpec` 与 `checkFeedsPage` 的 ③
+      hidden: entry.hidden === true, internal: entry.internal === true,
+      listGroup: entry.listGroup
     }, entry.pageKind, entry.pageSlug, predicate));
   }
 
@@ -671,7 +843,7 @@ function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS, ve
     emptyNote: `${FEEDS_WORDING.FEEDS_NOTES.emptyNew}`,
     homePageUrl: absolute('changes/'), pageRoute: 'changes/', predicate: null,
     mayBeEmpty: true, homepage: HOMEPAGE_FEED_IDS.includes('new'), vendor: null,
-    changeBucket: 'created'
+    changeBucket: 'created', listGroup: 'core'
   });
   specs.push({
     id: 'changes', kind: 'changes', path: 'feed/changes.xml', jsonPath: 'feed/changes.json',
@@ -680,7 +852,7 @@ function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS, ve
     emptyNote: `${FEEDS_WORDING.FEEDS_NOTES.emptyChanges}`,
     homePageUrl: absolute('changes/'), pageRoute: 'changes/', predicate: null,
     mayBeEmpty: true, homepage: HOMEPAGE_FEED_IDS.includes('changes'), vendor: null,
-    changeBucket: 'all'
+    changeBucket: 'all', listGroup: 'core'
   });
 
   // v2.3 / v3.0：变化类 Feed（套餐 / API 计费）**从注册表来**，一条循环同时管两个来源。
@@ -746,7 +918,7 @@ function resolveSpecs({ deals = [], store = null, vendorSlugs = VENDOR_SLUGS, ve
       // 于是「订阅了这一家」的读者在 Feed 里找不到对应的页面）。
       homePageUrl: absolute(vendorRouteOf(slug)), pageRoute: vendorRouteOf(slug), predicate: null,
       mayBeEmpty: false, homepage: false, vendor,
-      slug, itemCount: items.length
+      slug, itemCount: items.length, listGroup: 'vendor'
     });
   }
   return { specs, vendorSkipped, vendorUnmapped, changeFeedsSkipped };
@@ -1525,7 +1697,14 @@ module.exports = {
   HIGH_VALUE_TYPES,
   HOMEPAGE_FEED_IDS,
   COLLECTION_FEED_PAGES,
+  FEED_LIST_GROUPS,
   FEEDS_WORDING,
+  // P3-4：可见性与 `/feeds/` 汇总页的双向对账（唯一实现，页面渲染层不再手写 id 清单）
+  isPublicSpec,
+  publicSpecs,
+  publicFeeds,
+  pageGroups,
+  checkFeedsPage,
   // v1.7：页面 → 它自己的订阅源（页面声明与自检都读这一处，不再硬编码 spec id）
   feedsForPage,
   vendorRouteOf,

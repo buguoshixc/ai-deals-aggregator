@@ -1,0 +1,20 @@
+{
+  "E1": {
+    "mutation": "第 8 列（免费额度）格改成 \"<td class=\\\"pfree\\\">credits 100 credits 长期有效，属于稳定长期免费能力</td>\"（原：<td class=\"pfree\">免费额度 1,000,000 tokens / one_time（新用户赠送，非长期能力）</td>…）",
+    "verifySiteExit": 0,
+    "failureLines": [],
+    "restoredByteExact": true
+  },
+  "E2": {
+    "pages": 173,
+    "collectedWordingOccurrences": 18,
+    "pagesWithBothWording": [
+      {
+        "rel": "index.html",
+        "collected": 1,
+        "officialWording": 2
+      }
+    ],
+    "pagesWithInferredWording": 16
+  }
+}

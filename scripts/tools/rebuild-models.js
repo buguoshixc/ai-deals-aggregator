@@ -19,7 +19,10 @@
  *
  * ## 安全规则
  *
- * · 来源层或关系层有硬问题 ⇒ 一个字节都不写（坏输入进不了写盘路径）；
+ * · 来源层或关系层有硬问题 ⇒ 一个字节都不写（坏输入进不了写盘路径）——
+ *   硬问题包括：身份唯一（一条 source pricing identity 至多归属一个 registry 模型，
+ *   按 link **展开后的** `(apiPlanId, modelKey, variant)` 集合判）、别名唯一、映射指向真实记录、
+ *   引文逐字来自记录，以及 **API / Coding 两侧的覆盖完整性**（每一串/每一条计价条目都必须有结局）；
  * · `--dry-run` ⇒ 只打印将要发生的变化；
  * · 把 registry 重建成 0 条（盘上还有）⇒ 拒绝，除非显式 `--allow-empty`；
  * · 两份产物同批更新，避免"模型表更新了、关系表还是旧的"这种自相矛盾。
@@ -74,7 +77,7 @@ function main() {
     return 1;
   }
 
-  const registryProblems = reg.validateRegistry(modelsLoad.table, { developers, extraDevelopers });
+  const registryProblems = reg.validateRegistry(modelsLoad.table, { developers, extraDevelopers, duplicateKeys: modelsLoad.duplicateKeys });
   const linkProblems = reg.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans });
   const gapProblems = reg.validateGaps(gapsLoad.doc, { plans, links: linksLoad.doc, table: modelsLoad.table });
   const coverageProblems = reg.validatePlanModelCoverage({
@@ -85,7 +88,7 @@ function main() {
     [...registryProblems, ...linkProblems, ...gapProblems, ...coverageProblems].slice(0, 40).forEach(item => console.error(`  - ${item}`));
     return 1;
   }
-  console.log('  ✓ 数据集级校验通过（身份唯一 · 别名唯一 · 映射存在 · 引文逐字来自记录 · 套餐侧每一串都已判过）');
+  console.log('  ✓ 数据集级校验通过（身份唯一 · 别名唯一 · 映射存在 · 一条计价条目至多归属一个 registry 模型 · 引文逐字来自记录 · API 与套餐两侧每一串都已判过）');
 
   const models = reg.publishedModels({ table: modelsLoad.table, links: linksLoad.doc, apiPlans, plans });
   const links = reg.publishedLinks(linksLoad.doc, modelsLoad.table);
@@ -103,8 +106,10 @@ function main() {
 
   const coverage = reg.coverageOf({ table: modelsLoad.table, links: linksLoad.doc, gaps: gapsLoad.doc, apiPlans, plans });
   console.log(`  · 覆盖：${coverage.linkedModels}/${coverage.models} 个模型被显式引用 · API 链接 ${coverage.apiLinks} 条 · Coding 链接 ${coverage.codingLinks} 条`);
-  console.log(`  · 未映射的 API modelKey：${coverage.unmappedModelKeys.length} 条` +
-    (coverage.unmappedModelKeys.length ? `（${coverage.unmappedModelKeys.slice(0, 5).map(item => `${item.provider}/${item.modelKey}`).join(' · ')}${coverage.unmappedModelKeys.length > 5 ? ' …' : ''}）` : ''));
+  // API 侧按**展开条目**记账（通配 variant=null 只为它真实展开到的计价条目负责，不整组算过）
+  console.log(`  · 计价条目（展开后）：${coverage.apiPricingItems} 条 = 已被映射认领 ${coverage.mappedApiEntries} 条 + 未认领 ${coverage.unmappedModelKeys.length} 条`);
+  console.log(`  · 未认领的计价条目：${coverage.unmappedModelKeys.length} 条` +
+    (coverage.unmappedModelKeys.length ? `（${coverage.unmappedModelKeys.slice(0, 5).map(item => `${item.provider}/${item.modelKey}·${item.variant}`).join(' · ')}${coverage.unmappedModelKeys.length > 5 ? ' …' : ''}，每一条都必须有结局，否则写盘会被上面这条判据拒绝）` : ''));
   console.log(`  · 套餐模型串：${coverage.planModelStrings} 条（已映射 ${coverage.planModelStrings - coverage.unmappedPlanModels.length - coverage.declaredPlanModels.length} · 已声明不对应单一模型身份 ${coverage.declaredPlanModels.length} · 未判 ${coverage.unmappedPlanModels.length}）`);
   coverage.declaredPlanModels.slice(0, 10).forEach(item => console.log(`      · ${item.provider} / ${item.modelName}（套餐 ${item.planId}）→ ${item.reason}`));
   if (coverage.declaredPlanModels.length > 10) console.log(`      … 另有 ${coverage.declaredPlanModels.length - 10} 条`);

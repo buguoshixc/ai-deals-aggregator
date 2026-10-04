@@ -1,0 +1,51 @@
+{
+  "dist": "dist.qc-verify",
+  "manifestPath": "data/index.json",
+  "manifestEntries": 9,
+  "jsonTotal": 36,
+  "classification": {
+    "manifest": [
+      "data/index.json"
+    ],
+    "dataset": [
+      "api-plan-history.json",
+      "api-plans.json",
+      "deal-history.json",
+      "deal-plan-links.json",
+      "deals.json",
+      "model-registry-links.json",
+      "models.json",
+      "plan-history.json",
+      "plans.json"
+    ],
+    "feed": 25,
+    "internal": [
+      "source-health.json"
+    ]
+  },
+  "mutation": {
+    "command": "node scripts/tools/data-docs-selftest.js --dir=D:\\qc-t18\\manifest-mutation",
+    "exitCode": 1,
+    "tail": [
+      "  ✓ 【防恒红】Feed 产出清单与产物里的 Feed 文件一致 → 零问题",
+      "  ✓ 【牙】feed 目录里出现注册表没产出的 JSON → 红（结构性豁免不成立）",
+      "  ✓ 【牙】Feed 注册表声明产出、产物里却没有 → 红",
+      "=== v3.0 数据出口演练：56 项通过，1 项失败 ===",
+      "失败项：",
+      "  ✗ dist 现场：方向 2 扫描 37 个 JSON，未认领 1 个"
+    ]
+  },
+  "control": {
+    "command": "node scripts/tools/data-docs-selftest.js --dir=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\quality-closure-post-audit\\dist.qc-verify",
+    "exitCode": 0
+  },
+  "notes": [
+    "dist 全树 JSON 36 份 = Manifest 自身 1 + 数据集 9 + Feed 家族 25 + 内部产物 1",
+    "Feed 家族抽样：feed/ai-coding.json feed/category-agent.json feed/category-api.json feed/category-audio.json …",
+    "内部产物：source-health.json",
+    "/docs/data/ 页面 <tr> 10 行 · 指向 11 个 JSON",
+    "独立变异（多放一份未登记 JSON）→ data-docs-selftest exit 1（被抓住）",
+    "对照（真实产物）：data-docs-selftest exit 0"
+  ],
+  "failures": []
+}

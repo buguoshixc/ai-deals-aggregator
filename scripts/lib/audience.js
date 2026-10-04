@@ -685,7 +685,11 @@ const WORDING_CONTRACT = {
   SOURCE_LABELS: {
     sectionTitle: '信息来源',
     official: '官方页面',
-    origin: '原始出处',
+    // t7 更正（队长授权，P3-11 / `F-r1-identity-004`）：顶层 `sourceUrl` 是**收录渠道**
+    // （这条记录最初从哪里被发现，允许是第三方目录站），不是「原始出处」—— 旧词会让读者
+    // 把它读成「官方原始出处」，与 Prompt §7.1「sourceUrl 是第三方时 UI 必须使用准确语义」相反。
+    // 与 `scripts/data/official_urls.json` 的 `_roles` 用同一套角色命名。
+    origin: '收录渠道',
     source: '收录来源',
     sourceType: '来源类型',
     method: '采集方式',
@@ -717,10 +721,24 @@ const WORDING_CONTRACT = {
     no_health_row: '来源心跳里没有这一条（来源改名 / 本轮只跑了部分来源）',
     no_health_doc: '本次构建没有可用的来源心跳数据'
   },
+  /* 「断言依据」的档位（t7 补 `collected`）。
+   *
+   * 为什么只有 `source` 一档不够：`source` 只说了「这个值有页面写着」，没说**是哪一页**写着。
+   * 第三方目录站收录（`sourceFacts.sourceType === 'directory'`）的记录，其字段依据引文来自
+   * 目录站的收录文案 —— 把它渲染成「官方页面明写」，会和同一块里那行「来源类型：第三方目录站
+   * 收录（已解析到官方页）」自相矛盾（审计 `F-r1-identity-001`：14 条 / 29 处）。
+   * `collected` 是这一档的如实说法：原文出自第三方收录页，不是官方页直引。
+   *
+   * 档位判据**只有一份**：`lib/provenance.js` 的 `basisWordingKey(entry, sourceType)`
+   * （同时读 basis / derived / sourceFacts.sourceType 三个轴）。index.html 的
+   * `sourceBlockHtml` 是它的最小副本（RENDER-CORE 在 vm 沙箱里跑，不能 require 本模块），
+   * 由 `provenance-selftest` 用 RENDER-CORE 的真实求值逐格比对两份实现。
+   */
   SOURCE_BASIS: {
     source: '官方页面明写',
     documented: '依据官方条款原文',
     inferred: '由官方原文推断',
+    collected: '第三方收录页原文（非官方页直引）',
     none: '未声明依据'
   },
   SOURCE_HEALTH: {
@@ -736,7 +754,8 @@ const WORDING_CONTRACT = {
     expiresAt: '截止日期'
   },
   SOURCE_NOTES: {
-    noOrigin: '未署名原始出处',
+    // 与 SOURCE_LABELS.origin 同一个词（空态的措辞必须跟着标签走，否则同一行里两个名字）
+    noOrigin: '未署名收录渠道',
     noEvidence: '未收录官方原文片段',
     evidenceNote: '以下片段摘自厂商官方页面，仅用于核对本页信息；完整内容与最终条款以官方页面为准。',
     disclaimer: '以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。'

@@ -1,5 +1,10 @@
 # A4 流水线基建 —— 交付物与接线说明（t4 / feed-pipeline）
 
+> **⏳ 历史交接快照（2026-10-04 加注）**：本文是 **v3.0 期间 t4 → t13 的交接单**，行号与「现状」描述都是**当时**的。
+> v3.0 之后（尤其 2026-10-03/04 质量收口的 T12）已经改动过的地方，**以 `docs/SCHEMA-v3.0.md` §10 与
+> `scripts/lib/feeds.js` 为准**；本文里标 **【已过期】** 的段落不得当现状引用。
+> 现行数字（含 `/feeds/` 48 个地址、24 份 Feed）与重算命令见 `research/quality-closure/RECLASSIFIED_FINDINGS.md` §0.2。
+
 > 本文件是 t4 的交接单：**前半是已实现的东西（可直接读的 API）**，
 > **后半是必须在 `build-local.js` 里接线的地方（t13 的写入范围）**。
 > 行号基于 t4 完成时的 worktree；按锚点（函数名 / 注释）定位更稳。
@@ -121,6 +126,12 @@ const apiPlanRadarStats = planChanges.summarize(apiPlanRadar);
 `feed/plans/api/changes.xml` / `.json`。
 
 ### ③ `/feeds/` 分组表（约 `1645-1668`）——**必改，否则订阅中心漏列**
+
+> **【已过期 · 2026-10-03 起】** 下表描述的「在 build-local 里写分组表」已不存在：
+> 质量收口（T12）后 `/feeds/` 的分组与行**由 Feed Registry 派生**（`scripts/lib/feeds.js` 的
+> `pageGroups()` / `feedsForPage()`），渲染层不再保留任何手写 ids 清单，`feeds-selftest` 有双向断言。
+> 现在 `/feeds/` 列出 **48** 个订阅地址（24 份 Feed × 2 格式，含 `category-*` 10 个；v3.0 当时 40）。
+> 以下代码块仅作**历史记录**保留。
 
 ```js
     {
@@ -342,7 +353,7 @@ t13 新增 `/plans/`、`/models/`、`/models/<slug>/`、`/archive/`、`/docs/dat
 |---|---|---|
 | ① API 变化视图 | `build-local.js` 的 `const apiPlanRadar = planChanges.buildApiPlanRadar({…})`（紧随 `apiPlanHistoryStore` 之后） | ✅ |
 | ② `buildFeeds` 四个新参数 | `apiPlanRadar` / `apiPlanAvailability` / `apiPlans` / `apiProviderTable` | ✅ |
-| ③ `/feeds/` 分组表 | `ids: feeds.PLAN_CHANGE_FEEDS.map(spec => spec.id)`（标签改为「套餐与 API 计费」） | ✅ |
+| ③ `/feeds/` 分组表 | 当时：`ids: feeds.PLAN_CHANGE_FEEDS.map(spec => spec.id)`（标签改为「套餐与 API 计费」）。**【已过期】** 2026-10-03 起分组由 `feeds.pageGroups()` 从注册表派生，渲染层不再写 ids 清单 | ✅（历史） |
 | ④ `rowHtml` 起算日 | 改成 `spec.startedAt`；措辞走 `feeds.changeWordingOf(spec)` | ✅ |
 | ⑤ 空态说明 | 按 feed 逐条生成（各自 `spec.startedAt` + 各自可用性） | ✅ |
 | ⑥ 页面声明订阅源 | `renderPlansPage` 与 `renderApiPlansPage` 都改为 `feeds.feedsForPage({route}, allFeeds)` | ✅ |

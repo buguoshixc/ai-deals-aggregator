@@ -154,10 +154,15 @@ assertNoDuplicateScriptKeys();
  * v2.1：`plans.json` 从这一版起**发布**（此前它只是仓库里的输入数据）。
  * 为什么现在才发：页面（`/plans/coding/`）在这一版才存在；先前发布一份没人读的数据文件，
  * 只会让「这个站到底发布了几份数据」这件事变得含糊。发布之后它同样进产物自检。
+ *
+ * v3.0 P2-25：**数据集那几行不再手写** —— 唯一注册表是 `lib/data-docs.js` 的 `PUBLIC_DATASETS`
+ * （`copy` / `rewrite` 的进这一张、`generated` 的进下面那一张）。新增一份公开数据集时只改注册表，
+ * 拷贝清单、Manifest、数据文档页与产物扫描会一起跟上，不会再出现"三份清单各自漂移"。
  */
-const PUBLIC_FILES = ['index.html', 'deals.json', 'plans.json', 'api-plans.json', 'favicon.svg', 'robots.txt', '.nojekyll'];
+const PUBLIC_FILES = ['index.html', 'favicon.svg', 'robots.txt', '.nojekyll', ...dataDocs.datasetCopyUrls()];
 /** 构建期生成、不走源码拷贝的产物 */
-const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json', 'deal-history.json', 'plan-history.json', 'api-plan-history.json', 'deal-plan-links.json', 'models.json', 'model-registry-links.json', 'data/index.json'];
+const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json',
+  ...dataDocs.datasetGeneratedUrls(), dataDocs.MANIFEST_URL];
 // 站点常量与 XML 转义的**唯一出处**是 lib/feeds.js（v1.6 起订阅层也要用它们）。
 const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = feeds;
 
@@ -1090,6 +1095,56 @@ ${jsonLdBlocks}
  *      这里一个字节都不生成。日志不可用时这一页照常存在（路由不能凭空消失），
  *      但正文必须说「没有拿到历史日志」，而不是「没有变化」。
  */
+/**
+ * 给 `/changes/` 正文里的**代表行**补上 SEO 门禁数行用的 `data-item` 标记。
+ *
+ * ## 为什么是「代表行」而不是每一行
+ *
+ * 同一记录可以合法地出现在多个分栏里（一条优惠可以既有「最近 7 天变化」又有「已结束」
+ * 与「重新出现」）。ItemList 是**记录级**视图：一个记录只能有一个 URL —— 发两条相同 URL
+ * 既是重复计数，也会让「声明数 == 元素数 == 页面行数」这条对账永远差几条。
+ * 所以两边共用 `changes.itemListRecords()` 给出的同一份集合（每个 id 一条，取最强事件），
+ * 行标记只落在该记录**代表那一行**上；其余行照常显示（弱事件不因为不进 ItemList 而消失）。
+ *
+ * ## 为什么按「文档顺序 + 出现次数」定位
+ *
+ * RENDER-CORE（`index.html`）只给每行写 `data-kind` 与 `data-deal-id`，不写 `data-item`：
+ * 那是**构建期**的决定（哪一行代表这条记录），不是模板的决定。顺序判据在
+ * `changes.renderOrderOf()`，这里逐行回读核对（行数不等 / 代表行找不到都算失败），
+ * 因此「判据与渲染分家」会在构建期就红，而不是变成读者页面上对不上的结构化数据。
+ *
+ * @param {string} body        `renderCore.changesPageHtml()` 的输出
+ * @param {object[]} records   `changes.itemListRecords()` 的输出
+ * @param {number} expectedRows 判据层的渲染顺序长度
+ */
+function markChangesRows(body, records, expectedRows) {
+  const problems = [];
+  const wanted = new Map();
+  for (const record of records) wanted.set(`${record.id}\u0000${record.occurrence}`, record);
+  const seen = new Map();
+  let rows = 0;
+  let marked = 0;
+  const html = String(body || '').replace(
+    /<li class="chgi" data-kind="([^"]*)" data-deal-id="([^"]*)">/g,
+    (match, kindAttr, idAttr) => {
+      rows++;
+      const id = decodeEntities(idAttr);
+      const occurrence = seen.get(id) || 0;
+      seen.set(id, occurrence + 1);
+      if (!wanted.has(`${id}\u0000${occurrence}`)) return match;
+      marked++;
+      return `<li class="chgi" data-item="${idAttr}" data-kind="${kindAttr}" data-deal-id="${idAttr}">`;
+    }
+  );
+  if (rows !== expectedRows) {
+    problems.push(`页面上的变化行 ${rows} 行 ≠ 判据层的渲染顺序 ${expectedRows} 项（分栏被裁剪或模板改了顺序？）`);
+  }
+  if (marked !== records.length) {
+    problems.push(`ItemList 有 ${records.length} 条，页面上只标出了 ${marked} 条代表行`);
+  }
+  return { html, rows, marked, problems };
+}
+
 function renderChangesPage(radar, indexHtml, renderCore, context = {}) {
   const changeFeedTags = context.changeFeedTags || feeds.rootFeedTags('../');
   const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
@@ -1114,13 +1169,13 @@ function renderChangesPage(radar, indexHtml, renderCore, context = {}) {
   //
   // ItemList 只收**真有详情页**的条目：给「已离开数据集」的条目发一个不存在的 URL，
   // 就是在结构化数据里造死链 —— 那比少声明几条更糟。
-  const linkable = [];
-  for (const key of changes.SECTION_ORDER) {
-    for (const item of radar.sections[key].items) {
-      if (item.href) linkable.push({ id: item.id, title: item.titled && item.title ? item.title : W.CHANGES_LABELS.tombstone });
-    }
-  }
-  const highValueTotal = changes.SECTION_ORDER.reduce((sum, key) => sum + (Number(radar.totals[key]) || 0), 0);
+  //
+  // v1.5 修复（P1-4 / F-r1-history-ai-001）：`numberOfItems` 与 `itemListElement`
+  // 必须是**同一次**集合、且**按记录去重**（一个记录同时出现在多个分栏时只算一条，
+  // 取最强事件——判据在 `changes.itemListRecords()`，与页面行标记共用）。
+  // 修复前的写法是「声明数 = 五栏 totals 合计（含状态量与不可链接条目）vs 元素 = 按栏遍历的
+  // 未去重列表」：只要有 1 条变化，两边就不可能相等，`itemlist-arity` 必红。
+  const itemListRecords = changes.itemListRecords(radar);
   const jsonLdBlocks = [
     {
       '@context': 'https://schema.org',
@@ -1143,24 +1198,38 @@ function renderChangesPage(radar, indexHtml, renderCore, context = {}) {
       '@context': 'https://schema.org',
       '@type': 'ItemList',
       name: PAGE_HEADING,
-      numberOfItems: highValueTotal,
-      itemListElement: linkable.slice(0, 50).map((item, index) => ({
+      numberOfItems: itemListRecords.length,
+      itemListElement: itemListRecords.map((record, index) => ({
         '@type': 'ListItem',
         position: index + 1,
-        url: `${SITE_URL}deal/${encodeURIComponent(item.id)}/`,
-        name: item.title
+        url: `${SITE_URL}${record.href}`,
+        name: record.name
       }))
     }
   ].map(data => `<script type="application/ld+json">
 ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 </script>`).join('\n');
 
-  const dealsBody = renderCore.changesPageHtml(radar, '../')
+  // 页面行标记：与上面的 ItemList 读**同一份**集合的同一个 `occurrence`。
+  // 没有这一步，`page-kinds.js` 对 `changes` 声明的 `checkRows/checkMembers` 就是
+  // 「声明它必须对账、却没有任何标记可对」—— 上一轮审计里 9 条 `itemlist-members`
+  // 与 2 条 `itemlist-arity` 正是这么来的。
+  const marked = markChangesRows(renderCore.changesPageHtml(radar, '../'), itemListRecords, changes.renderOrderOf(radar).length);
+  if (marked.problems.length) {
+    throw new Error(`/changes/ 的行标记与雷达不一致（判据与渲染分家了）：\n  - ${marked.problems.slice(0, 5).join('\n  - ')}`);
+  }
+  const dealsBody = marked.html
     .split('\n').map(line => `        ${line}`).join('\n');
   // v2.3：套餐变化。**不新做一页**：这一页本来就是「最近发生了什么变化」的落点，
   // 顶部加一行锚点导航把两块分开，block 由 `plans-page.js` 渲染（与套餐页共用同一句话）。
   const planBlock = context.planChanges
-    ? plansPage.planChangesPageBlockHtml(context.planChanges, { prefix: '../', providerTable: context.providerTable || null })
+    ? plansPage.planChangesPageBlockHtml(context.planChanges, {
+      prefix: '../',
+      providerTable: context.providerTable || null,
+      // 与 `/plans/coding/` 的那一块传**同一份上下文**：币种 / 额度单位 / 平台显示名
+      // 都从套餐记录里取，同一件事在两页上才是同一句话（见 context.plansById 的注释）。
+      plansById: context.plansById || null
+    })
       .split('\n').map(line => `      ${line}`).join('\n')
     : '';
   // v3.0 Stage H：API 价格变化。**同样不新做一页** —— 这一页的任务就是回答
@@ -2022,36 +2091,18 @@ function renderFeedsPage(feedList, indexHtml, context = {}) {
     'RSS 与 JSON Feed 两种格式，全部由本站构建期生成的静态文件提供 —— 没有账号、没有邮件列表、没有推送服务。';
   const pageUrl = `${SITE_URL}feeds/`;
 
-  const byId = new Map(feedList.map(feed => [feed.spec.id, feed]));
-  const pick = id => byId.get(id);
-  const groups = [
-    {
-      key: 'core', label: '全部与变化',
-      ids: ['all', 'changes', 'new'],
-      note: null
-    },
-    {
-      // v2.3 / v3.0：套餐变化与 API 价格变化是**两份互不注入的数据**（plans / api-plans），
-      // 所以单独一组，而不是塞进「全部与变化」。
-      // 清单**由注册表展开**（不写死 id）：将来加第三个变化来源时，这一页不会再漏列一次。
-      key: 'plans', label: '套餐与 API 计费',
-      ids: feeds.PLAN_CHANGE_FEEDS.map(spec => spec.id),
-      note: '套餐变化来自人工逐条核对官方页后重建的套餐数据（plans.json），API 价格变化来自'
-        + '同样方式重建的 API 计费数据（api-plans.json）；两者与优惠（deals）是三份互不注入的数据。'
-        + '每条变化都能在<a href="../plans/coding/">套餐对比页</a>或<a href="../plans/api/">API 计费对比页</a>找到落点。'
-    },
-    {
-      key: 'student', label: '学生',
-      ids: ['student', 'china'],
-      note: '按「我是谁」和「能不能在大陆用上」切；判据与 /student/、/need/china-usable/ 两页<b>同一份</b>。'
-    },
-    {
-      key: 'developer', label: '开发者',
-      ids: ['developer', 'free-api', 'free-tokens', 'ai-coding'],
-      note: '按福利类型与用途切；与目录页、按需求页共用同一套判据，所以订阅里的条数与页面上的行数不可能分头变化。'
-    }
-  ];
-  const vendorFeeds = feedList.filter(feed => feed.spec.vendor);
+  // 分组与成员**全部来自注册表**（`lib/feeds.js` 的 `pageGroups()` 从 spec.listGroup 派生）：
+  // 这一层**不许**再有第二份 id 清单 —— 手写清单正是 P3-4 的成因（分类 Feed 整组漏在
+  // 汇总页之外，而页面上与自检里都看不出来）。新增一条 Feed 只需在注册表里声明它属于哪一组，
+  // 「注册表 → 页面」这个方向由 `checkFeedsPage()` 的双向断言盯着。
+  const plan = feeds.pageGroups(feedList);
+  const groups = plan.groups.filter(group => group.key !== 'vendor');   // 厂商那一段单独排版（带门槛说明）
+  const vendorFeeds = (plan.groups.find(group => group.key === 'vendor') || { feeds: [] }).feeds;
+  // 兜底：public 但没有分组的 Feed 也照常列出来。两件事同时成立 ——
+  // 页面上不会静默少一份订阅，而 `checkFeedsPage()` 会把「没分组」报成必须修的问题。
+  const ungroupedFeeds = plan.ungrouped;
+  /** 站点根 Feed：按注册表的路径取，不再按 id 字面量取 */
+  const ownFeed = feedList.find(feed => feed.spec.path === feeds.ROOT_FEED.path) || null;
 
   const rowHtml = feed => {
     const spec = feed.spec;
@@ -2083,7 +2134,7 @@ function renderFeedsPage(feedList, indexHtml, context = {}) {
   };
 
   const groupHtml = groups.map(group => {
-    const rows = group.ids.map(pick).filter(Boolean);
+    const rows = group.feeds;
     if (!rows.length) return '';
     return `    <section class="fsec">
       <h2>${htmlEscape(group.label)}</h2>
@@ -2093,6 +2144,17 @@ ${rows.map(rowHtml).join('\n')}
       </ul>
     </section>`;
   }).filter(Boolean).join('\n');
+  // 没分组的 public Feed：单独一段列出来（正常情况下永远是空的；一旦出现，
+  // 构建自检会红，页面这里也保证它不会消失得无声无息）。
+  const ungroupedHtml = ungroupedFeeds.length
+    ? `    <section class="fsec">
+      <h2>其他订阅</h2>
+      <p class="snote">这些订阅源还没在注册表里声明分组（见 lib/feeds.js 的 FEED_LIST_GROUPS），先照实列出。</p>
+      <ul class="flist">
+${ungroupedFeeds.map(rowHtml).join('\n')}
+      </ul>
+    </section>`
+    : '';
 
   const emptyChangeFeeds = feedList.filter(feed => feed.spec.kind === 'changes' && !feed.items.length);
   const emptyNote = emptyChangeFeeds.length
@@ -2161,7 +2223,7 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <!-- feed 约定：这一页自己不产出条目（订阅是「内容更新」语义），但必须能被订阅发现。 -->
-${feeds.feedLinkTags([pick('all')].filter(Boolean), '../')}
+${feeds.feedLinkTags(ownFeed ? [ownFeed] : [], '../')}
 ${themeScript}
 ${style}
 <style>
@@ -2196,6 +2258,7 @@ ${jsonLdBlocks}
       ${emptyNote}
       ${emptyPlanNote}
 ${groupHtml}
+${ungroupedHtml}
     <section class="fsec">
       <h2>厂商订阅</h2>
       ${vendorNote}
@@ -2786,6 +2849,9 @@ function assemble() {
     availability: radarAvailability
   });
   const radarStats = changes.summarize(radar);
+  // ItemList 与页面行标记读的**同一份**集合（判据在 `changes.itemListRecords()`）：
+  // 自检用它给 SEO 门禁传 `itemIds`，并按它逐条对账「页面可见行 ↔ ItemList 成员」。
+  const changesItemList = changes.itemListRecords(radar);
   console.log(`  变化雷达: ${radar.availability === 'ok' ? '可用' : '不可用（无历史日志）'} · 基准日 ${radar.asOf || '未知'}` +
     ` · 今日新增 ${radarStats.totals.created} · 最近 7 天变化 ${radarStats.totals.changed} · 即将结束 ${radarStats.totals.endingSoon}` +
     ` · 已结束 ${radarStats.totals.ended} · 重新出现 ${radarStats.totals.restored} · 其他（不上首页）${radarStats.totals.other}` +
@@ -3280,6 +3346,11 @@ function assemble() {
     // v3.0 Stage H：第三条变化流（API 价格变化）也落在这一页上。
     apiPlanChanges: apiPlanRadar,
     planHistoryStore,
+    // 套餐变化那句话里的**币种与额度单位**从套餐记录里取（`planChangeTextOf` 的
+    // `plansById`）。少了它，`/changes/` 会写出「正常价格 79 → 59」，而 `/plans/coding/`
+    // 上同一件事写的是「正常价格 ¥79 → ¥59」—— 同一件事两种说法。
+    // 产物自检一直按「带 plansById」的那一句对账，只是生产上套餐变化恒为空，从未对上过。
+    plansById: new Map(plansStore.plans.map(plan => [plan.id, plan])),
     providerTable
   }), 'utf8');
   console.log(`  变化雷达页: /changes/（基准日 ${radar.asOf || '未知'} · 高价值 ${changes.SECTION_ORDER
@@ -3529,14 +3600,20 @@ function assemble() {
     }
     for (const entry of gatedArchiveEntries) {
       const route = archiveLib.archiveEntryRoute(entry);
+      // ⚠️ 相对前缀由 `lib/archive.js` 的 `archiveEntryPrefix()` **按路由深度**派生
+      // （唯一实现；这里不再有第二条深度算式）：`archive/<kind>/<id>/` 是 3 层，
+      // 原先写死 `'../../'`（2 层）——favicon / feed / 面包屑 / 全站导航全部解析到
+      // `archive/…` 而不是站点根，而生产一条 ended/restored 都没有，因此从未被构建照到
+      // （审计 F-r1-history-ai-002：每页 27 条相对引用里 24 条死链）。
+      const prefix = archiveLib.archiveEntryPrefix(entry);
       fs.mkdirSync(path.join(OUT, route), { recursive: true });
       const entryHtml = renderModelsShell({
         route,
         title: `${entry.title || entry.id} · ${archiveLib.ARCHIVE_HEADING}`,
         description: `${entry.title || entry.id} 的结束 / 恢复记录：首次发现、最后有效时间、结束发现时间、最后已知内容与变化时间线。资料失效不等于资料删除。`,
-        body: archiveLib.renderArchiveEntry(entry, { prefix: '../../', siteUrl: SITE_URL }),
+        body: archiveLib.renderArchiveEntry(entry, { prefix, siteUrl: SITE_URL }),
         jsonLd: archiveLib.archiveEntryJsonLd(entry, { siteUrl: SITE_URL }),
-        prefix: '../../',
+        prefix,
         extraCss: ARCHIVE_PAGE_CSS
       }, html);
       fs.writeFileSync(path.join(OUT, route, 'index.html'), entryHtml, 'utf8');
@@ -3560,67 +3637,58 @@ function assemble() {
   //
   // 时间形状显式区分（题面点名）：`deals.json` 的 updatedAt 是**真实时刻**，
   // plans / api-plans / models / links 是**日期规范化**（当天零点），变化日志是**纯日期**。
-  const dataManifest = dataDocs.buildDatasetManifest([
-    {
-      id: 'deals', label: '优惠数据', category: 'deals', url: 'deals.json',
+  // v3.0 P2-25（`F-v3-export-001`）：公开数据集的**唯一注册表**是 `lib/data-docs.js` 的
+  // `PUBLIC_DATASETS`。这里只交出**运行期取值**（schemaVersion / updatedAt / count）——
+  // 名称、类别、发布地址、countNote 全在注册表里；Manifest、构建拷贝、`/docs/data/`
+  // 与产物扫描都从那一份派生。新增一份公开数据集 = 注册表加一行 + 这里给出它的取值；
+  // 只加了一边（注册表有、取值没有）会在这里硬失败，而不是悄悄少一份。
+  const datasetRegistryProblems = dataDocs.assertDatasetRegistryShape();
+  if (datasetRegistryProblems.length) {
+    throw new Error(`公开数据集注册表（PUBLIC_DATASETS）不合法（${datasetRegistryProblems.length} 处）：\n  - ` +
+      `${datasetRegistryProblems.slice(0, 5).join('\n  - ')}`);
+  }
+  const { manifest: dataManifest, missingValues: missingDatasetValues } = dataDocs.buildManifestFromRegistry({
+    deals: {
       schemaVersion: payload.schemaVersion, updatedAt: payload.updatedAt,
-      count: typeof payload.count === 'number' ? payload.count : (payload.deals || []).length,
-      purpose: '当前收录的 AI 优惠与福利条目（含构建期派生的 collections / needs / history / relatedPlans）'
+      count: typeof payload.count === 'number' ? payload.count : (payload.deals || []).length
     },
-    {
-      id: 'plans', label: 'Coding 套餐', category: 'coding-plans', url: 'plans.json',
-      schemaVersion: plansStore.schemaVersion, updatedAt: plansStore.updatedAt,
-      count: plansStore.count,
-      purpose: '长期在售的订阅型 / Coding 套餐（价格、额度、可用模型与限制）'
+    plans: {
+      schemaVersion: plansStore.schemaVersion, updatedAt: plansStore.updatedAt, count: plansStore.count
     },
-    {
-      id: 'api-plans', label: 'API 计费记录', category: 'api-pricing', url: 'api-plans.json',
-      schemaVersion: apiPlansStore.schemaVersion, updatedAt: apiPlansStore.updatedAt,
-      count: apiPlansStore.count,
-      purpose: '按量计费的官方单价（输入 / 输出 / 缓存 / Batch / 免费额度 / credits）'
+    'api-plans': {
+      schemaVersion: apiPlansStore.schemaVersion, updatedAt: apiPlansStore.updatedAt, count: apiPlansStore.count
     },
-    {
-      id: 'models', label: 'Model Registry', category: 'models', url: 'models.json',
-      schemaVersion: publishedModels.schemaVersion, updatedAt: publishedModels.updatedAt,
-      count: publishedModels.count,
-      purpose: '模型身份索引（id / slug / 开发者 / 别名 / 状态；派生 firstSeen / lastSeen）'
+    models: {
+      schemaVersion: publishedModels.schemaVersion, updatedAt: publishedModels.updatedAt, count: publishedModels.count
     },
-    {
-      id: 'model-registry-links', label: '模型映射关系', category: 'relationships', url: 'model-registry-links.json',
-      schemaVersion: publishedModelLinksModelDoc.schemaVersion, updatedAt: publishedModelLinksModelDoc.updatedAt,
-      count: publishedModelLinksModelDoc.count,
-      purpose: '显式映射：registry 模型 ↔ api-plans 的 modelKey / Coding 套餐（每条带官方出处）'
+    'model-registry-links': {
+      schemaVersion: publishedModelLinksModelDoc.schemaVersion,
+      updatedAt: publishedModelLinksModelDoc.updatedAt,
+      count: publishedModelLinksModelDoc.count
     },
-    {
-      id: 'deal-plan-links', label: '优惠 ↔ 套餐关系', category: 'relationships', url: 'deal-plan-links.json',
+    'deal-plan-links': {
       schemaVersion: dealLinksLoad.doc.schemaVersion,
       updatedAt: dealPlanLinks.canonicalUpdatedAt(dealLinksLoad.doc),
-      count: (dealLinksLoad.doc.links || []).length,
-      countNote: '当前关系条数（退役记录另计）',
-      purpose: '显式确认的优惠与套餐 / API 计费记录关系（每条带官方出处）'
+      count: (dealLinksLoad.doc.links || []).length
     },
-    {
-      id: 'deal-history', label: '优惠变化日志', category: 'history', url: 'deal-history.json',
+    'deal-history': {
       schemaVersion: historyStore.store.schemaVersion, updatedAt: historyStore.store.startedAt,
-      count: (historyStore.store.events || []).length,
-      countNote: '事件条目数（不含一次性基线）',
-      purpose: '优惠的一次性基线 + 追加事件（ended / restored / 内容变化）'
+      count: (historyStore.store.events || []).length
     },
-    {
-      id: 'plan-history', label: '套餐变化日志', category: 'history', url: 'plan-history.json',
+    'plan-history': {
       schemaVersion: planHistoryStore.schemaVersion, updatedAt: planHistoryStore.startedAt,
-      count: (planHistoryStore.events || []).length,
-      countNote: '事件条目数（不含一次性基线）',
-      purpose: 'Coding 套餐的一次性基线 + 追加事件（价格 / 额度 / 模型 / 限制 / 地区）'
+      count: (planHistoryStore.events || []).length
     },
-    {
-      id: 'api-plan-history', label: 'API 计费变化日志', category: 'history', url: 'api-plan-history.json',
+    'api-plan-history': {
       schemaVersion: apiPlanHistoryStore.schemaVersion, updatedAt: apiPlanHistoryStore.startedAt,
-      count: (apiPlanHistoryStore.events || []).length,
-      countNote: '事件条目数（不含一次性基线）',
-      purpose: 'API 计费记录的一次性基线 + 追加事件（价格 / 模型增删 / 免费额度 / 下线恢复）'
+      count: (apiPlanHistoryStore.events || []).length
     }
-  ]);
+  });
+  if (missingDatasetValues.length) {
+    throw new Error(`PUBLIC_DATASETS 登记了这些公开数据集，但本次构建没有交出它们的取值：` +
+      `${missingDatasetValues.join('、')}（在 build-local.js 的 buildManifestFromRegistry() 调用里补上 ` +
+      `schemaVersion / updatedAt / count）`);
+  }
   {
     const dir = path.join(OUT, 'data');
     fs.mkdirSync(dir, { recursive: true });
@@ -3922,6 +3990,9 @@ ${dataDocsUrl}
     radar,
     radarStats,
     radarAsOf,
+    // v1.5 修复（P1-4）：`/changes/` 的 ItemList 与页面行标记读的是这一份（去重后的可链接集合）。
+    // 自检对账要用同一个判据 —— 重算一遍就等于把「哪一条算代表」写了第二处。
+    changesItemList,
     // v2.3：套餐变化视图同样交给自检回读对账（页面块 ↔ 日志 ↔ 订阅源三方）
     planRadar,
     planRadarStats,
@@ -3976,6 +4047,26 @@ ${dataDocsUrl}
       ...directoryPages.map(page => page.route)
     ])
   });
+}
+
+/**
+ * 产物里全部文件的相对路径（POSIX 形式）。
+ *
+ * §10.7 的方向 2 要的是"磁盘上真的有什么"，所以**不读任何清单**：目录里出现的每个文件都算，
+ * 由 `dataDocs.assertArtifactCoverage()` 去问"它被哪个注册表认领"。
+ */
+function listArtifactFiles(dir) {
+  const out = [];
+  const walk = (abs, rel) => {
+    for (const entry of fs.readdirSync(abs, { withFileTypes: true })) {
+      const nextRel = rel ? `${rel}/${entry.name}` : entry.name;
+      const nextAbs = path.join(abs, entry.name);
+      if (entry.isDirectory()) walk(nextAbs, nextRel);
+      else out.push(nextRel);
+    }
+  };
+  walk(dir, '');
+  return out.sort();
 }
 
 function selfCheck(built) {
@@ -4431,18 +4522,26 @@ function selfCheck(built) {
           actualUpdatedAt: Object.fromEntries(Object.entries(actual).map(([id, row]) => [id, row.updatedAt]))
         })
       ];
-      // 发布的数据集数必须 == Manifest 条数（"多了一份没人知道的数据"同样要红）
-      const publishedDataFiles = ['deals.json', 'plans.json', 'api-plans.json', 'models.json',
-        'model-registry-links.json', 'deal-plan-links.json',
-        'deal-history.json', 'plan-history.json', 'api-plan-history.json'];
-      const missingFromManifest = publishedDataFiles.filter(file => !diskManifest.datasets.some(d => d.url === file));
+      // 发布的数据集数必须 == Manifest 条数（"多了一份没人知道的数据"同样要红）。
+      // 判据来自**唯一注册表**（`PUBLIC_DATASETS`），不是这里再抄一份 9 文件清单 ——
+      // 抄一份清单的后果正是 P2-25：新加一份公开 JSON 时没有任何东西会红。
+      const registeredDataFiles = dataDocs.datasetUrls();
+      const missingFromManifest = registeredDataFiles.filter(file => !diskManifest.datasets.some(d => d.url === file));
       if (missingFromManifest.length) {
-        problems.push(`有 ${missingFromManifest.length} 份已发布数据集没进 Manifest：${missingFromManifest.join('、')}`);
+        problems.push(`有 ${missingFromManifest.length} 份已登记的公开数据集没进 Manifest：${missingFromManifest.join('、')}`);
       }
+      // ---- 方向 2（§10.7）：扫描产物里的**全部** JSON，逐个要求"被某个注册表认领" ----
+      // Feed 家族的产出清单从 `feedBundle` 现取（就是刚刚落盘的那一份），
+      // 于是「feed 目录里的文件」与「Feed 注册表说要产出的文件」双向对账，不靠通配豁免。
+      const coverage = dataDocs.assertArtifactCoverage(listArtifactFiles(OUT), diskManifest, {
+        feedFiles: built.feedBundle.feeds.flatMap(feed => [feed.spec.path, feed.spec.jsonPath])
+      });
+      problems.push(...coverage.problems);
       if (problems.length) fail(`数据出口未通过诚实性断言：${problems.slice(0, 3).join('、')}`);
       else {
         console.log(`  ✓ 数据出口: Manifest ${diskManifest.count} 份数据集（六类齐）· ${docsHtml.includes('data/index.json') ? '页面给出 Manifest 地址' : '缺 Manifest 地址'}` +
           ` · endpoint 逐个存在 · schemaVersion / count / updatedAt 逐字段对账` +
+          ` · 方向 2 扫描：${dataDocs.artifactCoverageSummary(coverage.counts)}` +
           ` · 时间形状 真实时刻 ${diskManifest.datasets.filter(d => d.updatedAtShape === 'timestamp').length} / 日期规范化 ${diskManifest.datasets.filter(d => d.updatedAtShape === 'date-normalized').length} / 纯日期 ${diskManifest.datasets.filter(d => d.updatedAtShape === 'date').length}`);
       }
     }
@@ -4967,6 +5066,59 @@ function selfCheck(built) {
       const extra = [...onPage].filter(id => !linkable.has(id));
       if (missing.length) problems.push(`changes/ 漏了 ${missing.length} 条可链接条目（如 ${missing.slice(0, 3).join(', ')}）`);
       if (extra.length) problems.push(`changes/ 多了 ${extra.length} 条不在雷达里的链接（如 ${extra.slice(0, 3).join(', ')}）`);
+
+      // ---- 行 ↔ ItemList 双向对账（v1.5 修复 P1-4 / F-r1-history-ai-001）------------
+      //
+      // 三份集合必须**逐条相等**，缺一不可：
+      //   ① 判据层去重后的可链接集合（`changes.itemListRecords()`，唯一出处）；
+      //   ② 页面 ItemList 的成员（从磁盘回读 JSON-LD，不信内存里那一段）；
+      //   ③ 页面上的 `data-item` 行（SEO 门禁数的就是它）。
+      // 修复前这三份各算各的（声明数取五栏 totals、元素按栏遍历不去重、行标记根本没有），
+      // 只要有 1 条变化就必然对不上 —— 而这一页在生产数据上恒为 0 条，所以从未暴露。
+      {
+        const expectedIds = (built.changesItemList || []).map(record => record.id);
+        const markers = [...noScript.matchAll(/data-item="([^"]*)"/g)].map(m => decodeEntities(m[1]));
+        const list_ = seo.itemListOf(seo.jsonLdBlocks(page).blocks);
+        if (!list_) {
+          problems.push('changes/ 没有 ItemList 结构化数据（page-kinds 对 changes 声明它在场）');
+        } else {
+          const ids = list_.elements.map(element => {
+            const rel = String(element.url || '').replace(SITE_URL, '');
+            const match = rel.match(/^deal\/([^/]+)\/$/);
+            return match ? decodeURIComponent(match[1]) : `（非法 url：${element.url}）`;
+          });
+          if (Number(list_.numberOfItems) !== list_.elements.length) {
+            problems.push(`changes/ ItemList 声明 ${list_.numberOfItems} 项，实际发出 ${list_.elements.length} 项`);
+          }
+          if (list_.elements.length !== expectedIds.length) {
+            problems.push(`changes/ ItemList ${list_.elements.length} 项 ≠ 去重后的可链接记录 ${expectedIds.length} 条`);
+          }
+          if (new Set(ids).size !== ids.length) {
+            const dup = ids.filter((id, index) => ids.indexOf(id) !== index);
+            problems.push(`changes/ ItemList 里同一记录出现多次（${[...new Set(dup)].slice(0, 3).join(', ')}）`);
+          }
+          const same = (a, b) => a.length === b.length && a.every(id => b.includes(id));
+          if (!same(ids, expectedIds)) {
+            const onlyList = ids.filter(id => !expectedIds.includes(id));
+            const onlyJudge = expectedIds.filter(id => !ids.includes(id));
+            problems.push(`changes/ ItemList 成员与判据集合不一致（多 ${onlyList.length} / 少 ${onlyJudge.length}：` +
+              `${[...onlyList, ...onlyJudge].slice(0, 3).join(', ')}）`);
+          }
+          if (markers.length !== list_.elements.length) {
+            problems.push(`changes/ 页面 ${markers.length} 个 data-item 行 ≠ ItemList ${list_.elements.length} 项`);
+          }
+          if (new Set(markers).size !== markers.length) {
+            problems.push(`changes/ 页面上的 data-item 有重复（一个记录应当只有一行代表）`);
+          }
+          if (!same(markers, ids)) {
+            const stray = markers.filter(id => !ids.includes(id));
+            problems.push(`changes/ ItemList 成员在本页可见行里找不到对应行（${stray.slice(0, 3).join(', ') || '行集合不同'}）`);
+          }
+          for (const id of markers) {
+            if (!onPage.has(id)) problems.push(`changes/ data-item 行 ${id} 在页面上没有对应链接（行与链接分了家）`);
+          }
+        }
+      }
       // 预渲染正文（无 JS 可读）。阈值按「固定说明 + 每条 40 字」估：实测空态页约 900 字，
       // 每条事件行约 40–120 字。取 700 的下限只为拦住「渲染路径断了」这类坏法。
       const text = prerenderedText(page);
@@ -5256,9 +5408,11 @@ function selfCheck(built) {
       // v3.0 Stage D5/D6：模型索引（一层）与模型详情（两层）。深度由路由段数推导。
       [`${modelsPage.MODELS_INDEX_ROUTE}index.html`, '../'],
       ...built.modelDetailRoutes.map(route => [`${route}index.html`, '../../']),
-      // v3.0 Stage F：档案索引（一层）与档案详情（两层）。
+      // v3.0 Stage F：档案索引（一层）与档案详情（**三层**：`archive/<kind>/<id>/`）。
+      // 前缀一律问 `lib/archive.js` 要（`routePrefixOf`）——构建期与渲染层因此只有**一份**深度真相，
+      // 不可能再出现「页面写 '../../'、自检也写 '../../'」的镜像错误（审计 F-r1-history-ai-002）。
       [`${archiveLib.ARCHIVE_INDEX_ROUTE}index.html`, '../'],
-      ...built.archiveDetailRoutes.map(route => [`${route}index.html`, '../../']),
+      ...built.archiveDetailRoutes.map(route => [`${route}index.html`, archiveLib.routePrefixOf(route)]),
       // v3.0 Stage G：数据文档页（两层路由）。
       [`${dataDocs.DATA_DOCS_ROUTE}index.html`, '../../'],
       // v2.1：套餐对比页是**两层**深路由。深度写错的话，这一页的页头/页脚内链全是 404，
@@ -5946,8 +6100,11 @@ function selfCheck(built) {
       [`${modelsPage.MODELS_INDEX_ROUTE}index.html`, '模型资料索引', '../'],
       ...built.modelDetailRoutes.map(route => [`${route}index.html`, `/${route}`, '../../']),
       // v3.0 Stage F：档案页同样声明根 Feed（订阅发现按深度逐页对账）。
+      // 详情页前缀同样问 `lib/archive.js` 要（唯一深度真相）。
       [`${archiveLib.ARCHIVE_INDEX_ROUTE}index.html`, '历史档案', '../'],
-      ...built.archiveDetailRoutes.map(route => [`${route}index.html`, `/${route}`, '../../']),
+      ...built.archiveDetailRoutes.map(route => [
+        `${route}index.html`, `/${route}`, archiveLib.routePrefixOf(route)
+      ]),
       // v3.0 Stage G：数据文档页同样声明根 Feed。
       [`${dataDocs.DATA_DOCS_ROUTE}index.html`, '数据文档', '../../'],
       [`${plansPage.PLANS_ROUTE}index.html`, '套餐对比页', '../../'],
@@ -6012,22 +6169,26 @@ function selfCheck(built) {
         if (!fs.existsSync(path.join(OUT, route))) problems.push(`列出的订阅地址没有文件：${route}`);
       }
       // v3.0 Stage H（队长 B1）：**注册表里每个变化源都必须出现在这一页上**。
-      // 分组表改成从注册表展开之后，这条断言才真正有意义：谁把某个来源从分组里漏掉
-      // （或者新加一个来源忘了接线），这里是唯一会红的地方 —— 页面看起来依然"很正常"。
-      for (const spec of feeds.PLAN_CHANGE_FEEDS) {
-        const feed = built.feedBundle.feeds.find(item => item.spec.id === spec.id);
-        if (!feed) continue;                     // 未登记（alwaysGenerated:false 且没交视图）由上面那条断言报
-        for (const rel of [spec.path, spec.jsonPath]) {
-          if (!page.includes(`href="${SITE_URL}${rel}"`)) problems.push(`没有列出变化源 ${spec.id} 的地址 ${rel}`);
+      // P3-4：这条断言从「只盯 PLAN_CHANGE_FEEDS」扩成**注册表 → 页面 / 页面 → 注册表双向对账**
+      // （唯一实现在 `lib/feeds.js` 的 `checkFeedsPage()`）：分类 Feed 那一组曾经整组漏在这里，
+      // 而当时所有断言都绿 —— 因为页面上少列一条、自检里也没有任何一条要求它必须出现。
+      const audit = feeds.checkFeedsPage({ feedList: built.feedBundle.feeds, page, siteUrl: SITE_URL });
+      for (const problem of audit.problems) problems.push(problem);
+      // hidden/internal 的 Feed 不许留产物文件：隐藏 = 「这份订阅不属于公开产品」，
+      // 不是「页面少列几行」（文件还在 = 读者仍能拿到地址 ⇒ 有产出、无总览入口，正是 P3-4）。
+      for (const feed of built.feedBundle.feeds) {
+        if (feeds.isPublicSpec(feed.spec)) continue;
+        for (const rel of [feed.spec.path, feed.spec.jsonPath]) {
+          if (fs.existsSync(path.join(OUT, rel))) problems.push(`hidden/internal 的 Feed 仍有产物文件：${rel}`);
         }
-        if (!page.includes(spec.title)) problems.push(`没有列出变化源 ${spec.id} 的标题「${spec.title}」`);
       }
       const text = page.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '')
         .replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
       if (text.length < 600) problems.push(`预渲染正文过短（${text.length} 字）——无 JS 时读不到内容`);
       if (!/没有账号|没有邮件列表/.test(text)) problems.push('没有说明「不需要账号」');
       if (problems.length) fail(`订阅中心：${problems.join('；')}`);
-      else console.log(`  ✓ 订阅中心: /feeds/ 五条约定齐（自指 canonical · 双 feed · 两段 JSON-LD · 预渲染 ${text.length} 字 · ${listed.length} 个订阅地址全部存在）`);
+      else console.log(`  ✓ 订阅中心: /feeds/ 五条约定齐（自指 canonical · 双 feed · 两段 JSON-LD · 预渲染 ${text.length} 字 · ` +
+        `${listed.length} 个订阅地址全部存在）· 双向对账：注册表 ${audit.publicCount} 个 public Feed ↔ 页面列出 ${audit.listedCount} 条地址`);
     }
   }
 
@@ -6105,7 +6266,15 @@ function selfCheck(built) {
         checkItemListRows: false, checkItemListMembers: false
       }),
       readPage('status/', { kind: 'status', expectItemList: false }),
-      readPage('changes/', { kind: 'changes', expectItemList: true }),
+      // v1.5 修复（P1-4）：变化页的 ItemList 成员就是本站的优惠详情页（`deal/<id>/`），
+      // 因此 `itemIds` 传**判据层去重后的同一份集合**（不再留空 —— 留空等于声明
+      // 「成员必须属于本页」，却没有任何集合可对，每一条成员都会被判成「不属于本页」）。
+      // 行数对账（声明数 == 元素数 == 页面 data-item 行数）由页面的代表行标记承担。
+      readPage('changes/', {
+        kind: 'changes',
+        expectItemList: true,
+        itemIds: built.changesItemList.map(record => record.id)
+      }),
       readPage('feeds/', { kind: 'feeds', expectItemList: false }),
       // v3.0 Stage B：/plans/ 资料入口。三个开的默认值都来自 `lib/page-kinds.js` 的声明
       // （`plans-hub`：ItemList 在场 + 行数对账 + 成员对账关掉）。

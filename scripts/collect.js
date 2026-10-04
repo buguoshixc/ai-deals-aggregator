@@ -58,6 +58,7 @@ async function collectFrom(collector, report) {
   const items = [];
   let failed = false;
   let digests = [];
+  let errorCode = null;
 
   try {
     // v2.0：为这次抓取留一份**页面结构摘要**（不含正文）。
@@ -97,12 +98,16 @@ async function collectFrom(collector, report) {
     });
   } catch (error) {
     failed = true;
+    // describeError() 会把 error.code 折成一行文本（NO_BROWSER 就是它），而心跳判定要的是
+    // **错误码本身**：只有「内核根本起不来」才叫 headless_unavailable，「页面抓到了但规则变空」
+    // 是采集器该修了。所以在这里单独留一份原始 code 给 lib/health.js（见 P2-15）。
+    errorCode = error && error.code ? String(error.code) : null;
     digests = domDigest.isCapturing() ? domDigest.endCapture() : digests;
     report.finish(collector.id, { error: describeError(error) });
     console.error(`  ✗ ${collector.name}: ${describeError(error)}`);
   }
 
-  return { items, failed, digests };
+  return { items, failed, digests, errorCode };
 }
 
 /**
@@ -218,10 +223,12 @@ async function main() {  const headless = flag('headless');
   const fresh = [];
   const snapshotEntries = [];
   let collectorFailures = 0;
+  const collectorErrorCodes = new Map();
   for (const collector of picked) {
     console.log(`→ ${collector.name}`);
-    const { items, failed, digests } = await collectFrom(collector, report);
+    const { items, failed, digests, errorCode } = await collectFrom(collector, report);
     if (failed) collectorFailures++;
+    if (errorCode) collectorErrorCodes.set(collector.id, errorCode);
     fresh.push(...items);
     snapshotEntries.push({ source: collector.id, name: collector.name, digests: digests || [] });
   }
@@ -231,31 +238,29 @@ async function main() {  const headless = flag('headless');
   // 数据源健康：把本轮每个来源的结果推进**跨运行**的心跳文件。
   // 为什么必须有它：报告表只活在这次运行的内存里，而 store.js 会把策展条目的 lastSeen
   // 刷成今天，于是「某个源坏了几天」与「某个源这次没新东西」在页面上长得一模一样。
-  const headlessIds = new Set(registry.list({ headless: true }).filter(c => c.headless).map(c => c.id));
+  //
+  // 「这个无头来源本轮有没有条件渲染」的判定**不在这一层内联**：它是 lib/health.js 的
+  // headlessReady()，由 health-selftest 与生产调用同一个函数（P2-15 的根因就是这条公式
+  // 只存在于生产里：headlessReady===false 的前提是 row.error 存在，而 row.error 存在即
+  // ok=false，于是先撞上「采集器报错」分支，headless_unavailable 永远不可达）。
+  //
+  // 无头来源只认**本轮真的跑了的**collector（picked），不再无条件 list 全部无头来源：
+  // 后者会在普通（不带 --headless）采集里 require playwright-core，与「默认链路完全不依赖它」
+  // 的边界相冲突——那个边界正是「内核装不上也不该拖垮静态链路」的第一道保障。
+  const headlessIds = picked.filter(c => c.headless).map(c => c.id);
   const browserStatus = (() => {
+    if (!headlessIds.length) return { attempted: false, ok: null, channel: null, error: null, checkedAt: null };
     try {
       return require('./lib/browser').getLaunchStatus();
     } catch (error) {
-      return { attempted: false, ok: null, error: error.message };
+      return { attempted: false, ok: null, channel: null, error: error.message, checkedAt: null };
     }
   })();
-  const healthAttempts = report.list().map(row => {
-    const isHeadless = headlessIds.has(row.sourceId);
-    return {
-      source: row.sourceId,
-      name: row.name,
-      region: row.region,
-      kind: isHeadless ? 'headless' : 'static',
-      ok: !row.error,
-      error: row.error,
-      valid: row.valid,
-      produced: row.produced,
-      deals: row.deals,
-      ms: row.ms,
-      // 无头来源失败时，区分「浏览器根本起不来」与「页面抓到了但规则变空」：
-      // 只有前者能说成 headless_unavailable，后者是采集器该修了。
-      headlessReady: isHeadless ? (row.error ? browserStatus.ok === true : true) : true
-    };
+  const healthAttempts = health.attemptsFromReport({
+    rows: report.list(),
+    headlessIds,
+    browserStatus,
+    errorCodes: collectorErrorCodes
   });
   const healthStore = health.load();
   if (healthStore.broken) {

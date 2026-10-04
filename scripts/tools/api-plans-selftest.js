@@ -7,7 +7,8 @@
  *   · credits 是钱不是 token —— 结构上就写不进 token 数量，页面上也不折算；
  *   · 输入价与输出价分列，渲染层互换会被逐格对账当场抓住；
  *   · 模型改名（保持 modelKey）产生**零事件**；未登记的改名必须被检测出来；
- *   · 免费额度只装稳定长期能力，`0` 表示"官方明说免费"而 `null` 表示"官方没公布"。
+ *   · 免费额度**逐条标注性质**（长期提供 / 新用户赠送 / 限时赠送）：赠送类不得被渲染成长期能力，
+ *     `0` 表示"官方明说免费"而 `null` 表示"官方没公布"。
  *
  * 四条 Tooth Test 都是**实跑**：把东西弄坏 → 断言必须变红 → 复原后必须回到绿。
  * 「断言不是恒红」与「断言真的会红」同等重要（本仓的既有纪律）。
@@ -80,6 +81,7 @@ function rawPlan(overrides = {}) {
     models: JSON.parse(JSON.stringify(BASE_MODELS)),
     freeTier: {
       type: 'models',
+      stability: 'standing',
       models: ['glm-4.7-flash'],
       description: '官方长期提供 GLM-4.7-Flash 免费调用',
       conversionDependsOnModel: null
@@ -102,6 +104,78 @@ function rawPlan(overrides = {}) {
       lang: 'zh'
     }]
   }, overrides);
+}
+
+/**
+ * 换单位时必须**同时**换一条点名该单位的引文：单位是价格事实的一部分，
+ * 引文说「每百万」而字段写 per_1K_tokens 是矛盾，不是"另一种口径"。
+ */
+function perKEvidence() {
+  return [{
+    field: 'pricing.unit',
+    quote: '官方价目表表头：USD per 1K tokens（每 1000 tokens）',
+    sourceUrl: 'https://open.bigmodel.cn/pricing',
+    capturedAt: '2026-10-01',
+    lang: 'en'
+  }];
+}
+
+/**
+ * 「全仓没有单位换算路径」的**代码面**扫描（P2-20 / F-r2-api-006）。
+ *
+ * 旧版只扫 `api-plan-schema.js` 一个文件、只匹配常数乘法 —— 审计实测：在**渲染层**引入
+ * `value * 1000` 时五道门禁全绿。这一版把面扩到 `scripts/**` 的真实代码面，并按**单位语义**
+ * 立判据（先把注释 / 字符串 / 正则字面量剥掉，剩下的算术才是代码算术）：
+ *   ① 以换算为名的函数或常量（convertUnit / toPerMillion / UNIT_PER_…）；
+ *   ② 价格 / 额度标识符与换算因子（1000 / 1e3 / 1e6 / 1_000_000）出现在同一个算术表达式里；
+ *   ③ 单位标识符与换算因子出现在同一个算术表达式里。
+ *
+ * 为什么必须剥字面量：单位词表本身就是**正则**（`/每\s*1000/`），不剥的话「代码面扫描」会在
+ * 自己的词表上假红 —— 一条会假红的红线最后一定被改松。
+ */
+function unitConversionHits(source, file) {
+  const hits = [];
+  const stripped = String(source)
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')                       // 块注释
+    .replace(/^\s*\/\/.*$/gm, ' ')                           // 整行行注释
+    .replace(/([^:'"`\w])\/\/[^\n]*/g, '$1 ')                // 行尾注释（避开 http://）
+    .replace(/'(?:\\.|[^'\\\n])*'/g, "''")                   // 单引号字符串
+    .replace(/"(?:\\.|[^"\\\n])*"/g, '""')                   // 双引号字符串
+    .replace(/`(?:\\.|[^`\\])*`/g, '``')                     // 模板字符串
+    .replace(/\/(?![/*])(?:\\.|\[[^\]]*\]|[^/\n\\])+\/[gimsuy]*/g, ' '); // 正则字面量
+  const FACTOR = '(?:1000|1e3|1_000|1000000|1e6|1_000_000)';
+  // 标识符里**刻意不含裸 `value`**：`Math.round(value * 1e6) / 1e6` 是「四舍五入到 6 位」
+  // 这类与单位无关的规范化写法（`scripts/ai/*` 里就有三处），把它算成换算会让这条红线假红。
+  const MONEY = '(?:rate|price|amount|input|output|cached|token|unit)[A-Za-z_$]*';
+  const CONVERT_NAME = /(convertUnit|toPerMillion|toPerThousand|unitRatio|UNIT_PER_|perMillionFactor|perThousandFactor)/i;
+  const ARITH = new RegExp(`(?:${MONEY}[^;\\n]{0,20})\\s*[*/]\\s*${FACTOR}\\b|\\b${FACTOR}\\s*[*/][^;\\n]{0,20}${MONEY}`, 'i');
+  const UNIT_ARITH = new RegExp(`(?:per_1M|per_1K|per_million|per_thousand|UNIT_LABEL)[^;\\n]{0,20}\\s*[*/]\\s*\\d|\\d\\s*[*/][^;\\n]{0,20}(?:per_1M|per_1K|per_million|per_thousand)`, 'i');
+  // 与单位无关的既有规范化写法：四舍五入到 N 位（白名单只放这一种形态，并有断言钉住它不是换算）
+  const ROUNDING_IDIOM = /Math\.round\([^)]*\)\s*\/\s*(?:1e\d+|\d+)\b/;
+  stripped.split('\n').forEach((line, index) => {
+    const text = line.trim();
+    if (!text) return;
+    if (ROUNDING_IDIOM.test(text)) return;
+    if (CONVERT_NAME.test(text)) hits.push({ file, line: index + 1, why: '以换算为名的函数 / 常量', text });
+    else if (ARITH.test(text)) hits.push({ file, line: index + 1, why: '价格 / 额度标识符与换算因子出现在同一个算术表达式里', text });
+    else if (UNIT_ARITH.test(text)) hits.push({ file, line: index + 1, why: '单位标识符与数字出现在同一个算术表达式里', text });
+  });
+  return hits;
+}
+
+/** 递归列出目录下所有 .js（扫描面：真实代码，不含 fixtures / data） */
+function jsFilesUnder(dir) {
+  const out = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name === 'fixtures' || entry.name === 'data' || entry.name === 'node_modules') continue;
+      out.push(...jsFilesUnder(full));
+    } else if (entry.name.endsWith('.js')) {
+      out.push(full);
+    }
+  }
+  return out;
 }
 
 function build(overrides = {}) {
@@ -193,10 +267,10 @@ section('① 数据契约：身份 / 单位 / 模型条目');
     limits: [{ kind: 'rpm', value: 10, appliesTo: ['nope'], note: null }]
   }, '不在本记录的 models 里');
   rejects('freeTier.models 不在记录里 → 红', {
-    freeTier: { type: 'models', models: ['nope'], description: 'x', conversionDependsOnModel: null }
+    freeTier: { type: 'models', stability: 'standing', models: ['nope'], description: 'x', conversionDependsOnModel: null }
   }, '不在本记录的 models 里');
   rejects('freeTier 三态：官方明说没有免费额度必须带 description → 红', {
-    freeTier: { type: 'none', amount: null, period: null, models: null, description: null, conversionDependsOnModel: null }
+    freeTier: { type: 'none', stability: null, amount: null, period: null, models: null, description: null, conversionDependsOnModel: null }
   }, '必须用 description');
 }
 
@@ -206,8 +280,26 @@ section('② 单位：显式保存，且全仓没有换算路径（Tooth #3）')
 
 {
   const perM = build({ pricing: { currency: 'USD', unit: 'per_1M_tokens' } });
-  const perK = build({ pricing: { currency: 'USD', unit: 'per_1K_tokens' } });
-  check('同一数值 + 不同 unit 都能通过校验（单位是显式声明，不是隐含约定）', perM.ok && perK.ok);
+  const perK = build({ pricing: { currency: 'USD', unit: 'per_1K_tokens' }, evidence: perKEvidence() });
+  check('同一份价格数据 + 两种 unit 都能通过校验（单位是显式声明，不是隐含约定）',
+    perM.ok && perK.ok, JSON.stringify((perK.problems || []).slice(0, 1)));
+
+  // 【牙】P1-8：来源层把 unit 从 per_1M 翻成 per_1K（或反向）而引文没变 ⇒ 必须红
+  const flippedK = build({ pricing: { currency: 'USD', unit: 'per_1K_tokens' } });
+  check('【牙】引文点名「每百万」而 pricing.unit=per_1K_tokens → 红（单位枚举翻转必须有判据）',
+    !flippedK.ok && flippedK.problems.some(problem => problem.includes('每百万')),
+    JSON.stringify((flippedK.problems || []).slice(0, 1)));
+  const flippedM = build({ pricing: { currency: 'USD', unit: 'per_1M_tokens' }, evidence: perKEvidence() });
+  check('【牙·反向】引文点名「每千」而 pricing.unit=per_1M_tokens → 也红（两个方向都有牙）',
+    !flippedM.ok && flippedM.problems.some(problem => problem.includes('每千')),
+    JSON.stringify((flippedM.problems || []).slice(0, 1)));
+  const noWitness = build({
+    pricing: { currency: 'USD', unit: 'per_1M_tokens' },
+    evidence: [{ field: 'models.glm-5.3', quote: 'GLM-5.3：输入 8 / 输出 28', sourceUrl: 'https://open.bigmodel.cn/pricing', capturedAt: '2026-10-01' }]
+  });
+  check('【牙】单位没有任何见证（引文不点名、无 pricing.unit 引文、unitNote 空）→ 红（不许静默放行）',
+    !noWitness.ok && noWitness.problems.some(problem => problem.includes('没有任何单位见证')),
+    JSON.stringify((noWitness.problems || []).slice(0, 1)));
 
   const rowM = apiPage.apiRowsOf([perM.plan])[0];
   const rowK = apiPage.apiRowsOf([perK.plan])[0];
@@ -218,11 +310,161 @@ section('② 单位：显式保存，且全仓没有换算路径（Tooth #3）')
     apiPage.priceText(rowM.rates.input, 'USD') === apiPage.priceText(rowK.rates.input, 'USD'),
     `${apiPage.priceText(rowM.rates.input, 'USD')}`);
 
-  // 静态扫描：这一层的源码里不许出现"把每千换算成每百万"这类常数乘法
-  const source = fs.readFileSync(path.join(__dirname, '..', 'lib', 'api-plan-schema.js'), 'utf8');
-  const hasConvert = /(1000|1e3|1_000)\s*\*|\*\s*(1000|1e3|1_000)/.test(source)
-    || /UNIT_PER|convertUnit|toPerMillion/i.test(source);
-  check('【牙】api-plan-schema.js 里没有任何单位换算常数或函数', !hasConvert);
+  // ---- 结构性断言：单位必须**原样**从数据字段传到 formatter（中间不得出现算术） ----
+  for (const unit of apiSchema.API_UNITS) {
+    const built = build({ pricing: { currency: 'USD', unit }, evidence: unit === 'per_1K_tokens' ? perKEvidence() : rawPlan().evidence });
+    if (!built.ok) { check(`单位 ${unit} 的夹具可构造`, false, JSON.stringify((built.problems || []).slice(0, 1))); continue; }
+    const row = apiPage.apiRowsOf([built.plan])[0];
+    check(`单位列 = 币种 + API_UNIT_LABEL 的**纯查表**（${unit}）`,
+      row.unitText === `USD / ${apiSchema.API_UNIT_LABEL[unit]}`, row.unitText);
+    // 单元格里的数字必须是**数据里那个数字**（`0` 的渲染是「免费」，单独放行）：
+    // 任何一层偷偷乘除 1000，这里都会因为"数字不是原来那个"而红。
+    const expectedCell = row.rates.input === 0 ? '免费' : String(row.rates.input);
+    check(`价格单元格原样包含数据里的数字（${unit} 不做任何换算）`,
+      apiPage.rowsOfHtml(apiPage.apiPlansPageBody([built.plan], { providerTable: PROVIDER_TABLE, prefix: '../../' }))[0]
+        .cells[4].includes(expectedCell), `${unit} → 期望含「${expectedCell}」`);
+  }
+
+  // ---- 代码面扫描（P2-20 / F-r2-api-006）：换算路径不许出现在任何被扫描的文件里 ----
+  const scanFiles = jsFilesUnder(path.join(ROOT, 'scripts'));
+  const hits = scanFiles.flatMap(file => unitConversionHits(fs.readFileSync(file, 'utf8'), path.relative(ROOT, file)));
+  check(`【牙·代码面】scripts/ 下 ${scanFiles.length} 个 .js 文件里没有任何单位换算路径（旧版只扫 1 个文件）`,
+    hits.length === 0, hits.slice(0, 3).map(hit => `${hit.file}:${hit.line} ${hit.why} → ${hit.text}`).join(' | '));
+  // 【牙】扫描器不是摆设：把三种形态喂给它，必须全部命中
+  const SYNTHETIC_CONVERSIONS = [
+    ['scripts/lib/zh.js', 'const perMillion = rate.input * 1000;\n'],
+    ['scripts/lib/models-page.js', 'const converted = priceValue / 1000; // per_1K -> per_1M\n'],
+    ['scripts/lib/seo.js', 'function toPerMillion(value) { return value * 1000; }\n'],
+    ['scripts/tools/coverage-report.js', 'total += rates.output / 1e6;\n']
+  ];
+  const syntheticHits = SYNTHETIC_CONVERSIONS.filter(([file, source]) => unitConversionHits(source, file).length > 0);
+  check('【牙】扫描器对「非显眼文件里的换算路径」四种写法全部命中（否则这条红线是假的）',
+    syntheticHits.length === SYNTHETIC_CONVERSIONS.length,
+    SYNTHETIC_CONVERSIONS.filter(([file]) => !syntheticHits.some(([hitFile]) => hitFile === file)).map(([file]) => file).join(', '));
+  check('【牙·反向】扫描器不误伤真实代码（注释放行、纯查表放行）',
+    unitConversionHits('// 每千换算成每百万是禁止的\nconst label = API_UNIT_LABEL[unit];\n', 'scripts/lib/x.js').length === 0);
+}
+
+/* ================================================================== */
+section('⑤′ 证据绑定：维度 / 顺序 / 单位（§10.1–10.3）');
+/* ================================================================== */
+
+/**
+ * 这一节是 P1-7 / P1-8 的牙。审计实测：把来源层某个模型的 input 与 output 对调后重建，
+ * **五道门禁全 exit 0、发布产物变化**（读者看到的价格列全反，页面照常渲染）。
+ * 根因是证据只说「这段原文属于这个模型」（`models.<modelKey>`），说不出「哪个数字是输入价」。
+ *
+ * 修法是把绑定**追加**到维度级（`…rates.input`），并让官方表格的**列序**成为判据：
+ * 输入价永远在输出价之前 —— 这不是"价格大小的经验规则"，是原文自己的顺序。
+ */
+{
+  const PER_DIM = (field, quote) => [{ field, quote, sourceUrl: 'https://open.bigmodel.cn/pricing', capturedAt: '2026-10-01', lang: 'zh' }];
+
+  // 字段域：追加式扩展（旧形态保留 + 新形态可用）
+  const fields = apiSchema.apiEvidenceFieldsOf({ models: build().plan.models });
+  check('字段域：旧形态 models.<modelKey> 仍在（存量 35 条引文不许失配）',
+    fields.includes('models.glm-5.3'), fields.slice(0, 4).join(' · '));
+  check('字段域：新增逐变体 / 逐维度 / 记录级维度 / 非 token 单位四种键',
+    fields.includes('models.glm-5.3.standard')
+    && fields.includes('models.glm-5.3.standard.rates.input')
+    && fields.includes('models.glm-5.3.rates.output')
+    && fields.includes('rates.input')
+    && fields.includes('mediaRates.per_image'), fields.length);
+  const legacyField = build({ evidence: PER_DIM('models.glm-5.3', 'GLM-5.3：输入 8 元 / M，输出 28 元 / M') });
+  check('维度级绑定可用（…rates.input）且与规格一致',
+    legacyField.ok, JSON.stringify((legacyField.problems || []).slice(0, 1)));
+  const precise = build({
+    evidence: PER_DIM('models.glm-5.3.standard.rates.input', 'GLM-5.3 标准档：输入 8 元 / 百万 tokens，输出 28 元 / 百万 tokens')
+  });
+  check('精确到变体 + 维度的绑定可用', precise.ok, JSON.stringify((precise.problems || []).slice(0, 1)));
+
+  // B1：空转的维度绑定必须红
+  const vacuous = build({ evidence: PER_DIM('models.glm-5.3.standard.rates.output', 'GLM-5.3 标准档：输入 8 元 / 百万 tokens') });
+  check('【牙】绑定了 output 维度但引文里读不到输出价 → 红（空转的绑定等于没证）',
+    !vacuous.ok && vacuous.problems.some(problem => problem.includes('空转')),
+    JSON.stringify((vacuous.problems || []).slice(0, 1)));
+  const ghostDim = build({ evidence: PER_DIM('rates.reasoning', 'GLM-5.3：输入 8 元 / M，输出 28 元 / M') });
+  check('【牙】绑定一个**没有值**的维度（记录级 rates.reasoning）→ 红',
+    !ghostDim.ok && ghostDim.problems.some(problem => problem.includes('没有值')),
+    JSON.stringify((ghostDim.problems || []).slice(0, 1)));
+
+  // B2：来源层对调 input/output —— 引文没变、数据的顺序反了
+  // 注意：`models[0]` 是 glm-4.7-flash（规范序按 modelKey 升序），所以要**按身份**定位 glm-5.3 standard，
+  // 不能按下标 —— 这正是"夹具改错模型 ⇒ 断言假绿"的经典坑。
+  const swapRates = (input, output) => build().plan.models.map(entry => (
+    entry.modelKey === 'glm-5.3' && entry.variant === 'standard'
+      ? { ...entry, rates: { ...entry.rates, input, output } }
+      : entry
+  ));
+  const swapped = build({ models: swapRates(28, 8) });
+  check('【牙·P1-7】来源层把 input/output 对调（引文仍是官方原序）→ 红',
+    !swapped.ok && swapped.problems.some(problem => problem.includes('顺序相反')),
+    JSON.stringify((swapped.problems || []).slice(0, 1)));
+  const ordered = build({ models: swapRates(8, 28.5) });
+  check('对照：只改数值（不换序）不会因为"顺序"被判红（引文里没有 28.5 → 不作顺序断言）',
+    ordered.ok, JSON.stringify((ordered.problems || []).slice(0, 1)));
+  const sameValue = build({ models: swapRates(8, 8) });
+  check('对照：输入价 == 输出价时不作顺序断言（同一个数字没有先后）', sameValue.ok);
+
+  // B2 反向：引文顺序与数据一致时必须**绿**（判据不是恒红）
+  const officialOrder = build({
+    evidence: PER_DIM('models.glm-5.3', '官方表：GLM-5.3 输入 8 元 / 百万 tokens · 输出 28 元 / 百万 tokens')
+  });
+  check('对照：引文按官方列序写（输入在前）→ 绿（断言不是恒红）', officialOrder.ok,
+    JSON.stringify((officialOrder.problems || []).slice(0, 1)));
+
+  // 顺序判据的助手：数字定位（前导边界 + 粘连容忍）
+  check('引文数字定位：28 里的 8 不算 8（前导边界）',
+    apiSchema.quoteIndexOfNumber('输出 28 元', 8) === -1 || apiSchema.quoteIndexOfNumber('输出 28 元', 28) < apiSchema.quoteIndexOfNumber('输出 28 元', 8),
+    `${apiSchema.quoteIndexOfNumber('输出 28 元', 8)} / ${apiSchema.quoteIndexOfNumber('输出 28 元', 28)}`);
+  check('引文数字定位：粘连写法 2.1016.80 能认出 2.10 与 16.80',
+    apiSchema.quoteIndexOfNumber('永久五折4.20 2.1016.80 8.400.84', 2.1) >= 0
+    && apiSchema.quoteIndexOfNumber('永久五折4.20 2.1016.80 8.400.84', 16.8) >= 0,
+    `${apiSchema.quoteIndexOfNumber('永久五折4.20 2.1016.80 8.400.84', 2.1)} / ${apiSchema.quoteIndexOfNumber('永久五折4.20 2.1016.80 8.400.84', 16.8)}`);
+  check('单位点名：只认写出来的单位词，不看数字大小',
+    apiSchema.namedUnitOf('每百万 tokens') === 'million' && apiSchema.namedUnitOf('per 1K tokens') === 'thousand'
+    && apiSchema.namedUnitOf('输入 8 元 / 输出 28 元') === null,
+    `${apiSchema.namedUnitOf('每百万 tokens')} / ${apiSchema.namedUnitOf('per 1K tokens')} / ${apiSchema.namedUnitOf('输入 8 元 / 输出 28 元')}`);
+
+  // 第 7 / 8 列的渲染层对账（P1-9 / P1-10）：单位错位、类型词串台都必须红
+  const MEDIA_PLAN = build({
+    models: build().plan.models.map(entry => (
+      entry.modelKey === 'glm-5.3' && entry.variant === 'standard'
+        ? { ...entry, mediaRates: [{ kind: 'image', price: 0.04, unit: 'per_image', note: null }] }
+        : entry
+    )),
+    evidence: PER_DIM('models.glm-5.3', 'GLM-5.3：输入 8 元 / M，输出 28 元 / M；图像 0.04 元 / 张')
+  });
+  check('夹具：带 mediaRates 的记录可构造', MEDIA_PLAN.ok, JSON.stringify((MEDIA_PLAN.problems || []).slice(0, 1)));
+  const mediaHtml = apiPage.apiPlansPageBody([MEDIA_PLAN.plan], { providerTable: PROVIDER_TABLE, prefix: '../../' });
+  const mediaRows = apiPage.rowsOfHtml(mediaHtml);
+  const mediaIndex = apiPage.apiRowsOf([MEDIA_PLAN.plan]).findIndex(row => (row.mediaRates || []).length > 0);
+  check('夹具：确实渲染出带 mediaRates 的那一行', mediaIndex >= 0);
+  const mediaRow = mediaRows[mediaIndex];
+  check('第 7 列：数字 + 单位 + 标签三件都在（单位来自数据的 unit 字段）',
+    mediaRow.cells[7].includes('图像') && mediaRow.cells[7].includes('0.04') && mediaRow.cells[7].includes('每张'),
+    mediaRow.cells[7]);
+  check('对照组：带 mediaRates 的页面 0 问题',
+    apiPage.assertPageHonesty(mediaHtml, [MEDIA_PLAN.plan], { providerTable: PROVIDER_TABLE }).length === 0,
+    apiPage.assertPageHonesty(mediaHtml, [MEDIA_PLAN.plan], { providerTable: PROVIDER_TABLE }).slice(0, 1).join('；'));
+  const mediaMisplaced = mediaHtml.split('每张').join('每秒');
+  check('【牙·P1-9】把第 7 列的单位错位（每张 → 每秒）→ assertPageHonesty 变红',
+    apiPage.assertPageHonesty(mediaMisplaced, [MEDIA_PLAN.plan], { providerTable: PROVIDER_TABLE })
+      .some(problem => problem.includes('单位')), '单位错位没有被抓住');
+  const creditMismatch = build({
+    freeTier: { type: 'tokens', stability: 'standing', amount: 1000000, period: 'monthly', models: null, description: '官方每月赠送 100 万 tokens', conversionDependsOnModel: null },
+    evidence: PER_DIM('models.glm-5.3', 'GLM-5.3：输入 8 元 / M，输出 28 元 / M'),
+    pricing: { currency: 'USD', unit: 'per_1M_tokens' }
+  });
+  const tokenHtml = apiPage.apiPlansPageBody([creditMismatch.plan], { providerTable: PROVIDER_TABLE, prefix: '../../' });
+  // 免费额度那段在 `；credits：` 之前（同一格里还有 credits 段，两段不能混着断言）
+  const tokenCell = apiPage.rowsOfHtml(tokenHtml)[0].cells[8].split('；credits：')[0];
+  check('第 8 列：tokens 型免费额度印出 tokens 单位词',
+    tokenCell.includes('tokens') && !tokenCell.includes('credits'), tokenCell);
+  const creditsBent = tokenHtml.split('免费额度 1,000,000 tokens').join('免费额度 1,000,000 credits');
+  check('【牙·P1-10】把 tokens 额度印成 credits → assertPageHonesty 变红',
+    apiPage.assertPageHonesty(creditsBent, [creditMismatch.plan], { providerTable: PROVIDER_TABLE })
+      .some(problem => problem.includes('同源') || problem.includes('单位词')), '类型词串台没有被抓住');
 }
 
 /* ================================================================== */
@@ -302,9 +544,19 @@ section('④ 输入价 / 输出价分列（Tooth #2）');
 }
 
 /* ================================================================== */
-section('⑤ 免费额度（稳定长期能力）');
+section('⑤ 免费额度：长期能力 vs 新用户 / 限时赠送（P1-11）');
 /* ================================================================== */
 
+/**
+ * 这一节为什么存在（审计 `F-r2-api-005`，P1）：
+ * 页面口径写着「免费额度只记官方长期提供的免费能力」，而生产 4 条非空 `freeTier` 里
+ * `aliyun`（「有效期自开通百炼起 90 天内」）与 `tencent`（「首次开通…资源包有效期为1年」）
+ * 正是限时 / 新用户赠送 —— **生产数据违反它自己的规则**，而当时没有任何字段承载
+ * 「长期 vs 赠送」这一判据，五道门禁全绿。
+ *
+ * 修法 = 数据层必填 `stability`（缺省即错误）+ 渲染层逐条印出性质（赠送那两档明说「非长期能力」）
+ * + 两个方向的牙：① 数据把一次性赠送标成长期 → schema 红；② 渲染把赠送印成长期 → 页面断言红。
+ */
 {
   const built = build();
   const html = apiPage.apiPlansPageBody([built.plan], { providerTable: PROVIDER_TABLE, prefix: '../../' });
@@ -314,7 +566,7 @@ section('⑤ 免费额度（稳定长期能力）');
     html.includes('免费额度与 credits（厂商级事实）'));
 
   const nonePlan = build({
-    freeTier: { type: 'none', amount: null, period: null, models: null, description: '官方 FAQ 明说按量计费没有免费额度', conversionDependsOnModel: null }
+    freeTier: { type: 'none', stability: null, amount: null, period: null, models: null, description: '官方 FAQ 明说按量计费没有免费额度', conversionDependsOnModel: null }
   });
   const noneHtml = apiPage.apiPlansPageBody([nonePlan.plan], { providerTable: PROVIDER_TABLE, prefix: '../../' });
   check('「官方明说没有免费额度」与「我们没查到（null）」是两种写法',
@@ -324,6 +576,224 @@ section('⑤ 免费额度（稳定长期能力）');
   const unknownHtml = apiPage.apiPlansPageBody([unknownPlan.plan], { providerTable: PROVIDER_TABLE, prefix: '../../' });
   const unknownRow = apiPage.rowsOfHtml(unknownHtml)[0];
   check('未标注的免费额度写「—」', unknownRow.cells[8] === '—', unknownRow.cells[8]);
+
+  /* ---- 数据层：性质必填，且与 period / description 互斥 ---- */
+  const giftFreeTier = patch => ({
+    type: 'tokens',
+    amount: 1000000,
+    period: 'one_time',
+    models: null,
+    description: '官方写「首次开通腾讯混元大模型服务后…共100万 tokens，共享消耗。资源包有效期为1年」',
+    conversionDependsOnModel: null,
+    ...patch
+  });
+  rejects('freeTier 缺 stability → 红（缺省会被读成长期能力，这正是那条 P1 的形态）',
+    { freeTier: giftFreeTier({}) }, 'stability 非法');
+  rejects('freeTier.stability 非法值 → 红（只接受三档）',
+    { freeTier: giftFreeTier({ stability: 'forever' }) }, 'stability 非法');
+  rejects('stability=standing 与 period=one_time 自相矛盾 → 红',
+    { freeTier: giftFreeTier({ stability: 'standing' }) }, '自相矛盾');
+  rejects('赠送额度写成周期性刷新（period=monthly）→ 红',
+    { freeTier: giftFreeTier({ stability: 'new_user', period: 'monthly' }) }, '不得写成周期性');
+  rejects('赠送额度缺 description → 红（分类必须由官方条件支撑）',
+    { freeTier: giftFreeTier({ stability: 'new_user', description: null }) }, '必须用 description');
+  rejects('赠送额度的 description 没写条件 → 红',
+    { freeTier: giftFreeTier({ stability: 'new_user', description: '官方提供一部分免费额度' }) }, '没有写明赠送');
+  rejects('type=none 却标了性质 → 红（「没有」没有性质可标）',
+    { freeTier: { type: 'none', stability: 'standing', amount: null, period: null, models: null, description: '官方 FAQ 明说没有免费额度', conversionDependsOnModel: null } },
+    '必须是 null');
+
+  const gift = build({ freeTier: giftFreeTier({ stability: 'new_user' }) });
+  check('正例：新用户赠送（一次性 + 写明官方条件）通过校验', gift.ok, JSON.stringify(gift.problems));
+  const promo = build({ freeTier: giftFreeTier({ stability: 'promotional', description: '官方限时活动：活动期间赠送 100 万 tokens，活动结束即失效' }) });
+  check('正例：限时赠送通过校验', promo.ok, JSON.stringify(promo.problems));
+
+  /* ---- credits 型免费额度：仓库内原本没有正例（审计 API-FREETIER-004 / P2.5-API-CREDITS-004） ---- */
+  // 审计的 ⚠️ 原话：机制只在**仓库外**的临时夹具里被证明过 ——「若 conversionDependsOnModel
+  // 判据被删，无任何测试会红」。这一条把它钉进仓库，并顺带证明 credits 型也带性质标注。
+  const creditTier = build({
+    freeTier: {
+      type: 'credits', stability: 'standing', amount: 5, period: null, models: null,
+      description: '官方免费档：每账户 5 credits，按各模型当前单价扣减', conversionDependsOnModel: true
+    }
+  });
+  check('正例：freeTier.type=credits（带 conversionDependsOnModel）通过校验', creditTier.ok, JSON.stringify(creditTier.problems));
+  const noConversion = build({
+    freeTier: {
+      type: 'credits', stability: 'standing', amount: 5, period: null, models: null,
+      description: '官方免费档：每账户 5 credits', conversionDependsOnModel: null
+    }
+  });
+  check('【牙】type=credits 缺 conversionDependsOnModel → 红（换算条件必须显式）',
+    !noConversion.ok && noConversion.problems.some(problem => String(problem).includes('conversionDependsOnModel')),
+    JSON.stringify((noConversion.problems || []).slice(0, 2)));
+
+  /* ---- §10.4 三态契约（API 侧）：`conversionDependsOnModel` 的 true / false / null ---- */
+  // 「官方没说」与「官方说不是」必须能被区分：`null` 不许被读成 `false`。
+  check('三态契约常量 = true / false / null（唯一清单）',
+    JSON.stringify(apiSchema.FREE_TIER_CONVERSION_TRISTATE) === JSON.stringify([true, false, null]),
+    JSON.stringify(apiSchema.FREE_TIER_CONVERSION_TRISTATE));
+  {
+    // 缺字段 ⇒ null（未知），**不是** false
+    const omitted = build({
+      freeTier: {
+        type: 'other', stability: 'standing', amount: null, period: null, models: null,
+        description: '官方写「免费额度按账户发放，具体规则见帮助中心」'
+      }
+    });
+    check('缺 conversionDependsOnModel 的记录落成 null（未说明），绝不是 false',
+      omitted.ok && omitted.plan.freeTier.conversionDependsOnModel === null
+      && Object.is(omitted.plan.freeTier.conversionDependsOnModel, null),
+      JSON.stringify(omitted.ok ? omitted.plan.freeTier : omitted.problems));
+  }
+  {
+    const explicitFalse = build({
+      freeTier: {
+        type: 'other', stability: 'standing', amount: null, period: null, models: null,
+        description: '官方写「免费额度不与模型单价挂钩」', conversionDependsOnModel: false
+      }
+    });
+    check('显式 false 保持 false（不落 null、不落 undefined）',
+      explicitFalse.ok && explicitFalse.plan.freeTier.conversionDependsOnModel === false,
+      JSON.stringify(explicitFalse.ok ? explicitFalse.plan.freeTier : explicitFalse.problems));
+    const roundTrip = explicitFalse.ok ? JSON.parse(JSON.stringify(explicitFalse.plan)) : null;
+    check('三态经 JSON 往返不变：false 仍是 false、null 仍是 null（重建路径不得改语义）',
+      roundTrip && roundTrip.freeTier.conversionDependsOnModel === false
+      && Object.is(roundTrip.freeTier.conversionDependsOnModel, false));
+  }
+  {
+    // 三态只认 true / false / null：字符串 "false"、0、缺失之外的垃圾一律红
+    const stringFalse = build({
+      freeTier: {
+        type: 'other', stability: 'standing', amount: null, period: null, models: null,
+        description: '官方写「按账户发放」', conversionDependsOnModel: 'false'
+      }
+    });
+    check('【牙】conversionDependsOnModel 写字符串 "false" → 红（三态只认字面量）',
+      !stringFalse.ok && stringFalse.problems.some(problem => String(problem).includes('conversionDependsOnModel')),
+      JSON.stringify((stringFalse.problems || []).slice(0, 2)));
+    const zero = build({
+      freeTier: {
+        type: 'other', stability: 'standing', amount: null, period: null, models: null,
+        description: '官方写「按账户发放」', conversionDependsOnModel: 0
+      }
+    });
+    check('【牙】conversionDependsOnModel 写 0 → 红（0 不是 false）',
+      !zero.ok && zero.problems.some(problem => String(problem).includes('conversionDependsOnModel')),
+      JSON.stringify((zero.problems || []).slice(0, 2)));
+  }
+  {
+    // T12 的 stability：必填枚举**不得**被本次三态改动削弱成可缺省。
+    // 夹具刻意用**中性形状**（period=null、description=null、非赠送条件）：如果有人把
+    // "缺 stability" 改成"默认 standing"，这里不会再被别的规则（如 standing×one_time 自相矛盾）
+    // 顺带拦住 —— 于是这条断言就成了唯一能识破"削弱"的那一道。这正是它必须长这样子的原因。
+    const neutral = {
+      type: 'tokens', amount: 1000000, period: null, models: null,
+      description: null, conversionDependsOnModel: null
+    };
+    const missingStability = build({ freeTier: Object.assign({}, neutral) });
+    check('【牙】§10.4 回归：freeTier.stability 缺省 → 红（中性形状；若被改成默认 standing，这条会失守）',
+      !missingStability.ok && missingStability.problems.some(problem => String(problem).includes('stability')),
+      JSON.stringify((missingStability.problems || []).slice(0, 2)));
+    const nullStability = build({ freeTier: Object.assign({}, neutral, { stability: null }) });
+    check('【牙】§10.4 回归：freeTier.stability=null → 红（null 不是三档之一）',
+      !nullStability.ok && nullStability.problems.some(problem => String(problem).includes('stability')),
+      JSON.stringify((nullStability.problems || []).slice(0, 2)));
+    const standingOk = build({ freeTier: Object.assign({}, neutral, { stability: 'standing' }) });
+    check('对照：同一中性形状补上 stability=standing → 通过（证明上一条红的是"缺 stability"本身）',
+      standingOk.ok, JSON.stringify(standingOk.problems));
+  }
+
+  /* ---- 渲染层：单元格必须印出性质，赠送不得被写成长期能力 ---- */
+  const renderCells = plan => apiPage.rowsOfHtml(
+    apiPage.apiPlansPageBody([plan], { providerTable: PROVIDER_TABLE, prefix: '../../' })
+  )[0].cells[8];
+  const standingCell = renderCells(built.plan);
+  check('长期能力的单元格印出「长期提供的免费模型…」',
+    standingCell.includes('长期提供的免费模型'), standingCell);
+  const giftCell = renderCells(gift.plan);
+  check('新用户赠送的单元格印出「新用户赠送」，并**明说**「非长期能力」',
+    giftCell.includes('新用户赠送') && giftCell.includes('非长期能力'), giftCell);
+  check('新用户赠送的单元格里不得出现长期能力字样（「长期提供」/「长期免费」）',
+    !giftCell.includes('长期提供') && !giftCell.includes('长期免费'), giftCell);
+  const promoCell = renderCells(promo.plan);
+  check('限时赠送的单元格印出「限时赠送」并明说非长期能力',
+    promoCell.includes('限时赠送') && promoCell.includes('非长期能力'), promoCell);
+  const creditCell = renderCells(creditTier.plan);
+  check('credits 型免费额度也带性质，渲染成「长期提供的免费额度 5 credits」',
+    creditCell.includes('长期提供的免费额度 5 credits'), creditCell);
+
+  const giftHtml = apiPage.apiPlansPageBody([gift.plan], { providerTable: PROVIDER_TABLE, prefix: '../../' });
+  check('对照组：未变异的页面 0 问题',
+    apiPage.assertPageHonesty(giftHtml, [gift.plan], { providerTable: PROVIDER_TABLE }).length === 0,
+    apiPage.assertPageHonesty(giftHtml, [gift.plan], { providerTable: PROVIDER_TABLE }).slice(0, 2).join('；'));
+
+  // 【牙】把 period=one_time 的赠送**渲染成**长期免费额度 —— 页面诚实性断言必须红
+  const forcedLong = giftHtml.split(giftCell).join('长期免费额度 1,000,000 tokens');
+  const forcedProblems = apiPage.assertPageHonesty(forcedLong, [gift.plan], { providerTable: PROVIDER_TABLE });
+  check('【牙】把一次性赠送渲染成「长期免费额度」→ assertPageHonesty 变红',
+    forcedProblems.some(p => p.includes('长期') || p.includes('新用户赠送')), forcedProblems.slice(0, 2).join('；'));
+
+  // 【牙·反向】长期能力被抹掉性质词（靠少说一句话来"统一口径"）→ 同样红
+  const stripped = giftHtml.split(giftCell).join('免费额度 1,000,000 tokens / one_time');
+  check('【牙·反向】赠送单元格少了性质词 → 也变红（两个方向都有牙）',
+    apiPage.assertPageHonesty(stripped, [gift.plan], { providerTable: PROVIDER_TABLE }).length > 0);
+  // 【牙·矛盾】性质词在、但同一格里还写着「长期提供」→ 自相矛盾即红（不是"有标注就放行"）
+  const forcedBoth = giftHtml.split(giftCell).join('长期提供的免费额度 1,000,000 tokens / one_time（新用户赠送，非长期能力）');
+  check('【牙】赠送单元格同时写着「长期提供」与「新用户赠送」→ 仍红（矛盾即红）',
+    apiPage.assertPageHonesty(forcedBoth, [gift.plan], { providerTable: PROVIDER_TABLE }).some(problem => problem.includes('长期能力')),
+    apiPage.assertPageHonesty(forcedBoth, [gift.plan], { providerTable: PROVIDER_TABLE }).slice(0, 1).join('；'));
+  const standingHtml = apiPage.apiPlansPageBody([built.plan], { providerTable: PROVIDER_TABLE, prefix: '../../' });
+  const standingStripped = standingHtml.split(standingCell).join(standingCell.replace('长期', ''));
+  check('【牙】长期能力的「长期」被删掉 → 变红（不得靠删词抹平）',
+    apiPage.assertPageHonesty(standingStripped, [built.plan], { providerTable: PROVIDER_TABLE }).length > 0);
+
+  /* ---- 口径文案：三档必须写进页面与 schema 的同一句话里（不许分家） ---- */
+  const notesText = apiPage.API_PLANS_NOTES.join('\n');
+  check('页面口径写明三档性质（长期提供 / 新用户赠送 / 限时赠送）',
+    ['长期提供', '新用户赠送', '限时赠送'].every(word => notesText.includes(word)), notesText.slice(0, 120));
+  check('页面口径不再宣称「只记官方长期提供的免费能力」（旧口径与数据自相矛盾）',
+    !/只记.{0,12}长期提供/.test(notesText), notesText.slice(0, 120));
+  check('schema 的口径文案与页面口径同调（同一处措辞不许分家）',
+    ['长期提供', '新用户赠送', '限时赠送'].every(word => apiSchema.API_WORDING.freeTierScope.includes(word))
+    && !/只记.{0,12}长期提供/.test(apiSchema.API_WORDING.freeTierScope),
+    apiSchema.API_WORDING.freeTierScope.slice(0, 120));
+
+  /* ---- 生产数据：4 条 freeTier 的性质与页面逐条对账 ---- */
+  const realPlans = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8')).plans;
+  const withFree = realPlans.filter(plan => plan.freeTier && plan.freeTier.type !== 'none');
+  check('生产每条 freeTier 都写了 stability', withFree.length > 0
+    && withFree.every(plan => apiSchema.FREE_TIER_STABILITY.includes(plan.freeTier.stability)),
+    withFree.filter(plan => !apiSchema.FREE_TIER_STABILITY.includes(plan.freeTier.stability)).map(plan => plan.provider).join(','));
+  const realHtml = apiPage.apiPlansPageBody(realPlans, { providerTable: PROVIDER_TABLE, prefix: '../../' });
+  const realRows = apiPage.rowsOfHtml(realHtml);
+  const realExpected = apiPage.apiRowsOf(realPlans, { providerTable: PROVIDER_TABLE });
+  const realPageProblems = apiPage.assertPageHonesty(realHtml, realPlans, { providerTable: PROVIDER_TABLE });
+  check('生产页面：免费额度那一列的性质与数据逐条一致（长期 / 新用户赠送 各就各位）',
+    realPageProblems.length === 0, realPageProblems.slice(0, 2).join('；'));
+  const natureCounts = { standing: 0, new_user: 0, promotional: 0 };
+  for (const plan of withFree) natureCounts[plan.freeTier.stability]++;
+  const nonStanding = withFree.filter(plan => plan.freeTier.stability !== 'standing');
+  const longClaimed = realExpected.filter((row, index) => {
+    const free = row.plan.freeTier;
+    if (!free || free.type === 'none' || free.stability === 'standing') return false;
+    const cell = (realRows[index] || { cells: [] }).cells[8] || '';
+    return cell.includes(apiSchema.FREE_TIER_STABILITY_LABEL.standing) || cell.includes('长期免费');
+  });
+  check('生产页面：没有任何一条赠送 / 限时额度被印成长期能力（计数必须为 0）',
+    longClaimed.length === 0, longClaimed.map(row => `${row.provider} ${row.model}: ${row.plan.freeTier.stability}`).slice(0, 2).join(' | '));
+  const labeledPlanIds = new Set(realExpected
+    .filter((row, index) => {
+      const free = row.plan.freeTier;
+      if (!free || free.type === 'none') return false;
+      const cell = (realRows[index] || { cells: [] }).cells[8] || '';
+      return cell.includes(apiSchema.FREE_TIER_STABILITY_LABEL[free.stability]);
+    })
+    .map(row => row.plan.id));
+  check('生产页面：每条 freeTier 的性质都印在单元格里（一条不漏）',
+    labeledPlanIds.size === withFree.length, `${labeledPlanIds.size}/${withFree.length}`);
+  console.log(`  生产 freeTier 性质分布：长期提供 ${natureCounts.standing} 条 · 新用户赠送 ${natureCounts.new_user} 条 · 限时赠送 ${natureCounts.promotional} 条` +
+    `（非长期 ${nonStanding.length} 条：${nonStanding.map(plan => `${plan.provider}/${plan.freeTier.period}`).join(' · ')}）`);
 }
 
 /* ================================================================== */
@@ -399,7 +869,7 @@ function eventsOf(before, after, extra = {}) {
   check('模型备注只改标点 → 零事件', punct.appended.length === 0, JSON.stringify(punct.appended.map(e => e.type)));
 
   // 单位变化
-  const unit = eventsOf(build().plan, build({ pricing: { currency: 'CNY', unit: 'per_1K_tokens' } }).plan);
+  const unit = eventsOf(build().plan, build({ pricing: { currency: 'CNY', unit: 'per_1K_tokens' }, evidence: perKEvidence() }).plan);
   check('单位变化 → unit_changed（单独一条，不混进价格变化）',
     unit.appended.some(e => e.type === 'unit_changed' && e.field === 'pricing.unit'),
     JSON.stringify(unit.problems.concat(unit.appended.map(e => `${e.type}:${e.field}`))));
@@ -595,6 +1065,52 @@ section('⑥″ API 变化视图（/changes/ 的 API 分栏，订阅源的输入
   check('套餐与 API 两个来源共用一份分栏实现（差异只登记在 RADAR_SOURCES）',
     Object.keys(planChanges.RADAR_SOURCES).sort().join(',') === 'api,plans'
     && !/function buildApiPlanRadar[\s\S]{0,400}?sections\.created = /.test(fs.readFileSync(path.join(__dirname, '..', 'lib', 'plan-changes.js'), 'utf8')));
+
+  /* ---- 生命周期事件的文案：不许出现空的 from/to 占位（T07 非空 E2E 抓到的生产可见缺陷） ----
+   *
+   * 形态：`created` / `restored` 没有 from/to，旧实现把它们塞进「新增：{to}」模板 ⇒
+   * 页面上出现「首次收录 · **新增：—**」（生产 6 处、合成非空态 9 处）——
+   * 类型列已经说了「首次收录」，旁边那句「新增：—」既不构成一句话，也在暗示"新增了某个东西"。
+   */
+  const lifecycleEvents = [
+    { type: 'created', planId: 'aaaaaaaaaaaa', at: '2026-10-01', field: null, from: null, to: null },
+    { type: 'restored', planId: 'bbbbbbbbbbbb', at: '2026-10-02', field: null, from: null, to: null },
+    { type: 'ended', planId: 'cccccccccccc', at: '2026-10-03', reason: 'source_no_longer_lists' },
+    { type: 'created', planId: 'dddddddddddd', at: '2026-10-01', contentChanged: false },
+    { type: 'restored', planId: 'eeeeeeeeeeee', at: '2026-10-02', previousEndedAt: '2026-09-01' }
+  ];
+  for (const event of lifecycleEvents) {
+    const text = apiPage.apiPlanChangeTextOf(event);
+    check(`生命周期事件 ${event.type}：文案非空、且不是「新增：—」这类空占位（实得「${text}」）`,
+      Boolean(text) && !/(新增|移除)[:：]\s*—/.test(text) && !/—\s*→|→\s*—/.test(text), text);
+  }
+  const createdText = apiPage.apiPlanChangeTextOf(lifecycleEvents[0]);
+  check('首次收录按真实语义说（不是「新增：某个值」）',
+    createdText.includes('首次进入数据集'), createdText);
+  const restoredText = apiPage.apiPlanChangeTextOf(lifecycleEvents[1]);
+  check('重新出现按真实语义说（不是「新增：某个值」）',
+    restoredText.includes('重新出现') && restoredText.includes('此前记为不再收录'), restoredText);
+  check('「不再收录」说原因（它本来就没有 from/to）',
+    apiPage.apiPlanChangeTextOf(lifecycleEvents[2]).includes('不再收录') === false
+    && apiPage.apiPlanChangeTextOf(lifecycleEvents[2]).includes('来源'), apiPage.apiPlanChangeTextOf(lifecycleEvents[2]));
+  check('渲染层：带生命周期事件的「最近变化」块里 0 处空占位',
+    !/(新增|移除)[:：]\s*—/.test(apiPage.apiChangesBlockHtml(
+      { events: lifecycleEvents, baseline: { at: '2026-10-01' } }, [build().plan]
+    )), '渲染出的块里仍有占位');
+  check('渲染层：/changes/ 的单条渲染器对生命周期事件也给出一句非空文案',
+    lifecycleEvents.every(event => apiPage.apiPlanChangeItemHtml({
+      ...event, titled: true, vendor: 'zhipu', title: '演练用 API 计费'
+    }).includes('class="pchgwhat">' + (apiPage.apiPlanChangeTextOf(event)).slice(0, 4))));
+  check('【牙】把空占位塞回页面 → assertPageHonesty 当场红',
+    apiPage.assertPageHonesty(
+      `${apiPage.apiPlansPageBody([build().plan], { providerTable: PROVIDER_TABLE, prefix: '../../' })}`
+        + '<li><span class="pchgwhat">新增：—</span></li>',
+      [build().plan], { providerTable: PROVIDER_TABLE }
+    ).some(problem => problem.includes('空的 from/to 占位')));
+  check('【牙】日志诚实性断言：正常生命周期事件 0 问题；而「ended 没有原因」这种会渲染成空的形态必红',
+    apiPage.assertHistoryHonesty([], { events: lifecycleEvents }).length === 0
+    && apiPage.assertHistoryHonesty([], { events: [{ type: 'ended', planId: 'x', reason: null }] })
+      .some(problem => problem.includes('空文案')), '空文案没有被抓住');
 }
 
 /* ================================================================== */

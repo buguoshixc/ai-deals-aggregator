@@ -1,0 +1,166 @@
+{
+  "A": {
+    "mutation": "glm-4.5v 两行三格价格对调（data-item/data-variant/行数/单位文案不变）",
+    "file": "dist/models/glm-4.5v/index.html",
+    "shaBefore": "770963ac1bc95b7a09cfc87d22de083c5921dedc48732fa17c2e7d4bb0be3912",
+    "shaAfter": "1fc07d86531f7040a9553255a9edb92d886cb9604f8ff52c18eadb754a5d26d5",
+    "productionGate": {
+      "command": "node scripts/tools/models-page-selftest.js --dir=dist（生产门禁）",
+      "exit": 1,
+      "hits": [
+        "✓ 真实数据上索引页断言零问题（断言不是恒红）",
+        "✓ 多平台模型（deepseek-v4-pro：4 条计价）详情页断言零问题",
+        "✓ 【牙 #3】坏映射让页面断言变红（数据层问题不许在页面层被静默吞掉）",
+        "✓ canonical 各不相同 → 零问题（断言不是恒红）"
+      ]
+    },
+    "myJoinAudit": {
+      "command": "node research/quality-closure/verify-work/join-audit.cjs --dist=dist（自写独立）",
+      "exit": 1,
+      "hits": [
+        "✗ 4 处差异：",
+        "- [价格] glm-4.5v 646f01c662e6|glm-4.5v|long_context: 第1格「¥2」≠ api-plans rates.input=4",
+        "- [价格] glm-4.5v 646f01c662e6|glm-4.5v|long_context: 第2格「¥6」≠ api-plans rates.output=12",
+        "- [价格] glm-4.5v 646f01c662e6|glm-4.5v|standard: 第1格「¥4」≠ api-plans rates.input=2"
+      ]
+    }
+  },
+  "B": [
+    {
+      "id": "R1-registry-hardwired",
+      "file": "scripts/lib/model-registry.js",
+      "shaBefore": "a87b188f1daa80b793c03009d31e24038f0478dbb13578a0de73ca8633bc1528",
+      "shaAfter": "e84c52f8f2321c1199896fd64cc42ef939e6d8f4c628b4bff8ca3bc7922ea326",
+      "gates": [
+        {
+          "name": "models-selftest",
+          "command": "node scripts/tools/models-selftest.js",
+          "exit": 1,
+          "hits": [
+            "✗ 真实的 model-registry-links.json 通过关系校验（64 条） —— links[1] claude-haiku-4.5: source pricing identity (x, y, standard)（记录 x · modelKey y · variant standard）已经映射到 claude-fable-5.1 —— 同一条价格记录不许映射到两个 registry 模型 | links[2] claude-opus-5.5: source pricing identity (x, y, standard)（记录 x · modelKey y · variant standard）已经映射到 claude-fable-5.1 —— 同一条价格记录不许映射到两个 registry 模型 | links[3] claude-sonnet-5.5: source pricing identity (x, y, standard)（记录 x · modelKey y · variant standard）已经映射到 claude-fable-5.1 —— 同一条价格记录不许映射到两个 registry 模型 | links[4] deepseek-flash: source pricing identity (x, y, standard)（记录 x · modelKey y · variant standard）已经映射到 claude-fable-5.1 —— 同一条价格记录不许映射到两个 registry 模型 | links[5] deepseek-flash: source pricing identity (x, y, standard)（记录 x · modelKey y · variant standard）已经映射到 claude-fable-5.1 —— 同一条价格记录不许映射到两个 registry 模型",
+            "✗ 没有任何 API modelKey 未映射（覆盖报告里的 0 是结论，不是没算） —— aliyun/deepseek-v4-pro | aliyun/glm-5.3 | aliyun/kimi-k3 | aliyun/minimax-m3 | aliyun/qwen-max",
+            "✗ 通配映射（variant=null）展开成该 modelKey 在**这条记录**里的全部真实 variant（qwen3-max: standard + long_context） —— [{\"apiPlanId\":\"x\",\"modelKey\":\"y\",\"variant\":\"standard\"}]",
+            "✗ 【Tooth 2】同一条 (apiPlanId, modelKey, variant) 映射到两个 registry model → 红 —— links[1] claude-haiku-4.5: source pricing identity (x, y, standard)（记录 x · modelKey y · variant standard）已经映射到 claude-fable-5.1 —— 同一条价格记录不许映射到两个 registry 模型"
+          ]
+        },
+        {
+          "name": "check-model-registry-links",
+          "command": "node scripts/tools/check-model-registry-links.js",
+          "exit": 1,
+          "hits": [
+            "❌ Model Registry 关系层有 55 处硬问题：",
+            "✗ links[1] claude-haiku-4.5: source pricing identity (x, y, standard)（记录 x · modelKey y · variant standard）已经映射到 claude-fable-5.1 —— 同一条价格记录不许映射到两个 registry 模型",
+            "✗ links[2] claude-opus-5.5: source pricing identity (x, y, standard)（记录 x · modelKey y · variant standard）已经映射到 claude-fable-5.1 —— 同一条价格记录不许映射到两个 registry 模型",
+            "✗ links[3] claude-sonnet-5.5: source pricing identity (x, y, standard)（记录 x · modelKey y · variant standard）已经映射到 claude-fable-5.1 —— 同一条价格记录不许映射到两个 registry 模型"
+          ]
+        },
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exit": 1,
+          "hits": [
+            "❌ 校验失败，共 55 项："
+          ]
+        }
+      ],
+      "restoredByteExact": true
+    },
+    {
+      "id": "R2-health-hardwired",
+      "file": "scripts/lib/health.js",
+      "shaBefore": "bf8278b01378301ec4f66e2df1a0534323c2cca1a32ab63875aa1d33bdc837f4",
+      "shaAfter": "2121e3b2efb24f02d401e3895b97d6b99117151d240c455cdc42480f0c31011e",
+      "gates": [
+        {
+          "name": "health-selftest",
+          "command": "node scripts/tools/health-selftest.js",
+          "exit": 1,
+          "hits": [
+            "❌ 数据源健康自测：62 项通过，10 项失败",
+            "- H2 Collect Summary 里无头来源落到 headless_unavailable — 智谱AI活动页 | 智谱AI活动页       国内    0      0      0      0      0.0s     NO_BROWSER | 智谱AI活动页: NO_BROWSER | 智谱AI活动页 | 智谱AI活动页       4      4      0      失败（collector_error） 2026-10-03 03:56 | 智谱AI活动页：连续失败 1 次 / 连续零产出 0 次 — NO_BROWSER"
+          ]
+        }
+      ],
+      "restoredByteExact": true
+    }
+  ],
+  "C": {
+    "manifestEntries": 9,
+    "distJsonTotal": 36,
+    "byBucket": {
+      "rootLevel": 11,
+      "dataIndex": 1,
+      "feedDir": 24,
+      "other": 0
+    },
+    "feedFamilyFiles": 48,
+    "feedJsonFiles": 24,
+    "feedXmlFiles": 24,
+    "feedsPagePerFeedUnique": 48,
+    "feedsPageRootFeedUnique": 4,
+    "feedsPageFeedHrefUnique": 52,
+    "feedsPageRelAlternate": 2,
+    "feedsPageRelAlternateHrefs": [
+      "../feed.xml",
+      "../feed.json"
+    ],
+    "rootJsonFiles": [
+      "api-plan-history.json",
+      "api-plans.json",
+      "deal-history.json",
+      "deal-plan-links.json",
+      "deals.json",
+      "feed.json",
+      "model-registry-links.json",
+      "models.json",
+      "plan-history.json",
+      "plans.json",
+      "source-health.json"
+    ],
+    "otherJsonFiles": []
+  },
+  "D": [
+    {
+      "tool": "archive-selftest",
+      "emptyDistExit": 1,
+      "allowMissingExit": 0,
+      "allowMissingMarked": true,
+      "realDistExit": 0
+    },
+    {
+      "tool": "data-docs-selftest",
+      "emptyDistExit": 1,
+      "allowMissingExit": 0,
+      "allowMissingMarked": true,
+      "realDistExit": 0
+    },
+    {
+      "tool": "models-page-selftest",
+      "emptyDistExit": 1,
+      "allowMissingExit": 0,
+      "allowMissingMarked": true,
+      "realDistExit": 0
+    },
+    {
+      "tool": "planshub-selftest",
+      "emptyDistExit": 1,
+      "allowMissingExit": 0,
+      "allowMissingMarked": true,
+      "realDistExit": 0
+    },
+    {
+      "tool": "vendor-page-selftest",
+      "emptyDistExit": 1,
+      "allowMissingExit": 0,
+      "allowMissingMarked": true,
+      "realDistExit": 0
+    },
+    {
+      "tool": "check-feeds-reproducible",
+      "emptyDistExit": 1,
+      "allowMissingExit": 0,
+      "allowMissingMarked": true,
+      "realDistExit": 0
+    }
+  ]
+}

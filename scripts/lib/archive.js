@@ -69,6 +69,27 @@ function archiveEntryRoute(entry) {
 }
 
 /**
+ * **相对前缀的唯一实现**：把「路由深度」换算成 `'../'.repeat(depth)`。
+ *
+ * 为什么必须是唯一实现、并且必须由路由推出来：`/archive/<kind>/<id>/` 的深度是 **3**，
+ * 而详情页原先写死 `'../../'`（2 层）——页面上 favicon / feed / 面包屑 / 全站导航因此
+ * 全部解析到 `archive/…` 而不是站点根。生产一条 ended/restored 都没有，所以这个写死
+ * 在交付日一次都没被构建照到（审计 F-r1-history-ai-002：每页 27 条相对引用里 24 条死链）。
+ *
+ * 同一个数字写在两处（这里与调用方各写一遍）就是同一个坑的下一形态：改一边不会红。
+ * 所以调用方一律用 `archiveEntryPrefix(entry)`，页面层再也看不到一个字面量前缀。
+ */
+function routePrefixOf(route) {
+  const depth = String(route || '').split('/').filter(Boolean).length;
+  return '../'.repeat(depth);
+}
+
+/** 某个档案条目的详情页前缀（= 它自己那条路由的深度） */
+function archiveEntryPrefix(entry) {
+  return routePrefixOf(archiveEntryRoute(entry));
+}
+
+/**
  * 详情页门槛（题面 §4）：**必须存在可重建的事件链与快照**。
  *
  *   · 事件链：至少一条 `ended` / `restored`（`buildArchive()` 已经只产出这种条目，
@@ -611,9 +632,21 @@ function archiveIndexJsonLd(archives, ctx = {}) {
   ];
 }
 
-/** `/archive/<kind>/<id>/` 详情：状态 / 时间 / 最后已知内容 / 官方来源 / 时间线 */
+/**
+ * `/archive/<kind>/<id>/` 详情：状态 / 时间 / 最后已知内容 / 官方来源 / 时间线。
+ *
+ * `ctx.prefix` **必填**（用 `archiveEntryPrefix(entry)` 取）：这里不再有默认值 ——
+ * 一个猜错的默认值（曾经的 `'../../'`）会让整页的相对引用静默地少一层，而页面本身
+ * 看起来完全正常。缺失时直接抛错，让「谁忘了传」在构建期就暴露。
+ */
 function renderArchiveEntry(entry, ctx = {}) {
-  const prefix = ctx.prefix === undefined ? '../../' : ctx.prefix;
+  if (ctx.prefix === undefined || ctx.prefix === null) {
+    throw new Error('renderArchiveEntry 需要 ctx.prefix（请用 archiveEntryPrefix(entry) 按路由深度派生，不要写死层级）');
+  }
+  const prefix = ctx.prefix;
+  if (typeof prefix !== 'string' || !/^(?:\.\.\/)*$/.test(prefix)) {
+    throw new Error(`renderArchiveEntry 的 ctx.prefix 非法（${JSON.stringify(prefix)}）——只接受 '' 或若干层 '../'`);
+  }
   const title = entry.title || `${entry.id}（无标题快照）`;
   const known = entry.lastKnown || {};
   const knownRows = Object.keys(known).sort().map(field => {
@@ -829,6 +862,8 @@ module.exports = {
   stripTags,
   decodeEntities,
   archiveEntryRoute,
+  routePrefixOf,
+  archiveEntryPrefix,
   archiveDetailGate,
   assertArchiveSitemapEligibility,
   assertArchiveDetailRoutes,

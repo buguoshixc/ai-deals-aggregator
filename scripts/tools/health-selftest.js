@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 数据源健康状态自测（零依赖、纯函数、秒级）。
+ * 数据源健康状态自测（纯函数 + 一条端到端接线，秒级）。
  *
  * 为什么要自测：这套状态机存在的唯一理由是「网站显示今天更新，但某个采集源已经坏了几天」
  * 不再发生。它一旦判错方向——把连续零产出算成正常、或把「服务好好的只是这次没新内容」
@@ -13,14 +13,28 @@
  *   ⑤ 无头浏览器没起来               failed（哪怕采集器自己没抛错）
  * 外加：采集器抛异常、条数陡降、恢复后计数清零、本轮没跑的来源不许冒充「今天健康」。
  *
+ * 第 5、6 节是 P2-15 的回归钉：**判定写在生产里、断言写在别处**正是那个缺陷的形态
+ * （真实接线路径下 `headless_unavailable` 出现 0 次，全被折叠成 `collector_error`）。
+ * 所以这两节不复制公式：
+ *   · §5 调用的 `attemptsFromReport` 就是 collect.js 生产接线调用的那个函数；
+ *   · §6 真跑一次 `collect.js --headless --dry-run`（注入一个起不来的内核），
+ *     拿 Collect Summary 原文断言 —— 任何在接线/判定/注入点上「把 headlessReady 写死」
+ *     的改动都会让这一节变红，而不是让一处断言与另一处实现各自自洽。
+ *
  * 用法：node scripts/tools/health-selftest.js
  */
 
+const fs = require('fs');
+const crypto = require('crypto');
 const path = require('path');
+const { spawnSync } = require('child_process');
 const {
-  STATUS, ZERO_OUTPUT_FAIL_AFTER, SHARP_DROP_RATIO,
-  emptyDoc, evaluate, build, summarize, relativeTime, formatCN
+  STATUS, ZERO_OUTPUT_FAIL_AFTER, SHARP_DROP_RATIO, REASON_LABEL,
+  emptyDoc, evaluate, build, summarize, relativeTime, formatCN,
+  headlessReady, attemptsFromReport
 } = require('../lib/health');
+
+const ROOT = path.join(__dirname, '..', '..');
 
 let pass = 0;
 const failures = [];
@@ -35,6 +49,15 @@ function check(name, ok, detail = '') {
 
 function checkEqual(name, actual, expected) {
   check(name, actual === expected, `期望 ${JSON.stringify(expected)}，实得 ${JSON.stringify(actual)}`);
+}
+
+/** 文件指纹（文件不存在时返回 null）：§6 用它证明「dry-run 一个字节都没写」 */
+function sha256File(file) {
+  try {
+    return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  } catch (error) {
+    return null;
+  }
 }
 
 /** 跑一串「每轮条数」的尝试，返回每轮的记录 */
@@ -170,6 +193,136 @@ checkEqual('相对时间：从未', relativeTime(null, base), '从未');
 checkEqual('北京时间格式化（UTC→+08:00）', formatCN('2026-09-28T04:11:00Z'), '2026-09-28 12:11');
 checkEqual('北京时间格式化：跨日', formatCN('2026-09-27T16:30:00Z'), '2026-09-28 00:30');
 checkEqual('北京时间格式化：空值', formatCN(null), '—');
+
+/* ------------------------------------------------------------------ */
+console.log('\n=== 5) 真实接线：无头来源 × 浏览器可用性（P2-15 回归钉） ===');
+
+/**
+ * 用**生产接线的同一个函数**（health.attemptsFromReport）把「采集报告行 + 浏览器探测结论」
+ * 翻成心跳输入，再喂给 evaluate —— 公式不在这里复制第二份。
+ *
+ * 判据来源：research/audit 的 F-r1-identity-002 六组合矩阵（`browser ok=false + headless
+ * row.error` 曾经得到 `collector_error`，`headless_unavailable` 在整个矩阵里出现 0 次）。
+ */
+const WIRING_NOW = new Date(Date.UTC(2026, 9, 3, 4, 0, 0));
+const BROWSER_DOWN = { attempted: true, ok: false, channel: null, error: '未找到可用的浏览器内核' };
+const BROWSER_UP = { attempted: true, ok: true, channel: 'msedge', error: null };
+const BROWSER_UNPROBED = { attempted: false, ok: null, channel: null, error: null };
+
+function wiring({ rowError = null, errorCode = null, browser = BROWSER_UP, isHeadless = true, valid = 0 }) {
+  const [attempt] = attemptsFromReport({
+    rows: [{
+      sourceId: 'cn_volc_ark', name: '火山方舟', region: 'cn',
+      error: rowError, valid, produced: valid, deals: 0, ms: 1200
+    }],
+    headlessIds: isHeadless ? ['cn_volc_ark'] : [],
+    browserStatus: browser,
+    errorCodes: errorCode ? { cn_volc_ark: errorCode } : null
+  });
+  return { attempt, record: evaluate({ attempt, now: WIRING_NOW }) };
+}
+
+const wiringReasons = new Set();
+
+// A) 内核起不来 —— 真实链路：launch() 探测三个内核都失败 ⇒ 抛 code=NO_BROWSER（接线留码）
+const a = wiring({ rowError: 'NO_BROWSER', errorCode: 'NO_BROWSER', browser: BROWSER_DOWN });
+wiringReasons.add(a.record.reason);
+checkEqual('A1 内核不可用 + 无头来源报错 ⇒ headlessReady=false', a.attempt.headlessReady, false);
+checkEqual('A2 …⇒ status=failed', a.record.status, STATUS.failed);
+checkEqual('A3 …⇒ reason=headless_unavailable（修复前这里是 collector_error）', a.record.reason, 'headless_unavailable');
+check('A4 …⇒ lastError 里留着内核不可用的原话', /无头浏览器不可用/.test(a.record.lastError || ''), a.record.lastError);
+
+// B) 内核起不来 + 采集器自己吞了错（人工构造）：状态相同，但记账按「成功路径」走
+const b = wiring({ browser: BROWSER_DOWN });
+wiringReasons.add(b.record.reason);
+checkEqual('B1 内核不可用 + 采集器没抛错 ⇒ 同样 failed/headless_unavailable', `${b.record.status}/${b.record.reason}`, 'failed/headless_unavailable');
+
+// C) 内核可用 + 无头来源报错（页面 403 / robots 拒绝）：必须仍判 collector_error
+const c = wiring({ rowError: 'HTTP 403', browser: BROWSER_UP });
+wiringReasons.add(c.record.reason);
+checkEqual('C1 内核可用 + 采集器报错 ⇒ collector_error（页面问题不许说成内核问题）', c.record.reason, 'collector_error');
+
+// D) 本轮没探测过内核 + 采集器报错：不许无凭据地宣称「浏览器不可用」
+const d = wiring({ rowError: 'HTTP 403', browser: BROWSER_UNPROBED });
+wiringReasons.add(d.record.reason);
+checkEqual('D1 没探测过内核 ⇒ headlessReady=null（不是 false）', d.attempt.headlessReady, null);
+checkEqual('D2 …⇒ collector_error', d.record.reason, 'collector_error');
+checkEqual('D3 记录里 headlessReady 也是 null（三态不许折叠成 false）', d.record.headlessReady, null);
+
+// E) 内核可用 + 无头来源正常产出：不许因为「是无头来源」被压低
+const e = wiring({ browser: BROWSER_UP, valid: 12 });
+wiringReasons.add(e.record.reason);
+checkEqual('E1 内核可用 + 产出 12 条 ⇒ healthy', `${e.record.status}/${e.record.reason}`, 'healthy/null');
+checkEqual('E2 …⇒ headlessReady=true 如实记下', e.record.headlessReady, true);
+
+// F) 静态来源完全不受浏览器影响
+const f = wiring({ rowError: 'HTTP 403', browser: BROWSER_DOWN, isHeadless: false });
+wiringReasons.add(f.record.reason);
+checkEqual('F1 静态来源 headlessReady=null', f.attempt.headlessReady, null);
+checkEqual('F2 静态来源报错 ⇒ collector_error（不是 headless_unavailable）', f.record.reason, 'collector_error');
+
+check('G1 六组合矩阵里 headless_unavailable 真的可达（修复前出现 0 次）', wiringReasons.has('headless_unavailable'),
+  `实得 ${[...wiringReasons].join(',')}`);
+check('G2 每个 reason 都在既有 REASON_LABEL 枚举内（本任务不新增枚举）',
+  [...wiringReasons].every(reason => reason === null || Object.prototype.hasOwnProperty.call(REASON_LABEL, reason)),
+  [...wiringReasons].join(','));
+checkEqual('G3 headlessReady 判定函数本身：非无头来源一律 null', headlessReady({ isHeadless: false, browserStatus: BROWSER_DOWN }), null);
+
+/* ------------------------------------------------------------------ */
+console.log('\n=== 6) 端到端接线：真跑一次采集（--dry-run，不写任何文件） ===');
+
+/**
+ * 端到端（跑的是生产入口 collect.js 本身，不是复制的公式）：
+ * 注入一个**不存在**的内核可执行文件 ⇒ 三个内核全起不来 ⇒ 该无头来源的 Collect Summary
+ * 必须落到「失败（headless_unavailable）」。
+ *
+ * 这一条同时钉住三处：collect.js 的接线、health.js 的判定顺序、browser.js 的注入点。
+ * 它也是唯一能抓住「在 collect.js 的调用点把 headlessReady 写死成 true」的断言。
+ * --dry-run：只读不写（本脚本跑完会核对 deals.json / scripts/data/*.json 的 sha256 未变）。
+ */
+const INJECTED_BROWSER = path.join(ROOT, '.qc-iso', 'no-such-browser', 'chrome.exe');
+check('H0 注入路径确实不存在（演练前提成立）', !fs.existsSync(INJECTED_BROWSER), INJECTED_BROWSER);
+
+// dry-run 的承诺是「只读不写」：跑之前先把采集会碰的几份数据文件的指纹记下来，
+// 跑完逐个比对（不比对 deal-history.json：它可能被并行的历史层任务改动，不是本次演练的证据）。
+const untouched = [
+  'deals.json',
+  path.join('scripts', 'data', 'source-health.json'),
+  path.join('scripts', 'data', 'zh-pending.json'),
+  path.join('scripts', 'data', 'source-snapshots.json')
+].map(rel => ({ rel, before: sha256File(path.join(ROOT, rel)) }));
+
+const e2e = (() => {
+  const r = spawnSync(
+    process.execPath,
+    [path.join(ROOT, 'scripts', 'collect.js'), '--headless', '--dry-run', '--only=cn_zhipu_pricing'],
+    {
+      cwd: ROOT,
+      encoding: 'utf8',
+      maxBuffer: 64 * 1024 * 1024,
+      env: { ...process.env, DSH_BROWSER_EXECUTABLE: INJECTED_BROWSER }
+    }
+  );
+  return {
+    status: r.status,
+    stdout: r.stdout || '',
+    stderr: r.stderr || '',
+    spawnError: r.error ? String(r.error.message) : null
+  };
+})();
+
+const summaryLine = (e2e.stdout.match(/来源明细:[^\n]*/) || [''])[0];
+const healthRow = (e2e.stdout.match(/智谱AI活动页[^\n]*/g) || []).join(' | ');
+const changedFiles = untouched.filter(item => sha256File(path.join(ROOT, item.rel)) !== item.before).map(item => item.rel);
+
+check('H1 端到端采集进程跑起来且 exit 0（dry-run 不写盘）', e2e.status === 0,
+  `exit=${e2e.status}${e2e.spawnError ? ` spawnError=${e2e.spawnError}` : ''} ` +
+  `${e2e.stderr.split('\n').filter(Boolean).slice(-2).join(' / ')}`);
+check('H2 Collect Summary 里无头来源落到 headless_unavailable', /失败（headless_unavailable）/.test(e2e.stdout),
+  healthRow || summaryLine);
+check('H3 Collect Summary 同时明说「无头浏览器 不可用」', /无头浏览器 不可用/.test(summaryLine), summaryLine);
+check('H4 这一轮演练一个字节都没写进生产数据文件（dry-run 的只读承诺）', changedFiles.length === 0,
+  changedFiles.join(', '));
 
 /* ------------------------------------------------------------------ */
 console.log(`\n${failures.length ? '❌' : '✅'} 数据源健康自测：${pass} 项通过，${failures.length} 项失败`);

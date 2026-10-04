@@ -108,7 +108,12 @@ const KIND_TABLE = {
   changes: {
     label: '变化页',
     textFloor: floor(600),
-    itemList: { expect: true, checkRows: true, checkMembers: true, marker: 'item' },
+    // 成员集合的**权威判据在构建期的 `lib/changes.js`（`itemListRecords()`）**：
+    // 一个记录只出现一次（取最强事件）、不可链接的条目不入列表。
+    // 独立门禁（`seo-verify.js`）只读产物，**不复制这份雷达判据**——所以这里不做成员归属对账，
+    // 改由三条产物内自洽断言守着：成员按 id 唯一 / 每个成员的 URL 在 dist 里存在 /
+    // 声明数 == 元素数 == 页面 `data-item` 行数。构建期另有三方对账（见 build-local 自检）。
+    itemList: { expect: true, checkRows: true, checkMembers: false, marker: 'item' },
     sitemap: { priority: '0.8', changefreq: 'daily' }
   },
   feeds: {

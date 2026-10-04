@@ -1,5 +1,11 @@
 # v3.0 团队共享参考（唯一权威的实施约束）
 
+> **⏳ 时效声明（2026-10-04 质量收口时追加）**：本文是 **v3.0 开发当时**的团队参考快照。
+> 其中「现状」「硬编码位置」「行号」「数据数字」都描述 **v3.0 当时的仓库**；v3.0 之后（含 2026-10-03/04 的质量收口）
+> 已发生改动的地方，以 `docs/SCHEMA-v3.0.md` §10「质量收口后的硬约束」与
+> `research/quality-closure/RECLASSIFIED_FINDINGS.md`（当前数字重算表）为准。
+> 本文中标了 **【已过期】** 的段落请勿当现状引用。
+
 > 本文件由队长维护。**任何成员在动手前必须先读完本文件**。
 > 题面原文：`docs/v3.0/TASK-SPEC-v3.0.md`（2065 行，按需查，不要通读）。
 > 阶段计划与硬规则见 `docs/v3.0/STAGE-PLAN.md`。
@@ -189,7 +195,10 @@
 
 - `scripts/lib/feeds.js` 当前是**单条变化 spec**：`PLAN_CHANGE_FEED`（`feed/plans/coding/changes.*`）
   + 静态 `PAGE_FEED_ROUTES`（`plans/coding/` → 它）。要抽象成多 spec，**不要复制一份 `feeds-api.js`**。
-- `/feeds/` 的分组表是**硬编码**的（`build-local.js:1645-1668`），加 API 变化源必须同步改分组表。
+- **【已过期 · 2026-10-03 起不成立】** ~~`/feeds/` 的分组表是**硬编码**的（`build-local.js:1645-1668`）~~：
+  质量收口后分组**由 Feed Registry 派生**（`scripts/lib/feeds.js` 的 `pageGroups()` / `feedsForPage()`；
+  渲染层不再手写 ids 清单），加变化源不再需要同步改分组表；`feeds-selftest` 有双向断言（注册表 → 页面、页面 → 注册表）。
+  `/feeds/` 当前列出 **48** 个订阅地址（24 份 Feed × 2 格式，含 `category-*` 10 个）。
 - GUID 规则：优惠条目用 `deal.id` 逐字；优惠变化用 `chg:<sha1(history.eventKey(event))[:16]>`；
   套餐变化用 `plan-history` 的 `eventId`（12 hex）。API 变化**必须**用 `api-plan-history` 的派生事件 ID。
 - ⚠️ **实测缺口**：`scripts/lib/plan-history.js` 有 `eventIdOf()` 且 `verifyStore` 会重算比对（手写必红），
@@ -219,12 +228,18 @@
 
 ## 7. 数据现状要点（写代码时要用的真值）
 
-- `api-plans.json`：7 条记录 / **37** 个模型计价条目 / **22** 个不同 `modelKey` / 5 provider。
+> **【2026-10-04 重算】** 本节数字已按当前 HEAD 重算；v3.0 当时的旧值见行内括注。
+> 重算命令见 `research/quality-closure/RECLASSIFIED_FINDINGS.md` §0.2。
+
+- `api-plans.json`：**13** 条记录（v3.0 当时 7）/ **67** 个模型计价条目（当时 37）/ **45** 个不同 `modelKey`（当时 22）/ **10** provider（当时 5）。
   记录字段序：`id, kind, provider, planName, channel, officialUrl, source, sourceUrl, region,
   pricing, models, freeTier, limits, credits, restrictions, firstSeen, lastSeen, verified, verifiedAt,
-  evidence, derivedMetrics`。`pricing.unit` 全为 `per_1M_tokens`；`credits` 全为 `null`；
+  evidence, derivedMetrics`。`pricing.unit` 为 `per_1M_tokens`（13/13）；`credits` 全为 `null`（13/13）；
   `rates.reasoning/batchInput/batchOutput` 100% 为 `null`；batch 与 off-peak 是**独立记录**（靠 `channel`），
-  不是独立字段；`freeTier` 只在 google 与 zhipu 上有（`type: 'models'`）。
+  不是独立字段。
+- `freeTier` **不再「只在 google 与 zhipu 上有」**：现行 **4 条** —— `standing` 2 条（google `type:'models'`、zhipu `type:'models'`）
+  + `new_user` 2 条（aliyun、tencent，均 `type:'tokens'` / 一次性 100 万 tokens）。
+  `stability` 是**三档必填**（`standing | new_user | promotional`，缺省即红，见 `SCHEMA-v2.5.md` §8）。
 - `plans.json`：9 条 / 8 provider；`supportedModels` 是**自由文本 `{name, role, note}`，没有模型键**，
   且 9 条里只有 3 条有值（minimax Token Plan Plus、trae 会员 Pro、zhipu Lite）。
   与 API 侧真名级重合**只有 2 处**：`GLM-5.3` ↔ `glm-5.3`、`GLM-5.3-Flash` ↔ `glm-5.3-flash`。

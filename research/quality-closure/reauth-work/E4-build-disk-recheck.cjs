@@ -1,0 +1,22 @@
+'use strict';
+/** E4：现场产物第 8 列被手改后，build-local 的**写盘后重检**能不能抓（P1-10 面） */
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+const { spawnSync } = require('child_process');
+const DIR = 'D:\\qc-t23\\extra\\R5-api-page';
+const GOLD = 'D:\\qc-t23\\gold';
+const page = path.join(DIR, 'dist/plans/api/index.html');
+const sha = f => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
+const before = sha(page);
+const html = fs.readFileSync(page, 'utf8');
+const cell = html.match(/<td class="pfree">[^<]*<\/td>/)[0];
+fs.writeFileSync(page, html.replace(cell, '<td class="pfree">credits 100 credits 长期有效，属于稳定长期免费能力</td>'));
+console.log('E4 变异：', cell.slice(0, 70), '→ credits 版本 · sha', before.slice(0, 10), '→', sha(page).slice(0, 10));
+const r = spawnSync('node scripts/tools/build-local.js', { cwd: DIR, shell: true, encoding: 'utf8', maxBuffer: 128 * 1024 * 1024 });
+const out = `${r.stdout || ''}\n${r.stderr || ''}`;
+console.log('build-local exit =', r.status);
+const lines = out.split('\n').filter(l => /✗|❌|免费额度|credits|pfree/.test(l));
+lines.slice(0, 8).forEach(l => console.log('   ' + l.trim().slice(0, 220)));
+fs.copyFileSync(path.join(GOLD, 'dist/plans/api/index.html'), page);
+console.log('恢复逐字节 =', sha(page) === before);

@@ -1,0 +1,686 @@
+{
+  "gold": "D:\\qc-t18\\wt",
+  "work": "D:\\qc-t18\\cases",
+  "results": [
+    {
+      "id": "m1-wildcard-other-slug",
+      "note": "P0 原始形态：规范序合法追加一条通配映射",
+      "expect": "red-multi",
+      "ms": 2048,
+      "before": {
+        "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "after": {
+        "scripts/data/model-registry-links.json": "0a0f09b330c38f450ad2e22d88297ebba403e6783adf4c30a7f94d108054ec8c",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "changed": [
+        "scripts/data/model-registry-links.json"
+      ],
+      "gates": [
+        {
+          "name": "links-check",
+          "command": "node scripts/tools/check-model-registry-links.js",
+          "exitCode": 1,
+          "hits": [
+            "计价条目（展开后）：67 条 = 已被映射认领 67 条 + 未认领 0 条",
+            "✗ links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, long_context)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant long_context）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型",
+            "✗ links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, standard)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant standard）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型"
+          ]
+        },
+        {
+          "name": "registry-selftest",
+          "command": "node scripts/tools/models-selftest.js",
+          "exitCode": 1,
+          "hits": [
+            "✗ 真实的 model-registry-links.json 通过关系校验（65 条） —— links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, long_context)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant long_context）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型 | links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, standard)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant standard）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型",
+            "✓ 【牙 #3】映射指向不存在的 apiPlanId → 红",
+            "✓ 【牙 #3】映射指向不存在的 modelKey → 红"
+          ]
+        },
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 1,
+          "hits": [
+            "- Model Registry 关系层: links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, long_context)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant long_context）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型",
+            "- Model Registry 关系层: links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, standard)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant standard）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型"
+          ]
+        },
+        {
+          "name": "models-reproducible",
+          "command": "node scripts/tools/check-models-reproducible.js",
+          "exitCode": 1,
+          "hits": [
+            "- model-registry-links.json 与来源层的产出不一致（手改过产物，或改了来源层没重建）"
+          ]
+        },
+        {
+          "name": "rebuild-models",
+          "command": "node scripts/tools/rebuild-models.js",
+          "exitCode": 1,
+          "hits": [
+            "❌ 来源层/关系层有 2 处问题，拒绝写盘：",
+            "- links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, long_context)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant long_context）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型",
+            "- links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, standard)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant standard）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型"
+          ]
+        }
+      ],
+      "reds": [
+        "links-check",
+        "registry-selftest",
+        "validate-strict",
+        "models-reproducible",
+        "rebuild-models"
+      ]
+    },
+    {
+      "id": "m2-explicit-standard-other-slug",
+      "note": "只撞 67 条里的 1 条",
+      "expect": "red-multi",
+      "ms": 2359,
+      "before": {
+        "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "after": {
+        "scripts/data/model-registry-links.json": "b9bfb871c4c4f36da98b7139b9addb0dcbf101f84f5c5fc46265a0fa8ffde5e6",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "changed": [
+        "scripts/data/model-registry-links.json"
+      ],
+      "gates": [
+        {
+          "name": "links-check",
+          "command": "node scripts/tools/check-model-registry-links.js",
+          "exitCode": 1,
+          "hits": [
+            "计价条目（展开后）：67 条 = 已被映射认领 67 条 + 未认领 0 条",
+            "✗ links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, standard)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant standard）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型"
+          ]
+        },
+        {
+          "name": "registry-selftest",
+          "command": "node scripts/tools/models-selftest.js",
+          "exitCode": 1,
+          "hits": [
+            "✗ 真实的 model-registry-links.json 通过关系校验（65 条） —— links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, standard)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant standard）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型",
+            "✓ 【牙 #3】映射指向不存在的 apiPlanId → 红",
+            "✓ 【牙 #3】映射指向不存在的 modelKey → 红"
+          ]
+        },
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 1,
+          "hits": [
+            "- Model Registry 关系层: links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, standard)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant standard）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型"
+          ]
+        },
+        {
+          "name": "models-reproducible",
+          "command": "node scripts/tools/check-models-reproducible.js",
+          "exitCode": 1,
+          "hits": [
+            "- model-registry-links.json 与来源层的产出不一致（手改过产物，或改了来源层没重建）"
+          ]
+        },
+        {
+          "name": "rebuild-models",
+          "command": "node scripts/tools/rebuild-models.js",
+          "exitCode": 1,
+          "hits": [
+            "❌ 来源层/关系层有 1 处问题，拒绝写盘：",
+            "- links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, standard)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant standard）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型"
+          ]
+        }
+      ],
+      "reds": [
+        "links-check",
+        "registry-selftest",
+        "validate-strict",
+        "models-reproducible",
+        "rebuild-models"
+      ]
+    },
+    {
+      "id": "m3-adjacent-explicit",
+      "note": "相邻变体",
+      "expect": "red-multi",
+      "ms": 1938,
+      "before": {
+        "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "after": {
+        "scripts/data/model-registry-links.json": "eb270b29337488a532d63c7423c9d9d64582bfd9dbfde4c0718fc29ec80ffbf1",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "changed": [
+        "scripts/data/model-registry-links.json"
+      ],
+      "gates": [
+        {
+          "name": "links-check",
+          "command": "node scripts/tools/check-model-registry-links.js",
+          "exitCode": 1,
+          "hits": [
+            "计价条目（展开后）：67 条 = 已被映射认领 67 条 + 未认领 0 条",
+            "✗ links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, long_context)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant long_context）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型"
+          ]
+        },
+        {
+          "name": "registry-selftest",
+          "command": "node scripts/tools/models-selftest.js",
+          "exitCode": 1,
+          "hits": [
+            "✗ 真实的 model-registry-links.json 通过关系校验（65 条） —— links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, long_context)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant long_context）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型",
+            "✓ 【牙 #3】映射指向不存在的 apiPlanId → 红",
+            "✓ 【牙 #3】映射指向不存在的 modelKey → 红"
+          ]
+        },
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 1,
+          "hits": [
+            "- Model Registry 关系层: links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, long_context)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant long_context）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型"
+          ]
+        },
+        {
+          "name": "models-reproducible",
+          "command": "node scripts/tools/check-models-reproducible.js",
+          "exitCode": 1,
+          "hits": [
+            "- model-registry-links.json 与来源层的产出不一致（手改过产物，或改了来源层没重建）"
+          ]
+        },
+        {
+          "name": "rebuild-models",
+          "command": "node scripts/tools/rebuild-models.js",
+          "exitCode": 1,
+          "hits": [
+            "❌ 来源层/关系层有 1 处问题，拒绝写盘：",
+            "- links[51] qwen3-max: source pricing identity (ebc4af9a71b6, qwen3-max, long_context)（记录 ebc4af9a71b6 · modelKey qwen3-max · variant long_context）已经映射到 glm-5.3 —— 同一条价格记录不许映射到两个 registry 模型"
+          ]
+        }
+      ],
+      "reds": [
+        "links-check",
+        "registry-selftest",
+        "validate-strict",
+        "models-reproducible",
+        "rebuild-models"
+      ]
+    },
+    {
+      "id": "m4-remove-mapping-M09",
+      "note": "审计 M09：删一条必需的 registry→API 映射",
+      "expect": "red-multi",
+      "ms": 1874,
+      "before": {
+        "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "after": {
+        "scripts/data/model-registry-links.json": "a31cded4cda67360ee91c3f3938a0cd43c534ee5eb1bbc93ff876261ad86f466",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "changed": [
+        "scripts/data/model-registry-links.json"
+      ],
+      "gates": [
+        {
+          "name": "links-check",
+          "command": "node scripts/tools/check-model-registry-links.js",
+          "exitCode": 1,
+          "hits": [
+            "计价条目（展开后）：67 条 = 已被映射认领 66 条 + 未认领 1 条",
+            "✗ API 侧 1 条计价条目（source pricing identity）既没有 registry 映射、也没有任何处置：(4f8bae91f9f8, claude-fable-5.1, standard) —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）",
+            "✗ 未认领的计价条目（删掉一条映射就补回来；每一条都必须有结局）："
+          ]
+        },
+        {
+          "name": "registry-selftest",
+          "command": "node scripts/tools/models-selftest.js",
+          "exitCode": 1,
+          "hits": [
+            "✗ 真实的 model-registry-links.json 通过关系校验（63 条） —— API 侧 1 条计价条目（source pricing identity）既没有 registry 映射、也没有任何处置：(4f8bae91f9f8, claude-fable-5.1, standard) —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）",
+            "✓ 【牙 #3】映射指向不存在的 apiPlanId → 红",
+            "✓ 【牙 #3】映射指向不存在的 modelKey → 红"
+          ]
+        },
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 1,
+          "hits": [
+            "- Model Registry 关系层: API 侧 1 条计价条目（source pricing identity）既没有 registry 映射、也没有任何处置：(4f8bae91f9f8, claude-fable-5.1, standard) —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）"
+          ]
+        },
+        {
+          "name": "models-reproducible",
+          "command": "node scripts/tools/check-models-reproducible.js",
+          "exitCode": 1,
+          "hits": [
+            "- models.json 与来源层的产出不一致（2 处差异）—— 手改过产物，或改了来源层没重建",
+            "- model-registry-links.json 与来源层的产出不一致（手改过产物，或改了来源层没重建）"
+          ]
+        },
+        {
+          "name": "rebuild-models",
+          "command": "node scripts/tools/rebuild-models.js",
+          "exitCode": 1,
+          "hits": [
+            "❌ 来源层/关系层有 1 处问题，拒绝写盘：",
+            "- API 侧 1 条计价条目（source pricing identity）既没有 registry 映射、也没有任何处置：(4f8bae91f9f8, claude-fable-5.1, standard) —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）"
+          ]
+        }
+      ],
+      "reds": [
+        "links-check",
+        "registry-selftest",
+        "validate-strict",
+        "models-reproducible",
+        "rebuild-models"
+      ]
+    },
+    {
+      "id": "m5-duplicate-top-slug",
+      "note": "F-T19-1 形态：重复顶层 slug 键（第二条逐字段合法，排除干扰判据）",
+      "expect": "red-all4",
+      "ms": 1944,
+      "before": {
+        "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "after": {
+        "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+        "scripts/data/models.json": "d4495a8588488f0aab282fa6f20c82bab4f0f032620c1220913d6babc240319f",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "changed": [
+        "scripts/data/models.json"
+      ],
+      "gates": [
+        {
+          "name": "links-check",
+          "command": "node scripts/tools/check-model-registry-links.js",
+          "exitCode": 1,
+          "hits": [
+            "计价条目（展开后）：67 条 = 已被映射认领 67 条 + 未认领 0 条",
+            "✗ models.json 的顶层键 \"glm-5.3\" 重复出现 —— 同一个 slug（= 同一个 registry 身份）只能有一条；JSON.parse 会静默只留最后一条，前一条根本进不了判据"
+          ]
+        },
+        {
+          "name": "registry-selftest",
+          "command": "node scripts/tools/models-selftest.js",
+          "exitCode": 1,
+          "hits": [
+            "✓ 【牙 #3】映射指向不存在的 apiPlanId → 红",
+            "✓ 【牙 #3】映射指向不存在的 modelKey → 红",
+            "✓ 【牙 #3】Coding 映射指向不存在的 planId → 红"
+          ]
+        },
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 1,
+          "hits": [
+            "- Model Registry: models.json 的顶层键 \"glm-5.3\" 重复出现 —— 同一个 slug（= 同一个 registry 身份）只能有一条；JSON.parse 会静默只留最后一条，前一条根本进不了判据"
+          ]
+        },
+        {
+          "name": "models-reproducible",
+          "command": "node scripts/tools/check-models-reproducible.js",
+          "exitCode": 1,
+          "hits": []
+        },
+        {
+          "name": "rebuild-models",
+          "command": "node scripts/tools/rebuild-models.js",
+          "exitCode": 1,
+          "hits": [
+            "❌ 来源层/关系层有 1 处问题，拒绝写盘：",
+            "- models.json 的顶层键 \"glm-5.3\" 重复出现 —— 同一个 slug（= 同一个 registry 身份）只能有一条；JSON.parse 会静默只留最后一条，前一条根本进不了判据"
+          ]
+        }
+      ],
+      "reds": [
+        "links-check",
+        "registry-selftest",
+        "validate-strict",
+        "models-reproducible",
+        "rebuild-models"
+      ]
+    },
+    {
+      "id": "m6-root-artifact-only",
+      "note": "已知现场事实①：只改仓根 → 可重建性门禁是唯一红的",
+      "expect": "expect-matrix:links-check=green,registry-selftest=green,validate-strict=green,models-reproducible=red",
+      "ms": 1872,
+      "before": {
+        "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "after": {
+        "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "9cb9e9b4dea26577385c14c5f619edb3184e8b1de2396de94bf520b739315a60",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "changed": [
+        "model-registry-links.json"
+      ],
+      "gates": [
+        {
+          "name": "links-check",
+          "command": "node scripts/tools/check-model-registry-links.js",
+          "exitCode": 0,
+          "hits": [
+            "计价条目（展开后）：67 条 = 已被映射认领 67 条 + 未认领 0 条"
+          ]
+        },
+        {
+          "name": "registry-selftest",
+          "command": "node scripts/tools/models-selftest.js",
+          "exitCode": 0,
+          "hits": [
+            "✓ 【牙 #3】映射指向不存在的 apiPlanId → 红",
+            "✓ 【牙 #3】映射指向不存在的 modelKey → 红",
+            "✓ 【牙 #3】Coding 映射指向不存在的 planId → 红"
+          ]
+        },
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 0,
+          "hits": []
+        },
+        {
+          "name": "models-reproducible",
+          "command": "node scripts/tools/check-models-reproducible.js",
+          "exitCode": 1,
+          "hits": [
+            "- model-registry-links.json 与来源层的产出不一致（手改过产物，或改了来源层没重建）"
+          ]
+        },
+        {
+          "name": "rebuild-models",
+          "command": "node scripts/tools/rebuild-models.js",
+          "exitCode": 0,
+          "hits": [
+            "· 计价条目（展开后）：67 条 = 已被映射认领 67 条 + 未认领 0 条",
+            "· 未认领的计价条目：0 条"
+          ]
+        }
+      ],
+      "reds": [
+        "models-reproducible"
+      ]
+    },
+    {
+      "id": "m7-unresolved-wildcard",
+      "note": "空展开",
+      "expect": "red-multi",
+      "ms": 1876,
+      "before": {
+        "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "after": {
+        "scripts/data/model-registry-links.json": "2aecd7e39e771269530b950199bd7778dd31cf49c0b33c9b3bdb020bed3099c1",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "changed": [
+        "scripts/data/model-registry-links.json"
+      ],
+      "gates": [
+        {
+          "name": "links-check",
+          "command": "node scripts/tools/check-model-registry-links.js",
+          "exitCode": 1,
+          "hits": [
+            "计价条目（展开后）：67 条 = 已被映射认领 67 条 + 未认领 0 条",
+            "✗ links[27] glm-5.3: modelKey「ghost-model-key-t18」在记录 ebc4af9a71b6 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）",
+            "✗ links[27] glm-5.3: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过"
+          ]
+        },
+        {
+          "name": "registry-selftest",
+          "command": "node scripts/tools/models-selftest.js",
+          "exitCode": 1,
+          "hits": [
+            "✗ 真实的 model-registry-links.json 通过关系校验（65 条） —— links[27] glm-5.3: modelKey「ghost-model-key-t18」在记录 ebc4af9a71b6 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge） | links[27] glm-5.3: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✓ 【牙 #3】映射指向不存在的 apiPlanId → 红",
+            "✓ 【牙 #3】映射指向不存在的 modelKey → 红"
+          ]
+        },
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 1,
+          "hits": [
+            "- Model Registry 关系层: links[27] glm-5.3: modelKey「ghost-model-key-t18」在记录 ebc4af9a71b6 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）",
+            "- Model Registry 关系层: links[27] glm-5.3: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过"
+          ]
+        },
+        {
+          "name": "models-reproducible",
+          "command": "node scripts/tools/check-models-reproducible.js",
+          "exitCode": 1,
+          "hits": [
+            "- model-registry-links.json 与来源层的产出不一致（手改过产物，或改了来源层没重建）"
+          ]
+        },
+        {
+          "name": "rebuild-models",
+          "command": "node scripts/tools/rebuild-models.js",
+          "exitCode": 1,
+          "hits": [
+            "❌ 来源层/关系层有 2 处问题，拒绝写盘：",
+            "- links[27] glm-5.3: modelKey「ghost-model-key-t18」在记录 ebc4af9a71b6 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）",
+            "- links[27] glm-5.3: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过"
+          ]
+        }
+      ],
+      "reds": [
+        "links-check",
+        "registry-selftest",
+        "validate-strict",
+        "models-reproducible",
+        "rebuild-models"
+      ]
+    },
+    {
+      "id": "m8-empty-registry",
+      "note": "只剩 _ 元信息键（0 个 slug）",
+      "expect": "red-all4",
+      "ms": 1915,
+      "before": {
+        "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "after": {
+        "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+        "scripts/data/models.json": "e12d5f40e235ce486ca327c40936e29efdb8cbbc357231aaa17232327980e933",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "changed": [
+        "scripts/data/models.json"
+      ],
+      "gates": [
+        {
+          "name": "links-check",
+          "command": "node scripts/tools/check-model-registry-links.js",
+          "exitCode": 1,
+          "hits": [
+            "计价条目（展开后）：67 条 = 已被映射认领 67 条 + 未认领 0 条",
+            "✗ models.json 里没有任何模型"
+          ]
+        },
+        {
+          "name": "registry-selftest",
+          "command": "node scripts/tools/models-selftest.js",
+          "exitCode": 1,
+          "hits": [
+            "✗ 真实的 models.json 通过身份校验（0 条） —— models.json 里没有任何模型"
+          ]
+        },
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 1,
+          "hits": [
+            "- Model Registry: models.json 里没有任何模型"
+          ]
+        },
+        {
+          "name": "models-reproducible",
+          "command": "node scripts/tools/check-models-reproducible.js",
+          "exitCode": 1,
+          "hits": [
+            "- models.json 与来源层的产出不一致（44 处差异）—— 手改过产物，或改了来源层没重建"
+          ]
+        },
+        {
+          "name": "rebuild-models",
+          "command": "node scripts/tools/rebuild-models.js",
+          "exitCode": 1,
+          "hits": [
+            "❌ 来源层/关系层有 66 处问题，拒绝写盘：",
+            "- models.json 里没有任何模型"
+          ]
+        }
+      ],
+      "reds": [
+        "links-check",
+        "registry-selftest",
+        "validate-strict",
+        "models-reproducible",
+        "rebuild-models"
+      ]
+    },
+    {
+      "id": "m9-delete-links-file",
+      "note": "关系层来源文件消失",
+      "expect": "red-multi",
+      "ms": 1808,
+      "before": {
+        "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "after": {
+        "scripts/data/model-registry-links.json": "MISSING",
+        "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+        "scripts/data/model-registry-gaps.json": "1e89ba04c43a0daf950cb747a0413336bc89db3a32a9f2de2c95bf5a017a6e5c",
+        "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+        "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b"
+      },
+      "changed": [
+        "scripts/data/model-registry-links.json"
+      ],
+      "gates": [
+        {
+          "name": "links-check",
+          "command": "node scripts/tools/check-model-registry-links.js",
+          "exitCode": 1,
+          "hits": [
+            "计价条目（展开后）：67 条 = 已被映射认领 0 条 + 未认领 67 条",
+            "✗ scripts/data/model-registry-links.json 不存在",
+            "✗ 未认领的计价条目（删掉一条映射就补回来；每一条都必须有结局）："
+          ]
+        },
+        {
+          "name": "registry-selftest",
+          "command": "node scripts/tools/models-selftest.js",
+          "exitCode": 1,
+          "hits": []
+        },
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 1,
+          "hits": [
+            "- 缺少 scripts\\data\\model-registry-links.json：Model Registry 的关系层不存在"
+          ]
+        },
+        {
+          "name": "models-reproducible",
+          "command": "node scripts/tools/check-models-reproducible.js",
+          "exitCode": 1,
+          "hits": [
+            "- models.json 与来源层的产出不一致（88 处差异）—— 手改过产物，或改了来源层没重建",
+            "- model-registry-links.json 与来源层的产出不一致（手改过产物，或改了来源层没重建）"
+          ]
+        },
+        {
+          "name": "rebuild-models",
+          "command": "node scripts/tools/rebuild-models.js",
+          "exitCode": 1,
+          "hits": [
+            "❌ 1 处硬问题，拒绝写盘：",
+            "- scripts/data/model-registry-links.json 不存在"
+          ]
+        }
+      ],
+      "reds": [
+        "links-check",
+        "registry-selftest",
+        "validate-strict",
+        "models-reproducible",
+        "rebuild-models"
+      ]
+    }
+  ],
+  "problems": []
+}

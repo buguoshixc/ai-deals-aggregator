@@ -26,6 +26,15 @@
  * 3. **别名不是猜测**：别名只来自 registry entry 的 `aliases`（每条都该有来源）；
  *    本层不生成别名。
  *
+ * ## 一行 = 一个真实计价条目（v3.0 修订 F-v3-registry-001 / P1-12）
+ *
+ * 计价表的行身份是 `planId|modelKey|variant`，判据对象是**展开后的 identity 集合**：
+ * 关系层写 `variant: null` 的意思是"这条记录的该 modelKey 通用价"，即**全部真实 variant**，
+ * 不是"随便挑一条"。所以一条通配映射在页面上会渲染成它真实覆盖的 n 行
+ * （`standard` 与 `long_context` 各自一行、各自的价格）—— 旧实现只返回第一条匹配，
+ * 于是更便宜的那档价格在页面上根本不存在。
+ * 对账口径与 `scripts/tools/registry-join-audit.js`（独立 join，不 require 本文件）一致。
+ *
  * ## 纯函数
  *
  * 不读盘、不联网、不看时钟：registry、映射、`api-plans.json`、日志都由调用方传入。
@@ -156,15 +165,48 @@ function providerNameOf(key, table) {
 /* ------------------------------------------------------------------ */
 
 /**
- * API 侧引用：`apiPlanId + modelKey(+variant)` → 记录里的那一条计价。
- * 找不到就如实记进 `missing`（数据层门禁会判红），**绝不编一条价格出来**。
+ * API 侧引用：`apiPlanId + modelKey(+variant)` → 记录里的计价条目。
+ *
+ * v3.0 修订（F-v3-registry-001 / P1-12）：这里**不再返回"第一条匹配"**。
+ * 判据是**展开后的 identity 集合** `(apiPlanId, modelKey, 记录里真实 variant)`：
+ *   · `variant` 为 null / undefined ⇒ 认领该 `modelKey` 在这条记录里的**全部**真实 variant
+ *     （`variant: null` 是"通用价"，不是"随便挑一条"）；
+ *   · 显式 variant ⇒ 只认领那一条。
+ *
+ * 为什么必须展开：真实数据里有 12 组 `(apiPlanId, modelKey)` 带 `standard + long_context`
+ * 两个变体，而关系层 55 条 API 映射全是 `variant: null`。旧实现 `.find(... !link.variant || ...)`
+ * 永远返回记录里的**第一条**（本项目里是更贵的 `long_context`），于是 GLM-4.5V 页面只剩
+ * 「长上下文 ¥4 / ¥12」，`standard ¥2 / ¥6` 从来没被渲染过 —— 一个真实计价条目在页面上不存在。
+ *
+ * 返回 `{ plan, rows: [{entry, variant}], missingVariants, unresolved }`；
+ * 找不到记录 / modelKey 时返回 null（由调用方如实记进 `missing`，绝不编一条价格出来）。
  */
-function apiTargetOf(link, apiPlansById) {
+function apiTargetsOf(link, apiPlansById) {
   const plan = apiPlansById.get(link.apiPlanId) || null;
   if (!plan) return null;
-  const entry = (plan.models || []).find(item => item && item.modelKey === link.modelKey
-    && (!link.variant || item.variant === link.variant)) || null;
-  return entry ? { plan, entry } : null;
+  const entries = (plan.models || []).filter(item => item && item.modelKey === link.modelKey);
+  if (!entries.length) return null;
+  const wildcard = link.variant === null || link.variant === undefined || link.variant === '';
+  const rows = wildcard ? entries.slice() : entries.filter(item => item.variant === link.variant);
+  return {
+    plan,
+    // 一条真实计价条目 = 一行（记录里的顺序即页面顺序，不做任何去重）
+    rows: rows.map(entry => ({ plan, entry, variant: entry.variant })),
+    // 显式写了 variant 却在这条记录里找不到：如实报出来（数据层门禁会判红），页面不补行
+    missingVariants: wildcard || rows.length ? [] : [link.variant],
+    // 通配却一条真实 variant 都没匹配到（记录里没有这个 modelKey）
+    unresolved: wildcard && rows.length === 0
+  };
+}
+
+/**
+ * 兼容出口：单条命中（展开后的**第一条**，按记录顺序）。
+ * 页面渲染必须走 `apiTargetsOf()`，这个函数只为"确实只关心一条"的调用方保留。
+ */
+function apiTargetOf(link, apiPlansById) {
+  const hit = apiTargetsOf(link, apiPlansById);
+  if (!hit || !hit.rows.length) return null;
+  return { plan: hit.plan, entry: hit.rows[0].entry };
 }
 
 /** Coding 侧引用：`planId + modelName` → 套餐 `supportedModels` 里的那一条（按官方写的名字精确相等） */
@@ -210,14 +252,25 @@ function modelReferencesOf(model, ctx = {}) {
     if (!link || typeof link !== 'object') continue;
     if (!linkTargets(link, model)) continue;
     if (link.apiPlanId) {
-      const hit = apiTargetOf(link, apiPlansById);
+      const hit = apiTargetsOf(link, apiPlansById);
       if (!hit) {
         missing.push({ kind: 'api', apiPlanId: link.apiPlanId, modelKey: link.modelKey });
         continue;
       }
-      modelKeys.add(hit.entry.modelKey);
+      if (hit.unresolved) {
+        // 通配却什么都没认领：这是数据层的问题（validateLinks 判红），页面**不补一行**
+        missing.push({ kind: 'api', apiPlanId: link.apiPlanId, modelKey: link.modelKey, variant: link.variant });
+        continue;
+      }
+      for (const variant of hit.missingVariants) {
+        missing.push({ kind: 'api', apiPlanId: link.apiPlanId, modelKey: link.modelKey, variant });
+      }
       planIds.add(hit.plan.id);
-      apiItems.push({ plan: hit.plan, entry: hit.entry, link });
+      // 一条真实计价条目 = 一行（展开式：通配 link 产出该 modelKey 的全部真实 variant）
+      for (const target of hit.rows) {
+        modelKeys.add(target.entry.modelKey);
+        apiItems.push({ plan: target.plan, entry: target.entry, link });
+      }
     }
     if (link.planId) {
       const hit = codingTargetOf(link, plansById);
@@ -313,11 +366,22 @@ function modelReferenceOfCached(model, ctx) {
 /* 行模型（先算数据、再拼 HTML）                                          */
 /* ------------------------------------------------------------------ */
 
+/**
+ * **行身份**：`planId|modelKey|variant`（P1-12 口径更正）。
+ *
+ * 旧身份只有 `planId` —— 一条记录有多个变体时两行会**同身份**，页面层就无法表达
+ * "同一记录里 standard 与 long_context 各一行"，回读对账也会把两行当成一行。
+ * 现在身份覆盖到真实计价条目：一条 `api-plans.models[]` 元素 = 一个身份。
+ */
+function apiPricingRowIdOf(row) {
+  return `${row.planId}|${row.modelKey}|${row.variant}`;
+}
+
 /** 一条 API 计价条目 → 展示行（价格用 API 页的同一套格式化，不重写口径） */
 function apiPricingRowOf(item, ctx = {}) {
   const { plan, entry } = item;
   const providerKey = plan.provider;
-  return {
+  const row = {
     planId: plan.id,
     modelKey: entry.modelKey,
     channel: plan.channel,
@@ -334,6 +398,8 @@ function apiPricingRowOf(item, ctx = {}) {
     officialUrl: plan.officialUrl || '',
     note: entry.note || null
   };
+  row.rowId = apiPricingRowIdOf(row);
+  return row;
 }
 
 /** 索引页的一行：一个模型 */
@@ -612,8 +678,9 @@ function modelsIndexJsonLd(registry, ctx = {}) {
 function modelPricingRowHtml(row, prefix) {
   const official = row.officialUrl
     ? `<a href="${escapeHtml(row.officialUrl)}" rel="noopener">官方定价页 ↗</a>` : UNKNOWN_NUM;
-  return `        <tr class="mapirow" data-item="${escapeHtml(row.planId)}" data-plan="${escapeHtml(row.planId)}"
-          data-model-key="${escapeHtml(row.modelKey)}" data-provider="${escapeHtml(row.providerKey)}">
+  // 行身份 = planId|modelKey|variant（一条真实计价条目一行，两行互不冒充）
+  return `        <tr class="mapirow" data-item="${escapeHtml(row.rowId || apiPricingRowIdOf(row))}" data-plan="${escapeHtml(row.planId)}"
+          data-model-key="${escapeHtml(row.modelKey)}" data-variant="${escapeHtml(String(row.variant === null || row.variant === undefined ? '' : row.variant))}" data-provider="${escapeHtml(row.providerKey)}">
           <th scope="row">${escapeHtml(row.provider)}</th>
           <td>${escapeHtml(row.channelLabel)}</td>
           <td>${escapeHtml(row.variantLabel)}</td>
@@ -811,8 +878,11 @@ function markupOnly(html) {
  * 回读页面再与数据对账：
  *   · 索引页：行数 == 已生成详情页的模型数；ItemList 声明数 == 元素数 == `data-item` 行数；
  *     未过门槛的模型**不许**出现在 ItemList 里（§8 第 19 条牙）。
- *   · 详情页：表格每一行的 `data-provider` 必须等于该 `plan` 在数据里的 provider
- *     ——「展示不存在的 Provider」当场变红（§8 第 5 条牙）。
+ *   · 详情页（v3.0 修订 F-v3-registry-001 / P1-12）：
+ *     · 表格每一行的**行身份** `data-item = planId|modelKey|variant` 必须逐字等于数据里那条计价条目的身份
+ *       —— 「同记录里换个 variant 冒充」「凭空的 modelKey」「展示不存在的 Provider」当场变红（§8 第 5 条牙）；
+ *     · 行数 == **展开后的**真实计价条目数（一条 pricing item = 一行）；每条都必须在页面上出现
+ *       —— 多变体吞行（只渲染更贵的 long_context、standard 消失）在这里变红。
  *
  * @param {string} html 页面（正文或整页）
  * @param {object} page `{ kind: 'models-index', registry, ctx }` 或
@@ -884,27 +954,53 @@ function assertPageHonesty(html, page = {}) {
       if (!text.includes(label)) problems.push(`详情页缺少「${label}」`);
     }
     const refs = modelReferencesOf(model, ctx);
-    const expectedPlanProviders = new Map(refs.apiItems.map(item => [item.plan.id, item.plan.provider]));
-    const rowRe = /<tr class="mapirow" data-item="([^"]*)" data-plan="([^"]*)"[^>]*data-model-key="([^"]*)"[^>]*data-provider="([^"]*)"/g;
+    // 期望行 = **展开后的计价条目集合**（一条真实 pricing item = 一行），不是 link 条数。
+    // 行身份 `planId|modelKey|variant`：多行同身份 ⇒ 红（两行互不冒充）。
+    const expectedRows = refs.apiItems.map(item => {
+      const row = apiPricingRowOf(item, ctx);
+      return {
+        rowId: row.rowId,
+        planId: row.planId,
+        modelKey: row.modelKey,
+        variant: String(row.variant === null || row.variant === undefined ? '' : row.variant),
+        provider: row.providerKey
+      };
+    });
+    const expectedById = new Map(expectedRows.map(row => [row.rowId, row]));
+    const rowRe = /<tr class="mapirow" data-item="([^"]*)" data-plan="([^"]*)"[^>]*data-model-key="([^"]*)"[^>]*data-variant="([^"]*)"[^>]*data-provider="([^"]*)"/g;
+    const seenRowIds = new Set();
     let match;
     let rowCount = 0;
     while ((match = rowRe.exec(text)) !== null) {
       rowCount++;
-      const [, item, planId, modelKey, provider] = match;
-      const real = expectedPlanProviders.get(planId);
-      if (!real) {
-        problems.push(`表格里的记录 ${planId} 不在该模型的显式引用里（凭空出现的 Provider「${provider}」）`);
+      const [, item, planId, modelKey, variant, provider] = match;
+      const identity = `${planId}|${modelKey}|${variant}`;
+      const expected = expectedById.get(identity);
+      if (!expected) {
+        const planKnown = expectedRows.some(row => row.planId === planId);
+        problems.push(planKnown
+          ? `表格里的行 identity「${identity}」不是该模型的真实计价条目（同一记录里被换掉的 variant / modelKey 也要报——不允许拿另一条价格冒充）`
+          : `表格里的记录 ${planId} 不在该模型的显式引用里（凭空出现的 Provider「${provider}」）`);
         continue;
       }
-      if (real !== provider) {
-        problems.push(`记录 ${planId} 的 Provider 显示为「${provider}」，按数据应为「${real}」`);
+      if (item !== identity) {
+        problems.push(`表格行的 data-item（${item}）与行 identity（${identity}）不一致`);
       }
-      const known = refs.apiItems.some(entry => entry.plan.id === planId && entry.entry.modelKey === modelKey);
-      if (!known) problems.push(`记录 ${planId} 上标注的 modelKey「${modelKey}」与该模型没有映射`);
-      if (item !== planId) problems.push(`表格行的 data-item（${item}）与记录 id（${planId}）不一致`);
+      if (seenRowIds.has(identity)) {
+        problems.push(`表格里出现重复行 identity「${identity}」—— 一条计价条目只能有一行`);
+      }
+      seenRowIds.add(identity);
+      if (expected.provider !== provider) {
+        problems.push(`记录 ${planId} 的 Provider 显示为「${provider}」，按数据应为「${expected.provider}」`);
+      }
     }
-    if (rowCount !== refs.apiItems.length) {
-      problems.push(`计价表 ${rowCount} 行 ≠ 显式映射的计价条目 ${refs.apiItems.length} 条`);
+    if (rowCount !== expectedRows.length) {
+      problems.push(`计价表 ${rowCount} 行 ≠ 该模型真实计价条目 ${expectedRows.length} 条（一条 pricing item = 一行；多变体不许吞行）`);
+    }
+    for (const row of expectedRows) {
+      if (!seenRowIds.has(row.rowId)) {
+        problems.push(`计价条目 ${row.rowId}（记录 ${row.planId} · ${row.modelKey} · variant ${row.variant}）没有渲染成行 —— 一个真实计价条目在页面上不存在`);
+      }
     }
     // 题面 D6 点名的列（同一模型在多个平台上必须**全部**列出——行数对账在上一段）
     if (refs.apiItems.length) {
@@ -1008,6 +1104,8 @@ module.exports = {
   linkModelIdOf,
   linkTargets,
   apiTargetOf,
+  apiTargetsOf,
+  apiPricingRowIdOf,
   codingTargetOf,
   modelIdOf,
   modelNameOf,

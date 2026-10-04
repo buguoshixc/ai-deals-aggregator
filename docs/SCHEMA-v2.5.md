@@ -205,13 +205,20 @@ firstSeen · lastSeen · verified · verifiedAt · evidence · derivedMetrics
 
 ---
 
-## 8. `freeTier`：只装**稳定长期**免费能力（题面 §六）
+## 8. `freeTier`：三档 `stability` 必填，且只登记**长期**能力（题面 §六 · 2026-10-04 更新）
 
 ```json
-"freeTier": { "type": "models", "amount": null, "period": null,
+"freeTier": { "type": "models", "stability": "standing", "amount": null, "period": null,
               "models": ["glm-4.7-flash", "glm-4.6v-flash"],
               "description": "官方长期提供的免费 API 模型…", "conversionDependsOnModel": null }
 ```
+
+> **本节在质量收口后已更新**：旧版只写「只装**稳定长期**免费能力」，但没有可机器校验的「长期/新用户」字段，
+> 于是「新用户赠送 / 限时赠品」曾被收进 `freeTier` 并被页面写成长期能力（审计 P1-11 / `F-r2-api-005`）。
+> 现在**每一块 `freeTier` 都必须显式回答** `stability`，判据在 `scripts/lib/api-plan-schema.js` 的
+> `FREE_TIER_STABILITY = ['standing','new_user','promotional']`；**缺省或 `null` 一律红**（不许默认成 `standing`）。
+> 现行生产 4 条：`standing` 2 条（google / zhipu）+ `new_user` 2 条（aliyun / tencent，均为 100 万 tokens / 一次性资源包）。
+> 现行数字与重算命令见 [`research/quality-closure/RECLASSIFIED_FINDINGS.md`](../research/quality-closure/RECLASSIFIED_FINDINGS.md) §0.2。
 
 - `type` ∈ `tokens | credits | requests | models | rate_limited | unlimited_fair_use | none | other`；
   复用 plans 的"量纲型必须有正数 amount / 无数值型必须没有 / 语义在文字里的必须写 description"三张表。
@@ -219,9 +226,13 @@ firstSeen · lastSeen · verified · verifiedAt · evidence · derivedMetrics
   - 整块**缺席**（`null`）= 我们没查到 / 官方没说明；
   - `{ "type": "none" }` = 官方**明说**没有免费额度，必须带 `description` 与官方引文；
   - `0` 之类的字面量一律不接受。
+  - `conversionDependsOnModel` 也是三态（`true / false / null`）：**缺字段与显式 `null` 都落成 `null`（未知），绝不落成 `false`**；
+    `type: "credits"` 时必须明确回答（连 `null` 都不接受）。
 - `type: "models"` ⇒ `models` 必填，且每个 key 必须是本记录 `models` 里真实存在的 `modelKey`。
 - **限时活动与新用户赠送不写在这里**：它们是优惠（Deals），通过 `deal-plan-links.json` 关联。
   页面上有一句话写明这条分工，且 API 计费页的「当前优惠」块把两者连起来。
+  「新用户赠送」若确有官方原文且额度是 API 能力（如阿里云百炼新人 100 万 tokens / 90 天），
+  可以留在 `freeTier`，但 `stability` 必须写 `new_user`，页面措辞按 `stability` 分档。
 
 ---
 

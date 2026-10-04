@@ -1,0 +1,669 @@
+{
+  "gold": "D:\\qc-t20\\gold",
+  "work": "D:\\qc-t20\\cases",
+  "gitBash": "C:\\Program Files\\Git\\bin\\bash.exe",
+  "commonGates": [
+    "validate-strict",
+    "check-ci-consistency",
+    "check-reproducible",
+    "check-plans-reproducible",
+    "check-api-plans-reproducible",
+    "check-models-reproducible",
+    "rebuild-api-plans（判据入口：拒绝写盘即判据红）",
+    "rebuild-plans（判据入口：拒绝写盘即判据红）",
+    "rebuild-models（判据入口：拒绝写盘即判据红）",
+    "check-api-plan-history",
+    "check-plan-history",
+    "history-verify",
+    "models-selftest",
+    "models-page-selftest",
+    "api-plans-selftest",
+    "plans-selftest",
+    "ai-selftest",
+    "data-docs-selftest",
+    "feeds-selftest",
+    "health-selftest",
+    "provenance-selftest",
+    "archive-selftest",
+    "seo-verify",
+    "coverage-report",
+    "deal-plan-links-selftest",
+    "audience-selftest",
+    "MY-join-audit",
+    "build-local"
+  ],
+  "browserGate": "MY-browser-matrix",
+  "goldManifest": {
+    "deals.json": "3ba148dbc640e1b2afc68e9d7e4cfd6fed87b6151f796fd67e399b91826dd301",
+    "plans.json": "a72c91efea82b843141dfa9994f11a81ed38e2d2ca31c3c218fa31b15cb70938",
+    "api-plans.json": "19cd8af73a746d909a447c4afd09f198f8664892b69710f968e48e5c3ed479ec",
+    "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b",
+    "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+    "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+    "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+    "scripts/data/curated_plans.json": "9c6e49a351d40e79d40e3f8b3ffab87b0e542fbf9c6545b67014cb1df10d80cc",
+    "scripts/data/curated_api_plans.json": "8674dd236813c77c97a5218590efb873c82548525e3c894470d6764ea238cec3",
+    "scripts/data/source-health.json": "dea22263ad42aabde32066013a5c432726f6b08d830c1f7cc95fb430c00f2183",
+    ".github/workflows/verify.yml": "03af788ff72d1ac1980619602e805b303ec68ac288ada654d1ff82b5c6cee84b",
+    ".github/actions/gate/action.yml": "48701a23795ffa1caade2e887a96599ba39938f4defe2c2d0df07ee677016af1"
+  },
+  "goldAfter": {
+    "deals.json": "3ba148dbc640e1b2afc68e9d7e4cfd6fed87b6151f796fd67e399b91826dd301",
+    "plans.json": "a72c91efea82b843141dfa9994f11a81ed38e2d2ca31c3c218fa31b15cb70938",
+    "api-plans.json": "19cd8af73a746d909a447c4afd09f198f8664892b69710f968e48e5c3ed479ec",
+    "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b",
+    "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+    "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+    "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+    "scripts/data/curated_plans.json": "9c6e49a351d40e79d40e3f8b3ffab87b0e542fbf9c6545b67014cb1df10d80cc",
+    "scripts/data/curated_api_plans.json": "8674dd236813c77c97a5218590efb873c82548525e3c894470d6764ea238cec3",
+    "scripts/data/source-health.json": "dea22263ad42aabde32066013a5c432726f6b08d830c1f7cc95fb430c00f2183",
+    ".github/workflows/verify.yml": "03af788ff72d1ac1980619602e805b303ec68ac288ada654d1ff82b5c6cee84b",
+    ".github/actions/gate/action.yml": "48701a23795ffa1caade2e887a96599ba39938f4defe2c2d0df07ee677016af1"
+  },
+  "goldIntact": true,
+  "sharedManifest": {
+    "deals.json": "3ba148dbc640e1b2afc68e9d7e4cfd6fed87b6151f796fd67e399b91826dd301",
+    "plans.json": "a72c91efea82b843141dfa9994f11a81ed38e2d2ca31c3c218fa31b15cb70938",
+    "api-plans.json": "19cd8af73a746d909a447c4afd09f198f8664892b69710f968e48e5c3ed479ec",
+    "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b",
+    "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+    "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+    "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+    "scripts/data/curated_plans.json": "9c6e49a351d40e79d40e3f8b3ffab87b0e542fbf9c6545b67014cb1df10d80cc",
+    "scripts/data/curated_api_plans.json": "8674dd236813c77c97a5218590efb873c82548525e3c894470d6764ea238cec3",
+    "scripts/data/source-health.json": "dea22263ad42aabde32066013a5c432726f6b08d830c1f7cc95fb430c00f2183",
+    ".github/workflows/verify.yml": "03af788ff72d1ac1980619602e805b303ec68ac288ada654d1ff82b5c6cee84b",
+    ".github/actions/gate/action.yml": "48701a23795ffa1caade2e887a96599ba39938f4defe2c2d0df07ee677016af1"
+  },
+  "sharedAfter": {
+    "deals.json": "3ba148dbc640e1b2afc68e9d7e4cfd6fed87b6151f796fd67e399b91826dd301",
+    "plans.json": "a72c91efea82b843141dfa9994f11a81ed38e2d2ca31c3c218fa31b15cb70938",
+    "api-plans.json": "19cd8af73a746d909a447c4afd09f198f8664892b69710f968e48e5c3ed479ec",
+    "models.json": "8fa85b1d0547b7ed54b671711f6a10585c1753b440713a16d210dad6746ae95b",
+    "model-registry-links.json": "fd2336c86d07645779efc55a9b3bf05bf1aa99c4193854e5afa9d6503d9d1a2e",
+    "scripts/data/models.json": "05b72c2dcc8f642e61182d4439649ce68a50e5ac73c5b419a966b7784e9bff0e",
+    "scripts/data/model-registry-links.json": "3594e4da5df5a3db4b864e19b95dc963a7003b234849ec92b940cf08d84a7b40",
+    "scripts/data/curated_plans.json": "9c6e49a351d40e79d40e3f8b3ffab87b0e542fbf9c6545b67014cb1df10d80cc",
+    "scripts/data/curated_api_plans.json": "8674dd236813c77c97a5218590efb873c82548525e3c894470d6764ea238cec3",
+    "scripts/data/source-health.json": "dea22263ad42aabde32066013a5c432726f6b08d830c1f7cc95fb430c00f2183",
+    ".github/workflows/verify.yml": "03af788ff72d1ac1980619602e805b303ec68ac288ada654d1ff82b5c6cee84b",
+    ".github/actions/gate/action.yml": "48701a23795ffa1caade2e887a96599ba39938f4defe2c2d0df07ee677016af1"
+  },
+  "sharedIntact": true,
+  "results": [
+    {
+      "id": "M03-changes-history-nonempty",
+      "title": "Changes history 非空 → build/verify 必须绿",
+      "lane": "§15 变化雷达（T07/T11 修复面）",
+      "kind": "state",
+      "expect": "GREEN",
+      "detectors": [
+        "build-local",
+        "seo-verify",
+        "verify-site",
+        "check-plan-history",
+        "check-api-plan-history",
+        "validate-strict"
+      ],
+      "ms": 47564,
+      "files": [],
+      "setupRuns": [
+        {
+          "id": "M03 Changes 非空：把 T07 生成器产出的非空历史移植进「当前代码」副本（gold 基底）",
+          "command": "node \"D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\quality-closure-post-audit\\research\\quality-closure\\mutation-work\\prepare-nonempty.cjs\" --case=\"D:\\qc-t20\\cases\\M03-changes-history-nonempty\" --fixture=\"D:\\qc-t20\\cases\\_e2e\"",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "id": "M03 Changes 非空：build-local（非空状态必须构建成功）",
+          "command": "node scripts/tools/build-local.js",
+          "exitCode": 0,
+          "key": [
+            "套餐模型串    : 19 条 = 已映射 9 + 已声明不对应单一模型身份 10 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "模型注册表: 44 个模型 · 11 个开发者 · 11 个模型族 · 状态 active 44 · 关系 64 条（API 55 / Coding 9） · 未映射 API modelKey 0 条 · 套餐模型串 19 条（已映射 9 / 已声明不对应单一模型身份 10 / 未判 0） · 未被引用的模型 0 个",
+            "跳过 vendor/Trae：count=0 events=0 · no-vendor-identity · provider「trae」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 2 条 / API 记录 0 条 / 模型 0 个）"
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 0,
+          "key": [
+            "套餐模型串    : 19 条 = 已映射 9 + 已声明不对应单一模型身份 10 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）"
+          ]
+        },
+        {
+          "name": "check-ci-consistency",
+          "command": "node scripts/tools/check-ci-consistency.js --expect-checks=36",
+          "exitCode": 0,
+          "key": [
+            "✓ (3b) 全部 workflow 的 runs-on 都不是浮动标签（按取值判，不按字符串判） — 未发现 *-latest 取值（注释里提到它不算漂移）",
+            "✓ (15) collect.yml 的推送用专用 GitHub App 身份（github-actions 不能被加进 ruleset 绕过名单） — App token 换取排在推送之前 · checkout 不持久化凭据 · 提交带 [skip ci] 防双链发布"
+          ]
+        },
+        {
+          "name": "check-reproducible",
+          "command": "node scripts/tools/check-reproducible.js",
+          "exitCode": 0,
+          "key": [
+            "补充自身问题  : 非法 0 · 指向已不存在的条目 0 · 与策展条目撞 id 0（都应为 0）",
+            "不一致        : 0 处（必须为 0）",
+            "provenance 漂移: 0 处（必须为 0）"
+          ]
+        },
+        {
+          "name": "check-plans-reproducible",
+          "command": "node scripts/tools/check-plans-reproducible.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "check-api-plans-reproducible",
+          "command": "node scripts/tools/check-api-plans-reproducible.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "check-models-reproducible",
+          "command": "node scripts/tools/check-models-reproducible.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "rebuild-api-plans（判据入口：拒绝写盘即判据红）",
+          "command": "node scripts/tools/rebuild-api-plans.js",
+          "exitCode": 0,
+          "key": [
+            "✓ 数据集级校验通过（id 唯一 · 身份唯一 · updatedAt · 规范排序 · provider 表）"
+          ]
+        },
+        {
+          "name": "rebuild-plans（判据入口：拒绝写盘即判据红）",
+          "command": "node scripts/tools/rebuild-plans.js",
+          "exitCode": 0,
+          "key": [
+            "✓ 数据集级校验通过（id 唯一 · 身份唯一 · updatedAt · 规范排序 · provider 表）"
+          ]
+        },
+        {
+          "name": "rebuild-models（判据入口：拒绝写盘即判据红）",
+          "command": "node scripts/tools/rebuild-models.js",
+          "exitCode": 0,
+          "key": [
+            "✓ 数据集级校验通过（身份唯一 · 别名唯一 · 映射存在 · 一条计价条目至多归属一个 registry 模型 · 引文逐字来自记录 · API 与套餐两侧每一串都已判过）",
+            "· 计价条目（展开后）：67 条 = 已被映射认领 67 条 + 未认领 0 条",
+            "· 未认领的计价条目：0 条"
+          ]
+        },
+        {
+          "name": "check-api-plan-history",
+          "command": "node scripts/tools/check-api-plan-history.js",
+          "exitCode": 0,
+          "key": [
+            "派生 eventId  : 12/12 条事件带 id · 重算比对 0 处不一致"
+          ]
+        },
+        {
+          "name": "check-plan-history",
+          "command": "node scripts/tools/check-plan-history.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "history-verify",
+          "command": "node scripts/tools/history-verify.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "models-selftest",
+          "command": "node scripts/tools/models-selftest.js",
+          "exitCode": 0,
+          "key": [
+            "✓ 真实的 models.json 通过身份校验（44 条）",
+            "套餐模型串：19 条 = 已映射 9 + 已声明\"不对应单一模型身份\" 10 + 未判 0（逐条见 check-model-registry-links 的输出）",
+            "✓ 每个模型的 officialUrl 都是它某条映射记录里真实引用过的官方页（不许出现凭空的链接）"
+          ]
+        },
+        {
+          "name": "models-page-selftest",
+          "command": "node scripts/tools/models-page-selftest.js --dir=dist",
+          "exitCode": 0,
+          "key": [
+            "① 真实 registry：身份 / 映射 / 门槛",
+            "✓ 覆盖：未映射 API modelKey 0 条 · 套餐模型串未判 0 条（已声明不对应单一模型身份 10 条）",
+            "✓ §17 独立 join：期望行数 == api-plans 真实计价条目数（一条 pricing item = 一行）"
+          ]
+        },
+        {
+          "name": "api-plans-selftest",
+          "command": "node scripts/tools/api-plans-selftest.js",
+          "exitCode": 0,
+          "key": [
+            "① 数据契约：身份 / 单位 / 模型条目",
+            "✓ limits.appliesTo 指向不存在的模型 → 红",
+            "✓ 【牙】单位没有任何见证（引文不点名、无 pricing.unit 引文、unitNote 空）→ 红（不许静默放行）"
+          ]
+        },
+        {
+          "name": "plans-selftest",
+          "command": "node scripts/tools/plans-selftest.js",
+          "exitCode": 0,
+          "key": [
+            "① 构造与身份（id 必须稳定）",
+            "✓ 额度周期与计费周期不一致时不产出单价",
+            "✓ 不可比较时该值为 null（额度周期与计费周期不一致）"
+          ]
+        },
+        {
+          "name": "ai-selftest",
+          "command": "node scripts/tools/ai-selftest.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "data-docs-selftest",
+          "command": "node scripts/tools/data-docs-selftest.js --dir=dist",
+          "exitCode": 0,
+          "key": [
+            "④ 牙 #12：文档里的 JSON endpoint 不存在",
+            "✓ 【牙】Manifest 里写了一个不存在的 endpoint → assertEndpointsExist 变红",
+            "✓ 【牙】同一个错误在页面断言里也会变红（模板与 Manifest 不一致）"
+          ]
+        },
+        {
+          "name": "feeds-selftest",
+          "command": "node scripts/tools/feeds-selftest.js",
+          "exitCode": 1,
+          "key": [
+            "✓ lib/feeds.js 里没有 Date.now（订阅层不许读时钟 / 联网 / 写盘）",
+            "✓ lib/feeds.js 里没有 无参 new Date(（订阅层不许读时钟 / 联网 / 写盘）",
+            "✓ lib/feeds.js 里没有 process.env（订阅层不许读时钟 / 联网 / 写盘）"
+          ]
+        },
+        {
+          "name": "health-selftest",
+          "command": "node scripts/tools/health-selftest.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "provenance-selftest",
+          "command": "node scripts/tools/provenance-selftest.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "archive-selftest",
+          "command": "node scripts/tools/archive-selftest.js --dir=dist",
+          "exitCode": 1,
+          "key": [
+            "✗ 真实日志 0 事件 ⇒ 0 条档案（这是事实，不是故障）",
+            "✗ 空态明说\"0 条是事实，不是故障\"，并给出**具体到事件类型**的为空原因",
+            "✗ 空态没有把\"没有拿到日志\"与\"没有记录\"混为一谈"
+          ]
+        },
+        {
+          "name": "seo-verify",
+          "command": "node scripts/tools/seo-verify.js --dir=dist",
+          "exitCode": 0,
+          "key": [
+            "✓ changes/ ItemList 成员按 id 唯一（一个记录不许占两个位置）",
+            "✓ changes/ ItemList 声明数 == 元素数 == 页面 data-item 行数"
+          ]
+        },
+        {
+          "name": "coverage-report",
+          "command": "node scripts/tools/coverage-report.js",
+          "exitCode": 0,
+          "key": [
+            "已声明\"不对应单一模型身份\"                 10   模型池 / 系列名 / 一个串多个模型 / registry 没有的身份 / 图像语音资源（逐条见缺口 5 下方）",
+            "── 已声明\"不对应单一模型身份\"的套餐模型串（有理由的缺口，不是漏判）──"
+          ]
+        },
+        {
+          "name": "deal-plan-links-selftest",
+          "command": "node scripts/tools/deal-plan-links-selftest.js",
+          "exitCode": 0,
+          "key": [
+            "✓ planId 指向不存在的套餐 → 报错",
+            "✓ dealId 指向不存在的优惠 → 报错",
+            "✓ 链接声明的 provider 与套餐的不一致 → 报错"
+          ]
+        },
+        {
+          "name": "audience-selftest",
+          "command": "node scripts/tools/audience-selftest.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "MY-join-audit",
+          "command": "node research/quality-closure/verify-work/join-audit.cjs --dist=dist",
+          "exitCode": 0,
+          "key": [
+            "· 多变体页 9 个 · 逐页行数 glm-4.5v:2 glm-4.6v:2 glm-4.6v-flashx:2 glm-5v-turbo:2 qwen3-max:2 gpt-6-astra:4 gpt-6-luna:4 gpt-6.1-sol:4 minimax-m3:3 · 合计 25 行",
+            "· 共 67 条身份被认领 · 唯一 owner 67 条",
+            "✅ 四项计数全 0，且行身份 / 价格 / 单位 / 通道 / 变体 / 来源链接 / canonical 逐项对账通过"
+          ]
+        },
+        {
+          "name": "build-local",
+          "command": "node scripts/tools/build-local.js",
+          "exitCode": 0,
+          "key": [
+            "套餐模型串    : 19 条 = 已映射 9 + 已声明不对应单一模型身份 10 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "模型注册表: 44 个模型 · 11 个开发者 · 11 个模型族 · 状态 active 44 · 关系 64 条（API 55 / Coding 9） · 未映射 API modelKey 0 条 · 套餐模型串 19 条（已映射 9 / 已声明不对应单一模型身份 10 / 未判 0） · 未被引用的模型 0 个",
+            "跳过 vendor/Trae：count=0 events=0 · no-vendor-identity · provider「trae」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 2 条 / API 记录 0 条 / 模型 0 个）"
+          ]
+        },
+        {
+          "name": "MY-browser-matrix",
+          "command": "node research/quality-closure/verify-work/browser-matrix.cjs --dist=dist",
+          "exitCode": 0,
+          "key": [
+            "✅ 浏览器矩阵全过（横向溢出 / console / 失败请求 / 站内链接与锚点 / canonical / 面包屑 / 来源外链）"
+          ]
+        }
+      ],
+      "extras": [],
+      "restore": [],
+      "reds": [
+        "feeds-selftest",
+        "archive-selftest"
+      ],
+      "failedExtras": [],
+      "failedSetup": [],
+      "verdict": "PASS-requirement"
+    },
+    {
+      "id": "M04-archive-nonempty",
+      "title": "Archive 非空 → assets / internal links 必须绿",
+      "lane": "§15 历史档案（T08 修复面）",
+      "kind": "state",
+      "expect": "GREEN",
+      "detectors": [
+        "archive-selftest(--dir=dist)",
+        "build-local",
+        "seo-verify",
+        "verify-site",
+        "my-join-audit"
+      ],
+      "ms": 35125,
+      "files": [],
+      "setupRuns": [
+        {
+          "id": "M04 Archive 非空：把 T07 生成器产出的非空历史移植进「当前代码」副本（gold 基底）",
+          "command": "node \"D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\quality-closure-post-audit\\research\\quality-closure\\mutation-work\\prepare-nonempty.cjs\" --case=\"D:\\qc-t20\\cases\\M04-archive-nonempty\" --fixture=\"D:\\qc-t20\\cases\\_e2e\"",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "id": "M04 Archive 非空：build-local（非空状态必须构建成功）",
+          "command": "node scripts/tools/build-local.js",
+          "exitCode": 0,
+          "key": [
+            "套餐模型串    : 19 条 = 已映射 9 + 已声明不对应单一模型身份 10 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "模型注册表: 44 个模型 · 11 个开发者 · 11 个模型族 · 状态 active 44 · 关系 64 条（API 55 / Coding 9） · 未映射 API modelKey 0 条 · 套餐模型串 19 条（已映射 9 / 已声明不对应单一模型身份 10 / 未判 0） · 未被引用的模型 0 个",
+            "跳过 vendor/Trae：count=0 events=0 · no-vendor-identity · provider「trae」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 2 条 / API 记录 0 条 / 模型 0 个）"
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "name": "validate-strict",
+          "command": "node scripts/validate.js --strict",
+          "exitCode": 0,
+          "key": [
+            "套餐模型串    : 19 条 = 已映射 9 + 已声明不对应单一模型身份 10 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）"
+          ]
+        },
+        {
+          "name": "check-ci-consistency",
+          "command": "node scripts/tools/check-ci-consistency.js --expect-checks=36",
+          "exitCode": 0,
+          "key": [
+            "✓ (3b) 全部 workflow 的 runs-on 都不是浮动标签（按取值判，不按字符串判） — 未发现 *-latest 取值（注释里提到它不算漂移）",
+            "✓ (15) collect.yml 的推送用专用 GitHub App 身份（github-actions 不能被加进 ruleset 绕过名单） — App token 换取排在推送之前 · checkout 不持久化凭据 · 提交带 [skip ci] 防双链发布"
+          ]
+        },
+        {
+          "name": "check-reproducible",
+          "command": "node scripts/tools/check-reproducible.js",
+          "exitCode": 0,
+          "key": [
+            "补充自身问题  : 非法 0 · 指向已不存在的条目 0 · 与策展条目撞 id 0（都应为 0）",
+            "不一致        : 0 处（必须为 0）",
+            "provenance 漂移: 0 处（必须为 0）"
+          ]
+        },
+        {
+          "name": "check-plans-reproducible",
+          "command": "node scripts/tools/check-plans-reproducible.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "check-api-plans-reproducible",
+          "command": "node scripts/tools/check-api-plans-reproducible.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "check-models-reproducible",
+          "command": "node scripts/tools/check-models-reproducible.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "rebuild-api-plans（判据入口：拒绝写盘即判据红）",
+          "command": "node scripts/tools/rebuild-api-plans.js",
+          "exitCode": 0,
+          "key": [
+            "✓ 数据集级校验通过（id 唯一 · 身份唯一 · updatedAt · 规范排序 · provider 表）"
+          ]
+        },
+        {
+          "name": "rebuild-plans（判据入口：拒绝写盘即判据红）",
+          "command": "node scripts/tools/rebuild-plans.js",
+          "exitCode": 0,
+          "key": [
+            "✓ 数据集级校验通过（id 唯一 · 身份唯一 · updatedAt · 规范排序 · provider 表）"
+          ]
+        },
+        {
+          "name": "rebuild-models（判据入口：拒绝写盘即判据红）",
+          "command": "node scripts/tools/rebuild-models.js",
+          "exitCode": 0,
+          "key": [
+            "✓ 数据集级校验通过（身份唯一 · 别名唯一 · 映射存在 · 一条计价条目至多归属一个 registry 模型 · 引文逐字来自记录 · API 与套餐两侧每一串都已判过）",
+            "· 计价条目（展开后）：67 条 = 已被映射认领 67 条 + 未认领 0 条",
+            "· 未认领的计价条目：0 条"
+          ]
+        },
+        {
+          "name": "check-api-plan-history",
+          "command": "node scripts/tools/check-api-plan-history.js",
+          "exitCode": 0,
+          "key": [
+            "派生 eventId  : 12/12 条事件带 id · 重算比对 0 处不一致"
+          ]
+        },
+        {
+          "name": "check-plan-history",
+          "command": "node scripts/tools/check-plan-history.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "history-verify",
+          "command": "node scripts/tools/history-verify.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "models-selftest",
+          "command": "node scripts/tools/models-selftest.js",
+          "exitCode": 0,
+          "key": [
+            "✓ 真实的 models.json 通过身份校验（44 条）",
+            "套餐模型串：19 条 = 已映射 9 + 已声明\"不对应单一模型身份\" 10 + 未判 0（逐条见 check-model-registry-links 的输出）",
+            "✓ 每个模型的 officialUrl 都是它某条映射记录里真实引用过的官方页（不许出现凭空的链接）"
+          ]
+        },
+        {
+          "name": "models-page-selftest",
+          "command": "node scripts/tools/models-page-selftest.js --dir=dist",
+          "exitCode": 0,
+          "key": [
+            "① 真实 registry：身份 / 映射 / 门槛",
+            "✓ 覆盖：未映射 API modelKey 0 条 · 套餐模型串未判 0 条（已声明不对应单一模型身份 10 条）",
+            "✓ §17 独立 join：期望行数 == api-plans 真实计价条目数（一条 pricing item = 一行）"
+          ]
+        },
+        {
+          "name": "api-plans-selftest",
+          "command": "node scripts/tools/api-plans-selftest.js",
+          "exitCode": 0,
+          "key": [
+            "① 数据契约：身份 / 单位 / 模型条目",
+            "✓ limits.appliesTo 指向不存在的模型 → 红",
+            "✓ 【牙】单位没有任何见证（引文不点名、无 pricing.unit 引文、unitNote 空）→ 红（不许静默放行）"
+          ]
+        },
+        {
+          "name": "plans-selftest",
+          "command": "node scripts/tools/plans-selftest.js",
+          "exitCode": 0,
+          "key": [
+            "① 构造与身份（id 必须稳定）",
+            "✓ 额度周期与计费周期不一致时不产出单价",
+            "✓ 不可比较时该值为 null（额度周期与计费周期不一致）"
+          ]
+        },
+        {
+          "name": "ai-selftest",
+          "command": "node scripts/tools/ai-selftest.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "data-docs-selftest",
+          "command": "node scripts/tools/data-docs-selftest.js --dir=dist",
+          "exitCode": 0,
+          "key": [
+            "④ 牙 #12：文档里的 JSON endpoint 不存在",
+            "✓ 【牙】Manifest 里写了一个不存在的 endpoint → assertEndpointsExist 变红",
+            "✓ 【牙】同一个错误在页面断言里也会变红（模板与 Manifest 不一致）"
+          ]
+        },
+        {
+          "name": "feeds-selftest",
+          "command": "node scripts/tools/feeds-selftest.js",
+          "exitCode": 1,
+          "key": [
+            "✓ lib/feeds.js 里没有 Date.now（订阅层不许读时钟 / 联网 / 写盘）",
+            "✓ lib/feeds.js 里没有 无参 new Date(（订阅层不许读时钟 / 联网 / 写盘）",
+            "✓ lib/feeds.js 里没有 process.env（订阅层不许读时钟 / 联网 / 写盘）"
+          ]
+        },
+        {
+          "name": "health-selftest",
+          "command": "node scripts/tools/health-selftest.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "provenance-selftest",
+          "command": "node scripts/tools/provenance-selftest.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "archive-selftest",
+          "command": "node scripts/tools/archive-selftest.js --dir=dist",
+          "exitCode": 1,
+          "key": [
+            "✗ 真实日志 0 事件 ⇒ 0 条档案（这是事实，不是故障）",
+            "✗ 空态明说\"0 条是事实，不是故障\"，并给出**具体到事件类型**的为空原因",
+            "✗ 空态没有把\"没有拿到日志\"与\"没有记录\"混为一谈"
+          ]
+        },
+        {
+          "name": "seo-verify",
+          "command": "node scripts/tools/seo-verify.js --dir=dist",
+          "exitCode": 0,
+          "key": [
+            "✓ changes/ ItemList 成员按 id 唯一（一个记录不许占两个位置）",
+            "✓ changes/ ItemList 声明数 == 元素数 == 页面 data-item 行数"
+          ]
+        },
+        {
+          "name": "coverage-report",
+          "command": "node scripts/tools/coverage-report.js",
+          "exitCode": 0,
+          "key": [
+            "已声明\"不对应单一模型身份\"                 10   模型池 / 系列名 / 一个串多个模型 / registry 没有的身份 / 图像语音资源（逐条见缺口 5 下方）",
+            "── 已声明\"不对应单一模型身份\"的套餐模型串（有理由的缺口，不是漏判）──"
+          ]
+        },
+        {
+          "name": "deal-plan-links-selftest",
+          "command": "node scripts/tools/deal-plan-links-selftest.js",
+          "exitCode": 0,
+          "key": [
+            "✓ planId 指向不存在的套餐 → 报错",
+            "✓ dealId 指向不存在的优惠 → 报错",
+            "✓ 链接声明的 provider 与套餐的不一致 → 报错"
+          ]
+        },
+        {
+          "name": "audience-selftest",
+          "command": "node scripts/tools/audience-selftest.js",
+          "exitCode": 0,
+          "key": []
+        },
+        {
+          "name": "MY-join-audit",
+          "command": "node research/quality-closure/verify-work/join-audit.cjs --dist=dist",
+          "exitCode": 0,
+          "key": [
+            "· 多变体页 9 个 · 逐页行数 glm-4.5v:2 glm-4.6v:2 glm-4.6v-flashx:2 glm-5v-turbo:2 qwen3-max:2 gpt-6-astra:4 gpt-6-luna:4 gpt-6.1-sol:4 minimax-m3:3 · 合计 25 行",
+            "· 共 67 条身份被认领 · 唯一 owner 67 条",
+            "✅ 四项计数全 0，且行身份 / 价格 / 单位 / 通道 / 变体 / 来源链接 / canonical 逐项对账通过"
+          ]
+        },
+        {
+          "name": "build-local",
+          "command": "node scripts/tools/build-local.js",
+          "exitCode": 0,
+          "key": [
+            "套餐模型串    : 19 条 = 已映射 9 + 已声明不对应单一模型身份 10 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）",
+            "模型注册表: 44 个模型 · 11 个开发者 · 11 个模型族 · 状态 active 44 · 关系 64 条（API 55 / Coding 9） · 未映射 API modelKey 0 条 · 套餐模型串 19 条（已映射 9 / 已声明不对应单一模型身份 10 / 未判 0） · 未被引用的模型 0 个",
+            "跳过 vendor/Trae：count=0 events=0 · no-vendor-identity · provider「trae」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 2 条 / API 记录 0 条 / 模型 0 个）"
+          ]
+        },
+        {
+          "name": "MY-browser-matrix",
+          "command": "node research/quality-closure/verify-work/browser-matrix.cjs --dist=dist",
+          "exitCode": 0,
+          "key": [
+            "✅ 浏览器矩阵全过（横向溢出 / console / 失败请求 / 站内链接与锚点 / canonical / 面包屑 / 来源外链）"
+          ]
+        }
+      ],
+      "extras": [],
+      "restore": [],
+      "reds": [
+        "feeds-selftest",
+        "archive-selftest"
+      ],
+      "failedExtras": [],
+      "failedSetup": [],
+      "verdict": "PASS-requirement"
+    }
+  ]
+}

@@ -27,6 +27,103 @@ const landing = require('../lib/landing');
 // `VENDOR_RULES` 是顶层 const，在沙箱里不会挂到 context 上，所以只能经
 // `vendorKeyNames()` 这个纯函数取值器读（只读常量、不碰 DOM）。
 const renderCore = require('../lib/render-core');
+const dataDocs = require('../lib/data-docs');
+
+/* ------------------------------------------------------------------ */
+/* 静态扫描的小工具（§14：字符串型断言必须先剥注释、按访问形态判）        */
+/* ------------------------------------------------------------------ */
+
+function stripComments(source) {
+  return String(source).replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+}
+
+/** 订阅层不许自己去读的套餐侧数据文件 / 模块（判据只盯这三个 token） */
+const FEEDS_FORBIDDEN_DATA = ['plans.json', 'curated_plans', 'plan-schema'];
+
+/** 「真的会去读一个东西」的调用名。`JSON.parse` 在内：它只解析已经被读进来的内容。 */
+const READ_CALL_RE = /\b(?:require|import|readFileSync|readFile|createReadStream|JSON\.parse|fetch|axios\.(?:get|request))\s*\(/g;
+
+/**
+ * 把每个"读取调用"的**实参文本**取出来（括号配平、跳过字符串里的括号）。
+ * 取实参而不是整行，是因为判据要回答的是"这次调用读的是不是这个文件"。
+ */
+function readCallArguments(source) {
+  const stripped = stripComments(source);
+  const args = [];
+  READ_CALL_RE.lastIndex = 0;
+  let match;
+  while ((match = READ_CALL_RE.exec(stripped)) !== null) {
+    const start = match.index + match[0].length;
+    let depth = 1;
+    let i = start;
+    let quote = null;
+    while (i < stripped.length && depth > 0) {
+      const ch = stripped[i];
+      if (quote) {
+        if (ch === '\\') { i += 2; continue; }
+        if (ch === quote) quote = null;
+        i += 1;
+        continue;
+      }
+      if (ch === '"' || ch === '\'' || ch === '`') { quote = ch; i += 1; continue; }
+      if (ch === '(') depth += 1;
+      else if (ch === ')') depth -= 1;
+      i += 1;
+    }
+    args.push({ call: match[0].replace(/\s*\($/, ''), text: stripped.slice(start, Math.max(start, i - 1)) });
+  }
+  return args;
+}
+
+/** 把"拼出来的字符串"还原成连续文本：去掉引号 / 反引号 / 加号 / 空白 */
+function stringSkeleton(text) {
+  return String(text).replace(/['"`]/g, '').replace(/\+/g, '').replace(/\s+/g, '');
+}
+
+/**
+ * token 的**词边界**形态：`plans.json` 不得命中 `api-plans.json`（那正是订阅层合法的另一半：
+ * API 价格变化源）。裸 `includes()` 会把 `api-plans.json` 也算成"读了 plans.json"，
+ * 于是判据连"哪一个文件"都分不清。
+ */
+function tokenPattern(token) {
+  return new RegExp(`(?<![A-Za-z0-9_.\\-])${token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`);
+}
+
+/**
+ * **访问形态**判据：文件名字符串出现在一个真的会读它的调用里 ⇒ 报红。
+ *
+ * 为什么不能按裸子串判：`lib/feeds.js` 的 feed source note 里**正当**写着
+ * 「套餐数据（plans.json）」—— 那是给读者的说明，不是读取。旧实现
+ * `source.includes('plans.json')` 把散文判成违规，于是别人在同一个文件里写一句
+ * 文档就会把这条门禁染红（实测 233/1，回退该文件立刻 234/0）。
+ * 判据改成"谁在读"之后，**写文档的自由**与**读数据的禁令**不再互相撞车。
+ *
+ * 覆盖：`path.join(ROOT, 'plans.json')`（拼接）、`` `${ROOT}/plans.json` ``（模板串）、
+ * `'plans' + '.json'`（分段拼接）、`require('./plan-schema')`（模块名）、静态 `import … from`。
+ * 注释先剥掉（§14 / F-verify-x-004：注释里的示例代码不算）。
+ *
+ * 已知边界（如实写出）：先把路径存进变量、再 `readFileSync(变量)` 是静态判据抓不到的 ——
+ * 那条支路只能靠 review。本判据保证的是"文件名与读取动作写在同一个表达式里"必红。
+ */
+function dataFileAccessHits(source, tokens) {
+  const hits = [];
+  for (const { call, text } of readCallArguments(source)) {
+    const skeleton = stringSkeleton(text);
+    for (const token of tokens) {
+      const pattern = tokenPattern(token);
+      if (pattern.test(text) || pattern.test(skeleton)) hits.push(`${call}(…) 里读取了 ${token}`);
+    }
+  }
+  const stripped = stripComments(source);
+  const importRe = /\bimport\s+(?:[^;'"]*?\s+from\s+)?['"]([^'"]+)['"]/g;
+  let match;
+  while ((match = importRe.exec(stripped)) !== null) {
+    for (const token of tokens) {
+      if (tokenPattern(token).test(match[1])) hits.push(`import … from '${match[1]}'（${token}）`);
+    }
+  }
+  return [...new Set(hits)];
+}
 
 let passed = 0;
 const failures = [];
@@ -312,8 +409,31 @@ rejects('【牙】T10 value="unknown" 却没写 note → 判红', rawTokens({
 accepts('value="unknown" 且写了 note → 合法（查过但来源没说明）', rawTokens({
   restrictions: [{ kind: 'new_user_only', value: 'unknown', note: '官方页面未说明领取资格' }]
 }));
-accepts('value=false → 合法（来源明说"不是"）', rawTokens({
+// v3.0 §10.4 修订：`false` 不再"有 note 没 note 都行"—— 说"不是"必须能兑现官方否定表述。
+// 这条改动正面拦住的正是审计 P2-12（F-r2-plans-002）的形态：把 unknown 降级成 false。
+const falseWithWitness = accepts('value=false 且 note 给出官方否定表述 → 合法（来源明说"不是"）', rawTokens({
+  restrictions: [{ kind: 'account_required', value: false, note: '官方原文「无需注册账号即可试用」' }]
+}));
+check('false 走完构造仍**保持 false**（不落 null、不落 "unknown"）',
+  falseWithWitness.restrictions[0].value === false && typeof falseWithWitness.restrictions[0].value === 'boolean',
+  JSON.stringify(falseWithWitness.restrictions));
+rejects('【牙】§10.4 value=false 却不写 note → 判红（"不是"必须给官方原文，不许凭感觉）', rawTokens({
   restrictions: [{ kind: 'account_required', value: false, note: null }]
+}), '官方否定表述');
+rejects('【牙】§10.4 value=false 的 note 只写「未说明」→ 判红（这就是把 unknown 降级成 false 的形态）', rawTokens({
+  restrictions: [{ kind: 'account_required', value: false, note: '官方页面未说明是否需要账号' }]
+}), '否定表述');
+rejects('【牙】§10.4 value="unknown" 的 note 只写官方否定表述 → 判红（该写 false 就别写 unknown）', rawTokens({
+  restrictions: [{ kind: 'account_required', value: 'unknown', note: '官方原文「无需注册账号」' }]
+}), '未说明');
+rejects('【牙】§10.4 restrictions 缺 value 字段 → 判红（缺字段不得被当成 false）', rawTokens({
+  restrictions: [{ kind: 'account_required', note: '故意不写 value' }]
+}), 'value 缺失');
+rejects('【牙】§10.4 value=null → 判红（null 不在计划侧三态里，它是"没写"不是"否"）', rawTokens({
+  restrictions: [{ kind: 'account_required', value: null, note: 'null 不是答案' }]
+}), '必须');
+accepts('value=true 不要求见证词（本契约只盯 unknown / false 两个方向，不改变其它语义）', rawTokens({
+  restrictions: [{ kind: 'fair_use', value: true, note: '官方写「Usage limits apply.」' }]
 }));
 rejects('同一 kind 写两条 → 判红', rawTokens({
   restrictions: [{ kind: 'invite_only', value: true, note: null }, { kind: 'invite_only', value: false, note: null }]
@@ -327,6 +447,95 @@ rejects('restrictions 的 kind 非法 → 判红', rawTokens({
 accepts('rolling_window 用文本表达窗口 → 合法', rawTokens({
   restrictions: [{ kind: 'rolling_window', value: '每 5 小时 + 每周', note: null }]
 }));
+
+/* ================================================================== */
+
+section('⑤b §10.4 三态契约：重建 / 渲染 / 派生三条路径都不得把 unknown 或缺失变成 false');
+
+{
+  // 契约常量：三态只有三个字面量，**且它是唯一清单**（任何"顺手加一档"都要先改这里）
+  check('三态契约常量 = true / false / "unknown"（唯一清单）',
+    JSON.stringify(planSchema.RESTRICTION_TRISTATE) === JSON.stringify([true, false, 'unknown'])
+    && planSchema.TRISTATE_UNKNOWN === 'unknown',
+    JSON.stringify(planSchema.RESTRICTION_TRISTATE));
+
+  const unknownRaw = rawTokens({
+    restrictions: [{ kind: 'new_user_only', value: 'unknown', note: '官方页面未说明领取资格（查过官网与文档）' }]
+  });
+  const unknownPlan = accepts('unknown 记录能构造', unknownRaw);
+
+  // ---- 路径 ①：重建（构造 → 序列化 → 再校验，即 rebuild + validate 的那条链）----
+  check('重建路径：unknown 经 JSON 往返后仍是 "unknown"（不落 false、不落 null）',
+    JSON.parse(JSON.stringify(unknownPlan)).restrictions[0].value === 'unknown');
+  {
+    const again = planSchema.makePlan(unknownPlan, { fromRecord: true, today: TODAY });
+    check('重建路径：把记录再喂回归一器，unknown 一字不变（幂等）',
+      again.ok && again.plan.restrictions[0].value === 'unknown', again.problems.join(' | ').slice(0, 160));
+  }
+  {
+    const verdict = planSchema.validatePlan(unknownPlan, 0);
+    check('重建路径：unknown 记录通过 validatePlan（三态是合法状态，不是"待修"）', verdict.ok, verdict.errors.join(' | ').slice(0, 160));
+  }
+  {
+    // 缺字段：不许被补成 false —— 归一器必须直接报红
+    const missingValue = make(rawTokens({ restrictions: [{ kind: 'new_user_only', note: '没有 value' }] }));
+    check('重建路径：缺 value 的记录被拒（缺字段不得被补成 false）',
+      !missingValue.ok && !/false/.test(JSON.stringify(missingValue.plan && missingValue.plan.restrictions)),
+      missingValue.problems.join(' | ').slice(0, 160));
+  }
+  {
+    // 「来源层把 unknown 降级成 false」的完整形态：note 还是那句"未说明" ⇒ 必红
+    const downgraded = make(rawTokens({
+      restrictions: [{ kind: 'new_user_only', value: false, note: '官方页面未说明领取资格（查过官网与文档）' }]
+    }));
+    check('重建路径：来源层把 unknown 降级成 false（note 未变）→ 拒收（P2-12 的原始形态）',
+      !downgraded.ok && downgraded.problems.join(' ').includes('否定表述'),
+      downgraded.problems.join(' | ').slice(0, 160));
+  }
+
+  // ---- 路径 ②：渲染（页面那一行给读者看的到底是什么）----
+  const pageLib = require('../lib/plans-page');
+  const unknownRow = pageLib.planRowOf(unknownPlan, { providerTable: providers.load().table });
+  const falseRow = pageLib.planRowOf(falseWithWitness, { providerTable: providers.load().table });
+  const noRestrictionRow = pageLib.planRowOf(accepts('没有限制条件的套餐能构造', rawTokens({ restrictions: null })), {});
+  check('渲染路径：unknown 渲染成「未确认」而不是「否」',
+    unknownRow.restrictions.join(' ').includes('未确认') && !unknownRow.restrictions.join(' ').includes('否'),
+    unknownRow.restrictions.join(' · '));
+  check('渲染路径：false 渲染成「否」（明确的"不是"与"没查到"在页面上必须长得不一样）',
+    falseRow.restrictions.join(' ').includes('否') && !falseRow.restrictions.join(' ').includes('未确认'),
+    falseRow.restrictions.join(' · '));
+  check('渲染路径：没有限制条件 / 缺失时不产生任何一行（不得凭空印出一个「否」）',
+    noRestrictionRow.restrictions.length === 0, JSON.stringify(noRestrictionRow.restrictions));
+
+  // ---- 路径 ③：派生指标（未知量不得变成 0 / false）----
+  {
+    // 直接驱动派生函数：四种"未知"都必须是 null，而不是 0 / false
+    const unknownShapes = [
+      ['额度数量未知', { quota: { type: 'tokens', amount: null, period: 'monthly' } }],
+      ['额度周期未知', { quota: { type: 'tokens', amount: 6e9, period: null } }],
+      ['价格未知', { quota: { type: 'tokens', amount: 6e9, period: 'monthly' }, billing: { period: 'monthly', currency: 'CNY', regularPrice: null } }],
+      ['额度类型未知', { quota: { type: null, amount: 6e9, period: 'monthly' }, billing: { period: 'monthly', currency: 'CNY', regularPrice: 60 } }]
+    ];
+    const bad = [];
+    for (const [label, shape] of unknownShapes) {
+      const { metric, reason } = planSchema.deriveMetricsWithReason(shape);
+      if (!Object.is(metric, null)) bad.push(`${label} → ${JSON.stringify(metric)}`);
+      if (/false/i.test(String(reason))) bad.push(`${label} 的理由里出现 false：${reason}`);
+    }
+    check('派生指标路径：四种「未知」一律 null（严格 null，不是 0 / false / undefined）',
+      bad.length === 0, bad.join(' · '));
+  }
+  {
+    const amountless = accepts('unlimited_fair_use 套餐（没有固定额度数值）', rawTokens({
+      quota: { type: 'unlimited_fair_use', amount: null, period: null, description: '官方写「不设固定额度，按公平使用策略调度」', conversionDependsOnModel: null },
+      evidence: [{ field: 'quota.description', quote: '不设固定额度，按公平使用策略调度', sourceUrl: OFFICIAL, capturedAt: TODAY, lang: 'zh' }]
+    }));
+    check('派生指标路径：没有固定额度的记录 ⇒ nominalUnitPrice 严格为 null（不编一个数）',
+      amountless.derivedMetrics.nominalUnitPrice === null, JSON.stringify(amountless.derivedMetrics));
+  }
+  check('派生指标路径：不可比较的既有三种情形仍然 null（回归）',
+    [requestsPlan, creditsPlan, ratePlan].every(plan => Object.is(plan.derivedMetrics.nominalUnitPrice, null)));
+}
 
 /* ================================================================== */
 
@@ -838,7 +1047,8 @@ section('⑪ 边界：谁可以引用 plans，谁不可以');
   //      不许直接读 plans.json —— 页面由构建期预渲染，浏览器不 fetch 套餐数据；
   //   ④ 机制内核 `lib/history-core.js` 由两份日志共用（它在 plan-history-selftest 里被静态
   //      断言「不含任何一方的专有字段」）。
-  const stripComments = source => source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+  // 判据工具 `stripComments` / `dataFileAccessHits` 在文件顶部（模块级）：这一段与下面那些
+  // **对照断言**共用同一份实现 —— 判据写两遍就会慢慢分家。
   const planTokens = ['plans.json', 'plan-schema', 'curated_plans', 'plans-page', 'providers.json',
     'plan-history', 'plan-changes', 'PLAN_CHANGE', 'pchanges'];
 
@@ -855,10 +1065,45 @@ section('⑪ 边界：谁可以引用 plans，谁不可以');
     chainHits.length === 0, chainHits.join(' | '));
 
   // ② 订阅层：允许引用 plans 的模块，但不许自己读数据文件，也不许把套餐混进优惠的判据里
-  const feedsSource = stripComments(fs.readFileSync(path.join(ROOT, 'scripts/lib/feeds.js'), 'utf8'));
-  const feedsDataHits = ['plans.json', 'curated_plans', 'plan-schema'].filter(token => feedsSource.includes(token));
-  check('订阅层不自己读套餐数据文件（plans.json / curated_plans / plan-schema 一律不出现）',
+  const feedsSource = fs.readFileSync(path.join(ROOT, 'scripts/lib/feeds.js'), 'utf8');
+  const feedsDataHits = dataFileAccessHits(feedsSource, FEEDS_FORBIDDEN_DATA);
+  check('订阅层不自己读套餐数据文件（判据是**访问形态**：真的去读才红，提到文件名不算）',
     feedsDataHits.length === 0, feedsDataHits.join(' | '));
+
+  // ②-对照（常驻）：这条判据必须能真的红、也必须不冤枉文档
+  //   正向 ①：`path.join` 拼接 + readFileSync（最常见的那一种）
+  check('【对照】插入一处真实读取（path.join + readFileSync）→ 必须报红',
+    dataFileAccessHits(`const fs = require('fs');\nconst raw = fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8');\n`,
+      FEEDS_FORBIDDEN_DATA).length > 0);
+  //   正向 ②：模板串写法
+  check('【对照】插入一处真实读取（模板串 + JSON.parse）→ 必须报红',
+    dataFileAccessHits('const raw = JSON.parse(fs.readFileSync(`${ROOT}/curated_plans.json`, \'utf8\'));\n',
+      FEEDS_FORBIDDEN_DATA).length > 0);
+  //   正向 ③：require 模块名（订阅层自己去解析 schema 也是越界）
+  check('【对照】require(\'./plan-schema\') → 必须报红',
+    dataFileAccessHits("const planSchema = require('./plan-schema');\n", FEEDS_FORBIDDEN_DATA).length > 0);
+  //   正向 ④：字符串拼接把文件名拼出来（'plans' + '.json'）—— 拼接必须与整串等价
+  check('【对照】把文件名拼成两段（\'plans\' + \'.json\'）→ 必须报红',
+    dataFileAccessHits("const raw = fs.readFileSync(path.join(ROOT, 'plans' + '.json'), 'utf8');\n",
+      FEEDS_FORBIDDEN_DATA).length > 0);
+  //   正向 ⑤：先存进变量再读 —— 静态判据**抓不到**（已知边界）。这条断言把边界钉住：
+  //   它现在必须是绿的，将来若有人把它变成"能抓"，这条对照会失败并提醒更新文档。
+  check('【对照·已知边界】先把路径存进变量再 readFileSync → 静态判据抓不到（只能靠 review）',
+    dataFileAccessHits("const p = path.join(ROOT, 'plans.json');\nconst raw = fs.readFileSync(p, 'utf8');\n",
+      FEEDS_FORBIDDEN_DATA).length === 0);
+  //   反向 ①：现行 feeds.js 里那种**散文**（feed source note 写到文件名）→ 不得报红
+  check('【对照】只提到文件名（散文 / 说明文字）→ 不得报红（门禁不许限制别人怎么写文档）',
+    dataFileAccessHits("const note = '套餐变化来自人工逐条核对官方页后重建的套餐数据（plans.json），API 价格变化来自 api-plans.json';\n",
+      FEEDS_FORBIDDEN_DATA).length === 0);
+  //   反向 ②：注释里的示例代码 → 不得报红（§14：字符串型断言必须先剥注释）
+  check('【对照】注释里的读取代码 → 不得报红（字符串型断言必须先剥注释）',
+    dataFileAccessHits("// const raw = fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8');\nconst x = 1;\n",
+      FEEDS_FORBIDDEN_DATA).length === 0);
+  //   反向 ③：读的是别的数据文件 → 不得报红（判据只盯这三个 token）
+  check('【对照】读 api-plans.json（合法：订阅层有 API 变化源）→ 不得报红',
+    dataFileAccessHits("const raw = fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8');\n",
+      FEEDS_FORBIDDEN_DATA).length === 0);
+
   check('订阅层对 plans 的引用只有「套餐变化」这一条通道（kind = plan-changes）',
     feedsSource.includes("kind: 'plan-changes'") && feedsSource.includes('PLAN_CHANGE_FEED') &&
     /kind === 'plan-changes'/.test(feedsSource));
@@ -872,12 +1117,16 @@ section('⑪ 边界：谁可以引用 plans，谁不可以');
     // 数量写死是刻意的 —— 多出第三处时应该有人停下来想一下它是不是又一条要维护的入链。
     `占位符 ${plansHrefs} 个（页脚 + 顶栏）`);
 
-  // 正向：构建期**必须**引用它，否则上面那些"不许引用"的断言会因为"整条线根本不存在"而假绿
+  // 正向：构建期**必须**引用它，否则上面那些"不许引用"的断言会因为"整条线根本不存在"而假绿。
+  // 发布清单的**唯一出处**已经搬到 Dataset Manifest（`lib/data-docs.js` 的 datasetCopyUrls()），
+  // 所以这里问模块，而不是在 build-local.js 的源码里正则一个数组字面量 ——
+  // 后者会在清单搬家那天变成一条"看起来还在守、其实已经失配"的断言（本轮实测：它先红了）。
   const buildSource = stripComments(fs.readFileSync(path.join(ROOT, 'scripts/tools/build-local.js'), 'utf8'));
-  check('构建期确实接进了套餐页（占位符 → 路由 → 页面）',
+  const publishedCopies = dataDocs.datasetCopyUrls();
+  check('构建期确实接进了套餐页（占位符 → 路由 → 发布清单）',
     buildSource.includes('__PLANS_HREF__') && buildSource.includes('plansPage.PLANS_ROUTE') &&
-    /PUBLIC_FILES\s*=\s*\[[^\]]*'plans\.json'/.test(buildSource),
-    '占位符 / 路由 / PUBLIC_FILES 三者缺一不可');
+    publishedCopies.includes('plans.json'),
+    `占位符 / 路由 / 发布清单三者缺一不可（发布清单含 plans.json：${publishedCopies.includes('plans.json')}）`);
 }
 
 /* ================================================================== */

@@ -11,6 +11,9 @@
  *  3. **不参与 CI 发布链路**：`scripts/collect.js` 默认不加载本模块，只有显式的
  *     headless 采集器才 require 它，且本地跑得通才上线。
  *  4. 与 http.js 一致遵守 robots.txt。
+ *  5. 有一个**显式的注入点** `DSH_BROWSER_EXECUTABLE`（见 launchOptions）：本机装了 Edge/Chrome 时
+ *     「内核不可用」这条路径没法自然复现，而它对应的判据（source-health 的 headless_unavailable）
+ *     必须能与「页面改版/规则失效」区分开。注入的是启动参数，不是状态——不设置时行为一字不变。
  */
 
 const { chromium } = require('playwright-core');
@@ -47,13 +50,33 @@ function getLaunchStatus() {
   return { ...launchStatus };
 }
 
+/**
+ * 「内核不可用」这条路径的注入点（本地自测 / 变异演练 / CI 模拟用）：
+ *
+ *   DSH_BROWSER_EXECUTABLE=<不存在或起不来的可执行文件>
+ *
+ * 为什么需要它：本机装了 Edge/Chrome 时，`launch()` 不会失败，「无头浏览器不可用」这条路径
+ * 无法自然复现；而它恰恰是 source-health 必须能与「页面改版/规则失效」区分开的那一类
+ * （reason=headless_unavailable：等 runner 装内核 vs 改采集器规则）。
+ *
+ * 注入的是**启动参数**而不是结论：失败仍然来自 playwright 真实的启动失败，
+ * `getLaunchStatus()` 照实记下 ok=false 与错误原文；不设置时下面的判断一字不变。
+ */
+function injectedExecutable() {
+  const value = String(process.env.DSH_BROWSER_EXECUTABLE || '').trim();
+  return value || null;
+}
+
 function launchOptions(target) {
+  const injected = injectedExecutable();
+  if (injected) return { executablePath: injected, headless: true };
   return target === 'bundled' ? { headless: true } : { channel: target, headless: true };
 }
 
 /** 探测本机可用的浏览器内核，返回内核名（'msedge' / 'chrome' / 'bundled'）；都不可用返回 null */
 async function detectChannel() {
   if (cachedChannel) return cachedChannel;
+  let lastError = null;
   for (const target of CHANNELS) {
     let browser = null;
     try {
@@ -62,12 +85,17 @@ async function detectChannel() {
       recordLaunch(true, target);
       return target;
     } catch (error) {
-      /* 该内核不可用，试下一个 */
+      /* 该内核不可用，试下一个；错误原文留着，好让人知道到底是缺内核还是注入路径写错了 */
+      lastError = String((error && error.message) || error).split('\n')[0].slice(0, 120);
     } finally {
       if (browser) await browser.close().catch(() => {});
     }
   }
-  recordLaunch(false, null, '未找到可用的浏览器内核（Edge / Chrome / playwright 自带 chromium 都起不来）');
+  const injected = injectedExecutable();
+  recordLaunch(false, null,
+    injected
+      ? `注入的浏览器可执行文件起不来（DSH_BROWSER_EXECUTABLE=${injected}）：${lastError || '未知原因'}`
+      : '未找到可用的浏览器内核（Edge / Chrome / playwright 自带 chromium 都起不来）');
   return null;
 }
 

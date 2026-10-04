@@ -24,6 +24,49 @@ const providers = require('../lib/providers');
 const ROOT = path.join(__dirname, '..', '..');
 const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
 
+/* ------------------------------------------------------------------ */
+/* 产物目录与 fail-closed 前置（§10.9 · P2-10 / P2-26）                  */
+/* ------------------------------------------------------------------ */
+//
+// 第 ⑤ 节要读**构建产物**（`<dist>/plans/index.html` 等）。原先是
+// 「产物不存在 ⇒ 跳过并计 ✓」—— 而门禁在构建**之前**跑，dist/ 根本不存在，
+// 于是这一节在 CI 里永远是绿的（同一 commit，项数随环境在 27/32 之间变）。
+//
+// 六个产物依赖工具现在用同一套协议：
+//   · `--dir=<path>`            显式指定产物目录（默认 `<repo>/dist`）；
+//   · 缺少必需产物 ⇒ **非 0**，并给出「先 build / 用 --dir 指到别的产物」的下一步；
+//   · 只有显式 `--allow-missing-dist` 才允许跳过，且会被标成 `⚠️ OPTIONAL DIAGNOSTIC`。
+//
+// 「产物该不该存在」不由本工具猜：门禁 action 把这一步排在 `Assemble site` 之后，
+// 并把 `--dir=dist` 显式传进来（`check-ci-consistency` 的 (17) 守着这个调用形态）。
+const dirArg = process.argv.find(arg => arg.startsWith('--dir='));
+const ALLOW_MISSING_DIST = process.argv.includes('--allow-missing-dist');
+const DIST = path.resolve(ROOT, dirArg ? dirArg.slice('--dir='.length) : 'dist');
+
+/** 必需的产物缺失时：显式允许 → OPTIONAL DIAGNOSTIC（通过）；否则记红并返回 false */
+function requireDist(what, marker) {
+  const file = path.join(DIST, marker);
+  if (fs.existsSync(file)) return true;
+  if (ALLOW_MISSING_DIST) {
+    check(`⚠️ OPTIONAL DIAGNOSTIC（--allow-missing-dist）：跳过 ${what} 的现场检查（缺 ${marker}）`, true);
+    return false;
+  }
+  check(`缺少必需产物：${what} —— 找不到 ${path.relative(ROOT, file) || file}` +
+    `（先跑 npm run build，或用 --dir=<构建输出> 指到那份产物；只有显式 --allow-missing-dist 才允许跳过）`, false);
+  return false;
+}
+
+/** 一组必需产物：整个 dist 缺失时只记一条红；否则逐个点名缺了哪个 */
+function requireDistFiles(what, markers) {
+  if (!fs.existsSync(DIST)) return requireDist(what, markers[0]);
+  let ok = true;
+  for (const marker of markers) {
+    if (fs.existsSync(path.join(DIST, marker))) continue;
+    ok = requireDist(what, marker) && ok;
+  }
+  return ok;
+}
+
 let passed = 0;
 const failures = [];
 
@@ -286,45 +329,44 @@ function distProblems(distDir, overrides = {}) {
   return problems;
 }
 
-if (fs.existsSync(path.join(ROOT, 'dist', 'plans', 'index.html'))) {
-  const problems = distProblems(path.join(ROOT, 'dist'));
+if (requireDistFiles('dist 现场 /plans/', [path.join('plans', 'index.html'), 'sitemap.xml', 'index.html'])) {
+  const problems = distProblems(DIST);
   check('dist 现场：sitemap 成员 / 自指 canonical / 唯一 h1 / 面包屑 / ItemList / 无孤儿',
     problems.length === 0, problems.slice(0, 3).join('；'));
 
   // 牙：把 sitemap 里那一条删掉 → 必须变红
-  const sitemapText = fs.readFileSync(path.join(ROOT, 'dist', 'sitemap.xml'), 'utf8');
+  const sitemapText = fs.readFileSync(path.join(DIST, 'sitemap.xml'), 'utf8');
   const noLoc = sitemapText.replace(`<loc>${SITE_URL}plans/</loc>`, '');
   check('【牙】sitemap 少了 /plans/ → 产物检查变红',
-    noLoc !== sitemapText && distProblems(path.join(ROOT, 'dist'), { sitemapText: noLoc }).some(p => p.includes('sitemap')));
+    noLoc !== sitemapText && distProblems(DIST, { sitemapText: noLoc }).some(p => p.includes('sitemap')));
 
   // 牙：把共享页脚里的入口删掉（模拟孤儿）→ 必须变红
-  const indexHtml = fs.readFileSync(path.join(ROOT, 'dist', 'index.html'), 'utf8');
+  const indexHtml = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8');
   const orphaned = indexHtml.replace(/href="plans\/"/, 'href="plans-not-here/"');
   check('【牙】页脚入口消失（孤儿页）→ 产物检查变红',
-    orphaned !== indexHtml && distProblems(path.join(ROOT, 'dist'), { indexHtml: orphaned })
+    orphaned !== indexHtml && distProblems(DIST, { indexHtml: orphaned })
       .some(p => p.includes('孤儿')));
 
   // 牙：抽掉一个区块（无 JS 读者看不到那一块）→ 必须变红
-  const hubHtml = fs.readFileSync(path.join(ROOT, 'dist', 'plans', 'index.html'), 'utf8');
+  const hubHtml = fs.readFileSync(path.join(DIST, 'plans', 'index.html'), 'utf8');
   const gutted = hubHtml.replace(/<section class="phubsec" id="plans-hub-api"[\s\S]*?<\/section>/, '');
   check('【牙】API 计费块被抽掉 → 无 JS 完整性检查变红',
-    gutted !== hubHtml && distProblems(path.join(ROOT, 'dist'), { hubHtml: gutted })
+    gutted !== hubHtml && distProblems(DIST, { hubHtml: gutted })
       .some(p => p.includes('plans-hub-api')));
 
   // 牙：把一张大表塞进来（"第三张重复大表"）→ 必须变红
   const withTable = hubHtml.replace('</main>', '<table class="ptable"><tbody><tr><td>x</td></tr></tbody></table></main>');
   check('【牙】塞进一张大表 → 「不是第三张表」这条变红',
-    withTable !== hubHtml && distProblems(path.join(ROOT, 'dist'), { hubHtml: withTable })
+    withTable !== hubHtml && distProblems(DIST, { hubHtml: withTable })
       .some(p => p.includes('大表')));
 
   // 牙：把变化块里的深链改回页内死锚点 → 必须变红
   const deadLinked = hubHtml.replace(/href="\.\.\/plans\/coding\/#plan-[0-9a-f]{12}"/, 'href="#plan-deadbeef0000"');
   check('【牙】变化行的深链被换成页内死锚点 → 变红',
-    deadLinked !== hubHtml && distProblems(path.join(ROOT, 'dist'), { hubHtml: deadLinked })
+    deadLinked !== hubHtml && distProblems(DIST, { hubHtml: deadLinked })
       .some(p => p.includes('页内锚点没有落点')));
-} else {
-  check('构建产物不存在时**跳过** dist 现场检查（先跑 npm run build）', true);
 }
+// 缺产物不在这里「跳过并计 ✓」：requireDistFiles() 要么已记红，要么是显式 OPTIONAL DIAGNOSTIC。
 
 /* ================================================================== */
 

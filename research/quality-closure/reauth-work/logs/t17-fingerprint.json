@@ -1,0 +1,59 @@
+{
+  "gold": "D:\\qc-t23\\gold",
+  "results": [
+    {
+      "id": "g1-comment-in-body",
+      "note": "run 体里插注释（语义不变）",
+      "expect": 0,
+      "yamlChanged": true,
+      "exitCode": 0,
+      "errors": []
+    },
+    {
+      "id": "g2-blank-line-in-body",
+      "note": "run 体里插空行（语义不变）",
+      "expect": 0,
+      "yamlChanged": true,
+      "exitCode": 0,
+      "errors": []
+    },
+    {
+      "id": "g3-rename-step",
+      "note": "只改步骤 name（语义不变）",
+      "expect": "observe",
+      "yamlChanged": true,
+      "exitCode": 1,
+      "errors": [
+        "✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — #30 期望「Assemble site (same path as deploy.yml)」实得「Assemble site (T18 实验改名)」",
+        "✗ (17) package.json 里的每个 selftest:* 都被门禁真的跑到（新脚本必须登记） — Models-page self-test (index + detail pages): 排在「Assemble site (same path as deploy.yml)」之前（产物依赖步骤必须在构建之后）、Plans-hub self-test (/plans/): 排在「Assemble site (same path as deploy.yml)」之前（产物依赖步骤必须在构建之后）、Vendor-pages self-test (/vendor/): 排在「Assemble site (same path as deploy.yml)」之前（产物依赖步骤必须在构建之后）、Archive self-test (/archive/, synthetic ended/restored fixtures): 排在「Assemble site (same path as deploy.yml)」之前（产物依赖步骤必须在构建之后）（新增自测必须同步三处：.github/actions/gate/action.yml 的步骤、本文件的 GATE_STEP_NAMES 与 GATE_STEP_RUN 指纹；产物依赖步骤还要带 --dir=dist 并排在 Assemble site 之后）",
+        "❌ CI 口径检查 36 项，失败 2 项",
+        "✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — #30 期望「Assemble site (same path as deploy.yml)」实得「Assemble site (T18 实验改名)」"
+      ]
+    },
+    {
+      "id": "g4-continue-on-error",
+      "note": "给步骤加 continue-on-error: true",
+      "expect": "nonzero",
+      "yamlChanged": true,
+      "exitCode": 1,
+      "errors": [
+        "✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — 这些步骤带 continue-on-error（门禁不许静默放过）：Validate data (strict)",
+        "❌ CI 口径检查 36 项，失败 1 项",
+        "✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — 这些步骤带 continue-on-error（门禁不许静默放过）：Validate data (strict)"
+      ]
+    },
+    {
+      "id": "g5-dir-semantic-change",
+      "note": "--dir=dist → --dir=dist.qc-gate（语义变化）",
+      "expect": "nonzero",
+      "yamlChanged": true,
+      "exitCode": 1,
+      "errors": [
+        "✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — 步骤体变了：Data-docs self-test (/docs/data/ + /data/index.json): run 体与冻结指纹不一致（实得「node scripts/tools/data-docs-selftest.js --dir=d…」）",
+        "❌ CI 口径检查 36 项，失败 1 项",
+        "✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — 步骤体变了：Data-docs self-test (/docs/data/ + /data/index.json): run 体与冻结指纹不一致（实得「node scripts/tools/data-docs-selftest.js --dir=d…」）"
+      ]
+    }
+  ],
+  "problems": []
+}

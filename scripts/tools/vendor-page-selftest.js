@@ -26,8 +26,48 @@ const providers = require('../lib/providers');
 const renderCore = require('../lib/render-core');
 
 const ROOT = path.join(__dirname, '..', '..');
-const DIST = path.join(ROOT, 'dist');
 const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
+
+/* ------------------------------------------------------------------ */
+/* 产物目录与 fail-closed 前置（§10.9 · P2-10 / P2-26）                  */
+/* ------------------------------------------------------------------ */
+//
+// 第 ⑧ 节要读**构建产物**（`<dist>/vendor/**` 与四份数据集）。原先的写法是
+// 「dist 里没有接线好的资料区块 ⇒ 跳过并计 ✓」—— 而门禁在构建**之前**跑，
+// 于是这一节在 CI 里永远是绿的；接线确实完成之后，这条「尚未接线」的出口
+// 还会把真正的接线回归（资料区块消失）静默吞掉。
+//
+// 六个产物依赖工具现在用同一套协议：
+//   · `--dir=<path>`            显式指定产物目录（默认 `<repo>/dist`）；
+//   · 缺少必需产物 ⇒ **非 0**，并给出「先 build / 用 --dir 指到别的产物」的下一步；
+//   · 只有显式 `--allow-missing-dist` 才允许跳过，且会被标成 `⚠️ OPTIONAL DIAGNOSTIC`。
+const dirArg = process.argv.find(arg => arg.startsWith('--dir='));
+const ALLOW_MISSING_DIST = process.argv.includes('--allow-missing-dist');
+const DIST = path.resolve(ROOT, dirArg ? dirArg.slice('--dir='.length) : 'dist');
+
+/** 必需的产物缺失时：显式允许 → OPTIONAL DIAGNOSTIC（通过）；否则记红并返回 false */
+function requireDist(what, marker) {
+  const file = path.join(DIST, marker);
+  if (fs.existsSync(file)) return true;
+  if (ALLOW_MISSING_DIST) {
+    check(`⚠️ OPTIONAL DIAGNOSTIC（--allow-missing-dist）：跳过 ${what} 的现场检查（缺 ${marker}）`, true);
+    return false;
+  }
+  check(`缺少必需产物：${what} —— 找不到 ${path.relative(ROOT, file) || file}` +
+    `（先跑 npm run build，或用 --dir=<构建输出> 指到那份产物；只有显式 --allow-missing-dist 才允许跳过）`, false);
+  return false;
+}
+
+/** 一组必需产物：整个 dist 缺失时只记一条红；否则逐个点名缺了哪个 */
+function requireDistFiles(what, markers) {
+  if (!fs.existsSync(DIST)) return requireDist(what, markers[0]);
+  let ok = true;
+  for (const marker of markers) {
+    if (fs.existsSync(path.join(DIST, marker))) continue;
+    ok = requireDist(what, marker) && ok;
+  }
+  return ok;
+}
 
 let passed = 0;
 const failures = [];
@@ -138,6 +178,41 @@ check('资料区块的计数标记与数据一致（API 记录 / 模型计价条
   }));
 check('资料区块里没有 data-item / data-child（否则 ItemList 行数对账会失真）',
   vendorPages.every(spec => !/data-item=|data-child=/.test(vendorPage.renderVendorKnowledgeSections(spec, ctxFor(spec)))));
+
+// F-v3-registry-001 / P1-12：per-model「在这一家的计价条目 N 条」必须按**展开后的条目**算。
+// 旧口径把一条 `variant: null` 映射记成 1 条，而模型页现在为它渲染 n 行 —— 同一个事实两个数字。
+{
+  const planById = new Map(apiPlans.filter(plan => plan && plan.id).map(plan => [plan.id, plan]));
+  const expandedCountOf = link => {
+    const plan = planById.get(link.apiPlanId);
+    if (!plan) return 0;
+    const entries = (plan.models || []).filter(item => item && item.modelKey === link.modelKey);
+    if (!entries.length) return 0;
+    if (link.variant === null || link.variant === undefined || link.variant === '') return entries.length;
+    return entries.filter(item => item.variant === link.variant).length;
+  };
+  const mismatched = [];
+  const seen = new Map();
+  for (const spec of vendorPages) {
+    const ctx = ctxFor(spec);
+    const view = vendorPage.vendorViewOf(spec, ctx);
+    // 口径：只算**本厂商自己的** API 记录（与本页 providerKey 一致），再按展开后的条目数计
+    const ownPlanIds = new Set(apiPlans.filter(plan => plan && plan.provider === view.providerKey).map(plan => plan.id));
+    for (const model of view.models) {
+      const refs = modelLinks.filter(link => link
+        && (String(link.registrySlug || '') === model.slug || String(link.registryModelId || '') === model.id)
+        && link.apiPlanId && ownPlanIds.has(link.apiPlanId));
+      const expected = refs.reduce((sum, link) => sum + expandedCountOf(link), 0);
+      if (model.apiItemCount !== expected) mismatched.push(`${spec.slug}/${model.slug}: ${model.apiItemCount} ≠ ${expected}`);
+      if (expected > 0 && !seen.has(model.slug)) seen.set(model.slug, expected);
+    }
+  }
+  check('厂商页 per-model 计价条目数 = 本厂商记录里独立展开后的条目数（通配映射不按 1 条算）',
+    mismatched.length === 0, mismatched.slice(0, 4).join(' · '));
+  const multi = [...seen.entries()].filter(([, count]) => count > 1);
+  check(`真实数据里至少有一个模型在厂商页上记的条目数是展开出来的（如 qwen3-max: ${seen.get('qwen3-max')}）`,
+    multi.length >= 1 && seen.get('qwen3-max') === 2, JSON.stringify(multi.slice(0, 6)));
+}
 check('没有 Coding 套餐的厂商写的是明确空态（不是空白、也不是 0 条记录）',
   vendorPages.filter(spec => !vendorPage.vendorViewOf(spec, ctxFor(spec)).codingPlans.length)
     .every(spec => /尚未收录这家厂商的 Coding 套餐/.test(vendorPage.renderVendorKnowledgeSections(spec, ctxFor(spec)))));
@@ -358,8 +433,13 @@ section('⑧ 真实产物（接线后才有；未接线时如实跳过）');
     && fs.readdirSync(path.join(DIST, 'vendor'))
       .some(slug => fs.existsSync(path.join(DIST, 'vendor', slug, 'index.html'))
         && fs.readFileSync(path.join(DIST, 'vendor', slug, 'index.html'), 'utf8').includes(vendorPage.KNOWLEDGE_WRAPPER_ID));
-  if (!wired) {
-    check('厂商资料区块尚未接线（build-local 的 extraSections 由接线说明那一方改）—— 本节按「如实跳过」处理', true);
+  const ready = requireDistFiles('dist 现场的厂商资料页', ['vendor', 'api-plans.json', 'plans.json',
+    'models.json', 'model-registry-links.json', 'sitemap.xml']);
+  if (!ready) {
+    // 缺产物：已记红（或显式 OPTIONAL DIAGNOSTIC）。
+  } else if (!wired) {
+    // 接线完成后「没接线」不再是可跳过状态：资料区块消失 = 用户可见回归。
+    check('厂商资料区块在产物里不存在（build-local 的 extraSections 没有接线 / 接线回归）', false);
   } else {
     const problems = [];
     const diskApiPlans = JSON.parse(fs.readFileSync(path.join(DIST, 'api-plans.json'), 'utf8')).plans;

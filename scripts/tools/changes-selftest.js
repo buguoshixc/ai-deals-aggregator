@@ -420,6 +420,75 @@ section('⑫ 真实数据不变量');
 }
 
 /* ------------------------------------------------------------------ */
+section('⑬ 记录级代表事件（ItemList 与页面行标记的唯一出处）');
+
+{
+  // 这一节守的是上一轮审计的 P1-4：`/changes/` 只要有 1 条变化，产物自检必然失败。
+  // 根因不是某一处算错，而是**三份集合各算各的**（声明数取五栏合计、元素按栏遍历不去重、
+  // 页面行标记根本没有）。现在三份集合都读 `changes.itemListRecords()` 这一处，
+  // 所以这一节就是在钉住那个口径本身。
+  const rc = require('../lib/render-core').load();
+  const events = [
+    event({ id: ID_A, at: day(0), type: 'created', field: null, from: null, to: null, fields: {} }),
+    event({ id: ID_A, at: day(-2), from: '旧说明', to: '新说明' }),
+    event({ id: ID_B, at: day(-3), from: 'x', to: 'y' }),
+    event({ id: ID_A, at: day(-5), type: 'ended', field: null, from: null, to: null, reason: 'withdrawn' }),
+    event({ id: ID_A, at: day(-1), type: 'restored', field: null, from: null, to: null }),
+    // B 只有「字段变化 + 不再收录」：代表事件是**后面那一行**（ended 强于 changed），
+    // 所以它的 occurrence 必须是 1 —— 标记不能顺手打在第一条出现上。
+    event({ id: ID_B, at: day(-1), type: 'ended', field: null, from: null, to: null, reason: 'withdrawn' })
+  ];
+  const deals = [deal({ id: ID_A }), deal({ id: ID_B })];
+  const r = radarOf(events, deals);
+  const records = changes.itemListRecords(r);
+
+  check('一个记录同时出现在多栏时，ItemList 只给它一个位置',
+    records.filter(record => record.id === ID_A).length === 1 && r.sections.changed.items.some(i => i.id === ID_A));
+  check('同一个 id 在页面上出现多次：ItemList 的顺序按**代表行**的渲染顺序',
+    records.map(record => record.id).join(',') === `${ID_A},${ID_B}`, records.map(record => record.id).join(','));
+  check('代表事件取最强的那一条（生命周期 > 字段变化 > 状态量）',
+    records[0].kind === 'created' && records[1].kind === 'ended',
+    `${records[0].kind} / ${records[1].kind}`);
+  check('occurrence 指向该记录在渲染顺序里的第几次出现（可以是后面的那一行）',
+    records[0].occurrence === 0 && records[1].occurrence === 1,
+    `${records[0].occurrence} / ${records[1].occurrence}`);
+
+  const gone = changes.buildRadar({
+    deals: [],
+    store: { startedAt: AS_OF, events: [event({ id: ID_C, at: day(-1), type: 'ended', field: null, from: null, to: null, reason: 'pruned_expired', label: { title: '下架的优惠' } })] },
+    asOf: AS_OF
+  });
+  check('没有详情页（已离开数据集）的条目**不进** ItemList —— 结构化数据里不造死链',
+    gone.sections.ended.items.length === 1 && changes.itemListRecords(gone).length === 0);
+  check('页面对应行仍然存在（不进 ItemList ≠ 从页面上消失）',
+    rc.changesPageHtml(gone, '../').includes('class="chgi"') && rc.changesPageHtml(gone, '../').includes('下架的优惠'));
+
+  const soon = radarOf([event({ id: ID_A, at: day(-1), from: 'x', to: 'y' })], [deal({ id: ID_A, expiresAt: day(3) })]);
+  check('「即将结束」是状态量，强度低于字段变化（同一条记录不会因此改代表）',
+    soon.totals.endingSoon === 1 && changes.itemListRecords(soon)[0].kind === 'changed',
+    changes.itemListRecords(soon)[0].kind);
+
+  check('纯函数：同一份 radar 两次调用逐字节相同',
+    JSON.stringify(changes.itemListRecords(r)) === JSON.stringify(changes.itemListRecords(r)));
+
+  // 最硬的一条：判据给的「渲染顺序」必须与 RENDER-CORE **真的渲染出来的行**逐项一致
+  // （行标记按文档顺序落点，顺序分家就等于把标记打在别人身上）。
+  const page = rc.changesPageHtml(r, '../');
+  const rowIds = [...page.matchAll(/data-deal-id="([^"]*)"/g)].map(m => m[1]);
+  const judgeIds = changes.renderOrderOf(r).map(entry => entry.item.id);
+  check('renderOrderOf 与 RENDER-CORE 的可见行顺序逐项一致',
+    rowIds.join(',') === judgeIds.join(','), `${rowIds.join(',')} / ${judgeIds.join(',')}`);
+  const occurrenceOk = records.every(record =>
+    judgeIds.filter(id => id === record.id).length > record.occurrence);
+  check('代表行的 occurrence 在渲染顺序里真的存在（不会指到不存在的行）', occurrenceOk);
+  check('每条记录恰好占一个位置（标记数 == 记录数）',
+    new Set(records.map(record => record.id)).size === records.length);
+  check('空雷达：ItemList 与行标记都是 0 条（空态下也不许凭空发结构化数据）',
+    changes.itemListRecords(radarOf([], [deal()])).length === 0
+    && changes.renderOrderOf(radarOf([], [deal()])).length === 0);
+}
+
+/* ------------------------------------------------------------------ */
 console.log(`\n=== v1.5 变化雷达演练：${passed} 项通过，${failures.length} 项失败 ===`);
 if (failures.length) {
   for (const item of failures) console.log(`  ✗ ${item.name}${item.detail ? ` —— ${item.detail}` : ''}`);

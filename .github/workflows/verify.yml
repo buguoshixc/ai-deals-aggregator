@@ -83,8 +83,12 @@ jobs:
       #    build job 的 if、以及**发布链必须先过 gate**（prepublish 无 job 级 if + needs 关系）；
       # ⑦ 本文件的 on: 不得加 paths / paths-ignore —— 它要当必需检查，被路径过滤就不是「跳过」
       #    而是**永久 pending**；⑧ 守住 `.github/actions/gate/action.yml` 的**步骤序列**：谁把真浏览器
-      #    验收从门禁里拿掉，这里立刻红；⑨ collect.yml 的 gate 必须排在提交步骤之前；
-      # ⑩ 末尾看门狗断言「断言名单与冻结清单等值」。
+      #    验收从门禁里拿掉，这里立刻红；**同时冻结每个步骤的 run 体**（先剥注释再比对规范化后的
+      #    命令：`run:` 换成 `echo skipped`、加 `continue-on-error`、加 `if: false` 全都会红），
+      #    并**真实执行**"浏览器可用性判定"那段 shell（浏览器不可用 + 非逐字 'true' ⇒ 必须失败；
+      #    逐字 'true' ⇒ 降级且必须留下明确记录）；⑧′ 产物依赖步骤必须显式 `--dir=dist` 且排在
+      #    Assemble site **之后**（原先排在构建前，CI 干净检出里没有 dist/ ⇒ 那些牙一次都没跑过）；
+      #    ⑨ collect.yml 的 gate 必须排在提交步骤之前；⑩ 末尾看门狗断言「断言名单与冻结清单等值」。
       # ⑪ 未加引号的标量里不得出现「冒号 + 空格」—— 那在块上下文里是映射分隔符，GitHub 的
       #    真实 YAML 解析器会拒绝整个文件（本仓库的缩进读取器读得过去，于是本地全绿、
       #    推上去什么都不跑；2026-09-28 实测踩到过一次，用 Python 的 YAML 解析器才发现）。
@@ -98,6 +102,11 @@ jobs:
       #    2026-10-01 由 35 提到 36（v3.0 集成）：新增（17）新脚本登记制 ——
       #    package.json 里每个 `selftest:*` 的脚本文件都必须真的出现在门禁 action 里，
       #    堵住「写了自测、忘了接进门禁」这种**完全静默**的漂移（本地照样全绿）。
+      #    2026-10-04（P1-2/P1-3/P2-26 收口）：**项数仍然是 36** —— 新增的判据折进既有断言
+      #    （(10) 步骤体指纹 + 降级判定真实执行、(11) 降级输入按事件求值、(17) 产物依赖步骤
+      #    的 --dir 与顺序），因为 `--expect-checks` 是被调用方钉住的口径，加断言就等于改口径。
+      #    下面 `with.allow_degraded_run` 的取值不是靠 grep 字符串守的：(11) 会把它按触发事件
+      #    **真的求值** —— 改成硬编码 'true' 会立刻让 check-ci 变红（PR / push 必须解析成 'false'）。
       - name: CI consistency (action / runner / node-version / engines drift)
         run: node scripts/tools/check-ci-consistency.js --expect-checks=36
 

@@ -1,0 +1,389 @@
+{
+  "root": "D:\\qc-t18\\wt",
+  "gitBash": "C:\\Program Files\\Git\\bin\\bash.exe",
+  "steps": 40,
+  "reds": [],
+  "results": [
+    {
+      "name": "CI consistency (36 断言)",
+      "command": "node scripts/tools/check-ci-consistency.js --expect-checks=36",
+      "exitCode": 0,
+      "ms": 1206,
+      "summary": [
+        "✓ (E) 实跑项数 == --expect-checks=36（期望值来自 命令行 --expect-checks=36；数字钉在调用方，与看门狗互相独立）",
+        "✅ CI 口径检查 36 项，失败 0 项"
+      ]
+    },
+    {
+      "name": "Validate data (strict)",
+      "command": "node scripts/validate.js --strict",
+      "exitCode": 0,
+      "ms": 189,
+      "summary": [
+        "免费额度/credits: 带免费额度 4 条（其中官方明说\"没有\" 0 条） · 带 credits 0 条 · 带速率限制 2 条 · 非 token 计费项 8 条",
+        "✅ 校验通过（strict 模式）"
+      ]
+    },
+    {
+      "name": "Reproducibility gate",
+      "command": "node scripts/tools/check-reproducible.js",
+      "exitCode": 0,
+      "ms": 105,
+      "summary": [
+        "✅ deals.json 可重建：值全部有源，且管线对它是幂等的（再跑一遍采集不会改动它）。"
+      ]
+    },
+    {
+      "name": "History verify",
+      "command": "node scripts/tools/history-verify.js",
+      "exitCode": 0,
+      "ms": 78,
+      "summary": [
+        "✅ 历史可重建：基线 + 事件重放逐字段等于当前 deals.json，且生命周期成对。"
+      ]
+    },
+    {
+      "name": "Migration verifier",
+      "command": "node scripts/tools/migrate-audience-verify.js",
+      "exitCode": 0,
+      "ms": 77,
+      "summary": [
+        "✓ after 逐条通过 validateDeal（含 provenance 的全部硬约束） — 0 项",
+        "✅ migrate --audience 验收：15/15 项通过"
+      ]
+    },
+    {
+      "name": "Translation gate",
+      "command": "node scripts/tools/zh-todo.js --check",
+      "exitCode": 0,
+      "ms": 64,
+      "summary": [
+        "✅ 译文与数据一致"
+      ]
+    },
+    {
+      "name": "Translation self-test",
+      "command": "node scripts/tools/zh-selftest.js",
+      "exitCode": 0,
+      "ms": 11647,
+      "summary": [
+        "✅ 演练 15 项，失败 0 项"
+      ]
+    },
+    {
+      "name": "Expiry self-test",
+      "command": "node scripts/tools/expiry-selftest.js",
+      "exitCode": 0,
+      "ms": 85,
+      "summary": [
+        "✅ 活动期限自测：94 项通过，0 项失败"
+      ]
+    },
+    {
+      "name": "Text self-test",
+      "command": "node scripts/tools/text-selftest.js",
+      "exitCode": 0,
+      "ms": 76,
+      "summary": [
+        "✅ 文本清洗自测：46 项通过，0 项失败"
+      ]
+    },
+    {
+      "name": "Health self-test",
+      "command": "node scripts/tools/health-selftest.js",
+      "exitCode": 0,
+      "ms": 3935,
+      "summary": [
+        "✅ 数据源健康自测：72 项通过，0 项失败"
+      ]
+    },
+    {
+      "name": "Provenance self-test",
+      "command": "node scripts/tools/provenance-selftest.js",
+      "exitCode": 0,
+      "ms": 95,
+      "summary": [
+        "✅ provenance 自测：114 项通过，0 项失败"
+      ]
+    },
+    {
+      "name": "Deal-history self-test",
+      "command": "node scripts/tools/history-selftest.js",
+      "exitCode": 0,
+      "ms": 134,
+      "summary": [
+        "✓ 重现后 verifyStore 通过",
+        "=== v1.4 优惠历史演练：61 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "Change-radar self-test",
+      "command": "node scripts/tools/changes-selftest.js",
+      "exitCode": 0,
+      "ms": 81,
+      "summary": [
+        "✓ renderOrderOf 与 RENDER-CORE 的可见行顺序逐项一致",
+        "=== v1.5 变化雷达演练：101 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "Feeds self-test",
+      "command": "node scripts/tools/feeds-selftest.js",
+      "exitCode": 0,
+      "ms": 424,
+      "summary": [
+        "✓ 裸 & 被抓到（RSS 里一个裸 & 就能让整份 feed 解析失败）",
+        "=== v1.6 订阅层演练：131 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "SEO self-test",
+      "command": "node scripts/tools/seo-selftest.js",
+      "exitCode": 0,
+      "ms": 157,
+      "summary": [
+        "✓ 摘要的数字与 seo.recomputeSummary 的重算逐项一致（同一份数据的两种算法）",
+        "=== v1.7 SEO 门禁演练：63 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "Audience self-test",
+      "command": "node scripts/tools/audience-selftest.js",
+      "exitCode": 0,
+      "ms": 110,
+      "summary": [
+        "=== 4) 前后端同源语义：audienceRows 逐项一致 ===",
+        "✅ 受众字段自测：191 项通过，0 项失败"
+      ]
+    },
+    {
+      "name": "App-token self-test",
+      "command": "node scripts/tools/app-token-selftest.js",
+      "exitCode": 0,
+      "ms": 286,
+      "summary": [
+        "✅ 采集机器人身份自测：67 项通过，0 项失败"
+      ]
+    },
+    {
+      "name": "AI layer self-test",
+      "command": "node scripts/tools/ai-selftest.js",
+      "exitCode": 0,
+      "ms": 2501,
+      "summary": [
+        "AI 自检 63 项 · 失败 0",
+        "✅ AI 层边界完好：候选不合格就进不来，AI 挂掉不影响确定性链路，"
+      ]
+    },
+    {
+      "name": "Collector fixtures",
+      "command": "node scripts/tools/fixture-test.js",
+      "exitCode": 0,
+      "ms": 280,
+      "summary": [
+        "fixture 4 项 · 失败 0"
+      ]
+    },
+    {
+      "name": "Plans self-test",
+      "command": "node scripts/tools/plans-selftest.js",
+      "exitCode": 0,
+      "ms": 448,
+      "summary": [
+        "✓ 页面级诚实性断言全部通过（含最近变化块与时间线）",
+        "✅ === v2.1 Coding Plan 数据模型演练：264 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "Plan-history self-test",
+      "command": "node scripts/tools/plan-history-selftest.js",
+      "exitCode": 0,
+      "ms": 163,
+      "summary": [
+        "✓ 干净夹具通过",
+        "=== v2.3 套餐变化日志演练：132 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "Deal-plan-links self-test",
+      "command": "node scripts/tools/deal-plan-links-selftest.js",
+      "exitCode": 0,
+      "ms": 117,
+      "summary": [
+        "✓ 套餐页：断言在正确的块上通过",
+        "=== v2.4 优惠 ↔ 套餐关系演练：80 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "API-plans self-test",
+      "command": "node scripts/tools/api-plans-selftest.js",
+      "exitCode": 0,
+      "ms": 216,
+      "summary": [
+        "✓ 【牙】同一运行里的\"新增 + 移除且单价有相同项\"→ 写出 possible_rename 异常（**检测不等于自动合并**）",
+        "=== v2.5 API / Token 计费演练：175 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "API-plans reproducibility",
+      "command": "node scripts/tools/check-api-plans-reproducible.js",
+      "exitCode": 0,
+      "ms": 87,
+      "summary": [
+        "✅ api-plans.json 可重建性通过：与 curated_api_plans.json 的产出逐字节一致"
+      ]
+    },
+    {
+      "name": "API-plan-history verify",
+      "command": "node scripts/tools/check-api-plan-history.js",
+      "exitCode": 0,
+      "ms": 84,
+      "summary": [
+        "✅ API 计费变化可重建：基线 + 事件重放逐字段等于当前 api-plans.json，且生命周期成对。"
+      ]
+    },
+    {
+      "name": "Model-registry self-test",
+      "command": "node scripts/tools/models-selftest.js",
+      "exitCode": 0,
+      "ms": 110,
+      "summary": [
+        "✓ 【牙 #22】没传 registry 表（table 为空）却有声明 → 红（判不了\"是不是能对上\"就不是通过）",
+        "✅ === v3.0 Model Registry 演练：90 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "Models-page self-test",
+      "command": "node scripts/tools/models-page-selftest.js --dir=dist",
+      "exitCode": 0,
+      "ms": 373,
+      "summary": [
+        "✓ 未映射模型：门槛不通过（没有任何显式引用）",
+        "=== v3.0 Model Registry 页面演练：61 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "Plans-hub self-test",
+      "command": "node scripts/tools/planshub-selftest.js --dir=dist",
+      "exitCode": 0,
+      "ms": 149,
+      "summary": [
+        "=== v3.0 /plans/ 资料入口演练：32 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "Vendor-pages self-test",
+      "command": "node scripts/tools/vendor-page-selftest.js --dir=dist",
+      "exitCode": 0,
+      "ms": 160,
+      "summary": [
+        "✓ dist 现场：19 个厂商页的资料区块与数据逐项对账",
+        "=== v3.0 厂商统一资料页演练：52 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "Archive self-test",
+      "command": "node scripts/tools/archive-selftest.js --dir=dist",
+      "exitCode": 0,
+      "ms": 106,
+      "summary": [
+        "✓ 详情页六项必备信息齐全（状态/首次/最后有效/结束发现/最后已知/时间线）",
+        "=== v3.0 历史档案演练：69 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "Data-docs self-test",
+      "command": "node scripts/tools/data-docs-selftest.js --dir=dist",
+      "exitCode": 0,
+      "ms": 118,
+      "summary": [
+        "✓ 【牙】豁免项在产物里不存在（过期豁免）→ 红",
+        "=== v3.0 数据出口演练：57 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "name": "Models reproducibility",
+      "command": "node scripts/tools/check-models-reproducible.js",
+      "exitCode": 0,
+      "ms": 83,
+      "summary": [
+        "✅ Model Registry 可重建性通过：models.json 与 model-registry-links.json 都与来源层逐字节一致"
+      ]
+    },
+    {
+      "name": "Model-registry links check",
+      "command": "node scripts/tools/check-model-registry-links.js",
+      "exitCode": 0,
+      "ms": 80,
+      "summary": [
+        "✅ Model Registry 关系层通过：每条映射都指向真实存在的记录与模型，一条 source pricing identity 至多归属一个 registry 模型，引文逐字来自记录本身；API 与 Coding 两侧每一个模型身份都已判过"
+      ]
+    },
+    {
+      "name": "Coverage report",
+      "command": "node scripts/tools/coverage-report.js",
+      "exitCode": 0,
+      "ms": 95,
+      "summary": [
+        "失败原因：qoder.com 的 robots.txt 对本路径 Disallow，静态抓取与无头渲染两条路都被拒（遵守 robots，不做绕过）。改用官方文档站 docs.qoder.com/account/pricing.md。",
+        "✅ 覆盖报告自检通过（0 处问题）。"
+      ]
+    },
+    {
+      "name": "Assemble site",
+      "command": "node scripts/tools/build-local.js",
+      "exitCode": 0,
+      "ms": 1972,
+      "summary": [
+        "✅ 产物自检通过",
+        "✅ 构建完成 → dist/（自检全过，已从暂存目录就位）"
+      ]
+    },
+    {
+      "name": "Feeds reproducibility",
+      "command": "node scripts/tools/check-feeds-reproducible.js",
+      "exitCode": 0,
+      "ms": 3925,
+      "summary": [
+        "✅ 订阅可复现门禁：2 次构建，全部逐字节一致"
+      ]
+    },
+    {
+      "name": "Plans reproducibility",
+      "command": "node scripts/tools/check-plans-reproducible.js",
+      "exitCode": 0,
+      "ms": 78,
+      "summary": [
+        "✅ plans.json 可重建性通过：与 curated_plans.json 的产出逐字节一致"
+      ]
+    },
+    {
+      "name": "Plan-history verify",
+      "command": "node scripts/tools/check-plan-history.js",
+      "exitCode": 0,
+      "ms": 90,
+      "summary": [
+        "✅ 套餐变化可重建：基线 + 事件重放逐字段等于当前 plans.json，且生命周期成对。"
+      ]
+    },
+    {
+      "name": "SEO verification (from dist/)",
+      "command": "node scripts/tools/seo-verify.js --dir=dist",
+      "exitCode": 0,
+      "ms": 442,
+      "summary": [
+        "✅ SEO 验收 11 项，失败 0 项"
+      ]
+    },
+    {
+      "name": "Real-browser acceptance",
+      "command": "node scripts/tools/verify-site.js --dir=dist",
+      "exitCode": 0,
+      "ms": 66526,
+      "summary": [
+        "✓ /docs/data/ 按设计没有站外链接（这一页只做站内导航与数据出口） — 0 条：（另有 1 条本项目仓库入口，由共享页脚声明，不计）",
+        "✅ 验收 703 项，失败 0 项"
+      ]
+    }
+  ]
+}

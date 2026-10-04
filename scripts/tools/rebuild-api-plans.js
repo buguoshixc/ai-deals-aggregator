@@ -99,6 +99,22 @@ function main() {
   apiPlans.assertValidStore(curated.payload, { providerTable });
   console.log('  ✓ 数据集级校验通过（id 唯一 · 身份唯一 · updatedAt · 规范排序 · provider 表）');
 
+  // 免费额度的**性质**分布（P1-11 / `F-r2-api-005`）：一次重建就能看出「长期能力」与
+  // 「新用户 / 限时赠送」各有多少条。0 与 N 在这一行必须长得不一样 ——
+  // 「本轮没有赠送类免费额度」与「这一层没跑」不能混成同一句话。
+  // 性质是**必填**字段（`lib/api-plan-schema.js` 的 FREE_TIER_STABILITY），缺了就校验不过，
+  // 所以这里不需要兜底默认值：数不出来只会是因为数据本身已经红了。
+  const stabilityCounts = { standing: 0, new_user: 0, promotional: 0 };
+  let freeTierRecords = 0;
+  for (const plan of curated.payload.plans) {
+    if (!plan.freeTier || plan.freeTier.type === 'none') continue;
+    freeTierRecords++;
+    if (stabilityCounts[plan.freeTier.stability] !== undefined) stabilityCounts[plan.freeTier.stability]++;
+  }
+  console.log(`  · 免费额度性质：带 freeTier ${freeTierRecords} 条 —— 长期提供 ${stabilityCounts.standing} · `
+    + `新用户赠送 ${stabilityCounts.new_user} · 限时赠送 ${stabilityCounts.promotional}`
+    + '（后两类**不是**长期能力，页面上逐条标注）');
+
   const diskDoc = readDiskPlans();
   const diskText = diskDoc ? fs.readFileSync(API_PLANS, 'utf8') : null;
   const nextText = `${JSON.stringify(curated.payload, null, 2)}\n`;

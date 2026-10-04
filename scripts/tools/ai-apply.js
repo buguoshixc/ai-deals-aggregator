@@ -5,12 +5,18 @@
  * 这是整个 AI 层里**唯一**会写生产数据的地方，所以它的每一条限制都是有意的：
  *
  *   1. 只处理 `review.decision === 'accept'` 的候选 —— 没被人点过的，一个都不写；
+ *      判定只有一处实现（`candidates.acceptedOf`：人工决定 + 状态一致 + schema/enum/evidence 三关），
+ *      这里**不许**再写行内的 `review.decision === 'accept'` filter（那正是 P1-1/M17 的根因：
+ *      改一行就能让未审阅的候选进入生产，而所有门禁照绿）。
+ *      人点了 accept 但机器门没过的，本工具**点名拒绝**，不静默丢弃。
  *   2. 重复候选一律拒绝（要合并只有人工改 `aliases.json` 一条路）；
  *   3. 诊断 / 补丁 / 审计候选一律拒绝（它们是报告，不是数据）；
  *   4. 只写两个**已存在的人工来源层**：`curated_*.json` 与 `audience-overrides.json`；
  *      `deals.json` 是派生产物，由 `npm run collect` 重新推导 —— 不在这里碰；
  *   5. 写完全套门禁；**门禁红就把文件回滚**并把错误原样报出来。
  *      落地写到一半失败比不写更坏：数据会停在一个既不是旧值也不是新值的状态。
+ *   6. `--file` 只接受候选文件：落点必须在 `.ai-cache/**` 或 `research/**`（白名单），
+ *      内容必须是候选信封 —— `--file=deals.json` 这类调用会被明确拒掉（exit 1）。
  *
  * 用法：
  *   node scripts/tools/ai-apply.js --id=<候选 id> [--file=…] [--dry-run]
@@ -239,23 +245,49 @@ function appendLog(entries) {
   writeJson(APPLIED_LOG, doc);
 }
 
+/** 人工点了 accept 但机器门没过时，说清是哪一条不过（落地工具必须点名，不许静默丢） */
+function unverifiedReason(item) {
+  const gates = candidates.deterministicFailures(item);
+  if (gates.length) return gates.join(', ');
+  return `status=${item.status}（与 review.decision=accept 不一致）`;
+}
+
 function main() {
   const id = option('id');
   const allAccepted = flag('all-accepted');
   const dryRun = flag('dry-run');
-  const file = option('file') ? path.resolve(ROOT, option('file')) : candidates.latestCandidatesFile(option('task'));
 
-  if (!file || !fs.existsSync(file)) {
-    console.error('找不到候选文件。先跑维护任务与 ai-accept。');
+  // `--file` 只接受候选文件：落点白名单 + 信封形状（把生产真值当候选读的调用在这里被拒）。
+  let file;
+  try {
+    file = option('file')
+      ? candidates.resolveOutputPath(option('file'), { label: '候选文件' })
+      : candidates.latestCandidatesFile(option('task'));
+    if (!file) throw new Error('找不到候选文件。先跑维护任务与 ai-accept。');
+  } catch (error) {
+    console.error(`❌ ${error.message}`);
     return 1;
   }
-  const payload = candidates.readCandidates(file);
-  const accepted = payload.candidates.filter(item => item.review && item.review.decision === 'accept');
+
+  let payload;
+  try {
+    payload = candidates.readCandidatesStrict(file);
+  } catch (error) {
+    console.error(`❌ ${error.message}`);
+    return 1;
+  }
+
+  // 「已接受」的判定只有一处实现（candidates.acceptedOf）。这里**不许**再写行内 filter。
+  const accepted = candidates.acceptedOf(payload);
+  const unverified = candidates.acceptedButUnverified(payload);
   const wanted = allAccepted ? accepted : accepted.filter(item => item.id === id || (id && item.id.startsWith(id)));
 
   if (!id && !allAccepted) {
     console.error('用法：node scripts/tools/ai-apply.js --id=<候选 id>（或 --all-accepted）');
     return 1;
+  }
+  for (const item of unverified) {
+    console.error(`  ✗ ${item.id} 已被人工接受，但机器门未过：${unverifiedReason(item)} —— 拒绝落地`);
   }
   if (!wanted.length) {
     console.error(`没有"已接受"的候选匹配 ${id || '(all)'}。先用 ai-accept 记录人工决定。`);

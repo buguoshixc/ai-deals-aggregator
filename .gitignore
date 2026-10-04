@@ -59,3 +59,9 @@ dist.v24/
 # 它也不是任何生产数据的来源 —— 采集/合并/构建都不读它，删掉不影响任何东西。
 # 需要留档的候选以 workflow artifact 的形式上传（见 .github/workflows/ai-maintenance.yml）。
 .ai-cache/
+
+# 质量收口（quality-closure-post-audit）并行会话的隔离产物目录：
+# dist.qc-* 是同一条构建路径的 --out= 目标（避免与别的会话正在用的 dist/ 互相踩踏），
+# .qc-* 是各任务的一次性证据脚本/临时输出。两者都是过程产物，验证完即弃，绝不入库。
+dist.qc-*/
+.qc-*/
