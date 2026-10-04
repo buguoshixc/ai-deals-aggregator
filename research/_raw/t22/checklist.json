@@ -1,0 +1,320 @@
+{
+  "source": "D:/AI_DEALS_COVERAGE_EXPANSION_V1_PROMPT.md",
+  "countedAt": "1970-01-01T00:00:00.000Z",
+  "items87Count": 47,
+  "items88Count": 15,
+  "items87": [
+    {
+      "n": 1,
+      "text": "基于最新 `origin/master`",
+      "srcLine": 2568
+    },
+    {
+      "n": 2,
+      "text": "没有重复造 Coverage Report",
+      "srcLine": 2569
+    },
+    {
+      "n": 3,
+      "text": "Target Provider Universe 有唯一来源",
+      "srcLine": 2570
+    },
+    {
+      "n": 4,
+      "text": "Coverage Target 与 Production Truth 分层",
+      "srcLine": 2571
+    },
+    {
+      "n": 5,
+      "text": "12 家目标全部完成调查",
+      "srcLine": 2572
+    },
+    {
+      "n": 6,
+      "text": "不强迫 12 家全部 adopted",
+      "srcLine": 2573
+    },
+    {
+      "n": 7,
+      "text": "`releasedAt` 与 `firstSeen` 分离",
+      "srcLine": 2574
+    },
+    {
+      "n": 8,
+      "text": "`releasedAt` 有官方 evidence",
+      "srcLine": 2575
+    },
+    {
+      "n": 9,
+      "text": "无证据日期保持 unknown/null",
+      "srcLine": 2576
+    },
+    {
+      "n": 10,
+      "text": "新增 `modelRole`",
+      "srcLine": 2577
+    },
+    {
+      "n": 11,
+      "text": "comparable group 不跨 developer/family/role",
+      "srcLine": 2578
+    },
+    {
+      "n": 12,
+      "text": "Freshness Policy 单一实现",
+      "srcLine": 2579
+    },
+    {
+      "n": 13,
+      "text": "不读墙上时钟决定 catalogStatus",
+      "srcLine": 2580
+    },
+    {
+      "n": 14,
+      "text": "不用版本号自动判新旧",
+      "srcLine": 2581
+    },
+    {
+      "n": 15,
+      "text": "current / aging / legacy / historical / unknown 可区分",
+      "srcLine": 2582
+    },
+    {
+      "n": 16,
+      "text": "unknown 不被静默隐藏",
+      "srcLine": 2583
+    },
+    {
+      "n": 17,
+      "text": "每个 active comparable group 至少有 current/unknown",
+      "srcLine": 2584
+    },
+    {
+      "n": 18,
+      "text": "legacy 不删除 Registry identity",
+      "srcLine": 2585
+    },
+    {
+      "n": 19,
+      "text": "legacy detail route 保留",
+      "srcLine": 2586
+    },
+    {
+      "n": 20,
+      "text": "History 没被重写",
+      "srcLine": 2587
+    },
+    {
+      "n": 21,
+      "text": "API Pricing 没因 catalog filter 丢真值",
+      "srcLine": 2588
+    },
+    {
+      "n": 22,
+      "text": "`/models/` 默认减少旧型号干扰",
+      "srcLine": 2589
+    },
+    {
+      "n": 23,
+      "text": "用户可查看旧型号",
+      "srcLine": 2590
+    },
+    {
+      "n": 24,
+      "text": "No-JS 完整",
+      "srcLine": 2591
+    },
+    {
+      "n": 25,
+      "text": "Current Model Coverage 使用目标集合做分母",
+      "srcLine": 2592
+    },
+    {
+      "n": 26,
+      "text": "Historical Depth 与 Current Coverage 分开",
+      "srcLine": 2593
+    },
+    {
+      "n": 27,
+      "text": "不存在无意义大量新增旧模型",
+      "srcLine": 2594
+    },
+    {
+      "n": 28,
+      "text": "Provider / Model identity 没靠名字相似度自动合并",
+      "srcLine": 2595
+    },
+    {
+      "n": 29,
+      "text": "Source Health 已审查",
+      "srcLine": 2596
+    },
+    {
+      "n": 30,
+      "text": "长期失败 source 有明确裁决",
+      "srcLine": 2597
+    },
+    {
+      "n": 31,
+      "text": "Analytics 本地仍零请求",
+      "srcLine": 2598
+    },
+    {
+      "n": 32,
+      "text": "Build deterministic",
+      "srcLine": 2599
+    },
+    {
+      "n": 33,
+      "text": "Registry rebuild deterministic",
+      "srcLine": 2600
+    },
+    {
+      "n": 34,
+      "text": "Coverage JSON deterministic",
+      "srcLine": 2601
+    },
+    {
+      "n": 35,
+      "text": "Stable IDs 无非预期变化",
+      "srcLine": 2602
+    },
+    {
+      "n": 36,
+      "text": "Sitemap 无非预期丢页",
+      "srcLine": 2603
+    },
+    {
+      "n": 37,
+      "text": "Feed / Manifest 无非预期变化",
+      "srcLine": 2604
+    },
+    {
+      "n": 38,
+      "text": "Mutation / Tooth Tests 已真实执行",
+      "srcLine": 2605
+    },
+    {
+      "n": 39,
+      "text": "Self-Audit 已完成",
+      "srcLine": 2606
+    },
+    {
+      "n": 40,
+      "text": "Self-Audit 中 REPAIR_NOW = 0",
+      "srcLine": 2607
+    },
+    {
+      "n": 41,
+      "text": "P0 = 0",
+      "srcLine": 2608
+    },
+    {
+      "n": 42,
+      "text": "P1 = 0",
+      "srcLine": 2609
+    },
+    {
+      "n": 43,
+      "text": "Full Gate 全绿",
+      "srcLine": 2610
+    },
+    {
+      "n": 44,
+      "text": "Required CI 全绿",
+      "srcLine": 2611
+    },
+    {
+      "n": 45,
+      "text": "Deploy 成功",
+      "srcLine": 2612
+    },
+    {
+      "n": 46,
+      "text": "Online Smoke 成功",
+      "srcLine": 2613
+    },
+    {
+      "n": 47,
+      "text": "最终报告与 Self-Audit 报告已提交",
+      "srcLine": 2614
+    }
+  ],
+  "items88": [
+    {
+      "n": 1,
+      "text": "只增加模型数量，没有 Coverage Target",
+      "srcLine": 2623
+    },
+    {
+      "n": 2,
+      "text": "Coverage Report 写了，但数字不是从生产数据派生",
+      "srcLine": 2624
+    },
+    {
+      "n": 3,
+      "text": "releasedAt 大量靠猜",
+      "srcLine": 2625
+    },
+    {
+      "n": 4,
+      "text": "firstSeen 被拿来当发布时间",
+      "srcLine": 2626
+    },
+    {
+      "n": 5,
+      "text": "所有模型最后仍全部 current，但没有解释",
+      "srcLine": 2627
+    },
+    {
+      "n": 6,
+      "text": "legacy 直接从 Registry 删除",
+      "srcLine": 2628
+    },
+    {
+      "n": 7,
+      "text": "模型详情页 404",
+      "srcLine": 2629
+    },
+    {
+      "n": 8,
+      "text": "历史价格被清理",
+      "srcLine": 2630
+    },
+    {
+      "n": 9,
+      "text": "12 个 Provider 强行全部 adopted",
+      "srcLine": 2631
+    },
+    {
+      "n": 10,
+      "text": "第三方目录被当官方证据",
+      "srcLine": 2632
+    },
+    {
+      "n": 11,
+      "text": "为了 Gate 绿删除断言",
+      "srcLine": 2633
+    },
+    {
+      "n": 12,
+      "text": "只跑 happy path，没有 mutation",
+      "srcLine": 2634
+    },
+    {
+      "n": 13,
+      "text": "Self-Audit 只复制完成报告",
+      "srcLine": 2635
+    },
+    {
+      "n": 14,
+      "text": "CI 没跑却写“应该通过”",
+      "srcLine": 2636
+    },
+    {
+      "n": 15,
+      "text": "Deploy 没跑却写“线上正常”",
+      "srcLine": 2637
+    }
+  ]
+}

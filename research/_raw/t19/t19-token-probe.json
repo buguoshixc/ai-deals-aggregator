@@ -1,0 +1,328 @@
+{
+  "file": "research/_raw/t15-url-verify/aws-q-overview.txt",
+  "testedAt": "2026-10-04T14:59:27.665Z",
+  "tested": 40,
+  "blocked": 0,
+  "results": [
+    {
+      "token": "3822079bac49…",
+      "len": 40,
+      "at": 23777,
+      "blocked": false,
+      "sha": "7e799b280488",
+      "ctx": "ting-channels/website/aws/en_US/homepage/global-nav/reinvent-register.3822079bac49f139ae46016a9a99c3eed71fad4a.png\\\",\\\"imageAlt\\\":\\\"An abstr"
+    },
+    {
+      "token": "fbb950fa275e…",
+      "len": 40,
+      "at": 24173,
+      "blocked": false,
+      "sha": "6492e5ef74f3",
+      "ctx": "nnels/website/aws/en_US/homepage/global-nav/building-30-day-challenge.fbb950fa275e28193955202b94c04d0125135ecc.jpg\\\",\\\"imageAlt\\\":\\\"An abstr"
+    },
+    {
+      "token": "bce7bdc05328…",
+      "len": 40,
+      "at": 24525,
+      "blocked": false,
+      "sha": "8231bffd0b0a",
+      "ctx": "m/onedam/marketing-channels/website/aws/en_US/homepage/global-nav/isv.bce7bdc05328153704c0c2a90d7dd38658e4d349.jpg\\\",\\\"imageAlt\\\":\\\"An abstr"
+    },
+    {
+      "token": "07a6484f8eaa…",
+      "len": 40,
+      "at": 25682,
+      "blocked": false,
+      "sha": "e444aab1ad82",
+      "ctx": "bsite/aws/en_US/global-nav/aws-library_illustration_innovation_8_1200.07a6484f8eaa3100138cf8b6dce14f1db024db32.jpg\\\",\\\"imageAlt\\\":\\\"an abstr"
+    },
+    {
+      "token": "77dd122bde9a…",
+      "len": 40,
+      "at": 28861,
+      "blocked": false,
+      "sha": "afd495c565d8",
+      "ctx": "/website/aws/en_US/global-nav/aws-library_illustration_culture_2_1200.77dd122bde9af49ea0c09cdc009c193866f62ad7.jpg\\\",\\\"imageAlt\\\":\\\"alt\\\",\\\""
+    },
+    {
+      "token": "29c48d4e7420…",
+      "len": 40,
+      "at": 29260,
+      "blocked": false,
+      "sha": "ce6642ba4aa6",
+      "ctx": "website/aws/en_US/global-nav/aws-library_illustration_culture_11_1200.29c48d4e742090396f61d0c5d5eec4ea8d714817.jpg\\\",\\\"imageAlt\\\":\\\"alt\\\",\\\""
+    },
+    {
+      "token": "d39ce52e61f1…",
+      "len": 40,
+      "at": 263984,
+      "blocked": false,
+      "sha": "5cec5530a741",
+      "ctx": "roduct-categories/developer-tools/approved/images/qdev_hero_condensed.d39ce52e61f1249ad5d8cccb382a84b2851dffa1.png\",\"heading\":\"Amazon Q Deve"
+    },
+    {
+      "token": "c31ace9c7009…",
+      "len": 40,
+      "at": 296573,
+      "blocked": false,
+      "sha": "97de7c760e4d",
+      "ctx": "oved/images/animations/q-dev-overview/final/3-code-with-confidence-v2.c31ace9c70093fedf31941c4453e4b6d66ca8444.json\",\"id\":\"ams#c1\",\"itemCTAL"
+    },
+    {
+      "token": "f3d1bb48ef14…",
+      "len": 40,
+      "at": 309359,
+      "blocked": false,
+      "sha": "45c684372da2",
+      "ctx": "ws/en_US/developer/approved/images/animations/operate/final/billie-v2.f3d1bb48ef14433981083ea4f18a6659a935ddc8.json\",\"id\":\"ams#c1\",\"itemCTAL"
+    },
+    {
+      "token": "7995ac4a5de4…",
+      "len": 40,
+      "at": 314095,
+      "blocked": false,
+      "sha": "19c43d22c1c8",
+      "ctx": "eveloper/approved/images/animations/q-dev-overview/final/6-upgrade-v2.7995ac4a5de4fb580f6c3964876788e7d31577ad.json\",\"id\":\"ams#c1\",\"itemCTAL"
+    },
+    {
+      "token": "e861442590c8…",
+      "len": 40,
+      "at": 324715,
+      "blocked": false,
+      "sha": "8da69261b8b1",
+      "ctx": "eveloper/approved/images/animations/q-dev-overview/final/Sagemaker-v1.e861442590c8dd3ab65e20922444e78ae6e0341d.json\",\"id\":\"ams#c1\",\"itemCTAL"
+    },
+    {
+      "token": "b951f414ae78…",
+      "len": 40,
+      "at": 329832,
+      "blocked": false,
+      "sha": "de2b7e489532",
+      "ctx": "S/developer/approved/images/animations/q-dev-overview/final/1-plan-v2.b951f414ae78b6a605cb7fa0a9c8b88f5bc0baf1.json\",\"id\":\"ams#c1\",\"itemCTAL"
+    },
+    {
+      "token": "b1bf0f811086…",
+      "len": 40,
+      "at": 330651,
+      "blocked": false,
+      "sha": "c2b7967c6238",
+      "ctx": "eveloper/approved/images/animations/q-dev-overview/final/2-develop-v6.b1bf0f811086bd3112382132c037f0087682c042.json\",\"id\":\"ams#c2\",\"itemCTAL"
+    },
+    {
+      "token": "6ca8074be10f…",
+      "len": 40,
+      "at": 331387,
+      "blocked": false,
+      "sha": "ba80e66dbac5",
+      "ctx": "/developer-tools/approved/images/2ce737cb-8a79-ace0-eef3-940eed66dbed.6ca8074be10f06c590720c8477459329de1817e7.png\",\"id\":\"ams#c3\",\"itemCTALa"
+    },
+    {
+      "token": "a7efb1d1b267…",
+      "len": 40,
+      "at": 332210,
+      "blocked": false,
+      "sha": "47d72309e5a8",
+      "ctx": "r/approved/images/animations/q-dev-overview/final/SecurityScanning-v1.a7efb1d1b267cc371b554d2a6b4f1ebbdf76b336.json\",\"id\":\"ams#c4\",\"itemCTAL"
+    },
+    {
+      "token": "94e9bc0e24e7…",
+      "len": 40,
+      "at": 359885,
+      "blocked": false,
+      "sha": "8a72434f5161",
+      "ctx": "/developer-tools/approved/images/29966737-009b-c0c4-509c-fe0b117162b8.94e9bc0e24e7b0125e1dbadf136338709fcf68c6.png\",\"itemOption\":\"bleed\",\"it"
+    },
+    {
+      "token": "6f0e8740ecf1…",
+      "len": 40,
+      "at": 360170,
+      "blocked": false,
+      "sha": "ce4143809e87",
+      "ctx": "/developer-tools/approved/images/67e3b9c5-16fb-5e71-60ce-ba79b409ab57.6f0e8740ecf1cb1cb12b543e7836f7aaa6f71843.png\",\"id\":\"ams#c1\",\"itemCTALa"
+    },
+    {
+      "token": "c536522a3256…",
+      "len": 40,
+      "at": 360726,
+      "blocked": false,
+      "sha": "c90946356f12",
+      "ctx": "/developer-tools/approved/images/089396bb-ca49-2c4b-b899-fa0c766ebef8.c536522a32565eafb2b53a914cee130db5ed1f0c.png\",\"itemOption\":\"bleed\",\"it"
+    },
+    {
+      "token": "a4c983d890ce…",
+      "len": 40,
+      "at": 361007,
+      "blocked": false,
+      "sha": "351e3f0c609d",
+      "ctx": "ries/developer-tools/approved/images/4f402926b5083a0cbef89af206fb2997.a4c983d890ce4bc85dbbc91208c0b5573f100c78.png\",\"id\":\"ams#c2\",\"itemCTALa"
+    },
+    {
+      "token": "44a30302663b…",
+      "len": 40,
+      "at": 361685,
+      "blocked": false,
+      "sha": "e63497f72f63",
+      "ctx": "/developer-tools/approved/images/7dda066c-13f7-998c-8fc1-7341e356dc78.44a30302663b0c100d2e6d820666e1bfe821dd11.png\",\"itemOption\":\"bleed\",\"it"
+    },
+    {
+      "token": "d5844a8b1029…",
+      "len": 40,
+      "at": 361966,
+      "blocked": false,
+      "sha": "4a2dd372fa0c",
+      "ctx": "ries/developer-tools/approved/images/31ce7ebd14a64855edaeaba94c566b7b.d5844a8b1029c3f82964c26ab66989b991493655.png\",\"id\":\"ams#c3\",\"itemCTALa"
+    },
+    {
+      "token": "fc9973227b02…",
+      "len": 40,
+      "at": 362529,
+      "blocked": false,
+      "sha": "882811c7570d",
+      "ctx": "/developer-tools/approved/images/73c4956f-7431-785c-9a57-789557db7315.fc9973227b02bf520ef294304a54ff424b64bfbc.png\",\"itemOption\":\"bleed\",\"it"
+    },
+    {
+      "token": "f1c92db16ce1…",
+      "len": 40,
+      "at": 362815,
+      "blocked": false,
+      "sha": "0aa9d4c67d45",
+      "ctx": "quantum-technologies/approved/images/6652a25b213f107570345d6325dd03e4.f1c92db16ce1dcc49f2ff3c84c7157e85d7031a8.png\",\"id\":\"ams#c4\",\"itemCTALa"
+    },
+    {
+      "token": "4e0334caba3f…",
+      "len": 40,
+      "at": 363474,
+      "blocked": false,
+      "sha": "c5e0a96f2653",
+      "ctx": "/developer-tools/approved/images/b2ce1aaf-16a6-5e90-f660-400f7cad7a89.4e0334caba3f478f85a1b3fec76de5e48f8b9eae.png\",\"itemOption\":\"bleed\",\"it"
+    },
+    {
+      "token": "f3a516afab42…",
+      "len": 40,
+      "at": 363769,
+      "blocked": false,
+      "sha": "ae12699664a0",
+      "ctx": "ificial-intelligence/approved/images/6935bc9f13cf35f107178b5fed0d7938.f3a516afab42d1ac8e5720a76ec46bedf5db0755.png\",\"id\":\"ams#c5\",\"itemCTALa"
+    },
+    {
+      "token": "12f8e233e9c8…",
+      "len": 40,
+      "at": 366437,
+      "blocked": false,
+      "sha": "27c1b73aa0a8",
+      "ctx": "/developer-tools/approved/images/3e4acee9-d3cd-2383-5404-61bf73270eb1.12f8e233e9c8d691e4b7a6a187ca5e311d593823.png\",\"mediaAltText\":\"Missing "
+    },
+    {
+      "token": "75f19f869839…",
+      "len": 40,
+      "at": 366742,
+      "blocked": false,
+      "sha": "7476eac9e009",
+      "ctx": "/developer-tools/approved/images/5864bade-2d3d-7e58-9f84-067e92ceee60.75f19f869839545c0f2c3d253fdb487d9ca23197.png\",\"mediaAltText\":\"Missing "
+    },
+    {
+      "token": "d7713e49b052…",
+      "len": 40,
+      "at": 367047,
+      "blocked": false,
+      "sha": "91b63c47a126",
+      "ctx": "/developer-tools/approved/images/a1ff2e59-b814-ad54-e5ed-2f9efd99c1b7.d7713e49b0520d856fa2a02dc9c43b6bcb5df8ca.png\",\"mediaAltText\":\"Missing "
+    },
+    {
+      "token": "06fa8576e0a7…",
+      "len": 40,
+      "at": 367352,
+      "blocked": false,
+      "sha": "09725f8ec75c",
+      "ctx": "/developer-tools/approved/images/220c51ad-b540-8a1f-b7d0-596788604973.06fa8576e0a725821440e03f143785e20e64a6ac.png\",\"mediaAltText\":\"Missing "
+    },
+    {
+      "token": "4f221a647763…",
+      "len": 40,
+      "at": 367657,
+      "blocked": false,
+      "sha": "6a3ae17df224",
+      "ctx": "/developer-tools/approved/images/9c8f6468-0708-b848-af5e-aa7a31f99c2e.4f221a647763edb92782b8424252a728c2f6ed13.png\",\"mediaAltText\":\"Missing "
+    },
+    {
+      "token": "738e19b5f7f5…",
+      "len": 40,
+      "at": 367962,
+      "blocked": false,
+      "sha": "77073faca615",
+      "ctx": "/developer-tools/approved/images/fdf6ce66-811c-39e0-72b5-e507ff8e1d61.738e19b5f7f5dacec9e248ad107e084ad5f3ef24.png\",\"mediaAltText\":\"Missing "
+    },
+    {
+      "token": "6379381d913c…",
+      "len": 40,
+      "at": 377900,
+      "blocked": false,
+      "sha": "03db3a1a9b4e",
+      "ctx": "/developer-tools/approved/images/9f7b5e0e-0cb4-5943-2f29-76e71f75a1b4.6379381d913ce872ee0dfd5074ac27b943f3fc29.png\",\"mediaAltText\":\"Missing "
+    },
+    {
+      "token": "bfb834b64501…",
+      "len": 40,
+      "at": 378205,
+      "blocked": false,
+      "sha": "61692568c39b",
+      "ctx": "/developer-tools/approved/images/39a0b8f5-297a-9e5c-b8e9-0e011683914c.bfb834b64501159f68a1efe467739dbbc859fcd2.png\",\"mediaAltText\":\"Missing "
+    },
+    {
+      "token": "c43e7ed9c9e0…",
+      "len": 40,
+      "at": 378510,
+      "blocked": false,
+      "sha": "eacd484158b3",
+      "ctx": "/developer-tools/approved/images/d0546eae-0e70-8579-d485-5e2e01a4331d.c43e7ed9c9e0b392fd7176391dac07d2504dcaa5.png\",\"mediaAltText\":\"Missing "
+    },
+    {
+      "token": "1556a126907c…",
+      "len": 40,
+      "at": 378815,
+      "blocked": false,
+      "sha": "85e00fe166b5",
+      "ctx": "/developer-tools/approved/images/88211d3f-0949-7481-1b29-872255f35b9e.1556a126907c6412f2d0929e5fa5d7e248b03284.png\",\"mediaAltText\":\"Missing "
+    },
+    {
+      "token": "bfc3e497ccdf…",
+      "len": 40,
+      "at": 379120,
+      "blocked": false,
+      "sha": "ac9416c25757",
+      "ctx": "/developer-tools/approved/images/9c6b8639-8819-e2d0-593e-a09efadd0f96.bfc3e497ccdffed8a68aa80c7678bdfcfccbd20f.png\",\"mediaAltText\":\"Missing "
+    },
+    {
+      "token": "fe2a2fecabf5…",
+      "len": 40,
+      "at": 379425,
+      "blocked": false,
+      "sha": "db8d7e2c19b6",
+      "ctx": "/developer-tools/approved/images/95f07e66-5aba-dfdc-90ff-99854ac27eb6.fe2a2fecabf5c8c2b6648a4ca7503babc34aaf1b.png\",\"mediaAltText\":\"Missing "
+    },
+    {
+      "token": "482146d46f6e…",
+      "len": 40,
+      "at": 409381,
+      "blocked": false,
+      "sha": "c11bc98d7f3f",
+      "ctx": "ies/business-application/approved/images/qdev_merch_qdev_v1_1280x1280.482146d46f6e43e26aaee85484f398a8885e867d.jpg\",\"patternCTALabel\":\"Learn"
+    },
+    {
+      "token": "b92f94fbc72e…",
+      "len": 40,
+      "at": 410023,
+      "blocked": false,
+      "sha": "9d816febd9a8",
+      "ctx": "siness-application/approved/images/qdev_merch_qdev_resource_1280x1280.b92f94fbc72e8558cc4668f8eb988aee94a3f42b.jpg\",\"patternCTALabel\":\"Learn"
+    },
+    {
+      "token": "d01c47b3e22c…",
+      "len": 40,
+      "at": 411289,
+      "blocked": false,
+      "sha": "c73a50b9b900",
+      "ctx": "egories/business-application/approved/images/pattern%20card%20med%208.d01c47b3e22c611b0ba7554fb92a163738b8a6ff.png\",\"patternCTALabel\":\"Learn"
+    }
+  ]
+}

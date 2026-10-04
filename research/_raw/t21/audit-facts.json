@@ -1,0 +1,240 @@
+{
+  "facts": {
+    "providers": 34,
+    "coverageTargetRows": 34,
+    "coverageTargetProviders": 34,
+    "coverageTargetFieldsPerRow": [
+      "provider",
+      "tier",
+      "role",
+      "intent",
+      "applicabilityNote",
+      "dimensionIntent",
+      "currentTargets",
+      "rulings",
+      "note"
+    ],
+    "plans": 37,
+    "planProviders": 18,
+    "apiPlans": 17,
+    "apiProviders": 14,
+    "apiModelEntries": 93,
+    "registryModels": 44,
+    "links": 82,
+    "apiLinks": 69,
+    "codingLinks": 13,
+    "gaps": 54,
+    "sourceHealth": {
+      "count": 9,
+      "dist": {
+        "healthy": 8,
+        "failed": 1
+      },
+      "generatedAt": "2026-10-04T16:31:52.051Z",
+      "futurepedia": 10
+    },
+    "vendorKeyNullProviders": [
+      "JetBrains",
+      "Groq",
+      "Together AI",
+      "Fireworks AI",
+      "Cerebras",
+      "Trae",
+      "Qoder CN",
+      "腾讯 CodeBuddy",
+      "Qoder International"
+    ],
+    "catalogStatusCensus": {
+      "unknown": 40,
+      "current": 3,
+      "legacy": 1
+    },
+    "releasedAtNonNull": 4,
+    "freshnessGroupNonNull": 1,
+    "modelRoleValues": [
+      "coding",
+      "embedding",
+      "fast",
+      "general",
+      "other",
+      "translation",
+      "vision"
+    ]
+  },
+  "registeredDomains": {
+    "ai360": [
+      "360.com"
+    ],
+    "baichuan": [
+      "baichuan-ai.com"
+    ],
+    "stepfun": [
+      "stepfun.com"
+    ],
+    "sensetime": [
+      "sensetime.com"
+    ],
+    "replit": [
+      "replit.com"
+    ],
+    "aws": [
+      "aws.amazon.com"
+    ],
+    "jetbrains": [
+      "jetbrains.com"
+    ],
+    "groq": [
+      "groq.com"
+    ],
+    "together": [
+      "together.ai"
+    ],
+    "fireworks": [
+      "fireworks.ai"
+    ],
+    "cerebras": [
+      "cerebras.ai"
+    ],
+    "zhipu": [
+      "bigmodel.cn"
+    ],
+    "trae": [
+      "trae.cn"
+    ],
+    "qoder": [
+      "help.aliyun.com",
+      "qoder.com"
+    ],
+    "codebuddy": [
+      "codebuddy.ai",
+      "codebuddy.cn"
+    ],
+    "moonshot": [
+      "kimi.com"
+    ],
+    "minimax": [
+      "minimax.cn",
+      "hailuoai.com"
+    ],
+    "github": [
+      "github.com"
+    ],
+    "cursor": [
+      "cursor.com"
+    ],
+    "openai": [
+      "openai.com",
+      "chatgpt.com"
+    ],
+    "anthropic": [
+      "anthropic.com",
+      "claude.com"
+    ],
+    "google": [
+      "google.com",
+      "ai.google.dev",
+      "gemini.google",
+      "blog.google",
+      "codeassist.google"
+    ],
+    "deepseek": [
+      "deepseek.com"
+    ],
+    "baidu": [
+      "baidu.com"
+    ],
+    "volcengine": [
+      "volcengine.com"
+    ],
+    "coze": [
+      "coze.cn"
+    ],
+    "iflytek": [
+      "xfyun.cn"
+    ],
+    "microsoft": [
+      "microsoft.com"
+    ],
+    "notion": [
+      "notion.com"
+    ],
+    "aliyun": [
+      "aliyun.com"
+    ],
+    "siliconflow": [
+      "siliconflow.cn"
+    ],
+    "tencent": [
+      "tencent.com"
+    ],
+    "windsurf": [
+      "windsurf.com"
+    ],
+    "qoder-intl": [
+      "qoder.com"
+    ]
+  },
+  "gates": {
+    "validateStrict": {
+      "exit": 0,
+      "last": "✅ 校验通过（strict 模式）"
+    },
+    "checkCi": {
+      "exit": 0,
+      "last": "✅ CI 口径检查 38 项，失败 0 项"
+    },
+    "coverageReport": {
+      "exit": 0,
+      "last": "✅ 覆盖报告自检通过（0 处问题）。"
+    },
+    "coverageTargetsSelftest": {
+      "exit": 0,
+      "last": "=== coverage-expansion-v1 覆盖意图层演练：110 项通过，0 项失败 ==="
+    },
+    "freshnessSelftest": {
+      "exit": 0,
+      "last": "✅ 新鲜度判据自测：100 项通过，0 项失败"
+    },
+    "modelRolesSelftest": {
+      "exit": 0,
+      "last": "✅ 枚举契约守卫：7 项通过，0 项失败"
+    },
+    "modelsSelftest": {
+      "exit": 0,
+      "last": "✅ === v3.0 Model Registry 演练：143 项通过，0 项失败 ==="
+    },
+    "modelsPageSelftest": {
+      "exit": 0,
+      "last": "=== v3.0 Model Registry 页面演练：115 项通过，0 项失败 ==="
+    },
+    "vendorPageSelftest": {
+      "exit": 0,
+      "last": "=== v3.0 厂商统一资料页演练：57 项通过，0 项失败 ==="
+    },
+    "apiPlansSelftest": {
+      "exit": 0,
+      "last": "=== v2.5 API / Token 计费演练：176 项通过，0 项失败 ==="
+    },
+    "plansSelftest": {
+      "exit": 0,
+      "last": "✅ === v2.1 Coding Plan 数据模型演练：264 项通过，0 项失败 ==="
+    },
+    "feedsSelftest": {
+      "exit": 0,
+      "last": "=== v1.6 订阅层演练：145 项通过，0 项失败 ==="
+    },
+    "provenanceSelftest": {
+      "exit": 0,
+      "last": "✅ provenance 自测：132 项通过，0 项失败"
+    },
+    "dataDocsSelftest": {
+      "exit": 0,
+      "last": "=== v3.0 数据出口演练：58 项通过，0 项失败 ==="
+    }
+  },
+  "repoCounts": {
+    "scripts": 94,
+    "selftestScripts": 25,
+    "gateSteps": 49
+  }
+}

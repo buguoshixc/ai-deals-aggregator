@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-10-04T18:04:14.475Z",
+  "base": "https://buguoshixc.github.io/ai-deals-aggregator/",
+  "expectations": {
+    "dataModelCount": 44,
+    "modelsShowLegacyCountMin": 1,
+    "releaseDateMarkerCountMin": 1,
+    "note": "t40 预检时线上是旧版本：data-model=0 / models-show-legacy=0 / 详情页无 data-release-date"
+  },
+  "routes": [
+    {
+      "route": "",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/",
+      "status": 200,
+      "ok": true,
+      "headers": {
+        "last-modified": "Sun, 04 Oct 2026 18:03:37 GMT",
+        "etag": "W/\"6ac294f9-619aa\"",
+        "cache-control": "max-age=600",
+        "age": "4",
+        "content-length": "113777",
+        "server": "GitHub.com",
+        "x-proxy-cache": "MISS",
+        "date": "Sun, 04 Oct 2026 18:04:11 GMT"
+      },
+      "facts": {},
+      "bodyBytes": 399786,
+      "error": null
+    },
+    {
+      "route": "models/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/models/",
+      "status": 200,
+      "ok": true,
+      "headers": {
+        "last-modified": "Sun, 04 Oct 2026 18:03:37 GMT",
+        "etag": "W/\"6ac294f9-22f9f\"",
+        "cache-control": "max-age=600",
+        "age": "0",
+        "content-length": "33749",
+        "server": "GitHub.com",
+        "x-proxy-cache": "MISS",
+        "date": "Sun, 04 Oct 2026 18:04:12 GMT"
+      },
+      "facts": {
+        "dataModelCount": 44,
+        "modelsShowLegacyCount": 1
+      },
+      "bodyBytes": 143263,
+      "error": null
+    },
+    {
+      "route": "models/deepseek-v3.2/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/models/deepseek-v3.2/",
+      "status": 200,
+      "ok": true,
+      "headers": {
+        "last-modified": "Sun, 04 Oct 2026 18:03:37 GMT",
+        "etag": "W/\"6ac294f9-1508b\"",
+        "cache-control": "max-age=600",
+        "age": "0",
+        "content-length": "27329",
+        "server": "GitHub.com",
+        "x-proxy-cache": "MISS",
+        "date": "Sun, 04 Oct 2026 18:04:12 GMT"
+      },
+      "facts": {
+        "releaseDateMarkerCount": 1
+      },
+      "bodyBytes": 86155,
+      "error": null
+    },
+    {
+      "route": "plans/api/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/plans/api/",
+      "status": 200,
+      "ok": true,
+      "headers": {
+        "last-modified": "Sun, 04 Oct 2026 18:03:37 GMT",
+        "etag": "W/\"6ac294f9-32bde\"",
+        "cache-control": "max-age=600",
+        "age": "0",
+        "content-length": "40348",
+        "server": "GitHub.com",
+        "x-proxy-cache": "MISS",
+        "date": "Sun, 04 Oct 2026 18:04:13 GMT"
+      },
+      "facts": {},
+      "bodyBytes": 207838,
+      "error": null
+    },
+    {
+      "route": "plans/coding/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/plans/coding/",
+      "status": 200,
+      "ok": true,
+      "headers": {
+        "last-modified": "Sun, 04 Oct 2026 18:03:37 GMT",
+        "etag": "W/\"6ac294f9-3daea\"",
+        "cache-control": "max-age=600",
+        "age": "0",
+        "content-length": "56941",
+        "server": "GitHub.com",
+        "x-proxy-cache": "MISS",
+        "date": "Sun, 04 Oct 2026 18:04:13 GMT"
+      },
+      "facts": {},
+      "bodyBytes": 252650,
+      "error": null
+    },
+    {
+      "route": "sitemap.xml",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/sitemap.xml",
+      "status": 200,
+      "ok": true,
+      "headers": {
+        "last-modified": "Sun, 04 Oct 2026 18:03:37 GMT",
+        "etag": "W/\"6ac294f9-86ba\"",
+        "cache-control": "max-age=600",
+        "age": "0",
+        "content-length": "1828",
+        "server": "GitHub.com",
+        "x-proxy-cache": "MISS",
+        "date": "Sun, 04 Oct 2026 18:04:13 GMT"
+      },
+      "facts": {
+        "locCount": 173
+      },
+      "bodyBytes": 34490,
+      "error": null
+    },
+    {
+      "route": "feeds/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/feeds/",
+      "status": 200,
+      "ok": true,
+      "headers": {
+        "last-modified": "Sun, 04 Oct 2026 18:03:37 GMT",
+        "etag": "W/\"6ac294f9-17d0c\"",
+        "cache-control": "max-age=600",
+        "age": "0",
+        "content-length": "28108",
+        "server": "GitHub.com",
+        "x-proxy-cache": "MISS",
+        "date": "Sun, 04 Oct 2026 18:04:14 GMT"
+      },
+      "facts": {},
+      "bodyBytes": 97548,
+      "error": null
+    }
+  ]
+}
