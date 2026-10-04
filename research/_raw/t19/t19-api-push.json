@@ -1,0 +1,42 @@
+{
+  "startedAt": "2026-10-04T15:00:07.019Z",
+  "wt": "D:/OneDrive/Desktop/Code/AI Page/.worktrees/coverage-expansion-v1",
+  "branch": "coverage-expansion-v1",
+  "dryRun": true,
+  "steps": [
+    {
+      "at": "2026-10-04T15:00:07.021Z",
+      "msg": "blob 缓存：命中 239 条（来自 t19-blob-cache.json）"
+    },
+    {
+      "at": "2026-10-04T15:00:07.101Z",
+      "msg": "HEAD = 42aad10 · base(master) = a4dd40f"
+    },
+    {
+      "at": "2026-10-04T15:00:07.141Z",
+      "msg": "git index 文件数 = 804（stage 非 0 的条目 = 0）· 推送排除 1 个（research/_raw/t15-url-verify/aws-q-overview.txt）· 实际建树 803 个"
+    },
+    {
+      "at": "2026-10-04T15:00:07.277Z",
+      "msg": "本地 blob SHA 全部算完：803 个（总字节 18956892）"
+    },
+    {
+      "at": "2026-10-04T15:00:07.277Z",
+      "msg": "--dry-run：只算 SHA，不发请求。前 3 条：b1d46982 .gitattributes | 54451259 .github/actions/gate/action.yml | daeb4804 .github/workflows/ai-maintenance.yml"
+    }
+  ],
+  "api": {
+    "blobs": 0,
+    "trees": 0,
+    "commits": 0,
+    "refs": 0,
+    "retries": 0
+  },
+  "excluded": [
+    {
+      "file": "research/_raw/t15-url-verify/aws-q-overview.txt",
+      "reason": "GitHub push protection 判为 secret（422 Secret detected in content）。已逐 token 打靶：文件内 40 个 40 位高熵串逐个单发**全部未被拦**，本地秘密扫描（AWS/GitHub/OpenAI/Slack/JWT/私钥/basic-auth 共 14 类）在该文件上**零命中** ⇒ 判为高熵字符串假阳性，但它确实挡住本文件的内容上传。该文件是 t15 的原始抓取快照（远端 master 上已有同名文件），不属于本轮产品产物 ⇒ 本次提交不更新它。"
+    }
+  ],
+  "dryRunItems": 803
+}

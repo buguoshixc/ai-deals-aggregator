@@ -1,0 +1,88 @@
+{
+  "before": "research/_raw/t40/live-baseline.json",
+  "after": "research/_raw/t40/after-deploy.json",
+  "rows": [
+    {
+      "route": "",
+      "missing": false,
+      "differences": [
+        "Last-Modified Sun, 04 Oct 2026 07:16:27 GMT → Sun, 04 Oct 2026 18:03:37 GMT",
+        "ETag W/\"6ac1fd4b-6197c\" → W/\"6ac294f9-619aa\""
+      ]
+    },
+    {
+      "route": "models/",
+      "missing": false,
+      "differences": [
+        "Last-Modified Sun, 04 Oct 2026 07:16:27 GMT → Sun, 04 Oct 2026 18:03:37 GMT",
+        "ETag W/\"6ac1fd4b-1deaf\" → W/\"6ac294f9-22f9f\"",
+        "DOM 事实 dataModelCount: 0 → 44",
+        "DOM 事实 modelsShowLegacyCount: 0 → 1"
+      ]
+    },
+    {
+      "route": "models/deepseek-v3.2/",
+      "missing": false,
+      "differences": [
+        "Last-Modified Sun, 04 Oct 2026 07:16:27 GMT → Sun, 04 Oct 2026 18:03:37 GMT",
+        "ETag W/\"6ac1fd4b-14c94\" → W/\"6ac294f9-1508b\"",
+        "DOM 事实 releaseDateMarkerCount: 0 → 1"
+      ]
+    },
+    {
+      "route": "plans/api/",
+      "missing": false,
+      "differences": [
+        "Last-Modified Sun, 04 Oct 2026 07:16:27 GMT → Sun, 04 Oct 2026 18:03:37 GMT",
+        "ETag W/\"6ac1fd4b-2bb15\" → W/\"6ac294f9-32bde\""
+      ]
+    },
+    {
+      "route": "plans/coding/",
+      "missing": false,
+      "differences": [
+        "Last-Modified Sun, 04 Oct 2026 07:16:27 GMT → Sun, 04 Oct 2026 18:03:37 GMT",
+        "ETag W/\"6ac1fd4b-30e89\" → W/\"6ac294f9-3daea\""
+      ]
+    },
+    {
+      "route": "sitemap.xml",
+      "missing": false,
+      "differences": [
+        "Last-Modified Sun, 04 Oct 2026 07:16:27 GMT → Sun, 04 Oct 2026 18:03:37 GMT",
+        "ETag W/\"6ac1fd4b-8473\" → W/\"6ac294f9-86ba\"",
+        "DOM 事实 locCount: 170 → 173"
+      ]
+    },
+    {
+      "route": "feeds/",
+      "missing": false,
+      "differences": [
+        "Last-Modified Sun, 04 Oct 2026 07:16:27 GMT → Sun, 04 Oct 2026 18:03:37 GMT",
+        "ETag W/\"6ac1fd4b-17bf4\" → W/\"6ac294f9-17d0c\""
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "索引页 data-model == 44",
+      "ok": true,
+      "actual": 44
+    },
+    {
+      "name": "索引页 models-show-legacy >= 1",
+      "ok": true,
+      "actual": 1
+    },
+    {
+      "name": "legacy 详情页 data-release-date >= 1",
+      "ok": true,
+      "actual": 1
+    },
+    {
+      "name": "七条路由全部 200",
+      "ok": true,
+      "actual": "7/7 200"
+    }
+  ]
+}

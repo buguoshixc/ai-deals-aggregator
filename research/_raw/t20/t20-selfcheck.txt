@@ -1,0 +1,36 @@
+报告节数：19
+✓ 第 1 节「Baseline」在位
+✓ 第 2 节「Before → After」在位
+✓ 第 3 节「Coverage Architecture」在位
+✓ 第 4 节「Provider Universe」在位
+✓ 第 5 节「12 家 Candidate Review」在位
+✓ 第 6 节「Coding Review」在位
+✓ 第 7 节「Model Freshness」在位
+✓ 第 8 节「Currentness Migration」在位
+✓ 第 9 节「Coverage Results」在位
+✓ 第 10 节「Data Added」在位
+✓ 第 11 节「Data Not Added」在位
+✓ 第 12 节「Source Health」在位
+✓ 第 13 节「Reproducibility」在位
+✓ 第 14 节「Gate」在位
+✓ 第 15 节「CI / Deploy」在位
+✓ 第 16 节「Online Smoke」在位
+✓ 第 17 节「Data Integrity」在位
+✓ 第 18 节「Page-level evidence」在位
+✓ 第 19 节「Remaining Risks」在位
+✓ 小节编号 1..19 连续
+report:coverage 普查行：catalogStatus 普查           current 3 · aging 0 · legacy 1 · historical 0 · unknown 40（和 44）   五态和必须 == registry 模型数 44（不等 ⇒ 报告自检非 0）
+✓ models.json 五态与 report:coverage 文本行逐项一致
+✓ 报告里写的分布串与现场一致
+
+--- research/coverage-expansion-v1-provider-review.md · 38629 字节 · sha256 a964c6cf6a0c69f7
+  含「44」：false · 含五态串：true · 含 2026-09-10：false
+
+--- research/coverage-expansion-v1-model-currentness.md · 43225 字节 · sha256 b2f9aa3cf9473a8f
+  含「44」：true · 含五态串：true · 含 2026-09-10：true
+✓ currentness.json 44 行与来源层 44 键一致
+✓ 来源层带官方日期的只有 4 条
+
+来源层 dated：deepseek-flash@2026-09-10 · deepseek-v3.2@2025-12-01 · deepseek-v4-pro@2026-08-13 · minimax-m3@2026-06-01
+
+✅ 自检全部通过

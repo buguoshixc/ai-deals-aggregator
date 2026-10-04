@@ -1,195 +1,221 @@
-# ▶ 从这里继续：coverage-expansion-v1 续跑手册（自包含）
+# ▶ 从这里继续：coverage-expansion-v1 交班手册 v2（自包含）
 
-> **入口文件**。本文件自包含：只读它就能继续任务，不需要原始对话。
-> 配套快照（细节更全，按需查）：`coverage-expansion-v1-RESUME-STATE.md`（状态与口径）· `coverage-expansion-v1-AGENT-STATUS.md`（成员/subagent 情况与派活模板）。
-> 最后更新：停机窗口，分支 `coverage-expansion-v1`，HEAD `42aad10`，**远端无该分支、无 PR**（t19 未被推送）。
+> **入口文件**。只读它就能接手，不需要上一轮对话。
+> 状态时刻 **2026-10-05 01:05 +08**（分支 `coverage-expansion-v1`，HEAD `2ebcf62`，**远端仍无该分支、无 PR**）。
+> 配套（细节更全，按需查）：`coverage-expansion-v1-RESUME-STATE.md` · `coverage-expansion-v1-AGENT-STATUS.md`。
 
 ---
 
-## 1. 启动检查（先跑这五条，别凭记忆）
+## ✅ 0. 状态更新（2026-10-05 02:15 +08）：**本链路已全部完成，不必再续跑**
+
+> 本节的读数**推翻**下面若干「现场判据」；下面原文全部保留（append-only），读的时候以本节为准。
+
+| 项 | 01:05 手册写的 | **实际结果** |
+|---|---|---|
+| 远端分支 | 远端无该分支 | **已有**：`2ebcf62` 早已在远端（00:52Z 推送成功），本轮又推了 `503edde` → … → `a400936` |
+| PR | 无 | **PR #38** 已建、已按 gate 转绿后合并 |
+| 合并 | 未做 | **已合并**：merge SHA **`d444dcd732edcd7a4255fd48b707dbece7938970`**（2026-10-04T18:00:12Z，`--merge --delete-branch=false`） |
+| 门禁 | 需重跑 | **已重跑**：冻结 tip 49 步 · **48 过 / 0 红 / 1 跳过** · `headChanged=false`；本地 `verify-site` **735/0** |
+| CI | 未跑 | **`gate` = pass**（run `37222401719`）；此前**连续两次真红**，根因已定位并修复（见下） |
+| 部署 | 未做 | **success**（run `37222667957`，head `d444dcd7`） |
+| 线上冒烟 | 无读数 | **`compare-live.cjs --require-deployed` exit 0**（`data-model` 0→44 · `models-show-legacy` 0→1 · `data-release-date` 0→1 · 7 路由 200）· **`verify-site --url=` 735 项 / 失败 0** |
+| 本机到 github.io | 不通 | **本轮实测通**（`fetch` 200 / 923 ms）⇒ 冒烟是直连取的，没用 `web_fetch` |
+| t20 报告 §9/§16 | 待补 14 格 | **已补**：`coverage-expansion-v1-report.md` §**16.1**（append-only，保留原「未运行」行） |
+| t22 | 未做 | **已交付** `coverage-expansion-v1-acceptance.md`：§87 **47/47 pass** · 0 FAIL · P0=0 · P1=0 · REPAIR_NOW=0 · §88 十五行逐条不成立 |
+
+### CI 那次红的根因（**不是数据缺陷**，值得记下来）
+
+`scripts/tools/coverage-targets-selftest.js` 的 `runReport()` 用 `spawnSync` 直接读子进程 stdout（**管道**）。
+`report:coverage --json` 的 stdout 约 **218 KB**，超过管道缓冲；父进程未及排空时管里那截会**静默丢失**：
+CI(Linux/Node 24.21) 实测只取回 **152,627 字符 / 185,186 字节**（本机 **180,774 / 218,443**），
+且正好切在**多字节字符中间** ⇒ JSON 未终止 ⇒ `JSON.parse` 抛 `Unterminated string`
+⇒「（隔离上游）JSON 可解析」红，并连带跳过 33 条下游断言（**110 项 → 75 项**）。
+本机 Windows 约 180 KB 能完整读回，所以**长期只在本机绿**。
+
+**修法**（`2d81e33`）：把子进程 stdout 重定向进**文件**再整份读回（不经管道）。
+**反证**：同一份输入下管道捕获与文件捕获**逐字节相同**（sha256 `0b801f419f30c45b`，180,774 字符）。
+收口：`29282ae` 移除临时诊断；CI 在 `2d81e33` 与 `29282ae` 上**都 pass**。
+
+### 仍需人工知道的三件事
+
+1. **验收产物已在版本库、但尚未进 `master`**：`a400936`（36 个文件）在分支 `coverage-expansion-v1` 上；
+   `master` 停在 `d444dcd7`。若要让验收文档进 master，走一条 `docs(research)` 的小 PR 即可（同一条门禁链）。
+2. **团队尚未 delete/archive**：`coverage-expansion-v1` 的 8 成员全 `idle`；t19/t22 仍是 `in_progress`。
+   按纪律应在确认无未完工作后归档（本会话的 AgentTeams 工具不接管该团队，需由原队长会话处理）。
+3. **两条变异盲区必须与「CAUGHT 24/27」一起引**（见 `coverage-expansion-v1-acceptance.md` §6）：
+   ①「测试改自己」构造上接不住；②真实引文忠于官方页**没有离线门禁**。禁止写「真实引文已逐条验真」。
+
+---
+
+## 0. 三条环境事实（本轮实测，不知道就会走错路）
+
+### 0.1 git 走的本地代理是**死的** —— 不是 github.com 不通
+```
+git config --get http.proxy   →  http://127.0.0.1:7890     # 该监听已死
+```
+经代理的一切 git 网络操作报 `SSL_ERROR_SYSCALL` / `schannel: failed to receive handshake`。
+**直连是好的**（已实测）：
+```powershell
+git -c http.proxy= -c https.proxy= ls-remote --heads origin
+# exit 0，列出：master d57aa3ef · fix/analytics-smoke-assertions 77131a6c · private-analytics-v1 13071909
+```
+⇒ **所有 git 网络命令都加 `-c http.proxy= -c https.proxy=`**（或先 `git config --unset http.proxy; git config --unset https.proxy`）。
+⇒ **直连可用但不稳定**（两边都是实测）：00:57 `ls-remote` **exit 0** 并列出远端 refs；01:07 同一命令 `Failed to connect to github.com port 443 … Couldn't connect to server`（21 s 超时），随后连试 3 次全败。
+⇒ 失败时**重试 3–5 次、间隔 30–60 s**，不要立刻断定「被墙」；`api.github.com` 一直可用（`gh api rate_limit` 实测 4996/5000）。
+⇒ **不要**采纳「git-over-HTTPS 被阻断、只能走 Git Data API」这种单一结论（那是经死代理测出来的），也**不要**用 `research/_raw/t19/push-via-api.cjs` 原样跑：它按「git push 不可用 + 必须排除 1 个文件」设计，两条前提都不成立（文件已被 §0.2 的 bypass 解锁；排除文件会让推送树 ≠ 已审计的树）。
+
+### 0.4 万不得已才走的 API 推送路径（**先读，别踩已知的坑**）
+仅当 github.com 反复不通、而 `api.github.com` 可用时使用。已知坑与硬要求：
+1. 内容必须取**索引里的 blob**（`git cat-file blob <sha>`，或 `git ls-files -s` 给出的 SHA）——**不要**上传工作区字节：本仓库 `core.autocrlf=true` 且 `.gitattributes` 有 `* text=auto`，工作区 CRLF 与索引 LF 不同 ⇒ 这正是旧脚本日志里「SHA 不一致 2…7」的来源。
+2. 自底向上建 blob → tree → commit（复用远端已存在的 blob），**先建完所有 commit，再比对最后一个 commit 的 SHA 是否等于本地 `git rev-parse HEAD`**；相等才 `POST /git/refs`。commit SHA 是内容寻址的，**相等即逐字节保真**；不相等就**不要**建 ref（此时零不可逆动作，回头查树/父提交）。
+3. 建 ref 前先 `GET /repos/buguoshixc/ai-deals-aggregator/git/ref/heads/coverage-expansion-v1` 确认分支不存在（存在就会 422）。
+4. `git push` 与 API 建 ref 二者**只能用一个**，且推完必须回读远端 tip 与本地 HEAD 比对。
+
+### 0.2 push protection 已按用户授权解开（**有期限：本地 03:53 前**）
+仓库 public 且 `secret_scanning_push_protection=enabled`。`research/_raw/t15-url-verify/aws-q-overview.txt`（488,408 B，`5657fd8` 加入，origin/master 上没有）里两处被判为 `GITHUB_APP_TOKEN` 形状 —— 实测是 **AWS 图片文件名哈希**（`…reinvent-register.3822079bac49f139ae46016a9a99c3eed71fad4a.png`），文件内 `ghs_/ghu_/gho_/ghp_/ghr_/github_pat_/JWT/x-access-token` **全部 0 命中** ⇒ 假阳性。
+用户已授权（2026-10-05 00:53）建两条 bypass：placeholder_id `3KEbokYAoknRipwKKssxVooiMxa` · `3KEbooqbesrsJtT11D5vms4YZ5S`，`reason=false_positive`。
+**验证**：同内容 `POST /git/blobs` 现返回 `78984fbdc9ccf69362fd05bba93156698b707bee`，与本地 index blob **逐字节相同** ⇒ 该文件可原样进分支：**不改历史、不排除文件、SHA 不变**。
+到期后若又被拦：从 422 响应的 `metadata.secret_scanning.bypass_placeholders[].placeholder_id` 取值，再执行
+`gh api --method POST repos/buguoshixc/ai-deals-aggregator/secret-scanning/push-protection-bypasses -f placeholder_id=<id> -f reason=false_positive`（**建之前先问用户**）。
+
+### 0.3 名称与端点
+owner 是 **`buguoshixc`**（题面 `buguoshixix` 是笔误 → 404）· 线上 `https://buguoshixc.github.io/ai-deals-aggregator/` · 必需检查名 **`gate`** · master **无分支保护** · Pages `build_type=workflow` · `gh` 已登录（keyring，作用域含 repo+workflow）。
+本机直连 github.io 目前**不通** ⇒ 线上冒烟读数可用 `web_fetch`（走外部网络）取回，并在回执里注明取回方式。
+
+---
+
+## 1. 现场检查（先跑这六条，别凭记忆）
 
 ```powershell
-cd ".worktrees/coverage-expansion-v1"          # 相对 D:\OneDrive\Desktop\Code\AI Page
-git log --oneline -3                            # 期望 HEAD = 42aad10（或其后我方的提交）
-git status --short                              # 期望：干净，或只有未跟踪的 research/_raw/**
-git ls-remote --heads origin coverage-expansion-v1
+cd ".worktrees/coverage-expansion-v1"
+git log --oneline -3
+git status --short
+git -c http.proxy= -c https.proxy= ls-remote --heads origin
 gh pr list --head coverage-expansion-v1 --state all
 gh run list --workflow "Deploy to GitHub Pages" --limit 5
-curl.exe -sI https://buguoshixc.github.io/ai-deals-aggregator/     # 看 Last-Modified / ETag
 ```
-
-**判定表 → 从哪一步续**
 
 | 现场 | 含义 | 从哪续 |
 |---|---|---|
-| 远端无分支 | t19 未推送（**2026-10-04 停机时的实际状态**） | §2 第 0 步（门禁前置）→ 第 1 步 push |
-| 有分支、无 PR | 推了没建 PR | §2 第 2 步 |
-| 有 PR、checks 未定 | 等 CI | §2 第 3 步（人工确认名为 `gate` 的检查 success） |
-| 有 PR、已 merge | 已合 | §2 第 5 步（等 Deploy）→ 第 6 步（冒烟） |
-| 线上 `data-model=44` | 已经部署并生效 | 直接进 §3（t20/t21/t22） |
+| 远端无分支 | 还没推（**01:05 的实际状态**） | §3 第 0 步 → 第 1 步 |
+| 有分支、无 PR | 推了没建 PR | §3 第 2 步 |
+| 有 PR、checks 未定 | 等 CI | §3 第 3 步（人工确认名为 `gate` 的检查 success） |
+| 有 PR、已 merge | 已合 | §3 第 5 步（等 Deploy）→ 第 6 步（冒烟） |
+| 线上 `data-model=44` | 已部署生效 | §4 的 t22 与 §9 补格 |
 
 ---
 
-## 2. 续跑运行单（不可逆动作一律卡在绿的前置之后）
+## 2. 任务板现状（01:05，team `coverage-expansion-v1` —— **继续用它，别新建**）
 
-### 第 0 步 · 冻结 HEAD 上的门禁前置（任一红 ⇒ 停，不许 push）
+46 任务；只看这四条：
+- **t19 [in_progress · attempt 4] → research-firstparty**：已把 `origin/master` 合进分支（**`2ebcf62`**，取 master 最新采集的 `deals.json` / `source-health.json` / `source-snapshots.json` / `zh-pending.json`）。推送到现在**未完成**。
+- **t20 [completed]** → `research/coverage-expansion-v1-report.md`（31,356 B；sha256 `8f37f409aa5f40542b8017bc15b4dd2922e5427522eed5520a246acffd9417ec`）＋ 两份调查文档的**纯追加**对账节（model-currentness 96/0、provider-review 58/0）。
+- **t21 [completed]** → `research/coverage-expansion-v1-self-audit.md`（≈40 KB · 12 节 · 15 行矩阵）：**P0=0 · P1（未关闭）=0**；变异 24/27 CAUGHT + **2 条留档盲区**；「降低断言的文件 0 个」；`sameIdentityDifferentId` 为空、`removedIds=0`、slug 44→44 顺序未变；`source-health` 漂移与 t15-F6 审查侧误判均如实写入。
+- **t22 → §87 逐条核对（题面 **47 条**，不是 44）**：依赖 t20+t21 **已满足**。
+  ⚠️ 但 `research/_raw/t22/`（`extract-checklist.cjs` + `checklist.json`）已于 **01:01** 出现 —— 疑似某个成员已经开始动手（可能是调度器把 t22 唤给 `coverage-engineer`）⇒ **先看任务板确认 t22 的真实归属与状态，别重复派同一任务**。
+- 其余：t1–t18、t23–t46 除 `t8 / t9 / t11 / t14 / t15 / t43`（终端 failed 但**产物都在盘上**、内容已被后续任务覆盖）外均 completed —— **不要重做这些**。
 
+---
+
+## 3. 剩余链路（命令级；不可逆动作一律卡在绿的前置之后）
+
+### 第 0 步 · 冻结 tip 上的门禁（**必须重跑**：2ebcf62 合了 master 的数据）
 ```powershell
-node research/_raw/coverage-expansion-v1/t18-gate-runner.cjs   # 期望 48 过 / 0 红 / 1 跳过（跳过=npm ci）
-node scripts/tools/build-local.js                              # 期望 exit 0
-node scripts/tools/verify-site.js                              # 期望 735 项 0 失败
-git rev-parse HEAD ; git status --short                        # 记下 HEAD；树必须干净
+node research/_raw/coverage-expansion-v1/t18-gate-runner.cjs   # 期望 49 步 → 48 过 / 0 红 / 1 跳过（跳过=npm ci）
+node scripts/tools/build-local.js                              # exit 0
+node scripts/tools/verify-site.js                              # 期望 0 失败（历史读数 735/0，合并后需重取）
+git rev-parse HEAD ; git status --short                        # 记下 HEAD；树里只应有 research/_raw/** 未跟踪
 ```
-命令速查（更快的一批，可先跑）：`node scripts/validate.js --strict` · `node scripts/tools/check-ci-consistency.js`（期望 38 项 0 失败；`--expect-checks=37` **必须** exit 1）· `node scripts/tools/coverage-report.js` · `node scripts/tools/models-selftest.js`（143/0）。
+速查批次：`node scripts/validate.js --strict` · `node scripts/tools/check-ci-consistency.js`（**38 项 0 失败**；`--expect-checks=37` **必须** exit 1）· `node scripts/tools/coverage-report.js`。
+> 队长 00:56 曾在 `2ebcf62` 上跑过一次全量门禁，一路 PASS 到 `SEO verification`，但为避开与 t19 成员并发构建而中止 ⇒ **那只是部分读数，不是结论**。
 
-### 第 1 步 · 推送（**不可逆**，public 仓库）
-
+### 第 1 步 · 推送（**不可逆**，public 仓库；bypass 有效期 ~03:53）
 ```powershell
-git push -u origin coverage-expansion-v1
+git -c http.proxy= -c https.proxy= push -u origin coverage-expansion-v1
 ```
+被 push protection 拦（GH013 / "Push cannot contain secrets"）⇒ 见 §0.2（不要重写历史、不要排除文件、不要 `--no-verify`、不要 force push）。
 
-### 第 2 步 · 建 PR（正文直接贴下面这段）
-
+### 第 2 步 · 建 PR（正文文件已写好）
 ```powershell
 gh pr create --base master --head coverage-expansion-v1 `
   --title "feat(coverage): coverage-expansion-v1 —— 结构化覆盖体系 + 4 家推理平台定价 + 8 条国际 Coding 套餐" `
   --body-file research/_raw/t19-pr-body.md
 ```
-
-PR 正文（存成 `research/_raw/t19-pr-body.md` 后使用）：
-
-```markdown
-## 本版目标
-把项目从「收集了很多数据」升级成「明确知道要覆盖什么 / 当前覆盖到哪里 / 哪些模型值得默认展示 / 哪些旧模型只作历史」，并给出可审计的处置与残余登记。
-
-## 变化
-- 数据：providers 23→34 · plans 23→37（18 家）· api-plans 13→17（93 条计价条目）· coverage-targets 0→34 ·
-  Model Registry 44 个模型（v2 字段：modelRole / releasedAt / releaseEvidence / freshnessGroup）·
-  links 82（API 69 + Coding 13）· declarations 54（Coding 42 + API 12）
-- 机制：处置登记表**双侧化**（API 侧 `off-registry-model`）+ 反绕过折叠牙 + `validateLinks`/`validateGaps` 成对调用机器牙；
-  门禁 action.yml 45→49 步 · `check-ci-consistency` 37→38 项（`--expect-checks=38`；37 必红）· 新增反向登记制与引文自称牙
-- 页面：/models/ 索引默认隐藏 legacy/historical（No-JS 完整，静态 44 行）· 新增 /vendor/ 页（aws / replit / stepfun）
-
-## 证据
-- 全量门禁报告 `research/_raw/coverage-expansion-v1/t18-full-gate-report.md`（48 过/0 红/1 跳过）
-- 残余登记表 `research/coverage-expansion-v1-residual-register.md`（含 34 条引文残余与 sha256）
-- 两份独立审查：`research/coverage-expansion-v1-data-quality-review.md`（t15）· `research/_raw/t26/report.md`（对抗性审查 pass）
-- 变异电池 `research/_raw/t17/MUTATION-RESULTS.md`（27 例：CAUGHT 24 / 盲区 2 / 恢复 100%）
-
-## 未验证与已知边界（如实声明）
-- 线上冒烟只有**部署后**才有读数（本 PR 不含该读数）。
-- `aging` / `historical` 在真实数据上为 **0**，成因：44 个模型里只有 4 条有官方 `releasedAt` 证据 ⇒ 40 条 `unknown`（默认可见）。
-- **34 条**历史 API 映射的引文未逐字点名该模型（口径不一致，属已登记残余）。
-- 变异电池两条盲区：①「测试改自己」构造上任何门禁都接不住；②真实引文忠于官方页**没有离线门禁**，由抄件逐字耦合 + 独立审查 + 引文自称牙三层覆盖。
-- `master` 当前**无分支保护**：`gate` 未过也能合并，本 PR 的"等 CI"靠人工确认。
-- §87 第 29/30 条（Source Health 已审查 / 长期失败源有裁决）的载体是一份**人读报告**（`research/coverage-expansion-v1-source-health-rulings.md`），不是机读文件。
-
-## 回滚
-`git revert -m 1 <merge-sha>` 后推 master，走同一条门禁链。
-```
+正文里补三条事实：① 本分支**已合并 master 最新自动采集**（`2ebcf62`）；② `source-health` 是**活读数**（见 §4.1）；③「未验证与已知边界」里写明 §87 是 **47 条**、线上冒烟在部署后才有读数。
 
 ### 第 3 步 · 等 CI（人工确认，平台不会拦）
-
 ```powershell
 gh pr checks --watch        # 必须看到名为 gate 的检查 success
 ```
 
 ### 第 4 步 · 合并（**不可逆**）
-
 ```powershell
-gh pr merge --merge --delete-branch=false      # 保留提交历史；记下 merge SHA
+gh pr merge --merge --delete-branch=false      # 记下 merge SHA
 ```
 
 ### 第 5 步 · 等部署
-
 ```powershell
 gh run list --workflow "Deploy to GitHub Pages" --limit 5      # 等到 success
 ```
 
-### 第 6 步 · 线上冒烟（先等版本指纹变化，再跑全量）
-
+### 第 6 步 · 线上冒烟
 ```powershell
 node research/_raw/t40/compare-live.cjs --before=research/_raw/t40/live-baseline.json `
   --poll-after=research/_raw/t40/after-deploy.json --timeout-min=12 --interval-sec=45 --require-deployed
-# 期望：data-model=44 · models-show-legacy≥1 · legacy 详情页 data-release-date≥1 · 7 条路由 200
-# CDN max-age=600 未过期 ≠ 缺陷（四象限判定见 research/_raw/t40/README.md）
 node scripts/tools/verify-site.js --url=https://buguoshixc.github.io/ai-deals-aggregator/
-# 注意：题面里的 buguoshixix 是笔误（404）；--url= 时 Analytics 断言翻转为"应看到官方 beacon"属预期
 ```
+期望：`data-model=44` · `models-show-legacy≥1` · legacy 详情页 `data-release-date≥1` · 7 条路由 200。
+⚠️ 基线快照拍的是**合并 master 之前**的线上旧版，且本机到 github.io 直连目前不通 ⇒ 若直连失败，用 `web_fetch` 抓 `…/models.json` 与首页核对（44 条模型 / catalogStatus 分布 / `data-model=44`），并注明取回方式。
 
-### 第 7 步 · 回执
-
-每步命令 + 读数（推送的 commit 范围 · PR 号与 URL · CI 结论 · merge SHA · Deploy 结论 · 冒烟读数）。**失败就停在那一步并报**，不跳步、不 force push、不改仓库设置或分支保护。
-
----
-
-## 3. 剩余三个任务（现成任务书，可直接粘进 `reassign_task` 的 reason）
-
-### t20 · 最终报告（建议 freshness-engineer）
-
-> 前置：`research/_raw/t39/report-inputs.md`（11 节素材 + §I 的 14 个"部署后才能填"格子）· `research/coverage-expansion-v1-residual-register.md`（**必须引用**）· t19 的回执（部署与冒烟读数）· `research/_raw/t37/evidence.md`（部署事实）。
-> 要做：写 `research/coverage-expansion-v1-report.md`（≤400 行）：① 目标与范围 ② 数据扩充 ③ Registry v2 与 API 侧处置 ④ 门禁与自测清单 ⑤ 覆盖报告 v2（§41/§42）⑥ 变异电池 ⑦ 两份独立审查（含两次**审查侧误判**的 append-only 更正：T15-F6、T38-R1）⑧ 残余登记表（引用 34 + sha256，两条 M24 盲区如实列）⑨ 部署与线上冒烟（填 §I 的 14 格）⑩ 未做与已知边界。
-> 口径（三处必须按 §4 转述）：残余 34 + 清单 sha256 · source-health 基线 8/1 → 现行 9/9 · coverage-report stdout sha256 已变为 `ff039fa4…`。
-> 禁止：改数据/代码/登记表；无出处命令的数字；把 aging/historical=0 写成缺陷或略过。
-> 回执 ≤40 行。
-
-### t21 · 独立 Self-Audit（**务必改派小会话成员**，如 research-firstparty）
-
-> 独立复核（第二条路径，**不 require** `scripts/lib/**` 的同类实现）：① 自己写脚本复算 registry 44 · links 82 · declarations 54 · 计价条目 93 = 81 + 12 + 0 · plans 37 · api-plans 17 · coverage-targets 34；② 抽查三条牙：删关系层 ⇒ `report:coverage` 红；索引身份改名 ⇒ `models-page-selftest` 红；摘掉一条 selftest 登记 ⇒ `check-ci-consistency` 红；③ **如实列**两条 M24 盲区 + 34 条引文残余 + aging/historical=0 + master 无分支保护（不许写"0 盲区"）；④ 给 verdict。
-> 交付 `research/coverage-expansion-v1-self-audit.md`（≤200 行）。只读生产文件，变异在 %TEMP% 副本。
-
-### t22 · §87 最终验收（建议 coverage-engineer）
-
-> 前置：`research/_raw/t38/section87-precheck.md`（预映射：已可证 33 / 待产出 12 / 缺证据 2 —— 其中 **29/30 已由队长复核改判为已可证**，载体是 `research/coverage-expansion-v1-source-health-rulings.md`）。
-> 要做：对 **47 条**（题面 `D:\AI_DEALS_COVERAGE_EXPANSION_V1_PROMPT.md` 第 2568–2614 行程序化计数；任务书里的"44"是旧口径）逐条判定 pass/fail，每条给：文件路径 + 可执行命令 + 状态（已可证 / 待产出 / 缺证据），并单独列缺证据与风险；输出 verdict。
-> 交付 `research/coverage-expansion-v1-acceptance.md`。
+### 第 7 步 · 补格与收尾
+- 把 14 个部署读数补进 t20 报告的 §9（Online Smoke）—— t20 已 completed，**只许 append**（注明「按 t19 回执填入」）或另立一个小任务，**不许改写已发布结论**。
+- t22：按 `research/_raw/t38/section87-precheck.md` 对 **47 条**逐条判定 pass/fail（每条给文件路径 + 可执行命令 + 状态），交付 `research/coverage-expansion-v1-acceptance.md`。
+- 全部 terminal 后再 delete/archive 团队；**不要**丢下未完成的工作。
 
 ---
 
-## 4. 引用口径（写报告/审查时必须照抄，否则会写错）
+## 4. 已过期 / 易写错的读数（不修正就会写错）
 
-1. **残余条数 = 34**，清单 sha256 `b9d97c444e7e59d0d90b2855165a1bc67422b2d0dc573805569d2cc5e6c6f696`；
-   注意登记表**整文件** sha256 是另一个值（`b8b05522…`），别混。
-2. **`scripts/data/source-health.json`：基线 a4dd40f = healthy 8 / failed 1（futurepedia cf=9、HTTP 403）→ 现行 9/9 healthy。**
-   T15-F6 声称"与基线逐字节相同"是**错的**（拿错对照物），t13 原句为真 —— 这条已作为"被证伪的审查发现"登记在残余登记表 §4.1。
-3. **`coverage-report --json` 的 stdout sha256 已因内容增加而变化**：`7e50e31d…b751` → **`ff039fa4a804a2d5e5a9004509670e3eb9babfd6db33723f2b6e3b5beab9dcf`**（载荷段 `5288c615…`）。
-   引用旧值的文档（t25 L33 / t38 §87 第 34 条 / t18-gate-results.json）需注明版本或复跑；determinism 判据本身是"两次运行相等"，不受影响。
-4. **§87 是 47 条**（不是 44）；**线上 URL 是 `https://buguoshixc.github.io/ai-deals-aggregator/`**（题面 `buguoshixix` 是笔误，404）。
+1. **`source-health` 是活的**：基线 `a4dd40f` = **healthy 8 / failed 1**（futurepedia `cf=9`、HTTP 403）→ 中途 `9/9 healthy` → **现在又是 failed 且 `consecutiveFailures=10`**（`generatedAt 2026-10-04T16:31:52Z`）。
+   ⇒ 任何「futurepedia 已恢复 / 9/9 healthy」的表述**现在都过期**；t20 报告 §12、残余登记表 §4.1、`coverage-expansion-v1-source-health-rulings.md` 需按「**带 generatedAt + cf 的读数**」append-only 更正。t13 原句「已更新 source-health.json」为真（T15-F6 的「逐字节相同」已被证伪，见登记表 §4.1）。
+2. **`2ebcf62` 合入 master 后**：`deals.json`（412 行）、`source-snapshots.json`（约 -607 行量级）等都变了 ⇒ 任何 deals 计数、sitemap `<loc>` 数、dist 页数、`coverage-report --json` 的 stdout sha256（上一读数 `ff039fa4a804a2d5e5a9004509670e3eb9babfd6db33723f2b6e3b5beab9dcf`，载荷段 `5288c615…`）**必须重跑重取**。
+3. **baseline corrections 只许以「草稿→实测」引用，且必须带当前值**：`41→45（现 49）` · `36→37（现 38；旧值 36 长期住在 verify.yml 第 95 行注释里，调用行是第 125 行）` · `5023 字节 vs 5 条关系` · `8→9（现 10）`；C5 = 一手构建 **HTML 173 / 文件 290 / sitemap 170**。
+4. **残余 = 34 条** + 清单 sha256 `b9d97c444e7e59d0d90b2855165a1bc67422b2d0dc573805569d2cc5e6c6f696`（登记表**整文件** sha256 是另一个值 `b8b05522…`，别混）。
+5. **§87 = 47 条**（题面 2568–2614 行程序化计数）；第 29/30 条的载体是**人读报告** `research/coverage-expansion-v1-source-health-rulings.md`（18,418 B），**不许**再写成「缺证据」。
+6. **两条 M24 盲区**必须与「变异 24/27」一起引：①「测试改自己」构造上接不住（`NOT_CAUGHT(KNOWN)`）；②真实引文忠于官方页**没有离线门禁**（三层覆盖：抄件逐字耦合 + 独立审查 + 引文自称牙）。禁止写「真实引文已逐条验真」「0 命中 ⇒ 引文都是真的」。引 T26-F1 要用 t30 的 `acme_glm-5.3` 证据，**不要**用 zai 三例。
 
-## 5. 关键数字（t20 直接可用，均已现场跑过）
+---
 
-| 项 | 值 |
-|---|---|
-| providers / plans / api-plans | **34** / **37**（18 家）/ **17** 条记录 · **93** 条计价条目 |
-| Model Registry | **44** 个模型 · catalogStatus `{unknown 40, current 3, legacy 1}` · modelRole `{general 24, vision 8, fast 6, other 2, translation 2, embedding 1, coding 1}` · releasedAt 4 有值 / 40 空 |
-| 关系层 / 处置登记 | links **82**（API 69 + Coding 13，带 evidence 61）· declarations **54**（Coding 42 + API 12） |
-| 记账方程 | `93 = 81 已映射 + 12 已处置 + 0 未判` · Coding `55 = 13 + 42 + 0` |
-| coverage-targets | **34** 行 = 34 个 provider 身份（双向对账差集为空） |
-| 门禁 | action.yml **49** 步（基线 45）· `check-ci-consistency` **38** 项（`--expect-checks=38`；37 必红）· selftest:* **25** 条 |
-| 自测项数 | models 143 · models-page 115 · coverage-targets 110 · provenance 132 · feeds 145 · data-docs 58 · api-plans 176 · freshness 100 · 枚举 7 |
-| 浏览器验收 | verify-site **735/0**（回归比对 741/0） |
-| 变异电池 | 27 例（1 对照 + 26 变异）· CAUGHT **24** · 盲区 **2** · 非预期红 0 · 逐字节恢复 100% |
-| 部署前线上基线 | `data-model=0` · `models-show-legacy=0` · `release-date=0` · sitemap `<loc>=170` · 7 路由 200 · `Cache-Control: max-age=600` |
+## 5. 未提交的产物（提交时**显式列路径**，别 `git add -A`）
 
-## 6. 禁止事项与环境纪律
+新增：`research/coverage-expansion-v1-report.md` · `research/coverage-expansion-v1-self-audit.md` · `research/_raw/t19-pr-body.md` · `research/_raw/{t19,t20,t21}/**`
+修改：`research/coverage-expansion-v1-model-currentness.md`（+96）· `research/coverage-expansion-v1-provider-review.md`（+58）
 
-**禁止**：force push · 改仓库设置或分支保护 · 绕过 CI 合并 · `git checkout --` 重置数据文件（曾吃掉未提交改动）· `git add -A`（曾把别人在途产物带走）· 用 inline `-m` 带引号提交（PowerShell 会拆参数）· 追溯性改写已发布结论（更正一律 append-only）· 把"未验证"写成"已满足"。
+⚠️ **t19 正在跑门禁时不要提交**（HEAD 变化会让它的门禁读数失效）。先确认 t19 是否已收口，或等它跑完再提交。
+⚠️ 提交消息一律写文件 + `git commit -F msg.txt`；**禁止** inline `-m` 带引号（PowerShell 会拆参数）。
 
-**纪律**（本轮教训换来的）：
-1. 瓶颈是**成员会话上下文**（4 个成员 >512k 被判 400 死掉）与 **TPM 限流** ⇒ 契约短、报告限行数、并发 ≤2–3、优先小会话成员（`research-firstparty` / `research-inference`）。
-2. 提交一律**显式列路径** + 消息文件（`git commit -F msg.txt`）。
-3. 只读类任务（审查/核对）放小会话成员；写代码/数据的任务同时只给一个成员。
-4. 每条改动配**反证**（构造违规输入 ⇒ 必红 + 对照绿）；报错要**点名数据对象并给实际/期望两侧**；断言**只增不减**。
-5. 不可逆动作（push / merge / deploy）**卡在绿的前置之后**；失败就停在那一步。
-6. `send_message` 在本环境多次报 "active teammate not found" ⇒ 交互走 `agent_teams_status` + `reassign_task`。
+---
 
-## 7. 证据索引（找读数从这里进）
+## 6. 纪律（本轮教训换来的）
 
-- 状态/口径：本文件 · `coverage-expansion-v1-RESUME-STATE.md` · `coverage-expansion-v1-AGENT-STATUS.md`
-- 门禁与全量 Gate：`research/_raw/coverage-expansion-v1/t18-full-gate-report.md` · `t18-gate-results.json` · `t18-gate-runner.cjs`（可复跑）· `t41-derived-r5-readings.{json,md}`
-- 审查：`research/coverage-expansion-v1-data-quality-review.md`（t15）· `research/_raw/t26/report.md`（对抗性审查）· `research/_raw/t28/`（t14 闭环 + 仲裁 34）· `research/_raw/t35/M24-BOUNDARY.md`
-- 变异：`research/_raw/t17/MUTATION-RESULTS.md` · `logs/battery.json` · `mutation-battery.cjs`
-- 覆盖报告：`scripts/tools/coverage-report.js`（文本 + `--json`）· `research/_raw/t45/section41-audit.md`（§41/§42 载体核对）· `research/_raw/t46/README.md`（五态普查与反证）
-- 部署：`research/_raw/t37/t19-runbook.md` + `evidence.md` · `research/_raw/t40/{live-baseline.json,compare-live.cjs,README.md}`
-- 报告素材：`research/_raw/t39/report-inputs.md` + `collect.cjs`
+1. 瓶颈是**成员会话上下文**（>512k ⇒ 400 死：page-engineer 615k、data-integrator 671k）与**网关 503 维护**、**TPM 限流** ⇒ 契约短（报告限行数）、并发 ≤2–3、优先小会话成员（`research-firstparty` / `research-inference`）。
+2. 每条改动配**反证**（构造违规输入 ⇒ 必红 + 对照绿）；报错要**点名数据对象并给实际/期望两侧**；断言**只增不减**。
+3. 更正一律 **append-only**（T15-F6、T38-R1 两条审查侧误判就是这样留档的）。
+4. 不可逆动作（push / merge / deploy）**卡在绿的前置之后**，失败就停在那一步并如实报告。
+5. 禁止：force push · 改仓库设置或分支保护 · 绕过 CI 合并 · `git checkout --` 重置数据文件（曾吃掉未提交改动）· `git add -A`（曾把在途产物带走）· 把「未验证」写成「已满足」。
+6. `master` 是移动靶（自动采集每轮都在推，如 `d57aa3e`）⇒ 推送前先合一次 master。
+7. 成员内部 `subagent` 委派上限为 **0**（被拒：`AgentTeams member delegation limit (0) reached`）⇒ 成员必须自己写交付物。
+8. 上一轮的**会话级定时提醒已删除**（提醒只属于创建它的会话）；若新会话需要，用 `schedule_create` 自建（建议 300s + 先探网络再决定）。
+
+---
+
+## 7. 证据索引
+
+- 门禁与全量 Gate：`research/_raw/coverage-expansion-v1/t18-full-gate-report.md` · `t18-gate-results.json` · `t18-gate-runner.cjs` · `t41-derived-r5-readings.{json,md}`
+- 审查与自审：`research/_raw/t26/report.md`（对抗性 pass）· `research/coverage-expansion-v1-data-quality-review.md`（t15）· `research/_raw/t28/`（t14 闭环 + 仲裁 34）· `research/coverage-expansion-v1-self-audit.md`（t21）· `research/_raw/t21/**`
+- 变异电池：`research/_raw/t17/MUTATION-RESULTS.md` · `logs/battery.json` · `mutation-battery.cjs`
+- 覆盖报告：`scripts/tools/coverage-report.js` · `research/_raw/t45/section41-audit.md` · `research/_raw/t46/README.md`（五态普查）
+- 部署与冒烟：`research/_raw/t37/{t19-runbook.md,evidence.md}` · `research/_raw/t40/{live-baseline.json,compare-live.cjs,README.md}`
+- 报告与素材：`research/coverage-expansion-v1-report.md`（t20）· `research/_raw/t39/report-inputs.md`
 - 残余与裁决：`research/coverage-expansion-v1-residual-register.md` · `research/coverage-expansion-v1-source-health-rulings.md` · `research/coverage-expansion-v1-model-currentness.md` · `research/coverage-expansion-v1-provider-review.md` 与 `research/_raw/coverage-expansion-v1/provider-review.md`
+- §87 预映射：`research/_raw/t38/section87-precheck.md`
