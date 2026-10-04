@@ -162,9 +162,9 @@ const API_LINK_KEY_ORDER = ['registrySlug', 'apiPlanId', 'modelKey', 'variant', 
 const CODING_LINK_KEY_ORDER = ['registrySlug', 'planId', 'modelName', 'basis', 'evidence', 'note'];
 
 /**
- * 套餐侧模型串"**不对应单一模型身份**"的理由枚举（见 `scripts/data/model-registry-gaps.json`）。
+ * **处置登记的理由枚举（Coding 侧）**（见 `scripts/data/model-registry-gaps.json`）。
  *
- * 这张表是**处置登记**，不是映射：能落到一个 registry 身份上的字符串必须去写映射，
+ * 这张表是**处置登记**，不是映射：能落到一个 registry 身份上的串必须去写映射，
  * 写进这张表就是错的（`validateGaps()` 会拿关系层来查这一点）。
  * 每个 code 都对应一种**可判定的缺失**，不是一个"其它"垃圾桶：
  *   · `pool`               官方只给模型池 / 自动调度，未逐一点名（且该条的 role 必须是 `pool`）
@@ -175,8 +175,27 @@ const CODING_LINK_KEY_ORDER = ['registrySlug', 'planId', 'modelName', 'basis', '
  */
 const GAP_REASONS = ['pool', 'series', 'multi-model', 'off-registry-model', 'non-text-resource'];
 
-/** 处置登记的字段与顺序（`registrySlug` 故意不在其中：这张表永远不写映射） */
+/**
+ * 处置登记表的字段与顺序（Coding 侧；`registrySlug` 故意不在其中：这张表永远不写映射）。
+ *
+ * 表是**双侧**的，每条声明**恰好**属于一侧（与 links 的 exactly-one 规则同形）：
+ *   · Coding 侧（`planId` + `modelName`）：`plans.json` 的 `supportedModels[].name` 是自由文本
+ *     ⇒ 一串字对不上一个身份时在这里登记理由，reason 取 `GAP_REASONS`；
+ *   · API 侧（`apiPlanId` + `modelKey`）：`api-plans.json` 的计价条目（source pricing identity）是
+ *     **结构化键** ⇒ 要么指到一条真实计价条目、要么对不上任何 registry 身份，没有"一句话里写了多个模型"
+ *     这类形态，所以 reason 只允许 `off-registry-model`（见 `API_GAP_REASONS`）。
+ */
 const GAP_KEY_ORDER = ['planId', 'modelName', 'role', 'reason', 'sourceUrl', 'note'];
+
+/** API 侧处置登记的字段与顺序（`role` 也故意不在其中：API 记录没有"这一串在套餐里的角色"这回事） */
+const API_GAP_KEY_ORDER = ['apiPlanId', 'modelKey', 'variant', 'reason', 'sourceUrl', 'note'];
+
+/**
+ * API 侧允许的理由（**封闭**）。只有"官方点名了单一模型、但该写法在 registry 里没有身份"这一种：
+ * `pool` / `series` / `multi-model` / `non-text-resource` 都是"套餐里的一串自由文本"才有的形态，
+ * 出现在 API 侧就是拿套餐侧的词给结构化键兜底（`validateGaps()` 会报红并写出允许值）。
+ */
+const API_GAP_REASONS = ['off-registry-model'];
 
 /**
  * 来源层里出现即错误的派生字段（它们只能算出来）。
@@ -243,6 +262,52 @@ function withoutMeta(object) {
 function normalizeText(value) {
   return String(value === null || value === undefined ? '' : value)
     .normalize('NFKC').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+/**
+ * **折叠精确相等**用的归一（与 `normalizeText()` 刻意分开，两个都在用）：
+ *   · `normalizeText()`  只做 NFKC + 折叠空白 + 小写 ⇒ 用于"**逐字**相等"的候选（normalized-name-exact）；
+ *   · `identityFold()`   再丢掉分隔符与末尾注记 ⇒ 用于"写法不同、**其实是同一个串**"的探测。
+ *
+ * 口径写死在这里（各调用点不许自己再写一份）：
+ *   ① NFKC；
+ *   ② 去掉**末尾**的注记 `（…）` / `(…)`（官方显示名常带"（官方 modelId: …）"这类补注）；
+ *   ③ 去掉所有空白与 `-` `.` `_` `／`/` ；
+ *   ④ 小写。
+ *
+ * 举例：`MiniMax（稀宇科技）` → `minimax`；`zai-org.glm-5.3` → `zaiorgglm53`；
+ * `GLM 5.3` → `glm53`；`deepseek-ai.v4-pro-0813` → `deepseekv4pro0813`。
+ *
+ * ⚠️ 这是**探测**用的归一，不是生产身份：命中只说明"这两个写法折叠后相等"。
+ * 是否同一身份仍然由人工写映射决定 —— `candidatesOf()` 只把命中产出成候选，
+ * 而**处置登记表里出现命中就是红**（能对上就必须去写映射，或用别名把"对不上"说清楚）。
+ */
+function identityFold(value) {
+  const text = String(value === null || value === undefined ? '' : value).normalize('NFKC');
+  return text
+    .replace(/[（(][^（()）]*[）)]\s*$/, '')
+    .replace(/[\s\-.‐–—_/／]/g, '')
+    .toLowerCase();
+}
+
+/**
+ * 一个键的**命名空间后缀组合**（按 `/` 与 `.` 切分后的尾部组合），长的在前：
+ * `zai-org.glm-5.3` → [`zai-org.glm-5.3`, `glm-5.3`]；`qwen.qwen3.8-27b` → [`qwen.qwen3.8-27b`, `qwen3.8-27b`, `8-27b`]。
+ *
+ * 为什么要后缀：托管平台的 `modelKey` 常带厂商命名空间（`vendor.model`），而 registry 的身份是
+ * **不含命名空间**的裸名 —— 只比整串会漏掉"其实就是同一个模型"的那些写法（牙 #反绕过正是要抓它）。
+ * 只按 `/` 与 `.` 切分（**不切 `-`**）：`-` 是名字本身的一部分（`gpt-oss-120b`），切了会造出
+ * `oss120b` 这种不存在的身份。
+ */
+function namespaceSuffixes(value) {
+  const text = String(value === null || value === undefined ? '' : value);
+  const parts = text.split(/[/．.]/).filter(part => part !== '');
+  const out = [];
+  for (let start = 0; start < parts.length; start += 1) {
+    const tail = parts.slice(start).join('.');
+    if (tail && !out.includes(tail)) out.push(tail);
+  }
+  return out;
 }
 
 /** 模型 id：稳定、不可读、**不进手写文件**（与 deal/plan id 同一套做法） */
@@ -671,10 +736,19 @@ function declarationsList(gapsDoc) {
   return [];
 }
 
-/** 处置登记的规范序键：先 planId，再 modelName */
+/**
+ * 处置登记的规范序键：**先侧别**（`api` / `coding`），再各自的键。
+ *
+ * 加侧别前缀不是装饰：同一张表里现在同时装 Coding 侧与 API 侧的声明，若仍按
+ * `planId + modelName` 排序，API 侧记录（`apiPlanId` 是另一种 id 空间）会与套餐侧交错，
+ * "打乱输入 → 同一串字节"这条纪律就守不住了。侧别前缀让两段的次序各自独立且稳定。
+ */
 function orderKeyOfDeclaration(declaration) {
   if (!declaration) return '';
-  return `${declaration.planId}\u0000${declaration.modelName}`;
+  if (declaration.apiPlanId !== undefined || declaration.modelKey !== undefined) {
+    return `api\u0000${declaration.apiPlanId}\u0000${declaration.modelKey}\u0000${declaration.variant === null || declaration.variant === undefined ? '' : declaration.variant}`;
+  }
+  return `coding\u0000${declaration.planId}\u0000${declaration.modelName}`;
 }
 
 function sortDeclarations(declarations) {
@@ -926,7 +1000,7 @@ function evidenceProblems(evidence, record, where, errors) {
  *     与 Coding 侧的"每个模型串都必须有结局"同一原则（没有"未判"这一格）；
  *   · basis 合法；有引文类 basis 必须有引文，explicit-mapping 必须没有引文且有 note。
  */
-function validateLinks(doc, { table = {}, apiPlans = [], plans = [] } = {}) {
+function validateLinks(doc, { table = {}, apiPlans = [], plans = [], gaps = {} } = {}) {
   const errors = [];
   if (!doc || typeof doc !== 'object' || Array.isArray(doc)) return ['model-registry-links.json 必须是一个对象'];
   if (doc.schemaVersion !== MODEL_SCHEMA_VERSION) {
@@ -1044,21 +1118,30 @@ function validateLinks(doc, { table = {}, apiPlans = [], plans = [] } = {}) {
     }
   });
 
-  // API 侧完整性：每一条计价条目都必须被一条映射认领（与 Coding 侧"每一串都必须有结局"同级）。
-  // 只在 registry 表非空时判 —— 空表会让"未映射"变成 67 条噪音，掩盖真正的那条错。
+  // API 侧完整性：每一条计价条目都必须有**结局** —— 被一条映射认领，**或**在处置登记表里
+  // 声明"对不上任何 registry 身份"（API 侧声明，见 validateGaps()）。两处都没有 ⇒ 红。
+  // 只在 registry 表非空时判 —— 空表会让"未映射"变成几十条噪音，掩盖真正的那条错。
   if (Object.keys(table || {}).length) {
+    // 处置声明覆盖的 identity：复用 sourcePricingIdentitiesOf() 展开（与 validateGaps 同一支判据）
+    const declaredApi = new Set();
+    for (const declaration of declarationsList(gaps)) {
+      if (!declaration || declaration.apiPlanId === undefined || declaration.modelKey === undefined) continue;
+      for (const identity of sourcePricingIdentitiesOf(declaration, apiPlans).identities) {
+        declaredApi.add(sourcePricingIdentityKey(identity));
+      }
+    }
     const uncovered = [];
     for (const plan of (apiPlans || [])) {
       for (const entry of (plan && plan.models) || []) {
         if (!entry) continue;
         const identity = { apiPlanId: plan.id, modelKey: entry.modelKey, variant: entry.variant };
-        if (!seenApi.has(sourcePricingIdentityKey(identity))) {
-          uncovered.push(describeSourcePricingIdentity(identity));
-        }
+        const key = sourcePricingIdentityKey(identity);
+        if (seenApi.has(key) || declaredApi.has(key)) continue;
+        uncovered.push(describeSourcePricingIdentity(identity));
       }
     }
     if (uncovered.length) {
-      errors.push(`API 侧 ${uncovered.length} 条计价条目（source pricing identity）既没有 registry 映射、也没有任何处置：${uncovered.slice(0, 5).join(' · ')}${uncovered.length > 5 ? ' …' : ''} —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）`);
+      errors.push(`API 侧 ${uncovered.length} 条计价条目（source pricing identity）既没有 registry 映射（model-registry-links.json）、也没有在 model-registry-gaps.json 里声明理由：${uncovered.slice(0, 5).join(' · ')}${uncovered.length > 5 ? ' …' : ''} —— 每一条都必须人工判一次（删掉一条映射就要在关系层里补回来，禁止静默留空）`);
     }
   }
 
@@ -1089,26 +1172,35 @@ function sortLinks(links) {
 }
 
 /* ------------------------------------------------------------------ */
-/* 校验：套餐侧模型串的处置登记 + 覆盖完整性                            */
+/* 校验：处置登记（Coding 侧 / API 侧双侧）+ 覆盖完整性                 */
 /* ------------------------------------------------------------------ */
 
 /**
- * 处置登记校验（`scripts/data/model-registry-gaps.json`）。判据：
- *   · 顶层形状 / schemaVersion / 未知字段（`registrySlug` 在这里是**未知字段**：本表永远不写映射）；
- *   · `modelName` 必须**逐字**等于该套餐 `supportedModels` 里已经写下的名字；
- *   · `role` 必须逐字等于那一条的 `role`（它是从数据抄来的对照值，抄错即红）；
- *   · **声明必须真的是"映射不上"**：`modelName` 归一后若精确落到某个 registry 身份（slug / 别名），
- *     这条就该去写映射 —— 拿"不对应单一模型身份"绕过映射即红（与 `planCandidatesOf()` 同一支索引）；
- *   · `reason` 只能取 `GAP_REASONS`；`reason==='pool'` 与记录 `role==='pool'` 必须**互为充要**；
- *   · `sourceUrl` 必须是该套餐自己的官方页（`officialUrl` 或 `sourceUrl`）；
- *   · `note` 必须写清"为什么不能对应单一模型身份"（不许留空、不许超长）；
- *   · 同一个 (planId, modelName) 不许既在本表里、又在关系层里有映射（自相矛盾）；
- *   · 规范序 + 不许重复。
+ * 处置登记校验（`scripts/data/model-registry-gaps.json`，**双侧**）。判据：
+ *   · 每条声明**恰好**属于一侧：Coding 侧（`planId` + `modelName`）或 API 侧（`apiPlanId` + `modelKey`）
+ *     —— 两侧都写或各缺一半都红（与 links 的 exactly-one 规则同形）；
+ *   · 键序按侧别（Coding 侧 `planId → modelName → role → reason → sourceUrl → note`；
+ *     API 侧 `apiPlanId → modelKey → variant → reason → sourceUrl → note`）；
+ *   · Coding 侧：`planId` 必须存在；`modelName` 必须**逐字**等于该套餐 `supportedModels` 里的名字；
+ *     `role` 必须逐字等于那一条的 `role`；`reason` 取 `GAP_REASONS`，且与记录 `role==='pool'` 互为充要；
+ *   · API 侧：`apiPlanId` 必须存在；`modelKey` 必须在该记录 `models[]` 里；`variant` 必须是 `null`
+ *     （通配 = 该 modelKey 的全部真实变体）或该 modelKey 的真实变体；展开一条都没匹配到 ⇒ 红；
+ *     `reason` 只允许 `API_GAP_REASONS`（`off-registry-model`）；
+ *   · 两侧共用：`sourceUrl` 必须是**那条记录自己的**官方页（`officialUrl` 或 `sourceUrl`，
+ *     http(s) 且不是聚合站）；`note` 必须写清理由（非空、不超长）；
+ *   · **不许双重记账**（双向）：同一条展开后的 source pricing identity 不许既被关系层的映射认领、
+ *     又在这里声明"对不上"（Coding 侧的 (planId, modelName) 同理）；
+ *   · **反绕过**（两侧各用同一支索引）：Coding 侧 `modelName` 归一后精确落到某个 registry 身份 ⇒ 红
+ *     （与 `planCandidatesOf()` 同一支索引）；API 侧 `modelKey` 与记录的官方显示名**折叠后**精确落到
+ *     某个 registry 身份（含命名空间后缀探测）⇒ 红并点名那个 slug（与 `candidatesOf()` 的
+ *     `normalized-name-folded` / `normalized-namespace-suffix` 同一支索引）—— 能对上就必须去写映射
+ *     （没有引文时 basis=explicit-mapping + note），或者把 registry 的别名补成真实写法；
+ *   · 规范序（先侧别，再各自的键）+ 同侧同键不许重复。
  *
- * **完整性不在这里判**：一条串"既没映射也没声明"由 `validatePlanModelCoverage()` 报红 ——
- * 只有那里同时看得到关系层与本表。反过来，这里判的"声明其实能对上"是**本表自己的合法性**。
+ * **完整性不在这里判**：Coding 侧"既没映射也没声明"由 `validatePlanModelCoverage()` 报红、
+ * API 侧同一件事由 `validateLinks()` 报红 —— 只有那两处同时看得到关系层与本表。
  */
-function validateGaps(doc, { plans = [], links = {}, table = {} } = {}) {
+function validateGaps(doc, { plans = [], links = {}, table = {}, apiPlans = [] } = {}) {
   const errors = [];
   if (!doc || typeof doc !== 'object' || Array.isArray(doc)) return ['model-registry-gaps.json 必须是一个对象'];
   if (doc.schemaVersion !== MODEL_SCHEMA_VERSION) {
@@ -1122,87 +1214,163 @@ function validateGaps(doc, { plans = [], links = {}, table = {} } = {}) {
   if (!Array.isArray(doc.declarations)) errors.push('declarations 必须是数组');
   if (declarations.length > LIMITS.linksTotal) errors.push(`处置条数 ${declarations.length} 超过上限 ${LIMITS.linksTotal}`);
 
+  // 关系层已认领的两侧（"不许双重记账"的对照面）
   const mappedCoding = new Set();
+  const mappedApi = new Set();
   for (const link of linksList(links)) {
-    if (link && link.planId !== undefined && link.modelName !== undefined) {
+    if (!link) continue;
+    if (link.planId !== undefined && link.modelName !== undefined) {
       mappedCoding.add(`${link.planId}\u0000${link.modelName}`);
+    }
+    if (link.apiPlanId !== undefined && link.modelKey !== undefined) {
+      for (const identity of sourcePricingIdentitiesOf(link, apiPlans).identities) {
+        mappedApi.add(sourcePricingIdentityKey(identity));
+      }
     }
   }
 
-  // 没有 registry 表就判不了"这条声明是不是其实能对上" ⇒ 不许假绿。
+  const isApiDeclaration = declaration => Boolean(declaration)
+    && (declaration.apiPlanId !== undefined || declaration.modelKey !== undefined);
+  const apiDeclarations = declarations.filter(isApiDeclaration);
+
+  // 没有输入不许假绿：判"其实能对上"需要 registry 表，判 API 侧存在性需要 apiPlans。
   // （独立审查员 2026-10-02 抓到：不传 table 时，declarations 里写一条能对上的名字会静默通过。）
   const normalized = normalizedIndexOf(table);
+  const folded = foldedIndexOf(table);
   if (!normalized.size && declarations.length) {
     errors.push(`没有拿到 registry 表（table 为空），无法判定这 ${declarations.length} 条声明是不是"其实能对上" —— 这不是通过`);
+  }
+  if (apiDeclarations.length && !(Array.isArray(apiPlans) && apiPlans.length)) {
+    errors.push(`有 ${apiDeclarations.length} 条 API 侧声明却没有拿到 apiPlans，无法判定它们指向的计价条目是否存在 —— 这不是通过`);
   }
 
   const seen = new Set();
   declarations.forEach((declaration, index) => {
-    const where = `declarations[${index}] ${declaration && declaration.planId ? declaration.planId : '(无 planId)'}`;
     if (!declaration || typeof declaration !== 'object' || Array.isArray(declaration)) {
-      errors.push(`${where}: 必须是对象`);
+      errors.push(`declarations[${index}]: 必须是对象`);
       return;
     }
-    keyOrderProblem(declaration, GAP_KEY_ORDER, where, errors);
+    const isApi = isApiDeclaration(declaration);
+    const isCoding = declaration.planId !== undefined || declaration.modelName !== undefined;
+    const where = `declarations[${index}] ${isApi ? 'API' : 'Coding'} 侧 ${isApi ? (declaration.apiPlanId || '(无 apiPlanId)') : (declaration.planId || '(无 planId)')}`;
+    if (isApi === isCoding) {
+      errors.push(`${where}: 必须**恰好**是 Coding 侧（planId + modelName）或 API 侧（apiPlanId + modelKey）之一（两侧都写或各缺一半都不行）`);
+      return;
+    }
+    keyOrderProblem(declaration, isApi ? API_GAP_KEY_ORDER : GAP_KEY_ORDER, where, errors);
 
-    const plan = (plans || []).find(item => item && item.id === declaration.planId);
-    let entry = null;
-    if (!plan) {
-      errors.push(`${where}: planId ${declaration.planId} 不存在（处置只能针对真实存在的套餐）`);
+    if (isApi) {
+      const plan = (apiPlans || []).find(item => item && item.id === declaration.apiPlanId);
+      let entry = null;
+      if (!plan) {
+        errors.push(`${where}: apiPlanId 不存在（${declaration.apiPlanId} 不在 apiPlans 里；处置只能针对真实存在的 API 计费记录）`);
+      } else {
+        entry = (plan.models || []).find(item => item && item.modelKey === declaration.modelKey) || null;
+        if (!entry) {
+          errors.push(`${where}: modelKey「${declaration.modelKey}」不在记录 ${plan.id} 里（处置只能指向该记录真实写着的计价条目）`);
+        } else if (!isWildcardVariant(declaration.variant)
+          && !(plan.models || []).some(item => item.modelKey === declaration.modelKey && item.variant === declaration.variant)) {
+          errors.push(`${where}: variant「${declaration.variant}」不是记录 ${plan.id} 里 modelKey「${declaration.modelKey}」的真实变体`);
+        }
+      }
+
+      if (!API_GAP_REASONS.includes(declaration.reason)) {
+        errors.push(`${where}: API 侧 reason 非法（${declaration.reason}），允许 ${API_GAP_REASONS.join(' / ')}（pool / series / multi-model / non-text-resource 是套餐侧概念，不能拿来给结构化键兜底）`);
+      }
+
+      if (plan) {
+        if (!isHttpUrl(declaration.sourceUrl)) {
+          errors.push(`${where}: sourceUrl 必须是 http(s)`);
+        } else if (provenance.isAggregatorUrl(declaration.sourceUrl)) {
+          errors.push(`${where}: sourceUrl 指向聚合站（${declaration.sourceUrl}）—— 处置只能针对官方页`);
+        } else if (declaration.sourceUrl !== plan.officialUrl && declaration.sourceUrl !== plan.sourceUrl) {
+          errors.push(`${where}: sourceUrl「${declaration.sourceUrl}」不是 API 记录 ${plan.id} 自己的官方页（${plan.officialUrl} / ${plan.sourceUrl}）`);
+        }
+      }
+
+      // 展开与覆盖记账**复用** sourcePricingIdentitiesOf()（本模块唯一的口径实现，不另写第二份）
+      const claims = sourcePricingIdentitiesOf(declaration, apiPlans);
+      if (claims.unresolved) {
+        errors.push(`${where}: 通配 variant=null 在记录 ${declaration.apiPlanId} 里一条真实变体都没匹配到 —— 它什么都没声明，不许静默通过`);
+      }
+      claims.identities.forEach(identity => {
+        if (mappedApi.has(sourcePricingIdentityKey(identity))) {
+          errors.push(`${where}: source pricing identity ${describeSourcePricingIdentity(identity)} 已经在关系层里有映射 —— 一件事不能既"已映射"又"声明不对应单一模型身份"`);
+        }
+      });
+
+      // 反绕过：折叠索引（与 candidatesOf() 同一支规则）点名"其实能对上"的声明
+      const probes = [{ label: 'modelKey', value: declaration.modelKey }];
+      if (entry) probes.push({ label: 'name', value: entry.name });
+      probes.forEach(probe => {
+        foldedHitsOf(probe.value, folded).forEach(hit => {
+          errors.push(`${where}: ${probe.label}「${probe.value}」折叠后精确落到 registry 身份「${hit.slug}」（规则 ${hit.rule}）—— 能对上就必须去关系层写映射（basis=explicit-mapping + note），或者修 registry 的别名；不许用"不对应单一模型身份"绕过`);
+        });
+      });
+
+      const apiKey = `api\u0000${declaration.apiPlanId}\u0000${declaration.modelKey}\u0000${declaration.variant === null || declaration.variant === undefined ? '' : declaration.variant}`;
+      if (seen.has(apiKey)) errors.push(`${where}: 同一个 (apiPlanId, modelKey, variant) 在本表里重复`);
+      seen.add(apiKey);
     } else {
-      entry = (plan.supportedModels || []).find(item => item && item.name === declaration.modelName) || null;
-      if (!entry) {
-        errors.push(`${where}: modelName「${declaration.modelName}」不在套餐 ${plan.id} 的 supportedModels 里（本表只能逐字引用套餐已经写下的名字）`);
-      } else if (declaration.role !== entry.role) {
-        errors.push(`${where}: role「${declaration.role}」与套餐 ${plan.id} 里那一条的 role「${entry.role}」不一致（role 是从数据抄来的对照值，不许自己改）`);
+      const plan = (plans || []).find(item => item && item.id === declaration.planId);
+      let entry = null;
+      if (!plan) {
+        errors.push(`${where}: planId ${declaration.planId} 不存在（处置只能针对真实存在的套餐）`);
+      } else {
+        entry = (plan.supportedModels || []).find(item => item && item.name === declaration.modelName) || null;
+        if (!entry) {
+          errors.push(`${where}: modelName「${declaration.modelName}」不在套餐 ${plan.id} 的 supportedModels 里（本表只能逐字引用套餐已经写下的名字）`);
+        } else if (declaration.role !== entry.role) {
+          errors.push(`${where}: role「${declaration.role}」与套餐 ${plan.id} 里那一条的 role「${entry.role}」不一致（role 是从数据抄来的对照值，不许自己改）`);
+        }
       }
-    }
 
-    if (!GAP_REASONS.includes(declaration.reason)) {
-      errors.push(`${where}: reason 非法（${declaration.reason}），允许 ${GAP_REASONS.join(' / ')}`);
-    } else if (entry) {
-      // pool 与记录 role 互为充要：池子必须写成 pool；写成 pool 的那一条，记录的 role 就必须是 pool。
-      if (declaration.reason === 'pool' && entry.role !== 'pool') {
-        errors.push(`${where}: reason=pool 但套餐里那一条的 role 是「${entry.role}」—— 官方没有说它是模型池，不许用 pool 兜底`);
+      if (!GAP_REASONS.includes(declaration.reason)) {
+        errors.push(`${where}: reason 非法（${declaration.reason}），允许 ${GAP_REASONS.join(' / ')}`);
+      } else if (entry) {
+        // pool 与记录 role 互为充要：池子必须写成 pool；写成 pool 的那一条，记录的 role 就必须是 pool。
+        if (declaration.reason === 'pool' && entry.role !== 'pool') {
+          errors.push(`${where}: reason=pool 但套餐里那一条的 role 是「${entry.role}」—— 官方没有说它是模型池，不许用 pool 兜底`);
+        }
+        if (declaration.reason !== 'pool' && entry.role === 'pool') {
+          errors.push(`${where}: 套餐里那一条的 role 是 pool，reason 就必须是 pool（实得 ${declaration.reason}）`);
+        }
       }
-      if (declaration.reason !== 'pool' && entry.role === 'pool') {
-        errors.push(`${where}: 套餐里那一条的 role 是 pool，reason 就必须是 pool（实得 ${declaration.reason}）`);
-      }
-    }
 
-    if (plan) {
-      if (!isHttpUrl(declaration.sourceUrl)) {
-        errors.push(`${where}: sourceUrl 必须是 http(s)`);
-      } else if (provenance.isAggregatorUrl(declaration.sourceUrl)) {
-        errors.push(`${where}: sourceUrl 指向聚合站（${declaration.sourceUrl}）—— 处置只能针对官方页`);
-      } else if (declaration.sourceUrl !== plan.officialUrl && declaration.sourceUrl !== plan.sourceUrl) {
-        errors.push(`${where}: sourceUrl「${declaration.sourceUrl}」不是套餐 ${plan.id} 自己的官方页（${plan.officialUrl} / ${plan.sourceUrl}）`);
+      if (plan) {
+        if (!isHttpUrl(declaration.sourceUrl)) {
+          errors.push(`${where}: sourceUrl 必须是 http(s)`);
+        } else if (provenance.isAggregatorUrl(declaration.sourceUrl)) {
+          errors.push(`${where}: sourceUrl 指向聚合站（${declaration.sourceUrl}）—— 处置只能针对官方页`);
+        } else if (declaration.sourceUrl !== plan.officialUrl && declaration.sourceUrl !== plan.sourceUrl) {
+          errors.push(`${where}: sourceUrl「${declaration.sourceUrl}」不是套餐 ${plan.id} 自己的官方页（${plan.officialUrl} / ${plan.sourceUrl}）`);
+        }
+      }
+
+      const pair = `${declaration.planId}\u0000${declaration.modelName}`;
+      if (seen.has(`coding\u0000${pair}`)) errors.push(`${where}: 同一个 (planId, modelName) 在本表里重复`);
+      seen.add(`coding\u0000${pair}`);
+      if (mappedCoding.has(pair)) {
+        errors.push(`${where}: (${declaration.planId}, ${declaration.modelName}) 已经在关系层里有映射 —— 一件事不能既"已映射"又"声明不对应单一模型身份"`);
+      }
+      // "其实能对上"也必须红：与 planCandidatesOf() 用同一支归一索引，所以候选规则能算出来的串
+      // 不许以"不对应单一模型身份"的名义留在这里。声明表只能装**真的对不上**的串。
+      const exactHit = normalized.get(normalizeText(declaration.modelName));
+      if (exactHit) {
+        errors.push(`${where}: modelName「${declaration.modelName}」归一后精确落到 registry 身份「${exactHit}」—— 能对上的串必须去关系层写映射，不许用"不对应单一模型身份"绕过（候选规则 planCandidatesOf() 正是这么算的）`);
       }
     }
 
     if (typeof declaration.note !== 'string' || !declaration.note.trim()) {
-      errors.push(`${where}: 必须写 note 说明"为什么这串不能对应单一模型身份"（这张表存的是理由，不是一个空表头）`);
+      errors.push(`${where}: 必须写 note 说明"为什么这${isApi ? '条计价条目' : '串'}不能对应单一模型身份"（这张表存的是理由，不是一个空表头）`);
     } else if (declaration.note.length > MAX_NOTE_LENGTH) {
       errors.push(`${where}: note 超过 ${MAX_NOTE_LENGTH} 字`);
-    }
-
-    const pair = `${declaration.planId}\u0000${declaration.modelName}`;
-    if (seen.has(pair)) errors.push(`${where}: 同一个 (planId, modelName) 在本表里重复`);
-    seen.add(pair);
-    if (mappedCoding.has(pair)) {
-      errors.push(`${where}: (${declaration.planId}, ${declaration.modelName}) 已经在关系层里有映射 —— 一件事不能既"已映射"又"声明不对应单一模型身份"`);
-    }
-    // "其实能对上"也必须红：与 planCandidatesOf() 用同一支归一索引，所以候选规则能算出来的串
-    // 不许以"不对应单一模型身份"的名义留在这里。声明表只能装**真的对不上**的串。
-    const exactHit = normalized.get(normalizeText(declaration.modelName));
-    if (exactHit) {
-      errors.push(`${where}: modelName「${declaration.modelName}」归一后精确落到 registry 身份「${exactHit}」—— 能对上的串必须去关系层写映射，不许用"不对应单一模型身份"绕过（候选规则 planCandidatesOf() 正是这么算的）`);
     }
   });
 
   const sorted = sortDeclarations(declarations);
   if (JSON.stringify(declarations.map(orderKeyOfDeclaration)) !== JSON.stringify(sorted.map(orderKeyOfDeclaration))) {
-    errors.push('declarations 的记录顺序不是规范序（应先按 planId，再按 modelName）');
+    errors.push('declarations 的记录顺序不是规范序（应先按侧别（api / coding），再按各自的键）');
   }
   return errors;
 }
@@ -1363,15 +1531,36 @@ function coverageOf({ table = {}, links = {}, gaps = {}, apiPlans = [], plans = 
     if (link.registrySlug && table[link.registrySlug]) linkedSlugs.add(link.registrySlug);
   }
   const declaredCoding = new Map();
+  const declaredApi = new Map();
+  const declaredApiEntries = [];
   for (const declaration of declarationsList(gaps)) {
     if (!declaration) continue;
+    if (declaration.apiPlanId !== undefined && declaration.modelKey !== undefined) {
+      // API 侧声明：逐条留档（provider / apiPlanId / modelKey / variant / reason / note），
+      // 覆盖记账按**展开后的 identity** 记（通配声明可能盖住多条，复用 sourcePricingIdentitiesOf 展开）
+      const declaredPlan = apiPlans.find(item => item && item.id === declaration.apiPlanId) || null;
+      declaredApiEntries.push({
+        provider: declaredPlan ? declaredPlan.provider : null,
+        apiPlanId: declaration.apiPlanId,
+        modelKey: declaration.modelKey,
+        variant: declaration.variant === undefined ? null : declaration.variant,
+        reason: declaration.reason,
+        note: declaration.note
+      });
+      for (const identity of sourcePricingIdentitiesOf(declaration, apiPlans).identities) {
+        declaredApi.set(sourcePricingIdentityKey(identity), declaration);
+      }
+      continue;
+    }
     declaredCoding.set(`${declaration.planId}\u0000${declaration.modelName}`, declaration);
   }
   const unmappedModelKeys = [];
   for (const plan of apiPlans) {
     for (const entry of (plan.models || [])) {
       const identity = { apiPlanId: plan.id, modelKey: entry.modelKey, variant: entry.variant };
-      if (mappedApi.has(sourcePricingIdentityKey(identity))) continue;
+      // 语义（coverage-expansion-v1）：**映射与处置都没有**才算"未判" —— 处置声明也是一种结局。
+      // 于是 apiPricingItems === mappedApiEntries + declaredApiIdentities + unmappedModelKeys.length
+      if (mappedApi.has(sourcePricingIdentityKey(identity)) || declaredApi.has(sourcePricingIdentityKey(identity))) continue;
       unmappedModelKeys.push({
         apiPlanId: plan.id, provider: plan.provider, modelKey: entry.modelKey, variant: entry.variant
       });
@@ -1403,9 +1592,11 @@ function coverageOf({ table = {}, links = {}, gaps = {}, apiPlans = [], plans = 
     unlinkedModels,
     apiLinks: list.filter(link => link && link.apiPlanId).length,
     codingLinks: list.filter(link => link && link.planId).length,
-    // API 侧按**展开条目**记账的三项：总条目 / 已被认领 / 未映射（后者逐行在 unmappedModelKeys 里）
+    // API 侧按**展开条目**记账：总条目 = 已被映射认领 + 已被处置声明覆盖 + 未判（三者之和必须相等）
     apiPricingItems: apiPlans.reduce((total, plan) => total + ((plan && plan.models) || []).length, 0),
     mappedApiEntries: mappedApi.size,
+    declaredApiEntries,
+    declaredApiIdentities: declaredApi.size,
     unmappedModelKeys,
     planModelStrings,
     unmappedPlanModels,
@@ -1433,26 +1624,86 @@ function normalizedIndexOf(table) {
   return normalized;
 }
 
+/**
+ * **折叠后的精确**索引：`identityFold(slug|alias) → slug`（与 `normalizedIndexOf()` 并行，两支都留着）。
+ *
+ * 它比"逐字相等"宽松、比"相似度"严格得多（没有编辑距离、没有子串、没有 LLM）：
+ * 只把**分隔符与末尾注记**抹掉后做**逐字**比较，所以 `zai-org.glm-5.3` 与 `glm-5.3`、
+ * `GLM 5.3` 与 `glm-5.3`、`DeepSeek V4 Pro 0813` 与 `deepseek-v4-pro-0813` 会被认成同一个串。
+ * 它只用于**产候选**与**反绕过探测**，永远不写生产映射。
+ */
+function foldedIndexOf(table) {
+  const { bySlug, byAlias } = indexOf(table);
+  const folded = new Map();
+  for (const slug of bySlug.keys()) if (!folded.has(identityFold(slug))) folded.set(identityFold(slug), slug);
+  for (const [alias, slug] of byAlias) if (!folded.has(identityFold(alias))) folded.set(identityFold(alias), slug);
+  return folded;
+}
+
+/**
+ * 一个字符串在折叠索引里的命中（含**命名空间后缀**探测）。返回 `[{slug, rule}]`（同 slug 只留第一条）：
+ *   · 整串折叠命中 ⇒ 规则名 `normalized-name-folded`；
+ *   · 某个命名空间后缀命中 ⇒ 规则名 `normalized-namespace-suffix`。
+ * 顺序固定（先整串、再后缀由长到短），所以候选输出是确定性的。
+ */
+function foldedHitsOf(value, foldedIndex) {
+  const out = [];
+  const push = (slug, rule) => {
+    if (!slug) return;
+    if (out.some(item => item.slug === slug)) return;
+    out.push({ slug, rule });
+  };
+  push(foldedIndex.get(identityFold(value)), 'normalized-name-folded');
+  for (const suffix of namespaceSuffixes(value)) {
+    push(foldedIndex.get(identityFold(suffix)), 'normalized-namespace-suffix');
+  }
+  return out;
+}
+
 function candidatesOf({ table = {}, apiPlans = [] } = {}) {
   const normalized = normalizedIndexOf(table);
+  const folded = foldedIndexOf(table);
 
   const out = [];
+  const emitted = new Set();
+  const emit = (rule, slug, plan, entry, note) => {
+    const key = `${plan.id}\u0000${entry.modelKey}\u0000${slug}`;
+    if (emitted.has(key)) return;
+    emitted.add(key);
+    out.push({
+      status: 'candidate', rule, registrySlug: slug,
+      apiPlanId: plan.id, modelKey: entry.modelKey, modelName: entry.name, note
+    });
+  };
+
   for (const plan of apiPlans) {
     for (const entry of (plan.models || [])) {
-      const hit = normalized.get(normalizeText(entry.modelKey)) || normalized.get(normalizeText(entry.name));
-      if (!hit) continue;
-      out.push({
-        status: 'candidate',
-        rule: 'normalized-name-exact',
-        registrySlug: hit,
-        apiPlanId: plan.id,
-        modelKey: entry.modelKey,
-        modelName: entry.name,
-        note: '归一后精确相等（NFKC + 折叠空白 + 小写），只作人工 review 用；写生产映射必须人工逐条确认'
-      });
+      const exact = normalized.get(normalizeText(entry.modelKey)) || normalized.get(normalizeText(entry.name));
+      if (exact) {
+        emit('normalized-name-exact', exact, plan, entry,
+          '归一后精确相等（NFKC + 折叠空白 + 小写），只作人工 review 用；写生产映射必须人工逐条确认');
+      }
+      // 折叠探测：整串折叠（`normalized-name-folded`）+ 命名空间后缀（`normalized-namespace-suffix`）。
+      // 只比"抹掉分隔符与末尾注记后逐字相等"，没有编辑距离 / 子串 / LLM；三支规则都**只产候选**，
+      // 写生产映射（links）必须人工逐条确认；处置登记表里出现命中即红（见 validateGaps()）。
+      for (const probe of [entry.modelKey, entry.name]) {
+        for (const hit of foldedHitsOf(probe, folded)) {
+          emit(hit.rule, hit.slug, plan, entry,
+            '折叠后精确相等（NFKC + 去末尾注记 + 去空白与 - . _ / + 小写；含命名空间后缀探测），只作人工 review 用；写生产映射必须人工逐条确认');
+        }
+      }
     }
   }
-  return out.sort((a, b) => (a.apiPlanId + a.modelKey < b.apiPlanId + b.modelKey ? -1 : 1));
+  return out.sort((a, b) => {
+    // 主序与原来逐字相同（apiPlanId + modelKey），只在主序相等时按规则名 + slug 定唯一的先后，
+    // 免得同一条记录的多个候选之间出现"顺序靠 sort 实现细节"这种情况。
+    const ka = a.apiPlanId + a.modelKey;
+    const kb = b.apiPlanId + b.modelKey;
+    if (ka !== kb) return ka < kb ? -1 : 1;
+    const ra = a.rule + a.registrySlug;
+    const rb = b.rule + b.registrySlug;
+    return ra < rb ? -1 : ra > rb ? 1 : 0;
+  });
 }
 
 /**
@@ -1464,22 +1715,38 @@ function candidatesOf({ table = {}, apiPlans = [] } = {}) {
  */
 function planCandidatesOf({ table = {}, plans = [] } = {}) {
   const normalized = normalizedIndexOf(table);
+  const folded = foldedIndexOf(table);
   const out = [];
+  const emitted = new Set();
+  const emit = (rule, slug, plan, entry, note) => {
+    const key = `${plan.id}\u0000${entry.name}\u0000${slug}`;
+    if (emitted.has(key)) return;
+    emitted.add(key);
+    out.push({ status: 'candidate', rule, registrySlug: slug, planId: plan.id, modelName: entry.name, note });
+  };
   for (const plan of plans) {
     for (const entry of (plan.supportedModels || [])) {
-      const hit = normalized.get(normalizeText(entry.name));
-      if (!hit) continue;
-      out.push({
-        status: 'candidate',
-        rule: 'normalized-name-exact',
-        registrySlug: hit,
-        planId: plan.id,
-        modelName: entry.name,
-        note: '归一后精确相等（NFKC + 折叠空白 + 小写），只作人工 review 用；写生产映射必须人工逐条确认'
-      });
+      const exact = normalized.get(normalizeText(entry.name));
+      if (exact) {
+        emit('normalized-name-exact', exact, plan, entry,
+          '归一后精确相等（NFKC + 折叠空白 + 小写），只作人工 review 用；写生产映射必须人工逐条确认');
+      }
+      // 与 candidatesOf() 同一支折叠规则（同一个索引、同一套后缀探测）：名字里带命名空间或注记的串
+      // （`zai-org/GLM-5.3` 这类）也要能被规则发现，而不是靠人凭印象去挑。
+      for (const hit of foldedHitsOf(entry.name, folded)) {
+        emit(hit.rule, hit.slug, plan, entry,
+          '折叠后精确相等（NFKC + 去末尾注记 + 去空白与 - . _ / + 小写；含命名空间后缀探测），只作人工 review 用；写生产映射必须人工逐条确认');
+      }
     }
   }
-  return out.sort((a, b) => (a.planId + a.modelName < b.planId + b.modelName ? -1 : 1));
+  return out.sort((a, b) => {
+    const ka = a.planId + a.modelName;
+    const kb = b.planId + b.modelName;
+    if (ka !== kb) return ka < kb ? -1 : 1;
+    const ra = a.rule + a.registrySlug;
+    const rb = b.rule + b.registrySlug;
+    return ra < rb ? -1 : ra > rb ? 1 : 0;
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -1575,6 +1842,7 @@ module.exports = {
   MODEL_CATALOG_STATUS,
   LINK_BASIS,
   GAP_REASONS,
+  API_GAP_REASONS,
   ENTRY_KEY_ORDER,
   PUBLISHED_MODEL_KEY_ORDER,
   RELEASE_EVIDENCE_KEY_ORDER,
@@ -1582,6 +1850,7 @@ module.exports = {
   API_LINK_KEY_ORDER,
   CODING_LINK_KEY_ORDER,
   GAP_KEY_ORDER,
+  API_GAP_KEY_ORDER,
   DERIVED_KEYS,
   LIMITS,
   MAX_ALIASES,
@@ -1608,6 +1877,10 @@ module.exports = {
   declarationsList,
   indexOf,
   normalizedIndexOf,
+  foldedIndexOf,
+  foldedHitsOf,
+  identityFold,
+  namespaceSuffixes,
   resolveSlug,
   pricingEntriesOf,
   realVariantsOf,

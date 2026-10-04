@@ -87,22 +87,26 @@
       "provider": "aws",
       "tier": "major",
       "role": "coding-product",
-      "intent": "Amazon Q Developer 订阅档位的官方价格与停支公告",
-      "applicabilityNote": "deals/api/models 不适用（本轮）：① 没有专门覆盖 AWS 官方优惠的采集来源；② Bedrock 按量价目表本轮未取证（研究只覆盖 Q Developer）⇒ 该维度只留意图、不写 target，复查条件=有一轮研究取到 Bedrock 官方价目页并可逐字引用；③ AWS 是托管平台，Bedrock 上的模型身份归各自发行方。",
+      "intent": "Amazon Q Developer 的订阅档位、超额计价与已宣布的停支时效",
+      "applicabilityNote": "api / models 不适用（本轮）：① Bedrock 的按量价目表暂无官方取证面（研究只覆盖 Amazon Q Developer 这条产品线）；② AWS 是托管平台，Bedrock 上的模型身份归各自发行方。",
       "dimensionIntent": {
-        "deals": null,
-        "coding": "Amazon Q Developer Free / Pro 档位",
+        "deals": "AWS 官方优惠 / 免费额度（只收官方来源）",
+        "coding": "Amazon Q Developer Free Tier / Pro 档位与已宣布的停支公告",
         "api": null,
         "models": null
       },
       "currentTargets": [
         {
           "dimension": "coding",
+          "planName": "Amazon Q Developer Free Tier"
+        },
+        {
+          "dimension": "coding",
           "planName": "Amazon Q Developer Pro"
         }
       ],
       "rulings": [],
-      "note": null
+      "note": "本条记录的**时效事实**：官方产品页逐字公告 2027-04-30 起停止支持 Amazon Q Developer IDE 插件并建议改用 Kiro ⇒ 使用者在页面上必须能看到这条，不能只显示价格。"
     },
     {
       "provider": "baichuan",
@@ -145,6 +149,31 @@
         {
           "dimension": "deals",
           "source": "百度千帆"
+        }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "cerebras",
+      "tier": "long-tail",
+      "role": "inference-platform",
+      "intent": "Cerebras Inference Developer 档的官方按量计费与一次性赠送额度",
+      "applicabilityNote": "deals / coding / models 都不适用：① 官方 $5 一次性 promotional credit 属优惠而不属 freeTier，本轮没有可引用的公开优惠页；② 官方没有编程订阅套餐；③ 托管模型身份归各发行方。",
+      "dimensionIntent": {
+        "deals": null,
+        "coding": null,
+        "api": "Cerebras Developer 档按量计费（官方页可逐字取到的两条模型行）",
+        "models": null
+      },
+      "currentTargets": [
+        {
+          "dimension": "api",
+          "modelKey": "gpt-oss-120b"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "qwen3.8-27b"
         }
       ],
       "rulings": [],
@@ -231,6 +260,63 @@
       "note": null
     },
     {
+      "provider": "fireworks",
+      "tier": "major",
+      "role": "inference-platform",
+      "intent": "Fireworks AI Serverless 的官方按量计费（Standard 与 Priority 两个通道）",
+      "applicabilityNote": "deals / coding / models 都不适用：① 本轮取到的 serverless pricing 页里没有任何 free tier 段落（freeTier 写 null=没查到，不得写 none）；② 官方没有编程订阅套餐；③ 托管模型身份归各发行方。",
+      "dimensionIntent": {
+        "deals": null,
+        "coding": null,
+        "api": "Fireworks Serverless 按量计费（standard 通道；priority 通道本轮未逐条落）",
+        "models": null
+      },
+      "currentTargets": [
+        {
+          "dimension": "api",
+          "modelKey": "deepseek-v4p1-flash"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "ember-1"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "glm-5p3"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "glm-5p3-flash"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "gpt-oss-120b"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "kimi-k3"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "minimax-m3"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "nemotron-3-ultra-nvfp4"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "nemotron-lightning-3p5-30b-a3b"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "qwen3p8-max"
+        }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
       "provider": "github",
       "tier": "major",
       "role": "coding-product",
@@ -250,15 +336,23 @@
       "provider": "google",
       "tier": "core",
       "role": "model-developer",
-      "intent": "Google Gemini 的订阅、官方 API 定价与当前模型身份",
+      "intent": "Google（Gemini / Vertex / Gemini Code Assist）的优惠、订阅、API 定价与当前模型身份",
       "applicabilityNote": null,
       "dimensionIntent": {
-        "deals": "Google / Gemini 官方优惠（只收官方来源）",
-        "coding": "Google AI Pro / Gemini Code Assist 订阅档位",
+        "deals": "Google Cloud / Gemini 官方优惠与额度（只收官方来源）",
+        "coding": "Gemini Code Assist Standard / Enterprise 订阅档位",
         "api": "Gemini API 按量计费",
         "models": "Gemini 当前主力模型"
       },
       "currentTargets": [
+        {
+          "dimension": "coding",
+          "planName": "Gemini Code Assist Enterprise"
+        },
+        {
+          "dimension": "coding",
+          "planName": "Gemini Code Assist Standard"
+        },
         {
           "dimension": "models",
           "registrySlug": "gemini-3.7-flash"
@@ -266,6 +360,47 @@
         {
           "dimension": "models",
           "registrySlug": "gemini-3.8-flash"
+        }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "groq",
+      "tier": "major",
+      "role": "inference-platform",
+      "intent": "Groq 托管推理的官方按量计费（计价主体是 Groq，不是模型发行方）与速率限制",
+      "applicabilityNote": "deals / coding / models 都不适用：① 本轮没有找到 Groq 官方页面上的优惠口径可引用；② 官方没有编程订阅套餐，只有按量 API 与企业合同；③ 平台托管的模型身份归各自的发行方（openai / meta / moonshot…），不归 Groq。",
+      "dimensionIntent": {
+        "deals": null,
+        "coding": null,
+        "api": "GroqCloud 按量计费（production / preview 模型的公开单价表）",
+        "models": null
+      },
+      "currentTargets": [
+        {
+          "dimension": "api",
+          "modelKey": "meta-llama.prompt-guard-2-22m"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "meta-llama.prompt-guard-2-86m"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "openai.gpt-oss-120b"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "openai.gpt-oss-20b"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "openai.gpt-oss-safeguard-20b"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "qwen.qwen3.8-27b"
         }
       ],
       "rulings": [],
@@ -292,6 +427,31 @@
           "revisitBy": null
         }
       ],
+      "note": null
+    },
+    {
+      "provider": "jetbrains",
+      "tier": "major",
+      "role": "coding-product",
+      "intent": "JetBrains AI 订阅档位（AI Pro / AI Ultimate）的官方价格与服务档位",
+      "applicabilityNote": "deals / api / models 都不适用：① JetBrains AI 是订阅产品，官方购买页没有可引用的独立优惠口径；② 它不对外提供公开的按量 API 计费；③ 它不发行自己的模型身份（AI 服务里用的是第三方模型）。",
+      "dimensionIntent": {
+        "deals": null,
+        "coding": "JetBrains AI Pro / AI Ultimate 的个人档与商业档",
+        "api": null,
+        "models": null
+      },
+      "currentTargets": [
+        {
+          "dimension": "coding",
+          "planName": "JetBrains AI Pro"
+        },
+        {
+          "dimension": "coding",
+          "planName": "JetBrains AI Ultimate"
+        }
+      ],
+      "rulings": [],
       "note": null
     },
     {
@@ -546,6 +706,55 @@
         {
           "dimension": "models",
           "registrySlug": "hunyuan-a13b"
+        }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "together",
+      "tier": "major",
+      "role": "inference-platform",
+      "intent": "Together AI Serverless 的官方按量计费与逐模型 cached input 价",
+      "applicabilityNote": "deals / coding / models 都不适用：① 本轮没有取到 Together 官方页上的优惠口径；② 官方只有按量 API 与企业合同，没有编程订阅套餐；③ 托管模型身份归各发行方。",
+      "dimensionIntent": {
+        "deals": null,
+        "coding": null,
+        "api": "Together Serverless 按量计费（chat 模型逐条公开单价）",
+        "models": null
+      },
+      "currentTargets": [
+        {
+          "dimension": "api",
+          "modelKey": "deepseek-ai.v4-pro-0813"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "deepseek-ai.v4.1-flash"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "minimaxai.m3"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "moonshotai.kimi-k3"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "openai.gpt-oss-120b"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "thinkingmachines.inkling"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "zai-org.glm-5.3"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "zai-org.glm-5.3-flash"
         }
       ],
       "rulings": [],

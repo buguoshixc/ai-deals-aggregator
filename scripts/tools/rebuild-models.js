@@ -122,8 +122,8 @@ function main() {
   }
 
   const registryProblems = reg.validateRegistry(modelsLoad.table, { developers, extraDevelopers, duplicateKeys: modelsLoad.duplicateKeys });
-  const linkProblems = reg.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans });
-  const gapProblems = reg.validateGaps(gapsLoad.doc, { plans, links: linksLoad.doc, table: modelsLoad.table });
+  const linkProblems = reg.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans, gaps: gapsLoad.doc });
+  const gapProblems = reg.validateGaps(gapsLoad.doc, { plans, links: linksLoad.doc, table: modelsLoad.table, apiPlans });
   const coverageProblems = reg.validatePlanModelCoverage({
     table: modelsLoad.table, links: linksLoad.doc, gaps: gapsLoad.doc, apiPlans, plans
   });

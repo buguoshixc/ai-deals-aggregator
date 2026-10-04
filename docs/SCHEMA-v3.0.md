@@ -19,7 +19,7 @@
 | 真值层 | `deals.json` / `plans.json` / `api-plans.json` + 三份 `scripts/data/*-history.json` | **契约与字节不动**（v3.0 全程未改字段集），不做超级 Entity 表 |
 | 人工来源层 | `scripts/data/curated_*.json`、`providers.json`、`vendor-slugs.json`、`deal-plan-links.json`、**新增** `models.json`、`model-registry-links.json` | 追加式扩展；一律「人工写、机器校验」 |
 | 索引层 | **新** `scripts/data/models.json` → 派生产物 `models.json` | 只回答「模型身份」，**不是价格真值** |
-| 关系层 | **新** `scripts/data/model-registry-links.json` → 派生产物（注入 `registryModelId`）；**新** `scripts/data/model-registry-gaps.json`（套餐侧处置登记，**不发布**） | 显式映射；**禁止相似度 / LLM 猜**；映射不上必须逐条写明理由 |
+| 关系层 | **新** `scripts/data/model-registry-links.json` → 派生产物（注入 `registryModelId`）；**新** `scripts/data/model-registry-gaps.json`（**双侧**处置登记：Coding 侧 / API 侧，**不发布**） | 显式映射；**禁止相似度 / LLM 猜**；映射不上必须逐条写明理由（两侧同一条门禁：每一条计价条目 / 模型串都必须有结局） |
 | 归档层 | 由 `baseline + events + absence + tombstone` 派生 | **不落新真值文件** |
 | 出口层 | `/data/index.json`（Dataset Manifest，只描述数据集） | 文档与 Manifest **同源对账** |
 
@@ -98,59 +98,101 @@
 
 **两侧都必须「有结局」**（2026-10-03 按 §10.6 收紧；本节旧版曾写「API 侧映射不上是允许的」，**已作废**）：
 
-- **API 侧**：任何一条真实计价条目（`apiPlanId + modelKey + variant`）**若没有被任何映射认领，是硬失败** ——
-  `npm run check:model-registry-links` 与 `models-selftest` 都会红（删掉一条必需的 registry→API 映射即触发；
-  对应审计 M09 的「抓不到」场景已在收口中修掉）。`variant: null` 的通配映射只为它**真实展开到的**条目负责。
+- **API 侧**：任何一条真实计价条目（`apiPlanId + modelKey + variant`）**若既没有被任何映射认领、
+  又不在处置登记表里声明，是硬失败** —— `npm run check:model-registry-links` 与 `models-selftest` 都会红
+  （删掉一条必需的 registry→API 映射即触发；对应审计 M09 的「抓不到」场景已在收口中修掉）。
+  `variant: null` 的通配映射只为它**真实展开到的**条目负责。API 侧的第二个出口是
+  `model-registry-gaps.json` 的 **API 侧声明**（见 §2.1）—— 它登记的是「这条计价条目对不上任何 registry 身份」，
+  于是「每一条计价条目都必须有结局」这句话终于有了可表达的形态（此前只能把 API 条目伪造成套餐侧声明）。
 - **套餐侧（Coding）**：`plans.json` 的 `supportedModels[].name` 是自由文本，只有两种结局 ——
-  映射进关系层，或进 `model-registry-gaps.json` 声明「不对应单一模型身份」。Coding 侧**不允许静默留空**。
+  映射进关系层，或进 `model-registry-gaps.json` 声明「不对应单一模型身份」。两侧都**不允许静默留空**。
 
 > 覆盖报告（`npm run report:coverage`）的缺口 3 **不再是「允许的结果」**，而是「必须处理的清单」：
-> 自 2026-10-03 起按**展开后的计价条目**记账（当前 13 条记录 / **67** 个计价条目），
-> 通配映射不再把整组算成已覆盖；未认领条目会逐条点名。
+> 自 2026-10-03 起按**展开后的计价条目**记账（当前 17 条记录 / **93** 个计价条目 = 已被映射认领 **81** +
+> API 侧声明 **12** + 未判 **0**），通配映射不再把整组算成已覆盖；未认领条目会逐条点名。
 
-### 2.1 套餐侧处置登记（`scripts/data/model-registry-gaps.json`）
+### 2.1 处置登记：**双侧**（`scripts/data/model-registry-gaps.json`）
+
+这张表是**两侧共用**的出口：每条声明**恰好**属于一侧（两侧都写、或各缺一半 ⇒ 红，与关系层的
+exactly-one 规则同形）。**它永远不写 `registrySlug`**（写了就是未知字段 → 红），
+存在的意义只是回答「为什么**没有**映射」。**本表不发布**（`/model-registry-gaps.json` 线上 404 是有意的）。
 
 ```jsonc
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,                        // v2 起本表双侧化（与 links / registry 同一个版本号）
   "declarations": [
+    // —— Coding 侧：plans.json 的 supportedModels[].name 是自由文本 ——
     {
-      "planId": "f04787381e3b",           // 必须真实存在
-      "modelName": "Seed-Code",           // 必须**逐字**等于该套餐 supportedModels 里的名字
-      "role": "included",                 // 必须逐字等于那一条的 role（从数据抄来的对照值）
-      "reason": "off-registry-model",      // 见下表
+      "planId": "f04787381e3b",              // 必须真实存在
+      "modelName": "Seed-Code",              // 必须**逐字**等于该套餐 supportedModels 里的名字
+      "role": "included",                    // 必须逐字等于那一条的 role（从数据抄来的对照值）
+      "reason": "off-registry-model",        // 见下表（Coding 侧 5 个值）
       "sourceUrl": "https://www.trae.cn/pricing",  // 必须是该套餐自己的 officialUrl / sourceUrl
       "note": "官方折扣表逐字写「Seed-Code」；registry 里没有这个身份 …"
+    },
+    // —— API 侧：api-plans.json 的计价条目（结构化键）——
+    {
+      "apiPlanId": "036c5f09561e",           // 必须真实存在
+      "modelKey": "openai.gpt-oss-20b",      // 必须在该记录 models[] 里
+      "variant": "standard",                 // null（通配 = 该 modelKey 的全部真实变体）或真实变体
+      "reason": "off-registry-model",        // API 侧**只允许**这一个值
+      "sourceUrl": "https://console.groq.com/docs/models",  // 必须是该 API 记录自己的 officialUrl / sourceUrl
+      "note": "官方定价记录点名了单一模型「GPT OSS 20B」（modelKey `openai.gpt-oss-20b`）；registry 里没有它的身份 …"
     }
   ],
-  "_note": "…", "_rules": "…"            // 人工维护说明（不参与判据）
+  "_note": "…", "_rules": "…"                // 人工维护说明（不参与判据）
 }
 ```
 
-| `reason` | 含义 |
-|---|---|
-| `pool` | 官方只给模型池 / 自动调度，未逐一点名（**要求该条 `role === "pool"`**） |
-| `series` | 官方只给产品线系列名，未落到版本 |
-| `multi-model` | 一个字符串里写了不止一个模型 |
-| `off-registry-model` | 官方点名了单一模型，但该写法在 registry 里没有精确身份 |
-| `non-text-resource` | 图像 / 语音等非文本资源，不是文本模型身份 |
+侧别键序也是契约：Coding 侧 `planId → modelName → role → reason → sourceUrl → note`；
+API 侧 `apiPlanId → modelKey → variant → reason → sourceUrl → note`。
+整体规范序**先按侧别**（`api` / `coding`），再按各自的键 —— 打乱输入必须得到同一串字节。
+
+| `reason` | 允许的侧别 | 含义 |
+|---|---|---|
+| `pool` | Coding | 官方只给模型池 / 自动调度，未逐一点名（**要求该条 `role === "pool"`**） |
+| `series` | Coding | 官方只给产品线系列名，未落到版本 |
+| `multi-model` | Coding | 一个字符串里写了不止一个模型 |
+| `off-registry-model` | **Coding + API** | 官方点名了单一模型，但该写法在 registry 里没有精确身份（API 侧**唯一**允许值） |
+| `non-text-resource` | Coding | 图像 / 语音等非文本资源，不是文本模型身份 |
+
+`pool` / `series` / `multi-model` / `non-text-resource` 都是「套餐里**一串自由文本**」才有的形态；
+API 侧的键是结构化的（指到一条真实计价条目），所以**只允许 `off-registry-model`** ——
+用套餐侧的词给 API 侧兜底即红，错误信息会写出允许值。
 
 - **这张表永远不写 `registrySlug`**（写了就是未知字段 → 红）。它的存在只为回答「为什么**没有**映射」。
-- **判据**：`validateGaps()`。`modelName` / `role` 逐字对账；`reason` 与 `role` 互为充要；
-  `sourceUrl` 必须是该套餐自己的官方页；`note` 必填 ≤ 240 字（note 里引用官方原文时必须**逐字来自该记录自己的文字**，
-  不许新造引文）；与关系层冲突即红；规范序；不许重复。
-- **声明必须真的是「映射不上」**：`validateGaps()` 拿 `normalizedIndexOf(table)` 反查 ——
-  `modelName` 归一后若精确落到某个 registry 身份（slug / 别名），这条就该去写映射，
-  拿声明绕过映射即红（与候选规则 `planCandidatesOf()` 同一支归一索引）。
-  因此调用方**必须把 registry 表传进来**；不传（table 为空）却有声明 ⇒ 红 —— 判不了就不是通过。
-- **完整性是硬门禁**：`validatePlanModelCoverage()` 规定，`plans.json` 里任何一条模型串若
-  **既没有映射、又没有声明** ⇒ 红。六处都会停：`scripts/validate.js --strict`（门禁第 01 步）、
-  `build-local.js`（构建期）、`npm run models:rebuild`、`npm run check:models:reproducible`、
-  `npm run check:model-registry-links`、`npm run report:coverage`。
+- **判据**：`validateGaps()`。每条声明**恰好**属于一侧（两侧都写 / 各缺一半 ⇒ 红），键序按侧别；
+  Coding 侧 `modelName` / `role` 逐字对账、`reason` 与 `role` 互为充要；API 侧 `apiPlanId` 必须真实存在
+  （否则报「apiPlanId 不存在」）、`modelKey` 必须在该记录 `models[]` 里、`variant` 必须是 null（通配）
+  或真实变体（通配一条都没展开到 ⇒ 红），展开逻辑复用 `sourcePricingIdentitiesOf()`；
+  `sourceUrl` 必须是**那条记录自己的**官方页（套餐 `officialUrl`/`sourceUrl`，API 记录 `officialUrl`/`sourceUrl`）；
+  `note` 必填 ≤ 240 字（note 里引用官方原文时必须**逐字来自该记录自己的文字**，不许新造引文）；
+  与关系层冲突即红（**双向**：同一条展开后的 source pricing identity 不许既被映射认领、又在这里声明）；
+  规范序；同侧同键不许重复。
+- **声明必须真的是「映射不上」**：Coding 侧拿 `normalizedIndexOf(table)` 反查 `modelName`；
+  API 侧拿**折叠精确相等**索引（`identityFold`：NFKC → 去末尾 `（…）`/`(…)` 注记 → 去空白与 `- . _ /` → 小写）
+  探测 `modelKey` 与记录的官方显示名，**含命名空间后缀**（`vendor.model` → `model`）。
+  命中即红并**点名那个 slug**：能对上就必须去写映射（没有引文时 `basis=explicit-mapping` + `note`），
+  或者把 registry 的别名补成真实写法。这两个探针与候选规则
+  （`planCandidatesOf()` 的 `normalized-name-exact`、`candidatesOf()` 的 `normalized-name-folded` /
+  `normalized-namespace-suffix`）**用的是同一支索引**，所以"规则能算出来的"不可能靠声明藏起来。
+  反过来：调用方**必须把 registry 表（和 apiPlans）传进来**；不传却有声明 ⇒ 红 —— 判不了就不是通过。
+- **完整性是硬门禁（两侧同一条原则）**：Coding 侧由 `validatePlanModelCoverage()` 判
+  （`plans.json` 里任何一条模型串「既没有映射、又没有声明」⇒ 红）；API 侧由 `validateLinks()` 判
+  （任何一条计价条目「既没有映射、又没有 API 侧声明」⇒ 红，错误信息同时点名两个出口文件）。
+  八处都会停：`scripts/validate.js --strict`（门禁第 01 步）、`build-local.js`（构建期）、
+  `npm run models:rebuild`、`npm run check:models:reproducible`、`npm run check:model-registry-links`、
+  `npm run report:coverage`、`models-selftest`、`models-page-selftest`。
   「没判过」不许被当成「不需要判」——那种漏判不会有任何报错，只会在覆盖报告里安静地少一行。
+- **覆盖率记账（`coverageOf()`）**：`apiPricingItems = mappedApiEntries + declaredApiIdentities + unmappedModelKeys.length`
+  三者之和恒等；`declaredApiEntries` 逐条留档（provider / apiPlanId / modelKey / variant / reason / note），
+  `unmappedModelKeys` 的语义是「映射与处置**都没有**」。声明过的条目**没有页面行**（它没有 registry 身份），
+  页面侧因此按「计价条目 − 已声明条目」对账 —— 少一行不是被静默吞掉，而是被声明计数解释掉。
 - **本表不发布**：根目录没有它的派生产物（它是一张过程留痕，不是站点数据）。
 - **反证**：变异电池 `#22`（摘掉 `validateGaps`）与 `#24`（把一条声明改成 registry 里真实存在的别名
-  `zai-org/GLM-5.3`，走 `check-model-registry-links.js` 端到端）都必须当场变红。
+  `zai-org/GLM-5.3`，走 `check-model-registry-links.js` 端到端）都必须当场变红；
+  `models-selftest` ⑦ 节另有 API 侧 15 条牙（存在性 / exactly-one / 键序 / reason 白名单 / sourceUrl /
+  note / 重复记账 / 反绕过 `vendor.glm-5.3`+`GLM 5.3` / 删一条声明后复红 / 覆盖率记账）。
 
 ---
 
@@ -302,7 +344,7 @@
 **数字现行值（2026-10-04 重算）**：重算脚本与逐条命令见
 `research/quality-closure/RECLASSIFIED_FINDINGS.md` §0.2「当前数字重算表」。现行值：
 deals **134**（deal 80 / tool 54）· plans **23** · api-plans **13** 条 / **67** 个计价条目 / **10** provider ·
-models **44** · registry 映射 **64**（API 55 + Coding 9）· gaps 声明 **10** ·
+models **44** · registry 映射 **82**（API 69 + Coding 13）· gaps 声明 **54**（Coding 42 + API 12；API 侧 12 条是"对不上任何 registry 身份"的计价条目）·
 Feed **24 份**（×2 = **48** 文件；`/feeds/` 列出 48 个地址，含 category-* 10 个）·
 HTML 页 **173** · sitemap **170** · 构建产物 **290** 文件 · 门禁步骤 **44** / 断言 **36** ·
 历史事件 deal 0 / plan 14 / api-plan 6。

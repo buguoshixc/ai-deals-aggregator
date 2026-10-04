@@ -1054,9 +1054,9 @@ function checkModelRegistryFile() {
   // check-model-registry-links / models-selftest 红、rebuild-models 拒绝写盘，而 validate --strict 假绿。
   modelRegistry.validateRegistry(modelsLoad.table, { developers, extraDevelopers, duplicateKeys: modelsLoad.duplicateKeys })
     .forEach(message => error(`Model Registry: ${message}`));
-  modelRegistry.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans })
+  modelRegistry.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans, gaps: gapsLoad.doc })
     .forEach(message => error(`Model Registry 关系层: ${message}`));
-  modelRegistry.validateGaps(gapsLoad.doc, { plans, links: linksLoad.doc, table: modelsLoad.table })
+  modelRegistry.validateGaps(gapsLoad.doc, { plans, links: linksLoad.doc, table: modelsLoad.table, apiPlans })
     .forEach(message => error(`Model Registry 处置登记: ${message}`));
   modelRegistry.validatePlanModelCoverage({
     table: modelsLoad.table, links: linksLoad.doc, gaps: gapsLoad.doc, apiPlans, plans

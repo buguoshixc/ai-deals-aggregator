@@ -1,8 +1,104 @@
 {
-  "_note": "v3.0 Stage D 补充层：**套餐侧模型串的处置登记表**。`plans.json` 的 `supportedModels[].name` 是自由文本，两种结局只有两种，都必须显式写下来 —— ① 落进 `scripts/data/model-registry-links.json`（能对应单一模型身份）；② 落进本表（明确**不对应单一模型身份**，逐条给理由）。本表只登记「为什么没有映射」，**永远不写 registrySlug**：任何能落到一个 registry 身份上的字符串都必须去写映射，写进本表就是错的。`plans.json` 一个字节都不改（`name` / `role` 都是它自己的事实）。",
-  "_rules": "① 每条恰好是 (planId + modelName)；② modelName 必须**逐字**等于该套餐 `supportedModels` 里已经写下的名字（大小写、空格、斜杠都不许动）；③ role 必须逐字等于该套餐那一条的 `role`（`pool` / `included`）—— 它是从数据抄来的对照值，抄错即红；④ reason 只能取 `pool`（官方只给模型池 / 自动调度，未逐一点名，**且记录的 role 必须是 pool**）/ `series`（官方只给产品线系列名，未落到版本）/ `multi-model`（一个字符串里写了不止一个模型）/ `off-registry-model`（官方点名了单一模型，但该写法在 registry 里没有精确身份）/ `non-text-resource`（图像 / 语音等非文本资源）之一；⑤ sourceUrl 必须等于该套餐自己的 `officialUrl` 或 `sourceUrl`（处置只能针对这条记录自己的官方页）；⑥ note 必须写清「为什么这串不能对应单一模型身份」，不许留空；note 里引用官方原文时必须**逐字来自该套餐记录自己已有的文字**（不许新造引文 —— 本表不制造第二事实来源）；⑦ 同一个 (planId, modelName) 不许既在本表里、又在关系层里有映射（那是自相矛盾）；⑧ **完整性是硬门禁**：`plans.json` 里任何一个模型串，若既没有映射、又不在本表里 ⇒ 红（不许静默留空，也不许把「没判过」当成「不需要判」）；⑨ **声明必须真的是「映射不上」**：`modelName` 归一后若精确落到某个 registry 身份（slug / 别名），这条就该去写映射 —— 拿「不对应单一模型身份」绕过映射即红（与候选规则 `planCandidatesOf()` 用同一支归一索引；判这件事需要 registry 表，所以调用方必须把表传进来，不传即红）。",
+  "_note": "v3.0 Stage D 补充层（coverage-expansion-v1 起为**双侧**）：**处置登记表**。两种结局都必须显式写下来 —— ① 落进 `scripts/data/model-registry-links.json`（能对应单一模型身份）；② 落进本表（明确**不对应单一模型身份**，逐条给理由）。本表**永远不写 registrySlug**。**Coding 侧**（`planId` + `modelName`）登记 `plans.json` 里对不上的自由文本串；**API 侧**（`apiPlanId` + `modelKey`）登记 `api-plans.json` 里对不上任何 registry 身份的计价条目 —— API 侧 reason 只允许 `off-registry-model`。本表**不发布**，它不是数据出口，只是让「每一条都必须有结局」变成硬门禁。",
+  "_rules": "① 每条恰好是 (planId + modelName)；② **每条声明恰好属于一侧**：Coding 侧（planId + modelName）或 API 侧（apiPlanId + modelKey），两侧都写或各缺一半即红；③ API 侧键序 `apiPlanId → modelKey → variant → reason → sourceUrl → note`，reason 只允许 `off-registry-model`（pool / series / multi-model / non-text-resource 是套餐侧概念）；④ API 侧的 apiPlanId 必须真实存在、modelKey 必须在该记录 models[] 里、variant 必须是 null（通配）或真实变体，通配展开一条都没匹配到即红；⑤ **反绕过**：API 侧的 modelKey 与记录的官方显示名会用「折叠精确相等」索引（NFKC → 去末尾注记 → 去空白与 - . _ / → 小写，含命名空间后缀探测）在 registry 的 slug+aliases 上探测，命中即红并点名那个 slug —— 能对上就必须去写映射（没有引文时 basis=explicit-mapping + note），或者把 registry 的别名补成真实写法；⑥ modelName 必须**逐字**等于该套餐 `supportedModels` 里已经写下的名字（大小写、空格、斜杠都不许动）；③ role 必须逐字等于该套餐那一条的 `role`（`pool` / `included`）—— 它是从数据抄来的对照值，抄错即红；④ reason 只能取 `pool`（官方只给模型池 / 自动调度，未逐一点名，**且记录的 role 必须是 pool**）/ `series`（官方只给产品线系列名，未落到版本）/ `multi-model`（一个字符串里写了不止一个模型）/ `off-registry-model`（官方点名了单一模型，但该写法在 registry 里没有精确身份）/ `non-text-resource`（图像 / 语音等非文本资源）之一；⑤ sourceUrl 必须等于该套餐自己的 `officialUrl` 或 `sourceUrl`（处置只能针对这条记录自己的官方页）；⑥ note 必须写清「为什么这串不能对应单一模型身份」，不许留空；note 里引用官方原文时必须**逐字来自该套餐记录自己已有的文字**（不许新造引文 —— 本表不制造第二事实来源）；⑦ 同一个 (planId, modelName) 不许既在本表里、又在关系层里有映射（那是自相矛盾）；⑧ **完整性是硬门禁**：`plans.json` 里任何一个模型串，若既没有映射、又不在本表里 ⇒ 红（不许静默留空，也不许把「没判过」当成「不需要判」）；⑨ **声明必须真的是「映射不上」**：`modelName` 归一后若精确落到某个 registry 身份（slug / 别名），这条就该去写映射 —— 拿「不对应单一模型身份」绕过映射即红（与候选规则 `planCandidatesOf()` 用同一支归一索引；判这件事需要 registry 表，所以调用方必须把表传进来，不传即红）。",
   "schemaVersion": 2,
   "declarations": [
+    {
+      "apiPlanId": "036c5f09561e",
+      "modelKey": "meta-llama.prompt-guard-2-22m",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://console.groq.com/docs/models",
+      "note": "官方定价记录点名了单一模型「Llama Prompt Guard 2 22M」（modelKey `meta-llama.prompt-guard-2-22m`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+    },
+    {
+      "apiPlanId": "036c5f09561e",
+      "modelKey": "meta-llama.prompt-guard-2-86m",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://console.groq.com/docs/models",
+      "note": "官方定价记录点名了单一模型「Llama Prompt Guard 2 86M」（modelKey `meta-llama.prompt-guard-2-86m`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+    },
+    {
+      "apiPlanId": "036c5f09561e",
+      "modelKey": "openai.gpt-oss-120b",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://console.groq.com/docs/models",
+      "note": "官方定价记录点名了单一模型「GPT OSS 120B」（modelKey `openai.gpt-oss-120b`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+    },
+    {
+      "apiPlanId": "036c5f09561e",
+      "modelKey": "openai.gpt-oss-20b",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://console.groq.com/docs/models",
+      "note": "官方定价记录点名了单一模型「GPT OSS 20B」（modelKey `openai.gpt-oss-20b`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+    },
+    {
+      "apiPlanId": "036c5f09561e",
+      "modelKey": "openai.gpt-oss-safeguard-20b",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://console.groq.com/docs/models",
+      "note": "官方定价记录点名了单一模型「GPT OSS Safeguard 20B」（modelKey `openai.gpt-oss-safeguard-20b`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+    },
+    {
+      "apiPlanId": "61aa6c3ed3ff",
+      "modelKey": "gpt-oss-120b",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://www.cerebras.ai/pricing",
+      "note": "官方定价记录点名了单一模型「GPT OSS 120B」（modelKey `gpt-oss-120b`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+    },
+    {
+      "apiPlanId": "8a26562011f2",
+      "modelKey": "openai.gpt-oss-120b",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://docs.together.ai/docs/serverless/models.md",
+      "note": "官方定价记录点名了单一模型「GPT-OSS 120B」（modelKey `openai.gpt-oss-120b`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+    },
+    {
+      "apiPlanId": "8a26562011f2",
+      "modelKey": "thinkingmachines.inkling",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://docs.together.ai/docs/serverless/models.md",
+      "note": "官方定价记录点名了单一模型「Inkling」（modelKey `thinkingmachines.inkling`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+    },
+    {
+      "apiPlanId": "929a1f3ec46c",
+      "modelKey": "ember-1",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+      "note": "官方定价记录点名了单一模型「Ember-1」（modelKey `ember-1`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+    },
+    {
+      "apiPlanId": "929a1f3ec46c",
+      "modelKey": "gpt-oss-120b",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+      "note": "官方定价记录点名了单一模型「OpenAI GPT OSS 120B」（modelKey `gpt-oss-120b`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+    },
+    {
+      "apiPlanId": "929a1f3ec46c",
+      "modelKey": "nemotron-3-ultra-nvfp4",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+      "note": "官方定价记录点名了单一模型「NVIDIA Nemotron 3 Ultra」（modelKey `nemotron-3-ultra-nvfp4`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+    },
+    {
+      "apiPlanId": "929a1f3ec46c",
+      "modelKey": "nemotron-lightning-3p5-30b-a3b",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+      "note": "官方定价记录点名了单一模型「NVIDIA Nemotron 3.5 Lightning 30B A3B」（modelKey `nemotron-lightning-3p5-30b-a3b`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+    },
     {
       "planId": "0a66f3117162",
       "modelName": "step-3.5-flash-2603",

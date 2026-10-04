@@ -173,6 +173,14 @@ function main() {
 
   const dealProviderKeys = new Set([...dealVendorCount.keys()].filter(key => key !== '(未识别)'));
 
+  // t14-F4：`deals.providers` 的口径必须写明是**仅 type=deal**。
+  // 为什么要有这一行对照：deals 里还有 `type=tool` 的行（工具目录），它们同样带 vendor 原始串，
+  // 但**不进 provider universe**（那些串没有归一规则、也没有套餐/计费侧的身份）。
+  // 只写一个 "provider 数" 而不说分母是什么，读者会把它与"deals 里出现过的所有厂商"混为一谈。
+  const toolVendorKeys = new Set(toolRows
+    .map(deal => (core.vendorOf(deal) || {}).key)
+    .filter(key => key && key !== '(未识别)'));
+
   /* ---------------- Coding Plans ---------------- */
   const plans = Array.isArray(plansDoc.plans) ? plansDoc.plans : [];
   const planProviderCount = new Map();
@@ -263,10 +271,25 @@ function main() {
     }
   }
 
+  // API 侧处置声明覆盖的计价条目（`model-registry-gaps.json` 的 **API 侧**声明）：
+  // 自 coverage-expansion-v1 起，"未映射"的语义是「**映射与处置都没有**」——
+  // 声明过的条目**有结局**（结局是"对不上任何 registry 身份"），不该再被算成"未判"。
+  // 这里只做减法，**不动任何输出结构**（新口径的逐条留档走 lib 的 coverageOf().declaredApiEntries）。
+  const declaredApiKeys = new Set();
+  if (registryGapsLoaded.doc && !registryGapsLoaded.broken) {
+    for (const declaration of registry.declarationsList(registryGapsLoaded.doc)) {
+      if (!declaration || declaration.apiPlanId === undefined || declaration.modelKey === undefined) continue;
+      for (const identity of registry.sourcePricingIdentitiesOf(declaration, apiPlans).identities) {
+        declaredApiKeys.add(`${identity.apiPlanId}::${identity.modelKey}::${identity.variant}`);
+      }
+    }
+  }
+
   const unmappedModels = [];
   for (const plan of apiPlans) {
     for (const model of (Array.isArray(plan.models) ? plan.models : [])) {
-      if (mappedApiKeys.has(`${plan.id}::${model.modelKey}::${model.variant}`)) continue;
+      const identityKey = `${plan.id}::${model.modelKey}::${model.variant}`;
+      if (mappedApiKeys.has(identityKey) || declaredApiKeys.has(identityKey)) continue;
       unmappedModels.push({
         provider: plan.provider,
         providerName: providers.providerNameOf(plan.provider, providerTable),
@@ -295,14 +318,57 @@ function main() {
   if (planCoverage.unmappedModelKeys.length !== unmappedModels.length) {
     problems.push(`报告层与 lib/model-registry.js 对"未映射计价条目"的读数不一致（报告 ${unmappedModels.length} / lib ${planCoverage.unmappedModelKeys.length}）—— 两处看的不是同一份关系层。`);
   }
+
+  /* ---------------- API 侧处置（t25：把"结局"如实记进方程） ---------------- */
+  //
+  // t23 起 `model-registry-gaps.json` 有了 **API 侧**声明（`apiPlanId` + `modelKey` + `variant` +
+  // `reason=off-registry-model`），于是计价条目的结局变成三种、而且必须**三种相加等于总数**：
+  //
+  //     计价条目 N 条 = 已映射认领 A + 已处置声明 B + 未判 C
+  //
+  // 这份报告以前只有 A 与 C 两个数（B 没有出口），于是"处置过的条目"被悄悄算进了 A：
+  // 一个声明过"对不上任何 registry 身份"的条目，看起来和"有一条真实映射"完全一样。
+  // 现在 B 单独成一格，且 **C 不为 0 时报告自检必须非 0**（与 validateLinks 同一口径：不许比门禁好看）。
+  //
+  // 记账口径：A / B / C 一律按**展开后的计价条目**（`(planId, modelKey, variant)`）数，
+  // 通配（`variant: null`）只为它真实展开到的条目负责 —— 与 lib 的 `coverageOf()` 逐字相同。
+  const apiPricingEntries = planCoverage.apiPricingItems;
+  const mappedApiEntries = planCoverage.mappedApiEntries;
+  const declaredApiIdentityCount = planCoverage.declaredApiIdentities;
+  const unmappedApiEntries = planCoverage.unmappedModelKeys.length;
+  const apiDispositionOrder = (row) => [
+    row.provider === null || row.provider === undefined ? '' : row.provider,
+    row.apiPlanId === null || row.apiPlanId === undefined ? '' : row.apiPlanId,
+    row.modelKey === null || row.modelKey === undefined ? '' : row.modelKey,
+    row.variant === null || row.variant === undefined ? '' : row.variant
+  ].join('\u0000');
+  const declaredApiRows = [...planCoverage.declaredApiEntries]
+    .sort((a, b) => (apiDispositionOrder(a) < apiDispositionOrder(b) ? -1 : apiDispositionOrder(a) > apiDispositionOrder(b) ? 1 : 0));
+  // 三条读数逐项对账（报告自己的独立记账 ↔ lib 的唯一判据）：对不上就是"报告看的"和"门禁看的"分家了。
+  if (mappedApiEntries !== mappedApiKeys.size) {
+    problems.push(`报告层与 lib/model-registry.js 对"已映射 API 计价条目"的读数不一致（报告 ${mappedApiKeys.size} / lib ${mappedApiEntries}）—— 两处看的不是同一份关系层。`);
+  }
+  if (declaredApiIdentityCount !== declaredApiKeys.size) {
+    problems.push(`报告层与 lib/model-registry.js 对"已处置声明的 API 计价条目"的读数不一致（报告 ${declaredApiKeys.size} / lib ${declaredApiIdentityCount}）—— 两处看的不是同一份处置登记表。`);
+  }
+  const apiEquationTotal = mappedApiEntries + declaredApiIdentityCount + unmappedApiEntries;
+  if (apiEquationTotal !== apiPricingEntries) {
+    problems.push(`API 侧记账不闭合：计价条目 ${apiPricingEntries} 条 ≠ 已映射认领 ${mappedApiEntries} + 已处置声明 ${declaredApiIdentityCount} + 未判 ${unmappedApiEntries}（= ${apiEquationTotal}）—— 三个数必须把每一条计价条目恰好分完，否则报告在自说自话。`);
+  }
+  if (unmappedApiEntries > 0) {
+    // 与 validateLinks 同一口径：每一条计价条目都必须有结局（映射 **或** 处置声明）。
+    const sample = planCoverage.unmappedModelKeys.slice(0, 3)
+      .map(row => `(${row.apiPlanId}, ${row.modelKey}, ${row.variant})`).join(' · ');
+    problems.push(`API 侧还有 ${unmappedApiEntries} 条计价条目既没有 registry 映射、也没有在 model-registry-gaps.json 里声明处置 —— 每一条都必须人工判一次（映射或"不对应单一模型身份"，禁止静默留空）：${sample}${unmappedApiEntries > 3 ? ' …' : ''}`);
+  }
   if (registryGapsLoaded.doc) {
-    problems.push(...registry.validateGaps(registryGapsLoaded.doc, { plans, links: registryLinksLoaded.doc, table: registryLoaded.table }));
+    problems.push(...registry.validateGaps(registryGapsLoaded.doc, { plans, links: registryLinksLoaded.doc, table: registryLoaded.table, apiPlans }));
   }
   // 关系层判据本身也在这里跑一遍（与 check-model-registry-links / validate --strict / 构建期同一支）：
   // 一条 source pricing identity 两个 owner、冗余重复认领、API 侧有计价条目没人认领 —— 都是**报告不可信**，
   // 不能只在别处红而报告照样打印一个好看的数字。
   if (!linksMissing) {
-    problems.push(...registry.validateLinks(registryLinksLoaded.doc, { table: registryLoaded.table, apiPlans, plans }));
+    problems.push(...registry.validateLinks(registryLinksLoaded.doc, { table: registryLoaded.table, apiPlans, plans, gaps: registryGapsLoaded.doc }));
   }
   if (!linksMissing && registryGapsLoaded.doc && !registryMissing) {
     problems.push(...registry.validatePlanModelCoverage({
@@ -341,7 +407,9 @@ function main() {
   /* ---------------- 交叉缺口 ---------------- */
   const dealsWithoutPlans = uniqSorted([...dealProviderKeys].filter(key => !planProviderKeys.has(key)));
   const plansWithoutDeals = uniqSorted([...planProviderKeys].filter(key => !dealProviderKeys.has(key)));
-  const apiWithoutRegistryMapping = unmappedModels.length;
+  // （t25：原来这里还有一个 `apiWithoutRegistryMapping = unmappedModels.length`，只被旧的
+  //  "已映射 API 计价条目" 那一行用；现在那一行换成了 A / B / C 三个读数 + 方程，
+  //  该变量已无出口 —— 删掉它，免得留一个没人读的中间量让后来者以为是判据。）
 
   /* ---------------- 一致性自检（红 = 报告不可信） ---------------- */
   if (Number.isFinite(plansDoc.count) && plansDoc.count !== plans.length) {
@@ -607,7 +675,8 @@ function main() {
   line('');
 
   line('── Deals ────────────────────────────────────────────────────────────');
-  kv('provider 数', dealVendorRows.length, 'deals 侧归一后的厂商键数（不含未识别）');
+  kv('provider 数（仅 type=deal）', dealVendorRows.length, `只数 type=deal 的 ${dealRows.length} 行归一后的厂商键（不含未识别）；type=tool 的 ${toolRows.length} 行不进 provider universe`);
+  kv('工具行厂商数（对照，不计入）', toolVendorKeys.size, `type=tool 共 ${toolRows.length} 行；它们的厂商串同样带 vendor 原始串，但没有归一规则、也没有套餐/计费侧身份`);
   kv('当前优惠数', currentDeals.length, `type=deal 且未过期（过期 ${expiredDeals.length} 条）`);
   kv('工具条目数', toolRows.length, 'type=tool，不计入"当前优惠数"');
   line('');
@@ -634,9 +703,15 @@ function main() {
   } else {
     kv('registry 映射条数', relations.length);
   }
-  kv('已映射 API 计价条目', modelPricingItems - apiWithoutRegistryMapping, `共 ${modelPricingItems} 条（按展开后的 (planId, modelKey, variant) 记账，通配映射不整组算过）`);
+  // API 侧与 Coding 侧**对称**：都有"已映射"与"已声明不对应单一模型身份"两个出口。
+  // 三个数必须把每一条计价条目恰好分完（见上方 apiEquationTotal 的闭合断言）。
+  kv('已映射认领 API 计价条目', mappedApiEntries, '按展开后的 (planId, modelKey, variant) 记账：通配映射只算它真实展开到的条目');
+  kv('已处置声明的 API 计价条目', declaredApiIdentityCount, `model-registry-gaps.json 的 API 侧声明展开后覆盖的条目（当前 ${declaredApiRows.length} 条声明 · reason=off-registry-model）`);
+  kv('未判 API 计价条目', unmappedApiEntries, '既没有映射、也没有处置声明（必须为 0；不为 0 时本报告自检非 0，与 validateLinks 同一口径）');
+  line(`  API 侧记账：计价条目 ${apiPricingEntries} 条 = 已映射认领 ${mappedApiEntries} + 已处置声明 ${declaredApiIdentityCount} + 未判 ${unmappedApiEntries}`);
   kv('已映射 Coding 模型串', planCoverage.planModelStrings - planCoverage.unmappedPlanModels.length - planCoverage.declaredPlanModels.length, `共 ${planCoverage.planModelStrings} 条；关系层里 Coding 映射 ${planCoverage.codingLinks} 条`);
-  kv('已声明"不对应单一模型身份"', planCoverage.declaredPlanModels.length, '模型池 / 系列名 / 一个串多个模型 / registry 没有的身份 / 图像语音资源（逐条见缺口 5 下方）');
+  kv('已声明"不对应单一模型身份"（套餐侧）', planCoverage.declaredPlanModels.length, '模型池 / 系列名 / 一个串多个模型 / registry 没有的身份 / 图像语音资源（逐条见缺口 5 下方）');
+  kv('已声明"不对应单一模型身份"（API 侧）', declaredApiRows.length, 'reason=off-registry-model（逐条见缺口 5 下方的 API 侧清单；与套餐侧是两个出口、同一本账）');
   line('');
 
   line('── 缺口 1：有 Deals 无 Plans 的 provider ────────────────────────────');
@@ -649,7 +724,8 @@ function main() {
   plansWithoutDeals.forEach(key => line(`  · ${key}（${providers.providerNameOf(key, providerTable)}）   ${planProviderCount.get(key).count} 条套餐`));
   line('');
 
-  line('── 缺口 3：有 API Pricing 无 Model Registry 映射的模型 ──────────────');
+  line('── 缺口 3：有 API Pricing 既无映射、也无处置声明的计价条目（未判）──');
+  line(`  （口径：计价条目 ${apiPricingEntries} 条 − 映射认领 ${mappedApiEntries} − 处置声明 ${declaredApiIdentityCount} = 未判 ${unmappedApiEntries}；不为 0 时报告自检非 0）`);
   if (!unmappedModels.length) line('  （无）');
   unmappedModels
     .sort((a, b) => [a.provider, a.planId, a.modelKey, a.variant].join('|').localeCompare([b.provider, b.planId, b.modelKey, b.variant].join('|')))
@@ -684,6 +760,18 @@ function main() {
     .slice()
     .sort((a, b) => [a.provider, a.planId, a.modelName].join('|').localeCompare([b.provider, b.planId, b.modelName].join('|')))
     .forEach(row => line(`  · ${providers.providerNameOf(row.provider, providerTable)} / ${row.modelName}（套餐 ${row.planId}）→ ${row.reason}（记录里的 role=${row.role}）`));
+  line('');
+  line('── 已声明"不对应单一模型身份"的 API 计价条目（有理由的缺口，不是漏判）──');
+  // 与套餐侧同一件事的另一半：声明过的计价条目**有结局**（结局 = 对不上任何 registry 身份），
+  // 所以它们不在"未判"里、也不在"已映射"里 —— 它们是第三格。
+  if (!declaredApiRows.length) line('  （无）');
+  for (const row of declaredApiRows) {
+    const who = row.provider === null || row.provider === undefined
+      ? `（provider 读不出：记录 ${row.apiPlanId} 不在 api-plans.json 里）`
+      : `${providers.providerNameOf(row.provider, providerTable)}（${row.provider}）`;
+    const variant = row.variant === null || row.variant === undefined ? '(通配)' : row.variant;
+    line(`  · ${who} / ${row.apiPlanId} → ${row.modelKey} · ${variant} → ${row.reason}`);
+  }
   line('');
 
   line('── 已采信并移交 registry-curator 落盘的候选 ─────────────────────────');
@@ -855,7 +943,14 @@ function main() {
         planModelStrings: planCoverage.planModelStrings,
         mappedPlanModelCount: planCoverage.planModelStrings - planCoverage.unmappedPlanModels.length - planCoverage.declaredPlanModels.length,
         unmappedPlanModels: planCoverage.unmappedPlanModels,
-        declaredPlanModels: planCoverage.declaredPlanModels
+        declaredPlanModels: planCoverage.declaredPlanModels,
+        // ---- t25 新增：**追加在既有键之后**（旧键的名字与顺序一个都没动）----
+        // A / B / C 是上面那条方程的三个加数：计价条目 = mappedApiEntries + declaredApiEntries + 未判。
+        // `declaredApiEntries` 记的是**展开后覆盖的计价条目数**（方程的 B，记账用）；
+        // `declaredApiEntryRows` 是声明本身的逐条留档（当前无通配声明 ⇒ 两者相等；有通配声明时会分叉，记账一律读前者）。
+        mappedApiEntries,
+        declaredApiEntries: declaredApiIdentityCount,
+        declaredApiEntryRows: declaredApiRows
       },
       gaps: {
         dealsWithoutPlans,
@@ -863,7 +958,9 @@ function main() {
         unmappedModelCount: unmappedModels.length,
         unmappedPlanModelCount: planCoverage.unmappedPlanModels.length,
         declaredPlanModelCount: planCoverage.declaredPlanModels.length,
-        notAdoptedProviders
+        notAdoptedProviders,
+        // ---- t25 新增：**追加在既有键之后** ----
+        declaredApiEntryCount: declaredApiRows.length
       },
       candidates: { total: candidates.length, adopted: adopted.length, notAdopted: notAdopted.length },
       // ---- v2（coverage-expansion-v1）：全部进**新键**，旧键一个字都不动 ----

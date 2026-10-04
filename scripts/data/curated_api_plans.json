@@ -17,8 +17,14 @@
         "name": "deepseek-flash",
         "modelKey": "deepseek-flash",
         "variant": "standard",
-        "aliases": ["DeepSeek-V4.1-Flash"],
-        "rates": { "input": 0.3, "output": 1.2, "cachedInput": 0.006 },
+        "aliases": [
+          "DeepSeek-V4.1-Flash"
+        ],
+        "rates": {
+          "input": 0.3,
+          "output": 1.2,
+          "cachedInput": 0.006
+        },
         "mediaRates": null,
         "note": "官方表格 PEAK 行；同一模型另有低峰时段（OFF-PEAK）价格，见「API 按量计费（低峰时段）」那条记录。上下文长度 1M，最大输出 384K"
       },
@@ -26,16 +32,36 @@
         "name": "deepseek-v4-pro",
         "modelKey": "deepseek-v4-pro",
         "variant": "standard",
-        "aliases": ["DeepSeek-V4-Pro-0813"],
-        "rates": { "input": 1.32, "output": 3.96, "cachedInput": 0.044 },
+        "aliases": [
+          "DeepSeek-V4-Pro-0813"
+        ],
+        "rates": {
+          "input": 1.32,
+          "output": 3.96,
+          "cachedInput": 0.044
+        },
         "mediaRates": null,
         "note": "官方表格 PEAK 行；上下文长度 1M，支持思考模式"
       }
     ],
     "freeTier": null,
     "limits": [
-      { "kind": "concurrency", "value": 2500, "appliesTo": ["deepseek-flash"], "note": "官方表格 Concurrency Limit 列" },
-      { "kind": "concurrency", "value": 500, "appliesTo": ["deepseek-v4-pro"], "note": "官方表格 Concurrency Limit 列" }
+      {
+        "kind": "concurrency",
+        "value": 2500,
+        "appliesTo": [
+          "deepseek-flash"
+        ],
+        "note": "官方表格 Concurrency Limit 列"
+      },
+      {
+        "kind": "concurrency",
+        "value": 500,
+        "appliesTo": [
+          "deepseek-v4-pro"
+        ],
+        "note": "官方表格 Concurrency Limit 列"
+      }
     ],
     "credits": null,
     "restrictions": null,
@@ -85,8 +111,14 @@
         "name": "deepseek-flash",
         "modelKey": "deepseek-flash",
         "variant": "standard",
-        "aliases": ["DeepSeek-V4.1-Flash"],
-        "rates": { "input": 0.15, "output": 0.6, "cachedInput": 0.003 },
+        "aliases": [
+          "DeepSeek-V4.1-Flash"
+        ],
+        "rates": {
+          "input": 0.15,
+          "output": 0.6,
+          "cachedInput": 0.003
+        },
         "mediaRates": null,
         "note": "官方表格 OFF-PEAK 行（低峰时段）"
       },
@@ -94,20 +126,44 @@
         "name": "deepseek-v4-pro",
         "modelKey": "deepseek-v4-pro",
         "variant": "standard",
-        "aliases": ["DeepSeek-V4-Pro-0813"],
-        "rates": { "input": 0.66, "output": 1.98, "cachedInput": 0.022 },
+        "aliases": [
+          "DeepSeek-V4-Pro-0813"
+        ],
+        "rates": {
+          "input": 0.66,
+          "output": 1.98,
+          "cachedInput": 0.022
+        },
         "mediaRates": null,
         "note": "官方表格 OFF-PEAK 行（低峰时段）"
       }
     ],
     "freeTier": null,
     "limits": [
-      { "kind": "concurrency", "value": 2500, "appliesTo": ["deepseek-flash"], "note": "官方表格 Concurrency Limit 列（与标准档相同）" },
-      { "kind": "concurrency", "value": 500, "appliesTo": ["deepseek-v4-pro"], "note": "官方表格 Concurrency Limit 列（与标准档相同）" }
+      {
+        "kind": "concurrency",
+        "value": 2500,
+        "appliesTo": [
+          "deepseek-flash"
+        ],
+        "note": "官方表格 Concurrency Limit 列（与标准档相同）"
+      },
+      {
+        "kind": "concurrency",
+        "value": 500,
+        "appliesTo": [
+          "deepseek-v4-pro"
+        ],
+        "note": "官方表格 Concurrency Limit 列（与标准档相同）"
+      }
     ],
     "credits": null,
     "restrictions": [
-      { "kind": "rate_limit", "value": "低峰时段（OFF-PEAK）价格", "note": "官方定价页把同一张表分成 PEAK / OFF-PEAK 两行；具体时段以官方公告为准，本站不推断" }
+      {
+        "kind": "rate_limit",
+        "value": "低峰时段（OFF-PEAK）价格",
+        "note": "官方定价页把同一张表分成 PEAK / OFF-PEAK 两行；具体时段以官方公告为准，本站不推断"
+      }
     ],
     "firstSeen": "2026-10-01",
     "lastSeen": "2026-10-01",
@@ -149,7 +205,11 @@
         "modelKey": "glm-5.3",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 8, "output": 28, "cachedInput": 2 },
+        "rates": {
+          "input": 8,
+          "output": 28,
+          "cachedInput": 2
+        },
         "mediaRates": null,
         "note": "上下文 1M；输入模态：文本；缓存存储官方标注「限时免费」（属限时活动，未记为固定单价）"
       },
@@ -158,7 +218,11 @@
         "modelKey": "glm-5.3-flash",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 0.8, "output": 2.8, "cachedInput": 0.23 },
+        "rates": {
+          "input": 0.8,
+          "output": 2.8,
+          "cachedInput": 0.23
+        },
         "mediaRates": null,
         "note": "上下文 1M；输入模态：图片、视频、文件、文本"
       },
@@ -167,7 +231,11 @@
         "modelKey": "glm-4.7-flash",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 0, "output": 0, "cachedInput": 0 },
+        "rates": {
+          "input": 0,
+          "output": 0,
+          "cachedInput": 0
+        },
         "mediaRates": null,
         "note": "官方 FAQ 逐字写明：GLM-4.7-Flash（200K 上下文）输入免费、输出免费、缓存免费。0 是「官方明说免费」，不是「未知」"
       },
@@ -176,7 +244,11 @@
         "modelKey": "glm-4.6v-flash",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 0, "output": 0, "cachedInput": 0 },
+        "rates": {
+          "input": 0,
+          "output": 0,
+          "cachedInput": 0
+        },
         "mediaRates": null,
         "note": "官方 FAQ 逐字写明：GLM-4.6V-Flash 输入免费、输出免费、缓存免费"
       },
@@ -185,7 +257,10 @@
         "modelKey": "glm-5v-turbo",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 5, "output": 22 },
+        "rates": {
+          "input": 5,
+          "output": 22
+        },
         "mediaRates": null,
         "note": "官方按输入长度分档：此条为 [0,32K) 档"
       },
@@ -194,7 +269,10 @@
         "modelKey": "glm-5v-turbo",
         "variant": "long_context",
         "aliases": null,
-        "rates": { "input": 7, "output": 26 },
+        "rates": {
+          "input": 7,
+          "output": 26
+        },
         "mediaRates": null,
         "note": "官方按输入长度分档：此条为 [32K+) 档"
       },
@@ -203,7 +281,10 @@
         "modelKey": "glm-4.6v",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 1, "output": 3 },
+        "rates": {
+          "input": 1,
+          "output": 3
+        },
         "mediaRates": null,
         "note": "官方按输入长度分档：[0,32K) 档"
       },
@@ -212,7 +293,10 @@
         "modelKey": "glm-4.6v",
         "variant": "long_context",
         "aliases": null,
-        "rates": { "input": 2, "output": 6 },
+        "rates": {
+          "input": 2,
+          "output": 6
+        },
         "mediaRates": null,
         "note": "官方按输入长度分档：[32K,128K) 档"
       },
@@ -221,7 +305,10 @@
         "modelKey": "glm-4.6v-flashx",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 0.15, "output": 1.5 },
+        "rates": {
+          "input": 0.15,
+          "output": 1.5
+        },
         "mediaRates": null,
         "note": "官方按输入长度分档：[0,32K) 档"
       },
@@ -230,7 +317,10 @@
         "modelKey": "glm-4.6v-flashx",
         "variant": "long_context",
         "aliases": null,
-        "rates": { "input": 0.3, "output": 3 },
+        "rates": {
+          "input": 0.3,
+          "output": 3
+        },
         "mediaRates": null,
         "note": "官方按输入长度分档：[32K,128K) 档"
       },
@@ -239,7 +329,10 @@
         "modelKey": "glm-4.5v",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 2, "output": 6 },
+        "rates": {
+          "input": 2,
+          "output": 6
+        },
         "mediaRates": null,
         "note": "官方按输入长度分档：[0,32K) 档"
       },
@@ -248,7 +341,10 @@
         "modelKey": "glm-4.5v",
         "variant": "long_context",
         "aliases": null,
-        "rates": { "input": 4, "output": 12 },
+        "rates": {
+          "input": 4,
+          "output": 12
+        },
         "mediaRates": null,
         "note": "官方按输入长度分档：[32K,64K) 档"
       }
@@ -258,15 +354,26 @@
       "stability": "standing",
       "amount": null,
       "period": null,
-      "models": ["glm-4.7-flash", "glm-4.6v-flash"],
+      "models": [
+        "glm-4.7-flash",
+        "glm-4.6v-flash"
+      ],
       "description": "官方长期提供的免费 API 模型：文本模型 GLM-4.7-Flash（200K 上下文）与视觉模型 GLM-4.6V-Flash，输入 / 输出 / 缓存均为免费。这是官方 FAQ 里写明的常规能力，不是限时活动",
       "conversionDependsOnModel": null
     },
     "limits": null,
     "credits": null,
     "restrictions": [
-      { "kind": "rate_limit", "value": "输入长度分档计价", "note": "官方定价页写明：当输入或输出长度超过一定阈值（如 32K tokens）时会进入更高档单价；本表用 variant=long_context 的独立条目表达" },
-      { "kind": "region_restriction", "value": "中国大陆", "note": "智谱开放平台面向中国大陆提供服务" }
+      {
+        "kind": "rate_limit",
+        "value": "输入长度分档计价",
+        "note": "官方定价页写明：当输入或输出长度超过一定阈值（如 32K tokens）时会进入更高档单价；本表用 variant=long_context 的独立条目表达"
+      },
+      {
+        "kind": "region_restriction",
+        "value": "中国大陆",
+        "note": "智谱开放平台面向中国大陆提供服务"
+      }
     ],
     "firstSeen": "2026-10-01",
     "lastSeen": "2026-10-01",
@@ -315,7 +422,12 @@
         "modelKey": "gpt-6-astra",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 10, "cachedInput": 1, "cacheWrite": 12.5, "output": 50 },
+        "rates": {
+          "input": 10,
+          "cachedInput": 1,
+          "cacheWrite": 12.5,
+          "output": 50
+        },
         "mediaRates": null,
         "note": "Standard / Short context"
       },
@@ -324,7 +436,12 @@
         "modelKey": "gpt-6-astra",
         "variant": "long_context",
         "aliases": null,
-        "rates": { "input": 20, "cachedInput": 2, "cacheWrite": 25, "output": 75 },
+        "rates": {
+          "input": 20,
+          "cachedInput": 2,
+          "cacheWrite": 25,
+          "output": 75
+        },
         "mediaRates": null,
         "note": "Standard / Long context"
       },
@@ -333,7 +450,12 @@
         "modelKey": "gpt-6.1-sol",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 2, "cachedInput": 0.1, "cacheWrite": 2.5, "output": 10 },
+        "rates": {
+          "input": 2,
+          "cachedInput": 0.1,
+          "cacheWrite": 2.5,
+          "output": 10
+        },
         "mediaRates": null,
         "note": "Standard / Short context"
       },
@@ -342,7 +464,12 @@
         "modelKey": "gpt-6.1-sol",
         "variant": "long_context",
         "aliases": null,
-        "rates": { "input": 4, "cachedInput": 0.2, "cacheWrite": 5, "output": 15 },
+        "rates": {
+          "input": 4,
+          "cachedInput": 0.2,
+          "cacheWrite": 5,
+          "output": 15
+        },
         "mediaRates": null,
         "note": "Standard / Long context"
       },
@@ -351,7 +478,12 @@
         "modelKey": "gpt-6-luna",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 0.1, "cachedInput": 0.01, "cacheWrite": 0.125, "output": 0.5 },
+        "rates": {
+          "input": 0.1,
+          "cachedInput": 0.01,
+          "cacheWrite": 0.125,
+          "output": 0.5
+        },
         "mediaRates": null,
         "note": "Standard / Short context"
       },
@@ -360,7 +492,12 @@
         "modelKey": "gpt-6-luna",
         "variant": "long_context",
         "aliases": null,
-        "rates": { "input": 0.2, "cachedInput": 0.02, "cacheWrite": 0.25, "output": 0.75 },
+        "rates": {
+          "input": 0.2,
+          "cachedInput": 0.02,
+          "cacheWrite": 0.25,
+          "output": 0.75
+        },
         "mediaRates": null,
         "note": "Standard / Long context"
       },
@@ -371,7 +508,12 @@
         "aliases": null,
         "rates": {},
         "mediaRates": [
-          { "kind": "audio", "price": 0.05, "unit": "per_minute", "note": "官方 GPT-Live sessions 表：Price per minute" }
+          {
+            "kind": "audio",
+            "price": 0.05,
+            "unit": "per_minute",
+            "note": "官方 GPT-Live sessions 表：Price per minute"
+          }
         ],
         "note": "官方按分钟计价，没有 token 单价条目"
       }
@@ -427,7 +569,12 @@
         "modelKey": "gpt-6-astra",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 5, "cachedInput": 0.5, "cacheWrite": 6.25, "output": 25 },
+        "rates": {
+          "input": 5,
+          "cachedInput": 0.5,
+          "cacheWrite": 6.25,
+          "output": 25
+        },
         "mediaRates": null,
         "note": "Batch / Short context（官方价格为 Standard 的一半）"
       },
@@ -436,7 +583,12 @@
         "modelKey": "gpt-6-astra",
         "variant": "long_context",
         "aliases": null,
-        "rates": { "input": 10, "cachedInput": 1, "cacheWrite": 12.5, "output": 37.5 },
+        "rates": {
+          "input": 10,
+          "cachedInput": 1,
+          "cacheWrite": 12.5,
+          "output": 37.5
+        },
         "mediaRates": null,
         "note": "Batch / Long context"
       },
@@ -445,7 +597,12 @@
         "modelKey": "gpt-6.1-sol",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 1, "cachedInput": 0.05, "cacheWrite": 1.25, "output": 5 },
+        "rates": {
+          "input": 1,
+          "cachedInput": 0.05,
+          "cacheWrite": 1.25,
+          "output": 5
+        },
         "mediaRates": null,
         "note": "Batch / Short context"
       },
@@ -454,7 +611,12 @@
         "modelKey": "gpt-6.1-sol",
         "variant": "long_context",
         "aliases": null,
-        "rates": { "input": 2, "cachedInput": 0.1, "cacheWrite": 2.5, "output": 7.5 },
+        "rates": {
+          "input": 2,
+          "cachedInput": 0.1,
+          "cacheWrite": 2.5,
+          "output": 7.5
+        },
         "mediaRates": null,
         "note": "Batch / Long context"
       },
@@ -463,7 +625,12 @@
         "modelKey": "gpt-6-luna",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 0.05, "cachedInput": 0.005, "cacheWrite": 0.0625, "output": 0.25 },
+        "rates": {
+          "input": 0.05,
+          "cachedInput": 0.005,
+          "cacheWrite": 0.0625,
+          "output": 0.25
+        },
         "mediaRates": null,
         "note": "Batch / Short context"
       },
@@ -472,7 +639,12 @@
         "modelKey": "gpt-6-luna",
         "variant": "long_context",
         "aliases": null,
-        "rates": { "input": 0.1, "cachedInput": 0.01, "cacheWrite": 0.125, "output": 0.375 },
+        "rates": {
+          "input": 0.1,
+          "cachedInput": 0.01,
+          "cacheWrite": 0.125,
+          "output": 0.375
+        },
         "mediaRates": null,
         "note": "Batch / Long context"
       }
@@ -481,7 +653,11 @@
     "limits": null,
     "credits": null,
     "restrictions": [
-      { "kind": "rate_limit", "value": "批处理（Batch）通道", "note": "官方把 Batch 单列一张价格表；批处理通常异步返回，时延与标准档不同，本站只记录价格事实" }
+      {
+        "kind": "rate_limit",
+        "value": "批处理（Batch）通道",
+        "note": "官方把 Batch 单列一张价格表；批处理通常异步返回，时延与标准档不同，本站只记录价格事实"
+      }
     ],
     "firstSeen": "2026-10-01",
     "lastSeen": "2026-10-01",
@@ -523,7 +699,13 @@
         "modelKey": "claude-fable-5.1",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 10, "output": 50, "cacheWrite": 12.5, "cacheWriteLong": 20, "cachedInput": 0.25 },
+        "rates": {
+          "input": 10,
+          "output": 50,
+          "cacheWrite": 12.5,
+          "cacheWriteLong": 20,
+          "cachedInput": 0.25
+        },
         "mediaRates": null,
         "note": "缓存写入两档：5 分钟写入 1.25 倍输入价、1 小时写入 2 倍输入价；缓存命中 0.025 倍输入价（官方 Cache operation 表逐字写明）"
       },
@@ -532,7 +714,13 @@
         "modelKey": "claude-opus-5.5",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 4, "output": 20, "cacheWrite": 5, "cacheWriteLong": 8, "cachedInput": 0.2 },
+        "rates": {
+          "input": 4,
+          "output": 20,
+          "cacheWrite": 5,
+          "cacheWriteLong": 8,
+          "cachedInput": 0.2
+        },
         "mediaRates": null,
         "note": "缓存命中为 0.05 倍输入价（官方 Cache operation 表）"
       },
@@ -541,7 +729,13 @@
         "modelKey": "claude-sonnet-5.5",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 2, "output": 10, "cacheWrite": 2.5, "cacheWriteLong": 4, "cachedInput": 0.2 },
+        "rates": {
+          "input": 2,
+          "output": 10,
+          "cacheWrite": 2.5,
+          "cacheWriteLong": 4,
+          "cachedInput": 0.2
+        },
         "mediaRates": null,
         "note": null
       },
@@ -550,7 +744,13 @@
         "modelKey": "claude-haiku-4.5",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 1, "output": 5, "cacheWrite": 1.25, "cacheWriteLong": 2, "cachedInput": 0.1 },
+        "rates": {
+          "input": 1,
+          "output": 5,
+          "cacheWrite": 1.25,
+          "cacheWriteLong": 2,
+          "cachedInput": 0.1
+        },
         "mediaRates": null,
         "note": null
       }
@@ -606,9 +806,18 @@
         "modelKey": "gemini-3.8-flash",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 0.75, "output": 3.75, "cachedInput": 0.075 },
+        "rates": {
+          "input": 0.75,
+          "output": 3.75,
+          "cachedInput": 0.075
+        },
         "mediaRates": [
-          { "kind": "other", "price": 0.5, "unit": "per_1M_token_hours", "note": "上下文缓存存储价，官方逐字：$0.50 / 1,000,000 tokens per hour (storage price) through December 31, 2026" }
+          {
+            "kind": "other",
+            "price": 0.5,
+            "unit": "per_1M_token_hours",
+            "note": "上下文缓存存储价，官方逐字：$0.50 / 1,000,000 tokens per hour (storage price) through December 31, 2026"
+          }
         ],
         "note": "官方标注调价：输入 $1.50、输出 $7.50「starting January 1, 2027」。本站只记录当前生效价，调价原文见本节末的官方引文"
       },
@@ -617,9 +826,18 @@
         "modelKey": "gemini-3.7-flash",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 0.75, "output": 3.75, "cachedInput": 0.075 },
+        "rates": {
+          "input": 0.75,
+          "output": 3.75,
+          "cachedInput": 0.075
+        },
         "mediaRates": [
-          { "kind": "other", "price": 0.5, "unit": "per_1M_token_hours", "note": "上下文缓存存储价（与 3.8 Flash 同表同值）" }
+          {
+            "kind": "other",
+            "price": 0.5,
+            "unit": "per_1M_token_hours",
+            "note": "上下文缓存存储价（与 3.8 Flash 同表同值）"
+          }
         ],
         "note": "官方同样标注 2027-01-01 起调整为输入 $1.50、输出 $7.50"
       },
@@ -628,7 +846,11 @@
         "modelKey": "gemini-3.6-flash",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 0.75, "output": 3.75, "cachedInput": 0.075 },
+        "rates": {
+          "input": 0.75,
+          "output": 3.75,
+          "cachedInput": 0.075
+        },
         "mediaRates": null,
         "note": "官方同样标注 2027-01-01 起调整为输入 $1.50、输出 $7.50"
       },
@@ -637,9 +859,18 @@
         "modelKey": "gemini-3.5-flash",
         "variant": "standard",
         "aliases": null,
-        "rates": { "input": 1.5, "output": 9, "cachedInput": 0.15 },
+        "rates": {
+          "input": 1.5,
+          "output": 9,
+          "cachedInput": 0.15
+        },
         "mediaRates": [
-          { "kind": "other", "price": 1, "unit": "per_1M_token_hours", "note": "上下文缓存存储价：$1.00 / 1,000,000 tokens per hour (storage price)" }
+          {
+            "kind": "other",
+            "price": 1,
+            "unit": "per_1M_token_hours",
+            "note": "上下文缓存存储价：$1.00 / 1,000,000 tokens per hour (storage price)"
+          }
         ],
         "note": null
       }
@@ -649,14 +880,23 @@
       "stability": "standing",
       "amount": null,
       "period": null,
-      "models": ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.5-flash"],
+      "models": [
+        "gemini-3.8-flash",
+        "gemini-3.7-flash",
+        "gemini-3.6-flash",
+        "gemini-3.5-flash"
+      ],
       "description": "官方定价页的 Free Tier 列：这四个模型在免费档下的输入价与输出价均为 Free of charge（免费档的速率限制与「用于改进产品」条款由官方单独规定）",
       "conversionDependsOnModel": null
     },
     "limits": null,
     "credits": null,
     "restrictions": [
-      { "kind": "fair_use", "value": true, "note": "官方 Free Tier 列写明 Used to improve our products: Yes（免费档的数据会被用于改进产品），付费档为 No" }
+      {
+        "kind": "fair_use",
+        "value": true,
+        "note": "官方 Free Tier 列写明 Used to improve our products: Yes（免费档的数据会被用于改进产品），付费档为 No"
+      }
     ],
     "firstSeen": "2026-10-01",
     "lastSeen": "2026-10-01",
@@ -1406,6 +1646,476 @@
         "sourceUrl": "https://cloud.tencent.com/document/product/1729/97731",
         "capturedAt": "2026-10-01",
         "lang": "zh"
+      }
+    ]
+  },
+  {
+    "provider": "groq",
+    "planName": "模型推理按量计费",
+    "channel": "standard",
+    "officialUrl": "https://console.groq.com/docs/models",
+    "source": "Official-Docs",
+    "sourceUrl": "https://console.groq.com/docs/models",
+    "region": "global",
+    "pricing": {
+      "currency": "USD",
+      "unit": "per_1M_tokens",
+      "unitNote": "官方表列头逐字为 “PRICE PER 1M TOKENS”"
+    },
+    "models": [
+      {
+        "name": "GPT OSS 120B",
+        "modelKey": "openai.gpt-oss-120b",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.15,
+          "output": 0.6,
+          "cachedInput": null
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "GPT OSS 20B",
+        "modelKey": "openai.gpt-oss-20b",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.075,
+          "output": 0.3,
+          "cachedInput": null
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "GPT OSS Safeguard 20B",
+        "modelKey": "openai.gpt-oss-safeguard-20b",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.075,
+          "output": 0.3,
+          "cachedInput": null
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "Llama Prompt Guard 2 22M",
+        "modelKey": "meta-llama.prompt-guard-2-22m",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.03,
+          "output": 0.03,
+          "cachedInput": null
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "Llama Prompt Guard 2 86M",
+        "modelKey": "meta-llama.prompt-guard-2-86m",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.04,
+          "output": 0.04,
+          "cachedInput": null
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "Qwen 3.8 27B",
+        "modelKey": "qwen.qwen3.8-27b",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.29,
+          "output": 0.59,
+          "cachedInput": null
+        },
+        "mediaRates": null,
+        "note": null
+      }
+    ],
+    "freeTier": null,
+    "limits": null,
+    "credits": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-04",
+    "lastSeen": "2026-10-04",
+    "verified": true,
+    "verifiedAt": "2026-10-04",
+    "evidence": [
+      {
+        "field": "pricing.currency",
+        "quote": "PRICE PER 1M TOKENS — GPT OSS 120B $0.15 / $0.60；GPT OSS 20B $0.075 / $0.30（官方 Supported Models 页逐字）",
+        "sourceUrl": "https://console.groq.com/docs/models",
+        "capturedAt": "2026-10-04",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "provider": "together",
+    "planName": "Serverless 按量计费",
+    "channel": "standard",
+    "officialUrl": "https://docs.together.ai/docs/serverless/models.md",
+    "source": "Official-Docs",
+    "sourceUrl": "https://docs.together.ai/docs/serverless/models.md",
+    "region": "global",
+    "pricing": {
+      "currency": "USD",
+      "unit": "per_1M_tokens",
+      "unitNote": "官方列头逐字 «Input pricing (per 1M tokens)» / «Cached input pricing (per 1M tokens)» / «Output pricing (per 1M tokens)»"
+    },
+    "models": [
+      {
+        "name": "Inkling",
+        "modelKey": "thinkingmachines.inkling",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 1,
+          "output": 4.05,
+          "cachedInput": 0.17
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "Kimi K3",
+        "modelKey": "moonshotai.kimi-k3",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 3,
+          "output": 15,
+          "cachedInput": 0.3
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "GLM-5.3",
+        "modelKey": "zai-org.glm-5.3",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 1.4,
+          "output": 4.4,
+          "cachedInput": 0.26
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "GLM-5.3 Flash",
+        "modelKey": "zai-org.glm-5.3-flash",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.15,
+          "output": 0.5,
+          "cachedInput": 0.03
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "GPT-OSS 120B",
+        "modelKey": "openai.gpt-oss-120b",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.15,
+          "output": 0.6,
+          "cachedInput": null
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "DeepSeek V4 Pro 0813",
+        "modelKey": "deepseek-ai.v4-pro-0813",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 1.32,
+          "output": 3.96,
+          "cachedInput": 0.13
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "DeepSeek V4.1 Flash",
+        "modelKey": "deepseek-ai.v4.1-flash",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.3,
+          "output": 1.2,
+          "cachedInput": 0.006
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "MiniMax M3",
+        "modelKey": "minimaxai.m3",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.3,
+          "output": 1.2,
+          "cachedInput": 0.06
+        },
+        "mediaRates": null,
+        "note": null
+      }
+    ],
+    "freeTier": null,
+    "limits": null,
+    "credits": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-04",
+    "lastSeen": "2026-10-04",
+    "verified": true,
+    "verifiedAt": "2026-10-04",
+    "evidence": [
+      {
+        "field": "pricing.currency",
+        "quote": "Input pricing (per 1M tokens) / Cached input pricing (per 1M tokens) / Output pricing (per 1M tokens) —— Inkling 1 / 0.17 / 4.05；Kimi K3 3 / 0.3 / 15（官方 serverless models 页逐字列头与两行）",
+        "sourceUrl": "https://docs.together.ai/docs/serverless/models.md",
+        "capturedAt": "2026-10-04",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "provider": "fireworks",
+    "planName": "Serverless 按量计费",
+    "channel": "standard",
+    "officialUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+    "source": "Official-Docs",
+    "sourceUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+    "region": "global",
+    "pricing": {
+      "currency": "USD",
+      "unit": "per_1M_tokens",
+      "unitNote": "官方页逐字 “(USD per 1M tokens)”"
+    },
+    "models": [
+      {
+        "name": "Ember-1",
+        "modelKey": "ember-1",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 3,
+          "output": 15,
+          "cachedInput": 0.3
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "Kimi K3",
+        "modelKey": "kimi-k3",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 3,
+          "output": 15,
+          "cachedInput": 0.3
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "DeepSeek V4.1 Flash",
+        "modelKey": "deepseek-v4p1-flash",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.3,
+          "output": 1.2,
+          "cachedInput": 0.006
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "GLM 5.3",
+        "modelKey": "glm-5p3",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 1.4,
+          "output": 4.4,
+          "cachedInput": 0.26
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "GLM 5.3 Flash",
+        "modelKey": "glm-5p3-flash",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.15,
+          "output": 0.5,
+          "cachedInput": 0.03
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "Qwen 3.8 Max",
+        "modelKey": "qwen3p8-max",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 2,
+          "output": 6,
+          "cachedInput": 0.25
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "MiniMax M3",
+        "modelKey": "minimax-m3",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.3,
+          "output": 1.2,
+          "cachedInput": 0.06
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "OpenAI GPT OSS 120B",
+        "modelKey": "gpt-oss-120b",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.15,
+          "output": 0.6,
+          "cachedInput": 0.015
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "NVIDIA Nemotron 3.5 Lightning 30B A3B",
+        "modelKey": "nemotron-lightning-3p5-30b-a3b",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.05,
+          "output": 0.2,
+          "cachedInput": 0.01
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "NVIDIA Nemotron 3 Ultra (Preview)",
+        "modelKey": "nemotron-3-ultra-nvfp4",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.6,
+          "output": 2.4,
+          "cachedInput": 0.12
+        },
+        "mediaRates": null,
+        "note": null
+      }
+    ],
+    "freeTier": null,
+    "limits": null,
+    "credits": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-04",
+    "lastSeen": "2026-10-04",
+    "verified": true,
+    "verifiedAt": "2026-10-04",
+    "evidence": [
+      {
+        "field": "pricing.currency",
+        "quote": "(USD per 1M tokens) —— Model | Standard | Priority；Ember-1 3 / 15；Kimi K3 3 / 15；GLM 5.3 1.4 / 4.4（官方 serverless pricing 页逐字）",
+        "sourceUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+        "capturedAt": "2026-10-04",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "provider": "cerebras",
+    "planName": "推理按量计费 Developer 档",
+    "channel": "standard",
+    "officialUrl": "https://www.cerebras.ai/pricing",
+    "source": "Official-Docs",
+    "sourceUrl": "https://www.cerebras.ai/pricing",
+    "region": "global",
+    "pricing": {
+      "currency": "USD",
+      "unit": "per_1M_tokens",
+      "unitNote": "官方价格单元格逐字为 $X.XX/M tokens（每百万 token）"
+    },
+    "models": [
+      {
+        "name": "GPT OSS 120B",
+        "modelKey": "gpt-oss-120b",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.35,
+          "output": 0.75,
+          "cachedInput": null
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      {
+        "name": "Qwen 3.8 27B",
+        "modelKey": "qwen3.8-27b",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.99,
+          "output": 1.49,
+          "cachedInput": null
+        },
+        "mediaRates": null,
+        "note": null
+      }
+    ],
+    "freeTier": null,
+    "limits": null,
+    "credits": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-04",
+    "lastSeen": "2026-10-04",
+    "verified": true,
+    "verifiedAt": "2026-10-04",
+    "evidence": [
+      {
+        "field": "pricing.currency",
+        "quote": "$X.XX/M tokens（每百万 token）—— GPT OSS 120B $0.35 / $0.75；Qwen 3.8 27B $0.99 / $1.49（Developer 档逐字）",
+        "sourceUrl": "https://www.cerebras.ai/pricing",
+        "capturedAt": "2026-10-04",
+        "lang": "en"
       }
     ]
   }

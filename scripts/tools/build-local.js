@@ -3070,9 +3070,11 @@ function assemble() {
     const registryProblems = [
       ...modelRegistry.validateRegistry(modelsTable, { developers: modelDevelopers, extraDevelopers: modelsExtraDevelopers }),
       ...modelRegistry.validateLinks(modelLinksDoc, {
-        table: modelsTable, apiPlans: apiPlansStore.plans, plans: plansStore.plans
+        table: modelsTable, apiPlans: apiPlansStore.plans, plans: plansStore.plans, gaps: modelsGapsLoad.doc
       }),
-      ...modelRegistry.validateGaps(modelsGapsLoad.doc, { plans: plansStore.plans, links: modelLinksDoc, table: modelsTable }),
+      ...modelRegistry.validateGaps(modelsGapsLoad.doc, {
+        plans: plansStore.plans, links: modelLinksDoc, table: modelsTable, apiPlans: apiPlansStore.plans
+      }),
       // 覆盖完整性：任何一条套餐模型串"既没映射也没声明"都在这里停住（不许静默留空）
       ...modelRegistry.validatePlanModelCoverage({
         table: modelsTable, links: modelLinksDoc, gaps: modelsGapsLoad.doc,

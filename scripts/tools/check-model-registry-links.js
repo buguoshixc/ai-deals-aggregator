@@ -64,8 +64,8 @@ function main() {
     problems.push(...reg.validateRegistry(modelsLoad.table, {
       developers, extraDevelopers, duplicateKeys: modelsLoad.duplicateKeys
     }));
-    problems.push(...reg.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans }));
-    problems.push(...reg.validateGaps(gapsLoad.doc, { plans, links: linksLoad.doc, table: modelsLoad.table }));
+    problems.push(...reg.validateLinks(linksLoad.doc, { table: modelsLoad.table, apiPlans, plans, gaps: gapsLoad.doc }));
+    problems.push(...reg.validateGaps(gapsLoad.doc, { plans, links: linksLoad.doc, table: modelsLoad.table, apiPlans }));
     problems.push(...reg.validatePlanModelCoverage({
       table: modelsLoad.table, links: linksLoad.doc, gaps: gapsLoad.doc, apiPlans, plans
     }));

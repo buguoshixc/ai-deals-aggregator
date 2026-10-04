@@ -451,8 +451,65 @@ if (plainProblems.length) {
   plainProblems.slice(0, 6).forEach(text => console.log(`       · ${text}`));
 }
 
-// JSON 结构契约：把上游在飞的问题隔离掉（--links / --gaps 指向临时副本，**只**把顶层
-// schemaVersion 对齐到当前 registry 值），确认报告成功时 JSON 的键结构完整、两次逐字节一致。
+// JSON 结构契约（t25 升级）：**旧键必须是前缀（逐字逐序）+ 追加键必须恰好等于一张显式白名单**。
+//
+// 为什么不再是全等断言：报告从这一轮起要新增 API 侧处置的键（`mappedApiEntries` /
+// `declaredApiEntries` / `declaredApiEntryRows` / `gaps.declaredApiEntryCount`），追加在既有键之后。
+// 全等会把**合法的追加**与**偷偷改名/挪位**判成同一件事；而放宽成全等会丢掉冻结的意义。
+// 于是契约收紧成两条规则（规则本身是下面的纯函数，反证牙与真实断言共用同一支）：
+//   ① 旧键的名字与顺序必须逐字逐序地出现在最前面（前缀）；
+//   ② 多出来的键必须**恰好**等于白名单（多一个、少一个、换个顺序都红）。
+// 这一层最该防的是"新增键时顺手把旧键挪了位"——那种改动不会有任何报错，只会让下游的
+// 位置假设静默失效（§42 冻结契约的理由）。
+const LEGACY_CONTRACT = {
+  deals: ['providers', 'currentDeals', 'expiredDeals', 'tools', 'providerRows'],
+  coding: ['providers', 'plans', 'providerRows'],
+  api: ['providers', 'pricingRecords', 'modelPricingItems', 'distinctModelKeys', 'providerRows'],
+  registry: ['registryPresent', 'linksPresent', 'gapsPresent', 'unmappedModels', 'planModelStrings',
+    'mappedPlanModelCount', 'unmappedPlanModels', 'declaredPlanModels'],
+  gaps: ['dealsWithoutPlans', 'plansWithoutDeals', 'unmappedModelCount', 'unmappedPlanModelCount',
+    'declaredPlanModelCount', 'notAdoptedProviders'],
+  candidates: ['total', 'adopted', 'notAdopted']
+};
+const LEGACY_TOP_LEVEL = ['generatedAt', 'deals', 'coding', 'api', 'registry', 'gaps', 'candidates'];
+/** 追加键白名单：报告新增键必须**逐个登记在这里**（本轮 = t25 新增的 API 侧处置键） */
+const APPENDED_KEY_WHITELIST = {
+  deals: [],
+  coding: [],
+  api: [],
+  registry: ['mappedApiEntries', 'declaredApiEntries', 'declaredApiEntryRows'],
+  gaps: ['declaredApiEntryCount'],
+  candidates: []
+};
+
+/** 冻结契约判据：返回问题列表（空 = 通过）。**只有这一处实现**，反证牙也调它。 */
+function contractProblems(actualKeys, legacyKeys, whitelist) {
+  const problems = [];
+  const prefix = actualKeys.slice(0, legacyKeys.length);
+  if (JSON.stringify(prefix) !== JSON.stringify(legacyKeys)) {
+    problems.push(`旧键必须是前缀且逐字逐序（期望 ${legacyKeys.join(',')}；实得 ${prefix.join(',')}）`);
+  }
+  const appended = actualKeys.slice(legacyKeys.length);
+  if (JSON.stringify(appended) !== JSON.stringify(whitelist)) {
+    problems.push(`追加键必须恰好等于白名单（期望 [${whitelist.join(',')}]；实得 [${appended.join(',')}]）`);
+  }
+  return problems;
+}
+
+check('【反证牙】冻结契约规则：把旧键顺序打乱 ⇒ 必须报问题',
+  contractProblems(['coding', 'deals'], ['deals', 'coding'], []).length > 0);
+check('【反证牙】冻结契约规则：删掉一个旧键 ⇒ 必须报问题',
+  contractProblems(['deals'], ['deals', 'coding'], []).length > 0);
+check('【反证牙】冻结契约规则：追加键不在白名单里 ⇒ 必须报问题',
+  contractProblems(['deals', 'coding', 'zzz'], ['deals', 'coding'], []).length > 0);
+check('【反证牙】冻结契约规则：白名单里的键少了或顺序不对 ⇒ 必须报问题',
+  contractProblems(['deals', 'coding'], ['deals', 'coding'], ['a', 'b']).length > 0
+  && contractProblems(['deals', 'coding', 'b', 'a'], ['deals', 'coding'], ['a', 'b']).length > 0);
+check('【正向】冻结契约规则：旧键原样 + 白名单内的追加 ⇒ 通过',
+  contractProblems(['deals', 'coding', 'extra'], ['deals', 'coding'], ['extra']).length === 0);
+
+// 把上游在飞的问题隔离掉（--links / --gaps 指向临时副本，**只**把顶层 schemaVersion 对齐到
+// 当前 registry 值），确认报告成功时 JSON 的键结构完整、两次逐字节一致。
 const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'coverage-report-'));
 const isoArgs = [];
 try {
@@ -470,23 +527,13 @@ try {
   const iso2 = runReport(['--json', ...isoArgs]);
   const payload1 = jsonOf(iso1.stdout);
   const payload2 = jsonOf(iso2.stdout);
+  const isoProblems = iso1.stderr.split('\n').filter(text => text.trim().startsWith('- ')).map(text => text.trim().slice(2));
   check('（隔离上游）报告自检 0 处问题，退出码 0', iso1.status === 0 && iso2.status === 0,
-    `status ${iso1.status}/${iso2.status}；${iso1.stderr.trim().split('\n').slice(-2).join(' ')}`);
+    `status ${iso1.status}/${iso2.status}；问题 ${isoProblems.length} 处：${isoProblems.slice(0, 2).join('；')}`);
   check('（隔离上游）两次运行逐字节一致', iso1.stdout === iso2.stdout && iso1.stdout.length > 0);
   check('（隔离上游）JSON 可解析', Boolean(payload1) && Boolean(payload2));
 
   if (payload1) {
-    const LEGACY_CONTRACT = {
-      deals: ['providers', 'currentDeals', 'expiredDeals', 'tools', 'providerRows'],
-      coding: ['providers', 'plans', 'providerRows'],
-      api: ['providers', 'pricingRecords', 'modelPricingItems', 'distinctModelKeys', 'providerRows'],
-      registry: ['registryPresent', 'linksPresent', 'gapsPresent', 'unmappedModels', 'planModelStrings',
-        'mappedPlanModelCount', 'unmappedPlanModels', 'declaredPlanModels'],
-      gaps: ['dealsWithoutPlans', 'plansWithoutDeals', 'unmappedModelCount', 'unmappedPlanModelCount',
-        'declaredPlanModelCount', 'notAdoptedProviders'],
-      candidates: ['total', 'adopted', 'notAdopted']
-    };
-    const LEGACY_TOP_LEVEL = ['generatedAt', 'deals', 'coding', 'api', 'registry', 'gaps', 'candidates'];
     const topKeys = Object.keys(payload1);
     check('旧 JSON 顶层键一个不少，且只多出 coverageTargets',
       LEGACY_TOP_LEVEL.every(key => topKeys.includes(key))
@@ -494,10 +541,18 @@ try {
       `顶层键：${topKeys.join(',')}`);
     check('generatedAt 仍是顶层字符串日期', typeof payload1.generatedAt === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(payload1.generatedAt));
     for (const [section_, keys] of Object.entries(LEGACY_CONTRACT)) {
-      check(`旧键结构未变：${section_} 的子键逐字相同`,
-        JSON.stringify(Object.keys(payload1[section_])) === JSON.stringify(keys),
-        `实得 ${Object.keys(payload1[section_] || {}).join(',')}`);
+      const actual = Object.keys(payload1[section_] || {});
+      const problems = contractProblems(actual, keys, APPENDED_KEY_WHITELIST[section_] || []);
+      check(`冻结契约（旧键前缀 + 追加键白名单）：${section_}`, problems.length === 0,
+        problems.join('；') || `实得 ${actual.join(',')}`);
     }
+    // 端到端反证：拿**这一轮真实的 payload** 把键序打乱 / 删掉一个旧键，同一条规则必须红。
+    const shuffledRegistry = Object.keys(payload1.registry || {}).slice().reverse();
+    check('【反证牙·端到端】真实 payload 的 registry 键序被打乱 ⇒ 同一条契约规则报红',
+      contractProblems(shuffledRegistry, LEGACY_CONTRACT.registry, APPENDED_KEY_WHITELIST.registry).length > 0);
+    const droppedRegistry = Object.keys(payload1.registry || {}).filter(key => key !== 'linksPresent');
+    check('【反证牙·端到端】真实 payload 删掉一个旧键 linksPresent ⇒ 同一条契约规则报红',
+      contractProblems(droppedRegistry, LEGACY_CONTRACT.registry, APPENDED_KEY_WHITELIST.registry).length > 0);
 
     const cov = payload1.coverageTargets;
     check('新键 coverageTargets 结构完整（universe / dimensions / rows / 清单 / currentModels / sourceHealth / freshness）',
@@ -530,6 +585,20 @@ try {
         .filter((name, index, list) => list.indexOf(name) === index).sort().join('|'));
     check('freshness 块如实反映模块状态（ok / broken / missing 三选一）',
       ['ok', 'broken', 'missing'].includes(cov.freshness.status));
+
+    // t25：报告必须把 API 侧处置如实暴露出来（三者和必须等于计价条目总数，逐项在 JSON 里可核）。
+    const reg = payload1.registry || {};
+    const gap = payload1.gaps || {};
+    check('t25：registry 新增 API 侧处置键（映射 A / 已处置 B / 逐条留档）且三者和 == 计价条目总数',
+      reg.mappedApiEntries + reg.declaredApiEntries + gap.unmappedModelCount === payload1.api.modelPricingItems
+      && reg.declaredApiEntries === gap.declaredApiEntryCount
+      && Array.isArray(reg.declaredApiEntryRows));
+    check('t25：逐条留档是稳定排序（两次运行里 registry.declaredApiEntryRows 逐字节相同）',
+      JSON.stringify(payload1.registry.declaredApiEntryRows) === JSON.stringify(payload2.registry.declaredApiEntryRows));
+  } else {
+    // 不许静默跳过：拿不到 payload 时，契约**没有**被核对过 —— 这一条必须显式红，并点名上游原因。
+    check('（隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON', false,
+      `报告退出码 ${iso1.status}；上游自检问题 ${isoProblems.length} 处：${isoProblems.slice(0, 3).join('；')}`);
   }
 } finally {
   try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch (error) { /* 临时目录清不掉不影响判据 */ }

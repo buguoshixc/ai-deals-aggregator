@@ -193,8 +193,8 @@ check(`registry 载入 ${models.length} 个模型（slug 为键的人工来源�
   models.length === Object.keys(modelsTable).length && models.length > 0);
 check('registry 与关系层都通过同一支判据校验',
   modelRegistry.validateRegistry(modelsTable, { developers: modelDevelopers, extraDevelopers }).length === 0
-  && modelRegistry.validateLinks(linksDoc, { table: modelsTable, apiPlans, plans }).length === 0
-  && modelRegistry.validateGaps(modelRegistry.loadGaps().doc, { plans, links: linksDoc, table: modelsTable }).length === 0
+  && modelRegistry.validateLinks(linksDoc, { table: modelsTable, apiPlans, plans, gaps: modelRegistry.loadGaps().doc }).length === 0
+  && modelRegistry.validateGaps(modelRegistry.loadGaps().doc, { plans, links: linksDoc, table: modelsTable, apiPlans }).length === 0
   && modelRegistry.validatePlanModelCoverage({
     table: modelsTable, links: linksDoc, gaps: modelRegistry.loadGaps().doc, apiPlans, plans
   }).length === 0);
@@ -627,8 +627,15 @@ const ranked = gated.map(gate => models.find(model => model.slug === gate.slug))
     audit.models === 44 && audit.counts.missing === 0 && audit.counts.extra === 0
     && audit.counts.duplicate === 0 && audit.counts.multiOwner === 0,
     JSON.stringify(audit.counts));
-  check('§17 独立 join：期望行数 == api-plans 真实计价条目数（一条 pricing item = 一行）',
-    audit.expectedRows === audit.pricingItems, `${audit.expectedRows} vs ${audit.pricingItems}`);
+  // 计价条目的结局只有两种：**有一行**（被映射到某个 registry 身份）或**有一条 API 侧声明**
+  // （`model-registry-gaps.json` 里声明"对不上任何 registry 身份"，因此按定义没有页面）。
+  // 所以"期望行数 = 总条目 − 已声明条目"；等式两边都不许有第三种结局（静默消失）。
+  const joinDeclaredApi = modelRegistry.coverageOf({
+    table: modelsTable, links: linksDoc, gaps: modelRegistry.loadGaps().doc, apiPlans, plans
+  }).declaredApiIdentities;
+  check('§17 独立 join：期望行数 == api-plans 计价条目 − 已声明"不对应单一模型身份"的条目（每条都要有结局：要么一行、要么一条声明）',
+    audit.expectedRows === audit.pricingItems - joinDeclaredApi,
+    `${audit.expectedRows} vs ${audit.pricingItems} − ${joinDeclaredApi}`);
   check(`§17 独立 join：受影响口径独立重算为 ${audit.multiVariantGroups} 组 / ${audit.affectedSlugs.length} 个 slug`,
     audit.multiVariantGroups === 12 && audit.affectedSlugs.length === 9, audit.affectedSlugs.join(' | '));
   // 交叉对账：产物的行数必须等于独立 join 的期望（逐页），且**不借被测判据**
@@ -1241,6 +1248,10 @@ if (DIST_MODELS_OK) {
 
   const cellExpectations = cellExpectationsFor(cellRawLinks, cellRawApiPlans, providerNames);
   const cellItemTotal = cellRawApiPlans.reduce((sum, plan) => sum + ((plan && plan.models) || []).length, 0);
+  // 已声明"不对应单一模型身份"的计价条目数（它们按定义没有页面行 —— 结局是"一条声明"，不是"一行"）
+  const cellDeclaredApi = modelRegistry.coverageOf({
+    table: modelsTable, links: linksDoc, gaps: modelRegistry.loadGaps().doc, apiPlans, plans
+  }).declaredApiIdentities;
   let cellRowsChecked = 0;
   let cellPagesChecked = 0;
   const cellCoverageProblems = [];
@@ -1257,8 +1268,8 @@ if (DIST_MODELS_OK) {
   }
   check(`逐格对账：${cellPagesChecked} 个模型页 · ${cellRowsChecked} 条计价条目 · ${cellRowsChecked * Object.keys(CELL_FIELD_LABELS).length} 个格，**全部**等于数据里那一条`,
     cellValueProblems.length === 0, cellValueProblems.slice(0, 4).join(' ｜ ').slice(0, 600));
-  check(`逐格对账覆盖 = api-plans 全部计价条目（${cellRowsChecked}/${cellItemTotal}，0 豁免；${cellExpectations.size} 个 slug 逐页有产物）`,
-    cellRowsChecked === cellItemTotal && cellCoverageProblems.length === 0
+  check(`逐格对账覆盖 = api-plans 计价条目 − 已声明"不对应单一模型身份"的条目（${cellRowsChecked}/${cellItemTotal}，其中已声明 ${cellItemTotal - cellRowsChecked} 条；${cellExpectations.size} 个 slug 逐页有产物）`,
+    cellRowsChecked === cellItemTotal - cellDeclaredApi && cellCoverageProblems.length === 0
     && cellPagesChecked === cellExpectations.size && cellItemTotal > 0,
     cellCoverageProblems.slice(0, 3).join(' ｜ '));
 

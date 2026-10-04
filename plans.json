@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "updatedAt": "2026-10-04T00:00:00+08:00",
-  "count": 29,
+  "count": 37,
   "plans": [
     {
       "id": "536e6b211045",
@@ -58,6 +58,111 @@
           "quote": "Usage limits apply. Prices shown don’t include applicable tax. Price and plans are subject to change at Anthropic's discretion.",
           "sourceUrl": "https://www.anthropic.com/pricing",
           "capturedAt": "2026-10-01",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "9cdc922f1407",
+      "kind": "coding",
+      "provider": "aws",
+      "planName": "Amazon Q Developer Free Tier",
+      "officialUrl": "https://aws.amazon.com/q/developer/pricing/",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://aws.amazon.com/q/developer/pricing/",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 0,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方逐字 `perpetual Free Tier`（长期免费）⇒ $0 是「官方明说免费」而不是「价格未知」（与既有 trae 免费版同口径）。时效事实（官方产品页逐字公告）：2027-04-30 起 AWS 将停止支持 Amazon Q Developer IDE 插件，官方建议改用 Kiro。完整引文与出处见本条 evidence（字段 billing.note）。"
+      },
+      "quota": {
+        "type": "requests",
+        "amount": 50,
+        "period": "monthly",
+        "description": "官方逐字 50 agentic requests per month；另有 1,000 lines of code per month（用于 Java 升级，单位是「行」）写在 restrictions 里，不塞进 amount。",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": [
+        {
+          "kind": "account_required",
+          "value": true,
+          "note": "官方逐字：available to users logged in as an AWS Identity and Access Management (IAM) user or AWS Builder ID user."
+        }
+      ],
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Amazon Q Developer offers a perpetual Free Tier with monthly limits … Free — 50 agentic requests per month ; 1,000 lines of code per month",
+          "sourceUrl": "https://aws.amazon.com/q/developer/pricing/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "7f63541ead64",
+      "kind": "coding",
+      "provider": "aws",
+      "planName": "Amazon Q Developer Pro",
+      "officialUrl": "https://aws.amazon.com/q/developer/pricing/",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://aws.amazon.com/q/developer/pricing/",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 19,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方逐字 $19/mo. per user、charged per user, per month（首月按天折算）。时效事实（官方产品页逐字公告）：2027-04-30 起 AWS 将停止支持 Amazon Q Developer IDE 插件，官方建议改用 Kiro。完整引文与出处见本条 evidence（字段 billing.note）。"
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "额度单位是**提交的行数（LOC）**，不是 token/积分/请求数 ⇒ 按 other 记并写明口径、不折算。官方逐字：4,000 lines of code per month per user pooled at account level; extra lines at $.003 per LOC submitted.",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": [
+        {
+          "kind": "account_required",
+          "value": true,
+          "note": "官方逐字：allocations aggregated at the AWS payer-account level every month；超额 $0.003/LOC。"
+        }
+      ],
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Pro Tier: Expanded limits $19/mo. per user ; Pro — 4,000 lines of code per month per user pooled at account level. Extra lines of code available at $.003 per line of code submitted.",
+          "sourceUrl": "https://aws.amazon.com/q/developer/pricing/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        },
+        {
+          "field": "restrictions",
+          "quote": "On April 30, 2027, AWS will discontinue support for Amazon Q Developer IDE plugins. For capabilities similar to Amazon Q Developer IDE plugins, explore Kiro to access the latest models and features.",
+          "sourceUrl": "https://aws.amazon.com/q/developer/",
+          "capturedAt": "2026-10-04",
           "lang": "en"
         }
       ],
@@ -578,6 +683,92 @@
       }
     },
     {
+      "id": "7d2b06f8e311",
+      "kind": "coding",
+      "provider": "google",
+      "planName": "Gemini Code Assist Enterprise",
+      "officialUrl": "https://codeassist.google/",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://codeassist.google/",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 54,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方两组价：年付预付 US $45/user/month、无年付承诺 US $54/user/month ⇒ 收月付 $54。同页另有「Enterprise membership … $75 per developer per month」是另一件商品（企业会员包），与本档不是同一件事，只认 $54。"
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方未给固定额度数值 ⇒ rate_limited，不写数字。",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Price per user with no annual upfront commitment — $0/user/month | $22.80/user/month | $54/user/month",
+          "sourceUrl": "https://codeassist.google/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "55fcf3e3b735",
+      "kind": "coding",
+      "provider": "google",
+      "planName": "Gemini Code Assist Standard",
+      "officialUrl": "https://codeassist.google/",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://codeassist.google/",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 22.8,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方两组价并列：年付预付 US $19/user/month、无年付承诺 US $22.80/user/month ⇒ 收无年付承诺的月付 $22.80，年付 $19 见 note。受众逐字：Individual student, hobbyist, open source, and freelance developers。"
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方本档权益列没有可核对的固定额度数值（只有功能清单与 Gemini CLI 的「generous free tier with high usage limits」这类措辞）⇒ rate_limited 并保留官方口径，**不写数字**。",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Price per user with no annual upfront commitment — $0/user/month | $22.80/user/month | $54/user/month",
+          "sourceUrl": "https://codeassist.google/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
       "id": "5939e9bc26e7",
       "kind": "coding",
       "provider": "iflytek",
@@ -663,6 +854,92 @@
           "sourceUrl": "https://www.xfyun.cn/doc/spark/CodingPlan.html",
           "capturedAt": "2026-10-04",
           "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "3d40bba3e537",
+      "kind": "coding",
+      "provider": "jetbrains",
+      "planName": "JetBrains AI Pro",
+      "officialUrl": "https://www.jetbrains.com/ai-ides/buy/",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 10,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方购买页内嵌商品目录 JSON 同时给出两组价：**个人** US $10.00/月（年付 US $100.00，合 US $8.33/月）、**商业** US $20.00/月（年付 US $200.00，合 US $16.67/月）。本条收**个人档月付**（schema 的身份里没有 audience 维度，另开会变成两条同名记录）；商业档价与年付价见本条 note。"
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方该页只给价格与服务档位，未公布可核对的固定额度数值 ⇒ 按 rate_limited 记，不写数字。",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "\"code\": \"AIP\" … \"prices\": {\"personal\": {\"yearlyPerMonth\": [\"US $8.33\"], \"monthly\": [\"US $10.00\"]}, \"commercial\": {\"monthly\": [\"US $20.00\"]}} … \"name\": \"JetBrains AI Pro\"",
+          "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "6713bb49d876",
+      "kind": "coding",
+      "provider": "jetbrains",
+      "planName": "JetBrains AI Ultimate",
+      "officialUrl": "https://www.jetbrains.com/ai-ides/buy/",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 30,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方同一商品目录 JSON：个人 US $30.00/月（年付 US $300.00，合 US $25.00/月）、商业 US $60.00/月（年付 US $600.00，合 US $50.00/月）⇒ 收个人档月付。商品码 IDESPR-AIU（捆绑、仅商业档、仅年付 $720.00）不收。"
+      },
+      "quota": {
+        "type": "rate_limited",
+        "amount": null,
+        "period": null,
+        "description": "官方未公布可核对的固定额度数值 ⇒ rate_limited，不写数字。",
+        "conversionDependsOnModel": null
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "\"code\": \"AIPU\" … \"prices\": {\"personal\": {\"monthly\": [\"US $30.00\"]}, \"commercial\": {\"monthly\": [\"US $60.00\"]}} … \"name\": \"JetBrains AI Ultimate\"",
+          "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
         }
       ],
       "derivedMetrics": {
@@ -1083,6 +1360,92 @@
           "sourceUrl": "https://help.aliyun.com/zh/lingma/billing-description",
           "capturedAt": "2026-10-01",
           "lang": "zh"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "415f82fc8938",
+      "kind": "coding",
+      "provider": "replit",
+      "planName": "Core",
+      "officialUrl": "https://replit.com/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://replit.com/pricing",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 20,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方定价页顶部标注 Yearly「Up to 10% off」；Core 卡片直出 $20 / $18 / month, billed annually。本条收**月付 $20**，年付 $18/月 见本条 note。"
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "官方卡片逐字：$20 towards most powerful models（每月 $20 抵用于最强模型）+ Up to 30 hours of chat on Free Mode + Up to 60 projects on Free Mode。额度以**金额**表示、官方未给 token / 积分数值 ⇒ 按 other 记并写明口径，**不折算**。",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Core $20 / $18 / month, billed annually — ✔ AI integrations ✔ Up to 30 hours of chat on Free Mode ✔ Up to 60 projects on Free Mode ✔ $20 towards most powerful models ✔ Plan mode ✔ Unlimited workspaces",
+          "sourceUrl": "https://replit.com/pricing",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
+        }
+      ],
+      "derivedMetrics": {
+        "nominalUnitPrice": null
+      }
+    },
+    {
+      "id": "4f9af31d0d58",
+      "kind": "coding",
+      "provider": "replit",
+      "planName": "Pro",
+      "officialUrl": "https://replit.com/pricing",
+      "source": "Official-Pricing",
+      "sourceUrl": "https://replit.com/pricing",
+      "region": "global",
+      "billing": {
+        "period": "monthly",
+        "currency": "USD",
+        "regularPrice": 100,
+        "promoPrice": null,
+        "promoNote": null,
+        "note": "官方卡片 Pro $100 / $90 / month, billed annually。本条收月付 $100，年付 $90/月 见本条 note。Enterprise 档官方写 Custom ⇒ 不是固定档价，**不收**；页面上没有 Free 档 ⇒ 不为它新建 regularPrice=0 的记录。"
+      },
+      "quota": {
+        "type": "other",
+        "amount": null,
+        "period": "monthly",
+        "description": "官方卡片逐字：$100 towards most powerful models + 10 parallel agents + Even more Free Mode usage + Up to 15 collaborators + Invite up to 50 viewers + Database rollback up to 28 days。金额口径 ⇒ other，不折算。",
+        "conversionDependsOnModel": true
+      },
+      "supportedModels": null,
+      "restrictions": null,
+      "firstSeen": "2026-10-04",
+      "lastSeen": "2026-10-04",
+      "verified": true,
+      "verifiedAt": "2026-10-04",
+      "evidence": [
+        {
+          "field": "billing.regularPrice",
+          "quote": "Pro $100 / $90 / month, billed annually — ✔ 10 parallel agents ✔ Premium Support ✔ Even more Free Mode usage ✔ $100 towards most powerful models ✔ Up to 15 collaborators",
+          "sourceUrl": "https://replit.com/pricing",
+          "capturedAt": "2026-10-04",
+          "lang": "en"
         }
       ],
       "derivedMetrics": {

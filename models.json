@@ -108,7 +108,7 @@
       ],
       "freshnessGroup": "current-mainline",
       "firstSeen": "2026-10-01",
-      "lastSeen": "2026-10-01",
+      "lastSeen": "2026-10-04",
       "catalogStatus": "current",
       "catalogReason": "group-newest-within-current-window",
       "note": "跨平台身份合并（人工判断）：阿里云百炼官方页 Model ID = `deepseek-v4.1-flash`（见 api-plans 记录 ef4d06758403 的 evidence）；DeepSeek 官方页同一模型 = `deepseek-flash`、别名 `DeepSeek-V4.1-Flash`（见 fffbb44ac3a9）。据上述两处官方串一致（V4.1 + Flash）**判断为**同一身份；价格各留原记录。若日后证实版本不同应拆开。"
@@ -168,7 +168,7 @@
       ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
-      "lastSeen": "2026-10-01",
+      "lastSeen": "2026-10-04",
       "catalogStatus": "current",
       "catalogReason": "group-newest-within-current-window",
       "note": null
@@ -450,7 +450,7 @@
       "releaseEvidence": [],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
-      "lastSeen": "2026-10-01",
+      "lastSeen": "2026-10-04",
       "catalogStatus": "unknown",
       "catalogReason": "group-has-no-dated-model",
       "note": null
@@ -470,7 +470,7 @@
       "releaseEvidence": [],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
-      "lastSeen": "2026-10-01",
+      "lastSeen": "2026-10-04",
       "catalogStatus": "unknown",
       "catalogReason": "group-has-no-dated-model",
       "note": null
@@ -712,7 +712,7 @@
       "releaseEvidence": [],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
-      "lastSeen": "2026-10-01",
+      "lastSeen": "2026-10-04",
       "catalogStatus": "unknown",
       "catalogReason": "group-has-no-dated-model",
       "note": null
@@ -801,7 +801,7 @@
       ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
-      "lastSeen": "2026-10-01",
+      "lastSeen": "2026-10-04",
       "catalogStatus": "current",
       "catalogReason": "group-newest-within-current-window",
       "note": null
@@ -865,7 +865,7 @@
       "releaseEvidence": [],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
-      "lastSeen": "2026-10-01",
+      "lastSeen": "2026-10-04",
       "catalogStatus": "unknown",
       "catalogReason": "group-has-no-dated-model",
       "note": null
@@ -885,7 +885,7 @@
       "releaseEvidence": [],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
-      "lastSeen": "2026-10-01",
+      "lastSeen": "2026-10-04",
       "catalogStatus": "unknown",
       "catalogReason": "group-has-no-dated-model",
       "note": null

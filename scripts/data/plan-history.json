@@ -877,6 +877,184 @@
       },
       "runAt": "2026-10-04T11:19:28.690Z",
       "eventId": "37ee48446d3f"
+    },
+    {
+      "planId": "3d40bba3e537",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 10,
+        "billing.currency": "USD",
+        "quota.type": "rate_limited",
+        "quota.description": "官方该页只给价格与服务档位，未公布可核对的固定额度数值 ⇒ 按 rate_limited 记，不写数字。",
+        "region": "global",
+        "officialUrl": "https://www.jetbrains.com/ai-ides/buy/",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/"
+      },
+      "runAt": "2026-10-04T12:07:08.828Z",
+      "eventId": "a4c4ec384cb4"
+    },
+    {
+      "planId": "415f82fc8938",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 20,
+        "billing.currency": "USD",
+        "quota.type": "other",
+        "quota.period": "monthly",
+        "quota.description": "官方卡片逐字：$20 towards most powerful models（每月 $20 抵用于最强模型）+ Up to 30 hours of chat on Free Mode + Up to 60 projects on Free Mode。额度以**金额**表示、官方未给 token / 积分数值 ⇒ 按 other 记并写明口径，**不折算**。",
+        "region": "global",
+        "officialUrl": "https://replit.com/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://replit.com/pricing"
+      },
+      "runAt": "2026-10-04T12:07:08.828Z",
+      "eventId": "4ac4ad8715b3"
+    },
+    {
+      "planId": "4f9af31d0d58",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 100,
+        "billing.currency": "USD",
+        "quota.type": "other",
+        "quota.period": "monthly",
+        "quota.description": "官方卡片逐字：$100 towards most powerful models + 10 parallel agents + Even more Free Mode usage + Up to 15 collaborators + Invite up to 50 viewers + Database rollback up to 28 days。金额口径 ⇒ other，不折算。",
+        "region": "global",
+        "officialUrl": "https://replit.com/pricing",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://replit.com/pricing"
+      },
+      "runAt": "2026-10-04T12:07:08.828Z",
+      "eventId": "52cdf72e0737"
+    },
+    {
+      "planId": "55fcf3e3b735",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 22.8,
+        "billing.currency": "USD",
+        "quota.type": "rate_limited",
+        "quota.description": "官方本档权益列没有可核对的固定额度数值（只有功能清单与 Gemini CLI 的「generous free tier with high usage limits」这类措辞）⇒ rate_limited 并保留官方口径，**不写数字**。",
+        "region": "global",
+        "officialUrl": "https://codeassist.google/",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://codeassist.google/"
+      },
+      "runAt": "2026-10-04T12:07:08.828Z",
+      "eventId": "a54e79d840e1"
+    },
+    {
+      "planId": "6713bb49d876",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 30,
+        "billing.currency": "USD",
+        "quota.type": "rate_limited",
+        "quota.description": "官方未公布可核对的固定额度数值 ⇒ rate_limited，不写数字。",
+        "region": "global",
+        "officialUrl": "https://www.jetbrains.com/ai-ides/buy/",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://www.jetbrains.com/ai-ides/buy/"
+      },
+      "runAt": "2026-10-04T12:07:08.828Z",
+      "eventId": "98a4cd864067"
+    },
+    {
+      "planId": "7d2b06f8e311",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 54,
+        "billing.currency": "USD",
+        "quota.type": "rate_limited",
+        "quota.description": "官方未给固定额度数值 ⇒ rate_limited，不写数字。",
+        "region": "global",
+        "officialUrl": "https://codeassist.google/",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://codeassist.google/"
+      },
+      "runAt": "2026-10-04T12:07:08.828Z",
+      "eventId": "a92c6cf5c193"
+    },
+    {
+      "planId": "7f63541ead64",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 19,
+        "billing.currency": "USD",
+        "quota.type": "other",
+        "quota.period": "monthly",
+        "quota.description": "额度单位是**提交的行数（LOC）**，不是 token/积分/请求数 ⇒ 按 other 记并写明口径、不折算。官方逐字：4,000 lines of code per month per user pooled at account level; extra lines at $.003 per LOC submitted.",
+        "restrictions": [
+          {
+            "kind": "account_required",
+            "value": true,
+            "note": "官方逐字：allocations aggregated at the AWS payer-account level every month；超额 $0.003/LOC。"
+          }
+        ],
+        "region": "global",
+        "officialUrl": "https://aws.amazon.com/q/developer/pricing/",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://aws.amazon.com/q/developer/pricing/"
+      },
+      "runAt": "2026-10-04T12:07:08.828Z",
+      "eventId": "dd0e668e8f7b"
+    },
+    {
+      "planId": "9cdc922f1407",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 0,
+        "billing.currency": "USD",
+        "quota.type": "requests",
+        "quota.amount": 50,
+        "quota.period": "monthly",
+        "restrictions": [
+          {
+            "kind": "account_required",
+            "value": true,
+            "note": "官方逐字：available to users logged in as an AWS Identity and Access Management (IAM) user or AWS Builder ID user."
+          }
+        ],
+        "region": "global",
+        "officialUrl": "https://aws.amazon.com/q/developer/pricing/",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://aws.amazon.com/q/developer/pricing/"
+      },
+      "runAt": "2026-10-04T12:07:08.828Z",
+      "eventId": "43ace235ef74"
     }
   ]
 }
