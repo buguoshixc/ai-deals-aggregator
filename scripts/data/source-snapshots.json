@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-04T10:34:24.755Z",
+  "updatedAt": "2026-10-04T16:31:52.091Z",
   "note": "每个来源保留两代页面结构摘要（不含页面正文）。用于 AI 诊断与人工排查；`npm run selftest:ai` 守着体积上限。",
   "sources": [
     {
       "source": "aitools",
       "name": "aitools.fyi",
-      "updatedAt": "2026-10-04T10:34:24.755Z",
+      "updatedAt": "2026-10-04T16:31:52.091Z",
       "current": {
-        "capturedAt": "2026-10-04T10:34:24.755Z",
+        "capturedAt": "2026-10-04T16:31:52.091Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://aitools.fyi/",
-            "capturedAt": "2026-10-04T10:33:56.669Z",
+            "capturedAt": "2026-10-04T16:31:13.678Z",
             "httpStatus": 200,
             "bytes": 335317,
             "htmlSha256": "0688843894318744",
@@ -225,18 +225,18 @@
     {
       "source": "cn_aliyun",
       "name": "阿里云百炼",
-      "updatedAt": "2026-10-04T10:34:24.755Z",
+      "updatedAt": "2026-10-04T16:31:52.091Z",
       "current": {
-        "capturedAt": "2026-10-04T10:34:24.755Z",
+        "capturedAt": "2026-10-04T16:31:52.091Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://help.aliyun.com/zh/model-studio/new-free-quota",
-            "capturedAt": "2026-10-04T10:33:49.807Z",
+            "capturedAt": "2026-10-04T16:31:12.032Z",
             "httpStatus": 200,
             "bytes": 70972,
-            "htmlSha256": "cd513ac56b43c3ea",
+            "htmlSha256": "97afc0a2cf097dd9",
             "titleSha256": "645631f20b7050a3",
             "markers": {
               "login": false,
@@ -450,15 +450,15 @@
     {
       "source": "cn_qianfan",
       "name": "百度千帆",
-      "updatedAt": "2026-10-04T10:34:24.755Z",
+      "updatedAt": "2026-10-04T16:31:52.091Z",
       "current": {
-        "capturedAt": "2026-10-04T10:34:24.755Z",
+        "capturedAt": "2026-10-04T16:31:52.091Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg",
-            "capturedAt": "2026-10-04T10:33:48.607Z",
+            "capturedAt": "2026-10-04T16:31:10.072Z",
             "httpStatus": 200,
             "bytes": 288126,
             "htmlSha256": "d9ffc36e09eb3bae",
@@ -675,18 +675,18 @@
     {
       "source": "cn_volc_ark",
       "name": "火山方舟",
-      "updatedAt": "2026-10-04T10:34:24.755Z",
+      "updatedAt": "2026-10-04T16:31:52.091Z",
       "current": {
-        "capturedAt": "2026-10-04T10:34:24.755Z",
+        "capturedAt": "2026-10-04T16:31:52.091Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://www.volcengine.com/product/ark",
-            "capturedAt": "2026-10-04T10:34:24.241Z",
+            "capturedAt": "2026-10-04T16:31:51.526Z",
             "httpStatus": null,
-            "bytes": 2430494,
-            "htmlSha256": "a95b395969b38129",
+            "bytes": 2433152,
+            "htmlSha256": "11c36573595e4431",
             "titleSha256": "e08d1beecacc59dd",
             "markers": {
               "login": false,
@@ -708,8 +708,8 @@
               "link": 198,
               "form": 0,
               "input": 2,
-              "script": 35,
-              "div": 2045
+              "script": 40,
+              "div": 2052
             },
             "shape": {
               "hasDataTable": true,
@@ -727,7 +727,7 @@
             "selectorHits": {
               "table": 22,
               "table tr": 54,
-              "div": 2045
+              "div": 2052
             },
             "regexHits": {
               "free-word": 15
@@ -898,15 +898,15 @@
     {
       "source": "cn_zhipu",
       "name": "智谱AI",
-      "updatedAt": "2026-10-04T10:34:24.755Z",
+      "updatedAt": "2026-10-04T16:31:52.091Z",
       "current": {
-        "capturedAt": "2026-10-04T10:34:24.755Z",
+        "capturedAt": "2026-10-04T16:31:52.091Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://docs.bigmodel.cn/cn/guide/start/model-overview",
-            "capturedAt": "2026-10-04T10:33:50.229Z",
+            "capturedAt": "2026-10-04T16:31:12.954Z",
             "httpStatus": 200,
             "bytes": 856466,
             "htmlSha256": "80203992ec14b3b0",
@@ -1119,18 +1119,18 @@
     {
       "source": "cn_zhipu_pricing",
       "name": "智谱AI活动页",
-      "updatedAt": "2026-10-04T10:34:24.755Z",
+      "updatedAt": "2026-10-04T16:31:52.091Z",
       "current": {
-        "capturedAt": "2026-10-04T10:34:24.755Z",
+        "capturedAt": "2026-10-04T16:31:52.091Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://bigmodel.cn/pricing",
-            "capturedAt": "2026-10-04T10:34:20.698Z",
+            "capturedAt": "2026-10-04T16:31:44.471Z",
             "httpStatus": null,
-            "bytes": 931831,
-            "htmlSha256": "b8a198c2af9e5a70",
+            "bytes": 931832,
+            "htmlSha256": "f4cd9212af9b1f7c",
             "titleSha256": "5e48a507d22998aa",
             "markers": {
               "login": false,
@@ -1342,442 +1342,25 @@
     {
       "source": "futurepedia",
       "name": "Futurepedia",
-      "updatedAt": "2026-10-04T10:34:24.755Z",
-      "current": {
-        "capturedAt": "2026-10-04T10:34:24.755Z",
-        "itemCount": 8,
-        "items": [
-          {
-            "v": 1,
-            "url": "https://www.futurepedia.io/",
-            "capturedAt": "2026-10-04T10:33:59.643Z",
-            "httpStatus": 200,
-            "bytes": 1482138,
-            "htmlSha256": "46aa41669b74915b",
-            "titleSha256": "1f9878c086490340",
-            "markers": {
-              "login": false,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 11,
-              "listItem": 28,
-              "heading": 8,
-              "heading1": 1,
-              "link": 108,
-              "form": 2,
-              "input": 2,
-              "script": 76,
-              "div": 298
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": true,
-              "scriptToTextRatio": 99
-            },
-            "textLength": 5162,
-            "textSha256": "37397788edb13aa2",
-            "keywordHits": {
-              "free": 11,
-              "deal": 0,
-              "discount": 0,
-              "pricing": 0
-            },
-            "selectorHits": {
-              "a[href*=\"utm_source=futurepedia\"]": 1,
-              "meta[name=\"description\"]": 1,
-              "span": 47
-            },
-            "regexHits": {
-              "deal-word": 87
-            },
-            "topClasses": [
-              {
-                "name": "flex",
-                "count": 160
-              },
-              {
-                "name": "items-center",
-                "count": 125
-              },
-              {
-                "name": "font-normal",
-                "count": 77
-              },
-              {
-                "name": "justify-center",
-                "count": 69
-              },
-              {
-                "name": "leading-none",
-                "count": 65
-              },
-              {
-                "name": "text-base",
-                "count": 65
-              },
-              {
-                "name": "text-textGray",
-                "count": 63
-              },
-              {
-                "name": "text-sm",
-                "count": 58
-              },
-              {
-                "name": "hover:no-underline",
-                "count": 53
-              },
-              {
-                "name": "hover:opacity-75",
-                "count": 53
-              },
-              {
-                "name": "w-full",
-                "count": 49
-              },
-              {
-                "name": "font-bold",
-                "count": 41
-              }
-            ]
-          },
-          {
-            "v": 1,
-            "url": "https://www.futurepedia.io/tool/chatgpt",
-            "capturedAt": "2026-10-04T10:34:00.797Z",
-            "httpStatus": 200,
-            "bytes": 246664,
-            "htmlSha256": "16ba4091fdc375ec",
-            "titleSha256": "ec0adcd459367f2b",
-            "markers": {
-              "login": false,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 0,
-              "listItem": 64,
-              "heading": 13,
-              "heading1": 2,
-              "link": 74,
-              "form": 2,
-              "input": 2,
-              "script": 87,
-              "div": 222
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": false,
-              "scriptToTextRatio": 19.73
-            },
-            "textLength": 7098,
-            "textSha256": "735350e16def2e93",
-            "keywordHits": {
-              "free": 9,
-              "deal": 1,
-              "discount": 0,
-              "pricing": 2
-            },
-            "selectorHits": {
-              "a[href*=\"utm_source=futurepedia\"]": 3,
-              "meta[name=\"description\"]": 1,
-              "span": 54
-            },
-            "regexHits": {
-              "deal-word": 27
-            },
-            "topClasses": [
-              {
-                "name": "flex",
-                "count": 121
-              },
-              {
-                "name": "items-center",
-                "count": 75
-              },
-              {
-                "name": "h-4",
-                "count": 63
-              },
-              {
-                "name": "w-4",
-                "count": 60
-              },
-              {
-                "name": "text-transparent",
-                "count": 46
-              },
-              {
-                "name": "fill-orange2",
-                "count": 45
-              },
-              {
-                "name": "w-full",
-                "count": 44
-              },
-              {
-                "name": "text-sm",
-                "count": 33
-              },
-              {
-                "name": "pl-0",
-                "count": 30
-              },
-              {
-                "name": "sr-only",
-                "count": 26
-              },
-              {
-                "name": "justify-center",
-                "count": 25
-              },
-              {
-                "name": "rounded-full",
-                "count": 25
-              }
-            ]
-          },
-          {
-            "v": 1,
-            "url": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
-            "capturedAt": "2026-10-04T10:34:01.042Z",
-            "httpStatus": 200,
-            "bytes": 181128,
-            "htmlSha256": "d9d77921ceef1a36",
-            "titleSha256": "7bd434d265f56ea7",
-            "markers": {
-              "login": false,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 0,
-              "listItem": 57,
-              "heading": 11,
-              "heading1": 1,
-              "link": 62,
-              "form": 2,
-              "input": 2,
-              "script": 79,
-              "div": 110
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": false,
-              "scriptToTextRatio": 14.26
-            },
-            "textLength": 7490,
-            "textSha256": "21f3f46dd4fc37bc",
-            "keywordHits": {
-              "free": 9,
-              "deal": 0,
-              "discount": 0,
-              "pricing": 2
-            },
-            "selectorHits": {
-              "a[href*=\"utm_source=futurepedia\"]": 5,
-              "meta[name=\"description\"]": 1,
-              "span": 35
-            },
-            "regexHits": {
-              "deal-word": 23
-            },
-            "topClasses": [
-              {
-                "name": "flex",
-                "count": 78
-              },
-              {
-                "name": "items-center",
-                "count": 53
-              },
-              {
-                "name": "w-full",
-                "count": 36
-              },
-              {
-                "name": "text-sm",
-                "count": 32
-              },
-              {
-                "name": "pl-0",
-                "count": 26
-              },
-              {
-                "name": "text-gray-300",
-                "count": 25
-              },
-              {
-                "name": "justify-center",
-                "count": 24
-              },
-              {
-                "name": "gap-2",
-                "count": 23
-              },
-              {
-                "name": "leading-6",
-                "count": 23
-              },
-              {
-                "name": "px-4",
-                "count": 23
-              },
-              {
-                "name": "hover:text-white",
-                "count": 22
-              },
-              {
-                "name": "text-white",
-                "count": 22
-              }
-            ]
-          },
-          {
-            "v": 1,
-            "url": "https://www.futurepedia.io/tool/perplexity-ai",
-            "capturedAt": "2026-10-04T10:34:01.538Z",
-            "httpStatus": 200,
-            "bytes": 214217,
-            "htmlSha256": "8c51e703f937a715",
-            "titleSha256": "d5d774c86cbd9bc3",
-            "markers": {
-              "login": false,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 0,
-              "listItem": 60,
-              "heading": 13,
-              "heading1": 2,
-              "link": 66,
-              "form": 2,
-              "input": 2,
-              "script": 86,
-              "div": 171
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": false,
-              "scriptToTextRatio": 16.73
-            },
-            "textLength": 7625,
-            "textSha256": "05e04a5a094d3a23",
-            "keywordHits": {
-              "free": 10,
-              "deal": 1,
-              "discount": 0,
-              "pricing": 2
-            },
-            "selectorHits": {
-              "a[href*=\"utm_source=futurepedia\"]": 3,
-              "meta[name=\"description\"]": 1,
-              "span": 45
-            },
-            "regexHits": {
-              "deal-word": 26
-            },
-            "topClasses": [
-              {
-                "name": "flex",
-                "count": 101
-              },
-              {
-                "name": "items-center",
-                "count": 68
-              },
-              {
-                "name": "w-full",
-                "count": 44
-              },
-              {
-                "name": "text-sm",
-                "count": 33
-              },
-              {
-                "name": "text-gray-300",
-                "count": 30
-              },
-              {
-                "name": "h-4",
-                "count": 28
-              },
-              {
-                "name": "justify-center",
-                "count": 25
-              },
-              {
-                "name": "pl-0",
-                "count": 25
-              },
-              {
-                "name": "w-4",
-                "count": 25
-              },
-              {
-                "name": "gap-2",
-                "count": 24
-              },
-              {
-                "name": "text-white",
-                "count": 24
-              },
-              {
-                "name": "leading-6",
-                "count": 23
-              }
-            ]
-          }
-        ]
-      },
+      "updatedAt": "2026-10-04T16:31:52.091Z",
+      "current": null,
       "previous": null
     },
     {
       "source": "futuretools",
       "name": "Futuretools",
-      "updatedAt": "2026-10-04T10:34:24.755Z",
+      "updatedAt": "2026-10-04T16:31:52.091Z",
       "current": {
-        "capturedAt": "2026-10-04T10:34:24.755Z",
+        "capturedAt": "2026-10-04T16:31:52.091Z",
         "itemCount": 39,
         "items": [
           {
             "v": 1,
             "url": "https://www.futuretools.io/",
-            "capturedAt": "2026-10-04T10:34:05.476Z",
+            "capturedAt": "2026-10-04T16:31:16.860Z",
             "httpStatus": 200,
-            "bytes": 430840,
-            "htmlSha256": "9eaa644f35756cd0",
+            "bytes": 430834,
+            "htmlSha256": "d405d1f0de11756b",
             "titleSha256": "e042c9a77d0f9e16",
             "markers": {
               "login": false,
@@ -1805,10 +1388,10 @@
             "shape": {
               "hasDataTable": false,
               "hasCards": true,
-              "scriptToTextRatio": 17.79
+              "scriptToTextRatio": 17.8
             },
-            "textLength": 9499,
-            "textSha256": "e1d6be5713cd1141",
+            "textLength": 9496,
+            "textSha256": "4b6ea2d810f3b1ee",
             "keywordHits": {
               "free": 1,
               "deal": 0,
@@ -1874,11 +1457,112 @@
           },
           {
             "v": 1,
-            "url": "https://futuretools.io/tools/ankon-ai-kos341",
-            "capturedAt": "2026-10-04T10:34:06.100Z",
+            "url": "https://futuretools.io/tools/star-by-face",
+            "capturedAt": "2026-10-04T16:31:17.159Z",
             "httpStatus": 200,
-            "bytes": 90890,
-            "htmlSha256": "b133c95d41e13f6f",
+            "bytes": 92223,
+            "htmlSha256": "ccec72649dcf413c",
+            "titleSha256": "3e145b34cabccb1b",
+            "markers": {
+              "login": true,
+              "captcha": false,
+              "cloudflare": false,
+              "errorPage": false,
+              "consentOnly": false,
+              "spaShell": false,
+              "noDataTable": true
+            },
+            "counts": {
+              "table": 0,
+              "tr": 0,
+              "td": 0,
+              "card": 13,
+              "listItem": 27,
+              "heading": 11,
+              "heading1": 1,
+              "link": 47,
+              "form": 2,
+              "input": 4,
+              "script": 41,
+              "div": 86
+            },
+            "shape": {
+              "hasDataTable": false,
+              "hasCards": true,
+              "scriptToTextRatio": 33.47
+            },
+            "textLength": 1427,
+            "textSha256": "b7b9ad268bad3519",
+            "keywordHits": {
+              "free": 5,
+              "deal": 0,
+              "discount": 0
+            },
+            "selectorHits": {
+              "a[href^=\"/tools/\"]": 0,
+              "a[href^=\"/go/\"]": 2
+            },
+            "regexHits": {
+              "deal-word": 10
+            },
+            "topClasses": [
+              {
+                "name": "transition-colors",
+                "count": 56
+              },
+              {
+                "name": "text-muted-foreground",
+                "count": 52
+              },
+              {
+                "name": "text-sm",
+                "count": 47
+              },
+              {
+                "name": "flex",
+                "count": 43
+              },
+              {
+                "name": "items-center",
+                "count": 42
+              },
+              {
+                "name": "font-medium",
+                "count": 34
+              },
+              {
+                "name": "rounded-lg",
+                "count": 30
+              },
+              {
+                "name": "px-3",
+                "count": 28
+              },
+              {
+                "name": "hover:text-primary",
+                "count": 25
+              },
+              {
+                "name": "border",
+                "count": 21
+              },
+              {
+                "name": "gap-2",
+                "count": 20
+              },
+              {
+                "name": "py-2",
+                "count": 20
+              }
+            ]
+          },
+          {
+            "v": 1,
+            "url": "https://futuretools.io/tools/ankon-ai-kos341",
+            "capturedAt": "2026-10-04T16:31:17.177Z",
+            "httpStatus": 200,
+            "bytes": 90933,
+            "htmlSha256": "1f2d3ab917255d8f",
             "titleSha256": "764b0b5720ab2507",
             "markers": {
               "login": true,
@@ -1900,13 +1584,13 @@
               "link": 47,
               "form": 2,
               "input": 4,
-              "script": 40,
+              "script": 41,
               "div": 83
             },
             "shape": {
               "hasDataTable": false,
               "hasCards": true,
-              "scriptToTextRatio": 24.97
+              "scriptToTextRatio": 24.98
             },
             "textLength": 1905,
             "textSha256": "c5bb7a38d56adf62",
@@ -1975,12 +1659,12 @@
           },
           {
             "v": 1,
-            "url": "https://futuretools.io/tools/cliphi-w0gfbv",
-            "capturedAt": "2026-10-04T10:34:06.246Z",
+            "url": "https://futuretools.io/tools/klarent-15bc54ee",
+            "capturedAt": "2026-10-04T16:31:17.203Z",
             "httpStatus": 200,
-            "bytes": 93800,
-            "htmlSha256": "64fe18969141f2a1",
-            "titleSha256": "fb85ca5dc8045183",
+            "bytes": 93595,
+            "htmlSha256": "b556ecc6cdbb7693",
+            "titleSha256": "37831213d1ab1514",
             "markers": {
               "login": true,
               "captcha": false,
@@ -1994,23 +1678,23 @@
               "table": 0,
               "tr": 0,
               "td": 0,
-              "card": 13,
+              "card": 14,
               "listItem": 27,
               "heading": 11,
               "heading1": 1,
-              "link": 47,
+              "link": 49,
               "form": 2,
               "input": 4,
-              "script": 44,
-              "div": 88
+              "script": 45,
+              "div": 85
             },
             "shape": {
               "hasDataTable": false,
               "hasCards": true,
-              "scriptToTextRatio": 27.67
+              "scriptToTextRatio": 24.3
             },
-            "textLength": 1768,
-            "textSha256": "3f0dfcb70fbfa0a2",
+            "textLength": 2035,
+            "textSha256": "a11c855b706009d6",
             "keywordHits": {
               "free": 2,
               "deal": 0,
@@ -2026,11 +1710,11 @@
             "topClasses": [
               {
                 "name": "transition-colors",
-                "count": 56
+                "count": 58
               },
               {
                 "name": "text-muted-foreground",
-                "count": 52
+                "count": 54
               },
               {
                 "name": "text-sm",
@@ -2038,132 +1722,31 @@
               },
               {
                 "name": "flex",
-                "count": 43
+                "count": 41
               },
               {
                 "name": "items-center",
-                "count": 42
+                "count": 40
               },
               {
                 "name": "font-medium",
-                "count": 34
+                "count": 36
               },
               {
                 "name": "rounded-lg",
-                "count": 30
+                "count": 31
               },
               {
                 "name": "px-3",
-                "count": 28
+                "count": 29
               },
               {
                 "name": "hover:text-primary",
-                "count": 25
+                "count": 27
               },
               {
                 "name": "border",
-                "count": 21
-              },
-              {
-                "name": "gap-2",
-                "count": 20
-              },
-              {
-                "name": "py-2",
-                "count": 20
-              }
-            ]
-          },
-          {
-            "v": 1,
-            "url": "https://futuretools.io/tools/star-by-face",
-            "capturedAt": "2026-10-04T10:34:06.349Z",
-            "httpStatus": 200,
-            "bytes": 92180,
-            "htmlSha256": "06557a169f72a570",
-            "titleSha256": "3e145b34cabccb1b",
-            "markers": {
-              "login": true,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 13,
-              "listItem": 27,
-              "heading": 11,
-              "heading1": 1,
-              "link": 47,
-              "form": 2,
-              "input": 4,
-              "script": 40,
-              "div": 86
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": true,
-              "scriptToTextRatio": 33.45
-            },
-            "textLength": 1427,
-            "textSha256": "b7b9ad268bad3519",
-            "keywordHits": {
-              "free": 5,
-              "deal": 0,
-              "discount": 0
-            },
-            "selectorHits": {
-              "a[href^=\"/tools/\"]": 0,
-              "a[href^=\"/go/\"]": 2
-            },
-            "regexHits": {
-              "deal-word": 10
-            },
-            "topClasses": [
-              {
-                "name": "transition-colors",
-                "count": 56
-              },
-              {
-                "name": "text-muted-foreground",
-                "count": 52
-              },
-              {
-                "name": "text-sm",
-                "count": 47
-              },
-              {
-                "name": "flex",
-                "count": 43
-              },
-              {
-                "name": "items-center",
-                "count": 42
-              },
-              {
-                "name": "font-medium",
-                "count": 34
-              },
-              {
-                "name": "rounded-lg",
-                "count": 30
-              },
-              {
-                "name": "px-3",
-                "count": 28
-              },
-              {
-                "name": "hover:text-primary",
-                "count": 25
-              },
-              {
-                "name": "border",
-                "count": 21
+                "count": 22
               },
               {
                 "name": "gap-2",
@@ -2591,18 +2174,18 @@
     {
       "source": "layer3labs",
       "name": "Layer3Labs",
-      "updatedAt": "2026-10-04T10:34:24.755Z",
+      "updatedAt": "2026-10-04T16:31:52.091Z",
       "current": {
-        "capturedAt": "2026-10-04T10:34:24.755Z",
+        "capturedAt": "2026-10-04T16:31:52.091Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://www.layer3labs.io/ai-discounts",
-            "capturedAt": "2026-10-04T10:33:51.412Z",
+            "capturedAt": "2026-10-04T16:31:13.329Z",
             "httpStatus": 200,
-            "bytes": 51987,
-            "htmlSha256": "bb3657a6b47f7781",
+            "bytes": 52144,
+            "htmlSha256": "0f8d78aeadc58ff4",
             "titleSha256": "c0d54efbb51eb330",
             "markers": {
               "login": false,
@@ -2621,7 +2204,7 @@
               "listItem": 54,
               "heading": 17,
               "heading1": 1,
-              "link": 124,
+              "link": 126,
               "form": 0,
               "input": 0,
               "script": 18,
@@ -2644,7 +2227,7 @@
               "table": 2,
               "table tr": 20,
               "table td": 80,
-              "a[href^=\"http\"]": 30
+              "a[href^=\"http\"]": 32
             },
             "regexHits": {
               "deal-table-header": 1
