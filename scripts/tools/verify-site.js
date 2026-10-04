@@ -5443,25 +5443,43 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       rows.map(row => `${row.route || '/'}:${row.text}`).join(' · '));
 
     if (live) {
-      // 线上（`--url=`）：**应当**看到 Cloudflare 的 beacon 请求，而且只允许出现在白名单 origin 上。
-      const beacon = analyticsRequests.filter(url => url.includes('beacon.min.js'));
-      const others = analyticsRequests.filter(url => !url.includes('beacon.min.js'));
-      check('线上：至少一个页面真的加载了 Cloudflare beacon 脚本',
+      // 线上（`--url=`）：**应当**看到 Cloudflare 的 beacon 请求，而且只允许落在两个官方 origin 上。
+      //
+      // ⚠️ 两条判据是**首次线上冒烟实测校正过的**（第一版写错，2026-10-04）：
+      //   ① beacon 脚本请求**不带** `?token=` 查询串 —— token 在脚本元素的 `data-cf-beacon`
+      //      属性里（这正是官方 snippet 的形状）。第一版断言「URL 必须等于脚本地址 + token
+      //      查询串」，线上实测立刻判红：真实请求是 `…/beacon.min.js`（无查询串）。
+      //      那是断言写错了，不是产品错了 —— 修的是断言。
+      //   ② 上报会命中 **`cloudflareinsights.com/cdn-cgi/rum`**（官方文档里「未走 Cloudflare
+      //      代理的站点」的上报端点），因此它**不是**「混进来的其它外部请求」。
+      //      第一版把它当成异常，同样判红。
+      const scriptUrl = analytics.ANALYTICS.beaconScriptUrl;
+      const beacon = analyticsRequests.filter(url => url === scriptUrl || url.startsWith(`${scriptUrl}?`));
+      const rum = analyticsRequests.filter(url => url.startsWith(`${analytics.ANALYTICS.beaconEndpointUrl}?`)
+        || url === analytics.ANALYTICS.beaconEndpointUrl);
+      const unexpected = analyticsRequests.filter(url => !beacon.includes(url) && !rum.includes(url));
+
+      check('线上：至少一个页面真的加载了 Cloudflare beacon 脚本（授权地址，不带查询串）',
         beacon.length > 0,
         beacon.length
           ? `观测到 ${beacon.length} 次 beacon 脚本请求`
           : 'ℹ️ 未观测到 beacon 请求（可能是广告拦截器 / 网络故障 / Production Guard 判错——请人工看 DevTools 的 Network）');
-      check('线上：beacon 请求的 URL 精确等于配置里的脚本地址 + token 查询串',
-        beacon.every(url => url === `${analytics.ANALYTICS.beaconScriptUrl}?token=${analytics.ANALYTICS.siteToken}`),
-        beacon.slice(0, 2).join(' · ') || '（没有观测到，上一项已说明）');
+
+      check('线上：上报只发往官方 RUM 端点 cloudflareinsights.com/cdn-cgi/rum',
+        rum.length > 0,
+        rum.length
+          ? `观测到 ${rum.length} 次 RUM 上报`
+          : 'ℹ️ 本次没有观测到 RUM 上报（页面可能在首次 hidden 之前就结束了 —— 官方在 hidden 后才上报 Web Vitals）');
+
       check('线上：beacon 元素在页面里是 module + data-cf-beacon（与官方 snippet 同形）',
         rows.every(row => row.beaconElement >= 1 || row.bootstraps === 1),
         rows.map(row => `${row.route || '/'}:module=${row.beaconElement}`).join(' · '));
-      check('线上：分析请求只发往白名单 origin（没有其它外部请求混进来）',
-        others.length === 0 && rows.every(row => row.newForbidden === 0),
-        others.slice(0, 3).join(' · ') || '全部落在允许的两个 origin 上');
+
+      check('线上：分析请求**只**落在两个官方地址上（没有别的外部请求混进来）',
+        unexpected.length === 0 && rows.every(row => row.newForbidden === 0) && externalRequests.length === 0,
+        unexpected.slice(0, 3).join(' · ') || '全部落在允许的两个 origin 上');
       console.log(`     线上观测：分析请求 ${analyticsRequests.length} 次 `
-        + `（beacon 脚本 ${beacon.length} · 上报端点 ${others.length}）`);
+        + `（beacon 脚本 ${beacon.length} · RUM 上报 ${rum.length} · 其它 ${unexpected.length}）`);
     } else {
       // 本地：**本轮的强制要求** —— 一个 Cloudflare 请求都不许有。
       check('本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取）',
