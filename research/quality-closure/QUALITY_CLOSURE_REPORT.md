@@ -597,7 +597,18 @@ T23 在提交态独立重跑 **39/40 node 步骤 + 回归比对，全部 exit 0*
 `master` 上的计划采集自 **2026-10-03 15:47Z** 起连续失败：`Collect AI Deals` run 37134505706 在 gate 步骤 exit 1，直接原因是构建自检
 `✗ SEO[itemlist-arity] changes/：ItemList 声明 1 项，但 itemListElement 只有 0 项` —— **正是本轮修复的 P1-4（`/changes/` 非空路径）**，采集侧一产生历史事件就把构建打红，进而 `dist/deals.json` 不存在、job 失败，并由 `workflow_run` 连累那次 deploy 也失败（run 37134604743，11s，按设计「上游采集未通过 → 拒绝发布」）。
 
-本轮的 P1-4 修复（合成非空历史端到端夹具 + itemlist 判据收口）针对的就是这条路径；**但真实采集链路上的确认需要再跑一次 `Collect AI Deals`**（该 workflow 会写入并推送数据，属独立授权范围，本轮未触发）。
+本轮的 P1-4 修复（合成非空历史端到端夹具 + itemlist 判据收口）针对的就是这条路径。**该确认已于 2026-10-04 完成**（用户明确授权「再跑一遍」）：
+
+| 步骤 | 结果 |
+|---|---|
+| 手动触发 `Collect AI Deals`（`workflow_dispatch`；`allow_degraded_run` 未勾选 ⇒ `'false'`） | run `37173084387` **success** 3m49s —— 此前失败的 `Gate (validate → translation → selftests → build → real browser)` 步骤 **✓** |
+| 采集结果提交 | `1b87844 chore(data): 更新优惠数据、来源健康与变更记录 2026-10-04 11:09 CST [skip ci]`；deals **134 → 135**；**`deal-history` 事件 0 → 1**（生产上首次出现非空历史） |
+| 由 `workflow_run` 触发的发布 | run `37173274046` **success** —— 「采集 → 自动发布」这条链路恢复 |
+| 线上 `/changes/` | 200；JSON-LD `ItemList` 1 / `ListItem` 2 自洽；分栏「今日新增（1）」「今日新增（14）」正常渲染 —— **正是此前把构建打红的非空路径** |
+| 线上数据 | `deals.json` **135** 条 · `updatedAt 2026-10-04T11:07:44+08:00` · `deal-history.json` **1** 个事件 |
+| 部署后线上冒烟（第二次） | `verify-site.js --url=` **702 项 0 失败**（比部署前那次少 1 项：断言项数随数据变化；两次均 **0 失败**） |
+
+⇒ P1-4 是本轮唯一一条「**生产现场复现 → 修复 → 生产现场转绿**」的完整闭环。
 
 ---
 
@@ -727,7 +738,7 @@ P0 × 1 全部落在 FIXED；P1 12 条 = FIXED 5 + GUARDRAIL_ADDED 7。逐条证
 1. CI 在提交态重跑完整门禁 —— 已满足：PR #32 的分支 `gate`（run 37171970378）、`master` 的 `Verify site (gate)`（run 37172126751）、以及发布链自己的 `prepublish`（同一 gate action，`allow_degraded_run='false'`，run 37172126798）**三段全绿**；
 2. 线上冒烟 —— 已满足：部署后 `verify-site.js --url=` 对线上站点 **703 项 0 失败**（§21）。
 
-**仍未覆盖的一件事**：真实采集链路的确认（`Collect AI Deals` 自 2026-10-03 起因本轮修复的 P1-4 失败，需要再跑一次该 workflow 才能确认修复在采集现场生效）。它写入并推送生产数据，属独立授权范围，本轮未触发。
+**采集链路的确认也已关闭**（2026-10-04）：手动重跑 `Collect AI Deals` → 门禁 ✓ → 数据提交（deals **135**、`deal-history` 事件 **1**）→ `workflow_run` 自动发布 ✓ → 线上 `/changes/` 正常渲染、线上冒烟 **702 项 0 失败**（§21）。至此本轮的三项收尾条件（CI 在提交态重跑完整门禁、线上冒烟、真实采集链路确认）**全部满足**。
 
 ---
 
