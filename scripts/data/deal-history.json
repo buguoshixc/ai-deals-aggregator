@@ -2706,5 +2706,23 @@
     }
   },
   "absence": {},
-  "events": []
+  "events": [
+    {
+      "id": "4a4f4777ffbc",
+      "at": "2026-10-04",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/flowrite",
+        "verified": false
+      },
+      "runAt": "2026-10-04T03:07:44.127Z"
+    }
+  ]
 }
