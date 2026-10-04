@@ -228,6 +228,17 @@ function main() {
   if (registryLinksLoaded.broken) problems.push(`scripts/data/model-registry-links.json 解析失败：${registryLinksLoaded.broken}`);
   const relations = relationsOf(registryLinksLoaded.doc);
   const linksMissing = relations === null;
+  // 牙（T14-F1，独立审查抓到）：**关系层读不到时必须判红**，不能只在正文写一句
+  // 「映射覆盖按 0 计算」然后 exit 0。
+  // 为什么：本报告是「缺口清单」的唯一落盘处，而"关系层整个没了"与"确实一条映射都没有"
+  // 会导出完全相同的数字（未映射 = 全部）。兄弟分支（models.json 读不出、gaps 缺失）都已判红，
+  // 唯独这一条只用来跳过校验 —— 于是**删掉整个关系层文件，报告照样绿**（实测过），
+  // 那等于这份报告随时可能在一份残缺的盘面上说"全覆盖"。
+  if (linksMissing && !registryLinksLoaded.missing && !registryLinksLoaded.broken) {
+    problems.push('scripts/data/model-registry-links.json 存在、也能解析，却读不出任何映射数组 —— 禁止把"读不懂这份关系层"当成"没有映射"（那会让缺口数字看起来等于全部，而报告仍然绿）。');
+  } else if (registryLinksLoaded.missing) {
+    problems.push('缺少 scripts/data/model-registry-links.json —— 关系层不存在，API 侧与套餐侧的映射覆盖都无从判定（这不是"0 条映射"，是"这份报告没有分母"）。');
+  }
 
   // v3.0 修订（套餐侧）：`plans.json` 的模型串是自由文本，结局只有"映射"或"显式声明不对应单一模型身份"。
   // 本报告原先**只统计 API 侧**，套餐侧那 11 条串在报告里一个字都没有 —— 于是"缺口"看起来比实际小。

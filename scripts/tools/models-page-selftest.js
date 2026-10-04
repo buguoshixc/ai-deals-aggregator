@@ -229,6 +229,45 @@ section('② 索引页：行 / ItemList / 筛选 / 静态可读（真实数据�
   check(`索引页 ${markers.length} 个 data-item == 过门槛的模型数（${gated.length}）`, markers.length === gated.length);
   check(`索引页静态表 ${tableSlugs.length} 行 == registry 全部模型数（${models.length}）—— 默认隐藏不许删行`,
     tableSlugs.length === models.length && new Set(tableSlugs).size === models.length);
+  // 牙（T14-F2，独立审查抓到）：上面两条只做**计数**对账 —— 把索引里 13 处 `glm-5.3` 全改成
+  // `glm-5.3x`（含 2 个详情链接）时，112 项断言**全过**，也就是说页面可以指着另一个身份而没人发现。
+  // 计数对账与身份对账是两件事，这里补上后者：
+  //   ① 每一行的 slug 必须能在发布数据集里找到（不许出现数据集里没有的行）；
+  //   ② 行内的**详情链接**必须逐字指向该行那个身份的路由（链接指错 = 点进去是另一个人）；
+  //   ③ 反向：数据集里每个模型都必须有自己那一行（不许少行）。
+  {
+    const bySlug = new Map(models.map(model => [model.slug, model]));
+    const unknownRows = tableSlugs.filter(slug => !bySlug.has(slug));
+    check('索引页每一行的 data-model 都指向发布数据集里真实存在的身份（计数对账之外的**身份**对账）',
+      unknownRows.length === 0, unknownRows.slice(0, 3).join(' / '));
+
+    // 集合 + 次序逐字相等：这是唯一能抓住「把某一行改名成另一个值」的判据
+    // （只比链接与行内 slug 是否互相一致是抓不住的 —— 两处一起改就自洽了）。
+    const expectedSlugs = models.map(model => model.slug);
+    const missingRows = expectedSlugs.filter(slug => !tableSlugs.includes(slug));
+    const extraRows = tableSlugs.filter(slug => !bySlug.has(slug));
+    check('索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）',
+      JSON.stringify(tableSlugs) === JSON.stringify(expectedSlugs),
+      `缺 ${missingRows.slice(0, 3).join('/') || '无'} · 多 ${extraRows.slice(0, 3).join('/') || '无'}`);
+
+    // 行内详情链接必须指向**这一行自己的**路由（链接指错 = 点进去是另一个人）
+    const rowHtml = new Map();
+    for (const match of html.matchAll(/<tr data-model="([^"]*)"[\s\S]*?<\/tr>/g)) rowHtml.set(match[1], match[0]);
+    const mislinked = [];
+    for (const slug of tableSlugs) {
+      const row = rowHtml.get(slug);
+      if (!row) { mislinked.push(`${slug}(缺行)`); continue; }
+      const linkMatch = row.match(/<a href="([^"]*)"/);
+      const wantsLink = gated.some(item => item.slug === slug);
+      if (!wantsLink) continue;
+      if (!linkMatch) { mislinked.push(`${slug}(没有链接)`); continue; }
+      // 索引页自己在 `models/` 这一层，行内链接带前缀（`../models/<slug>/`）。
+      const linked = decodeURIComponent(String(linkMatch[1]).replace(/^(\.\.\/)+/, '').replace(/\/$/, ''));
+      if (linked !== `models/${slug}`) mislinked.push(`${slug}(链接指向 ${linkMatch[1]})`);
+    }
+    check('每一行的详情链接逐字指向该行自己的路由（链接指错 = 点进去是另一个身份）',
+      mislinked.length === 0, mislinked.slice(0, 3).join(' / '));
+  }
   check('预渲染 HTML 里一行都不带 hidden（默认隐藏只发生在运行时 ⇒ 无 JS 读到完整表）',
     !/<tr[^>]*\shidden[\s>]/.test(modelsPage.markupOnly(html)));
   check('预渲染 HTML 里零控件（筛选整块由脚本建，无 JS 时是完整静态表）',
@@ -863,6 +902,34 @@ function distProblems(overrides = {}) {
   if (!indexHtml.includes(`<link rel="canonical" href="${SITE_URL}models/">`)) problems.push('索引页 canonical 不是自指');
   if ((markup.match(/<h1[\s>]/g) || []).length !== 1) problems.push('索引页 h1 数量不是 1');
   if (!indexHtml.includes(modelsPage.MODELS_INDEX_FILTER_SCRIPT)) problems.push('索引页缺少内联筛选脚本');
+
+  // 牙（T14-F2，独立审查抓到）：**索引页的身份对账必须落在产物上**。
+  // 为什么放在这里而不是 §②：§② 是用数据集**在内存里重新渲染**页面再对账的，
+  // 所以"把产物里的某一行改名"根本进不了它的视野（实测：产物里 13 处 glm-5.3 改成
+  // glm-5.3x、含 2 个详情链接，112 项断言仍全过）。产物对账必须读**磁盘上的那一份**。
+  if (modelsDoc) {
+    const onDiskSlugs = [...markup.matchAll(/<tr data-model="([^"]*)"/g)].map(match => match[1]);
+    const publishedSlugs = modelsDoc.models.map(model => model.slug);
+    if (JSON.stringify(onDiskSlugs) !== JSON.stringify(publishedSlugs)) {
+      const missing = publishedSlugs.filter(slug => !onDiskSlugs.includes(slug));
+      const extra = onDiskSlugs.filter(slug => !publishedSlugs.includes(slug));
+      problems.push(`索引页产物的行与发布数据集不一致（缺 ${missing.slice(0, 3).join('/') || '无'} · 多 ${extra.slice(0, 3).join('/') || '无'}）—— 改名 / 换位 / 多行少行都算`);
+    }
+    // 行内详情链接必须指向**这一行自己的**路由（链接指错 = 点进去是另一个人）
+    const rowHtml = new Map();
+    for (const match of markup.matchAll(/<tr data-model="([^"]*)"[\s\S]*?<\/tr>/g)) rowHtml.set(match[1], match[0]);
+    const gatedSlugs = new Set(modelsDoc.models.map(model => model.slug));
+    const mislinked = [];
+    for (const slug of onDiskSlugs) {
+      const row = rowHtml.get(slug);
+      if (!row || !gatedSlugs.has(slug)) continue;
+      const linkMatch = row.match(/<a href="([^"]*)"/);
+      if (!linkMatch) { mislinked.push(`${slug}(没有链接)`); continue; }
+      const linked = decodeURIComponent(String(linkMatch[1]).replace(/^(\.\.\/)+/, '').replace(/\/$/, ''));
+      if (linked !== `models/${slug}`) mislinked.push(`${slug}(链接指向 ${linkMatch[1]})`);
+    }
+    if (mislinked.length) problems.push(`索引页有 ${mislinked.length} 行的详情链接没指向自己：${mislinked.slice(0, 3).join(' / ')}`);
+  }
 
   if (modelsDoc) {
     for (const model of modelsDoc.models) {
