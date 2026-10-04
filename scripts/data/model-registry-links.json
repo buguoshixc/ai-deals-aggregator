@@ -1,7 +1,7 @@
 {
   "_note": "v3.0 Stage D 的**关系层**：把 API 侧记录的 (apiPlanId, modelKey) 与 Coding 套餐 supportedModels 里的自由文本 name 显式映射到 Model Registry 的模型身份。api-plans.json / plans.json 一个字节都不改（modelKey 已稳定），映射只写在这里。发布产物 model-registry-links.json 会把 registrySlug 展开成派生的 registryModelId（渲染层按 id 匹配）。",
   "_rules": "① 每条记录恰好是 API 侧（apiPlanId + modelKey）或 Coding 侧（planId + modelName）之一；② registrySlug 必须存在于 models.json；③ apiPlanId + modelKey 必须真的存在于该记录（modelKey 改名后必须**人工**改这条映射 —— 工具不许自动 merge），variant 为 null 表示\"该 modelKey 在该记录下的全部 variant 都属于这个模型\"，非 null 只在\"同一 modelKey 的不同 variant 分属不同模型\"时才用（当前 0 条）；④ Coding 侧的 modelName 必须逐字等于套餐 supportedModels 里已经写下的名字（自由文本，没有模型键，所以只能逐条人工写）；⑤ 同一 (apiPlanId, modelKey, variant) 不得映射到两个 registry 模型；⑥ **引文不许新造**：basis 是引文类时，evidence 每一条必须逐字等于被引用记录自己已有的官方引文（field / sourceUrl / quote 三者相同）—— 链接只允许复制记录的引文；没有引文时如实写 basis=explicit-mapping + note 说明原因（题面 D3：显式映射**或**可靠官方证据，二者必有其一）。",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "links": [
     {
       "registrySlug": "claude-fable-5.1",

@@ -1,0 +1,437 @@
+{
+  "_note": "coverage-expansion-v1：**Coverage Target 层**（覆盖意图层）。这是仓库里唯一写下「我们打算覆盖什么」的地方 —— 之前所有覆盖读数都只对**已经出现的数据**做除法，一家平台一条记录都没有时它在报告里根本不存在，缺口看起来永远比实际小。本文件是**内部维护层**：不发布、不进 PUBLIC_DATASETS / Dataset Manifest / Feed / Sitemap，只在仓库内被 coverage-report.js 与门禁读取。",
+  "_stateModel": "本文件**只写意图**（tier / role / intent / 每个维度的适用性与意图 / current targets / 人工裁决理由），**绝不手写状态**。七态（COVERED / PARTIAL / MISSING / DEFERRED / UNVERIFIABLE / NOT_APPLICABLE / BLOCKED_SOURCE）一律由 scripts/lib/coverage-targets.js 从盘上事实派生，优先级即该文件头部的表：NOT_APPLICABLE > DEFERRED > UNVERIFIABLE > BLOCKED_SOURCE > PARTIAL/COVERED/MISSING。**DEFERRED 永不算 MISSING**：有理由的缺口（延期 / 不可核 / 不适用 / 来源全坏）必须与真缺口（MISSING）分得开。",
+  "_vocabulary": "tier = core / major / long-tail（这家平台在覆盖优先级里的档位）；role = model-developer（第一方模型开发者）/ inference-platform（托管·推理平台）/ coding-product（编程产品：套餐·IDE）/ tool-vendor（工具·SaaS 厂商）/ directory（目录·集市）。dimensionIntent 的四个键**必须逐个表态**：值为意图字符串=适用，值为 null=不适用（此时必须写 applicabilityNote 说明为什么）。",
+  "_currentTargets": "currentTargets 写的是「这一格里具体要覆盖的那几条」，按维度用各自的词：deals → source（真实存在过的采集来源名）、coding → planName、api → modelKey、models → registrySlug。registrySlug 必须存在于 scripts/data/models.json（指向不存在的模型身份一律红）；source 必须是 source-health 的 name 或 deals.json 里出现过的 source。盘上还没兑现的那些**不写在这里**（写进来就是「声称已覆盖」），它们由派生出的 PARTIAL / MISSING 报出来。",
+  "_rulings": "人工裁决（rulings）只有三种结局，且都不等于「已覆盖」：deferred（本轮不做，**必须**写 revisitBy 复查条件）、unverifiable（查过、官方来源不可核）、schema-not-supported（官方定价存在，当前 schema 诚实表达不了）。研究结论里的 adopted / partial 不写在这里 —— 那是「要不要做」，做没做成由盘上事实派生。",
+  "_rules": "硬校验（scripts/lib/coverage-targets.js 的 validateTargets）：① provider 必须存在于 scripts/data/providers.json；② registrySlug 必须存在于 scripts/data/models.json；③ deals 的 source 必须真实存在过；④ providers.json 里每个 provider 都必须在 targets 里有一行（身份层与意图层双向对账，少一行就是这家平台没人宣称要覆盖）；⑤ 手写状态字段（state/status/coverage/... ）一律红；⑥ 顶层与记录内的重复键（判据来自原文）一律红；⑦ 字段顺序、targets 顺序（按 provider）、currentTargets 顺序（按维度再按目标名）必须是规范序。",
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-04",
+  "targets": [
+    {
+      "provider": "aliyun",
+      "tier": "core",
+      "role": "model-developer",
+      "intent": "阿里云百炼（通义千问）的官方优惠、按量计费与当前模型身份",
+      "applicabilityNote": "coding 不适用：阿里云的编程助手（通义灵码 / Qoder）已单列 provider qoder / qoder-intl，不在这里重复计算。",
+      "dimensionIntent": {
+        "deals": "百炼新用户额度与官方活动页优惠",
+        "coding": null,
+        "api": "百炼按量计费（含平台托管的第三方模型价）",
+        "models": "通义千问系列当前主力模型"
+      },
+      "currentTargets": [
+        { "dimension": "deals", "source": "阿里云百炼" },
+        { "dimension": "models", "registrySlug": "qwen3-max" },
+        { "dimension": "models", "registrySlug": "qwen3.8-max" }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "anthropic",
+      "tier": "core",
+      "role": "model-developer",
+      "intent": "Anthropic Claude 的订阅、官方 API 定价与当前模型身份",
+      "applicabilityNote": null,
+      "dimensionIntent": {
+        "deals": "Claude 官方优惠 / 新用户额度（只收官方来源）",
+        "coding": "Claude Pro / Max 订阅档位",
+        "api": "Claude API 按量计费",
+        "models": "Claude 当前主力模型"
+      },
+      "currentTargets": [
+        { "dimension": "models", "registrySlug": "claude-opus-5.5" },
+        { "dimension": "models", "registrySlug": "claude-sonnet-5.5" }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "baidu",
+      "tier": "core",
+      "role": "model-developer",
+      "intent": "百度智能云千帆（文心 / ERNIE）的优惠、API 定价与当前模型身份",
+      "applicabilityNote": null,
+      "dimensionIntent": {
+        "deals": "千帆官方新用户免费额度与活动（来源：百度千帆）",
+        "coding": "Comate 编程助手订阅档位",
+        "api": "千帆模型按量计费",
+        "models": "文心 / ERNIE 当前主力模型"
+      },
+      "currentTargets": [
+        { "dimension": "deals", "source": "百度千帆" }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "codebuddy",
+      "tier": "major",
+      "role": "coding-product",
+      "intent": "腾讯 CodeBuddy 的编程套餐档位与官方优惠",
+      "applicabilityNote": "deals 不适用：CodeBuddy 在 deals 侧没有独立身份（providers.json 的 vendorKey=null），相关优惠归入腾讯；api / models 不适用：订阅制编程助手，不公开按量计费，也没有归属它的 registry 模型身份。",
+      "dimensionIntent": {
+        "deals": null,
+        "coding": "CodeBuddy 各档订阅（标准 / 高级 / 旗舰 / Team）",
+        "api": null,
+        "models": null
+      },
+      "currentTargets": [],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "coze",
+      "tier": "long-tail",
+      "role": "tool-vendor",
+      "intent": "扣子 Coze 的官方优惠、付费档位与 API 计费（若有公开价）",
+      "applicabilityNote": "coding 不适用：扣子不是编程套餐产品；models 不适用：扣子平台上出现的模型身份归属各自的开发者（豆包属火山引擎），不归平台。",
+      "dimensionIntent": {
+        "deals": "扣子官方活动 / 新用户额度",
+        "coding": null,
+        "api": "扣子专业版与 API 调用计费",
+        "models": null
+      },
+      "currentTargets": [],
+      "rulings": [
+        {
+          "dimension": "api",
+          "decision": "unverifiable",
+          "reason": "本轮没有找到扣子官方公开的 API 按量计费价目页（站内只有订阅档位），核不出可诚实表达的定价",
+          "revisitBy": null
+        }
+      ],
+      "note": null
+    },
+    {
+      "provider": "cursor",
+      "tier": "major",
+      "role": "coding-product",
+      "intent": "Cursor 的订阅档位与官方优惠",
+      "applicabilityNote": "api / models 不适用：Cursor 是订阅制 IDE，不公开按量计费，也没有归属它的 registry 模型身份（产品里用的是别家模型）。",
+      "dimensionIntent": {
+        "deals": "Cursor 官方优惠 / 学生与团队折扣",
+        "coding": "Cursor Pro / Business 等订阅档位",
+        "api": null,
+        "models": null
+      },
+      "currentTargets": [],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "deepseek",
+      "tier": "core",
+      "role": "model-developer",
+      "intent": "DeepSeek 官方 API 定价、优惠与当前模型身份",
+      "applicabilityNote": "coding 不适用：DeepSeek 只做 API 按量计费，没有官方编程订阅套餐。",
+      "dimensionIntent": {
+        "deals": "DeepSeek 官方优惠 / 新用户额度（只收官方来源）",
+        "coding": null,
+        "api": "DeepSeek API 按量计费",
+        "models": "DeepSeek 当前主力模型"
+      },
+      "currentTargets": [
+        { "dimension": "models", "registrySlug": "deepseek-flash" },
+        { "dimension": "models", "registrySlug": "deepseek-v4-pro" }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "github",
+      "tier": "major",
+      "role": "coding-product",
+      "intent": "GitHub Copilot 订阅档位与官方优惠",
+      "applicabilityNote": "api / models 不适用：Copilot 没有公开的按量计费页，registry 里也没有归属 GitHub 的模型身份（Copilot 用的是别家模型）。",
+      "dimensionIntent": {
+        "deals": "GitHub / Copilot 官方优惠（学生、开源维护者）",
+        "coding": "Copilot Pro / Pro+ / Max / Business 档位",
+        "api": null,
+        "models": null
+      },
+      "currentTargets": [],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "google",
+      "tier": "core",
+      "role": "model-developer",
+      "intent": "Google Gemini 的订阅、官方 API 定价与当前模型身份",
+      "applicabilityNote": null,
+      "dimensionIntent": {
+        "deals": "Google / Gemini 官方优惠（只收官方来源）",
+        "coding": "Google AI Pro / Gemini Code Assist 订阅档位",
+        "api": "Gemini API 按量计费",
+        "models": "Gemini 当前主力模型"
+      },
+      "currentTargets": [
+        { "dimension": "models", "registrySlug": "gemini-3.7-flash" },
+        { "dimension": "models", "registrySlug": "gemini-3.8-flash" }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "iflytek",
+      "tier": "major",
+      "role": "model-developer",
+      "intent": "科大讯飞星火（讯飞开放平台）的优惠、API 定价与当前模型身份",
+      "applicabilityNote": null,
+      "dimensionIntent": {
+        "deals": "讯飞开放平台新用户额度与官方活动",
+        "coding": "讯飞编程助手订阅档位（待核实是否只有消费端会员）",
+        "api": "讯飞星火按量计费",
+        "models": "星火当前主力模型"
+      },
+      "currentTargets": [],
+      "rulings": [
+        {
+          "dimension": "coding",
+          "decision": "unverifiable",
+          "reason": "本轮没有找到科大讯飞官方公开的编程订阅套餐价目页（只有 API 计费与消费端会员），核不实它在 coding 维度是否有可覆盖的对象",
+          "revisitBy": null
+        }
+      ],
+      "note": null
+    },
+    {
+      "provider": "microsoft",
+      "tier": "long-tail",
+      "role": "tool-vendor",
+      "intent": "Microsoft Copilot 系列订阅的官方价格与优惠",
+      "applicabilityNote": "models 不适用：registry 里没有归属 Microsoft 的模型身份（Copilot 用的是别家模型）。",
+      "dimensionIntent": {
+        "deals": "Microsoft / Copilot 官方优惠",
+        "coding": "Microsoft 365 Copilot / Copilot Pro 订阅档位",
+        "api": "Azure OpenAI 与 Copilot API 计费（区域分档口径待裁决）",
+        "models": null
+      },
+      "currentTargets": [],
+      "rulings": [
+        {
+          "dimension": "api",
+          "decision": "deferred",
+          "reason": "Azure OpenAI 按区域分档、按币种定价，口径与第一方 API 价不同，需要先裁决怎么表达再收",
+          "revisitBy": "当 API 层决定支持区域分档定价，或明确裁决不纳入 Azure 时复查"
+        }
+      ],
+      "note": null
+    },
+    {
+      "provider": "minimax",
+      "tier": "core",
+      "role": "model-developer",
+      "intent": "MiniMax（稀宇科技）的套餐、API 定价与当前模型身份",
+      "applicabilityNote": null,
+      "dimensionIntent": {
+        "deals": "MiniMax 官方优惠 / 新用户额度",
+        "coding": "MiniMax Token Plan 各档位",
+        "api": "MiniMax API 按量计费",
+        "models": "MiniMax 当前主力模型"
+      },
+      "currentTargets": [
+        { "dimension": "models", "registrySlug": "minimax-m2.7" },
+        { "dimension": "models", "registrySlug": "minimax-m3" }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "moonshot",
+      "tier": "core",
+      "role": "model-developer",
+      "intent": "月之暗面 Kimi 的套餐、开放平台定价与当前模型身份",
+      "applicabilityNote": null,
+      "dimensionIntent": {
+        "deals": "Kimi 官方优惠 / 新用户额度",
+        "coding": "Kimi 会员 / Code 套餐档位",
+        "api": "Kimi 开放平台按量计费",
+        "models": "Kimi 当前主力模型"
+      },
+      "currentTargets": [
+        { "dimension": "models", "registrySlug": "kimi-k2.7-code" },
+        { "dimension": "models", "registrySlug": "kimi-k3" }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "notion",
+      "tier": "long-tail",
+      "role": "tool-vendor",
+      "intent": "Notion 官方优惠与订阅档位",
+      "applicabilityNote": "coding / api / models 不适用：Notion 不是编程产品，API 对工作区免费、不按量计费，也没有归属它的 registry 模型身份。",
+      "dimensionIntent": {
+        "deals": "Notion 官方优惠 / 教育与非营利折扣",
+        "coding": null,
+        "api": null,
+        "models": null
+      },
+      "currentTargets": [],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "openai",
+      "tier": "core",
+      "role": "model-developer",
+      "intent": "OpenAI 的订阅、官方 API 定价与当前模型身份",
+      "applicabilityNote": null,
+      "dimensionIntent": {
+        "deals": "OpenAI / ChatGPT 官方优惠（只收官方来源）",
+        "coding": "ChatGPT Plus / Pro / Business 订阅（含 Codex 额度）",
+        "api": "OpenAI API 按量计费",
+        "models": "OpenAI 当前主力模型"
+      },
+      "currentTargets": [
+        { "dimension": "models", "registrySlug": "gpt-6-luna" },
+        { "dimension": "models", "registrySlug": "gpt-6.1-sol" }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "qoder",
+      "tier": "major",
+      "role": "coding-product",
+      "intent": "Qoder CN 的编程套餐档位与官方优惠",
+      "applicabilityNote": "deals 不适用：Qoder CN 在 deals 侧没有独立身份（vendorKey=null），活动归入阿里云；api / models 不适用：订阅制编程助手，不公开按量计费，也没有归属它的 registry 模型身份。",
+      "dimensionIntent": {
+        "deals": null,
+        "coding": "Qoder CN 个人 / 团队订阅档位",
+        "api": null,
+        "models": null
+      },
+      "currentTargets": [],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "qoder-intl",
+      "tier": "major",
+      "role": "coding-product",
+      "intent": "Qoder 国际站的订阅档位（独立定价、独立币种）",
+      "applicabilityNote": "deals 不适用：国际站在 deals 侧没有独立身份（vendorKey=null）；api / models 不适用：订阅制编程助手，不公开按量计费，也没有归属它的 registry 模型身份。",
+      "dimensionIntent": {
+        "deals": null,
+        "coding": "Qoder International Pro+ / Ultra 档位",
+        "api": null,
+        "models": null
+      },
+      "currentTargets": [],
+      "rulings": [],
+      "note": "CN 站与国际站是独立定价、独立币种的两个 SKU 面，并表会造出「同一张表里两套货币」的假象，因此各自一行。"
+    },
+    {
+      "provider": "siliconflow",
+      "tier": "major",
+      "role": "inference-platform",
+      "intent": "硅基流动托管平台的官方优惠与按量计费",
+      "applicabilityNote": "coding / models 不适用：硅基流动是推理托管平台，没有编程订阅套餐；平台上出现的模型身份归属各自的开发者，不归平台。",
+      "dimensionIntent": {
+        "deals": "硅基流动官方额度与活动",
+        "coding": null,
+        "api": "硅基流动托管模型按量计费",
+        "models": null
+      },
+      "currentTargets": [],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "tencent",
+      "tier": "core",
+      "role": "model-developer",
+      "intent": "腾讯云混元的官方优惠、按量计费与当前模型身份",
+      "applicabilityNote": "coding 不适用：腾讯的编程助手（CodeBuddy）已单列 provider codebuddy，不在这里重复计算。",
+      "dimensionIntent": {
+        "deals": "腾讯云 / 混元官方优惠与免费额度",
+        "coding": null,
+        "api": "腾讯云混元按量计费",
+        "models": "混元当前主力模型"
+      },
+      "currentTargets": [
+        { "dimension": "models", "registrySlug": "hunyuan-a13b" }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "trae",
+      "tier": "major",
+      "role": "coding-product",
+      "intent": "Trae 的会员档位与官方优惠",
+      "applicabilityNote": "deals 不适用：Trae 在 deals 侧没有独立身份（vendorKey=null），相关活动归入其母公司；api / models 不适用：订阅制 AI IDE，不公开按量计费，也没有归属它的 registry 模型身份。",
+      "dimensionIntent": {
+        "deals": null,
+        "coding": "Trae 会员 Pro / 免费 Free 档位",
+        "api": null,
+        "models": null
+      },
+      "currentTargets": [],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "volcengine",
+      "tier": "core",
+      "role": "inference-platform",
+      "intent": "火山引擎方舟（豆包）的优惠、按量计费与当前模型身份",
+      "applicabilityNote": "coding 不适用：火山引擎是模型与推理平台，没有编程订阅套餐（豆包 App 的消费端订阅属另一条产品线）。",
+      "dimensionIntent": {
+        "deals": "火山方舟官方优惠与新用户额度（来源：火山方舟）",
+        "coding": null,
+        "api": "火山方舟按量计费",
+        "models": "豆包当前主力模型"
+      },
+      "currentTargets": [
+        { "dimension": "deals", "source": "火山方舟" },
+        { "dimension": "models", "registrySlug": "doubao-seed-2.1-pro" },
+        { "dimension": "models", "registrySlug": "doubao-seed-2.1-turbo" }
+      ],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "windsurf",
+      "tier": "major",
+      "role": "coding-product",
+      "intent": "Windsurf 的订阅档位与官方优惠",
+      "applicabilityNote": "api / models 不适用：Windsurf 是订阅制 AI IDE，不公开按量计费，也没有归属它的 registry 模型身份。",
+      "dimensionIntent": {
+        "deals": "Windsurf 官方优惠 / 学生折扣",
+        "coding": "Windsurf Pro / Max 档位",
+        "api": null,
+        "models": null
+      },
+      "currentTargets": [],
+      "rulings": [],
+      "note": null
+    },
+    {
+      "provider": "zhipu",
+      "tier": "core",
+      "role": "model-developer",
+      "intent": "智谱AI 开放平台（GLM / BigModel）的优惠、套餐、按量计费与当前模型身份",
+      "applicabilityNote": null,
+      "dimensionIntent": {
+        "deals": "开放平台与活动页的新用户额度 / 折扣（来源：智谱AI、智谱AI活动页）",
+        "coding": "GLM Coding Plan 档位",
+        "api": "BigModel 按量计费",
+        "models": "GLM 当前主力模型"
+      },
+      "currentTargets": [
+        { "dimension": "deals", "source": "智谱AI" },
+        { "dimension": "deals", "source": "智谱AI活动页" },
+        { "dimension": "models", "registrySlug": "glm-4.7-flash" },
+        { "dimension": "models", "registrySlug": "glm-5.3" },
+        { "dimension": "models", "registrySlug": "glm-5.3-flash" }
+      ],
+      "rulings": [],
+      "note": null
+    }
+  ]
+}

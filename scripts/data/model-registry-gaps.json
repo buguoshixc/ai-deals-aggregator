@@ -1,7 +1,7 @@
 {
   "_note": "v3.0 Stage D 补充层：**套餐侧模型串的处置登记表**。`plans.json` 的 `supportedModels[].name` 是自由文本，两种结局只有两种，都必须显式写下来 —— ① 落进 `scripts/data/model-registry-links.json`（能对应单一模型身份）；② 落进本表（明确**不对应单一模型身份**，逐条给理由）。本表只登记「为什么没有映射」，**永远不写 registrySlug**：任何能落到一个 registry 身份上的字符串都必须去写映射，写进本表就是错的。`plans.json` 一个字节都不改（`name` / `role` 都是它自己的事实）。",
   "_rules": "① 每条恰好是 (planId + modelName)；② modelName 必须**逐字**等于该套餐 `supportedModels` 里已经写下的名字（大小写、空格、斜杠都不许动）；③ role 必须逐字等于该套餐那一条的 `role`（`pool` / `included`）—— 它是从数据抄来的对照值，抄错即红；④ reason 只能取 `pool`（官方只给模型池 / 自动调度，未逐一点名，**且记录的 role 必须是 pool**）/ `series`（官方只给产品线系列名，未落到版本）/ `multi-model`（一个字符串里写了不止一个模型）/ `off-registry-model`（官方点名了单一模型，但该写法在 registry 里没有精确身份）/ `non-text-resource`（图像 / 语音等非文本资源）之一；⑤ sourceUrl 必须等于该套餐自己的 `officialUrl` 或 `sourceUrl`（处置只能针对这条记录自己的官方页）；⑥ note 必须写清「为什么这串不能对应单一模型身份」，不许留空；note 里引用官方原文时必须**逐字来自该套餐记录自己已有的文字**（不许新造引文 —— 本表不制造第二事实来源）；⑦ 同一个 (planId, modelName) 不许既在本表里、又在关系层里有映射（那是自相矛盾）；⑧ **完整性是硬门禁**：`plans.json` 里任何一个模型串，若既没有映射、又不在本表里 ⇒ 红（不许静默留空，也不许把「没判过」当成「不需要判」）；⑨ **声明必须真的是「映射不上」**：`modelName` 归一后若精确落到某个 registry 身份（slug / 别名），这条就该去写映射 —— 拿「不对应单一模型身份」绕过映射即红（与候选规则 `planCandidatesOf()` 用同一支归一索引；判这件事需要 registry 表，所以调用方必须把表传进来，不传即红）。",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "declarations": [
     {
       "planId": "536e6b211045",

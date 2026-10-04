@@ -54,6 +54,12 @@ const plansHubPage = require('../lib/plans-hub-page');
 // `lib/model-registry.js` 的同一份判据 —— 页面层不自己算 id，也不判"两个名字是不是同一个模型"。
 const modelsPage = require('../lib/models-page');
 const modelRegistry = require('../lib/model-registry');
+// coverage-expansion-v1：`catalogStatus` / `catalogReason` 是**派生**字段，判据只有一处
+// （`scripts/lib/model-freshness.js`）。构建期必须与 `rebuild-models.js`、
+// `check-models-reproducible.js` 用**同一支派生** —— 少传一次 `catalog`，
+// 产物里每条都会落成 `unknown`，而盘上那份带真实原因码 ⇒ 下面那条"与仓库里那份逐字节相同"
+// 的对账会当场红（本轮构建**真的**踩过一次：三处调用点必须同步）。
+const modelFreshness = require('../lib/model-freshness');
 // v3.0 Stage F：历史档案（`/archive/`）。归档层是**派生视图**：三份日志的
 // baseline + events + absence（+ ended 的墓碑 label）→ 结束/恢复条目，不落新真值文件。
 const archiveLib = require('../lib/archive');
@@ -3077,8 +3083,37 @@ function assemble() {
       throw new Error(`Model Registry 未通过校验（${registryProblems.length} 项）：\n  - ${registryProblems.slice(0, 8).join('\n  - ')}`);
     }
   }
+  // coverage-expansion-v1：`catalogStatus` / `catalogReason` 是**派生**字段，判据在
+  // `scripts/lib/model-freshness.js`。这里必须与 `rebuild-models.js` / `check-models-reproducible.js`
+  // 用**同一支派生**：不传 catalog 的话，本处会写出"全部 unknown"的那一份，于是下面
+  // "与仓库里的派生产物逐字节相同"必然失败（而盘上那份是对的）—— 那是假红，会挡住整个构建。
+  const modelCatalog = (() => {
+    try {
+      const freshness = require('../lib/model-freshness');
+      const report = freshness.deriveCatalog({
+        models: Object.keys(modelsTable).sort().map(slug => {
+          const entry = modelsTable[slug] || {};
+          return {
+            slug,
+            developer: entry.developer === undefined ? null : entry.developer,
+            family: entry.family === undefined ? null : entry.family,
+            modelRole: entry.modelRole === undefined ? null : entry.modelRole,
+            releasedAt: entry.releasedAt === undefined ? null : entry.releasedAt,
+            status: entry.status === undefined ? null : entry.status,
+            freshnessGroup: entry.freshnessGroup === undefined ? null : entry.freshnessGroup
+          };
+        })
+      });
+      if (report.invariantViolations.length) {
+        throw new Error(`新鲜度层报出 ${report.invariantViolations.length} 条硬不变量违规：${report.invariantViolations.slice(0, 3).map(item => `[${item.code}] ${item.detail}`).join(' | ')}`);
+      }
+      return report;
+    } catch (error) {
+      throw new Error(`catalogStatus 无法派生（${error.message}）—— 派生层缺位时不允许继续构建：写到一半的目录状态会与仓库里的派生产物不一致`);
+    }
+  })();
   const publishedModels = modelRegistry.publishedModels({
-    table: modelsTable, links: modelLinksDoc, apiPlans: apiPlansStore.plans, plans: plansStore.plans
+    table: modelsTable, links: modelLinksDoc, apiPlans: apiPlansStore.plans, plans: plansStore.plans, catalog: modelCatalog
   });
   const publishedModelLinksModelDoc = modelRegistry.publishedLinks(modelLinksDoc, modelsTable);
   for (const [file, doc] of [['models.json', publishedModels], ['model-registry-links.json', publishedModelLinksModelDoc]]) {
@@ -3563,7 +3598,11 @@ function assemble() {
   fs.mkdirSync(path.join(OUT, 'models'), { recursive: true });
   {
     const modelsIndexCtx = { ...modelsCtx, prefix: '../', __refCache: new Map() };
-    const indexBody = modelsPage.renderModelsIndex(modelsTable, modelsIndexCtx);
+    // ⚠️ 传的是**派生产物**（`publishedModels.models`，带 `catalogStatus` / `catalogReason`），
+    // 不是来源层 `modelsTable`：目录状态是派生字段，来源层里根本没有它 —— 传错的那一版
+    // 会让索引页每一行都渲染成「发布时间未知」且丢掉 `data-catalog-status`
+    // （筛选脚本与浏览器验收都读这个属性），而详情页拿的是派生记录 ⇒ 两页自相矛盾。
+    const indexBody = modelsPage.renderModelsIndex(modelRecords, modelsIndexCtx);
     const indexHtml = renderModelsShell({
       route: modelsPage.MODELS_INDEX_ROUTE,
       title: modelsPage.MODELS_INDEX_HEADING,
@@ -3574,7 +3613,10 @@ function assemble() {
     }, html);
     fs.writeFileSync(path.join(OUT, modelsPage.MODELS_INDEX_ROUTE, 'index.html'), indexHtml, 'utf8');
     const indexProblems = modelsPage.assertPageHonesty(indexHtml, {
-      kind: 'models-index', registry: modelsTable, ctx: { ...modelsIndexCtx, siteUrl: SITE_URL }
+      // 断言必须与**页面**读同一份数据：索引页是用派生记录（`modelRecords`）渲染的，
+      // 这里若传来源层 `modelsTable`（没有 catalogStatus），断言会以为每行都该是
+      // 「发布时间未知」而把正确的页面判红 —— 判据与产物必须同源，否则这条牙只会误伤。
+      kind: 'models-index', registry: modelRecords, ctx: { ...modelsIndexCtx, siteUrl: SITE_URL }
     });
     if (indexProblems.length) {
       throw new Error(`模型索引页的诚实性断言未通过（${indexProblems.length} 处）：\n  - ${indexProblems.slice(0, 5).join('\n  - ')}`);

@@ -51,6 +51,13 @@ const dealPlanLinks = require('./deal-plan-links');
 // 否则"两个身份空间"就是这么来的。这里只用纯函数，不触发任何读盘。
 const modelRegistry = require('./model-registry');
 const pageKinds = require('./page-kinds');
+// coverage-expansion-v1：**目录状态（catalogStatus）的词表与默认可见集合只有一处实现** ——
+// `model-freshness.js`。页面层只读它两个派生出口：
+//   · `CATALOG_STATUS_LABEL`（中性中文标签：当前型号 / 较早型号 / 旧型号 / 历史型号 / 发布时间未知）；
+//   · `DEFAULT_HIDDEN_CATALOG_STATUSES`（默认隐藏 legacy / historical）。
+// 页面**不**自己再写一份词表或默认集合：两份词表 = 两个真相，报告与页面会各自漂移。
+// 这里只用它的**常量**，不借它做判定 —— 页面不重算新鲜度（那是判据层的事）。
+const modelFreshness = require('./model-freshness');
 
 const MODELS_INDEX_ROUTE = 'models/';
 const MODEL_ROUTE_PREFIX = 'models/';
@@ -65,12 +72,63 @@ const UNKNOWN_TRI = plansPage.UNKNOWN_TRI;
 const FORBIDDEN_CLAIM_WORDS = plansPage.FORBIDDEN_CLAIM_WORDS;
 const escapeHtml = plansPage.escapeHtml;
 
+/**
+ * 人工状态（registry 的 `status`）→ 页面用词。**封闭表**。
+ *
+ * 「已下线」**只允许**来自 `retired` 这一格（人工依据驱动的官方下线）。目录状态
+ * （`catalogStatus`）任何一格都不许借用它 —— 一个模型"相对同类较旧"不等于"官方下线"，
+ * 把两者混起来就是在替读者宣布一件没发生的事。这条纪律由 `assertPageHonesty()` 逐行查。
+ */
 const STATUS_LABEL = {
   active: '在售 / 可用',
   deprecated: '官方已弃用',
   retired: '已下线',
   unknown: '未确认'
 };
+
+/** 目录状态 → 中性中文标签（**同一份词表在 `model-freshness.js`，这里只取用） */
+const CATALOG_STATUS_LABEL = modelFreshness.CATALOG_STATUS_LABEL;
+/** 目录状态的封闭枚举（同上：判据层是唯一出处） */
+const CATALOG_STATUSES = modelFreshness.CATALOG_STATUSES;
+/** 目录状态判不出来时的取值。`unknown` 绝不等于 legacy —— 它只是"判不了"。 */
+const CATALOG_STATUS_UNKNOWN = 'unknown';
+/** **默认隐藏**的目录状态（legacy / historical）。默认可见集合 = 枚举里剩下的那三个。 */
+const DEFAULT_HIDDEN_CATALOG_STATUS = [...modelFreshness.DEFAULT_HIDDEN_CATALOG_STATUSES];
+
+/**
+ * 模型角色（registry 的 `modelRole`）→ 中文标签。
+ *
+ * 刻意写成**表 + 兜底原样显示**，而不是"查不到就给个垃圾桶词"：角色枚举正在两处收敛
+ * （身份层 `model-registry.MODEL_ROLES` / 展示判据层 `model-freshness.MODEL_ROLES`），
+ * 任何一边新增一档时，页面显示**原文**（事实）而不是编一个中文词。自测里有一条
+ * 「真实数据里出现的每个角色都必须有中文标签」的漂移对照，新角色一进来就会被点名。
+ */
+const MODEL_ROLE_LABEL = {
+  // 能力位（identity 层 v2 口径）
+  llm: '通用文本模型',
+  'small-fast-variant': '同代小尺寸 / 低延迟档',
+  vlm: '视觉理解模型',
+  'multimodal-llm': '多模态通用模型',
+  'retrieval-embedding': '向量化 / 嵌入模型',
+  translation: '翻译专用模型',
+  'translation-lite': '翻译轻量档',
+  roleplay: '角色扮演模型',
+  'code-specialist': '代码专用模型',
+  // 判据层的同义档（两处枚举收敛中；两套都给出标签，避免同一档显示成英文原文）
+  general: '通用文本模型',
+  fast: '同代小尺寸 / 低延迟档',
+  reasoning: '推理模型',
+  coding: '代码专用模型',
+  vision: '视觉理解模型',
+  embedding: '向量化 / 嵌入模型',
+  audio: '语音模型',
+  realtime: '实时模型',
+  chat: '对话模型',
+  other: '其他'
+};
+
+/** 「显示旧型号」入口的 id（脚本建控件；预渲染里一个控件都没有） */
+const MODELS_SHOW_OLD_ID = 'models-show-legacy';
 
 const MODELS_INDEX_NOTES = [
   '这一页是**身份索引**：一行 = 一个模型。同一家公司的不同写法不会自动合并 ——'
@@ -79,7 +137,15 @@ const MODELS_INDEX_NOTES = [
   + '没有映射的 `modelKey` 仍然留在覆盖报告里，不会在这里被算成"这个平台也提供它"。',
   '模型详情页展示的价格全部来自 [API / Token 计费对比](plans/api/) 的同一份数据；'
   + '本页**不折算、不合并、不排序成"最便宜"**，也**不写推荐**。',
-  '别名只用于**已确认改名 / 官方别名 / 格式差异**，每条都应有来源；别名不用于猜测同模型。'
+  '别名只用于**已确认改名 / 官方别名 / 格式差异**，每条都应有来源；别名不用于猜测同模型。',
+  '「目录状态」是**派生**的中性分类：它只说明这条模型相对**同比较组**（开发者 + 模型族 + 角色）'
+  + '里最新发布的模型处在什么时间位置，**不是质量评分、不是本站推荐**，也不代表它是否还能用。'
+  + '判不了的写「发布时间未知」—— 不知道绝不当作"旧"。',
+  '「目录状态」为旧型号 / 历史型号的条目**默认不占据首屏**（`legacy` / `historical`），'
+  + '但**一行都不会从这一页消失**：静态表里始终是 registry 的全部模型，'
+  + '没有 JS 的读者看到的是完整表格，有 JS 时可以勾选「显示旧型号」按需展开。'
+  + '模型详情页与 sitemap 的成员资格**只由显式引用决定**，与目录状态无关 ——'
+  + '旧型号的资料页不会被删，也不会被藏起来。'
 ];
 
 /* ------------------------------------------------------------------ */
@@ -402,7 +468,58 @@ function apiPricingRowOf(item, ctx = {}) {
   return row;
 }
 
-/** 索引页的一行：一个模型 */
+/** 一条模型的目录状态：**只认枚举内的值**；缺失 / 非法一律如实回落到 `unknown`（判不了） */
+function catalogStatusOf(model) {
+  const raw = String((model && model.catalogStatus) || '').trim();
+  return CATALOG_STATUSES.includes(raw) ? raw : CATALOG_STATUS_UNKNOWN;
+}
+
+/** 目录状态是否**默认隐藏**（legacy / historical）—— 默认可见集合是它的补集 */
+function catalogStatusHiddenByDefault(model) {
+  return DEFAULT_HIDDEN_CATALOG_STATUS.includes(catalogStatusOf(model));
+}
+
+/** 目录状态的中性中文标签。枚举外的值绝不会走到这里（上面已经回落成 unknown） */
+function catalogStatusLabelOf(model) {
+  return CATALOG_STATUS_LABEL[catalogStatusOf(model)] || UNKNOWN_TEXT;
+}
+
+/** 模型角色原文（registry v2 的 `modelRole`；没有就空串） */
+function modelRoleOf(model) {
+  return String((model && model.modelRole) || '').trim();
+}
+
+/** 模型角色的中文标签；**枚举里没有的角色原样显示**（宁可显示原文，也不编一个词） */
+function modelRoleLabelOf(model) {
+  const role = modelRoleOf(model);
+  if (!role) return UNKNOWN_TEXT;
+  return MODEL_ROLE_LABEL[role] || role;
+}
+
+/**
+ * 发布时间（`releasedAt`）：`{ raw, date }`。`date` 用判据层的同一支日期归一
+ * （`YYYY-MM-DD`、日历合法），判不了就是 `null` —— 页面**不**用 `firstSeen` 兜底：
+ * "我们收得晚"不是"这个模型发布得晚"。
+ */
+function releaseDateOf(model) {
+  const raw = model && model.releasedAt !== null && model.releasedAt !== undefined
+    ? String(model.releasedAt).trim() : '';
+  return { raw, date: raw ? modelFreshness.normalizeReleaseDate(raw) : null };
+}
+
+/** 发布日期证据（`releaseEvidence`）：每条都是 `{sourceUrl, quote, capturedAt}`，非法形态如实跳过 */
+function releaseEvidenceOf(model) {
+  const list = model && Array.isArray(model.releaseEvidence) ? model.releaseEvidence : [];
+  return list.filter(item => item && typeof item === 'object' && !Array.isArray(item));
+}
+
+/**
+ * 索引页的一行：一个模型。
+ *
+ * 这里**不再**决定"要不要展示"：目录状态（`catalogStatus`）是判据层派生的字段，
+ * 页面只负责如实渲染它 + 把默认隐藏集合交给构建期参数化的筛选脚本。
+ * 门槛（有没有详情页）仍然只由**显式引用**决定 —— 与目录状态完全无关。
+ */
 function modelsIndexRowOf(model, ctx = {}) {
   const refs = modelReferenceOfCached(model, ctx);
   const gate = modelPageGate(model, ctx);
@@ -420,6 +537,14 @@ function modelsIndexRowOf(model, ctx = {}) {
     family,
     status: String(model.status || 'unknown'),
     statusLabel: STATUS_LABEL[model.status] || STATUS_LABEL.unknown,
+    // coverage-expansion-v1：派生的目录状态 + registry v2 的模型角色（两列都要中性用词）
+    catalogStatus: catalogStatusOf(model),
+    catalogStatusLabel: catalogStatusLabelOf(model),
+    catalogReason: String((model && model.catalogReason) || '') || null,
+    hiddenByDefault: catalogStatusHiddenByDefault(model),
+    modelRole: modelRoleOf(model),
+    modelRoleLabel: modelRoleLabelOf(model),
+    releasedAt: releaseDateOf(model).date,
     aliases,
     officialUrl: String(model.officialUrl || ''),
     firstSeen: model.firstSeen || null,
@@ -452,16 +577,42 @@ function modelsIndexRowOf(model, ctx = {}) {
  *   · 控件**整块由 JS 建出来** —— 预渲染 HTML 里一个 `<input>`/`<select>` 都没有，
  *     无 JS 的读者看到的是完整的静态表（不会看到点不动的死控件）；
  *   · 只读页面上的 `data-*`（不内联第二份数据载荷，避免两份数据漂移）；
- *   · 不改地址、不生成 URL、不做任何排序或推荐 —— 只做"隐藏 / 显示"。
+ *   · 不改地址、不生成 URL、不做任何排序或推荐 —— 只做"隐藏 / 显示"；
+ *   · **默认隐藏集合是构建期参数**（`defaultHiddenStatus`）：脚本自己不留一份写死的
+ *     legacy/historical，调用方给什么就按什么藏。默认值取判据层的
+ *     `DEFAULT_HIDDEN_CATALOG_STATUSES`（页面不另写一份策略）。
+ *
+ * 隐藏**只发生在运行时**：`row.hidden = true` 是脚本做的，预渲染 HTML 里一行都不带 `hidden`
+ * ——所以关掉 JS 打开这一页，读到的是 registry 的**全部**模型（No-JS 完整），
+ * 这也是 `assertPageHonesty()` 会当场查的一条。
+ *
+ * @param {object} [options]
+ * @param {string[]} [options.defaultHiddenStatus] 默认隐藏的目录状态（默认取判据层的集合）
+ * @returns {string} 内联脚本源码（逐字节进页面）
  */
-const MODELS_INDEX_FILTER_SCRIPT = `(function () {
+function buildModelsIndexFilterScript(options = {}) {
+  // 显式传 `[]` = "默认不隐藏任何一档"（这是有效参数，不是"没传"）；
+  // 完全没传才回落成判据层的默认隐藏集合。
+  const requested = options && Array.isArray(options.defaultHiddenStatus)
+    ? options.defaultHiddenStatus
+    : DEFAULT_HIDDEN_CATALOG_STATUS;
+  const defaultHidden = [...new Set(requested.map(String))].sort();
+  const catalogLabels = {};
+  for (const status of CATALOG_STATUSES) catalogLabels[status] = CATALOG_STATUS_LABEL[status] || status;
+  const roleLabels = { ...MODEL_ROLE_LABEL };
+  return `(function () {
   'use strict';
   var table = document.getElementById('models-table');
   var host = document.getElementById('models-filter');
   var counter = document.getElementById('models-count');
   if (!table || !host) return;
-  var rows = Array.prototype.slice.call(table.querySelectorAll('tbody tr[data-item]'));
+  var rows = Array.prototype.slice.call(table.querySelectorAll('tbody tr[data-model]'));
   if (!rows.length) return;
+
+  // 构建期参数（本脚本里唯一的一份默认可见性策略；不读页面上的第二份数据）
+  var DEFAULT_HIDDEN = ${JSON.stringify(defaultHidden)};
+  var CATALOG_LABELS = ${JSON.stringify(catalogLabels)};
+  var ROLE_LABELS = ${JSON.stringify(roleLabels)};
 
   function valuesOf(attr) {
     var seen = [];
@@ -472,7 +623,11 @@ const MODELS_INDEX_FILTER_SCRIPT = `(function () {
     return seen;
   }
 
-  function makeSelect(label, attr, values, formatter) {
+  function labelOf(value, map) {
+    return map[value] || value;
+  }
+
+  function makeSelect(label, attr, formatter, values) {
     var wrap = document.createElement('label');
     wrap.className = 'mfl';
     wrap.appendChild(document.createTextNode(label));
@@ -482,7 +637,7 @@ const MODELS_INDEX_FILTER_SCRIPT = `(function () {
     all.value = '';
     all.textContent = '全部';
     select.appendChild(all);
-    values.forEach(function (value) {
+    (values || valuesOf(attr)).forEach(function (value) {
       var option = document.createElement('option');
       option.value = value;
       option.textContent = formatter ? formatter(value) : value;
@@ -503,17 +658,45 @@ const MODELS_INDEX_FILTER_SCRIPT = `(function () {
   search.appendChild(input);
   host.appendChild(search);
 
-  host.appendChild(makeSelect('开发者', 'data-developer', valuesOf('data-developer')));
-  host.appendChild(makeSelect('模型族', 'data-family', valuesOf('data-family')));
-  host.appendChild(makeSelect('状态', 'data-status', valuesOf('data-status')));
-  host.appendChild(makeSelect('出现平台数', 'data-platforms', valuesOf('data-platforms').sort(function (a, b) { return Number(a) - Number(b); }), function (value) {
-    return value + ' 个平台';
+  host.appendChild(makeSelect('开发者', 'data-developer'));
+  host.appendChild(makeSelect('模型族', 'data-family'));
+  host.appendChild(makeSelect('状态', 'data-status'));
+  host.appendChild(makeSelect('目录状态', 'data-catalog-status', function (value) {
+    return labelOf(value, CATALOG_LABELS);
   }));
+  host.appendChild(makeSelect('模型角色', 'data-role', function (value) {
+    return labelOf(value, ROLE_LABELS);
+  }));
+  host.appendChild(makeSelect('出现平台数', 'data-platforms', function (value) {
+    return value + ' 个平台';
+  }, valuesOf('data-platforms').sort(function (a, b) { return Number(a) - Number(b); })));
+
+  // 「显示旧型号」入口：只在构建期声明了默认隐藏集合时才建（否则它是个没有作用的开关）。
+  var toggle = null;
+  if (DEFAULT_HIDDEN.length) {
+    var showOld = document.createElement('label');
+    showOld.className = 'mfl mfshow';
+    toggle = document.createElement('input');
+    toggle.type = 'checkbox';
+    toggle.id = '${MODELS_SHOW_OLD_ID}';
+    toggle.setAttribute('data-filter-toggle', 'default-hidden');
+    showOld.appendChild(toggle);
+    showOld.appendChild(document.createTextNode('显示'
+      + DEFAULT_HIDDEN.map(function (value) { return labelOf(value, CATALOG_LABELS); }).join(' / ')
+      + '（默认隐藏）'));
+    host.appendChild(showOld);
+  }
 
   function apply() {
     var query = input.value.trim().toLowerCase();
     var selects = Array.prototype.slice.call(host.querySelectorAll('select[data-filter]'));
+    // 读者**主动**选了某个目录状态 ⇒ 这就是"我要看这一档"，不再套用默认隐藏。
+    var catalogPicked = selects.some(function (select) {
+      return select.getAttribute('data-filter') === 'data-catalog-status' && select.value;
+    });
+    var showHidden = Boolean(toggle && toggle.checked) || catalogPicked;
     var shown = 0;
+    var policyHidden = 0;
     rows.forEach(function (row) {
       var ok = true;
       if (query) {
@@ -524,20 +707,59 @@ const MODELS_INDEX_FILTER_SCRIPT = `(function () {
         if (!ok || !select.value) return;
         if ((row.getAttribute(select.getAttribute('data-filter')) || '') !== select.value) ok = false;
       });
+      // 默认隐藏：只隐藏、不删行；行还在 DOM 里（无 JS 时全部可见）。
+      if (ok && !showHidden && DEFAULT_HIDDEN.indexOf(row.getAttribute('data-catalog-status') || '') !== -1) {
+        ok = false;
+        policyHidden += 1;
+      }
       row.hidden = !ok;
       if (ok) shown += 1;
     });
-    if (counter) counter.textContent = '显示 ' + shown + ' / ' + rows.length + ' 个模型';
+    if (counter) {
+      counter.textContent = '显示 ' + shown + ' / ' + rows.length + ' 个模型'
+        + (policyHidden
+          ? '（另有 ' + policyHidden + ' 个旧型号默认隐藏 —— 勾选上方「显示旧型号」可查看）'
+          : '');
+    }
   }
 
   host.addEventListener('input', apply);
   host.addEventListener('change', apply);
   apply();
 })();`;
+}
+
+/**
+ * 页面上的那一份筛选脚本（默认参数 = 判据层的默认隐藏集合）。
+ *
+ * 为什么留一个模块级常量而不是每次现算：构建期要从磁盘回读整页并**逐字节**比对
+ * 页面里那份脚本与这一份（`build-local.js` / 自测都这么做），两边必须同一串字节。
+ */
+const MODELS_INDEX_FILTER_SCRIPT = buildModelsIndexFilterScript({
+  defaultHiddenStatus: DEFAULT_HIDDEN_CATALOG_STATUS
+});
 
 /** 内联脚本的 HTML（与 `plans-compare` 一样：页面上的那一份就是这里的一份字节） */
 function modelsIndexFilterScriptHtml() {
   return `<script id="models-filter-core">\n${MODELS_INDEX_FILTER_SCRIPT}\n</script>`;
+}
+
+/**
+ * 从**页面原文**里读回内联脚本的构建期参数（`DEFAULT_HIDDEN`）。
+ *
+ * 为什么读回来而不是信常量：这一条正是"页面上的那一份脚本真的按参数生成"的判据 ——
+ * 把页面里的参数改成 `[]`（默认全显）或删掉默认隐藏，`assertPageHonesty()` 当场红。
+ * 读不出来返回 `null`（调用方报红，不静默）。
+ */
+function modelsIndexFilterParamsOf(html) {
+  const match = String(html || '').match(/var DEFAULT_HIDDEN = (\[[^\]]*\]);/);
+  if (!match) return null;
+  try {
+    const parsed = JSON.parse(match[1]);
+    return Array.isArray(parsed) ? parsed.map(String) : null;
+  } catch (error) {
+    return null;
+  }
 }
 
 function modelsIndexRowHtml(row, prefix) {
@@ -545,20 +767,29 @@ function modelsIndexRowHtml(row, prefix) {
   const name = row.linked
     ? `<a href="${escapeHtml(`${prefix}${row.href}`)}">${escapeHtml(row.name)}</a>`
     : `${escapeHtml(row.name)}<small class="munlinked">资料不足，未生成详情页</small>`;
-  return `        <tr data-item="${escapeHtml(row.slug)}"
+  // 行身份有两层，**故意分开**：
+  //   · `data-model`  —— 表里的一行（= registry 的一个模型；**全部**模型都在表里）；
+  //   · `data-item`   —— 这一行同时是 ItemList 的成员（= 有详情页的模型，`seo.js` 数它）。
+  // 合成一个属性会让"旧型号被默认隐藏"很自然地演变成"旧型号从 ItemList / 静态表里消失"。
+  const itemAttr = row.linked ? ` data-item="${escapeHtml(row.slug)}"` : '';
+  return `        <tr data-model="${escapeHtml(row.slug)}" data-linked="${row.linked ? 'true' : 'false'}"${itemAttr}
           data-developer="${escapeHtml(row.developer)}"
           data-family="${escapeHtml(row.family)}"
           data-status="${escapeHtml(row.statusLabel)}"
+          data-catalog-status="${escapeHtml(row.catalogStatus)}"
+          data-role="${escapeHtml(row.modelRole)}"
           data-platforms="${row.platformCount}"
           data-search="${escapeHtml(row.search)}">
           <th scope="row">${name}<small>${escapeHtml(row.id)}</small></th>
-          <td>${escapeHtml(row.developer)}</td>
-          <td>${escapeHtml(row.family)}</td>
-          <td>${escapeHtml(aliasText)}</td>
-          <td>${escapeHtml(row.statusLabel)}</td>
-          <td class="num">${row.platformCount}</td>
-          <td class="num">${row.apiItemCount}</td>
-          <td>${escapeHtml(row.lastSeen || UNKNOWN_TEXT)}</td>
+          <td data-cell="developer">${escapeHtml(row.developer)}</td>
+          <td data-cell="family">${escapeHtml(row.family)}</td>
+          <td data-cell="aliases">${escapeHtml(aliasText)}</td>
+          <td data-cell="status">${escapeHtml(row.statusLabel)}</td>
+          <td data-cell="catalog-status">${escapeHtml(row.catalogStatusLabel)}</td>
+          <td data-cell="role">${escapeHtml(row.modelRoleLabel)}</td>
+          <td class="num" data-cell="platforms">${row.platformCount}</td>
+          <td class="num" data-cell="api-items">${row.apiItemCount}</td>
+          <td data-cell="last-seen">${escapeHtml(row.lastSeen || UNKNOWN_TEXT)}</td>
         </tr>`;
 }
 
@@ -574,6 +805,7 @@ function renderModelsIndex(registry, ctx = {}) {
   const rows = models.map(model => modelsIndexRowOf(model, ctx));
   const linked = rows.filter(row => row.linked);
   const unlinked = rows.filter(row => !row.linked);
+  const hiddenCount = rows.filter(row => row.hiddenByDefault).length;
   const developerCount = new Set(rows.map(row => row.developer)).size;
   const notes = MODELS_INDEX_NOTES
     .map(text => `        <li>${modelsMarkdownish(text, prefix)}</li>`).join('\n');
@@ -581,12 +813,10 @@ function renderModelsIndex(registry, ctx = {}) {
   const emptyState = rows.length
     ? ''
     : `      <p class="snote mnone">当前 registry 里没有任何模型 —— 这是事实，不是故障：本站只收录有官方来源、且能被显式引用的模型。</p>\n`;
+  // 未过门槛的模型**仍然留在表里**（一行都不少），只是没有详情页链接：
+  // 表的行数 == registry 的全部模型数，这一条由 `assertPageHonesty()` 对账。
   const unlinkedBlock = unlinked.length
-    ? `      <h2 class="ph2" id="models-unlinked">资料不足的模型（未生成详情页）</h2>
-      <p class="snote">${modelsMarkdownish('以下模型在 registry 里有身份，但**还没有任何显式引用**（API 计价映射 / 套餐 / 优惠 / 历史事件），因此本版本不为它们生成详情页 —— 它们仍在覆盖报告里。', prefix)}</p>
-      <ul class="mlist">
-${unlinked.map(row => `        <li>${escapeHtml(row.name)}<small>${escapeHtml(row.developer)}</small></li>`).join('\n')}
-      </ul>
+    ? `      <p class="snote" id="models-unlinked">${modelsMarkdownish(`表里有 ${unlinked.length} 个模型**还没有任何显式引用**（API 计价映射 / 套餐 / 优惠 / 历史事件），因此本版本不为它们生成详情页 —— 它们仍在覆盖报告里，也仍在这一页上（名字后面的小字标出）。`, prefix)}</p>
 `
     : '';
 
@@ -605,24 +835,24 @@ ${notes}
       </ul>
 
 ${emptyState}      <div id="models-filter" class="mfilter" aria-label="筛选模型"></div>
-      <p class="snote mcount" id="models-count">显示 ${linked.length} / ${linked.length} 个模型</p>
+      <p class="snote mcount" id="models-count">显示 ${rows.length} / ${rows.length} 个模型${hiddenCount ? `（旧型号 ${hiddenCount} 个默认不占首屏，可用「显示旧型号」查看）` : ''}</p>
 
       <div class="ptable-wrap">
       <table class="ptable" id="models-table">
-        <caption>一行 = registry 里的一个模型。价格与平台数只统计 <b>已显式映射</b> 的本站数据；
-          没有生成详情页的模型列在表下的清单里（它们仍在覆盖报告里）。</caption>
+        <caption>一行 = registry 里的一个模型：<b>全部</b> ${rows.length} 个模型都在这一张表里（默认不隐藏任何一行）。
+          价格与平台数只统计 <b>已显式映射</b> 的本站数据；「目录状态」是派生分类，「模型角色」来自 registry。</caption>
         <thead>
           <tr><th scope="col">模型</th><th scope="col">开发者</th><th scope="col">模型族</th><th scope="col">别名</th>
-            <th scope="col">状态</th><th scope="col">出现平台数</th><th scope="col">API 计价条目</th><th scope="col">最近核对</th></tr>
+            <th scope="col">状态</th><th scope="col">目录状态</th><th scope="col">模型角色</th>
+            <th scope="col">出现平台数</th><th scope="col">API 计价条目</th><th scope="col">最近核对</th></tr>
         </thead>
         <tbody>
-${linked.length ? linked.map(row => modelsIndexRowHtml(row, prefix)).join('\n') : ''}
+${rows.length ? rows.map(row => modelsIndexRowHtml(row, prefix)).join('\n') : ''}
         </tbody>
       </table>
       </div>
 
-${unlinkedBlock}
-      <p class="snote" id="models-links">相关页面：
+${unlinkedBlock}      <p class="snote" id="models-links">相关页面：
         <a href="${escapeHtml(`${prefix}plans/`)}">套餐与 API 计费资料库</a> ·
         <a href="${escapeHtml(`${prefix}plans/api/`)}">API / Token 计费对比</a> ·
         <a href="${escapeHtml(`${prefix}vendor/`)}">按厂商浏览</a> ·
@@ -725,6 +955,46 @@ function relatedDealLineOf(item, ctx, prefix) {
 }
 
 /**
+ * 「发布时间」这一格的**值 + 官方证据链接**。
+ *
+ * 三条纪律：
+ *   1. **没有官方发布日期就写「未标注」**，绝不拿 `firstSeen`（本站第一次看到）或版本号凑一个日期；
+ *   2. 有日期就**必须**能点回官方出处（`releaseEvidence` 的 `sourceUrl`）——"某天发布的"
+ *      这句话的出处必须可复核，而且出处域由身份层按 developer 的官方域登记校验过；
+ *   3. 证据与日期互为充要：缺哪一边都如实显示缺什么（不补、不藏）。
+ *
+ * 返回 `{ attrs, html }`：`attrs` 挂在 `<dd>` 上，让**外部**（自测 / 真浏览器验收）不必
+ * 抠文案就能读到"页面上的发布时间到底是哪一天、附了几条证据"。
+ */
+function releaseBlockOf(model) {
+  const { raw, date } = releaseDateOf(model);
+  const evidence = releaseEvidenceOf(model);
+  const attrDate = date || '';
+  const attrs = ` data-release-date="${escapeHtml(attrDate)}" data-release-evidence="${evidence.length}"`;
+  const evidenceHtml = evidence.map(item => {
+    const url = String(item.sourceUrl || '');
+    const quote = String(item.quote || '');
+    const capturedAt = String(item.capturedAt || '');
+    const link = url ? `<a href="${escapeHtml(url)}" rel="noopener">官方来源 ↗</a>` : '<span>（证据缺 sourceUrl）</span>';
+    const detail = [quote ? `「${quote}」` : '', capturedAt ? `抓取于 ${capturedAt}` : ''].filter(Boolean).join(' · ');
+    return ` ${link}${detail ? `<small>${escapeHtml(detail)}</small>` : ''}`;
+  }).join('');
+  const missingNote = date
+    ? ''
+    : `<small>没有官方发布日期证据 —— 「${escapeHtml('首次收录')}」是本站第一次看到它的日子，不是它的发布时间</small>`;
+  const evidenceNote = date && !evidence.length
+    ? '<small>registry 里有发布日期却没有附官方证据链接 —— 这一条该在数据层判红</small>'
+    : '';
+  const orphanNote = !date && evidence.length
+    ? '<small>registry 里附了发布日期证据却没有 releasedAt —— 这一条该在数据层判红</small>'
+    : '';
+  const value = date
+    ? `<time datetime="${escapeHtml(date)}">${escapeHtml(date)}</time>`
+    : escapeHtml(UNKNOWN_TEXT);
+  return { raw, date, evidence, attrs, html: `${value}${evidenceHtml}${missingNote}${evidenceNote}${orphanNote}` };
+}
+
+/**
  * `/models/<slug>/` 正文（纯函数）。
  *
  * @param {object} model registry entry
@@ -738,6 +1008,17 @@ function renderModelPage(model, ctx = {}) {
   const aliases = Array.isArray(model.aliases) ? model.aliases : [];
   const rows = refs.apiItems.map(item => apiPricingRowOf(item, ctx));
   const platformCount = new Set(rows.map(row => row.providerKey)).size;
+
+  // 中性用词：目录状态与模型角色都走词表（枚举外的角色原样显示，绝不编一个词）
+  const catalog = {
+    status: catalogStatusOf(model),
+    label: catalogStatusLabelOf(model)
+  };
+  const role = {
+    raw: modelRoleOf(model),
+    label: modelRoleLabelOf(model)
+  };
+  const release = releaseBlockOf(model);
 
   const aliasText = aliases.length ? aliases.map(alias => escapeHtml(String(alias))).join('、') : UNKNOWN_NUM;
   const official = model.officialUrl
@@ -802,9 +1083,12 @@ ${refs.events.slice().sort((a, b) => (a.at === b.at ? 0 : a.at < b.at ? 1 : -1))
         <dt>开发者</dt><dd>${escapeHtml(model.developer || UNKNOWN_TEXT)}${model.owner && model.owner !== model.developer ? `（owner：${escapeHtml(String(model.owner))}）` : ''}</dd>
         <dt>模型族</dt><dd>${escapeHtml(model.family || UNKNOWN_TEXT)}</dd>
         <dt>别名</dt><dd>${aliasText}</dd>
-        <dt>状态</dt><dd>${escapeHtml(STATUS_LABEL[model.status] || STATUS_LABEL.unknown)}</dd>
+        <dt>状态</dt><dd>${escapeHtml(STATUS_LABEL[model.status] || STATUS_LABEL.unknown)}<small>人工登记的官方状态；只有官方确实下线这一格才用下线措辞，目录状态不借用它</small></dd>
+        <dt>目录状态</dt><dd data-catalog-status="${escapeHtml(catalog.status)}" data-cell="catalog-status">${escapeHtml(catalog.label)}<small>相对同比较组的发布时间位置，<b>不是</b>质量评分、也不是本站推荐；判不了就是「${escapeHtml(CATALOG_STATUS_LABEL.unknown)}」</small></dd>
+        <dt>模型角色</dt><dd data-role="${escapeHtml(role.raw)}" data-cell="role">${escapeHtml(role.label)}<small>registry 里登记的能力位（不按版本号推断）</small></dd>
+        <dt>发布时间</dt><dd${release.attrs}>${release.html}</dd>
         <dt>官方链接</dt><dd>${official}${vendorLine}</dd>
-        <dt>首次收录</dt><dd>${escapeHtml(model.firstSeen || UNKNOWN_TEXT)}</dd>
+        <dt>首次收录</dt><dd>${escapeHtml(model.firstSeen || UNKNOWN_TEXT)}<small>本站第一次看到它的日子，不是它的发布时间</small></dd>
         <dt>最近核对</dt><dd>${escapeHtml(model.lastSeen || UNKNOWN_TEXT)}</dd>
         <dt>记录 id</dt><dd>${escapeHtml(modelIdOf(model))}</dd>
       </dl>
@@ -904,9 +1188,29 @@ function assertPageHonesty(html, page = {}) {
   if (kind === 'models-index') {
     checkCommon();
     if (!text.includes(MODELS_INDEX_HEADING)) problems.push(`缺少标题「${MODELS_INDEX_HEADING}」`);
-    const rows = modelsOf(page.registry).map(model => modelsIndexRowOf(model, ctx));
+    const models = modelsOf(page.registry);
+    const rows = models.map(model => modelsIndexRowOf(model, ctx));
     const linked = rows.filter(row => row.linked);
     const markers = [...text.matchAll(/data-item="([^"]*)"/g)].map(match => match[1]);
+    // ---- 静态表完整性（coverage-expansion-v1）：一行 = registry 的一个模型，**全部**都在 ----
+    //
+    // 这一条同时是"默认隐藏旧型号"的护栏：默认隐藏**只发生在运行时**（脚本设 row.hidden），
+    // 静态 HTML 里必须一行不少、一行不 hidden。否则"默认隐藏"会悄悄变成"无 JS 时看不到"。
+    const tableRows = [...text.matchAll(/<tr data-model="([^"]*)"/g)].map(match => match[1]);
+    if (tableRows.length !== models.length) {
+      problems.push(`静态表 ${tableRows.length} 行 ≠ registry 全部模型 ${models.length} 个（默认隐藏只许发生在运行时，静态表一行都不许少）`);
+    }
+    const tableSlugs = new Set(tableRows);
+    if (tableSlugs.size !== tableRows.length) {
+      problems.push(`静态表里有重复的 data-model 行（${tableRows.length} 行 / ${tableSlugs.size} 个唯一 slug）`);
+    }
+    for (const row of rows) {
+      if (!tableSlugs.has(row.slug)) problems.push(`registry 里的「${row.slug}」没有渲染成静态行（静态表 = 全部模型）`);
+    }
+    if (/<tr[^>]*\shidden[\s>]/.test(text)) {
+      problems.push('预渲染 HTML 里出现 hidden 的行 —— 默认隐藏只能由脚本在运行时加，静态表必须完整');
+    }
+    // ---- ItemList 成员 = 有详情页的模型（`data-item`），与目录状态无关 ----
     if (markers.length !== linked.length) {
       problems.push(`索引页 ${markers.length} 行 ≠ 已生成详情页的模型 ${linked.length} 个`);
     }
@@ -914,12 +1218,70 @@ function assertPageHonesty(html, page = {}) {
     for (const slug of markers) {
       if (!expected.has(slug)) problems.push(`索引页列出了不该生成详情页的模型「${slug}」`);
     }
+    // ---- 详情路由 / sitemap 成员资格**不因 catalogStatus 变化** ----
+    //
+    // 判据是"换一个目录状态，门槛结论一字不变"：把 legacy/historical 当成"淘汰"来处理的话，
+    // 这条会在真正开始判 legacy 的那一轮变红（而不是等线上发现旧型号的页面没了）。
+    for (const model of models) {
+      const base = modelPageGate(model, ctx);
+      const baselineInPage = tableSlugs.has(base.slug);
+      for (const forced of CATALOG_STATUSES) {
+        const alt = modelPageGate({ ...model, catalogStatus: forced }, ctx);
+        if (alt.shouldGenerate !== base.shouldGenerate || alt.route !== base.route) {
+          problems.push(`模型「${base.slug}」的门槛结论随 catalogStatus（${forced}）变化了 —— 详情路由与 sitemap 只由显式引用决定`);
+          break;
+        }
+      }
+      if (!baselineInPage) problems.push(`模型「${base.slug}」不在静态表里`);
+      // 该有详情页的模型必须带 data-item（默认隐藏的旧型号同样带：藏的是首屏，不是身份）
+      if (base.shouldGenerate && !markers.includes(base.slug)) {
+        problems.push(`过门槛的模型「${base.slug}」在静态表里没有 data-item（ItemList / 详情路由不该随目录状态变化）`);
+      }
+    }
+    // ---- 目录状态与角色两列：每一行都必须带标记，且格里的词必须等于词表里的那一格 ----
+    const catalogLabels = new Set(Object.values(CATALOG_STATUS_LABEL));
+    for (const row of rows) {
+      const rowHtml = (text.match(new RegExp(`<tr data-model="${row.slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[\\s\\S]*?<\\/tr>`)) || [''])[0];
+      if (!rowHtml) continue;
+      const catalogCell = (rowHtml.match(/<td data-cell="catalog-status">([^<]*)<\/td>/) || [])[1];
+      const roleCell = (rowHtml.match(/<td data-cell="role">([^<]*)<\/td>/) || [])[1];
+      if (catalogCell === undefined) problems.push(`「${row.slug}」行缺少目录状态格（data-cell="catalog-status"）`);
+      else if (catalogCell !== row.catalogStatusLabel || !catalogLabels.has(catalogCell)) {
+        problems.push(`「${row.slug}」行的目录状态显示为「${catalogCell}」，按数据应为「${row.catalogStatusLabel}」（中性词表里的一格）`);
+      }
+      if (roleCell === undefined) problems.push(`「${row.slug}」行缺少模型角色格（data-cell="role"）`);
+      else if (roleCell !== row.modelRoleLabel) {
+        problems.push(`「${row.slug}」行的模型角色显示为「${roleCell}」，按 registry 应为「${row.modelRoleLabel}」`);
+      }
+      if (!rowHtml.includes(`data-catalog-status="${row.catalogStatus}"`)) {
+        problems.push(`「${row.slug}」行缺少 data-catalog-status（筛选脚本与外部验收都读它）`);
+      }
+      // 「已下线」只允许出现在 status=retired 的行上
+      const statusCell = (rowHtml.match(/<td data-cell="status">([^<]*)<\/td>/) || [])[1] || '';
+      if (statusCell.includes(STATUS_LABEL.retired) && row.status !== 'retired') {
+        problems.push(`「${row.slug}」行把 status=${row.status} 写成了「${STATUS_LABEL.retired}」—— 这个说法只允许用在官方已下线的模型上`);
+      }
+      if (row.status === 'retired' && !statusCell.includes(STATUS_LABEL.retired)) {
+        problems.push(`「${row.slug}」的 status=retired，状态格却是「${statusCell}」（应写「${STATUS_LABEL.retired}」）`);
+      }
+    }
     // 搜索 / 筛选：控件由 JS 建（预渲染里一个都没有），数据全在静态表里。
     if (!/id="models-filter"/.test(text)) problems.push('缺少筛选控件容器 #models-filter');
     if (!/id="models-table"/.test(text)) problems.push('缺少模型表 #models-table');
     if (!/id="models-count"/.test(text)) problems.push('缺少计数行 #models-count');
     if (!String(html).includes(MODELS_INDEX_FILTER_SCRIPT)) {
       problems.push('内联的筛选脚本与 lib/models-page.js 里的那一份不是同一份字节');
+    }
+    // 默认隐藏集合是**构建期参数**：从页面原文把参数读回来，与判据层的集合逐个比对
+    const scriptParams = modelsIndexFilterParamsOf(html);
+    const wantedHidden = [...DEFAULT_HIDDEN_CATALOG_STATUS].sort().join(',');
+    if (!scriptParams) {
+      problems.push('页面里的筛选脚本没有 DEFAULT_HIDDEN 参数（默认可见性策略不见了）');
+    } else if ([...scriptParams].sort().join(',') !== wantedHidden) {
+      problems.push(`内联脚本的默认隐藏集合是 [${scriptParams.join(', ')}]，判据层要求 [${DEFAULT_HIDDEN_CATALOG_STATUS.join(', ')}]`);
+    }
+    if (DEFAULT_HIDDEN_CATALOG_STATUS.length && !String(html).includes(MODELS_SHOW_OLD_ID)) {
+      problems.push(`默认隐藏了旧型号却没有「显示旧型号」入口（#${MODELS_SHOW_OLD_ID}）—— 藏起来的东西必须点得到`);
     }
     if (/<input|<select|<button/.test(text)) {
       problems.push('预渲染 HTML 里出现了 JS 控件 —— 控件必须整块由脚本建（无 JS 时不给可点暗示）');
@@ -949,9 +1311,70 @@ function assertPageHonesty(html, page = {}) {
     const model = page.model;
     const name = modelNameOf(model);
     if (!text.includes(name)) problems.push(`缺少模型名「${name}」`);
-    // 题面 D6 点名的六项基本信息
-    for (const label of ['模型名称', '开发者', '别名', '官方链接']) {
+    // 题面 D6 点名的六项基本信息 + coverage-expansion-v1 的三项（目录状态 / 模型角色 / 发布时间）
+    for (const label of ['模型名称', '开发者', '别名', '官方链接', '目录状态', '模型角色', '发布时间']) {
       if (!text.includes(label)) problems.push(`详情页缺少「${label}」`);
+    }
+    // 发布时间：页面上的那一天 + 附了几条证据，都由页面自己声明的标记读回来对账。
+    // 这一条同时守三件事：不许凑日期、有日期必须有官方证据链接、证据必须逐条可点。
+    {
+      const release = releaseBlockOf(model);
+      const dateAttr = (text.match(/data-release-date="([^"]*)"/) || [])[1];
+      const evidenceAttr = (text.match(/data-release-evidence="(\d+)"/) || [])[1];
+      if (dateAttr === undefined) problems.push('详情页缺少 data-release-date 标记（发布时间无法被外部复核）');
+      else if (dateAttr !== (release.date || '')) {
+        problems.push(`详情页的发布时间是「${dateAttr}」，按 registry 应为「${release.date || '(未标注)'}」`);
+      }
+      if (evidenceAttr === undefined) problems.push('详情页缺少 data-release-evidence 标记');
+      else if (Number(evidenceAttr) !== release.evidence.length) {
+        problems.push(`详情页标了 ${evidenceAttr} 条发布日期证据，registry 里是 ${release.evidence.length} 条`);
+      }
+      if (release.raw && !release.date) {
+        problems.push(`registry 的 releasedAt「${release.raw}」不是可解析的真实日期（数据层应判红，页面如实写「未标注」）`);
+      }
+      if (release.date) {
+        if (!text.includes(`<time datetime="${release.date}">`)) {
+          problems.push(`详情页没有把发布时间渲染成 <time datetime="${release.date}">`);
+        }
+        if (!release.evidence.length) {
+          problems.push('详情页有发布时间却没有任何官方证据链接 —— 这句话必须有出处');
+        }
+        for (const item of release.evidence) {
+          const url = String(item.sourceUrl || '');
+          if (url && !text.includes(`href="${url}"`)) {
+            problems.push(`发布日期证据的出处 ${url} 没有出现在页面上（证据必须点得到）`);
+          }
+        }
+      } else if (release.evidence.length) {
+        problems.push('registry 里附了发布日期证据却没有 releasedAt（互为充要，数据层应判红）');
+      }
+    }
+    // 中性状态词：目录状态格里的词必须是词表里那一格；「已下线」只允许 status=retired 用
+    {
+      const status = String(model.status || 'unknown');
+      if (!text.includes(catalogStatusLabelOf(model))) {
+        problems.push(`详情页没有写出目录状态「${catalogStatusLabelOf(model)}」`);
+      }
+      const saidRetired = text.includes(STATUS_LABEL.retired);
+      if (saidRetired && status !== 'retired') {
+        problems.push(`模型 status=${status}，页面却写了「${STATUS_LABEL.retired}」—— 这个说法只允许用在官方已下线的模型上`);
+      }
+      if (status === 'retired' && !saidRetired) {
+        problems.push(`模型 status=retired，页面却没有写出「${STATUS_LABEL.retired}」`);
+      }
+      const catalogAttr = (text.match(/data-catalog-status="([^"]*)"/) || [])[1];
+      if (catalogAttr !== catalogStatusOf(model)) {
+        problems.push(`详情页的 data-catalog-status 是「${catalogAttr}」，按数据应为「${catalogStatusOf(model)}」`);
+      }
+      // 详情路由不因目录状态变化：换一个目录状态重算门槛，结论必须一字不变
+      const gate0 = modelPageGate(model, ctx);
+      for (const forced of CATALOG_STATUSES) {
+        const alt = modelPageGate({ ...model, catalogStatus: forced }, ctx);
+        if (alt.shouldGenerate !== gate0.shouldGenerate || alt.route !== gate0.route) {
+          problems.push(`该模型的门槛结论随 catalogStatus（${forced}）变化了 —— 详情页与 sitemap 只由显式引用决定`);
+          break;
+        }
+      }
     }
     const refs = modelReferencesOf(model, ctx);
     // 期望行 = **展开后的计价条目集合**（一条真实 pricing item = 一行），不是 link 条数。
@@ -1092,7 +1515,13 @@ module.exports = {
   MODELS_INDEX_DESCRIPTION,
   MODELS_INDEX_NOTES,
   MODELS_INDEX_FILTER_SCRIPT,
+  MODELS_SHOW_OLD_ID,
   STATUS_LABEL,
+  CATALOG_STATUS_LABEL,
+  CATALOG_STATUSES,
+  CATALOG_STATUS_UNKNOWN,
+  DEFAULT_HIDDEN_CATALOG_STATUS,
+  MODEL_ROLE_LABEL,
   FORBIDDEN_CLAIM_WORDS,
   UNKNOWN_TEXT,
   UNKNOWN_NUM,
@@ -1112,6 +1541,14 @@ module.exports = {
   modelSlugOf,
   modelHrefOf,
   providerNameOf,
+  catalogStatusOf,
+  catalogStatusLabelOf,
+  catalogStatusHiddenByDefault,
+  modelRoleOf,
+  modelRoleLabelOf,
+  releaseDateOf,
+  releaseEvidenceOf,
+  releaseBlockOf,
   modelReferencesOf,
   modelPageGate,
   apiPricingRowOf,
@@ -1119,7 +1556,9 @@ module.exports = {
   relatedDealLineOf,
   modelsIndexRowOf,
   modelsIndexRowHtml,
+  buildModelsIndexFilterScript,
   modelsIndexFilterScriptHtml,
+  modelsIndexFilterParamsOf,
   renderModelsIndex,
   modelsIndexJsonLd,
   renderModelPage,

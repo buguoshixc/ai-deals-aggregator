@@ -29,6 +29,9 @@ const path = require('path');
 
 const modelsPage = require('../lib/models-page');
 const modelRegistry = require('../lib/model-registry');
+// 判据层（目录状态的唯一出处）：自测只读它的词表/默认集合与 `MODEL_CATALOG_STATUS` 枚举，
+// 用来做**漂移对照** —— 页面自己再写一份词表就等于两个真相。
+const modelFreshness = require('../lib/model-freshness');
 const apiPlansPage = require('../lib/api-plans-page');
 const apiSchema = require('../lib/api-plan-schema');
 const plansPageLib = require('../lib/plans-page');
@@ -113,7 +116,32 @@ const dealLinks = readJson('scripts/data/deal-plan-links.json');
 const apiPlanHistoryStore = readJson('scripts/data/api-plan-history.json');
 const modelsTable = modelRegistry.load().table;
 const linksDoc = modelRegistry.loadLinks().doc;
-const publishedModels = modelRegistry.publishedModels({ table: modelsTable, links: linksDoc, apiPlans, plans });
+
+/**
+ * 目录状态派生（`catalogStatus` / `catalogReason`）—— 与 `build-local.js` / `rebuild-models.js`
+ * 走**同一支**判据（`model-freshness.deriveCatalog`）。这里不另写一份判据，
+ * 只把来源层字段映射成判据层的入参（少传一次 catalog，产物里每条都会落成 unknown）。
+ */
+function derivedCatalogOf(table) {
+  return modelFreshness.deriveCatalog({
+    models: Object.keys(table || {}).sort().map(slug => {
+      const entry = table[slug] || {};
+      return {
+        slug,
+        developer: entry.developer === undefined ? null : entry.developer,
+        family: entry.family === undefined ? null : entry.family,
+        modelRole: entry.modelRole === undefined ? null : entry.modelRole,
+        releasedAt: entry.releasedAt === undefined ? null : entry.releasedAt,
+        status: entry.status === undefined ? null : entry.status,
+        freshnessGroup: entry.freshnessGroup === undefined ? null : entry.freshnessGroup
+      };
+    })
+  });
+}
+
+const publishedModels = modelRegistry.publishedModels({
+  table: modelsTable, links: linksDoc, apiPlans, plans, catalog: derivedCatalogOf(modelsTable)
+});
 const publishedLinks = modelRegistry.publishedLinks(linksDoc, modelsTable);
 const modelDevelopers = Object.values(providerTable).map(entry => String((entry && entry.name) || ''));
 const modelsSourceRaw = JSON.parse(fs.readFileSync(modelRegistry.MODELS_FILE, 'utf8'));
@@ -182,24 +210,33 @@ check(`全部 ${models.length} 个模型都被显式引用（门槛内 ${gated.l
     && coverage.linkedModels === coverage.models);
 }
 check('派生产物两次构建逐字节相同（不读墙上时钟）',
-  JSON.stringify(modelRegistry.publishedModels({ table: modelsTable, links: linksDoc, apiPlans, plans })) === JSON.stringify(publishedModels));
+  JSON.stringify(modelRegistry.publishedModels({
+    table: modelsTable, links: linksDoc, apiPlans, plans, catalog: derivedCatalogOf(modelsTable)
+  })) === JSON.stringify(publishedModels));
 
 /* ================================================================== */
 section('② 索引页：行 / ItemList / 筛选 / 静态可读（真实数据）');
 /* ================================================================== */
 
 {
-  const { html, jsonLd, ctx: indexCtx } = indexPageOf(modelsTable);
-  const problems = modelsPage.assertPageHonesty(html + jsonLd, { kind: 'models-index', registry: modelsTable, ctx: indexCtx });
+  // 索引页渲染走**发布数据集**（`publishedModels`，带派生的 catalogStatus / catalogReason）——
+  // 与 `build-local.js` 的调用点同源；来源层 `modelsTable` 里根本没有目录状态这个字段。
+  const { html, jsonLd, ctx: indexCtx } = indexPageOf(publishedModels);
+  const problems = modelsPage.assertPageHonesty(html + jsonLd, { kind: 'models-index', registry: publishedModels, ctx: indexCtx });
   check('真实数据上索引页断言零问题（断言不是恒红）', problems.length === 0, problems.slice(0, 3).join('；'));
   const markers = [...html.matchAll(/data-item="([^"]*)"/g)].map(match => match[1]);
-  check(`索引页 ${markers.length} 行 == 过门槛的模型数（${gated.length}）`, markers.length === gated.length);
+  const tableSlugs = [...html.matchAll(/<tr data-model="([^"]*)"/g)].map(match => match[1]);
+  check(`索引页 ${markers.length} 个 data-item == 过门槛的模型数（${gated.length}）`, markers.length === gated.length);
+  check(`索引页静态表 ${tableSlugs.length} 行 == registry 全部模型数（${models.length}）—— 默认隐藏不许删行`,
+    tableSlugs.length === models.length && new Set(tableSlugs).size === models.length);
+  check('预渲染 HTML 里一行都不带 hidden（默认隐藏只发生在运行时 ⇒ 无 JS 读到完整表）',
+    !/<tr[^>]*\shidden[\s>]/.test(modelsPage.markupOnly(html)));
   check('预渲染 HTML 里零控件（筛选整块由脚本建，无 JS 时是完整静态表）',
     !/<input|<select|<button/.test(modelsPage.markupOnly(html)));
   check('内联筛选脚本与 lib/models-page.js 逐字节同源', html.includes(modelsPage.MODELS_INDEX_FILTER_SCRIPT));
-  check('每行都带五个筛选维度（开发者 / 模型族 / 状态 / 平台数 / 搜索串）',
-    ['data-developer=', 'data-family=', 'data-status=', 'data-platforms=', 'data-search=']
-      .every(attr => (html.match(new RegExp(attr.replace('=', '="'), 'g')) || []).length === markers.length));
+  check('每行都带七个筛选维度（开发者 / 模型族 / 状态 / 目录状态 / 角色 / 平台数 / 搜索串）',
+    ['data-developer=', 'data-family=', 'data-status=', 'data-catalog-status=', 'data-role=', 'data-platforms=', 'data-search=']
+      .every(attr => (html.match(new RegExp(attr.replace('=', '="'), 'g')) || []).length === tableSlugs.length));
   check('搜索串覆盖模型名 / 开发者 / 别名',
     models.some(model => {
       const row = modelsPage.modelsIndexRowOf(model, indexCtx);
@@ -209,6 +246,127 @@ section('② 索引页：行 / ItemList / 筛选 / 静态可读（真实数据�
       const row = modelsPage.modelsIndexRowOf(model, indexCtx);
       return row.aliases.some(alias => row.search.includes(modelRegistry.normalizeText(alias)));
     }));
+  // 目录状态 / 模型角色两列：中性词表与判据层同源，真实数据的每一行都能显示成中文标签
+  {
+    const params = modelsPage.modelsIndexFilterParamsOf(html);
+    check('内联脚本的默认隐藏集合 == 判据层的 DEFAULT_HIDDEN_CATALOG_STATUSES（构建期参数真的进了页面）',
+      Array.isArray(params)
+      && [...params].sort().join(',') === [...modelsPage.DEFAULT_HIDDEN_CATALOG_STATUS].sort().join(','),
+      JSON.stringify(params));
+    check('默认隐藏集合 == [legacy, historical]，且默认可见 = current / aging / unknown',
+      [...modelsPage.DEFAULT_HIDDEN_CATALOG_STATUS].sort().join(',') === 'historical,legacy'
+      && modelsPage.CATALOG_STATUSES
+        .filter(status => !modelsPage.DEFAULT_HIDDEN_CATALOG_STATUS.includes(status))
+        .sort().join(',') === 'aging,current,unknown');
+    check('页面提供了「显示旧型号」入口（入口 id 在脚本里）', html.includes(modelsPage.MODELS_SHOW_OLD_ID));
+    check('目录状态词表与判据层（model-freshness）逐字同源（两处不一致 = 两个真相）',
+      JSON.stringify(modelsPage.CATALOG_STATUS_LABEL) === JSON.stringify(modelFreshness.CATALOG_STATUS_LABEL),
+      JSON.stringify(modelsPage.CATALOG_STATUS_LABEL));
+    check('中性词表里没有「下线 / 淘汰 / 过时 / 推荐」这类结论性或淘汰性用词',
+      Object.values(modelsPage.CATALOG_STATUS_LABEL)
+        .every(label => !/下线|淘汰|过时|推荐|最强|最佳/.test(label)),
+      JSON.stringify(modelsPage.CATALOG_STATUS_LABEL));
+    const unmappedRoles = [...new Set(publishedModels.models.map(model => model.modelRole).filter(Boolean))]
+      .filter(role => !modelsPage.MODEL_ROLE_LABEL[role]);
+    check('真实数据里出现的每个 modelRole 都有中文标签（新角色一进来就会被点名）',
+      unmappedRoles.length === 0, unmappedRoles.join(' / '));
+    check('每一行的目录状态格与角色格都等于词表里那一格',
+      publishedModels.models.every(model => {
+        const row = modelsPage.modelsIndexRowOf(model, indexCtx);
+        return html.includes(`data-catalog-status="${row.catalogStatus}"`)
+          && html.includes(`<td data-cell="catalog-status">${row.catalogStatusLabel}</td>`)
+          && html.includes(`<td data-cell="role">${row.modelRoleLabel}</td>`);
+      }));
+    check('「已下线」只出现在 status=retired 的行上（数状态格，不数 data-status 这个筛选值）',
+      (modelsPage.markupOnly(html).match(/<td data-cell="status">已下线<\/td>/g) || []).length
+        === publishedModels.models.filter(model => model.status === 'retired').length,
+      `页面状态格 ${(modelsPage.markupOnly(html).match(/<td data-cell="status">已下线<\/td>/g) || []).length} 次`);
+  }
+}
+
+/* ================================================================== */
+section('②b 目录状态 / 模型角色：默认隐藏与「显示旧型号」（合成五档夹具 + 变异）');
+/* ================================================================== */
+
+{
+  // 合成夹具：五个目录状态各一条 —— 真实数据本轮可能一条 legacy 都没有，
+  // 所以这一层不能只靠真实数据（"分支能不能工作"必须自己钉住）。
+  // 映射只给 `cur-1` 与 `legacy-1`：另外三条**留在静态表里**但没有详情页。
+  const entry = (name, status, modelRole, catalogStatus) => ({
+    canonicalName: name, developer: '开发商甲', owner: null, family: '演练', aliases: [],
+    officialUrl: 'https://a.example/', status, modelRole, releasedAt: null, releaseEvidence: [],
+    freshnessGroup: null, catalogStatus, note: null
+  });
+  const catalogTable = {
+    'cur-1': entry('演练当前模型', 'active', 'llm', 'current'),
+    'aging-1': entry('演练较早模型', 'active', 'vlm', 'aging'),
+    'legacy-1': entry('演练旧型号', 'active', 'llm', 'legacy'),
+    'hist-1': entry('演练历史型号', 'retired', 'llm', 'historical'),
+    'unk-1': entry('演练未判模型', 'active', '翻译专用角色-未登记', 'unknown')
+  };
+  const firstApiPlan = apiPlans[0];
+  const firstModelKey = firstApiPlan.models[0].modelKey;
+  const catalogLinks = {
+    schemaVersion: 1,
+    links: [
+      { registrySlug: 'cur-1', apiPlanId: firstApiPlan.id, modelKey: firstModelKey, variant: null, basis: 'explicit-mapping', evidence: [], note: '演练' },
+      { registrySlug: 'legacy-1', apiPlanId: firstApiPlan.id, modelKey: firstModelKey, variant: null, basis: 'explicit-mapping', evidence: [], note: '演练' }
+    ]
+  };
+  const { html, jsonLd, ctx: catalogCtx } = indexPageOf(catalogTable, { links: catalogLinks });
+  const catalogProblems = modelsPage.assertPageHonesty(html + jsonLd, {
+    kind: 'models-index', registry: catalogTable, ctx: catalogCtx
+  });
+  check('合成五档夹具：索引页断言零问题（判据不是恒红）', catalogProblems.length === 0, catalogProblems.slice(0, 3).join('；'));
+  const staticRows = [...html.matchAll(/<tr data-model="([^"]*)"/g)].map(match => match[1]);
+  const itemRows = [...html.matchAll(/data-item="([^"]*)"/g)].map(match => match[1]);
+  check('合成夹具：静态表 5 行（含没有详情页的 3 条），data-item 只有 2 行（有详情页的那两条）',
+    staticRows.length === 5 && itemRows.length === 2 && itemRows.includes('legacy-1'),
+    `静态 ${staticRows.length} · data-item ${itemRows.length}`);
+  check('合成夹具：legacy / historical 的目录状态格用了中性词（旧型号 / 历史型号），没有借用下线用词',
+    html.includes('<td data-cell="catalog-status">旧型号</td>')
+    && html.includes('<td data-cell="catalog-status">历史型号</td>')
+    && !/data-cell="catalog-status"[^>]*>已下线/.test(html));
+  check('合成夹具：retired 那条的状态格是「已下线」，其余四条都不是（数状态格，不数筛选属性）',
+    (modelsPage.markupOnly(html).match(/<td data-cell="status">已下线<\/td>/g) || []).length === 1);
+  check('合成夹具：未登记的角色原样显示（不编词），已登记的角色显示中文标签',
+    html.includes('<td data-cell="role">翻译专用角色-未登记</td>')
+    && html.includes('<td data-cell="role">通用文本模型</td>'));
+  check('合成夹具：默认隐藏集合从页面参数读回来 == legacy+historical',
+    JSON.stringify([...(modelsPage.modelsIndexFilterParamsOf(html) || [])].sort()) === JSON.stringify(['historical', 'legacy']));
+
+  // ---- 变异（每一条都必须当场变红）----
+  const honestyOf = h => modelsPage.assertPageHonesty(h + jsonLd, { kind: 'models-index', registry: catalogTable, ctx: catalogCtx });
+  const allDisplayed = html.replace(/var DEFAULT_HIDDEN = \[[^\]]*\];/, 'var DEFAULT_HIDDEN = [];');
+  check('【变异】把页面脚本的默认隐藏集合改成 []（默认全显）→ 断言变红',
+    allDisplayed !== html && honestyOf(allDisplayed).some(problem => problem.includes('默认隐藏集合')));
+  const preHidden = html.replace('<tr data-model="legacy-1"', '<tr hidden data-model="legacy-1"');
+  check('【变异】给静态行预先加 hidden（无 JS 时少一行）→ 断言变红',
+    preHidden !== html && honestyOf(preHidden).some(problem => problem.includes('hidden')));
+  const droppedStatic = html.replace(/<tr data-model="unk-1"[\s\S]*?<\/tr>/, '');
+  check('【变异】静态表删掉一行（无详情页的那条）→ 断言变红（静态表 ≠ 全部模型）',
+    droppedStatic !== html && honestyOf(droppedStatic).some(problem => problem.includes('静态表') || problem.includes('没有渲染成静态行')));
+  const wrongLabel = html.replace('<td data-cell="catalog-status">旧型号</td>', '<td data-cell="catalog-status">当前型号</td>');
+  check('【变异】把某一行的目录状态格换成另一档的词 → 断言变红',
+    wrongLabel !== html && honestyOf(wrongLabel).some(problem => problem.includes('目录状态显示为')));
+  const retiredOnActive = html.replace('<td data-cell="status">在售 / 可用</td>', '<td data-cell="status">已下线</td>');
+  check('【变异】把 status=active 的行写成「已下线」→ 断言变红',
+    retiredOnActive !== html && honestyOf(retiredOnActive).some(problem => problem.includes('已下线')));
+  const itemDropped = html.replace(' data-item="legacy-1"', '');
+  check('【变异】隐掉过门槛旧型号的 data-item（详情路由随目录状态消失）→ 断言变红',
+    itemDropped !== html && honestyOf(itemDropped).some(problem => problem.includes('data-item') || problem.includes('行 ≠')));
+  const itemAdded = html.replace('<tr data-model="unk-1"', '<tr data-item="unk-1" data-model="unk-1"');
+  check('【变异】给不过门槛的行硬加 data-item（凭空生成详情页入口）→ 断言变红',
+    itemAdded !== html && honestyOf(itemAdded).some(problem => problem.includes('不该生成详情页')));
+  // 参数化是真的：换一个参数就是另一串字节，而且空集合 = "默认不隐藏任何一档"
+  const noHiddenScript = modelsPage.buildModelsIndexFilterScript({ defaultHiddenStatus: [] });
+  check('buildModelsIndexFilterScript 的默认隐藏集合是**真参数**（显式 [] ⇒ 脚本里就是空表，默认全显）',
+    noHiddenScript.includes('var DEFAULT_HIDDEN = [];')
+    && noHiddenScript !== modelsPage.MODELS_INDEX_FILTER_SCRIPT
+    && noHiddenScript.includes("'use strict';"));
+  const onlyLegacyScript = modelsPage.buildModelsIndexFilterScript({ defaultHiddenStatus: ['legacy'] });
+  check('只隐藏 legacy 的参数也生效（脚本里的集合逐字等于传入值）',
+    onlyLegacyScript.includes('var DEFAULT_HIDDEN = ["legacy"];'));
 }
 
 /* ================================================================== */
@@ -236,7 +394,93 @@ const ranked = gated.map(gate => models.find(model => model.slug === gate.slug))
       && html.includes(row.cacheText) && html.includes(row.unitText)));
   check('基本信息六项齐全（模型名称 / 开发者 / 别名 / 官方链接 / 状态 / 记录 id）',
     ['模型名称', '开发者', '别名', '官方链接', '状态', '记录 id'].every(label => html.includes(label)));
+  check('详情页新增三项：目录状态（中性词）/ 模型角色 / 发布时间',
+    ['目录状态', '模型角色', '发布时间'].every(label => html.includes(label)));
   check('详情页刻意没有 ItemList（详情叶子，不是集合页）', !/ItemList/.test(html + jsonLd));
+}
+
+/* ------------------------------------------------------------------ */
+/* ③a 发布时间（官方证据链接）与中性状态词（真实数据 + 合成夹具 + 变异）    */
+/* ------------------------------------------------------------------ */
+
+{
+  // 真实数据里**有**发布日期证据的模型页：日期必须渲染成 <time>，每条证据都必须可点。
+  const withEvidence = publishedModels.models.find(model =>
+    model.releasedAt && (model.releaseEvidence || []).length && gated.some(gate => gate.slug === model.slug));
+  if (withEvidence) {
+    const { html, jsonLd, ctx: detailCtx } = detailPageOf(withEvidence);
+    const block = modelsPage.releaseBlockOf(withEvidence);
+    check(`发布时间（${withEvidence.slug}）：页面断言零问题`, modelsPage.assertPageHonesty(html + jsonLd, {
+      kind: 'model', model: withEvidence, ctx: detailCtx
+    }).length === 0);
+    check(`发布时间（${withEvidence.slug}）：日期渲染成 <time datetime>，每条官方证据链接都在页面上`,
+      html.includes(`<time datetime="${block.date}">`)
+      && block.evidence.every(item => html.includes(`href="${item.sourceUrl}"`)));
+    check(`发布时间（${withEvidence.slug}）：页面的 data-release-date / data-release-evidence 与 registry 对得上`,
+      html.includes(`data-release-date="${block.date}"`)
+      && html.includes(`data-release-evidence="${block.evidence.length}"`));
+    const noEvidenceLink = html.replace(`<a href="${block.evidence[0].sourceUrl}" rel="noopener">`, '<span>');
+    check('【变异】把发布时间的官方证据链接摘掉 → 断言变红（这句话必须有出处）',
+      noEvidenceLink !== html && modelsPage.assertPageHonesty(noEvidenceLink, {
+        kind: 'model', model: withEvidence, ctx: detailCtx
+      }).some(problem => problem.includes('证据') || problem.includes('出处')));
+    const fabricated = html.replace(`data-release-date="${block.date}"`, 'data-release-date="2019-01-01"');
+    check('【变异】把页面上的发布时间改成另一个日期 → 断言变红（页面不许自己造日期）',
+      fabricated !== html && modelsPage.assertPageHonesty(fabricated, { kind: 'model', model: withEvidence, ctx: detailCtx })
+        .some(problem => problem.includes('发布时间')));
+  } else {
+    check('真实数据里暂时没有「有发布日期证据」的模型页样本（如实跳过，不造数据）', true);
+  }
+
+  // 合成夹具：有证据 / 没证据两种形态都钉住（真实数据可能一条都没有）
+  const releasedModel = {
+    slug: 'rel-1', canonicalName: '演练已发布模型', developer: '开发商甲', owner: null, family: '演练',
+    aliases: [], officialUrl: 'https://a.example/', status: 'active', modelRole: 'llm',
+    releasedAt: '2026-01-02',
+    releaseEvidence: [{ sourceUrl: 'https://a.example/news', quote: '官方公告原文', capturedAt: '2026-02-01' }],
+    freshnessGroup: null, catalogStatus: 'current', catalogReason: null, note: null
+  };
+  const undatedModel = {
+    ...releasedModel, slug: 'undated-1', canonicalName: '演练无日期模型', releasedAt: null,
+    releaseEvidence: [], catalogStatus: 'unknown'
+  };
+  const synthLinks = { schemaVersion: 1, links: ['rel-1', 'undated-1'].map(slug => ({
+    registrySlug: slug, apiPlanId: apiPlans[0].id, modelKey: apiPlans[0].models[0].modelKey,
+    variant: null, basis: 'explicit-mapping', evidence: [], note: '演练'
+  })) };
+  const { html: relHtml, ctx: relCtx } = detailPageOf(releasedModel, { links: synthLinks });
+  check('合成夹具（有发布日期）：断言零问题，且页面上有官方证据链接与引文原文',
+    modelsPage.assertPageHonesty(relHtml, { kind: 'model', model: releasedModel, ctx: relCtx }).length === 0
+    && relHtml.includes('href="https://a.example/news"') && relHtml.includes('官方公告原文')
+    && relHtml.includes('<time datetime="2026-01-02">2026-01-02</time>'));
+  const { html: undatedHtml, ctx: undatedCtx } = detailPageOf(undatedModel, { links: synthLinks });
+  check('合成夹具（没有发布日期）：如实写「未标注」，且不拿「首次收录」当发布时间',
+    modelsPage.assertPageHonesty(undatedHtml, { kind: 'model', model: undatedModel, ctx: undatedCtx }).length === 0
+    && undatedHtml.includes('data-release-date=""') && undatedHtml.includes('不是它的发布时间'));
+  const inventedDate = undatedHtml.replace('data-release-date=""', 'data-release-date="2020-03-04"');
+  check('【变异】给没有官方发布日期的模型硬塞一个日期 → 断言变红',
+    inventedDate !== undatedHtml && modelsPage.assertPageHonesty(inventedDate, {
+      kind: 'model', model: undatedModel, ctx: undatedCtx
+    }).some(problem => problem.includes('发布时间')));
+
+  // 中性状态词：「已下线」只允许 status=retired
+  const statusLabelRetired = modelsPage.STATUS_LABEL.retired;
+  const activeSaysRetired = relHtml.replace('<dt>状态</dt><dd>', `<dt>状态</dt><dd>${statusLabelRetired}`);
+  check('【变异】给 status=active 的详情页写上「已下线」→ 断言变红（目录状态不是下线状态）',
+    activeSaysRetired !== relHtml && modelsPage.assertPageHonesty(activeSaysRetired, {
+      kind: 'model', model: releasedModel, ctx: relCtx
+    }).some(problem => problem.includes('已下线')));
+  const retiredModel = { ...undatedModel, status: 'retired', catalogStatus: 'historical' };
+  const retiredHtml = detailPageOf(retiredModel, { links: synthLinks }).html;
+  check('合成夹具（retired）：状态写「已下线」、目录状态写中性词「历史型号」，两者不混用',
+    retiredHtml.includes(statusLabelRetired)
+    && retiredHtml.includes('data-cell="catalog-status">历史型号')
+    && !/data-cell="catalog-status"[^>]*>已下线/.test(retiredHtml));
+  const catalogMismatch = relHtml.replace('data-catalog-status="current"', 'data-catalog-status="legacy"');
+  check('【变异】把详情页的 data-catalog-status 改成另一档 → 断言变红',
+    catalogMismatch !== relHtml && modelsPage.assertPageHonesty(catalogMismatch, {
+      kind: 'model', model: releasedModel, ctx: relCtx
+    }).some(problem => problem.includes('catalogStatus') || problem.includes('data-catalog-status')));
 }
 
 /* ------------------------------------------------------------------ */
@@ -401,7 +645,7 @@ section('④ 牙 #1 / #2 / #4：同名不合并、别名唯一、改名不自动
   const rows = [...html.matchAll(/data-item="([^"]*)"/g)].map(match => match[1]);
   check('【牙 #1】页面侧：同名不同开发者的两条**各自一行**（没有被合并成一行）',
     rows.includes('alpha-1') && rows.includes('alpha-2') && rows.length === 2);
-  const merged = html.replace(/<tr data-item="alpha-2"[\s\S]*?<\/tr>/, '');
+  const merged = html.replace(/<tr data-model="alpha-2"[\s\S]*?<\/tr>/, '');
   check('【牙 #1】把两条合并成一条（少一行）→ 行数对账变红',
     merged !== html
     && modelsPage.assertPageHonesty(merged, { kind: 'models-index', registry: twoSameName, ctx: indexCtx }).length > 0);

@@ -1,0 +1,217 @@
+{
+  "_note": "coverage-expansion-v1 的真实开发基线。所有「前后对账」都以这份记录为分母，不允许用旧报告、旧本地 master 或任何二手数字代替。本文件由 t1（ci-gate-engineer）在 worktree .worktrees/coverage-expansion-v1 的 HEAD=a4dd40f 上**逐项重新度量**后回写：每一项都带 measured 出处，与上一版草稿不一致的数字在 corrections 里逐条列明。dist/ 是 gitignore 的构建产物，本轮为取基线页数在**隔离目录**（--out=baseline.building，随后删除）真实构建过一次，产物内容即 a4dd40f 的现场。",
+  "versionName": "coverage-expansion-v1",
+  "capturedAt": "2026-10-04T18:14:30+08:00",
+  "capturedAtUtc": "2026-10-04T10:14:30Z",
+  "measuredBy": "ci-gate-engineer (task t1, attempt 1)",
+  "measurementMethod": "所有计数由仓库外的独立度量脚本直读盘上文件得出（不引用任何既有报告），再用 `node scripts/tools/coverage-report.js --json` 交叉核对 deals/plans/api-plans 三组数字；gate 口径由 `node scripts/tools/check-ci-consistency.js --expect-checks=37` 实跑核对（DSH_BASH=Git for Windows bash，退出码 0、失败 0 项）。",
+
+  "branch": "coverage-expansion-v1",
+  "worktree": ".worktrees/coverage-expansion-v1",
+  "baselineSha": "a4dd40fc66ea612f327036f5ba3d98cbff46c288",
+  "originMasterSha": "a4dd40fc66ea612f327036f5ba3d98cbff46c288",
+  "headEqualsOriginMaster": true,
+  "aheadBehindOriginMaster": "0 0（git rev-list --left-right --count origin/master...HEAD）",
+  "localMasterShaAtPlanTime": "433477d",
+  "localMasterWasBehind": 8,
+  "baselineCommitSubject": "fix(verify): 线上冒烟的两条分析断言按真实行为校正（首次线上运行当场证伪） (#37)",
+  "baselineCommitDate": "2026-10-04 15:12:33 +0800",
+  "node": "v24.13.1",
+  "npm": "11.19.0",
+  "gitStatusAtBaseline": {
+    "trackedTree": "clean —— `git diff --stat a4dd40f` 空：盘上所有**已跟踪**文件与基线 SHA 逐字节一致（无修改、无暂存）",
+    "untracked": [
+      "research/_raw/coverage-expansion-v1/baseline.json（本文件）",
+      "research/_raw/coverage-expansion-v1/currentness.json（并行任务 t10 的在途产物）",
+      "scripts/lib/model-freshness.js（并行任务的在途实现）",
+      "scripts/tmp-t10-currentness.cjs（并行任务的临时脚本）",
+      "scripts/tools/model-freshness-sensitivity.js（并行任务的在途实现）"
+    ],
+    "untrackedNote": "未跟踪项全部是**本轮团队在途工作**，不属于基线快照；基线本身是「a4dd40f 的已跟踪树」（截至本文件 capturedAt 仍 `git diff a4dd40f` 为空）。上面这份未跟踪清单只是捕获瞬间的快照，并行任务会不断增删它 —— 对账时看的是「已跟踪树是否仍等于 a4dd40f」与「本清单之外是否有被跟踪的改动」，不是逐个对齐这些文件名。",
+    "ignoredArtifacts": ".worktrees/、dist/、*.building/、*.stale/ 均由 .gitignore 覆盖，不参与 git status"
+  },
+
+  "data": {
+    "deals": {
+      "total": 135,
+      "dealRows": 80,
+      "toolRows": 55,
+      "updatedAt": "2026-10-04T12:28:23+08:00",
+      "schemaVersion": 2,
+      "normalizedVendorKeys": 31,
+      "measured": "deals.json 的 count 字段 == deals 数组长度 == 135，且 type 分布 {deal:80, tool:55}；normalizedVendorKeys 取 coverage-report.js --json 的 deals.providers=31（与 gaps.dealsWithoutPlans 的 23 个键同属一套归一空间）"
+    },
+    "plans": {
+      "count": 23,
+      "providers": 12,
+      "updatedAt": "2026-10-01T00:00:00+08:00",
+      "schemaVersion": 1,
+      "measured": "plans.json 的 count == 数组长度 == 23；providers 取 coverage-report.js 的 coding.providers=12"
+    },
+    "apiPlans": {
+      "records": 13,
+      "providers": 10,
+      "modelPricingItems": 67,
+      "distinctModelKeys": 45,
+      "updatedAt": "2026-10-01T00:00:00+08:00",
+      "schemaVersion": 1,
+      "measured": "api-plans.json 的 count == 数组长度 == 13；modelPricingItems/distinctModelKeys 取 coverage-report.js 的 api.modelPricingItems=67 / api.distinctModelKeys=45"
+    },
+    "modelRegistry": {
+      "publishedModels": 44,
+      "publishedSchemaVersion": 1,
+      "publishedUpdatedAt": "2026-10-01T00:00:00+08:00",
+      "statusCensus": { "active": 44, "retired": 0, "unknown": 0 },
+      "sourceEntries": 44,
+      "sourceFile": "scripts/data/models.json（注册表来源层，44 个 slug 键 + _note/_rules/_derived/_identity/_developers_extra 元键）",
+      "linksFile": "scripts/data/model-registry-links.json",
+      "links": 64,
+      "apiLinks": 64,
+      "codingPlanModelMappings": 9,
+      "planModelStrings": 19,
+      "gapDeclarations": 10,
+      "gapFile": "scripts/data/model-registry-gaps.json（declarations 10 条；与 coverage-report 的 registry.declaredPlanModels 同源）",
+      "measured": "models.json 的 count == 数组长度 == 44，status 全部 active；links=64 为 model-registry-links.json 的 links 数组长度（每行都带 apiPlanId+modelKey ⇒ apiLinks 同为 64）；codingPlanModelMappings=9 与 planModelStrings=19 取 coverage-report.js 的 registry.mappedPlanModelCount / planModelStrings；gapDeclarations=10 取 model-registry-gaps.json 的 declarations.length"
+    },
+    "providers": {
+      "registered": 23,
+      "file": "scripts/data/providers.json",
+      "keys": ["zhipu", "trae", "qoder", "codebuddy", "moonshot", "minimax", "github", "cursor", "openai", "anthropic", "google", "deepseek", "baidu", "volcengine", "coze", "iflytek", "microsoft", "notion", "aliyun", "siliconflow", "tencent", "windsurf", "qoder-intl"],
+      "measured": "Object.keys(providers.json) 去掉下划线开头的元键（_note/_keying/_rule/_aliases_v3/_aliases_v3_rulings/_cross_dataset/_official_domains_note/_v25_note/_vendor_pages_note/_v30_note_a3/_qoder_intl_note）= 23"
+    },
+    "developersExtra": {
+      "count": 1,
+      "keys": ["阶跃星辰（StepFun）"],
+      "file": "scripts/data/models.json 的 _developers_extra（不在 providers.json 里、但有官方依据的开发者白名单）"
+    },
+    "dealPlanLinks": {
+      "relations": 5,
+      "retired": 0,
+      "fileBytes": 5023,
+      "file": "scripts/data/deal-plan-links.json",
+      "measured": "links 数组长度 5、retired 数组长度 0；5023 是**文件字节数**，不是条数（上一版草稿把它当成条数，见 corrections）"
+    }
+  },
+
+  "collectors": {
+    "registeredInCode": 7,
+    "headlessExtra": 2,
+    "totalRegistered": 9,
+    "registryIds": ["cn_qianfan", "cn_aliyun", "cn_zhipu", "layer3labs", "aitools", "futurepedia", "futuretools"],
+    "headlessIds": ["cn_zhipu_pricing", "cn_volc_ark"],
+    "measured": "require('scripts/collectors').list() = 7 个常驻采集器；list({headless:true}) = 9（多出两个只在 --headless 下可用的：智谱AI活动页、火山方舟）",
+    "sourceHealthRows": 9,
+    "sourceHealthFile": "scripts/data/source-health.json",
+    "statusCensus": { "healthy": 8, "failed": 1 },
+    "knownLongTermFailure": {
+      "source": "futurepedia",
+      "name": "Futurepedia",
+      "kind": "static",
+      "status": "failed",
+      "reason": "collector_error",
+      "consecutiveFailures": 9,
+      "lastItemCount": 7,
+      "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+      "lastAttemptAt": "2026-10-04T04:28:23.566Z",
+      "lastSuccessAt": "2026-09-30T01:36:21.446Z"
+    }
+  },
+
+  "site": {
+    "distHtmlPages": 173,
+    "distTotalFiles": 290,
+    "sitemapEntries": 170,
+    "indexablePages": 170,
+    "aliasPages": 3,
+    "dealDetailPages": 80,
+    "modelDetailPages": 44,
+    "vendorPages": 19,
+    "feedFiles": 50,
+    "measurement": "dist/ 在基线 SHA 上不存在（gitignore）。为取得可对账的基线页数，在 worktree 内真实跑了一次构建：`node scripts/tools/build-local.js --out=baseline.building`（隔离目录，避免与并行任务争用 dist/），构建自检全过；随后数出 173 个 *.html / 290 个文件 / sitemap 170 条 <loc>，再把该目录删除（已确认删除后无 *.building / *.stale 残留）。同一份数字与主工作区现场 dist/ 的 173 个 HTML 相互印证。",
+    "buildSelfCheckHighlights": "构建自检原文：`SEO 安全门禁: 27 个检查码 × 173 个页面全过（可索引 170 · 别名 3 · 详情页 80 · 落地页 93 · 厂商页 19 · 分类页 5 · sitemap 170 · 孤儿 0 · 重复 canonical 0 · 无效内链 0）`；`订阅: 25 个 Feed × 2 种格式 = 50 个文件 · 428 条条目`",
+    "note": "本轮改造后必须重新构建并用同一口径对账；对账分母就是这里的 173（页）/ 170（sitemap）。"
+  },
+
+  "gates": {
+    "gateAction": ".github/actions/gate/action.yml",
+    "gateActionBytes": 32075,
+    "gateStepCount": 45,
+    "gateStepCountEvidence": "check-ci-consistency 的 (10) 实跑输出：`.github/actions/gate/action.yml 共 45 步：名字序列 / run 体指纹 / 步骤级 if / 无 continue-on-error 全过`；(10b) 同报 `run 步骤 45 个 / shell 声明 45 个`。冻结表 GATE_STEP_NAMES 恰为 45 条（末条 'Gate conclusion' 无尾逗号，用带尾逗号的简单正则只会数到 44 —— 上一版草稿的 41 与「文件名出现次数 45」都是错的）。",
+    "frozenRunBodies": 45,
+    "stepsWithoutFrozenRunBody": 0,
+    "frozenAssertionNames": 36,
+    "expectChecks": 37,
+    "expectChecksEvidence": "`.github/workflows/verify.yml:118` 的调用行 `run: node scripts/tools/check-ci-consistency.js --expect-checks=37`（带外钉住项数的唯一出处）。实跑 `--expect-checks=37` ⇒ `✅ CI 口径检查 37 项，失败 0 项`，exit 0；负向对照 `--expect-checks=36` ⇒ `❌ CI 口径检查 37 项，失败 1 项`（(E) 断言红），exit 1 ⇒ 真实值确为 37。",
+    "expectChecksCommentDrift": "verify.yml:95 的**注释**仍写 `--expect-checks=36` —— 注释不参与判据，但任何人照注释抄数字都会踩坑；本轮不动它，仅如实记录（谁改 verify.yml 的调用行，应把这处注释一起对齐）。",
+    "packageScripts": 90,
+    "selftestScripts": 22,
+    "selftestNote": "package.json 里 selftest:* 共 22 条；check-ci-consistency 的 (17) 要求每一条都真的被门禁跑到 —— 本轮新增自测必须同步登记 action.yml，且**不能**改动 verify.yml 的 --expect-checks 数字（除非同时增删断言）。",
+    "frozenRunBodiesNote": "check-ci-consistency.js 的 GATE_STEP_RUN 冻结每一步 run 体（改步骤体必须同步改冻结表）；步骤名前缀被改动也会由 (10) 判红。",
+    "baselineVerifyJson": "research/_raw/ours-baseline/verify.json（只覆盖首页与落地页指标：coveredDeals / cards / firstScreenFull / pageHeight / externalRequests / jsErrors）",
+    "checkCommand": "DSH_BASH=\"C:\\Program Files\\Git\\bin\\bash.exe\" node scripts/tools/check-ci-consistency.js --expect-checks=37"
+  },
+
+  "measuredFacts": {
+    "dealsVendorsWithoutPlans": 23,
+    "dealsVendorsWithoutPlansList": [
+      "ai360", "aliyun", "aws", "baichuan", "canva", "coze", "elevenlabs", "figma", "google",
+      "iflytek", "microsoft", "modelscope", "notion", "openai", "perplexity", "replit", "runway",
+      "sensetime", "siliconflow", "stepfun", "tencent", "volcengine", "zapier"
+    ],
+    "plansWithoutDeals": 4,
+    "plansWithoutDealsList": ["codebuddy", "qoder", "qoder-intl", "trae"],
+    "unmappedModelCount": 0,
+    "unmappedPlanModelCount": 0,
+    "declaredPlanModelCount": 10,
+    "planModelStrings": 19,
+    "mappedPlanModelCount": 9,
+    "existingCandidateRegistrations": 40,
+    "existingCandidateDecisions": { "adopted": 13, "notAdopted": 21, "alreadyCovered": 6 },
+    "existingCandidateFile": "research/v3.0-source-candidates.json（counts 与逐行 decision 双读一致：40 = 13 + 21 + 6）",
+    "coverageTargetsFileExists": false,
+    "releasedAtFieldExists": false,
+    "modelRoleFieldExists": false,
+    "catalogStatusFieldExists": false,
+    "fieldProbe": "后四项是对 models.json（发布产物）/ scripts/data 的字段探测：coverage-targets 类文件不存在；models.json 里没有 releasedAt / modelRole / catalogStatus 字段 ⇒ 本轮「明确知道要覆盖什么 / 哪些模型值得默认展示」所需的承载字段**尚未存在**。"
+  },
+
+  "corrections": [
+    {
+      "id": "C1",
+      "field": "gates.gateStepCount",
+      "draftValue": 41,
+      "measuredValue": 45,
+      "evidence": "check-ci-consistency (10) 实跑报 `共 45 步`；(10b) 报 `run 步骤 45 个 / shell 声明 45 个`；冻结表 GATE_STEP_NAMES 与 GATE_STEP_RUN 均 45 条。草稿的「41 步 + 文件名出现次数 45」两个数字都站不住。"
+    },
+    {
+      "id": "C2",
+      "field": "gates.expectChecks",
+      "draftValue": 36,
+      "measuredValue": 37,
+      "evidence": "verify.yml:118 实为 `--expect-checks=37`；实跑 37 项 0 失败（exit 0），负向 `--expect-checks=36` 判红 1 项（exit 1）。草稿引用的 36 是 verify.yml:95 **注释**里的旧数字。"
+    },
+    {
+      "id": "C3",
+      "field": "data.dealPlanLinks",
+      "draftValue": 5023,
+      "measuredValue": 5,
+      "evidence": "scripts/data/deal-plan-links.json 的 links 数组长度 = 5、retired = 0；5023 是该文件的**字节数**。已改为 {relations:5, retired:0, fileBytes:5023}。"
+    },
+    {
+      "id": "C4",
+      "field": "collectors.knownLongTermFailure.consecutiveFailures",
+      "draftValue": 8,
+      "measuredValue": 9,
+      "evidence": "scripts/data/source-health.json 的 futurepedia 行（已跟踪文件、与 a4dd40f 逐字节一致）现写 consecutiveFailures=9、lastAttemptAt=2026-10-04T04:28:23.566Z、lastSuccessAt=2026-09-30T01:36:21.446Z。"
+    },
+    {
+      "id": "C5",
+      "field": "site.distHtmlPages 的来源",
+      "draftValue": "取自改造前主工作区现场 dist/ 的 173",
+      "measuredValue": "173（在基线 SHA 上真实构建后数出）",
+      "evidence": "草稿的 173 是从**主工作区**（本地 master 433477d，落后 origin/master 8 个提交）的 dist/ 抄来的，属于二手数字。本轮改为在基线 SHA 上以 `--out=baseline.building` 隔离构建后直接计数：HTML 173 / 文件 290 / sitemap 170 —— 数值恰好相同，但来源现在是一手证据。"
+    }
+  ],
+
+  "reconciliationRule": "本轮任何「改造后 vs 基线」的对账，分子取同一命令在同一口径下的新度量，分母取本文件的值；若某个数字与 expectChecks=37 / gateStepCount=45 对不上（例如照抄任务书里的 36 / 41），以本文件为准并记一次偏差。"
+}

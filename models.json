@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "updatedAt": "2026-10-01T00:00:00+08:00",
   "count": 44,
   "models": [
@@ -13,8 +13,14 @@
       "aliases": [],
       "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -27,8 +33,14 @@
       "aliases": [],
       "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
       "status": "active",
+      "modelRole": "fast",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -41,8 +53,14 @@
       "aliases": [],
       "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -55,8 +73,14 @@
       "aliases": [],
       "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -72,8 +96,21 @@
       ],
       "officialUrl": "https://api-docs.deepseek.com/quick_start/pricing",
       "status": "active",
+      "modelRole": "vision",
+      "releasedAt": "2026-09-10",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "「### DeepSeek-V4.1-Flash Release / Today, we officially release the DeepSeek-V4.1-Flash model. It is the smallest model in our new architecture family, with native multimodal visual understanding.」",
+          "sourceUrl": "https://api-docs.deepseek.com/updates",
+          "capturedAt": "2026-10-04"
+        }
+      ],
+      "freshnessGroup": "current-mainline",
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
       "note": "跨平台身份合并（人工判断）：阿里云百炼官方页 Model ID = `deepseek-v4.1-flash`（见 api-plans 记录 ef4d06758403 的 evidence）；DeepSeek 官方页同一模型 = `deepseek-flash`、别名 `DeepSeek-V4.1-Flash`（见 fffbb44ac3a9）。据上述两处官方串一致（V4.1 + Flash）**判断为**同一身份；价格各留原记录。若日后证实版本不同应拆开。"
     },
     {
@@ -88,8 +125,21 @@
       ],
       "officialUrl": "https://siliconflow.cn/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": "2025-12-01",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "「## Date: 2025-12-01 / ### DeepSeek-V3.2 / Both `deepseek-chat` and `deepseek-reasoner` have been upgraded to DeepSeek-V3.2.」",
+          "sourceUrl": "https://api-docs.deepseek.com/updates",
+          "capturedAt": "2026-10-04"
+        }
+      ],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "legacy",
+      "catalogReason": "outranked-beyond-aging-window",
       "note": null
     },
     {
@@ -106,8 +156,21 @@
       ],
       "officialUrl": "https://api-docs.deepseek.com/quick_start/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": "2026-08-13",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "「### DeepSeek-V4-Pro Update / The GA release of DeepSeek-V4-Pro has been rolled out on the APP, Web, and API.」",
+          "sourceUrl": "https://api-docs.deepseek.com/updates",
+          "capturedAt": "2026-10-04"
+        }
+      ],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
       "note": null
     },
     {
@@ -120,8 +183,14 @@
       "aliases": [],
       "officialUrl": "https://www.volcengine.com/product/ark",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -134,8 +203,14 @@
       "aliases": [],
       "officialUrl": "https://www.volcengine.com/product/ark",
       "status": "active",
+      "modelRole": "fast",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -148,8 +223,14 @@
       "aliases": [],
       "officialUrl": "https://www.volcengine.com/product/ark",
       "status": "active",
+      "modelRole": "other",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -162,8 +243,14 @@
       "aliases": [],
       "officialUrl": "https://www.volcengine.com/product/ark",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -176,8 +263,14 @@
       "aliases": [],
       "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -190,8 +283,14 @@
       "aliases": [],
       "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -204,8 +303,14 @@
       "aliases": [],
       "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -218,8 +323,14 @@
       "aliases": [],
       "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -232,8 +343,14 @@
       "aliases": [],
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
+      "modelRole": "vision",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -246,8 +363,14 @@
       "aliases": [],
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
+      "modelRole": "vision",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -260,8 +383,14 @@
       "aliases": [],
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
+      "modelRole": "vision",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -274,8 +403,14 @@
       "aliases": [],
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
+      "modelRole": "vision",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -288,8 +423,14 @@
       "aliases": [],
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
+      "modelRole": "fast",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -304,8 +445,14 @@
       ],
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -318,8 +465,14 @@
       "aliases": [],
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
+      "modelRole": "fast",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -332,8 +485,14 @@
       "aliases": [],
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
+      "modelRole": "vision",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -346,8 +505,14 @@
       "aliases": [],
       "officialUrl": "https://platform.openai.com/docs/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -360,8 +525,14 @@
       "aliases": [],
       "officialUrl": "https://platform.openai.com/docs/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -374,8 +545,14 @@
       "aliases": [],
       "officialUrl": "https://platform.openai.com/docs/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -388,8 +565,14 @@
       "aliases": [],
       "officialUrl": "https://platform.openai.com/docs/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -402,8 +585,14 @@
       "aliases": [],
       "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -416,8 +605,14 @@
       "aliases": [],
       "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
       "status": "active",
+      "modelRole": "embedding",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -430,8 +625,14 @@
       "aliases": [],
       "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
       "status": "active",
+      "modelRole": "other",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -444,8 +645,14 @@
       "aliases": [],
       "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
       "status": "active",
+      "modelRole": "translation",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -458,8 +665,14 @@
       "aliases": [],
       "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
       "status": "active",
+      "modelRole": "translation",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -474,8 +687,14 @@
       ],
       "officialUrl": "https://siliconflow.cn/pricing",
       "status": "active",
+      "modelRole": "coding",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -488,8 +707,14 @@
       "aliases": [],
       "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -502,8 +727,14 @@
       "aliases": [],
       "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -516,8 +747,14 @@
       "aliases": [],
       "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -530,8 +767,14 @@
       "aliases": [],
       "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
       "status": "active",
+      "modelRole": "fast",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -546,8 +789,21 @@
       ],
       "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
       "status": "active",
+      "modelRole": "vision",
+      "releasedAt": "2026-06-01",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "「## 2026 年 6 月 1 日 / ## MiniMax M3 / 全新语言模型 MiniMax-M3 正式发布，面向 Agent 推理、工具调用、代码、多模态 Chat 输入和长上下文任务。」",
+          "sourceUrl": "https://platform.minimax.cn/docs/release-notes/models",
+          "capturedAt": "2026-10-04"
+        }
+      ],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
       "note": null
     },
     {
@@ -560,8 +816,14 @@
       "aliases": [],
       "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -576,8 +838,14 @@
       ],
       "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -592,8 +860,14 @@
       ],
       "officialUrl": "https://siliconflow.cn/pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -606,8 +880,14 @@
       "aliases": [],
       "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
       "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -622,8 +902,14 @@
       ],
       "officialUrl": "https://siliconflow.cn/pricing",
       "status": "active",
+      "modelRole": "fast",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     },
     {
@@ -636,8 +922,14 @@
       "aliases": [],
       "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
       "status": "active",
+      "modelRole": "vision",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
       "note": null
     }
   ]

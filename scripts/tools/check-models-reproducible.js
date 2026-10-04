@@ -62,7 +62,38 @@ function main() {
     problems.push(`来源层/关系层不合法（${sourceProblems.length} 处，先跑 npm run models:rebuild 看明细）`);
   }
 
-  const expectedModels = reg.serialize(reg.publishedModels({ table: modelsLoad.table, links: linksLoad.doc, apiPlans, plans }));
+  // coverage-expansion-v1：`catalogStatus` / `catalogReason` 是**派生**字段，判据在
+  // `scripts/lib/model-freshness.js`。重建与本次对账**必须用同一支派生**：
+  // 这里不传 catalog 的话，本脚本会认为"应为 null"、而盘上那份带着真实原因码 ⇒ 假红。
+  // 与 `rebuild-models.js` 的 `freshnessInputs()` 保持同一映射（字段名逐字相同）。
+  const freshnessProblems = [];
+  let catalogReport = null;
+  try {
+    const freshness = require('../lib/model-freshness');
+    const inputs = {
+      models: Object.keys(modelsLoad.table).sort().map(slug => {
+        const entry = modelsLoad.table[slug] || {};
+        return {
+          slug,
+          developer: entry.developer === undefined ? null : entry.developer,
+          family: entry.family === undefined ? null : entry.family,
+          modelRole: entry.modelRole === undefined ? null : entry.modelRole,
+          releasedAt: entry.releasedAt === undefined ? null : entry.releasedAt,
+          status: entry.status === undefined ? null : entry.status,
+          freshnessGroup: entry.freshnessGroup === undefined ? null : entry.freshnessGroup
+        };
+      })
+    };
+    catalogReport = freshness.deriveCatalog(inputs);
+    if (catalogReport.invariantViolations.length) {
+      freshnessProblems.push(`新鲜度层报出 ${catalogReport.invariantViolations.length} 条硬不变量违规（先跑 npm run models:rebuild 看明细）`);
+    }
+  } catch (error) {
+    freshnessProblems.push(`scripts/lib/model-freshness.js 不可用（${error.message}）—— catalogStatus 无法派生，本次对账会与盘上的派生结果不一致`);
+  }
+  problems.push(...freshnessProblems);
+
+  const expectedModels = reg.serialize(reg.publishedModels({ table: modelsLoad.table, links: linksLoad.doc, apiPlans, plans, catalog: catalogReport }));
   const expectedLinks = reg.serialize(reg.publishedLinks(linksLoad.doc, modelsLoad.table));
   const diskModels = fs.existsSync(reg.PUBLISHED_MODELS_FILE) ? fs.readFileSync(reg.PUBLISHED_MODELS_FILE, 'utf8') : null;
   const diskLinks = fs.existsSync(reg.PUBLISHED_LINKS_FILE) ? fs.readFileSync(reg.PUBLISHED_LINKS_FILE, 'utf8') : null;
