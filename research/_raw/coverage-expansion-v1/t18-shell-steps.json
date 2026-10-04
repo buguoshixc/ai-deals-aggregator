@@ -1,0 +1,97 @@
+{
+  "generatedAt": "2026-10-04T13:14:41.495Z",
+  "head": "9f27836a75d4131ca6a0d2b5e35f242b8b520aae",
+  "parsedBodies": {
+    "Prepare browser for the real-browser gate": {
+      "chars": 1611,
+      "lines": 46
+    },
+    "Browser availability decision (never silent)": {
+      "chars": 1470,
+      "lines": 48
+    },
+    "Gate conclusion": {
+      "chars": 409,
+      "lines": 14
+    }
+  },
+  "byteProof": [
+    {
+      "name": "Prepare browser for the real-browser gate",
+      "charsParsed": 1611,
+      "charsRaw": 1611,
+      "byteIdentical": true,
+      "firstDiff": null
+    },
+    {
+      "name": "Browser availability decision (never silent)",
+      "charsParsed": 1470,
+      "charsRaw": 1470,
+      "byteIdentical": true,
+      "firstDiff": null
+    },
+    {
+      "name": "Gate conclusion",
+      "charsParsed": 409,
+      "charsRaw": 409,
+      "byteIdentical": true,
+      "firstDiff": null
+    }
+  ],
+  "runs": [
+    {
+      "name": "45 Prepare browser（原样重跑）",
+      "exit": 0,
+      "ms": 6119,
+      "githubOutput": "browser_available=true\nexecutable=C:\\Users\\星澈\\AppData\\Local\\ms-playwright\\chromium-1243\\chrome-win64\\chrome.exe",
+      "summaryTail": "### 真浏览器验收 · 浏览器准备 / - 可执行文件：`C:\\Users\\星澈\\AppData\\Local\\ms-playwright\\chromium-1243\\chrome-win64\\chrome.exe` / - 结论：✅ 浏览器就绪，verify-site.js 会**真实执行**。",
+      "stdoutTail": "playwright-core 版本: 1.63.0\n浏览器可执行文件: C:\\Users\\星澈\\AppData\\Local\\ms-playwright\\chromium-1243\\chrome-win64\\chrome.exe",
+      "stderrTail": "║     npx playwright install                                                    ║\n║                                                                               ║\n╚═══════════════════════════════════════════════════════════════════════════════╝"
+    },
+    {
+      "name": "46 Browser availability（本机真实输出：探针在 Windows 上找不到 POSIX 路径的浏览器）",
+      "exit": 0,
+      "ms": 51,
+      "githubOutput": "mode=full",
+      "summaryTail": "- 判定：**真浏览器验收将执行**（verify-site.js + 回归比对，可执行文件 ``）",
+      "stdoutTail": "浏览器可用（）→ 真浏览器验收将执行",
+      "stderrTail": ""
+    },
+    {
+      "name": "46-counter A（avail=true / allow=false ⇒ 必须 exit 0 mode=full）",
+      "exit": 0,
+      "ms": 49,
+      "githubOutput": "mode=full",
+      "summaryTail": "- 判定：**真浏览器验收将执行**（verify-site.js + 回归比对，可执行文件 `/usr/bin/google-chrome`）",
+      "stdoutTail": "浏览器可用（/usr/bin/google-chrome）→ 真浏览器验收将执行",
+      "stderrTail": ""
+    },
+    {
+      "name": "46-counter B（avail=false / allow=false ⇒ 必须 exit 1 mode=none）",
+      "exit": 1,
+      "ms": 52,
+      "githubOutput": "mode=none",
+      "summaryTail": "1. 重跑本 job（多数情况是 npx 拉内核时的网络抖动）； / 2. 确认 runner 镜像里有 google-chrome / microsoft-edge； / 3. 确实只需要静态门禁时，人工 `workflow_dispatch` 并勾选 `allow_degraded_run`， /    Summary 会留下「未做真浏览器验收」的明确记录。",
+      "stdoutTail": "::error title=真浏览器验收无法执行::没有可用的浏览器可执行文件，且本次没有显式允许降级——门禁明确失败（不静默变绿）",
+      "stderrTail": ""
+    },
+    {
+      "name": "46-counter C（avail=false / allow=true ⇒ 必须 exit 0 mode=degraded 且留 warning）",
+      "exit": 0,
+      "ms": 47,
+      "githubOutput": "mode=degraded",
+      "summaryTail": "没有找到可用浏览器，且这次**显式**允许降级（人工触发）。 / 被跳过的是 verify-site.js 的真浏览器断言（横向溢出 / 内容裁切 / 弹层 / 键盘无障碍 / 对比 / 390px…）。 / 静态门禁（strict 校验、译文门禁、各个 selftest、产物自检）已照常执行。 / => **这个绿灯不包含真浏览器验收**，不要当成完整门禁的依据。",
+      "stdoutTail": "::warning title=降级运行：本次没有做真浏览器验收::没有可用的浏览器可执行文件；因显式 allow_degraded_run=true，只跑静态门禁",
+      "stderrTail": ""
+    },
+    {
+      "name": "49 Gate conclusion（按上文真实 mode 代入）",
+      "exit": 0,
+      "ms": 50,
+      "githubOutput": "",
+      "summaryTail": "### 门禁结论 / - 静态门禁 + **真浏览器验收 + 回归比对**都跑了 / - 触发事件：`push` @ `refs/heads/coverage-expansion-v1`",
+      "stdoutTail": "",
+      "stderrTail": ""
+    }
+  ]
+}

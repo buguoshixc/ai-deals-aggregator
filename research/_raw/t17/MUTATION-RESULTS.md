@@ -1,7 +1,7 @@
 # t17 · Mutation / Tooth Test 电池 —— 运行记录
 
 - 执行：freshness-engineer（t17，attempt 1 · attempt_id `05296185-fe9d-44a4-a422-85fac65712f6`）
-- 运行时刻：`2026-10-04T12:45:11.318Z`（用例执行窗口起点 `2026-10-04T12:44:13.862Z`）
+- 运行时刻：`2026-10-04T12:51:02.233Z`（用例执行窗口起点 `2026-10-04T12:50:08.758Z`）
 - 主机：win32 10.0.26100 · 14 逻辑核 · worker 6
 - 可复跑脚本：`research/_raw/t17/mutation-battery.cjs` + 用例库 `research/_raw/t17/mutation-cases.cjs`
 - 逐例原始记录（含 sha256 / 门禁 exit code / 断言原文）：`research/_raw/t17/logs/battery.json`

@@ -1,0 +1,89 @@
+{
+  "generatedAt": "2026-10-04T13:19:34.347Z",
+  "head": "9f27836a75d4131ca6a0d2b5e35f242b8b520aae",
+  "recomputed": {
+    "api": {
+      "pricingItems": 93,
+      "mappedClaims": 81,
+      "dispositions": 12,
+      "unclaimed": 0,
+      "unclaimedSample": [],
+      "providers": 14,
+      "records": 17
+    },
+    "coding": {
+      "plans": 37,
+      "providers": 18,
+      "modelStrings": 55,
+      "mappedLinks": 13,
+      "declared": 42
+    },
+    "deals": {
+      "total": 135,
+      "deal": 80,
+      "tool": 55
+    },
+    "registry": {
+      "publishedModels": 44,
+      "links": 82,
+      "apiLinks": 69,
+      "codingLinks": 13,
+      "gaps": 54
+    },
+    "providers": 34
+  },
+  "reported": {
+    "exit": 0,
+    "dealsProvidersOnlyDealScope": 31,
+    "apiProviders": 18,
+    "equation": "API 侧记账：计价条目 93 条 = 已映射认领 81 + 已处置声明 12 + 未判 0",
+    "pricingItems": 93,
+    "mapped": 81,
+    "declared": 12,
+    "unjudged": 0,
+    "jsonIdentical": true,
+    "jsonExit": 0
+  },
+  "comparison": [
+    {
+      "item": "API 计价条目",
+      "recomputed": 93,
+      "reported": 93,
+      "agree": true
+    },
+    {
+      "item": "API 已映射认领",
+      "recomputed": 81,
+      "reported": 81,
+      "agree": true
+    },
+    {
+      "item": "API 已处置声明",
+      "recomputed": 12,
+      "reported": 12,
+      "agree": true
+    },
+    {
+      "item": "API 未判",
+      "recomputed": 0,
+      "reported": 0,
+      "agree": true
+    },
+    {
+      "item": "API 记录数",
+      "recomputed": 17,
+      "reported": null,
+      "agree": "n/a"
+    }
+  ],
+  "coding": {
+    "recomputed": {
+      "plans": 37,
+      "providers": 18,
+      "modelStrings": 55,
+      "mappedLinks": 13,
+      "declared": 42
+    },
+    "note": "Coding 侧报告读数：模型串 55 = 映射 13 + 已声明 42 + 未判 0"
+  }
+}

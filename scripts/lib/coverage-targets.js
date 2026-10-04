@@ -93,8 +93,10 @@ const STATE_ORDER = ['COVERED', 'PARTIAL', 'MISSING', 'DEFERRED', 'UNVERIFIABLE'
 /** "需要人来看"的优先级序（`overallState()` 用它挑一格代表一个 provider） */
 const ATTENTION_ORDER = ['MISSING', 'PARTIAL', 'BLOCKED_SOURCE', 'UNVERIFIABLE', 'DEFERRED', 'COVERED', 'NOT_APPLICABLE'];
 
-/** 优先级序（派生时先命中先返回） */
-const PRECEDENCE = ['NOT_APPLICABLE', 'DEFERRED', 'UNVERIFIABLE', 'BLOCKED_SOURCE', 'PARTIAL', 'COVERED', 'MISSING'];
+// t35 / M26：这里原来还有一个 `PRECEDENCE = [...]` 常量（外加一条导出），t17 实测**没有任何生产者读它**：
+// 把它的顺序改掉，派生行为一个字节都不变 —— 但它读起来像权威判据，是"看起来是判据、其实是死代码"的漂移面。
+// 已删除。**七态优先级的唯一判据出处是下面 `deriveDimension()` 的 if 链**（先命中先返回）；
+// 本文件里不再有任何"看似参与判定"的常量表。要改优先级请改那串 if，并跑 coverage-targets-selftest。
 
 /** provider 优先级档（tier）。一层一层的含义写在 report 的 Universe 一节 */
 const TIERS = ['core', 'major', 'long-tail'];
@@ -746,6 +748,12 @@ function resolveTargetItem(item, dimension, target, facts) {
 /**
  * 单个 (provider × dimension) 格子的七态派生。判据全文在这里，报告与自测都调它。
  *
+ * ⚠️ **七态优先级的唯一判据出处就是下面这串 if**（先命中先返回，顺序即本文件头部那张表）。
+ * 本文件里**没有**任何"常量优先级表"参与判定 —— t35/M26 删掉了那个只定义、没人读的
+ * `PRECEDENCE`（改它的顺序不影响任何行为，却看起来像权威判据）。要改优先级：
+ * 改这串 if 的顺序，然后跑 `npm run selftest:coverage-targets`（它有一条真牙：
+ * 给 DEFERRED 分支加「无记录 ⇒ MISSING」短路会立刻变红）。
+ *
  * @returns {{dimension:string, state:string, reason:string|null, present:number, declared:number,
  *   resolved:number, items:object[], sources:object[], ruling:object|null, intent:string|null}}
  */
@@ -784,6 +792,9 @@ function deriveDimension(target, dimension, facts) {
   };
   const cell = (state, reason) => ({ ...base, state, reason: reason || null });
 
+  // ================= 七态判据（唯一出处；先命中先返回） =================
+  // 顺序即本文件头部那张表：NOT_APPLICABLE → DEFERRED → UNVERIFIABLE → BLOCKED_SOURCE → PARTIAL/COVERED/MISSING。
+  // 没有任何常量表参与这里（t35/M26 删掉了 PRECEDENCE）—— 判据就是下面这几条 if。
   // 1. 不适用
   if (!applicable) return cell(STATES.NOT_APPLICABLE, target.applicabilityNote || '人工标注"不适用"');
 
@@ -909,7 +920,6 @@ module.exports = {
   STATES,
   STATE_ORDER,
   ATTENTION_ORDER,
-  PRECEDENCE,
   TIERS,
   TIER_LABEL,
   ROLES,

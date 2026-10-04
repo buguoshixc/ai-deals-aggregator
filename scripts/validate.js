@@ -44,6 +44,98 @@ const CURATED_FILES = [
 
 const AGGREGATOR_HOSTS = ['layer3labs.io', 'futuretools.io', 'futurepedia.io', 'aitools.fyi'];
 
+/**
+ * t35 / M24：**引文里不许出现"元自称"**（对引用行为本身的声称）。
+ *
+ * ## 这条判据在防什么
+ *
+ * `evidence[].quote` 的语义是**逐字复制**——它是"官方页上真实存在的那一段文字"，
+ * 不是"我概括的官方意思"。所以在 quote **里面**写「逐字」「原文如此」这类自我介绍，
+ * 一个字节的事实都不增加，却正好是 t15-F1/F2 那个失败形态的措辞：
+ * **改写件自称逐字件**（实例见 commit af92d5d 的 `-` 行：`（Developer 档逐字）`）。
+ * 这一段判据让那种形态**再也无法悄悄出现**：要么引文真的是逐字的（那就不需要自称），
+ * 要么把"我做了什么判断"写进 `note`，而不是写进引文。
+ *
+ * ## 判据边界（扫描器与文档同步，别只读一半）
+ *
+ * 只抓**唯一功能就是声明引用行为**的词：逐字 / 一字不差 / 原文照录 / 原样照录 / 照抄 /
+ * 原文如此 / verbatim / word-for-word。**不纳入**「官方原文」「官方原话」——它们可能是
+ * 官方页正文自己的内容（引用一段谈"以官方原文为准"的公告是合法的），判不准的词不写成牙。
+ * 「编辑性括注进了引文正文」（F1/F2 的另一半，如 `（官方 Supported Models 页…）`）
+ * 同样**不在射程内**：它需要人读，不属于可离线判定的形态。
+ *
+ * ## 它不做什么
+ *
+ * 它**不**回答"这条引文是不是真的忠于官方页"——那件事没有离线门禁（见
+ * `docs/DESIGN-RULES.md` §8 的 H10 边界说明与 `research/_raw/t35/M24-BOUNDARY.md`）。
+ * **0 命中 ≠ 已验真**，两者必须分开读。
+ */
+const QUOTE_SELF_CLAIM_PATTERNS = [
+  { id: 'verbatim', label: '逐字（含逐字逐句）', re: /逐字/ },
+  { id: 'exactly-same', label: '一字不差', re: /一字不差/ },
+  { id: 'copy-verbatim', label: '原文照录 / 原样照录 / 照抄', re: /原文照录|原样照录|照抄/ },
+  { id: 'original-says', label: '原文如此', re: /原文如此/ },
+  { id: 'verbatim-en', label: 'verbatim / word-for-word', re: /verbatim|word-for-word/i }
+];
+
+/**
+ * 被扫的文件 = 发布数据 + 策展来源 + 三份历史 + 身份/关系层。
+ * 覆盖"引文可能落脚的每一处盘上文本"，而不是只扫 deals.json —— F1/F2 那四条改写件
+ * 就落在 api-plans 与 model-registry-links 里。
+ */
+const QUOTE_SELF_CLAIM_FILES = [
+  { file: DEALS_FILE, label: 'deals.json' },
+  { file: PLANS_FILE, label: 'plans.json' },
+  { file: API_PLANS_FILE, label: 'api-plans.json' },
+  { file: path.join(__dirname, 'data', 'curated_cn.json'), label: 'scripts/data/curated_cn.json' },
+  { file: path.join(__dirname, 'data', 'curated_global.json'), label: 'scripts/data/curated_global.json' },
+  { file: path.join(__dirname, 'data', 'curated_plans.json'), label: 'scripts/data/curated_plans.json' },
+  { file: path.join(__dirname, 'data', 'curated_api_plans.json'), label: 'scripts/data/curated_api_plans.json' },
+  { file: path.join(__dirname, 'data', 'deal-history.json'), label: 'scripts/data/deal-history.json' },
+  { file: path.join(__dirname, 'data', 'plan-history.json'), label: 'scripts/data/plan-history.json' },
+  { file: path.join(__dirname, 'data', 'api-plan-history.json'), label: 'scripts/data/api-plan-history.json' },
+  { file: path.join(__dirname, 'data', 'model-registry-links.json'), label: 'scripts/data/model-registry-links.json' },
+  { file: path.join(__dirname, 'data', 'model-registry-gaps.json'), label: 'scripts/data/model-registry-gaps.json' },
+  { file: path.join(__dirname, 'data', 'models.json'), label: 'scripts/data/models.json' }
+];
+
+/** 递归收集所有 `quote` 字符串（带可读路径：`records[2].evidence[0].quote`） */
+function collectQuoteFields(node, at, out) {
+  if (Array.isArray(node)) {
+    node.forEach((item, index) => collectQuoteFields(item, `${at}[${index}]`, out));
+    return out;
+  }
+  if (!node || typeof node !== 'object') return out;
+  for (const [key, value] of Object.entries(node)) {
+    const next = at ? `${at}.${key}` : key;
+    if (key === 'quote' && typeof value === 'string') out.push({ path: next, text: value });
+    else collectQuoteFields(value, next, out);
+  }
+  return out;
+}
+
+/**
+ * 扫一份文档里的全部 `quote`：返回 `{ quotes, problems }`。
+ * 纯函数（不读盘、不联网），所以自测可以零依赖地驱动它 —— 牙本身与接线分开验证。
+ */
+function scanQuoteSelfClaims(doc, label) {
+  const fields = collectQuoteFields(doc, '', []);
+  const problems = [];
+  fields.forEach(field => {
+    QUOTE_SELF_CLAIM_PATTERNS.forEach(pattern => {
+      if (!pattern.re.test(field.text)) return;
+      problems.push(`${label} ${field.path} 的 quote 里出现元自称「${pattern.label}」` +
+        '—— quote 的语义就是逐字复制，在它里面声明逐字正是「改写件自称逐字」的失败形态（t15-F1/F2）。' +
+        '引文只放官方页上真实存在的那段文字；对引文的判断请写进 note，不要写进引文。');
+    });
+  });
+  return { quotes: fields.length, problems };
+}
+
+/** checkProvenanceGuard 跑完之后留下的读数（main() 里打印；0 也要看得见） */
+let quoteSelfClaimStats = null;
+
+
 const errors = [];
 const warnings = [];
 
@@ -742,6 +834,30 @@ function checkProvenanceGuard() {
   if (new Set(texts).size !== texts.length) {
     error(`信息来源守卫：三个缺失状态的措辞有重复（${JSON.stringify(texts)}）——「不适用 / 未知 / 不可用」是三种不同的事实`);
   }
+
+  // ④ t35 / M24：引文里的**元自称**（逐字 / 一字不差 / 原文照录 / 原文如此 / verbatim）⇒ 红。
+  //
+  // 与上面三条的分工：①②③ 管的是"引文合不合法、来源有没有登记、措辞有没有越界"；
+  // 这一条管的是"引文有没有在自称它是引文"。它**不**回答"引文是不是真的忠于官方页"——
+  // 那件事没有离线门禁（见 docs/DESIGN-RULES.md §8 H10 的边界说明）。
+  // 读数一律留下来并打印（0 命中也要看得见）："跑了、干净"与"没跑"在日志里必须长得不一样。
+  const quoteScan = { files: 0, quotes: 0, hits: 0 };
+  for (const entry of QUOTE_SELF_CLAIM_FILES) {
+    // 文件缺失 / 解析失败由各自的数据集门禁报（这里不重复报；重复报只会把 40 条上限挤满）
+    if (!fs.existsSync(entry.file)) continue;
+    let doc;
+    try {
+      doc = JSON.parse(fs.readFileSync(entry.file, 'utf8'));
+    } catch (e) {
+      continue;
+    }
+    const scanned = scanQuoteSelfClaims(doc, entry.label);
+    quoteScan.files += 1;
+    quoteScan.quotes += scanned.quotes;
+    quoteScan.hits += scanned.problems.length;
+    scanned.problems.forEach(problem => error(problem));
+  }
+  quoteSelfClaimStats = quoteScan;
 }
 
 /**
@@ -1160,6 +1276,13 @@ function main() {
   // 「0 也打印」的意思正是让「没检查」与「检查了、干净」在日志里长得不一样。
   console.log(`受众字段落空  : ${curatedStats.audienceDropped} 处（策展文件里写了却没进记录的新字段）`);
   console.log(`官方引文落空  : ${curatedStats.evidenceDropped} 处（策展文件里写了却没进记录的官方原文片段）`);
+  // t35 / M24：引文自称扫描的读数（**只在 --strict 下跑**；0 命中也要打印）。
+  // 它扫的是"引文有没有自称逐字"，**不是**"引文是不是真的"——后者没有离线门禁，见 H10 边界说明。
+  if (quoteSelfClaimStats) {
+    console.log(`引文自称扫描  : ${quoteSelfClaimStats.quotes} 条 quote / ${quoteSelfClaimStats.files} 篇文件 · ${quoteSelfClaimStats.hits} 命中` +
+      `（元自称 = ${QUOTE_SELF_CLAIM_PATTERNS.map(pattern => pattern.label).join(' / ')}；` +
+      `它不回答"引文是不是真的忠于官方页"，0 命中 ≠ 已验真）`);
+  }
   if (stats && stats.evidenceBudget) {
     const b = stats.evidenceBudget;
     // 0 也打印：离上限多远、有没有引文，是两件都要知道的事（0 条时这条线是「制度在位」的证据）
@@ -1220,4 +1343,13 @@ function main() {
   console.log(`\n✅ 校验通过${strict ? '（strict 模式）' : ''}`);
 }
 
-main();
+// 作为脚本跑时执行 main()；被 require 时只交出判据（`provenance-selftest` 用它驱动 M24 的牙，
+// 免得自测里再抄一份正则 —— 一份实现，两个宿主）。
+if (require.main === module) main();
+
+module.exports = {
+  QUOTE_SELF_CLAIM_PATTERNS,
+  QUOTE_SELF_CLAIM_FILES,
+  collectQuoteFields,
+  scanQuoteSelfClaims
+};
