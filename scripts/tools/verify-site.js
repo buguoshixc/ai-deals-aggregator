@@ -16,6 +16,7 @@
  * 退出码非 0 = 有断言失败。
  */
 
+const crypto = require('crypto');
 const fs = require('fs');
 const http = require('http');
 const path = require('path');
@@ -5315,6 +5316,588 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     }
     check('/models/ 索引页的筛选控件由脚本建（无 JS 时 0 控件已在体检里查过；有 JS 时才有控件）',
       data.controls > 0, `${data.controls} 个控件`);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* §22b 叶子详情页的**统一内容列**（Detail Content Column）              */
+  /* ------------------------------------------------------------------ */
+  //
+  // 缺陷原型：deal 详情页的内容块被一条 `max-width: 820px` 钉在左边、模型详情页的 <main>
+  // 却撑满 .wrap（1380px）——同一站点的两种叶子页宽度不同、而且都不居中；来源块还额外
+  // 套了一层 820px + `word-break: break-all`。修法是**唯一**一处宽度来源：`.detail-main`。
+  //
+  // 这一节把「统一内容列」拆成**可判红的几何量**，再对同一套判据加五条变异牙（M1–M5）：
+  // 判据本身也必须被咬一次——否则「判据写错了」与「产品没问题」在日志里长得一模一样。
+  //
+  // 量法：全部读数来自真浏览器（getBoundingClientRect + 计算样式），不看页面自报的数字。
+  //   · 列（column）  = `<main class="detail-main">` 的 border-box：居中偏差 |left-(vw-right)| ≤ 8px、
+  //                     宽度 ∈ [1080, 1120]（1120 就是 CSS 里那一条 min(1120px, 100%)）。
+  //   · 轴（axis）    = 同一列里各区块 border-box 的左右极差 ≤ 1px（不是「看起来齐」，是量出来齐）：
+  //                     deal = crumb / dpane / dpane-more / dpane-src；model = crumb / stop / minfo / ptable-wrap。
+  //                     ⚠️ 卡**内部**的 .dgrid 之类自带 padding，不进这组；这里全是列级区块。
+  //   · 来源块        = .dpane-src 与列同宽（≤1px）、自身不横向溢出、word-break 不是 break-all。
+  //                     ⚠️ 「不再有 break-all」只在这个元素的**计算样式**上判：站点里另有一处
+  //                     break-all 属于改动前就存在的 .cmpshare（首页对比分享条），按整文件 grep 会误红。
+  //   · Header/Footer = .topin 与 .wrap 仍是 min(1420px, vw)、footer 仍等于 .wrap 的内容宽。
+  //                     这是**反向**断言：修内容列不许顺手把页头/页脚一起缩窄。
+  //   · 页面级溢出    = documentElement.scrollWidth ≤ 视口 + 1（390/768 两档都要成立）。
+  //
+  // 违规码全部由 leafProblems() 一处产出（变异牙复测的就是它，不在别处再写一份判据）：
+  //   column-missing / center / width / axis / axis-missing / src-missing / src-width /
+  //   src-break-all / self-overflow@<vw> / header / footer / page-overflow@<vw> /
+  //   mobile-width（768：列宽 == 可用宽）/ leaf-consistency（跨页比较：deal 与 model 同列）
+
+  const LEAF_TOL = 1;             // 同轴 / 来源块宽 / Header·Footer 的容差（px）
+  const LEAF_CENTER_TOL = 8;      // 居中容差（px）：亚像素取整 + 字体度量，8px 之内看不出歪
+  const LEAF_WIDTH_MIN = 1080;
+  const LEAF_WIDTH_MAX = 1120;
+  const LEAF_SHELL_MAX = 1420;    // .topin / .wrap 的 max-width：页头与页脚**不**跟着内容列缩
+  const LEAF_VIEWPORTS = [1600, 1440, 1280];
+  const LEAF_MOBILE = 768;        // 内容列必须铺满可用宽的那一档
+  const LEAF_NARROW = 390;        // 最窄档：页面级横向溢出的红线
+  // 超长 URL：**不可断**的一段。真实 URL 里的 `/`、`-` 本身就是断点，量不出「有没有兜底」，
+  // 所以 M4 的变异与正对照都注入这一串（页面内注入，绝不写盘）。
+  const LEAF_LONG_TOKEN = 'https://example.com/' + 'x'.repeat(180);
+
+  const LEAF_KINDS = {
+    deal: { axis: ['.crumb', '.dpane', '.dpane-more', '.dpane-src'], src: '.dpane-src' },
+    model: { axis: ['.crumb', '.stop', '.minfo', '.ptable-wrap'], src: null }
+  };
+  const LEAF_SELECTORS = ['.crumb', '.dpane', '.dpane-more', '.dpane-src', '.stop', '.minfo', '.ptable-wrap'];
+
+  const leafRound = n => Math.round(n * 100) / 100;
+  const leafCodes = problems => problems.map(problem => problem.code);
+  const leafExplain = problems => (problems.length
+    ? problems.map(problem => `${problem.code}（${problem.msg}）`).join('；')
+    : '无违规码');
+  const leafOverflowProblems = problems => problems.filter(problem =>
+    problem.code.startsWith('page-overflow') || problem.code.startsWith('self-overflow'));
+
+  /** 当前页面的**唯一**几何量测（不导航、不假设路由）：变异牙复测走的也是这一份。 */
+  async function leafMeasure(target) {
+    return target.evaluate(`(() => {
+      const box = el => {
+        const cs = getComputedStyle(el);
+        const r = el.getBoundingClientRect();
+        return {
+          count: 1,
+          left: r.left + window.scrollX, right: r.right + window.scrollX, width: r.width,
+          padLeft: parseFloat(cs.paddingLeft) || 0, padRight: parseFloat(cs.paddingRight) || 0,
+          scrollW: el.scrollWidth, clientW: el.clientWidth,
+          wordBreak: cs.wordBreak, overflowWrap: cs.overflowWrap
+        };
+      };
+      const missing = { count: 0, left: 0, right: 0, width: 0, padLeft: 0, padRight: 0, scrollW: 0, clientW: 0, wordBreak: '', overflowWrap: '' };
+      const one = sel => { const list = document.querySelectorAll(sel); return list.length ? box(list[0]) : Object.assign({}, missing); };
+      const els = {};
+      for (const sel of ${JSON.stringify(LEAF_SELECTORS)}) els[sel] = one(sel);
+      const main = one('main');
+      main.hasDetailMain = document.querySelectorAll('main').length === 1
+        && document.querySelector('main').classList.contains('detail-main');
+      return {
+        doc: {
+          innerWidth: window.innerWidth,
+          clientWidth: document.documentElement.clientWidth,
+          scrollWidth: document.documentElement.scrollWidth
+        },
+        main,
+        wrap: one('.wrap'),
+        topin: one('.topin'),
+        footer: one('footer'),
+        els,
+        mainCount: document.querySelectorAll('main').length,
+        detailMainMainCount: document.querySelectorAll('main.detail-main').length
+      };
+    })()`);
+  }
+
+  /** 单页违规码：只看量到的数，不看页面自报。`kind` 决定同轴元素集合与是否有来源块。 */
+  function leafProblems(geometry, kind) {
+    const problems = [];
+    const push = (code, msg) => problems.push({ code, msg });
+    const vw = geometry.doc.clientWidth;
+    const main = geometry.main;
+    const mainOk = main.count === 1 && main.hasDetailMain;
+    if (!mainOk) {
+      push('column-missing', `main.detail-main 数量 ${geometry.detailMainMainCount}（<main> 共 ${geometry.mainCount} 个）`);
+    }
+    if (mainOk) {
+      const deviation = Math.abs(main.left - (vw - main.right));
+      if (deviation > LEAF_CENTER_TOL) {
+        push('center', `列 ${leafRound(main.left)}..${leafRound(main.right)} 于视口 ${vw}：居中偏差 ${leafRound(deviation)}px > ${LEAF_CENTER_TOL}px`);
+      }
+      if (main.width < LEAF_WIDTH_MIN || main.width > LEAF_WIDTH_MAX) {
+        push('width', `列宽 ${leafRound(main.width)}px 不在 [${LEAF_WIDTH_MIN}, ${LEAF_WIDTH_MAX}]`);
+      }
+    }
+    // 同轴：列级区块的左右边缘必须落在同一条线上
+    const axis = kind.axis.map(sel => ({ sel, item: geometry.els[sel] || { count: 0 } }));
+    const missingAxis = axis.filter(entry => entry.item.count !== 1);
+    if (missingAxis.length) {
+      push('axis-missing', `同轴元素缺失/重复：${missingAxis.map(entry => `${entry.sel}×${entry.item.count}`).join(' ')}`);
+    } else {
+      const lefts = axis.map(entry => entry.item.left);
+      const rights = axis.map(entry => entry.item.right);
+      const spreadLeft = Math.max(...lefts) - Math.min(...lefts);
+      const spreadRight = Math.max(...rights) - Math.min(...rights);
+      if (spreadLeft > LEAF_TOL || spreadRight > LEAF_TOL) {
+        push('axis', `左右极差 ${leafRound(spreadLeft)}/${leafRound(spreadRight)}px > ${LEAF_TOL}px：`
+          + axis.map(entry => `${entry.sel}=${leafRound(entry.item.left)}..${leafRound(entry.item.right)}`).join(' '));
+      }
+    }
+    // 来源块：与列同宽、不横向溢出、不许再是 break-all
+    if (kind.src) {
+      const src = geometry.els[kind.src];
+      if (!src || src.count !== 1) {
+        push('src-missing', `来源块 ${kind.src} 数量 ${src ? src.count : 0}`);
+      } else {
+        if (mainOk && Math.abs(src.width - main.width) > LEAF_TOL) {
+          push('src-width', `来源块宽 ${leafRound(src.width)}px ≠ 列宽 ${leafRound(main.width)}px（差 ${leafRound(Math.abs(src.width - main.width))}px）`);
+        }
+        if (src.wordBreak === 'break-all') {
+          push('src-break-all', `${kind.src} 的计算样式仍是 word-break: break-all`);
+        }
+        if (src.scrollW > src.clientW + LEAF_TOL) {
+          push(`self-overflow@${vw}`, `来源块内部横向溢出 ${src.scrollW - src.clientW}px（scrollWidth ${src.scrollW} > clientWidth ${src.clientW}）`);
+        }
+      }
+    }
+    // Header / Footer 未缩窄（反向断言）
+    const shell = Math.min(LEAF_SHELL_MAX, vw);
+    if (geometry.topin.count !== 1) {
+      push('header', `.topin 数量 ${geometry.topin.count}`);
+    } else if (Math.abs(geometry.topin.width - shell) > LEAF_TOL) {
+      push('header', `.topin 宽 ${leafRound(geometry.topin.width)}px ≠ min(${LEAF_SHELL_MAX}px, 视口 ${vw}) = ${shell}px`);
+    }
+    if (geometry.wrap.count !== 1) {
+      push('footer', `.wrap 数量 ${geometry.wrap.count}`);
+    } else {
+      const inner = geometry.wrap.width - geometry.wrap.padLeft - geometry.wrap.padRight;
+      if (Math.abs(geometry.wrap.width - shell) > LEAF_TOL) {
+        push('footer', `.wrap 宽 ${leafRound(geometry.wrap.width)}px ≠ ${shell}px（页脚容器被内容列带窄了）`);
+      }
+      if (geometry.footer.count !== 1) {
+        push('footer', `footer 数量 ${geometry.footer.count}`);
+      } else if (Math.abs(geometry.footer.width - inner) > LEAF_TOL) {
+        push('footer', `footer 宽 ${leafRound(geometry.footer.width)}px ≠ .wrap 内容宽 ${leafRound(inner)}px`);
+      }
+    }
+    // 页面级横向溢出
+    if (geometry.doc.scrollWidth > vw + LEAF_TOL) {
+      push(`page-overflow@${vw}`, `documentElement.scrollWidth ${geometry.doc.scrollWidth} > 视口 ${vw}`);
+    }
+    return problems;
+  }
+
+  /** 768px：内容列必须铺满 .wrap 的可用宽（窄屏不另立断点），且页面不横向滚动。 */
+  function leafMobileProblems(geometry) {
+    const problems = [];
+    const vw = geometry.doc.clientWidth;
+    const inner = geometry.wrap.count === 1 ? geometry.wrap.width - geometry.wrap.padLeft - geometry.wrap.padRight : NaN;
+    if (geometry.main.count !== 1 || !(inner > 0) || Math.abs(geometry.main.width - inner) > LEAF_TOL) {
+      problems.push({
+        code: 'mobile-width',
+        msg: `列宽 ${leafRound(geometry.main.count === 1 ? geometry.main.width : NaN)}px ≠ .wrap 可用宽 ${leafRound(inner)}px`
+      });
+    }
+    if (geometry.doc.scrollWidth > vw + LEAF_TOL) {
+      problems.push({ code: `page-overflow@${vw}`, msg: `documentElement.scrollWidth ${geometry.doc.scrollWidth} > 视口 ${vw}` });
+    }
+    return problems;
+  }
+
+  /** 跨页违规码：deal 与 model 的叶子页必须落在**同一条**内容列上（「统一列」的语义本身）。 */
+  function leafPairProblems(dealGeometry, modelGeometry) {
+    const problems = [];
+    if (dealGeometry.main.count !== 1 || modelGeometry.main.count !== 1) {
+      problems.push({ code: 'leaf-consistency', msg: '两页中至少有一页没有唯一的 <main>' });
+      return problems;
+    }
+    const widthGap = Math.abs(dealGeometry.main.width - modelGeometry.main.width);
+    const leftGap = Math.abs(dealGeometry.main.left - modelGeometry.main.left);
+    if (widthGap > LEAF_TOL) {
+      problems.push({ code: 'leaf-consistency', msg: `deal 列宽 ${leafRound(dealGeometry.main.width)}px vs model ${leafRound(modelGeometry.main.width)}px（差 ${leafRound(widthGap)}px）` });
+    }
+    if (leftGap > LEAF_TOL) {
+      problems.push({ code: 'leaf-consistency', msg: `deal 列左 ${leafRound(dealGeometry.main.left)}px vs model ${leafRound(modelGeometry.main.left)}px（差 ${leafRound(leftGap)}px）` });
+    }
+    return problems;
+  }
+
+  /** 导航 → 视口 → 量测（三段一起做，免得每一档各写一遍）。 */
+  async function leafProbe(target, route, width) {
+    await target.setViewportSize({ width, height: 900 });
+    await target.goto(new URL(route, base).href, { waitUntil: 'load' });
+    return leafMeasure(target);
+  }
+
+  /**
+   * 变异：把页面**内联 <style> 的真实文本**里的一段逐字替换掉（只在浏览器内存里，不碰磁盘）。
+   *
+   * 反空洞守卫：锚点必须**恰好出现 1 次**。
+   *   · 出现 0 次 ⇒ 变异根本没落地（"改了个不存在的地方"）；
+   *   · 出现 ≥2 次 ⇒ 改中的可能是别处，后续断言测的不是这条规则。
+   * 两种情况都返回 ok:false 且**不做任何替换**，由调用方判红并打印原因。
+   * 「变异不生效却算通过」是这类测试最坏的假绿，这里宁可红。
+   */
+  async function leafMutate(target, anchor, replacement) {
+    return target.evaluate(`(() => {
+      const anchor = ${JSON.stringify(anchor)};
+      const styles = Array.prototype.slice.call(document.querySelectorAll('style'));
+      const counts = styles.map(style => style.textContent.split(anchor).length - 1);
+      const total = counts.reduce((sum, n) => sum + n, 0);
+      if (total !== 1) {
+        return { ok: false, occurrences: total, reason: '锚点在内联样式里出现 ' + total + ' 次（必须恰好 1 次）' };
+      }
+      const index = counts.findIndex(n => n === 1);
+      styles[index].textContent = styles[index].textContent.replace(anchor, ${JSON.stringify(replacement)});
+      return { ok: true, occurrences: 1 };
+    })()`);
+  }
+
+  /** M4 用：把不可断的超长 URL 注入来源块（页面内注入，绝不写盘）。 */
+  async function leafInjectLongUrl(target, token) {
+    return target.evaluate(`(() => {
+      const token = ${JSON.stringify(token)};
+      const link = document.querySelector('.dpane-src a');
+      if (link) { link.textContent = token; return 'link'; }
+      const src = document.querySelector('.dpane-src');
+      if (src) { src.textContent = token; return 'src'; }
+      return 'none';
+    })()`);
+  }
+
+  console.log('\n=== 22b) 叶子详情页统一内容列（Detail Content Column）===');
+  {
+    // 取样现场从数据算：deal 取 deals.json 里 url **最长**的一条（最长的官方页 URL 最容易把
+    // 来源块撑破），model 取 models.json[0]。两个都不写死 id/slug。
+    const leafTruth = await page.evaluate(`(async () => {
+      const deals = await (await fetch(${JSON.stringify(new URL('deals.json', base).href)})).json();
+      const models = await (await fetch(${JSON.stringify(new URL('models.json', base).href)})).json();
+      const list = (deals.deals || deals).slice();
+      const longest = list.slice().sort((a, b) => String(b.url || '').length - String(a.url || '').length)[0];
+      const rows = models.models || [];
+      return {
+        dealId: longest ? longest.id : null,
+        dealUrlLength: String((longest && longest.url) || '').length,
+        dealCount: list.length,
+        modelSlug: rows.length ? rows[0].slug : null,
+        modelCount: rows.length
+      };
+    })()`).catch(() => null);
+
+    check('§22b 取样：deal 详情（deals.json 里 url 最长的一条）与 model 详情（models.json[0]）都取到了',
+      Boolean(leafTruth && leafTruth.dealId && leafTruth.modelSlug),
+      leafTruth
+        ? `deal/${leafTruth.dealId}/（官方页 URL ${leafTruth.dealUrlLength} 字符 · 数据 ${leafTruth.dealCount} 条）· models/${leafTruth.modelSlug}/（数据 ${leafTruth.modelCount} 个模型）`
+        : '取不到 deals.json / models.json（取样前提不成立）');
+
+    if (!leafTruth || !leafTruth.dealId || !leafTruth.modelSlug) {
+      check('§22b 取样失败 ⇒ 这一节的几何断言全部判红（不允许静默跳过）', false,
+        '没有可测的叶子页：统一内容列的居中/宽度/同轴/溢出全部无从量起');
+    } else {
+      const leafRoutes = { deal: `deal/${leafTruth.dealId}/`, model: `models/${leafTruth.modelSlug}/` };
+      const leafGeometry = { deal: {}, model: {} };
+      /** 机器可读：每条变异复测到的违规码（--json 报告里能一眼看到牙咬到了什么） */
+      metrics.leafMutationCodes = {};
+
+      // ---- 桌面三档 + 768 + 390：deal / model 各一条独立 page，用完即 close() ----
+      const leafDealPage = await browser.newPage();
+      const leafModelPage = await browser.newPage();
+      try {
+        for (const [kind, target] of [['deal', leafDealPage], ['model', leafModelPage]]) {
+          for (const width of [...LEAF_VIEWPORTS, LEAF_MOBILE, LEAF_NARROW]) {
+            leafGeometry[kind][width] = await leafProbe(target, leafRoutes[kind], width);
+          }
+        }
+      } finally {
+        await leafDealPage.close();
+        await leafModelPage.close();
+      }
+
+      for (const kind of ['deal', 'model']) {
+        for (const width of LEAF_VIEWPORTS) {
+          const geometry = leafGeometry[kind][width];
+          const problems = leafProblems(geometry, LEAF_KINDS[kind]);
+          const codes = leafCodes(problems);
+          const main = geometry.main;
+          const deviation = Math.abs(main.left - (geometry.doc.clientWidth - main.right));
+          check(`§22b ${kind}@${width} 内容列居中（|left-(vw-right)|≤${LEAF_CENTER_TOL}）且列宽 ∈[${LEAF_WIDTH_MIN}, ${LEAF_WIDTH_MAX}]`,
+            codes.includes('center') === false && codes.includes('width') === false && codes.includes('column-missing') === false,
+            `列 ${leafRound(main.left)}..${leafRound(main.right)} W=${leafRound(main.width)} · 视口 ${geometry.doc.clientWidth} · 居中偏差 ${leafRound(deviation)}px · ${leafExplain(problems.filter(problem => ['center', 'width', 'column-missing'].includes(problem.code)))}`);
+          check(`§22b ${kind}@${width} 同轴：${LEAF_KINDS[kind].axis.join(' / ')} 左右极差 ≤${LEAF_TOL}px`,
+            codes.includes('axis') === false && codes.includes('axis-missing') === false,
+            LEAF_KINDS[kind].axis.map(sel => `${sel}=${leafRound(geometry.els[sel].left)}..${leafRound(geometry.els[sel].right)}`).join(' · ')
+              + ` · ${leafExplain(problems.filter(problem => problem.code === 'axis' || problem.code === 'axis-missing'))}`);
+          if (LEAF_KINDS[kind].src) {
+            const src = geometry.els[LEAF_KINDS[kind].src];
+            check(`§22b ${kind}@${width} 来源块宽 == 列宽（≤${LEAF_TOL}px）且自身不溢出`,
+              !codes.includes('src-width') && !codes.includes('src-missing') && leafOverflowProblems(problems).length === 0,
+              `来源块 W=${leafRound(src.width)} / 列 W=${leafRound(main.width)} · 内部溢出 ${src.scrollW - src.clientW}px · ${leafExplain(problems.filter(problem => ['src-width', 'src-missing'].includes(problem.code)).concat(leafOverflowProblems(problems)))}`);
+          }
+          check(`§22b ${kind}@${width} Header(.topin) 与 Footer(.wrap) 未缩窄：仍是 min(${LEAF_SHELL_MAX}px, 视口)`,
+            !codes.includes('header') && !codes.includes('footer'),
+            `.topin ${leafRound(geometry.topin.width)} / .wrap ${leafRound(geometry.wrap.width)} / footer ${leafRound(geometry.footer.width)}`
+              + `（期望 ${Math.min(LEAF_SHELL_MAX, geometry.doc.clientWidth)} 与 ${leafRound(geometry.wrap.width - geometry.wrap.padLeft - geometry.wrap.padRight)}）`
+              + ` · ${leafExplain(problems.filter(problem => problem.code === 'header' || problem.code === 'footer'))}`);
+        }
+      }
+
+      // ---- 统一列：deal 与 model 必须落在同一条列上（三档都查）----
+      const leafPairAll = LEAF_VIEWPORTS.flatMap(width =>
+        leafPairProblems(leafGeometry.deal[width], leafGeometry.model[width]).map(problem => ({ width, ...problem })));
+      check(`§22b deal 与 model 的叶子页落在同一条内容列上（${LEAF_VIEWPORTS.join('/')} 档列左与列宽一致 ≤${LEAF_TOL}px）`,
+        leafPairAll.length === 0,
+        leafPairAll.length
+          ? leafPairAll.map(problem => `@${problem.width} ${problem.code}：${problem.msg}`).join('；')
+          : `三档一致：列宽 ${leafRound(leafGeometry.deal[1440].main.width)}px · 列左 ${leafRound(leafGeometry.deal[1440].main.left)}px`);
+
+      // ---- 首页未被波及：统一内容列只作用在叶子详情页 ----
+      const leafHomePage = await browser.newPage();
+      try {
+        await leafHomePage.setViewportSize({ width: 1440, height: 900 });
+        await leafHomePage.goto(base, { waitUntil: 'load' });
+        const home = await leafHomePage.evaluate(`(() => ({
+          mains: Array.prototype.slice.call(document.querySelectorAll('main')).map(el => el.className || ''),
+          detailMainCount: document.querySelectorAll('main.detail-main').length
+        }))()`);
+        check('§22b 首页的 <main> 不带 detail-main（统一内容列不得波及首页）',
+          home.detailMainCount === 0 && home.mains.every(cls => (' ' + cls + ' ').indexOf(' detail-main ') === -1),
+          `首页 <main> ${home.mains.length} 个 · class [${home.mains.join(' | ') || '（空）'}] · main.detail-main ${home.detailMainCount} 个`);
+      } finally {
+        await leafHomePage.close();
+      }
+
+      // ---- 768：内容列铺满可用宽，且不横向溢出 ----
+      const leafMid = leafGeometry.deal[LEAF_MOBILE];
+      const leafMidModel = leafGeometry.model[LEAF_MOBILE];
+      const leafMidProblems = [
+        ...leafMobileProblems(leafMid).map(problem => ({ kind: 'deal', ...problem })),
+        ...leafMobileProblems(leafMidModel).map(problem => ({ kind: 'model', ...problem })),
+        ...leafPairProblems(leafMid, leafMidModel).map(problem => ({ kind: 'deal×model', ...problem }))
+      ];
+      check(`§22b @${LEAF_MOBILE} 内容列宽 == .wrap 可用宽（窄屏铺满、不另立断点）且页面无横向溢出`,
+        leafMidProblems.length === 0,
+        `deal 列 ${leafRound(leafMid.main.width)} / 可用 ${leafRound(leafMid.wrap.width - leafMid.wrap.padLeft - leafMid.wrap.padRight)}`
+        + ` · model 列 ${leafRound(leafMidModel.main.width)} / 可用 ${leafRound(leafMidModel.wrap.width - leafMidModel.wrap.padLeft - leafMidModel.wrap.padRight)}`
+        + ` · scrollWidth deal ${leafMid.doc.scrollWidth} / model ${leafMidModel.doc.scrollWidth}（视口 ${LEAF_MOBILE}）`
+        + ` · ${leafMidProblems.length ? leafMidProblems.map(problem => `${problem.kind} ${problem.code}：${problem.msg}`).join('；') : '无违规码'}`);
+
+      // ---- 390：页面级不横向滚动 + 来源块的断行策略 ----
+      const leafNarrow = leafGeometry.deal[LEAF_NARROW];
+      const leafNarrowModel = leafGeometry.model[LEAF_NARROW];
+      const leafNarrowOverflow = [
+        ...leafOverflowProblems(leafProblems(leafNarrow, LEAF_KINDS.deal)).map(problem => ({ kind: 'deal', ...problem })),
+        ...leafOverflowProblems(leafProblems(leafNarrowModel, LEAF_KINDS.model)).map(problem => ({ kind: 'model', ...problem }))
+      ];
+      check(`§22b @${LEAF_NARROW} documentElement.scrollWidth ≤ ${LEAF_NARROW + 1}（deal 与 model 都不横向滚动）`,
+        leafNarrowOverflow.length === 0
+        && leafNarrow.doc.scrollWidth <= LEAF_NARROW + 1 && leafNarrowModel.doc.scrollWidth <= LEAF_NARROW + 1,
+        `scrollWidth deal ${leafNarrow.doc.scrollWidth} / model ${leafNarrowModel.doc.scrollWidth}（视口 ${LEAF_NARROW}）`
+        + ` · ${leafNarrowOverflow.length ? leafNarrowOverflow.map(problem => `${problem.kind} ${problem.code}：${problem.msg}`).join('；') : '无溢出'}`);
+
+      const leafNarrowSrc = leafNarrow.els['.dpane-src'];
+      check(`§22b @${LEAF_NARROW} .dpane-src 的计算样式不是 break-all（长 URL 靠 overflow-wrap: anywhere 断行）`,
+        Boolean(leafNarrowSrc) && leafNarrowSrc.count === 1
+        && leafNarrowSrc.wordBreak === 'normal' && leafNarrowSrc.overflowWrap === 'anywhere',
+        leafNarrowSrc && leafNarrowSrc.count === 1
+          ? `word-break: ${leafNarrowSrc.wordBreak} · overflow-wrap: ${leafNarrowSrc.overflowWrap}（全站另有 .cmpshare 的 break-all，属改动前既有，不在本节判）`
+          : `.dpane-src 数量 ${leafNarrowSrc ? leafNarrowSrc.count : 0}`);
+
+      // ---- 长 URL 页（取样就是 url 最长的那条）自身与页面级都不溢出 ----
+      const leafLongUrl = [LEAF_NARROW, 1440].map(width => {
+        const geometry = leafGeometry.deal[width];
+        const problems = leafProblems(geometry, LEAF_KINDS.deal);
+        const src = geometry.els['.dpane-src'];
+        return { width, geometry, src, problems: leafOverflowProblems(problems) };
+      });
+      check(`§22b 长 URL 页（deal/${leafTruth.dealId}/，官方页 URL ${leafTruth.dealUrlLength} 字符）在 ${LEAF_NARROW} 与 1440 下自身与页面级都不溢出`,
+        leafLongUrl.every(item => item.problems.length === 0),
+        leafLongUrl.map(item => `@${item.width} scrollWidth ${item.geometry.doc.scrollWidth}（视口 ${item.geometry.doc.clientWidth}）`
+          + ` · .dpane-src ${leafRound(item.src.width)}px 内溢 ${item.src.scrollW - item.src.clientW}px`).join(' · ')
+        + ` · ${leafLongUrl.every(item => item.problems.length === 0) ? '无溢出' : leafLongUrl.flatMap(item => item.problems.map(problem => `@${item.width} ${problem.code}：${problem.msg}`)).join('；')}`);
+
+      // ---- M1–M5 变异牙 --------------------------------------------------
+      //
+      // 五条牙各自咬一处**真实的内联 CSS 文本**，复测的是同一套 leafProblems/leafPairProblems：
+      //   M1 center            —— 删掉 .detail-main 的 margin-inline:auto（列左贴 .wrap 内容左沿）
+      //   M2 width             —— 列宽改回 820px（缺陷原型）
+      //   M3 src-width         —— .dpane-src 的 width:100% 改成 820px（来源块又比列窄）
+      //   M4 page-overflow@390 —— 拿走 .dpane-src 的 overflow-wrap:anywhere + 注入 200 字符不可断 URL
+      //   M5 leaf-consistency  —— 只把 model 页的列改成 1100px（单页各项都合规，只有跨页比较能咬到）
+      // 每条都先过「锚点恰好出现 1 次」的反空洞守卫，再用同一个判据复测。
+      const leafHash = file => (fs.existsSync(file)
+        ? crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')
+        : null);
+      const leafArtifacts = {
+        deal: path.join(DIR, 'deal', leafTruth.dealId, 'index.html'),
+        model: path.join(DIR, 'models', leafTruth.modelSlug, 'index.html')
+      };
+      const leafHashBefore = { deal: leafHash(leafArtifacts.deal), model: leafHash(leafArtifacts.model) };
+
+      const leafMutations = [
+        {
+          id: 'M1', kind: 'deal', width: 1440, expect: 'center',
+          what: '删掉 .detail-main 的 margin-inline:auto',
+          anchor: '.detail-main { width: min(1120px, 100%); margin-inline: auto; }',
+          replacement: '.detail-main { width: min(1120px, 100%); margin-inline: 0; }'
+        },
+        {
+          id: 'M2', kind: 'deal', width: 1440, expect: 'width',
+          what: '把内容列宽度改回 820px（缺陷原型）',
+          anchor: '.detail-main { width: min(1120px, 100%); margin-inline: auto; }',
+          replacement: '.detail-main { width: 820px; margin-inline: auto; }'
+        },
+        {
+          id: 'M3', kind: 'deal', width: 1440, expect: 'src-width',
+          what: '把 .dpane-src 的 width:100% 改成 820px',
+          anchor: 'margin-top: var(--s3); width: 100%; max-width: none;',
+          replacement: 'margin-top: var(--s3); width: 820px; max-width: none;'
+        },
+        {
+          id: 'M4', kind: 'deal', width: LEAF_NARROW, expect: `page-overflow@${LEAF_NARROW}`, overflowOnly: true,
+          what: '拿走 .dpane-src 的 overflow-wrap:anywhere，并注入 200 字符不可断的超长 URL',
+          anchor: 'word-break: normal; overflow-wrap: anywhere;',
+          replacement: 'word-break: normal; overflow-wrap: normal;',
+          inject: LEAF_LONG_TOKEN
+        },
+        {
+          id: 'M5', kind: 'model', width: 1440, expect: 'leaf-consistency', pair: true,
+          what: '只把 model 详情页的内容列改成 1100px（两页不再同列）',
+          anchor: '.detail-main { width: min(1120px, 100%); margin-inline: auto; }',
+          replacement: '.detail-main { width: min(1100px, 100%); margin-inline: auto; }'
+        }
+      ];
+
+      for (const mutation of leafMutations) {
+        const target = await browser.newPage();
+        let guard = null;
+        let codes = [];
+        let injected = null;
+        let detail = '变异未执行';
+        try {
+          await target.setViewportSize({ width: mutation.width, height: 900 });
+          await target.goto(new URL(leafRoutes[mutation.kind], base).href, { waitUntil: 'load' });
+          guard = await leafMutate(target, mutation.anchor, mutation.replacement);
+          if (guard.ok) {
+            if (mutation.inject) injected = await leafInjectLongUrl(target, mutation.inject);
+            const geometry = await leafMeasure(target);
+            const problems = mutation.pair
+              ? leafPairProblems(leafGeometry.deal[mutation.width], geometry)
+              : leafProblems(geometry, LEAF_KINDS[mutation.kind]);
+            // 390 档的判据本来就只含溢出类（列宽那一档的定义是「铺满可用宽」，与 [1080,1120] 无关），
+            // 所以 overflowOnly 的变异只报溢出码，免得日志里出现一个与这条牙无关的 width。
+            codes = leafCodes(mutation.overflowOnly ? leafOverflowProblems(problems) : problems);
+            metrics.leafMutationCodes[mutation.id] = codes;
+            detail = `列 ${leafRound(geometry.main.left)}..${leafRound(geometry.main.right)} W=${leafRound(geometry.main.width)}`
+              + ` · scrollWidth ${geometry.doc.scrollWidth}（视口 ${geometry.doc.clientWidth}）`
+              + (mutation.inject ? ` · 超长 URL 注入位置 ${injected}` : '')
+              + ` · 违规码 [${codes.join(', ') || '无'}]`;
+          }
+        } finally {
+          await target.close();
+        }
+        check(`§22b ${mutation.id} 变异锚点唯一（逐字替换前必须恰好出现 1 次）`,
+          Boolean(guard && guard.ok),
+          guard
+            ? (guard.ok
+              ? `锚点「${mutation.anchor}」出现 1 次 · ${mutation.what}`
+              : `锚点「${mutation.anchor}」${guard.reason} ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）`)
+            : '变异未执行（页面没打开）');
+        check(`§22b ${mutation.id} 变异后复测必须出现「${mutation.expect}」违规码（${mutation.what}）`,
+          Boolean(guard && guard.ok) && (!mutation.inject || injected === 'link' || injected === 'src') && codes.includes(mutation.expect),
+          guard && guard.ok
+            ? `期望 ${mutation.expect} · 实测 [${codes.join(', ') || '无'}] · ${detail}`
+            : '锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）');
+      }
+
+      // ---- M4 的正对照：同样的超长 URL，一个字节 CSS 都不动 ⇒ 必须不溢出 ----
+      // 没有这条，「注入就溢出」证明的可能只是「注入本身会溢出」，与断行判据无关。
+      {
+        const target = await browser.newPage();
+        let geometry = null;
+        let injected = null;
+        try {
+          await target.setViewportSize({ width: LEAF_NARROW, height: 900 });
+          await target.goto(new URL(leafRoutes.deal, base).href, { waitUntil: 'load' });
+          injected = await leafInjectLongUrl(target, LEAF_LONG_TOKEN);
+          geometry = await leafMeasure(target);
+        } finally {
+          await target.close();
+        }
+        const controlCodes = geometry ? leafCodes(leafProblems(geometry, LEAF_KINDS.deal)) : ['（页面没打开）'];
+        const controlOverflow = geometry ? leafOverflowProblems(leafProblems(geometry, LEAF_KINDS.deal)) : [];
+        metrics.leafMutationCodes['M4-control'] = leafCodes(controlOverflow);
+        check(`§22b M4 正对照：同样注入 ${LEAF_LONG_TOKEN.length} 字符超长 URL、不动 CSS ⇒ @${LEAF_NARROW} 不得溢出`,
+          Boolean(geometry) && (injected === 'link' || injected === 'src')
+          && geometry.doc.scrollWidth <= LEAF_NARROW + 1 && controlOverflow.length === 0,
+          geometry
+            ? `超长 URL 注入位置 ${injected} · scrollWidth ${geometry.doc.scrollWidth}（视口 ${LEAF_NARROW}）`
+              + ` · 溢出类违规码 [${leafCodes(controlOverflow).join(', ') || '无'}]（全部码 [${controlCodes.join(', ') || '无'}]，390 档只看溢出）`
+            : '页面没打开');
+      }
+
+      // ---- 反空洞守卫自身的负例自检 ----
+      // 光是「每条变异都过守卫」还不够：如果守卫对任何输入都返回 ok，它就是个摆设。
+      // 这里用两个**必然失败**的锚点验它真的会红，而且是**不改页面就返回**（不留下半截替换）。
+      {
+        const target = await browser.newPage();
+        let absent = null;
+        let duplicated = null;
+        try {
+          await target.setViewportSize({ width: 1440, height: 900 });
+          await target.goto(new URL(leafRoutes.deal, base).href, { waitUntil: 'load' });
+          absent = await leafMutate(target, '§22b-这个锚点在产物里不存在', 'x');
+          // .dpane-src 那一行里 `overflow-wrap: anywhere;` 在整份内联样式里出现 3 次（≥2 ⇒ 非唯一）
+          duplicated = await leafMutate(target, 'overflow-wrap: anywhere;', 'overflow-wrap: anywhere;');
+        } finally {
+          await target.close();
+        }
+        check('§22b 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因',
+          Boolean(absent && absent.ok === false && absent.occurrences === 0 && absent.reason)
+          && Boolean(duplicated && duplicated.ok === false && duplicated.occurrences > 1 && duplicated.reason),
+          `不存在的锚点：${absent ? `ok=${absent.ok} · 出现 ${absent.occurrences} 次 · ${absent.reason || ''}` : '未执行'}`
+          + ` ／ 非唯一锚点：${duplicated ? `ok=${duplicated.ok} · 出现 ${duplicated.occurrences} 次 · ${duplicated.reason || ''}` : '未执行'}`);
+      }
+
+      // ---- 零磁盘污染：变异只发生在浏览器页面里 ----
+      const leafHashAfter = { deal: leafHash(leafArtifacts.deal), model: leafHash(leafArtifacts.model) };
+      if (urlArg) {
+        console.log('  ℹ️  --url= 线上冒烟：不读本地产物，零污染哈希按不适用处理（如实跳过，不造数据）');
+      } else {
+        check('§22b 变异牙零磁盘污染：dist 里两个产物文件的 sha256 变异前后相等（byte-exact）',
+          Boolean(leafHashBefore.deal) && Boolean(leafHashBefore.model)
+          && leafHashBefore.deal === leafHashAfter.deal && leafHashBefore.model === leafHashAfter.model,
+          `deal/${leafTruth.dealId}/index.html ${String(leafHashBefore.deal).slice(0, 12)}…`
+          + ` · models/${leafTruth.modelSlug}/index.html ${String(leafHashBefore.model).slice(0, 12)}…`
+          + `（前 ${String(leafHashBefore.deal).slice(0, 8)}/${String(leafHashAfter.deal).slice(0, 8)} · ${String(leafHashBefore.model).slice(0, 8)}/${String(leafHashAfter.model).slice(0, 8)}）`);
+      }
+
+      // ---- 机器可读指标 ----
+      const leafColumnWidths = { deal: {}, model: {} };
+      for (const kind of ['deal', 'model']) {
+        for (const width of [...LEAF_VIEWPORTS, LEAF_MOBILE, LEAF_NARROW]) {
+          leafColumnWidths[kind][width] = leafRound(leafGeometry[kind][width].main.width);
+        }
+      }
+      metrics.leafColumnWidth = leafRound(leafGeometry.deal[1440].main.width);
+      metrics.leafDealWidth = leafRound(leafGeometry.deal[1440].main.width);
+      metrics.leafModelWidth = leafRound(leafGeometry.model[1440].main.width);
+      // 移动端「页面级横向溢出」的实测值：0 = 不溢出（回归比对里它就是 0 才合格）
+      metrics.leafMobileOverflow = Math.max(0,
+        leafNarrow.doc.scrollWidth - leafNarrow.doc.clientWidth,
+        leafNarrowModel.doc.scrollWidth - leafNarrowModel.doc.clientWidth);
+      metrics.leafColumnWidths = leafColumnWidths;
+      metrics.leafSample = {
+        dealId: leafTruth.dealId,
+        dealUrlLength: leafTruth.dealUrlLength,
+        modelSlug: leafTruth.modelSlug
+      };
+      console.log(`     列宽：deal@1440 ${metrics.leafDealWidth}px / model@1440 ${metrics.leafModelWidth}px`
+        + ` · @768 deal ${leafColumnWidths.deal[LEAF_MOBILE]} / model ${leafColumnWidths.model[LEAF_MOBILE]}`
+        + ` · @390 deal ${leafColumnWidths.deal[LEAF_NARROW]} / model ${leafColumnWidths.model[LEAF_NARROW]}`
+        + ` · 移动端页面级溢出 ${metrics.leafMobileOverflow}px`);
+    }
   }
 
   /* ------------------------------------------------------------------ */

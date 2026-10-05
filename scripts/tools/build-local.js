@@ -891,7 +891,7 @@ ${style}
   </header>
 
   <div class="wrap">
-    <main id="main">
+    <main id="main" class="detail-main">
       <nav class="crumb" aria-label="面包屑">
         <a href="../../">首页</a> › ${categoryPage
     ? `<a href="../../${categoryPage.route}">${htmlEscape(deal.category)}</a>`
@@ -1952,8 +1952,11 @@ ${body}
  *
  * 与 `/plans/` 那一支同一套做法：正文在 lib、`<head>` / 页头 / 页脚 / JSON-LD 在这里。
  * `prefix` 由路由段数推导，**不写死**（索引一层、详情两层）。
+ *
+ * `mainClass` 缺省为空 ⇒ `<main id="main">` 一字不改（索引页 / 档案页 / 数据文档页全部走缺省）。
+ * 只有**详情内容列**页面（模型详情）才显式传 `'detail-main'`，宽度由首页那条 `.detail-main` 规则给。
  */
-function renderModelsShell({ route, title, description, body, jsonLd, prefix, extraCss = '' }, indexHtml) {
+function renderModelsShell({ route, title, description, body, jsonLd, prefix, extraCss = '', mainClass = '' }, indexHtml) {
   const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
   const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
   const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
@@ -2050,7 +2053,7 @@ ${jsonLdBlocks}
   </header>
 
   <div class="wrap">
-    <main id="main">
+    <main id="main"${mainClass ? ` class="${mainClass}"` : ''}>
 ${body}
     </main>
     ${footer}
@@ -3640,7 +3643,10 @@ function assemble() {
         description: `${modelsPage.modelNameOf(model)}（${model.developer || '开发者未标注'}）在本站收录的 API 计价条目、相关套餐、相关优惠与变化记录。本站只整理事实，不做推荐。`,
         body: modelsPage.renderModelPage(model, detailCtx),
         jsonLd: modelsPage.modelPageJsonLd(model, detailCtx),
-        prefix
+        prefix,
+        // 叶子详情页要的是**统一内容列**（与 /deal/<id>/ 同一条 .detail-main 规则）。
+        // 索引页 / 档案页 / 数据文档页都不传它，继续吃 .wrap 的 1420px。
+        mainClass: 'detail-main'
       }, html);
       fs.writeFileSync(path.join(OUT, route, 'index.html'), detailHtml, 'utf8');
       const problems = modelsPage.assertPageHonesty(detailHtml, {
