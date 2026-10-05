@@ -1,0 +1,161 @@
+{
+  "generatedAt": "2026-10-05T05:49:41.534Z",
+  "base": "https://buguoshixc.github.io/ai-deals-aggregator",
+  "policy": "题面 §75：只访问必要页面，不爬全站（生产在收真实 Analytics）",
+  "visited": 10,
+  "failed": 0,
+  "results": [
+    {
+      "url": "/",
+      "why": "门面：确认站点活着且首页可渲染",
+      "status": 200,
+      "bytes": 399786,
+      "sha256": "f758414df71d1647b793e12598f22dc9ac24be6b17563a899ecac20cf4901f87",
+      "analyticsBootstrap": true,
+      "checks": [],
+      "ok": true
+    },
+    {
+      "url": "/models/",
+      "why": "本轮改了模型索引（新增 7 身份、目录状态重派生）",
+      "status": 200,
+      "bytes": 151307,
+      "sha256": "2aafda8752683f255aeb8e83bbdc63d7c54f94cc18cd98a45e23e52e471d2064",
+      "analyticsBootstrap": true,
+      "checks": [
+        {
+          "name": "模型索引含新增身份 360zhinao-pro",
+          "ok": true
+        },
+        {
+          "name": "模型索引含 legacy 身份的静态行（默认隐藏不等于删行）",
+          "ok": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "url": "/models/claude-opus-5.5/",
+      "why": "本轮**新增 releaseEvidence** 的模型详情（2026-09-22 由官方 release 页取证）",
+      "status": 200,
+      "bytes": 86188,
+      "sha256": "78af30a5560d3ada33575582ddd202ed917c1bbfce8f3a285025b1f2af66901a",
+      "analyticsBootstrap": true,
+      "checks": [
+        {
+          "name": "详情页展示本轮取证到的发布日期 2026-09-22",
+          "ok": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "url": "/models/glm-5.3/",
+      "why": "本轮新增日期里被 t11/t12 用作夹具基准的那一条（2026-08-19）",
+      "status": 200,
+      "bytes": 89766,
+      "sha256": "a0d716698e3873f8a266696db03f5af829e288c102e71f383fc0cf21fb8aefda",
+      "analyticsBootstrap": true,
+      "checks": [
+        {
+          "name": "详情页展示 2026-08-19",
+          "ok": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "url": "/models/deepseek-v3.2/",
+      "why": "**legacy** 模型详情：题面 §53 要求 legacy 路由不被删、sitemap 不丢页",
+      "status": 200,
+      "bytes": 86155,
+      "sha256": "2653088e9a556802b5e7708f90b9d63f35d02417456b25ce113ecc2dba543b84",
+      "analyticsBootstrap": true,
+      "checks": [
+        {
+          "name": "legacy 详情页仍能打开且有正文",
+          "ok": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "url": "/plans/api/",
+      "why": "本轮 API 计价 17 → 24 条",
+      "status": 200,
+      "bytes": 233803,
+      "sha256": "5e869ff06675289261ec57a2994a6c715b963f01e5a8886d3c2da3b230df0200",
+      "analyticsBootstrap": true,
+      "checks": [
+        {
+          "name": "API 计价页出现本轮新增的 provider（360智脑 / 百川）",
+          "ok": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "url": "/plans/coding/",
+      "why": "本轮 Coding 套餐 37 → 44 条",
+      "status": 200,
+      "bytes": 278770,
+      "sha256": "f693fcf9d83b67419e31ea1e018624b75b257b1942111c7720ba110e48c1e4c8",
+      "analyticsBootstrap": true,
+      "checks": [],
+      "ok": true
+    },
+    {
+      "url": "/sitemap.xml",
+      "why": "题面 §53：无非预期丢页",
+      "status": 200,
+      "bytes": 36504,
+      "sha256": "45000b56c904bc9f5bfed35b27c6f6b6349a0b827c98853f7257e234787fdc11",
+      "analyticsBootstrap": false,
+      "checks": [
+        {
+          "name": "sitemap 含 legacy 模型 URL",
+          "ok": true
+        },
+        {
+          "name": "sitemap URL 数不少于基线 173（实测 183）",
+          "ok": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "url": "/feed.json",
+      "why": "题面 §79：Feed 无非预期变化",
+      "status": 200,
+      "bytes": 82334,
+      "sha256": "e9668600c2a50e4a42d7d898b2a07eadef8776b4839bee69b7dbfba680bd5977",
+      "analyticsBootstrap": false,
+      "checks": [
+        {
+          "name": "feed.json 可解析且条目数不少于基线 48",
+          "ok": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "url": "/data/index.json",
+      "why": "题面 §79：Dataset Manifest 无非预期变化",
+      "status": 200,
+      "bytes": 4124,
+      "sha256": "bbcedcb71190409058e6c4c6c19cfe2575cb99ee7afce14ff560216c26b7785b",
+      "analyticsBootstrap": false,
+      "checks": [
+        {
+          "name": "Dataset Manifest 仍是 9 个公开数据集",
+          "ok": true
+        },
+        {
+          "name": "source-rulings（内部维护层）**未**被发布",
+          "ok": true
+        }
+      ],
+      "ok": true
+    }
+  ]
+}
