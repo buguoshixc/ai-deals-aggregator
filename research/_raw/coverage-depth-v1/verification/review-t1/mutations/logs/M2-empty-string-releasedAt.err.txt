@@ -1,0 +1,3 @@
+
+❌ 覆盖报告自检失败：
+  - Release Evidence Coverage 与既有 "unknown release dates" 两处读数不一致（新读数 14 / 既有 13） —— "有没有官方发布日期"只能有一个判据（lib/model-freshness.js 的 releaseDateOf()），两处必须同时成立。

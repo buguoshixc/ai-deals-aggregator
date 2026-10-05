@@ -1,0 +1,8 @@
+﻿[counterproof] CI 侧：19 次读数，healthy 4 / failed 15，当前连续失败 10（2026-09-30T04:09:07.964Z → 2026-10-04T16:31:52.051Z）
+[counterproof] 本机侧：3 轮 --dry-run --only=futurepedia，全成功=true，每轮条数=[7,7,7]
+   round1 2026-10-05T04:34:07.021Z exit=0 produced=7
+   round2 2026-10-05T04:34:15.673Z exit=0 produced=7
+   round3 2026-10-05T04:34:22.389Z exit=0 produced=7
+[counterproof] 盘上裁决：[{"source":"futurepedia","decision":"keep-degraded","revisitBy":"2026-10-19 前复查（两周复审窗口）。到点用**同一条命令**重读两套读数：CI 侧 scripts/data/source-health.json 的 generatedAt 与 futurepedia.consecutiveFailures，加本机 dry-run 轮次。四条升级触发条件（满足任一条即提前复查并改裁决）：① CI 侧连续失败 ≥ 20 次（约再 5 天）且队长判定不再等它 → 转 headless-migrate 或 retire；② 另一来源开始覆盖 Midjourney / HubSpot AEO Sensor（独占价值消失）→ 转 retire；③ CI 侧出现与 403 不同形态的失败（HTML 结构变化 / 零产出 / 登录墙）→ 转 repair（那时才是真的可修缺陷）；④ 若决意保留其内容贡献 → 按 headless-migrate 走，且**必须先拿到 CI 出口下连续多轮 --headless 的稳定性读数**，否则不允许落地。"}]（cf≥3 的来源 ["futurepedia"]）
+[counterproof] 结论：observed unstable（CI 侧连续失败 / 本机侧本轮全成功；两侧读数分开、都带时间戳）—— 这是**当次观测**，不是"已恢复"，也不是"来源坏了"
+[counterproof] 写出: research\_raw\coverage-depth-v1\verification\source-reliability-counterproof.json

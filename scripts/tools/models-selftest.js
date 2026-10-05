@@ -64,6 +64,105 @@ function hasProblem(problems, needle) {
   return problems.some(problem => String(problem).includes(needle));
 }
 
+/**
+ * t12（修复 t8/t11 的唯一红灯）：**汇总的结构不变量**。返回问题列表（空 = 通过）。**只有这一处实现**。
+ *
+ * 被替掉的旧断言是 `summary.total === 44 && summary.byStatus.active === 44 && summary.byStatus.retired === 0` ——
+ * 它把某一轮的数据快照（44）写进了判据（题面 §47 禁止的形态）：模型从 44 长到 51 之后，
+ * 三条里的两条**永远为假**，而"数据增长"根本不是缺陷。新判据把"分母"换成**现读的文件**
+ * （`scripts/data/models.json` 的身份数）与**发布条目数**，并把"有没有身份被漏掉"变成一条闭合式：
+ *
+ *   ① total === 现读文件里的身份数（文件自己是分母）；
+ *   ② total === 发布条目数（有身份没被计入发布管线 ⇒ 红）；
+ *   ③ active + retired + unknown === total（三态必须把每个身份恰好分完，不许有"未计入"的第四态）；
+ *   ④ retired === 0（退役只由人工依据驱动）。
+ *
+ * 保护强度对照见本节的反证牙：旧断言会红而新断言**仍红**的那一例是"有身份被翻成 retired"；
+ * 旧断言会红而新断言**不该红**的那一例是"文件合法增长"—— 后者正是本次要修掉的假红。
+ */
+function summaryProblems(summary, fileIdentityCount, publishedCount) {
+  const problems = [];
+  if (summary.total !== fileIdentityCount) {
+    problems.push(`① total ${summary.total} ≠ 现读的 scripts/data/models.json 身份数 ${fileIdentityCount} —— 汇总的分母必须是文件本身`);
+  }
+  if (summary.total !== publishedCount) {
+    problems.push(`② total ${summary.total} ≠ 发布条目数 ${publishedCount} —— 有身份没被计入发布管线`);
+  }
+  if (summary.byStatus.active + summary.byStatus.retired + summary.byStatus.unknown !== summary.total) {
+    problems.push(`③ active ${summary.byStatus.active} + retired ${summary.byStatus.retired} + unknown ${summary.byStatus.unknown} ≠ total ${summary.total} —— 三态必须把每个身份恰好分完`);
+  }
+  if (summary.byStatus.retired !== 0) {
+    problems.push(`④ retired ${summary.byStatus.retired} ≠ 0 —— 退役只由人工依据驱动，不允许自发生成`);
+  }
+  return problems;
+}
+
+/** 旧断言（把 44 写死）的纯函数版 —— 只用于**保护强度对照**，不是判据。 */
+function legacySummaryProblems(summary, pinnedTotal) {
+  const problems = [];
+  if (summary.total !== pinnedTotal) problems.push(`旧断言：total ≠ ${pinnedTotal}`);
+  if (summary.byStatus.active !== pinnedTotal) problems.push(`旧断言：active ≠ ${pinnedTotal}`);
+  if (summary.byStatus.retired !== 0) problems.push('旧断言：retired ≠ 0');
+  return problems;
+}
+
+/**
+ * t12：**API 侧声明行的判据**。返回问题列表（空 = 通过）。**只有这一处实现**，反证牙也调它。
+ *
+ * 把旧断言 `apiDecl.length === 12`（以及 `apiCoverage.declaredApiEntries.length === 12`）里的
+ * **数据快照**换成"与现读文件对账 + 逐条可回查"：
+ *   · reason 必须是 `off-registry-model`；
+ *   · apiPlanId 必须在 api-plans 里；
+ *   · sourceUrl 必须是该记录自己的官方页；
+ *   · modelKey 必须在该记录里；显式 variant 必须是真实变体；通配 variant 必须至少匹配到 1 条真实变体。
+ */
+function apiDeclarationProblems(list, plans) {
+  const problems = [];
+  (Array.isArray(list) ? list : []).forEach((declaration, index) => {
+    const where = `apiDeclarations[${index}]`;
+    if (!declaration || typeof declaration !== 'object') { problems.push(`${where}: 必须是对象`); return; }
+    const spot = `${where} ${declaration.apiPlanId}/${declaration.modelKey}/${declaration.variant === undefined ? 'undefined' : declaration.variant}`;
+    if (declaration.reason !== 'off-registry-model') {
+      problems.push(`${spot}: reason 必须是 off-registry-model（实得 ${JSON.stringify(declaration.reason)}）`);
+    }
+    const plan = (plans || []).find(item => item && item.id === declaration.apiPlanId) || null;
+    if (!plan) { problems.push(`${spot}: apiPlanId 不在 api-plans.json 里`); return; }
+    if (declaration.sourceUrl !== plan.officialUrl && declaration.sourceUrl !== plan.sourceUrl) {
+      problems.push(`${spot}: sourceUrl 不是该记录自己的官方页（实得 ${declaration.sourceUrl}）`);
+    }
+    const models = (plan.models || []).filter(model => model && model.modelKey === declaration.modelKey);
+    if (!models.length) { problems.push(`${spot}: modelKey 不在记录 ${plan.id} 里`); return; }
+    const realVariants = [...new Set(models.map(model => model.variant).filter(variant => variant !== null && variant !== undefined))];
+    if (declaration.variant === null || declaration.variant === undefined) {
+      if (!realVariants.length) problems.push(`${spot}: 通配声明在记录 ${plan.id} 里一条真实变体都没匹配到`);
+    } else if (!models.some(model => model.variant === declaration.variant)) {
+      problems.push(`${spot}: variant 不是该 modelKey 的真实变体（实得 ${JSON.stringify([...new Set(models.map(model => model.variant))])}）`);
+    }
+  });
+  return problems;
+}
+
+/**
+ * t12 **唯一性牙**：同一个 `(apiPlanId, modelKey, variant)` 不许在处置登记表里出现两次。
+ * 返回重复的规范键列表（空 = 通过）。判据来自原始三元组，与 lib 的 identity 键无关。
+ *
+ * 为什么要有它：重复声明不会让任何计数变小（两条行、两条 identity），旧的 `=== 12` 也照样绿 —— 但它
+ * 意味着**同一件事被声明了两遍**（本轮 `23643dfd94f8/ernie-5.1` 就真的重复过 2 次）。这是"条数对得上"
+ * 与"内容对得上"之间的一格空白，只能靠唯一性来钉。
+ */
+function duplicateApiDeclarationKeys(list) {
+  const seen = new Set();
+  const duplicates = [];
+  for (const declaration of (Array.isArray(list) ? list : [])) {
+    if (!declaration || typeof declaration !== 'object') continue;
+    const variant = declaration.variant === null || declaration.variant === undefined ? '(通配)' : String(declaration.variant);
+    const key = `${declaration.apiPlanId}\u0000${declaration.modelKey}\u0000${variant}`;
+    if (seen.has(key)) duplicates.push(key.split('\u0000').join('/'));
+    seen.add(key);
+  }
+  return [...new Set(duplicates)];
+}
+
 /* ================================================================== */
 
 section('① 真实数据自洽');
@@ -514,10 +613,48 @@ section('④ 可重建与身份稳定性');
     resolveChecks.every(([input, expected]) => reg.resolveSlug(input, table) === expected),
     resolveChecks.map(([input, expected]) => `${input}→${reg.resolveSlug(input, table)}(期望 ${expected})`).join(' · '));
 
-  const summary = reg.summarize(reg.publishedModels({ table, links, apiPlans, plans }));
-  check('汇总：44 个模型全部 active、0 retired（退役只由人工依据驱动）',
-    summary.total === 44 && summary.byStatus.active === 44 && summary.byStatus.retired === 0,
-    JSON.stringify(summary));
+  const publishedModelsDoc = reg.publishedModels({ table, links, apiPlans, plans });
+  const publishedModelsList = Array.isArray(publishedModelsDoc) ? publishedModelsDoc : (publishedModelsDoc.models || []);
+  const summary = reg.summarize(publishedModelsDoc);
+  // t12：分母来自**现读的文件**（再 load 一次 scripts/data/models.json），不是某一轮的快照数字。
+  const freshIdentityCount = Object.keys(reg.load().table || {}).length;
+  const summaryIssueList = summaryProblems(summary, freshIdentityCount, publishedModelsList.length);
+  check('汇总：每个身份都有结局（total == 现读 models.json 身份数 == 发布条目数；active + retired + unknown == total），且 retired 仍为 0（退役只由人工依据驱动）',
+    summaryIssueList.length === 0,
+    summaryIssueList.join('；') || `total=${summary.total} · 现读文件身份数=${freshIdentityCount} · 发布条目数=${publishedModelsList.length} · ${JSON.stringify(summary.byStatus)}`);
+  // 保护强度对照（t12 验收第 6 条）：旧断言（把 44 写死）与同一支新判据跑同一批**合成**输入。
+  // 用当时真实的快照值 44 当旧判据的分母，才是一次公平对照。
+  const summaryTeeth = [
+    {
+      name: '合法增长（文件 51、total 51、三态闭合）',
+      legacy: legacySummaryProblems({ total: 51, byStatus: { active: 51, retired: 0, unknown: 0 } }, 44).length,
+      next: summaryProblems({ total: 51, byStatus: { active: 51, retired: 0, unknown: 0 } }, 51, 51).length,
+      expectLegacyRed: true, expectNextRed: false
+    },
+    {
+      name: '有身份被翻成 retired（44→43 active + 1 retired）',
+      legacy: legacySummaryProblems({ total: 44, byStatus: { active: 43, retired: 1, unknown: 0 } }, 44).length,
+      next: summaryProblems({ total: 44, byStatus: { active: 43, retired: 1, unknown: 0 } }, 44, 44).length,
+      expectLegacyRed: true, expectNextRed: true
+    },
+    {
+      name: '有身份被发布管线漏掉（文件 44、total/发布 43）',
+      legacy: legacySummaryProblems({ total: 43, byStatus: { active: 43, retired: 0, unknown: 0 } }, 44).length,
+      next: summaryProblems({ total: 43, byStatus: { active: 43, retired: 0, unknown: 0 } }, 44, 43).length,
+      expectLegacyRed: true, expectNextRed: true
+    },
+    {
+      name: '旧抓不住、新抓住：发布管线漏掉一条（文件 44、汇总 44、发布条目 43）',
+      legacy: legacySummaryProblems({ total: 44, byStatus: { active: 44, retired: 0, unknown: 0 } }, 44).length,
+      next: summaryProblems({ total: 44, byStatus: { active: 44, retired: 0, unknown: 0 } }, 44, 43).length,
+      expectLegacyRed: false, expectNextRed: true
+    }
+  ];
+  check('【保护强度对照·t12】汇总判据：旧会红/新仍红（翻成 retired、被漏掉）与 旧假红/新正确（合法增长）各就各位，且新多抓一类（三态不闭合）',
+    summaryTeeth.every(teeth => (teeth.legacy > 0) === teeth.expectLegacyRed && (teeth.next > 0) === teeth.expectNextRed),
+    summaryTeeth.map(teeth => `${teeth.name}：旧${teeth.legacy > 0 ? '红' : '绿'}/新${teeth.next > 0 ? '红' : '绿'}`).join('；'));
+  console.log('    ℹ t12 汇总判据保护强度对照（合成输入，逐条现场读数）:');
+  summaryTeeth.forEach(teeth => console.log(`       · ${teeth.name} ⇒ 旧断言${teeth.legacy > 0 ? '红' : '绿'} / 新判据${teeth.next > 0 ? '红' : '绿'}`));
 }
 
 /* ================================================================== */
@@ -764,14 +901,43 @@ section('⑥ v2 来源层字段（schemaVersion 2）：角色 / 发布日期证�
     hasProblem(reg.validateRegistry(roughDate, v2Ctx), '真实日期'));
 
   // ---- 牙：互为充要的两个方向 ----
+  // ⚠️ T2-F1 自指盲区（本任务修）：这两个夹具以前只改**一半**字段，隐式依赖"另一半在真实数据里
+  // 恰好为空"；glm-5.3 被合法补上 releasedAt=2026-08-19 + releaseEvidence 之后，负例被真实数据
+  // 静默解除武装（检查仍在、却不再报红 —— 这是最危险的一类假绿）。夹具必须**显式写死两半**。
   const dateNoEvidence = clone(table);
   dateNoEvidence['glm-5.3'].releasedAt = '2026-01-01';
+  dateNoEvidence['glm-5.3'].releaseEvidence = []; // 显式清空另一半：夹具自足，不看真实数据
   check('【v2】写了 releasedAt 却不给官方证据 → 红',
     hasProblem(reg.validateRegistry(dateNoEvidence, v2Ctx), '互为充要'));
   const evidenceNoDate = clone(table);
+  evidenceNoDate['glm-5.3'].releasedAt = null; // 显式清空另一半：夹具自足，不看真实数据
   evidenceNoDate['glm-5.3'].releaseEvidence = [clone(table['deepseek-flash'].releaseEvidence[0])];
   check('【v2】给了官方证据却不写 releasedAt → 红（互为充要的另一半）',
     hasProblem(reg.validateRegistry(evidenceNoDate, v2Ctx), '互为充要'));
+
+  // ---- 牙（T2-F1 解耦牙）：判的是**夹具逻辑**，不是当前数据 ----
+  // 先造一份「glm-5.3 两半都合法有值」的表（未来真实数据很可能就长这样，起点自身必须合法），
+  // 再从它出发按同样方式各造一份"只有一半"的表：两份都必须报红。于是无论真实数据里 glm-5.3
+  // 是 null 还是有日期，上面两个负例都不会被真实数据的变化静默解除武装。
+  const bothHalvesValid = clone(table);
+  bothHalvesValid['glm-5.3'].releasedAt = '2026-01-01';
+  bothHalvesValid['glm-5.3'].releaseEvidence = [{
+    field: 'releasedAt',
+    quote: '2026-8-19 GLM-5.3 新一代旗舰模型上线',
+    sourceUrl: 'https://docs.bigmodel.cn/cn/update/new-releases',
+    capturedAt: '2026-10-05'
+  }];
+  const onlyDate = clone(bothHalvesValid);
+  onlyDate['glm-5.3'].releaseEvidence = [];
+  const onlyEvidence = clone(bothHalvesValid);
+  onlyEvidence['glm-5.3'].releasedAt = null;
+  const onlyDateProblems = reg.validateRegistry(onlyDate, v2Ctx);
+  const onlyEvidenceProblems = reg.validateRegistry(onlyEvidence, v2Ctx);
+  check('【v2】解耦牙：起点两半都合法时，夹具仍能各自造出"只有一半"的非法表并报红（T2-F1 自指盲区）',
+    !hasProblem(reg.validateRegistry(bothHalvesValid, v2Ctx), '互为充要')
+    && hasProblem(onlyDateProblems, '互为充要')
+    && hasProblem(onlyEvidenceProblems, '互为充要'),
+    `onlyDate=${onlyDateProblems.slice(0, 1).join(' | ')} / onlyEvidence=${onlyEvidenceProblems.slice(0, 1).join(' | ')}`);
 
   // ---- 牙：第三方托管平台的"发布时间"不是开发商的发布证据 ----
   const thirdParty = clone(table);
@@ -860,12 +1026,32 @@ section('⑦ API 侧处置登记（gaps 双侧化）：出口、反绕过与覆�
 {
   const apiCtx = { plans, links, table, apiPlans };
   const apiDecl = apiDeclarationsOf(gaps);
-  check(`真实数据：API 侧声明 ${apiDecl.length} 条，reason 全部是 off-registry-model、sourceUrl 全部取自该记录自己的官方页`,
-    apiDecl.length === 12 && apiDecl.every(declaration => declaration.reason === 'off-registry-model'
-      && (() => {
-        const plan = apiPlans.find(item => item.id === declaration.apiPlanId);
-        return plan && (declaration.sourceUrl === plan.officialUrl || declaration.sourceUrl === plan.sourceUrl);
-      })()));
+  // t12：分母换成**现读的文件**（再 load 一次 scripts/data/model-registry-gaps.json），不再写死 12。
+  // 这样"有人删了声明确忘了同步"会被抓住，而"数据合法增长"不会再假红（§47）。
+  const freshApiDecl = apiDeclarationsOf(reg.loadGaps().doc);
+  const apiDeclarationIssues = apiDeclarationProblems(apiDecl, apiPlans);
+  check(`真实数据：API 侧声明 ${apiDecl.length} 条 == 现读 gaps 文件的 ${freshApiDecl.length} 条，且每条都逐字对得回真实 api-plans 记录（reason / sourceUrl / modelKey / variant）`,
+    apiDecl.length === freshApiDecl.length && apiDeclarationIssues.length === 0,
+    `条数 ${apiDecl.length} vs 现读 ${freshApiDecl.length}；${apiDeclarationIssues.slice(0, 2).join(' | ') || ''}`);
+  const duplicateApiKeys = duplicateApiDeclarationKeys(apiDecl);
+  check('【唯一性牙·t12】同一个 (apiPlanId, modelKey, variant) 不许在处置登记表里重复出现（本轮曾实际出现 23643dfd94f8/ernie-5.1 重复 2 次）',
+    duplicateApiKeys.length === 0, duplicateApiKeys.join(' | '));
+  // 可证伪性证明：同一支判据与唯一性牙在扰动输入上必须红（否则它们只是"看起来在看着"）。
+  const apiDeclarationTeeth = [
+    { name: 'reason 改错', problems: apiDeclarationProblems([{ apiPlanId: apiPlans[0].id, modelKey: (apiPlans[0].models[0] || {}).modelKey, variant: (apiPlans[0].models[0] || {}).variant, reason: 'pool', sourceUrl: apiPlans[0].officialUrl }], apiPlans) },
+    { name: 'sourceUrl 换成别家官方页', problems: apiDeclarationProblems([{ apiPlanId: apiPlans[0].id, modelKey: (apiPlans[0].models[0] || {}).modelKey, variant: (apiPlans[0].models[0] || {}).variant, reason: 'off-registry-model', sourceUrl: 'https://example.invalid/other' }], apiPlans) },
+    { name: 'variant 编造', problems: apiDeclarationProblems([{ apiPlanId: apiPlans[0].id, modelKey: (apiPlans[0].models[0] || {}).modelKey, variant: 'no-such-variant', reason: 'off-registry-model', sourceUrl: apiPlans[0].officialUrl }], apiPlans) },
+    { name: 'apiPlanId 不存在', problems: apiDeclarationProblems([{ apiPlanId: 'ffffffffffff', modelKey: 'x', variant: null, reason: 'off-registry-model', sourceUrl: 'https://example.invalid/x' }], apiPlans) }
+  ];
+  check('【可证伪性·t12】API 侧声明判据在四种扰动输入下**必红**（reason / sourceUrl / variant / apiPlanId）',
+    apiDeclarationTeeth.every(teeth => teeth.problems.length > 0),
+    apiDeclarationTeeth.map(teeth => `${teeth.name}：${teeth.problems[0] || '(没有报红)'}`).join('；'));
+  check('【可证伪性·t12】唯一性牙在同一 (apiPlanId, modelKey, variant) 出现两次时**必红**（重复声明不会让任何计数变小）',
+    duplicateApiDeclarationKeys([{ apiPlanId: 'p', modelKey: 'm', variant: 'standard' }, { apiPlanId: 'p', modelKey: 'm', variant: 'standard' }]).length > 0
+    && duplicateApiDeclarationKeys([{ apiPlanId: 'p', modelKey: 'm', variant: 'standard' }, { apiPlanId: 'p', modelKey: 'm', variant: 'long_context' }]).length === 0,
+    JSON.stringify(duplicateApiDeclarationKeys([{ apiPlanId: 'p', modelKey: 'm', variant: 'standard' }, { apiPlanId: 'p', modelKey: 'm', variant: 'standard' }])));
+  console.log('    ℹ t12 API 侧声明判据可证伪性现场输出（四种扰动 ⇒ 必红）:');
+  apiDeclarationTeeth.forEach(teeth => console.log(`       · ${teeth.name} ⇒ ${teeth.problems[0] || '(没有报红)'}`));
   check('真实数据：没有任何声明"两侧都写"（每条恰好属于一侧）',
     reg.declarationsList(gaps).every(declaration => (declaration.planId !== undefined) !== (declaration.apiPlanId !== undefined)));
   check('真实数据：真实 gaps 通过双侧校验（0 处问题）',
@@ -998,17 +1184,30 @@ section('⑦ API 侧处置登记（gaps 双侧化）：出口、反绕过与覆�
     reg.validateLinks(links, { table, apiPlans, plans, gaps: dropDeclaration }).slice(0, 1).join(' | '));
   // ---- ⑪ coverageOf 记账 ----
   const apiCoverage = reg.coverageOf({ table, links, gaps, apiPlans, plans });
-  check('【API 处置】coverageOf：declaredApiEntries 逐条留档（12 条 · 带 provider）+ unmappedModelKeys 归零 + 三者和 == 总条目',
-    apiCoverage.declaredApiEntries.length === 12
+  // t12：行数分母 = **现读** gaps 文件的 API 侧声明行数；展开数分母 = 对同一批声明**逐条展开去重**的数。
+  // 两个口径各自独立对账，不再出现 12 这类字面量。
+  const freshApiRowCount = apiDeclarationsOf(reg.loadGaps().doc).length;
+  const expandedIdentityKeys = new Set();
+  for (const declaration of apiDecl) {
+    for (const identity of reg.sourcePricingIdentitiesOf(declaration, apiPlans).identities) {
+      expandedIdentityKeys.add(reg.sourcePricingIdentityKey(identity));
+    }
+  }
+  check(`【API 处置】coverageOf：declaredApiEntries 逐条留档（${apiCoverage.declaredApiEntries.length} 条 · 带 provider）+ 行数 == 现读文件行数 + 展开数 == 逐条展开去重 + unmappedModelKeys 归零 + 三者和 == 总条目`,
+    apiCoverage.declaredApiEntries.length === freshApiRowCount
+    && apiCoverage.declaredApiIdentities === expandedIdentityKeys.size
+    && apiCoverage.declaredApiIdentities >= apiCoverage.declaredApiEntries.length
     && apiCoverage.unmappedModelKeys.length === 0
     && apiCoverage.mappedApiEntries + apiCoverage.declaredApiIdentities + apiCoverage.unmappedModelKeys.length === apiCoverage.apiPricingItems
     && apiCoverage.declaredApiEntries.every(entry => entry.provider && entry.apiPlanId && entry.modelKey
       && entry.reason === 'off-registry-model' && entry.note),
     JSON.stringify({
       declared: apiCoverage.declaredApiEntries.length,
+      freshFileRows: freshApiRowCount,
+      identities: apiCoverage.declaredApiIdentities,
+      expandedRecomputed: expandedIdentityKeys.size,
       unmapped: apiCoverage.unmappedModelKeys.length,
       mapped: apiCoverage.mappedApiEntries,
-      identities: apiCoverage.declaredApiIdentities,
       items: apiCoverage.apiPricingItems
     }));
   // ---- ⑫ 同一支折叠规则也用于产候选：API 侧每个折叠命中都必须有映射或声明 ----
@@ -1036,7 +1235,7 @@ section('⑦ API 侧处置登记（gaps 双侧化）：出口、反绕过与覆�
   check('【API 处置】每个折叠命中的计价条目都有结局（映射或声明），没有"能对上却没写、也没声明"的漏网之鱼',
     foldedWithoutOutcome.length === 0,
     foldedWithoutOutcome.slice(0, 5).map(item => `${item.apiPlanId}/${item.modelKey}(${item.rule})`).join(' | '));
-  check('【API 处置·对照】真实数据里 12 条声明在折叠索引下 0 命中（7 条能对上的已经去写了映射）',
+  check(`【API 处置·对照】真实数据里 ${apiDecl.length} 条声明在折叠索引下 0 命中（能对上的已经去写了映射）`,
     apiDecl.every(declaration => {
       const plan = apiPlans.find(item => item.id === declaration.apiPlanId);
       const entry = plan && (plan.models || []).find(model => model.modelKey === declaration.modelKey);

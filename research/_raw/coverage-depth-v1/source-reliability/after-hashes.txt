@@ -1,0 +1,46 @@
+﻿# t4 只读证明 · 取证后 sha256（2026-10-05T11:50:12.2406614+08:00，HEAD ff86368e6d12d1ef57b2f51aa2c957c01d2a9ed8）
+# 1) 受监控的被跟踪文件（before 见 tracked-hashes.json，逐字节相同）
+F782626E2B0E9B31236393507FE00121E90FAF55DB92FBD71FA52002885ABF80  scripts/data/source-health.json
+25E4ED54FE64B3E7BEB9EE710CA3D9E4C321D1EC72D084F89C4C1D423C138EB6  scripts/data/source-snapshots.json
+FE063BC9E4E40B1051958D6F14B889F44D391848F0D2555B82E421651DFCD558  deals.json
+DB7BC088E1AEC758F92B31D17DACAEBA393CFB1F5D72A8B9BB97CE4158B3A052  scripts/data/deal-history.json
+F9F85EBAA84FA58AB2711FA1B6217DD95C195D968F2EAB285DA342D7C32C06E6  scripts/data/zh-pending.json
+622209F13FC41E5705E6A995CA65AEF9C4F43894FDE9BA1AB79119CCED7D476A  scripts/data/source-probes.json
+4176D75C0C95707C65314360F497243DC46056D373B731819BA1B665123D7F42  index.html
+046EE40FDF2FC326B483C93F200379F68AA333D5058252D8D0D9F47E31302AD7  scripts/collectors/global_directories.js
+D3CEE7F49F0A4E8BF0CD2E7FAF12883776DB6E03E8262402E3E035B376AFA854  scripts/lib/dedup.js
+
+# 2) 本任务目录内全部工件（research/_raw/coverage-depth-v1/source-reliability/）；本文件自身不列入（自引用）
+E7F49D7E6C7CDE94921C10A4AB5CA66FB41A31051DA9F757B9DA53F7CA653A2F  research/_raw/coverage-depth-v1/source-reliability/census-fp-round1.json
+CD4A488C30D461884D8B395A60A605AB6EFD9E6AF2E771732B717E92A5EC365B  research/_raw/coverage-depth-v1/source-reliability/census-fp-round2.json
+C96D97A8B9A0CE1A1502A789193F07ED2891BCC00766E6D59D7D34DD0AD6524F  research/_raw/coverage-depth-v1/source-reliability/census-fp-round3.json
+0A38DC173AEC7879EAD7EEB9CDD9EB5678A1317542D59F0017DA564A82CD874A  research/_raw/coverage-depth-v1/source-reliability/census-full1.json
+14EC6EEB2BFA9D68527E1D127879B9A3422CD9491FBAADD2712E143CB7C17643  research/_raw/coverage-depth-v1/source-reliability/census-table.json
+6EF3801507E6375215F29DE2EFECE4A1EF6111AABBA63ED122917019597A7C75  research/_raw/coverage-depth-v1/source-reliability/ci-history.txt
+D114D4394E91775B102B3AFF5F0B838D3F3D53272941079263A8F1FDF9985FBF  research/_raw/coverage-depth-v1/source-reliability/ci-readings.json
+EC84BE0C78552F22971DDE133DC2973C86586018B58DE3DD17DD3946F856B355  research/_raw/coverage-depth-v1/source-reliability/headless-futurepedia-stability.json
+BFAF1CE1D56908BC673647BC1A8A45A9A69DF38134B1FF5B584381F5B66427B8  research/_raw/coverage-depth-v1/source-reliability/http-forensics-fp.json
+BE2C4CD26088E9F7283CE91890D809DAE6A00D862434DE0840CA2E132B7D0B5D  research/_raw/coverage-depth-v1/source-reliability/http-forensics-fp2.json
+21BFB7C7FA6D6D63D9892659EC7DFC9323212386014AF6D1AD73632C5CC0BE12  research/_raw/coverage-depth-v1/source-reliability/logs/census-full1.txt
+796571590AB0DB4D9E69009B542421FFBE9E61C63F3ACDA35CBE825F5DC97B51  research/_raw/coverage-depth-v1/source-reliability/logs/ci-history.txt
+51BAC36F53282FABDE00962B655F47C566E9C023E16677D4C4DAAA7086EAC638  research/_raw/coverage-depth-v1/source-reliability/logs/dryrun-only-futurepedia-3rounds.txt
+F421CCF55242789997B1F942CBEE850D38C471C2D303AD5551009FFF893C47B4  research/_raw/coverage-depth-v1/source-reliability/logs/fixture-test.txt
+EBB51AC5BC17CF4F3EE8D059E85659BCB5FD74218D8465E8A3F569560AC4BD8B  research/_raw/coverage-depth-v1/source-reliability/logs/fp-round1.txt
+E88094D8CE8F6D03FED611EE3F6BB2365D36F80119702201658BBC29C9037220  research/_raw/coverage-depth-v1/source-reliability/logs/fp-rounds.txt
+1F46A099D6BF050B0ACF410654FF1BBC5340F2E23A2373764CBF5DC915358C68  research/_raw/coverage-depth-v1/source-reliability/logs/headless-futurepedia.txt
+827A381984AE7F003DEFF9E70019E8A9EB92F17F53F9F7109384CC10BD354FED  research/_raw/coverage-depth-v1/source-reliability/logs/health-selftest.txt
+40F38D1F69BBB73CCFCA53CAF91ECB6C52B1CCB3939E942D7FD60E27BE97166F  research/_raw/coverage-depth-v1/source-reliability/logs/http-forensics-fp.txt
+C8FE6B5729EAE7AE01C76F0877FA2D51E84DEC81B16FF5F3D30ADA61B0548720  research/_raw/coverage-depth-v1/source-reliability/logs/http-forensics-fp2.txt
+731FF3E8DDCE6589AAD9463D8E97A5D66CE4623EAAEF783E30B9C2360F13AC6B  research/_raw/coverage-depth-v1/source-reliability/logs/overlap-fp-round1.txt
+534F33CC54E468F90E51E9D411AFC15AF017230FD5CAAC048F2BE172207D419E  research/_raw/coverage-depth-v1/source-reliability/logs/surface-futurepedia.txt
+DBD3D4B3540FF4D8DB5A1C73CD1F492425529AE974AAFDCAD7E939E9144D2875  research/_raw/coverage-depth-v1/source-reliability/logs/verify-misc.txt
+94F3830C40FB082F063784BFCC688EF3C54F02FDC00DB4F49D64FB5FEBB4FEDE  research/_raw/coverage-depth-v1/source-reliability/overlap-fp-round1.json
+30655D1E9D689EA54B0998370AFC286AEED994734BAE8477B0DA5703FAE9CA08  research/_raw/coverage-depth-v1/source-reliability/probe-census.cjs
+4CEF5FD54474527D4A73B143757A6E485D2FE413BE203B366AC0AA280F6BD8B9  research/_raw/coverage-depth-v1/source-reliability/probe-ci-history.cjs
+61982DF2EF32BA1A6901302F45DD17E0BF71678933A0C51F06AC65FC9D88C103  research/_raw/coverage-depth-v1/source-reliability/probe-futurepedia-headless.cjs
+C2C2F967660F5763A4CF47694F76F6B36B555551A1215BDB3BB962E7D66B1EB7  research/_raw/coverage-depth-v1/source-reliability/probe-futurepedia-surface.cjs
+6628CB27DF7B3AF3E1757B0DF985F07E8345AD701BA837C778D2F4A43C3CAA62  research/_raw/coverage-depth-v1/source-reliability/probe-http-forensics.cjs
+9249FD0347C1977CD37BA025820CCF9FF028687A2300C456836FBD73780547A1  research/_raw/coverage-depth-v1/source-reliability/probe-overlap.cjs
+DBC37909068FCD487FED4F0B247410C5BC16348D7848104F63B553832BAE1F26  research/_raw/coverage-depth-v1/source-reliability/surface-futurepedia.json
+09EE31C1B9A3F6754197F3062F76E97EF13F8EF7D51DBE0F4322A184754AEE14  research/_raw/coverage-depth-v1/source-reliability/tracked-hashes.json
+5B83A62288C1CE144A55ADCA922EC4A30A3B004300578944FF41171C40F925E2  research/coverage-depth-v1-source-reliability.md

@@ -1,0 +1,258 @@
+﻿=== universe ===
+{"declared":34,"providersRegistered":34,"withData":34,"withoutAnyData":[],"undeclaredProviders":[],"tiers":{"long-tail":5,"core":11,"major":18},"roles":{"model-developer":15,"coding-product":10,"inference-platform":6,"tool-vendor":3},"providers":[{"provider":"ai360","name":"360智脑","tier":"long-tail","role":"model-developer","overall":"MISSING","withData":true,"applicableDimensions":4,"coveredDimensions":1,"states":{"deals":"COVERED","coding":"MISSING","api":"MISSING","models":"MISSING"},"intent":"360 智脑开放平台自研模型（360zhinao 系列）的官方优惠、按量计费与模型身份"},{"provider":"aliyun","name":"阿里云","tier":"core","role":"model-developer","overall":"COVERED","withData":true,"applicableDimensions":3,"coveredDimensions":3,"states":{"deals":"COVERED","coding":"NOT_APPLICABLE","api":"COVERED","models":"COVERED"},"intent":"阿里云百炼（通义千问）的官方优惠、按量计费与当前模型身份"},{"provider":"anthropic","name":"Anthropic","tier":"core","role":"model-developer","overall":"COVERED","withData":true,"applicableDimensions":4,"coveredDimensions":4,"states":{"deals":"COVERED","coding":"COVERED","api":"COVERED","models":"COVERED"},"intent":"Anthropic Claude 的订阅、官方 API 定价与当前模型身份"},{"provider":"aws","name":"AWS","tier":"major","role":"coding-product","overall":"COVERED","withData":true,"applicableDimensions":2,"coveredDimensions":2,"states":{"deals":"COVERED","coding":"COVERED","api":"NOT_APPLICABLE","models":"NOT_APPLICABLE"},"intent":"Amazon Q Developer 的订阅档位、超额计价与已宣布的停支时效"},{"provider":"baichuan","name":"百川智能","tier":"major","role":"model-developer","overall":"MISSING","withData":true,"applicableDimensions":4,"coveredDimensions":1,"states":{"deals":"COVERED","coding":"MISSING","api":"MISSING","models":"MISSING"},"intent":"百川智能开放平台的官方优惠、按量计费与当前模型身份"},{"provider":"baidu","name":"百度智能云","tier":"core","role":"model-developer","overall":"MISSING","withData":true,"applicableDimensions":4,"coveredDimensions":2,"states":{"deals":"COVERED","coding":"COVERED","api":"MISSING","models":"MISSING"},"intent":"百度智能云千帆（文心 / ERNIE）的优惠、API 定价与当前模型身份"},{"provider":"cerebras","name":"Cerebras","tier":"long-tail","role":"inference-platform","overall":"COVERED","withData":true,"applicableDimensions":1,"coveredDimensions":1,"states":{"deals":"NOT_APPLICABLE","coding":"NOT_APPLICABLE","api":"COVERED","models":"NOT_APPLICABLE"},"intent":"Cerebras Inference Developer 档的官方按量计费与一次性赠送额度"},{"provider":"codebuddy","name":"腾讯 CodeBuddy","tier":"major","role":"coding-product","overall":"COVERED","withData":true,"applicableDimensions":1,"coveredDimensions":1,"states":{"deals":"NOT_APPLICABLE","coding":"COVERED","api":"NOT_APPLICABLE","models":"NOT_APPLICABLE"},"intent":"腾讯 CodeBuddy 的编程套餐档位与官方优惠"},{"provider":"coze","name":"扣子 Coze","tier":"long-tail","role":"tool-vendor","overall":"UNVERIFIABLE","withData":true,"applicableDimensions":2,"coveredDimensions":1,"states":{"deals":"COVERED","coding":"NOT_APPLICABLE","api":"UNVERIFIABLE","models":"NOT_APPLICABLE"},"intent":"扣子 Coze 的官方优惠、付费档位与 API 计费（若有公开价）"},{"provider":"cursor","name":"Cursor","tier":"major","role":"coding-product","overall":"COVERED","withData":true,"applicableDimensions":2,"coveredDimensions":2,"states":{"deals":"COVERED","coding":"COVERED","api":"NOT_APPLICABLE","models":"NOT_APPLICABLE"},"intent":"Cursor 的订阅档位与官方优惠"},{"provider":"deepseek","name":"DeepSeek","tier":"core","role":"model-developer","overall":"MISSING","withData":true,"applicableDimensions":3,"coveredDimensions":2,"states":{"deals":"MISSING","coding":"NOT_APPLICABLE","api":"COVERED","models":"COVERED"},"intent":"DeepSeek 官方 API 定价、优惠与当前模型身份"},{"provider":"fireworks","name":"Fireworks AI","tier":"major","role":"inference-platform","overall":"COVERED","withData":true,"applicableDimensions":1,"coveredDimensions":1,"states":{"deals":"NOT_APPLICABLE","coding":"NOT_APPLICABLE","api":"COVERED","models":"NOT_APPLICABLE"},"intent":"Fireworks AI Serverless 的官方按量计费（Standard 与 Priority 两个通道）"},{"provider":"github","name":"GitHub","tier":"major","role":"coding-product","overall":"COVERED","withData":true,"applicableDimensions":2,"coveredDimensions":2,"states":{"deals":"COVERED","coding":"COVERED","api":"NOT_APPLICABLE","models":"NOT_APPLICABLE"},"intent":"GitHub Copilot 订阅档位与官方优惠"},{"provider":"google","name":"Google","tier":"core","role":"model-developer","overall":"COVERED","withData":true,"applicableDimensions":4,"coveredDimensions":4,"states":{"deals":"COVERED","coding":"COVERED","api":"COVERED","models":"COVERED"},"intent":"Google（Gemini / Vertex / Gemini Code Assist）的优惠、订阅、API 定价与当前模型身份"},{"provider":"groq","name":"Groq","tier":"major","role":"inference-platform","overall":"COVERED","withData":true,"applicableDimensions":1,"coveredDimensions":1,"states":{"deals":"NOT_APPLICABLE","coding":"NOT_APPLICABLE","api":"COVERED","models":"NOT_APPLICABLE"},"intent":"Groq 托管推理的官方按量计费（计价主体是 Groq，不是模型发行方）与速率限制"},{"provider":"iflytek","name":"科大讯飞","tier":"major","role":"model-developer","overall":"MISSING","withData":true,"applicableDimensions":4,"coveredDimensions":1,"states":{"deals":"COVERED","coding":"UNVERIFIABLE","api":"MISSING","models":"MISSING"},"intent":"科大讯飞星火（讯飞开放平台）的优惠、API 定价与当前模型身份"},{"provider":"jetbrains","name":"JetBrains","tier":"major","role":"coding-product","overall":"COVERED","withData":true,"applicableDimensions":1,"coveredDimensions":1,"states":{"deals":"NOT_APPLICABLE","coding":"COVERED","api":"NOT_APPLICABLE","models":"NOT_APPLICABLE"},"intent":"JetBrains AI 订阅档位（AI Pro / AI Ultimate）的官方价格与服务档位"},{"provider":"microsoft","name":"Microsoft","tier":"long-tail","role":"tool-vendor","overall":"MISSING","withData":true,"applicableDimensions":3,"coveredDimensions":1,"states":{"deals":"COVERED","coding":"MISSING","api":"DEFERRED","models":"NOT_APPLICABLE"},"intent":"Microsoft Copilot 系列订阅的官方价格与优惠"},{"provider":"minimax","name":"MiniMax（稀宇科技）","tier":"core","role":"model-developer","overall":"COVERED","withData":true,"applicableDimensions":4,"coveredDimensions":4,"states":{"deals":"COVERED","coding":"COVERED","api":"COVERED","models":"COVERED"},"intent":"MiniMax（稀宇科技）的套餐、API 定价与当前模型身份"},{"provider":"moonshot","name":"月之暗面","tier":"core","role":"model-developer","overall":"MISSING","withData":true,"applicableDimensions":4,"coveredDimensions":3,"states":{"deals":"COVERED","coding":"COVERED","api":"MISSING","models":"COVERED"},"intent":"月之暗面 Kimi 的套餐、开放平台定价与当前模型身份"},{"provider":"notion","name":"Notion","tier":"long-tail","role":"tool-vendor","overall":"COVERED","withData":true,"applicableDimensions":1,"coveredDimensions":1,"states":{"deals":"COVERED","coding":"NOT_APPLICABLE","api":"NOT_APPLICABLE","models":"NOT_APPLICABLE"},"intent":"Notion 官方优惠与订阅档位"},{"provider":"openai","name":"OpenAI","tier":"core","role":"model-developer","overall":"MISSING","withData":true,"applicableDimensions":4,"coveredDimensions":3,"states":{"deals":"COVERED","coding":"MISSING","api":"COVERED","models":"COVERED"},"intent":"OpenAI 的订阅、官方 API 定价与当前模型身份"},{"provider":"qoder","name":"Qoder CN","tier":"major","role":"coding-product","overall":"COVERED","withData":true,"applicableDimensions":1,"coveredDimensions":1,"states":{"deals":"NOT_APPLICABLE","coding":"COVERED","api":"NOT_APPLICABLE","models":"NOT_APPLICABLE"},"intent":"Qoder CN 的编程套餐档位与官方优惠"},{"provider":"qoder-intl","name":"Qoder International","tier":"major","role":"coding-product","overall":"COVERED","withData":true,"applicableDimensions":1,"coveredDimensions":1,"states":{"deals":"NOT_APPLICABLE","coding":"COVERED","api":"NOT_APPLICABLE","models":"NOT_APPLICABLE"},"intent":"Qoder 国际站的订阅档位（独立定价、独立币种）"},{"provider":"replit","name":"Replit","tier":"major","role":"coding-product","overall":"PARTIAL","withData":true,"applicableDimensions":1,"coveredDimensions":0,"states":{"deals":"NOT_APPLICABLE","coding":"PARTIAL","api":"NOT_APPLICABLE","models":"NOT_APPLICABLE"},"intent":"Replit Core / Pro 订阅档位的官方价格与额度口径"},{"provider":"sensetime","name":"商汤科技","tier":"major","role":"model-developer","overall":"MISSING","withData":true,"applicableDimensions":4,"coveredDimensions":1,"states":{"deals":"COVERED","coding":"MISSING","api":"MISSING","models":"DEFERRED"},"intent":"商汤科技日日新（SenseNova）与大装置的官方优惠、按量计费、Token Plan 与当前模型身份"},{"provider":"siliconflow","name":"硅基流动","tier":"major","role":"inference-platform","overall":"COVERED","withData":true,"applicableDimensions":2,"coveredDimensions":2,"states":{"deals":"COVERED","coding":"NOT_APPLICABLE","api":"COVERED","models":"NOT_APPLICABLE"},"intent":"硅基流动托管平台的官方优惠与按量计费"},{"provider":"stepfun","name":"阶跃星辰","tier":"major","role":"model-developer","overall":"MISSING","withData":true,"applicableDimensions":4,"coveredDimensions":3,"states":{"deals":"COVERED","coding":"COVERED","api":"MISSING","models":"COVERED"},"intent":"阶跃星辰（StepFun）开放平台的官方优惠、API 按量计费、Step Plan 订阅与当前模型身份"},{"provider":"tencent","name":"腾讯云","tier":"core","role":"model-developer","overall":"COVERED","withData":true,"applicableDimensions":3,"coveredDimensions":3,"states":{"deals":"COVERED","coding":"NOT_APPLICABLE","api":"COVERED","models":"COVERED"},"intent":"腾讯云混元的官方优惠、按量计费与当前模型身份"},{"provider":"together","name":"Together AI","tier":"major","role":"inference-platform","overall":"COVERED","withData":true,"applicableDimensions":1,"coveredDimensions":1,"states":{"deals":"NOT_APPLICABLE","coding":"NOT_APPLICABLE","api":"COVERED","models":"NOT_APPLICABLE"},"intent":"Together AI Serverless 的官方按量计费与逐模型 cached input 价"},{"provider":"trae","name":"Trae","tier":"major","role":"coding-product","overall":"COVERED","withData":true,"applicableDimensions":1,"coveredDimensions":1,"states":{"deals":"NOT_APPLICABLE","coding":"COVERED","api":"NOT_APPLICABLE","models":"NOT_APPLICABLE"},"intent":"Trae 的会员档位与官方优惠"},{"provider":"volcengine","name":"火山引擎","tier":"core","role":"inference-platform","overall":"COVERED","withData":true,"applicableDimensions":3,"coveredDimensions":3,"states":{"deals":"COVERED","coding":"NOT_APPLICABLE","api":"COVERED","models":"COVERED"},"intent":"火山引擎方舟（豆包）的优惠、按量计费与当前模型身份"},{"provider":"windsurf","name":"Windsurf","tier":"major","role":"coding-product","overall":"COVERED","withData":true,"applicableDimensions":2,"coveredDimensions":2,"states":{"deals":"COVERED","coding":"COVERED","api":"NOT_APPLICABLE","models":"NOT_APPLICABLE"},"intent":"Windsurf 的订阅档位与官方优惠"},{"provider":"zhipu","name":"智谱AI","tier":"core","role":"model-developer","overall":"COVERED","withData":true,"applicableDimensions":4,"coveredDimensions":4,"states":{"deals":"COVERED","coding":"COVERED","api":"COVERED","models":"COVERED"},"intent":"智谱AI 开放平台（GLM / BigModel）的优惠、套餐、按量计费与当前模型身份"}]}
+=== dimensions ===
+{"deals":{"COVERED":23,"PARTIAL":0,"MISSING":1,"DEFERRED":0,"UNVERIFIABLE":0,"NOT_APPLICABLE":10,"BLOCKED_SOURCE":0},"coding":{"COVERED":16,"PARTIAL":1,"MISSING":5,"DEFERRED":0,"UNVERIFIABLE":1,"NOT_APPLICABLE":11,"BLOCKED_SOURCE":0},"api":{"COVERED":14,"PARTIAL":0,"MISSING":7,"DEFERRED":1,"UNVERIFIABLE":1,"NOT_APPLICABLE":11,"BLOCKED_SOURCE":0},"models":{"COVERED":11,"PARTIAL":0,"MISSING":4,"DEFERRED":1,"UNVERIFIABLE":0,"NOT_APPLICABLE":18,"BLOCKED_SOURCE":0}}
+=== states ===
+{"COVERED":64,"PARTIAL":1,"MISSING":17,"DEFERRED":2,"UNVERIFIABLE":2,"NOT_APPLICABLE":50,"BLOCKED_SOURCE":0}
+=== counts by state ===
+{
+  "deals:undefined": 136,
+  "coding:undefined": 136,
+  "api:undefined": 136,
+  "models:undefined": 136
+}
+=== MOISSING/PARTIAL rows ===
+=== missingTargets ===
+[
+ {
+  "provider": "ai360",
+  "name": "360智脑",
+  "dimension": "coding",
+  "state": "MISSING",
+  "declared": 0,
+  "present": 0,
+  "resolved": 0,
+  "reason": "可覆盖、未延期、来源健康，但盘上一条记录都没有",
+  "items": []
+ },
+ {
+  "provider": "ai360",
+  "name": "360智脑",
+  "dimension": "api",
+  "state": "MISSING",
+  "declared": 1,
+  "present": 0,
+  "resolved": 0,
+  "reason": "声明的 1 条 current target 一条都没兑现，且该维度没有任何记录",
+  "items": [
+   {
+    "value": "360zhinao-turbo-llm-geo",
+    "resolved": false,
+    "reason": "api-plans.json 里没有这家 provider 的计价条目 modelKey「360zhinao-turbo-llm-geo」"
+   }
+  ]
+ },
+ {
+  "provider": "ai360",
+  "name": "360智脑",
+  "dimension": "models",
+  "state": "MISSING",
+  "declared": 0,
+  "present": 0,
+  "resolved": 0,
+  "reason": "可覆盖、未延期、来源健康，但盘上一条记录都没有",
+  "items": []
+ },
+ {
+  "provider": "baichuan",
+  "name": "百川智能",
+  "dimension": "coding",
+  "state": "MISSING",
+  "declared": 0,
+  "present": 0,
+  "resolved": 0,
+  "reason": "可覆盖、未延期、来源健康，但盘上一条记录都没有",
+  "items": []
+ },
+ {
+  "provider": "baichuan",
+  "name": "百川智能",
+  "dimension": "api",
+  "state": "MISSING",
+  "declared": 2,
+  "present": 0,
+  "resolved": 0,
+  "reason": "声明的 2 条 current target 一条都没兑现，且该维度没有任何记录",
+  "items": [
+   {
+    "value": "Baichuan-M3",
+    "resolved": false,
+    "reason": "api-plans.json 里没有这家 provider 的计价条目 modelKey「Baichuan-M3」"
+   },
+   {
+    "value": "Baichuan-M3-Plus",
+    "resolved": false,
+    "reason": "api-plans.json 里没有这家 provider 的计价条目 modelKey「Baichuan-M3-Plus」"
+   }
+  ]
+ },
+ {
+  "provider": "baichuan",
+  "name": "百川智能",
+  "dimension": "models",
+  "state": "MISSING",
+  "declared": 0,
+  "present": 0,
+  "resolved": 0,
+  "reason": "可覆盖、未延期、来源健康，但盘上一条记录都没有",
+  "items": []
+ },
+ {
+  "provider": "baidu",
+  "name": "百度智能云",
+  "dimension": "api",
+  "state": "MISSING",
+  "declared": 0,
+  "present": 0,
+  "resolved": 0,
+  "reason": "可覆盖、未延期、来源健康，但盘上一条记录都没有",
+  "items": []
+ },
+ {
+  "provider": "baidu",
+  "name": "百度智能云",
+  "dimension": "models",
+  "state": "MISSING",
+  "declared": 0,
+  "present": 0,
+  "resolved": 0,
+  "reason": "可覆盖、未延期、来源健康，但盘上一条记录都没有",
+  "items": []
+ },
+ {
+  "provider": "deepseek",
+  "name": "DeepSeek",
+  "dimension": "deals",
+  "state": "MISSING",
+  "declared": 0,
+  "present": 0,
+  "resolved": 0,
+  "reason": "可覆盖、未延期、来源健康，但盘上一条记录都没有",
+  "items": []
+ },
+ {
+  "provider": "iflytek",
+  "name": "科大讯飞",
+  "dimension": "api",
+  "state": "MISSING",
+  "declared": 0,
+  "present": 0,
+  "resolved": 0,
+  "reason": "可覆盖、未延期、来源健康，但盘上一条记录都没有",
+  "items": []
+ },
+ {
+  "provider": "iflytek",
+  "name": "科大讯飞",
+  "dimension": "models",
+  "state": "MISSING",
+  "declared": 0,
+  "present": 0,
+  "resolved": 0,
+  "reason": "可覆盖、未延期、来源健康，但盘上一条记录都没有",
+  "items": []
+ },
+ {
+  "provider": "microsoft",
+  "name": "Microsoft",
+  "dimension": "coding",
+  "state": "MISSING",
+  "declared": 0,
+  "present": 0,
+  "resolved": 0,
+  "reason": "可覆盖、未延期、来源健康，但盘上一条记录都没有",
+  "items": []
+ },
+ {
+  "provider": "moonshot",
+  "name": "月之暗面",
+  "dimension": "api",
+  "state": "MISSING",
+  "declared": 0,
+  "present": 0,
+  "resolved": 0,
+  "reason": "可覆盖、未延期、来源健康，但盘上一条记录都没有",
+  "items": []
+ },
+ {
+  "provider": "openai",
+  "name": "OpenAI",
+  "dimension": "coding",
+  "state": "MISSING",
+  "declared": 0,
+  "present": 0,
+  "resolved": 0,
+  "reason": "可覆盖、未延期、来源健康，但盘上一条记录都没有",
+  "items": []
+ },
+ {
+  "provider": "sensetime",
+  "name": "商汤科技",
+  "dimension": "coding",
+  "state": "MISSING",
+  "declared": 0,
+  "present": 0,
+  "resolved": 0,
+  "reason": "可覆盖、未延期、来源健康，但盘上一条记录都没有",
+  "items": []
+ },
+ {
+  "provider": "sensetime",
+  "name": "商汤科技",
+  "dimension": "api",
+  "state": "MISSING",
+  "declared": 1,
+  "present": 0,
+  "resolved": 0,
+  "reason": "声明的 1 条 current target 一条都没兑现，且该维度没有任何记录",
+  "items": [
+   {
+    "value": "SenseNova-V6.5-Pro",
+    "resolved": false,
+    "reason": "api-plans.json 里没有这家 provider 的计价条目 modelKey「SenseNova-V6.5-Pro」"
+   }
+  ]
+ },
+ {
+  "provider": "stepfun",
+  "name": "阶跃星辰",
+  "dimension": "api",
+  "state": "MISSING",
+  "declared": 2,
+  "present": 0,
+  "resolved": 0,
+  "reason": "声明的 2 条 current target 一条都没兑现，且该维度没有任何记录",
+  "items": [
+   {
+    "value": "step-3.7-flash",
+    "resolved": false,
+    "reason": "api-plans.json 里没有这家 provider 的计价条目 modelKey「step-3.7-flash」"
+   },
+   {
+    "value": "step-5-preview",
+    "resolved": false,
+    "reason": "api-plans.json 里没有这家 provider 的计价条目 modelKey「step-5-preview」"
+   }
+  ]
+ }
+]
+=== partialTargets ===
+[
+ {
+  "provider": "replit",
+  "name": "Replit",
+  "dimension": "coding",
+  "state": "PARTIAL",
+  "declared": 1,
+  "present": 2,
+  "resolved": 0,
+  "reason": "声明的 1 条 current target 一条都没兑现，但该维度另有 2 条记录",
+  "items": [
+   {
+    "value": "Replit Core",
+    "resolved": false,
+    "reason": "plans.json 里没有这家 provider 的套餐「Replit Core」"
+   }
+  ]
+ }
+]

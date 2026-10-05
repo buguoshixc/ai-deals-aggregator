@@ -1,0 +1,39 @@
+﻿# validate --strict：终态红 vs HEAD 绿 —— 归因（只读） 2026-10-05T11:58:29.7017801+08:00  HEAD=ff86368e6d12d1ef57b2f51aa2c957c01d2a9ed8
+
+## 结论
+终态红 **不来自本任务**：5 条错误全部指向并发成员未提交的 api-plans.json 新记录 09ed95f9cd81（provider sensetime，域名 www.sensecore.cn 不在其登记的官方域 sensetime.com）。
+该记录在 HEAD 版本里**不存在**；用 HEAD 的被跟踪文件在 TEMP 快照上跑同一条命令 → exit=0「✅ 校验通过（strict 模式）」。
+
+## 1) 工作区终态读数（红，exit=1）
+⚠️  警告 2 条：
+❌ 校验失败，共 10 项：
+  - 官方域守卫：plans.json 5ef2cd29fff0（provider sensetime）: officialUrl 的域 www.sensenova.cn 不在该 provider 登记的官方域里（sensetime.com）—— 声称 official 的出处必须落在官方来源登记上
+  - 官方域守卫：plans.json 5ef2cd29fff0（provider sensetime）: sourceUrl 的域 www.sensenova.cn 不在该 provider 登记的官方域里（sensetime.com）—— 声称 official 的出处必须落在官方来源登记上
+  - 官方域守卫：plans.json 5ef2cd29fff0（provider sensetime）: evidence[].sourceUrl 的域 www.sensenova.cn 不在该 provider 登记的官方域里（sensetime.com）—— 声称 official 的出处必须落在官方来源登记上
+  - 官方域守卫：plans.json 5ef2cd29fff0（provider sensetime）: evidence[].sourceUrl 的域 www.sensenova.cn 不在该 provider 登记的官方域里（sensetime.com）—— 声称 official 的出处必须落在官方来源登记上
+  - 官方域守卫：plans.json 5ef2cd29fff0（provider sensetime）: evidence[].sourceUrl 的域 www.sensenova.cn 不在该 provider 登记的官方域里（sensetime.com）—— 声称 official 的出处必须落在官方来源登记上
+  - 官方域守卫：api-plans.json 09ed95f9cd81（provider sensetime）: officialUrl 的域 www.sensecore.cn 不在该 provider 登记的官方域里（sensetime.com）—— 声称 official 的出处必须落在官方来源登记上
+  - 官方域守卫：api-plans.json 09ed95f9cd81（provider sensetime）: sourceUrl 的域 www.sensecore.cn 不在该 provider 登记的官方域里（sensetime.com）—— 声称 official 的出处必须落在官方来源登记上
+  - 官方域守卫：api-plans.json 09ed95f9cd81（provider sensetime）: evidence[].sourceUrl 的域 www.sensecore.cn 不在该 provider 登记的官方域里（sensetime.com）—— 声称 official 的出处必须落在官方来源登记上
+  - 官方域守卫：api-plans.json 09ed95f9cd81（provider sensetime）: evidence[].sourceUrl 的域 www.sensecore.cn 不在该 provider 登记的官方域里（sensetime.com）—— 声称 official 的出处必须落在官方来源登记上
+  - 官方域守卫：api-plans.json 09ed95f9cd81（provider sensetime）: evidence[].sourceUrl 的域 www.sensecore.cn 不在该 provider 登记的官方域里（sensetime.com）—— 声称 official 的出处必须落在官方来源登记上
+
+## 2) HEAD 版本是否含该记录
+HEAD 版 api-plans.json 含 09ed95f9cd81 : False
+工作区版 api-plans.json 含 09ed95f9cd81 : True
+
+## 3) 并发未提交改动规模
+ api-plans.json                     | 617 ++++++++++++++++++++++++++++++++++++-
+ scripts/data/api-plan-history.json | 410 ++++++++++++++++++++++++
+ 2 files changed, 1025 insertions(+), 2 deletions(-)
+
+## 4) HEAD 快照（TEMP，git archive HEAD + node_modules junction）上的同一条命令
+exit=0；尾部读数：
+
+⚠️  警告 2 条：
+  - 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名）
+  - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）
+
+✅ 校验通过（strict 模式）
+
+## 5) 本任务 in-scope/受保护文件：7 个关键文件逐字节未变（详见 hashes-before.txt / hashes-after.txt）

@@ -1,0 +1,71 @@
+{
+  "count": 11,
+  "details": [
+    {
+      "file": "scripts/tools/coverage-targets-selftest.js",
+      "line": 119,
+      "form": "every",
+      "expr": "Object.keys(providerTable).filter(key => !ct.targetsList(targetsLoaded.doc).some(target => target.provider === key)).join(', ')); .every(item => Object.prototype.hasOwnProperty.call(registryTable, item.registry"
+    },
+    {
+      "file": "scripts/tools/coverage-targets-selftest.js",
+      "line": 139,
+      "form": "every",
+      "expr": "realDerived.rows.filter(row => row.state === ct.STATES.MISSING) .every(row => row.present === 0 && !row.ruling));"
+    },
+    {
+      "file": "scripts/tools/coverage-targets-selftest.js",
+      "line": 277,
+      "form": "every",
+      "expr": "cell('alpha', 'coding').items.filter(item => !item.resolved) .every(item => typeof item.reason === 'string' && item.reason.length > 0));"
+    },
+    {
+      "file": "scripts/tools/feeds-selftest.js",
+      "line": 150,
+      "form": "every",
+      "expr": "check('分类 Feed 的标题都带具体分类', specs.filter(spec => spec.kind === 'collection' && spec.id !== 'all') .every(spec => /AI Deals Radar · .+/.test(spec.title)));"
+    },
+    {
+      "file": "scripts/tools/feeds-selftest.js",
+      "line": 385,
+      "form": "every",
+      "expr": "check('厂商 Feed 的路径用 slug 而不是显示名', built.feeds.filter(feed => feed.spec.vendor) .every(feed => /^feed\\/vendor\\/[a-z0-9-]+\\.xml$/.test(feed.spec.path)));"
+    },
+    {
+      "file": "scripts/tools/feeds-selftest.js",
+      "line": 532,
+      "form": "some",
+      "expr": "planFeed.items.length === planChanges.itemsOf(planRadar).filter(item => item.type !== 'updated').length, .some(event => planHistory.eventIdOf(event) === item.id)),"
+    },
+    {
+      "file": "scripts/tools/models-selftest.js",
+      "line": 803,
+      "form": "some",
+      "expr": "const withoutTrae = reg.linksList(links).filter(link => !(link.planId === 'f04787381e3b' && link.modelName === 'DeepSeek-Flash')); .some(item => item.planId === 'f04787381e3b' && item.modelName === 'DeepSeek-Fla"
+    },
+    {
+      "file": "scripts/tools/plans-selftest.js",
+      "line": 1028,
+      "form": "every",
+      "expr": "store.plans.filter(plan => plan.quota.type !== 'tokens') .every(plan => plan.derivedMetrics.nominalUnitPrice === null));"
+    },
+    {
+      "file": "scripts/tools/plans-selftest.js",
+      "line": 1031,
+      "form": "every",
+      "expr": "store.plans.filter(plan => plan.derivedMetrics.nominalUnitPrice !== null) .every(plan => plan.quota.type === 'tokens'));"
+    },
+    {
+      "file": "scripts/tools/vendor-page-selftest.js",
+      "line": 228,
+      "form": "every",
+      "expr": "vendorPages.filter(spec => !vendorPage.vendorViewOf(spec, ctxFor(spec)).codingPlans.length) .every(spec => /尚未收录这家厂商的 Coding 套餐/.test(vendorPage.renderVendorKnowledgeSectio"
+    },
+    {
+      "file": "scripts/tools/vendor-page-selftest.js",
+      "line": 362,
+      "form": "some",
+      "expr": "return candidateSetProblems(vendorPages.filter(page => page !== target)) .some(problem => problem.startsWith(target.key + ':'));"
+    }
+  ]
+}

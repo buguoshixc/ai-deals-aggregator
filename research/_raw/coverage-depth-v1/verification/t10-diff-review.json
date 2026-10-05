@@ -1,0 +1,323 @@
+{
+  "repo": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1",
+  "ranAt": "2026-10-05T05:12:06.869Z",
+  "numstat": [
+    {
+      "file": "api-plans.json",
+      "added": 615,
+      "removed": 2
+    },
+    {
+      "file": "model-registry-links.json",
+      "added": 182,
+      "removed": 2
+    },
+    {
+      "file": "models.json",
+      "added": 465,
+      "removed": 129
+    },
+    {
+      "file": "plans.json",
+      "added": 359,
+      "removed": 2
+    },
+    {
+      "file": "scripts/data/api-plan-history.json",
+      "added": 410,
+      "removed": 0
+    },
+    {
+      "file": "scripts/data/coverage-targets.json",
+      "added": 110,
+      "removed": 15
+    },
+    {
+      "file": "scripts/data/curated_api_plans.json",
+      "added": 515,
+      "removed": 0
+    },
+    {
+      "file": "scripts/data/curated_plans.json",
+      "added": 322,
+      "removed": 0
+    },
+    {
+      "file": "scripts/data/model-registry-gaps.json",
+      "added": 32,
+      "removed": 0
+    },
+    {
+      "file": "scripts/data/model-registry-links.json",
+      "added": 170,
+      "removed": 0
+    },
+    {
+      "file": "scripts/data/models.json",
+      "added": 363,
+      "removed": 69
+    },
+    {
+      "file": "scripts/data/plan-history.json",
+      "added": 141,
+      "removed": 0
+    },
+    {
+      "file": "scripts/data/providers.json",
+      "added": 3,
+      "removed": 1
+    },
+    {
+      "file": "scripts/tools/coverage-report.js",
+      "added": 624,
+      "removed": 2
+    },
+    {
+      "file": "scripts/tools/coverage-targets-selftest.js",
+      "added": 957,
+      "removed": 6
+    },
+    {
+      "file": "scripts/tools/models-page-selftest.js",
+      "added": 161,
+      "removed": 13
+    },
+    {
+      "file": "scripts/tools/models-selftest.js",
+      "added": 213,
+      "removed": 14
+    }
+  ],
+  "renames": [
+    {
+      "file": "scripts/tools/models-selftest.js",
+      "removed": [
+        "汇总：44 个模型全部 active、0 retired（退役只由人工依据驱动）",
+        "真实数据：API 侧声明 ${apiDecl.length} 条，reason 全部是 off-registry-model、sourceUrl 全部取自该记录自己的官方页",
+        "【API 处置】coverageOf：declaredApiEntries 逐条留档（12 条 · 带 provider）+ unmappedModelKeys 归零 + 三者和 == 总条目",
+        "【API 处置·对照】真实数据里 12 条声明在折叠索引下 0 命中（7 条能对上的已经去写了映射）"
+      ],
+      "added": [
+        "汇总：每个身份都有结局（total == 现读 models.json 身份数 == 发布条目数；active + retired + unknown == total），且 retired 仍为 0（退役只由人工依据驱动）",
+        "【保护强度对照·t12】汇总判据：旧会红/新仍红（翻成 retired、被漏掉）与 旧假红/新正确（合法增长）各就各位，且新多抓一类（三态不闭合）",
+        "真实数据：API 侧声明 ${apiDecl.length} 条 == 现读 gaps 文件的 ${freshApiDecl.length} 条，且每条都逐字对得回真实 api-plans 记录（reason / sourceUrl / modelKey / variant）",
+        "【唯一性牙·t12】同一个 (apiPlanId, modelKey, variant) 不许在处置登记表里重复出现（本轮曾实际出现 23643dfd94f8/ernie-5.1 重复 2 次）",
+        "【可证伪性·t12】API 侧声明判据在四种扰动输入下**必红**（reason / sourceUrl / variant / apiPlanId）",
+        "【可证伪性·t12】唯一性牙在同一 (apiPlanId, modelKey, variant) 出现两次时**必红**（重复声明不会让任何计数变小）",
+        "【API 处置·对照】真实数据里 ${apiDecl.length} 条声明在折叠索引下 0 命中（能对上的已经去写了映射）"
+      ]
+    },
+    {
+      "file": "scripts/tools/models-page-selftest.js",
+      "removed": [
+        "§17 独立 join：44 个模型 missing / extra / duplicate source identity / multi-owner 四项计数全为 0",
+        "§17 独立 join：受影响口径独立重算为 ${audit.multiVariantGroups} 组 / ${audit.affectedSlugs.length} 个 slug"
+      ],
+      "added": [
+        "【换位牙·t13】把索引页两行对调 ⇒ 同一支判据必红（次序维度真的有牙，不是集合比较冒充的）",
+        "【可证伪性·t13·真实数据变异】把关系层现算的某一格换成另一个 slug（个数不变）⇒ 同一支集合比对必红",
+        "§17 独立 join：模型数 == 现读发布数据集的 ${publishedModelsOnDisk} 个，且 missing / extra / duplicate source identity / multi-owner 四项计数各自为 0",
+        "【可证伪性·t13】四项计数是**逐项**断言的：任意一项非 0 都会被单独点名（不是只报一个合计）",
+        "§17 独立 join：受影响口径与关系层现读现算逐条相等（${joinMultiVariant.groups} 组 / ${joinMultiVariant.slugs.size} 个 slug）"
+      ]
+    }
+  ],
+  "checkCounts": [
+    {
+      "file": "scripts/tools/models-selftest.js",
+      "checkCallsBefore": 140,
+      "checkCallsAfter": 145,
+      "checkEqualBefore": 0,
+      "checkEqualAfter": 0,
+      "removedCheckNames": [
+        "汇总：44 个模型全部 active、0 retired（退役只由人工依据驱动）",
+        "真实数据：API 侧声明 ${apiDecl.length} 条，reason 全部是 off-registry-model、sourceUrl 全部取自该记录自己的官方页",
+        "【API 处置】coverageOf：declaredApiEntries 逐条留档（12 条 · 带 provider）+ unmappedModelKeys 归零 + 三者和 == 总条目",
+        "【API 处置·对照】真实数据里 12 条声明在折叠索引下 0 命中（7 条能对上的已经去写了映射）"
+      ],
+      "addedCheckNames": [
+        "汇总：每个身份都有结局（total == 现读 models.json 身份数 == 发布条目数；active + retired + unknown == total），且 retired 仍为 0（退役只由人工依据驱动）",
+        "【保护强度对照·t12】汇总判据：旧会红/新仍红（翻成 retired、被漏掉）与 旧假红/新正确（合法增长）各就各位，且新多抓一类（三态不闭合）",
+        "真实数据：API 侧声明 ${apiDecl.length} 条 == 现读 gaps 文件的 ${freshApiDecl.length} 条，且每条都逐字对得回真实 api-plans 记录（reason / sourceUrl / modelKey / variant）",
+        "【唯一性牙·t12】同一个 (apiPlanId, modelKey, variant) 不许在处置登记表里重复出现（本轮曾实际出现 23643dfd94f8/ernie-5.1 重复 2 次）",
+        "【可证伪性·t12】API 侧声明判据在四种扰动输入下**必红**（reason / sourceUrl / variant / apiPlanId）",
+        "【可证伪性·t12】唯一性牙在同一 (apiPlanId, modelKey, variant) 出现两次时**必红**（重复声明不会让任何计数变小）",
+        "【API 处置·对照】真实数据里 ${apiDecl.length} 条声明在折叠索引下 0 命中（能对上的已经去写了映射）"
+      ]
+    },
+    {
+      "file": "scripts/tools/coverage-targets-selftest.js",
+      "checkCallsBefore": 84,
+      "checkCallsAfter": 147,
+      "checkEqualBefore": 0,
+      "checkEqualAfter": 0,
+      "removedCheckNames": [],
+      "addedCheckNames": [
+        "t12：声明行的两种视图必须相等、且展开数 ≥ 行数（A/B/行数三项在 JSON 里逐项可核）",
+        "t12：每条 API 侧声明行都能按 (apiPlanId, modelKey, variant) 逐字对回 api-plans 记录（通配行必须展开到 ≥1 条真实变体）",
+        "t12：【不许同源自证】声明行数必须与**现读文件**数出来的 API 侧声明行数相等，且展开增量必须等于逐格复算出的通配多余覆盖",
+        "t12：【定向夹具·通配】variant:null 通配声明 1 行展开成 2 条计价条目 ⇒ 展开数**严格大于**声明行数（不是等于）",
+        "t12：【定向夹具·通配】展开出的每条 identity 都能**逐字**对回同一份 api-plans 的 (apiPlanId, modelKey, variant)",
+        "t12：【定向夹具·通配】在这个**合法**通配态下新判据 0 问题（0 映射 + 2 已处置 + 0 未判 == 2 计价条目；行数对得上文件、增量对得上逐格复算）",
+        "t12：【方向牙·通配】通配声明${ghostCase.label} ⇒ 一条 identity 都没覆盖（unresolved）⇒ 展开数 < 行数 ⇒ 同一支判据**必红**",
+        "t12：【方向牙·通配】同一份声明（${ghostCase.label}）也被**逐行回查**抓住：${ghostCase.rowNeedle}",
+        "【反证牙·t12】${name} ⇒ 新判据必红",
+        "【反证牙·t12】旧判据**漏抓**、新判据抓住的一例：声明行的两种视图脱钩（B == count 仍成立 ⇒ 旧绿）",
+        "【反证牙·t12】旧判据**假红**（T6-F1 本体）、新判据正确的一例：合法通配态 B=2 > 行数=1 且方程闭合 ⇒ 旧红 / 新绿",
+        "【反证牙·t12】B 与行数的**脱钩**（B < 行数、方程仍闭合）⇒ 新旧两支判据**都**必红（没有放松）",
+        "t12：报告层现场反证需要至少一条真实 API 侧声明（拿它克隆出被改坏的两份）",
+        "【反证牙·t12·报告层】处置登记表顺序被打乱（声明数组乱序）⇒ 报告自检非 0，并点名「记录顺序不是规范序」",
+        "source-rulings 判据层是纯函数：不读墙上时钟、不联网、不写盘",
+        "source-rulings 判据层零依赖（只 require fs / path，没有别的模块）",
+        "source-rulings 冻结 schema 的词表与题面一致（四裁决 / 三成本档 / 三条必填关系）",
+        "稳定序：sortRulings 与输入顺序无关，且按 source 的 code-unit 序（大写在前的 code-unit 事实）",
+        "source-rulings 夹具本身合法（0 处问题，实际 ${sr.validateRulings(FIXTURE_SOURCE_RULINGS).length} 处）",
+        "三方对账夹具本身合法（0 处问题）",
+        "【牙】source-rulings schema：${name}",
+        "【牙】三方对账：${name}",
+        "【反向牙】retire 的来源**完全不在任何一层**不算错（退出去的来源本来就该从注册表与心跳里消失）",
+        "【夹具】裁决 → 身份命中：id 与 name 两种写法都能命中同一个来源",
+        "v3：裁决表不在盘上时**优雅降级**（退出码 0、文本如实说「尚未落盘」、不崩）",
+        "v3：未落盘层**计入报告自检口径**（同一行相邻打印，不静默当通过）",
+        "v3：现场生成的合法夹具通过 schema 校验（0 处问题，实际 ${fixtureProblems.length} 处）",
+        "v3：【确定性】喂同一份夹具的两次 --json 输出逐字节一致",
+        "v3：裁决表落盘（夹具）后报告自检 0 处问题，且不再有待落盘层",
+        "v3：v3 四节的 JSON 结构可核对：报告成功运行并在 stdout 给出 JSON",
+        "v3①：Release Evidence Coverage 四要素齐全（registry / known / unknown / known%），且已知 + 未知 == registry 模型数",
+        "v3①：三维拆分（developer / modelRole / catalogStatus）各自闭合 —— 各档之和 == registry 模型数",
+        "v3①：已知/未知的判据是 lib 的 releaseDateOf().provided —— 与现有 unknownReleaseDates 读数**同源**（两处必须相等）",
+        "v3①：catalogStatus 拆分带完整词表（一档不落地也印出来 —— 与 R4 五态普查同一纪律）",
+        "v3①：百分比写明「不是 KPI」（不许把观测量当目标线）",
+        "v3②：五条规则**原文**随队列一起输出（① ~ ⑤ 一条不少）",
+        "v3②：队列覆盖全部 registry 模型，且 unknownCount 与第①节的 unknown **同源**",
+        "v3②：打印 N 是固定常量并在 JSON 里写明（前 N 条 = min(limit, total)）",
+        "v3②：队列次序**逐条复算**五条规则（① 未知优先 → ② 组规模降序 → ③ tier → ④ 下游引用 → ⑤ slug code-unit）",
+        "v3②：tier 判据来自 coverage-targets（够不到 target 的按 long-tail），且与意图层逐行一致",
+        "v3②：组键由 lib 的 comparableGroupOf() 给出（报告没有另写一份组键算法）",
+        "v3③：队列条数 == MISSING + PARTIAL，且 counts 之和 == 队列条数（每个格子恰好落进一档）",
+        "v3③：每一条都带「目标 N / 已兑现 M / 缺 K / 出口状态」，且 K == N − M、M ≤ N",
+        "v3③：分层规则**原文**随队列一起输出（A ~ D 四档 + 判据定义一条不少）",
+        "v3③：每一条的 priority 都能**逐条复算**出来（判据全部在 payload 里，不靠信任）",
+        "v3③：MISSING 行的盘上记录必须是 0（MISSING 的定义：可覆盖、未延期、来源健康，但盘上一条都没有）",
+        "v3③【可证伪性·t7-F1】同一支判据在三种扰动输入下**必红**（否则 MISSING=0 时它就是空集恒真的假牙）",
+        "v3④：Source Reliability 必须打印 generatedAt —— 且它与心跳文件里写的**逐字相等**（不是跑报告的墙钟时间）",
+        "v3④：沿用既有 sourceHealth.registryRowCount / registryRows / registryOnlySources 口径（两处逐字相等，不另算一份）",
+        "v3④：裁决 × live 读数 join 成型（每条裁决都带身份命中与心跳读数，且 health 的连续失败次数来自文件）",
+        "v3④：三方对账（裁决 ↔ 采集器注册表 ↔ source-health）0 处问题，且规则原文写进 JSON",
+        "v3④：面板上的差异集是**算出来的**（未裁决的注册表行 == 注册表 ∖ 已裁决，不多不少）",
+        "v3：文本与 JSON **同源**（分层计数行、已知/未知行、队列长度在两侧逐字一致）",
+        "v3：四节的标题在文本里都在（文本侧不是只写了 JSON）",
+        "【反证牙·v3④】keep-degraded 缺 whyKept ⇒ 报告自检非 0，并点名「必须写 whyKept」",
+        "【反证牙·v3④】已裁决 retire 的来源仍在采集器注册表 ⇒ 报告自检非 0，并点名「仍然挂在采集器注册表里」",
+        "【反证牙·v3④】连续失败 ≥ 3 次的来源一条裁决都没有 ⇒ 报告自检非 0，并点名「没有在 source-rulings.json 里留下裁决」",
+        "【反证牙·v3④】裁决数组不是按 source 的 code-unit 序 ⇒ 报告自检非 0，并点名「不是规范序」",
+        "【反证牙·v3①】有模型的 releasedAt 写了却解析不出可判日 ⇒ 报告自检非 0，并点名「解析不出可判日」",
+        "【反证牙·v3②】releasedAt 写成空串（规则①的判据与既有 unknown release dates 分家）⇒ 报告自检非 0，并点名「两处读数不一致」",
+        "【反证牙·v3③】gap queue 的输入层非法（current target 指向不存在的 registrySlug）⇒ 报告自检非 0，并点名「不在 scripts/data/models.json」"
+      ]
+    },
+    {
+      "file": "scripts/tools/models-page-selftest.js",
+      "checkCallsBefore": 125,
+      "checkCallsAfter": 130,
+      "checkEqualBefore": 0,
+      "checkEqualAfter": 0,
+      "removedCheckNames": [
+        "§17 独立 join：44 个模型 missing / extra / duplicate source identity / multi-owner 四项计数全为 0",
+        "§17 独立 join：受影响口径独立重算为 ${audit.multiVariantGroups} 组 / ${audit.affectedSlugs.length} 个 slug"
+      ],
+      "addedCheckNames": [
+        "【换位牙·t13】把索引页两行对调 ⇒ 同一支判据必红（次序维度真的有牙，不是集合比较冒充的）",
+        "【可证伪性·t13·真实数据变异】把关系层现算的某一格换成另一个 slug（个数不变）⇒ 同一支集合比对必红",
+        "§17 独立 join：模型数 == 现读发布数据集的 ${publishedModelsOnDisk} 个，且 missing / extra / duplicate source identity / multi-owner 四项计数各自为 0",
+        "【可证伪性·t13】四项计数是**逐项**断言的：任意一项非 0 都会被单独点名（不是只报一个合计）",
+        "§17 独立 join：受影响口径与关系层现读现算逐条相等（${joinMultiVariant.groups} 组 / ${joinMultiVariant.slugs.size} 个 slug）"
+      ]
+    }
+  ],
+  "notes": [],
+  "untrackedNewFiles": [
+    "research/_raw/coverage-depth-v1/verification/debug-audit-misses.cjs",
+    "research/_raw/coverage-depth-v1/verification/debug-deepseek-quote-context.cjs",
+    "research/_raw/coverage-depth-v1/verification/debug-why-raw-missed.cjs",
+    "research/_raw/coverage-depth-v1/verification/extract-report-json.cjs",
+    "research/_raw/coverage-depth-v1/verification/hashes-artifacts.txt",
+    "research/_raw/coverage-depth-v1/verification/independent-recompute.cjs",
+    "research/_raw/coverage-depth-v1/verification/independent-recompute.json",
+    "research/_raw/coverage-depth-v1/verification/logs/baseline-models-selftest.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/debug-audit-misses.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/debug-deepseek-quote-context.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/independent-recompute.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/input-hashes-at-report-run2.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/input-hashes-at-report.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/mutations-final.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/mutations-full.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/mutations-full2.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/mutations-m15b.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/mutations-smoke.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/mutations-smoke2.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/mutations-smoke3.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/release-audit.txt",
+    "research/_raw/coverage-depth-v1/verification/logs/source-reliability-counterproof.txt",
+    "research/_raw/coverage-depth-v1/verification/mutations.cjs",
+    "research/_raw/coverage-depth-v1/verification/mutations.json",
+    "research/_raw/coverage-depth-v1/verification/release-audit.cjs",
+    "research/_raw/coverage-depth-v1/verification/release-audit.json",
+    "research/_raw/coverage-depth-v1/verification/report-human.txt",
+    "research/_raw/coverage-depth-v1/verification/report-json-run1.txt",
+    "research/_raw/coverage-depth-v1/verification/report-json-run2.txt",
+    "research/_raw/coverage-depth-v1/verification/report-json.parsed.json",
+    "research/_raw/coverage-depth-v1/verification/report-json.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/check-queue-order.cjs",
+    "research/_raw/coverage-depth-v1/verification/review-t1/clock-1005.err.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/clock-1005.out.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/clock-1006.err.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/clock-1006.out.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/clock-1231.err.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/clock-1231.out.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/clock-2027.err.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/clock-2027.out.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/det-A1.err.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/det-A1.out.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/det-A2.err.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/det-A2.out.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/det-B1.err.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/det-B1.out.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/det-B2.err.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/det-B2.out.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/extract-json.cjs",
+    "research/_raw/coverage-depth-v1/verification/review-t1/fake-clock-hook.cjs",
+    "research/_raw/coverage-depth-v1/verification/review-t1/final-verify-json.err.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/final-verify-json.out.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/final-verify-selftest.err.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/final-verify-selftest.out.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/final-verify-text.err.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/final-verify-text.out.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/fz2-report-json.err.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/fz2-report-json.out.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/fz2-selftest.err.txt",
+    "research/_raw/coverage-depth-v1/verification/review-t1/fz2-selftest.out.txt"
+  ],
+  "renameEvidence": [
+    {
+      "oldName": "汇总：44 个模型全部 active、0 retired（退役只由人工依据驱动）",
+      "oldExpr": " check('汇总：44 个模型全部 active、0 retired（退役只由人工依据驱动）', summary.total === 44 && summary.byStatus.active === 44 && summary.byStatus.retired === 0, JSON.stringify(summary)); } /* ================================================================== */ section('⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结局）');",
+      "newName": "汇总：每个身份都有结局（total == 现读 models.json 身份数 == 发布条目数；active + retired + unknown == total），且 retired 仍为 0（退役只由人工依据驱动）"
+    },
+    {
+      "oldName": "真实数据：API 侧声明 ${apiDecl.length} 条，reason 全部是 off-registry-model、sourceUrl 全部取自该记录自己的官方页",
+      "oldExpr": " check(`真实数据：API 侧声明 ${apiDecl.length} 条，reason 全部是 off-registry-model、sourceUrl 全部取自该记录自己的官方页`, apiDecl.length === 12 && apiDecl.every(declaration => declaration.reason === 'off-registry-model' && (() => { const plan = apiPlans.find(item => item.id === declaration.apiPlanId); return plan && (declaration.sourceUrl === plan.officialUrl || declaration.sourceUrl === plan.sourceUrl); })())); check('真实数据：没有任何声明\"两侧都写\"（每条恰好属于一侧）', reg.declarationsList(gaps).every",
+      "newName": "汇总：每个身份都有结局（total == 现读 models.json 身份数 == 发布条目数；active + retired + unknown == total），且 retired 仍为 0（退役只由人工依据驱动）"
+    },
+    {
+      "oldName": "【API 处置】coverageOf：declaredApiEntries 逐条留档（12 条 · 带 provider）+ unmappedModelKeys 归零 + 三者和 == 总条目",
+      "oldExpr": " check('【API 处置】coverageOf：declaredApiEntries 逐条留档（12 条 · 带 provider）+ unmappedModelKeys 归零 + 三者和 == 总条目', apiCoverage.declaredApiEntries.length === 12 && apiCoverage.unmappedModelKeys.length === 0 && apiCoverage.mappedApiEntries + apiCoverage.declaredApiIdentities + apiCoverage.unmappedModelKeys.length === apiCoverage.apiPricingItems && apiCoverage.declaredApiEntries.every(entry => entry.provider && entry.apiPlanId && entry.modelKey && entry.reason === 'o",
+      "newName": "汇总：每个身份都有结局（total == 现读 models.json 身份数 == 发布条目数；active + retired + unknown == total），且 retired 仍为 0（退役只由人工依据驱动）"
+    },
+    {
+      "oldName": "【API 处置·对照】真实数据里 12 条声明在折叠索引下 0 命中（7 条能对上的已经去写了映射）",
+      "oldExpr": " check('【API 处置·对照】真实数据里 12 条声明在折叠索引下 0 命中（7 条能对上的已经去写了映射）', apiDecl.every(declaration => { const plan = apiPlans.find(item => item.id === declaration.apiPlanId); const entry = plan && (plan.models || []).find(model => model.modelKey === declaration.modelKey); return reg.foldedHitsOf(declaration.modelKey, reg.foldedIndexOf(table)).length === 0 && (!entry || reg.foldedHitsOf(entry.name, reg.foldedIndexOf(table)).length === 0); })); }",
+      "newName": "汇总：每个身份都有结局（total == 现读 models.json 身份数 == 发布条目数；active + retired + unknown == total），且 retired 仍为 0（退役只由人工依据驱动）"
+    }
+  ]
+}

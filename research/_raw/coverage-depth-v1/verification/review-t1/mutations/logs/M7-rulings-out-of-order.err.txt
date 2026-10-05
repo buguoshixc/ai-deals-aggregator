@@ -1,0 +1,4 @@
+
+❌ 覆盖报告自检失败：
+  - rulings 数组不是规范序（应按 source 的 code-unit 序：aitools → layer3labs，实得 layer3labs → aitools） —— 文件里的顺序就是读者看到的顺序，两次读取必须得到同一串字节
+  - 来源「futurepedia」连续失败已达 3 次以上，却没有在 scripts/data/source-rulings.json 里留下裁决 —— 长期失败必须有人表态（repair / headless-migrate / keep-degraded / retire 四选一），不许只以读数的形式常驻。

@@ -4,6 +4,74 @@
   "schemaVersion": 2,
   "links": [
     {
+      "registrySlug": "360zhinao-pro",
+      "apiPlanId": "0940febeeea9",
+      "modelKey": "360zhinao-pro",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.360zhinao-pro",
+          "quote": "360zhinao/360zhinao-pro 360智脑 输入价格: ¥2 / 1M tokens 输出价格: ¥5 / 1M tokens 缓存写入价格: ¥2.5 / 1M tokens 缓存读取价格: ¥0.2 / 1M tokens 上下文: 32,000 最大输出: 8,192",
+          "sourceUrl": "https://ai.360.com/open/zh/models",
+          "capturedAt": "2026-10-05",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "360zhinao-turbo-llm-geo",
+      "apiPlanId": "0940febeeea9",
+      "modelKey": "360zhinao-turbo-llm-geo",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.360zhinao-turbo-llm-geo",
+          "quote": "360zhinao/360zhinao-turbo-llm-geo 360智脑 业务内部专用模型 输入价格: ¥1 / 1M tokens 输出价格: ¥2 / 1M tokens 缓存写入价格: ¥1.25 / 1M tokens 缓存读取价格: ¥0.1 / 1M tokens 上下文: 116,000 最大输出: 16,000",
+          "sourceUrl": "https://ai.360.com/open/zh/models",
+          "capturedAt": "2026-10-05",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "baichuan-m3",
+      "apiPlanId": "218c142dcb17",
+      "modelKey": "baichuan-m3",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.baichuan-m3",
+          "quote": "模型调用 Baichuan-M3 | 32k | 00:00 ~ 24:00 | 输入：0.01元/千tokens 输出：0.03元/千tokens",
+          "sourceUrl": "https://platform.baichuan-ai.com/prices",
+          "capturedAt": "2026-10-05",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "baichuan-m3-plus",
+      "apiPlanId": "218c142dcb17",
+      "modelKey": "baichuan-m3-plus",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.baichuan-m3-plus",
+          "quote": "模型调用 Baichuan-M3-Plus | 32k | 00:00 ~ 24:00 | 输入：0.005元/千tokens 输出：0.009元/千tokens",
+          "sourceUrl": "https://platform.baichuan-ai.com/prices",
+          "capturedAt": "2026-10-05",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
       "registrySlug": "claude-fable-5.1",
       "apiPlanId": "4f8bae91f9f8",
       "modelKey": "claude-fable-5.1",
@@ -297,6 +365,40 @@
           "quote": "Doubao-Seed-Evolving 6元/百万输入tokens 30元/百万输出tokens 1.2元/百万命中tokens 0.017元/百万tokens缓存/小时",
           "sourceUrl": "https://www.volcengine.com/product/ark",
           "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "ernie-4.5-turbo-128k",
+      "apiPlanId": "23643dfd94f8",
+      "modelKey": "ernie-4.5-turbo-128k",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.ernie-4.5-turbo-128k",
+          "quote": "ERNIE 4.5 Turbo ERNIE-4.5-Turbo-128K 推理服务 输入 0.0008 0.00032 元/千tokens 命中缓存 0.0002 -- 元/千tokens 输出 0.0032 0.00128 元/千tokens",
+          "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
+          "capturedAt": "2026-10-05",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "ernie-5.1",
+      "apiPlanId": "23643dfd94f8",
+      "modelKey": "ernie-5.1",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.ernie-5.1",
+          "quote": "ERNIE 5.1 ERNIE-5.1 推理服务 输入（输入<=32k） 0.004 - 元/千tokens 输出（输入<=32k） 0.018 - 元/千tokens 输入（32k<输入<=128k） 0.006 - 元/千tokens 输出（32k<输入<=128k） 0.022 - 元/千tokens",
+          "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
+          "capturedAt": "2026-10-05",
           "lang": "zh"
         }
       ],
@@ -806,6 +908,23 @@
       "note": null
     },
     {
+      "registrySlug": "kimi-k2.7-code",
+      "apiPlanId": "c4b6948c4fa9",
+      "modelKey": "kimi-k2.7-code",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.kimi-k2.7-code",
+          "quote": "模型 计费单位 输入价格（缓存命中） 输入价格（缓存未命中） 输出价格 上下文窗口 kimi-k2.7-code 1M tokens ¥1.30 ¥6.50 ¥27.00 262,144 tokens",
+          "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
+          "capturedAt": "2026-10-05",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
       "registrySlug": "kimi-k3",
       "apiPlanId": "8a26562011f2",
       "modelKey": "moonshotai.kimi-k3",
@@ -838,6 +957,23 @@
         }
       ],
       "note": "该记录官方引文逐字出现「Kimi K3」⇒ 用引文类 basis；引文整条照抄自记录自己的 evidence，不新造引文。"
+    },
+    {
+      "registrySlug": "kimi-k3",
+      "apiPlanId": "c4b6948c4fa9",
+      "modelKey": "kimi-k3",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.kimi-k3",
+          "quote": "模型 计费单位 缓存写入（TTL 5min） 缓存写入（TTL 1h） 输入价格（缓存命中） 输入价格（缓存未命中） 输出价格 上下文窗口 kimi-k3 1M tokens ¥20.00 ¥40.00 ¥2.00 ¥20.00 ¥100.00 1,048,576 tokens",
+          "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
+          "capturedAt": "2026-10-05",
+          "lang": "zh"
+        }
+      ],
+      "note": null
     },
     {
       "registrySlug": "kimi-k3",
@@ -1057,6 +1193,40 @@
           "quote": "qwen3.8-max Batch调用半价 上下文缓存享有折扣 非思考和思考模式 0<Token≤1M 12元 36元 100万Token",
           "sourceUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
           "capturedAt": "2026-10-01",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "spark-x2.5",
+      "apiPlanId": "faf2d5722e71",
+      "modelKey": "spark-x2.5",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.spark-x2.5",
+          "quote": "星火大模型 Spark-X2.5 模型价格 限时五折 输入 1.60 元/百万tokens 输出 6.00 元/百万tokens 缓存命中 0.24 元/百万tokens",
+          "sourceUrl": "https://xinghuo.xfyun.cn/sparkapi",
+          "capturedAt": "2026-10-05",
+          "lang": "zh"
+        }
+      ],
+      "note": null
+    },
+    {
+      "registrySlug": "step-3.5-flash",
+      "apiPlanId": "03b27e432472",
+      "modelKey": "step-3.5-flash",
+      "variant": null,
+      "basis": "official-pricing-page",
+      "evidence": [
+        {
+          "field": "models.step-3.5-flash",
+          "quote": "推理大模型的定价表 step-3.5-flash | 1M tokens | 0.7 元 | 0.14 元 | 2.1 元",
+          "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
+          "capturedAt": "2026-10-05",
           "lang": "zh"
         }
       ],

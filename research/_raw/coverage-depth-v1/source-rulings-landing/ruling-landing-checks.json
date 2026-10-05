@@ -1,0 +1,305 @@
+{
+  "probe": "probe-ruling-landing.cjs",
+  "ranAtUtc": "2026-10-05T03:55:55.896Z",
+  "ranAtLocal": "Mon Oct 05 2026 11:55:55 GMT+0800 (中国标准时间)",
+  "head": null,
+  "longFailingSources": [
+    {
+      "source": "futurepedia",
+      "consecutiveFailures": 10,
+      "status": "failed",
+      "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+      "healthGeneratedAt": "2026-10-04T16:31:52.051Z"
+    }
+  ],
+  "rulingUnderTest": {
+    "source": "futurepedia",
+    "decision": "keep-degraded",
+    "codeSideLanding": "不改采集代码（契约：理由与复查条件写进 T06 的裁决数据文件）",
+    "evidence": "research/coverage-depth-v1-source-reliability.md §7（t4，2026-10-05）"
+  },
+  "check1_registryVsProbes": {
+    "registryIds": [
+      "aitools",
+      "cn_aliyun",
+      "cn_qianfan",
+      "cn_volc_ark",
+      "cn_zhipu",
+      "cn_zhipu_pricing",
+      "futurepedia",
+      "futuretools",
+      "layer3labs"
+    ],
+    "probeIds": [
+      "aitools",
+      "cn_aliyun",
+      "cn_qianfan",
+      "cn_volc_ark",
+      "cn_zhipu",
+      "cn_zhipu_pricing",
+      "futurepedia",
+      "futuretools",
+      "layer3labs"
+    ],
+    "missing": [],
+    "unknown": [],
+    "broken": null,
+    "pass": true
+  },
+  "check2_baseVsHealth": {
+    "baseIds": [
+      "aitools",
+      "cn_aliyun",
+      "cn_qianfan",
+      "cn_zhipu",
+      "futurepedia",
+      "futuretools",
+      "layer3labs"
+    ],
+    "headlessIds": [
+      "cn_volc_ark",
+      "cn_zhipu_pricing"
+    ],
+    "unionIds": [
+      "aitools",
+      "cn_aliyun",
+      "cn_qianfan",
+      "cn_volc_ark",
+      "cn_zhipu",
+      "cn_zhipu_pricing",
+      "futurepedia",
+      "futuretools",
+      "layer3labs"
+    ],
+    "healthRows": [
+      "aitools",
+      "cn_aliyun",
+      "cn_qianfan",
+      "cn_volc_ark",
+      "cn_zhipu",
+      "cn_zhipu_pricing",
+      "futurepedia",
+      "futuretools",
+      "layer3labs"
+    ],
+    "healthGeneratedAt": "2026-10-04T16:31:52.051Z",
+    "healthFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\scripts\\data\\source-health.json",
+    "rowsNotInRegistry": [],
+    "registryNotInHealth": [],
+    "staleRows": [],
+    "kindMismatch": [],
+    "pass": true
+  },
+  "check3_fixtures": {
+    "fixtureDirs": [
+      "cn_qianfan.deals",
+      "futurepedia.list",
+      "futuretools.list",
+      "layer3labs.deals"
+    ],
+    "declaredFixtures": [
+      {
+        "id": "cn_qianfan",
+        "fixture": "cn_qianfan.deals"
+      },
+      {
+        "id": "layer3labs",
+        "fixture": "layer3labs.deals"
+      },
+      {
+        "id": "futurepedia",
+        "fixture": "futurepedia.list"
+      },
+      {
+        "id": "futuretools",
+        "fixture": "futuretools.list"
+      }
+    ],
+    "fixtureFiles": {
+      "cn_qianfan.deals": [
+        "PROVENANCE.md",
+        "expected.json",
+        "page.min.html"
+      ],
+      "futurepedia.list": [
+        "PROVENANCE.md",
+        "expected.json",
+        "page.min.html"
+      ],
+      "futuretools.list": [
+        "PROVENANCE.md",
+        "expected.json",
+        "page.min.html"
+      ],
+      "layer3labs.deals": [
+        "PROVENANCE.md",
+        "expected.json",
+        "page.min.html"
+      ]
+    },
+    "dirOrphans": [],
+    "declaredMissing": [],
+    "incompleteDirs": [],
+    "pass": true
+  },
+  "check4_sourceTypes": {
+    "sourceTypes": [
+      {
+        "source": "Futuretools",
+        "count": 34,
+        "sourceType": "directory"
+      },
+      {
+        "source": "Curated-CN",
+        "count": 18,
+        "sourceType": "curated"
+      },
+      {
+        "source": "百度千帆",
+        "count": 17,
+        "sourceType": "official"
+      },
+      {
+        "source": "aitools.fyi",
+        "count": 15,
+        "sourceType": "directory"
+      },
+      {
+        "source": "Curated",
+        "count": 14,
+        "sourceType": "curated"
+      },
+      {
+        "source": "火山方舟",
+        "count": 12,
+        "sourceType": "official"
+      },
+      {
+        "source": "Layer3Labs",
+        "count": 9,
+        "sourceType": "directory"
+      },
+      {
+        "source": "智谱AI",
+        "count": 7,
+        "sourceType": "official"
+      },
+      {
+        "source": "智谱AI活动页",
+        "count": 5,
+        "sourceType": "official"
+      },
+      {
+        "source": "Futurepedia",
+        "count": 3,
+        "sourceType": "directory"
+      },
+      {
+        "source": "阿里云百炼",
+        "count": 1,
+        "sourceType": "official"
+      }
+    ],
+    "unknownSourceTypes": [],
+    "futurepediaRecords": [
+      {
+        "id": "cb45e0c735bd",
+        "title": "HubSpot AEO Sensor",
+        "sourceType": "directory",
+        "lastSeen": "2026-09-30"
+      },
+      {
+        "id": "9e7c938ec401",
+        "title": "Midjourney",
+        "sourceType": "directory",
+        "lastSeen": "2026-09-30"
+      },
+      {
+        "id": "376b6b3397e6",
+        "title": "Grok",
+        "sourceType": "directory",
+        "lastSeen": "2026-10-05"
+      }
+    ],
+    "sourceTypesEntryForFuturepedia": "directory",
+    "pass": true
+  },
+  "check5_historySafety": {
+    "dealsCount": 135,
+    "dealsUpdatedAt": "2026-10-05T00:31:52+08:00",
+    "lifecycleTouchedIds": [],
+    "historyEvents": 1,
+    "endedEvents": 0,
+    "endedForFuturepedia": 0,
+    "futurepediaIds": [
+      "cb45e0c735bd",
+      "9e7c938ec401",
+      "376b6b3397e6"
+    ],
+    "pass": true
+  },
+  "negativeControls": {
+    "probeCoverage_withoutFuturepedia": {
+      "missing": [],
+      "unknown": [
+        "futurepedia"
+      ],
+      "broken": null
+    },
+    "probeCoverage_withGhostCollector": {
+      "missing": [
+        "ghost_source"
+      ],
+      "unknown": [],
+      "broken": null
+    },
+    "fixtureOrphanSimulation": {
+      "simulatedDirs": [
+        "cn_qianfan.deals",
+        "futurepedia.list",
+        "futuretools.list",
+        "layer3labs.deals",
+        "retired.list"
+      ],
+      "orphans": [
+        "retired.list"
+      ]
+    },
+    "fixtureDeclaredButMissingSimulation": [
+      "ghost.list"
+    ],
+    "sourceTypeFallbackSimulation": {
+      "knownKey": "directory",
+      "unknownKey": "unknown",
+      "recordsAffectedIfDropped": 3
+    },
+    "kindMismatchSimulation": [
+      {
+        "source": "cn_volc_ark",
+        "healthKind": "headless",
+        "wrongExpectation": "static",
+        "wouldFlag": true
+      }
+    ]
+  },
+  "t06Handoff": {
+    "file": "scripts/data/source-rulings.json",
+    "entries": [
+      {
+        "source": "futurepedia",
+        "decision": "keep-degraded",
+        "whyKept": "跨环境观测不一致（本机 5 变体 + 9 轮全成功；CI 连续 10 次 HTTP 403；请求头不是变量，唯一无法本机复现的变量是出口 IP/机房）；无可复现缺陷可修；失败不污染数据（失败源不进 absenceEligibleSources）；它是 2 条独占记录（Midjourney / HubSpot AEO Sensor）的唯一发现通道；成本 55 行代码 / 0 新增依赖",
+        "revisitBy": "2026-10-19",
+        "evidence": "research/coverage-depth-v1-source-reliability.md §3/§5/§7（t4，读数时间戳 2026-10-05T03:30Z–03:45Z）",
+        "escalationTriggers": [
+          "CI 侧连续失败 ≥ 20 次且队长判定不再等待",
+          "另一来源开始覆盖 Midjourney / HubSpot AEO Sensor ⇒ 独占价值消失，可转 retire",
+          "CI 侧出现与 403 不同形态的失败（结构变化 / 零产出）⇒ 转 repair",
+          "决意保留其内容贡献 ⇒ 先补 CI 出口的无头稳定性读数，再走 headless-migrate"
+        ]
+      }
+    ],
+    "note": "本任务只提供字段与判据；裁决落盘与 schema 由 T06 负责。"
+  },
+  "allChecksPass": true
+}

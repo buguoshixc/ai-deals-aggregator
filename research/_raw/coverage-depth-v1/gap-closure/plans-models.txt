@@ -1,0 +1,35 @@
+﻿=== plans with supportedModels ===
+Trae | 会员 Pro -> GLM 5.2 / 5.3(included), Seed-2.1-Turbo(included), Seed-Code(included), DeepSeek-Flash(included), DeepSeek-Pro(included)
+智谱AI | Lite -> GLM-5.3(included), GLM-5.3-Flash(included)
+MiniMax | Token Plan Plus -> MiniMax M3(included), MiniMax M2.7(included), 图像 / 语音资源(included)
+百度智能云 | Comate 个人专业版 -> 百度 Comate 官方模型（Auto 调度）(pool)
+百度智能云 | Comate 个人旗舰版 -> 百度 Comate 官方模型（Auto 调度）(pool)
+MiniMax（稀宇科技） | Token Plan Max -> MiniMax M3(included), MiniMax M2.7(included)
+MiniMax（稀宇科技） | Token Plan Ultra -> MiniMax M3(included), MiniMax M2.7(included)
+Anthropic | Claude Pro -> Claude 系列模型（含 Claude Code）(included)
+Qoder International | Pro+ -> premium 模型池 + 基础模型兜底(pool)
+Qoder International | Ultra -> premium 模型池 + 基础模型兜底(pool)
+阶跃星辰 | Step Plan · Flash Mini -> step-5-preview(included), step-3.7-flash(included), step-3.5-flash(included), step-3.5-flash-2603(included), stepaudio-2.5-realtime(included), stepaudio-2.5-chat(included), stepaudio-2.5-tts(included), stepaudio-2.5-asr(included), step-router-v1(included)
+阶跃星辰 | Step Plan · Flash Plus -> step-5-preview(included), step-3.7-flash(included), step-3.5-flash(included), step-3.5-flash-2603(included), stepaudio-2.5-realtime(included), stepaudio-2.5-chat(included), stepaudio-2.5-tts(included), stepaudio-2.5-asr(included), step-router-v1(included)
+阶跃星辰 | Step Plan · Flash Pro -> step-5-preview(included), step-3.7-flash(included), step-3.5-flash(included), step-3.5-flash-2603(included), stepaudio-2.5-realtime(included), stepaudio-2.5-chat(included), stepaudio-2.5-tts(included), stepaudio-2.5-asr(included), step-router-v1(included)
+阶跃星辰 | Step Plan · Flash Max -> step-5-preview(included), step-3.7-flash(included), step-3.5-flash(included), step-3.5-flash-2603(included), stepaudio-2.5-realtime(included), stepaudio-2.5-chat(included), stepaudio-2.5-tts(included), stepaudio-2.5-asr(included), step-router-v1(included)
+=== coding-side declarations reasons ===
+{"off-registry-model":15,"series":5,"non-text-resource":17,"pool":4,"multi-model":1}
+sample: [
+ {
+  "planId": "0a66f3117162",
+  "modelName": "step-3.5-flash-2603",
+  "role": "included",
+  "reason": "off-registry-model",
+  "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+  "note": "官方点名的单一模型，是 step-3.5-flash 的 2603 版本号写法；registry 的 step-3.5-flash 没有版本后缀 ⇒ 不能凭版本号后缀认定同一身份（禁止用命名差异猜同一模型）。"
+ },
+ {
+  "planId": "0a66f3117162",
+  "modelName": "step-3.7-flash",
+  "role": "included",
+  "reason": "off-registry-model",
+  "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+  "note": "官方点名的单一模型（Flash 档），registry 里没有精确身份（registry 目前只有 step-3.5-flash）。"
+ }
+]

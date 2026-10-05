@@ -1,0 +1,56 @@
+﻿=== plans.json (provider|planName|price|period|quota) ===
+anthropic | Claude Pro | 20 | USD | monthly | "rate_limited" | global
+aws | Amazon Q Developer Free Tier | 0 | USD | monthly | "requests" | global
+aws | Amazon Q Developer Pro | 19 | USD | monthly | "other" | global
+baidu | Comate 个人专业版 | 59 | CNY | monthly | "other" | cn
+baidu | Comate 个人旗舰版 | 199 | CNY | monthly | "other" | cn
+codebuddy | Team 版(月付) | 40 | USD | monthly | "credits" | global
+codebuddy | 旗舰版 | 999 | CNY | monthly | "credits" | cn
+codebuddy | 标准版 | 99 | CNY | monthly | "credits" | cn
+codebuddy | 高级版 | 199 | CNY | monthly | "credits" | cn
+cursor | Pro | 20 | USD | monthly | "other" | global
+github | Copilot Max | 100 | USD | monthly | "other" | global
+github | Copilot Pro+ | 39 | USD | monthly | "other" | global
+github | Pro | 10 | USD | monthly | "credits" | global
+google | Gemini Code Assist Enterprise | 54 | USD | monthly | "rate_limited" | global
+google | Gemini Code Assist Standard | 22.8 | USD | monthly | "rate_limited" | global
+iflytek | 讯飞星辰 MaaS · Astron Coding Plan 速通版 | 999 | CNY | monthly | "requests" | cn
+iflytek | 讯飞星辰 MaaS · Astron Coding Plan 高效版 | 199 | CNY | monthly | "requests" | cn
+jetbrains | JetBrains AI Pro | 10 | USD | monthly | "rate_limited" | global
+jetbrains | JetBrains AI Ultimate | 30 | USD | monthly | "rate_limited" | global
+minimax | Token Plan Max | 119 | CNY | monthly | "rate_limited" | cn
+minimax | Token Plan Plus | 49 | CNY | monthly | "rate_limited" | cn
+minimax | Token Plan Ultra | 469 | CNY | monthly | "rate_limited" | cn
+moonshot | Moderato | 99 | CNY | monthly | "other" | cn
+qoder-intl | Pro+ | 60 | USD | monthly | "credits" | global
+qoder-intl | Ultra | 200 | USD | monthly | "credits" | global
+qoder | 个人专业版(Pro) | 59 | CNY | monthly | "credits" | cn
+replit | Core | 20 | USD | monthly | "other" | global
+replit | Pro | 100 | USD | monthly | "other" | global
+stepfun | Step Plan · Flash Max | 699 | CNY | monthly | "credits" | cn
+stepfun | Step Plan · Flash Mini | 49 | CNY | monthly | "credits" | cn
+stepfun | Step Plan · Flash Plus | 99 | CNY | monthly | "credits" | cn
+stepfun | Step Plan · Flash Pro | 199 | CNY | monthly | "credits" | cn
+trae | 会员 Pro | 99 | CNY | monthly | "credits" | cn
+trae | 免费 Free | 0 | CNY | monthly | "credits" | cn
+windsurf | Max | 200 | USD | monthly | "rate_limited" | global
+windsurf | Pro | 20 | USD | monthly | "rate_limited" | global
+zhipu | Lite | null |  | monthly | "credits" | cn
+=== api-plans.json (provider|planName|channel|unit|currency|models|freeTier) ===
+aliyun | 模型推理按量计费(中国内地) | standard | per_1M_tokens | CNY | deepseek-v4-pro,glm-5.3,kimi-k3,minimax-m3,qwen-max,qwen3-max,qwen3-max,qwen3.8-max | "tokens" | cn
+aliyun | 模型推理按量计费(闲时) | off_peak | per_1M_tokens | CNY | deepseek-v4.1-flash | null | cn
+anthropic | Claude API 按量计费 | standard | per_1M_tokens | USD | claude-fable-5.1,claude-haiku-4.5,claude-opus-5.5,claude-sonnet-5.5 | null | global
+cerebras | 推理按量计费 Developer 档 | standard | per_1M_tokens | USD | gpt-oss-120b,qwen3.8-27b | null | global
+deepseek | API 按量计费 | off_peak | per_1M_tokens | USD | deepseek-flash,deepseek-v4-pro | null | cn
+deepseek | API 按量计费 | standard | per_1M_tokens | USD | deepseek-flash,deepseek-v4-pro | null | cn
+fireworks | Serverless 按量计费 | standard | per_1M_tokens | USD | deepseek-v4p1-flash,ember-1,glm-5p3-flash,glm-5p3,gpt-oss-120b,kimi-k3,minimax-m3,nemotron-3-ultra-nvfp4,nemotron-lightning-3p5-30b-a3b,qwen3p8-max | null | global
+google | Gemini API 标准档 | standard | per_1M_tokens | USD | gemini-3.5-flash,gemini-3.6-flash,gemini-3.7-flash,gemini-3.8-flash | "models" | global
+groq | 模型推理按量计费 | standard | per_1M_tokens | USD | meta-llama.prompt-guard-2-22m,meta-llama.prompt-guard-2-86m,openai.gpt-oss-120b,openai.gpt-oss-20b,openai.gpt-oss-safeguard-20b,qwen.qwen3.8-27b | null | global
+minimax | API 按量计费 | standard | per_1M_tokens | CNY | minimax-m2.5,minimax-m2.7-highspeed,minimax-m2.7,minimax-m3,minimax-m3 | null | cn
+openai | API 标准价格 | standard | per_1M_tokens | USD | gpt-6-astra,gpt-6-astra,gpt-6-luna,gpt-6-luna,gpt-6.1-sol,gpt-6.1-sol,gpt-live-1 | null | global
+openai | Batch API | batch | per_1M_tokens | USD | gpt-6-astra,gpt-6-astra,gpt-6-luna,gpt-6-luna,gpt-6.1-sol,gpt-6.1-sol | null | global
+siliconflow | 模型推理按量计费 | standard | per_1M_tokens | CNY | deepseek-v3.2,deepseek-v4-pro,glm-5.3,kimi-k2.7-code,qwen3.8-27b,step-3.5-flash | null | cn
+tencent | 混元生文按量计费 | standard | per_1M_tokens | CNY | hunyuan-a13b,hunyuan-embedding,hunyuan-role-latest,hunyuan-translation-lite,hunyuan-translation,tencent-hy-vision-1.5-instruct | "tokens" | cn
+together | Serverless 按量计费 | standard | per_1M_tokens | USD | deepseek-ai.v4-pro-0813,deepseek-ai.v4.1-flash,minimaxai.m3,moonshotai.kimi-k3,openai.gpt-oss-120b,thinkingmachines.inkling,zai-org.glm-5.3-flash,zai-org.glm-5.3 | null | global
+volcengine | 豆包模型 API 按量计费 | standard | per_1M_tokens | CNY | doubao-seed-2.1-pro,doubao-seed-2.1-turbo,doubao-seed-character,doubao-seed-evolving | null | cn
+zhipu | 模型 API 按量计费 | standard | per_1M_tokens | CNY | glm-4.5v,glm-4.5v,glm-4.6v-flashx,glm-4.6v-flashx,glm-4.6v-flash,glm-4.6v,glm-4.6v,glm-4.7-flash,glm-5.3-flash,glm-5.3,glm-5v-turbo,glm-5v-turbo | "models" | cn

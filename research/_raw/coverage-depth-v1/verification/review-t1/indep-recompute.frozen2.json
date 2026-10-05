@@ -1,0 +1,222 @@
+{
+  "root": "C:\\Users\\星澈\\AppData\\Local\\Temp\\cvdv1-t7-frozen2",
+  "capture": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\fz2-report-json.out.txt",
+  "findings": [
+    {
+      "id": "recompute.releasedAt.divergence",
+      "ok": true,
+      "detail": "v2 口径 unknown=14，我的\"非空字符串\"口径 unknown=14"
+    },
+    {
+      "id": "vs.report.registryModels",
+      "ok": true,
+      "detail": "44 vs mine 44"
+    },
+    {
+      "id": "vs.report.known",
+      "ok": true,
+      "detail": "30 vs mine 30"
+    },
+    {
+      "id": "vs.report.unknown",
+      "ok": true,
+      "detail": "14 vs mine(v2口径) 14"
+    },
+    {
+      "id": "vs.report.unparsable",
+      "ok": true,
+      "detail": "0 vs mine 0"
+    },
+    {
+      "id": "vs.report.catalogStatusCensus",
+      "ok": true,
+      "detail": "report={\"current\":27,\"aging\":2,\"legacy\":1,\"historical\":0,\"unknown\":14} mine={\"current\":27,\"legacy\":1,\"unknown\":14,\"aging\":2,\"historical\":0}"
+    },
+    {
+      "id": "vs.report.sameDate",
+      "ok": true,
+      "detail": "2026-10-04T16:31:52.051Z vs 2026-10-04T16:31:52.051Z"
+    },
+    {
+      "id": "vs.report.states",
+      "ok": true,
+      "detail": "report={\"COVERED\":75,\"PARTIAL\":0,\"MISSING\":4,\"DEFERRED\":3,\"UNVERIFIABLE\":2,\"NOT_APPLICABLE\":52,\"BLOCKED_SOURCE\":0} mine={\"COVERED\":75,\"PARTIAL\":0,\"MISSING\":4,\"DEFERRED\":3,\"UNVERIFIABLE\":2,\"NOT_APPLICABLE\":52,\"BLOCKED_SOURCE\":0}"
+    },
+    {
+      "id": "vs.report.missingSet",
+      "ok": true,
+      "detail": "report=4 mine=4"
+    },
+    {
+      "id": "vs.report.partialSet",
+      "ok": true,
+      "detail": "report= mine="
+    },
+    {
+      "id": "vs.report.gapQueue",
+      "ok": true,
+      "detail": "4 vs mine 4"
+    }
+  ],
+  "checks": [],
+  "releasedAt": {
+    "total": 44,
+    "v2UnknownCount": 14,
+    "stringUnknownCount": 14,
+    "knownCount": 30,
+    "unparsableCount": 0,
+    "notYmd": [],
+    "unparsable": [],
+    "knownSlugs": [
+      "claude-fable-5.1",
+      "claude-haiku-4.5",
+      "claude-opus-5.5",
+      "claude-sonnet-5.5",
+      "deepseek-flash",
+      "deepseek-v3.2",
+      "deepseek-v4-pro",
+      "gemini-3.5-flash",
+      "gemini-3.6-flash",
+      "gemini-3.7-flash",
+      "gemini-3.8-flash",
+      "glm-4.5v",
+      "glm-4.6v",
+      "glm-4.7-flash",
+      "glm-5.3",
+      "glm-5.3-flash",
+      "glm-5v-turbo",
+      "gpt-6-astra",
+      "gpt-6-luna",
+      "gpt-6.1-sol",
+      "hunyuan-a13b",
+      "hunyuan-role-latest",
+      "hunyuan-translation",
+      "hunyuan-translation-lite",
+      "kimi-k2.7-code",
+      "kimi-k3",
+      "minimax-m2.7",
+      "minimax-m2.7-highspeed",
+      "minimax-m3",
+      "tencent-hy-vision-1.5-instruct"
+    ]
+  },
+  "catalogStatus": {
+    "wordListFromLibText": [
+      "current",
+      "aging",
+      "legacy",
+      "historical",
+      "unknown"
+    ],
+    "publishedModels": 44,
+    "registryModels": 44,
+    "counts": {
+      "current": 27,
+      "legacy": 1,
+      "unknown": 14,
+      "aging": 2,
+      "historical": 0
+    },
+    "outsideWordList": []
+  },
+  "myStates": {
+    "COVERED": 75,
+    "PARTIAL": 0,
+    "MISSING": 4,
+    "DEFERRED": 3,
+    "UNVERIFIABLE": 2,
+    "NOT_APPLICABLE": 52,
+    "BLOCKED_SOURCE": 0
+  },
+  "myMissing": [
+    "ai360/models",
+    "baichuan/models",
+    "baidu/models",
+    "iflytek/models"
+  ],
+  "myPartial": [],
+  "myBlocked": [],
+  "myDeferred": [
+    "microsoft/coding",
+    "microsoft/api",
+    "sensetime/models"
+  ],
+  "myUnverifiable": [
+    "coze/api",
+    "deepseek/deals"
+  ],
+  "myNotApplicable": 52,
+  "mappingClosure": {
+    "registrySlugs": 44,
+    "mappedSlugs": 44,
+    "unmappedSlugs": [],
+    "linksRows": 85,
+    "apiPricingEntries": 108,
+    "distinctApiPricingEntries": 108
+  },
+  "sourceHealth": {
+    "generatedAt": "2026-10-04T16:31:52.051Z",
+    "rows": 9,
+    "unhealthy": [
+      "Futurepedia(failed/collector_error) cf=10"
+    ],
+    "cfGe3": [
+      "Futurepedia(10)"
+    ]
+  },
+  "report": {
+    "registryModels": 44,
+    "known": 30,
+    "unknown": 14,
+    "unparsable": 0,
+    "withReleaseEvidence": 30,
+    "byCatalogStatus": [
+      "current=27",
+      "aging=2",
+      "legacy=1",
+      "historical=0",
+      "unknown=14"
+    ],
+    "censusCounts": {
+      "current": 27,
+      "aging": 2,
+      "legacy": 1,
+      "historical": 0,
+      "unknown": 14
+    },
+    "censusSum": 44,
+    "states": {
+      "COVERED": 75,
+      "PARTIAL": 0,
+      "MISSING": 4,
+      "DEFERRED": 3,
+      "UNVERIFIABLE": 2,
+      "NOT_APPLICABLE": 52,
+      "BLOCKED_SOURCE": 0
+    },
+    "missing": [
+      "ai360/models",
+      "baichuan/models",
+      "baidu/models",
+      "iflytek/models"
+    ],
+    "partial": [],
+    "gapCounts": {
+      "A": 0,
+      "B": 0,
+      "C": 3,
+      "D": 1
+    },
+    "gapTotal": 4,
+    "gapKeys": [
+      "baidu/models",
+      "baichuan/models",
+      "iflytek/models",
+      "ai360/models"
+    ],
+    "unknownReleaseDates": 14,
+    "healthGeneratedAt": "2026-10-04T16:31:52.051Z",
+    "healthRowCount": 9,
+    "notLanded": false
+  }
+}

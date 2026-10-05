@@ -1,0 +1,3 @@
+
+❌ 覆盖报告自检失败：
+  - 来源「futurepedia」连续失败已达 3 次以上，却没有在 scripts/data/source-rulings.json 里留下裁决 —— 长期失败必须有人表态（repair / headless-migrate / keep-degraded / retire 四选一），不许只以读数的形式常驻。

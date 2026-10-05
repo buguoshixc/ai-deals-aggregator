@@ -1,0 +1,3348 @@
+{
+  "probe": "independent-recompute.cjs",
+  "ranAtUtc": "2026-10-05T04:46:15.500Z",
+  "ranAtLocal": "Mon Oct 05 2026 12:46:15 GMT+0800 (中国标准时间)",
+  "independence": {
+    "requiredModules": [
+      "fs",
+      "path",
+      "crypto"
+    ],
+    "forbiddenNotRequired": [
+      "scripts/lib/coverage-targets.js",
+      "scripts/lib/model-freshness.js",
+      "scripts/tools/coverage-report.js"
+    ],
+    "reusedAuthorityTables": [
+      "scripts/lib/model-freshness.js（正则读源码文本，未 require）",
+      "index.html#RENDER-CORE VENDOR_RULES（文本切片求值，未 require render-core）"
+    ],
+    "note": "判据代码全部本文件自己实现；只复用\"权威数据表\"（策略阈值与厂商规则），且都是读源码/HTML 文本，不经被测模块"
+  },
+  "inputHashes": {
+    "scripts/data/models.json": "386e6e81b0eaca630dd064a61dbf1fb711241a1bd65add133340b75cc1337559",
+    "models.json": "ce69f006f0fa481a50f442ad06e0113eb963125ddddc03b18a2da752a8988370",
+    "scripts/data/coverage-targets.json": "29eb1a71fbac78c9875d142a8d89da4a2d627aac3eb425b89ef8e319f61abe2a",
+    "scripts/data/providers.json": "8180ccdb1794b5665930c1f7b11c15373d2db176bdd5eebb68a17344b5c390ba",
+    "scripts/data/model-registry-links.json": "99d9c9e7146614180ff7e4039bc20706f4a84c78364edacfa6841a704298bd14",
+    "scripts/data/model-registry-gaps.json": "25635fedee71b3f7f7c1f9507adbafc6ab68fd1b05f25538588bf7b3e43edde0",
+    "api-plans.json": "acebde3a35bebbc61dd9cddea55654c1eed6f7103332f5aeae8e231cdae6e81c",
+    "plans.json": "1668d19cadbce7e2feb1f662001c87effb520b2669027628ee0c89cc16e154ba",
+    "deals.json": "fe063bc9e4e40b1051958d6f14b889f44d391848f0d2555b82e421651dfcd558",
+    "scripts/data/source-health.json": "f782626e2b0e9b31236393507fe00121e90faf55db92fbd71fa52002885abf80",
+    "scripts/data/source-rulings.json": "65fce6f8551266e7bc9a6e05f27c30f65524b159214e751aae7205a5c6749321",
+    "scripts/lib/model-freshness.js": "090838265d9ae29d223c1e9b53b126a563ea4f64440a3e100d6314c9d56afa10",
+    "index.html": "4176d75c0c95707c65314360f497243dc46056d373b731819ba1b665123d7f42"
+  },
+  "reportJsonSource": {
+    "file": "research\\_raw\\coverage-depth-v1\\verification\\report-json.parsed.json",
+    "sha256": "7ba9096b905449bd6babc0f3a0ab9610a50c2462d5ab753e4044182ce8ac1b5e",
+    "bytes": 211226
+  },
+  "releasedAt": {
+    "registryModels": 51,
+    "known": 32,
+    "unknown": 19,
+    "unparsable": 0,
+    "withReleaseEvidence": 32,
+    "knownPercent": 62.7,
+    "dateWithoutEvidence": [],
+    "evidenceWithoutDate": [],
+    "entries": [
+      {
+        "slug": "claude-fable-5.1",
+        "developer": "Anthropic",
+        "owner": "Anthropic",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-09-01",
+        "releasedAt": "2026-09-01",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing"
+      },
+      {
+        "slug": "claude-haiku-4.5",
+        "developer": "Anthropic",
+        "owner": "Anthropic",
+        "modelRole": "fast",
+        "status": "active",
+        "releasedAtRaw": "2025-10-15",
+        "releasedAt": "2025-10-15",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing"
+      },
+      {
+        "slug": "claude-opus-5.5",
+        "developer": "Anthropic",
+        "owner": "Anthropic",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-09-22",
+        "releasedAt": "2026-09-22",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing"
+      },
+      {
+        "slug": "claude-sonnet-5.5",
+        "developer": "Anthropic",
+        "owner": "Anthropic",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-09-28",
+        "releasedAt": "2026-09-28",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing"
+      },
+      {
+        "slug": "deepseek-flash",
+        "developer": "DeepSeek",
+        "owner": "DeepSeek",
+        "modelRole": "vision",
+        "status": "active",
+        "releasedAtRaw": "2026-09-10",
+        "releasedAt": "2026-09-10",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://api-docs.deepseek.com/quick_start/pricing"
+      },
+      {
+        "slug": "deepseek-v3.2",
+        "developer": "DeepSeek",
+        "owner": "DeepSeek",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2025-12-01",
+        "releasedAt": "2025-12-01",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://siliconflow.cn/pricing"
+      },
+      {
+        "slug": "deepseek-v4-pro",
+        "developer": "DeepSeek",
+        "owner": "DeepSeek",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-08-13",
+        "releasedAt": "2026-08-13",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://api-docs.deepseek.com/quick_start/pricing"
+      },
+      {
+        "slug": "doubao-seed-2.1-pro",
+        "developer": "火山引擎",
+        "owner": "火山引擎",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://www.volcengine.com/product/ark"
+      },
+      {
+        "slug": "doubao-seed-2.1-turbo",
+        "developer": "火山引擎",
+        "owner": "火山引擎",
+        "modelRole": "fast",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://www.volcengine.com/product/ark"
+      },
+      {
+        "slug": "doubao-seed-character",
+        "developer": "火山引擎",
+        "owner": "火山引擎",
+        "modelRole": "other",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://www.volcengine.com/product/ark"
+      },
+      {
+        "slug": "doubao-seed-evolving",
+        "developer": "火山引擎",
+        "owner": "火山引擎",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://www.volcengine.com/product/ark"
+      },
+      {
+        "slug": "gemini-3.5-flash",
+        "developer": "Google",
+        "owner": "Google",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-05-19",
+        "releasedAt": "2026-05-19",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing"
+      },
+      {
+        "slug": "gemini-3.6-flash",
+        "developer": "Google",
+        "owner": "Google",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-07-21",
+        "releasedAt": "2026-07-21",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing"
+      },
+      {
+        "slug": "gemini-3.7-flash",
+        "developer": "Google",
+        "owner": "Google",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-08-13",
+        "releasedAt": "2026-08-13",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing"
+      },
+      {
+        "slug": "gemini-3.8-flash",
+        "developer": "Google",
+        "owner": "Google",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-09-02",
+        "releasedAt": "2026-09-02",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing"
+      },
+      {
+        "slug": "glm-4.5v",
+        "developer": "智谱AI",
+        "owner": "智谱AI",
+        "modelRole": "vision",
+        "status": "active",
+        "releasedAtRaw": "2025-08-11",
+        "releasedAt": "2025-08-11",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://open.bigmodel.cn/pricing"
+      },
+      {
+        "slug": "glm-4.6v",
+        "developer": "智谱AI",
+        "owner": "智谱AI",
+        "modelRole": "vision",
+        "status": "active",
+        "releasedAtRaw": "2025-12-08",
+        "releasedAt": "2025-12-08",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://open.bigmodel.cn/pricing"
+      },
+      {
+        "slug": "glm-4.6v-flash",
+        "developer": "智谱AI",
+        "owner": "智谱AI",
+        "modelRole": "vision",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://open.bigmodel.cn/pricing"
+      },
+      {
+        "slug": "glm-4.6v-flashx",
+        "developer": "智谱AI",
+        "owner": "智谱AI",
+        "modelRole": "vision",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://open.bigmodel.cn/pricing"
+      },
+      {
+        "slug": "glm-4.7-flash",
+        "developer": "智谱AI",
+        "owner": "智谱AI",
+        "modelRole": "fast",
+        "status": "active",
+        "releasedAtRaw": "2026-01-19",
+        "releasedAt": "2026-01-19",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://open.bigmodel.cn/pricing"
+      },
+      {
+        "slug": "glm-5.3",
+        "developer": "智谱AI",
+        "owner": "智谱AI",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-08-19",
+        "releasedAt": "2026-08-19",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://open.bigmodel.cn/pricing"
+      },
+      {
+        "slug": "glm-5.3-flash",
+        "developer": "智谱AI",
+        "owner": "智谱AI",
+        "modelRole": "fast",
+        "status": "active",
+        "releasedAtRaw": "2026-08-26",
+        "releasedAt": "2026-08-26",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://open.bigmodel.cn/pricing"
+      },
+      {
+        "slug": "glm-5v-turbo",
+        "developer": "智谱AI",
+        "owner": "智谱AI",
+        "modelRole": "vision",
+        "status": "active",
+        "releasedAtRaw": "2026-04-02",
+        "releasedAt": "2026-04-02",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://open.bigmodel.cn/pricing"
+      },
+      {
+        "slug": "gpt-6-astra",
+        "developer": "OpenAI",
+        "owner": "OpenAI",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-09-03",
+        "releasedAt": "2026-09-03",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://platform.openai.com/docs/pricing"
+      },
+      {
+        "slug": "gpt-6-luna",
+        "developer": "OpenAI",
+        "owner": "OpenAI",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-09-22",
+        "releasedAt": "2026-09-22",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://platform.openai.com/docs/pricing"
+      },
+      {
+        "slug": "gpt-6.1-sol",
+        "developer": "OpenAI",
+        "owner": "OpenAI",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-09-29",
+        "releasedAt": "2026-09-29",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://platform.openai.com/docs/pricing"
+      },
+      {
+        "slug": "gpt-live-1",
+        "developer": "OpenAI",
+        "owner": "OpenAI",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://platform.openai.com/docs/pricing"
+      },
+      {
+        "slug": "hunyuan-a13b",
+        "developer": "腾讯云",
+        "owner": "腾讯云",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2025-06-25",
+        "releasedAt": "2025-06-25",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://cloud.tencent.com/document/product/1729/97731"
+      },
+      {
+        "slug": "hunyuan-embedding",
+        "developer": "腾讯云",
+        "owner": "腾讯云",
+        "modelRole": "embedding",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://cloud.tencent.com/document/product/1729/97731"
+      },
+      {
+        "slug": "hunyuan-role-latest",
+        "developer": "腾讯云",
+        "owner": "腾讯云",
+        "modelRole": "other",
+        "status": "active",
+        "releasedAtRaw": "2025-09-24",
+        "releasedAt": "2025-09-24",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://cloud.tencent.com/document/product/1729/97731"
+      },
+      {
+        "slug": "hunyuan-translation",
+        "developer": "腾讯云",
+        "owner": "腾讯云",
+        "modelRole": "translation",
+        "status": "active",
+        "releasedAtRaw": "2025-10-14",
+        "releasedAt": "2025-10-14",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://cloud.tencent.com/document/product/1729/97731"
+      },
+      {
+        "slug": "hunyuan-translation-lite",
+        "developer": "腾讯云",
+        "owner": "腾讯云",
+        "modelRole": "translation",
+        "status": "active",
+        "releasedAtRaw": "2025-06-06",
+        "releasedAt": "2025-06-06",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://cloud.tencent.com/document/product/1729/97731"
+      },
+      {
+        "slug": "kimi-k2.7-code",
+        "developer": "月之暗面",
+        "owner": "月之暗面",
+        "modelRole": "coding",
+        "status": "active",
+        "releasedAtRaw": "2026-06-13",
+        "releasedAt": "2026-06-13",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://siliconflow.cn/pricing"
+      },
+      {
+        "slug": "kimi-k3",
+        "developer": "月之暗面",
+        "owner": "月之暗面",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-07-17",
+        "releasedAt": "2026-07-17",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing"
+      },
+      {
+        "slug": "minimax-m2.5",
+        "developer": "MiniMax（稀宇科技）",
+        "owner": "MiniMax（稀宇科技）",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo"
+      },
+      {
+        "slug": "minimax-m2.7",
+        "developer": "MiniMax（稀宇科技）",
+        "owner": "MiniMax（稀宇科技）",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": "2026-03-18",
+        "releasedAt": "2026-03-18",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo"
+      },
+      {
+        "slug": "minimax-m2.7-highspeed",
+        "developer": "MiniMax（稀宇科技）",
+        "owner": "MiniMax（稀宇科技）",
+        "modelRole": "fast",
+        "status": "active",
+        "releasedAtRaw": "2026-03-18",
+        "releasedAt": "2026-03-18",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo"
+      },
+      {
+        "slug": "minimax-m3",
+        "developer": "MiniMax（稀宇科技）",
+        "owner": "MiniMax（稀宇科技）",
+        "modelRole": "vision",
+        "status": "active",
+        "releasedAtRaw": "2026-06-01",
+        "releasedAt": "2026-06-01",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo"
+      },
+      {
+        "slug": "qwen-max",
+        "developer": "阿里云",
+        "owner": "阿里云",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing"
+      },
+      {
+        "slug": "qwen3-max",
+        "developer": "阿里云",
+        "owner": "阿里云",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing"
+      },
+      {
+        "slug": "qwen3.8-27b",
+        "developer": "阿里云",
+        "owner": "阿里云",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://siliconflow.cn/pricing"
+      },
+      {
+        "slug": "qwen3.8-max",
+        "developer": "阿里云",
+        "owner": "阿里云",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing"
+      },
+      {
+        "slug": "step-3.5-flash",
+        "developer": "阶跃星辰",
+        "owner": "阶跃星辰",
+        "modelRole": "fast",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://siliconflow.cn/pricing"
+      },
+      {
+        "slug": "tencent-hy-vision-1.5-instruct",
+        "developer": "腾讯云",
+        "owner": "腾讯云",
+        "modelRole": "vision",
+        "status": "active",
+        "releasedAtRaw": "2025-12-17",
+        "releasedAt": "2025-12-17",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://cloud.tencent.com/document/product/1729/97731"
+      },
+      {
+        "slug": "360zhinao-pro",
+        "developer": "360智脑",
+        "owner": "360智脑",
+        "modelRole": null,
+        "status": "active",
+        "releasedAtRaw": "2026-08-05",
+        "releasedAt": "2026-08-05",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://ai.360.com/open/zh/models"
+      },
+      {
+        "slug": "360zhinao-turbo-llm-geo",
+        "developer": "360智脑",
+        "owner": "360智脑",
+        "modelRole": null,
+        "status": "active",
+        "releasedAtRaw": "2026-08-24",
+        "releasedAt": "2026-08-24",
+        "provided": true,
+        "unparsable": false,
+        "hasReleaseEvidence": true,
+        "evidenceCount": 1,
+        "officialUrl": "https://ai.360.com/open/zh/models"
+      },
+      {
+        "slug": "baichuan-m3",
+        "developer": "百川智能",
+        "owner": "百川智能",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://platform.baichuan-ai.com/prices"
+      },
+      {
+        "slug": "baichuan-m3-plus",
+        "developer": "百川智能",
+        "owner": "百川智能",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://platform.baichuan-ai.com/prices"
+      },
+      {
+        "slug": "ernie-4.5-turbo-128k",
+        "developer": "百度智能云",
+        "owner": "百度智能云",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a"
+      },
+      {
+        "slug": "ernie-5.1",
+        "developer": "百度智能云",
+        "owner": "百度智能云",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a"
+      },
+      {
+        "slug": "spark-x2.5",
+        "developer": "科大讯飞",
+        "owner": "科大讯飞",
+        "modelRole": "general",
+        "status": "active",
+        "releasedAtRaw": null,
+        "releasedAt": null,
+        "provided": false,
+        "unparsable": false,
+        "hasReleaseEvidence": false,
+        "evidenceCount": 0,
+        "officialUrl": "https://xinghuo.xfyun.cn/sparkapi"
+      }
+    ]
+  },
+  "catalogStatus": {
+    "models": 51,
+    "counts": {
+      "current": 29,
+      "aging": 2,
+      "legacy": 1,
+      "historical": 0,
+      "unknown": 19
+    },
+    "sum": 51,
+    "mismatches": [],
+    "rows": [
+      {
+        "slug": "360zhinao-pro",
+        "group": "360智脑\u0000360zhinao\u0000",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "360zhinao-turbo-llm-geo",
+        "releasedAt": "2026-08-05",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "360zhinao-turbo-llm-geo",
+        "group": "360智脑\u0000360zhinao\u0000",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "360zhinao-turbo-llm-geo",
+        "releasedAt": "2026-08-24",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "baichuan-m3",
+        "group": "百川智能\u0000baichuan m\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "baichuan-m3-plus",
+        "group": "百川智能\u0000baichuan m\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "claude-fable-5.1",
+        "group": "anthropic\u0000claude\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "claude-sonnet-5.5",
+        "releasedAt": "2026-09-01",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "claude-opus-5.5",
+        "group": "anthropic\u0000claude\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "claude-sonnet-5.5",
+        "releasedAt": "2026-09-22",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "claude-sonnet-5.5",
+        "group": "anthropic\u0000claude\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "claude-sonnet-5.5",
+        "releasedAt": "2026-09-28",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "claude-haiku-4.5",
+        "group": "anthropic\u0000claude\u0000fast",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "claude-haiku-4.5",
+        "releasedAt": "2025-10-15",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "deepseek-flash",
+        "group": "current-mainline",
+        "groupTier": "multimodal",
+        "window": "180/365",
+        "latestComparable": "deepseek-flash",
+        "releasedAt": "2026-09-10",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "deepseek-v3.2",
+        "group": "deepseek\u0000deepseek\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "deepseek-v4-pro",
+        "releasedAt": "2025-12-01",
+        "status": "active",
+        "catalogStatus": "legacy",
+        "publishedCatalogStatus": "legacy"
+      },
+      {
+        "slug": "deepseek-v4-pro",
+        "group": "deepseek\u0000deepseek\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "deepseek-v4-pro",
+        "releasedAt": "2026-08-13",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "doubao-seed-2.1-pro",
+        "group": "火山引擎\u0000doubao seed\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "doubao-seed-evolving",
+        "group": "火山引擎\u0000doubao seed\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "doubao-seed-2.1-turbo",
+        "group": "火山引擎\u0000doubao seed\u0000fast",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "doubao-seed-character",
+        "group": "火山引擎\u0000doubao seed\u0000other",
+        "groupTier": "infrastructure",
+        "window": "365/730",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "ernie-4.5-turbo-128k",
+        "group": "百度智能云\u0000ernie\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "ernie-5.1",
+        "group": "百度智能云\u0000ernie\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "gemini-3.5-flash",
+        "group": "google\u0000gemini\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "gemini-3.8-flash",
+        "releasedAt": "2026-05-19",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "gemini-3.6-flash",
+        "group": "google\u0000gemini\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "gemini-3.8-flash",
+        "releasedAt": "2026-07-21",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "gemini-3.7-flash",
+        "group": "google\u0000gemini\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "gemini-3.8-flash",
+        "releasedAt": "2026-08-13",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "gemini-3.8-flash",
+        "group": "google\u0000gemini\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "gemini-3.8-flash",
+        "releasedAt": "2026-09-02",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "glm-4.5v",
+        "group": "智谱ai\u0000glm\u0000vision",
+        "groupTier": "multimodal",
+        "window": "180/365",
+        "latestComparable": "glm-5v-turbo",
+        "releasedAt": "2025-08-11",
+        "status": "active",
+        "catalogStatus": "aging",
+        "publishedCatalogStatus": "aging"
+      },
+      {
+        "slug": "glm-4.6v",
+        "group": "智谱ai\u0000glm\u0000vision",
+        "groupTier": "multimodal",
+        "window": "180/365",
+        "latestComparable": "glm-5v-turbo",
+        "releasedAt": "2025-12-08",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "glm-4.6v-flash",
+        "group": "智谱ai\u0000glm\u0000vision",
+        "groupTier": "multimodal",
+        "window": "180/365",
+        "latestComparable": "glm-5v-turbo",
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "glm-4.6v-flashx",
+        "group": "智谱ai\u0000glm\u0000vision",
+        "groupTier": "multimodal",
+        "window": "180/365",
+        "latestComparable": "glm-5v-turbo",
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "glm-5v-turbo",
+        "group": "智谱ai\u0000glm\u0000vision",
+        "groupTier": "multimodal",
+        "window": "180/365",
+        "latestComparable": "glm-5v-turbo",
+        "releasedAt": "2026-04-02",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "glm-4.7-flash",
+        "group": "智谱ai\u0000glm\u0000fast",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "glm-5.3-flash",
+        "releasedAt": "2026-01-19",
+        "status": "active",
+        "catalogStatus": "aging",
+        "publishedCatalogStatus": "aging"
+      },
+      {
+        "slug": "glm-5.3-flash",
+        "group": "智谱ai\u0000glm\u0000fast",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "glm-5.3-flash",
+        "releasedAt": "2026-08-26",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "glm-5.3",
+        "group": "智谱ai\u0000glm\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "glm-5.3",
+        "releasedAt": "2026-08-19",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "gpt-6-astra",
+        "group": "openai\u0000gpt\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "gpt-6.1-sol",
+        "releasedAt": "2026-09-03",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "gpt-6-luna",
+        "group": "openai\u0000gpt\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "gpt-6.1-sol",
+        "releasedAt": "2026-09-22",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "gpt-6.1-sol",
+        "group": "openai\u0000gpt\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "gpt-6.1-sol",
+        "releasedAt": "2026-09-29",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "gpt-live-1",
+        "group": "openai\u0000gpt\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "gpt-6.1-sol",
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "hunyuan-a13b",
+        "group": "腾讯云\u0000hunyuan\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "hunyuan-a13b",
+        "releasedAt": "2025-06-25",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "hunyuan-embedding",
+        "group": "腾讯云\u0000hunyuan\u0000embedding",
+        "groupTier": "infrastructure",
+        "window": "365/730",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "hunyuan-role-latest",
+        "group": "腾讯云\u0000hunyuan\u0000other",
+        "groupTier": "infrastructure",
+        "window": "365/730",
+        "latestComparable": "hunyuan-role-latest",
+        "releasedAt": "2025-09-24",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "hunyuan-translation",
+        "group": "腾讯云\u0000hunyuan\u0000translation",
+        "groupTier": "infrastructure",
+        "window": "365/730",
+        "latestComparable": "hunyuan-translation",
+        "releasedAt": "2025-10-14",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "hunyuan-translation-lite",
+        "group": "腾讯云\u0000hunyuan\u0000translation",
+        "groupTier": "infrastructure",
+        "window": "365/730",
+        "latestComparable": "hunyuan-translation",
+        "releasedAt": "2025-06-06",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "kimi-k2.7-code",
+        "group": "月之暗面\u0000kimi\u0000coding",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "kimi-k2.7-code",
+        "releasedAt": "2026-06-13",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "kimi-k3",
+        "group": "月之暗面\u0000kimi\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "kimi-k3",
+        "releasedAt": "2026-07-17",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "minimax-m2.5",
+        "group": "minimax(稀宇科技)\u0000minimax m\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "minimax-m2.7",
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "minimax-m2.7",
+        "group": "minimax(稀宇科技)\u0000minimax m\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "minimax-m2.7",
+        "releasedAt": "2026-03-18",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "minimax-m2.7-highspeed",
+        "group": "minimax(稀宇科技)\u0000minimax m\u0000fast",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": "minimax-m2.7-highspeed",
+        "releasedAt": "2026-03-18",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "minimax-m3",
+        "group": "minimax(稀宇科技)\u0000minimax m\u0000vision",
+        "groupTier": "multimodal",
+        "window": "180/365",
+        "latestComparable": "minimax-m3",
+        "releasedAt": "2026-06-01",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      },
+      {
+        "slug": "qwen-max",
+        "group": "阿里云\u0000qwen\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "qwen3-max",
+        "group": "阿里云\u0000qwen\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "qwen3.8-27b",
+        "group": "阿里云\u0000qwen\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "qwen3.8-max",
+        "group": "阿里云\u0000qwen\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "spark-x2.5",
+        "group": "科大讯飞\u0000spark\u0000general",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "step-3.5-flash",
+        "group": "阶跃星辰\u0000step\u0000fast",
+        "groupTier": "conversational",
+        "window": "120/240",
+        "latestComparable": null,
+        "releasedAt": null,
+        "status": "active",
+        "catalogStatus": "unknown",
+        "publishedCatalogStatus": "unknown"
+      },
+      {
+        "slug": "tencent-hy-vision-1.5-instruct",
+        "group": "腾讯云\u0000hunyuan\u0000vision",
+        "groupTier": "multimodal",
+        "window": "180/365",
+        "latestComparable": "tencent-hy-vision-1.5-instruct",
+        "releasedAt": "2025-12-17",
+        "status": "active",
+        "catalogStatus": "current",
+        "publishedCatalogStatus": "current"
+      }
+    ]
+  },
+  "targets": {
+    "providers": 34,
+    "cells": 136,
+    "states": {
+      "COVERED": 79,
+      "NOT_APPLICABLE": 52,
+      "UNVERIFIABLE": 2,
+      "DEFERRED": 3
+    },
+    "currentTargets": {
+      "declared": 86,
+      "resolved": 86
+    },
+    "missing": [],
+    "partial": [],
+    "deferred": [
+      {
+        "provider": "microsoft",
+        "dimension": "coding",
+        "state": "DEFERRED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": "deferred"
+      },
+      {
+        "provider": "microsoft",
+        "dimension": "api",
+        "state": "DEFERRED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": "deferred"
+      },
+      {
+        "provider": "sensetime",
+        "dimension": "models",
+        "state": "DEFERRED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": "deferred"
+      }
+    ],
+    "unverifiable": [
+      {
+        "provider": "coze",
+        "dimension": "api",
+        "state": "UNVERIFIABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": "unverifiable"
+      },
+      {
+        "provider": "deepseek",
+        "dimension": "deals",
+        "state": "UNVERIFIABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": "unverifiable"
+      }
+    ],
+    "notApplicable": [
+      {
+        "provider": "ai360",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "aliyun",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "aws",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "aws",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "baichuan",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "cerebras",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "cerebras",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "cerebras",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "codebuddy",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "codebuddy",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "codebuddy",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "coze",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "coze",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "cursor",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "cursor",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "deepseek",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "fireworks",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "fireworks",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "fireworks",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "github",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "github",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "groq",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "groq",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "groq",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "jetbrains",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "jetbrains",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "jetbrains",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "microsoft",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "notion",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "notion",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "notion",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "qoder",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "qoder",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "qoder",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "qoder-intl",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "qoder-intl",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "qoder-intl",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "replit",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "replit",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "replit",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "siliconflow",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "siliconflow",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "tencent",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "together",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "together",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "together",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "trae",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "trae",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "trae",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "volcengine",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "windsurf",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "windsurf",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      }
+    ],
+    "blocked": [],
+    "rows": [
+      {
+        "provider": "ai360",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "ai360",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "ai360",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 1,
+        "resolved": 1,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "ai360",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "aliyun",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 1,
+        "resolved": 1,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "aliyun",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "aliyun",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "aliyun",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 4,
+        "ruling": null
+      },
+      {
+        "provider": "anthropic",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "anthropic",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "anthropic",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "anthropic",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 4,
+        "ruling": null
+      },
+      {
+        "provider": "aws",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "aws",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "aws",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "aws",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "baichuan",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "baichuan",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "baichuan",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "baichuan",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "baidu",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 1,
+        "resolved": 1,
+        "present": 17,
+        "ruling": null
+      },
+      {
+        "provider": "baidu",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "baidu",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "baidu",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "cerebras",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "cerebras",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "cerebras",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "cerebras",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "codebuddy",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "codebuddy",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 4,
+        "ruling": null
+      },
+      {
+        "provider": "codebuddy",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "codebuddy",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "coze",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 4,
+        "ruling": null
+      },
+      {
+        "provider": "coze",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "coze",
+        "dimension": "api",
+        "state": "UNVERIFIABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": "unverifiable"
+      },
+      {
+        "provider": "coze",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "cursor",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "cursor",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "cursor",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "cursor",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "deepseek",
+        "dimension": "deals",
+        "state": "UNVERIFIABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": "unverifiable"
+      },
+      {
+        "provider": "deepseek",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "deepseek",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "deepseek",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 3,
+        "ruling": null
+      },
+      {
+        "provider": "fireworks",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "fireworks",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "fireworks",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 10,
+        "resolved": 10,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "fireworks",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "github",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 3,
+        "ruling": null
+      },
+      {
+        "provider": "github",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 3,
+        "ruling": null
+      },
+      {
+        "provider": "github",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "github",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "google",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 4,
+        "ruling": null
+      },
+      {
+        "provider": "google",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "google",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "google",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 4,
+        "ruling": null
+      },
+      {
+        "provider": "groq",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "groq",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "groq",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 6,
+        "resolved": 6,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "groq",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "iflytek",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "iflytek",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "iflytek",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 1,
+        "resolved": 1,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "iflytek",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 1,
+        "resolved": 1,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "jetbrains",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "jetbrains",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "jetbrains",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "jetbrains",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "microsoft",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "microsoft",
+        "dimension": "coding",
+        "state": "DEFERRED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": "deferred"
+      },
+      {
+        "provider": "microsoft",
+        "dimension": "api",
+        "state": "DEFERRED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": "deferred"
+      },
+      {
+        "provider": "microsoft",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "minimax",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 3,
+        "ruling": null
+      },
+      {
+        "provider": "minimax",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 3,
+        "ruling": null
+      },
+      {
+        "provider": "minimax",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "minimax",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 4,
+        "ruling": null
+      },
+      {
+        "provider": "moonshot",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "moonshot",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "moonshot",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "moonshot",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "notion",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "notion",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "notion",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "notion",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "openai",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 3,
+        "ruling": null
+      },
+      {
+        "provider": "openai",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 6,
+        "resolved": 6,
+        "present": 6,
+        "ruling": null
+      },
+      {
+        "provider": "openai",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "openai",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 4,
+        "ruling": null
+      },
+      {
+        "provider": "qoder",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "qoder",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "qoder",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "qoder",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "qoder-intl",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "qoder-intl",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "qoder-intl",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "qoder-intl",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "replit",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "replit",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "replit",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "replit",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "sensetime",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "sensetime",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 1,
+        "resolved": 1,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "sensetime",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 1,
+        "resolved": 1,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "sensetime",
+        "dimension": "models",
+        "state": "DEFERRED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": "deferred"
+      },
+      {
+        "provider": "siliconflow",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "siliconflow",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "siliconflow",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "siliconflow",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "stepfun",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "stepfun",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 4,
+        "ruling": null
+      },
+      {
+        "provider": "stepfun",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "stepfun",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "tencent",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "tencent",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "tencent",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "tencent",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 1,
+        "resolved": 1,
+        "present": 6,
+        "ruling": null
+      },
+      {
+        "provider": "together",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "together",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "together",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 8,
+        "resolved": 8,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "together",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "trae",
+        "dimension": "deals",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "trae",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "trae",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "trae",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "volcengine",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 1,
+        "resolved": 1,
+        "present": 13,
+        "ruling": null
+      },
+      {
+        "provider": "volcengine",
+        "dimension": "coding",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "volcengine",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "volcengine",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 4,
+        "ruling": null
+      },
+      {
+        "provider": "windsurf",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "windsurf",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 2,
+        "ruling": null
+      },
+      {
+        "provider": "windsurf",
+        "dimension": "api",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "windsurf",
+        "dimension": "models",
+        "state": "NOT_APPLICABLE",
+        "declared": 0,
+        "resolved": 0,
+        "present": 0,
+        "ruling": null
+      },
+      {
+        "provider": "zhipu",
+        "dimension": "deals",
+        "state": "COVERED",
+        "declared": 2,
+        "resolved": 2,
+        "present": 12,
+        "ruling": null
+      },
+      {
+        "provider": "zhipu",
+        "dimension": "coding",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "zhipu",
+        "dimension": "api",
+        "state": "COVERED",
+        "declared": 0,
+        "resolved": 0,
+        "present": 1,
+        "ruling": null
+      },
+      {
+        "provider": "zhipu",
+        "dimension": "models",
+        "state": "COVERED",
+        "declared": 3,
+        "resolved": 3,
+        "present": 8,
+        "ruling": null
+      }
+    ]
+  },
+  "closure": {
+    "registryModels": 51,
+    "unmappedModels": [],
+    "links": 92,
+    "linkProblems": [],
+    "declarationRowCount": 58,
+    "apiDeclarationRows": 16,
+    "codingDeclarationRows": 42,
+    "wildcardDeclarations": 0,
+    "declarationProblems": [],
+    "equation": {
+      "A_mappedApiEntries": 92,
+      "B_declaredApiIdentities": 16,
+      "C_undecided": 0,
+      "sum": 108,
+      "apiModelPricingItems": 108,
+      "holds": true
+    },
+    "caliber": {
+      "rowsVsIdentities": {
+        "rows": 16,
+        "identities": 16,
+        "equal": true,
+        "identitiesGeRows": true
+      },
+      "note": "声明行数 = 声明条目数；展开后 identity 数（＝方程的 B）只在没有 variant:null 通配时与它相等"
+    }
+  },
+  "sourceHealth": {
+    "generatedAt": "2026-10-04T16:31:52.051Z",
+    "rowCount": 9,
+    "census": {
+      "healthy": 8,
+      "degraded": 0,
+      "failed": 1,
+      "other": 0
+    },
+    "zeroOutput": [],
+    "longFailing": [
+      {
+        "source": "futurepedia",
+        "consecutiveFailures": 10,
+        "status": "failed",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastSuccessAt": "2026-09-30T01:36:21.446Z"
+      }
+    ],
+    "missingRulings": [],
+    "unreconciledRulingSources": [],
+    "decisionCounts": {
+      "keep-degraded": 1
+    },
+    "reviewedAt": "2026-10-05",
+    "collectorIdsFromSource": [
+      "aitools",
+      "cn_aliyun",
+      "cn_qianfan",
+      "cn_volc_ark",
+      "cn_zhipu",
+      "cn_zhipu_pricing",
+      "futurepedia",
+      "futuretools",
+      "layer3labs"
+    ],
+    "rowsNotInCollectorIds": [],
+    "collectorIdsWithoutHealthRow": []
+  },
+  "comparison": {
+    "available": true,
+    "diffs": [
+      {
+        "metric": "registry.releasedAt.known",
+        "recomputed": 32,
+        "report": 32,
+        "equal": true,
+        "note": "report 的 known 来自 lib/model-freshness.js 的 releaseDateOf().provided"
+      },
+      {
+        "metric": "registry.releasedAt.unknown",
+        "recomputed": 19,
+        "report": 19,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "registry.releasedAt.unparsable",
+        "recomputed": 0,
+        "report": 0,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "registry.withReleaseEvidence",
+        "recomputed": 32,
+        "report": 32,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "catalogStatus.counts",
+        "recomputed": {
+          "current": 29,
+          "aging": 2,
+          "legacy": 1,
+          "historical": 0,
+          "unknown": 19
+        },
+        "report": {
+          "current": 29,
+          "aging": 2,
+          "legacy": 1,
+          "historical": 0,
+          "unknown": 19
+        },
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "targets.states（补零后）",
+        "recomputed": {
+          "COVERED": 79,
+          "PARTIAL": 0,
+          "MISSING": 0,
+          "DEFERRED": 3,
+          "UNVERIFIABLE": 2,
+          "NOT_APPLICABLE": 52,
+          "BLOCKED_SOURCE": 0
+        },
+        "report": {
+          "COVERED": 79,
+          "PARTIAL": 0,
+          "MISSING": 0,
+          "DEFERRED": 3,
+          "UNVERIFIABLE": 2,
+          "NOT_APPLICABLE": 52,
+          "BLOCKED_SOURCE": 0
+        },
+        "equal": true,
+        "note": "报告印 0 值键；独立重算只统计出现过的状态——补零后逐键相等"
+      },
+      {
+        "metric": "targets.missingCount",
+        "recomputed": 0,
+        "report": 0,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "targets.partialCount",
+        "recomputed": 0,
+        "report": 0,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "targets.deferredCount",
+        "recomputed": 3,
+        "report": 3,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "targets.unverifiableCount",
+        "recomputed": 2,
+        "report": 2,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "targets.notApplicableCount",
+        "recomputed": 52,
+        "report": 52,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "registry.unmappedModels",
+        "recomputed": [],
+        "report": [],
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "api.equation.A",
+        "recomputed": 92,
+        "report": 92,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "api.equation.B",
+        "recomputed": 16,
+        "report": 16,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "api.declaredRows",
+        "recomputed": 16,
+        "report": 16,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "api.equation.C",
+        "recomputed": 0,
+        "report": 0,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "api.equation.sum",
+        "recomputed": 108,
+        "report": 108,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "sourceHealth.rowCount",
+        "recomputed": 9,
+        "report": 9,
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "sourceHealth.generatedAt",
+        "recomputed": "2026-10-04T16:31:52.051Z",
+        "report": "2026-10-04T16:31:52.051Z",
+        "equal": true,
+        "note": null
+      },
+      {
+        "metric": "targets.cells",
+        "recomputed": 136,
+        "report": 136,
+        "equal": true,
+        "note": null
+      }
+    ],
+    "mismatched": [],
+    "cellDiffs": [],
+    "catalogDiffs": []
+  }
+}

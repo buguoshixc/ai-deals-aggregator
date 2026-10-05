@@ -1,0 +1,140 @@
+﻿
+① 真实文件与事实快照（scripts/data/coverage-targets.json）
+  ✓ coverage-targets.json 在盘上且是合法 JSON
+  ✓ 顶层没有重复键（判据来自原文，JSON.parse 看不见这类事故）
+  ✓ 真实文件通过全部硬校验（0 处问题，实际 0 处）
+  ✓ 意图层与身份层双向对上：providers.json 每一个 provider 都有一行
+  ✓ 每一条 current target 的 registrySlug 都真实存在于 scripts/data/models.json
+  ✓ 每一条 current target 的 deals source 都真实存在过（source-health 的 name 或 deals.json 的 source）
+  ✓ 意图层没有手写状态字段（state / status / coverage / selfStatus …）
+  ✓ tier / role 全部落在枚举内
+  ✓ reviewedAt 是 null 或 YYYY-MM-DD
+  ✓ 派生行数 == Target 行数 × 维度数
+  ✓ 真实盘面上每一个格子的状态都在七态之内
+  ✓ 真实盘面：COVERED 的格子必须真的有记录（不许空口算覆盖）
+  ✓ 真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉
+  ✓ coverage-targets 没有被登记成公开数据集（PUBLIC_DATASETS）
+  ✓ coverage-targets 不在 Manifest 的数据集地址里
+  ✓ coverage-targets 没有进 Feed 层（lib/feeds.js 里不出现）
+  ✓ 判据层是纯函数：不读墙上时钟、不联网、不写盘
+
+② 七态派生（夹具：每种状态都必须真的能派出来）
+  ✓ 夹具本身是合法输入（0 处问题，实际 0 处）
+  ✓ COVERED：声明的 current target 全部兑现（deals / api / models 三格）
+  ✓ PARTIAL：声明三条只兑现两条 ⇒ PARTIAL（不是 COVERED，也不是 MISSING）
+  ✓ PARTIAL 的未兑现项逐条给出理由（哪一条没兑现、为什么）
+  ✓ MISSING：可覆盖、未延期、来源健康，但盘上一条记录都没有（beta.coding）
+  ✓ 【关键牙】DEFERRED 永不算 MISSING：beta.api 延期且盘上无记录 ⇒ DEFERRED
+  ✓ 【关键牙】schema-not-supported 同样归 DEFERRED（当前 schema 表达不了 ≠ 漏了）
+  ✓ UNVERIFIABLE：查过、官方来源不可核 ⇒ 不算 MISSING（gamma.coding）
+  ✓ NOT_APPLICABLE：维度标 null ⇒ 不适用，且理由来自 applicabilityNote
+  ✓ BLOCKED_SOURCE：声明的来源全部不健康且盘上无记录 ⇒ 不算 MISSING（delta.deals）
+  ✓ BLOCKED_SOURCE 只在"无记录 + 来源全坏"时成立：alpha.deals 来源健康 ⇒ COVERED
+  ✓ 声明了 registry 里存在但**归属别家**的模型 ⇒ 不算兑现，逐条给出归属理由（gamma.models）
+  ✓ MISSING / DEFERRED 的优先级：延期盖过"盘上无记录"
+  ✓ overallState：按"需要人来看"的优先级挑一格代表 provider（beta 有 MISSING 一格 ⇒ MISSING 压过 DEFERRED）
+  ✓ overallState：BLOCKED_SOURCE 压过 NOT_APPLICABLE（delta）
+  ✓ overallState：四格都好 ⇒ COVERED（alpha 的 COVERED/NOT_APPLICABLE/PARTIAL 里 PARTIAL 优先）
+  ✓ states 计数 == 派生行数（不多不少）
+  ✓ 七态在夹具里**全部出现过**
+
+③ 牙（每一条变异都必须让 validateTargets 报红）
+  ✓ 【牙】provider 指向不存在的身份 → 红
+  ✓ 【牙】registrySlug 指向不存在的模型 → 红
+  ✓ 【牙】deals source 编造一个不存在的来源 → 红
+  ✓ 【牙】身份层有 provider，意图层少一行 → 红（双向对账）
+  ✓ 【牙】手写状态字段（state）→ 红
+  ✓ 【牙】手写 selfStatus → 红（研究结论要写成 rulings，不是状态字段）
+  ✓ 【牙】deferred 缺 revisitBy（复查条件）→ 红
+  ✓ 【牙】标了"不适用"却没写 applicabilityNote → 红
+  ✓ 【牙】同一个维度两条裁决 → 红
+  ✓ 【牙】dimensionIntent 缺一个维度 → 红
+  ✓ 【牙】currentTargets 词汇表不匹配（models 写成 modelKey）→ 红
+  ✓ 【牙】给"不适用"的维度写裁决 → 红
+  ✓ 【牙】targets 记录顺序不是规范序 → 红
+  ✓ 【牙】currentTargets 顺序不是规范序 → 红
+  ✓ 【牙】未知字段 → 红
+  ✓ 【牙】intent 为空 → 红
+  ✓ 【牙】tier 非法 → 红
+  ✓ 【牙】rulinss 不是数组 → 红
+  ✓ 【牙】顶层 schemaVersion 不对 → 红
+  ✓ 【牙】顶层未知字段 → 红
+  ✓ 【牙】【原文牙】引用重复键 → 红
+  ✓ 【牙】空表（一条意图都没有）→ 红
+  ✓ 【反向牙】声明了一条盘上没有的 current target 不是校验错误 —— 它是 PARTIAL/MISSING 的事实
+  ✓ 【反向牙】声明落空 + 盘上无记录 ⇒ MISSING（不是校验错误）
+  ✓ 重复键检测器认得嵌套对象里的重复键（含数组下标路径）
+  ✓ 重复键检测器认得顶层重复键（路径为空时报顶层）
+  ✓ 重复键检测器不把字符串值误当键
+  ✓ load() 从**原文**扫出重复键并交给校验收口
+
+④ 端到端：report:coverage（文本 + deterministic JSON）
+  ✓ 【确定性】两次 `report:coverage --json` 输出逐字节一致
+  ✓ 【确定性】退出码在两次运行里一致
+  ✓ 本层不引入任何报告自检问题（上游在飞的问题逐条打印，不计在本层）
+    ℹ 本次运行里来自上游（非本层）的自检问题 3 处：
+       · API 侧记账不闭合：计价条目 108 条 ≠ 已映射认领 92 + 已处置声明 17 + 未判 0（= 109）—— 三个数必须把每一条计价条目恰好分完，否则报告在自说自话。
+       · declarations[58] API 侧 036c5f09561e: variant「t10-mutation-variant」不是记录 036c5f09561e 里 modelKey「meta-llama.prompt-guard-2-22m」的真实变体
+       · declarations 的记录顺序不是规范序（应先按侧别（api / coding），再按各自的键）
+  ✓ 【反证牙】冻结契约规则：把旧键顺序打乱 ⇒ 必须报问题
+  ✓ 【反证牙】冻结契约规则：删掉一个旧键 ⇒ 必须报问题
+  ✓ 【反证牙】冻结契约规则：追加键不在白名单里 ⇒ 必须报问题
+  ✓ 【反证牙】冻结契约规则：白名单里的键少了或顺序不对 ⇒ 必须报问题
+  ✓ 【正向】冻结契约规则：旧键原样 + 白名单内的追加 ⇒ 通过
+  ✗ （隔离上游）报告自检 0 处问题，退出码 0 —— status 1/1；问题 3 处：API 侧记账不闭合：计价条目 108 条 ≠ 已映射认领 92 + 已处置声明 17 + 未判 0（= 109）—— 三个数必须把每一条计价条目恰好分完，否则报告在自说自话。；declarations[58] API 侧 036c5f09561e: variant「t10-mutation-variant」不是记录 036c5f09561e 里 modelKey「meta-llama.prompt-guard-2-22m」的真实变体
+  ✓ （隔离上游）两次运行逐字节一致
+  ✗ （隔离上游）JSON 可解析
+  ✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON —— 报告退出码 1；上游自检问题 3 处：API 侧记账不闭合：计价条目 108 条 ≠ 已映射认领 92 + 已处置声明 17 + 未判 0（= 109）—— 三个数必须把每一条计价条目恰好分完，否则报告在自说自话。；declarations[58] API 侧 036c5f09561e: variant「t10-mutation-variant」不是记录 036c5f09561e 里 modelKey「meta-llama.prompt-guard-2-22m」的真实变体；declarations 的记录顺序不是规范序（应先按侧别（api / coding），再按各自的键）
+  ✓ 【反证牙】发布产物少一个模型（五态之和 ≠ registry 模型数）⇒ 报告自检非 0，并点名「五态普查不闭合」
+  ✓ 【反证牙】出现词表外的 catalogStatus（retired）⇒ 报告自检非 0，并点名「不在词表里」
+
+⑤ source-rulings 判据层（纯函数、零依赖、不读墙钟）+ v3 四节
+  ✓ source-rulings 判据层是纯函数：不读墙上时钟、不联网、不写盘
+  ✓ source-rulings 判据层零依赖（只 require fs / path，没有别的模块）
+  ✓ source-rulings 冻结 schema 的词表与题面一致（四裁决 / 三成本档 / 三条必填关系）
+  ✓ 稳定序：sortRulings 与输入顺序无关，且按 source 的 code-unit 序（大写在前的 code-unit 事实）
+  ✓ source-rulings 夹具本身合法（0 处问题，实际 0 处）
+  ✓ 三方对账夹具本身合法（0 处问题）
+  ✓ 【牙】source-rulings schema：schemaVersion 不对 → 红
+  ✓ 【牙】source-rulings schema：顶层未知字段 → 红
+  ✓ 【牙】source-rulings schema：decision 非法（watch = 变相的"待定"）→ 红
+  ✓ 【牙】source-rulings schema：reason 为空 → 红
+  ✓ 【牙】source-rulings schema：同一个来源两条裁决 → 红
+  ✓ 【牙】source-rulings schema：rulings 不是按 source 的 code-unit 序 → 红
+  ✓ 【牙】source-rulings schema：裁决里出现未知字段 → 红
+  ✓ 【牙】source-rulings schema：裁决字段顺序不是规范序 → 红
+  ✓ 【牙】source-rulings schema：evidence 不是数组 → 红
+  ✓ 【牙】source-rulings schema：evidence 缺 url → 红
+  ✓ 【牙】source-rulings schema：evidence 的 url 不是绝对地址 → 红
+  ✓ 【牙】source-rulings schema：evidence 的 capturedAt 不是日期 → 红
+  ✓ 【牙】source-rulings schema：evidence 的 reading 为空 → 红
+  ✓ 【牙】source-rulings schema：overlap 不是对象 → 红
+  ✓ 【牙】source-rulings schema：overlap 计数是负数 → 红
+  ✓ 【牙】source-rulings schema：maintenanceCost 非法 → 红
+  ✓ 【牙】source-rulings schema：keep-degraded 缺 whyKept → 红
+  ✓ 【牙】source-rulings schema：keep-degraded 缺 revisitBy → 红
+  ✓ 【牙】source-rulings schema：headless-migrate 缺 headlessStability → 红
+  ✓ 【牙】source-rulings schema：repair 缺 revisitBy → 红
+  ✓ 【牙】三方对账：已裁决 retire 的来源仍挂在采集器注册表里 → 红
+  ✓ 【牙】三方对账：连续失败 ≥ 3 次的来源没有裁决 → 红（清空裁决表）
+  ✓ 【牙】三方对账：repair 的来源不在注册表里 → 红
+  ✓ 【牙】三方对账：非 retire 的裁决命不中任何身份（名字写错）→ 红
+  ✓ 【反向牙】retire 的来源**完全不在任何一层**不算错（退出去的来源本来就该从注册表与心跳里消失）
+  ✓ 【夹具】裁决 → 身份命中：id 与 name 两种写法都能命中同一个来源
+  ✗ v3：裁决表不在盘上时**优雅降级**（退出码 0、文本如实说「尚未落盘」、不崩） —— exit 1；问题 API 侧记账不闭合：计价条目 108 条 ≠ 已映射认领 92 + 已处置声明 17 + 未判 0（= 109）—— 三个数必须把每一条计价条目恰好分完，否则报告在自说自话。；declarations[58] API 侧 036c5f09561e: variant「t10-mutation-variant」不是记录 036c5f09561e 里 modelKey「meta-llama.prompt-guard-2-22m」的真实变体
+  ✓ v3：未落盘层**计入报告自检口径**（同一行相邻打印，不静默当通过）
+  ✓ v3：现场生成的合法夹具通过 schema 校验（0 处问题，实际 0 处）
+  ✗ v3：【确定性】喂同一份夹具的两次 --json 输出逐字节一致 —— status 1/1，长度 35651/35651
+  ✗ v3：裁决表落盘（夹具）后报告自检 0 处问题，且不再有待落盘层 —— 问题 3 处：API 侧记账不闭合：计价条目 108 条 ≠ 已映射认领 92 + 已处置声明 17 + 未判 0（= 109）—— 三个数必须把每一条计价条目恰好分完，否则报告在自说自话。；declarations[58] API 侧 036c5f09561e: variant「t10-mutation-variant」不是记录 036c5f09561e 里 modelKey「meta-llama.prompt-guard-2-22m」的真实变体
+  ✗ v3：v3 四节的 JSON 结构可核对：报告成功运行并在 stdout 给出 JSON —— 报告退出码 1；问题 API 侧记账不闭合：计价条目 108 条 ≠ 已映射认领 92 + 已处置声明 17 + 未判 0（= 109）—— 三个数必须把每一条计价条目恰好分完，否则报告在自说自话。；declarations[58] API 侧 036c5f09561e: variant「t10-mutation-variant」不是记录 036c5f09561e 里 modelKey「meta-llama.prompt-guard-2-22m」的真实变体；declarations 的记录顺序不是规范序（应先按侧别（api / coding），再按各自的键）
+
+=== coverage-expansion-v1 覆盖意图层演练：108 项通过，7 项失败 ===
+失败项：
+  ✗ （隔离上游）报告自检 0 处问题，退出码 0
+  ✗ （隔离上游）JSON 可解析
+  ✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON
+  ✗ v3：裁决表不在盘上时**优雅降级**（退出码 0、文本如实说「尚未落盘」、不崩）
+  ✗ v3：【确定性】喂同一份夹具的两次 --json 输出逐字节一致
+  ✗ v3：裁决表落盘（夹具）后报告自检 0 处问题，且不再有待落盘层
+  ✗ v3：v3 四节的 JSON 结构可核对：报告成功运行并在 stdout 给出 JSON
+

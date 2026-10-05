@@ -1,0 +1,85 @@
+=== t12 · 契约里全部 7 条 Verify（原始字节读数） ===
+1) node scripts/tools/coverage-targets-selftest.js      exit=0  sha256=a41dde8d41e65cff25f55a3e9f6cf3acf7a4ae89ea37acdfafc78397451123ce  bytes=23069
+   === coverage-expansion-v1 覆盖意图层演练：201 项通过，0 项失败 ===
+2) node scripts/tools/models-selftest.js                 exit=0  sha256=d459d975715cfff5005af099e5b6e3ca67fae499fa5fc24c3f893274ad9f04a0  bytes=18158
+   ✅ === v3.0 Model Registry 演练：148 项通过，0 项失败 ===
+3) node scripts/tools/coverage-report.js                 exit=0  sha256=64e04acfdcd508143572fcf752cc61c7e33927265f8c611df31115b92bf2c9ad  bytes=51319
+   报告自检问题：0 处
+4) node scripts/tools/coverage-report.js --json  run1    exit=0  sha256=cc0f2d45385b1d4af2c4ae1cda6cd037866c479f45694c666af5bcf60e186f9b  bytes=256643
+                                        run2    exit=0  sha256=cc0f2d45385b1d4af2c4ae1cda6cd037866c479f45694c666af5bcf60e186f9b  bytes=256643
+   byte-identical = true
+5) node scripts/validate.js --strict                     exit=0  sha256=3f0ff15eb11291554ece820e81d2026d01bc8f47aad3ae02c1be0b74906a13fd  bytes=3379
+   ✅ 校验通过（strict 模式）
+6) node scripts/tools/check-models-reproducible.js       exit=0  sha256=0291bbeb14363583044fdbde2d47bb230b49abc4ca0f852d098cbe797e9144c5  bytes=184
+   ✅ Model Registry 可重建性通过：models.json 与 model-registry-links.json 都与来源层逐字节一致
+7) node scripts/tools/check-model-registry-links.js      exit=0  sha256=69d2520676efa8703ea75dd1d60e85a35f76ae29ad17179b5cfc17cb76923503  bytes=2329
+   ✅ Model Registry 关系层通过：每条映射都指向真实存在的记录与模型，一条 source pricing identity 至多归属一个 registry 模型，引文逐字来自记录本身；API 与 Coding 两侧每一个模型身份
+
+=== 检查名增删对照（既有检查名一个不改；条数只增） ===
+coverage-targets-selftest.js（改前 = t6 收口时的 178/0 读数）：178 → 201（净增 23）
+   被删除或改名的既有检查名：0
+   新增检查名：23
+     + t12：声明行的两种视图必须相等、且展开数 ≥ 行数（A/B/行数三项在 JSON 里逐项可核）
+     + t12：每条 API 侧声明行都能按 (apiPlanId, modelKey, variant) 逐字对回 api-plans 记录（通配行必须展开到 ≥1 条真实变体）
+     + t12：【不许同源自证】声明行数必须与**现读文件**数出来的 API 侧声明行数相等，且展开增量必须等于逐格复算出的通配多余覆盖
+     + t12：【定向夹具·通配】variant:null 通配声明 1 行展开成 2 条计价条目 ⇒ 展开数**严格大于**声明行数（不是等于）
+     + t12：【定向夹具·通配】展开出的每条 identity 都能**逐字**对回同一份 api-plans 的 (apiPlanId, modelKey, variant)
+     + t12：【定向夹具·通配】在这个**合法**通配态下新判据 0 问题（0 映射 + 2 已处置 + 0 未判 == 2 计价条目；行数对得上文件、增量对得上逐格复算）
+     + t12：【方向牙·通配】通配声明指向不存在的 modelKey ⇒ 一条 identity 都没覆盖（unresolved）⇒ 展开数 < 行数 ⇒ 同一支判据**必红**
+     + t12：【方向牙·通配】同一份声明（指向不存在的 modelKey）也被**逐行回查**抓住：不在记录
+     + t12：【方向牙·通配】通配声明指向存在但一条真实变体都没有的 modelKey ⇒ 一条 identity 都没覆盖（unresolved）⇒ 展开数 < 行数 ⇒ 同一支判据**必红**
+     + t12：【方向牙·通配】同一份声明（指向存在但一条真实变体都没有的 modelKey）也被**逐行回查**抓住：一条真实变体都没匹配到
+     + 【反证牙·t12】变异①-a：声明行数与展开数不一致（count = 行数 − 1） ⇒ 新判据必红
+     + 【反证牙·t12】变异①-b：声明行数与展开数不一致（count = 行数 + 1） ⇒ 新判据必红
+     + 【反证牙·t12】变异②：声明计数与数组长度脱钩（逐条留档被换成非数组） ⇒ 新判据必红
+     + 【反证牙·t12】变异③：B 与行数脱钩（B = 行数 − 1，方程仍闭合） ⇒ 新判据必红
+     + 【反证牙·t12】变异④：方程不闭合（C 多算一条） ⇒ 新判据必红
+     + 【反证牙·t12】变异⑤：现读文件与载荷的行数对不上（文件多一行 —— 例如有人删了声明却忘了同步） ⇒ 新判据必红
+     + 【反证牙·t12】变异⑥：展开增量对不上逐格复算的通配多余覆盖（增量多 1，别处冒出来的） ⇒ 新判据必红
+     + 【反证牙·t12】旧判据**漏抓**、新判据抓住的一例：声明行的两种视图脱钩（B == count 仍成立 ⇒ 旧绿）
+     + 【反证牙·t12】旧判据**假红**（T6-F1 本体）、新判据正确的一例：合法通配态 B=2 > 行数=1 且方程闭合 ⇒ 旧红 / 新绿
+     + 【反证牙·t12】B 与行数的**脱钩**（B < 行数、方程仍闭合）⇒ 新旧两支判据**都**必红（没有放松）
+     + 【反证牙·t12·报告层】处置登记表里加一条"对不上任何计价条目"的通配声明 ⇒ 报告自检非 0，并点名「一条真实变体都没匹配到」
+     + 【反证牙·t12·报告层】处置登记表顺序被打乱（声明数组乱序）⇒ 报告自检非 0，并点名「记录顺序不是规范序」
+     + v3③【可证伪性·t7-F1】同一支判据在三种扰动输入下**必红**（否则 MISSING=0 时它就是空集恒真的假牙）
+models-selftest.js（改前 = 本 attempt 改前的 141 项通过 / 3 项失败读数）：144 → 148（净增 4）
+   被删除或改名的既有检查名：4
+     - 汇总：44 个模型全部 active、0 retired（退役只由人工依据驱动） —— {"total":51,"byStatus":{"active":51,"retired":0,"unknown":0},"byModelRole":{"general":29,"fast":6,"reasoning":0,"coding":1,"vision":8,"embedding":1,"audio":0,"realtime":0,"translation":2,"other":2,"(null)":2},"byCatalogStatus":{"current":0,"aging":0,"legacy":0,"historical":0,"unknown":51},"developers":15,"families":15,"updatedAt":"2026-10-05T00:00:00+08:00"}
+     - 真实数据：API 侧声明 16 条，reason 全部是 off-registry-model、sourceUrl 全部取自该记录自己的官方页
+     - 【API 处置】coverageOf：declaredApiEntries 逐条留档（12 条 · 带 provider）+ unmappedModelKeys 归零 + 三者和 == 总条目 —— {"declared":16,"unmapped":0,"mapped":92,"identities":16,"items":108}
+     - 【API 处置·对照】真实数据里 12 条声明在折叠索引下 0 命中（7 条能对上的已经去写了映射）
+   新增检查名：8
+     + 汇总：每个身份都有结局（total == 现读 models.json 身份数 == 发布条目数；active + retired + unknown == total），且 retired 仍为 0（退役只由人工依据驱动）
+     + 【保护强度对照·t12】汇总判据：旧会红/新仍红（翻成 retired、被漏掉）与 旧假红/新正确（合法增长）各就各位，且新多抓一类（三态不闭合）
+     + 真实数据：API 侧声明 16 条 == 现读 gaps 文件的 16 条，且每条都逐字对得回真实 api-plans 记录（reason / sourceUrl / modelKey / variant）
+     + 【唯一性牙·t12】同一个 (apiPlanId, modelKey, variant) 不许在处置登记表里重复出现（本轮曾实际出现 23643dfd94f8/ernie-5.1 重复 2 次）
+     + 【可证伪性·t12】API 侧声明判据在四种扰动输入下**必红**（reason / sourceUrl / variant / apiPlanId）
+     + 【可证伪性·t12】唯一性牙在同一 (apiPlanId, modelKey, variant) 出现两次时**必红**（重复声明不会让任何计数变小）
+     + 【API 处置】coverageOf：declaredApiEntries 逐条留档（16 条 · 带 provider）+ 行数 == 现读文件行数 + 展开数 == 逐条展开去重 + unmappedModelKeys 归零 + 三者和 == 总条目
+     + 【API 处置·对照】真实数据里 16 条声明在折叠索引下 0 命中（能对上的已经去写了映射）
+
+=== t12 现场读数（汇总判据保护强度对照 / API 侧声明可证伪性 / 变异的现场命中） ===
+models-selftest.js · 合法增长（文件 51、total 51、三态闭合） ⇒ 旧断言红 / 新判据绿
+models-selftest.js · 有身份被翻成 retired（44→43 active + 1 retired） ⇒ 旧断言红 / 新判据红
+models-selftest.js · 有身份被发布管线漏掉（文件 44、total/发布 43） ⇒ 旧断言红 / 新判据红
+models-selftest.js · 旧抓不住、新抓住：发布管线漏掉一条（文件 44、汇总 44、发布条目 43） ⇒ 旧断言绿 / 新判据红
+models-selftest.js · reason 改错 ⇒ apiDeclarations[0] 0940febeeea9/360zhinao-pro/standard: reason 必须是 off-registry-model（实得 "pool"）
+models-selftest.js · sourceUrl 换成别家官方页 ⇒ apiDeclarations[0] 0940febeeea9/360zhinao-pro/standard: sourceUrl 不是该记录自己的官方页（实得 https://example.invalid/other）
+models-selftest.js · variant 编造 ⇒ apiDeclarations[0] 0940febeeea9/360zhinao-pro/no-such-variant: variant 不是该 modelKey 的真实变体（实得 ["standard"]）
+models-selftest.js · apiPlanId 不存在 ⇒ apiDeclarations[0] ffffffffffff/x/null: apiPlanId 不在 api-plans.json 里
+coverage-targets-selftest.js · 变异①-a：声明行数与展开数不一致（count = 行数 − 1） ⇒ 新判据红 / 旧判据红：① 声明行的两种视图不等：registry.declaredApiEntryRows.length=16 ≠ gaps.declaredApiEntryCount=15
+coverage-targets-selftest.js · 变异①-b：声明行数与展开数不一致（count = 行数 + 1） ⇒ 新判据红 / 旧判据红：① 声明行的两种视图不等：registry.declaredApiEntryRows.length=16 ≠ gaps.declaredApiEntryCount=17
+coverage-targets-selftest.js · 变异②：声明计数与数组长度脱钩（逐条留档被换成非数组） ⇒ 新判据红 / 旧判据红：逐条留档 declaredApiEntryRows 必须是数组（声明行没有出口 ⇒ 下面的两条关系无从核对）
+coverage-targets-selftest.js · 变异③：B 与行数脱钩（B = 行数 − 1，方程仍闭合） ⇒ 新判据红 / 旧判据红：② 展开后的计价条目数 15 < 声明行数 16 —— 展开只会让条目数不少于行数（variant:null 一行展开多条）；小于说明有声明行一条 identity 都没覆盖到位（或两个视图本来就是不同的量）
+coverage-targets-selftest.js · 变异④：方程不闭合（C 多算一条） ⇒ 新判据红 / 旧判据红：③ API 侧记账不闭合：A 92 + B 16 + C 1 = 109 ≠ 计价条目 108
+coverage-targets-selftest.js · 变异⑤：现读文件与载荷的行数对不上（文件多一行 —— 例如有人删了声明却忘了同步） ⇒ 新判据红 / 旧判据绿：④ 载荷里的声明行数 16 ≠ 现读文件里的 API 侧声明行数 17 —— 载荷与盘上文件必须逐字对上（两边各数一遍，不是同一个数抄两处）
+coverage-targets-selftest.js · 变异⑥：展开增量对不上逐格复算的通配多余覆盖（增量多 1，别处冒出来的） ⇒ 新判据红 / 旧判据绿：⑤ 展开数超出行数的部分 0 ≠ 逐格复算出来的通配多余覆盖 1 —— 展开的增量只能来自 variant:null 行（每行贡献"该 modelKey 真实变体数 − 1"），别处冒出来的增量必红
+coverage-targets-selftest.js · 旧判据漏抓的一例：两种视图脱钩（B == count 仍成立） ⇒ 新判据红 / 旧判据绿：① 声明行的两种视图不等：registry.declaredApiEntryRows.length=15 ≠ gaps.declaredApiEntryCount=16
+coverage-targets-selftest.js · 旧判据假红的一例（T6-F1 本体）：合法通配态 B(2) > 行数(1) 且方程闭合 ⇒ 新判据绿 / 旧判据红：旧：旧断言：展开后的计价条目数 ≠ 声明行数 ⇒ 新：绿
+coverage-targets-selftest.js · 合成单格 present 扰动（present=1） ⇒ 有 1 格 MISSING 却在盘上有记录（present ≠ 0）：(合成)/deals=1 —— MISSING 的定义是"可覆盖、未延期、来源健康，但盘上一条都没有"
+coverage-targets-selftest.js · 集合大小与计数脱钩（空集 vs states.MISSING=1） ⇒ MISSING 行集合大小 0 ≠ states.MISSING 计数 1 —— 两处读数必须一致（空集也要对上 0，不许靠"没有行"蒙过去）
+coverage-targets-selftest.js · 真实载荷 ∨ 合成行：把一格 MISSING 的 present 改成 1 ⇒ MISSING 行集合大小 1 ≠ states.MISSING 计数 0 —— 两处读数必须一致（空集也要对上 0，不许靠"没有行"蒙过去）
+
+=== 归属纪律 ===
+本次只改两个自测文件：scripts/tools/coverage-targets-selftest.js、scripts/tools/models-selftest.js。
+scripts/data/** 零改动（所有变异施加在内存载荷；报告层夹具写在 os.tmpdir()）。

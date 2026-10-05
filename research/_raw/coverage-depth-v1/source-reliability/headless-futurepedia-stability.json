@@ -1,0 +1,254 @@
+{
+  "probe": "probe-futurepedia-headless.cjs",
+  "target": "https://www.futurepedia.io/",
+  "rounds": 3,
+  "ranAtUtc": "2026-10-05T03:37:43.249Z",
+  "channel": "msedge",
+  "launchStatusBefore": {
+    "attempted": false,
+    "ok": null,
+    "channel": null,
+    "error": null,
+    "checkedAt": null
+  },
+  "results": [
+    {
+      "round": 1,
+      "startedAtUtc": "2026-10-05T03:37:43.249Z",
+      "ms": 6489,
+      "ok": true,
+      "finalUrl": "https://www.futurepedia.io/",
+      "title": "Find The Best AI Tools & Software, Futurepedia.io",
+      "htmlBytes": 1480303,
+      "domTextLength": 5162,
+      "visibleTextLength": 4809,
+      "notes": [],
+      "matchedNeedle": "Futurepedia",
+      "consoleErrors": [],
+      "failedRequests": [],
+      "parseItems": 7,
+      "parseTitles": [
+        "ChatGPT",
+        "Claude",
+        "HubSpot AEO Sensor",
+        "Perplexity",
+        "Google Gemini",
+        "Midjourney",
+        "Grok"
+      ],
+      "parsePageUrls": [
+        "https://www.futurepedia.io/tool/chatgpt",
+        "https://www.futurepedia.io/tool/claude",
+        "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+        "https://www.futurepedia.io/tool/perplexity-ai",
+        "https://www.futurepedia.io/tool/google-gemini",
+        "https://www.futurepedia.io/tool/midjourney",
+        "https://www.futurepedia.io/tool/grok"
+      ],
+      "digest": {
+        "markers": {
+          "login": false,
+          "captcha": false,
+          "cloudflare": false,
+          "errorPage": false,
+          "consentOnly": false,
+          "spaShell": false,
+          "noDataTable": true
+        },
+        "shape": {
+          "hasDataTable": false,
+          "hasCards": true,
+          "scriptToTextRatio": 99
+        },
+        "counts": {
+          "table": 0,
+          "tr": 0,
+          "td": 0,
+          "card": 11,
+          "listItem": 28,
+          "heading": 8,
+          "heading1": 1,
+          "link": 108,
+          "form": 2,
+          "input": 2,
+          "script": 75,
+          "div": 298
+        },
+        "textLength": 5162,
+        "selectorHits": {
+          "a[href*=\"utm_source=futurepedia\"]": 1,
+          "meta[name=\"description\"]": 1,
+          "span": 47
+        },
+        "htmlSha256": "b3d16e99fb0cfb75"
+      }
+    },
+    {
+      "round": 2,
+      "startedAtUtc": "2026-10-05T03:37:51.249Z",
+      "ms": 3399,
+      "ok": true,
+      "finalUrl": "https://www.futurepedia.io/",
+      "title": "Find The Best AI Tools & Software, Futurepedia.io",
+      "htmlBytes": 1481408,
+      "domTextLength": 5162,
+      "visibleTextLength": 4809,
+      "notes": [],
+      "matchedNeedle": "Futurepedia",
+      "consoleErrors": [],
+      "failedRequests": [],
+      "parseItems": 7,
+      "parseTitles": [
+        "ChatGPT",
+        "Claude",
+        "HubSpot AEO Sensor",
+        "Perplexity",
+        "Google Gemini",
+        "Midjourney",
+        "Grok"
+      ],
+      "parsePageUrls": [
+        "https://www.futurepedia.io/tool/chatgpt",
+        "https://www.futurepedia.io/tool/claude",
+        "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+        "https://www.futurepedia.io/tool/perplexity-ai",
+        "https://www.futurepedia.io/tool/google-gemini",
+        "https://www.futurepedia.io/tool/midjourney",
+        "https://www.futurepedia.io/tool/grok"
+      ],
+      "digest": {
+        "markers": {
+          "login": false,
+          "captcha": false,
+          "cloudflare": false,
+          "errorPage": false,
+          "consentOnly": false,
+          "spaShell": false,
+          "noDataTable": true
+        },
+        "shape": {
+          "hasDataTable": false,
+          "hasCards": true,
+          "scriptToTextRatio": 99
+        },
+        "counts": {
+          "table": 0,
+          "tr": 0,
+          "td": 0,
+          "card": 11,
+          "listItem": 28,
+          "heading": 8,
+          "heading1": 1,
+          "link": 108,
+          "form": 2,
+          "input": 2,
+          "script": 76,
+          "div": 299
+        },
+        "textLength": 5162,
+        "selectorHits": {
+          "a[href*=\"utm_source=futurepedia\"]": 1,
+          "meta[name=\"description\"]": 1,
+          "span": 47
+        },
+        "htmlSha256": "d2e2d30194c4cbfe"
+      }
+    },
+    {
+      "round": 3,
+      "startedAtUtc": "2026-10-05T03:37:56.159Z",
+      "ms": 3614,
+      "ok": true,
+      "finalUrl": "https://www.futurepedia.io/",
+      "title": "Find The Best AI Tools & Software, Futurepedia.io",
+      "htmlBytes": 1481404,
+      "domTextLength": 5162,
+      "visibleTextLength": 4809,
+      "notes": [],
+      "matchedNeedle": "Futurepedia",
+      "consoleErrors": [],
+      "failedRequests": [],
+      "parseItems": 7,
+      "parseTitles": [
+        "ChatGPT",
+        "Claude",
+        "HubSpot AEO Sensor",
+        "Perplexity",
+        "Google Gemini",
+        "Midjourney",
+        "Grok"
+      ],
+      "parsePageUrls": [
+        "https://www.futurepedia.io/tool/chatgpt",
+        "https://www.futurepedia.io/tool/claude",
+        "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+        "https://www.futurepedia.io/tool/perplexity-ai",
+        "https://www.futurepedia.io/tool/google-gemini",
+        "https://www.futurepedia.io/tool/midjourney",
+        "https://www.futurepedia.io/tool/grok"
+      ],
+      "digest": {
+        "markers": {
+          "login": false,
+          "captcha": false,
+          "cloudflare": false,
+          "errorPage": false,
+          "consentOnly": false,
+          "spaShell": false,
+          "noDataTable": true
+        },
+        "shape": {
+          "hasDataTable": false,
+          "hasCards": true,
+          "scriptToTextRatio": 99
+        },
+        "counts": {
+          "table": 0,
+          "tr": 0,
+          "td": 0,
+          "card": 11,
+          "listItem": 28,
+          "heading": 8,
+          "heading1": 1,
+          "link": 108,
+          "form": 2,
+          "input": 2,
+          "script": 76,
+          "div": 299
+        },
+        "textLength": 5162,
+        "selectorHits": {
+          "a[href*=\"utm_source=futurepedia\"]": 1,
+          "meta[name=\"description\"]": 1,
+          "span": 47
+        },
+        "htmlSha256": "779fa2e853311668"
+      }
+    }
+  ],
+  "notes": [
+    "无头路径走的也是生产 lib/browser.js（与 cn_zhipu_pricing / cn_volc_ark 同一条链路）。",
+    "本机出口 ≠ CI 出口：读数只在「本机是否稳定」这一层成立。"
+  ],
+  "launchStatusAfter": {
+    "attempted": true,
+    "ok": true,
+    "channel": "msedge",
+    "error": null,
+    "checkedAt": "2026-10-05T03:37:56.365Z"
+  },
+  "summary": {
+    "rounds": 3,
+    "okRounds": 3,
+    "errorRounds": 0,
+    "itemCounts": [
+      7,
+      7,
+      7
+    ],
+    "stableItemCount": true,
+    "medianMs": 3614,
+    "maxMs": 6489,
+    "identicalTitles": true
+  }
+}

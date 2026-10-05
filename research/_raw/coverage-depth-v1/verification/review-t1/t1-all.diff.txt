@@ -1,0 +1,4239 @@
+diff --git a/api-plans.json b/api-plans.json
+index 2d2dcbe..5112ae1 100644
+--- a/api-plans.json
++++ b/api-plans.json
+@@ -1,11 +1,97 @@
+ {
+   "schemaVersion": 1,
+-  "updatedAt": "2026-10-04T00:00:00+08:00",
+-  "count": 17,
++  "updatedAt": "2026-10-05T00:00:00+08:00",
++  "count": 24,
+   "plans": [
++    {
++      "id": "0940febeeea9",
++      "kind": "api",
++      "provider": "ai360",
++      "planName": "360zhinao 模型广场按量计费",
++      "channel": "standard",
++      "officialUrl": "https://ai.360.com/open/zh/models",
++      "source": "Official-Pricing",
++      "sourceUrl": "https://ai.360.com/open/zh/models",
++      "region": "cn",
++      "pricing": {
++        "currency": "CNY",
++        "unit": "per_1M_tokens",
++        "unitNote": "官方模型广场每个模型卡片逐条写「输入价格: ¥1 / 1M tokens」，单位为每百万 tokens、币种人民币"
++      },
++      "models": [
++        {
++          "name": "360zhinao/360zhinao-pro",
++          "modelKey": "360zhinao-pro",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 2,
++            "output": 5,
++            "cachedInput": 0.2,
++            "cacheWrite": 2.5,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "官方卡片未写简介；上下文 32,000 / 最大输出 8,192"
++        },
++        {
++          "name": "360zhinao/360zhinao-turbo-llm-geo",
++          "modelKey": "360zhinao-turbo-llm-geo",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 1,
++            "output": 2,
++            "cachedInput": 0.1,
++            "cacheWrite": 1.25,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "官方卡片逐字：业务内部专用模型；上下文 116,000 / 最大输出 16,000"
++        }
++      ],
++      "freeTier": null,
++      "limits": null,
++      "credits": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "pricing.unit",
++          "quote": "输入价格: ¥1 / 1M tokens 输出价格: ¥2 / 1M tokens 缓存写入价格: ¥1.25 / 1M tokens 缓存读取价格: ¥0.1 / 1M tokens 上下文: 116,000 最大输出: 16,000",
++          "sourceUrl": "https://ai.360.com/open/zh/models",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "models.360zhinao-pro",
++          "quote": "360zhinao/360zhinao-pro 360智脑 输入价格: ¥2 / 1M tokens 输出价格: ¥5 / 1M tokens 缓存写入价格: ¥2.5 / 1M tokens 缓存读取价格: ¥0.2 / 1M tokens 上下文: 32,000 最大输出: 8,192",
++          "sourceUrl": "https://ai.360.com/open/zh/models",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "models.360zhinao-turbo-llm-geo",
++          "quote": "360zhinao/360zhinao-turbo-llm-geo 360智脑 业务内部专用模型 输入价格: ¥1 / 1M tokens 输出价格: ¥2 / 1M tokens 缓存写入价格: ¥1.25 / 1M tokens 缓存读取价格: ¥0.1 / 1M tokens 上下文: 116,000 最大输出: 16,000",
++          "sourceUrl": "https://ai.360.com/open/zh/models",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "derivedMetrics": {}
++    },
+     {
+       "id": "ebc4af9a71b6",
+       "kind": "api",
+       "provider": "aliyun",
+       "planName": "模型推理按量计费(中国内地)",
+       "channel": "standard",
+@@ -384,12 +470,202 @@
+           "capturedAt": "2026-10-01",
+           "lang": "en"
+         }
+       ],
+       "derivedMetrics": {}
+     },
++    {
++      "id": "218c142dcb17",
++      "kind": "api",
++      "provider": "baichuan",
++      "planName": "百川大模型按量计费",
++      "channel": "standard",
++      "officialUrl": "https://platform.baichuan-ai.com/prices",
++      "source": "Official-Pricing",
++      "sourceUrl": "https://platform.baichuan-ai.com/prices",
++      "region": "cn",
++      "pricing": {
++        "currency": "CNY",
++        "unit": "per_1K_tokens",
++        "unitNote": "官方「价格说明」逐字写「计费模式：按照实际使用的数据量（千tokens）收费」，价目表每格写「元/千tokens」——单位是每千 tokens、币种人民币"
++      },
++      "models": [
++        {
++          "name": "Baichuan-M3-Plus",
++          "modelKey": "baichuan-m3-plus",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 0.005,
++            "output": 0.009,
++            "cachedInput": null,
++            "cacheWrite": null,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "官方价目表：上下文 32k；对话会自动触发「医疗搜索」并单独计费（0.03 元/次）"
++        },
++        {
++          "name": "Baichuan-M3",
++          "modelKey": "baichuan-m3",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 0.01,
++            "output": 0.03,
++            "cachedInput": null,
++            "cacheWrite": null,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "官方价目表：上下文 32k，00:00~24:00 单一价"
++        }
++      ],
++      "freeTier": null,
++      "limits": null,
++      "credits": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "pricing.unit",
++          "quote": "按照实际使用的数据量（千tokens）收费。Token在这里指的是文本中的一个最小单位",
++          "sourceUrl": "https://platform.baichuan-ai.com/prices",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "models.baichuan-m3",
++          "quote": "模型调用 Baichuan-M3 | 32k | 00:00 ~ 24:00 | 输入：0.01元/千tokens 输出：0.03元/千tokens",
++          "sourceUrl": "https://platform.baichuan-ai.com/prices",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "models.baichuan-m3-plus",
++          "quote": "模型调用 Baichuan-M3-Plus | 32k | 00:00 ~ 24:00 | 输入：0.005元/千tokens 输出：0.009元/千tokens",
++          "sourceUrl": "https://platform.baichuan-ai.com/prices",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "derivedMetrics": {}
++    },
++    {
++      "id": "23643dfd94f8",
++      "kind": "api",
++      "provider": "baidu",
++      "planName": "千帆模型按量后付费",
++      "channel": "standard",
++      "officialUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
++      "source": "Official-Pricing",
++      "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
++      "region": "cn",
++      "pricing": {
++        "currency": "CNY",
++        "unit": "per_1K_tokens",
++        "unitNote": "官方「价格」页价格表「单位」列逐格写「元/千tokens」，币种人民币"
++      },
++      "models": [
++        {
++          "name": "ERNIE-4.5-Turbo-128K",
++          "modelKey": "ernie-4.5-turbo-128k",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 0.0008,
++            "output": 0.0032,
++            "cachedInput": 0.0002,
++            "cacheWrite": null,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "官方另给批量推理列（输入 0.00032 / 输出 0.00128）与搜索增强 0.004 元/次，本记录只收在线推理列"
++        },
++        {
++          "name": "ERNIE-5.1",
++          "modelKey": "ernie-5.1",
++          "variant": "long_context",
++          "aliases": null,
++          "rates": {
++            "input": 0.006,
++            "output": 0.022,
++            "cachedInput": null,
++            "cacheWrite": null,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "同一模型的长上下文档；官方分档为「32k<输入<=128k」"
++        },
++        {
++          "name": "ERNIE-5.1",
++          "modelKey": "ernie-5.1",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 0.004,
++            "output": 0.018,
++            "cachedInput": null,
++            "cacheWrite": null,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "文本生成/在线推理列；官方分档为「输入（输入<=32k）」"
++        }
++      ],
++      "freeTier": null,
++      "limits": null,
++      "credits": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "pricing.unit",
++          "quote": "模型名称 版本名称 服务内容 子项 在线推理 批量推理 单位 ERNIE 5.1 ERNIE-5.1 推理服务 输入（输入<=32k） 0.004 - 元/千tokens",
++          "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "models.ernie-4.5-turbo-128k",
++          "quote": "ERNIE 4.5 Turbo ERNIE-4.5-Turbo-128K 推理服务 输入 0.0008 0.00032 元/千tokens 命中缓存 0.0002 -- 元/千tokens 输出 0.0032 0.00128 元/千tokens",
++          "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "models.ernie-5.1",
++          "quote": "ERNIE 5.1 ERNIE-5.1 推理服务 输入（输入<=32k） 0.004 - 元/千tokens 输出（输入<=32k） 0.018 - 元/千tokens 输入（32k<输入<=128k） 0.006 - 元/千tokens 输出（32k<输入<=128k） 0.022 - 元/千tokens",
++          "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "derivedMetrics": {}
++    },
+     {
+       "id": "61aa6c3ed3ff",
+       "kind": "api",
+       "provider": "cerebras",
+       "planName": "推理按量计费 Developer 档",
+       "channel": "standard",
+@@ -1191,12 +1467,73 @@
+           "capturedAt": "2026-10-04",
+           "lang": "en"
+         }
+       ],
+       "derivedMetrics": {}
+     },
++    {
++      "id": "faf2d5722e71",
++      "kind": "api",
++      "provider": "iflytek",
++      "planName": "星火大模型 API 按量计费",
++      "channel": "standard",
++      "officialUrl": "https://xinghuo.xfyun.cn/sparkapi",
++      "source": "Official-Pricing",
++      "sourceUrl": "https://xinghuo.xfyun.cn/sparkapi",
++      "region": "cn",
++      "pricing": {
++        "currency": "CNY",
++        "unit": "per_1M_tokens",
++        "unitNote": "官方产品页模型价格区逐字写「输入 1.60 元/百万tokens」，单位为每百万 tokens、币种人民币"
++      },
++      "models": [
++        {
++          "name": "Spark-X2.5",
++          "modelKey": "spark-x2.5",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 1.6,
++            "output": 6,
++            "cachedInput": 0.24,
++            "cacheWrite": null,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "官方价格区同时标注「限时五折」；表中数字即官方当前展示价，页面未给原价，本站不推算"
++        }
++      ],
++      "freeTier": null,
++      "limits": null,
++      "credits": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "pricing.unit",
++          "quote": "星火大模型 Spark-X2.5 模型价格 限时五折 输入 1.60 元/百万tokens 输出 6.00 元/百万tokens 缓存命中 0.24 元/百万tokens",
++          "sourceUrl": "https://xinghuo.xfyun.cn/sparkapi",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "models.spark-x2.5",
++          "quote": "星火大模型 Spark-X2.5 模型价格 限时五折 输入 1.60 元/百万tokens 输出 6.00 元/百万tokens 缓存命中 0.24 元/百万tokens",
++          "sourceUrl": "https://xinghuo.xfyun.cn/sparkapi",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "derivedMetrics": {}
++    },
+     {
+       "id": "796e0c92ecdc",
+       "kind": "api",
+       "provider": "minimax",
+       "planName": "API 按量计费",
+       "channel": "standard",
+@@ -1331,12 +1668,98 @@
+           "capturedAt": "2026-10-01",
+           "lang": "zh"
+         }
+       ],
+       "derivedMetrics": {}
+     },
++    {
++      "id": "c4b6948c4fa9",
++      "kind": "api",
++      "provider": "moonshot",
++      "planName": "Kimi 开放平台模型推理按量计费",
++      "channel": "standard",
++      "officialUrl": "https://platform.kimi.com/docs/pricing/chat",
++      "source": "Official-Docs",
++      "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
++      "region": "cn",
++      "pricing": {
++        "currency": "CNY",
++        "unit": "per_1M_tokens",
++        "unitNote": "官方定价页表格「计费单位」列逐格写「1M tokens」，页尾写「此处 1M = 1,000,000，表格中的价格代表每消耗 1M tokens 的价格」，币种人民币"
++      },
++      "models": [
++        {
++          "name": "kimi-k2.7-code",
++          "modelKey": "kimi-k2.7-code",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 6.5,
++            "output": 27,
++            "cachedInput": 1.3,
++            "cacheWrite": null,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "K2 系列编程模型；上下文窗口 262,144 tokens。同表另有 -highspeed 档（¥13 / ¥54）"
++        },
++        {
++          "name": "kimi-k3",
++          "modelKey": "kimi-k3",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 20,
++            "output": 100,
++            "cachedInput": 2,
++            "cacheWrite": 20,
++            "cacheWriteLong": 40,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "缓存写入按 TTL 分 5min / 1h 两档；上下文窗口 1,048,576 tokens"
++        }
++      ],
++      "freeTier": null,
++      "limits": null,
++      "credits": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "pricing.unit",
++          "quote": "此处 1M = 1,000,000，表格中的价格代表每消耗 1M tokens 的价格。",
++          "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "models.kimi-k2.7-code",
++          "quote": "模型 计费单位 输入价格（缓存命中） 输入价格（缓存未命中） 输出价格 上下文窗口 kimi-k2.7-code 1M tokens ¥1.30 ¥6.50 ¥27.00 262,144 tokens",
++          "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "models.kimi-k3",
++          "quote": "模型 计费单位 缓存写入（TTL 5min） 缓存写入（TTL 1h） 输入价格（缓存命中） 输入价格（缓存未命中） 输出价格 上下文窗口 kimi-k3 1M tokens ¥20.00 ¥40.00 ¥2.00 ¥20.00 ¥100.00 1,048,576 tokens",
++          "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "derivedMetrics": {}
++    },
+     {
+       "id": "206f8b4bde7b",
+       "kind": "api",
+       "provider": "openai",
+       "planName": "API 标准价格",
+       "channel": "standard",
+@@ -1671,12 +2094,98 @@
+           "capturedAt": "2026-10-01",
+           "lang": "en"
+         }
+       ],
+       "derivedMetrics": {}
+     },
++    {
++      "id": "09ed95f9cd81",
++      "kind": "api",
++      "provider": "sensetime",
++      "planName": "日日新大模型 Tokens 按量后付费",
++      "channel": "standard",
++      "officialUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
++      "source": "Official-Docs",
++      "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
++      "region": "cn",
++      "pricing": {
++        "currency": "CNY",
++        "unit": "per_1K_tokens",
++        "unitNote": "官方「模型调用计费」页计费单位段逐字写「千tokens：1 千tokens = 1000 tokens」，价表格子写「元/千tokens」"
++      },
++      "models": [
++        {
++          "name": "SenseNova-V6.5-Pro",
++          "modelKey": "sensenova-v6.5-pro",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 0.003,
++            "output": 0.009,
++            "cachedInput": null,
++            "cacheWrite": null,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "官方「日日新-融合模态大模型」价格表；同表另有 SenseNova-V6.5-Turbo / V6-Pro / V6-Turbo / V6-Reasoner"
++        },
++        {
++          "name": "SenseNova-V6.5-Turbo",
++          "modelKey": "sensenova-v6.5-turbo",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 0.0015,
++            "output": 0.0045,
++            "cachedInput": null,
++            "cacheWrite": null,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "官方「日日新-融合模态大模型」价格表"
++        }
++      ],
++      "freeTier": null,
++      "limits": null,
++      "credits": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "pricing.unit",
++          "quote": "计费单位：千tokens：1 千tokens = 1000 tokens，调用模型服务时根据实际的输入和输出tokens数量收费。",
++          "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "models.sensenova-v6.5-pro",
++          "quote": "SenseNova-V6.5-Pro模型调用 | 输入tokens | 0.003元/千tokens | 输出tokens | 0.009元/千tokens",
++          "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "models.sensenova-v6.5-turbo",
++          "quote": "SenseNova-V6.5-Turbo模型调用 | 输入tokens | 0.0015元/千tokens | 输出tokens | 0.0045元/千tokens",
++          "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "derivedMetrics": {}
++    },
+     {
+       "id": "6844d46deb05",
+       "kind": "api",
+       "provider": "siliconflow",
+       "planName": "模型推理按量计费",
+       "channel": "standard",
+@@ -1841,12 +2350,116 @@
+           "capturedAt": "2026-10-01",
+           "lang": "zh"
+         }
+       ],
+       "derivedMetrics": {}
+     },
++    {
++      "id": "03b27e432472",
++      "kind": "api",
++      "provider": "stepfun",
++      "planName": "StepFun 开放平台模型推理按量计费",
++      "channel": "standard",
++      "officialUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++      "source": "Official-Docs",
++      "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++      "region": "cn",
++      "pricing": {
++        "currency": "CNY",
++        "unit": "per_1M_tokens",
++        "unitNote": "官方「定价与限速」页各定价表「计费单位」列逐格写「1M tokens」，价格格写「7 元」「1.35 元」等，币种人民币"
++      },
++      "models": [
++        {
++          "name": "step-3.5-flash",
++          "modelKey": "step-3.5-flash",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 0.7,
++            "output": 2.1,
++            "cachedInput": 0.14,
++            "cacheWrite": null,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "推理大模型定价表；同表另有带日期版本 step-3.5-flash-2603（同价）"
++        },
++        {
++          "name": "step-3.7-flash",
++          "modelKey": "step-3.7-flash",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 1.35,
++            "output": 8.1,
++            "cachedInput": 0.27,
++            "cacheWrite": null,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "多模态推理大模型定价表（Flash 档）"
++        },
++        {
++          "name": "step-5-preview",
++          "modelKey": "step-5-preview",
++          "variant": "standard",
++          "aliases": null,
++          "rates": {
++            "input": 7,
++            "output": 20,
++            "cachedInput": 0.35,
++            "cacheWrite": null,
++            "cacheWriteLong": null,
++            "reasoning": null,
++            "batchInput": null,
++            "batchOutput": null
++          },
++          "mediaRates": null,
++          "note": "多模态推理大模型定价表（旗舰档）"
++        }
++      ],
++      "freeTier": null,
++      "limits": null,
++      "credits": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "models.step-3.5-flash",
++          "quote": "推理大模型的定价表 step-3.5-flash | 1M tokens | 0.7 元 | 0.14 元 | 2.1 元",
++          "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "models.step-3.7-flash",
++          "quote": "step-3.7-flash | 1M tokens | 1.35 元 | 0.27 元 | 8.1 元",
++          "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "models.step-5-preview",
++          "quote": "step-5-preview | 1M tokens | 7 元 | 0.35 元 | 20 元",
++          "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "derivedMetrics": {}
++    },
+     {
+       "id": "2981d8f29020",
+       "kind": "api",
+       "provider": "tencent",
+       "planName": "混元生文按量计费",
+       "channel": "standard",
+diff --git a/model-registry-links.json b/model-registry-links.json
+index 4c98a1b..a20d3d9 100644
+--- a/model-registry-links.json
++++ b/model-registry-links.json
+@@ -1,10 +1,10 @@
+ {
+   "schemaVersion": 2,
+-  "updatedAt": "2026-10-04T00:00:00+08:00",
+-  "count": 82,
++  "updatedAt": "2026-10-05T00:00:00+08:00",
++  "count": 85,
+   "links": [
+     {
+       "registrySlug": "claude-fable-5.1",
+       "registryModelId": "28c1baf2cc3e",
+       "apiPlanId": "4f8bae91f9f8",
+       "modelKey": "claude-fable-5.1",
+@@ -852,12 +852,30 @@
+           "capturedAt": "2026-10-01",
+           "lang": "zh"
+         }
+       ],
+       "note": null
+     },
++    {
++      "registrySlug": "kimi-k2.7-code",
++      "registryModelId": "37b07c27103b",
++      "apiPlanId": "c4b6948c4fa9",
++      "modelKey": "kimi-k2.7-code",
++      "variant": null,
++      "basis": "official-pricing-page",
++      "evidence": [
++        {
++          "field": "models.kimi-k2.7-code",
++          "quote": "模型 计费单位 输入价格（缓存命中） 输入价格（缓存未命中） 输出价格 上下文窗口 kimi-k2.7-code 1M tokens ¥1.30 ¥6.50 ¥27.00 262,144 tokens",
++          "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "note": null
++    },
+     {
+       "registrySlug": "kimi-k3",
+       "registryModelId": "b24a97c1562b",
+       "apiPlanId": "8a26562011f2",
+       "modelKey": "moonshotai.kimi-k3",
+       "variant": "standard",
+@@ -888,12 +906,30 @@
+           "capturedAt": "2026-10-04",
+           "lang": "en"
+         }
+       ],
+       "note": "该记录官方引文逐字出现「Kimi K3」⇒ 用引文类 basis；引文整条照抄自记录自己的 evidence，不新造引文。"
+     },
++    {
++      "registrySlug": "kimi-k3",
++      "registryModelId": "b24a97c1562b",
++      "apiPlanId": "c4b6948c4fa9",
++      "modelKey": "kimi-k3",
++      "variant": null,
++      "basis": "official-pricing-page",
++      "evidence": [
++        {
++          "field": "models.kimi-k3",
++          "quote": "模型 计费单位 缓存写入（TTL 5min） 缓存写入（TTL 1h） 输入价格（缓存命中） 输入价格（缓存未命中） 输出价格 上下文窗口 kimi-k3 1M tokens ¥20.00 ¥40.00 ¥2.00 ¥20.00 ¥100.00 1,048,576 tokens",
++          "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "note": null
++    },
+     {
+       "registrySlug": "kimi-k3",
+       "registryModelId": "b24a97c1562b",
+       "apiPlanId": "ebc4af9a71b6",
+       "modelKey": "kimi-k3",
+       "variant": null,
+@@ -1126,12 +1162,30 @@
+           "capturedAt": "2026-10-01",
+           "lang": "zh"
+         }
+       ],
+       "note": null
+     },
++    {
++      "registrySlug": "step-3.5-flash",
++      "registryModelId": "08a33ff6273a",
++      "apiPlanId": "03b27e432472",
++      "modelKey": "step-3.5-flash",
++      "variant": null,
++      "basis": "official-pricing-page",
++      "evidence": [
++        {
++          "field": "models.step-3.5-flash",
++          "quote": "推理大模型的定价表 step-3.5-flash | 1M tokens | 0.7 元 | 0.14 元 | 2.1 元",
++          "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "note": null
++    },
+     {
+       "registrySlug": "step-3.5-flash",
+       "registryModelId": "08a33ff6273a",
+       "apiPlanId": "6844d46deb05",
+       "modelKey": "step-3.5-flash",
+       "variant": null,
+diff --git a/models.json b/models.json
+index bc5352b..ad96008 100644
+--- a/models.json
++++ b/models.json
+@@ -1,9 +1,9 @@
+ {
+   "schemaVersion": 2,
+-  "updatedAt": "2026-10-04T00:00:00+08:00",
++  "updatedAt": "2026-10-05T00:00:00+08:00",
+   "count": 44,
+   "models": [
+     {
+       "id": "28c1baf2cc3e",
+       "slug": "claude-fable-5.1",
+       "canonicalName": "Claude Fable 5.1",
+@@ -689,13 +689,13 @@
+       "status": "active",
+       "modelRole": "coding",
+       "releasedAt": null,
+       "releaseEvidence": [],
+       "freshnessGroup": null,
+       "firstSeen": "2026-10-01",
+-      "lastSeen": "2026-10-01",
++      "lastSeen": "2026-10-05",
+       "catalogStatus": "unknown",
+       "catalogReason": "group-has-no-dated-model",
+       "note": null
+     },
+     {
+       "id": "b24a97c1562b",
+@@ -709,13 +709,13 @@
+       "status": "active",
+       "modelRole": "general",
+       "releasedAt": null,
+       "releaseEvidence": [],
+       "freshnessGroup": null,
+       "firstSeen": "2026-10-01",
+-      "lastSeen": "2026-10-04",
++      "lastSeen": "2026-10-05",
+       "catalogStatus": "unknown",
+       "catalogReason": "group-has-no-dated-model",
+       "note": null
+     },
+     {
+       "id": "4f59533f03f5",
+@@ -904,13 +904,13 @@
+       "status": "active",
+       "modelRole": "fast",
+       "releasedAt": null,
+       "releaseEvidence": [],
+       "freshnessGroup": null,
+       "firstSeen": "2026-10-01",
+-      "lastSeen": "2026-10-04",
++      "lastSeen": "2026-10-05",
+       "catalogStatus": "unknown",
+       "catalogReason": "group-has-no-dated-model",
+       "note": null
+     },
+     {
+       "id": "8be8a9f12747",
+diff --git a/plans.json b/plans.json
+index 4b94656..3ae7ff9 100644
+--- a/plans.json
++++ b/plans.json
+@@ -1,10 +1,10 @@
+ {
+   "schemaVersion": 1,
+-  "updatedAt": "2026-10-04T00:00:00+08:00",
+-  "count": 37,
++  "updatedAt": "2026-10-05T00:00:00+08:00",
++  "count": 44,
+   "plans": [
+     {
+       "id": "536e6b211045",
+       "kind": "coding",
+       "provider": "anthropic",
+       "planName": "Claude Pro",
+@@ -1208,12 +1208,312 @@
+         }
+       ],
+       "derivedMetrics": {
+         "nominalUnitPrice": null
+       }
+     },
++    {
++      "id": "908f38cee9c9",
++      "kind": "coding",
++      "provider": "openai",
++      "planName": "ChatGPT Business · Premium 座位",
++      "officialUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++      "source": "Official-Docs",
++      "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++      "region": "global",
++      "billing": {
++        "period": "monthly",
++        "currency": "USD",
++        "regularPrice": 125,
++        "promoPrice": null,
++        "promoNote": null,
++        "note": "官方座位表写「Premium seat | Monthly plan: $125 per user per month | Annual plan: $100 per user per month, billed annually」；本条收**月付座位**，年付是另一个 SKU"
++      },
++      "quota": {
++        "type": "rate_limited",
++        "amount": null,
++        "period": null,
++        "description": "官方写 Premium 座位「include all the same access as Standard seats, but with higher usage limits」且无 5 小时上限；未公布固定数值",
++        "conversionDependsOnModel": null
++      },
++      "supportedModels": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "billing.regularPrice",
++          "quote": "Premium seat | Monthly plan: $125 per user per month | Annual plan: $100 per user per month, billed annually",
++          "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++          "capturedAt": "2026-10-05",
++          "lang": "en"
++        },
++        {
++          "field": "quota.description",
++          "quote": "Premium seats cost $100 per user per month when billed annually, or $125 per user per month when billed monthly. Premium includes 5x more usage than Standard seats, no 5-hour usage limit",
++          "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++          "capturedAt": "2026-10-05",
++          "lang": "en"
++        }
++      ],
++      "derivedMetrics": {
++        "nominalUnitPrice": null
++      }
++    },
++    {
++      "id": "f7d832753cc5",
++      "kind": "coding",
++      "provider": "openai",
++      "planName": "ChatGPT Business · Standard 座位",
++      "officialUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++      "source": "Official-Docs",
++      "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++      "region": "global",
++      "billing": {
++        "period": "monthly",
++        "currency": "USD",
++        "regularPrice": 25,
++        "promoPrice": null,
++        "promoNote": null,
++        "note": "官方座位表写「Standard seat | Monthly plan: $25 per user per month | Annual plan: $20 per user per month, billed annually」；本条收**月付座位**，年付是另一个 SKU（不做 12 个月换算）"
++      },
++      "quota": {
++        "type": "rate_limited",
++        "amount": null,
++        "period": null,
++        "description": "官方写 Standard 座位含 ChatGPT、ChatGPT Work 与 Codex；座位用量按 5 小时窗口给本地消息估算区间（如 GPT-6 Astra 5–45 条），未公布固定数值",
++        "conversionDependsOnModel": null
++      },
++      "supportedModels": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "billing.regularPrice",
++          "quote": "Standard seat | Monthly plan: $25 per user per month | Annual plan: $20 per user per month, billed annually",
++          "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++          "capturedAt": "2026-10-05",
++          "lang": "en"
++        },
++        {
++          "field": "quota.description",
++          "quote": "Standard ChatGPT seats include access to ChatGPT, ChatGPT Work, and Codex … For most countries, pricing (USD) is $25 per user per month if billed monthly and $20 per user per month if billed annually.",
++          "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++          "capturedAt": "2026-10-05",
++          "lang": "en"
++        }
++      ],
++      "derivedMetrics": {
++        "nominalUnitPrice": null
++      }
++    },
++    {
++      "id": "f22ba46a0d6a",
++      "kind": "coding",
++      "provider": "openai",
++      "planName": "ChatGPT Plus",
++      "officialUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
++      "source": "Official-Docs",
++      "sourceUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
++      "region": "global",
++      "billing": {
++        "period": "monthly",
++        "currency": "USD",
++        "regularPrice": 20,
++        "promoPrice": null,
++        "promoNote": null,
++        "note": "官方写「a subscription plan that provides enhanced access to the ChatGPT web app for $20/month」与「Price: $20/month (billed monthly)」；同页答「Currently, we do not support annual billing」——本条只有月付 SKU"
++      },
++      "quota": {
++        "type": "rate_limited",
++        "amount": null,
++        "period": null,
++        "description": "官方 Usage Limits 段写「Plus subscriptions may include usage limits such as message caps, especially during high demand. These limits may vary based on system conditions.」未公布固定数值",
++        "conversionDependsOnModel": null
++      },
++      "supportedModels": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "billing.regularPrice",
++          "quote": "ChatGPT Plus is a subscription plan that provides enhanced access to the ChatGPT web app for $20/month. … Price: $20/month (billed monthly).",
++          "sourceUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
++          "capturedAt": "2026-10-05",
++          "lang": "en"
++        },
++        {
++          "field": "quota.description",
++          "quote": "To ensure a smooth experience for all users, Plus subscriptions may include usage limits such as message caps, especially during high demand. These limits may vary based on system conditions.",
++          "sourceUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
++          "capturedAt": "2026-10-05",
++          "lang": "en"
++        }
++      ],
++      "derivedMetrics": {
++        "nominalUnitPrice": null
++      }
++    },
++    {
++      "id": "5b69ae2939c8",
++      "kind": "coding",
++      "provider": "openai",
++      "planName": "ChatGPT Pro 100",
++      "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++      "source": "Official-Docs",
++      "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++      "region": "global",
++      "billing": {
++        "period": "monthly",
++        "currency": "USD",
++        "regularPrice": 100,
++        "promoPrice": null,
++        "promoNote": null,
++        "note": "官方三档表逐行写「Pro 100 | $100 | Not included」；同页写「Pro is billed monthly. Annual billing and payment for multiple months in advance are not available.」"
++      },
++      "quota": {
++        "type": "rate_limited",
++        "amount": null,
++        "period": null,
++        "description": "官方写「Pro 200 includes more usage than Pro 100. Pro 500 offers the highest included usage of the three plans.」；未公布固定数值；Ultrafast 只有 Pro 500 含",
++        "conversionDependsOnModel": null
++      },
++      "supportedModels": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "billing.regularPrice",
++          "quote": "Choose from three monthly Pro plans: Plan | Monthly price (USD) | Ultrafast — Pro 100 | $100 | Not included — Pro 200 | $200 | Not included — Pro 500 | $500 | Included",
++          "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++          "capturedAt": "2026-10-05",
++          "lang": "en"
++        },
++        {
++          "field": "quota.description",
++          "quote": "Pro 200 includes more usage than Pro 100. Pro 500 offers the highest included usage of the three plans.",
++          "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++          "capturedAt": "2026-10-05",
++          "lang": "en"
++        }
++      ],
++      "derivedMetrics": {
++        "nominalUnitPrice": null
++      }
++    },
++    {
++      "id": "03f246d78293",
++      "kind": "coding",
++      "provider": "openai",
++      "planName": "ChatGPT Pro 200",
++      "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++      "source": "Official-Docs",
++      "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++      "region": "global",
++      "billing": {
++        "period": "monthly",
++        "currency": "USD",
++        "regularPrice": 200,
++        "promoPrice": null,
++        "promoNote": null,
++        "note": "官方三档表写「Pro 200 | $200」；同页写「The monthly price remains $200.」——本轮不把 grandfathering 的用量差异写成价格差异"
++      },
++      "quota": {
++        "type": "rate_limited",
++        "amount": null,
++        "period": null,
++        "description": "官方写「Pro 200 includes more usage than Pro 100」；新订户不再享有旧额度（官方写 lower included usage allowance），未公布固定数值",
++        "conversionDependsOnModel": null
++      },
++      "supportedModels": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "billing.regularPrice",
++          "quote": "Choose from three monthly Pro plans: Plan | Monthly price (USD) | Ultrafast — Pro 100 | $100 | Not included — Pro 200 | $200 | Not included — Pro 500 | $500 | Included",
++          "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++          "capturedAt": "2026-10-05",
++          "lang": "en"
++        },
++        {
++          "field": "quota.description",
++          "quote": "New subscriptions that aren’t eligible for grandfathering include a lower usage allowance. … The monthly price remains $200.",
++          "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++          "capturedAt": "2026-10-05",
++          "lang": "en"
++        }
++      ],
++      "derivedMetrics": {
++        "nominalUnitPrice": null
++      }
++    },
++    {
++      "id": "83b27b3f3537",
++      "kind": "coding",
++      "provider": "openai",
++      "planName": "ChatGPT Pro 500",
++      "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++      "source": "Official-Docs",
++      "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++      "region": "global",
++      "billing": {
++        "period": "monthly",
++        "currency": "USD",
++        "regularPrice": 500,
++        "promoPrice": null,
++        "promoNote": null,
++        "note": "官方写「Pro 500, a new $500/month plan that includes Astra Ultrafast」；三档表写「Pro 500 | $500 | Included」"
++      },
++      "quota": {
++        "type": "rate_limited",
++        "amount": null,
++        "period": null,
++        "description": "官方写「Pro 500 offers the highest included usage of the three plans」；Ultrafast 仅本档含，未公布固定数值",
++        "conversionDependsOnModel": null
++      },
++      "supportedModels": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "billing.regularPrice",
++          "quote": "ChatGPT Pro now offers Pro 500, a new $500/month plan that includes Astra Ultrafast.",
++          "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++          "capturedAt": "2026-10-05",
++          "lang": "en"
++        },
++        {
++          "field": "quota.description",
++          "quote": "Pro 500 offers the highest included usage of the three plans. … Among Pro plans, Ultrafast is available only on Pro 500.",
++          "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++          "capturedAt": "2026-10-05",
++          "lang": "en"
++        }
++      ],
++      "derivedMetrics": {
++        "nominalUnitPrice": null
++      }
++    },
+     {
+       "id": "e1cbd20766b9",
+       "kind": "coding",
+       "provider": "qoder-intl",
+       "planName": "Pro+",
+       "officialUrl": "https://docs.qoder.com/account/pricing.md",
+@@ -1463,12 +1763,69 @@
+         }
+       ],
+       "derivedMetrics": {
+         "nominalUnitPrice": null
+       }
+     },
++    {
++      "id": "5ef2cd29fff0",
++      "kind": "coding",
++      "provider": "sensetime",
++      "planName": "SenseNova Token Plan · Free(公测)",
++      "officialUrl": "https://www.sensenova.cn/token-plan",
++      "source": "Official-Pricing",
++      "sourceUrl": "https://www.sensenova.cn/token-plan",
++      "region": "cn",
++      "billing": {
++        "period": "monthly",
++        "currency": "CNY",
++        "regularPrice": 0,
++        "promoPrice": null,
++        "promoNote": null,
++        "note": "官方订阅方案区写「公测期完全免费开放，付费档位即将上线」，档位卡片写「Free · 公测 限时放量 ¥ 0/月」；0 是「确实免费」而不是「价格未知」；Lite / Pro 付费档官方写「即将上线」⇒ 没有公开价，不收录"
++      },
++      "quota": {
++        "type": "credits",
++        "amount": 60000,
++        "period": "rolling",
++        "description": "官方写「60,000 积分 / 5 小时（特殊模型除外，具体参考文档说明）」；公测档点名 SenseNova 6.8 Flash Lite 与 SenseNova U1 Fast 两个模型",
++        "conversionDependsOnModel": true
++      },
++      "supportedModels": null,
++      "restrictions": null,
++      "firstSeen": "2026-10-05",
++      "lastSeen": "2026-10-05",
++      "verified": true,
++      "verifiedAt": "2026-10-05",
++      "evidence": [
++        {
++          "field": "billing.period",
++          "quote": "订阅方案 公测期完全免费开放，付费档位即将上线",
++          "sourceUrl": "https://www.sensenova.cn/token-plan",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "billing.regularPrice",
++          "quote": "Free · 公测 限时放量 ¥ 0/月",
++          "sourceUrl": "https://www.sensenova.cn/token-plan",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        },
++        {
++          "field": "quota.amount",
++          "quote": "60,000 积分 / 5 小时i特殊模型除外，具体参考文档说明。",
++          "sourceUrl": "https://www.sensenova.cn/token-plan",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "derivedMetrics": {
++        "nominalUnitPrice": null
++      }
++    },
+     {
+       "id": "2281d41b3a26",
+       "kind": "coding",
+       "provider": "stepfun",
+       "planName": "Step Plan · Flash Max",
+       "officialUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+diff --git a/scripts/data/api-plan-history.json b/scripts/data/api-plan-history.json
+index 6a923c6..65c229b 100644
+--- a/scripts/data/api-plan-history.json
++++ b/scripts/data/api-plan-history.json
+@@ -2121,9 +2121,419 @@
+         "officialUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+         "source": "Official-Docs",
+         "sourceUrl": "https://docs.fireworks.ai/serverless/pricing.md"
+       },
+       "runAt": "2026-10-04T12:13:10.752Z",
+       "eventId": "a348c0b20353"
++    },
++    {
++      "planId": "03b27e432472",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "pricing.currency": "CNY",
++        "pricing.unit": "per_1M_tokens",
++        "models": [
++          {
++            "name": "step-3.5-flash",
++            "modelKey": "step-3.5-flash",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 0.7,
++              "output": 2.1,
++              "cachedInput": 0.14,
++              "cacheWrite": null,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "推理大模型定价表；同表另有带日期版本 step-3.5-flash-2603（同价）"
++          },
++          {
++            "name": "step-3.7-flash",
++            "modelKey": "step-3.7-flash",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 1.35,
++              "output": 8.1,
++              "cachedInput": 0.27,
++              "cacheWrite": null,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "多模态推理大模型定价表（Flash 档）"
++          },
++          {
++            "name": "step-5-preview",
++            "modelKey": "step-5-preview",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 7,
++              "output": 20,
++              "cachedInput": 0.35,
++              "cacheWrite": null,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "多模态推理大模型定价表（旗舰档）"
++          }
++        ],
++        "region": "cn",
++        "officialUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++        "source": "Official-Docs",
++        "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details"
++      },
++      "runAt": "2026-10-05T03:55:30.418Z",
++      "eventId": "c537574c49c9"
++    },
++    {
++      "planId": "0940febeeea9",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "pricing.currency": "CNY",
++        "pricing.unit": "per_1M_tokens",
++        "models": [
++          {
++            "name": "360zhinao/360zhinao-pro",
++            "modelKey": "360zhinao-pro",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 2,
++              "output": 5,
++              "cachedInput": 0.2,
++              "cacheWrite": 2.5,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "官方卡片未写简介；上下文 32,000 / 最大输出 8,192"
++          },
++          {
++            "name": "360zhinao/360zhinao-turbo-llm-geo",
++            "modelKey": "360zhinao-turbo-llm-geo",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 1,
++              "output": 2,
++              "cachedInput": 0.1,
++              "cacheWrite": 1.25,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "官方卡片逐字：业务内部专用模型；上下文 116,000 / 最大输出 16,000"
++          }
++        ],
++        "region": "cn",
++        "officialUrl": "https://ai.360.com/open/zh/models",
++        "source": "Official-Pricing",
++        "sourceUrl": "https://ai.360.com/open/zh/models"
++      },
++      "runAt": "2026-10-05T03:55:30.418Z",
++      "eventId": "774f46a2852f"
++    },
++    {
++      "planId": "09ed95f9cd81",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "pricing.currency": "CNY",
++        "pricing.unit": "per_1K_tokens",
++        "models": [
++          {
++            "name": "SenseNova-V6.5-Pro",
++            "modelKey": "sensenova-v6.5-pro",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 0.003,
++              "output": 0.009,
++              "cachedInput": null,
++              "cacheWrite": null,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "官方「日日新-融合模态大模型」价格表；同表另有 SenseNova-V6.5-Turbo / V6-Pro / V6-Turbo / V6-Reasoner"
++          },
++          {
++            "name": "SenseNova-V6.5-Turbo",
++            "modelKey": "sensenova-v6.5-turbo",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 0.0015,
++              "output": 0.0045,
++              "cachedInput": null,
++              "cacheWrite": null,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "官方「日日新-融合模态大模型」价格表"
++          }
++        ],
++        "region": "cn",
++        "officialUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
++        "source": "Official-Docs",
++        "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing"
++      },
++      "runAt": "2026-10-05T03:55:30.418Z",
++      "eventId": "89aab95ef541"
++    },
++    {
++      "planId": "218c142dcb17",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "pricing.currency": "CNY",
++        "pricing.unit": "per_1K_tokens",
++        "models": [
++          {
++            "name": "Baichuan-M3-Plus",
++            "modelKey": "baichuan-m3-plus",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 0.005,
++              "output": 0.009,
++              "cachedInput": null,
++              "cacheWrite": null,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "官方价目表：上下文 32k；对话会自动触发「医疗搜索」并单独计费（0.03 元/次）"
++          },
++          {
++            "name": "Baichuan-M3",
++            "modelKey": "baichuan-m3",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 0.01,
++              "output": 0.03,
++              "cachedInput": null,
++              "cacheWrite": null,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "官方价目表：上下文 32k，00:00~24:00 单一价"
++          }
++        ],
++        "region": "cn",
++        "officialUrl": "https://platform.baichuan-ai.com/prices",
++        "source": "Official-Pricing",
++        "sourceUrl": "https://platform.baichuan-ai.com/prices"
++      },
++      "runAt": "2026-10-05T03:55:30.418Z",
++      "eventId": "8c7b0144494e"
++    },
++    {
++      "planId": "23643dfd94f8",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "pricing.currency": "CNY",
++        "pricing.unit": "per_1K_tokens",
++        "models": [
++          {
++            "name": "ERNIE-4.5-Turbo-128K",
++            "modelKey": "ernie-4.5-turbo-128k",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 0.0008,
++              "output": 0.0032,
++              "cachedInput": 0.0002,
++              "cacheWrite": null,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "官方另给批量推理列（输入 0.00032 / 输出 0.00128）与搜索增强 0.004 元/次，本记录只收在线推理列"
++          },
++          {
++            "name": "ERNIE-5.1",
++            "modelKey": "ernie-5.1",
++            "variant": "long_context",
++            "aliases": null,
++            "rates": {
++              "input": 0.006,
++              "output": 0.022,
++              "cachedInput": null,
++              "cacheWrite": null,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "同一模型的长上下文档；官方分档为「32k<输入<=128k」"
++          },
++          {
++            "name": "ERNIE-5.1",
++            "modelKey": "ernie-5.1",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 0.004,
++              "output": 0.018,
++              "cachedInput": null,
++              "cacheWrite": null,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "文本生成/在线推理列；官方分档为「输入（输入<=32k）」"
++          }
++        ],
++        "region": "cn",
++        "officialUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
++        "source": "Official-Pricing",
++        "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a"
++      },
++      "runAt": "2026-10-05T03:55:30.418Z",
++      "eventId": "99e72b0be2ef"
++    },
++    {
++      "planId": "c4b6948c4fa9",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "pricing.currency": "CNY",
++        "pricing.unit": "per_1M_tokens",
++        "models": [
++          {
++            "name": "kimi-k2.7-code",
++            "modelKey": "kimi-k2.7-code",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 6.5,
++              "output": 27,
++              "cachedInput": 1.3,
++              "cacheWrite": null,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "K2 系列编程模型；上下文窗口 262,144 tokens。同表另有 -highspeed 档（¥13 / ¥54）"
++          },
++          {
++            "name": "kimi-k3",
++            "modelKey": "kimi-k3",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 20,
++              "output": 100,
++              "cachedInput": 2,
++              "cacheWrite": 20,
++              "cacheWriteLong": 40,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "缓存写入按 TTL 分 5min / 1h 两档；上下文窗口 1,048,576 tokens"
++          }
++        ],
++        "region": "cn",
++        "officialUrl": "https://platform.kimi.com/docs/pricing/chat",
++        "source": "Official-Docs",
++        "sourceUrl": "https://platform.kimi.com/docs/pricing/chat"
++      },
++      "runAt": "2026-10-05T03:55:30.418Z",
++      "eventId": "efe6182bbfff"
++    },
++    {
++      "planId": "faf2d5722e71",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "pricing.currency": "CNY",
++        "pricing.unit": "per_1M_tokens",
++        "models": [
++          {
++            "name": "Spark-X2.5",
++            "modelKey": "spark-x2.5",
++            "variant": "standard",
++            "aliases": null,
++            "rates": {
++              "input": 1.6,
++              "output": 6,
++              "cachedInput": 0.24,
++              "cacheWrite": null,
++              "cacheWriteLong": null,
++              "reasoning": null,
++              "batchInput": null,
++              "batchOutput": null
++            },
++            "mediaRates": null,
++            "note": "官方价格区同时标注「限时五折」；表中数字即官方当前展示价，页面未给原价，本站不推算"
++          }
++        ],
++        "region": "cn",
++        "officialUrl": "https://xinghuo.xfyun.cn/sparkapi",
++        "source": "Official-Pricing",
++        "sourceUrl": "https://xinghuo.xfyun.cn/sparkapi"
++      },
++      "runAt": "2026-10-05T03:55:30.418Z",
++      "eventId": "b71423a7e1e0"
+     }
+   ]
+ }
+diff --git a/scripts/data/curated_api_plans.json b/scripts/data/curated_api_plans.json
+index b8f1336..d1d73e7 100644
+--- a/scripts/data/curated_api_plans.json
++++ b/scripts/data/curated_api_plans.json
+@@ -2115,8 +2115,523 @@
+         "quote": "[OPENAI]GPT OSS 120B | ~3000 tokens/s | $0.35/M tokens | $0.75/M tokens",
+         "sourceUrl": "https://www.cerebras.ai/pricing",
+         "capturedAt": "2026-10-04",
+         "lang": "en"
+       }
+     ]
++  },
++  {
++    "provider": "ai360",
++    "planName": "360zhinao 模型广场按量计费",
++    "channel": "standard",
++    "officialUrl": "https://ai.360.com/open/zh/models",
++    "source": "Official-Pricing",
++    "sourceUrl": "https://ai.360.com/open/zh/models",
++    "region": "cn",
++    "pricing": {
++      "currency": "CNY",
++      "unit": "per_1M_tokens",
++      "unitNote": "官方模型广场每个模型卡片逐条写「输入价格: ¥1 / 1M tokens」，单位为每百万 tokens、币种人民币"
++    },
++    "models": [
++      {
++        "name": "360zhinao/360zhinao-turbo-llm-geo",
++        "modelKey": "360zhinao-turbo-llm-geo",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 1,
++          "output": 2,
++          "cachedInput": 0.1,
++          "cacheWrite": 1.25
++        },
++        "mediaRates": null,
++        "note": "官方卡片逐字：业务内部专用模型；上下文 116,000 / 最大输出 16,000"
++      },
++      {
++        "name": "360zhinao/360zhinao-pro",
++        "modelKey": "360zhinao-pro",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 2,
++          "output": 5,
++          "cachedInput": 0.2,
++          "cacheWrite": 2.5
++        },
++        "mediaRates": null,
++        "note": "官方卡片未写简介；上下文 32,000 / 最大输出 8,192"
++      }
++    ],
++    "freeTier": null,
++    "limits": null,
++    "credits": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "pricing.unit",
++        "quote": "输入价格: ¥1 / 1M tokens 输出价格: ¥2 / 1M tokens 缓存写入价格: ¥1.25 / 1M tokens 缓存读取价格: ¥0.1 / 1M tokens 上下文: 116,000 最大输出: 16,000",
++        "sourceUrl": "https://ai.360.com/open/zh/models",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "models.360zhinao-turbo-llm-geo",
++        "quote": "360zhinao/360zhinao-turbo-llm-geo 360智脑 业务内部专用模型 输入价格: ¥1 / 1M tokens 输出价格: ¥2 / 1M tokens 缓存写入价格: ¥1.25 / 1M tokens 缓存读取价格: ¥0.1 / 1M tokens 上下文: 116,000 最大输出: 16,000",
++        "sourceUrl": "https://ai.360.com/open/zh/models",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "models.360zhinao-pro",
++        "quote": "360zhinao/360zhinao-pro 360智脑 输入价格: ¥2 / 1M tokens 输出价格: ¥5 / 1M tokens 缓存写入价格: ¥2.5 / 1M tokens 缓存读取价格: ¥0.2 / 1M tokens 上下文: 32,000 最大输出: 8,192",
++        "sourceUrl": "https://ai.360.com/open/zh/models",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      }
++    ]
++  },
++  {
++    "provider": "baichuan",
++    "planName": "百川大模型按量计费",
++    "channel": "standard",
++    "officialUrl": "https://platform.baichuan-ai.com/prices",
++    "source": "Official-Pricing",
++    "sourceUrl": "https://platform.baichuan-ai.com/prices",
++    "region": "cn",
++    "pricing": {
++      "currency": "CNY",
++      "unit": "per_1K_tokens",
++      "unitNote": "官方「价格说明」逐字写「计费模式：按照实际使用的数据量（千tokens）收费」，价目表每格写「元/千tokens」——单位是每千 tokens、币种人民币"
++    },
++    "models": [
++      {
++        "name": "Baichuan-M3-Plus",
++        "modelKey": "baichuan-m3-plus",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 0.005,
++          "output": 0.009
++        },
++        "mediaRates": null,
++        "note": "官方价目表：上下文 32k；对话会自动触发「医疗搜索」并单独计费（0.03 元/次）"
++      },
++      {
++        "name": "Baichuan-M3",
++        "modelKey": "baichuan-m3",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 0.01,
++          "output": 0.03
++        },
++        "mediaRates": null,
++        "note": "官方价目表：上下文 32k，00:00~24:00 单一价"
++      }
++    ],
++    "freeTier": null,
++    "limits": null,
++    "credits": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "pricing.unit",
++        "quote": "按照实际使用的数据量（千tokens）收费。Token在这里指的是文本中的一个最小单位",
++        "sourceUrl": "https://platform.baichuan-ai.com/prices",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "models.baichuan-m3-plus",
++        "quote": "模型调用 Baichuan-M3-Plus | 32k | 00:00 ~ 24:00 | 输入：0.005元/千tokens 输出：0.009元/千tokens",
++        "sourceUrl": "https://platform.baichuan-ai.com/prices",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "models.baichuan-m3",
++        "quote": "模型调用 Baichuan-M3 | 32k | 00:00 ~ 24:00 | 输入：0.01元/千tokens 输出：0.03元/千tokens",
++        "sourceUrl": "https://platform.baichuan-ai.com/prices",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      }
++    ]
++  },
++  {
++    "provider": "baidu",
++    "planName": "千帆模型按量后付费",
++    "channel": "standard",
++    "officialUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
++    "source": "Official-Pricing",
++    "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
++    "region": "cn",
++    "pricing": {
++      "currency": "CNY",
++      "unit": "per_1K_tokens",
++      "unitNote": "官方「价格」页价格表「单位」列逐格写「元/千tokens」，币种人民币"
++    },
++    "models": [
++      {
++        "name": "ERNIE-5.1",
++        "modelKey": "ernie-5.1",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 0.004,
++          "output": 0.018
++        },
++        "mediaRates": null,
++        "note": "文本生成/在线推理列；官方分档为「输入（输入<=32k）」"
++      },
++      {
++        "name": "ERNIE-5.1",
++        "modelKey": "ernie-5.1",
++        "variant": "long_context",
++        "aliases": null,
++        "rates": {
++          "input": 0.006,
++          "output": 0.022
++        },
++        "mediaRates": null,
++        "note": "同一模型的长上下文档；官方分档为「32k<输入<=128k」"
++      },
++      {
++        "name": "ERNIE-4.5-Turbo-128K",
++        "modelKey": "ernie-4.5-turbo-128k",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 0.0008,
++          "output": 0.0032,
++          "cachedInput": 0.0002
++        },
++        "mediaRates": null,
++        "note": "官方另给批量推理列（输入 0.00032 / 输出 0.00128）与搜索增强 0.004 元/次，本记录只收在线推理列"
++      }
++    ],
++    "freeTier": null,
++    "limits": null,
++    "credits": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "pricing.unit",
++        "quote": "模型名称 版本名称 服务内容 子项 在线推理 批量推理 单位 ERNIE 5.1 ERNIE-5.1 推理服务 输入（输入<=32k） 0.004 - 元/千tokens",
++        "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "models.ernie-5.1",
++        "quote": "ERNIE 5.1 ERNIE-5.1 推理服务 输入（输入<=32k） 0.004 - 元/千tokens 输出（输入<=32k） 0.018 - 元/千tokens 输入（32k<输入<=128k） 0.006 - 元/千tokens 输出（32k<输入<=128k） 0.022 - 元/千tokens",
++        "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "models.ernie-4.5-turbo-128k",
++        "quote": "ERNIE 4.5 Turbo ERNIE-4.5-Turbo-128K 推理服务 输入 0.0008 0.00032 元/千tokens 命中缓存 0.0002 -- 元/千tokens 输出 0.0032 0.00128 元/千tokens",
++        "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      }
++    ]
++  },
++  {
++    "provider": "iflytek",
++    "planName": "星火大模型 API 按量计费",
++    "channel": "standard",
++    "officialUrl": "https://xinghuo.xfyun.cn/sparkapi",
++    "source": "Official-Pricing",
++    "sourceUrl": "https://xinghuo.xfyun.cn/sparkapi",
++    "region": "cn",
++    "pricing": {
++      "currency": "CNY",
++      "unit": "per_1M_tokens",
++      "unitNote": "官方产品页模型价格区逐字写「输入 1.60 元/百万tokens」，单位为每百万 tokens、币种人民币"
++    },
++    "models": [
++      {
++        "name": "Spark-X2.5",
++        "modelKey": "spark-x2.5",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 1.6,
++          "output": 6,
++          "cachedInput": 0.24
++        },
++        "mediaRates": null,
++        "note": "官方价格区同时标注「限时五折」；表中数字即官方当前展示价，页面未给原价，本站不推算"
++      }
++    ],
++    "freeTier": null,
++    "limits": null,
++    "credits": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "pricing.unit",
++        "quote": "星火大模型 Spark-X2.5 模型价格 限时五折 输入 1.60 元/百万tokens 输出 6.00 元/百万tokens 缓存命中 0.24 元/百万tokens",
++        "sourceUrl": "https://xinghuo.xfyun.cn/sparkapi",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "models.spark-x2.5",
++        "quote": "星火大模型 Spark-X2.5 模型价格 限时五折 输入 1.60 元/百万tokens 输出 6.00 元/百万tokens 缓存命中 0.24 元/百万tokens",
++        "sourceUrl": "https://xinghuo.xfyun.cn/sparkapi",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      }
++    ]
++  },
++  {
++    "provider": "moonshot",
++    "planName": "Kimi 开放平台模型推理按量计费",
++    "channel": "standard",
++    "officialUrl": "https://platform.kimi.com/docs/pricing/chat",
++    "source": "Official-Docs",
++    "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
++    "region": "cn",
++    "pricing": {
++      "currency": "CNY",
++      "unit": "per_1M_tokens",
++      "unitNote": "官方定价页表格「计费单位」列逐格写「1M tokens」，页尾写「此处 1M = 1,000,000，表格中的价格代表每消耗 1M tokens 的价格」，币种人民币"
++    },
++    "models": [
++      {
++        "name": "kimi-k3",
++        "modelKey": "kimi-k3",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 20,
++          "output": 100,
++          "cachedInput": 2,
++          "cacheWrite": 20,
++          "cacheWriteLong": 40
++        },
++        "mediaRates": null,
++        "note": "缓存写入按 TTL 分 5min / 1h 两档；上下文窗口 1,048,576 tokens"
++      },
++      {
++        "name": "kimi-k2.7-code",
++        "modelKey": "kimi-k2.7-code",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 6.5,
++          "output": 27,
++          "cachedInput": 1.3
++        },
++        "mediaRates": null,
++        "note": "K2 系列编程模型；上下文窗口 262,144 tokens。同表另有 -highspeed 档（¥13 / ¥54）"
++      }
++    ],
++    "freeTier": null,
++    "limits": null,
++    "credits": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "pricing.unit",
++        "quote": "此处 1M = 1,000,000，表格中的价格代表每消耗 1M tokens 的价格。",
++        "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "models.kimi-k3",
++        "quote": "模型 计费单位 缓存写入（TTL 5min） 缓存写入（TTL 1h） 输入价格（缓存命中） 输入价格（缓存未命中） 输出价格 上下文窗口 kimi-k3 1M tokens ¥20.00 ¥40.00 ¥2.00 ¥20.00 ¥100.00 1,048,576 tokens",
++        "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "models.kimi-k2.7-code",
++        "quote": "模型 计费单位 输入价格（缓存命中） 输入价格（缓存未命中） 输出价格 上下文窗口 kimi-k2.7-code 1M tokens ¥1.30 ¥6.50 ¥27.00 262,144 tokens",
++        "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      }
++    ]
++  },
++  {
++    "provider": "sensetime",
++    "planName": "日日新大模型 Tokens 按量后付费",
++    "channel": "standard",
++    "officialUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
++    "source": "Official-Docs",
++    "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
++    "region": "cn",
++    "pricing": {
++      "currency": "CNY",
++      "unit": "per_1K_tokens",
++      "unitNote": "官方「模型调用计费」页计费单位段逐字写「千tokens：1 千tokens = 1000 tokens」，价表格子写「元/千tokens」"
++    },
++    "models": [
++      {
++        "name": "SenseNova-V6.5-Pro",
++        "modelKey": "sensenova-v6.5-pro",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 0.003,
++          "output": 0.009
++        },
++        "mediaRates": null,
++        "note": "官方「日日新-融合模态大模型」价格表；同表另有 SenseNova-V6.5-Turbo / V6-Pro / V6-Turbo / V6-Reasoner"
++      },
++      {
++        "name": "SenseNova-V6.5-Turbo",
++        "modelKey": "sensenova-v6.5-turbo",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 0.0015,
++          "output": 0.0045
++        },
++        "mediaRates": null,
++        "note": "官方「日日新-融合模态大模型」价格表"
++      }
++    ],
++    "freeTier": null,
++    "limits": null,
++    "credits": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "pricing.unit",
++        "quote": "计费单位：千tokens：1 千tokens = 1000 tokens，调用模型服务时根据实际的输入和输出tokens数量收费。",
++        "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "models.sensenova-v6.5-pro",
++        "quote": "SenseNova-V6.5-Pro模型调用 | 输入tokens | 0.003元/千tokens | 输出tokens | 0.009元/千tokens",
++        "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "models.sensenova-v6.5-turbo",
++        "quote": "SenseNova-V6.5-Turbo模型调用 | 输入tokens | 0.0015元/千tokens | 输出tokens | 0.0045元/千tokens",
++        "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      }
++    ]
++  },
++  {
++    "provider": "stepfun",
++    "planName": "StepFun 开放平台模型推理按量计费",
++    "channel": "standard",
++    "officialUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++    "source": "Official-Docs",
++    "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++    "region": "cn",
++    "pricing": {
++      "currency": "CNY",
++      "unit": "per_1M_tokens",
++      "unitNote": "官方「定价与限速」页各定价表「计费单位」列逐格写「1M tokens」，价格格写「7 元」「1.35 元」等，币种人民币"
++    },
++    "models": [
++      {
++        "name": "step-5-preview",
++        "modelKey": "step-5-preview",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 7,
++          "output": 20,
++          "cachedInput": 0.35
++        },
++        "mediaRates": null,
++        "note": "多模态推理大模型定价表（旗舰档）"
++      },
++      {
++        "name": "step-3.7-flash",
++        "modelKey": "step-3.7-flash",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 1.35,
++          "output": 8.1,
++          "cachedInput": 0.27
++        },
++        "mediaRates": null,
++        "note": "多模态推理大模型定价表（Flash 档）"
++      },
++      {
++        "name": "step-3.5-flash",
++        "modelKey": "step-3.5-flash",
++        "variant": "standard",
++        "aliases": null,
++        "rates": {
++          "input": 0.7,
++          "output": 2.1,
++          "cachedInput": 0.14
++        },
++        "mediaRates": null,
++        "note": "推理大模型定价表；同表另有带日期版本 step-3.5-flash-2603（同价）"
++      }
++    ],
++    "freeTier": null,
++    "limits": null,
++    "credits": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "models.step-3.5-flash",
++        "quote": "推理大模型的定价表 step-3.5-flash | 1M tokens | 0.7 元 | 0.14 元 | 2.1 元",
++        "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "models.step-5-preview",
++        "quote": "step-5-preview | 1M tokens | 7 元 | 0.35 元 | 20 元",
++        "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "models.step-3.7-flash",
++        "quote": "step-3.7-flash | 1M tokens | 1.35 元 | 0.27 元 | 8.1 元",
++        "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      }
++    ]
+   }
+ ]
+diff --git a/scripts/data/curated_plans.json b/scripts/data/curated_plans.json
+index 643eac7..2370ada 100644
+--- a/scripts/data/curated_plans.json
++++ b/scripts/data/curated_plans.json
+@@ -1972,8 +1972,330 @@
+         "quote": "On April 30, 2027, AWS will discontinue support for Amazon Q Developer IDE plugins. For capabilities similar to Amazon Q Developer IDE plugins, explore Kiro to access the latest models and features.",
+         "sourceUrl": "https://aws.amazon.com/q/developer/",
+         "capturedAt": "2026-10-04",
+         "lang": "en"
+       }
+     ]
++  },
++  {
++    "provider": "openai",
++    "planName": "ChatGPT Plus",
++    "officialUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
++    "source": "Official-Docs",
++    "sourceUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
++    "region": "global",
++    "billing": {
++      "period": "monthly",
++      "currency": "USD",
++      "regularPrice": 20,
++      "promoPrice": null,
++      "promoNote": null,
++      "note": "官方写「a subscription plan that provides enhanced access to the ChatGPT web app for $20/month」与「Price: $20/month (billed monthly)」；同页答「Currently, we do not support annual billing」——本条只有月付 SKU"
++    },
++    "quota": {
++      "type": "rate_limited",
++      "amount": null,
++      "period": null,
++      "description": "官方 Usage Limits 段写「Plus subscriptions may include usage limits such as message caps, especially during high demand. These limits may vary based on system conditions.」未公布固定数值",
++      "conversionDependsOnModel": null
++    },
++    "supportedModels": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "billing.regularPrice",
++        "quote": "ChatGPT Plus is a subscription plan that provides enhanced access to the ChatGPT web app for $20/month. … Price: $20/month (billed monthly).",
++        "sourceUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
++        "capturedAt": "2026-10-05",
++        "lang": "en"
++      },
++      {
++        "field": "quota.description",
++        "quote": "To ensure a smooth experience for all users, Plus subscriptions may include usage limits such as message caps, especially during high demand. These limits may vary based on system conditions.",
++        "sourceUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
++        "capturedAt": "2026-10-05",
++        "lang": "en"
++      }
++    ]
++  },
++  {
++    "provider": "openai",
++    "planName": "ChatGPT Pro 100",
++    "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++    "source": "Official-Docs",
++    "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++    "region": "global",
++    "billing": {
++      "period": "monthly",
++      "currency": "USD",
++      "regularPrice": 100,
++      "promoPrice": null,
++      "promoNote": null,
++      "note": "官方三档表逐行写「Pro 100 | $100 | Not included」；同页写「Pro is billed monthly. Annual billing and payment for multiple months in advance are not available.」"
++    },
++    "quota": {
++      "type": "rate_limited",
++      "amount": null,
++      "period": null,
++      "description": "官方写「Pro 200 includes more usage than Pro 100. Pro 500 offers the highest included usage of the three plans.」；未公布固定数值；Ultrafast 只有 Pro 500 含",
++      "conversionDependsOnModel": null
++    },
++    "supportedModels": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "billing.regularPrice",
++        "quote": "Choose from three monthly Pro plans: Plan | Monthly price (USD) | Ultrafast — Pro 100 | $100 | Not included — Pro 200 | $200 | Not included — Pro 500 | $500 | Included",
++        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++        "capturedAt": "2026-10-05",
++        "lang": "en"
++      },
++      {
++        "field": "quota.description",
++        "quote": "Pro 200 includes more usage than Pro 100. Pro 500 offers the highest included usage of the three plans.",
++        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++        "capturedAt": "2026-10-05",
++        "lang": "en"
++      }
++    ]
++  },
++  {
++    "provider": "openai",
++    "planName": "ChatGPT Pro 200",
++    "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++    "source": "Official-Docs",
++    "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++    "region": "global",
++    "billing": {
++      "period": "monthly",
++      "currency": "USD",
++      "regularPrice": 200,
++      "promoPrice": null,
++      "promoNote": null,
++      "note": "官方三档表写「Pro 200 | $200」；同页写「The monthly price remains $200.」——本轮不把 grandfathering 的用量差异写成价格差异"
++    },
++    "quota": {
++      "type": "rate_limited",
++      "amount": null,
++      "period": null,
++      "description": "官方写「Pro 200 includes more usage than Pro 100」；新订户不再享有旧额度（官方写 lower included usage allowance），未公布固定数值",
++      "conversionDependsOnModel": null
++    },
++    "supportedModels": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "billing.regularPrice",
++        "quote": "Choose from three monthly Pro plans: Plan | Monthly price (USD) | Ultrafast — Pro 100 | $100 | Not included — Pro 200 | $200 | Not included — Pro 500 | $500 | Included",
++        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++        "capturedAt": "2026-10-05",
++        "lang": "en"
++      },
++      {
++        "field": "quota.description",
++        "quote": "New subscriptions that aren’t eligible for grandfathering include a lower usage allowance. … The monthly price remains $200.",
++        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++        "capturedAt": "2026-10-05",
++        "lang": "en"
++      }
++    ]
++  },
++  {
++    "provider": "openai",
++    "planName": "ChatGPT Pro 500",
++    "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++    "source": "Official-Docs",
++    "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++    "region": "global",
++    "billing": {
++      "period": "monthly",
++      "currency": "USD",
++      "regularPrice": 500,
++      "promoPrice": null,
++      "promoNote": null,
++      "note": "官方写「Pro 500, a new $500/month plan that includes Astra Ultrafast」；三档表写「Pro 500 | $500 | Included」"
++    },
++    "quota": {
++      "type": "rate_limited",
++      "amount": null,
++      "period": null,
++      "description": "官方写「Pro 500 offers the highest included usage of the three plans」；Ultrafast 仅本档含，未公布固定数值",
++      "conversionDependsOnModel": null
++    },
++    "supportedModels": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "billing.regularPrice",
++        "quote": "ChatGPT Pro now offers Pro 500, a new $500/month plan that includes Astra Ultrafast.",
++        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++        "capturedAt": "2026-10-05",
++        "lang": "en"
++      },
++      {
++        "field": "quota.description",
++        "quote": "Pro 500 offers the highest included usage of the three plans. … Among Pro plans, Ultrafast is available only on Pro 500.",
++        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++        "capturedAt": "2026-10-05",
++        "lang": "en"
++      }
++    ]
++  },
++  {
++    "provider": "openai",
++    "planName": "ChatGPT Business · Standard 座位",
++    "officialUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++    "source": "Official-Docs",
++    "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++    "region": "global",
++    "billing": {
++      "period": "monthly",
++      "currency": "USD",
++      "regularPrice": 25,
++      "promoPrice": null,
++      "promoNote": null,
++      "note": "官方座位表写「Standard seat | Monthly plan: $25 per user per month | Annual plan: $20 per user per month, billed annually」；本条收**月付座位**，年付是另一个 SKU（不做 12 个月换算）"
++    },
++    "quota": {
++      "type": "rate_limited",
++      "amount": null,
++      "period": null,
++      "description": "官方写 Standard 座位含 ChatGPT、ChatGPT Work 与 Codex；座位用量按 5 小时窗口给本地消息估算区间（如 GPT-6 Astra 5–45 条），未公布固定数值",
++      "conversionDependsOnModel": null
++    },
++    "supportedModels": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "billing.regularPrice",
++        "quote": "Standard seat | Monthly plan: $25 per user per month | Annual plan: $20 per user per month, billed annually",
++        "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++        "capturedAt": "2026-10-05",
++        "lang": "en"
++      },
++      {
++        "field": "quota.description",
++        "quote": "Standard ChatGPT seats include access to ChatGPT, ChatGPT Work, and Codex … For most countries, pricing (USD) is $25 per user per month if billed monthly and $20 per user per month if billed annually.",
++        "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++        "capturedAt": "2026-10-05",
++        "lang": "en"
++      }
++    ]
++  },
++  {
++    "provider": "openai",
++    "planName": "ChatGPT Business · Premium 座位",
++    "officialUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++    "source": "Official-Docs",
++    "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++    "region": "global",
++    "billing": {
++      "period": "monthly",
++      "currency": "USD",
++      "regularPrice": 125,
++      "promoPrice": null,
++      "promoNote": null,
++      "note": "官方座位表写「Premium seat | Monthly plan: $125 per user per month | Annual plan: $100 per user per month, billed annually」；本条收**月付座位**，年付是另一个 SKU"
++    },
++    "quota": {
++      "type": "rate_limited",
++      "amount": null,
++      "period": null,
++      "description": "官方写 Premium 座位「include all the same access as Standard seats, but with higher usage limits」且无 5 小时上限；未公布固定数值",
++      "conversionDependsOnModel": null
++    },
++    "supportedModels": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "billing.regularPrice",
++        "quote": "Premium seat | Monthly plan: $125 per user per month | Annual plan: $100 per user per month, billed annually",
++        "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++        "capturedAt": "2026-10-05",
++        "lang": "en"
++      },
++      {
++        "field": "quota.description",
++        "quote": "Premium seats cost $100 per user per month when billed annually, or $125 per user per month when billed monthly. Premium includes 5x more usage than Standard seats, no 5-hour usage limit",
++        "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++        "capturedAt": "2026-10-05",
++        "lang": "en"
++      }
++    ]
++  },
++  {
++    "provider": "sensetime",
++    "planName": "SenseNova Token Plan · Free(公测)",
++    "officialUrl": "https://www.sensenova.cn/token-plan",
++    "source": "Official-Pricing",
++    "sourceUrl": "https://www.sensenova.cn/token-plan",
++    "region": "cn",
++    "billing": {
++      "period": "monthly",
++      "currency": "CNY",
++      "regularPrice": 0,
++      "promoPrice": null,
++      "promoNote": null,
++      "note": "官方订阅方案区写「公测期完全免费开放，付费档位即将上线」，档位卡片写「Free · 公测 限时放量 ¥ 0/月」；0 是「确实免费」而不是「价格未知」；Lite / Pro 付费档官方写「即将上线」⇒ 没有公开价，不收录"
++    },
++    "quota": {
++      "type": "credits",
++      "amount": 60000,
++      "period": "rolling",
++      "description": "官方写「60,000 积分 / 5 小时（特殊模型除外，具体参考文档说明）」；公测档点名 SenseNova 6.8 Flash Lite 与 SenseNova U1 Fast 两个模型",
++      "conversionDependsOnModel": true
++    },
++    "supportedModels": null,
++    "restrictions": null,
++    "firstSeen": "2026-10-05",
++    "lastSeen": "2026-10-05",
++    "verified": true,
++    "verifiedAt": "2026-10-05",
++    "evidence": [
++      {
++        "field": "billing.regularPrice",
++        "quote": "Free · 公测 限时放量 ¥ 0/月",
++        "sourceUrl": "https://www.sensenova.cn/token-plan",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "quota.amount",
++        "quote": "60,000 积分 / 5 小时i特殊模型除外，具体参考文档说明。",
++        "sourceUrl": "https://www.sensenova.cn/token-plan",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      },
++      {
++        "field": "billing.period",
++        "quote": "订阅方案 公测期完全免费开放，付费档位即将上线",
++        "sourceUrl": "https://www.sensenova.cn/token-plan",
++        "capturedAt": "2026-10-05",
++        "lang": "zh"
++      }
++    ]
+   }
+ ]
+diff --git a/scripts/data/model-registry-gaps.json b/scripts/data/model-registry-gaps.json
+index 00feb32..b2e6caa 100644
+--- a/scripts/data/model-registry-gaps.json
++++ b/scripts/data/model-registry-gaps.json
+@@ -40,12 +40,92 @@
+       "modelKey": "openai.gpt-oss-safeguard-20b",
+       "variant": "standard",
+       "reason": "off-registry-model",
+       "sourceUrl": "https://console.groq.com/docs/models",
+       "note": "官方定价记录点名了单一模型「GPT OSS Safeguard 20B」（modelKey `openai.gpt-oss-safeguard-20b`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+     },
++    {
++      "apiPlanId": "03b27e432472",
++      "modelKey": "step-3.7-flash",
++      "variant": "standard",
++      "reason": "off-registry-model",
++      "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++      "note": "官方定价页点名的单一模型；阶跃 Flash 档单一模型；registry 目前只有 step-3.5-flash，逐字 / 折叠均不等（版本号不同不得推定同一身份） ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
++    },
++    {
++      "apiPlanId": "03b27e432472",
++      "modelKey": "step-5-preview",
++      "variant": "standard",
++      "reason": "off-registry-model",
++      "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++      "note": "官方定价页点名的单一模型；阶跃旗舰预览档单一模型；registry 里没有精确身份，逐字 / 折叠均不等 ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
++    },
++    {
++      "apiPlanId": "0940febeeea9",
++      "modelKey": "360zhinao-pro",
++      "variant": "standard",
++      "reason": "off-registry-model",
++      "sourceUrl": "https://ai.360.com/open/zh/models",
++      "note": "官方定价页点名的单一模型；360 自研当前线；registry 里没有任何 360 归属身份（逐字 / 折叠 / 命名空间后缀都不等） ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
++    },
++    {
++      "apiPlanId": "0940febeeea9",
++      "modelKey": "360zhinao-turbo-llm-geo",
++      "variant": "standard",
++      "reason": "off-registry-model",
++      "sourceUrl": "https://ai.360.com/open/zh/models",
++      "note": "官方定价页点名的单一模型；360 自研业务专用模型；registry 里没有 360 归属身份，逐字 / 折叠探测均不等 ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
++    },
++    {
++      "apiPlanId": "09ed95f9cd81",
++      "modelKey": "sensenova-v6.5-pro",
++      "variant": "standard",
++      "reason": "off-registry-model",
++      "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
++      "note": "官方定价页点名的单一模型；商汤融合模态当前线；registry 里没有商汤归属身份 ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
++    },
++    {
++      "apiPlanId": "09ed95f9cd81",
++      "modelKey": "sensenova-v6.5-turbo",
++      "variant": "standard",
++      "reason": "off-registry-model",
++      "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
++      "note": "官方定价页点名的单一模型；商汤融合模态当前线；registry 里没有商汤归属身份 ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
++    },
++    {
++      "apiPlanId": "218c142dcb17",
++      "modelKey": "baichuan-m3",
++      "variant": "standard",
++      "reason": "off-registry-model",
++      "sourceUrl": "https://platform.baichuan-ai.com/prices",
++      "note": "官方定价页点名的单一模型；百川 M 系列当期线；registry 里没有百川归属身份 ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
++    },
++    {
++      "apiPlanId": "218c142dcb17",
++      "modelKey": "baichuan-m3-plus",
++      "variant": "standard",
++      "reason": "off-registry-model",
++      "sourceUrl": "https://platform.baichuan-ai.com/prices",
++      "note": "官方定价页点名的单一模型；百川 M 系列当期线；registry 里没有百川归属身份 ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
++    },
++    {
++      "apiPlanId": "23643dfd94f8",
++      "modelKey": "ernie-4.5-turbo-128k",
++      "variant": "standard",
++      "reason": "off-registry-model",
++      "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
++      "note": "官方定价页点名的单一模型；文心 4.5 Turbo 的 128K 版本名；registry 里没有文心归属身份 ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
++    },
++    {
++      "apiPlanId": "23643dfd94f8",
++      "modelKey": "ernie-5.1",
++      "variant": null,
++      "reason": "off-registry-model",
++      "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
++      "note": "官方定价页点名的单一模型；文心当前旗舰；registry 里没有文心归属身份（standard 与 long_context 两个变体都逐字 / 折叠不等） ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
++    },
+     {
+       "apiPlanId": "61aa6c3ed3ff",
+       "modelKey": "gpt-oss-120b",
+       "variant": "standard",
+       "reason": "off-registry-model",
+       "sourceUrl": "https://www.cerebras.ai/pricing",
+@@ -96,12 +176,20 @@
+       "modelKey": "nemotron-lightning-3p5-30b-a3b",
+       "variant": "standard",
+       "reason": "off-registry-model",
+       "sourceUrl": "https://docs.fireworks.ai/serverless/pricing.md",
+       "note": "官方定价记录点名了单一模型「NVIDIA Nemotron 3.5 Lightning 30B A3B」（modelKey `nemotron-lightning-3p5-30b-a3b`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+     },
++    {
++      "apiPlanId": "faf2d5722e71",
++      "modelKey": "spark-x2.5",
++      "variant": "standard",
++      "reason": "off-registry-model",
++      "sourceUrl": "https://xinghuo.xfyun.cn/sparkapi",
++      "note": "官方定价页点名的单一模型；讯飞自研旗舰；registry 里没有讯飞归属身份 ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
++    },
+     {
+       "planId": "0a66f3117162",
+       "modelName": "step-3.5-flash-2603",
+       "role": "included",
+       "reason": "off-registry-model",
+       "sourceUrl": "https://platform.stepfun.com/docs/zh/step-plan/overview",
+diff --git a/scripts/data/model-registry-links.json b/scripts/data/model-registry-links.json
+index c5822c1..cedd511 100644
+--- a/scripts/data/model-registry-links.json
++++ b/scripts/data/model-registry-links.json
+@@ -802,12 +802,29 @@
+           "capturedAt": "2026-10-01",
+           "lang": "zh"
+         }
+       ],
+       "note": null
+     },
++    {
++      "registrySlug": "kimi-k2.7-code",
++      "apiPlanId": "c4b6948c4fa9",
++      "modelKey": "kimi-k2.7-code",
++      "variant": null,
++      "basis": "official-pricing-page",
++      "evidence": [
++        {
++          "field": "models.kimi-k2.7-code",
++          "quote": "模型 计费单位 输入价格（缓存命中） 输入价格（缓存未命中） 输出价格 上下文窗口 kimi-k2.7-code 1M tokens ¥1.30 ¥6.50 ¥27.00 262,144 tokens",
++          "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "note": null
++    },
+     {
+       "registrySlug": "kimi-k3",
+       "apiPlanId": "8a26562011f2",
+       "modelKey": "moonshotai.kimi-k3",
+       "variant": "standard",
+       "basis": "official-pricing-page",
+@@ -836,12 +853,29 @@
+           "capturedAt": "2026-10-04",
+           "lang": "en"
+         }
+       ],
+       "note": "该记录官方引文逐字出现「Kimi K3」⇒ 用引文类 basis；引文整条照抄自记录自己的 evidence，不新造引文。"
+     },
++    {
++      "registrySlug": "kimi-k3",
++      "apiPlanId": "c4b6948c4fa9",
++      "modelKey": "kimi-k3",
++      "variant": null,
++      "basis": "official-pricing-page",
++      "evidence": [
++        {
++          "field": "models.kimi-k3",
++          "quote": "模型 计费单位 缓存写入（TTL 5min） 缓存写入（TTL 1h） 输入价格（缓存命中） 输入价格（缓存未命中） 输出价格 上下文窗口 kimi-k3 1M tokens ¥20.00 ¥40.00 ¥2.00 ¥20.00 ¥100.00 1,048,576 tokens",
++          "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "note": null
++    },
+     {
+       "registrySlug": "kimi-k3",
+       "apiPlanId": "ebc4af9a71b6",
+       "modelKey": "kimi-k3",
+       "variant": null,
+       "basis": "official-pricing-page",
+@@ -1059,12 +1093,29 @@
+           "capturedAt": "2026-10-01",
+           "lang": "zh"
+         }
+       ],
+       "note": null
+     },
++    {
++      "registrySlug": "step-3.5-flash",
++      "apiPlanId": "03b27e432472",
++      "modelKey": "step-3.5-flash",
++      "variant": null,
++      "basis": "official-pricing-page",
++      "evidence": [
++        {
++          "field": "models.step-3.5-flash",
++          "quote": "推理大模型的定价表 step-3.5-flash | 1M tokens | 0.7 元 | 0.14 元 | 2.1 元",
++          "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
++          "capturedAt": "2026-10-05",
++          "lang": "zh"
++        }
++      ],
++      "note": null
++    },
+     {
+       "registrySlug": "step-3.5-flash",
+       "apiPlanId": "6844d46deb05",
+       "modelKey": "step-3.5-flash",
+       "variant": null,
+       "basis": "official-pricing-page",
+diff --git a/scripts/data/plan-history.json b/scripts/data/plan-history.json
+index e73ca7d..47c84b8 100644
+--- a/scripts/data/plan-history.json
++++ b/scripts/data/plan-history.json
+@@ -1052,9 +1052,150 @@
+         "officialUrl": "https://aws.amazon.com/q/developer/pricing/",
+         "source": "Official-Pricing",
+         "sourceUrl": "https://aws.amazon.com/q/developer/pricing/"
+       },
+       "runAt": "2026-10-04T12:07:08.828Z",
+       "eventId": "43ace235ef74"
++    },
++    {
++      "planId": "03f246d78293",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "billing.regularPrice": 200,
++        "billing.currency": "USD",
++        "quota.type": "rate_limited",
++        "quota.description": "官方写「Pro 200 includes more usage than Pro 100」；新订户不再享有旧额度（官方写 lower included usage allowance），未公布固定数值",
++        "region": "global",
++        "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++        "source": "Official-Docs",
++        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers"
++      },
++      "runAt": "2026-10-05T03:57:58.336Z",
++      "eventId": "05a4f0bdf78b"
++    },
++    {
++      "planId": "5b69ae2939c8",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "billing.regularPrice": 100,
++        "billing.currency": "USD",
++        "quota.type": "rate_limited",
++        "quota.description": "官方写「Pro 200 includes more usage than Pro 100. Pro 500 offers the highest included usage of the three plans.」；未公布固定数值；Ultrafast 只有 Pro 500 含",
++        "region": "global",
++        "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++        "source": "Official-Docs",
++        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers"
++      },
++      "runAt": "2026-10-05T03:57:58.336Z",
++      "eventId": "a55b6d8666cd"
++    },
++    {
++      "planId": "5ef2cd29fff0",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "billing.regularPrice": 0,
++        "billing.currency": "CNY",
++        "quota.type": "credits",
++        "quota.amount": 60000,
++        "quota.period": "rolling",
++        "region": "cn",
++        "officialUrl": "https://www.sensenova.cn/token-plan",
++        "source": "Official-Pricing",
++        "sourceUrl": "https://www.sensenova.cn/token-plan"
++      },
++      "runAt": "2026-10-05T03:57:58.336Z",
++      "eventId": "8772b9a23683"
++    },
++    {
++      "planId": "83b27b3f3537",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "billing.regularPrice": 500,
++        "billing.currency": "USD",
++        "quota.type": "rate_limited",
++        "quota.description": "官方写「Pro 500 offers the highest included usage of the three plans」；Ultrafast 仅本档含，未公布固定数值",
++        "region": "global",
++        "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
++        "source": "Official-Docs",
++        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers"
++      },
++      "runAt": "2026-10-05T03:57:58.336Z",
++      "eventId": "137e4ebad64f"
++    },
++    {
++      "planId": "908f38cee9c9",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "billing.regularPrice": 125,
++        "billing.currency": "USD",
++        "quota.type": "rate_limited",
++        "quota.description": "官方写 Premium 座位「include all the same access as Standard seats, but with higher usage limits」且无 5 小时上限；未公布固定数值",
++        "region": "global",
++        "officialUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++        "source": "Official-Docs",
++        "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview"
++      },
++      "runAt": "2026-10-05T03:57:58.336Z",
++      "eventId": "43bc49949d16"
++    },
++    {
++      "planId": "f22ba46a0d6a",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "billing.regularPrice": 20,
++        "billing.currency": "USD",
++        "quota.type": "rate_limited",
++        "quota.description": "官方 Usage Limits 段写「Plus subscriptions may include usage limits such as message caps, especially during high demand. These limits may vary based on system conditions.」未公布固定数值",
++        "region": "global",
++        "officialUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
++        "source": "Official-Docs",
++        "sourceUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus"
++      },
++      "runAt": "2026-10-05T03:57:58.336Z",
++      "eventId": "b37a9f963d1e"
++    },
++    {
++      "planId": "f7d832753cc5",
++      "at": "2026-10-05",
++      "type": "created",
++      "field": null,
++      "from": null,
++      "to": null,
++      "fields": {
++        "billing.regularPrice": 25,
++        "billing.currency": "USD",
++        "quota.type": "rate_limited",
++        "quota.description": "官方写 Standard 座位含 ChatGPT、ChatGPT Work 与 Codex；座位用量按 5 小时窗口给本地消息估算区间（如 GPT-6 Astra 5–45 条），未公布固定数值",
++        "region": "global",
++        "officialUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
++        "source": "Official-Docs",
++        "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview"
++      },
++      "runAt": "2026-10-05T03:57:58.336Z",
++      "eventId": "3daa27677a5f"
+     }
+   ]
+ }
+diff --git a/scripts/tools/coverage-report.js b/scripts/tools/coverage-report.js
+index ac130b4..0452154 100644
+--- a/scripts/tools/coverage-report.js
++++ b/scripts/tools/coverage-report.js
+@@ -18,13 +18,30 @@
+  *     not-applicable / blocked-by-source-health）；
+  *   · Current Model Coverage（声明的 current target 模型是否真的在 registry 里归属这家、
+  *     unknown release dates、legacy/historical 保留情况）；
+  *   · Source Health impact（声明的来源与 `scripts/data/source-health.json` 对账）；
+  *   · Freshness 阈值与理由（策略模块落盘时读它的常量，没落盘就如实说"没落盘"）。
+  *
+- * **旧口径一个字都不改**：旧的五类交叉缺口、旧的 JSON 键全部保留（新内容进新的键），
++ * ## v3（coverage-depth-v1）：从「覆盖了几格」升级到「下一步补哪一条」
++ *
++ * v2 已经能说出每个 (provider × 维度) 格子是七态里的哪一种，但读者拿到那张表之后仍然要自己
++ * 判断"现在最该做哪一件事"。v3 追加**四节**（文本与 JSON 同一批数字），把"下一步"变成可执行的队列：
++ *
++ *   · **Release Evidence Coverage** —— registry 里有多少模型写下了官方发布日期（按 developer /
++ *     modelRole / catalogStatus 三维拆分）。百分比只是**观测指标，不是 KPI**：没有目标线、不进门禁。
++ *   · **Model Release Evidence Queue** —— 只读的"优先补哪几条发布日期"队列：五条**打印在报告里**的
++ *     确定性规则（未知优先 → 可比组规模降序 → tier core>major>long-tail → 是否被下游引用 → slug
++ *     code-unit 序），没有任何主观分、没有伪精确分数。
++ *   · **Gap Closure Queue** —— MISSING / PARTIAL 按 Priority A/B/C/D 分层，每条带「目标 N / 已兑现 M /
++ *     缺 K」与出口状态；分层规则同样**逐字打印**（判据全部来自既有读数，不引入第二套口径）。
++ *   · **Source Reliability summary** —— 读 `scripts/data/source-rulings.json`（workstream C 的写域，
++ *     判据层是 `scripts/lib/source-rulings.js`），与 `scripts/data/source-health.json` 的 live 读数 join，
++ *     并做「裁决 ↔ 采集器注册表 ↔ source-health」三方对账。**必须打印心跳的 generatedAt**。
++ *
++ * **旧口径一个字都不改**：旧的五类交叉缺口、旧的 JSON 键全部保留（新内容进新的键，且全部追加在
++ * `coverageTargets` 既有键之后 —— 顶层键序与 v2 逐字逐序相同），
+  * 免得下游（CI、审阅、报告）因为一次升级而看不见原来的数字。
+  * `--json` 两次运行逐字节一致（所有新数组都按确定性顺序输出）。
+  *
+  * 题面 §C4 要求至少输出：
+  *   Deals : provider 数 · 当前优惠数
+  *   Coding: provider 数 · plan 数
+@@ -56,12 +73,13 @@ const fs = require('fs');
+ const path = require('path');
+ 
+ const { load: loadRenderCore } = require('../lib/render-core');
+ const providers = require('../lib/providers');
+ const registry = require('../lib/model-registry');
+ const coverageTargets = require('../lib/coverage-targets');
++const sourceRulings = require('../lib/source-rulings');
+ const { todayCN } = require('../lib/schema');
+ 
+ const ROOT = path.join(__dirname, '..', '..');
+ 
+ /** `--models=` / `--links=` 只用于**验证报告本身**（Stage D 的关系层尚未落盘时，用它喂一份临时文件
+  *  来确认「有映射」分支真的走得通）。不传就是盘上的真实路径。 */
+@@ -85,12 +103,35 @@ const TARGETS_FILE = overrideOf('targets') || path.join(ROOT, 'scripts', 'data',
+ const PUBLISHED_MODELS_FILE = overrideOf('published-models') || path.join(ROOT, 'models.json');
+ /** 数据源健康心跳（`BLOCKED_SOURCE` 与 Source Health impact 的唯一出处） */
+ const SOURCE_HEALTH_FILE = overrideOf('source-health') || path.join(ROOT, 'scripts', 'data', 'source-health.json');
+ /** Freshness 单一策略模块（t4 落盘后才有；没有就如实说"没落盘"，绝不假装 0 个 unknown） */
+ const FRESHNESS_MODULE = '../lib/model-freshness';
+ 
++/** 来源裁决表（v3 新增；**workstream C 的写域**，本报告只读它）。`--source-rulings=` 只用于验证报告本身。 */
++const SOURCE_RULINGS_FILE = overrideOf('source-rulings') || path.join(ROOT, 'scripts', 'data', 'source-rulings.json');
++
++/** 采集器注册表（三方对账的第二方；`collectors/index.js` 不加载无头链路，require 它不联网、不读盘） */
++const COLLECTORS_INDEX = '../collectors';
++
++/**
++ * Release Evidence Queue 打印/输出前几条。**固定常量**（不是"前几名"那种拍脑袋）：
++ * 15 条足以覆盖当前 40 条 unknown 里最该动手的一批，又不会把报告刷成一张长表；
++ * 改它就改这一行，并跑 coverage-targets-selftest。
++ */
++const RELEASE_QUEUE_LIMIT = 15;
++
++/**
++ * Gap Closure Queue 的「高价值维度」。这是一条**声明出来的人工判据**（不是从数据里推出来的）：
++ * API 计费与模型身份这两个维度的缺口，直接决定"这家平台在页面上有没有可用的价格/模型"，
++ * 而 deals / coding 的缺口影响的是入口的丰富度。规则原文会逐字打印在报告里 —— 读者不必猜。
++ */
++const HIGH_VALUE_DIMENSIONS = ['api', 'models'];
++
++/** 派生字段在发布产物里缺席时，报告里用的占位标签（与既有 `statusesOutsideWordList` 的写法同一个词） */
++const FIELD_MISSING_LABEL = '(字段缺失)';
++
+ /** 题面 §C3 要求候选登记表逐条给出的字段 —— 少一个字段这条记录就不算留档 */
+ const CANDIDATE_REQUIRED_FIELDS = [
+   'provider',
+   'url',
+   'checkedAt',
+   'failedReason',
+@@ -100,12 +141,22 @@ const CANDIDATE_REQUIRED_FIELDS = [
+   'pageOffline',
+   'incomplete'
+ ];
+ 
+ const problems = [];
+ 
++/**
++ * **层未落盘**（不是错误，但必须显式计入自检口径，绝不静默当通过）。
++ *
++ * 为什么与 `problems` 分开记：`problems` 是"报告不可信"（数据互相矛盾、读不懂、对账不上），
++ * 它让报告 exit 1；而"某一层这一轮还没落盘"不是矛盾 —— 但**它与"这一层全是健康的"长得一模一样**，
++ * 所以它必须出现在自检区里（文本一行 + JSON 一个键），由读者决定要不要等它。
++ * 与 Freshness 策略模块同一处理（那一节也是"没落盘就如实说，不判红"）。
++ */
++const pendingLayers = [];
++
+ function readJson(file, label) {
+   try {
+     return JSON.parse(fs.readFileSync(file, 'utf8'));
+   } catch (error) {
+     if (error.code === 'ENOENT') return null;
+     problems.push(`${label} 读取失败：${error.message}`);
+@@ -581,12 +632,18 @@ function main() {
+   /* ---------------- Freshness 阈值与理由（v2） ---------------- */
+   const freshnessPath = path.join(__dirname, '..', 'lib', 'model-freshness.js');
+   //
+   // 三种结局**必须分开报**：文件不在盘上（层未落盘）≠ 文件在盘上但读不出来（坏了）≠ 读得出策略。
+   // 这里刻意 catch 住 require 失败：本报告要能在一份策略模块正在改写的仓库里照常跑出别的数字 ——
+   // 但那件事会在文本与 JSON 里**显式写出来**，不是静默降级（静默降级正是这一层最该防的事）。
++  //
++  // v3：这里额外留一个**内存引用** `freshnessJudge`（模块对象本身）。Release Evidence Coverage 与
++  // Release Evidence Queue 借它调 `releaseDateOf()` / `resolveModelRole()` / `comparableGroupOf()` ——
++  // 判据仍然只有一份（在 lib 里），报告不另写一份；而 `coverageTargets.freshness` 那一块的字形
++  // **一个字节都不动**（那是 t46 冻结的旧键，往里塞函数会让 --json 变成不可序列化）。
++  let freshnessJudge = null;
+   const freshness = (() => {
+     if (!fs.existsSync(freshnessPath)) {
+       return {
+         status: 'missing',
+         available: false,
+         module: 'scripts/lib/model-freshness.js',
+@@ -601,12 +658,13 @@ function main() {
+         note: 'freshness 单一策略层尚未落盘（scripts/lib/model-freshness.js 不存在）：本报告**不**判定 currentness ——'
+           + ' unknown release dates 与 legacy/historical 一律如实标成"层未落盘"，绝不用 0 冒充（0 个 legacy 与"分不出 legacy"是两件事）。'
+       };
+     }
+     try {
+       const mod = require(freshnessPath);
++      freshnessJudge = mod;
+       const policy = mod.MODEL_FRESHNESS_POLICY === undefined ? null : mod.MODEL_FRESHNESS_POLICY;
+       return {
+         status: 'ok',
+         available: true,
+         module: 'scripts/lib/model-freshness.js',
+         error: null,
+@@ -755,12 +813,468 @@ function main() {
+     present: row.present,
+     resolved: row.resolved,
+     reason: row.reason,
+     items: row.items.map(item => ({ value: item.value, resolved: item.resolved, reason: item.reason }))
+   });
+ 
++  /* ==================================================================== */
++  /* v3（coverage-depth-v1）新增四节的**同一批数字**（文本与 JSON 双侧共用）  */
++  /* ==================================================================== */
++  //
++  // 纪律（与上面 v2 各节逐字相同）：
++  //   · 判据只有一份 —— 都在既有 lib 里，报告只"取词表 / 取逐条值 / 按维度分组"；
++  //   · 相位差如实报 —— 整层没落盘就写"分不出"，绝不用 0 冒充；
++  //   · 数组一律**确定性序**（code-unit 或显式规则），两次运行逐字节一致；
++  //   · 新增内容全部追加进 `coverageTargets` 的**新键**，旧键一个字节都不动。
++
++  /* ---------------- ① Release Evidence Coverage（v3） ---------------- */
++  //
++  // "有没有官方发布日期"的判据只有一份：`lib/model-freshness.js` 的 `releaseDateOf()`（`provided` 位）——
++  // 与 `deriveCatalog()` 判 current / aging / legacy / historical / unknown 时用的是**同一个函数**。
++  // 报告不另写一个"releasedAt 是不是空"的判断（那正是"两套口径"的起点）。
++  const judgeReleaseDateOf = entry => (freshnessJudge && typeof freshnessJudge.releaseDateOf === 'function'
++    ? freshnessJudge.releaseDateOf(entry)
++    : null);
++  const judgeModelRoleOf = entry => (freshnessJudge && typeof freshnessJudge.resolveModelRole === 'function'
++    ? freshnessJudge.resolveModelRole(entry)
++    : undefined);
++  const freshnessJudgeAvailable = Boolean(freshnessJudge
++    && typeof freshnessJudge.releaseDateOf === 'function'
++    && typeof freshnessJudge.resolveModelRole === 'function'
++    && typeof freshnessJudge.comparableGroupOf === 'function'
++    && Array.isArray(freshness.catalogStatuses));
++  /**
++   * 占比（百分数，保留一位小数）。**纯观测指标**，不参与任何判定。
++   *
++   * 刻意写成 `(part / whole) * 100` 再 `toFixed(1)`：本仓库有一条跨文件的单位换算红线
++   * （`api-plans-selftest.js` 会扫 scripts/ 下所有 .js），它盯的是"价格/额度类标识符与 1e3 / 1e6
++   * 这类换算因子出现在同一行的算术表达式里"。这里做的是**百分比**，与单位换算无关，
++   * 所以既不用那些因子，变量名也与价格/额度无关 —— 免得一条只该管计费的牙在这里误报。
++   */
++  const sharePercentOf = (part, whole) => (whole ? Number(((part / whole) * 100).toFixed(1)) : null);
++  const releaseEvidenceRows = registryEntries.map(([slug, entry]) => {
++    const info = facts.dimensions.models.bySlug[slug] || {};
++    const date = judgeReleaseDateOf(entry);
++    const role = judgeModelRoleOf(entry);
++    const catalogStatus = info.catalogStatus === undefined ? null : info.catalogStatus;
++    return {
++      slug,
++      developer: info.developer === undefined || info.developer === null || String(info.developer) === ''
++        ? FIELD_MISSING_LABEL : String(info.developer),
++      modelRole: role === undefined || role === null || role === ''
++        ? FIELD_MISSING_LABEL : String(role),
++      catalogStatus: catalogStatus === null ? FIELD_MISSING_LABEL : String(catalogStatus),
++      provided: Boolean(date && date.provided === true),
++      judgeable: Boolean(date && date.normalized !== null),
++      withReleaseEvidence: Boolean(entry && Array.isArray(entry.releaseEvidence) && entry.releaseEvidence.length > 0)
++    };
++  });
++  const bucketReleaseEvidence = (list, keyOf, compare, fillKeys) => {
++    const map = new Map();
++    const blank = key => ({ key, total: 0, known: 0, unknown: 0, unparsable: 0, withReleaseEvidence: 0 });
++    for (const row of list) {
++      const key = keyOf(row);
++      const bucket = map.get(key) || blank(key);
++      bucket.total += 1;
++      if (row.provided) {
++        bucket.known += 1;
++        if (!row.judgeable) bucket.unparsable += 1;
++      } else bucket.unknown += 1;
++      if (row.withReleaseEvidence) bucket.withReleaseEvidence += 1;
++      map.set(key, bucket);
++    }
++    // `fillKeys` = 有词表的维度（catalogStatus）：**一档不落地也印出来**（与 R4 五态普查同一纪律 ——
++    // 少印一档会让读者以为那一档不存在，而不是那一档为 0）。
++    const buckets = [...map.values()];
++    for (const key of (Array.isArray(fillKeys) ? fillKeys : [])) {
++      if (!map.has(key)) buckets.push(blank(key));
++    }
++    return buckets
++      .map(bucket => Object.assign(bucket, { knownPercent: sharePercentOf(bucket.known, bucket.total) }))
++      .sort(compare);
++  };
++  const byCountThenKey = (a, b) => (b.total - a.total) || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
++  const catalogWordIndex = key => (catalogStatusWordList || []).indexOf(key);
++  const byWordListThenKey = (a, b) => {
++    const ai = catalogWordIndex(a.key);
++    const bi = catalogWordIndex(b.key);
++    const ar = ai < 0 ? Number.MAX_SAFE_INTEGER : ai;
++    const br = bi < 0 ? Number.MAX_SAFE_INTEGER : bi;
++    return (ar - br) || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
++  };
++  const releaseEvidence = (() => {
++    const base = {
++      source: 'scripts/data/models.json（来源层：releasedAt / developer / modelRole）+ 发布产物 models.json（派生层：catalogStatus）',
++      judge: 'scripts/lib/model-freshness.js（releaseDateOf / resolveModelRole / CATALOG_STATUSES）',
++      registryModels: registryEntries.length,
++      releasedAtLanded,
++      catalogStatusLanded,
++      status: 'ok',
++      known: null,
++      unknown: null,
++      unparsable: null,
++      withReleaseEvidence: null,
++      knownPercent: null,
++      percentNote: '覆盖率百分比是**观测指标，不是 KPI**：没有目标线、没有权重、不进门禁、不参与任何判定 —— 它只回答"这一层今天长什么样"。',
++      groupOrder: ['developer', 'modelRole', 'catalogStatus'],
++      byDeveloper: null,
++      byModelRole: null,
++      byCatalogStatus: null,
++      reason: null
++    };
++    if (!freshnessJudgeAvailable) {
++      return Object.assign(base, {
++        status: 'no-judge',
++        reason: 'lib/model-freshness.js 没给出 releaseDateOf() / resolveModelRole() / comparableGroupOf() / CATALOG_STATUSES'
++          + ' —— 没有判据层，本报告**不**自己发明一个"发布日期算不算写了"的判断（"分不出"与"0 条未知"是两件事）。'
++      });
++    }
++    if (!releasedAtLanded) {
++      return Object.assign(base, {
++        status: 'no-release-field',
++        reason: 'scripts/data/models.json 里没有一个条目带 releasedAt 字段（Model Registry v2 尚未落盘）—— 如实报"分不出"，不用 0 冒充。'
++      });
++    }
++    const known = releaseEvidenceRows.filter(row => row.provided).length;
++    const unknown = releaseEvidenceRows.length - known;
++    const unparsable = releaseEvidenceRows.filter(row => row.provided && !row.judgeable).length;
++    const byDeveloper = bucketReleaseEvidence(releaseEvidenceRows, row => row.developer, byCountThenKey);
++    const byModelRole = bucketReleaseEvidence(releaseEvidenceRows, row => row.modelRole, byCountThenKey);
++    const byCatalogStatus = catalogStatusLanded
++      ? bucketReleaseEvidence(releaseEvidenceRows, row => row.catalogStatus, byWordListThenKey, catalogStatusWordList)
++      : null;
++    return Object.assign(base, {
++      known,
++      unknown,
++      unparsable,
++      withReleaseEvidence: releaseEvidenceRows.filter(row => row.withReleaseEvidence).length,
++      knownPercent: sharePercentOf(known, releaseEvidenceRows.length),
++      byDeveloper,
++      byModelRole,
++      byCatalogStatus,
++      reason: null
++    });
++  })();
++  // 两处读数必须同时成立：新读数（lib 的 releaseDateOf().provided）↔ 既有 "unknown release dates"。
++  // 分家就说明"有没有 releasedAt"有了两个判据 —— 那正是本报告最该当场报红的事。
++  if (releaseEvidence.status === 'ok' && unknownReleaseDates !== null
++    && releaseEvidence.unknown !== unknownReleaseDates.length) {
++    problems.push(`Release Evidence Coverage 与既有 "unknown release dates" 两处读数不一致（新读数 ${releaseEvidence.unknown} / 既有 ${unknownReleaseDates.length}）`
++      + ' —— "有没有官方发布日期"只能有一个判据（lib/model-freshness.js 的 releaseDateOf()），两处必须同时成立。');
++  }
++  if (releaseEvidence.status === 'ok' && releaseEvidence.unparsable > 0) {
++    problems.push(`Release Evidence Coverage：有 ${releaseEvidence.unparsable} 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD）`
++      + ' —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。');
++  }
++  for (const [name, list] of [['byDeveloper', releaseEvidence.byDeveloper], ['byModelRole', releaseEvidence.byModelRole], ['byCatalogStatus', releaseEvidence.byCatalogStatus]]) {
++    if (!Array.isArray(list)) continue;
++    const sum = list.reduce((total, bucket) => total + bucket.total, 0);
++    if (sum !== registryEntries.length) {
++      problems.push(`Release Evidence Coverage 的 ${name} 拆分不闭合：各档之和 ${sum} ≠ registry 模型数 ${registryEntries.length}`
++        + ' —— 每一个模型必须恰好落进一档（少一档说明有一类值被静默丢掉了）。');
++    }
++  }
++
++  /* ---------------- ② Model Release Evidence Queue（v3） ---------------- */
++  //
++  // 只读队列：把"优先补哪几条发布日期"变成一条**可复算的次序**，而不是一句"先补重要的"。
++  // 规则原文（下面 rules 数组）会逐字打印进报告 —— 读者不必猜排序依据。
++  // 没有任何主观分：五条规则全部是盘上事实（字段是否为空 / 组大小 / tier / 下游引用 / slug 次序）。
++  const releaseEvidenceQueue = (() => {
++    const tierRankOf = { core: 0, major: 1, 'long-tail': 2 };
++    const tiersInUse = coverageTargets.TIERS;
++    const rows = registryEntries.map(([slug, entry]) => {
++      const info = facts.dimensions.models.bySlug[slug] || {};
++      const date = judgeReleaseDateOf(entry);
++      const provider = info.provider === undefined ? null : info.provider;
++      const summary = provider ? targetSummaries.find(row => row.provider === provider) : null;
++      // tier 读 coverage-targets.json；够不到 target 的（归属不在覆盖宇宙里）按 long-tail —— 这是规则③的原文。
++      const tier = summary && tiersInUse.includes(summary.tier) ? summary.tier : 'long-tail';
++      return {
++        slug,
++        developer: info.developer === undefined || info.developer === null ? null : String(info.developer),
++        family: entry && entry.family !== undefined && entry.family !== null ? String(entry.family) : null,
++        modelRole: (() => { const role = judgeModelRoleOf(entry); return role === undefined || role === null ? null : String(role); })(),
++        releasedAt: entry && entry.releasedAt !== undefined ? entry.releasedAt : null,
++        releasedAtUnknown: !(date && date.provided === true),
++        groupKey: null,
++        groupKind: null,
++        groupDegraded: null,
++        groupLabel: null,
++        groupSize: 0,
++        provider,
++        tier,
++        tierRank: tierRankOf[tier] === undefined ? 2 : tierRankOf[tier],
++        referencedByApiPlans: apiModelKeys.has(slug),
++        referencedByPlans: false,
++        referenced: false
++      };
++    });
++    const bySlug = new Map(rows.map(row => [row.slug, row]));
++    // ② 可比组规模：组键的唯一判据在 lib/model-freshness.js 的 comparableGroupOf()
++    //   （`freshnessGroup` 优先，否则 developer + family + modelRole）——报告不另写一个组键算法。
++    if (freshnessJudge && typeof freshnessJudge.comparableGroupOf === 'function') {
++      const describe = typeof freshnessJudge.describeGroupKey === 'function'
++        ? freshnessJudge.describeGroupKey : key => String(key);
++      const size = new Map();
++      for (const row of rows) {
++        const entry = registryLoaded.table[row.slug] || {};
++        const group = freshnessJudge.comparableGroupOf(entry);
++        row.groupKey = group.key;
++        row.groupKind = group.source;
++        row.groupDegraded = group.degraded === true;
++        row.groupLabel = describe(group.key);
++        size.set(group.key, (size.get(group.key) || 0) + 1);
++      }
++      for (const row of rows) row.groupSize = row.groupKey === null ? 0 : (size.get(row.groupKey) || 0);
++    }
++    // ④ 是否被 api-plans.json 或 plans.json 引用：api 侧按 api-plans 的 modelKey，套餐侧按关系层的 Coding 映射。
++    if (Array.isArray(relations)) {
++      for (const link of relations) {
++        if (!link || link.registrySlug === undefined || link.registrySlug === null) continue;
++        const row = bySlug.get(String(link.registrySlug));
++        if (!row) continue;
++        if (link.apiPlanId) row.referencedByApiPlans = true;
++        if (link.planId) row.referencedByPlans = true;
++      }
++    }
++    for (const row of rows) row.referenced = row.referencedByApiPlans || row.referencedByPlans;
++    // 五条规则的比较器（顺序即优先级；先比出来的先决定次序，同则看下一条）
++    const compare = (a, b) => {
++      if (a.releasedAtUnknown !== b.releasedAtUnknown) return a.releasedAtUnknown ? -1 : 1;   // ① 未知优先
++      if (a.groupSize !== b.groupSize) return b.groupSize - a.groupSize;                       // ② 可比组规模降序
++      if (a.tierRank !== b.tierRank) return a.tierRank - b.tierRank;                           // ③ core > major > long-tail
++      if (a.referenced !== b.referenced) return a.referenced ? -1 : 1;                         // ④ 被下游引用优先
++      return a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0;                                   // ⑤ slug 的 code-unit 序
++    };
++    const ordered = [...rows].sort(compare);
++    const queue = ordered.slice(0, RELEASE_QUEUE_LIMIT).map((row, index) => Object.assign({ rank: index + 1 }, row));
++    return {
++      limit: RELEASE_QUEUE_LIMIT,
++      rules: [
++        '① `releasedAt` 为空（null 或字段缺席）的优先 —— 与报告既有 `unknown release dates` 同一判据（lib/model-freshness.js 的 `releaseDateOf().provided`）；已经写下发布日期的排在其后。',
++        '② 可比组规模**降序**：组键由 lib/model-freshness.js 的 `comparableGroupOf()` 给出（`freshnessGroup` 显式优先，否则 `developer + family + modelRole`）；组越大，一次补全能修好的相对读数越多。',
++        '③ provider tier：`core` > `major` > `long-tail`（tier 读 `scripts/data/coverage-targets.json` 的意图行）；归属够不到任何 target 的模型按 `long-tail`。',
++        '④ 是否被 `api-plans.json` 或 `plans.json` 引用（是 > 否）：api 侧按 api-plans 里出现过的 `modelKey`，套餐侧按关系层 `model-registry-links.json` 的 Coding 映射认领到的 slug。',
++        '⑤ tiebreak：`slug` 的 **code-unit 序**（不用 localeCompare —— 它随 ICU 版本变，会让两次运行不再逐字节一致）。'
++      ],
++      ruleNote: '先命中先决定次序（比较器按 ①→②→③→④→⑤ 逐条比）；没有任何主观分、没有加权、没有伪精确分数。'
++        + ` 队列覆盖全部 ${registryEntries.length} 个 registry 模型，下面只打印前 ${RELEASE_QUEUE_LIMIT} 条（固定常量 RELEASE_QUEUE_LIMIT）。`,
++      total: rows.length,
++      unknownCount: rows.filter(row => row.releasedAtUnknown).length,
++      knownCount: rows.filter(row => !row.releasedAtUnknown).length,
++      groupJudgeAvailable: Boolean(freshnessJudge && typeof freshnessJudge.comparableGroupOf === 'function'),
++      queue
++    };
++  })();
++
++  /* ---------------- ③ Source Reliability summary（v3） ---------------- */
++  //
++  // 这一节把三份东西对到一起：**人工裁决**（scripts/data/source-rulings.json，workstream C 的写域）、
++  // **采集器注册表**（scripts/collectors 的 list()）、**心跳**（scripts/data/source-health.json 的 live 读数）。
++  // 判据（schema 校验 + 稳定序 + 三方对账）全部在 `scripts/lib/source-rulings.js`，报告只做 join 与排版。
++  const collectorRows = (() => {
++    try {
++      const mod = require(COLLECTORS_INDEX);
++      return typeof mod.list === 'function' ? mod.list() : null;
++    } catch (error) {
++      return null;
++    }
++  })();
++  if (!collectorRows) {
++    problems.push('scripts/collectors 注册表读不出来 —— 「裁决 ↔ 采集器注册表 ↔ source-health」三方对账缺了第二方，'
++      + '本节的"注册表"一栏无从判定（缺输入不是通过）。');
++  }
++  const sourceRulingsLoaded = sourceRulings.load(SOURCE_RULINGS_FILE);
++  const rulingsValidationProblems = sourceRulingsLoaded.doc ? sourceRulings.validateRulings(sourceRulingsLoaded.doc) : [];
++  const rulingsReconciled = sourceRulings.reconcileRulings({
++    doc: sourceRulingsLoaded.doc,
++    registrySources: collectorRows || [],
++    healthSources: sourceHealthDoc && Array.isArray(sourceHealthDoc.sources) ? sourceHealthDoc.sources : []
++  });
++  if (sourceRulingsLoaded.broken) {
++    problems.push(`scripts/data/source-rulings.json 解析失败：${sourceRulingsLoaded.broken}`);
++  } else if (sourceRulingsLoaded.missing) {
++    // 优雅降级**但不静默**：这一层由 workstream C 落盘，落盘前报告要能照常为别的层出数 ——
++    // 所以它进 `pendingLayers`（显式计入自检口径、写进文本与 JSON），而不是硬红、更不是当通过。
++    pendingLayers.push({
++      file: 'scripts/data/source-rulings.json',
++      layer: 'source-rulings（长期失败来源的人工裁决）',
++      note: '尚未落盘 —— 「裁决 ↔ 采集器注册表 ↔ source-health」三方对账本轮没有输入（**不是"没有长期失败的来源"，也不是"全部健康"**）；'
++        + '这一层由 workstream C 落盘，落盘后本报告会自动开始对账，并对 schema 与三条硬关系逐条判红。'
++    });
++  } else {
++    problems.push(...rulingsValidationProblems);
++    problems.push(...rulingsReconciled.problems);
++  }
++  // 裁决 → 身份（id 与 name 两种写法都能命中；gap queue 的"来源困难"要按 source-health 的 name 查）
++  const rulingBySourceName = new Map();
++  for (const row of rulingsReconciled.rows) {
++    for (const token of [row.source, row.registry && row.registry.id, row.registry && row.registry.name,
++      row.health && row.health.id, row.health && row.health.name]) {
++      if (token === null || token === undefined || token === '') continue;
++      const key = String(token);
++      if (!rulingBySourceName.has(key)) rulingBySourceName.set(key, row);
++    }
++  }
++  const sourceReliability = {
++    file: 'scripts/data/source-rulings.json',
++    present: Boolean(sourceRulingsLoaded.doc),
++    notLanded: sourceRulingsLoaded.missing === true,
++    broken: sourceRulingsLoaded.broken === null ? null : sourceRulingsLoaded.broken,
++    schemaVersion: sourceRulingsLoaded.doc && sourceRulingsLoaded.doc.schemaVersion !== undefined
++      ? sourceRulingsLoaded.doc.schemaVersion : null,
++    reviewedAt: sourceRulingsLoaded.doc && sourceRulingsLoaded.doc.reviewedAt !== undefined
++      ? sourceRulingsLoaded.doc.reviewedAt : null,
++    // 「必须打印 generatedAt」：这是心跳文件自己的时间戳（**不是**跑报告的墙钟时间）——
++    // 本节的 live 读数全部出自这一次心跳，读者要能判断它有多新。
++    healthFile: 'scripts/data/source-health.json',
++    healthGeneratedAt: sourceHealthDoc && sourceHealthDoc.generatedAt !== undefined ? sourceHealthDoc.generatedAt : null,
++    healthRowCount: sourceHealthDoc && Array.isArray(sourceHealthDoc.sources) ? sourceHealthDoc.sources.length : 0,
++    collectorRegistryFile: 'scripts/collectors（index.js 的 list()）',
++    collectorRegistryCount: collectorRows ? collectorRows.length : null,
++    decisionOrder: sourceRulings.DECISIONS.slice(),
++    decisionCounts: rulingsReconciled.byDecision,
++    rulings: rulingsReconciled.rows,
++    validationProblems: rulingsValidationProblems,
++    validationProblemCount: rulingsValidationProblems.length,
++    reconciliation: {
++      judge: 'scripts/lib/source-rulings.js 的 reconcileRulings()',
++      ruleCount: 4,
++      ruleNote: '① retire 的来源不得在注册表；② consecutiveFailures ≥ 3 的来源必须有裁决；'
++        + '③ repair / headless-migrate 的来源必须在注册表；④ 非 retire 的裁决必须命中一个真实身份（id 或 name）。',
++      problemCount: rulingsReconciled.problems.length,
++      problems: rulingsReconciled.problems,
++      unruledRegistrySources: rulingsReconciled.unruledRegistrySources,
++      failuresRequiringRuling: rulingsReconciled.failuresRequiringRuling,
++      missingRulingsForFailures: rulingsReconciled.missingRulingsForFailures,
++      retireStillRegistered: rulingsReconciled.retireStillRegistered,
++      retireStillInHealth: rulingsReconciled.retireStillInHealth,
++      repairOrMigrateUnregistered: rulingsReconciled.repairOrMigrateUnregistered,
++      unresolvedSources: rulingsReconciled.unresolvedSources
++    },
++    // R8 的来源宇宙对照：**沿用既有 sourceHealth.registryRowCount / registryRows / registryOnlySources 口径**
++    // （同一批变量，不另算一份；自测里有一条断言要求这两处逐字相等）。
++    registryRowCount: sourceHealthRegistryNames.length,
++    registryRows: sourceHealthRegistryNames,
++    registryOnlySources: sourceHealthRegistryOnly,
++    notLandedNote: sourceRulingsLoaded.missing
++      ? 'source-rulings 层尚未落盘（本节的裁决读数为空是"没有输入"，不是"没有长期失败的来源"）。'
++      : null
++  };
++
++  /* ---------------- ④ Gap Closure Queue（v3） ---------------- */
++  //
++  // 把 MISSING / PARTIAL 排成"先做哪一格"的队列。分层的判据**全部是既有读数**：
++  // tier（coverage-targets.json）、维度是否高价值（常量 HIGH_VALUE_DIMENSIONS）、
++  // 这一格有没有把要覆盖的那一条写成可回指的实体（declared > 0）、
++  // 以及它依赖的来源现在什么状态（source-health 的 live 读数 + source-rulings 的裁决）。
++  // 没有主观分、没有加权、没有伪精确分数。
++  const gapClosureQueue = (() => {
++    const cells = [...derived.missing, ...derived.partial];
++    const dimensionIndex = dimension => coverageTargets.DIMENSIONS.indexOf(dimension);
++    const sourcesOfProvider = new Map();
++    for (const target of derived.targets) {
++      const names = [];
++      for (const dimension of coverageTargets.DIMENSIONS) {
++        for (const source of (target.dimensions[dimension].sources || [])) {
++          if (source && source.name) names.push(String(source.name));
++        }
++      }
++      sourcesOfProvider.set(target.provider, [...new Set(names)].sort());
++    }
++    const orders = { A: 0, B: 1, C: 2, D: 3 };
++    const rows = cells.map(cell => {
++      const summary = summaryOf(cell.provider);
++      const tier = summary && coverageTargets.TIERS.includes(summary.tier) ? summary.tier : 'long-tail';
++      const names = sourcesOfProvider.get(cell.provider) || [];
++      const hardSources = [];
++      const costlySources = [];
++      for (const name of names) {
++        const health = facts.sourceHealth[name] || null;
++        const ruling = rulingBySourceName.get(name) || null;
++        const unhealthy = Boolean(health && health.status && health.status !== 'healthy');
++        const ruled = Boolean(ruling && ['retire', 'keep-degraded', 'repair', 'headless-migrate'].includes(ruling.decision));
++        if (unhealthy || ruled) hardSources.push(name);
++        if (ruling && ruling.overlap && ruling.overlap.maintenanceCost === 'high') costlySources.push(name);
++      }
++      const highValue = HIGH_VALUE_DIMENSIONS.includes(cell.dimension);
++      const explicitSource = cell.declared > 0;
++      const sourceHard = hardSources.length > 0;
++      const highCost = costlySources.length > 0;
++      const priority = (tier === 'core' || tier === 'major')
++        ? (tier === 'core' && highValue && explicitSource && !sourceHard && !highCost ? 'A'
++          : (tier === 'major' && explicitSource && !sourceHard && !highCost ? 'B' : 'C'))
++        : 'D';
++      return {
++        priority,
++        provider: cell.provider,
++        name: cell.providerName,
++        tier,
++        role: summary ? summary.role : null,
++        dimension: cell.dimension,
++        dimensionLabel: coverageTargets.DIMENSION_LABEL[cell.dimension],
++        state: cell.state,
++        exitState: cell.state,
++        targetN: cell.declared,
++        coveredM: cell.resolved,
++        missingK: cell.declared - cell.resolved,
++        present: cell.present,
++        highValue,
++        explicitSource,
++        sourceHard,
++        highCost,
++        declaredSources: names,
++        hardSources,
++        costlySources,
++        // `present` 是"盘上这一维度有没有记录"，与 N/M/K 是两条不同的轴：
++        // 一条 current target 都没声明的格子（N=0、K=0）照样可能是 MISSING —— 因为盘上一条记录都没有。
++        reason: cell.reason
++      };
++    });
++    const ordered = [...rows].sort((a, b) => (orders[a.priority] - orders[b.priority])
++      || (a.tier < b.tier ? -1 : a.tier > b.tier ? 1 : 0)
++      || (a.provider < b.provider ? -1 : a.provider > b.provider ? 1 : 0)
++      || (dimensionIndex(a.dimension) - dimensionIndex(b.dimension)));
++    const counts = { A: 0, B: 0, C: 0, D: 0 };
++    for (const row of rows) counts[row.priority] += 1;
++    if (ordered.length !== derived.missing.length + derived.partial.length) {
++      problems.push(`Gap Closure Queue 条数 ${ordered.length} ≠ MISSING ${derived.missing.length} + PARTIAL ${derived.partial.length}`
++        + ' —— 队列必须恰好收下每一格真缺口与每一个部分兑现的格子，不多不少。');
++    }
++    if (counts.A + counts.B + counts.C + counts.D !== ordered.length) {
++      problems.push(`Gap Closure Queue 分层不闭合：A+B+C+D = ${counts.A + counts.B + counts.C + counts.D} ≠ 队列条数 ${ordered.length}。`);
++    }
++    for (const row of rows) {
++      if (row.coveredM > row.targetN) {
++        problems.push(`Gap Closure Queue：${row.provider} 的 ${row.dimension} 格"已兑现 ${row.coveredM}"大于"目标 ${row.targetN}" —— 兑现数不可能超过声明数。`);
++      }
++    }
++    return {
++      rules: [
++        '「官方来源明确」= 这一格声明了至少一条 current target（`declared ≥ 1`）：意图层把"要覆盖的那一条"写成了可回指的实体（deals→`source` / coding→`planName` / api→`modelKey` / models→`registrySlug`）。只写了维度散文、没有实体的格子不算"来源明确"。',
++        '「来源困难」= 这家 provider 在各维度声明的来源里，至少一条满足：source-health 的 live 状态 ≠ `healthy`，或已被 `scripts/data/source-rulings.json` 裁决为 retire / keep-degraded / repair / headless-migrate 之一。',
++        '「高维护成本」= 来源裁决里的 overlap.maintenanceCost = high。它**并入**上面的"来源困难"：一个核心平台的缺口若依赖高维护成本的来源，它仍然是"要做但难做"（C 档），不是"可以不做"（D 档）。',
++        `「高价值维度」= ${HIGH_VALUE_DIMENSIONS.join(' / ')}（固定常量 HIGH_VALUE_DIMENSIONS）：这两个维度的缺口直接决定"这家平台在页面上有没有可用的价格或模型身份"。`,
++        'A = tier=core ∧ 维度∈高价值维度 ∧ 官方来源明确 ∧ ¬来源困难 ∧ ¬高维护成本',
++        'B = tier=major ∧ 官方来源明确 ∧ ¬来源困难 ∧ ¬高维护成本',
++        'C = tier∈{core, major} 但够不上 A / B：来源困难、或高维护成本、或还没把"要覆盖的那一条"写成可回指的实体、或 core 的非高价值维度',
++        'D = tier=long-tail（长尾平台，维护成本按定义为最高）',
++        '先命中先归，判定顺序 A → B → C → D（每个格子恰好落进一档）。层内次序：priority → tier 的 code-unit 序 → provider 的 code-unit 序 → 维度序（' + coverageTargets.DIMENSIONS.join(' → ') + '）。'
++      ],
++      exitRule: '每一格的出口只有两条（与 coverage-targets.json 的裁决机制同一套）：把"缺 K 条"补齐（→ COVERED / PARTIAL 变 COVERED），'
++        + '或在 scripts/data/coverage-targets.json 的 `rulings` 里写一条 deferred / unverifiable / schema-not-supported（→ DEFERRED / UNVERIFIABLE）。'
++        + '「出口状态」列印的是这一格**此刻**的派生状态。',
++      highValueDimensions: HIGH_VALUE_DIMENSIONS.slice(),
++      priorityOrder: ['A', 'B', 'C', 'D'],
++      counts,
++      total: ordered.length,
++      queue: ordered
++    };
++  })();
++
+   /* ---------------- 输出 ---------------- */
+   const out = [];
+   const line = text => out.push(text);
+   const kv = (label, value, note) => line(`  ${String(label).padEnd(26)} ${String(value).padStart(6)}${note ? `   ${note}` : ''}`);
+ 
+   line('======================================================================');
+@@ -1016,16 +1530,117 @@ function main() {
+     line(`  ${freshness.note}`);
+   } else {
+     line(`  策略来源：${freshness.module}（**尚未落盘**）`);
+     line(`  ${freshness.note}`);
+   }
+   line('');
++  line('── Release Evidence Coverage（v3 新增 · 官方发布日期写下了多少）──────');
++  line(`  判据层：${releaseEvidence.judge} —— 报告不重算口径，只按既有判据分组`);
++  if (releaseEvidence.status === 'ok') {
++    kv('registry 模型数', releaseEvidence.registryModels, `来源层 ${releaseEvidence.source}`);
++    kv('已知 official release date', releaseEvidence.known, `= ${releaseEvidence.knownPercent}%（**百分比是观测指标，不是 KPI**：没有目标线、不进门禁、不参与判定）`);
++    kv('未知 official release date', releaseEvidence.unknown, 'releasedAt 为 null 或字段缺席（与报告的 unknown release dates 同一判据）');
++    kv('带 releaseEvidence 引文', releaseEvidence.withReleaseEvidence, '这一栏只是观测：`releasedAt` 与 `releaseEvidence` 互为充要的判据归 lib/model-registry.js（本条不另立判据）');
++    const bucketLine = (label, list) => {
++      if (!Array.isArray(list)) return;
++      line(`  ${label}拆分（按档位条数降序）：`);
++      for (const bucket of list) {
++        line(`      ${String(bucket.key).padEnd(24)} 共 ${String(bucket.total).padStart(3)} · 已知 ${String(bucket.known).padStart(3)} · 未知 ${String(bucket.unknown).padStart(3)} · 已知率 ${bucket.knownPercent === null ? '(空)' : `${bucket.knownPercent}%`}`);
++      }
++    };
++    bucketLine('developer ', releaseEvidence.byDeveloper);
++    bucketLine('modelRole ', releaseEvidence.byModelRole);
++    if (releaseEvidence.byCatalogStatus) {
++      line('  catalogStatus 拆分（词表序 = lib/model-freshness.js 的 CATALOG_STATUSES）：');
++      for (const bucket of releaseEvidence.byCatalogStatus) {
++        line(`      ${String(bucket.key).padEnd(24)} 共 ${String(bucket.total).padStart(3)} · 已知 ${String(bucket.known).padStart(3)} · 未知 ${String(bucket.unknown).padStart(3)} · 已知率 ${bucket.knownPercent === null ? '(空)' : `${bucket.knownPercent}%`}`);
++      }
++    } else {
++      line('  catalogStatus 拆分：**分不出** —— 发布产物 models.json 里没有一个条目带 catalogStatus（freshness 派生层尚未落盘）。');
++    }
++  } else {
++    line(`  **分不出**（${releaseEvidence.status}）：${releaseEvidence.reason}`);
++  }
++  line('');
++
++  line('── Model Release Evidence Queue（v3 新增 · 只读优先队列）────────────');
++  line(`  队列共 ${releaseEvidenceQueue.total} 条（= registry 模型数；未知发布日期 ${releaseEvidenceQueue.unknownCount} 条 / 已知 ${releaseEvidenceQueue.knownCount} 条），下面打印前 ${releaseEvidenceQueue.limit} 条`);
++  line('  排序规则（原文；判据全部来自盘上事实，没有任何主观分）：');
++  for (const rule of releaseEvidenceQueue.rules) line(`      ${rule}`);
++  line(`  说明：${releaseEvidenceQueue.ruleNote}`);
++  line('  前 N 条：');
++  if (!releaseEvidenceQueue.queue.length) line('      （无）');
++  for (const row of releaseEvidenceQueue.queue) {
++    line(`      ${String(row.rank).padStart(3)}. ${String(row.slug).padEnd(28)} ${row.releasedAtUnknown ? 'releasedAt=未知' : `releasedAt=${row.releasedAt}`}`
++      + `  组 ${String(row.groupSize).padStart(2)}（${row.groupLabel === null ? '(无判据层)' : row.groupLabel}）`
++      + `  tier=${row.tier}  下游引用=${row.referenced ? '是' : '否'}`);
++  }
++  line('');
++
++  line('── Gap Closure Queue（v3 新增 · MISSING / PARTIAL 分层）──────────────');
++  line(`  队列共 ${gapClosureQueue.total} 条：A ${gapClosureQueue.counts.A} · B ${gapClosureQueue.counts.B} · C ${gapClosureQueue.counts.C} · D ${gapClosureQueue.counts.D}`);
++  line('  分层规则（原文；判据全部来自既有读数，没有伪精确分数）：');
++  for (const rule of gapClosureQueue.rules) line(`      ${rule}`);
++  line(`  出口：${gapClosureQueue.exitRule}`);
++  line('  逐条（目标 N / 已兑现 M / 缺 K / 出口状态）：');
++  if (!gapClosureQueue.queue.length) line('      （无）');
++  for (const row of gapClosureQueue.queue) {
++    line(`      [${row.priority}] ${String(row.provider).padEnd(12)} ${String(row.name || '').padEnd(16)} ${String(row.tier).padEnd(9)} ${row.dimensionLabel}：目标 ${row.targetN} / 已兑现 ${row.coveredM} / 缺 ${row.missingK}`
++      + ` · 盘上记录 ${row.present} · 出口状态 ${row.exitState}`
++      + `${row.sourceHard ? ` · 来源困难（${row.hardSources.join('、')}）` : ''}${row.highCost ? ` · 高维护成本（${row.costlySources.join('、')}）` : ''}`);
++    line(`            ${row.reason}`);
++  }
++  line('');
++
++  line('── Source Reliability summary（v3 新增 · 裁决 × live 读数）───────────');
++  line(`  心跳：${sourceReliability.healthFile} 的 generatedAt = ${sourceReliability.healthGeneratedAt === null ? '(文件里没有 generatedAt)' : sourceReliability.healthGeneratedAt}`);
++  line(`        本节所有 live 读数都出自**这一次**心跳（不是跑报告的墙钟时间）；它越旧，下面的 status 越不可信。`);
++  line(`  裁决表：${sourceReliability.file} —— ${sourceReliability.notLanded ? '**尚未落盘**（未落盘 ≠ 通过：本轮三方对账没有输入）' : `已落盘（reviewedAt=${sourceReliability.reviewedAt === null ? '(未写)' : sourceReliability.reviewedAt}）`}`);
++  line(`  注册表：${sourceReliability.collectorRegistryFile} 共 ${sourceReliability.collectorRegistryCount === null ? '(读不出)' : sourceReliability.collectorRegistryCount} 行`
++    + ` · source-health 注册表共 ${sourceReliability.registryRowCount} 行（沿用既有 registryRowCount 口径）`);
++  if (sourceReliability.notLanded) {
++    line(`  ⚠️ ${sourceReliability.notLandedNote}`);
++  } else {
++    line(`  裁决分布：${sourceReliability.decisionOrder.map(decision => `${decision}=${sourceReliability.decisionCounts[decision]}`).join(' · ')}`);
++    line('  逐条（裁决 × 注册表 × 心跳）：');
++    if (!sourceReliability.rulings.length) line('      （无裁决）');
++    for (const row of sourceReliability.rulings) {
++      const where = row.registry ? `注册表 id=${row.registry.id}` : '不在注册表';
++      const health = row.health
++        ? `health ${row.health.status}${row.health.reason ? `/${row.health.reason}` : ''}（连续失败 ${row.health.consecutiveFailures}）`
++        : 'health 无此行';
++      line(`      · ${String(row.source).padEnd(20)} ${String(row.decision).padEnd(17)} ← ${where} · ${health}`);
++      line(`        理由：${row.reason}`);
++      if (row.whyKept) line(`        保留理由：${row.whyKept}`);
++      if (row.revisitBy) line(`        复查条件：${row.revisitBy}`);
++      if (row.headlessStability) line(`        无头稳定性：${row.headlessStability}`);
++      line(`        取证 ${row.evidenceCount} 条 · overlap 存量 ${row.overlap ? row.overlap.historicalItems : '(缺)'} / 独有 ${row.overlap ? row.overlap.uniqueItems : '(缺)'} / 重叠 ${row.overlap ? row.overlap.overlapItems : '(缺)'} · 维护成本 ${row.overlap ? row.overlap.maintenanceCost : '(缺)'}`);
++    }
++    line('  三方对账（判据在 scripts/lib/source-rulings.js）：');
++    line(`      · retire 的来源仍在注册表：${sourceReliability.reconciliation.retireStillRegistered.length} 条${sourceReliability.reconciliation.retireStillRegistered.length ? `（${sourceReliability.reconciliation.retireStillRegistered.map(item => item.source).join('、')}）` : ''}`);
++    line(`      · 连续失败 ≥ ${sourceRulings.HEALTH_FAILURES_REQUIRING_RULING} 次却没有裁决：${sourceReliability.reconciliation.missingRulingsForFailures.length} 条${sourceReliability.reconciliation.missingRulingsForFailures.length ? `（${sourceReliability.reconciliation.missingRulingsForFailures.join('、')}）` : ''}`);
++    line(`      · repair / headless-migrate 却不在注册表：${sourceReliability.reconciliation.repairOrMigrateUnregistered.length} 条${sourceReliability.reconciliation.repairOrMigrateUnregistered.length ? `（${sourceReliability.reconciliation.repairOrMigrateUnregistered.map(item => item.source).join('、')}）` : ''}`);
++    line(`      · 裁决的 source 命不中任何身份：${sourceReliability.reconciliation.unresolvedSources.length} 条${sourceReliability.reconciliation.unresolvedSources.length ? `（${sourceReliability.reconciliation.unresolvedSources.join('、')}）` : ''}`);
++    line(`      · 对账问题合计：${sourceReliability.reconciliation.problemCount} 处（不为 0 时报告自检非 0）`);
++    line(`      · 还没裁决的注册表行（不是错误，是缺口）：${sourceReliability.reconciliation.unruledRegistrySources.join(' / ') || '（无）'}`);
++    line(`      · 已 retire 但心跳里还有行：${sourceReliability.reconciliation.retireStillInHealth.join(' / ') || '（无）'}（心跳行可能是旧读数，删不删由 workstream C 决定）`);
++    if (sourceReliability.validationProblemCount) {
++      line(`  ⚠️ 裁决表 schema 问题 ${sourceReliability.validationProblemCount} 处：${sourceReliability.validationProblems.slice(0, 3).join('；')}`);
++    }
++  }
++  line('');
+ 
+   line('──────────────────────────────────────────────────────────────────────');
+   line(`候选登记表：${candidates.length} 条（已采信 ${adopted.length} / 未采信 ${notAdopted.length}）`);
+   line(`报告自检问题：${problems.length} 处`);
++  // 未落盘层**计入自检口径**（同一行相邻打印），但不判红：见 `pendingLayers` 的注释。
++  // 这一行存在的唯一理由：让"某一层还没落盘"永远不可能被读成"这一层全是健康的"。
++  if (pendingLayers.length) {
++    line(`报告自检待落盘层：${pendingLayers.length} 项（**计入自检口径**：未落盘 ≠ 通过，也不判红 —— 与 Freshness 策略模块同一处理）`);
++    for (const layer of pendingLayers) line(`  · ${layer.file}（${layer.layer}）—— ${layer.note}`);
++  }
+ 
+   console.log(out.join('\n'));
+ 
+   if (problems.length) {
+     console.error('\n❌ 覆盖报告自检失败：');
+     for (const problem of problems) console.error(`  - ${problem}`);
+@@ -1187,13 +1802,20 @@ function main() {
+           counts: catalogStatusCensus.counts,
+           sum: catalogStatusCensus.sum,
+           registryModels: catalogStatusCensus.registryModels,
+           statusesOutsideWordList: catalogStatusCensus.statusesOutsideWordList,
+           source: '发布产物 models.json 的 catalogStatus（派生字段，来源层禁写）；词表与 censusOf() 来自 scripts/lib/model-freshness.js',
+           reason: catalogStatusCensus.reason
+-        }
++        },
++        // ---- v3（coverage-depth-v1）新增：**追加在既有键之后**（旧键一律不动位）----
++        // 四节的新键全部挂在这里，而不是顶层：顶层键序（generatedAt … coverageTargets）因此与 v2
++        // **逐字逐序相同** —— 下游按位置读顶层键的地方一个都不会失效。
++        releaseEvidence,
++        releaseEvidenceQueue,
++        gapClosureQueue,
++        sourceReliability
+       }
+     };
+     console.log('\nJSON:');
+     console.log(JSON.stringify(payload, null, 2));
+   }
+ 
+diff --git a/scripts/tools/coverage-targets-selftest.js b/scripts/tools/coverage-targets-selftest.js
+index e402e35..f956a90 100644
+--- a/scripts/tools/coverage-targets-selftest.js
++++ b/scripts/tools/coverage-targets-selftest.js
+@@ -27,12 +27,13 @@
+ const fs = require('fs');
+ const os = require('os');
+ const path = require('path');
+ const { spawnSync } = require('child_process');
+ 
+ const ct = require('../lib/coverage-targets');
++const sr = require('../lib/source-rulings');
+ const providers = require('../lib/providers');
+ const registry = require('../lib/model-registry');
+ const freshnessLib = require('../lib/model-freshness');
+ const { load: loadRenderCore } = require('../lib/render-core');
+ const dataDocs = require('../lib/data-docs');
+ 
+@@ -500,36 +501,50 @@ const LEGACY_CONTRACT = {
+   'coverageTargets.sourceHealth': ['declaredSources', 'unhealthyDeclaredSources', 'blockedTargets']
+ };
+ const LEGACY_TOP_LEVEL = ['generatedAt', 'deals', 'coding', 'api', 'registry', 'gaps', 'candidates'];
+ /**
+  * 追加键白名单：报告新增键必须**逐个登记在这里**（t25 = API 侧处置键；t46 = R4 五态普查 + 候选明细 + 来源宇宙）。
+  *
+- * 语义锚点（t29 补；t46 追加）——白名单里各键**锚在哪个读数**上：
++ * 语义锚点（t29 补；t46 追加；v3 再追加）——白名单里各键**锚在哪个读数**上：
+  *   · `registry.mappedApiEntries`     = lib `coverageOf().mappedApiEntries`（**数**：展开后被映射认领的计价条目数 = 方程的 A）
+  *   · `registry.declaredApiEntries`   = lib `coverageOf().declaredApiIdentities`（**数**：展开后被处置声明覆盖的计价条目数 = 方程的 B）
+  *   · `registry.declaredApiEntryRows` = lib `coverageOf().declaredApiEntries`（**数组**：声明本身逐条留档，长度 = 声明条数）
+  *   · `gaps.declaredApiEntryCount`    = 上面的 `declaredApiEntryRows.length`（**数**；**不是**方程的 B）
+  *   · `coverageTargets.catalogStatusCensus` = 五态普查：词表 = lib `CATALOG_STATUSES`、逐条值 = 发布产物
+  *       `models.json` 的 `catalogStatus`、计数 = lib `censusOf()`；`sum` **必须等于** `currentModels.registryModels`
+  *   · `candidates.rows`               = 候选来源审查的**逐条明细**（url / checkedAt / 是否采信 / 失败原因），
+  *       排序 = provider → url → checkedAt → slug 的 code-unit 序
+  *   · `coverageTargets.sourceHealth.{registryRowCount,registryRows,registryOnlySources}` = R8 的来源宇宙对照
+  *       （注册表几行 / 本节收几行 / 差集是哪几个）
++ *   · `coverageTargets.releaseEvidence` = v3 第①节：registry 模型数 / 已知 releasedAt / 未知 / 已知率，
++ *       并**按 developer、modelRole、catalogStatus 三维拆分**；判据全部来自 lib（`releaseDateOf()` /
++ *       `resolveModelRole()` / `CATALOG_STATUSES`），报告只分组、不重算口径。百分比是观测指标，不是 KPI。
++ *   · `coverageTargets.releaseEvidenceQueue` = v3 第②节：只读的"优先补哪几条发布日期"队列，
++ *       五条规则原文随队列一起输出；规则①的判据与第①节的 known/unknown **同源**（同一支
++ *       `releaseDateOf().provided`），队列条数 = registry 模型数。
++ *   · `coverageTargets.gapClosureQueue` = v3 第③节：MISSING / PARTIAL 的 A/B/C/D 分层，
++ *       每条带「目标 N / 已兑现 M / 缺 K」；`counts` 之和 == 队列长度 == `states.MISSING + states.PARTIAL`。
++ *   · `coverageTargets.sourceReliability` = v3 第④节：`scripts/data/source-rulings.json` 的裁决
++ *       × `scripts/data/source-health.json` 的 live 读数（**必须带 healthGeneratedAt**）；
++ *       `registryRowCount/registryRows/registryOnlySources` 与 `coverageTargets.sourceHealth` 的那三个键
++ *       **逐字相等**（同一口径，不另算一份）；三方对账的问题清单在 `reconciliation.problems` 里。
+  * ⚠️ 陷阱：lib 的 `declaredApiEntries`（数组）与报告的 `registry.declaredApiEntries`（数）**同名不同义**；
+  *    报告层那个冻结键名已经占了"数"的位置，所以"声明行数组"只能另起一名 `declaredApiEntryRows`。
+  *    两层的词是**交叉**的：报告 `registry.declaredApiEntries`（数）↔ lib `declaredApiIdentities`（数）、
+  *    报告 `registry.declaredApiEntryRows`（数组）↔ lib `declaredApiEntries`（数组）。
+  */
+ const APPENDED_KEY_WHITELIST = {
+   deals: [],
+   coding: [],
+   api: [],
+   registry: ['mappedApiEntries', 'declaredApiEntries', 'declaredApiEntryRows'],
+   gaps: ['declaredApiEntryCount'],
+   candidates: ['rows'],
+-  coverageTargets: ['catalogStatusCensus'],
++  // v3（coverage-depth-v1）：四节新键**追加在 v2 既有键之后**（`catalogStatusCensus` 是 t46 追加的最后一位，
++  // 它前面的冻结点一位都没动 —— 这正是 LEGACY_CONTRACT 那一条前缀判据的意义）。
++  coverageTargets: ['catalogStatusCensus', 'releaseEvidence', 'releaseEvidenceQueue', 'gapClosureQueue', 'sourceReliability'],
+   'coverageTargets.sourceHealth': ['registryRowCount', 'registryRows', 'registryOnlySources']
+ };
+ 
+ /** 点分路径取值（契约表里的嵌套节用 `a.b.c` 寻址）；取不到 ⇒ undefined（由契约判据判"缺键"） */
+ function valueAt(node, dotted) {
+   return String(dotted).split('.').reduce((current, key) => (current === null || current === undefined ? undefined : current[key]), node);
+@@ -611,13 +626,15 @@ try {
+       contractProblems(droppedRegistry, LEGACY_CONTRACT.registry, APPENDED_KEY_WHITELIST.registry).length > 0);
+ 
+     const cov = payload1.coverageTargets;
+     check('新键 coverageTargets 结构完整（universe / dimensions / rows / 清单 / currentModels / sourceHealth / freshness）',
+       Boolean(cov) && ['file', 'present', 'schemaVersion', 'reviewedAt', 'validationProblems', 'states',
+         'universe', 'dimensions', 'rows', 'missingTargets', 'partialTargets', 'deferred', 'unverifiable',
+-        'notApplicable', 'blockedBySourceHealth', 'currentModels', 'sourceHealth', 'freshness']
++        'notApplicable', 'blockedBySourceHealth', 'currentModels', 'sourceHealth', 'freshness',
++        // v3 追加的四个新键：存在性断言（缺一个即红 —— 白名单里的键必须真的出现）
++        'releaseEvidence', 'releaseEvidenceQueue', 'gapClosureQueue', 'sourceReliability']
+         .every(key => Object.prototype.hasOwnProperty.call(cov, key)),
+       Object.keys(cov || {}).join(','));
+     check('universe.declared == 意图层行数，且与 providers.json 身份数逐字相等',
+       cov.universe.declared === ct.targetsList(targetsLoaded.doc).length
+       && cov.universe.declared === Object.keys(providerTable).length);
+     check('dimensions 与 rows 自洽：每个维度的状态计数之和 == 该维度行数',
+@@ -740,12 +757,479 @@ try {
+     bogusRun.status !== 0 && bogusRun.stderr.includes('不在词表里'),
+     `exit ${bogusRun.status}；${(bogusRun.stderr.split('\n').find(line => line.includes('词表')) || '(没有点到词表)').trim().slice(0, 120)}`);
+ } finally {
+   try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch (error) { /* 临时目录清不掉不影响判据 */ }
+ }
+ 
++/* ================================================================== */
++/* ⑤ v3（coverage-depth-v1）：source-rulings 判据层 + 报告新增四节        */
++/* ================================================================== */
++//
++// 这一段的纪律与 ①②③④ 逐字相同：**纯函数驱动 + 夹具反证**。
++// 为什么 source-rulings 的 schema / 对账必须用夹具而不是盘上文件：盘上那份文件由 workstream C 落盘，
++// 它此刻可能还不存在、也可能只有一条裁决 —— **用真实文件证明不了"retire 还在注册表里会红"**。
++// 反面同样重要：报告对"尚未落盘"必须优雅降级（不崩、不静默当通过），所以那条路径也要用
++// 一份**不存在的路径**去驱动，而不是靠"碰巧还没落盘"。
++
++section('⑤ source-rulings 判据层（纯函数、零依赖、不读墙钟）+ v3 四节');
++
++const srLibSource = fs.readFileSync(path.join(ROOT, 'scripts', 'lib', 'source-rulings.js'), 'utf8');
++check('source-rulings 判据层是纯函数：不读墙上时钟、不联网、不写盘',
++  !/Date\.now|new Date\(/.test(srLibSource) && !/https?:\/\//.test(srLibSource.replace(/^[\s\S]*?\*\//, ''))
++  && !/writeFileSync|appendFileSync/.test(srLibSource));
++check('source-rulings 判据层零依赖（只 require fs / path，没有别的模块）',
++  [...srLibSource.matchAll(/require\(([^)]*)\)/g)].every(hit => /'fs'|'path'/.test(hit[1])),
++  [...srLibSource.matchAll(/require\(([^)]*)\)/g)].map(hit => hit[1]).join(' '));
++check('source-rulings 冻结 schema 的词表与题面一致（四裁决 / 三成本档 / 三条必填关系）',
++  JSON.stringify(sr.DECISIONS) === JSON.stringify(['repair', 'headless-migrate', 'keep-degraded', 'retire'])
++  && JSON.stringify(sr.MAINTENANCE_COSTS) === JSON.stringify(['low', 'medium', 'high'])
++  && JSON.stringify(sr.REQUIRED_BY_DECISION['keep-degraded']) === JSON.stringify(['whyKept', 'revisitBy'])
++  && JSON.stringify(sr.REQUIRED_BY_DECISION.repair) === JSON.stringify(['revisitBy'])
++  && JSON.stringify(sr.REQUIRED_BY_DECISION['headless-migrate']) === JSON.stringify(['headlessStability'])
++  && sr.HEALTH_FAILURES_REQUIRING_RULING === 3,
++  JSON.stringify({ decisions: sr.DECISIONS, required: sr.REQUIRED_BY_DECISION }));
++
++/* ---- 稳定序：**code-unit 序**，不是 localeCompare（后者随 ICU 版本变） ---- */
++check('稳定序：sortRulings 与输入顺序无关，且按 source 的 code-unit 序（大写在前的 code-unit 事实）',
++  sr.sortRulings([{ source: 'zeta' }, { source: 'alpha' }, { source: 'Zulu' }]).map(row => row.source).join(',')
++  === 'Zulu,alpha,zeta'
++  && sr.orderKeyOfRuling({ source: 'beta' }) === 'beta',
++  JSON.stringify(sr.sortRulings([{ source: 'zeta' }, { source: 'alpha' }, { source: 'Zulu' }]).map(row => row.source)));
++
++/* ---- schema 夹具：合法输入 + 每一条变异必须报红 ---- */
++const FIXTURE_SOURCE_RULINGS = {
++  schemaVersion: sr.SCHEMA_VERSION,
++  reviewedAt: '2026-10-05',
++  _note: '夹具：不落盘，只用于驱动判据层',
++  rulings: [
++    {
++      source: 'delta_official',
++      decision: 'headless-migrate',
++      reason: '夹具：静态链路拿不到，迁无头',
++      evidence: [{ url: 'https://example.invalid/source', capturedAt: '2026-10-05', reading: '夹具：HTTP 403' }],
++      overlap: { historicalItems: 3, uniqueItems: 1, overlapItems: 2, maintenanceCost: 'medium' },
++      whyKept: null,
++      revisitBy: null,
++      headlessStability: '夹具：连跑 3 轮稳定'
++    },
++    {
++      source: 'gamma_official',
++      decision: 'keep-degraded',
++      reason: '夹具：独有价值大于维护成本',
++      evidence: [],
++      overlap: { historicalItems: 0, uniqueItems: 5, overlapItems: 0, maintenanceCost: 'low' },
++      whyKept: '夹具：只有这一家给出这类条目',
++      revisitBy: '夹具：连续失败再翻倍时复查',
++      headlessStability: null
++    }
++  ]
++};
++const FIXTURE_REGISTRY_SOURCES = [
++  { id: 'delta_official', name: 'Delta Official', region: 'global', headless: false },
++  { id: 'gamma_official', name: 'Gamma Official', region: 'global', headless: false },
++  { id: 'epsilon_official', name: 'Epsilon Official', region: 'global', headless: false }
++];
++const FIXTURE_HEALTH_SOURCES = [
++  { source: 'delta_official', name: 'Delta Official', status: 'failed', reason: 'collector_error', consecutiveFailures: 9 },
++  { source: 'gamma_official', name: 'Gamma Official', status: 'healthy', reason: null, consecutiveFailures: 0 }
++];
++
++check(`source-rulings 夹具本身合法（0 处问题，实际 ${sr.validateRulings(FIXTURE_SOURCE_RULINGS).length} 处）`,
++  sr.validateRulings(FIXTURE_SOURCE_RULINGS).length === 0,
++  sr.validateRulings(FIXTURE_SOURCE_RULINGS).slice(0, 3).join('；'));
++check('三方对账夹具本身合法（0 处问题）',
++  sr.reconcileRulings({
++    doc: FIXTURE_SOURCE_RULINGS, registrySources: FIXTURE_REGISTRY_SOURCES, healthSources: FIXTURE_HEALTH_SOURCES
++  }).problems.length === 0,
++  sr.reconcileRulings({
++    doc: FIXTURE_SOURCE_RULINGS, registrySources: FIXTURE_REGISTRY_SOURCES, healthSources: FIXTURE_HEALTH_SOURCES
++  }).problems.slice(0, 3).join('；'));
++
++const rulingsRed = (name, mutate, needle) => {
++  const doc = clone(FIXTURE_SOURCE_RULINGS);
++  mutate(doc);
++  const found = sr.validateRulings(doc);
++  check(`【牙】source-rulings schema：${name}`, found.length > 0 && (!needle || found.some(text => text.includes(needle))),
++    found.length ? `Problems: ${found.slice(0, 2).join('；')}` : '没有报红');
++};
++rulingsRed('schemaVersion 不对 → 红', doc => { doc.schemaVersion = 99; }, 'schemaVersion 应为');
++rulingsRed('顶层未知字段 → 红', doc => { doc.extra = true; }, '顶层未知字段');
++rulingsRed('decision 非法（watch = 变相的"待定"）→ 红', doc => { doc.rulings[0].decision = 'watch'; }, 'decision 非法');
++rulingsRed('reason 为空 → 红', doc => { doc.rulings[0].reason = '   '; }, 'reason 不能为空');
++rulingsRed('同一个来源两条裁决 → 红',
++  doc => { doc.rulings.push(clone(doc.rulings[0])); }, '出现了不止一次');
++rulingsRed('rulings 不是按 source 的 code-unit 序 → 红', doc => { doc.rulings.reverse(); }, '不是规范序');
++rulingsRed('裁决里出现未知字段 → 红', doc => { doc.rulings[0].verdict = 'ok'; }, '未知字段');
++rulingsRed('裁决字段顺序不是规范序 → 红',
++  doc => { const row = doc.rulings[0]; const moved = row.source; delete row.source; row.source = moved; }, '不是规范序');
++rulingsRed('evidence 不是数组 → 红', doc => { doc.rulings[0].evidence = null; }, 'evidence 必须是数组');
++rulingsRed('evidence 缺 url → 红', doc => { doc.rulings[0].evidence[0].url = ''; }, 'url 不能为空');
++rulingsRed('evidence 的 url 不是绝对地址 → 红',
++  doc => { doc.rulings[0].evidence[0].url = '看过了，页面上有'; }, '不是绝对地址');
++rulingsRed('evidence 的 capturedAt 不是日期 → 红',
++  doc => { doc.rulings[0].evidence[0].capturedAt = '2026年10月'; }, 'capturedAt 必须是');
++rulingsRed('evidence 的 reading 为空 → 红', doc => { doc.rulings[0].evidence[0].reading = ''; }, 'reading 不能为空');
++rulingsRed('overlap 不是对象 → 红', doc => { doc.rulings[0].overlap = null; }, 'overlap 必须是对象');
++rulingsRed('overlap 计数是负数 → 红', doc => { doc.rulings[0].overlap.uniqueItems = -1; }, '必须是非负整数');
++rulingsRed('maintenanceCost 非法 → 红', doc => { doc.rulings[0].overlap.maintenanceCost = 'very-high'; }, 'maintenanceCost 非法');
++rulingsRed('keep-degraded 缺 whyKept → 红', doc => { doc.rulings[1].whyKept = null; }, '必须写 whyKept');
++rulingsRed('keep-degraded 缺 revisitBy → 红', doc => { doc.rulings[1].revisitBy = ''; }, '必须写 revisitBy');
++rulingsRed('headless-migrate 缺 headlessStability → 红',
++  doc => { doc.rulings[0].headlessStability = null; }, '必须写 headlessStability');
++rulingsRed('repair 缺 revisitBy → 红',
++  doc => { doc.rulings[0].decision = 'repair'; doc.rulings[0].headlessStability = null; }, '必须写 revisitBy');
++
++/* ---- 三方对账夹具：三条硬关系 + 一条反向牙 ---- */
++const rulingsReconcileRed = (name, doc, needle) => {
++  const result = sr.reconcileRulings({
++    doc, registrySources: FIXTURE_REGISTRY_SOURCES, healthSources: FIXTURE_HEALTH_SOURCES
++  });
++  check(`【牙】三方对账：${name}`,
++    result.problems.length > 0 && (!needle || result.problems.some(text => text.includes(needle))),
++    result.problems.length ? `Problems: ${result.problems.slice(0, 2).join('；')}` : '没有报红');
++};
++const reconcileFixture = mutate => { const doc = clone(FIXTURE_SOURCE_RULINGS); mutate(doc); return doc; };
++
++rulingsReconcileRed('已裁决 retire 的来源仍挂在采集器注册表里 → 红',
++  reconcileFixture(doc => { doc.rulings[1].decision = 'retire'; doc.rulings[1].whyKept = null; doc.rulings[1].revisitBy = null; }),
++  'retire');
++rulingsReconcileRed('连续失败 ≥ 3 次的来源没有裁决 → 红（清空裁决表）',
++  reconcileFixture(doc => { doc.rulings = []; }), '连续失败');
++rulingsReconcileRed('repair 的来源不在注册表里 → 红',
++  reconcileFixture(doc => {
++    doc.rulings[0].decision = 'repair';
++    doc.rulings[0].headlessStability = null;
++    doc.rulings[0].revisitBy = '夹具：改版后复查';
++    doc.rulings.unshift({
++      source: 'ghost_official', decision: 'repair', reason: '夹具：不在注册表的来源',
++      evidence: [], overlap: { historicalItems: 0, uniqueItems: 0, overlapItems: 0, maintenanceCost: 'low' },
++      whyKept: null, revisitBy: '夹具：复查', headlessStability: null
++    });
++  }), 'repair');
++rulingsReconcileRed('非 retire 的裁决命不中任何身份（名字写错）→ 红',
++  reconcileFixture(doc => { doc.rulings[1].source = 'gamma_officiall'; }), '都找不到同一个身份');
++check('【反向牙】retire 的来源**完全不在任何一层**不算错（退出去的来源本来就该从注册表与心跳里消失）',
++  sr.reconcileRulings({
++    doc: {
++      schemaVersion: sr.SCHEMA_VERSION,
++      reviewedAt: null,
++      rulings: [{
++        source: 'already_gone', decision: 'retire', reason: '夹具：已下线', evidence: [],
++        overlap: { historicalItems: 0, uniqueItems: 0, overlapItems: 0, maintenanceCost: 'low' },
++        whyKept: null, revisitBy: null, headlessStability: null
++      }]
++    },
++    registrySources: [{ id: 'gamma_official', name: 'Gamma Official' }],
++    healthSources: []
++  }).problems.join('；') === '');
++check('【夹具】裁决 → 身份命中：id 与 name 两种写法都能命中同一个来源',
++  (() => {
++    const byId = sr.reconcileRulings({
++      doc: FIXTURE_SOURCE_RULINGS, registrySources: FIXTURE_REGISTRY_SOURCES, healthSources: FIXTURE_HEALTH_SOURCES
++    }).rows[0];
++    const byName = sr.reconcileRulings({
++      doc: {
++        schemaVersion: sr.SCHEMA_VERSION, reviewedAt: null,
++        rulings: [Object.assign(clone(FIXTURE_SOURCE_RULINGS.rulings[0]), { source: 'Delta Official' })]
++      },
++      registrySources: FIXTURE_REGISTRY_SOURCES, healthSources: FIXTURE_HEALTH_SOURCES
++    }).rows[0];
++    return byId.registry.id === 'delta_official' && byName.registry.id === 'delta_official'
++      && byId.health.consecutiveFailures === 9 && byName.health.consecutiveFailures === 9
++      && byId.resolvedBy === 'registry-id' && byName.resolvedBy === 'registry-name';
++  })());
++
++/* ---- 报告端到端：v3 四节的**同一批数字** + 夹具反证 ---- */
++const v3Tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'coverage-v3-'));
++try {
++  /* ① 优雅降级：把裁决表指向一个**不存在的路径** —— 这比"碰巧还没落盘"更可靠（落盘之后也照样能跑）。 */
++  const absentRun = runReport([`--source-rulings=${path.join(v3Tmp, 'does-not-exist.json')}`]);
++  const absentProblems = absentRun.stderr.split('\n').filter(text => text.trim().startsWith('- ')).map(text => text.trim().slice(2));
++  check('v3：裁决表不在盘上时**优雅降级**（退出码 0、文本如实说「尚未落盘」、不崩）',
++    absentRun.status === 0 && absentRun.stdout.includes('尚未落盘') && absentProblems.length === 0,
++    `exit ${absentRun.status}；问题 ${absentProblems.slice(0, 2).join('；')}`);
++  check('v3：未落盘层**计入报告自检口径**（同一行相邻打印，不静默当通过）',
++    absentRun.stdout.includes('报告自检待落盘层：1 项')
++    && absentRun.stdout.includes('scripts/data/source-rulings.json')
++    && absentRun.stdout.includes('计入自检口径'),
++    (absentRun.stdout.split('\n').find(text => text.includes('待落盘层')) || '(没有这一行)').trim().slice(0, 140));
++
++  /* ② 落盘分支：喂一份**合法夹具**（覆盖真实心跳里的每一个来源），报告必须绿、且四节结构完整。 */
++  const liveHealth = readJson('scripts/data/source-health.json');
++  const fixtureDoc = {
++    schemaVersion: sr.SCHEMA_VERSION,
++    reviewedAt: '2026-01-01',
++    _note: '夹具：由 coverage-targets-selftest 现场生成，不落盘',
++    rulings: sr.sortRulings(liveHealth.sources.map(source => ({
++      source: source.source,
++      decision: 'keep-degraded',
++      reason: `夹具：${source.name} 保留降级（自测专用）`,
++      evidence: [],
++      overlap: { historicalItems: 0, uniqueItems: 1, overlapItems: 0, maintenanceCost: 'low' },
++      whyKept: '夹具：为覆盖"每个注册来源都有裁决"这一分支而生成',
++      revisitBy: '夹具：下一次复查',
++      headlessStability: null
++    })))
++  };
++  const fixtureProblems = sr.validateRulings(fixtureDoc);
++  check(`v3：现场生成的合法夹具通过 schema 校验（0 处问题，实际 ${fixtureProblems.length} 处）`,
++    fixtureProblems.length === 0, fixtureProblems.slice(0, 2).join('；'));
++  const fixtureFile = path.join(v3Tmp, 'source-rulings.fixture.json');
++  fs.writeFileSync(fixtureFile, `${JSON.stringify(fixtureDoc, null, 2)}\n`);
++
++  const landed1 = runReport(['--json', `--source-rulings=${fixtureFile}`]);
++  const landed2 = runReport(['--json', `--source-rulings=${fixtureFile}`]);
++  const payload = jsonOf(landed1.stdout);
++  const landedProblems = landed1.stderr.split('\n').filter(text => text.trim().startsWith('- ')).map(text => text.trim().slice(2));
++  check('v3：【确定性】喂同一份夹具的两次 --json 输出逐字节一致',
++    landed1.stdout === landed2.stdout && landed1.status === 0 && landed2.status === 0,
++    `status ${landed1.status}/${landed2.status}，长度 ${landed1.stdout.length}/${landed2.stdout.length}`);
++  check('v3：裁决表落盘（夹具）后报告自检 0 处问题，且不再有待落盘层',
++    landedProblems.length === 0 && !landed1.stdout.includes('报告自检待落盘层'),
++    `问题 ${landedProblems.length} 处：${landedProblems.slice(0, 2).join('；')}`);
++
++  if (!payload) {
++    check('v3：v3 四节的 JSON 结构可核对：报告成功运行并在 stdout 给出 JSON', false,
++      `报告退出码 ${landed1.status}；问题 ${landedProblems.slice(0, 3).join('；')}`);
++  } else {
++    const cov3 = payload.coverageTargets;
++    const eq = cov3.releaseEvidence;
++    const queue = cov3.releaseEvidenceQueue;
++    const gap = cov3.gapClosureQueue;
++    const rel = cov3.sourceReliability;
++
++    /* --- ① Release Evidence Coverage --- */
++    check('v3①：Release Evidence Coverage 四要素齐全（registry / known / unknown / known%），且已知 + 未知 == registry 模型数',
++      eq.registryModels === cov3.currentModels.registryModels
++      && eq.known + eq.unknown === eq.registryModels
++      && typeof eq.knownPercent === 'number'
++      && eq.knownPercent === Number(((eq.known / eq.registryModels) * 100).toFixed(1)),
++      `registry=${eq.registryModels} known=${eq.known} unknown=${eq.unknown} known%=${eq.knownPercent}`);
++    check('v3①：三维拆分（developer / modelRole / catalogStatus）各自闭合 —— 各档之和 == registry 模型数',
++      ['byDeveloper', 'byModelRole', 'byCatalogStatus'].every(name => Array.isArray(eq[name])
++        && eq[name].reduce((total, bucket) => total + bucket.total, 0) === eq.registryModels)
++      && typeof eq.byDeveloper[0].known === 'number' && typeof eq.byDeveloper[0].unknown === 'number'
++      && typeof eq.byDeveloper[0].knownPercent === 'number',
++      ['byDeveloper', 'byModelRole', 'byCatalogStatus'].map(name => `${name}=${(eq[name] || []).reduce((total, bucket) => total + bucket.total, 0)}`).join(' '));
++    check('v3①：已知/未知的判据是 lib 的 releaseDateOf().provided —— 与现有 unknownReleaseDates 读数**同源**（两处必须相等）',
++      eq.unknown === cov3.currentModels.unknownReleaseDates.length
++      && eq.known === Object.entries(registryTable).filter(([, entry]) => entry.releasedAt !== null && entry.releasedAt !== undefined).length
++      && eq.known + eq.unknown === Object.keys(registryTable).length,
++      `unknown=${eq.unknown} / unknownReleaseDates=${cov3.currentModels.unknownReleaseDates.length} / known=${eq.known}`);
++    check('v3①：catalogStatus 拆分带完整词表（一档不落地也印出来 —— 与 R4 五态普查同一纪律）',
++      eq.byCatalogStatus.map(bucket => bucket.key).join(',') === freshnessLib.CATALOG_STATUSES.join(','),
++      eq.byCatalogStatus.map(bucket => `${bucket.key}:${bucket.total}`).join(' '));
++    check('v3①：百分比写明「不是 KPI」（不许把观测量当目标线）',
++      /不是 KPI/.test(eq.percentNote || '') && /观测指标/.test(eq.percentNote || '')
++      && landed1.stdout.includes('百分比是观测指标，不是 KPI'),
++      (eq.percentNote || '').slice(0, 80));
++
++    /* --- ② Model Release Evidence Queue --- */
++    const queueRules = Array.isArray(queue.rules) ? queue.rules.join(' ') : '';
++    check('v3②：五条规则**原文**随队列一起输出（① ~ ⑤ 一条不少）',
++      ['①', '②', '③', '④', '⑤'].every(mark => queueRules.includes(mark))
++      && /comparableGroupOf/.test(queueRules) && /code-unit/.test(queueRules)
++      && /api-plans\.json/.test(queueRules) && /plans\.json/.test(queueRules) && /long-tail/.test(queueRules),
++      queueRules.slice(0, 120));
++    check('v3②：队列覆盖全部 registry 模型，且 unknownCount 与第①节的 unknown **同源**',
++      queue.total === eq.registryModels && queue.unknownCount === eq.unknown
++      && queue.knownCount === eq.known && queue.unknownCount + queue.knownCount === queue.total);
++    check('v3②：打印 N 是固定常量并在 JSON 里写明（前 N 条 = min(limit, total)）',
++      Number.isInteger(queue.limit) && queue.limit > 0
++      && queue.queue.length === Math.min(queue.limit, queue.total)
++      && queue.queue.every((row, index) => row.rank === index + 1));
++    check('v3②：队列次序**逐条复算**五条规则（① 未知优先 → ② 组规模降序 → ③ tier → ④ 下游引用 → ⑤ slug code-unit）',
++      (() => {
++        const tierRank = { core: 0, major: 1, 'long-tail': 2 };
++        for (let index = 1; index < queue.queue.length; index += 1) {
++          const a = queue.queue[index - 1];
++          const b = queue.queue[index];
++          if (a.releasedAtUnknown !== b.releasedAtUnknown) { if (!a.releasedAtUnknown) return false; continue; }
++          if (a.groupSize !== b.groupSize) { if (a.groupSize < b.groupSize) return false; continue; }
++          if (tierRank[a.tier] !== tierRank[b.tier]) { if (tierRank[a.tier] > tierRank[b.tier]) return false; continue; }
++          if (a.referenced !== b.referenced) { if (!a.referenced) return false; continue; }
++          if (!(a.slug < b.slug)) return false;
++        }
++        return queue.queue.every(row => ['core', 'major', 'long-tail'].includes(row.tier)
++          && typeof row.groupSize === 'number'
++          && row.referenced === (row.referencedByApiPlans || row.referencedByPlans));
++      })(),
++      queue.queue.slice(0, 3).map(row => `${row.rank}:${row.slug}/g${row.groupSize}/${row.tier}`).join(' '));
++    check('v3②：tier 判据来自 coverage-targets（够不到 target 的按 long-tail），且与意图层逐行一致',
++      queue.queue.every(row => {
++        const target = ct.targetsList(targetsLoaded.doc).find(item => item.provider === row.provider);
++        return row.tier === (target ? target.tier : 'long-tail');
++      }));
++    check('v3②：组键由 lib 的 comparableGroupOf() 给出（报告没有另写一份组键算法）',
++      queue.groupJudgeAvailable === true && queue.queue.every(row => {
++        const group = freshnessLib.comparableGroupOf(registryTable[row.slug] || {});
++        return row.groupKey === group.key && row.groupKind === group.source;
++      }));
++
++    /* --- ③ Gap Closure Queue --- */
++    const gapQueue = gap.queue;
++    check('v3③：队列条数 == MISSING + PARTIAL，且 counts 之和 == 队列条数（每个格子恰好落进一档）',
++      gapQueue.length === cov3.states.MISSING + cov3.states.PARTIAL
++      && gap.counts.A + gap.counts.B + gap.counts.C + gap.counts.D === gapQueue.length
++      && ['A', 'B', 'C', 'D'].every(priority => gap.counts[priority] === gapQueue.filter(row => row.priority === priority).length),
++      JSON.stringify(gap.counts) + ` / ${gapQueue.length}`);
++    check('v3③：每一条都带「目标 N / 已兑现 M / 缺 K / 出口状态」，且 K == N − M、M ≤ N',
++      gapQueue.every(row => Number.isInteger(row.targetN) && Number.isInteger(row.coveredM) && Number.isInteger(row.missingK)
++        && row.missingK === row.targetN - row.coveredM && row.coveredM <= row.targetN
++        && ['MISSING', 'PARTIAL'].includes(row.state) && row.exitState === row.state
++        && typeof row.present === 'number' && typeof row.reason === 'string'));
++    check('v3③：分层规则**原文**随队列一起输出（A ~ D 四档 + 判据定义一条不少）',
++      ['A = ', 'B = ', 'C = ', 'D = '].every(mark => gap.rules.join(' ').includes(mark))
++      && /HIGH_VALUE_DIMENSIONS/.test(gap.rules.join(' ')) && /先命中先归/.test(gap.rules.join(' '))
++      && /官方来源明确/.test(gap.rules.join(' ')) && /来源困难/.test(gap.rules.join(' '))
++      && JSON.stringify(gap.highValueDimensions) === JSON.stringify(['api', 'models']));
++    check('v3③：每一条的 priority 都能**逐条复算**出来（判据全部在 payload 里，不靠信任）',
++      gapQueue.every(row => {
++        const highCost = row.highCost === true;
++        const hard = row.sourceHard === true || highCost;
++        const expected = (row.tier === 'core' || row.tier === 'major')
++          ? (row.tier === 'core' && row.highValue && row.explicitSource && !hard ? 'A'
++            : (row.tier === 'major' && row.explicitSource && !hard ? 'B' : 'C'))
++          : 'D';
++        return row.priority === expected
++          && row.explicitSource === (row.targetN > 0)
++          && Array.isArray(row.declaredSources) && Array.isArray(row.hardSources) && Array.isArray(row.costlySources);
++      }));
++    check('v3③：MISSING 行的盘上记录必须是 0（MISSING 的定义：可覆盖、未延期、来源健康，但盘上一条都没有）',
++      gapQueue.filter(row => row.state === 'MISSING').every(row => row.present === 0));
++
++    /* --- ④ Source Reliability summary --- */
++    const sv = cov3.sourceHealth;
++    check('v3④：Source Reliability 必须打印 generatedAt —— 且它与心跳文件里写的**逐字相等**（不是跑报告的墙钟时间）',
++      typeof rel.healthGeneratedAt === 'string' && rel.healthGeneratedAt === readJson('scripts/data/source-health.json').generatedAt
++      && landed1.stdout.includes(rel.healthGeneratedAt),
++      `${rel.healthGeneratedAt}`);
++    check('v3④：沿用既有 sourceHealth.registryRowCount / registryRows / registryOnlySources 口径（两处逐字相等，不另算一份）',
++      rel.registryRowCount === sv.registryRowCount && rel.registryRowCount === rel.registryRows.length
++      && JSON.stringify(rel.registryRows) === JSON.stringify(sv.registryRows)
++      && JSON.stringify(rel.registryOnlySources) === JSON.stringify(sv.registryOnlySources));
++    check('v3④：裁决 × live 读数 join 成型（每条裁决都带身份命中与心跳读数，且 health 的连续失败次数来自文件）',
++      rel.present === true && rel.notLanded === false
++      && rel.rulings.length === rel.decisionOrder.reduce((total, decision) => total + rel.decisionCounts[decision], 0)
++      && rel.rulings.every(row => row.health && typeof row.health.consecutiveFailures === 'number'
++        && row.resolvedBy !== null
++        && (row.registry
++          ? row.health.consecutiveFailures === readJson('scripts/data/source-health.json').sources
++            .find(source => source.source === row.registry.id).consecutiveFailures
++          : /health/.test(row.resolvedBy)))
++      && rel.rulings.every((row, index) => index === 0 || rel.rulings[index - 1].source < row.source),
++      `裁决 ${rel.rulings.length} 条：${rel.decisionOrder.map(decision => `${decision}=${rel.decisionCounts[decision]}`).join(' ')}`);
++    check('v3④：三方对账（裁决 ↔ 采集器注册表 ↔ source-health）0 处问题，且规则原文写进 JSON',
++      rel.reconciliation.problemCount === 0 && rel.reconciliation.problems.length === 0
++      && rel.reconciliation.ruleCount === 4
++      && /retire/.test(rel.reconciliation.ruleNote) && /consecutiveFailures/.test(rel.reconciliation.ruleNote)
++      && rel.collectorRegistryCount === require('../collectors').list().length,
++      JSON.stringify(rel.reconciliation.problems).slice(0, 160));
++    check('v3④：面板上的差异集是**算出来的**（未裁决的注册表行 == 注册表 ∖ 已裁决，不多不少）',
++      rel.reconciliation.unruledRegistrySources.length
++      === require('../collectors').list().filter(source => !rel.rulings.some(row => row.registry && row.registry.id === source.id)).length);
++
++    /* --- 文本 / JSON 同源 --- */
++    const gapCountsLine = /队列共 (\d+) 条：A (\d+) · B (\d+) · C (\d+) · D (\d+)/.exec(landed1.stdout);
++    check('v3：文本与 JSON **同源**（分层计数行、已知/未知行、队列长度在两侧逐字一致）',
++      Boolean(gapCountsLine)
++      && Number(gapCountsLine[1]) === gapQueue.length
++      && Number(gapCountsLine[2]) === gap.counts.A && Number(gapCountsLine[3]) === gap.counts.B
++      && Number(gapCountsLine[4]) === gap.counts.C && Number(gapCountsLine[5]) === gap.counts.D
++      && landed1.stdout.includes(`未知 official release date`) && landed1.stdout.includes(`未知发布日期 ${queue.unknownCount} 条`),
++      gapCountsLine ? gapCountsLine[0] : '(文本里没有分层计数行)');
++    check('v3：四节的标题在文本里都在（文本侧不是只写了 JSON）',
++      ['Release Evidence Coverage', 'Model Release Evidence Queue', 'Gap Closure Queue', 'Source Reliability summary']
++        .every(title => landed1.stdout.includes(title)));
++
++    /* --- 夹具反证（非法输入 ⇒ 必红），逐键覆盖 --- */
++    const writeFixture = (name, mutate) => {
++      const doc = clone(fixtureDoc);
++      mutate(doc);
++      const file = path.join(v3Tmp, name);
++      fs.writeFileSync(file, `${JSON.stringify(doc, null, 2)}\n`);
++      return file;
++    };
++    const redRun = (file, needle) => {
++      const result = runReport([`--source-rulings=${file}`]);
++      return {
++        ok: result.status !== 0 && result.stderr.includes(needle),
++        exit: result.status,
++        hit: (result.stderr.split('\n').find(text => text.includes(needle)) || '(没有点到要害)').trim().slice(0, 140)
++      };
++    };
++
++    const noWhyKept = writeFixture('bad-whykept.json', doc => { doc.rulings[0].whyKept = null; });
++    const noWhyKeptRun = redRun(noWhyKept, '必须写 whyKept');
++    check('【反证牙·v3④】keep-degraded 缺 whyKept ⇒ 报告自检非 0，并点名「必须写 whyKept」',
++      noWhyKeptRun.ok, `exit ${noWhyKeptRun.exit}；${noWhyKeptRun.hit}`);
++
++    const retireRegistered = writeFixture('bad-retire.json', doc => {
++      doc.rulings[0].decision = 'retire';
++      doc.rulings[0].whyKept = null;
++      doc.rulings[0].revisitBy = null;
++    });
++    const retireRun = redRun(retireRegistered, '仍然挂在采集器注册表里');
++    check('【反证牙·v3④】已裁决 retire 的来源仍在采集器注册表 ⇒ 报告自检非 0，并点名「仍然挂在采集器注册表里」',
++      retireRun.ok, `exit ${retireRun.exit}；${retireRun.hit}`);
++
++    const emptyRulings = writeFixture('bad-empty.json', doc => { doc.rulings = []; });
++    const emptyRun = redRun(emptyRulings, '却没有在 scripts/data/source-rulings.json 里留下裁决');
++    check('【反证牙·v3④】连续失败 ≥ 3 次的来源一条裁决都没有 ⇒ 报告自检非 0，并点名「没有在 source-rulings.json 里留下裁决」',
++      emptyRun.ok, `exit ${emptyRun.exit}；${emptyRun.hit}`);
++
++    const unordered = writeFixture('bad-order.json', doc => { doc.rulings.reverse(); });
++    const unorderedRun = redRun(unordered, '不是规范序');
++    check('【反证牙·v3④】裁决数组不是按 source 的 code-unit 序 ⇒ 报告自检非 0，并点名「不是规范序」',
++      unorderedRun.ok, `exit ${unorderedRun.exit}；${unorderedRun.hit}`);
++
++    const brokenJson = path.join(v3Tmp, 'bad-json.json');
++    fs.writeFileSync(brokenJson, '{ this is not json }\n');
++    const brokenRun = redRun(brokenJson, '解析失败');
++    check('【反证牙·v3④】裁决表在盘上但读不出来 ⇒ 报告自检非 0（"坏文件"与"尚未落盘"必须是两件事）',
++      brokenRun.ok, `exit ${brokenRun.exit}；${brokenRun.hit}`);
++
++    /* --- ① / ② 的反证：判据层被喂进"写了但判不了的发布日期"与"空串日期" --- */
++    const sourceDoc = readJson('scripts/data/models.json');
++    const unparsableDoc = clone(sourceDoc);
++    unparsableDoc['deepseek-flash'].releasedAt = '2026-10';            // 写了，但解析不出可判日
++    const unparsableFile = path.join(v3Tmp, 'models-unparsable.json');
++    fs.writeFileSync(unparsableFile, `${JSON.stringify(unparsableDoc, null, 2)}\n`);
++    const unparsableRun = runReport([`--models=${unparsableFile}`]);
++    check('【反证牙·v3①】有模型的 releasedAt 写了却解析不出可判日 ⇒ 报告自检非 0，并点名「解析不出可判日」',
++      unparsableRun.status !== 0 && unparsableRun.stderr.includes('解析不出可判日'),
++      `exit ${unparsableRun.status}；${(unparsableRun.stderr.split('\n').find(text => text.includes('解析不出')) || '(没有点到)').trim().slice(0, 120)}`);
++
++    const blankDoc = clone(sourceDoc);
++    blankDoc['deepseek-flash'].releasedAt = '';                        // 空串：两处读数会分家
++    const blankFile = path.join(v3Tmp, 'models-blank-date.json');
++    fs.writeFileSync(blankFile, `${JSON.stringify(blankDoc, null, 2)}\n`);
++    const blankRun = runReport([`--models=${blankFile}`]);
++    check('【反证牙·v3②】releasedAt 写成空串（规则①的判据与既有 unknown release dates 分家）⇒ 报告自检非 0，并点名「两处读数不一致」',
++      blankRun.status !== 0 && blankRun.stderr.includes('两处读数不一致'),
++      `exit ${blankRun.status}；${(blankRun.stderr.split('\n').find(text => text.includes('不一致')) || '(没有点到)').trim().slice(0, 140)}`);
++
++    /* --- ③ 的反证：gap queue 的输入层被改成非法 --- */
++    const targetsDoc = readJson('scripts/data/coverage-targets.json');
++    const badTargets = clone(targetsDoc);
++    const gamma = badTargets.targets.find(target => target.currentTargets
++      .some(item => item.dimension === 'models'));
++    gamma.currentTargets = gamma.currentTargets
++      .filter(item => item.dimension !== 'models')
++      .concat([{ dimension: 'models', registrySlug: 'ghost-model-000' }]);
++    const badTargetsFile = path.join(v3Tmp, 'targets-bad-slug.json');
++    fs.writeFileSync(badTargetsFile, `${JSON.stringify(badTargets, null, 2)}\n`);
++    const badTargetsRun = runReport([`--targets=${badTargetsFile}`]);
++    check('【反证牙·v3③】gap queue 的输入层非法（current target 指向不存在的 registrySlug）⇒ 报告自检非 0，并点名「不在 scripts/data/models.json」',
++      badTargetsRun.status !== 0 && badTargetsRun.stderr.includes('不在 scripts/data/models.json'),
++      `exit ${badTargetsRun.status}；${(badTargetsRun.stderr.split('\n').find(text => text.includes('models.json')) || '(没有点到)').trim().slice(0, 140)}`);
++  }
++} finally {
++  try { fs.rmSync(v3Tmp, { recursive: true, force: true }); } catch (error) { /* 临时目录清不掉不影响判据 */ }
++}
++
+ /* ================================================================== */
+ 
+ console.log(`\n=== coverage-expansion-v1 覆盖意图层演练：${passed} 项通过，${failures.length} 项失败 ===`);
+ if (failures.length) {
+   console.log('失败项：');
+   failures.forEach(name => console.log(`  ✗ ${name}`));

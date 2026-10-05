@@ -1,0 +1,279 @@
+{
+  "label": "probe-check",
+  "generatedAt": "2026-10-05T03:32:48.752Z",
+  "head": "ff86368e6d12d1ef57b2f51aa2c957c01d2a9ed8",
+  "dirtyFiles": 4,
+  "actionStepsParsed": 49,
+  "expectChecksFromVerifyYml": [
+    "38",
+    "38"
+  ],
+  "executed": 2,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Install dependencies",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Validate data (strict)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Reproducibility gate (no value without a source)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "History verify (log consistent with deals.json)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Migration verifier (audience provenance backfill)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Translation gate (drift blocks, pending ages out)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Translation self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Expiry self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Text / cleanText self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Source-health self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Provenance self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Deal-history self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Change-radar self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Feeds self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "SEO self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Audience self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "App-token self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "AI layer self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Collector fixtures (offline replay)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Plans self-test (data + page)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Plan-history self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Deal-plan-links self-test",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "API-plans self-test (data + page)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "API-plans reproducibility (curated → api-plans.json, byte-compare)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "API-plan-history verify (log consistent with api-plans.json)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Model-registry self-test (identity + explicit mapping)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Models reproducibility (registry → models.json, byte-compare)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Model-registry links check (explicit mapping only, no similarity)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Coverage report (gap list consistent with data)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Coverage-targets self-test (intent layer + seven derived states)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Model-role vocabulary self-test (registry ↔ freshness contract)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Freshness self-test (catalogStatus branches)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Freshness threshold sensitivity (±90 days, baseline invariants)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Assemble site (same path as deploy.yml)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Models-page self-test (index + detail pages)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Plans-hub self-test (/plans/)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Vendor-pages self-test (/vendor/)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Archive self-test (/archive/, synthetic ended/restored fixtures)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Data-docs self-test (/docs/data/ + /data/index.json)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Analytics self-test (bootstrap count / production guard / provider)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Feeds reproducibility (build twice, byte-compare)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Plans reproducibility (curated → plans.json, byte-compare)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Plan-history verify (log consistent with plans.json)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "SEO verification (independent, from dist/)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Prepare browser for the real-browser gate",
+      "shell": "bash",
+      "run": "node -e \"const b=require('./scripts/lib/browser');b.detectChannel().then(c=>{console.log(JSON.stringify({available:!!c,channel:c}));process.exit(c?0:1)}).catch(",
+      "exitCode": 0,
+      "durationMs": 31676,
+      "logBytes": 38,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\probe-check\\logs\\45-prepare-browser-for-the-real-browser-gate.log",
+      "localOverride": true,
+      "overrideReason": "CI 用 npx playwright install --with-deps chromium + GITHUB_OUTPUT；本机已有 Edge，改用 lib/browser.js 的 detectChannel()（同一支探测入口）。本步骤本身不判死，与 CI 语义一致。",
+      "ciRun": "|"
+    },
+    {
+      "name": "Browser availability decision (never silent)",
+      "shell": "bash",
+      "run": "node -e \"const b=require('./scripts/lib/browser');b.detectChannel().then(c=>{console.log(JSON.stringify({available:!!c,channel:c}));process.exit(c?0:1)}).catch(",
+      "exitCode": 0,
+      "durationMs": 30930,
+      "logBytes": 38,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\probe-check\\logs\\46-browser-availability-decision-never-silent.log",
+      "localOverride": true,
+      "overrideReason": "CI 读上一步的 GITHUB_OUTPUT；本地直接重新探测。语义不变：探测不到浏览器就 exit 1，绝不静默变绿（与 CI 默认失败一致）。",
+      "ciRun": "|"
+    },
+    {
+      "name": "Real-browser acceptance (verify-site.js)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Regression verify (baseline compare)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "Gate conclusion",
+      "skipped": true,
+      "reason": "--only 过滤"
+    },
+    {
+      "name": "CI consistency (verify.yml --expect-checks)",
+      "skipped": true,
+      "reason": "--only 过滤"
+    }
+  ]
+}

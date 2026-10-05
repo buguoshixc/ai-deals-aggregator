@@ -1,0 +1,83 @@
+﻿--- curated_plans providers ---
+{"Trae":2,"智谱AI":1,"Qoder CN":1,"腾讯 CodeBuddy":4,"月之暗面":1,"MiniMax":1,"GitHub":3,"Cursor":1,"Windsurf":2,"百度智能云":2,"MiniMax（稀宇科技）":2,"Anthropic":1,"Qoder International":2,"阶跃星辰":4,"科大讯飞":2,"JetBrains":2,"Replit":2,"Google":2,"AWS":2}
+--- curated_api_plans providers ---
+{"deepseek":2,"zhipu":1,"openai":2,"anthropic":1,"google":1,"阿里云百炼":2,"MiniMax（稀宇科技）":1,"硅基流动":1,"火山引擎":1,"腾讯云":1,"groq":1,"together":1,"fireworks":1,"cerebras":1}
+--- replit plans ---
+[
+ {
+  "provider": "Replit",
+  "planName": "Core",
+  "officialUrl": "https://replit.com/pricing",
+  "source": "Official-Pricing",
+  "sourceUrl": "https://replit.com/pricing",
+  "region": "global",
+  "billing": {
+   "period": "monthly",
+   "currency": "USD",
+   "regularPrice": 20,
+   "promoPrice": null,
+   "promoNote": null,
+   "note": "官方定价页顶部标注 Yearly「Up to 10% off」；Core 卡片直出 $20 / $18 / month, billed annually。本条收**月付 $20**，年付 $18/月 见本条 note。"
+  },
+  "quota": {
+   "type": "other",
+   "amount": null,
+   "period": "monthly",
+   "description": "官方卡片逐字：$20 towards most powerful models（每月 $20 抵用于最强模型）+ Up to 30 hours of chat on Free Mode + Up to 60 projects on Free Mode。额度以**金额**表示、官方未给 token / 积分数值 ⇒ 按 other 记并写明口径，**不折算**。",
+   "conversionDependsOnModel": true
+  },
+  "supportedModels": null,
+  "restrictions": null,
+  "firstSeen": "2026-10-04",
+  "lastSeen": "2026-10-04",
+  "verified": true,
+  "verifiedAt": "2026-10-04",
+  "evidence": [
+   {
+    "field": "billing.regularPrice",
+    "quote": "Core\n$20\n$18\n/ month, billed annually",
+    "sourceUrl": "https://replit.com/pricing",
+    "capturedAt": "2026-10-04",
+    "lang": "en"
+   }
+  ]
+ },
+ {
+  "provider": "Replit",
+  "planName": "Pro",
+  "officialUrl": "https://replit.com/pricing",
+  "source": "Official-Pricing",
+  "sourceUrl": "https://replit.com/pricing",
+  "region": "global",
+  "billing": {
+   "period": "monthly",
+   "currency": "USD",
+   "regularPrice": 100,
+   "promoPrice": null,
+   "promoNote": null,
+   "note": "官方卡片 Pro $100 / $90 / month, billed annually。本条收月付 $100，年付 $90/月 见本条 note。Enterprise 档官方写 Custom ⇒ 不是固定档价，**不收**；页面上没有 Free 档 ⇒ 不为它新建 regularPrice=0 的记录。"
+  },
+  "quota": {
+   "type": "other",
+   "amount": null,
+   "period": "monthly",
+   "description": "官方卡片逐字：$100 towards most powerful models + 10 parallel agents + Even more Free Mode usage + Up to 15 collaborators + Invite up to 50 viewers + Database rollback up to 28 days。金额口径 ⇒ other，不折算。",
+   "conversionDependsOnModel": true
+  },
+  "supportedModels": null,
+  "restrictions": null,
+  "firstSeen": "2026-10-04",
+  "lastSeen": "2026-10-04",
+  "verified": true,
+  "verifiedAt": "2026-10-04",
+  "evidence": [
+   {
+    "field": "billing.regularPrice",
+    "quote": "Pro\n$100\n$90\n/ month, billed annually",
+    "sourceUrl": "https://replit.com/pricing",
+    "capturedAt": "2026-10-04",
+    "lang": "en"
+   }
+  ]
+ }
+]

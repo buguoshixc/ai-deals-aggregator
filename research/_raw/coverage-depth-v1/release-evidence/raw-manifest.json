@@ -1,0 +1,809 @@
+{
+  "_what": "coverage-depth-v1 Workstream A 官方页原件的可复核清单",
+  "_why": "raw/ 下 96 份原始第三方快照约 38 MB，按仓库既有纪律（.gitignore 的 v3.0-sources 先例）不入版本库；本清单是它的离线索引，保证「原件不入库」不等于「证据不可复核」",
+  "_howToRecheck": "按 url 重新抓取后与本清单的 sha256 对比（页面随时间变化属正常，此时以 research/coverage-depth-v1-release-evidence.md 里逐条记录的 quote 与 capturedAt 为准）；未入库的原件仍留在提交者本地同一路径",
+  "generatedAt": "2026-10-05T05:14:11.721Z",
+  "fileCount": 96,
+  "totalBytes": 39728252,
+  "mappedToUrl": 68,
+  "unmappedFiles": [
+    "raw/aliyun-models-pricing.html",
+    "raw/aliyun-models-pure.md",
+    "raw/aliyun-text-model.md",
+    "raw/anthropic-fable51.html",
+    "raw/anthropic-models-overview2.html",
+    "raw/anthropic-sonnet55.html",
+    "raw/oai-gpt-live-1.html",
+    "raw/oai-gpt6-sol-luna.html",
+    "raw/oai-gpt6-sol-luna2.html",
+    "raw/oai-gpt61-sol.html",
+    "raw/oai-sitemap-index.xml",
+    "raw/oai-sitemap.xml",
+    "raw/oai-zh-gpt61-sol.html",
+    "raw/oai-zh-sol-luna.html",
+    "raw/p stepfun-llms.txt",
+    "raw/sitemap-aliyun.xml",
+    "raw/sitemap-anthropic.xml",
+    "raw/sitemap-bigmodel.xml",
+    "raw/sitemap-kimi.xml",
+    "raw/sitemap-minimax.xml",
+    "raw/sitemap-stepfun.xml",
+    "raw/sitemap-tencent.xml",
+    "raw/stepfun-migration.md",
+    "raw/stepfun-models-overview.md",
+    "raw/stepfun-release-notes.md",
+    "raw/stepfun-step35flash.md",
+    "raw/volcengine-model-release-2025.html",
+    "raw/volcengine-model-release-2026.html"
+  ],
+  "entries": [
+    {
+      "file": "raw/aliyun-model-pricing.html",
+      "bytes": 1958520,
+      "sha256": "56a1d1e2af78c8187b85c32858a9ead170d04e9d8ff5eb67744b5fbd77838d48",
+      "fileMtimeUtc": "2026-10-05T03:35:50.804Z",
+      "url": "https://help.aliyun.com/zh/model-studio/model-pricing",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/aliyun-model-release-notes.html",
+      "bytes": 198463,
+      "sha256": "3f26eb6f3a7f3772302999180184284dca322ac89229a4041c265da7ac5e605f",
+      "fileMtimeUtc": "2026-10-05T03:35:52.056Z",
+      "url": "https://help.aliyun.com/zh/model-studio/model-release-notes",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/aliyun-models-pricing.html",
+      "bytes": 24899,
+      "sha256": "1bde2e66271c34c298920d8d197471fb6c72b29b18186df6443780dfef97c1c3",
+      "fileMtimeUtc": "2026-10-05T03:40:00.774Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/aliyun-models-pure.md",
+      "bytes": 22906,
+      "sha256": "51d3b2bf6139e7c53a6d56be4824a3dc02f43ea538afdbd404239695e26064b7",
+      "fileMtimeUtc": "2026-10-05T03:44:43.744Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/aliyun-models.html",
+      "bytes": 97056,
+      "sha256": "b8b070282393cc5e2ad9530c664d25c9817e51743facf552b42bf00b198c6eb6",
+      "fileMtimeUtc": "2026-10-05T03:35:42.813Z",
+      "url": "https://help.aliyun.com/zh/model-studio/models",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/aliyun-models2.html",
+      "bytes": 97054,
+      "sha256": "278250c78482f523a5d28c3913b8535a103409bf8d653a2cb6a52c11936d0a64",
+      "fileMtimeUtc": "2026-10-05T03:40:43.772Z",
+      "url": "https://help.aliyun.com/zh/model-studio/models",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/aliyun-new-model-release.html",
+      "bytes": 24899,
+      "sha256": "1bde2e66271c34c298920d8d197471fb6c72b29b18186df6443780dfef97c1c3",
+      "fileMtimeUtc": "2026-10-05T03:37:13.552Z",
+      "url": "https://help.aliyun.com/zh/model-studio/new-model-release",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/aliyun-qwen-api.html",
+      "bytes": 24899,
+      "sha256": "1bde2e66271c34c298920d8d197471fb6c72b29b18186df6443780dfef97c1c3",
+      "fileMtimeUtc": "2026-10-05T03:37:14.010Z",
+      "url": "https://help.aliyun.com/zh/model-studio/developer-reference/qwen-api",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/aliyun-qwen-max.html",
+      "bytes": 54163,
+      "sha256": "904532bbd15b9424184aee08a2e7050d4a79c05f79ab1958e66ba92b40813776",
+      "fileMtimeUtc": "2026-10-05T03:37:14.693Z",
+      "url": "https://help.aliyun.com/zh/model-studio/qwen-max",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/aliyun-text-model.md",
+      "bytes": 32900,
+      "sha256": "95035e6fa878c9391ee133a7d6203367173f1dc32d739ffd2d0107f151c7c9c9",
+      "fileMtimeUtc": "2026-10-05T03:53:32.572Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/anthropic-fable51.html",
+      "bytes": 21066,
+      "sha256": "75450c00d4e447e50fe7a6be1bae3929fc83a4b9363a0c917fb08479494d3cd0",
+      "fileMtimeUtc": "2026-10-05T03:52:04.796Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/anthropic-fable51b.html",
+      "bytes": 355018,
+      "sha256": "d48bcf2bbecb04f86d57668fb0f27348a7ce081e6fb357b598d0a6b945026c3a",
+      "fileMtimeUtc": "2026-10-05T03:52:45.758Z",
+      "url": "https://www.anthropic.com/claude-fable-and-mythos-5-1",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/anthropic-haiku45.html",
+      "bytes": 174830,
+      "sha256": "4668300a985b3c562f8aa39d9f528f3160964b8cffe6441f78f2d19b1568221a",
+      "fileMtimeUtc": "2026-10-05T03:46:13.795Z",
+      "url": "https://www.anthropic.com/news/claude-haiku-4-5",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/anthropic-model-deprecations.html",
+      "bytes": 299299,
+      "sha256": "c10c5f307f825e4970432cbae31e46bdbbdf83a8af84295932188f92b0a51acd",
+      "fileMtimeUtc": "2026-10-05T03:36:53.342Z",
+      "url": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/anthropic-models-overview.html",
+      "bytes": 300663,
+      "sha256": "7ff740a36d3b919b352dbc2de0fcaaf13a77762dd8356f13743b3a1043a7d2b7",
+      "fileMtimeUtc": "2026-10-05T03:36:03.993Z",
+      "url": "https://docs.anthropic.com/en/docs/about-claude/models/overview",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/anthropic-models-overview2.html",
+      "bytes": 299299,
+      "sha256": "d43f0e9f66bdf1dacf88e268fc9764540664fd339a56218ac9addb2b5ac83f42",
+      "fileMtimeUtc": "2026-10-05T03:40:40.879Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/anthropic-news-index.html",
+      "bytes": 425195,
+      "sha256": "42762107caf88d78e0dcdef5f2d06edbce4fa94e92927d7c0de608bc2d708523",
+      "fileMtimeUtc": "2026-10-05T03:40:37.531Z",
+      "url": "https://www.anthropic.com/news",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/anthropic-opus55.html",
+      "bytes": 460910,
+      "sha256": "ca0cb209afd1720d64ea6f1253da0bbded6d5f8637d9e3f8af1fe6458ea8d147",
+      "fileMtimeUtc": "2026-10-05T03:52:04.177Z",
+      "url": "https://www.anthropic.com/claude-opus-5-5",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/anthropic-opus55b.html",
+      "bytes": 460910,
+      "sha256": "ca0cb209afd1720d64ea6f1253da0bbded6d5f8637d9e3f8af1fe6458ea8d147",
+      "fileMtimeUtc": "2026-10-05T03:52:35.813Z",
+      "url": "https://www.anthropic.com/claude-opus-5-5",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/anthropic-sonnet55.html",
+      "bytes": 21068,
+      "sha256": "7f300899f0acd34d26219482eab7e46085a9ae3b45dbe27d363400157047a389",
+      "fileMtimeUtc": "2026-10-05T03:52:02.727Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/anthropic-sonnet55b.html",
+      "bytes": 282141,
+      "sha256": "24b00ed329f0a31f74f850f1ad9ca8458092c16290f71ab6e24804c0d628584f",
+      "fileMtimeUtc": "2026-10-05T03:52:34.798Z",
+      "url": "https://www.anthropic.com/claude-sonnet-5-5",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-doc-glm53.html",
+      "bytes": 1050491,
+      "sha256": "4ce3b81b5c304fdc0fb9bc15cc694cf0d19d87b676c38df9b6d386fea41a2c97",
+      "fileMtimeUtc": "2026-10-05T03:38:44.879Z",
+      "url": "https://docs.bigmodel.cn/cn/guide/models/text/glm-5.3",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-doc-glm53flash.html",
+      "bytes": 862967,
+      "sha256": "b07dda9a6a5927ae241aa6ec31fef1eb24659489309ff4bbdac349540d9d62a7",
+      "fileMtimeUtc": "2026-10-05T03:38:45.312Z",
+      "url": "https://docs.bigmodel.cn/cn/guide/models/vlm/glm-5.3-flash",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-doc-pricing.html",
+      "bytes": 950037,
+      "sha256": "c538a372bdd6c86d5825758e83eb234a8d27e1382b4ecbc1f89784afbb125d7e",
+      "fileMtimeUtc": "2026-10-05T03:38:46.466Z",
+      "url": "https://docs.bigmodel.cn/cn/guide/start/pricing",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-glm45v.html",
+      "bytes": 1827150,
+      "sha256": "bc40ba544f9589c8520ab74822dd48ffa3768f5a7e19e2985487e034caf523ca",
+      "fileMtimeUtc": "2026-10-05T03:37:00.445Z",
+      "url": "https://docs.bigmodel.cn/cn/guide/models/vlm/glm-4.5v",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-glm46.html",
+      "bytes": 1250128,
+      "sha256": "7915ecaf44e8be698eb514c1412721e39beebe5c447280d2d3cdd9e9de576eec",
+      "fileMtimeUtc": "2026-10-05T03:36:59.353Z",
+      "url": "https://docs.bigmodel.cn/cn/guide/models/text/glm-4.6",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-glm46v.html",
+      "bytes": 1776700,
+      "sha256": "dda32d8e85e2df002f212aed17441f7afdf9a1328fc0ce5f99b49462e976a402",
+      "fileMtimeUtc": "2026-10-05T03:36:59.839Z",
+      "url": "https://docs.bigmodel.cn/cn/guide/models/vlm/glm-4.6v",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-glm5.html",
+      "bytes": 1268316,
+      "sha256": "bf8df1653aad8645560dafbb385617ede7928735e8f8680622b16a9c92c228f0",
+      "fileMtimeUtc": "2026-10-05T03:36:58.847Z",
+      "url": "https://docs.bigmodel.cn/cn/guide/models/text/glm-5",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-glm53.html",
+      "bytes": 1050491,
+      "sha256": "4ce3b81b5c304fdc0fb9bc15cc694cf0d19d87b676c38df9b6d386fea41a2c97",
+      "fileMtimeUtc": "2026-10-05T03:37:00.890Z",
+      "url": "https://docs.bigmodel.cn/cn/guide/models/text/glm-5.3",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-http-intro.html",
+      "bytes": 1060145,
+      "sha256": "a8f3778ceee181e5637cec6ebd044e439780b223b8e714db563dcdcf5d4a3bd8",
+      "fileMtimeUtc": "2026-10-05T03:35:28.110Z",
+      "url": "https://docs.bigmodel.cn/cn/guide/develop/http/introduction",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-migrate.html",
+      "bytes": 924634,
+      "sha256": "2482b30be26dafd8ee05cc5ac1f14fb7f9e2ea79e1dcecb4042c2b3763907ec9",
+      "fileMtimeUtc": "2026-10-05T03:38:47.011Z",
+      "url": "https://docs.bigmodel.cn/cn/guide/start/migrate-to-glm-new",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-model-overview.html",
+      "bytes": 880588,
+      "sha256": "2adbf2562e5dfdeec847282e0e04de17a0976818e69dc0b7f1c47e5617ea3d04",
+      "fileMtimeUtc": "2026-10-05T03:35:26.695Z",
+      "url": "https://docs.bigmodel.cn/cn/guide/start/model-overview",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-new-releases.html",
+      "bytes": 857046,
+      "sha256": "0141e5524d19d39ec65a4cdd85e177c5dc3688901d072f87283fb1e0a5495ef3",
+      "fileMtimeUtc": "2026-10-05T03:38:44.279Z",
+      "url": "https://docs.bigmodel.cn/cn/update/new-releases",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-notice-glm53flash.html",
+      "bytes": 749277,
+      "sha256": "db316687c5845f86604cf4b3915d736a20d39f018a3788524737b30d739d835d",
+      "fileMtimeUtc": "2026-10-05T03:38:46.056Z",
+      "url": "https://docs.bigmodel.cn/cn/coding-plan/notice/event-glm-5.3-flash",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-open-api.html",
+      "bytes": 794259,
+      "sha256": "f930a8a8ee1b98fa37d551b4ae190e683d4b345daf2cddb58c4662a7097e5293",
+      "fileMtimeUtc": "2026-10-05T03:36:57.754Z",
+      "url": "https://docs.bigmodel.cn/cn/guide/start/introduction",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/bigmodel-pricing.html",
+      "bytes": 4589,
+      "sha256": "5cd957ecd6020f2dcd6f39381dadbff37a268dbbc150b62df425bd100b555544",
+      "fileMtimeUtc": "2026-10-05T03:35:28.497Z",
+      "url": "https://open.bigmodel.cn/pricing",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/bigmodel-quick-start.html",
+      "bytes": 1014585,
+      "sha256": "2b2e65d2e38437a5ddb156ed8ec20fe19f6847946d606b95ebf2979fc864ac27",
+      "fileMtimeUtc": "2026-10-05T03:36:58.400Z",
+      "url": "https://docs.bigmodel.cn/cn/guide/start/quick-start",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/google-blog-gemini.html",
+      "bytes": 395660,
+      "sha256": "be2cf2787c257b7ce1fca28f71f68a00c8d07565efafe0311469d4d5933edc7d",
+      "fileMtimeUtc": "2026-10-05T03:36:06.563Z",
+      "url": "https://blog.google/products-and-platforms/products/gemini/",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/google-gemini-changelog.html",
+      "bytes": 169433,
+      "sha256": "d4881c636aab59671123fd794ba7db72d79b4ceb400cb142738c69ebd65760f4",
+      "fileMtimeUtc": "2026-10-05T03:30:37.093Z",
+      "url": "https://ai.google.dev/gemini-api/docs/changelog",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/google-gemini-models.html",
+      "bytes": 155316,
+      "sha256": "01a61ba31ca3a048bd1c0261d44f9f6cfb2c1eaf5af95edd4cab32748e4dee19",
+      "fileMtimeUtc": "2026-10-05T03:30:38.148Z",
+      "url": "https://ai.google.dev/gemini-api/docs/models",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/kimi-blog-en.html",
+      "bytes": 131126,
+      "sha256": "a3485917be45dcadc232dac6e3ef8957fe74bd5de25c50e6c3af95468a00c55a",
+      "fileMtimeUtc": "2026-10-05T03:44:44.274Z",
+      "url": "https://www.kimi.ai/blog/",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/kimi-blog-k3.html",
+      "bytes": 333047,
+      "sha256": "07ee3f7da437b0384053f54820018904f7451d54049fd2d585150d9c3ecbaab9",
+      "fileMtimeUtc": "2026-10-05T03:44:41.149Z",
+      "url": "https://www.kimi.ai/blog/kimi-k3",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/kimi-blog.html",
+      "bytes": 193195,
+      "sha256": "884685e16151869655d7a4c823ea5ec7979e014a0d7db969a6d0706bccfc2c70",
+      "fileMtimeUtc": "2026-10-05T03:37:09.696Z",
+      "url": "https://www.kimi.ai/blog/",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/kimi-home.html",
+      "bytes": 144033,
+      "sha256": "714febce8280c23ea28b8d6081b6c2fdbd814d8c84cbc0dde54c667506855a89",
+      "fileMtimeUtc": "2026-10-05T03:35:38.045Z",
+      "url": "https://www.kimi.com/",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/kimi-news-index.html",
+      "bytes": 181262,
+      "sha256": "b952165ff80ccf5d662c1e6fbfc0c40a89831380d1cb775cae5134ef6c78eda7",
+      "fileMtimeUtc": "2026-10-05T03:52:06.156Z",
+      "url": "https://www.kimi.com/news/",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/kimi-news-k27code.html",
+      "bytes": 181262,
+      "sha256": "b952165ff80ccf5d662c1e6fbfc0c40a89831380d1cb775cae5134ef6c78eda7",
+      "fileMtimeUtc": "2026-10-05T03:52:05.508Z",
+      "url": "https://www.kimi.com/news/",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/kimi-news-k3.html",
+      "bytes": 286273,
+      "sha256": "312aebdc40322d2fb179c8f15e02212541cada9bfeb6edd1901a1f8bc11cad45",
+      "fileMtimeUtc": "2026-10-05T03:44:41.785Z",
+      "url": "https://www.kimi.com/news/kimi-k3",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/kimi-res-k27code.html",
+      "bytes": 261551,
+      "sha256": "86a1cce5ff0a0755bf56c94e0a42abe9d006cc6639b81850fef2112a5b12b723",
+      "fileMtimeUtc": "2026-10-05T03:52:36.409Z",
+      "url": "https://www.kimi.com/resources/kimi-k2-7-code",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/minimax-models-intro.html",
+      "bytes": 566561,
+      "sha256": "9125cb34e2e8ae24d6990b276a5c59ed34a8d0bbe85fa861d20ff407ac5eb514",
+      "fileMtimeUtc": "2026-10-05T03:35:41.864Z",
+      "url": "https://platform.minimax.cn/docs/guides/models-intro",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/minimax-release-notes-apis.html",
+      "bytes": 515416,
+      "sha256": "1bd555d152fb6f9a505e14d08a5823b05d8041a87fc99cd1b0158491a2b71ccf",
+      "fileMtimeUtc": "2026-10-05T03:37:12.848Z",
+      "url": "https://platform.minimax.cn/docs/release-notes/apis",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/minimax-release-notes.html",
+      "bytes": 614866,
+      "sha256": "d2927dfd3e1da0437d00c57bf25c026e134cb95534c86a4d698df0a6bd10fc00",
+      "fileMtimeUtc": "2026-10-05T03:35:40.247Z",
+      "url": "https://platform.minimax.cn/docs/release-notes/models",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/oai-gpt-live-1.html",
+      "bytes": 9966,
+      "sha256": "30732c63868fc963bd0d37cc809b89379d9b6d7ee03ed0e7edc3588dbacb7bff",
+      "fileMtimeUtc": "2026-10-05T03:53:46.905Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/oai-gpt6-astra.html",
+      "bytes": 2801092,
+      "sha256": "e24f6a5d241c2955f667120c838988ad60d2f4ceaa5794a267fe5e3d1211930b",
+      "fileMtimeUtc": "2026-10-05T03:44:42.722Z",
+      "url": "https://openai.com/index/gpt-6-astra/",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/oai-gpt6-sol-luna.html",
+      "bytes": 9961,
+      "sha256": "11b2b248af11b1a6903c255a8add7f862713326a1a5619b0d90d1111e73cb083",
+      "fileMtimeUtc": "2026-10-05T03:53:32.039Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/oai-gpt6-sol-luna2.html",
+      "bytes": 9982,
+      "sha256": "b40e74b1f44079f1f069c982b8e24eac2e972dc220a6ab153f7cdaac3b38521b",
+      "fileMtimeUtc": "2026-10-05T03:54:38.529Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/oai-gpt61-sol.html",
+      "bytes": 9940,
+      "sha256": "bee1c250086ff802cf72b0704f2ba83feb35d064180837a34f0b14ecbb6a8f2f",
+      "fileMtimeUtc": "2026-10-05T03:53:31.695Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/oai-gpt61-sol2.html",
+      "bytes": 607867,
+      "sha256": "dff5980ea4ff90071a2078d27afb5c253624b03237d8fe21a801c431277dc8d0",
+      "fileMtimeUtc": "2026-10-05T03:54:20.760Z",
+      "url": "https://openai.com/index/introducing-gpt-6-1-sol/",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/oai-sitemap-index.xml",
+      "bytes": 32,
+      "sha256": "015a048fe4ec05be605d2665cec1ec3ebb5a90ecaf042e09fed6e47e5e5b3b1a",
+      "fileMtimeUtc": "2026-10-05T03:54:38.968Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/oai-sitemap.xml",
+      "bytes": 3767,
+      "sha256": "d6e07676e5535086b51418cea582c8159052411afcde3a53170568a849cb16d3",
+      "fileMtimeUtc": "2026-10-05T03:54:04.916Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/oai-zh-gpt61-sol.html",
+      "bytes": 10101,
+      "sha256": "d8bb613530f03663e65fb1e41c3cae57bafd10ac86d49a29b5b17278ac4084a3",
+      "fileMtimeUtc": "2026-10-05T03:53:46.152Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/oai-zh-sol-luna.html",
+      "bytes": 10122,
+      "sha256": "9c4328984de584a40a6fe96ef0037fb9ede1ce295ad2220004132a0e9f87fe5a",
+      "fileMtimeUtc": "2026-10-05T03:53:46.497Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/openai-docs-changelog.html",
+      "bytes": 5508,
+      "sha256": "29cd37d952d351e97abd64e9bf5ad3c67c684f070d01febe796fbeb205fbaa71",
+      "fileMtimeUtc": "2026-10-05T03:36:54.420Z",
+      "url": "https://platform.openai.com/docs/changelog",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/openai-docs-models.html",
+      "bytes": 5508,
+      "sha256": "c41435ef75e6b9836951e145699b84f7c28cb00aaa38981e1b68473f312e6882",
+      "fileMtimeUtc": "2026-10-05T03:36:55.152Z",
+      "url": "https://platform.openai.com/docs/models",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/openai-help-release-notes.html",
+      "bytes": 10063,
+      "sha256": "e11dd2d231435f0973dbbc35d7088cb445678178c4c3a8ee1f13bf4a9f578272",
+      "fileMtimeUtc": "2026-10-05T03:36:56.078Z",
+      "url": "https://help.openai.com/en/articles/6825453-chatgpt-release-notes",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/openai-news-index.html",
+      "bytes": 9716,
+      "sha256": "322dd3e491a02a1349b68ab189b5d31280e796cc15cbeac7a9e13c240af87f60",
+      "fileMtimeUtc": "2026-10-05T03:36:04.629Z",
+      "url": "https://openai.com/news/",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/p stepfun-docs.html",
+      "bytes": 784805,
+      "sha256": "df2f6262c6c1086ac90978110285a116d81c2349ae618f1e9ccc27ad846cea90",
+      "fileMtimeUtc": "2026-10-05T03:37:16.664Z",
+      "url": "https://platform.stepfun.com/docs/zh/welcome",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/p stepfun-llms.txt",
+      "bytes": 14242,
+      "sha256": "a9f6f3d5ef60d1d5b0c439334269b06f427e87fe5e8a3e0ab2a2555ad55083c9",
+      "fileMtimeUtc": "2026-10-05T03:39:58.945Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/sitemap-aliyun.xml",
+      "bytes": 115,
+      "sha256": "cb9397f37ac9d57864b4e549d9666a5898b731bb56b040e58de35795639b1ee0",
+      "fileMtimeUtc": "2026-10-05T03:38:15.957Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/sitemap-anthropic.xml",
+      "bytes": 299299,
+      "sha256": "5611c7d89d2128e3532e792b9daf74b936b1d78c58e88c2fb35730388d96190b",
+      "fileMtimeUtc": "2026-10-05T03:38:15.354Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/sitemap-bigmodel.xml",
+      "bytes": 35042,
+      "sha256": "d8c83fef5bcf9471721032d3dfafb8bb680adf453f13722a7157545dc7615d01",
+      "fileMtimeUtc": "2026-10-05T03:37:49.745Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/sitemap-kimi.xml",
+      "bytes": 1645,
+      "sha256": "f2f0bcf5e078adddb9bf4b2d53ff17949e91d84ce5ab7208b09ad06c6abd5f62",
+      "fileMtimeUtc": "2026-10-05T03:38:12.436Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/sitemap-minimax.xml",
+      "bytes": 1273,
+      "sha256": "f14bc69441f36490337a8f719b51cfb3cd9a9a8ea4034975313659fdb035d754",
+      "fileMtimeUtc": "2026-10-05T03:37:50.142Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/sitemap-stepfun.xml",
+      "bytes": 28228,
+      "sha256": "b5dd360dc82c85ba93c5a8d9d7ebdc7d0a6522d9e7735311b0064c668b38dc3a",
+      "fileMtimeUtc": "2026-10-05T03:37:50.493Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/sitemap-tencent.xml",
+      "bytes": 453,
+      "sha256": "0e8cca3fb77c635f9fe77bdafb0096f85e7c32a84e3fc8f2a085b2962cc2ff83",
+      "fileMtimeUtc": "2026-10-05T03:37:50.793Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/stepfun-changelog.html",
+      "bytes": 2731,
+      "sha256": "bb6288ea76ab4faade13ec78068966f98e38a201deb4a828e205d34f41ae9de6",
+      "fileMtimeUtc": "2026-10-05T03:35:54.056Z",
+      "url": "https://www.stepfun.com/changelog",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/stepfun-migration.md",
+      "bytes": 3423,
+      "sha256": "dbfb5f74fd842a2f087fe6c19217cd150cdea20f5c5a1373dad087b7a671bcec",
+      "fileMtimeUtc": "2026-10-05T03:40:42.574Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/stepfun-models-overview.md",
+      "bytes": 101556,
+      "sha256": "0cc9a0477cec57c9fe97fe69d861d511c6ea90266c950481ad1d9d1ebb5b8238",
+      "fileMtimeUtc": "2026-10-05T03:40:42.101Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/stepfun-release-notes.md",
+      "bytes": 2869,
+      "sha256": "374046bd12ae78232d758c5a3d5127d8a6abfcc1f336729a7b8b75c26d13e126",
+      "fileMtimeUtc": "2026-10-05T03:40:43.054Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/stepfun-step35flash.html",
+      "bytes": 28245,
+      "sha256": "3e40af3dc429c9af12efc3077a706e4ddb1f5028a39a13792e5ec2a393250a90",
+      "fileMtimeUtc": "2026-10-05T03:37:17.067Z",
+      "url": "https://platform.stepfun.com/step-chat/step-3.5-flash",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/stepfun-step35flash.md",
+      "bytes": 4103,
+      "sha256": "b3cf14fe92a4ff5145dd001f0bfaa491f92104e6fc8b8ccc250f17ef7a4018fc",
+      "fileMtimeUtc": "2026-10-05T03:40:41.499Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/tencent-embedding-doc.html",
+      "bytes": 223127,
+      "sha256": "8995db83988b29cbe2fa50dd0adb595851faea0eaacbe98c19b4feb373ca3ea7",
+      "fileMtimeUtc": "2026-10-05T03:44:43.216Z",
+      "url": "https://cloud.tencent.com/document/product/1729/102832",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/tencent-hunyuan-doc-index.html",
+      "bytes": 192975,
+      "sha256": "5e9875707449453114af5493c5a408dd3c17df76c16eaeaf32cf89d8cd5d07f2",
+      "fileMtimeUtc": "2026-10-05T03:40:00.262Z",
+      "url": "https://cloud.tencent.com/document/product/1729",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/tencent-hunyuan-model-list.html",
+      "bytes": 289897,
+      "sha256": "730e2992093b97b7a61e3e1ba81b890f44058a4b74a598faf5dec6451fa22b6b",
+      "fileMtimeUtc": "2026-10-05T03:35:36.203Z",
+      "url": "https://cloud.tencent.com/document/product/1729/97731",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/tencent-hunyuan-news.html",
+      "bytes": 65094,
+      "sha256": "9af7ebf27dd1e8c7b7e1bd7fa0f69024134765316068c6ada950308836a10ddf",
+      "fileMtimeUtc": "2026-10-05T03:37:08.407Z",
+      "url": "https://cloud.tencent.com/document/product/1729/123519",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/tencent-hunyuan-pricing.html",
+      "bytes": 339288,
+      "sha256": "9b794ab8006d446ea3fc3255d66a571f83a5100e5d0f51ba146923e3fc35125d",
+      "fileMtimeUtc": "2026-10-05T03:35:36.585Z",
+      "url": "https://cloud.tencent.com/document/product/1729/104753",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/tencent-hunyuan-release.html",
+      "bytes": 690977,
+      "sha256": "29c4078474666080546fd0010a6a3d005994e61d109f163789833282e0305841",
+      "fileMtimeUtc": "2026-10-05T03:35:37.367Z",
+      "url": "https://cloud.tencent.com/document/product/1246/109250",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/tencent-hunyuan-update-log.html",
+      "bytes": 62728,
+      "sha256": "a2d925810beacd4accd3effa0ebb83a56799abb9c384d756fd4bf6920b05a063",
+      "fileMtimeUtc": "2026-10-05T03:37:07.411Z",
+      "url": "https://cloud.tencent.com/document/product/1729/113168",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/tencent-hunyuan-update-log2.html",
+      "bytes": 442404,
+      "sha256": "261dfeb13eec9c9c904eedde54b51bd16f140c2e651a53e632704b51e9449067",
+      "fileMtimeUtc": "2026-10-05T03:39:59.863Z",
+      "url": "https://cloud.tencent.com/document/product/248/113168",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/test-deepseek-updates.html",
+      "bytes": 48320,
+      "sha256": "f64ecf38152439e05b656156fb7cb4f17ff2c4826a53a556787c35d2f48f406a",
+      "fileMtimeUtc": "2026-10-05T03:28:27.759Z",
+      "url": "https://api-docs.deepseek.com/updates",
+      "urlSource": "self-reported(canonical/og:url)"
+    },
+    {
+      "file": "raw/volcengine-ark-model-list.html",
+      "bytes": 807000,
+      "sha256": "4a5c1cfa8a34391fe40bae5937f5b6b4b0e464d0ef7db1e127c657416922569c",
+      "fileMtimeUtc": "2026-10-05T03:35:32.950Z",
+      "url": "https://www.volcengine.com/docs/82379/1159178",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/volcengine-ark-model-price.html",
+      "bytes": 11914,
+      "sha256": "7a7f67466eeea994fcf7570f9e005777be181a73138ca76485ed0dd4c845ae90",
+      "fileMtimeUtc": "2026-10-05T03:37:05.693Z",
+      "url": "https://www.volcengine.com/docs/82379/1263279",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/volcengine-ark-model-updates.html",
+      "bytes": 2028677,
+      "sha256": "5fc5b4c26b5c7727adef74341ad4ac18daf40b87d4cdfc652fcfd26163340dd7",
+      "fileMtimeUtc": "2026-10-05T03:37:04.078Z",
+      "url": "https://www.volcengine.com/docs/82379/1544106",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/volcengine-ark-models.html",
+      "bytes": 1887584,
+      "sha256": "d9f2a40f60577dea12d6435101210f8e4dfcb10028e143d9ffadc6ff9c0ad44d",
+      "fileMtimeUtc": "2026-10-05T03:35:31.346Z",
+      "url": "https://www.volcengine.com/docs/82379/1330310",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/volcengine-ark-updates.html",
+      "bytes": 921137,
+      "sha256": "5f1711d124dd5218eb0bd9c324bc5bd92ad406885bac0ebd5ae47b460ffe4917",
+      "fileMtimeUtc": "2026-10-05T03:35:35.750Z",
+      "url": "https://www.volcengine.com/docs/82379/1099320",
+      "urlSource": "tsv-manifest"
+    },
+    {
+      "file": "raw/volcengine-model-release-2025.html",
+      "bytes": 11914,
+      "sha256": "40a4d8d46911604cbf23a08ca865789ccfbc8f20f66a55d771eac39938906e47",
+      "fileMtimeUtc": "2026-10-05T03:43:13.559Z",
+      "url": null,
+      "urlSource": null
+    },
+    {
+      "file": "raw/volcengine-model-release-2026.html",
+      "bytes": 807000,
+      "sha256": "fac8ab7004089fdc85545e595feb50eca29d467a4707b1e71e66d106d20398a8",
+      "fileMtimeUtc": "2026-10-05T03:43:14.787Z",
+      "url": null,
+      "urlSource": null
+    }
+  ]
+}

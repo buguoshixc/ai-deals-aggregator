@@ -1,0 +1,122 @@
+{
+  "probe": "tracked-hashes (t4 只读证明)",
+  "ranAtUtc": "2026-10-05T03:46:29.000Z",
+  "ranAtLocal": "2026-10-05T11:46:29+08:00",
+  "head": "ff86368e6d12d1ef57b2f51aa2c957c01d2a9ed8",
+  "method": "取证前（11:28）与取证后（11:46）对同一批被跟踪文件取 SHA-256；同时记录两次 git status --porcelain",
+  "monitoredTrackedFiles": [
+    {
+      "path": "scripts/data/source-health.json",
+      "beforeSha256": "F782626E2B0E9B31236393507FE00121E90FAF55DB92FBD71FA52002885ABF80",
+      "afterSha256": "F782626E2B0E9B31236393507FE00121E90FAF55DB92FBD71FA52002885ABF80",
+      "changed": false,
+      "note": "CI 侧 live 读数：generatedAt=2026-10-04T16:31:52.051Z，8 healthy / 1 failed（futurepedia cf=10）。本任务全程只读。"
+    },
+    {
+      "path": "scripts/data/source-snapshots.json",
+      "beforeSha256": "25E4ED54FE64B3E7BEB9EE710CA3D9E4C321D1EC72D084F89C4C1D423C138EB6",
+      "afterSha256": "25E4ED54FE64B3E7BEB9EE710CA3D9E4C321D1EC72D084F89C4C1D423C138EB6",
+      "changed": false
+    },
+    {
+      "path": "deals.json",
+      "beforeSha256": "FE063BC9E4E40B1051958D6F14B889F44D391848F0D2555B82E421651DFCD558",
+      "afterSha256": "FE063BC9E4E40B1051958D6F14B889F44D391848F0D2555B82E421651DFCD558",
+      "changed": false
+    },
+    {
+      "path": "scripts/data/deal-history.json",
+      "beforeSha256": "DB7BC088E1AEC758F92B31D17DACAEBA393CFB1F5D72A8B9BB97CE4158B3A052",
+      "afterSha256": "DB7BC088E1AEC758F92B31D17DACAEBA393CFB1F5D72A8B9BB97CE4158B3A052",
+      "changed": false,
+      "note": "历史层零改动，符合「History 不伪造」。"
+    },
+    {
+      "path": "scripts/data/zh-pending.json",
+      "beforeSha256": "F9F85EBAA84FA58AB2711FA1B6217DD95C195D968F2EAB285DA342D7C32C06E6",
+      "afterSha256": "F9F85EBAA84FA58AB2711FA1B6217DD95C195D968F2EAB285DA342D7C32C06E6",
+      "changed": false
+    },
+    {
+      "path": "scripts/data/source-probes.json",
+      "beforeSha256": "622209F13FC41E5705E6A995CA65AEF9C4F43894FDE9BA1AB79119CCED7D476A",
+      "afterSha256": "622209F13FC41E5705E6A995CA65AEF9C4F43894FDE9BA1AB79119CCED7D476A",
+      "changed": false,
+      "note": "t5 的落地对象，本任务未动。"
+    },
+    {
+      "path": "index.html",
+      "beforeSha256": "4176D75C0C95707C65314360F497243DC46056D373B731819BA1B665123D7F42",
+      "afterSha256": "4176D75C0C95707C65314360F497243DC46056D373B731819BA1B665123D7F42",
+      "changed": false,
+      "note": "render-core.vendorOf 的宿主文件，只读加载。"
+    }
+  ],
+  "referenceHashesAfterOnly": [
+    {
+      "path": "scripts/collectors/global_directories.js",
+      "afterSha256": "046EE40FDF2FC326B483C93F200379F68AA333D5058252D8D0D9F47E31302AD7",
+      "note": "t5 的落地对象（retire 时改这里）；本任务未动。"
+    },
+    {
+      "path": "scripts/lib/dedup.js",
+      "afterSha256": "D3CEE7F49F0A4E8BF0CD2E7FAF12883776DB6E03E8262402E3E035B376AFA854",
+      "note": "overlap 判据复用的生产模块；只 require，未改。"
+    }
+  ],
+  "gitStatusBefore": [
+    "?? .tmp-providers.txt",
+    "?? .tmp-status.txt",
+    "?? .tmp-t0.txt",
+    "?? research/_raw/coverage-depth-v1/"
+  ],
+  "gitStatusAfter": [
+    " M scripts/data/curated_api_plans.json",
+    " M scripts/tools/coverage-report.js",
+    " M scripts/tools/coverage-targets-selftest.js",
+    "?? .tmp-al.txt",
+    "?? .tmp-al2.txt",
+    "?? .tmp-an.txt",
+    "?? .tmp-an2.txt",
+    "?? .tmp-g1.txt",
+    "?? .tmp-g2.txt",
+    "?? .tmp-kimi.txt",
+    "?? .tmp-mix1.txt",
+    "?? .tmp-mm.txt",
+    "?? .tmp-providers.txt",
+    "?? .tmp-status.txt",
+    "?? .tmp-t0.txt",
+    "?? .tmp-tc.txt",
+    "?? .tmp-tc2.txt",
+    "?? .tmp-tc3.txt",
+    "?? .tmp-tc4.txt",
+    "?? .tmp-vc1.txt",
+    "?? .tmp-vc2.txt",
+    "?? .tmp-vc3.txt",
+    "?? .tmp-zp1.txt",
+    "?? .tmp-zp2.txt",
+    "?? .tmp-zp3.txt",
+    "?? research/_raw/coverage-depth-v1/",
+    "?? research/coverage-depth-v1-source-reliability.md",
+    "?? scripts/lib/source-rulings.js"
+  ],
+  "attribution": {
+    "mine": [
+      "research/coverage-depth-v1-source-reliability.md",
+      "research/_raw/coverage-depth-v1/source-reliability/"
+    ],
+    "otherMembers": [
+      "scripts/data/curated_api_plans.json ( M ) — 不是本任务写的；属 t3/gap-closure 或 t1 的写域",
+      "scripts/tools/coverage-report.js ( M ) — 不是本任务写的",
+      "scripts/tools/coverage-targets-selftest.js ( M ) — 不是本任务写的",
+      "scripts/lib/source-rulings.js ( ?? ) — 不是本任务写的",
+      ".tmp-*.txt ( ?? ) — 并发成员的临时文件，取证前即存在多个，其余在取证期间由他人产生"
+    ],
+    "verdict": "本任务对 7 个受监控的被跟踪文件零改动（before == after，逐字节）；上面三处 M 与 source-rulings.js 均为并发成员写入，不在本任务 in-scope 路径内，也没有被本任务触碰。"
+  },
+  "commands": {
+    "before": "foreach ($f in <7 files>) { Get-FileHash -Algorithm SHA256 $f }",
+    "after": "foreach ($f in <7 files>) { Get-FileHash -Algorithm SHA256 $f }; git status --porcelain; git diff --stat",
+    "artifacts": "Get-ChildItem research/_raw/coverage-depth-v1/source-reliability -Recurse -File | Get-FileHash -Algorithm SHA256"
+  }
+}

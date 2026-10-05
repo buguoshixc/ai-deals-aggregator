@@ -1,0 +1,29 @@
+﻿===== node scripts/tools/inspect-source.js （按 Verify 原文，无参数） 2026-10-05T11:39:19.6475065+08:00 =====
+node : 用法: node scripts/tools/inspect-source.js <url> [cssSelector]
+所在位置 行:4 字符: 1
++ node scripts/tools/inspect-source.js 2>&1 | Out-File -Append -Encodin ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (用法: node script...> [cssSelector]:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+exit=1
+===== node scripts/tools/inspect-source.js https://www.futurepedia.io/ （有参数，实际取证） =====
+URL     : https://www.futurepedia.io/
+长度    : 1482136 字节
+表格    : 0 个，tr 0 行
+标题    : h1=1 h2=4 h3=3
+链接    : a=108
+脚本    : script=76，__NEXT_DATA__=0
+exit=0
+===== node -e health 读数（Verify 原文） 2026-10-05T11:39:24.7163179+08:00 =====
+2026-10-04T16:31:52.051Z
+aitools healthy 0 
+cn_aliyun healthy 0 
+cn_qianfan healthy 0 
+cn_volc_ark healthy 0 
+cn_zhipu healthy 0 
+cn_zhipu_pricing healthy 0 
+futurepedia failed 10 https://www.futurepedia.io/ 抓取失败: HTTP 403
+futuretools healthy 0 
+layer3labs healthy 0 
+exit=0

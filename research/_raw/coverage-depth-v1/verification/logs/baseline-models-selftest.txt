@@ -1,0 +1,168 @@
+﻿
+① 真实数据自洽
+  ✓ 真实的 models.json 通过身份校验（51 条）
+  ✓ 真实的 model-registry-links.json 通过关系校验（92 条）
+  ✓ 每个 registry 模型都至少被一条显式映射引用（未映射的不生成页面）
+  ✓ 没有任何 API modelKey 未映射（覆盖报告里的 0 是结论，不是没算）
+    套餐模型串：55 条 = 已映射 13 + 已声明"不对应单一模型身份" 42 + 未判 0（逐条见 check-model-registry-links 的输出）
+  ✓ 派生时间线自洽：firstSeen ≤ lastSeen
+  ✓ 派生 id 全部是 12 位十六进制且两两不同
+  ✓ id 与 slug 一致（同一 slug 永远同一个 id）
+  ✓ 每个模型的 officialUrl 都是它某条映射记录里真实引用过的官方页（不许出现凭空的链接）
+
+② 题面 §8 的 5 条 Model Registry 牙
+  ✓ 【牙 #1】同名不同开发者的两条模型（被合并成一个名字）→ 红
+  ✓ 【牙 #2】同一个 alias 指向两个 registry 模型 → 红
+  ✓ 【牙 #2】alias 与另一个模型的 slug 撞车 → 红
+  ✓ 【牙 #3】映射指向不存在的 apiPlanId → 红
+  ✓ 【牙 #3】映射指向不存在的 modelKey → 红
+  ✓ 【牙 #3】Coding 映射指向不存在的 planId → 红
+  ✓ 【牙 #3】Coding 映射的 modelName 不在套餐里 → 红
+  ✓ 【牙 #3】映射指向不存在的 registrySlug → 红
+  ✓ 【牙 #4】api-plans 里 modelKey 改名后，旧映射必须红（工具不许自动 merge 到新键）
+  ✓ 【牙 #4】身份层没有任何写生产映射的代码路径（不出现 writeFileSync）
+  ✓ 【牙 #4】身份层没有任何相似度算法（去掉注释后不出现 levenshtein / similarity / dice / jaro）
+  ✓ 【牙 #4】相似度/归一匹配只能产出候选：每条候选都带 status=candidate，且没有生产字段
+  ✓ 【牙 #5】页面会展示一个未登记的 developer（"不存在的 Provider"）→ 红
+  ✓ 【牙 #5】反向：开发者判不出来时写 null 是合法的（不是一律禁止缺字段）
+
+③b source pricing identity：一条计价条目至多归属一个 registry 模型（P0 常驻牙）
+  ✓ 通配映射（variant=null）展开成该 modelKey 在**这条记录**里的全部真实 variant（qwen3-max: standard + long_context）
+  ✓ 身份键 = planId + modelKey + 记录内真实 variant（键里不许出现 None/undefined/(all) 的字面折叠）
+  ✓ 只有 standard 的记录里，通配展开只有 1 条（通配不是"永远多条"，更不是整组已覆盖）
+  ✓ 通配映射匹配不到任何真实 variant ⇒ unresolved=true（调用方据此报红，不许静默通过）
+  ✓ 【Tooth 1】已有一条显式 standard 映射，再追加一条通配 null 映射到另一个 slug → 红（null 展开后就含 standard）
+  ✓ 【Tooth 1】已有一条通配 null 映射，再追加一条显式 long_context 映射到另一个 slug → 红（通配已认领该变体）
+  ✓ 【Tooth 2】同一条 (apiPlanId, modelKey, variant) 映射到两个 registry model → 红
+  ✓ 【Tooth 2】反向：完全重复的一条记录（同一 slug）→ 红（重复记录判据）
+  ✓ 【Tooth 3】同一个 registry model 认领多个不同 Provider 的记录 → 绿（siliconflow / together / deepseek / aliyun）
+  ✓ 【Tooth 3】同一 slug 同时认领 aliyun 与 deepseek 的记录 → 绿（认领集合不相交，只有"没写全"的完整性提示）
+  ✓ 【Tooth 4】同 modelKey 的两个不同 variant 分别归属两个 slug（认领集合不相交：{standard} ∩ {long_context} = ∅）→ 绿
+  ✓ 【Tooth 4】反向：把 long_context 改成 standard（认领集合相交）→ 红
+  ✓ 【Tooth 4】同一 slug 上"通配 + 显式"的冗余重复认领 → 红（冗余映射不许伪装成更细的粒度）
+  ✓ 【Tooth 5】production：duplicate source pricing identity owner = 0 且 multi-owner = 0（92 条被认领的计价条目）
+  ✓ 【Tooth 5】production：计价条目按展开记账后仍然全覆盖（映射 + 处置 + 未判 = 总条目，未判 0），且 no 通配虚高
+  ✓ coverageOf()：只认领 1 条显式映射时，覆盖记 1 条、未认领 107 条（不按 (planId, modelKey) 整组算）
+  ✓ coverageOf()：同一条通配映射只记它真实展开到的条目数（2 条），不把整条记录算成已覆盖
+  ✓ 【M09 / §10.6】删掉一条必需的 registry→API 映射 → 红（check-model-registry-links 必须 exit≠0，不再靠自测替它红）
+  ✓ 【M09 / §10.6】同一次删除里，registry 模型 claude-fable-5.1 也不再被任何映射引用（两条读数一致）
+  ✓ 【M09 / §10.6】API 侧完整性与 Coding 侧同级：两侧都由 lib 判据报"既没有映射也没有处置"，且真实数据 0 处
+  ✓ 原文扫描：手写 models.json 里重复的顶层 slug 键被扫出来（JSON.parse 只会留最后一条）
+  ✓ 原文扫描：只有**顶层**的重复键算数（嵌套对象里的同名键 / 字符串值里的冒号不算）
+  ✓ validateRegistry：拿到 duplicateKeys 时必红（同一个 slug = 同一个 registry 身份，不许出现两条）
+  ✓ validateRegistry：真实来源层原文里 0 个重复顶层键（不是靠 parse 结果"看不见"）
+  ✓ 【F-T19-1 常驻牙】scripts/validate.js 的 validateRegistry(...) 传了 duplicateKeys（漏传 = 重复顶层键假绿）
+  ✓ 【F-T19-1 常驻牙】scripts/tools/check-models-reproducible.js 的 validateRegistry(...) 传了 duplicateKeys（漏传 = 重复顶层键假绿）
+  ✓ duplicate canonical identity：两条模型写同一个 canonicalName → 红
+  ✓ alias collision：同一个 alias 指向两个 registry 模型 → 红（同一个别名只能是同一个身份）
+
+③ 派生字段、引文与"没有输入不许假绿"
+  ✓ 手写派生字段 id / firstSeen → 红（它们只能算出来）
+  ✓ 来源关系层里手写 registryModelId → 红（它是发布时注入的派生字段）
+  ✓ 凭空写一条引文（不在被引用记录的 evidence 里）→ 红
+  ✓ basis=explicit-mapping 却不写 note → 红（"没有引文"也必须说出来）
+  ✓ 引文类 basis 却没有引文 → 红
+  ✓ 空 registry → 红（"什么都没有"不是通过）
+  ✓ registry 里有模型、关系层却一条映射都没有 → 红（"没写"不是"干净"）
+  ✓ 空表 + 空关系层 → 红（模型一个都不存在 / registry 为空）
+  ✓ schemaVersion 不对 → 红
+  ✓ 关系层顺序不是规范序 → 红（打乱输入仍必须得到同一串字节）
+
+④ 可重建与身份稳定性
+  ✓ 同一份来源层两次产出逐字节相同
+  ✓ 打乱来源层键序 → 产物逐字节不变（规范排序不是装饰）
+  ✓ 发布关系层给每条记录注入了 registryModelId（渲染层按 id 匹配）
+  ✓ 发布关系层的字段顺序是规范序（registrySlug 后紧跟 registryModelId）
+  ✓ slug / 别名的解析是精确相等（不做大小写折叠、不做 trim、不猜）
+  ✗ 汇总：44 个模型全部 active、0 retired（退役只由人工依据驱动） —— {"total":51,"byStatus":{"active":51,"retired":0,"unknown":0},"byModelRole":{"general":29,"fast":6,"reasoning":0,"coding":1,"vision":8,"embedding":1,"audio":0,"realtime":0,"translation":2,"other":2,"(null)":2},"byCatalogStatus":{"current":0,"aging":0,"legacy":0,"historical":0,"unknown":51},"developers":15,"families":15,"updatedAt":"2026-10-05T00:00:00+08:00"}
+
+⑤ 套餐侧模型串覆盖（v3.0 修订：每一串都必须有结局）
+  ✓ 真实数据：套餐模型串 55 条 = 已映射 13 + 已声明 42 + 未判 0，且未判必须是 0
+  ✓ 真实数据：真实 model-registry-gaps.json 通过处置校验
+  ✓ 真实数据：套餐侧覆盖完整性 0 处问题
+  ✓ 真实数据：每条 Coding 侧声明的 (planId, modelName, role) 都逐字对得回套餐数据
+  ✓ 真实数据：每条 API 侧声明的 (apiPlanId, modelKey, variant) 都逐字对得回 api-plans 记录
+  ✓ 真实数据：套餐侧每一条被映射的串都真的在套餐里逐字存在（与 validateLinks 同一判据）
+  ✓ 【牙 #21】删掉一条声明 → 那一串立刻变成"既没有映射也没有声明"并报红
+  ✓ 【牙 #21】处置登记表清空 → 未判条数等于全部未映射串数（42 条）
+  ✓ 【牙 #21】套餐里新增/改名一条模型串却没有声明 → 红（不许悄悄多出一行）
+  ✓ 【牙 #21】plans 为空 → 红（覆盖完整性无从判定，不是通过）
+  ✓ 【牙 #22】role 与套餐里那一条不一致（抄错对照值）→ 红
+  ✓ 【牙 #22】记录 role=pool 却把 reason 写成 series → 红（pool 与 role 必须互为充要）
+  ✓ 【牙 #22】记录 role=included 却拿 pool 兜底 → 红（官方没说它是模型池）
+  ✓ 【牙 #22】reason 不在枚举里 → 红（没有"其它"垃圾桶）
+  ✓ 【牙 #22】modelName 不是逐字引用套餐里的名字 → 红
+  ✓ 【牙 #22】sourceUrl 不是该套餐自己的官方页 → 红
+  ✓ 【牙 #22】处置登记里偷写 registrySlug（想绕过映射）→ 红（它是未知字段）
+  ✓ 【牙 #22】同一串既在关系层有映射、又在登记表里声明 → 红（一件事不能有两种结局）
+  ✓ 【牙 #22】登记表顺序不是规范序 → 红（打乱输入仍必须得到同一串字节）
+  ✓ 【牙 #22】声明不写理由 → 红（这张表存的就是理由）
+  ✓ 【牙 #22】把一条归一后**能精确落到 registry 身份**的串声明成"对不上" → 红（能对上的必须去写映射）
+  ✓ 【牙 #22】没传 registry 表（table 为空）却有声明 → 红（判不了"是不是能对上"就不是通过）
+  ✓ 套餐侧候选是"归一后精确相等"的规则产物（每条都带 status=candidate，且没有生产字段）
+  ✓ 凡是归一后**精确**能对上的套餐串，都已经写进了关系层（没有"能对上却没写"的漏网之鱼）
+  ✓ 反向：候选由规则算出，与关系层无关（拿掉 trae/DeepSeek-Flash 那条映射，候选照样出现）
+
+⑥ v2 来源层字段（schemaVersion 2）：角色 / 发布日期证据 / 分组覆盖
+  ✓ 真实数据：每条都写出了 v2 四字段（值可以诚实为 null / []，字段本身不许省）
+  ✓ 真实数据：modelRole 全部落在 MODEL_ROLES（general / fast / reasoning / coding / vision / embedding / audio / realtime / translation / other）或 null 里
+  ✓ 真实数据：releasedAt 与 releaseEvidence 互为充要（有日期必须有官方证据；有证据必须有日期）
+  ✓ 真实数据：有发布日的条目，引文都带 field=releasedAt + quote + capturedAt（形态与 deals / plans / links 的引文同一套）
+  ✓ 真实数据：有发布日的条目，出处都落在该 developer 在 providers.json 登记的官方域上（第三方平台顶替不了发布证据）
+  ✓ 真实数据：写了 freshnessGroup 的那几条都有 note（理由写在表里，不是偷偷把比较组改小）
+  ✓ 【v2】删掉 modelRole（schemaVersion 1 的旧条目形状）→ 红
+  ✓ 【v2】删掉 releaseEvidence（"没有证据"也要显式写 []）→ 红
+  ✓ 【v2】手写 catalogStatus / catalogReason → 红（它们是派生字段，判据在 model-freshness.js）
+  ✓ 【v2】modelRole 自造值（不在最小枚举里）→ 红（同一个状态不许有两个词）
+  ✓ 【v2】releasedAt=2026-02-30（日历里不存在的日期）→ 红
+  ✓ 【v2】releasedAt="约 2026 年 8 月" → 红（假精度）
+  ✓ 【v2】写了 releasedAt 却不给官方证据 → 红
+  ✓ 【v2】给了官方证据却不写 releasedAt → 红（互为充要的另一半）
+  ✓ 【v2】解耦牙：起点两半都合法时，夹具仍能各自造出"只有一半"的非法表并报红（T2-F1 自指盲区）
+  ✓ 【v2】出处是第三方托管平台（siliconflow.cn 不在月之暗面的官方域登记上）→ 红
+  ✓ 【v2】developer 没有官方域登记（Unknown Vendor X 既不在 providers.json 也不在 _developers_extra）→ 红（要么登记官方域，要么 releasedAt 留 null）
+  ✓ 【v2】引文的 field 不是 releasedAt → 红（这组引文只证明发布日期）
+  ✓ 【v2】引文里多写一个键（httpStatus）→ 红（研究细节不进身份层，形态必须封闭）
+  ✓ 【v2】引文缺 capturedAt → 红（"哪天看到的"是这条证据能被复核的前提）
+  ✓ 【v2】freshnessGroup 非空却不写 note → 红（没有理由的分组 = 把比较组偷偷改小）
+  ✓ 【v2】来源层条目键序漂移（modelRole 跑到 status 之前）→ 红（键序也是契约）
+  ✓ 派生产物 models.json：schemaVersion 2，且每条都带 catalogStatus / catalogReason（派生，不是手写）
+  ✓ 派生产物 models.json：catalogStatus 已经和新鲜度层接线（至少一条不是 unknown），unknown 一律默认可见
+  ✓ 派生产物 model-registry-links.json：schemaVersion 2
+
+⑦ API 侧处置登记（gaps 双侧化）：出口、反绕过与覆盖率记账
+  ✗ 真实数据：API 侧声明 16 条，reason 全部是 off-registry-model、sourceUrl 全部取自该记录自己的官方页
+  ✓ 真实数据：没有任何声明"两侧都写"（每条恰好属于一侧）
+  ✓ 真实数据：真实 gaps 通过双侧校验（0 处问题）
+  ✓ 【API 处置】apiPlanId 不存在 → 红（错误信息里点名「apiPlanId 不存在」并写出那个 id）
+  ✓ 【API 处置】modelKey 不在该记录里 → 红
+  ✓ 【API 处置】variant 不是该 modelKey 的真实变体 → 红
+  ✓ 【API 处置】一条声明两侧都写 → 红（与 links 的 exactly-one 同形）
+  ✓ 【API 处置】API 侧键序不是规范序 → 红
+  ✓ 【API 处置】API 侧 reason=pool（套餐侧概念）→ 红并写出允许值
+  ✓ 【API 处置】sourceUrl 不是该 API 记录自己的官方页 → 红
+  ✓ 【API 处置】note 留空 → 红（这张表存的就是理由）
+  ✓ 【API 处置】同一条计价条目既被 link 认领、又在这里声明"对不上" → 红（双向检查）
+  ✓ 【API 处置·反绕过牙】modelKey「vendor.glm-5.3」+ 官方显示名「GLM 5.3」→ 红且点名 glm-5.3
+  ✓ 【API 处置·反绕过牙·对照绿】同形状但折叠后对不上任何身份 → 绿
+  ✓ 【T26-F1】下划线命名空间 zai_org_glm-5.3（t26 点名形状） 作为 API 侧声明 modelKey → 红且点名 glm-5.3
+  ✓ 【T26-F1】连字符+下划线 zai-org_glm-5.3（t26 点名形状） 作为 API 侧声明 modelKey → 红且点名 glm-5.3
+  ✓ 【T26-F1】下划线命名空间 acme_glm-5.3（命名空间不在任何别名里 ⇒ 只能靠切分） 作为 API 侧声明 modelKey → 红且点名 glm-5.3
+  ✓ 【T26-F1】连字符命名空间 acme-glm-5.3（同上） 作为 API 侧声明 modelKey → 红且点名 glm-5.3
+  ✓ 【T26-F1·对照】fixture 的官方显示名「ACME Model X」本身对不上任何 registry 身份（红只可能来自 modelKey 那条路）
+  ✓ 【T26-F1·对照绿】真实 off-registry 键（openai.gpt-oss-120b / GPT OSS 120B）在切分集补齐后仍然 0 命中
+  ✓ 【T26-F1】切分集只需覆盖 schema 允许的分隔符：MODEL_KEY_RE 拒收冒号/井号/反斜杠/中文方括号等拼法（那些不是风险，不为它们加规则）
+  ✓ 【API 处置】删掉一条 API 侧声明 → validateLinks 复红（两处都没有）；留着则绿
+  ✗ 【API 处置】coverageOf：declaredApiEntries 逐条留档（12 条 · 带 provider）+ unmappedModelKeys 归零 + 三者和 == 总条目 —— {"declared":16,"unmapped":0,"mapped":92,"identities":16,"items":108}
+  ✓ 【API 处置】candidatesOf 的规则名里同时有 normalized-name-exact / normalized-name-folded / normalized-namespace-suffix
+  ✓ 【API 处置】每个折叠命中的计价条目都有结局（映射或声明），没有"能对上却没写、也没声明"的漏网之鱼
+  ✓ 【API 处置·对照】真实数据里 12 条声明在折叠索引下 0 命中（7 条能对上的已经去写了映射）
+
+⑧ 机器牙：validateLinks 与 validateGaps 必须成对调用（T26-F2）
+  ✓ 源码级机器牙：8 个调用 validateLinks 的生产入口都同时调用 validateGaps（有结局 ≠ 结局合法）
+  ✓ 源码级机器牙·反证：TEMP 副本里摘掉一个入口的 validateGaps 调用 → 必红且点名该文件
+
+❌ === v3.0 Model Registry 演练：141 项通过，3 项失败 ===
+   - 汇总：44 个模型全部 active、0 retired（退役只由人工依据驱动） —— {"total":51,"byStatus":{"active":51,"retired":0,"unknown":0},"byModelRole":{"general":29,"fast":6,"reasoning":0,"coding":1,"vision":8,"embedding":1,"audio":0,"realtime":0,"translation":2,"other":2,"(null)":2},"byCatalogStatus":{"current":0,"aging":0,"legacy":0,"historical":0,"unknown":51},"developers":15,"families":15,"updatedAt":"2026-10-05T00:00:00+08:00"}
+   - 真实数据：API 侧声明 16 条，reason 全部是 off-registry-model、sourceUrl 全部取自该记录自己的官方页
+   - 【API 处置】coverageOf：declaredApiEntries 逐条留档（12 条 · 带 provider）+ unmappedModelKeys 归零 + 三者和 == 总条目 —— {"declared":16,"unmapped":0,"mapped":92,"identities":16,"items":108}

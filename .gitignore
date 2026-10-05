@@ -26,6 +26,15 @@ research/_raw/v3.0-sources/html/
 research/_raw/v3.0-sources/text/
 research/_raw/v3.0-sources/domtext/
 
+# coverage-depth-v1 取证现场（research/_raw/coverage-depth-v1/release-evidence/raw/）的
+# **原始第三方快照**：不入库，与上面 v3.0-sources 与 shots/ 同一条纪律。
+# 理由同样三条：① 是第三方正文（96 份官方页 HTML 原件）；② 约 38 MB，与仓库历史不成比例；
+# ③ 可由 URL 重新抓取。**唯一的证据**（官方逐字引文 + 官方 URL + capturedAt + 采信/否决判定）
+# 已落在 research/coverage-depth-v1-release-evidence.md 的逐条采信表与 scripts/data/models.json
+# 的 releaseEvidence 里；原件的离线索引（文件名 / 字节数 / sha256 / 抓取时间 / 自述 URL）
+# 落在同目录 raw-manifest.json（96 份全部有 sha256，68 份有 URL），见该目录 README.md。
+research/_raw/coverage-depth-v1/release-evidence/raw/
+
 # DSH 会话的残留探针：临时诊断脚本，会读本机 ~/.dsh/.credentials.yaml，
 # 文件自己写着 Safe to delete——不属于本项目源码，不入库
 .vision-probe.mjs

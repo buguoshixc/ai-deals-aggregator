@@ -1,0 +1,105 @@
+{
+  "extractedFrom": "scripts/tools/coverage-targets-selftest.js (missingRowsProblems, 盘上真实实现)",
+  "functionSource": "function missingRowsProblems(rows, expectedCount) {\n  const problems = [];\n  const missing = (Array.isArray(rows) ? rows : []).filter(row => row && row.state === 'MISSING');\n  if (Number.isInteger(expectedCount) && missing.length !== expectedCount) {\n    problems.push(`MISSING 行集合大小 ${missing.length} ≠ states.MISSING 计数 ${expectedCount} —— 两处读数必须一致（空集也要对上 0，不许靠\"没有行\"蒙过去）`);\n  }\n  const withRecords = missing.filter(row => row.present !== 0);\n  if (withRecords.length) {\n    problems.push(`有 ${withRecords.length} 格 MISSING 却在盘上有记录（present ≠ 0）：${withRecords.slice(0, 3).map(row => `${row.provider}/${row.dimension}=${row.present}`).join('、')} —— MISSING 的定义是\"可覆盖、未延期、来源健康，但盘上一条都没有\"`);\n  }\n  return problems;\n}",
+  "oldPredicateHoldsOnEmpty": true,
+  "cases": [
+    {
+      "id": "C0 正控制：空集 + 计数 0（当前盘面：MISSING=0）",
+      "expectedCount": 0,
+      "rows": [],
+      "wants": "no-problem",
+      "got": "no-problem",
+      "problems": [],
+      "ok": true
+    },
+    {
+      "id": "C1 空集 + 计数 1（老判据在此恒真 ⇒ 假牙）",
+      "expectedCount": 1,
+      "rows": [],
+      "wants": "problem",
+      "got": "problem",
+      "problems": [
+        "MISSING 行集合大小 0 ≠ states.MISSING 计数 1 —— 两处读数必须一致（空集也要对上 0，不许靠\"没有行\"蒙过去）"
+      ],
+      "ok": true
+    },
+    {
+      "id": "C2 合成 MISSING 行 present=1 + 计数 1",
+      "expectedCount": 1,
+      "rows": [
+        {
+          "state": "MISSING",
+          "provider": "x",
+          "dimension": "deals",
+          "present": 1
+        }
+      ],
+      "wants": "problem",
+      "got": "problem",
+      "problems": [
+        "有 1 格 MISSING 却在盘上有记录（present ≠ 0）：x/deals=1 —— MISSING 的定义是\"可覆盖、未延期、来源健康，但盘上一条都没有\""
+      ],
+      "ok": true
+    },
+    {
+      "id": "C3 行数 1 + 计数 2（集合与计数脱钩）",
+      "expectedCount": 2,
+      "rows": [
+        {
+          "state": "MISSING",
+          "provider": "x",
+          "dimension": "deals",
+          "present": 0
+        }
+      ],
+      "wants": "problem",
+      "got": "problem",
+      "problems": [
+        "MISSING 行集合大小 1 ≠ states.MISSING 计数 2 —— 两处读数必须一致（空集也要对上 0，不许靠\"没有行\"蒙过去）"
+      ],
+      "ok": true
+    },
+    {
+      "id": "C4 合法 MISSING 行 present=0 + 计数 1",
+      "expectedCount": 1,
+      "rows": [
+        {
+          "state": "MISSING",
+          "provider": "x",
+          "dimension": "deals",
+          "present": 0
+        }
+      ],
+      "wants": "no-problem",
+      "got": "no-problem",
+      "problems": [],
+      "ok": true
+    },
+    {
+      "id": "C5 非 MISSING 行（COVERED present=5）不得被误伤 + 计数 0",
+      "expectedCount": 0,
+      "rows": [
+        {
+          "state": "COVERED",
+          "provider": "x",
+          "dimension": "deals",
+          "present": 5
+        }
+      ],
+      "wants": "no-problem",
+      "got": "no-problem",
+      "problems": [],
+      "ok": true
+    },
+    {
+      "id": "C6 坏输入：rows 不是数组",
+      "expectedCount": 0,
+      "rows": null,
+      "wants": "no-problem",
+      "got": "no-problem",
+      "problems": [],
+      "ok": true
+    }
+  ],
+  "failures": 0
+}

@@ -1,0 +1,175 @@
+{
+  "repo": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1",
+  "scannedFiles": 165,
+  "hits": 19,
+  "byForm": {
+    "some": 3,
+    "every": 16
+  },
+  "files": [
+    "scripts/tools/audience-selftest.js",
+    "scripts/tools/coverage-targets-selftest.js",
+    "scripts/tools/data-docs-selftest.js",
+    "scripts/tools/model-freshness-selftest.js",
+    "scripts/tools/plan-history-selftest.js",
+    "scripts/tools/plans-selftest.js",
+    "scripts/tools/vendor-page-selftest.js",
+    "scripts/tools/verify-site.js"
+  ],
+  "details": [
+    {
+      "file": "scripts/tools/audience-selftest.js",
+      "line": 768,
+      "form": "some",
+      "code": "dealRecords.filter(d => au.needsOf(d).some(slug => !known.has(slug))).map(d => d.id).join(', '));",
+      "nearestCheck": "所有记录的 needsOf 结果都落在注册表内",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/coverage-targets-selftest.js",
+      "line": 116,
+      "form": "some",
+      "code": "Object.keys(providerTable).filter(key => !ct.targetsList(targetsLoaded.doc).some(target => target.provider === key)).join(', '));",
+      "nearestCheck": "意图层与身份层双向对上：providers.json 每一个 provider 都有一行",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/coverage-targets-selftest.js",
+      "line": 136,
+      "form": "every",
+      "code": "realDerived.rows.filter(row => row.state === ct.STATES.COVERED).every(row => row.present > 0 || row.resolved > 0));",
+      "nearestCheck": "真实盘面：COVERED 的格子必须真的有记录（不许空口算覆盖）",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/coverage-targets-selftest.js",
+      "line": 646,
+      "form": "every",
+      "code": "* `gapQueue.filter(row => row.state === 'MISSING').every(row => row.present === 0)`。",
+      "nearestCheck": null,
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/coverage-targets-selftest.js",
+      "line": 1534,
+      "form": "every",
+      "code": "// t7-F1 修复：原来这一条是 `gapQueue.filter(MISSING).every(present === 0)` —— 本轮 MISSING 已收口到 0，",
+      "nearestCheck": "v3③：每一条的 priority 都能**逐条复算**出来（判据全部在 payload 里，不靠信任）",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/data-docs-selftest.js",
+      "line": 223,
+      "form": "every",
+      "code": "&& manifest.datasets.filter(d => d.category === 'history').every(d => docs.timeShapeOf(d.updatedAt) === 'date'));",
+      "nearestCheck": "两种时间形状都被真实数据覆盖：deals 是真实时刻，plans/api/models 是日期规范化",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/model-freshness-selftest.js",
+      "line": 333,
+      "form": "every",
+      "code": "check('unknown 的原因码永远不在 superseded 表里', invariants.entries.filter(entry => entry.catalogStatus === 'unknown').every(entry => !fresh.SUPERSEDED_REASONS.includes(entry.catalogReason)));",
+      "nearestCheck": "unknown 的原因码永远不在 superseded 表里",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/model-freshness-selftest.js",
+      "line": 334,
+      "form": "every",
+      "code": "check('unknown 的原因码必须在 UNKNOWN_REASONS 里', invariants.entries.filter(entry => entry.catalogStatus === 'unknown').every(entry => fresh.UNKNOWN_REASONS.includes(entry.catalogReason)));",
+      "nearestCheck": "unknown 的原因码必须在 UNKNOWN_REASONS 里",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/model-freshness-selftest.js",
+      "line": 338,
+      "form": "every",
+      "code": "&& invariants.entries.filter(entry => entry.comparableGroupKey === retiredGroup.key).every(entry => entry.catalogStatus === 'historical'));",
+      "nearestCheck": "retired 组全是 historical，且没有 active ⇒ 不许凭空 current",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/plan-history-selftest.js",
+      "line": 430,
+      "form": "every",
+      "code": "forced.store.events.filter(e => e.type === 'ended').every(e => e.reason === 'withdrawn'),",
+      "nearestCheck": "--allow-mass-removal ⇒ 缺席的 3 条各记一条 ended(withdrawn)",
+      "guardHints": [
+        "同块有 length 比较"
+      ]
+    },
+    {
+      "file": "scripts/tools/plans-selftest.js",
+      "line": 1292,
+      "form": "every",
+      "code": "payload.rows.filter(row => row.regular === null).every(row =>",
+      "nearestCheck": "价格档不会把原价未标注 / 非月付的行捞进来",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/vendor-page-selftest.js",
+      "line": 512,
+      "form": "every",
+      "code": "vendorPages.filter(page => page.count > 0).every(page => page.title === `${page.key} 的 AI 优惠`)",
+      "nearestCheck": "有条数的厂商页 title/heading 未被改写（只有 0 优惠的资料页换标题）",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/vendor-page-selftest.js",
+      "line": 513,
+      "form": "every",
+      "code": "&& vendorPages.filter(page => page.count === 0 && page.nonDealMaterial).every(page => page.title === `${page.key} 的 AI 资料`));",
+      "nearestCheck": "有条数的厂商页 title/heading 未被改写（只有 0 优惠的资料页换标题）",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 1535,
+      "form": "every",
+      "code": "feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([rel, box]) => {",
+      "nearestCheck": "RSS 与 JSON Feed 的条目数、id 集合两侧一致",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 1548,
+      "form": "every",
+      "code": "feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => !box.offMidnight) &&",
+      "nearestCheck": "订阅条目的时间都是数据日期的北京时间零点（没有构建时刻泄进产物）",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 1549,
+      "form": "every",
+      "code": "feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => /GMT$/.test(String(box.lastBuildDate || ''))),",
+      "nearestCheck": "订阅条目的时间都是数据日期的北京时间零点（没有构建时刻泄进产物）",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 1553,
+      "form": "every",
+      "code": "feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => box.icon && box.favicon) &&",
+      "nearestCheck": "JSON Feed 都带 icon 与 favicon；RSS 都带 <image> 与 atom:link rel=self",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 1554,
+      "form": "every",
+      "code": "feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => box.image && box.selfLink),",
+      "nearestCheck": "JSON Feed 都带 icon 与 favicon；RSS 都带 <image> 与 atom:link rel=self",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 5135,
+      "form": "some",
+      "code": "const multiVariantSlugs = Object.keys(expectedBySlug).filter(slug => (linksDoc.links || []).some(link =>",
+      "nearestCheck": null,
+      "guardHints": []
+    }
+  ]
+}

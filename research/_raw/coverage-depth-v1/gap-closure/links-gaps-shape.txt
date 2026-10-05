@@ -1,0 +1,67 @@
+﻿declarations: 54
+api-side: 12 coding-side: 42
+sample api-side: [
+ {
+  "apiPlanId": "036c5f09561e",
+  "modelKey": "meta-llama.prompt-guard-2-22m",
+  "variant": "standard",
+  "reason": "off-registry-model",
+  "sourceUrl": "https://console.groq.com/docs/models",
+  "note": "官方定价记录点名了单一模型「Llama Prompt Guard 2 22M」（modelKey `meta-llama.prompt-guard-2-22m`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+ },
+ {
+  "apiPlanId": "036c5f09561e",
+  "modelKey": "meta-llama.prompt-guard-2-86m",
+  "variant": "standard",
+  "reason": "off-registry-model",
+  "sourceUrl": "https://console.groq.com/docs/models",
+  "note": "官方定价记录点名了单一模型「Llama Prompt Guard 2 86M」（modelKey `meta-llama.prompt-guard-2-86m`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+ },
+ {
+  "apiPlanId": "036c5f09561e",
+  "modelKey": "openai.gpt-oss-120b",
+  "variant": "standard",
+  "reason": "off-registry-model",
+  "sourceUrl": "https://console.groq.com/docs/models",
+  "note": "官方定价记录点名了单一模型「GPT OSS 120B」（modelKey `openai.gpt-oss-120b`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
+ }
+]
+---
+links keys: _note, _rules, schemaVersion, links
+array fields: links=82
+sample link: [
+ {
+  "registrySlug": "claude-fable-5.1",
+  "apiPlanId": "4f8bae91f9f8",
+  "modelKey": "claude-fable-5.1",
+  "variant": null,
+  "basis": "official-pricing-page",
+  "evidence": [
+   {
+    "field": "models.claude-fable-5.1",
+    "quote": "Claude Fable 5.1 | Base tokens: Input $10 / MTok, Output $50 / MTok | Prompt caching: 5m writes $12.50 / MTok, 1h writes $20 / MTok, Hits and refreshes $0.25 / MTok",
+    "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+    "capturedAt": "2026-10-01",
+    "lang": "en"
+   }
+  ],
+  "note": null
+ },
+ {
+  "registrySlug": "claude-haiku-4.5",
+  "apiPlanId": "4f8bae91f9f8",
+  "modelKey": "claude-haiku-4.5",
+  "variant": null,
+  "basis": "official-pricing-page",
+  "evidence": [
+   {
+    "field": "models.claude-haiku-4.5",
+    "quote": "Claude Haiku 4.5 | Base tokens: Input $1 / MTok, Output $5 / MTok | Prompt caching: 5m writes $1.25 / MTok, 1h writes $2 / MTok, Hits and refreshes $0.10 / MTok",
+    "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+    "capturedAt": "2026-10-01",
+    "lang": "en"
+   }
+  ],
+  "note": null
+ }
+]

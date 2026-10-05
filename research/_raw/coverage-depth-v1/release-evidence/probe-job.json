@@ -1,0 +1,7 @@
+{
+  "files": ["aliyun-model-release-notes.html", "aliyun-models-pure.md"],
+  "jobs": [
+    { "label": "qwen3-any", "pattern": "qwen3[a-z0-9\\.\\-]*", "window": 150, "max": 10 },
+    { "label": "zh-dates-2026", "pattern": "2026\\s*\\u5e74\\s*\\d{1,2}\\s*\\u6708|\\d{1,2}\\s*\\u6708\\s*\\d{1,2}\\s*\\u65e5", "window": 130, "max": 12 }
+  ]
+}

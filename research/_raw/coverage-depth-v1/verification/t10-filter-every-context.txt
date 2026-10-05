@@ -1,0 +1,228 @@
+
+===== scripts/tools/audience-selftest.js:768 [some] =====
+  762:   const empty = counts.filter(([, n]) => n === 0);
+  763:   check('每条入口在当前数据里都至少有一条（0 条的会被构建期跳过，那说明判据或数据坏了）',
+  764:     empty.length === 0, empty.map(([slug]) => slug).join(', '));
+  765:   console.log(`  当前命中分布：${counts.map(([slug, n]) => `${slug} ${n}`).join(' · ')}`);
+  766:   check('所有记录的 needsOf 结果都落在注册表内',
+  767:     dealRecords.every(d => au.needsOf(d).every(slug => known.has(slug))),
+  768:     dealRecords.filter(d => au.needsOf(d).some(slug => !known.has(slug))).map(d => d.id).join(', '));
+  769: }
+  770: 
+  771: /* ================================================================== */
+
+===== scripts/tools/coverage-targets-selftest.js:116 [some] =====
+  110: check('顶层没有重复键（判据来自原文，JSON.parse 看不见这类事故）',
+  111:   targetsLoaded.duplicateKeys.length === 0, targetsLoaded.duplicateKeys.join('；'));
+  112: check(`真实文件通过全部硬校验（0 处问题，实际 ${realProblems.length} 处）`, realProblems.length === 0,
+  113:   realProblems.slice(0, 3).join('；'));
+  114: check('意图层与身份层双向对上：providers.json 每一个 provider 都有一行',
+  115:   Object.keys(providerTable).every(key => ct.targetsList(targetsLoaded.doc).some(target => target.provider === key)),
+  116:   Object.keys(providerTable).filter(key => !ct.targetsList(targetsLoaded.doc).some(target => target.provider === key)).join(', '));
+  117: check('每一条 current target 的 registrySlug 都真实存在于 scripts/data/models.json',
+  118:   ct.targetsList(targetsLoaded.doc).every(target => ct.declaredTargetsOf(target, 'models')
+  119:     .every(item => Object.prototype.hasOwnProperty.call(registryTable, item.registrySlug))));
+
+===== scripts/tools/coverage-targets-selftest.js:136 [every] =====
+  130: check('派生行数 == Target 行数 × 维度数',
+  131:   realDerived.rows.length === ct.targetsList(targetsLoaded.doc).length * ct.DIMENSIONS.length,
+  132:   `实得 ${realDerived.rows.length}`);
+  133: check('真实盘面上每一个格子的状态都在七态之内',
+  134:   realDerived.rows.every(row => ct.STATE_ORDER.includes(row.state)));
+  135: check('真实盘面：COVERED 的格子必须真的有记录（不许空口算覆盖）',
+  136:   realDerived.rows.filter(row => row.state === ct.STATES.COVERED).every(row => row.present > 0 || row.resolved > 0));
+  137: check('真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉',
+  138:   realDerived.rows.filter(row => row.state === ct.STATES.MISSING)
+  139:     .every(row => row.present === 0 && !row.ruling));
+
+===== scripts/tools/coverage-targets-selftest.js:646 [every] =====
+  640: }
+  641: 
+  642: /**
+  643:  * v3③：**MISSING 行的判据**。返回问题列表（空 = 通过）。**只有这一处实现**，反证牙也调它。
+  644:  *
+  645:  * 为什么要有这一支（t7-F1）：原来这条检查写成
+  646:  * `gapQueue.filter(row => row.state === 'MISSING').every(row => row.present === 0)`。
+  647:  * 语法上完全正确，但本轮缺口收口之后 MISSING = 0 ⇒ `filter` 出**空集** ⇒ `every` 在空集上**恒真**
+  648:  * ⇒ 这条检查已经**永远绿**了。它不会报错，只会静静地把一格保护力交出去 —— 比"没有这条检查"更坏，
+  649:  * 因为它读起来像有人在看着。
+
+===== scripts/tools/coverage-targets-selftest.js:1534 [every] =====
+ 1528:             : (row.tier === 'major' && row.explicitSource && !hard ? 'B' : 'C'))
+ 1529:           : 'D';
+ 1530:         return row.priority === expected
+ 1531:           && row.explicitSource === (row.targetN > 0)
+ 1532:           && Array.isArray(row.declaredSources) && Array.isArray(row.hardSources) && Array.isArray(row.costlySources);
+ 1533:       }));
+ 1534:     // t7-F1 修复：原来这一条是 `gapQueue.filter(MISSING).every(present === 0)` —— 本轮 MISSING 已收口到 0，
+ 1535:     // `filter` 出**空集**、`every` 在空集上恒真 ⇒ 它已经**永远绿**了（假牙）。现在判据换成共用纯函数
+ 1536:     // `missingRowsProblems()`：先把"集合大小 == states.MISSING 计数"钉住（空集也要对上 0），再逐格判 present，
+ 1537:     // 并用三种扰动输入证明它**能被证伪**。
+
+===== scripts/tools/data-docs-selftest.js:223 [every] =====
+  217:   `实际（PUBLIC_DATASETS 用到的类别）${JSON.stringify([...new Set(docs.PUBLIC_DATASETS.map(entry => entry.category))])}`
+  218:   + ` / 期望（DATASET_CATEGORIES 的 key）${JSON.stringify(declaredCategoryKeys)}`
+  219:   + `；差异 [表里没有: ${registryCategoryDrift.join(',') || '无'}]`);
+  220: check('两种时间形状都被真实数据覆盖：deals 是真实时刻，plans/api/models 是日期规范化',
+  221:   docs.timeShapeOf(manifest.datasets.find(d => d.id === 'deals').updatedAt) === 'timestamp'
+  222:   && ['plans', 'api-plans', 'models'].every(id => docs.timeShapeOf(manifest.datasets.find(d => d.id === id).updatedAt) === 'date-normalized')
+  223:   && manifest.datasets.filter(d => d.category === 'history').every(d => docs.timeShapeOf(d.updatedAt) === 'date'));
+  224: 
+  225: /* ================================================================== */
+  226: section('② 页面：六个必需段落 + 断言');
+
+===== scripts/tools/model-freshness-selftest.js:333 [every] =====
+  327:   model('inv-retired', 'Core', 'Core Old', 'general', '2026-08-01', 'retired')
+  328: ];
+  329: const invariants = fresh.deriveCatalog({ models: INVARIANT_MODELS });
+  330: checkEqual('不变量夹具：零违规', invariants.invariantViolations.length, 0);
+  331: check('整组 active 无日期 ⇒ 全部 unknown（不是 legacy）', ['inv-nodate-1', 'inv-nodate-2'].every(slug => statusOfSlug(invariants, slug) === 'unknown'));
+  332: check('整组 active 无日期 ⇒ 组仍算"默认可见"', invariants.groups.every(group => group.activeCount === 0 || group.visibleByDefault));
+  333: check('unknown 的原因码永远不在 superseded 表里', invariants.entries.filter(entry => entry.catalogStatus === 'unknown').every(entry => !fresh.SUPERSEDED_REASONS.includes(entry.catalogReason)));
+  334: check('unknown 的原因码必须在 UNKNOWN_REASONS 里', invariants.entries.filter(entry => entry.catalogStatus === 'unknown').every(entry => fresh.UNKNOWN_REASONS.includes(entry.catalogReason)));
+  335: const retiredGroup = invariants.groups.find(group => group.memberSlugs.includes('inv-retired'));
+  336: check('retired 组全是 historical，且没有 active ⇒ 不许凭空 current', retiredGroup !== undefined
+
+===== scripts/tools/model-freshness-selftest.js:334 [every] =====
+  328: ];
+  329: const invariants = fresh.deriveCatalog({ models: INVARIANT_MODELS });
+  330: checkEqual('不变量夹具：零违规', invariants.invariantViolations.length, 0);
+  331: check('整组 active 无日期 ⇒ 全部 unknown（不是 legacy）', ['inv-nodate-1', 'inv-nodate-2'].every(slug => statusOfSlug(invariants, slug) === 'unknown'));
+  332: check('整组 active 无日期 ⇒ 组仍算"默认可见"', invariants.groups.every(group => group.activeCount === 0 || group.visibleByDefault));
+  333: check('unknown 的原因码永远不在 superseded 表里', invariants.entries.filter(entry => entry.catalogStatus === 'unknown').every(entry => !fresh.SUPERSEDED_REASONS.includes(entry.catalogReason)));
+  334: check('unknown 的原因码必须在 UNKNOWN_REASONS 里', invariants.entries.filter(entry => entry.catalogStatus === 'unknown').every(entry => fresh.UNKNOWN_REASONS.includes(entry.catalogReason)));
+  335: const retiredGroup = invariants.groups.find(group => group.memberSlugs.includes('inv-retired'));
+  336: check('retired 组全是 historical，且没有 active ⇒ 不许凭空 current', retiredGroup !== undefined
+  337:   && retiredGroup.activeCount === 0
+
+===== scripts/tools/model-freshness-selftest.js:338 [every] =====
+  332: check('整组 active 无日期 ⇒ 组仍算"默认可见"', invariants.groups.every(group => group.activeCount === 0 || group.visibleByDefault));
+  333: check('unknown 的原因码永远不在 superseded 表里', invariants.entries.filter(entry => entry.catalogStatus === 'unknown').every(entry => !fresh.SUPERSEDED_REASONS.includes(entry.catalogReason)));
+  334: check('unknown 的原因码必须在 UNKNOWN_REASONS 里', invariants.entries.filter(entry => entry.catalogStatus === 'unknown').every(entry => fresh.UNKNOWN_REASONS.includes(entry.catalogReason)));
+  335: const retiredGroup = invariants.groups.find(group => group.memberSlugs.includes('inv-retired'));
+  336: check('retired 组全是 historical，且没有 active ⇒ 不许凭空 current', retiredGroup !== undefined
+  337:   && retiredGroup.activeCount === 0
+  338:   && invariants.entries.filter(entry => entry.comparableGroupKey === retiredGroup.key).every(entry => entry.catalogStatus === 'historical'));
+  339: 
+  340: /**
+  341:  * 牙（变异测试）：把某一组**唯一的可见状态**改成 legacy，同时**同步改掉组计数**，
+
+===== scripts/tools/plan-history-selftest.js:430 [every] =====
+  424:   check('恢复后 verifyStore 通过', ph.verifyStore(recovered.store, all, { today: '2026-10-01' }).length === 0);
+  425: 
+  426:   // 显式放行批量下架：ended 必须真的写出来（reason 用 withdrawn，不声称"多次未见"）
+  427:   const forced = ph.record(seeded(all), run(all, [D], { allowMassRemoval: true }));
+  428:   check('--allow-mass-removal ⇒ 缺席的 3 条各记一条 ended(withdrawn)',
+  429:     forced.store.events.filter(e => e.type === 'ended').length === 3 &&
+  430:     forced.store.events.filter(e => e.type === 'ended').every(e => e.reason === 'withdrawn'),
+  431:     JSON.stringify(typesOf(forced.store)));
+  432:   check('--allow-mass-removal ⇒ anomalies 标 override',
+  433:     forced.store.anomalies.some(item => item.override === true));
+
+===== scripts/tools/plans-selftest.js:1292 [every] =====
+ 1286:   check('价格档只命中同币种、同周期、原价落在 [min,max) 里的行',
+ 1287:     Boolean(cnyBucket) && cnyHits.length > 0 && cnyHits.every(row =>
+ 1288:       row.currency === 'CNY' && row.period === 'monthly' && row.regular >= 50 && row.regular < 100),
+ 1289:     `命中 ${cnyHits.length} 行`);
+ 1290:   check('价格档不会把原价未标注 / 非月付的行捞进来',
+ 1291:     cnyHits.every(row => typeof row.regular === 'number') &&
+ 1292:     payload.rows.filter(row => row.regular === null).every(row =>
+ 1293:       !compare.matches(row, Object.assign(compare.emptyState(), { price: 'CNY-50-100' }), payload.dimensions.price)));
+ 1294: 
+ 1295:   // 搜索：中文显示值、平台别名、模型名都要覆盖
+
+===== scripts/tools/vendor-page-selftest.js:512 [every] =====
+  506:   const baseSlugs = basePlan.pages.filter(page => page.kind === 'vendor').map(page => page.slug);
+  507:   check(`既有 ${baseSlugs.length} 个厂商页全部保留（没有因为新门槛而消失）`,
+  508:     baseSlugs.every(slug => vendorPages.some(page => page.slug === slug)));
+  509:   check('非厂商页调用资料区块渲染器返回空串（纯追加：一个字节都不加）',
+  510:     vendorPage.renderVendorKnowledgeSections({ kind: 'collection', key: 'student', slug: 'student' }, {}) === '');
+  511:   check('有条数的厂商页 title/heading 未被改写（只有 0 优惠的资料页换标题）',
+  512:     vendorPages.filter(page => page.count > 0).every(page => page.title === `${page.key} 的 AI 优惠`)
+  513:     && vendorPages.filter(page => page.count === 0 && page.nonDealMaterial).every(page => page.title === `${page.key} 的 AI 资料`));
+  514: }
+  515: 
+
+===== scripts/tools/vendor-page-selftest.js:513 [every] =====
+  507:   check(`既有 ${baseSlugs.length} 个厂商页全部保留（没有因为新门槛而消失）`,
+  508:     baseSlugs.every(slug => vendorPages.some(page => page.slug === slug)));
+  509:   check('非厂商页调用资料区块渲染器返回空串（纯追加：一个字节都不加）',
+  510:     vendorPage.renderVendorKnowledgeSections({ kind: 'collection', key: 'student', slug: 'student' }, {}) === '');
+  511:   check('有条数的厂商页 title/heading 未被改写（只有 0 优惠的资料页换标题）',
+  512:     vendorPages.filter(page => page.count > 0).every(page => page.title === `${page.key} 的 AI 优惠`)
+  513:     && vendorPages.filter(page => page.count === 0 && page.nonDealMaterial).every(page => page.title === `${page.key} 的 AI 资料`));
+  514: }
+  515: 
+  516: check('vendor-page.js 是纯函数（不读盘、不看时钟）',
+
+===== scripts/tools/verify-site.js:1535 [every] =====
+ 1529:   const feedTargets = Object.entries(feedProbe.targets);
+ 1530:   check('全部订阅目标是 200 且被真解析器读出来（无 XML 解析错误）',
+ 1531:     feedTargets.every(([, box]) => box.ok && !box.parserError) && feedTargets.some(([rel]) => rel.endsWith('.xml')),
+ 1532:     feedTargets.filter(([, box]) => !box.ok || box.parserError).map(([rel, box]) => `${rel}: ${box.status}${box.parserError ? ` ${box.parserError}` : ''}`).join(' | ') || `${feedTargets.length} 个目标`);
+ 1533: 
+ 1534:   check('RSS 与 JSON Feed 的条目数、id 集合两侧一致',
+ 1535:     feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([rel, box]) => {
+ 1536:       const jsonBox = feedProbe.targets[rel.replace(/\.xml$/, '.json')];
+ 1537:       return jsonBox && jsonBox.items === box.items &&
+ 1538:         JSON.stringify(jsonBox.ids) === JSON.stringify(box.ids);
+
+===== scripts/tools/verify-site.js:1548 [every] =====
+ 1542: 
+ 1543:   check('订阅条目的主链接指向**本站**页面（不是把流量导出站外）',
+ 1544:     feedTargets.every(([, box]) => box.urls.every(url => !url || url.startsWith(feedProbe.site))),
+ 1545:     (feedTargets.map(([rel, box]) => box.urls.find(url => url && !url.startsWith(feedProbe.site)) && `${rel}: ${box.urls.find(url => url && !url.startsWith(feedProbe.site))}`).filter(Boolean)[0]) || '全部站内');
+ 1546: 
+ 1547:   check('订阅条目的时间都是数据日期的北京时间零点（没有构建时刻泄进产物）',
+ 1548:     feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => !box.offMidnight) &&
+ 1549:     feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => /GMT$/.test(String(box.lastBuildDate || ''))),
+ 1550:     feedTargets.map(([rel, box]) => `${rel}:${box.offMidnight || 0}`).slice(0, 4).join(' · '));
+ 1551: 
+
+===== scripts/tools/verify-site.js:1549 [every] =====
+ 1543:   check('订阅条目的主链接指向**本站**页面（不是把流量导出站外）',
+ 1544:     feedTargets.every(([, box]) => box.urls.every(url => !url || url.startsWith(feedProbe.site))),
+ 1545:     (feedTargets.map(([rel, box]) => box.urls.find(url => url && !url.startsWith(feedProbe.site)) && `${rel}: ${box.urls.find(url => url && !url.startsWith(feedProbe.site))}`).filter(Boolean)[0]) || '全部站内');
+ 1546: 
+ 1547:   check('订阅条目的时间都是数据日期的北京时间零点（没有构建时刻泄进产物）',
+ 1548:     feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => !box.offMidnight) &&
+ 1549:     feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => /GMT$/.test(String(box.lastBuildDate || ''))),
+ 1550:     feedTargets.map(([rel, box]) => `${rel}:${box.offMidnight || 0}`).slice(0, 4).join(' · '));
+ 1551: 
+ 1552:   check('JSON Feed 都带 icon 与 favicon；RSS 都带 <image> 与 atom:link rel=self',
+
+===== scripts/tools/verify-site.js:1553 [every] =====
+ 1547:   check('订阅条目的时间都是数据日期的北京时间零点（没有构建时刻泄进产物）',
+ 1548:     feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => !box.offMidnight) &&
+ 1549:     feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => /GMT$/.test(String(box.lastBuildDate || ''))),
+ 1550:     feedTargets.map(([rel, box]) => `${rel}:${box.offMidnight || 0}`).slice(0, 4).join(' · '));
+ 1551: 
+ 1552:   check('JSON Feed 都带 icon 与 favicon；RSS 都带 <image> 与 atom:link rel=self',
+ 1553:     feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => box.icon && box.favicon) &&
+ 1554:     feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => box.image && box.selfLink),
+ 1555:     '两种格式的图标与自指字段齐备');
+ 1556: 
+
+===== scripts/tools/verify-site.js:1554 [every] =====
+ 1548:     feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => !box.offMidnight) &&
+ 1549:     feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => /GMT$/.test(String(box.lastBuildDate || ''))),
+ 1550:     feedTargets.map(([rel, box]) => `${rel}:${box.offMidnight || 0}`).slice(0, 4).join(' · '));
+ 1551: 
+ 1552:   check('JSON Feed 都带 icon 与 favicon；RSS 都带 <image> 与 atom:link rel=self',
+ 1553:     feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => box.icon && box.favicon) &&
+ 1554:     feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => box.image && box.selfLink),
+ 1555:     '两种格式的图标与自指字段齐备');
+ 1556: 
+ 1557:   check('订阅里确实有优惠条目（不是空壳）', feedProbe.targets['feed.xml'].items > 0,
+
+===== scripts/tools/verify-site.js:5135 [some] =====
+ 5129:           expectedBySlug[link.registrySlug] = (expectedBySlug[link.registrySlug] || 0) + 1;
+ 5130:           const pair = link.apiPlanId + '|' + link.modelKey;
+ 5131:           groupCount[pair] = (groupCount[pair] || 0) + 1;
+ 5132:         }
+ 5133:       }
+ 5134:       const multiPairs = Object.keys(groupCount).filter(key => groupCount[key] > 1);
+ 5135:       const multiVariantSlugs = Object.keys(expectedBySlug).filter(slug => (linksDoc.links || []).some(link =>
+ 5136:         link.registrySlug === slug && link.apiPlanId && multiPairs.includes(link.apiPlanId + '|' + link.modelKey)));
+ 5137:       // coverage-expansion-v1：默认可见性**在这一层按数据现算**（不写死集合、不读页面自报的数）。
+ 5138:       // 期望值只从 dist/models.json 的 catalogStatus 推：current / aging / unknown 默认展示，

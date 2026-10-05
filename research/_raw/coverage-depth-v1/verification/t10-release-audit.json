@@ -1,0 +1,895 @@
+{
+  "repo": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1",
+  "ranAt": "2026-10-05T05:11:13.497Z",
+  "totals": {
+    "registryEntries": 51,
+    "withReleasedAt": 32,
+    "withoutReleasedAt": 19,
+    "newBatchCaptured2026_10_05": 28,
+    "rawFilesAvailable": 439,
+    "structureRows": 32
+  },
+  "structure": [
+    {
+      "slug": "claude-fable-5.1",
+      "releasedAt": "2026-09-01",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "claude-haiku-4.5",
+      "releasedAt": "2025-10-15",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "claude-opus-5.5",
+      "releasedAt": "2026-09-22",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "claude-sonnet-5.5",
+      "releasedAt": "2026-09-28",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "deepseek-flash",
+      "releasedAt": "2026-09-10",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "deepseek-v3.2",
+      "releasedAt": "2025-12-01",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "deepseek-v4-pro",
+      "releasedAt": "2026-08-13",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "gemini-3.5-flash",
+      "releasedAt": "2026-05-19",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "gemini-3.6-flash",
+      "releasedAt": "2026-07-21",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "gemini-3.7-flash",
+      "releasedAt": "2026-08-13",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "gemini-3.8-flash",
+      "releasedAt": "2026-09-02",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "glm-4.5v",
+      "releasedAt": "2025-08-11",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "glm-4.6v",
+      "releasedAt": "2025-12-08",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "glm-4.7-flash",
+      "releasedAt": "2026-01-19",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "glm-5.3",
+      "releasedAt": "2026-08-19",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "glm-5.3-flash",
+      "releasedAt": "2026-08-26",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "glm-5v-turbo",
+      "releasedAt": "2026-04-02",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "gpt-6-astra",
+      "releasedAt": "2026-09-03",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "gpt-6-luna",
+      "releasedAt": "2026-09-22",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "gpt-6.1-sol",
+      "releasedAt": "2026-09-29",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "hunyuan-a13b",
+      "releasedAt": "2025-06-25",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "hunyuan-role-latest",
+      "releasedAt": "2025-09-24",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "hunyuan-translation",
+      "releasedAt": "2025-10-14",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "hunyuan-translation-lite",
+      "releasedAt": "2025-06-06",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "kimi-k2.7-code",
+      "releasedAt": "2026-06-13",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "kimi-k3",
+      "releasedAt": "2026-07-17",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "minimax-m2.7",
+      "releasedAt": "2026-03-18",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "minimax-m2.7-highspeed",
+      "releasedAt": "2026-03-18",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "minimax-m3",
+      "releasedAt": "2026-06-01",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "tencent-hy-vision-1.5-instruct",
+      "releasedAt": "2025-12-17",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "360zhinao-pro",
+      "releasedAt": "2026-08-05",
+      "evidenceCount": 1,
+      "issues": []
+    },
+    {
+      "slug": "360zhinao-turbo-llm-geo",
+      "releasedAt": "2026-08-24",
+      "evidenceCount": 1,
+      "issues": []
+    }
+  ],
+  "dateSemantics": [
+    {
+      "slug": "claude-fable-5.1",
+      "releasedAt": "2026-09-01",
+      "valid": true
+    },
+    {
+      "slug": "claude-haiku-4.5",
+      "releasedAt": "2025-10-15",
+      "valid": true
+    },
+    {
+      "slug": "claude-opus-5.5",
+      "releasedAt": "2026-09-22",
+      "valid": true
+    },
+    {
+      "slug": "claude-sonnet-5.5",
+      "releasedAt": "2026-09-28",
+      "valid": true
+    },
+    {
+      "slug": "deepseek-flash",
+      "releasedAt": "2026-09-10",
+      "valid": true
+    },
+    {
+      "slug": "deepseek-v3.2",
+      "releasedAt": "2025-12-01",
+      "valid": true
+    },
+    {
+      "slug": "deepseek-v4-pro",
+      "releasedAt": "2026-08-13",
+      "valid": true
+    },
+    {
+      "slug": "gemini-3.5-flash",
+      "releasedAt": "2026-05-19",
+      "valid": true
+    },
+    {
+      "slug": "gemini-3.6-flash",
+      "releasedAt": "2026-07-21",
+      "valid": true
+    },
+    {
+      "slug": "gemini-3.7-flash",
+      "releasedAt": "2026-08-13",
+      "valid": true
+    },
+    {
+      "slug": "gemini-3.8-flash",
+      "releasedAt": "2026-09-02",
+      "valid": true
+    },
+    {
+      "slug": "glm-4.5v",
+      "releasedAt": "2025-08-11",
+      "valid": true
+    },
+    {
+      "slug": "glm-4.6v",
+      "releasedAt": "2025-12-08",
+      "valid": true
+    },
+    {
+      "slug": "glm-4.7-flash",
+      "releasedAt": "2026-01-19",
+      "valid": true
+    },
+    {
+      "slug": "glm-5.3",
+      "releasedAt": "2026-08-19",
+      "valid": true
+    },
+    {
+      "slug": "glm-5.3-flash",
+      "releasedAt": "2026-08-26",
+      "valid": true
+    },
+    {
+      "slug": "glm-5v-turbo",
+      "releasedAt": "2026-04-02",
+      "valid": true
+    },
+    {
+      "slug": "gpt-6-astra",
+      "releasedAt": "2026-09-03",
+      "valid": true
+    },
+    {
+      "slug": "gpt-6-luna",
+      "releasedAt": "2026-09-22",
+      "valid": true
+    },
+    {
+      "slug": "gpt-6.1-sol",
+      "releasedAt": "2026-09-29",
+      "valid": true
+    },
+    {
+      "slug": "hunyuan-a13b",
+      "releasedAt": "2025-06-25",
+      "valid": true
+    },
+    {
+      "slug": "hunyuan-role-latest",
+      "releasedAt": "2025-09-24",
+      "valid": true
+    },
+    {
+      "slug": "hunyuan-translation",
+      "releasedAt": "2025-10-14",
+      "valid": true
+    },
+    {
+      "slug": "hunyuan-translation-lite",
+      "releasedAt": "2025-06-06",
+      "valid": true
+    },
+    {
+      "slug": "kimi-k2.7-code",
+      "releasedAt": "2026-06-13",
+      "valid": true
+    },
+    {
+      "slug": "kimi-k3",
+      "releasedAt": "2026-07-17",
+      "valid": true
+    },
+    {
+      "slug": "minimax-m2.7",
+      "releasedAt": "2026-03-18",
+      "valid": true
+    },
+    {
+      "slug": "minimax-m2.7-highspeed",
+      "releasedAt": "2026-03-18",
+      "valid": true
+    },
+    {
+      "slug": "minimax-m3",
+      "releasedAt": "2026-06-01",
+      "valid": true
+    },
+    {
+      "slug": "tencent-hy-vision-1.5-instruct",
+      "releasedAt": "2025-12-17",
+      "valid": true
+    },
+    {
+      "slug": "360zhinao-pro",
+      "releasedAt": "2026-08-05",
+      "valid": true
+    },
+    {
+      "slug": "360zhinao-turbo-llm-geo",
+      "releasedAt": "2026-08-24",
+      "valid": true
+    }
+  ],
+  "sampleAudit": [
+    {
+      "slug": "claude-fable-5.1",
+      "url": "https://www.anthropic.com/news",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-09-01",
+      "quoteHead": "Introducing Claude Fable 5.1 and Claude Mythos 5.1 / Announcements Sep 1, 2026 / Our most advanced models for coding and",
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\anthropic-news-index.html",
+      "probes": [
+        "Announcements",
+        "capabilities",
+        "Introducing"
+      ],
+      "rawContext": "lass=\"FeaturedGrid-module-scss-module__W1FydW__meta\"><span class=\"caption bold\">Announcements</span><time class=\"FeaturedGrid-module-scss-module__W1FydW__date caption bold\">Sep 28, 2026</time></div><p class=\"body-3 serif FeaturedGrid-module"
+    },
+    {
+      "slug": "claude-haiku-4.5",
+      "url": "https://www.anthropic.com/news/claude-haiku-4-5",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2025-10-15",
+      "quoteHead": "Introducing Claude Haiku 4.5 / Oct 15, 2025 / Claude Haiku 4.5, our latest small model, is available today to all users.",
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\anthropic-haiku45.html",
+      "probes": [
+        "Introducing",
+        "available",
+        "Claude"
+      ],
+      "rawContext": "r0r03233i0c.css\" as=\"style\"/><meta name=\"theme-color\" content=\"#141413\"/><title>Introducing Claude Haiku 4.5 \\ Anthropic</title><meta name=\"description\" content=\"Claude Haiku 4.5, our latest small model, is available today to all users.\"/><"
+    },
+    {
+      "slug": "claude-opus-5.5",
+      "url": "https://www.anthropic.com/news",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-09-22",
+      "quoteHead": "Introducing Claude Opus 5.5 / Announcements Sep 22, 2026 / Opus 5.5 performs at the level of Claude Fable 5.1 on most wo",
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\anthropic-news-index.html",
+      "probes": [
+        "Announcements",
+        "Introducing",
+        "performs"
+      ],
+      "rawContext": "lass=\"FeaturedGrid-module-scss-module__W1FydW__meta\"><span class=\"caption bold\">Announcements</span><time class=\"FeaturedGrid-module-scss-module__W1FydW__date caption bold\">Sep 28, 2026</time></div><p class=\"body-3 serif FeaturedGrid-module"
+    },
+    {
+      "slug": "claude-sonnet-5.5",
+      "url": "https://www.anthropic.com/news",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-09-28",
+      "quoteHead": "Introducing Claude Sonnet 5.5 / Announcements Sep 28, 2026 / A clear upgrade over Sonnet 5 that runs 30% faster and cost",
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\anthropic-news-index.html",
+      "probes": [
+        "Announcements",
+        "Introducing",
+        "upgrade"
+      ],
+      "rawContext": "lass=\"FeaturedGrid-module-scss-module__W1FydW__meta\"><span class=\"caption bold\">Announcements</span><time class=\"FeaturedGrid-module-scss-module__W1FydW__date caption bold\">Sep 28, 2026</time></div><p class=\"body-3 serif FeaturedGrid-module"
+    },
+    {
+      "slug": "gemini-3.5-flash",
+      "url": "https://ai.google.dev/gemini-api/docs/changelog",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-05-19",
+      "quoteHead": "May 19, 2026 / Released gemini-3.5-flash, the generally available (GA) version of Gemini 3.5 Flash, our most intelligent",
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\anthropic-news-index.html",
+      "probes": [
+        "intelligent",
+        "performance",
+        "generally"
+      ],
+      "rawContext": "e, information network, educational content, smart learning, knowledge sharing, intelligent documentation, connected learning\\\",\\\"name\\\":\\\"Hand NodeBook\\\",\\\"type\\\":\\\"hero\\\"}},\\\"publishedOn\\\":\\\"2026-07-22T17:00:00.000Z\\\",\\\"slug\\\":{\\\"_type\\\":"
+    }
+  ],
+  "mechanical": [
+    {
+      "slug": "claude-fable-5.1",
+      "url": "https://www.anthropic.com/news",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-09-01",
+      "quoteLen": 249,
+      "probes": [
+        "Announcements",
+        "capabilities",
+        "Introducing"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": false,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\anthropic-news-index.html"
+    },
+    {
+      "slug": "claude-haiku-4.5",
+      "url": "https://www.anthropic.com/news/claude-haiku-4-5",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2025-10-15",
+      "quoteLen": 120,
+      "probes": [
+        "Introducing",
+        "available",
+        "Claude"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": false,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\anthropic-haiku45.html"
+    },
+    {
+      "slug": "claude-opus-5.5",
+      "url": "https://www.anthropic.com/news",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-09-22",
+      "quoteLen": 161,
+      "probes": [
+        "Announcements",
+        "Introducing",
+        "performs"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": false,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\anthropic-news-index.html"
+    },
+    {
+      "slug": "claude-sonnet-5.5",
+      "url": "https://www.anthropic.com/news",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-09-28",
+      "quoteLen": 151,
+      "probes": [
+        "Announcements",
+        "Introducing",
+        "upgrade"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": false,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\anthropic-news-index.html"
+    },
+    {
+      "slug": "gemini-3.5-flash",
+      "url": "https://ai.google.dev/gemini-api/docs/changelog",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-05-19",
+      "quoteLen": 240,
+      "probes": [
+        "intelligent",
+        "performance",
+        "generally"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\anthropic-news-index.html"
+    },
+    {
+      "slug": "gemini-3.6-flash",
+      "url": "https://ai.google.dev/gemini-api/docs/changelog",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-07-21",
+      "quoteLen": 363,
+      "probes": [
+        "capabilities",
+        "production",
+        "efficiency"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\anthropic-news-index.html"
+    },
+    {
+      "slug": "gemini-3.7-flash",
+      "url": "https://ai.google.dev/gemini-api/docs/changelog",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-08-13",
+      "quoteLen": 326,
+      "probes": [
+        "improvements",
+        "introductory",
+        "intelligent"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\google-gemini-changelog.html"
+    },
+    {
+      "slug": "gemini-3.8-flash",
+      "url": "https://ai.google.dev/gemini-api/docs/changelog",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-09-02",
+      "quoteLen": 226,
+      "probes": [
+        "intelligent",
+        "engineering",
+        "engineered"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\google-gemini-changelog.html"
+    },
+    {
+      "slug": "glm-4.5v",
+      "url": "https://docs.bigmodel.cn/cn/update/new-releases",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2025-08-11",
+      "quoteLen": 80,
+      "probes": [
+        "级别开源视觉推理模型",
+        "视觉推理模型上线",
+        "Thinking"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\bigmodel-new-releases.html"
+    },
+    {
+      "slug": "glm-4.6v",
+      "url": "https://docs.bigmodel.cn/cn/update/new-releases",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2025-12-08",
+      "quoteLen": 62,
+      "probes": [
+        "主流多模态评测基准全面验证",
+        "视觉推理模型上线"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\bigmodel-new-releases.html"
+    },
+    {
+      "slug": "glm-4.7-flash",
+      "url": "https://docs.bigmodel.cn/cn/update/new-releases",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-01-19",
+      "quoteLen": 82,
+      "probes": [
+        "任务理解与代码生成能力处于同类模型的较高水平",
+        "轻量参数规模下实现了高效的",
+        "免费模型上线"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\bigmodel-new-releases.html"
+    },
+    {
+      "slug": "glm-5.3",
+      "url": "https://docs.bigmodel.cn/cn/update/new-releases",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-08-19",
+      "quoteLen": 144,
+      "probes": [
+        "等公开基准测试中达到开源模型",
+        "新一代旗舰模型上线",
+        "的编程能力大幅提升"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\bigmodel-new-releases.html"
+    },
+    {
+      "slug": "glm-5.3-flash",
+      "url": "https://docs.bigmodel.cn/cn/update/new-releases",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-08-26",
+      "quoteLen": 94,
+      "probes": [
+        "渲染与交互反馈并持续迭代改进",
+        "浏览器与图形界面的协同闭环",
+        "使模型能够主动观察界面"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\bigmodel-new-releases.html"
+    },
+    {
+      "slug": "glm-5v-turbo",
+      "url": "https://docs.bigmodel.cn/cn/update/new-releases",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-04-02",
+      "quoteLen": 91,
+      "probes": [
+        "在更小参数量下实现更优的性能表现",
+        "多模态任务处理更高效",
+        "兼顾视觉理解与"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\bigmodel-new-releases.html"
+    },
+    {
+      "slug": "gpt-6-astra",
+      "url": "https://openai.com/index/gpt-6-astra/",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-09-03",
+      "quoteLen": 149,
+      "probes": [
+        "publicationDateText",
+        "intelligence",
+        "generation"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\oai-gpt6-astra.html"
+    },
+    {
+      "slug": "gpt-6-luna",
+      "url": "https://openai.com/index/gpt-6-astra/",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-09-22",
+      "quoteLen": 94,
+      "probes": [
+        "September",
+        "expanding",
+        "Update"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\anthropic-news-index.html"
+    },
+    {
+      "slug": "gpt-6.1-sol",
+      "url": "https://openai.com/index/introducing-gpt-6-1-sol/",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-09-29",
+      "quoteLen": 140,
+      "probes": [
+        "publicationDateText",
+        "introducing",
+        "Introducing"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\oai-gpt6-astra.html"
+    },
+    {
+      "slug": "hunyuan-a13b",
+      "url": "https://cloud.tencent.com/document/product/1729/104753",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2025-06-25",
+      "quoteLen": 117,
+      "probes": [
+        "同时兼顾效果及推理性能",
+        "hunyuan",
+        "版本更新时间"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\tencent-hunyuan-pricing.html"
+    },
+    {
+      "slug": "hunyuan-role-latest",
+      "url": "https://cloud.tencent.com/document/product/1729/104753",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2025-09-24",
+      "quoteLen": 74,
+      "probes": [
+        "hunyuan",
+        "latest"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\tencent-hunyuan-pricing.html"
+    },
+    {
+      "slug": "hunyuan-translation",
+      "url": "https://cloud.tencent.com/document/product/1729/104753",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2025-10-14",
+      "quoteLen": 64,
+      "probes": [
+        "33种语言互译和5种民族语言互译",
+        "translation",
+        "hunyuan"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\tencent-hunyuan-pricing.html"
+    },
+    {
+      "slug": "hunyuan-translation-lite",
+      "url": "https://cloud.tencent.com/document/product/1729/104753",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2025-06-06",
+      "quoteLen": 103,
+      "probes": [
+        "模型进行翻译能力专项优化",
+        "translation",
+        "通过迭代高质量多语言"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\tencent-hunyuan-pricing.html"
+    },
+    {
+      "slug": "kimi-k2.7-code",
+      "url": "https://www.kimi.com/resources/kimi-k2-7-code",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-06-13",
+      "quoteLen": 145,
+      "probes": [
+        "datePublished",
+        "description",
+        "长程编程能力更强"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\kimi-res-k27code.html"
+    },
+    {
+      "slug": "kimi-k3",
+      "url": "https://www.kimi.com/news/kimi-k3",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-07-17",
+      "quoteLen": 64,
+      "probes": [
+        "我们迄今能力最强的模型",
+        "智能的新前沿",
+        "我们正式推出"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\kimi-news-k3.html"
+    },
+    {
+      "slug": "minimax-m2.7",
+      "url": "https://platform.minimax.cn/docs/release-notes/models",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-03-18",
+      "quoteLen": 102,
+      "probes": [
+        "highspeed",
+        "开启模型的自我迭代",
+        "MiniMax"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": false,
+      "dateInRaw": false,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\minimax-models-intro.html"
+    },
+    {
+      "slug": "minimax-m2.7-highspeed",
+      "url": "https://platform.minimax.cn/docs/release-notes/models",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-03-18",
+      "quoteLen": 102,
+      "probes": [
+        "highspeed",
+        "开启模型的自我迭代",
+        "MiniMax"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": false,
+      "dateInRaw": false,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\minimax-models-intro.html"
+    },
+    {
+      "slug": "tencent-hy-vision-1.5-instruct",
+      "url": "https://cloud.tencent.com/document/product/1729/104753",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2025-12-17",
+      "quoteLen": 94,
+      "probes": [
+        "Instruct",
+        "instruct",
+        "Tencent"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\release-evidence\\raw\\tencent-hunyuan-pricing.html"
+    },
+    {
+      "slug": "360zhinao-pro",
+      "url": "https://ai.360.com/open/zh/models/360zhinao/360zhinao-pro",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-08-05",
+      "quoteLen": 87,
+      "probes": [
+        "360zhinao",
+        "最大输出长度"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\gap-closure\\raw-ai360-pro-page.txt"
+    },
+    {
+      "slug": "360zhinao-turbo-llm-geo",
+      "url": "https://ai.360.com/open/zh/models/360zhinao/360zhinao-turbo-llm-geo",
+      "capturedAt": "2026-10-05",
+      "releasedAt": "2026-08-24",
+      "quoteLen": 81,
+      "probes": [
+        "360zhinao",
+        "业务内部专用模型"
+      ],
+      "probesAllFound": true,
+      "dateInQuote": true,
+      "dateInRaw": true,
+      "rawFile": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\gap-closure\\raw-ai360-turbo-page.txt"
+    }
+  ],
+  "problems": [
+    "日期-出处核对：2 条引文所在 raw 页里找不到该 releasedAt 的任一日历写法：minimax-m2.7, minimax-m2.7-highspeed"
+  ],
+  "counts": {
+    "mechanical": 28,
+    "probesAllFound": 28,
+    "dateInRaw": 26,
+    "dateInQuote": 22
+  }
+}

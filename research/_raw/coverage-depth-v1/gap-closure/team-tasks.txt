@@ -1,0 +1,12 @@
+﻿members: release-evidence-curator/Workstream A 负责人：Model Registry 官方发布日期取证与落盘 | gap-closure-curator/Workstream B 负责人：Target Provider Universe 内 MISSING/PARTIAL 缺口收口 | source-reliability-engineer/Workstream C 负责人：来源实况普查、overlap 分析、采集器裁决落地 | report-engine-engineer/Workstream D 负责人：report:coverage v3 扩展 + source-rulings 判据层 + 冻结契约与牙 | verifier-auditor/独立验证与对抗式审查：独立重算、Mutation M1–M15、Review、Self-Audit 与最终报告
+task count: 10
+t1 | in_progress | report-engine-engineer | 5 | 扩展唯一的维护者总入口 npm run report:coverage（文本 + --json 双侧同源），新增 Release Evidence Coverage、Model Release Evidence Queu
+t2 | in_progress | release-evidence-curator | 5 | Workstream A：为现有 44 条 Model Registry 建立确定性的 Release Evidence 队列，按官方来源等级（L1 release announcement > L2 changelog
+t3 | in_progress | gap-closure-curator | 13 | Workstream B-1：消化当前 Target Provider Universe 内在 API 计价 / Coding 套餐 / Deals 三个维度上的 MISSING 与 PARTIAL，用官方证据把缺口变成
+t4 | in_progress | source-reliability-engineer | 2 | Workstream C-1：对当前全部 9 个采集来源做实况普查（带 generatedAt 时间戳），对长期失败来源做 overlap 与独有价值分析并给出可复核的裁决建议，产出只读取证工件。
+t5 | pending | - | 4 | 按 T04 的取证结论，把每个长期失败来源的四选一裁决落到采集器代码层：repair（修静态抓取）/ headless-migrate（迁到无头）/ keep-degraded（保留但标注）/ retire（代码层停止注
+t6 | pending | - | 3 | 把 T04 的取证结论落成人工裁决层数据文件 scripts/data/source-rulings.json（worker 只写裁决与理由，状态读数仍只来自 source-health.json），并完成「裁决 ↔ 采
+t7 | pending | verifier-auditor | 1 | 对 t1 的实现做对抗式审查：验证四节新增内容真实存在且文本/JSON 同源、JSON 键只追加且确定性成立、口径单一出处未被破坏、新牙真的有牙且无恒绿空断言、source-rulings 非法输入路径逐条必红；输出结构
+t8 | pending | - | 8 | Workstream B-2：处理 models 维度剩下的 MISSING（ai360 / baichuan / baidu / iflytek 等）—— 有官方依据时新增 registry 身份并完成映射或处置声明，
+t9 | pending | - | 1 | 独立验证整个 coverage-depth-v1 交付：用一条不依赖被测 coverage / freshness lib 的独立路径重算全部关键读数；对全部新增 releasedAt 做逐条忠实度稽核；真实执行 M1–
+t10 | pending | - | 3 | 同轮完成 Self-Audit 与最终报告初稿：假设 releasedAt 可能写错、Coverage 状态可能算错、source 裁决可能被一时网络影响、report 可能与 lib 共用同一个 bug、测试可能恒绿 

@@ -1,0 +1,40 @@
+=== t13 · Verify 全量读数（原始字节） ===
+1) models-page-selftest --allow-missing-dist   exit=0  sha256=395d2166296e16c88b023b71e6a6161efbcf5a3e2e987dd6fb53839de9a45be4
+   === v3.0 Model Registry 页面演练：120 项通过，0 项失败 ===
+2) models-page-selftest --dir=dist             exit=0  sha256=395d2166296e16c88b023b71e6a6161efbcf5a3e2e987dd6fb53839de9a45be4
+   === v3.0 Model Registry 页面演练：120 项通过，0 项失败 ===
+3) coverage-report.js                          exit=0  sha256=64e04acfdcd508143572fcf752cc61c7e33927265f8c611df31115b92bf2c9ad
+   报告自检问题：0 处
+4) validate.js --strict                        exit=0  sha256=3f0ff15eb11291554ece820e81d2026d01bc8f47aad3ae02c1be0b74906a13fd
+   ✅ 校验通过（strict 模式）
+5) build-local.js --out=dist.qc-mpsel         exit=0  sha256=7fadb3ca28a11777a1917f34b71907b42dbeabd3f4ccd4d85e01e844606f18a6
+   ✅ 构建完成 → dist.qc-mpsel/（自检全过，已从暂存目录就位）
+6) models-page-selftest --dir=dist.qc-mpsel    exit=0  sha256=db722e4911b90951a3affc99f5aab510d13e63ac478ed0d4ec12a6a7b72a6a50
+   === v3.0 Model Registry 页面演练：120 项通过，0 项失败 ===
+   独立 join（产物侧）：独立 join（dist.qc-mpsel）：模型 51 · 页 51 · 期望行 92（api-plans 真实计价条目 108）· missing 0 · extra 0 · duplicate 0 · multi-owner 0
+
+=== 改前 4 条失败原文 → 改后全绿 ===
+   改前 ✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无
+   改前 ✗ 独立重算：10 个 registry 模型存在"一条映射覆盖多个真实 variant"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max
+   改前 ✗ §17 独立 join：44 个模型 missing / extra / duplicate source identity / multi-owner 四项计数全为 0 —— {"missing":0,"extra":0,"duplicate":0,"multiOwner":0}
+   改前 ✗ §17 独立 join：受影响口径独立重算为 13 组 / 10 个 slug —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max
+   改前 === v3.0 Model Registry 页面演练：111 项通过，4 项失败 ===
+   改前 ✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）
+   改前 ✗ 独立重算：10 个 registry 模型存在"一条映射覆盖多个真实 variant"（应为 9 个）
+   改前 ✗ §17 独立 join：44 个模型 missing / extra / duplicate source identity / multi-owner 四项计数全为 0
+   改前 ✗ §17 独立 join：受影响口径独立重算为 13 组 / 10 个 slug
+   改后 === v3.0 Model Registry 页面演练：120 项通过，0 项失败 ===（两种跑法同值：--allow-missing-dist === v3.0 Model Registry 页面演练：120 项通过，0 项失败 ===）
+
+=== 检查名增删对照 ===
+   改前 ✓ 行数（既有检查名）= 111；改后 ✓ 行数 = 120
+   被删除或改名的既有检查名：0
+   新增检查名：9
+     + 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）
+     + 【换位牙·t13】把索引页两行对调 ⇒ 同一支判据必红（次序维度真的有牙，不是集合比较冒充的）
+     + 【换位牙·t13·对照】同一份对调后的行序在"集合口径"下是绿的 —— 所以旧口径抓不住换位，新口径能
+     + 独立重算：10 个 registry 模型存在"一条映射覆盖多个真实 variant"（必须 == 关系层现读现算的 10 个，且逐条集合相等）
+     + 【可证伪性·t13】"集合相等"不是"计数相等"的伪装：个数相同但内容不同的两批 slug ⇒ 同一支比对必红（正例同时给出，证明它不是恒红）
+     + 【可证伪性·t13·真实数据变异】把关系层现算的某一格换成另一个 slug（个数不变）⇒ 同一支集合比对必红
+     + §17 独立 join：模型数 == 现读发布数据集的 51 个，且 missing / extra / duplicate source identity / multi-owner 四项计数各自为 0
+     + 【可证伪性·t13】四项计数是**逐项**断言的：任意一项非 0 都会被单独点名（不是只报一个合计）
+     + §17 独立 join：受影响口径与关系层现读现算逐条相等（13 组 / 10 个 slug）

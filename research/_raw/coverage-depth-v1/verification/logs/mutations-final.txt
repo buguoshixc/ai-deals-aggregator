@@ -1,0 +1,33 @@
+﻿[mutations] 复制 pristine 副本…
+[mutations] 复制 沙箱 副本…
+[mutations] 沙箱已就绪（C:\Users\星澈\AppData\Local\Temp\t9-mutation-sandbox）；pristine 漂移=[]
+[baseline] coverage-targets-selftest: exit=0 失败行=0
+[baseline] model-freshness-selftest: exit=0 失败行=0
+[baseline] models-selftest: exit=1 失败行=4
+[baseline] models-page-selftest: exit=1 失败行=4
+[baseline] api-plans-selftest: exit=0 失败行=0
+[baseline] analytics-selftest: exit=0 失败行=1
+[baseline] coverage-report: exit=0 失败行=0
+[baseline] validate-strict: exit=0 失败行=0
+[baseline] history-verify: exit=0 失败行=0
+[M1] 删掉一条 releasedAt 的 releaseEvidence → 抓到=models-selftest,models-page-selftest,validate-strict restore=byte-exact
+[M2] 写一个非法日期 2026-10 → 抓到=coverage-targets-selftest,models-selftest,models-page-selftest,coverage-report,validate-strict restore=byte-exact
+[M3] 证据 sourceUrl 换成第三方域 → 抓到=models-selftest,models-page-selftest,validate-strict restore=byte-exact
+[M4] 引文与日期无关（换成人造文本） → 抓到=（无） restore=byte-exact
+[M5] releasedAt 置空（看会不会被派生 legacy） → 抓到=（无） 派生=unknown restore=byte-exact
+[M6] firstSeen 混入 Freshness（改成很久以前） → 抓到=（无） 派生=current restore=byte-exact
+[M7] 跨 modelRole 同组（不同档的模型塞进同一 freshnessGroup） → 抓到=（无） 派生=current restore=byte-exact
+[M8] 删掉一个已被 current target 声明的 production 记录（api 侧 modelKey 行） → 抓到=coverage-targets-selftest,models-selftest,models-page-selftest,coverage-report,validate-strict restore=byte-exact
+[M9] 源码变异：DEFERRED 分支失效（延期的格子掉进 MISSING） → 抓到=coverage-targets-selftest restore=byte-exact
+[M10] 源码变异：PARTIAL 被当成 COVERED（部分兑现也算全兑现） → 抓到=coverage-targets-selftest restore=byte-exact
+[M11] 裁决数据变异：给仍在注册表里的来源写 retire → 抓到=coverage-targets-selftest,coverage-report restore=byte-exact
+[M12] 删掉历史 Deal（模拟"retire 顺手删数据"） → 抓到=history-verify restore=byte-exact
+[M13] 让一个 registry 模型变 retired（legacy/historical 路由与索引行） → 抓到=models-selftest 派生=historical restore=byte-exact
+[M14] API Pricing 因 legacy 丢行（把已映射的 registry 模型置 retired） → 抓到=models-selftest 派生=historical restore=byte-exact
+[M15] 源码变异：本地 Analytics 发网络请求 → 抓到=（无） restore=byte-exact
+[M15b] 源码变异（加强版）：把网络请求塞进会被逐字内联到页面的 ANALYTICS-GUARD 区块 → 抓到=analytics-selftest restore=byte-exact
+
+[mutations] 抓到 11/16；盲区 ["M4","M5","M6","M7","M15"]
+[mutations] byte-exact restore 全部成功=true；共享工作区漂移=[]
+[mutations] 基线就红的 gate：["models-selftest(exit 1)","models-page-selftest(exit 1)"]
+[mutations] 写出: research\_raw\coverage-depth-v1\verification\mutations.json

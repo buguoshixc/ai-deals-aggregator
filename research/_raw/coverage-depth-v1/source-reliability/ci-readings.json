@@ -1,0 +1,645 @@
+{
+  "probe": "probe-ci-history.cjs",
+  "ranAtUtc": "2026-10-05T03:42:43.428Z",
+  "source": "git log -- scripts/data/source-health.json（每次 CI 采集的提交）",
+  "readingsCount": 19,
+  "futurepediaSummary": {
+    "readings": 19,
+    "healthyReadings": 4,
+    "failedReadings": 15,
+    "lastHealthyGeneratedAt": "2026-09-30T01:36:21.446Z",
+    "lastHealthyCommitTime": "2026-09-30T09:38:55+08:00",
+    "currentStreakFailures": 10,
+    "currentStreakFirstFailureGeneratedAt": "2026-09-30T04:09:07.964Z",
+    "currentStreakLastFailureGeneratedAt": "2026-10-04T16:31:52.051Z",
+    "consecutiveFailuresCounterAtHead": 10,
+    "lastSuccessAtAtHead": "2026-09-30T01:36:21.446Z"
+  },
+  "nonHealthyAcrossAllReadings": [
+    {
+      "source": "futurepedia",
+      "readings": 15
+    }
+  ],
+  "rows": [
+    {
+      "commit": "d57aa3e",
+      "commitTime": "2026-10-05T00:34:39+08:00",
+      "commitSubject": "chore(data): 更新优惠数据、来源健康与变更记录 2026-10-05 00:34 CST [skip ci]",
+      "generatedAt": "2026-10-04T16:31:52.051Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:10"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-10-04T16:31:52.051Z",
+        "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 10,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 2169,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "45b7b47",
+      "commitTime": "2026-10-04T12:31:01+08:00",
+      "commitSubject": "chore(data): 更新优惠数据、来源健康与变更记录 2026-10-04 12:31 CST [skip ci]",
+      "generatedAt": "2026-10-04T04:28:23.566Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:9"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-10-04T04:28:23.566Z",
+        "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 9,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 1930,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "1b87844",
+      "commitTime": "2026-10-04T11:09:55+08:00",
+      "commitSubject": "chore(data): 更新优惠数据、来源健康与变更记录 2026-10-04 11:09 CST [skip ci]",
+      "generatedAt": "2026-10-04T03:07:44.109Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:8"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-10-04T03:07:44.109Z",
+        "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 8,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 2182,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "ebb2303",
+      "commitTime": "2026-10-03T11:59:15+08:00",
+      "commitSubject": "chore(data): 更新优惠数据、来源健康与变更记录 2026-10-03 11:59 CST [skip ci]",
+      "generatedAt": "2026-10-03T03:56:44.430Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:7"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-10-03T03:56:44.430Z",
+        "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 7,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 2267,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "9cfeaeb",
+      "commitTime": "2026-10-03T01:36:59+08:00",
+      "commitSubject": "chore(data): 更新优惠数据、来源健康与变更记录 2026-10-03 01:36 CST [skip ci]",
+      "generatedAt": "2026-10-02T17:34:24.906Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:6"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-10-02T17:34:24.906Z",
+        "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 6,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 1949,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "1c024db",
+      "commitTime": "2026-10-02T12:16:36+08:00",
+      "commitSubject": "chore(data): 更新优惠数据、来源健康与变更记录 2026-10-02 12:16 CST [skip ci]",
+      "generatedAt": "2026-10-02T04:14:02.909Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:5"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-10-02T04:14:02.909Z",
+        "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 5,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 2191,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "3bd1de7",
+      "commitTime": "2026-10-02T02:11:22+08:00",
+      "commitSubject": "chore(data): 更新优惠数据、来源健康与变更记录 2026-10-02 02:11 CST [skip ci]",
+      "generatedAt": "2026-10-01T18:08:51.193Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:4"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-10-01T18:08:51.193Z",
+        "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 4,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 2216,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "cf3bf13",
+      "commitTime": "2026-10-01T12:22:45+08:00",
+      "commitSubject": "chore(data): 更新优惠数据、来源健康与变更记录 2026-10-01 12:22 CST [skip ci]",
+      "generatedAt": "2026-10-01T04:20:35.712Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:3"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-10-01T04:20:35.712Z",
+        "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 3,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 2285,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "d8640a9",
+      "commitTime": "2026-10-01T01:44:11+08:00",
+      "commitSubject": "chore(data): 更新优惠数据、来源健康与变更记录 2026-10-01 01:44 CST [skip ci]",
+      "generatedAt": "2026-09-30T17:42:06.038Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:2"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-09-30T17:42:06.038Z",
+        "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 2,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 3955,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "8127458",
+      "commitTime": "2026-09-30T12:11:00+08:00",
+      "commitSubject": "chore(data): 更新优惠数据与来源健康 2026-09-30 12:11 CST [skip ci]",
+      "generatedAt": "2026-09-30T04:09:07.964Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:1"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-09-30T04:09:07.964Z",
+        "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 1,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 1966,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "036db88",
+      "commitTime": "2026-09-30T09:38:55+08:00",
+      "commitSubject": "merge: 并回 origin/master（PR #3 v1.2-intent-first-home + 一次机器人数据更新）",
+      "generatedAt": "2026-09-30T01:36:21.446Z",
+      "census": {
+        "healthy": 9,
+        "degraded": 0,
+        "failed": 0,
+        "other": 0
+      },
+      "nonHealthy": [],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-09-30T01:36:21.446Z",
+        "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 0,
+        "consecutiveZero": 0,
+        "status": "healthy",
+        "reason": null,
+        "lastError": null,
+        "lastDurationMs": 4362,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "3c00cba",
+      "commitTime": "2026-09-30T09:27:26+08:00",
+      "commitSubject": "chore(data): 真实采集一轮 + 3 条官方引文（curated 文件里早就写着的原话）",
+      "generatedAt": "2026-09-29T17:48:21.615Z",
+      "census": {
+        "healthy": 9,
+        "degraded": 0,
+        "failed": 0,
+        "other": 0
+      },
+      "nonHealthy": [],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-09-29T17:48:21.615Z",
+        "lastSuccessAt": "2026-09-29T17:48:21.615Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 0,
+        "consecutiveZero": 0,
+        "status": "healthy",
+        "reason": null,
+        "lastError": null,
+        "lastDurationMs": 4785,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "08b8a75",
+      "commitTime": "2026-09-30T01:47:53+08:00",
+      "commitSubject": "chore(data): 更新优惠数据与来源健康 2026-09-30 01:47 CST [skip ci]",
+      "generatedAt": "2026-09-29T17:46:02.101Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:1"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-09-29T17:46:02.101Z",
+        "lastSuccessAt": "2026-09-29T13:04:54.254Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 1,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 2410,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "f1d8d4e",
+      "commitTime": "2026-09-29T21:10:21+08:00",
+      "commitSubject": "fix(dedup): 从零重新推导数据，暴露并修掉「显式 unknown 键会丢」与「键序随 winner 变」",
+      "generatedAt": "2026-09-29T13:04:54.254Z",
+      "census": {
+        "healthy": 9,
+        "degraded": 0,
+        "failed": 0,
+        "other": 0
+      },
+      "nonHealthy": [],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-09-29T13:04:54.254Z",
+        "lastSuccessAt": "2026-09-29T13:04:54.254Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 0,
+        "consecutiveZero": 0,
+        "status": "healthy",
+        "reason": null,
+        "lastError": null,
+        "lastDurationMs": 11011,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "41756e1",
+      "commitTime": "2026-09-29T12:26:42+08:00",
+      "commitSubject": "chore(data): 更新优惠数据与来源健康 2026-09-29 12:26 CST [skip ci]",
+      "generatedAt": "2026-09-29T04:25:08.650Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:4"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-09-29T04:25:08.650Z",
+        "lastSuccessAt": "2026-09-28T13:21:46.334Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 4,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 2052,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "daded2e",
+      "commitTime": "2026-09-29T03:21:49+08:00",
+      "commitSubject": "chore(data): 更新优惠数据与来源健康 2026-09-29 03:21 CST [skip ci]",
+      "generatedAt": "2026-09-28T19:20:16.406Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:3"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-09-28T19:20:16.406Z",
+        "lastSuccessAt": "2026-09-28T13:21:46.334Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 3,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 2034,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "259199b",
+      "commitTime": "2026-09-28T23:52:53+08:00",
+      "commitSubject": "chore(data): 更新优惠数据与来源健康 2026-09-28 23:52 CST [skip ci]",
+      "generatedAt": "2026-09-28T15:51:22.593Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:2"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-09-28T15:51:22.593Z",
+        "lastSuccessAt": "2026-09-28T13:21:46.334Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 2,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 3202,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "a7d7a22",
+      "commitTime": "2026-09-28T23:46:01+08:00",
+      "commitSubject": "chore(data): 更新优惠数据与来源健康 2026-09-28 23:46 CST [skip ci]",
+      "generatedAt": "2026-09-28T15:44:31.915Z",
+      "census": {
+        "healthy": 8,
+        "degraded": 0,
+        "failed": 1,
+        "other": 0
+      },
+      "nonHealthy": [
+        "futurepedia:failed:1"
+      ],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-09-28T15:44:31.915Z",
+        "lastSuccessAt": "2026-09-28T13:21:46.334Z",
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "consecutiveFailures": 1,
+        "consecutiveZero": 0,
+        "status": "failed",
+        "reason": "collector_error",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "lastDurationMs": 2209,
+        "headlessReady": null
+      }
+    },
+    {
+      "commit": "f0e3671",
+      "commitTime": "2026-09-28T21:27:21+08:00",
+      "commitSubject": "feat(zh,health): 译文门禁改双档 + 数据源健康接线 + /status/ 页",
+      "generatedAt": "2026-09-28T13:21:46.334Z",
+      "census": {
+        "healthy": 9,
+        "degraded": 0,
+        "failed": 0,
+        "other": 0
+      },
+      "nonHealthy": [],
+      "futurepedia": {
+        "source": "futurepedia",
+        "name": "Futurepedia",
+        "region": "global",
+        "kind": "static",
+        "lastAttemptAt": "2026-09-28T13:21:46.334Z",
+        "lastSuccessAt": "2026-09-28T13:21:46.334Z",
+        "lastItemCount": 7,
+        "previousItemCount": null,
+        "delta": 7,
+        "consecutiveFailures": 0,
+        "consecutiveZero": 0,
+        "status": "healthy",
+        "reason": null,
+        "lastError": null,
+        "lastDurationMs": 8507,
+        "headlessReady": null
+      }
+    }
+  ]
+}

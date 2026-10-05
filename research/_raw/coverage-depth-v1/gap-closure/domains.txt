@@ -1,0 +1,11 @@
+﻿sensetime ["sensetime.com"]
+moonshot ["kimi.com"]
+iflytek ["xfyun.cn"]
+baidu ["baidu.com"]
+openai ["openai.com","chatgpt.com"]
+stepfun ["stepfun.com"]
+baichuan ["baichuan-ai.com"]
+ai360 ["360.com"]
+--- official_urls.json ---
+chatgpt, claude, githubcopilot, microsoftcopilot, canva, notion, cursor, replit, zapier, make
+{"_comment":"聚合站条目缺官方落地页时的官方页映射。key 为 lib/dedup.js 的 aliasKey(title)。所有 URL 都经 scripts/tools/check-links.js 实测可访问。","_roles":"t7：四个 URL 字段的角色**不是同一个东西**，刻意不合并（审计 F-r1-identity-004 / P3-11 的处置）。① `deal.url` / `plan.officialUrl` = **官方落地页**（读者点「查看」去的页面；渲染成「官方页面」行）：必须是本登记表或 providers.json 的官方域，不得是聚合站。② `deal.sourceUrl` / `plan.sourceUrl` = **收录渠道**（渲染成「原始出处」行）：这条记录最初是从哪里被发现的，**允许**是第三方目录站（sourceType=directory 的来源），它与官方落地页不同域是正常的。③ `deal.provenance.sourceUrl` = **断言依据出处**：字段值是从哪一页读来的（v1.1 的 evidence 依据链）。④ `evidence[].sourceUrl` = **官方原文片段的出处**：逐条引文来自哪一页，它在 provenance.js 里受 4 站黑名单约束、在 lib/official.js 里再受官方域白名单约束。所以「同一条记录两个 URL 不同」本身不是错误 —— 一个是「我们从哪发现的」，另一个是「值是从哪读的」；只有『声称官方、而依据出处落在第三方目录站』才是矛盾，由 officialDomainProblems() 报红。","_officialDomains_note":"t7 deals 侧官方域登记（A 空间）。键 = `vendorOf(deal).key` 在本仓库真实记录上会产出的那个键（命中 VENDOR_RULES 时是 A 空间键，命中不了时是厂商原始串 —— 与 vendorOf 同口径）。**只登记这里**：① B 空间（providers

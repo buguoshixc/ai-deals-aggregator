@@ -1,0 +1,240 @@
+﻿{
+  "file": "research/_raw/coverage-depth-v1/verification/review-t1/run-json-1.json",
+  "rawBytes": 267227,
+  "textBytes": 52785,
+  "jsonBytes": 214384,
+  "topKeys": [
+    "generatedAt",
+    "deals",
+    "coding",
+    "api",
+    "registry",
+    "gaps",
+    "candidates",
+    "coverageTargets"
+  ],
+  "coverageTargetsKeys": [
+    "file",
+    "present",
+    "schemaVersion",
+    "reviewedAt",
+    "validationProblemCount",
+    "validationProblems",
+    "stateOrder",
+    "states",
+    "universe",
+    "dimensions",
+    "rows",
+    "missingTargets",
+    "partialTargets",
+    "deferred",
+    "unverifiable",
+    "notApplicable",
+    "blockedBySourceHealth",
+    "currentModels",
+    "sourceHealth",
+    "freshness",
+    "catalogStatusCensus",
+    "releaseEvidence",
+    "releaseEvidenceQueue",
+    "gapClosureQueue",
+    "sourceReliability"
+  ],
+  "coverageTargetsKeyCount": 25,
+  "generatedAt": "2026-10-05",
+  "releaseEvidence": {
+    "status": "ok",
+    "registryModels": 44,
+    "releasedAtLanded": true,
+    "catalogStatusLanded": true,
+    "known": 4,
+    "unknown": 40,
+    "unparsable": 0,
+    "withReleaseEvidence": 4,
+    "knownPercent": 9.1,
+    "groupOrder": [
+      "developer",
+      "modelRole",
+      "catalogStatus"
+    ],
+    "byDeveloper": [
+      "智谱AI:8/0",
+      "腾讯云:6/0",
+      "Anthropic:4/0",
+      "Google:4/0",
+      "MiniMax（稀宇科技）:4/1",
+      "OpenAI:4/0",
+      "火山引擎:4/0",
+      "阿里云:4/0",
+      "DeepSeek:3/3",
+      "月之暗面:2/0",
+      "阶跃星辰:1/0"
+    ],
+    "byModelRole": [
+      "general:24/2",
+      "vision:8/2",
+      "fast:6/0",
+      "other:2/0",
+      "translation:2/0",
+      "coding:1/0",
+      "embedding:1/0"
+    ],
+    "byCatalogStatus": [
+      "current:3/3",
+      "aging:0/0",
+      "legacy:1/1",
+      "historical:0/0",
+      "unknown:40/0"
+    ]
+  },
+  "releaseEvidenceQueue": {
+    "limit": 15,
+    "total": 44,
+    "unknownCount": 40,
+    "knownCount": 4,
+    "groupJudgeAvailable": true,
+    "rulesCount": 5,
+    "queueLen": 15,
+    "queueKeys": [
+      "rank",
+      "slug",
+      "developer",
+      "family",
+      "modelRole",
+      "releasedAt",
+      "releasedAtUnknown",
+      "groupKey",
+      "groupKind",
+      "groupDegraded",
+      "groupLabel",
+      "groupSize",
+      "provider",
+      "tier",
+      "tierRank",
+      "referencedByApiPlans",
+      "referencedByPlans",
+      "referenced"
+    ],
+    "queue": [
+      "#1 glm-4.5v unknown=true group=智谱ai · glm · vision(5) tier=core/0 ref=true releasedAt=null",
+      "#2 glm-4.6v unknown=true group=智谱ai · glm · vision(5) tier=core/0 ref=true releasedAt=null",
+      "#3 glm-4.6v-flash unknown=true group=智谱ai · glm · vision(5) tier=core/0 ref=true releasedAt=null",
+      "#4 glm-4.6v-flashx unknown=true group=智谱ai · glm · vision(5) tier=core/0 ref=true releasedAt=null",
+      "#5 glm-5v-turbo unknown=true group=智谱ai · glm · vision(5) tier=core/0 ref=true releasedAt=null",
+      "#6 gemini-3.5-flash unknown=true group=google · gemini · general(4) tier=core/0 ref=true releasedAt=null",
+      "#7 gemini-3.6-flash unknown=true group=google · gemini · general(4) tier=core/0 ref=true releasedAt=null",
+      "#8 gemini-3.7-flash unknown=true group=google · gemini · general(4) tier=core/0 ref=true releasedAt=null",
+      "#9 gemini-3.8-flash unknown=true group=google · gemini · general(4) tier=core/0 ref=true releasedAt=null",
+      "#10 gpt-6-astra unknown=true group=openai · gpt · general(4) tier=core/0 ref=true releasedAt=null",
+      "#11 gpt-6-luna unknown=true group=openai · gpt · general(4) tier=core/0 ref=true releasedAt=null",
+      "#12 gpt-6.1-sol unknown=true group=openai · gpt · general(4) tier=core/0 ref=true releasedAt=null",
+      "#13 gpt-live-1 unknown=true group=openai · gpt · general(4) tier=core/0 ref=true releasedAt=null",
+      "#14 qwen-max unknown=true group=阿里云 · qwen · general(4) tier=core/0 ref=true releasedAt=null",
+      "#15 qwen3-max unknown=true group=阿里云 · qwen · general(4) tier=core/0 ref=true releasedAt=null"
+    ]
+  },
+  "gapClosureQueue": {
+    "total": 13,
+    "counts": {
+      "A": 0,
+      "B": 3,
+      "C": 7,
+      "D": 3
+    },
+    "rulesCount": 9,
+    "highValueDimensions": [
+      "api",
+      "models"
+    ],
+    "priorityOrder": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "queueLen": 13,
+    "queue": [
+      "B baichuan/api state=PARTIAL N=2 M=0 K=2 present=1 hv=true explicit=true hard=false highCost=false",
+      "B replit/coding state=PARTIAL N=1 M=0 K=1 present=2 hv=false explicit=true hard=false highCost=false",
+      "B sensetime/api state=PARTIAL N=1 M=0 K=1 present=1 hv=true explicit=true hard=false highCost=false",
+      "C baidu/models state=MISSING N=0 M=0 K=0 present=0 hv=true explicit=false hard=false highCost=false",
+      "C deepseek/deals state=MISSING N=0 M=0 K=0 present=0 hv=false explicit=false hard=false highCost=false",
+      "C openai/coding state=MISSING N=0 M=0 K=0 present=0 hv=false explicit=false hard=false highCost=false",
+      "C baichuan/coding state=MISSING N=0 M=0 K=0 present=0 hv=false explicit=false hard=false highCost=false",
+      "C baichuan/models state=MISSING N=0 M=0 K=0 present=0 hv=true explicit=false hard=false highCost=false",
+      "C iflytek/models state=MISSING N=0 M=0 K=0 present=0 hv=true explicit=false hard=false highCost=false",
+      "C sensetime/coding state=MISSING N=0 M=0 K=0 present=0 hv=false explicit=false hard=false highCost=false",
+      "D ai360/coding state=MISSING N=0 M=0 K=0 present=0 hv=false explicit=false hard=false highCost=false",
+      "D ai360/models state=MISSING N=0 M=0 K=0 present=0 hv=true explicit=false hard=false highCost=false",
+      "D microsoft/coding state=MISSING N=0 M=0 K=0 present=0 hv=false explicit=false hard=false highCost=false"
+    ]
+  },
+  "sourceReliability": {
+    "file": "scripts/data/source-rulings.json",
+    "present": false,
+    "notLanded": true,
+    "broken": null,
+    "schemaVersion": null,
+    "reviewedAt": null,
+    "healthFile": "scripts/data/source-health.json",
+    "healthGeneratedAt": "2026-10-04T16:31:52.051Z",
+    "healthRowCount": 9,
+    "collectorRegistryFile": "scripts/collectors（index.js 的 list()）",
+    "collectorRegistryCount": 7,
+    "decisionOrder": [
+      "repair",
+      "headless-migrate",
+      "keep-degraded",
+      "retire"
+    ],
+    "decisionCounts": {
+      "repair": 0,
+      "headless-migrate": 0,
+      "keep-degraded": 0,
+      "retire": 0
+    },
+    "rulingsCount": 0,
+    "validationProblemCount": 0,
+    "validationProblems": [],
+    "reconciliation": {
+      "judge": "scripts/lib/source-rulings.js 的 reconcileRulings()",
+      "ruleCount": 4,
+      "problemCount": 1,
+      "problems": [
+        "来源「futurepedia」连续失败已达 3 次以上，却没有在 scripts/data/source-rulings.json 里留下裁决 —— 长期失败必须有人表态（repair / headless-migrate / keep-degraded / retire 四选一），不许只以读数的形式常驻。"
+      ],
+      "unruledRegistrySources": [
+        "aitools",
+        "cn_aliyun",
+        "cn_qianfan",
+        "cn_zhipu",
+        "futurepedia",
+        "futuretools",
+        "layer3labs"
+      ],
+      "failuresRequiringRuling": [
+        {
+          "source": "futurepedia",
+          "name": "Futurepedia",
+          "status": "failed",
+          "consecutiveFailures": 10
+        }
+      ],
+      "missingRulingsForFailures": [
+        "futurepedia"
+      ],
+      "retireStillRegistered": [],
+      "retireStillInHealth": [],
+      "repairOrMigrateUnregistered": [],
+      "unresolvedSources": []
+    },
+    "registryRowCount": 9,
+    "registryOnlySources": [
+      "Futurepedia",
+      "Futuretools",
+      "Layer3Labs",
+      "aitools.fyi"
+    ],
+    "notLandedNote": "source-rulings 层尚未落盘（本节的裁决读数为空是\"没有输入\"，不是\"没有长期失败的来源\"）。"
+  }
+}

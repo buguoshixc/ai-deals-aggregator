@@ -1,0 +1,219 @@
+{
+  "capturedAt": "2026-10-05T03:30:33.398Z",
+  "baselineSha": "ff86368e6d12d1ef57b2f51aa2c957c01d2a9ed8",
+  "cwd": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\cd-baseline",
+  "note": "coverage-depth-v1 Before 分母；只在 detached 的 cd-baseline 工作树上采集",
+  "commands": {
+    "npm ls --depth=0": {
+      "exitCode": 0,
+      "stderr": ""
+    },
+    "npm run report:coverage": {
+      "exitCode": 0,
+      "stderr": ""
+    },
+    "node scripts/tools/coverage-report.js": {
+      "args": [
+        "scripts/tools/coverage-report.js"
+      ],
+      "exitCode": 0,
+      "stderr": ""
+    },
+    "node scripts/tools/coverage-report.js --json (1)": {
+      "args": [
+        "scripts/tools/coverage-report.js",
+        "--json"
+      ],
+      "exitCode": 0,
+      "stderr": ""
+    },
+    "node scripts/tools/coverage-report.js --json (2)": {
+      "args": [
+        "scripts/tools/coverage-report.js",
+        "--json"
+      ],
+      "exitCode": 0,
+      "stderr": ""
+    },
+    "node scripts/collect.js --list": {
+      "args": [
+        "scripts/collect.js",
+        "--list"
+      ],
+      "exitCode": 0,
+      "stderr": ""
+    },
+    "node scripts/collect.js --headless --list": {
+      "args": [
+        "scripts/collect.js",
+        "--headless",
+        "--list"
+      ],
+      "exitCode": 0,
+      "stderr": ""
+    }
+  },
+  "readings": {
+    "reportCoverageJsonBytes": 218443,
+    "reportCoverageTextLines": 394,
+    "reportCoverageSelfCheckProblems": 0,
+    "npmBannerBytes": 86,
+    "collectorsStatic": [
+      "cn_qianfan",
+      "cn_aliyun",
+      "cn_zhipu",
+      "layer3labs",
+      "aitools",
+      "futurepedia",
+      "futuretools"
+    ],
+    "collectorsHeadless": [
+      "cn_qianfan",
+      "cn_aliyun",
+      "cn_zhipu",
+      "layer3labs",
+      "aitools",
+      "futurepedia",
+      "futuretools",
+      "cn_zhipu_pricing",
+      "cn_volc_ark"
+    ],
+    "sourceHealth": {
+      "generatedAt": "2026-10-04T16:31:52.051Z",
+      "rows": 9,
+      "byStatus": {
+        "healthy": 8,
+        "failed": 1
+      },
+      "failing": [
+        {
+          "source": "futurepedia",
+          "status": "failed",
+          "consecutiveFailures": 10,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      ]
+    },
+    "registry": {
+      "publishedModels": 44,
+      "sourceEntries": 44,
+      "releasedAtKnownSource": 4,
+      "releasedAtKnownPublished": 4,
+      "withReleaseEvidence": 4,
+      "catalogStatus": {
+        "unknown": 40,
+        "current": 3,
+        "legacy": 1
+      },
+      "modelRole": {
+        "general": 24,
+        "fast": 6,
+        "vision": 8,
+        "other": 2,
+        "embedding": 1,
+        "translation": 2,
+        "coding": 1
+      },
+      "developers": {
+        "Anthropic": 4,
+        "DeepSeek": 3,
+        "火山引擎": 4,
+        "Google": 4,
+        "智谱AI": 8,
+        "OpenAI": 4,
+        "腾讯云": 6,
+        "月之暗面": 2,
+        "MiniMax（稀宇科技）": 4,
+        "阿里云": 4,
+        "阶跃星辰": 1
+      }
+    },
+    "coverageTargets": {
+      "schemaVersion": 1,
+      "reviewedAt": "2026-10-04",
+      "targetRows": 34,
+      "providerIdentities": 34,
+      "tier": {
+        "long-tail": 5,
+        "core": 11,
+        "major": 18
+      },
+      "role": {
+        "model-developer": 15,
+        "coding-product": 10,
+        "inference-platform": 6,
+        "tool-vendor": 3
+      },
+      "ruledDimensions": 4
+    },
+    "data": {
+      "deals": {
+        "rows": 135,
+        "count": 135,
+        "updatedAt": "2026-10-05T00:31:52+08:00",
+        "byType": {
+          "deal": 80,
+          "tool": 55
+        }
+      },
+      "plans": {
+        "rows": 37,
+        "updatedAt": "2026-10-04T00:00:00+08:00"
+      },
+      "apiPlans": {
+        "rows": 17,
+        "updatedAt": "2026-10-04T00:00:00+08:00"
+      },
+      "registryLinks": {
+        "rows": 82,
+        "schemaVersion": 2
+      }
+    },
+    "gate": {
+      "actionSteps": 49,
+      "expectChecks": {
+        "values": [
+          38,
+          38
+        ],
+        "unique": [
+          38
+        ]
+      },
+      "workflows": [
+        "ai-maintenance.yml",
+        "collect.yml",
+        "deploy.yml",
+        "probe-sources.yml",
+        "verify.yml"
+      ]
+    },
+    "reportDerived": {
+      "dimensionCensus": [
+        "Deals 优惠（deals）：COVERED=23 · PARTIAL=0 · MISSING=1 · DEFERRED=0 · UNVERIFIABLE=0 · NOT_APPLICABLE=10 · BLOCKED_SOURCE=0",
+        "Coding 套餐（coding）：COVERED=16 · PARTIAL=1 · MISSING=5 · DEFERRED=0 · UNVERIFIABLE=1 · NOT_APPLICABLE=11 · BLOCKED_SOURCE=0",
+        "API 计费（api）：COVERED=14 · PARTIAL=0 · MISSING=7 · DEFERRED=1 · UNVERIFIABLE=1 · NOT_APPLICABLE=11 · BLOCKED_SOURCE=0",
+        "模型身份（models）：COVERED=11 · PARTIAL=0 · MISSING=4 · DEFERRED=1 · UNVERIFIABLE=0 · NOT_APPLICABLE=18 · BLOCKED_SOURCE=0"
+      ],
+      "catalogStatusCensus": "current 3 · aging 0 · legacy 1 · historical 0 · unknown 40（和 44）   五态和必须 == registry 模型数 44（不等 ⇒ 报告自检非 0）",
+      "targetUniverse": "34",
+      "publicDatasets": 9
+    }
+  },
+  "hashes": {
+    "reportCoverageText": "15775193df7f52c0c77ef21031708ffdbb52cec7a2c4e498a2cb7ddef3a4e4a7",
+    "reportCoverageJsonRun1": "0b801f419f30c45b0327c5d6e4f5415b241fc2b35b21da39efe4b8815328ee70",
+    "reportCoverageJsonRun2": "0b801f419f30c45b0327c5d6e4f5415b241fc2b35b21da39efe4b8815328ee70",
+    "reportCoverageJsonByteIdentical": true
+  },
+  "git": {
+    "head": "ff86368e6d12d1ef57b2f51aa2c957c01d2a9ed8",
+    "dirtyFiles": 0
+  },
+  "env": {
+    "node": "v24.13.1",
+    "npm": "11.19.0",
+    "platform": "win32",
+    "arch": "x64"
+  }
+}

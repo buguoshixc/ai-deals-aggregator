@@ -1,0 +1,59 @@
+{
+  "m1": {
+    "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\m1-models-unparsable.json",
+    "slug": "doubao-seed-2.1-pro",
+    "expect": "解析不出可判日"
+  },
+  "m2": {
+    "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\m2-models-empty-string.json",
+    "slug": "doubao-seed-2.1-pro",
+    "expect": "两处读数不一致"
+  },
+  "m3": {
+    "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\m3-targets-bad-slug.json",
+    "provider": "aliyun",
+    "expect": "不在 scripts/data/models.json"
+  },
+  "clean": {
+    "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-clean.json",
+    "expect": null,
+    "note": "合法夹具（对账应 0 处问题）"
+  },
+  "m4": {
+    "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m4-keep-degraded-no-whykept.json",
+    "expect": "必须写 whyKept"
+  },
+  "m5": {
+    "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m5-retire-still-registered.json",
+    "expect": "仍然挂在采集器注册表里"
+  },
+  "m6": {
+    "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m6-empty.json",
+    "expect": "没有在 scripts/data/source-rulings.json 里留下裁决"
+  },
+  "m7": {
+    "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m7-out-of-order.json",
+    "expect": "不是规范序"
+  },
+  "m8": {
+    "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m8-broken.json",
+    "expect": "解析失败"
+  },
+  "m9": {
+    "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m9-illegal-decision.json",
+    "expect": "decision 非法"
+  },
+  "m10": {
+    "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m10-headless-no-stability.json",
+    "expect": "必须写 headlessStability"
+  },
+  "m11": {
+    "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m11-relative-url.json",
+    "expect": "不是绝对地址"
+  },
+  "m12": {
+    "file": null,
+    "expect": "尚未落盘",
+    "note": "不传 --source-rulings（沙箱里本来就没有这份文件）⇒ 必须 exit 0 且如实说未落盘"
+  }
+}

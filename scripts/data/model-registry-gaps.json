@@ -44,6 +44,38 @@
       "note": "官方定价记录点名了单一模型「GPT OSS Safeguard 20B」（modelKey `openai.gpt-oss-safeguard-20b`）；registry 里没有它的身份（逐字/折叠/后缀不等）⇒ 判过：对不上。按 §29 它可进 registry，但需其官方身份证据（canonicalName/developer/officialUrl），本轮未收集 ⇒ 记为 off-registry-model，不硬塞、不留空。"
     },
     {
+      "apiPlanId": "03b27e432472",
+      "modelKey": "step-3.7-flash",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
+      "note": "官方定价页点名的单一模型；阶跃 Flash 档单一模型；registry 目前只有 step-3.5-flash，逐字 / 折叠均不等（版本号不同不得推定同一身份） ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
+    },
+    {
+      "apiPlanId": "03b27e432472",
+      "modelKey": "step-5-preview",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
+      "note": "官方定价页点名的单一模型；阶跃旗舰预览档单一模型；registry 里没有精确身份，逐字 / 折叠均不等 ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
+    },
+    {
+      "apiPlanId": "09ed95f9cd81",
+      "modelKey": "sensenova-v6.5-pro",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
+      "note": "官方定价页点名的单一模型；商汤融合模态当前线；registry 里没有商汤归属身份 ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
+    },
+    {
+      "apiPlanId": "09ed95f9cd81",
+      "modelKey": "sensenova-v6.5-turbo",
+      "variant": "standard",
+      "reason": "off-registry-model",
+      "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
+      "note": "官方定价页点名的单一模型；商汤融合模态当前线；registry 里没有商汤归属身份 ⇒ 判过：对不上（不代表它不值得进 registry —— 身份登记属 Workstream B-2 / t8）。"
+    },
+    {
       "apiPlanId": "61aa6c3ed3ff",
       "modelKey": "gpt-oss-120b",
       "variant": "standard",

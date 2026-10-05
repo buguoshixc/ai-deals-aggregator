@@ -1,0 +1,32 @@
+--- team.tasks[9].description ---
+工作目录：D:\OneDrive\Desktop\Code\AI Page\.worktrees\coverage-depth-v1。所有路径 workspace 相对（.worktrees/coverage-depth-v1/...）。captain 会在部署之后把 CI / Deploy / Online Smoke 实测读数追加进 report.md，所以那三节留占位即可。
+
+【t7 的三条 low finding 必须逐条落账（不许漏）】
+· T7-F1（GUARDRAIL）：coverage-targets-selftest 里 `gapQueue.filter(state==='MISSING').every(present===0)` 在 MISSING=0 时是空集恒真 —— t12 已换成 `missingRowsProblems()`（集合大小 == states.MISSING 计数 + 逐格 present + 三种扰动可证伪）。你负责**独立验证它真的能红**，并进入 RTM。
+· T7-F3（已修，必须复核）：t12 曾在 coverage-targets-selftest:836 留下代数恒真式 `X === Y + (X - Y)` —— 已换成两条各有独立来源的真不变量（:918 附近）。你负责独立验证替换后的断言**可被证伪**（构造变异 ⇒ 必红），并把「恒真式不得进门」写进 GUARDRAIL 结论。
+· T7-F2（DOC）：报告确实读墙钟（`generatedAt=todayCN()`，HEAD 既有），所以「两次 --json byte-identical」只在**同日**成立；四节新增内容不受影响。请在最终报告里把该口径写成 same-day，不要写成无条件 byte-identical。
+
+【残留同类风险：由你评估并定性（captain 扫描发现，不在 t12 契约里）】
+`scripts/tools/coverage-targets-selftest.js:136` 是一条**既有**的 `filter(...).every(...)` 形态：`realDerived.rows.filter(state===COVERED).every(row => row.present > 0 || row.resolved > 0)`。与 T7-F1 同一类风险：当 COVERED 集合为空时它是空集恒真。请你：① 全仓扫描同类 `filter(...).every(...)` / `filter(...).some(...)` 形态，列出全部命中；② 逐条判定「空集可达性」（在当前设计下 COVERED/MISSING 集合真能为空吗？为空的后果是什么？有没有别的断言会先红？）；③ 给出结论分类（GUARDRAIL 补非空前提 / DESIGN_ACCEPTED 并写明为何空集不可达或有其他断言先红）；④ 结论进 Self-Audit 的 Findings 与 Remaining P2/P3，**不要自己改这两个文件**（它们已随 t12 收口，改动会破坏已冻结的读数）。
+
+【t9 的独立性缺口必须由你补上】
+t9（独立重算 + M1–M15 变异）由 Workstream C 的负责人执行，因此**C 线（来源实况普查 / source-rulings 裁决 / 采集器侧落地）对他而言是自审**。你必须在 t10 里对他那部分做独立复核，并写进 Self-Audit 的 Independent Rec
+
+--- team.tasks[11].output ---
+t12 完成（契约里 8 条验收项全部满足；本 attempt 内另修掉了 t7 抓到的 F3/F1）。
+
+【重要】拿到权威契约后发现任务书渲染给我的是**截断版**：team.json 里的 t12 契约 inScope **包含 `scripts/tools/models-selftest.js`**、acceptance 是 8 条、Verify 是 7 条。已按权威契约补齐（你消息里那句"仍待你改"与契约一致，前一条消息里"Out of scope"是渲染截断）。
+
+【改了什么（2 个文件）】
+A. `scripts/tools/coverage-targets-selftest.js`：t25 那条跨语义等值断言 → 共用纯函数 `apiDispositionProblems()` 的五条各自可证伪关系（① 两视图相等 ② 展开数 ≥ 行数 ③ 方程 ④ 行数 == **现读文件** ⑤ 展开增量 == **逐格复算**的通配多余覆盖）+ 逐行回查 `apiDeclarationRowProblems()` + 通配定向夹具（严格大于、逐字对回）+ 两例方向牙 + 6 种变异 + 旧/新判据对照。**t7-F3 的代数恒真式 `X === Y+(X−Y)` 已删除**。**t7-F1 的空集恒真 `filter(MISSING).every(...)` 已换成 `missingRowsProblems()`**（集合大小 == states.MISSING 计数 + 逐格 present），并加三种扰动的可证伪性检查。
+B. `scripts/tools/models-selftest.js`：三处写死计数（`total===44`、两处 `===12`）→ 结构不变量：`summaryProblems()`（total == **现读** models.json 身份数 == 发布条目数；三态之和 == total；retired === 0）、`apiDeclarationProblems()`（与**现读** gaps 文件行数对账 + 逐条可回查 reason/sourceUrl/modelKey/variant）、`coverageOf` 侧再对账「行数 == 现读文件行数」与「展开数 == 逐条展开去重数」。另补**唯一性牙** `duplicateApiDeclarationKeys()`（同一 (apiPlanId, modelKey, variant) 不许重复；当前 16 条零重复，本轮 ernie-5.1 的重复已由数据方拆成逐变体）。
+
+【条数】coverage-targets-selftest.js **178 → 201**（+23，改名 0）· models-selftest.js **141 通过/3 失败 → 148 通过/0 失败**（那 3 项 ✗→✓；+7；4 条名字里带 44/12 字面量的改为插值）。
+
+【保护强度（逐条对照表 → `research/_raw/coverage-depth-v1/repair-stale-baselines/t12-assertion-provability.md`）】
+· 旧会红/新仍红：翻成 retired、被发布管线漏掉、声明计数脱钩 —— 逐条贴出旧红/新红读数
+· 旧假红/新正确：合法增长（§47，44→51）与合法通配态（T6-F1 本体）
+· 旧抓不住/新抓住：发布管线漏掉一条（旧绿/新红）、现读文件与载荷行数不一致、展开增量与逐格复算不一致、两
+
+--- inbox/captain.jsonl (1 行) ---
+{"id":"34059289-d9c1-4151-8d86-0e2e5966649d","from":"report-engine-engineer","to":"captain","content":"【t12 完成 · repair · attempt 2】\n\nsource_task_id=t12 · source_attempt_id=59b04b05-4ef7-45f2-b759-8e5e8859da6d · status=completed\n\n■ 先说一件重要的事：任务书渲染给我的是**截断版契约**\n我读了权威记录 `.agent-teams/coverage-depth-v1/team.json` 里 t12 的字段（只读诊断）：`inScope` **包含 `scripts/tools/models-selftest.js`**、`acceptance` 是 **8 条**（其中第 4/5 条就是 models-selftest 的三处写死计数）、`verify` 是 **7 条**（含 models-selftest / check-models-reproducible / check-model-registry-links）。我收到的任务书里那段 `Out of scope: … models-selftest.js …` 与 acceptance 只有 6 条，是**渲染截断**。我按权威契约补齐了 —— 与你消息里\"仍待你改\"一致。**这也解释了我上一条消息里那个\"范围问题\"的疑问，无需你再裁决。**\n\n■ 改了什么（两个文件）\n**A. `coverage-targets-selftest.js`**：t25 那条跨语义等值断言 → 共用纯函数 `apiDispositionProblems()` 的五条各自可证伪关系（① 两视图相等 ② 展开数 ≥ 行数 ③ 方程 ④ 行数 == **现读文件** ⑤ 展开增量 == **逐格复算**的通配多余覆盖）+ 逐行回查 `apiDeclarationRowProblem

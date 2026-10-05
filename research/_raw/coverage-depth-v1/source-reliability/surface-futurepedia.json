@@ -1,0 +1,92 @@
+{
+  "probe": "probe-futurepedia-surface.cjs",
+  "ranAtUtc": "2026-10-05T03:39:07.041Z",
+  "ranAtLocal": "Mon Oct 05 2026 11:39:07 GMT+0800 (中国标准时间)",
+  "parts": {
+    "home": {
+      "status": 200,
+      "bytes": 1481771,
+      "parseItems": 7,
+      "parseTitles": [
+        "ChatGPT",
+        "Claude",
+        "HubSpot AEO Sensor",
+        "Perplexity",
+        "Google Gemini",
+        "Midjourney",
+        "Grok"
+      ],
+      "anchorCount": 108,
+      "uniqueToolHrefsInHtml": 0,
+      "toolHrefsSample": []
+    },
+    "/ai-tools": {
+      "url": "https://www.futurepedia.io/ai-tools",
+      "status": 200,
+      "bytes": 111329,
+      "parseItems": 0,
+      "parseTitlesSample": [],
+      "uniqueToolHrefsInHtml": 0
+    },
+    "/ai-tools?page=2": {
+      "url": "https://www.futurepedia.io/ai-tools?page=2",
+      "status": 200,
+      "bytes": 111396,
+      "parseItems": 0,
+      "parseTitlesSample": [],
+      "uniqueToolHrefsInHtml": 0
+    },
+    "sitemap.xml": {
+      "url": "https://www.futurepedia.io/sitemap.xml",
+      "status": 200,
+      "bytes": 135660,
+      "locCount": 631,
+      "byPattern": {
+        "tool": 0,
+        "deal": 0,
+        "ai": 0
+      },
+      "sample": [
+        "https://www.futurepedia.io/newsletter",
+        "https://www.futurepedia.io/resources",
+        "https://www.futurepedia.io/ai-tools",
+        "https://www.futurepedia.io/ai-innovations",
+        "https://www.futurepedia.io/ai-innovations/leaderboard",
+        "https://www.futurepedia.io/tutorials",
+        "https://www.futurepedia.io/courses",
+        "https://www.futurepedia.io/ai-education-platform",
+        "https://www.futurepedia.io/learning-paths",
+        "https://www.futurepedia.io/disclosure",
+        "https://www.futurepedia.io/terms-of-service",
+        "https://www.futurepedia.io/update-a-tool"
+      ],
+      "head": "\n    <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n      \n      <url>\n        <loc>https://www.futurepedia.io/newsletter</loc>\n        <lastmod>2026-09-30T16:19:54.000Z</lastmod>\n        \n        \n      </url>\n    \n      <url>\n        <loc>https://www.futurepedia.io/resources</loc>\n        <lastmod>2026-09-30T16:19:54.000Z</lastmod>\n        \n        \n      </url>\n    \n      <url>\n  "
+    },
+    "sitemap_tools.xml": {
+      "url": "https://www.futurepedia.io/sitemap_tools.xml",
+      "status": 200,
+      "bytes": 191216,
+      "locCount": 1332,
+      "byPattern": {
+        "tool": 1332,
+        "deal": 1,
+        "ai": 0
+      },
+      "sample": [
+        "https://www.futurepedia.io/tool/gencraft",
+        "https://www.futurepedia.io/tool/looq-ai",
+        "https://www.futurepedia.io/tool/vexub",
+        "https://www.futurepedia.io/tool/hostinger-reach",
+        "https://www.futurepedia.io/tool/teal-resume-builder",
+        "https://www.futurepedia.io/tool/trade-ideas",
+        "https://www.futurepedia.io/tool/drafthorse-ai",
+        "https://www.futurepedia.io/tool/replika",
+        "https://www.futurepedia.io/tool/wistia-remix",
+        "https://www.futurepedia.io/tool/ai-text-humanizer",
+        "https://www.futurepedia.io/tool/ai-prompt-library",
+        "https://www.futurepedia.io/tool/angry-email-translator"
+      ],
+      "head": "\n    <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n      \n      <url>\n        <loc>https://www.futurepedia.io/tool/gencraft</loc>\n        <lastmod>2026-09-16T15:40:30.000Z</lastmod>\n      </url>\n    \n      <url>\n        <loc>https://www.futurepedia.io/tool/looq-ai</loc>\n        <lastmod>2026-09-10T16:04:34.000Z</lastmod>\n      </url>\n    \n      <url>\n        <loc>https://www.futurep"
+    }
+  }
+}

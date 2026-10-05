@@ -1,0 +1,17 @@
+﻿ api-plans.json                             | 617 +++++++++++++++++-
+ model-registry-links.json                  | 184 +++++-
+ models.json                                | 594 ++++++++++++++----
+ plans.json                                 | 361 ++++++++++-
+ scripts/data/api-plan-history.json         | 410 ++++++++++++
+ scripts/data/coverage-targets.json         | 125 +++-
+ scripts/data/curated_api_plans.json        | 515 +++++++++++++++
+ scripts/data/curated_plans.json            | 322 ++++++++++
+ scripts/data/model-registry-gaps.json      |  32 +
+ scripts/data/model-registry-links.json     | 170 +++++
+ scripts/data/models.json                   | 432 ++++++++++---
+ scripts/data/plan-history.json             | 141 +++++
+ scripts/data/providers.json                |   4 +-
+ scripts/tools/coverage-report.js           | 626 ++++++++++++++++++-
+ scripts/tools/coverage-targets-selftest.js | 963 ++++++++++++++++++++++++++++-
+ scripts/tools/models-selftest.js           | 227 ++++++-
+ 16 files changed, 5481 insertions(+), 242 deletions(-)

@@ -1,0 +1,16 @@
+﻿links order sample: claude-fable-5.1|4f8bae91f9f8  claude-haiku-4.5|4f8bae91f9f8  claude-opus-5.5|4f8bae91f9f8  claude-sonnet-5.5|4f8bae91f9f8  deepseek-flash|8a26562011f2  deepseek-flash|929a1f3ec46c
+links tail: step-3.5-flash|0a66f3117162  step-3.5-flash|2281d41b3a26  step-3.5-flash|383ed55706fc  step-3.5-flash|ef931b98b927
+--- api decls ---
+036c5f09561e | meta-llama.prompt-guard-2-22m | standard
+036c5f09561e | meta-llama.prompt-guard-2-86m | standard
+036c5f09561e | openai.gpt-oss-120b | standard
+036c5f09561e | openai.gpt-oss-20b | standard
+036c5f09561e | openai.gpt-oss-safeguard-20b | standard
+61aa6c3ed3ff | gpt-oss-120b | standard
+8a26562011f2 | openai.gpt-oss-120b | standard
+8a26562011f2 | thinkingmachines.inkling | standard
+929a1f3ec46c | ember-1 | standard
+929a1f3ec46c | gpt-oss-120b | standard
+929a1f3ec46c | nemotron-3-ultra-nvfp4 | standard
+929a1f3ec46c | nemotron-lightning-3p5-30b-a3b | standard
+first coding decl: {"planId":"0a66f3117162","modelName":"step-3.5-flash-2603","role":"included","reason":"off-registry-model","sourceUrl":"

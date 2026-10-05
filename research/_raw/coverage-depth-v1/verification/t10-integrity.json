@@ -1,0 +1,251 @@
+{
+  "repo": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1",
+  "ranAt": "2026-10-05T05:07:40.462Z",
+  "ids": {
+    "apiPlanIds": {
+      "before": 17,
+      "after": 24,
+      "added": 7,
+      "removed": 0,
+      "addedSample": [
+        "0940febeeea9",
+        "218c142dcb17",
+        "23643dfd94f8",
+        "faf2d5722e71",
+        "c4b6948c4fa9",
+        "09ed95f9cd81",
+        "03b27e432472"
+      ],
+      "removedSample": []
+    },
+    "codingPlanIds": {
+      "before": 37,
+      "after": 44,
+      "added": 7,
+      "removed": 0,
+      "addedSample": [
+        "908f38cee9c9",
+        "f7d832753cc5",
+        "f22ba46a0d6a",
+        "5b69ae2939c8",
+        "03f246d78293",
+        "83b27b3f3537",
+        "5ef2cd29fff0"
+      ],
+      "removedSample": []
+    },
+    "dealIds": {
+      "before": 135,
+      "after": 135,
+      "added": 0,
+      "removed": 0,
+      "addedSample": [],
+      "removedSample": []
+    },
+    "providerKeys": {
+      "before": 34,
+      "after": 34,
+      "added": 0,
+      "removed": 0,
+      "addedSample": [],
+      "removedSample": []
+    },
+    "modelSlugs": {
+      "before": 44,
+      "after": 51,
+      "added": 7,
+      "removed": 0,
+      "addedSample": [
+        "360zhinao-pro",
+        "360zhinao-turbo-llm-geo",
+        "baichuan-m3",
+        "baichuan-m3-plus",
+        "ernie-4.5-turbo-128k",
+        "ernie-5.1",
+        "spark-x2.5"
+      ],
+      "removedSample": []
+    },
+    "linkIdentities": {
+      "before": 75,
+      "after": 85,
+      "added": 10,
+      "removed": 0,
+      "addedSample": [
+        "360zhinao-pro\u00000940febeeea9\u0000360zhinao-pro\u0000null",
+        "360zhinao-turbo-llm-geo\u00000940febeeea9\u0000360zhinao-turbo-llm-geo\u0000null",
+        "baichuan-m3\u0000218c142dcb17\u0000baichuan-m3\u0000null",
+        "baichuan-m3-plus\u0000218c142dcb17\u0000baichuan-m3-plus\u0000null",
+        "ernie-4.5-turbo-128k\u000023643dfd94f8\u0000ernie-4.5-turbo-128k\u0000null",
+        "ernie-5.1\u000023643dfd94f8\u0000ernie-5.1\u0000null",
+        "kimi-k2.7-code\u0000c4b6948c4fa9\u0000kimi-k2.7-code\u0000null",
+        "kimi-k3\u0000c4b6948c4fa9\u0000kimi-k3\u0000null",
+        "spark-x2.5\u0000faf2d5722e71\u0000spark-x2.5\u0000null",
+        "step-3.5-flash\u000003b27e432472\u0000step-3.5-flash\u0000null"
+      ],
+      "removedSample": []
+    }
+  },
+  "history": {
+    "deal-history.json": {
+      "file": "scripts/data/deal-history.json",
+      "eventsBefore": 1,
+      "eventsAfter": 1,
+      "typesBefore": {
+        "created": 1
+      },
+      "typesAfter": {
+        "created": 1
+      },
+      "added": 0,
+      "removed": 0,
+      "addedSample": [],
+      "topLevelKeys": [
+        "schemaVersion",
+        "startedAt",
+        "baseline",
+        "absence",
+        "events"
+      ],
+      "addedEndedEvents": 0
+    },
+    "plan-history.json": {
+      "file": "scripts/data/plan-history.json",
+      "eventsBefore": 28,
+      "eventsAfter": 35,
+      "typesBefore": {
+        "created": 28
+      },
+      "typesAfter": {
+        "created": 35
+      },
+      "added": 7,
+      "removed": 0,
+      "addedSample": [
+        {
+          "type": "created",
+          "at": "2026-10-05",
+          "id": "03f246d78293"
+        },
+        {
+          "type": "created",
+          "at": "2026-10-05",
+          "id": "5b69ae2939c8"
+        },
+        {
+          "type": "created",
+          "at": "2026-10-05",
+          "id": "5ef2cd29fff0"
+        },
+        {
+          "type": "created",
+          "at": "2026-10-05",
+          "id": "83b27b3f3537"
+        },
+        {
+          "type": "created",
+          "at": "2026-10-05",
+          "id": "908f38cee9c9"
+        },
+        {
+          "type": "created",
+          "at": "2026-10-05",
+          "id": "f22ba46a0d6a"
+        }
+      ],
+      "topLevelKeys": [
+        "schemaVersion",
+        "startedAt",
+        "baseline",
+        "absence",
+        "anomalies",
+        "events"
+      ],
+      "addedEndedEvents": 0
+    },
+    "api-plan-history.json": {
+      "file": "scripts/data/api-plan-history.json",
+      "eventsBefore": 10,
+      "eventsAfter": 17,
+      "typesBefore": {
+        "created": 10
+      },
+      "typesAfter": {
+        "created": 17
+      },
+      "added": 7,
+      "removed": 0,
+      "addedSample": [
+        {
+          "type": "created",
+          "at": "2026-10-05",
+          "id": "03b27e432472"
+        },
+        {
+          "type": "created",
+          "at": "2026-10-05",
+          "id": "0940febeeea9"
+        },
+        {
+          "type": "created",
+          "at": "2026-10-05",
+          "id": "09ed95f9cd81"
+        },
+        {
+          "type": "created",
+          "at": "2026-10-05",
+          "id": "218c142dcb17"
+        },
+        {
+          "type": "created",
+          "at": "2026-10-05",
+          "id": "23643dfd94f8"
+        },
+        {
+          "type": "created",
+          "at": "2026-10-05",
+          "id": "c4b6948c4fa9"
+        }
+      ],
+      "topLevelKeys": [
+        "schemaVersion",
+        "startedAt",
+        "baseline",
+        "absence",
+        "anomalies",
+        "events"
+      ],
+      "addedEndedEvents": 0
+    }
+  },
+  "pricing": {
+    "legacyModels": [
+      "deepseek-v3.2"
+    ],
+    "apiModelKeysTotal": 77,
+    "rows": [
+      {
+        "slug": "deepseek-v3.2",
+        "catalogStatus": "legacy",
+        "apiPricingRowPresent": true,
+        "plans": [
+          "6844d46deb05"
+        ]
+      }
+    ],
+    "publishedModels": 51
+  },
+  "registry": {
+    "registrySlugs": 51,
+    "linkRows": 92,
+    "mappedSlugs": 51,
+    "unmappedSlugs": [],
+    "pricingIdentities": 108,
+    "distinctPricingIdentities": 108,
+    "declarationsTotal": 58,
+    "apiSideDeclarations": 16,
+    "declarationDuplicateKeys": 41,
+    "apiDeclarationKeysAllResolvable": true
+  },
+  "problems": []
+}

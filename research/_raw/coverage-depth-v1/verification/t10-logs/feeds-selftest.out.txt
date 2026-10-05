@@ -1,0 +1,187 @@
+
+一、纯函数与零依赖
+  ✓ lib/feeds.js 里没有 Date.now（订阅层不许读时钟 / 联网 / 写盘）
+  ✓ lib/feeds.js 里没有 无参 new Date(（订阅层不许读时钟 / 联网 / 写盘）
+  ✓ lib/feeds.js 里没有 process.env（订阅层不许读时钟 / 联网 / 写盘）
+  ✓ lib/feeds.js 里没有 网络调用（订阅层不许读时钟 / 联网 / 写盘）
+  ✓ lib/feeds.js 里没有 文件写入（订阅层不许读时钟 / 联网 / 写盘）
+
+二、注册表
+  ✓ spec id 唯一
+  ✓ RSS / JSON 路径全局唯一
+  ✓ Feed 标题两两不同（不许所有 Feed 都叫一个站点名）
+  ✓ 分类 Feed 的标题都带具体分类
+  ✓ RSS 与 JSON 成对出现（不存在只有一种格式的 Feed）
+  ✓ 分类 Feed 的判据来自 audience 的谓词注册表（没有第二份判据实现）
+  ✓ Feed student 能对上一个既有页面
+  ✓ Feed developer 能对上一个既有页面
+  ✓ Feed free-api 能对上一个既有页面
+  ✓ Feed free-tokens 能对上一个既有页面
+  ✓ Feed ai-coding 能对上一个既有页面
+  ✓ Feed china 能对上一个既有页面
+  ✓ Feed category-api 能对上一个既有页面
+  ✓ Feed category-chat 能对上一个既有页面
+  ✓ Feed category-audio 能对上一个既有页面
+  ✓ Feed category-image 能对上一个既有页面
+  ✓ Feed category-agent 能对上一个既有页面
+  ✓ 分类 Feed 的描述与页面注册表逐字相同
+  ✓ 国内可用 Feed 的判据是 availability.chinaUsable（不是 region=cn）
+
+三、Stable ID 与防重复
+  ✓ 优惠条目的 id 就是 deal.id（升级 v1.6 不会给老订阅者重推）
+  ✓ 优惠条目的 id 集合 == 当前 deal 记录 id 集合（无工具条目混入）
+  ✓ 同一天同一字段变两次不会撞 id（这正是不能用可读 id 的原因）
+  ✓ id 与 runAt 无关（构建时刻影响不了身份）
+  ✓ id 随事件内容变化（改一个字段就换一个 id）
+  ✓ 变化 id 与优惠 id 的命名空间不相交（chg: 前缀）
+  ✓ 同输入连续构建 10 次，条目与产物长度完全一致
+  ✓ 10 次构建的 RSS/JSON 文本逐字节相同
+  ✓ 打乱记录键序不改变 Feed 条目（序列化顺序不由输入顺序决定）
+  ✓ 只改 updatedAt 的时分秒不改变任何条目的时间字段
+
+四、时间口径
+  ✓ 优惠条目的时间字段全部来自数据的日期集合（构建时刻没有泄进产物）
+  ✓ `lastSeen`（每轮采集都刷新）不进任何机器可读时间字段
+  ✓ 没有高价值事件的记录 date_modified 缺席（不是拿刷新日冒充）
+  ✓ 同一条记录不会所有 Feed 共用同一个构建时间
+
+五、排除项与空 Feed 策略
+  ✓ 工具条目（type=tool）不进优惠 Feed
+  ✓ 已过期条目不进优惠 Feed
+  ✓ 已结束（ended）条目不进优惠 Feed
+  ✓ 正常条目仍在优惠 Feed 里
+  ✓ 空 Feed 会被判红（除 new / changes / 各条变化 Feed 外）
+  ✓ new / changes / 变化类 Feed 为空不判红（起算日之前本来就没有变化）
+  ✓ 空的变化 Feed 在描述里如实说明起算日与「还没有变化」
+  ✓ 日志不可用时变化 Feed 为空，但描述说的是「没有拿到历史日志」而不是「没有变化」
+  ✓ student Feed 只收满足 student 判据的条目
+
+六、厂商门槛与 slug
+  ✓ 只有 1 条优惠的厂商不生成订阅
+  ✓ 有 2 条优惠的厂商生成订阅
+  ✓ 有 3 条历史事件的厂商也生成订阅（URL 稳定性的单调兜底）
+  ✓ 厂商 slug 必须来自人工表（够门槛但没登记 ⇒ 报出来，不猜一个）
+  ✓ slug 表自身的形状合法（^[a-z0-9][a-z0-9-]*$ 且唯一）
+  ✓ 真实数据上够门槛的厂商全部有 slug
+  ✓ 厂商 Feed 的路径用 slug 而不是显示名
+
+七、XML 良构检查器
+  ✓ 良构 XML 判为通过
+  ✓ 裸 & 被抓到（RSS 里一个裸 & 就能让整份 feed 解析失败）
+  ✓ 标签不配平被抓到
+  ✓ 单引号属性被抓到
+  ✓ 缺少 XML 声明被抓到
+  ✓ 属性值是引用类型时也检查实体
+  ✓ 全部 36 份真实产物都良构
+
+八、Tooth Test：篡改必须红
+  ✓ 未篡改的真实产物：0 个问题（验证器不是永远红的噪声）
+  ✓ T1 同一 Feed 里 guid 重复 → guid-unique 红
+  ✓ T2 student Feed 混入非学生条目 → predicate-holds 红
+  ✓ T3 变化 Feed 指向不存在的事件 → change-event-exists 红
+  ✓ T4 链接指向不存在的页面 → link-exists 红
+  ✓ 额外：把变化 Feed 清空且日志可用时不再报「事件找不到」（负例不误报）
+
+九、套餐变化订阅源（v2.3：另一份数据的变化流）
+  ✓ 套餐变化 Feed 的 spec：路由 / 标题 / 主页 / 允许为空
+  ✓ 套餐变化 Feed 的条目数 == 雷达里的变化条数（去掉元信息）
+  ✓ 每一条的 guid == 日志里重算出来的事件身份
+  ✓ 记录级元信息（updated）不进订阅
+  ✓ 每条都深链到套餐对比页的那一行（#plan-<id>）
+  ✓ 正文里写着变化本身（「正常价格 … → …」）
+  ✓ 套餐变化 Feed 未篡改时 0 个问题
+  ✓ 没有套餐变化时：条目为空，描述如实说起算日
+  ✓ 套餐变化的空态写的是**套餐**的变化面（不复用优惠那句）
+  ✓ 套餐变化日志不可用时：描述说「没有拿到日志」而不是「没有变化」
+  ✓ T6 套餐变化 guid 与日志对不上 → change-event-exists 红
+  ✓ T7 记录级元信息混进套餐变化订阅 → change-event-exists 红（它不在日志里）
+  ✓ T8 套餐变化条目指向不存在的页面 → link-exists 红
+
+十一、v3.0 多 spec 注册表与「API 价格变化」订阅
+  ✓ 注册表是**多 spec**（套餐 + API，不是一条）
+  ✓ spec id / RSS 路径 / JSON 路径互不相同
+  ✓ 每个 spec 的 pageRoute / pageKind 互不相同（page.kind 与 page.route 解析不可能撞车）
+  ✓ 每条 spec 的 changeSource 都有条目实现（没有「登记了但没人实现」的来源）
+  ✓ feedsForPage 按 page.route 解析到 API 那一份
+  ✓ feedsForPage 按 page.kind 解析到 API 那一份
+  ✓ feedsForPage 按 page.route 解析到套餐那一份（老路由不回退）
+  ✓ 没有 scripts/lib/feeds-api.js（订阅逻辑只有一份实现）
+  ✓ 两个来源共用同一份条目实现（feeds.js 里只有一个 changeItemsFor）
+  ✓ 接线后 API 价格变化 Feed 真的被登记（spec 路由 / 主页 / 允许为空）
+  ✓ API Feed 的条目数 == API 雷达里的变化条数（去掉元信息）
+  ✓ 每一条 API 条目的 guid == apiPlanEventIdOf 重算出来的事件身份
+  ✓ GUID 两次构建逐字节相同（不是每次 build 重新生成）
+  ✓ 记录级元信息（updated）不进 API 订阅
+  ✓ API 订阅的条目身份全部来自 api-plan-history，没有一个来自 plan-history
+  ✓ 两条变化 Feed 的 guid 集合不相交（同一件事不可能同时属于两份订阅）
+  ✓ 每条都深链到 API 计费页的那一行（/plans/api/#plan-<id>）
+  ✓ 正文里写着变化本身（页面与订阅共用同一句话）
+  ✓ API 价格变化订阅未篡改时 0 个问题（验证器不是永远红的噪声）
+  ✓ changeViews 形状与平铺参数等价（同一批 guid）
+  ✓ T9 API 变化的 guid 与 api-plan-history 对不上 → change-event-exists 红（其余条目照常过）
+  ✓ T10 Coding 套餐事件混进 API 订阅 → change-event-exists 红（不混入）
+  ✓ T11 API 条目指向不存在的页面 → link-exists 红
+  ✓ T12 记录级元信息混进 API 订阅 → change-event-exists 红（它不在日志里）
+  ✓ 接线后 API 那条与套餐那条一样**始终生成**（alwaysGenerated=true）
+  ✓ 没交出 API 变化视图时：描述说「没有拿到日志」而不是「还没有观测到变化」
+  ✓ 没交视图不影响套餐那一条（两条各自独立判断）
+  ✓ alwaysGenerated=false 的来源没交视图时**不登记**，且记进 changeFeedsSkipped
+  ✓ 注册表恢复原状：夹具跑完后的 feeds.PLAN_CHANGE_FEEDS 与**进入夹具前的快照**同一批、同一序（没留下、没顶掉、没换序）
+  ✓ 每条变化 Feed 的起算日 == **它自己**那份日志的 startedAt（两份日志不同时才构成证据）
+  ✓ 空态描述里的起算日取自**它自己**那一份（没有拿另一份日志的顶上）
+
+十、渲染入口与页面同源
+  ✓ 首页订阅发现：注册表 HOMEPAGE_FEED_IDS 与产物里 spec.homepage=true 的 Feed 是同一批（两侧同源，不写条数）
+  ✓ 首页订阅发现：tag 里的地址集合 == 由那批 Feed 的 spec.path + spec.jsonPath 派生的集合（集合相等，且每个地址只出现一次）
+  ✓ 首页订阅发现里的每个地址都指向真实存在的 Feed
+  ✓ 根 Feed 标签与注册表同源
+  ✓ HTML 属性里的标题做过转义（不会把引号带进属性）
+
+十二、/feeds/ 汇总页与注册表的双向对账（P3-4 回归钉）
+  ✓ 注册表里登记的每一份 public Feed 都落进了汇总页的分组
+  ✓ 本轮注册表里没有「hidden/internal 却仍被生成」的 Feed（隐藏必须与不生成绑定）
+  ✓ 没有一个 public Feed 是「没分组」的（否则它会从 /feeds/ 静默消失）
+  ✓ 分组计划不重不漏（分组里的 Feed 数 == public Feed 数）
+  ✓ 5 个分类 Feed 全在「按分类」组里（P3-4：它们曾经整组不在 /feeds/ 上）
+  ✓ 合成的完整页面零问题（断言不是恒红）
+  ✓ 方向①（注册表 → 页面）：抽掉一份 Feed ⇒ 必须红
+  ✓ 方向②（页面 → 注册表）：页面上多一条注册表没有的订阅 ⇒ 必须红
+  ✓ 方向③（hidden 不许当 ignore list）：仍被生成的 Feed 标成 hidden ⇒ 必须红
+  ✓ 方向④：public Feed 没有分组 ⇒ 必须红
+  ✓ 默认 public；只有 hidden / internal 才是例外
+  ✓ publicFeeds() 按同一判据过滤
+  ✓ 既有 Feed 的 URL 形态被冻结（只补汇总页，不动任何订阅地址）
+  ✓ 没有新增 /feed/api.xml 或 /feed/coding.xml（Prompt §13.1 明确禁止）
+  ✓ 汇总页渲染层从注册表取分组（调用 feeds.pageGroups）
+  ✓ 汇总页渲染层不再手写 Feed id 清单（没有 ids: [...] 这种第二份清单）
+
+十三、空态判据（t31 / T28-F1）：按数字边界判「0 条」，空态原意不许被削掉
+    逐组结果（拼法 → isZeroCountRow）：
+      true  空态·行首                「0 条」
+      true  空态·行尾                「最近变化 0 条」
+      true  空态·前接标点              「（0 条）」
+      true  空态·真实空态行             「AI Deals Radar · Coding 套餐变化 0 条（变更记录自 2026-09-30 起）」
+      false 10 条                 「10 条」
+      false 20 条                 「20 条」
+      false 30 条                 「30 条」
+      false 80 条                 「80 条」
+      false 100 条                「100 条」
+      false 1,000 条              「1,000 条」
+      false 28 条                 「28 条」
+      false 9 条                  「9 条」
+      false 真实非空行（10 条）          「AI Deals Radar · API 价格变化 10 条 · 最近一条 2026-10-04」
+  ✓ 【判据】真空态行判为 0 条（行首 / 行尾 / 前接标点 / 带起算日的完整行，四种拼法都要命中）
+  ✓ 【对照组·真牙】条数以 0 结尾的**非空**行一律不是空态（10 / 20 / 30 / 80 / 100 / 1,000 条）
+  ✓ 【回归钉】旧写法（裸 /0 条/ 子串）把这 6 种「条数以 0 结尾」的非空拼法全判成空态 —— 缺陷可复现，牙不是凭空加的
+  ✓ 【边界】`0 条` 后面紧跟数字 / 没有空格 ⇒ 不算空态（不把脏文案误判成空态）
+  ✓ 【原意】空态行 + 起算日 ⇒ 通过（对照组：这一条证明判据不是恒红）
+  ✓ 【原意·不许被削】空态行**缺**起算日 ⇒ 必须判失败（这道牙存在的理由）
+  ✓ 【假红已修】非空行（10 条，条数以 0 结尾）⇒ 不进空态分支、不要求起算日
+  ✓ 【对照组】非空行即便写了起算日也通过（非空行写不写起算日都不算错）
+  ✓ 【现场夹具】两条真实变化流（28 条 / 10 条）在新判据下都不进空态分支 ⇒ T28-F1 的假红消失
+  ✓ 【现场夹具·对照】同一窗口里**真的**出现「0 条」时，仍然要求起算日
+  ✓ 【单一出处】页面验收里不再有裸 `/0 条/` 子串判据（只允许存在于解释这件事的注释里）
+  ✓ 【单一出处】页面验收改调 lib/feeds.js 的具名判据，而不是自己再写一份正则
+  ✓ 【原意还在】页面验收仍然走「空态 ⇒ 必须有起算日」这条判据（判据函数仍然会否掉无起算日的空态行）
+
+=== v1.6 订阅层演练：145 项通过，0 项失败 ===

@@ -1,0 +1,90 @@
+{
+  "sandbox": "C:\\Users\\星澈\\AppData\\Local\\Temp\\cvdv1-t10-teeth",
+  "pristineSha": "bf6c0e3f9d4317f0f07a76e5853eabd0c287bf9996fcd3d8067e84c05ce59f35",
+  "ranAt": "2026-10-05T05:05:08.122Z",
+  "cases": [
+    {
+      "id": "C0-control",
+      "expect": "exit 0（0 失败）",
+      "exit": 0,
+      "failLines": [],
+      "tail": " ⏎ === coverage-expansion-v1 覆盖意图层演练：201 项通过，0 项失败 ===",
+      "ok": true
+    },
+    {
+      "id": "P1a-F1-inject-synthetic-missing-row",
+      "patchHits": 1,
+      "exit": 1,
+      "expectCheck": "MISSING 行的盘上记录必须是 0",
+      "hitExpectedCheck": true,
+      "failLines": [
+        "✗ v3③：MISSING 行的盘上记录必须是 0（MISSING 的定义：可覆盖、未延期、来源健康，但盘上一条都没有） —— MISSING 行集合大小 1 ≠ states.MISSING 计数 0 —— 两处读数必须一致（空集也要对上 0，不许靠\"没有行\"蒙过去）；有 1 格 MISSING 却在盘上有记录（present ≠ 0）：(t10-probe)/deals=1 —— MISSIN",
+        "✗ v3③：MISSING 行的盘上记录必须是 0（MISSING 的定义：可覆盖、未延期、来源健康，但盘上一条都没有）"
+      ],
+      "tail": "失败项： ⏎   ✗ v3③：MISSING 行的盘上记录必须是 0（MISSING 的定义：可覆盖、未延期、来源健康，但盘上一条都没有）",
+      "shaBefore": "bf6c0e3f9d4317f0f07a76e5853eabd0c287bf9996fcd3d8067e84c05ce59f35",
+      "shaMutated": "adf419531d96def016ad1506ed3ff79448c6c42dcd6333811f509553aee93aa2",
+      "shaAfter": "bf6c0e3f9d4317f0f07a76e5853eabd0c287bf9996fcd3d8067e84c05ce59f35",
+      "restoredByteExact": true,
+      "ok": true
+    },
+    {
+      "id": "P1b-F1-offset-expected-count",
+      "patchHits": 1,
+      "exit": 1,
+      "expectCheck": "MISSING 行的盘上记录必须是 0",
+      "hitExpectedCheck": true,
+      "failLines": [
+        "✗ v3③：MISSING 行的盘上记录必须是 0（MISSING 的定义：可覆盖、未延期、来源健康，但盘上一条都没有） —— MISSING 行集合大小 0 ≠ states.MISSING 计数 1 —— 两处读数必须一致（空集也要对上 0，不许靠\"没有行\"蒙过去）",
+        "✗ v3③：MISSING 行的盘上记录必须是 0（MISSING 的定义：可覆盖、未延期、来源健康，但盘上一条都没有）"
+      ],
+      "tail": "失败项： ⏎   ✗ v3③：MISSING 行的盘上记录必须是 0（MISSING 的定义：可覆盖、未延期、来源健康，但盘上一条都没有）",
+      "shaBefore": "bf6c0e3f9d4317f0f07a76e5853eabd0c287bf9996fcd3d8067e84c05ce59f35",
+      "shaMutated": "fddce251b3b541b140beed6d6735c7c0ad55b4e4588a4eb8e70791502e04832d",
+      "shaAfter": "bf6c0e3f9d4317f0f07a76e5853eabd0c287bf9996fcd3d8067e84c05ce59f35",
+      "restoredByteExact": true,
+      "ok": true
+    },
+    {
+      "id": "P2a-F3-file-side-plus-one",
+      "patchHits": 1,
+      "exit": 1,
+      "expectCheck": "不许同源自证",
+      "hitExpectedCheck": true,
+      "failLines": [
+        "✗ t25：registry 新增 API 侧处置键（映射 A / 已处置 B / 逐条留档）且三者和 == 计价条目总数 —— ④ 载荷里的声明行数 16 ≠ 现读文件里的 API 侧声明行数 17 —— 载荷与盘上文件必须逐字对上（两边各数一遍，不是同一个数抄两处）",
+        "✗ t12：【不许同源自证】声明行数必须与**现读文件**数出来的 API 侧声明行数相等，且展开增量必须等于逐格复算出的通配多余覆盖 —— 载荷行数=16 / 文件行数=17 / 展开增量=0 / 通配多余覆盖复算=0",
+        "✗ t25：registry 新增 API 侧处置键（映射 A / 已处置 B / 逐条留档）且三者和 == 计价条目总数",
+        "✗ t12：【不许同源自证】声明行数必须与**现读文件**数出来的 API 侧声明行数相等，且展开增量必须等于逐格复算出的通配多余覆盖"
+      ],
+      "tail": "  ✗ t25：registry 新增 API 侧处置键（映射 A / 已处置 B / 逐条留档）且三者和 == 计价条目总数 ⏎   ✗ t12：【不许同源自证】声明行数必须与**现读文件**数出来的 API 侧声明行数相等，且展开增量必须等于逐格复算出的通配多余覆盖",
+      "shaBefore": "bf6c0e3f9d4317f0f07a76e5853eabd0c287bf9996fcd3d8067e84c05ce59f35",
+      "shaMutated": "47cd3bec1767916574ac8a3563d6e9dc8211294402a9fb2a7940df5ec93331f3",
+      "shaAfter": "bf6c0e3f9d4317f0f07a76e5853eabd0c287bf9996fcd3d8067e84c05ce59f35",
+      "restoredByteExact": true,
+      "ok": true
+    },
+    {
+      "id": "P2b-F3-recomputed-side-plus-one",
+      "patchHits": 1,
+      "exit": 1,
+      "expectCheck": "不许同源自证",
+      "hitExpectedCheck": true,
+      "failLines": [
+        "✗ t25：registry 新增 API 侧处置键（映射 A / 已处置 B / 逐条留档）且三者和 == 计价条目总数 —— ⑤ 展开数超出行数的部分 0 ≠ 逐格复算出来的通配多余覆盖 1 —— 展开的增量只能来自 variant:null 行（每行贡献\"该 modelKey 真实变体数 − 1\"），别处冒出来的增量必红",
+        "✗ t12：【不许同源自证】声明行数必须与**现读文件**数出来的 API 侧声明行数相等，且展开增量必须等于逐格复算出的通配多余覆盖 —— 载荷行数=16 / 文件行数=16 / 展开增量=0 / 通配多余覆盖复算=1",
+        "✗ t25：registry 新增 API 侧处置键（映射 A / 已处置 B / 逐条留档）且三者和 == 计价条目总数",
+        "✗ t12：【不许同源自证】声明行数必须与**现读文件**数出来的 API 侧声明行数相等，且展开增量必须等于逐格复算出的通配多余覆盖"
+      ],
+      "tail": "  ✗ t25：registry 新增 API 侧处置键（映射 A / 已处置 B / 逐条留档）且三者和 == 计价条目总数 ⏎   ✗ t12：【不许同源自证】声明行数必须与**现读文件**数出来的 API 侧声明行数相等，且展开增量必须等于逐格复算出的通配多余覆盖",
+      "shaBefore": "bf6c0e3f9d4317f0f07a76e5853eabd0c287bf9996fcd3d8067e84c05ce59f35",
+      "shaMutated": "7c823615d51a32206d6f41b573ca99ea72d6121fbfb1b107adf05e82dee6edf5",
+      "shaAfter": "bf6c0e3f9d4317f0f07a76e5853eabd0c287bf9996fcd3d8067e84c05ce59f35",
+      "restoredByteExact": true,
+      "ok": true
+    }
+  ],
+  "passed": 5,
+  "failed": 0,
+  "sharedWorktreeSelftestSha": "bf6c0e3f9d4317f0f07a76e5853eabd0c287bf9996fcd3d8067e84c05ce59f35"
+}

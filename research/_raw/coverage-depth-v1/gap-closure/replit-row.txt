@@ -1,0 +1,13 @@
+﻿{
+ "provider": "replit",
+ "name": "Replit",
+ "tier": "major",
+ "role": "coding-product",
+ "dimension": "deals",
+ "state": "NOT_APPLICABLE",
+ "present": 1,
+ "currentPresent": 1,
+ "declared": 0,
+ "resolved": 0,
+ "reason": "deals/api/models 不适用：① 没有任何一路采集来源覆盖 Replit 官方优惠（deals.json 的 source 只有 11 个）⇒ 不写 deals target；② 官方没有公开的按量 API 价目；③ 它不发行自己的模型身份。"
+}

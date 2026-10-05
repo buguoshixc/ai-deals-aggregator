@@ -1,0 +1,751 @@
+diff --git a/scripts/tools/coverage-report.js b/scripts/tools/coverage-report.js
+index ac130b4..0452154 100644
+--- a/scripts/tools/coverage-report.js
++++ b/scripts/tools/coverage-report.js
+@@ -18,13 +18,30 @@
+  *     not-applicable / blocked-by-source-health）；
+  *   · Current Model Coverage（声明的 current target 模型是否真的在 registry 里归属这家、
+  *     unknown release dates、legacy/historical 保留情况）；
+  *   · Source Health impact（声明的来源与 `scripts/data/source-health.json` 对账）；
+  *   · Freshness 阈值与理由（策略模块落盘时读它的常量，没落盘就如实说"没落盘"）。
+  *
+- * **旧口径一个字都不改**：旧的五类交叉缺口、旧的 JSON 键全部保留（新内容进新的键），
++ * ## v3（coverage-depth-v1）：从「覆盖了几格」升级到「下一步补哪一条」
++ *
++ * v2 已经能说出每个 (provider × 维度) 格子是七态里的哪一种，但读者拿到那张表之后仍然要自己
++ * 判断"现在最该做哪一件事"。v3 追加**四节**（文本与 JSON 同一批数字），把"下一步"变成可执行的队列：
++ *
++ *   · **Release Evidence Coverage** —— registry 里有多少模型写下了官方发布日期（按 developer /
++ *     modelRole / catalogStatus 三维拆分）。百分比只是**观测指标，不是 KPI**：没有目标线、不进门禁。
++ *   · **Model Release Evidence Queue** —— 只读的"优先补哪几条发布日期"队列：五条**打印在报告里**的
++ *     确定性规则（未知优先 → 可比组规模降序 → tier core>major>long-tail → 是否被下游引用 → slug
++ *     code-unit 序），没有任何主观分、没有伪精确分数。
++ *   · **Gap Closure Queue** —— MISSING / PARTIAL 按 Priority A/B/C/D 分层，每条带「目标 N / 已兑现 M /
++ *     缺 K」与出口状态；分层规则同样**逐字打印**（判据全部来自既有读数，不引入第二套口径）。
++ *   · **Source Reliability summary** —— 读 `scripts/data/source-rulings.json`（workstream C 的写域，
++ *     判据层是 `scripts/lib/source-rulings.js`），与 `scripts/data/source-health.json` 的 live 读数 join，
++ *     并做「裁决 ↔ 采集器注册表 ↔ source-health」三方对账。**必须打印心跳的 generatedAt**。
++ *
++ * **旧口径一个字都不改**：旧的五类交叉缺口、旧的 JSON 键全部保留（新内容进新的键，且全部追加在
++ * `coverageTargets` 既有键之后 —— 顶层键序与 v2 逐字逐序相同），
+  * 免得下游（CI、审阅、报告）因为一次升级而看不见原来的数字。
+  * `--json` 两次运行逐字节一致（所有新数组都按确定性顺序输出）。
+  *
+  * 题面 §C4 要求至少输出：
+  *   Deals : provider 数 · 当前优惠数
+  *   Coding: provider 数 · plan 数
+@@ -56,12 +73,13 @@ const fs = require('fs');
+ const path = require('path');
+ 
+ const { load: loadRenderCore } = require('../lib/render-core');
+ const providers = require('../lib/providers');
+ const registry = require('../lib/model-registry');
+ const coverageTargets = require('../lib/coverage-targets');
++const sourceRulings = require('../lib/source-rulings');
+ const { todayCN } = require('../lib/schema');
+ 
+ const ROOT = path.join(__dirname, '..', '..');
+ 
+ /** `--models=` / `--links=` 只用于**验证报告本身**（Stage D 的关系层尚未落盘时，用它喂一份临时文件
+  *  来确认「有映射」分支真的走得通）。不传就是盘上的真实路径。 */
+@@ -85,12 +103,35 @@ const TARGETS_FILE = overrideOf('targets') || path.join(ROOT, 'scripts', 'data',
+ const PUBLISHED_MODELS_FILE = overrideOf('published-models') || path.join(ROOT, 'models.json');
+ /** 数据源健康心跳（`BLOCKED_SOURCE` 与 Source Health impact 的唯一出处） */
+ const SOURCE_HEALTH_FILE = overrideOf('source-health') || path.join(ROOT, 'scripts', 'data', 'source-health.json');
+ /** Freshness 单一策略模块（t4 落盘后才有；没有就如实说"没落盘"，绝不假装 0 个 unknown） */
+ const FRESHNESS_MODULE = '../lib/model-freshness';
+ 
++/** 来源裁决表（v3 新增；**workstream C 的写域**，本报告只读它）。`--source-rulings=` 只用于验证报告本身。 */
++const SOURCE_RULINGS_FILE = overrideOf('source-rulings') || path.join(ROOT, 'scripts', 'data', 'source-rulings.json');
++
++/** 采集器注册表（三方对账的第二方；`collectors/index.js` 不加载无头链路，require 它不联网、不读盘） */
++const COLLECTORS_INDEX = '../collectors';
++
++/**
++ * Release Evidence Queue 打印/输出前几条。**固定常量**（不是"前几名"那种拍脑袋）：
++ * 15 条足以覆盖当前 40 条 unknown 里最该动手的一批，又不会把报告刷成一张长表；
++ * 改它就改这一行，并跑 coverage-targets-selftest。
++ */
++const RELEASE_QUEUE_LIMIT = 15;
++
++/**
++ * Gap Closure Queue 的「高价值维度」。这是一条**声明出来的人工判据**（不是从数据里推出来的）：
++ * API 计费与模型身份这两个维度的缺口，直接决定"这家平台在页面上有没有可用的价格/模型"，
++ * 而 deals / coding 的缺口影响的是入口的丰富度。规则原文会逐字打印在报告里 —— 读者不必猜。
++ */
++const HIGH_VALUE_DIMENSIONS = ['api', 'models'];
++
++/** 派生字段在发布产物里缺席时，报告里用的占位标签（与既有 `statusesOutsideWordList` 的写法同一个词） */
++const FIELD_MISSING_LABEL = '(字段缺失)';
++
+ /** 题面 §C3 要求候选登记表逐条给出的字段 —— 少一个字段这条记录就不算留档 */
+ const CANDIDATE_REQUIRED_FIELDS = [
+   'provider',
+   'url',
+   'checkedAt',
+   'failedReason',
+@@ -100,12 +141,22 @@ const CANDIDATE_REQUIRED_FIELDS = [
+   'pageOffline',
+   'incomplete'
+ ];
+ 
+ const problems = [];
+ 
++/**
++ * **层未落盘**（不是错误，但必须显式计入自检口径，绝不静默当通过）。
++ *
++ * 为什么与 `problems` 分开记：`problems` 是"报告不可信"（数据互相矛盾、读不懂、对账不上），
++ * 它让报告 exit 1；而"某一层这一轮还没落盘"不是矛盾 —— 但**它与"这一层全是健康的"长得一模一样**，
++ * 所以它必须出现在自检区里（文本一行 + JSON 一个键），由读者决定要不要等它。
++ * 与 Freshness 策略模块同一处理（那一节也是"没落盘就如实说，不判红"）。
++ */
++const pendingLayers = [];
++
+ function readJson(file, label) {
+   try {
+     return JSON.parse(fs.readFileSync(file, 'utf8'));
+   } catch (error) {
+     if (error.code === 'ENOENT') return null;
+     problems.push(`${label} 读取失败：${error.message}`);
+@@ -581,12 +632,18 @@ function main() {
+   /* ---------------- Freshness 阈值与理由（v2） ---------------- */
+   const freshnessPath = path.join(__dirname, '..', 'lib', 'model-freshness.js');
+   //
+   // 三种结局**必须分开报**：文件不在盘上（层未落盘）≠ 文件在盘上但读不出来（坏了）≠ 读得出策略。
+   // 这里刻意 catch 住 require 失败：本报告要能在一份策略模块正在改写的仓库里照常跑出别的数字 ——
+   // 但那件事会在文本与 JSON 里**显式写出来**，不是静默降级（静默降级正是这一层最该防的事）。
++  //
++  // v3：这里额外留一个**内存引用** `freshnessJudge`（模块对象本身）。Release Evidence Coverage 与
++  // Release Evidence Queue 借它调 `releaseDateOf()` / `resolveModelRole()` / `comparableGroupOf()` ——
++  // 判据仍然只有一份（在 lib 里），报告不另写一份；而 `coverageTargets.freshness` 那一块的字形
++  // **一个字节都不动**（那是 t46 冻结的旧键，往里塞函数会让 --json 变成不可序列化）。
++  let freshnessJudge = null;
+   const freshness = (() => {
+     if (!fs.existsSync(freshnessPath)) {
+       return {
+         status: 'missing',
+         available: false,
+         module: 'scripts/lib/model-freshness.js',
+@@ -601,12 +658,13 @@ function main() {
+         note: 'freshness 单一策略层尚未落盘（scripts/lib/model-freshness.js 不存在）：本报告**不**判定 currentness ——'
+           + ' unknown release dates 与 legacy/historical 一律如实标成"层未落盘"，绝不用 0 冒充（0 个 legacy 与"分不出 legacy"是两件事）。'
+       };
+     }
+     try {
+       const mod = require(freshnessPath);
++      freshnessJudge = mod;
+       const policy = mod.MODEL_FRESHNESS_POLICY === undefined ? null : mod.MODEL_FRESHNESS_POLICY;
+       return {
+         status: 'ok',
+         available: true,
+         module: 'scripts/lib/model-freshness.js',
+         error: null,
+@@ -755,12 +813,468 @@ function main() {
+     present: row.present,
+     resolved: row.resolved,
+     reason: row.reason,
+     items: row.items.map(item => ({ value: item.value, resolved: item.resolved, reason: item.reason }))
+   });
+ 
++  /* ==================================================================== */
++  /* v3（coverage-depth-v1）新增四节的**同一批数字**（文本与 JSON 双侧共用）  */
++  /* ==================================================================== */
++  //
++  // 纪律（与上面 v2 各节逐字相同）：
++  //   · 判据只有一份 —— 都在既有 lib 里，报告只"取词表 / 取逐条值 / 按维度分组"；
++  //   · 相位差如实报 —— 整层没落盘就写"分不出"，绝不用 0 冒充；
++  //   · 数组一律**确定性序**（code-unit 或显式规则），两次运行逐字节一致；
++  //   · 新增内容全部追加进 `coverageTargets` 的**新键**，旧键一个字节都不动。
++
++  /* ---------------- ① Release Evidence Coverage（v3） ---------------- */
++  //
++  // "有没有官方发布日期"的判据只有一份：`lib/model-freshness.js` 的 `releaseDateOf()`（`provided` 位）——
++  // 与 `deriveCatalog()` 判 current / aging / legacy / historical / unknown 时用的是**同一个函数**。
++  // 报告不另写一个"releasedAt 是不是空"的判断（那正是"两套口径"的起点）。
++  const judgeReleaseDateOf = entry => (freshnessJudge && typeof freshnessJudge.releaseDateOf === 'function'
++    ? freshnessJudge.releaseDateOf(entry)
++    : null);
++  const judgeModelRoleOf = entry => (freshnessJudge && typeof freshnessJudge.resolveModelRole === 'function'
++    ? freshnessJudge.resolveModelRole(entry)
++    : undefined);
++  const freshnessJudgeAvailable = Boolean(freshnessJudge
++    && typeof freshnessJudge.releaseDateOf === 'function'
++    && typeof freshnessJudge.resolveModelRole === 'function'
++    && typeof freshnessJudge.comparableGroupOf === 'function'
++    && Array.isArray(freshness.catalogStatuses));
++  /**
++   * 占比（百分数，保留一位小数）。**纯观测指标**，不参与任何判定。
++   *
++   * 刻意写成 `(part / whole) * 100` 再 `toFixed(1)`：本仓库有一条跨文件的单位换算红线
++   * （`api-plans-selftest.js` 会扫 scripts/ 下所有 .js），它盯的是"价格/额度类标识符与 1e3 / 1e6
++   * 这类换算因子出现在同一行的算术表达式里"。这里做的是**百分比**，与单位换算无关，
++   * 所以既不用那些因子，变量名也与价格/额度无关 —— 免得一条只该管计费的牙在这里误报。
++   */
++  const sharePercentOf = (part, whole) => (whole ? Number(((part / whole) * 100).toFixed(1)) : null);
++  const releaseEvidenceRows = registryEntries.map(([slug, entry]) => {
++    const info = facts.dimensions.models.bySlug[slug] || {};
++    const date = judgeReleaseDateOf(entry);
++    const role = judgeModelRoleOf(entry);
++    const catalogStatus = info.catalogStatus === undefined ? null : info.catalogStatus;
++    return {
++      slug,
++      developer: info.developer === undefined || info.developer === null || String(info.developer) === ''
++        ? FIELD_MISSING_LABEL : String(info.developer),
++      modelRole: role === undefined || role === null || role === ''
++        ? FIELD_MISSING_LABEL : String(role),
++      catalogStatus: catalogStatus === null ? FIELD_MISSING_LABEL : String(catalogStatus),
++      provided: Boolean(date && date.provided === true),
++      judgeable: Boolean(date && date.normalized !== null),
++      withReleaseEvidence: Boolean(entry && Array.isArray(entry.releaseEvidence) && entry.releaseEvidence.length > 0)
++    };
++  });
++  const bucketReleaseEvidence = (list, keyOf, compare, fillKeys) => {
++    const map = new Map();
++    const blank = key => ({ key, total: 0, known: 0, unknown: 0, unparsable: 0, withReleaseEvidence: 0 });
++    for (const row of list) {
++      const key = keyOf(row);
++      const bucket = map.get(key) || blank(key);
++      bucket.total += 1;
++      if (row.provided) {
++        bucket.known += 1;
++        if (!row.judgeable) bucket.unparsable += 1;
++      } else bucket.unknown += 1;
++      if (row.withReleaseEvidence) bucket.withReleaseEvidence += 1;
++      map.set(key, bucket);
++    }
++    // `fillKeys` = 有词表的维度（catalogStatus）：**一档不落地也印出来**（与 R4 五态普查同一纪律 ——
++    // 少印一档会让读者以为那一档不存在，而不是那一档为 0）。
++    const buckets = [...map.values()];
++    for (const key of (Array.isArray(fillKeys) ? fillKeys : [])) {
++      if (!map.has(key)) buckets.push(blank(key));
++    }
++    return buckets
++      .map(bucket => Object.assign(bucket, { knownPercent: sharePercentOf(bucket.known, bucket.total) }))
++      .sort(compare);
++  };
++  const byCountThenKey = (a, b) => (b.total - a.total) || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
++  const catalogWordIndex = key => (catalogStatusWordList || []).indexOf(key);
++  const byWordListThenKey = (a, b) => {
++    const ai = catalogWordIndex(a.key);
++    const bi = catalogWordIndex(b.key);
++    const ar = ai < 0 ? Number.MAX_SAFE_INTEGER : ai;
++    const br = bi < 0 ? Number.MAX_SAFE_INTEGER : bi;
++    return (ar - br) || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
++  };
++  const releaseEvidence = (() => {
++    const base = {
++      source: 'scripts/data/models.json（来源层：releasedAt / developer / modelRole）+ 发布产物 models.json（派生层：catalogStatus）',
++      judge: 'scripts/lib/model-freshness.js（releaseDateOf / resolveModelRole / CATALOG_STATUSES）',
++      registryModels: registryEntries.length,
++      releasedAtLanded,
++      catalogStatusLanded,
++      status: 'ok',
++      known: null,
++      unknown: null,
++      unparsable: null,
++      withReleaseEvidence: null,
++      knownPercent: null,
++      percentNote: '覆盖率百分比是**观测指标，不是 KPI**：没有目标线、没有权重、不进门禁、不参与任何判定 —— 它只回答"这一层今天长什么样"。',
++      groupOrder: ['developer', 'modelRole', 'catalogStatus'],
++      byDeveloper: null,
++      byModelRole: null,
++      byCatalogStatus: null,
++      reason: null
++    };
++    if (!freshnessJudgeAvailable) {
++      return Object.assign(base, {
++        status: 'no-judge',
++        reason: 'lib/model-freshness.js 没给出 releaseDateOf() / resolveModelRole() / comparableGroupOf() / CATALOG_STATUSES'
++          + ' —— 没有判据层，本报告**不**自己发明一个"发布日期算不算写了"的判断（"分不出"与"0 条未知"是两件事）。'
++      });
++    }
++    if (!releasedAtLanded) {
++      return Object.assign(base, {
++        status: 'no-release-field',
++        reason: 'scripts/data/models.json 里没有一个条目带 releasedAt 字段（Model Registry v2 尚未落盘）—— 如实报"分不出"，不用 0 冒充。'
++      });
++    }
++    const known = releaseEvidenceRows.filter(row => row.provided).length;
++    const unknown = releaseEvidenceRows.length - known;
++    const unparsable = releaseEvidenceRows.filter(row => row.provided && !row.judgeable).length;
++    const byDeveloper = bucketReleaseEvidence(releaseEvidenceRows, row => row.developer, byCountThenKey);
++    const byModelRole = bucketReleaseEvidence(releaseEvidenceRows, row => row.modelRole, byCountThenKey);
++    const byCatalogStatus = catalogStatusLanded
++      ? bucketReleaseEvidence(releaseEvidenceRows, row => row.catalogStatus, byWordListThenKey, catalogStatusWordList)
++      : null;
++    return Object.assign(base, {
++      known,
++      unknown,
++      unparsable,
++      withReleaseEvidence: releaseEvidenceRows.filter(row => row.withReleaseEvidence).length,
++      knownPercent: sharePercentOf(known, releaseEvidenceRows.length),
++      byDeveloper,
++      byModelRole,
++      byCatalogStatus,
++      reason: null
++    });
++  })();
++  // 两处读数必须同时成立：新读数（lib 的 releaseDateOf().provided）↔ 既有 "unknown release dates"。
++  // 分家就说明"有没有 releasedAt"有了两个判据 —— 那正是本报告最该当场报红的事。
++  if (releaseEvidence.status === 'ok' && unknownReleaseDates !== null
++    && releaseEvidence.unknown !== unknownReleaseDates.length) {
++    problems.push(`Release Evidence Coverage 与既有 "unknown release dates" 两处读数不一致（新读数 ${releaseEvidence.unknown} / 既有 ${unknownReleaseDates.length}）`
++      + ' —— "有没有官方发布日期"只能有一个判据（lib/model-freshness.js 的 releaseDateOf()），两处必须同时成立。');
++  }
++  if (releaseEvidence.status === 'ok' && releaseEvidence.unparsable > 0) {
++    problems.push(`Release Evidence Coverage：有 ${releaseEvidence.unparsable} 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD）`
++      + ' —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。');
++  }
++  for (const [name, list] of [['byDeveloper', releaseEvidence.byDeveloper], ['byModelRole', releaseEvidence.byModelRole], ['byCatalogStatus', releaseEvidence.byCatalogStatus]]) {
++    if (!Array.isArray(list)) continue;
++    const sum = list.reduce((total, bucket) => total + bucket.total, 0);
++    if (sum !== registryEntries.length) {
++      problems.push(`Release Evidence Coverage 的 ${name} 拆分不闭合：各档之和 ${sum} ≠ registry 模型数 ${registryEntries.length}`
++        + ' —— 每一个模型必须恰好落进一档（少一档说明有一类值被静默丢掉了）。');
++    }
++  }
++
++  /* ---------------- ② Model Release Evidence Queue（v3） ---------------- */
++  //
++  // 只读队列：把"优先补哪几条发布日期"变成一条**可复算的次序**，而不是一句"先补重要的"。
++  // 规则原文（下面 rules 数组）会逐字打印进报告 —— 读者不必猜排序依据。
++  // 没有任何主观分：五条规则全部是盘上事实（字段是否为空 / 组大小 / tier / 下游引用 / slug 次序）。
++  const releaseEvidenceQueue = (() => {
++    const tierRankOf = { core: 0, major: 1, 'long-tail': 2 };
++    const tiersInUse = coverageTargets.TIERS;
++    const rows = registryEntries.map(([slug, entry]) => {
++      const info = facts.dimensions.models.bySlug[slug] || {};
++      const date = judgeReleaseDateOf(entry);
++      const provider = info.provider === undefined ? null : info.provider;
++      const summary = provider ? targetSummaries.find(row => row.provider === provider) : null;
++      // tier 读 coverage-targets.json；够不到 target 的（归属不在覆盖宇宙里）按 long-tail —— 这是规则③的原文。
++      const tier = summary && tiersInUse.includes(summary.tier) ? summary.tier : 'long-tail';
++      return {
++        slug,
++        developer: info.developer === undefined || info.developer === null ? null : String(info.developer),
++        family: entry && entry.family !== undefined && entry.family !== null ? String(entry.family) : null,
++        modelRole: (() => { const role = judgeModelRoleOf(entry); return role === undefined || role === null ? null : String(role); })(),
++        releasedAt: entry && entry.releasedAt !== undefined ? entry.releasedAt : null,
++        releasedAtUnknown: !(date && date.provided === true),
++        groupKey: null,
++        groupKind: null,
++        groupDegraded: null,
++        groupLabel: null,
++        groupSize: 0,
++        provider,
++        tier,
++        tierRank: tierRankOf[tier] === undefined ? 2 : tierRankOf[tier],
++        referencedByApiPlans: apiModelKeys.has(slug),
++        referencedByPlans: false,
++        referenced: false
++      };
++    });
++    const bySlug = new Map(rows.map(row => [row.slug, row]));
++    // ② 可比组规模：组键的唯一判据在 lib/model-freshness.js 的 comparableGroupOf()
++    //   （`freshnessGroup` 优先，否则 developer + family + modelRole）——报告不另写一个组键算法。
++    if (freshnessJudge && typeof freshnessJudge.comparableGroupOf === 'function') {
++      const describe = typeof freshnessJudge.describeGroupKey === 'function'
++        ? freshnessJudge.describeGroupKey : key => String(key);
++      const size = new Map();
++      for (const row of rows) {
++        const entry = registryLoaded.table[row.slug] || {};
++        const group = freshnessJudge.comparableGroupOf(entry);
++        row.groupKey = group.key;
++        row.groupKind = group.source;
++        row.groupDegraded = group.degraded === true;
++        row.groupLabel = describe(group.key);
++        size.set(group.key, (size.get(group.key) || 0) + 1);
++      }
++      for (const row of rows) row.groupSize = row.groupKey === null ? 0 : (size.get(row.groupKey) || 0);
++    }
++    // ④ 是否被 api-plans.json 或 plans.json 引用：api 侧按 api-plans 的 modelKey，套餐侧按关系层的 Coding 映射。
++    if (Array.isArray(relations)) {
++      for (const link of relations) {
++        if (!link || link.registrySlug === undefined || link.registrySlug === null) continue;
++        const row = bySlug.get(String(link.registrySlug));
++        if (!row) continue;
++        if (link.apiPlanId) row.referencedByApiPlans = true;
++        if (link.planId) row.referencedByPlans = true;
++      }
++    }
++    for (const row of rows) row.referenced = row.referencedByApiPlans || row.referencedByPlans;
++    // 五条规则的比较器（顺序即优先级；先比出来的先决定次序，同则看下一条）
++    const compare = (a, b) => {
++      if (a.releasedAtUnknown !== b.releasedAtUnknown) return a.releasedAtUnknown ? -1 : 1;   // ① 未知优先
++      if (a.groupSize !== b.groupSize) return b.groupSize - a.groupSize;                       // ② 可比组规模降序
++      if (a.tierRank !== b.tierRank) return a.tierRank - b.tierRank;                           // ③ core > major > long-tail
++      if (a.referenced !== b.referenced) return a.referenced ? -1 : 1;                         // ④ 被下游引用优先
++      return a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0;                                   // ⑤ slug 的 code-unit 序
++    };
++    const ordered = [...rows].sort(compare);
++    const queue = ordered.slice(0, RELEASE_QUEUE_LIMIT).map((row, index) => Object.assign({ rank: index + 1 }, row));
++    return {
++      limit: RELEASE_QUEUE_LIMIT,
++      rules: [
++        '① `releasedAt` 为空（null 或字段缺席）的优先 —— 与报告既有 `unknown release dates` 同一判据（lib/model-freshness.js 的 `releaseDateOf().provided`）；已经写下发布日期的排在其后。',
++        '② 可比组规模**降序**：组键由 lib/model-freshness.js 的 `comparableGroupOf()` 给出（`freshnessGroup` 显式优先，否则 `developer + family + modelRole`）；组越大，一次补全能修好的相对读数越多。',
++        '③ provider tier：`core` > `major` > `long-tail`（tier 读 `scripts/data/coverage-targets.json` 的意图行）；归属够不到任何 target 的模型按 `long-tail`。',
++        '④ 是否被 `api-plans.json` 或 `plans.json` 引用（是 > 否）：api 侧按 api-plans 里出现过的 `modelKey`，套餐侧按关系层 `model-registry-links.json` 的 Coding 映射认领到的 slug。',
++        '⑤ tiebreak：`slug` 的 **code-unit 序**（不用 localeCompare —— 它随 ICU 版本变，会让两次运行不再逐字节一致）。'
++      ],
++      ruleNote: '先命中先决定次序（比较器按 ①→②→③→④→⑤ 逐条比）；没有任何主观分、没有加权、没有伪精确分数。'
++        + ` 队列覆盖全部 ${registryEntries.length} 个 registry 模型，下面只打印前 ${RELEASE_QUEUE_LIMIT} 条（固定常量 RELEASE_QUEUE_LIMIT）。`,
++      total: rows.length,
++      unknownCount: rows.filter(row => row.releasedAtUnknown).length,
++      knownCount: rows.filter(row => !row.releasedAtUnknown).length,
++      groupJudgeAvailable: Boolean(freshnessJudge && typeof freshnessJudge.comparableGroupOf === 'function'),
++      queue
++    };
++  })();
++
++  /* ---------------- ③ Source Reliability summary（v3） ---------------- */
++  //
++  // 这一节把三份东西对到一起：**人工裁决**（scripts/data/source-rulings.json，workstream C 的写域）、
++  // **采集器注册表**（scripts/collectors 的 list()）、**心跳**（scripts/data/source-health.json 的 live 读数）。
++  // 判据（schema 校验 + 稳定序 + 三方对账）全部在 `scripts/lib/source-rulings.js`，报告只做 join 与排版。
++  const collectorRows = (() => {
++    try {
++      const mod = require(COLLECTORS_INDEX);
++      return typeof mod.list === 'function' ? mod.list() : null;
++    } catch (error) {
++      return null;
++    }
++  })();
++  if (!collectorRows) {
++    problems.push('scripts/collectors 注册表读不出来 —— 「裁决 ↔ 采集器注册表 ↔ source-health」三方对账缺了第二方，'
++      + '本节的"注册表"一栏无从判定（缺输入不是通过）。');
++  }
++  const sourceRulingsLoaded = sourceRulings.load(SOURCE_RULINGS_FILE);
++  const rulingsValidationProblems = sourceRulingsLoaded.doc ? sourceRulings.validateRulings(sourceRulingsLoaded.doc) : [];
++  const rulingsReconciled = sourceRulings.reconcileRulings({
++    doc: sourceRulingsLoaded.doc,
++    registrySources: collectorRows || [],
++    healthSources: sourceHealthDoc && Array.isArray(sourceHealthDoc.sources) ? sourceHealthDoc.sources : []
++  });
++  if (sourceRulingsLoaded.broken) {
++    problems.push(`scripts/data/source-rulings.json 解析失败：${sourceRulingsLoaded.broken}`);
++  } else if (sourceRulingsLoaded.missing) {
++    // 优雅降级**但不静默**：这一层由 workstream C 落盘，落盘前报告要能照常为别的层出数 ——
++    // 所以它进 `pendingLayers`（显式计入自检口径、写进文本与 JSON），而不是硬红、更不是当通过。
++    pendingLayers.push({
++      file: 'scripts/data/source-rulings.json',
++      layer: 'source-rulings（长期失败来源的人工裁决）',
++      note: '尚未落盘 —— 「裁决 ↔ 采集器注册表 ↔ source-health」三方对账本轮没有输入（**不是"没有长期失败的来源"，也不是"全部健康"**）；'
++        + '这一层由 workstream C 落盘，落盘后本报告会自动开始对账，并对 schema 与三条硬关系逐条判红。'
++    });
++  } else {
++    problems.push(...rulingsValidationProblems);
++    problems.push(...rulingsReconciled.problems);
++  }
++  // 裁决 → 身份（id 与 name 两种写法都能命中；gap queue 的"来源困难"要按 source-health 的 name 查）
++  const rulingBySourceName = new Map();
++  for (const row of rulingsReconciled.rows) {
++    for (const token of [row.source, row.registry && row.registry.id, row.registry && row.registry.name,
++      row.health && row.health.id, row.health && row.health.name]) {
++      if (token === null || token === undefined || token === '') continue;
++      const key = String(token);
++      if (!rulingBySourceName.has(key)) rulingBySourceName.set(key, row);
++    }
++  }
++  const sourceReliability = {
++    file: 'scripts/data/source-rulings.json',
++    present: Boolean(sourceRulingsLoaded.doc),
++    notLanded: sourceRulingsLoaded.missing === true,
++    broken: sourceRulingsLoaded.broken === null ? null : sourceRulingsLoaded.broken,
++    schemaVersion: sourceRulingsLoaded.doc && sourceRulingsLoaded.doc.schemaVersion !== undefined
++      ? sourceRulingsLoaded.doc.schemaVersion : null,
++    reviewedAt: sourceRulingsLoaded.doc && sourceRulingsLoaded.doc.reviewedAt !== undefined
++      ? sourceRulingsLoaded.doc.reviewedAt : null,
++    // 「必须打印 generatedAt」：这是心跳文件自己的时间戳（**不是**跑报告的墙钟时间）——
++    // 本节的 live 读数全部出自这一次心跳，读者要能判断它有多新。
++    healthFile: 'scripts/data/source-health.json',
++    healthGeneratedAt: sourceHealthDoc && sourceHealthDoc.generatedAt !== undefined ? sourceHealthDoc.generatedAt : null,
++    healthRowCount: sourceHealthDoc && Array.isArray(sourceHealthDoc.sources) ? sourceHealthDoc.sources.length : 0,
++    collectorRegistryFile: 'scripts/collectors（index.js 的 list()）',
++    collectorRegistryCount: collectorRows ? collectorRows.length : null,
++    decisionOrder: sourceRulings.DECISIONS.slice(),
++    decisionCounts: rulingsReconciled.byDecision,
++    rulings: rulingsReconciled.rows,
++    validationProblems: rulingsValidationProblems,
++    validationProblemCount: rulingsValidationProblems.length,
++    reconciliation: {
++      judge: 'scripts/lib/source-rulings.js 的 reconcileRulings()',
++      ruleCount: 4,
++      ruleNote: '① retire 的来源不得在注册表；② consecutiveFailures ≥ 3 的来源必须有裁决；'
++        + '③ repair / headless-migrate 的来源必须在注册表；④ 非 retire 的裁决必须命中一个真实身份（id 或 name）。',
++      problemCount: rulingsReconciled.problems.length,
++      problems: rulingsReconciled.problems,
++      unruledRegistrySources: rulingsReconciled.unruledRegistrySources,
++      failuresRequiringRuling: rulingsReconciled.failuresRequiringRuling,
++      missingRulingsForFailures: rulingsReconciled.missingRulingsForFailures,
++      retireStillRegistered: rulingsReconciled.retireStillRegistered,
++      retireStillInHealth: rulingsReconciled.retireStillInHealth,
++      repairOrMigrateUnregistered: rulingsReconciled.repairOrMigrateUnregistered,
++      unresolvedSources: rulingsReconciled.unresolvedSources
++    },
++    // R8 的来源宇宙对照：**沿用既有 sourceHealth.registryRowCount / registryRows / registryOnlySources 口径**
++    // （同一批变量，不另算一份；自测里有一条断言要求这两处逐字相等）。
++    registryRowCount: sourceHealthRegistryNames.length,
++    registryRows: sourceHealthRegistryNames,
++    registryOnlySources: sourceHealthRegistryOnly,
++    notLandedNote: sourceRulingsLoaded.missing
++      ? 'source-rulings 层尚未落盘（本节的裁决读数为空是"没有输入"，不是"没有长期失败的来源"）。'
++      : null
++  };
++
++  /* ---------------- ④ Gap Closure Queue（v3） ---------------- */
++  //
++  // 把 MISSING / PARTIAL 排成"先做哪一格"的队列。分层的判据**全部是既有读数**：
++  // tier（coverage-targets.json）、维度是否高价值（常量 HIGH_VALUE_DIMENSIONS）、
++  // 这一格有没有把要覆盖的那一条写成可回指的实体（declared > 0）、
++  // 以及它依赖的来源现在什么状态（source-health 的 live 读数 + source-rulings 的裁决）。
++  // 没有主观分、没有加权、没有伪精确分数。
++  const gapClosureQueue = (() => {
++    const cells = [...derived.missing, ...derived.partial];
++    const dimensionIndex = dimension => coverageTargets.DIMENSIONS.indexOf(dimension);
++    const sourcesOfProvider = new Map();
++    for (const target of derived.targets) {
++      const names = [];
++      for (const dimension of coverageTargets.DIMENSIONS) {
++        for (const source of (target.dimensions[dimension].sources || [])) {
++          if (source && source.name) names.push(String(source.name));
++        }
++      }
++      sourcesOfProvider.set(target.provider, [...new Set(names)].sort());
++    }
++    const orders = { A: 0, B: 1, C: 2, D: 3 };
++    const rows = cells.map(cell => {
++      const summary = summaryOf(cell.provider);
++      const tier = summary && coverageTargets.TIERS.includes(summary.tier) ? summary.tier : 'long-tail';
++      const names = sourcesOfProvider.get(cell.provider) || [];
++      const hardSources = [];
++      const costlySources = [];
++      for (const name of names) {
++        const health = facts.sourceHealth[name] || null;
++        const ruling = rulingBySourceName.get(name) || null;
++        const unhealthy = Boolean(health && health.status && health.status !== 'healthy');
++        const ruled = Boolean(ruling && ['retire', 'keep-degraded', 'repair', 'headless-migrate'].includes(ruling.decision));
++        if (unhealthy || ruled) hardSources.push(name);
++        if (ruling && ruling.overlap && ruling.overlap.maintenanceCost === 'high') costlySources.push(name);
++      }
++      const highValue = HIGH_VALUE_DIMENSIONS.includes(cell.dimension);
++      const explicitSource = cell.declared > 0;
++      const sourceHard = hardSources.length > 0;
++      const highCost = costlySources.length > 0;
++      const priority = (tier === 'core' || tier === 'major')
++        ? (tier === 'core' && highValue && explicitSource && !sourceHard && !highCost ? 'A'
++          : (tier === 'major' && explicitSource && !sourceHard && !highCost ? 'B' : 'C'))
++        : 'D';
++      return {
++        priority,
++        provider: cell.provider,
++        name: cell.providerName,
++        tier,
++        role: summary ? summary.role : null,
++        dimension: cell.dimension,
++        dimensionLabel: coverageTargets.DIMENSION_LABEL[cell.dimension],
++        state: cell.state,
++        exitState: cell.state,
++        targetN: cell.declared,
++        coveredM: cell.resolved,
++        missingK: cell.declared - cell.resolved,
++        present: cell.present,
++        highValue,
++        explicitSource,
++        sourceHard,
++        highCost,
++        declaredSources: names,
++        hardSources,
++        costlySources,
++        // `present` 是"盘上这一维度有没有记录"，与 N/M/K 是两条不同的轴：
++        // 一条 current target 都没声明的格子（N=0、K=0）照样可能是 MISSING —— 因为盘上一条记录都没有。
++        reason: cell.reason
++      };
++    });
++    const ordered = [...rows].sort((a, b) => (orders[a.priority] - orders[b.priority])
++      || (a.tier < b.tier ? -1 : a.tier > b.tier ? 1 : 0)
++      || (a.provider < b.provider ? -1 : a.provider > b.provider ? 1 : 0)
++      || (dimensionIndex(a.dimension) - dimensionIndex(b.dimension)));
++    const counts = { A: 0, B: 0, C: 0, D: 0 };
++    for (const row of rows) counts[row.priority] += 1;
++    if (ordered.length !== derived.missing.length + derived.partial.length) {
++      problems.push(`Gap Closure Queue 条数 ${ordered.length} ≠ MISSING ${derived.missing.length} + PARTIAL ${derived.partial.length}`
++        + ' —— 队列必须恰好收下每一格真缺口与每一个部分兑现的格子，不多不少。');
++    }
++    if (counts.A + counts.B + counts.C + counts.D !== ordered.length) {
++      problems.push(`Gap Closure Queue 分层不闭合：A+B+C+D = ${counts.A + counts.B + counts.C + counts.D} ≠ 队列条数 ${ordered.length}。`);
++    }
++    for (const row of rows) {
++      if (row.coveredM > row.targetN) {
++        problems.push(`Gap Closure Queue：${row.provider} 的 ${row.dimension} 格"已兑现 ${row.coveredM}"大于"目标 ${row.targetN}" —— 兑现数不可能超过声明数。`);
++      }
++    }
++    return {
++      rules: [
++        '「官方来源明确」= 这一格声明了至少一条 current target（`declared ≥ 1`）：意图层把"要覆盖的那一条"写成了可回指的实体（deals→`source` / coding→`planName` / api→`modelKey` / models→`registrySlug`）。只写了维度散文、没有实体的格子不算"来源明确"。',
++        '「来源困难」= 这家 provider 在各维度声明的来源里，至少一条满足：source-health 的 live 状态 ≠ `healthy`，或已被 `scripts/data/source-rulings.json` 裁决为 retire / keep-degraded / repair / headless-migrate 之一。',
++        '「高维护成本」= 来源裁决里的 overlap.maintenanceCost = high。它**并入**上面的"来源困难"：一个核心平台的缺口若依赖高维护成本的来源，它仍然是"要做但难做"（C 档），不是"可以不做"（D 档）。',
++        `「高价值维度」= ${HIGH_VALUE_DIMENSIONS.join(' / ')}（固定常量 HIGH_VALUE_DIMENSIONS）：这两个维度的缺口直接决定"这家平台在页面上有没有可用的价格或模型身份"。`,
++        'A = tier=core ∧ 维度∈高价值维度 ∧ 官方来源明确 ∧ ¬来源困难 ∧ ¬高维护成本',
++        'B = tier=major ∧ 官方来源明确 ∧ ¬来源困难 ∧ ¬高维护成本',
++        'C = tier∈{core, major} 但够不上 A / B：来源困难、或高维护成本、或还没把"要覆盖的那一条"写成可回指的实体、或 core 的非高价值维度',
++        'D = tier=long-tail（长尾平台，维护成本按定义为最高）',
++        '先命中先归，判定顺序 A → B → C → D（每个格子恰好落进一档）。层内次序：priority → tier 的 code-unit 序 → provider 的 code-unit 序 → 维度序（' + coverageTargets.DIMENSIONS.join(' → ') + '）。'
++      ],
++      exitRule: '每一格的出口只有两条（与 coverage-targets.json 的裁决机制同一套）：把"缺 K 条"补齐（→ COVERED / PARTIAL 变 COVERED），'
++        + '或在 scripts/data/coverage-targets.json 的 `rulings` 里写一条 deferred / unverifiable / schema-not-supported（→ DEFERRED / UNVERIFIABLE）。'
++        + '「出口状态」列印的是这一格**此刻**的派生状态。',
++      highValueDimensions: HIGH_VALUE_DIMENSIONS.slice(),
++      priorityOrder: ['A', 'B', 'C', 'D'],
++      counts,
++      total: ordered.length,
++      queue: ordered
++    };
++  })();
++
+   /* ---------------- 输出 ---------------- */
+   const out = [];
+   const line = text => out.push(text);
+   const kv = (label, value, note) => line(`  ${String(label).padEnd(26)} ${String(value).padStart(6)}${note ? `   ${note}` : ''}`);
+ 
+   line('======================================================================');
+@@ -1016,16 +1530,117 @@ function main() {
+     line(`  ${freshness.note}`);
+   } else {
+     line(`  策略来源：${freshness.module}（**尚未落盘**）`);
+     line(`  ${freshness.note}`);
+   }
+   line('');
++  line('── Release Evidence Coverage（v3 新增 · 官方发布日期写下了多少）──────');
++  line(`  判据层：${releaseEvidence.judge} —— 报告不重算口径，只按既有判据分组`);
++  if (releaseEvidence.status === 'ok') {
++    kv('registry 模型数', releaseEvidence.registryModels, `来源层 ${releaseEvidence.source}`);
++    kv('已知 official release date', releaseEvidence.known, `= ${releaseEvidence.knownPercent}%（**百分比是观测指标，不是 KPI**：没有目标线、不进门禁、不参与判定）`);
++    kv('未知 official release date', releaseEvidence.unknown, 'releasedAt 为 null 或字段缺席（与报告的 unknown release dates 同一判据）');
++    kv('带 releaseEvidence 引文', releaseEvidence.withReleaseEvidence, '这一栏只是观测：`releasedAt` 与 `releaseEvidence` 互为充要的判据归 lib/model-registry.js（本条不另立判据）');
++    const bucketLine = (label, list) => {
++      if (!Array.isArray(list)) return;
++      line(`  ${label}拆分（按档位条数降序）：`);
++      for (const bucket of list) {
++        line(`      ${String(bucket.key).padEnd(24)} 共 ${String(bucket.total).padStart(3)} · 已知 ${String(bucket.known).padStart(3)} · 未知 ${String(bucket.unknown).padStart(3)} · 已知率 ${bucket.knownPercent === null ? '(空)' : `${bucket.knownPercent}%`}`);
++      }
++    };
++    bucketLine('developer ', releaseEvidence.byDeveloper);
++    bucketLine('modelRole ', releaseEvidence.byModelRole);
++    if (releaseEvidence.byCatalogStatus) {
++      line('  catalogStatus 拆分（词表序 = lib/model-freshness.js 的 CATALOG_STATUSES）：');
++      for (const bucket of releaseEvidence.byCatalogStatus) {
++        line(`      ${String(bucket.key).padEnd(24)} 共 ${String(bucket.total).padStart(3)} · 已知 ${String(bucket.known).padStart(3)} · 未知 ${String(bucket.unknown).padStart(3)} · 已知率 ${bucket.knownPercent === null ? '(空)' : `${bucket.knownPercent}%`}`);
++      }
++    } else {
++      line('  catalogStatus 拆分：**分不出** —— 发布产物 models.json 里没有一个条目带 catalogStatus（freshness 派生层尚未落盘）。');
++    }
++  } else {
++    line(`  **分不出**（${releaseEvidence.status}）：${releaseEvidence.reason}`);
++  }
++  line('');
++
++  line('── Model Release Evidence Queue（v3 新增 · 只读优先队列）────────────');
++  line(`  队列共 ${releaseEvidenceQueue.total} 条（= registry 模型数；未知发布日期 ${releaseEvidenceQueue.unknownCount} 条 / 已知 ${releaseEvidenceQueue.knownCount} 条），下面打印前 ${releaseEvidenceQueue.limit} 条`);
++  line('  排序规则（原文；判据全部来自盘上事实，没有任何主观分）：');
++  for (const rule of releaseEvidenceQueue.rules) line(`      ${rule}`);
++  line(`  说明：${releaseEvidenceQueue.ruleNote}`);
++  line('  前 N 条：');
++  if (!releaseEvidenceQueue.queue.length) line('      （无）');
++  for (const row of releaseEvidenceQueue.queue) {
++    line(`      ${String(row.rank).padStart(3)}. ${String(row.slug).padEnd(28)} ${row.releasedAtUnknown ? 'releasedAt=未知' : `releasedAt=${row.releasedAt}`}`
++      + `  组 ${String(row.groupSize).padStart(2)}（${row.groupLabel === null ? '(无判据层)' : row.groupLabel}）`
++      + `  tier=${row.tier}  下游引用=${row.referenced ? '是' : '否'}`);
++  }
++  line('');
++
++  line('── Gap Closure Queue（v3 新增 · MISSING / PARTIAL 分层）──────────────');
++  line(`  队列共 ${gapClosureQueue.total} 条：A ${gapClosureQueue.counts.A} · B ${gapClosureQueue.counts.B} · C ${gapClosureQueue.counts.C} · D ${gapClosureQueue.counts.D}`);
++  line('  分层规则（原文；判据全部来自既有读数，没有伪精确分数）：');
++  for (const rule of gapClosureQueue.rules) line(`      ${rule}`);
++  line(`  出口：${gapClosureQueue.exitRule}`);
++  line('  逐条（目标 N / 已兑现 M / 缺 K / 出口状态）：');
++  if (!gapClosureQueue.queue.length) line('      （无）');
++  for (const row of gapClosureQueue.queue) {
++    line(`      [${row.priority}] ${String(row.provider).padEnd(12)} ${String(row.name || '').padEnd(16)} ${String(row.tier).padEnd(9)} ${row.dimensionLabel}：目标 ${row.targetN} / 已兑现 ${row.coveredM} / 缺 ${row.missingK}`
++      + ` · 盘上记录 ${row.present} · 出口状态 ${row.exitState}`
++      + `${row.sourceHard ? ` · 来源困难（${row.hardSources.join('、')}）` : ''}${row.highCost ? ` · 高维护成本（${row.costlySources.join('、')}）` : ''}`);
++    line(`            ${row.reason}`);
++  }
++  line('');
++
++  line('── Source Reliability summary（v3 新增 · 裁决 × live 读数）───────────');
++  line(`  心跳：${sourceReliability.healthFile} 的 generatedAt = ${sourceReliability.healthGeneratedAt === null ? '(文件里没有 generatedAt)' : sourceReliability.healthGeneratedAt}`);
++  line(`        本节所有 live 读数都出自**这一次**心跳（不是跑报告的墙钟时间）；它越旧，下面的 status 越不可信。`);
++  line(`  裁决表：${sourceReliability.file} —— ${sourceReliability.notLanded ? '**尚未落盘**（未落盘 ≠ 通过：本轮三方对账没有输入）' : `已落盘（reviewedAt=${sourceReliability.reviewedAt === null ? '(未写)' : sourceReliability.reviewedAt}）`}`);
++  line(`  注册表：${sourceReliability.collectorRegistryFile} 共 ${sourceReliability.collectorRegistryCount === null ? '(读不出)' : sourceReliability.collectorRegistryCount} 行`
++    + ` · source-health 注册表共 ${sourceReliability.registryRowCount} 行（沿用既有 registryRowCount 口径）`);
++  if (sourceReliability.notLanded) {
++    line(`  ⚠️ ${sourceReliability.notLandedNote}`);
++  } else {
++    line(`  裁决分布：${sourceReliability.decisionOrder.map(decision => `${decision}=${sourceReliability.decisionCounts[decision]}`).join(' · ')}`);
++    line('  逐条（裁决 × 注册表 × 心跳）：');
++    if (!sourceReliability.rulings.length) line('      （无裁决）');
++    for (const row of sourceReliability.rulings) {
++      const where = row.registry ? `注册表 id=${row.registry.id}` : '不在注册表';
++      const health = row.health
++        ? `health ${row.health.status}${row.health.reason ? `/${row.health.reason}` : ''}（连续失败 ${row.health.consecutiveFailures}）`
++        : 'health 无此行';
++      line(`      · ${String(row.source).padEnd(20)} ${String(row.decision).padEnd(17)} ← ${where} · ${health}`);
++      line(`        理由：${row.reason}`);
++      if (row.whyKept) line(`        保留理由：${row.whyKept}`);
++      if (row.revisitBy) line(`        复查条件：${row.revisitBy}`);
++      if (row.headlessStability) line(`        无头稳定性：${row.headlessStability}`);
++      line(`        取证 ${row.evidenceCount} 条 · overlap 存量 ${row.overlap ? row.overlap.historicalItems : '(缺)'} / 独有 ${row.overlap ? row.overlap.uniqueItems : '(缺)'} / 重叠 ${row.overlap ? row.overlap.overlapItems : '(缺)'} · 维护成本 ${row.overlap ? row.overlap.maintenanceCost : '(缺)'}`);
++    }
++    line('  三方对账（判据在 scripts/lib/source-rulings.js）：');
++    line(`      · retire 的来源仍在注册表：${sourceReliability.reconciliation.retireStillRegistered.length} 条${sourceReliability.reconciliation.retireStillRegistered.length ? `（${sourceReliability.reconciliation.retireStillRegistered.map(item => item.source).join('、')}）` : ''}`);
++    line(`      · 连续失败 ≥ ${sourceRulings.HEALTH_FAILURES_REQUIRING_RULING} 次却没有裁决：${sourceReliability.reconciliation.missingRulingsForFailures.length} 条${sourceReliability.reconciliation.missingRulingsForFailures.length ? `（${sourceReliability.reconciliation.missingRulingsForFailures.join('、')}）` : ''}`);
++    line(`      · repair / headless-migrate 却不在注册表：${sourceReliability.reconciliation.repairOrMigrateUnregistered.length} 条${sourceReliability.reconciliation.repairOrMigrateUnregistered.length ? `（${sourceReliability.reconciliation.repairOrMigrateUnregistered.map(item => item.source).join('、')}）` : ''}`);
++    line(`      · 裁决的 source 命不中任何身份：${sourceReliability.reconciliation.unresolvedSources.length} 条${sourceReliability.reconciliation.unresolvedSources.length ? `（${sourceReliability.reconciliation.unresolvedSources.join('、')}）` : ''}`);
++    line(`      · 对账问题合计：${sourceReliability.reconciliation.problemCount} 处（不为 0 时报告自检非 0）`);
++    line(`      · 还没裁决的注册表行（不是错误，是缺口）：${sourceReliability.reconciliation.unruledRegistrySources.join(' / ') || '（无）'}`);
++    line(`      · 已 retire 但心跳里还有行：${sourceReliability.reconciliation.retireStillInHealth.join(' / ') || '（无）'}（心跳行可能是旧读数，删不删由 workstream C 决定）`);
++    if (sourceReliability.validationProblemCount) {
++      line(`  ⚠️ 裁决表 schema 问题 ${sourceReliability.validationProblemCount} 处：${sourceReliability.validationProblems.slice(0, 3).join('；')}`);
++    }
++  }
++  line('');
+ 
+   line('──────────────────────────────────────────────────────────────────────');
+   line(`候选登记表：${candidates.length} 条（已采信 ${adopted.length} / 未采信 ${notAdopted.length}）`);
+   line(`报告自检问题：${problems.length} 处`);
++  // 未落盘层**计入自检口径**（同一行相邻打印），但不判红：见 `pendingLayers` 的注释。
++  // 这一行存在的唯一理由：让"某一层还没落盘"永远不可能被读成"这一层全是健康的"。
++  if (pendingLayers.length) {
++    line(`报告自检待落盘层：${pendingLayers.length} 项（**计入自检口径**：未落盘 ≠ 通过，也不判红 —— 与 Freshness 策略模块同一处理）`);
++    for (const layer of pendingLayers) line(`  · ${layer.file}（${layer.layer}）—— ${layer.note}`);
++  }
+ 
+   console.log(out.join('\n'));
+ 
+   if (problems.length) {
+     console.error('\n❌ 覆盖报告自检失败：');
+     for (const problem of problems) console.error(`  - ${problem}`);
+@@ -1187,13 +1802,20 @@ function main() {
+           counts: catalogStatusCensus.counts,
+           sum: catalogStatusCensus.sum,
+           registryModels: catalogStatusCensus.registryModels,
+           statusesOutsideWordList: catalogStatusCensus.statusesOutsideWordList,
+           source: '发布产物 models.json 的 catalogStatus（派生字段，来源层禁写）；词表与 censusOf() 来自 scripts/lib/model-freshness.js',
+           reason: catalogStatusCensus.reason
+-        }
++        },
++        // ---- v3（coverage-depth-v1）新增：**追加在既有键之后**（旧键一律不动位）----
++        // 四节的新键全部挂在这里，而不是顶层：顶层键序（generatedAt … coverageTargets）因此与 v2
++        // **逐字逐序相同** —— 下游按位置读顶层键的地方一个都不会失效。
++        releaseEvidence,
++        releaseEvidenceQueue,
++        gapClosureQueue,
++        sourceReliability
+       }
+     };
+     console.log('\nJSON:');
+     console.log(JSON.stringify(payload, null, 2));
+   }
+ 

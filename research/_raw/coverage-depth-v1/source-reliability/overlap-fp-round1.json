@@ -1,0 +1,491 @@
+{
+  "probe": "probe-overlap.cjs",
+  "tag": "fp-round1",
+  "ranAtUtc": "2026-10-05T03:35:13.748Z",
+  "inputs": {
+    "censusFile": "census-fp-round1.json",
+    "censusRunAtUtc": "2026-10-05T03:30:49.416Z",
+    "dealsMeta": {
+      "schemaVersion": 2,
+      "updatedAt": "2026-10-05T00:31:52+08:00",
+      "count": 135
+    },
+    "dealsFileSha256Note": "deals.json 只读打开；sha256 见本目录 tracked-hashes.json",
+    "fpLiveRawItems": 7,
+    "fpLiveDeals": 7,
+    "dealsTotal": 135,
+    "otherDeals": 132,
+    "fpDealsInDataset": 3,
+    "dealsSourceCensus": {
+      "Futuretools": 34,
+      "Curated-CN": 18,
+      "百度千帆": 17,
+      "aitools.fyi": 15,
+      "Curated": 14,
+      "火山方舟": 12,
+      "Layer3Labs": 9,
+      "智谱AI": 7,
+      "智谱AI活动页": 5,
+      "Futurepedia": 3,
+      "阿里云百炼": 1
+    }
+  },
+  "criteria": {
+    "T_titleKey": "dedup.aliasKey(dedup.normalizeTitle(title))",
+    "U_urlKey": "URL host+path 归一（去 www / 丢 query / 去尾斜杠 / 小写）",
+    "V_vendorKey": "render-core.vendorOf({vendor}).key（粗判据，仅诊断）",
+    "S_sourceKey": "sourceUrl host+path 归一",
+    "rawTitle": "逐字相等（对照，仅用于证明归一的必要性）",
+    "extendedOverlap": "T ∪ U ∪ S（源页相同也算同一件事）",
+    "productionOverlap": "T（= dedup() 的真实行为）"
+  },
+  "numbers": {
+    "fpLiveItems": 7,
+    "fpLiveExtendedOverlap": 4,
+    "fpLiveExtendedUnique": 3,
+    "fpLiveProductionOverlap": 4,
+    "fpLiveRawTitleOverlap": 2,
+    "fpLiveVendorOnlyOverlap": 0,
+    "fpHistoricalRecords": 3,
+    "fpHistoricalOverlapWithOthers": 0,
+    "fpHistoricalUniqueAgainstOthers": 3,
+    "fpRecentUniqueCandidates": 0,
+    "fpRecentUniqueCandidatesNewVendor": 0
+  },
+  "perItem": [
+    {
+      "live": {
+        "title": "ChatGPT",
+        "titleKey": "chatgpt",
+        "normalizeTitle": "chatgpt",
+        "urlKey": "chatgpt.com",
+        "sourceKey": "futurepedia.io/tool/chatgpt",
+        "vendor": "ChatGPT",
+        "vendorKey": "openai",
+        "vendorName": "OpenAI",
+        "source": "Futurepedia",
+        "id": "074f9d38b5d5",
+        "discountInfo": "",
+        "url": "https://chatgpt.com/",
+        "sourceUrl": "https://www.futurepedia.io/tool/chatgpt",
+        "score": 25
+      },
+      "matches": {
+        "titleKey": [
+          "Layer3Labs / ChatGPT / OpenAI"
+        ],
+        "urlKey": [],
+        "sourceKey": [],
+        "vendorKey": [
+          "Layer3Labs / ChatGPT / OpenAI",
+          "Layer3Labs / ChatGPT Plus for Veterans (OpenAI)",
+          "aitools.fyi / GPT Image 2.5"
+        ],
+        "rawTitle": []
+      },
+      "extendedOverlap": true,
+      "productionOverlap": true,
+      "rawTitleOverlap": false,
+      "inDatasetAtAll": true,
+      "competitorScores": [
+        {
+          "other": "Layer3Labs",
+          "otherScore": 83,
+          "fpScore": 25,
+          "fpWins": false
+        }
+      ]
+    },
+    {
+      "live": {
+        "title": "Claude",
+        "titleKey": "claude",
+        "normalizeTitle": "claude",
+        "urlKey": "claude.ai",
+        "sourceKey": "futurepedia.io/tool/claude",
+        "vendor": "Claude",
+        "vendorKey": "anthropic",
+        "vendorName": "Anthropic",
+        "source": "Futurepedia",
+        "id": "ac589cc2b414",
+        "discountInfo": "",
+        "url": "https://claude.ai/",
+        "sourceUrl": "https://www.futurepedia.io/tool/claude",
+        "score": 25
+      },
+      "matches": {
+        "titleKey": [
+          "Curated / Anthropic Claude 非营利组织折扣"
+        ],
+        "urlKey": [],
+        "sourceKey": [],
+        "vendorKey": [
+          "Curated / Anthropic Claude 非营利组织折扣"
+        ],
+        "rawTitle": []
+      },
+      "extendedOverlap": true,
+      "productionOverlap": true,
+      "rawTitleOverlap": false,
+      "inDatasetAtAll": true,
+      "competitorScores": [
+        {
+          "other": "Curated",
+          "otherScore": 203,
+          "fpScore": 25,
+          "fpWins": false
+        }
+      ]
+    },
+    {
+      "live": {
+        "title": "HubSpot AEO Sensor",
+        "titleKey": "hubspotaeosensor",
+        "normalizeTitle": "hubspotaeosensor",
+        "urlKey": "hubspot.com/aeo-sensor",
+        "sourceKey": "futurepedia.io/tool/hubspot-aeo-sensor",
+        "vendor": "HubSpot AEO",
+        "vendorKey": "HubSpot AEO",
+        "vendorName": "HubSpot AEO",
+        "source": "Futurepedia",
+        "id": "cb45e0c735bd",
+        "discountInfo": "",
+        "url": "https://www.hubspot.com/aeo-sensor",
+        "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+        "score": 25
+      },
+      "matches": {
+        "titleKey": [],
+        "urlKey": [],
+        "sourceKey": [],
+        "vendorKey": [],
+        "rawTitle": []
+      },
+      "extendedOverlap": false,
+      "productionOverlap": false,
+      "rawTitleOverlap": false,
+      "inDatasetAtAll": true,
+      "competitorScores": [],
+      "vendorKnownInDataset": true
+    },
+    {
+      "live": {
+        "title": "Perplexity",
+        "titleKey": "perplexity",
+        "normalizeTitle": "perplexity",
+        "urlKey": "perplexity.ai",
+        "sourceKey": "futurepedia.io/tool/perplexity-ai",
+        "vendor": "Perplexity",
+        "vendorKey": "perplexity",
+        "vendorName": "Perplexity",
+        "source": "Futurepedia",
+        "id": "f8637444bb43",
+        "discountInfo": "",
+        "url": "https://www.perplexity.ai/",
+        "sourceUrl": "https://www.futurepedia.io/tool/perplexity-ai",
+        "score": 25
+      },
+      "matches": {
+        "titleKey": [
+          "Layer3Labs / Perplexity"
+        ],
+        "urlKey": [],
+        "sourceKey": [],
+        "vendorKey": [
+          "Layer3Labs / Perplexity"
+        ],
+        "rawTitle": [
+          "Layer3Labs / Perplexity"
+        ]
+      },
+      "extendedOverlap": true,
+      "productionOverlap": true,
+      "rawTitleOverlap": true,
+      "inDatasetAtAll": true,
+      "competitorScores": [
+        {
+          "other": "Layer3Labs",
+          "otherScore": 133,
+          "fpScore": 25,
+          "fpWins": false
+        }
+      ]
+    },
+    {
+      "live": {
+        "title": "Google Gemini",
+        "titleKey": "gemini",
+        "normalizeTitle": "googlegemini",
+        "urlKey": "gemini.google.com",
+        "sourceKey": "futurepedia.io/tool/google-gemini",
+        "vendor": "Google Gemini",
+        "vendorKey": "google",
+        "vendorName": "Google",
+        "source": "Futurepedia",
+        "id": "1e28b6e75cc2",
+        "discountInfo": "",
+        "url": "https://gemini.google.com/",
+        "sourceUrl": "https://www.futurepedia.io/tool/google-gemini",
+        "score": 25
+      },
+      "matches": {
+        "titleKey": [
+          "Layer3Labs / Google Gemini"
+        ],
+        "urlKey": [],
+        "sourceKey": [],
+        "vendorKey": [
+          "Layer3Labs / Google Gemini",
+          "Futuretools / NotebookLM",
+          "Futuretools / Google AI Studio",
+          "Curated / Google AI Pro 学生免费 12 个月（含 Gemini 高级版）"
+        ],
+        "rawTitle": [
+          "Layer3Labs / Google Gemini"
+        ]
+      },
+      "extendedOverlap": true,
+      "productionOverlap": true,
+      "rawTitleOverlap": true,
+      "inDatasetAtAll": true,
+      "competitorScores": [
+        {
+          "other": "Layer3Labs",
+          "otherScore": 83,
+          "fpScore": 25,
+          "fpWins": false
+        }
+      ]
+    },
+    {
+      "live": {
+        "title": "Midjourney",
+        "titleKey": "midjourney",
+        "normalizeTitle": "midjourney",
+        "urlKey": "midjourney.com/home",
+        "sourceKey": "futurepedia.io/tool/midjourney",
+        "vendor": "Midjourney",
+        "vendorKey": "midjourney",
+        "vendorName": "Midjourney",
+        "source": "Futurepedia",
+        "id": "9e7c938ec401",
+        "discountInfo": "",
+        "url": "https://www.midjourney.com/home/",
+        "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
+        "score": 25
+      },
+      "matches": {
+        "titleKey": [],
+        "urlKey": [],
+        "sourceKey": [],
+        "vendorKey": [],
+        "rawTitle": []
+      },
+      "extendedOverlap": false,
+      "productionOverlap": false,
+      "rawTitleOverlap": false,
+      "inDatasetAtAll": true,
+      "competitorScores": [],
+      "vendorKnownInDataset": true
+    },
+    {
+      "live": {
+        "title": "Grok",
+        "titleKey": "grok",
+        "normalizeTitle": "grok",
+        "urlKey": "x.ai/grok",
+        "sourceKey": "futurepedia.io/tool/grok",
+        "vendor": "Grok",
+        "vendorKey": "xai",
+        "vendorName": "xAI",
+        "source": "Futurepedia",
+        "id": "376b6b3397e6",
+        "discountInfo": "",
+        "url": "https://x.ai/grok",
+        "sourceUrl": "https://www.futurepedia.io/tool/grok",
+        "score": 25
+      },
+      "matches": {
+        "titleKey": [],
+        "urlKey": [],
+        "sourceKey": [],
+        "vendorKey": [],
+        "rawTitle": []
+      },
+      "extendedOverlap": false,
+      "productionOverlap": false,
+      "rawTitleOverlap": false,
+      "inDatasetAtAll": true,
+      "competitorScores": [],
+      "vendorKnownInDataset": true
+    }
+  ],
+  "historical": [
+    {
+      "record": {
+        "title": "HubSpot AEO Sensor",
+        "titleKey": "hubspotaeosensor",
+        "normalizeTitle": "hubspotaeosensor",
+        "urlKey": "hubspot.com/aeo-sensor",
+        "sourceKey": "futurepedia.io/tool/hubspot-aeo-sensor",
+        "vendor": "HubSpot AEO",
+        "vendorKey": "HubSpot AEO",
+        "vendorName": "HubSpot AEO",
+        "source": "Futurepedia",
+        "id": "cb45e0c735bd",
+        "discountInfo": "",
+        "url": "https://www.hubspot.com/aeo-sensor",
+        "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+        "score": 25
+      },
+      "overlapWith": [],
+      "overlap": false
+    },
+    {
+      "record": {
+        "title": "Midjourney",
+        "titleKey": "midjourney",
+        "normalizeTitle": "midjourney",
+        "urlKey": "midjourney.com/home",
+        "sourceKey": "futurepedia.io/tool/midjourney",
+        "vendor": "Midjourney",
+        "vendorKey": "midjourney",
+        "vendorName": "Midjourney",
+        "source": "Futurepedia",
+        "id": "9e7c938ec401",
+        "discountInfo": "",
+        "url": "https://www.midjourney.com/home/",
+        "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
+        "score": 25
+      },
+      "overlapWith": [],
+      "overlap": false
+    },
+    {
+      "record": {
+        "title": "Grok",
+        "titleKey": "grok",
+        "normalizeTitle": "grok",
+        "urlKey": "x.ai/grok",
+        "sourceKey": "futurepedia.io/tool/grok",
+        "vendor": "Grok",
+        "vendorKey": "xai",
+        "vendorName": "xAI",
+        "source": "Futurepedia",
+        "id": "376b6b3397e6",
+        "discountInfo": "",
+        "url": "https://x.ai/grok",
+        "sourceUrl": "https://www.futurepedia.io/tool/grok",
+        "score": 25
+      },
+      "overlapWith": [],
+      "overlap": false
+    }
+  ],
+  "fieldContribution": [
+    {
+      "title": "ChatGPT",
+      "extendedOverlap": true,
+      "against": "Layer3Labs / ChatGPT / OpenAI",
+      "mergeFieldDiffs": [],
+      "contributesNonLifecycle": false,
+      "contributesFields": []
+    },
+    {
+      "title": "Claude",
+      "extendedOverlap": true,
+      "against": "Curated / Anthropic Claude 非营利组织折扣",
+      "mergeFieldDiffs": [],
+      "contributesNonLifecycle": false,
+      "contributesFields": []
+    },
+    {
+      "title": "HubSpot AEO Sensor",
+      "extendedOverlap": false,
+      "against": null,
+      "selfRefreshDiffs": [
+        {
+          "field": "zh",
+          "before": "{\"description\":\"追踪 AI 问答引擎如何改变你网站的曝光表现。\"}",
+          "after": "null",
+          "lifecycleOnly": false
+        }
+      ],
+      "selfRefreshFields": [
+        "zh"
+      ]
+    },
+    {
+      "title": "Perplexity",
+      "extendedOverlap": true,
+      "against": "Layer3Labs / Perplexity",
+      "mergeFieldDiffs": [],
+      "contributesNonLifecycle": false,
+      "contributesFields": []
+    },
+    {
+      "title": "Google Gemini",
+      "extendedOverlap": true,
+      "against": "Layer3Labs / Google Gemini",
+      "mergeFieldDiffs": [],
+      "contributesNonLifecycle": false,
+      "contributesFields": []
+    },
+    {
+      "title": "Midjourney",
+      "extendedOverlap": false,
+      "against": null,
+      "selfRefreshDiffs": [
+        {
+          "field": "zh",
+          "before": "{\"description\":\"用提示词生成图片与视频。\"}",
+          "after": "null",
+          "lifecycleOnly": false
+        }
+      ],
+      "selfRefreshFields": [
+        "zh"
+      ]
+    },
+    {
+      "title": "Grok",
+      "extendedOverlap": false,
+      "against": null,
+      "selfRefreshDiffs": [
+        {
+          "field": "zh",
+          "before": "{\"description\":\"对话式 AI，基于实时网络与 X 的内容给出及时回答。\"}",
+          "after": "null",
+          "lifecycleOnly": false
+        }
+      ],
+      "selfRefreshFields": [
+        "zh"
+      ]
+    }
+  ],
+  "productionControl": {
+    "otherDeals": 132,
+    "otherDealsAfterProductionDedup": 132,
+    "combinedInput": 139,
+    "combinedAfterDedup": 135,
+    "productionMergedCount": 4,
+    "fpRepresentativesAfter": 3,
+    "deltaVsOthersOnly": 3
+  },
+  "sourcePriority": {
+    "Curated": 100,
+    "Curated-CN": 100,
+    "Layer3Labs": 50,
+    "智谱AI": 40,
+    "智谱AI活动页": 40,
+    "火山方舟": 40,
+    "深度求索": 40,
+    "阿里云百炼": 40,
+    "月之暗面": 40,
+    "百度千帆": 40,
+    "aitools.fyi": 30,
+    "Futurepedia": 20,
+    "Futuretools": 10
+  }
+}

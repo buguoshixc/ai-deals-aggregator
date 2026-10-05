@@ -1,0 +1,218 @@
+{
+  "root": "C:\\Users\\星澈\\AppData\\Local\\Temp\\cvdv1-t7-sandbox",
+  "capture": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\det-A1.out.txt",
+  "findings": [
+    {
+      "id": "recompute.releasedAt.divergence",
+      "ok": true,
+      "detail": "v2 口径 unknown=40，我的\"非空字符串\"口径 unknown=40"
+    },
+    {
+      "id": "vs.report.registryModels",
+      "ok": true,
+      "detail": "44 vs mine 44"
+    },
+    {
+      "id": "vs.report.known",
+      "ok": true,
+      "detail": "4 vs mine 4"
+    },
+    {
+      "id": "vs.report.unknown",
+      "ok": true,
+      "detail": "40 vs mine(v2口径) 40"
+    },
+    {
+      "id": "vs.report.unparsable",
+      "ok": true,
+      "detail": "0 vs mine 0"
+    },
+    {
+      "id": "vs.report.catalogStatusCensus",
+      "ok": true,
+      "detail": "report={\"current\":3,\"aging\":0,\"legacy\":1,\"historical\":0,\"unknown\":40} mine={\"unknown\":40,\"current\":3,\"legacy\":1,\"aging\":0,\"historical\":0}"
+    },
+    {
+      "id": "vs.report.sameDate",
+      "ok": true,
+      "detail": "2026-10-04T16:31:52.051Z vs 2026-10-04T16:31:52.051Z"
+    },
+    {
+      "id": "vs.report.states",
+      "ok": true,
+      "detail": "report={\"COVERED\":71,\"PARTIAL\":3,\"MISSING\":8,\"DEFERRED\":2,\"UNVERIFIABLE\":2,\"NOT_APPLICABLE\":50,\"BLOCKED_SOURCE\":0} mine={\"COVERED\":71,\"PARTIAL\":3,\"MISSING\":8,\"DEFERRED\":2,\"UNVERIFIABLE\":2,\"NOT_APPLICABLE\":50,\"BLOCKED_SOURCE\":0}"
+    },
+    {
+      "id": "vs.report.missingSet",
+      "ok": true,
+      "detail": "report=8 mine=8"
+    },
+    {
+      "id": "vs.report.partialSet",
+      "ok": true,
+      "detail": "report=baichuan/api,replit/coding,sensetime/api mine=baichuan/api N=2 M=0 rows=1,replit/coding N=1 M=0 rows=2,sensetime/api N=1 M=0 rows=1"
+    },
+    {
+      "id": "vs.report.gapQueue",
+      "ok": true,
+      "detail": "11 vs mine 11"
+    }
+  ],
+  "checks": [],
+  "releasedAt": {
+    "total": 44,
+    "v2UnknownCount": 40,
+    "stringUnknownCount": 40,
+    "knownCount": 4,
+    "unparsableCount": 0,
+    "notYmd": [],
+    "unparsable": [],
+    "knownSlugs": [
+      "deepseek-flash",
+      "deepseek-v3.2",
+      "deepseek-v4-pro",
+      "minimax-m3"
+    ]
+  },
+  "catalogStatus": {
+    "wordListFromLibText": [
+      "current",
+      "aging",
+      "legacy",
+      "historical",
+      "unknown"
+    ],
+    "publishedModels": 44,
+    "registryModels": 44,
+    "counts": {
+      "unknown": 40,
+      "current": 3,
+      "legacy": 1,
+      "aging": 0,
+      "historical": 0
+    },
+    "outsideWordList": []
+  },
+  "myStates": {
+    "COVERED": 71,
+    "PARTIAL": 3,
+    "MISSING": 8,
+    "DEFERRED": 2,
+    "UNVERIFIABLE": 2,
+    "NOT_APPLICABLE": 50,
+    "BLOCKED_SOURCE": 0
+  },
+  "myMissing": [
+    "ai360/coding",
+    "ai360/models",
+    "baichuan/coding",
+    "baichuan/models",
+    "baidu/models",
+    "deepseek/deals",
+    "iflytek/models",
+    "microsoft/coding"
+  ],
+  "myPartial": [
+    "baichuan/api N=2 M=0 rows=1",
+    "replit/coding N=1 M=0 rows=2",
+    "sensetime/api N=1 M=0 rows=1"
+  ],
+  "myBlocked": [],
+  "myDeferred": [
+    "microsoft/api",
+    "sensetime/models"
+  ],
+  "myUnverifiable": [
+    "coze/api",
+    "iflytek/coding"
+  ],
+  "myNotApplicable": 50,
+  "mappingClosure": {
+    "registrySlugs": 44,
+    "mappedSlugs": 44,
+    "unmappedSlugs": [],
+    "linksRows": 85,
+    "apiPricingEntries": 108,
+    "distinctApiPricingEntries": 108
+  },
+  "sourceHealth": {
+    "generatedAt": "2026-10-04T16:31:52.051Z",
+    "rows": 9,
+    "unhealthy": [
+      "Futurepedia(failed/collector_error) cf=10"
+    ],
+    "cfGe3": [
+      "Futurepedia(10)"
+    ]
+  },
+  "report": {
+    "registryModels": 44,
+    "known": 4,
+    "unknown": 40,
+    "unparsable": 0,
+    "withReleaseEvidence": 4,
+    "byCatalogStatus": [
+      "current=3",
+      "aging=0",
+      "legacy=1",
+      "historical=0",
+      "unknown=40"
+    ],
+    "censusCounts": {
+      "current": 3,
+      "aging": 0,
+      "legacy": 1,
+      "historical": 0,
+      "unknown": 40
+    },
+    "censusSum": 44,
+    "states": {
+      "COVERED": 71,
+      "PARTIAL": 3,
+      "MISSING": 8,
+      "DEFERRED": 2,
+      "UNVERIFIABLE": 2,
+      "NOT_APPLICABLE": 50,
+      "BLOCKED_SOURCE": 0
+    },
+    "missing": [
+      "ai360/coding",
+      "ai360/models",
+      "baichuan/coding",
+      "baichuan/models",
+      "baidu/models",
+      "deepseek/deals",
+      "iflytek/models",
+      "microsoft/coding"
+    ],
+    "partial": [
+      "baichuan/api",
+      "replit/coding",
+      "sensetime/api"
+    ],
+    "gapCounts": {
+      "A": 0,
+      "B": 3,
+      "C": 5,
+      "D": 3
+    },
+    "gapTotal": 11,
+    "gapKeys": [
+      "baichuan/api",
+      "replit/coding",
+      "sensetime/api",
+      "baidu/models",
+      "deepseek/deals",
+      "baichuan/coding",
+      "baichuan/models",
+      "iflytek/models",
+      "ai360/coding",
+      "ai360/models",
+      "microsoft/coding"
+    ],
+    "unknownReleaseDates": 40,
+    "healthGeneratedAt": "2026-10-04T16:31:52.051Z",
+    "healthRowCount": 9,
+    "notLanded": true
+  }
+}
