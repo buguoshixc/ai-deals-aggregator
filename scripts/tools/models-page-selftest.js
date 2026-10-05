@@ -104,6 +104,85 @@ function readJson(rel) {
   return JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'));
 }
 
+/**
+ * t13：**索引页行序的判据**。返回问题列表（空 = 通过）。**只有这一处实现**，换位牙也调它。
+ *
+ * 口径是「集合 **与次序** 逐字相等」——`JSON.stringify(rendered) === JSON.stringify(expected)`
+ * 比较整个数组，不是集合比较，也不先 sort。为什么必须是这个口径：只比"每一行的 slug 在集合里"
+ * 抓不住**换位**（两行对调后集合完全一样），而换位意味着读者看到的目录顺序与发布数据集不一致。
+ *
+ * `expected` 必须是**发布数据集**的顺序（`publishedModels.models.map(m => m.slug)`），不是源层
+ * `scripts/data/models.json` 的顶层键序 —— 后者是人工维护顺序（新身份追加在末尾），两者只在
+ * "源层恰好也是排序的"这一巧合下相等。t13 的四条失败里第一条就是它。
+ */
+function indexOrderProblems(renderedSlugs, expectedSlugs, bySlug) {
+  const problems = [];
+  const missing = expectedSlugs.filter(slug => !renderedSlugs.includes(slug));
+  const extra = renderedSlugs.filter(slug => !(bySlug && bySlug.has(slug)));
+  if (missing.length) problems.push(`缺 ${missing.slice(0, 3).join('/')}${missing.length > 3 ? ' …' : ''}`);
+  if (extra.length) problems.push(`多 ${extra.slice(0, 3).join('/')}${extra.length > 3 ? ' …' : ''}`);
+  if (JSON.stringify(renderedSlugs) !== JSON.stringify(expectedSlugs)) {
+    const at = renderedSlugs.findIndex((slug, index) => slug !== expectedSlugs[index]);
+    problems.push(at < 0
+      ? `行数不同（页面 ${renderedSlugs.length} / 期望 ${expectedSlugs.length}）`
+      : `次序不是逐字相等（首个不同在第 ${at + 1} 位：页面 ${JSON.stringify(renderedSlugs[at])} vs 期望 ${JSON.stringify(expectedSlugs[at])}）`);
+  }
+  return problems;
+}
+
+/**
+ * t13：**从关系层现读现算**"多变体"口径。返回 `{ groups, slugs }`：**只有这一处实现**。
+ *
+ *   · `groups` = api-plans 里"同一个 `(apiPlanId, modelKey)` 有 >1 条计价条目"的组数
+ *     （与 `registry-join-audit.js` 的 `multiVariantGroups` 同一语义：按**条目数**数，不按去重变体数）；
+ *   · `slugs`  = 关系层里"认领了某个多变体组的 ≥2 条真实 identity"的 registry 模型集合。
+ *
+ * 为什么要有它：页面侧（§17 独立 join 从**产物 HTML** 重算）与数据侧（从**关系层 + api-plans** 重算）
+ * 必须给出同一批 slug —— 这条对账两侧的实现路径完全不同，唯一共同点是它们都在读真实的盘上文件。
+ * 旧断言把 `12 组 / 9 个 slug` 写进判据（数据快照），本轮数据长到 13/10 就假红。
+ */
+function multiVariantFromLinks() {
+  const links = modelRegistry.linksList(modelRegistry.loadLinks().doc);   // **现读**关系层文件
+  const planById = new Map(apiPlans.filter(plan => plan && plan.id).map(plan => [plan.id, plan]));
+  const multiVariantKeys = new Set();
+  for (const plan of apiPlans) {
+    const countByKey = new Map();
+    for (const entry of (plan.models || [])) {
+      if (!entry) continue;
+      countByKey.set(entry.modelKey, (countByKey.get(entry.modelKey) || 0) + 1);
+    }
+    for (const [modelKey, count] of countByKey) {
+      if (count > 1) multiVariantKeys.add(`${plan.id}\u0000${modelKey}`);
+    }
+  }
+  const slugs = new Set();
+  for (const link of links) {
+    if (!link || !link.registrySlug || link.apiPlanId === undefined) continue;
+    if (!planById.has(link.apiPlanId)) continue;
+    const perGroup = new Map();
+    for (const identity of modelRegistry.sourcePricingIdentitiesOf(link, apiPlans).identities) {
+      const key = `${identity.apiPlanId}\u0000${identity.modelKey}`;
+      if (!multiVariantKeys.has(key)) continue;
+      perGroup.set(key, (perGroup.get(key) || 0) + 1);
+    }
+    if ([...perGroup.values()].some(count => count > 1)) slugs.add(link.registrySlug);
+  }
+  return { groups: multiVariantKeys.size, slugs };
+}
+
+/** t13：§17 四项计数必须**各自**为 0（不许只报一个合计）。返回非 0 的项。**只有这一处实现**。 */
+function joinCountProblems(counts) {
+  return ['missing', 'extra', 'duplicate', 'multiOwner']
+    .filter(key => (counts || {})[key] !== 0)
+    .map(key => `${key}=${(counts || {})[key]}`);
+}
+
+/** t13：两个 slug 集合是否**逐条**相等（排序后整数组比较，不是比个数）。**只有这一处实现**。 */
+function slugSetsEqual(left, right) {
+  const normalize = list => [...new Set(list || [])].sort();
+  return JSON.stringify(normalize(left)) === JSON.stringify(normalize(right));
+}
+
 /* ------------------------------------------------------------------ */
 /* 真实数据                                                            */
 /* ------------------------------------------------------------------ */
@@ -243,12 +322,38 @@ section('② 索引页：行 / ItemList / 筛选 / 静态可读（真实数据�
 
     // 集合 + 次序逐字相等：这是唯一能抓住「把某一行改名成另一个值」的判据
     // （只比链接与行内 slug 是否互相一致是抓不住的 —— 两处一起改就自洽了）。
-    const expectedSlugs = models.map(model => model.slug);
-    const missingRows = expectedSlugs.filter(slug => !tableSlugs.includes(slug));
-    const extraRows = tableSlugs.filter(slug => !bySlug.has(slug));
+    //
+    // t13（本条失败的根因）：期望序必须取**发布数据集**的 slug 序列 —— 上面第 222 行的注释本来就是
+    // 这么写的（"索引页渲染走**发布数据集**"），但代码用的是 `models.map(model => model.slug)`，
+    // 那是源层 `modelsOf(modelsTable)` 的**人工维护键序**（`scripts/data/models.json` 的顶层键序，
+    // 新身份追加在末尾）。两者在 HEAD 恰好一致（源层当时也是排序的），t8 追加 7 个新身份后才分叉 ——
+    // 这是"断言用了另一个口径"，**不是页面渲染次序错了**（页面渲染的正是发布数据集，次序正确）。
+    // 判据强度不变：仍是 JSON.stringify 整数组比较（换位必红），**没有**降级成集合比较。
+    const expectedSlugs = publishedModels.models.map(model => model.slug);
+    const indexOrderIssues = indexOrderProblems(tableSlugs, expectedSlugs, bySlug);
     check('索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）',
-      JSON.stringify(tableSlugs) === JSON.stringify(expectedSlugs),
-      `缺 ${missingRows.slice(0, 3).join('/') || '无'} · 多 ${extraRows.slice(0, 3).join('/') || '无'}`);
+      indexOrderIssues.length === 0, indexOrderIssues.join('；'));
+
+    // t13 换位牙：把渲染出来的两行**对调**，同一支判据必须红 —— 证明次序维度真的有牙，
+    // 不是"集合比较"在冒充（集合比较对换位是绿的）。只在内存里改 HTML 片段，不碰产物。
+    const swappedIndex = (() => {
+      const rows = [...html.matchAll(/<tr data-model="[^"]*"[\s\S]*?<\/tr>/g)].map(match => match[0]);
+      if (rows.length < 2 || rows[0] === rows[1]) return null;
+      return html.split(rows[0]).join('\u0000__ROW0__\u0000').split(rows[1]).join(rows[0]).split('\u0000__ROW0__\u0000').join(rows[1]);
+    })();
+    const swappedSlugs = swappedIndex === null ? [] : [...swappedIndex.matchAll(/<tr data-model="([^"]*)"/g)].map(match => match[1]);
+    const swappedIssues = swappedIndex === null ? [] : indexOrderProblems(swappedSlugs, expectedSlugs, bySlug);
+    check('【换位牙·t13】把索引页两行对调 ⇒ 同一支判据必红（次序维度真的有牙，不是集合比较冒充的）',
+      swappedIndex !== null && swappedSlugs.length === tableSlugs.length && swappedIssues.length > 0,
+      swappedIndex === null ? '样本不足（索引页少于两行）' : `对调后：${swappedIssues.join('；')}`);
+    check('【换位牙·t13·对照】同一份对调后的行序在"集合口径"下是绿的 —— 所以旧口径抓不住换位，新口径能',
+      swappedIndex !== null
+      && [...swappedSlugs].sort().join('|') === [...expectedSlugs].sort().join('|')
+      && swappedIssues.length > 0,
+      swappedIndex === null ? '样本不足' : `集合相等 ${swappedSlugs.length} 行 / 次序问题 ${swappedIssues.length} 条`);
+    // 现场输出：通过时也把命中信息打出来（验收要的就是这份逐条现场读数）
+    console.log(`    ℹ t13 换位牙现场输出：把两行对调 ⇒ ${swappedIssues.join('；') || '(没有报红)'}`
+      + `（同一份输入在"集合口径"下是绿的：${[...swappedSlugs].sort().join('|') === [...expectedSlugs].sort().join('|')}）`);
 
     // 行内详情链接必须指向**这一行自己的**路由（链接指错 = 点进去是另一个人）
     const rowHtml = new Map();
@@ -546,8 +651,33 @@ const ranked = gated.map(gate => models.find(model => model.slug === gate.slug))
   }
   const affected = [...expectedRowsBySlug.entries()]
     .filter(([, list]) => list.length > new Set(list.map(({ plan, entry }) => `${plan.id}|${entry.modelKey}`)).size);
-  check(`独立重算：${affected.length} 个 registry 模型存在"一条映射覆盖多个真实 variant"（应为 9 个）`,
-    affected.length === 9, affected.map(([slug]) => slug).join(' | '));
+  // t13：分母换成**关系层现读现算**（不再写死 9）。这里的两条实现路径**完全不同**：
+  //   · `affected`（本段自算）手工展开 api-plans × links；
+  //   · `multiVariantFromLinks()` 走 lib 的 `sourcePricingIdentitiesOf()`，并**重新读一次关系层文件**。
+  // 两边必须给出**同一批 slug**（集合相等，不只是个数相等）。
+  const multiVariantLinks = multiVariantFromLinks();
+  const affectedSlugList = affected.map(([slug]) => slug).sort();
+  const multiVariantSlugList = [...multiVariantLinks.slugs].sort();
+  check(`独立重算：${affected.length} 个 registry 模型存在"一条映射覆盖多个真实 variant"（必须 == 关系层现读现算的 ${multiVariantSlugList.length} 个，且逐条集合相等）`,
+    affectedSlugList.length > 0 && slugSetsEqual(affectedSlugList, multiVariantSlugList),
+    `独立重算 ${affectedSlugList.join(' | ')} ⟷ 关系层现算 ${multiVariantSlugList.join(' | ')}`);
+  check('【可证伪性·t13】"集合相等"不是"计数相等"的伪装：个数相同但内容不同的两批 slug ⇒ 同一支比对必红（正例同时给出，证明它不是恒红）',
+    slugSetsEqual(['a', 'b', 'c'], ['a', 'b', 'd']) === false
+    && slugSetsEqual(['a', 'b', 'c'], ['a', 'b', 'c']) === true
+    && slugSetsEqual([], []) === true,
+    `[a,b,c] vs [a,b,d] ⇒ ${slugSetsEqual(['a', 'b', 'c'], ['a', 'b', 'd'])}（应为 false）`);
+  // 真实数据当场变异：把右侧某一格换成另一个 slug（**个数不变**），比对必须红。
+  const perturbedMultiVariantSlugs = multiVariantSlugList.length
+    ? [...multiVariantSlugList.slice(0, -1), `${multiVariantSlugList[multiVariantSlugList.length - 1]}-perturbed`].sort()
+    : [];
+  check('【可证伪性·t13·真实数据变异】把关系层现算的某一格换成另一个 slug（个数不变）⇒ 同一支集合比对必红',
+    multiVariantSlugList.length > 0
+    && perturbedMultiVariantSlugs.length === multiVariantSlugList.length
+    && slugSetsEqual(affectedSlugList, perturbedMultiVariantSlugs) === false,
+    `${multiVariantSlugList.length} → ${perturbedMultiVariantSlugs.length} 个（个数不变）· 集合相等 = ${slugSetsEqual(affectedSlugList, perturbedMultiVariantSlugs)}（应为 false）`);
+  console.log(`    ℹ t13 集合比对可证伪性：[a,b,c] vs [a,b,d] ⇒ ${slugSetsEqual(['a', 'b', 'c'], ['a', 'b', 'd'])}（应 false）；`
+    + `[a,b,c] vs [a,b,c] ⇒ ${slugSetsEqual(['a', 'b', 'c'], ['a', 'b', 'c'])}（应 true）；`
+    + `真实数据把一格换成 "-perturbed"（个数仍 ${perturbedMultiVariantSlugs.length}）⇒ ${slugSetsEqual(affectedSlugList, perturbedMultiVariantSlugs)}（应 false）`);
   const affectedSlugs = affected.map(([slug]) => slug).sort();
 
   const shortPages = [];
@@ -623,10 +753,22 @@ const ranked = gated.map(gate => models.find(model => model.slug === gate.slug))
   console.log(`    独立 join（${audit.dist}）：模型 ${audit.models} · 页 ${audit.pages} · 期望行 ${audit.expectedRows}`
     + `（api-plans 真实计价条目 ${audit.pricingItems}）· missing ${audit.counts.missing} · extra ${audit.counts.extra}`
     + ` · duplicate ${audit.counts.duplicate} · multi-owner ${audit.counts.multiOwner}`);
-  check('§17 独立 join：44 个模型 missing / extra / duplicate source identity / multi-owner 四项计数全为 0',
-    audit.models === 44 && audit.counts.missing === 0 && audit.counts.extra === 0
-    && audit.counts.duplicate === 0 && audit.counts.multiOwner === 0,
-    JSON.stringify(audit.counts));
+  // t13：模型数分母换成**现读发布数据集**（不再写死 44）；四项计数仍然**各自**断言为 0
+  // （`joinCountProblems()` 逐项点名，不许只在一个合计里蒙过去）。
+  const publishedModelsOnDisk = readJson('models.json').models.length;
+  const joinCountIssueList = joinCountProblems(audit.counts);
+  check(`§17 独立 join：模型数 == 现读发布数据集的 ${publishedModelsOnDisk} 个，且 missing / extra / duplicate source identity / multi-owner 四项计数各自为 0`,
+    audit.models === publishedModelsOnDisk && joinCountIssueList.length === 0,
+    `audit.models=${audit.models} vs 发布数据集 ${publishedModelsOnDisk}；${joinCountIssueList.join('、') || JSON.stringify(audit.counts)}`);
+  check('【可证伪性·t13】四项计数是**逐项**断言的：任意一项非 0 都会被单独点名（不是只报一个合计）',
+    ['missing', 'extra', 'duplicate', 'multiOwner'].every(key => joinCountProblems({ missing: 0, extra: 0, duplicate: 0, multiOwner: 0, [key]: 1 }).join('、') === `${key}=1`)
+    && joinCountProblems({ missing: 0, extra: 0, duplicate: 0, multiOwner: 0 }).length === 0,
+    ['missing', 'extra', 'duplicate', 'multiOwner'].map(key => `${key}:${joinCountProblems({ missing: 0, extra: 0, duplicate: 0, multiOwner: 0, [key]: 1 }).join('、')}`).join(' · '));
+  console.log('    ℹ t13 四项计数逐项点名现场输出：'
+    + ['missing', 'extra', 'duplicate', 'multiOwner']
+      .map(key => `${key}=1 ⇒ 「${joinCountProblems({ missing: 0, extra: 0, duplicate: 0, multiOwner: 0, [key]: 1 }).join('、')}」`)
+      .join(' · ')
+    + `；全 0 ⇒ 「${joinCountProblems({ missing: 0, extra: 0, duplicate: 0, multiOwner: 0 }).join('、')}」（空串 = 通过）`);
   // 计价条目的结局只有两种：**有一行**（被映射到某个 registry 身份）或**有一条 API 侧声明**
   // （`model-registry-gaps.json` 里声明"对不上任何 registry 身份"，因此按定义没有页面）。
   // 所以"期望行数 = 总条目 − 已声明条目"；等式两边都不许有第三种结局（静默消失）。
@@ -636,8 +778,14 @@ const ranked = gated.map(gate => models.find(model => model.slug === gate.slug))
   check('§17 独立 join：期望行数 == api-plans 计价条目 − 已声明"不对应单一模型身份"的条目（每条都要有结局：要么一行、要么一条声明）',
     audit.expectedRows === audit.pricingItems - joinDeclaredApi,
     `${audit.expectedRows} vs ${audit.pricingItems} − ${joinDeclaredApi}`);
-  check(`§17 独立 join：受影响口径独立重算为 ${audit.multiVariantGroups} 组 / ${audit.affectedSlugs.length} 个 slug`,
-    audit.multiVariantGroups === 12 && audit.affectedSlugs.length === 9, audit.affectedSlugs.join(' | '));
+  // t13：写死的 `12 组 / 9 个 slug` 换成**现读关系层 → 分组 → 与页面口径对账**，
+  // 保留「两个口径必须相等」的强度（而且从"计数相等"提到"集合逐条相等"）。
+  const joinMultiVariant = multiVariantFromLinks();
+  check(`§17 独立 join：受影响口径与关系层现读现算逐条相等（${joinMultiVariant.groups} 组 / ${joinMultiVariant.slugs.size} 个 slug）`,
+    audit.multiVariantGroups === joinMultiVariant.groups
+    && slugSetsEqual(audit.affectedSlugs, [...joinMultiVariant.slugs]),
+    `页面口径 ${audit.multiVariantGroups} 组 / ${audit.affectedSlugs.length} 个 · 关系层现算 ${joinMultiVariant.groups} 组 / ${joinMultiVariant.slugs.size} 个`
+    + ` · 差异 ${JSON.stringify([...new Set([...audit.affectedSlugs, ...joinMultiVariant.slugs])].filter(slug => !audit.affectedSlugs.includes(slug) || !joinMultiVariant.slugs.has(slug)))}`);
   // 交叉对账：产物的行数必须等于独立 join 的期望（逐页），且**不借被测判据**
   const expectedBySlug = audit.expectedBySlug;
   const mismatched = [];

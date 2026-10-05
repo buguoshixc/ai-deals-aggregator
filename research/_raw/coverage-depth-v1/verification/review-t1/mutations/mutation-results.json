@@ -1,0 +1,221 @@
+{
+  "sandbox": "C:\\Users\\星澈\\AppData\\Local\\Temp\\cvdv1-t7-frozen2",
+  "reviewDir": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1",
+  "ranAt": "2026-10-05T04:25:12.454Z",
+  "cases": [
+    {
+      "id": "C0-clean-fixture",
+      "args": [
+        "--source-rulings=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-clean.json"
+      ],
+      "expect": null,
+      "expectExitZero": true,
+      "exit": 0,
+      "hitExpectedString": true,
+      "hitLine": "未知 official release date       14   releasedAt 为 null 或字段缺席（与报告的 unknown release dates 同一判据）",
+      "ok": true,
+      "note": "合法夹具：对账应 0 处问题",
+      "outFile": "mutations\\logs\\C0-clean-fixture.out.txt",
+      "errFile": "mutations\\logs\\C0-clean-fixture.err.txt"
+    },
+    {
+      "id": "M1-unparsable-releasedAt",
+      "args": [
+        "--models=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\m1-models-unparsable.json"
+      ],
+      "expect": "解析不出可判日",
+      "expectExitZero": false,
+      "exit": 1,
+      "hitExpectedString": true,
+      "hitLine": "- Release Evidence Coverage：有 1 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD） —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。",
+      "ok": true,
+      "note": null,
+      "outFile": "mutations\\logs\\M1-unparsable-releasedAt.out.txt",
+      "errFile": "mutations\\logs\\M1-unparsable-releasedAt.err.txt"
+    },
+    {
+      "id": "M2-empty-string-releasedAt",
+      "args": [
+        "--models=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\m2-models-empty-string.json"
+      ],
+      "expect": "两处读数不一致",
+      "expectExitZero": false,
+      "exit": 1,
+      "hitExpectedString": true,
+      "hitLine": "- Release Evidence Coverage 与既有 \"unknown release dates\" 两处读数不一致（新读数 14 / 既有 13） —— \"有没有官方发布日期\"只能有一个判据（lib/model-freshness.js 的 releaseDateOf()），两处必须同时成立。",
+      "ok": true,
+      "note": null,
+      "outFile": "mutations\\logs\\M2-empty-string-releasedAt.out.txt",
+      "errFile": "mutations\\logs\\M2-empty-string-releasedAt.err.txt"
+    },
+    {
+      "id": "M3-bad-registrySlug",
+      "args": [
+        "--targets=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\m3-targets-bad-slug.json"
+      ],
+      "expect": "不在 scripts/data/models.json",
+      "expectExitZero": false,
+      "exit": 1,
+      "hitExpectedString": true,
+      "hitLine": "- targets[1] aliyun currentTargets[1]: registrySlug「t7-no-such-slug-xyz」不在 scripts/data/models.json 里 —— current target 指向不存在的模型身份一律红",
+      "ok": true,
+      "note": null,
+      "outFile": "mutations\\logs\\M3-bad-registrySlug.out.txt",
+      "errFile": "mutations\\logs\\M3-bad-registrySlug.err.txt"
+    },
+    {
+      "id": "M4-keep-degraded-no-whyKept",
+      "args": [
+        "--source-rulings=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m4-keep-degraded-no-whykept.json"
+      ],
+      "expect": "必须写 whyKept",
+      "expectExitZero": false,
+      "exit": 1,
+      "hitExpectedString": true,
+      "hitLine": "- rulings[0] futurepedia: decision=keep-degraded 必须写 whyKept（这是\"有理由的保留/修复\"与\"没人管\"的唯一区别）",
+      "ok": true,
+      "note": null,
+      "outFile": "mutations\\logs\\M4-keep-degraded-no-whyKept.out.txt",
+      "errFile": "mutations\\logs\\M4-keep-degraded-no-whyKept.err.txt"
+    },
+    {
+      "id": "M5-retire-still-registered",
+      "args": [
+        "--source-rulings=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m5-retire-still-registered.json"
+      ],
+      "expect": "仍然挂在采集器注册表里",
+      "expectExitZero": false,
+      "exit": 1,
+      "hitExpectedString": true,
+      "hitLine": "- 已裁决 retire 的来源「futurepedia」仍然挂在采集器注册表里（registry id futurepedia） —— \"退出采集链路\"与\"还在被采集\"不能同时成立：要么从 scripts/collectors 摘掉它，要么把裁决改成 repair / keep-degraded。",
+      "ok": true,
+      "note": null,
+      "outFile": "mutations\\logs\\M5-retire-still-registered.out.txt",
+      "errFile": "mutations\\logs\\M5-retire-still-registered.err.txt"
+    },
+    {
+      "id": "M6-cf3-without-ruling",
+      "args": [
+        "--source-rulings=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m6-empty.json"
+      ],
+      "expect": "没有在 scripts/data/source-rulings.json 里留下裁决",
+      "expectExitZero": false,
+      "exit": 1,
+      "hitExpectedString": true,
+      "hitLine": "- 来源「futurepedia」连续失败已达 3 次以上，却没有在 scripts/data/source-rulings.json 里留下裁决 —— 长期失败必须有人表态（repair / headless-migrate / keep-degraded / retire 四选一），不许只以读数的形式常驻。",
+      "ok": true,
+      "note": null,
+      "outFile": "mutations\\logs\\M6-cf3-without-ruling.out.txt",
+      "errFile": "mutations\\logs\\M6-cf3-without-ruling.err.txt"
+    },
+    {
+      "id": "M7-rulings-out-of-order",
+      "args": [
+        "--source-rulings=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m7-out-of-order.json"
+      ],
+      "expect": "不是规范序",
+      "expectExitZero": false,
+      "exit": 1,
+      "hitExpectedString": true,
+      "hitLine": "- rulings 数组不是规范序（应按 source 的 code-unit 序：aitools → layer3labs，实得 layer3labs → aitools） —— 文件里的顺序就是读者看到的顺序，两次读取必须得到同一串字节",
+      "ok": true,
+      "note": null,
+      "outFile": "mutations\\logs\\M7-rulings-out-of-order.out.txt",
+      "errFile": "mutations\\logs\\M7-rulings-out-of-order.err.txt"
+    },
+    {
+      "id": "M8-broken-json",
+      "args": [
+        "--source-rulings=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m8-broken.json"
+      ],
+      "expect": "解析失败",
+      "expectExitZero": false,
+      "exit": 1,
+      "hitExpectedString": true,
+      "hitLine": "- scripts/data/source-rulings.json 解析失败：Expected property name or '}' in JSON at position 35 (line 1 column 36)",
+      "ok": true,
+      "note": null,
+      "outFile": "mutations\\logs\\M8-broken-json.out.txt",
+      "errFile": "mutations\\logs\\M8-broken-json.err.txt"
+    },
+    {
+      "id": "M9-illegal-decision",
+      "args": [
+        "--source-rulings=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m9-illegal-decision.json"
+      ],
+      "expect": "decision 非法",
+      "expectExitZero": false,
+      "exit": 1,
+      "hitExpectedString": true,
+      "hitLine": "- rulings[0] futurepedia: decision 非法（pending），允许 repair / headless-migrate / keep-degraded / retire —— 没有\"待定\"这一档",
+      "ok": true,
+      "note": null,
+      "outFile": "mutations\\logs\\M9-illegal-decision.out.txt",
+      "errFile": "mutations\\logs\\M9-illegal-decision.err.txt"
+    },
+    {
+      "id": "M10-headless-migrate-no-stability",
+      "args": [
+        "--source-rulings=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m10-headless-no-stability.json"
+      ],
+      "expect": "必须写 headlessStability",
+      "expectExitZero": false,
+      "exit": 1,
+      "hitExpectedString": true,
+      "hitLine": "- rulings[0] futurepedia: decision=headless-migrate 必须写 headlessStability（这是\"有理由的保留/修复\"与\"没人管\"的唯一区别）",
+      "ok": true,
+      "note": null,
+      "outFile": "mutations\\logs\\M10-headless-migrate-no-stability.out.txt",
+      "errFile": "mutations\\logs\\M10-headless-migrate-no-stability.err.txt"
+    },
+    {
+      "id": "M11-relative-evidence-url",
+      "args": [
+        "--source-rulings=D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\research\\_raw\\coverage-depth-v1\\verification\\review-t1\\mutations\\rulings-m11-relative-url.json"
+      ],
+      "expect": "不是绝对地址",
+      "expectExitZero": false,
+      "exit": 1,
+      "hitExpectedString": true,
+      "hitLine": "- rulings[0] futurepedia 的 evidence[0]: url「futurepedia.io/x」不是绝对地址（要写 scheme://…，不许写一句自我声明）",
+      "ok": true,
+      "note": null,
+      "outFile": "mutations\\logs\\M11-relative-evidence-url.out.txt",
+      "errFile": "mutations\\logs\\M11-relative-evidence-url.err.txt"
+    },
+    {
+      "id": "M12-missing-file",
+      "sandboxWithoutRulings": "C:\\Users\\星澈\\AppData\\Local\\Temp\\cvdv1-t7-head",
+      "expect": "尚未落盘 + 未落盘 ≠ 通过 + 报告自检待落盘层 + source-rulings（长期失败来源的人工裁决）",
+      "exit": 0,
+      "expectExitZero": true,
+      "hitExpectedString": true,
+      "hitLine": "裁决表：scripts/data/source-rulings.json —— **尚未落盘**（未落盘 ≠ 通过：本轮三方对账没有输入）",
+      "ok": true,
+      "note": "未落盘 ≠ 通过：exit 0 但显式计入自检口径"
+    },
+    {
+      "id": "M1b-inplace-mutated-then-restored",
+      "args": [],
+      "expect": "解析不出可判日",
+      "expectExitZero": false,
+      "exit": 1,
+      "hitExpectedString": true,
+      "hitLine": "- Release Evidence Coverage：有 1 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD） —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。",
+      "ok": true,
+      "note": "直接改沙箱 scripts/data/models.json（不传 --models=）",
+      "outFile": "mutations\\logs\\M1b-inplace-mutated-then-restored.out.txt",
+      "errFile": "mutations\\logs\\M1b-inplace-mutated-then-restored.err.txt"
+    },
+    {
+      "id": "M1b-restore-proof",
+      "shaBefore": "2f69aa5100cd9248510546afd814ff2345b0a038107eb947032c627201c1fb42",
+      "mutatedSha": "420d99e80d3b9dad175d2981f8750e63fd6f12d5cfade68d5fd26f8d3e1648f1",
+      "shaAfter": "2f69aa5100cd9248510546afd814ff2345b0a038107eb947032c627201c1fb42",
+      "restoredByteExact": true,
+      "ok": true
+    }
+  ],
+  "passed": 15,
+  "failed": 0
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-05",
+  "_note": "长期失败来源的人工裁决层（内部维护层，**不发布**：不进 PUBLIC_DATASETS / Dataset Manifest / Sitemap / Feed）。judgment 只写在这里，**状态读数一律只来自 scripts/data/source-health.json**，本文件不产生任何读数。判据层与三方对账在 scripts/lib/source-rulings.js（schema 校验 + source 的 code-unit 稳定序 + 裁决↔采集器注册表↔source-health），本文件只写数据。约定四条：(1) evidence[].url 是**证据的对象**（被观测的那个地址），不是证据文件的存放位置——证据文件路径与 sha256 写在 reading 里，全部落在 research/_raw/coverage-depth-v1/source-reliability/；(2) 所有健康陈述都带 source-health.json 的 generatedAt，不写永久性结论（结论都有复查窗口）；(3) overlap 三个计数的口径（唯一出处 overlap-fp-round1.json 的 numbers 段）：historicalItems = 数据集里已存在的该来源记录条数，overlapItems = 本次 live 条目中与其它来源重合的条数（判据 extended = T_titleKey ∪ U_urlKey ∪ S_sourceKey），uniqueItems = 本次 live 条目中其它来源没有对应项的条数；(4) maintenanceCost 是**保留这条来源的持续成本**（代码面 + 运行面 + 人工 triage 面），不是它的产出价值：low = 无人值守也不出错，medium = 需要定期人工 triage 或有中等运行成本，high = 有可修缺陷 / 需要持续改规则 / 停产风险高。",
+  "rulings": [
+    {
+      "source": "futurepedia",
+      "decision": "keep-degraded",
+      "reason": "9 个采集来源里唯一非 healthy 的一个，且该判定只出现在 CI 侧读数里：盘上 generatedAt=2026-10-04T16:31:52.051Z 记 status=failed reason=collector_error consecutiveFailures=10，lastError=「https://www.futurepedia.io/ 抓取失败: HTTP 403」；本机同 URL 在 2026-10-05T03:31–03:40Z 的五变体归因实验全 200、9 轮连续读数全成功。⇒ 判定为**跨环境观测不一致**（observed unstable），不是可复现的缺陷。四类裁决逐条对照：repair 不选（本机无可复现缺陷、fixture 契约通过、静态可采面已无空间——目录页静态 HTML 里 0 个 /tool/ 链接，任何『修法』都是盲改，违反不猜）；headless-migrate 暂不选（本机无头 3/3 稳定，但无头仍从同一 CI 出口发请求——换的是 TLS/JS 指纹不是出口 IP，对『IP/机房策略』这一假设没有对症证据，且 CI 出口那一半稳定性没有读数）；retire 不选（会永久冻结 Midjourney / HubSpot AEO Sensor 两条独占记录的唯一刷新通道，而删除数据本身不会发生，只有 lastSeen 停摆）；故取 keep-degraded 并写下复查窗口与四条升级触发条件。",
+      "evidence": [
+        {
+          "url": "https://www.futurepedia.io/",
+          "capturedAt": "2026-10-04",
+          "reading": "盘上心跳唯一 live 读数（scripts/data/source-health.json，generatedAt=2026-10-04T16:31:52.051Z，sha256=f782626e2b0e9b31236393507fe00121e90faf55db92fbd71fa52002885abf80，该次普查 healthy 8 / degraded 0 / failed 1）：futurepedia status=failed reason=collector_error consecutiveFailures=10 consecutiveZero=0 lastSuccessAt=2026-09-30T01:36:21.446Z lastItemCount=7 previousItemCount=7 delta=0 lastDurationMs=2169 lastError=\"https://www.futurepedia.io/ 抓取失败: HTTP 403\" headlessReady=null"
+        },
+        {
+          "url": "https://www.futurepedia.io/",
+          "capturedAt": "2026-10-05",
+          "reading": "CI 侧历史由 git 重建（research/_raw/coverage-depth-v1/source-reliability/ci-readings.json，probe-ci-history.cjs，ranAtUtc=2026-10-05T03:42:43.428Z，readingsCount=19）：futurepediaSummary.readings=19 · healthyReadings=4 · failedReadings=15 · currentStreakFailures=10 · currentStreakFirstFailureGeneratedAt=2026-09-30T04:09:07.964Z · currentStreakLastFailureGeneratedAt=2026-10-04T16:31:52.051Z · consecutiveFailuresCounterAtHead=10；nonHealthyAcrossAllReadings=[{source:futurepedia,readings:15}]（其余 8 个来源在全部 19 次读数里 consecutiveFailures 恒为 0）"
+        },
+        {
+          "url": "https://www.futurepedia.io/",
+          "capturedAt": "2026-10-05",
+          "reading": "本机 HTTP 归因实验（http-forensics-fp.json ranAtUtc=2026-10-05T03:31:49.168Z；http-forensics-fp2.json ranAtUtc=2026-10-05T03:32:52.446Z，同 URL、同机器、逐项只改一个变量）：V1 采集器现值头 200 / 1,482,136 B / 2,068 ms、V1b 跟随重定向 200、V2 完全不发 UA 200 / 1,481,571 B、V3 满浏览器头 200、V4 Googlebot UA 200 / 1,478,093 B；maxRedirects=0 直接 200（无重定向）；响应头 server=cloudflare / x-powered-by=Next.js / cf-cache-status=DYNAMIC / cf-ray=…-SEA；markers{login:false,captcha:false,cloudflare:false,errorPage:false}。唯一无法在本机复现的变量 = 出口 IP/机房（egress 2409:895a:dcd:aeb8:a9f1:1296:511c:4188，zone trace loc=CN / colo=SEA）——归因只到这一步，记为**假设**"
+        },
+        {
+          "url": "https://www.futurepedia.io/robots.txt",
+          "capturedAt": "2026-10-05",
+          "reading": "http-forensics-fp2.json#robots（2026-10-05T03:33:16Z，HTTP 200，374 B，cf-cache-status=REVALIDATED）：body 开头逐字为 \"User-Agent: *\\nAllow: /\\nDisallow: /search/\\nDisallow: /?search=*\\nDisallow: /api/image-widget*…\" ⇒ 采集路径未被 robots 禁止"
+        },
+        {
+          "url": "https://www.futurepedia.io/",
+          "capturedAt": "2026-10-05",
+          "reading": "本机连续 9 轮读数（census-fp-round1/2/3.json 各 startedAtUtc 2026-10-05T03:30:49.416Z / 2026-10-05T03:38:27.955Z / 2026-10-05T03:40:33.374Z；logs/dryrun-only-futurepedia-3rounds.txt 三轮生产 dry-run exit 0；headless-futurepedia-stability.json ranAtUtc=2026-10-05T03:37:43.249Z）：本机 9/9 全成功，每轮 7 条且与 CI 侧 lastItemCount=7 逐个相同；无头 3 轮 okRounds=3 / itemCounts=[7,7,7] / stableItemCount=true / identicalTitles=true / medianMs=3614 / maxMs=6489 / channel=msedge / 无 consoleErrors / 无 failedRequests。无头读数只在「本机是否稳定」这一层成立"
+        },
+        {
+          "url": "https://www.futurepedia.io/",
+          "capturedAt": "2026-10-05",
+          "reading": "overlap / 独有价值（overlap-fp-round1.json，probe-overlap.cjs，ranAtUtc=2026-10-05T03:35:13.748Z，输入 deals.json count=135）：numbers.fpLiveItems=7 · fpLiveExtendedOverlap=4 · fpLiveExtendedUnique=3 · fpLiveProductionOverlap=4 · fpLiveRawTitleOverlap=2 · fpHistoricalRecords=3 · fpHistoricalOverlapWithOthers=0 · fpRecentUniqueCandidates=0；productionControl{combinedInput:139, combinedAfterDedup:135, productionMergedCount:4, fpRepresentativesAfter:3}；4 条重合条目并入已有记录后 mergeFieldDiffs=[] （字段贡献 0）；3 条独有 = HubSpot AEO Sensor / Midjourney / Grok，其中 Midjourney 与 HubSpot AEO Sensor 是全库唯一来源（Grok 由 Futuretools 每轮共同发现）。「逐字相等」只能抓到 2 条 ⇒ 本裁决不采用 title===title 作为判据"
+        },
+        {
+          "url": "https://www.futurepedia.io/ai-tools",
+          "capturedAt": "2026-10-05",
+          "reading": "repair 的可采面测量（surface-futurepedia.json，probe-futurepedia-surface.cjs，ranAtUtc=2026-10-05T03:39:07.041Z）：首页 200 / 1,481,771 B / parseItems=7；/ai-tools 200 / 111,329 B / parseItems=0 / uniqueToolHrefsInHtml=0；/ai-tools?page=2 200 / 111,396 B / parseItems=0；sitemap.xml 200 / 135,660 B / locCount=631；sitemap_tools.xml 200 / 191,216 B / locCount=1332（全部 /tool/，采集器目前只读 7/1332≈0.5%）。⇒ 静态路径扩不出量，「把采集器指向列表页」这条 repair 没有空间"
+        }
+      ],
+      "overlap": {
+        "historicalItems": 3,
+        "uniqueItems": 3,
+        "overlapItems": 4,
+        "maintenanceCost": "medium"
+      },
+      "whyKept": "四条理由：(1) CI 侧 403 是**跨环境观测不一致**，本机 5 变体 + 9 轮全成功且没有任何可复现的缺陷 —— 在拿不出可修对象时盲改（repair）与「不猜」相冲突；(2) 失败**不污染数据**：失败源不进 absenceEligibleSources，不产生批量 ended，不删除任何记录，只是这一轮不刷新；(3) 它是 Midjourney / HubSpot AEO Sensor 两条**独占记录的唯一发现通道**，一旦停采这两条的 lastSeen 会冻结在 2026-09-30（可见的陈旧，需要人知道），而记录本身不会被删；(4) 成本极低：55 行代码、0 新增依赖、每轮 8 次 HTTP / 约 2.93 MB、本机 4.5–6.8 s；机制上只要某一轮 CI 成功，健康层下一轮就会按既定规则回 healthy（这是规则行为，不是对未来的断言）。代价与反方已如实记录于 reason 与本文件的 maintenanceCost=medium（每轮 CI 失败都要人工 triage 一次「还是那条已知的 403 吗」）。",
+      "revisitBy": "2026-10-19 前复查（两周复审窗口）。到点用**同一条命令**重读两套读数：CI 侧 scripts/data/source-health.json 的 generatedAt 与 futurepedia.consecutiveFailures，加本机 dry-run 轮次。四条升级触发条件（满足任一条即提前复查并改裁决）：① CI 侧连续失败 ≥ 20 次（约再 5 天）且队长判定不再等它 → 转 headless-migrate 或 retire；② 另一来源开始覆盖 Midjourney / HubSpot AEO Sensor（独占价值消失）→ 转 retire；③ CI 侧出现与 403 不同形态的失败（HTML 结构变化 / 零产出 / 登录墙）→ 转 repair（那时才是真的可修缺陷）；④ 若决意保留其内容贡献 → 按 headless-migrate 走，且**必须先拿到 CI 出口下连续多轮 --headless 的稳定性读数**，否则不允许落地。",
+      "headlessStability": null
+    }
+  ]
+}

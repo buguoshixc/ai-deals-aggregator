@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-05",
+  "rulings": [
+    {
+      "source": "layer3labs",
+      "decision": "repair",
+      "reason": "l 开头，规范序里应排在后面。",
+      "evidence": [
+        {
+          "url": "https://www.futurepedia.io/",
+          "capturedAt": "2026-10-05",
+          "reading": "HTTP 403 / collector_error 连续 10 次（scripts/data/source-health.json 现场读数）"
+        }
+      ],
+      "overlap": {
+        "historicalItems": 0,
+        "uniqueItems": 12,
+        "overlapItems": 0,
+        "maintenanceCost": "medium"
+      },
+      "whyKept": null,
+      "revisitBy": "2026-11-01",
+      "headlessStability": null
+    },
+    {
+      "source": "aitools",
+      "decision": "repair",
+      "reason": "a 开头，规范序里应排在前面。",
+      "evidence": [
+        {
+          "url": "https://www.futurepedia.io/",
+          "capturedAt": "2026-10-05",
+          "reading": "HTTP 403 / collector_error 连续 10 次（scripts/data/source-health.json 现场读数）"
+        }
+      ],
+      "overlap": {
+        "historicalItems": 0,
+        "uniqueItems": 12,
+        "overlapItems": 0,
+        "maintenanceCost": "medium"
+      },
+      "whyKept": null,
+      "revisitBy": "2026-11-01",
+      "headlessStability": null
+    }
+  ]
+}

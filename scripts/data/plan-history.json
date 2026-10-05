@@ -1055,6 +1055,147 @@
       },
       "runAt": "2026-10-04T12:07:08.828Z",
       "eventId": "43ace235ef74"
+    },
+    {
+      "planId": "03f246d78293",
+      "at": "2026-10-05",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 200,
+        "billing.currency": "USD",
+        "quota.type": "rate_limited",
+        "quota.description": "官方写「Pro 200 includes more usage than Pro 100」；新订户不再享有旧额度（官方写 lower included usage allowance），未公布固定数值",
+        "region": "global",
+        "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+        "source": "Official-Docs",
+        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers"
+      },
+      "runAt": "2026-10-05T03:57:58.336Z",
+      "eventId": "05a4f0bdf78b"
+    },
+    {
+      "planId": "5b69ae2939c8",
+      "at": "2026-10-05",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 100,
+        "billing.currency": "USD",
+        "quota.type": "rate_limited",
+        "quota.description": "官方写「Pro 200 includes more usage than Pro 100. Pro 500 offers the highest included usage of the three plans.」；未公布固定数值；Ultrafast 只有 Pro 500 含",
+        "region": "global",
+        "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+        "source": "Official-Docs",
+        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers"
+      },
+      "runAt": "2026-10-05T03:57:58.336Z",
+      "eventId": "a55b6d8666cd"
+    },
+    {
+      "planId": "5ef2cd29fff0",
+      "at": "2026-10-05",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 0,
+        "billing.currency": "CNY",
+        "quota.type": "credits",
+        "quota.amount": 60000,
+        "quota.period": "rolling",
+        "region": "cn",
+        "officialUrl": "https://www.sensenova.cn/token-plan",
+        "source": "Official-Pricing",
+        "sourceUrl": "https://www.sensenova.cn/token-plan"
+      },
+      "runAt": "2026-10-05T03:57:58.336Z",
+      "eventId": "8772b9a23683"
+    },
+    {
+      "planId": "83b27b3f3537",
+      "at": "2026-10-05",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 500,
+        "billing.currency": "USD",
+        "quota.type": "rate_limited",
+        "quota.description": "官方写「Pro 500 offers the highest included usage of the three plans」；Ultrafast 仅本档含，未公布固定数值",
+        "region": "global",
+        "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+        "source": "Official-Docs",
+        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers"
+      },
+      "runAt": "2026-10-05T03:57:58.336Z",
+      "eventId": "137e4ebad64f"
+    },
+    {
+      "planId": "908f38cee9c9",
+      "at": "2026-10-05",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 125,
+        "billing.currency": "USD",
+        "quota.type": "rate_limited",
+        "quota.description": "官方写 Premium 座位「include all the same access as Standard seats, but with higher usage limits」且无 5 小时上限；未公布固定数值",
+        "region": "global",
+        "officialUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
+        "source": "Official-Docs",
+        "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview"
+      },
+      "runAt": "2026-10-05T03:57:58.336Z",
+      "eventId": "43bc49949d16"
+    },
+    {
+      "planId": "f22ba46a0d6a",
+      "at": "2026-10-05",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 20,
+        "billing.currency": "USD",
+        "quota.type": "rate_limited",
+        "quota.description": "官方 Usage Limits 段写「Plus subscriptions may include usage limits such as message caps, especially during high demand. These limits may vary based on system conditions.」未公布固定数值",
+        "region": "global",
+        "officialUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
+        "source": "Official-Docs",
+        "sourceUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus"
+      },
+      "runAt": "2026-10-05T03:57:58.336Z",
+      "eventId": "b37a9f963d1e"
+    },
+    {
+      "planId": "f7d832753cc5",
+      "at": "2026-10-05",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "billing.regularPrice": 25,
+        "billing.currency": "USD",
+        "quota.type": "rate_limited",
+        "quota.description": "官方写 Standard 座位含 ChatGPT、ChatGPT Work 与 Codex；座位用量按 5 小时窗口给本地消息估算区间（如 GPT-6 Astra 5–45 条），未公布固定数值",
+        "region": "global",
+        "officialUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
+        "source": "Official-Docs",
+        "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview"
+      },
+      "runAt": "2026-10-05T03:57:58.336Z",
+      "eventId": "3daa27677a5f"
     }
   ]
 }

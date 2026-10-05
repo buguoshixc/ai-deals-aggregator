@@ -1,0 +1,17 @@
+﻿✓ StableID api-plans[].id: baseline=17 current=24 added=7 removed=0
+✓ StableID plans[].id: baseline=37 current=44 added=7 removed=0
+✓ StableID registry models[].slug: baseline=44 current=51 added=7 removed=0
+✓ StableID root models[].id: baseline=44 current=51 added=7 removed=0
+✓ StableID deals[].id: baseline=135 current=135 added=0 removed=0
+✓ StableID providers keys: baseline=34 current=34 added=0 removed=0
+✓ History scripts/data/deal-history.json: events 1 → 1 (added=0 removed=0) kinds={}
+✓ History scripts/data/plan-history.json: events 28 → 35 (added=7 removed=0) kinds={"created":7}
+✓ History scripts/data/api-plan-history.json: events 10 → 17 (added=7 removed=0) kinds={"created":7}
+✓ History 归属 scripts/data/api-plan-history.json: 新增 7 条，其中不指向本轮新增记录的 0 条
+✓ History 归属 scripts/data/plan-history.json: 新增 7 条，其中不指向本轮新增记录的 0 条
+✓ Pricing legacy deepseek-v3.2: apiPlans=1 pricingRows=1
+✓ Registry 映射闭合: registry=51 linked=51 未被任何链接引用的=0
+✓ 派生集合一致: 来源层 51 vs 根 models.json 51（缺 0 / 多 0）
+  · census: total=51 releasedAt 已知=32 / 未知=19 catalogStatus={"current":29,"unknown":19,"legacy":1,"aging":2}
+
+→ 证据写入 research\_raw\coverage-depth-v1\verification\t10\integrity.json

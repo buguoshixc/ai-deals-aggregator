@@ -1,0 +1,553 @@
+ .gitignore                                         |    9 +
+ api-plans.json                                     |  617 +-
+ model-registry-links.json                          |  184 +-
+ models.json                                        |  594 +-
+ plans.json                                         |  361 +-
+ .../coverage-depth-v1/baseline/baseline-dist.json  |   89 +
+ .../_raw/coverage-depth-v1/baseline/baseline.json  |  219 +
+ .../baseline/capture-baseline-dist.cjs             |  155 +
+ .../baseline/capture-baseline.cjs                  |  230 +
+ .../baseline/collect-headless-list.txt             |   10 +
+ .../coverage-depth-v1/baseline/collect-list.txt    |   10 +
+ .../coverage-depth-v1/baseline/dist-file-list.txt  |  293 +
+ .../_raw/coverage-depth-v1/baseline/npm-ls.txt     |    5 +
+ .../baseline/npm-report-coverage.txt               |  398 +
+ .../baseline/report-coverage-json-1.txt            | 5665 +++++++++++++
+ .../baseline/report-coverage-json-2.txt            | 5665 +++++++++++++
+ .../coverage-depth-v1/baseline/report-coverage.txt |  394 +
+ .../coverage-depth-v1/baseline/sitemap-urls.txt    |  173 +
+ .../coverage-depth-v1/baseline/source-health.json  |  168 +
+ .../coverage-depth-v1/baseline/stable-ids.json     |  410 +
+ .../_raw/coverage-depth-v1/gap-closure/_extract.js |   21 +
+ .../_raw/coverage-depth-v1/gap-closure/_grid.js    |   29 +
+ .../_raw/coverage-depth-v1/gap-closure/_reladd.js  |  145 +
+ .../_raw/coverage-depth-v1/gap-closure/_relfix.js  |   58 +
+ .../_raw/coverage-depth-v1/gap-closure/_render.js  |   39 +
+ .../_raw/coverage-depth-v1/gap-closure/_t8apply.js |  190 +
+ .../coverage-depth-v1/gap-closure/_targets-edit.js |  177 +
+ .../gap-closure/coverage-baseline.json             |  Bin 0 -> 372880 bytes
+ .../gap-closure/coverage-baseline.parsed.json      | 5271 ++++++++++++
+ .../gap-closure/coverage-final.json                | 6001 ++++++++++++++
+ .../gap-closure/coverage-final.raw.txt             | 6499 +++++++++++++++
+ .../gap-closure/coverage-live.json                 | 5269 ++++++++++++
+ .../gap-closure/coverage-live.raw.txt              | 5665 +++++++++++++
+ .../gap-closure/coverage-live2.json                | 6019 ++++++++++++++
+ .../gap-closure/coverage-live2.raw.txt             | 6516 +++++++++++++++
+ .../gap-closure/coverage-t8-after.json             | 5911 +++++++++++++
+ .../gap-closure/coverage-t8-after.raw.txt          | 6396 ++++++++++++++
+ .../gap-closure/coverage-t8-before.json            | 6001 ++++++++++++++
+ .../gap-closure/coverage-t8-before.raw.txt         | 6499 +++++++++++++++
+ .../coverage-depth-v1/gap-closure/coverage.json    | 5269 ++++++++++++
+ .../gap-closure/data-inventory.txt                 |   83 +
+ .../_raw/coverage-depth-v1/gap-closure/domains.txt |   11 +
+ .../_raw/coverage-depth-v1/gap-closure/evidence.md |  242 +
+ .../coverage-depth-v1/gap-closure/gaps-live.txt    |   26 +
+ .../coverage-depth-v1/gap-closure/gapsfile.txt     |    3 +
+ .../coverage-depth-v1/gap-closure/grid-live.txt    |  258 +
+ .../gap-closure/history-verify.txt                 |  Bin 0 -> 702 bytes
+ .../gap-closure/links-gaps-shape.txt               |   67 +
+ .../coverage-depth-v1/gap-closure/plans-models.txt |   35 +
+ .../gap-closure/published-inventory.txt            |   56 +
+ .../gap-closure/raw-ai360-models.lines.txt         |    1 +
+ .../gap-closure/raw-ai360-models.txt               |    1 +
+ .../gap-closure/raw-ai360-pro-page.txt             |    1 +
+ .../gap-closure/raw-ai360-turbo-page.txt           |    1 +
+ .../raw-baidu-qianfan-pricing.lines.txt            |    1 +
+ .../gap-closure/raw-baidu-qianfan-pricing.txt      |    1 +
+ .../gap-closure/raw-iflytek-sparkapi.lines.txt     |    1 +
+ .../gap-closure/raw-iflytek-sparkapi.txt           |    1 +
+ .../gap-closure/registry-slugs.txt                 |   45 +
+ .../coverage-depth-v1/gap-closure/rel-order.txt    |   16 +
+ .../coverage-depth-v1/gap-closure/replit-row.txt   |   13 +
+ .../gap-closure/selftest-targets.txt               |  Bin 0 -> 18152 bytes
+ .../gap-closure/selftest-targets2.txt              |  Bin 0 -> 18010 bytes
+ .../gap-closure/sensetime-deals.txt                |    8 +
+ .../coverage-depth-v1/gap-closure/t8-scope.txt     |   20 +
+ .../coverage-depth-v1/gap-closure/team-tasks.txt   |   12 +
+ .../gap-closure/validate-strict-after-domains.txt  |  Bin 0 -> 4142 bytes
+ .../coverage-depth-v1/gap-closure/verify-final.txt |   71 +
+ .../gap-closure/verify-t8-final.txt                |   24 +
+ .../coverage-depth-v1/gap-closure/verify-t8.txt    |   34 +
+ research/_raw/coverage-depth-v1/gate/PR-BODY.md    |  134 +
+ .../_raw/coverage-depth-v1/gate/churn-check.cjs    |   92 +
+ .../_raw/coverage-depth-v1/gate/churn/churn.json   |  507 ++
+ .../gate/diagnose-index-order.cjs                  |   71 +
+ .../gate/diagnose-index-order2.cjs                 |   39 +
+ .../gate/final-coverage-report.txt                 |  483 ++
+ .../_raw/coverage-depth-v1/gate/gate-runner.cjs    |  209 +
+ .../gate/parse-check/gate-results.json             |  265 +
+ .../gate/post-t13/gate-results.json                |  470 ++
+ .../gate/post-t13/step-summary.md                  |    1 +
+ .../gate/pre-integration/gate-results.json         |  470 ++
+ .../gate/pre-integration/step-summary.md           |    1 +
+ .../gate/probe-check/gate-results.json             |  279 +
+ .../gate/repro-final/reproducibility.json          |  103 +
+ .../coverage-depth-v1/gate/reproducibility.cjs     |  109 +
+ .../coverage-depth-v1/release-evidence/README.md   |   49 +
+ .../release-evidence/anthropic-featured.cjs        |   20 +
+ .../release-evidence/apply-evidence.cjs            |  347 +
+ .../release-evidence/debug-quote.cjs               |   25 +
+ .../coverage-depth-v1/release-evidence/fetch.ps1   |   17 +
+ .../coverage-depth-v1/release-evidence/find.cjs    |   82 +
+ .../coverage-depth-v1/release-evidence/links.cjs   |   27 +
+ .../release-evidence/make-raw-manifest.cjs         |   98 +
+ .../release-evidence/oai-extract.cjs               |   24 +
+ .../release-evidence/patch-checker.cjs             |   33 +
+ .../release-evidence/patch-checker2.cjs            |   30 +
+ .../release-evidence/probe-job.json                |    7 +
+ .../coverage-depth-v1/release-evidence/probe.cjs   |   85 +
+ .../coverage-depth-v1/release-evidence/queue.cjs   |  115 +
+ .../coverage-depth-v1/release-evidence/queue.json  | 1005 +++
+ .../release-evidence/raw-manifest.json             |  809 ++
+ .../release-evidence/raw-search.cjs                |   15 +
+ .../coverage-depth-v1/release-evidence/slice.cjs   |   22 +
+ .../release-evidence/sources-round1.tsv            |   30 +
+ .../release-evidence/sources-round2.tsv            |   24 +
+ .../repair-models-page-selftest/after1.txt         |  140 +
+ .../before-4-failures.txt                          |  141 +
+ .../probe-t13-repair.cjs                           |  113 +
+ .../t13-assertion-provability.md                   |  117 +
+ .../repair-models-page-selftest/t13-summary.txt    |   40 +
+ .../verify-1-allow-missing-dist.stderr.txt         |    0
+ .../verify-1-allow-missing-dist.txt                |  144 +
+ .../verify-2-dir-dist.stderr.txt                   |    0
+ .../verify-2-dir-dist.txt                          |  144 +
+ .../verify-3-coverage-report.stderr.txt            |    0
+ .../verify-3-coverage-report.txt                   |  483 ++
+ .../verify-4-validate-strict.stderr.txt            |    0
+ .../verify-4-validate-strict.txt                   |   45 +
+ .../verify-5-build-dist-qc-mpsel.stderr.txt        |    0
+ .../verify-5-build-dist-qc-mpsel.txt               |  189 +
+ .../verify-6-dir-dist-qc-mpsel.stderr.txt          |    0
+ .../verify-6-dir-dist-qc-mpsel.txt                 |  144 +
+ .../repair-models-selftest/NOTES.md                |   73 +
+ .../after-models-selftest.txt                      |  168 +
+ ..._scripts_tools_check-models-reproducible.js.txt |    3 +
+ ...after-node_scripts_tools_coverage-report.js.txt |  497 ++
+ ...e_scripts_tools_model-freshness-selftest.js.txt |   14 +
+ .../after-node_scripts_validate.js_--strict.txt    |   46 +
+ .../after2-models-selftest.txt                     |  168 +
+ .../attempt3-final-readings.md                     |   37 +
+ .../attempt3-models-selftest.txt                   |  180 +
+ ..._scripts_tools_check-models-reproducible.js.txt |    3 +
+ ...empt3-node_scripts_tools_coverage-report.js.txt |  484 ++
+ ...e_scripts_tools_model-freshness-selftest.js.txt |   14 +
+ .../attempt3-node_scripts_validate.js_--strict.txt |   46 +
+ .../before-models-selftest.txt                     |  169 +
+ .../t12-assertion-provability.md                   |  126 +
+ .../t12-models-selftest-stdout.txt                 |  179 +
+ .../t12-mutation-evidence.txt                      |   31 +
+ .../repair-stale-baselines/t12-selftest-stdout.txt |  227 +
+ .../repair-t25-clause2/models-selftest-after.txt   |  179 +
+ .../repair-t25-clause2/models-selftest-before.txt  |  Bin 0 -> 19636 bytes
+ .../repair-t25-clause2/probe-1.err                 |    0
+ .../repair-t25-clause2/probe-1.out                 |   45 +
+ .../repair-t25-clause2/probe-2.err                 |    0
+ .../repair-t25-clause2/probe-2.out                 |   45 +
+ .../repair-t25-clause2/probe-3.err                 |    0
+ .../repair-t25-clause2/probe-3.out                 |   45 +
+ .../repair-t25-clause2/probe-t12-repair.cjs        |  127 +
+ .../repair-t25-clause2/t12-summary.txt             |   85 +
+ .../repair-t25-clause2/validate-stderr.txt         |    0
+ .../verify-1-coverage-targets-selftest.stderr.txt  |    0
+ .../verify-1-coverage-targets-selftest.txt         |  227 +
+ .../verify-2-coverage-report.stderr.txt            |    0
+ .../verify-2-coverage-report.txt                   |  483 ++
+ .../verify-2-models-selftest.stderr.txt            |    0
+ .../verify-2-models-selftest.txt                   |  179 +
+ .../verify-3-coverage-report.stderr.txt            |    0
+ .../verify-3-coverage-report.txt                   |  483 ++
+ .../verify-3-json-run1.stderr.txt                  |    0
+ .../repair-t25-clause2/verify-3-json-run1.txt      | 6396 ++++++++++++++
+ .../verify-3-json-run2.stderr.txt                  |    0
+ .../repair-t25-clause2/verify-3-json-run2.txt      | 6396 ++++++++++++++
+ .../verify-4-json-run1.stderr.txt                  |    0
+ .../repair-t25-clause2/verify-4-json-run1.txt      | 6396 ++++++++++++++
+ .../verify-4-json-run2.stderr.txt                  |    0
+ .../repair-t25-clause2/verify-4-json-run2.txt      | 6396 ++++++++++++++
+ .../verify-4-validate-strict.stderr.txt            |    0
+ .../verify-4-validate-strict.txt                   |   45 +
+ .../verify-5-validate-strict.stderr.txt            |    0
+ .../verify-5-validate-strict.txt                   |   45 +
+ .../verify-6-check-models-reproducible.stderr.txt  |    0
+ .../verify-6-check-models-reproducible.txt         |    2 +
+ .../verify-7-check-model-registry-links.stderr.txt |    0
+ .../verify-7-check-model-registry-links.txt        |   26 +
+ .../report/api-plans-selftest.txt                  |  Bin 0 -> 15458 bytes
+ .../coverage-depth-v1/report/baseline-json1.txt    |  Bin 0 -> 372880 bytes
+ .../coverage-depth-v1/report/baseline-json2.txt    |  Bin 0 -> 372880 bytes
+ .../report/baseline-report.err.txt                 |    0
+ .../coverage-depth-v1/report/baseline-report.txt   |  Bin 0 -> 54904 bytes
+ .../coverage-depth-v1/report/baseline-selftest.txt |  120 +
+ .../coverage-depth-v1/report/final-apiplans.txt    |  Bin 0 -> 15458 bytes
+ .../_raw/coverage-depth-v1/report/final-ci.txt     |  Bin 0 -> 10226 bytes
+ .../_raw/coverage-depth-v1/report/final-json-1.txt | 6865 +++++++++++++++
+ .../_raw/coverage-depth-v1/report/final-json-2.txt | 6865 +++++++++++++++
+ .../_raw/coverage-depth-v1/report/final-report.err |    0
+ .../_raw/coverage-depth-v1/report/final-report.txt |  Bin 0 -> 73768 bytes
+ .../coverage-depth-v1/report/final-selftest.txt    |  Bin 0 -> 18010 bytes
+ .../coverage-depth-v1/report/final-validate.txt    |  Bin 0 -> 5538 bytes
+ .../coverage-depth-v1/report/final-validate2.txt   |  Bin 0 -> 5548 bytes
+ .../coverage-depth-v1/report/final-validate3.txt   |  Bin 0 -> 4102 bytes
+ .../_raw/coverage-depth-v1/report/v3-apiplans.txt  |  Bin 0 -> 15458 bytes
+ research/_raw/coverage-depth-v1/report/v3-ci.txt   |  Bin 0 -> 10226 bytes
+ .../_raw/coverage-depth-v1/report/v3-json-a.txt    | 6865 +++++++++++++++
+ .../_raw/coverage-depth-v1/report/v3-json-b.txt    | 6865 +++++++++++++++
+ .../_raw/coverage-depth-v1/report/v3-json1.txt     |  Bin 0 -> 458682 bytes
+ .../coverage-depth-v1/report/v3-report.err.txt     |    0
+ .../_raw/coverage-depth-v1/report/v3-report.txt    |  Bin 0 -> 73768 bytes
+ .../_raw/coverage-depth-v1/report/v3-selftest.txt  |  Bin 0 -> 18010 bytes
+ .../_raw/coverage-depth-v1/report/v3-validate.txt  |  Bin 0 -> 4102 bytes
+ .../source-reliability/after-hashes.txt            |   46 +
+ .../source-reliability/census-fp-round1.json       |  987 +++
+ .../source-reliability/census-fp-round2.json       |  987 +++
+ .../source-reliability/census-fp-round3.json       |  987 +++
+ .../source-reliability/census-full1.json           | 8702 ++++++++++++++++++++
+ .../source-reliability/census-table.json           |  223 +
+ .../source-reliability/ci-history.txt              |   23 +
+ .../source-reliability/ci-readings.json            |  645 ++
+ .../headless-futurepedia-stability.json            |  254 +
+ .../source-reliability/http-forensics-fp.json      |  494 ++
+ .../source-reliability/http-forensics-fp2.json     |  823 ++
+ .../source-reliability/logs/census-full1.txt       |  Bin 0 -> 2200 bytes
+ .../source-reliability/logs/ci-history.txt         |  Bin 0 -> 1094 bytes
+ .../logs/dryrun-only-futurepedia-3rounds.txt       |  250 +
+ .../source-reliability/logs/fixture-test.txt       |   13 +
+ .../source-reliability/logs/fp-round1.txt          |  Bin 0 -> 1194 bytes
+ .../source-reliability/logs/fp-rounds.txt          |   14 +
+ .../logs/headless-futurepedia.txt                  |  Bin 0 -> 900 bytes
+ .../source-reliability/logs/health-selftest.txt    |   15 +
+ .../source-reliability/logs/http-forensics-fp.txt  |  Bin 0 -> 2166 bytes
+ .../source-reliability/logs/http-forensics-fp2.txt |  Bin 0 -> 4270 bytes
+ .../source-reliability/logs/overlap-fp-round1.txt  |  Bin 0 -> 3220 bytes
+ .../logs/surface-futurepedia.txt                   |  Bin 0 -> 864 bytes
+ .../source-reliability/logs/verify-misc.txt        |   29 +
+ .../source-reliability/overlap-fp-round1.json      |  491 ++
+ .../source-reliability/probe-census.cjs            |  219 +
+ .../source-reliability/probe-ci-history.cjs        |   94 +
+ .../probe-futurepedia-headless.cjs                 |  137 +
+ .../probe-futurepedia-surface.cjs                  |  111 +
+ .../source-reliability/probe-http-forensics.cjs    |  307 +
+ .../source-reliability/probe-overlap.cjs           |  275 +
+ .../source-reliability/surface-futurepedia.json    |   92 +
+ .../coverage-depth-v1/source-reliability/t6-ci.txt |  Bin 0 -> 10226 bytes
+ .../source-reliability/t6-final-report.err         |    0
+ .../source-reliability/t6-final-report.txt         |  Bin 0 -> 73818 bytes
+ .../source-reliability/t6-final-selftest.txt       |  Bin 0 -> 18010 bytes
+ .../source-reliability/t6-final-validate.txt       |  Bin 0 -> 4142 bytes
+ .../source-reliability/t6-json-1.txt               | 6499 +++++++++++++++
+ .../source-reliability/t6-json-2.txt               | 6499 +++++++++++++++
+ .../source-reliability/t6-json-probe.txt           | 6516 +++++++++++++++
+ .../source-reliability/t6-report.err               |    0
+ .../source-reliability/t6-report.txt               |  Bin 0 -> 73556 bytes
+ .../source-reliability/t6-selftest.txt             |  Bin 0 -> 18152 bytes
+ .../source-reliability/t6-selftest2.txt            |  Bin 0 -> 18152 bytes
+ .../source-reliability/t6-selftest3.txt            |  Bin 0 -> 18152 bytes
+ .../source-reliability/t6-selftest4.txt            |  Bin 0 -> 18010 bytes
+ .../source-reliability/t6-validate.txt             |  Bin 0 -> 7962 bytes
+ .../source-reliability/t6-validate2.txt            |  Bin 0 -> 7964 bytes
+ .../source-reliability/t6-validate4.txt            |  Bin 0 -> 4142 bytes
+ .../source-reliability/tracked-hashes.json         |  122 +
+ .../source-rulings-landing/README.md               |   40 +
+ .../source-rulings-landing/hashes-after.txt        |   14 +
+ .../source-rulings-landing/hashes-artifacts.txt    |   28 +
+ .../source-rulings-landing/hashes-before.txt       |   14 +
+ .../logs/probe-ruling-landing.txt                  |  Bin 0 -> 2304 bytes
+ .../logs/validate-strict-attribution.txt           |   39 +
+ .../logs/validate-strict-head-snapshot-TEMP.txt    |   45 +
+ .../source-rulings-landing/logs/verify-final.txt   |  Bin 0 -> 14633 bytes
+ .../source-rulings-landing/logs/verify.txt         |  Bin 0 -> 12208 bytes
+ .../probe-ruling-landing.cjs                       |  216 +
+ .../ruling-landing-checks.json                     |  305 +
+ .../verification/debug-audit-misses.cjs            |   57 +
+ .../verification/debug-deepseek-quote-context.cjs  |   62 +
+ .../verification/debug-why-raw-missed.cjs          |   68 +
+ .../verification/extract-report-json.cjs           |   57 +
+ .../verification/hashes-artifacts.txt              |  170 +
+ .../verification/independent-recompute.cjs         |  628 ++
+ .../verification/independent-recompute.json        | 3348 ++++++++
+ .../verification/logs/baseline-models-selftest.txt |  168 +
+ .../verification/logs/debug-audit-misses.txt       |   18 +
+ .../logs/debug-deepseek-quote-context.txt          |   43 +
+ .../verification/logs/independent-recompute.txt    |   12 +
+ .../logs/input-hashes-at-report-run2.txt           |   10 +
+ .../verification/logs/input-hashes-at-report.txt   |   12 +
+ .../verification/logs/mutations-final.txt          |   33 +
+ .../verification/logs/mutations-full.txt           |   30 +
+ .../verification/logs/mutations-full2.txt          |   32 +
+ .../verification/logs/mutations-m15b.txt           |   17 +
+ .../verification/logs/mutations-smoke.txt          |   17 +
+ .../verification/logs/mutations-smoke2.txt         |   33 +
+ .../verification/logs/mutations-smoke3.txt         |   16 +
+ .../verification/logs/release-audit.txt            |   36 +
+ .../logs/source-reliability-counterproof.txt       |    8 +
+ .../coverage-depth-v1/verification/mutations.cjs   |  489 ++
+ .../coverage-depth-v1/verification/mutations.json  | 1952 +++++
+ .../verification/release-audit.cjs                 |  416 +
+ .../verification/release-audit.json                | 1835 +++++
+ .../verification/report-human.txt                  |  483 ++
+ .../verification/report-json-run1.txt              | 6396 ++++++++++++++
+ .../verification/report-json-run2.txt              | 6396 ++++++++++++++
+ .../verification/report-json.parsed.json           | 5911 +++++++++++++
+ .../coverage-depth-v1/verification/report-json.txt | 6396 ++++++++++++++
+ .../verification/review-t1/check-queue-order.cjs   |   76 +
+ .../verification/review-t1/clock-1005.err.txt      |    0
+ .../verification/review-t1/clock-1005.out.txt      | 6865 +++++++++++++++
+ .../verification/review-t1/clock-1006.err.txt      |    0
+ .../verification/review-t1/clock-1006.out.txt      | 6865 +++++++++++++++
+ .../verification/review-t1/clock-1231.err.txt      |    0
+ .../verification/review-t1/clock-1231.out.txt      | 6865 +++++++++++++++
+ .../verification/review-t1/clock-2027.err.txt      |    0
+ .../verification/review-t1/clock-2027.out.txt      | 6865 +++++++++++++++
+ .../verification/review-t1/det-A1.err.txt          |    0
+ .../verification/review-t1/det-A1.out.txt          | 6730 +++++++++++++++
+ .../verification/review-t1/det-A2.err.txt          |    0
+ .../verification/review-t1/det-A2.out.txt          | 6730 +++++++++++++++
+ .../verification/review-t1/det-B1.err.txt          |    0
+ .../verification/review-t1/det-B1.out.txt          | 6490 +++++++++++++++
+ .../verification/review-t1/det-B2.err.txt          |    0
+ .../verification/review-t1/det-B2.out.txt          | 6490 +++++++++++++++
+ .../verification/review-t1/extract-json.cjs        |  124 +
+ .../verification/review-t1/fake-clock-hook.cjs     |   33 +
+ .../review-t1/final-verify-json.err.txt            |    0
+ .../review-t1/final-verify-json.out.txt            | 6396 ++++++++++++++
+ .../review-t1/final-verify-selftest.err.txt        |    0
+ .../review-t1/final-verify-selftest.out.txt        |  218 +
+ .../review-t1/final-verify-text.err.txt            |    0
+ .../review-t1/final-verify-text.out.txt            |  483 ++
+ .../verification/review-t1/fz2-report-json.err.txt |    0
+ .../verification/review-t1/fz2-report-json.out.txt | 6499 +++++++++++++++
+ .../verification/review-t1/fz2-selftest.err.txt    |    0
+ .../verification/review-t1/fz2-selftest.out.txt    |  190 +
+ .../verification/review-t1/hash.cjs                |   72 +
+ .../verification/review-t1/head-selftest-src.js    |  753 ++
+ .../verification/review-t1/head-selftest.err.txt   |    0
+ .../verification/review-t1/head-selftest.out.txt   |  120 +
+ .../verification/review-t1/indep-recompute.cjs     |  357 +
+ .../review-t1/indep-recompute.frozen2.json         |  222 +
+ .../review-t1/indep-recompute.frozen2.stderr.txt   |  Bin 0 -> 664 bytes
+ .../review-t1/indep-recompute.frozen2.stdout.txt   |  Bin 0 -> 10622 bytes
+ .../review-t1/indep-recompute.s2-headdata.json     |  239 +
+ .../review-t1/indep-recompute.s2.stderr.txt        |  Bin 0 -> 664 bytes
+ .../review-t1/indep-recompute.s2.stdout.txt        |  Bin 0 -> 11278 bytes
+ .../review-t1/indep-recompute.snap1.json           |  218 +
+ .../review-t1/indep-recompute.snap1.stderr.txt     |  Bin 0 -> 664 bytes
+ .../review-t1/indep-recompute.snap1.stdout.txt     |  Bin 0 -> 10566 bytes
+ .../verification/review-t1/live-report-now.err.txt |    0
+ .../verification/review-t1/live-report-now.out.txt |  483 ++
+ .../review-t1/live-selftest-now.err.txt            |    0
+ .../review-t1/live-selftest-now.out.txt            |  190 +
+ .../review-t1/live-selftest-now2.err.txt           |    0
+ .../review-t1/live-selftest-now2.out.txt           |  218 +
+ .../review-t1/live-with-rulings-json.err.txt       |    0
+ .../review-t1/live-with-rulings-json.out.txt       | 6396 ++++++++++++++
+ .../review-t1/make-mutation-fixtures.cjs           |  104 +
+ .../review-t1/mutations/fixtures-manifest.json     |   59 +
+ .../mutations/fixtures-manifest.stdout.txt         |  Bin 0 -> 6142 bytes
+ .../mutations/logs/C0-clean-fixture.err.txt        |    0
+ .../mutations/logs/C0-clean-fixture.out.txt        |  495 ++
+ .../logs/M1-unparsable-releasedAt.err.txt          |    3 +
+ .../logs/M1-unparsable-releasedAt.out.txt          |  494 ++
+ .../logs/M10-headless-migrate-no-stability.err.txt |    3 +
+ .../logs/M10-headless-migrate-no-stability.out.txt |  494 ++
+ .../logs/M11-relative-evidence-url.err.txt         |    3 +
+ .../logs/M11-relative-evidence-url.out.txt         |  494 ++
+ .../mutations/logs/M12-missing-file.err.txt        |    0
+ .../mutations/logs/M12-missing-file.out.txt        |  513 ++
+ .../logs/M1b-inplace-mutated-then-restored.err.txt |    3 +
+ .../logs/M1b-inplace-mutated-then-restored.out.txt |  494 ++
+ .../logs/M2-empty-string-releasedAt.err.txt        |    3 +
+ .../logs/M2-empty-string-releasedAt.out.txt        |  494 ++
+ .../mutations/logs/M3-bad-registrySlug.err.txt     |    4 +
+ .../mutations/logs/M3-bad-registrySlug.out.txt     |  498 ++
+ .../logs/M4-keep-degraded-no-whyKept.err.txt       |    3 +
+ .../logs/M4-keep-degraded-no-whyKept.out.txt       |  494 ++
+ .../logs/M5-retire-still-registered.err.txt        |    3 +
+ .../logs/M5-retire-still-registered.out.txt        |  493 ++
+ .../mutations/logs/M6-cf3-without-ruling.err.txt   |    3 +
+ .../mutations/logs/M6-cf3-without-ruling.out.txt   |  490 ++
+ .../mutations/logs/M7-rulings-out-of-order.err.txt |    4 +
+ .../mutations/logs/M7-rulings-out-of-order.out.txt |  498 ++
+ .../mutations/logs/M8-broken-json.err.txt          |    3 +
+ .../mutations/logs/M8-broken-json.out.txt          |  490 ++
+ .../mutations/logs/M9-illegal-decision.err.txt     |    3 +
+ .../mutations/logs/M9-illegal-decision.out.txt     |  494 ++
+ .../review-t1/mutations/m1-models-unparsable.json  |  853 ++
+ .../review-t1/mutations/m1b-models-backup.json     |  853 ++
+ .../mutations/m2-models-empty-string.json          |  853 ++
+ .../review-t1/mutations/m3-targets-bad-slug.json   |  929 +++
+ .../review-t1/mutations/mutation-results.json      |  221 +
+ .../review-t1/mutations/rulings-clean.json         |   27 +
+ .../rulings-m10-headless-no-stability.json         |   27 +
+ .../mutations/rulings-m11-relative-url.json        |   27 +
+ .../rulings-m4-keep-degraded-no-whykept.json       |   27 +
+ .../rulings-m5-retire-still-registered.json        |   27 +
+ .../review-t1/mutations/rulings-m6-empty.json      |    5 +
+ .../mutations/rulings-m7-out-of-order.json         |   48 +
+ .../review-t1/mutations/rulings-m8-broken.json     |    1 +
+ .../mutations/rulings-m9-illegal-decision.json     |   27 +
+ .../verification/review-t1/mutations/suite-run.txt |  Bin 0 -> 5952 bytes
+ .../verification/review-t1/no-network-hook.cjs     |   58 +
+ .../verification/review-t1/nonet-s2-json.err.txt   |    0
+ .../verification/review-t1/nonet-s2-json.out.txt   | 6865 +++++++++++++++
+ .../verification/review-t1/nonet-wt-json.err.txt   |    0
+ .../verification/review-t1/nonet-wt-json.out.txt   | 6396 ++++++++++++++
+ .../verification/review-t1/now-selftest.diff.txt   |  848 ++
+ .../verification/review-t1/parsed-json-1.txt       |  240 +
+ .../verification/review-t1/review-t1-report.md     |  241 +
+ .../verification/review-t1/run-json-1.json         | 6798 +++++++++++++++
+ .../verification/review-t1/run-mutations.cjs       |  126 +
+ .../verification/review-t1/run-node.cjs            |   67 +
+ .../verification/review-t1/run-text.err.txt        |    0
+ .../verification/review-t1/run-text.txt            |  Bin 0 -> 73698 bytes
+ .../verification/review-t1/s1-report-json.err.txt  |    0
+ .../verification/review-t1/s1-report-json.out.txt  | 5665 +++++++++++++
+ .../verification/review-t1/s2-parsed.err.txt       |    0
+ .../verification/review-t1/s2-parsed.out.txt       |  245 +
+ .../verification/review-t1/s2-parsed.txt           |  Bin 0 -> 17050 bytes
+ .../review-t1/s2-report-json-b.err.txt             |    0
+ .../review-t1/s2-report-json-b.out.txt             | 6865 +++++++++++++++
+ .../verification/review-t1/s2-report-json.err.txt  |    0
+ .../verification/review-t1/s2-report-json.out.txt  | 6865 +++++++++++++++
+ .../verification/review-t1/s2-selftest.err.txt     |    0
+ .../verification/review-t1/s2-selftest.out.txt     |  190 +
+ .../verification/review-t1/sandbox-run-err.txt     |    3 +
+ .../verification/review-t1/sandbox-run-text.txt    |  502 ++
+ .../verification/review-t1/sb-report-json.err.txt  |    0
+ .../verification/review-t1/sb-report-json.out.txt  | 6730 +++++++++++++++
+ .../verification/review-t1/sb-report.err.txt       |    0
+ .../verification/review-t1/sb-report.out.txt       |  504 ++
+ .../verification/review-t1/sb-selftest.err.txt     |    0
+ .../verification/review-t1/sb-selftest.out.txt     |  192 +
+ .../verification/review-t1/selftest.txt            |  Bin 0 -> 18152 bytes
+ .../review-t1/shared-worktree-sha-before.json      |   14 +
+ .../verification/review-t1/t1-all.diff.txt         | 4239 ++++++++++
+ .../review-t1/t1-coverage-report.diff.txt          |  Bin 0 -> 77878 bytes
+ .../verification/review-t1/t1-report.diff.txt      |  751 ++
+ .../verification/review-t1/t1-selftest.diff.txt    |  568 ++
+ .../review-t1/text-json-samesource.cjs             |  247 +
+ .../source-reliability-counterproof.cjs            |  164 +
+ .../source-reliability-counterproof.json           |  301 +
+ .../verification/t10-cline-audit.cjs               |  182 +
+ .../verification/t10-cline-audit.json              |  229 +
+ .../verification/t10-coverage-report.err.txt       |    0
+ .../verification/t10-coverage-report.out.txt       |  483 ++
+ .../verification/t10-diff-review.cjs               |   87 +
+ .../verification/t10-diff-review.json              |  323 +
+ .../verification/t10-extract-team.cjs              |   77 +
+ .../verification/t10-filter-every-context.txt      |  228 +
+ .../verification/t10-filter-every-scan.cjs         |   68 +
+ .../verification/t10-filter-every-scan.json        |  175 +
+ .../verification/t10-filter-every-scan2.cjs        |   93 +
+ .../verification/t10-filter-every-scan2.json       |   33 +
+ .../verification/t10-final-json.err.txt            |    0
+ .../verification/t10-final-json.out.txt            | 6396 ++++++++++++++
+ .../verification/t10-integrity.cjs                 |  143 +
+ .../verification/t10-integrity.json                |  251 +
+ .../t10-logs/analytics-selftest.err.txt            |    0
+ .../t10-logs/analytics-selftest.out.txt            |   49 +
+ .../t10-logs/api-plans-selftest.err.txt            |    0
+ .../t10-logs/api-plans-selftest.out.txt            |  201 +
+ .../verification/t10-logs/archive-selftest.err.txt |    0
+ .../verification/t10-logs/archive-selftest.out.txt |   95 +
+ .../t10-logs/check-model-registry-links.err.txt    |    0
+ .../t10-logs/check-model-registry-links.out.txt    |   26 +
+ .../t10-logs/check-models-reproducible.err.txt     |    0
+ .../t10-logs/check-models-reproducible.out.txt     |    2 +
+ .../verification/t10-logs/coverage-report.err.txt  |    0
+ .../verification/t10-logs/coverage-report.out.txt  |  483 ++
+ .../t10-logs/coverage-targets-selftest.err.txt     |    0
+ .../t10-logs/coverage-targets-selftest.out.txt     |  227 +
+ .../verification/t10-logs/feeds-selftest.err.txt   |    0
+ .../verification/t10-logs/feeds-selftest.out.txt   |  187 +
+ .../verification/t10-logs/health-selftest.err.txt  |    0
+ .../verification/t10-logs/health-selftest.out.txt  |   13 +
+ .../verification/t10-logs/history-selftest.err.txt |    0
+ .../verification/t10-logs/history-selftest.out.txt |   83 +
+ .../t10-logs/model-freshness-selftest.err.txt      |    0
+ .../t10-logs/model-freshness-selftest.out.txt      |   13 +
+ .../models-page-allow-missing-dist.err.txt         |    0
+ .../models-page-allow-missing-dist.out.txt         |  144 +
+ .../verification/t10-logs/models-page-dist.err.txt |    0
+ .../verification/t10-logs/models-page-dist.out.txt |  144 +
+ .../verification/t10-logs/models-selftest.err.txt  |    0
+ .../verification/t10-logs/models-selftest.out.txt  |  179 +
+ .../t10-logs/plan-history-selftest.err.txt         |    0
+ .../t10-logs/plan-history-selftest.out.txt         |  166 +
+ .../t10-logs/provenance-selftest.err.txt           |    0
+ .../t10-logs/provenance-selftest.out.txt           |   20 +
+ .../verification/t10-logs/seo-selftest.err.txt     |    0
+ .../verification/t10-logs/seo-selftest.out.txt     |   75 +
+ .../verification/t10-logs/validate-strict.err.txt  |    0
+ .../verification/t10-logs/validate-strict.out.txt  |   45 +
+ .../verification/t10-mps-dist.err.txt              |    0
+ .../verification/t10-mps-dist.out.txt              |  144 +
+ .../verification/t10-mps-now.err.txt               |    0
+ .../verification/t10-mps-now.out.txt               |  144 +
+ .../verification/t10-multiline-forms.json          |   71 +
+ .../verification/t10-prompt-marks.txt              |  127 +
+ .../verification/t10-release-audit.cjs             |  185 +
+ .../verification/t10-release-audit.json            |  895 ++
+ .../t10-repro-check-api-plans-reproducible.err.txt |    0
+ .../t10-repro-check-api-plans-reproducible.out.txt |    3 +
+ .../t10-repro-check-feeds-reproducible.err.txt     |    0
+ .../t10-repro-check-feeds-reproducible.out.txt     |   11 +
+ .../t10-repro-check-plans-reproducible.err.txt     |    0
+ .../t10-repro-check-plans-reproducible.out.txt     |    2 +
+ .../t10-repro-check-reproducible.err.txt           |    0
+ .../t10-repro-check-reproducible.out.txt           |   21 +
+ .../verification/t10-run-suite.cjs                 |   56 +
+ .../verification/t10-sitemap-diff.json             |   17 +
+ .../verification/t10-suite-results.json            |  211 +
+ .../verification/t10-task-contracts.txt            |  213 +
+ .../verification/t10-teeth-check.cjs               |  134 +
+ .../verification/t10-teeth-results.json            |   90 +
+ .../verification/t10-teeth/C0-control.err.txt      |    0
+ .../verification/t10-teeth/C0-control.out.txt      |  227 +
+ .../P1a-F1-inject-synthetic-missing-row.err.txt    |    0
+ .../P1a-F1-inject-synthetic-missing-row.out.txt    |  229 +
+ .../t10-teeth/P1b-F1-offset-expected-count.err.txt |    0
+ .../t10-teeth/P1b-F1-offset-expected-count.out.txt |  229 +
+ .../t10-teeth/P2a-F3-file-side-plus-one.err.txt    |    0
+ .../t10-teeth/P2a-F3-file-side-plus-one.out.txt    |  230 +
+ .../P2b-F3-recomputed-side-plus-one.err.txt        |    0
+ .../P2b-F3-recomputed-side-plus-one.out.txt        |  230 +
+ .../verification/t10-truncation-facts.txt          |   32 +
+ .../verification/t10-validate-strict.err.txt       |    0
+ .../verification/t10-validate-strict.out.txt       |   45 +
+ .../verification/t10/diffstat-contract.txt         |    0
+ .../verification/t10/diffstat-worktree.txt         |   17 +
+ .../verification/t10/empty-set-scan.json           |  203 +
+ .../verification/t10/empty-set-scan.txt            |   70 +
+ .../verification/t10/integrity-check.cjs           |  121 +
+ .../verification/t10/integrity-summary.txt         |   17 +
+ .../verification/t10/integrity.json                |  427 +
+ .../verification/t10/mutate-sandbox.cjs            |   75 +
+ .../verification/t10/sandbox-C0-control.txt        |  228 +
+ .../verification/t10/sandbox-MA-census.txt         |  234 +
+ .../t10/sandbox-MB-gaps-declaration.txt            |  140 +
+ .../verification/t10/sandbox-MC-restored.txt       |  228 +
+ .../verification/t10/scan-empty-set.cjs            |   59 +
+ .../verification/t10/t7f1-falsifiable.json         |  105 +
+ .../verification/t10/t7f1-falsifiable.txt          |   23 +
+ .../verification/t10/verify-t7f1-falsifiable.cjs   |   68 +
+ .../verification/verification-report.md            |  267 +
+ research/coverage-depth-v1-gap-closure.md          |  334 +
+ research/coverage-depth-v1-release-evidence.md     |  126 +
+ research/coverage-depth-v1-source-reliability.md   |  460 ++
+ scripts/data/api-plan-history.json                 |  410 +
+ scripts/data/coverage-targets.json                 |  125 +-
+ scripts/data/curated_api_plans.json                |  515 ++
+ scripts/data/curated_plans.json                    |  322 +
+ scripts/data/model-registry-gaps.json              |   32 +
+ scripts/data/model-registry-links.json             |  170 +
+ scripts/data/models.json                           |  432 +-
+ scripts/data/plan-history.json                     |  141 +
+ scripts/data/providers.json                        |    4 +-
+ scripts/data/source-rulings.json                   |   58 +
+ scripts/lib/source-rulings.js                      |  584 ++
+ scripts/tools/coverage-report.js                   |  626 +-
+ scripts/tools/coverage-targets-selftest.js         |  963 ++-
+ scripts/tools/models-page-selftest.js              |  174 +-
+ scripts/tools/models-selftest.js                   |  227 +-
+ 552 files changed, 391930 insertions(+), 255 deletions(-)

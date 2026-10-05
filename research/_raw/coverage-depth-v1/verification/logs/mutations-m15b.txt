@@ -1,0 +1,17 @@
+﻿[mutations] 复制 沙箱 副本…
+[mutations] 沙箱已就绪（C:\Users\星澈\AppData\Local\Temp\t9-mutation-sandbox）；pristine 漂移=[]
+[baseline] coverage-targets-selftest: exit=0 失败行=0
+[baseline] model-freshness-selftest: exit=0 失败行=0
+[baseline] models-selftest: exit=1 失败行=4
+[baseline] models-page-selftest: exit=1 失败行=4
+[baseline] api-plans-selftest: exit=0 失败行=0
+[baseline] analytics-selftest: exit=0 失败行=1
+[baseline] coverage-report: exit=0 失败行=0
+[baseline] validate-strict: exit=0 失败行=0
+[baseline] history-verify: exit=0 失败行=0
+[M15b] 源码变异（加强版）：把网络请求塞进会被逐字内联到页面的 ANALYTICS-GUARD 区块 → 抓到=analytics-selftest restore=byte-exact
+
+[mutations] 抓到 1/1；盲区 []
+[mutations] byte-exact restore 全部成功=true；共享工作区漂移=[]
+[mutations] 基线就红的 gate：["models-selftest(exit 1)","models-page-selftest(exit 1)"]
+[mutations] 写出: research\_raw\coverage-depth-v1\verification\mutations.json

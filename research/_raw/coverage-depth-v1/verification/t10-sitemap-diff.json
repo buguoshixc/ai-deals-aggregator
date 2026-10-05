@@ -1,0 +1,17 @@
+{
+  "baseline": 173,
+  "now": 183,
+  "lost": [],
+  "added": [
+    "https://buguoshixc.github.io/ai-deals-aggregator/vendor/ai360/",
+    "https://buguoshixc.github.io/ai-deals-aggregator/vendor/baichuan/",
+    "https://buguoshixc.github.io/ai-deals-aggregator/vendor/sensetime/",
+    "https://buguoshixc.github.io/ai-deals-aggregator/models/360zhinao-pro/",
+    "https://buguoshixc.github.io/ai-deals-aggregator/models/360zhinao-turbo-llm-geo/",
+    "https://buguoshixc.github.io/ai-deals-aggregator/models/baichuan-m3/",
+    "https://buguoshixc.github.io/ai-deals-aggregator/models/baichuan-m3-plus/",
+    "https://buguoshixc.github.io/ai-deals-aggregator/models/ernie-4.5-turbo-128k/",
+    "https://buguoshixc.github.io/ai-deals-aggregator/models/ernie-5.1/",
+    "https://buguoshixc.github.io/ai-deals-aggregator/models/spark-x2.5/"
+  ]
+}

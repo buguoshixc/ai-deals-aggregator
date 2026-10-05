@@ -1,0 +1,14 @@
+{
+  "scripts/tools/coverage-report.js": "76cb871751d9909dfbdb121b8e9f705509bf60cf7f89d007c07ad4962419cba7",
+  "scripts/tools/coverage-targets-selftest.js": "8c3f37a02390e9385337587a2a782d6a5766fc9a493690fa54ab7db0962efa74",
+  "scripts/lib/source-rulings.js": "b1921a1974f9349b9311d5efefc7a462dcb7322ae09e1f71143b9e94eadec6d5",
+  "scripts/lib/model-freshness.js": "090838265d9ae29d223c1e9b53b126a563ea4f64440a3e100d6314c9d56afa10",
+  "scripts/lib/coverage-targets.js": "19657cd5514f2008228de10d1311e31d353cb2cfb5274119964f5046a4291ba4",
+  "scripts/data/models.json": "e7c82ae086744911e4c5937109b40c4583c91ff2034a1ee61667479111335b27",
+  "scripts/data/coverage-targets.json": "e55012b7c29b0a32362bbd58c7fc19aba860c989b7971477c8e2340844ec3d60",
+  "scripts/data/source-health.json": "f782626e2b0e9b31236393507fe00121e90faf55db92fbd71fa52002885abf80",
+  "models.json": "19f9996f2a4cbb3c50b3e4642a4211aad56b3cc6c33b400a757051d6d8c95f2d",
+  "deals.json": "fe063bc9e4e40b1051958d6f14b889f44d391848f0d2555b82e421651dfcd558",
+  "plans.json": "1668d19cadbce7e2feb1f662001c87effb520b2669027628ee0c89cc16e154ba",
+  "api-plans.json": "acebde3a35bebbc61dd9cddea55654c1eed6f7103332f5aeae8e231cdae6e81c"
+}

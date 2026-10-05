@@ -1,0 +1,987 @@
+{
+  "probe": "probe-census.cjs",
+  "tag": "fp-round3",
+  "headless": false,
+  "startedAtUtc": "2026-10-05T03:40:33.374Z",
+  "startedAtLocal": "Mon Oct 05 2026 11:40:33 GMT+0800 (中国标准时间)",
+  "finishedAtUtc": "2026-10-05T03:40:37.884Z",
+  "wallMs": 4510,
+  "onDiskHealth": {
+    "generatedAt": "2026-10-04T16:31:52.051Z",
+    "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\scripts\\data\\source-health.json",
+    "sha256": "f782626e2b0e9b31236393507fe00121e90faf55db92fbd71fa52002885abf80",
+    "census": {
+      "healthy": 8,
+      "degraded": 0,
+      "failed": 1
+    }
+  },
+  "wouldBeHealth": {
+    "generatedAt": "2026-10-05T03:40:37.884Z",
+    "census": {
+      "healthy": 9,
+      "degraded": 0,
+      "failed": 0
+    },
+    "note": "内存推演值：本探针不写盘，故 source-health.json 保持上表 onDiskHealth 的值"
+  },
+  "browserStatus": {
+    "attempted": false,
+    "ok": null,
+    "channel": null,
+    "error": null,
+    "checkedAt": null
+  },
+  "sources": [
+    {
+      "source": "futurepedia",
+      "name": "Futurepedia",
+      "kind": "static",
+      "region": "global",
+      "ok": true,
+      "error": null,
+      "valid": 7,
+      "produced": 7,
+      "deals": 0,
+      "ms": 4508,
+      "headlessReady": null,
+      "onDisk": {
+        "status": "failed",
+        "reason": "collector_error",
+        "consecutiveFailures": 10,
+        "consecutiveZero": 0,
+        "lastItemCount": 7,
+        "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+        "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
+        "generatedAt": "2026-10-04T16:31:52.051Z"
+      },
+      "wouldBe": {
+        "status": "healthy",
+        "reason": null,
+        "consecutiveFailures": 0,
+        "consecutiveZero": 0,
+        "lastItemCount": 7,
+        "previousItemCount": 7,
+        "delta": 0,
+        "lastSuccessAt": "2026-10-05T03:40:37.884Z",
+        "lastError": null,
+        "headlessReady": null
+      },
+      "digests": [
+        {
+          "url": "https://www.futurepedia.io/",
+          "httpStatus": 200,
+          "bytes": 1482136,
+          "htmlSha256": "2fcd55d8d191db15",
+          "titleSha256": "1f9878c086490340",
+          "textLength": 5162,
+          "markers": {
+            "login": false,
+            "captcha": false,
+            "cloudflare": false,
+            "errorPage": false,
+            "consentOnly": false,
+            "spaShell": false,
+            "noDataTable": true
+          },
+          "shape": {
+            "hasDataTable": false,
+            "hasCards": true,
+            "scriptToTextRatio": 99
+          },
+          "counts": {
+            "table": 0,
+            "tr": 0,
+            "td": 0,
+            "card": 11,
+            "listItem": 28,
+            "heading": 8,
+            "heading1": 1,
+            "link": 108,
+            "form": 2,
+            "input": 2,
+            "script": 76,
+            "div": 298
+          },
+          "selectorHits": {
+            "a[href*=\"utm_source=futurepedia\"]": 1,
+            "meta[name=\"description\"]": 1,
+            "span": 47
+          },
+          "keywordHits": {
+            "free": 11,
+            "deal": 0,
+            "discount": 0,
+            "pricing": 0
+          },
+          "regexHits": {
+            "deal-word": 87
+          },
+          "topClasses": [
+            {
+              "name": "flex",
+              "count": 160
+            },
+            {
+              "name": "items-center",
+              "count": 125
+            },
+            {
+              "name": "font-normal",
+              "count": 77
+            },
+            {
+              "name": "justify-center",
+              "count": 69
+            },
+            {
+              "name": "leading-none",
+              "count": 65
+            },
+            {
+              "name": "text-base",
+              "count": 65
+            },
+            {
+              "name": "text-textGray",
+              "count": 63
+            },
+            {
+              "name": "text-sm",
+              "count": 58
+            }
+          ],
+          "error": null
+        },
+        {
+          "url": "https://www.futurepedia.io/tool/chatgpt",
+          "httpStatus": 200,
+          "bytes": 246662,
+          "htmlSha256": "166e105c1bf7198f",
+          "titleSha256": "ec0adcd459367f2b",
+          "textLength": 7098,
+          "markers": {
+            "login": false,
+            "captcha": false,
+            "cloudflare": false,
+            "errorPage": false,
+            "consentOnly": false,
+            "spaShell": false,
+            "noDataTable": true
+          },
+          "shape": {
+            "hasDataTable": false,
+            "hasCards": false,
+            "scriptToTextRatio": 19.73
+          },
+          "counts": {
+            "table": 0,
+            "tr": 0,
+            "td": 0,
+            "card": 0,
+            "listItem": 64,
+            "heading": 13,
+            "heading1": 2,
+            "link": 74,
+            "form": 2,
+            "input": 2,
+            "script": 87,
+            "div": 222
+          },
+          "selectorHits": {
+            "a[href*=\"utm_source=futurepedia\"]": 3,
+            "meta[name=\"description\"]": 1,
+            "span": 54
+          },
+          "keywordHits": {
+            "free": 9,
+            "deal": 1,
+            "discount": 0,
+            "pricing": 2
+          },
+          "regexHits": {
+            "deal-word": 27
+          },
+          "topClasses": [
+            {
+              "name": "flex",
+              "count": 121
+            },
+            {
+              "name": "items-center",
+              "count": 75
+            },
+            {
+              "name": "h-4",
+              "count": 63
+            },
+            {
+              "name": "w-4",
+              "count": 60
+            },
+            {
+              "name": "text-transparent",
+              "count": 46
+            },
+            {
+              "name": "fill-orange2",
+              "count": 45
+            },
+            {
+              "name": "w-full",
+              "count": 44
+            },
+            {
+              "name": "text-sm",
+              "count": 33
+            }
+          ],
+          "error": null
+        },
+        {
+          "url": "https://www.futurepedia.io/tool/claude",
+          "httpStatus": 200,
+          "bytes": 204245,
+          "htmlSha256": "aba218adf9dac181",
+          "titleSha256": "49d501737e62ee8c",
+          "textLength": 6456,
+          "markers": {
+            "login": false,
+            "captcha": false,
+            "cloudflare": false,
+            "errorPage": false,
+            "consentOnly": false,
+            "spaShell": false,
+            "noDataTable": true
+          },
+          "shape": {
+            "hasDataTable": false,
+            "hasCards": false,
+            "scriptToTextRatio": 19.05
+          },
+          "counts": {
+            "table": 0,
+            "tr": 0,
+            "td": 0,
+            "card": 0,
+            "listItem": 62,
+            "heading": 13,
+            "heading1": 2,
+            "link": 68,
+            "form": 2,
+            "input": 2,
+            "script": 84,
+            "div": 164
+          },
+          "selectorHits": {
+            "a[href*=\"utm_source=futurepedia\"]": 3,
+            "meta[name=\"description\"]": 1,
+            "span": 42
+          },
+          "keywordHits": {
+            "free": 11,
+            "deal": 0,
+            "discount": 0,
+            "pricing": 3
+          },
+          "regexHits": {
+            "deal-word": 24
+          },
+          "topClasses": [
+            {
+              "name": "flex",
+              "count": 97
+            },
+            {
+              "name": "items-center",
+              "count": 67
+            },
+            {
+              "name": "w-full",
+              "count": 44
+            },
+            {
+              "name": "text-sm",
+              "count": 33
+            },
+            {
+              "name": "text-gray-300",
+              "count": 32
+            },
+            {
+              "name": "pl-0",
+              "count": 28
+            },
+            {
+              "name": "justify-center",
+              "count": 25
+            },
+            {
+              "name": "gap-2",
+              "count": 23
+            }
+          ],
+          "error": null
+        },
+        {
+          "url": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+          "httpStatus": 200,
+          "bytes": 181126,
+          "htmlSha256": "3a7ad35e72091609",
+          "titleSha256": "7bd434d265f56ea7",
+          "textLength": 7490,
+          "markers": {
+            "login": false,
+            "captcha": false,
+            "cloudflare": false,
+            "errorPage": false,
+            "consentOnly": false,
+            "spaShell": false,
+            "noDataTable": true
+          },
+          "shape": {
+            "hasDataTable": false,
+            "hasCards": false,
+            "scriptToTextRatio": 14.26
+          },
+          "counts": {
+            "table": 0,
+            "tr": 0,
+            "td": 0,
+            "card": 0,
+            "listItem": 57,
+            "heading": 11,
+            "heading1": 1,
+            "link": 62,
+            "form": 2,
+            "input": 2,
+            "script": 79,
+            "div": 110
+          },
+          "selectorHits": {
+            "a[href*=\"utm_source=futurepedia\"]": 5,
+            "meta[name=\"description\"]": 1,
+            "span": 35
+          },
+          "keywordHits": {
+            "free": 9,
+            "deal": 0,
+            "discount": 0,
+            "pricing": 2
+          },
+          "regexHits": {
+            "deal-word": 23
+          },
+          "topClasses": [
+            {
+              "name": "flex",
+              "count": 78
+            },
+            {
+              "name": "items-center",
+              "count": 53
+            },
+            {
+              "name": "w-full",
+              "count": 36
+            },
+            {
+              "name": "text-sm",
+              "count": 32
+            },
+            {
+              "name": "pl-0",
+              "count": 26
+            },
+            {
+              "name": "text-gray-300",
+              "count": 25
+            },
+            {
+              "name": "justify-center",
+              "count": 24
+            },
+            {
+              "name": "gap-2",
+              "count": 23
+            }
+          ],
+          "error": null
+        },
+        {
+          "url": "https://www.futurepedia.io/tool/perplexity-ai",
+          "httpStatus": 200,
+          "bytes": 214215,
+          "htmlSha256": "87c6e8dbeddf105f",
+          "titleSha256": "d5d774c86cbd9bc3",
+          "textLength": 7625,
+          "markers": {
+            "login": false,
+            "captcha": false,
+            "cloudflare": false,
+            "errorPage": false,
+            "consentOnly": false,
+            "spaShell": false,
+            "noDataTable": true
+          },
+          "shape": {
+            "hasDataTable": false,
+            "hasCards": false,
+            "scriptToTextRatio": 16.73
+          },
+          "counts": {
+            "table": 0,
+            "tr": 0,
+            "td": 0,
+            "card": 0,
+            "listItem": 60,
+            "heading": 13,
+            "heading1": 2,
+            "link": 66,
+            "form": 2,
+            "input": 2,
+            "script": 86,
+            "div": 171
+          },
+          "selectorHits": {
+            "a[href*=\"utm_source=futurepedia\"]": 3,
+            "meta[name=\"description\"]": 1,
+            "span": 45
+          },
+          "keywordHits": {
+            "free": 10,
+            "deal": 1,
+            "discount": 0,
+            "pricing": 2
+          },
+          "regexHits": {
+            "deal-word": 26
+          },
+          "topClasses": [
+            {
+              "name": "flex",
+              "count": 101
+            },
+            {
+              "name": "items-center",
+              "count": 68
+            },
+            {
+              "name": "w-full",
+              "count": 44
+            },
+            {
+              "name": "text-sm",
+              "count": 33
+            },
+            {
+              "name": "text-gray-300",
+              "count": 30
+            },
+            {
+              "name": "h-4",
+              "count": 28
+            },
+            {
+              "name": "justify-center",
+              "count": 25
+            },
+            {
+              "name": "pl-0",
+              "count": 25
+            }
+          ],
+          "error": null
+        },
+        {
+          "url": "https://www.futurepedia.io/tool/google-gemini",
+          "httpStatus": 200,
+          "bytes": 201120,
+          "htmlSha256": "18c0fef18d561b09",
+          "titleSha256": "ddee794f38dcc959",
+          "textLength": 6123,
+          "markers": {
+            "login": false,
+            "captcha": false,
+            "cloudflare": false,
+            "errorPage": false,
+            "consentOnly": false,
+            "spaShell": false,
+            "noDataTable": true
+          },
+          "shape": {
+            "hasDataTable": false,
+            "hasCards": false,
+            "scriptToTextRatio": 19.59
+          },
+          "counts": {
+            "table": 0,
+            "tr": 0,
+            "td": 0,
+            "card": 0,
+            "listItem": 57,
+            "heading": 13,
+            "heading1": 2,
+            "link": 63,
+            "form": 2,
+            "input": 2,
+            "script": 85,
+            "div": 172
+          },
+          "selectorHits": {
+            "a[href*=\"utm_source=futurepedia\"]": 3,
+            "meta[name=\"description\"]": 1,
+            "span": 41
+          },
+          "keywordHits": {
+            "free": 8,
+            "deal": 0,
+            "discount": 0,
+            "pricing": 8
+          },
+          "regexHits": {
+            "deal-word": 18
+          },
+          "topClasses": [
+            {
+              "name": "flex",
+              "count": 100
+            },
+            {
+              "name": "items-center",
+              "count": 68
+            },
+            {
+              "name": "w-full",
+              "count": 44
+            },
+            {
+              "name": "text-sm",
+              "count": 33
+            },
+            {
+              "name": "h-4",
+              "count": 28
+            },
+            {
+              "name": "text-gray-300",
+              "count": 28
+            },
+            {
+              "name": "justify-center",
+              "count": 25
+            },
+            {
+              "name": "w-4",
+              "count": 25
+            }
+          ],
+          "error": null
+        },
+        {
+          "url": "https://www.futurepedia.io/tool/grok",
+          "httpStatus": 200,
+          "bytes": 174728,
+          "htmlSha256": "562ce7477fc102cd",
+          "titleSha256": "5b9b8db6924562c1",
+          "textLength": 6539,
+          "markers": {
+            "login": false,
+            "captcha": false,
+            "cloudflare": false,
+            "errorPage": false,
+            "consentOnly": false,
+            "spaShell": false,
+            "noDataTable": true
+          },
+          "shape": {
+            "hasDataTable": false,
+            "hasCards": false,
+            "scriptToTextRatio": 15.46
+          },
+          "counts": {
+            "table": 0,
+            "tr": 0,
+            "td": 0,
+            "card": 0,
+            "listItem": 60,
+            "heading": 12,
+            "heading1": 2,
+            "link": 66,
+            "form": 2,
+            "input": 2,
+            "script": 76,
+            "div": 121
+          },
+          "selectorHits": {
+            "a[href*=\"utm_source=futurepedia\"]": 5,
+            "meta[name=\"description\"]": 1,
+            "span": 36
+          },
+          "keywordHits": {
+            "free": 9,
+            "deal": 0,
+            "discount": 0,
+            "pricing": 3
+          },
+          "regexHits": {
+            "deal-word": 16
+          },
+          "topClasses": [
+            {
+              "name": "flex",
+              "count": 83
+            },
+            {
+              "name": "items-center",
+              "count": 59
+            },
+            {
+              "name": "w-full",
+              "count": 39
+            },
+            {
+              "name": "text-sm",
+              "count": 33
+            },
+            {
+              "name": "pl-0",
+              "count": 27
+            },
+            {
+              "name": "justify-center",
+              "count": 25
+            },
+            {
+              "name": "text-gray-300",
+              "count": 25
+            },
+            {
+              "name": "leading-6",
+              "count": 23
+            }
+          ],
+          "error": null
+        },
+        {
+          "url": "https://www.futurepedia.io/tool/midjourney",
+          "httpStatus": 200,
+          "bytes": 228399,
+          "htmlSha256": "7016cf1401e50a11",
+          "titleSha256": "101fa6b30e090283",
+          "textLength": 7882,
+          "markers": {
+            "login": false,
+            "captcha": false,
+            "cloudflare": false,
+            "errorPage": false,
+            "consentOnly": false,
+            "spaShell": false,
+            "noDataTable": true
+          },
+          "shape": {
+            "hasDataTable": false,
+            "hasCards": false,
+            "scriptToTextRatio": 17.27
+          },
+          "counts": {
+            "table": 0,
+            "tr": 0,
+            "td": 0,
+            "card": 0,
+            "listItem": 64,
+            "heading": 13,
+            "heading1": 2,
+            "link": 68,
+            "form": 2,
+            "input": 2,
+            "script": 87,
+            "div": 187
+          },
+          "selectorHits": {
+            "a[href*=\"utm_source=futurepedia\"]": 3,
+            "meta[name=\"description\"]": 1,
+            "span": 47
+          },
+          "keywordHits": {
+            "free": 7,
+            "deal": 0,
+            "discount": 0,
+            "pricing": 4
+          },
+          "regexHits": {
+            "deal-word": 28
+          },
+          "topClasses": [
+            {
+              "name": "flex",
+              "count": 106
+            },
+            {
+              "name": "items-center",
+              "count": 70
+            },
+            {
+              "name": "w-full",
+              "count": 44
+            },
+            {
+              "name": "h-4",
+              "count": 38
+            },
+            {
+              "name": "w-4",
+              "count": 35
+            },
+            {
+              "name": "text-sm",
+              "count": 33
+            },
+            {
+              "name": "pl-0",
+              "count": 30
+            },
+            {
+              "name": "justify-center",
+              "count": 25
+            }
+          ],
+          "error": null
+        }
+      ]
+    }
+  ],
+  "items": {
+    "futurepedia": {
+      "raw": [
+        {
+          "title": "ChatGPT",
+          "url": "https://chatgpt.com/?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/chatgpt",
+          "source": "Futurepedia",
+          "discount": "Freemium, $8/mo",
+          "description": "The versatile AI assistant for everyday questions, writing, and code.",
+          "category": ""
+        },
+        {
+          "title": "Claude",
+          "url": "https://claude.ai/?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/claude",
+          "source": "Futurepedia",
+          "discount": "Freemium, $17/mo",
+          "description": "Anthropic's assistant, known for careful reasoning and long documents.",
+          "category": ""
+        },
+        {
+          "title": "HubSpot AEO Sensor",
+          "url": "https://www.hubspot.com/aeo-sensor?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+          "source": "Futurepedia",
+          "discount": "Free",
+          "description": "Tracks how AI answer engines shift your website’s visibility.",
+          "category": ""
+        },
+        {
+          "title": "Perplexity",
+          "url": "https://www.perplexity.ai/?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/perplexity-ai",
+          "source": "Futurepedia",
+          "discount": "Freemium, $20/mo",
+          "description": "Answers questions with cited web sources.",
+          "category": ""
+        },
+        {
+          "title": "Google Gemini",
+          "url": "https://gemini.google.com/?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/google-gemini",
+          "source": "Futurepedia",
+          "discount": "Freemium, $9.99/mo",
+          "description": "An AI assistant that works directly with your Google apps and files.",
+          "category": ""
+        },
+        {
+          "title": "Midjourney",
+          "url": "https://www.midjourney.com/home/?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
+          "source": "Futurepedia",
+          "discount": "Paid, $10/mo",
+          "description": "Creates images and videos from prompts.",
+          "category": ""
+        },
+        {
+          "title": "Grok",
+          "url": "https://x.ai/grok?utm_source=futurepedia&utm_medium=marketplace&utm_campaign=futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/grok",
+          "source": "Futurepedia",
+          "discount": "Freemium, $30/mo",
+          "description": "A conversational AI for timely answers from the live web and X.",
+          "category": ""
+        }
+      ],
+      "deals": [
+        {
+          "id": "074f9d38b5d5",
+          "title": "ChatGPT",
+          "vendor": "ChatGPT",
+          "url": "https://chatgpt.com/",
+          "source": "Futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/chatgpt",
+          "region": "global",
+          "type": "tool",
+          "discountInfo": null,
+          "pricingModel": "freemium",
+          "priceLine": null,
+          "features": null,
+          "category": "对话模型",
+          "description": "The versatile AI assistant for everyday questions, writing, and code.",
+          "eligibility": null,
+          "validity": null,
+          "expiresAt": null,
+          "firstSeen": "2026-10-05",
+          "lastSeen": "2026-10-05",
+          "verified": false,
+          "verifiedAt": null
+        },
+        {
+          "id": "ac589cc2b414",
+          "title": "Claude",
+          "vendor": "Claude",
+          "url": "https://claude.ai/",
+          "source": "Futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/claude",
+          "region": "global",
+          "type": "tool",
+          "discountInfo": null,
+          "pricingModel": "freemium",
+          "priceLine": null,
+          "features": null,
+          "category": "对话模型",
+          "description": "Anthropic's assistant, known for careful reasoning and long documents.",
+          "eligibility": null,
+          "validity": null,
+          "expiresAt": null,
+          "firstSeen": "2026-10-05",
+          "lastSeen": "2026-10-05",
+          "verified": false,
+          "verifiedAt": null
+        },
+        {
+          "id": "cb45e0c735bd",
+          "title": "HubSpot AEO Sensor",
+          "vendor": "HubSpot AEO",
+          "url": "https://www.hubspot.com/aeo-sensor",
+          "source": "Futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/hubspot-aeo-sensor",
+          "region": "global",
+          "type": "tool",
+          "discountInfo": null,
+          "pricingModel": null,
+          "priceLine": null,
+          "features": null,
+          "category": "其他",
+          "description": "Tracks how AI answer engines shift your website’s visibility.",
+          "eligibility": null,
+          "validity": null,
+          "expiresAt": null,
+          "firstSeen": "2026-10-05",
+          "lastSeen": "2026-10-05",
+          "verified": false,
+          "verifiedAt": null
+        },
+        {
+          "id": "f8637444bb43",
+          "title": "Perplexity",
+          "vendor": "Perplexity",
+          "url": "https://www.perplexity.ai/",
+          "source": "Futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/perplexity-ai",
+          "region": "global",
+          "type": "tool",
+          "discountInfo": null,
+          "pricingModel": "freemium",
+          "priceLine": null,
+          "features": null,
+          "category": "其他",
+          "description": "Answers questions with cited web sources.",
+          "eligibility": null,
+          "validity": null,
+          "expiresAt": null,
+          "firstSeen": "2026-10-05",
+          "lastSeen": "2026-10-05",
+          "verified": false,
+          "verifiedAt": null
+        },
+        {
+          "id": "1e28b6e75cc2",
+          "title": "Google Gemini",
+          "vendor": "Google Gemini",
+          "url": "https://gemini.google.com/",
+          "source": "Futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/google-gemini",
+          "region": "global",
+          "type": "tool",
+          "discountInfo": null,
+          "pricingModel": "freemium",
+          "priceLine": null,
+          "features": null,
+          "category": "对话模型",
+          "description": "An AI assistant that works directly with your Google apps and files.",
+          "eligibility": null,
+          "validity": null,
+          "expiresAt": null,
+          "firstSeen": "2026-10-05",
+          "lastSeen": "2026-10-05",
+          "verified": false,
+          "verifiedAt": null
+        },
+        {
+          "id": "9e7c938ec401",
+          "title": "Midjourney",
+          "vendor": "Midjourney",
+          "url": "https://www.midjourney.com/home/",
+          "source": "Futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/midjourney",
+          "region": "global",
+          "type": "tool",
+          "discountInfo": null,
+          "pricingModel": null,
+          "priceLine": null,
+          "features": null,
+          "category": "图像绘画",
+          "description": "Creates images and videos from prompts.",
+          "eligibility": null,
+          "validity": null,
+          "expiresAt": null,
+          "firstSeen": "2026-10-05",
+          "lastSeen": "2026-10-05",
+          "verified": false,
+          "verifiedAt": null
+        },
+        {
+          "id": "376b6b3397e6",
+          "title": "Grok",
+          "vendor": "Grok",
+          "url": "https://x.ai/grok",
+          "source": "Futurepedia",
+          "sourceUrl": "https://www.futurepedia.io/tool/grok",
+          "region": "global",
+          "type": "tool",
+          "discountInfo": null,
+          "pricingModel": "freemium",
+          "priceLine": null,
+          "features": null,
+          "category": "对话模型",
+          "description": "A conversational AI for timely answers from the live web and X.",
+          "eligibility": null,
+          "validity": null,
+          "expiresAt": null,
+          "firstSeen": "2026-10-05",
+          "lastSeen": "2026-10-05",
+          "verified": false,
+          "verifiedAt": null
+        }
+      ],
+      "error": null
+    }
+  }
+}

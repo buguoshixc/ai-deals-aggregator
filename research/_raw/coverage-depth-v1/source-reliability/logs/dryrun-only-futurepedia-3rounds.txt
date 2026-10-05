@@ -1,0 +1,250 @@
+﻿# 命令：node scripts/collect.js --dry-run --only=futurepedia （3 轮连续，每轮前后记时间戳）
+===== 第 1 轮 开始 2026-10-05T11:36:31.7566361+08:00 =====
+开始采集（2026-10-05）：1 个来源，dry-run 模式
+→ Futurepedia
+
+=== 采集报告（dry-run） ===
+来源               地区    产出   合格   优惠   垃圾   耗时     错误
+----------------------------------------------------------
+Futurepedia        国外    7      7      0      0      5.2s     
+----------------------------------------------------------
+合计：1 个来源，产出 7 条，合格 7 条，其中优惠 0 条，失败 0 个
+
+=== 数据源健康（跨运行） ===
+来源               上次   本次   增减   状态       最近成功
+---------------------------------------------------
+aitools.fyi        15     15     0      正常       2026-10-04 16:31
+阿里云百炼         1      1      0      正常       2026-10-04 16:31
+百度千帆           17     17     0      正常       2026-10-04 16:31
+火山方舟           12     12     0      正常       2026-10-04 16:31
+智谱AI             7      7      0      正常       2026-10-04 16:31
+智谱AI活动页       4      4      0      正常       2026-10-04 16:31
+Futurepedia        7      7      0      正常       2026-10-05 03:36
+Futuretools        38     38     0      正常       2026-10-04 16:31
+Layer3Labs         13     13     0      正常       2026-10-04 16:31
+---------------------------------------------------
+合计：9 个来源 · 正常 9 · 异常 0 · 失败 0
+策展 curated_cn.json: 18/18 条可用
+策展 curated_global.json: 14/14 条可用
+
+既有 deals.json: 135 条
+合并结果: 新采 7 + 既有 135 + 策展 32 → 去重合并 39 → 修剪前 135 → 最终 135
+修剪明细: 下架过期 0 条 · 超出上限 0 条 · 退役垃圾 0 条 · 重分类 0 条
+受众字段: 可信度仲裁冲突 0 处 · 涉及 0 条
+声明式补充: 命中 56 条 · 与文件不一致 0 处
+来源明细: 采集器失败 0/1 个 · 零产出 0 个 · 异常 0 个 · 失败 0 个 · 无头浏览器 未探测
+其中：优惠 80 条，国内 60 条，含截止时间 0 条
+node : ⚠️  降级告警：本次仅采到 7 条，低于既有 135 条的 30%（仅告警，不拦写盘；零产出时才拦）。
+所在位置 行:6 字符: 3
++   node scripts/collect.js --dry-run --only=futurepedia 2>&1 | Out-Fil ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (⚠️  降级告警：本次仅采到 ...警，不拦写盘；零产出时才拦）。:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+中文译文: 45/135 条带中文译文（63 个字段） · 1 条待翻译
+  ℹ️  待译 1 条（最老 1 天，宽限 7 天）：node scripts/tools/zh-todo.js 查看
+      Flowrite（1 天）
+
+✓ 最终门禁：数据全部合规（dry-run 也跑这一步，它只读不写）
+
+(dry-run，未写盘)
+历史层: 本次为 --only 子集运行，跳过（避免把未跑的来源误判成「不再列出」）
+
+新增/变更预览（前 15 条优惠）：
+  · [cn] ERNIE-4.5-Turbo-128K 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] ERNIE-4.5-Turbo-32K 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] ERNIE-4.5-Turbo-VL 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] ERNIE-X1-Turbo-32K 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-R1 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-R1-250528 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-V3-250324 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-V3.1-250821 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-V3.1-Think-250821 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Kimi-K2-Instruct 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Qwen3-235B-A22B-Instruct-2507 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Qwen3-30B-A3B-Instruct-2507 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Qwen3-Coder-30B-A3B-Instruct 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Qwen3-Coder-480B-A35B-Instruct 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] bge-large-en 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+===== 第 1 轮 结束 2026-10-05T11:36:37.3274405+08:00 exit=0 =====
+===== 第 2 轮 开始 2026-10-05T11:37:02.3354556+08:00 =====
+开始采集（2026-10-05）：1 个来源，dry-run 模式
+→ Futurepedia
+
+=== 采集报告（dry-run） ===
+来源               地区    产出   合格   优惠   垃圾   耗时     错误
+----------------------------------------------------------
+Futurepedia        国外    7      7      0      0      4.6s     
+----------------------------------------------------------
+合计：1 个来源，产出 7 条，合格 7 条，其中优惠 0 条，失败 0 个
+
+=== 数据源健康（跨运行） ===
+来源               上次   本次   增减   状态       最近成功
+---------------------------------------------------
+aitools.fyi        15     15     0      正常       2026-10-04 16:31
+阿里云百炼         1      1      0      正常       2026-10-04 16:31
+百度千帆           17     17     0      正常       2026-10-04 16:31
+火山方舟           12     12     0      正常       2026-10-04 16:31
+智谱AI             7      7      0      正常       2026-10-04 16:31
+智谱AI活动页       4      4      0      正常       2026-10-04 16:31
+Futurepedia        7      7      0      正常       2026-10-05 03:37
+Futuretools        38     38     0      正常       2026-10-04 16:31
+Layer3Labs         13     13     0      正常       2026-10-04 16:31
+---------------------------------------------------
+合计：9 个来源 · 正常 9 · 异常 0 · 失败 0
+策展 curated_cn.json: 18/18 条可用
+策展 curated_global.json: 14/14 条可用
+
+既有 deals.json: 135 条
+node : ⚠️  降级告警：本次仅采到 7 条，低于既有 135 条的 30%（仅告警，不拦写盘；零产出时才拦）。
+所在位置 行:6 字符: 3
++   node scripts/collect.js --dry-run --only=futurepedia 2>&1 | Out-Fil ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (⚠️  降级告警：本次仅采到 ...警，不拦写盘；零产出时才拦）。:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+合并结果: 新采 7 + 既有 135 + 策展 32 → 去重合并 39 → 修剪前 135 → 最终 135
+修剪明细: 下架过期 0 条 · 超出上限 0 条 · 退役垃圾 0 条 · 重分类 0 条
+受众字段: 可信度仲裁冲突 0 处 · 涉及 0 条
+声明式补充: 命中 56 条 · 与文件不一致 0 处
+来源明细: 采集器失败 0/1 个 · 零产出 0 个 · 异常 0 个 · 失败 0 个 · 无头浏览器 未探测
+其中：优惠 80 条，国内 60 条，含截止时间 0 条
+中文译文: 45/135 条带中文译文（63 个字段） · 1 条待翻译
+  ℹ️  待译 1 条（最老 1 天，宽限 7 天）：node scripts/tools/zh-todo.js 查看
+      Flowrite（1 天）
+
+✓ 最终门禁：数据全部合规（dry-run 也跑这一步，它只读不写）
+
+(dry-run，未写盘)
+历史层: 本次为 --only 子集运行，跳过（避免把未跑的来源误判成「不再列出」）
+
+新增/变更预览（前 15 条优惠）：
+  · [cn] ERNIE-4.5-Turbo-128K 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] ERNIE-4.5-Turbo-32K 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] ERNIE-4.5-Turbo-VL 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] ERNIE-X1-Turbo-32K 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-R1 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-R1-250528 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-V3-250324 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-V3.1-250821 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-V3.1-Think-250821 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Kimi-K2-Instruct 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Qwen3-235B-A22B-Instruct-2507 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Qwen3-30B-A3B-Instruct-2507 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Qwen3-Coder-30B-A3B-Instruct 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Qwen3-Coder-480B-A35B-Instruct 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] bge-large-en 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+===== 第 2 轮 结束 2026-10-05T11:37:07.2576732+08:00 exit=0 =====
+===== 第 3 轮 开始 2026-10-05T11:37:32.2602515+08:00 =====
+开始采集（2026-10-05）：1 个来源，dry-run 模式
+→ Futurepedia
+
+=== 采集报告（dry-run） ===
+来源               地区    产出   合格   优惠   垃圾   耗时     错误
+----------------------------------------------------------
+Futurepedia        国外    7      7      0      0      4.5s     
+----------------------------------------------------------
+合计：1 个来源，产出 7 条，合格 7 条，其中优惠 0 条，失败 0 个
+
+=== 数据源健康（跨运行） ===
+来源               上次   本次   增减   状态       最近成功
+---------------------------------------------------
+aitools.fyi        15     15     0      正常       2026-10-04 16:31
+阿里云百炼         1      1      0      正常       2026-10-04 16:31
+百度千帆           17     17     0      正常       2026-10-04 16:31
+火山方舟           12     12     0      正常       2026-10-04 16:31
+智谱AI             7      7      0      正常       2026-10-04 16:31
+智谱AI活动页       4      4      0      正常       2026-10-04 16:31
+Futurepedia        7      7      0      正常       2026-10-05 03:37
+Futuretools        38     38     0      正常       2026-10-04 16:31
+Layer3Labs         13     13     0      正常       2026-10-04 16:31
+---------------------------------------------------
+合计：9 个来源 · 正常 9 · 异常 0 · 失败 0
+策展 curated_cn.json: 18/18 条可用
+策展 curated_global.json: 14/14 条可用
+
+既有 deals.json: 135 条
+node : ⚠️  降级告警：本次仅采到 7 条，低于既有 135 条的 30%（仅告警，不拦写盘；零产出时才拦）。
+所在位置 行:6 字符: 3
++   node scripts/collect.js --dry-run --only=futurepedia 2>&1 | Out-Fil ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (⚠️  降级告警：本次仅采到 ...警，不拦写盘；零产出时才拦）。:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+合并结果: 新采 7 + 既有 135 + 策展 32 → 去重合并 39 → 修剪前 135 → 最终 135
+修剪明细: 下架过期 0 条 · 超出上限 0 条 · 退役垃圾 0 条 · 重分类 0 条
+受众字段: 可信度仲裁冲突 0 处 · 涉及 0 条
+声明式补充: 命中 56 条 · 与文件不一致 0 处
+来源明细: 采集器失败 0/1 个 · 零产出 0 个 · 异常 0 个 · 失败 0 个 · 无头浏览器 未探测
+其中：优惠 80 条，国内 60 条，含截止时间 0 条
+中文译文: 45/135 条带中文译文（63 个字段） · 1 条待翻译
+  ℹ️  待译 1 条（最老 1 天，宽限 7 天）：node scripts/tools/zh-todo.js 查看
+      Flowrite（1 天）
+
+✓ 最终门禁：数据全部合规（dry-run 也跑这一步，它只读不写）
+
+(dry-run，未写盘)
+历史层: 本次为 --only 子集运行，跳过（避免把未跑的来源误判成「不再列出」）
+
+新增/变更预览（前 15 条优惠）：
+  · [cn] ERNIE-4.5-Turbo-128K 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] ERNIE-4.5-Turbo-32K 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] ERNIE-4.5-Turbo-VL 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] ERNIE-X1-Turbo-32K 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-R1 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-R1-250528 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-V3-250324 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-V3.1-250821 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] DeepSeek-V3.1-Think-250821 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Kimi-K2-Instruct 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Qwen3-235B-A22B-Instruct-2507 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Qwen3-30B-A3B-Instruct-2507 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Qwen3-Coder-30B-A3B-Instruct 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] Qwen3-Coder-480B-A35B-Instruct 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+  · [cn] bge-large-en 新用户免费额度 — 首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月
+      https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg
+===== 第 3 轮 结束 2026-10-05T11:37:37.0238482+08:00 exit=0 =====

@@ -6,17 +6,17 @@
   "_rulings": "人工裁决（rulings）只有三种结局，且都不等于「已覆盖」：deferred（本轮不做，**必须**写 revisitBy 复查条件）、unverifiable（查过、官方来源不可核）、schema-not-supported（官方定价存在，当前 schema 诚实表达不了）。研究结论里的 adopted / partial 不写在这里 —— 那是「要不要做」，做没做成由盘上事实派生。",
   "_rules": "硬校验（scripts/lib/coverage-targets.js 的 validateTargets）：① provider 必须存在于 scripts/data/providers.json；② registrySlug 必须存在于 scripts/data/models.json；③ deals 的 source 必须真实存在过；④ providers.json 里每个 provider 都必须在 targets 里有一行（身份层与意图层双向对账，少一行就是这家平台没人宣称要覆盖）；⑤ 手写状态字段（state/status/coverage/... ）一律红；⑥ 顶层与记录内的重复键（判据来自原文）一律红；⑦ 字段顺序、targets 顺序（按 provider）、currentTargets 顺序（按维度再按目标名）必须是规范序。",
   "schemaVersion": 1,
-  "reviewedAt": "2026-10-04",
+  "reviewedAt": "2026-10-05",
   "targets": [
     {
       "provider": "ai360",
       "tier": "long-tail",
       "role": "model-developer",
       "intent": "360 智脑开放平台自研模型（360zhinao 系列）的官方优惠、按量计费与模型身份",
-      "applicabilityNote": "coding 不适用：官方只有「第三方工具接入」文档（CC Switch + Claude Code / Codex），没有自营编码订阅套餐。",
+      "applicabilityNote": "coding 不适用：官方只有「第三方工具接入」文档（CC Switch + Claude Code / Codex），没有自营编码订阅套餐（2026-10-05 复核：模型广场 94 个模型与平台页均无自营编程订阅档位）。",
       "dimensionIntent": {
         "deals": "360 智脑官方活动 / 新用户额度（只收官方来源）",
-        "coding": "自营编码订阅套餐（官方只有第三方工具的接入文档，没有自营 Coding 套餐）",
+        "coding": null,
         "api": "360zhinao 自研模型按量计费（¥/1M tokens）",
         "models": "360zhinao 自研当前模型"
       },
@@ -24,6 +24,14 @@
         {
           "dimension": "api",
           "modelKey": "360zhinao-turbo-llm-geo"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "360zhinao-pro"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "360zhinao-turbo-llm-geo"
         }
       ],
       "rulings": [],
@@ -113,21 +121,29 @@
       "tier": "major",
       "role": "model-developer",
       "intent": "百川智能开放平台的官方优惠、按量计费与当前模型身份",
-      "applicabilityNote": "coding 不适用：官方公开面（platform.baichuan-ai.com/prices）只有按量计费、搜索增强、知识库与 Embeddings 价目，没有任何编程/订阅套餐。",
+      "applicabilityNote": "coding 不适用：官方公开价目面只有按量计费、搜索增强、知识库与 Embeddings，没有任何编程 / 订阅套餐（2026-10-05 复核确认）。",
       "dimensionIntent": {
         "deals": "百川智能官方活动 / 新用户额度（只收官方来源）",
-        "coding": "编程订阅套餐（官方公开面只有按量、知识库与 Embeddings，没有 Coding 订阅）",
+        "coding": null,
         "api": "百川 M 系列按量计费（元/千 tokens，输入输出分明）",
         "models": "Baichuan-M 系列当前主力模型"
       },
       "currentTargets": [
         {
           "dimension": "api",
-          "modelKey": "Baichuan-M3"
+          "modelKey": "baichuan-m3"
         },
         {
           "dimension": "api",
-          "modelKey": "Baichuan-M3-Plus"
+          "modelKey": "baichuan-m3-plus"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "baichuan-m3"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "baichuan-m3-plus"
         }
       ],
       "rulings": [],
@@ -149,6 +165,22 @@
         {
           "dimension": "deals",
           "source": "百度千帆"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "ernie-4.5-turbo-128k"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "ernie-5.1"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "ernie-4.5-turbo-128k"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "ernie-5.1"
         }
       ],
       "rulings": [],
@@ -256,7 +288,14 @@
           "registrySlug": "deepseek-v4-pro"
         }
       ],
-      "rulings": [],
+      "rulings": [
+        {
+          "dimension": "deals",
+          "decision": "unverifiable",
+          "reason": "查过 DeepSeek 官方来源（api-docs.deepseek.com 定价页与文档、platform.deepseek.com、deepseek.com 首页与公告），官方当前没有任何公开优惠 / 新用户额度 / 限时活动的口径可引用 ⇒ 这一格没有可诚实收录的对象，是\"查过、没有\"，不是漏采",
+          "revisitBy": null
+        }
+      ],
       "note": null
     },
     {
@@ -418,15 +457,25 @@
         "api": "讯飞星火按量计费",
         "models": "星火当前主力模型"
       },
-      "currentTargets": [],
-      "rulings": [
+      "currentTargets": [
         {
           "dimension": "coding",
-          "decision": "unverifiable",
-          "reason": "本轮没有找到科大讯飞官方公开的编程订阅套餐价目页（只有 API 计费与消费端会员），核不实它在 coding 维度是否有可覆盖的对象",
-          "revisitBy": null
+          "planName": "讯飞星辰 MaaS · Astron Coding Plan 速通版"
+        },
+        {
+          "dimension": "coding",
+          "planName": "讯飞星辰 MaaS · Astron Coding Plan 高效版"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "spark-x2.5"
+        },
+        {
+          "dimension": "models",
+          "registrySlug": "spark-x2.5"
         }
       ],
+      "rulings": [],
       "note": null
     },
     {
@@ -468,6 +517,12 @@
       },
       "currentTargets": [],
       "rulings": [
+        {
+          "dimension": "coding",
+          "decision": "deferred",
+          "reason": "官方公开价可核（如 Microsoft 365 Business Premium with Copilot $32/user/月按年付），但 Microsoft 自营没有编程订阅套餐 —— 编程订阅是 GitHub Copilot，已单列 provider github。把生产力套件订阅记进 coding 会污染编程套餐横向对比，需要先裁决 coding 维度的收录范围",
+          "revisitBy": "当 coding 维度明确裁决是否收录「生产力套件订阅」（或官方推出 Microsoft 自营编程订阅、或 GitHub Copilot 与 Microsoft 合并为一个 identity）时复查"
+        },
         {
           "dimension": "api",
           "decision": "deferred",
@@ -516,6 +571,14 @@
       },
       "currentTargets": [
         {
+          "dimension": "api",
+          "modelKey": "kimi-k2.7-code"
+        },
+        {
+          "dimension": "api",
+          "modelKey": "kimi-k3"
+        },
+        {
           "dimension": "models",
           "registrySlug": "kimi-k2.7-code"
         },
@@ -556,6 +619,30 @@
         "models": "OpenAI 当前主力模型"
       },
       "currentTargets": [
+        {
+          "dimension": "coding",
+          "planName": "ChatGPT Business · Premium 座位"
+        },
+        {
+          "dimension": "coding",
+          "planName": "ChatGPT Business · Standard 座位"
+        },
+        {
+          "dimension": "coding",
+          "planName": "ChatGPT Plus"
+        },
+        {
+          "dimension": "coding",
+          "planName": "ChatGPT Pro 100"
+        },
+        {
+          "dimension": "coding",
+          "planName": "ChatGPT Pro 200"
+        },
+        {
+          "dimension": "coding",
+          "planName": "ChatGPT Pro 500"
+        },
         {
           "dimension": "models",
           "registrySlug": "gpt-6-luna"
@@ -615,7 +702,11 @@
       "currentTargets": [
         {
           "dimension": "coding",
-          "planName": "Replit Core"
+          "planName": "Core"
+        },
+        {
+          "dimension": "coding",
+          "planName": "Pro"
         }
       ],
       "rulings": [],
@@ -635,8 +726,12 @@
       },
       "currentTargets": [
         {
+          "dimension": "coding",
+          "planName": "SenseNova Token Plan · Free(公测)"
+        },
+        {
           "dimension": "api",
-          "modelKey": "SenseNova-V6.5-Pro"
+          "modelKey": "sensenova-v6.5-pro"
         }
       ],
       "rulings": [

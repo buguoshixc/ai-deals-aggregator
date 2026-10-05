@@ -1,0 +1,213 @@
+
+========== t1 | completed | implementation ==========
+objective: 扩展唯一的维护者总入口 npm run report:coverage（文本 + --json 双侧同源），新增 Release Evidence Coverage、Model Release Evidence Queue、Gap Closure Queue、Source Reliability summary 四节；新增判据层 scripts/lib/source-rulings.js（裁决 schema 校验 + 稳定序 + 裁决↔注册表↔health 三方对账）；保持 --json 确定性、键只追加、既有断言只增不减。
+inScope: [".worktrees/coverage-depth-v1/scripts/tools/coverage-report.js",".worktrees/coverage-depth-v1/scripts/tools/coverage-targets-selftest.js",".worktrees/coverage-depth-v1/scripts/lib/source-rulings.js",".worktrees/coverage-depth-v1/scripts/lib/coverage-targets.js",".worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/report/"]
+outOfScope: [".worktrees/coverage-depth-v1/scripts/data/",".worktrees/coverage-depth-v1/scripts/collectors/",".worktrees/coverage-depth-v1/.github/",".worktrees/coverage-depth-v1/package.json",".worktrees/coverage-depth-v1/models.json",".worktrees/coverage-depth-v1/plans.json",".worktrees/coverage-depth-v1/api-plans.json",".worktrees/coverage-depth-v1/deals.json",".worktrees/coverage-depth-v1/research/coverage-depth-v1-report.md",".worktrees/coverage-depth-v1/research/coverage-depth-v1-self-audit.md"]
+acceptance(8):
+  A1: report:coverage 文本与 --json 双侧新增四节：Release Evidence Coverage（registry/known/unknown/known% + 按 developer、modelRole、catalogStatus 三维拆分）、Model Release Evidence Queue、Gap Closure Queue（Priority A/B/C/D + target N / covered M / missing K）、Source Reliability summary（裁决 × live 读数 join，必须打印 generatedAt）
+  A2: 排序规则透明且确定性：release queue 的五条规则（unknown 优先 / 可比组规模降序 / tier core>major>long-tail / 是否被 api-plans 或 plans 引用 / slug code-unit tiebreak）与 gap queue 的 A-D 分层规则都把规则原文打印进报告，且不使用任何 LLM 主观分数或伪精确分数
+  A3: 新建 scripts/lib/source-rulings.js：纯函数、零依赖、不读墙钟、不联网；提供 schema 校验 + 按 source 的 code-unit 稳定序 + 「裁决 ↔ scripts/collectors 注册表 ↔ source-health」三方对账
+  A4: --json 键序只追加：旧键（顶层 generatedAt,deals,coding,api,registry,gaps,candidates,coverageTargets 与 coverageTargets 内既有键）逐字逐序不动位；LEGACY_CONTRACT 与 APPENDED_KEY_WHITELIST 同步注册新键，且每个新键都有存在性断言
+  A5: 确定性：同一份输入连续两次 --json 输出 byte-identical，贴出两次 sha256；不读墙钟（无 new Date()/Date.now() 影响输出）、不联网、无随机
+  A6: 每个新键至少一条夹具反证（构造非法输入 ⇒ 必红），并贴出命中信息；不许放宽任何既有断言（断言条数只增不减）
+  A7: coverage-report.js 对 scripts/data/source-rulings.json 缺失时优雅降级为「尚未落盘」并计入报告自检问题，而不是崩溃或静默当通过
+  A8: 覆盖率报告自检问题 = 0，且 scripts/tools/coverage-targets-selftest.js 全绿（项数只增不减，贴改前改后项数）
+verify: ["node scripts/tools/coverage-report.js","node scripts/tools/coverage-report.js --json","node scripts/tools/coverage-targets-selftest.js","node scripts/validate.js --strict","node scripts/tools/check-ci-consistency.js"]
+assignee: report-engine-engineer | attempts: (n/a)
+
+========== t2 | completed | work ==========
+objective: Workstream A：为现有 44 条 Model Registry 建立确定性的 Release Evidence 队列，按官方来源等级（L1 release announcement > L2 changelog > L3 model docs 明确日期 > L4 官方 blog/product update > L5 开发商自己的官方 GitHub release/model card）逐条取证，把可核的官方发布日期与逐字引文写进 scripts/data/models.json，并用 npm run models:rebuild 重新派生 catalogStatus；第三方来源只用于发现候选，不制造日期精度。
+inScope: [".worktrees/coverage-depth-v1/scripts/data/models.json",".worktrees/coverage-depth-v1/models.json",".worktrees/coverage-depth-v1/model-registry-links.json",".worktrees/coverage-depth-v1/research/coverage-depth-v1-release-evidence.md",".worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/release-evidence/"]
+outOfScope: [".worktrees/coverage-depth-v1/scripts/data/coverage-targets.json",".worktrees/coverage-depth-v1/scripts/data/providers.json",".worktrees/coverage-depth-v1/scripts/data/curated_api_plans.json",".worktrees/coverage-depth-v1/scripts/data/curated_plans.json",".worktrees/coverage-depth-v1/scripts/data/curated_global.json",".worktrees/coverage-depth-v1/scripts/data/curated_cn.json",".worktrees/coverage-depth-v1/scripts/lib/",".worktrees/coverage-depth-v1/scripts/tools/",".worktrees/coverage-depth-v1/plans.json",".worktrees/coverage-depth-v1/api-plans.json",".worktrees/coverage-depth-v1/deals.json",".worktrees/coverage-depth-v1/scripts/data/deal-history.json",".worktrees/coverage-depth-v1/scripts/data/plan-history.json",".worktrees/coverage-depth-v1/scripts/data/api-plan-history.json"]
+acceptance(9):
+  A1: 先建立确定性 Release Evidence 队列并落盘（unknown 优先 → 可比组规模降序 → provider tier core>major>long-tail → 是否被 api-plans/plans 引用 → slug code-unit tiebreak），队列规则原文写进研究工件
+  A2: 每条新增 releasedAt 都有 releaseEvidence：field=releasedAt、quote 是官方页面上的逐字片段且真实包含日期/发布语义、sourceUrl 落在该 developer 于 scripts/data/providers.json 的 officialDomains 上、capturedAt 是真实日期
+  A3: 100% 新增日期逐条人工式复核：打开证据页、确认 quote 忠实、确认 identity 归属、确认日期语义；研究工件里给出逐条对照表（slug / 官方 URL / 原文片段 / 判定 / 采信或否决理由）
+  A4: 官方只给到月份的，一律 releasedAt 保持 null，并在研究工件里逐条记 month-known-day-unknown + 原文；绝不新增 releaseDatePrecision 字段、绝不写月初冒充具体日
+  A5: 第三方来源（OpenRouter / SiliconFlow / Together / 百炼第三方托管行 / 媒体 / 榜单）只用于发现候选，零条成为 releasedAt 证据；未采信条目要在研究工件里写明原因
+  A6: 口径统一：releasedAt = 该 registry identity 对公众正式可用/官方正式发布的最早可核日期；preview 与 GA 并存时取正式公开可用日，并在 note 里说明 preview 情况
+  A7: 零身份 churn：不改任何 slug / id / canonicalName / developer / owner / family / status / modelRole / aliases，不新增 registry 身份，只改现有条目的 releasedAt / releaseEvidence / note
+  A8: root models.json 与 model-registry-links.json 由 npm run models:rebuild 派生（不手改），catalogStatus 全部由派生得到、零手填；补日期不得往任何 *-history.json 插入事件
+  A9: 若补完日期后出现系统性错误（主流型号大批 legacy，或几乎全部旧型号仍 current）才允许重跑 model-freshness-sensitivity.js（±60/±90）并列出全部翻转模型；否则不动 MODEL_FRESHNESS_POLICY
+verify: ["node scripts/tools/models-selftest.js","node scripts/tools/model-freshness-selftest.js","node scripts/tools/check-models-reproducible.js","node scripts/validate.js --strict","node -e \"const m=require('./models.json').models;const c={};for(const v of m)c[v.catalogStatus]=(c[v.catalogStatus]||0)+1;console.log(c,'sum',m.length,'known',m.filter(x=>x.releasedAt).length)\""]
+assignee: release-evidence-curator | attempts: (n/a)
+
+========== t3 | completed | work ==========
+objective: Workstream B-1：消化当前 Target Provider Universe 内在 API 计价 / Coding 套餐 / Deals 三个维度上的 MISSING 与 PARTIAL，用官方证据把缺口变成 COVERED，或诚实地落成 UNVERIFIABLE / DEFERRED / NOT_APPLICABLE / BLOCKED_SOURCE 并写明理由与复查条件。
+inScope: [".worktrees/coverage-depth-v1/scripts/data/curated_api_plans.json",".worktrees/coverage-depth-v1/scripts/data/curated_plans.json",".worktrees/coverage-depth-v1/scripts/data/curated_global.json",".worktrees/coverage-depth-v1/scripts/data/curated_cn.json",".worktrees/coverage-depth-v1/scripts/data/coverage-targets.json",".worktrees/coverage-depth-v1/api-plans.json",".worktrees/coverage-depth-v1/plans.json",".worktrees/coverage-depth-v1/deals.json",".worktrees/coverage-depth-v1/scripts/data/plan-history.json",".worktrees/coverage-depth-v1/scripts/data/api-plan-history.json",".worktrees/coverage-depth-v1/scripts/data/deal-history.json",".worktrees/coverage-depth-v1/research/coverage-depth-v1-gap-closure.md",".worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/gap-closure/"]
+outOfScope: [".worktrees/coverage-depth-v1/scripts/data/models.json",".worktrees/coverage-depth-v1/models.json",".worktrees/coverage-depth-v1/model-registry-links.json",".worktrees/coverage-depth-v1/scripts/data/model-registry-links.json",".worktrees/coverage-depth-v1/scripts/data/model-registry-gaps.json",".worktrees/coverage-depth-v1/scripts/lib/",".worktrees/coverage-depth-v1/scripts/tools/",".worktrees/coverage-depth-v1/scripts/collectors/",".worktrees/coverage-depth-v1/.github/"]
+acceptance(11):
+  A1: 先用重定向到文件的方式重跑 npm run report:coverage --json，取当前真实的 MISSING / PARTIAL 列表（不许沿用题面或 captain 给的旧数字），并在报告里贴出这份现场读数
+  A2: 每个 MISSING 最后都落到 COVERED / PARTIAL / UNVERIFIABLE / DEFERRED / NOT_APPLICABLE / BLOCKED_SOURCE 之一并给出理由；调查完仍留 MISSING 且无解释 = 不合格
+  A3: DEFERRED 必须在 coverage-targets.json 的 rulings 里带 revisitBy 复查条件；UNVERIFIABLE 必须附「查过哪些官方来源、为什么核不出」
+  A4: PARTIAL 必须说清缺哪部分（target N / covered M / missing K），让维护者直接知道下一步补什么
+  A5: MISSING/PARTIAL 先按维护价值分层（A: core+高价值维度+官方来源明确；B: major+官方来源明确；C: core/major 但来源困难；D: long-tail/高维护成本），分层规则可解释、不使用伪精确分数；维度价值按 provider role 调整（model-developer → API/Models/Deals/Coding；coding-product → Coding/Deals，API/Models 通常 N/A；inference-platform → API/Deals，Models 归 developer）
+  A6: 新增 API 计价记录逐项核对 provider identity / officialUrl / sourceUrl / pricing.unit / currency / input / output / cached input / variant / freeTier / credits / evidence；零条把复杂 bundle（按小时/按图/按秒/季付包/容量预留）硬写成 per_1M_tokens；schema 表达不了且不满足「≥2 家独立 Provider 都需要 + 语义清晰 + 不破坏既有 Pricing Truth」的记 DEFERRED_SCHEMA 留档
+  A7: 新增 Coding 套餐满足进门条件（公开官方价格 + 稳定 plan identity + 明确 billing + 明确 quota/limits + 证据可追溯）；零条把 Contact Sales / 自定义报价硬编成固定价格
+  A8: Deals 缺口不得制造优惠：官方当前没有公开优惠时诚实落 UNVERIFIABLE / NOT_APPLICABLE
+  A9: Stable ID 零非预期 churn：不改任何既有 deal id / plan id / api plan id / provider key；新增记录 firstSeen = 本次观测日，不伪造历史 firstSeen
+  A10: 不新增 Provider（除非满足题面四条件之一并有官方证据），Provider Universe 保持 34 行双向对账
+  A11: 根 api-plans.json / plans.json / deals.json 与三份 history 全部由 rebuild 命令派生（零手改）
+verify: ["node scripts/tools/coverage-report.js","node scripts/tools/coverage-targets-selftest.js","npm run api-plans:rebuild","npm run plans:rebuild","npm run rebuild","node scripts/tools/check-api-plans-reproducible.js","node scripts/tools/check-plans-reproducible.js","node scripts/tools/check-reproducible.js","node scripts/tools/check-api-plan-history.js","node scripts/tools/check-plan-history.js","node scripts/tools/check:history","node scripts/validate.js --strict"]
+assignee: gap-closure-curator | attempts: (n/a)
+
+========== t4 | completed | work ==========
+objective: Workstream C-1：对当前全部 9 个采集来源做实况普查（带 generatedAt 时间戳），对长期失败来源做 overlap 与独有价值分析并给出可复核的裁决建议，产出只读取证工件。
+inScope: [".worktrees/coverage-depth-v1/research/coverage-depth-v1-source-reliability.md",".worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/source-reliability/"]
+outOfScope: [".worktrees/coverage-depth-v1/scripts/",".worktrees/coverage-depth-v1/.github/",".worktrees/coverage-depth-v1/deals.json",".worktrees/coverage-depth-v1/plans.json",".worktrees/coverage-depth-v1/api-plans.json",".worktrees/coverage-depth-v1/models.json"]
+acceptance(8):
+  A1: 重跑采集/健康读数得到 live 时间戳，逐 source 记录 healthy / failed / degraded / zero 与 consecutiveFailures；所有 health 陈述都带 generatedAt，禁止写「已恢复」这类永久结论
+  A2: 对 consecutiveFailures >= 3 的每个来源逐条回答题面 §29 的 8 问（static 是否可访问 / UA·redirect·HTML 结构是否变化 / headless 是否稳定 / 是否需要登录 / 是否 bot protection / 与其它 discovery source overlap 多大 / 是否有独有候选价值 / 维护成本）
+  A3: Futurepedia 必须重新裁决（不许默认 repair 也不许默认 retire）：给出 historical items / unique items / overlap items / recent unique candidates / maintenance cost 五项数字
+  A4: overlap 计算复用 scripts/lib/dedup.js 的 normalizeTitle / aliasKey / SOURCE_PRIORITY，并叠加官方 URL（host+path 归一）与 render-core.vendorOf 的 vendor 归一；禁止用 title === title 统计 overlap
+  A5: 时间敏感反证：对失败来源做至少 3 轮连续采集（记录每轮时间戳与结果），本地读数与 CI 读数分开记录；结论写 observed unstable 而不是 fixed
+  A6: 本机与 CI 的读数差异要作为证据写清楚（captain 已实测：本机用采集器同一 UA/headers 请求 futurepedia 首页是 HTTP 200，dry-run --only=futurepedia 采集器失败 0/1 且产出 7 条；而 source-health.json 记的是 CI 侧 HTTP 403 / consecutiveFailures 10）
+  A7: 本任务只产出取证结论与研究工件，不落地裁决、不改代码（落地在依赖本任务的 T05/T06）
+  A8: 所有临时文件只写在自己的 research 目录与系统 TEMP，共享工作区的被跟踪文件零改动（贴 sha256 证明）
+verify: ["node scripts/collect.js --list","node scripts/collect.js --headless --list","node scripts/collect.js --dry-run --only=futurepedia","node scripts/tools/inspect-source.js","node -e \"const h=require('./scripts/data/source-health.json');console.log(h.generatedAt);for(const s of h.sources)console.log(s.source,s.status,s.consecutiveFailures,s.lastError||'')\""]
+assignee: source-reliability-engineer | attempts: (n/a)
+
+========== t5 | completed | work ==========
+objective: 按 T04 的取证结论，把每个长期失败来源的四选一裁决落到采集器代码层：repair（修静态抓取）/ headless-migrate（迁到无头）/ keep-degraded（保留但标注）/ retire（代码层停止注册），并保证探针表、fixture、provenance 与注册表三处对账同时自洽，历史 Deals 与 deal 生命周期零改动。
+inScope: [".worktrees/coverage-depth-v1/scripts/collectors/",".worktrees/coverage-depth-v1/scripts/data/source-probes.json",".worktrees/coverage-depth-v1/scripts/data/fixtures/",".worktrees/coverage-depth-v1/scripts/lib/provenance.js"]
+outOfScope: [".worktrees/coverage-depth-v1/scripts/data/source-rulings.json",".worktrees/coverage-depth-v1/scripts/data/source-health.json",".worktrees/coverage-depth-v1/deals.json",".worktrees/coverage-depth-v1/scripts/data/deal-history.json",".worktrees/coverage-depth-v1/scripts/lib/model-freshness.js",".worktrees/coverage-depth-v1/scripts/tools/coverage-report.js",".worktrees/coverage-depth-v1/.github/"]
+acceptance(9):
+  A1: 依据 T04 的取证结论，对每个长期失败来源给出恰好一条四选一裁决的代码侧落地：repair / headless-migrate / keep-degraded / retire
+  A2: retire 落地正确且不丢历史：从 scripts/collectors/global_directories.js 的导出移除使 collectors/index.js 的 BASE 少一个；同步删除 scripts/data/source-probes.json 对应条目与 scripts/data/fixtures/<name>/ 目录；**scripts/lib/provenance.js 的 SOURCE_TYPES 条目必须保留**（否则历史 Deals 的 sourceType 变 unknown = 改写历史）
+  A3: retire 后：deals.json 行数不变、无任何 deal 被标 ended、历史 Deals 仍能解析出原 sourceType；贴出前后逐字节对照或 sha256
+  A4: repair 若改选择器：同步更新 scripts/data/fixtures/<name>/expected.json，使 node scripts/tools/fixture-test.js 与 node scripts/tools/ai-selftest.js 同时绿
+  A5: headless-migrate：来源在无头链路上注册，scripts/data/source-probes.json 有条目（无头来源也在探针表里），并附连续多次采集的稳定性读数
+  A6: keep-degraded：不改采集代码，理由与复查条件写进 T06 的裁决数据文件
+  A7: 三条对账同时绿：注册的采集器 ↔ source-probes.json 双向无差集；collectors/index.js 的 BASE 与 source-health 注册表一致；fixture 目录 ↔ 注册表无孤儿
+  A8: 不改 MODEL_FRESHNESS_POLICY、不接 Cloudflare Analytics API、不建 dashboard/告警/数据库
+  A9: 共享工作区被跟踪文件改动只落在本任务申报范围内；临时实验只在 TEMP 或 research 目录
+verify: ["node scripts/tools/fixture-test.js","node scripts/tools/ai-selftest.js","node scripts/collect.js --list","node scripts/collect.js --headless --list","node scripts/validate.js --strict","node scripts/tools/provenance-selftest.js"]
+assignee: source-reliability-engineer | attempts: (n/a)
+
+========== t6 | completed | work ==========
+objective: 把 T04 的取证结论落成人工裁决层数据文件 scripts/data/source-rulings.json（worker 只写裁决与理由，状态读数仍只来自 source-health.json），并完成「裁决 ↔ 采集器注册表 ↔ source-health」三方对账。
+inScope: [".worktrees/coverage-depth-v1/scripts/data/source-rulings.json",".worktrees/coverage-depth-v1/research/coverage-depth-v1-source-reliability.md",".worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/source-reliability/"]
+outOfScope: [".worktrees/coverage-depth-v1/scripts/lib/source-rulings.js",".worktrees/coverage-depth-v1/scripts/lib/data-docs.js",".worktrees/coverage-depth-v1/scripts/collectors/",".worktrees/coverage-depth-v1/scripts/tools/coverage-report.js",".worktrees/coverage-depth-v1/scripts/data/source-health.json",".worktrees/coverage-depth-v1/deals.json"]
+acceptance(8):
+  A1: scripts/data/source-rulings.json 按 t1 定下的冻结 schema 落盘：schemaVersion / reviewedAt / rulings[]，每条 ruling 含 source / decision / reason / evidence[] / overlap{}，数组按 source 的 code-unit 序
+  A2: 每个 consecutiveFailures >= 3 的来源恰好一条裁决，四选一（repair / headless-migrate / keep-degraded / retire），零遗漏零重复
+  A3: 条件字段齐备：keep-degraded 必有 whyKept + revisitBy；repair 必有 revisitBy；headless-migrate 必有 headlessStability（连续多次采集读数的结构化记录）
+  A4: 每条裁决都带可复核 evidence（url + capturedAt + reading 原文），且所有 health 陈述带生成时间戳，不写永久性结论
+  A5: 三方对账自洽：retire 的来源不在采集器注册表；repair / headless-migrate 的来源在注册表；注册表与 source-health 注册表无无法解释的差集
+  A6: 文件是内部维护层：未进 scripts/lib/data-docs.js 的 PUBLIC_DATASETS、未出现在 dist/data/index.json、未进 sitemap / feed
+  A7: 文件确定性：无墙钟时间戳参与输出（reviewedAt 是人工日期而非 new Date()），同一输入序列化 byte-identical
+  A8: node scripts/tools/coverage-targets-selftest.js 与 node scripts/tools/coverage-report.js 在该文件落盘后全绿（报告里 Source Reliability 一节不再是「尚未落盘」）
+verify: ["node -e \"const r=require('./scripts/data/source-rulings.json');console.log(r.schemaVersion,r.reviewedAt,r.rulings.length);for(const x of r.rulings)console.log(x.source,x.decision)\"","node scripts/tools/coverage-report.js","node scripts/tools/coverage-targets-selftest.js","node scripts/validate.js --strict"]
+assignee: report-engine-engineer | attempts: (n/a)
+
+========== t7 | completed | review ==========
+objective: 对 t1 的实现做对抗式审查：验证四节新增内容真实存在且文本/JSON 同源、JSON 键只追加且确定性成立、口径单一出处未被破坏、新牙真的有牙且无恒绿空断言、source-rulings 非法输入路径逐条必红；输出结构化 findings 与 verdict。
+inScope: [".worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/verification/review-t1/"]
+outOfScope: [".worktrees/coverage-depth-v1/scripts/",".worktrees/coverage-depth-v1/scripts/data/",".worktrees/coverage-depth-v1/models.json",".worktrees/coverage-depth-v1/plans.json",".worktrees/coverage-depth-v1/api-plans.json",".worktrees/coverage-depth-v1/deals.json"]
+acceptance(8):
+  A1: 对抗式审查 report:coverage v3 与 source-rulings 判据层：逐条核对四节新增内容在文本与 JSON 双侧真的存在且同源，而不是只有标题
+  A2: JSON 契约：旧键逐字逐序不动位（用 git diff 与两次 --json 输出证明），新键只追加；两次 --json byte-identical
+  A3: 确定性反证：自己独立构造一次运行证明报告不读墙钟（例如在报告中搜索时间戳，确认只出现数据里的日期）；确认无网络、无随机
+  A4: 确认口径单一出处：Release Evidence Coverage 的 catalogStatus 逐条值来自发布产物 models.json、词表来自 lib/model-freshness.js，报告没有自己重算一套；Gap Closure 的七态来自 scripts/lib/coverage-targets.js 派生，报告没有手写状态
+  A5: 确认优先级/排序规则可解释且确定性：release queue 五条规则、gap queue A-D 分层都在报告里打印原文，且不含 LLM 主观分或伪精确分数
+  A6: 牙的有效性抽验：至少独立抽 3 条新牙，构造非法输入确认真的变红（不是恒绿），贴出命中信息；并检查是否存在「加了断言但从不可能失败」的空断言
+  A7: source-rulings 缺失与非法两种路径都被正确处置：缺失时报告计入自检问题而不是静默当通过；decision 非法枚举 / keep-degraded 缺 whyKept / headless-migrate 缺 headlessStability / retire 却仍在注册表 —— 逐条必须红
+  A8: 指出任何 scope creep、重复真相源、放宽的旧断言、被顶翻的写死常量（题面 §47）
+verify: ["node scripts/tools/coverage-report.js","node scripts/tools/coverage-report.js --json","node scripts/tools/coverage-targets-selftest.js"]
+assignee: verifier-auditor | attempts: (n/a)
+
+========== t8 | completed | work ==========
+objective: Workstream B-2：处理 models 维度剩下的 MISSING（ai360 / baichuan / baidu / iflytek 等）—— 有官方依据时新增 registry 身份并完成映射或处置声明，否则诚实地落 unverifiable / deferred；全程与 Workstream A 串行写 scripts/data/models.json。
+inScope: [".worktrees/coverage-depth-v1/scripts/data/models.json",".worktrees/coverage-depth-v1/scripts/data/model-registry-links.json",".worktrees/coverage-depth-v1/scripts/data/model-registry-gaps.json",".worktrees/coverage-depth-v1/scripts/data/coverage-targets.json",".worktrees/coverage-depth-v1/models.json",".worktrees/coverage-depth-v1/model-registry-links.json",".worktrees/coverage-depth-v1/research/coverage-depth-v1-gap-closure.md",".worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/gap-closure/"]
+outOfScope: [".worktrees/coverage-depth-v1/scripts/data/curated_api_plans.json",".worktrees/coverage-depth-v1/scripts/data/curated_plans.json",".worktrees/coverage-depth-v1/scripts/lib/",".worktrees/coverage-depth-v1/scripts/tools/",".worktrees/coverage-depth-v1/scripts/collectors/",".worktrees/coverage-depth-v1/.github/"]
+acceptance(7):
+  A1: 在 t2 完成后才动 scripts/data/models.json，且只做「新增 registry 身份」这一件事，不改 t2 已落盘的任何 releasedAt / releaseEvidence
+  A2: 新增身份必须逐条有官方依据：canonicalName 用开发者自己平台的官方写法、developer/owner 用 providers.json 的规范显示名或在 _developers_extra 逐条登记、officialUrl 指向开发者自己列出该模型的官方页、modelRole 有官方能力标记（判不出写 null）、确无证据就写 releasedAt: null + releaseEvidence: []
+  A3: 新身份必须被显式处置：或在 scripts/data/model-registry-links.json 里映射到 api-plans 的 modelKey / Coding 套餐（带官方出处），或在 scripts/data/model-registry-gaps.json 里声明不对应单一模型身份（带 reason 与证据）—— 不允许悬空
+  A4: ai360 / baichuan / baidu / iflytek 的 models 维度：能补的补成 COVERED；官方确实无法给出可核身份的，诚实地在 coverage-targets.json 的 rulings 里落 unverifiable 或 deferred（带复查条件），并把该维度的 currentTargets 写清楚
+  A5: registry 无理由膨胀为零：每个新增身份都要在研究工件里写清「为什么它是独立身份而不是别名/系列名」，禁止按版本号或「看起来像旗舰」猜
+  A6: Stable ID 零 churn：不改任何既有 slug / id；新 slug 不与既有 slug 或别名冲突
+  A7: 根 models.json 与 model-registry-links.json 由 npm run models:rebuild 派生（零手改）
+verify: ["node scripts/tools/models-selftest.js","node scripts/tools/check-model-registry-links.js","node scripts/tools/check-models-reproducible.js","node scripts/tools/coverage-report.js","node scripts/validate.js --strict"]
+assignee: gap-closure-curator | attempts: (n/a)
+
+========== t9 | completed | verification ==========
+objective: 独立验证整个 coverage-depth-v1 交付：用一条不依赖被测 coverage / freshness lib 的独立路径重算全部关键读数；对全部新增 releasedAt 做逐条忠实度稽核；真实执行 M1–M15 变异并如实记录盲区；对来源裁决做时间敏感反证；输出分类 findings。
+inScope: [".worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/verification/"]
+outOfScope: [".worktrees/coverage-depth-v1/scripts/",".worktrees/coverage-depth-v1/scripts/data/",".worktrees/coverage-depth-v1/models.json",".worktrees/coverage-depth-v1/plans.json",".worktrees/coverage-depth-v1/api-plans.json",".worktrees/coverage-depth-v1/deals.json",".worktrees/coverage-depth-v1/dist/"]
+acceptance(8):
+  A1: 独立重算脚本不 require 被测的 coverage / freshness lib（scripts/lib/coverage-targets.js、scripts/lib/model-freshness.js、scripts/tools/coverage-report.js），直接读 raw source 重算：releasedAt known/unknown、catalogStatus 分布、MISSING、PARTIAL、covered current targets、Registry 映射闭合、source health 普查；与 report:coverage 的读数逐项对照，任何差异都要解释而不是抹平
+  A2: Release Date 独立稽核：直接读 scripts/data/models.json，检查 releasedAt != null ⇒ releaseEvidence 必有 ⇒ sourceUrl 落在该 developer 的 officialDomains ⇒ quote 非空且非纯形态；并打印全部新增日期清单供逐条核验
+  A3: 100% 新增 releasedAt 做过人工式 source-faithfulness review（打开证据 URL、确认 quote 逐字、确认 identity、确认日期语义），记录里区分「已核」「无法复核」「不采信」
+  A4: Mutation M1–M15 全部真实执行（M1 删 evidence / M2 非法日期 / M3 换第三方域 / M4 quote 与日期无关 / M5 releasedAt=null 被派生 legacy / M6 firstSeen 混入 Freshness / M7 跨 modelRole 同组 / M8 删 MISSING target 的 production 记录 / M9 DEFERRED 误算 MISSING / M10 PARTIAL 误算 COVERED / M11 retired 来源仍注册 / M12 retire 删历史 Deal / M13 legacy 路由不生成 / M14 API Pricing 因 legacy 丢行 / M15 本地 Analytics 发请求），逐条记「预期红 / 实际红 / byte-exact restore」
+  A5: Mutation 在 TEMP 沙箱副本上做：每轮前后对共享工作区相关文件贴 sha256，证明共享工作区 0 变化；不许直接在共享工作区改文件做变异
+  A6: 如实写 Mutation 盲区：哪些变异没被抓住、为什么、属于自指盲区还是断言缺失（题面 §48，禁止写「Mutation 全覆盖」）
+  A7: 对源可靠性结论做时间敏感反证：核验来源裁决不是被一时网络影响（本地与 CI 读数分开、都带时间戳）
+  A8: findings 按 REPAIR_NOW / GUARDRAIL / VERIFY / DESIGN_ACCEPTED / DOC / NOT_REQUIRED 分类；每条给 id / severity / problem / file / line / requiredFix
+verify: ["node research/_raw/coverage-depth-v1/verification/independent-recompute.cjs","node research/_raw/coverage-depth-v1/verification/mutations.cjs","node scripts/tools/coverage-report.js","node scripts/validate.js --strict"]
+assignee: source-reliability-engineer | attempts: (n/a)
+
+========== t10 | in_progress | work ==========
+objective: 同轮完成 Self-Audit 与最终报告初稿：假设 releasedAt 可能写错、Coverage 状态可能算错、source 裁决可能被一时网络影响、report 可能与 lib 共用同一个 bug、测试可能恒绿 —— 逐条去证伪，产出 Requirement Traceability Matrix、Git Diff Review、Independent Recalculation、Release Evidence Audit、Mutation Results、Findings/Fixes/P0/P1/P2/P3，以及题面 §77 结构的最终报告初稿。
+inScope: [".worktrees/coverage-depth-v1/research/coverage-depth-v1-self-audit.md",".worktrees/coverage-depth-v1/research/coverage-depth-v1-report.md",".worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/verification/"]
+outOfScope: [".worktrees/coverage-depth-v1/scripts/",".worktrees/coverage-depth-v1/scripts/data/",".worktrees/coverage-depth-v1/models.json",".worktrees/coverage-depth-v1/plans.json",".worktrees/coverage-depth-v1/api-plans.json",".worktrees/coverage-depth-v1/deals.json",".worktrees/coverage-depth-v1/research/coverage-depth-v1-release-evidence.md",".worktrees/coverage-depth-v1/research/coverage-depth-v1-gap-closure.md",".worktrees/coverage-depth-v1/research/coverage-depth-v1-source-reliability.md"]
+acceptance(8):
+  A1: research/coverage-depth-v1-self-audit.md 至少含：Requirement Traceability Matrix（Requirement / Implementation / Source of Truth / Test / Independent Evidence / Status=PASS|FAIL|PARTIAL|N/A）、Git Diff Review、Independent Recalculation、Release Evidence Audit、Mutation Results、Findings、Fixes、P0、P1、Remaining P2/P3
+  A2: Git Diff Review 从基线 ff86368e6d12d1ef57b2f51aa2c957c01d2a9ed8 逐文件过（git diff ff86368...HEAD），专门找：scope creep / 手改派生产物 / 重复 truth source / 放宽旧断言 / 无证据 release date / Stable ID churn / 无理由 History 变化
+  A3: Requirement Traceability Matrix 逐条覆盖题面 §79 完成清单的每一项，不允许有空格或含糊项；无法满足的必须写 FAIL/PARTIAL 与原因
+  A4: research/coverage-depth-v1-report.md 按题面 §77 章节建好：Baseline / Release Evidence / Catalog Currentness / Coverage Gap Closure / Source Reliability / Data Added / Data Not Added / Integrity / Reproducibility / Gate / CI·Deploy / Online Smoke / Remaining Risks —— 其中 CI·Deploy 与 Online Smoke 两节先写「待 captain 部署后回填」占位，其余必须写实数
+  A5: Integrity 一节逐项给实测证据：Stable IDs（逐类 id 集合对比基线，零非预期 churn）、History（三份 history 无新增伪造事件）、Pricing（legacy 模型 API 计价行仍在）、Registry（映射闭合）、Sitemap（无非预期丢页）、Feed、Manifest、Analytics（本地请求 0）
+  A6: P0 = 0 且 P1 = 0 且 REPAIR_NOW = 0 才可判 pass；否则把未闭合项如实列出并判需要修复
+  A7: 数据口径纪律：题面 §80 的「禁止的假完成」逐条自查并在报告里给出反证
+  A8: 两份报告只写真实跑出来的读数，禁止写「应该通过」「线上正常」这类未执行结论
+verify: ["git diff --stat ff86368e6d12d1ef57b2f51aa2c957c01d2a9ed8...HEAD","node scripts/validate.js --strict","node scripts/tools/coverage-report.js"]
+assignee: verifier-auditor | attempts: (n/a)
+
+========== t11 | completed | repair ==========
+objective: 修复 scripts/tools/models-selftest.js 中两个【v2】负例夹具对真实数据的隐式依赖（t2 数据变化暴露的自指盲区），并补一条解耦牙确保它不会被未来数据变化再次静默解除武装。
+inScope: [".worktrees/coverage-depth-v1/scripts/tools/models-selftest.js",".worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/repair-models-selftest/"]
+outOfScope: [".worktrees/coverage-depth-v1/scripts/data/",".worktrees/coverage-depth-v1/scripts/lib/",".worktrees/coverage-depth-v1/scripts/tools/coverage-report.js",".worktrees/coverage-depth-v1/scripts/tools/coverage-targets-selftest.js",".worktrees/coverage-depth-v1/.github/",".worktrees/coverage-depth-v1/package.json",".worktrees/coverage-depth-v1/models.json"]
+acceptance(7):
+  A1: 两个【v2】负例夹具显式写死另一半字段：dateNoEvidence 克隆体显式 releaseEvidence = []；evidenceNoDate 克隆体显式 releasedAt = null。夹具不再依赖「真实数据里那一半恰好为空」
+  A2: 贴出改前/改后读数：改前 node scripts/tools/models-selftest.js 的 5 项失败原文（逐条点名），改后全绿（0 项失败）
+  A3: 新增一条**解耦牙**：在夹具里构造一份「glm-5.3 的 releasedAt 与 releaseEvidence 两半都合法有值」的表，断言两个负例在该表上仍然各自报红 —— 证明夹具不会被未来真实数据的变化静默解除武装。必须是对夹具逻辑的断言，不是对当前数据的断言
+  A4: 不许放宽任何既有断言：断言条数只增不减（贴改前/改后条数），既有检查名一个不改
+  A5: 修复后复跑 node scripts/validate.js --strict 必须 exit 0；若 api-plans 声明对账那 3 项仍红，必须逐条归因到具体写域并作为阻塞项上报 captain，**不许改本任务范围外的任何文件**
+  A6: 改完对 scripts/tools/models-selftest.js 贴出 git diff --stat 与新增/删除行数，证明改动局限于本任务范围
+  A7: 边界自律：不改 scripts/data/**、不改 scripts/lib/**、不改其它 selftest、不改 .github/**、不改 package.json
+verify: ["node scripts/tools/models-selftest.js","node scripts/tools/model-freshness-selftest.js","node scripts/tools/check-models-reproducible.js","node scripts/validate.js --strict","node scripts/tools/coverage-report.js"]
+assignee: release-evidence-curator | attempts: (n/a)
+
+========== t12 | completed | repair ==========
+objective: 修复两类「测试断言编码了当前数据快照」的缺陷（题面 §47 明令禁止的形态）：① coverage-targets-selftest.js 的 t25 clause2 跨语义等值断言（`declaredApiEntries`=展开后计价条目数 vs `declaredApiEntryCount`=声明行数，只在没有通配声明时巧合成立）；② models-selftest.js 的三处写死基线计数（`summary.total === 44`、`apiDecl.length === 12`、`apiCoverage.declaredApiEntries.length === 12`）—— 它们要求数据永远停在某一轮之前，任何合法的数据增长都会顶红。两类都改成**结构不变量**，并补齐反证证明新断言不比旧的弱。
+inScope: [".worktrees/coverage-depth-v1/scripts/tools/coverage-targets-selftest.js",".worktrees/coverage-depth-v1/scripts/tools/models-selftest.js",".worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/repair-t25-clause2/",".worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/repair-stale-baselines/"]
+outOfScope: [".worktrees/coverage-depth-v1/scripts/data/",".worktrees/coverage-depth-v1/scripts/lib/",".worktrees/coverage-depth-v1/scripts/tools/coverage-report.js",".worktrees/coverage-depth-v1/.github/",".worktrees/coverage-depth-v1/package.json"]
+acceptance(8):
+  A1: 把 coverage-targets-selftest.js 里 `reg.declaredApiEntries === gap.declaredApiEntryCount` 这条跨语义等值断言换成**一般成立**的关系式，且必须比原来更强而不是更弱：至少覆盖 ① `registry.declaredApiEntryRows.length === gaps.declaredApiEntryCount`（同一批声明行的两种视图必须相等）② `registry.declaredApiEntries >= registry.declaredApiEntryRows.length`（`variant:null` 通配会展开成多条，展开只会多不会少）③ 方程 `A + B + C = items` 仍然成立
+  A2: coverage-targets-selftest.js 新增一条**通配声明**定向断言：构造含 `variant: null` 声明的夹具，断言 ② 是严格大于（不是等于），且每条声明行的逐条留档都能按 `(apiPlanId, modelKey, variant)` 逐字对回 api-plans 记录
+  A3: 反证完整性：**证明新断言抓得住旧断言抓得住的一切**。对旧断言能抓的每一种变异（声明行数与展开数不一致、声明指向不存在的 apiPlanId / modelKey、声明数组乱序、声明计数与数组长度脱钩）逐条给出「变异 ⇒ 必红」现场输出；并给出旧断言抓不住而新断言抓住的那一例
+  A4: models-selftest.js 里 `summary.total === 44 && summary.byStatus.active === 44` 改为**结构不变量**：total 必须等于从 `scripts/data/models.json` 现读的身份数（文件自己是分母）、`byStatus.active + byStatus.retired + byStatus.unknown === summary.total`、`byStatus.retired === 0`、且没有任何身份未被计入。**不许**再出现 44 这类字面量
+  A5: models-selftest.js 里两处 API 侧声明计数断言（`apiDecl.length === 12` 与 `apiCoverage.declaredApiEntries.length === 12`）改为**与 `scripts/data/model-registry-gaps.json` 的实际行数/展开数对账**（文件自己是分母），并补一条**唯一性牙**：同一 `(apiPlanId, modelKey, variant)` 不许重复出现（本轮实际出现过 `23643dfd94f8/ernie-5.1` 重复 2 次），且每条声明都必须能对回真实 api-plans 记录
+  A6: **「改成结构不变量」不等于放宽**：必须逐条论证新断言 ≥ 旧断言的保护强度，并给出「旧断言会红、新断言仍红」的对照；不许删除任何既有检查，断言条数只增不减，既有检查名一个不改（贴改前/改后条数）
+  A7: 不许为了让自测变绿去改 `scripts/data/**` 下任何数据：本轮那三处失败是**断言编码了数据快照**（题面 §47 禁止的形态），要改的是断言不是数据。若发现数据侧真有缺陷（例如声明重复），**只归因并上报 captain**，不要在本次改动里顺手修数据
+  A8: 复跑读数全绿并贴出：`coverage-targets-selftest.js`（项数改前/改后）· `models-selftest.js`（项数改前/改后，含那 3 项从 ✗ 到 ✓）· `coverage-report.js` 自检 0 处 · `coverage-report.js --json` 两次 byte-identical 的 sha256 · `validate.js --strict` · `check-models-reproducible.js` · `check-model-registry-links.js`
+verify: ["node scripts/tools/coverage-targets-selftest.js","node scripts/tools/models-selftest.js","node scripts/tools/coverage-report.js","node scripts/tools/coverage-report.js --json","node scripts/validate.js --strict","node scripts/tools/check-models-reproducible.js","node scripts/tools/check-model-registry-links.js"]
+assignee: report-engine-engineer | attempts: (n/a)
+
+========== t13 | in_progress | repair ==========
+objective: 收口 scripts/tools/models-page-selftest.js 的 4 条失败（预集成 Full Gate 里唯一红灯的一步）：1 条是断言代码与自己的注释口径不一致（用源层键序冒充发布数据集次序列），3 条是写死的基线快照（9 / 44 / 13 组·9 slug）。全部改成以现读文件为分母的结构不变量，并补齐可证伪性证明。
+inScope: [".worktrees/coverage-depth-v1/scripts/tools/models-page-selftest.js",".worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/repair-models-page-selftest/"]
+outOfScope: [".worktrees/coverage-depth-v1/scripts/data/",".worktrees/coverage-depth-v1/scripts/lib/",".worktrees/coverage-depth-v1/scripts/tools/build-local.js",".worktrees/coverage-depth-v1/scripts/tools/models-selftest.js",".worktrees/coverage-depth-v1/scripts/tools/coverage-targets-selftest.js",".worktrees/coverage-depth-v1/.github/",".worktrees/coverage-depth-v1/package.json"]
+acceptance(10):
+  A1: 四条失败全部收口（`node scripts/tools/models-page-selftest.js --allow-missing-dist` 与 `--dir=dist` 两种跑法都 0 失败），并贴出改前 4 条失败原文 → 改后全绿读数
+  A2: 第 1 条（索引次序）必须按「发布数据集」口径修，不许降级成集合相等：`scripts/tools/models-page-selftest.js:246` 的 `expectedSlugs = models.map(model => model.slug)` 用的是源层 `modelsOf(modelsTable)` 的键序，而它上面第 244 行的注释写的是「发布数据集的 slug 序列」—— 代码与注释不一致。实测根因：源层 `scripts/data/models.json` 的顶层键序不是排序的（t8 把 7 个新身份追加在末尾），而发布产物 `models.json` 是排序的，两者在 HEAD 恰好一致、本轮才分叉。请把期望值改成发布数据集的次序（`publishedModels.models.map(m => m.slug)`），保留「集合与次序逐字相等」的强度（换位仍必须红）。禁止改成先 sort 再比较的集合比较
+  A3: 为第 1 条补一条方向牙：把渲染输入的行序对调两行 ⇒ 必红（证明次序维度真的有牙，不是集合比较冒充的）
+  A4: 第 2 条失败（独立重算说 10 个 registry 模型存在一条映射覆盖多个真实 variant，期望值写死为 9）里的 `9` 是写死的基线快照：改成从 `scripts/data/model-registry-links.json` 现读现算（文件自己是分母），并保留「独立重算 == 文件现算」这条对账的强度
+  A5: 第 3 条失败（§17 独立 join 的检查名里写着 `44 个模型`）里的 `44` 是写死的：改成从发布数据集现读模型数（文件自己是分母），四项 `missing / extra / duplicate / multiOwner` 必须仍各自断言为 0，不许只留一条合计
+  A6: 第 4 条失败（§17 独立 join 的检查名里写着 `13 组 / 10 个 slug`）里的写死值改成现算现比（现读关系层 → 分组 → 与页面口径对账），保留「两个口径必须相等」的强度
+  A7: 改成结构不变量不等于放宽：逐条论证新断言 ≥ 旧断言的保护强度，并给出「旧断言会红、新断言仍红」的对照；断言条数只增不减，既有检查名一个不改（除本条要求替换的两个含字面量的名字，需在交付里逐条列 old → new 并说明理由）
+  A8: 附可证伪性对照表：本次新增或改写的每一条断言逐条给出「形态 / 空集或恒真或同源风险 / 扰动输入 / 现场输出」，并给出至少 4 条「变异 ⇒ 必红」现场输出（含第 1 条的换位牙）
+  A9: 不许改 `scripts/data/**`、`scripts/lib/**`、`scripts/tools/build-local.js`：本轮这四条是测试编码了快照 / 代码与注释不一致，不是数据或页面构建的缺陷。若你判断某条其实是真实缺陷（例如页面渲染次序真的错了），停下来报 captain，不要自行改页面构建
+  A10: 复跑读数全绿并贴出：models-page-selftest（两种跑法）· coverage-report（自检 0 处）· validate --strict · `node scripts/tools/build-local.js --out=dist.qc-mpsel` 后以 `--dir=dist.qc-mpsel` 再跑一次
+verify: ["node scripts/tools/models-page-selftest.js --allow-missing-dist","node scripts/tools/models-page-selftest.js --dir=dist","node scripts/tools/coverage-report.js","node scripts/validate.js --strict"]
+assignee: report-engine-engineer | attempts: (n/a)

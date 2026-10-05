@@ -1,0 +1,211 @@
+{
+  "repo": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1",
+  "ranAt": "2026-10-05T05:12:56.043Z",
+  "results": [
+    {
+      "id": "models-page-allow-missing-dist",
+      "script": "scripts/tools/models-page-selftest.js",
+      "args": [
+        "--allow-missing-dist"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "  ✓ 【对照】真实页面（deepseek-flash）上把两格数值改成占位 → 必须点名 8a26562011f2|deepseek-ai.v4.1-flash|standard ⏎  ⏎ === v3.0 Model Registry 页面演练：120 项通过，0 项失败 ===",
+      "outBytes": 13666,
+      "errBytes": 0
+    },
+    {
+      "id": "models-page-dist",
+      "script": "scripts/tools/models-page-selftest.js",
+      "args": [
+        "--dir=dist"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "  ✓ 【对照】真实页面（deepseek-flash）上把两格数值改成占位 → 必须点名 8a26562011f2|deepseek-ai.v4.1-flash|standard ⏎  ⏎ === v3.0 Model Registry 页面演练：120 项通过，0 项失败 ===",
+      "outBytes": 13666,
+      "errBytes": 0
+    },
+    {
+      "id": "models-selftest",
+      "script": "scripts/tools/models-selftest.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "  ✓ 源码级机器牙·反证：TEMP 副本里摘掉一个入口的 validateGaps 调用 → 必红且点名该文件 ⏎  ⏎ ✅ === v3.0 Model Registry 演练：148 项通过，0 项失败 ===",
+      "outBytes": 18158,
+      "errBytes": 0
+    },
+    {
+      "id": "coverage-targets-selftest",
+      "script": "scripts/tools/coverage-targets-selftest.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "  ✓ 【反证牙·v3③】gap queue 的输入层非法（current target 指向不存在的 registrySlug）⇒ 报告自检非 0，并点名「不在 scripts/data/models.json」 ⏎  ⏎ === coverage-expansion-v1 覆盖意图层演练：201 项通过，0 项失败 ===",
+      "outBytes": 23069,
+      "errBytes": 0
+    },
+    {
+      "id": "model-freshness-selftest",
+      "script": "scripts/tools/model-freshness-selftest.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "=== 5) 纯函数纪律：不读墙上时钟、不改入参、输出可重建 === ⏎  ⏎ ✅ 新鲜度判据自测：100 项通过，0 项失败",
+      "outBytes": 483,
+      "errBytes": 0
+    },
+    {
+      "id": "check-models-reproducible",
+      "script": "scripts/tools/check-models-reproducible.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "✅ Model Registry 可重建性通过：models.json 与 model-registry-links.json 都与来源层逐字节一致 ⏎    51 个模型 · 92 条映射 · updatedAt=2026-10-05T00:00:00+08:00",
+      "outBytes": 184,
+      "errBytes": 0
+    },
+    {
+      "id": "check-model-registry-links",
+      "script": "scripts/tools/check-model-registry-links.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "     · stepfun / stepaudio-2.5-chat（套餐 ef931b98b927）→ non-text-resource ⏎      … 另有 22 条 ⏎    候选（归一后精确相等，**只供人工 review，绝不写生产映射**）：API 0 条 · 套餐 0 条",
+      "outBytes": 2329,
+      "errBytes": 0
+    },
+    {
+      "id": "validate-strict",
+      "script": "scripts/validate.js",
+      "args": [
+        "--strict"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "  - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名） ⏎  ⏎ ✅ 校验通过（strict 模式）",
+      "outBytes": 3379,
+      "errBytes": 0
+    },
+    {
+      "id": "coverage-report",
+      "script": "scripts/tools/coverage-report.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "报告自检问题：0 处 ⏎  ⏎ ✅ 覆盖报告自检通过（0 处问题）。",
+      "outBytes": 51319,
+      "errBytes": 0
+    },
+    {
+      "id": "history-selftest",
+      "script": "scripts/tools/history-selftest.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "  ✓ 真实文件在上限内 ⏎  ⏎ === v1.4 优惠历史演练：61 项通过，0 项失败 ===",
+      "outBytes": 3343,
+      "errBytes": 0
+    },
+    {
+      "id": "provenance-selftest",
+      "script": "scripts/tools/provenance-selftest.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "   现场读数：400 条 quote / 13 篇文件 · 0 命中（它只回答\"引文有没有自称\"，不回答\"引文是不是真的\"——见 H10 边界） ⏎  ⏎ ✅ provenance 自测：132 项通过，0 项失败",
+      "outBytes": 1386,
+      "errBytes": 0
+    },
+    {
+      "id": "analytics-selftest",
+      "script": "scripts/tools/analytics-selftest.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": " ⏎ ✅ 分析门禁 31 项，失败 0 项 ⏎    页面覆盖：186 个 HTML（trackable 186 · excluded 0）· bootstrap 186 个",
+      "outBytes": 3631,
+      "errBytes": 0
+    },
+    {
+      "id": "seo-selftest",
+      "script": "scripts/tools/seo-selftest.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "  ✓ scripts/lib/landing.js 里没有 外部依赖 ⏎  ⏎ === v1.7 SEO 门禁演练：63 项通过，0 项失败 ===",
+      "outBytes": 3477,
+      "errBytes": 0
+    },
+    {
+      "id": "feeds-selftest",
+      "script": "scripts/tools/feeds-selftest.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "  ✓ 【原意还在】页面验收仍然走「空态 ⇒ 必须有起算日」这条判据（判据函数仍然会否掉无起算日的空态行） ⏎  ⏎ === v1.6 订阅层演练：145 项通过，0 项失败 ===",
+      "outBytes": 12967,
+      "errBytes": 0
+    },
+    {
+      "id": "plan-history-selftest",
+      "script": "scripts/tools/plan-history-selftest.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "  ✓ 「最近变化」块按优先级取（价格类排在元信息之前，且取到的是高价值变化） ⏎  ⏎ === v2.3 套餐变化日志演练：132 项通过，0 项失败 ===",
+      "outBytes": 8853,
+      "errBytes": 0
+    },
+    {
+      "id": "api-plans-selftest",
+      "script": "scripts/tools/api-plans-selftest.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "  ✓ 历史诚实性断言在空日志上零问题（断言不是恒红） ⏎  ⏎ === v2.5 API / Token 计费演练：176 项通过，0 项失败 ===",
+      "outBytes": 15348,
+      "errBytes": 0
+    },
+    {
+      "id": "health-selftest",
+      "script": "scripts/tools/health-selftest.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "=== 6) 端到端接线：真跑一次采集（--dry-run，不写任何文件） === ⏎  ⏎ ✅ 数据源健康自测：72 项通过，0 项失败",
+      "outBytes": 383,
+      "errBytes": 0
+    },
+    {
+      "id": "archive-selftest",
+      "script": "scripts/tools/archive-selftest.js",
+      "args": [],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": null,
+      "tail": "  ✓ 交付日真实产物：0 条档案（三份日志 ended/restored 事件各 0 条 ⇒ 0 条是事实） ⏎  ⏎ === v3.0 历史档案演练：69 项通过，0 项失败 ===",
+      "outBytes": 6017,
+      "errBytes": 0
+    }
+  ],
+  "failed": 0
+}

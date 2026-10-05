@@ -1,8 +1,102 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-10-04T00:00:00+08:00",
-  "count": 44,
+  "updatedAt": "2026-10-05T00:00:00+08:00",
+  "count": 51,
   "models": [
+    {
+      "id": "abfdd38bb85e",
+      "slug": "360zhinao-pro",
+      "canonicalName": "360zhinao-pro",
+      "developer": "360智脑",
+      "owner": "360智脑",
+      "family": "360zhinao",
+      "aliases": [],
+      "officialUrl": "https://ai.360.com/open/zh/models",
+      "status": "active",
+      "modelRole": null,
+      "releasedAt": "2026-08-05",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "360zhinao/360zhinao-pro 在线对话 360智脑 发布时间 2026/8/5 模型系列 360智脑 … 上下文窗口 32,000 最大输出长度 8,192",
+          "sourceUrl": "https://ai.360.com/open/zh/models/360zhinao/360zhinao-pro",
+          "capturedAt": "2026-10-05"
+        }
+      ],
+      "freshnessGroup": null,
+      "firstSeen": "2026-10-05",
+      "lastSeen": "2026-10-05",
+      "catalogStatus": "current",
+      "catalogReason": "within-current-window",
+      "note": "官方模型页逐字写「发布时间 2026/8/5」（斜杠、未补零），releasedAt 规范化成 2026-08-05，引文保留官方原写法；官方全名带命名空间前缀 `360zhinao/`。modelRole 留 null：官方页只给系列 / 模态 / 定价，没有能力标记。"
+    },
+    {
+      "id": "229ebc1fcbfd",
+      "slug": "360zhinao-turbo-llm-geo",
+      "canonicalName": "360zhinao-turbo-llm-geo",
+      "developer": "360智脑",
+      "owner": "360智脑",
+      "family": "360zhinao",
+      "aliases": [],
+      "officialUrl": "https://ai.360.com/open/zh/models",
+      "status": "active",
+      "modelRole": null,
+      "releasedAt": "2026-08-24",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "360zhinao/360zhinao-turbo-llm-geo 在线对话 360智脑 发布时间 2026/8/24 模型系列 360智脑 … 业务内部专用模型",
+          "sourceUrl": "https://ai.360.com/open/zh/models/360zhinao/360zhinao-turbo-llm-geo",
+          "capturedAt": "2026-10-05"
+        }
+      ],
+      "freshnessGroup": null,
+      "firstSeen": "2026-10-05",
+      "lastSeen": "2026-10-05",
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
+      "note": "官方模型页逐字写「发布时间 2026/8/24」（斜杠、未补零），releasedAt 规范化成 2026-08-24；官方写「业务内部专用模型」。modelRole 留 null：官方页无可落进枚举的能力标记。"
+    },
+    {
+      "id": "2ffb17692d83",
+      "slug": "baichuan-m3",
+      "canonicalName": "Baichuan-M3",
+      "developer": "百川智能",
+      "owner": "百川智能",
+      "family": "Baichuan M",
+      "aliases": [],
+      "officialUrl": "https://platform.baichuan-ai.com/prices",
+      "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
+      "firstSeen": "2026-10-05",
+      "lastSeen": "2026-10-05",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
+      "note": "官方价目页逐字写「模型调用 Baichuan-M3」；官方页面无发布日（只有计费行）⇒ releasedAt 留 null / releaseEvidence 为空。modelRole=general 的依据是官方按「对话全流程节点产生的 Token 总数」计费；同页「医疗搜索」不落进 MODEL_ROLES 枚举，不据此改角色。"
+    },
+    {
+      "id": "a3af903afde6",
+      "slug": "baichuan-m3-plus",
+      "canonicalName": "Baichuan-M3-Plus",
+      "developer": "百川智能",
+      "owner": "百川智能",
+      "family": "Baichuan M",
+      "aliases": [],
+      "officialUrl": "https://platform.baichuan-ai.com/prices",
+      "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
+      "firstSeen": "2026-10-05",
+      "lastSeen": "2026-10-05",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
+      "note": "官方价目页逐字写「模型调用 Baichuan-M3-Plus」（上下文 32k）；官方页面无发布日 ⇒ releasedAt 留 null。modelRole=general 的依据同 Baichuan-M3（官方按对话全流程计费）。"
+    },
     {
       "id": "28c1baf2cc3e",
       "slug": "claude-fable-5.1",
@@ -14,14 +108,21 @@
       "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-09-01",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "Introducing Claude Fable 5.1 and Claude Mythos 5.1 / Announcements Sep 1, 2026 / Our most advanced models for coding and knowledge work. Their research capabilities also offer an early glimpse of how AI models will contribute to scientific progress.",
+          "sourceUrl": "https://www.anthropic.com/news",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "within-current-window",
+      "note": "releasedAt 取 Newsroom 上该公告的官方日期（公告详情页 /claude-fable-and-mythos-5-1 正文不印日期，日期只印在 Newsroom 条目上）。"
     },
     {
       "id": "9e4edaea528f",
@@ -34,13 +135,20 @@
       "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
       "status": "active",
       "modelRole": "fast",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2025-10-15",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "Introducing Claude Haiku 4.5 / Oct 15, 2025 / Claude Haiku 4.5, our latest small model, is available today to all users.",
+          "sourceUrl": "https://www.anthropic.com/news/claude-haiku-4-5",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
       "note": null
     },
     {
@@ -54,14 +162,21 @@
       "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-09-22",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "Introducing Claude Opus 5.5 / Announcements Sep 22, 2026 / Opus 5.5 performs at the level of Claude Fable 5.1 on most work and costs 40% less to run than Opus 5.",
+          "sourceUrl": "https://www.anthropic.com/news",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "within-current-window",
+      "note": "releasedAt 取 Newsroom 上该公告的官方日期（公告详情页正文不印日期）。"
     },
     {
       "id": "6bd2c86ef81c",
@@ -74,14 +189,21 @@
       "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-09-28",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "Introducing Claude Sonnet 5.5 / Announcements Sep 28, 2026 / A clear upgrade over Sonnet 5 that runs 30% faster and costs up to 30% less for most work.",
+          "sourceUrl": "https://www.anthropic.com/news",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
+      "note": "releasedAt 取 Newsroom 上该公告的官方日期（公告详情页正文不印日期）。"
     },
     {
       "id": "899d7c20d38d",
@@ -254,6 +376,46 @@
       "note": null
     },
     {
+      "id": "d20c764cbe8a",
+      "slug": "ernie-4.5-turbo-128k",
+      "canonicalName": "ERNIE-4.5-Turbo-128K",
+      "developer": "百度智能云",
+      "owner": "百度智能云",
+      "family": "ERNIE",
+      "aliases": [],
+      "officialUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
+      "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
+      "firstSeen": "2026-10-05",
+      "lastSeen": "2026-10-05",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
+      "note": "官方「价格」页把该模型列在「文本生成」节下，版本名称逐字为「ERNIE-4.5-Turbo-128K」；页面只有更新时间（2026-07-09），不是发布日 ⇒ releasedAt 留 null。modelRole=general 取自官方分节「文本生成」。"
+    },
+    {
+      "id": "a395f53ed71c",
+      "slug": "ernie-5.1",
+      "canonicalName": "ERNIE-5.1",
+      "developer": "百度智能云",
+      "owner": "百度智能云",
+      "family": "ERNIE",
+      "aliases": [],
+      "officialUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
+      "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
+      "firstSeen": "2026-10-05",
+      "lastSeen": "2026-10-05",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
+      "note": "官方「价格」页把该模型列在「文本生成」节下，模型名称/版本名称逐字为「ERNIE 5.1 / ERNIE-5.1」（另有按输入长度分的两档，见 api-plans 的 variant）；页面只有更新时间，不是发布日 ⇒ releasedAt 留 null。"
+    },
+    {
       "id": "7d51116be870",
       "slug": "gemini-3.5-flash",
       "canonicalName": "Gemini 3.5 Flash",
@@ -264,14 +426,21 @@
       "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-05-19",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "May 19, 2026 / Released gemini-3.5-flash, the generally available (GA) version of Gemini 3.5 Flash, our most intelligent model for sustained frontier performance on agentic and coding tasks. This is now the model behind gemini-flash-latest.",
+          "sourceUrl": "https://ai.google.dev/gemini-api/docs/changelog",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "within-current-window",
+      "note": "releasedAt 取官方 changelog 的 GA（正式公开可用）日；官方原文明写「the generally available (GA) version」，若 3.5 Flash 另有更早 preview 期，preview 日不作为发布日期。"
     },
     {
       "id": "7c2253d11282",
@@ -284,14 +453,21 @@
       "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-07-21",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "July 21, 2026 / Gemini 3.6 Flash and Gemini 3.5 Flash-Lite generally available (GA): Released stable, production-ready versions of our latest 3.x Flash models: Gemini 3.6 Flash (gemini-3.6-flash): Features improved token efficiency and code/agentic planning capabilities at a lower price point than 3.5 Flash, resolving developer feedback around output verbosity.",
+          "sourceUrl": "https://ai.google.dev/gemini-api/docs/changelog",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "within-current-window",
+      "note": "releasedAt 取官方 changelog 的 GA（正式公开可用）日；preview 期（若存在）不作为发布日期。"
     },
     {
       "id": "5fbeef06793d",
@@ -304,14 +480,21 @@
       "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-08-13",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "August 13, 2026 / Gemini 3.7 Flash generally available (GA): Released our most intelligent workhorse model yet for coding and agents: Gemini 3.7 Flash (gemini-3.7-flash): Substantial improvements across software engineering, web development, and agentic workflows, available at an introductory price through December 31, 2026.",
+          "sourceUrl": "https://ai.google.dev/gemini-api/docs/changelog",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "within-current-window",
+      "note": "releasedAt 取官方 changelog 的 GA（正式公开可用）日；preview 期（若存在）不作为发布日期。"
     },
     {
       "id": "7210f54e3abd",
@@ -324,14 +507,21 @@
       "officialUrl": "https://ai.google.dev/gemini-api/docs/pricing",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-09-02",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "September 2, 2026 / Gemini 3.8 Flash generally available (GA): Released gemini-3.8-flash, our most intelligent Flash model, engineered for long-horizon software engineering, autonomous agents, and complex enterprise workflows.",
+          "sourceUrl": "https://ai.google.dev/gemini-api/docs/changelog",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
+      "note": "releasedAt 取官方 changelog 的 GA（正式公开可用）日；preview 期（若存在）不作为发布日期。"
     },
     {
       "id": "2f7de55bd399",
@@ -344,13 +534,20 @@
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
       "modelRole": "vision",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2025-08-11",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "2025-08-11 / GLM-4.5V 视觉推理模型上线 / 100B 级别开源视觉推理模型 SOTA，比 GLM-4.1V-Thinking “更大更强”",
+          "sourceUrl": "https://docs.bigmodel.cn/cn/update/new-releases",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogStatus": "aging",
+      "catalogReason": "newer-comparable-exists",
       "note": null
     },
     {
@@ -364,13 +561,20 @@
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
       "modelRole": "vision",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2025-12-08",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "2025-12-08 / GLM-4.6V 视觉推理模型上线 / 20+ 主流多模态评测基准全面验证，均取得 SOTA 成绩",
+          "sourceUrl": "https://docs.bigmodel.cn/cn/update/new-releases",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogStatus": "current",
+      "catalogReason": "within-current-window",
       "note": null
     },
     {
@@ -390,7 +594,7 @@
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
       "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogReason": "release-date-missing",
       "note": null
     },
     {
@@ -410,7 +614,7 @@
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
       "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogReason": "release-date-missing",
       "note": null
     },
     {
@@ -424,13 +628,20 @@
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
       "modelRole": "fast",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-01-19",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "2026-01-19 / GLM-4.7-Flash 免费模型上线 / 轻量参数规模下实现了高效的 Coding 能力，任务理解与代码生成能力处于同类模型的较高水平",
+          "sourceUrl": "https://docs.bigmodel.cn/cn/update/new-releases",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogStatus": "aging",
+      "catalogReason": "newer-comparable-exists",
       "note": null
     },
     {
@@ -446,14 +657,21 @@
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-08-19",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "2026-8-19 / GLM-5.3 新一代旗舰模型上线 / 更强的编程能力：GLM-5.3 的编程能力大幅提升，在智谱内部 Z.ai Code Bench 上较 GLM-5.2 提升了 50%，在包括 Terminal Bench 3.0 等公开基准测试中达到开源模型 SOTA 水平",
+          "sourceUrl": "https://docs.bigmodel.cn/cn/update/new-releases",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-04",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
+      "note": "官方发布记录原文写作 `2026-8-19`（月/日未补零）；releasedAt 按同一日期规范化为 2026-08-19，逐字引文保留官方原写法。"
     },
     {
       "id": "8b5b023d64ed",
@@ -466,13 +684,20 @@
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
       "modelRole": "fast",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-08-26",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "2026-08-26 / GLM-5.3-Flash 原生多模态模型上线 / 原生融入视觉能力，使模型能够主动观察界面、渲染与交互反馈并持续迭代改进，实现代码、浏览器与图形界面的协同闭环。",
+          "sourceUrl": "https://docs.bigmodel.cn/cn/update/new-releases",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-04",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
       "note": null
     },
     {
@@ -486,13 +711,20 @@
       "officialUrl": "https://open.bigmodel.cn/pricing",
       "status": "active",
       "modelRole": "vision",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-04-02",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "2026-04-02 / GLM-5V-Turbo 多模态 Coding 基座模型上线 / 兼顾视觉理解与 Coding 能力，在更小参数量下实现更优的性能表现，多模态任务处理更高效",
+          "sourceUrl": "https://docs.bigmodel.cn/cn/update/new-releases",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
       "note": null
     },
     {
@@ -506,14 +738,21 @@
       "officialUrl": "https://platform.openai.com/docs/pricing",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-09-03",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "\"slug\":\"index/gpt-6-astra\",\"publicationDateText\":\"September 3, 2026\",\"pageType\":\"Article\",\"pageTitle\":\"GPT-6 Astra: A new generation of intelligence\"",
+          "sourceUrl": "https://openai.com/index/gpt-6-astra/",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "within-current-window",
+      "note": "OpenAI 文章页正文不印日期；releasedAt 取该官方页自带的发布元数据 publicationDateText（同一片段里带 pageType=Article 与页面标题，身份可核）。"
     },
     {
       "id": "3cd750512f02",
@@ -526,14 +765,21 @@
       "officialUrl": "https://platform.openai.com/docs/pricing",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-09-22",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "Update on September 22, 2026: We are expanding our GPT‑6 family with GPT‑6 Sol and GPT‑6 Luna.",
+          "sourceUrl": "https://openai.com/index/gpt-6-astra/",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "within-current-window",
+      "note": "releasedAt 取 OpenAI 官方 Astra 页上的带日期更新行（明写 2026-09-22 扩充 GPT‑6 家族、点出 GPT‑6 Luna）；该模型自己的公告页在本次抓取时被 Cloudflare 403 拦住，故以官方 Astra 页的这条日期行为证。"
     },
     {
       "id": "10b13c75807c",
@@ -546,14 +792,21 @@
       "officialUrl": "https://platform.openai.com/docs/pricing",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-09-29",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "\"slug\":\"index/introducing-gpt-6-1-sol\",\"publicationDateText\":\"September 29, 2026\",\"pageType\":\"Article\",\"pageTitle\":\"Introducing GPT-6.1 Sol\"",
+          "sourceUrl": "https://openai.com/index/introducing-gpt-6-1-sol/",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
+      "note": "releasedAt 取该官方页自带的发布元数据 publicationDateText（正文不印日期）。"
     },
     {
       "id": "5345ec52eb04",
@@ -572,7 +825,7 @@
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
       "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogReason": "release-date-missing",
       "note": null
     },
     {
@@ -586,14 +839,21 @@
       "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2025-06-25",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "模型类型 / 模型名称（API 调用名） / 版本更新时间 / 能力和特征 / 输入输出 / 相关文档 / 通用文生文 / hunyuan-a13b / 2025-06-25 / 1. 适用场景：绝大部分场景，同时兼顾效果及推理性能。",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/104753",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
+      "note": "官方模型表该列字段名是「版本更新时间」；releasedAt 取该模型版本的官方更新时间（该 identity 在官方表里只有这一个版本行）。"
     },
     {
       "id": "1f641f4265e9",
@@ -626,13 +886,20 @@
       "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
       "status": "active",
       "modelRole": "other",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2025-09-24",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "角色扮演 / hunyuan-role-latest / 2025-09-24 / 1. 适用场景：AI 数字分身、AI 角色扮演、AI 情感陪聊等",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/104753",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
       "note": null
     },
     {
@@ -646,13 +913,20 @@
       "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
       "status": "active",
       "modelRole": "translation",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2025-10-14",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "翻译 / hunyuan-translation / 2025-10-14 / 支持语种齐全，33种语言互译和5种民族语言互译；",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/104753",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
       "note": null
     },
     {
@@ -666,13 +940,20 @@
       "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
       "status": "active",
       "modelRole": "translation",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2025-06-06",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "hunyuan-translation-lite / 2025-06-06 / 混元翻译专项模型，基于混元2B-Dense 模型进行翻译能力专项优化，通过迭代高质量多语言 SFT 数据，强化多语种翻译能力。",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/104753",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogStatus": "current",
+      "catalogReason": "within-current-window",
       "note": null
     },
     {
@@ -688,14 +969,21 @@
       "officialUrl": "https://siliconflow.cn/pricing",
       "status": "active",
       "modelRole": "coding",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-06-13",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "\"description\":\"Kimi K2.7 Code 是一款聚焦编程、具备 agent 能力的模型，长程编程能力更强，agent 能力进一步提升，思考 token 用量较 K2.6 降低 30%。\",\"datePublished\":\"2026-06-13T09:47:36.717Z\"",
+          "sourceUrl": "https://www.kimi.com/resources/kimi-k2-7-code",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
-      "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "lastSeen": "2026-10-05",
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
+      "note": "releasedAt 取该官方页自带的 datePublished（页面可见文案只写「更新于：2026-09-14」，那是内容修订日，不作发布日期）。"
     },
     {
       "id": "b24a97c1562b",
@@ -708,14 +996,21 @@
       "officialUrl": "https://help.aliyun.com/zh/model-studio/model-pricing",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-07-17",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "Kimi K3：智能的新前沿 / 更新于：2026-07-17 / 今天，我们正式推出 Kimi K3，我们迄今能力最强的模型。",
+          "sourceUrl": "https://www.kimi.com/news/kimi-k3",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
-      "lastSeen": "2026-10-04",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "lastSeen": "2026-10-05",
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
+      "note": "官方新闻页的「更新于」与正文「今天，我们正式推出 Kimi K3」同为 2026-07-17（页面同屏并列）。"
     },
     {
       "id": "4f59533f03f5",
@@ -734,7 +1029,7 @@
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
       "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogReason": "release-date-missing",
       "note": null
     },
     {
@@ -748,13 +1043,20 @@
       "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
       "status": "active",
       "modelRole": "general",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-03-18",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "2026 年 3 月 18 日 / MiniMax M2.7 / 全新语言模型 MiniMax-M2.7 系列模型 MiniMax-M2.7 / M2.7-highspeed 正式发布，开启模型的自我迭代",
+          "sourceUrl": "https://platform.minimax.cn/docs/release-notes/models",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
       "note": null
     },
     {
@@ -768,14 +1070,21 @@
       "officialUrl": "https://platform.minimax.cn/docs/guides/pricing-paygo",
       "status": "active",
       "modelRole": "fast",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2026-03-18",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "2026 年 3 月 18 日 / MiniMax M2.7 / 全新语言模型 MiniMax-M2.7 系列模型 MiniMax-M2.7 / M2.7-highspeed 正式发布，开启模型的自我迭代",
+          "sourceUrl": "https://platform.minimax.cn/docs/release-notes/models",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
+      "note": "与 minimax-m2.7 同一条官方发布记录（原文把 M2.7 与 M2.7-highspeed 并列在同一行里正式发布）。"
     },
     {
       "id": "62e85e8d9cce",
@@ -891,6 +1200,26 @@
       "note": null
     },
     {
+      "id": "8334bff1aa19",
+      "slug": "spark-x2.5",
+      "canonicalName": "Spark-X2.5",
+      "developer": "科大讯飞",
+      "owner": "科大讯飞",
+      "family": "Spark",
+      "aliases": [],
+      "officialUrl": "https://xinghuo.xfyun.cn/sparkapi",
+      "status": "active",
+      "modelRole": "general",
+      "releasedAt": null,
+      "releaseEvidence": [],
+      "freshnessGroup": null,
+      "firstSeen": "2026-10-05",
+      "lastSeen": "2026-10-05",
+      "catalogStatus": "unknown",
+      "catalogReason": "group-has-no-dated-model",
+      "note": "官方产品页逐字写「星火大模型 Spark-X2.5 星火新一代通用旗舰模型」；页面无发布日 ⇒ releasedAt 留 null。modelRole=general 取自官方「通用旗舰模型」的能力表述。"
+    },
+    {
       "id": "08a33ff6273a",
       "slug": "step-3.5-flash",
       "canonicalName": "Step-3.5-Flash",
@@ -907,7 +1236,7 @@
       "releaseEvidence": [],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
-      "lastSeen": "2026-10-04",
+      "lastSeen": "2026-10-05",
       "catalogStatus": "unknown",
       "catalogReason": "group-has-no-dated-model",
       "note": null
@@ -923,14 +1252,21 @@
       "officialUrl": "https://cloud.tencent.com/document/product/1729/97731",
       "status": "active",
       "modelRole": "vision",
-      "releasedAt": null,
-      "releaseEvidence": [],
+      "releasedAt": "2025-12-17",
+      "releaseEvidence": [
+        {
+          "field": "releasedAt",
+          "quote": "混元图生文 / Tencent HY Vision 1.5 Instruct（hunyuan-vision-1.5-instruct） / 2025-12-17 / 基于文本 TurboS",
+          "sourceUrl": "https://cloud.tencent.com/document/product/1729/104753",
+          "capturedAt": "2026-10-05"
+        }
+      ],
       "freshnessGroup": null,
       "firstSeen": "2026-10-01",
       "lastSeen": "2026-10-01",
-      "catalogStatus": "unknown",
-      "catalogReason": "group-has-no-dated-model",
-      "note": null
+      "catalogStatus": "current",
+      "catalogReason": "group-newest-within-current-window",
+      "note": "官方表里 identity 的 API 调用名为 hunyuan-vision-1.5-instruct、显示名为 Tencent HY Vision 1.5 Instruct，与本条 canonicalName 逐字一致。"
     }
   ]
 }

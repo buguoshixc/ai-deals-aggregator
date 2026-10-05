@@ -1,0 +1,203 @@
+{
+  "scannedFiles": 165,
+  "hits": [
+    {
+      "file": "scripts\\tools\\coverage-targets-selftest.js",
+      "line": 136,
+      "receiver": "realDerived.rows",
+      "filterArg": "row => row.state === ct.STATES.COVERED",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "realDerived.rows.filter(row => row.state === ct.STATES.COVERED).every(row => row.present > 0 || row.resolved > 0));"
+    },
+    {
+      "file": "scripts\\tools\\coverage-targets-selftest.js",
+      "line": 138,
+      "receiver": "realDerived.rows",
+      "filterArg": "row => row.state === ct.STATES.MISSING",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "realDerived.rows.filter(row => row.state === ct.STATES.MISSING)"
+    },
+    {
+      "file": "scripts\\tools\\coverage-targets-selftest.js",
+      "line": 276,
+      "receiver": "items",
+      "filterArg": "item => !item.resolved",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "cell('alpha', 'coding').items.filter(item => !item.resolved)"
+    },
+    {
+      "file": "scripts\\tools\\coverage-targets-selftest.js",
+      "line": 646,
+      "receiver": "gapQueue",
+      "filterArg": "row => row.state === 'MISSING'",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "* `gapQueue.filter(row => row.state === 'MISSING').every(row => row.present === 0)`。"
+    },
+    {
+      "file": "scripts\\tools\\coverage-targets-selftest.js",
+      "line": 1534,
+      "receiver": "gapQueue",
+      "filterArg": "MISSING",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "// t7-F1 修复：原来这一条是 `gapQueue.filter(MISSING).every(present === 0)` —— 本轮 MISSING 已收口到 0，"
+    },
+    {
+      "file": "scripts\\tools\\data-docs-selftest.js",
+      "line": 223,
+      "receiver": "manifest.datasets",
+      "filterArg": "d => d.category === 'history'",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "&& manifest.datasets.filter(d => d.category === 'history').every(d => docs.timeShapeOf(d.updatedAt) === 'date'));"
+    },
+    {
+      "file": "scripts\\tools\\feeds-selftest.js",
+      "line": 149,
+      "receiver": "specs",
+      "filterArg": "spec => spec.kind === 'collection' && spec.id !== 'all'",
+      "terminal": "every",
+      "guardNearby": true,
+      "code": "check('分类 Feed 的标题都带具体分类', specs.filter(spec => spec.kind === 'collection' && spec.id !== 'all')"
+    },
+    {
+      "file": "scripts\\tools\\feeds-selftest.js",
+      "line": 384,
+      "receiver": "built.feeds",
+      "filterArg": "feed => feed.spec.vendor",
+      "terminal": "every",
+      "guardNearby": true,
+      "code": "check('厂商 Feed 的路径用 slug 而不是显示名', built.feeds.filter(feed => feed.spec.vendor)"
+    },
+    {
+      "file": "scripts\\tools\\model-freshness-selftest.js",
+      "line": 333,
+      "receiver": "invariants.entries",
+      "filterArg": "entry => entry.catalogStatus === 'unknown'",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "check('unknown 的原因码永远不在 superseded 表里', invariants.entries.filter(entry => entry.catalogStatus === 'unknown').every(entry => !fresh.SUPERSEDED_REASONS"
+    },
+    {
+      "file": "scripts\\tools\\model-freshness-selftest.js",
+      "line": 334,
+      "receiver": "invariants.entries",
+      "filterArg": "entry => entry.catalogStatus === 'unknown'",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "check('unknown 的原因码必须在 UNKNOWN_REASONS 里', invariants.entries.filter(entry => entry.catalogStatus === 'unknown').every(entry => fresh.UNKNOWN_REASONS."
+    },
+    {
+      "file": "scripts\\tools\\model-freshness-selftest.js",
+      "line": 338,
+      "receiver": "invariants.entries",
+      "filterArg": "entry => entry.comparableGroupKey === retiredGroup.key",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "&& invariants.entries.filter(entry => entry.comparableGroupKey === retiredGroup.key).every(entry => entry.catalogStatus === 'historical'));"
+    },
+    {
+      "file": "scripts\\tools\\plan-history-selftest.js",
+      "line": 430,
+      "receiver": "forced.store.events",
+      "filterArg": "e => e.type === 'ended'",
+      "terminal": "every",
+      "guardNearby": true,
+      "code": "forced.store.events.filter(e => e.type === 'ended').every(e => e.reason === 'withdrawn'),"
+    },
+    {
+      "file": "scripts\\tools\\plans-selftest.js",
+      "line": 1027,
+      "receiver": "store.plans",
+      "filterArg": "plan => plan.quota.type !== 'tokens'",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "store.plans.filter(plan => plan.quota.type !== 'tokens')"
+    },
+    {
+      "file": "scripts\\tools\\plans-selftest.js",
+      "line": 1030,
+      "receiver": "store.plans",
+      "filterArg": "plan => plan.derivedMetrics.nominalUnitPrice !== null",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "store.plans.filter(plan => plan.derivedMetrics.nominalUnitPrice !== null)"
+    },
+    {
+      "file": "scripts\\tools\\plans-selftest.js",
+      "line": 1292,
+      "receiver": "payload.rows",
+      "filterArg": "row => row.regular === null",
+      "terminal": "every",
+      "guardNearby": true,
+      "code": "payload.rows.filter(row => row.regular === null).every(row =>"
+    },
+    {
+      "file": "scripts\\tools\\vendor-page-selftest.js",
+      "line": 512,
+      "receiver": "vendorPages",
+      "filterArg": "page => page.count > 0",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "vendorPages.filter(page => page.count > 0).every(page => page.title === `${page.key} 的 AI 优惠`)"
+    },
+    {
+      "file": "scripts\\tools\\vendor-page-selftest.js",
+      "line": 513,
+      "receiver": "vendorPages",
+      "filterArg": "page => page.count === 0 && page.nonDealMaterial",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "&& vendorPages.filter(page => page.count === 0 && page.nonDealMaterial).every(page => page.title === `${page.key} 的 AI 资料`));"
+    },
+    {
+      "file": "scripts\\tools\\verify-site.js",
+      "line": 1535,
+      "receiver": "feedTargets",
+      "filterArg": "([rel]) => rel.endsWith('.xml')",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([rel, box]) => {"
+    },
+    {
+      "file": "scripts\\tools\\verify-site.js",
+      "line": 1548,
+      "receiver": "feedTargets",
+      "filterArg": "([rel]) => rel.endsWith('.json')",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => !box.offMidnight) &&"
+    },
+    {
+      "file": "scripts\\tools\\verify-site.js",
+      "line": 1549,
+      "receiver": "feedTargets",
+      "filterArg": "([rel]) => rel.endsWith('.xml')",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => /GMT$/.test(String(box.lastBuildDate || ''))),"
+    },
+    {
+      "file": "scripts\\tools\\verify-site.js",
+      "line": 1553,
+      "receiver": "feedTargets",
+      "filterArg": "([rel]) => rel.endsWith('.json')",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => box.icon && box.favicon) &&"
+    },
+    {
+      "file": "scripts\\tools\\verify-site.js",
+      "line": 1554,
+      "receiver": "feedTargets",
+      "filterArg": "([rel]) => rel.endsWith('.xml')",
+      "terminal": "every",
+      "guardNearby": false,
+      "code": "feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => box.image && box.selfLink),"
+    }
+  ]
+}

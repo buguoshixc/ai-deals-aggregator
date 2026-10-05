@@ -2118,5 +2118,520 @@
         "lang": "en"
       }
     ]
+  },
+  {
+    "provider": "ai360",
+    "planName": "360zhinao 模型广场按量计费",
+    "channel": "standard",
+    "officialUrl": "https://ai.360.com/open/zh/models",
+    "source": "Official-Pricing",
+    "sourceUrl": "https://ai.360.com/open/zh/models",
+    "region": "cn",
+    "pricing": {
+      "currency": "CNY",
+      "unit": "per_1M_tokens",
+      "unitNote": "官方模型广场每个模型卡片逐条写「输入价格: ¥1 / 1M tokens」，单位为每百万 tokens、币种人民币"
+    },
+    "models": [
+      {
+        "name": "360zhinao/360zhinao-turbo-llm-geo",
+        "modelKey": "360zhinao-turbo-llm-geo",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 1,
+          "output": 2,
+          "cachedInput": 0.1,
+          "cacheWrite": 1.25
+        },
+        "mediaRates": null,
+        "note": "官方卡片逐字：业务内部专用模型；上下文 116,000 / 最大输出 16,000"
+      },
+      {
+        "name": "360zhinao/360zhinao-pro",
+        "modelKey": "360zhinao-pro",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 2,
+          "output": 5,
+          "cachedInput": 0.2,
+          "cacheWrite": 2.5
+        },
+        "mediaRates": null,
+        "note": "官方卡片未写简介；上下文 32,000 / 最大输出 8,192"
+      }
+    ],
+    "freeTier": null,
+    "limits": null,
+    "credits": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "pricing.unit",
+        "quote": "输入价格: ¥1 / 1M tokens 输出价格: ¥2 / 1M tokens 缓存写入价格: ¥1.25 / 1M tokens 缓存读取价格: ¥0.1 / 1M tokens 上下文: 116,000 最大输出: 16,000",
+        "sourceUrl": "https://ai.360.com/open/zh/models",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "models.360zhinao-turbo-llm-geo",
+        "quote": "360zhinao/360zhinao-turbo-llm-geo 360智脑 业务内部专用模型 输入价格: ¥1 / 1M tokens 输出价格: ¥2 / 1M tokens 缓存写入价格: ¥1.25 / 1M tokens 缓存读取价格: ¥0.1 / 1M tokens 上下文: 116,000 最大输出: 16,000",
+        "sourceUrl": "https://ai.360.com/open/zh/models",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "models.360zhinao-pro",
+        "quote": "360zhinao/360zhinao-pro 360智脑 输入价格: ¥2 / 1M tokens 输出价格: ¥5 / 1M tokens 缓存写入价格: ¥2.5 / 1M tokens 缓存读取价格: ¥0.2 / 1M tokens 上下文: 32,000 最大输出: 8,192",
+        "sourceUrl": "https://ai.360.com/open/zh/models",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      }
+    ]
+  },
+  {
+    "provider": "baichuan",
+    "planName": "百川大模型按量计费",
+    "channel": "standard",
+    "officialUrl": "https://platform.baichuan-ai.com/prices",
+    "source": "Official-Pricing",
+    "sourceUrl": "https://platform.baichuan-ai.com/prices",
+    "region": "cn",
+    "pricing": {
+      "currency": "CNY",
+      "unit": "per_1K_tokens",
+      "unitNote": "官方「价格说明」逐字写「计费模式：按照实际使用的数据量（千tokens）收费」，价目表每格写「元/千tokens」——单位是每千 tokens、币种人民币"
+    },
+    "models": [
+      {
+        "name": "Baichuan-M3-Plus",
+        "modelKey": "baichuan-m3-plus",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.005,
+          "output": 0.009
+        },
+        "mediaRates": null,
+        "note": "官方价目表：上下文 32k；对话会自动触发「医疗搜索」并单独计费（0.03 元/次）"
+      },
+      {
+        "name": "Baichuan-M3",
+        "modelKey": "baichuan-m3",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.01,
+          "output": 0.03
+        },
+        "mediaRates": null,
+        "note": "官方价目表：上下文 32k，00:00~24:00 单一价"
+      }
+    ],
+    "freeTier": null,
+    "limits": null,
+    "credits": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "pricing.unit",
+        "quote": "按照实际使用的数据量（千tokens）收费。Token在这里指的是文本中的一个最小单位",
+        "sourceUrl": "https://platform.baichuan-ai.com/prices",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "models.baichuan-m3-plus",
+        "quote": "模型调用 Baichuan-M3-Plus | 32k | 00:00 ~ 24:00 | 输入：0.005元/千tokens 输出：0.009元/千tokens",
+        "sourceUrl": "https://platform.baichuan-ai.com/prices",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "models.baichuan-m3",
+        "quote": "模型调用 Baichuan-M3 | 32k | 00:00 ~ 24:00 | 输入：0.01元/千tokens 输出：0.03元/千tokens",
+        "sourceUrl": "https://platform.baichuan-ai.com/prices",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      }
+    ]
+  },
+  {
+    "provider": "baidu",
+    "planName": "千帆模型按量后付费",
+    "channel": "standard",
+    "officialUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
+    "source": "Official-Pricing",
+    "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
+    "region": "cn",
+    "pricing": {
+      "currency": "CNY",
+      "unit": "per_1K_tokens",
+      "unitNote": "官方「价格」页价格表「单位」列逐格写「元/千tokens」，币种人民币"
+    },
+    "models": [
+      {
+        "name": "ERNIE-5.1",
+        "modelKey": "ernie-5.1",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.004,
+          "output": 0.018
+        },
+        "mediaRates": null,
+        "note": "文本生成/在线推理列；官方分档为「输入（输入<=32k）」"
+      },
+      {
+        "name": "ERNIE-5.1",
+        "modelKey": "ernie-5.1",
+        "variant": "long_context",
+        "aliases": null,
+        "rates": {
+          "input": 0.006,
+          "output": 0.022
+        },
+        "mediaRates": null,
+        "note": "同一模型的长上下文档；官方分档为「32k<输入<=128k」"
+      },
+      {
+        "name": "ERNIE-4.5-Turbo-128K",
+        "modelKey": "ernie-4.5-turbo-128k",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.0008,
+          "output": 0.0032,
+          "cachedInput": 0.0002
+        },
+        "mediaRates": null,
+        "note": "官方另给批量推理列（输入 0.00032 / 输出 0.00128）与搜索增强 0.004 元/次，本记录只收在线推理列"
+      }
+    ],
+    "freeTier": null,
+    "limits": null,
+    "credits": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "pricing.unit",
+        "quote": "模型名称 版本名称 服务内容 子项 在线推理 批量推理 单位 ERNIE 5.1 ERNIE-5.1 推理服务 输入（输入<=32k） 0.004 - 元/千tokens",
+        "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "models.ernie-5.1",
+        "quote": "ERNIE 5.1 ERNIE-5.1 推理服务 输入（输入<=32k） 0.004 - 元/千tokens 输出（输入<=32k） 0.018 - 元/千tokens 输入（32k<输入<=128k） 0.006 - 元/千tokens 输出（32k<输入<=128k） 0.022 - 元/千tokens",
+        "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "models.ernie-4.5-turbo-128k",
+        "quote": "ERNIE 4.5 Turbo ERNIE-4.5-Turbo-128K 推理服务 输入 0.0008 0.00032 元/千tokens 命中缓存 0.0002 -- 元/千tokens 输出 0.0032 0.00128 元/千tokens",
+        "sourceUrl": "https://cloud.baidu.com/doc/qianfan-docs/s/Jm8r1826a",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      }
+    ]
+  },
+  {
+    "provider": "iflytek",
+    "planName": "星火大模型 API 按量计费",
+    "channel": "standard",
+    "officialUrl": "https://xinghuo.xfyun.cn/sparkapi",
+    "source": "Official-Pricing",
+    "sourceUrl": "https://xinghuo.xfyun.cn/sparkapi",
+    "region": "cn",
+    "pricing": {
+      "currency": "CNY",
+      "unit": "per_1M_tokens",
+      "unitNote": "官方产品页模型价格区逐字写「输入 1.60 元/百万tokens」，单位为每百万 tokens、币种人民币"
+    },
+    "models": [
+      {
+        "name": "Spark-X2.5",
+        "modelKey": "spark-x2.5",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 1.6,
+          "output": 6,
+          "cachedInput": 0.24
+        },
+        "mediaRates": null,
+        "note": "官方价格区同时标注「限时五折」；表中数字即官方当前展示价，页面未给原价，本站不推算"
+      }
+    ],
+    "freeTier": null,
+    "limits": null,
+    "credits": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "pricing.unit",
+        "quote": "星火大模型 Spark-X2.5 模型价格 限时五折 输入 1.60 元/百万tokens 输出 6.00 元/百万tokens 缓存命中 0.24 元/百万tokens",
+        "sourceUrl": "https://xinghuo.xfyun.cn/sparkapi",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "models.spark-x2.5",
+        "quote": "星火大模型 Spark-X2.5 模型价格 限时五折 输入 1.60 元/百万tokens 输出 6.00 元/百万tokens 缓存命中 0.24 元/百万tokens",
+        "sourceUrl": "https://xinghuo.xfyun.cn/sparkapi",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      }
+    ]
+  },
+  {
+    "provider": "moonshot",
+    "planName": "Kimi 开放平台模型推理按量计费",
+    "channel": "standard",
+    "officialUrl": "https://platform.kimi.com/docs/pricing/chat",
+    "source": "Official-Docs",
+    "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
+    "region": "cn",
+    "pricing": {
+      "currency": "CNY",
+      "unit": "per_1M_tokens",
+      "unitNote": "官方定价页表格「计费单位」列逐格写「1M tokens」，页尾写「此处 1M = 1,000,000，表格中的价格代表每消耗 1M tokens 的价格」，币种人民币"
+    },
+    "models": [
+      {
+        "name": "kimi-k3",
+        "modelKey": "kimi-k3",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 20,
+          "output": 100,
+          "cachedInput": 2,
+          "cacheWrite": 20,
+          "cacheWriteLong": 40
+        },
+        "mediaRates": null,
+        "note": "缓存写入按 TTL 分 5min / 1h 两档；上下文窗口 1,048,576 tokens"
+      },
+      {
+        "name": "kimi-k2.7-code",
+        "modelKey": "kimi-k2.7-code",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 6.5,
+          "output": 27,
+          "cachedInput": 1.3
+        },
+        "mediaRates": null,
+        "note": "K2 系列编程模型；上下文窗口 262,144 tokens。同表另有 -highspeed 档（¥13 / ¥54）"
+      }
+    ],
+    "freeTier": null,
+    "limits": null,
+    "credits": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "pricing.unit",
+        "quote": "此处 1M = 1,000,000，表格中的价格代表每消耗 1M tokens 的价格。",
+        "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "models.kimi-k3",
+        "quote": "模型 计费单位 缓存写入（TTL 5min） 缓存写入（TTL 1h） 输入价格（缓存命中） 输入价格（缓存未命中） 输出价格 上下文窗口 kimi-k3 1M tokens ¥20.00 ¥40.00 ¥2.00 ¥20.00 ¥100.00 1,048,576 tokens",
+        "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "models.kimi-k2.7-code",
+        "quote": "模型 计费单位 输入价格（缓存命中） 输入价格（缓存未命中） 输出价格 上下文窗口 kimi-k2.7-code 1M tokens ¥1.30 ¥6.50 ¥27.00 262,144 tokens",
+        "sourceUrl": "https://platform.kimi.com/docs/pricing/chat",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      }
+    ]
+  },
+  {
+    "provider": "sensetime",
+    "planName": "日日新大模型 Tokens 按量后付费",
+    "channel": "standard",
+    "officialUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
+    "source": "Official-Docs",
+    "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
+    "region": "cn",
+    "pricing": {
+      "currency": "CNY",
+      "unit": "per_1K_tokens",
+      "unitNote": "官方「模型调用计费」页计费单位段逐字写「千tokens：1 千tokens = 1000 tokens」，价表格子写「元/千tokens」"
+    },
+    "models": [
+      {
+        "name": "SenseNova-V6.5-Pro",
+        "modelKey": "sensenova-v6.5-pro",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.003,
+          "output": 0.009
+        },
+        "mediaRates": null,
+        "note": "官方「日日新-融合模态大模型」价格表；同表另有 SenseNova-V6.5-Turbo / V6-Pro / V6-Turbo / V6-Reasoner"
+      },
+      {
+        "name": "SenseNova-V6.5-Turbo",
+        "modelKey": "sensenova-v6.5-turbo",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.0015,
+          "output": 0.0045
+        },
+        "mediaRates": null,
+        "note": "官方「日日新-融合模态大模型」价格表"
+      }
+    ],
+    "freeTier": null,
+    "limits": null,
+    "credits": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "pricing.unit",
+        "quote": "计费单位：千tokens：1 千tokens = 1000 tokens，调用模型服务时根据实际的输入和输出tokens数量收费。",
+        "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "models.sensenova-v6.5-pro",
+        "quote": "SenseNova-V6.5-Pro模型调用 | 输入tokens | 0.003元/千tokens | 输出tokens | 0.009元/千tokens",
+        "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "models.sensenova-v6.5-turbo",
+        "quote": "SenseNova-V6.5-Turbo模型调用 | 输入tokens | 0.0015元/千tokens | 输出tokens | 0.0045元/千tokens",
+        "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      }
+    ]
+  },
+  {
+    "provider": "stepfun",
+    "planName": "StepFun 开放平台模型推理按量计费",
+    "channel": "standard",
+    "officialUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
+    "source": "Official-Docs",
+    "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
+    "region": "cn",
+    "pricing": {
+      "currency": "CNY",
+      "unit": "per_1M_tokens",
+      "unitNote": "官方「定价与限速」页各定价表「计费单位」列逐格写「1M tokens」，价格格写「7 元」「1.35 元」等，币种人民币"
+    },
+    "models": [
+      {
+        "name": "step-5-preview",
+        "modelKey": "step-5-preview",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 7,
+          "output": 20,
+          "cachedInput": 0.35
+        },
+        "mediaRates": null,
+        "note": "多模态推理大模型定价表（旗舰档）"
+      },
+      {
+        "name": "step-3.7-flash",
+        "modelKey": "step-3.7-flash",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 1.35,
+          "output": 8.1,
+          "cachedInput": 0.27
+        },
+        "mediaRates": null,
+        "note": "多模态推理大模型定价表（Flash 档）"
+      },
+      {
+        "name": "step-3.5-flash",
+        "modelKey": "step-3.5-flash",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 0.7,
+          "output": 2.1,
+          "cachedInput": 0.14
+        },
+        "mediaRates": null,
+        "note": "推理大模型定价表；同表另有带日期版本 step-3.5-flash-2603（同价）"
+      }
+    ],
+    "freeTier": null,
+    "limits": null,
+    "credits": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "models.step-3.5-flash",
+        "quote": "推理大模型的定价表 step-3.5-flash | 1M tokens | 0.7 元 | 0.14 元 | 2.1 元",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "models.step-5-preview",
+        "quote": "step-5-preview | 1M tokens | 7 元 | 0.35 元 | 20 元",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "models.step-3.7-flash",
+        "quote": "step-3.7-flash | 1M tokens | 1.35 元 | 0.27 元 | 8.1 元",
+        "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      }
+    ]
   }
 ]

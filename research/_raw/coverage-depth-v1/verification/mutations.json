@@ -1,0 +1,1952 @@
+{
+  "probe": "mutations.cjs",
+  "ranAtUtc": "2026-10-05T04:46:15.573Z",
+  "ranAtLocal": "Mon Oct 05 2026 12:46:15 GMT+0800 (中国标准时间)",
+  "sandbox": "C:\\Users\\星澈\\AppData\\Local\\Temp\\t9-mutation-sandbox",
+  "pristine": "C:\\Users\\星澈\\AppData\\Local\\Temp\\t9-mutation-pristine",
+  "discipline": [
+    "变异只在 TEMP 沙箱副本上做；共享工作区只读哈希",
+    "每条变异前 restore + 哈希校验，跑完再 restore（byte-exact 是读数不是声明）",
+    "判红用增量：pristine 基线已红的 gate 必须先减掉基线，再看新增失败"
+  ],
+  "gates": [
+    "coverage-targets-selftest",
+    "model-freshness-selftest",
+    "models-selftest",
+    "models-page-selftest",
+    "api-plans-selftest",
+    "analytics-selftest",
+    "coverage-report",
+    "validate-strict",
+    "history-verify"
+  ],
+  "workspaceHashes": {
+    "before": {
+      "scripts/data/models.json": "386e6e81b0eaca630dd064a61dbf1fb711241a1bd65add133340b75cc1337559",
+      "models.json": "ce69f006f0fa481a50f442ad06e0113eb963125ddddc03b18a2da752a8988370",
+      "scripts/data/coverage-targets.json": "29eb1a71fbac78c9875d142a8d89da4a2d627aac3eb425b89ef8e319f61abe2a",
+      "scripts/data/source-rulings.json": "65fce6f8551266e7bc9a6e05f27c30f65524b159214e751aae7205a5c6749321",
+      "scripts/data/model-registry-gaps.json": "25635fedee71b3f7f7c1f9507adbafc6ab68fd1b05f25538588bf7b3e43edde0",
+      "scripts/data/model-registry-links.json": "99d9c9e7146614180ff7e4039bc20706f4a84c78364edacfa6841a704298bd14",
+      "deals.json": "fe063bc9e4e40b1051958d6f14b889f44d391848f0d2555b82e421651dfcd558",
+      "api-plans.json": "acebde3a35bebbc61dd9cddea55654c1eed6f7103332f5aeae8e231cdae6e81c",
+      "scripts/lib/coverage-targets.js": "19657cd5514f2008228de10d1311e31d353cb2cfb5274119964f5046a4291ba4",
+      "scripts/lib/model-freshness.js": "090838265d9ae29d223c1e9b53b126a563ea4f64440a3e100d6314c9d56afa10",
+      "scripts/lib/analytics.js": "085f32a55a7b4ba9a65f48416a0d7128711c0755acbf7f593e409b69f7f8658c",
+      "scripts/tools/coverage-report.js": "76cb871751d9909dfbdb121b8e9f705509bf60cf7f89d007c07ad4962419cba7"
+    },
+    "after": {
+      "scripts/data/models.json": "386e6e81b0eaca630dd064a61dbf1fb711241a1bd65add133340b75cc1337559",
+      "models.json": "ce69f006f0fa481a50f442ad06e0113eb963125ddddc03b18a2da752a8988370",
+      "scripts/data/coverage-targets.json": "29eb1a71fbac78c9875d142a8d89da4a2d627aac3eb425b89ef8e319f61abe2a",
+      "scripts/data/source-rulings.json": "65fce6f8551266e7bc9a6e05f27c30f65524b159214e751aae7205a5c6749321",
+      "scripts/data/model-registry-gaps.json": "25635fedee71b3f7f7c1f9507adbafc6ab68fd1b05f25538588bf7b3e43edde0",
+      "scripts/data/model-registry-links.json": "99d9c9e7146614180ff7e4039bc20706f4a84c78364edacfa6841a704298bd14",
+      "deals.json": "fe063bc9e4e40b1051958d6f14b889f44d391848f0d2555b82e421651dfcd558",
+      "api-plans.json": "acebde3a35bebbc61dd9cddea55654c1eed6f7103332f5aeae8e231cdae6e81c",
+      "scripts/lib/coverage-targets.js": "19657cd5514f2008228de10d1311e31d353cb2cfb5274119964f5046a4291ba4",
+      "scripts/lib/model-freshness.js": "090838265d9ae29d223c1e9b53b126a563ea4f64440a3e100d6314c9d56afa10",
+      "scripts/lib/analytics.js": "085f32a55a7b4ba9a65f48416a0d7128711c0755acbf7f593e409b69f7f8658c",
+      "scripts/tools/coverage-report.js": "76cb871751d9909dfbdb121b8e9f705509bf60cf7f89d007c07ad4962419cba7"
+    },
+    "drift": []
+  },
+  "baseline": {
+    "coverage-targets-selftest": {
+      "exitCode": 0,
+      "failures": []
+    },
+    "model-freshness-selftest": {
+      "exitCode": 0,
+      "failures": []
+    },
+    "models-selftest": {
+      "exitCode": 0,
+      "failures": []
+    },
+    "models-page-selftest": {
+      "exitCode": 1,
+      "failures": [
+        "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+        "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+        "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+        "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+      ]
+    },
+    "api-plans-selftest": {
+      "exitCode": 0,
+      "failures": []
+    },
+    "analytics-selftest": {
+      "exitCode": 0,
+      "failures": [
+        "✅ 分析门禁 17 项，失败 0 项"
+      ]
+    },
+    "coverage-report": {
+      "exitCode": 0,
+      "failures": []
+    },
+    "validate-strict": {
+      "exitCode": 0,
+      "failures": []
+    },
+    "history-verify": {
+      "exitCode": 0,
+      "failures": []
+    }
+  },
+  "summary": {
+    "total": 16,
+    "caught": 11,
+    "blind": [
+      "M4",
+      "M5",
+      "M6",
+      "M7",
+      "M15"
+    ],
+    "restoreAllByteExact": true,
+    "workspaceDrift": [],
+    "baselineRedGates": [
+      {
+        "id": "models-page-selftest",
+        "exitCode": 1,
+        "failures": [
+          "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+          "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+          "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+          "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+        ]
+      }
+    ]
+  },
+  "results": [
+    {
+      "id": "M1",
+      "what": "删掉一条 releasedAt 的 releaseEvidence",
+      "expect": "models-selftest / validate 必红（releasedAt 与证据互为充要）",
+      "context": {
+        "slug": "claude-fable-5.1"
+      },
+      "rebuildExitCode": null,
+      "observed": null,
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "✗ 真实的 models.json 通过身份校验（51 条） —— models.json 的 claude-fable-5.1: 缺少 v2 字段 releaseEvidence —— 值可以诚实地写 null / []，但字段本身必须写出（v1 条目在这里被当场拒掉）；允许字段：canonicalName / developer / owner / family / aliases / officialUrl / status / modelRole / releasedAt / releaseEvidence / freshnessGroup / note | models.json 的 claude-fable-5.1: releaseEvidence 必须是数组（没有官方证据就写 []） | models.json 的 claude-fable-5.1: releasedAt 与 releaseEvidence **互为充要**（现在 releasedAt=\"2026-09-01\"、releaseEvidence 为空）—— 有日期必须有官方证据，有证据必须有日期；查不到日期就诚实地写 releasedAt: null + releaseEvidence: []",
+            "✗ 真实数据：每条都写出了 v2 四字段（值可以诚实为 null / []，字段本身不许省） —— claude-fable-5.1",
+            "✗ 真实数据：releasedAt 与 releaseEvidence 互为充要（有日期必须有官方证据；有证据必须有日期） —— claude-fable-5.1",
+            "✗ 【v2】解耦牙：起点两半都合法时，夹具仍能各自造出\"只有一半\"的非法表并报红（T2-F1 自指盲区） —— onlyDate=models.json 的 claude-fable-5.1: 缺少 v2 字段 releaseEvidence —— 值可以诚实地写 null / []，但字段本身必须写出（v1 条目在这里被当场拒掉）；允许字段：canonicalName / developer / owner / family / aliases / officialUrl / status / modelRole / releasedAt / releaseEvidence / freshnessGroup / note / onlyEvidence=models.json 的 claude-fable-5.1: 缺少 v2 字段 releaseEvidence —— 值可以诚实地写 null / []，但字段本身必须写出（v1 条目在这里被当场拒掉）；允许字段：canonicalName / developer / owner / family / aliases / officialUrl / status / modelRole / releasedAt / releaseEvidence / freshnessGroup / note",
+            "❌ === v3.0 Model Registry 演练：144 项通过，4 项失败 ==="
+          ],
+          "newFailures": [
+            "✗ 真实的 models.json 通过身份校验（51 条） —— models.json 的 claude-fable-5.1: 缺少 v2 字段 releaseEvidence —— 值可以诚实地写 null / []，但字段本身必须写出（v1 条目在这里被当场拒掉）；允许字段：canonicalName / developer / owner / family / aliases / officialUrl / status / modelRole / releasedAt / releaseEvidence / freshnessGroup / note | models.json 的 claude-fable-5.1: releaseEvidence 必须是数组（没有官方证据就写 []） | models.json 的 claude-fable-5.1: releasedAt 与 releaseEvidence **互为充要**（现在 releasedAt=\"2026-09-01\"、releaseEvidence 为空）—— 有日期必须有官方证据，有证据必须有日期；查不到日期就诚实地写 releasedAt: null + releaseEvidence: []",
+            "✗ 真实数据：每条都写出了 v2 四字段（值可以诚实为 null / []，字段本身不许省） —— claude-fable-5.1",
+            "✗ 真实数据：releasedAt 与 releaseEvidence 互为充要（有日期必须有官方证据；有证据必须有日期） —— claude-fable-5.1",
+            "✗ 【v2】解耦牙：起点两半都合法时，夹具仍能各自造出\"只有一半\"的非法表并报红（T2-F1 自指盲区） —— onlyDate=models.json 的 claude-fable-5.1: 缺少 v2 字段 releaseEvidence —— 值可以诚实地写 null / []，但字段本身必须写出（v1 条目在这里被当场拒掉）；允许字段：canonicalName / developer / owner / family / aliases / officialUrl / status / modelRole / releasedAt / releaseEvidence / freshnessGroup / note / onlyEvidence=models.json 的 claude-fable-5.1: 缺少 v2 字段 releaseEvidence —— 值可以诚实地写 null / []，但字段本身必须写出（v1 条目在这里被当场拒掉）；允许字段：canonicalName / developer / owner / family / aliases / officialUrl / status / modelRole / releasedAt / releaseEvidence / freshnessGroup / note",
+            "❌ === v3.0 Model Registry 演练：144 项通过，4 项失败 ==="
+          ],
+          "wentRed": true,
+          "addedFailures": 5
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ registry 与关系层都通过同一支判据校验",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ registry 与关系层都通过同一支判据校验",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [
+            "✗ registry 与关系层都通过同一支判据校验",
+            "✗ registry 与关系层都通过同一支判据校验"
+          ],
+          "wentRed": false,
+          "addedFailures": 2
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "validate-strict": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "❌ 校验失败，共 3 项："
+          ],
+          "newFailures": [
+            "❌ 校验失败，共 3 项："
+          ],
+          "wentRed": true,
+          "addedFailures": 1
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [
+        "models-selftest",
+        "models-page-selftest",
+        "validate-strict"
+      ],
+      "caught": true,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M2",
+      "what": "写一个非法日期 2026-10",
+      "expect": "models-selftest / model-freshness-selftest 必红（解析不出可判日）",
+      "context": {
+        "slug": "claude-fable-5.1"
+      },
+      "rebuildExitCode": null,
+      "observed": null,
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "✗ （隔离上游）报告自检 0 处问题，退出码 0 —— status 1/1；问题 1 处：Release Evidence Coverage：有 1 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD） —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。",
+            "✗ （隔离上游）JSON 可解析",
+            "✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON —— 报告退出码 1；上游自检问题 1 处：Release Evidence Coverage：有 1 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD） —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。",
+            "✗ v3：裁决表不在盘上时**优雅降级**（退出码 0、文本如实说「尚未落盘」、不崩） —— exit 1；问题 Release Evidence Coverage：有 1 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD） —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。",
+            "✗ v3：【确定性】喂同一份夹具的两次 --json 输出逐字节一致 —— status 1/1，长度 35545/35545",
+            "✗ v3：裁决表落盘（夹具）后报告自检 0 处问题，且不再有待落盘层 —— 问题 1 处：Release Evidence Coverage：有 1 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD） —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。",
+            "✗ v3：v3 四节的 JSON 结构可核对：报告成功运行并在 stdout 给出 JSON —— 报告退出码 1；问题 Release Evidence Coverage：有 1 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD） —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。",
+            "✗ （隔离上游）报告自检 0 处问题，退出码 0",
+            "✗ （隔离上游）JSON 可解析",
+            "✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON",
+            "✗ v3：裁决表不在盘上时**优雅降级**（退出码 0、文本如实说「尚未落盘」、不崩）",
+            "✗ v3：【确定性】喂同一份夹具的两次 --json 输出逐字节一致"
+          ],
+          "newFailures": [
+            "✗ （隔离上游）报告自检 0 处问题，退出码 0 —— status 1/1；问题 1 处：Release Evidence Coverage：有 1 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD） —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。",
+            "✗ （隔离上游）JSON 可解析",
+            "✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON —— 报告退出码 1；上游自检问题 1 处：Release Evidence Coverage：有 1 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD） —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。",
+            "✗ v3：裁决表不在盘上时**优雅降级**（退出码 0、文本如实说「尚未落盘」、不崩） —— exit 1；问题 Release Evidence Coverage：有 1 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD） —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。",
+            "✗ v3：【确定性】喂同一份夹具的两次 --json 输出逐字节一致 —— status 1/1，长度 35545/35545",
+            "✗ v3：裁决表落盘（夹具）后报告自检 0 处问题，且不再有待落盘层 —— 问题 1 处：Release Evidence Coverage：有 1 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD） —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。",
+            "✗ v3：v3 四节的 JSON 结构可核对：报告成功运行并在 stdout 给出 JSON —— 报告退出码 1；问题 Release Evidence Coverage：有 1 条模型的 releasedAt **写了但解析不出可判日**（形如 YYYY-MM-DD） —— 写着的日期与 freshness 的判据分家了：要么把日期改成真实日期，要么改判据层（lib/model-freshness.js 的 normalizeReleaseDate）。",
+            "✗ （隔离上游）报告自检 0 处问题，退出码 0",
+            "✗ （隔离上游）JSON 可解析",
+            "✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON",
+            "✗ v3：裁决表不在盘上时**优雅降级**（退出码 0、文本如实说「尚未落盘」、不崩）",
+            "✗ v3：【确定性】喂同一份夹具的两次 --json 输出逐字节一致"
+          ],
+          "wentRed": true,
+          "addedFailures": 12
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "✗ 真实的 models.json 通过身份校验（51 条） —— models.json 的 claude-fable-5.1: releasedAt 必须是 null 或真实日期 YYYY-MM-DD（实得 \"2026-10\"）—— 不接受\"约 2026 年 8 月\"这类假精度",
+            "❌ === v3.0 Model Registry 演练：147 项通过，1 项失败 ==="
+          ],
+          "newFailures": [
+            "✗ 真实的 models.json 通过身份校验（51 条） —— models.json 的 claude-fable-5.1: releasedAt 必须是 null 或真实日期 YYYY-MM-DD（实得 \"2026-10\"）—— 不接受\"约 2026 年 8 月\"这类假精度",
+            "❌ === v3.0 Model Registry 演练：147 项通过，1 项失败 ==="
+          ],
+          "wentRed": true,
+          "addedFailures": 2
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ registry 与关系层都通过同一支判据校验",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ registry 与关系层都通过同一支判据校验",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [
+            "✗ registry 与关系层都通过同一支判据校验",
+            "✗ registry 与关系层都通过同一支判据校验"
+          ],
+          "wentRed": false,
+          "addedFailures": 2
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "❌ 覆盖报告自检失败："
+          ],
+          "newFailures": [
+            "❌ 覆盖报告自检失败："
+          ],
+          "wentRed": true,
+          "addedFailures": 1
+        },
+        "validate-strict": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "❌ 校验失败，共 1 项："
+          ],
+          "newFailures": [
+            "❌ 校验失败，共 1 项："
+          ],
+          "wentRed": true,
+          "addedFailures": 1
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [
+        "coverage-targets-selftest",
+        "models-selftest",
+        "models-page-selftest",
+        "coverage-report",
+        "validate-strict"
+      ],
+      "caught": true,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M3",
+      "what": "证据 sourceUrl 换成第三方域",
+      "expect": "validate --strict 的官方域守卫必红",
+      "context": {
+        "slug": "claude-fable-5.1"
+      },
+      "rebuildExitCode": null,
+      "observed": null,
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "✗ 真实的 models.json 通过身份校验（51 条） —— models.json 的 claude-fable-5.1 releaseEvidence[0]: 出处域 third-party-mirror.example.com 不在 developer「Anthropic」登记的官方域里（anthropic.com / claude.com）—— 发布日期证据必须是开发商官方页（第三方托管平台的发布时间不算）",
+            "✗ 真实数据：有发布日的条目，出处都落在该 developer 在 providers.json 登记的官方域上（第三方平台顶替不了发布证据） —— claude-fable-5.1",
+            "❌ === v3.0 Model Registry 演练：146 项通过，2 项失败 ==="
+          ],
+          "newFailures": [
+            "✗ 真实的 models.json 通过身份校验（51 条） —— models.json 的 claude-fable-5.1 releaseEvidence[0]: 出处域 third-party-mirror.example.com 不在 developer「Anthropic」登记的官方域里（anthropic.com / claude.com）—— 发布日期证据必须是开发商官方页（第三方托管平台的发布时间不算）",
+            "✗ 真实数据：有发布日的条目，出处都落在该 developer 在 providers.json 登记的官方域上（第三方平台顶替不了发布证据） —— claude-fable-5.1",
+            "❌ === v3.0 Model Registry 演练：146 项通过，2 项失败 ==="
+          ],
+          "wentRed": true,
+          "addedFailures": 3
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ registry 与关系层都通过同一支判据校验",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ registry 与关系层都通过同一支判据校验",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [
+            "✗ registry 与关系层都通过同一支判据校验",
+            "✗ registry 与关系层都通过同一支判据校验"
+          ],
+          "wentRed": false,
+          "addedFailures": 2
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "validate-strict": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "❌ 校验失败，共 1 项："
+          ],
+          "newFailures": [
+            "❌ 校验失败，共 1 项："
+          ],
+          "wentRed": true,
+          "addedFailures": 1
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [
+        "models-selftest",
+        "models-page-selftest",
+        "validate-strict"
+      ],
+      "caught": true,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M4",
+      "what": "引文与日期无关（换成人造文本）",
+      "expect": "**预期是盲区**：日期仍在、域仍对，现有门禁很可能抓不到",
+      "context": {
+        "slug": "claude-fable-5.1"
+      },
+      "rebuildExitCode": null,
+      "observed": null,
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "validate-strict": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [],
+      "caught": false,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M5",
+      "what": "releasedAt 置空（看会不会被派生 legacy）",
+      "expect": "派生必须是 unknown（不是 legacy）；若变成 legacy 即红",
+      "context": {
+        "slug": "claude-fable-5.1",
+        "rebuild": true,
+        "observeModel": "claude-fable-5.1"
+      },
+      "rebuildExitCode": 0,
+      "observed": {
+        "slug": "claude-fable-5.1",
+        "catalogStatus": "unknown",
+        "catalogReason": "release-date-missing",
+        "releasedAt": null,
+        "freshnessGroup": null,
+        "status": "active"
+      },
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "validate-strict": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [],
+      "caught": false,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M6",
+      "what": "firstSeen 混入 Freshness（改成很久以前）",
+      "expect": "**预期不受影响**（firstSeen 不是发布日）；受影响即红",
+      "context": {
+        "slug": "360zhinao-pro",
+        "rebuild": true,
+        "observeModel": "360zhinao-pro"
+      },
+      "rebuildExitCode": 0,
+      "observed": {
+        "slug": "360zhinao-pro",
+        "catalogStatus": "current",
+        "catalogReason": "within-current-window",
+        "releasedAt": "2026-08-05",
+        "freshnessGroup": null,
+        "status": "active"
+      },
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "validate-strict": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [],
+      "caught": false,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M7",
+      "what": "跨 modelRole 同组（不同档的模型塞进同一 freshnessGroup）",
+      "expect": "比它新的另一档模型把它挤成 legacy ⇒ 说明跨档互淘汰；门禁是否红另记",
+      "context": {
+        "slug": "360zhinao-pro + tencent-hy-vision-1.5-instruct",
+        "rebuild": true,
+        "observeModel": "360zhinao-pro"
+      },
+      "rebuildExitCode": 0,
+      "observed": {
+        "slug": "360zhinao-pro",
+        "catalogStatus": "current",
+        "catalogReason": "group-newest-within-current-window",
+        "releasedAt": "2026-08-05",
+        "freshnessGroup": "m7-cross-role-group",
+        "status": "active"
+      },
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "validate-strict": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [],
+      "caught": false,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M8",
+      "what": "删掉一个已被 current target 声明的 production 记录（api 侧 modelKey 行）",
+      "expect": "coverage-report 里该格从 COVERED 掉档（PARTIAL/MISSING）；门禁是否红另记",
+      "context": {
+        "provider": "ai360",
+        "modelKey": "360zhinao-turbo-llm-geo",
+        "removedRows": 1
+      },
+      "rebuildExitCode": null,
+      "observed": null,
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "✗ （隔离上游）报告自检 0 处问题，退出码 0 —— status 1/1；问题 2 处：links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）；links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ （隔离上游）JSON 可解析",
+            "✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON —— 报告退出码 1；上游自检问题 2 处：links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）；links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ v3：裁决表不在盘上时**优雅降级**（退出码 0、文本如实说「尚未落盘」、不崩） —— exit 1；问题 links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）；links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ v3：【确定性】喂同一份夹具的两次 --json 输出逐字节一致 —— status 1/1，长度 35864/35864",
+            "✗ v3：裁决表落盘（夹具）后报告自检 0 处问题，且不再有待落盘层 —— 问题 2 处：links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）；links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ v3：v3 四节的 JSON 结构可核对：报告成功运行并在 stdout 给出 JSON —— 报告退出码 1；问题 links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）；links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ （隔离上游）报告自检 0 处问题，退出码 0",
+            "✗ （隔离上游）JSON 可解析",
+            "✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON",
+            "✗ v3：裁决表不在盘上时**优雅降级**（退出码 0、文本如实说「尚未落盘」、不崩）",
+            "✗ v3：【确定性】喂同一份夹具的两次 --json 输出逐字节一致"
+          ],
+          "newFailures": [
+            "✗ （隔离上游）报告自检 0 处问题，退出码 0 —— status 1/1；问题 2 处：links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）；links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ （隔离上游）JSON 可解析",
+            "✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON —— 报告退出码 1；上游自检问题 2 处：links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）；links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ v3：裁决表不在盘上时**优雅降级**（退出码 0、文本如实说「尚未落盘」、不崩） —— exit 1；问题 links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）；links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ v3：【确定性】喂同一份夹具的两次 --json 输出逐字节一致 —— status 1/1，长度 35864/35864",
+            "✗ v3：裁决表落盘（夹具）后报告自检 0 处问题，且不再有待落盘层 —— 问题 2 处：links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）；links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ v3：v3 四节的 JSON 结构可核对：报告成功运行并在 stdout 给出 JSON —— 报告退出码 1；问题 links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）；links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ （隔离上游）报告自检 0 处问题，退出码 0",
+            "✗ （隔离上游）JSON 可解析",
+            "✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON",
+            "✗ v3：裁决表不在盘上时**优雅降级**（退出码 0、文本如实说「尚未落盘」、不崩）",
+            "✗ v3：【确定性】喂同一份夹具的两次 --json 输出逐字节一致"
+          ],
+          "wentRed": true,
+          "addedFailures": 12
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "✗ 真实的 model-registry-links.json 通过关系校验（92 条） —— links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge） | links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ 【Tooth 3】同一个 registry model 认领多个不同 Provider 的记录 → 绿（siliconflow / together / deepseek / aliyun） —— links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge） | links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ 【Tooth 4】同 modelKey 的两个不同 variant 分别归属两个 slug（认领集合不相交：{standard} ∩ {long_context} = ∅）→ 绿 —— links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge） | links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ 【M09 / §10.6】API 侧完整性与 Coding 侧同级：两侧都由 lib 判据报\"既没有映射也没有处置\"，且真实数据 0 处",
+            "✗ 【API 处置】删掉一条 API 侧声明 → validateLinks 复红（两处都没有）；留着则绿 —— links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）",
+            "❌ === v3.0 Model Registry 演练：143 项通过，5 项失败 ==="
+          ],
+          "newFailures": [
+            "✗ 真实的 model-registry-links.json 通过关系校验（92 条） —— links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge） | links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ 【Tooth 3】同一个 registry model 认领多个不同 Provider 的记录 → 绿（siliconflow / together / deepseek / aliyun） —— links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge） | links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ 【Tooth 4】同 modelKey 的两个不同 variant 分别归属两个 slug（认领集合不相交：{standard} ∩ {long_context} = ∅）→ 绿 —— links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge） | links[1] 360zhinao-turbo-llm-geo: 通配映射（variant=null）在这条记录里一条真实 variant 都没匹配到 —— 它什么都没认领，不许静默通过",
+            "✗ 【M09 / §10.6】API 侧完整性与 Coding 侧同级：两侧都由 lib 判据报\"既没有映射也没有处置\"，且真实数据 0 处",
+            "✗ 【API 处置】删掉一条 API 侧声明 → validateLinks 复红（两处都没有）；留着则绿 —— links[1] 360zhinao-turbo-llm-geo: modelKey「360zhinao-turbo-llm-geo」在记录 0940febeeea9 里不存在（modelKey 改名后必须**人工**改这条映射，工具不许自动 merge）",
+            "❌ === v3.0 Model Registry 演练：143 项通过，5 项失败 ==="
+          ],
+          "wentRed": true,
+          "addedFailures": 6
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ registry 与关系层都通过同一支判据校验",
+            "✗ 全部 51 个模型都被显式引用（门槛内 50 个）",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ registry 与关系层都通过同一支判据校验",
+            "✗ 全部 51 个模型都被显式引用（门槛内 50 个）",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [
+            "✗ registry 与关系层都通过同一支判据校验",
+            "✗ 全部 51 个模型都被显式引用（门槛内 50 个）",
+            "✗ registry 与关系层都通过同一支判据校验",
+            "✗ 全部 51 个模型都被显式引用（门槛内 50 个）"
+          ],
+          "wentRed": false,
+          "addedFailures": 4
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "✗ 360zhinao-turbo-llm-geo：api-plans.json 里没有这家 provider 的计价条目 modelKey「360zhinao-turbo-llm-geo」",
+            "❌ 覆盖报告自检失败："
+          ],
+          "newFailures": [
+            "✗ 360zhinao-turbo-llm-geo：api-plans.json 里没有这家 provider 的计价条目 modelKey「360zhinao-turbo-llm-geo」",
+            "❌ 覆盖报告自检失败："
+          ],
+          "wentRed": true,
+          "addedFailures": 2
+        },
+        "validate-strict": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "❌ 校验失败，共 4 项："
+          ],
+          "newFailures": [
+            "❌ 校验失败，共 4 项："
+          ],
+          "wentRed": true,
+          "addedFailures": 1
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [
+        "coverage-targets-selftest",
+        "models-selftest",
+        "models-page-selftest",
+        "coverage-report",
+        "validate-strict"
+      ],
+      "caught": true,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M9",
+      "what": "源码变异：DEFERRED 分支失效（延期的格子掉进 MISSING）",
+      "expect": "coverage-targets-selftest 必红（它的牙就在这条短路）",
+      "context": {
+        "file": "scripts/lib/coverage-targets.js"
+      },
+      "rebuildExitCode": null,
+      "observed": null,
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "✗ 真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉",
+            "✗ 【关键牙】DEFERRED 永不算 MISSING：beta.api 延期且盘上无记录 ⇒ DEFERRED —— 实得 MISSING",
+            "✗ 【关键牙】schema-not-supported 同样归 DEFERRED（当前 schema 表达不了 ≠ 漏了） —— 实得 MISSING",
+            "✗ UNVERIFIABLE：查过、官方来源不可核 ⇒ 不算 MISSING（gamma.coding） —— 实得 MISSING",
+            "✗ MISSING / DEFERRED 的优先级：延期盖过\"盘上无记录\"",
+            "✗ 七态在夹具里**全部出现过** —— DEFERRED, UNVERIFIABLE",
+            "✗ 【反向牙】声明了一条盘上没有的 current target 不是校验错误 —— 它是 PARTIAL/MISSING 的事实",
+            "✗ 真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉",
+            "✗ 【关键牙】DEFERRED 永不算 MISSING：beta.api 延期且盘上无记录 ⇒ DEFERRED",
+            "✗ 【关键牙】schema-not-supported 同样归 DEFERRED（当前 schema 表达不了 ≠ 漏了）",
+            "✗ UNVERIFIABLE：查过、官方来源不可核 ⇒ 不算 MISSING（gamma.coding）",
+            "✗ MISSING / DEFERRED 的优先级：延期盖过\"盘上无记录\""
+          ],
+          "newFailures": [
+            "✗ 真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉",
+            "✗ 【关键牙】DEFERRED 永不算 MISSING：beta.api 延期且盘上无记录 ⇒ DEFERRED —— 实得 MISSING",
+            "✗ 【关键牙】schema-not-supported 同样归 DEFERRED（当前 schema 表达不了 ≠ 漏了） —— 实得 MISSING",
+            "✗ UNVERIFIABLE：查过、官方来源不可核 ⇒ 不算 MISSING（gamma.coding） —— 实得 MISSING",
+            "✗ MISSING / DEFERRED 的优先级：延期盖过\"盘上无记录\"",
+            "✗ 七态在夹具里**全部出现过** —— DEFERRED, UNVERIFIABLE",
+            "✗ 【反向牙】声明了一条盘上没有的 current target 不是校验错误 —— 它是 PARTIAL/MISSING 的事实",
+            "✗ 真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉",
+            "✗ 【关键牙】DEFERRED 永不算 MISSING：beta.api 延期且盘上无记录 ⇒ DEFERRED",
+            "✗ 【关键牙】schema-not-supported 同样归 DEFERRED（当前 schema 表达不了 ≠ 漏了）",
+            "✗ UNVERIFIABLE：查过、官方来源不可核 ⇒ 不算 MISSING（gamma.coding）",
+            "✗ MISSING / DEFERRED 的优先级：延期盖过\"盘上无记录\""
+          ],
+          "wentRed": true,
+          "addedFailures": 12
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "validate-strict": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [
+        "coverage-targets-selftest"
+      ],
+      "caught": true,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M10",
+      "what": "源码变异：PARTIAL 被当成 COVERED（部分兑现也算全兑现）",
+      "expect": "coverage-targets-selftest 必红",
+      "context": {
+        "file": "scripts/lib/coverage-targets.js"
+      },
+      "rebuildExitCode": null,
+      "observed": null,
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "✗ PARTIAL：声明三条只兑现两条 ⇒ PARTIAL（不是 COVERED，也不是 MISSING） —— 实得 COVERED（2/3）",
+            "✗ overallState：四格都好 ⇒ COVERED（alpha 的 COVERED/NOT_APPLICABLE/PARTIAL 里 PARTIAL 优先）",
+            "✗ 七态在夹具里**全部出现过** —— PARTIAL",
+            "✗ PARTIAL：声明三条只兑现两条 ⇒ PARTIAL（不是 COVERED，也不是 MISSING）",
+            "✗ overallState：四格都好 ⇒ COVERED（alpha 的 COVERED/NOT_APPLICABLE/PARTIAL 里 PARTIAL 优先）",
+            "✗ 七态在夹具里**全部出现过**"
+          ],
+          "newFailures": [
+            "✗ PARTIAL：声明三条只兑现两条 ⇒ PARTIAL（不是 COVERED，也不是 MISSING） —— 实得 COVERED（2/3）",
+            "✗ overallState：四格都好 ⇒ COVERED（alpha 的 COVERED/NOT_APPLICABLE/PARTIAL 里 PARTIAL 优先）",
+            "✗ 七态在夹具里**全部出现过** —— PARTIAL",
+            "✗ PARTIAL：声明三条只兑现两条 ⇒ PARTIAL（不是 COVERED，也不是 MISSING）",
+            "✗ overallState：四格都好 ⇒ COVERED（alpha 的 COVERED/NOT_APPLICABLE/PARTIAL 里 PARTIAL 优先）",
+            "✗ 七态在夹具里**全部出现过**"
+          ],
+          "wentRed": true,
+          "addedFailures": 6
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "validate-strict": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [
+        "coverage-targets-selftest"
+      ],
+      "caught": true,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M11",
+      "what": "裁决数据变异：给仍在注册表里的来源写 retire",
+      "expect": "coverage-report 的对账必红（retire 仍在采集器注册表）",
+      "context": {
+        "source": "aitools"
+      },
+      "rebuildExitCode": null,
+      "observed": null,
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "✗ （隔离上游）报告自检 0 处问题，退出码 0 —— status 1/1；问题 4 处：rulings[1] aitools 的 evidence[0]: 必须是对象；rulings[1] aitools: overlap 必须是对象（{historicalItems, uniqueItems, overlapItems, maintenanceCost}）",
+            "✗ （隔离上游）JSON 可解析",
+            "✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON —— 报告退出码 1；上游自检问题 4 处：rulings[1] aitools 的 evidence[0]: 必须是对象；rulings[1] aitools: overlap 必须是对象（{historicalItems, uniqueItems, overlapItems, maintenanceCost}）；rulings 数组不是规范序（应按 source 的 code-unit 序：aitools → futurepedia，实得 futurepedia → aitools） —— 文件里的顺序就是读者看到的顺序，两次读取必须得到同一串字节",
+            "✗ （隔离上游）报告自检 0 处问题，退出码 0",
+            "✗ （隔离上游）JSON 可解析",
+            "✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON"
+          ],
+          "newFailures": [
+            "✗ （隔离上游）报告自检 0 处问题，退出码 0 —— status 1/1；问题 4 处：rulings[1] aitools 的 evidence[0]: 必须是对象；rulings[1] aitools: overlap 必须是对象（{historicalItems, uniqueItems, overlapItems, maintenanceCost}）",
+            "✗ （隔离上游）JSON 可解析",
+            "✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON —— 报告退出码 1；上游自检问题 4 处：rulings[1] aitools 的 evidence[0]: 必须是对象；rulings[1] aitools: overlap 必须是对象（{historicalItems, uniqueItems, overlapItems, maintenanceCost}）；rulings 数组不是规范序（应按 source 的 code-unit 序：aitools → futurepedia，实得 futurepedia → aitools） —— 文件里的顺序就是读者看到的顺序，两次读取必须得到同一串字节",
+            "✗ （隔离上游）报告自检 0 处问题，退出码 0",
+            "✗ （隔离上游）JSON 可解析",
+            "✗ （隔离上游）JSON 契约可核对：报告成功运行并在 stdout 给出 JSON"
+          ],
+          "wentRed": true,
+          "addedFailures": 6
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "❌ 覆盖报告自检失败："
+          ],
+          "newFailures": [
+            "❌ 覆盖报告自检失败："
+          ],
+          "wentRed": true,
+          "addedFailures": 1
+        },
+        "validate-strict": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [
+        "coverage-targets-selftest",
+        "coverage-report"
+      ],
+      "caught": true,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M12",
+      "what": "删掉历史 Deal（模拟\"retire 顺手删数据\"）",
+      "expect": "history-verify 必红（账本与 deals.json 对不上）",
+      "context": {
+        "removed": 3
+      },
+      "rebuildExitCode": null,
+      "observed": null,
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "validate-strict": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "history-verify": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "❌ 历史与当前状态不一致：3 处。"
+          ],
+          "newFailures": [
+            "❌ 历史与当前状态不一致：3 处。"
+          ],
+          "wentRed": true,
+          "addedFailures": 1
+        }
+      },
+      "caughtBy": [
+        "history-verify"
+      ],
+      "caught": true,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M13",
+      "what": "让一个 registry 模型变 retired（legacy/historical 路由与索引行）",
+      "expect": "models-page-selftest 或 models-selftest 变红",
+      "context": {
+        "slug": "claude-fable-5.1",
+        "rebuild": true,
+        "observeModel": "claude-fable-5.1"
+      },
+      "rebuildExitCode": 0,
+      "observed": {
+        "slug": "claude-fable-5.1",
+        "catalogStatus": "historical",
+        "catalogReason": "status-retired-human-evidence",
+        "releasedAt": "2026-09-01",
+        "freshnessGroup": null,
+        "status": "retired"
+      },
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "✗ 汇总：每个身份都有结局（total == 现读 models.json 身份数 == 发布条目数；active + retired + unknown == total），且 retired 仍为 0（退役只由人工依据驱动） —— ④ retired 1 ≠ 0 —— 退役只由人工依据驱动，不允许自发生成",
+            "❌ === v3.0 Model Registry 演练：147 项通过，1 项失败 ==="
+          ],
+          "newFailures": [
+            "✗ 汇总：每个身份都有结局（total == 现读 models.json 身份数 == 发布条目数；active + retired + unknown == total），且 retired 仍为 0（退役只由人工依据驱动） —— ④ retired 1 ≠ 0 —— 退役只由人工依据驱动，不允许自发生成",
+            "❌ === v3.0 Model Registry 演练：147 项通过，1 项失败 ==="
+          ],
+          "wentRed": true,
+          "addedFailures": 2
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "validate-strict": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [
+        "models-selftest"
+      ],
+      "caught": true,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M14",
+      "what": "API Pricing 因 legacy 丢行（把已映射的 registry 模型置 retired）",
+      "expect": "api-plans-selftest 或 coverage-report 变红",
+      "context": {
+        "slug": "360zhinao-pro",
+        "rebuild": true,
+        "observeModel": "360zhinao-pro"
+      },
+      "rebuildExitCode": 0,
+      "observed": {
+        "slug": "360zhinao-pro",
+        "catalogStatus": "historical",
+        "catalogReason": "status-retired-human-evidence",
+        "releasedAt": "2026-08-05",
+        "freshnessGroup": null,
+        "status": "retired"
+      },
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "✗ 汇总：每个身份都有结局（total == 现读 models.json 身份数 == 发布条目数；active + retired + unknown == total），且 retired 仍为 0（退役只由人工依据驱动） —— ④ retired 1 ≠ 0 —— 退役只由人工依据驱动，不允许自发生成",
+            "❌ === v3.0 Model Registry 演练：147 项通过，1 项失败 ==="
+          ],
+          "newFailures": [
+            "✗ 汇总：每个身份都有结局（total == 现读 models.json 身份数 == 发布条目数；active + retired + unknown == total），且 retired 仍为 0（退役只由人工依据驱动） —— ④ retired 1 ≠ 0 —— 退役只由人工依据驱动，不允许自发生成",
+            "❌ === v3.0 Model Registry 演练：147 项通过，1 项失败 ==="
+          ],
+          "wentRed": true,
+          "addedFailures": 2
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "validate-strict": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [
+        "models-selftest"
+      ],
+      "caught": true,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M15",
+      "what": "源码变异：本地 Analytics 发网络请求",
+      "expect": "analytics-selftest 必红（分析层零请求）",
+      "context": {
+        "file": "scripts/lib/analytics.js",
+        "where": "guard 区块之外的帮助函数（未被调用）"
+      },
+      "rebuildExitCode": null,
+      "observed": null,
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [
+            "✅ 分析门禁 17 项，失败 0 项"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "coverage-report": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "validate-strict": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [],
+      "caught": false,
+      "restoreOk": true,
+      "restoreDrift": []
+    },
+    {
+      "id": "M15b",
+      "what": "源码变异（加强版）：把网络请求塞进会被逐字内联到页面的 ANALYTICS-GUARD 区块",
+      "expect": "analytics-selftest 必红（guard 在 vm 里只有白名单宿主）",
+      "context": {
+        "file": "scripts/lib/analytics.js",
+        "where": "ANALYTICS-GUARD 区块内（构建期内联、selftest vm 求值）"
+      },
+      "rebuildExitCode": null,
+      "observed": null,
+      "gates": {
+        "coverage-targets-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "model-freshness-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "models-page-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 1,
+          "failures": [
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红） —— 缺 无 · 多 无",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个） —— ernie-5.1 | glm-4.5v | glm-4.6v | glm-4.6v-flashx | glm-5v-turbo | gpt-6-astra | gpt-6-luna | gpt-6.1-sol | minimax-m3 | qwen3-max",
+            "✗ 索引页的行**集合与次序**逐字等于发布数据集的 slug 序列（改名 / 换位 / 多行少行都变红）",
+            "✗ 独立重算：10 个 registry 模型存在\"一条映射覆盖多个真实 variant\"（应为 9 个）"
+          ],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "api-plans-selftest": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "analytics-selftest": {
+          "exitCode": 1,
+          "baselineExitCode": 0,
+          "failures": [
+            "✗ guard 区块能在「没有 document/window/require」的沙箱里独立求值（唯一实现可被独立验证） —— fetch is not defined",
+            "❌ 分析门禁 14 项，失败 1 项",
+            "✗ guard 区块能在「没有 document/window/require」的沙箱里独立求值（唯一实现可被独立验证）"
+          ],
+          "newFailures": [
+            "✗ guard 区块能在「没有 document/window/require」的沙箱里独立求值（唯一实现可被独立验证） —— fetch is not defined",
+            "❌ 分析门禁 14 项，失败 1 项",
+            "✗ guard 区块能在「没有 document/window/require」的沙箱里独立求值（唯一实现可被独立验证）"
+          ],
+          "wentRed": true,
+          "addedFailures": 3
+        },
+        "coverage-report": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "validate-strict": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        },
+        "history-verify": {
+          "exitCode": 0,
+          "baselineExitCode": 0,
+          "failures": [],
+          "newFailures": [],
+          "wentRed": false,
+          "addedFailures": 0
+        }
+      },
+      "caughtBy": [
+        "analytics-selftest"
+      ],
+      "caught": true,
+      "restoreOk": true,
+      "restoreDrift": []
+    }
+  ]
+}

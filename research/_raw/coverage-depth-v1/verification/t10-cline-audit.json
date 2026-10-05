@@ -1,0 +1,229 @@
+{
+  "ranAt": "2026-10-05T05:02:28.619Z",
+  "registry": {
+    "baseIds": [
+      "aitools",
+      "cn_aliyun",
+      "cn_qianfan",
+      "cn_zhipu",
+      "futurepedia",
+      "futuretools",
+      "layer3labs"
+    ],
+    "headlessIds": [
+      "cn_volc_ark",
+      "cn_zhipu_pricing"
+    ],
+    "union": [
+      "aitools",
+      "cn_aliyun",
+      "cn_qianfan",
+      "cn_volc_ark",
+      "cn_zhipu",
+      "cn_zhipu_pricing",
+      "futurepedia",
+      "futuretools",
+      "layer3labs"
+    ]
+  },
+  "health": {
+    "generatedAt": "2026-10-04T16:31:52.051Z",
+    "rows": 9,
+    "ageHours": 12.51,
+    "unhealthy": [
+      "futurepedia(failed/collector_error)"
+    ],
+    "cfGe3": [
+      "futurepedia=10"
+    ],
+    "staleRows": []
+  },
+  "ruling": {
+    "source": "futurepedia",
+    "decision": "keep-degraded",
+    "revisitByHasDate": true,
+    "overlap": {
+      "historicalItems": 3,
+      "uniqueItems": 3,
+      "overlapItems": 4,
+      "maintenanceCost": "medium"
+    },
+    "evidenceCount": 7,
+    "capturedAt": [
+      "2026-10-04",
+      "2026-10-05",
+      "2026-10-05",
+      "2026-10-05",
+      "2026-10-05",
+      "2026-10-05",
+      "2026-10-05"
+    ]
+  },
+  "futurepediaDeals": [
+    {
+      "id": "cb45e0c735bd",
+      "title": "HubSpot AEO Sensor",
+      "lastSeen": "2026-09-30",
+      "status": null,
+      "sourceType": "directory"
+    },
+    {
+      "id": "9e7c938ec401",
+      "title": "Midjourney",
+      "lastSeen": "2026-09-30",
+      "status": null,
+      "sourceType": "directory"
+    },
+    {
+      "id": "376b6b3397e6",
+      "title": "Grok",
+      "lastSeen": "2026-10-05",
+      "status": null,
+      "sourceType": "directory"
+    }
+  ],
+  "staleCriterionSourceExcerpt": "#!/usr/bin/env node\n/**\n * t5 取证：**裁决的采集器侧落地**是否自洽（只读，不写任何生产文件）。\n *\n * T04 结论：唯一长期失败来源 `futurepedia`（consecutiveFailures=10）的裁决 = `keep-degraded`。\n * 「keep-degraded」在代码侧的落地要求是「不改采集代码」，因此本探针要做的是**证明三处对账同时为真、\n * 且历史零改动**，而不是产出 diff：\n *   ① 注册的采集器 ↔ source-probes.json 双向无差集（用生产函数 domDigest.probeCoverage）；\n *   ② collectors/index.js 的 BASE(+headless) ↔ source-health.json 注册表一致（含 kind 一致、无 stale 行）；\n *   ③ fixture 目录 ↔ 注册表无孤儿（双向，且每个目录的三件套齐全）。\n * 另附：\n *   ④ provenance.SOURCE_TYPES 对历史 Deals 的 sourceTy",
+  "checks": [
+    {
+      "id": "census.registryCount",
+      "ok": true,
+      "detail": "registry 并集 9 个：aitools,cn_aliyun,cn_qianfan,cn_volc_ark,cn_zhipu,cn_zhipu_pricing,futurepedia,futuretools,layer3labs"
+    },
+    {
+      "id": "census.baseCount",
+      "ok": true,
+      "detail": "BASE 7 个"
+    },
+    {
+      "id": "census.headlessCount",
+      "ok": true,
+      "detail": "headless 2 个：cn_volc_ark,cn_zhipu_pricing"
+    },
+    {
+      "id": "census.registryEqProbes",
+      "ok": true,
+      "detail": "registry=[\"aitools\",\"cn_aliyun\",\"cn_qianfan\",\"cn_volc_ark\",\"cn_zhipu\",\"cn_zhipu_pricing\",\"futurepedia\",\"futuretools\",\"layer3labs\"] probes=[\"aitools\",\"cn_aliyun\",\"cn_qianfan\",\"cn_volc_ark\",\"cn_zhipu\",\"cn_zhipu_pricing\",\"futurepedia\",\"futuretools\",\"layer3labs\"]"
+    },
+    {
+      "id": "census.registryEqHealth",
+      "ok": true,
+      "detail": "registry=[\"aitools\",\"cn_aliyun\",\"cn_qianfan\",\"cn_volc_ark\",\"cn_zhipu\",\"cn_zhipu_pricing\",\"futurepedia\",\"futuretools\",\"layer3labs\"] health=[\"aitools\",\"cn_aliyun\",\"cn_qianfan\",\"cn_volc_ark\",\"cn_zhipu\",\"cn_zhipu_pricing\",\"futurepedia\",\"futuretools\",\"layer3labs\"]"
+    },
+    {
+      "id": "census.unhealthySet",
+      "ok": true,
+      "detail": "非 healthy：[\"futurepedia(failed/collector_error)\"]"
+    },
+    {
+      "id": "census.cfGe3",
+      "ok": true,
+      "detail": "cf≥3：[\"futurepedia=10\"]"
+    },
+    {
+      "id": "census.healthGeneratedAt",
+      "ok": true,
+      "detail": "心跳 generatedAt=2026-10-04T16:31:52.051Z"
+    },
+    {
+      "id": "census.staleRows(recomputed)",
+      "ok": true,
+      "detail": "我按\"必填四件套缺失\"判 stale ⇒ []"
+    },
+    {
+      "id": "rulings.schemaVersion",
+      "ok": true,
+      "detail": "schemaVersion=1"
+    },
+    {
+      "id": "rulings.reviewedAt",
+      "ok": true,
+      "detail": "reviewedAt=2026-10-05"
+    },
+    {
+      "id": "rulings.singleRuling",
+      "ok": true,
+      "detail": "rulings=1"
+    },
+    {
+      "id": "rulings.decision",
+      "ok": true,
+      "detail": "decision=keep-degraded"
+    },
+    {
+      "id": "rulings.revisitByDate",
+      "ok": true,
+      "detail": "revisitBy 含 2026-10-19：2026-10-19 前复查（两周复审窗口）。到点用**同一条命令**重读两套读…"
+    },
+    {
+      "id": "rulings.overlapNumbers",
+      "ok": true,
+      "detail": "overlap={\"historicalItems\":3,\"uniqueItems\":3,\"overlapItems\":4,\"maintenanceCost\":\"medium\"}"
+    },
+    {
+      "id": "rulings.mdOverlapNumbers",
+      "ok": true,
+      "detail": "文档里能找到 3/3/4/medium：{\"historical\":true,\"unique\":true,\"overlap\":true,\"medium\":true}"
+    },
+    {
+      "id": "rulings.evidenceCount",
+      "ok": true,
+      "detail": "evidence=7 条"
+    },
+    {
+      "id": "rulings.evidenceDates",
+      "ok": true,
+      "detail": "capturedAt 分布=[\"2026-10-04\",\"2026-10-05\",\"2026-10-05\",\"2026-10-05\",\"2026-10-05\",\"2026-10-05\",\"2026-10-05\"]"
+    },
+    {
+      "id": "rulings.whyKeptNonEmpty",
+      "ok": true,
+      "detail": "whyKept 481 字符"
+    },
+    {
+      "id": "rulings.whyKeptSemanticsMatchDoc",
+      "ok": true,
+      "detail": "关键短语在文档命中 [\"跨环境观测不一致\",\"不污染数据\",\"独占\",\"成本\"]，在 whyKept 命中 [\"跨环境观测不一致\",\"不污染数据\",\"独占\",\"成本\"]（逐字不同属预期：md §11.2 声明来源是 §7.5 第一条要点）"
+    },
+    {
+      "id": "rulings.mdDeclaresWhyKeptSource",
+      "ok": true,
+      "detail": "文档 §11.2 是否声明 whyKept 来源 = §7.5"
+    },
+    {
+      "id": "rulings.mdMentionsKeepDegraded",
+      "ok": true,
+      "detail": "文档提到 keep-degraded"
+    },
+    {
+      "id": "rulings.mdMentionsRevisitBy",
+      "ok": true,
+      "detail": "文档提到 2026-10-19"
+    },
+    {
+      "id": "provenance.futurepediaInSourceTypes",
+      "ok": true,
+      "detail": "SOURCE_TYPES.Futurepedia=directory"
+    },
+    {
+      "id": "provenance.historicalFuturepediaType",
+      "ok": true,
+      "detail": "3 条 Futurepedia 记录 → sourceType=[\"directory\",\"directory\",\"directory\"]"
+    },
+    {
+      "id": "health.futurepediaRowPresent",
+      "ok": true,
+      "detail": "futurepedia 行是否存在"
+    },
+    {
+      "id": "health.futurepediaRowFields",
+      "ok": true,
+      "detail": "行={\"source\":\"futurepedia\",\"name\":\"Futurepedia\",\"region\":\"global\",\"kind\":\"static\",\"lastAttemptAt\":\"2026-10-04T16:31:52.051Z\",\"lastSuccessAt\":\"2026-09-30T01:36:21.446Z\",\"lastItemCount\":7,\"previousItemCount\":7,\"delta\":0,\"consecutiveFailures\":10,\"consecutiveZero\":0,\"status\":\"failed\",\"reason\":\"collector_error\",\"lastError\":\"https://www.futurepedia.io/ 抓取失败: HTTP 403\",\"lastDurationMs\":2169,\"headlessReady\":null}"
+    },
+    {
+      "id": "health.byteIdenticalToBaseline",
+      "ok": true,
+      "detail": "git show HEAD 版本 4515 字节 vs 工作区 4515 字节（规范化换行后比较）"
+    }
+  ],
+  "problems": []
+}

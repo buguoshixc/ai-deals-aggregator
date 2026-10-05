@@ -1,0 +1,33 @@
+{
+  "repo": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1",
+  "scannedFiles": 165,
+  "hits": 2,
+  "byForm": {
+    "every": 2
+  },
+  "hints": {
+    "no-guard-hint": 2
+  },
+  "details": [
+    {
+      "file": "scripts/tools/vendor-page-selftest.js",
+      "checkLine": 226,
+      "hitLine": 417,
+      "form": "every",
+      "checkName": "(名字不是字面量)",
+      "exprLines": 3,
+      "exprPreview": "('没有 Coding 套餐的厂商写的是明确空态（不是空白、也不是 0 条记录）', vendorPages.filter(spec => !vendorPage.vendorViewOf(spec, ctxFor(spec)).codingPlans.length) .every(spec => /尚未收录这家厂商的 Coding 套餐/.test(vendorPage.renderVendorKnowledgeSections(spec, ctxFor(spec))))",
+      "guardHints": []
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "checkLine": 1534,
+      "hitLine": 2968,
+      "form": "every",
+      "checkName": "(名字不是字面量)",
+      "exprLines": 8,
+      "exprPreview": "('RSS 与 JSON Feed 的条目数、id 集合两侧一致', feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([rel, box]) => { const jsonBox = feedProbe.targets[rel.replace(/\\.xml$/, '.json')]; return jsonBox && jsonBox.items === box.items && JSON.stringify(jsonBox.ids) === J",
+      "guardHints": []
+    }
+  ]
+}

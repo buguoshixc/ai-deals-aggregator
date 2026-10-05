@@ -1975,5 +1975,327 @@
         "lang": "en"
       }
     ]
+  },
+  {
+    "provider": "openai",
+    "planName": "ChatGPT Plus",
+    "officialUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
+    "source": "Official-Docs",
+    "sourceUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
+    "region": "global",
+    "billing": {
+      "period": "monthly",
+      "currency": "USD",
+      "regularPrice": 20,
+      "promoPrice": null,
+      "promoNote": null,
+      "note": "官方写「a subscription plan that provides enhanced access to the ChatGPT web app for $20/month」与「Price: $20/month (billed monthly)」；同页答「Currently, we do not support annual billing」——本条只有月付 SKU"
+    },
+    "quota": {
+      "type": "rate_limited",
+      "amount": null,
+      "period": null,
+      "description": "官方 Usage Limits 段写「Plus subscriptions may include usage limits such as message caps, especially during high demand. These limits may vary based on system conditions.」未公布固定数值",
+      "conversionDependsOnModel": null
+    },
+    "supportedModels": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "billing.regularPrice",
+        "quote": "ChatGPT Plus is a subscription plan that provides enhanced access to the ChatGPT web app for $20/month. … Price: $20/month (billed monthly).",
+        "sourceUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
+        "capturedAt": "2026-10-05",
+        "lang": "en"
+      },
+      {
+        "field": "quota.description",
+        "quote": "To ensure a smooth experience for all users, Plus subscriptions may include usage limits such as message caps, especially during high demand. These limits may vary based on system conditions.",
+        "sourceUrl": "https://help.openai.com/en/articles/6950777-what-is-chatgpt-plus",
+        "capturedAt": "2026-10-05",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "provider": "openai",
+    "planName": "ChatGPT Pro 100",
+    "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+    "source": "Official-Docs",
+    "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+    "region": "global",
+    "billing": {
+      "period": "monthly",
+      "currency": "USD",
+      "regularPrice": 100,
+      "promoPrice": null,
+      "promoNote": null,
+      "note": "官方三档表逐行写「Pro 100 | $100 | Not included」；同页写「Pro is billed monthly. Annual billing and payment for multiple months in advance are not available.」"
+    },
+    "quota": {
+      "type": "rate_limited",
+      "amount": null,
+      "period": null,
+      "description": "官方写「Pro 200 includes more usage than Pro 100. Pro 500 offers the highest included usage of the three plans.」；未公布固定数值；Ultrafast 只有 Pro 500 含",
+      "conversionDependsOnModel": null
+    },
+    "supportedModels": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "billing.regularPrice",
+        "quote": "Choose from three monthly Pro plans: Plan | Monthly price (USD) | Ultrafast — Pro 100 | $100 | Not included — Pro 200 | $200 | Not included — Pro 500 | $500 | Included",
+        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+        "capturedAt": "2026-10-05",
+        "lang": "en"
+      },
+      {
+        "field": "quota.description",
+        "quote": "Pro 200 includes more usage than Pro 100. Pro 500 offers the highest included usage of the three plans.",
+        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+        "capturedAt": "2026-10-05",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "provider": "openai",
+    "planName": "ChatGPT Pro 200",
+    "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+    "source": "Official-Docs",
+    "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+    "region": "global",
+    "billing": {
+      "period": "monthly",
+      "currency": "USD",
+      "regularPrice": 200,
+      "promoPrice": null,
+      "promoNote": null,
+      "note": "官方三档表写「Pro 200 | $200」；同页写「The monthly price remains $200.」——本轮不把 grandfathering 的用量差异写成价格差异"
+    },
+    "quota": {
+      "type": "rate_limited",
+      "amount": null,
+      "period": null,
+      "description": "官方写「Pro 200 includes more usage than Pro 100」；新订户不再享有旧额度（官方写 lower included usage allowance），未公布固定数值",
+      "conversionDependsOnModel": null
+    },
+    "supportedModels": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "billing.regularPrice",
+        "quote": "Choose from three monthly Pro plans: Plan | Monthly price (USD) | Ultrafast — Pro 100 | $100 | Not included — Pro 200 | $200 | Not included — Pro 500 | $500 | Included",
+        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+        "capturedAt": "2026-10-05",
+        "lang": "en"
+      },
+      {
+        "field": "quota.description",
+        "quote": "New subscriptions that aren’t eligible for grandfathering include a lower usage allowance. … The monthly price remains $200.",
+        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+        "capturedAt": "2026-10-05",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "provider": "openai",
+    "planName": "ChatGPT Pro 500",
+    "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+    "source": "Official-Docs",
+    "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+    "region": "global",
+    "billing": {
+      "period": "monthly",
+      "currency": "USD",
+      "regularPrice": 500,
+      "promoPrice": null,
+      "promoNote": null,
+      "note": "官方写「Pro 500, a new $500/month plan that includes Astra Ultrafast」；三档表写「Pro 500 | $500 | Included」"
+    },
+    "quota": {
+      "type": "rate_limited",
+      "amount": null,
+      "period": null,
+      "description": "官方写「Pro 500 offers the highest included usage of the three plans」；Ultrafast 仅本档含，未公布固定数值",
+      "conversionDependsOnModel": null
+    },
+    "supportedModels": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "billing.regularPrice",
+        "quote": "ChatGPT Pro now offers Pro 500, a new $500/month plan that includes Astra Ultrafast.",
+        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+        "capturedAt": "2026-10-05",
+        "lang": "en"
+      },
+      {
+        "field": "quota.description",
+        "quote": "Pro 500 offers the highest included usage of the three plans. … Among Pro plans, Ultrafast is available only on Pro 500.",
+        "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+        "capturedAt": "2026-10-05",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "provider": "openai",
+    "planName": "ChatGPT Business · Standard 座位",
+    "officialUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
+    "source": "Official-Docs",
+    "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
+    "region": "global",
+    "billing": {
+      "period": "monthly",
+      "currency": "USD",
+      "regularPrice": 25,
+      "promoPrice": null,
+      "promoNote": null,
+      "note": "官方座位表写「Standard seat | Monthly plan: $25 per user per month | Annual plan: $20 per user per month, billed annually」；本条收**月付座位**，年付是另一个 SKU（不做 12 个月换算）"
+    },
+    "quota": {
+      "type": "rate_limited",
+      "amount": null,
+      "period": null,
+      "description": "官方写 Standard 座位含 ChatGPT、ChatGPT Work 与 Codex；座位用量按 5 小时窗口给本地消息估算区间（如 GPT-6 Astra 5–45 条），未公布固定数值",
+      "conversionDependsOnModel": null
+    },
+    "supportedModels": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "billing.regularPrice",
+        "quote": "Standard seat | Monthly plan: $25 per user per month | Annual plan: $20 per user per month, billed annually",
+        "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
+        "capturedAt": "2026-10-05",
+        "lang": "en"
+      },
+      {
+        "field": "quota.description",
+        "quote": "Standard ChatGPT seats include access to ChatGPT, ChatGPT Work, and Codex … For most countries, pricing (USD) is $25 per user per month if billed monthly and $20 per user per month if billed annually.",
+        "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
+        "capturedAt": "2026-10-05",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "provider": "openai",
+    "planName": "ChatGPT Business · Premium 座位",
+    "officialUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
+    "source": "Official-Docs",
+    "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
+    "region": "global",
+    "billing": {
+      "period": "monthly",
+      "currency": "USD",
+      "regularPrice": 125,
+      "promoPrice": null,
+      "promoNote": null,
+      "note": "官方座位表写「Premium seat | Monthly plan: $125 per user per month | Annual plan: $100 per user per month, billed annually」；本条收**月付座位**，年付是另一个 SKU"
+    },
+    "quota": {
+      "type": "rate_limited",
+      "amount": null,
+      "period": null,
+      "description": "官方写 Premium 座位「include all the same access as Standard seats, but with higher usage limits」且无 5 小时上限；未公布固定数值",
+      "conversionDependsOnModel": null
+    },
+    "supportedModels": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "billing.regularPrice",
+        "quote": "Premium seat | Monthly plan: $125 per user per month | Annual plan: $100 per user per month, billed annually",
+        "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
+        "capturedAt": "2026-10-05",
+        "lang": "en"
+      },
+      {
+        "field": "quota.description",
+        "quote": "Premium seats cost $100 per user per month when billed annually, or $125 per user per month when billed monthly. Premium includes 5x more usage than Standard seats, no 5-hour usage limit",
+        "sourceUrl": "https://help.openai.com/en/articles/8792828-chatgpt-business-overview",
+        "capturedAt": "2026-10-05",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "provider": "sensetime",
+    "planName": "SenseNova Token Plan · Free(公测)",
+    "officialUrl": "https://www.sensenova.cn/token-plan",
+    "source": "Official-Pricing",
+    "sourceUrl": "https://www.sensenova.cn/token-plan",
+    "region": "cn",
+    "billing": {
+      "period": "monthly",
+      "currency": "CNY",
+      "regularPrice": 0,
+      "promoPrice": null,
+      "promoNote": null,
+      "note": "官方订阅方案区写「公测期完全免费开放，付费档位即将上线」，档位卡片写「Free · 公测 限时放量 ¥ 0/月」；0 是「确实免费」而不是「价格未知」；Lite / Pro 付费档官方写「即将上线」⇒ 没有公开价，不收录"
+    },
+    "quota": {
+      "type": "credits",
+      "amount": 60000,
+      "period": "rolling",
+      "description": "官方写「60,000 积分 / 5 小时（特殊模型除外，具体参考文档说明）」；公测档点名 SenseNova 6.8 Flash Lite 与 SenseNova U1 Fast 两个模型",
+      "conversionDependsOnModel": true
+    },
+    "supportedModels": null,
+    "restrictions": null,
+    "firstSeen": "2026-10-05",
+    "lastSeen": "2026-10-05",
+    "verified": true,
+    "verifiedAt": "2026-10-05",
+    "evidence": [
+      {
+        "field": "billing.regularPrice",
+        "quote": "Free · 公测 限时放量 ¥ 0/月",
+        "sourceUrl": "https://www.sensenova.cn/token-plan",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "quota.amount",
+        "quote": "60,000 积分 / 5 小时i特殊模型除外，具体参考文档说明。",
+        "sourceUrl": "https://www.sensenova.cn/token-plan",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      },
+      {
+        "field": "billing.period",
+        "quote": "订阅方案 公测期完全免费开放，付费档位即将上线",
+        "sourceUrl": "https://www.sensenova.cn/token-plan",
+        "capturedAt": "2026-10-05",
+        "lang": "zh"
+      }
+    ]
   }
 ]

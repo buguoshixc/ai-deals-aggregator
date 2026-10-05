@@ -1,0 +1,26 @@
+﻿--- missingTargets ---
+ai360/coding MISSING declared=0 present=0 resolved=0
+ai360/api MISSING declared=1 present=0 resolved=0
+ai360/models MISSING declared=0 present=0 resolved=0
+baichuan/coding MISSING declared=0 present=0 resolved=0
+baichuan/api MISSING declared=2 present=0 resolved=0
+baichuan/models MISSING declared=0 present=0 resolved=0
+baidu/api MISSING declared=0 present=0 resolved=0
+baidu/models MISSING declared=0 present=0 resolved=0
+deepseek/deals MISSING declared=0 present=0 resolved=0
+iflytek/api MISSING declared=0 present=0 resolved=0
+iflytek/models MISSING declared=0 present=0 resolved=0
+microsoft/coding MISSING declared=0 present=0 resolved=0
+moonshot/api MISSING declared=0 present=0 resolved=0
+openai/coding MISSING declared=0 present=0 resolved=0
+sensetime/coding MISSING declared=0 present=0 resolved=0
+sensetime/api MISSING declared=1 present=0 resolved=0
+stepfun/api MISSING declared=2 present=0 resolved=0
+--- partialTargets ---
+replit/coding PARTIAL declared=1 present=2 resolved=0
+--- deferred ---
+microsoft/api DEFERRED declared=0 present=0 resolved=0
+sensetime/models DEFERRED declared=0 present=0 resolved=0
+--- unverifiable ---
+coze/api UNVERIFIABLE declared=0 present=0 resolved=0
+iflytek/coding UNVERIFIABLE declared=0 present=2 resolved=0

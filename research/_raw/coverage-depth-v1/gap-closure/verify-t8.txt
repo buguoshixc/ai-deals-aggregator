@@ -1,0 +1,34 @@
+
+### npm run models:rebuild --silent => exit 0
+      · model-registry-links.json 需要写盘
+    
+    ? 已写出 models.json：51 个模型，updatedAt=2026-10-05T00:00:00+08:00
+    ? 已写出 model-registry-links.json：92 条映射
+    下一步：node scripts/tools/check-models-reproducible.js && node scripts/tools/check-model-registry-links.js
+### node scripts/tools/models-selftest.js => exit 1
+    ? === v3.0 Model Registry 演练：140 项通过，4 项失败 ===
+       - 每个模型的 officialUrl 都是它某条映射记录里真实引用过的官方页（不许出现凭空的链接） —— 360zhinao-pro → https://ai.360.com/open/zh/models/360zhinao/360zhinao-pro | 360zhinao-turbo-llm-geo → https://ai.360.com/open/zh/models/360zhinao/360zhinao-turbo-llm-geo
+       - 汇总：44 个模型全部 active、0 retired（退役只由人工依据驱动） —— {"total":51,"byStatus":{"active":51,"retired":0,"unknown":0},"byModelRole":{"general":29,"fast":6,"reasoning":0,"coding":1,"vision":8,"embedding":1,"audio":0,"realtime":0,"translation":2,"other":2,"(null)":2},"byCatalogStatus":{"current":0,"aging":0,"legacy":0,"historical":0,"unknown":51},"developers":15,"families":15,"updatedAt":"2026-10-05T00:00:00+08:00"}
+       - 真实数据：API 侧声明 16 条，reason 全部是 off-registry-model、sourceUrl 全部取自该记录自己的官方页
+       - 【API 处置】coverageOf：declaredApiEntries 逐条留档（12 条 · 带 provider）+ unmappedModelKeys 归零 + 三者和 == 总条目 —— {"declared":16,"unmapped":0,"mapped":92,"identities":16,"items":108}
+### node scripts/tools/check-model-registry-links.js => exit 0
+         · stepfun / step-router-v1（套餐 ef931b98b927）→ series
+         · stepfun / stepaudio-2.5-asr（套餐 ef931b98b927）→ non-text-resource
+         · stepfun / stepaudio-2.5-chat（套餐 ef931b98b927）→ non-text-resource
+         … 另有 22 条
+       候选（归一后精确相等，**只供人工 review，绝不写生产映射**）：API 0 条 · 套餐 0 条
+### node scripts/tools/check-models-reproducible.js => exit 0
+    ? Model Registry 可重建性通过：models.json 与 model-registry-links.json 都与来源层逐字节一致
+       51 个模型 · 92 条映射 · updatedAt=2026-10-05T00:00:00+08:00
+### node scripts/tools/coverage-report.js => exit 1
+    候选登记表：40 条（已采信 13 / 未采信 21）
+    报告自检问题：1 处
+    System.Management.Automation.RemoteException
+    ? 覆盖报告自检失败：
+      - scripts/data/coverage-targets.json 解析失败：顶层必须是对象（{schemaVersion, reviewedAt, targets}）
+### node scripts/validate.js --strict => exit 0
+    ??  警告 2 条：
+      - 疑似同一优惠未合并：Getsolved ? Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名）
+      - 疑似同一优惠未合并：KREA ? Kreado AI（可在 scripts/data/aliases.json 登记别名）
+    
+    ? 校验通过（strict 模式）

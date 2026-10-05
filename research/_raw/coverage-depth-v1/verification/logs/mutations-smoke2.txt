@@ -1,0 +1,33 @@
+﻿node : node:fs:1867
+所在位置 行:3 字符: 1
++ node "$dir/mutations.cjs" --only=M1 --keep-sandbox 2>&1 | Out-File -E ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (node:fs:1867:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  binding.symlink(
+          ^
+
+Error: ENOENT: no such file or directory, symlink 'D:\OneDrive\Desktop\Code\AI Page\.worktrees\coverage-depth-v1\node_m
+odules' -> 'C:\Users\星澈\AppData\Local\Temp\t9-mutation-sandbox\node_modules'
+    at Object.symlinkSync (node:fs:1867:11)
+    at linkNodeModules (D:\OneDrive\Desktop\Code\AI Page\.worktrees\coverage-depth-v1\research\_raw\coverage-depth-v1\v
+erification\mutations.cjs:54:6)
+    at main (D:\OneDrive\Desktop\Code\AI Page\.worktrees\coverage-depth-v1\research\_raw\coverage-depth-v1\verification
+\mutations.cjs:320:3)
+    at Object.<anonymous> (D:\OneDrive\Desktop\Code\AI Page\.worktrees\coverage-depth-v1\research\_raw\coverage-depth-v
+1\verification\mutations.cjs:449:1)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'symlink',
+  path: 'D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\coverage-depth-v1\\node_modules',
+  dest: 'C:\\Users\\星澈\\AppData\\Local\\Temp\\t9-mutation-sandbox\\node_modules'
+}
+
+Node.js v24.13.1

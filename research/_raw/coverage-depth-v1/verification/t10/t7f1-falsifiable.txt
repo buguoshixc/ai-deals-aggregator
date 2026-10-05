@@ -1,0 +1,23 @@
+﻿## 独立证伪 T7-F1（用盘上真实实现，喂我自己的对抗输入）
+
+✓ C0 正控制：空集 + 计数 0（当前盘面：MISSING=0）
+    ⇒ no-problem
+✓ C1 空集 + 计数 1（老判据在此恒真 ⇒ 假牙）
+    ⇒ problem : MISSING 行集合大小 0 ≠ states.MISSING 计数 1 —— 两处读数必须一致（空集也要对上 0，不许靠"没有行"蒙过去）
+✓ C2 合成 MISSING 行 present=1 + 计数 1
+    ⇒ problem : 有 1 格 MISSING 却在盘上有记录（present ≠ 0）：x/deals=1 —— MISSING 的定义是"可覆盖、未延期、来源健康，但盘上一条都没有"
+✓ C3 行数 1 + 计数 2（集合与计数脱钩）
+    ⇒ problem : MISSING 行集合大小 1 ≠ states.MISSING 计数 2 —— 两处读数必须一致（空集也要对上 0，不许靠"没有行"蒙过去）
+✓ C4 合法 MISSING 行 present=0 + 计数 1
+    ⇒ no-problem
+✓ C5 非 MISSING 行（COVERED present=5）不得被误伤 + 计数 0
+    ⇒ no-problem
+✓ C6 坏输入：rows 不是数组
+    ⇒ no-problem
+
+## 老判据对照
+    [].filter(state==='MISSING').every(present===0) === true（空集恒真 ⇒ MISSING=0 时永远绿）
+    新判据在 C1（空集 vs 计数 1）与 C2（present=1）上都报红 ⇒ 可证伪
+
+结论：不通过 0 / 7 组对抗输入
+→ 证据写入 t7f1-falsifiable.json

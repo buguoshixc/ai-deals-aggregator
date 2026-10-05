@@ -1,0 +1,89 @@
+{
+  "capturedAt": "2026-10-05T03:33:18.714Z",
+  "baselineSha": "ff86368e6d12d1ef57b2f51aa2c957c01d2a9ed8",
+  "cwd": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\cd-baseline",
+  "stableIds": {
+    "registrySlugs": {
+      "count": 44,
+      "sha256OfSortedList": "6343f22a95532103ad098ebcddbfe488ba65cb72a627d7d394d46ee153e20595"
+    },
+    "publishedModelIds": {
+      "count": 44,
+      "sha256OfSortedList": "ab6ae8cb20a18c246d5bfbfe8256a79178d4167579a1eb8772060f5359578e24"
+    },
+    "publishedModelSlugs": {
+      "count": 44,
+      "sha256OfSortedList": "6343f22a95532103ad098ebcddbfe488ba65cb72a627d7d394d46ee153e20595"
+    },
+    "providerKeys": {
+      "count": 34,
+      "sha256OfSortedList": "6a87dfcd5f76261e8b5ba75313a34594a6940110334a22519d239c3efccbde5a"
+    },
+    "dealIds": {
+      "count": 135,
+      "sha256OfSortedList": "c913c51b435f2a8a7575bc43a12972bd330b03461d2156095cc8c3d5493b6b24"
+    },
+    "planIds": {
+      "count": 37,
+      "sha256OfSortedList": "a8cbafbf5ba71d8764f6ec2e2aad1359c4acebac640bca2c8a79a26b05d54be6"
+    },
+    "apiPlanIds": {
+      "count": 17,
+      "sha256OfSortedList": "5c0f94f58537b9ef53fb3ad71f0e07ee64bcd415b841a048c4c84ca256563cad"
+    },
+    "registryLinkIds": {
+      "count": 0,
+      "sha256OfSortedList": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "coverageTargetProviders": {
+      "count": 34,
+      "sha256OfSortedList": "6a87dfcd5f76261e8b5ba75313a34594a6940110334a22519d239c3efccbde5a"
+    },
+    "coverageTargetSig": "f64aeaa36f30381dad6a69c21a3ef2aaa5090f05ac74c91abc6d2a7055d4d00c"
+  },
+  "build": {
+    "exitCode": 0,
+    "log": "baseline-build.log"
+  },
+  "dist": {
+    "totalFiles": 293,
+    "htmlFiles": 176,
+    "jsonFiles": 36,
+    "modelDetailRoutes": 44,
+    "fileListSha256": "bcd4fa8ddc923c8fc55b75b0fe56bf2e185c6730444d2da32e94c8161582628a",
+    "sitemapUrls": 173,
+    "sitemapSha256": "4f1ca4702e3f1840783acf133074758fca9c30dbe9b1a46981d6b1898cd84df6",
+    "sitemapModelUrls": 45,
+    "sitemapHasLegacyModel": true,
+    "feedXml": {
+      "bytes": 84796,
+      "sha256": "aae1603629a10ec6c19f3997f1662f0369ba2d7d9169ddeadfa3370c4936e43a"
+    },
+    "feedEntries": 0,
+    "feedJson": {
+      "bytes": 82334,
+      "sha256": "e9668600c2a50e4a42d7d898b2a07eadef8776b4839bee69b7dbfba680bd5977"
+    },
+    "feedJsonItems": 80,
+    "datasetManifest": {
+      "bytes": 4124,
+      "sha256": "757809cc4fae1e6c0ca013fce526cd59a3400ac15dcd4279ae22b03edf346f5e"
+    },
+    "datasetManifestEntries": 9,
+    "datasetManifestIds": [
+      "api-plan-history",
+      "api-plans",
+      "deal-history",
+      "deal-plan-links",
+      "deals",
+      "model-registry-links",
+      "models",
+      "plan-history",
+      "plans"
+    ],
+    "legacyDetailRouteExists": true,
+    "legacyDetailRouteSha256": "cf40d4c4615ecdea51cf5962c1630540c3947db4cb3d893f7f1c8402ab8d3a1f",
+    "modelsHubSha256": "3f88534f1a83bb019f9eb7f186e78a4224399d2d323e06e67579174a78e556ac",
+    "homeSha256": "4dc486d3fd081724fb778381f404b638d177b5c2055a13b0934f11bf36c8c455"
+  }
+}

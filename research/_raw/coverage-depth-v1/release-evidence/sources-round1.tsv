@@ -1,0 +1,30 @@
+# coverage-depth-v1 Workstream A：官方来源抓取清单（url<TAB>保存名）
+# 只用**官方域**（providers.json officialDomains）；第三方页一概不进这个清单。
+https://www.anthropic.com/news	anthropic-news-index.html
+https://docs.anthropic.com/en/docs/about-claude/models/overview	anthropic-models-overview.html
+https://docs.anthropic.com/en/release-notes/api	anthropic-release-notes-api.html
+https://docs.anthropic.com/en/docs/about-claude/model-deprecations	anthropic-model-deprecations.html
+https://openai.com/news/	openai-news-index.html
+https://platform.openai.com/docs/changelog	openai-docs-changelog.html
+https://platform.openai.com/docs/models	openai-docs-models.html
+https://ai.google.dev/gemini-api/docs/changelog	google-gemini-changelog.html
+https://ai.google.dev/gemini-api/docs/models	google-gemini-models.html
+https://blog.google/products/gemini/	google-blog-gemini.html
+https://docs.bigmodel.cn/cn/guide/start/model-overview	bigmodel-model-overview.html
+https://docs.bigmodel.cn/cn/guide/develop/http/introduction	bigmodel-http-intro.html
+https://open.bigmodel.cn/dev/api	bigmodel-open-api.html
+https://open.bigmodel.cn/pricing	bigmodel-pricing.html
+https://www.volcengine.com/docs/82379/1330310	volcengine-ark-models.html
+https://www.volcengine.com/docs/82379/1159178	volcengine-ark-model-list.html
+https://www.volcengine.com/docs/82379/1099320	volcengine-ark-updates.html
+https://cloud.tencent.com/document/product/1729/97731	tencent-hunyuan-model-list.html
+https://cloud.tencent.com/document/product/1729/104753	tencent-hunyuan-pricing.html
+https://cloud.tencent.com/document/product/1729/109250	tencent-hunyuan-release.html
+https://www.kimi.com/	kimi-home.html
+https://platform.minimax.cn/docs/release-notes/models	minimax-release-notes.html
+https://platform.minimax.cn/docs/guides/models-intro	minimax-models-intro.html
+https://help.aliyun.com/zh/model-studio/models	aliyun-models.html
+https://help.aliyun.com/zh/model-studio/model-pricing	aliyun-model-pricing.html
+https://help.aliyun.com/zh/model-studio/model-release-notes	aliyun-model-release-notes.html
+https://platform.stepfun.com/docs/overview/model-list	stepfun-model-list.html
+https://www.stepfun.com/changelog	stepfun-changelog.html

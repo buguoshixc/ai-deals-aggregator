@@ -1,0 +1,14 @@
+﻿===== probe-census futurepedia round 2 start 2026-10-05T11:38:27.6790459+08:00 =====
+[probe-census] tag=fp-round2 headless=false picked=futurepedia
+[probe-census] startedAt(UTC)=2026-10-05T03:38:27.955Z startedAt(local)=Mon Oct 05 2026 11:38:27 GMT+0800 (中国标准时间)
+  ✓ futurepedia produced=7 valid=7 deals=0 ms=5139
+[probe-census] 盘上读数 generatedAt=2026-10-04T16:31:52.051Z 普查={"healthy":8,"degraded":0,"failed":1}
+[probe-census] 本轮推演 generatedAt=2026-10-05T03:38:33.096Z 普查={"healthy":9,"degraded":0,"failed":0}
+[probe-census] 写出（本目录，非生产文件）: D:\OneDrive\Desktop\Code\AI Page\.worktrees\coverage-depth-v1\research\_raw\coverage-depth-v1\source-reliability\census-fp-round2.json
+===== probe-census futurepedia round 3 start 2026-10-05T11:40:33.1412128+08:00 =====
+[probe-census] tag=fp-round3 headless=false picked=futurepedia
+[probe-census] startedAt(UTC)=2026-10-05T03:40:33.374Z startedAt(local)=Mon Oct 05 2026 11:40:33 GMT+0800 (中国标准时间)
+  ✓ futurepedia produced=7 valid=7 deals=0 ms=4508
+[probe-census] 盘上读数 generatedAt=2026-10-04T16:31:52.051Z 普查={"healthy":8,"degraded":0,"failed":1}
+[probe-census] 本轮推演 generatedAt=2026-10-05T03:40:37.884Z 普查={"healthy":9,"degraded":0,"failed":0}
+[probe-census] 写出（本目录，非生产文件）: D:\OneDrive\Desktop\Code\AI Page\.worktrees\coverage-depth-v1\research\_raw\coverage-depth-v1\source-reliability\census-fp-round3.json

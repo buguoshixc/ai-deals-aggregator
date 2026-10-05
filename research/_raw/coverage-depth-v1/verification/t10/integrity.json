@@ -1,0 +1,427 @@
+{
+  "generatedAtNote": "2026-10-05 (t10 independent integrity pass)",
+  "baseline": "ff86368e6d12d1ef57b2f51aa2c957c01d2a9ed8",
+  "stableIds": [
+    {
+      "label": "api-plans[].id",
+      "baseline": 17,
+      "current": 24,
+      "added": 7,
+      "removed": 0,
+      "removedIds": [],
+      "addedIds": [
+        "0940febeeea9",
+        "218c142dcb17",
+        "23643dfd94f8",
+        "faf2d5722e71",
+        "c4b6948c4fa9",
+        "09ed95f9cd81",
+        "03b27e432472"
+      ],
+      "expectAdditions": "additions expected"
+    },
+    {
+      "label": "plans[].id",
+      "baseline": 37,
+      "current": 44,
+      "added": 7,
+      "removed": 0,
+      "removedIds": [],
+      "addedIds": [
+        "908f38cee9c9",
+        "f7d832753cc5",
+        "f22ba46a0d6a",
+        "5b69ae2939c8",
+        "03f246d78293",
+        "83b27b3f3537",
+        "5ef2cd29fff0"
+      ],
+      "expectAdditions": "additions expected"
+    },
+    {
+      "label": "registry models[].slug",
+      "baseline": 44,
+      "current": 51,
+      "added": 7,
+      "removed": 0,
+      "removedIds": [],
+      "addedIds": [
+        "360zhinao-pro",
+        "360zhinao-turbo-llm-geo",
+        "baichuan-m3",
+        "baichuan-m3-plus",
+        "ernie-4.5-turbo-128k",
+        "ernie-5.1",
+        "spark-x2.5"
+      ],
+      "expectAdditions": "additions expected"
+    },
+    {
+      "label": "root models[].id",
+      "baseline": 44,
+      "current": 51,
+      "added": 7,
+      "removed": 0,
+      "removedIds": [],
+      "addedIds": [
+        "abfdd38bb85e",
+        "229ebc1fcbfd",
+        "2ffb17692d83",
+        "a3af903afde6",
+        "d20c764cbe8a",
+        "a395f53ed71c",
+        "8334bff1aa19"
+      ],
+      "expectAdditions": "additions expected (derived)"
+    },
+    {
+      "label": "deals[].id",
+      "baseline": 135,
+      "current": 135,
+      "added": 0,
+      "removed": 0,
+      "removedIds": [],
+      "addedIds": [],
+      "expectAdditions": "must be zero churn"
+    },
+    {
+      "label": "providers keys",
+      "baseline": 34,
+      "current": 34,
+      "added": 0,
+      "removed": 0,
+      "removedIds": [],
+      "addedIds": [],
+      "expectAdditions": "must be zero churn"
+    }
+  ],
+  "history": [
+    {
+      "file": "scripts/data/deal-history.json",
+      "baselineEvents": 1,
+      "currentEvents": 1,
+      "added": 0,
+      "removed": 0,
+      "addedKinds": {},
+      "samples": []
+    },
+    {
+      "file": "scripts/data/plan-history.json",
+      "baselineEvents": 28,
+      "currentEvents": 35,
+      "added": 7,
+      "removed": 0,
+      "addedKinds": {
+        "created": 7
+      },
+      "samples": [
+        {
+          "planId": "03f246d78293",
+          "at": "2026-10-05",
+          "type": "created",
+          "field": null,
+          "from": null,
+          "to": null,
+          "fields": {
+            "billing.regularPrice": 200,
+            "billing.currency": "USD",
+            "quota.type": "rate_limited",
+            "quota.description": "官方写「Pro 200 includes more usage than Pro 100」；新订户不再享有旧额度（官方写 lower included usage allowance），未公布固定数值",
+            "region": "global",
+            "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+            "source": "Official-Docs",
+            "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers"
+          },
+          "runAt": "2026-10-05T03:57:58.336Z",
+          "eventId": "05a4f0bdf78b"
+        },
+        {
+          "planId": "5b69ae2939c8",
+          "at": "2026-10-05",
+          "type": "created",
+          "field": null,
+          "from": null,
+          "to": null,
+          "fields": {
+            "billing.regularPrice": 100,
+            "billing.currency": "USD",
+            "quota.type": "rate_limited",
+            "quota.description": "官方写「Pro 200 includes more usage than Pro 100. Pro 500 offers the highest included usage of the three plans.」；未公布固定数值；Ultrafast 只有 Pro 500 含",
+            "region": "global",
+            "officialUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers",
+            "source": "Official-Docs",
+            "sourceUrl": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers"
+          },
+          "runAt": "2026-10-05T03:57:58.336Z",
+          "eventId": "a55b6d8666cd"
+        },
+        {
+          "planId": "5ef2cd29fff0",
+          "at": "2026-10-05",
+          "type": "created",
+          "field": null,
+          "from": null,
+          "to": null,
+          "fields": {
+            "billing.regularPrice": 0,
+            "billing.currency": "CNY",
+            "quota.type": "credits",
+            "quota.amount": 60000,
+            "quota.period": "rolling",
+            "region": "cn",
+            "officialUrl": "https://www.sensenova.cn/token-plan",
+            "source": "Official-Pricing",
+            "sourceUrl": "https://www.sensenova.cn/token-plan"
+          },
+          "runAt": "2026-10-05T03:57:58.336Z",
+          "eventId": "8772b9a23683"
+        }
+      ]
+    },
+    {
+      "file": "scripts/data/api-plan-history.json",
+      "baselineEvents": 10,
+      "currentEvents": 17,
+      "added": 7,
+      "removed": 0,
+      "addedKinds": {
+        "created": 7
+      },
+      "samples": [
+        {
+          "planId": "03b27e432472",
+          "at": "2026-10-05",
+          "type": "created",
+          "field": null,
+          "from": null,
+          "to": null,
+          "fields": {
+            "pricing.currency": "CNY",
+            "pricing.unit": "per_1M_tokens",
+            "models": [
+              {
+                "name": "step-3.5-flash",
+                "modelKey": "step-3.5-flash",
+                "variant": "standard",
+                "aliases": null,
+                "rates": {
+                  "input": 0.7,
+                  "output": 2.1,
+                  "cachedInput": 0.14,
+                  "cacheWrite": null,
+                  "cacheWriteLong": null,
+                  "reasoning": null,
+                  "batchInput": null,
+                  "batchOutput": null
+                },
+                "mediaRates": null,
+                "note": "推理大模型定价表；同表另有带日期版本 step-3.5-flash-2603（同价）"
+              },
+              {
+                "name": "step-3.7-flash",
+                "modelKey": "step-3.7-flash",
+                "variant": "standard",
+                "aliases": null,
+                "rates": {
+                  "input": 1.35,
+                  "output": 8.1,
+                  "cachedInput": 0.27,
+                  "cacheWrite": null,
+                  "cacheWriteLong": null,
+                  "reasoning": null,
+                  "batchInput": null,
+                  "batchOutput": null
+                },
+                "mediaRates": null,
+                "note": "多模态推理大模型定价表（Flash 档）"
+              },
+              {
+                "name": "step-5-preview",
+                "modelKey": "step-5-preview",
+                "variant": "standard",
+                "aliases": null,
+                "rates": {
+                  "input": 7,
+                  "output": 20,
+                  "cachedInput": 0.35,
+                  "cacheWrite": null,
+                  "cacheWriteLong": null,
+                  "reasoning": null,
+                  "batchInput": null,
+                  "batchOutput": null
+                },
+                "mediaRates": null,
+                "note": "多模态推理大模型定价表（旗舰档）"
+              }
+            ],
+            "region": "cn",
+            "officialUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details",
+            "source": "Official-Docs",
+            "sourceUrl": "https://platform.stepfun.com/docs/zh/guides/pricing/details"
+          },
+          "runAt": "2026-10-05T03:55:30.418Z",
+          "eventId": "c537574c49c9"
+        },
+        {
+          "planId": "0940febeeea9",
+          "at": "2026-10-05",
+          "type": "created",
+          "field": null,
+          "from": null,
+          "to": null,
+          "fields": {
+            "pricing.currency": "CNY",
+            "pricing.unit": "per_1M_tokens",
+            "models": [
+              {
+                "name": "360zhinao/360zhinao-pro",
+                "modelKey": "360zhinao-pro",
+                "variant": "standard",
+                "aliases": null,
+                "rates": {
+                  "input": 2,
+                  "output": 5,
+                  "cachedInput": 0.2,
+                  "cacheWrite": 2.5,
+                  "cacheWriteLong": null,
+                  "reasoning": null,
+                  "batchInput": null,
+                  "batchOutput": null
+                },
+                "mediaRates": null,
+                "note": "官方卡片未写简介；上下文 32,000 / 最大输出 8,192"
+              },
+              {
+                "name": "360zhinao/360zhinao-turbo-llm-geo",
+                "modelKey": "360zhinao-turbo-llm-geo",
+                "variant": "standard",
+                "aliases": null,
+                "rates": {
+                  "input": 1,
+                  "output": 2,
+                  "cachedInput": 0.1,
+                  "cacheWrite": 1.25,
+                  "cacheWriteLong": null,
+                  "reasoning": null,
+                  "batchInput": null,
+                  "batchOutput": null
+                },
+                "mediaRates": null,
+                "note": "官方卡片逐字：业务内部专用模型；上下文 116,000 / 最大输出 16,000"
+              }
+            ],
+            "region": "cn",
+            "officialUrl": "https://ai.360.com/open/zh/models",
+            "source": "Official-Pricing",
+            "sourceUrl": "https://ai.360.com/open/zh/models"
+          },
+          "runAt": "2026-10-05T03:55:30.418Z",
+          "eventId": "774f46a2852f"
+        },
+        {
+          "planId": "09ed95f9cd81",
+          "at": "2026-10-05",
+          "type": "created",
+          "field": null,
+          "from": null,
+          "to": null,
+          "fields": {
+            "pricing.currency": "CNY",
+            "pricing.unit": "per_1K_tokens",
+            "models": [
+              {
+                "name": "SenseNova-V6.5-Pro",
+                "modelKey": "sensenova-v6.5-pro",
+                "variant": "standard",
+                "aliases": null,
+                "rates": {
+                  "input": 0.003,
+                  "output": 0.009,
+                  "cachedInput": null,
+                  "cacheWrite": null,
+                  "cacheWriteLong": null,
+                  "reasoning": null,
+                  "batchInput": null,
+                  "batchOutput": null
+                },
+                "mediaRates": null,
+                "note": "官方「日日新-融合模态大模型」价格表；同表另有 SenseNova-V6.5-Turbo / V6-Pro / V6-Turbo / V6-Reasoner"
+              },
+              {
+                "name": "SenseNova-V6.5-Turbo",
+                "modelKey": "sensenova-v6.5-turbo",
+                "variant": "standard",
+                "aliases": null,
+                "rates": {
+                  "input": 0.0015,
+                  "output": 0.0045,
+                  "cachedInput": null,
+                  "cacheWrite": null,
+                  "cacheWriteLong": null,
+                  "reasoning": null,
+                  "batchInput": null,
+                  "batchOutput": null
+                },
+                "mediaRates": null,
+                "note": "官方「日日新-融合模态大模型」价格表"
+              }
+            ],
+            "region": "cn",
+            "officialUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing",
+            "source": "Official-Docs",
+            "sourceUrl": "https://www.sensecore.cn/help/docs/model-as-a-service/nova/pricing"
+          },
+          "runAt": "2026-10-05T03:55:30.418Z",
+          "eventId": "89aab95ef541"
+        }
+      ]
+    }
+  ],
+  "historyAttribution": [
+    {
+      "file": "scripts/data/api-plan-history.json",
+      "addedCount": 7,
+      "unattributed": 0,
+      "orphanSamples": []
+    },
+    {
+      "file": "scripts/data/plan-history.json",
+      "addedCount": 7,
+      "unattributed": 0,
+      "orphanSamples": []
+    }
+  ],
+  "pricing": [
+    {
+      "slug": "deepseek-v3.2",
+      "catalogStatus": "legacy",
+      "apiPlanIds": [
+        "6844d46deb05"
+      ],
+      "pricingRows": 1
+    }
+  ],
+  "registry": {
+    "registrySlugs": 51,
+    "linkedSlugs": 51,
+    "unlinked": 0,
+    "unlinkedSlugs": []
+  },
+  "derived": {
+    "sourceSlugs": 51,
+    "publishedSlugs": 51,
+    "missing": 0,
+    "extra": 0
+  },
+  "census": {
+    "total": 51,
+    "knownReleasedAt": 32,
+    "unknownReleasedAt": 19,
+    "byCatalogStatus": {
+      "current": 29,
+      "unknown": 19,
+      "legacy": 1,
+      "aging": 2
+    }
+  }
+}

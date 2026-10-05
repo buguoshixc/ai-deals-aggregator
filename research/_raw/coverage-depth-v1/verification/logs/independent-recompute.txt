@@ -1,0 +1,12 @@
+﻿[recompute] 独立路径：require = fs, path, crypto（未 require 被测 lib）
+[recompute] releasedAt: 总 51 · known 32 · unknown 19 · unparsable 0 · 带引文 32
+[recompute] 充要：有日期无引文 [] · 有引文无日期 []
+[recompute] catalogStatus: {"current":29,"aging":2,"legacy":1,"historical":0,"unknown":19}（sum=51）与发布产物不一致 0 条
+[recompute] targets 七态: {"COVERED":79,"NOT_APPLICABLE":52,"UNVERIFIABLE":2,"DEFERRED":3} 格子 136；current targets 兑现 86/86
+[recompute] API 记账：A=92 + B=16 + C=0 = 108 / 总条目 108 ✅
+[recompute] 声明行数=16（通配 0）· B>=rows ✅ · B==rows ✅
+[recompute] 映射闭合：未映射模型 [] · link 问题 0 · 声明问题 0
+[recompute] source health: {"healthy":8,"degraded":0,"failed":1,"other":0} rows=9 generatedAt=2026-10-04T16:31:52.051Z 缺裁决 []
+[recompute] 与 report 对照：0 项不等 / 20 项
+[recompute] 逐格状态差异 0 处；catalogStatus 差异 0 处
+[recompute] 写出: research\_raw\coverage-depth-v1\verification\independent-recompute.json

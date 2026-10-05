@@ -1,0 +1,494 @@
+{
+  "probe": "probe-http-forensics.cjs",
+  "tag": "fp",
+  "target": "https://www.futurepedia.io/",
+  "ranAtUtc": "2026-10-05T03:31:49.168Z",
+  "ranAtLocal": "Mon Oct 05 2026 11:31:49 GMT+0800 (中国标准时间)",
+  "node": "v24.13.1",
+  "collectorUA": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+  "collectorHeaders": {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+    "Referer": "https://www.futurepedia.io/"
+  },
+  "variants": {
+    "V1_collector_headers_no_follow": {
+      "status": 200,
+      "ms": 2068,
+      "bytes": 1482136,
+      "location": null,
+      "httpVersion": "1.1",
+      "remoteAddress": "2606:4700:3034::6815:1185",
+      "remoteFamily": "IPv6",
+      "headers": {
+        "date": "Mon, 05 Oct 2026 03:31:50 GMT",
+        "content-type": "text/html; charset=utf-8",
+        "age": "0",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=63072000",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, accept-encoding",
+        "x-powered-by": "Next.js",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "pdx1::lhr1::gg4tj-1791171109784-b9b392ed7e58",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a4595b0bca65af49-SEA",
+        "alt-svc": "h3=\":443\"; ma=86400"
+      },
+      "digest": {
+        "v": 1,
+        "url": "https://www.futurepedia.io/",
+        "capturedAt": "2026-10-05T03:31:51.421Z",
+        "httpStatus": 200,
+        "bytes": 1482136,
+        "htmlSha256": "8ec53dbb82aff432",
+        "titleSha256": "1f9878c086490340",
+        "markers": {
+          "login": false,
+          "captcha": false,
+          "cloudflare": false,
+          "errorPage": false,
+          "consentOnly": false,
+          "spaShell": false,
+          "noDataTable": true
+        },
+        "counts": {
+          "table": 0,
+          "tr": 0,
+          "td": 0,
+          "card": 11,
+          "listItem": 28,
+          "heading": 8,
+          "heading1": 1,
+          "link": 108,
+          "form": 2,
+          "input": 2,
+          "script": 76,
+          "div": 298
+        },
+        "shape": {
+          "hasDataTable": false,
+          "hasCards": true,
+          "scriptToTextRatio": 99
+        },
+        "textLength": 5162,
+        "textSha256": "b271e76e08136057",
+        "keywordHits": {},
+        "selectorHits": {},
+        "regexHits": {},
+        "topClasses": [
+          {
+            "name": "flex",
+            "count": 160
+          },
+          {
+            "name": "items-center",
+            "count": 125
+          },
+          {
+            "name": "font-normal",
+            "count": 77
+          },
+          {
+            "name": "justify-center",
+            "count": 69
+          },
+          {
+            "name": "leading-none",
+            "count": 65
+          },
+          {
+            "name": "text-base",
+            "count": 65
+          },
+          {
+            "name": "text-textGray",
+            "count": 63
+          },
+          {
+            "name": "text-sm",
+            "count": 58
+          },
+          {
+            "name": "hover:no-underline",
+            "count": 53
+          },
+          {
+            "name": "hover:opacity-75",
+            "count": 53
+          },
+          {
+            "name": "w-full",
+            "count": 49
+          },
+          {
+            "name": "font-bold",
+            "count": 41
+          }
+        ]
+      }
+    },
+    "V1b_collector_headers_followed": {
+      "status": 200,
+      "ms": 1380,
+      "bytes": 1482136,
+      "location": null,
+      "headers": {
+        "date": "Mon, 05 Oct 2026 03:31:52 GMT",
+        "content-type": "text/html; charset=utf-8",
+        "age": "0",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=63072000",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, accept-encoding",
+        "x-powered-by": "Next.js",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "pdx1::lhr1::gg4tj-1791171111594-cd437b55e44a",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a4595b174e33af49-SEA",
+        "alt-svc": "h3=\":443\"; ma=86400"
+      },
+      "digest": {
+        "v": 1,
+        "url": "https://www.futurepedia.io/",
+        "capturedAt": "2026-10-05T03:31:52.926Z",
+        "httpStatus": 200,
+        "bytes": 1482136,
+        "htmlSha256": "4774e5be5617bf59",
+        "titleSha256": "1f9878c086490340",
+        "markers": {
+          "login": false,
+          "captcha": false,
+          "cloudflare": false,
+          "errorPage": false,
+          "consentOnly": false,
+          "spaShell": false,
+          "noDataTable": true
+        },
+        "counts": {
+          "table": 0,
+          "tr": 0,
+          "td": 0,
+          "card": 11,
+          "listItem": 28,
+          "heading": 8,
+          "heading1": 1,
+          "link": 108,
+          "form": 2,
+          "input": 2,
+          "script": 76,
+          "div": 298
+        },
+        "shape": {
+          "hasDataTable": false,
+          "hasCards": true,
+          "scriptToTextRatio": 99
+        },
+        "textLength": 5162,
+        "textSha256": "b271e76e08136057",
+        "keywordHits": {},
+        "selectorHits": {},
+        "regexHits": {},
+        "topClasses": [
+          {
+            "name": "flex",
+            "count": 160
+          },
+          {
+            "name": "items-center",
+            "count": 125
+          },
+          {
+            "name": "font-normal",
+            "count": 77
+          },
+          {
+            "name": "justify-center",
+            "count": 69
+          },
+          {
+            "name": "leading-none",
+            "count": 65
+          },
+          {
+            "name": "text-base",
+            "count": 65
+          },
+          {
+            "name": "text-textGray",
+            "count": 63
+          },
+          {
+            "name": "text-sm",
+            "count": 58
+          },
+          {
+            "name": "hover:no-underline",
+            "count": 53
+          },
+          {
+            "name": "hover:opacity-75",
+            "count": 53
+          },
+          {
+            "name": "w-full",
+            "count": 49
+          },
+          {
+            "name": "font-bold",
+            "count": 41
+          }
+        ]
+      },
+      "title": "Find The Best AI Tools &amp; Software, Futurepedia.io"
+    },
+    "V2_no_ua": {
+      "status": 200,
+      "ms": 1197,
+      "bytes": 1481571,
+      "headers": {
+        "date": "Mon, 05 Oct 2026 03:31:53 GMT",
+        "content-type": "text/html; charset=utf-8",
+        "age": "0",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=63072000",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, accept-encoding",
+        "x-powered-by": "Next.js",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "pdx1::lhr1::gg4tj-1791171113069-7e64b32c2a3a",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a4595b20acceaf49-SEA",
+        "alt-svc": "h3=\":443\"; ma=86400"
+      }
+    },
+    "V3_full_browser_headers": {
+      "status": 200,
+      "ms": 1512,
+      "bytes": 1482136,
+      "headers": {
+        "date": "Mon, 05 Oct 2026 03:31:54 GMT",
+        "content-type": "text/html; charset=utf-8",
+        "age": "0",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=63072000",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, accept-encoding",
+        "x-powered-by": "Next.js",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "pdx1::lhr1::dnf8c-1791171114284-9099af9de9bb",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a4595b282a12af49-SEA",
+        "alt-svc": "h3=\":443\"; ma=86400"
+      }
+    },
+    "V4_googlebot_ua": {
+      "status": 200,
+      "ms": 1630,
+      "bytes": 1478093,
+      "headers": {
+        "date": "Mon, 05 Oct 2026 03:31:56 GMT",
+        "content-type": "text/html; charset=utf-8",
+        "age": "0",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=63072000",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, accept-encoding",
+        "x-powered-by": "Next.js",
+        "x-vercel-cache": "MISS",
+        "x-vercel-id": "pdx1::lhr1::dfpjc-1791171116302-858921e9abd8",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a4595b319973af49-SEA",
+        "alt-svc": "h3=\":443\"; ma=86400"
+      }
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "requestedAtUtc": "2026-10-05T03:32:00.195Z",
+      "status": 200,
+      "ms": 1109,
+      "bytes": 1482136,
+      "cfRay": "a4595b4729cdaf49-SEA",
+      "server": "cloudflare",
+      "ipHits": 14,
+      "digestMarkers": {
+        "login": false,
+        "captcha": false,
+        "cloudflare": false,
+        "errorPage": false,
+        "consentOnly": false,
+        "spaShell": false,
+        "noDataTable": true
+      }
+    },
+    {
+      "round": 2,
+      "requestedAtUtc": "2026-10-05T03:32:02.960Z",
+      "status": 200,
+      "ms": 1138,
+      "bytes": 1482136,
+      "cfRay": "a4595b584d9daf49-SEA",
+      "server": "cloudflare",
+      "ipHits": 14,
+      "digestMarkers": {
+        "login": false,
+        "captcha": false,
+        "cloudflare": false,
+        "errorPage": false,
+        "consentOnly": false,
+        "spaShell": false,
+        "noDataTable": true
+      }
+    },
+    {
+      "round": 3,
+      "requestedAtUtc": "2026-10-05T03:32:06.066Z",
+      "status": 200,
+      "ms": 1470,
+      "bytes": 1482136,
+      "cfRay": "a4595b699888af49-SEA",
+      "server": "cloudflare",
+      "ipHits": 14,
+      "digestMarkers": {
+        "login": false,
+        "captcha": false,
+        "cloudflare": false,
+        "errorPage": false,
+        "consentOnly": false,
+        "spaShell": false,
+        "noDataTable": true
+      }
+    }
+  ],
+  "details": [],
+  "robots": {
+    "url": "https://www.futurepedia.io/robots.txt",
+    "status": 200,
+    "ms": 625,
+    "bytes": 374,
+    "headers": {
+      "date": "Mon, 05 Oct 2026 03:32:09 GMT",
+      "content-type": "text/plain; charset=utf-8",
+      "age": "0",
+      "cache-control": "public, max-age=14400, must-revalidate",
+      "server": "cloudflare",
+      "strict-transport-security": "max-age=63072000",
+      "x-vercel-cache": "MISS",
+      "x-vercel-id": "pdx1::p67wf-1791051565635-3c85936a337c",
+      "cf-cache-status": "REVALIDATED",
+      "cf-ray": "a4595b856a56af49-SEA",
+      "alt-svc": "h3=\":443\"; ma=86400"
+    },
+    "body": "User-Agent: *\nAllow: /\nDisallow: /search/\nDisallow: /?search=*\nDisallow: /api/image-widget*\nDisallow: /*?*verified=*\nDisallow: /*?*view=*\nDisallow: /*?*sort=*\nDisallow: /*?*feature=*\nDisallow: /*?*pricing=*\nDisallow: /profile\nDisallow: /*?*signup=*\nDisallow: /*?*focus=*\n\nSitemap: https://www.futurepedia.io/sitemap.xml\nSitemap: https://www.futurepedia.io/sitemap_tools.xml\n",
+    "allowedHome": true,
+    "allowedTool": true
+  },
+  "egress": {
+    "error": "timeout of 10000ms exceeded"
+  },
+  "productionPath": {
+    "ok": true,
+    "ms": 1660,
+    "bytes": 1482136,
+    "atUtc": "2026-10-05T03:31:58.927Z",
+    "digest": {
+      "v": 1,
+      "url": "https://www.futurepedia.io/",
+      "capturedAt": "2026-10-05T03:31:59.084Z",
+      "httpStatus": 200,
+      "bytes": 1482136,
+      "htmlSha256": "a30741c2db851d5f",
+      "titleSha256": "1f9878c086490340",
+      "markers": {
+        "login": false,
+        "captcha": false,
+        "cloudflare": false,
+        "errorPage": false,
+        "consentOnly": false,
+        "spaShell": false,
+        "noDataTable": true
+      },
+      "counts": {
+        "table": 0,
+        "tr": 0,
+        "td": 0,
+        "card": 11,
+        "listItem": 28,
+        "heading": 8,
+        "heading1": 1,
+        "link": 108,
+        "form": 2,
+        "input": 2,
+        "script": 76,
+        "div": 298
+      },
+      "shape": {
+        "hasDataTable": false,
+        "hasCards": true,
+        "scriptToTextRatio": 99
+      },
+      "textLength": 5162,
+      "textSha256": "b271e76e08136057",
+      "keywordHits": {},
+      "selectorHits": {},
+      "regexHits": {},
+      "topClasses": [
+        {
+          "name": "flex",
+          "count": 160
+        },
+        {
+          "name": "items-center",
+          "count": 125
+        },
+        {
+          "name": "font-normal",
+          "count": 77
+        },
+        {
+          "name": "justify-center",
+          "count": 69
+        },
+        {
+          "name": "leading-none",
+          "count": 65
+        },
+        {
+          "name": "text-base",
+          "count": 65
+        },
+        {
+          "name": "text-textGray",
+          "count": 63
+        },
+        {
+          "name": "text-sm",
+          "count": 58
+        },
+        {
+          "name": "hover:no-underline",
+          "count": 53
+        },
+        {
+          "name": "hover:opacity-75",
+          "count": 53
+        },
+        {
+          "name": "w-full",
+          "count": 49
+        },
+        {
+          "name": "font-bold",
+          "count": 41
+        }
+      ]
+    }
+  },
+  "notes": [
+    "本探针只发公开 GET；所有变体同 URL、同机器，逐项只改一个变量。",
+    "V9 是本机出口读数，不是对 Cloudflare 的断言：本机与 GitHub Actions 的出口 IP/机房必然不同。"
+  ]
+}

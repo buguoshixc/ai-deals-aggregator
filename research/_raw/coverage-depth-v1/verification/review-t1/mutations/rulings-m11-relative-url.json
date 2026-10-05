@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-05",
+  "rulings": [
+    {
+      "source": "futurepedia",
+      "decision": "repair",
+      "reason": "页面改版导致选择器失效，留在静态链路上按新结构重写规则。",
+      "evidence": [
+        {
+          "url": "futurepedia.io/x",
+          "capturedAt": "2026-10-05",
+          "reading": "一句自我声明，没有可回访地址"
+        }
+      ],
+      "overlap": {
+        "historicalItems": 0,
+        "uniqueItems": 12,
+        "overlapItems": 0,
+        "maintenanceCost": "medium"
+      },
+      "whyKept": null,
+      "revisitBy": "2026-11-01",
+      "headlessStability": null
+    }
+  ]
+}

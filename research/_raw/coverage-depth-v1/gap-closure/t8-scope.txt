@@ -1,0 +1,20 @@
+﻿t8 objective: Workstream B-2：处理 models 维度剩下的 MISSING（ai360 / baichuan / baidu / iflytek 等）—— 有官方依据时新增 registry 身份并完成映射或处置声明，否则诚实地落 unverifiable / deferred；全程与 Workstream A 串行写 scripts/data/models.json。
+t8 inScope:
+  - .worktrees/coverage-depth-v1/scripts/data/models.json
+  - .worktrees/coverage-depth-v1/scripts/data/model-registry-links.json
+  - .worktrees/coverage-depth-v1/scripts/data/model-registry-gaps.json
+  - .worktrees/coverage-depth-v1/scripts/data/coverage-targets.json
+  - .worktrees/coverage-depth-v1/models.json
+  - .worktrees/coverage-depth-v1/model-registry-links.json
+  - .worktrees/coverage-depth-v1/research/coverage-depth-v1-gap-closure.md
+  - .worktrees/coverage-depth-v1/research/_raw/coverage-depth-v1/gap-closure/
+t3 outOfScope:
+  - .worktrees/coverage-depth-v1/scripts/data/models.json
+  - .worktrees/coverage-depth-v1/models.json
+  - .worktrees/coverage-depth-v1/model-registry-links.json
+  - .worktrees/coverage-depth-v1/scripts/data/model-registry-links.json
+  - .worktrees/coverage-depth-v1/scripts/data/model-registry-gaps.json
+  - .worktrees/coverage-depth-v1/scripts/lib/
+  - .worktrees/coverage-depth-v1/scripts/tools/
+  - .worktrees/coverage-depth-v1/scripts/collectors/
+  - .worktrees/coverage-depth-v1/.github/

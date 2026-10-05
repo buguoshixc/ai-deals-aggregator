@@ -1,0 +1,568 @@
+diff --git a/scripts/tools/coverage-targets-selftest.js b/scripts/tools/coverage-targets-selftest.js
+index e402e35..f956a90 100644
+--- a/scripts/tools/coverage-targets-selftest.js
++++ b/scripts/tools/coverage-targets-selftest.js
+@@ -27,12 +27,13 @@
+ const fs = require('fs');
+ const os = require('os');
+ const path = require('path');
+ const { spawnSync } = require('child_process');
+ 
+ const ct = require('../lib/coverage-targets');
++const sr = require('../lib/source-rulings');
+ const providers = require('../lib/providers');
+ const registry = require('../lib/model-registry');
+ const freshnessLib = require('../lib/model-freshness');
+ const { load: loadRenderCore } = require('../lib/render-core');
+ const dataDocs = require('../lib/data-docs');
+ 
+@@ -500,36 +501,50 @@ const LEGACY_CONTRACT = {
+   'coverageTargets.sourceHealth': ['declaredSources', 'unhealthyDeclaredSources', 'blockedTargets']
+ };
+ const LEGACY_TOP_LEVEL = ['generatedAt', 'deals', 'coding', 'api', 'registry', 'gaps', 'candidates'];
+ /**
+  * 追加键白名单：报告新增键必须**逐个登记在这里**（t25 = API 侧处置键；t46 = R4 五态普查 + 候选明细 + 来源宇宙）。
+  *
+- * 语义锚点（t29 补；t46 追加）——白名单里各键**锚在哪个读数**上：
++ * 语义锚点（t29 补；t46 追加；v3 再追加）——白名单里各键**锚在哪个读数**上：
+  *   · `registry.mappedApiEntries`     = lib `coverageOf().mappedApiEntries`（**数**：展开后被映射认领的计价条目数 = 方程的 A）
+  *   · `registry.declaredApiEntries`   = lib `coverageOf().declaredApiIdentities`（**数**：展开后被处置声明覆盖的计价条目数 = 方程的 B）
+  *   · `registry.declaredApiEntryRows` = lib `coverageOf().declaredApiEntries`（**数组**：声明本身逐条留档，长度 = 声明条数）
+  *   · `gaps.declaredApiEntryCount`    = 上面的 `declaredApiEntryRows.length`（**数**；**不是**方程的 B）
+  *   · `coverageTargets.catalogStatusCensus` = 五态普查：词表 = lib `CATALOG_STATUSES`、逐条值 = 发布产物
+  *       `models.json` 的 `catalogStatus`、计数 = lib `censusOf()`；`sum` **必须等于** `currentModels.registryModels`
+  *   · `candidates.rows`               = 候选来源审查的**逐条明细**（url / checkedAt / 是否采信 / 失败原因），
+  *       排序 = provider → url → checkedAt → slug 的 code-unit 序
+  *   · `coverageTargets.sourceHealth.{registryRowCount,registryRows,registryOnlySources}` = R8 的来源宇宙对照
+  *       （注册表几行 / 本节收几行 / 差集是哪几个）
++ *   · `coverageTargets.releaseEvidence` = v3 第①节：registry 模型数 / 已知 releasedAt / 未知 / 已知率，
++ *       并**按 developer、modelRole、catalogStatus 三维拆分**；判据全部来自 lib（`releaseDateOf()` /
++ *       `resolveModelRole()` / `CATALOG_STATUSES`），报告只分组、不重算口径。百分比是观测指标，不是 KPI。
++ *   · `coverageTargets.releaseEvidenceQueue` = v3 第②节：只读的"优先补哪几条发布日期"队列，
++ *       五条规则原文随队列一起输出；规则①的判据与第①节的 known/unknown **同源**（同一支
++ *       `releaseDateOf().provided`），队列条数 = registry 模型数。
++ *   · `coverageTargets.gapClosureQueue` = v3 第③节：MISSING / PARTIAL 的 A/B/C/D 分层，
++ *       每条带「目标 N / 已兑现 M / 缺 K」；`counts` 之和 == 队列长度 == `states.MISSING + states.PARTIAL`。
++ *   · `coverageTargets.sourceReliability` = v3 第④节：`scripts/data/source-rulings.json` 的裁决
++ *       × `scripts/data/source-health.json` 的 live 读数（**必须带 healthGeneratedAt**）；
++ *       `registryRowCount/registryRows/registryOnlySources` 与 `coverageTargets.sourceHealth` 的那三个键
++ *       **逐字相等**（同一口径，不另算一份）；三方对账的问题清单在 `reconciliation.problems` 里。
+  * ⚠️ 陷阱：lib 的 `declaredApiEntries`（数组）与报告的 `registry.declaredApiEntries`（数）**同名不同义**；
+  *    报告层那个冻结键名已经占了"数"的位置，所以"声明行数组"只能另起一名 `declaredApiEntryRows`。
+  *    两层的词是**交叉**的：报告 `registry.declaredApiEntries`（数）↔ lib `declaredApiIdentities`（数）、
+  *    报告 `registry.declaredApiEntryRows`（数组）↔ lib `declaredApiEntries`（数组）。
+  */
+ const APPENDED_KEY_WHITELIST = {
+   deals: [],
+   coding: [],
+   api: [],
+   registry: ['mappedApiEntries', 'declaredApiEntries', 'declaredApiEntryRows'],
+   gaps: ['declaredApiEntryCount'],
+   candidates: ['rows'],
+-  coverageTargets: ['catalogStatusCensus'],
++  // v3（coverage-depth-v1）：四节新键**追加在 v2 既有键之后**（`catalogStatusCensus` 是 t46 追加的最后一位，
++  // 它前面的冻结点一位都没动 —— 这正是 LEGACY_CONTRACT 那一条前缀判据的意义）。
++  coverageTargets: ['catalogStatusCensus', 'releaseEvidence', 'releaseEvidenceQueue', 'gapClosureQueue', 'sourceReliability'],
+   'coverageTargets.sourceHealth': ['registryRowCount', 'registryRows', 'registryOnlySources']
+ };
+ 
+ /** 点分路径取值（契约表里的嵌套节用 `a.b.c` 寻址）；取不到 ⇒ undefined（由契约判据判"缺键"） */
+ function valueAt(node, dotted) {
+   return String(dotted).split('.').reduce((current, key) => (current === null || current === undefined ? undefined : current[key]), node);
+@@ -611,13 +626,15 @@ try {
+       contractProblems(droppedRegistry, LEGACY_CONTRACT.registry, APPENDED_KEY_WHITELIST.registry).length > 0);
+ 
+     const cov = payload1.coverageTargets;
+     check('新键 coverageTargets 结构完整（universe / dimensions / rows / 清单 / currentModels / sourceHealth / freshness）',
+       Boolean(cov) && ['file', 'present', 'schemaVersion', 'reviewedAt', 'validationProblems', 'states',
+         'universe', 'dimensions', 'rows', 'missingTargets', 'partialTargets', 'deferred', 'unverifiable',
+-        'notApplicable', 'blockedBySourceHealth', 'currentModels', 'sourceHealth', 'freshness']
++        'notApplicable', 'blockedBySourceHealth', 'currentModels', 'sourceHealth', 'freshness',
++        // v3 追加的四个新键：存在性断言（缺一个即红 —— 白名单里的键必须真的出现）
++        'releaseEvidence', 'releaseEvidenceQueue', 'gapClosureQueue', 'sourceReliability']
+         .every(key => Object.prototype.hasOwnProperty.call(cov, key)),
+       Object.keys(cov || {}).join(','));
+     check('universe.declared == 意图层行数，且与 providers.json 身份数逐字相等',
+       cov.universe.declared === ct.targetsList(targetsLoaded.doc).length
+       && cov.universe.declared === Object.keys(providerTable).length);
+     check('dimensions 与 rows 自洽：每个维度的状态计数之和 == 该维度行数',
+@@ -740,12 +757,479 @@ try {
+     bogusRun.status !== 0 && bogusRun.stderr.includes('不在词表里'),
+     `exit ${bogusRun.status}；${(bogusRun.stderr.split('\n').find(line => line.includes('词表')) || '(没有点到词表)').trim().slice(0, 120)}`);
+ } finally {
+   try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch (error) { /* 临时目录清不掉不影响判据 */ }
+ }
+ 
++/* ================================================================== */
++/* ⑤ v3（coverage-depth-v1）：source-rulings 判据层 + 报告新增四节        */
++/* ================================================================== */
++//
++// 这一段的纪律与 ①②③④ 逐字相同：**纯函数驱动 + 夹具反证**。
++// 为什么 source-rulings 的 schema / 对账必须用夹具而不是盘上文件：盘上那份文件由 workstream C 落盘，
++// 它此刻可能还不存在、也可能只有一条裁决 —— **用真实文件证明不了"retire 还在注册表里会红"**。
++// 反面同样重要：报告对"尚未落盘"必须优雅降级（不崩、不静默当通过），所以那条路径也要用
++// 一份**不存在的路径**去驱动，而不是靠"碰巧还没落盘"。
++
++section('⑤ source-rulings 判据层（纯函数、零依赖、不读墙钟）+ v3 四节');
++
++const srLibSource = fs.readFileSync(path.join(ROOT, 'scripts', 'lib', 'source-rulings.js'), 'utf8');
++check('source-rulings 判据层是纯函数：不读墙上时钟、不联网、不写盘',
++  !/Date\.now|new Date\(/.test(srLibSource) && !/https?:\/\//.test(srLibSource.replace(/^[\s\S]*?\*\//, ''))
++  && !/writeFileSync|appendFileSync/.test(srLibSource));
++check('source-rulings 判据层零依赖（只 require fs / path，没有别的模块）',
++  [...srLibSource.matchAll(/require\(([^)]*)\)/g)].every(hit => /'fs'|'path'/.test(hit[1])),
++  [...srLibSource.matchAll(/require\(([^)]*)\)/g)].map(hit => hit[1]).join(' '));
++check('source-rulings 冻结 schema 的词表与题面一致（四裁决 / 三成本档 / 三条必填关系）',
++  JSON.stringify(sr.DECISIONS) === JSON.stringify(['repair', 'headless-migrate', 'keep-degraded', 'retire'])
++  && JSON.stringify(sr.MAINTENANCE_COSTS) === JSON.stringify(['low', 'medium', 'high'])
++  && JSON.stringify(sr.REQUIRED_BY_DECISION['keep-degraded']) === JSON.stringify(['whyKept', 'revisitBy'])
++  && JSON.stringify(sr.REQUIRED_BY_DECISION.repair) === JSON.stringify(['revisitBy'])
++  && JSON.stringify(sr.REQUIRED_BY_DECISION['headless-migrate']) === JSON.stringify(['headlessStability'])
++  && sr.HEALTH_FAILURES_REQUIRING_RULING === 3,
++  JSON.stringify({ decisions: sr.DECISIONS, required: sr.REQUIRED_BY_DECISION }));
++
++/* ---- 稳定序：**code-unit 序**，不是 localeCompare（后者随 ICU 版本变） ---- */
++check('稳定序：sortRulings 与输入顺序无关，且按 source 的 code-unit 序（大写在前的 code-unit 事实）',
++  sr.sortRulings([{ source: 'zeta' }, { source: 'alpha' }, { source: 'Zulu' }]).map(row => row.source).join(',')
++  === 'Zulu,alpha,zeta'
++  && sr.orderKeyOfRuling({ source: 'beta' }) === 'beta',
++  JSON.stringify(sr.sortRulings([{ source: 'zeta' }, { source: 'alpha' }, { source: 'Zulu' }]).map(row => row.source)));
++
++/* ---- schema 夹具：合法输入 + 每一条变异必须报红 ---- */
++const FIXTURE_SOURCE_RULINGS = {
++  schemaVersion: sr.SCHEMA_VERSION,
++  reviewedAt: '2026-10-05',
++  _note: '夹具：不落盘，只用于驱动判据层',
++  rulings: [
++    {
++      source: 'delta_official',
++      decision: 'headless-migrate',
++      reason: '夹具：静态链路拿不到，迁无头',
++      evidence: [{ url: 'https://example.invalid/source', capturedAt: '2026-10-05', reading: '夹具：HTTP 403' }],
++      overlap: { historicalItems: 3, uniqueItems: 1, overlapItems: 2, maintenanceCost: 'medium' },
++      whyKept: null,
++      revisitBy: null,
++      headlessStability: '夹具：连跑 3 轮稳定'
++    },
++    {
++      source: 'gamma_official',
++      decision: 'keep-degraded',
++      reason: '夹具：独有价值大于维护成本',
++      evidence: [],
++      overlap: { historicalItems: 0, uniqueItems: 5, overlapItems: 0, maintenanceCost: 'low' },
++      whyKept: '夹具：只有这一家给出这类条目',
++      revisitBy: '夹具：连续失败再翻倍时复查',
++      headlessStability: null
++    }
++  ]
++};
++const FIXTURE_REGISTRY_SOURCES = [
++  { id: 'delta_official', name: 'Delta Official', region: 'global', headless: false },
++  { id: 'gamma_official', name: 'Gamma Official', region: 'global', headless: false },
++  { id: 'epsilon_official', name: 'Epsilon Official', region: 'global', headless: false }
++];
++const FIXTURE_HEALTH_SOURCES = [
++  { source: 'delta_official', name: 'Delta Official', status: 'failed', reason: 'collector_error', consecutiveFailures: 9 },
++  { source: 'gamma_official', name: 'Gamma Official', status: 'healthy', reason: null, consecutiveFailures: 0 }
++];
++
++check(`source-rulings 夹具本身合法（0 处问题，实际 ${sr.validateRulings(FIXTURE_SOURCE_RULINGS).length} 处）`,
++  sr.validateRulings(FIXTURE_SOURCE_RULINGS).length === 0,
++  sr.validateRulings(FIXTURE_SOURCE_RULINGS).slice(0, 3).join('；'));
++check('三方对账夹具本身合法（0 处问题）',
++  sr.reconcileRulings({
++    doc: FIXTURE_SOURCE_RULINGS, registrySources: FIXTURE_REGISTRY_SOURCES, healthSources: FIXTURE_HEALTH_SOURCES
++  }).problems.length === 0,
++  sr.reconcileRulings({
++    doc: FIXTURE_SOURCE_RULINGS, registrySources: FIXTURE_REGISTRY_SOURCES, healthSources: FIXTURE_HEALTH_SOURCES
++  }).problems.slice(0, 3).join('；'));
++
++const rulingsRed = (name, mutate, needle) => {
++  const doc = clone(FIXTURE_SOURCE_RULINGS);
++  mutate(doc);
++  const found = sr.validateRulings(doc);
++  check(`【牙】source-rulings schema：${name}`, found.length > 0 && (!needle || found.some(text => text.includes(needle))),
++    found.length ? `Problems: ${found.slice(0, 2).join('；')}` : '没有报红');
++};
++rulingsRed('schemaVersion 不对 → 红', doc => { doc.schemaVersion = 99; }, 'schemaVersion 应为');
++rulingsRed('顶层未知字段 → 红', doc => { doc.extra = true; }, '顶层未知字段');
++rulingsRed('decision 非法（watch = 变相的"待定"）→ 红', doc => { doc.rulings[0].decision = 'watch'; }, 'decision 非法');
++rulingsRed('reason 为空 → 红', doc => { doc.rulings[0].reason = '   '; }, 'reason 不能为空');
++rulingsRed('同一个来源两条裁决 → 红',
++  doc => { doc.rulings.push(clone(doc.rulings[0])); }, '出现了不止一次');
++rulingsRed('rulings 不是按 source 的 code-unit 序 → 红', doc => { doc.rulings.reverse(); }, '不是规范序');
++rulingsRed('裁决里出现未知字段 → 红', doc => { doc.rulings[0].verdict = 'ok'; }, '未知字段');
++rulingsRed('裁决字段顺序不是规范序 → 红',
++  doc => { const row = doc.rulings[0]; const moved = row.source; delete row.source; row.source = moved; }, '不是规范序');
++rulingsRed('evidence 不是数组 → 红', doc => { doc.rulings[0].evidence = null; }, 'evidence 必须是数组');
++rulingsRed('evidence 缺 url → 红', doc => { doc.rulings[0].evidence[0].url = ''; }, 'url 不能为空');
++rulingsRed('evidence 的 url 不是绝对地址 → 红',
++  doc => { doc.rulings[0].evidence[0].url = '看过了，页面上有'; }, '不是绝对地址');
++rulingsRed('evidence 的 capturedAt 不是日期 → 红',
++  doc => { doc.rulings[0].evidence[0].capturedAt = '2026年10月'; }, 'capturedAt 必须是');
++rulingsRed('evidence 的 reading 为空 → 红', doc => { doc.rulings[0].evidence[0].reading = ''; }, 'reading 不能为空');
++rulingsRed('overlap 不是对象 → 红', doc => { doc.rulings[0].overlap = null; }, 'overlap 必须是对象');
++rulingsRed('overlap 计数是负数 → 红', doc => { doc.rulings[0].overlap.uniqueItems = -1; }, '必须是非负整数');
++rulingsRed('maintenanceCost 非法 → 红', doc => { doc.rulings[0].overlap.maintenanceCost = 'very-high'; }, 'maintenanceCost 非法');
++rulingsRed('keep-degraded 缺 whyKept → 红', doc => { doc.rulings[1].whyKept = null; }, '必须写 whyKept');
++rulingsRed('keep-degraded 缺 revisitBy → 红', doc => { doc.rulings[1].revisitBy = ''; }, '必须写 revisitBy');
++rulingsRed('headless-migrate 缺 headlessStability → 红',
++  doc => { doc.rulings[0].headlessStability = null; }, '必须写 headlessStability');
++rulingsRed('repair 缺 revisitBy → 红',
++  doc => { doc.rulings[0].decision = 'repair'; doc.rulings[0].headlessStability = null; }, '必须写 revisitBy');
++
++/* ---- 三方对账夹具：三条硬关系 + 一条反向牙 ---- */
++const rulingsReconcileRed = (name, doc, needle) => {
++  const result = sr.reconcileRulings({
++    doc, registrySources: FIXTURE_REGISTRY_SOURCES, healthSources: FIXTURE_HEALTH_SOURCES
++  });
++  check(`【牙】三方对账：${name}`,
++    result.problems.length > 0 && (!needle || result.problems.some(text => text.includes(needle))),
++    result.problems.length ? `Problems: ${result.problems.slice(0, 2).join('；')}` : '没有报红');
++};
++const reconcileFixture = mutate => { const doc = clone(FIXTURE_SOURCE_RULINGS); mutate(doc); return doc; };
++
++rulingsReconcileRed('已裁决 retire 的来源仍挂在采集器注册表里 → 红',
++  reconcileFixture(doc => { doc.rulings[1].decision = 'retire'; doc.rulings[1].whyKept = null; doc.rulings[1].revisitBy = null; }),
++  'retire');
++rulingsReconcileRed('连续失败 ≥ 3 次的来源没有裁决 → 红（清空裁决表）',
++  reconcileFixture(doc => { doc.rulings = []; }), '连续失败');
++rulingsReconcileRed('repair 的来源不在注册表里 → 红',
++  reconcileFixture(doc => {
++    doc.rulings[0].decision = 'repair';
++    doc.rulings[0].headlessStability = null;
++    doc.rulings[0].revisitBy = '夹具：改版后复查';
++    doc.rulings.unshift({
++      source: 'ghost_official', decision: 'repair', reason: '夹具：不在注册表的来源',
++      evidence: [], overlap: { historicalItems: 0, uniqueItems: 0, overlapItems: 0, maintenanceCost: 'low' },
++      whyKept: null, revisitBy: '夹具：复查', headlessStability: null
++    });
++  }), 'repair');
++rulingsReconcileRed('非 retire 的裁决命不中任何身份（名字写错）→ 红',
++  reconcileFixture(doc => { doc.rulings[1].source = 'gamma_officiall'; }), '都找不到同一个身份');
++check('【反向牙】retire 的来源**完全不在任何一层**不算错（退出去的来源本来就该从注册表与心跳里消失）',
++  sr.reconcileRulings({
++    doc: {
++      schemaVersion: sr.SCHEMA_VERSION,
++      reviewedAt: null,
++      rulings: [{
++        source: 'already_gone', decision: 'retire', reason: '夹具：已下线', evidence: [],
++        overlap: { historicalItems: 0, uniqueItems: 0, overlapItems: 0, maintenanceCost: 'low' },
++        whyKept: null, revisitBy: null, headlessStability: null
++      }]
++    },
++    registrySources: [{ id: 'gamma_official', name: 'Gamma Official' }],
++    healthSources: []
++  }).problems.join('；') === '');
++check('【夹具】裁决 → 身份命中：id 与 name 两种写法都能命中同一个来源',
++  (() => {
++    const byId = sr.reconcileRulings({
++      doc: FIXTURE_SOURCE_RULINGS, registrySources: FIXTURE_REGISTRY_SOURCES, healthSources: FIXTURE_HEALTH_SOURCES
++    }).rows[0];
++    const byName = sr.reconcileRulings({
++      doc: {
++        schemaVersion: sr.SCHEMA_VERSION, reviewedAt: null,
++        rulings: [Object.assign(clone(FIXTURE_SOURCE_RULINGS.rulings[0]), { source: 'Delta Official' })]
++      },
++      registrySources: FIXTURE_REGISTRY_SOURCES, healthSources: FIXTURE_HEALTH_SOURCES
++    }).rows[0];
++    return byId.registry.id === 'delta_official' && byName.registry.id === 'delta_official'
++      && byId.health.consecutiveFailures === 9 && byName.health.consecutiveFailures === 9
++      && byId.resolvedBy === 'registry-id' && byName.resolvedBy === 'registry-name';
++  })());
++
++/* ---- 报告端到端：v3 四节的**同一批数字** + 夹具反证 ---- */
++const v3Tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'coverage-v3-'));
++try {
++  /* ① 优雅降级：把裁决表指向一个**不存在的路径** —— 这比"碰巧还没落盘"更可靠（落盘之后也照样能跑）。 */
++  const absentRun = runReport([`--source-rulings=${path.join(v3Tmp, 'does-not-exist.json')}`]);
++  const absentProblems = absentRun.stderr.split('\n').filter(text => text.trim().startsWith('- ')).map(text => text.trim().slice(2));
++  check('v3：裁决表不在盘上时**优雅降级**（退出码 0、文本如实说「尚未落盘」、不崩）',
++    absentRun.status === 0 && absentRun.stdout.includes('尚未落盘') && absentProblems.length === 0,
++    `exit ${absentRun.status}；问题 ${absentProblems.slice(0, 2).join('；')}`);
++  check('v3：未落盘层**计入报告自检口径**（同一行相邻打印，不静默当通过）',
++    absentRun.stdout.includes('报告自检待落盘层：1 项')
++    && absentRun.stdout.includes('scripts/data/source-rulings.json')
++    && absentRun.stdout.includes('计入自检口径'),
++    (absentRun.stdout.split('\n').find(text => text.includes('待落盘层')) || '(没有这一行)').trim().slice(0, 140));
++
++  /* ② 落盘分支：喂一份**合法夹具**（覆盖真实心跳里的每一个来源），报告必须绿、且四节结构完整。 */
++  const liveHealth = readJson('scripts/data/source-health.json');
++  const fixtureDoc = {
++    schemaVersion: sr.SCHEMA_VERSION,
++    reviewedAt: '2026-01-01',
++    _note: '夹具：由 coverage-targets-selftest 现场生成，不落盘',
++    rulings: sr.sortRulings(liveHealth.sources.map(source => ({
++      source: source.source,
++      decision: 'keep-degraded',
++      reason: `夹具：${source.name} 保留降级（自测专用）`,
++      evidence: [],
++      overlap: { historicalItems: 0, uniqueItems: 1, overlapItems: 0, maintenanceCost: 'low' },
++      whyKept: '夹具：为覆盖"每个注册来源都有裁决"这一分支而生成',
++      revisitBy: '夹具：下一次复查',
++      headlessStability: null
++    })))
++  };
++  const fixtureProblems = sr.validateRulings(fixtureDoc);
++  check(`v3：现场生成的合法夹具通过 schema 校验（0 处问题，实际 ${fixtureProblems.length} 处）`,
++    fixtureProblems.length === 0, fixtureProblems.slice(0, 2).join('；'));
++  const fixtureFile = path.join(v3Tmp, 'source-rulings.fixture.json');
++  fs.writeFileSync(fixtureFile, `${JSON.stringify(fixtureDoc, null, 2)}\n`);
++
++  const landed1 = runReport(['--json', `--source-rulings=${fixtureFile}`]);
++  const landed2 = runReport(['--json', `--source-rulings=${fixtureFile}`]);
++  const payload = jsonOf(landed1.stdout);
++  const landedProblems = landed1.stderr.split('\n').filter(text => text.trim().startsWith('- ')).map(text => text.trim().slice(2));
++  check('v3：【确定性】喂同一份夹具的两次 --json 输出逐字节一致',
++    landed1.stdout === landed2.stdout && landed1.status === 0 && landed2.status === 0,
++    `status ${landed1.status}/${landed2.status}，长度 ${landed1.stdout.length}/${landed2.stdout.length}`);
++  check('v3：裁决表落盘（夹具）后报告自检 0 处问题，且不再有待落盘层',
++    landedProblems.length === 0 && !landed1.stdout.includes('报告自检待落盘层'),
++    `问题 ${landedProblems.length} 处：${landedProblems.slice(0, 2).join('；')}`);
++
++  if (!payload) {
++    check('v3：v3 四节的 JSON 结构可核对：报告成功运行并在 stdout 给出 JSON', false,
++      `报告退出码 ${landed1.status}；问题 ${landedProblems.slice(0, 3).join('；')}`);
++  } else {
++    const cov3 = payload.coverageTargets;
++    const eq = cov3.releaseEvidence;
++    const queue = cov3.releaseEvidenceQueue;
++    const gap = cov3.gapClosureQueue;
++    const rel = cov3.sourceReliability;
++
++    /* --- ① Release Evidence Coverage --- */
++    check('v3①：Release Evidence Coverage 四要素齐全（registry / known / unknown / known%），且已知 + 未知 == registry 模型数',
++      eq.registryModels === cov3.currentModels.registryModels
++      && eq.known + eq.unknown === eq.registryModels
++      && typeof eq.knownPercent === 'number'
++      && eq.knownPercent === Number(((eq.known / eq.registryModels) * 100).toFixed(1)),
++      `registry=${eq.registryModels} known=${eq.known} unknown=${eq.unknown} known%=${eq.knownPercent}`);
++    check('v3①：三维拆分（developer / modelRole / catalogStatus）各自闭合 —— 各档之和 == registry 模型数',
++      ['byDeveloper', 'byModelRole', 'byCatalogStatus'].every(name => Array.isArray(eq[name])
++        && eq[name].reduce((total, bucket) => total + bucket.total, 0) === eq.registryModels)
++      && typeof eq.byDeveloper[0].known === 'number' && typeof eq.byDeveloper[0].unknown === 'number'
++      && typeof eq.byDeveloper[0].knownPercent === 'number',
++      ['byDeveloper', 'byModelRole', 'byCatalogStatus'].map(name => `${name}=${(eq[name] || []).reduce((total, bucket) => total + bucket.total, 0)}`).join(' '));
++    check('v3①：已知/未知的判据是 lib 的 releaseDateOf().provided —— 与现有 unknownReleaseDates 读数**同源**（两处必须相等）',
++      eq.unknown === cov3.currentModels.unknownReleaseDates.length
++      && eq.known === Object.entries(registryTable).filter(([, entry]) => entry.releasedAt !== null && entry.releasedAt !== undefined).length
++      && eq.known + eq.unknown === Object.keys(registryTable).length,
++      `unknown=${eq.unknown} / unknownReleaseDates=${cov3.currentModels.unknownReleaseDates.length} / known=${eq.known}`);
++    check('v3①：catalogStatus 拆分带完整词表（一档不落地也印出来 —— 与 R4 五态普查同一纪律）',
++      eq.byCatalogStatus.map(bucket => bucket.key).join(',') === freshnessLib.CATALOG_STATUSES.join(','),
++      eq.byCatalogStatus.map(bucket => `${bucket.key}:${bucket.total}`).join(' '));
++    check('v3①：百分比写明「不是 KPI」（不许把观测量当目标线）',
++      /不是 KPI/.test(eq.percentNote || '') && /观测指标/.test(eq.percentNote || '')
++      && landed1.stdout.includes('百分比是观测指标，不是 KPI'),
++      (eq.percentNote || '').slice(0, 80));
++
++    /* --- ② Model Release Evidence Queue --- */
++    const queueRules = Array.isArray(queue.rules) ? queue.rules.join(' ') : '';
++    check('v3②：五条规则**原文**随队列一起输出（① ~ ⑤ 一条不少）',
++      ['①', '②', '③', '④', '⑤'].every(mark => queueRules.includes(mark))
++      && /comparableGroupOf/.test(queueRules) && /code-unit/.test(queueRules)
++      && /api-plans\.json/.test(queueRules) && /plans\.json/.test(queueRules) && /long-tail/.test(queueRules),
++      queueRules.slice(0, 120));
++    check('v3②：队列覆盖全部 registry 模型，且 unknownCount 与第①节的 unknown **同源**',
++      queue.total === eq.registryModels && queue.unknownCount === eq.unknown
++      && queue.knownCount === eq.known && queue.unknownCount + queue.knownCount === queue.total);
++    check('v3②：打印 N 是固定常量并在 JSON 里写明（前 N 条 = min(limit, total)）',
++      Number.isInteger(queue.limit) && queue.limit > 0
++      && queue.queue.length === Math.min(queue.limit, queue.total)
++      && queue.queue.every((row, index) => row.rank === index + 1));
++    check('v3②：队列次序**逐条复算**五条规则（① 未知优先 → ② 组规模降序 → ③ tier → ④ 下游引用 → ⑤ slug code-unit）',
++      (() => {
++        const tierRank = { core: 0, major: 1, 'long-tail': 2 };
++        for (let index = 1; index < queue.queue.length; index += 1) {
++          const a = queue.queue[index - 1];
++          const b = queue.queue[index];
++          if (a.releasedAtUnknown !== b.releasedAtUnknown) { if (!a.releasedAtUnknown) return false; continue; }
++          if (a.groupSize !== b.groupSize) { if (a.groupSize < b.groupSize) return false; continue; }
++          if (tierRank[a.tier] !== tierRank[b.tier]) { if (tierRank[a.tier] > tierRank[b.tier]) return false; continue; }
++          if (a.referenced !== b.referenced) { if (!a.referenced) return false; continue; }
++          if (!(a.slug < b.slug)) return false;
++        }
++        return queue.queue.every(row => ['core', 'major', 'long-tail'].includes(row.tier)
++          && typeof row.groupSize === 'number'
++          && row.referenced === (row.referencedByApiPlans || row.referencedByPlans));
++      })(),
++      queue.queue.slice(0, 3).map(row => `${row.rank}:${row.slug}/g${row.groupSize}/${row.tier}`).join(' '));
++    check('v3②：tier 判据来自 coverage-targets（够不到 target 的按 long-tail），且与意图层逐行一致',
++      queue.queue.every(row => {
++        const target = ct.targetsList(targetsLoaded.doc).find(item => item.provider === row.provider);
++        return row.tier === (target ? target.tier : 'long-tail');
++      }));
++    check('v3②：组键由 lib 的 comparableGroupOf() 给出（报告没有另写一份组键算法）',
++      queue.groupJudgeAvailable === true && queue.queue.every(row => {
++        const group = freshnessLib.comparableGroupOf(registryTable[row.slug] || {});
++        return row.groupKey === group.key && row.groupKind === group.source;
++      }));
++
++    /* --- ③ Gap Closure Queue --- */
++    const gapQueue = gap.queue;
++    check('v3③：队列条数 == MISSING + PARTIAL，且 counts 之和 == 队列条数（每个格子恰好落进一档）',
++      gapQueue.length === cov3.states.MISSING + cov3.states.PARTIAL
++      && gap.counts.A + gap.counts.B + gap.counts.C + gap.counts.D === gapQueue.length
++      && ['A', 'B', 'C', 'D'].every(priority => gap.counts[priority] === gapQueue.filter(row => row.priority === priority).length),
++      JSON.stringify(gap.counts) + ` / ${gapQueue.length}`);
++    check('v3③：每一条都带「目标 N / 已兑现 M / 缺 K / 出口状态」，且 K == N − M、M ≤ N',
++      gapQueue.every(row => Number.isInteger(row.targetN) && Number.isInteger(row.coveredM) && Number.isInteger(row.missingK)
++        && row.missingK === row.targetN - row.coveredM && row.coveredM <= row.targetN
++        && ['MISSING', 'PARTIAL'].includes(row.state) && row.exitState === row.state
++        && typeof row.present === 'number' && typeof row.reason === 'string'));
++    check('v3③：分层规则**原文**随队列一起输出（A ~ D 四档 + 判据定义一条不少）',
++      ['A = ', 'B = ', 'C = ', 'D = '].every(mark => gap.rules.join(' ').includes(mark))
++      && /HIGH_VALUE_DIMENSIONS/.test(gap.rules.join(' ')) && /先命中先归/.test(gap.rules.join(' '))
++      && /官方来源明确/.test(gap.rules.join(' ')) && /来源困难/.test(gap.rules.join(' '))
++      && JSON.stringify(gap.highValueDimensions) === JSON.stringify(['api', 'models']));
++    check('v3③：每一条的 priority 都能**逐条复算**出来（判据全部在 payload 里，不靠信任）',
++      gapQueue.every(row => {
++        const highCost = row.highCost === true;
++        const hard = row.sourceHard === true || highCost;
++        const expected = (row.tier === 'core' || row.tier === 'major')
++          ? (row.tier === 'core' && row.highValue && row.explicitSource && !hard ? 'A'
++            : (row.tier === 'major' && row.explicitSource && !hard ? 'B' : 'C'))
++          : 'D';
++        return row.priority === expected
++          && row.explicitSource === (row.targetN > 0)
++          && Array.isArray(row.declaredSources) && Array.isArray(row.hardSources) && Array.isArray(row.costlySources);
++      }));
++    check('v3③：MISSING 行的盘上记录必须是 0（MISSING 的定义：可覆盖、未延期、来源健康，但盘上一条都没有）',
++      gapQueue.filter(row => row.state === 'MISSING').every(row => row.present === 0));
++
++    /* --- ④ Source Reliability summary --- */
++    const sv = cov3.sourceHealth;
++    check('v3④：Source Reliability 必须打印 generatedAt —— 且它与心跳文件里写的**逐字相等**（不是跑报告的墙钟时间）',
++      typeof rel.healthGeneratedAt === 'string' && rel.healthGeneratedAt === readJson('scripts/data/source-health.json').generatedAt
++      && landed1.stdout.includes(rel.healthGeneratedAt),
++      `${rel.healthGeneratedAt}`);
++    check('v3④：沿用既有 sourceHealth.registryRowCount / registryRows / registryOnlySources 口径（两处逐字相等，不另算一份）',
++      rel.registryRowCount === sv.registryRowCount && rel.registryRowCount === rel.registryRows.length
++      && JSON.stringify(rel.registryRows) === JSON.stringify(sv.registryRows)
++      && JSON.stringify(rel.registryOnlySources) === JSON.stringify(sv.registryOnlySources));
++    check('v3④：裁决 × live 读数 join 成型（每条裁决都带身份命中与心跳读数，且 health 的连续失败次数来自文件）',
++      rel.present === true && rel.notLanded === false
++      && rel.rulings.length === rel.decisionOrder.reduce((total, decision) => total + rel.decisionCounts[decision], 0)
++      && rel.rulings.every(row => row.health && typeof row.health.consecutiveFailures === 'number'
++        && row.resolvedBy !== null
++        && (row.registry
++          ? row.health.consecutiveFailures === readJson('scripts/data/source-health.json').sources
++            .find(source => source.source === row.registry.id).consecutiveFailures
++          : /health/.test(row.resolvedBy)))
++      && rel.rulings.every((row, index) => index === 0 || rel.rulings[index - 1].source < row.source),
++      `裁决 ${rel.rulings.length} 条：${rel.decisionOrder.map(decision => `${decision}=${rel.decisionCounts[decision]}`).join(' ')}`);
++    check('v3④：三方对账（裁决 ↔ 采集器注册表 ↔ source-health）0 处问题，且规则原文写进 JSON',
++      rel.reconciliation.problemCount === 0 && rel.reconciliation.problems.length === 0
++      && rel.reconciliation.ruleCount === 4
++      && /retire/.test(rel.reconciliation.ruleNote) && /consecutiveFailures/.test(rel.reconciliation.ruleNote)
++      && rel.collectorRegistryCount === require('../collectors').list().length,
++      JSON.stringify(rel.reconciliation.problems).slice(0, 160));
++    check('v3④：面板上的差异集是**算出来的**（未裁决的注册表行 == 注册表 ∖ 已裁决，不多不少）',
++      rel.reconciliation.unruledRegistrySources.length
++      === require('../collectors').list().filter(source => !rel.rulings.some(row => row.registry && row.registry.id === source.id)).length);
++
++    /* --- 文本 / JSON 同源 --- */
++    const gapCountsLine = /队列共 (\d+) 条：A (\d+) · B (\d+) · C (\d+) · D (\d+)/.exec(landed1.stdout);
++    check('v3：文本与 JSON **同源**（分层计数行、已知/未知行、队列长度在两侧逐字一致）',
++      Boolean(gapCountsLine)
++      && Number(gapCountsLine[1]) === gapQueue.length
++      && Number(gapCountsLine[2]) === gap.counts.A && Number(gapCountsLine[3]) === gap.counts.B
++      && Number(gapCountsLine[4]) === gap.counts.C && Number(gapCountsLine[5]) === gap.counts.D
++      && landed1.stdout.includes(`未知 official release date`) && landed1.stdout.includes(`未知发布日期 ${queue.unknownCount} 条`),
++      gapCountsLine ? gapCountsLine[0] : '(文本里没有分层计数行)');
++    check('v3：四节的标题在文本里都在（文本侧不是只写了 JSON）',
++      ['Release Evidence Coverage', 'Model Release Evidence Queue', 'Gap Closure Queue', 'Source Reliability summary']
++        .every(title => landed1.stdout.includes(title)));
++
++    /* --- 夹具反证（非法输入 ⇒ 必红），逐键覆盖 --- */
++    const writeFixture = (name, mutate) => {
++      const doc = clone(fixtureDoc);
++      mutate(doc);
++      const file = path.join(v3Tmp, name);
++      fs.writeFileSync(file, `${JSON.stringify(doc, null, 2)}\n`);
++      return file;
++    };
++    const redRun = (file, needle) => {
++      const result = runReport([`--source-rulings=${file}`]);
++      return {
++        ok: result.status !== 0 && result.stderr.includes(needle),
++        exit: result.status,
++        hit: (result.stderr.split('\n').find(text => text.includes(needle)) || '(没有点到要害)').trim().slice(0, 140)
++      };
++    };
++
++    const noWhyKept = writeFixture('bad-whykept.json', doc => { doc.rulings[0].whyKept = null; });
++    const noWhyKeptRun = redRun(noWhyKept, '必须写 whyKept');
++    check('【反证牙·v3④】keep-degraded 缺 whyKept ⇒ 报告自检非 0，并点名「必须写 whyKept」',
++      noWhyKeptRun.ok, `exit ${noWhyKeptRun.exit}；${noWhyKeptRun.hit}`);
++
++    const retireRegistered = writeFixture('bad-retire.json', doc => {
++      doc.rulings[0].decision = 'retire';
++      doc.rulings[0].whyKept = null;
++      doc.rulings[0].revisitBy = null;
++    });
++    const retireRun = redRun(retireRegistered, '仍然挂在采集器注册表里');
++    check('【反证牙·v3④】已裁决 retire 的来源仍在采集器注册表 ⇒ 报告自检非 0，并点名「仍然挂在采集器注册表里」',
++      retireRun.ok, `exit ${retireRun.exit}；${retireRun.hit}`);
++
++    const emptyRulings = writeFixture('bad-empty.json', doc => { doc.rulings = []; });
++    const emptyRun = redRun(emptyRulings, '却没有在 scripts/data/source-rulings.json 里留下裁决');
++    check('【反证牙·v3④】连续失败 ≥ 3 次的来源一条裁决都没有 ⇒ 报告自检非 0，并点名「没有在 source-rulings.json 里留下裁决」',
++      emptyRun.ok, `exit ${emptyRun.exit}；${emptyRun.hit}`);
++
++    const unordered = writeFixture('bad-order.json', doc => { doc.rulings.reverse(); });
++    const unorderedRun = redRun(unordered, '不是规范序');
++    check('【反证牙·v3④】裁决数组不是按 source 的 code-unit 序 ⇒ 报告自检非 0，并点名「不是规范序」',
++      unorderedRun.ok, `exit ${unorderedRun.exit}；${unorderedRun.hit}`);
++
++    const brokenJson = path.join(v3Tmp, 'bad-json.json');
++    fs.writeFileSync(brokenJson, '{ this is not json }\n');
++    const brokenRun = redRun(brokenJson, '解析失败');
++    check('【反证牙·v3④】裁决表在盘上但读不出来 ⇒ 报告自检非 0（"坏文件"与"尚未落盘"必须是两件事）',
++      brokenRun.ok, `exit ${brokenRun.exit}；${brokenRun.hit}`);
++
++    /* --- ① / ② 的反证：判据层被喂进"写了但判不了的发布日期"与"空串日期" --- */
++    const sourceDoc = readJson('scripts/data/models.json');
++    const unparsableDoc = clone(sourceDoc);
++    unparsableDoc['deepseek-flash'].releasedAt = '2026-10';            // 写了，但解析不出可判日
++    const unparsableFile = path.join(v3Tmp, 'models-unparsable.json');
++    fs.writeFileSync(unparsableFile, `${JSON.stringify(unparsableDoc, null, 2)}\n`);
++    const unparsableRun = runReport([`--models=${unparsableFile}`]);
++    check('【反证牙·v3①】有模型的 releasedAt 写了却解析不出可判日 ⇒ 报告自检非 0，并点名「解析不出可判日」',
++      unparsableRun.status !== 0 && unparsableRun.stderr.includes('解析不出可判日'),
++      `exit ${unparsableRun.status}；${(unparsableRun.stderr.split('\n').find(text => text.includes('解析不出')) || '(没有点到)').trim().slice(0, 120)}`);
++
++    const blankDoc = clone(sourceDoc);
++    blankDoc['deepseek-flash'].releasedAt = '';                        // 空串：两处读数会分家
++    const blankFile = path.join(v3Tmp, 'models-blank-date.json');
++    fs.writeFileSync(blankFile, `${JSON.stringify(blankDoc, null, 2)}\n`);
++    const blankRun = runReport([`--models=${blankFile}`]);
++    check('【反证牙·v3②】releasedAt 写成空串（规则①的判据与既有 unknown release dates 分家）⇒ 报告自检非 0，并点名「两处读数不一致」',
++      blankRun.status !== 0 && blankRun.stderr.includes('两处读数不一致'),
++      `exit ${blankRun.status}；${(blankRun.stderr.split('\n').find(text => text.includes('不一致')) || '(没有点到)').trim().slice(0, 140)}`);
++
++    /* --- ③ 的反证：gap queue 的输入层被改成非法 --- */
++    const targetsDoc = readJson('scripts/data/coverage-targets.json');
++    const badTargets = clone(targetsDoc);
++    const gamma = badTargets.targets.find(target => target.currentTargets
++      .some(item => item.dimension === 'models'));
++    gamma.currentTargets = gamma.currentTargets
++      .filter(item => item.dimension !== 'models')
++      .concat([{ dimension: 'models', registrySlug: 'ghost-model-000' }]);
++    const badTargetsFile = path.join(v3Tmp, 'targets-bad-slug.json');
++    fs.writeFileSync(badTargetsFile, `${JSON.stringify(badTargets, null, 2)}\n`);
++    const badTargetsRun = runReport([`--targets=${badTargetsFile}`]);
++    check('【反证牙·v3③】gap queue 的输入层非法（current target 指向不存在的 registrySlug）⇒ 报告自检非 0，并点名「不在 scripts/data/models.json」',
++      badTargetsRun.status !== 0 && badTargetsRun.stderr.includes('不在 scripts/data/models.json'),
++      `exit ${badTargetsRun.status}；${(badTargetsRun.stderr.split('\n').find(text => text.includes('models.json')) || '(没有点到)').trim().slice(0, 140)}`);
++  }
++} finally {
++  try { fs.rmSync(v3Tmp, { recursive: true, force: true }); } catch (error) { /* 临时目录清不掉不影响判据 */ }
++}
++
+ /* ================================================================== */
+ 
+ console.log(`\n=== coverage-expansion-v1 覆盖意图层演练：${passed} 项通过，${failures.length} 项失败 ===`);
+ if (failures.length) {
+   console.log('失败项：');
+   failures.forEach(name => console.log(`  ✗ ${name}`));

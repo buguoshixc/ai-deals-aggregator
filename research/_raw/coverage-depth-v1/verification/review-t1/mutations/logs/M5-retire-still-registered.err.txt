@@ -1,0 +1,3 @@
+
+❌ 覆盖报告自检失败：
+  - 已裁决 retire 的来源「futurepedia」仍然挂在采集器注册表里（registry id futurepedia） —— "退出采集链路"与"还在被采集"不能同时成立：要么从 scripts/collectors 摘掉它，要么把裁决改成 repair / keep-degraded。

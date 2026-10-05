@@ -1,0 +1,36 @@
+﻿[release-audit] HEAD=ff86368e6d12d1ef57b2f51aa2c957c01d2a9ed8 有日期条目 32 · 其中本轮新增 28（含新身份 2）
+[release-audit] 全部条目分类：{"已核":30,"已核（引文未自证）":2}
+[release-audit] 仅本轮新增：{"已核":28}；基线 4 条：{"已核（引文未自证）":2,"已核":2}
+  已核（分段逐字 @ raw/anthropic-fable51b.html#visible） claude-fable-5.1               2026-09-01  日期✓ 域✓ 引文✓ 逐字✓  https://www.anthropic.com/news
+  已核（分段逐字 @ raw/anthropic-haiku45.html#visible） claude-haiku-4.5               2025-10-15  日期✓ 域✓ 引文✓ 逐字✓  https://www.anthropic.com/news/claude-haiku-4-5
+  已核（分段逐字 @ raw/anthropic-news-index.html#visible） claude-opus-5.5                2026-09-22  日期✓ 域✓ 引文✓ 逐字✓  https://www.anthropic.com/news
+  已核（分段逐字 @ raw/anthropic-news-index.html#visible） claude-sonnet-5.5              2026-09-28  日期✓ 域✓ 引文✓ 逐字✓  https://www.anthropic.com/news
+  已核（日期在页面 @ raw/test-deepseek-updates.html#visible，但**引文本身不含日期**） deepseek-flash                 2026-09-10  日期✗ 域✓ 引文✓ 逐字✓  https://api-docs.deepseek.com/updates
+  已核（分段逐字 @ raw/test-deepseek-updates.html#visible） deepseek-v3.2                  2025-12-01  日期✓ 域✓ 引文✓ 逐字✓  https://api-docs.deepseek.com/updates
+  已核（日期在页面 @ raw/test-deepseek-updates.html#visible，但**引文本身不含日期**） deepseek-v4-pro                2026-08-13  日期✗ 域✓ 引文✓ 逐字✓  https://api-docs.deepseek.com/updates
+  已核（分段逐字 @ raw/google-gemini-changelog.html#visible） gemini-3.5-flash               2026-05-19  日期✓ 域✓ 引文✓ 逐字✓  https://ai.google.dev/gemini-api/docs/changelog
+  已核（分段逐字 @ raw/google-gemini-changelog.html#visible） gemini-3.6-flash               2026-07-21  日期✓ 域✓ 引文✓ 逐字✓  https://ai.google.dev/gemini-api/docs/changelog
+  已核（分段逐字 @ raw/google-gemini-changelog.html#visible） gemini-3.7-flash               2026-08-13  日期✓ 域✓ 引文✓ 逐字✓  https://ai.google.dev/gemini-api/docs/changelog
+  已核（分段逐字 @ raw/google-gemini-changelog.html#visible） gemini-3.8-flash               2026-09-02  日期✓ 域✓ 引文✓ 逐字✓  https://ai.google.dev/gemini-api/docs/changelog
+  已核（逐 token 100% @ raw/bigmodel-new-releases.html#visible） glm-4.5v                       2025-08-11  日期✓ 域✓ 引文✓ 逐字✗  https://docs.bigmodel.cn/cn/update/new-releases
+  已核（分段逐字 @ raw/bigmodel-new-releases.html#visible） glm-4.6v                       2025-12-08  日期✓ 域✓ 引文✓ 逐字✓  https://docs.bigmodel.cn/cn/update/new-releases
+  已核（分段逐字 @ raw/bigmodel-new-releases.html#visible） glm-4.7-flash                  2026-01-19  日期✓ 域✓ 引文✓ 逐字✓  https://docs.bigmodel.cn/cn/update/new-releases
+  已核（分段逐字 @ raw/bigmodel-new-releases.html#visible） glm-5.3                        2026-08-19  日期✓ 域✓ 引文✓ 逐字✓  https://docs.bigmodel.cn/cn/update/new-releases
+  已核（分段逐字 @ raw/bigmodel-new-releases.html#visible） glm-5.3-flash                  2026-08-26  日期✓ 域✓ 引文✓ 逐字✓  https://docs.bigmodel.cn/cn/update/new-releases
+  已核（分段逐字 @ raw/bigmodel-new-releases.html#visible） glm-5v-turbo                   2026-04-02  日期✓ 域✓ 引文✓ 逐字✓  https://docs.bigmodel.cn/cn/update/new-releases
+  已核（逐 token 100% @ raw/oai-gpt6-astra.html#source） gpt-6-astra                    2026-09-03  日期✓ 域✓ 引文✓ 逐字✗  https://openai.com/index/gpt-6-astra/
+  已核（整段逐字 @ raw/oai-gpt6-astra.html#visible） gpt-6-luna                     2026-09-22  日期✓ 域✓ 引文✓ 逐字✓  https://openai.com/index/gpt-6-astra/
+  已核（逐 token 100% @ raw/oai-gpt6-astra.html#source） gpt-6.1-sol                    2026-09-29  日期✓ 域✓ 引文✓ 逐字✗  https://openai.com/index/introducing-gpt-6-1-sol/
+  已核（分段逐字 @ raw/tencent-hunyuan-pricing.html#visible） hunyuan-a13b                   2025-06-25  日期✓ 域✓ 引文✓ 逐字✓  https://cloud.tencent.com/document/product/1729/104753
+  已核（分段逐字 @ raw/tencent-hunyuan-pricing.html#visible） hunyuan-role-latest            2025-09-24  日期✓ 域✓ 引文✓ 逐字✓  https://cloud.tencent.com/document/product/1729/104753
+  已核（逐 token 100% @ raw/tencent-hunyuan-pricing.html#visible） hunyuan-translation            2025-10-14  日期✓ 域✓ 引文✓ 逐字✗  https://cloud.tencent.com/document/product/1729/104753
+  已核（分段逐字 @ raw/tencent-hunyuan-model-list.html#visible） hunyuan-translation-lite       2025-06-06  日期✓ 域✓ 引文✓ 逐字✓  https://cloud.tencent.com/document/product/1729/104753
+  已核（逐 token 100% @ raw/kimi-res-k27code.html#source） kimi-k2.7-code                 2026-06-13  日期✓ 域✓ 引文✓ 逐字✗  https://www.kimi.com/resources/kimi-k2-7-code
+  已核（分段逐字 @ raw/kimi-news-k3.html#visible） kimi-k3                        2026-07-17  日期✓ 域✓ 引文✓ 逐字✓  https://www.kimi.com/news/kimi-k3
+  已核（分段逐字 @ raw/minimax-release-notes.html#visible） minimax-m2.7                   2026-03-18  日期✓ 域✓ 引文✓ 逐字✓  https://platform.minimax.cn/docs/release-notes/models
+  已核（分段逐字 @ raw/minimax-release-notes.html#visible） minimax-m2.7-highspeed         2026-03-18  日期✓ 域✓ 引文✓ 逐字✓  https://platform.minimax.cn/docs/release-notes/models
+  已核（分段逐字 @ raw/minimax-release-notes.html#visible） minimax-m3                     2026-06-01  日期✓ 域✓ 引文✓ 逐字✓  https://platform.minimax.cn/docs/release-notes/models
+  已核（分段逐字 @ raw/tencent-hunyuan-pricing.html#visible） tencent-hy-vision-1.5-instruct 2025-12-17  日期✓ 域✓ 引文✓ 逐字✓  https://cloud.tencent.com/document/product/1729/104753
+  已核（分段逐字 @ live#visible） 360zhinao-pro                  2026-08-05  日期✓ 域✓ 引文✓ 逐字✓  https://ai.360.com/open/zh/models/360zhinao/360zhinao-pro
+  已核（分段逐字 @ live#visible） 360zhinao-turbo-llm-geo        2026-08-24  日期✓ 域✓ 引文✓ 逐字✓  https://ai.360.com/open/zh/models/360zhinao/360zhinao-turbo-llm-geo
+[release-audit] 写出: research\_raw\coverage-depth-v1\verification\release-audit.json

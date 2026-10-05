@@ -1,0 +1,120 @@
+﻿
+① 真实文件与事实快照（scripts/data/coverage-targets.json）
+  ✓ coverage-targets.json 在盘上且是合法 JSON
+  ✓ 顶层没有重复键（判据来自原文，JSON.parse 看不见这类事故）
+  ✓ 真实文件通过全部硬校验（0 处问题，实际 0 处）
+  ✓ 意图层与身份层双向对上：providers.json 每一个 provider 都有一行
+  ✓ 每一条 current target 的 registrySlug 都真实存在于 scripts/data/models.json
+  ✓ 每一条 current target 的 deals source 都真实存在过（source-health 的 name 或 deals.json 的 source）
+  ✓ 意图层没有手写状态字段（state / status / coverage / selfStatus …）
+  ✓ tier / role 全部落在枚举内
+  ✓ reviewedAt 是 null 或 YYYY-MM-DD
+  ✓ 派生行数 == Target 行数 × 维度数
+  ✓ 真实盘面上每一个格子的状态都在七态之内
+  ✓ 真实盘面：COVERED 的格子必须真的有记录（不许空口算覆盖）
+  ✓ 真实盘面：MISSING 的格子必须真的没有记录、且没有被裁决挡掉
+  ✓ coverage-targets 没有被登记成公开数据集（PUBLIC_DATASETS）
+  ✓ coverage-targets 不在 Manifest 的数据集地址里
+  ✓ coverage-targets 没有进 Feed 层（lib/feeds.js 里不出现）
+  ✓ 判据层是纯函数：不读墙上时钟、不联网、不写盘
+
+② 七态派生（夹具：每种状态都必须真的能派出来）
+  ✓ 夹具本身是合法输入（0 处问题，实际 0 处）
+  ✓ COVERED：声明的 current target 全部兑现（deals / api / models 三格）
+  ✓ PARTIAL：声明三条只兑现两条 ⇒ PARTIAL（不是 COVERED，也不是 MISSING）
+  ✓ PARTIAL 的未兑现项逐条给出理由（哪一条没兑现、为什么）
+  ✓ MISSING：可覆盖、未延期、来源健康，但盘上一条记录都没有（beta.coding）
+  ✓ 【关键牙】DEFERRED 永不算 MISSING：beta.api 延期且盘上无记录 ⇒ DEFERRED
+  ✓ 【关键牙】schema-not-supported 同样归 DEFERRED（当前 schema 表达不了 ≠ 漏了）
+  ✓ UNVERIFIABLE：查过、官方来源不可核 ⇒ 不算 MISSING（gamma.coding）
+  ✓ NOT_APPLICABLE：维度标 null ⇒ 不适用，且理由来自 applicabilityNote
+  ✓ BLOCKED_SOURCE：声明的来源全部不健康且盘上无记录 ⇒ 不算 MISSING（delta.deals）
+  ✓ BLOCKED_SOURCE 只在"无记录 + 来源全坏"时成立：alpha.deals 来源健康 ⇒ COVERED
+  ✓ 声明了 registry 里存在但**归属别家**的模型 ⇒ 不算兑现，逐条给出归属理由（gamma.models）
+  ✓ MISSING / DEFERRED 的优先级：延期盖过"盘上无记录"
+  ✓ overallState：按"需要人来看"的优先级挑一格代表 provider（beta 有 MISSING 一格 ⇒ MISSING 压过 DEFERRED）
+  ✓ overallState：BLOCKED_SOURCE 压过 NOT_APPLICABLE（delta）
+  ✓ overallState：四格都好 ⇒ COVERED（alpha 的 COVERED/NOT_APPLICABLE/PARTIAL 里 PARTIAL 优先）
+  ✓ states 计数 == 派生行数（不多不少）
+  ✓ 七态在夹具里**全部出现过**
+
+③ 牙（每一条变异都必须让 validateTargets 报红）
+  ✓ 【牙】provider 指向不存在的身份 → 红
+  ✓ 【牙】registrySlug 指向不存在的模型 → 红
+  ✓ 【牙】deals source 编造一个不存在的来源 → 红
+  ✓ 【牙】身份层有 provider，意图层少一行 → 红（双向对账）
+  ✓ 【牙】手写状态字段（state）→ 红
+  ✓ 【牙】手写 selfStatus → 红（研究结论要写成 rulings，不是状态字段）
+  ✓ 【牙】deferred 缺 revisitBy（复查条件）→ 红
+  ✓ 【牙】标了"不适用"却没写 applicabilityNote → 红
+  ✓ 【牙】同一个维度两条裁决 → 红
+  ✓ 【牙】dimensionIntent 缺一个维度 → 红
+  ✓ 【牙】currentTargets 词汇表不匹配（models 写成 modelKey）→ 红
+  ✓ 【牙】给"不适用"的维度写裁决 → 红
+  ✓ 【牙】targets 记录顺序不是规范序 → 红
+  ✓ 【牙】currentTargets 顺序不是规范序 → 红
+  ✓ 【牙】未知字段 → 红
+  ✓ 【牙】intent 为空 → 红
+  ✓ 【牙】tier 非法 → 红
+  ✓ 【牙】rulinss 不是数组 → 红
+  ✓ 【牙】顶层 schemaVersion 不对 → 红
+  ✓ 【牙】顶层未知字段 → 红
+  ✓ 【牙】【原文牙】引用重复键 → 红
+  ✓ 【牙】空表（一条意图都没有）→ 红
+  ✓ 【反向牙】声明了一条盘上没有的 current target 不是校验错误 —— 它是 PARTIAL/MISSING 的事实
+  ✓ 【反向牙】声明落空 + 盘上无记录 ⇒ MISSING（不是校验错误）
+  ✓ 重复键检测器认得嵌套对象里的重复键（含数组下标路径）
+  ✓ 重复键检测器认得顶层重复键（路径为空时报顶层）
+  ✓ 重复键检测器不把字符串值误当键
+  ✓ load() 从**原文**扫出重复键并交给校验收口
+
+④ 端到端：report:coverage（文本 + deterministic JSON）
+  ✓ 【确定性】两次 `report:coverage --json` 输出逐字节一致
+  ✓ 【确定性】退出码在两次运行里一致
+  ✓ 本层不引入任何报告自检问题（上游在飞的问题逐条打印，不计在本层）
+  ✓ 【反证牙】冻结契约规则：把旧键顺序打乱 ⇒ 必须报问题
+  ✓ 【反证牙】冻结契约规则：删掉一个旧键 ⇒ 必须报问题
+  ✓ 【反证牙】冻结契约规则：追加键不在白名单里 ⇒ 必须报问题
+  ✓ 【反证牙】冻结契约规则：白名单里的键少了或顺序不对 ⇒ 必须报问题
+  ✓ 【正向】冻结契约规则：旧键原样 + 白名单内的追加 ⇒ 通过
+  ✓ （隔离上游）报告自检 0 处问题，退出码 0
+  ✓ （隔离上游）两次运行逐字节一致
+  ✓ （隔离上游）JSON 可解析
+  ✓ 旧 JSON 顶层键一个不少，且只多出 coverageTargets
+  ✓ generatedAt 仍是顶层字符串日期
+  ✓ 冻结契约（旧键前缀 + 追加键白名单）：deals
+  ✓ 冻结契约（旧键前缀 + 追加键白名单）：coding
+  ✓ 冻结契约（旧键前缀 + 追加键白名单）：api
+  ✓ 冻结契约（旧键前缀 + 追加键白名单）：registry
+  ✓ 冻结契约（旧键前缀 + 追加键白名单）：gaps
+  ✓ 冻结契约（旧键前缀 + 追加键白名单）：candidates
+  ✓ 冻结契约（旧键前缀 + 追加键白名单）：coverageTargets
+  ✓ 冻结契约（旧键前缀 + 追加键白名单）：coverageTargets.sourceHealth
+  ✓ 【反证牙】点分路径取值器：嵌套取得到、缺一层给 undefined（否则嵌套节会静默变成"空对象 ⇒ 全缺"而报红）
+  ✓ 【反证牙·端到端】真实 payload 的 registry 键序被打乱 ⇒ 同一条契约规则报红
+  ✓ 【反证牙·端到端】真实 payload 删掉一个旧键 linksPresent ⇒ 同一条契约规则报红
+  ✓ 新键 coverageTargets 结构完整（universe / dimensions / rows / 清单 / currentModels / sourceHealth / freshness）
+  ✓ universe.declared == 意图层行数，且与 providers.json 身份数逐字相等
+  ✓ dimensions 与 rows 自洽：每个维度的状态计数之和 == 该维度行数
+  ✓ states 与 rows 自洽：状态计数之和 == 行数
+  ✓ 七态每一项都出现在 states 里（不许少报一种状态）
+  ✓ missingTargets 与 states.MISSING 对得上（清单不是另一份数字）
+  ✓ deferred / unverifiable 清单与 states 对得上
+  ✓ currentModels 的 target 条数与意图层声明逐字相等
+  ✓ sourceHealth 的声明来源与意图层写过的 source 一致
+  ✓ freshness 块如实反映模块状态（ok / broken / missing 三选一）
+  ✓ t46：coverageTargets.catalogStatusCensus 存在，且词表就是 lib 的 CATALOG_STATUSES（判据层单一出处）
+  ✓ t46：五态每一档都与发布产物 models.json 的 catalogStatus 直接过滤一致（不是报告自算的另一份数字）
+  ✓ t46：五态之和 == registry 模型数 == 发布产物模型数（不闭合即报告自检非 0）
+  ✓ t46：没有词表外的 catalogStatus 值（未知值不许静默并进 unknown，也不许自己加一档）
+  ✓ t46：文本那一行的五态读数与 JSON 的 counts 逐档一致，且「（和 N）」== sum（文本/JSON 不许各说各话）
+  ✓ t46：candidates.rows 逐条带 url / 检查日期 / 是否采信 / 失败原因（这三样此前在 JSON 里各 0 次）
+  ✓ t46：candidates.rows 排序稳定（两次运行逐字节相同）
+  ✓ t46：sourceHealth 追加了来源宇宙对照，且注册表行数 == source-health.json 的实际行数
+  ✓ t46：差集 == 注册表 ∖ 本节已列（两项相加恰好等于注册表行数，不多不少）
+  ✓ t25：registry 新增 API 侧处置键（映射 A / 已处置 B / 逐条留档）且三者和 == 计价条目总数
+  ✓ t25：逐条留档是稳定排序（两次运行里 registry.declaredApiEntryRows 逐字节相同）
+  ✓ 【反证牙】发布产物少一个模型（五态之和 ≠ registry 模型数）⇒ 报告自检非 0，并点名「五态普查不闭合」
+  ✓ 【反证牙】出现词表外的 catalogStatus（retired）⇒ 报告自检非 0，并点名「不在词表里」
+
+=== coverage-expansion-v1 覆盖意图层演练：110 项通过，0 项失败 ===

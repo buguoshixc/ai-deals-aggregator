@@ -1,0 +1,70 @@
+﻿扫描 165 个文件，命中 22 处 filter(…).every/some：
+
+scripts\tools\coverage-targets-selftest.js:136  [realDerived.rows.filter(…)..every] guardNearby=no
+    filter: row => row.state === ct.STATES.COVERED
+    code  : realDerived.rows.filter(row => row.state === ct.STATES.COVERED).every(row => row.present > 0 || row.resolved > 0));
+scripts\tools\coverage-targets-selftest.js:138  [realDerived.rows.filter(…)..every] guardNearby=no
+    filter: row => row.state === ct.STATES.MISSING
+    code  : realDerived.rows.filter(row => row.state === ct.STATES.MISSING)
+scripts\tools\coverage-targets-selftest.js:276  [items.filter(…)..every] guardNearby=no
+    filter: item => !item.resolved
+    code  : cell('alpha', 'coding').items.filter(item => !item.resolved)
+scripts\tools\coverage-targets-selftest.js:646  [gapQueue.filter(…)..every] guardNearby=no
+    filter: row => row.state === 'MISSING'
+    code  : * `gapQueue.filter(row => row.state === 'MISSING').every(row => row.present === 0)`。
+scripts\tools\coverage-targets-selftest.js:1534  [gapQueue.filter(…)..every] guardNearby=no
+    filter: MISSING
+    code  : // t7-F1 修复：原来这一条是 `gapQueue.filter(MISSING).every(present === 0)` —— 本轮 MISSING 已收口到 0，
+scripts\tools\data-docs-selftest.js:223  [manifest.datasets.filter(…)..every] guardNearby=no
+    filter: d => d.category === 'history'
+    code  : && manifest.datasets.filter(d => d.category === 'history').every(d => docs.timeShapeOf(d.updatedAt) === 'date'));
+scripts\tools\feeds-selftest.js:149  [specs.filter(…)..every] guardNearby=YES
+    filter: spec => spec.kind === 'collection' && spec.id !== 'all'
+    code  : check('分类 Feed 的标题都带具体分类', specs.filter(spec => spec.kind === 'collection' && spec.id !== 'all')
+scripts\tools\feeds-selftest.js:384  [built.feeds.filter(…)..every] guardNearby=YES
+    filter: feed => feed.spec.vendor
+    code  : check('厂商 Feed 的路径用 slug 而不是显示名', built.feeds.filter(feed => feed.spec.vendor)
+scripts\tools\model-freshness-selftest.js:333  [invariants.entries.filter(…)..every] guardNearby=no
+    filter: entry => entry.catalogStatus === 'unknown'
+    code  : check('unknown 的原因码永远不在 superseded 表里', invariants.entries.filter(entry => entry.catalogStatus === 'unknown').every(entry => !fresh.SUPERSEDED_REASONS
+scripts\tools\model-freshness-selftest.js:334  [invariants.entries.filter(…)..every] guardNearby=no
+    filter: entry => entry.catalogStatus === 'unknown'
+    code  : check('unknown 的原因码必须在 UNKNOWN_REASONS 里', invariants.entries.filter(entry => entry.catalogStatus === 'unknown').every(entry => fresh.UNKNOWN_REASONS.
+scripts\tools\model-freshness-selftest.js:338  [invariants.entries.filter(…)..every] guardNearby=no
+    filter: entry => entry.comparableGroupKey === retiredGroup.key
+    code  : && invariants.entries.filter(entry => entry.comparableGroupKey === retiredGroup.key).every(entry => entry.catalogStatus === 'historical'));
+scripts\tools\plan-history-selftest.js:430  [forced.store.events.filter(…)..every] guardNearby=YES
+    filter: e => e.type === 'ended'
+    code  : forced.store.events.filter(e => e.type === 'ended').every(e => e.reason === 'withdrawn'),
+scripts\tools\plans-selftest.js:1027  [store.plans.filter(…)..every] guardNearby=no
+    filter: plan => plan.quota.type !== 'tokens'
+    code  : store.plans.filter(plan => plan.quota.type !== 'tokens')
+scripts\tools\plans-selftest.js:1030  [store.plans.filter(…)..every] guardNearby=no
+    filter: plan => plan.derivedMetrics.nominalUnitPrice !== null
+    code  : store.plans.filter(plan => plan.derivedMetrics.nominalUnitPrice !== null)
+scripts\tools\plans-selftest.js:1292  [payload.rows.filter(…)..every] guardNearby=YES
+    filter: row => row.regular === null
+    code  : payload.rows.filter(row => row.regular === null).every(row =>
+scripts\tools\vendor-page-selftest.js:512  [vendorPages.filter(…)..every] guardNearby=no
+    filter: page => page.count > 0
+    code  : vendorPages.filter(page => page.count > 0).every(page => page.title === `${page.key} 的 AI 优惠`)
+scripts\tools\vendor-page-selftest.js:513  [vendorPages.filter(…)..every] guardNearby=no
+    filter: page => page.count === 0 && page.nonDealMaterial
+    code  : && vendorPages.filter(page => page.count === 0 && page.nonDealMaterial).every(page => page.title === `${page.key} 的 AI 资料`));
+scripts\tools\verify-site.js:1535  [feedTargets.filter(…)..every] guardNearby=no
+    filter: ([rel]) => rel.endsWith('.xml')
+    code  : feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([rel, box]) => {
+scripts\tools\verify-site.js:1548  [feedTargets.filter(…)..every] guardNearby=no
+    filter: ([rel]) => rel.endsWith('.json')
+    code  : feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => !box.offMidnight) &&
+scripts\tools\verify-site.js:1549  [feedTargets.filter(…)..every] guardNearby=no
+    filter: ([rel]) => rel.endsWith('.xml')
+    code  : feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => /GMT$/.test(String(box.lastBuildDate || ''))),
+scripts\tools\verify-site.js:1553  [feedTargets.filter(…)..every] guardNearby=no
+    filter: ([rel]) => rel.endsWith('.json')
+    code  : feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => box.icon && box.favicon) &&
+scripts\tools\verify-site.js:1554  [feedTargets.filter(…)..every] guardNearby=no
+    filter: ([rel]) => rel.endsWith('.xml')
+    code  : feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => box.image && box.selfLink),
+
+→ 证据写入 empty-set-scan.json

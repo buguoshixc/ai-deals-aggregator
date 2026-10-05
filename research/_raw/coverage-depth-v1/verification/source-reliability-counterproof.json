@@ -1,0 +1,301 @@
+{
+  "probe": "source-reliability-counterproof.cjs",
+  "ranAtUtc": "2026-10-05T04:34:05.592Z",
+  "ranAtLocal": "Mon Oct 05 2026 12:34:05 GMT+0800 (中国标准时间)",
+  "question": "来源裁决（futurepedia = keep-degraded）是不是被一时网络抖动影响的？",
+  "ciSide": {
+    "source": "git log -- scripts/data/source-health.json（每次 CI 采集的落地读数；TZ=Asia/Shanghai，cron 0 0/12 * * * UTC）",
+    "healthFileGeneratedAt": "2026-10-04T16:31:52.051Z",
+    "healthFileSha256": "f782626e2b0e9b31236393507fe00121e90faf55db92fbd71fa52002885abf80",
+    "readings": 19,
+    "healthy": 4,
+    "failed": 15,
+    "currentStreakFailures": 10,
+    "streakFrom": "2026-09-30T04:09:07.964Z",
+    "streakTo": "2026-10-04T16:31:52.051Z",
+    "rows": [
+      {
+        "commit": "d57aa3e",
+        "commitTime": "2026-10-05T00:34:39+08:00",
+        "generatedAt": "2026-10-04T16:31:52.051Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 10,
+          "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "45b7b47",
+        "commitTime": "2026-10-04T12:31:01+08:00",
+        "generatedAt": "2026-10-04T04:28:23.566Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 9,
+          "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "1b87844",
+        "commitTime": "2026-10-04T11:09:55+08:00",
+        "generatedAt": "2026-10-04T03:07:44.109Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 8,
+          "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "ebb2303",
+        "commitTime": "2026-10-03T11:59:15+08:00",
+        "generatedAt": "2026-10-03T03:56:44.430Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 7,
+          "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "9cfeaeb",
+        "commitTime": "2026-10-03T01:36:59+08:00",
+        "generatedAt": "2026-10-02T17:34:24.906Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 6,
+          "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "1c024db",
+        "commitTime": "2026-10-02T12:16:36+08:00",
+        "generatedAt": "2026-10-02T04:14:02.909Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 5,
+          "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "3bd1de7",
+        "commitTime": "2026-10-02T02:11:22+08:00",
+        "generatedAt": "2026-10-01T18:08:51.193Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 4,
+          "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "cf3bf13",
+        "commitTime": "2026-10-01T12:22:45+08:00",
+        "generatedAt": "2026-10-01T04:20:35.712Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 3,
+          "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "d8640a9",
+        "commitTime": "2026-10-01T01:44:11+08:00",
+        "generatedAt": "2026-09-30T17:42:06.038Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 2,
+          "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "8127458",
+        "commitTime": "2026-09-30T12:11:00+08:00",
+        "generatedAt": "2026-09-30T04:09:07.964Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 1,
+          "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "036db88",
+        "commitTime": "2026-09-30T09:38:55+08:00",
+        "generatedAt": "2026-09-30T01:36:21.446Z",
+        "futurepedia": {
+          "status": "healthy",
+          "consecutiveFailures": 0,
+          "lastSuccessAt": "2026-09-30T01:36:21.446Z",
+          "lastItemCount": 7,
+          "lastError": null
+        }
+      },
+      {
+        "commit": "3c00cba",
+        "commitTime": "2026-09-30T09:27:26+08:00",
+        "generatedAt": "2026-09-29T17:48:21.615Z",
+        "futurepedia": {
+          "status": "healthy",
+          "consecutiveFailures": 0,
+          "lastSuccessAt": "2026-09-29T17:48:21.615Z",
+          "lastItemCount": 7,
+          "lastError": null
+        }
+      },
+      {
+        "commit": "08b8a75",
+        "commitTime": "2026-09-30T01:47:53+08:00",
+        "generatedAt": "2026-09-29T17:46:02.101Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 1,
+          "lastSuccessAt": "2026-09-29T13:04:54.254Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "f1d8d4e",
+        "commitTime": "2026-09-29T21:10:21+08:00",
+        "generatedAt": "2026-09-29T13:04:54.254Z",
+        "futurepedia": {
+          "status": "healthy",
+          "consecutiveFailures": 0,
+          "lastSuccessAt": "2026-09-29T13:04:54.254Z",
+          "lastItemCount": 7,
+          "lastError": null
+        }
+      },
+      {
+        "commit": "41756e1",
+        "commitTime": "2026-09-29T12:26:42+08:00",
+        "generatedAt": "2026-09-29T04:25:08.650Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 4,
+          "lastSuccessAt": "2026-09-28T13:21:46.334Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "daded2e",
+        "commitTime": "2026-09-29T03:21:49+08:00",
+        "generatedAt": "2026-09-28T19:20:16.406Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 3,
+          "lastSuccessAt": "2026-09-28T13:21:46.334Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "259199b",
+        "commitTime": "2026-09-28T23:52:53+08:00",
+        "generatedAt": "2026-09-28T15:51:22.593Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 2,
+          "lastSuccessAt": "2026-09-28T13:21:46.334Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "a7d7a22",
+        "commitTime": "2026-09-28T23:46:01+08:00",
+        "generatedAt": "2026-09-28T15:44:31.915Z",
+        "futurepedia": {
+          "status": "failed",
+          "consecutiveFailures": 1,
+          "lastSuccessAt": "2026-09-28T13:21:46.334Z",
+          "lastItemCount": 7,
+          "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+        }
+      },
+      {
+        "commit": "f0e3671",
+        "commitTime": "2026-09-28T21:27:21+08:00",
+        "generatedAt": "2026-09-28T13:21:46.334Z",
+        "futurepedia": {
+          "status": "healthy",
+          "consecutiveFailures": 0,
+          "lastSuccessAt": "2026-09-28T13:21:46.334Z",
+          "lastItemCount": 7,
+          "lastError": null
+        }
+      }
+    ]
+  },
+  "localSide": {
+    "source": "node scripts/collect.js --dry-run --only=futurepedia（生产代码路径，不写盘）",
+    "rounds": [
+      {
+        "round": 1,
+        "startedAtUtc": "2026-10-05T04:34:07.021Z",
+        "startedAtLocal": "Mon Oct 05 2026 12:34:07 GMT+0800 (中国标准时间)",
+        "exitCode": 0,
+        "produced": 7,
+        "failedCollectors": "采集器失败 0/1"
+      },
+      {
+        "round": 2,
+        "startedAtUtc": "2026-10-05T04:34:15.673Z",
+        "startedAtLocal": "Mon Oct 05 2026 12:34:15 GMT+0800 (中国标准时间)",
+        "exitCode": 0,
+        "produced": 7,
+        "failedCollectors": "采集器失败 0/1"
+      },
+      {
+        "round": 3,
+        "startedAtUtc": "2026-10-05T04:34:22.389Z",
+        "startedAtLocal": "Mon Oct 05 2026 12:34:22 GMT+0800 (中国标准时间)",
+        "exitCode": 0,
+        "produced": 7,
+        "failedCollectors": "采集器失败 0/1"
+      }
+    ],
+    "allSucceeded": true,
+    "itemCounts": [
+      7,
+      7,
+      7
+    ]
+  },
+  "rulingsOnDisk": {
+    "reviewedAt": "2026-10-05",
+    "decisions": [
+      {
+        "source": "futurepedia",
+        "decision": "keep-degraded",
+        "revisitBy": "2026-10-19 前复查（两周复审窗口）。到点用**同一条命令**重读两套读数：CI 侧 scripts/data/source-health.json 的 generatedAt 与 futurepedia.consecutiveFailures，加本机 dry-run 轮次。四条升级触发条件（满足任一条即提前复查并改裁决）：① CI 侧连续失败 ≥ 20 次（约再 5 天）且队长判定不再等它 → 转 headless-migrate 或 retire；② 另一来源开始覆盖 Midjourney / HubSpot AEO Sensor（独占价值消失）→ 转 retire；③ CI 侧出现与 403 不同形态的失败（HTML 结构变化 / 零产出 / 登录墙）→ 转 repair（那时才是真的可修缺陷）；④ 若决意保留其内容贡献 → 按 headless-migrate 走，且**必须先拿到 CI 出口下连续多轮 --headless 的稳定性读数**，否则不允许落地。"
+      }
+    ]
+  },
+  "longFailingFromLiveHealth": [
+    {
+      "source": "futurepedia",
+      "consecutiveFailures": 10,
+      "status": "failed",
+      "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403"
+    }
+  ],
+  "verdict": "observed unstable（CI 侧连续失败 / 本机侧本轮全成功；两侧读数分开、都带时间戳）—— 这是**当次观测**，不是\"已恢复\"，也不是\"来源坏了\""
+}

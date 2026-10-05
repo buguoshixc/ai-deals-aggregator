@@ -1,0 +1,4 @@
+
+❌ 覆盖报告自检失败：
+  - targets[1] aliyun currentTargets[1]: registrySlug「t7-no-such-slug-xyz」不在 scripts/data/models.json 里 —— current target 指向不存在的模型身份一律红
+  - targets[1] aliyun: currentTargets 不是规范序（先按维度 deals → coding → api → models，再按目标名升序）

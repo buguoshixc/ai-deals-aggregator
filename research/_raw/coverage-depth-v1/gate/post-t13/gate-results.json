@@ -1,0 +1,470 @@
+{
+  "label": "post-t13",
+  "generatedAt": "2026-10-05T05:09:44.129Z",
+  "head": "ff86368e6d12d1ef57b2f51aa2c957c01d2a9ed8",
+  "dirtyFiles": 23,
+  "actionStepsParsed": 49,
+  "expectChecksFromVerifyYml": [
+    "38",
+    "38"
+  ],
+  "executed": 49,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Install dependencies",
+      "skipped": true,
+      "reason": "本地跳过：本轮开工时已 npm ci；重跑会先删 node_modules，而队友可能正在用"
+    },
+    {
+      "name": "Validate data (strict)",
+      "shell": "bash",
+      "run": "node scripts/validate.js --strict",
+      "exitCode": 0,
+      "durationMs": 274,
+      "logBytes": 3379,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\02-validate-data-strict.log"
+    },
+    {
+      "name": "Reproducibility gate (no value without a source)",
+      "shell": "bash",
+      "run": "node scripts/tools/check-reproducible.js",
+      "exitCode": 0,
+      "durationMs": 152,
+      "logBytes": 1043,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\03-reproducibility-gate-no-value-without-a-source.log"
+    },
+    {
+      "name": "History verify (log consistent with deals.json)",
+      "shell": "bash",
+      "run": "node scripts/tools/history-verify.js",
+      "exitCode": 0,
+      "durationMs": 105,
+      "logBytes": 490,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\04-history-verify-log-consistent-with-deals-json.log"
+    },
+    {
+      "name": "Migration verifier (audience provenance backfill)",
+      "shell": "bash",
+      "run": "node scripts/tools/migrate-audience-verify.js",
+      "exitCode": 0,
+      "durationMs": 102,
+      "logBytes": 2343,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\05-migration-verifier-audience-provenance-backfill.log"
+    },
+    {
+      "name": "Translation gate (drift blocks, pending ages out)",
+      "shell": "bash",
+      "run": "node scripts/tools/zh-todo.js --check",
+      "exitCode": 0,
+      "durationMs": 100,
+      "logBytes": 423,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\06-translation-gate-drift-blocks-pending-ages-out.log"
+    },
+    {
+      "name": "Translation self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/zh-selftest.js",
+      "exitCode": 0,
+      "durationMs": 13961,
+      "logBytes": 1529,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\07-translation-self-test.log"
+    },
+    {
+      "name": "Expiry self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/expiry-selftest.js",
+      "exitCode": 0,
+      "durationMs": 141,
+      "logBytes": 699,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\08-expiry-self-test.log"
+    },
+    {
+      "name": "Text / cleanText self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/text-selftest.js",
+      "exitCode": 0,
+      "durationMs": 115,
+      "logBytes": 320,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\09-text-cleantext-self-test.log"
+    },
+    {
+      "name": "Source-health self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/health-selftest.js",
+      "exitCode": 0,
+      "durationMs": 815,
+      "logBytes": 383,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\10-source-health-self-test.log"
+    },
+    {
+      "name": "Provenance self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/provenance-selftest.js",
+      "exitCode": 0,
+      "durationMs": 179,
+      "logBytes": 1386,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\11-provenance-self-test.log"
+    },
+    {
+      "name": "Deal-history self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/history-selftest.js",
+      "exitCode": 0,
+      "durationMs": 174,
+      "logBytes": 3343,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\12-deal-history-self-test.log"
+    },
+    {
+      "name": "Change-radar self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/changes-selftest.js",
+      "exitCode": 0,
+      "durationMs": 116,
+      "logBytes": 6988,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\13-change-radar-self-test.log"
+    },
+    {
+      "name": "Feeds self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/feeds-selftest.js",
+      "exitCode": 0,
+      "durationMs": 478,
+      "logBytes": 12967,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\14-feeds-self-test.log"
+    },
+    {
+      "name": "SEO self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/seo-selftest.js",
+      "exitCode": 0,
+      "durationMs": 183,
+      "logBytes": 3477,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\15-seo-self-test.log"
+    },
+    {
+      "name": "Audience self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/audience-selftest.js",
+      "exitCode": 0,
+      "durationMs": 155,
+      "logBytes": 1214,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\16-audience-self-test.log"
+    },
+    {
+      "name": "App-token self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/app-token-selftest.js",
+      "exitCode": 0,
+      "durationMs": 372,
+      "logBytes": 62,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\17-app-token-self-test.log"
+    },
+    {
+      "name": "AI layer self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/ai-selftest.js",
+      "exitCode": 0,
+      "durationMs": 2237,
+      "logBytes": 3905,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\18-ai-layer-self-test.log"
+    },
+    {
+      "name": "Collector fixtures (offline replay)",
+      "shell": "bash",
+      "run": "node scripts/tools/fixture-test.js",
+      "exitCode": 0,
+      "durationMs": 328,
+      "logBytes": 431,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\19-collector-fixtures-offline-replay.log"
+    },
+    {
+      "name": "Plans self-test (data + page)",
+      "shell": "bash",
+      "run": "node scripts/tools/plans-selftest.js",
+      "exitCode": 0,
+      "durationMs": 781,
+      "logBytes": 19870,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\20-plans-self-test-data-page.log"
+    },
+    {
+      "name": "Plan-history self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/plan-history-selftest.js",
+      "exitCode": 0,
+      "durationMs": 207,
+      "logBytes": 8853,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\21-plan-history-self-test.log"
+    },
+    {
+      "name": "Deal-plan-links self-test",
+      "shell": "bash",
+      "run": "node scripts/tools/deal-plan-links-selftest.js",
+      "exitCode": 0,
+      "durationMs": 162,
+      "logBytes": 6451,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\22-deal-plan-links-self-test.log"
+    },
+    {
+      "name": "API-plans self-test (data + page)",
+      "shell": "bash",
+      "run": "node scripts/tools/api-plans-selftest.js",
+      "exitCode": 0,
+      "durationMs": 285,
+      "logBytes": 15348,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\23-api-plans-self-test-data-page.log"
+    },
+    {
+      "name": "API-plans reproducibility (curated → api-plans.json, byte-compare)",
+      "shell": "bash",
+      "run": "node scripts/tools/check-api-plans-reproducible.js",
+      "exitCode": 0,
+      "durationMs": 120,
+      "logBytes": 264,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\24-api-plans-reproducibility-curated-api-plans-json-byte-compar.log"
+    },
+    {
+      "name": "API-plan-history verify (log consistent with api-plans.json)",
+      "shell": "bash",
+      "run": "node scripts/tools/check-api-plan-history.js",
+      "exitCode": 0,
+      "durationMs": 124,
+      "logBytes": 776,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\25-api-plan-history-verify-log-consistent-with-api-plans-json.log"
+    },
+    {
+      "name": "Model-registry self-test (identity + explicit mapping)",
+      "shell": "bash",
+      "run": "node scripts/tools/models-selftest.js",
+      "exitCode": 0,
+      "durationMs": 279,
+      "logBytes": 18158,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\26-model-registry-self-test-identity-explicit-mapping.log"
+    },
+    {
+      "name": "Models reproducibility (registry → models.json, byte-compare)",
+      "shell": "bash",
+      "run": "node scripts/tools/check-models-reproducible.js",
+      "exitCode": 0,
+      "durationMs": 135,
+      "logBytes": 184,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\27-models-reproducibility-registry-models-json-byte-compare.log"
+    },
+    {
+      "name": "Model-registry links check (explicit mapping only, no similarity)",
+      "shell": "bash",
+      "run": "node scripts/tools/check-model-registry-links.js",
+      "exitCode": 0,
+      "durationMs": 120,
+      "logBytes": 2329,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\28-model-registry-links-check-explicit-mapping-only-no-similari.log"
+    },
+    {
+      "name": "Coverage report (gap list consistent with data)",
+      "shell": "bash",
+      "run": "node scripts/tools/coverage-report.js",
+      "exitCode": 0,
+      "durationMs": 364,
+      "logBytes": 51319,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\29-coverage-report-gap-list-consistent-with-data.log"
+    },
+    {
+      "name": "Coverage-targets self-test (intent layer + seven derived states)",
+      "shell": "bash",
+      "run": "node scripts/tools/coverage-targets-selftest.js",
+      "exitCode": 0,
+      "durationMs": 6464,
+      "logBytes": 23069,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\30-coverage-targets-self-test-intent-layer-seven-derived-states.log"
+    },
+    {
+      "name": "Model-role vocabulary self-test (registry ↔ freshness contract)",
+      "shell": "bash",
+      "run": "node scripts/tools/model-role-vocabulary-selftest.js",
+      "exitCode": 0,
+      "durationMs": 111,
+      "logBytes": 997,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\31-model-role-vocabulary-self-test-registry-freshness-contract.log"
+    },
+    {
+      "name": "Freshness self-test (catalogStatus branches)",
+      "shell": "bash",
+      "run": "node scripts/tools/model-freshness-selftest.js",
+      "exitCode": 0,
+      "durationMs": 105,
+      "logBytes": 483,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\32-freshness-self-test-catalogstatus-branches.log"
+    },
+    {
+      "name": "Freshness threshold sensitivity (±90 days, baseline invariants)",
+      "shell": "bash",
+      "run": "node scripts/tools/model-freshness-sensitivity.js",
+      "exitCode": 0,
+      "durationMs": 124,
+      "logBytes": 18045,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\33-freshness-threshold-sensitivity-90-days-baseline-invariants.log"
+    },
+    {
+      "name": "Assemble site (same path as deploy.yml)",
+      "shell": "bash",
+      "run": "node scripts/tools/build-local.js",
+      "exitCode": 0,
+      "durationMs": 2718,
+      "logBytes": 19531,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\34-assemble-site-same-path-as-deploy-yml.log"
+    },
+    {
+      "name": "Models-page self-test (index + detail pages)",
+      "shell": "bash",
+      "run": "node scripts/tools/models-page-selftest.js --dir=dist",
+      "exitCode": 0,
+      "durationMs": 523,
+      "logBytes": 13666,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\35-models-page-self-test-index-detail-pages.log"
+    },
+    {
+      "name": "Plans-hub self-test (/plans/)",
+      "shell": "bash",
+      "run": "node scripts/tools/planshub-selftest.js --dir=dist",
+      "exitCode": 0,
+      "durationMs": 171,
+      "logBytes": 2725,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\36-plans-hub-self-test-plans.log"
+    },
+    {
+      "name": "Vendor-pages self-test (/vendor/)",
+      "shell": "bash",
+      "run": "node scripts/tools/vendor-page-selftest.js --dir=dist",
+      "exitCode": 0,
+      "durationMs": 210,
+      "logBytes": 5587,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\37-vendor-pages-self-test-vendor.log"
+    },
+    {
+      "name": "Archive self-test (/archive/, synthetic ended/restored fixtures)",
+      "shell": "bash",
+      "run": "node scripts/tools/archive-selftest.js --dir=dist",
+      "exitCode": 0,
+      "durationMs": 148,
+      "logBytes": 6017,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\38-archive-self-test-archive-synthetic-ended-restored-fixtures.log"
+    },
+    {
+      "name": "Data-docs self-test (/docs/data/ + /data/index.json)",
+      "shell": "bash",
+      "run": "node scripts/tools/data-docs-selftest.js --dir=dist",
+      "exitCode": 0,
+      "durationMs": 166,
+      "logBytes": 5199,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\39-data-docs-self-test-docs-data-data-index-json.log"
+    },
+    {
+      "name": "Analytics self-test (bootstrap count / production guard / provider)",
+      "shell": "bash",
+      "run": "node scripts/tools/analytics-selftest.js --dir=dist",
+      "exitCode": 0,
+      "durationMs": 7890,
+      "logBytes": 3631,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\40-analytics-self-test-bootstrap-count-production-guard-provide.log"
+    },
+    {
+      "name": "Feeds reproducibility (build twice, byte-compare)",
+      "shell": "bash",
+      "run": "node scripts/tools/check-feeds-reproducible.js --dir=dist",
+      "exitCode": 0,
+      "durationMs": 5951,
+      "logBytes": 674,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\41-feeds-reproducibility-build-twice-byte-compare.log"
+    },
+    {
+      "name": "Plans reproducibility (curated → plans.json, byte-compare)",
+      "shell": "bash",
+      "run": "node scripts/tools/check-plans-reproducible.js",
+      "exitCode": 0,
+      "durationMs": 124,
+      "logBytes": 133,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\42-plans-reproducibility-curated-plans-json-byte-compare.log"
+    },
+    {
+      "name": "Plan-history verify (log consistent with plans.json)",
+      "shell": "bash",
+      "run": "node scripts/tools/check-plan-history.js",
+      "exitCode": 0,
+      "durationMs": 120,
+      "logBytes": 699,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\43-plan-history-verify-log-consistent-with-plans-json.log"
+    },
+    {
+      "name": "SEO verification (independent, from dist/)",
+      "shell": "bash",
+      "run": "node scripts/tools/seo-verify.js",
+      "exitCode": 0,
+      "durationMs": 566,
+      "logBytes": 1257,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\44-seo-verification-independent-from-dist.log"
+    },
+    {
+      "name": "Prepare browser for the real-browser gate",
+      "shell": "bash",
+      "run": "node -e \"const b=require('./scripts/lib/browser');b.detectChannel().then(c=>{console.log(JSON.stringify({available:!!c,channel:c}));process.exit(c?0:1)}).catch(",
+      "exitCode": 0,
+      "durationMs": 5387,
+      "logBytes": 38,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\45-prepare-browser-for-the-real-browser-gate.log",
+      "localOverride": true,
+      "overrideReason": "CI 用 npx playwright install --with-deps chromium + GITHUB_OUTPUT；本机已有 Edge，改用 lib/browser.js 的 detectChannel()（同一支探测入口）。本步骤本身不判死，与 CI 语义一致。",
+      "ciRun": "|"
+    },
+    {
+      "name": "Browser availability decision (never silent)",
+      "shell": "bash",
+      "run": "node -e \"const b=require('./scripts/lib/browser');b.detectChannel().then(c=>{console.log(JSON.stringify({available:!!c,channel:c}));process.exit(c?0:1)}).catch(",
+      "exitCode": 0,
+      "durationMs": 1039,
+      "logBytes": 38,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\46-browser-availability-decision-never-silent.log",
+      "localOverride": true,
+      "overrideReason": "CI 读上一步的 GITHUB_OUTPUT；本地直接重新探测。语义不变：探测不到浏览器就 exit 1，绝不静默变绿（与 CI 默认失败一致）。",
+      "ciRun": "|"
+    },
+    {
+      "name": "Real-browser acceptance (verify-site.js)",
+      "shell": "bash",
+      "run": "node scripts/tools/verify-site.js",
+      "exitCode": 0,
+      "durationMs": 74868,
+      "logBytes": 90717,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\47-real-browser-acceptance-verify-site-js.log"
+    },
+    {
+      "name": "Regression verify (baseline compare)",
+      "shell": "bash",
+      "run": "node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json",
+      "exitCode": 0,
+      "durationMs": 69726,
+      "logBytes": 91175,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\48-regression-verify-baseline-compare.log"
+    },
+    {
+      "name": "Gate conclusion",
+      "shell": "bash",
+      "run": "echo \"（本地 Full Gate：结论由 research/_raw/coverage-depth-v1/gate/<label>/gate-results.json 汇总）\" >> \"$GITHUB_STEP_SUMMARY\"",
+      "exitCode": 0,
+      "durationMs": 53,
+      "logBytes": 0,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\49-gate-conclusion.log",
+      "localOverride": true,
+      "overrideReason": "CI 只把结论写进 GITHUB_STEP_SUMMARY；本地由 gate-runner 自己汇总，这里只保留同一份 Summary 文件的落盘。",
+      "ciRun": "|"
+    },
+    {
+      "name": "CI consistency (verify.yml --expect-checks)",
+      "shell": "bash",
+      "run": "node scripts/tools/check-ci-consistency.js --expect-checks=38",
+      "exitCode": 0,
+      "durationMs": 1105,
+      "logBytes": 7438,
+      "log": "research\\_raw\\coverage-depth-v1\\gate\\post-t13\\logs\\50-ci-consistency-verify-yml-expect-checks.log"
+    }
+  ]
+}
