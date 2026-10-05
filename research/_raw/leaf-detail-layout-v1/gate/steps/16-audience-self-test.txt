@@ -1,0 +1,28 @@
+# Audience self-test
+# $ node scripts/tools/audience-selftest.js
+
+=== 1) audit：手写数据里「声明了却归一后消失」必须被抓住 ===
+
+=== 2) 构造期与校验期：非法一律拦、缺席一律放行 ===
+
+=== 3) hasKnown / audienceRows：false 与 unknown 绝不混淆 ===
+
+=== 4) 前后端同源语义：audienceRows 逐项一致 ===
+
+=== 5) 措辞跨层比对（文本级）：改坏任何一边都必须红 ===
+
+=== 6) merge：逐字段可信度仲裁（不依赖 score()）===
+
+=== 6b) 三态映射合并：两条「产出不该取决于谁当 winner」的不变量 ===
+
+=== 7) mergeAll：新字段活过一轮真实采集 ===
+
+=== 8) 手写数据入口 + 当前数据分布（不变量）===
+  当前 135 条（deal 80 / tool 55）：audience 88 · benefitType 80 · eligibilityDetail 61 · claimRequirements 65 · availability 32 · provenance 88
+
+=== 9) 按需求找优惠（v1.2）：注册表与判据 ===
+  当前命中分布：student-only 12 · edu-identity 7 · no-card 1 · china-usable 30 · free-tier 60 · free-api 45 · free-tokens 44 · ai-coding 4 · free-model 12 · dev-credits 67
+
+=== 10) 断言依据的档位（t7：第三方收录 / 推断不得写成「官方页面明写」）===
+
+✅ 受众字段自测：191 项通过，0 项失败

@@ -1,6 +1,38 @@
 # AI 优惠聚合器 — 项目状态
 
-**最后更新**：2026-10-04（最新一节 **private-analytics-v1：私有站点分析**，分支 `private-analytics-v1`，已本地交付待合入）
+**最后更新**：2026-10-05（最新一节 **leaf-detail-layout-v1：叶子详情页统一内容列**，分支 `leaf-detail-layout-v1`，已合并 + 已部署 + 线上冒烟通过）
+
+---
+
+## 0.2 leaf-detail-layout-v1 状态（2026-10-05）
+
+> **一句话现状**：`/deal/<id>/` 与 `/models/<slug>/` 两种**叶子详情页**的正文从"固定约 820px 贴在容器左边"
+> 改成**同一条居中的详情内容列**（`min(1120px, 100%)`）；面包屑 / 详情卡 / 其它优惠 / 来源说明共用同一条轴，
+> Header 与 Footer 不跟着缩窄，首页与所有集合型页面零波及。
+
+| 维度 | 实测 |
+|---|---|
+| 基线 | `origin/master` = `d09a1c5`，worktree `.worktrees/leaf-detail-layout-v1`，冻结提交 `f2dec0c` |
+| 根因 | 共享 `<style>` 把宽度写死在卡片上（`.dpane` / `.dpane-src` 各自 `max-width: 820px`），而外层只有 `.wrap`(1420px) —— 详情主体没有任何居中容器；模型详情页是第三套宽度（整幅 1380px） |
+| 改动面 | `index.html`（共享 `<style>`：新增 `.detail-main`、两处去 820px、`break-all` → `normal`+`anywhere`）· `scripts/tools/build-local.js`（deal 模板 + `renderModelsShell` 的 `mainClass`）· `scripts/tools/verify-site.js`（新增 §22b + M1–M5 变异牙）—— 共 3 文件 / 601+ 6− |
+| 最终内容宽度 | **1120px**（`width: min(1120px, 100%)`；< ~1160px 自然退化为满宽并保留 `.wrap` padding） |
+| deal 详情 | `main` 1380 → **1120**；居中偏差 **560px → 0px**；`.dpane` 820 → 1120；`.dpane-src` 820/`break-all` → 1120/`normal`+`anywhere`；同轴极差 0px |
+| model 详情 | `main` 1380 → **1120**，与 deal 同一列；改动前该页 `.dpane*` 元素为 0 个（两族本就不统一） |
+| 波及面 | 186 页全量扫描：带 `detail-main` 的 `<main>` 恰好 **131**（80 deal + 51 model），非叶子页 **0**；全站 `max-width: 820px` 声明 **0** 处；`.topin` 1420 / `footer` 1380 / 首页 `main` 1380 前后一致 |
+| 响应式 | @768 列宽 728 == 可用宽；@390 `scrollWidth` 390（deal/model 都无横向滚动）；长 URL 页（129 字符官方 URL）390/1440 都不溢出 |
+| 牙 | `verify-site.js` §22b **41 条**真浏览器断言 + **M1–M5 变异牙**（锚点唯一性守卫、M4 正对照、变异前后产物 sha256 相等）；反空洞守卫负例实测让整轮失败 4 项、退出码 1 |
+| 门禁 | CI 口径 **38/38** · Gate action 49 步本机执行 **45 步全过** · `verify-site` **776 项 0 失败** · 回归比对 **782 项 0 失败** |
+| 独立复查 | 另写一套探针（不 require 本仓库任何代码）：**verdict = pass · P0 = 0 · P1 = 0 · REPAIR_NOW = 0**（32/32） |
+| 数据层 | **零变化**：数据文件零 diff；改动前后全产物 303→303 文件、117/117 非 HTML 逐字节相同、186/186 HTML 页剥掉样式后正文逐字节相同、样式块行差恰好 +8/−2 |
+| CI / Deploy | PR **#42** 必需检查 `gate` **pass**（3m9s）→ 合并 → `Deploy to GitHub Pages` **success** |
+| Online Smoke | 只打 3 页（首页 + 1 deal + 1 model）：**9 项全过**；线上 `class="detail-main"` 已在、`max-width: 820px` 已消失 |
+
+边界：不改数据 / 文案 / 颜色 / 字体 / 卡片设计 · 不新建任何 `detail*.css`（共享样式只有一个来源）·
+不碰 `/archive/**`（History 家族，且当前 0 个档案详情页）· 不碰首页与集合型页面 ·
+首页 `.cmpshare` 既有的 `word-break: break-all` 刻意保留（不在本次范围）。
+完整报告：[research/leaf-detail-layout-v1-report.md](research/leaf-detail-layout-v1-report.md)，
+独立复查：[research/leaf-detail-layout-v1-self-audit.md](research/leaf-detail-layout-v1-self-audit.md)。
+
 
 ---
 

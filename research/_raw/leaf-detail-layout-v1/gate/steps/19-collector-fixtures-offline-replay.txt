@@ -1,0 +1,14 @@
+# Collector fixtures (offline replay)
+# $ node scripts/tools/fixture-test.js
+
+fixture 回放（解析器行为契约）
+→ cn_qianfan.deals
+  ✓ cn_qianfan.deals: 17 条与期望一致（片段 1875 字节）
+→ futurepedia.list
+  ✓ futurepedia.list: 3 条与期望一致（片段 1176 字节）
+→ futuretools.list
+  ✓ futuretools.list: 6 条与期望一致（片段 4857 字节）
+→ layer3labs.deals
+  ✓ layer3labs.deals: 13 条与期望一致（片段 7442 字节）
+
+fixture 4 项 · 失败 0

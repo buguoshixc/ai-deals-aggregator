@@ -1,0 +1,250 @@
+# Freshness threshold sensitivity (±90 days, baseline invariants)
+# $ node scripts/tools/model-freshness-sensitivity.js
+
+================================================================================================
+新鲜度阈值灵敏度复查 · 策略 v1;default=conversational;conversational=120/240;infrastructure=365/730;multimodal=180/365
+夹具 48 条（锚点 2026-10-01）
+全部 releasedAt 由"相对本组最新差 N 天"算出（锚点 2026-10-01，字面量）；不读生产数据、不读墙上时钟、不联网
+================================================================================================
+
+【基线】三档探针的派生状态（按相对本组最新的差读）
+  conversational（120/240 天）：
+    gap    0d  current    可见  conversational-g0000
+    gap nulld  historical 隐藏  edge-retired
+    gap nulld  unknown    可见  edge-unknown
+    gap   50d  current    可见  conversational-g0050
+    gap  100d  current    可见  conversational-g0100
+    gap  119d  current    可见  conversational-g0119
+    gap  120d  aging      可见  conversational-g0120
+    gap  121d  aging      可见  conversational-g0121
+    gap  150d  aging      可见  conversational-g0150
+    gap  200d  aging      可见  conversational-g0200
+    gap  239d  aging      可见  conversational-g0239
+    gap  240d  legacy     隐藏  conversational-g0240
+    gap  241d  legacy     隐藏  conversational-g0241
+    gap  300d  legacy     隐藏  conversational-g0300
+    gap  365d  legacy     隐藏  conversational-g0365
+    gap  400d  legacy     隐藏  conversational-g0400
+    gap  730d  legacy     隐藏  conversational-g0730
+    gap  900d  legacy     隐藏  conversational-g0900
+  multimodal（180/365 天）：
+    gap    0d  current    可见  multimodal-g0000
+    gap   50d  current    可见  multimodal-g0050
+    gap  150d  current    可见  multimodal-g0150
+    gap  179d  current    可见  multimodal-g0179
+    gap  180d  aging      可见  multimodal-g0180
+    gap  181d  aging      可见  multimodal-g0181
+    gap  239d  aging      可见  multimodal-g0239
+    gap  240d  aging      可见  multimodal-g0240
+    gap  300d  aging      可见  multimodal-g0300
+    gap  364d  aging      可见  multimodal-g0364
+    gap  365d  legacy     隐藏  multimodal-g0365
+    gap  366d  legacy     隐藏  multimodal-g0366
+    gap  500d  legacy     隐藏  multimodal-g0500
+    gap  730d  legacy     隐藏  multimodal-g0730
+    gap  900d  legacy     隐藏  multimodal-g0900
+  infrastructure（365/730 天）：
+    gap    0d  current    可见  infrastructure-g0000
+    gap   50d  current    可见  infrastructure-g0050
+    gap  150d  current    可见  infrastructure-g0150
+    gap  364d  current    可见  infrastructure-g0364
+    gap  365d  aging      可见  infrastructure-g0365
+    gap  366d  aging      可见  infrastructure-g0366
+    gap  500d  aging      可见  infrastructure-g0500
+    gap  700d  aging      可见  infrastructure-g0700
+    gap  729d  aging      可见  infrastructure-g0729
+    gap  730d  legacy     隐藏  infrastructure-g0730
+    gap  731d  legacy     隐藏  infrastructure-g0731
+    gap  900d  legacy     隐藏  infrastructure-g0900
+    gap 1200d  legacy     隐藏  infrastructure-g1200
+
+  边界情形（不参与淘汰的记录）：
+    edge-baddate    unknown    release-date-unparsable
+    edge-nodate     unknown    group-has-no-dated-model
+    edge-retired    historical status-retired-human-evidence
+    edge-unknown    unknown    status-unknown-not-judged
+
+  基线合计：{"current":12,"aging":16,"legacy":16,"historical":1,"unknown":3}
+  默认可见 31 / 默认隐藏 17
+  整组掉到 0 个可见状态的组：1
+  不变量违规：0
+
+【扰动】
+------------------------------------------------------------------------------------------------
+>> uniform +90d：两轴同时 +90（对照：边界整体上移，展示面变宽）
+   阈值 {"conversational":"210/330","infrastructure":"455/820","multimodal":"270/455"} · 分布 {"current":22,"aging":13,"legacy":9,"historical":1,"unknown":3} · 翻转 17 条
+     · conversational-g0120   gap  120d  aging -> current
+     · conversational-g0121   gap  121d  aging -> current
+     · conversational-g0150   gap  150d  aging -> current
+     · conversational-g0200   gap  200d  aging -> current
+     · conversational-g0240   gap  240d  legacy -> aging
+     · conversational-g0241   gap  241d  legacy -> aging
+     · conversational-g0300   gap  300d  legacy -> aging
+     · infrastructure-g0365   gap  365d  aging -> current
+     · infrastructure-g0366   gap  366d  aging -> current
+     · infrastructure-g0730   gap  730d  legacy -> aging
+     · infrastructure-g0731   gap  731d  legacy -> aging
+     · multimodal-g0180       gap  180d  aging -> current
+     · multimodal-g0181       gap  181d  aging -> current
+     · multimodal-g0239       gap  239d  aging -> current
+     · multimodal-g0240       gap  240d  aging -> current
+     · multimodal-g0365       gap  365d  legacy -> aging
+     · multimodal-g0366       gap  366d  legacy -> aging
+   整组掉到 0 个可见状态：1 组（其中有 active 模型的：0 组）
+     · sensitivity lab · edge retired · general  [tier conversational · active 0 · 最新 null · {"current":0,"aging":0,"legacy":0,"historical":1,"unknown":0}]
+------------------------------------------------------------------------------------------------
+>> uniform -90d：两轴同时 -90（对照：边界整体下移，展示面变窄）
+   阈值 {"conversational":"30/150","infrastructure":"275/640","multimodal":"90/275"} · 分布 {"current":6,"aging":15,"legacy":23,"historical":1,"unknown":3} · 翻转 13 条
+     · conversational-g0050   gap   50d  current -> aging
+     · conversational-g0100   gap  100d  current -> aging
+     · conversational-g0119   gap  119d  current -> aging
+     · conversational-g0150   gap  150d  aging -> legacy
+     · conversational-g0200   gap  200d  aging -> legacy
+     · conversational-g0239   gap  239d  aging -> legacy
+     · infrastructure-g0364   gap  364d  current -> aging
+     · infrastructure-g0700   gap  700d  aging -> legacy
+     · infrastructure-g0729   gap  729d  aging -> legacy
+     · multimodal-g0150       gap  150d  current -> aging
+     · multimodal-g0179       gap  179d  current -> aging
+     · multimodal-g0300       gap  300d  aging -> legacy
+     · multimodal-g0364       gap  364d  aging -> legacy
+   整组掉到 0 个可见状态：1 组（其中有 active 模型的：0 组）
+     · sensitivity lab · edge retired · general  [tier conversational · active 0 · 最新 null · {"current":0,"aging":0,"legacy":0,"historical":1,"unknown":0}]
+------------------------------------------------------------------------------------------------
+>> current +60d：current 窗口放宽 60 天
+   阈值 {"conversational":"180/240","infrastructure":"425/730","multimodal":"240/365"} · 分布 {"current":20,"aging":8,"legacy":16,"historical":1,"unknown":3} · 翻转 8 条
+     · conversational-g0120   gap  120d  aging -> current
+     · conversational-g0121   gap  121d  aging -> current
+     · conversational-g0150   gap  150d  aging -> current
+     · infrastructure-g0365   gap  365d  aging -> current
+     · infrastructure-g0366   gap  366d  aging -> current
+     · multimodal-g0180       gap  180d  aging -> current
+     · multimodal-g0181       gap  181d  aging -> current
+     · multimodal-g0239       gap  239d  aging -> current
+   整组掉到 0 个可见状态：1 组（其中有 active 模型的：0 组）
+     · sensitivity lab · edge retired · general  [tier conversational · active 0 · 最新 null · {"current":0,"aging":0,"legacy":0,"historical":1,"unknown":0}]
+------------------------------------------------------------------------------------------------
+>> current -60d：current 窗口收窄 60 天
+   阈值 {"conversational":"60/240","infrastructure":"305/730","multimodal":"120/365"} · 分布 {"current":7,"aging":21,"legacy":16,"historical":1,"unknown":3} · 翻转 5 条
+     · conversational-g0100   gap  100d  current -> aging
+     · conversational-g0119   gap  119d  current -> aging
+     · infrastructure-g0364   gap  364d  current -> aging
+     · multimodal-g0150       gap  150d  current -> aging
+     · multimodal-g0179       gap  179d  current -> aging
+   整组掉到 0 个可见状态：1 组（其中有 active 模型的：0 组）
+     · sensitivity lab · edge retired · general  [tier conversational · active 0 · 最新 null · {"current":0,"aging":0,"legacy":0,"historical":1,"unknown":0}]
+------------------------------------------------------------------------------------------------
+>> current +90d：current 窗口放宽 90 天
+   阈值 {"conversational":"210/240","infrastructure":"455/730","multimodal":"270/365"} · 分布 {"current":22,"aging":6,"legacy":16,"historical":1,"unknown":3} · 翻转 10 条
+     · conversational-g0120   gap  120d  aging -> current
+     · conversational-g0121   gap  121d  aging -> current
+     · conversational-g0150   gap  150d  aging -> current
+     · conversational-g0200   gap  200d  aging -> current
+     · infrastructure-g0365   gap  365d  aging -> current
+     · infrastructure-g0366   gap  366d  aging -> current
+     · multimodal-g0180       gap  180d  aging -> current
+     · multimodal-g0181       gap  181d  aging -> current
+     · multimodal-g0239       gap  239d  aging -> current
+     · multimodal-g0240       gap  240d  aging -> current
+   整组掉到 0 个可见状态：1 组（其中有 active 模型的：0 组）
+     · sensitivity lab · edge retired · general  [tier conversational · active 0 · 最新 null · {"current":0,"aging":0,"legacy":0,"historical":1,"unknown":0}]
+------------------------------------------------------------------------------------------------
+>> current -90d：current 窗口收窄 90 天
+   阈值 {"conversational":"30/240","infrastructure":"275/730","multimodal":"90/365"} · 分布 {"current":6,"aging":22,"legacy":16,"historical":1,"unknown":3} · 翻转 6 条
+     · conversational-g0050   gap   50d  current -> aging
+     · conversational-g0100   gap  100d  current -> aging
+     · conversational-g0119   gap  119d  current -> aging
+     · infrastructure-g0364   gap  364d  current -> aging
+     · multimodal-g0150       gap  150d  current -> aging
+     · multimodal-g0179       gap  179d  current -> aging
+   整组掉到 0 个可见状态：1 组（其中有 active 模型的：0 组）
+     · sensitivity lab · edge retired · general  [tier conversational · active 0 · 最新 null · {"current":0,"aging":0,"legacy":0,"historical":1,"unknown":0}]
+------------------------------------------------------------------------------------------------
+>> aging +60d：aging 窗口放宽 60 天
+   阈值 {"conversational":"120/300","infrastructure":"365/790","multimodal":"180/425"} · 分布 {"current":12,"aging":22,"legacy":10,"historical":1,"unknown":3} · 翻转 6 条
+     · conversational-g0240   gap  240d  legacy -> aging
+     · conversational-g0241   gap  241d  legacy -> aging
+     · infrastructure-g0730   gap  730d  legacy -> aging
+     · infrastructure-g0731   gap  731d  legacy -> aging
+     · multimodal-g0365       gap  365d  legacy -> aging
+     · multimodal-g0366       gap  366d  legacy -> aging
+   整组掉到 0 个可见状态：1 组（其中有 active 模型的：0 组）
+     · sensitivity lab · edge retired · general  [tier conversational · active 0 · 最新 null · {"current":0,"aging":0,"legacy":0,"historical":1,"unknown":0}]
+------------------------------------------------------------------------------------------------
+>> aging -60d：aging 窗口收窄 60 天
+   阈值 {"conversational":"120/180","infrastructure":"365/670","multimodal":"180/305"} · 分布 {"current":12,"aging":11,"legacy":21,"historical":1,"unknown":3} · 翻转 5 条
+     · conversational-g0200   gap  200d  aging -> legacy
+     · conversational-g0239   gap  239d  aging -> legacy
+     · infrastructure-g0700   gap  700d  aging -> legacy
+     · infrastructure-g0729   gap  729d  aging -> legacy
+     · multimodal-g0364       gap  364d  aging -> legacy
+   整组掉到 0 个可见状态：1 组（其中有 active 模型的：0 组）
+     · sensitivity lab · edge retired · general  [tier conversational · active 0 · 最新 null · {"current":0,"aging":0,"legacy":0,"historical":1,"unknown":0}]
+------------------------------------------------------------------------------------------------
+>> aging +90d：aging 窗口放宽 90 天
+   阈值 {"conversational":"120/330","infrastructure":"365/820","multimodal":"180/455"} · 分布 {"current":12,"aging":23,"legacy":9,"historical":1,"unknown":3} · 翻转 7 条
+     · conversational-g0240   gap  240d  legacy -> aging
+     · conversational-g0241   gap  241d  legacy -> aging
+     · conversational-g0300   gap  300d  legacy -> aging
+     · infrastructure-g0730   gap  730d  legacy -> aging
+     · infrastructure-g0731   gap  731d  legacy -> aging
+     · multimodal-g0365       gap  365d  legacy -> aging
+     · multimodal-g0366       gap  366d  legacy -> aging
+   整组掉到 0 个可见状态：1 组（其中有 active 模型的：0 组）
+     · sensitivity lab · edge retired · general  [tier conversational · active 0 · 最新 null · {"current":0,"aging":0,"legacy":0,"historical":1,"unknown":0}]
+------------------------------------------------------------------------------------------------
+>> aging -90d：aging 窗口收窄 90 天
+   阈值 {"conversational":"120/150","infrastructure":"365/640","multimodal":"180/275"} · 分布 {"current":12,"aging":9,"legacy":23,"historical":1,"unknown":3} · 翻转 7 条
+     · conversational-g0150   gap  150d  aging -> legacy
+     · conversational-g0200   gap  200d  aging -> legacy
+     · conversational-g0239   gap  239d  aging -> legacy
+     · infrastructure-g0700   gap  700d  aging -> legacy
+     · infrastructure-g0729   gap  729d  aging -> legacy
+     · multimodal-g0300       gap  300d  aging -> legacy
+     · multimodal-g0364       gap  364d  aging -> legacy
+   整组掉到 0 个可见状态：1 组（其中有 active 模型的：0 组）
+     · sensitivity lab · edge retired · general  [tier conversational · active 0 · 最新 null · {"current":0,"aging":0,"legacy":0,"historical":1,"unknown":0}]
+------------------------------------------------------------------------------------------------
+>> current +60 / aging +60（同向等幅）
+   阈值 {"conversational":"180/300","infrastructure":"425/790","multimodal":"240/425"} · 分布 {"current":20,"aging":14,"legacy":10,"historical":1,"unknown":3} · 翻转 14 条
+     · conversational-g0120   gap  120d  aging -> current
+     · conversational-g0121   gap  121d  aging -> current
+     · conversational-g0150   gap  150d  aging -> current
+     · conversational-g0240   gap  240d  legacy -> aging
+     · conversational-g0241   gap  241d  legacy -> aging
+     · infrastructure-g0365   gap  365d  aging -> current
+     · infrastructure-g0366   gap  366d  aging -> current
+     · infrastructure-g0730   gap  730d  legacy -> aging
+     · infrastructure-g0731   gap  731d  legacy -> aging
+     · multimodal-g0180       gap  180d  aging -> current
+     · multimodal-g0181       gap  181d  aging -> current
+     · multimodal-g0239       gap  239d  aging -> current
+     · multimodal-g0365       gap  365d  legacy -> aging
+     · multimodal-g0366       gap  366d  legacy -> aging
+   整组掉到 0 个可见状态：1 组（其中有 active 模型的：0 组）
+     · sensitivity lab · edge retired · general  [tier conversational · active 0 · 最新 null · {"current":0,"aging":0,"legacy":0,"historical":1,"unknown":0}]
+------------------------------------------------------------------------------------------------
+>> current -60 / aging +60（夹逼：窗口变窄而隐藏线放宽）
+   阈值 {"conversational":"60/300","infrastructure":"305/790","multimodal":"120/425"} · 分布 {"current":7,"aging":27,"legacy":10,"historical":1,"unknown":3} · 翻转 11 条
+     · conversational-g0100   gap  100d  current -> aging
+     · conversational-g0119   gap  119d  current -> aging
+     · conversational-g0240   gap  240d  legacy -> aging
+     · conversational-g0241   gap  241d  legacy -> aging
+     · infrastructure-g0364   gap  364d  current -> aging
+     · infrastructure-g0730   gap  730d  legacy -> aging
+     · infrastructure-g0731   gap  731d  legacy -> aging
+     · multimodal-g0150       gap  150d  current -> aging
+     · multimodal-g0179       gap  179d  current -> aging
+     · multimodal-g0365       gap  365d  legacy -> aging
+     · multimodal-g0366       gap  366d  legacy -> aging
+   整组掉到 0 个可见状态：1 组（其中有 active 模型的：0 组）
+     · sensitivity lab · edge retired · general  [tier conversational · active 0 · 最新 null · {"current":0,"aging":0,"legacy":0,"historical":1,"unknown":0}]
+------------------------------------------------------------------------------------------------
+结论：
+  · 翻转最多：uniform +90d：两轴同时 +90（对照：边界整体上移，展示面变宽）（17 条）
+  · "整组含 active 却 0 个可见状态"最多：uniform +90d：两轴同时 +90（对照：边界整体上移，展示面变宽）（0 组）
+  · 同向等幅对照（current 与 aging 同时 ±90）：翻转 17 / 13 / 14 条 —— **会变**：
+      边界整体上移时 `[aging, aging±90)` 区间的 legacy 会变可见，整体下移时 `[current, current±90)` 区间的 current 会被隐藏。
+      "同幅平移不影响结论"是错的（本文件早先就这么写过，已改正）。真正不变的是组内相对次序 —— 所以最新那条永远是 current。
+  · 所有情景下不变量都成立（active 组至少留一条 current/unknown）：风险是"默认展示面变窄/变宽"，不是"数据坏了"。
+  · 非 active 的组（如只有 retired 的历史组）掉到 0 个可见状态是**设计如此**，不是缺陷 —— 上面用 · 标出。

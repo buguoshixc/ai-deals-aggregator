@@ -1,0 +1,2908 @@
+{
+  "generatedAt": "2026-10-05T12:40:07.900Z",
+  "distRoot": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\leaf-detail-layout-v1\\dist",
+  "pageCount": 186,
+  "byKind": {
+    "archive": {
+      "pages": 1,
+      "detailMainRuleSet": [
+        1
+      ],
+      "detailMainClassTotal": 0,
+      "maxWidth820Total": 0,
+      "dpaneRuleMin": 1,
+      "dpaneRuleMax": 1,
+      "dpaneSrcRuleMax": 1,
+      "examples": [
+        "/archive/"
+      ]
+    },
+    "other": {
+      "pages": 52,
+      "detailMainRuleSet": [
+        1
+      ],
+      "detailMainClassTotal": 0,
+      "maxWidth820Total": 0,
+      "dpaneRuleMin": 1,
+      "dpaneRuleMax": 1,
+      "dpaneSrcRuleMax": 1,
+      "examples": [
+        "/category/agent/",
+        "/category/api/",
+        "/category/audio/",
+        "/category/chat/"
+      ]
+    },
+    "deal-leaf": {
+      "pages": 80,
+      "detailMainRuleSet": [
+        1
+      ],
+      "detailMainClassTotal": 80,
+      "maxWidth820Total": 0,
+      "dpaneRuleMin": 1,
+      "dpaneRuleMax": 1,
+      "dpaneSrcRuleMax": 1,
+      "examples": [
+        "/deal/017bdbc04e70/",
+        "/deal/0273d8b23412/",
+        "/deal/0c30d79a5016/",
+        "/deal/1688614d6669/"
+      ]
+    },
+    "home": {
+      "pages": 1,
+      "detailMainRuleSet": [
+        1
+      ],
+      "detailMainClassTotal": 0,
+      "maxWidth820Total": 0,
+      "dpaneRuleMin": 1,
+      "dpaneRuleMax": 1,
+      "dpaneSrcRuleMax": 1,
+      "examples": [
+        "/"
+      ]
+    },
+    "models-leaf": {
+      "pages": 51,
+      "detailMainRuleSet": [
+        1
+      ],
+      "detailMainClassTotal": 51,
+      "maxWidth820Total": 0,
+      "dpaneRuleMin": 1,
+      "dpaneRuleMax": 1,
+      "dpaneSrcRuleMax": 1,
+      "examples": [
+        "/models/360zhinao-pro/",
+        "/models/360zhinao-turbo-llm-geo/",
+        "/models/baichuan-m3/",
+        "/models/baichuan-m3-plus/"
+      ]
+    },
+    "models-index": {
+      "pages": 1,
+      "detailMainRuleSet": [
+        1
+      ],
+      "detailMainClassTotal": 0,
+      "maxWidth820Total": 0,
+      "dpaneRuleMin": 1,
+      "dpaneRuleMax": 1,
+      "dpaneSrcRuleMax": 1,
+      "examples": [
+        "/models/"
+      ]
+    }
+  },
+  "sourceIndex": {
+    "detailMainRule": 1,
+    "dpaneRule": 1,
+    "dpaneSrcRule": 1,
+    "maxWidth820": 0,
+    "breakAll": 1,
+    "detailMainClass": 0
+  },
+  "cssRuleSourcesInRepo": [],
+  "cssFilesInDist": [
+    "dist/logos.css"
+  ],
+  "suspiciousCssFiles": [],
+  "pagesWithBreakAll": [
+    {
+      "route": "/archive/",
+      "breakAll": 1
+    },
+    {
+      "route": "/category/agent/",
+      "breakAll": 1
+    },
+    {
+      "route": "/category/api/",
+      "breakAll": 1
+    },
+    {
+      "route": "/category/audio/",
+      "breakAll": 1
+    },
+    {
+      "route": "/category/chat/",
+      "breakAll": 1
+    },
+    {
+      "route": "/category/image/",
+      "breakAll": 1
+    },
+    {
+      "route": "/category/",
+      "breakAll": 1
+    },
+    {
+      "route": "/changes/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/017bdbc04e70/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/0273d8b23412/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/0c30d79a5016/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/1688614d6669/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/176234a80147/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/1888ab62bd67/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/1c057c22422c/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/219f6fca7f31/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/2db62eb1a8a0/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/2eae0e246de2/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/3c8a9a6a9ee9/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/407572a1e046/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/42c65c0d8d9d/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/45ead69d60cc/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/47a4c57f3a15/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4987c183fc1a/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4a875a435019/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4bda0ebbb091/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4c7952115477/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4caf88e30671/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4d4bcb5b6829/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4e659666cbb2/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/514a84a1064a/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/5253b5ed77b1/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/57847fbcc1ed/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/5c38e515a3ae/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/5dedb9455508/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/6013b80f266f/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/62e3166acec0/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/65f0bdd295ac/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/6644f3b43bdb/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/6798f78de5ce/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/6869e7866510/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/7691c150c8e5/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/78384299b660/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/7f8c32f6a327/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/833a9889bfb7/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/8814355d59e1/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/8b2e8d64f11f/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/8b609cb05116/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/8dada3205ed8/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/8e7b0fd03e73/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/913211f6d165/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/9180073deef1/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/97d21ff73d3e/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/9c12f13df3ba/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/9c553dd82d2d/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/a1255b2fbae2/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/aacd5856bba2/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/ad1d0c83909d/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/adcb6471a512/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/b4d87c02f4d9/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/b56f33b3d4f3/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/b75b42583ad8/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/b8f11a235591/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/bcba406ed9ff/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/bf156583e97c/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c05dc74bfd78/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c25b0ed788e3/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c433fee91818/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c4ab5c5d8101/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c59299cdc88e/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c694e7c5f125/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c971e33a9cd0/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/d6aaee8c7379/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/d8d0ba522315/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/df1210f69a39/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/df8ec56faa17/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e237cab7c007/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e384895f5935/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e4bd8003b3d6/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e4f7271cf7dc/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e63402b5cc83/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e65f54470862/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e7e8f538456c/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e91f65960877/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/ead998e58cd9/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/ebd47f6d2522/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/f22e3cd094ad/",
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/f578493037d4/",
+      "breakAll": 1
+    },
+    {
+      "route": "/developer/",
+      "breakAll": 1
+    },
+    {
+      "route": "/docs/data/",
+      "breakAll": 1
+    },
+    {
+      "route": "/feeds/",
+      "breakAll": 1
+    },
+    {
+      "route": "/free-api/",
+      "breakAll": 1
+    },
+    {
+      "route": "/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/360zhinao-pro/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/360zhinao-turbo-llm-geo/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/baichuan-m3/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/baichuan-m3-plus/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/claude-fable-5.1/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/claude-haiku-4.5/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/claude-opus-5.5/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/claude-sonnet-5.5/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/deepseek-flash/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/deepseek-v3.2/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/deepseek-v4-pro/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/doubao-seed-2.1-pro/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/doubao-seed-2.1-turbo/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/doubao-seed-character/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/doubao-seed-evolving/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/ernie-4.5-turbo-128k/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/ernie-5.1/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gemini-3.5-flash/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gemini-3.6-flash/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gemini-3.7-flash/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gemini-3.8-flash/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-4.5v/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-4.6v/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-4.6v-flash/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-4.6v-flashx/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-4.7-flash/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-5.3/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-5.3-flash/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-5v-turbo/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gpt-6-astra/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gpt-6-luna/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gpt-6.1-sol/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gpt-live-1/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/hunyuan-a13b/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/hunyuan-embedding/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/hunyuan-role-latest/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/hunyuan-translation/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/hunyuan-translation-lite/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/kimi-k2.7-code/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/kimi-k3/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/minimax-m2.5/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/minimax-m2.7/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/minimax-m2.7-highspeed/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/minimax-m3/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/qwen-max/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/qwen3-max/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/qwen3.8-27b/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/qwen3.8-max/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/spark-x2.5/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/step-3.5-flash/",
+      "breakAll": 1
+    },
+    {
+      "route": "/models/tencent-hy-vision-1.5-instruct/",
+      "breakAll": 1
+    },
+    {
+      "route": "/need/ai-coding/",
+      "breakAll": 1
+    },
+    {
+      "route": "/need/china-usable/",
+      "breakAll": 1
+    },
+    {
+      "route": "/need/dev-credits/",
+      "breakAll": 1
+    },
+    {
+      "route": "/need/edu-identity/",
+      "breakAll": 1
+    },
+    {
+      "route": "/need/free-api/",
+      "breakAll": 1
+    },
+    {
+      "route": "/need/free-model/",
+      "breakAll": 1
+    },
+    {
+      "route": "/need/free-tier/",
+      "breakAll": 1
+    },
+    {
+      "route": "/need/free-tokens/",
+      "breakAll": 1
+    },
+    {
+      "route": "/need/no-card/",
+      "breakAll": 1
+    },
+    {
+      "route": "/need/student-only/",
+      "breakAll": 1
+    },
+    {
+      "route": "/plans/api/",
+      "breakAll": 1
+    },
+    {
+      "route": "/plans/coding/",
+      "breakAll": 1
+    },
+    {
+      "route": "/plans/",
+      "breakAll": 1
+    },
+    {
+      "route": "/status/",
+      "breakAll": 1
+    },
+    {
+      "route": "/student/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/ai360/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/aliyun/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/anthropic/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/aws/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/baichuan/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/baidu-ai-cloud/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/coze/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/cursor/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/deepseek/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/github/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/google/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/iflytek/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/microsoft/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/minimax/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/moonshot/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/notion/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/openai/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/replit/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/sensetime/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/siliconflow/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/stepfun/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/tencent-cloud/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/volcengine/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/windsurf/",
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/zhipu/",
+      "breakAll": 1
+    }
+  ],
+  "pagesViolating": [],
+  "pages": [
+    {
+      "route": "/archive/",
+      "kind": "archive",
+      "bytes": 86937,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/category/agent/",
+      "kind": "other",
+      "bytes": 87477,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/category/api/",
+      "kind": "other",
+      "bytes": 110806,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/category/audio/",
+      "kind": "other",
+      "bytes": 88845,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/category/chat/",
+      "kind": "other",
+      "bytes": 95561,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/category/image/",
+      "kind": "other",
+      "bytes": 88330,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/category/",
+      "kind": "other",
+      "bytes": 85883,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/changes/",
+      "kind": "other",
+      "bytes": 104393,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/017bdbc04e70/",
+      "kind": "deal-leaf",
+      "bytes": 88437,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/0273d8b23412/",
+      "kind": "deal-leaf",
+      "bytes": 89084,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/0c30d79a5016/",
+      "kind": "deal-leaf",
+      "bytes": 88103,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/1688614d6669/",
+      "kind": "deal-leaf",
+      "bytes": 88130,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/176234a80147/",
+      "kind": "deal-leaf",
+      "bytes": 88903,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/1888ab62bd67/",
+      "kind": "deal-leaf",
+      "bytes": 87653,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/1c057c22422c/",
+      "kind": "deal-leaf",
+      "bytes": 89420,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/219f6fca7f31/",
+      "kind": "deal-leaf",
+      "bytes": 88372,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/2db62eb1a8a0/",
+      "kind": "deal-leaf",
+      "bytes": 87753,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/2eae0e246de2/",
+      "kind": "deal-leaf",
+      "bytes": 88338,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/3c8a9a6a9ee9/",
+      "kind": "deal-leaf",
+      "bytes": 88007,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/407572a1e046/",
+      "kind": "deal-leaf",
+      "bytes": 87661,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/42c65c0d8d9d/",
+      "kind": "deal-leaf",
+      "bytes": 89269,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/45ead69d60cc/",
+      "kind": "deal-leaf",
+      "bytes": 87603,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/47a4c57f3a15/",
+      "kind": "deal-leaf",
+      "bytes": 87675,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4987c183fc1a/",
+      "kind": "deal-leaf",
+      "bytes": 90780,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4a875a435019/",
+      "kind": "deal-leaf",
+      "bytes": 88581,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4bda0ebbb091/",
+      "kind": "deal-leaf",
+      "bytes": 88083,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4c7952115477/",
+      "kind": "deal-leaf",
+      "bytes": 88250,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4caf88e30671/",
+      "kind": "deal-leaf",
+      "bytes": 88345,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4d4bcb5b6829/",
+      "kind": "deal-leaf",
+      "bytes": 88239,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/4e659666cbb2/",
+      "kind": "deal-leaf",
+      "bytes": 87499,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/514a84a1064a/",
+      "kind": "deal-leaf",
+      "bytes": 88432,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/5253b5ed77b1/",
+      "kind": "deal-leaf",
+      "bytes": 87598,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/57847fbcc1ed/",
+      "kind": "deal-leaf",
+      "bytes": 87777,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/5c38e515a3ae/",
+      "kind": "deal-leaf",
+      "bytes": 88250,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/5dedb9455508/",
+      "kind": "deal-leaf",
+      "bytes": 88140,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/6013b80f266f/",
+      "kind": "deal-leaf",
+      "bytes": 87814,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/62e3166acec0/",
+      "kind": "deal-leaf",
+      "bytes": 88075,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/65f0bdd295ac/",
+      "kind": "deal-leaf",
+      "bytes": 89406,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/6644f3b43bdb/",
+      "kind": "deal-leaf",
+      "bytes": 88437,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/6798f78de5ce/",
+      "kind": "deal-leaf",
+      "bytes": 88109,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/6869e7866510/",
+      "kind": "deal-leaf",
+      "bytes": 88353,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/7691c150c8e5/",
+      "kind": "deal-leaf",
+      "bytes": 90486,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/78384299b660/",
+      "kind": "deal-leaf",
+      "bytes": 88426,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/7f8c32f6a327/",
+      "kind": "deal-leaf",
+      "bytes": 87603,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/833a9889bfb7/",
+      "kind": "deal-leaf",
+      "bytes": 88591,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/8814355d59e1/",
+      "kind": "deal-leaf",
+      "bytes": 88316,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/8b2e8d64f11f/",
+      "kind": "deal-leaf",
+      "bytes": 88316,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/8b609cb05116/",
+      "kind": "deal-leaf",
+      "bytes": 88415,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/8dada3205ed8/",
+      "kind": "deal-leaf",
+      "bytes": 87753,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/8e7b0fd03e73/",
+      "kind": "deal-leaf",
+      "bytes": 89507,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/913211f6d165/",
+      "kind": "deal-leaf",
+      "bytes": 88785,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/9180073deef1/",
+      "kind": "deal-leaf",
+      "bytes": 88294,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/97d21ff73d3e/",
+      "kind": "deal-leaf",
+      "bytes": 89418,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/9c12f13df3ba/",
+      "kind": "deal-leaf",
+      "bytes": 88327,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/9c553dd82d2d/",
+      "kind": "deal-leaf",
+      "bytes": 87918,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/a1255b2fbae2/",
+      "kind": "deal-leaf",
+      "bytes": 88272,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/aacd5856bba2/",
+      "kind": "deal-leaf",
+      "bytes": 88098,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/ad1d0c83909d/",
+      "kind": "deal-leaf",
+      "bytes": 88316,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/adcb6471a512/",
+      "kind": "deal-leaf",
+      "bytes": 87646,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/b4d87c02f4d9/",
+      "kind": "deal-leaf",
+      "bytes": 88882,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/b56f33b3d4f3/",
+      "kind": "deal-leaf",
+      "bytes": 90417,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/b75b42583ad8/",
+      "kind": "deal-leaf",
+      "bytes": 88014,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/b8f11a235591/",
+      "kind": "deal-leaf",
+      "bytes": 89154,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/bcba406ed9ff/",
+      "kind": "deal-leaf",
+      "bytes": 88304,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/bf156583e97c/",
+      "kind": "deal-leaf",
+      "bytes": 88316,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c05dc74bfd78/",
+      "kind": "deal-leaf",
+      "bytes": 88811,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c25b0ed788e3/",
+      "kind": "deal-leaf",
+      "bytes": 88333,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c433fee91818/",
+      "kind": "deal-leaf",
+      "bytes": 88606,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c4ab5c5d8101/",
+      "kind": "deal-leaf",
+      "bytes": 88448,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c59299cdc88e/",
+      "kind": "deal-leaf",
+      "bytes": 88289,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c694e7c5f125/",
+      "kind": "deal-leaf",
+      "bytes": 87614,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/c971e33a9cd0/",
+      "kind": "deal-leaf",
+      "bytes": 88707,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/d6aaee8c7379/",
+      "kind": "deal-leaf",
+      "bytes": 87652,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/d8d0ba522315/",
+      "kind": "deal-leaf",
+      "bytes": 88335,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/df1210f69a39/",
+      "kind": "deal-leaf",
+      "bytes": 87963,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/df8ec56faa17/",
+      "kind": "deal-leaf",
+      "bytes": 89658,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e237cab7c007/",
+      "kind": "deal-leaf",
+      "bytes": 89317,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e384895f5935/",
+      "kind": "deal-leaf",
+      "bytes": 88338,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e4bd8003b3d6/",
+      "kind": "deal-leaf",
+      "bytes": 87928,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e4f7271cf7dc/",
+      "kind": "deal-leaf",
+      "bytes": 88145,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e63402b5cc83/",
+      "kind": "deal-leaf",
+      "bytes": 88916,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e65f54470862/",
+      "kind": "deal-leaf",
+      "bytes": 88404,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e7e8f538456c/",
+      "kind": "deal-leaf",
+      "bytes": 88180,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/e91f65960877/",
+      "kind": "deal-leaf",
+      "bytes": 88791,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/ead998e58cd9/",
+      "kind": "deal-leaf",
+      "bytes": 87777,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/ebd47f6d2522/",
+      "kind": "deal-leaf",
+      "bytes": 89408,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/f22e3cd094ad/",
+      "kind": "deal-leaf",
+      "bytes": 88262,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/deal/f578493037d4/",
+      "kind": "deal-leaf",
+      "bytes": 88884,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/developer/",
+      "kind": "other",
+      "bytes": 128559,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/docs/data/",
+      "kind": "other",
+      "bytes": 100808,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/feeds/",
+      "kind": "other",
+      "bytes": 98117,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/free-api/",
+      "kind": "other",
+      "bytes": 114294,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/",
+      "kind": "home",
+      "bytes": 400355,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/360zhinao-pro/",
+      "kind": "models-leaf",
+      "bytes": 86771,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/360zhinao-turbo-llm-geo/",
+      "kind": "models-leaf",
+      "bytes": 86922,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/baichuan-m3/",
+      "kind": "models-leaf",
+      "bytes": 86595,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/baichuan-m3-plus/",
+      "kind": "models-leaf",
+      "bytes": 86713,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/claude-fable-5.1/",
+      "kind": "models-leaf",
+      "bytes": 86978,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/claude-haiku-4.5/",
+      "kind": "models-leaf",
+      "bytes": 86694,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/claude-opus-5.5/",
+      "kind": "models-leaf",
+      "bytes": 86777,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/claude-sonnet-5.5/",
+      "kind": "models-leaf",
+      "bytes": 86713,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/deepseek-flash/",
+      "kind": "models-leaf",
+      "bytes": 90213,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/deepseek-v3.2/",
+      "kind": "models-leaf",
+      "bytes": 86744,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/deepseek-v4-pro/",
+      "kind": "models-leaf",
+      "bytes": 90009,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/doubao-seed-2.1-pro/",
+      "kind": "models-leaf",
+      "bytes": 86631,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/doubao-seed-2.1-turbo/",
+      "kind": "models-leaf",
+      "bytes": 86666,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/doubao-seed-character/",
+      "kind": "models-leaf",
+      "bytes": 86835,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/doubao-seed-evolving/",
+      "kind": "models-leaf",
+      "bytes": 86644,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/ernie-4.5-turbo-128k/",
+      "kind": "models-leaf",
+      "bytes": 86844,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/ernie-5.1/",
+      "kind": "models-leaf",
+      "bytes": 87399,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gemini-3.5-flash/",
+      "kind": "models-leaf",
+      "bytes": 86757,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gemini-3.6-flash/",
+      "kind": "models-leaf",
+      "bytes": 86969,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gemini-3.7-flash/",
+      "kind": "models-leaf",
+      "bytes": 86932,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gemini-3.8-flash/",
+      "kind": "models-leaf",
+      "bytes": 86916,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-4.5v/",
+      "kind": "models-leaf",
+      "bytes": 87593,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-4.6v/",
+      "kind": "models-leaf",
+      "bytes": 87579,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-4.6v-flash/",
+      "kind": "models-leaf",
+      "bytes": 86860,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-4.6v-flashx/",
+      "kind": "models-leaf",
+      "bytes": 87530,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-4.7-flash/",
+      "kind": "models-leaf",
+      "bytes": 87141,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-5.3/",
+      "kind": "models-leaf",
+      "bytes": 90355,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-5.3-flash/",
+      "kind": "models-leaf",
+      "bytes": 88654,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/glm-5v-turbo/",
+      "kind": "models-leaf",
+      "bytes": 87724,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gpt-6-astra/",
+      "kind": "models-leaf",
+      "bytes": 88753,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gpt-6-luna/",
+      "kind": "models-leaf",
+      "bytes": 88588,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gpt-6.1-sol/",
+      "kind": "models-leaf",
+      "bytes": 88718,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/gpt-live-1/",
+      "kind": "models-leaf",
+      "bytes": 86438,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/hunyuan-a13b/",
+      "kind": "models-leaf",
+      "bytes": 86856,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/hunyuan-embedding/",
+      "kind": "models-leaf",
+      "bytes": 86688,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/hunyuan-role-latest/",
+      "kind": "models-leaf",
+      "bytes": 86895,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/hunyuan-translation/",
+      "kind": "models-leaf",
+      "bytes": 86824,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/hunyuan-translation-lite/",
+      "kind": "models-leaf",
+      "bytes": 86976,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/",
+      "kind": "models-index",
+      "bytes": 151876,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/kimi-k2.7-code/",
+      "kind": "models-leaf",
+      "bytes": 87778,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/kimi-k3/",
+      "kind": "models-leaf",
+      "bytes": 89211,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/minimax-m2.5/",
+      "kind": "models-leaf",
+      "bytes": 86724,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/minimax-m2.7/",
+      "kind": "models-leaf",
+      "bytes": 87363,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/minimax-m2.7-highspeed/",
+      "kind": "models-leaf",
+      "bytes": 86993,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/minimax-m3/",
+      "kind": "models-leaf",
+      "bytes": 90847,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/qwen-max/",
+      "kind": "models-leaf",
+      "bytes": 86573,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/qwen3-max/",
+      "kind": "models-leaf",
+      "bytes": 87411,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/qwen3.8-27b/",
+      "kind": "models-leaf",
+      "bytes": 88043,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/qwen3.8-max/",
+      "kind": "models-leaf",
+      "bytes": 87499,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/spark-x2.5/",
+      "kind": "models-leaf",
+      "bytes": 86627,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/step-3.5-flash/",
+      "kind": "models-leaf",
+      "bytes": 88074,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/models/tencent-hy-vision-1.5-instruct/",
+      "kind": "models-leaf",
+      "bytes": 86964,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 1,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/need/ai-coding/",
+      "kind": "other",
+      "bytes": 87189,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/need/china-usable/",
+      "kind": "other",
+      "bytes": 107106,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/need/dev-credits/",
+      "kind": "other",
+      "bytes": 129023,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/need/edu-identity/",
+      "kind": "other",
+      "bytes": 89241,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/need/free-api/",
+      "kind": "other",
+      "bytes": 114535,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/need/free-model/",
+      "kind": "other",
+      "bytes": 92835,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/need/free-tier/",
+      "kind": "other",
+      "bytes": 127063,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/need/free-tokens/",
+      "kind": "other",
+      "bytes": 114728,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/need/no-card/",
+      "kind": "other",
+      "bytes": 84882,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/need/student-only/",
+      "kind": "other",
+      "bytes": 92842,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/plans/api/",
+      "kind": "other",
+      "bytes": 234372,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/plans/coding/",
+      "kind": "other",
+      "bytes": 279339,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/plans/",
+      "kind": "other",
+      "bytes": 96107,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/status/",
+      "kind": "other",
+      "bytes": 87041,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/student/",
+      "kind": "other",
+      "bytes": 92531,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/ai360/",
+      "kind": "other",
+      "bytes": 90136,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/aliyun/",
+      "kind": "other",
+      "bytes": 92351,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/anthropic/",
+      "kind": "other",
+      "bytes": 90363,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/aws/",
+      "kind": "other",
+      "bytes": 90021,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/baichuan/",
+      "kind": "other",
+      "bytes": 90270,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/baidu-ai-cloud/",
+      "kind": "other",
+      "bytes": 103161,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/coze/",
+      "kind": "other",
+      "bytes": 92240,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/cursor/",
+      "kind": "other",
+      "bytes": 89375,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/deepseek/",
+      "kind": "other",
+      "bytes": 89874,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/github/",
+      "kind": "other",
+      "bytes": 91966,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/google/",
+      "kind": "other",
+      "bytes": 90779,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/iflytek/",
+      "kind": "other",
+      "bytes": 92056,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/",
+      "kind": "other",
+      "bytes": 98324,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/microsoft/",
+      "kind": "other",
+      "bytes": 90789,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/minimax/",
+      "kind": "other",
+      "bytes": 93567,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/moonshot/",
+      "kind": "other",
+      "bytes": 90579,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/notion/",
+      "kind": "other",
+      "bytes": 90171,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/openai/",
+      "kind": "other",
+      "bytes": 92462,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/replit/",
+      "kind": "other",
+      "bytes": 89735,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/sensetime/",
+      "kind": "other",
+      "bytes": 90261,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/siliconflow/",
+      "kind": "other",
+      "bytes": 91290,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/stepfun/",
+      "kind": "other",
+      "bytes": 91507,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/tencent-cloud/",
+      "kind": "other",
+      "bytes": 91309,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/volcengine/",
+      "kind": "other",
+      "bytes": 98756,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/windsurf/",
+      "kind": "other",
+      "bytes": 90069,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    },
+    {
+      "route": "/vendor/zhipu/",
+      "kind": "other",
+      "bytes": 99293,
+      "detailMainRule": 1,
+      "dpaneRule": 1,
+      "dpaneSrcRule": 1,
+      "detailMainClass": 0,
+      "maxWidth820": 0,
+      "breakAll": 1
+    }
+  ]
+}

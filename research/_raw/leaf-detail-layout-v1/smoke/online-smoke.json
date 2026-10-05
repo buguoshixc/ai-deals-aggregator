@@ -1,0 +1,191 @@
+{
+  "base": "https://buguoshixc.github.io/ai-deals-aggregator/",
+  "at": "2026-10-05T13:00:56.109Z",
+  "pages": {
+    "home": {
+      "status": 200,
+      "geo": {
+        "vw": 1440,
+        "docScroll": 1440,
+        "mainClass": "",
+        "mainRect": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380
+        },
+        "wrapRect": {
+          "left": 10,
+          "right": 1430,
+          "width": 1420
+        },
+        "crumb": null,
+        "pane": null,
+        "more": null,
+        "src": null,
+        "srcWordBreak": null,
+        "srcOverflowWrap": null,
+        "srcSelfOverflow": null
+      }
+    },
+    "deal": {
+      "route": "deal/2eae0e246de2/",
+      "status": 200,
+      "geo": {
+        "vw": 1440,
+        "docScroll": 1440,
+        "mainClass": "detail-main",
+        "mainRect": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120
+        },
+        "wrapRect": {
+          "left": 10,
+          "right": 1430,
+          "width": 1420
+        },
+        "crumb": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120
+        },
+        "pane": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120
+        },
+        "more": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120
+        },
+        "src": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120
+        },
+        "srcWordBreak": "normal",
+        "srcOverflowWrap": "anywhere",
+        "srcSelfOverflow": 0
+      }
+    },
+    "dealMobile": {
+      "geo": {
+        "vw": 390,
+        "docScroll": 390,
+        "mainClass": "detail-main",
+        "mainRect": {
+          "left": 16,
+          "right": 374,
+          "width": 358
+        },
+        "wrapRect": {
+          "left": 0,
+          "right": 390,
+          "width": 390
+        },
+        "crumb": {
+          "left": 16,
+          "right": 374,
+          "width": 358
+        },
+        "pane": {
+          "left": 16,
+          "right": 374,
+          "width": 358
+        },
+        "more": {
+          "left": 16,
+          "right": 374,
+          "width": 358
+        },
+        "src": {
+          "left": 16,
+          "right": 374,
+          "width": 358
+        },
+        "srcWordBreak": "normal",
+        "srcOverflowWrap": "anywhere",
+        "srcSelfOverflow": 0
+      }
+    },
+    "model": {
+      "route": "models/360zhinao-pro/",
+      "status": 200,
+      "geo": {
+        "vw": 1440,
+        "docScroll": 1440,
+        "mainClass": "detail-main",
+        "mainRect": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120
+        },
+        "wrapRect": {
+          "left": 10,
+          "right": 1430,
+          "width": 1420
+        },
+        "crumb": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120
+        },
+        "pane": null,
+        "more": null,
+        "src": null,
+        "srcWordBreak": null,
+        "srcOverflowWrap": null,
+        "srcSelfOverflow": null
+      }
+    }
+  },
+  "checks": [
+    {
+      "name": "首页 HTTP 200",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "name": "首页没有被详情列波及（<main> 无 detail-main，且无横向溢出）",
+      "ok": true,
+      "detail": "main 1380px / wrap 1420px"
+    },
+    {
+      "name": "能确定一条 deal 详情路由（首页卡片链接 / deals.json）",
+      "ok": true,
+      "detail": "deal/2eae0e246de2/（ernie=2eae0e246de2 longest=8e7b0fd03e73）"
+    },
+    {
+      "name": "/deal/2eae0e246de2/ 桌面详情内容列（HTTP 200）",
+      "ok": true,
+      "detail": "main=1120px @160~1280 · 居中偏差 0px"
+    },
+    {
+      "name": "/deal/2eae0e246de2/ 来源块与正文同宽（dpane-src ≈ detail-main，且不是 820）",
+      "ok": true,
+      "detail": "src=1120px / main=1120px"
+    },
+    {
+      "name": "/deal/2eae0e246de2/ 普通文本不被逐字符断行（word-break=normal）",
+      "ok": true,
+      "detail": "word-break=normal overflow-wrap=anywhere"
+    },
+    {
+      "name": "/deal/2eae0e246de2/ 390px 无横向溢出",
+      "ok": true,
+      "detail": "docScroll=390 · 来源块自身溢出=0"
+    },
+    {
+      "name": "/models/360zhinao-pro/ 桌面详情内容列（HTTP 200）",
+      "ok": true,
+      "detail": "main=1120px @160~1280"
+    },
+    {
+      "name": "/deal 与 /models 叶子页共用同一条内容列宽度（一致性）",
+      "ok": true,
+      "detail": "deal=1120px / model=1120px"
+    }
+  ],
+  "failed": 0
+}

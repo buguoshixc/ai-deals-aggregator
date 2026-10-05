@@ -1,0 +1,72 @@
+# AI layer self-test
+# $ node scripts/tools/ai-selftest.js
+
+AI 层自检（离线，不依赖任何 API key 与网络）
+
+  ✓ 牙1 非 unknown 断言必须有证据
+  ✓ 牙2 非法 enum 必须判无效
+  ✓ 牙2b 三态不接受 null
+  ✓ 牙2c 三态不接受字符串 "true"
+  ✓ 牙3 无据的 false 必须被审核层标出
+  ✓ 牙3b 有否定线索的 false 不被误报
+  ✓ 牙4 AI 去重模块不得导出任何合并/写入符号
+  ✓ 牙4b 跑一轮重复候选后 deals.json 不变
+  ✓ 牙4c 重复候选不写入任何生产文件
+  ✓ 牙5 确定性链路不得引用 AI 层
+  ✓ 牙5b AI 超时不影响采集器清单
+  ✓ 牙5c AI 挂掉时 validate 仍然通过
+  ✓ 牙5d provider 永不抛异常且失败可归类
+  ✓ 牙6 密钥模式扫描覆盖六类样本
+  ✓ 牙6b 扫描结果不泄露完整密钥
+  ✓ 牙6c 候选文件里的密钥会被扫出来
+  ✓ 牙6d 产物自检已接入密钥扫描
+  ✓ 牙6e 送模型前会脱敏
+  ✓ 牙7a 生成侧结构上拒绝全部生产真值与穿越路径
+  ✓ 牙7b 白名单允许 .ai-cache/** 与 research/**
+  ✓ 牙7c 生成侧非法 --out 端到端 exit≠0
+  ✓ 牙7d 被拒的落点没有留下任何文件
+  ✓ 牙7e 生成侧合法 --out（.ai-cache/candidates/**）写入成功
+  ✓ 牙7f 绕过 CLI 直接调写函数同样拒绝写生产真值
+  ✓ 牙7g 生成路径拒绝写出带 review.decision 的候选
+  ✓ 牙7h 生成产出的候选一律「未下决定」
+  ✓ 牙7j 真实生成（离线 mock provider）产出了候选
+  ✓ 牙7k 生成产出的候选一律未下决定、且不在可落地集合里
+  ✓ 牙7i 生成侧跑完，生产真值逐字节不变
+  ✓ 牙8a 未经 accept 的候选集合为空
+  ✓ 牙8b 显式 accept 之后恰好 1 条可落地
+  ✓ 牙8c 状态与决定必须一致（status=accepted 才算数）
+  ✓ 牙8d 机器门（schema/enum/evidence）缺一关都不算数
+  ✓ 牙8e 未接受候选：ai-apply exit≠0 且拒绝落地（M17 回归钉）
+  ✓ 牙8f 显式 accept 是一个独立动作（ai-accept 写在候选文件里）
+  ✓ 牙8g accept 之后 re-read 仍只认那一条
+  ✓ 牙8h 显式 accept 之后 ai-apply 推进到写入判定点
+  ✓ 牙8i 人工接受但机器门未过：ai-apply exit≠0 并点名
+  ✓ 牙8j 手改候选（断言无引文）在 accept 时被机器门拒绝
+  ✓ 牙8k ai-apply 的接受判定走唯一实现 candidates.acceptedOf（不再有行内 filter）
+  ✓ 牙8l 生成层（scripts/ai/**）不得调用 accept/apply 工具（禁隐式 accept）
+  ✓ 牙9a 生产真值里没有候选信封（AI 输出没有绕过 accept 混进来）
+  ✓ 牙9b 检测器能认出被复制进生产真值的候选信封
+  ✓ 牙9c 正常生产真值不被误报
+  ✓ 结构 候选信封字段齐全（可追溯：谁、何时、基于什么）
+  ✓ 结构 缓存 key 与时间无关且可复现
+  ✓ 结构 缓存 key 随 promptVersion 变化
+  ✓ 结构 缓存 key 随 model 变化
+  ✓ 结构 canonicalJson 与键序无关
+  ✓ 结构 探针声明表覆盖全部注册采集器
+  ✓ 结构 每个 fixture 都有采集器登记
+  ✓ 结构 页面摘要不含页面正文
+  ✓ 结构 快照文件在体积上限内
+  ✓ 结构 快照保留两代（current/previous）
+  ✓ 结构 .ai-cache 已被 gitignore
+  ✓ 结构 deal 记录未新增 AI 字段
+  ✓ 结构 译文守卫对人工译文零误报
+  ✓ 结构 补丁应用器能干净应用
+  ✓ 结构 补丁应用器拒绝上下文对不上的补丁
+  ✓ 结构 补丁路径只允许 scripts/collectors/**
+  ✓ 结构 成本与输入上限有单一出处（schemas.TASK_LIMITS）  —— true
+  ✓ 结构 查不到价目时报"成本未知"而不是 0
+  ✓ 结构 用量账本能汇总
+
+AI 自检 63 项 · 失败 0
+✅ AI 层边界完好：候选不合格就进不来，AI 挂掉不影响确定性链路，
+   AI 生成物写不出生产真值，未经 accept 的候选一个都推不动。
