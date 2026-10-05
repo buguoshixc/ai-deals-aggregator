@@ -1,0 +1,1199 @@
+{
+  "generatedAt": "2026-10-05T12:43:17.850Z",
+  "probeInputs": [
+    "before.json",
+    "before-recheck.json",
+    "after-deal.json",
+    "after-models.json",
+    "after-axis.json",
+    "after-compare.json",
+    "mutations-real/M1..M5.json",
+    "t4-static-checks.json"
+  ],
+  "checks": [
+    {
+      "id": "ruler-identical",
+      "status": "passed",
+      "detail": "before.json vs before-recheck.json 比较 348 个数值，差异 0 个"
+    },
+    {
+      "id": "bbox-deal/8e7b0fd03e73@1600",
+      "status": "passed",
+      "detail": "main offsetWidth=1120（要求 ∈[1080,1120]）· centerΔ=0（要求 ≤8）· rect 240..1360"
+    },
+    {
+      "id": "bbox-deal/8e7b0fd03e73@1440",
+      "status": "passed",
+      "detail": "main offsetWidth=1120（要求 ∈[1080,1120]）· centerΔ=0（要求 ≤8）· rect 160..1280"
+    },
+    {
+      "id": "bbox-deal/8e7b0fd03e73@1280",
+      "status": "passed",
+      "detail": "main offsetWidth=1120（要求 ∈[1080,1120]）· centerΔ=0（要求 ≤8）· rect 80..1200"
+    },
+    {
+      "id": "bbox-models/360zhinao-pro@1600",
+      "status": "passed",
+      "detail": "main offsetWidth=1120（要求 ∈[1080,1120]）· centerΔ=0（要求 ≤8）· rect 240..1360"
+    },
+    {
+      "id": "bbox-models/360zhinao-pro@1440",
+      "status": "passed",
+      "detail": "main offsetWidth=1120（要求 ∈[1080,1120]）· centerΔ=0（要求 ≤8）· rect 160..1280"
+    },
+    {
+      "id": "bbox-models/360zhinao-pro@1280",
+      "status": "passed",
+      "detail": "main offsetWidth=1120（要求 ∈[1080,1120]）· centerΔ=0（要求 ≤8）· rect 80..1200"
+    },
+    {
+      "id": "axis-deal@1600",
+      "status": "passed",
+      "detail": ".crumb/.dpane/.dpane-more/.dpane-src 左 240,240,240,240 极差 0px · 右 1360,1360,1360,1360 极差 0px（要求 ≤1px）"
+    },
+    {
+      "id": "axis-deal@1440",
+      "status": "passed",
+      "detail": ".crumb/.dpane/.dpane-more/.dpane-src 左 160,160,160,160 极差 0px · 右 1280,1280,1280,1280 极差 0px（要求 ≤1px）"
+    },
+    {
+      "id": "axis-deal@1280",
+      "status": "passed",
+      "detail": ".crumb/.dpane/.dpane-more/.dpane-src 左 80,80,80,80 极差 0px · 右 1200,1200,1200,1200 极差 0px（要求 ≤1px）"
+    },
+    {
+      "id": "axis-models@1600",
+      "status": "passed",
+      "detail": ".crumb/.stop/.minfo/.ptable-wrap 左 240,240,240,240 极差 0px · 右 1360,1360,1360,1360 极差 0px（要求 ≤1px）"
+    },
+    {
+      "id": "axis-models@1440",
+      "status": "passed",
+      "detail": ".crumb/.stop/.minfo/.ptable-wrap 左 160,160,160,160 极差 0px · 右 1280,1280,1280,1280 极差 0px（要求 ≤1px）"
+    },
+    {
+      "id": "axis-models@1280",
+      "status": "passed",
+      "detail": ".crumb/.stop/.minfo/.ptable-wrap 左 80,80,80,80 极差 0px · 右 1200,1200,1200,1200 极差 0px（要求 ≤1px）"
+    },
+    {
+      "id": "src-eq-column-deal@1600",
+      "status": "passed",
+      "detail": ".dpane-src=1120 vs 列宽=1120 差 0px（要求 ≤1px）"
+    },
+    {
+      "id": "src-eq-column-deal@1440",
+      "status": "passed",
+      "detail": ".dpane-src=1120 vs 列宽=1120 差 0px（要求 ≤1px）"
+    },
+    {
+      "id": "src-eq-column-deal@1280",
+      "status": "passed",
+      "detail": ".dpane-src=1120 vs 列宽=1120 差 0px（要求 ≤1px）"
+    },
+    {
+      "id": "mobile-390-deal/8e7b0fd03e73",
+      "status": "passed",
+      "detail": "documentElement.scrollWidth=390（要求 ≤391）· clientWidth=390 · 溢出 0px"
+    },
+    {
+      "id": "mobile-390-models/360zhinao-pro",
+      "status": "passed",
+      "detail": "documentElement.scrollWidth=390（要求 ≤391）· clientWidth=390 · 溢出 0px"
+    },
+    {
+      "id": "narrow-768-/deal/2eae0e246de2/",
+      "status": "passed",
+      "detail": "documentElement.scrollWidth=768（要求 ≤768）· main=728（铺满可用宽）"
+    },
+    {
+      "id": "narrow-768-/models/claude-opus-5.5/",
+      "status": "passed",
+      "detail": "documentElement.scrollWidth=768（要求 ≤768）· main=728（铺满可用宽）"
+    },
+    {
+      "id": "long-url-390",
+      "status": "passed",
+      "detail": "deal/8e7b0fd03e73 @390 documentElement.scrollWidth=390（≤391）"
+    },
+    {
+      "id": "long-url-1440",
+      "status": "passed",
+      "detail": "deal/8e7b0fd03e73 @1440 documentElement.scrollWidth=1440（≤1440）"
+    },
+    {
+      "id": "home-main-untouched",
+      "status": "passed",
+      "detail": "首页 main @1440：改动前 1380 → 改动后 1380（要求不变且 =1380）"
+    },
+    {
+      "id": "leaf-pair-same-column@1600",
+      "status": "passed",
+      "detail": "deal main=1120 · model main=1120 · 列左 240 vs 240（要求同宽）"
+    },
+    {
+      "id": "leaf-pair-same-column@1440",
+      "status": "passed",
+      "detail": "deal main=1120 · model main=1120 · 列左 160 vs 160（要求同宽）"
+    },
+    {
+      "id": "leaf-pair-same-column@1280",
+      "status": "passed",
+      "detail": "deal main=1120 · model main=1120 · 列左 80 vs 80（要求同宽）"
+    },
+    {
+      "id": "nonleaf-not-widened",
+      "status": "passed",
+      "detail": "/ main 1380/1380/1240/728 class=\"\" · /models/ main 1380/1380/1240/728 class=\"\" · /archive/ main 1380/1380/1240/728 class=\"\" · /category/api/ main 1380/1380/1240/728 class=\"\" · /vendor/anthropic/ main 1380/1380/1240/728 class=\"\""
+    },
+    {
+      "id": "mutations-bite",
+      "status": "passed",
+      "detail": "M1(center) 基准 0 → 变异 260 / 260 · M2(width) 基准 1120 → 变异 820 · M3(src-width) 基准 1120 / 1120 → 变异 820 / 列 1120 差 300 · M4(page-overflow@390) 基准 390 → 变异 1136 · M5(leaf-consistency) 基准 1120 / 1120 → 变异 1120 / 1380"
+    },
+    {
+      "id": "static-single-rule",
+      "status": "passed",
+      "detail": "186 页全部：.detail-main 规则=1、.dpane 规则=1、max-width:820px=0；违规页 0"
+    },
+    {
+      "id": "static-class-scope",
+      "status": "passed",
+      "detail": "叶子页带 class=\"detail-main\" 合计 131（80 deal + 51 model），非叶子页合计 0"
+    },
+    {
+      "id": "static-no-second-css",
+      "status": "passed",
+      "detail": "detail*.css：无 · 仓库 CSS 里含 .detail-main 的文件：0 · dist 内 CSS：dist/logos.css"
+    },
+    {
+      "id": "static-source-rule",
+      "status": "passed",
+      "detail": "源码 index.html：.detail-main=1 .dpane=1 .dpane-src=1 max-width:820px=0 break-all=1（属于 .cmpshare，与详情页无关）"
+    }
+  ],
+  "comparison": [
+    {
+      "route": "/deal/2eae0e246de2/",
+      "viewport": 1600,
+      "before": {
+        ".wrap": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": {
+          "w": 820,
+          "cd": 560,
+          "wb": "normal",
+          "mw": "820px"
+        },
+        ".dpane-more": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane-src": {
+          "w": 820,
+          "cd": 560,
+          "wb": "break-all",
+          "mw": "820px"
+        },
+        ".topin": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1600
+      },
+      "after": {
+        ".wrap": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane-more": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane-src": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".topin": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1600
+      }
+    },
+    {
+      "route": "/deal/2eae0e246de2/",
+      "viewport": 1440,
+      "before": {
+        ".wrap": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": {
+          "w": 820,
+          "cd": 560,
+          "wb": "normal",
+          "mw": "820px"
+        },
+        ".dpane-more": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane-src": {
+          "w": 820,
+          "cd": 560,
+          "wb": "break-all",
+          "mw": "820px"
+        },
+        ".topin": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1440
+      },
+      "after": {
+        ".wrap": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane-more": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane-src": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".topin": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1440
+      }
+    },
+    {
+      "route": "/deal/2eae0e246de2/",
+      "viewport": 1280,
+      "before": {
+        ".wrap": {
+          "w": 1280,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1240,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": {
+          "w": 820,
+          "cd": 420,
+          "wb": "normal",
+          "mw": "820px"
+        },
+        ".dpane-more": {
+          "w": 1240,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane-src": {
+          "w": 820,
+          "cd": 420,
+          "wb": "break-all",
+          "mw": "820px"
+        },
+        ".topin": {
+          "w": 1280,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1240,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1280
+      },
+      "after": {
+        ".wrap": {
+          "w": 1280,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane-more": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane-src": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".topin": {
+          "w": 1280,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1240,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1280
+      }
+    },
+    {
+      "route": "/deal/2eae0e246de2/",
+      "viewport": 390,
+      "before": {
+        ".wrap": {
+          "w": 390,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "820px"
+        },
+        ".dpane-more": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane-src": {
+          "w": 358,
+          "cd": 0,
+          "wb": "break-all",
+          "mw": "820px"
+        },
+        ".topin": {
+          "w": 390,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 390
+      },
+      "after": {
+        ".wrap": {
+          "w": 390,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane-more": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane-src": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".topin": {
+          "w": 390,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 390
+      }
+    },
+    {
+      "route": "/models/claude-opus-5.5/",
+      "viewport": 1600,
+      "before": {
+        ".wrap": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1600
+      },
+      "after": {
+        ".wrap": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1600
+      }
+    },
+    {
+      "route": "/models/claude-opus-5.5/",
+      "viewport": 1440,
+      "before": {
+        ".wrap": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1440
+      },
+      "after": {
+        ".wrap": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1440
+      }
+    },
+    {
+      "route": "/models/claude-opus-5.5/",
+      "viewport": 1280,
+      "before": {
+        ".wrap": {
+          "w": 1280,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1240,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 1280,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1240,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1280
+      },
+      "after": {
+        ".wrap": {
+          "w": 1280,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1120,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 1280,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1240,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1280
+      }
+    },
+    {
+      "route": "/models/claude-opus-5.5/",
+      "viewport": 390,
+      "before": {
+        ".wrap": {
+          "w": 390,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 390,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 390
+      },
+      "after": {
+        ".wrap": {
+          "w": 390,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 390,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 390
+      }
+    },
+    {
+      "route": "/",
+      "viewport": 1600,
+      "before": {
+        ".wrap": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1600
+      },
+      "after": {
+        ".wrap": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1600
+      }
+    },
+    {
+      "route": "/",
+      "viewport": 1440,
+      "before": {
+        ".wrap": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1440
+      },
+      "after": {
+        ".wrap": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 1420,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1380,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1440
+      }
+    },
+    {
+      "route": "/",
+      "viewport": 1280,
+      "before": {
+        ".wrap": {
+          "w": 1280,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1240,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 1280,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1240,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1280
+      },
+      "after": {
+        ".wrap": {
+          "w": 1280,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 1240,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 1280,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 1240,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 1280
+      }
+    },
+    {
+      "route": "/",
+      "viewport": 390,
+      "before": {
+        ".wrap": {
+          "w": 390,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 390,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 390
+      },
+      "after": {
+        ".wrap": {
+          "w": 390,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "main": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        ".dpane": null,
+        ".dpane-more": null,
+        ".dpane-src": null,
+        ".topin": {
+          "w": 390,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "1420px"
+        },
+        "footer": {
+          "w": 358,
+          "cd": 0,
+          "wb": "normal",
+          "mw": "none"
+        },
+        "scrollWidth": 390
+      }
+    }
+  ],
+  "mutationEffects": [
+    {
+      "id": "M1",
+      "expect": "center",
+      "base": "0",
+      "after": "260 / 260",
+      "ok": true
+    },
+    {
+      "id": "M2",
+      "expect": "width",
+      "base": "1120",
+      "after": "820",
+      "ok": true
+    },
+    {
+      "id": "M3",
+      "expect": "src-width",
+      "base": "1120 / 1120",
+      "after": "820 / 列 1120 差 300",
+      "ok": true
+    },
+    {
+      "id": "M4",
+      "expect": "page-overflow@390",
+      "base": "390",
+      "after": "1136",
+      "ok": true
+    },
+    {
+      "id": "M5",
+      "expect": "leaf-consistency",
+      "base": "1120 / 1120",
+      "after": "1120 / 1380",
+      "ok": true
+    }
+  ],
+  "mutationAnchors": {
+    "M1": [
+      {
+        "id": "M1",
+        "ok": true,
+        "pages": [
+          {
+            "route": "/deal/8e7b0fd03e73/",
+            "applied": true,
+            "hits": "1"
+          },
+          {
+            "route": "/models/360zhinao-pro/",
+            "applied": true,
+            "hits": "1"
+          }
+        ]
+      }
+    ],
+    "M2": [
+      {
+        "id": "M2",
+        "ok": true,
+        "pages": [
+          {
+            "route": "/deal/8e7b0fd03e73/",
+            "applied": true,
+            "hits": "1"
+          },
+          {
+            "route": "/models/360zhinao-pro/",
+            "applied": true,
+            "hits": "1"
+          }
+        ]
+      }
+    ],
+    "M3": [
+      {
+        "id": "M3",
+        "ok": true,
+        "pages": [
+          {
+            "route": "/deal/8e7b0fd03e73/",
+            "applied": true,
+            "hits": "1"
+          },
+          {
+            "route": "/models/360zhinao-pro/",
+            "applied": true,
+            "hits": "1"
+          }
+        ]
+      }
+    ],
+    "M4": [
+      {
+        "id": "M4",
+        "ok": true,
+        "pages": [
+          {
+            "route": "/deal/8e7b0fd03e73/",
+            "applied": true,
+            "hits": "1"
+          },
+          {
+            "route": "/models/360zhinao-pro/",
+            "applied": true,
+            "hits": "1"
+          }
+        ]
+      }
+    ],
+    "M5": [
+      {
+        "id": "M5",
+        "ok": true,
+        "pages": [
+          {
+            "route": "/deal/8e7b0fd03e73/",
+            "applied": false,
+            "hits": ""
+          },
+          {
+            "route": "/models/360zhinao-pro/",
+            "applied": true,
+            "hits": "1"
+          }
+        ]
+      }
+    ]
+  },
+  "summary": {
+    "total": 32,
+    "passed": 32,
+    "failed": 0
+  }
+}

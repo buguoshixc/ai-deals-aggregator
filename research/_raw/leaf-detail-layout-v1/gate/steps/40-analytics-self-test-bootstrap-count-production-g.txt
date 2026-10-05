@@ -1,0 +1,52 @@
+# Analytics self-test (bootstrap count / production guard / provider)
+# $ node scripts/tools/analytics-selftest.js --dir=dist
+
+
+1) 配置（唯一配置源：scripts/lib/analytics.js）
+  ✓ 配置形状与站点常量对账（provider / enabled / token 形状 / hostname / path 前缀 / 白名单）
+  ✓ siteToken 是真实 32 位小写十六进制（不是 placeholder、不是被截断的值）
+  ✓ productionHostname / productionPathPrefix 等于 SITE_URL 解析出的 host 与 path
+  ✓ 外部请求白名单只含官方需要的两个 origin（脚本 + 上报），没有通配
+  ✓ beacon 脚本地址与 Cloudflare 官方文档一致（static.cloudflareinsights.com/beacon.min.js）
+  ✓ 配置校验自身有牙：8 种改坏都必须被判红
+  ✓ route 表自身形状合法（每条规则都有 kind 与 why）
+
+2) Production Guard 真值表（vm 沙箱执行 lib/analytics.js 的 guard 区块）
+  ✓ guard 区块能在「没有 document/window/require」的沙箱里独立求值（唯一实现可被独立验证）
+  ✓ 真值表 11 条（生产 3 条 + 非生产 8 条）逐条相符
+  ✓ enabled:false 时即使 location 完全是生产站也必须禁用
+  ✓ 前缀一旦放宽成「/」，同域其它项目就会被误判 —— 证明「必须同时判 pathname 前缀」这条判据真的在起作用
+
+3) 产物页面覆盖（dist/**/*.html 现场扫描）
+  ✓ 每个页面都能被判出统计范围（没有「未登记的页面族」）
+  ✓ trackable 页面 each exactly 1 bootstrap（186 页）
+  ✓ 声明为 excluded 的页面一律 0 个 bootstrap
+  ✓ 产物里没有任何残留占位符
+  ✓ bootstrap 总数 == trackable 页面数（不存在「某页多注入了一次」）
+  ✓ 产物里没有分析数据文件（traffic.json / analytics.json / public-analytics.json / stats.json）与 /stats/ 目录
+  ✓ 扫描本身没有别的问题
+      页面家族：deal×80 · model×51 · vendor×25 · need×10 · category×5 · collection×3 · hub×2 · plans×2 · archive-index×1 · changes×1 · data-docs×1 · feeds×1 · home×1 · models-index×1 · plans-hub×1 · status×1
+
+4) 注入内容与唯一配置源逐项一致
+  ✓ 抽样路由都能在产物里找到（/ · /deal/ · /plans/api/ · /plans/coding/ · /models/ · /vendor/ · /changes/ · /status/ · /feeds/ · /docs/data/）
+  ✓ 抽样页面（10 条路由）的 bootstrap 与配置 / 官方形状 / guard 源码逐项一致
+  ✓ 整个产物里没有出现任何别的第三方分析服务
+
+5) 牙测试（临时副本上定向篡改；干净副本必须静默）
+  ✓ 干净产物：扫描零问题（否则后面的「抓到篡改」不能说明任何事）
+  ✓ 8 种定向篡改每一种都被扫出来（牙真的在）
+  ✓ 前缀被放宽后产物内容本身也变了（不是只靠真值表发现）
+
+6) 凭据边界（Cloudflare 账户凭据 vs browser Site Token）
+  ✓ 源码 / 文档 / workflow 里没有 Cloudflare 账户凭据形状的串（API Token / Global Key / X-Auth-Key / Bearer）
+  ✓ 合法的 browser Site Token 不被判成泄密（否则会逼出 build-time 注入，破坏构建确定性）
+  ✓ 牙：伪造一个「账户 API Token 名 = 值」的形状会被扫出来
+  ✓ 本轮没有调用 Cloudflare Analytics API（源码 / workflow 里没有该 API 域名）
+
+7) 不公开统计（无 /stats/、不进公开数据集）
+  ✓ 仓库根没有 traffic.json / analytics.json / public-analytics.json
+  ✓ Analytics 没有被登记进 PUBLIC_DATASETS（访问数据不是公开数据集）
+  ✓ sitemap 里没有 /stats/ 或 /analytics/ 这类公开统计页
+
+✅ 分析门禁 31 项，失败 0 项
+   页面覆盖：186 个 HTML（trackable 186 · excluded 0）· bootstrap 186 个

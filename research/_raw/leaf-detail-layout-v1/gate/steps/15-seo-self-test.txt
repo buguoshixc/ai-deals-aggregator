@@ -1,0 +1,78 @@
+# SEO self-test
+# $ node scripts/tools/seo-selftest.js
+
+
+一、干净夹具必须静默（验证器不能是永远红的噪声）
+  ✓ 未篡改的夹具：0 个问题
+  ✓ 统计口径齐全（报告用的一组数字）
+
+二、每一条检查码都必须真的会响（逐个定向篡改）
+  ✓ gate-threshold 会响
+  ✓ gate-pinned-missing 会响
+  ✓ gate-pinned-empty 会响
+  ✓ alias-target-exists 会响
+  ✓ alias-item-set 会响
+  ✓ alias-indexable 会响
+  ✓ slug-shape 会响
+  ✓ slug-unique 会响
+  ✓ title-unique 会响
+  ✓ title-length 会响
+  ✓ desc-nonempty 会响
+  ✓ desc-unique 会响
+  ✓ canonical-self 会响
+  ✓ canonical-unique 会响
+  ✓ h1-count 会响
+  ✓ robots-policy 会响
+  ✓ itemlist-arity 会响
+  ✓ itemlist-members 会响
+  ✓ breadcrumb-target-exists 会响
+  ✓ sitemap-target-exists 会响
+  ✓ sitemap-policy 会响
+  ✓ orphan 会响
+  ✓ internal-link-exists 会响
+  ✓ thin-content 会响
+  ✓ duplicate-item-set 会响
+  ✓ summary-source 会响
+  ✓ feed-declared 会响
+  ✓ 检查码表里的 27 条全部有对应的演练夹具
+
+三、门槛函数的分支（shouldGenerateLandingPage）
+  ✓ 厂商：有效优惠 ≥ 2 → 生成
+  ✓ 厂商：1 条且未钉住 → 不生成
+  ✓ 厂商：1 条但钉住 → 生成（收录过的 URL 不消失）
+  ✓ 厂商：钉住但 0 条 → 不生成（空页面对读者没有价值）
+  ✓ 厂商：历史事件 ≥ 3 → 生成（门槛的第二条腿）
+  ✓ 分类：≥ 4 条 → 生成
+  ✓ 分类：少一条 → 不生成
+  ✓ 分类：条目集合与既有页面完全相同 → 不生成（同一主题不重复建 URL）
+  ✓ 枢纽：有子页才生成
+  ✓ 别名：目标不存在就不生成
+  ✓ 未知类型直接抛错（不静默放行）
+
+四、注册表与产物的一致性（用真实数据）
+  ✓ 计划里没有问题（违规在构建期就直接抛错）
+  ✓ slug 表：厂商键全部是 A 空间的**规范显示名**（不是采集时的原始字符串）
+  ✓ provider 的 name 不在 A 空间规范名里 ⇒ 它的 vendorKey 必须是 null（无厂商名就不参与 /vendor/ 身份空间）
+  ✓ slug 表与分类 slug 表的形状合法且全局唯一
+  ✓ 分类 slug 表里没有 categories.js 之外的枚举值
+  ✓ 每个分类页都登记了 slug 与理由（或进了排除表）
+  ✓ 钉住表覆盖全部别名路由（别名不允许是无人看管的路由）
+  ✓ 别名目标都能在计划里找到且可索引
+  ✓ 别名页的条目集合与目标页逐条相同（用真实数据重算一遍）
+  ✓ 没有任何两个可索引集合页的条目集合逐条相同（用真实数据重算一遍）
+  ✓ 被跳过的页面都带原因（「悄悄少了一页」不允许）
+  ✓ 摘要的数字与 seo.recomputeSummary 的重算逐项一致（同一份数据的两种算法）
+
+五、零依赖与无时钟（这两个文件必须能在门禁链里裸跑）
+  ✓ scripts/lib/seo.js 里没有 Date.now
+  ✓ scripts/lib/seo.js 里没有 无参 new Date(
+  ✓ scripts/lib/seo.js 里没有 网络调用
+  ✓ scripts/lib/seo.js 里没有 文件写入
+  ✓ scripts/lib/seo.js 里没有 外部依赖
+  ✓ scripts/lib/landing.js 里没有 Date.now
+  ✓ scripts/lib/landing.js 里没有 无参 new Date(
+  ✓ scripts/lib/landing.js 里没有 网络调用
+  ✓ scripts/lib/landing.js 里没有 文件写入
+  ✓ scripts/lib/landing.js 里没有 外部依赖
+
+=== v1.7 SEO 门禁演练：63 项通过，0 项失败 ===

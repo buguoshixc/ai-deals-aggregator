@@ -1,0 +1,446 @@
+{
+  "identity": {
+    "at": "2026-10-05T12:48:40.665Z",
+    "node": "v24.13.1",
+    "platform": "win32",
+    "gateAction": ".github/actions/gate/action.yml",
+    "gateActionSha256": "d1c4b0df6900edf84e4981d29f997bbfe9914efb5252593a5dc25d270d5f39bc",
+    "dshEdge": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "stepsInAction": 49
+  },
+  "executed": 45,
+  "passed": 45,
+  "failed": 0,
+  "skipped": 4,
+  "results": [
+    {
+      "index": 1,
+      "name": "Install dependencies",
+      "status": "skipped",
+      "reason": "npm ci 已按 lockfile 装好（本机 worktree 内已执行）"
+    },
+    {
+      "index": 2,
+      "name": "Validate data (strict)",
+      "run": "node scripts/validate.js --strict",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 385,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/02-validate-data-strict.txt"
+    },
+    {
+      "index": 3,
+      "name": "Reproducibility gate (no value without a source)",
+      "run": "node scripts/tools/check-reproducible.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 138,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/03-reproducibility-gate-no-value-without-a-source.txt"
+    },
+    {
+      "index": 4,
+      "name": "History verify (log consistent with deals.json)",
+      "run": "node scripts/tools/history-verify.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 72,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/04-history-verify-log-consistent-with-deals-json.txt"
+    },
+    {
+      "index": 5,
+      "name": "Migration verifier (audience provenance backfill)",
+      "run": "node scripts/tools/migrate-audience-verify.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 93,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/05-migration-verifier-audience-provenance-backfill.txt"
+    },
+    {
+      "index": 6,
+      "name": "Translation gate (drift blocks, pending ages out)",
+      "run": "node scripts/tools/zh-todo.js --check",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 75,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/06-translation-gate-drift-blocks-pending-ages-out.txt"
+    },
+    {
+      "index": 7,
+      "name": "Translation self-test",
+      "run": "node scripts/tools/zh-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 13694,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/07-translation-self-test.txt"
+    },
+    {
+      "index": 8,
+      "name": "Expiry self-test",
+      "run": "node scripts/tools/expiry-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 84,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/08-expiry-self-test.txt"
+    },
+    {
+      "index": 9,
+      "name": "Text / cleanText self-test",
+      "run": "node scripts/tools/text-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 73,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/09-text-cleantext-self-test.txt"
+    },
+    {
+      "index": 10,
+      "name": "Source-health self-test",
+      "run": "node scripts/tools/health-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 4594,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/10-source-health-self-test.txt"
+    },
+    {
+      "index": 11,
+      "name": "Provenance self-test",
+      "run": "node scripts/tools/provenance-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 125,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/11-provenance-self-test.txt"
+    },
+    {
+      "index": 12,
+      "name": "Deal-history self-test",
+      "run": "node scripts/tools/history-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 121,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/12-deal-history-self-test.txt"
+    },
+    {
+      "index": 13,
+      "name": "Change-radar self-test",
+      "run": "node scripts/tools/changes-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 79,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/13-change-radar-self-test.txt"
+    },
+    {
+      "index": 14,
+      "name": "Feeds self-test",
+      "run": "node scripts/tools/feeds-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 431,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/14-feeds-self-test.txt"
+    },
+    {
+      "index": 15,
+      "name": "SEO self-test",
+      "run": "node scripts/tools/seo-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 135,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/15-seo-self-test.txt"
+    },
+    {
+      "index": 16,
+      "name": "Audience self-test",
+      "run": "node scripts/tools/audience-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 110,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/16-audience-self-test.txt"
+    },
+    {
+      "index": 17,
+      "name": "App-token self-test",
+      "run": "node scripts/tools/app-token-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 300,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/17-app-token-self-test.txt"
+    },
+    {
+      "index": 18,
+      "name": "AI layer self-test",
+      "run": "node scripts/tools/ai-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 2473,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/18-ai-layer-self-test.txt"
+    },
+    {
+      "index": 19,
+      "name": "Collector fixtures (offline replay)",
+      "run": "node scripts/tools/fixture-test.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 337,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/19-collector-fixtures-offline-replay.txt"
+    },
+    {
+      "index": 20,
+      "name": "Plans self-test (data + page)",
+      "run": "node scripts/tools/plans-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 879,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/20-plans-self-test-data-page.txt"
+    },
+    {
+      "index": 21,
+      "name": "Plan-history self-test",
+      "run": "node scripts/tools/plan-history-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 158,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/21-plan-history-self-test.txt"
+    },
+    {
+      "index": 22,
+      "name": "Deal-plan-links self-test",
+      "run": "node scripts/tools/deal-plan-links-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 130,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/22-deal-plan-links-self-test.txt"
+    },
+    {
+      "index": 23,
+      "name": "API-plans self-test (data + page)",
+      "run": "node scripts/tools/api-plans-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 788,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/23-api-plans-self-test-data-page.txt"
+    },
+    {
+      "index": 24,
+      "name": "API-plans reproducibility (curated → api-plans.json, byte-compare)",
+      "run": "node scripts/tools/check-api-plans-reproducible.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 85,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/24-api-plans-reproducibility-curated-api-plans-json.txt"
+    },
+    {
+      "index": 25,
+      "name": "API-plan-history verify (log consistent with api-plans.json)",
+      "run": "node scripts/tools/check-api-plan-history.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 69,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/25-api-plan-history-verify-log-consistent-with-api-.txt"
+    },
+    {
+      "index": 26,
+      "name": "Model-registry self-test (identity + explicit mapping)",
+      "run": "node scripts/tools/models-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 238,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/26-model-registry-self-test-identity-explicit-mappi.txt"
+    },
+    {
+      "index": 27,
+      "name": "Models reproducibility (registry → models.json, byte-compare)",
+      "run": "node scripts/tools/check-models-reproducible.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 83,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/27-models-reproducibility-registry-models-json-byte.txt"
+    },
+    {
+      "index": 28,
+      "name": "Model-registry links check (explicit mapping only, no similarity)",
+      "run": "node scripts/tools/check-model-registry-links.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 82,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/28-model-registry-links-check-explicit-mapping-only.txt"
+    },
+    {
+      "index": 29,
+      "name": "Coverage report (gap list consistent with data)",
+      "run": "node scripts/tools/coverage-report.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 348,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/29-coverage-report-gap-list-consistent-with-data.txt"
+    },
+    {
+      "index": 30,
+      "name": "Coverage-targets self-test (intent layer + seven derived states)",
+      "run": "node scripts/tools/coverage-targets-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 6709,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/30-coverage-targets-self-test-intent-layer-seven-de.txt"
+    },
+    {
+      "index": 31,
+      "name": "Model-role vocabulary self-test (registry ↔ freshness contract)",
+      "run": "node scripts/tools/model-role-vocabulary-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 56,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/31-model-role-vocabulary-self-test-registry-freshne.txt"
+    },
+    {
+      "index": 32,
+      "name": "Freshness self-test (catalogStatus branches)",
+      "run": "node scripts/tools/model-freshness-selftest.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 55,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/32-freshness-self-test-catalogstatus-branches.txt"
+    },
+    {
+      "index": 33,
+      "name": "Freshness threshold sensitivity (±90 days, baseline invariants)",
+      "run": "node scripts/tools/model-freshness-sensitivity.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 66,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/33-freshness-threshold-sensitivity-90-days-baseline.txt"
+    },
+    {
+      "index": 34,
+      "name": "Assemble site (same path as deploy.yml)",
+      "run": "node scripts/tools/build-local.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 2671,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/34-assemble-site-same-path-as-deploy-yml.txt"
+    },
+    {
+      "index": 35,
+      "name": "Models-page self-test (index + detail pages)",
+      "run": "node scripts/tools/models-page-selftest.js --dir=dist",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 517,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/35-models-page-self-test-index-detail-pages.txt"
+    },
+    {
+      "index": 36,
+      "name": "Plans-hub self-test (/plans/)",
+      "run": "node scripts/tools/planshub-selftest.js --dir=dist",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 130,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/36-plans-hub-self-test-plans.txt"
+    },
+    {
+      "index": 37,
+      "name": "Vendor-pages self-test (/vendor/)",
+      "run": "node scripts/tools/vendor-page-selftest.js --dir=dist",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 159,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/37-vendor-pages-self-test-vendor.txt"
+    },
+    {
+      "index": 38,
+      "name": "Archive self-test (/archive/, synthetic ended/restored fixtures)",
+      "run": "node scripts/tools/archive-selftest.js --dir=dist",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 82,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/38-archive-self-test-archive-synthetic-ended-restor.txt"
+    },
+    {
+      "index": 39,
+      "name": "Data-docs self-test (/docs/data/ + /data/index.json)",
+      "run": "node scripts/tools/data-docs-selftest.js --dir=dist",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 121,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/39-data-docs-self-test-docs-data-data-index-json.txt"
+    },
+    {
+      "index": 40,
+      "name": "Analytics self-test (bootstrap count / production guard / provider)",
+      "run": "node scripts/tools/analytics-selftest.js --dir=dist",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 9337,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/40-analytics-self-test-bootstrap-count-production-g.txt"
+    },
+    {
+      "index": 41,
+      "name": "Feeds reproducibility (build twice, byte-compare)",
+      "run": "node scripts/tools/check-feeds-reproducible.js --dir=dist",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 6068,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/41-feeds-reproducibility-build-twice-byte-compare.txt"
+    },
+    {
+      "index": 42,
+      "name": "Plans reproducibility (curated → plans.json, byte-compare)",
+      "run": "node scripts/tools/check-plans-reproducible.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 65,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/42-plans-reproducibility-curated-plans-json-byte-co.txt"
+    },
+    {
+      "index": 43,
+      "name": "Plan-history verify (log consistent with plans.json)",
+      "run": "node scripts/tools/check-plan-history.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 67,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/43-plan-history-verify-log-consistent-with-plans-js.txt"
+    },
+    {
+      "index": 44,
+      "name": "SEO verification (independent, from dist/)",
+      "run": "node scripts/tools/seo-verify.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 529,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/44-seo-verification-independent-from-dist.txt"
+    },
+    {
+      "index": 45,
+      "name": "Prepare browser for the real-browser gate",
+      "status": "skipped",
+      "reason": "CI 专用：探测 runner 上的浏览器；本机用 DSH_EDGE 指定的 Edge"
+    },
+    {
+      "index": 46,
+      "name": "Browser availability decision (never silent)",
+      "status": "skipped",
+      "reason": "CI 专用：把\"浏览器不可用\"判红并写 Step Summary；该 shell 本身由 check-ci-consistency (10) 真实执行"
+    },
+    {
+      "index": 47,
+      "name": "Real-browser acceptance (verify-site.js)",
+      "run": "node scripts/tools/verify-site.js",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 67492,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/47-real-browser-acceptance-verify-site-js.txt"
+    },
+    {
+      "index": 48,
+      "name": "Regression verify (baseline compare)",
+      "run": "node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json",
+      "status": "passed",
+      "exitCode": 0,
+      "ms": 68458,
+      "log": "research/_raw/leaf-detail-layout-v1/gate/steps/48-regression-verify-baseline-compare.txt"
+    },
+    {
+      "index": 49,
+      "name": "Gate conclusion",
+      "status": "skipped",
+      "reason": "CI 专用：只写 GitHub Step Summary，不参与判定"
+    }
+  ]
+}

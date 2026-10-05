@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-05T12:52:55.773Z",
+  "before": {
+    "docScrollHeight": 4665,
+    "bodyScrollHeight": 4665,
+    "cards": 50,
+    "cardHeight": 192,
+    "firstScreenFull": 9,
+    "gridColumns": 3,
+    "mainWidth": 1380
+  },
+  "after": {
+    "docScrollHeight": 4665,
+    "bodyScrollHeight": 4665,
+    "cards": 50,
+    "cardHeight": 192,
+    "firstScreenFull": 9,
+    "gridColumns": 3,
+    "mainWidth": 1380
+  },
+  "shots": [
+    {
+      "name": "deal-1600",
+      "file": "research/_raw/leaf-detail-layout-v1/shots/deal-1600.png",
+      "mainWidth": 1120,
+      "mainLeft": 240,
+      "mainRight": 1360,
+      "vw": 1600,
+      "docScroll": 1600
+    },
+    {
+      "name": "deal-1440",
+      "file": "research/_raw/leaf-detail-layout-v1/shots/deal-1440.png",
+      "mainWidth": 1120,
+      "mainLeft": 160,
+      "mainRight": 1280,
+      "vw": 1440,
+      "docScroll": 1440
+    },
+    {
+      "name": "model-1440",
+      "file": "research/_raw/leaf-detail-layout-v1/shots/model-1440.png",
+      "mainWidth": 1120,
+      "mainLeft": 160,
+      "mainRight": 1280,
+      "vw": 1440,
+      "docScroll": 1440
+    },
+    {
+      "name": "deal-768",
+      "file": "research/_raw/leaf-detail-layout-v1/shots/deal-768.png",
+      "mainWidth": 728,
+      "mainLeft": 20,
+      "mainRight": 748,
+      "vw": 768,
+      "docScroll": 768
+    },
+    {
+      "name": "deal-390",
+      "file": "research/_raw/leaf-detail-layout-v1/shots/deal-390.png",
+      "mainWidth": 358,
+      "mainLeft": 16,
+      "mainRight": 374,
+      "vw": 390,
+      "docScroll": 390
+    }
+  ],
+  "homeHeightAttribution": {
+    "before": 4665,
+    "after": 4665,
+    "delta": 0,
+    "verdict": "改动前后首页页高**逐像素相同** ⇒ 回归比对里那 +76px 与本次改动无关（基线是 2026-09-29 的旧数据）"
+  }
+}

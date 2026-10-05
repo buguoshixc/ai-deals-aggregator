@@ -1,0 +1,23 @@
+# 本目录的体积纪律（与仓库既有的 research/_raw 规矩一致：留结论与判据，不留可再生的字节副本）
+#
+# 被排除的两份"改动前"页面快照：各约 0.9 MB 的 HTML/JSON 副本，**都能一条命令重建**——
+#   git worktree add --detach <dir> d09a1c5 && (在该 worktree) node scripts/tools/build-local.js
+# 它们的 sha256 与用途边界记在同级 README.md 与 baseline-head/sha256.txt 里（那两份**入库**）。
+# 为什么不留：仓库对 shots/、第三方快照、*.building/ 都是同一条纪律 —— 可再生的字节不进索引。
+baseline/baseline-dist/
+baseline/baseline-head/
+
+# 截图：与顶层 .gitignore 的 research/_raw/**/shots 同义，这里再兜一层（本目录自足）
+shots/
+*.png
+
+# 探针的临时目录（合成产物副本，验证完即弃）
+audit/.tmp/
+
+# 注意：gate/steps/ 是**入库**的 —— 那是 Full Gate 45 步的逐步原始日志（与上一轮
+# research/_raw/coverage-depth-v1/verification/*.txt 同一性质），是本次交付的门禁证据。
+
+# 顶层 .gitignore 有一条 `*.log`（防的是散落的运行日志）。这一份是**指名道姓的交付证据**：
+# 反空洞守卫的负例实测（自造"M4 锚点缺失"的产物副本 ⇒ verify-site.js 失败 4 项、退出码 1）。
+# 因此在这里把它按名字放回来 —— 只放这一个文件，不用通配。
+!audit/anchor-missing-guard.log

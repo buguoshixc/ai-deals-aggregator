@@ -1,0 +1,29 @@
+docs(leaf-detail-layout-v1): 最终报告 + Self-Audit + Full Gate/CI/Deploy/Online Smoke 实测读数
+
+交付文档与证据（代码在 #42 已合并部署，本提交只补文档与证据，不改任何源码/数据）：
+
+- research/leaf-detail-layout-v1-report.md —— 根因、改动文件、最终内容宽度、deal/model 桌面测量、
+  390px 溢出、Mutation 结果、Full Gate / CI / Deploy / Online Smoke 实测读数、数据层零变化的三条独立证据、
+  视觉检查（1600/1440/768/390 实拍读数）与两份基线的用途边界。
+- research/leaf-detail-layout-v1-self-audit.md —— 独立复查（另写一套探针，不 require 本仓库任何代码）：
+  verdict=pass · P0=0 · P1=0 · REPAIR_NOW=0（自算判据 32/32），含八条验收逐条、对账表与残余风险。
+- research/_raw/leaf-detail-layout-v1/** —— 本轮的**可复核证据**（90 个文件）：
+  · gate/run-full-gate.cjs：**现场解析** action.yml（49 步）后串行执行，逐步日志落 gate/steps/NN-*.txt；
+  · gate/before-after-compare.cjs + .json：改动前后**全产物**对账（186/186 HTML 页剥掉样式后正文逐字节相同、
+    117/117 非 HTML 文件逐字节相同、样式块行集合差恰好 +8/−2）；
+  · gate/visual-and-home-height.json：首页页高归因（忠实改动前构建 4665px == 改动后 4665px，
+    即回归比对里那 +76px 是 6 天前基线的数据漂移，与本次改动无关）；
+  · audit/：独立探针 leaf-probe.cjs（自写静态服务 + playwright-core，不 require 仓库任何 lib）、
+    before/after/mutations 读数、以及**反空洞守卫负例** anchor-missing-guard.log
+    （自造"M4 锚点缺失"的产物副本 ⇒ verify-site.js 失败 4 项、退出码 1）；
+  · smoke/online-smoke.cjs + .json：线上冒烟只打 3 个页面（首页 + 1 deal + 1 model），
+    不遍历全站以免污染真实 Analytics；
+  · baseline/README.md + sha256 清单：说明两份"改动前"快照各自的用途边界。
+  体积纪律：两份页面快照（baseline-dist / baseline-head）与截图（shots、*.png）按仓库既有规矩
+  **不入库**（可由一条 build 命令重建 / 可重拍），由本目录的 .gitignore 显式排除并写明理由。
+
+实测要点（详见报告）：deal `main` 1380→1120、居中偏差 560px→0px、`.dpane` 820→1120、
+`.dpane-src` 820/break-all→1120/normal+anywhere；model 详情 1380→1120（与 deal 同列）；
+131 个叶子页（80 deal + 51 model）在 1440 下横向溢出 0；@390 scrollWidth 390；
+本地 Full Gate：CI 口径 38/38、Gate 45/45、verify-site 776 项 0 失败、回归 782 项 0 失败；
+CI PR #42 `gate` pass（3m9s）；`Deploy to GitHub Pages` success；线上冒烟 9/9。

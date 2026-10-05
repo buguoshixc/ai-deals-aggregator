@@ -1,0 +1,5 @@
+# Plans reproducibility (curated → plans.json, byte-compare)
+# $ node scripts/tools/check-plans-reproducible.js
+
+✅ plans.json 可重建性通过：与 curated_plans.json 的产出逐字节一致
+   44 条 · updatedAt=2026-10-05T00:00:00+08:00

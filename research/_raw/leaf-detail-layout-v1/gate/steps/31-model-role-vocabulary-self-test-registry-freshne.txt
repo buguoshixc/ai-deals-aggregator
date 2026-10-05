@@ -1,0 +1,18 @@
+# Model-role vocabulary self-test (registry ↔ freshness contract)
+# $ node scripts/tools/model-role-vocabulary-selftest.js
+
+=== 模型角色 / 目录状态枚举契约守卫 ===
+  ✓ model-registry.js 的 MODEL_ROLES 逐字等于题面 §16 的 10 值
+  ✓ model-freshness.js 的 MODEL_ROLES 与 model-registry.js 逐字相同（两个真相 = 零个真相）
+  ✓ 档位表 tiers[].modelRoles 的并集 == 契约枚举（不多不少）
+  ✓ 档位表里没有重复挂同一个角色（重复 = 分档判据不唯一）
+  ✓ cover：model-registry.js 的 MODEL_CATALOG_STATUS 与 model-freshness.js 的 CATALOG_STATUSES 逐字相同
+  ✓ catalogStatus 逐字等于题面 §20 的枚举
+  ✓ 默认隐藏集合恰为 legacy + historical（题面 §31），其余默认可见
+
+  现状：registry 10 个角色 · freshness 10 个角色 · 档位 3 档
+    · conversational（120/240 天）= general / fast / reasoning / coding
+    · multimodal（180/365 天）= vision / audio / realtime
+    · infrastructure（365/730 天）= embedding / translation / other
+
+✅ 枚举契约守卫：7 项通过，0 项失败

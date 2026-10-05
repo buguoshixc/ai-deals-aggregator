@@ -1,0 +1,169 @@
+# Plan-history self-test
+# $ node scripts/tools/plan-history-selftest.js
+
+
+① 剖面：字段表 / 措辞 / 投影
+  ✓ 被跟踪字段与字段事件类型表一一对应
+  ✓ 每个事件类型都有中文措辞
+  ✓ 每个结束原因都有中文措辞
+  ✓ 每个被跟踪字段都有中文标签
+  ✓ 值决定类型的字段声明了多种事件类型
+  ✓ 噪音字段明确不跟踪（lastSeen / verifiedAt / evidence / derivedMetrics / 备注）
+  ✓ 量化型额度的 quota.description 不被当作额度语义（投影为 null）
+  ✓ 限速型额度的 quota.description **就是**额度语义（投影保留）
+  ✓ 带点路径能读到嵌套字段
+  ✓ 模型清单比较：顺序无关
+  ✓ 模型清单比较：note 只差空白与标点 ⇒ 相同
+  ✓ 模型清单比较：role 变化 ⇒ 不同
+  ✓ 限制条件比较：顺序无关且 note 文案归一
+  ✓ 限制条件比较：value 变化 ⇒ 不同
+
+② Stable event id（派生字段）
+  ✓ 同一条事件两次计算 ⇒ 同一个 eventId
+  ✓ 值不同 ⇒ eventId 不同
+  ✓ 日期不同 ⇒ eventId 不同
+  ✓ 事件落库时带上重算得到的 eventId
+  ✓ 手写 eventId ⇒ verifyStore 红
+
+③ 价格：涨价 / 降价 / 活动价开始结束换挡
+  ✓ 正常价格 99 → 68 ⇒ 恰好一条 price_changed
+  ✓ 价格事件的 from / to 是数字（不是字符串）
+  ✓ 改价后 verifyStore 通过
+  ✓ promoPrice null → 9.9 ⇒ promo_started（牙 5）
+  ✓ promo_started 事件带 from=null / to=9.9
+  ✓ promoPrice 9.9 → null ⇒ promo_ended
+  ✓ promoPrice 9.9 → 19.9 ⇒ promo_changed（不是 started / ended）
+  ✓ 币种变化 ⇒ billing_changed（不做汇率，只如实记）
+
+④ 额度：增加 / 减少 / 口径变化
+  ✓ 额度 6000000000 → 3000000000 ⇒ quota_decreased（牙 4）
+  ✓ quota_decreased 带 from / to 数值
+  ✓ 额度 3000000000 → 6000000000 ⇒ quota_increased
+  ✓ 固定额度 → 限速（amount 变 null）⇒ 只能是 quota_changed，不谎称增减
+  ✓ 额度类型变化 ⇒ quota.type 记 quota_changed
+  ✓ 跨量纲的数值同时变化时**不**比大小（quota.amount 也是 quota_changed）
+  ✓ 跨量纲时不出现 quota_increased / quota_decreased
+  ✓ 额度刷新周期变化 ⇒ quota_changed
+  ✓ 限速型额度说明只差尾随空格 ⇒ 0 事件
+  ✓ 限速型额度说明实质变化 ⇒ 一条 quota_changed
+  ✓ 量化型套餐的 quota.description 文案变化 ⇒ 0 事件
+
+⑤ 模型：新增 / 移除 / 顺序（牙 1）
+  ✓ 新增一个模型 ⇒ 一条 model_added（from = null）
+  ✓ model_added 的 to 是模型对象
+  ✓ 移除一个模型 ⇒ 一条 model_removed（to = null）
+  ✓ supportedModels 只是顺序变化 ⇒ **0 事件**（牙 1）
+  ✓ 顺序变化的输入仍能通过一致性校验（顺序不是变化）
+  ✓ 同名模型 role 变化 ⇒ model_changed（不是增删）
+  ✓ 模型 note 只差标点与空白 ⇒ 0 事件
+
+⑥ 限制条件与销售地区
+  ✓ 新增限制条件 ⇒ 一条 restriction_changed（from/to 是整个数组）
+  ✓ 限制条件 note 只差标点 ⇒ 0 事件
+  ✓ 销售地区 国内 → 国外 ⇒ availability_changed
+
+⑦ 幂等：重复运行不重复产生事件（牙 3）
+  ✓ 第一次运行产生一条 price_changed
+  ✓ 连续第二次运行 ⇒ 0 条新事件（牙 3）
+  ✓ 连续两次运行的事件总数仍为 1
+  ✓ 无事件发生的运行字节不变
+  ✓ 重复运行后 verifyStore 仍通过
+  ✓ 连续 30 次变化 ⇒ 30 条事件（链式）
+  ✓ 30 条链式事件后 verifyStore 通过
+
+⑧ 退出保护：一次没见到不算下线 / 批量熔断（牙 2）
+  ✓ 第一次未见 ⇒ **0 条 ended**（R2：一次没采到不算下线）
+  ✓ 第一次未见只推进观测态（misses=1，未 ended）
+  ✓ 观测期未满时 verifyStore 仍通过（合法的中间态）
+  ✓ 连续第二次未见 ⇒ 一条 ended(source_no_longer_lists)
+  ✓ ended 带墓碑标签（记录离开数据后还能认出是谁）
+  ✓ ended 后 verifyStore 通过
+  ✓ 一次删掉 3/4 条套餐 ⇒ **0 条 ended**（牙 2 批量熔断）
+  ✓ 熔断只留档：anomalies 有记录且列出缺席套餐
+  ✓ 熔断时观测态标成 blockedAt（解释为什么没记 ended）
+  ✓ 熔断状态下 verifyStore 通过（数据与日志仍然自洽）
+  ✓ 熔断不推进计数（misses 仍是 0）
+  ✓ 本次输出为空 ⇒ 0 条 ended（empty_dataset）
+  ✓ 空输出时 verifyStore 通过
+  ✓ 本次运行输入不可信 ⇒ 0 条 ended、不推进计数
+  ✓ 输入不可信时 verifyStore 通过
+  ✓ 缺席的套餐回来 ⇒ 观测态清零、0 事件
+  ✓ 恢复后 verifyStore 通过
+  ✓ --allow-mass-removal ⇒ 缺席的 3 条各记一条 ended(withdrawn)
+  ✓ --allow-mass-removal ⇒ anomalies 标 override
+  ✓ 放行批量下架后 verifyStore 通过
+
+⑨ 重现（restore）与字段追赶
+  ✓ 两轮后 A 已记 ended
+  ✓ 重新出现 ⇒ 记 restored
+  ✓ 重现时字段与离开时不同 ⇒ 按链补一条字段事件（from = 链上的旧值）
+  ✓ 重现后 verifyStore 通过
+  ✓ 重现后观测态被清掉
+
+⑩ 计费周期重键（v2.1 点名要显式决策的那一条）
+  ✓ 月付改年付（同 provider + 同套餐名）⇒ 立即 ended(period_changed) + created
+  ✓ 不需要等两次缺席确认（同一次运行里就有证据）
+  ✓ 新记录的 created 带 supersedes 指向旧记录
+  ✓ 周期重键后 verifyStore 通过
+  ✓ supersedes 指向不存在的 ended ⇒ 必红
+  ✓ 删掉 period_changed 的 ended（只留 created.supersedes）⇒ 必红
+
+⑪ 时间只来自数据：日期倒填被拒绝
+  ✓ 第一次变化记在 2026-10-05
+  ✓ 数据日期早于该套餐上一条事件 ⇒ 拒绝写事件并报错
+  ✓ 非法数据日期 ⇒ 直接报错
+
+⑫ 链与形状的牙齿
+  ✓ 干净夹具通过
+  ✓ 手改 from ⇒ 链断裂红
+  ✓ 现状与历史不一致 ⇒ 红（改了 plans.json 却没走重建路径）
+  ✓ 记录从 plans.json 消失却没有 ended ⇒ 红（且不在观测期）
+  ✓ restored 之前没有 ended ⇒ 红
+  ✓ 未跟踪字段进日志 ⇒ 红
+  ✓ 事件类型与该字段允许的类型不符 ⇒ 红
+  ✓ 未知事件类型 ⇒ 红
+  ✓ 未来日期 ⇒ 红
+  ✓ 未知 ended reason ⇒ 红
+  ✓ from 与 to 相同的「假变化」⇒ 红
+  ✓ anomalies 形状非法（missing=0 / 非法 id）⇒ 红
+  ✓ 当前套餐没有历史锚点 ⇒ 红
+  ✓ 事件总数超上限 ⇒ 红（不自动截断）
+  ✓ 文件体积超上限 ⇒ 红
+
+⑬ 视图层（时间线 / 有界视图 / 统计）
+  ✓ 时间线按时间倒序（新的在前）
+  ✓ 时间线包含两种事件类型
+  ✓ 有界视图只给最近 N 条并报出总数
+  ✓ 无事件的套餐 ⇒ null（页面说「暂无变更记录」）
+  ✓ attachToPlans 注入 planHistory 且不改入参
+  ✓ 统计：事件数 / 分类 / 涉及记录数
+
+⑭ 与 deals 不分家：机制只有一份实现（静态扫描）
+  ✓ history.js 与 plan-history.js 都 require 同一个 history-core
+  ✓ 内核里没有 deals 或 plans 的专有字段 / 事件类型
+  ✓ 两个领域层里同名的机制函数都是转手调内核的薄包装（没有第二份实现）
+  ✓ 两个剖面都提供内核要求的全部键
+  ✓ 两个剖面的事件身份字段名各自正确（deals=id / plans=planId）
+  ✓ plans 的事件身份字段是 planId、数据身份字段是 id（两者不混用）
+
+⑮ 真实数据不变量
+  ✓ scripts/data/plan-history.json 存在且可解析
+  ✓ 真实日志有基线锚点（每条当前套餐都在基线里、或被 created 事件锚定）
+  ✓ 真实日志与真实 plans.json 一致
+  ✓ 真实文件在上限内
+  ✓ 基线里不含噪音字段（lastSeen / verifiedAt / evidence / derivedMetrics）
+
+⑯ 变化视图的窗口与分栏（判据在 lib/plan-changes.js）
+  ✓ 夹具：日志里有 3 条事件（2 条价格 + 1 条元信息）
+  ✓ 窗口：窗口外的事件不渲染（10-01 距基准日 9 天 ⇒ 出窗，只剩 10-05 那条）
+  ✓ 窗口：元信息（updated）不进任何分栏，只进 other.metadata
+  ✓ 窗口：7 天以外、30 天以内的事件不再进「最近变化」
+  ✓ 窗口：基准日当天首次收录 ⇒ 今日新增（created）
+  ✓ 窗口：过去 6 天内首次收录 ⇒ 并进「最近 7 天变化」
+  ✓ 窗口：未来日期的事件不渲染（不拿未来的事当已发生）
+  ✓ 不可用：availability 不是 ok 时分栏全空，且 totals 归零
+  ✓ 上限：每栏超出上限时只报条数、不删数据（truncated 计数正确）
+  ✓ 确定性：同一份输入两次构建的视图逐字节相同
+  ✓ 「最近变化」块按优先级取（价格类排在元信息之前，且取到的是高价值变化）
+
+=== v2.3 套餐变化日志演练：132 项通过，0 项失败 ===
