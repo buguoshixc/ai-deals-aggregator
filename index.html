@@ -682,13 +682,19 @@
     .crumb { font-size: var(--fs-md); color: var(--mut); margin: var(--s4) 0 var(--s3); word-break: break-word; }
     .crumb a { color: var(--mut); text-decoration: none; }
     .crumb a:hover { color: var(--brand); text-decoration: underline; }
+    /* 详情内容列（Detail Content Column）：deal 详情页与模型详情页共用的**唯一**宽度来源。
+       宽度写在这里，页面上只加一个 class，别再往页面里塞第二套宽度规则。
+       Header(.topin) 与 Footer 不在这条规则的作用域内，仍是 .wrap 的 1420px。 */
+    .detail-main { width: min(1120px, 100%); margin-inline: auto; }
     .dpane {
       background: var(--card); border: 1px solid var(--line); border-radius: var(--r-dlg);
-      padding: var(--s4) var(--s4) var(--s2); max-width: 820px;
+      padding: var(--s4) var(--s4) var(--s2); width: 100%; max-width: none;
     }
+    /* 与上方卡片同宽：随内容列铺满，不再另立一套 820px 宽度。 */
+    .dpane-more { margin-top: var(--s3); }
     .dpane-src {
       font-size: var(--fs-md); color: var(--mut); line-height: 1.8;
-      margin-top: var(--s3); max-width: 820px; word-break: break-all;
+      margin-top: var(--s3); width: 100%; max-width: none; word-break: normal; overflow-wrap: anywhere;
     }
     .dpane-src a { color: var(--brand); }
 
