@@ -160,20 +160,50 @@ CI 在 **ubuntu-24.04 + runner 自带浏览器 + Node 24** 上跑同一份 `.git
 这说明题面 §72 记录过的那个坑（大 JSON 的 stdout 管道在 CI 被截断 ⇒ local green / CI red）
 **本轮没有复现** —— 报告侧的大输出已全部改成文件捕获，已在两侧同时验证。
 
-### Deploy（待部署后回填）
+### Deploy（已实测，captain 回填）
 
-> 占位字段（不写未执行结论）：部署地址 / 部署时间 / 部署产物 commit / GitHub Pages job 结论 /
-> 与本地构建的字节对照。
+| 项 | 读数 |
+| --- | --- |
+| 合并 commit | `677c5fcacb50b93f7f273d62d89ca3dafa273233`（`Merge pull request #40 from buguoshixc/coverage-depth-v1`） |
+| 合并后 master 上的 gate | run `37269085985`（`push`）—— **success 3m 4s** |
+| 部署 | run `37269086046`（`Deploy to GitHub Pages`，`push`）—— **success 4m 11s** |
+| 部署地址 | `https://buguoshixc.github.io/ai-deals-aggregator/` |
+| 与本地构建的关系 | 部署走 `deploy.yml` **自己的**构建路径（与本地 `build-local.js` 同一条链），**没有**复用本地 `dist/` —— 本地 `dist/` 不是交付产物 |
+
+> 本轮在合并前后共跑出 4 次全绿的远端 gate：PR head `351da20`（3m37s）、PR head `8fda2cd`（3m27s）、
+> 合并后 master `677c5fc`（3m4s），加上 2 次本地 Full Gate（49/49）。
 
 ---
 
-## 12. Online Smoke
+## 12. Online Smoke（已实测，captain 回填）
 
-> 待 captain 部署后回填。占位字段：线上 URL 探活（首页 / 一个新增 releaseEvidence 的模型页 /
-> 一个 legacy 模型页 / `/plans/api/` / `/plans/coding/`）/ sitemap 与 feed 可访问性 /
-> 关键数据点抽核（示例模型 `releasedAt` 与页面展示一致）/ Analytics 线上行为复核。
-> **本轮刻意只访问必要页面**（不爬全站 170+ 页），理由见题面 §75：生产已经有真实 Analytics，
-> 全站爬一遍会污染观测数据。
+脚本：`research/_raw/coverage-depth-v1/gate/online-smoke.cjs` · `generatedAt = 2026-10-05T05:49:41.534Z`
+
+| 页面 | HTTP | 字节 |
+| --- | --- | --- |
+| `/` | 200 | 399,786 |
+| `/models/` | 200 | 151,307 |
+| `/models/claude-opus-5.5/`（本轮新增 releaseEvidence） | 200 | 86,188 |
+| `/models/glm-5.3/`（本轮新增日期） | 200 | 89,766 |
+| `/models/deepseek-v3.2/`（**legacy**） | 200 | 86,155 |
+| `/plans/api/`（本轮 17 → 24 条） | 200 | 233,803 |
+| `/plans/coding/`（本轮 37 → 44 条） | 200 | 278,770 |
+| `/sitemap.xml` | 200 | 36,504 |
+| `/feed.json` | 200 | 82,334 |
+| `/data/index.json` | 200 | 4,124 |
+
+**结果：访问 10 个页面，失败 0；页面内容抽核 11/11 通过**，其中：
+
+- `/models/` 含本轮新增身份 `360zhinao-pro`，且**仍含 legacy 身份的静态行**（`data-model="deepseek-v3.2"` —— 默认隐藏不等于删行，§53）
+- `/models/claude-opus-5.5/` 展示本轮取证到的 `2026-09-22`；`/models/glm-5.3/` 展示 `2026-08-19`
+- `/models/deepseek-v3.2/` 作为 legacy 详情页仍可打开且有正文
+- `/plans/api/` 出现本轮新增的 provider
+- sitemap 含 legacy 模型 URL，URL 数 ≥ 基线 173；`feed.json` 可解析且条目数 ≥ 基线 48
+- Dataset Manifest 仍是 **9** 个公开数据集，且**内部维护层 `source-rulings` 没有被发布**（题面 §41）
+
+**访问面刻意只有 10 个**（题面 §75）：生产已经在收真实 Analytics，全站 170+ 页爬一遍会污染观测数据。
+10 个页面里 **7 个**带 analytics bootstrap（其余 3 个是 sitemap / feed / manifest，非 HTML），
+说明生产侧的计数是**真的在跑**的 —— 这正是不能全站爬的理由。
 
 ---
 
