@@ -470,6 +470,24 @@ const NEED_PREDICATES = {
  * 短标签**只出现在窄屏的首页入口行上**：落地页的标题、面包屑、`<title>`、JSON-LD
  * 与桌面端入口仍然用完整 `label`（`renderNeedRow` 按一个 `?short=1` 的标记选择用哪一个），
  * 所以「点进去看到的是完整标题、桌面端读到的是完整标签」，没有一个读者只能看到缩写。
+ *
+ * ## v1.8：新增两个**纯展示**字段（首页专题导航卡用）
+ *
+ *   · `icon`            —— 卡片左侧的单字符 emoji，装饰性（渲染时带 `aria-hidden`），十条两两不同；
+ *   · `homeDescription` —— 卡片上说明行的那一句话，12–24 个**非空格**字符。
+ *
+ * 两条纪律，缺一条这两个字段就会变成第二个真相来源：
+ *
+ *  ① **不参与任何判据**。它们不进 `NEED_PREDICATES`、不影响 `needsOf()`、不进
+ *     `dist/deals.json` —— 那份 JSON 里每个条目的 `needs` 仍然只是由判据算出来的 slug 数组。
+ *     改这两个字段，站点收哪些条目**一个都不会变**（`audience-selftest.js` §9 钉这一点）。
+ *  ② `homeDescription` 写的是「点进去能看到什么」，不是判据的复述。写成
+ *     「benefitType 含 free_api」那种内部措辞，读者读到的是我们的表结构，不是他能拿到什么。
+ *     长度也不是美学问题：卡片上这一行是 `white-space: nowrap` + `text-overflow: ellipsis`，
+ *     超出的部分会被省略号吃掉 —— 一句永远被截断的说明，等于没人认真写过它。
+ *
+ * `short` 本轮**保留但停止在首页使用**（首页换成整卡后不再需要两套标签）：
+ * 字段留着，下面那 11 条既有断言就不用动；它的历史用途与实测数字见上。
  */
 const NEED_PAGES = [
   {
@@ -477,6 +495,8 @@ const NEED_PAGES = [
     group: 'student',
     label: '学生专享',
     short: '专享',
+    icon: '🎓',
+    homeDescription: '学生套餐与教育折扣，附申请门槛',
     heading: '面向学生的 AI 优惠',
     depth: 2,
     predicate: 'studentOnly',
@@ -493,6 +513,8 @@ const NEED_PAGES = [
     group: 'student',
     label: '教育身份可领',
     short: '教育',
+    icon: '🏫',
+    homeDescription: '凭学校邮箱可领的教育版与额度',
     heading: '凭教育身份可以领取的 AI 优惠',
     depth: 2,
     predicate: 'eduIdentity',
@@ -509,6 +531,8 @@ const NEED_PAGES = [
     group: 'student',
     label: '无需信用卡',
     short: '免卡',
+    icon: '🚫',
+    homeDescription: '不用绑卡就能注册领取的条目',
     heading: '不需要信用卡的 AI 优惠',
     depth: 2,
     predicate: 'noCard',
@@ -525,6 +549,8 @@ const NEED_PAGES = [
     group: 'student',
     label: '国内可用',
     short: '国内',
+    icon: '🌏',
+    homeDescription: '已确认大陆可注册使用的条目',
     heading: '中国大陆用户可以正常领取使用的优惠',
     depth: 2,
     predicate: 'chinaUsable',
@@ -542,6 +568,8 @@ const NEED_PAGES = [
     group: 'student',
     label: '完全免费',
     short: '免费',
+    icon: '🆓',
+    homeDescription: '不用付费就能用上的免费档位',
     heading: '免费档可用：不用付费就能用上的优惠',
     depth: 2,
     predicate: 'freeTier',
@@ -558,6 +586,8 @@ const NEED_PAGES = [
     group: 'developer',
     label: '免费 API',
     short: 'API',
+    icon: '🔌',
+    homeDescription: '可直接调用的免费接口与试用额度',
     heading: '可以免费调用的 API',
     depth: 2,
     predicate: 'freeApi',
@@ -574,6 +604,8 @@ const NEED_PAGES = [
     group: 'developer',
     label: '免费 Tokens',
     short: 'Tokens',
+    icon: '🎁',
+    homeDescription: '新用户赠送的额度与活动积分',
     heading: '赠送 Token / 免费额度类优惠',
     depth: 2,
     predicate: 'freeTokens',
@@ -590,6 +622,8 @@ const NEED_PAGES = [
     group: 'developer',
     label: 'AI Coding',
     short: 'Coding',
+    icon: '💻',
+    homeDescription: '代码补全与编程助手的优惠',
     heading: '编程开发类 AI 优惠',
     depth: 2,
     predicate: 'aiCoding',
@@ -606,6 +640,8 @@ const NEED_PAGES = [
     group: 'developer',
     label: '免费模型',
     short: '模型',
+    icon: '🧠',
+    homeDescription: '可以零成本调用的模型清单',
     heading: '可以免费使用的模型',
     depth: 2,
     predicate: 'freeModel',
@@ -622,6 +658,8 @@ const NEED_PAGES = [
     group: 'developer',
     label: '开发者 Credits',
     short: 'Credits',
+    icon: '💰',
+    homeDescription: '云平台赠金与创业扶持额度',
     heading: '面向开发者的赠送额度',
     depth: 2,
     predicate: 'devCredits',

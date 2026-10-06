@@ -1,0 +1,52 @@
+{
+  "generatedAt": "2026-10-05T14:34:09.830Z",
+  "method": "runtime-only：nav.needs 上 inline height:31px + overflow:hidden（!important），不改任何文件、不重建",
+  "cardView": {
+    "after": {
+      "needsHeight": 153,
+      "gridTop": 349,
+      "firstScreenFull": 6,
+      "firstScreenPart": 9,
+      "lastFullBottom": 781,
+      "slackFull": 119,
+      "pageHeight": 4787,
+      "overflowX": 0
+    },
+    "compressed31": {
+      "needsHeight": 31,
+      "gridTop": 227,
+      "firstScreenFull": 9,
+      "firstScreenPart": 9,
+      "lastFullBottom": 899,
+      "slackFull": 1,
+      "pageHeight": 4665,
+      "overflowX": 0
+    }
+  },
+  "listView": {
+    "after": {
+      "needsHeight": 153,
+      "rows": 50,
+      "rowsVisible": 10,
+      "listTop": 339,
+      "rowHeight": 46,
+      "pageHeight": 3567
+    },
+    "compressed31": {
+      "needsHeight": 31,
+      "rows": 50,
+      "rowsVisible": 13,
+      "listTop": 217,
+      "rowHeight": 46,
+      "pageHeight": 3445
+    }
+  },
+  "attribution": {
+    "needsHeightDelta": 122,
+    "gridTopDelta": 122,
+    "firstScreenFullDelta": -3,
+    "rowsVisibleDelta": -3,
+    "listTopDelta": 122,
+    "pageHeightDelta": 122
+  }
+}

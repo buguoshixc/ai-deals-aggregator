@@ -1,0 +1,12 @@
+{
+  "id": "M6b",
+  "description": "【T4 的 M6R 形态】给**全部四条** .need-grid 规则都注入 overflow-x:auto（基础 + ≤1180 + ≤760 + ≤560）",
+  "target": "全部 .need-grid 规则（整页 4 处）",
+  "anchorHits": 4,
+  "expectedHits": 4,
+  "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+  "shaAfter": "6665E2411B624D3D54BFF645C6515BCFD31EA6692FC23DD98C89F6027C12F689",
+  "bytesBefore": 403822,
+  "bytesAfter": 403894,
+  "appliedAt": "2026-10-06T02:25:38.520Z"
+}

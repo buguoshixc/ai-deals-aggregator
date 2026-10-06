@@ -298,51 +298,54 @@ function renderVendorLine(plan) {
 }
 
 /**
- * 首页「按需求找优惠」入口行。**构建期注入**，与 NEED_PAGES 同一份注册表。
+ * 首页「按需求找优惠」导航块。**构建期注入**，与 NEED_PAGES 同一份注册表。
+ *
+ * v1.8 把标签式 chip 换成整卡（Topic Entry Card）：每张卡 = 图标 + 标题 + 一句说明 + 箭头，
+ * 而**整张卡就是那个 `<a>` 本身**（不是「卡片容器里再放一个文字链接」—— 那种形状里可点区域
+ * 只剩文字，而这一块本来就是导航）。
  *
  * 三个必须一起成立的性质（各自都有断言）：
- *   ① 每条都是 `<a href="need/<slug>/">` —— 静态导航，无 JS 可点。首页是静态文件，
- *      `?need=` 之类的 query 改不了服务端 HTML，写成按钮就是「点了没反应」；
+ *   ① 每条都是 `<a class="need-card" href="need/<slug>/">` —— 静态导航，无 JS 可点。首页是静态
+ *      文件，`?need=` 之类的 query 改不了服务端 HTML，写成按钮就是「点了没反应」；
  *   ② 数字是**数据层条数**（与落地页表格行数同源）。首页卡片数是折叠后的，两者会不同，
  *      这个差额由落地页题注里那句现成说明承担；
  *   ③ 条数为 0 的入口**不出现**（同 `facetBarHtml` 对分类入口的处理：一个点下去空空如也的
  *      入口不如没有），同时那一页也不生成、不进 sitemap —— 三处由同一个过滤条件保证一致。
+ *      ⚠️ 因此 `class="need-card"` 的出现次数等于**已生成页面数**，而它等于注册表条数这件事
+ *      由数据本身的既有断言保证（`audience-selftest.js` §9「每条入口在当前数据里都至少有一条」）。
+ *
+ * 卡片上的四件套（`.need-icon` / `.need-copy > strong` / `.need-copy > small` / `.need-arrow`）
+ * 由产物自检 ⑥ **逐张按元素**判：少任何一件，卡片就退化成一条看不懂的链接。图标与箭头是
+ * 纯装饰（`aria-hidden`），标题与说明才是卡片真正的内容。
  */
 function renderNeedRow(deals) {
   // ⚠️ 只数 `type === 'deal'`：落地页的表格也是这么过滤的（与分类页同一口径）。
   // 不这么写就会数进工具条目，首页显示 15 而落地页列 12 —— 第一次跑就被
   // 「首页入口数字 ≠ 落地页行数」那条自检当场抓住（它不是假想出来的风险）。
   const scope = deals.filter(deal => deal.type === 'deal');
-  const groups = audience.NEED_GROUPS.map(group => {
-    const links = DIRECTORY_PAGES
-      // v1.7：三条近义页降级为别名页（noindex），但它们仍是可用的需求入口，
-      // 首页入口行照旧全部列出 —— 入口的完整性不受索引策略影响。
-      .filter(spec => (spec.kind === 'need' || spec.kind === 'alias') && spec.group === group.key)
-      .map(spec => ({ spec, count: scope.filter(deal => (deal.needs || []).includes(spec.slug)).length }))
-      .filter(item => item.count > 0);
-    if (!links.length) return null;
-    // 两套标签同时写进 HTML，由 CSS 媒体查询切换（**不用 data-short + JS**）：
-    // 无 JS 的访客在窄屏上也要看到短标签，而 JS 在无 JS 时根本不会跑。
-    // 完整标签保留在 DOM 里（`hidden` 语义靠 CSS），所以屏幕阅读器在桌面端读到的仍是全称。
-    const anchors = links.map(item =>
-      `<a href="${item.spec.route}"><span class="nl"><span class="nl-full">${htmlEscape(item.spec.label)}</span>` +
-      `<span class="nl-short">${htmlEscape(item.spec.short || item.spec.label)}</span></span><b>${item.count}</b></a>`).join('');
-    return { label: group.label, anchors };
-  }).filter(Boolean);
-  if (!groups.length) return '  <!-- 按需求入口：当前没有一条有内容的入口（数据全空时不渲染死链） -->';
-  // 两组的 DOM 形状：`<span class="ngroup"><span class="nlb">组名</span><span class="nlinks">…</span></span>`。
-  //
-  // 为什么组名**不在** `.nlinks` 里面（第一版它在里面，付出了三次返工）：
-  // 组名与 chip 混在同一个 flex/grid 流里时，任何「一行两枚」的写法都要跟容器宽度
-  // 做算术 —— 实测 `calc(50% - 4px)` 会把两枚顶到 358px（容器正好 358px）而落单；
-  // 换成 grid + `grid-column: 1/-1` 又出现 phantom 行（5 枚占 3 行却按 4 行算高，
-  // 整块 256px）。把组名移到流外之后，`.nlinks` 是一个纯粹的容器：桌面端 flex 行内、
-  // 窄屏两列 grid —— 5 枚正好 2+2+1，没有需要算的东西。
-  const inner = groups.map((group, index) =>
-    `${index ? '<span class="nsep" aria-hidden="true"></span>' : ''}` +
-    `<span class="ngroup"><span class="nlb">${htmlEscape(group.label)}</span>` +
-    `<span class="nlinks">${group.anchors}</span></span>`).join('');
-  return `  <nav class="needs" aria-label="按需求找优惠">${inner}</nav>`;
+  const cards = DIRECTORY_PAGES
+    // v1.7：三条近义页降级为别名页（noindex），但它们仍是可用的需求入口，
+    // 首页入口行照旧全部列出 —— 入口的完整性不受索引策略影响。
+    .filter(spec => spec.kind === 'need' || spec.kind === 'alias')
+    .map(spec => ({ spec, count: scope.filter(deal => (deal.needs || []).includes(spec.slug)).length }))
+    .filter(item => item.count > 0)
+    .map(item =>
+      `<a class="need-card" href="${item.spec.route}">` +
+      `<span class="need-icon" aria-hidden="true">${htmlEscape(item.spec.icon)}</span>` +
+      `<span class="need-copy"><strong>${htmlEscape(item.spec.label)}</strong><b>${item.count}</b>` +
+      `<small>${htmlEscape(item.spec.homeDescription)}</small></span>` +
+      `<span class="need-arrow" aria-hidden="true">→</span>` +
+      `</a>`).join('');
+  if (!cards) return '  <!-- 按需求入口：当前没有一条有内容的入口（数据全空时不渲染死链） -->';
+  // 所有卡铺进**同一个**网格，顺序就是 NEED_PAGES 的顺序：首页第 i 张卡必须逐条对上注册表
+  // 第 i 条的 label / href（断言正是这么比的）。分组不再靠 DOM 结构表达 —— 旧的「组名 + 组内
+  // 一排 chip」那套容器（组名与 chip 曾反复争同一条 flex/grid 行，返工三次）整体删掉了；
+  // 分组现在只活在注册表的 `group` 字段里（分组信息由卡片自己的标题与图标承担，
+  // 学生组 / 开发者组在 NEED_PAGES 里本来就是前后相邻的两段）。
+  // 卡上的属性刻意只有 class 与 href 两个：`<a class="need-card" href="…">` 这个字面形状
+  // 是可被外部断言直接钉住的契约，多挂一个 data-* 就会让「按契约写的正则」悄悄失配。
+  // 列数是 CSS 的事（桌面 5 列 = 10 张正好 5×2，窄屏按断点降到 3 / 2 / 1 列）。
+  return `  <nav class="needs" aria-label="按需求找优惠"><div class="need-grid">${cards}</div></nav>`;
 }
 
 /**
@@ -5935,7 +5938,7 @@ function selfCheck(built) {
       if (extra.length) problems.push(`首页筛选器有分类页注册表里没有的入口: ${extra.join(', ')}`);
     }
 
-    // ⑥ 首页「按需求找优惠」入口行与注册表 + 已生成页面**三处对齐**（v1.2）。
+    // ⑥ 首页「按需求找优惠」导航卡与注册表 + 已生成页面**三处对齐**（v1.2 建、v1.8 改成整卡）。
     //
     // 这一块是构建期注入的（`renderNeedRow`），但「注入的东西对不对」必须回读产物来判：
     //   · 每个已生成的按需求页都必须在首页有一个入口（否则那一页没有任何站内入口）；
@@ -5943,41 +5946,48 @@ function selfCheck(built) {
     //   · 入口上的数字必须等于落地页的行数（否则「首页写 12、页面列 7」而两边都不报错）；
     //   · 入口必须是 `<a>` 而不是按钮：首页是静态文件，无 JS 时按钮点了没反应。
     // 最后一条最容易在重构里丢掉（比如有人为了「点了就地筛选」把它换成 button），
-    // 所以它按**元素**判，不按类名判。
+    // 所以它按**元素**判，不按类名判 —— v1.8 换成整卡之后，这一条再往前一步：
+    // **逐张卡**判四件套（图标 / 标题 / 说明 / 箭头）齐不齐，以及卡上那串 `class="need-card"`
+    // 是不是就长在 `<a>` 自己身上（「容器挂类名、里面只有文字是链接」那种形状要能被抓住）。
     {
       const needsNav = (html.match(/<nav class="needs"[^>]*>([\s\S]*?)<\/nav>/) || [])[1];
       if (!needsNav) {
         problems.push('首页里找不到按需求入口行（nav.needs）——预渲染注入失败或标记被删');
       } else {
-        // 从链接里取**标签与数字**。标签在 `.nl-full` / `.nl-short` 两个 span 里
-        // （窄屏由 CSS 换短标签），所以先取全称那个 span 的文字，取不到再退回整条文本。
-        const anchors = [...needsNav.matchAll(/<a href="([^"]+)"[\s\S]*?<\/a>/g)].map(m => {
-          const tag = m[0];
-          const full = (tag.match(/<span class="nl-full">([^<]*)<\/span>/) || [])[1];
-          const badge = (tag.match(/<b>(\d+)<\/b>/) || [])[1];
-          const fallback = tag.replace(/<[^>]+>/g, '').replace(/\d+$/, '').trim();
-          return { href: m[1], label: full || fallback, count: Number(badge) };
-        });
-        if (anchors.length !== built.needPages.length) {
-          problems.push(`首页按需求入口 ${anchors.length} 个 ≠ 已生成页面 ${built.needPages.length} 个`);
+        // 整卡：`<a class="need-card" href="…">` 起、`</a>` 止。href 与卡片内容是同一个匹配里出来的，
+        // 所以「哪张卡指向哪里」不需要第二次解析。`[^>]*` 只为容忍将来往 `<a>` 上再挂属性 ——
+        // 「卡不是 <a> 本身」那种形状（容器挂类名、里面一个文字链接）仍然匹配不到。
+        const cards = [...needsNav.matchAll(/<a class="need-card" href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)];
+        const cardClassHits = (needsNav.match(/class="need-card"/g) || []).length;
+        if (cardClassHits !== cards.length) {
+          problems.push(`class="need-card" 出现 ${cardClassHits} 次 ≠ 整卡链接 ${cards.length} 个（卡不是 <a> 本身，而是「容器挂类名 + 里面一个文字链接」那种形状）`);
         }
-        const buttons = [...needsNav.matchAll(/<button|<input|<select/g)].length;
-        if (buttons) problems.push(`按需求入口行里出现了 ${buttons} 个 JS 控件（无 JS 时是死按钮，只允许 <a>）`);
-        // 两套标签必须都在（窄屏换短标签这件事只在 CSS 里，缺了任一套就有一半视口看不到名字）
-        const withBothLabels = [...needsNav.matchAll(/<a href="[^"]+"[\s\S]*?<\/a>/g)]
-          .filter(m => /class="nl-full"/.test(m[0]) && /class="nl-short"/.test(m[0])).length;
-        if (withBothLabels !== anchors.length) {
-          problems.push(`按需求入口里有 ${anchors.length - withBothLabels} 条缺少全称或窄屏短标签`);
+        if (cards.length !== built.needPages.length) {
+          problems.push(`首页专题导航卡 ${cards.length} 张 ≠ 已生成页面 ${built.needPages.length} 个`);
         }
-        for (const anchor of anchors) {
-          const page = built.needPages.find(item => item.route === anchor.href);
-          if (!page) { problems.push(`首页入口「${anchor.label}」指向未生成的 ${anchor.href}`); continue; }
-          if (page.count !== anchor.count) {
-            problems.push(`首页入口「${anchor.label}」数字 ${anchor.count} ≠ 落地页 ${page.count} 条`);
+        const buttons = [...needsNav.matchAll(/<button|<input|<select|data-facet|aria-pressed|role="button"/g)].length;
+        if (buttons) problems.push(`按需求导航卡里出现了 ${buttons} 个 JS 控件 / facet 语义（无 JS 时是死按钮，只允许 <a>）`);
+        for (const [, href, inner] of cards) {
+          // 四件套逐件取文本：取不到 = 那一件没了（空文本与「标签在但内容是空的」都算缺失）
+          const icon = (inner.match(/<span class="need-icon" aria-hidden="true">([^<]*)<\/span>/) || [])[1] || '';
+          const label = (inner.match(/<strong>([^<]*)<\/strong>/) || [])[1] || '';
+          const desc = (inner.match(/<small>([^<]*)<\/small>/) || [])[1] || '';
+          const arrow = (inner.match(/<span class="need-arrow" aria-hidden="true">([^<]*)<\/span>/) || [])[1] || '';
+          const badge = (inner.match(/<b>(\d+)<\/b>/) || [])[1];
+          const missing = [!icon && '图标', !label && '标题', !desc && '说明', !arrow && '箭头'].filter(Boolean);
+          if (missing.length) problems.push(`专题导航卡 ${href} 缺 ${missing.join(' / ')}（四件套不齐，卡片退化成一条看不懂的链接）`);
+          // 「每条 href 有真实文件」：`built.needPages` 只能证明**计划里有**这一页，
+          // 证明不了**盘上有** —— 这一条按产物判，死链在这里就被拦下。
+          if (!fs.existsSync(path.join(OUT, href, 'index.html'))) {
+            problems.push(`专题导航卡指向不存在的文件 ${href}index.html`);
           }
-          if (!anchor.label) problems.push(`首页入口 ${anchor.href} 没有文字标签`);
+          const page = built.needPages.find(item => item.route === href);
+          if (!page) { problems.push(`首页导航卡「${label}」指向未生成的 ${href}`); continue; }
+          if (page.count !== Number(badge)) {
+            problems.push(`首页导航卡「${label}」数字 ${badge === undefined ? '缺失' : badge} ≠ 落地页 ${page.count} 条`);
+          }
         }
-        const missingEntry = built.needPages.filter(page => !anchors.some(a => a.href === page.route));
+        const missingEntry = built.needPages.filter(page => !cards.some(card => card[1] === page.route));
         if (missingEntry.length) problems.push(`这些按需求页在首页没有入口: ${missingEntry.map(p => p.route).join(', ')}`);
       }
     }

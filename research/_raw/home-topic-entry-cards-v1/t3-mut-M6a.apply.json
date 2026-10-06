@@ -1,0 +1,12 @@
+{
+  "id": "M6a",
+  "description": "【T4 原始 finding 形态】只给**基础** .need-grid 规则（display:grid 那条）注入 overflow-x:auto —— 5 列、内容本来没溢出",
+  "target": ".need-grid 基础规则（整页 1 处，含 display:grid）",
+  "anchorHits": 1,
+  "expectedHits": 1,
+  "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+  "shaAfter": "59283A6909731F74056CC95A0EE1181386D6455795EC927358D9A54F6D1699E0",
+  "bytesBefore": 403822,
+  "bytesAfter": 403840,
+  "appliedAt": "2026-10-06T02:24:13.563Z"
+}

@@ -366,39 +366,72 @@
        `.jump[hidden]`（0,2,0）胜过 `.jump`（0,1,0），也顺带盖住媒体查询里的 display:grid。 */
     .jump[hidden] { display: none; }
 
-    /* ---------- 按需求找优惠（v1.2） ----------
-       入口行与上面那条筛选条是**两层**，刻意不复用 .facetsin：
-         · 筛选条是横向滚动的单行、且按当前数据重画（计数随筛选变）；
-         · 这一行是静态导航（构建期注入、指向 /need/<slug>/ 落地页），无 JS 也必须完整可点，
+    /* ---------- 按需求找优惠：Topic Entry Card（v1.8 由标签式 chip 改成整卡） ----------
+       与上面那条筛选条（Filter Chip：26px 药丸、横向滚动的一行）刻意是**两层**，不复用 .f：
+         · 筛选条按当前数据重画（计数随筛选变），它是筛选器；
+         · 这一块是**静态导航**（构建期注入、整卡指向 /need/<slug>/ 落地页），无 JS 也必须完整可点，
            所以禁止横向滚动容器（窄屏上「看不见的入口」等于没有入口）。
 
-       ⚠️ **宽度与高度都是量出来的，不是估的**（1440×900 实测）：
-       两组各占一行时这一块高 38px，网格起点 196→234px，首屏「完整可见」的卡片
-       从 9 张掉到 6 张 —— 基线本来就卡在 9 张那条线上，多 38px 就整掉一行。
-       合成一行（组名内联 + 分隔线）后高 28px，实测网格起点 224px、首屏完整可见 8 张。
-       这 28px 是「一个清晰入口」的定价，写在这里免得下一个人以为它免费。 */
-    .needs {
-      max-width: 1420px; margin: 0 auto; padding: 5px 20px 0;
-      display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--s2);
-      font-size: var(--fs-sm);
+       为什么要从 chip 换成整卡（1440×900 实测）：十条 chip 平铺成**一行十枚**、单枚 26px 高，
+       既读不出「点进去有什么」，也没有任何分组感；390px 下又折成 6 行、整块 240px，
+       把首屏的卡片挤到只剩 1 张完整可见。整卡 + 网格把这两件事一起解决：桌面 10 张正好 5×2，
+       窄屏按断点降列，说明行单行截断。
+
+       ⚠️ **高度是量出来的**（1440×900 实测）：单卡 68px、行距 12px ⇒ 网格 148px，加上 .needs
+       的 5px 上内边距共 153px（旧 chip 那一行 31px，δ = +122px）。这一块一高，首屏完整可见的
+       Deal Card 就从 9 张掉到 6 张 —— 精确的临界值是 **δ ≥ 2px**（δ=+1 时最后一张完整卡的
+       bottom 恰好 900.00px，仍算「完整可见」），+122px 是它的 61 倍。代价不是免费的：
+       verify-site.js 的首屏断言与 ours-baseline 基线按实测同步（见报告），
+       同一块首屏账的另一半写在本文件下方 .hubline 的注释里。
+
+       **After 实测（1440×900，Edge headless，同 verify-site.js 口径）**：
+       · 本块 153px、网格起点 **349px**（Before 227）、10 张卡 5×2、每张高 **68px（唯一值）**、
+         全部在视口内、clipped 0、横向溢出 0；
+       · 首屏完整可见 **6 张** / 含截断 **9 张**（Before 9 / 9）、slack 119px（Before 1px）、
+         页高 **4787px**（Before 4665，+122px = δ）；`article.g` 仍是 50 张、3 列、192px 高；
+       · 十条说明在 1440px 下**一条都没被截断**（说明行可用 192px，12–24 字装得下）；
+       · 无 JS 打开：卡数 / 标题 / 说明 / href 与有 JS 时逐条相同（构建期注入，本行没有 JS）。
+       这些数字的来源与复现命令写在 T2 报告里；T3 用同一套口径复核。 */
+    .needs { max-width: 1420px; margin: 0 auto; padding: 5px 20px 0; }
+
+    /* 桌面 5 列：十条入口正好 5×2，没有残行。minmax(0, 1fr) 是关键 ——
+       `1fr` 等价于 `minmax(auto, 1fr)`，那个 auto 下限会被最长的那句说明顶住，把轨道撑宽。 */
+    .need-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--s3); }
+
+    /* 整卡即链接：可点区域是**整块卡片**，不是卡里那行标题
+       （反例是「卡片容器里再放一个文字链接」——那种形状里可点区域只剩文字）。 */
+    .need-card {
+      display: flex; align-items: center; gap: var(--s2);
+      height: 68px; padding: 0 var(--s3);
+      border: 1px solid var(--line); border-radius: var(--r); background: var(--card);
+      color: var(--ink); text-decoration: none;
+      transition: border-color var(--t-fast) var(--e-std), background-color var(--t-fast) var(--e-std);
     }
-    .needs .nlb { color: var(--mut); flex: none; }
-    .needs a {
-      display: inline-flex; align-items: center; gap: var(--s1);
-      color: var(--ink2); text-decoration: none; border: 1px solid var(--line);
-      border-radius: var(--r-pill); padding: 3px 10px; white-space: nowrap;
-      transition: border-color var(--t-fast) var(--e-std), color var(--t-fast) var(--e-std);
+    /* hover 只做三件事：边框变色、背景降一档（--line 是既有的发丝色）、箭头右移 2px。
+       刻意不做 scale / 强阴影 / 弹跳：这一块在首屏，十条一起动会盖过内容本身。 */
+    .need-card:hover { border-color: var(--brand); background: var(--line); }
+    .need-card:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    /* 图标：装饰性（渲染时带 aria-hidden），只按 glyph 排版。这里用 --fs-lg 是因为 emoji
+       在 12px 上会缩成一个认不出的小点 —— 它是同一条字号阶梯里的既有档位，不是新字号。 */
+    .need-card .need-icon { flex: none; font-size: var(--fs-lg); line-height: 1; }
+    .need-card .need-copy {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 1px var(--s2);
+      flex: 1 1 auto; min-width: 0;
     }
-    .needs a:hover { border-color: var(--brand); color: var(--brand); }
-    .needs a:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
-    .needs a b { opacity: .7; margin-left: 2px; font-weight: 600; }
-    /* 两套标签由 CSS 切换（不用 JS）：桌面端全称，窄屏缩写。见 NEED_PAGES 的 `short` 注释。 */
-    .needs .nl-short { display: none; }
-    /* 桌面端：两组并排在一行里；组名与 chip 之间只靠 gap 分隔。
-       `.ngroup` 与 `.nlinks` 都是**透明容器** —— 它们存在只是为了窄屏能换一种排法
-       （见媒体查询里那段注释），桌面端不参与任何尺寸计算。 */
-    .needs .ngroup, .needs .nlinks { display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--s2); }
-    .needs .nsep { width: 1px; height: 16px; background: var(--line); flex: none; margin: 0 var(--s1); }
+    .need-card .need-copy strong { font-size: var(--fs-sm); font-weight: 600; }
+    .need-card .need-copy b { font-size: var(--fs-xs); font-weight: 600; color: var(--mut); }
+    /* 说明行**单行截断**：卡片高度与文案长度无关（长文案既不会把卡片顶高、也不会让行高抖）。
+       flex-basis 100% 让它在「标题 + 条数」那一行之后独占一行。 */
+    .need-card .need-copy small {
+      flex: 1 1 100%; min-width: 0;
+      font-size: var(--fs-xs); color: var(--mut);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .need-card .need-arrow {
+      flex: none; font-size: var(--fs-sm); color: var(--mut); line-height: 1;
+      transition: transform var(--t-fast) var(--e-std);
+    }
+    .need-card:hover .need-arrow { transform: translateX(2px); }
 
     /* ---------- 变化雷达（v1.5） ----------
        与 .needs 同一套视觉语言（pill + --line 边框 + --fs-sm）。
@@ -407,6 +440,10 @@
        第三行（档 2 的第一行）底边 = 899px，距视口底边只剩 1px。任何独立成行的条带
        （哪怕 23px 高）都会把首屏完整可见从 9 张压到 6 张 —— 这条由 verify-site.js 的
        「首屏完整可见卡片 ≥ 9」硬断言当着，实测数据见本文件上方的 .hubline 注释与报告。
+       ⚠️ v1.8 追记：上方那块专题导航卡从 31px 抬到 153px（δ=+122px），首屏完整可见因此
+       **就是** 9 → 6 张。阈值与 ours-baseline 基线按实测同步（唯一被授权的契约变更，
+       见报告）。上面这段数字全部是**改动之前**测的，留在这里作为那次实测的原始记录，
+       不要在下一轮把它当成本轮之后的现状。
        雷达因此是那一行的**可伸缩项**：`flex: 1 1 auto; min-width: 0`，内容超宽时由
        正文区（.rscroll）内部横滑，绝不把整行顶成两行；唯一的入口「全部变化」放在
        横滑容器**外面**、`flex: none` —— 一个需要横滑才看得见的入口等于没有入口（v1.2 的同一课）。 */
@@ -1007,7 +1044,11 @@
       .search { max-width: none; order: 3; min-width: 100%; }
       .topstat { order: 2; }
     }
-    @media (max-width: 1180px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 1180px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      /* 专题导航卡：5 列在 1180px 以下每张只剩 218px 出头，说明行会被截到读不出内容 */
+      .need-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
     @media (max-width: 760px) {
       :root { --cardH: auto; }
       /* 单列用 minmax(0, 1fr) 而不是 1fr：`1fr` 等价于 `minmax(auto, 1fr)`，那个 auto 下限
@@ -1037,14 +1078,14 @@
       .jump { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s1); align-items: stretch; }
       .jump .lb { display: none; }
       .jump a { text-align: center; padding: var(--s1) 2px; }
-      /* 按需求入口：窄屏不做横滑（横滑的入口等于没有入口），改成两列定宽。
-         为什么不是靠 flex-wrap 自然折行：390px 实测折成 3/3/3/1 —— 末行只剩一枚、
+      /* 按需求入口：窄屏不做横滑（横滑的入口等于没有入口），改成按断点降列。
+         为什么不是靠 flex-wrap 自然折行：390px 实测会折成 3/3/3/1 —— 末行只剩一枚、
          右边空出 200 多像素的残行（`.jump` 当年就是被同一个毛病咬过一次，
-         见 research/VISION-REVIEW.md §6）。两列是**结构上**不可能出现残行的排法，
-         且组名独占一行、后面紧跟自己那一组的 chip。
-         代价是比自然折行多一行（+30px 高）；这一块本来就要占位，宁可要稳定的排布。 */
+         见 research/VISION-REVIEW.md §6）。网格是**结构上**不可能出现残行的排法。
+         这里用两列：每张约 358/2px，标题完整、说明行截断到十来个字。 */
       .needs { padding: 6px 16px 0; }
-      .needs a { padding: 4px 9px; }
+      .need-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2); }
+      .need-card { padding: 0 10px; gap: var(--s1); }
       /* 变化雷达：窄屏下「跳到档位」本身是四等分整行（见上），所以雷达顺延到下一行 ——
          仍然只有一行（实测 24px），且正文区横滑、入口固定。桌面端它不额外占行。 */
       .hubline { flex-wrap: wrap; gap: 6px var(--s3); }
@@ -1053,31 +1094,6 @@
       /* 窄屏换短文案：全称 22 字在 390px 下比正文区宽，会被裁掉半句（实测溢出 16px） */
       .radar .rnone .rf { display: none; }
       .radar .rnone .rs { display: inline; }
-      /* 窄屏换短标签：十枚全称在本机实测折成 5 行 chip、整块 204px，把首屏的卡片挤到
-         一张都不剩（改之前是 1 张）。短标签把整块压回 136px。切换只靠 CSS，无 JS 也生效。 */
-      .needs .nl-full { display: none; }
-      .needs .nl-short { display: inline; }
-      /* 窄屏两列：组名独占一行，5 枚 chip 排成 2+2+1（实测整块 63px/组，10 枚共 3 行 chip）。
-         这里换过三种写法，每一种的症状都只是「数字变了」，所以把数字都写下来：
-           ① `.ngroup` 用 `display: grid; grid-template-columns: repeat(2, 1fr)` 且组名
-              是网格项 + `grid-column: 1 / -1`：实测 `grid-template-rows` =
-              `20px 28px 28px 28px` —— 5 枚 chip 只占 3 行却按 4 行算高，整块 256px；
-           ② `flex: 0 0 calc(50% - 4px)`：容器 358px、chip 175px、gap 8px，
-              两枚 350+8=358 正好卡在边界，第三枚落单成一行（整块仍是 256px）；
-           ③ `.ngroup` 与 chip 在同一个 flex 流里、用 `flex: 1 1 40%`：同样是落单。
-         现在的形状是**结构上**不可能出错的那种：组名在 `.nlinks` 之外（它自己一行），
-         `.nlinks` 是一个纯粹的容器 —— 桌面端 flex 行内，窄屏两列 grid，5 枚正好 2+2+1。
-         ⚠️ 选择器和基础规则**同级**（都是 `.needs .nlinks`），所以这里靠的是**源序**
-         （媒体查询在文件更后面）。第一版写成 `.nlinks` / `.ngroup` 两个类，特异性
-         2 vs 2 打平后基础规则赢了 —— 症状是「移动端量到的还是 240px、chip 仍是 2/2/1
-         但组名与 chip 同高」，看着像布局没生效，其实是层叠没生效。
-         判据不止是「看着顺眼」：`check-mobile-chrome.js` 会量 `nav.needs` 的
-         clipped / outOfViewport / overflowX，`verify-site.js` 的 §15b2 会量 390/360px。 */
-      .needs .nlinks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px var(--s2); flex: 1 1 100%; }
-      .needs .nlb { margin-top: 2px; }
-      .needs .nsep { display: none; }
-      .needs .ngroup { display: block; flex: 1 1 100%; }
-      .needs .ngroup a { justify-content: space-between; }
       .dbody { padding: 20px; }
       .dgrid { grid-template-columns: 1fr; }
       /* 对比条与对比弹层：390px 下只缩小内边距，宽度始终跟着视口走（不制造横向溢出） */
@@ -1087,6 +1103,16 @@
       .cmptable tbody th { width: 68px; min-width: 68px; }
       .cmptable thead th:first-child { width: 68px; min-width: 68px; }
     }
+
+    /* 更窄的屏（≤560px）：专题导航卡降到单列。两列在 390px 下每张只剩约 170px，
+       标题会被截掉半截、说明行几乎全被省略号吃掉；单列时卡片 358px、说明行拿到 296px
+       （实测），十条说明**一条都没被截断**（1440px 下也一条都没截：说明行的可用宽度
+       192px 已经装得下 12–24 字）。
+       代价写清楚（实测，390×900）：整块从 Before 的 240px 变成 758px，网格起点
+       617.75 → 1135.75px，于是首屏**不再剩任何一张卡**（Before 剩 1 张完整可见）。
+       这是把十条入口做成整卡之后手机端必然要付的钱 —— 桌面端的同一笔账（9 → 6 张）
+       写在 .needs 的注释里。 */
+    @media (max-width: 560px) { .need-grid { grid-template-columns: minmax(0, 1fr); } }
   </style>
 </head>
 <body>
@@ -1126,13 +1152,17 @@
   </nav>
 
   <!--
-    按需求找优惠（v1.2）。**整块由构建期注入**（标记见下），源码里一个入口都不写死：
-      · 入口的清单与判据活在 scripts/lib/audience.js 的 NEED_PAGES（唯一出处）；
-      · 每条入口指向一个**预渲染的静态页** /need/<slug>/，所以它必须是无 JS 也能点的 <a>，
+    按需求找优惠：Topic Entry Card（v1.2 建、v1.8 由标签式 chip 改成整卡）。
+    **整块由构建期注入**（标记见下），源码里一个入口都不写死：
+      · 入口的清单、判据、以及卡上的图标与那句说明都活在 scripts/lib/audience.js 的
+        NEED_PAGES（唯一出处）—— 全仓没有第二份手写清单，产物自检会逐张卡回读产物对账；
+      · 每张卡指向一个**预渲染的静态页** /need/<slug>/，所以它必须是整块可点的 <a>，
         而不是 <button> —— 首页是静态文件，query 参数改不了服务端返回的 HTML，
-        「点了没反应」的那类死按钮在这里是不允许的（G11 同一条纪律）。
-      · 所以这一块里没有一个 [data-facet]，也没有一个 star/compare 控件：
-        产物自检会扫「预渲染 HTML 零 JS 控件」，它同时守着这一块。
+        「点了没反应」的那类死按钮在这里是不允许的（G11 同一条纪律）；
+      · 所以这一块里没有一个 [data-facet]、没有一个 [aria-pressed]，也没有一个
+        star/compare 控件：产物自检会扫「预渲染 HTML 零 JS 控件」并按元素守住这一块。
+      · 卡上的四件套（图标 / 标题 / 说明 / 箭头）与网格列数分别由产物自检与 CSS 负责，
+        本文件只提供容器与样式，不在这里写任何一条入口文案。
   -->
   <!--PRERENDER:needs-->
 

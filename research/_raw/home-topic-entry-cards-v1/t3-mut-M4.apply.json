@@ -1,0 +1,12 @@
+{
+  "id": "M4",
+  "description": "整卡从 <a href> 改成 <button>（无 JS 不可导航、href 消失；href 值挪到 data-href 只为留住文案，判据不看它）",
+  "target": "nav.needs 区块内的卡片元素",
+  "anchorHits": 10,
+  "expectedHits": 10,
+  "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+  "shaAfter": "9DDB9512E1CA245E4A8BAF74F4ED3D993D39F5C1AC4759663ABB59AFCE74C6A8",
+  "bytesBefore": 403822,
+  "bytesAfter": 403972,
+  "appliedAt": "2026-10-06T02:31:05.750Z"
+}

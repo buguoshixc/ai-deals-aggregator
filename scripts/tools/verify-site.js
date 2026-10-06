@@ -27,6 +27,9 @@ const ROOT = path.join(__dirname, '..', '..');
 // 而不是把一个数字写死在断言里 —— 写死的后果是每加一份分类 Feed 都要来改一次验收脚本。
 const feedsLib = require('../lib/feeds');
 const landingsLib = require('../lib/landing');
+// 首页专题导航卡（v1.8）的**唯一来源**：卡数 / 标题 / href / 落地页 h1 全部按注册表现算，
+// 不把「10」写进断言里 —— 加一条需求页时这些断言自动跟着走，而不是变成一条永远为真的死断言。
+const audienceLib = require('../lib/audience');
 // private-analytics-v1：外部请求白名单与页面判定都取自**唯一实现**（lib/analytics.js）——
 // 这里不重写一份 origin 表，也不 grep token 字符串：判据只有一处，改了那边这一支跟着变。
 const analytics = require('../lib/analytics');
@@ -260,7 +263,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('卡片数与预渲染一致', rendered.cards >= 45, `${rendered.cards} 条`);
   check('桌面三列', rendered.cols === 3, `${rendered.cols} 列`);
   check('卡片高度统一', rendered.heights.length === 1, rendered.heights.join('/') + 'px');
-  check('首屏完整可见卡片 ≥ 9', rendered.firstScreenFull >= 9,
+  /* 阈值 9 → 6（2026-10-05，home-topic-entry-cards-v1 **唯一**被授权同步的阈值之一）。
+     为什么必须改：首页「按需求找优惠」从 31px 的一行 chip 改成 153px 的专题导航卡网格
+     （δ = +122px），网格起点 227 → 349px，实测首屏完整可见从 9 张掉到 6 张
+     （含截断仍是 9 张 —— 两个读数都接着打印，别用「含截断」掩盖「完整可见」的下降）。
+     实测的精确临界值是 δ ≥ 2px（δ=+1 时最后一张完整卡 bottom 恰好 900.00px，仍算完整可见），
+     +122px 是它的 61 倍，所以这不是「可能」而是必然。
+     这是**记录一次已披露的密度下降**，不是把断言放宽到看不见回归：阈值仍严格等于实测值，
+     顶部再加任何一条独立条带（实测 ≥ 47px）都会让它重新变红。
+     原始读数 / 归因实验 / Before-After 全表见 research/_raw/home-topic-entry-cards-v1/VERIFY-REPORT.md。 */
+  check('首屏完整可见卡片 ≥ 6', rendered.firstScreenFull >= 6,
     `完整 ${rendered.firstScreenFull} 张 / 含截断 ${rendered.firstScreenPart} 张 · 网格起点 ${rendered.gridTop}px · 页高 ${rendered.pageHeight}px`);
   Object.assign(metrics, {
     cards: rendered.cards,
@@ -2273,57 +2285,127 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   if (!needTruth || !Object.keys(needTruth.needs).length) {
     check('dist/deals.json 里有按需求命中（needs 字段）', false, '读不到 deals.json 或 needs 为空');
   } else {
-    // 首页入口行：逐条读出 href / 文字 / 数字
+    // 首页专题导航卡：逐张读出「href / 标题 / 条数 / 说明 / 图标 / 箭头」与几何（每张卡的矩形）。
+    // ⚠️ 期望值一律不写死：卡数与逐条对账都跟 scripts/lib/audience.js 的 NEED_PAGES 比。
+    const needPages = audienceLib.NEED_PAGES.map(p => ({
+      slug: p.slug, label: p.label, heading: p.heading, icon: p.icon, desc: p.homeDescription,
+      route: `need/${p.slug}/`
+    }));
     await page.goto(base, { waitUntil: 'load' });
     await waitForApp(page);
     const navRow = await page.evaluate(() => {
       const nav = document.querySelector('nav.needs');
       if (!nav) return null;
-      const links = [...nav.querySelectorAll('a')];
+      const grid = nav.querySelector('.need-grid');
+      const cards = [...nav.querySelectorAll('a.need-card')];
+      const rects = cards.map(a => {
+        const r = a.getBoundingClientRect();
+        return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height };
+      });
+      // 重叠：任意两张卡的矩形不得相交（同一视口内，「叠在一起的两张卡」是纯几何缺陷，
+      // 页面级横向溢出查不出来 —— 它们都还在视口里）
+      let overlaps = 0;
+      for (let i = 0; i < rects.length; i++) for (let j = i + 1; j < rects.length; j++) {
+        const a = rects[i], b = rects[j];
+        if (a.left < b.right - 0.5 && b.left < a.right - 0.5 && a.top < b.bottom - 0.5 && b.top < a.bottom - 0.5) overlaps++;
+      }
+      const tops = [...new Set(rects.map(r => Math.round(r.top)))].sort((x, y) => x - y);
+      const navStyle = getComputedStyle(nav);
+      const legacyClasses = ['nl', 'nl-full', 'nl-short', 'nlb', 'nsep', 'ngroup', 'nlinks']
+        .filter(c => [...nav.querySelectorAll('*')].some(el => el.classList.contains(c)));
       return {
-        count: links.length,
-        items: links.map(a => {
-          // 标签有两套 span（桌面全称 / 窄屏缩写），由 CSS 切换 —— 数标签必须取
-          // **当前可见的那一个**。第一版直接读 `a.textContent`，两套 span 的文字被拼在一起
-          // （「学生专享学生专享」），而断言里那句 `replace(/\d+$/,'')` 恰好把重复部分
-          // 当成了「标题里本来就有数字」，于是它一直绿着 —— 一个把 bug 藏起来的断言。
-          const full = a.querySelector('.nl-full');
-          const short = a.querySelector('.nl-short');
-          const visible = [full, short].find(el => el && getComputedStyle(el).display !== 'none');
+        count: cards.length,
+        items: cards.map((a, i) => {
+          // 四件套：图标（装饰性）/ 标题 / 说明 / 箭头。逐个**计数**而不是只看存在 ——
+          // 两个箭头、两个说明同样是坏形状，而 `querySelector` 只看得到第一个。
+          const icon = a.querySelector('.need-icon');
+          const strong = a.querySelector('.need-copy > strong');
+          const small = a.querySelector('.need-copy > small');
+          const arrow = a.querySelector('.need-arrow');
+          const txt = el => (el && el.textContent ? el.textContent.trim() : '');
           return {
             href: a.getAttribute('href'),
-            label: ((visible || a).textContent || '').replace(/\s+/g, ' ').trim(),
-            fullLabel: full ? full.textContent.trim() : '',
-            shortLabel: short ? short.textContent.trim() : '',
-            badge: Number((a.querySelector('b') || {}).textContent || ''),
-            isAnchor: a.tagName === 'A'
+            label: txt(strong),
+            desc: txt(small),
+            // 条数：口径与 build-local.js 的 renderNeedRow 一致（只数 type === 'deal'）
+            badge: Number((a.querySelector('.need-copy b') || {}).textContent || ''),
+            isAnchor: a.tagName === 'A',
+            isNeedCard: a.classList.contains('need-card'),
+            iconCount: a.querySelectorAll('.need-icon').length,
+            iconText: txt(icon),
+            iconHidden: icon ? icon.getAttribute('aria-hidden') : null,
+            strongCount: a.querySelectorAll('.need-copy > strong').length,
+            smallCount: a.querySelectorAll('.need-copy > small').length,
+            arrowCount: a.querySelectorAll('.need-arrow').length,
+            arrowText: txt(arrow),
+            arrowHidden: arrow ? arrow.getAttribute('aria-hidden') : null,
+            // 「整卡即链接」的反例：卡片里再放一个可点元素（可点区域只剩那行文字）
+            nestedInteractive: a.querySelectorAll('a, button, input, select, [role="button"]').length,
+            rect: rects[i]
           };
         }),
-        // 两套标签缺一不可：缺全称则桌面端只剩缩写，缺缩写则窄屏又回到 240px 长块
-        bothLabels: links.filter(a => a.querySelector('.nl-full') && a.querySelector('.nl-short')).length,
-        // 这一块里不允许出现任何需要 JS 才生效的控件（无 JS 时的死按钮）
-        controls: nav.querySelectorAll('button, input, select').length,
-        inViewport: links.every(a => {
-          const r = a.getBoundingClientRect();
-          return r.left >= 0 && r.right <= window.innerWidth + 1 && r.width > 0;
-        }),
-        rows: new Set(links.map(a => a.offsetTop)).size,
+        // 与筛选器的语义隔离：这一块里一个需要 JS 的控件 / facet 标记都不许有
+        jsControls: nav.querySelectorAll('button, input, select').length,
+        facetMarkers: nav.querySelectorAll('[data-facet], [aria-pressed], [role="button"]').length,
+        legacyClasses,
+        navOverflowX: navStyle.overflowX,
+        navScrollable: nav.scrollWidth > nav.clientWidth + 1,
+        tracks: grid ? getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length : 0,
+        rowsByTop: tops.map(t => rects.filter(r => Math.round(r.top) === t).length),
+        inViewport: rects.filter(r => r.width > 0 && r.height > 0 && r.left >= -0.5 && r.right <= window.innerWidth + 1).length,
+        overlaps,
         overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth
       };
     });
-    check('首页有「按需求找优惠」入口行，且每条都是 <a>（无 JS 也能点）',
-      Boolean(navRow) && navRow.count === Object.keys(needTruth.needs).length && navRow.items.every(i => i.isAnchor),
-      navRow ? `${navRow.count} 条入口 / 数据里 ${Object.keys(needTruth.needs).length} 个需求 · 控件 ${navRow.controls} 个`
+    // ① 卡数：注册表是唯一来源（NEED_PAGES.length），同时与「数据里真有命中的需求数」对账。
+    check('首页专题导航卡：卡数 == NEED_PAGES.length（按注册表现算，不写死条数）',
+      Boolean(navRow) && navRow.count === needPages.length,
+      navRow ? `${navRow.count} 张卡 / 注册表 ${needPages.length} 条需求 · dist/deals.json 里 ${Object.keys(needTruth.needs).length} 个需求有命中`
         : '找不到 nav.needs');
+    check('首页有「按需求找优惠」入口行，且每条都是 <a>（无 JS 也能点）',
+      Boolean(navRow) && navRow.count === Object.keys(needTruth.needs).length &&
+      navRow.items.every(i => i.isAnchor && i.isNeedCard && i.nestedInteractive === 0),
+      navRow ? `${navRow.count} 条入口 / 数据里 ${Object.keys(needTruth.needs).length} 个需求 · JS 控件 ${navRow.jsControls} 个 · 卡里嵌套可点元素 ${navRow.items.reduce((n, i) => n + i.nestedInteractive, 0)} 个`
+        : '找不到 nav.needs');
+    // ② 逐条对账：第 i 张卡的标题 / href 必须等于注册表第 i 条 —— 错位一条即红（M7 的牙）
+    const misordered = navRow ? navRow.items.map((it, i) => ({ it, i })).filter(({ it, i }) => {
+      const want = needPages[i];
+      return !want || it.label !== want.label || it.href !== want.route;
+    }) : [];
+    check('首页专题导航卡：逐条 label / href 与 NEED_PAGES 对账不错位（顺序一致）',
+      Boolean(navRow) && navRow.items.length === needPages.length && misordered.length === 0,
+      navRow ? (misordered.length
+        ? misordered.slice(0, 4).map(({ it, i }) => `第 ${i + 1} 张「${it.label}」→ ${it.href} ≠ 注册表「${(needPages[i] || {}).label}」→ ${(needPages[i] || {}).route}`).join(' · ')
+        : `${navRow.items.length} 张卡与注册表同序同值（${navRow.items.map(i => i.label).join(' / ')}）`) : '—');
+    // ③ 语义隔离：这一块与 26px 的筛选条只隔几十像素，重构时最容易顺手换回 button / data-facet
     check('入口行里没有任何 JS 控件（无 JS 时不给可点暗示）',
-      Boolean(navRow) && navRow.controls === 0,
-      navRow ? `${navRow.controls} 个` : '—');
-    check('每条入口都同时带全称与窄屏短标签（CSS 切换，无 JS 也生效）',
-      Boolean(navRow) && navRow.bothLabels === navRow.count,
-      navRow ? `${navRow.bothLabels}/${navRow.count} 条两套齐全 · 全称「${navRow.items[0] && navRow.items[0].fullLabel}」/ 短「${navRow.items[0] && navRow.items[0].shortLabel}」` : '—');
-    check('桌面端入口显示的是全称、不是缩写',
-      Boolean(navRow) && navRow.items.every(i => i.label === i.fullLabel && i.label.length > 0),
-      navRow ? navRow.items.filter(i => i.label !== i.fullLabel).map(i => `${i.href} 显示「${i.label}」`).join(' · ') || '全部全称' : '—');
+      Boolean(navRow) && navRow.jsControls === 0 && navRow.facetMarkers === 0 && navRow.legacyClasses.length === 0,
+      navRow ? `JS 控件 ${navRow.jsControls} 个 · facet 标记 ${navRow.facetMarkers} 个 · 旧 chip 类残留 [${navRow.legacyClasses.join(', ')}]` : '—');
+    check('首页专题导航卡：与筛选器语义隔离（nav.needs 内 [data-facet] / [aria-pressed] / [role="button"] 计数为 0）',
+      Boolean(navRow) && navRow.facetMarkers === 0,
+      navRow ? `${navRow.facetMarkers} 个（[data-facet] + [aria-pressed] + [role="button"] 合计）` : '—');
+    // ④ 四件套逐张齐全（M2 删说明 / M3 删箭头都红在这里）
+    const broken = navRow ? navRow.items.filter(i => !(
+      i.iconCount === 1 && i.iconText.length > 0 && i.iconHidden === 'true' &&
+      i.strongCount === 1 && i.label.length > 0 &&
+      i.smallCount === 1 && i.desc.length > 0 &&
+      i.arrowCount === 1 && i.arrowText.length > 0 && i.arrowHidden === 'true')) : [];
+    const fourPieceDetail = () => {
+      if (!navRow) return '找不到 nav.needs';
+      if (!navRow.items.length) return '整个 nav.needs 里一张 a.need-card 都没有（卡片形状被换掉了）';
+      if (broken.length) {
+        return broken.slice(0, 3).map(i => `${i.href}：图标 ${i.iconCount} / 标题 ${i.strongCount}「${i.label}」/ 说明 ${i.smallCount}「${i.desc}」/ 箭头 ${i.arrowCount}`).join(' · ');
+      }
+      const first = navRow.items[0];
+      return `${navRow.items.length} 张卡四件套齐全 · 例「${first.iconText} ${first.label} ${first.badge} ${first.desc} ${first.arrowText}」`;
+    };
+    check('首页专题导航卡：每张卡四件套齐全（need-icon / 非空 strong / 非空 small / need-arrow）',
+      Boolean(navRow) && navRow.items.length > 0 && broken.length === 0,
+      fourPieceDetail());
+    // ⚠️ detail 一律不得解引用不存在的元素：卡数为 0（例如把整卡换成 <button> 的变异）时
+    //    `items[0]` 是 undefined —— 断言脚本必须**干净地判红**，而不是自己抛 TypeError 半路死掉
+    //    （实测踩过一次：M4 变异下 792 项只跑到 §15b2 就崩了，JSON 报告文件都没写出来）。
+    //    所以这里的 detail 走一个显式分支的函数，`items[0]` 只在「确实有卡」时才访问。
     // 首页数字 == 落地页行数（两个方向都查：数字对不对、有没有多余的入口）
     const badgeMismatch = (navRow ? navRow.items : []).filter(item => {
       const slug = String(item.href || '').replace(/^need\//, '').replace(/\/$/, '');
@@ -2334,6 +2416,48 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       navRow ? (badgeMismatch.length
         ? badgeMismatch.map(i => `${i.href} 首页 ${i.badge} / 数据 ${(needTruth.needs[String(i.href).replace(/^need\//, '').replace(/\/$/, '')] || []).length}`).join(' · ')
         : `${navRow.items.map(i => `${i.label}${i.badge}`).join(' ')}`) : '—');
+    // 反向也查：数据里每个有命中的需求都必须有入口（漏项 = 少一个入口），且 href 不重复
+    const cardSlugs = new Set((navRow ? navRow.items : []).map(i => String(i.href || '').replace(/^need\//, '').replace(/\/$/, '')));
+    const missingEntries = Object.keys(needTruth.needs).filter(slug => !cardSlugs.has(slug));
+    check('首页专题导航卡：数据里每个需求都有对应入口（没有漏项、href 不重复）',
+      Boolean(navRow) && missingEntries.length === 0 && cardSlugs.size === navRow.items.length,
+      navRow ? `${cardSlugs.size} 个不同 href · 漏 ${missingEntries.length} 个${missingEntries.length ? `（${missingEntries.join(', ')}）` : ''}` : '—');
+
+    // ⑤ 真实导航（不是比 href 字符串）：至少 3 张**不同的**卡用 page.click 真点，
+    //    要求落到 /need/<slug>/、HTTP 200、落地页 h1 与注册项的 heading 逐字相等。
+    //    取样点 = 注册表的首 / 中 / 末三条：覆盖首屏第一张（最容易被浮层吃掉的那张）、
+    //    中间一张、以及换行边缘的最后一张 —— 只比 href 时这三张全都「通过」，点了才知道。
+    const clickIdx = [...new Set([0, Math.floor(needPages.length / 2), needPages.length - 1])].filter(i => needPages[i]);
+    for (const i of clickIdx) {
+      const spec = needPages[i];
+      await page.goto(base, { waitUntil: 'load' });
+      await waitForApp(page);
+      const sel = `nav.needs a.need-card[href="${spec.route}"]`;
+      const hits = await page.locator(sel).count();
+      const errorsBefore = errors.length;
+      let resp = null;
+      let landed = '';
+      let h1 = '';
+      if (hits === 1) {
+        // 先挂响应监听再点：顺序反了就会漏掉那次导航的响应（本地服务器毫秒级返回）
+        const waiting = page.waitForResponse(r => r.request().isNavigationRequest() &&
+          r.url().split(/[?#]/)[0].endsWith(`/need/${spec.slug}/`), { timeout: 20000 }).catch(() => null);
+        await page.click(sel);
+        resp = await waiting;
+        await page.waitForURL(u => u.href.split(/[?#]/)[0].endsWith(`/need/${spec.slug}/`), { timeout: 20000 }).catch(() => {});
+        await page.waitForLoadState('load');
+        await page.waitForFunction(() => {
+          const el = document.querySelector('h1');
+          return !!el && el.textContent.trim().length > 0;
+        }).catch(() => {});
+        landed = (page.url() || '').split(/[?#]/)[0];
+        h1 = await page.evaluate(() => ((document.querySelector('h1') || {}).textContent || '').trim());
+      }
+      check(`首页专题导航卡：真点第 ${i + 1} 张卡「${spec.label}」→ /need/${spec.slug}/（HTTP 200 · h1 与注册项一致）`,
+        hits === 1 && Boolean(resp) && resp.status() === 200 &&
+        landed.endsWith(`/need/${spec.slug}/`) && h1 === spec.heading && errors.length === errorsBefore,
+        `点到卡 ${hits} 张 · HTTP ${resp ? resp.status() : '—'} · 落地 ${landed || '—'} · h1「${h1}」/ 注册项「${spec.heading}」· JS 错误 ${errors.length - errorsBefore} 个`);
+    }
 
     // 逐条落地页：能打开、canonical 自指、条目集合逐 id 相等、内链真能到详情页
     for (const [slug, expectedIds] of Object.entries(needTruth.needs)) {
@@ -2413,20 +2537,101 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       }
     }
 
-    // 有 JS 的入口行 + 窄屏几何：不做横滑、不被裁、不撑宽页面
+    // 有 JS 的入口行 + 响应式几何：1600/1440/1280/768/430/390 逐档把**每一张卡**的矩形读出来。
     await page.goto(base, { waitUntil: 'load' });
     await waitForApp(page);
+    /**
+     * 为什么是「逐档 + 逐张」而不是只量一次 390px：
+     * 入口行从 flex 换成了网格（桌面 5 列 → ≤1180 三列 → ≤760 两列 → ≤560 单列），
+     * 断点写错时的症状各不相同 —— 有的档 10 张会挤成一行（每张只剩 86px、说明全被截断），
+     * 有的档某一张越出视口右缘（页面级横向溢出还是 0，因为它被 nav 的宽度兜住了）。
+     * 所以每一档都问三个问题：每张卡都在视口内吗？有没有两张叠在一起？页面横向能滚吗？
+     */
+    for (const width of [1600, 1440, 1280, 768, 430, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.waitForTimeout(150);
+      const geo = await page.evaluate(() => {
+        const nav = document.querySelector('nav.needs');
+        if (!nav) return null;
+        const grid = nav.querySelector('.need-grid');
+        const cards = [...nav.querySelectorAll('a.need-card')];
+        const rects = cards.map(a => {
+          const r = a.getBoundingClientRect();
+          return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height };
+        });
+        let overlaps = 0;
+        for (let i = 0; i < rects.length; i++) for (let j = i + 1; j < rects.length; j++) {
+          const a = rects[i], b = rects[j];
+          if (a.left < b.right - 0.5 && b.left < a.right - 0.5 && a.top < b.bottom - 0.5 && b.top < a.bottom - 0.5) overlaps++;
+        }
+        const tops = [...new Set(rects.map(r => Math.round(r.top)))].sort((x, y) => x - y);
+        const navStyle = getComputedStyle(nav);
+        return {
+          total: cards.length,
+          visible: rects.filter(r => r.width > 0 && r.height > 0 && r.left >= -0.5 && r.right <= window.innerWidth + 1).length,
+          minLeft: rects.length ? Math.round(Math.min(...rects.map(r => r.left))) : 0,
+          maxRight: rects.length ? Math.round(Math.max(...rects.map(r => r.right))) : 0,
+          heights: [...new Set(rects.map(r => Math.round(r.height)))],
+          clipped: cards.filter(a => a.scrollWidth > a.clientWidth + 1).length,
+          perRow: tops.map(t => rects.filter(r => Math.round(r.top) === t).length),
+          rows: tops.length,
+          tracks: grid ? getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length : 0,
+          navH: Math.round(nav.getBoundingClientRect().height),
+          navOverflowX: navStyle.overflowX,
+          navScrollable: nav.scrollWidth > nav.clientWidth + 1,
+          navScrollW: nav.scrollWidth,
+          navClientW: nav.clientWidth,
+          // 容器自身的计算样式（v1.8.1 起单独成条断言）：横向滚动容器藏入口的机制是
+          // 「溢出被容器吃掉、页面级宽度照旧正常」，光看卡片矩形与 documentElement.scrollWidth 看不出来。
+          gridOverflowX: grid ? getComputedStyle(grid).overflowX : '(没有 .need-grid)',
+          gridScrollable: grid ? grid.scrollWidth > grid.clientWidth + 1 : false,
+          gridScrollW: grid ? grid.scrollWidth : null,
+          gridClientW: grid ? grid.clientWidth : null,
+          overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          overlaps
+        };
+      });
+      check(`专题导航卡 ${width}px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）`,
+        Boolean(geo) && geo.total > 0 && geo.visible === geo.total && geo.overlaps === 0 && geo.overflowX === 0,
+        geo ? `${geo.visible}/${geo.total} 张在视口内 · left ${geo.minLeft} / right ${geo.maxRight}（视口 ${width}）· ${geo.rows} 行（${geo.perRow.join('/')}）· 卡高 ${geo.heights.join('/')}px · 重叠 ${geo.overlaps} 对 · 页面溢出 ${geo.overflowX}px`
+          : '找不到 nav.needs');
+      check(`专题导航卡 ${width}px：.needs 不是横向滚动容器、卡片没有被裁`,
+        Boolean(geo) && geo.navOverflowX !== 'auto' && geo.navOverflowX !== 'scroll' && !geo.navScrollable && geo.clipped === 0,
+        geo ? `overflow-x=${geo.navOverflowX} · nav.scrollWidth ${geo.navScrollable ? '>' : '≤'} clientWidth · 被裁 ${geo.clipped} 张 · 整块 ${geo.navH}px` : '—');
+      /* v1.8.1（T6 返工）：**直接**断言「这一块按设计不是横向滚动容器」——独立于卡片当前有没有溢出。
+         为什么必须单独一条（复核者 T4 的原始 finding，队长独立复现）：横向滚动容器藏入口的机制正是
+         「溢出被容器吃掉、页面级宽度照旧正常」——`overflow-x:auto` 时容器在滚动位置 0 上量到的
+         `documentElement.scrollWidth - clientWidth` 依然是 0，卡片矩形也全都「在视口内」，
+         上面那两条（每张卡在视口内 / nav 不是横滑容器且卡片没被裁）会全部保持绿。
+         实测（可复核文件：`research/_raw/home-topic-entry-cards-v1/t6-m6-check.js` 自证探针 +
+         `t6-mut-M6a.json/.log` 完整套件记录 + `t3-mut-M6a.apply.json` 的锚点命中数与 sha）：
+         只把 `overflow-x:auto` 注入**基础** .need-grid 规则（5 列、内容本来就没溢出，grid 的
+         scrollWidth/clientWidth 仍然相等）时，旧断言失败 0 条、**这一条失败 6 条**（6 档视口各一条）。
+         两种形态分开记、不混：M6a = 只注入基础规则（纯语义缺陷、几何全绿）；M6b = 注入全部四条 .need-grid 规则。
+         逐档现场数字与原始输出见 VERIFY-REPORT.md 的「T6 返工追加」小节。
+         判据只取**计算样式**（overflow-x ∉ {auto, scroll}）；scrollWidth/clientWidth 只作为现场数字打印，
+         不当作「必须相等」的判据（内容真的超宽时，这块也不该横滑，而应该降列/换行）。 */
+      check(`专题导航卡 ${width}px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）`,
+        Boolean(geo) && geo.navOverflowX !== 'auto' && geo.navOverflowX !== 'scroll' &&
+        geo.gridOverflowX !== 'auto' && geo.gridOverflowX !== 'scroll',
+        geo ? `.needs overflow-x=${geo.navOverflowX} · .need-grid overflow-x=${geo.gridOverflowX} · ` +
+          `scrollWidth/clientWidth：needs ${geo.navScrollW}/${geo.navClientW} · grid ${geo.gridScrollW}/${geo.gridClientW}` : '—');
+      if (width === 1440) {
+        check('专题导航卡 1440px：.need-grid 轨道数 == 5，10 张排成 5×2（不再 10 张挤一行）',
+          Boolean(geo) && geo.tracks === 5 && geo.rows === 2 && geo.perRow.length === 2 && geo.perRow.every(n => n === 5),
+          geo ? `${geo.tracks} 条轨道 · ${geo.rows} 行（${geo.perRow.join('/')}）` : '—');
+      }
+    }
+
+    // 390/360：判据不动（全部入口在视口内 + 不被裁 + 页面不横向溢出），只把选择器
+    // 从 `.nl-full` / `.nlinks` 换成整卡 `.need-card` —— 旧结构那两条（短标签切换 / 每组两列）
+    // 的判据在新结构里**不存在**（没有两套 span、也没有 .nlinks），留着只会是永远为真的死断言。
     for (const width of [390, 360]) {
       await page.setViewportSize({ width, height: 844 });
       await page.waitForTimeout(150);
       const geo = await page.evaluate(() => {
         const nav = document.querySelector('nav.needs');
-        const links = [...nav.querySelectorAll('a')];
-        const visibleLabel = a => {
-          const els = [...a.querySelectorAll('.nl-full, .nl-short')];
-          const shown = els.filter(el => getComputedStyle(el).display !== 'none');
-          return shown.map(el => el.textContent).join('');
-        };
+        const links = [...nav.querySelectorAll('a.need-card')];
         const tops = [...new Set(links.map(a => Math.round(a.getBoundingClientRect().top)))].sort((x, y) => x - y);
         return {
           rows: new Set(links.map(a => a.offsetTop)).size,
@@ -2439,46 +2644,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           }).length,
           total: links.length,
           overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-          navScrollW: nav.scrollWidth,
-          navClientW: nav.clientWidth,
-          // 窄屏必须**真的**切到短标签。这一条防的是「CSS 媒体查询没生效」——
-          // 那时十枚全称会折成 5 行、整块 204px，而 clipped/overflow 全部照旧是 0，
-          // 单看几何数字完全正常（这个坑实际踩过一次，症状只是「首屏少一张卡」）。
-          labels: links.map(a => visibleLabel(a)),
-          // 有标签一个都没显示出来 = 两套 span 都 display:none（切换规则写错）
-          labelsBlank: links.filter(a => !visibleLabel(a)).length,
           navH: Math.round(nav.getBoundingClientRect().height)
         };
       });
       check(`按需求入口 ${width}px：全部入口在视口内、不被裁、页面不横向溢出`,
         geo.clipped === 0 && geo.visible === geo.total && geo.overflowX === 0,
-        `${geo.visible}/${geo.total} 可见 · ${geo.chipRows} 行 chip（${geo.perRow.join('/')}）· 整块 ${geo.navH}px · 被裁 ${geo.clipped} · 页面溢出 ${geo.overflowX}px`);
-      check(`按需求入口 ${width}px：切到了窄屏短标签（每枚都有可见文字）`,
-        geo.labelsBlank === 0 && geo.labels.every(label => label.length > 0 && label.length <= 8),
-        `${geo.labelsBlank} 枚无文字 · 标签「${geo.labels.join('|')}」`);
-      // 每组的 chip 排布：5 枚按 2 列排必然是 2+2+1。判据不是「不许有 1」——
-      // **每组 5 枚按两列排，末行必然是 1 枚**，那是除不尽的算术而不是缺陷；
-      // 要防的是另外两件事（这两个都真实发生过，而 clipped/overflow 都还是 0）：
-      //   ① 组名占掉网格第 1 列 ⇒ 首行只排得下 2 枚、多出一行（5 枚排成 3 行）；
-      //   ② 幽灵行/被拉高 ⇒ 整块 240px 变 256px、首屏少一张卡。
-      const groups = await page.evaluate(() => {
-        const out = [];
-        document.querySelectorAll('nav.needs .nlinks').forEach(box => {
-          const links = [...box.querySelectorAll('a')];
-          const tops = [...new Set(links.map(a => Math.round(a.getBoundingClientRect().top)))].sort((x, y) => x - y);
-          out.push({
-            perRow: tops.map(t => links.filter(a => Math.round(a.getBoundingClientRect().top) === t).length),
-            gridRows: getComputedStyle(box).gridTemplateRows.split(' ').filter(Boolean).length,
-            boxH: Math.round(box.getBoundingClientRect().height)
-          });
-        });
-        return out;
-      });
-      check(`按需求入口 ${width}px：每组两列排布，没有幽灵行、没有被拉高`,
-        groups.length === 2 && groups.every(g =>
-          g.perRow.length === 3 && g.perRow[0] === 2 && g.perRow[1] === 2 && g.perRow[2] === 1 &&
-          g.gridRows === 3 && g.boxH <= 100) && geo.navH < 300,
-        `${groups.length} 组 · ${groups.map(g => `每行 ${g.perRow.join('/')}（grid 轨道 ${g.gridRows} · 块高 ${g.boxH}px）`).join(' · ')} · 整块 ${geo.navH}px`);
+        `${geo.visible}/${geo.total} 可见 · ${geo.chipRows} 行卡（${geo.perRow.join('/')}）· 整块 ${geo.navH}px · 被裁 ${geo.clipped} · 页面溢出 ${geo.overflowX}px`);
     }
     await page.setViewportSize({ width: 1440, height: 900 });
 
@@ -2500,11 +2671,18 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       }
       // 顺便：无 JS 打开**首页**时入口行必须还在（它是构建期注入的静态导航）
       await noJsP.goto(base, { waitUntil: 'load' });
-      const homeNoJs = await noJsP.evaluate(() => ({
-        entries: document.querySelectorAll('nav.needs a').length,
-        firstHref: (document.querySelector('nav.needs a') || {}).getAttribute
-          ? document.querySelector('nav.needs a').getAttribute('href') : ''
-      }));
+      const homeNoJs = await noJsP.evaluate(() => {
+        const cards = [...document.querySelectorAll('nav.needs a.need-card')];
+        return {
+          entries: document.querySelectorAll('nav.needs a').length,
+          firstHref: cards[0] ? cards[0].getAttribute('href') : '',
+          items: cards.map(a => ({
+            href: a.getAttribute('href'),
+            label: ((a.querySelector('.need-copy > strong') || {}).textContent || '').trim(),
+            desc: ((a.querySelector('.need-copy > small') || {}).textContent || '').trim()
+          }))
+        };
+      });
       await noJsCtx.close();
       check('需求页不执行 JS 也能读到判据说明与全部条目（预渲染的硬定义）',
         probes.length > 0 && probes.every(p => p.chars > 500 && p.rows > 0 && p.links > 0 && p.why && p.jumpback),
@@ -2512,6 +2690,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       check('无 JS 打开首页时「按需求找优惠」入口行仍在且指向需求页',
         homeNoJs.entries === Object.keys(needTruth.needs).length && /^need\//.test(homeNoJs.firstHref),
         `${homeNoJs.entries} 条入口 · 首条 ${homeNoJs.firstHref}`);
+      // 「预渲染」的硬定义：卡片不是在浏览器里由 JS 生成再插回去的。
+      // 判据是**逐条相等**（卡数 / 标题 / 说明 / href 一起比），不是「看起来差不多」：
+      // 任何一处只在有 JS 时才出现（或只排一次序）都会在这一条上现形。
+      const jsSide = navRow ? navRow.items.map(i => ({ href: i.href, label: i.label, desc: i.desc })) : null;
+      check('无 JS 打开首页：专题导航卡的卡数 / 标题 / 说明 / href 与有 JS 时逐条相同（构建期注入）',
+        Boolean(jsSide) && JSON.stringify(homeNoJs.items) === JSON.stringify(jsSide),
+        `${homeNoJs.items.length} 张卡逐条比对${JSON.stringify(homeNoJs.items) === JSON.stringify(jsSide) ? '全部相同' : '存在差异'}` +
+        ` · 首张「${homeNoJs.items[0] ? homeNoJs.items[0].href : '—'}」/「${homeNoJs.items[0] ? homeNoJs.items[0].label : '—'}」/「${homeNoJs.items[0] ? homeNoJs.items[0].desc : '—'}」`);
     }
   }
 
@@ -2690,7 +2876,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       stored: (() => { try { return localStorage.getItem('dsh.view'); } catch (e) { return 'n/a'; } })()
     };
   }, JUMP_GEOM);
-  check('列表视图：首屏完整可见 ≥ 12 行（实测 13，卡片视图 9）', rowsView.visible >= 12,
+  /* 阈值 12 → 10（2026-10-05，队长授权同步；与上面「首屏完整可见卡片 ≥ 6」是**同一笔账**）。
+     列表视图与卡片视图共用同一段固定顶部（表头 / 结果条 / 专题导航卡），所以首页专题卡把
+     nav.needs 从 31px 抬到 153px（δ = +122px）以后，列表视图的起点同步下移：
+     同一 dist 的归因实验（只在运行时把 nav.needs 压回 31px）实测 listTop 217 → 339px、
+     首屏完整可见行数 13 → 10（行高 46px，122px ÷ 46 ≈ 2.7 行）、页高差额正好 122px。
+     阈值仍严格等于实测值（10），不是「放宽到看不见回归」：顶部再加任何一条新的独立条带
+     （哪怕只有 47px）都会让这一条再红一次；断言名里不再写死卡片视图的数字 ——
+     卡片视图的读数由 detail 动态打印（rendered.firstScreenFull），写死就会同步漏改。 */
+  check('列表视图：首屏完整可见 ≥ 10 行', rowsView.visible >= 10,
     `${rowsView.visible} 行（行高 ${rowsView.rowHeight}px · 共 ${rowsView.rows} 行 · 页高 ${rowsView.pageHeight}px）；` +
     `卡片视图同口径 ${rendered.firstScreenFull} 张`);
   check('列表视图：条目数与卡片一致且字段同源',

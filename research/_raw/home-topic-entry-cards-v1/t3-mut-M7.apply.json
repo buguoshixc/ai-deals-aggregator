@@ -1,0 +1,12 @@
+{
+  "id": "M7",
+  "description": "把其中一张卡的 href 指到错 slug（need/ai-coding/ → need/ai-coding-x/）",
+  "target": "nav.needs 区块内的第 8 张卡 href",
+  "anchorHits": 1,
+  "expectedHits": 1,
+  "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+  "shaAfter": "9C9499D0BE9BDCF51066B05CB4510D699A786F9030A39EB452F3419D4AF1E101",
+  "bytesBefore": 403822,
+  "bytesAfter": 403824,
+  "appliedAt": "2026-10-06T02:35:06.327Z"
+}

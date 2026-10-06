@@ -1,0 +1,12 @@
+{
+  "id": "M2",
+  "description": "删掉卡上的说明行 <small>…</small>（卡片结构残缺）",
+  "target": "nav.needs 区块内的 <small>",
+  "anchorHits": 10,
+  "expectedHits": 10,
+  "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+  "shaAfter": "E45A8A63624E81980ECD3438FBE9C8DF15BC4F7DC50447F9A62FF5464203DB78",
+  "bytesBefore": 403822,
+  "bytesAfter": 403276,
+  "appliedAt": "2026-10-06T02:28:24.467Z"
+}
