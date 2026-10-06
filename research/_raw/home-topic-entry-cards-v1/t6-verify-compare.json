@@ -1,0 +1,4008 @@
+{
+  "target": "http://127.0.0.1:62282/",
+  "generatedAt": "2026-10-05T16:06:51.415Z",
+  "total": 804,
+  "failed": 0,
+  "metrics": {
+    "cards": 50,
+    "cols": 3,
+    "tierHeads": 4,
+    "tiles": 53,
+    "tileKeys": 32,
+    "cardHeight": 192,
+    "firstScreenFull": 6,
+    "firstScreenPart": 9,
+    "gridTop": 349,
+    "pageHeight": 4787,
+    "prerenderedCards": 50,
+    "prerenderedLinks": 50,
+    "coveredDeals": 80,
+    "leafMutationCodes": {
+      "M1": [
+        "center"
+      ],
+      "M2": [
+        "width"
+      ],
+      "M3": [
+        "axis",
+        "src-width"
+      ],
+      "M4": [
+        "self-overflow@390",
+        "page-overflow@390"
+      ],
+      "M5": [
+        "leaf-consistency",
+        "leaf-consistency"
+      ],
+      "M4-control": []
+    },
+    "leafColumnWidth": 1120,
+    "leafDealWidth": 1120,
+    "leafModelWidth": 1120,
+    "leafMobileOverflow": 0,
+    "leafColumnWidths": {
+      "deal": {
+        "390": 358,
+        "768": 728,
+        "1280": 1120,
+        "1440": 1120,
+        "1600": 1120
+      },
+      "model": {
+        "390": 358,
+        "768": 728,
+        "1280": 1120,
+        "1440": 1120,
+        "1600": 1120
+      }
+    },
+    "leafSample": {
+      "dealId": "8e7b0fd03e73",
+      "dealUrlLength": 129,
+      "modelSlug": "360zhinao-pro"
+    },
+    "externalRequests": 0,
+    "analyticsRequests": 0,
+    "failedRequests": 0,
+    "jsErrors": 0,
+    "jsErrorSamples": [],
+    "httpNotFound": [],
+    "target": "http://127.0.0.1:62282/",
+    "generatedAt": "2026-10-05T16:06:51.415Z"
+  },
+  "checks": [
+    {
+      "name": "静态骨架有卡片",
+      "ok": true,
+      "detail": "50 条"
+    },
+    {
+      "name": "静态骨架有外链",
+      "ok": true,
+      "detail": "50 个"
+    },
+    {
+      "name": "力度分带已预渲染",
+      "ok": true,
+      "detail": "4 档"
+    },
+    {
+      "name": "筛选条已预渲染",
+      "ok": true,
+      "detail": "13 个 facet"
+    },
+    {
+      "name": "logo 已预渲染",
+      "ok": true,
+      "detail": "53 个 tile"
+    },
+    {
+      "name": "无 JS 时不显示「详情」提示",
+      "ok": true
+    },
+    {
+      "name": "无 JS 时不渲染收藏/对比控件",
+      "ok": true,
+      "detail": "星标 0 个 / 可见 0 个 · 对比条 0 个 / 可见 false · 对比弹层展开 false"
+    },
+    {
+      "name": "无 JS 时也没有收藏入口 / 失效清理按钮（同样是 JS 建的）",
+      "ok": true,
+      "detail": "收藏入口 0 个 · 清理按钮 0 个"
+    },
+    {
+      "name": "静态骨架里没有「已核验」字样",
+      "ok": true,
+      "detail": "0 张命中"
+    },
+    {
+      "name": "静态骨架每张卡片都带「数据更新」日期",
+      "ok": true,
+      "detail": "50/50"
+    },
+    {
+      "name": "卡片数与预渲染一致",
+      "ok": true,
+      "detail": "50 条"
+    },
+    {
+      "name": "桌面三列",
+      "ok": true,
+      "detail": "3 列"
+    },
+    {
+      "name": "卡片高度统一",
+      "ok": true,
+      "detail": "192px"
+    },
+    {
+      "name": "首屏完整可见卡片 ≥ 6",
+      "ok": true,
+      "detail": "完整 6 张 / 含截断 9 张 · 网格起点 349px · 页高 4787px"
+    },
+    {
+      "name": "汇总条已填充",
+      "ok": true,
+      "detail": "显示 50 条卡片 · 国内 30 · 国外 20 · 覆盖 4 个力度档位"
+    },
+    {
+      "name": "顶栏汇总已填充",
+      "ok": true,
+      "detail": "50 条优惠 · 更新 2026-10-05"
+    },
+    {
+      "name": "首页顶栏的套餐对比入口在配色切换器**右边**（几何判定，不是\"还在页面上\"）",
+      "ok": true,
+      "detail": "入口 839-979px · 切换器右缘 821px · 汇总条左缘 1253px"
+    },
+    {
+      "name": "首页顶栏入口是实心品牌色药丸（填充 == 页面 --brand、文字 == --on-accent、加粗）",
+      "ok": true,
+      "detail": "填充 rgb(59, 91, 253)（--brand #3b5bfd）· 文字 rgb(255, 255, 255)（--on-accent #fff）· 字重 600"
+    },
+    {
+      "name": "首页顶栏 761px：页面不横向溢出、搜索框仍可用、入口仍在视口里",
+      "ok": true,
+      "detail": "溢出 0px · 搜索框 721px · 顶栏高 104px"
+    },
+    {
+      "name": "首页顶栏 820px：页面不横向溢出、搜索框仍可用、入口仍在视口里",
+      "ok": true,
+      "detail": "溢出 0px · 搜索框 780px · 顶栏高 104px"
+    },
+    {
+      "name": "首页顶栏 900px：页面不横向溢出、搜索框仍可用、入口仍在视口里",
+      "ok": true,
+      "detail": "溢出 0px · 搜索框 860px · 顶栏高 104px"
+    },
+    {
+      "name": "首页顶栏 940px：页面不横向溢出、搜索框仍可用、入口仍在视口里",
+      "ok": true,
+      "detail": "溢出 0px · 搜索框 900px · 顶栏高 104px"
+    },
+    {
+      "name": "首页顶栏 941px：页面不横向溢出、搜索框仍可用、入口仍在视口里",
+      "ok": true,
+      "detail": "溢出 0px · 搜索框 216px · 顶栏高 59px"
+    },
+    {
+      "name": "全部 logo 可加载且有尺寸",
+      "ok": true,
+      "detail": "32 个"
+    },
+    {
+      "name": "缩写块有字 / 不裁切 / 已标注",
+      "ok": true,
+      "detail": "3 个（空 0 / 裁切 0 / 未标注 0） 例：稀宇=MiniMax（稀宇科技） 稀宇=MiniMax（稀宇科技） 稀宇=MiniMax（稀宇科技）"
+    },
+    {
+      "name": "官方图形与缩写块不混用",
+      "ok": true,
+      "detail": "每张卡二选一"
+    },
+    {
+      "name": "卡片内容无溢出",
+      "ok": true,
+      "detail": "全部卡片内容在高度内"
+    },
+    {
+      "name": "每条优惠按 id 归到恰好一张卡上（没有条目丢失、也没有凭空捏造的 id）",
+      "ok": true,
+      "detail": "未认领 0 条 / 被多张卡认领 0 条 / 卡片上不存在的 id 0 个"
+    },
+    {
+      "name": "认领关系同厂商（折叠键把厂商算进去了，不是只按优惠文案并卡）",
+      "ok": true,
+      "detail": "全部 80 条都落在同一厂商的卡片上"
+    },
+    {
+      "name": "折叠卡声明的覆盖条数与实际认领数一致（不虚报）",
+      "ok": true,
+      "detail": "智谱AI 免费模型：声明 7 / 认领 7 · 百度千帆 新用户免费额度：声明 17 / 认领 17 · 火山方舟 免费额度：声明 9 / 认领 9"
+    },
+    {
+      "name": "折叠卡的额度口径与数据一致（各型号额度不同时不许写「共用同一份额度」）",
+      "ok": true,
+      "detail": "智谱AI 免费模型：varies · 数据里 6 种文案 · 卡上「各型号额度不同」 · 百度千帆 新用户免费额度：shared · 数据里 1 种文案 · 卡上「共用同一份额度」 · 火山方舟 免费额度：varies · 数据里 7 种文案 · 卡上「各型号额度不同」"
+    },
+    {
+      "name": "折叠卡那行优惠文案没被裁、且说清了代表条目那句",
+      "ok": true,
+      "detail": "智谱AI 免费模型：50 字 · 百度千帆 新用户免费额度：40 字 · 火山方舟 免费额度：27 字"
+    },
+    {
+      "name": "折叠卡把成员原文预渲染进静态正文（无 JS / 爬虫也读得到）",
+      "ok": true,
+      "detail": "智谱AI 免费模型：6/6 种原文 · 374 字 · 百度千帆 新用户免费额度：1/1 种原文 · 375 字 · 火山方舟 免费额度：7/7 种原文 · 365 字"
+    },
+    {
+      "name": "被折叠的每一条都还能从首页点到自己的详情页",
+      "ok": true,
+      "detail": "智谱AI 免费模型：成员链接 7/7 · 百度千帆 新用户免费额度：成员链接 17/17 · 火山方舟 免费额度：成员链接 9/9"
+    },
+    {
+      "name": "悬停确实展开了 logo 簇",
+      "ok": true,
+      "detail": "间距 -6px → 4px（4 个 tile）"
+    },
+    {
+      "name": "展开前后：卡片高 / logo 簇宽 / 标题宽 均不变",
+      "ok": true,
+      "detail": "{\"before\":{\"card\":192,\"strip\":105,\"tileGap\":-6,\"title\":167,\"titleBox\":20,\"tiles\":4},\"after\":{\"card\":192,\"strip\":105,\"tileGap\":4,\"title\":167,\"titleBox\":20,\"tiles\":4}}"
+    },
+    {
+      "name": "点卡片打开弹层",
+      "ok": true,
+      "detail": "「百度千帆 新用户免费额度」"
+    },
+    {
+      "name": "弹层标题与卡片一致",
+      "ok": true,
+      "detail": "弹层「百度千帆 新用户免费额度」"
+    },
+    {
+      "name": "弹层在视口正中",
+      "ok": true,
+      "detail": "中心偏移 x=0px y=0px"
+    },
+    {
+      "name": "弹层未溢出视口",
+      "ok": true
+    },
+    {
+      "name": "弹层有字段表与领取入口",
+      "ok": true,
+      "detail": "12 个字段"
+    },
+    {
+      "name": "弹层 logo 一行平铺",
+      "ok": true,
+      "detail": "4 个 tile，宽 38px"
+    },
+    {
+      "name": "弹层里有完整的信息来源块（来源 / 新鲜度 / 依据）",
+      "ok": true,
+      "detail": "10 行 · 含「最近成功采集」=true"
+    },
+    {
+      "name": "可以关闭",
+      "ok": true
+    },
+    {
+      "name": "筛选条里不再有「已核验」按钮与计数",
+      "ok": true
+    },
+    {
+      "name": "卡片与顶栏不再出现「已核验」字样",
+      "ok": true,
+      "detail": "卡片 0 张命中"
+    },
+    {
+      "name": "每张卡片都标注「数据更新」日期",
+      "ok": true,
+      "detail": "50/50"
+    },
+    {
+      "name": "「国内」筛选生效",
+      "ok": true,
+      "detail": "50 → 30"
+    },
+    {
+      "name": "取消筛选后回到全量",
+      "ok": true,
+      "detail": "50"
+    },
+    {
+      "name": "非力度排序时不显示分带",
+      "ok": true,
+      "detail": "分带 0 个"
+    },
+    {
+      "name": "切回力度排序恢复分带",
+      "ok": true,
+      "detail": "分带 4 个，卡片 50"
+    },
+    {
+      "name": "搜索有结果且收窄",
+      "ok": true,
+      "detail": "2 条 → 百度千帆 新用户免费额度 / 扣子 Coze 部分模型限时免费 每模型 100 次/天"
+    },
+    {
+      "name": "优惠视图里存在带中文译文的卡片（检索验证的取样前提）",
+      "ok": true,
+      "detail": "Perplexity · 译文字段 discountInfo"
+    },
+    {
+      "name": "中文译文可搜：粘贴译文里的中文片段能搜到那张卡",
+      "ok": true,
+      "detail": "搜「通过验证的学生与教育工作者可优惠购买」→ 1/50 张卡 · 命中「Perplexity」=true"
+    },
+    {
+      "name": "「全部工具」视图里存在带中文译文的卡片（检索验证的取样前提）",
+      "ok": true,
+      "detail": "ChatGPT / OpenAI · 译文字段 discountInfo"
+    },
+    {
+      "name": "中文译文可搜（全部工具视图）：同样能搜到",
+      "ok": true,
+      "detail": "搜「套餐可选年付」→ 1/105 张卡 · 命中「ChatGPT / OpenAI」=true"
+    },
+    {
+      "name": "工具 Tab 有卡片",
+      "ok": true,
+      "detail": "105 条（其中工具 55）"
+    },
+    {
+      "name": "工具卡不冒充优惠",
+      "ok": true,
+      "detail": "0 条越界，55 条用灰条简介"
+    },
+    {
+      "name": "长尾厂商走名称缩写兜底",
+      "ok": true,
+      "detail": "官方图形 63 个 / 缩写块 45 个（AN GA LD LI MG NE）"
+    },
+    {
+      "name": "无横向溢出",
+      "ok": true,
+      "detail": "溢出 0px"
+    },
+    {
+      "name": "移动端单列",
+      "ok": true,
+      "detail": "1 列"
+    },
+    {
+      "name": "移动端卡片完整",
+      "ok": true,
+      "detail": "50 卡片 / 57 tile"
+    },
+    {
+      "name": "390px 与 360px：逐个控件都不被裁、不越出视口（页面级溢出查不出的那一类）",
+      "ok": true,
+      "detail": "13 + 13 个控件逐个量过：自裁 0 · 被祖先裁 0 · 越出视口 0"
+    },
+    {
+      "name": "390px 与 360px：跳转 chip 都排满一行（不折成 3+1、右侧不留大片空白）",
+      "ok": true,
+      "detail": "390px: chips=4 rows=1 perRow=[4] 余量=0px · 360px: chips=4 rows=1 perRow=[4] 余量=0px"
+    },
+    {
+      "name": "360px 页面级无横向溢出（390px 那条量不到更窄的视口）",
+      "ok": true,
+      "detail": "溢出 0px · 网格 328px / 容器 328px"
+    },
+    {
+      "name": "手机弹层也在正中",
+      "ok": true,
+      "detail": "中心偏移 x=0px y=0px"
+    },
+    {
+      "name": "手机弹层不超出屏幕",
+      "ok": true
+    },
+    {
+      "name": "卡片提示只给有译文的条目",
+      "ok": true,
+      "detail": "50 张卡中 6 张带「中文」提示"
+    },
+    {
+      "name": "提示语说明详情页有中文翻译",
+      "ok": true,
+      "detail": "详情页附中文翻译"
+    },
+    {
+      "name": "译文显示在英文原文下面",
+      "ok": true,
+      "detail": "英文仍保留：Cursor says anyone can start free.…"
+    },
+    {
+      "name": "译文确实是中文",
+      "ok": true,
+      "detail": "Cursor 表示任何人都可以免费开始使用。它的学生页面把学"
+    },
+    {
+      "name": "译文默认展开",
+      "ok": true,
+      "detail": "3 个译文块"
+    },
+    {
+      "name": "点一下能收起",
+      "ok": true,
+      "detail": "open=true 隐藏=true localStorage=0"
+    },
+    {
+      "name": "同一份详情里的译文块同步折叠",
+      "ok": true
+    },
+    {
+      "name": "刷新后仍记得「已收起」",
+      "ok": true,
+      "detail": "3 个译文块，展开 无"
+    },
+    {
+      "name": "收起后还能再展开",
+      "ok": true
+    },
+    {
+      "name": "同一会话内换卡片也保持收起（不刷新）",
+      "ok": true,
+      "detail": "「Replit」3 个译文块全部收起"
+    },
+    {
+      "name": "无译文的卡片不出现译文块",
+      "ok": true,
+      "detail": "「百川智能 海纳百川计划 免费使用 M3Plus API」0 个译文块"
+    },
+    {
+      "name": "工具卡片的英文简介也带译文",
+      "ok": true,
+      "detail": "「Grok」卡片英文「A conversational AI for timely answers f」→ 详情 1 个译文块，简介译文：对话式 AI，基于实时网络与 X 的内容给出及时回答。"
+    },
+    {
+      "name": "手机端译文可折叠且不撑破弹层",
+      "ok": true,
+      "detail": "宽度合规 / 3 块 true→false / 横向溢出 0px"
+    },
+    {
+      "name": "语义标签齐备（header / nav / main）",
+      "ok": true,
+      "detail": "header=1 nav=4 main=1"
+    },
+    {
+      "name": "筛选按钮逐个带 aria-pressed",
+      "ok": true,
+      "detail": "13/13 个"
+    },
+    {
+      "name": "亮色主题：低于 4.5:1 的文本 ≤ 20",
+      "ok": true,
+      "detail": "抽样 803 · 跳过复杂背景 8 · 低于要求 0 · 最低 4.51 · 最差 无"
+    },
+    {
+      "name": "切到深色立即生效并记住",
+      "ok": true,
+      "detail": "data-theme=dark localStorage=dark color-scheme=dark body=rgb(11, 13, 16)"
+    },
+    {
+      "name": "刷新后仍是深色（无「先亮后暗」闪回）",
+      "ok": true,
+      "detail": "data-theme=dark body=rgb(11, 13, 16)"
+    },
+    {
+      "name": "暗色主题：低于 4.5:1 的文本 ≤ 20",
+      "ok": true,
+      "detail": "抽样 803 · 低于要求 0 · 最低 5.98 · 最差 无"
+    },
+    {
+      "name": "两种主题下抽样量相当（深色不是把内容藏起来）",
+      "ok": true,
+      "detail": "亮色 803 → 暗色 803"
+    },
+    {
+      "name": "切回「跟随系统」会清掉手动选择",
+      "ok": true,
+      "detail": "data-theme=null localStorage=null"
+    },
+    {
+      "name": "prefers-reduced-motion 下动效被关掉",
+      "ok": true,
+      "detail": "卡片 transition-duration=1e-05s · 仍在动的元素 0 个"
+    },
+    {
+      "name": "同页锚点导航存在且都有落点",
+      "ok": true,
+      "detail": "4 个锚点 / 落点 4 个 / 首个落点 top=351px"
+    },
+    {
+      "name": "点锚点真的跳到该档位",
+      "ok": true,
+      "detail": "scrollY 0 → 795（#tier-2）"
+    },
+    {
+      "name": "卡片视图 + 力度优先：锚点导航真的显示（几何判定）",
+      "ok": true,
+      "detail": "hidden=false display=flex h=28 offsetH=28 可见链接=4 死链=0"
+    },
+    {
+      "name": "updated 排序：锚点导航**真的**隐藏（几何判定，不留死锚点）",
+      "ok": true,
+      "detail": "hidden=true display=none h=0 offsetH=0 可见链接=0 死链=0"
+    },
+    {
+      "name": "expiry 排序：锚点导航**真的**隐藏（几何判定，不留死锚点）",
+      "ok": true,
+      "detail": "hidden=true display=none h=0 offsetH=0 可见链接=0 死链=0"
+    },
+    {
+      "name": "切回力度优先：锚点导航恢复显示",
+      "ok": true,
+      "detail": "hidden=false display=flex h=28 offsetH=28 可见链接=4 死链=0 · 分带 4 个"
+    },
+    {
+      "name": "搜索无结果（全部档位为空）：锚点导航整块隐藏，不留死锚点",
+      "ok": true,
+      "detail": "hidden=true display=none h=0 offsetH=0 可见链接=0 死链=0 · 分带 0 个"
+    },
+    {
+      "name": "清空搜索后锚点导航恢复且每个锚点都有落点",
+      "ok": true,
+      "detail": "hidden=false display=flex h=28 offsetH=28 可见链接=4 死链=0"
+    },
+    {
+      "name": "详情里有预填 id 的纠错入口",
+      "ok": true,
+      "detail": "https://github.com/buguoshixc/ai-deals-aggregator/issues/new?title=%5B%E4%BF…（rel=noopener noreferrer）"
+    },
+    {
+      "name": "首页声明了四个订阅选择 × 两种格式 = 8 条 rel=\"alternate\"",
+      "ok": true,
+      "detail": "feed.xml · feed.json · feed/student.xml · feed/student.json · feed/developer.xml · feed/developer.json · feed/changes.xml · feed/changes.json"
+    },
+    {
+      "name": "每个订阅目标的 <title> 与首页声明的 title 逐字相同（改了注册表忘了改页面就会红）",
+      "ok": true,
+      "detail": "8 条一致"
+    },
+    {
+      "name": "全部订阅目标是 200 且被真解析器读出来（无 XML 解析错误）",
+      "ok": true,
+      "detail": "8 个目标"
+    },
+    {
+      "name": "RSS 与 JSON Feed 的条目数、id 集合两侧一致",
+      "ok": true,
+      "detail": "feed.xml 80 条 · feed/changes.xml 1 条 · feed/student.xml 12 条 · feed/developer.xml 67 条"
+    },
+    {
+      "name": "订阅条目的主链接指向**本站**页面（不是把流量导出站外）",
+      "ok": true,
+      "detail": "全部站内"
+    },
+    {
+      "name": "订阅条目的时间都是数据日期的北京时间零点（没有构建时刻泄进产物）",
+      "ok": true,
+      "detail": "feed.xml:0 · feed.json:0 · feed/changes.xml:0 · feed/changes.json:0"
+    },
+    {
+      "name": "JSON Feed 都带 icon 与 favicon；RSS 都带 <image> 与 atom:link rel=self",
+      "ok": true,
+      "detail": "两种格式的图标与自指字段齐备"
+    },
+    {
+      "name": "订阅里确实有优惠条目（不是空壳）",
+      "ok": true,
+      "detail": "feed.xml 80 条 · feed/changes.xml 1 条（变化流为空是事实）"
+    },
+    {
+      "name": "订阅里的条目链接真的打得开（换成本地地址取，不碰公网）",
+      "ok": true,
+      "detail": "deal/b56f33b3d4f3/ 200 · deal/0273d8b23412/ 200 · deal/176234a80147/ 200"
+    },
+    {
+      "name": "结构化数据含 WebSite 节点",
+      "ok": true,
+      "detail": "Organization / WebSite / BreadcrumbList / FAQPage / ItemList"
+    },
+    {
+      "name": "/feeds/ 存在且有标题",
+      "ok": true,
+      "detail": "订阅 AI 优惠 · AI 优惠聚合器"
+    },
+    {
+      "name": "/feeds/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/feeds/"
+    },
+    {
+      "name": "/feeds/ 声明恰好两个订阅源（根 Feed 对）",
+      "ok": true,
+      "detail": "2 个"
+    },
+    {
+      "name": "/feeds/ JSON-LD 是 CollectionPage + BreadcrumbList",
+      "ok": true,
+      "detail": "CollectionPage, BreadcrumbList"
+    },
+    {
+      "name": "/feeds/ 列出了全部订阅源（每个厂商 Feed 一行）",
+      "ok": true,
+      "detail": "25 行"
+    },
+    {
+      "name": "/feeds/ 上列出的每一个订阅地址都有对应产物文件",
+      "ok": true,
+      "detail": "50 个地址全部存在"
+    },
+    {
+      "name": "/feeds/ 明说不需要账号（无 JS 时也读得到）",
+      "ok": true
+    },
+    {
+      "name": "/feeds/ 的变化订阅按当前状态说清（空 ⇒ 起算日 / 非空 ⇒ 条数与最近一条日期）",
+      "ok": true,
+      "detail": "变化 1 条 · 页面写的是「最近变化 … 条 + 最近一条 …」"
+    },
+    {
+      "name": "/feeds/ 列出了「AI Deals Radar · Coding 套餐变化」的 RSS 与 JSON Feed",
+      "ok": true,
+      "detail": "标题 true · RSS true · JSON true"
+    },
+    {
+      "name": "/feeds/ 列出了「AI Deals Radar · API 价格变化」的 RSS 与 JSON Feed",
+      "ok": true,
+      "detail": "标题 true · RSS true · JSON true"
+    },
+    {
+      "name": "/feeds/ 为空的变化流那一行写出了起算日",
+      "ok": true,
+      "detail": "AI Deals Radar · Coding 套餐变化: 说 0 条=false · 有起算日=false | AI Deals Radar · API 价格变化: 说 0 条=false · 有起算日=false"
+    },
+    {
+      "name": "首页标题链接指向站内详情页",
+      "ok": true,
+      "detail": "deal/c59299cdc88e/（target=无）"
+    },
+    {
+      "name": "首页 CTA 仍直达厂商官方页",
+      "ok": true,
+      "detail": "https://platform.baichuan-ai.com/docs/guide（target=_blank）"
+    },
+    {
+      "name": "详情页有标题与面包屑",
+      "ok": true,
+      "detail": "百川智能 海纳百川计划 免费使用 M3Plus AP · 面包屑 3 段 · 正文 685 字符"
+    },
+    {
+      "name": "详情页恰好一个 h1（独立文档必须有且只有一个一级标题）",
+      "ok": true,
+      "detail": "1 个"
+    },
+    {
+      "name": "详情页 canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/deal/c59299cdc88e/（当前路径 /deal/c59299cdc88e/）"
+    },
+    {
+      "name": "详情页有返回入口与官方链接",
+      "ok": true,
+      "detail": "返回入口=true · 官方链接 2 个"
+    },
+    {
+      "name": "详情页有结构化数据",
+      "ok": true,
+      "detail": "2 段"
+    },
+    {
+      "name": "详情页没有 JS 错误",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "详情页没有外部请求",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "详情页不执行 JS 也能读到内容",
+      "ok": true,
+      "detail": "正文 1168 字符 · 标题「百川智能 海纳百川计划 免费使用 M3Plu」· 官方链接 5 个"
+    },
+    {
+      "name": "详情页出现「适用人群」结构化行，且取值不是空的",
+      "ok": true,
+      "detail": "「ERNIE-4.5-Turbo-128K 新用户免费额度」→ 开发者 · 字段表 12 格"
+    },
+    {
+      "name": "unknown 的中国大陆可用性渲染成「尚未确认」，**绝不**渲染成「中国大陆用户不可用」",
+      "ok": true,
+      "detail": "「Perplexity」：含「尚未确认」=true · 含「中国大陆用户不可用」=false"
+    },
+    {
+      "name": "chinaUsable=false 的条目照直说「中国大陆用户不可用」（确定值不得软化）",
+      "ok": true,
+      "detail": "「Google AI Pro 学生免费 12 个月（含 Gemini 高级版）」"
+    },
+    {
+      "name": "详情页有「信息来源」块，且标签行完整（≥8 行）",
+      "ok": true,
+      "detail": "「ERNIE-4.5-Turbo-128K 新用户免费额度」→ 10 行 · 1 个链接"
+    },
+    {
+      "name": "信息来源块带免责句（不构成对有效性的判断）",
+      "ok": true,
+      "detail": " 未收录官方原文片段 以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。"
+    },
+    {
+      "name": "信息来源块里有官方页面链接",
+      "ok": true,
+      "detail": "1 个链接"
+    },
+    {
+      "name": "信息来源块里没有本站自发的有效性结论（已核验 / 100% 有效）",
+      "ok": true,
+      "detail": "信息来源 官方页面 https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg 收录渠道 未署名收录渠道 收录来源 百度千帆"
+    },
+    {
+      "name": "人工策展条目：「最近成功采集」显示「不适用」（不是「未知」）",
+      "ok": true,
+      "detail": "信息来源 官方页面 https://www.volcengine.com/docs/6359/1279663 收录渠道 未署名收录渠道 收录来源 Curated"
+    },
+    {
+      "name": "人工策展条目不会假装成有采集记录（没有 <time>）",
+      "ok": true,
+      "detail": "time="
+    },
+    {
+      "name": "采集侧条目：渲染出真实的「最近成功采集」时间（known 不得被降级成「未知」）",
+      "ok": true,
+      "detail": "time=2026-10-05T04:14:30.776Z · 段「 2026-10-05 12:14（北京时间） · 最近一次采集正常 断言依据 」"
+    },
+    {
+      "name": "有官方引文的条目：引文渲染出来，并带出处链接与采集日期",
+      "ok": true,
+      "detail": "ps://ai.360.com/open/zh/terms 以下片段摘自厂商官方页面，仅用于核对本页信息；完整内容与最终条款以官方页面为准。 以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。"
+    },
+    {
+      "name": "引文块带「仅用于核对本页信息」的说明",
+      "ok": true
+    },
+    {
+      "name": "详情页信息来源块 390px 不产生横向溢出（长 URL 必须换行而不是撑宽）",
+      "ok": true,
+      "detail": "页面溢出 0px · 10 行中越界 0 行"
+    },
+    {
+      "name": "详情页信息来源块 360px 不产生横向溢出（长 URL 必须换行而不是撑宽）",
+      "ok": true,
+      "detail": "页面溢出 0px · 10 行中越界 0 行"
+    },
+    {
+      "name": "详情页有「变更记录」块，且带免责句与总数",
+      "ok": true,
+      "detail": "总数 0 · 0 条事件行"
+    },
+    {
+      "name": "「变更记录」块里没有本站自发的有效性结论（已核验 / 100% 有效）",
+      "ok": true,
+      "detail": "变更记录 暂无变更记录 起算日之前的状态没有历史记录，因此这里不显示任何变化。"
+    },
+    {
+      "name": "没有变更记录的条目：明说「暂无变更记录」而不是空白（空白会冒充「没有变化」）",
+      "ok": true,
+      "detail": "total=0 · 事件 0 行 · 文本「变更记录 暂无变更记录 起算日之前的状态没有历史记录，因此这里不显示任何变化。」"
+    },
+    {
+      "name": "详情页不执行 JS 也能读到「变更记录」块（预渲染的硬定义）",
+      "ok": true,
+      "detail": "文本「变更记录 暂无变更记录 起算日之前的状态没有历史记录，因此这里不显示任何变化。」"
+    },
+    {
+      "name": "详情页变更记录块 390px 不产生横向溢出",
+      "ok": true,
+      "detail": "页面溢出 0px · 0 条事件行中越界 0 行"
+    },
+    {
+      "name": "详情页变更记录块 360px 不产生横向溢出",
+      "ok": true,
+      "detail": "页面溢出 0px · 0 条事件行中越界 0 行"
+    },
+    {
+      "name": "搜「中国大陆」命中数 ≤ 已知可用性的条目数（unknown 不进 haystack，结果不许虚高）",
+      "ok": true,
+      "detail": "命中 9 张卡 · 已知可用性 31 条 · unknown 6 条"
+    },
+    {
+      "name": "/student/ 能打开且标题非空",
+      "ok": true,
+      "detail": "「面向学生的 AI 优惠」· 表格 12 行 · 正文 2285 字"
+    },
+    {
+      "name": "/student/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/student/"
+    },
+    {
+      "name": "/student/ 条目集合与 deals.json 的 collections 逐 id 相等",
+      "ok": true,
+      "detail": "页面 12 条 / 数据 12 条"
+    },
+    {
+      "name": "/student/ 恰好 4 个订阅源 + 恰好三段 JSON-LD（CollectionPage / BreadcrumbList / ItemList）",
+      "ok": true,
+      "detail": "feed 4 个 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]（期望 [BreadcrumbList, CollectionPage, ItemList]）"
+    },
+    {
+      "name": "/student/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/developer/ 能打开且标题非空",
+      "ok": true,
+      "detail": "「面向开发者的 AI 优惠」· 表格 67 行 · 正文 7188 字"
+    },
+    {
+      "name": "/developer/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/developer/"
+    },
+    {
+      "name": "/developer/ 条目集合与 deals.json 的 collections 逐 id 相等",
+      "ok": true,
+      "detail": "页面 67 条 / 数据 67 条"
+    },
+    {
+      "name": "/developer/ 恰好 4 个订阅源 + 恰好三段 JSON-LD（CollectionPage / BreadcrumbList / ItemList）",
+      "ok": true,
+      "detail": "feed 4 个 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]（期望 [BreadcrumbList, CollectionPage, ItemList]）"
+    },
+    {
+      "name": "/developer/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/free-api/ 能打开且标题非空",
+      "ok": true,
+      "detail": "「可以免费调用的 API」· 表格 45 行 · 正文 5327 字"
+    },
+    {
+      "name": "/free-api/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/free-api/"
+    },
+    {
+      "name": "/free-api/ 条目集合与 deals.json 的 collections 逐 id 相等",
+      "ok": true,
+      "detail": "页面 45 条 / 数据 45 条"
+    },
+    {
+      "name": "/free-api/ 恰好 4 个订阅源 + 恰好三段 JSON-LD（CollectionPage / BreadcrumbList / ItemList）",
+      "ok": true,
+      "detail": "feed 4 个 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]（期望 [BreadcrumbList, CollectionPage, ItemList]）"
+    },
+    {
+      "name": "/free-api/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "分类页不执行 JS 也能读到条目表（预渲染的硬定义）",
+      "ok": true,
+      "detail": "/student/ 12 行/2261 字 · /developer/ 67 行/7109 字 · /free-api/ 45 行/5270 字 · 最短正文 2261 字"
+    },
+    {
+      "name": "分类页无 JS 时页脚分类入口仍在且指向正确（站内导航不是 JS 控件）",
+      "ok": true,
+      "detail": "页脚链接 ../student/, ../developer/, ../free-api/"
+    },
+    {
+      "name": "分类页没有把「尚未确认」压成「不可用」",
+      "ok": true,
+      "detail": "/student/ 不可用=true/尚未确认=true · /developer/ 不可用=false/尚未确认=true · /free-api/ 不可用=false/尚未确认=true"
+    },
+    {
+      "name": "首页点「student」筛出的卡片数与 /student/ 一致（同一份判据）",
+      "ok": true,
+      "detail": "入口「🎓 学生12」→ 12 张卡 · 分类页/数据 12 条"
+    },
+    {
+      "name": "首页点「developer」筛出的卡片数与 /developer/ 一致（同一份判据）",
+      "ok": true,
+      "detail": "入口「⌨ 开发者37」→ 37 张卡 · 分类页/数据 67 条（折叠合并 30 条）"
+    },
+    {
+      "name": "首页点「free-api」筛出的卡片数与 /free-api/ 一致（同一份判据）",
+      "ok": true,
+      "detail": "入口「⚡ 免费 API15」→ 15 张卡 · 分类页/数据 45 条（折叠合并 30 条）"
+    },
+    {
+      "name": "取消分类筛选后回到全量卡片视图（进入/退出不改其它筛选）",
+      "ok": true,
+      "detail": "50 张卡"
+    },
+    {
+      "name": "首页专题导航卡：卡数 == NEED_PAGES.length（按注册表现算，不写死条数）",
+      "ok": true,
+      "detail": "10 张卡 / 注册表 10 条需求 · dist/deals.json 里 10 个需求有命中"
+    },
+    {
+      "name": "首页有「按需求找优惠」入口行，且每条都是 <a>（无 JS 也能点）",
+      "ok": true,
+      "detail": "10 条入口 / 数据里 10 个需求 · JS 控件 0 个 · 卡里嵌套可点元素 0 个"
+    },
+    {
+      "name": "首页专题导航卡：逐条 label / href 与 NEED_PAGES 对账不错位（顺序一致）",
+      "ok": true,
+      "detail": "10 张卡与注册表同序同值（学生专享 / 教育身份可领 / 无需信用卡 / 国内可用 / 完全免费 / 免费 API / 免费 Tokens / AI Coding / 免费模型 / 开发者 Credits）"
+    },
+    {
+      "name": "入口行里没有任何 JS 控件（无 JS 时不给可点暗示）",
+      "ok": true,
+      "detail": "JS 控件 0 个 · facet 标记 0 个 · 旧 chip 类残留 []"
+    },
+    {
+      "name": "首页专题导航卡：与筛选器语义隔离（nav.needs 内 [data-facet] / [aria-pressed] / [role=\"button\"] 计数为 0）",
+      "ok": true,
+      "detail": "0 个（[data-facet] + [aria-pressed] + [role=\"button\"] 合计）"
+    },
+    {
+      "name": "首页专题导航卡：每张卡四件套齐全（need-icon / 非空 strong / 非空 small / need-arrow）",
+      "ok": true,
+      "detail": "10 张卡四件套齐全 · 例「🎓 学生专享 12 学生套餐与教育折扣，附申请门槛 →」"
+    },
+    {
+      "name": "首页每条入口的数字 == 数据里该需求的条数",
+      "ok": true,
+      "detail": "学生专享12 教育身份可领7 无需信用卡1 国内可用30 完全免费60 免费 API45 免费 Tokens44 AI Coding4 免费模型12 开发者 Credits67"
+    },
+    {
+      "name": "首页专题导航卡：数据里每个需求都有对应入口（没有漏项、href 不重复）",
+      "ok": true,
+      "detail": "10 个不同 href · 漏 0 个"
+    },
+    {
+      "name": "首页专题导航卡：真点第 1 张卡「学生专享」→ /need/student-only/（HTTP 200 · h1 与注册项一致）",
+      "ok": true,
+      "detail": "点到卡 1 张 · HTTP 200 · 落地 http://127.0.0.1:62282/need/student-only/ · h1「面向学生的 AI 优惠」/ 注册项「面向学生的 AI 优惠」· JS 错误 0 个"
+    },
+    {
+      "name": "首页专题导航卡：真点第 6 张卡「免费 API」→ /need/free-api/（HTTP 200 · h1 与注册项一致）",
+      "ok": true,
+      "detail": "点到卡 1 张 · HTTP 200 · 落地 http://127.0.0.1:62282/need/free-api/ · h1「可以免费调用的 API」/ 注册项「可以免费调用的 API」· JS 错误 0 个"
+    },
+    {
+      "name": "首页专题导航卡：真点第 10 张卡「开发者 Credits」→ /need/dev-credits/（HTTP 200 · h1 与注册项一致）",
+      "ok": true,
+      "detail": "点到卡 1 张 · HTTP 200 · 落地 http://127.0.0.1:62282/need/dev-credits/ · h1「面向开发者的赠送额度」/ 注册项「面向开发者的赠送额度」· JS 错误 0 个"
+    },
+    {
+      "name": "/need/china-usable/ 条目集合与 deals.json 的 needs 逐 id 相等",
+      "ok": true,
+      "detail": "页面 30 条 / 数据 30 条"
+    },
+    {
+      "name": "/need/china-usable/ canonical 自指 + 4 个订阅源 + 三段 JSON-LD",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/need/china-usable/ · feed 4 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+      "name": "/need/china-usable/ 有「为什么在这一页」一列且写了依据",
+      "ok": true,
+      "detail": "表头 [优惠 | 适用人群 | 为什么在这一页 | 门槛 / 领取要求 | 中国大陆可用性]"
+    },
+    {
+      "name": "/need/china-usable/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/need/china-usable/ 的详情页内链真的能打开（两层深前缀没写错）",
+      "ok": true,
+      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1277 字"
+    },
+    {
+      "name": "/need/free-tier/ 条目集合与 deals.json 的 needs 逐 id 相等",
+      "ok": true,
+      "detail": "页面 60 条 / 数据 60 条"
+    },
+    {
+      "name": "/need/free-tier/ canonical 自指 + 2 个订阅源 + 三段 JSON-LD",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/need/free-tier/ · feed 2 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+      "name": "/need/free-tier/ 有「为什么在这一页」一列且写了依据",
+      "ok": true,
+      "detail": "表头 [优惠 | 适用人群 | 为什么在这一页 | 门槛 / 领取要求 | 中国大陆可用性]"
+    },
+    {
+      "name": "/need/free-tier/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/need/free-tier/ 的详情页内链真的能打开（两层深前缀没写错）",
+      "ok": true,
+      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1277 字"
+    },
+    {
+      "name": "/need/free-api/ 条目集合与 deals.json 的 needs 逐 id 相等",
+      "ok": true,
+      "detail": "页面 45 条 / 数据 45 条"
+    },
+    {
+      "name": "/need/free-api/ canonical 自指 + 2 个订阅源 + 三段 JSON-LD",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/need/free-api/ · feed 2 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+      "name": "/need/free-api/ 有「为什么在这一页」一列且写了依据",
+      "ok": true,
+      "detail": "表头 [优惠 | 适用人群 | 为什么在这一页 | 门槛 / 领取要求 | 中国大陆可用性]"
+    },
+    {
+      "name": "/need/free-api/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/need/free-api/ 的详情页内链真的能打开（两层深前缀没写错）",
+      "ok": true,
+      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1277 字"
+    },
+    {
+      "name": "/need/free-tokens/ 条目集合与 deals.json 的 needs 逐 id 相等",
+      "ok": true,
+      "detail": "页面 44 条 / 数据 44 条"
+    },
+    {
+      "name": "/need/free-tokens/ canonical 自指 + 4 个订阅源 + 三段 JSON-LD",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/need/free-tokens/ · feed 4 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+      "name": "/need/free-tokens/ 有「为什么在这一页」一列且写了依据",
+      "ok": true,
+      "detail": "表头 [优惠 | 适用人群 | 为什么在这一页 | 门槛 / 领取要求 | 中国大陆可用性]"
+    },
+    {
+      "name": "/need/free-tokens/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/need/free-tokens/ 的详情页内链真的能打开（两层深前缀没写错）",
+      "ok": true,
+      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1277 字"
+    },
+    {
+      "name": "/need/dev-credits/ 条目集合与 deals.json 的 needs 逐 id 相等",
+      "ok": true,
+      "detail": "页面 67 条 / 数据 67 条"
+    },
+    {
+      "name": "/need/dev-credits/ canonical 自指 + 2 个订阅源 + 三段 JSON-LD",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/need/dev-credits/ · feed 2 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+      "name": "/need/dev-credits/ 有「为什么在这一页」一列且写了依据",
+      "ok": true,
+      "detail": "表头 [优惠 | 适用人群 | 为什么在这一页 | 门槛 / 领取要求 | 中国大陆可用性]"
+    },
+    {
+      "name": "/need/dev-credits/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/need/dev-credits/ 的详情页内链真的能打开（两层深前缀没写错）",
+      "ok": true,
+      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1277 字"
+    },
+    {
+      "name": "/need/free-model/ 条目集合与 deals.json 的 needs 逐 id 相等",
+      "ok": true,
+      "detail": "页面 12 条 / 数据 12 条"
+    },
+    {
+      "name": "/need/free-model/ canonical 自指 + 2 个订阅源 + 三段 JSON-LD",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/need/free-model/ · feed 2 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+      "name": "/need/free-model/ 有「为什么在这一页」一列且写了依据",
+      "ok": true,
+      "detail": "表头 [优惠 | 适用人群 | 为什么在这一页 | 门槛 / 领取要求 | 中国大陆可用性]"
+    },
+    {
+      "name": "/need/free-model/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/need/free-model/ 的详情页内链真的能打开（两层深前缀没写错）",
+      "ok": true,
+      "detail": "HTTP 200 · 落地 deal/ebd47f6d2522 · canonical deal/ebd47f6d2522 · 正文 1616 字"
+    },
+    {
+      "name": "/need/student-only/ 条目集合与 deals.json 的 needs 逐 id 相等",
+      "ok": true,
+      "detail": "页面 12 条 / 数据 12 条"
+    },
+    {
+      "name": "/need/student-only/ canonical 自指 + 2 个订阅源 + 三段 JSON-LD",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/need/student-only/ · feed 2 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+      "name": "/need/student-only/ 有「为什么在这一页」一列且写了依据",
+      "ok": true,
+      "detail": "表头 [优惠 | 适用人群 | 为什么在这一页 | 门槛 / 领取要求 | 中国大陆可用性]"
+    },
+    {
+      "name": "/need/student-only/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/need/student-only/ 的详情页内链真的能打开（两层深前缀没写错）",
+      "ok": true,
+      "detail": "HTTP 200 · 落地 deal/c05dc74bfd78 · canonical deal/c05dc74bfd78 · 正文 1673 字"
+    },
+    {
+      "name": "/need/edu-identity/ 条目集合与 deals.json 的 needs 逐 id 相等",
+      "ok": true,
+      "detail": "页面 7 条 / 数据 7 条"
+    },
+    {
+      "name": "/need/edu-identity/ canonical 自指 + 2 个订阅源 + 三段 JSON-LD",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/need/edu-identity/ · feed 2 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+      "name": "/need/edu-identity/ 有「为什么在这一页」一列且写了依据",
+      "ok": true,
+      "detail": "表头 [优惠 | 适用人群 | 为什么在这一页 | 门槛 / 领取要求 | 中国大陆可用性]"
+    },
+    {
+      "name": "/need/edu-identity/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/need/edu-identity/ 的详情页内链真的能打开（两层深前缀没写错）",
+      "ok": true,
+      "detail": "HTTP 200 · 落地 deal/c05dc74bfd78 · canonical deal/c05dc74bfd78 · 正文 1673 字"
+    },
+    {
+      "name": "/need/ai-coding/ 条目集合与 deals.json 的 needs 逐 id 相等",
+      "ok": true,
+      "detail": "页面 4 条 / 数据 4 条"
+    },
+    {
+      "name": "/need/ai-coding/ canonical 自指 + 4 个订阅源 + 三段 JSON-LD",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/need/ai-coding/ · feed 4 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+      "name": "/need/ai-coding/ 有「为什么在这一页」一列且写了依据",
+      "ok": true,
+      "detail": "表头 [优惠 | 适用人群 | 为什么在这一页 | 门槛 / 领取要求 | 中国大陆可用性]"
+    },
+    {
+      "name": "/need/ai-coding/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/need/ai-coding/ 的详情页内链真的能打开（两层深前缀没写错）",
+      "ok": true,
+      "detail": "HTTP 200 · 落地 deal/df8ec56faa17 · canonical deal/df8ec56faa17 · 正文 1717 字"
+    },
+    {
+      "name": "/need/no-card/ 条目集合与 deals.json 的 needs 逐 id 相等",
+      "ok": true,
+      "detail": "页面 1 条 / 数据 1 条"
+    },
+    {
+      "name": "/need/no-card/ canonical 自指 + 2 个订阅源 + 三段 JSON-LD",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/need/no-card/ · feed 2 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+      "name": "/need/no-card/ 有「为什么在这一页」一列且写了依据",
+      "ok": true,
+      "detail": "表头 [优惠 | 适用人群 | 为什么在这一页 | 门槛 / 领取要求 | 中国大陆可用性]"
+    },
+    {
+      "name": "/need/no-card/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/need/no-card/ 的详情页内链真的能打开（两层深前缀没写错）",
+      "ok": true,
+      "detail": "HTTP 200 · 落地 deal/6644f3b43bdb · canonical deal/6644f3b43bdb · 正文 1337 字"
+    },
+    {
+      "name": "专题导航卡 1600px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+      "ok": true,
+      "detail": "10/10 张在视口内 · left 110 / right 1490（视口 1600）· 2 行（5/5）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+    },
+    {
+      "name": "专题导航卡 1600px：.needs 不是横向滚动容器、卡片没有被裁",
+      "ok": true,
+      "detail": "overflow-x=visible · nav.scrollWidth ≤ clientWidth · 被裁 0 张 · 整块 153px"
+    },
+    {
+      "name": "专题导航卡 1600px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+      "ok": true,
+      "detail": ".needs overflow-x=visible · .need-grid overflow-x=visible · scrollWidth/clientWidth：needs 1420/1420 · grid 1380/1380"
+    },
+    {
+      "name": "专题导航卡 1440px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+      "ok": true,
+      "detail": "10/10 张在视口内 · left 30 / right 1410（视口 1440）· 2 行（5/5）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+    },
+    {
+      "name": "专题导航卡 1440px：.needs 不是横向滚动容器、卡片没有被裁",
+      "ok": true,
+      "detail": "overflow-x=visible · nav.scrollWidth ≤ clientWidth · 被裁 0 张 · 整块 153px"
+    },
+    {
+      "name": "专题导航卡 1440px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+      "ok": true,
+      "detail": ".needs overflow-x=visible · .need-grid overflow-x=visible · scrollWidth/clientWidth：needs 1420/1420 · grid 1380/1380"
+    },
+    {
+      "name": "专题导航卡 1440px：.need-grid 轨道数 == 5，10 张排成 5×2（不再 10 张挤一行）",
+      "ok": true,
+      "detail": "5 条轨道 · 2 行（5/5）"
+    },
+    {
+      "name": "专题导航卡 1280px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+      "ok": true,
+      "detail": "10/10 张在视口内 · left 20 / right 1260（视口 1280）· 2 行（5/5）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+    },
+    {
+      "name": "专题导航卡 1280px：.needs 不是横向滚动容器、卡片没有被裁",
+      "ok": true,
+      "detail": "overflow-x=visible · nav.scrollWidth ≤ clientWidth · 被裁 0 张 · 整块 153px"
+    },
+    {
+      "name": "专题导航卡 1280px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+      "ok": true,
+      "detail": ".needs overflow-x=visible · .need-grid overflow-x=visible · scrollWidth/clientWidth：needs 1280/1280 · grid 1240/1240"
+    },
+    {
+      "name": "专题导航卡 768px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+      "ok": true,
+      "detail": "10/10 张在视口内 · left 20 / right 748（视口 768）· 4 行（3/3/3/1）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+    },
+    {
+      "name": "专题导航卡 768px：.needs 不是横向滚动容器、卡片没有被裁",
+      "ok": true,
+      "detail": "overflow-x=visible · nav.scrollWidth ≤ clientWidth · 被裁 0 张 · 整块 313px"
+    },
+    {
+      "name": "专题导航卡 768px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+      "ok": true,
+      "detail": ".needs overflow-x=visible · .need-grid overflow-x=visible · scrollWidth/clientWidth：needs 768/768 · grid 728/728"
+    },
+    {
+      "name": "专题导航卡 430px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+      "ok": true,
+      "detail": "10/10 张在视口内 · left 16 / right 414（视口 430）· 10 行（1/1/1/1/1/1/1/1/1/1）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+    },
+    {
+      "name": "专题导航卡 430px：.needs 不是横向滚动容器、卡片没有被裁",
+      "ok": true,
+      "detail": "overflow-x=visible · nav.scrollWidth ≤ clientWidth · 被裁 0 张 · 整块 758px"
+    },
+    {
+      "name": "专题导航卡 430px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+      "ok": true,
+      "detail": ".needs overflow-x=visible · .need-grid overflow-x=visible · scrollWidth/clientWidth：needs 430/430 · grid 398/398"
+    },
+    {
+      "name": "专题导航卡 390px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+      "ok": true,
+      "detail": "10/10 张在视口内 · left 16 / right 374（视口 390）· 10 行（1/1/1/1/1/1/1/1/1/1）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+    },
+    {
+      "name": "专题导航卡 390px：.needs 不是横向滚动容器、卡片没有被裁",
+      "ok": true,
+      "detail": "overflow-x=visible · nav.scrollWidth ≤ clientWidth · 被裁 0 张 · 整块 758px"
+    },
+    {
+      "name": "专题导航卡 390px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+      "ok": true,
+      "detail": ".needs overflow-x=visible · .need-grid overflow-x=visible · scrollWidth/clientWidth：needs 390/390 · grid 358/358"
+    },
+    {
+      "name": "按需求入口 390px：全部入口在视口内、不被裁、页面不横向溢出",
+      "ok": true,
+      "detail": "10/10 可见 · 10 行卡（1/1/1/1/1/1/1/1/1/1）· 整块 758px · 被裁 0 · 页面溢出 0px"
+    },
+    {
+      "name": "按需求入口 360px：全部入口在视口内、不被裁、页面不横向溢出",
+      "ok": true,
+      "detail": "10/10 可见 · 10 行卡（1/1/1/1/1/1/1/1/1/1）· 整块 758px · 被裁 0 · 页面溢出 0px"
+    },
+    {
+      "name": "需求页不执行 JS 也能读到判据说明与全部条目（预渲染的硬定义）",
+      "ok": true,
+      "detail": "no-card 1 行/1131 字 · ai-coding 4 行/1432 字 · china-usable 30 行/4744 字"
+    },
+    {
+      "name": "无 JS 打开首页时「按需求找优惠」入口行仍在且指向需求页",
+      "ok": true,
+      "detail": "10 条入口 · 首条 need/student-only/"
+    },
+    {
+      "name": "无 JS 打开首页：专题导航卡的卡数 / 标题 / 说明 / href 与有 JS 时逐条相同（构建期注入）",
+      "ok": true,
+      "detail": "10 张卡逐条比对全部相同 · 首张「need/student-only/」/「学生专享」/「学生套餐与教育折扣，附申请门槛」"
+    },
+    {
+      "name": "/status/ 能打开且标题非空",
+      "ok": true,
+      "detail": "「数据源状态」· 表格 9 行 · 正文 1232 字"
+    },
+    {
+      "name": "/status/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/status/"
+    },
+    {
+      "name": "/status/ 行数与状态标签与 source-health.json 逐个对账",
+      "ok": true,
+      "detail": "页面 9 行 / 数据 9 个 · 标签 [✅ 正常 ❌ 失败]"
+    },
+    {
+      "name": "/status/ 补齐五条约定：恰好两个 feed + 恰好两段 JSON-LD（WebPage + BreadcrumbList）",
+      "ok": true,
+      "detail": "feed 2 个 · JSON-LD [WebPage, BreadcrumbList]（期望 [BreadcrumbList, WebPage]）"
+    },
+    {
+      "name": "/status/ 有指向 source-health.json 的链接（机器可读的那一份）",
+      "ok": true,
+      "detail": "1 个"
+    },
+    {
+      "name": "/status/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/status/ 不执行 JS 也能读到来源表与绝对时间（预渲染的硬定义）",
+      "ok": true,
+      "detail": "9 行 / 1324 字 / 9 个 <time datetime>"
+    },
+    {
+      "name": "/status/ 无 JS 时页脚路由入口仍在且指向正确",
+      "ok": true,
+      "detail": "页脚链接 ../student/, ../developer/, ../free-api/, ../status/"
+    },
+    {
+      "name": "/status/ 390px 不产生页面级横向溢出（宽表应在容器内横滚，而不是撑开整页）",
+      "ok": true,
+      "detail": "页面溢出 0px · .stable-wrap overflow-x=auto · 表格宽 495px / 容器宽 358px"
+    },
+    {
+      "name": "/status/ 360px 不产生页面级横向溢出（宽表应在容器内横滚，而不是撑开整页）",
+      "ok": true,
+      "detail": "页面溢出 0px · .stable-wrap overflow-x=auto · 表格宽 495px / 容器宽 328px"
+    },
+    {
+      "name": "详情页沿用首页的主题选择",
+      "ok": true,
+      "detail": "data-theme=dark · 选中「dark」· body=rgb(11, 13, 16)"
+    },
+    {
+      "name": "有视图切换器（卡片 / 列表）",
+      "ok": true,
+      "detail": "2 个按钮"
+    },
+    {
+      "name": "列表视图：首屏完整可见 ≥ 10 行",
+      "ok": true,
+      "detail": "10 行（行高 46px · 共 50 行 · 页高 3567px）；卡片视图同口径 6 张"
+    },
+    {
+      "name": "列表视图：条目数与卡片一致且字段同源",
+      "ok": true,
+      "detail": "50 行 · 站内标题链接=true · 官方 CTA=true"
+    },
+    {
+      "name": "列表视图：不分带且锚点导航真的隐藏（几何判定，不留死锚点）",
+      "ok": true,
+      "detail": "分带 0 个 · hidden=true display=none h=0 offsetH=0 可见链接=0 死链=0"
+    },
+    {
+      "name": "列表视图：偏好已写入 localStorage",
+      "ok": true,
+      "detail": "dsh.view=rows"
+    },
+    {
+      "name": "刷新后仍是列表视图",
+      "ok": true,
+      "detail": "class=rows · 选中「rows」"
+    },
+    {
+      "name": "列表视图整行也能打开详情",
+      "ok": true,
+      "detail": "弹层 open=true「百川智能 海纳百川计划 免费使用 M3Plu」"
+    },
+    {
+      "name": "切回卡片视图恢复原样（密度与分带都不变）",
+      "ok": true,
+      "detail": "50 张卡 · 首屏完整可见 6 张 · 分带 4 个 · dsh.view=cards"
+    },
+    {
+      "name": "手机端列表视图明显更短且不横向溢出",
+      "ok": true,
+      "detail": "卡片 11830px → 列表 4811px（5.7 屏 · 50 行 · 横向溢出 0px）"
+    },
+    {
+      "name": "卡片进入 Tab 顺序且标注了键盘用法",
+      "ok": true,
+      "detail": "50/50 张可聚焦 · 50 张有 aria-label"
+    },
+    {
+      "name": "回车能打开详情",
+      "ok": true,
+      "detail": "弹层=true「百川智能 海纳百川计划 免费使用 M3Plu」"
+    },
+    {
+      "name": "Esc 关闭后焦点归还给那张卡片",
+      "ok": true,
+      "detail": "弹层=false · 焦点在 <article>「百川智能 海纳百川计划 免费使用 M3Plu」"
+    },
+    {
+      "name": "列表视图的行同样可聚焦、回车打开、Esc 后归位",
+      "ok": true,
+      "detail": "弹层=true · 行全部可聚焦=true · 焦点归位=true"
+    },
+    {
+      "name": "卡片上有收藏星标，且是绝对定位（不参与布局）",
+      "ok": true,
+      "detail": "position=absolute aria-pressed=false · aria-label「收藏 百川智能 海纳百川计划 免费使」"
+    },
+    {
+      "name": "点星标即收藏，且不会顺带弹出详情弹层",
+      "ok": true,
+      "detail": "aria-pressed=true · 详情弹层=false"
+    },
+    {
+      "name": "收藏写进 localStorage，刷新后仍然亮着",
+      "ok": true,
+      "detail": "刷新前 localStorage=[\"c59299cdc88e\"] → 刷新后 aria-pressed=true · 卡片高 192→192px · 标题宽 248→248px"
+    },
+    {
+      "name": "详情弹层里有完整标注的「收藏 / 加入对比」",
+      "ok": true,
+      "detail": "收藏「★收藏」· 对比「加入对比」"
+    },
+    {
+      "name": "对比最多收 4 条，第 5 条被挡住",
+      "ok": true,
+      "detail": "点 5 次收进 4 条 · localStorage 4 条 · 对比条「已选 4 / 4 条进入对比」· 标题条 4 个"
+    },
+    {
+      "name": "选择写进可分享 URL（?compare=id,id,…）",
+      "ok": true,
+      "detail": "?compare=c59299cdc88e,d8d0ba522315,6869e7866510,ebd47f6d2522"
+    },
+    {
+      "name": "分享链接打开后选择被复现（URL 是唯一事实来源，不靠本机 localStorage）",
+      "ok": true,
+      "detail": "还原 4 条 · 对比条可见 true · 该上下文里的收藏 0 个 · ?compare=c59299cdc88e,d8d0ba522315,6869e7866510,ebd47f6d2522"
+    },
+    {
+      "name": "对比表：4 列并排、行都是关键字段、单元格零空白",
+      "ok": true,
+      "detail": "4 列 / 4 行（额度、适用条件、有效期、更新时间）· 空格子 0 个 · 占位符 0 个"
+    },
+    {
+      "name": "Esc 关闭对比视图并把焦点还给「打开对比」按钮",
+      "ok": true,
+      "detail": "弹层=false · 焦点在 <button>"
+    },
+    {
+      "name": "点「打开对比」弹层真的可见（量几何，不只看 open 属性）",
+      "ok": true,
+      "detail": "open=true · hidden=false · display=block · 920×735px · 在视口内=true · :modal=true · 4 列"
+    },
+    {
+      "name": "关闭对比后不留顶层 modal，页面立刻恢复可交互",
+      "ok": true,
+      "detail": "残留 :modal=false · 关闭后点卡片能开详情=true · 弹层仍开=false"
+    },
+    {
+      "name": "390px 下对比条展开也不产生横向溢出",
+      "ok": true,
+      "detail": "对比条 0–390px / 视口 390px · 溢出 0px · 「已选 4 / 4 条进入对比」"
+    },
+    {
+      "name": "390px 下对比弹层不超出视口（宽表靠内部横滚）",
+      "ok": true,
+      "detail": "弹层 20–370px（宽 350px）/ 视口 390px · 页面横向溢出 0px · 表内可横滚=true"
+    },
+    {
+      "name": "筛选挡住已选项时「打开对比」仍然打开（选择是跨视图的集合，不是当前视图的子集）",
+      "ok": true,
+      "detail": "换筛选后条上「已选 2 / 4 条进入对比」→ 弹层 open=true · display=block · 920px / 2 列"
+    },
+    {
+      "name": "对比条计数与标题条同源（不再「已选 2 条 · 0 个标题」）",
+      "ok": true,
+      "detail": "标题条 2 个 · 条上「已选 2 / 4 条进入对比」"
+    },
+    {
+      "name": "对比选择里的失效项被移除，并在条上说明（不静默消失）",
+      "ok": true,
+      "detail": "localStorage 剩 1 条 · 条可见=true · 打开按钮 disabled=true · 「已选 1 / 4 条进入对比 · 已移除 1 条当前数据里找不到的对比项」"
+    },
+    {
+      "name": "补选一条后失效说明清掉、按钮恢复可用",
+      "ok": true,
+      "detail": "补选成功=true · 选择 2 条 · 按钮 disabled=false · 「已选 2 / 4 条进入对比」"
+    },
+    {
+      "name": "零收藏时筛选条里没有收藏入口（不给「点了没反应」的按钮）",
+      "ok": true,
+      "detail": "入口 0 个 · 默认视图 50 张卡片"
+    },
+    {
+      "name": "收藏一条后出现「我的收藏」入口，计数为 1 且未选中",
+      "ok": true,
+      "detail": "入口「★ 我的收藏1」· 计数 1 / localStorage 1 条 · aria-pressed=false · title「只看我收藏的条目（共 1 条，只存在本机）」"
+    },
+    {
+      "name": "收藏视图只留下收藏的卡片（星标亮、结果条切到收藏口径）",
+      "ok": true,
+      "detail": "1 张卡片 · 星标亮 1 个 · aria-pressed=true · 「显示 1 条收藏卡片」"
+    },
+    {
+      "name": "收藏视图里取消收藏：卡片立刻消失、空态有说明、焦点落到入口",
+      "ok": true,
+      "detail": "0 张卡片 · localStorage 0 条 · 入口仍在=true · 焦点在入口=true · 「没有符合条件的收藏卡片 · 地区 / 分类 / 厂商 / 搜索等筛选可能把它挡住…」"
+    },
+    {
+      "name": "退出收藏视图后回到原来的卡片数（进入/退出不改其它筛选）",
+      "ok": true,
+      "detail": "50 张（进入前 50 张）· 零收藏后入口自动收起=true"
+    },
+    {
+      "name": "收藏入口按本机收藏总数计数（含失效项），视图里说明「找不到」并给出清理按钮",
+      "ok": true,
+      "detail": "入口计数 2 · 视图 1 张卡片 · 清理按钮 1 个 · 「显示 1 条收藏卡片 · 另有 1 条收藏在当前数据里找不到（条目可能已改名或下架）清理这 1 条」"
+    },
+    {
+      "name": "390px 与 360px：收藏入口与清理按钮都在视口内、无横向溢出",
+      "ok": true,
+      "detail": "390px：入口 16–117 · 清理 124–203 · 溢出 0px · 360px：入口 16–117 · 清理 149–228 · 溢出 0px"
+    },
+    {
+      "name": "点「清理」只删失效项：真实收藏保留、计数与说明同步",
+      "ok": true,
+      "detail": "localStorage 1 条 · 入口计数 1 · 清理按钮 0 个 · 视图 1 张卡片"
+    },
+    {
+      "name": "收藏一条已被折叠的成员条目：落到那张折叠卡上、不报「找不到」、也不诱导清理",
+      "ok": true,
+      "detail": "收藏成员 id e7e8f538456c → 视图 1 张卡「智谱AI 免费模型」· 清理按钮 0 个 · 「显示 1 条收藏卡片」"
+    },
+    {
+      "name": "首页有变化雷达条带（构建期注入，无 JS 也在）",
+      "ok": true,
+      "detail": "总数 1 · 0 项"
+    },
+    {
+      "name": "条带只占一行（≤ 34px：首屏卡片预算）",
+      "ok": true,
+      "detail": "18px"
+    },
+    {
+      "name": "条带里没有 JS 控件（无 JS 时一个死按钮都没有）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "条带入口指向 /changes/ 且落在视口内",
+      "ok": true,
+      "detail": "href=changes/ · 在视口内=true"
+    },
+    {
+      "name": "条带自身不横溢（横滑只发生在正文区）",
+      "ok": true,
+      "detail": "nav 溢出 0px · 正文区可滑 0px"
+    },
+    {
+      "name": "条带最多 3 项",
+      "ok": true,
+      "detail": "0 项"
+    },
+    {
+      "name": "条带条数 + 其他变化 == 窗口内事件 + 即将结束（第二把尺子）",
+      "ok": true,
+      "detail": "条带 1 + 其他 0 / 重算 1（基准日 2026-10-05：窗口事件 1 + 即将结束 0）"
+    },
+    {
+      "name": "条带里的条目都来自窗口内的事件（没有凭空出现的项）",
+      "ok": true,
+      "detail": "全部命中"
+    },
+    {
+      "name": "/changes/ 页存在且分栏齐（优惠五栏 + 套餐一栏 + API 一栏）",
+      "ok": true,
+      "detail": "今日新增（0） | 最近 7 天变化（1） | 即将结束（0） | 已结束（0） | 重新出现（0） | 套餐变化 | API 价格变化"
+    },
+    {
+      "name": "/changes/ 的分栏标题与判据同源（优惠五栏 + 套餐变化 + API 价格变化）",
+      "ok": true,
+      "detail": "今日新增（0） | 最近 7 天变化（1） | 即将结束（0） | 已结束（0） | 重新出现（0） | 套餐变化 | API 价格变化"
+    },
+    {
+      "name": "/changes/ 有「不计入高价值的其他变化」折叠块",
+      "ok": true
+    },
+    {
+      "name": "/changes/ 的 canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/changes/"
+    },
+    {
+      "name": "/changes/ 声明了每一条变化流各一对订阅源（优惠变化 + 注册表里的每一条）",
+      "ok": true,
+      "detail": "共 6 条（期望 6） · ../feed/changes.xml · ../feed/changes.json · ../feed/plans/coding/changes.xml · ../feed/plans/coding/changes.json · ../feed/plans/api/changes.xml · ../feed/plans/api/changes.json"
+    },
+    {
+      "name": "/changes/ 的内链都带输出深度前缀（../deal/…）",
+      "ok": true,
+      "detail": "抽查 0 条"
+    },
+    {
+      "name": "/changes/ 有「优惠变化 / 套餐变化 / API 价格变化」锚点导航且三个锚点都有落点",
+      "ok": true,
+      "detail": "导航链接 #deals,#plans,#api-plans · #deals true · #api-plans true"
+    },
+    {
+      "name": "/changes/ 套餐变化有四栏（最近 7 天变化 / 今日新增 / 不再收录 / 重新出现）",
+      "ok": true,
+      "detail": "今日新增（7） | 最近 7 天变化（28） | 不再收录（0） | 重新出现（0）"
+    },
+    {
+      "name": "/changes/ API 价格变化有四栏（最近 7 天变化 / 今日新增 / 不再收录 / 重新出现）",
+      "ok": true,
+      "detail": "今日新增（7） | 最近 7 天变化（10） | 不再收录（0） | 重新出现（0）"
+    },
+    {
+      "name": "/changes/ 套餐变化每条都深链到套餐对比页的真实行（锚点有落点）",
+      "ok": true,
+      "detail": "35 条 · 链接 35 条 · 全部有落点"
+    },
+    {
+      "name": "/changes/ 套餐变化为空时给的是明确空态（不是一片空白）",
+      "ok": true,
+      "detail": "35 条"
+    },
+    {
+      "name": "/changes/ API 价格变化每条都深链到 API 计费页的真实行（跨页锚点有落点）",
+      "ok": true,
+      "detail": "17 条 · 链接 17 条 · 全部有落点"
+    },
+    {
+      "name": "/changes/ API 价格变化为空时给的是明确空态（不是一片空白）",
+      "ok": true,
+      "detail": "17 条"
+    },
+    {
+      "name": "/changes/ API 价格变化块没有在日志可用时说「没有拿到日志」",
+      "ok": true,
+      "detail": "措辞正确"
+    },
+    {
+      "name": "API 价格变化订阅源可取（RSS + JSON Feed 各一份，HTTP 200）",
+      "ok": true,
+      "detail": "HTTP 200 / 200"
+    },
+    {
+      "name": "API 价格变化订阅的 guid 逐条等于日志里的派生事件身份（不是每次 build 重新生成）",
+      "ok": true,
+      "detail": "JSON 17 条 / RSS 17 条 / 日志 17 条"
+    },
+    {
+      "name": "API 价格变化订阅的链接全部指向 /plans/api/#plan-<id>（跨页深链，不是本页锚点）",
+      "ok": true,
+      "detail": "17 条"
+    },
+    {
+      "name": "API 价格变化订阅里没有混入 Coding 套餐事件（两份日志的身份空间不相交）",
+      "ok": true,
+      "detail": "c537574c49c9,774f46a2852f,89aab95ef541,8c7b0144494e,99e72b0be2ef,efe6182bbfff,b71423a7e1e0,3edb0ae3da4c,7fb4ead58527,29ee79880204,a348c0b20353,721e0657c80d,422949164f14,ac2f68ab9fc3,d67c4c1a37dc,989143bdd068,bbacdbbbeb44"
+    },
+    {
+      "name": "雷达行 → 单条历史（本轮无样本：日志里还没有任何事件）",
+      "ok": true,
+      "detail": "跳过：可点的雷达行为 0（v1.5 交付当天日志为空，链路已由 selftest 与构建自检覆盖）"
+    },
+    {
+      "name": "无 JS 时 /changes/ 五栏 + 起算日 + 免责句全部可读",
+      "ok": true,
+      "detail": "分栏 7 · 起算日 true · 免责句 true · 折叠块 true"
+    },
+    {
+      "name": "无 JS 时 /changes/ 的套餐变化块也可读（构建期静态渲染）",
+      "ok": true,
+      "detail": "套餐变化 true · 0 条"
+    },
+    {
+      "name": "无 JS 时 /changes/ 的 API 价格变化块也可读（构建期静态渲染）",
+      "ok": true,
+      "detail": "API 价格变化 true · 17 条"
+    },
+    {
+      "name": "390px 与 360px：条带仍是一行、页面零横溢、入口在视口内",
+      "ok": true,
+      "detail": "390px：高 18px · 页溢 0px · 「全部变化」在视口内 true · 360px：高 18px · 页溢 0px · 「全部变化」在视口内 true"
+    },
+    {
+      "name": "窄屏空态：短文案不超出正文区（没有条目时不该需要横滑）",
+      "ok": true,
+      "detail": "390px：条目 0 · 正文区溢出 0px · 360px：条目 0 · 正文区溢出 0px"
+    },
+    {
+      "name": "390px：/changes/ 零横向溢出（列表式布局，不是宽表）",
+      "ok": true,
+      "detail": "溢出 0px · 分栏 7"
+    },
+    {
+      "name": "没有外部请求（无 CDN 热链）",
+      "ok": true,
+      "detail": "全部同源"
+    },
+    {
+      "name": "没有加载失败",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "没有 JS 错误",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "分类落地页 /category/api/ 打开且只有一个 h1",
+      "ok": true,
+      "detail": "h1=1 · 正文 5147 字 · 「AI API 服务与算力平台的优惠」"
+    },
+    {
+      "name": "分类落地页 /category/api/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/category/api/"
+    },
+    {
+      "name": "分类落地页 /category/api/ ItemList 声明数 == 可见行数",
+      "ok": true,
+      "detail": "声明 36 / 元素 36 / 行 36"
+    },
+    {
+      "name": "分类落地页 /category/api/ robots 与索引策略一致",
+      "ok": true,
+      "detail": "index, follow, max-image-preview:large"
+    },
+    {
+      "name": "分类落地页 /category/api/ 的 sitemap 成员资格与索引策略一致",
+      "ok": true,
+      "detail": "sitemap 有"
+    },
+    {
+      "name": "分类落地页 /category/api/ 面包屑指向真实存在的枢纽页",
+      "ok": true,
+      "detail": "../../ ../../category/"
+    },
+    {
+      "name": "分类落地页 /category/api/ 有数据摘要块且声明了自己的订阅源",
+      "ok": true,
+      "detail": "摘要 6 行 · feed 4 个"
+    },
+    {
+      "name": "分类落地页 /category/api/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "厂商落地页 /vendor/zhipu/ 打开且只有一个 h1",
+      "ok": true,
+      "detail": "h1=1 · 正文 3470 字 · 「智谱AI 的 AI 优惠与免费额度」"
+    },
+    {
+      "name": "厂商落地页 /vendor/zhipu/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/vendor/zhipu/"
+    },
+    {
+      "name": "厂商落地页 /vendor/zhipu/ ItemList 声明数 == 可见行数",
+      "ok": true,
+      "detail": "声明 12 / 元素 12 / 行 12"
+    },
+    {
+      "name": "厂商落地页 /vendor/zhipu/ robots 与索引策略一致",
+      "ok": true,
+      "detail": "index, follow, max-image-preview:large"
+    },
+    {
+      "name": "厂商落地页 /vendor/zhipu/ 的 sitemap 成员资格与索引策略一致",
+      "ok": true,
+      "detail": "sitemap 有"
+    },
+    {
+      "name": "厂商落地页 /vendor/zhipu/ 面包屑指向真实存在的枢纽页",
+      "ok": true,
+      "detail": "../../ ../../vendor/"
+    },
+    {
+      "name": "厂商落地页 /vendor/zhipu/ 有数据摘要块且声明了自己的订阅源",
+      "ok": true,
+      "detail": "摘要 5 行 · feed 4 个"
+    },
+    {
+      "name": "厂商落地页 /vendor/zhipu/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "分类枢纽页 /category/ 打开且只有一个 h1",
+      "ok": true,
+      "detail": "h1=1 · 正文 1096 字 · 「按分类浏览 AI 优惠」"
+    },
+    {
+      "name": "分类枢纽页 /category/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/category/"
+    },
+    {
+      "name": "分类枢纽页 /category/ ItemList 声明数 == 可见行数",
+      "ok": true,
+      "detail": "声明 5 / 元素 5 / 行 5"
+    },
+    {
+      "name": "分类枢纽页 /category/ robots 与索引策略一致",
+      "ok": true,
+      "detail": "index, follow, max-image-preview:large"
+    },
+    {
+      "name": "分类枢纽页 /category/ 的 sitemap 成员资格与索引策略一致",
+      "ok": true,
+      "detail": "sitemap 有"
+    },
+    {
+      "name": "分类枢纽页 /category/ 的每一行都是子页链接（不夹带条目行）",
+      "ok": true,
+      "detail": "子页链接 5 · 条目链接 0"
+    },
+    {
+      "name": "分类枢纽页 /category/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "厂商枢纽页 /vendor/ 打开且只有一个 h1",
+      "ok": true,
+      "detail": "h1=1 · 正文 2876 字 · 「按厂商浏览 AI 优惠」"
+    },
+    {
+      "name": "厂商枢纽页 /vendor/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/vendor/"
+    },
+    {
+      "name": "厂商枢纽页 /vendor/ ItemList 声明数 == 可见行数",
+      "ok": true,
+      "detail": "声明 25 / 元素 25 / 行 25"
+    },
+    {
+      "name": "厂商枢纽页 /vendor/ robots 与索引策略一致",
+      "ok": true,
+      "detail": "index, follow, max-image-preview:large"
+    },
+    {
+      "name": "厂商枢纽页 /vendor/ 的 sitemap 成员资格与索引策略一致",
+      "ok": true,
+      "detail": "sitemap 有"
+    },
+    {
+      "name": "厂商枢纽页 /vendor/ 的每一行都是子页链接（不夹带条目行）",
+      "ok": true,
+      "detail": "子页链接 25 · 条目链接 0"
+    },
+    {
+      "name": "厂商枢纽页 /vendor/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "别名页 /need/student-only/ 打开且只有一个 h1",
+      "ok": true,
+      "detail": "h1=1 · 正文 2457 字 · 「面向学生的 AI 优惠」"
+    },
+    {
+      "name": "别名页 /need/student-only/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/need/student-only/"
+    },
+    {
+      "name": "别名页 /need/student-only/ ItemList 声明数 == 可见行数",
+      "ok": true,
+      "detail": "声明 12 / 元素 12 / 行 12"
+    },
+    {
+      "name": "别名页 /need/student-only/ robots 与索引策略一致",
+      "ok": true,
+      "detail": "noindex, follow"
+    },
+    {
+      "name": "别名页 /need/student-only/ 的 sitemap 成员资格与索引策略一致",
+      "ok": true,
+      "detail": "sitemap 无"
+    },
+    {
+      "name": "别名页 /need/student-only/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "首页恰好一个 h1 且就是站点主标题",
+      "ok": true,
+      "detail": "AI 优惠聚合器"
+    },
+    {
+      "name": "/plans/coding/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "h1 1 个 · 正文 16415 字 · 「AI Coding 套餐对比」"
+    },
+    {
+      "name": "/plans/coding/ 的 h1 与首页顶栏入口的名字逐字一致（入口名不是另抄一份）",
+      "ok": true,
+      "detail": "顶栏「AI Coding 套餐对比」 vs h1「AI Coding 套餐对比」"
+    },
+    {
+      "name": "/plans/coding/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/plans/coding/"
+    },
+    {
+      "name": "/plans/coding/ 行数与 plans.json 逐个对账",
+      "ok": true,
+      "detail": "页面 44 行 / 数据 44 条"
+    },
+    {
+      "name": "/plans/coding/ ItemList 声明数 == 9 行，且是 CollectionPage + Breadcrumb + ItemList",
+      "ok": true,
+      "detail": "声明 44 / 行 44 / JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+      "name": "/plans/coding/ 三个数值列与数据逐条对账（未知写「未标注」/「—」，免费写 0，不可比较一律「—」）",
+      "ok": true,
+      "detail": "全部一致"
+    },
+    {
+      "name": "/plans/coding/ 不可比较的单价格数 == 数据里算不出的条数",
+      "ok": true,
+      "detail": "页面标记 44 格 / 数据 44 条"
+    },
+    {
+      "name": "/plans/coding/ 每条套餐都有官方页链接且指向数据里的那个地址",
+      "ok": true,
+      "detail": "44 个官方链接"
+    },
+    {
+      "name": "/plans/coding/ 写着「名义 Token 单价只用于粗略比较」的口径",
+      "ok": true
+    },
+    {
+      "name": "/plans/coding/ 页面上没有结论性词汇（不做价值判断）",
+      "ok": true,
+      "detail": "查了 14 个词"
+    },
+    {
+      "name": "/plans/coding/ 面包屑回站根（两层路由必须用 ../../，不是 ../）",
+      "ok": true,
+      "detail": "../../"
+    },
+    {
+      "name": "/plans/coding/ 页脚有指向本页的入口",
+      "ok": true,
+      "detail": "../../plans/ ../../plans/coding/ ../../plans/api/"
+    },
+    {
+      "name": "/plans/coding/ 没有 JS 错误、没有外部请求",
+      "ok": true,
+      "detail": "错误 0 · 外部请求 0"
+    },
+    {
+      "name": "/plans/coding/ 390px 不产生页面级横向溢出（11 列宽表应在容器内横滚）",
+      "ok": true,
+      "detail": "页面溢出 0px · .ptable-wrap overflow-x=auto · 表格宽 1055px / 容器宽 358px"
+    },
+    {
+      "name": "/plans/coding/ 360px 不产生页面级横向溢出（11 列宽表应在容器内横滚）",
+      "ok": true,
+      "detail": "页面溢出 0px · .ptable-wrap overflow-x=auto · 表格宽 1055px / 容器宽 328px"
+    },
+    {
+      "name": "/plans/coding/ 有 JS 时出现筛选控件（无 JS 时那一块是空的）",
+      "ok": true
+    },
+    {
+      "name": "/plans/coding/ 初始状态：全部行可见，状态行数字与数据一致",
+      "ok": true,
+      "detail": "显示 44 / 共 44 条套餐"
+    },
+    {
+      "name": "/plans/coding/ 平台筛选：20 个 chip 的可见集合都等于数据",
+      "ok": true,
+      "detail": "20 个平台逐个对账通过"
+    },
+    {
+      "name": "/plans/coding/ 「有活动价」只剩有活动价的行（正常价与活动价没有混为一谈）",
+      "ok": true,
+      "detail": "5 行"
+    },
+    {
+      "name": "/plans/coding/ 「无活动价」只剩没有活动价的行",
+      "ok": true
+    },
+    {
+      "name": "/plans/coding/ 「模型未标注」只剩 supportedModels 为空的行",
+      "ok": true
+    },
+    {
+      "name": "/plans/coding/ 地区筛选只剩该地区的行",
+      "ok": true
+    },
+    {
+      "name": "/plans/coding/ 额度类型筛选逐个对账",
+      "ok": true,
+      "detail": "4 类"
+    },
+    {
+      "name": "/plans/coding/ 价格区间（同币种 + 半开区间）逐个对账，选项 8 档",
+      "ok": true,
+      "detail": "全部一致"
+    },
+    {
+      "name": "/plans/coding/ 搜索覆盖中文显示值 / 平台别名 / 模型名（逐词对账）",
+      "ok": true,
+      "detail": "4 个词逐个通过"
+    },
+    {
+      "name": "/plans/coding/ 筛选与搜索都不改地址（不为筛选组合生成 URL）",
+      "ok": true,
+      "detail": "http://127.0.0.1:62282/plans/coding/"
+    },
+    {
+      "name": "/plans/coding/ 正常月费排序：不可比较（原价未标注）恒在末尾，同币种内升序",
+      "ok": true,
+      "detail": "USD0 USD10 USD10 USD19 USD20 USD20 USD20 USD20 USD20 USD22.8 USD25 USD30 USD39 USD40 USD54 USD60 USD100 USD100 USD100 USD125 USD200 USD200 USD200 USD500 CNY0 CNY0 CNY49 CNY49 CNY59 CNY59 CNY99 CNY99 CNY99 CNY99 CNY119 CNY199 CNY199 CNY199 CNY199 CNY469 CNY699 CNY999 CNY999 ——"
+    },
+    {
+      "name": "/plans/coding/ 反向排序时不可比较项**仍然**在末尾（不会被顶到最前）",
+      "ok": true,
+      "detail": "USD500 USD200 USD200 USD200 USD125 USD100 USD100 USD100 USD60 USD54 USD40 USD39 USD30 USD25 USD22.8 USD20 USD20 USD20 USD20 USD20 USD19 USD10 USD10 USD0 CNY999 CNY999 CNY699 CNY469 CNY199 CNY199 CNY199 CNY199 CNY119 CNY99 CNY99 CNY99 CNY99 CNY59 CNY59 CNY49 CNY49 CNY0 CNY0 ——"
+    },
+    {
+      "name": "/plans/coding/ 最近更新排序：日期非递增（最新在前）",
+      "ok": true
+    },
+    {
+      "name": "/plans/coding/ 清除筛选回到规范序（行序与数据一致）",
+      "ok": true
+    },
+    {
+      "name": "/plans/coding/ 「名义 Token 单价」排序只在真有可比行时才出现",
+      "ok": true,
+      "detail": "数据里可比 0 条 / 按钮 false"
+    },
+    {
+      "name": "/plans/coding/ 可见行里没有任何一格单价格是数字（不可比较一律「—」）",
+      "ok": true,
+      "detail": "0 格带数字"
+    },
+    {
+      "name": "/plans/coding/ 点「详情」展开出该行的官方溯源（colspan == 表头列数，链接可点）",
+      "ok": true,
+      "detail": "colspan 11/11 · 3 个链接 · aria-expanded=true"
+    },
+    {
+      "name": "/plans/coding/ 再点一次收起详情",
+      "ok": true
+    },
+    {
+      "name": "/plans/coding/ 390px 筛选 + 展开详情后仍无页面级横向溢出",
+      "ok": true,
+      "detail": "溢出 0px"
+    },
+    {
+      "name": "/plans/coding/ 390px 横滚后「平台 / 套餐」两列仍钉在视口里（详情行同时是展开状态）",
+      "ok": true,
+      "detail": "容器 16 · 平台 16 · 套餐 94 · 详情展开=true"
+    },
+    {
+      "name": "/plans/coding/ 390px 只有一个表格（移动端不维护第二套数据模板）",
+      "ok": true
+    },
+    {
+      "name": "/plans/coding/ 390px 粘性列里的官方链接仍是可点的最上层元素",
+      "ok": true
+    },
+    {
+      "name": "/plans/coding/ 360px 筛选 + 展开详情后仍无页面级横向溢出",
+      "ok": true,
+      "detail": "溢出 0px"
+    },
+    {
+      "name": "/plans/coding/ 360px 横滚后「平台 / 套餐」两列仍钉在视口里（详情行同时是展开状态）",
+      "ok": true,
+      "detail": "容器 16 · 平台 16 · 套餐 94 · 详情展开=true"
+    },
+    {
+      "name": "/plans/coding/ 360px 只有一个表格（移动端不维护第二套数据模板）",
+      "ok": true
+    },
+    {
+      "name": "/plans/coding/ 360px 粘性列里的官方链接仍是可点的最上层元素",
+      "ok": true
+    },
+    {
+      "name": "/plans/coding/ 口径与说明占满正文宽度（不再被 82ch 压成一条窄柱）",
+      "ok": true,
+      "detail": "11 条 · 列表 1380px / 末尾段 1380px / 表格 1380px · 裁切 0 条 · max-width=none / none"
+    },
+    {
+      "name": "/plans/coding/ 口径与说明按正文宽度排版（每句 ≤ 2 行，窄柱时是 2~3 行）",
+      "ok": true,
+      "detail": "每句行数 [1 1 1 1 1 1 1 1 1 1 1] · 最多 1 行"
+    },
+    {
+      "name": "/plans/coding/ 有「最近变化」块（构建期的最近变化就在这一块里）",
+      "ok": true,
+      "detail": "5 条"
+    },
+    {
+      "name": "/plans/coding/ 最近变化块里每条的日期都真的在变更日志里（页面不自己造事件）",
+      "ok": true,
+      "detail": "5 条 · 日志日期 [2026-10-01, 2026-10-04, 2026-10-05]"
+    },
+    {
+      "name": "/plans/coding/ 最近变化块每条都深链到真实存在的套餐行",
+      "ok": true,
+      "detail": "#plan-0a66f3117162 #plan-2281d41b3a26 #plan-383ed55706fc #plan-3d40bba3e537 #plan-415f82fc8938"
+    },
+    {
+      "name": "/plans/coding/ 变化日志为空/不可用时，最近变化块给的是明确空态（不是一片空白）",
+      "ok": true,
+      "detail": "最近变化 2026-10-04 阶跃星辰 Step Plan · Flash Plus 首次收录 首次收录 2026-10-04 阶跃星辰 Step Plan · Flash Max 首次收录 首次收录 2026-10-04 阶跃星辰 St"
+    },
+    {
+      "name": "/plans/coding/ 最近变化块有指向 /changes/ 的入口（不是孤立的一块）",
+      "ok": true,
+      "detail": "#plan-0a66f3117162 #plan-2281d41b3a26 #plan-383ed55706fc #plan-3d40bba3e537 #plan-415f82fc8938 ../../changes/#plans"
+    },
+    {
+      "name": "/plans/coding/ 每个套餐行都有 #plan-<id> 锚点（订阅与最近变化的落点）",
+      "ok": true,
+      "detail": "44 个锚点 / 44 条套餐"
+    },
+    {
+      "name": "/plans/coding/ 每条套餐的详情时间线与变更日志逐条对账",
+      "ok": true,
+      "detail": "44 条套餐（有变化 35 条）"
+    },
+    {
+      "name": "/plans/coding/ 展开详情后时间线在 DOM 里（无变化时如实写「暂无变更记录」）",
+      "ok": true,
+      "detail": "首次收录 2026-10-01 最近核对 2026-10-01 来源类型 official 官方来源 官方定价页 ↗ 官方只写「More usage*」并在逐功能表里对比，未公布固定数值；页尾明确「Usage limits apply.」 变更记录（1 条） 2026-10-01 首次收录 官方原文引文（2 条） 正常"
+    },
+    {
+      "name": "/plans/coding/ 的套餐变化订阅源可访问且良构",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "套餐变化订阅源的每一条 guid 都等于日志里重算出来的事件身份",
+      "ok": true,
+      "detail": "35 条 guid（日志 35 条事件）"
+    },
+    {
+      "name": "套餐变化订阅源的每一条链接都落在套餐对比页的某一行上",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/plans/coding/#plan-03f246d78293 https://buguoshixc.github.io/ai-deals-aggregator/plans/coding/#plan-5b69ae2939c8"
+    },
+    {
+      "name": "/plans/coding/ 无 JS 时仍有完整静态内容（行数 / 官方链接 / h1 / 正文）",
+      "ok": true,
+      "detail": "44 行 · 44 个官方链接 · 正文 15485 字"
+    },
+    {
+      "name": "/plans/coding/ 无 JS 时页面上零个交互控件（不给\"点了没反应\"的暗示）",
+      "ok": true,
+      "detail": "控件 0 个"
+    },
+    {
+      "name": "/plans/coding/ 无 JS 时「最近变化」块与行锚点仍在（都是构建期静态渲染）",
+      "ok": true,
+      "detail": "块 1 个 · 块内 281 字 · 锚点 44/44"
+    },
+    {
+      "name": "首页顶栏或页脚有「套餐对比」入口（这一页不是孤儿页）",
+      "ok": true
+    },
+    {
+      "name": "/plans/coding/ 有优惠 ↔ 套餐块 #plan-deals（构建期静态渲染，无 JS 也读得到）",
+      "ok": true,
+      "detail": "44 行"
+    },
+    {
+      "name": "/plans/coding/ 关联块逐条列出全部套餐，顺序与表内一致",
+      "ok": true,
+      "detail": "44 行 / 44 条套餐"
+    },
+    {
+      "name": "/plans/coding/ 关联块每行都链回真实的套餐行锚点",
+      "ok": true,
+      "detail": "#plan-536e6b211045 #plan-9cdc922f1407 #plan-7f63541ead64"
+    },
+    {
+      "name": "/plans/coding/ 「当前优惠」只出现在当前关系上，空态写明「暂无当前优惠」",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "/plans/coding/ 每一条当前关系都出现在页面上（漏一条就是\"关系丢了\"）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "/plans/coding/ 已结束的优惠没有以「当前优惠」形态出现（Tooth #4 的浏览器侧）",
+      "ok": true
+    },
+    {
+      "name": "dist/deal-plan-links.json 可下载且与源表一致（关系可被外部核对）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/deal/7691c150c8e5/ 有关系 → 渲染出「关联的正常套餐」块",
+      "ok": true,
+      "detail": "关联的正常套餐 MiniMax（稀宇科技） Token Plan Plus 当前优惠 正常价格 ¥49CNY 当前活动价"
+    },
+    {
+      "name": "/deal/<id>/ 关联块列出的套餐与关系表一致",
+      "ok": true,
+      "detail": "[\"a6a6a374dfba\"]"
+    },
+    {
+      "name": "/deal/<id>/ 每条记录都链到它所在那一页的行锚点，且锚点在那一页上真实存在",
+      "ok": true,
+      "detail": "../../plans/coding/#plan-a6a6a374dfba ../../plans/coding/#plan-a6a6a374dfba"
+    },
+    {
+      "name": "/deal/<id>/ 关联块写出记录名与查看链接（两类记录各有自己的措辞）",
+      "ok": true
+    },
+    {
+      "name": "/deal/<id>/ 没有关系的优惠页一个字节都不多（不渲染关联块）",
+      "ok": true,
+      "detail": "0 个 .dplans"
+    },
+    {
+      "name": "/plans/api/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "h1 1 个 · 正文 20344 字 · 「API / Token 计费对比」"
+    },
+    {
+      "name": "/plans/api/ canonical 自指",
+      "ok": true,
+      "detail": "/ai-deals-aggregator/plans/api/"
+    },
+    {
+      "name": "/plans/api/ 行数与 api-plans.json 逐个对账",
+      "ok": true,
+      "detail": "页面 108 行 / 数据 108"
+    },
+    {
+      "name": "/plans/api/ ItemList 声明数 == 行数（且是 CollectionPage + BreadcrumbList + ItemList）",
+      "ok": true,
+      "detail": "声明 108 / 行 108"
+    },
+    {
+      "name": "/plans/api/ 输入价 / 输出价 / 缓存命中输入 三列逐格与数据对账（互换输入输出必红）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "/plans/api/ 每一行都写出「计费单位」，且与数据一致（$ / 1M 与 $ / 1K 不会被混为一谈）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "/plans/api/ 每行都给官方定价页链接，且指向数据里的那个地址",
+      "ok": true,
+      "detail": "108 个"
+    },
+    {
+      "name": "/plans/api/ 没有任何交互控件（v1 是预渲染静态表，无 JS 也给不出\"点了没反应\"的暗示）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/plans/api/ 每条记录都有 #plan-<id> 锚点（记录数 == 锚点数）",
+      "ok": true,
+      "detail": "24 个锚点：plan-0940febeeea9 plan-ebc4af9a71b6 plan-ef4d06758403 plan-4f8bae91f9f8 plan-218c142dcb17 plan-23643dfd94f8 plan-61aa6c3ed3ff plan-e546e8ab4c7d plan-fffbb44ac3a9 plan-929a1f3ec46c plan-a110a5bfc3f8 plan-036c5f09561e plan-faf2d5722e71 plan-796e0c92ecdc plan-c4b6948c4fa9 plan-206f8b4bde7b plan-82c3df0bc204 plan-09ed95f9cd81 plan-6844d46deb05 plan-03b27e432472 plan-2981d8f29020 plan-8a26562011f2 plan-a4a9addc49ca plan-646f01c662e6"
+    },
+    {
+      "name": "/plans/api/ 面包屑回站根（两层路由必须用 ../../，不是 ../）",
+      "ok": true,
+      "detail": "../../"
+    },
+    {
+      "name": "/plans/api/ 页脚有指向本页的入口",
+      "ok": true,
+      "detail": "../../plans/ ../../plans/coding/ ../../plans/api/"
+    },
+    {
+      "name": "/plans/api/ 与 Coding 套餐页互相可达（并列的产品能力，不是孤岛）",
+      "ok": true
+    },
+    {
+      "name": "/plans/api/ 写着「单位不换算」与「credits 不是 token」两类口径",
+      "ok": true
+    },
+    {
+      "name": "/plans/api/ 页面上没有结论性词汇（不做价值判断）",
+      "ok": true
+    },
+    {
+      "name": "/plans/api/ 平台列的 logo 真的画出来了（引用了 logos.css，不是空方块）",
+      "ok": true,
+      "detail": "{\"present\":true,\"key\":\"ai360\",\"w\":16,\"h\":16,\"bg\":\"url(\\\"http://127.0.0.1:62282/logos/ai360.png\\\")\"}"
+    },
+    {
+      "name": "/plans/api/ 390px 不产生页面级横向溢出（11 列宽表应在容器内横滚）",
+      "ok": true,
+      "detail": "溢出 0px"
+    },
+    {
+      "name": "/plans/api/ 390px 只有一个表格（移动端不维护第二套数据模板）",
+      "ok": true
+    },
+    {
+      "name": "/plans/api/ 360px 不产生页面级横向溢出（11 列宽表应在容器内横滚）",
+      "ok": true,
+      "detail": "溢出 0px"
+    },
+    {
+      "name": "/plans/api/ 360px 只有一个表格（移动端不维护第二套数据模板）",
+      "ok": true
+    },
+    {
+      "name": "首页顶栏或页脚有「API / Token 计费对比」入口（这一页不是孤儿页）",
+      "ok": true
+    },
+    {
+      "name": "/plans/api/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/plans/api/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/plans/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「AI 套餐与 API 计费资料库」"
+    },
+    {
+      "name": "/plans/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/plans/"
+    },
+    {
+      "name": "/plans/ 面包屑第一级回站根（1 层路由 ⇒ ../）",
+      "ok": true,
+      "detail": "../"
+    },
+    {
+      "name": "/plans/ ItemList 声明数 == 元素数 == 页面 data-item 行数",
+      "ok": true,
+      "detail": "声明 2 / 元素 2 / 行 2"
+    },
+    {
+      "name": "/plans/ 页脚有指向本页的入口",
+      "ok": true,
+      "detail": "../plans/ ../plans/coding/ ../plans/api/"
+    },
+    {
+      "name": "/plans/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/plans/ 按设计没有站外链接（这一页只做站内导航与数据出口）",
+      "ok": true,
+      "detail": "0 条：（另有 1 条本项目仓库入口，由共享页脚声明，不计）"
+    },
+    {
+      "name": "/plans/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/plans/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/plans/ 无 JS 时正文完整（≥700 字）",
+      "ok": true,
+      "detail": "3289 字"
+    },
+    {
+      "name": "/plans/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/plans/ 无 JS 时读得到「Coding 套餐」",
+      "ok": true
+    },
+    {
+      "name": "/plans/ 无 JS 时读得到「API 计费」",
+      "ok": true
+    },
+    {
+      "name": "/plans/ 无 JS 时读得到「最近套餐与价格变化」",
+      "ok": true
+    },
+    {
+      "name": "/plans/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/plans/ 给出两个子页入口（Coding 与 API）",
+      "ok": true
+    },
+    {
+      "name": "/plans/ 不是第三张重复大表（0 个 <table>）",
+      "ok": true
+    },
+    {
+      "name": "/plans/ 的计数与 dist 数据逐个对账（套餐数 / 计费记录 / 模型计价条目）",
+      "ok": true,
+      "detail": "{\"plans\":44,\"apiRecords\":24,\"apiItems\":108}"
+    },
+    {
+      "name": "/plans/ 互链到模型资料 / 历史档案 / 数据文档（枢纽页互链）",
+      "ok": true
+    },
+    {
+      "name": "/models/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「AI 模型资料索引」"
+    },
+    {
+      "name": "/models/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/models/"
+    },
+    {
+      "name": "/models/ 面包屑第一级回站根（1 层路由 ⇒ ../）",
+      "ok": true,
+      "detail": "../"
+    },
+    {
+      "name": "/models/ ItemList 声明数 == 元素数 == 页面 data-item 行数",
+      "ok": true,
+      "detail": "声明 51 / 元素 51 / 行 51"
+    },
+    {
+      "name": "/models/ 页脚有指向本页的入口",
+      "ok": true,
+      "detail": "../models/"
+    },
+    {
+      "name": "/models/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/models/ 按设计没有站外链接（这一页只做站内导航与数据出口）",
+      "ok": true,
+      "detail": "0 条：（另有 1 条本项目仓库入口，由共享页脚声明，不计）"
+    },
+    {
+      "name": "/models/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/ 无 JS 时正文完整（≥600 字）",
+      "ok": true,
+      "detail": "5686 字"
+    },
+    {
+      "name": "/models/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/models/ 无 JS 时读得到「模型资料索引」",
+      "ok": true
+    },
+    {
+      "name": "/models/ 无 JS 时读得到「开发者」",
+      "ok": true
+    },
+    {
+      "name": "/models/ 无 JS 时读得到「模型族」",
+      "ok": true
+    },
+    {
+      "name": "/models/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/models/ 静态表行数 == dist/models.json 全部模型数（51 个）",
+      "ok": true,
+      "detail": "页面 51 行 / 数据 51 个"
+    },
+    {
+      "name": "/models/ 有详情页的行（data-item）== ItemList 声明数 == 元素数（成员口径没被默认隐藏改掉）",
+      "ok": true,
+      "detail": "data-item 51 / 声明 51 / 元素 51"
+    },
+    {
+      "name": "/models/ 默认隐藏的旧型号详情页仍在索引页里（1 个隐藏模型）",
+      "ok": true,
+      "detail": "全部仍有入链"
+    },
+    {
+      "name": "/models/ 初始可见行数 == current+aging+unknown 的行数（50 行）",
+      "ok": true,
+      "detail": "可见 50 / 期望 50（默认隐藏 1）· 显示 50 / 51 个模型（另有 1 个旧型号默认隐藏 —— 勾选上方「显示旧型号」可查看）"
+    },
+    {
+      "name": "/models/ 默认隐藏的行数 == legacy/historical 的行数（多藏一个都是错的）",
+      "ok": true,
+      "detail": "隐藏 1 / 期望 1 · 目录状态分布 {\"current\":29,\"unknown\":19,\"legacy\":1,\"aging\":2}"
+    },
+    {
+      "name": "/models/ 有「显示旧型号」入口（默认藏起来的东西必须点得到）",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "name": "/models/ 计数行如实报出「显示 X / N」",
+      "ok": true,
+      "detail": "显示 50 / 51 个模型（另有 1 个旧型号默认隐藏 —— 勾选上方「显示旧型号」可查看）"
+    },
+    {
+      "name": "/models/ 勾选「显示旧型号」后可见行数 == 全部 51 行（一行都不删）",
+      "ok": true,
+      "detail": "可见 51 / 全部 51 · 显示 51 / 51 个模型"
+    },
+    {
+      "name": "/models/ 取消勾选后回到默认可见集合（隐藏是即时开关，不是一次性吞掉）",
+      "ok": true,
+      "detail": "可见 50 / 初始 50"
+    },
+    {
+      "name": "/models/ 无 JS 时静态表仍是全部 51 行、且没有一行预先隐藏（No-JS 完整）",
+      "ok": true,
+      "detail": "行 51 / hidden 0 / hidden 属性 0"
+    },
+    {
+      "name": "/models/ 无 JS 时一个控件都没有（「显示旧型号」入口也整块由脚本建）",
+      "ok": true,
+      "detail": "0 个控件"
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「DeepSeek-V3.2」"
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/models/deepseek-v3.2/"
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 面包屑第一级回站根（2 层路由 ⇒ ../../）",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 刻意没有 ItemList（详情叶子 / 单页）",
+      "ok": true,
+      "detail": "声明 -1"
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 官方链接逐条都在（≥1 条，且都是 http(s)）",
+      "ok": true,
+      "detail": "4 条"
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 无 JS 时正文完整（≥700 字）",
+      "ok": true,
+      "detail": "1416 字"
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 无 JS 时读得到「发布时间」",
+      "ok": true
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 无 JS 时读得到「目录状态」",
+      "ok": true
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 无 JS 时读得到「API 提供平台」",
+      "ok": true
+    },
+    {
+      "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/models/deepseek-v3.2/ 旧型号的详情页照常生成、仍在 sitemap、无 JS 读得到发布时间与目录状态",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/deepseek-v3.2/ 详情页标出的目录状态确实属于默认隐藏集合",
+      "ok": true
+    },
+    {
+      "name": "/models/ 抽样覆盖多变体模型页（数据里有几个就至少抽一个）",
+      "ok": true,
+      "detail": "数据里多变体 slug 3 个（ernie-5.1, glm-4.5v, glm-4.6v）· 抽样 6 个"
+    },
+    {
+      "name": "/models/ernie-5.1/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「ERNIE-5.1」"
+    },
+    {
+      "name": "/models/ernie-5.1/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/models/ernie-5.1/"
+    },
+    {
+      "name": "/models/ernie-5.1/ 面包屑第一级回站根（2 层路由 ⇒ ../../）",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/ernie-5.1/ 刻意没有 ItemList（详情叶子 / 单页）",
+      "ok": true,
+      "detail": "声明 -1"
+    },
+    {
+      "name": "/models/ernie-5.1/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/models/ernie-5.1/ 官方链接逐条都在（≥1 条，且都是 http(s)）",
+      "ok": true,
+      "detail": "4 条"
+    },
+    {
+      "name": "/models/ernie-5.1/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/ernie-5.1/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/ernie-5.1/ 无 JS 时正文完整（≥700 字）",
+      "ok": true,
+      "detail": "1396 字"
+    },
+    {
+      "name": "/models/ernie-5.1/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/models/ernie-5.1/ 无 JS 时读得到「模型名称」",
+      "ok": true
+    },
+    {
+      "name": "/models/ernie-5.1/ 无 JS 时读得到「开发者」",
+      "ok": true
+    },
+    {
+      "name": "/models/ernie-5.1/ 无 JS 时读得到「API 提供平台」",
+      "ok": true
+    },
+    {
+      "name": "/models/ernie-5.1/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/models/ernie-5.1/ 面包屑第二级指向 /models/（真实路由）",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/ernie-5.1/ 从索引页有一条入链（详情页不是孤岛）",
+      "ok": true
+    },
+    {
+      "name": "/models/ernie-5.1/ 计价表逐行可回读（行数 == 展开后的真实计价条目数）",
+      "ok": true,
+      "detail": "页面 2 行 · 展开期望 2 条（多变体模型页）"
+    },
+    {
+      "name": "/models/glm-4.5v/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「GLM-4.5V」"
+    },
+    {
+      "name": "/models/glm-4.5v/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/models/glm-4.5v/"
+    },
+    {
+      "name": "/models/glm-4.5v/ 面包屑第一级回站根（2 层路由 ⇒ ../../）",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/glm-4.5v/ 刻意没有 ItemList（详情叶子 / 单页）",
+      "ok": true,
+      "detail": "声明 -1"
+    },
+    {
+      "name": "/models/glm-4.5v/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/models/glm-4.5v/ 官方链接逐条都在（≥1 条，且都是 http(s)）",
+      "ok": true,
+      "detail": "5 条"
+    },
+    {
+      "name": "/models/glm-4.5v/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/glm-4.5v/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/glm-4.5v/ 无 JS 时正文完整（≥700 字）",
+      "ok": true,
+      "detail": "1500 字"
+    },
+    {
+      "name": "/models/glm-4.5v/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/models/glm-4.5v/ 无 JS 时读得到「模型名称」",
+      "ok": true
+    },
+    {
+      "name": "/models/glm-4.5v/ 无 JS 时读得到「开发者」",
+      "ok": true
+    },
+    {
+      "name": "/models/glm-4.5v/ 无 JS 时读得到「API 提供平台」",
+      "ok": true
+    },
+    {
+      "name": "/models/glm-4.5v/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/models/glm-4.5v/ 面包屑第二级指向 /models/（真实路由）",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/glm-4.5v/ 从索引页有一条入链（详情页不是孤岛）",
+      "ok": true
+    },
+    {
+      "name": "/models/glm-4.5v/ 计价表逐行可回读（行数 == 展开后的真实计价条目数）",
+      "ok": true,
+      "detail": "页面 2 行 · 展开期望 2 条（多变体模型页）"
+    },
+    {
+      "name": "/models/glm-4.6v/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「GLM-4.6V」"
+    },
+    {
+      "name": "/models/glm-4.6v/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/models/glm-4.6v/"
+    },
+    {
+      "name": "/models/glm-4.6v/ 面包屑第一级回站根（2 层路由 ⇒ ../../）",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/glm-4.6v/ 刻意没有 ItemList（详情叶子 / 单页）",
+      "ok": true,
+      "detail": "声明 -1"
+    },
+    {
+      "name": "/models/glm-4.6v/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/models/glm-4.6v/ 官方链接逐条都在（≥1 条，且都是 http(s)）",
+      "ok": true,
+      "detail": "5 条"
+    },
+    {
+      "name": "/models/glm-4.6v/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/glm-4.6v/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/glm-4.6v/ 无 JS 时正文完整（≥700 字）",
+      "ok": true,
+      "detail": "1482 字"
+    },
+    {
+      "name": "/models/glm-4.6v/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/models/glm-4.6v/ 无 JS 时读得到「模型名称」",
+      "ok": true
+    },
+    {
+      "name": "/models/glm-4.6v/ 无 JS 时读得到「开发者」",
+      "ok": true
+    },
+    {
+      "name": "/models/glm-4.6v/ 无 JS 时读得到「API 提供平台」",
+      "ok": true
+    },
+    {
+      "name": "/models/glm-4.6v/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/models/glm-4.6v/ 面包屑第二级指向 /models/（真实路由）",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/glm-4.6v/ 从索引页有一条入链（详情页不是孤岛）",
+      "ok": true
+    },
+    {
+      "name": "/models/glm-4.6v/ 计价表逐行可回读（行数 == 展开后的真实计价条目数）",
+      "ok": true,
+      "detail": "页面 2 行 · 展开期望 2 条（多变体模型页）"
+    },
+    {
+      "name": "/models/360zhinao-pro/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「360zhinao-pro」"
+    },
+    {
+      "name": "/models/360zhinao-pro/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/models/360zhinao-pro/"
+    },
+    {
+      "name": "/models/360zhinao-pro/ 面包屑第一级回站根（2 层路由 ⇒ ../../）",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/360zhinao-pro/ 刻意没有 ItemList（详情叶子 / 单页）",
+      "ok": true,
+      "detail": "声明 -1"
+    },
+    {
+      "name": "/models/360zhinao-pro/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/models/360zhinao-pro/ 官方链接逐条都在（≥1 条，且都是 http(s)）",
+      "ok": true,
+      "detail": "4 条"
+    },
+    {
+      "name": "/models/360zhinao-pro/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/360zhinao-pro/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/360zhinao-pro/ 无 JS 时正文完整（≥700 字）",
+      "ok": true,
+      "detail": "1366 字"
+    },
+    {
+      "name": "/models/360zhinao-pro/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/models/360zhinao-pro/ 无 JS 时读得到「模型名称」",
+      "ok": true
+    },
+    {
+      "name": "/models/360zhinao-pro/ 无 JS 时读得到「开发者」",
+      "ok": true
+    },
+    {
+      "name": "/models/360zhinao-pro/ 无 JS 时读得到「API 提供平台」",
+      "ok": true
+    },
+    {
+      "name": "/models/360zhinao-pro/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/models/360zhinao-pro/ 面包屑第二级指向 /models/（真实路由）",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/360zhinao-pro/ 从索引页有一条入链（详情页不是孤岛）",
+      "ok": true
+    },
+    {
+      "name": "/models/360zhinao-pro/ 计价表逐行可回读（行数 == 展开后的真实计价条目数）",
+      "ok": true,
+      "detail": "页面 1 行 · 展开期望 1 条"
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「360zhinao-turbo-llm-geo」"
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/models/360zhinao-turbo-llm-geo/"
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 面包屑第一级回站根（2 层路由 ⇒ ../../）",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 刻意没有 ItemList（详情叶子 / 单页）",
+      "ok": true,
+      "detail": "声明 -1"
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 官方链接逐条都在（≥1 条，且都是 http(s)）",
+      "ok": true,
+      "detail": "4 条"
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 无 JS 时正文完整（≥700 字）",
+      "ok": true,
+      "detail": "1399 字"
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 无 JS 时读得到「模型名称」",
+      "ok": true
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 无 JS 时读得到「开发者」",
+      "ok": true
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 无 JS 时读得到「API 提供平台」",
+      "ok": true
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 面包屑第二级指向 /models/（真实路由）",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 从索引页有一条入链（详情页不是孤岛）",
+      "ok": true
+    },
+    {
+      "name": "/models/360zhinao-turbo-llm-geo/ 计价表逐行可回读（行数 == 展开后的真实计价条目数）",
+      "ok": true,
+      "detail": "页面 1 行 · 展开期望 1 条"
+    },
+    {
+      "name": "/models/baichuan-m3/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「Baichuan-M3」"
+    },
+    {
+      "name": "/models/baichuan-m3/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/models/baichuan-m3/"
+    },
+    {
+      "name": "/models/baichuan-m3/ 面包屑第一级回站根（2 层路由 ⇒ ../../）",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/baichuan-m3/ 刻意没有 ItemList（详情叶子 / 单页）",
+      "ok": true,
+      "detail": "声明 -1"
+    },
+    {
+      "name": "/models/baichuan-m3/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/models/baichuan-m3/ 官方链接逐条都在（≥1 条，且都是 http(s)）",
+      "ok": true,
+      "detail": "3 条"
+    },
+    {
+      "name": "/models/baichuan-m3/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/baichuan-m3/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/models/baichuan-m3/ 无 JS 时正文完整（≥700 字）",
+      "ok": true,
+      "detail": "1289 字"
+    },
+    {
+      "name": "/models/baichuan-m3/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/models/baichuan-m3/ 无 JS 时读得到「模型名称」",
+      "ok": true
+    },
+    {
+      "name": "/models/baichuan-m3/ 无 JS 时读得到「开发者」",
+      "ok": true
+    },
+    {
+      "name": "/models/baichuan-m3/ 无 JS 时读得到「API 提供平台」",
+      "ok": true
+    },
+    {
+      "name": "/models/baichuan-m3/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/models/baichuan-m3/ 面包屑第二级指向 /models/（真实路由）",
+      "ok": true,
+      "detail": "../../ ../../models/"
+    },
+    {
+      "name": "/models/baichuan-m3/ 从索引页有一条入链（详情页不是孤岛）",
+      "ok": true
+    },
+    {
+      "name": "/models/baichuan-m3/ 计价表逐行可回读（行数 == 展开后的真实计价条目数）",
+      "ok": true,
+      "detail": "页面 1 行 · 展开期望 1 条"
+    },
+    {
+      "name": "/models/ 索引页的筛选控件由脚本建（无 JS 时 0 控件已在体检里查过；有 JS 时才有控件）",
+      "ok": true,
+      "detail": "8 个控件"
+    },
+    {
+      "name": "§22b 取样：deal 详情（deals.json 里 url 最长的一条）与 model 详情（models.json[0]）都取到了",
+      "ok": true,
+      "detail": "deal/8e7b0fd03e73/（官方页 URL 129 字符 · 数据 135 条）· models/360zhinao-pro/（数据 51 个模型）"
+    },
+    {
+      "name": "§22b deal@1600 内容列居中（|left-(vw-right)|≤8）且列宽 ∈[1080, 1120]",
+      "ok": true,
+      "detail": "列 240..1360 W=1120 · 视口 1600 · 居中偏差 0px · 无违规码"
+    },
+    {
+      "name": "§22b deal@1600 同轴：.crumb / .dpane / .dpane-more / .dpane-src 左右极差 ≤1px",
+      "ok": true,
+      "detail": ".crumb=240..1360 · .dpane=240..1360 · .dpane-more=240..1360 · .dpane-src=240..1360 · 无违规码"
+    },
+    {
+      "name": "§22b deal@1600 来源块宽 == 列宽（≤1px）且自身不溢出",
+      "ok": true,
+      "detail": "来源块 W=1120 / 列 W=1120 · 内部溢出 0px · 无违规码"
+    },
+    {
+      "name": "§22b deal@1600 Header(.topin) 与 Footer(.wrap) 未缩窄：仍是 min(1420px, 视口)",
+      "ok": true,
+      "detail": ".topin 1420 / .wrap 1420 / footer 1380（期望 1420 与 1380） · 无违规码"
+    },
+    {
+      "name": "§22b deal@1440 内容列居中（|left-(vw-right)|≤8）且列宽 ∈[1080, 1120]",
+      "ok": true,
+      "detail": "列 160..1280 W=1120 · 视口 1440 · 居中偏差 0px · 无违规码"
+    },
+    {
+      "name": "§22b deal@1440 同轴：.crumb / .dpane / .dpane-more / .dpane-src 左右极差 ≤1px",
+      "ok": true,
+      "detail": ".crumb=160..1280 · .dpane=160..1280 · .dpane-more=160..1280 · .dpane-src=160..1280 · 无违规码"
+    },
+    {
+      "name": "§22b deal@1440 来源块宽 == 列宽（≤1px）且自身不溢出",
+      "ok": true,
+      "detail": "来源块 W=1120 / 列 W=1120 · 内部溢出 0px · 无违规码"
+    },
+    {
+      "name": "§22b deal@1440 Header(.topin) 与 Footer(.wrap) 未缩窄：仍是 min(1420px, 视口)",
+      "ok": true,
+      "detail": ".topin 1420 / .wrap 1420 / footer 1380（期望 1420 与 1380） · 无违规码"
+    },
+    {
+      "name": "§22b deal@1280 内容列居中（|left-(vw-right)|≤8）且列宽 ∈[1080, 1120]",
+      "ok": true,
+      "detail": "列 80..1200 W=1120 · 视口 1280 · 居中偏差 0px · 无违规码"
+    },
+    {
+      "name": "§22b deal@1280 同轴：.crumb / .dpane / .dpane-more / .dpane-src 左右极差 ≤1px",
+      "ok": true,
+      "detail": ".crumb=80..1200 · .dpane=80..1200 · .dpane-more=80..1200 · .dpane-src=80..1200 · 无违规码"
+    },
+    {
+      "name": "§22b deal@1280 来源块宽 == 列宽（≤1px）且自身不溢出",
+      "ok": true,
+      "detail": "来源块 W=1120 / 列 W=1120 · 内部溢出 0px · 无违规码"
+    },
+    {
+      "name": "§22b deal@1280 Header(.topin) 与 Footer(.wrap) 未缩窄：仍是 min(1420px, 视口)",
+      "ok": true,
+      "detail": ".topin 1280 / .wrap 1280 / footer 1240（期望 1280 与 1240） · 无违规码"
+    },
+    {
+      "name": "§22b model@1600 内容列居中（|left-(vw-right)|≤8）且列宽 ∈[1080, 1120]",
+      "ok": true,
+      "detail": "列 240..1360 W=1120 · 视口 1600 · 居中偏差 0px · 无违规码"
+    },
+    {
+      "name": "§22b model@1600 同轴：.crumb / .stop / .minfo / .ptable-wrap 左右极差 ≤1px",
+      "ok": true,
+      "detail": ".crumb=240..1360 · .stop=240..1360 · .minfo=240..1360 · .ptable-wrap=240..1360 · 无违规码"
+    },
+    {
+      "name": "§22b model@1600 Header(.topin) 与 Footer(.wrap) 未缩窄：仍是 min(1420px, 视口)",
+      "ok": true,
+      "detail": ".topin 1420 / .wrap 1420 / footer 1380（期望 1420 与 1380） · 无违规码"
+    },
+    {
+      "name": "§22b model@1440 内容列居中（|left-(vw-right)|≤8）且列宽 ∈[1080, 1120]",
+      "ok": true,
+      "detail": "列 160..1280 W=1120 · 视口 1440 · 居中偏差 0px · 无违规码"
+    },
+    {
+      "name": "§22b model@1440 同轴：.crumb / .stop / .minfo / .ptable-wrap 左右极差 ≤1px",
+      "ok": true,
+      "detail": ".crumb=160..1280 · .stop=160..1280 · .minfo=160..1280 · .ptable-wrap=160..1280 · 无违规码"
+    },
+    {
+      "name": "§22b model@1440 Header(.topin) 与 Footer(.wrap) 未缩窄：仍是 min(1420px, 视口)",
+      "ok": true,
+      "detail": ".topin 1420 / .wrap 1420 / footer 1380（期望 1420 与 1380） · 无违规码"
+    },
+    {
+      "name": "§22b model@1280 内容列居中（|left-(vw-right)|≤8）且列宽 ∈[1080, 1120]",
+      "ok": true,
+      "detail": "列 80..1200 W=1120 · 视口 1280 · 居中偏差 0px · 无违规码"
+    },
+    {
+      "name": "§22b model@1280 同轴：.crumb / .stop / .minfo / .ptable-wrap 左右极差 ≤1px",
+      "ok": true,
+      "detail": ".crumb=80..1200 · .stop=80..1200 · .minfo=80..1200 · .ptable-wrap=80..1200 · 无违规码"
+    },
+    {
+      "name": "§22b model@1280 Header(.topin) 与 Footer(.wrap) 未缩窄：仍是 min(1420px, 视口)",
+      "ok": true,
+      "detail": ".topin 1280 / .wrap 1280 / footer 1240（期望 1280 与 1240） · 无违规码"
+    },
+    {
+      "name": "§22b deal 与 model 的叶子页落在同一条内容列上（1600/1440/1280 档列左与列宽一致 ≤1px）",
+      "ok": true,
+      "detail": "三档一致：列宽 1120px · 列左 160px"
+    },
+    {
+      "name": "§22b 首页的 <main> 不带 detail-main（统一内容列不得波及首页）",
+      "ok": true,
+      "detail": "首页 <main> 1 个 · class [（空）] · main.detail-main 0 个"
+    },
+    {
+      "name": "§22b @768 内容列宽 == .wrap 可用宽（窄屏铺满、不另立断点）且页面无横向溢出",
+      "ok": true,
+      "detail": "deal 列 728 / 可用 728 · model 列 728 / 可用 728 · scrollWidth deal 768 / model 768（视口 768） · 无违规码"
+    },
+    {
+      "name": "§22b @390 documentElement.scrollWidth ≤ 391（deal 与 model 都不横向滚动）",
+      "ok": true,
+      "detail": "scrollWidth deal 390 / model 390（视口 390） · 无溢出"
+    },
+    {
+      "name": "§22b @390 .dpane-src 的计算样式不是 break-all（长 URL 靠 overflow-wrap: anywhere 断行）",
+      "ok": true,
+      "detail": "word-break: normal · overflow-wrap: anywhere（全站另有 .cmpshare 的 break-all，属改动前既有，不在本节判）"
+    },
+    {
+      "name": "§22b 长 URL 页（deal/8e7b0fd03e73/，官方页 URL 129 字符）在 390 与 1440 下自身与页面级都不溢出",
+      "ok": true,
+      "detail": "@390 scrollWidth 390（视口 390） · .dpane-src 358px 内溢 0px · @1440 scrollWidth 1440（视口 1440） · .dpane-src 1120px 内溢 0px · 无溢出"
+    },
+    {
+      "name": "§22b M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "ok": true,
+      "detail": "锚点「.detail-main { width: min(1120px, 100%); margin-inline: auto; }」出现 1 次 · 删掉 .detail-main 的 margin-inline:auto"
+    },
+    {
+      "name": "§22b M1 变异后复测必须出现「center」违规码（删掉 .detail-main 的 margin-inline:auto）",
+      "ok": true,
+      "detail": "期望 center · 实测 [center] · 列 30..1150 W=1120 · scrollWidth 1440（视口 1440） · 违规码 [center]"
+    },
+    {
+      "name": "§22b M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "ok": true,
+      "detail": "锚点「.detail-main { width: min(1120px, 100%); margin-inline: auto; }」出现 1 次 · 把内容列宽度改回 820px（缺陷原型）"
+    },
+    {
+      "name": "§22b M2 变异后复测必须出现「width」违规码（把内容列宽度改回 820px（缺陷原型））",
+      "ok": true,
+      "detail": "期望 width · 实测 [width] · 列 310..1130 W=820 · scrollWidth 1440（视口 1440） · 违规码 [width]"
+    },
+    {
+      "name": "§22b M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "ok": true,
+      "detail": "锚点「margin-top: var(--s3); width: 100%; max-width: none;」出现 1 次 · 把 .dpane-src 的 width:100% 改成 820px"
+    },
+    {
+      "name": "§22b M3 变异后复测必须出现「src-width」违规码（把 .dpane-src 的 width:100% 改成 820px）",
+      "ok": true,
+      "detail": "期望 src-width · 实测 [axis, src-width] · 列 160..1280 W=1120 · scrollWidth 1440（视口 1440） · 违规码 [axis, src-width]"
+    },
+    {
+      "name": "§22b M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "ok": true,
+      "detail": "锚点「word-break: normal; overflow-wrap: anywhere;」出现 1 次 · 拿走 .dpane-src 的 overflow-wrap:anywhere，并注入 200 字符不可断的超长 URL"
+    },
+    {
+      "name": "§22b M4 变异后复测必须出现「page-overflow@390」违规码（拿走 .dpane-src 的 overflow-wrap:anywhere，并注入 200 字符不可断的超长 URL）",
+      "ok": true,
+      "detail": "期望 page-overflow@390 · 实测 [self-overflow@390, page-overflow@390] · 列 16..374 W=358 · scrollWidth 1213（视口 390） · 超长 URL 注入位置 link · 违规码 [self-overflow@390, page-overflow@390]"
+    },
+    {
+      "name": "§22b M5 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "ok": true,
+      "detail": "锚点「.detail-main { width: min(1120px, 100%); margin-inline: auto; }」出现 1 次 · 只把 model 详情页的内容列改成 1100px（两页不再同列）"
+    },
+    {
+      "name": "§22b M5 变异后复测必须出现「leaf-consistency」违规码（只把 model 详情页的内容列改成 1100px（两页不再同列））",
+      "ok": true,
+      "detail": "期望 leaf-consistency · 实测 [leaf-consistency, leaf-consistency] · 列 170..1270 W=1100 · scrollWidth 1440（视口 1440） · 违规码 [leaf-consistency, leaf-consistency]"
+    },
+    {
+      "name": "§22b M4 正对照：同样注入 200 字符超长 URL、不动 CSS ⇒ @390 不得溢出",
+      "ok": true,
+      "detail": "超长 URL 注入位置 link · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [width]，390 档只看溢出）"
+    },
+    {
+      "name": "§22b 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因",
+      "ok": true,
+      "detail": "不存在的锚点：ok=false · 出现 0 次 · 锚点在内联样式里出现 0 次（必须恰好 1 次） ／ 非唯一锚点：ok=false · 出现 3 次 · 锚点在内联样式里出现 3 次（必须恰好 1 次）"
+    },
+    {
+      "name": "§22b 变异牙零磁盘污染：dist 里两个产物文件的 sha256 变异前后相等（byte-exact）",
+      "ok": true,
+      "detail": "deal/8e7b0fd03e73/index.html b52c74d01be7… · models/360zhinao-pro/index.html 1b6acb66faba…（前 b52c74d0/b52c74d0 · 1b6acb66/1b6acb66）"
+    },
+    {
+      "name": "/vendor/ 至少有一个厂商页进 sitemap",
+      "ok": true,
+      "detail": "25 个"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「百度智能云 的 AI 优惠与免费额度」"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/vendor/baidu-ai-cloud/"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 面包屑第一级回站根（2 层路由 ⇒ ../../）",
+      "ok": true,
+      "detail": "../../ ../../vendor/"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ ItemList 声明数 == 元素数 == 页面 data-item 行数",
+      "ok": true,
+      "detail": "声明 17 / 元素 17 / 行 17"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 官方链接逐条都在（≥1 条，且都是 http(s)）",
+      "ok": true,
+      "detail": "5 条"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 无 JS 时正文完整（≥600 字）",
+      "ok": true,
+      "detail": "4183 字"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 无 JS 时读得到「按厂商浏览」",
+      "ok": true
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 无 JS 时读得到「福利类型」",
+      "ok": true
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 面包屑第二级指向 /vendor/ 枢纽",
+      "ok": true,
+      "detail": "../../ ../../vendor/"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 从 /vendor/ 枢纽有一条入链（厂商页不是孤岛）",
+      "ok": true
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 资料区块六节齐（官方入口 / 套餐 / API / 模型 / 变化 / 订阅）",
+      "ok": true,
+      "detail": "6 节"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 资料区块的官方入口指向**数据里有出处**的地址",
+      "ok": true,
+      "detail": "4 条 · 全部有出处"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 资料区块的计数都带 data-vendor-count 标记且非负（可被外部重算）",
+      "ok": true,
+      "detail": "{\"api-records\":1,\"api-model-items\":3,\"api-channels\":1,\"models\":2,\"api-records-inline\":1}"
+    },
+    {
+      "name": "/vendor/baidu-ai-cloud/ 「API 记录数」的两个标记一致（标题行 == 正文行）",
+      "ok": true,
+      "detail": "1 vs 1"
+    },
+    {
+      "name": "/vendor/volcengine/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「火山引擎 的 AI 优惠与免费额度」"
+    },
+    {
+      "name": "/vendor/volcengine/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/vendor/volcengine/"
+    },
+    {
+      "name": "/vendor/volcengine/ 面包屑第一级回站根（2 层路由 ⇒ ../../）",
+      "ok": true,
+      "detail": "../../ ../../vendor/"
+    },
+    {
+      "name": "/vendor/volcengine/ ItemList 声明数 == 元素数 == 页面 data-item 行数",
+      "ok": true,
+      "detail": "声明 13 / 元素 13 / 行 13"
+    },
+    {
+      "name": "/vendor/volcengine/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/vendor/volcengine/ 官方链接逐条都在（≥1 条，且都是 http(s)）",
+      "ok": true,
+      "detail": "3 条"
+    },
+    {
+      "name": "/vendor/volcengine/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/vendor/volcengine/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/vendor/volcengine/ 无 JS 时正文完整（≥600 字）",
+      "ok": true,
+      "detail": "3007 字"
+    },
+    {
+      "name": "/vendor/volcengine/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/vendor/volcengine/ 无 JS 时读得到「按厂商浏览」",
+      "ok": true
+    },
+    {
+      "name": "/vendor/volcengine/ 无 JS 时读得到「福利类型」",
+      "ok": true
+    },
+    {
+      "name": "/vendor/volcengine/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/vendor/volcengine/ 面包屑第二级指向 /vendor/ 枢纽",
+      "ok": true,
+      "detail": "../../ ../../vendor/"
+    },
+    {
+      "name": "/vendor/volcengine/ 从 /vendor/ 枢纽有一条入链（厂商页不是孤岛）",
+      "ok": true
+    },
+    {
+      "name": "/vendor/volcengine/ 资料区块六节齐（官方入口 / 套餐 / API / 模型 / 变化 / 订阅）",
+      "ok": true,
+      "detail": "6 节"
+    },
+    {
+      "name": "/vendor/volcengine/ 资料区块的官方入口指向**数据里有出处**的地址",
+      "ok": true,
+      "detail": "2 条 · 全部有出处"
+    },
+    {
+      "name": "/vendor/volcengine/ 资料区块的计数都带 data-vendor-count 标记且非负（可被外部重算）",
+      "ok": true,
+      "detail": "{\"api-records\":1,\"api-model-items\":4,\"api-channels\":1,\"models\":4,\"api-records-inline\":1}"
+    },
+    {
+      "name": "/vendor/volcengine/ 「API 记录数」的两个标记一致（标题行 == 正文行）",
+      "ok": true,
+      "detail": "1 vs 1"
+    },
+    {
+      "name": "/vendor/zhipu/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「智谱AI 的 AI 优惠与免费额度」"
+    },
+    {
+      "name": "/vendor/zhipu/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/vendor/zhipu/"
+    },
+    {
+      "name": "/vendor/zhipu/ 面包屑第一级回站根（2 层路由 ⇒ ../../）",
+      "ok": true,
+      "detail": "../../ ../../vendor/"
+    },
+    {
+      "name": "/vendor/zhipu/ ItemList 声明数 == 元素数 == 页面 data-item 行数",
+      "ok": true,
+      "detail": "声明 12 / 元素 12 / 行 12"
+    },
+    {
+      "name": "/vendor/zhipu/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/vendor/zhipu/ 官方链接逐条都在（≥1 条，且都是 http(s)）",
+      "ok": true,
+      "detail": "4 条"
+    },
+    {
+      "name": "/vendor/zhipu/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/vendor/zhipu/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/vendor/zhipu/ 无 JS 时正文完整（≥600 字）",
+      "ok": true,
+      "detail": "3470 字"
+    },
+    {
+      "name": "/vendor/zhipu/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/vendor/zhipu/ 无 JS 时读得到「按厂商浏览」",
+      "ok": true
+    },
+    {
+      "name": "/vendor/zhipu/ 无 JS 时读得到「福利类型」",
+      "ok": true
+    },
+    {
+      "name": "/vendor/zhipu/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/vendor/zhipu/ 面包屑第二级指向 /vendor/ 枢纽",
+      "ok": true,
+      "detail": "../../ ../../vendor/"
+    },
+    {
+      "name": "/vendor/zhipu/ 从 /vendor/ 枢纽有一条入链（厂商页不是孤岛）",
+      "ok": true
+    },
+    {
+      "name": "/vendor/zhipu/ 资料区块六节齐（官方入口 / 套餐 / API / 模型 / 变化 / 订阅）",
+      "ok": true,
+      "detail": "6 节"
+    },
+    {
+      "name": "/vendor/zhipu/ 资料区块的官方入口指向**数据里有出处**的地址",
+      "ok": true,
+      "detail": "3 条 · 全部有出处"
+    },
+    {
+      "name": "/vendor/zhipu/ 资料区块的计数都带 data-vendor-count 标记且非负（可被外部重算）",
+      "ok": true,
+      "detail": "{\"api-records\":1,\"api-model-items\":12,\"api-channels\":1,\"models\":8,\"api-records-inline\":1}"
+    },
+    {
+      "name": "/vendor/zhipu/ 「API 记录数」的两个标记一致（标题行 == 正文行）",
+      "ok": true,
+      "detail": "1 vs 1"
+    },
+    {
+      "name": "/vendor/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「按厂商浏览 AI 优惠」"
+    },
+    {
+      "name": "/vendor/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/vendor/"
+    },
+    {
+      "name": "/vendor/ 面包屑第一级回站根（1 层路由 ⇒ ../）",
+      "ok": true,
+      "detail": "../"
+    },
+    {
+      "name": "/vendor/ ItemList 声明数 == 元素数 == 页面 data-item 行数",
+      "ok": true,
+      "detail": "声明 25 / 元素 25 / 行 25"
+    },
+    {
+      "name": "/vendor/ 页脚有指向本页的入口",
+      "ok": true,
+      "detail": "../vendor/ ../vendor/baidu-ai-cloud/ ../vendor/volcengine/ ../vendor/zhipu/ ../vendor/coze/ ../vendor/github/ ../vendor/"
+    },
+    {
+      "name": "/vendor/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/vendor/ 按设计没有站外链接（这一页只做站内导航与数据出口）",
+      "ok": true,
+      "detail": "0 条：（另有 1 条本项目仓库入口，由共享页脚声明，不计）"
+    },
+    {
+      "name": "/vendor/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/vendor/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/vendor/ 无 JS 时正文完整（≥500 字）",
+      "ok": true,
+      "detail": "2876 字"
+    },
+    {
+      "name": "/vendor/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/vendor/ 无 JS 时读得到「按厂商浏览」",
+      "ok": true
+    },
+    {
+      "name": "/vendor/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/vendor/ 枢纽列出 25 个厂商入口",
+      "ok": true,
+      "detail": "页面 25 行 / sitemap 25 个"
+    },
+    {
+      "name": "/archive/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「历史档案」"
+    },
+    {
+      "name": "/archive/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/archive/"
+    },
+    {
+      "name": "/archive/ 面包屑第一级回站根（1 层路由 ⇒ ../）",
+      "ok": true,
+      "detail": "../"
+    },
+    {
+      "name": "/archive/ ItemList 声明数 == 元素数 == 页面 data-item 行数",
+      "ok": true,
+      "detail": "声明 0 / 元素 0 / 行 0"
+    },
+    {
+      "name": "/archive/ 页脚有指向本页的入口",
+      "ok": true,
+      "detail": "../archive/"
+    },
+    {
+      "name": "/archive/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/archive/ 按设计没有站外链接（这一页只做站内导航与数据出口）",
+      "ok": true,
+      "detail": "0 条：（另有 1 条本项目仓库入口，由共享页脚声明，不计）"
+    },
+    {
+      "name": "/archive/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/archive/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/archive/ 无 JS 时正文完整（≥600 字）",
+      "ok": true,
+      "detail": "1308 字"
+    },
+    {
+      "name": "/archive/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/archive/ 无 JS 时读得到「历史档案」",
+      "ok": true
+    },
+    {
+      "name": "/archive/ 无 JS 时读得到「已结束」",
+      "ok": true
+    },
+    {
+      "name": "/archive/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/archive/ 三组都在（优惠 / Coding 套餐 / API 计费记录）",
+      "ok": true
+    },
+    {
+      "name": "/archive/ 三份变化日志都取到了（没有把 api-plan-history 写成 api-history 这类文件名错误）",
+      "ok": true,
+      "detail": "{\"deal\":0,\"plan\":0,\"api\":0}"
+    },
+    {
+      "name": "/archive/ 的档案条数与三份日志里 ended/restored 的**唯一记录数**一致（空 ⇒ 0 行）",
+      "ok": true,
+      "detail": "页面 0 行 · 日志里 ended/restored 覆盖 0 条记录"
+    },
+    {
+      "name": "/archive/ 空态写明「0 条是事实，不是故障」（空是事实，不是故障）",
+      "ok": true
+    },
+    {
+      "name": "/archive/ 无 JS 时读到当前状态该说的话（空 ⇒ 空态说明 / 非空 ⇒ 分组计数）",
+      "ok": true,
+      "detail": "页面 0 行 · 无 JS 正文 1308 字"
+    },
+    {
+      "name": "/docs/data/ 能打开且恰好一个 h1",
+      "ok": true,
+      "detail": "1 个 · 「数据文档与公开数据集」"
+    },
+    {
+      "name": "/docs/data/ canonical 自指",
+      "ok": true,
+      "detail": "https://buguoshixc.github.io/ai-deals-aggregator/docs/data/"
+    },
+    {
+      "name": "/docs/data/ 面包屑第一级回站根（2 层路由 ⇒ ../../）",
+      "ok": true,
+      "detail": "../../"
+    },
+    {
+      "name": "/docs/data/ ItemList 声明数 == 元素数 == 页面 data-item 行数",
+      "ok": true,
+      "detail": "声明 9 / 元素 9 / 行 9"
+    },
+    {
+      "name": "/docs/data/ 页脚有指向本页的入口",
+      "ok": true,
+      "detail": "../../docs/data/"
+    },
+    {
+      "name": "/docs/data/ 在 sitemap 里（成员资格，不是\"文件存在\"）",
+      "ok": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "name": "/docs/data/ 按设计没有站外链接（这一页只做站内导航与数据出口）",
+      "ok": true,
+      "detail": "0 条：（另有 1 条本项目仓库入口，由共享页脚声明，不计）"
+    },
+    {
+      "name": "/docs/data/ 390px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/docs/data/ 360px 不产生页面级横向溢出",
+      "ok": true,
+      "detail": "0px"
+    },
+    {
+      "name": "/docs/data/ 无 JS 时正文完整（≥1200 字）",
+      "ok": true,
+      "detail": "5531 字"
+    },
+    {
+      "name": "/docs/data/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "/docs/data/ 无 JS 时读得到「数据集索引」",
+      "ok": true
+    },
+    {
+      "name": "/docs/data/ 无 JS 时读得到「使用示例」",
+      "ok": true
+    },
+    {
+      "name": "/docs/data/ 无 JS 时读得到「引用方式」",
+      "ok": true
+    },
+    {
+      "name": "/docs/data/ 无 JS 时读得到「Schema 稳定性」",
+      "ok": true
+    },
+    {
+      "name": "/docs/data/ 无 JS 时读得到「License 状态」",
+      "ok": true
+    },
+    {
+      "name": "/docs/data/ 没有 JS 错误、没有外部请求（含本节的全部导航）",
+      "ok": true,
+      "detail": "JS 错误 0 个 · 外部请求 0 个"
+    },
+    {
+      "name": "/docs/data/ 行数 == dist/data/index.json 的数据集数（9 份）",
+      "ok": true,
+      "detail": "页面 9 行 / Manifest 9 份"
+    },
+    {
+      "name": "/docs/data/ 里每个 endpoint 都真的能取到（逐条 HTTP 200）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "/docs/data/ 页面标出每份数据的时间形状（真实时刻 / 日期规范化 / 纯日期）",
+      "ok": true
+    },
+    {
+      "name": "/docs/data/ 引用示例里带官方出处（不宣称本站是官方来源）",
+      "ok": true
+    },
+    {
+      "name": "抽样 7 个页面在真实 DOM 里各有一个 analytics bootstrap（含 noindex / 深层路由）",
+      "ok": true,
+      "detail": "/=1 · plans/api/=1 · plans/coding/=1 · models/=1 · models/360zhinao-pro/=1 · vendor/ai360/=1 · changes/=1"
+    },
+    {
+      "name": "抽样页面里没有残留的分析占位符（页面 HTML 里不会露出模板标记）",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "抽样页面正文都有内容（分析注入没有把正文吃掉）",
+      "ok": true,
+      "detail": "/:12271 · plans/api/:20344 · plans/coding/:16415 · models/:5956 · models/360zhinao-pro/:1366 · vendor/ai360/:1996 · changes/:3801"
+    },
+    {
+      "name": "本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取）",
+      "ok": true,
+      "detail": "全部 0"
+    },
+    {
+      "name": "本地：网络层同样 0 次分析请求（guard 在插入 <script> 之前就返回了）",
+      "ok": true,
+      "detail": "本轮累计 0 次"
+    },
+    {
+      "name": "本地：抽样页面没有新增 JS 错误（Analytics 失败不得影响产品）",
+      "ok": true,
+      "detail": "全部 0"
+    },
+    {
+      "name": "本地：没有出现白名单之外的外部请求",
+      "ok": true,
+      "detail": "0 个"
+    },
+    {
+      "name": "回归：覆盖的优惠条数不减少",
+      "ok": true,
+      "detail": "80 → 80"
+    },
+    {
+      "name": "回归：卡片数不减少",
+      "ok": true,
+      "detail": "50 → 50"
+    },
+    {
+      "name": "回归：首屏完整可见不减少",
+      "ok": true,
+      "detail": "6 → 6"
+    },
+    {
+      "name": "回归：页高不增加（容差 15%）",
+      "ok": true,
+      "detail": "4589px → 4787px"
+    },
+    {
+      "name": "回归：外部请求不增加",
+      "ok": true,
+      "detail": "0 → 0"
+    },
+    {
+      "name": "回归：JS 错误仍为 0",
+      "ok": true,
+      "detail": "0 个"
+    }
+  ]
+}

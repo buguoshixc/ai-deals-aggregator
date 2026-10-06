@@ -1,0 +1,57 @@
+﻿# CI 原始读数：run 37407349002（PR #44 · workflow `Verify site (gate)` · job `gate`）
+
+| 项 | 值 |
+|---|---|
+| run id | `37407349002` |
+| run URL | https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/37407349002 |
+| head SHA | `d8612e07b6a27d7055e1775227293e6ee36289e3` |
+| 触发 | pull_request → master（PR #44） |
+| 结论 | **success**（status=completed） |
+| 起止 | 2026-10-06T03:05:44Z → 2026-10-06T03:09:30Z |
+| job `gate` | conclusion=**success** · 用时 **223s** |
+
+采集命令（逐字）：
+
+```
+gh run view 37407349002 --json status,conclusion,headSha,url,createdAt,startedAt,updatedAt,jobs   # → ci-run-37407349002.json
+gh run view 37407349002 --log                                                                   # → 下列逐字过滤行
+```
+
+## 步骤清单（`gh run view --json jobs` 原始读数，顺序照抄）
+
+```
+[1] Set up job -> success
+[2] Checkout -> success
+[3] Setup Node.js -> success
+[4] CI consistency (action / runner / node-version / engines drift) -> success
+[5] Gate (validate → translation → selftests → build → real browser) -> success
+[9] Post Setup Node.js -> success
+[10] Post Checkout -> success
+[11] Complete job -> success
+```
+
+## 关键断言原始行（逐字，取自 run log；已去掉 gh 的时间戳前缀）
+
+```
+added 51 packages, and audited 52 packages in 1s
+✅ CI 口径检查 38 项，失败 0 项
+✅ 产物自检通过
+✅ 构建完成 → dist/（自检全过，已从暂存目录就位）
+✅ 受众字段自测：197 项通过，0 项失败
+✅ 分析门禁 31 项，失败 0 项
+✅ 验收 798 项，失败 0 项
+✅ 验收 804 项，失败 0 项
+✅ SEO 验收 11 项，失败 0 项
+浏览器可用（/home/runner/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome）→ 真浏览器验收将执行
+  ✓ plans.json 与 curated_plans.json 的产出逐字节一致
+✅ 演练 15 项，失败 0 项
+```
+
+> 说明一：CI 上第 1 步 `npm ci` **真的执行了**（`added 51 packages, and audited 52 packages in 1s` / `found 0 vulnerabilities`），
+> 与本地 Full Gate「第 1 步未执行」的局限互补。
+>
+> 说明二：本 run 的浏览器准备判定为 **真浏览器验收将执行**（Chromium `/home/runner/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome`），
+> 即 `allow_degraded_run: false` 的严格路径，不是降级运行。
+>
+> 说明三：门禁步骤数与断言项数都是**本次运行的读数**，不是历史常量 —— `check-ci-consistency` 本就会动态读
+> `.github/actions/gate/action.yml` 的步骤序列并逐条比对（本 run 的 `✅ CI 口径检查 38 项，失败 0 项` 就是它的读数）。

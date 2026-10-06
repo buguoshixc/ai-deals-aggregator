@@ -1,0 +1,12 @@
+{
+  "id": "M6",
+  "description": "把 .need-grid 的 5 列网格改成 10×220px 的横向滚动容器（nowrap/横滑藏入口）",
+  "target": "正文 CSS 里的 .need-grid 基础规则（整页 1 处）",
+  "anchorHits": 1,
+  "expectedHits": 1,
+  "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+  "shaAfter": "9A744FBDDD6B8CF02246DCA672432E2522633DF512A741382791BEC0E045EF21",
+  "bytesBefore": 403822,
+  "bytesAfter": 403832,
+  "appliedAt": "2026-10-06T02:33:43.868Z"
+}

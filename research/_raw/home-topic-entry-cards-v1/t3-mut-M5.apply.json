@@ -1,0 +1,12 @@
+{
+  "id": "M5",
+  "description": "给每张卡加选中态 aria-pressed=\"false\"（handoff 里最容易顺手加的属性）",
+  "target": "nav.needs 区块（卡片开标签）",
+  "anchorHits": 10,
+  "expectedHits": 10,
+  "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+  "shaAfter": "FEFC61BABBE36C694C730510A0C8BFF323542579C663F5DEA2D0B78B770F0718",
+  "bytesBefore": 403822,
+  "bytesAfter": 404032,
+  "appliedAt": "2026-10-06T02:32:25.115Z"
+}

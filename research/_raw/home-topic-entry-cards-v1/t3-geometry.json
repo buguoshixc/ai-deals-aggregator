@@ -1,0 +1,1813 @@
+{
+  "generatedAt": "2026-10-05T14:22:50.816Z",
+  "target": "http://127.0.0.1:53130/",
+  "browser": {
+    "executable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "headless": true,
+    "playwrightCore": "1.63.0"
+  },
+  "measurementNote": "口径与 scripts/tools/verify-site.js 逐字相同：waitUntil:load + waitForApp（#lastUpdated 由 -- 变真实时间戳）；完整可见 = bottom <= innerHeight",
+  "distIndexSha256": "8076370e3c7af29a3c3b6289a57b3b0c673da033cd1cc8432cfa7fa7652e5242",
+  "after": {
+    "1440x900": {
+      "viewport": {
+        "w": 1440,
+        "h": 900
+      },
+      "needs": {
+        "found": true,
+        "height": 153,
+        "top": 102,
+        "bottom": 255,
+        "overflowX": "visible",
+        "scrollWidth": 1420,
+        "clientWidth": 1420,
+        "scrollable": false,
+        "cards": 10,
+        "links": 10,
+        "jsControls": 0,
+        "facetMarkers": 0,
+        "gridTop": 107,
+        "gridColumns": "266.391px 266.406px 266.391px 266.406px 266.391px",
+        "gridTracks": 5,
+        "gridOverflowX": "visible",
+        "rows": 2,
+        "perRow": [
+          5,
+          5
+        ],
+        "rowTops": [
+          107,
+          187
+        ],
+        "heights": [
+          68
+        ],
+        "widths": [
+          266.39,
+          266.41
+        ],
+        "clipped": 0,
+        "inViewport": 10,
+        "overlaps": 0,
+        "minLeft": 30,
+        "maxRight": 1409.98,
+        "rects": [
+          {
+            "left": 30,
+            "right": 296.39,
+            "top": 107,
+            "bottom": 175,
+            "width": 266.39,
+            "height": 68
+          },
+          {
+            "left": 308.39,
+            "right": 574.8,
+            "top": 107,
+            "bottom": 175,
+            "width": 266.41,
+            "height": 68
+          },
+          {
+            "left": 586.8,
+            "right": 853.19,
+            "top": 107,
+            "bottom": 175,
+            "width": 266.39,
+            "height": 68
+          },
+          {
+            "left": 865.19,
+            "right": 1131.59,
+            "top": 107,
+            "bottom": 175,
+            "width": 266.41,
+            "height": 68
+          },
+          {
+            "left": 1143.59,
+            "right": 1409.98,
+            "top": 107,
+            "bottom": 175,
+            "width": 266.39,
+            "height": 68
+          },
+          {
+            "left": 30,
+            "right": 296.39,
+            "top": 187,
+            "bottom": 255,
+            "width": 266.39,
+            "height": 68
+          },
+          {
+            "left": 308.39,
+            "right": 574.8,
+            "top": 187,
+            "bottom": 255,
+            "width": 266.41,
+            "height": 68
+          },
+          {
+            "left": 586.8,
+            "right": 853.19,
+            "top": 187,
+            "bottom": 255,
+            "width": 266.39,
+            "height": 68
+          },
+          {
+            "left": 865.19,
+            "right": 1131.59,
+            "top": 187,
+            "bottom": 255,
+            "width": 266.41,
+            "height": 68
+          },
+          {
+            "left": 1143.59,
+            "right": 1409.98,
+            "top": 187,
+            "bottom": 255,
+            "width": 266.39,
+            "height": 68
+          }
+        ]
+      },
+      "dealGrid": {
+        "top": 349,
+        "cols": 3,
+        "colGap": "12px",
+        "rowGap": "12px"
+      },
+      "cards": {
+        "count": 50,
+        "heights": [
+          192
+        ],
+        "firstScreenFull": 6,
+        "firstScreenPart": 9,
+        "lastFullBottom": 781,
+        "slackFull": 119
+      },
+      "facets": {
+        "count": 13,
+        "tags": [
+          "BUTTON"
+        ],
+        "heights": [
+          26
+        ]
+      },
+      "pageHeight": 4787,
+      "overflowX": 0
+    },
+    "responsive": {
+      "1600x900": {
+        "viewport": {
+          "w": 1600,
+          "h": 900
+        },
+        "needs": {
+          "found": true,
+          "height": 153,
+          "top": 102,
+          "bottom": 255,
+          "overflowX": "visible",
+          "scrollWidth": 1420,
+          "clientWidth": 1420,
+          "scrollable": false,
+          "cards": 10,
+          "links": 10,
+          "jsControls": 0,
+          "facetMarkers": 0,
+          "gridTop": 107,
+          "gridColumns": "266.391px 266.406px 266.391px 266.406px 266.391px",
+          "gridTracks": 5,
+          "gridOverflowX": "visible",
+          "rows": 2,
+          "perRow": [
+            5,
+            5
+          ],
+          "rowTops": [
+            107,
+            187
+          ],
+          "heights": [
+            68
+          ],
+          "widths": [
+            266.39,
+            266.41
+          ],
+          "clipped": 0,
+          "inViewport": 10,
+          "overlaps": 0,
+          "minLeft": 110,
+          "maxRight": 1489.98,
+          "rects": [
+            {
+              "left": 110,
+              "right": 376.39,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 388.39,
+              "right": 654.8,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.41,
+              "height": 68
+            },
+            {
+              "left": 666.8,
+              "right": 933.19,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 945.19,
+              "right": 1211.59,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.41,
+              "height": 68
+            },
+            {
+              "left": 1223.59,
+              "right": 1489.98,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 110,
+              "right": 376.39,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 388.39,
+              "right": 654.8,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.41,
+              "height": 68
+            },
+            {
+              "left": 666.8,
+              "right": 933.19,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 945.19,
+              "right": 1211.59,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.41,
+              "height": 68
+            },
+            {
+              "left": 1223.59,
+              "right": 1489.98,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.39,
+              "height": 68
+            }
+          ]
+        },
+        "dealGrid": {
+          "top": 349,
+          "cols": 3,
+          "colGap": "12px",
+          "rowGap": "12px"
+        },
+        "cards": {
+          "count": 50,
+          "heights": [
+            192
+          ],
+          "firstScreenFull": 6,
+          "firstScreenPart": 9,
+          "lastFullBottom": 781,
+          "slackFull": 119
+        },
+        "facets": {
+          "count": 13,
+          "tags": [
+            "BUTTON"
+          ],
+          "heights": [
+            26
+          ]
+        },
+        "pageHeight": 4787,
+        "overflowX": 0
+      },
+      "1440x900": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "needs": {
+          "found": true,
+          "height": 153,
+          "top": 102,
+          "bottom": 255,
+          "overflowX": "visible",
+          "scrollWidth": 1420,
+          "clientWidth": 1420,
+          "scrollable": false,
+          "cards": 10,
+          "links": 10,
+          "jsControls": 0,
+          "facetMarkers": 0,
+          "gridTop": 107,
+          "gridColumns": "266.391px 266.406px 266.391px 266.406px 266.391px",
+          "gridTracks": 5,
+          "gridOverflowX": "visible",
+          "rows": 2,
+          "perRow": [
+            5,
+            5
+          ],
+          "rowTops": [
+            107,
+            187
+          ],
+          "heights": [
+            68
+          ],
+          "widths": [
+            266.39,
+            266.41
+          ],
+          "clipped": 0,
+          "inViewport": 10,
+          "overlaps": 0,
+          "minLeft": 30,
+          "maxRight": 1409.98,
+          "rects": [
+            {
+              "left": 30,
+              "right": 296.39,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 308.39,
+              "right": 574.8,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.41,
+              "height": 68
+            },
+            {
+              "left": 586.8,
+              "right": 853.19,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 865.19,
+              "right": 1131.59,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.41,
+              "height": 68
+            },
+            {
+              "left": 1143.59,
+              "right": 1409.98,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 30,
+              "right": 296.39,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 308.39,
+              "right": 574.8,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.41,
+              "height": 68
+            },
+            {
+              "left": 586.8,
+              "right": 853.19,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 865.19,
+              "right": 1131.59,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.41,
+              "height": 68
+            },
+            {
+              "left": 1143.59,
+              "right": 1409.98,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.39,
+              "height": 68
+            }
+          ]
+        },
+        "dealGrid": {
+          "top": 349,
+          "cols": 3,
+          "colGap": "12px",
+          "rowGap": "12px"
+        },
+        "cards": {
+          "count": 50,
+          "heights": [
+            192
+          ],
+          "firstScreenFull": 6,
+          "firstScreenPart": 9,
+          "lastFullBottom": 781,
+          "slackFull": 119
+        },
+        "facets": {
+          "count": 13,
+          "tags": [
+            "BUTTON"
+          ],
+          "heights": [
+            26
+          ]
+        },
+        "pageHeight": 4787,
+        "overflowX": 0
+      },
+      "1280x900": {
+        "viewport": {
+          "w": 1280,
+          "h": 900
+        },
+        "needs": {
+          "found": true,
+          "height": 153,
+          "top": 102,
+          "bottom": 255,
+          "overflowX": "visible",
+          "scrollWidth": 1280,
+          "clientWidth": 1280,
+          "scrollable": false,
+          "cards": 10,
+          "links": 10,
+          "jsControls": 0,
+          "facetMarkers": 0,
+          "gridTop": 107,
+          "gridColumns": "238.391px 238.406px 238.391px 238.406px 238.391px",
+          "gridTracks": 5,
+          "gridOverflowX": "visible",
+          "rows": 2,
+          "perRow": [
+            5,
+            5
+          ],
+          "rowTops": [
+            107,
+            187
+          ],
+          "heights": [
+            68
+          ],
+          "widths": [
+            238.39,
+            238.41
+          ],
+          "clipped": 0,
+          "inViewport": 10,
+          "overlaps": 0,
+          "minLeft": 20,
+          "maxRight": 1259.98,
+          "rects": [
+            {
+              "left": 20,
+              "right": 258.39,
+              "top": 107,
+              "bottom": 175,
+              "width": 238.39,
+              "height": 68
+            },
+            {
+              "left": 270.39,
+              "right": 508.8,
+              "top": 107,
+              "bottom": 175,
+              "width": 238.41,
+              "height": 68
+            },
+            {
+              "left": 520.8,
+              "right": 759.19,
+              "top": 107,
+              "bottom": 175,
+              "width": 238.39,
+              "height": 68
+            },
+            {
+              "left": 771.19,
+              "right": 1009.59,
+              "top": 107,
+              "bottom": 175,
+              "width": 238.41,
+              "height": 68
+            },
+            {
+              "left": 1021.59,
+              "right": 1259.98,
+              "top": 107,
+              "bottom": 175,
+              "width": 238.39,
+              "height": 68
+            },
+            {
+              "left": 20,
+              "right": 258.39,
+              "top": 187,
+              "bottom": 255,
+              "width": 238.39,
+              "height": 68
+            },
+            {
+              "left": 270.39,
+              "right": 508.8,
+              "top": 187,
+              "bottom": 255,
+              "width": 238.41,
+              "height": 68
+            },
+            {
+              "left": 520.8,
+              "right": 759.19,
+              "top": 187,
+              "bottom": 255,
+              "width": 238.39,
+              "height": 68
+            },
+            {
+              "left": 771.19,
+              "right": 1009.59,
+              "top": 187,
+              "bottom": 255,
+              "width": 238.41,
+              "height": 68
+            },
+            {
+              "left": 1021.59,
+              "right": 1259.98,
+              "top": 187,
+              "bottom": 255,
+              "width": 238.39,
+              "height": 68
+            }
+          ]
+        },
+        "dealGrid": {
+          "top": 349,
+          "cols": 3,
+          "colGap": "12px",
+          "rowGap": "12px"
+        },
+        "cards": {
+          "count": 50,
+          "heights": [
+            192
+          ],
+          "firstScreenFull": 6,
+          "firstScreenPart": 9,
+          "lastFullBottom": 781,
+          "slackFull": 119
+        },
+        "facets": {
+          "count": 13,
+          "tags": [
+            "BUTTON"
+          ],
+          "heights": [
+            26
+          ]
+        },
+        "pageHeight": 4787,
+        "overflowX": 0
+      },
+      "768x900": {
+        "viewport": {
+          "w": 768,
+          "h": 900
+        },
+        "needs": {
+          "found": true,
+          "height": 313,
+          "top": 147,
+          "bottom": 460,
+          "overflowX": "visible",
+          "scrollWidth": 768,
+          "clientWidth": 768,
+          "scrollable": false,
+          "cards": 10,
+          "links": 10,
+          "jsControls": 0,
+          "facetMarkers": 0,
+          "gridTop": 152,
+          "gridColumns": "234.656px 234.672px 234.672px",
+          "gridTracks": 3,
+          "gridOverflowX": "visible",
+          "rows": 4,
+          "perRow": [
+            3,
+            3,
+            3,
+            1
+          ],
+          "rowTops": [
+            152,
+            232,
+            312,
+            392
+          ],
+          "heights": [
+            68
+          ],
+          "widths": [
+            234.66,
+            234.67
+          ],
+          "clipped": 0,
+          "inViewport": 10,
+          "overlaps": 0,
+          "minLeft": 20,
+          "maxRight": 748,
+          "rects": [
+            {
+              "left": 20,
+              "right": 254.66,
+              "top": 152,
+              "bottom": 220,
+              "width": 234.66,
+              "height": 68
+            },
+            {
+              "left": 266.66,
+              "right": 501.33,
+              "top": 152,
+              "bottom": 220,
+              "width": 234.67,
+              "height": 68
+            },
+            {
+              "left": 513.33,
+              "right": 748,
+              "top": 152,
+              "bottom": 220,
+              "width": 234.67,
+              "height": 68
+            },
+            {
+              "left": 20,
+              "right": 254.66,
+              "top": 232,
+              "bottom": 300,
+              "width": 234.66,
+              "height": 68
+            },
+            {
+              "left": 266.66,
+              "right": 501.33,
+              "top": 232,
+              "bottom": 300,
+              "width": 234.67,
+              "height": 68
+            },
+            {
+              "left": 513.33,
+              "right": 748,
+              "top": 232,
+              "bottom": 300,
+              "width": 234.67,
+              "height": 68
+            },
+            {
+              "left": 20,
+              "right": 254.66,
+              "top": 312,
+              "bottom": 380,
+              "width": 234.66,
+              "height": 68
+            },
+            {
+              "left": 266.66,
+              "right": 501.33,
+              "top": 312,
+              "bottom": 380,
+              "width": 234.67,
+              "height": 68
+            },
+            {
+              "left": 513.33,
+              "right": 748,
+              "top": 312,
+              "bottom": 380,
+              "width": 234.67,
+              "height": 68
+            },
+            {
+              "left": 20,
+              "right": 254.66,
+              "top": 392,
+              "bottom": 460,
+              "width": 234.66,
+              "height": 68
+            }
+          ]
+        },
+        "dealGrid": {
+          "top": 586.75,
+          "cols": 2,
+          "colGap": "12px",
+          "rowGap": "12px"
+        },
+        "cards": {
+          "count": 50,
+          "heights": [
+            192
+          ],
+          "firstScreenFull": 2,
+          "firstScreenPart": 4,
+          "lastFullBottom": 814.75,
+          "slackFull": 85.25
+        },
+        "facets": {
+          "count": 13,
+          "tags": [
+            "BUTTON"
+          ],
+          "heights": [
+            26
+          ]
+        },
+        "pageHeight": 6680,
+        "overflowX": 0
+      },
+      "430x900": {
+        "viewport": {
+          "w": 430,
+          "h": 900
+        },
+        "needs": {
+          "found": true,
+          "height": 758,
+          "top": 191,
+          "bottom": 949,
+          "overflowX": "visible",
+          "scrollWidth": 430,
+          "clientWidth": 430,
+          "scrollable": false,
+          "cards": 10,
+          "links": 10,
+          "jsControls": 0,
+          "facetMarkers": 0,
+          "gridTop": 197,
+          "gridColumns": "398px",
+          "gridTracks": 1,
+          "gridOverflowX": "visible",
+          "rows": 10,
+          "perRow": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "rowTops": [
+            197,
+            273,
+            349,
+            425,
+            501,
+            577,
+            653,
+            729,
+            805,
+            881
+          ],
+          "heights": [
+            68
+          ],
+          "widths": [
+            398
+          ],
+          "clipped": 0,
+          "inViewport": 10,
+          "overlaps": 0,
+          "minLeft": 16,
+          "maxRight": 414,
+          "rects": [
+            {
+              "left": 16,
+              "right": 414,
+              "top": 197,
+              "bottom": 265,
+              "width": 398,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 414,
+              "top": 273,
+              "bottom": 341,
+              "width": 398,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 414,
+              "top": 349,
+              "bottom": 417,
+              "width": 398,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 414,
+              "top": 425,
+              "bottom": 493,
+              "width": 398,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 414,
+              "top": 501,
+              "bottom": 569,
+              "width": 398,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 414,
+              "top": 577,
+              "bottom": 645,
+              "width": 398,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 414,
+              "top": 653,
+              "bottom": 721,
+              "width": 398,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 414,
+              "top": 729,
+              "bottom": 797,
+              "width": 398,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 414,
+              "top": 805,
+              "bottom": 873,
+              "width": 398,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 414,
+              "top": 881,
+              "bottom": 949,
+              "width": 398,
+              "height": 68
+            }
+          ]
+        },
+        "dealGrid": {
+          "top": 1135.75,
+          "cols": 1,
+          "colGap": "8px",
+          "rowGap": "8px"
+        },
+        "cards": {
+          "count": 50,
+          "heights": [
+            194,
+            174,
+            195,
+            168
+          ],
+          "firstScreenFull": 0,
+          "firstScreenPart": 0,
+          "lastFullBottom": null,
+          "slackFull": null
+        },
+        "facets": {
+          "count": 13,
+          "tags": [
+            "BUTTON"
+          ],
+          "heights": [
+            26
+          ]
+        },
+        "pageHeight": 11686,
+        "overflowX": 0
+      },
+      "390x900": {
+        "viewport": {
+          "w": 390,
+          "h": 900
+        },
+        "needs": {
+          "found": true,
+          "height": 758,
+          "top": 191,
+          "bottom": 949,
+          "overflowX": "visible",
+          "scrollWidth": 390,
+          "clientWidth": 390,
+          "scrollable": false,
+          "cards": 10,
+          "links": 10,
+          "jsControls": 0,
+          "facetMarkers": 0,
+          "gridTop": 197,
+          "gridColumns": "358px",
+          "gridTracks": 1,
+          "gridOverflowX": "visible",
+          "rows": 10,
+          "perRow": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "rowTops": [
+            197,
+            273,
+            349,
+            425,
+            501,
+            577,
+            653,
+            729,
+            805,
+            881
+          ],
+          "heights": [
+            68
+          ],
+          "widths": [
+            358
+          ],
+          "clipped": 0,
+          "inViewport": 10,
+          "overlaps": 0,
+          "minLeft": 16,
+          "maxRight": 374,
+          "rects": [
+            {
+              "left": 16,
+              "right": 374,
+              "top": 197,
+              "bottom": 265,
+              "width": 358,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 374,
+              "top": 273,
+              "bottom": 341,
+              "width": 358,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 374,
+              "top": 349,
+              "bottom": 417,
+              "width": 358,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 374,
+              "top": 425,
+              "bottom": 493,
+              "width": 358,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 374,
+              "top": 501,
+              "bottom": 569,
+              "width": 358,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 374,
+              "top": 577,
+              "bottom": 645,
+              "width": 358,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 374,
+              "top": 653,
+              "bottom": 721,
+              "width": 358,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 374,
+              "top": 729,
+              "bottom": 797,
+              "width": 358,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 374,
+              "top": 805,
+              "bottom": 873,
+              "width": 358,
+              "height": 68
+            },
+            {
+              "left": 16,
+              "right": 374,
+              "top": 881,
+              "bottom": 949,
+              "width": 358,
+              "height": 68
+            }
+          ]
+        },
+        "dealGrid": {
+          "top": 1135.75,
+          "cols": 1,
+          "colGap": "8px",
+          "rowGap": "8px"
+        },
+        "cards": {
+          "count": 50,
+          "heights": [
+            194,
+            176,
+            195,
+            168
+          ],
+          "firstScreenFull": 0,
+          "firstScreenPart": 0,
+          "lastFullBottom": null,
+          "slackFull": null
+        },
+        "facets": {
+          "count": 13,
+          "tags": [
+            "BUTTON"
+          ],
+          "heights": [
+            26
+          ]
+        },
+        "pageHeight": 11830,
+        "overflowX": 0
+      }
+    },
+    "noJs": {
+      "1440x900": {
+        "viewport": {
+          "w": 1440,
+          "h": 900
+        },
+        "needs": {
+          "found": true,
+          "height": 153,
+          "top": 102,
+          "bottom": 255,
+          "overflowX": "visible",
+          "scrollWidth": 1420,
+          "clientWidth": 1420,
+          "scrollable": false,
+          "cards": 10,
+          "links": 10,
+          "jsControls": 0,
+          "facetMarkers": 0,
+          "gridTop": 107,
+          "gridColumns": "266.391px 266.406px 266.391px 266.406px 266.391px",
+          "gridTracks": 5,
+          "gridOverflowX": "visible",
+          "rows": 2,
+          "perRow": [
+            5,
+            5
+          ],
+          "rowTops": [
+            107,
+            187
+          ],
+          "heights": [
+            68
+          ],
+          "widths": [
+            266.39,
+            266.41
+          ],
+          "clipped": 0,
+          "inViewport": 10,
+          "overlaps": 0,
+          "minLeft": 30,
+          "maxRight": 1409.98,
+          "rects": [
+            {
+              "left": 30,
+              "right": 296.39,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 308.39,
+              "right": 574.8,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.41,
+              "height": 68
+            },
+            {
+              "left": 586.8,
+              "right": 853.19,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 865.19,
+              "right": 1131.59,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.41,
+              "height": 68
+            },
+            {
+              "left": 1143.59,
+              "right": 1409.98,
+              "top": 107,
+              "bottom": 175,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 30,
+              "right": 296.39,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 308.39,
+              "right": 574.8,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.41,
+              "height": 68
+            },
+            {
+              "left": 586.8,
+              "right": 853.19,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.39,
+              "height": 68
+            },
+            {
+              "left": 865.19,
+              "right": 1131.59,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.41,
+              "height": 68
+            },
+            {
+              "left": 1143.59,
+              "right": 1409.98,
+              "top": 187,
+              "bottom": 255,
+              "width": 266.39,
+              "height": 68
+            }
+          ]
+        },
+        "dealGrid": {
+          "top": 349,
+          "cols": 3,
+          "colGap": "12px",
+          "rowGap": "12px"
+        },
+        "cards": {
+          "count": 50,
+          "heights": [
+            192
+          ],
+          "firstScreenFull": 6,
+          "firstScreenPart": 9,
+          "lastFullBottom": 781,
+          "slackFull": 119
+        },
+        "facets": {
+          "count": 13,
+          "tags": [
+            "BUTTON"
+          ],
+          "heights": [
+            26
+          ]
+        },
+        "pageHeight": 4787,
+        "overflowX": 0
+      }
+    }
+  },
+  "cards": {
+    "jsCount": 10,
+    "noJsCount": 10,
+    "identical": true,
+    "js": [
+      {
+        "tag": "A",
+        "href": "need/student-only/",
+        "label": "学生专享",
+        "badge": "12",
+        "desc": "学生套餐与教育折扣，附申请门槛",
+        "icon": "🎓",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/edu-identity/",
+        "label": "教育身份可领",
+        "badge": "7",
+        "desc": "凭学校邮箱可领的教育版与额度",
+        "icon": "🏫",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/no-card/",
+        "label": "无需信用卡",
+        "badge": "1",
+        "desc": "不用绑卡就能注册领取的条目",
+        "icon": "🚫",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/china-usable/",
+        "label": "国内可用",
+        "badge": "30",
+        "desc": "已确认大陆可注册使用的条目",
+        "icon": "🌏",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/free-tier/",
+        "label": "完全免费",
+        "badge": "60",
+        "desc": "不用付费就能用上的免费档位",
+        "icon": "🆓",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/free-api/",
+        "label": "免费 API",
+        "badge": "45",
+        "desc": "可直接调用的免费接口与试用额度",
+        "icon": "🔌",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/free-tokens/",
+        "label": "免费 Tokens",
+        "badge": "44",
+        "desc": "新用户赠送的额度与活动积分",
+        "icon": "🎁",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/ai-coding/",
+        "label": "AI Coding",
+        "badge": "4",
+        "desc": "代码补全与编程助手的优惠",
+        "icon": "💻",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/free-model/",
+        "label": "免费模型",
+        "badge": "12",
+        "desc": "可以零成本调用的模型清单",
+        "icon": "🧠",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/dev-credits/",
+        "label": "开发者 Credits",
+        "badge": "67",
+        "desc": "云平台赠金与创业扶持额度",
+        "icon": "💰",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      }
+    ],
+    "noJs": [
+      {
+        "tag": "A",
+        "href": "need/student-only/",
+        "label": "学生专享",
+        "badge": "12",
+        "desc": "学生套餐与教育折扣，附申请门槛",
+        "icon": "🎓",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/edu-identity/",
+        "label": "教育身份可领",
+        "badge": "7",
+        "desc": "凭学校邮箱可领的教育版与额度",
+        "icon": "🏫",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/no-card/",
+        "label": "无需信用卡",
+        "badge": "1",
+        "desc": "不用绑卡就能注册领取的条目",
+        "icon": "🚫",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/china-usable/",
+        "label": "国内可用",
+        "badge": "30",
+        "desc": "已确认大陆可注册使用的条目",
+        "icon": "🌏",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/free-tier/",
+        "label": "完全免费",
+        "badge": "60",
+        "desc": "不用付费就能用上的免费档位",
+        "icon": "🆓",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/free-api/",
+        "label": "免费 API",
+        "badge": "45",
+        "desc": "可直接调用的免费接口与试用额度",
+        "icon": "🔌",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/free-tokens/",
+        "label": "免费 Tokens",
+        "badge": "44",
+        "desc": "新用户赠送的额度与活动积分",
+        "icon": "🎁",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/ai-coding/",
+        "label": "AI Coding",
+        "badge": "4",
+        "desc": "代码补全与编程助手的优惠",
+        "icon": "💻",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/free-model/",
+        "label": "免费模型",
+        "badge": "12",
+        "desc": "可以零成本调用的模型清单",
+        "icon": "🧠",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      },
+      {
+        "tag": "A",
+        "href": "need/dev-credits/",
+        "label": "开发者 Credits",
+        "badge": "67",
+        "desc": "云平台赠金与创业扶持额度",
+        "icon": "💰",
+        "iconAriaHidden": "true",
+        "arrow": "→",
+        "arrowAriaHidden": "true",
+        "fourPiece": true
+      }
+    ]
+  },
+  "clicks": [
+    {
+      "index": 1,
+      "slug": "student-only",
+      "label": "学生专享",
+      "selectorHits": 1,
+      "httpStatus": 200,
+      "landedUrl": "http://127.0.0.1:53130/need/student-only/",
+      "h1": "面向学生的 AI 优惠",
+      "h1Expected": "面向学生的 AI 优惠",
+      "jsErrors": 0,
+      "ok": true
+    },
+    {
+      "index": 2,
+      "slug": "edu-identity",
+      "label": "教育身份可领",
+      "selectorHits": 1,
+      "httpStatus": 200,
+      "landedUrl": "http://127.0.0.1:53130/need/edu-identity/",
+      "h1": "凭教育身份可以领取的 AI 优惠",
+      "h1Expected": "凭教育身份可以领取的 AI 优惠",
+      "jsErrors": 0,
+      "ok": true
+    },
+    {
+      "index": 3,
+      "slug": "no-card",
+      "label": "无需信用卡",
+      "selectorHits": 1,
+      "httpStatus": 200,
+      "landedUrl": "http://127.0.0.1:53130/need/no-card/",
+      "h1": "不需要信用卡的 AI 优惠",
+      "h1Expected": "不需要信用卡的 AI 优惠",
+      "jsErrors": 0,
+      "ok": true
+    },
+    {
+      "index": 4,
+      "slug": "china-usable",
+      "label": "国内可用",
+      "selectorHits": 1,
+      "httpStatus": 200,
+      "landedUrl": "http://127.0.0.1:53130/need/china-usable/",
+      "h1": "中国大陆用户可以正常领取使用的优惠",
+      "h1Expected": "中国大陆用户可以正常领取使用的优惠",
+      "jsErrors": 0,
+      "ok": true
+    },
+    {
+      "index": 5,
+      "slug": "free-tier",
+      "label": "完全免费",
+      "selectorHits": 1,
+      "httpStatus": 200,
+      "landedUrl": "http://127.0.0.1:53130/need/free-tier/",
+      "h1": "免费档可用：不用付费就能用上的优惠",
+      "h1Expected": "免费档可用：不用付费就能用上的优惠",
+      "jsErrors": 0,
+      "ok": true
+    },
+    {
+      "index": 6,
+      "slug": "free-api",
+      "label": "免费 API",
+      "selectorHits": 1,
+      "httpStatus": 200,
+      "landedUrl": "http://127.0.0.1:53130/need/free-api/",
+      "h1": "可以免费调用的 API",
+      "h1Expected": "可以免费调用的 API",
+      "jsErrors": 0,
+      "ok": true
+    },
+    {
+      "index": 7,
+      "slug": "free-tokens",
+      "label": "免费 Tokens",
+      "selectorHits": 1,
+      "httpStatus": 200,
+      "landedUrl": "http://127.0.0.1:53130/need/free-tokens/",
+      "h1": "赠送 Token / 免费额度类优惠",
+      "h1Expected": "赠送 Token / 免费额度类优惠",
+      "jsErrors": 0,
+      "ok": true
+    },
+    {
+      "index": 8,
+      "slug": "ai-coding",
+      "label": "AI Coding",
+      "selectorHits": 1,
+      "httpStatus": 200,
+      "landedUrl": "http://127.0.0.1:53130/need/ai-coding/",
+      "h1": "编程开发类 AI 优惠",
+      "h1Expected": "编程开发类 AI 优惠",
+      "jsErrors": 0,
+      "ok": true
+    },
+    {
+      "index": 9,
+      "slug": "free-model",
+      "label": "免费模型",
+      "selectorHits": 1,
+      "httpStatus": 200,
+      "landedUrl": "http://127.0.0.1:53130/need/free-model/",
+      "h1": "可以免费使用的模型",
+      "h1Expected": "可以免费使用的模型",
+      "jsErrors": 0,
+      "ok": true
+    },
+    {
+      "index": 10,
+      "slug": "dev-credits",
+      "label": "开发者 Credits",
+      "selectorHits": 1,
+      "httpStatus": 200,
+      "landedUrl": "http://127.0.0.1:53130/need/dev-credits/",
+      "h1": "面向开发者的赠送额度",
+      "h1Expected": "面向开发者的赠送额度",
+      "jsErrors": 0,
+      "ok": true
+    }
+  ],
+  "clicksAllOk": true,
+  "before": {
+    "1440x900": {
+      "needsHeight": 31,
+      "gridTop": 227,
+      "firstScreenFull": 9,
+      "firstScreenPart": 9,
+      "lastFullBottom": 899,
+      "slackFull": 1,
+      "pageHeight": 4665,
+      "overflowX": 0,
+      "cards": 50
+    },
+    "narrow": {
+      "1440x900": {
+        "needsHeight": 31,
+        "gridTop": 227,
+        "firstScreenFull": 9,
+        "firstScreenPart": 9,
+        "slackFull": 1,
+        "pageHeight": 4665,
+        "overflowX": 0,
+        "perRow": [
+          10
+        ]
+      },
+      "1440x900-nojs": {
+        "pageHeight": 4665,
+        "overflowX": 0
+      },
+      "1600x900": {
+        "needsHeight": 31,
+        "gridTop": 227,
+        "firstScreenFull": 9,
+        "firstScreenPart": 9,
+        "slackFull": 1,
+        "pageHeight": 4665,
+        "overflowX": 0,
+        "perRow": [
+          10
+        ]
+      },
+      "1280x900": {
+        "needsHeight": 31,
+        "gridTop": 227,
+        "firstScreenFull": 9,
+        "firstScreenPart": 9,
+        "slackFull": 1,
+        "pageHeight": 4665,
+        "overflowX": 0,
+        "perRow": [
+          10
+        ]
+      },
+      "768x900": {
+        "needsHeight": 63,
+        "gridTop": 336.75,
+        "firstScreenFull": 4,
+        "firstScreenPart": 6,
+        "slackFull": 131.25,
+        "pageHeight": 6430,
+        "overflowX": 0,
+        "perRow": [
+          5,
+          5
+        ]
+      },
+      "430x900": {
+        "needsHeight": 240,
+        "gridTop": 617.75,
+        "firstScreenFull": 1,
+        "firstScreenPart": 2,
+        "slackFull": 56.56,
+        "pageHeight": 11168,
+        "overflowX": 0,
+        "perRow": [
+          2,
+          2,
+          1,
+          2,
+          2,
+          1
+        ]
+      },
+      "390x900": {
+        "needsHeight": 240,
+        "gridTop": 617.75,
+        "firstScreenFull": 1,
+        "firstScreenPart": 2,
+        "slackFull": 56.56,
+        "pageHeight": 11312,
+        "overflowX": 0,
+        "perRow": [
+          2,
+          2,
+          1,
+          2,
+          2,
+          1
+        ]
+      },
+      "360x900": {
+        "needsHeight": 240,
+        "gridTop": 617.75,
+        "firstScreenFull": 1,
+        "firstScreenPart": 2,
+        "slackFull": 56.56,
+        "pageHeight": 11350,
+        "overflowX": 0,
+        "perRow": [
+          2,
+          2,
+          1,
+          2,
+          2,
+          1
+        ]
+      }
+    }
+  },
+  "delta": {
+    "needsHeight": {
+      "before": 31,
+      "after": 153,
+      "delta": 122
+    },
+    "gridTop": {
+      "before": 227,
+      "after": 349,
+      "delta": 122
+    },
+    "firstScreenFull": {
+      "before": 9,
+      "after": 6,
+      "delta": -3
+    },
+    "firstScreenPart": {
+      "before": 9,
+      "after": 9,
+      "delta": 0
+    },
+    "slackFull": {
+      "before": 1,
+      "after": 119,
+      "delta": 118
+    },
+    "pageHeight": {
+      "before": 4665,
+      "after": 4787,
+      "delta": 122
+    }
+  },
+  "jsErrors": []
+}

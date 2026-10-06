@@ -1,0 +1,12 @@
+{
+  "id": "M3",
+  "description": "删掉导航暗示：<span class=\"need-arrow\">…</span> 整个去掉",
+  "target": "nav.needs 区块内的 .need-arrow",
+  "anchorHits": 10,
+  "expectedHits": 10,
+  "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+  "shaAfter": "63EED99EC2BC97B1AB32F57395AB408935781E1A9DE9481DEABA2D611DFB5C9D",
+  "bytesBefore": 403822,
+  "bytesAfter": 403282,
+  "appliedAt": "2026-10-06T02:29:45.089Z"
+}

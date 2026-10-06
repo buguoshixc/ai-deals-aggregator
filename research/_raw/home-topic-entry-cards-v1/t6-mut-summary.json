@@ -1,0 +1,383 @@
+{
+  "generatedAt": "2026-10-06T02:38:49.174Z",
+  "assertionSet": 798,
+  "note": "T6 返工后（798 项断言集）",
+  "mutations": [
+    {
+      "id": "M1",
+      "description": "把整卡重新挂上 facet 控件标记（退回「标签式入口」的语义）：data-facet=\"need\" 加到每张卡的 <a> 上",
+      "target": "nav.needs 区块（卡片开标签）",
+      "anchorHits": 10,
+      "expectedHits": 10,
+      "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+      "shaAfter": "E6D17988F3C2E3353264E191676F2D5FED6FC845F1AF0BFEEC58C1DD8A7F4396",
+      "bytesBefore": 403822,
+      "bytesAfter": 404002,
+      "appliedAt": "2026-10-06T02:27:02.054Z",
+      "reportFile": "t6-mut-M1.json",
+      "verifyTotal": 798,
+      "verifyFailed": 3,
+      "verifyExitNonZero": true,
+      "failingChecks": [
+        {
+          "name": "筛选按钮逐个带 aria-pressed",
+          "detail": "13/23 个"
+        },
+        {
+          "name": "入口行里没有任何 JS 控件（无 JS 时不给可点暗示）",
+          "detail": "JS 控件 0 个 · facet 标记 10 个 · 旧 chip 类残留 []"
+        },
+        {
+          "name": "首页专题导航卡：与筛选器语义隔离（nav.needs 内 [data-facet] / [aria-pressed] / [role=\"button\"] 计数为 0）",
+          "detail": "10 个（[data-facet] + [aria-pressed] + [role=\"button\"] 合计）"
+        }
+      ],
+      "summaryLine": "",
+      "rawFailLines": []
+    },
+    {
+      "id": "M2",
+      "description": "删掉卡上的说明行 <small>…</small>（卡片结构残缺）",
+      "target": "nav.needs 区块内的 <small>",
+      "anchorHits": 10,
+      "expectedHits": 10,
+      "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+      "shaAfter": "E45A8A63624E81980ECD3438FBE9C8DF15BC4F7DC50447F9A62FF5464203DB78",
+      "bytesBefore": 403822,
+      "bytesAfter": 403276,
+      "appliedAt": "2026-10-06T02:28:24.467Z",
+      "reportFile": "t6-mut-M2.json",
+      "verifyTotal": 798,
+      "verifyFailed": 1,
+      "verifyExitNonZero": true,
+      "failingChecks": [
+        {
+          "name": "首页专题导航卡：每张卡四件套齐全（need-icon / 非空 strong / 非空 small / need-arrow）",
+          "detail": "need/student-only/：图标 1 / 标题 1「学生专享」/ 说明 0「」/ 箭头 1 · need/edu-identity/：图标 1 / 标题 1「教育身份可领」/ 说明 0「」/ 箭头 1 · need/no-card/：图标 1 / 标题 1「无需信用卡」/ 说明 0「」/ 箭头 1"
+        }
+      ],
+      "summaryLine": "",
+      "rawFailLines": []
+    },
+    {
+      "id": "M3",
+      "description": "删掉导航暗示：<span class=\"need-arrow\">…</span> 整个去掉",
+      "target": "nav.needs 区块内的 .need-arrow",
+      "anchorHits": 10,
+      "expectedHits": 10,
+      "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+      "shaAfter": "63EED99EC2BC97B1AB32F57395AB408935781E1A9DE9481DEABA2D611DFB5C9D",
+      "bytesBefore": 403822,
+      "bytesAfter": 403282,
+      "appliedAt": "2026-10-06T02:29:45.089Z",
+      "reportFile": "t6-mut-M3.json",
+      "verifyTotal": 798,
+      "verifyFailed": 1,
+      "verifyExitNonZero": true,
+      "failingChecks": [
+        {
+          "name": "首页专题导航卡：每张卡四件套齐全（need-icon / 非空 strong / 非空 small / need-arrow）",
+          "detail": "need/student-only/：图标 1 / 标题 1「学生专享」/ 说明 1「学生套餐与教育折扣，附申请门槛」/ 箭头 0 · need/edu-identity/：图标 1 / 标题 1「教育身份可领」/ 说明 1「凭学校邮箱可领的教育版与额度」/ 箭头 0 · need/no-card/：图标 1 / 标题 1「无需信用卡」/ 说明 1「不用绑卡就能注册领取的条目」/ 箭头 0"
+        }
+      ],
+      "summaryLine": "",
+      "rawFailLines": []
+    },
+    {
+      "id": "M4",
+      "description": "整卡从 <a href> 改成 <button>（无 JS 不可导航、href 消失；href 值挪到 data-href 只为留住文案，判据不看它）",
+      "target": "nav.needs 区块内的卡片元素",
+      "anchorHits": 10,
+      "expectedHits": 10,
+      "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+      "shaAfter": "9DDB9512E1CA245E4A8BAF74F4ED3D993D39F5C1AC4759663ABB59AFCE74C6A8",
+      "bytesBefore": 403822,
+      "bytesAfter": 403972,
+      "appliedAt": "2026-10-06T02:31:05.750Z",
+      "reportFile": "t6-mut-M4.json",
+      "verifyTotal": 798,
+      "verifyFailed": 17,
+      "verifyExitNonZero": true,
+      "failingChecks": [
+        {
+          "name": "首页专题导航卡：卡数 == NEED_PAGES.length（按注册表现算，不写死条数）",
+          "detail": "0 张卡 / 注册表 10 条需求 · dist/deals.json 里 10 个需求有命中"
+        },
+        {
+          "name": "首页有「按需求找优惠」入口行，且每条都是 <a>（无 JS 也能点）",
+          "detail": "0 条入口 / 数据里 10 个需求 · JS 控件 10 个 · 卡里嵌套可点元素 0 个"
+        },
+        {
+          "name": "首页专题导航卡：逐条 label / href 与 NEED_PAGES 对账不错位（顺序一致）",
+          "detail": "0 张卡与注册表同序同值（）"
+        },
+        {
+          "name": "入口行里没有任何 JS 控件（无 JS 时不给可点暗示）",
+          "detail": "JS 控件 10 个 · facet 标记 0 个 · 旧 chip 类残留 []"
+        },
+        {
+          "name": "首页专题导航卡：每张卡四件套齐全（need-icon / 非空 strong / 非空 small / need-arrow）",
+          "detail": "整个 nav.needs 里一张 a.need-card 都没有（卡片形状被换掉了）"
+        },
+        {
+          "name": "首页专题导航卡：数据里每个需求都有对应入口（没有漏项、href 不重复）",
+          "detail": "0 个不同 href · 漏 10 个（china-usable, free-tier, free-api, free-tokens, dev-credits, free-model, student-only, edu-identity, ai-coding, no-card）"
+        },
+        {
+          "name": "首页专题导航卡：真点第 1 张卡「学生专享」→ /need/student-only/（HTTP 200 · h1 与注册项一致）",
+          "detail": "点到卡 0 张 · HTTP — · 落地 — · h1「」/ 注册项「面向学生的 AI 优惠」· JS 错误 0 个"
+        },
+        {
+          "name": "首页专题导航卡：真点第 6 张卡「免费 API」→ /need/free-api/（HTTP 200 · h1 与注册项一致）",
+          "detail": "点到卡 0 张 · HTTP — · 落地 — · h1「」/ 注册项「可以免费调用的 API」· JS 错误 0 个"
+        },
+        {
+          "name": "首页专题导航卡：真点第 10 张卡「开发者 Credits」→ /need/dev-credits/（HTTP 200 · h1 与注册项一致）",
+          "detail": "点到卡 0 张 · HTTP — · 落地 — · h1「」/ 注册项「面向开发者的赠送额度」· JS 错误 0 个"
+        },
+        {
+          "name": "专题导航卡 1600px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+          "detail": "0/0 张在视口内 · left 0 / right 0（视口 1600）· 0 行（）· 卡高 px · 重叠 0 对 · 页面溢出 0px"
+        },
+        {
+          "name": "专题导航卡 1440px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+          "detail": "0/0 张在视口内 · left 0 / right 0（视口 1440）· 0 行（）· 卡高 px · 重叠 0 对 · 页面溢出 0px"
+        },
+        {
+          "name": "专题导航卡 1440px：.need-grid 轨道数 == 5，10 张排成 5×2（不再 10 张挤一行）",
+          "detail": "5 条轨道 · 0 行（）"
+        },
+        {
+          "name": "专题导航卡 1280px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+          "detail": "0/0 张在视口内 · left 0 / right 0（视口 1280）· 0 行（）· 卡高 px · 重叠 0 对 · 页面溢出 0px"
+        },
+        {
+          "name": "专题导航卡 768px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+          "detail": "0/0 张在视口内 · left 0 / right 0（视口 768）· 0 行（）· 卡高 px · 重叠 0 对 · 页面溢出 0px"
+        },
+        {
+          "name": "专题导航卡 430px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+          "detail": "0/0 张在视口内 · left 0 / right 0（视口 430）· 0 行（）· 卡高 px · 重叠 0 对 · 页面溢出 0px"
+        },
+        {
+          "name": "专题导航卡 390px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+          "detail": "0/0 张在视口内 · left 0 / right 0（视口 390）· 0 行（）· 卡高 px · 重叠 0 对 · 页面溢出 0px"
+        },
+        {
+          "name": "无 JS 打开首页时「按需求找优惠」入口行仍在且指向需求页",
+          "detail": "0 条入口 · 首条 "
+        }
+      ],
+      "summaryLine": "",
+      "rawFailLines": []
+    },
+    {
+      "id": "M5",
+      "description": "给每张卡加选中态 aria-pressed=\"false\"（handoff 里最容易顺手加的属性）",
+      "target": "nav.needs 区块（卡片开标签）",
+      "anchorHits": 10,
+      "expectedHits": 10,
+      "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+      "shaAfter": "FEFC61BABBE36C694C730510A0C8BFF323542579C663F5DEA2D0B78B770F0718",
+      "bytesBefore": 403822,
+      "bytesAfter": 404032,
+      "appliedAt": "2026-10-06T02:32:25.115Z",
+      "reportFile": "t6-mut-M5.json",
+      "verifyTotal": 798,
+      "verifyFailed": 2,
+      "verifyExitNonZero": true,
+      "failingChecks": [
+        {
+          "name": "入口行里没有任何 JS 控件（无 JS 时不给可点暗示）",
+          "detail": "JS 控件 0 个 · facet 标记 10 个 · 旧 chip 类残留 []"
+        },
+        {
+          "name": "首页专题导航卡：与筛选器语义隔离（nav.needs 内 [data-facet] / [aria-pressed] / [role=\"button\"] 计数为 0）",
+          "detail": "10 个（[data-facet] + [aria-pressed] + [role=\"button\"] 合计）"
+        }
+      ],
+      "summaryLine": "",
+      "rawFailLines": []
+    },
+    {
+      "id": "M6",
+      "description": "把 .need-grid 的 5 列网格改成 10×220px 的横向滚动容器（nowrap/横滑藏入口）",
+      "target": "正文 CSS 里的 .need-grid 基础规则（整页 1 处）",
+      "anchorHits": 1,
+      "expectedHits": 1,
+      "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+      "shaAfter": "9A744FBDDD6B8CF02246DCA672432E2522633DF512A741382791BEC0E045EF21",
+      "bytesBefore": 403822,
+      "bytesAfter": 403832,
+      "appliedAt": "2026-10-06T02:33:43.868Z",
+      "reportFile": "t6-mut-M6.json",
+      "verifyTotal": 798,
+      "verifyFailed": 10,
+      "verifyExitNonZero": true,
+      "failingChecks": [
+        {
+          "name": "专题导航卡 1600px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+          "detail": "6/10 张在视口内 · left 110 / right 2418（视口 1600）· 1 行（10）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+        },
+        {
+          "name": "专题导航卡 1600px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 1420/1420 · grid 2308/1380"
+        },
+        {
+          "name": "专题导航卡 1440px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+          "detail": "6/10 张在视口内 · left 30 / right 2338（视口 1440）· 1 行（10）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+        },
+        {
+          "name": "专题导航卡 1440px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 1420/1420 · grid 2308/1380"
+        },
+        {
+          "name": "专题导航卡 1440px：.need-grid 轨道数 == 5，10 张排成 5×2（不再 10 张挤一行）",
+          "detail": "10 条轨道 · 1 行（10）"
+        },
+        {
+          "name": "专题导航卡 1280px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+          "detail": "5/10 张在视口内 · left 20 / right 2328（视口 1280）· 1 行（10）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+        },
+        {
+          "name": "专题导航卡 1280px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 1280/1280 · grid 2308/1240"
+        },
+        {
+          "name": "专题导航卡 768px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 768/768 · grid 728/728"
+        },
+        {
+          "name": "专题导航卡 430px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 430/430 · grid 398/398"
+        },
+        {
+          "name": "专题导航卡 390px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 390/390 · grid 358/358"
+        }
+      ],
+      "summaryLine": "",
+      "rawFailLines": []
+    },
+    {
+      "id": "M6a",
+      "description": "【T4 原始 finding 形态】只给**基础** .need-grid 规则（display:grid 那条）注入 overflow-x:auto —— 5 列、内容本来没溢出",
+      "target": ".need-grid 基础规则（整页 1 处，含 display:grid）",
+      "anchorHits": 1,
+      "expectedHits": 1,
+      "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+      "shaAfter": "59283A6909731F74056CC95A0EE1181386D6455795EC927358D9A54F6D1699E0",
+      "bytesBefore": 403822,
+      "bytesAfter": 403840,
+      "appliedAt": "2026-10-06T02:24:13.563Z",
+      "reportFile": "t6-mut-M6a.json",
+      "verifyTotal": 798,
+      "verifyFailed": 6,
+      "verifyExitNonZero": true,
+      "failingChecks": [
+        {
+          "name": "专题导航卡 1600px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 1420/1420 · grid 1380/1380"
+        },
+        {
+          "name": "专题导航卡 1440px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 1420/1420 · grid 1380/1380"
+        },
+        {
+          "name": "专题导航卡 1280px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 1280/1280 · grid 1240/1240"
+        },
+        {
+          "name": "专题导航卡 768px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 768/768 · grid 728/728"
+        },
+        {
+          "name": "专题导航卡 430px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 430/430 · grid 398/398"
+        },
+        {
+          "name": "专题导航卡 390px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 390/390 · grid 358/358"
+        }
+      ],
+      "summaryLine": "",
+      "rawFailLines": []
+    },
+    {
+      "id": "M6b",
+      "description": "【T4 的 M6R 形态】给**全部四条** .need-grid 规则都注入 overflow-x:auto（基础 + ≤1180 + ≤760 + ≤560）",
+      "target": "全部 .need-grid 规则（整页 4 处）",
+      "anchorHits": 4,
+      "expectedHits": 4,
+      "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+      "shaAfter": "6665E2411B624D3D54BFF645C6515BCFD31EA6692FC23DD98C89F6027C12F689",
+      "bytesBefore": 403822,
+      "bytesAfter": 403894,
+      "appliedAt": "2026-10-06T02:25:38.520Z",
+      "reportFile": "t6-mut-M6b.json",
+      "verifyTotal": 798,
+      "verifyFailed": 6,
+      "verifyExitNonZero": true,
+      "failingChecks": [
+        {
+          "name": "专题导航卡 1600px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 1420/1420 · grid 1380/1380"
+        },
+        {
+          "name": "专题导航卡 1440px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 1420/1420 · grid 1380/1380"
+        },
+        {
+          "name": "专题导航卡 1280px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 1280/1280 · grid 1240/1240"
+        },
+        {
+          "name": "专题导航卡 768px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 768/768 · grid 728/728"
+        },
+        {
+          "name": "专题导航卡 430px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 430/430 · grid 398/398"
+        },
+        {
+          "name": "专题导航卡 390px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+          "detail": ".needs overflow-x=visible · .need-grid overflow-x=auto · scrollWidth/clientWidth：needs 390/390 · grid 358/358"
+        }
+      ],
+      "summaryLine": "",
+      "rawFailLines": []
+    },
+    {
+      "id": "M7",
+      "description": "把其中一张卡的 href 指到错 slug（need/ai-coding/ → need/ai-coding-x/）",
+      "target": "nav.needs 区块内的第 8 张卡 href",
+      "anchorHits": 1,
+      "expectedHits": 1,
+      "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+      "shaAfter": "9C9499D0BE9BDCF51066B05CB4510D699A786F9030A39EB452F3419D4AF1E101",
+      "bytesBefore": 403822,
+      "bytesAfter": 403824,
+      "appliedAt": "2026-10-06T02:35:06.327Z",
+      "reportFile": "t6-mut-M7.json",
+      "verifyTotal": 798,
+      "verifyFailed": 3,
+      "verifyExitNonZero": true,
+      "failingChecks": [
+        {
+          "name": "首页专题导航卡：逐条 label / href 与 NEED_PAGES 对账不错位（顺序一致）",
+          "detail": "第 8 张「AI Coding」→ need/ai-coding-x/ ≠ 注册表「AI Coding」→ need/ai-coding/"
+        },
+        {
+          "name": "首页每条入口的数字 == 数据里该需求的条数",
+          "detail": "need/ai-coding-x/ 首页 4 / 数据 0"
+        },
+        {
+          "name": "首页专题导航卡：数据里每个需求都有对应入口（没有漏项、href 不重复）",
+          "detail": "10 个不同 href · 漏 1 个（ai-coding）"
+        }
+      ],
+      "summaryLine": "",
+      "rawFailLines": []
+    }
+  ]
+}

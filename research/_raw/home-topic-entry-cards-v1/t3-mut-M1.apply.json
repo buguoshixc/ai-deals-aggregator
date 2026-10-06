@@ -1,0 +1,12 @@
+{
+  "id": "M1",
+  "description": "把整卡重新挂上 facet 控件标记（退回「标签式入口」的语义）：data-facet=\"need\" 加到每张卡的 <a> 上",
+  "target": "nav.needs 区块（卡片开标签）",
+  "anchorHits": 10,
+  "expectedHits": 10,
+  "shaBefore": "8076370E3C7AF29A3C3B6289A57B3B0C673DA033CD1CC8432CFA7FA7652E5242",
+  "shaAfter": "E6D17988F3C2E3353264E191676F2D5FED6FC845F1AF0BFEEC58C1DD8A7F4396",
+  "bytesBefore": 403822,
+  "bytesAfter": 404002,
+  "appliedAt": "2026-10-06T02:27:02.054Z"
+}

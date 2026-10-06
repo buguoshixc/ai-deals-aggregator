@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-10-06T02:40:10.196Z",
+  "before": {
+    "file": "t3-verify-after.json",
+    "total": 792,
+    "failed": 0
+  },
+  "after": {
+    "file": "t6-verify-after.json",
+    "total": 798,
+    "failed": 0
+  },
+  "addedCount": 6,
+  "removedCount": 0,
+  "commonCount": 792,
+  "added": [
+    "专题导航卡 1600px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+    "专题导航卡 1440px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+    "专题导航卡 1280px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+    "专题导航卡 768px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+    "专题导航卡 430px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）",
+    "专题导航卡 390px：.needs 与 .need-grid 都不是横向滚动容器（计算 overflow-x ∉ auto/scroll）"
+  ],
+  "removed": [],
+  "detailChangedCount": 0,
+  "detailChanged": [],
+  "okChangedCount": 0,
+  "okChanged": [],
+  "verdict": true
+}

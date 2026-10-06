@@ -702,6 +702,37 @@ console.log('\n=== 9) 按需求找优惠（v1.2）：注册表与判据 ===');
     check(`短标签不含数字或版本号（${page.slug}「${page.short}」）`,
       !/\d/.test(page.short || '') && !/v\d/.test(page.short || ''), page.short);
   }
+  /* v1.8：首页专题导航卡的两个**纯展示**字段（`icon` / `homeDescription`）。
+     它们不进任何判据、不进 dist/deals.json，但会**原样出现在首页卡片上**，所以形状要有牙：
+       · 说明行在卡片上是单行截断（`white-space: nowrap` + `text-overflow: ellipsis`），
+         太长会被省略号吃掉、太短说不清里面有什么 —— 12–24 个非空格字符是可读区间；
+       · 语气是「点进去能看到什么」，不是判据的复述：写 `benefitType` / 「字段」这类内部措辞，
+         读者看到的是我们的表结构；
+       · 图标是装饰性的单字符 emoji（渲染时带 aria-hidden），十条两两不同 ——
+         同一屏里两个一样的图标，等于没有图标。 */
+  check('每条都有首页卡片说明（homeDescription）',
+    au.NEED_PAGES.every(page => typeof page.homeDescription === 'string' && page.homeDescription.trim().length > 0),
+    au.NEED_PAGES.filter(page => !(typeof page.homeDescription === 'string' && page.homeDescription.trim()))
+      .map(page => page.slug).join(', '));
+  const homeLen = page => String(page.homeDescription || '').replace(/\s+/g, '').length;
+  check('首页说明是 12–24 个非空格字符（卡片上只有一行，超出会被省略号吃掉）',
+    au.NEED_PAGES.every(page => homeLen(page) >= 12 && homeLen(page) <= 24),
+    au.NEED_PAGES.map(page => `${page.slug}:${homeLen(page)}`).join(' '));
+  const homeInternal = au.NEED_PAGES
+    .filter(page => /benefitType|audience|contains|pricingModel|字段|判据/.test(page.homeDescription || ''))
+    .map(page => page.slug);
+  check('首页说明不写内部判据措辞（读者要的是「能拿到什么」，不是我们的表结构）',
+    homeInternal.length === 0, homeInternal.join(', '));
+  const homeNumbers = au.NEED_PAGES.filter(page => /\d/.test(page.homeDescription || '')).map(page => page.slug);
+  check('首页说明不含数字与版本号（条数按数据现算，写死必然过期）',
+    homeNumbers.length === 0, homeNumbers.join(', '));
+  check('每条都有图标，且是单个字符（装饰性 emoji，卡片上带 aria-hidden）',
+    au.NEED_PAGES.every(page => typeof page.icon === 'string' && [...page.icon].length === 1),
+    au.NEED_PAGES.filter(page => !(typeof page.icon === 'string' && [...page.icon].length === 1))
+      .map(page => `${page.slug}(${page.icon || '无'})`).join(', '));
+  check('十个图标两两不同（同一屏里两个同样的图标等于没有图标）',
+    new Set(au.NEED_PAGES.map(page => page.icon)).size === au.NEED_PAGES.length,
+    au.NEED_PAGES.map(page => page.icon).join(' '));
   check('每条 why 至少三句（缺了就成了「只有条数、没有口径」的页面）',
     au.NEED_PAGES.every(page => Array.isArray(page.why) && page.why.length >= 3),
     au.NEED_PAGES.filter(page => !Array.isArray(page.why) || page.why.length < 3).map(p => p.slug).join(', '));
