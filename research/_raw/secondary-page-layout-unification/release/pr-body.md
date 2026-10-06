@@ -106,7 +106,8 @@
 - `research/_raw/secondary-page-layout-unification/release/online-path-negcontrol-baseline.json` / `.txt` — 同一 `--base=` 模式的负对照：改动前产物必须 exit 1
 - `research/_raw/secondary-page-layout-unification/release/robustness-rehearsal.txt` — 健壮性三情形（sitemap 缺条目 / 404 与超时 / 前缀写错）的实测 + 代码级论证
 - `research/_raw/secondary-page-layout-unification/release/rehearsal-summary.json` — 8 条用例的机器可读汇总 + 出口纪律核对（非回环 base 0 条 · 产物里真实域名 0 次）
-- `research/_raw/secondary-page-layout-unification/release/add-manifest.txt` / `add-manifest-dryrun.txt` — 发布 `git add` 的精确清单与 `--dry-run` 预演读数（文件数 / 体积 / dist 排除证明）
+- `research/_raw/secondary-page-layout-unification/release/add-manifest.txt` / `add-manifest-dryrun.txt` — 发布 `git add` 的精确清单与预演读数（**时间无关口径 = tracked ∪ untracked**；`dryrun` 那份是发布前冻结快照，供口径自证）
+- `research/_raw/secondary-page-layout-unification/release/add-manifest-postcommit.txt` — 提交后的逐条清单（tracked 975 + 本次增量 5 = 976 个路径）
 - `research/_raw/secondary-page-layout-unification/release/evidence-index-snapshot.txt` — 本索引的**某一时刻**核对快照（发布前须在众人停写后重跑）
 - `research/_raw/secondary-page-layout-unification/release/check-evidence-index.cjs` — 本索引的机器核对器（存在性 + `--git` 提交后是否仍在）
 - `research/_raw/secondary-page-layout-unification/release/check-release-consistency.cjs` — 发布前最终闸门的唯一装置（索引 ⊂ add 清单 / 文档引用分类 / sha 绑定 / 版本 pin）

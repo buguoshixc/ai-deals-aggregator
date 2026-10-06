@@ -1,6 +1,6 @@
-# PR 证据索引核对 · 快照（t23 终态 · 2026-10-07 00:0x）
+# PR 证据索引核对 · 快照（t34 · 首提交 8168251465a4 之后）
 
-> ⚠️ 仍是**某一时刻**的快照：t31 仍在写（verify/），任何成员再写入之后必须由 captain 重跑：
+> ⚠️ 仍是**某一时刻**的快照：任何成员再写入之后必须由 captain 重跑：
 >
 > ```bash
 > node research/_raw/secondary-page-layout-unification/release/check-evidence-index.cjs --git   # 期望 EXIT=0
@@ -12,7 +12,7 @@
 
 ```text
 证据索引核对：research/_raw/secondary-page-layout-unification/release/pr-body.md
-  索引块内路径 59 条（其中目录 1 条）
+  索引块内路径 60 条（其中目录 1 条）
     ✓ research/_raw/secondary-page-layout-unification/t1/17-t1-summary.md
     ✓ research/_raw/secondary-page-layout-unification/t1/07-dist-snote-audit.txt
     ✓ research/_raw/secondary-page-layout-unification/t1/10-frozen-string-audit.txt
@@ -65,6 +65,7 @@
     ✓ research/_raw/secondary-page-layout-unification/release/robustness-rehearsal.txt
     ✓ research/_raw/secondary-page-layout-unification/release/rehearsal-summary.json
     ✓ research/_raw/secondary-page-layout-unification/release/add-manifest.txt
+    ✓ research/_raw/secondary-page-layout-unification/release/add-manifest-postcommit.txt
     ✓ research/_raw/secondary-page-layout-unification/release/evidence-index-snapshot.txt
     ✓ research/_raw/secondary-page-layout-unification/release/check-evidence-index.cjs
     ✓ research/_raw/secondary-page-layout-unification/release/check-release-consistency.cjs
@@ -73,14 +74,14 @@
     ✓ research/_raw/secondary-page-layout-unification/release/version-pins.json
     ✓ research/_raw/secondary-page-layout-unification/release/final-gate.json
 
-✅ 59/59 条路径全部存在，且都在 research/_raw/secondary-page-layout-unification/ 之下
+✅ 60/60 条路径全部存在，且都在 research/_raw/secondary-page-layout-unification/ 之下
 ```
 
 ## ② 存在性 + 提交后仍在（--git）· EXIT=0
 
 ```text
 证据索引核对：research/_raw/secondary-page-layout-unification/release/pr-body.md
-  索引块内路径 59 条（其中目录 1 条）
+  索引块内路径 60 条（其中目录 1 条）
     ✓ research/_raw/secondary-page-layout-unification/t1/17-t1-summary.md
     ✓ research/_raw/secondary-page-layout-unification/t1/07-dist-snote-audit.txt
     ✓ research/_raw/secondary-page-layout-unification/t1/10-frozen-string-audit.txt
@@ -133,6 +134,7 @@
     ✓ research/_raw/secondary-page-layout-unification/release/robustness-rehearsal.txt
     ✓ research/_raw/secondary-page-layout-unification/release/rehearsal-summary.json
     ✓ research/_raw/secondary-page-layout-unification/release/add-manifest.txt
+    ✓ research/_raw/secondary-page-layout-unification/release/add-manifest-postcommit.txt
     ✓ research/_raw/secondary-page-layout-unification/release/evidence-index-snapshot.txt
     ✓ research/_raw/secondary-page-layout-unification/release/check-evidence-index.cjs
     ✓ research/_raw/secondary-page-layout-unification/release/check-release-consistency.cjs
@@ -140,7 +142,7 @@
     ✓ research/_raw/secondary-page-layout-unification/release/proposed-gitignore-addendum.txt
     ✓ research/_raw/secondary-page-layout-unification/release/version-pins.json
     ✓ research/_raw/secondary-page-layout-unification/release/final-gate.json
-   git 预检：59 条路径都不会被 .gitignore 吃掉
+   git 预检：60 条路径都不会被 .gitignore 吃掉
 
-✅ 59/59 条路径全部存在，且都在 research/_raw/secondary-page-layout-unification/ 之下
+✅ 60/60 条路径全部存在，且都在 research/_raw/secondary-page-layout-unification/ 之下
 ```

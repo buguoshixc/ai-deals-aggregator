@@ -1,0 +1,3464 @@
+{
+  "tool": "secondary-page-layout-unification/online-smoke",
+  "schemaVersion": 1,
+  "at": "2026-10-06T17:28:15.905Z",
+  "node": "v24.13.1",
+  "playwrightCore": "1.63.0",
+  "mode": "online",
+  "base": "https://buguoshixc.github.io/ai-deals-aggregator/",
+  "dir": null,
+  "derivation": {
+    "source": "sitemap:http",
+    "fallback": false,
+    "rootPrefix": "/ai-deals-aggregator/",
+    "sitemapLocs": 183,
+    "dealRoutes": 80,
+    "modelRoutes": 51,
+    "dealRoute": "deal/2eae0e246de2/",
+    "modelRoute": "models/claude-fable-5.1/",
+    "note": "deal id / model slug 全部现场推导（线上 sitemap.xml / 本地 <dir>/sitemap.xml，退路 deals.json / models.json），脚本里不写死任何 id；/models/ 索引本身在正则层被排除（^models/<slug>/$）"
+  },
+  "thresholds": {
+    "noteRatio": 0.85,
+    "axisRatio": 0.05,
+    "tol": 1,
+    "detailColumnMax": 1120,
+    "detailCenterTol": 8,
+    "viewports": [
+      1440,
+      390
+    ]
+  },
+  "frozenSnoteRule": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+  "pages": [
+    {
+      "route": "student/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/student/",
+      "family": "wide",
+      "requireNotes": true,
+      "why": "宽数据页；曾被压成 70ch 的四个壳之一（§22c M1–M4 变异靶页）",
+      "status": 200,
+      "desktop": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".ctable",
+        "regionFallback": false,
+        "region": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 1,
+        "noteCount": 3,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页收的是来源明确说面向学生的优惠：audience 写了 s",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 1394.86,
+              "width": 1364.86,
+              "lines": 6
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 1
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52,
+              "lines": 3
+            }
+          }
+        ]
+      },
+      "narrow": {
+        "doc": {
+          "innerWidth": 390,
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".ctable",
+        "regionFallback": false,
+        "region": {
+          "left": 16,
+          "right": 437.3,
+          "width": 421.3,
+          "scrollW": 421,
+          "clientW": 421,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 1,
+        "noteCount": 3,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页收的是来源明确说面向学生的优惠：audience 写了 s",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 367.3,
+              "width": 351.3,
+              "lines": 11
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "left": 16,
+              "right": 77.64,
+              "width": 61.64,
+              "lines": 1
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 367.52,
+              "width": 351.52,
+              "lines": 5
+            }
+          }
+        ]
+      },
+      "externalRequests": [
+        "https://static.cloudflareinsights.com",
+        "https://cloudflareinsights.com"
+      ]
+    },
+    {
+      "route": "need/edu-identity/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/need/edu-identity/",
+      "family": "wide",
+      "requireNotes": true,
+      "why": "按需求页（注册表驱动，slug 随数据走）",
+      "status": 200,
+      "desktop": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".ctable",
+        "regionFallback": false,
+        "region": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 1,
+        "noteCount": 3,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页收的是教育身份相关的优惠：适用人群写了「学生 / 教师 /",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 1394.38,
+              "width": 1364.38,
+              "lines": 6
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 1
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52,
+              "lines": 3
+            }
+          }
+        ]
+      },
+      "narrow": {
+        "doc": {
+          "innerWidth": 390,
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".ctable",
+        "regionFallback": false,
+        "region": {
+          "left": 16,
+          "right": 473.3,
+          "width": 457.3,
+          "scrollW": 457,
+          "clientW": 457,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 1,
+        "noteCount": 3,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页收的是教育身份相关的优惠：适用人群写了「学生 / 教师 /",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 367.98,
+              "width": 351.98,
+              "lines": 10
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "left": 16,
+              "right": 77.64,
+              "width": 61.64,
+              "lines": 1
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 367.52,
+              "width": 351.52,
+              "lines": 5
+            }
+          }
+        ]
+      },
+      "externalRequests": [
+        "https://static.cloudflareinsights.com",
+        "https://cloudflareinsights.com"
+      ]
+    },
+    {
+      "route": "status/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/status/",
+      "family": "wide",
+      "requireNotes": true,
+      "why": "状态页；§22c 变异靶页，主数据区是 .stable",
+      "status": 200,
+      "desktop": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".stable",
+        "regionFallback": false,
+        "region": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 1,
+        "noteCount": 2,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这里列出每个采集来源最近一次的结果与跨运行的连续性。为什么要公开",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 1406.39,
+              "width": 1376.39,
+              "lines": 10
+            }
+          },
+          {
+            "index": 1,
+            "text": "机器可读的同一份数据：source-health.json。 本",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 682.36,
+              "width": 652.36,
+              "lines": 3
+            }
+          }
+        ]
+      },
+      "narrow": {
+        "doc": {
+          "innerWidth": 390,
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".stable",
+        "regionFallback": false,
+        "region": {
+          "left": 16,
+          "right": 511.39,
+          "width": 495.39,
+          "scrollW": 495,
+          "clientW": 495,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 1,
+        "noteCount": 2,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这里列出每个采集来源最近一次的结果与跨运行的连续性。为什么要公开",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 367.3,
+              "width": 351.3,
+              "lines": 16
+            }
+          },
+          {
+            "index": 1,
+            "text": "机器可读的同一份数据：source-health.json。 本",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 356.36,
+              "width": 340.36,
+              "lines": 4
+            }
+          }
+        ]
+      },
+      "externalRequests": [
+        "https://static.cloudflareinsights.com",
+        "https://cloudflareinsights.com"
+      ]
+    },
+    {
+      "route": "changes/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/changes/",
+      "family": "wide",
+      "requireNotes": true,
+      "why": "变化页：全站说明条数最多的一页（13 条），旧判据只看见第一条",
+      "status": 200,
+      "desktop": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".chgsec",
+        "regionFallback": false,
+        "region": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "frozenCount": 1,
+        "noteCount": 13,
+        "notes": [
+          {
+            "index": 0,
+            "text": "本页五个分栏互不重叠：今日新增只列今天首次收录的条目；最近 7 ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 728.09,
+              "width": 698.09,
+              "lines": 1
+            }
+          },
+          {
+            "index": 1,
+            "text": "「即将结束」只认数据里写有绝对截止日期（expiresAt）的条",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 511.09,
+              "width": 481.09,
+              "lines": 1
+            }
+          },
+          {
+            "index": 2,
+            "text": "这些变化只影响记录的元信息或写法（分类、出处、空白与措辞），不改",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 606,
+              "width": 576,
+              "lines": 1
+            }
+          },
+          {
+            "index": 3,
+            "text": "已结束与重新出现只列最近 30 天；更早的记录仍留在该条目自己的",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 481.52,
+              "width": 451.52,
+              "lines": 1
+            }
+          },
+          {
+            "index": 4,
+            "text": "以上是本站采集与合并过程留下的观测记录；「不再收录」表示本站未再",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 846,
+              "width": 816,
+              "lines": 1
+            }
+          },
+          {
+            "index": 5,
+            "text": "套餐变化来自本站重建套餐数据时的观测记录；变更记录自 2026-",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 433.92,
+              "width": 403.92,
+              "lines": 1
+            }
+          },
+          {
+            "index": 6,
+            "text": "自起算日起，没有观测到不再收录的套餐。",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 258,
+              "width": 228,
+              "lines": 1
+            }
+          },
+          {
+            "index": 7,
+            "text": "没有观测到重新出现的套餐。",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 186,
+              "width": 156,
+              "lines": 1
+            }
+          },
+          {
+            "index": 8,
+            "text": "以上是本站重建套餐数据时留下的观测记录；「不再收录」表示人工来源",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 966,
+              "width": 936,
+              "lines": 1
+            }
+          },
+          {
+            "index": 9,
+            "text": "API 价格变化来自本站重建 API 计费数据时的观测记录；变更",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 479.09,
+              "width": 449.09,
+              "lines": 1
+            }
+          },
+          {
+            "index": 10,
+            "text": "自起算日起，没有观测到不再收录的 API 计费记录。",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 306.23,
+              "width": 276.23,
+              "lines": 1
+            }
+          },
+          {
+            "index": 11,
+            "text": "没有观测到重新出现的 API 计费记录。",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 234.23,
+              "width": 204.23,
+              "lines": 1
+            }
+          },
+          {
+            "index": 12,
+            "text": "以上是本站重建 API 计费数据时留下的观测记录；「不再收录」表",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 1002.23,
+              "width": 972.23,
+              "lines": 1
+            }
+          }
+        ]
+      },
+      "narrow": {
+        "doc": {
+          "innerWidth": 390,
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".chgsec",
+        "regionFallback": false,
+        "region": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "frozenCount": 1,
+        "noteCount": 13,
+        "notes": [
+          {
+            "index": 0,
+            "text": "本页五个分栏互不重叠：今日新增只列今天首次收录的条目；最近 7 ",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 373.77,
+              "width": 357.77,
+              "lines": 2
+            }
+          },
+          {
+            "index": 1,
+            "text": "「即将结束」只认数据里写有绝对截止日期（expiresAt）的条",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 365.09,
+              "width": 349.09,
+              "lines": 2
+            }
+          },
+          {
+            "index": 2,
+            "text": "这些变化只影响记录的元信息或写法（分类、出处、空白与措辞），不改",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 340,
+              "width": 324,
+              "lines": 2
+            }
+          },
+          {
+            "index": 3,
+            "text": "已结束与重新出现只列最近 30 天；更早的记录仍留在该条目自己的",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 371.52,
+              "width": 355.52,
+              "lines": 2
+            }
+          },
+          {
+            "index": 4,
+            "text": "以上是本站采集与合并过程留下的观测记录；「不再收录」表示本站未再",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 364,
+              "width": 348,
+              "lines": 3
+            }
+          },
+          {
+            "index": 5,
+            "text": "套餐变化来自本站重建套餐数据时的观测记录；变更记录自 2026-",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 361.97,
+              "width": 345.97,
+              "lines": 2
+            }
+          },
+          {
+            "index": 6,
+            "text": "自起算日起，没有观测到不再收录的套餐。",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 244,
+              "width": 228,
+              "lines": 1
+            }
+          },
+          {
+            "index": 7,
+            "text": "没有观测到重新出现的套餐。",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 172,
+              "width": 156,
+              "lines": 1
+            }
+          },
+          {
+            "index": 8,
+            "text": "以上是本站重建套餐数据时留下的观测记录；「不再收录」表示人工来源",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 364,
+              "width": 348,
+              "lines": 3
+            }
+          },
+          {
+            "index": 9,
+            "text": "API 价格变化来自本站重建 API 计费数据时的观测记录；变更",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 373.17,
+              "width": 357.17,
+              "lines": 2
+            }
+          },
+          {
+            "index": 10,
+            "text": "自起算日起，没有观测到不再收录的 API 计费记录。",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 292.23,
+              "width": 276.23,
+              "lines": 1
+            }
+          },
+          {
+            "index": 11,
+            "text": "没有观测到重新出现的 API 计费记录。",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 220.23,
+              "width": 204.23,
+              "lines": 1
+            }
+          },
+          {
+            "index": 12,
+            "text": "以上是本站重建 API 计费数据时留下的观测记录；「不再收录」表",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 364.23,
+              "width": 348.23,
+              "lines": 3
+            }
+          }
+        ]
+      },
+      "externalRequests": [
+        "https://static.cloudflareinsights.com",
+        "https://cloudflareinsights.com"
+      ]
+    },
+    {
+      "route": "feeds/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/feeds/",
+      "family": "wide",
+      "requireNotes": true,
+      "why": "订阅中心；§22c 变异靶页，主数据区是 .flist",
+      "status": 200,
+      "desktop": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".flist",
+        "regionFallback": false,
+        "region": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "grid"
+        },
+        "frozenCount": 1,
+        "noteCount": 8,
+        "notes": [
+          {
+            "index": 0,
+            "text": "把下面的地址粘进任意 RSS / JSON Feed 阅读器即可",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 1071.06,
+              "width": 1041.06,
+              "lines": 1
+            }
+          },
+          {
+            "index": 1,
+            "text": "套餐变化来自人工逐条核对官方页后重建的套餐数据（plans.js",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 1293.19,
+              "width": 1263.19,
+              "lines": 5
+            }
+          },
+          {
+            "index": 2,
+            "text": "按「我是谁」和「能不能在大陆用上」切；判据与 /student/",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 541.67,
+              "width": 511.67,
+              "lines": 3
+            }
+          },
+          {
+            "index": 3,
+            "text": "按福利类型与用途切；与目录页、按需求页共用同一套判据，所以订阅里",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 630,
+              "width": 600,
+              "lines": 1
+            }
+          },
+          {
+            "index": 4,
+            "text": "按站点的分类落地页切（/category/api/ 等五页）；判",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 781.45,
+              "width": 751.45,
+              "lines": 3
+            }
+          },
+          {
+            "index": 5,
+            "text": "厂商订阅只给「当前收录的优惠 ≥ 2 条」或「历史变更事件 ≥ ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 1055.53,
+              "width": 1025.53,
+              "lines": 1
+            }
+          },
+          {
+            "index": 6,
+            "text": "优惠订阅回答「当前有哪些符合这个条件的优惠」；最近变化与最近新增",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 1071.88,
+              "width": 1041.88,
+              "lines": 1
+            }
+          },
+          {
+            "index": 7,
+            "text": "信息来自厂商官方页面，最终以官方页面为准。",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 282,
+              "width": 252,
+              "lines": 1
+            }
+          }
+        ]
+      },
+      "narrow": {
+        "doc": {
+          "innerWidth": 390,
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".flist",
+        "regionFallback": false,
+        "region": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "grid"
+        },
+        "frozenCount": 1,
+        "noteCount": 8,
+        "notes": [
+          {
+            "index": 0,
+            "text": "把下面的地址粘进任意 RSS / JSON Feed 阅读器即可",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 367.3,
+              "width": 351.3,
+              "lines": 3
+            }
+          },
+          {
+            "index": 1,
+            "text": "套餐变化来自人工逐条核对官方页后重建的套餐数据（plans.js",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 368.69,
+              "width": 352.69,
+              "lines": 8
+            }
+          },
+          {
+            "index": 2,
+            "text": "按「我是谁」和「能不能在大陆用上」切；判据与 /student/",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 280,
+              "width": 264,
+              "lines": 4
+            }
+          },
+          {
+            "index": 3,
+            "text": "按福利类型与用途切；与目录页、按需求页共用同一套判据，所以订阅里",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 364,
+              "width": 348,
+              "lines": 2
+            }
+          },
+          {
+            "index": 4,
+            "text": "按站点的分类落地页切（/category/api/ 等五页）；判",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 371.45,
+              "width": 355.45,
+              "lines": 5
+            }
+          },
+          {
+            "index": 5,
+            "text": "厂商订阅只给「当前收录的优惠 ≥ 2 条」或「历史变更事件 ≥ ",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 364,
+              "width": 348,
+              "lines": 3
+            }
+          },
+          {
+            "index": 6,
+            "text": "优惠订阅回答「当前有哪些符合这个条件的优惠」；最近变化与最近新增",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 367.3,
+              "width": 351.3,
+              "lines": 3
+            }
+          },
+          {
+            "index": 7,
+            "text": "信息来自厂商官方页面，最终以官方页面为准。",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 268,
+              "width": 252,
+              "lines": 1
+            }
+          }
+        ]
+      },
+      "externalRequests": [
+        "https://static.cloudflareinsights.com",
+        "https://cloudflareinsights.com"
+      ]
+    },
+    {
+      "route": "plans/coding/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/plans/coding/",
+      "family": "wide",
+      "requireNotes": true,
+      "why": "套餐对比页：主数据区（.ptable）比页面列还宽的那一类",
+      "status": 200,
+      "desktop": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".ptable",
+        "regionFallback": false,
+        "region": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 1,
+        "noteCount": 5,
+        "notes": [
+          {
+            "index": 0,
+            "text": "把各平台长期在售的 AI Coding 套餐放在一张表里比：正常",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 965.09,
+              "width": 935.09,
+              "lines": 1
+            }
+          },
+          {
+            "index": 1,
+            "text": "筛选、搜索与排序需要 JavaScript；未启用时，下面这张表",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": null
+          },
+          {
+            "index": 2,
+            "text": "本期没有一条套餐的额度是固定 Token，名义 Token 单价",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 438.22,
+              "width": 408.22,
+              "lines": 1
+            }
+          },
+          {
+            "index": 3,
+            "text": "关联是显式确认的：只有人工在 deal-plan-links.j",
+            "box": {
+              "left": 43,
+              "right": 1397,
+              "width": 1354,
+              "scrollW": 1354,
+              "clientW": 1354,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1354,
+            "textWidth": 1354,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 43,
+              "right": 848.48,
+              "width": 805.48,
+              "lines": 3
+            }
+          },
+          {
+            "index": 4,
+            "text": "名义 Token 单价的口径：名义 Token 单价只根据套餐标",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "scrollW": 1380,
+              "clientW": 1380,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 1402.22,
+              "width": 1372.22,
+              "lines": 4
+            }
+          }
+        ]
+      },
+      "narrow": {
+        "doc": {
+          "innerWidth": 390,
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".ptable",
+        "regionFallback": false,
+        "region": {
+          "left": 16,
+          "right": 1071.17,
+          "width": 1055.17,
+          "scrollW": 1055,
+          "clientW": 1055,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 1,
+        "noteCount": 5,
+        "notes": [
+          {
+            "index": 0,
+            "text": "把各平台长期在售的 AI Coding 套餐放在一张表里比：正常",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 364,
+              "width": 348,
+              "lines": 3
+            }
+          },
+          {
+            "index": 1,
+            "text": "筛选、搜索与排序需要 JavaScript；未启用时，下面这张表",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": null
+          },
+          {
+            "index": 2,
+            "text": "本期没有一条套餐的额度是固定 Token，名义 Token 单价",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 364.22,
+              "width": 348.22,
+              "lines": 2
+            }
+          },
+          {
+            "index": 3,
+            "text": "关联是显式确认的：只有人工在 deal-plan-links.j",
+            "box": {
+              "left": 29,
+              "right": 361,
+              "width": 332,
+              "scrollW": 332,
+              "clientW": 332,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 332,
+            "textWidth": 332,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 29,
+              "right": 354.48,
+              "width": 325.48,
+              "lines": 5
+            }
+          },
+          {
+            "index": 4,
+            "text": "名义 Token 单价的口径：名义 Token 单价只根据套餐标",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 369.05,
+              "width": 353.05,
+              "lines": 7
+            }
+          }
+        ]
+      },
+      "externalRequests": [
+        "https://static.cloudflareinsights.com",
+        "https://cloudflareinsights.com"
+      ]
+    },
+    {
+      "route": "deal/2eae0e246de2/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/deal/2eae0e246de2/",
+      "family": "detail",
+      "requireNotes": false,
+      "why": "叶子详情：内容列 1120px 居中；这类页面本来没有页面级说明",
+      "status": 200,
+      "desktop": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainCount": 1,
+        "detailMainCount": 1,
+        "mainClass": "detail-main",
+        "main": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120,
+          "scrollW": 1120,
+          "clientW": 1120,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": null,
+        "regionFallback": true,
+        "region": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120,
+          "scrollW": 1120,
+          "clientW": 1120,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "frozenCount": 1,
+        "noteCount": 0,
+        "notes": []
+      },
+      "narrow": {
+        "doc": {
+          "innerWidth": 390,
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "mainCount": 1,
+        "detailMainCount": 1,
+        "mainClass": "detail-main",
+        "main": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": null,
+        "regionFallback": true,
+        "region": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "frozenCount": 1,
+        "noteCount": 0,
+        "notes": []
+      },
+      "externalRequests": [
+        "https://static.cloudflareinsights.com",
+        "https://cloudflareinsights.com"
+      ]
+    },
+    {
+      "route": "models/claude-fable-5.1/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/models/claude-fable-5.1/",
+      "family": "detail",
+      "requireNotes": true,
+      "why": "叶子详情里**有**页面级说明的那一类（说明同样要 ≥0.85×1120）",
+      "status": 200,
+      "desktop": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainCount": 1,
+        "detailMainCount": 1,
+        "mainClass": "detail-main",
+        "main": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120,
+          "scrollW": 1120,
+          "clientW": 1120,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".ptable",
+        "regionFallback": false,
+        "region": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120,
+          "scrollW": 1120,
+          "clientW": 1120,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 1,
+        "noteCount": 5,
+        "notes": [
+          {
+            "index": 0,
+            "text": "全部来自本站 API / Token 计费对比 的同一份数据； ",
+            "box": {
+              "left": 160,
+              "right": 1280,
+              "width": 1120,
+              "scrollW": 1120,
+              "clientW": 1120,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1120,
+            "textWidth": 1120,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 160,
+              "right": 845.09,
+              "width": 685.09,
+              "lines": 5
+            }
+          },
+          {
+            "index": 1,
+            "text": "没有与该模型显式关联的 Coding 套餐 —— 本站不按套餐里",
+            "box": {
+              "left": 160,
+              "right": 1280,
+              "width": 1120,
+              "scrollW": 1120,
+              "clientW": 1120,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1120,
+            "textWidth": 1120,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 160,
+              "right": 830.92,
+              "width": 670.92,
+              "lines": 3
+            }
+          },
+          {
+            "index": 2,
+            "text": "没有与该模型显式关联的优惠 —— 本站不用标题关键词猜关系。",
+            "box": {
+              "left": 160,
+              "right": 1280,
+              "width": 1120,
+              "scrollW": 1120,
+              "clientW": 1120,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1120,
+            "textWidth": 1120,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 160,
+              "right": 502.58,
+              "width": 342.58,
+              "lines": 3
+            }
+          },
+          {
+            "index": 3,
+            "text": "这一节是派生视图：直接把 API 计费日志里与该模型有关的记录事",
+            "box": {
+              "left": 160,
+              "right": 1280,
+              "width": 1120,
+              "scrollW": 1120,
+              "clientW": 1120,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1120,
+            "textWidth": 1120,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 160,
+              "right": 700.23,
+              "width": 540.23,
+              "lines": 3
+            }
+          },
+          {
+            "index": 4,
+            "text": "API 计费日志里没有与该模型相关的事件。",
+            "box": {
+              "left": 160,
+              "right": 1280,
+              "width": 1120,
+              "scrollW": 1120,
+              "clientW": 1120,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1120,
+            "textWidth": 1120,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 160,
+              "right": 384.95,
+              "width": 224.95,
+              "lines": 1
+            }
+          }
+        ]
+      },
+      "narrow": {
+        "doc": {
+          "innerWidth": 390,
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "mainCount": 1,
+        "detailMainCount": 1,
+        "mainClass": "detail-main",
+        "main": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".ptable",
+        "regionFallback": false,
+        "region": {
+          "left": 16,
+          "right": 734.17,
+          "width": 718.17,
+          "scrollW": 718,
+          "clientW": 718,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 1,
+        "noteCount": 5,
+        "notes": [
+          {
+            "index": 0,
+            "text": "全部来自本站 API / Token 计费对比 的同一份数据； ",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 365.25,
+              "width": 349.25,
+              "lines": 6
+            }
+          },
+          {
+            "index": 1,
+            "text": "没有与该模型显式关联的 Coding 套餐 —— 本站不按套餐里",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 367.45,
+              "width": 351.45,
+              "lines": 4
+            }
+          },
+          {
+            "index": 2,
+            "text": "没有与该模型显式关联的优惠 —— 本站不用标题关键词猜关系。",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 358.58,
+              "width": 342.58,
+              "lines": 3
+            }
+          },
+          {
+            "index": 3,
+            "text": "这一节是派生视图：直接把 API 计费日志里与该模型有关的记录事",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 364.23,
+              "width": 348.23,
+              "lines": 4
+            }
+          },
+          {
+            "index": 4,
+            "text": "API 计费日志里没有与该模型相关的事件。",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 240.95,
+              "width": 224.95,
+              "lines": 1
+            }
+          }
+        ]
+      },
+      "externalRequests": [
+        "https://static.cloudflareinsights.com",
+        "https://cloudflareinsights.com"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "HTTP 200",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族）",
+      "ok": true,
+      "detail": "main 1380px · 主数据区 .ctable 1380px · 说明 3 条（#0 1380px / ratio 1）"
+    },
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物）",
+      "ok": true,
+      "detail": "frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）"
+    },
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言）",
+      "ok": true,
+      "detail": "noteCount=3"
+    },
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "说明 #0 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1364.86px/6 行 · 文本「这一页收的是来源明确说面向学生的优惠：audience 写了 s」"
+    },
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "说明 #1 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 61.64px/1 行 · 文本「全部变化 →」"
+    },
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "说明 #2 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1047.52px/3 行 · 文本「分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（」"
+    },
+    {
+      "page": "student/",
+      "viewport": 390,
+      "name": "documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出）",
+      "ok": true,
+      "detail": "scrollWidth=390 · clientWidth=390 · innerWidth=390"
+    },
+    {
+      "page": "need/edu-identity/",
+      "viewport": 1440,
+      "name": "HTTP 200",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "page": "need/edu-identity/",
+      "viewport": 1440,
+      "name": "几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族）",
+      "ok": true,
+      "detail": "main 1380px · 主数据区 .ctable 1380px · 说明 3 条（#0 1380px / ratio 1）"
+    },
+    {
+      "page": "need/edu-identity/",
+      "viewport": 1440,
+      "name": "共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物）",
+      "ok": true,
+      "detail": "frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）"
+    },
+    {
+      "page": "need/edu-identity/",
+      "viewport": 1440,
+      "name": "页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言）",
+      "ok": true,
+      "detail": "noteCount=3"
+    },
+    {
+      "page": "need/edu-identity/",
+      "viewport": 1440,
+      "name": "说明 #0 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1364.38px/6 行 · 文本「这一页收的是教育身份相关的优惠：适用人群写了「学生 / 教师 /」"
+    },
+    {
+      "page": "need/edu-identity/",
+      "viewport": 1440,
+      "name": "说明 #1 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 61.64px/1 行 · 文本「全部变化 →」"
+    },
+    {
+      "page": "need/edu-identity/",
+      "viewport": 1440,
+      "name": "说明 #2 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1047.52px/3 行 · 文本「分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（」"
+    },
+    {
+      "page": "need/edu-identity/",
+      "viewport": 390,
+      "name": "documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出）",
+      "ok": true,
+      "detail": "scrollWidth=390 · clientWidth=390 · innerWidth=390"
+    },
+    {
+      "page": "status/",
+      "viewport": 1440,
+      "name": "HTTP 200",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "page": "status/",
+      "viewport": 1440,
+      "name": "几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族）",
+      "ok": true,
+      "detail": "main 1380px · 主数据区 .stable 1380px · 说明 2 条（#0 1380px / ratio 1）"
+    },
+    {
+      "page": "status/",
+      "viewport": 1440,
+      "name": "共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物）",
+      "ok": true,
+      "detail": "frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）"
+    },
+    {
+      "page": "status/",
+      "viewport": 1440,
+      "name": "页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言）",
+      "ok": true,
+      "detail": "noteCount=2"
+    },
+    {
+      "page": "status/",
+      "viewport": 1440,
+      "name": "说明 #0 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1376.39px/10 行 · 文本「这里列出每个采集来源最近一次的结果与跨运行的连续性。为什么要公开」"
+    },
+    {
+      "page": "status/",
+      "viewport": 1440,
+      "name": "说明 #1 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 652.36px/3 行 · 文本「机器可读的同一份数据：source-health.json。 本」"
+    },
+    {
+      "page": "status/",
+      "viewport": 390,
+      "name": "documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出）",
+      "ok": true,
+      "detail": "scrollWidth=390 · clientWidth=390 · innerWidth=390"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "HTTP 200",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族）",
+      "ok": true,
+      "detail": "main 1380px · 主数据区 .chgsec 1380px · 说明 13 条（#0 1380px / ratio 1）"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物）",
+      "ok": true,
+      "detail": "frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言）",
+      "ok": true,
+      "detail": "noteCount=13"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "说明 #0 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 698.09px/1 行 · 文本「本页五个分栏互不重叠：今日新增只列今天首次收录的条目；最近 7 」"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "说明 #1 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 481.09px/1 行 · 文本「「即将结束」只认数据里写有绝对截止日期（expiresAt）的条」"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "说明 #2 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 576px/1 行 · 文本「这些变化只影响记录的元信息或写法（分类、出处、空白与措辞），不改」"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "说明 #3 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 451.52px/1 行 · 文本「已结束与重新出现只列最近 30 天；更早的记录仍留在该条目自己的」"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "说明 #4 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 816px/1 行 · 文本「以上是本站采集与合并过程留下的观测记录；「不再收录」表示本站未再」"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "说明 #5 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 403.92px/1 行 · 文本「套餐变化来自本站重建套餐数据时的观测记录；变更记录自 2026-」"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "说明 #6 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 228px/1 行 · 文本「自起算日起，没有观测到不再收录的套餐。」"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "说明 #7 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 156px/1 行 · 文本「没有观测到重新出现的套餐。」"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "说明 #8 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 936px/1 行 · 文本「以上是本站重建套餐数据时留下的观测记录；「不再收录」表示人工来源」"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "说明 #9 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 449.09px/1 行 · 文本「API 价格变化来自本站重建 API 计费数据时的观测记录；变更」"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "说明 #10 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 276.23px/1 行 · 文本「自起算日起，没有观测到不再收录的 API 计费记录。」"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "说明 #11 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 204.23px/1 行 · 文本「没有观测到重新出现的 API 计费记录。」"
+    },
+    {
+      "page": "changes/",
+      "viewport": 1440,
+      "name": "说明 #12 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 972.23px/1 行 · 文本「以上是本站重建 API 计费数据时留下的观测记录；「不再收录」表」"
+    },
+    {
+      "page": "changes/",
+      "viewport": 390,
+      "name": "documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出）",
+      "ok": true,
+      "detail": "scrollWidth=390 · clientWidth=390 · innerWidth=390"
+    },
+    {
+      "page": "feeds/",
+      "viewport": 1440,
+      "name": "HTTP 200",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "page": "feeds/",
+      "viewport": 1440,
+      "name": "几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族）",
+      "ok": true,
+      "detail": "main 1380px · 主数据区 .flist 1380px · 说明 8 条（#0 1380px / ratio 1）"
+    },
+    {
+      "page": "feeds/",
+      "viewport": 1440,
+      "name": "共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物）",
+      "ok": true,
+      "detail": "frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）"
+    },
+    {
+      "page": "feeds/",
+      "viewport": 1440,
+      "name": "页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言）",
+      "ok": true,
+      "detail": "noteCount=8"
+    },
+    {
+      "page": "feeds/",
+      "viewport": 1440,
+      "name": "说明 #0 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1041.06px/1 行 · 文本「把下面的地址粘进任意 RSS / JSON Feed 阅读器即可」"
+    },
+    {
+      "page": "feeds/",
+      "viewport": 1440,
+      "name": "说明 #1 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1263.19px/5 行 · 文本「套餐变化来自人工逐条核对官方页后重建的套餐数据（plans.js」"
+    },
+    {
+      "page": "feeds/",
+      "viewport": 1440,
+      "name": "说明 #2 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 511.67px/3 行 · 文本「按「我是谁」和「能不能在大陆用上」切；判据与 /student/」"
+    },
+    {
+      "page": "feeds/",
+      "viewport": 1440,
+      "name": "说明 #3 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 600px/1 行 · 文本「按福利类型与用途切；与目录页、按需求页共用同一套判据，所以订阅里」"
+    },
+    {
+      "page": "feeds/",
+      "viewport": 1440,
+      "name": "说明 #4 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 751.45px/3 行 · 文本「按站点的分类落地页切（/category/api/ 等五页）；判」"
+    },
+    {
+      "page": "feeds/",
+      "viewport": 1440,
+      "name": "说明 #5 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1025.53px/1 行 · 文本「厂商订阅只给「当前收录的优惠 ≥ 2 条」或「历史变更事件 ≥ 」"
+    },
+    {
+      "page": "feeds/",
+      "viewport": 1440,
+      "name": "说明 #6 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1041.88px/1 行 · 文本「优惠订阅回答「当前有哪些符合这个条件的优惠」；最近变化与最近新增」"
+    },
+    {
+      "page": "feeds/",
+      "viewport": 1440,
+      "name": "说明 #7 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 252px/1 行 · 文本「信息来自厂商官方页面，最终以官方页面为准。」"
+    },
+    {
+      "page": "feeds/",
+      "viewport": 390,
+      "name": "documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出）",
+      "ok": true,
+      "detail": "scrollWidth=390 · clientWidth=390 · innerWidth=390"
+    },
+    {
+      "page": "plans/coding/",
+      "viewport": 1440,
+      "name": "HTTP 200",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "page": "plans/coding/",
+      "viewport": 1440,
+      "name": "几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族）",
+      "ok": true,
+      "detail": "main 1380px · 主数据区 .ptable 1380px · 说明 5 条（#0 1380px / ratio 1）"
+    },
+    {
+      "page": "plans/coding/",
+      "viewport": 1440,
+      "name": "共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物）",
+      "ok": true,
+      "detail": "frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）"
+    },
+    {
+      "page": "plans/coding/",
+      "viewport": 1440,
+      "name": "页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言）",
+      "ok": true,
+      "detail": "noteCount=5"
+    },
+    {
+      "page": "plans/coding/",
+      "viewport": 1440,
+      "name": "说明 #0 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 935.09px/1 行 · 文本「把各平台长期在售的 AI Coding 套餐放在一张表里比：正常」"
+    },
+    {
+      "page": "plans/coding/",
+      "viewport": 1440,
+      "name": "说明 #1 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 —px/0 行 · 文本「筛选、搜索与排序需要 JavaScript；未启用时，下面这张表」"
+    },
+    {
+      "page": "plans/coding/",
+      "viewport": 1440,
+      "name": "说明 #2 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 408.22px/1 行 · 文本「本期没有一条套餐的额度是固定 Token，名义 Token 单价」"
+    },
+    {
+      "page": "plans/coding/",
+      "viewport": 1440,
+      "name": "说明 #3 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1354px · 盒 43~1397（1354px）· 列 1380px · ratio=0.981 · 字迹 805.48px/3 行 · 文本「关联是显式确认的：只有人工在 deal-plan-links.j」"
+    },
+    {
+      "page": "plans/coding/",
+      "viewport": 1440,
+      "name": "说明 #4 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1372.22px/4 行 · 文本「名义 Token 单价的口径：名义 Token 单价只根据套餐标」"
+    },
+    {
+      "page": "plans/coding/",
+      "viewport": 390,
+      "name": "documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出）",
+      "ok": true,
+      "detail": "scrollWidth=390 · clientWidth=390 · innerWidth=390"
+    },
+    {
+      "page": "deal/2eae0e246de2/",
+      "viewport": 1440,
+      "name": "HTTP 200",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "page": "deal/2eae0e246de2/",
+      "viewport": 1440,
+      "name": "几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · detail 族）",
+      "ok": true,
+      "detail": "main 1120px · 主数据区 <main>（回落） 1120px · 说明 0 条"
+    },
+    {
+      "page": "deal/2eae0e246de2/",
+      "viewport": 1440,
+      "name": "共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物）",
+      "ok": true,
+      "detail": "frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）"
+    },
+    {
+      "page": "deal/2eae0e246de2/",
+      "viewport": 1440,
+      "name": "页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言）",
+      "ok": true,
+      "detail": "noteCount=0（本页不要求）"
+    },
+    {
+      "page": "deal/2eae0e246de2/",
+      "viewport": 390,
+      "name": "documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出）",
+      "ok": true,
+      "detail": "scrollWidth=390 · clientWidth=390 · innerWidth=390"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "HTTP 200",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · detail 族）",
+      "ok": true,
+      "detail": "main 1120px · 主数据区 .ptable 1120px · 说明 5 条（#0 1120px / ratio 1）"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物）",
+      "ok": true,
+      "detail": "frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言）",
+      "ok": true,
+      "detail": "noteCount=5"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "说明 #0 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 685.09px/5 行 · 文本「全部来自本站 API / Token 计费对比 的同一份数据； 」"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "说明 #1 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 670.92px/3 行 · 文本「没有与该模型显式关联的 Coding 套餐 —— 本站不按套餐里」"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "说明 #2 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 342.58px/3 行 · 文本「没有与该模型显式关联的优惠 —— 本站不用标题关键词猜关系。」"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "说明 #3 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 540.23px/3 行 · 文本「这一节是派生视图：直接把 API 计费日志里与该模型有关的记录事」"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "说明 #4 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 224.95px/1 行 · 文本「API 计费日志里没有与该模型相关的事件。」"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 390,
+      "name": "documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出）",
+      "ok": true,
+      "detail": "scrollWidth=390 · clientWidth=390 · innerWidth=390"
+    }
+  ],
+  "ok": true,
+  "failed": 0,
+  "browser": {
+    "executablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+  },
+  "externalRequests": {
+    "origins": [
+      "https://static.cloudflareinsights.com",
+      "https://cloudflareinsights.com"
+    ],
+    "enforced": false
+  }
+}

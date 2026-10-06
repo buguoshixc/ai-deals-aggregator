@@ -22,8 +22,8 @@
 >     与第 47 步（**852** / 0）**不是同一个计数器**，不得混引。
 > - ✅ **不受影响**：§E / §F 的**产物侧**数字是最终证据 —— 六轮修复都只动了 `scripts/tools/verify-site.js`，
 >   产物自 t1 之后未再改动（轮 6 的字节对账再次复算：303 个文件跑前/跑后 sha256 **0 差异**，见 §D.4 / §H）。
-> - **§I Online Smoke**：**待发布后回填**。本文件里没有任何线上 Deploy / HTTP / 真浏览器线上几何读数 —— 线上访问尚未发生，此处**不写任何推测值**。
-> - **CI 的 required check 读数在 §H.3 显式标注为「待 PR 建好之后才有」**，不预写；发布前终检由 **t23** 执行。
+> - **§I Online Smoke**：**已回填（发布态实测）** —— 提交 / PR #45 / 合并提交 / CI `gate` / `Deploy to GitHub Pages` 三 job / 线上几何 smoke（8 页 · **79 项断言 · failed 0**）全部有值；并如实登记**取证环境的网络事实**（§I.5）。
+> - **CI 的 required check 读数已由发布实跑补齐**（PR run **37501963346** → pass · 4m53s；master run **37502684190** → success），见 §H.3 与 §I.2。
 > - **三份长期文档**（`docs/DESIGN-RULES.md` / `PROJECT_STATUS.md` / `NEXT-STEPS.md`）：规则与产物侧事实写全；门禁数字已换成**轮 6 冻结读数**。
 >
 > **证据纪律（本文件全程遵守）**：每一个数字都能在 `research/_raw/secondary-page-layout-unification/**` 的证据文件里找到出处；
@@ -1123,16 +1123,16 @@ M6 只把 `overflow-wrap: anywhere` 换成 `normal`；M8/M9a/M9b/M10 是**追加
 > 证据：**轮 6 → `research/_raw/secondary-page-layout-unification/teeth/T24-ROUND5.md` · `.../teeth/_scratch/r6-gate/summary.json` · `.../review/t26/T26-ROUND5.md`（读数复核）** ·
 > 轮 4 → `.../t21/t21-summary.json`（step13） · `.../verify/T22-GATE-SELF-AUDIT.md`（§5 N06/N17 · §7 F4） · 轮 2 → `.../gate/03-browser-rerun.txt`
 
-### H.3 CI 的 required check 读数 —— **待 PR 建好之后才有，本节不预写**
+### H.3 CI 的 required check 读数 —— **已回填（发布实跑）**
 
 - 必需检查名是 **`gate`**（workflow 的 `name` 是 `Verify site (gate)`，但分支保护要填的是 **job 名 `gate`**）。
-- 本轮 PR 尚未创建 ⇒ **没有任何 CI 运行、没有 `gate` 的结论、没有 run id**。
-  本节在发布后（`release/checklist.md` S7/S11）用 `gh pr checks` / `gh run view` 的实测输出回填。
-- 版本一致性风险已由**本地**证据先兜住：`check-ci-consistency.js` **exit 0 · 38 项 0 失败**（含「断言名单与冻结清单等值」
-  「实跑项数 == `--expect-checks=38`」）—— 轮 5 复算见 `teeth/_scratch/r6-ci.log`。
+- **实测（发布实跑）**：PR **#45** 上的 `verify.yml`（job 名 `gate`）run **37501963346** → **pass · 4m53s**；
+  master 上的同一 workflow run **37502684190** → **success**。详见 §I.2。
+- 版本一致性风险另由**本地**证据兜住：`check-ci-consistency.js` **exit 0 · 38 项 0 失败**（含「断言名单与冻结清单等值」
+  「实跑项数 == `--expect-checks=38`」）—— 轮 6 复算见 `teeth/_scratch/r6-ci.log`。
 
 > 证据：`research/_raw/secondary-page-layout-unification/release/checklist.md`（§2.1 第 6 条：必需检查名；§2.3 第 1 条） ·
-> `.../teeth/_scratch/r6-ci.log`（轮 5：38 项 / 失败 0） · §I 回填位置
+> `.../teeth/_scratch/r6-ci.log`（轮 6：38 项 / 失败 0） · **§I.2（发布实跑的 run id 与结论）**
 
 ### H.4 成本（CI 20 分钟超时是否安全）
 
@@ -1171,14 +1171,77 @@ t19 只删掉了这个开关，没有新增断言。覆盖面的扩大发生在*
 
 ---
 
-## §I Online Smoke —— **待发布后回填（不得编造）**
+## §I Online Smoke —— **已回填（发布态实测）**
 
-线上 Deploy / HTTP / 真浏览器几何**尚未发生**。本文件在此处**不写任何 Deploy、HTTP 状态码或线上几何读数**。
-发布后由 captain 或本文作者用 `.../release/online-smoke.cjs` 的实测产物 `online-smoke-result.json` 回填，
-并按 `.../release/checklist.md`（S11）逐条对出处。
+> 本节全部是**发布之后**从 GitHub / 线上域名取回的**实测读数**；数据来源 = `gh` 的输出 + 线上 smoke 的落盘 JSON。
+> **§30 十五项中「提交 / PR / 合并 / 部署 / 线上 smoke」四项已全部回填为实测值**（本节 I.1–I.4），不再有任何待回填字段。
 
-（可从 `release/README.md` §2 读到的是**本地 dry-run** 读数 —— 那是「脚本能不能跑、判据会不会响」的证据，
-**不是**线上读数，不得当作 §I 使用。）
+### I.1 提交与合并
+
+| 项 | 实测值 |
+| --- | --- |
+| 分支提交（最终） | **`8168251465a447da81d0de509a6be05519fca9a7`**（分支 `secondary-page-layout-unification`） |
+| 合并提交（master） | **`9251e83b68a704cebe2ecd4d66f72126e12fb90c`** |
+| PR | **#45** · <https://github.com/buguoshixc/ai-deals-aggregator/pull/45> · `mergedAt = **2026-10-06T17:19:39Z**` |
+
+### I.2 CI（必需检查 `gate`）
+
+| 运行 | run id | 结论 |
+| --- | --- | --- |
+| PR 上的 `Verify site (gate)` | **37501963346** | **pass · 4m53s** |
+| master 上的 `Verify site (gate)` | **37502684190** | **success** |
+
+### I.3 部署（`Deploy to GitHub Pages`）
+
+| 项 | 实测值 |
+| --- | --- |
+| run id | **37502684227** |
+| 结论 | **success** |
+| 三个 job | **`prepublish` ✅ / `build` ✅ / `deploy` ✅**（全部 success） |
+
+### I.4 线上几何 smoke（真浏览器，跑线上域名）
+
+| 项 | 实测值 |
+| --- | --- |
+| 产物 | `research/_raw/secondary-page-layout-unification/release/online-smoke-result.json`（**107261 B**） |
+| 模式 / 基线 | `mode = **online**` · `base = https://buguoshixc.github.io/ai-deals-aggregator/` |
+| 采样时间 | `at = **2026-10-06T17:28:15.905Z**` |
+| 结果 | **8 页 · 79 项断言 · `failed = 0` · `ok = true`** |
+| 取样推导 | `derivation.source = sitemap:http` · `fallback = false` · `sitemapLocs 183` · `dealRoutes 80` · `modelRoutes 51` · 取样 `deal/2eae0e246de2/` 与 `models/claude-fable-5.1/`（**id / slug 现场推导，脚本里不写死**） |
+| 判据阈值（与 §22c 同源） | `noteRatio 0.85` · `axisRatio 0.05` · `tol 1` · `detailColumnMax **1120**` · `detailCenterTol 8` · 视口 `[1440, 390]` |
+| 冻结串 | 线上每页命中 `.snote { … max-width: none; overflow-wrap: anywhere; }` —— **`frozenCount = 1`** |
+
+**这一步为什么能证明「线上跑的是新产物」**：改动前（`dist.baseline`）的产物里**根本没有那条共享规则**，同一支脚本对旧产物量到的 `frozenCount = **0**`；
+线上 8/8 页量到 `frozenCount = 1` ⇒ **线上确为新产物**（不是 CDN 还在发旧版）。
+
+**逐条关键读数（不给"通过"，给值）**：
+
+| 页面 | 族 | 关键读数 |
+| --- | --- | --- |
+| `student/` | wide | `main 1380px` · 主数据区 `.ctable 1380px` · 说明 **3 条**；**#0 `textWidth=1380px` · 盒 `30~1410`（1380px）· 列 1380px · `ratio=1`** · 字迹 1364.86px/6 行；#1 `textWidth=1380px` · 盒 30~1410 · `ratio=1` |
+| `status/` · `changes/` · `feeds/` | wide | 说明分别 **2 / 13 / 8 条**，各 #0 均 `textWidth=1380px` · 盒 `30~1410` · `ratio=1` · `frozenCount=1` |
+| `need/edu-identity/` · `plans/coding/` | wide | 说明 **3 / 5 条**，#0 同样 `textWidth=1380px` · 盒 `30~1410` · `ratio=1` |
+| `models/claude-fable-5.1/` | detail | `main **1120px**` · 主数据区 `.ptable 1120px` · 说明 **5 条**（#0 `1120px` / `ratio 1`）；#0 `textWidth=1120px` · 盒 `160~1280` · `ratio=1`；#1 `textWidth=1120px` · `ratio=1` |
+| `deal/2eae0e246de2/` | detail | `main **1120px**`（`mainClass = detail-main`）· 主数据区（回落 `<main>`）`1120px` · 说明 0 条 |
+| **全部 8 页 @390** | — | `documentElement.scrollWidth = 390 = clientWidth = innerWidth` ⇒ **无横向溢出**（8/8 页逐页一条断言） |
+
+（`thresholds.viewports` 只有 `[1440, 390]` —— 线上 smoke 的判据面就是**桌面几何 + 窄屏溢出**两档；全站 186 页的逐条判据在 §G / §H 的门禁里，不在本节。）
+
+### I.5 取证环境的网络事实（**属环境、不是产物问题 —— 必须写清，免得后人误读**）
+
+- 本机 `github.com:443` 被**定点阻断**：DNS 解析到 `20.205.243.166` **不可达**，备用 IP 可达。
+- 因此本轮的两条出网路径都经**本地代理 `127.0.0.1:7890`**：
+  ① **推送**用**一次性**参数 `git -c http.proxy=http://127.0.0.1:7890 push`（**没有**写进任何全局/仓库 git 配置）；
+  ② **浏览器取线上页**用环境变量 `HTTPS_PROXY=http://127.0.0.1:7890`。
+- **对照（这条防的就是「把网络故障读成站点缺陷」）**：smoke **首次直连时 8/8 页面全部 `ERR_CONNECTION_CLOSED` 失败**；
+  **改走代理后同一脚本、同一目标跑出 79/0 通过**。⇒ 首次失败是**取证环境的网络**问题，不是站点问题。
+- 另一条边界：`release/online-smoke-result.json` 是**发布后新生成**的文件，**不在原 PR 证据索引的 59 条里**（索引是冻结在发布前那一刻的快照）——
+  如实登记在此，**文件保留**。
+
+> 证据：`research/_raw/secondary-page-layout-unification/release/online-smoke-result.json`（107261 B；`mode` / `base` / `at` / `checks` / `pages` / `derivation` / `thresholds` / `frozenSnoteRule` 全字段） ·
+> `.../release/online-smoke.cjs`（脚本本体） · `.../release/checklist.md`（S7 必需检查 / S9 部署 / S10 线上冒烟 / S11 回填） ·
+> `.../release/online-smoke-dryrun.json` 与 `.../release/online-smoke-negcontrol-baseline.json`（发布**前**的本地 dry-run 与负对照 ——
+> 负对照在改动前产物上必须红，用来证明这套判据真的会响；**它们不是线上读数**）
 
 ## §J Self Audit
 
@@ -1598,7 +1661,7 @@ t25 在 `CONSUMER-FIX.md` **§7** 里留了一份**同类过时措辞**清单 �
 | K13 | §J ⑫ 源码注释 `verify-site.js:6562` | **仍开着**（轮 4/5/6 都没动它）⇒ 记为 low | t22（历史读数） |
 | K14 | §J「已闭合项」表 | 现 **7 行**（新增 T22-F1、轮 6 标记级豁免键） | t28 / t29 |
 | K15 | §J 残余项分级 | 已给出逐条形状与「已闭合 / 仍开着」的对照；**③ 与 ⑭② 是仅有的两个未决面** | 本文作者归并 |
-| K16 | §I Online Smoke | **保持「待发布后回填」**（未预写任何发布后数字） | captain 发布 |
+| K16 | §I Online Smoke | **已回填（发布态实测）**：I.1 提交/合并 · I.2 CI · I.3 部署 · I.4 线上几何 smoke（8 页 / 79 项 / failed 0）· I.5 取证环境网络事实 | captain 发布 + t33 |
 | K17 | `docs/DESIGN-RULES.md` | §6 S4 验证格 + 文末「落地情况」门禁行 → **轮 6（`2cbc160d`）** | t28 / t29 |
 | K18 | `PROJECT_STATUS.md` | §0.3 表「门禁」行 → **轮 6**；「CI / Deploy / Online Smoke」行仍写「未发生」 | t28 / t29 |
 | K19 | `NEXT-STEPS.md` | §0 剩余事项第 1 条 → **轮 6**（并清掉一处历史任务号） | t28 / t29 |
@@ -1614,7 +1677,7 @@ t25 在 `CONSUMER-FIX.md` **§7** 里留了一份**同类过时措辞**清单 �
 | CI `gate` / Deploy / 线上几何 | **captain 发布后** | `release/online-smoke-result.json` |
 
 <!-- LINES:BEGIN -->
-**行号索引（t32 收口后的快照；本块在文件末尾，改动它不会移动上面的行）**
+**行号索引（t33 回填 §I 后的快照；本块在文件末尾，改动它不会移动上面的行）**
 
 | 章节 / 条目 | 行号 |
 | --- | --- |
@@ -1622,19 +1685,16 @@ t25 在 `CONSUMER-FIX.md` **§7** 里留了一份**同类过时措辞**清单 �
 | §E Before/After | **L726** |
 | §F Regression | **L818** |
 | §G Mutation | **L906**（G.1 = **L919** · G.2b = **L961**） |
-| §H Full Gate | **L1071**（H.1 = **L1077** · H.2 = **L1106** · H.4 = **L1137**） |
-| §I Online Smoke（**待发布后回填**） | **L1174** |
-| §J Self Audit | **L1183**（故事线六轮表 = **L1190**） |
-| **§J ③ `writing-mode`（已重测 · P1/DEFERRED · 五档表 + 假绿路径 + requiredFix）** | **L1259** |
-| §J ⑦ 判据消费者（已闭合） | **L1360** |
-| §J ⑧ `display:contents` 单行条 | **L1373** |
-| §J ⑨ @360 域外残余 | **L1393** |
-| §J ⑩ T22-F1（已闭合） | **L1404** |
-| §J ⑭ 轮 6 两条登记（豁免键 / 空说明口径） | **L1426** |
-| §J ⑪ 几何真值脚本（t25 已闭合） | **L1455** |
-| §J ⑬ 同类过时措辞残留（DEFERRED） | **L1476** |
-| §J ⑫ 源码注释 `verify-site.js:6562`（low，仍开着） | **L1498** |
-| §J「已闭合项」表（7 行） | **L1505** |
-| 附录 · 证据索引 | **L1522** |
-| §K 收口记录 | **L1574** |
+| §H Full Gate | **L1071**（H.1 = **L1077** · H.2 = **L1106** · **H.3 CI 已回填 = L1126** · H.4 = **L1137**） |
+| **§I Online Smoke（已回填 · 发布态）** | **L1174** |
+| §J Self Audit | **L1246**（故事线六轮表 = **L1253**） |
+| §J ③ `writing-mode`（已重测 · P1/DEFERRED） | **L1322** |
+| §J ⑩ T22-F1（已闭合） | **L1467** |
+| §J ⑭ 轮 6 两条登记（豁免键 / 空说明口径） | **L1489** |
+| §J ⑪ 几何真值脚本（t25 已闭合） | **L1518** |
+| §J ⑬ 同类过时措辞残留（DEFERRED） | **L1539** |
+| §J ⑫ 源码注释 `verify-site.js:6562`（low，仍开着） | **L1561** |
+| §J「已闭合项」表 | **L1568** |
+| 附录 · 证据索引 | **L1585** |
+| §K 收口记录 | **L1637** |
 <!-- LINES:END -->

@@ -99,7 +99,17 @@ const fatal = [];
 const drift = [];
 const info = [];
 
-/* ---------------- ① add 清单 ---------------- */
+/* ---------------- ① add 清单（**时间无关口径**，t34 修正） ----------------
+ *
+ * ⚠️ 旧口径的坑（首提交 `8168251465a4` 之后实测自红，t33 发现、t34 收口）：
+ *   「应入库集合」**不能**只看 `git add --dry-run` 的输出 —— 它列出的是"本次会**新增/修改**的"，
+ *   提交之后那 980 个文件已经 tracked，`--dry-run` 不再列它们 ⇒ 源文件与索引路径全被报成
+ *   "不在 add 清单里"（40+ 条假 FATAL，逐条都不是缺陷）。
+ *
+ * 新口径：**应入库集合 = `git ls-files`（已 tracked）∪ `git add --dry-run` 会新增/修改的**。
+ *   这个并集在**提交前**与**提交后**给出同一个判定（提交前：目标文件在 dry-run 那一半；
+ *   提交后：它们已落在 tracked 那一半），因此闸门读数与提交时点无关。
+ */
 const addFiles = [];
 const addArgv = ['add', '--dry-run', '--all', '--', ...SOURCE_FILES, EV];
 const addRes = spawnSync('git', addArgv, { cwd: ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
@@ -111,11 +121,18 @@ if (addRes.error || addRes.status !== 0) {
     if (m) addFiles.push(m[1]);
   }
 }
+const trackedRes = spawnSync('git', ['ls-files'], { cwd: ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+const tracked = new Set(trackedRes.status === 0 ? String(trackedRes.stdout).split('\n').filter(Boolean) : []);
+if (trackedRes.status !== 0) fatal.push('git ls-files 跑不起来（时间无关口径无从判定，不静默降级）');
+/** 应入库集合：tracked ∪ 本次 dry-run 新增/修改 —— 提交前/提交后同一个判定 */
+const inRepo = new Set([...tracked, ...addFiles]);
 let addBytes = 0;
 for (const f of addFiles) { try { addBytes += fs.statSync(path.resolve(ROOT, f)).size; } catch { /* 由存在性检查兜 */ } }
-const addSet = new Set(addFiles);
-info.push(`add 清单：${addFiles.length} 个文件 / ${addBytes} bytes ≈ ${(addBytes / 1048576).toFixed(3)} MB`);
-// 越界项**按目录归类**（4,000+ 条逐条打印没有意义，按目录给数量+体积才是可处置的形态）
+info.push(`应入库集合：tracked ${tracked.size} ∪ 本次新增/修改 ${addFiles.length} = **${inRepo.size}** 个路径`
+  + `（本次 dry-run 体积 ${addBytes} bytes ≈ ${(addBytes / 1048576).toFixed(3)} MB）`);
+// 越界项**按目录归类**（4,000+ 条逐条打印没有意义，按目录给数量+体积才是可处置的形态）。
+// 注意：越界扫描只扫**本次会新增/修改的**（dry-run 输出）—— 那是"这次 add 会把什么带进来"的问题；
+// 已 tracked 的文件属于"历史上已经进去了"，另有 §1.5 的入库后卫生检查管它，两者不混。
 const offenseGroups = new Map();
 for (const f of addFiles) {
   if (REINCLUDED.has(f)) continue;   // 指名放回的 4 个证据文件：设计意图，不算越界（captain 2026-10-06 明确）
@@ -136,7 +153,61 @@ const offenses = [...offenseGroups.values()].sort((a, b) => b.count - a.count);
 for (const o of offenses) {
   fatal.push(`add 清单越界 [${o.kind}] ${o.group}：${o.count} 个文件 / ${(o.bytes / 1048576).toFixed(2)} MB（例：${o.sample}）`);
 }
-for (const f of SOURCE_FILES) if (!addSet.has(f)) fatal.push(`源文件不在 add 清单里：${f}`);
+for (const f of SOURCE_FILES) if (!inRepo.has(f)) fatal.push(`源文件既不在 tracked 里、也不会被本次 add 带上：${f}`);
+
+/* ---------------- ①′ 时间无关性的**自证**（t34） ----------------
+ * 拿发布前冻结的那份 `--dry-run` 原始输出（add-manifest-dryrun.txt）逐条回查：
+ * 里面每个**盘上还存在**的路径，都必须落在 `inRepo` 里 —— 这就是"提交前 / 提交后同一读数"的机器证据
+ * （提交前：它们在 dry-run 那一半；提交后：它们在 tracked 那一半）。
+ */
+const SNAPSHOT = path.join(HERE, 'add-manifest-dryrun.txt');
+const timeIndependence = { snapshot: path.basename(SNAPSHOT), snapshotPaths: 0, checkedExisting: 0, notInUnion: [], note: '' };
+if (fs.existsSync(SNAPSHOT)) {
+  const snapPaths = [...new Set([...fs.readFileSync(SNAPSHOT, 'utf8').matchAll(/^add '(.+)'$/gm)].map(m => m[1]))];
+  timeIndependence.snapshotPaths = snapPaths.length;
+  for (const p of snapPaths) {
+    if (!fs.existsSync(path.resolve(ROOT, p))) continue;   // 快照之后被删/挪走的，跳过（下面 note 里说明）
+    timeIndependence.checkedExisting += 1;
+    if (!inRepo.has(p)) timeIndependence.notInUnion.push(p);
+  }
+  timeIndependence.note = `${timeIndependence.checkedExisting}/${timeIndependence.snapshotPaths} 条发布前快照路径在盘上仍存在，`
+    + (timeIndependence.notInUnion.length ? `${timeIndependence.notInUnion.length} 条不在应入库集合里` : '全部都在应入库集合里（提交前/提交后同一读数）');
+  // 补一步**刻意排除**的识别：快照是"发布前"抓的，之后 `.gitignore` 被补过（如 `**/scratch/`），
+  // 于是有些路径**按设计**不再入库。它们不是"对不上"，而是"后来被有意排除了" —— 必须分开记，
+  // 否则装置会把"修好的那一步"报成缺陷（这正是 t34 要消灭的那类假报）。
+  timeIndependence.excludedSinceSnapshot = [];
+  if (timeIndependence.notInUnion.length) {
+    const ig = spawnSync('git', ['check-ignore', '--stdin'], {
+      cwd: ROOT, encoding: 'utf8', input: `${timeIndependence.notInUnion.join('\n')}\n`, maxBuffer: 64 * 1024 * 1024
+    });
+    const ignoredNow = new Set(String(ig.stdout || '').split('\n').map(s => s.trim()).filter(Boolean));
+    timeIndependence.excludedSinceSnapshot = timeIndependence.notInUnion.filter(p => ignoredNow.has(p));
+    const unexplained = timeIndependence.notInUnion.filter(p => !ignoredNow.has(p));
+    info.push(`时间无关性自证：其中 **${timeIndependence.excludedSinceSnapshot.length}** 条是快照之后被 \`.gitignore\` **有意排除**的`
+      + `（如 ${timeIndependence.excludedSinceSnapshot.slice(0, 3).join(' · ') || '无'}）⇒ 不算对不上`);
+    for (const p of unexplained.slice(0, 10)) drift.push(`发布前快照里的路径既不在 tracked、也不会被 add 带上，且现在也没被忽略：${p}`);
+  }
+  timeIndependence.note += timeIndependence.excludedSinceSnapshot.length
+    ? `；另有 ${timeIndependence.excludedSinceSnapshot.length} 条在快照之后被 .gitignore 有意排除` : '';
+  info.push(`时间无关性自证：${timeIndependence.note}`);
+} else {
+  info.push(`时间无关性自证：跳过（没有 ${path.basename(SNAPSHOT)} 这份发布前快照）`);
+}
+
+/* ---------------- ①″ 入库后卫生（t34 新增，只对"本版证据目录里已 tracked 的"跑） ----------------
+ * 提交之后，越界扫描（只看 dry-run）不再能发现"已经把可再生字节提交进去"这件事。
+ * 这一节补上：本版证据目录里**已 tracked** 的文件如果命中 FORBIDDEN 形态（且不在白名单里），
+ * 记为 DRIFT（不是 FATAL —— 它已经进历史了，处置是"下一个提交里移除"或"加入白名单并说明理由"）。
+ */
+const trackedEvil = [...tracked].filter(f => f.startsWith(`${EV}/`) && !REINCLUDED.has(f))
+  .filter(f => FORBIDDEN.some(bad => bad.re.test(f)));
+if (trackedEvil.length) {
+  const groups = new Map();
+  for (const f of trackedEvil) { const g = f.slice(EV.length + 1).split('/').slice(0, 2).join('/'); groups.set(g, (groups.get(g) || 0) + 1); }
+  for (const [g, n] of [...groups].sort((a, b) => b[1] - a[1])) drift.push(`入库后卫生：本版证据目录里已有 ${n} 个可再生字节被 tracked（${g}）—— 下一个提交里移除，或加白名单并写明理由`);
+} else {
+  info.push('入库后卫生：本版证据目录里已 tracked 的文件中，可再生字节 0 个（白名单除外）');
+}
 
 /* ---------------- ② 索引（pr-body 标记块内的路径） ---------------- */
 const indexPath = path.resolve(ROOT, PR_BODY);
@@ -159,7 +230,8 @@ for (const p of indexPaths) {
   const abs = path.resolve(ROOT, p.replace(/\/$/, ''));
   if (!fs.existsSync(abs)) fatal.push(`索引路径不存在：${p}`);
   const asFile = p.endsWith('/') ? null : p;
-  if (asFile && !addSet.has(asFile)) fatal.push(`索引路径不在 add 清单里（提交后会成死链）：${p}`);
+  // 时间无关：提交前它在 dry-run 那一半、提交后它在 tracked 那一半 —— 两边都算"会被带上"。
+  if (asFile && !inRepo.has(asFile)) fatal.push(`索引路径既不在 tracked、也不会被本次 add 带上（提交后会成死链）：${p}`);
 }
 const ignored = spawnSync('git', ['ls-files', '--others', '--ignored', '--exclude-standard', '--', ...indexPaths.map(p => p.replace(/\/$/, ''))],
   { cwd: ROOT, encoding: 'utf8' });
@@ -327,7 +399,20 @@ const pinsOut = {
 if (argOf('json')) {
   const out = path.resolve(ROOT, argOf('json'));
   fs.mkdirSync(path.dirname(out), { recursive: true });
-  fs.writeFileSync(out, `${JSON.stringify({ ...pinsOut, add: { files: addFiles.length, bytes: addBytes }, index: { paths: indexPaths.length }, docs: docReport, unboundSha, fatal, drift }, null, 2)}\n`, 'utf8');
+  fs.writeFileSync(out, `${JSON.stringify({
+    ...pinsOut,
+    add: {
+      // t34：时间无关口径 —— 报三个数，且语义写清楚，免得下一位再把它读成"只有这么点文件"
+      trackedPaths: tracked.size,
+      newlyAddedOrModified: addFiles.length,
+      inRepoUnion: inRepo.size,
+      newlyAddedBytes: addBytes,
+      historicalSnapshot: 'add-manifest.txt / add-manifest-postcommit.txt（发布前的那一份是 add-manifest-dryrun.txt，不改写）'
+    },
+    timeIndependence,
+    index: { paths: indexPaths.length },
+    docs: docReport, unboundSha, fatal, drift
+  }, null, 2)}\n`, 'utf8');
 }
 const pinsFile = path.join(HERE, 'version-pins.json');
 fs.writeFileSync(pinsFile, `${JSON.stringify(pinsOut, null, 2)}\n`, 'utf8');
