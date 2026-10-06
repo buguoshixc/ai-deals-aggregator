@@ -2723,6 +2723,40 @@
         "verified": false
       },
       "runAt": "2026-10-04T03:07:44.127Z"
+    },
+    {
+      "id": "69a0d047e3f9",
+      "at": "2026-10-06",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/pickle-ai",
+        "verified": false
+      },
+      "runAt": "2026-10-06T05:02:32.199Z"
+    },
+    {
+      "id": "8f479fcbe8f9",
+      "at": "2026-10-06",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "编程开发",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/rocket-new",
+        "verified": false
+      },
+      "runAt": "2026-10-06T05:02:32.199Z"
     }
   ]
 }
