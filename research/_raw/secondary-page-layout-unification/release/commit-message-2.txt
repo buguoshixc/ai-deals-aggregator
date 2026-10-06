@@ -1,0 +1,39 @@
+docs(secondary-page-layout-unification): 回填发布报告 §I + 发布侧核对器口径收口
+
+第一个提交（8168251465a4）已发布上线，本提交只补发布态记录与发布侧装置口径，
+不动任何源码 / 判据 / 产物（scripts/ · index.html · dist/ · dist.baseline/ · .github/ 零改动）。
+
+报告与文档
+- research/secondary-page-layout-unification-report.md：§I 从「待发布后回填」改为实测值
+  （I.1 提交与合并 · I.2 CI · I.3 部署 · I.4 线上几何 smoke · I.5 取证环境网络事实）；
+  四个文档内「待发布后回填」残留 = 0。
+- PROJECT_STATUS.md / NEXT-STEPS.md：发布态同步为「已发布并回填」。
+- docs/03-docs-diff-stat.txt：按第二提交口径重生成。
+
+发布态实测（写进 §I 的值）
+- 分支提交 8168251465a447da81d0de509a6be05519fca9a7；合并提交 9251e83b68a704cebe2ecd4d66f72126e12fb90c
+- PR #45（mergedAt 2026-10-06T17:19:39Z）
+- CI：PR 上 Verify site (gate) run 37501963346 → pass · 4m53s；master run 37502684190 → success
+- Deploy：run 37502684227 → success，job prepublish / build / deploy 全部 success
+- 线上几何 smoke：release/online-smoke-result.json → mode=online · 8 页 · 79 项断言 · failed=0 · ok=true；
+  线上 8/8 页 frozenCount=1（旧产物=0）⇒ 机器证明线上跑的是新产物
+
+取证环境（如实登记，非产物问题）
+- 本机 github.com:443 被定点阻断（DNS 解析到 20.205.243.166 不可达，备用 IP 可达）；
+  推送经一次性 `-c http.proxy=http://127.0.0.1:7890`（未写入全局配置），浏览器经 HTTPS_PROXY。
+- 对照：smoke 首次直连 8/8 页 ERR_CONNECTION_CLOSED 失败 → 走代理后 79/0 通过。
+
+发布侧装置口径收口（release/**）
+- check-release-consistency.cjs：add 清单对账改为时间无关口径
+  「应入库集合 = git ls-files（tracked）∪ git add --dry-run 增量」。
+  首提交之后旧口径必然自红（已入库文件不再出现在 dry-run 里），当时报的 40 条 FATAL
+  （源文件不在清单 ×7 + 索引路径不在清单 ×33）全部来自这一条，与真实缺陷无关；现清零。
+  另新增「入库后卫生检查」（已 tracked 的可再生字节，白名单除外），当前读数 0。
+- 新增 timeIndependence 自证段：拿发布前冻结的 add-manifest-dryrun.txt（1,238 行，不改写）
+  逐条回查 ⇒ 1,237 条全在盘上，958 条落在应入库集合内（提交前属 dry-run 那一半、
+  提交后属 tracked 那一半 ⇒ 判定相同），279 条是快照之后被 .gitignore 有意排除的
+  verify/scratch/t31-form/**；真「对不上」0 条。
+- 重抓 add-manifest.txt（四列对照）+ 新增 add-manifest-postcommit.txt；T23-FINAL-GATE.md 追加 §7。
+- check-evidence-index.cjs --git → EXIT=0（60/60，索引新增 add-manifest-postcommit.txt 一条）。
+
+纯布局版本的不变量不受本提交影响：数据 / 文案 / 路由 / 结构化数据 0 变化（证明见报告 §4）。

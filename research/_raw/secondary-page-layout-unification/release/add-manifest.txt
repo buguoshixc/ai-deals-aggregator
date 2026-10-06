@@ -1,12 +1,23 @@
-# 发布时的 `git add` 精确清单（t12 预演 · **t23 终态终检**）
+# 发布时的 `git add` 精确清单（t12 预演 · t23 终检 · **t34 口径收口**）
 
-> 读数时间：**2026-10-06 23:5x (CST)**（轮 6 冻结后的终态重测；attempt 1 的 22:03 读数见 §2 对照列）
+> 读数时间：**2026-10-07 01:4x (CST)**（首提交 `8168251465a4` **之后**的重测；此前两次读数见 §2 对照列）
 > 工作树 `D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification`
-> 本文件是**预演读数**，不是发布动作：全程只用 `git add --dry-run`（`-n`，不写索引）。
+> 本文件是**预演读数**，不是发布动作：全程只用 `git add --dry-run` / `git ls-files`（只读，不写索引）。
 >
-> ✅ **t23 终态结论：add 清单可以发布。** 清单 **953 文件 / 108,982,578 B ≈ 103.93 MB**，
-> 可再生的越界项 **0**（`teeth/_scratch` 只剩 4 个**指名放回**的文件 —— 报告 §G/§J 点名引用，
-> 见 §2.2）。attempt 1 报的两条越界已由 `teeth/_scratch/*` + 4 条 `!` 与 `review/*/scratch/` 闭合。
+> ⚠️ **t34 口径变更（必须读这一段）**：
+> 「应入库集合」的定义从「**只看 `git add --dry-run` 的输出**」改成
+> 「**`git ls-files`（已 tracked）∪ `git add --dry-run` 会新增/修改的**」。
+> **为什么必须改**：首提交之后，那 975 个本版范围文件已经 tracked，`--dry-run` **不再列它们**
+> ⇒ 旧口径会把 7 个源文件与 33 条索引路径报成"不在 add 清单里"（t33 实测 **40 条假 FATAL**，
+> 逐条都不是缺陷）。新口径在**提交前**（目标文件落在 dry-run 那一半）与**提交后**（落在 tracked 那一半）
+> 给出**同一个判定**，闸门读数因此与提交时点无关。自证见 `check-release-consistency.cjs` 的
+> `timeIndependence` 段与 `final-gate.json`。
+>
+> ✅ **t34 后的结论**：`check-release-consistency.cjs` **EXIT=0 · FATAL 0 / DRIFT 0**（提交后）；
+> 本版范围内应入库 **976 个路径 / ≈106.82 MB**（tracked 975 + 本次新增/修改 5）；
+> 可再生的越界项 **0**（`teeth/_scratch` 只剩 4 个**指名放回**的文件，见 §2.2）。
+> 提交后的逐条清单另存 **`add-manifest-postcommit.txt`**；**发布前**那份 `--dry-run` 原始输出
+> （`add-manifest-dryrun.txt`，1,238 行 / 23:57）**冻结不改**，它就是时间无关性自证的输入。
 
 ## §1. 精确清单（**8 条路径**，只有这些）
 
@@ -24,25 +35,35 @@
 **不要用 `git add -A` / `git add .`** —— 那会把工作树里所有未跟踪文件卷进来。清单是**指名道姓**的，
 这正是"dist.baseline / dist.synth-fixed 绝不会被带进去"的**主保证**（见 §3）。
 
-## §2. `git add --dry-run` 的预演读数（不写索引）
+## §2. 读数（三列：提交后现状 / 口径修正后 / 历史）
 
 ```bash
-git add --dry-run --all -- index.html scripts/lib/page-kinds.js scripts/lib/archive.js \
+# ① 已 tracked（本版范围）
+git ls-files -- index.html scripts/lib/page-kinds.js scripts/lib/archive.js \
      scripts/tools/build-local.js scripts/tools/verify-site.js scripts/tools/archive-selftest.js \
      scripts/tools/seo-selftest.js research/_raw/secondary-page-layout-unification
+# ② 本次会新增/修改的（untracked）
+git add --dry-run --all -- <同上 8 条>
+# ③ 应入库集合 = ① ∪ ②   ← t34 新口径（提交前/提交后同一判定）
 ```
 
-| 读数 | **t23 终态（23:5x）** | attempt 1（22:03） | t12 历史值（17:00） |
-| --- | --- | --- | --- |
-| `add '…'` 行数 = 文件数 | **953** | 5,444（含 4,638 个可再生 scratch） | 485 |
-| 总体积 | **108,982,578 B ≈ 103.93 MB** | 414,923,673 B ≈ 395.7 MB | 34,301,901 B ≈ 32.713 MB |
-| 其中源码 7 个 | 7 个 · **1,362,935 B ≈ 1,330 KB** | 1,323,194 B | 同左 |
-| 其中证据目录 | 946 个 · ≈102.63 MB | 5,437 个 · ≈394 MB（含副本） | 478 个 · ≈31.45 MB |
-| 越界（scratch / png / dist.* / 停机快照） | **0** | 4,638 | 0 |
-| 退出码 | 0 | 0 | 0 |
+| 读数 | **提交后（t34 · 现状）** | **口径修正后（应入库集合）** | t23 发布前（23:5x） | t12 历史（17:00） |
+| --- | --- | --- | --- | --- |
+| 文件数 | ① tracked **975** ＋ ② 本次新增/修改 **5** | **976**（= ① ∪ ②） | 953（旧口径：只看 ②，发布前恰好等于并集） | 485 |
+| 总体积 | ① ≈106.62 MB ＋ ② ≈207 KB | **≈106.82 MB** | ≈103.93 MB | ≈32.713 MB |
+| 其中源码 7 个 | 7 个（已 tracked） | 7 个 | 7 个 · 1,362,935 B | 同左 |
+| 越界（scratch / png / dist.* / 停机快照） | **0** | **0** | 0 | 0 |
+| 闸门退出码 | **0（FATAL 0 / DRIFT 0）** | 0 | 0（t23 attempt 2 收尾） | 0 |
 
-> 读数容差：清单里的文件（含本文件）在读数之后仍可能被再编辑一次，会带来 **<3 KB** 的字节漂移；
-> **文件数 953 不受影响**。提交前重跑 §5 的命令即可拿到终值。
+> **新旧口径的差异来源（一句话）**：旧口径 = ②（`--dry-run` 的输出）；新口径 = ① ∪ ②。
+> **提交前**两者相等（目标文件都在 ② 里）；**提交后**① 里多了 975 个已入库文件、② 只剩 5 个增量
+> ⇒ 若仍按旧口径，那 975 个文件就不在"清单"里，于是 7 个源文件 + 33 条索引路径被误报（t33 的 40 条假 FATAL）。
+> 判据本身（越界扫描、索引成员、源文件成员）全部改用**新口径**；越界扫描仍只看 ②（那才是"这次 add 会带进来什么"的问题）。
+>
+> 读数容差：清单内的文件（含本文件与 `final-gate.json`）在读数之后仍会被再编辑一次，
+> 带来 **<3 KB** 级字节漂移；**文件数不受影响**。复跑 §5 的命令即得终值。
+> 提交后逐条清单：`add-manifest-postcommit.txt`；**发布前**那份 `--dry-run` 原始输出
+> （`add-manifest-dryrun.txt`）**冻结不改** —— 它是时间无关性自证的输入。
 
 ### §2.1 attempt 1 的越界是什么，以及怎么闭合的
 

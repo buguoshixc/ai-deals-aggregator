@@ -38,8 +38,12 @@
    轮 6 冻结值（判据 sha `2cbc160dc64f8ade…`）= `--dir=dist` **852 项 / 0 失败** · `--dir=dist.baseline` **852 / 36** · 窄柱并集 **156 条 / 48 页** · CI **38/0** ·
    Full Gate **49 步 → 执行 45 / 通过 45 / 失败 0 / 跳过 4 · exit 0**（第 47 步 852 / 第 48 步 858）。
    注意**轮 5 与轮 6 的四个计数逐项相同**，区别只在判据 sha（`610b25a8…` → `2cbc160d…`）与豁免条件 —— 引用时带轮次 + sha。
-2. **发布链未走**：PR 尚未创建 ⇒ 没有 CI 的 `gate` 结论、没有 Deploy、没有线上几何冒烟。
-   发布顺序与判据见 `research/_raw/secondary-page-layout-unification/release/checklist.md`（S1→S11）。
+2. **发布链已走完**：PR **#45** 已合并（`mergedAt 2026-10-06T17:19:39Z`，合并提交 `9251e83b68a7…`；分支提交 `8168251465a4…`）；
+   CI `gate`：PR run **37501963346** → pass · 4m53s、master run **37502684190** → success；
+   `Deploy to GitHub Pages` run **37502684227** → success（`prepublish`/`build`/`deploy` 全 success）；
+   线上几何 smoke **8 页 / 79 项断言 / failed 0 / ok=true**（线上 `frozenCount=1` ⇒ 确为新产物）。
+   取证环境提醒：本机 `github.com:443` 被定点阻断 ⇒ 推送与浏览器取线上页均经本地代理 `127.0.0.1:7890`；
+   **首次直连 smoke 8/8 `ERR_CONNECTION_CLOSED` 是网络问题、不是站点问题**（走代理后 79/0 通过）。
 3. **DEFERRED（不在本版承诺内，逐条有证据）**：绘制类遮盖 / 不可见性（`clip-path` / `mask-*` / 不透明覆盖层 / `color: transparent`）——
    本仓库没有构建路径产出它们（**252 个源文件 + 186 个产物全 0 处**）、完整修复不可行、像素断言会让 CI 因跨平台字体渲染变 flaky 红（那比漏判更糟）；
    以及 `writing-mode` 的**覆盖不对称** —— **已重测（t31）· 记 P1 / DEFERRED**（用户裁定：如实披露、直接发布，不开修复轮 7）：

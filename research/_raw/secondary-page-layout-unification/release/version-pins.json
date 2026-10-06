@@ -1,8 +1,8 @@
 {
   "tool": "secondary-page-layout-unification/release/check-release-consistency",
-  "at": "2026-10-06T17:09:11.976Z",
+  "at": "2026-10-06T17:38:00.629Z",
   "node": "v24.13.1",
-  "head": "1f225d22625c15702995785394b60185ebd0520b",
+  "head": "8168251465a447da81d0de509a6be05519fca9a7",
   "originMaster": "1f225d22625c15702995785394b60185ebd0520b",
   "note": "轮 5（t24/t25/t26）冻结后必须重跑本脚本，本文件即\"提交内容与证据的版本绑定表\"",
   "pins": {
@@ -120,11 +120,11 @@
     },
     "research/secondary-page-layout-unification-report.md": {
       "exists": true,
-      "sha256": "a3b09975213e9cf9053b6f34fd5b81d04c7d8b5e4e34cf74d306be466224ae27",
-      "sha16": "A3B09975213E9CF9",
-      "bytes": 145798,
-      "lines": 1640,
-      "mtime": "2026-10-06T16:10:27.695Z"
+      "sha256": "f4353c61ee6820e36f27d10ac2c9d90d2b9a5a54147c2a2f96a088632df85c6a",
+      "sha16": "F4353C61EE6820E3",
+      "bytes": 150927,
+      "lines": 1700,
+      "mtime": "2026-10-06T17:31:52.281Z"
     },
     "research/secondary-page-layout-unification-self-audit.md": {
       "exists": true,
@@ -136,19 +136,19 @@
     },
     "PROJECT_STATUS.md": {
       "exists": true,
-      "sha256": "708b79c21fe3f09fe34546bcfd53bd6777977fff28edb0be9088b00d55cff72b",
-      "sha16": "708B79C21FE3F09F",
-      "bytes": 314100,
+      "sha256": "3db2f89a7c672279ef015cd7dcc0c043750fe2735efa34c0a26f1b1e0a2ccc30",
+      "sha16": "3DB2F89A7C672279",
+      "bytes": 314688,
       "lines": 3635,
-      "mtime": "2026-10-06T15:48:01.376Z"
+      "mtime": "2026-10-06T17:30:59.396Z"
     },
     "NEXT-STEPS.md": {
       "exists": true,
-      "sha256": "e576c5931ae769883110476b298c13611547c35d0e1a02a25473b4cebc368923",
-      "sha16": "E576C5931AE76988",
-      "bytes": 54987,
-      "lines": 571,
-      "mtime": "2026-10-06T16:09:56.554Z"
+      "sha256": "ca3d48388ca9e2484c5cdb17729ed6c0dd3fd442f8b6181fea2942f90e2be39f",
+      "sha16": "CA3D48388CA9E248",
+      "bytes": 55497,
+      "lines": 575,
+      "mtime": "2026-10-06T17:30:59.398Z"
     },
     "docs/DESIGN-RULES.md": {
       "exists": true,
