@@ -1,0 +1,41 @@
+﻿--- git status --porcelain (tracked changes) ---
+ M index.html
+ M scripts/lib/archive.js
+ M scripts/lib/page-kinds.js
+ M scripts/tools/archive-selftest.js
+ M scripts/tools/build-local.js
+ M scripts/tools/seo-selftest.js
+?? dist.baseline/
+?? research/_raw/secondary-page-layout-unification/
+
+--- git diff --numstat ---
+9	0	index.html
+46	0	scripts/lib/archive.js
+119	0	scripts/lib/page-kinds.js
+58	0	scripts/tools/archive-selftest.js
+15	9	scripts/tools/build-local.js
+59	0	scripts/tools/seo-selftest.js
+
+--- page-kinds.js: removed/changed non-added lines (should be NONE) ---
+
+--- index.html: removed/changed non-added lines (should be NONE) ---
+
+--- archive.js: removed/changed non-added lines (should be NONE) ---
+--- index.html added lines ---
++    /* 页面级说明（Page-level Note）：与上一条 `.detail-main` 同一条纪律 —— **宽度只写在这里**。
++       为什么是 `max-width: none`：说明是**这一页的导语**，不是一篇独立文章。它属于数据型页面
++       （Wide Data Page，见 scripts/lib/page-kinds.js 的 LAYOUT_FAMILIES），
++       与表格 / 列表**同轴**、跟随站点数据容器（`.wrap`）；把它压成阅读列（12px 字体下约 420px，
++       而主数据区是 1380px）会让同一页的说明看起来像"另一页的内容"。
++       文档序上这份共享 <style> 先于各页面壳自己的局部 <style>，所以只要页面壳里不再复制第二份
++       `.snote` 规则，这里就是「一处定义、全站生效」。真需要收窄的阅读列页面，
++       请去 LAYOUT_FAMILIES 登记一个新族，而不是就地改宽度。 */
++    .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }
+
+--- dist.baseline files modified in the last 6 hours (should be NONE) ---
+count=303
+D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\dist.baseline\.nojekyll 10/06/2026 14:27:05
+D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\dist.baseline\api-plan-history.json 10/06/2026 14:27:49
+D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\dist.baseline\api-plans.json 10/06/2026 14:27:05
+D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\dist.baseline\deal-history.json 10/06/2026 14:27:49
+D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\dist.baseline\deal-plan-links.json 10/06/2026 14:27:49

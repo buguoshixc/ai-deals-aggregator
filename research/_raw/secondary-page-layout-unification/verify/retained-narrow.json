@@ -1,0 +1,1609 @@
+{
+  "generatedAt": "2026-10-06T08:23:53.721Z",
+  "dir": "dist",
+  "viewport": 1440,
+  "lsumSmall": {
+    "routes": 43,
+    "measuredItems": 141,
+    "boxWidth": {
+      "min": 144.83,
+      "max": 201.61
+    },
+    "ratioToLi": {
+      "min": 0.868129,
+      "median": 0.894737,
+      "max": 0.901614
+    },
+    "ratioToLsum": {
+      "min": 0.104949,
+      "median": 0.135507,
+      "max": 0.146094
+    },
+    "ratioToMain": {
+      "min": 0.104949,
+      "median": 0.135507,
+      "max": 0.146094
+    },
+    "lines": {
+      "one": 74,
+      "two": 59,
+      "more": 8
+    },
+    "linesAfterWidening": {
+      "one": 141,
+      "two": 0,
+      "more": 0
+    },
+    "inkFillsBox": 133,
+    "multiLineThatWouldCollapse": 67,
+    "maxWidthValues": [
+      "201.609px"
+    ],
+    "samples": [
+      {
+        "url": "/category/agent/",
+        "mainWidth": 1380,
+        "itemCount": 3,
+        "items": [
+          {
+            "index": 0,
+            "text": "判据：type=deal 且未过期，且命中本页判据",
+            "maxWidth": "201.609px",
+            "fontSize": "11px",
+            "lineHeight": "16.5px",
+            "box": {
+              "left": 41,
+              "right": 242.61,
+              "width": 201.61
+            },
+            "li": {
+              "left": 30,
+              "right": 253.61,
+              "width": 223.61
+            },
+            "ul": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "main": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "ink": {
+              "left": 41,
+              "right": 236.31,
+              "width": 195.31,
+              "lines": 2,
+              "longest": 195.31
+            },
+            "lines": 2,
+            "widened": {
+              "box": {
+                "left": 41,
+                "right": 258.31,
+                "width": 217.31
+              },
+              "height": 16.5,
+              "ink": {
+                "left": 41,
+                "right": 258.31,
+                "width": 217.31,
+                "lines": 1,
+                "longest": 217.31
+              },
+              "lines": 1
+            },
+            "ratioToLi": 0.901614,
+            "ratioToLsum": 0.146094,
+            "ratioToMain": 0.146094,
+            "inkRatioToBox": 0.968752,
+            "linesAfterWidening": 1,
+            "boxAfterWidening": 217.31
+          },
+          {
+            "index": 1,
+            "text": "判据：benefitType 含 free_api",
+            "maxWidth": "201.609px",
+            "fontSize": "11px",
+            "lineHeight": "16.5px",
+            "box": {
+              "left": 272.61,
+              "right": 417.44,
+              "width": 144.83
+            },
+            "li": {
+              "left": 261.61,
+              "right": 428.44,
+              "width": 166.83
+            },
+            "ul": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "main": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "ink": {
+              "left": 272.61,
+              "right": 417.44,
+              "width": 144.83,
+              "lines": 1,
+              "longest": 144.83
+            },
+            "lines": 1,
+            "widened": {
+              "box": {
+                "left": 272.61,
+                "right": 417.44,
+                "width": 144.83
+              },
+              "height": 16.5,
+              "ink": {
+                "left": 272.61,
+                "right": 417.44,
+                "width": 144.83,
+                "lines": 1,
+                "longest": 144.83
+              },
+              "lines": 1
+            },
+            "ratioToLi": 0.868129,
+            "ratioToLsum": 0.104949,
+            "ratioToMain": 0.104949,
+            "inkRatioToBox": 1,
+            "linesAfterWidening": 1,
+            "boxAfterWidening": 144.83
+          },
+          {
+            "index": 2,
+            "text": "判据：本页条目的规范厂商名去重计数",
+            "maxWidth": "201.609px",
+            "fontSize": "11px",
+            "lineHeight": "16.5px",
+            "box": {
+              "left": 447.44,
+              "right": 634.44,
+              "width": 187
+            },
+            "li": {
+              "left": 436.44,
+              "right": 645.44,
+              "width": 209
+            },
+            "ul": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "main": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "ink": {
+              "left": 447.44,
+              "right": 634.44,
+              "width": 187,
+              "lines": 1,
+              "longest": 187
+            },
+            "lines": 1,
+            "widened": {
+              "box": {
+                "left": 447.44,
+                "right": 634.44,
+                "width": 187
+              },
+              "height": 16.5,
+              "ink": {
+                "left": 447.44,
+                "right": 634.44,
+                "width": 187,
+                "lines": 1,
+                "longest": 187
+              },
+              "lines": 1
+            },
+            "ratioToLi": 0.894737,
+            "ratioToLsum": 0.135507,
+            "ratioToMain": 0.135507,
+            "inkRatioToBox": 1,
+            "linesAfterWidening": 1,
+            "boxAfterWidening": 187
+          }
+        ],
+        "route": "category/agent/"
+      },
+      {
+        "url": "/category/api/",
+        "mainWidth": 1380,
+        "itemCount": 6,
+        "items": [
+          {
+            "index": 0,
+            "text": "判据：type=deal 且未过期，且命中本页判据",
+            "maxWidth": "201.609px",
+            "fontSize": "11px",
+            "lineHeight": "16.5px",
+            "box": {
+              "left": 41,
+              "right": 242.61,
+              "width": 201.61
+            },
+            "li": {
+              "left": 30,
+              "right": 253.61,
+              "width": 223.61
+            },
+            "ul": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "main": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "ink": {
+              "left": 41,
+              "right": 236.31,
+              "width": 195.31,
+              "lines": 2,
+              "longest": 195.31
+            },
+            "lines": 2,
+            "widened": {
+              "box": {
+                "left": 41,
+                "right": 258.31,
+                "width": 217.31
+              },
+              "height": 16.5,
+              "ink": {
+                "left": 41,
+                "right": 258.31,
+                "width": 217.31,
+                "lines": 1,
+                "longest": 217.31
+              },
+              "lines": 1
+            },
+            "ratioToLi": 0.901614,
+            "ratioToLsum": 0.146094,
+            "ratioToMain": 0.146094,
+            "inkRatioToBox": 0.968752,
+            "linesAfterWidening": 1,
+            "boxAfterWidening": 217.31
+          },
+          {
+            "index": 1,
+            "text": "判据：claimRequirements.creditCardRequired === false（来源明说不需要）",
+            "maxWidth": "201.609px",
+            "fontSize": "11px",
+            "lineHeight": "16.5px",
+            "box": {
+              "left": 272.61,
+              "right": 474.22,
+              "width": 201.61
+            },
+            "li": {
+              "left": 261.61,
+              "right": 485.22,
+              "width": 223.61
+            },
+            "ul": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "main": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "ink": {
+              "left": 272.61,
+              "right": 460.95,
+              "width": 188.34,
+              "lines": 3,
+              "longest": 188.34
+            },
+            "lines": 3,
+            "widened": {
+              "box": {
+                "left": 272.61,
+                "right": 643.67,
+                "width": 371.06
+              },
+              "height": 16.5,
+              "ink": {
+                "left": 272.61,
+                "right": 643.67,
+                "width": 371.06,
+                "lines": 1,
+                "longest": 371.06
+              },
+              "lines": 1
+            },
+            "ratioToLi": 0.901614,
+            "ratioToLsum": 0.146094,
+            "ratioToMain": 0.146094,
+            "inkRatioToBox": 0.93418,
+            "linesAfterWidening": 1,
+            "boxAfterWidening": 371.06
+          },
+          {
+            "index": 2,
+            "text": "判据：availability.chinaUsable === true（来源写明可用）",
+            "maxWidth": "201.609px",
+            "fontSize": "11px",
+            "lineHeight": "16.5px",
+            "box": {
+              "left": 504.22,
+              "right": 705.83,
+              "width": 201.61
+            },
+            "li": {
+              "left": 493.22,
+              "right": 716.83,
+              "width": 223.61
+            },
+            "ul": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "main": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "ink": {
+              "left": 504.22,
+              "right": 697.14,
+              "width": 192.92,
+              "lines": 2,
+              "longest": 192.92
+            },
+            "lines": 2,
+            "widened": {
+              "box": {
+                "left": 504.22,
+                "right": 785.14,
+                "width": 280.92
+              },
+              "height": 16.5,
+              "ink": {
+                "left": 504.22,
+                "right": 785.14,
+                "width": 280.92,
+                "lines": 1,
+                "longest": 280.92
+              },
+              "lines": 1
+            },
+            "ratioToLi": 0.901614,
+            "ratioToLsum": 0.146094,
+            "ratioToMain": 0.146094,
+            "inkRatioToBox": 0.956897,
+            "linesAfterWidening": 1,
+            "boxAfterWidening": 280.92
+          },
+          {
+            "index": 3,
+            "text": "判据：benefitType 含 free_api",
+            "maxWidth": "201.609px",
+            "fontSize": "11px",
+            "lineHeight": "16.5px",
+            "box": {
+              "left": 735.83,
+              "right": 880.66,
+              "width": 144.83
+            },
+            "li": {
+              "left": 724.83,
+              "right": 891.66,
+              "width": 166.83
+            },
+            "ul": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "main": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "ink": {
+              "left": 735.83,
+              "right": 880.66,
+              "width": 144.83,
+              "lines": 1,
+              "longest": 144.83
+            },
+            "lines": 1,
+            "widened": {
+              "box": {
+                "left": 735.83,
+                "right": 880.66,
+                "width": 144.83
+              },
+              "height": 16.5,
+              "ink": {
+                "left": 735.83,
+                "right": 880.66,
+                "width": 144.83,
+                "lines": 1,
+                "longest": 144.83
+              },
+              "lines": 1
+            },
+            "ratioToLi": 0.868129,
+            "ratioToLsum": 0.104949,
+            "ratioToMain": 0.104949,
+            "inkRatioToBox": 1,
+            "linesAfterWidening": 1,
+            "boxAfterWidening": 144.83
+          },
+          {
+            "index": 4,
+            "text": "判据：benefitType 含 free_model",
+            "maxWidth": "201.609px",
+            "fontSize": "11px",
+            "lineHeight": "16.5px",
+            "box": {
+              "left": 910.66,
+              "right": 1071.58,
+              "width": 160.92
+            },
+            "li": {
+              "left": 899.66,
+              "right": 1082.58,
+              "width": 182.92
+            },
+            "ul": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "main": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "ink": {
+              "left": 910.66,
+              "right": 1071.58,
+              "width": 160.92,
+              "lines": 1,
+              "longest": 160.92
+            },
+            "lines": 1,
+            "widened": {
+              "box": {
+                "left": 910.66,
+                "right": 1071.58,
+                "width": 160.92
+              },
+              "height": 16.5,
+              "ink": {
+                "left": 910.66,
+                "right": 1071.58,
+                "width": 160.92,
+                "lines": 1,
+                "longest": 160.92
+              },
+              "lines": 1
+            },
+            "ratioToLi": 0.879729,
+            "ratioToLsum": 0.116609,
+            "ratioToMain": 0.116609,
+            "inkRatioToBox": 1,
+            "linesAfterWidening": 1,
+            "boxAfterWidening": 160.92
+          },
+          {
+            "index": 5,
+            "text": "判据：本页条目的规范厂商名去重计数",
+            "maxWidth": "201.609px",
+            "fontSize": "11px",
+            "lineHeight": "16.5px",
+            "box": {
+              "left": 1101.58,
+              "right": 1288.58,
+              "width": 187
+            },
+            "li": {
+              "left": 1090.58,
+              "right": 1299.58,
+              "width": 209
+            },
+            "ul": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "main": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "ink": {
+              "left": 1101.58,
+              "right": 1288.58,
+              "width": 187,
+              "lines": 1,
+              "longest": 187
+            },
+            "lines": 1,
+            "widened": {
+              "box": {
+                "left": 1101.58,
+                "right": 1288.58,
+                "width": 187
+              },
+              "height": 16.5,
+              "ink": {
+                "left": 1101.58,
+                "right": 1288.58,
+                "width": 187,
+                "lines": 1,
+                "longest": 187
+              },
+              "lines": 1
+            },
+            "ratioToLi": 0.894737,
+            "ratioToLsum": 0.135507,
+            "ratioToMain": 0.135507,
+            "inkRatioToBox": 1,
+            "linesAfterWidening": 1,
+            "boxAfterWidening": 187
+          }
+        ],
+        "route": "category/api/"
+      },
+      {
+        "url": "/category/audio/",
+        "mainWidth": 1380,
+        "itemCount": 4,
+        "items": [
+          {
+            "index": 0,
+            "text": "判据：type=deal 且未过期，且命中本页判据",
+            "maxWidth": "201.609px",
+            "fontSize": "11px",
+            "lineHeight": "16.5px",
+            "box": {
+              "left": 41,
+              "right": 242.61,
+              "width": 201.61
+            },
+            "li": {
+              "left": 30,
+              "right": 253.61,
+              "width": 223.61
+            },
+            "ul": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "main": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "ink": {
+              "left": 41,
+              "right": 236.31,
+              "width": 195.31,
+              "lines": 2,
+              "longest": 195.31
+            },
+            "lines": 2,
+            "widened": {
+              "box": {
+                "left": 41,
+                "right": 258.31,
+                "width": 217.31
+              },
+              "height": 16.5,
+              "ink": {
+                "left": 41,
+                "right": 258.31,
+                "width": 217.31,
+                "lines": 1,
+                "longest": 217.31
+              },
+              "lines": 1
+            },
+            "ratioToLi": 0.901614,
+            "ratioToLsum": 0.146094,
+            "ratioToMain": 0.146094,
+            "inkRatioToBox": 0.968752,
+            "linesAfterWidening": 1,
+            "boxAfterWidening": 217.31
+          },
+          {
+            "index": 1,
+            "text": "判据：benefitType 含 free_api",
+            "maxWidth": "201.609px",
+            "fontSize": "11px",
+            "lineHeight": "16.5px",
+            "box": {
+              "left": 272.61,
+              "right": 417.44,
+              "width": 144.83
+            },
+            "li": {
+              "left": 261.61,
+              "right": 428.44,
+              "width": 166.83
+            },
+            "ul": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "main": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "ink": {
+              "left": 272.61,
+              "right": 417.44,
+              "width": 144.83,
+              "lines": 1,
+              "longest": 144.83
+            },
+            "lines": 1,
+            "widened": {
+              "box": {
+                "left": 272.61,
+                "right": 417.44,
+                "width": 144.83
+              },
+              "height": 16.5,
+              "ink": {
+                "left": 272.61,
+                "right": 417.44,
+                "width": 144.83,
+                "lines": 1,
+                "longest": 144.83
+              },
+              "lines": 1
+            },
+            "ratioToLi": 0.868129,
+            "ratioToLsum": 0.104949,
+            "ratioToMain": 0.104949,
+            "inkRatioToBox": 1,
+            "linesAfterWidening": 1,
+            "boxAfterWidening": 144.83
+          },
+          {
+            "index": 2,
+            "text": "判据：benefitType 含 free_model",
+            "maxWidth": "201.609px",
+            "fontSize": "11px",
+            "lineHeight": "16.5px",
+            "box": {
+              "left": 447.44,
+              "right": 608.36,
+              "width": 160.92
+            },
+            "li": {
+              "left": 436.44,
+              "right": 619.36,
+              "width": 182.92
+            },
+            "ul": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "main": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "ink": {
+              "left": 447.44,
+              "right": 608.36,
+              "width": 160.92,
+              "lines": 1,
+              "longest": 160.92
+            },
+            "lines": 1,
+            "widened": {
+              "box": {
+                "left": 447.44,
+                "right": 608.36,
+                "width": 160.92
+              },
+              "height": 16.5,
+              "ink": {
+                "left": 447.44,
+                "right": 608.36,
+                "width": 160.92,
+                "lines": 1,
+                "longest": 160.92
+              },
+              "lines": 1
+            },
+            "ratioToLi": 0.879729,
+            "ratioToLsum": 0.116609,
+            "ratioToMain": 0.116609,
+            "inkRatioToBox": 1,
+            "linesAfterWidening": 1,
+            "boxAfterWidening": 160.92
+          },
+          {
+            "index": 3,
+            "text": "判据：本页条目的规范厂商名去重计数",
+            "maxWidth": "201.609px",
+            "fontSize": "11px",
+            "lineHeight": "16.5px",
+            "box": {
+              "left": 638.36,
+              "right": 825.36,
+              "width": 187
+            },
+            "li": {
+              "left": 627.36,
+              "right": 836.36,
+              "width": 209
+            },
+            "ul": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "main": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "ink": {
+              "left": 638.36,
+              "right": 825.36,
+              "width": 187,
+              "lines": 1,
+              "longest": 187
+            },
+            "lines": 1,
+            "widened": {
+              "box": {
+                "left": 638.36,
+                "right": 825.36,
+                "width": 187
+              },
+              "height": 16.5,
+              "ink": {
+                "left": 638.36,
+                "right": 825.36,
+                "width": 187,
+                "lines": 1,
+                "longest": 187
+              },
+              "lines": 1
+            },
+            "ratioToLi": 0.894737,
+            "ratioToLsum": 0.135507,
+            "ratioToMain": 0.135507,
+            "inkRatioToBox": 1,
+            "linesAfterWidening": 1,
+            "boxAfterWidening": 187
+          }
+        ],
+        "route": "category/audio/"
+      }
+    ],
+    "pages": [
+      {
+        "route": "category/agent/",
+        "itemCount": 3
+      },
+      {
+        "route": "category/api/",
+        "itemCount": 6
+      },
+      {
+        "route": "category/audio/",
+        "itemCount": 4
+      },
+      {
+        "route": "category/chat/",
+        "itemCount": 5
+      },
+      {
+        "route": "category/image/",
+        "itemCount": 5
+      },
+      {
+        "route": "developer/",
+        "itemCount": 7
+      },
+      {
+        "route": "free-api/",
+        "itemCount": 6
+      },
+      {
+        "route": "need/ai-coding/",
+        "itemCount": 2
+      },
+      {
+        "route": "need/china-usable/",
+        "itemCount": 6
+      },
+      {
+        "route": "need/dev-credits/",
+        "itemCount": 7
+      },
+      {
+        "route": "need/edu-identity/",
+        "itemCount": 3
+      },
+      {
+        "route": "need/free-api/",
+        "itemCount": 6
+      },
+      {
+        "route": "need/free-model/",
+        "itemCount": 6
+      },
+      {
+        "route": "need/free-tier/",
+        "itemCount": 6
+      },
+      {
+        "route": "need/free-tokens/",
+        "itemCount": 6
+      },
+      {
+        "route": "need/no-card/",
+        "itemCount": 2
+      },
+      {
+        "route": "need/student-only/",
+        "itemCount": 4
+      },
+      {
+        "route": "student/",
+        "itemCount": 4
+      },
+      {
+        "route": "vendor/ai360/",
+        "itemCount": 1
+      },
+      {
+        "route": "vendor/aliyun/",
+        "itemCount": 3
+      },
+      {
+        "route": "vendor/anthropic/",
+        "itemCount": 1
+      },
+      {
+        "route": "vendor/aws/",
+        "itemCount": 1
+      },
+      {
+        "route": "vendor/baichuan/",
+        "itemCount": 2
+      },
+      {
+        "route": "vendor/baidu-ai-cloud/",
+        "itemCount": 3
+      },
+      {
+        "route": "vendor/coze/",
+        "itemCount": 4
+      },
+      {
+        "route": "vendor/cursor/",
+        "itemCount": 1
+      },
+      {
+        "route": "vendor/deepseek/",
+        "itemCount": 1
+      },
+      {
+        "route": "vendor/github/",
+        "itemCount": 1
+      },
+      {
+        "route": "vendor/google/",
+        "itemCount": 1
+      },
+      {
+        "route": "vendor/iflytek/",
+        "itemCount": 4
+      },
+      {
+        "route": "vendor/microsoft/",
+        "itemCount": 3
+      },
+      {
+        "route": "vendor/minimax/",
+        "itemCount": 3
+      },
+      {
+        "route": "vendor/moonshot/",
+        "itemCount": 2
+      },
+      {
+        "route": "vendor/notion/",
+        "itemCount": 1
+      },
+      {
+        "route": "vendor/openai/",
+        "itemCount": 1
+      },
+      {
+        "route": "vendor/replit/",
+        "itemCount": 1
+      },
+      {
+        "route": "vendor/sensetime/",
+        "itemCount": 2
+      },
+      {
+        "route": "vendor/siliconflow/",
+        "itemCount": 3
+      },
+      {
+        "route": "vendor/stepfun/",
+        "itemCount": 2
+      },
+      {
+        "route": "vendor/tencent-cloud/",
+        "itemCount": 3
+      },
+      {
+        "route": "vendor/volcengine/",
+        "itemCount": 3
+      },
+      {
+        "route": "vendor/windsurf/",
+        "itemCount": 1
+      },
+      {
+        "route": "vendor/zhipu/",
+        "itemCount": 5
+      }
+    ]
+  },
+  "pdetailBody": {
+    "routes": [
+      "plans/coding/"
+    ],
+    "expandMethods": [
+      {
+        "route": "plans/coding/",
+        "expandMethod": "clicked:button:详情",
+        "visibleCount": 1,
+        "bodyCount": 1
+      }
+    ],
+    "visibleBodies": 1,
+    "boxWidth": {
+      "min": 465.75,
+      "max": 465.75
+    },
+    "ratioToCell": {
+      "min": 0.337745,
+      "median": 0.337745,
+      "max": 0.337745
+    },
+    "ratioToTableClient": {
+      "min": 0.3375,
+      "median": 0.3375,
+      "max": 0.3375
+    },
+    "textLength": {
+      "min": 511,
+      "max": 511
+    },
+    "maxWidthValues": [
+      "465.75px"
+    ],
+    "detail": [
+      {
+        "url": "/plans/coding/",
+        "expandMethod": "clicked:button:详情",
+        "mainWidth": 1380,
+        "tableTag": "table.ptable",
+        "table": {
+          "clientWidth": 1380,
+          "scrollWidth": 1380,
+          "box": {
+            "left": 30,
+            "right": 1410,
+            "width": 1380,
+            "height": 6501
+          }
+        },
+        "bodyCount": 1,
+        "visibleCount": 1,
+        "bodies": [
+          {
+            "index": 0,
+            "visible": true,
+            "maxWidth": "465.75px",
+            "fontSize": "12px",
+            "textLength": 511,
+            "box": {
+              "left": 42,
+              "right": 507.75,
+              "width": 465.75,
+              "height": 361.5
+            },
+            "cell": {
+              "left": 30.5,
+              "right": 1409.5,
+              "width": 1379,
+              "height": 388.5
+            },
+            "cellTag": "td",
+            "widened": {
+              "box": {
+                "left": 42,
+                "right": 1398,
+                "width": 1356,
+                "height": 307.5
+              },
+              "scrollWidth": 1356
+            },
+            "dlRows": 4,
+            "headings": 2,
+            "ratioToCell": 0.337745,
+            "ratioToMain": 0.3375,
+            "ratioToTableClient": 0.3375
+          }
+        ],
+        "route": "plans/coding/"
+      }
+    ]
+  },
+  "aliasNote": {
+    "routes": [
+      "need/dev-credits/",
+      "need/free-api/",
+      "need/student-only/"
+    ],
+    "noteCount": 9,
+    "allAlignedToMain": true,
+    "anyWouldBeNarrow": false,
+    "axis": [
+      {
+        "route": "need/dev-credits/",
+        "index": 0,
+        "axis": {
+          "dLeft": 0,
+          "dRight": 0,
+          "tolerance": 69,
+          "alignedToMain": true
+        },
+        "width": {
+          "textArea": 1369,
+          "column": 1380,
+          "limit": 1173,
+          "ratio": 0.992029,
+          "wouldBeNarrow": false
+        },
+        "offsetFromMain": 0
+      },
+      {
+        "route": "need/dev-credits/",
+        "index": 1,
+        "axis": {
+          "dLeft": 0,
+          "dRight": 0,
+          "tolerance": 69,
+          "alignedToMain": true
+        },
+        "width": {
+          "textArea": 1380,
+          "column": 1380,
+          "limit": 1173,
+          "ratio": 1,
+          "wouldBeNarrow": false
+        },
+        "offsetFromMain": 0
+      },
+      {
+        "route": "need/dev-credits/",
+        "index": 2,
+        "axis": {
+          "dLeft": 0,
+          "dRight": 0,
+          "tolerance": 69,
+          "alignedToMain": true
+        },
+        "width": {
+          "textArea": 1380,
+          "column": 1380,
+          "limit": 1173,
+          "ratio": 1,
+          "wouldBeNarrow": false
+        },
+        "offsetFromMain": 0
+      },
+      {
+        "route": "need/free-api/",
+        "index": 0,
+        "axis": {
+          "dLeft": 0,
+          "dRight": 0,
+          "tolerance": 69,
+          "alignedToMain": true
+        },
+        "width": {
+          "textArea": 1369,
+          "column": 1380,
+          "limit": 1173,
+          "ratio": 0.992029,
+          "wouldBeNarrow": false
+        },
+        "offsetFromMain": 0
+      },
+      {
+        "route": "need/free-api/",
+        "index": 1,
+        "axis": {
+          "dLeft": 0,
+          "dRight": 0,
+          "tolerance": 69,
+          "alignedToMain": true
+        },
+        "width": {
+          "textArea": 1380,
+          "column": 1380,
+          "limit": 1173,
+          "ratio": 1,
+          "wouldBeNarrow": false
+        },
+        "offsetFromMain": 0
+      },
+      {
+        "route": "need/free-api/",
+        "index": 2,
+        "axis": {
+          "dLeft": 0,
+          "dRight": 0,
+          "tolerance": 69,
+          "alignedToMain": true
+        },
+        "width": {
+          "textArea": 1380,
+          "column": 1380,
+          "limit": 1173,
+          "ratio": 1,
+          "wouldBeNarrow": false
+        },
+        "offsetFromMain": 0
+      },
+      {
+        "route": "need/student-only/",
+        "index": 0,
+        "axis": {
+          "dLeft": 0,
+          "dRight": 0,
+          "tolerance": 69,
+          "alignedToMain": true
+        },
+        "width": {
+          "textArea": 1369,
+          "column": 1380,
+          "limit": 1173,
+          "ratio": 0.992029,
+          "wouldBeNarrow": false
+        },
+        "offsetFromMain": 0
+      },
+      {
+        "route": "need/student-only/",
+        "index": 1,
+        "axis": {
+          "dLeft": 0,
+          "dRight": 0,
+          "tolerance": 69,
+          "alignedToMain": true
+        },
+        "width": {
+          "textArea": 1380,
+          "column": 1380,
+          "limit": 1173,
+          "ratio": 1,
+          "wouldBeNarrow": false
+        },
+        "offsetFromMain": 0
+      },
+      {
+        "route": "need/student-only/",
+        "index": 2,
+        "axis": {
+          "dLeft": 0,
+          "dRight": 0,
+          "tolerance": 69,
+          "alignedToMain": true
+        },
+        "width": {
+          "textArea": 1380,
+          "column": 1380,
+          "limit": 1173,
+          "ratio": 1,
+          "wouldBeNarrow": false
+        },
+        "offsetFromMain": 0
+      }
+    ],
+    "detail": [
+      {
+        "url": "/need/dev-credits/",
+        "main": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380
+        },
+        "noteCount": 3,
+        "notes": [
+          {
+            "index": 0,
+            "classes": "snote aliasnote",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "contentBox": 1369,
+            "textArea": 1369,
+            "borderLeftWidth": 3,
+            "borderRightWidth": 0,
+            "paddingLeft": 8,
+            "paddingRight": 0,
+            "marginLeft": 0,
+            "maxWidth": "none",
+            "text": "这一页是旧地址：它与 开发者优惠 收的是同一批条目（同一份判据）。页面保留是为了让老链接仍然可用，但"
+          },
+          {
+            "index": 1,
+            "classes": "snote",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "contentBox": 1380,
+            "textArea": 1380,
+            "borderLeftWidth": 0,
+            "borderRightWidth": 0,
+            "paddingLeft": 0,
+            "paddingRight": 0,
+            "marginLeft": 0,
+            "maxWidth": "none",
+            "text": "这一页收的是给开发者的赠金与资源包：适用人群写了「开发者」，或福利类型是「开发者赠送额度」。 与「免"
+          },
+          {
+            "index": 2,
+            "classes": "snote",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "contentBox": 1380,
+            "textArea": 1380,
+            "borderLeftWidth": 0,
+            "borderRightWidth": 0,
+            "paddingLeft": 0,
+            "paddingRight": 0,
+            "marginLeft": 0,
+            "maxWidth": "none",
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API 的情"
+          }
+        ],
+        "route": "need/dev-credits/",
+        "evaluation": [
+          {
+            "index": 0,
+            "axis": {
+              "dLeft": 0,
+              "dRight": 0,
+              "tolerance": 69,
+              "alignedToMain": true
+            },
+            "width": {
+              "textArea": 1369,
+              "column": 1380,
+              "limit": 1173,
+              "ratio": 0.992029,
+              "wouldBeNarrow": false
+            },
+            "offsetFromMain": 0
+          },
+          {
+            "index": 1,
+            "axis": {
+              "dLeft": 0,
+              "dRight": 0,
+              "tolerance": 69,
+              "alignedToMain": true
+            },
+            "width": {
+              "textArea": 1380,
+              "column": 1380,
+              "limit": 1173,
+              "ratio": 1,
+              "wouldBeNarrow": false
+            },
+            "offsetFromMain": 0
+          },
+          {
+            "index": 2,
+            "axis": {
+              "dLeft": 0,
+              "dRight": 0,
+              "tolerance": 69,
+              "alignedToMain": true
+            },
+            "width": {
+              "textArea": 1380,
+              "column": 1380,
+              "limit": 1173,
+              "ratio": 1,
+              "wouldBeNarrow": false
+            },
+            "offsetFromMain": 0
+          }
+        ]
+      },
+      {
+        "url": "/need/free-api/",
+        "main": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380
+        },
+        "noteCount": 3,
+        "notes": [
+          {
+            "index": 0,
+            "classes": "snote aliasnote",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "contentBox": 1369,
+            "textArea": 1369,
+            "borderLeftWidth": 3,
+            "borderRightWidth": 0,
+            "paddingLeft": 8,
+            "paddingRight": 0,
+            "marginLeft": 0,
+            "maxWidth": "none",
+            "text": "这一页是旧地址：它与 免费 API 收的是同一批条目（同一份判据）。页面保留是为了让老链接仍然可用，"
+          },
+          {
+            "index": 1,
+            "classes": "snote",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "contentBox": 1380,
+            "textArea": 1380,
+            "borderLeftWidth": 0,
+            "borderRightWidth": 0,
+            "paddingLeft": 0,
+            "paddingRight": 0,
+            "marginLeft": 0,
+            "maxWidth": "none",
+            "text": "这一页按福利类型收：福利类型里写了「免费 API」的条目。与 /free-api/ 分类页、/dev"
+          },
+          {
+            "index": 2,
+            "classes": "snote",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "contentBox": 1380,
+            "textArea": 1380,
+            "borderLeftWidth": 0,
+            "borderRightWidth": 0,
+            "paddingLeft": 0,
+            "paddingRight": 0,
+            "marginLeft": 0,
+            "maxWidth": "none",
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API 的情"
+          }
+        ],
+        "route": "need/free-api/",
+        "evaluation": [
+          {
+            "index": 0,
+            "axis": {
+              "dLeft": 0,
+              "dRight": 0,
+              "tolerance": 69,
+              "alignedToMain": true
+            },
+            "width": {
+              "textArea": 1369,
+              "column": 1380,
+              "limit": 1173,
+              "ratio": 0.992029,
+              "wouldBeNarrow": false
+            },
+            "offsetFromMain": 0
+          },
+          {
+            "index": 1,
+            "axis": {
+              "dLeft": 0,
+              "dRight": 0,
+              "tolerance": 69,
+              "alignedToMain": true
+            },
+            "width": {
+              "textArea": 1380,
+              "column": 1380,
+              "limit": 1173,
+              "ratio": 1,
+              "wouldBeNarrow": false
+            },
+            "offsetFromMain": 0
+          },
+          {
+            "index": 2,
+            "axis": {
+              "dLeft": 0,
+              "dRight": 0,
+              "tolerance": 69,
+              "alignedToMain": true
+            },
+            "width": {
+              "textArea": 1380,
+              "column": 1380,
+              "limit": 1173,
+              "ratio": 1,
+              "wouldBeNarrow": false
+            },
+            "offsetFromMain": 0
+          }
+        ]
+      },
+      {
+        "url": "/need/student-only/",
+        "main": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380
+        },
+        "noteCount": 3,
+        "notes": [
+          {
+            "index": 0,
+            "classes": "snote aliasnote",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "contentBox": 1369,
+            "textArea": 1369,
+            "borderLeftWidth": 3,
+            "borderRightWidth": 0,
+            "paddingLeft": 8,
+            "paddingRight": 0,
+            "marginLeft": 0,
+            "maxWidth": "none",
+            "text": "这一页是旧地址：它与 学生优惠 收的是同一批条目（同一份判据）。页面保留是为了让老链接仍然可用，但搜"
+          },
+          {
+            "index": 1,
+            "classes": "snote",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "contentBox": 1380,
+            "textArea": 1380,
+            "borderLeftWidth": 0,
+            "borderRightWidth": 0,
+            "paddingLeft": 0,
+            "paddingRight": 0,
+            "marginLeft": 0,
+            "maxWidth": "none",
+            "text": "这一页收的是来源明确说面向学生的优惠：适用人群写了「学生」、资格门槛里「需要学生身份」为「是」、或福"
+          },
+          {
+            "index": 2,
+            "classes": "snote",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "contentBox": 1380,
+            "textArea": 1380,
+            "borderLeftWidth": 0,
+            "borderRightWidth": 0,
+            "paddingLeft": 0,
+            "paddingRight": 0,
+            "marginLeft": 0,
+            "maxWidth": "none",
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API 的情"
+          }
+        ],
+        "route": "need/student-only/",
+        "evaluation": [
+          {
+            "index": 0,
+            "axis": {
+              "dLeft": 0,
+              "dRight": 0,
+              "tolerance": 69,
+              "alignedToMain": true
+            },
+            "width": {
+              "textArea": 1369,
+              "column": 1380,
+              "limit": 1173,
+              "ratio": 0.992029,
+              "wouldBeNarrow": false
+            },
+            "offsetFromMain": 0
+          },
+          {
+            "index": 1,
+            "axis": {
+              "dLeft": 0,
+              "dRight": 0,
+              "tolerance": 69,
+              "alignedToMain": true
+            },
+            "width": {
+              "textArea": 1380,
+              "column": 1380,
+              "limit": 1173,
+              "ratio": 1,
+              "wouldBeNarrow": false
+            },
+            "offsetFromMain": 0
+          },
+          {
+            "index": 2,
+            "axis": {
+              "dLeft": 0,
+              "dRight": 0,
+              "tolerance": 69,
+              "alignedToMain": true
+            },
+            "width": {
+              "textArea": 1380,
+              "column": 1380,
+              "limit": 1173,
+              "ratio": 1,
+              "wouldBeNarrow": false
+            },
+            "offsetFromMain": 0
+          }
+        ]
+      }
+    ]
+  }
+}

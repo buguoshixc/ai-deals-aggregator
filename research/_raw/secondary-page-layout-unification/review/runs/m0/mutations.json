@@ -1,0 +1,132 @@
+{
+  "target": "http://127.0.0.1:50462/",
+  "dir": "dist.baseline",
+  "generatedAt": "2026-10-06T07:26:18.748Z",
+  "frozenAnchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+  "noteRatio": "note.width >= 0.85 * min(主数据区宽, 页面列宽)",
+  "rows": [
+    {
+      "id": "M1",
+      "route": "student/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "what": "把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）",
+      "observed": [],
+      "hit": false,
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "domInjection": false,
+      "injectedTokenLength": 0
+    },
+    {
+      "id": "M2",
+      "route": "status/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "what": "把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）",
+      "observed": [],
+      "hit": false,
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "domInjection": false,
+      "injectedTokenLength": 0
+    },
+    {
+      "id": "M3",
+      "route": "changes/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "what": "把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）",
+      "observed": [],
+      "hit": false,
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "domInjection": false,
+      "injectedTokenLength": 0
+    },
+    {
+      "id": "M4",
+      "route": "feeds/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "what": "把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）",
+      "observed": [],
+      "hit": false,
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "domInjection": false,
+      "injectedTokenLength": 0
+    },
+    {
+      "id": "M6",
+      "route": "student/",
+      "width": 390,
+      "expect": "page-overflow@390",
+      "what": "拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串",
+      "observed": [],
+      "hit": false,
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "domInjection": false,
+      "injectedTokenLength": 200
+    },
+    {
+      "id": "M7",
+      "route": "status/",
+      "width": 1440,
+      "expect": "unexpected-detail-main",
+      "what": "给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）",
+      "observed": [
+        "unexpected-detail-main",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "anchor": null,
+      "domInjection": true,
+      "injectedTokenLength": 0
+    }
+  ],
+  "control": {
+    "id": "M6-control",
+    "route": "student/",
+    "width": 390,
+    "expect": "不得出现 page-overflow@390",
+    "observed": [
+      "page-overflow@390"
+    ]
+  },
+  "m5Reuse": {
+    "section": "§22b",
+    "assertions": 41,
+    "failing": 0,
+    "codes": {
+      "M1": [
+        "center"
+      ],
+      "M2": [
+        "width"
+      ],
+      "M3": [
+        "axis",
+        "src-width"
+      ],
+      "M4": [
+        "self-overflow@390",
+        "page-overflow@390"
+      ],
+      "M5": [
+        "leaf-consistency",
+        "leaf-consistency"
+      ],
+      "M4-control": []
+    }
+  },
+  "layoutSweep": {
+    "total": 186,
+    "wide": 55,
+    "detail": 131,
+    "other": 0,
+    "notesChecked": 105,
+    "narrowNotes": 48,
+    "overflowPages": 0,
+    "unexpectedDetailMain": 0,
+    "missingDetailMain": 0,
+    "unclassified": 0
+  }
+}

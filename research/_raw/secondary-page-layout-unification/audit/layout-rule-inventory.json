@@ -1,0 +1,2305 @@
+{
+  "meta": {
+    "task": "T9 §19 布局规则重复审计 + §20 保留窄宽与 max-width 普查（只读）",
+    "generatedBy": "research/_raw/secondary-page-layout-unification/audit/scan-layout-rules.cjs",
+    "scope": [
+      "index.html",
+      "scripts/**"
+    ],
+    "method": "JS 词法级抽取字符串/模板区域（跳过注释）→ 花括号感知 CSS 解析 → 归属到页面壳 → 显式判断表分类",
+    "classNames": [
+      ".snote",
+      ".ph2",
+      ".plist",
+      ".stop",
+      ".cstop",
+      ".detail-main"
+    ],
+    "productSourcesScanned": 215,
+    "unclassifiedCount": 0,
+    "skippedNonCssCandidates": 2167,
+    "skippedSamples": [
+      ":root",
+      ":root[data-theme=\"dark\"]",
+      ":root:not([data-theme=\"light\"]):not([data-theme=\"dark\"])",
+      "/* hidden 必须真的不显示：上面 .jump 是**作者级** display 声明，会盖掉 UA 样式表里的 [hidden]",
+      "（层叠先比来源再比特异性，作者级无条件胜出），于是 js 里 `jump.hidden = true` 只改了属性、导航照旧可见可点 —— 这正是「假隐藏」。 ",
+      "min-width: 0`，内容超宽时由 正文区（.rscroll）内部横滑，绝不把整行顶成两行；唯一的入口「全部变化」放在 横滑容器**外面**、`flex:",
+      "border: 0; padding: 0; border-radius: var(--r-dlg); background: var(--card); col",
+      "provenance.credibility：$",
+      "provenance.fields.$",
+      "：basis=$",
+      "$",
+      "entry.note ? `「$"
+    ],
+    "declarationFragments": [
+      {
+        "file": "scripts/tools/verify-site.js",
+        "line": 5951,
+        "text": "'margin-top: var(--s3); width: 100%; max-width: none;'",
+        "note": "不含花括号的 CSS 声明片段（JS 字符串）：测试工具的变异载荷，不是规则定义，不计入普查"
+      },
+      {
+        "file": "scripts/tools/verify-site.js",
+        "line": 5952,
+        "text": "'margin-top: var(--s3); width: 820px; max-width: none;'",
+        "note": "不含花括号的 CSS 声明片段（JS 字符串）：测试工具的变异载荷，不是规则定义，不计入普查"
+      },
+      {
+        "file": "scripts/tools/verify-site.js",
+        "line": 6163,
+        "text": "'max-width: none'",
+        "note": "不含花括号的 CSS 声明片段（JS 字符串）：测试工具的变异载荷，不是规则定义，不计入普查"
+      },
+      {
+        "file": "scripts/tools/verify-site.js",
+        "line": 6163,
+        "text": "'max-width: 70ch'",
+        "note": "不含花括号的 CSS 声明片段（JS 字符串）：测试工具的变异载荷，不是规则定义，不计入普查"
+      }
+    ]
+  },
+  "summary": [
+    {
+      "className": ".snote",
+      "declarationCount": 2,
+      "distinctRuleBodies": 2,
+      "duplicatedCopies": 0,
+      "copyGroups": [],
+      "targetSelectors": [
+        ".snote",
+        ".snote.chgwarn"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "max-width: none"
+      ],
+      "handledInThisChange": true,
+      "verdict": "唯一出处（含宽度的规则 1 条；另 1 条是不含宽度的修饰类 .snote.chgwarn）",
+      "note": "本次的主角：**宽度声明只剩 1 处**（index.html:734，唯一的 `max-width: none`）；另一处 `.snote.chgwarn` 是颜色修饰、不含宽度。8 份页面级副本已删除 ⇒ 唯一出处。",
+      "handlingVerdict": "本次处理：收成唯一出处"
+    },
+    {
+      "className": ".ph2",
+      "declarationCount": 9,
+      "distinctRuleBodies": 5,
+      "duplicatedCopies": 4,
+      "copyGroups": [
+        {
+          "ruleText": ".ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }",
+          "copies": 4,
+          "hasWidthDeclaration": false,
+          "occurrences": [
+            "scripts/tools/build-local.js:1620 (shell-plans-coding)",
+            "scripts/tools/build-local.js:1745 (shell-plans-api)",
+            "scripts/tools/build-local.js:1888 (shell-plans-hub)",
+            "scripts/tools/build-local.js:2005 (shell-models)"
+          ]
+        },
+        {
+          "ruleText": ".pchanges .ph2 { margin: 0 0 var(--s2); }",
+          "copies": 2,
+          "hasWidthDeclaration": false,
+          "occurrences": [
+            "scripts/tools/build-local.js:1529 (shell-plans-coding)",
+            "scripts/tools/build-local.js:1913 (shell-plans-hub)"
+          ]
+        }
+      ],
+      "targetSelectors": [
+        ".asec .ph2",
+        ".pchanges .ph2",
+        ".ph2",
+        ".phubsec .ph2",
+        ".pplandeals .ph2"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "handledInThisChange": false,
+      "verdict": "同一条规则被复制（多处逐字相同）",
+      "note": "4 份逐字复制 + 5 处带父级作用域的变体（`.pchanges .ph2` / `.pplandeals .ph2` / `.phubsec .ph2` / `.asec .ph2`）；全部无宽度声明 ⇒ 不产生布局漂移。",
+      "handlingVerdict": "本次故意不动（多处复制但无宽度）"
+    },
+    {
+      "className": ".plist",
+      "declarationCount": 8,
+      "distinctRuleBodies": 2,
+      "duplicatedCopies": 6,
+      "copyGroups": [
+        {
+          "ruleText": ".plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }",
+          "copies": 4,
+          "hasWidthDeclaration": true,
+          "occurrences": [
+            "scripts/tools/build-local.js:1621 (shell-plans-coding)",
+            "scripts/tools/build-local.js:1746 (shell-plans-api)",
+            "scripts/tools/build-local.js:1889 (shell-plans-hub)",
+            "scripts/tools/build-local.js:2006 (shell-models)"
+          ]
+        },
+        {
+          "ruleText": ".plist b { color: var(--ink2); }",
+          "copies": 4,
+          "hasWidthDeclaration": false,
+          "occurrences": [
+            "scripts/tools/build-local.js:1622 (shell-plans-coding)",
+            "scripts/tools/build-local.js:1747 (shell-plans-api)",
+            "scripts/tools/build-local.js:1890 (shell-plans-hub)",
+            "scripts/tools/build-local.js:2007 (shell-models)"
+          ]
+        }
+      ],
+      "targetSelectors": [
+        ".plist",
+        ".plist b"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "max-width: none"
+      ],
+      "handledInThisChange": false,
+      "verdict": "同一条规则被复制（多处逐字相同）",
+      "note": "4 份逐字复制（都带 `max-width: none`，**取值一致**）+ 4 份 `.plist b`；取值一致 ⇒ 无漂移，本次故意不动。",
+      "handlingVerdict": "本次故意不动（4 份副本、取值逐字相同）"
+    },
+    {
+      "className": ".stop",
+      "declarationCount": 15,
+      "distinctRuleBodies": 3,
+      "duplicatedCopies": 12,
+      "copyGroups": [
+        {
+          "ruleText": ".stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }",
+          "copies": 5,
+          "hasWidthDeclaration": false,
+          "occurrences": [
+            "scripts/tools/build-local.js:1054 (shell-status)",
+            "scripts/tools/build-local.js:1611 (shell-plans-coding)",
+            "scripts/tools/build-local.js:1742 (shell-plans-api)",
+            "scripts/tools/build-local.js:1885 (shell-plans-hub)",
+            "scripts/tools/build-local.js:2002 (shell-models)"
+          ]
+        },
+        {
+          "ruleText": ".stop h1 { font-size: 19px; margin: 0; }",
+          "copies": 5,
+          "hasWidthDeclaration": false,
+          "occurrences": [
+            "scripts/tools/build-local.js:1055 (shell-status)",
+            "scripts/tools/build-local.js:1612 (shell-plans-coding)",
+            "scripts/tools/build-local.js:1743 (shell-plans-api)",
+            "scripts/tools/build-local.js:1886 (shell-plans-hub)",
+            "scripts/tools/build-local.js:2003 (shell-models)"
+          ]
+        },
+        {
+          "ruleText": ".stop .meta { color: var(--mut); font-size: var(--fs-sm); }",
+          "copies": 5,
+          "hasWidthDeclaration": false,
+          "occurrences": [
+            "scripts/tools/build-local.js:1056 (shell-status)",
+            "scripts/tools/build-local.js:1613 (shell-plans-coding)",
+            "scripts/tools/build-local.js:1744 (shell-plans-api)",
+            "scripts/tools/build-local.js:1887 (shell-plans-hub)",
+            "scripts/tools/build-local.js:2004 (shell-models)"
+          ]
+        }
+      ],
+      "targetSelectors": [
+        ".stop",
+        ".stop .meta",
+        ".stop h1"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "handledInThisChange": false,
+      "verdict": "同一条规则被复制（多处逐字相同）",
+      "note": "5 份逐字复制（`.stop` / `.stop h1` / `.stop .meta` 各 5 份，分布在 status / plans / api-plans / plans-hub / models）；全部无宽度声明。",
+      "handlingVerdict": "本次故意不动（5 份副本、无宽度）"
+    },
+    {
+      "className": ".cstop",
+      "declarationCount": 3,
+      "distinctRuleBodies": 3,
+      "duplicatedCopies": 0,
+      "copyGroups": [],
+      "targetSelectors": [
+        ".cstop",
+        ".cstop .meta",
+        ".cstop h1"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "handledInThisChange": false,
+      "verdict": "同一类名的多处不同规则（各自页面壳独有）",
+      "note": "目录页壳里的 `.stop` 版本，单处、无宽度、无副本。",
+      "handlingVerdict": "不需要处理（单处，无宽度）"
+    },
+    {
+      "className": ".detail-main",
+      "declarationCount": 1,
+      "distinctRuleBodies": 1,
+      "duplicatedCopies": 0,
+      "copyGroups": [],
+      "targetSelectors": [
+        ".detail-main"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "width: min(1120px, 100%)"
+      ],
+      "handledInThisChange": false,
+      "verdict": "唯一出处",
+      "note": "唯一出处（index.html:725），本次之前就已经是唯一出处，不需要改动。",
+      "handlingVerdict": "不需要处理（已经是唯一出处）"
+    }
+  ],
+  "repetitionVerdict": {
+    "uniqueSources": [
+      ".detail-main"
+    ],
+    "copiedSameRule": [
+      {
+        "className": ".ph2",
+        "copiedCopies": 4,
+        "groups": [
+          {
+            "ruleText": ".ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }",
+            "copies": 4,
+            "hasWidthDeclaration": false,
+            "occurrences": [
+              "scripts/tools/build-local.js:1620 (shell-plans-coding)",
+              "scripts/tools/build-local.js:1745 (shell-plans-api)",
+              "scripts/tools/build-local.js:1888 (shell-plans-hub)",
+              "scripts/tools/build-local.js:2005 (shell-models)"
+            ]
+          },
+          {
+            "ruleText": ".pchanges .ph2 { margin: 0 0 var(--s2); }",
+            "copies": 2,
+            "hasWidthDeclaration": false,
+            "occurrences": [
+              "scripts/tools/build-local.js:1529 (shell-plans-coding)",
+              "scripts/tools/build-local.js:1913 (shell-plans-hub)"
+            ]
+          }
+        ]
+      },
+      {
+        "className": ".plist",
+        "copiedCopies": 6,
+        "groups": [
+          {
+            "ruleText": ".plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }",
+            "copies": 4,
+            "hasWidthDeclaration": true,
+            "occurrences": [
+              "scripts/tools/build-local.js:1621 (shell-plans-coding)",
+              "scripts/tools/build-local.js:1746 (shell-plans-api)",
+              "scripts/tools/build-local.js:1889 (shell-plans-hub)",
+              "scripts/tools/build-local.js:2006 (shell-models)"
+            ]
+          },
+          {
+            "ruleText": ".plist b { color: var(--ink2); }",
+            "copies": 4,
+            "hasWidthDeclaration": false,
+            "occurrences": [
+              "scripts/tools/build-local.js:1622 (shell-plans-coding)",
+              "scripts/tools/build-local.js:1747 (shell-plans-api)",
+              "scripts/tools/build-local.js:1890 (shell-plans-hub)",
+              "scripts/tools/build-local.js:2007 (shell-models)"
+            ]
+          }
+        ]
+      },
+      {
+        "className": ".stop",
+        "copiedCopies": 12,
+        "groups": [
+          {
+            "ruleText": ".stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }",
+            "copies": 5,
+            "hasWidthDeclaration": false,
+            "occurrences": [
+              "scripts/tools/build-local.js:1054 (shell-status)",
+              "scripts/tools/build-local.js:1611 (shell-plans-coding)",
+              "scripts/tools/build-local.js:1742 (shell-plans-api)",
+              "scripts/tools/build-local.js:1885 (shell-plans-hub)",
+              "scripts/tools/build-local.js:2002 (shell-models)"
+            ]
+          },
+          {
+            "ruleText": ".stop h1 { font-size: 19px; margin: 0; }",
+            "copies": 5,
+            "hasWidthDeclaration": false,
+            "occurrences": [
+              "scripts/tools/build-local.js:1055 (shell-status)",
+              "scripts/tools/build-local.js:1612 (shell-plans-coding)",
+              "scripts/tools/build-local.js:1743 (shell-plans-api)",
+              "scripts/tools/build-local.js:1886 (shell-plans-hub)",
+              "scripts/tools/build-local.js:2003 (shell-models)"
+            ]
+          },
+          {
+            "ruleText": ".stop .meta { color: var(--mut); font-size: var(--fs-sm); }",
+            "copies": 5,
+            "hasWidthDeclaration": false,
+            "occurrences": [
+              "scripts/tools/build-local.js:1056 (shell-status)",
+              "scripts/tools/build-local.js:1613 (shell-plans-coding)",
+              "scripts/tools/build-local.js:1744 (shell-plans-api)",
+              "scripts/tools/build-local.js:1887 (shell-plans-hub)",
+              "scripts/tools/build-local.js:2004 (shell-models)"
+            ]
+          }
+        ]
+      }
+    ],
+    "intentionalMultiple": [
+      {
+        "className": ".cstop",
+        "declarations": 3,
+        "selectors": [
+          ".cstop",
+          ".cstop .meta",
+          ".cstop h1"
+        ]
+      }
+    ],
+    "note": "「同一条规则被复制」= 规则文本逐字相同而出现在多处；「同一类名的多处不同规则」= 选择器带父级作用域或属于不同页面壳，本来就是各页独有，不算重复。"
+  },
+  "auxiliaryFamilies": [
+    {
+      "className": ".ptable",
+      "declarationCount": 42,
+      "distinctRuleBodies": 22,
+      "duplicatedCopies": 20,
+      "hasWidthDeclaration": true,
+      "copyGroups": [
+        {
+          "ruleText": ".ptable { overflow: visible; }",
+          "copies": 3,
+          "occurrences": [
+            "scripts/tools/build-local.js:1565",
+            "scripts/tools/build-local.js:1790",
+            "scripts/tools/build-local.js:2035"
+          ]
+        },
+        {
+          "ruleText": ".ptable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }",
+          "copies": 3,
+          "occurrences": [
+            "scripts/tools/build-local.js:1624",
+            "scripts/tools/build-local.js:1749",
+            "scripts/tools/build-local.js:2009"
+          ]
+        },
+        {
+          "ruleText": ".ptable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }",
+          "copies": 3,
+          "occurrences": [
+            "scripts/tools/build-local.js:1625",
+            "scripts/tools/build-local.js:1750",
+            "scripts/tools/build-local.js:2010"
+          ]
+        },
+        {
+          "ruleText": ".ptable th, .ptable td { text-align: left; padding: 9px 11px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }",
+          "copies": 3,
+          "occurrences": [
+            "scripts/tools/build-local.js:1626",
+            "scripts/tools/build-local.js:1751",
+            "scripts/tools/build-local.js:2011"
+          ]
+        },
+        {
+          "ruleText": ".ptable thead th { border-top: 0; color: var(--mut); font-weight: 600; white-space: nowrap; }",
+          "copies": 3,
+          "occurrences": [
+            "scripts/tools/build-local.js:1627",
+            "scripts/tools/build-local.js:1752",
+            "scripts/tools/build-local.js:2012"
+          ]
+        },
+        {
+          "ruleText": ".ptable tbody th { font-weight: 600; white-space: nowrap; }",
+          "copies": 3,
+          "occurrences": [
+            "scripts/tools/build-local.js:1628",
+            "scripts/tools/build-local.js:1753",
+            "scripts/tools/build-local.js:2013"
+          ]
+        },
+        {
+          "ruleText": ".ptable small { display: block; color: var(--mut); font-weight: 400; font-size: 11.5px; margin-top: 2px; line-height: 1.5; }",
+          "copies": 3,
+          "occurrences": [
+            "scripts/tools/build-local.js:1630",
+            "scripts/tools/build-local.js:1755",
+            "scripts/tools/build-local.js:2015"
+          ]
+        },
+        {
+          "ruleText": ".ptable .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }",
+          "copies": 3,
+          "occurrences": [
+            "scripts/tools/build-local.js:1631",
+            "scripts/tools/build-local.js:1756",
+            "scripts/tools/build-local.js:2016"
+          ]
+        },
+        {
+          "ruleText": ".ptable a { color: var(--brand); }",
+          "copies": 3,
+          "occurrences": [
+            "scripts/tools/build-local.js:1633",
+            "scripts/tools/build-local.js:1757",
+            "scripts/tools/build-local.js:2017"
+          ]
+        },
+        {
+          "ruleText": ".ptable th, .ptable td { padding: 8px 9px; }",
+          "copies": 3,
+          "occurrences": [
+            "scripts/tools/build-local.js:1636",
+            "scripts/tools/build-local.js:1798",
+            "scripts/tools/build-local.js:2039"
+          ]
+        }
+      ]
+    },
+    {
+      "className": ".stable",
+      "declarationCount": 8,
+      "distinctRuleBodies": 8,
+      "duplicatedCopies": 0,
+      "hasWidthDeclaration": true,
+      "copyGroups": []
+    },
+    {
+      "className": ".ctable",
+      "declarationCount": 9,
+      "distinctRuleBodies": 9,
+      "duplicatedCopies": 0,
+      "hasWidthDeclaration": true,
+      "copyGroups": []
+    }
+  ],
+  "entries": [
+    {
+      "className": ".detail-main",
+      "alsoMentions": [],
+      "file": "index.html",
+      "line": 725,
+      "selector": ".detail-main",
+      "ruleText": ".detail-main { width: min(1120px, 100%); margin-inline: auto; }",
+      "declarations": [
+        "width: min(1120px, 100%)",
+        "margin-inline: auto"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "width: min(1120px, 100%)"
+      ],
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "shellKey": null,
+      "sourceKind": "product-css",
+      "regionKind": "html-style-block",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不需要处理（已经是唯一出处）",
+        "reason": "`.detail-main` 在本次之前就已经是唯一出处（index.html 的共享 <style>），deal / models 详情页只是加一个 class。本次的工作是把 `.snote` 收到同一条纪律上，而不是再改它。"
+      },
+      "handlingKey": ".detail-main|index.html|725",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".snote",
+      "alsoMentions": [],
+      "file": "index.html",
+      "line": 734,
+      "selector": ".snote",
+      "ruleText": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "declarations": [
+        "color: var(--mut)",
+        "font-size: var(--fs-sm)",
+        "line-height: 1.7",
+        "margin: 0 0 var(--s3)",
+        "max-width: none",
+        "overflow-wrap: anywhere"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "max-width: none"
+      ],
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "shellKey": null,
+      "sourceKind": "product-css",
+      "regionKind": "html-style-block",
+      "mediaQueries": [],
+      "handling": {
+        "handled": true,
+        "verdict": "本次处理：收成唯一出处",
+        "role": "全站唯一出处（共享 <style>）",
+        "reason": "本次把 8 份页面级副本收成这一条（4 份 70ch + 4 份 none ⇒ 1 份 none）。T2 的变异牙就锚在这一串上；共享样式在文档序上先于页面局部样式，因此「一处定义、全站生效」。",
+        "evidence": [
+          "index.html:734",
+          "scripts/tools/build-local.js 删除 8 条（原 1048/1347/1613/1739/1883/2001/2311/2710）",
+          "dist 186/186 页各恰好 1 条 .snote 规则"
+        ]
+      },
+      "handlingKey": ".snote|index.html|734",
+      "handlingSource": "entry-override"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1054,
+      "selector": ".stop",
+      "ruleText": ".stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }",
+      "declarations": [
+        "display: flex",
+        "align-items: baseline",
+        "gap: var(--s2)",
+        "flex-wrap: wrap",
+        "margin-bottom: var(--s2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-status",
+        "label": "/status/ 状态页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderStatusPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|1054",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1055,
+      "selector": ".stop h1",
+      "ruleText": ".stop h1 { font-size: 19px; margin: 0; }",
+      "declarations": [
+        "font-size: 19px",
+        "margin: 0"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-status",
+        "label": "/status/ 状态页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderStatusPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|1055",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1056,
+      "selector": ".stop .meta",
+      "ruleText": ".stop .meta { color: var(--mut); font-size: var(--fs-sm); }",
+      "declarations": [
+        "color: var(--mut)",
+        "font-size: var(--fs-sm)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-status",
+        "label": "/status/ 状态页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderStatusPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|1056",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".snote",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1355,
+      "selector": ".snote.chgwarn",
+      "ruleText": ".snote.chgwarn { color: var(--warn, #a35a00); }",
+      "declarations": [
+        "color: var(--warn, #a35a00)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-changes",
+        "label": "/changes/ 变化页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderChangesPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动",
+        "role": ".snote 的修饰类（只改颜色）",
+        "reason": "`.snote.chgwarn` 不含任何宽度声明，它不是「同一条规则的第二份取值」，而是同一族里的一个语义修饰。把它也搬进共享样式要新增一条只有颜色用途的规则，收益是\"少一行\"，风险是给共享样式引入一个只有 changes 页用得上的类 —— 不值得。"
+      },
+      "handlingKey": ".snote|scripts/tools/build-local.js|1355",
+      "handlingSource": "entry-override"
+    },
+    {
+      "className": ".ph2",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1529,
+      "selector": ".pchanges .ph2",
+      "ruleText": ".pchanges .ph2 { margin: 0 0 var(--s2); }",
+      "declarations": [
+        "margin: 0 0 var(--s2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-coding",
+        "label": "/plans/coding/ 套餐对比页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（多处复制但无宽度）",
+        "reason": "`.ph2`（小节标题）在页面壳里逐字复制了 4 份，另有 4 处是**加了父级作用域**的变体（`.pchanges .ph2` / `.pplandeals .ph2` / `.phubsec .ph2` / `.asec .ph2`）——后者是各页面壳的**独有规则**，本来就不该合并。关键是：`.ph2` 全部不含宽度声明，四处逐字相同的取值不会产生布局漂移。收口它们需要改动 4~5 个页面壳的样式抽取，收益是\"更整齐\"，风险是新的回归面 —— 不为了代码更漂亮做大重构。"
+      },
+      "handlingKey": ".ph2|scripts/tools/build-local.js|1529",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".ph2",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1544,
+      "selector": ".pplandeals .ph2",
+      "ruleText": ".pplandeals .ph2 { margin: 0 0 var(--s2); }",
+      "declarations": [
+        "margin: 0 0 var(--s2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-coding",
+        "label": "/plans/coding/ 套餐对比页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（多处复制但无宽度）",
+        "reason": "`.ph2`（小节标题）在页面壳里逐字复制了 4 份，另有 4 处是**加了父级作用域**的变体（`.pchanges .ph2` / `.pplandeals .ph2` / `.phubsec .ph2` / `.asec .ph2`）——后者是各页面壳的**独有规则**，本来就不该合并。关键是：`.ph2` 全部不含宽度声明，四处逐字相同的取值不会产生布局漂移。收口它们需要改动 4~5 个页面壳的样式抽取，收益是\"更整齐\"，风险是新的回归面 —— 不为了代码更漂亮做大重构。"
+      },
+      "handlingKey": ".ph2|scripts/tools/build-local.js|1544",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1611,
+      "selector": ".stop",
+      "ruleText": ".stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }",
+      "declarations": [
+        "display: flex",
+        "align-items: baseline",
+        "gap: var(--s2)",
+        "flex-wrap: wrap",
+        "margin-bottom: var(--s2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-coding",
+        "label": "/plans/coding/ 套餐对比页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|1611",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1612,
+      "selector": ".stop h1",
+      "ruleText": ".stop h1 { font-size: 19px; margin: 0; }",
+      "declarations": [
+        "font-size: 19px",
+        "margin: 0"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-coding",
+        "label": "/plans/coding/ 套餐对比页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|1612",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1613,
+      "selector": ".stop .meta",
+      "ruleText": ".stop .meta { color: var(--mut); font-size: var(--fs-sm); }",
+      "declarations": [
+        "color: var(--mut)",
+        "font-size: var(--fs-sm)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-coding",
+        "label": "/plans/coding/ 套餐对比页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|1613",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".ph2",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1620,
+      "selector": ".ph2",
+      "ruleText": ".ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }",
+      "declarations": [
+        "font-size: 15px",
+        "margin: var(--s4) 0 var(--s2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-coding",
+        "label": "/plans/coding/ 套餐对比页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（多处复制但无宽度）",
+        "reason": "`.ph2`（小节标题）在页面壳里逐字复制了 4 份，另有 4 处是**加了父级作用域**的变体（`.pchanges .ph2` / `.pplandeals .ph2` / `.phubsec .ph2` / `.asec .ph2`）——后者是各页面壳的**独有规则**，本来就不该合并。关键是：`.ph2` 全部不含宽度声明，四处逐字相同的取值不会产生布局漂移。收口它们需要改动 4~5 个页面壳的样式抽取，收益是\"更整齐\"，风险是新的回归面 —— 不为了代码更漂亮做大重构。"
+      },
+      "handlingKey": ".ph2|scripts/tools/build-local.js|1620",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".plist",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1621,
+      "selector": ".plist",
+      "ruleText": ".plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }",
+      "declarations": [
+        "margin: 0",
+        "padding-left: 1.15em",
+        "color: var(--mut)",
+        "font-size: var(--fs-sm)",
+        "line-height: 1.8",
+        "max-width: none"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "max-width: none"
+      ],
+      "shell": {
+        "id": "shell-plans-coding",
+        "label": "/plans/coding/ 套餐对比页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（4 份副本、取值逐字相同）",
+        "reason": "`.plist` 的宽度声明在 4 个页面壳里各一份，但**四份逐字相同**（`max-width: none`，跟随数据容器）。漂移风险来自「同一条规则、两种取值」（`.snote` 正是这种），而不是「同一取值写了四遍」。本次只处理前者；后者如实登记在案，留给将来有真实漂移迹象时再收。"
+      },
+      "handlingKey": ".plist|scripts/tools/build-local.js|1621",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".plist",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1622,
+      "selector": ".plist b",
+      "ruleText": ".plist b { color: var(--ink2); }",
+      "declarations": [
+        "color: var(--ink2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-coding",
+        "label": "/plans/coding/ 套餐对比页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（4 份副本、取值逐字相同）",
+        "reason": "`.plist` 的宽度声明在 4 个页面壳里各一份，但**四份逐字相同**（`max-width: none`，跟随数据容器）。漂移风险来自「同一条规则、两种取值」（`.snote` 正是这种），而不是「同一取值写了四遍」。本次只处理前者；后者如实登记在案，留给将来有真实漂移迹象时再收。"
+      },
+      "handlingKey": ".plist|scripts/tools/build-local.js|1622",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1742,
+      "selector": ".stop",
+      "ruleText": ".stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }",
+      "declarations": [
+        "display: flex",
+        "align-items: baseline",
+        "gap: var(--s2)",
+        "flex-wrap: wrap",
+        "margin-bottom: var(--s2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-api",
+        "label": "/plans/api/ API 计费页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderApiPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|1742",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1743,
+      "selector": ".stop h1",
+      "ruleText": ".stop h1 { font-size: 19px; margin: 0; }",
+      "declarations": [
+        "font-size: 19px",
+        "margin: 0"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-api",
+        "label": "/plans/api/ API 计费页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderApiPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|1743",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1744,
+      "selector": ".stop .meta",
+      "ruleText": ".stop .meta { color: var(--mut); font-size: var(--fs-sm); }",
+      "declarations": [
+        "color: var(--mut)",
+        "font-size: var(--fs-sm)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-api",
+        "label": "/plans/api/ API 计费页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderApiPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|1744",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".ph2",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1745,
+      "selector": ".ph2",
+      "ruleText": ".ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }",
+      "declarations": [
+        "font-size: 15px",
+        "margin: var(--s4) 0 var(--s2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-api",
+        "label": "/plans/api/ API 计费页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderApiPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（多处复制但无宽度）",
+        "reason": "`.ph2`（小节标题）在页面壳里逐字复制了 4 份，另有 4 处是**加了父级作用域**的变体（`.pchanges .ph2` / `.pplandeals .ph2` / `.phubsec .ph2` / `.asec .ph2`）——后者是各页面壳的**独有规则**，本来就不该合并。关键是：`.ph2` 全部不含宽度声明，四处逐字相同的取值不会产生布局漂移。收口它们需要改动 4~5 个页面壳的样式抽取，收益是\"更整齐\"，风险是新的回归面 —— 不为了代码更漂亮做大重构。"
+      },
+      "handlingKey": ".ph2|scripts/tools/build-local.js|1745",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".plist",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1746,
+      "selector": ".plist",
+      "ruleText": ".plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }",
+      "declarations": [
+        "margin: 0",
+        "padding-left: 1.15em",
+        "color: var(--mut)",
+        "font-size: var(--fs-sm)",
+        "line-height: 1.8",
+        "max-width: none"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "max-width: none"
+      ],
+      "shell": {
+        "id": "shell-plans-api",
+        "label": "/plans/api/ API 计费页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderApiPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（4 份副本、取值逐字相同）",
+        "reason": "`.plist` 的宽度声明在 4 个页面壳里各一份，但**四份逐字相同**（`max-width: none`，跟随数据容器）。漂移风险来自「同一条规则、两种取值」（`.snote` 正是这种），而不是「同一取值写了四遍」。本次只处理前者；后者如实登记在案，留给将来有真实漂移迹象时再收。"
+      },
+      "handlingKey": ".plist|scripts/tools/build-local.js|1746",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".plist",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1747,
+      "selector": ".plist b",
+      "ruleText": ".plist b { color: var(--ink2); }",
+      "declarations": [
+        "color: var(--ink2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-api",
+        "label": "/plans/api/ API 计费页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderApiPlansPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（4 份副本、取值逐字相同）",
+        "reason": "`.plist` 的宽度声明在 4 个页面壳里各一份，但**四份逐字相同**（`max-width: none`，跟随数据容器）。漂移风险来自「同一条规则、两种取值」（`.snote` 正是这种），而不是「同一取值写了四遍」。本次只处理前者；后者如实登记在案，留给将来有真实漂移迹象时再收。"
+      },
+      "handlingKey": ".plist|scripts/tools/build-local.js|1747",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1885,
+      "selector": ".stop",
+      "ruleText": ".stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }",
+      "declarations": [
+        "display: flex",
+        "align-items: baseline",
+        "gap: var(--s2)",
+        "flex-wrap: wrap",
+        "margin-bottom: var(--s2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-hub",
+        "label": "/plans/ 资料入口页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansHubShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|1885",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1886,
+      "selector": ".stop h1",
+      "ruleText": ".stop h1 { font-size: 19px; margin: 0; }",
+      "declarations": [
+        "font-size: 19px",
+        "margin: 0"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-hub",
+        "label": "/plans/ 资料入口页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansHubShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|1886",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1887,
+      "selector": ".stop .meta",
+      "ruleText": ".stop .meta { color: var(--mut); font-size: var(--fs-sm); }",
+      "declarations": [
+        "color: var(--mut)",
+        "font-size: var(--fs-sm)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-hub",
+        "label": "/plans/ 资料入口页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansHubShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|1887",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".ph2",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1888,
+      "selector": ".ph2",
+      "ruleText": ".ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }",
+      "declarations": [
+        "font-size: 15px",
+        "margin: var(--s4) 0 var(--s2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-hub",
+        "label": "/plans/ 资料入口页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansHubShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（多处复制但无宽度）",
+        "reason": "`.ph2`（小节标题）在页面壳里逐字复制了 4 份，另有 4 处是**加了父级作用域**的变体（`.pchanges .ph2` / `.pplandeals .ph2` / `.phubsec .ph2` / `.asec .ph2`）——后者是各页面壳的**独有规则**，本来就不该合并。关键是：`.ph2` 全部不含宽度声明，四处逐字相同的取值不会产生布局漂移。收口它们需要改动 4~5 个页面壳的样式抽取，收益是\"更整齐\"，风险是新的回归面 —— 不为了代码更漂亮做大重构。"
+      },
+      "handlingKey": ".ph2|scripts/tools/build-local.js|1888",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".plist",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1889,
+      "selector": ".plist",
+      "ruleText": ".plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }",
+      "declarations": [
+        "margin: 0",
+        "padding-left: 1.15em",
+        "color: var(--mut)",
+        "font-size: var(--fs-sm)",
+        "line-height: 1.8",
+        "max-width: none"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "max-width: none"
+      ],
+      "shell": {
+        "id": "shell-plans-hub",
+        "label": "/plans/ 资料入口页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansHubShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（4 份副本、取值逐字相同）",
+        "reason": "`.plist` 的宽度声明在 4 个页面壳里各一份，但**四份逐字相同**（`max-width: none`，跟随数据容器）。漂移风险来自「同一条规则、两种取值」（`.snote` 正是这种），而不是「同一取值写了四遍」。本次只处理前者；后者如实登记在案，留给将来有真实漂移迹象时再收。"
+      },
+      "handlingKey": ".plist|scripts/tools/build-local.js|1889",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".plist",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1890,
+      "selector": ".plist b",
+      "ruleText": ".plist b { color: var(--ink2); }",
+      "declarations": [
+        "color: var(--ink2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-hub",
+        "label": "/plans/ 资料入口页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansHubShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（4 份副本、取值逐字相同）",
+        "reason": "`.plist` 的宽度声明在 4 个页面壳里各一份，但**四份逐字相同**（`max-width: none`，跟随数据容器）。漂移风险来自「同一条规则、两种取值」（`.snote` 正是这种），而不是「同一取值写了四遍」。本次只处理前者；后者如实登记在案，留给将来有真实漂移迹象时再收。"
+      },
+      "handlingKey": ".plist|scripts/tools/build-local.js|1890",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".ph2",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1893,
+      "selector": ".phubsec .ph2",
+      "ruleText": ".phubsec .ph2 { margin-top: 0; }",
+      "declarations": [
+        "margin-top: 0"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-hub",
+        "label": "/plans/ 资料入口页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansHubShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（多处复制但无宽度）",
+        "reason": "`.ph2`（小节标题）在页面壳里逐字复制了 4 份，另有 4 处是**加了父级作用域**的变体（`.pchanges .ph2` / `.pplandeals .ph2` / `.phubsec .ph2` / `.asec .ph2`）——后者是各页面壳的**独有规则**，本来就不该合并。关键是：`.ph2` 全部不含宽度声明，四处逐字相同的取值不会产生布局漂移。收口它们需要改动 4~5 个页面壳的样式抽取，收益是\"更整齐\"，风险是新的回归面 —— 不为了代码更漂亮做大重构。"
+      },
+      "handlingKey": ".ph2|scripts/tools/build-local.js|1893",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".ph2",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 1913,
+      "selector": ".pchanges .ph2",
+      "ruleText": ".pchanges .ph2 { margin: 0 0 var(--s2); }",
+      "declarations": [
+        "margin: 0 0 var(--s2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-plans-hub",
+        "label": "/plans/ 资料入口页（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderPlansHubShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（多处复制但无宽度）",
+        "reason": "`.ph2`（小节标题）在页面壳里逐字复制了 4 份，另有 4 处是**加了父级作用域**的变体（`.pchanges .ph2` / `.pplandeals .ph2` / `.phubsec .ph2` / `.asec .ph2`）——后者是各页面壳的**独有规则**，本来就不该合并。关键是：`.ph2` 全部不含宽度声明，四处逐字相同的取值不会产生布局漂移。收口它们需要改动 4~5 个页面壳的样式抽取，收益是\"更整齐\"，风险是新的回归面 —— 不为了代码更漂亮做大重构。"
+      },
+      "handlingKey": ".ph2|scripts/tools/build-local.js|1913",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 2002,
+      "selector": ".stop",
+      "ruleText": ".stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }",
+      "declarations": [
+        "display: flex",
+        "align-items: baseline",
+        "gap: var(--s2)",
+        "flex-wrap: wrap",
+        "margin-bottom: var(--s2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-models",
+        "label": "通用静态页壳：/models/、/models/<slug>/、/archive/、/docs/data/、档案详情",
+        "family": "wide+detail"
+      },
+      "shellKey": "build-local.js::renderModelsShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|2002",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 2003,
+      "selector": ".stop h1",
+      "ruleText": ".stop h1 { font-size: 19px; margin: 0; }",
+      "declarations": [
+        "font-size: 19px",
+        "margin: 0"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-models",
+        "label": "通用静态页壳：/models/、/models/<slug>/、/archive/、/docs/data/、档案详情",
+        "family": "wide+detail"
+      },
+      "shellKey": "build-local.js::renderModelsShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|2003",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".stop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 2004,
+      "selector": ".stop .meta",
+      "ruleText": ".stop .meta { color: var(--mut); font-size: var(--fs-sm); }",
+      "declarations": [
+        "color: var(--mut)",
+        "font-size: var(--fs-sm)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-models",
+        "label": "通用静态页壳：/models/、/models/<slug>/、/archive/、/docs/data/、档案详情",
+        "family": "wide+detail"
+      },
+      "shellKey": "build-local.js::renderModelsShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      },
+      "handlingKey": ".stop|scripts/tools/build-local.js|2004",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".ph2",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 2005,
+      "selector": ".ph2",
+      "ruleText": ".ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }",
+      "declarations": [
+        "font-size: 15px",
+        "margin: var(--s4) 0 var(--s2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-models",
+        "label": "通用静态页壳：/models/、/models/<slug>/、/archive/、/docs/data/、档案详情",
+        "family": "wide+detail"
+      },
+      "shellKey": "build-local.js::renderModelsShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（多处复制但无宽度）",
+        "reason": "`.ph2`（小节标题）在页面壳里逐字复制了 4 份，另有 4 处是**加了父级作用域**的变体（`.pchanges .ph2` / `.pplandeals .ph2` / `.phubsec .ph2` / `.asec .ph2`）——后者是各页面壳的**独有规则**，本来就不该合并。关键是：`.ph2` 全部不含宽度声明，四处逐字相同的取值不会产生布局漂移。收口它们需要改动 4~5 个页面壳的样式抽取，收益是\"更整齐\"，风险是新的回归面 —— 不为了代码更漂亮做大重构。"
+      },
+      "handlingKey": ".ph2|scripts/tools/build-local.js|2005",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".plist",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 2006,
+      "selector": ".plist",
+      "ruleText": ".plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }",
+      "declarations": [
+        "margin: 0",
+        "padding-left: 1.15em",
+        "color: var(--mut)",
+        "font-size: var(--fs-sm)",
+        "line-height: 1.8",
+        "max-width: none"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "max-width: none"
+      ],
+      "shell": {
+        "id": "shell-models",
+        "label": "通用静态页壳：/models/、/models/<slug>/、/archive/、/docs/data/、档案详情",
+        "family": "wide+detail"
+      },
+      "shellKey": "build-local.js::renderModelsShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（4 份副本、取值逐字相同）",
+        "reason": "`.plist` 的宽度声明在 4 个页面壳里各一份，但**四份逐字相同**（`max-width: none`，跟随数据容器）。漂移风险来自「同一条规则、两种取值」（`.snote` 正是这种），而不是「同一取值写了四遍」。本次只处理前者；后者如实登记在案，留给将来有真实漂移迹象时再收。"
+      },
+      "handlingKey": ".plist|scripts/tools/build-local.js|2006",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".plist",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 2007,
+      "selector": ".plist b",
+      "ruleText": ".plist b { color: var(--ink2); }",
+      "declarations": [
+        "color: var(--ink2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-models",
+        "label": "通用静态页壳：/models/、/models/<slug>/、/archive/、/docs/data/、档案详情",
+        "family": "wide+detail"
+      },
+      "shellKey": "build-local.js::renderModelsShell",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（4 份副本、取值逐字相同）",
+        "reason": "`.plist` 的宽度声明在 4 个页面壳里各一份，但**四份逐字相同**（`max-width: none`，跟随数据容器）。漂移风险来自「同一条规则、两种取值」（`.snote` 正是这种），而不是「同一取值写了四遍」。本次只处理前者；后者如实登记在案，留给将来有真实漂移迹象时再收。"
+      },
+      "handlingKey": ".plist|scripts/tools/build-local.js|2007",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".ph2",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 2077,
+      "selector": ".asec .ph2",
+      "ruleText": ".asec .ph2 { margin: 0 0 var(--s1); }",
+      "declarations": [
+        "margin: 0 0 var(--s1)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "extra-archive",
+        "label": "/archive/ 追加样式（拼进通用页壳的 <style>）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::ARCHIVE_PAGE_CSS",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（多处复制但无宽度）",
+        "reason": "`.ph2`（小节标题）在页面壳里逐字复制了 4 份，另有 4 处是**加了父级作用域**的变体（`.pchanges .ph2` / `.pplandeals .ph2` / `.phubsec .ph2` / `.asec .ph2`）——后者是各页面壳的**独有规则**，本来就不该合并。关键是：`.ph2` 全部不含宽度声明，四处逐字相同的取值不会产生布局漂移。收口它们需要改动 4~5 个页面壳的样式抽取，收益是\"更整齐\"，风险是新的回归面 —— 不为了代码更漂亮做大重构。"
+      },
+      "handlingKey": ".ph2|scripts/tools/build-local.js|2077",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".cstop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 2709,
+      "selector": ".cstop",
+      "ruleText": ".cstop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }",
+      "declarations": [
+        "display: flex",
+        "align-items: baseline",
+        "gap: var(--s2)",
+        "flex-wrap: wrap",
+        "margin-bottom: var(--s2)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-directory",
+        "label": "目录页家族：/<slug>/、/need/<slug>/、/vendor/<slug>/、category、alias（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderDirectoryPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不需要处理（单处，无宽度）",
+        "reason": "`.cstop` 只出现在目录页壳里一次（`.stop` 的目录页版本），不含宽度声明，也没有第二份副本。"
+      },
+      "handlingKey": ".cstop|scripts/tools/build-local.js|2709",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".cstop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 2710,
+      "selector": ".cstop h1",
+      "ruleText": ".cstop h1 { font-size: 19px; margin: 0; }",
+      "declarations": [
+        "font-size: 19px",
+        "margin: 0"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-directory",
+        "label": "目录页家族：/<slug>/、/need/<slug>/、/vendor/<slug>/、category、alias（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderDirectoryPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不需要处理（单处，无宽度）",
+        "reason": "`.cstop` 只出现在目录页壳里一次（`.stop` 的目录页版本），不含宽度声明，也没有第二份副本。"
+      },
+      "handlingKey": ".cstop|scripts/tools/build-local.js|2710",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".cstop",
+      "alsoMentions": [],
+      "file": "scripts/tools/build-local.js",
+      "line": 2711,
+      "selector": ".cstop .meta",
+      "ruleText": ".cstop .meta { color: var(--mut); font-size: var(--fs-sm); }",
+      "declarations": [
+        "color: var(--mut)",
+        "font-size: var(--fs-sm)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "shell-directory",
+        "label": "目录页家族：/<slug>/、/need/<slug>/、/vendor/<slug>/、category、alias（wide）",
+        "family": "wide"
+      },
+      "shellKey": "build-local.js::renderDirectoryPage",
+      "sourceKind": "product-css",
+      "regionKind": "js-template",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不需要处理（单处，无宽度）",
+        "reason": "`.cstop` 只出现在目录页壳里一次（`.stop` 的目录页版本），不含宽度声明，也没有第二份副本。"
+      },
+      "handlingKey": ".cstop|scripts/tools/build-local.js|2711",
+      "handlingSource": "class-policy"
+    },
+    {
+      "className": ".detail-main",
+      "alsoMentions": [],
+      "file": "scripts/tools/verify-site.js",
+      "line": 5939,
+      "selector": ".detail-main",
+      "ruleText": ".detail-main { width: min(1120px, 100%); margin-inline: auto; }",
+      "declarations": [
+        "width: min(1120px, 100%)",
+        "margin-inline: auto"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "width: min(1120px, 100%)"
+      ],
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "shellKey": "verify-site.js::(test-tool)",
+      "sourceKind": "fixture-string",
+      "regionKind": "js-string",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不适用（测试工具载荷，不是产物样式定义）",
+        "reason": "这些规则文本是 verify-site.js 的**变异锚点 / 断言载荷**：它们必须逐字引用产品规则，否则变异就锚不住（把产品规则改掉、门禁却什么都不响）。把它们「去重」或「收口」等于拆掉牙。本审计把它们单独归类为 fixtureMentions，不计入重复度，也不参与「本次是否处理」的判定。"
+      },
+      "handlingKey": ".detail-main|scripts/tools/verify-site.js|5939",
+      "handlingSource": "fixture-policy"
+    },
+    {
+      "className": ".detail-main",
+      "alsoMentions": [],
+      "file": "scripts/tools/verify-site.js",
+      "line": 5940,
+      "selector": ".detail-main",
+      "ruleText": ".detail-main { width: min(1120px, 100%); margin-inline: 0; }",
+      "declarations": [
+        "width: min(1120px, 100%)",
+        "margin-inline: 0"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "width: min(1120px, 100%)"
+      ],
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "shellKey": "verify-site.js::(test-tool)",
+      "sourceKind": "fixture-string",
+      "regionKind": "js-string",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不适用（测试工具载荷，不是产物样式定义）",
+        "reason": "这些规则文本是 verify-site.js 的**变异锚点 / 断言载荷**：它们必须逐字引用产品规则，否则变异就锚不住（把产品规则改掉、门禁却什么都不响）。把它们「去重」或「收口」等于拆掉牙。本审计把它们单独归类为 fixtureMentions，不计入重复度，也不参与「本次是否处理」的判定。"
+      },
+      "handlingKey": ".detail-main|scripts/tools/verify-site.js|5940",
+      "handlingSource": "fixture-policy"
+    },
+    {
+      "className": ".detail-main",
+      "alsoMentions": [],
+      "file": "scripts/tools/verify-site.js",
+      "line": 5945,
+      "selector": ".detail-main",
+      "ruleText": ".detail-main { width: min(1120px, 100%); margin-inline: auto; }",
+      "declarations": [
+        "width: min(1120px, 100%)",
+        "margin-inline: auto"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "width: min(1120px, 100%)"
+      ],
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "shellKey": "verify-site.js::(test-tool)",
+      "sourceKind": "fixture-string",
+      "regionKind": "js-string",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不适用（测试工具载荷，不是产物样式定义）",
+        "reason": "这些规则文本是 verify-site.js 的**变异锚点 / 断言载荷**：它们必须逐字引用产品规则，否则变异就锚不住（把产品规则改掉、门禁却什么都不响）。把它们「去重」或「收口」等于拆掉牙。本审计把它们单独归类为 fixtureMentions，不计入重复度，也不参与「本次是否处理」的判定。"
+      },
+      "handlingKey": ".detail-main|scripts/tools/verify-site.js|5945",
+      "handlingSource": "fixture-policy"
+    },
+    {
+      "className": ".detail-main",
+      "alsoMentions": [],
+      "file": "scripts/tools/verify-site.js",
+      "line": 5946,
+      "selector": ".detail-main",
+      "ruleText": ".detail-main { width: 820px; margin-inline: auto; }",
+      "declarations": [
+        "width: 820px",
+        "margin-inline: auto"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "width: 820px"
+      ],
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "shellKey": "verify-site.js::(test-tool)",
+      "sourceKind": "fixture-string",
+      "regionKind": "js-string",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不适用（测试工具载荷，不是产物样式定义）",
+        "reason": "这些规则文本是 verify-site.js 的**变异锚点 / 断言载荷**：它们必须逐字引用产品规则，否则变异就锚不住（把产品规则改掉、门禁却什么都不响）。把它们「去重」或「收口」等于拆掉牙。本审计把它们单独归类为 fixtureMentions，不计入重复度，也不参与「本次是否处理」的判定。"
+      },
+      "handlingKey": ".detail-main|scripts/tools/verify-site.js|5946",
+      "handlingSource": "fixture-policy"
+    },
+    {
+      "className": ".detail-main",
+      "alsoMentions": [],
+      "file": "scripts/tools/verify-site.js",
+      "line": 5964,
+      "selector": ".detail-main",
+      "ruleText": ".detail-main { width: min(1120px, 100%); margin-inline: auto; }",
+      "declarations": [
+        "width: min(1120px, 100%)",
+        "margin-inline: auto"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "width: min(1120px, 100%)"
+      ],
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "shellKey": "verify-site.js::(test-tool)",
+      "sourceKind": "fixture-string",
+      "regionKind": "js-string",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不适用（测试工具载荷，不是产物样式定义）",
+        "reason": "这些规则文本是 verify-site.js 的**变异锚点 / 断言载荷**：它们必须逐字引用产品规则，否则变异就锚不住（把产品规则改掉、门禁却什么都不响）。把它们「去重」或「收口」等于拆掉牙。本审计把它们单独归类为 fixtureMentions，不计入重复度，也不参与「本次是否处理」的判定。"
+      },
+      "handlingKey": ".detail-main|scripts/tools/verify-site.js|5964",
+      "handlingSource": "fixture-policy"
+    },
+    {
+      "className": ".detail-main",
+      "alsoMentions": [],
+      "file": "scripts/tools/verify-site.js",
+      "line": 5965,
+      "selector": ".detail-main",
+      "ruleText": ".detail-main { width: min(1100px, 100%); margin-inline: auto; }",
+      "declarations": [
+        "width: min(1100px, 100%)",
+        "margin-inline: auto"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "width: min(1100px, 100%)"
+      ],
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "shellKey": "verify-site.js::(test-tool)",
+      "sourceKind": "fixture-string",
+      "regionKind": "js-string",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不适用（测试工具载荷，不是产物样式定义）",
+        "reason": "这些规则文本是 verify-site.js 的**变异锚点 / 断言载荷**：它们必须逐字引用产品规则，否则变异就锚不住（把产品规则改掉、门禁却什么都不响）。把它们「去重」或「收口」等于拆掉牙。本审计把它们单独归类为 fixtureMentions，不计入重复度，也不参与「本次是否处理」的判定。"
+      },
+      "handlingKey": ".detail-main|scripts/tools/verify-site.js|5965",
+      "handlingSource": "fixture-policy"
+    },
+    {
+      "className": ".snote",
+      "alsoMentions": [],
+      "file": "scripts/tools/verify-site.js",
+      "line": 6161,
+      "selector": ".snote",
+      "ruleText": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "declarations": [
+        "color: var(--mut)",
+        "font-size: var(--fs-sm)",
+        "line-height: 1.7",
+        "margin: 0 0 var(--s3)",
+        "max-width: none",
+        "overflow-wrap: anywhere"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "max-width: none"
+      ],
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "shellKey": "verify-site.js::(test-tool)",
+      "sourceKind": "fixture-string",
+      "regionKind": "js-string",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不适用（测试工具载荷，不是产物样式定义）",
+        "reason": "这些规则文本是 verify-site.js 的**变异锚点 / 断言载荷**：它们必须逐字引用产品规则，否则变异就锚不住（把产品规则改掉、门禁却什么都不响）。把它们「去重」或「收口」等于拆掉牙。本审计把它们单独归类为 fixtureMentions，不计入重复度，也不参与「本次是否处理」的判定。"
+      },
+      "handlingKey": ".snote|scripts/tools/verify-site.js|6161",
+      "handlingSource": "fixture-policy"
+    },
+    {
+      "className": ".snote",
+      "alsoMentions": [],
+      "file": "scripts/tools/verify-site.js",
+      "line": 6811,
+      "selector": ".snote",
+      "ruleText": ".snote { padding-right: calc(100% - 70ch); }",
+      "declarations": [
+        "padding-right: calc(100% - 70ch)"
+      ],
+      "hasWidthDeclaration": false,
+      "widthDeclarations": [],
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "shellKey": "verify-site.js::(test-tool)",
+      "sourceKind": "fixture-string",
+      "regionKind": "js-string",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不适用（测试工具载荷，不是产物样式定义）",
+        "reason": "这些规则文本是 verify-site.js 的**变异锚点 / 断言载荷**：它们必须逐字引用产品规则，否则变异就锚不住（把产品规则改掉、门禁却什么都不响）。把它们「去重」或「收口」等于拆掉牙。本审计把它们单独归类为 fixtureMentions，不计入重复度，也不参与「本次是否处理」的判定。"
+      },
+      "handlingKey": ".snote|scripts/tools/verify-site.js|6811",
+      "handlingSource": "fixture-policy"
+    },
+    {
+      "className": ".snote",
+      "alsoMentions": [],
+      "file": "scripts/tools/verify-site.js",
+      "line": 6814,
+      "selector": ".snote ~ .snote",
+      "ruleText": ".snote ~ .snote { max-width: 70ch; }",
+      "declarations": [
+        "max-width: 70ch"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "max-width: 70ch"
+      ],
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "shellKey": "verify-site.js::(test-tool)",
+      "sourceKind": "fixture-string",
+      "regionKind": "js-string",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不适用（测试工具载荷，不是产物样式定义）",
+        "reason": "这些规则文本是 verify-site.js 的**变异锚点 / 断言载荷**：它们必须逐字引用产品规则，否则变异就锚不住（把产品规则改掉、门禁却什么都不响）。把它们「去重」或「收口」等于拆掉牙。本审计把它们单独归类为 fixtureMentions，不计入重复度，也不参与「本次是否处理」的判定。"
+      },
+      "handlingKey": ".snote|scripts/tools/verify-site.js|6814",
+      "handlingSource": "fixture-policy"
+    },
+    {
+      "className": ".snote",
+      "alsoMentions": [],
+      "file": "scripts/tools/verify-site.js",
+      "line": 6817,
+      "selector": ".snote:not(:first-of-type)",
+      "ruleText": ".snote:not(:first-of-type) { max-width: 70ch; }",
+      "declarations": [
+        "max-width: 70ch"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "max-width: 70ch"
+      ],
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "shellKey": "verify-site.js::(test-tool)",
+      "sourceKind": "fixture-string",
+      "regionKind": "js-string",
+      "mediaQueries": [],
+      "handling": {
+        "handled": false,
+        "verdict": "不适用（测试工具载荷，不是产物样式定义）",
+        "reason": "这些规则文本是 verify-site.js 的**变异锚点 / 断言载荷**：它们必须逐字引用产品规则，否则变异就锚不住（把产品规则改掉、门禁却什么都不响）。把它们「去重」或「收口」等于拆掉牙。本审计把它们单独归类为 fixtureMentions，不计入重复度，也不参与「本次是否处理」的判定。"
+      },
+      "handlingKey": ".snote|scripts/tools/verify-site.js|6817",
+      "handlingSource": "fixture-policy"
+    },
+    {
+      "className": ".snote",
+      "alsoMentions": [],
+      "file": "scripts/tools/verify-site.js",
+      "line": 6820,
+      "selector": ".snote",
+      "ruleText": ".snote { max-width: 70ch; }",
+      "declarations": [
+        "max-width: 70ch"
+      ],
+      "hasWidthDeclaration": true,
+      "widthDeclarations": [
+        "max-width: 70ch"
+      ],
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "shellKey": "verify-site.js::(test-tool)",
+      "sourceKind": "fixture-string",
+      "regionKind": "js-string",
+      "mediaQueries": [
+        "@media (min-width: 1500px)"
+      ],
+      "handling": {
+        "handled": false,
+        "verdict": "不适用（测试工具载荷，不是产物样式定义）",
+        "reason": "这些规则文本是 verify-site.js 的**变异锚点 / 断言载荷**：它们必须逐字引用产品规则，否则变异就锚不住（把产品规则改掉、门禁却什么都不响）。把它们「去重」或「收口」等于拆掉牙。本审计把它们单独归类为 fixtureMentions，不计入重复度，也不参与「本次是否处理」的判定。"
+      },
+      "handlingKey": ".snote|scripts/tools/verify-site.js|6820",
+      "handlingSource": "fixture-policy"
+    }
+  ],
+  "duplicateGroups": [
+    {
+      "className": ".stop",
+      "ruleText": ".stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }",
+      "copies": 5,
+      "occurrences": [
+        "scripts/tools/build-local.js:1054 (shell-status)",
+        "scripts/tools/build-local.js:1611 (shell-plans-coding)",
+        "scripts/tools/build-local.js:1742 (shell-plans-api)",
+        "scripts/tools/build-local.js:1885 (shell-plans-hub)",
+        "scripts/tools/build-local.js:2002 (shell-models)"
+      ],
+      "hasWidthDeclaration": false,
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      }
+    },
+    {
+      "className": ".stop",
+      "ruleText": ".stop h1 { font-size: 19px; margin: 0; }",
+      "copies": 5,
+      "occurrences": [
+        "scripts/tools/build-local.js:1055 (shell-status)",
+        "scripts/tools/build-local.js:1612 (shell-plans-coding)",
+        "scripts/tools/build-local.js:1743 (shell-plans-api)",
+        "scripts/tools/build-local.js:1886 (shell-plans-hub)",
+        "scripts/tools/build-local.js:2003 (shell-models)"
+      ],
+      "hasWidthDeclaration": false,
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      }
+    },
+    {
+      "className": ".stop",
+      "ruleText": ".stop .meta { color: var(--mut); font-size: var(--fs-sm); }",
+      "copies": 5,
+      "occurrences": [
+        "scripts/tools/build-local.js:1056 (shell-status)",
+        "scripts/tools/build-local.js:1613 (shell-plans-coding)",
+        "scripts/tools/build-local.js:1744 (shell-plans-api)",
+        "scripts/tools/build-local.js:1887 (shell-plans-hub)",
+        "scripts/tools/build-local.js:2004 (shell-models)"
+      ],
+      "hasWidthDeclaration": false,
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（5 份副本、无宽度）",
+        "reason": "`.stop`（页头行）在 status / plans / api-plans / plans-hub / models 五个页面壳里逐字复制了 5 份，连同 `.stop h1` / `.stop .meta` 各 5 份。它们**都不含宽度声明**，因此与本次的缺陷形态（说明被限宽）无关。同一条理由：不为了\"更漂亮\"去动 5 个页面壳。"
+      }
+    },
+    {
+      "className": ".ph2",
+      "ruleText": ".ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }",
+      "copies": 4,
+      "occurrences": [
+        "scripts/tools/build-local.js:1620 (shell-plans-coding)",
+        "scripts/tools/build-local.js:1745 (shell-plans-api)",
+        "scripts/tools/build-local.js:1888 (shell-plans-hub)",
+        "scripts/tools/build-local.js:2005 (shell-models)"
+      ],
+      "hasWidthDeclaration": false,
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（多处复制但无宽度）",
+        "reason": "`.ph2`（小节标题）在页面壳里逐字复制了 4 份，另有 4 处是**加了父级作用域**的变体（`.pchanges .ph2` / `.pplandeals .ph2` / `.phubsec .ph2` / `.asec .ph2`）——后者是各页面壳的**独有规则**，本来就不该合并。关键是：`.ph2` 全部不含宽度声明，四处逐字相同的取值不会产生布局漂移。收口它们需要改动 4~5 个页面壳的样式抽取，收益是\"更整齐\"，风险是新的回归面 —— 不为了代码更漂亮做大重构。"
+      }
+    },
+    {
+      "className": ".plist",
+      "ruleText": ".plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }",
+      "copies": 4,
+      "occurrences": [
+        "scripts/tools/build-local.js:1621 (shell-plans-coding)",
+        "scripts/tools/build-local.js:1746 (shell-plans-api)",
+        "scripts/tools/build-local.js:1889 (shell-plans-hub)",
+        "scripts/tools/build-local.js:2006 (shell-models)"
+      ],
+      "hasWidthDeclaration": true,
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（4 份副本、取值逐字相同）",
+        "reason": "`.plist` 的宽度声明在 4 个页面壳里各一份，但**四份逐字相同**（`max-width: none`，跟随数据容器）。漂移风险来自「同一条规则、两种取值」（`.snote` 正是这种），而不是「同一取值写了四遍」。本次只处理前者；后者如实登记在案，留给将来有真实漂移迹象时再收。"
+      }
+    },
+    {
+      "className": ".plist",
+      "ruleText": ".plist b { color: var(--ink2); }",
+      "copies": 4,
+      "occurrences": [
+        "scripts/tools/build-local.js:1622 (shell-plans-coding)",
+        "scripts/tools/build-local.js:1747 (shell-plans-api)",
+        "scripts/tools/build-local.js:1890 (shell-plans-hub)",
+        "scripts/tools/build-local.js:2007 (shell-models)"
+      ],
+      "hasWidthDeclaration": false,
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（4 份副本、取值逐字相同）",
+        "reason": "`.plist` 的宽度声明在 4 个页面壳里各一份，但**四份逐字相同**（`max-width: none`，跟随数据容器）。漂移风险来自「同一条规则、两种取值」（`.snote` 正是这种），而不是「同一取值写了四遍」。本次只处理前者；后者如实登记在案，留给将来有真实漂移迹象时再收。"
+      }
+    },
+    {
+      "className": ".ph2",
+      "ruleText": ".pchanges .ph2 { margin: 0 0 var(--s2); }",
+      "copies": 2,
+      "occurrences": [
+        "scripts/tools/build-local.js:1529 (shell-plans-coding)",
+        "scripts/tools/build-local.js:1913 (shell-plans-hub)"
+      ],
+      "hasWidthDeclaration": false,
+      "handling": {
+        "handled": false,
+        "verdict": "本次故意不动（多处复制但无宽度）",
+        "reason": "`.ph2`（小节标题）在页面壳里逐字复制了 4 份，另有 4 处是**加了父级作用域**的变体（`.pchanges .ph2` / `.pplandeals .ph2` / `.phubsec .ph2` / `.asec .ph2`）——后者是各页面壳的**独有规则**，本来就不该合并。关键是：`.ph2` 全部不含宽度声明，四处逐字相同的取值不会产生布局漂移。收口它们需要改动 4~5 个页面壳的样式抽取，收益是\"更整齐\"，风险是新的回归面 —— 不为了代码更漂亮做大重构。"
+      }
+    }
+  ],
+  "fixtureMentions": [
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 5939,
+      "selector": ".detail-main",
+      "ruleText": ".detail-main { width: min(1120px, 100%); margin-inline: auto; }",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "note": "测试工具里的 CSS 文本（变异锚点 / 断言载荷），不是产物样式定义，不计入重复度"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 5940,
+      "selector": ".detail-main",
+      "ruleText": ".detail-main { width: min(1120px, 100%); margin-inline: 0; }",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "note": "测试工具里的 CSS 文本（变异锚点 / 断言载荷），不是产物样式定义，不计入重复度"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 5945,
+      "selector": ".detail-main",
+      "ruleText": ".detail-main { width: min(1120px, 100%); margin-inline: auto; }",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "note": "测试工具里的 CSS 文本（变异锚点 / 断言载荷），不是产物样式定义，不计入重复度"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 5946,
+      "selector": ".detail-main",
+      "ruleText": ".detail-main { width: 820px; margin-inline: auto; }",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "note": "测试工具里的 CSS 文本（变异锚点 / 断言载荷），不是产物样式定义，不计入重复度"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 5964,
+      "selector": ".detail-main",
+      "ruleText": ".detail-main { width: min(1120px, 100%); margin-inline: auto; }",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "note": "测试工具里的 CSS 文本（变异锚点 / 断言载荷），不是产物样式定义，不计入重复度"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 5965,
+      "selector": ".detail-main",
+      "ruleText": ".detail-main { width: min(1100px, 100%); margin-inline: auto; }",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "note": "测试工具里的 CSS 文本（变异锚点 / 断言载荷），不是产物样式定义，不计入重复度"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 6161,
+      "selector": ".snote",
+      "ruleText": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "note": "测试工具里的 CSS 文本（变异锚点 / 断言载荷），不是产物样式定义，不计入重复度"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 6811,
+      "selector": ".snote",
+      "ruleText": ".snote { padding-right: calc(100% - 70ch); }",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "note": "测试工具里的 CSS 文本（变异锚点 / 断言载荷），不是产物样式定义，不计入重复度"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 6814,
+      "selector": ".snote ~ .snote",
+      "ruleText": ".snote ~ .snote { max-width: 70ch; }",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "note": "测试工具里的 CSS 文本（变异锚点 / 断言载荷），不是产物样式定义，不计入重复度"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 6817,
+      "selector": ".snote:not(:first-of-type)",
+      "ruleText": ".snote:not(:first-of-type) { max-width: 70ch; }",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "note": "测试工具里的 CSS 文本（变异锚点 / 断言载荷），不是产物样式定义，不计入重复度"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 6820,
+      "selector": ".snote",
+      "ruleText": ".snote { max-width: 70ch; }",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "note": "测试工具里的 CSS 文本（变异锚点 / 断言载荷），不是产物样式定义，不计入重复度"
+    }
+  ],
+  "notTouched": [
+    {
+      "id": "ph2-plist-stop-cstop-ptable",
+      "what": ".ph2 / .plist / .stop / .cstop / .ptable* 仍是多个页面壳各自复制一份的规则",
+      "why": "本次的目标是**减少布局漂移风险**，不是「代码更漂亮」。这五组类名里只有 `.plist` 带宽度声明，而且四处逐字相同（`max-width: none`）—— 四份相同取值不会产生漂移；真正的漂移来自「同一条规则、两种取值」（`.snote` 就是这样：4 份 70ch + 4 份 none）。把它们一并收口需要改动 5 个页面壳的样式抽取顺序与作用域（局部规则与共享规则的选择器优先级、`${extraCss}` 注入点都要重新论证），收益是「更整齐」，风险是**新的、没有被本次变异牙覆盖的回归面** —— 所以本次故意不动。",
+      "evidence": "layout-rule-inventory.json 的 duplicateGroups"
+    },
+    {
+      "id": "local-shell-extraction-order",
+      "what": "各页面壳「共享 <style> → 页面局部 <style>」的抽取顺序与会话作用域",
+      "why": "它已经是被验证过的机制（`.detail-main` 一直靠它工作）；改它会牵动全部 186 个页面，超出「布局漂移治理」的范围。"
+    },
+    {
+      "id": "verify-site-fixtures",
+      "what": "verify-site.js 里的 CSS 文本（变异锚点 / 断言载荷，如 WIDE_SNOTE_FROZEN、`.detail-main` 的三处 anchor）",
+      "why": "它们是**测试工具的输入**，不是产物样式定义。它们**必须**逐字引用产品规则（否则变异就锚不住）；把它们「去重」等于把变异牙拆掉。本审计把它们单独归类（fixtureMentions），不计入重复度。"
+    }
+  ],
+  "unhandledProductEntries": []
+}

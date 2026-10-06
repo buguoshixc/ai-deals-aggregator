@@ -1,0 +1,12 @@
+报告：research/_raw/secondary-page-layout-unification/geometry/consumer-selftest/case1-union-156.json
+total=842 failed=48
+数组型容器：
+  - metrics.layoutNotes · 156 行 · 字段 route,index,position,codes,kind,family,regionSel,column,width,textWidth,ratio,text
+  - metrics.layoutNotesAt1600 · 156 行 · 字段 route,index,position,codes,kind,family,regionSel,column,width,textWidth,ratio,text
+  - metrics.layoutViolations · 48 行 · 字段 route,kind,family,codes,noteKeys,noteCount,regionSel,column,textWidth
+条级码计数（metrics.layoutNotes）：{"note-narrow":48,"note-axis":156,"note-ink-narrow":108}
+页级码计数（metrics.layoutViolations）：{"note-narrow":48,"note-axis":48}
+按**接受码集合** /^note-(ink-)?narrow$/ 判窄：条级命中 156 条
+  与 truth-401 的 156 条真值：命中 156/156 · 漏 0
+  对照组 245 条里被误报：0
+  真值命中里的码分布：{"note-narrow":48,"note-ink-narrow":108}

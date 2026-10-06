@@ -1,0 +1,40 @@
+﻿# (a) 内容不变证明 · git 侧读数  @ 2026-10-06T15:19:40.2816439+08:00
+## A1. git rev-parse HEAD（基线应为 1f225d2…）
+1f225d22625c15702995785394b60185ebd0520b
+## A2. git diff --name-only 1f225d2..HEAD -- deals.json plans.json api-plans.json models.json model-registry-links.json scripts/data  （提交区间：应为空）
+(空)
+## A3. git status --porcelain -- deals.json plans.json api-plans.json models.json model-registry-links.json scripts/data  （未提交改动：应为空）
+(空)
+## A4. git diff --name-only -- deals.json plans.json api-plans.json models.json model-registry-links.json scripts/data  （工作区 vs 索引：应为空）
+(空)
+## A5. git diff --cached --name-only -- deals.json plans.json api-plans.json models.json model-registry-links.json scripts/data  （索引 vs HEAD：应为空）
+(空)
+## A6. git status --porcelain  （全仓未提交改动；提交区间内 0 提交，故 A2 与 A3 合起来即全部证据）
+ M index.html
+ M scripts/lib/archive.js
+ M scripts/lib/page-kinds.js
+ M scripts/tools/archive-selftest.js
+ M scripts/tools/build-local.js
+ M scripts/tools/seo-selftest.js
+ M scripts/tools/verify-site.js
+?? research/_raw/secondary-page-layout-unification/
+## A7. git diff --name-only 1f225d2 （工作区 vs 基线：本次改动的**完整**文件清单）
+index.html
+scripts/lib/archive.js
+scripts/lib/page-kinds.js
+scripts/tools/archive-selftest.js
+scripts/tools/build-local.js
+scripts/tools/seo-selftest.js
+scripts/tools/verify-site.js
+## A8. 基线数据的 sha256（盘上真值，与 dist 内嵌副本逐字节比）
+d5100ba056dd4fcbaf687d9f3da2acf029312e5fe183bdfcf261f70b135199f9  deals.json
+1668d19cadbce7e2feb1f662001c87effb520b2669027628ee0c89cc16e154ba  plans.json
+acebde3a35bebbc61dd9cddea55654c1eed6f7103332f5aeae8e231cdae6e81c  api-plans.json
+ce69f006f0fa481a50f442ad06e0113eb963125ddddc03b18a2da752a8988370  models.json
+722d5a969bab68e383552e16184b5613c48ec82002ff07e14067314c6818fd7d  model-registry-links.json
+## A9. dist 内嵌的公开数据副本 sha256（应与 A8 的源文件一致）
+816ae7eebff27a10bc0be47dc2a5063ce75d29be8edef6fcd279b4495e7b1542  dist/deals.json
+1668d19cadbce7e2feb1f662001c87effb520b2669027628ee0c89cc16e154ba  dist/plans.json
+acebde3a35bebbc61dd9cddea55654c1eed6f7103332f5aeae8e231cdae6e81c  dist/api-plans.json
+ce69f006f0fa481a50f442ad06e0113eb963125ddddc03b18a2da752a8988370  dist/models.json
+722d5a969bab68e383552e16184b5613c48ec82002ff07e14067314c6818fd7d  dist/model-registry-links.json

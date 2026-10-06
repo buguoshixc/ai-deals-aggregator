@@ -1,0 +1,84 @@
+# Data-docs self-test (/docs/data/ + /data/index.json)
+# $ node scripts/tools/data-docs-selftest.js --dir=dist
+# runAt 2026-10-06T15:42:15.082Z · verify-site.js sha256 2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e
+
+
+① Manifest：形状与可复现
+  ✓ Manifest 覆盖 9 份真实数据集
+  ✓ 唯一注册表 PUBLIC_DATASETS 声明了 9 份数据集，且每一份真值文件都在仓库里
+  ✓ Manifest 自身形状零问题
+  ✓ Manifest 两次构建逐字节相同（按 id 排序）
+  ✓ schemaVersion 与真实文件一致
+  ✓ 记录数与真实文件一致
+  ✓ 每个 endpoint 在仓库里都真实存在
+  ✓ updatedAt 与真实文件逐字段一致（含时间形状）
+  ✓ 类别表与 Manifest 的类别**双向相等**：表里声明的每一类都真有数据集，且 Manifest 里没有表外的类别
+  ✓ 注册表 PUBLIC_DATASETS 声明的 category 全部落在类别表里（注册表 ↔ 类别表 同源对账）
+  ✓ 两种时间形状都被真实数据覆盖：deals 是真实时刻，plans/api/models 是日期规范化
+
+② 页面：六个必需段落 + 断言
+  ✓ 真实数据上数据文档页断言零问题（断言不是恒红）
+  ✓ 六个必需段落齐全
+  ✓ 每份数据集都在页面上（endpoint + id）
+  ✓ 使用示例用的是真实 endpoint（JavaScript + Python）
+  ✓ 引用方式同时要求本站 URL、官方 source URL 与更新时间
+  ✓ 引用示例里带官方出处与更新日期
+  ✓ 页面显式标出每份数据的时间形状（读者不会以为它们是同一时刻产出的）
+  ✓ 页面给出 Manifest 地址并说明"只描述数据集"
+
+③ License：如实反映仓库现状
+  ✓ 仓库许可证状态：没有 LICENSE 文件
+  ✓ 没有 LICENSE 时写明"需要项目所有者决定"，不擅自决定
+
+④ 牙 #12：文档里的 JSON endpoint 不存在
+  ✓ 【牙】Manifest 里写了一个不存在的 endpoint → assertEndpointsExist 变红
+  ✓ 【牙】同一个错误在页面断言里也会变红（模板与 Manifest 不一致）
+  ✓ 【牙】页面上少列了一份数据集 → 红
+
+⑤ 牙 #13：schemaVersion 与真实数据不一致
+  ✓ 【牙】Manifest 把 deals 的 schemaVersion 写成 99 → 与真实数据对账变红
+
+⑥ 牙 #14：Dataset Manifest 数量与真实数据不一致
+  ✓ 【牙】Manifest 把 deals 记录数多写 1 → 与真实数据对账变红
+  ✓ 【牙】真实数据有记录却把 count 写成"不适用" → 红
+  ✓ 【牙】缺 url / 缺用途 / count 条数不符 → Manifest 形状校验变红
+
+⑦ 时间形状与类别（v3.0 新增口径）
+  ✓ timeShapeOf 正确区分三种形状
+  ✓ 【牙】把真实时刻标成「日期规范化」→ Manifest 形状校验变红
+  ✓ 【牙】updatedAt 与磁盘不一致 → assertUpdatedAt 变红
+  ✓ 【牙】六类里少一类（models）→ Manifest 形状校验变红
+  ✓ 【牙】未知类别 → Manifest 形状校验变红
+  ✓ 【牙】页面上把某一份的时间形状标错 → 页面断言变红
+  ✓ 【牙】页面上不写 Manifest 地址 → 页面断言变红
+
+⑧ 结论性词汇与声明表
+  ✓ 【牙】数据文档页注入结论性词汇 → 红
+  ✓ page-kinds 声明了 /docs/data/ 的 kind
+  ✓ data-docs 页的 ItemList 要求已在声明表里（在场 + 行数对账）
+  ✓ assertDeclared() 零问题（新家族没漏登记）
+
+⑨ 真实产物：/docs/data/ 与 /data/index.json（接线后才有；未接线时如实跳过）
+  ✓ dist 现场：Manifest 9 份数据集与磁盘逐字段对账、页面断言零问题
+  ✓ dist 现场：三份既有数据集与源文件逐字节相同（兼容承诺）
+  ✓ dist 现场：/data/index.json 只描述数据集（不含任何数据记录数组）
+  ✓ dist 现场：方向 2 扫描 36 个 JSON，未认领 0 个
+  ✓ dist 现场：覆盖统计对得上（公开数据集 == Manifest 条数 · Manifest 1 个 · 豁免项逐个在场）
+
+⑩ P2-25 方向 2：唯一注册表 + 产物 JSON 认领（含变异牙）
+  ✓ 注册表形状零问题（唯一注册表自己也被校验）
+  ✓ 注册表每一类都有数据集（六类齐 · 与 Manifest 同一口径）
+  ✓ 注册表按 emit 分派：拷贝类进 PUBLIC_FILES、生成类进 GENERATED_FILES（两处都不再手写清单）
+  ✓ source-health.json 的豁免是"写明理由"的，不是静默白名单
+  ✓ Feed 家族的归类带得出注册表归属（换的是另一份注册表，不是没人管）
+  ✓ 【防恒红】干净文件清单 → 零问题（先证明这条扫描在真实口径下会绿）
+  ✓ 【牙】产物里新增一份未登记的公开 JSON（dist/experimental-feed.json）→ 红，且点名文件与下一步
+  ✓ 【牙】子目录里新增未登记 JSON 同样红（扫描是全树，不是只看产物根）
+  ✓ 【牙】注册表有、Manifest 少一份（models）→ 注册表↔Manifest 双向红
+  ✓ 【牙】Manifest 里出现注册表外的数据集 → 红（Manifest 不许绕过唯一注册表）
+  ✓ 【牙】豁免项在产物里不存在（过期豁免）→ 红
+  ✓ 【防恒红】Feed 产出清单与产物里的 Feed 文件一致 → 零问题
+  ✓ 【牙】feed 目录里出现注册表没产出的 JSON → 红（结构性豁免不成立）
+  ✓ 【牙】Feed 注册表声明产出、产物里却没有 → 红
+
+=== v3.0 数据出口演练：58 项通过，0 项失败 ===

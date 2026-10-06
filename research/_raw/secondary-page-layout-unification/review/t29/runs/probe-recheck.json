@@ -1,0 +1,700 @@
+[
+  {
+    "dir": "scratch/clean",
+    "route": "plans/coding/",
+    "css": null,
+    "notes": 5,
+    "firesNew": 0,
+    "firesOld": 0,
+    "rows": [
+      {
+        "i": 0,
+        "box": "1380x20.39",
+        "visible": 84,
+        "raw": 84,
+        "glyphs": 1,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 1,
+        "box": "1380x0",
+        "visible": 0,
+        "raw": 44,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 2,
+        "box": "1380x20.39",
+        "visible": 41,
+        "raw": 41,
+        "glyphs": 1,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 3,
+        "box": "1354x20.39",
+        "visible": 80,
+        "raw": 80,
+        "glyphs": 3,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 4,
+        "box": "1380x40.78",
+        "visible": 136,
+        "raw": 136,
+        "glyphs": 4,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      }
+    ]
+  },
+  {
+    "dir": "scratch/clean",
+    "route": "plans/",
+    "css": null,
+    "notes": 12,
+    "firesNew": 0,
+    "firesOld": 0,
+    "rows": [
+      {
+        "i": 0,
+        "box": "1380x20.39",
+        "visible": 121,
+        "raw": 121,
+        "glyphs": 1,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 1,
+        "box": "1354x20.39",
+        "visible": 66,
+        "raw": 66,
+        "glyphs": 3,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 2,
+        "box": "1354x20.39",
+        "visible": 46,
+        "raw": 46,
+        "glyphs": 1,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 3,
+        "box": "1354x20.39",
+        "visible": 92,
+        "raw": 92,
+        "glyphs": 3,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 4,
+        "box": "1354x20.39",
+        "visible": 18,
+        "raw": 18,
+        "glyphs": 1,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 5,
+        "box": "1354x20.39",
+        "visible": 79,
+        "raw": 79,
+        "glyphs": 3,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 6,
+        "box": "1354x20.39",
+        "visible": 63,
+        "raw": 63,
+        "glyphs": 3,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 7,
+        "box": "1354x20.39",
+        "visible": 32,
+        "raw": 32,
+        "glyphs": 3,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 8,
+        "box": "1354x20.39",
+        "visible": 67,
+        "raw": 67,
+        "glyphs": 3,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 9,
+        "box": "1354x20.39",
+        "visible": 12,
+        "raw": 12,
+        "glyphs": 1,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 10,
+        "box": "1380x20.39",
+        "visible": 53,
+        "raw": 53,
+        "glyphs": 8,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 11,
+        "box": "1380x20.39",
+        "visible": 35,
+        "raw": 35,
+        "glyphs": 8,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      }
+    ]
+  },
+  {
+    "dir": "scratch/key",
+    "route": "plans/",
+    "css": null,
+    "notes": 12,
+    "firesNew": 12,
+    "firesOld": 0,
+    "rows": [
+      {
+        "i": 0,
+        "box": "1380x0",
+        "visible": 121,
+        "raw": 121,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 1,
+        "box": "1354x0",
+        "visible": 66,
+        "raw": 66,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 2,
+        "box": "1354x0",
+        "visible": 46,
+        "raw": 46,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 3,
+        "box": "1354x0",
+        "visible": 92,
+        "raw": 92,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 4,
+        "box": "1354x0",
+        "visible": 18,
+        "raw": 18,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 5,
+        "box": "1354x0",
+        "visible": 79,
+        "raw": 79,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 6,
+        "box": "1354x0",
+        "visible": 63,
+        "raw": 63,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 7,
+        "box": "1354x0",
+        "visible": 32,
+        "raw": 32,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 8,
+        "box": "1354x0",
+        "visible": 67,
+        "raw": 67,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 9,
+        "box": "1354x0",
+        "visible": 12,
+        "raw": 12,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 10,
+        "box": "1380x0",
+        "visible": 53,
+        "raw": 53,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 11,
+        "box": "1380x0",
+        "visible": 35,
+        "raw": 35,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      }
+    ]
+  },
+  {
+    "dir": "scratch/key-mixed",
+    "route": "plans/",
+    "css": null,
+    "notes": 12,
+    "firesNew": 12,
+    "firesOld": 0,
+    "rows": [
+      {
+        "i": 0,
+        "box": "1380x0",
+        "visible": 121,
+        "raw": 133,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 1,
+        "box": "1354x0",
+        "visible": 66,
+        "raw": 78,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 2,
+        "box": "1354x0",
+        "visible": 46,
+        "raw": 58,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 3,
+        "box": "1354x0",
+        "visible": 92,
+        "raw": 104,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 4,
+        "box": "1354x0",
+        "visible": 18,
+        "raw": 30,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 5,
+        "box": "1354x0",
+        "visible": 79,
+        "raw": 91,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 6,
+        "box": "1354x0",
+        "visible": 63,
+        "raw": 75,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 7,
+        "box": "1354x0",
+        "visible": 32,
+        "raw": 44,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 8,
+        "box": "1354x0",
+        "visible": 67,
+        "raw": 79,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 9,
+        "box": "1354x0",
+        "visible": 12,
+        "raw": 24,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 10,
+        "box": "1380x0",
+        "visible": 53,
+        "raw": 65,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      },
+      {
+        "i": 11,
+        "box": "1380x0",
+        "visible": 35,
+        "raw": 47,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": false
+      }
+    ]
+  },
+  {
+    "dir": "scratch/bare-fs0-plans",
+    "route": "plans/",
+    "css": null,
+    "notes": 12,
+    "firesNew": 12,
+    "firesOld": 12,
+    "rows": [
+      {
+        "i": 0,
+        "box": "1380x0",
+        "visible": 121,
+        "raw": 121,
+        "glyphs": 0,
+        "noscript": false,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": true
+      },
+      {
+        "i": 1,
+        "box": "1354x0",
+        "visible": 66,
+        "raw": 66,
+        "glyphs": 0,
+        "noscript": false,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": true
+      },
+      {
+        "i": 2,
+        "box": "1354x0",
+        "visible": 46,
+        "raw": 46,
+        "glyphs": 0,
+        "noscript": false,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": true
+      },
+      {
+        "i": 3,
+        "box": "1354x0",
+        "visible": 92,
+        "raw": 92,
+        "glyphs": 0,
+        "noscript": false,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": true
+      },
+      {
+        "i": 4,
+        "box": "1354x0",
+        "visible": 18,
+        "raw": 18,
+        "glyphs": 0,
+        "noscript": false,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": true
+      },
+      {
+        "i": 5,
+        "box": "1354x0",
+        "visible": 79,
+        "raw": 79,
+        "glyphs": 0,
+        "noscript": false,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": true
+      },
+      {
+        "i": 6,
+        "box": "1354x0",
+        "visible": 63,
+        "raw": 63,
+        "glyphs": 0,
+        "noscript": false,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": true
+      },
+      {
+        "i": 7,
+        "box": "1354x0",
+        "visible": 32,
+        "raw": 32,
+        "glyphs": 0,
+        "noscript": false,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": true
+      },
+      {
+        "i": 8,
+        "box": "1354x0",
+        "visible": 67,
+        "raw": 67,
+        "glyphs": 0,
+        "noscript": false,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": true
+      },
+      {
+        "i": 9,
+        "box": "1354x0",
+        "visible": 12,
+        "raw": 12,
+        "glyphs": 0,
+        "noscript": false,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": true
+      },
+      {
+        "i": 10,
+        "box": "1380x0",
+        "visible": 53,
+        "raw": 53,
+        "glyphs": 0,
+        "noscript": false,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": true
+      },
+      {
+        "i": 11,
+        "box": "1380x0",
+        "visible": 35,
+        "raw": 35,
+        "glyphs": 0,
+        "noscript": false,
+        "rendered": false,
+        "firesNew": true,
+        "firesOld": true
+      }
+    ]
+  },
+  {
+    "dir": "scratch/clean",
+    "route": "plans/coding/",
+    "css": "noscript { display: block; }",
+    "notes": 5,
+    "firesNew": 0,
+    "firesOld": 0,
+    "rows": [
+      {
+        "i": 0,
+        "box": "1380x20.39",
+        "visible": 84,
+        "raw": 84,
+        "glyphs": 1,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 1,
+        "box": "1380x0",
+        "visible": 0,
+        "raw": 44,
+        "glyphs": 0,
+        "noscript": true,
+        "rendered": false,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 2,
+        "box": "1380x20.39",
+        "visible": 41,
+        "raw": 41,
+        "glyphs": 1,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 3,
+        "box": "1354x20.39",
+        "visible": 80,
+        "raw": 80,
+        "glyphs": 3,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      },
+      {
+        "i": 4,
+        "box": "1380x40.78",
+        "visible": 136,
+        "raw": 136,
+        "glyphs": 4,
+        "noscript": false,
+        "rendered": true,
+        "firesNew": false,
+        "firesOld": false
+      }
+    ]
+  }
+]

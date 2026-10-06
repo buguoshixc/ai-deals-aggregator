@@ -1,0 +1,794 @@
+{
+  "probe": "T4 independent layout probe (no shared judging code with scripts/tools/verify-site.js §22c)",
+  "generatedAt": "2026-10-06T08:17:29.528Z",
+  "dir": "dist",
+  "viewports": [
+    1440,
+    1600
+  ],
+  "overflowViewport": 390,
+  "ratio": 0.85,
+  "routeCount": 4,
+  "totals": {
+    "pages": 4,
+    "pagesWithNotes": 3,
+    "notesAt1440": 10,
+    "notesAt1600": 10,
+    "narrowNotes1440": 0,
+    "narrowPages1440": 0,
+    "narrowNotes1600": 0,
+    "narrowPages1600": 0,
+    "clippedNotes1440": 0,
+    "overflowPages390": 0,
+    "routesWithoutMain": 0
+  },
+  "narrowSets": {
+    "1440|strict|minOfBoth": [],
+    "1440|strict|mainOnly": [],
+    "1440|strict|declaredHeuristic": [],
+    "1440|loose|minOfBoth": [],
+    "1440|loose|mainOnly": [],
+    "1440|loose|declaredHeuristic": [],
+    "1600|strict|minOfBoth": [],
+    "1600|strict|mainOnly": [],
+    "1600|strict|declaredHeuristic": [],
+    "1600|loose|minOfBoth": [],
+    "1600|loose|mainOnly": [],
+    "1600|loose|declaredHeuristic": []
+  },
+  "narrowRoutes1440": [],
+  "narrowRoutes1600": [],
+  "overflowRoutes390": [],
+  "pages": [
+    {
+      "route": "",
+      "overflowViolation": false,
+      "columns": {
+        "declaredHeuristic": 1380,
+        "mainOnly": 1380,
+        "minOfBoth": 1380
+      },
+      "regionSel1440": "div.rbar",
+      "noteCount1440": 0,
+      "noteCount1600": 0,
+      "violations1440": [],
+      "violations1600": [],
+      "notes1440": [],
+      "notes1600": []
+    },
+    {
+      "route": "archive/",
+      "overflowViolation": false,
+      "columns": {
+        "declaredHeuristic": 1380,
+        "mainOnly": 1380,
+        "minOfBoth": 1380
+      },
+      "regionSel1440": "nav.crumb",
+      "noteCount1440": 5,
+      "noteCount1600": 5,
+      "violations1440": [],
+      "violations1600": [],
+      "notes1440": [
+        {
+          "key": "archive/#0",
+          "index": 0,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 1104.39,
+          "inkLines": 1,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        },
+        {
+          "key": "archive/#1",
+          "index": 1,
+          "textAreaStrict": 1354,
+          "textAreaLoose": 1354,
+          "boxWidth": 1354,
+          "contentBox": 1354,
+          "inkWidth": 256.36,
+          "inkLines": 1,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            }
+          }
+        },
+        {
+          "key": "archive/#2",
+          "index": 2,
+          "textAreaStrict": 1354,
+          "textAreaLoose": 1354,
+          "boxWidth": 1354,
+          "contentBox": 1354,
+          "inkWidth": 256.36,
+          "inkLines": 1,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            }
+          }
+        },
+        {
+          "key": "archive/#3",
+          "index": 3,
+          "textAreaStrict": 1354,
+          "textAreaLoose": 1354,
+          "boxWidth": 1354,
+          "contentBox": 1354,
+          "inkWidth": 256.36,
+          "inkLines": 1,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            }
+          }
+        },
+        {
+          "key": "archive/#4",
+          "index": 4,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 448.28,
+          "inkLines": 10,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        }
+      ],
+      "notes1600": [
+        {
+          "key": "archive/#0",
+          "index": 0,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 1104.39,
+          "inkLines": 1,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        },
+        {
+          "key": "archive/#1",
+          "index": 1,
+          "textAreaStrict": 1354,
+          "textAreaLoose": 1354,
+          "boxWidth": 1354,
+          "contentBox": 1354,
+          "inkWidth": 256.36,
+          "inkLines": 1,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            }
+          }
+        },
+        {
+          "key": "archive/#2",
+          "index": 2,
+          "textAreaStrict": 1354,
+          "textAreaLoose": 1354,
+          "boxWidth": 1354,
+          "contentBox": 1354,
+          "inkWidth": 256.36,
+          "inkLines": 1,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            }
+          }
+        },
+        {
+          "key": "archive/#3",
+          "index": 3,
+          "textAreaStrict": 1354,
+          "textAreaLoose": 1354,
+          "boxWidth": 1354,
+          "contentBox": 1354,
+          "inkWidth": 256.36,
+          "inkLines": 1,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 0.981159,
+              "ratioLoose": 0.981159
+            }
+          }
+        },
+        {
+          "key": "archive/#4",
+          "index": 4,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 448.28,
+          "inkLines": 10,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "route": "category/",
+      "overflowViolation": false,
+      "columns": {
+        "declaredHeuristic": 1380,
+        "mainOnly": 1380,
+        "minOfBoth": 1380
+      },
+      "regionSel1440": "nav.crumb",
+      "noteCount1440": 2,
+      "noteCount1600": 2,
+      "violations1440": [],
+      "violations1600": [],
+      "notes1440": [
+        {
+          "key": "category/#0",
+          "index": 0,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 1371.45,
+          "inkLines": 6,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        },
+        {
+          "key": "category/#1",
+          "index": 1,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 904.83,
+          "inkLines": 3,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        }
+      ],
+      "notes1600": [
+        {
+          "key": "category/#0",
+          "index": 0,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 1371.45,
+          "inkLines": 6,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        },
+        {
+          "key": "category/#1",
+          "index": 1,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 904.83,
+          "inkLines": 3,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "route": "category/agent/",
+      "overflowViolation": false,
+      "columns": {
+        "declaredHeuristic": 1380,
+        "mainOnly": 1380,
+        "minOfBoth": 1380
+      },
+      "regionSel1440": "nav.crumb",
+      "noteCount1440": 3,
+      "noteCount1600": 3,
+      "violations1440": [],
+      "violations1600": [],
+      "notes1440": [
+        {
+          "key": "category/agent/#0",
+          "index": 0,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 1351.69,
+          "inkLines": 5,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        },
+        {
+          "key": "category/agent/#1",
+          "index": 1,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 61.64,
+          "inkLines": 1,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        },
+        {
+          "key": "category/agent/#2",
+          "index": 2,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 1047.52,
+          "inkLines": 3,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        }
+      ],
+      "notes1600": [
+        {
+          "key": "category/agent/#0",
+          "index": 0,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 1351.69,
+          "inkLines": 5,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        },
+        {
+          "key": "category/agent/#1",
+          "index": 1,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 61.64,
+          "inkLines": 1,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        },
+        {
+          "key": "category/agent/#2",
+          "index": 2,
+          "textAreaStrict": 1380,
+          "textAreaLoose": 1380,
+          "boxWidth": 1380,
+          "contentBox": 1380,
+          "inkWidth": 1047.52,
+          "inkLines": 3,
+          "clipped": false,
+          "byDenominator": {
+            "declaredHeuristic": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "mainOnly": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            },
+            "minOfBoth": {
+              "column": 1380,
+              "narrowStrict": false,
+              "narrowLoose": false,
+              "ratioStrict": 1,
+              "ratioLoose": 1
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

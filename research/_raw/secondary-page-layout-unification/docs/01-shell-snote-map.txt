@@ -1,0 +1,30 @@
+﻿# 改动前（commit 1f225d2）build-local.js 里 .snote 页面级规则 -> 所属页面壳
+# 生成方式（只读，可复算）：git show HEAD:scripts/tools/build-local.js 逐行扫描 ^function render\w+ 与 '\.snote \{ '
+# 工作目录：D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification
+# git rev-parse HEAD: 1f225d22625c15702995785394b60185ebd0520b
+
+== 页面壳函数起点（改动前文件） ==
+   289  renderVendorLine
+   321  renderNeedRow
+   492  renderDeals
+   952  renderStatusPage
+  1213  renderChangesPage
+  1443  renderPlansPage
+  1676  renderApiPlansPage
+  1841  renderPlansHubShell
+  1962  renderModelsShell
+  2154  renderFeedsPage
+  2398  renderDirectoryPage
+
+== .snote 规则（改动前文件，逐字） ==
+  1048  shell=renderStatusPage     max-width=70ch    .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+  1347  shell=renderChangesPage    max-width=70ch    .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+  1613  shell=renderPlansPage      max-width=none    .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
+  1739  shell=renderApiPlansPage   max-width=none    .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
+  1883  shell=renderPlansHubShell  max-width=none    .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
+  2001  shell=renderModelsShell    max-width=none    .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
+  2311  shell=renderFeedsPage      max-width=70ch    .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+  2710  shell=renderDirectoryPage  max-width=70ch    .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+
+== 汇总 ==
+shell 数 = 11 · .snote 规则数 = 8

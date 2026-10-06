@@ -1,0 +1,12 @@
+核对：research/_raw/secondary-page-layout-unification/geometry/consumer-selftest/case1-union-156.json × research/_raw/secondary-page-layout-unification/geometry/truth-401.json
+容器：条级 metrics.layoutNotes · 页级 metrics.layoutViolations · 条级为必需项：true
+真值：窄说明 156 条 / 48 页 · 对照组 245 条
+实测：窄说明 156 条 / 48 页 · layoutSweep {"total":186,"wide":55,"detail":131,"other":0,"notesChecked":105,"notesJudged":156,"narrowNotes":48,"narrowNotePages":48,"narrowNotesAt1600":48,"overflowPages":0,"unexpectedDetailMain":0,"missingDetailMain":0,"unclassified":0,"desktopViewports":[1440,1600]}
+接受码集合：/^note-(ink-)?narrow$/ · 命中码分布（条级）{"note-narrow":48,"note-ink-narrow":108}（页级 {"note-narrow":48}）
+其它码（本支不判；**pass ≠ 零违规**，其它码由 §22c 自己的断言面负责）：条级 {"note-axis":156} · 页级 {"note-axis":48}
+页集合：为空 = false
+漏判：0 条 / 0 页
+（基线轮的读法：真值的 156 条里没被命中的才是漏判）
+误报（对照组成员被报成窄）：0 条
+✅ 结论：pass（expect=baseline）· 报告里有条级容器 metrics.layoutNotes ⇒ 逐条核对（最强口径） 判窄用的是接受码集合 /^note-(ink-)?narrow$/（note-narrow ∪ note-ink-narrow；note-hidden-text 不算窄）。
+证据：research/_raw/secondary-page-layout-unification/geometry/consumer-selftest/case1-result.json

@@ -1,0 +1,5163 @@
+{
+  "generatedAt": "2026-10-06T09:19:17.948Z",
+  "task": "t11 · 第二对抗者",
+  "author": "adversary",
+  "judgeAfter": {
+    "path": "scripts\\tools\\verify-site.js",
+    "sha256": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb",
+    "judge": {
+      "anchors": {
+        "start": "const WIDE_TOL = 1;",
+        "problems": "function wideProblems(geometry, meta) {",
+        "mutate": "async function wideMutate(target, anchor, replacement) {"
+      },
+      "lines": "6151–6449",
+      "lineCount": 299,
+      "sha256": "47cfc56165be000d58e69bc77431d1678926a4034e7cb6d6bc7edf14f8f4b53e"
+    },
+    "mutate": {
+      "lines": "6457–6470",
+      "lineCount": 14,
+      "sha256": "b3d6ba24f3b65d417a96e1908804dbc44ad4ae008fbe505e4ae2be285015c3dc"
+    }
+  },
+  "harness": {
+    "path": "research/_raw/secondary-page-layout-unification/adversary/harness.cjs",
+    "usage": [
+      "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=A --verify-site=<path> [--dir=dist] [--forms=id1,id2] [--json=out.json]",
+      "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=B --verify-site=<path> --dir=dist --scratch-name=dist-probe-after --forms=id1,id2",
+      "锚点：`const WIDE_TOL = 1;` → `wideProblems` 函数结束；`async function wideMutate(target, anchor, replacement) {` → 函数结束（不按行号）",
+      "锚点缺失 ⇒ exit 3 + 报告 verdict=RED（对照件 adversary/fixtures/verify-site.no-WIDE_TOL.js · verify-site.no-wideProblems.js，读数在 runs/anchor-red-*.json）"
+    ],
+    "anchorRedEvidence": [
+      "adversary/runs/anchor-red-1.json（起点锚点缺失 ⇒ EXIT=3）",
+      "adversary/runs/anchor-red-2.json（终点锚点缺失 ⇒ EXIT=3）"
+    ]
+  },
+  "flipTable": [
+    {
+      "id": "ctl-maxwidth-70ch",
+      "direction": "control",
+      "injectedCss": ".snote { max-width: 70ch; }",
+      "before": {
+        "verdict": "bite",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "judgeBoxWidth": [
+          452.81
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 452.8,
+        "inkLongestLine": 447.3
+      },
+      "after": {
+        "verdict": "bite",
+        "codes": [
+          "note-narrow",
+          "note-axis",
+          "note-narrow",
+          "note-axis",
+          "note-narrow",
+          "note-axis"
+        ],
+        "judgeBoxWidth": [
+          452.81,
+          452.81,
+          452.81
+        ],
+        "judgeTextWidth": [
+          453,
+          453,
+          453
+        ],
+        "paintInkWidth": 452.8,
+        "inkLongestLine": 447.3
+      },
+      "flipped": false,
+      "stillPassingAfter": false,
+      "modeB": [
+        {
+          "sourceFile": "modeB-after-1.json",
+          "scratchProbeValid": false,
+          "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准",
+          "exitCode": 1,
+          "seconds": 123,
+          "pinnedStable": true,
+          "verdict": "bite",
+          "assertionTotals": {
+            "assertions": 842,
+            "failed": 3
+          },
+          "failingLines": [
+            "✗ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 3 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）；category/agent/#2 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「分类之间不互斥：一条优惠可以同时」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）",
+            "✗ §22c @1600 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 3 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）；category/agent/#2 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「分类之间不互斥：一条优惠可以同时」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）",
+            "✗ §22c @760 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出） — category/agent/#0 note-narrow：category/agent/#0 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 452.45px/7 行）；category/agent/#0 note-axis：category/agent/#0 说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（容差 max(1px, 0.05 × 728px) = 36.4px）；category/agent/#1 note-narrow：category/agent/#1 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 728px · 页面列 728px · 字迹 61.64px/1 行）；category/agent/#1 note-axis：category/agent/#1 说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（容差 max(1px, 0.05 × 728px) = 36.4px）；category/agent/#2 note-narrow：category/agent/#2 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 447.52px/5 行）",
+            "✗ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 3 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）；category/agent/#2 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「分类之间不互斥：一条优惠可以同时」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）",
+            "✗ §22c @1600 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 3 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）；category/agent/#2 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「分类之间不互斥：一条优惠可以同时」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）",
+            "✗ §22c @760 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出） — category/agent/#0 note-narrow：category/agent/#0 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 452.45px/7 行）；category/agent/#0 note-axis：category/agent/#0 说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（容差 max(1px, 0.05 × 728px) = 36.4px）；category/agent/#1 note-narrow：category/agent/#1 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 728px · 页面列 728px · 字迹 61.64px/1 行）；category/agent/#1 note-axis：category/agent/#1 说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（容差 max(1px, 0.05 × 728px) = 36.4px）；category/agent/#2 note-narrow：category/agent/#2 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 447.52px/5 行）"
+          ],
+          "section22cSummary": "  ✗ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 3 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）；category/agent/#2 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「分类之间不互斥：一条优惠可以同时」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）",
+          "scratchPaint": null,
+          "scratchJudge": null,
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-ctl-maxwidth-70ch.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "d182cde0e121d2beb36d1bef02390fc8ac65f55e50b724c4b905c1dff9fde18e",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 28
+          },
+          "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-ctl-maxwidth-70ch.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+        },
+        {
+          "sourceFile": "modeB-after-2.json",
+          "scratchProbeValid": true,
+          "scratchProbeInvalidReason": null,
+          "exitCode": 1,
+          "seconds": 114,
+          "pinnedStable": true,
+          "verdict": "bite",
+          "assertionTotals": {
+            "assertions": 842,
+            "failed": 3
+          },
+          "failingLines": [
+            "✗ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 3 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）；category/agent/#2 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「分类之间不互斥：一条优惠可以同时」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）",
+            "✗ §22c @1600 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 3 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）；category/agent/#2 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「分类之间不互斥：一条优惠可以同时」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）",
+            "✗ §22c @760 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出） — category/agent/#0 note-narrow：category/agent/#0 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 452.45px/7 行）；category/agent/#0 note-axis：category/agent/#0 说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（容差 max(1px, 0.05 × 728px) = 36.4px）；category/agent/#1 note-narrow：category/agent/#1 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 728px · 页面列 728px · 字迹 61.64px/1 行）；category/agent/#1 note-axis：category/agent/#1 说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（容差 max(1px, 0.05 × 728px) = 36.4px）；category/agent/#2 note-narrow：category/agent/#2 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 447.52px/5 行）",
+            "✗ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 3 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）；category/agent/#2 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「分类之间不互斥：一条优惠可以同时」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）",
+            "✗ §22c @1600 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 3 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）；category/agent/#2 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「分类之间不互斥：一条优惠可以同时」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）",
+            "✗ §22c @760 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出） — category/agent/#0 note-narrow：category/agent/#0 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 452.45px/7 行）；category/agent/#0 note-axis：category/agent/#0 说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（容差 max(1px, 0.05 × 728px) = 36.4px）；category/agent/#1 note-narrow：category/agent/#1 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 728px · 页面列 728px · 字迹 61.64px/1 行）；category/agent/#1 note-axis：category/agent/#1 说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（容差 max(1px, 0.05 × 728px) = 36.4px）；category/agent/#2 note-narrow：category/agent/#2 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 447.52px/5 行）"
+          ],
+          "section22cSummary": "  ✗ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 3 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）；category/agent/#2 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「分类之间不互斥：一条优惠可以同时」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）",
+          "scratchPaint": null,
+          "scratchJudge": null,
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-ctl-maxwidth-70ch.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "d182cde0e121d2beb36d1bef02390fc8ac65f55e50b724c4b905c1dff9fde18e",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 28
+          },
+          "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-ctl-maxwidth-70ch.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+        },
+        {
+          "sourceFile": "modeB-before.json",
+          "scratchProbeValid": true,
+          "scratchProbeInvalidReason": null,
+          "exitCode": 1,
+          "seconds": 95,
+          "pinnedStable": true,
+          "verdict": "bite",
+          "assertionTotals": {
+            "assertions": 827,
+            "failed": 2
+          },
+          "failingLines": [
+            "✗ §22c @1440 页面级说明与主数据区同轴（宽 ≥ 0.85×主数据区、与主容器或数据区 ≤1px、自身不裁切） — 105 页有页面级说明 · 81 页标为「无页面级说明」（跳过该条、不算失败：/ deal/017bdbc04e70/ deal/0273d8b23412/ …（还有 78）） · 窄说明 1 · 不同轴 1 · 裁切 0 · 同轴锚：主数据区 103 页 / 页面主容器 104 页 / 两者都 103 页 / 都不 1 页 · 命中样例：category/agent/ [note-narrow, note-axis] 说明 452.81px（主数据区 .ctable 1380px · 页面列 1380px）",
+            "✗ §22c @760 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-narrow：说明宽 452.81px < 0.85 × 728px（主数据区 .ctable 728px · 页面列 728px）；category/agent/ note-axis：说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（左右各容许 1px）",
+            "✗ §22c @1440 页面级说明与主数据区同轴（宽 ≥ 0.85×主数据区、与主容器或数据区 ≤1px、自身不裁切） — 105 页有页面级说明 · 81 页标为「无页面级说明」（跳过该条、不算失败：/ deal/017bdbc04e70/ deal/0273d8b23412/ …（还有 78）） · 窄说明 1 · 不同轴 1 · 裁切 0 · 同轴锚：主数据区 103 页 / 页面主容器 104 页 / 两者都 103 页 / 都不 1 页 · 命中样例：category/agent/ [note-narrow, note-axis] 说明 452.81px（主数据区 .ctable 1380px · 页面列 1380px）",
+            "✗ §22c @760 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-narrow：说明宽 452.81px < 0.85 × 728px（主数据区 .ctable 728px · 页面列 728px）；category/agent/ note-axis：说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（左右各容许 1px）"
+          ],
+          "section22cSummary": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+          "scratchPaint": null,
+          "scratchJudge": null,
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-ctl-maxwidth-70ch.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "d182cde0e121d2beb36d1bef02390fc8ac65f55e50b724c4b905c1dff9fde18e",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 28
+          },
+          "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-ctl-maxwidth-70ch.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756"
+        }
+      ],
+      "modeBConfirmedFalseGreen": false
+    },
+    {
+      "id": "writing-mode-vertical-fullwidth",
+      "direction": "writing-mode（盒宽锁满宽）",
+      "injectedCss": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; }",
+      "before": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 338,
+        "inkLongestLine": 16
+      },
+      "after": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "judgeTextWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "paintInkWidth": 338,
+        "inkLongestLine": 16
+      },
+      "flipped": false,
+      "stillPassingAfter": true,
+      "modeB": [
+        {
+          "sourceFile": "modeB-after-1.json",
+          "scratchProbeValid": false,
+          "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准",
+          "exitCode": 1,
+          "seconds": 117,
+          "pinnedStable": true,
+          "verdict": "bite",
+          "assertionTotals": {
+            "assertions": 842,
+            "failed": 1
+          },
+          "failingLines": [
+            "✗ §22c @360 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出） — category/agent/#0 note-clipped：category/agent/#0 说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）",
+            "✗ §22c @360 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出） — category/agent/#0 note-clipped：category/agent/#0 说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）"
+          ],
+          "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+          "scratchPaint": null,
+          "scratchJudge": null,
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-writing-mode-vertical-fullwidth.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "09e6b46c935c03e521a56445182fdade547108cd8e66da09f99c539855a43b6c",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 85
+          },
+          "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-writing-mode-vertical-fullwidth.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+        },
+        {
+          "sourceFile": "modeB-before.json",
+          "scratchProbeValid": true,
+          "scratchProbeInvalidReason": null,
+          "exitCode": 1,
+          "seconds": 97,
+          "pinnedStable": true,
+          "verdict": "bite",
+          "assertionTotals": {
+            "assertions": 827,
+            "failed": 1
+          },
+          "failingLines": [
+            "✗ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-clipped：说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）",
+            "✗ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-clipped：说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）"
+          ],
+          "section22cSummary": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+          "scratchPaint": null,
+          "scratchJudge": null,
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-writing-mode-vertical-fullwidth.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "09e6b46c935c03e521a56445182fdade547108cd8e66da09f99c539855a43b6c",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 85
+          },
+          "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-writing-mode-vertical-fullwidth.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756"
+        }
+      ],
+      "modeBConfirmedFalseGreen": false
+    },
+    {
+      "id": "flex-decorator-item",
+      "direction": "flex 容器 + 装饰项吃掉 70%（补充）",
+      "injectedCss": ".snote { display: flex; }\n.snote::after { content: \"\"; flex: 0 0 70%; }",
+      "before": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 413,
+        "inkLongestLine": 260.45
+      },
+      "after": {
+        "verdict": "bite",
+        "codes": [
+          "note-narrow",
+          "note-narrow",
+          "note-narrow"
+        ],
+        "judgeBoxWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "judgeTextWidth": [
+          12,
+          62,
+          14
+        ],
+        "paintInkWidth": 413,
+        "inkLongestLine": 260.45
+      },
+      "flipped": true,
+      "stillPassingAfter": false,
+      "modeB": [
+        {
+          "sourceFile": "modeB-after-2.json",
+          "scratchProbeValid": true,
+          "scratchProbeInvalidReason": null,
+          "exitCode": 1,
+          "seconds": 113,
+          "pinnedStable": true,
+          "verdict": "bite",
+          "assertionTotals": {
+            "assertions": 842,
+            "failed": 4
+          },
+          "failingLines": [
+            "✗ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 0 · 裁切 0 · textFallback 回落 40 条 · 命中样例：category/agent/#0 有字区域 12px（盒 1380px · 列 1380px · 比例 0.01 · 主数据区 .ctable · codes [note-narrow] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 62px（盒 1380px · 列 1380px · 比例 0.04 · 主数据区 .ctable · codes [note-narrow] · 「全部变化 →」）；category/agent/#2 有字区域 14px（盒 1380px · 列 1380px · 比例 0.01 · 主数据区 .ctable · codes [note-narrow] · 「分类之间不互斥：一条优惠可以同时」）",
+            "✗ §22c @1600 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 0 · 裁切 0 · textFallback 回落 40 条 · 命中样例：category/agent/#0 有字区域 12px（盒 1380px · 列 1380px · 比例 0.01 · 主数据区 .ctable · codes [note-narrow] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 62px（盒 1380px · 列 1380px · 比例 0.04 · 主数据区 .ctable · codes [note-narrow] · 「全部变化 →」）；category/agent/#2 有字区域 14px（盒 1380px · 列 1380px · 比例 0.01 · 主数据区 .ctable · codes [note-narrow] · 「分类之间不互斥：一条优惠可以同时」）",
+            "✗ §22c @760 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出） — category/agent/#0 note-narrow：category/agent/#0 有字区域宽 12px < 0.85 × 728px（盒宽 728px · content box 728px · 承载文本块 3 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 215.64px/28 行）；category/agent/#1 note-narrow：category/agent/#1 有字区域宽 62px < 0.85 × 728px（盒宽 728px · content box 728px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 61.64px/1 行）；category/agent/#2 note-narrow：category/agent/#2 有字区域宽 12px < 0.85 × 728px（盒宽 728px · content box 728px · 承载文本块 2 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 216px/13 行）",
+            "✗ §22c @360 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出） — category/agent/#0 note-narrow：category/agent/#0 有字区域宽 12px < 0.85 × 328px（盒宽 328px · content box 328px · 承载文本块 3 个 · 主数据区 .ctable 424.56px · 页面列 328px · 字迹 94.5px/64 行）；category/agent/#1 note-narrow：category/agent/#1 有字区域宽 62px < 0.85 × 328px（盒宽 328px · content box 328px · 承载文本块 1 个 · 主数据区 .ctable 424.56px · 页面列 328px · 字迹 61.64px/1 行）；category/agent/#2 note-narrow：category/agent/#2 有字区域宽 12px < 0.85 × 328px（盒宽 328px · content box 328px · 承载文本块 2 个 · 主数据区 .ctable 424.56px · 页面列 328px · 字迹 96px/21 行）",
+            "✗ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 0 · 裁切 0 · textFallback 回落 40 条 · 命中样例：category/agent/#0 有字区域 12px（盒 1380px · 列 1380px · 比例 0.01 · 主数据区 .ctable · codes [note-narrow] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 62px（盒 1380px · 列 1380px · 比例 0.04 · 主数据区 .ctable · codes [note-narrow] · 「全部变化 →」）；category/agent/#2 有字区域 14px（盒 1380px · 列 1380px · 比例 0.01 · 主数据区 .ctable · codes [note-narrow] · 「分类之间不互斥：一条优惠可以同时」）",
+            "✗ §22c @1600 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 0 · 裁切 0 · textFallback 回落 40 条 · 命中样例：category/agent/#0 有字区域 12px（盒 1380px · 列 1380px · 比例 0.01 · 主数据区 .ctable · codes [note-narrow] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 62px（盒 1380px · 列 1380px · 比例 0.04 · 主数据区 .ctable · codes [note-narrow] · 「全部变化 →」）；category/agent/#2 有字区域 14px（盒 1380px · 列 1380px · 比例 0.01 · 主数据区 .ctable · codes [note-narrow] · 「分类之间不互斥：一条优惠可以同时」）"
+          ],
+          "section22cSummary": "  ✗ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 3（落在 1 页） · 不同轴 0 · 裁切 0 · textFallback 回落 40 条 · 命中样例：category/agent/#0 有字区域 12px（盒 1380px · 列 1380px · 比例 0.01 · 主数据区 .ctable · codes [note-narrow] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 62px（盒 1380px · 列 1380px · 比例 0.04 · 主数据区 .ctable · codes [note-narrow] · 「全部变化 →」）；category/agent/#2 有字区域 14px（盒 1380px · 列 1380px · 比例 0.01 · 主数据区 .ctable · codes [note-narrow] · 「分类之间不互斥：一条优惠可以同时」）",
+          "scratchPaint": null,
+          "scratchJudge": null,
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-flex-decorator-item.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "555fd9de7e88c6db10fd98407116ba7b7affd79e1c6a106f9cf27310e461764c",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 72
+          },
+          "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-flex-decorator-item.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+        }
+      ],
+      "modeBConfirmedFalseGreen": false
+    },
+    {
+      "id": "ctl-no-inject",
+      "direction": "control",
+      "injectedCss": null,
+      "before": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 1344,
+        "inkLongestLine": 863.75
+      },
+      "after": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "judgeTextWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "paintInkWidth": 1344,
+        "inkLongestLine": 863.75
+      },
+      "flipped": false,
+      "stillPassingAfter": true,
+      "modeB": [
+        {
+          "sourceFile": "modeB-after-1.json",
+          "scratchProbeValid": false,
+          "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准",
+          "exitCode": 0,
+          "seconds": 145,
+          "pinnedStable": true,
+          "verdict": "false-green",
+          "assertionTotals": {
+            "assertions": 842,
+            "failed": 0
+          },
+          "failingLines": [],
+          "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+          "scratchPaint": {
+            "noteIndex": 0,
+            "imageWidth": 1380,
+            "imageHeight": 21,
+            "scale": 1,
+            "paintInkLeft": 0,
+            "paintInkRight": 1344,
+            "paintInkWidth": 1344,
+            "paintRuns": 36,
+            "paintLongestRun": 144,
+            "paintGaps": [
+              {
+                "leftCss": 107,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 112,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 168,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 218,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 233,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 286,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 297,
+                "widthCss": 11
+              },
+              {
+                "leftCss": 512,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 547,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 582,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 620,
+                "widthCss": 4
+              },
+              {
+                "leftCss": 628,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 649,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 681,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 693,
+                "widthCss": 9
+              },
+              {
+                "leftCss": 704,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 800,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 969,
+                "widthCss": 11
+              },
+              {
+                "leftCss": 1111,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 1176,
+                "widthCss": 8
+              }
+            ],
+            "paintInkColumns": 1207
+          },
+          "scratchJudge": {
+            "codes": [],
+            "verdict": "pass",
+            "judgeGeometry": {
+              "noteCount": 3,
+              "frozenCount": 1,
+              "regionSel": ".ctable",
+              "regionWidth": 1380,
+              "mainWidth": 1380,
+              "column": 1380,
+              "notes": [
+                {
+                  "index": 0,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 1351.69,
+                    "lines": 5,
+                    "longestLine": 863.75
+                  }
+                },
+                {
+                  "index": 1,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": true,
+                  "bearingCount": 0,
+                  "ink": {
+                    "width": 61.64,
+                    "lines": 1,
+                    "longestLine": 61.64
+                  }
+                },
+                {
+                  "index": 2,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 1047.52,
+                    "lines": 3,
+                    "longestLine": 963.52
+                  }
+                }
+              ],
+              "noteLegacy": {
+                "width": 1380,
+                "left": 30,
+                "right": 1410
+              }
+            }
+          },
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-ctl-no-inject.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "injected": false,
+            "reason": "对照：不注入"
+          },
+          "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-ctl-no-inject.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+        },
+        {
+          "sourceFile": "modeB-before.json",
+          "scratchProbeValid": true,
+          "scratchProbeInvalidReason": null,
+          "exitCode": 0,
+          "seconds": 102,
+          "pinnedStable": true,
+          "verdict": "false-green",
+          "assertionTotals": {
+            "assertions": 827,
+            "failed": 0
+          },
+          "failingLines": [],
+          "section22cSummary": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+          "scratchPaint": {
+            "noteIndex": 0,
+            "imageWidth": 1380,
+            "imageHeight": 21,
+            "scale": 1,
+            "paintInkLeft": 0,
+            "paintInkRight": 1344,
+            "paintInkWidth": 1344,
+            "paintRuns": 36,
+            "paintLongestRun": 144,
+            "paintGaps": [
+              {
+                "leftCss": 107,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 112,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 168,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 218,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 233,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 286,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 297,
+                "widthCss": 11
+              },
+              {
+                "leftCss": 512,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 547,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 582,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 620,
+                "widthCss": 4
+              },
+              {
+                "leftCss": 628,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 649,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 681,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 693,
+                "widthCss": 9
+              },
+              {
+                "leftCss": 704,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 800,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 969,
+                "widthCss": 11
+              },
+              {
+                "leftCss": 1111,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 1176,
+                "widthCss": 8
+              }
+            ],
+            "paintInkColumns": 1207
+          },
+          "scratchJudge": {
+            "codes": [],
+            "verdict": "pass",
+            "judgeGeometry": {
+              "noteCount": 3,
+              "frozenCount": 1,
+              "regionSel": ".ctable",
+              "regionWidth": 1380,
+              "mainWidth": 1380,
+              "column": 1380,
+              "notes": [],
+              "noteLegacy": {
+                "width": 1380,
+                "left": 30,
+                "right": 1410
+              }
+            }
+          },
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-ctl-no-inject.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "injected": false,
+            "reason": "对照：不注入"
+          },
+          "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-ctl-no-inject.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756"
+        }
+      ],
+      "modeBConfirmedFalseGreen": true
+    },
+    {
+      "id": "transform-scaleX",
+      "direction": "transform: scaleX()",
+      "injectedCss": ".snote { transform: scaleX(0.33); transform-origin: left center; }",
+      "before": {
+        "verdict": "bite",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "judgeBoxWidth": [
+          455.4
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 443.4,
+        "inkLongestLine": 285.04
+      },
+      "after": {
+        "verdict": "bite",
+        "codes": [
+          "note-axis",
+          "note-axis",
+          "note-axis"
+        ],
+        "judgeBoxWidth": [
+          455.4,
+          455.4,
+          455.4
+        ],
+        "judgeTextWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "paintInkWidth": 443.4,
+        "inkLongestLine": 285.04
+      },
+      "flipped": false,
+      "stillPassingAfter": false,
+      "modeB": null,
+      "modeBConfirmedFalseGreen": false
+    },
+    {
+      "id": "pseudo-content-narrow",
+      "direction": "伪元素承载正文（::before/::after 的 content）",
+      "injectedCss": ".snote { font-size: 0; }\n.snote::before { content: \"这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发放（例如「每日登录赠 1500 积分」），有效期往往很短，页面保留官方原文的期限说法。 积分与代金券的可用范围由平台决定，本站只转录官方页面写了什么。\"; display: block; max-width: 70ch; font-size: var(--fs-sm); line-height: 1.7; color: var(--mut); white-space: normal; }",
+      "before": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 453,
+        "inkLongestLine": null
+      },
+      "after": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "judgeTextWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "paintInkWidth": 453,
+        "inkLongestLine": null
+      },
+      "flipped": false,
+      "stillPassingAfter": true,
+      "modeB": [
+        {
+          "sourceFile": "modeB-after-2.json",
+          "scratchProbeValid": true,
+          "scratchProbeInvalidReason": null,
+          "exitCode": 0,
+          "seconds": 113,
+          "pinnedStable": true,
+          "verdict": "false-green",
+          "assertionTotals": {
+            "assertions": 842,
+            "failed": 0
+          },
+          "failingLines": [],
+          "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+          "scratchPaint": {
+            "noteIndex": 0,
+            "imageWidth": 1380,
+            "imageHeight": 62,
+            "scale": 1,
+            "paintInkLeft": 0,
+            "paintInkRight": 453,
+            "paintInkWidth": 453,
+            "paintRuns": 1,
+            "paintLongestRun": 453,
+            "paintGaps": [],
+            "paintInkColumns": 453
+          },
+          "scratchJudge": {
+            "codes": [],
+            "verdict": "pass",
+            "judgeGeometry": {
+              "noteCount": 3,
+              "frozenCount": 1,
+              "regionSel": ".ctable",
+              "regionWidth": 1380,
+              "mainWidth": 1380,
+              "column": 1380,
+              "notes": [
+                {
+                  "index": 0,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": null
+                },
+                {
+                  "index": 1,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": true,
+                  "bearingCount": 0,
+                  "ink": null
+                },
+                {
+                  "index": 2,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": null
+                }
+              ],
+              "noteLegacy": {
+                "width": 1380,
+                "left": 30,
+                "right": 1410
+              }
+            }
+          },
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-pseudo-content-narrow.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "6006727feaaa68e0a4aa30affc45e49cd1cf541e5e20c950706473bdecb9c983",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 506
+          },
+          "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-pseudo-content-narrow.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+        }
+      ],
+      "modeBConfirmedFalseGreen": true
+    },
+    {
+      "id": "text-indent-clip",
+      "direction": "text-indent 负值 + overflow: hidden",
+      "injectedCss": ".snote { text-indent: -9999px; white-space: nowrap; overflow: hidden; }",
+      "before": {
+        "verdict": "bite",
+        "codes": [
+          "note-clipped"
+        ],
+        "judgeBoxWidth": [
+          1380
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 0,
+        "inkLongestLine": 863.75
+      },
+      "after": {
+        "verdict": "bite",
+        "codes": [
+          "note-clipped",
+          "note-clipped",
+          "note-clipped"
+        ],
+        "judgeBoxWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "judgeTextWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "paintInkWidth": 0,
+        "inkLongestLine": 863.75
+      },
+      "flipped": false,
+      "stillPassingAfter": false,
+      "modeB": null,
+      "modeBConfirmedFalseGreen": false
+    },
+    {
+      "id": "text-indent-shift",
+      "direction": "text-indent 负值 + overflow: hidden（多行变体）",
+      "injectedCss": ".snote { text-indent: -9999px; overflow: hidden; }",
+      "before": {
+        "verdict": "bite",
+        "codes": [
+          "note-clipped"
+        ],
+        "judgeBoxWidth": [
+          1380
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 0,
+        "inkLongestLine": 863.75
+      },
+      "after": {
+        "verdict": "bite",
+        "codes": [
+          "note-clipped",
+          "note-clipped",
+          "note-clipped"
+        ],
+        "judgeBoxWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "judgeTextWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "paintInkWidth": 0,
+        "inkLongestLine": 863.75
+      },
+      "flipped": false,
+      "stillPassingAfter": false,
+      "modeB": null,
+      "modeBConfirmedFalseGreen": false
+    },
+    {
+      "id": "writing-mode-vertical",
+      "direction": "writing-mode",
+      "injectedCss": ".snote { writing-mode: vertical-rl; height: 5.6rem; overflow: hidden; }",
+      "before": {
+        "verdict": "bite",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "judgeBoxWidth": [
+          346.64
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 337.6,
+        "inkLongestLine": 16
+      },
+      "after": {
+        "verdict": "bite",
+        "codes": [
+          "note-narrow",
+          "note-axis",
+          "note-narrow",
+          "note-axis",
+          "note-narrow",
+          "note-axis"
+        ],
+        "judgeBoxWidth": [
+          346.64,
+          20.39,
+          265.08
+        ],
+        "judgeTextWidth": [
+          347,
+          20,
+          265
+        ],
+        "paintInkWidth": 337.6,
+        "inkLongestLine": 16
+      },
+      "flipped": false,
+      "stillPassingAfter": false,
+      "modeB": null,
+      "modeBConfirmedFalseGreen": false
+    },
+    {
+      "id": "font-size-tiny",
+      "direction": "font-size 极小但盒宽满宽",
+      "injectedCss": ".snote { font-size: 1px; }",
+      "before": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 112,
+        "inkLongestLine": 71.98
+      },
+      "after": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "judgeTextWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "paintInkWidth": 112,
+        "inkLongestLine": 71.98
+      },
+      "flipped": false,
+      "stillPassingAfter": true,
+      "modeB": null,
+      "modeBConfirmedFalseGreen": false
+    },
+    {
+      "id": "letter-spacing-huge",
+      "direction": "letter-spacing 极大",
+      "injectedCss": ".snote { letter-spacing: 40px; }",
+      "before": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 1325,
+        "inkLongestLine": 1364.45
+      },
+      "after": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "judgeTextWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "paintInkWidth": 1325,
+        "inkLongestLine": 1364.45
+      },
+      "flipped": false,
+      "stillPassingAfter": true,
+      "modeB": null,
+      "modeBConfirmedFalseGreen": false
+    },
+    {
+      "id": "multicol-narrow-columns",
+      "direction": "CSS 多列（column-width/column-count）",
+      "injectedCss": ".snote { column-count: 3; column-width: 340px; column-gap: 16px; }",
+      "before": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 913,
+        "inkLongestLine": 447.3
+      },
+      "after": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "judgeTextWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "paintInkWidth": 913,
+        "inkLongestLine": 447.3
+      },
+      "flipped": false,
+      "stillPassingAfter": true,
+      "modeB": [
+        {
+          "sourceFile": "modeB-after-1.json",
+          "scratchProbeValid": false,
+          "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准",
+          "exitCode": 0,
+          "seconds": 122,
+          "pinnedStable": true,
+          "verdict": "false-green",
+          "assertionTotals": {
+            "assertions": 842,
+            "failed": 0
+          },
+          "failingLines": [],
+          "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+          "scratchPaint": {
+            "noteIndex": 0,
+            "imageWidth": 1380,
+            "imageHeight": 21,
+            "scale": 1,
+            "paintInkLeft": 0,
+            "paintInkRight": 1344,
+            "paintInkWidth": 1344,
+            "paintRuns": 36,
+            "paintLongestRun": 144,
+            "paintGaps": [
+              {
+                "leftCss": 107,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 112,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 168,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 218,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 233,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 286,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 297,
+                "widthCss": 11
+              },
+              {
+                "leftCss": 512,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 547,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 582,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 620,
+                "widthCss": 4
+              },
+              {
+                "leftCss": 628,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 649,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 681,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 693,
+                "widthCss": 9
+              },
+              {
+                "leftCss": 704,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 800,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 969,
+                "widthCss": 11
+              },
+              {
+                "leftCss": 1111,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 1176,
+                "widthCss": 8
+              }
+            ],
+            "paintInkColumns": 1207
+          },
+          "scratchJudge": {
+            "codes": [],
+            "verdict": "pass",
+            "judgeGeometry": {
+              "noteCount": 3,
+              "frozenCount": 1,
+              "regionSel": ".ctable",
+              "regionWidth": 1380,
+              "mainWidth": 1380,
+              "column": 1380,
+              "notes": [
+                {
+                  "index": 0,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 1351.69,
+                    "lines": 5,
+                    "longestLine": 863.75
+                  }
+                },
+                {
+                  "index": 1,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": true,
+                  "bearingCount": 0,
+                  "ink": {
+                    "width": 61.64,
+                    "lines": 1,
+                    "longestLine": 61.64
+                  }
+                },
+                {
+                  "index": 2,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 1047.52,
+                    "lines": 3,
+                    "longestLine": 963.52
+                  }
+                }
+              ],
+              "noteLegacy": {
+                "width": 1380,
+                "left": 30,
+                "right": 1410
+              }
+            }
+          },
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-multicol-narrow-columns.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "214b97d4b08eb94d651df89da892a4a212555230eb124d7aec72e5f8d5036ad9",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 67
+          },
+          "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-multicol-narrow-columns.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+        },
+        {
+          "sourceFile": "modeB-after-2.json",
+          "scratchProbeValid": true,
+          "scratchProbeInvalidReason": null,
+          "exitCode": 0,
+          "seconds": 115,
+          "pinnedStable": true,
+          "verdict": "false-green",
+          "assertionTotals": {
+            "assertions": 842,
+            "failed": 0
+          },
+          "failingLines": [],
+          "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+          "scratchPaint": {
+            "noteIndex": 0,
+            "imageWidth": 1380,
+            "imageHeight": 42,
+            "scale": 1,
+            "paintInkLeft": 0,
+            "paintInkRight": 913,
+            "paintInkWidth": 913,
+            "paintRuns": 12,
+            "paintLongestRun": 196,
+            "paintGaps": [
+              {
+                "leftCss": 107,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 112,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 441,
+                "widthCss": 24
+              },
+              {
+                "leftCss": 553,
+                "widthCss": 11
+              },
+              {
+                "leftCss": 760,
+                "widthCss": 8
+              }
+            ],
+            "paintInkColumns": 858
+          },
+          "scratchJudge": {
+            "codes": [],
+            "verdict": "pass",
+            "judgeGeometry": {
+              "noteCount": 3,
+              "frozenCount": 1,
+              "regionSel": ".ctable",
+              "regionWidth": 1380,
+              "mainWidth": 1380,
+              "column": 1380,
+              "notes": [
+                {
+                  "index": 0,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 912.63,
+                    "lines": 8,
+                    "longestLine": 447.3
+                  }
+                },
+                {
+                  "index": 1,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": true,
+                  "bearingCount": 0,
+                  "ink": {
+                    "width": 61.64,
+                    "lines": 1,
+                    "longestLine": 61.64
+                  }
+                },
+                {
+                  "index": 2,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 621.33,
+                    "lines": 5,
+                    "longestLine": 447.52
+                  }
+                }
+              ],
+              "noteLegacy": {
+                "width": 1380,
+                "left": 30,
+                "right": 1410
+              }
+            }
+          },
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-multicol-narrow-columns.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "214b97d4b08eb94d651df89da892a4a212555230eb124d7aec72e5f8d5036ad9",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 67
+          },
+          "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-multicol-narrow-columns.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+        },
+        {
+          "sourceFile": "modeB-before.json",
+          "scratchProbeValid": true,
+          "scratchProbeInvalidReason": null,
+          "exitCode": 0,
+          "seconds": 95,
+          "pinnedStable": true,
+          "verdict": "false-green",
+          "assertionTotals": {
+            "assertions": 827,
+            "failed": 0
+          },
+          "failingLines": [],
+          "section22cSummary": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+          "scratchPaint": {
+            "noteIndex": 0,
+            "imageWidth": 1380,
+            "imageHeight": 42,
+            "scale": 1,
+            "paintInkLeft": 0,
+            "paintInkRight": 913,
+            "paintInkWidth": 913,
+            "paintRuns": 12,
+            "paintLongestRun": 196,
+            "paintGaps": [
+              {
+                "leftCss": 107,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 112,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 441,
+                "widthCss": 24
+              },
+              {
+                "leftCss": 553,
+                "widthCss": 11
+              },
+              {
+                "leftCss": 760,
+                "widthCss": 8
+              }
+            ],
+            "paintInkColumns": 858
+          },
+          "scratchJudge": {
+            "codes": [],
+            "verdict": "pass",
+            "judgeGeometry": {
+              "noteCount": 3,
+              "frozenCount": 1,
+              "regionSel": ".ctable",
+              "regionWidth": 1380,
+              "mainWidth": 1380,
+              "column": 1380,
+              "notes": [],
+              "noteLegacy": {
+                "width": 1380,
+                "left": 30,
+                "right": 1410
+              }
+            }
+          },
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-multicol-narrow-columns.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "214b97d4b08eb94d651df89da892a4a212555230eb124d7aec72e5f8d5036ad9",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 67
+          },
+          "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-multicol-narrow-columns.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756"
+        }
+      ],
+      "modeBConfirmedFalseGreen": true
+    },
+    {
+      "id": "overlay-opaque",
+      "direction": "不透明覆盖层遮住右侧文本",
+      "injectedCss": ".snote { position: relative; }\n.snote::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 30%; background: #f6f7f9; }",
+      "before": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 414,
+        "inkLongestLine": 863.75
+      },
+      "after": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "judgeTextWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "paintInkWidth": 414,
+        "inkLongestLine": 863.75
+      },
+      "flipped": false,
+      "stillPassingAfter": true,
+      "modeB": [
+        {
+          "sourceFile": "modeB-after-1.json",
+          "scratchProbeValid": false,
+          "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准",
+          "exitCode": 0,
+          "seconds": 117,
+          "pinnedStable": true,
+          "verdict": "false-green",
+          "assertionTotals": {
+            "assertions": 842,
+            "failed": 0
+          },
+          "failingLines": [],
+          "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+          "scratchPaint": {
+            "noteIndex": 0,
+            "imageWidth": 1380,
+            "imageHeight": 21,
+            "scale": 1,
+            "paintInkLeft": 0,
+            "paintInkRight": 1344,
+            "paintInkWidth": 1344,
+            "paintRuns": 36,
+            "paintLongestRun": 144,
+            "paintGaps": [
+              {
+                "leftCss": 107,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 112,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 168,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 218,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 233,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 286,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 297,
+                "widthCss": 11
+              },
+              {
+                "leftCss": 512,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 547,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 582,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 620,
+                "widthCss": 4
+              },
+              {
+                "leftCss": 628,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 649,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 681,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 693,
+                "widthCss": 9
+              },
+              {
+                "leftCss": 704,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 800,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 969,
+                "widthCss": 11
+              },
+              {
+                "leftCss": 1111,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 1176,
+                "widthCss": 8
+              }
+            ],
+            "paintInkColumns": 1207
+          },
+          "scratchJudge": {
+            "codes": [],
+            "verdict": "pass",
+            "judgeGeometry": {
+              "noteCount": 3,
+              "frozenCount": 1,
+              "regionSel": ".ctable",
+              "regionWidth": 1380,
+              "mainWidth": 1380,
+              "column": 1380,
+              "notes": [
+                {
+                  "index": 0,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 1351.69,
+                    "lines": 5,
+                    "longestLine": 863.75
+                  }
+                },
+                {
+                  "index": 1,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": true,
+                  "bearingCount": 0,
+                  "ink": {
+                    "width": 61.64,
+                    "lines": 1,
+                    "longestLine": 61.64
+                  }
+                },
+                {
+                  "index": 2,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 1047.52,
+                    "lines": 3,
+                    "longestLine": 963.52
+                  }
+                }
+              ],
+              "noteLegacy": {
+                "width": 1380,
+                "left": 30,
+                "right": 1410
+              }
+            }
+          },
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-overlay-opaque.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "5184f4757dd7d8f05f203c25a65c916f4d0fdfa3ffb20caea7ed4256514cb8b6",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 143
+          },
+          "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-overlay-opaque.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+        },
+        {
+          "sourceFile": "modeB-after-2.json",
+          "scratchProbeValid": true,
+          "scratchProbeInvalidReason": null,
+          "exitCode": 0,
+          "seconds": 115,
+          "pinnedStable": true,
+          "verdict": "false-green",
+          "assertionTotals": {
+            "assertions": 842,
+            "failed": 0
+          },
+          "failingLines": [],
+          "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+          "scratchPaint": {
+            "noteIndex": 0,
+            "imageWidth": 1380,
+            "imageHeight": 21,
+            "scale": 1,
+            "paintInkLeft": 0,
+            "paintInkRight": 414,
+            "paintInkWidth": 414,
+            "paintRuns": 12,
+            "paintLongestRun": 106,
+            "paintGaps": [
+              {
+                "leftCss": 107,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 112,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 168,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 218,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 233,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 286,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 297,
+                "widthCss": 11
+              }
+            ],
+            "paintInkColumns": 368
+          },
+          "scratchJudge": {
+            "codes": [],
+            "verdict": "pass",
+            "judgeGeometry": {
+              "noteCount": 3,
+              "frozenCount": 1,
+              "regionSel": ".ctable",
+              "regionWidth": 1380,
+              "mainWidth": 1380,
+              "column": 1380,
+              "notes": [
+                {
+                  "index": 0,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 1351.69,
+                    "lines": 5,
+                    "longestLine": 863.75
+                  }
+                },
+                {
+                  "index": 1,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": true,
+                  "bearingCount": 0,
+                  "ink": {
+                    "width": 61.64,
+                    "lines": 1,
+                    "longestLine": 61.64
+                  }
+                },
+                {
+                  "index": 2,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 1047.52,
+                    "lines": 3,
+                    "longestLine": 963.52
+                  }
+                }
+              ],
+              "noteLegacy": {
+                "width": 1380,
+                "left": 30,
+                "right": 1410
+              }
+            }
+          },
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-overlay-opaque.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "5184f4757dd7d8f05f203c25a65c916f4d0fdfa3ffb20caea7ed4256514cb8b6",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 143
+          },
+          "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-overlay-opaque.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+        },
+        {
+          "sourceFile": "modeB-before.json",
+          "scratchProbeValid": true,
+          "scratchProbeInvalidReason": null,
+          "exitCode": 0,
+          "seconds": 96,
+          "pinnedStable": true,
+          "verdict": "false-green",
+          "assertionTotals": {
+            "assertions": 827,
+            "failed": 0
+          },
+          "failingLines": [],
+          "section22cSummary": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+          "scratchPaint": {
+            "noteIndex": 0,
+            "imageWidth": 1380,
+            "imageHeight": 21,
+            "scale": 1,
+            "paintInkLeft": 0,
+            "paintInkRight": 414,
+            "paintInkWidth": 414,
+            "paintRuns": 12,
+            "paintLongestRun": 106,
+            "paintGaps": [
+              {
+                "leftCss": 107,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 112,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 168,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 218,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 233,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 286,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 297,
+                "widthCss": 11
+              }
+            ],
+            "paintInkColumns": 368
+          },
+          "scratchJudge": {
+            "codes": [],
+            "verdict": "pass",
+            "judgeGeometry": {
+              "noteCount": 3,
+              "frozenCount": 1,
+              "regionSel": ".ctable",
+              "regionWidth": 1380,
+              "mainWidth": 1380,
+              "column": 1380,
+              "notes": [],
+              "noteLegacy": {
+                "width": 1380,
+                "left": 30,
+                "right": 1410
+              }
+            }
+          },
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-overlay-opaque.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "5184f4757dd7d8f05f203c25a65c916f4d0fdfa3ffb20caea7ed4256514cb8b6",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 143
+          },
+          "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-overlay-opaque.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756"
+        }
+      ],
+      "modeBConfirmedFalseGreen": true
+    },
+    {
+      "id": "float-narrow-column",
+      "direction": "浮动占位把正文挤成窄列（补充）",
+      "injectedCss": ".snote::before { content: \"\"; float: right; width: 70%; height: 6em; }",
+      "before": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 411,
+        "inkLongestLine": 411.3
+      },
+      "after": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "judgeTextWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "paintInkWidth": 411,
+        "inkLongestLine": 411.3
+      },
+      "flipped": false,
+      "stillPassingAfter": true,
+      "modeB": [
+        {
+          "sourceFile": "modeB-after-1.json",
+          "scratchProbeValid": false,
+          "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准",
+          "exitCode": 0,
+          "seconds": 119,
+          "pinnedStable": true,
+          "verdict": "false-green",
+          "assertionTotals": {
+            "assertions": 842,
+            "failed": 0
+          },
+          "failingLines": [],
+          "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+          "scratchPaint": {
+            "noteIndex": 0,
+            "imageWidth": 1380,
+            "imageHeight": 21,
+            "scale": 1,
+            "paintInkLeft": 0,
+            "paintInkRight": 1344,
+            "paintInkWidth": 1344,
+            "paintRuns": 36,
+            "paintLongestRun": 144,
+            "paintGaps": [
+              {
+                "leftCss": 107,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 112,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 168,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 218,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 233,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 286,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 297,
+                "widthCss": 11
+              },
+              {
+                "leftCss": 512,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 547,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 582,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 620,
+                "widthCss": 4
+              },
+              {
+                "leftCss": 628,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 649,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 681,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 693,
+                "widthCss": 9
+              },
+              {
+                "leftCss": 704,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 800,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 969,
+                "widthCss": 11
+              },
+              {
+                "leftCss": 1111,
+                "widthCss": 2
+              },
+              {
+                "leftCss": 1176,
+                "widthCss": 8
+              }
+            ],
+            "paintInkColumns": 1207
+          },
+          "scratchJudge": {
+            "codes": [],
+            "verdict": "pass",
+            "judgeGeometry": {
+              "noteCount": 3,
+              "frozenCount": 1,
+              "regionSel": ".ctable",
+              "regionWidth": 1380,
+              "mainWidth": 1380,
+              "column": 1380,
+              "notes": [
+                {
+                  "index": 0,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 1351.69,
+                    "lines": 5,
+                    "longestLine": 863.75
+                  }
+                },
+                {
+                  "index": 1,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": true,
+                  "bearingCount": 0,
+                  "ink": {
+                    "width": 61.64,
+                    "lines": 1,
+                    "longestLine": 61.64
+                  }
+                },
+                {
+                  "index": 2,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 1047.52,
+                    "lines": 3,
+                    "longestLine": 963.52
+                  }
+                }
+              ],
+              "noteLegacy": {
+                "width": 1380,
+                "left": 30,
+                "right": 1410
+              }
+            }
+          },
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-float-narrow-column.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "54900a1938f4657045e05ad994221d12e1ab1c9bf49d3804d6380235fb47c400",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 71
+          },
+          "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-float-narrow-column.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+        },
+        {
+          "sourceFile": "modeB-after-2.json",
+          "scratchProbeValid": true,
+          "scratchProbeInvalidReason": null,
+          "exitCode": 0,
+          "seconds": 114,
+          "pinnedStable": true,
+          "verdict": "false-green",
+          "assertionTotals": {
+            "assertions": 842,
+            "failed": 0
+          },
+          "failingLines": [],
+          "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+          "scratchPaint": {
+            "noteIndex": 0,
+            "imageWidth": 1380,
+            "imageHeight": 83,
+            "scale": 1,
+            "paintInkLeft": 0,
+            "paintInkRight": 411,
+            "paintInkWidth": 411,
+            "paintRuns": 3,
+            "paintLongestRun": 168,
+            "paintGaps": [],
+            "paintInkColumns": 409
+          },
+          "scratchJudge": {
+            "codes": [],
+            "verdict": "pass",
+            "judgeGeometry": {
+              "noteCount": 3,
+              "frozenCount": 1,
+              "regionSel": ".ctable",
+              "regionWidth": 1380,
+              "mainWidth": 1380,
+              "column": 1380,
+              "notes": [
+                {
+                  "index": 0,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 411.3,
+                    "lines": 7,
+                    "longestLine": 411.3
+                  }
+                },
+                {
+                  "index": 1,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": true,
+                  "bearingCount": 0,
+                  "ink": {
+                    "width": 61.64,
+                    "lines": 1,
+                    "longestLine": 61.64
+                  }
+                },
+                {
+                  "index": 2,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 411.52,
+                    "lines": 5,
+                    "longestLine": 411.52
+                  }
+                }
+              ],
+              "noteLegacy": {
+                "width": 1380,
+                "left": 30,
+                "right": 1410
+              }
+            }
+          },
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-float-narrow-column.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "54900a1938f4657045e05ad994221d12e1ab1c9bf49d3804d6380235fb47c400",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 71
+          },
+          "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-float-narrow-column.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+        },
+        {
+          "sourceFile": "modeB-before.json",
+          "scratchProbeValid": true,
+          "scratchProbeInvalidReason": null,
+          "exitCode": 0,
+          "seconds": 98,
+          "pinnedStable": true,
+          "verdict": "false-green",
+          "assertionTotals": {
+            "assertions": 827,
+            "failed": 0
+          },
+          "failingLines": [],
+          "section22cSummary": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+          "scratchPaint": {
+            "noteIndex": 0,
+            "imageWidth": 1380,
+            "imageHeight": 83,
+            "scale": 1,
+            "paintInkLeft": 0,
+            "paintInkRight": 411,
+            "paintInkWidth": 411,
+            "paintRuns": 3,
+            "paintLongestRun": 168,
+            "paintGaps": [],
+            "paintInkColumns": 409
+          },
+          "scratchJudge": {
+            "codes": [],
+            "verdict": "pass",
+            "judgeGeometry": {
+              "noteCount": 3,
+              "frozenCount": 1,
+              "regionSel": ".ctable",
+              "regionWidth": 1380,
+              "mainWidth": 1380,
+              "column": 1380,
+              "notes": [],
+              "noteLegacy": {
+                "width": 1380,
+                "left": 30,
+                "right": 1410
+              }
+            }
+          },
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-float-narrow-column.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "54900a1938f4657045e05ad994221d12e1ab1c9bf49d3804d6380235fb47c400",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 71
+          },
+          "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-float-narrow-column.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756"
+        }
+      ],
+      "modeBConfirmedFalseGreen": true
+    },
+    {
+      "id": "grid-narrow-track",
+      "direction": "grid 单轨变窄（补充）",
+      "injectedCss": ".snote { display: grid; grid-template-columns: 340px 1fr; }",
+      "before": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 424,
+        "inkLongestLine": 339.3
+      },
+      "after": {
+        "verdict": "bite",
+        "codes": [
+          "note-narrow",
+          "note-narrow",
+          "note-narrow"
+        ],
+        "judgeBoxWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "judgeTextWidth": [
+          1040,
+          340,
+          1040
+        ],
+        "paintInkWidth": 424,
+        "inkLongestLine": 339.3
+      },
+      "flipped": true,
+      "stillPassingAfter": false,
+      "modeB": null,
+      "modeBConfirmedFalseGreen": false
+    },
+    {
+      "id": "clip-path-inset",
+      "direction": "clip-path 裁掉右侧（补充）",
+      "injectedCss": ".snote { clip-path: inset(0 70% 0 0); }",
+      "before": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380
+        ],
+        "judgeTextWidth": null,
+        "paintInkWidth": 414,
+        "inkLongestLine": 863.75
+      },
+      "after": {
+        "verdict": "pass",
+        "codes": [],
+        "judgeBoxWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "judgeTextWidth": [
+          1380,
+          1380,
+          1380
+        ],
+        "paintInkWidth": 414,
+        "inkLongestLine": 863.75
+      },
+      "flipped": false,
+      "stillPassingAfter": true,
+      "modeB": [
+        {
+          "sourceFile": "modeB-after-2.json",
+          "scratchProbeValid": true,
+          "scratchProbeInvalidReason": null,
+          "exitCode": 0,
+          "seconds": 113,
+          "pinnedStable": true,
+          "verdict": "false-green",
+          "assertionTotals": {
+            "assertions": 842,
+            "failed": 0
+          },
+          "failingLines": [],
+          "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+          "scratchPaint": {
+            "noteIndex": 0,
+            "imageWidth": 1380,
+            "imageHeight": 21,
+            "scale": 1,
+            "paintInkLeft": 0,
+            "paintInkRight": 414,
+            "paintInkWidth": 414,
+            "paintRuns": 12,
+            "paintLongestRun": 106,
+            "paintGaps": [
+              {
+                "leftCss": 107,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 112,
+                "widthCss": 8
+              },
+              {
+                "leftCss": 168,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 218,
+                "widthCss": 3
+              },
+              {
+                "leftCss": 233,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 286,
+                "widthCss": 7
+              },
+              {
+                "leftCss": 297,
+                "widthCss": 11
+              }
+            ],
+            "paintInkColumns": 368
+          },
+          "scratchJudge": {
+            "codes": [],
+            "verdict": "pass",
+            "judgeGeometry": {
+              "noteCount": 3,
+              "frozenCount": 1,
+              "regionSel": ".ctable",
+              "regionWidth": 1380,
+              "mainWidth": 1380,
+              "column": 1380,
+              "notes": [
+                {
+                  "index": 0,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 1351.69,
+                    "lines": 5,
+                    "longestLine": 863.75
+                  }
+                },
+                {
+                  "index": 1,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": true,
+                  "bearingCount": 0,
+                  "ink": {
+                    "width": 61.64,
+                    "lines": 1,
+                    "longestLine": 61.64
+                  }
+                },
+                {
+                  "index": 2,
+                  "boxWidth": 1380,
+                  "boxLeft": 30,
+                  "boxRight": 1410,
+                  "contentBox": 1380,
+                  "textWidth": 1380,
+                  "textFallback": false,
+                  "bearingCount": 1,
+                  "ink": {
+                    "width": 1047.52,
+                    "lines": 3,
+                    "longestLine": 963.52
+                  }
+                }
+              ],
+              "noteLegacy": {
+                "width": 1380,
+                "left": 30,
+                "right": 1410
+              }
+            }
+          },
+          "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-clip-path-inset.json",
+          "target": {
+            "file": "category/agent/index.html",
+            "sha256After": "7b28fffa009b8bbb2799d4daac6b21879dc3087f27a958350b97406d1603d908",
+            "ok": true,
+            "frozenCountBefore": 1,
+            "frozenCountAfter": 1,
+            "revertible": true,
+            "bytesAdded": 40
+          },
+          "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-clip-path-inset.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+          "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+        }
+      ],
+      "modeBConfirmedFalseGreen": true
+    }
+  ],
+  "modeB": {
+    "runs": [
+      {
+        "tag": "B",
+        "generatedAt": "2026-10-06T08:34:47.024Z",
+        "verifySiteSha256": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb",
+        "scratch": {
+          "dir": "research\\_raw\\secondary-page-layout-unification\\adversary\\scratch\\dist-probe-after",
+          "source": "dist",
+          "suiteRoot": "",
+          "dirArgPassed": "research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after"
+        },
+        "forms": [
+          {
+            "id": "ctl-no-inject",
+            "exitCode": 0,
+            "seconds": 145,
+            "assertions": 842,
+            "failed": 0
+          },
+          {
+            "id": "ctl-maxwidth-70ch",
+            "exitCode": 1,
+            "seconds": 123,
+            "assertions": 842,
+            "failed": 3
+          },
+          {
+            "id": "writing-mode-vertical-fullwidth",
+            "exitCode": 1,
+            "seconds": 117,
+            "assertions": 842,
+            "failed": 1
+          },
+          {
+            "id": "multicol-narrow-columns",
+            "exitCode": 0,
+            "seconds": 122,
+            "assertions": 842,
+            "failed": 0
+          },
+          {
+            "id": "overlay-opaque",
+            "exitCode": 0,
+            "seconds": 117,
+            "assertions": 842,
+            "failed": 0
+          },
+          {
+            "id": "float-narrow-column",
+            "exitCode": 0,
+            "seconds": 119,
+            "assertions": 842,
+            "failed": 0
+          }
+        ]
+      },
+      {
+        "tag": "B",
+        "generatedAt": "2026-10-06T08:48:57.593Z",
+        "verifySiteSha256": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb",
+        "scratch": {
+          "dir": "research\\_raw\\secondary-page-layout-unification\\adversary\\scratch\\dist-probe-after",
+          "source": "dist",
+          "suiteRoot": "",
+          "dirArgPassed": "research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after"
+        },
+        "forms": [
+          {
+            "id": "ctl-maxwidth-70ch",
+            "exitCode": 1,
+            "seconds": 114,
+            "assertions": 842,
+            "failed": 3
+          },
+          {
+            "id": "pseudo-content-narrow",
+            "exitCode": 0,
+            "seconds": 113,
+            "assertions": 842,
+            "failed": 0
+          },
+          {
+            "id": "multicol-narrow-columns",
+            "exitCode": 0,
+            "seconds": 115,
+            "assertions": 842,
+            "failed": 0
+          },
+          {
+            "id": "overlay-opaque",
+            "exitCode": 0,
+            "seconds": 115,
+            "assertions": 842,
+            "failed": 0
+          },
+          {
+            "id": "float-narrow-column",
+            "exitCode": 0,
+            "seconds": 114,
+            "assertions": 842,
+            "failed": 0
+          },
+          {
+            "id": "flex-decorator-item",
+            "exitCode": 1,
+            "seconds": 113,
+            "assertions": 842,
+            "failed": 4
+          },
+          {
+            "id": "clip-path-inset",
+            "exitCode": 0,
+            "seconds": 113,
+            "assertions": 842,
+            "failed": 0
+          }
+        ]
+      },
+      {
+        "tag": "B",
+        "generatedAt": "2026-10-06T09:09:15.106Z",
+        "verifySiteSha256": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+        "scratch": {
+          "dir": "research\\_raw\\secondary-page-layout-unification\\adversary\\scratch\\dist-probe-before",
+          "source": "dist",
+          "suiteRoot": "research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7",
+          "dirArgPassed": "../scratch/dist-probe-before"
+        },
+        "forms": [
+          {
+            "id": "ctl-no-inject",
+            "exitCode": 0,
+            "seconds": 102,
+            "assertions": 827,
+            "failed": 0
+          },
+          {
+            "id": "ctl-maxwidth-70ch",
+            "exitCode": 1,
+            "seconds": 95,
+            "assertions": 827,
+            "failed": 2
+          },
+          {
+            "id": "writing-mode-vertical-fullwidth",
+            "exitCode": 1,
+            "seconds": 97,
+            "assertions": 827,
+            "failed": 1
+          },
+          {
+            "id": "multicol-narrow-columns",
+            "exitCode": 0,
+            "seconds": 95,
+            "assertions": 827,
+            "failed": 0
+          },
+          {
+            "id": "overlay-opaque",
+            "exitCode": 0,
+            "seconds": 96,
+            "assertions": 827,
+            "failed": 0
+          },
+          {
+            "id": "float-narrow-column",
+            "exitCode": 0,
+            "seconds": 98,
+            "assertions": 827,
+            "failed": 0
+          }
+        ]
+      }
+    ],
+    "confirmedFalseGreen": [
+      {
+        "form": "pseudo-content-narrow",
+        "runs": [
+          {
+            "sourceFile": "modeB-after-2.json",
+            "exitCode": 0,
+            "assertions": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-pseudo-content-narrow.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-pseudo-content-narrow.json",
+            "scratchProbeValid": true,
+            "scratchPaintInkWidth": 453,
+            "scratchProbeInvalidReason": null
+          }
+        ]
+      },
+      {
+        "form": "multicol-narrow-columns",
+        "runs": [
+          {
+            "sourceFile": "modeB-after-1.json",
+            "exitCode": 0,
+            "assertions": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-multicol-narrow-columns.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-multicol-narrow-columns.json",
+            "scratchProbeValid": false,
+            "scratchPaintInkWidth": null,
+            "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准"
+          },
+          {
+            "sourceFile": "modeB-after-2.json",
+            "exitCode": 0,
+            "assertions": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-multicol-narrow-columns.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-multicol-narrow-columns.json",
+            "scratchProbeValid": true,
+            "scratchPaintInkWidth": 913,
+            "scratchProbeInvalidReason": null
+          },
+          {
+            "sourceFile": "modeB-before.json",
+            "exitCode": 0,
+            "assertions": {
+              "assertions": 827,
+              "failed": 0
+            },
+            "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-multicol-narrow-columns.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-multicol-narrow-columns.json",
+            "scratchProbeValid": true,
+            "scratchPaintInkWidth": 913,
+            "scratchProbeInvalidReason": null
+          }
+        ]
+      },
+      {
+        "form": "overlay-opaque",
+        "runs": [
+          {
+            "sourceFile": "modeB-after-1.json",
+            "exitCode": 0,
+            "assertions": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-overlay-opaque.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-overlay-opaque.json",
+            "scratchProbeValid": false,
+            "scratchPaintInkWidth": null,
+            "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准"
+          },
+          {
+            "sourceFile": "modeB-after-2.json",
+            "exitCode": 0,
+            "assertions": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-overlay-opaque.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-overlay-opaque.json",
+            "scratchProbeValid": true,
+            "scratchPaintInkWidth": 414,
+            "scratchProbeInvalidReason": null
+          },
+          {
+            "sourceFile": "modeB-before.json",
+            "exitCode": 0,
+            "assertions": {
+              "assertions": 827,
+              "failed": 0
+            },
+            "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-overlay-opaque.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-overlay-opaque.json",
+            "scratchProbeValid": true,
+            "scratchPaintInkWidth": 414,
+            "scratchProbeInvalidReason": null
+          }
+        ]
+      },
+      {
+        "form": "float-narrow-column",
+        "runs": [
+          {
+            "sourceFile": "modeB-after-1.json",
+            "exitCode": 0,
+            "assertions": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-float-narrow-column.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-float-narrow-column.json",
+            "scratchProbeValid": false,
+            "scratchPaintInkWidth": null,
+            "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准"
+          },
+          {
+            "sourceFile": "modeB-after-2.json",
+            "exitCode": 0,
+            "assertions": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-float-narrow-column.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-float-narrow-column.json",
+            "scratchProbeValid": true,
+            "scratchPaintInkWidth": 411,
+            "scratchProbeInvalidReason": null
+          },
+          {
+            "sourceFile": "modeB-before.json",
+            "exitCode": 0,
+            "assertions": {
+              "assertions": 827,
+              "failed": 0
+            },
+            "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-float-narrow-column.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-float-narrow-column.json",
+            "scratchProbeValid": true,
+            "scratchPaintInkWidth": 411,
+            "scratchProbeInvalidReason": null
+          }
+        ]
+      },
+      {
+        "form": "clip-path-inset",
+        "runs": [
+          {
+            "sourceFile": "modeB-after-2.json",
+            "exitCode": 0,
+            "assertions": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-clip-path-inset.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-clip-path-inset.json",
+            "scratchProbeValid": true,
+            "scratchPaintInkWidth": 414,
+            "scratchProbeInvalidReason": null
+          }
+        ]
+      }
+    ],
+    "sanityControl": [
+      {
+        "form": "ctl-no-inject",
+        "note": "模式 B 的「不注入」对照：整轮 EXIT=0 是预期（装置正常）",
+        "modeB": [
+          {
+            "sourceFile": "modeB-after-1.json",
+            "scratchProbeValid": false,
+            "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准",
+            "exitCode": 0,
+            "seconds": 145,
+            "pinnedStable": true,
+            "verdict": "false-green",
+            "assertionTotals": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "failingLines": [],
+            "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+            "scratchPaint": {
+              "noteIndex": 0,
+              "imageWidth": 1380,
+              "imageHeight": 21,
+              "scale": 1,
+              "paintInkLeft": 0,
+              "paintInkRight": 1344,
+              "paintInkWidth": 1344,
+              "paintRuns": 36,
+              "paintLongestRun": 144,
+              "paintGaps": [
+                {
+                  "leftCss": 107,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 112,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 168,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 218,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 233,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 286,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 297,
+                  "widthCss": 11
+                },
+                {
+                  "leftCss": 512,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 547,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 582,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 620,
+                  "widthCss": 4
+                },
+                {
+                  "leftCss": 628,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 649,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 681,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 693,
+                  "widthCss": 9
+                },
+                {
+                  "leftCss": 704,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 800,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 969,
+                  "widthCss": 11
+                },
+                {
+                  "leftCss": 1111,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 1176,
+                  "widthCss": 8
+                }
+              ],
+              "paintInkColumns": 1207
+            },
+            "scratchJudge": {
+              "codes": [],
+              "verdict": "pass",
+              "judgeGeometry": {
+                "noteCount": 3,
+                "frozenCount": 1,
+                "regionSel": ".ctable",
+                "regionWidth": 1380,
+                "mainWidth": 1380,
+                "column": 1380,
+                "notes": [
+                  {
+                    "index": 0,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 1351.69,
+                      "lines": 5,
+                      "longestLine": 863.75
+                    }
+                  },
+                  {
+                    "index": 1,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": true,
+                    "bearingCount": 0,
+                    "ink": {
+                      "width": 61.64,
+                      "lines": 1,
+                      "longestLine": 61.64
+                    }
+                  },
+                  {
+                    "index": 2,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 1047.52,
+                      "lines": 3,
+                      "longestLine": 963.52
+                    }
+                  }
+                ],
+                "noteLegacy": {
+                  "width": 1380,
+                  "left": 30,
+                  "right": 1410
+                }
+              }
+            },
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-ctl-no-inject.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "injected": false,
+              "reason": "对照：不注入"
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-ctl-no-inject.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+          },
+          {
+            "sourceFile": "modeB-before.json",
+            "scratchProbeValid": true,
+            "scratchProbeInvalidReason": null,
+            "exitCode": 0,
+            "seconds": 102,
+            "pinnedStable": true,
+            "verdict": "false-green",
+            "assertionTotals": {
+              "assertions": 827,
+              "failed": 0
+            },
+            "failingLines": [],
+            "section22cSummary": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+            "scratchPaint": {
+              "noteIndex": 0,
+              "imageWidth": 1380,
+              "imageHeight": 21,
+              "scale": 1,
+              "paintInkLeft": 0,
+              "paintInkRight": 1344,
+              "paintInkWidth": 1344,
+              "paintRuns": 36,
+              "paintLongestRun": 144,
+              "paintGaps": [
+                {
+                  "leftCss": 107,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 112,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 168,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 218,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 233,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 286,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 297,
+                  "widthCss": 11
+                },
+                {
+                  "leftCss": 512,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 547,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 582,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 620,
+                  "widthCss": 4
+                },
+                {
+                  "leftCss": 628,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 649,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 681,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 693,
+                  "widthCss": 9
+                },
+                {
+                  "leftCss": 704,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 800,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 969,
+                  "widthCss": 11
+                },
+                {
+                  "leftCss": 1111,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 1176,
+                  "widthCss": 8
+                }
+              ],
+              "paintInkColumns": 1207
+            },
+            "scratchJudge": {
+              "codes": [],
+              "verdict": "pass",
+              "judgeGeometry": {
+                "noteCount": 3,
+                "frozenCount": 1,
+                "regionSel": ".ctable",
+                "regionWidth": 1380,
+                "mainWidth": 1380,
+                "column": 1380,
+                "notes": [],
+                "noteLegacy": {
+                  "width": 1380,
+                  "left": 30,
+                  "right": 1410
+                }
+              }
+            },
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-ctl-no-inject.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "injected": false,
+              "reason": "对照：不注入"
+            },
+            "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-ctl-no-inject.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756"
+          }
+        ]
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "T11-writing-mode-vertical-fullwidth",
+      "severity": "medium",
+      "form": "writing-mode-vertical-fullwidth",
+      "direction": "writing-mode（盒宽锁满宽）",
+      "problem": "修复后的判据仍放行该形态：`.snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden }`：**盒宽锁死满宽**，正文竖排成一根 ~24px 竖条 —— 判据读数（修复后）盒宽 [1380,1380,1380] / textWidth [1380,1380,1380] 都「满宽」，而独立像素量测：可见文字实测 338px / 单行最长 16px（列宽 1380px ⇒ 只有 1%）。模式 B EXIT=1（117s · 842 项断言/失败 1）；模式 B EXIT=1（97s · 827 项断言/失败 1）",
+      "requiredFix": "判据要落到「可见文字」而不是「盒子」：① 对同一条说明统计**逐行**字迹宽（Range/BoundingClientRect 均可）而不是盒宽/content box —— 至少一条规则：文本占据 ≥2 行时，若**每一行**的宽度都 < 0.85×列宽 ⇒ note-narrow（多列/浮动/网格/竖排都在这里现形）；② 对绘制期隐藏（伪元素承载正文、遮罩/裁切、覆盖层）只能靠像素级字迹（截图像素列）或 elementFromPoint + getComputedStyle(el,\"::before\").content 这类独立量测兜底 —— 本 harness 的 inkFromPng() 已经给出可直接复用的实现与读数。",
+      "realism": {
+        "level": "medium",
+        "how": "同 writing-mode；`width: 100%` 是几乎必然跟着写的（否则盒子会被内容反推）",
+        "note": "★ 真正的 writing-mode 绕过形态：盒宽与内容盒宽都满宽，可见文字是一根竖条"
+      },
+      "evidence": {
+        "before": {
+          "verdict": "pass",
+          "codes": []
+        },
+        "after": {
+          "verdict": "pass",
+          "codes": [],
+          "boxWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "textWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "paintInkWidth": 338
+        },
+        "modeB": [
+          {
+            "sourceFile": "modeB-after-1.json",
+            "scratchProbeValid": false,
+            "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准",
+            "exitCode": 1,
+            "seconds": 117,
+            "pinnedStable": true,
+            "verdict": "bite",
+            "assertionTotals": {
+              "assertions": 842,
+              "failed": 1
+            },
+            "failingLines": [
+              "✗ §22c @360 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出） — category/agent/#0 note-clipped：category/agent/#0 说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）",
+              "✗ §22c @360 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出） — category/agent/#0 note-clipped：category/agent/#0 说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）"
+            ],
+            "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+            "scratchPaint": null,
+            "scratchJudge": null,
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-writing-mode-vertical-fullwidth.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "sha256After": "09e6b46c935c03e521a56445182fdade547108cd8e66da09f99c539855a43b6c",
+              "ok": true,
+              "frozenCountBefore": 1,
+              "frozenCountAfter": 1,
+              "revertible": true,
+              "bytesAdded": 85
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-writing-mode-vertical-fullwidth.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+          },
+          {
+            "sourceFile": "modeB-before.json",
+            "scratchProbeValid": true,
+            "scratchProbeInvalidReason": null,
+            "exitCode": 1,
+            "seconds": 97,
+            "pinnedStable": true,
+            "verdict": "bite",
+            "assertionTotals": {
+              "assertions": 827,
+              "failed": 1
+            },
+            "failingLines": [
+              "✗ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-clipped：说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）",
+              "✗ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-clipped：说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）"
+            ],
+            "section22cSummary": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+            "scratchPaint": null,
+            "scratchJudge": null,
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-writing-mode-vertical-fullwidth.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "sha256After": "09e6b46c935c03e521a56445182fdade547108cd8e66da09f99c539855a43b6c",
+              "ok": true,
+              "frozenCountBefore": 1,
+              "frozenCountAfter": 1,
+              "revertible": true,
+              "bytesAdded": 85
+            },
+            "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-writing-mode-vertical-fullwidth.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756"
+          }
+        ],
+        "scratch": "adversary/scratch/dist-probe-after/category/agent/index.html（注入串逐字节可回退，冻结串仍恰好 1 次）",
+        "screenshot": "adversary/runs/shots/writing-mode-vertical-fullwidth.png"
+      },
+      "reproCommandA": "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=A --verify-site=scripts/tools/verify-site.js --forms=writing-mode-vertical-fullwidth",
+      "reproCommandB": "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=B --verify-site=scripts/tools/verify-site.js --scratch-name=dist-probe-after --forms=writing-mode-vertical-fullwidth"
+    },
+    {
+      "id": "T11-pseudo-content-narrow",
+      "severity": "high",
+      "form": "pseudo-content-narrow",
+      "direction": "伪元素承载正文（::before/::after 的 content）",
+      "problem": "修复后的判据仍放行该形态：正文交给自己 `::before` 的 `content` 画（`display:block; max-width:70ch`），真实文本节点缩到 0 号字 ⇒ 判据不把伪元素算进「有字区域」 —— 判据读数（修复后）盒宽 [1380,1380,1380] / textWidth [1380,1380,1380] 都「满宽」，而独立像素量测：可见文字实测 453px / 单行最长 nullpx（列宽 1380px ⇒ 只有 33%）。模式 B EXIT=0（113s · 842 项断言/失败 0）",
+      "requiredFix": "判据要落到「可见文字」而不是「盒子」：① 对同一条说明统计**逐行**字迹宽（Range/BoundingClientRect 均可）而不是盒宽/content box —— 至少一条规则：文本占据 ≥2 行时，若**每一行**的宽度都 < 0.85×列宽 ⇒ note-narrow（多列/浮动/网格/竖排都在这里现形）；② 对绘制期隐藏（伪元素承载正文、遮罩/裁切、覆盖层）只能靠像素级字迹（截图像素列）或 elementFromPoint + getComputedStyle(el,\"::before\").content 这类独立量测兜底 —— 本 harness 的 inkFromPng() 已经给出可直接复用的实现与读数。",
+      "realism": {
+        "level": "low",
+        "how": "要把整段说明正文搬进 CSS 的 `content` —— 正常产品改动不会这么干（除非常年 SEO/文案兜底 hack）",
+        "note": "伪元素内容对 Range/`clientWidth` 都不可见；本条用来量化「文字面判据对伪元素的盲区」"
+      },
+      "evidence": {
+        "before": {
+          "verdict": "pass",
+          "codes": []
+        },
+        "after": {
+          "verdict": "pass",
+          "codes": [],
+          "boxWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "textWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "paintInkWidth": 453
+        },
+        "modeB": [
+          {
+            "sourceFile": "modeB-after-2.json",
+            "scratchProbeValid": true,
+            "scratchProbeInvalidReason": null,
+            "exitCode": 0,
+            "seconds": 113,
+            "pinnedStable": true,
+            "verdict": "false-green",
+            "assertionTotals": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "failingLines": [],
+            "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+            "scratchPaint": {
+              "noteIndex": 0,
+              "imageWidth": 1380,
+              "imageHeight": 62,
+              "scale": 1,
+              "paintInkLeft": 0,
+              "paintInkRight": 453,
+              "paintInkWidth": 453,
+              "paintRuns": 1,
+              "paintLongestRun": 453,
+              "paintGaps": [],
+              "paintInkColumns": 453
+            },
+            "scratchJudge": {
+              "codes": [],
+              "verdict": "pass",
+              "judgeGeometry": {
+                "noteCount": 3,
+                "frozenCount": 1,
+                "regionSel": ".ctable",
+                "regionWidth": 1380,
+                "mainWidth": 1380,
+                "column": 1380,
+                "notes": [
+                  {
+                    "index": 0,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": null
+                  },
+                  {
+                    "index": 1,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": true,
+                    "bearingCount": 0,
+                    "ink": null
+                  },
+                  {
+                    "index": 2,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": null
+                  }
+                ],
+                "noteLegacy": {
+                  "width": 1380,
+                  "left": 30,
+                  "right": 1410
+                }
+              }
+            },
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-pseudo-content-narrow.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "sha256After": "6006727feaaa68e0a4aa30affc45e49cd1cf541e5e20c950706473bdecb9c983",
+              "ok": true,
+              "frozenCountBefore": 1,
+              "frozenCountAfter": 1,
+              "revertible": true,
+              "bytesAdded": 506
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-pseudo-content-narrow.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+          }
+        ],
+        "scratch": "adversary/scratch/dist-probe-after/category/agent/index.html（注入串逐字节可回退，冻结串仍恰好 1 次）",
+        "screenshot": "adversary/runs/shots/pseudo-content-narrow.png"
+      },
+      "reproCommandA": "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=A --verify-site=scripts/tools/verify-site.js --forms=pseudo-content-narrow",
+      "reproCommandB": "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=B --verify-site=scripts/tools/verify-site.js --scratch-name=dist-probe-after --forms=pseudo-content-narrow"
+    },
+    {
+      "id": "T11-multicol-narrow-columns",
+      "severity": "blocker",
+      "form": "multicol-narrow-columns",
+      "direction": "CSS 多列（column-width/column-count）",
+      "problem": "修复后的判据仍放行该形态：`.snote { column-count: 3; column-width: 340px; column-gap: 16px }`：**盒宽一字不动**，文字被排成 3 根 ~340px 窄列 —— 缺陷外观（窄柱）一字不差地回来了 —— 判据读数（修复后）盒宽 [1380,1380,1380] / textWidth [1380,1380,1380] 都「满宽」，而独立像素量测：可见文字实测 913px / 单行最长 447.3px（列宽 1380px ⇒ 只有 32%）。模式 B EXIT=0（122s · 842 项断言/失败 0）；模式 B EXIT=0（115s · 842 项断言/失败 0）；模式 B EXIT=0（95s · 827 项断言/失败 0）",
+      "requiredFix": "判据要落到「可见文字」而不是「盒子」：① 对同一条说明统计**逐行**字迹宽（Range/BoundingClientRect 均可）而不是盒宽/content box —— 至少一条规则：文本占据 ≥2 行时，若**每一行**的宽度都 < 0.85×列宽 ⇒ note-narrow（多列/浮动/网格/竖排都在这里现形）；② 对绘制期隐藏（伪元素承载正文、遮罩/裁切、覆盖层）只能靠像素级字迹（截图像素列）或 elementFromPoint + getComputedStyle(el,\"::before\").content 这类独立量测兜底 —— 本 harness 的 inkFromPng() 已经给出可直接复用的实现与读数。",
+      "realism": {
+        "level": "medium",
+        "how": "「把长说明排成两栏/三栏」是很正常的一次排版改动：`.snote { columns: 2 }` 一行就够",
+        "note": "★ 重点形态：任何「文字区并集宽」口径都看不见它（并集横跨整盒，单行却很窄）"
+      },
+      "evidence": {
+        "before": {
+          "verdict": "pass",
+          "codes": []
+        },
+        "after": {
+          "verdict": "pass",
+          "codes": [],
+          "boxWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "textWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "paintInkWidth": 913
+        },
+        "modeB": [
+          {
+            "sourceFile": "modeB-after-1.json",
+            "scratchProbeValid": false,
+            "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准",
+            "exitCode": 0,
+            "seconds": 122,
+            "pinnedStable": true,
+            "verdict": "false-green",
+            "assertionTotals": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "failingLines": [],
+            "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+            "scratchPaint": {
+              "noteIndex": 0,
+              "imageWidth": 1380,
+              "imageHeight": 21,
+              "scale": 1,
+              "paintInkLeft": 0,
+              "paintInkRight": 1344,
+              "paintInkWidth": 1344,
+              "paintRuns": 36,
+              "paintLongestRun": 144,
+              "paintGaps": [
+                {
+                  "leftCss": 107,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 112,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 168,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 218,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 233,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 286,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 297,
+                  "widthCss": 11
+                },
+                {
+                  "leftCss": 512,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 547,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 582,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 620,
+                  "widthCss": 4
+                },
+                {
+                  "leftCss": 628,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 649,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 681,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 693,
+                  "widthCss": 9
+                },
+                {
+                  "leftCss": 704,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 800,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 969,
+                  "widthCss": 11
+                },
+                {
+                  "leftCss": 1111,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 1176,
+                  "widthCss": 8
+                }
+              ],
+              "paintInkColumns": 1207
+            },
+            "scratchJudge": {
+              "codes": [],
+              "verdict": "pass",
+              "judgeGeometry": {
+                "noteCount": 3,
+                "frozenCount": 1,
+                "regionSel": ".ctable",
+                "regionWidth": 1380,
+                "mainWidth": 1380,
+                "column": 1380,
+                "notes": [
+                  {
+                    "index": 0,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 1351.69,
+                      "lines": 5,
+                      "longestLine": 863.75
+                    }
+                  },
+                  {
+                    "index": 1,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": true,
+                    "bearingCount": 0,
+                    "ink": {
+                      "width": 61.64,
+                      "lines": 1,
+                      "longestLine": 61.64
+                    }
+                  },
+                  {
+                    "index": 2,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 1047.52,
+                      "lines": 3,
+                      "longestLine": 963.52
+                    }
+                  }
+                ],
+                "noteLegacy": {
+                  "width": 1380,
+                  "left": 30,
+                  "right": 1410
+                }
+              }
+            },
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-multicol-narrow-columns.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "sha256After": "214b97d4b08eb94d651df89da892a4a212555230eb124d7aec72e5f8d5036ad9",
+              "ok": true,
+              "frozenCountBefore": 1,
+              "frozenCountAfter": 1,
+              "revertible": true,
+              "bytesAdded": 67
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-multicol-narrow-columns.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+          },
+          {
+            "sourceFile": "modeB-after-2.json",
+            "scratchProbeValid": true,
+            "scratchProbeInvalidReason": null,
+            "exitCode": 0,
+            "seconds": 115,
+            "pinnedStable": true,
+            "verdict": "false-green",
+            "assertionTotals": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "failingLines": [],
+            "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+            "scratchPaint": {
+              "noteIndex": 0,
+              "imageWidth": 1380,
+              "imageHeight": 42,
+              "scale": 1,
+              "paintInkLeft": 0,
+              "paintInkRight": 913,
+              "paintInkWidth": 913,
+              "paintRuns": 12,
+              "paintLongestRun": 196,
+              "paintGaps": [
+                {
+                  "leftCss": 107,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 112,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 441,
+                  "widthCss": 24
+                },
+                {
+                  "leftCss": 553,
+                  "widthCss": 11
+                },
+                {
+                  "leftCss": 760,
+                  "widthCss": 8
+                }
+              ],
+              "paintInkColumns": 858
+            },
+            "scratchJudge": {
+              "codes": [],
+              "verdict": "pass",
+              "judgeGeometry": {
+                "noteCount": 3,
+                "frozenCount": 1,
+                "regionSel": ".ctable",
+                "regionWidth": 1380,
+                "mainWidth": 1380,
+                "column": 1380,
+                "notes": [
+                  {
+                    "index": 0,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 912.63,
+                      "lines": 8,
+                      "longestLine": 447.3
+                    }
+                  },
+                  {
+                    "index": 1,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": true,
+                    "bearingCount": 0,
+                    "ink": {
+                      "width": 61.64,
+                      "lines": 1,
+                      "longestLine": 61.64
+                    }
+                  },
+                  {
+                    "index": 2,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 621.33,
+                      "lines": 5,
+                      "longestLine": 447.52
+                    }
+                  }
+                ],
+                "noteLegacy": {
+                  "width": 1380,
+                  "left": 30,
+                  "right": 1410
+                }
+              }
+            },
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-multicol-narrow-columns.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "sha256After": "214b97d4b08eb94d651df89da892a4a212555230eb124d7aec72e5f8d5036ad9",
+              "ok": true,
+              "frozenCountBefore": 1,
+              "frozenCountAfter": 1,
+              "revertible": true,
+              "bytesAdded": 67
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-multicol-narrow-columns.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+          },
+          {
+            "sourceFile": "modeB-before.json",
+            "scratchProbeValid": true,
+            "scratchProbeInvalidReason": null,
+            "exitCode": 0,
+            "seconds": 95,
+            "pinnedStable": true,
+            "verdict": "false-green",
+            "assertionTotals": {
+              "assertions": 827,
+              "failed": 0
+            },
+            "failingLines": [],
+            "section22cSummary": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+            "scratchPaint": {
+              "noteIndex": 0,
+              "imageWidth": 1380,
+              "imageHeight": 42,
+              "scale": 1,
+              "paintInkLeft": 0,
+              "paintInkRight": 913,
+              "paintInkWidth": 913,
+              "paintRuns": 12,
+              "paintLongestRun": 196,
+              "paintGaps": [
+                {
+                  "leftCss": 107,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 112,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 441,
+                  "widthCss": 24
+                },
+                {
+                  "leftCss": 553,
+                  "widthCss": 11
+                },
+                {
+                  "leftCss": 760,
+                  "widthCss": 8
+                }
+              ],
+              "paintInkColumns": 858
+            },
+            "scratchJudge": {
+              "codes": [],
+              "verdict": "pass",
+              "judgeGeometry": {
+                "noteCount": 3,
+                "frozenCount": 1,
+                "regionSel": ".ctable",
+                "regionWidth": 1380,
+                "mainWidth": 1380,
+                "column": 1380,
+                "notes": [],
+                "noteLegacy": {
+                  "width": 1380,
+                  "left": 30,
+                  "right": 1410
+                }
+              }
+            },
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-multicol-narrow-columns.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "sha256After": "214b97d4b08eb94d651df89da892a4a212555230eb124d7aec72e5f8d5036ad9",
+              "ok": true,
+              "frozenCountBefore": 1,
+              "frozenCountAfter": 1,
+              "revertible": true,
+              "bytesAdded": 67
+            },
+            "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-multicol-narrow-columns.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756"
+          }
+        ],
+        "scratch": "adversary/scratch/dist-probe-after/category/agent/index.html（注入串逐字节可回退，冻结串仍恰好 1 次）",
+        "screenshot": "adversary/runs/shots/multicol-narrow-columns.png"
+      },
+      "reproCommandA": "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=A --verify-site=scripts/tools/verify-site.js --forms=multicol-narrow-columns",
+      "reproCommandB": "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=B --verify-site=scripts/tools/verify-site.js --scratch-name=dist-probe-after --forms=multicol-narrow-columns"
+    },
+    {
+      "id": "T11-overlay-opaque",
+      "severity": "high",
+      "form": "overlay-opaque",
+      "direction": "不透明覆盖层遮住右侧文本",
+      "problem": "修复后的判据仍放行该形态：`.snote { position: relative } .snote::after { inset: 0 0 0 30%; background: #f6f7f9 }`：右侧 70% 被底色盖死 ⇒ 可见文字只剩左边 ~414px —— 判据读数（修复后）盒宽 [1380,1380,1380] / textWidth [1380,1380,1380] 都「满宽」，而独立像素量测：可见文字实测 414px / 单行最长 863.75px（列宽 1380px ⇒ 只有 30%）。模式 B EXIT=0（117s · 842 项断言/失败 0）；模式 B EXIT=0（115s · 842 项断言/失败 0）；模式 B EXIT=0（96s · 827 项断言/失败 0）",
+      "requiredFix": "判据要落到「可见文字」而不是「盒子」：① 对同一条说明统计**逐行**字迹宽（Range/BoundingClientRect 均可）而不是盒宽/content box —— 至少一条规则：文本占据 ≥2 行时，若**每一行**的宽度都 < 0.85×列宽 ⇒ note-narrow（多列/浮动/网格/竖排都在这里现形）；② 对绘制期隐藏（伪元素承载正文、遮罩/裁切、覆盖层）只能靠像素级字迹（截图像素列）或 elementFromPoint + getComputedStyle(el,\"::before\").content 这类独立量测兜底 —— 本 harness 的 inkFromPng() 已经给出可直接复用的实现与读数。",
+      "realism": {
+        "level": "low",
+        "how": "需要一个不明所以的伪元素盖层；真实场景更接近「装饰层/骨架屏盖住了正文」",
+        "note": "文字排版一字没动，只是被盖住 —— 宽度类判据天然看不见「被盖住」"
+      },
+      "evidence": {
+        "before": {
+          "verdict": "pass",
+          "codes": []
+        },
+        "after": {
+          "verdict": "pass",
+          "codes": [],
+          "boxWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "textWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "paintInkWidth": 414
+        },
+        "modeB": [
+          {
+            "sourceFile": "modeB-after-1.json",
+            "scratchProbeValid": false,
+            "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准",
+            "exitCode": 0,
+            "seconds": 117,
+            "pinnedStable": true,
+            "verdict": "false-green",
+            "assertionTotals": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "failingLines": [],
+            "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+            "scratchPaint": {
+              "noteIndex": 0,
+              "imageWidth": 1380,
+              "imageHeight": 21,
+              "scale": 1,
+              "paintInkLeft": 0,
+              "paintInkRight": 1344,
+              "paintInkWidth": 1344,
+              "paintRuns": 36,
+              "paintLongestRun": 144,
+              "paintGaps": [
+                {
+                  "leftCss": 107,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 112,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 168,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 218,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 233,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 286,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 297,
+                  "widthCss": 11
+                },
+                {
+                  "leftCss": 512,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 547,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 582,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 620,
+                  "widthCss": 4
+                },
+                {
+                  "leftCss": 628,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 649,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 681,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 693,
+                  "widthCss": 9
+                },
+                {
+                  "leftCss": 704,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 800,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 969,
+                  "widthCss": 11
+                },
+                {
+                  "leftCss": 1111,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 1176,
+                  "widthCss": 8
+                }
+              ],
+              "paintInkColumns": 1207
+            },
+            "scratchJudge": {
+              "codes": [],
+              "verdict": "pass",
+              "judgeGeometry": {
+                "noteCount": 3,
+                "frozenCount": 1,
+                "regionSel": ".ctable",
+                "regionWidth": 1380,
+                "mainWidth": 1380,
+                "column": 1380,
+                "notes": [
+                  {
+                    "index": 0,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 1351.69,
+                      "lines": 5,
+                      "longestLine": 863.75
+                    }
+                  },
+                  {
+                    "index": 1,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": true,
+                    "bearingCount": 0,
+                    "ink": {
+                      "width": 61.64,
+                      "lines": 1,
+                      "longestLine": 61.64
+                    }
+                  },
+                  {
+                    "index": 2,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 1047.52,
+                      "lines": 3,
+                      "longestLine": 963.52
+                    }
+                  }
+                ],
+                "noteLegacy": {
+                  "width": 1380,
+                  "left": 30,
+                  "right": 1410
+                }
+              }
+            },
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-overlay-opaque.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "sha256After": "5184f4757dd7d8f05f203c25a65c916f4d0fdfa3ffb20caea7ed4256514cb8b6",
+              "ok": true,
+              "frozenCountBefore": 1,
+              "frozenCountAfter": 1,
+              "revertible": true,
+              "bytesAdded": 143
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-overlay-opaque.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+          },
+          {
+            "sourceFile": "modeB-after-2.json",
+            "scratchProbeValid": true,
+            "scratchProbeInvalidReason": null,
+            "exitCode": 0,
+            "seconds": 115,
+            "pinnedStable": true,
+            "verdict": "false-green",
+            "assertionTotals": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "failingLines": [],
+            "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+            "scratchPaint": {
+              "noteIndex": 0,
+              "imageWidth": 1380,
+              "imageHeight": 21,
+              "scale": 1,
+              "paintInkLeft": 0,
+              "paintInkRight": 414,
+              "paintInkWidth": 414,
+              "paintRuns": 12,
+              "paintLongestRun": 106,
+              "paintGaps": [
+                {
+                  "leftCss": 107,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 112,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 168,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 218,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 233,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 286,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 297,
+                  "widthCss": 11
+                }
+              ],
+              "paintInkColumns": 368
+            },
+            "scratchJudge": {
+              "codes": [],
+              "verdict": "pass",
+              "judgeGeometry": {
+                "noteCount": 3,
+                "frozenCount": 1,
+                "regionSel": ".ctable",
+                "regionWidth": 1380,
+                "mainWidth": 1380,
+                "column": 1380,
+                "notes": [
+                  {
+                    "index": 0,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 1351.69,
+                      "lines": 5,
+                      "longestLine": 863.75
+                    }
+                  },
+                  {
+                    "index": 1,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": true,
+                    "bearingCount": 0,
+                    "ink": {
+                      "width": 61.64,
+                      "lines": 1,
+                      "longestLine": 61.64
+                    }
+                  },
+                  {
+                    "index": 2,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 1047.52,
+                      "lines": 3,
+                      "longestLine": 963.52
+                    }
+                  }
+                ],
+                "noteLegacy": {
+                  "width": 1380,
+                  "left": 30,
+                  "right": 1410
+                }
+              }
+            },
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-overlay-opaque.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "sha256After": "5184f4757dd7d8f05f203c25a65c916f4d0fdfa3ffb20caea7ed4256514cb8b6",
+              "ok": true,
+              "frozenCountBefore": 1,
+              "frozenCountAfter": 1,
+              "revertible": true,
+              "bytesAdded": 143
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-overlay-opaque.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+          },
+          {
+            "sourceFile": "modeB-before.json",
+            "scratchProbeValid": true,
+            "scratchProbeInvalidReason": null,
+            "exitCode": 0,
+            "seconds": 96,
+            "pinnedStable": true,
+            "verdict": "false-green",
+            "assertionTotals": {
+              "assertions": 827,
+              "failed": 0
+            },
+            "failingLines": [],
+            "section22cSummary": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+            "scratchPaint": {
+              "noteIndex": 0,
+              "imageWidth": 1380,
+              "imageHeight": 21,
+              "scale": 1,
+              "paintInkLeft": 0,
+              "paintInkRight": 414,
+              "paintInkWidth": 414,
+              "paintRuns": 12,
+              "paintLongestRun": 106,
+              "paintGaps": [
+                {
+                  "leftCss": 107,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 112,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 168,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 218,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 233,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 286,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 297,
+                  "widthCss": 11
+                }
+              ],
+              "paintInkColumns": 368
+            },
+            "scratchJudge": {
+              "codes": [],
+              "verdict": "pass",
+              "judgeGeometry": {
+                "noteCount": 3,
+                "frozenCount": 1,
+                "regionSel": ".ctable",
+                "regionWidth": 1380,
+                "mainWidth": 1380,
+                "column": 1380,
+                "notes": [],
+                "noteLegacy": {
+                  "width": 1380,
+                  "left": 30,
+                  "right": 1410
+                }
+              }
+            },
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-overlay-opaque.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "sha256After": "5184f4757dd7d8f05f203c25a65c916f4d0fdfa3ffb20caea7ed4256514cb8b6",
+              "ok": true,
+              "frozenCountBefore": 1,
+              "frozenCountAfter": 1,
+              "revertible": true,
+              "bytesAdded": 143
+            },
+            "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-overlay-opaque.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756"
+          }
+        ],
+        "scratch": "adversary/scratch/dist-probe-after/category/agent/index.html（注入串逐字节可回退，冻结串仍恰好 1 次）",
+        "screenshot": "adversary/runs/shots/overlay-opaque.png"
+      },
+      "reproCommandA": "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=A --verify-site=scripts/tools/verify-site.js --forms=overlay-opaque",
+      "reproCommandB": "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=B --verify-site=scripts/tools/verify-site.js --scratch-name=dist-probe-after --forms=overlay-opaque"
+    },
+    {
+      "id": "T11-float-narrow-column",
+      "severity": "blocker",
+      "form": "float-narrow-column",
+      "direction": "浮动占位把正文挤成窄列（补充）",
+      "problem": "修复后的判据仍放行该形态：`.snote::before { content:\"\"; float: right; width: 70%; height: 6em }`：右侧 70% 被浮动占位吃掉，正文被迫排进左侧 30% ≈ 414px —— 判据读数（修复后）盒宽 [1380,1380,1380] / textWidth [1380,1380,1380] 都「满宽」，而独立像素量测：可见文字实测 411px / 单行最长 411.3px（列宽 1380px ⇒ 只有 30%）。模式 B EXIT=0（119s · 842 项断言/失败 0）；模式 B EXIT=0（114s · 842 项断言/失败 0）；模式 B EXIT=0（98s · 827 项断言/失败 0）",
+      "requiredFix": "判据要落到「可见文字」而不是「盒子」：① 对同一条说明统计**逐行**字迹宽（Range/BoundingClientRect 均可）而不是盒宽/content box —— 至少一条规则：文本占据 ≥2 行时，若**每一行**的宽度都 < 0.85×列宽 ⇒ note-narrow（多列/浮动/网格/竖排都在这里现形）；② 对绘制期隐藏（伪元素承载正文、遮罩/裁切、覆盖层）只能靠像素级字迹（截图像素列）或 elementFromPoint + getComputedStyle(el,\"::before\").content 这类独立量测兜底 —— 本 harness 的 inkFromPng() 已经给出可直接复用的实现与读数。",
+      "realism": {
+        "level": "medium",
+        "how": "真实写法：说明里放一张图/图标并 `float: right`（`img { float: right }`）——正是这个形状",
+        "note": "★ 与「改动前 70ch 窄柱」外观最像的一条：左边一根窄柱、右边整块空白"
+      },
+      "evidence": {
+        "before": {
+          "verdict": "pass",
+          "codes": []
+        },
+        "after": {
+          "verdict": "pass",
+          "codes": [],
+          "boxWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "textWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "paintInkWidth": 411
+        },
+        "modeB": [
+          {
+            "sourceFile": "modeB-after-1.json",
+            "scratchProbeValid": false,
+            "scratchProbeInvalidReason": "该轮在「先还原后探针」的顺序缺陷下跑的：套件 EXIT 有效，但 scratch 探针量到的是已还原页面 ⇒ 以 modeB-after-2 的复跑为准",
+            "exitCode": 0,
+            "seconds": 119,
+            "pinnedStable": true,
+            "verdict": "false-green",
+            "assertionTotals": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "failingLines": [],
+            "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+            "scratchPaint": {
+              "noteIndex": 0,
+              "imageWidth": 1380,
+              "imageHeight": 21,
+              "scale": 1,
+              "paintInkLeft": 0,
+              "paintInkRight": 1344,
+              "paintInkWidth": 1344,
+              "paintRuns": 36,
+              "paintLongestRun": 144,
+              "paintGaps": [
+                {
+                  "leftCss": 107,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 112,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 168,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 218,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 233,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 286,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 297,
+                  "widthCss": 11
+                },
+                {
+                  "leftCss": 512,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 547,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 582,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 620,
+                  "widthCss": 4
+                },
+                {
+                  "leftCss": 628,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 649,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 681,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 693,
+                  "widthCss": 9
+                },
+                {
+                  "leftCss": 704,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 800,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 969,
+                  "widthCss": 11
+                },
+                {
+                  "leftCss": 1111,
+                  "widthCss": 2
+                },
+                {
+                  "leftCss": 1176,
+                  "widthCss": 8
+                }
+              ],
+              "paintInkColumns": 1207
+            },
+            "scratchJudge": {
+              "codes": [],
+              "verdict": "pass",
+              "judgeGeometry": {
+                "noteCount": 3,
+                "frozenCount": 1,
+                "regionSel": ".ctable",
+                "regionWidth": 1380,
+                "mainWidth": 1380,
+                "column": 1380,
+                "notes": [
+                  {
+                    "index": 0,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 1351.69,
+                      "lines": 5,
+                      "longestLine": 863.75
+                    }
+                  },
+                  {
+                    "index": 1,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": true,
+                    "bearingCount": 0,
+                    "ink": {
+                      "width": 61.64,
+                      "lines": 1,
+                      "longestLine": 61.64
+                    }
+                  },
+                  {
+                    "index": 2,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 1047.52,
+                      "lines": 3,
+                      "longestLine": 963.52
+                    }
+                  }
+                ],
+                "noteLegacy": {
+                  "width": 1380,
+                  "left": 30,
+                  "right": 1410
+                }
+              }
+            },
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-float-narrow-column.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "sha256After": "54900a1938f4657045e05ad994221d12e1ab1c9bf49d3804d6380235fb47c400",
+              "ok": true,
+              "frozenCountBefore": 1,
+              "frozenCountAfter": 1,
+              "revertible": true,
+              "bytesAdded": 71
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-float-narrow-column.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+          },
+          {
+            "sourceFile": "modeB-after-2.json",
+            "scratchProbeValid": true,
+            "scratchProbeInvalidReason": null,
+            "exitCode": 0,
+            "seconds": 114,
+            "pinnedStable": true,
+            "verdict": "false-green",
+            "assertionTotals": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "failingLines": [],
+            "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+            "scratchPaint": {
+              "noteIndex": 0,
+              "imageWidth": 1380,
+              "imageHeight": 83,
+              "scale": 1,
+              "paintInkLeft": 0,
+              "paintInkRight": 411,
+              "paintInkWidth": 411,
+              "paintRuns": 3,
+              "paintLongestRun": 168,
+              "paintGaps": [],
+              "paintInkColumns": 409
+            },
+            "scratchJudge": {
+              "codes": [],
+              "verdict": "pass",
+              "judgeGeometry": {
+                "noteCount": 3,
+                "frozenCount": 1,
+                "regionSel": ".ctable",
+                "regionWidth": 1380,
+                "mainWidth": 1380,
+                "column": 1380,
+                "notes": [
+                  {
+                    "index": 0,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 411.3,
+                      "lines": 7,
+                      "longestLine": 411.3
+                    }
+                  },
+                  {
+                    "index": 1,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": true,
+                    "bearingCount": 0,
+                    "ink": {
+                      "width": 61.64,
+                      "lines": 1,
+                      "longestLine": 61.64
+                    }
+                  },
+                  {
+                    "index": 2,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 411.52,
+                      "lines": 5,
+                      "longestLine": 411.52
+                    }
+                  }
+                ],
+                "noteLegacy": {
+                  "width": 1380,
+                  "left": 30,
+                  "right": 1410
+                }
+              }
+            },
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-float-narrow-column.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "sha256After": "54900a1938f4657045e05ad994221d12e1ab1c9bf49d3804d6380235fb47c400",
+              "ok": true,
+              "frozenCountBefore": 1,
+              "frozenCountAfter": 1,
+              "revertible": true,
+              "bytesAdded": 71
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-float-narrow-column.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+          },
+          {
+            "sourceFile": "modeB-before.json",
+            "scratchProbeValid": true,
+            "scratchProbeInvalidReason": null,
+            "exitCode": 0,
+            "seconds": 98,
+            "pinnedStable": true,
+            "verdict": "false-green",
+            "assertionTotals": {
+              "assertions": 827,
+              "failed": 0
+            },
+            "failingLines": [],
+            "section22cSummary": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+            "scratchPaint": {
+              "noteIndex": 0,
+              "imageWidth": 1380,
+              "imageHeight": 83,
+              "scale": 1,
+              "paintInkLeft": 0,
+              "paintInkRight": 411,
+              "paintInkWidth": 411,
+              "paintRuns": 3,
+              "paintLongestRun": 168,
+              "paintGaps": [],
+              "paintInkColumns": 409
+            },
+            "scratchJudge": {
+              "codes": [],
+              "verdict": "pass",
+              "judgeGeometry": {
+                "noteCount": 3,
+                "frozenCount": 1,
+                "regionSel": ".ctable",
+                "regionWidth": 1380,
+                "mainWidth": 1380,
+                "column": 1380,
+                "notes": [],
+                "noteLegacy": {
+                  "width": 1380,
+                  "left": 30,
+                  "right": 1410
+                }
+              }
+            },
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-float-narrow-column.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "sha256After": "54900a1938f4657045e05ad994221d12e1ab1c9bf49d3804d6380235fb47c400",
+              "ok": true,
+              "frozenCountBefore": 1,
+              "frozenCountAfter": 1,
+              "revertible": true,
+              "bytesAdded": 71
+            },
+            "shell": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-float-narrow-column.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756"
+          }
+        ],
+        "scratch": "adversary/scratch/dist-probe-after/category/agent/index.html（注入串逐字节可回退，冻结串仍恰好 1 次）",
+        "screenshot": "adversary/runs/shots/float-narrow-column.png"
+      },
+      "reproCommandA": "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=A --verify-site=scripts/tools/verify-site.js --forms=float-narrow-column",
+      "reproCommandB": "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=B --verify-site=scripts/tools/verify-site.js --scratch-name=dist-probe-after --forms=float-narrow-column"
+    },
+    {
+      "id": "T11-clip-path-inset",
+      "severity": "high",
+      "form": "clip-path-inset",
+      "direction": "clip-path 裁掉右侧（补充）",
+      "problem": "修复后的判据仍放行该形态：`.snote { clip-path: inset(0 70% 0 0) }`：绘制期裁掉右侧 70%，盒宽/文字排版都不动 —— 判据读数（修复后）盒宽 [1380,1380,1380] / textWidth [1380,1380,1380] 都「满宽」，而独立像素量测：可见文字实测 414px / 单行最长 863.75px（列宽 1380px ⇒ 只有 30%）。模式 B EXIT=0（113s · 842 项断言/失败 0）",
+      "requiredFix": "判据要落到「可见文字」而不是「盒子」：① 对同一条说明统计**逐行**字迹宽（Range/BoundingClientRect 均可）而不是盒宽/content box —— 至少一条规则：文本占据 ≥2 行时，若**每一行**的宽度都 < 0.85×列宽 ⇒ note-narrow（多列/浮动/网格/竖排都在这里现形）；② 对绘制期隐藏（伪元素承载正文、遮罩/裁切、覆盖层）只能靠像素级字迹（截图像素列）或 elementFromPoint + getComputedStyle(el,\"::before\").content 这类独立量测兜底 —— 本 harness 的 inkFromPng() 已经给出可直接复用的实现与读数。",
+      "realism": {
+        "level": "low",
+        "how": "`clip-path` 多用于装饰性裁切；落到 `.snote` 是误伤",
+        "note": "补充：与遮罩同类（绘制期隐藏）"
+      },
+      "evidence": {
+        "before": {
+          "verdict": "pass",
+          "codes": []
+        },
+        "after": {
+          "verdict": "pass",
+          "codes": [],
+          "boxWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "textWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "paintInkWidth": 414
+        },
+        "modeB": [
+          {
+            "sourceFile": "modeB-after-2.json",
+            "scratchProbeValid": true,
+            "scratchProbeInvalidReason": null,
+            "exitCode": 0,
+            "seconds": 113,
+            "pinnedStable": true,
+            "verdict": "false-green",
+            "assertionTotals": {
+              "assertions": 842,
+              "failed": 0
+            },
+            "failingLines": [],
+            "section22cSummary": "  ✓ §22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切） — 全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 0（落在 0 页） · 不同轴 0 · 裁切 0 · textFallback 回落 41 条",
+            "scratchPaint": {
+              "noteIndex": 0,
+              "imageWidth": 1380,
+              "imageHeight": 21,
+              "scale": 1,
+              "paintInkLeft": 0,
+              "paintInkRight": 414,
+              "paintInkWidth": 414,
+              "paintRuns": 12,
+              "paintLongestRun": 106,
+              "paintGaps": [
+                {
+                  "leftCss": 107,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 112,
+                  "widthCss": 8
+                },
+                {
+                  "leftCss": 168,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 218,
+                  "widthCss": 3
+                },
+                {
+                  "leftCss": 233,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 286,
+                  "widthCss": 7
+                },
+                {
+                  "leftCss": 297,
+                  "widthCss": 11
+                }
+              ],
+              "paintInkColumns": 368
+            },
+            "scratchJudge": {
+              "codes": [],
+              "verdict": "pass",
+              "judgeGeometry": {
+                "noteCount": 3,
+                "frozenCount": 1,
+                "regionSel": ".ctable",
+                "regionWidth": 1380,
+                "mainWidth": 1380,
+                "column": 1380,
+                "notes": [
+                  {
+                    "index": 0,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 1351.69,
+                      "lines": 5,
+                      "longestLine": 863.75
+                    }
+                  },
+                  {
+                    "index": 1,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": true,
+                    "bearingCount": 0,
+                    "ink": {
+                      "width": 61.64,
+                      "lines": 1,
+                      "longestLine": 61.64
+                    }
+                  },
+                  {
+                    "index": 2,
+                    "boxWidth": 1380,
+                    "boxLeft": 30,
+                    "boxRight": 1410,
+                    "contentBox": 1380,
+                    "textWidth": 1380,
+                    "textFallback": false,
+                    "bearingCount": 1,
+                    "ink": {
+                      "width": 1047.52,
+                      "lines": 3,
+                      "longestLine": 963.52
+                    }
+                  }
+                ],
+                "noteLegacy": {
+                  "width": 1380,
+                  "left": 30,
+                  "right": 1410
+                }
+              }
+            },
+            "report": "research/_raw/secondary-page-layout-unification/adversary/runs/suite-clip-path-inset.json",
+            "target": {
+              "file": "category/agent/index.html",
+              "sha256After": "7b28fffa009b8bbb2799d4daac6b21879dc3087f27a958350b97406d1603d908",
+              "ok": true,
+              "frozenCountBefore": 1,
+              "frozenCountAfter": 1,
+              "revertible": true,
+              "bytesAdded": 40
+            },
+            "shell": "node scripts\\tools\\verify-site.js --dir=research/_raw/secondary-page-layout-unification/adversary/scratch/dist-probe-after --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-clip-path-inset.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+            "verifySiteSha": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+          }
+        ],
+        "scratch": "adversary/scratch/dist-probe-after/category/agent/index.html（注入串逐字节可回退，冻结串仍恰好 1 次）",
+        "screenshot": "adversary/runs/shots/clip-path-inset.png"
+      },
+      "reproCommandA": "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=A --verify-site=scripts/tools/verify-site.js --forms=clip-path-inset",
+      "reproCommandB": "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=B --verify-site=scripts/tools/verify-site.js --scratch-name=dist-probe-after --forms=clip-path-inset"
+    }
+  ],
+  "outOfPromiseObservations": [
+    {
+      "id": "T11-font-size-tiny",
+      "form": "font-size-tiny",
+      "observation": "**越界观察（不构成本版承诺内的缺陷）**：`.snote { font-size: 1px }`：盒宽满宽，文字缩到不可读（实测像素字迹只剩 112px —— 「窄柱」外观是字号造成的，不是宽度造成的） —— 判据两版都放行；它不是「页面级说明被压成窄柱」这条承诺里的缺陷。",
+      "realism": {
+        "level": "low",
+        "how": "把 `--fs-sm`/字号变量改错（比如 token 写错一位）就可能出现极小字号",
+        "note": "**不是窄柱缺陷**：本条用来说明门禁的边界（它不该管字号）；放行不算假绿，算越界观察"
+      },
+      "evidence": {
+        "before": {
+          "verdict": "pass",
+          "codes": []
+        },
+        "after": {
+          "verdict": "pass",
+          "codes": [],
+          "boxWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "textWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "paintInkWidth": 112
+        },
+        "modeB": null,
+        "scratch": "adversary/scratch/dist-probe-after/category/agent/index.html（注入串逐字节可回退，冻结串仍恰好 1 次）",
+        "screenshot": "adversary/runs/shots/font-size-tiny.png"
+      }
+    },
+    {
+      "id": "T11-letter-spacing-huge",
+      "form": "letter-spacing-huge",
+      "observation": "**越界观察（不构成本版承诺内的缺陷）**：`.snote { letter-spacing: 40px }`：每行只剩几个字，盒宽与行宽都还是满宽 —— 判据两版都放行；它不是「页面级说明被压成窄柱」这条承诺里的缺陷。",
+      "realism": {
+        "level": "low",
+        "how": "`letter-spacing` 通常写在标题/徽标上；落到 `.snote` 需要一次误伤（如选择器漏了层级）",
+        "note": "同为**越界观察**：不是窄柱"
+      },
+      "evidence": {
+        "before": {
+          "verdict": "pass",
+          "codes": []
+        },
+        "after": {
+          "verdict": "pass",
+          "codes": [],
+          "boxWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "textWidth": [
+            1380,
+            1380,
+            1380
+          ],
+          "paintInkWidth": 1325
+        },
+        "modeB": null,
+        "scratch": "adversary/scratch/dist-probe-after/category/agent/index.html（注入串逐字节可回退，冻结串仍恰好 1 次）",
+        "screenshot": "adversary/runs/shots/letter-spacing-huge.png"
+      }
+    }
+  ],
+  "calibration": {
+    "probe": "adversary/line-ink-calibration.cjs（独立探针，不接入套件；verify-site.js 未改动）",
+    "rule": "行数 ≥ 2 且 最宽行 < 0.85 × min(主数据区宽, 页面列宽)",
+    "report": "adversary/calibration-report.md",
+    "raw": "adversary/runs/calibration-all.json",
+    "sets": {
+      "dist": {
+        "dir": "dist",
+        "notes": 401,
+        "pages": 105,
+        "hits": {
+          "A_0p85_2lines": 0,
+          "V_0p5_2lines": 0,
+          "V_0p85_3lines": 0
+        }
+      },
+      "baseline": {
+        "dir": "dist.baseline",
+        "notes": 401,
+        "pages": 105,
+        "hits": {
+          "A_0p85_2lines": 108,
+          "V_0p5_2lines": 108,
+          "V_0p85_3lines": 100
+        }
+      },
+      "synth": {
+        "dir": "dist.synth-fixed",
+        "notes": 401,
+        "pages": 105,
+        "hits": {
+          "A_0p85_2lines": 0,
+          "V_0p5_2lines": 0,
+          "V_0p85_3lines": 0
+        }
+      }
+    },
+    "scratchForms": {
+      "multicol-narrow-columns": {
+        "css": ".snote { column-count: 3; column-width: 340px; column-gap: 16px; }",
+        "route": "category/agent/",
+        "screenshot": null,
+        "row": {
+          "route": "category/agent/",
+          "index": 0,
+          "column": 1380,
+          "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以",
+          "boxWidth": 1380,
+          "lineCount": 2,
+          "widestLine": 912.63,
+          "medianLine": 912.63,
+          "narrowestLine": 489.33,
+          "ratioWidestToColumn": 0.661,
+          "currentTextWidth": 1380,
+          "currentNarrow": false,
+          "currentCodes": []
+        },
+        "candidateVerdict": "咬中"
+      },
+      "float-narrow-column": {
+        "css": ".snote::before { content: \"\"; float: right; width: 70%; height: 6em; }",
+        "route": "category/agent/",
+        "screenshot": null,
+        "row": {
+          "route": "category/agent/",
+          "index": 0,
+          "column": 1380,
+          "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以",
+          "boxWidth": 1380,
+          "lineCount": 4,
+          "widestLine": 411.3,
+          "medianLine": 404.45,
+          "narrowestLine": 132,
+          "ratioWidestToColumn": 0.298,
+          "currentTextWidth": 1380,
+          "currentNarrow": false,
+          "currentCodes": []
+        },
+        "candidateVerdict": "咬中"
+      },
+      "overlay-opaque": {
+        "css": ".snote { position: relative; }\n.snote::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 30%; background: #f6f7f9; }",
+        "route": "category/agent/",
+        "screenshot": null,
+        "row": {
+          "route": "category/agent/",
+          "index": 0,
+          "column": 1380,
+          "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以",
+          "boxWidth": 1380,
+          "lineCount": 1,
+          "widestLine": 1351.69,
+          "medianLine": 1351.69,
+          "narrowestLine": 1351.69,
+          "ratioWidestToColumn": 0.979,
+          "currentTextWidth": 1380,
+          "currentNarrow": false,
+          "currentCodes": []
+        },
+        "candidateVerdict": "放行"
+      }
+    },
+    "truthComparison": {
+      "dist": {
+        "got": 0,
+        "extraCount": 0,
+        "missedCount": 0
+      },
+      "baseline": {
+        "got": 108,
+        "missedCount": 48,
+        "missedAllAreCaughtByCurrentCriterion": true,
+        "extraCount": 0
+      },
+      "synth": {
+        "got": 0,
+        "extraCount": 0
+      }
+    },
+    "conclusion": "候选判据（行数≥2 且 最宽行 < 0.85×列宽）在 dist/synth-fixed 上 0 误报、在 baseline 上补 108 条；单独跑会漏 48 条「单行 + 盒被压窄」——那 48 条现行 textWidth 判据已全覆盖（漏的 48 条里属于 caughtByOldCriteria 的 0 条）⇒ 结论是「加一条牙、不换牙」：并集 156/156、误报 0。"
+  },
+  "drawTimeHidingCensus": {
+    "question": "真实构建路径下是否存在「有人会真的写出来」的改动，能让页面级说明被裁剪/遮罩成窄柱？",
+    "raw": "adversary/runs/clip-census.json",
+    "scan": "252 个源文件 / 186 个产物 HTML",
+    "verdict": "绘制期裁剪/遮罩（clip-path / mask* / mix-blend-mode / filter）在源与产物里 **0 处** ⇒ 只能靠手改共享样式或注入造出 ⇒ 同意登记 P1 / DEFERRED，本轮不修。",
+    "counts": {
+      "源_clip_path": 0,
+      "源_mask": 0,
+      "产物_clip_path": 0,
+      "产物_mask": 0,
+      "产物_overflow_hidden": 4942,
+      "产物_line_clamp": 559
+    },
+    "residualRisk": "本仓库自己的「限字」写法是 overflow:hidden + -webkit-line-clamp（.g h3 / .of .tx / .tierhead .hint）：单独不会把说明压窄（截断在右侧、行宽仍满宽），但「说明被视觉截断」这条路的把手是现成的。"
+  },
+  "coverageAsymmetry": {
+    "form": "writing-mode-vertical-fullwidth",
+    "injection": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; }",
+    "raw": "adversary/runs/coverage-asymmetry-writing-mode.json",
+    "perViewport": [
+      {
+        "viewport": 1440,
+        "scope": "全站 186 页 / 逐条判 401 条",
+        "assertion": "✓",
+        "codes": [],
+        "detail": "窄条 0（落在 0 页）· 不同轴 0 · 裁切 0 · textFallback 回落 41 条"
+      },
+      {
+        "viewport": 1600,
+        "scope": "全站 186 页 / 逐条判 401 条",
+        "assertion": "✓",
+        "codes": [],
+        "detail": "窄条 0 · 不同轴 0 · 裁切 0"
+      },
+      {
+        "viewport": 390,
+        "scope": "全站 186 页 documentElement.scrollWidth",
+        "assertion": "✓",
+        "codes": [],
+        "detail": "最宽的一页 390px（视口 390）"
+      },
+      {
+        "viewport": 760,
+        "scope": "样本集 29 页",
+        "assertion": "✓",
+        "codes": [],
+        "detail": "0 违规码"
+      },
+      {
+        "viewport": 360,
+        "scope": "样本集 29 页",
+        "assertion": "✗",
+        "route": "category/agent/",
+        "noteIndex": 0,
+        "codes": [
+          "note-clipped"
+        ],
+        "message": "§22c @360 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出） — category/agent/#0 note-clipped：category/agent/#0 说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）",
+        "scrollWidth": 347,
+        "clientWidth": 328,
+        "overflowPx": 19
+      }
+    ],
+    "conclusion": "能看见它的路径只有「760/360 样本集（29 页，每族 1 条真实路由）」；若该形态落在一个**不在样本集里**的 wide 页上（例如另一个 category 页或某个 collection 页），整轮套件就是 EXIT=0 的假绿。",
+    "notFalseGreenBecause": "整轮 EXIT=1（842 项断言失败 1 项），所以它**不是**假绿：闸门最终会拦住它 —— 但拦住它的是 360 档的**溢出副作用**，而不是「竖排让可见文字只剩一根 16px 宽的竖条」这件事实；桌面两档（覆盖全站 186 页）对它完全无感。"
+  },
+  "summary": {
+    "forms": 16,
+    "passedAfter": 9,
+    "bitAfter": 7,
+    "flipped": [
+      "flex-decorator-item",
+      "grid-narrow-track"
+    ],
+    "falseGreenConfirmed": [
+      "pseudo-content-narrow",
+      "multicol-narrow-columns",
+      "overlay-opaque",
+      "float-narrow-column",
+      "clip-path-inset"
+    ],
+    "findingsBySeverity": {
+      "medium": 1,
+      "high": 3,
+      "blocker": 2
+    }
+  }
+}

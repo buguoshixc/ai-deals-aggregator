@@ -1,0 +1,10 @@
+探针 dir=D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\research\_raw\secondary-page-layout-unification\review\scratch\r3-balance · 宽度 1440,760 · 生成 2026-10-06T10:33:33.682Z · JS 错误 0
+@1440: 2 页 · 6 条说明 · 列宽 1380–1380 · probe70ch 452.81–452.81 · note-narrow 0 · note-ink-narrow 1 · note-hidden-text 0 · 变体(最长单矩形) 2 · 变体(>=3 行) 1
+@760: 2 页 · 6 条说明 · 列宽 728–728 · probe70ch 452.81–452.81 · note-narrow 3 · note-ink-narrow 3 · note-hidden-text 0 · 变体(最长单矩形) 4 · 变体(>=3 行) 3
+
+===== @760：命中 5 条（并集码 4 条 / 仅变体 1 条）=====
+  category/api/#0 [note-narrow+note-ink-narrow | ink-rect-variant+ink-3lines-variant] 盒 728 列 728 行 6 最宽 608.81 比值 0.8363 字形盒 10 选区 .ctable · 这一页按分类收条目：数据里的 category 是「
+  category/api/#1 [note-narrow] 盒 728 列 728 行 1 最宽 61.64 比值 0.0847 字形盒 1 选区 .ctable · 全部变化 →
+  category/api/#2 [note-narrow+note-ink-narrow | ink-rect-variant+ink-3lines-variant] 盒 728 列 728 行 4 最宽 488.81 比值 0.6714 字形盒 5 选区 .ctable · 分类之间不互斥：一条优惠可以同时出现在多个分类页与多
+  vendor/aliyun/#0 [note-ink-narrow | ink-rect-variant+ink-3lines-variant] 盒 728 列 728 行 5 最宽 600 比值 0.8242 字形盒 11 选区 .ctable · 这一页收的是登记在册的同一家厂商的条目：厂商名按站内
+  vendor/aliyun/#2 [- | ink-rect-variant] 盒 728 列 728 行 2 最宽 663.3 比值 0.9111 字形盒 6 选区 .ctable · 厂商名按站内归一规则合并（同一个公司的不同写法落到同

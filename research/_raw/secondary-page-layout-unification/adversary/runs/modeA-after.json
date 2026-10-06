@@ -1,0 +1,5008 @@
+{
+  "generatedAt": "2026-10-06T08:34:01.835Z",
+  "host": "t11 adversary · anchor-based harness",
+  "mode": "A",
+  "verifySite": {
+    "path": "scripts\\tools\\verify-site.js",
+    "sha256": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb",
+    "judge": {
+      "anchors": {
+        "start": "const WIDE_TOL = 1;",
+        "problems": "function wideProblems(geometry, meta) {",
+        "mutate": "async function wideMutate(target, anchor, replacement) {"
+      },
+      "lines": "6151–6449",
+      "lineCount": 299,
+      "sha256": "47cfc56165be000d58e69bc77431d1678926a4034e7cb6d6bc7edf14f8f4b53e"
+    },
+    "mutate": {
+      "lines": "6457–6470",
+      "lineCount": 14,
+      "sha256": "b3d6ba24f3b65d417a96e1908804dbc44ad4ae008fbe505e4ae2be285015c3dc"
+    }
+  },
+  "dir": "dist",
+  "extraction": {
+    "ok": true,
+    "missingSymbols": []
+  },
+  "forms": [
+    {
+      "id": "ctl-no-inject",
+      "what": "不注入（现场基线，正对照：装置不是对什么都判红）",
+      "direction": "control",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": null,
+      "realism": {
+        "level": "n/a",
+        "how": "—",
+        "note": "对照"
+      },
+      "expect": "pass",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\ctl-no-inject.png"
+      ],
+      "errors": [],
+      "codes": [],
+      "messages": [],
+      "verdict": "pass",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 1351.69,
+              "lines": 5,
+              "longestLine": 863.75
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "width": 61.64,
+              "lines": 1,
+              "longestLine": 61.64
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 1047.52,
+              "lines": 3,
+              "longestLine": 963.52
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 1380,
+          "left": 30,
+          "right": 1410
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": 30,
+              "right": 1381.69,
+              "width": 1351.69
+            },
+            "inkLongestLine": 863.75,
+            "inkMedianLine": 84,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 1381.69,
+              "width": 1351.69
+            },
+            "inkClippedLongest": 863.75,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkLongestLine": 61.64,
+            "inkMedianLine": 61.64,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkClippedLongest": 61.64,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 3,
+            "inkUnion": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52
+            },
+            "inkLongestLine": 963.52,
+            "inkMedianLine": 48,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52
+            },
+            "inkClippedLongest": 963.52,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 21,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 1344,
+        "paintInkWidth": 1344,
+        "paintRuns": 36,
+        "paintLongestRun": 144,
+        "paintGaps": [
+          {
+            "leftCss": 107,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 112,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 168,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 218,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 233,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 286,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 297,
+            "widthCss": 11
+          },
+          {
+            "leftCss": 512,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 547,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 582,
+            "widthCss": 2
+          },
+          {
+            "leftCss": 620,
+            "widthCss": 4
+          },
+          {
+            "leftCss": 628,
+            "widthCss": 2
+          },
+          {
+            "leftCss": 649,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 681,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 693,
+            "widthCss": 9
+          },
+          {
+            "leftCss": 704,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 800,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 969,
+            "widthCss": 11
+          },
+          {
+            "leftCss": 1111,
+            "widthCss": 2
+          },
+          {
+            "leftCss": 1176,
+            "widthCss": 8
+          }
+        ],
+        "paintInkColumns": 1207
+      },
+      "paintAll": [
+        1344,
+        62,
+        1040
+      ],
+      "paintInkWidthMin": 62
+    },
+    {
+      "id": "ctl-maxwidth-70ch",
+      "what": "正对照：`.snote { max-width: 70ch }`（改动前那根窄柱）—— 门禁必须咬到",
+      "direction": "control",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { max-width: 70ch; }",
+      "realism": {
+        "level": "high",
+        "how": "把 .snote 的 max-width 从 none 改回 70ch（就是本版要修的原缺陷）",
+        "note": "正对照，必须红"
+      },
+      "expect": "bite",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\ctl-maxwidth-70ch.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "messages": [
+        "category/agent/#0 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 452.45px/7 行）",
+        "category/agent/#0 说明 30..482.81 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "category/agent/#1 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 61.64px/1 行）",
+        "category/agent/#1 说明 30..482.81 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "category/agent/#2 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 447.52px/5 行）",
+        "category/agent/#2 说明 30..482.81 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）"
+      ],
+      "verdict": "bite",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 452.81,
+            "boxLeft": 30,
+            "boxRight": 482.81,
+            "contentBox": 453,
+            "textWidth": 453,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 452.45,
+              "lines": 7,
+              "longestLine": 447.3
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 452.81,
+            "boxLeft": 30,
+            "boxRight": 482.81,
+            "contentBox": 453,
+            "textWidth": 453,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "width": 61.64,
+              "lines": 1,
+              "longestLine": 61.64
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 452.81,
+            "boxLeft": 30,
+            "boxRight": 482.81,
+            "contentBox": 453,
+            "textWidth": 453,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 447.52,
+              "lines": 5,
+              "longestLine": 447.52
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 452.81,
+          "left": 30,
+          "right": 482.81
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81,
+              "height": 61.17
+            },
+            "rectCount": 7,
+            "inkUnion": {
+              "left": 30,
+              "right": 482.45,
+              "width": 452.45
+            },
+            "inkLongestLine": 447.3,
+            "inkMedianLine": 48,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 482.45,
+              "width": 452.45
+            },
+            "inkClippedLongest": 447.3,
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "61.1719px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkLongestLine": 61.64,
+            "inkMedianLine": 61.64,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkClippedLongest": 61.64,
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81,
+              "height": 61.17
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": 30,
+              "right": 477.52,
+              "width": 447.52
+            },
+            "inkLongestLine": 447.52,
+            "inkMedianLine": 156,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 477.52,
+              "width": 447.52
+            },
+            "inkClippedLongest": 447.52,
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "61.1719px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 453,
+        "imageHeight": 62,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 452.8,
+        "paintInkWidth": 452.8,
+        "paintRuns": 1,
+        "paintLongestRun": 452.8,
+        "paintGaps": [],
+        "paintInkColumns": 453
+      },
+      "paintAll": [
+        452.8,
+        62,
+        447.8
+      ],
+      "paintInkWidthMin": 62
+    },
+    {
+      "id": "transform-scaleX",
+      "what": "`.snote { transform: scaleX(0.33); transform-origin: left center }`：视觉上压到 1/3 宽，布局盒宽不变",
+      "direction": "transform: scaleX()",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { transform: scaleX(0.33); transform-origin: left center; }",
+      "realism": {
+        "level": "low",
+        "how": "给说明加一个缩放动画/装饰（`transform: scaleX()`），正常改动一般不这么写",
+        "note": "预计被 note-axis 咬到（getBoundingClientRect 含 transform）—— 这条是「判据真的在动」的对照组"
+      },
+      "expect": "bite",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\transform-scaleX.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [
+        "note-axis",
+        "note-axis",
+        "note-axis"
+      ],
+      "messages": [
+        "category/agent/#0 说明 30..485.4 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "category/agent/#1 说明 30..485.4 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "category/agent/#2 说明 30..485.4 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）"
+      ],
+      "verdict": "bite",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 455.4,
+            "boxLeft": 30,
+            "boxRight": 485.4,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 446.06,
+              "lines": 5,
+              "longestLine": 285.04
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 455.4,
+            "boxLeft": 30,
+            "boxRight": 485.4,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "width": 20.34,
+              "lines": 1,
+              "longestLine": 20.34
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 455.4,
+            "boxLeft": 30,
+            "boxRight": 485.4,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 345.68,
+              "lines": 3,
+              "longestLine": 317.96
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 455.4,
+          "left": 30,
+          "right": 485.4
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 485.4,
+              "width": 455.4,
+              "height": 20.39
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": 30,
+              "right": 476.06,
+              "width": 446.06
+            },
+            "inkLongestLine": 285.04,
+            "inkMedianLine": 27.72,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 476.06,
+              "width": 446.06
+            },
+            "inkClippedLongest": 285.04,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "matrix(0.33, 0, 0, 1, 0, 0)",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 485.4,
+              "width": 455.4,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 50.34,
+              "width": 20.34
+            },
+            "inkLongestLine": 20.34,
+            "inkMedianLine": 20.34,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 50.34,
+              "width": 20.34
+            },
+            "inkClippedLongest": 20.34,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "matrix(0.33, 0, 0, 1, 0, 0)",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 485.4,
+              "width": 455.4,
+              "height": 20.39
+            },
+            "rectCount": 3,
+            "inkUnion": {
+              "left": 30,
+              "right": 375.68,
+              "width": 345.68
+            },
+            "inkLongestLine": 317.96,
+            "inkMedianLine": 15.84,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 375.68,
+              "width": 345.68
+            },
+            "inkClippedLongest": 317.96,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "matrix(0.33, 0, 0, 1, 0, 0)",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 456,
+        "imageHeight": 21,
+        "scale": 1.001,
+        "paintInkLeft": 0,
+        "paintInkRight": 443.4,
+        "paintInkWidth": 443.4,
+        "paintRuns": 15,
+        "paintLongestRun": 68.9,
+        "paintGaps": [
+          {
+            "leftCss": 97.9,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 224.7,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 228.7,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 263.7,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 319.6,
+            "widthCss": 3
+          }
+        ],
+        "paintInkColumns": 415
+      },
+      "paintAll": [
+        443.4,
+        21,
+        343.5
+      ],
+      "paintInkWidthMin": 21
+    },
+    {
+      "id": "pseudo-content-narrow",
+      "what": "正文交给自己 `::before` 的 `content` 画（`display:block; max-width:70ch`），真实文本节点缩到 0 号字 ⇒ 判据不把伪元素算进「有字区域」",
+      "direction": "伪元素承载正文（::before/::after 的 content）",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { font-size: 0; }\n.snote::before { content: \"这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发放（例如「每日登录赠 1500 积分」），有效期往往很短，页面保留官方原文的期限说法。 积分与代金券的可用范围由平台决定，本站只转录官方页面写了什么。\"; display: block; max-width: 70ch; font-size: var(--fs-sm); line-height: 1.7; color: var(--mut); white-space: normal; }",
+      "realism": {
+        "level": "low",
+        "how": "要把整段说明正文搬进 CSS 的 `content` —— 正常产品改动不会这么干（除非常年 SEO/文案兜底 hack）",
+        "note": "伪元素内容对 Range/`clientWidth` 都不可见；本条用来量化「文字面判据对伪元素的盲区」"
+      },
+      "expect": "pass",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\pseudo-content-narrow.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [],
+      "messages": [],
+      "verdict": "pass",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": null
+          },
+          {
+            "index": 1,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": null
+          },
+          {
+            "index": 2,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": null
+          }
+        ],
+        "noteLegacy": {
+          "width": 1380,
+          "left": 30,
+          "right": 1410
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 61.17
+            },
+            "rectCount": 0,
+            "inkUnion": null,
+            "inkLongestLine": null,
+            "inkMedianLine": null,
+            "inkClippedUnion": null,
+            "inkClippedLongest": null,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "0px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "61.1719px"
+            },
+            "before": {
+              "content": "\"这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发放（例如「每日登录赠 1500 积分」），有效期往往很短，页面保留官方原文的期限说法。 积分与代金券的可用范围由平台决定，本站只转录官方页面写了什么。\"",
+              "display": "block",
+              "maxWidth": "452.812px",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "452.812px",
+              "height": "61.1719px",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "0px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 61.17
+            },
+            "rectCount": 0,
+            "inkUnion": null,
+            "inkLongestLine": null,
+            "inkMedianLine": null,
+            "inkClippedUnion": null,
+            "inkClippedLongest": null,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "0px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "61.1719px"
+            },
+            "before": {
+              "content": "\"这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发放（例如「每日登录赠 1500 积分」），有效期往往很短，页面保留官方原文的期限说法。 积分与代金券的可用范围由平台决定，本站只转录官方页面写了什么。\"",
+              "display": "block",
+              "maxWidth": "452.812px",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "452.812px",
+              "height": "61.1719px",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "0px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 61.17
+            },
+            "rectCount": 0,
+            "inkUnion": null,
+            "inkLongestLine": null,
+            "inkMedianLine": null,
+            "inkClippedUnion": null,
+            "inkClippedLongest": null,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "0px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "61.1719px"
+            },
+            "before": {
+              "content": "\"这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发放（例如「每日登录赠 1500 积分」），有效期往往很短，页面保留官方原文的期限说法。 积分与代金券的可用范围由平台决定，本站只转录官方页面写了什么。\"",
+              "display": "block",
+              "maxWidth": "452.812px",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "452.812px",
+              "height": "61.1719px",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "0px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 62,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 453,
+        "paintInkWidth": 453,
+        "paintRuns": 1,
+        "paintLongestRun": 453,
+        "paintGaps": [],
+        "paintInkColumns": 453
+      },
+      "paintAll": [
+        453,
+        453,
+        453
+      ],
+      "paintInkWidthMin": 453
+    },
+    {
+      "id": "text-indent-clip",
+      "what": "`.snote { text-indent: -9999px; white-space: nowrap; overflow: hidden }`：经典「视觉隐藏文字」，盒宽一字不动，整段说明**一个字都看不见**",
+      "direction": "text-indent 负值 + overflow: hidden",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { text-indent: -9999px; white-space: nowrap; overflow: hidden; }",
+      "realism": {
+        "level": "medium",
+        "how": "视觉隐藏（image-replacement / `.sr-only` 那类）是复制粘贴常见写法；把 `.snote` 误伤进去只需一次手滑",
+        "note": "实测：两版判据都咬到，但咬的是 **note-clipped（自身横向溢出）** 而不是「字看不见」——闸门拦得住，理由对不上缺陷（像素字迹 0px）"
+      },
+      "expect": "bite",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\text-indent-clip.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [
+        "note-clipped",
+        "note-clipped",
+        "note-clipped"
+      ],
+      "messages": [
+        "category/agent/#0 说明自身横向溢出 9999px（scrollWidth 11379 > clientWidth 1380）",
+        "category/agent/#1 说明自身横向溢出 9999px（scrollWidth 11379 > clientWidth 1380）",
+        "category/agent/#2 说明自身横向溢出 9999px（scrollWidth 11379 > clientWidth 1380）"
+      ],
+      "verdict": "bite",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 1351.69,
+              "lines": 5,
+              "longestLine": 863.75
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "width": 61.64,
+              "lines": 1,
+              "longestLine": 61.64
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 1047.52,
+              "lines": 3,
+              "longestLine": 963.52
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 1380,
+          "left": 30,
+          "right": 1410
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": -9969,
+              "right": -8617.31,
+              "width": 1351.69
+            },
+            "inkLongestLine": 863.75,
+            "inkMedianLine": 84,
+            "inkClippedUnion": null,
+            "inkClippedLongest": null,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "-9999px",
+              "overflow": "hidden",
+              "whiteSpace": "nowrap",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": -9969,
+              "right": -9907.36,
+              "width": 61.64
+            },
+            "inkLongestLine": 61.64,
+            "inkMedianLine": 61.64,
+            "inkClippedUnion": null,
+            "inkClippedLongest": null,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "-9999px",
+              "overflow": "hidden",
+              "whiteSpace": "nowrap",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 3,
+            "inkUnion": {
+              "left": -9969,
+              "right": -8921.48,
+              "width": 1047.52
+            },
+            "inkLongestLine": 963.52,
+            "inkMedianLine": 48,
+            "inkClippedUnion": null,
+            "inkClippedLongest": null,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "-9999px",
+              "overflow": "hidden",
+              "whiteSpace": "nowrap",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 21,
+        "scale": 1,
+        "paintInkLeft": -1,
+        "paintInkRight": 0,
+        "paintInkWidth": 0,
+        "paintRuns": 0,
+        "paintLongestRun": 0,
+        "paintGaps": [],
+        "paintInkColumns": 0
+      },
+      "paintAll": [
+        0,
+        0,
+        0
+      ],
+      "paintInkWidthMin": 0
+    },
+    {
+      "id": "text-indent-shift",
+      "what": "`.snote { text-indent: -9999px; overflow: hidden }`：只把**首行**移出盒外（其余行照常），盒宽不变",
+      "direction": "text-indent 负值 + overflow: hidden（多行变体）",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { text-indent: -9999px; overflow: hidden; }",
+      "realism": {
+        "level": "low",
+        "how": "同上写法的变体（不配 nowrap），只影响首行",
+        "note": "实测：被 note-clipped 顺带咬到；像素字迹 0px ⇒ 整条说明在视觉上不存在"
+      },
+      "expect": "bite",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\text-indent-shift.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [
+        "note-clipped",
+        "note-clipped",
+        "note-clipped"
+      ],
+      "messages": [
+        "category/agent/#0 说明自身横向溢出 9999px（scrollWidth 11379 > clientWidth 1380）",
+        "category/agent/#1 说明自身横向溢出 9999px（scrollWidth 11379 > clientWidth 1380）",
+        "category/agent/#2 说明自身横向溢出 9999px（scrollWidth 11379 > clientWidth 1380）"
+      ],
+      "verdict": "bite",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 1351.69,
+              "lines": 5,
+              "longestLine": 863.75
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "width": 61.64,
+              "lines": 1,
+              "longestLine": 61.64
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 1047.52,
+              "lines": 3,
+              "longestLine": 963.52
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 1380,
+          "left": 30,
+          "right": 1410
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": -9969,
+              "right": -8617.31,
+              "width": 1351.69
+            },
+            "inkLongestLine": 863.75,
+            "inkMedianLine": 84,
+            "inkClippedUnion": null,
+            "inkClippedLongest": null,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "-9999px",
+              "overflow": "hidden",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": -9969,
+              "right": -9907.36,
+              "width": 61.64
+            },
+            "inkLongestLine": 61.64,
+            "inkMedianLine": 61.64,
+            "inkClippedUnion": null,
+            "inkClippedLongest": null,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "-9999px",
+              "overflow": "hidden",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 3,
+            "inkUnion": {
+              "left": -9969,
+              "right": -8921.48,
+              "width": 1047.52
+            },
+            "inkLongestLine": 963.52,
+            "inkMedianLine": 48,
+            "inkClippedUnion": null,
+            "inkClippedLongest": null,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "-9999px",
+              "overflow": "hidden",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 21,
+        "scale": 1,
+        "paintInkLeft": -1,
+        "paintInkRight": 0,
+        "paintInkWidth": 0,
+        "paintRuns": 0,
+        "paintLongestRun": 0,
+        "paintGaps": [],
+        "paintInkColumns": 0
+      },
+      "paintAll": [
+        0,
+        0,
+        0
+      ],
+      "paintInkWidthMin": 0
+    },
+    {
+      "id": "writing-mode-vertical",
+      "what": "`.snote { writing-mode: vertical-rl; height: 5.6rem; overflow: hidden }`：正文改竖排 —— 盒宽被内容反推成 346.64px",
+      "direction": "writing-mode",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { writing-mode: vertical-rl; height: 5.6rem; overflow: hidden; }",
+      "realism": {
+        "level": "medium",
+        "how": "CJK 站点做竖排/侧栏标题时 `writing-mode` 很常见；一条规则落到 `.snote` 上即可",
+        "note": "实测：盒宽自己缩到 346.64px ⇒ 被 note-narrow **顺带**咬到（不是因为看见竖排）"
+      },
+      "expect": "bite",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\writing-mode-vertical.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "messages": [
+        "category/agent/#0 有字区域宽 347px < 0.85 × 1380px（盒宽 346.64px · content box 347px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 342.25px/21 行）",
+        "category/agent/#0 说明 30..376.64 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "category/agent/#1 有字区域宽 20px < 0.85 × 1380px（盒宽 20.39px · content box 20px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 16px/1 行）",
+        "category/agent/#1 说明 30..50.39 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "category/agent/#2 有字区域宽 265px < 0.85 × 1380px（盒宽 265.08px · content box 265px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 260.69px/15 行）",
+        "category/agent/#2 说明 30..295.08 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）"
+      ],
+      "verdict": "bite",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 346.64,
+            "boxLeft": 30,
+            "boxRight": 376.64,
+            "contentBox": 347,
+            "textWidth": 347,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 342.25,
+              "lines": 21,
+              "longestLine": 16
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 20.39,
+            "boxLeft": 30,
+            "boxRight": 50.39,
+            "contentBox": 20,
+            "textWidth": 20,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "width": 16,
+              "lines": 1,
+              "longestLine": 16
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 265.08,
+            "boxLeft": 30,
+            "boxRight": 295.08,
+            "contentBox": 265,
+            "textWidth": 265,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 260.69,
+              "lines": 15,
+              "longestLine": 16
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 346.64,
+          "left": 30,
+          "right": 376.64
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 376.64,
+              "width": 346.64,
+              "height": 89.59
+            },
+            "rectCount": 21,
+            "inkUnion": {
+              "left": 32.39,
+              "right": 374.64,
+              "width": 342.25
+            },
+            "inkLongestLine": 16,
+            "inkMedianLine": 16,
+            "inkClippedUnion": {
+              "left": 32.39,
+              "right": 374.64,
+              "width": 342.25
+            },
+            "inkClippedLongest": 16,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "vertical-rl",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "hidden",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "89.5938px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 50.39,
+              "width": 20.39,
+              "height": 89.59
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 32.39,
+              "right": 48.39,
+              "width": 16
+            },
+            "inkLongestLine": 16,
+            "inkMedianLine": 16,
+            "inkClippedUnion": {
+              "left": 32.39,
+              "right": 48.39,
+              "width": 16
+            },
+            "inkClippedLongest": 16,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "vertical-rl",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "hidden",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "89.5938px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 295.08,
+              "width": 265.08,
+              "height": 89.59
+            },
+            "rectCount": 15,
+            "inkUnion": {
+              "left": 32.39,
+              "right": 293.08,
+              "width": 260.69
+            },
+            "inkLongestLine": 16,
+            "inkMedianLine": 16,
+            "inkClippedUnion": {
+              "left": 32.39,
+              "right": 293.08,
+              "width": 260.69
+            },
+            "inkClippedLongest": 16,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "vertical-rl",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "hidden",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "89.5938px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 347,
+        "imageHeight": 91,
+        "scale": 1.001,
+        "paintInkLeft": 5,
+        "paintInkRight": 342.6,
+        "paintInkWidth": 337.6,
+        "paintRuns": 17,
+        "paintLongestRun": 14,
+        "paintGaps": [
+          {
+            "leftCss": 17,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 37,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 57.9,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 77.9,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 97.9,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 118.9,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 138.9,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 159.8,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 179.8,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 199.8,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 220.8,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 240.7,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 260.7,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 281.7,
+            "widthCss": 6
+          },
+          {
+            "leftCss": 301.7,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 322.7,
+            "widthCss": 8
+          }
+        ],
+        "paintInkColumns": 214
+      },
+      "paintAll": [
+        337.6,
+        14.6,
+        256.1
+      ],
+      "paintInkWidthMin": 14.6
+    },
+    {
+      "id": "writing-mode-vertical-fullwidth",
+      "what": "`.snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden }`：**盒宽锁死满宽**，正文竖排成一根 ~24px 竖条",
+      "direction": "writing-mode（盒宽锁满宽）",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; }",
+      "realism": {
+        "level": "medium",
+        "how": "同 writing-mode；`width: 100%` 是几乎必然跟着写的（否则盒子会被内容反推）",
+        "note": "★ 真正的 writing-mode 绕过形态：盒宽与内容盒宽都满宽，可见文字是一根竖条"
+      },
+      "expect": "pass",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\writing-mode-vertical-fullwidth.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [],
+      "messages": [],
+      "verdict": "pass",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 342.25,
+              "lines": 21,
+              "longestLine": 16
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "width": 16,
+              "lines": 1,
+              "longestLine": 16
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 260.69,
+              "lines": 15,
+              "longestLine": 16
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 1380,
+          "left": 30,
+          "right": 1410
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 89.59
+            },
+            "rectCount": 21,
+            "inkUnion": {
+              "left": 1065.75,
+              "right": 1408,
+              "width": 342.25
+            },
+            "inkLongestLine": 16,
+            "inkMedianLine": 16,
+            "inkClippedUnion": {
+              "left": 1065.75,
+              "right": 1408,
+              "width": 342.25
+            },
+            "inkClippedLongest": 16,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "vertical-rl",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "hidden",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "89.5938px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 89.59
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 1392,
+              "right": 1408,
+              "width": 16
+            },
+            "inkLongestLine": 16,
+            "inkMedianLine": 16,
+            "inkClippedUnion": {
+              "left": 1392,
+              "right": 1408,
+              "width": 16
+            },
+            "inkClippedLongest": 16,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "vertical-rl",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "hidden",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "89.5938px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 89.59
+            },
+            "rectCount": 15,
+            "inkUnion": {
+              "left": 1147.31,
+              "right": 1408,
+              "width": 260.69
+            },
+            "inkLongestLine": 16,
+            "inkMedianLine": 16,
+            "inkClippedUnion": {
+              "left": 1147.31,
+              "right": 1408,
+              "width": 260.69
+            },
+            "inkClippedLongest": 16,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "vertical-rl",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "hidden",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "89.5938px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 91,
+        "scale": 1,
+        "paintInkLeft": 1038,
+        "paintInkRight": 1376,
+        "paintInkWidth": 338,
+        "paintRuns": 17,
+        "paintLongestRun": 14,
+        "paintGaps": [
+          {
+            "leftCss": 1050,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 1071,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 1091,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 1111,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 1132,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 1152,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 1172,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 1193,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 1213,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 1234,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 1254,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 1274,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 1295,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 1315,
+            "widthCss": 6
+          },
+          {
+            "leftCss": 1335,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 1356,
+            "widthCss": 8
+          }
+        ],
+        "paintInkColumns": 214
+      },
+      "paintAll": [
+        338,
+        14,
+        257
+      ],
+      "paintInkWidthMin": 14
+    },
+    {
+      "id": "font-size-tiny",
+      "what": "`.snote { font-size: 1px }`：盒宽满宽，文字缩到不可读（实测像素字迹只剩 112px —— 「窄柱」外观是字号造成的，不是宽度造成的）",
+      "direction": "font-size 极小但盒宽满宽",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { font-size: 1px; }",
+      "realism": {
+        "level": "low",
+        "how": "把 `--fs-sm`/字号变量改错（比如 token 写错一位）就可能出现极小字号",
+        "note": "**不是窄柱缺陷**：本条用来说明门禁的边界（它不该管字号）；放行不算假绿，算越界观察"
+      },
+      "expect": "pass",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\font-size-tiny.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [],
+      "messages": [],
+      "verdict": "pass",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 112.66,
+              "lines": 5,
+              "longestLine": 71.98
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "width": 5.14,
+              "lines": 1,
+              "longestLine": 5.14
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 87.3,
+              "lines": 3,
+              "longestLine": 80.3
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 1380,
+          "left": 30,
+          "right": 1410
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 1.69
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": 30,
+              "right": 142.66,
+              "width": 112.66
+            },
+            "inkLongestLine": 71.98,
+            "inkMedianLine": 7,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 142.66,
+              "width": 112.66
+            },
+            "inkClippedLongest": 71.98,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "1px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "1.6875px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "1px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "1px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 1.69
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 35.14,
+              "width": 5.14
+            },
+            "inkLongestLine": 5.14,
+            "inkMedianLine": 5.14,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 35.14,
+              "width": 5.14
+            },
+            "inkClippedLongest": 5.14,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "1px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "1.6875px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "1px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "1px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 1.69
+            },
+            "rectCount": 3,
+            "inkUnion": {
+              "left": 30,
+              "right": 117.3,
+              "width": 87.3
+            },
+            "inkLongestLine": 80.3,
+            "inkMedianLine": 4,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 117.3,
+              "width": 87.3
+            },
+            "inkClippedLongest": 80.3,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "1px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "1.6875px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "1px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "1px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 3,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 112,
+        "paintInkWidth": 112,
+        "paintRuns": 6,
+        "paintLongestRun": 31,
+        "paintGaps": [
+          {
+            "leftCss": 24,
+            "widthCss": 2
+          },
+          {
+            "leftCss": 57,
+            "widthCss": 2
+          }
+        ],
+        "paintInkColumns": 105
+      },
+      "paintAll": [
+        112,
+        4,
+        87
+      ],
+      "paintInkWidthMin": 4
+    },
+    {
+      "id": "letter-spacing-huge",
+      "what": "`.snote { letter-spacing: 40px }`：每行只剩几个字，盒宽与行宽都还是满宽",
+      "direction": "letter-spacing 极大",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { letter-spacing: 40px; }",
+      "realism": {
+        "level": "low",
+        "how": "`letter-spacing` 通常写在标题/徽标上；落到 `.snote` 需要一次误伤（如选择器漏了层级）",
+        "note": "同为**越界观察**：不是窄柱"
+      },
+      "expect": "pass",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\letter-spacing-huge.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [],
+      "messages": [],
+      "verdict": "pass",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 1364.45,
+              "lines": 9,
+              "longestLine": 1364.45
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "width": 301.64,
+              "lines": 1,
+              "longestLine": 301.64
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 1368.23,
+              "lines": 6,
+              "longestLine": 1368.23
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 1380,
+          "left": 30,
+          "right": 1410
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 101.95
+            },
+            "rectCount": 9,
+            "inkUnion": {
+              "left": 30,
+              "right": 1394.45,
+              "width": 1364.45
+            },
+            "inkLongestLine": 1364.45,
+            "inkMedianLine": 667.3,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 1394.45,
+              "width": 1364.45
+            },
+            "inkClippedLongest": 1364.45,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "40px",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "101.953px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 331.64,
+              "width": 301.64
+            },
+            "inkLongestLine": 301.64,
+            "inkMedianLine": 301.64,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 331.64,
+              "width": 301.64
+            },
+            "inkClippedLongest": 301.64,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "40px",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 81.56
+            },
+            "rectCount": 6,
+            "inkUnion": {
+              "left": 30,
+              "right": 1398.23,
+              "width": 1368.23
+            },
+            "inkLongestLine": 1368.23,
+            "inkMedianLine": 988,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 1398.23,
+              "width": 1368.23
+            },
+            "inkClippedLongest": 1368.23,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "40px",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "81.5625px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 103,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 1325,
+        "paintInkWidth": 1325,
+        "paintRuns": 41,
+        "paintLongestRun": 40,
+        "paintGaps": [
+          {
+            "leftCss": 12,
+            "widthCss": 40
+          },
+          {
+            "leftCss": 64,
+            "widthCss": 40
+          },
+          {
+            "leftCss": 116,
+            "widthCss": 40
+          },
+          {
+            "leftCss": 168,
+            "widthCss": 40
+          },
+          {
+            "leftCss": 220,
+            "widthCss": 31
+          },
+          {
+            "leftCss": 272,
+            "widthCss": 31
+          },
+          {
+            "leftCss": 324,
+            "widthCss": 31
+          },
+          {
+            "leftCss": 376,
+            "widthCss": 26
+          },
+          {
+            "leftCss": 428,
+            "widthCss": 20
+          },
+          {
+            "leftCss": 455,
+            "widthCss": 4
+          },
+          {
+            "leftCss": 480,
+            "widthCss": 15
+          },
+          {
+            "leftCss": 501,
+            "widthCss": 10
+          },
+          {
+            "leftCss": 532,
+            "widthCss": 32
+          },
+          {
+            "leftCss": 597,
+            "widthCss": 19
+          },
+          {
+            "leftCss": 649,
+            "widthCss": 18
+          },
+          {
+            "leftCss": 693,
+            "widthCss": 26
+          },
+          {
+            "leftCss": 739,
+            "widthCss": 2
+          },
+          {
+            "leftCss": 745,
+            "widthCss": 26
+          },
+          {
+            "leftCss": 792,
+            "widthCss": 2
+          },
+          {
+            "leftCss": 796,
+            "widthCss": 21
+          },
+          {
+            "leftCss": 857,
+            "widthCss": 6
+          },
+          {
+            "leftCss": 867,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 888,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 913,
+            "widthCss": 14
+          },
+          {
+            "leftCss": 939,
+            "widthCss": 9
+          },
+          {
+            "leftCss": 960,
+            "widthCss": 19
+          },
+          {
+            "leftCss": 992,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 1013,
+            "widthCss": 18
+          },
+          {
+            "leftCss": 1044,
+            "widthCss": 4
+          },
+          {
+            "leftCss": 1065,
+            "widthCss": 18
+          },
+          {
+            "leftCss": 1098,
+            "widthCss": 6
+          },
+          {
+            "leftCss": 1117,
+            "widthCss": 18
+          },
+          {
+            "leftCss": 1147,
+            "widthCss": 9
+          },
+          {
+            "leftCss": 1169,
+            "widthCss": 12
+          },
+          {
+            "leftCss": 1199,
+            "widthCss": 11
+          },
+          {
+            "leftCss": 1212,
+            "widthCss": 27
+          },
+          {
+            "leftCss": 1251,
+            "widthCss": 9
+          },
+          {
+            "leftCss": 1272,
+            "widthCss": 13
+          },
+          {
+            "leftCss": 1304,
+            "widthCss": 8
+          }
+        ],
+        "paintInkColumns": 625
+      },
+      "paintAll": [
+        1325,
+        302,
+        1328
+      ],
+      "paintInkWidthMin": 302
+    },
+    {
+      "id": "multicol-narrow-columns",
+      "what": "`.snote { column-count: 3; column-width: 340px; column-gap: 16px }`：**盒宽一字不动**，文字被排成 3 根 ~340px 窄列 —— 缺陷外观（窄柱）一字不差地回来了",
+      "direction": "CSS 多列（column-width/column-count）",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { column-count: 3; column-width: 340px; column-gap: 16px; }",
+      "realism": {
+        "level": "medium",
+        "how": "「把长说明排成两栏/三栏」是很正常的一次排版改动：`.snote { columns: 2 }` 一行就够",
+        "note": "★ 重点形态：任何「文字区并集宽」口径都看不见它（并集横跨整盒，单行却很窄）"
+      },
+      "expect": "pass",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\multicol-narrow-columns.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [],
+      "messages": [],
+      "verdict": "pass",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 912.63,
+              "lines": 8,
+              "longestLine": 447.3
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "width": 61.64,
+              "lines": 1,
+              "longestLine": 61.64
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 621.33,
+              "lines": 5,
+              "longestLine": 447.52
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 1380,
+          "left": 30,
+          "right": 1410
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 40.78
+            },
+            "rectCount": 8,
+            "inkUnion": {
+              "left": 30,
+              "right": 942.63,
+              "width": 912.63
+            },
+            "inkLongestLine": 447.3,
+            "inkMedianLine": 48,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 942.63,
+              "width": 912.63
+            },
+            "inkClippedLongest": 447.3,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "3",
+              "columnWidth": "340px",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "40.7812px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkLongestLine": 61.64,
+            "inkMedianLine": 61.64,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkClippedLongest": 61.64,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "3",
+              "columnWidth": "340px",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 40.78
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": 30,
+              "right": 651.33,
+              "width": 621.33
+            },
+            "inkLongestLine": 447.52,
+            "inkMedianLine": 156,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 651.33,
+              "width": 621.33
+            },
+            "inkClippedLongest": 447.52,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "3",
+              "columnWidth": "340px",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "40.7812px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 42,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 913,
+        "paintInkWidth": 913,
+        "paintRuns": 12,
+        "paintLongestRun": 196,
+        "paintGaps": [
+          {
+            "leftCss": 107,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 112,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 441,
+            "widthCss": 24
+          },
+          {
+            "leftCss": 553,
+            "widthCss": 11
+          },
+          {
+            "leftCss": 760,
+            "widthCss": 8
+          }
+        ],
+        "paintInkColumns": 858
+      },
+      "paintAll": [
+        913,
+        62,
+        613
+      ],
+      "paintInkWidthMin": 62
+    },
+    {
+      "id": "overlay-opaque",
+      "what": "`.snote { position: relative } .snote::after { inset: 0 0 0 30%; background: #f6f7f9 }`：右侧 70% 被底色盖死 ⇒ 可见文字只剩左边 ~414px",
+      "direction": "不透明覆盖层遮住右侧文本",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { position: relative; }\n.snote::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 30%; background: #f6f7f9; }",
+      "realism": {
+        "level": "low",
+        "how": "需要一个不明所以的伪元素盖层；真实场景更接近「装饰层/骨架屏盖住了正文」",
+        "note": "文字排版一字没动，只是被盖住 —— 宽度类判据天然看不见「被盖住」"
+      },
+      "expect": "pass",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\overlay-opaque.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [],
+      "messages": [],
+      "verdict": "pass",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 1351.69,
+              "lines": 5,
+              "longestLine": 863.75
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "width": 61.64,
+              "lines": 1,
+              "longestLine": 61.64
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 1047.52,
+              "lines": 3,
+              "longestLine": 963.52
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 1380,
+          "left": 30,
+          "right": 1410
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": 30,
+              "right": 1381.69,
+              "width": 1351.69
+            },
+            "inkLongestLine": 863.75,
+            "inkMedianLine": 84,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 1381.69,
+              "width": 1351.69
+            },
+            "inkClippedLongest": 863.75,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "relative",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "\"\"",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "absolute",
+              "background": "rgb(246, 247, 249)",
+              "width": "966px",
+              "height": "20.3906px",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkLongestLine": 61.64,
+            "inkMedianLine": 61.64,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkClippedLongest": 61.64,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "relative",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "\"\"",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "absolute",
+              "background": "rgb(246, 247, 249)",
+              "width": "966px",
+              "height": "20.3906px",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 3,
+            "inkUnion": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52
+            },
+            "inkLongestLine": 963.52,
+            "inkMedianLine": 48,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52
+            },
+            "inkClippedLongest": 963.52,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "relative",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "\"\"",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "absolute",
+              "background": "rgb(246, 247, 249)",
+              "width": "966px",
+              "height": "20.3906px",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 21,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 414,
+        "paintInkWidth": 414,
+        "paintRuns": 12,
+        "paintLongestRun": 106,
+        "paintGaps": [
+          {
+            "leftCss": 107,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 112,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 168,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 218,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 233,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 286,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 297,
+            "widthCss": 11
+          }
+        ],
+        "paintInkColumns": 368
+      },
+      "paintAll": [
+        414,
+        62,
+        414
+      ],
+      "paintInkWidthMin": 62
+    },
+    {
+      "id": "float-narrow-column",
+      "what": "`.snote::before { content:\"\"; float: right; width: 70%; height: 6em }`：右侧 70% 被浮动占位吃掉，正文被迫排进左侧 30% ≈ 414px",
+      "direction": "浮动占位把正文挤成窄列（补充）",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote::before { content: \"\"; float: right; width: 70%; height: 6em; }",
+      "realism": {
+        "level": "medium",
+        "how": "真实写法：说明里放一张图/图标并 `float: right`（`img { float: right }`）——正是这个形状",
+        "note": "★ 与「改动前 70ch 窄柱」外观最像的一条：左边一根窄柱、右边整块空白"
+      },
+      "expect": "pass",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\float-narrow-column.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [],
+      "messages": [],
+      "verdict": "pass",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 411.3,
+              "lines": 7,
+              "longestLine": 411.3
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "width": 61.64,
+              "lines": 1,
+              "longestLine": 61.64
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 411.52,
+              "lines": 5,
+              "longestLine": 411.52
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 1380,
+          "left": 30,
+          "right": 1410
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 81.56
+            },
+            "rectCount": 7,
+            "inkUnion": {
+              "left": 30,
+              "right": 441.3,
+              "width": 411.3
+            },
+            "inkLongestLine": 411.3,
+            "inkMedianLine": 132,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 441.3,
+              "width": 411.3
+            },
+            "inkClippedLongest": 411.3,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "81.5625px"
+            },
+            "before": {
+              "content": "\"\"",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "966px",
+              "height": "72px",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkLongestLine": 61.64,
+            "inkMedianLine": 61.64,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkClippedLongest": 61.64,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "\"\"",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "966px",
+              "height": "72px",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 61.17
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": 30,
+              "right": 441.52,
+              "width": 411.52
+            },
+            "inkLongestLine": 411.52,
+            "inkMedianLine": 228,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 441.52,
+              "width": 411.52
+            },
+            "inkClippedLongest": 411.52,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "61.1719px"
+            },
+            "before": {
+              "content": "\"\"",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "966px",
+              "height": "72px",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 83,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 411,
+        "paintInkWidth": 411,
+        "paintRuns": 3,
+        "paintLongestRun": 168,
+        "paintGaps": [],
+        "paintInkColumns": 409
+      },
+      "paintAll": [
+        411,
+        62,
+        411
+      ],
+      "paintInkWidthMin": 62
+    },
+    {
+      "id": "grid-narrow-track",
+      "what": "`.snote { display: grid; grid-template-columns: 340px 1fr }`：文本落进 340px 的第一轨，盒宽仍满宽",
+      "direction": "grid 单轨变窄（补充）",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { display: grid; grid-template-columns: 340px 1fr; }",
+      "realism": {
+        "level": "low",
+        "how": "把说明块改成 grid 布局（分栏/图标+文字）时的常见写法",
+        "note": "补充：与 multicol 同一类盲区（宽盒里排窄行）"
+      },
+      "expect": "pass",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\grid-narrow-track.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow",
+        "note-narrow",
+        "note-narrow"
+      ],
+      "messages": [
+        "category/agent/#0 有字区域宽 1040px < 0.85 × 1380px（盒宽 1380px · content box 1380px · 承载文本块 3 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 424px/7 行）",
+        "category/agent/#1 有字区域宽 340px < 0.85 × 1380px（盒宽 1380px · content box 1380px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 61.64px/1 行）",
+        "category/agent/#2 有字区域宽 1040px < 0.85 × 1380px（盒宽 1380px · content box 1380px · 承载文本块 2 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 376px/5 行）"
+      ],
+      "verdict": "bite",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1040,
+            "textFallback": false,
+            "bearingCount": 3,
+            "ink": {
+              "width": 424,
+              "lines": 7,
+              "longestLine": 339.3
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 340,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 61.64,
+              "lines": 1,
+              "longestLine": 61.64
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1040,
+            "textFallback": false,
+            "bearingCount": 2,
+            "ink": {
+              "width": 376,
+              "lines": 5,
+              "longestLine": 339.52
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 1380,
+          "left": 30,
+          "right": 1410
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 101.95
+            },
+            "rectCount": 7,
+            "inkUnion": {
+              "left": 30,
+              "right": 454,
+              "width": 424
+            },
+            "inkLongestLine": 339.3,
+            "inkMedianLine": 192,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 454,
+              "width": 424
+            },
+            "inkClippedLongest": 339.3,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "grid",
+              "clipPath": "none",
+              "position": "static",
+              "height": "101.953px"
+            },
+            "before": {
+              "content": "none",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkLongestLine": 61.64,
+            "inkMedianLine": 61.64,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkClippedLongest": 61.64,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "grid",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 81.56
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": 30,
+              "right": 406,
+              "width": 376
+            },
+            "inkLongestLine": 339.52,
+            "inkMedianLine": 288,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 406,
+              "width": 376
+            },
+            "inkClippedLongest": 339.52,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "grid",
+              "clipPath": "none",
+              "position": "static",
+              "height": "81.5625px"
+            },
+            "before": {
+              "content": "none",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 103,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 424,
+        "paintInkWidth": 424,
+        "paintRuns": 3,
+        "paintLongestRun": 388,
+        "paintGaps": [],
+        "paintInkColumns": 422
+      },
+      "paintAll": [
+        424,
+        62,
+        376
+      ],
+      "paintInkWidthMin": 62
+    },
+    {
+      "id": "clip-path-inset",
+      "what": "`.snote { clip-path: inset(0 70% 0 0) }`：绘制期裁掉右侧 70%，盒宽/文字排版都不动",
+      "direction": "clip-path 裁掉右侧（补充）",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { clip-path: inset(0 70% 0 0); }",
+      "realism": {
+        "level": "low",
+        "how": "`clip-path` 多用于装饰性裁切；落到 `.snote` 是误伤",
+        "note": "补充：与遮罩同类（绘制期隐藏）"
+      },
+      "expect": "pass",
+      "files": [
+        "research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\shots\\clip-path-inset.png"
+      ],
+      "errors": [],
+      "injected": "addStyleTag",
+      "codes": [],
+      "messages": [],
+      "verdict": "pass",
+      "judgeGeometry": {
+        "noteCount": 3,
+        "frozenCount": 1,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "notes": [
+          {
+            "index": 0,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 1351.69,
+              "lines": 5,
+              "longestLine": 863.75
+            }
+          },
+          {
+            "index": 1,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "width": 61.64,
+              "lines": 1,
+              "longestLine": 61.64
+            }
+          },
+          {
+            "index": 2,
+            "boxWidth": 1380,
+            "boxLeft": 30,
+            "boxRight": 1410,
+            "contentBox": 1380,
+            "textWidth": 1380,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "width": 1047.52,
+              "lines": 3,
+              "longestLine": 963.52
+            }
+          }
+        ],
+        "noteLegacy": {
+          "width": 1380,
+          "left": 30,
+          "right": 1410
+        }
+      },
+      "probe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": 30,
+              "right": 1381.69,
+              "width": 1351.69
+            },
+            "inkLongestLine": 863.75,
+            "inkMedianLine": 84,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 1381.69,
+              "width": 1351.69
+            },
+            "inkClippedLongest": 863.75,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "inset(0px 70% 0px 0px)",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkLongestLine": 61.64,
+            "inkMedianLine": 61.64,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkClippedLongest": 61.64,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "inset(0px 70% 0px 0px)",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 3,
+            "inkUnion": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52
+            },
+            "inkLongestLine": 963.52,
+            "inkMedianLine": 48,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52
+            },
+            "inkClippedLongest": 963.52,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "inset(0px 70% 0px 0px)",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "paint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 21,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 414,
+        "paintInkWidth": 414,
+        "paintRuns": 12,
+        "paintLongestRun": 106,
+        "paintGaps": [
+          {
+            "leftCss": 107,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 112,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 168,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 218,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 233,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 286,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 297,
+            "widthCss": 11
+          }
+        ],
+        "paintInkColumns": 368
+      },
+      "paintAll": [
+        414,
+        62,
+        414
+      ],
+      "paintInkWidthMin": 62
+    }
+  ],
+  "summary": {
+    "forms": 15,
+    "bite": 6,
+    "pass": 9,
+    "error": 0,
+    "falseGreenConfirmed": [],
+    "unexpected": [
+      {
+        "id": "grid-narrow-track",
+        "verdict": "bite",
+        "expect": "pass"
+      }
+    ],
+    "judgeSha256": "47cfc56165be000d58e69bc77431d1678926a4034e7cb6d6bc7edf14f8f4b53e",
+    "verifySiteSha256": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb"
+  }
+}

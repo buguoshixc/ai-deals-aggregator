@@ -1,0 +1,10 @@
+{
+  "changes/": "@media (max-width:760px) { .snote { display: grid; grid-template-columns: minmax(0, 70ch) 1fr; } }",
+  "feeds/": ".snote { padding-right: calc(100% - 70ch); }",
+  "student/": ".snote { display: grid; grid-template-columns: minmax(0, 70ch) 1fr; }",
+  "status/": ".snote { max-width: 70ch; }",
+  "docs/data/": ".snote { font-size: 0; }",
+  "plans/": ".snote { display: grid; grid-template-columns: 200px 1fr; }",
+  "need/free-tier/": ".snote { white-space: nowrap; }",
+  "vendor/ai360/": ".snote { transform: scaleX(0.35); transform-origin: left center; }"
+}

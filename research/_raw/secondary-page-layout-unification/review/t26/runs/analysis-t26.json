@@ -1,0 +1,7207 @@
+{
+  "new-dist": {
+    "total": 852,
+    "failed": 0,
+    "failingNames": [],
+    "metrics": {
+      "sweepUnrendered": 1,
+      "sweepNoscript": 1,
+      "sweepText": 0,
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401,
+      "rows1600": 401
+    },
+    "codesFromDetails": {},
+    "upperBound": {
+      "ok": true,
+      "detail": "@1440 未渲染 1 条 = <noscript> 1 条 [plans/coding/#1] + note-unrendered 0 条 · 其它未渲染 0 条 · @1600 未渲染 1 条（<noscript> 1 · note-unrendered 0）"
+    },
+    "pageLevel1440": {
+      "ok": true,
+      "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）49 条 · 竖排 0 条 · textFallback 回落 41 条"
+    },
+    "unrenderedRowsIn1440": [
+      {
+        "key": "plans/coding/#1",
+        "noscriptSubtree": true,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "codes": []
+      }
+    ]
+  },
+  "new-baseline": {
+    "total": 852,
+    "failed": 36,
+    "failingNames": [
+      "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+      "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+      "§22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））",
+      "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））",
+      "§22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄））",
+      "§22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄））",
+      "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+      "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条））",
+      "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级",
+      "§22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M9a 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（相邻兄弟选择器））",
+      "§22c M9a 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M9b 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（:not(:first-of-type)））",
+      "§22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+      "§22c M11 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M11 变异后复测必须出现「note-ink-narrow」违规码（t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条））",
+      "§22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码",
+      "§22c M12 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M12 变异后复测必须出现「note-hidden-text」违规码（t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿）",
+      "§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text",
+      "§22c M13 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M13 变异后复测必须出现「note-unrendered」违规码（T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住）",
+      "§22c M13 承重证明：盒高被压成 0 的条**全部**由 note-unrendered 咬中，且窄柱/字迹/藏字三条判据在它们身上确实看不见",
+      "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+      "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条 note-narrow 都没有"
+    ],
+    "metrics": {
+      "sweepUnrendered": 1,
+      "sweepNoscript": 1,
+      "sweepText": 0,
+      "narrow": 156,
+      "ink": 108,
+      "union": 156,
+      "unionPages": 48,
+      "hiddenText": 0,
+      "rows": 401,
+      "rows1600": 401
+    },
+    "codesFromDetails": {
+      "unrendered": 3,
+      "narrow": 104,
+      "ink-narrow": 73,
+      "axis": 100,
+      "clipped": 1
+    },
+    "upperBound": {
+      "ok": true,
+      "detail": "@1440 未渲染 1 条 = <noscript> 1 条 [plans/coding/#1] + note-unrendered 0 条 · 其它未渲染 0 条 · @1600 未渲染 1 条（<noscript> 1 · note-unrendered 0）"
+    },
+    "pageLevel1440": {
+      "ok": false,
+      "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 156（落在 48 页） · note-ink-narrow 108（48 页） · 并集 156 条 / 48 页 · 藏字 0 · 不同轴 156 · 裁切 0 · 多行说明（有行证据）110 条 · 竖排 0 条 · textFallback 回落 41 条 · 命中样例：category/#0 内容盒"
+    },
+    "unrenderedRowsIn1440": [
+      {
+        "key": "plans/coding/#1",
+        "noscriptSubtree": true,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "codes": []
+      }
+    ]
+  },
+  "old-baseline": {
+    "total": 848,
+    "failed": 33,
+    "failingNames": [
+      "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+      "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+      "§22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））",
+      "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））",
+      "§22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄））",
+      "§22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄））",
+      "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+      "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条））",
+      "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级",
+      "§22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M9a 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（相邻兄弟选择器））",
+      "§22c M9a 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M9b 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（:not(:first-of-type)））",
+      "§22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+      "§22c M11 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M11 变异后复测必须出现「note-ink-narrow」违规码（t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条））",
+      "§22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码",
+      "§22c M12 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M12 变异后复测必须出现「note-hidden-text」违规码（t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿）",
+      "§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text",
+      "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+      "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条 note-narrow 都没有"
+    ],
+    "metrics": {
+      "sweepUnrendered": 1,
+      "narrow": 156,
+      "ink": 108,
+      "union": 156,
+      "unionPages": 48,
+      "hiddenText": 0,
+      "rows": 401,
+      "rows1600": 401
+    },
+    "codesFromDetails": {
+      "narrow": 104,
+      "ink-narrow": 73,
+      "axis": 100,
+      "clipped": 1
+    },
+    "pageLevel1440": {
+      "ok": false,
+      "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 1 条） · note-narrow 156（落在 48 页） · note-ink-narrow 108（48 页） · 并集 156 条 / 48 页 · 藏字 0 · 不同轴 156 · 裁切 0 · 多行说明（有行证据）110 条 · 竖排 0 条 · textFallback 回落 41 条 · 命中样例：category/#0 内容盒 453px / 盒 452.81px / 列 1380px · "
+    },
+    "unrenderedRowsIn1440": [
+      {
+        "key": "plans/coding/#1",
+        "textLength": 0,
+        "glyphRects": 0,
+        "codes": []
+      }
+    ]
+  },
+  "new-clean": {
+    "total": 852,
+    "failed": 0,
+    "failingNames": [],
+    "metrics": {
+      "sweepUnrendered": 1,
+      "sweepNoscript": 1,
+      "sweepText": 0,
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401,
+      "rows1600": 401
+    },
+    "codesFromDetails": {},
+    "upperBound": {
+      "ok": true,
+      "detail": "@1440 未渲染 1 条 = <noscript> 1 条 [plans/coding/#1] + note-unrendered 0 条 · 其它未渲染 0 条 · @1600 未渲染 1 条（<noscript> 1 · note-unrendered 0）"
+    },
+    "pageLevel1440": {
+      "ok": true,
+      "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）49 条 · 竖排 0 条 · textFallback 回落 41 条"
+    },
+    "unrenderedRowsIn1440": [
+      {
+        "key": "plans/coding/#1",
+        "noscriptSubtree": true,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "codes": []
+      }
+    ]
+  },
+  "new-bare-fs0": {
+    "total": 852,
+    "failed": 20,
+    "failingNames": [
+      "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c 未渲染说明：上界断言 —— <noscript> 之外不许有未渲染说明，且 unrenderedNotes 与 note-unrendered 判据一致",
+      "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+      "§22c @360 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+      "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））",
+      "§22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））",
+      "§22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄））",
+      "§22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄））",
+      "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+      "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条））",
+      "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级",
+      "§22c M9a 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（相邻兄弟选择器））",
+      "§22c M9a 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M9b 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（:not(:first-of-type)））",
+      "§22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+      "§22c M11 变异后复测必须出现「note-ink-narrow」违规码（t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条））",
+      "§22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码",
+      "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条 note-narrow 都没有"
+    ],
+    "metrics": {
+      "sweepUnrendered": 401,
+      "sweepNoscript": 1,
+      "sweepText": 400,
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401,
+      "rows1600": 401
+    },
+    "codesFromDetails": {
+      "unrendered": 418,
+      "narrow": 11,
+      "ink-narrow": 4
+    },
+    "upperBound": {
+      "ok": false,
+      "detail": "@1440 未渲染 401 条 = <noscript> 1 条 [plans/coding/#1] + note-unrendered 400 条 · 其它未渲染 400 条 · @1600 未渲染 401 条（<noscript> 1 · note-unrendered 400） · 违规条：archive/#0 archive/#1 archive/#2 archive/#3 archive/#4 category/#0 category/#1 category/agent/#0 category/agent/#1 category/agent/#2 category/api/#0 ca"
+    },
+    "pageLevel1440": {
+      "ok": false,
+      "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 401 条：<noscript> 1 + note-unrendered 400） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）0 条 · 竖排 0 条 · textFallback 回落 41 条 · 命中样例：archive/#0 内容盒 1380px / "
+    },
+    "unrenderedRowsIn1440": [
+      {
+        "key": "archive/#0",
+        "noscriptSubtree": false,
+        "textLength": 100,
+        "rawTextLength": 100,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "archive/#1",
+        "noscriptSubtree": false,
+        "textLength": 36,
+        "rawTextLength": 36,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "archive/#2",
+        "noscriptSubtree": false,
+        "textLength": 36,
+        "rawTextLength": 36,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "archive/#3",
+        "noscriptSubtree": false,
+        "textLength": 36,
+        "rawTextLength": 36,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "archive/#4",
+        "noscriptSubtree": false,
+        "textLength": 50,
+        "rawTextLength": 50,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/#0",
+        "noscriptSubtree": false,
+        "textLength": 133,
+        "rawTextLength": 133,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/#1",
+        "noscriptSubtree": false,
+        "textLength": 85,
+        "rawTextLength": 85,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/agent/#0",
+        "noscriptSubtree": false,
+        "textLength": 123,
+        "rawTextLength": 123,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/agent/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/agent/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/api/#0",
+        "noscriptSubtree": false,
+        "textLength": 181,
+        "rawTextLength": 181,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/api/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/api/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/audio/#0",
+        "noscriptSubtree": false,
+        "textLength": 148,
+        "rawTextLength": 148,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/audio/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/audio/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/chat/#0",
+        "noscriptSubtree": false,
+        "textLength": 148,
+        "rawTextLength": 148,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/chat/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/chat/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/image/#0",
+        "noscriptSubtree": false,
+        "textLength": 126,
+        "rawTextLength": 126,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/image/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "category/image/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "changes/#0",
+        "noscriptSubtree": false,
+        "textLength": 62,
+        "rawTextLength": 62,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "changes/#1",
+        "noscriptSubtree": false,
+        "textLength": 45,
+        "rawTextLength": 45,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "changes/#2",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "changes/#3",
+        "noscriptSubtree": false,
+        "textLength": 40,
+        "rawTextLength": 40,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "changes/#4",
+        "noscriptSubtree": false,
+        "textLength": 68,
+        "rawTextLength": 68,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "changes/#5",
+        "noscriptSubtree": false,
+        "textLength": 40,
+        "rawTextLength": 40,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "changes/#6",
+        "noscriptSubtree": false,
+        "textLength": 19,
+        "rawTextLength": 19,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "changes/#7",
+        "noscriptSubtree": false,
+        "textLength": 13,
+        "rawTextLength": 13,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "changes/#8",
+        "noscriptSubtree": false,
+        "textLength": 78,
+        "rawTextLength": 78,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "changes/#9",
+        "noscriptSubtree": false,
+        "textLength": 49,
+        "rawTextLength": 49,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "changes/#10",
+        "noscriptSubtree": false,
+        "textLength": 26,
+        "rawTextLength": 26,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "changes/#11",
+        "noscriptSubtree": false,
+        "textLength": 20,
+        "rawTextLength": 20,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "changes/#12",
+        "noscriptSubtree": false,
+        "textLength": 84,
+        "rawTextLength": 84,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "developer/#0",
+        "noscriptSubtree": false,
+        "textLength": 131,
+        "rawTextLength": 131,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "developer/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "developer/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "docs/data/#0",
+        "noscriptSubtree": false,
+        "textLength": 108,
+        "rawTextLength": 108,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "docs/data/#1",
+        "noscriptSubtree": false,
+        "textLength": 196,
+        "rawTextLength": 196,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "docs/data/#2",
+        "noscriptSubtree": false,
+        "textLength": 110,
+        "rawTextLength": 110,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "docs/data/#3",
+        "noscriptSubtree": false,
+        "textLength": 47,
+        "rawTextLength": 47,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "docs/data/#4",
+        "noscriptSubtree": false,
+        "textLength": 23,
+        "rawTextLength": 23,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "docs/data/#5",
+        "noscriptSubtree": false,
+        "textLength": 27,
+        "rawTextLength": 27,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "docs/data/#6",
+        "noscriptSubtree": false,
+        "textLength": 34,
+        "rawTextLength": 34,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "docs/data/#7",
+        "noscriptSubtree": false,
+        "textLength": 3,
+        "rawTextLength": 3,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "docs/data/#8",
+        "noscriptSubtree": false,
+        "textLength": 50,
+        "rawTextLength": 50,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "feeds/#0",
+        "noscriptSubtree": false,
+        "textLength": 98,
+        "rawTextLength": 98,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "feeds/#1",
+        "noscriptSubtree": false,
+        "textLength": 129,
+        "rawTextLength": 129,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "feeds/#2",
+        "noscriptSubtree": false,
+        "textLength": 59,
+        "rawTextLength": 59,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "feeds/#3",
+        "noscriptSubtree": false,
+        "textLength": 50,
+        "rawTextLength": 50,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "feeds/#4",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "feeds/#5",
+        "noscriptSubtree": false,
+        "textLength": 95,
+        "rawTextLength": 95,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "feeds/#6",
+        "noscriptSubtree": false,
+        "textLength": 89,
+        "rawTextLength": 89,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "feeds/#7",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "free-api/#0",
+        "noscriptSubtree": false,
+        "textLength": 181,
+        "rawTextLength": 181,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "free-api/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "free-api/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/#0",
+        "noscriptSubtree": false,
+        "textLength": 103,
+        "rawTextLength": 103,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/#1",
+        "noscriptSubtree": false,
+        "textLength": 47,
+        "rawTextLength": 47,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/#2",
+        "noscriptSubtree": false,
+        "textLength": 60,
+        "rawTextLength": 60,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/360zhinao-pro/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/360zhinao-pro/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/360zhinao-pro/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/360zhinao-pro/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/360zhinao-turbo-llm-geo/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/360zhinao-turbo-llm-geo/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/360zhinao-turbo-llm-geo/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/360zhinao-turbo-llm-geo/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/baichuan-m3-plus/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/baichuan-m3-plus/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/baichuan-m3-plus/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/baichuan-m3-plus/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/baichuan-m3/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/baichuan-m3/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/baichuan-m3/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/baichuan-m3/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-fable-5.1/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-fable-5.1/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-fable-5.1/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-fable-5.1/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-fable-5.1/#4",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-haiku-4.5/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-haiku-4.5/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-haiku-4.5/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-haiku-4.5/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-haiku-4.5/#4",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-opus-5.5/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-opus-5.5/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-opus-5.5/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-opus-5.5/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-opus-5.5/#4",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-sonnet-5.5/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-sonnet-5.5/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-sonnet-5.5/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-sonnet-5.5/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/claude-sonnet-5.5/#4",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/deepseek-flash/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/deepseek-flash/#1",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/deepseek-flash/#2",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/deepseek-v3.2/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/deepseek-v3.2/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/deepseek-v3.2/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/deepseek-v3.2/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/deepseek-v4-pro/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/deepseek-v4-pro/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/deepseek-v4-pro/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/deepseek-v4-pro/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-2.1-pro/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-2.1-pro/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-2.1-pro/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-2.1-pro/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-2.1-turbo/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-2.1-turbo/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-2.1-turbo/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-2.1-turbo/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-character/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-character/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-character/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-character/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-evolving/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-evolving/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-evolving/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/doubao-seed-evolving/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/ernie-4.5-turbo-128k/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/ernie-4.5-turbo-128k/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/ernie-4.5-turbo-128k/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/ernie-4.5-turbo-128k/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/ernie-5.1/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/ernie-5.1/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/ernie-5.1/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/ernie-5.1/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.5-flash/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.5-flash/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.5-flash/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.5-flash/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.5-flash/#4",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.6-flash/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.6-flash/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.6-flash/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.6-flash/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.6-flash/#4",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.7-flash/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.7-flash/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.7-flash/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.7-flash/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.7-flash/#4",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.8-flash/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.8-flash/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.8-flash/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.8-flash/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gemini-3.8-flash/#4",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.5v/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.5v/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.5v/#2",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.5v/#3",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.6v-flash/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.6v-flash/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.6v-flash/#2",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.6v-flash/#3",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.6v-flashx/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.6v-flashx/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.6v-flashx/#2",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.6v-flashx/#3",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.6v/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.6v/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.6v/#2",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.6v/#3",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.7-flash/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.7-flash/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.7-flash/#2",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-4.7-flash/#3",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-5.3-flash/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-5.3-flash/#1",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-5.3/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-5.3/#1",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-5v-turbo/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-5v-turbo/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-5v-turbo/#2",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/glm-5v-turbo/#3",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6-astra/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6-astra/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6-astra/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6-astra/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6-astra/#4",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6-luna/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6-luna/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6-luna/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6-luna/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6-luna/#4",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6.1-sol/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6.1-sol/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6.1-sol/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6.1-sol/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-6.1-sol/#4",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-live-1/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-live-1/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-live-1/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-live-1/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/gpt-live-1/#4",
+        "noscriptSubtree": false,
+        "textLength": 21,
+        "rawTextLength": 21,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-a13b/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-a13b/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-a13b/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-a13b/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-embedding/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-embedding/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-embedding/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-embedding/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-role-latest/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-role-latest/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-role-latest/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-role-latest/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-translation-lite/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-translation-lite/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-translation-lite/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-translation-lite/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-translation/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-translation/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-translation/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/hunyuan-translation/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/kimi-k2.7-code/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/kimi-k2.7-code/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/kimi-k2.7-code/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/kimi-k2.7-code/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/kimi-k3/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/kimi-k3/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/kimi-k3/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/kimi-k3/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/minimax-m2.5/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/minimax-m2.5/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/minimax-m2.5/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/minimax-m2.5/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/minimax-m2.7-highspeed/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/minimax-m2.7-highspeed/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/minimax-m2.7-highspeed/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/minimax-m2.7-highspeed/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/minimax-m2.7/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/minimax-m2.7/#1",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/minimax-m3/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/minimax-m3/#1",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen-max/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen-max/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen-max/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen-max/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen3-max/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen3-max/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen3-max/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen3-max/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen3.8-27b/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen3.8-27b/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen3.8-27b/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen3.8-27b/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen3.8-max/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen3.8-max/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen3.8-max/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/qwen3.8-max/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/spark-x2.5/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/spark-x2.5/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/spark-x2.5/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/spark-x2.5/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/step-3.5-flash/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/step-3.5-flash/#1",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/step-3.5-flash/#2",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/tencent-hy-vision-1.5-instruct/#0",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/tencent-hy-vision-1.5-instruct/#1",
+        "noscriptSubtree": false,
+        "textLength": 71,
+        "rawTextLength": 71,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/tencent-hy-vision-1.5-instruct/#2",
+        "noscriptSubtree": false,
+        "textLength": 30,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "models/tencent-hy-vision-1.5-instruct/#3",
+        "noscriptSubtree": false,
+        "textLength": 48,
+        "rawTextLength": 48,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/ai-coding/#0",
+        "noscriptSubtree": false,
+        "textLength": 224,
+        "rawTextLength": 224,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/ai-coding/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/ai-coding/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/china-usable/#0",
+        "noscriptSubtree": false,
+        "textLength": 298,
+        "rawTextLength": 298,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/china-usable/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/china-usable/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/dev-credits/#0",
+        "noscriptSubtree": false,
+        "textLength": 157,
+        "rawTextLength": 157,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/dev-credits/#1",
+        "noscriptSubtree": false,
+        "textLength": 192,
+        "rawTextLength": 192,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/dev-credits/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/edu-identity/#0",
+        "noscriptSubtree": false,
+        "textLength": 177,
+        "rawTextLength": 177,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/edu-identity/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/edu-identity/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/free-api/#0",
+        "noscriptSubtree": false,
+        "textLength": 161,
+        "rawTextLength": 161,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/free-api/#1",
+        "noscriptSubtree": false,
+        "textLength": 209,
+        "rawTextLength": 209,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/free-api/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/free-model/#0",
+        "noscriptSubtree": false,
+        "textLength": 151,
+        "rawTextLength": 151,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/free-model/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/free-model/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/free-tier/#0",
+        "noscriptSubtree": false,
+        "textLength": 217,
+        "rawTextLength": 217,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/free-tier/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/free-tier/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/free-tokens/#0",
+        "noscriptSubtree": false,
+        "textLength": 188,
+        "rawTextLength": 188,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/free-tokens/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/free-tokens/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/no-card/#0",
+        "noscriptSubtree": false,
+        "textLength": 192,
+        "rawTextLength": 192,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/no-card/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/no-card/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/student-only/#0",
+        "noscriptSubtree": false,
+        "textLength": 159,
+        "rawTextLength": 159,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/student-only/#1",
+        "noscriptSubtree": false,
+        "textLength": 214,
+        "rawTextLength": 214,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "need/student-only/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#0",
+        "noscriptSubtree": false,
+        "textLength": 121,
+        "rawTextLength": 121,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#1",
+        "noscriptSubtree": false,
+        "textLength": 66,
+        "rawTextLength": 66,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#2",
+        "noscriptSubtree": false,
+        "textLength": 46,
+        "rawTextLength": 46,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#3",
+        "noscriptSubtree": false,
+        "textLength": 92,
+        "rawTextLength": 92,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#4",
+        "noscriptSubtree": false,
+        "textLength": 18,
+        "rawTextLength": 18,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#5",
+        "noscriptSubtree": false,
+        "textLength": 79,
+        "rawTextLength": 79,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#6",
+        "noscriptSubtree": false,
+        "textLength": 63,
+        "rawTextLength": 63,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#7",
+        "noscriptSubtree": false,
+        "textLength": 32,
+        "rawTextLength": 32,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#8",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#9",
+        "noscriptSubtree": false,
+        "textLength": 12,
+        "rawTextLength": 12,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#10",
+        "noscriptSubtree": false,
+        "textLength": 53,
+        "rawTextLength": 53,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#11",
+        "noscriptSubtree": false,
+        "textLength": 35,
+        "rawTextLength": 35,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/api/#0",
+        "noscriptSubtree": false,
+        "textLength": 116,
+        "rawTextLength": 116,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/api/#1",
+        "noscriptSubtree": false,
+        "textLength": 93,
+        "rawTextLength": 93,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/api/#2",
+        "noscriptSubtree": false,
+        "textLength": 63,
+        "rawTextLength": 63,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/api/#3",
+        "noscriptSubtree": false,
+        "textLength": 80,
+        "rawTextLength": 80,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/api/#4",
+        "noscriptSubtree": false,
+        "textLength": 43,
+        "rawTextLength": 43,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/coding/#0",
+        "noscriptSubtree": false,
+        "textLength": 84,
+        "rawTextLength": 84,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/coding/#1",
+        "noscriptSubtree": true,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#2",
+        "noscriptSubtree": false,
+        "textLength": 41,
+        "rawTextLength": 41,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/coding/#3",
+        "noscriptSubtree": false,
+        "textLength": 80,
+        "rawTextLength": 80,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/coding/#4",
+        "noscriptSubtree": false,
+        "textLength": 136,
+        "rawTextLength": 136,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "status/#0",
+        "noscriptSubtree": false,
+        "textLength": 221,
+        "rawTextLength": 221,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "status/#1",
+        "noscriptSubtree": false,
+        "textLength": 65,
+        "rawTextLength": 65,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "student/#0",
+        "noscriptSubtree": false,
+        "textLength": 209,
+        "rawTextLength": 209,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "student/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "student/#2",
+        "noscriptSubtree": false,
+        "textLength": 91,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/#0",
+        "noscriptSubtree": false,
+        "textLength": 156,
+        "rawTextLength": 156,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/#1",
+        "noscriptSubtree": false,
+        "textLength": 85,
+        "rawTextLength": 85,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/ai360/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/ai360/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/ai360/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/aliyun/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/aliyun/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/aliyun/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/anthropic/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/anthropic/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/anthropic/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/aws/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/aws/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/aws/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/baichuan/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/baichuan/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/baichuan/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/baidu-ai-cloud/#0",
+        "noscriptSubtree": false,
+        "textLength": 277,
+        "rawTextLength": 277,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/baidu-ai-cloud/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/baidu-ai-cloud/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/coze/#0",
+        "noscriptSubtree": false,
+        "textLength": 162,
+        "rawTextLength": 162,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/coze/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/coze/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/cursor/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/cursor/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/cursor/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/deepseek/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/deepseek/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/deepseek/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/github/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/github/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/github/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/google/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/google/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/google/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/iflytek/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/iflytek/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/iflytek/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/microsoft/#0",
+        "noscriptSubtree": false,
+        "textLength": 162,
+        "rawTextLength": 162,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/microsoft/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/microsoft/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/minimax/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/minimax/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/minimax/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/moonshot/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/moonshot/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/moonshot/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/notion/#0",
+        "noscriptSubtree": false,
+        "textLength": 162,
+        "rawTextLength": 162,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/notion/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/notion/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/openai/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/openai/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/openai/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/replit/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/replit/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/replit/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/sensetime/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/sensetime/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/sensetime/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/siliconflow/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/siliconflow/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/siliconflow/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/stepfun/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/stepfun/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/stepfun/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/tencent-cloud/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/tencent-cloud/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/tencent-cloud/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/volcengine/#0",
+        "noscriptSubtree": false,
+        "textLength": 277,
+        "rawTextLength": 277,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/volcengine/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/volcengine/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/windsurf/#0",
+        "noscriptSubtree": false,
+        "textLength": 276,
+        "rawTextLength": 276,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/windsurf/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/windsurf/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/zhipu/#0",
+        "noscriptSubtree": false,
+        "textLength": 277,
+        "rawTextLength": 277,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/zhipu/#1",
+        "noscriptSubtree": false,
+        "textLength": 6,
+        "rawTextLength": 6,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "vendor/zhipu/#2",
+        "noscriptSubtree": false,
+        "textLength": 111,
+        "rawTextLength": 111,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      }
+    ]
+  },
+  "old-bare-fs0": {
+    "total": 848,
+    "failed": 14,
+    "failingNames": [
+      "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））",
+      "§22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））",
+      "§22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄））",
+      "§22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄））",
+      "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+      "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条））",
+      "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级",
+      "§22c M9a 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（相邻兄弟选择器））",
+      "§22c M9a 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M9b 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（:not(:first-of-type)））",
+      "§22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+      "§22c M11 变异后复测必须出现「note-ink-narrow」违规码（t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条））",
+      "§22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码"
+    ],
+    "metrics": {
+      "sweepUnrendered": 401,
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401,
+      "rows1600": 401
+    },
+    "codesFromDetails": {
+      "narrow": 9,
+      "ink-narrow": 2
+    },
+    "pageLevel1440": {
+      "ok": true,
+      "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 401 条） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）0 条 · 竖排 0 条 · textFallback 回落 41 条"
+    },
+    "unrenderedRowsIn1440": [
+      {
+        "key": "archive/#0",
+        "textLength": 100,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "archive/#1",
+        "textLength": 36,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "archive/#2",
+        "textLength": 36,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "archive/#3",
+        "textLength": 36,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "archive/#4",
+        "textLength": 50,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/#0",
+        "textLength": 133,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/#1",
+        "textLength": 85,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/agent/#0",
+        "textLength": 123,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/agent/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/agent/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/api/#0",
+        "textLength": 181,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/api/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/api/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/audio/#0",
+        "textLength": 148,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/audio/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/audio/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/chat/#0",
+        "textLength": 148,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/chat/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/chat/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/image/#0",
+        "textLength": 126,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/image/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "category/image/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "changes/#0",
+        "textLength": 62,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "changes/#1",
+        "textLength": 45,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "changes/#2",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "changes/#3",
+        "textLength": 40,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "changes/#4",
+        "textLength": 68,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "changes/#5",
+        "textLength": 40,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "changes/#6",
+        "textLength": 19,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "changes/#7",
+        "textLength": 13,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "changes/#8",
+        "textLength": 78,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "changes/#9",
+        "textLength": 49,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "changes/#10",
+        "textLength": 26,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "changes/#11",
+        "textLength": 20,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "changes/#12",
+        "textLength": 84,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "developer/#0",
+        "textLength": 131,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "developer/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "developer/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "docs/data/#0",
+        "textLength": 108,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "docs/data/#1",
+        "textLength": 196,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "docs/data/#2",
+        "textLength": 110,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "docs/data/#3",
+        "textLength": 47,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "docs/data/#4",
+        "textLength": 23,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "docs/data/#5",
+        "textLength": 27,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "docs/data/#6",
+        "textLength": 34,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "docs/data/#7",
+        "textLength": 3,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "docs/data/#8",
+        "textLength": 50,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "feeds/#0",
+        "textLength": 98,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "feeds/#1",
+        "textLength": 129,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "feeds/#2",
+        "textLength": 59,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "feeds/#3",
+        "textLength": 50,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "feeds/#4",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "feeds/#5",
+        "textLength": 95,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "feeds/#6",
+        "textLength": 89,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "feeds/#7",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "free-api/#0",
+        "textLength": 181,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "free-api/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "free-api/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/#0",
+        "textLength": 103,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/#1",
+        "textLength": 47,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/#2",
+        "textLength": 60,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/360zhinao-pro/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/360zhinao-pro/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/360zhinao-pro/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/360zhinao-pro/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/360zhinao-turbo-llm-geo/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/360zhinao-turbo-llm-geo/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/360zhinao-turbo-llm-geo/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/360zhinao-turbo-llm-geo/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/baichuan-m3-plus/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/baichuan-m3-plus/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/baichuan-m3-plus/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/baichuan-m3-plus/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/baichuan-m3/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/baichuan-m3/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/baichuan-m3/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/baichuan-m3/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-fable-5.1/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-fable-5.1/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-fable-5.1/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-fable-5.1/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-fable-5.1/#4",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-haiku-4.5/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-haiku-4.5/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-haiku-4.5/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-haiku-4.5/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-haiku-4.5/#4",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-opus-5.5/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-opus-5.5/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-opus-5.5/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-opus-5.5/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-opus-5.5/#4",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-sonnet-5.5/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-sonnet-5.5/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-sonnet-5.5/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-sonnet-5.5/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/claude-sonnet-5.5/#4",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/deepseek-flash/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/deepseek-flash/#1",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/deepseek-flash/#2",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/deepseek-v3.2/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/deepseek-v3.2/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/deepseek-v3.2/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/deepseek-v3.2/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/deepseek-v4-pro/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/deepseek-v4-pro/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/deepseek-v4-pro/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/deepseek-v4-pro/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-2.1-pro/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-2.1-pro/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-2.1-pro/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-2.1-pro/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-2.1-turbo/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-2.1-turbo/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-2.1-turbo/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-2.1-turbo/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-character/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-character/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-character/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-character/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-evolving/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-evolving/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-evolving/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/doubao-seed-evolving/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/ernie-4.5-turbo-128k/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/ernie-4.5-turbo-128k/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/ernie-4.5-turbo-128k/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/ernie-4.5-turbo-128k/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/ernie-5.1/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/ernie-5.1/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/ernie-5.1/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/ernie-5.1/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.5-flash/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.5-flash/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.5-flash/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.5-flash/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.5-flash/#4",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.6-flash/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.6-flash/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.6-flash/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.6-flash/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.6-flash/#4",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.7-flash/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.7-flash/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.7-flash/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.7-flash/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.7-flash/#4",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.8-flash/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.8-flash/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.8-flash/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.8-flash/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gemini-3.8-flash/#4",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.5v/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.5v/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.5v/#2",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.5v/#3",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.6v-flash/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.6v-flash/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.6v-flash/#2",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.6v-flash/#3",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.6v-flashx/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.6v-flashx/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.6v-flashx/#2",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.6v-flashx/#3",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.6v/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.6v/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.6v/#2",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.6v/#3",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.7-flash/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.7-flash/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.7-flash/#2",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-4.7-flash/#3",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-5.3-flash/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-5.3-flash/#1",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-5.3/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-5.3/#1",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-5v-turbo/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-5v-turbo/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-5v-turbo/#2",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/glm-5v-turbo/#3",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6-astra/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6-astra/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6-astra/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6-astra/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6-astra/#4",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6-luna/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6-luna/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6-luna/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6-luna/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6-luna/#4",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6.1-sol/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6.1-sol/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6.1-sol/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6.1-sol/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-6.1-sol/#4",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-live-1/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-live-1/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-live-1/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-live-1/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/gpt-live-1/#4",
+        "textLength": 21,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-a13b/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-a13b/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-a13b/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-a13b/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-embedding/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-embedding/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-embedding/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-embedding/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-role-latest/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-role-latest/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-role-latest/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-role-latest/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-translation-lite/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-translation-lite/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-translation-lite/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-translation-lite/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-translation/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-translation/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-translation/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/hunyuan-translation/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/kimi-k2.7-code/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/kimi-k2.7-code/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/kimi-k2.7-code/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/kimi-k2.7-code/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/kimi-k3/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/kimi-k3/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/kimi-k3/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/kimi-k3/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/minimax-m2.5/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/minimax-m2.5/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/minimax-m2.5/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/minimax-m2.5/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/minimax-m2.7-highspeed/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/minimax-m2.7-highspeed/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/minimax-m2.7-highspeed/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/minimax-m2.7-highspeed/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/minimax-m2.7/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/minimax-m2.7/#1",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/minimax-m3/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/minimax-m3/#1",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen-max/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen-max/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen-max/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen-max/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen3-max/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen3-max/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen3-max/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen3-max/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen3.8-27b/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen3.8-27b/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen3.8-27b/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen3.8-27b/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen3.8-max/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen3.8-max/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen3.8-max/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/qwen3.8-max/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/spark-x2.5/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/spark-x2.5/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/spark-x2.5/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/spark-x2.5/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/step-3.5-flash/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/step-3.5-flash/#1",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/step-3.5-flash/#2",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/tencent-hy-vision-1.5-instruct/#0",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/tencent-hy-vision-1.5-instruct/#1",
+        "textLength": 71,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/tencent-hy-vision-1.5-instruct/#2",
+        "textLength": 30,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "models/tencent-hy-vision-1.5-instruct/#3",
+        "textLength": 48,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/ai-coding/#0",
+        "textLength": 224,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/ai-coding/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/ai-coding/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/china-usable/#0",
+        "textLength": 298,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/china-usable/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/china-usable/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/dev-credits/#0",
+        "textLength": 157,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/dev-credits/#1",
+        "textLength": 192,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/dev-credits/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/edu-identity/#0",
+        "textLength": 177,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/edu-identity/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/edu-identity/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/free-api/#0",
+        "textLength": 161,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/free-api/#1",
+        "textLength": 209,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/free-api/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/free-model/#0",
+        "textLength": 151,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/free-model/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/free-model/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/free-tier/#0",
+        "textLength": 217,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/free-tier/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/free-tier/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/free-tokens/#0",
+        "textLength": 188,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/free-tokens/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/free-tokens/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/no-card/#0",
+        "textLength": 192,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/no-card/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/no-card/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/student-only/#0",
+        "textLength": 159,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/student-only/#1",
+        "textLength": 214,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "need/student-only/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#0",
+        "textLength": 121,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#1",
+        "textLength": 66,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#2",
+        "textLength": 46,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#3",
+        "textLength": 92,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#4",
+        "textLength": 18,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#5",
+        "textLength": 79,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#6",
+        "textLength": 63,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#7",
+        "textLength": 32,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#8",
+        "textLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#9",
+        "textLength": 12,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#10",
+        "textLength": 53,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#11",
+        "textLength": 35,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/api/#0",
+        "textLength": 116,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/api/#1",
+        "textLength": 93,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/api/#2",
+        "textLength": 63,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/api/#3",
+        "textLength": 80,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/api/#4",
+        "textLength": 43,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#0",
+        "textLength": 84,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#1",
+        "textLength": 0,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#2",
+        "textLength": 41,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#3",
+        "textLength": 80,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#4",
+        "textLength": 136,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "status/#0",
+        "textLength": 221,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "status/#1",
+        "textLength": 65,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "student/#0",
+        "textLength": 209,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "student/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "student/#2",
+        "textLength": 91,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/#0",
+        "textLength": 156,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/#1",
+        "textLength": 85,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/ai360/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/ai360/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/ai360/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/aliyun/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/aliyun/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/aliyun/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/anthropic/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/anthropic/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/anthropic/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/aws/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/aws/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/aws/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/baichuan/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/baichuan/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/baichuan/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/baidu-ai-cloud/#0",
+        "textLength": 277,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/baidu-ai-cloud/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/baidu-ai-cloud/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/coze/#0",
+        "textLength": 162,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/coze/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/coze/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/cursor/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/cursor/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/cursor/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/deepseek/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/deepseek/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/deepseek/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/github/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/github/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/github/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/google/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/google/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/google/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/iflytek/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/iflytek/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/iflytek/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/microsoft/#0",
+        "textLength": 162,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/microsoft/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/microsoft/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/minimax/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/minimax/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/minimax/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/moonshot/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/moonshot/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/moonshot/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/notion/#0",
+        "textLength": 162,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/notion/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/notion/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/openai/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/openai/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/openai/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/replit/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/replit/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/replit/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/sensetime/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/sensetime/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/sensetime/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/siliconflow/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/siliconflow/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/siliconflow/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/stepfun/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/stepfun/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/stepfun/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/tencent-cloud/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/tencent-cloud/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/tencent-cloud/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/volcengine/#0",
+        "textLength": 277,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/volcengine/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/volcengine/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/windsurf/#0",
+        "textLength": 276,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/windsurf/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/windsurf/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/zhipu/#0",
+        "textLength": 277,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/zhipu/#1",
+        "textLength": 6,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "vendor/zhipu/#2",
+        "textLength": 111,
+        "glyphRects": 0,
+        "codes": []
+      }
+    ]
+  },
+  "new-bare-fs0-plans": {
+    "total": 852,
+    "failed": 5,
+    "failingNames": [
+      "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c 未渲染说明：上界断言 —— <noscript> 之外不许有未渲染说明，且 unrenderedNotes 与 note-unrendered 判据一致",
+      "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+      "§22c @360 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）"
+    ],
+    "metrics": {
+      "sweepUnrendered": 13,
+      "sweepNoscript": 1,
+      "sweepText": 12,
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401,
+      "rows1600": 401
+    },
+    "codesFromDetails": {
+      "unrendered": 46,
+      "narrow": 2,
+      "ink-narrow": 2
+    },
+    "upperBound": {
+      "ok": false,
+      "detail": "@1440 未渲染 13 条 = <noscript> 1 条 [plans/coding/#1] + note-unrendered 12 条 · 其它未渲染 12 条 · @1600 未渲染 13 条（<noscript> 1 · note-unrendered 12） · 违规条：plans/#0 plans/#1 plans/#2 plans/#3 plans/#4 plans/#5 plans/#6 plans/#7 plans/#8 plans/#9 plans/#10 plans/#11"
+    },
+    "pageLevel1440": {
+      "ok": false,
+      "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 13 条：<noscript> 1 + note-unrendered 12） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）49 条 · 竖排 0 条 · textFallback 回落 41 条 · 命中样例：plans/#0 内容盒 1380px / 盒 1"
+    },
+    "unrenderedRowsIn1440": [
+      {
+        "key": "plans/#0",
+        "noscriptSubtree": false,
+        "textLength": 121,
+        "rawTextLength": 121,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#1",
+        "noscriptSubtree": false,
+        "textLength": 66,
+        "rawTextLength": 66,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#2",
+        "noscriptSubtree": false,
+        "textLength": 46,
+        "rawTextLength": 46,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#3",
+        "noscriptSubtree": false,
+        "textLength": 92,
+        "rawTextLength": 92,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#4",
+        "noscriptSubtree": false,
+        "textLength": 18,
+        "rawTextLength": 18,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#5",
+        "noscriptSubtree": false,
+        "textLength": 79,
+        "rawTextLength": 79,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#6",
+        "noscriptSubtree": false,
+        "textLength": 63,
+        "rawTextLength": 63,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#7",
+        "noscriptSubtree": false,
+        "textLength": 32,
+        "rawTextLength": 32,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#8",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#9",
+        "noscriptSubtree": false,
+        "textLength": 12,
+        "rawTextLength": 12,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#10",
+        "noscriptSubtree": false,
+        "textLength": 53,
+        "rawTextLength": 53,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#11",
+        "noscriptSubtree": false,
+        "textLength": 35,
+        "rawTextLength": 35,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/coding/#1",
+        "noscriptSubtree": true,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "codes": []
+      }
+    ]
+  },
+  "new-noscript-key": {
+    "total": 852,
+    "failed": 0,
+    "failingNames": [],
+    "metrics": {
+      "sweepUnrendered": 13,
+      "sweepNoscript": 13,
+      "sweepText": 0,
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401,
+      "rows1600": 401
+    },
+    "codesFromDetails": {},
+    "upperBound": {
+      "ok": true,
+      "detail": "@1440 未渲染 13 条 = <noscript> 13 条 [plans/#0, plans/#1, plans/#2, plans/#3, plans/#4, plans/#5, plans/#6, plans/#7, plans/#8, plans/#9, plans/#10, plans/#11, plans/coding/#1] + note-unrendered 0 条 · 其它未渲染 0 条 · @1600 未渲染 13 条（<noscript> 13 · note-unrendered 0）"
+    },
+    "pageLevel1440": {
+      "ok": true,
+      "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 13 条：<noscript> 13 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）49 条 · 竖排 0 条 · textFallback 回落 41 条"
+    },
+    "unrenderedRowsIn1440": [
+      {
+        "key": "plans/#0",
+        "noscriptSubtree": true,
+        "textLength": 121,
+        "rawTextLength": 121,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#1",
+        "noscriptSubtree": true,
+        "textLength": 66,
+        "rawTextLength": 66,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#2",
+        "noscriptSubtree": true,
+        "textLength": 46,
+        "rawTextLength": 46,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#3",
+        "noscriptSubtree": true,
+        "textLength": 92,
+        "rawTextLength": 92,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#4",
+        "noscriptSubtree": true,
+        "textLength": 18,
+        "rawTextLength": 18,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#5",
+        "noscriptSubtree": true,
+        "textLength": 79,
+        "rawTextLength": 79,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#6",
+        "noscriptSubtree": true,
+        "textLength": 63,
+        "rawTextLength": 63,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#7",
+        "noscriptSubtree": true,
+        "textLength": 32,
+        "rawTextLength": 32,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#8",
+        "noscriptSubtree": true,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#9",
+        "noscriptSubtree": true,
+        "textLength": 12,
+        "rawTextLength": 12,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#10",
+        "noscriptSubtree": true,
+        "textLength": 53,
+        "rawTextLength": 53,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/#11",
+        "noscriptSubtree": true,
+        "textLength": 35,
+        "rawTextLength": 35,
+        "glyphRects": 0,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#1",
+        "noscriptSubtree": true,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "codes": []
+      }
+    ]
+  },
+  "new-noscript-visible": {
+    "total": 852,
+    "failed": 5,
+    "failingNames": [
+      "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c 未渲染说明：上界断言 —— <noscript> 之外不许有未渲染说明，且 unrenderedNotes 与 note-unrendered 判据一致",
+      "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+      "§22c @360 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）"
+    ],
+    "metrics": {
+      "sweepUnrendered": 13,
+      "sweepNoscript": 1,
+      "sweepText": 12,
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401,
+      "rows1600": 401
+    },
+    "codesFromDetails": {
+      "unrendered": 46,
+      "narrow": 2,
+      "ink-narrow": 2
+    },
+    "upperBound": {
+      "ok": false,
+      "detail": "@1440 未渲染 13 条 = <noscript> 1 条 [plans/coding/#1] + note-unrendered 12 条 · 其它未渲染 12 条 · @1600 未渲染 13 条（<noscript> 1 · note-unrendered 12） · 违规条：plans/#0 plans/#1 plans/#2 plans/#3 plans/#4 plans/#5 plans/#6 plans/#7 plans/#8 plans/#9 plans/#10 plans/#11"
+    },
+    "pageLevel1440": {
+      "ok": false,
+      "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 13 条：<noscript> 1 + note-unrendered 12） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）49 条 · 竖排 0 条 · textFallback 回落 41 条 · 命中样例：plans/#0 内容盒 1380px / 盒 1"
+    },
+    "unrenderedRowsIn1440": [
+      {
+        "key": "plans/#0",
+        "noscriptSubtree": false,
+        "textLength": 121,
+        "rawTextLength": 121,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#1",
+        "noscriptSubtree": false,
+        "textLength": 66,
+        "rawTextLength": 66,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#2",
+        "noscriptSubtree": false,
+        "textLength": 46,
+        "rawTextLength": 46,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#3",
+        "noscriptSubtree": false,
+        "textLength": 92,
+        "rawTextLength": 92,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#4",
+        "noscriptSubtree": false,
+        "textLength": 18,
+        "rawTextLength": 18,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#5",
+        "noscriptSubtree": false,
+        "textLength": 79,
+        "rawTextLength": 79,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#6",
+        "noscriptSubtree": false,
+        "textLength": 63,
+        "rawTextLength": 63,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#7",
+        "noscriptSubtree": false,
+        "textLength": 32,
+        "rawTextLength": 32,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#8",
+        "noscriptSubtree": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#9",
+        "noscriptSubtree": false,
+        "textLength": 12,
+        "rawTextLength": 12,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#10",
+        "noscriptSubtree": false,
+        "textLength": 53,
+        "rawTextLength": 53,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#11",
+        "noscriptSubtree": false,
+        "textLength": 35,
+        "rawTextLength": 35,
+        "glyphRects": 0,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/coding/#1",
+        "noscriptSubtree": true,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "codes": []
+      }
+    ]
+  },
+  "nameDiff": {
+    "newNames": 852,
+    "oldNames": 848,
+    "removed": [
+      "§22c 违规码自检：10 个码全部由 wideProblems() 一处产出、且都可达（不多不少）",
+      "§22c 全站扫描（630 次导航）没有 JS 错误、没有外部请求"
+    ],
+    "added": [
+      "§22c 未渲染说明：上界断言 —— <noscript> 之外不许有未渲染说明，且 unrenderedNotes 与 note-unrendered 判据一致",
+      "§22c M13 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M13 变异后复测必须出现「note-unrendered」违规码（T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住）",
+      "§22c M13 承重证明：盒高被压成 0 的条**全部**由 note-unrendered 咬中，且窄柱/字迹/藏字三条判据在它们身上确实看不见",
+      "§22c 违规码自检：11 个码全部由 wideProblems() 一处产出、且都可达（不多不少）",
+      "§22c 全站扫描（631 次导航）没有 JS 错误、没有外部请求"
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+# Models reproducibility (registry → models.json, byte-compare)
+# $ node scripts/tools/check-models-reproducible.js
+# runAt 2026-10-06T15:42:15.082Z · verify-site.js sha256 2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e
+
+✅ Model Registry 可重建性通过：models.json 与 model-registry-links.json 都与来源层逐字节一致
+   51 个模型 · 92 条映射 · updatedAt=2026-10-05T00:00:00+08:00

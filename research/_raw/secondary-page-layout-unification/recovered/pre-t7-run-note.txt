@@ -1,0 +1,4 @@
+﻿沙箱只读纪律的一次偏差（如实记录）：
+verify-site.js 的 --json= 是相对 ROOT 解析的，而沙箱里 ROOT=recovered/pre-t7，所以 T3 第一次跑 pre-t7 判据时把 JSON 写进了 recovered/pre-t7/research/...（新建目录，未触碰沙箱原有文件）。
+处置：两个文件已移出到 recovered/pre-t7-M0-baseline.json 与 pre-t7-M0-baseline.mutations.json，新建的 research/ 目录已删除；沙箱 verify-site.js sha256 = 4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756（未变），沙箱顶层只剩 node_modules(junction) / scripts。
+后续跑沙箱时必须把 --json 用相对路径指到沙箱之外：--json=../../../../../../research/_raw/secondary-page-layout-unification/recovered/<name>.json

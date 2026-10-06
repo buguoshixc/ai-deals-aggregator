@@ -1,0 +1,10 @@
+核对：research/_raw/secondary-page-layout-unification/geometry/after-verify.json × research/_raw/secondary-page-layout-unification/geometry/truth-401.json
+容器：条级 metrics.layoutNotes · 页级 metrics.layoutViolations · 条级为必需项：false
+真值：窄说明 156 条 / 48 页 · 对照组 245 条
+实测：窄说明 0 条 / 0 页 · layoutSweep {"total":186,"wide":55,"detail":131,"other":0,"notesChecked":105,"notesJudged":401,"narrowNotes":0,"narrowNotePages":0,"narrowNotesAt1600":0,"overflowPages":0,"unexpectedDetailMain":0,"missingDetailMain":0,"unclassified":0,"desktopViewports":[1440,1600]}
+页集合：为空 = true
+漏判：156 条 / 0 页（样例 category/#0 category/agent/#0 category/api/#0 category/audio/#0 category/chat/#0）
+（绿轮的读法：真值的 156 条「改动前窄说明」在改动后产物上**应当一条都不出现** ⇒ 这里 156/156 条如期消失，不是漏判）
+误报（对照组成员被报成窄）：0 条
+✅ 结论：pass（expect=green）· 报告里有条级容器 metrics.layoutNotes ⇒ 逐条核对（最强口径）
+证据：research/_raw/secondary-page-layout-unification/geometry/gate-vs-truth-green.json

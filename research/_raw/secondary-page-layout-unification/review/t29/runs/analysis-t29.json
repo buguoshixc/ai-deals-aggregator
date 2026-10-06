@@ -1,0 +1,1908 @@
+{
+  "new-dist": {
+    "total": 852,
+    "failed": 0,
+    "failing": [],
+    "metrics": {},
+    "sweep": {
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401
+    },
+    "upperBound": {
+      "ok": true,
+      "detail": "@1440 未渲染 1 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 0 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 1 条（文本 0 1 · note-unrendered 0 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+    },
+    "plansRows": [
+      {
+        "key": "plans/#0",
+        "rendered": true,
+        "textLength": 121,
+        "rawTextLength": 121,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#1",
+        "rendered": true,
+        "textLength": 66,
+        "rawTextLength": 66,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#2",
+        "rendered": true,
+        "textLength": 46,
+        "rawTextLength": 46,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#3",
+        "rendered": true,
+        "textLength": 92,
+        "rawTextLength": 92,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#4",
+        "rendered": true,
+        "textLength": 18,
+        "rawTextLength": 18,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#5",
+        "rendered": true,
+        "textLength": 79,
+        "rawTextLength": 79,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#6",
+        "rendered": true,
+        "textLength": 63,
+        "rawTextLength": 63,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#7",
+        "rendered": true,
+        "textLength": 32,
+        "rawTextLength": 32,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#8",
+        "rendered": true,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#9",
+        "rendered": true,
+        "textLength": 12,
+        "rawTextLength": 12,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#10",
+        "rendered": true,
+        "textLength": 53,
+        "rawTextLength": 53,
+        "glyphRects": 8,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#11",
+        "rendered": true,
+        "textLength": 35,
+        "rawTextLength": 35,
+        "glyphRects": 8,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#0",
+        "rendered": true,
+        "textLength": 84,
+        "rawTextLength": 84,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#1",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#2",
+        "rendered": true,
+        "textLength": 41,
+        "rawTextLength": 41,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#3",
+        "rendered": true,
+        "textLength": 80,
+        "rawTextLength": 80,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#4",
+        "rendered": true,
+        "textLength": 136,
+        "rawTextLength": 136,
+        "glyphRects": 4,
+        "noscriptSubtree": false,
+        "codes": []
+      }
+    ]
+  },
+  "new-baseline": {
+    "total": 852,
+    "failed": 36,
+    "failing": [
+      "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+      "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+      "§22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））",
+      "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））",
+      "§22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄））",
+      "§22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄））",
+      "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+      "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条））",
+      "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级",
+      "§22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M9a 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（相邻兄弟选择器））",
+      "§22c M9a 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M9b 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（:not(:first-of-type)））",
+      "§22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+      "§22c M11 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M11 变异后复测必须出现「note-ink-narrow」违规码（t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条））",
+      "§22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码",
+      "§22c M12 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M12 变异后复测必须出现「note-hidden-text」违规码（t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿）",
+      "§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text",
+      "§22c M13 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M13 变异后复测必须出现「note-unrendered」违规码（T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住）",
+      "§22c M13 承重证明：盒高被压成 0 的条**全部**由 note-unrendered 咬中，且窄柱/字迹/藏字三条判据在它们身上确实看不见",
+      "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+      "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条 note-narrow 都没有"
+    ],
+    "metrics": {},
+    "sweep": {
+      "narrow": 156,
+      "ink": 108,
+      "union": 156,
+      "unionPages": 48,
+      "hiddenText": 0,
+      "rows": 401
+    },
+    "upperBound": {
+      "ok": true,
+      "detail": "@1440 未渲染 1 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 0 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 1 条（文本 0 1 · note-unrendered 0 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+    },
+    "plansRows": [
+      {
+        "key": "plans/#0",
+        "rendered": true,
+        "textLength": 121,
+        "rawTextLength": 121,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#1",
+        "rendered": true,
+        "textLength": 66,
+        "rawTextLength": 66,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#2",
+        "rendered": true,
+        "textLength": 46,
+        "rawTextLength": 46,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#3",
+        "rendered": true,
+        "textLength": 92,
+        "rawTextLength": 92,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#4",
+        "rendered": true,
+        "textLength": 18,
+        "rawTextLength": 18,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#5",
+        "rendered": true,
+        "textLength": 79,
+        "rawTextLength": 79,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#6",
+        "rendered": true,
+        "textLength": 63,
+        "rawTextLength": 63,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#7",
+        "rendered": true,
+        "textLength": 32,
+        "rawTextLength": 32,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#8",
+        "rendered": true,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#9",
+        "rendered": true,
+        "textLength": 12,
+        "rawTextLength": 12,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#10",
+        "rendered": true,
+        "textLength": 53,
+        "rawTextLength": 53,
+        "glyphRects": 8,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#11",
+        "rendered": true,
+        "textLength": 35,
+        "rawTextLength": 35,
+        "glyphRects": 8,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#0",
+        "rendered": true,
+        "textLength": 84,
+        "rawTextLength": 84,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#1",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#2",
+        "rendered": true,
+        "textLength": 41,
+        "rawTextLength": 41,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#3",
+        "rendered": true,
+        "textLength": 80,
+        "rawTextLength": 80,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#4",
+        "rendered": true,
+        "textLength": 136,
+        "rawTextLength": 136,
+        "glyphRects": 4,
+        "noscriptSubtree": false,
+        "codes": []
+      }
+    ]
+  },
+  "old-baseline": {
+    "total": 852,
+    "failed": 36,
+    "failing": [
+      "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+      "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+      "§22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））",
+      "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））",
+      "§22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄））",
+      "§22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄））",
+      "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+      "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条））",
+      "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级",
+      "§22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M9a 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（相邻兄弟选择器））",
+      "§22c M9a 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M9b 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（:not(:first-of-type)））",
+      "§22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+      "§22c M11 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M11 变异后复测必须出现「note-ink-narrow」违规码（t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条））",
+      "§22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码",
+      "§22c M12 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M12 变异后复测必须出现「note-hidden-text」违规码（t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿）",
+      "§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text",
+      "§22c M13 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M13 变异后复测必须出现「note-unrendered」违规码（T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住）",
+      "§22c M13 承重证明：盒高被压成 0 的条**全部**由 note-unrendered 咬中，且窄柱/字迹/藏字三条判据在它们身上确实看不见",
+      "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+      "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条 note-narrow 都没有"
+    ],
+    "metrics": {},
+    "sweep": {
+      "narrow": 156,
+      "ink": 108,
+      "union": 156,
+      "unionPages": 48,
+      "hiddenText": 0,
+      "rows": 401
+    },
+    "upperBound": {
+      "ok": true,
+      "detail": "@1440 未渲染 1 条 = <noscript> 1 条 [plans/coding/#1] + note-unrendered 0 条 · 其它未渲染 0 条 · @1600 未渲染 1 条（<noscript> 1 · note-unrendered 0）"
+    },
+    "plansRows": [
+      {
+        "key": "plans/#0",
+        "rendered": true,
+        "textLength": 121,
+        "rawTextLength": 121,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#1",
+        "rendered": true,
+        "textLength": 66,
+        "rawTextLength": 66,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#2",
+        "rendered": true,
+        "textLength": 46,
+        "rawTextLength": 46,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#3",
+        "rendered": true,
+        "textLength": 92,
+        "rawTextLength": 92,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#4",
+        "rendered": true,
+        "textLength": 18,
+        "rawTextLength": 18,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#5",
+        "rendered": true,
+        "textLength": 79,
+        "rawTextLength": 79,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#6",
+        "rendered": true,
+        "textLength": 63,
+        "rawTextLength": 63,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#7",
+        "rendered": true,
+        "textLength": 32,
+        "rawTextLength": 32,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#8",
+        "rendered": true,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#9",
+        "rendered": true,
+        "textLength": 12,
+        "rawTextLength": 12,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#10",
+        "rendered": true,
+        "textLength": 53,
+        "rawTextLength": 53,
+        "glyphRects": 8,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#11",
+        "rendered": true,
+        "textLength": 35,
+        "rawTextLength": 35,
+        "glyphRects": 8,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#0",
+        "rendered": true,
+        "textLength": 84,
+        "rawTextLength": 84,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#1",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#2",
+        "rendered": true,
+        "textLength": 41,
+        "rawTextLength": 41,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#3",
+        "rendered": true,
+        "textLength": 80,
+        "rawTextLength": 80,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#4",
+        "rendered": true,
+        "textLength": 136,
+        "rawTextLength": 136,
+        "glyphRects": 4,
+        "noscriptSubtree": false,
+        "codes": []
+      }
+    ]
+  },
+  "new-clean": {
+    "total": 852,
+    "failed": 0,
+    "failing": [],
+    "metrics": {},
+    "sweep": {
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401
+    },
+    "upperBound": {
+      "ok": true,
+      "detail": "@1440 未渲染 1 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 0 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 1 条（文本 0 1 · note-unrendered 0 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+    },
+    "plansRows": [
+      {
+        "key": "plans/#0",
+        "rendered": true,
+        "textLength": 121,
+        "rawTextLength": 121,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#1",
+        "rendered": true,
+        "textLength": 66,
+        "rawTextLength": 66,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#2",
+        "rendered": true,
+        "textLength": 46,
+        "rawTextLength": 46,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#3",
+        "rendered": true,
+        "textLength": 92,
+        "rawTextLength": 92,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#4",
+        "rendered": true,
+        "textLength": 18,
+        "rawTextLength": 18,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#5",
+        "rendered": true,
+        "textLength": 79,
+        "rawTextLength": 79,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#6",
+        "rendered": true,
+        "textLength": 63,
+        "rawTextLength": 63,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#7",
+        "rendered": true,
+        "textLength": 32,
+        "rawTextLength": 32,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#8",
+        "rendered": true,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#9",
+        "rendered": true,
+        "textLength": 12,
+        "rawTextLength": 12,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#10",
+        "rendered": true,
+        "textLength": 53,
+        "rawTextLength": 53,
+        "glyphRects": 8,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#11",
+        "rendered": true,
+        "textLength": 35,
+        "rawTextLength": 35,
+        "glyphRects": 8,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#0",
+        "rendered": true,
+        "textLength": 84,
+        "rawTextLength": 84,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#1",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#2",
+        "rendered": true,
+        "textLength": 41,
+        "rawTextLength": 41,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#3",
+        "rendered": true,
+        "textLength": 80,
+        "rawTextLength": 80,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#4",
+        "rendered": true,
+        "textLength": 136,
+        "rawTextLength": 136,
+        "glyphRects": 4,
+        "noscriptSubtree": false,
+        "codes": []
+      }
+    ]
+  },
+  "new-key": {
+    "total": 852,
+    "failed": 4,
+    "failing": [
+      "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+      "§22c @360 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）"
+    ],
+    "metrics": {},
+    "sweep": {
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401
+    },
+    "upperBound": {
+      "ok": true,
+      "detail": "@1440 未渲染 13 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 12 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 13 条（文本 0 1 · note-unrendered 12 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 13（不参与豁免）"
+    },
+    "plansRows": [
+      {
+        "key": "plans/#0",
+        "rendered": false,
+        "textLength": 121,
+        "rawTextLength": 121,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#1",
+        "rendered": false,
+        "textLength": 66,
+        "rawTextLength": 66,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#2",
+        "rendered": false,
+        "textLength": 46,
+        "rawTextLength": 46,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#3",
+        "rendered": false,
+        "textLength": 92,
+        "rawTextLength": 92,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#4",
+        "rendered": false,
+        "textLength": 18,
+        "rawTextLength": 18,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#5",
+        "rendered": false,
+        "textLength": 79,
+        "rawTextLength": 79,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#6",
+        "rendered": false,
+        "textLength": 63,
+        "rawTextLength": 63,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#7",
+        "rendered": false,
+        "textLength": 32,
+        "rawTextLength": 32,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#8",
+        "rendered": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#9",
+        "rendered": false,
+        "textLength": 12,
+        "rawTextLength": 12,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#10",
+        "rendered": false,
+        "textLength": 53,
+        "rawTextLength": 53,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#11",
+        "rendered": false,
+        "textLength": 35,
+        "rawTextLength": 35,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/coding/#0",
+        "rendered": true,
+        "textLength": 84,
+        "rawTextLength": 84,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#1",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#2",
+        "rendered": true,
+        "textLength": 41,
+        "rawTextLength": 41,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#3",
+        "rendered": true,
+        "textLength": 80,
+        "rawTextLength": 80,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#4",
+        "rendered": true,
+        "textLength": 136,
+        "rawTextLength": 136,
+        "glyphRects": 4,
+        "noscriptSubtree": false,
+        "codes": []
+      }
+    ]
+  },
+  "old-key": {
+    "total": 852,
+    "failed": 0,
+    "failing": [],
+    "metrics": {},
+    "sweep": {
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401
+    },
+    "upperBound": {
+      "ok": true,
+      "detail": "@1440 未渲染 13 条 = <noscript> 13 条 [plans/#0, plans/#1, plans/#2, plans/#3, plans/#4, plans/#5, plans/#6, plans/#7, plans/#8, plans/#9, plans/#10, plans/#11, plans/coding/#1] + note-unrendered 0 条 · 其它未渲染 0 条 · @1600 未渲染 13 条（<noscript> 13 · note-unrendered 0）"
+    },
+    "plansRows": [
+      {
+        "key": "plans/#0",
+        "rendered": false,
+        "textLength": 121,
+        "rawTextLength": 121,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/#1",
+        "rendered": false,
+        "textLength": 66,
+        "rawTextLength": 66,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/#2",
+        "rendered": false,
+        "textLength": 46,
+        "rawTextLength": 46,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/#3",
+        "rendered": false,
+        "textLength": 92,
+        "rawTextLength": 92,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/#4",
+        "rendered": false,
+        "textLength": 18,
+        "rawTextLength": 18,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/#5",
+        "rendered": false,
+        "textLength": 79,
+        "rawTextLength": 79,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/#6",
+        "rendered": false,
+        "textLength": 63,
+        "rawTextLength": 63,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/#7",
+        "rendered": false,
+        "textLength": 32,
+        "rawTextLength": 32,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/#8",
+        "rendered": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/#9",
+        "rendered": false,
+        "textLength": 12,
+        "rawTextLength": 12,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/#10",
+        "rendered": false,
+        "textLength": 53,
+        "rawTextLength": 53,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/#11",
+        "rendered": false,
+        "textLength": 35,
+        "rawTextLength": 35,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#0",
+        "rendered": true,
+        "textLength": 84,
+        "rawTextLength": 84,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#1",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#2",
+        "rendered": true,
+        "textLength": 41,
+        "rawTextLength": 41,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#3",
+        "rendered": true,
+        "textLength": 80,
+        "rawTextLength": 80,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#4",
+        "rendered": true,
+        "textLength": 136,
+        "rawTextLength": 136,
+        "glyphRects": 4,
+        "noscriptSubtree": false,
+        "codes": []
+      }
+    ]
+  },
+  "new-key-mixed": {
+    "total": 852,
+    "failed": 4,
+    "failing": [
+      "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+      "§22c @360 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）"
+    ],
+    "metrics": {},
+    "sweep": {
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401
+    },
+    "upperBound": {
+      "ok": true,
+      "detail": "@1440 未渲染 13 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 12 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 13 条（文本 0 1 · note-unrendered 12 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 13（不参与豁免）"
+    },
+    "plansRows": [
+      {
+        "key": "plans/#0",
+        "rendered": false,
+        "textLength": 121,
+        "rawTextLength": 133,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#1",
+        "rendered": false,
+        "textLength": 66,
+        "rawTextLength": 78,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#2",
+        "rendered": false,
+        "textLength": 46,
+        "rawTextLength": 58,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#3",
+        "rendered": false,
+        "textLength": 92,
+        "rawTextLength": 104,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#4",
+        "rendered": false,
+        "textLength": 18,
+        "rawTextLength": 30,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#5",
+        "rendered": false,
+        "textLength": 79,
+        "rawTextLength": 91,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#6",
+        "rendered": false,
+        "textLength": 63,
+        "rawTextLength": 75,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#7",
+        "rendered": false,
+        "textLength": 32,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#8",
+        "rendered": false,
+        "textLength": 67,
+        "rawTextLength": 79,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#9",
+        "rendered": false,
+        "textLength": 12,
+        "rawTextLength": 24,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#10",
+        "rendered": false,
+        "textLength": 53,
+        "rawTextLength": 65,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#11",
+        "rendered": false,
+        "textLength": 35,
+        "rawTextLength": 47,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/coding/#0",
+        "rendered": true,
+        "textLength": 84,
+        "rawTextLength": 84,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#1",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#2",
+        "rendered": true,
+        "textLength": 41,
+        "rawTextLength": 41,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#3",
+        "rendered": true,
+        "textLength": 80,
+        "rawTextLength": 80,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#4",
+        "rendered": true,
+        "textLength": 136,
+        "rawTextLength": 136,
+        "glyphRects": 4,
+        "noscriptSubtree": false,
+        "codes": []
+      }
+    ]
+  },
+  "new-bare-plans": {
+    "total": 852,
+    "failed": 4,
+    "failing": [
+      "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+      "§22c @360 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）"
+    ],
+    "metrics": {},
+    "sweep": {
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401
+    },
+    "upperBound": {
+      "ok": true,
+      "detail": "@1440 未渲染 13 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 12 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 13 条（文本 0 1 · note-unrendered 12 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+    },
+    "plansRows": [
+      {
+        "key": "plans/#0",
+        "rendered": false,
+        "textLength": 121,
+        "rawTextLength": 121,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#1",
+        "rendered": false,
+        "textLength": 66,
+        "rawTextLength": 66,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#2",
+        "rendered": false,
+        "textLength": 46,
+        "rawTextLength": 46,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#3",
+        "rendered": false,
+        "textLength": 92,
+        "rawTextLength": 92,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#4",
+        "rendered": false,
+        "textLength": 18,
+        "rawTextLength": 18,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#5",
+        "rendered": false,
+        "textLength": 79,
+        "rawTextLength": 79,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#6",
+        "rendered": false,
+        "textLength": 63,
+        "rawTextLength": 63,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#7",
+        "rendered": false,
+        "textLength": 32,
+        "rawTextLength": 32,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#8",
+        "rendered": false,
+        "textLength": 67,
+        "rawTextLength": 67,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#9",
+        "rendered": false,
+        "textLength": 12,
+        "rawTextLength": 12,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#10",
+        "rendered": false,
+        "textLength": 53,
+        "rawTextLength": 53,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/#11",
+        "rendered": false,
+        "textLength": 35,
+        "rawTextLength": 35,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": [
+          "note-unrendered"
+        ]
+      },
+      {
+        "key": "plans/coding/#0",
+        "rendered": true,
+        "textLength": 84,
+        "rawTextLength": 84,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#1",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#2",
+        "rendered": true,
+        "textLength": 41,
+        "rawTextLength": 41,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#3",
+        "rendered": true,
+        "textLength": 80,
+        "rawTextLength": 80,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#4",
+        "rendered": true,
+        "textLength": 136,
+        "rawTextLength": 136,
+        "glyphRects": 4,
+        "noscriptSubtree": false,
+        "codes": []
+      }
+    ]
+  },
+  "new-empty": {
+    "total": 852,
+    "failed": 1,
+    "failing": [
+      "/plans/ 互链到模型资料 / 历史档案 / 数据文档（枢纽页互链）"
+    ],
+    "metrics": {},
+    "sweep": {
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401
+    },
+    "upperBound": {
+      "ok": true,
+      "detail": "@1440 未渲染 13 条 = 可见文本 0 的 13 条 [plans/#0, plans/#1, plans/#2, plans/#3, plans/#4, plans/#5, plans/#6, plans/#7, plans/#8, plans/#9, plans/#10, plans/#11, plans/coding/#1] + note-unrendered 0 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 13 条（文本 0 13 · note-unrendered 0 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+    },
+    "plansRows": [
+      {
+        "key": "plans/#0",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#1",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#2",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#3",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#4",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#5",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#6",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#7",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#8",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#9",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#10",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#11",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#0",
+        "rendered": true,
+        "textLength": 84,
+        "rawTextLength": 84,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#1",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#2",
+        "rendered": true,
+        "textLength": 41,
+        "rawTextLength": 41,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#3",
+        "rendered": true,
+        "textLength": 80,
+        "rawTextLength": 80,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#4",
+        "rendered": true,
+        "textLength": 136,
+        "rawTextLength": 136,
+        "glyphRects": 4,
+        "noscriptSubtree": false,
+        "codes": []
+      }
+    ]
+  },
+  "old-empty": {
+    "total": 852,
+    "failed": 2,
+    "failing": [
+      "/plans/ 互链到模型资料 / 历史档案 / 数据文档（枢纽页互链）",
+      "§22c 未渲染说明：上界断言 —— <noscript> 之外不许有未渲染说明，且 unrenderedNotes 与 note-unrendered 判据一致"
+    ],
+    "metrics": {},
+    "sweep": {
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "unionPages": 0,
+      "hiddenText": 0,
+      "rows": 401
+    },
+    "upperBound": {
+      "ok": false,
+      "detail": "@1440 未渲染 13 条 = <noscript> 1 条 [plans/coding/#1] + note-unrendered 0 条 · 其它未渲染 12 条 · @1600 未渲染 13 条（<noscript> 1 · note-unrendered 0） · 违规条：plans/#0 plans/#1 plans/#2 plans/#3 plans/#4 plans/#5 plans/#6 plans/#7 plans/#8 plans/#9 plans/#10 plans/#11"
+    },
+    "plansRows": [
+      {
+        "key": "plans/#0",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#1",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#2",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#3",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#4",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#5",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#6",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#7",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#8",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#9",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#10",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/#11",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 0,
+        "glyphRects": 0,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#0",
+        "rendered": true,
+        "textLength": 84,
+        "rawTextLength": 84,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#1",
+        "rendered": false,
+        "textLength": 0,
+        "rawTextLength": 44,
+        "glyphRects": 0,
+        "noscriptSubtree": true,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#2",
+        "rendered": true,
+        "textLength": 41,
+        "rawTextLength": 41,
+        "glyphRects": 1,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#3",
+        "rendered": true,
+        "textLength": 80,
+        "rawTextLength": 80,
+        "glyphRects": 3,
+        "noscriptSubtree": false,
+        "codes": []
+      },
+      {
+        "key": "plans/coding/#4",
+        "rendered": true,
+        "textLength": 136,
+        "rawTextLength": 136,
+        "glyphRects": 4,
+        "noscriptSubtree": false,
+        "codes": []
+      }
+    ]
+  },
+  "nameDiff": {
+    "newNames": 852,
+    "oldNames": 852,
+    "removed": [
+      "§22c 未渲染说明：上界断言 —— <noscript> 之外不许有未渲染说明，且 unrenderedNotes 与 note-unrendered 判据一致"
+    ],
+    "added": [
+      "§22c 未渲染说明：上界断言 —— 未渲染条要么「可见文本为 0」，要么必须被 note-unrendered 咬中（两类不相交、并集完整、标记不豁免）"
+    ]
+  }
+}

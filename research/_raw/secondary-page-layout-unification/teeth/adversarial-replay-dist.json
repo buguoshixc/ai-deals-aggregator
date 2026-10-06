@@ -1,0 +1,3037 @@
+{
+  "generatedAt": "2026-10-06T08:16:19.413Z",
+  "dir": "dist",
+  "extracted": {
+    "file": "scripts/tools/verify-site.js",
+    "startAnchor": "const WIDE_TOL = 1;",
+    "endAnchor": "console.log('\\n=== 22c)",
+    "lines": "6151-6506",
+    "sha256": "892360b1cc006e9e82aa161aff52ba93bbf5c49716c5e3bddf144f4cae26cc0b"
+  },
+  "gateViewports": [
+    1440,
+    1600
+  ],
+  "flipRows": [
+    {
+      "id": "C0-control",
+      "route": "student/",
+      "width": 1440,
+      "original": "绿（对照✅）",
+      "originalRed": false,
+      "judgeRed": false,
+      "judgeCodes": [],
+      "gateCatches": false,
+      "flipped": false,
+      "note": ""
+    },
+    {
+      "id": "C0-narrow-all",
+      "route": "student/",
+      "width": 1440,
+      "original": "红 ✅有牙",
+      "originalRed": true,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#0",
+        "note-axis#0",
+        "note-narrow#1",
+        "note-axis#1",
+        "note-narrow#2",
+        "note-axis#2"
+      ],
+      "gateCatches": true,
+      "flipped": false,
+      "note": ""
+    },
+    {
+      "id": "B1-padded-wrapper",
+      "route": "student/",
+      "width": 1440,
+      "original": "红（假红：60px 内缩被 1px 轴判据误报）",
+      "originalRed": true,
+      "judgeRed": false,
+      "judgeCodes": [],
+      "gateCatches": false,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "B2-padded-tight",
+      "route": "student/",
+      "width": 1440,
+      "original": "红（假红：30px 内缩同类）",
+      "originalRed": true,
+      "judgeRed": false,
+      "judgeCodes": [],
+      "gateCatches": false,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "B3-450px-wrapper",
+      "route": "student/",
+      "width": 1440,
+      "original": "（本轮新增：450px 内缩的兼容性对偶）",
+      "originalRed": false,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#0",
+        "note-axis#0"
+      ],
+      "gateCatches": true,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "A1-partial-css",
+      "route": "student/",
+      "width": 1440,
+      "original": "绿 ⛔放行",
+      "originalRed": false,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#1",
+        "note-axis#1"
+      ],
+      "gateCatches": true,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "A2-partial-js",
+      "route": "student/",
+      "width": 1440,
+      "original": "绿 ⛔放行",
+      "originalRed": false,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#1",
+        "note-axis#1",
+        "note-narrow#2",
+        "note-axis#2"
+      ],
+      "gateCatches": true,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "A3-partial-changes",
+      "route": "changes/",
+      "width": 1440,
+      "original": "绿 ⛔放行",
+      "originalRed": false,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#1",
+        "note-axis#1",
+        "note-narrow#3",
+        "note-axis#3",
+        "note-narrow#4",
+        "note-axis#4"
+      ],
+      "gateCatches": true,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "A4-partial-siblings",
+      "route": "docs/data/",
+      "width": 1440,
+      "original": "绿 ⛔放行",
+      "originalRed": false,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#1",
+        "note-axis#1",
+        "note-narrow#2",
+        "note-axis#2",
+        "note-narrow#3",
+        "note-axis#3",
+        "note-narrow#4",
+        "note-axis#4",
+        "note-narrow#5",
+        "note-axis#5",
+        "note-narrow#6",
+        "note-axis#6",
+        "note-narrow#7",
+        "note-axis#7",
+        "note-narrow#8",
+        "note-axis#8"
+      ],
+      "gateCatches": true,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "A5-section-rules",
+      "route": "changes/",
+      "width": 1440,
+      "original": "绿 ⛔放行",
+      "originalRed": false,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#5",
+        "note-axis#5",
+        "note-narrow#6",
+        "note-axis#6",
+        "note-narrow#7",
+        "note-axis#7",
+        "note-narrow#8",
+        "note-axis#8",
+        "note-narrow#9",
+        "note-axis#9",
+        "note-narrow#10",
+        "note-axis#10",
+        "note-narrow#11",
+        "note-axis#11",
+        "note-narrow#12",
+        "note-axis#12"
+      ],
+      "gateCatches": true,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "C1-padding-right",
+      "route": "student/",
+      "width": 1440,
+      "original": "绿 ⛔放行",
+      "originalRed": false,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#0",
+        "note-narrow#1",
+        "note-narrow#2"
+      ],
+      "gateCatches": true,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "C1b-padding-both",
+      "route": "category/",
+      "width": 1440,
+      "original": "绿 ⛔放行",
+      "originalRed": false,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#0",
+        "note-narrow#1"
+      ],
+      "gateCatches": true,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "C1c-calc-70ch",
+      "route": "student/",
+      "width": 1440,
+      "original": "绿 ⛔放行",
+      "originalRed": false,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#0",
+        "note-narrow#1",
+        "note-narrow#2"
+      ],
+      "gateCatches": true,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "C1c-calc-70ch@1600",
+      "route": "student/",
+      "width": 1600,
+      "original": "（本轮新增：跨档复测）",
+      "originalRed": false,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#0",
+        "note-narrow#1",
+        "note-narrow#2"
+      ],
+      "gateCatches": true,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "C2-inner-block",
+      "route": "docs/data/",
+      "width": 1440,
+      "original": "绿 ⛔放行",
+      "originalRed": false,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#1",
+        "note-narrow#2",
+        "note-narrow#4",
+        "note-narrow#5",
+        "note-narrow#6",
+        "note-narrow#8"
+      ],
+      "gateCatches": true,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "C3-inner-wrapper",
+      "route": "student/",
+      "width": 1440,
+      "original": "绿 ⛔放行",
+      "originalRed": false,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#0"
+      ],
+      "gateCatches": true,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "C1-padding-right@1600",
+      "route": "student/",
+      "width": 1600,
+      "original": "（无原始判定）",
+      "originalRed": false,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#0",
+        "note-narrow#1",
+        "note-narrow#2"
+      ],
+      "gateCatches": true,
+      "flipped": true,
+      "note": ""
+    },
+    {
+      "id": "C4-no-main",
+      "route": "student/",
+      "width": 1440,
+      "original": "红（data-region-missing）",
+      "originalRed": true,
+      "judgeRed": true,
+      "judgeCodes": [
+        "data-region-missing"
+      ],
+      "gateCatches": true,
+      "flipped": false,
+      "note": ""
+    },
+    {
+      "id": "D1-media-1500@1440",
+      "route": "student/",
+      "width": 1440,
+      "original": "绿 ⛔放行",
+      "originalRed": false,
+      "judgeRed": false,
+      "judgeCodes": [],
+      "gateCatches": true,
+      "flipped": true,
+      "note": "1440 档媒体查询不生效（物理上无缺陷）；门禁新增的 1600 全站扫描咬到它"
+    },
+    {
+      "id": "D1-media-1500@1600",
+      "route": "student/",
+      "width": 1600,
+      "original": "红（判据没问题，是档位没量）",
+      "originalRed": true,
+      "judgeRed": true,
+      "judgeCodes": [
+        "note-narrow#0",
+        "note-axis#0",
+        "note-narrow#1",
+        "note-axis#1",
+        "note-narrow#2",
+        "note-axis#2"
+      ],
+      "gateCatches": true,
+      "flipped": false,
+      "note": ""
+    }
+  ],
+  "violations": [],
+  "results": [
+    {
+      "id": "C0-control",
+      "route": "student/",
+      "width": 1440,
+      "what": "不注入（现场基线）",
+      "injected": null,
+      "codes": [],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 1380,
+        "noteLeft": 30,
+        "noteRight": 1410,
+        "firstTextWidth": 1380,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1394.86,
+              "width": 1364.86,
+              "lines": 8
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52,
+              "lines": 4
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "messages": []
+    },
+    {
+      "id": "C0-narrow-all",
+      "route": "student/",
+      "width": 1440,
+      "what": "正对照：整页 .snote 全压回 70ch",
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow#0",
+        "note-axis#0",
+        "note-narrow#1",
+        "note-axis#1",
+        "note-narrow#2",
+        "note-axis#2"
+      ],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 452.81,
+        "noteLeft": 30,
+        "noteRight": 482.81,
+        "firstTextWidth": 453,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 481.09,
+              "width": 451.09,
+              "lines": 12
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 477.52,
+              "width": 447.52,
+              "lines": 6
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "messages": [
+        "student/#0 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 451.09px/9 行）",
+        "student/#0 说明 30..482.81 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "student/#1 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 61.64px/1 行）",
+        "student/#1 说明 30..482.81 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "student/#2 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 447.52px/5 行）",
+        "student/#2 说明 30..482.81 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）"
+      ]
+    },
+    {
+      "id": "B1-padded-wrapper",
+      "route": "student/",
+      "width": 1440,
+      "what": "说明外套 padding:0 60px 的容器（prompt §11 允许的少量差异 ⇒ 不该红）",
+      "injected": "evaluate",
+      "codes": [],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 1260,
+        "noteLeft": 90,
+        "noteRight": 1350,
+        "firstTextWidth": 1260,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 90,
+              "right": 1350,
+              "width": 1260
+            },
+            "text": {
+              "left": 90,
+              "right": 1346.86,
+              "width": 1256.86,
+              "lines": 8
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "div"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52,
+              "lines": 4
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "jsResult": 1260,
+      "messages": []
+    },
+    {
+      "id": "B2-padded-tight",
+      "route": "student/",
+      "width": 1440,
+      "what": "同上，padding 只留 30px",
+      "injected": "evaluate",
+      "codes": [],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 1320,
+        "noteLeft": 60,
+        "noteRight": 1380,
+        "firstTextWidth": 1320,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 60,
+              "right": 1380,
+              "width": 1320
+            },
+            "text": {
+              "left": 60,
+              "right": 1376.86,
+              "width": 1316.86,
+              "lines": 8
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "div"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52,
+              "lines": 4
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "jsResult": 1320,
+      "messages": []
+    },
+    {
+      "id": "B3-450px-wrapper",
+      "route": "student/",
+      "width": 1440,
+      "what": "本轮新增：450px 级内缩 ⇒ 必须由**宽判据**咬（不是轴判据）",
+      "injected": "evaluate",
+      "codes": [
+        "note-narrow#0",
+        "note-axis#0"
+      ],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 480,
+        "noteLeft": 480,
+        "noteRight": 960,
+        "firstTextWidth": 480,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 480,
+              "right": 960,
+              "width": 480
+            },
+            "text": {
+              "left": 480,
+              "right": 960,
+              "width": 480,
+              "lines": 12
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "div"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52,
+              "lines": 4
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "jsResult": 480,
+      "messages": [
+        "student/#0 有字区域宽 480px < 0.85 × 1380px（盒宽 480px · content box 480px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 480px/9 行）",
+        "student/#0 说明 480..960 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）"
+      ]
+    },
+    {
+      "id": "A1-partial-css",
+      "route": "student/",
+      "width": 1440,
+      "what": "只收窄 section 里的 .snote（第 2 条）",
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow#1",
+        "note-axis#1"
+      ],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 1380,
+        "noteLeft": 30,
+        "noteRight": 1410,
+        "firstTextWidth": 1380,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1394.86,
+              "width": 1364.86,
+              "lines": 8
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52,
+              "lines": 4
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "messages": [
+        "student/#1 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 61.64px/1 行）",
+        "student/#1 说明 30..482.81 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）"
+      ]
+    },
+    {
+      "id": "A2-partial-js",
+      "route": "student/",
+      "width": 1440,
+      "what": "行内样式只收窄第 2、3 条",
+      "injected": "evaluate",
+      "codes": [
+        "note-narrow#1",
+        "note-axis#1",
+        "note-narrow#2",
+        "note-axis#2"
+      ],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 1380,
+        "noteLeft": 30,
+        "noteRight": 1410,
+        "firstTextWidth": 1380,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1394.86,
+              "width": 1364.86,
+              "lines": 8
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 477.52,
+              "width": 447.52,
+              "lines": 6
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "jsResult": [
+        1380,
+        453,
+        453
+      ],
+      "messages": [
+        "student/#1 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 61.64px/1 行）",
+        "student/#1 说明 30..482.81 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "student/#2 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 447.52px/5 行）",
+        "student/#2 说明 30..482.81 与主数据区 .ctable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）"
+      ]
+    },
+    {
+      "id": "A3-partial-changes",
+      "route": "changes/",
+      "width": 1440,
+      "what": "changes/（13 条）只收窄首个之外的",
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow#1",
+        "note-axis#1",
+        "note-narrow#3",
+        "note-axis#3",
+        "note-narrow#4",
+        "note-axis#4"
+      ],
+      "geometry": {
+        "noteCount": 13,
+        "noteWidth": 1380,
+        "noteLeft": 30,
+        "noteRight": 1410,
+        "firstTextWidth": 1380,
+        "regionSel": ".chgsec",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 13,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 728.09,
+              "width": 698.09,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgdeals"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 475.09,
+              "width": 445.09,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgdeals"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 606,
+              "width": 576,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "details.chgother"
+          },
+          {
+            "i": 3,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 481.52,
+              "width": 451.52,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgdeals"
+          },
+          {
+            "i": 4,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 474,
+              "width": 444,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgdeals"
+          },
+          {
+            "i": 5,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 433.92,
+              "width": 403.92,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 6,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 258,
+              "width": 228,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "div.chgsub"
+          },
+          {
+            "i": 7,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 186,
+              "width": 156,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "div.chgsub"
+          },
+          {
+            "i": 8,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 966,
+              "width": 936,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 9,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 479.09,
+              "width": 449.09,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 10,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 306.23,
+              "width": 276.23,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "div.chgsub"
+          },
+          {
+            "i": 11,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 234.23,
+              "width": 204.23,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "div.chgsub"
+          },
+          {
+            "i": 12,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1002.23,
+              "width": 972.23,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          }
+        ]
+      },
+      "messages": [
+        "changes/#1 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .chgsec 1380px · 页面列 1380px · 字迹 445.09px/2 行）",
+        "changes/#1 说明 30..482.81 与主数据区 .chgsec 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "changes/#3 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .chgsec 1380px · 页面列 1380px · 字迹 451.52px/1 行）",
+        "changes/#3 说明 30..482.81 与主数据区 .chgsec 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "changes/#4 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .chgsec 1380px · 页面列 1380px · 字迹 444px/2 行）",
+        "changes/#4 说明 30..482.81 与主数据区 .chgsec 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）"
+      ]
+    },
+    {
+      "id": "A4-partial-siblings",
+      "route": "docs/data/",
+      "width": 1440,
+      "what": "docs/data/（9 条）相邻兄弟选择器收窄首个之外的全部",
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow#1",
+        "note-axis#1",
+        "note-narrow#2",
+        "note-axis#2",
+        "note-narrow#3",
+        "note-axis#3",
+        "note-narrow#4",
+        "note-axis#4",
+        "note-narrow#5",
+        "note-axis#5",
+        "note-narrow#6",
+        "note-axis#6",
+        "note-narrow#7",
+        "note-axis#7",
+        "note-narrow#8",
+        "note-axis#8"
+      ],
+      "geometry": {
+        "noteCount": 9,
+        "noteWidth": 1380,
+        "noteLeft": 30,
+        "noteRight": 1410,
+        "firstTextWidth": 1380,
+        "regionSel": ".ptable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 9,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1256.53,
+              "width": 1226.53,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 473.52,
+              "width": 443.52,
+              "lines": 9
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 478.8,
+              "width": 448.8,
+              "lines": 13
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 3,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 474.69,
+              "width": 444.69,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 4,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 181.16,
+              "width": 151.16,
+              "lines": 3
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 5,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 202.53,
+              "width": 172.53,
+              "lines": 3
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 6,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 438,
+              "width": 408,
+              "lines": 4
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 7,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 66,
+              "width": 36,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 8,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 478.28,
+              "width": 448.28,
+              "lines": 15
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "messages": [
+        "docs/data/#1 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 443.52px/7 行）",
+        "docs/data/#1 说明 30..482.81 与主数据区 .ptable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "docs/data/#2 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 448.8px/9 行）",
+        "docs/data/#2 说明 30..482.81 与主数据区 .ptable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "docs/data/#3 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 444.69px/2 行）",
+        "docs/data/#3 说明 30..482.81 与主数据区 .ptable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "docs/data/#4 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 151.16px/2 行）",
+        "docs/data/#4 说明 30..482.81 与主数据区 .ptable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "docs/data/#5 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 172.53px/2 行）",
+        "docs/data/#5 说明 30..482.81 与主数据区 .ptable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "docs/data/#6 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 408px/3 行）",
+        "docs/data/#6 说明 30..482.81 与主数据区 .ptable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "docs/data/#7 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 36px/1 行）",
+        "docs/data/#7 说明 30..482.81 与主数据区 .ptable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "docs/data/#8 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 448.28px/10 行）",
+        "docs/data/#8 说明 30..482.81 与主数据区 .ptable 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）"
+      ]
+    },
+    {
+      "id": "A5-section-rules",
+      "route": "changes/",
+      "width": 1440,
+      "what": "changes/ 分节里的 .snote 另加一条收窄规则（冻结串仍 1 次）",
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow#5",
+        "note-axis#5",
+        "note-narrow#6",
+        "note-axis#6",
+        "note-narrow#7",
+        "note-axis#7",
+        "note-narrow#8",
+        "note-axis#8",
+        "note-narrow#9",
+        "note-axis#9",
+        "note-narrow#10",
+        "note-axis#10",
+        "note-narrow#11",
+        "note-axis#11",
+        "note-narrow#12",
+        "note-axis#12"
+      ],
+      "geometry": {
+        "noteCount": 13,
+        "noteWidth": 1380,
+        "noteLeft": 30,
+        "noteRight": 1410,
+        "firstTextWidth": 1380,
+        "regionSel": ".chgsec",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 13,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 728.09,
+              "width": 698.09,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgdeals"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 511.09,
+              "width": 481.09,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgdeals"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 606,
+              "width": 576,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "details.chgother"
+          },
+          {
+            "i": 3,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 481.52,
+              "width": 451.52,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgdeals"
+          },
+          {
+            "i": 4,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 846,
+              "width": 816,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgdeals"
+          },
+          {
+            "i": 5,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 433.92,
+              "width": 403.92,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 6,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 258,
+              "width": 228,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "div.chgsub"
+          },
+          {
+            "i": 7,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 186,
+              "width": 156,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "div.chgsub"
+          },
+          {
+            "i": 8,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 474,
+              "width": 444,
+              "lines": 3
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 9,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 479.09,
+              "width": 449.09,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 10,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 306.23,
+              "width": 276.23,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "div.chgsub"
+          },
+          {
+            "i": 11,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 234.23,
+              "width": 204.23,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "div.chgsub"
+          },
+          {
+            "i": 12,
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 30,
+              "right": 474.23,
+              "width": 444.23,
+              "lines": 3
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          }
+        ]
+      },
+      "messages": [
+        "changes/#5 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .chgsec 1380px · 页面列 1380px · 字迹 403.92px/1 行）",
+        "changes/#5 说明 30..482.81 与主数据区 .chgsec 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "changes/#6 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .chgsec 1380px · 页面列 1380px · 字迹 228px/1 行）",
+        "changes/#6 说明 30..482.81 与主数据区 .chgsec 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "changes/#7 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .chgsec 1380px · 页面列 1380px · 字迹 156px/1 行）",
+        "changes/#7 说明 30..482.81 与主数据区 .chgsec 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "changes/#8 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .chgsec 1380px · 页面列 1380px · 字迹 444px/3 行）",
+        "changes/#8 说明 30..482.81 与主数据区 .chgsec 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "changes/#9 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .chgsec 1380px · 页面列 1380px · 字迹 449.09px/1 行）",
+        "changes/#9 说明 30..482.81 与主数据区 .chgsec 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "changes/#10 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .chgsec 1380px · 页面列 1380px · 字迹 276.23px/1 行）",
+        "changes/#10 说明 30..482.81 与主数据区 .chgsec 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "changes/#11 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .chgsec 1380px · 页面列 1380px · 字迹 204.23px/1 行）",
+        "changes/#11 说明 30..482.81 与主数据区 .chgsec 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "changes/#12 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .chgsec 1380px · 页面列 1380px · 字迹 444.23px/3 行）",
+        "changes/#12 说明 30..482.81 与主数据区 .chgsec 30..1410 / 页面主容器 <main> 30..1410 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）"
+      ]
+    },
+    {
+      "id": "C1-padding-right",
+      "route": "student/",
+      "width": 1440,
+      "what": "盒宽一字不动，padding-right 把有字区域压成 480px",
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow#0",
+        "note-narrow#1",
+        "note-narrow#2"
+      ],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 1380,
+        "noteLeft": 30,
+        "noteRight": 1410,
+        "firstTextWidth": 480,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 510,
+              "width": 480,
+              "lines": 12
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "900px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "900px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 510,
+              "width": 480,
+              "lines": 6
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "900px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "messages": [
+        "student/#0 有字区域宽 480px < 0.85 × 1380px（盒宽 1380px · content box 480px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 480px/9 行）",
+        "student/#1 有字区域宽 480px < 0.85 × 1380px（盒宽 1380px · content box 480px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 61.64px/1 行）",
+        "student/#2 有字区域宽 480px < 0.85 × 1380px（盒宽 1380px · content box 480px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 480px/5 行）"
+      ]
+    },
+    {
+      "id": "C1b-padding-both",
+      "route": "category/",
+      "width": 1440,
+      "what": "两侧 padding 各 450px（居中窄柱）",
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow#0",
+        "note-narrow#1"
+      ],
+      "geometry": {
+        "noteCount": 2,
+        "noteWidth": 1380,
+        "noteLeft": 30,
+        "noteRight": 1410,
+        "firstTextWidth": 480,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 2,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 480,
+              "right": 956.88,
+              "width": 476.88,
+              "lines": 10
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "450px",
+              "paddingRight": "450px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 480,
+              "right": 949.53,
+              "width": 469.53,
+              "lines": 5
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "450px",
+              "paddingRight": "450px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "messages": [
+        "category/#0 有字区域宽 480px < 0.85 × 1380px（盒宽 1380px · content box 480px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 476.88px/8 行）",
+        "category/#1 有字区域宽 480px < 0.85 × 1380px（盒宽 1380px · content box 480px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 469.53px/4 行）"
+      ]
+    },
+    {
+      "id": "C1c-calc-70ch",
+      "route": "student/",
+      "width": 1440,
+      "what": "★ blocker 原型：有字区域恒等于 70ch、border-box 一字不动",
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow#0",
+        "note-narrow#1",
+        "note-narrow#2"
+      ],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 1380,
+        "noteLeft": 30,
+        "noteRight": 1410,
+        "firstTextWidth": 452.81,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 481.09,
+              "width": 451.09,
+              "lines": 12
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "927.188px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "927.188px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 477.52,
+              "width": 447.52,
+              "lines": 6
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "927.188px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "messages": [
+        "student/#0 有字区域宽 452.81px < 0.85 × 1380px（盒宽 1380px · content box 452.81px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 451.09px/9 行）",
+        "student/#1 有字区域宽 452.81px < 0.85 × 1380px（盒宽 1380px · content box 452.81px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 61.64px/1 行）",
+        "student/#2 有字区域宽 452.81px < 0.85 × 1380px（盒宽 1380px · content box 452.81px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 447.52px/5 行）"
+      ]
+    },
+    {
+      "id": "C1c-calc-70ch@1600",
+      "route": "student/",
+      "width": 1600,
+      "what": "本轮新增：C1c 在 1600 档复测",
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow#0",
+        "note-narrow#1",
+        "note-narrow#2"
+      ],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 1380,
+        "noteLeft": 110,
+        "noteRight": 1490,
+        "firstTextWidth": 452.81,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1600,
+        "clientWidth": 1600
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 110,
+              "right": 1490,
+              "width": 1380
+            },
+            "text": {
+              "left": 110,
+              "right": 561.09,
+              "width": 451.09,
+              "lines": 12
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "927.188px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 110,
+              "right": 1490,
+              "width": 1380
+            },
+            "text": {
+              "left": 110,
+              "right": 171.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "927.188px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 110,
+              "right": 1490,
+              "width": 1380
+            },
+            "text": {
+              "left": 110,
+              "right": 557.52,
+              "width": 447.52,
+              "lines": 6
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "927.188px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "messages": [
+        "student/#0 有字区域宽 452.81px < 0.85 × 1380px（盒宽 1380px · content box 452.81px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 451.09px/9 行）",
+        "student/#1 有字区域宽 452.81px < 0.85 × 1380px（盒宽 1380px · content box 452.81px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 61.64px/1 行）",
+        "student/#2 有字区域宽 452.81px < 0.85 × 1380px（盒宽 1380px · content box 452.81px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 447.52px/5 行）"
+      ]
+    },
+    {
+      "id": "C2-inner-block",
+      "route": "docs/data/",
+      "width": 1440,
+      "what": "说明的子元素块级化并压到 70ch",
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow#1",
+        "note-narrow#2",
+        "note-narrow#4",
+        "note-narrow#5",
+        "note-narrow#6",
+        "note-narrow#8"
+      ],
+      "geometry": {
+        "noteCount": 9,
+        "noteWidth": 1380,
+        "noteLeft": 30,
+        "noteRight": 1410,
+        "firstTextWidth": 1380,
+        "regionSel": ".ptable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 9,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1256.53,
+              "width": 1226.53,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 858.78,
+              "width": 828.78,
+              "lines": 7
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 766.34,
+              "width": 736.34,
+              "lines": 12
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 3,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 522.69,
+              "width": 492.69,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 4,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81,
+              "lines": 3
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 5,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81,
+              "lines": 3
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 6,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 513.16,
+              "width": 483.16,
+              "lines": 4
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 7,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 66,
+              "width": 36,
+              "lines": 1
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 8,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81,
+              "lines": 15
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "messages": [
+        "docs/data/#1 有字区域宽 453px < 0.85 × 1380px（盒宽 1380px · content box 1380px · 承载文本块 3 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 828.78px/5 行）",
+        "docs/data/#2 有字区域宽 462px < 0.85 × 1380px（盒宽 1380px · content box 1380px · 承载文本块 5 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 736.34px/8 行）",
+        "docs/data/#4 有字区域宽 453px < 0.85 × 1380px（盒宽 1380px · content box 1380px · 承载文本块 2 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 99.28px/2 行）",
+        "docs/data/#5 有字区域宽 453px < 0.85 × 1380px（盒宽 1380px · content box 1380px · 承载文本块 2 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 99.28px/2 行）",
+        "docs/data/#6 有字区域宽 483px < 0.85 × 1380px（盒宽 1380px · content box 1380px · 承载文本块 2 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 264px/3 行）",
+        "docs/data/#8 有字区域宽 453px < 0.85 × 1380px（盒宽 1380px · content box 1380px · 承载文本块 6 个 · 主数据区 .ptable 1380px · 页面列 1380px · 字迹 120.23px/10 行）"
+      ]
+    },
+    {
+      "id": "C3-inner-wrapper",
+      "route": "student/",
+      "width": 1440,
+      "what": "把说明的**内容**装进 max-width:70ch 的容器（盒子丝毫不动）",
+      "injected": "evaluate",
+      "codes": [
+        "note-narrow#0"
+      ],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 1380,
+        "noteLeft": 30,
+        "noteRight": 1410,
+        "firstTextWidth": 453,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81,
+              "lines": 10
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52,
+              "lines": 4
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "jsResult": 453,
+      "messages": [
+        "student/#0 有字区域宽 453px < 0.85 × 1380px（盒宽 1380px · content box 1380px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 451.09px/9 行）"
+      ]
+    },
+    {
+      "id": "C1-padding-right@1600",
+      "route": "student/",
+      "width": 1600,
+      "what": "C1 在 1600 档复测",
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow#0",
+        "note-narrow#1",
+        "note-narrow#2"
+      ],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 1380,
+        "noteLeft": 110,
+        "noteRight": 1490,
+        "firstTextWidth": 480,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1600,
+        "clientWidth": 1600
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 110,
+              "right": 1490,
+              "width": 1380
+            },
+            "text": {
+              "left": 110,
+              "right": 590,
+              "width": 480,
+              "lines": 12
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "900px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 110,
+              "right": 1490,
+              "width": 1380
+            },
+            "text": {
+              "left": 110,
+              "right": 171.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "900px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 110,
+              "right": 1490,
+              "width": 1380
+            },
+            "text": {
+              "left": 110,
+              "right": 590,
+              "width": 480,
+              "lines": 6
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "900px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "messages": [
+        "student/#0 有字区域宽 480px < 0.85 × 1380px（盒宽 1380px · content box 480px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 480px/9 行）",
+        "student/#1 有字区域宽 480px < 0.85 × 1380px（盒宽 1380px · content box 480px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 61.64px/1 行）",
+        "student/#2 有字区域宽 480px < 0.85 × 1380px（盒宽 1380px · content box 480px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 480px/5 行）"
+      ]
+    },
+    {
+      "id": "C4-no-main",
+      "route": "student/",
+      "width": 1440,
+      "what": "把 <main> 拿掉 ⇒ 必须判 data-region-missing",
+      "injected": "evaluate",
+      "codes": [
+        "data-region-missing"
+      ],
+      "geometry": {
+        "noteCount": 0,
+        "noteWidth": 0,
+        "noteLeft": 0,
+        "noteRight": 0,
+        "firstTextWidth": null,
+        "regionSel": null,
+        "regionWidth": 0,
+        "mainWidth": 0,
+        "column": 0,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 0,
+        "notes": []
+      },
+      "jsResult": "main 已移除",
+      "messages": [
+        "没有唯一的 <main>（0 个）—— 主数据区与回落锚点都不存在"
+      ]
+    },
+    {
+      "id": "D1-media-1500@1440",
+      "route": "student/",
+      "width": 1440,
+      "what": "缺陷藏在 @media(min-width:1500px) 里，在 1440 档量（物理上无缺陷）",
+      "injected": "addStyleTag",
+      "codes": [],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 1380,
+        "noteLeft": 30,
+        "noteRight": 1410,
+        "firstTextWidth": 1380,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1394.86,
+              "width": 1364.86,
+              "lines": 8
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380
+            },
+            "text": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52,
+              "lines": 4
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "messages": []
+    },
+    {
+      "id": "D1-media-1500@1600",
+      "route": "student/",
+      "width": 1600,
+      "what": "同一注入，在**门禁新增的 1600 档**量",
+      "injected": "addStyleTag",
+      "codes": [
+        "note-narrow#0",
+        "note-axis#0",
+        "note-narrow#1",
+        "note-axis#1",
+        "note-narrow#2",
+        "note-axis#2"
+      ],
+      "geometry": {
+        "noteCount": 3,
+        "noteWidth": 452.81,
+        "noteLeft": 110,
+        "noteRight": 562.81,
+        "firstTextWidth": 453,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "mainWidth": 1380,
+        "column": 1380,
+        "frozenCount": 1,
+        "scrollWidth": 1600,
+        "clientWidth": 1600
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 110,
+              "right": 562.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 110,
+              "right": 561.09,
+              "width": 451.09,
+              "lines": 12
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 110,
+              "right": 562.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 110,
+              "right": 171.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 110,
+              "right": 562.81,
+              "width": 452.81
+            },
+            "text": {
+              "left": 110,
+              "right": 557.52,
+              "width": 447.52,
+              "lines": 6
+            },
+            "style": {
+              "maxWidth": "452.812px",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "messages": [
+        "student/#0 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 451.09px/9 行）",
+        "student/#0 说明 110..562.81 与主数据区 .ctable 110..1490 / 页面主容器 <main> 110..1490 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "student/#1 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 0 个 · textFallback 回落 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 61.64px/1 行）",
+        "student/#1 说明 110..562.81 与主数据区 .ctable 110..1490 / 页面主容器 <main> 110..1490 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）",
+        "student/#2 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 1380px · 页面列 1380px · 字迹 447.52px/5 行）",
+        "student/#2 说明 110..562.81 与主数据区 .ctable 110..1490 / 页面主容器 <main> 110..1490 都不在同一轴上（容差 max(1px, 0.05 × 1380px) = 69px）"
+      ]
+    },
+    {
+      "id": "ALIAS-notes",
+      "aliasRoutes": [
+        {
+          "route": "need/dev-credits/",
+          "codes": [],
+          "noteCount": 3,
+          "firstBox": 1380,
+          "firstTextWidth": 1369
+        },
+        {
+          "route": "need/free-api/",
+          "codes": [],
+          "noteCount": 3,
+          "firstBox": 1380,
+          "firstTextWidth": 1369
+        },
+        {
+          "route": "need/student-only/",
+          "codes": [],
+          "noteCount": 3,
+          "firstBox": 1380,
+          "firstTextWidth": 1369
+        }
+      ],
+      "codes": []
+    },
+    {
+      "id": "guard",
+      "rows": [
+        {
+          "id": "G0-absent",
+          "anchor": "（不存在的锚点）",
+          "result": {
+            "ok": false,
+            "occurrences": 0,
+            "reason": "锚点在内联样式里出现 0 次（必须恰好 1 次）"
+          }
+        },
+        {
+          "id": "G1-many",
+          "anchor": "color: var(--mut);",
+          "result": {
+            "ok": false,
+            "occurrences": 61,
+            "reason": "锚点在内联样式里出现 61 次（必须恰好 1 次）"
+          }
+        },
+        {
+          "id": "G3-exactly-2",
+          "anchor": "WIDE_SNOTE_FROZEN（页面里出现 2 次）",
+          "result": {
+            "ok": false,
+            "occurrences": 2,
+            "reason": "锚点在内联样式里出现 2 次（必须恰好 1 次）"
+          },
+          "occurrences": 2
+        },
+        {
+          "id": "G2-unique",
+          "anchor": "WIDE_SNOTE_FROZEN（真实锚点，唯一）",
+          "result": {
+            "ok": true,
+            "occurrences": 1
+          },
+          "effect": {
+            "maxWidth": "452.812px",
+            "width": 452.81
+          }
+        }
+      ]
+    }
+  ]
+}

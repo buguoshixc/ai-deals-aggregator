@@ -1,0 +1,357 @@
+{
+  "tool": "secondary-page-layout-unification/online-smoke",
+  "schemaVersion": 1,
+  "at": "2026-10-06T08:53:17.082Z",
+  "node": "v24.13.1",
+  "playwrightCore": "1.63.0",
+  "mode": "online",
+  "base": "http://127.0.0.1:53876/ai-deals-aggregator/",
+  "dir": null,
+  "derivation": {
+    "source": "sitemap:http",
+    "fallback": false,
+    "rootPrefix": "/ai-deals-aggregator/",
+    "sitemapLocs": 183,
+    "dealRoutes": 80,
+    "modelRoutes": 51,
+    "dealRoute": "deal/2eae0e246de2/",
+    "modelRoute": "models/claude-fable-5.1/",
+    "note": "deal id / model slug 全部现场推导（线上 sitemap.xml / 本地 <dir>/sitemap.xml，退路 deals.json / models.json），脚本里不写死任何 id；/models/ 索引本身在正则层被排除（^models/<slug>/$）"
+  },
+  "thresholds": {
+    "noteRatio": 0.85,
+    "axisRatio": 0.05,
+    "tol": 1,
+    "detailColumnMax": 1120,
+    "detailCenterTol": 8,
+    "viewports": [
+      1440,
+      390
+    ]
+  },
+  "frozenSnoteRule": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+  "pages": [
+    {
+      "route": "student/",
+      "url": "http://127.0.0.1:53876/ai-deals-aggregator/student/",
+      "family": "wide",
+      "requireNotes": true,
+      "why": "宽数据页；曾被压成 70ch 的四个壳之一（§22c M1–M4 变异靶页）",
+      "status": 200,
+      "desktop": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".ctable",
+        "regionFallback": false,
+        "region": {
+          "left": 30,
+          "right": 1410,
+          "width": 1380,
+          "scrollW": 1380,
+          "clientW": 1380,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 0,
+        "noteCount": 3,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页收的是来源明确说面向学生的优惠：audience 写了 s",
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81,
+              "scrollW": 453,
+              "clientW": 453,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "452.812px",
+              "overflowWrap": "normal",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 453,
+            "textWidth": 453,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 481.09,
+              "width": 451.09,
+              "lines": 9
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81,
+              "scrollW": 453,
+              "clientW": 453,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "452.812px",
+              "overflowWrap": "normal",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 453,
+            "textWidth": 453,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 1
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（",
+            "box": {
+              "left": 30,
+              "right": 482.81,
+              "width": 452.81,
+              "scrollW": 453,
+              "clientW": 453,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "452.812px",
+              "overflowWrap": "normal",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 453,
+            "textWidth": 453,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 30,
+              "right": 477.52,
+              "width": 447.52,
+              "lines": 5
+            }
+          }
+        ]
+      },
+      "narrow": {
+        "doc": {
+          "innerWidth": 390,
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "mainCount": 1,
+        "detailMainCount": 0,
+        "mainClass": "",
+        "main": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".ctable",
+        "regionFallback": false,
+        "region": {
+          "left": 16,
+          "right": 437.3,
+          "width": 421.3,
+          "scrollW": 421,
+          "clientW": 421,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 0,
+        "noteCount": 3,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页收的是来源明确说面向学生的优惠：audience 写了 s",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "452.812px",
+              "overflowWrap": "normal",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 367.3,
+              "width": 351.3,
+              "lines": 11
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "452.812px",
+              "overflowWrap": "normal",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": true,
+            "bearingCount": 0,
+            "ink": {
+              "left": 16,
+              "right": 77.64,
+              "width": 61.64,
+              "lines": 1
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "452.812px",
+              "overflowWrap": "normal",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 367.52,
+              "width": 351.52,
+              "lines": 5
+            }
+          }
+        ]
+      },
+      "externalRequests": []
+    }
+  ],
+  "checks": [
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "HTTP 200",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族）",
+      "ok": false,
+      "detail": "#0 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · 主数据区 .ctable 1380px · 页面列 1380px）；#0 说明盒 30~482.81 与主数据区（30~1410） 和 <main>（30~1410）都不在同一轴（容差 69px）；#1 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · 主数据区 .ctable 1380px · 页面列 1380px · textFallback 回落）；#1 说明盒 30~482.81 与主数据区（30~1410） 和 <main>（30~1410）都不在同一轴（容差 69px）；#2 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · 主数据区 .ctable 1380px · 页面列 1380px）；#2 说明盒 30~482.81 与主数据区（30~1410） 和 <main>（30~1410）都不在同一轴（容差 69px）"
+    },
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物）",
+      "ok": false,
+      "detail": "frozenCount=0（旧产物 = 0；页面壳又复制第二份 = ≥2）"
+    },
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言）",
+      "ok": true,
+      "detail": "noteCount=3"
+    },
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "说明 #0 有字区域 / ratio / 左右边缘",
+      "ok": false,
+      "detail": "textWidth=453px · 盒 30~482.81（452.81px）· 列 1380px · ratio=0.328 · 字迹 451.09px/9 行 · 文本「这一页收的是来源明确说面向学生的优惠：audience 写了 s」"
+    },
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "说明 #1 有字区域 / ratio / 左右边缘",
+      "ok": false,
+      "detail": "textWidth=453px · 盒 30~482.81（452.81px）· 列 1380px · ratio=0.328 · 字迹 61.64px/1 行 · 文本「全部变化 →」"
+    },
+    {
+      "page": "student/",
+      "viewport": 1440,
+      "name": "说明 #2 有字区域 / ratio / 左右边缘",
+      "ok": false,
+      "detail": "textWidth=453px · 盒 30~482.81（452.81px）· 列 1380px · ratio=0.328 · 字迹 447.52px/5 行 · 文本「分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（」"
+    },
+    {
+      "page": "student/",
+      "viewport": 390,
+      "name": "documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出）",
+      "ok": true,
+      "detail": "scrollWidth=390 · clientWidth=390 · innerWidth=390"
+    }
+  ],
+  "ok": false,
+  "failed": 5,
+  "browser": {
+    "executablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+  },
+  "externalRequests": {
+    "origins": [],
+    "enforced": false
+  }
+}

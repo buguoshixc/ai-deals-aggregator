@@ -1,0 +1,323 @@
+{
+  "dist": {
+    "exitEvidence": {
+      "total": 848,
+      "failed": 0
+    },
+    "layoutNotes": 401,
+    "layoutNotesAt1600": 401,
+    "rowsWithCodes": 0,
+    "notesMissingReadings": 0,
+    "codesHistogram": {},
+    "sweep": {
+      "narrow": 0,
+      "ink": 0,
+      "union": 0,
+      "hiddenText": 0,
+      "unrendered": 1
+    },
+    "singleLineCount1440": 319,
+    "singleLineCount1600": 319,
+    "withoutLineGate1440": 319,
+    "withoutLineGate1600": 319,
+    "ch70Values1440": [
+      null
+    ],
+    "lineCountMin": 0,
+    "noteNarrowPages": 0
+  },
+  "baseline": {
+    "exitEvidence": {
+      "total": 848,
+      "failed": 33
+    },
+    "narrowCount": 156,
+    "inkCount": 108,
+    "unionCount": 156,
+    "unionPages": 48,
+    "narrowPages": 48,
+    "inkPages": 48,
+    "allNarrowBoxWidth45281": true,
+    "narrowWidths": [
+      452.81
+    ],
+    "narrowSingleLine": 48,
+    "narrowMultiLine": 108,
+    "inkSingleLine": 0,
+    "inkMinusNarrow": 0,
+    "truthMinusReport": 0,
+    "reportMinusTruth": 0,
+    "truthNarrowEqualsReportNarrow": true,
+    "caughtByOldCriteria_allMultiLine": true,
+    "caughtByOldCriteria_allInked": true,
+    "caughtByOldCriteria_allNarrowCode": true,
+    "caughtByOldCriteria_lineCounts": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "onlyNewTruth_singleLine": 48,
+    "onlyNewTruth_multiLine": 60,
+    "truthCaughtByOld_singleLineIn123El": 0,
+    "truthCaughtIntersectSingleLineOfReport": 0,
+    "alreadyFineFalsePositives": 0,
+    "ch70Values": [
+      null
+    ],
+    "sample760": {
+      "ok": false,
+      "head": "196 条违规码 [category/#0 note-narrow, category/#0 note-ink-narrow, category/#0 note-axis, category/#1 note-narrow, category",
+      "codeCount": "196"
+    },
+    "sample360": {
+      "ok": true,
+      "detail": "0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ n"
+    },
+    "sweep": [
+      {
+        "width": 760,
+        "minColumn": 676,
+        "maxColumn": 728,
+        "ch70": [
+          452.81
+        ],
+        "inkScope": true
+      },
+      {
+        "width": 360,
+        "minColumn": 276,
+        "maxColumn": 328,
+        "ch70": [
+          452.81
+        ],
+        "inkScope": false
+      }
+    ],
+    "layoutNotes": 401
+  },
+  "oldVsNewBaseline": {
+    "newTotal": 848,
+    "newFailed": 33,
+    "oldTotal": 848,
+    "oldFailed": 33,
+    "onlyNew": [
+      "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）"
+    ],
+    "onlyOld": [
+      "§22c @760 样本集 29 页（旧口径 textWidth + 同轴 / 不裁切 / 不溢出；逐行字迹只在桌面档判）"
+    ],
+    "sameFailingSet": false,
+    "oldSample760": {
+      "ok": false,
+      "head": "category/#0 note-narrow：category/#0 有字区域宽（内容盒代理量）453px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 452.81px · 内容盒 453px · 行 4 行（最宽一行 447.3px） · 字形盒 8 个 · 列宽 728px · 阈值 618.8px（主数据区 .ctable 728px / 页面列 728px）；category/#0 note-axis：catego"
+    },
+    "oldSample360": {
+      "ok": true,
+      "detail": "0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ n"
+    },
+    "newSample760Keys": 196,
+    "oldSweep": {
+      "narrow": 156,
+      "ink": 108,
+      "union": 156,
+      "hiddenText": 0,
+      "unrendered": 1
+    },
+    "newSweep": {
+      "narrow": 156,
+      "ink": 108,
+      "union": 156,
+      "hiddenText": 0,
+      "unrendered": 1
+    },
+    "failedNames": [
+      "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+      "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+      "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+      "§22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））",
+      "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））",
+      "§22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄））",
+      "§22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄））",
+      "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+      "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条））",
+      "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级",
+      "§22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M9a 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（相邻兄弟选择器））",
+      "§22c M9a 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M9b 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（:not(:first-of-type)））",
+      "§22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+      "§22c M11 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M11 变异后复测必须出现「note-ink-narrow」违规码（t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条））",
+      "§22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码",
+      "§22c M12 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "§22c M12 变异后复测必须出现「note-hidden-text」违规码（t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿）",
+      "§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text",
+      "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+      "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条 note-narrow 都没有"
+    ]
+  },
+  "clean": {
+    "total": 848,
+    "failed": 0,
+    "failingNames": [],
+    "sample760": {
+      "ok": true,
+      "keys": "",
+      "widths": []
+    },
+    "sample360": {
+      "ok": true,
+      "detail": "0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ mode"
+    },
+    "inkNarrow": 0,
+    "union": 0
+  },
+  "grid760": {
+    "new": {
+      "total": 848,
+      "failed": 2,
+      "failingNames": [
+        "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+        "§22c @360 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）"
+      ],
+      "sample760": {
+        "ok": false,
+        "codes": "157",
+        "keys": "archive/#0 note-ink-narrow, archive/#4 note-narrow, archive/#4 note-ink-narrow, category/#0 note-narrow, category/#0 note-ink-narrow, category/#1 note-narrow, category/#1 note-ink-narrow, category/agent/#0 note-narrow, category/agent/#0 note-ink-narrow, category/agent/#1 note-narrow, category/agent/#2 note-narrow, category/agent/#2 note-ink-narrow, changes/#0 note-ink-narrow, changes/#1 note-ink-narrow, changes/#2 note-ink-narrow, changes/#4 note-ink-narrow, changes/#8 note-ink-narrow, changes/#12 note-ink-narrow, developer/#0 note-narrow, developer/#1 note-narrow, developer/#2 note-narrow, developer/#2 note-ink-narrow, docs/data/#0 note-ink-narrow, docs/data/#1 note-narrow, docs/data/#1 note-ink-narrow, docs/data/#2 note-narrow, docs/data/#3 note-ink-narrow, docs/data/#4 note-narrow, docs/data/#5 note-narrow, docs/data/#6 note-narrow, docs/data/#6 note-ink-narrow, docs/data/#8 note-narrow, docs/data/#8 note-ink-narrow, feeds/#0 note-ink-narrow, feeds/#1 note-narrow, feeds/#1 note-ink-narrow, feeds/#2 note-narrow, feeds/#2 note-ink-narrow, feeds/#3 note-ink-narrow, feeds/#4 note-narrow, feeds/#4 note-ink-narrow, feeds/#5 note-ink-narrow, feeds/#6 note-ink-narrow, free-api/#0 note-narrow, free-api/#0 note-ink-narrow, free-api/#1 note-narrow, free-api/#2 note-narrow, free-api/#2 note-ink-narrow, models/#0 note-ink-narrow, models/#1 note-ink-narrow, models/#2 note-narrow, models/#2 note-ink-narrow, models/360zhinao-pro/#0 note-narrow, models/360zhinao-pro/#1 note-narrow, models/360zhinao-pro/#1 note-ink-narrow, models/360zhinao-pro/#2 note-narrow, models/360zhinao-pro/#2 note-ink-narrow, models/360zhinao-pro/#3 note-narrow, models/360zhinao-pro/#3 note-ink-narrow, need/ai-coding/#0 note-narrow, need/ai-coding/#0 note-ink-narrow, need/ai-coding/#1 note-narrow, need/ai-coding/#2 note-narrow, need/ai-coding/#2 note-ink-narrow, need/china-usable/#0 note-narrow, need/china-usable/#0 note-ink-narrow, need/china-usable/#1 note-narrow, need/china-usable/#2 note-narrow, need/china-usable/#2 note-ink-narrow, need/dev-credits/#0 note-narrow, need/dev-credits/#0 note-ink-narrow, need/dev-credits/#1 note-narrow, need/dev-credits/#1 note-ink-narrow, need/dev-credits/#2 note-narrow, need/dev-credits/#2 note-ink-narrow, need/edu-identity/#0 note-narrow, need/edu-identity/#0 note-ink-narrow, need/edu-identity/#1 note-narrow, need/edu-identity/#2 note-narrow, need/edu-identity/#2 note-ink-narrow, need/free-api/#0 note-narrow, need/free-api/#0 note-ink-narrow, need/free-api/#1 note-narrow, need/free-api/#1 note-ink-narrow, need/free-api/#2 note-narrow, need/free-api/#2 note-ink-narrow, need/free-model/#0 note-narrow, need/free-model/#0 note-ink-narrow, need/free-model/#1 note-narrow, need/free-model/#2 note-narrow, need/free-model/#2 note-ink-narrow, need/free-tier/#0 note-narrow, need/free-tier/#1 note-narrow, need/free-tier/#2 note-narrow, need/free-tier/#2 note-ink-narrow, need/free-tokens/#0 note-narrow, need/free-tokens/#0 note-ink-narrow, need/free-tokens/#1 note-narrow, need/free-tokens/#2 note-narrow, need/free-tokens/#2 note-ink-narrow, need/no-card/#0 note-narrow, need/no-card/#1 note-narrow, need/no-card/#2 note-narrow, need/no-card/#2 note-ink-narrow, need/student-only/#0 note-narrow, need/student-only/#0 note-ink-narrow, need/student-only/#1 note-narrow, need/student-only/#1 note-ink-narrow, need/student-only/#2 note-narrow, need/student-only/#2 note-ink-narrow, plans/#0 note-ink-narrow, plans/#1 note-narrow, plans/#1 note-ink-narrow, plans/#3 note-narrow, plans/#5 note-narrow, plans/#6 note-narrow, plans/#6 note-ink-narrow, plans/#7 note-narrow, plans/#7 note-ink-narrow, plans/#8 note-narrow, plans/#8 note-ink-narrow, plans/#10 note-narrow, plans/#10 note-ink-narrow, plans/#11 note-narrow, plans/#11 note-ink-narrow, plans/api/#0 note-ink-narrow, plans/api/#1 note-narrow, plans/api/#1 note-ink-narrow, plans/api/#2 note-narrow, plans/api/#2 note-ink-narrow, plans/api/#3 note-narrow, plans/api/#3 note-ink-narrow, plans/api/#4 note-narrow, plans/api/#4 note-ink-narrow, plans/coding/#0 note-ink-narrow, plans/coding/#3 note-narrow, plans/coding/#3 note-ink-narrow, plans/coding/#4 note-narrow, plans/coding/#4 note-ink-narrow, status/#0 note-narrow, status/#0 note-ink-narrow, status/#1 note-narrow, status/#1 note-ink-narrow, student/#0 note-narrow, student/#0 note-ink-narrow, student/#1 note-narrow, student/#2 note-narrow, student/#2 note-ink-narrow, vendor/#0 note-narrow, vendor/#0 note-ink-narrow, vendor/#1 note-narrow, vendor/#1 note-ink-narrow, vendor/ai360/#0 note-narrow, vendor/ai360/#0 note-ink-narrow, vendor/ai360/#1 note-narrow, vendor/ai360/#2 note-narrow, vendor/ai360/#2 note-ink-narrow",
+        "widths": [
+          450.81,
+          450.81,
+          573.05,
+          573.05,
+          573.05,
+          572.81,
+          572.81,
+          572.81
+        ]
+      },
+      "sample360": {
+        "ok": false,
+        "detail": "66 条违规码 [archive/#4 note-narrow, category/#0 note-narrow, category/#1 note-narrow, category/agent/#0 note-narrow, catego"
+      },
+      "inkNarrow": 0,
+      "union": 0
+    },
+    "old": {
+      "total": 848,
+      "failed": 2,
+      "failingNames": [
+        "§22c @760 样本集 29 页（旧口径 textWidth + 同轴 / 不裁切 / 不溢出；逐行字迹只在桌面档判）",
+        "§22c @360 样本集 29 页（旧口径 textWidth + 同轴 / 不裁切 / 不溢出；逐行字迹只在桌面档判）"
+      ],
+      "sample760": {
+        "ok": false,
+        "keys": "",
+        "widths": [
+          573.05,
+          572.81,
+          500.81,
+          536.81,
+          61.64
+        ]
+      },
+      "sample360": {
+        "ok": false,
+        "detail": "archive/#4 note-narrow：archive/#4 有字区域宽（内容盒代理量）12px < 0.85 × 列宽（承载文本块 6 个）—— 盒宽 328px · 内容盒 328px · 行 29 行（最宽一行 328px） ·"
+      },
+      "inkNarrow": 0,
+      "union": 0
+    }
+  },
+  "contents": {
+    "new": {
+      "total": 848,
+      "failed": 17,
+      "failingNames": [
+        "/plans/coding/ 口径与说明占满正文宽度（不再被 82ch 压成一条窄柱）",
+        "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+        "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））",
+        "§22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））",
+        "§22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄））",
+        "§22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄））"
+      ],
+      "sample760": {
+        "ok": false,
+        "codes": "2",
+        "keys": "changes/#1 note-ink-narrow, changes/#4 note-ink-narrow",
+        "widths": [
+          457.09,
+          457.09,
+          540,
+          540
+        ]
+      },
+      "sample360": {
+        "ok": true,
+        "detail": "0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ mode"
+      },
+      "inkNarrow": 0,
+      "union": 0,
+      "codeHistogram": {
+        "ink-narrow": 7,
+        "narrow": 9,
+        "hidden-text": 2
+      }
+    },
+    "old": {
+      "total": 848,
+      "failed": 13,
+      "failingNames": [
+        "/plans/coding/ 口径与说明占满正文宽度（不再被 82ch 压成一条窄柱）",
+        "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+        "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+        "§22c @760 样本集 29 页（旧口径 textWidth + 同轴 / 不裁切 / 不溢出；逐行字迹只在桌面档判）",
+        "§22c @360 样本集 29 页（旧口径 textWidth + 同轴 / 不裁切 / 不溢出；逐行字迹只在桌面档判）",
+        "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级"
+      ],
+      "sample760": {
+        "ok": false,
+        "keys": "",
+        "widths": [
+          720.39,
+          256.36,
+          256.36
+        ]
+      },
+      "sample360": {
+        "ok": false,
+        "detail": "archive/#0 note-narrow：archive/#0 有字区域宽（内容盒代理量）0px < 0.85 × 列宽（承载文本块 1 个 · textFallback 回落）—— 盒宽 0px · 内容盒 0px · 行 4 行（最"
+      },
+      "inkNarrow": 0,
+      "union": 401,
+      "codeHistogram": {
+        "narrow": 77,
+        "ink-narrow": 5,
+        "axis": 72,
+        "hidden-text": 2
+      }
+    }
+  },
+  "crossCheckProbe": {
+    "pages": 105,
+    "totalNotes": 401,
+    "narrow": 156,
+    "allWidth45281": true,
+    "widths": [
+      452.81
+    ]
+  }
+}

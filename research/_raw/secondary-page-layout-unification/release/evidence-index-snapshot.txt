@@ -1,0 +1,146 @@
+# PR 证据索引核对 · 快照（t23 终态 · 2026-10-07 00:0x）
+
+> ⚠️ 仍是**某一时刻**的快照：t31 仍在写（verify/），任何成员再写入之后必须由 captain 重跑：
+>
+> ```bash
+> node research/_raw/secondary-page-layout-unification/release/check-evidence-index.cjs --git   # 期望 EXIT=0
+> ```
+>
+> 判据：① 每条路径**存在**；② 每条路径**提交之后还在**（没被 .gitignore 吃掉）。
+
+## ① 存在性（无 --git）· EXIT=0
+
+```text
+证据索引核对：research/_raw/secondary-page-layout-unification/release/pr-body.md
+  索引块内路径 59 条（其中目录 1 条）
+    ✓ research/_raw/secondary-page-layout-unification/t1/17-t1-summary.md
+    ✓ research/_raw/secondary-page-layout-unification/t1/07-dist-snote-audit.txt
+    ✓ research/_raw/secondary-page-layout-unification/t1/10-frozen-string-audit.txt
+    ✓ research/_raw/secondary-page-layout-unification/t1/11-no-other-snote-rules.txt
+    ✓ research/_raw/secondary-page-layout-unification/t1/18-main-class-spotcheck.txt
+    ✓ research/_raw/secondary-page-layout-unification/t1/audit-dist-snote.js
+    ✓ research/_raw/secondary-page-layout-unification/t1/audit-frozen-snote.js
+    ✓ research/_raw/secondary-page-layout-unification/t1/compare-dist-baseline.js
+    ✓ research/_raw/secondary-page-layout-unification/diff/01-git-content-proof.txt
+    ✓ research/_raw/secondary-page-layout-unification/diff/04-before-after-compare.log
+    ✓ research/_raw/secondary-page-layout-unification/diff/before-after-compare.json
+    ✓ research/_raw/secondary-page-layout-unification/diff/03-nonhtml-sha256.log
+    ✓ research/_raw/secondary-page-layout-unification/baseline/dist-baseline-sha256.txt
+    ✓ research/_raw/secondary-page-layout-unification/geometry/before-after.md
+    ✓ research/_raw/secondary-page-layout-unification/geometry/before.json
+    ✓ research/_raw/secondary-page-layout-unification/geometry/truth-401.json
+    ✓ research/_raw/secondary-page-layout-unification/geometry/wide-probe.cjs
+    ✓ research/_raw/secondary-page-layout-unification/geometry/gate-vs-truth.cjs
+    ✓ research/_raw/secondary-page-layout-unification/geometry/all-notes-after.json
+    ✓ research/_raw/secondary-page-layout-unification/teeth/README.md
+    ✓ research/_raw/secondary-page-layout-unification/teeth/mutations.json
+    ✓ research/_raw/secondary-page-layout-unification/teeth/M0-baseline.json
+    ✓ research/_raw/secondary-page-layout-unification/teeth/M0-after-repair.json
+    ✓ research/_raw/secondary-page-layout-unification/teeth/adversarial-replay.cjs
+    ✓ research/_raw/secondary-page-layout-unification/mutations-real/M-disk.json
+    ✓ research/_raw/secondary-page-layout-unification/mutations-real/M-disk.log
+    ✓ research/_raw/secondary-page-layout-unification/gate/run-full-gate.cjs
+    ✓ research/_raw/secondary-page-layout-unification/gate/00-dry-run.txt
+    ✓ research/_raw/secondary-page-layout-unification/gate/01-static-run.txt
+    ✓ research/_raw/secondary-page-layout-unification/gate/steps/summary.json
+    ✓ research/_raw/secondary-page-layout-unification/gate/steps/
+    ✓ research/_raw/secondary-page-layout-unification/review.md
+    ✓ research/_raw/secondary-page-layout-unification/review/adversarial.cjs
+    ✓ research/_raw/secondary-page-layout-unification/review/runs/dist-green.json
+    ✓ research/_raw/secondary-page-layout-unification/review/runs/m0/M0-baseline.json
+    ✓ research/_raw/secondary-page-layout-unification/t3/README.md
+    ✓ research/_raw/secondary-page-layout-unification/verify/byte-compare.cjs
+    ✓ research/_raw/secondary-page-layout-unification/release/README.md
+    ✓ research/_raw/secondary-page-layout-unification/release/online-smoke.cjs
+    ✓ research/_raw/secondary-page-layout-unification/release/online-smoke-dryrun.json
+    ✓ research/_raw/secondary-page-layout-unification/release/online-smoke-dryrun-detail.json
+    ✓ research/_raw/secondary-page-layout-unification/release/online-smoke-negcontrol-baseline.json
+    ✓ research/_raw/secondary-page-layout-unification/release/checklist.md
+    ✓ research/_raw/secondary-page-layout-unification/release/commit-message.txt
+    ✓ research/_raw/secondary-page-layout-unification/release/serve-dist-http.cjs
+    ✓ research/_raw/secondary-page-layout-unification/release/rehearse-online-path.cjs
+    ✓ research/_raw/secondary-page-layout-unification/release/online-path-rehearsal.json
+    ✓ research/_raw/secondary-page-layout-unification/release/online-path-prefix-rehearsal.json
+    ✓ research/_raw/secondary-page-layout-unification/release/online-path-negcontrol-baseline.json
+    ✓ research/_raw/secondary-page-layout-unification/release/robustness-rehearsal.txt
+    ✓ research/_raw/secondary-page-layout-unification/release/rehearsal-summary.json
+    ✓ research/_raw/secondary-page-layout-unification/release/add-manifest.txt
+    ✓ research/_raw/secondary-page-layout-unification/release/evidence-index-snapshot.txt
+    ✓ research/_raw/secondary-page-layout-unification/release/check-evidence-index.cjs
+    ✓ research/_raw/secondary-page-layout-unification/release/check-release-consistency.cjs
+    ✓ research/_raw/secondary-page-layout-unification/release/T23-FINAL-GATE.md
+    ✓ research/_raw/secondary-page-layout-unification/release/proposed-gitignore-addendum.txt
+    ✓ research/_raw/secondary-page-layout-unification/release/version-pins.json
+    ✓ research/_raw/secondary-page-layout-unification/release/final-gate.json
+
+✅ 59/59 条路径全部存在，且都在 research/_raw/secondary-page-layout-unification/ 之下
+```
+
+## ② 存在性 + 提交后仍在（--git）· EXIT=0
+
+```text
+证据索引核对：research/_raw/secondary-page-layout-unification/release/pr-body.md
+  索引块内路径 59 条（其中目录 1 条）
+    ✓ research/_raw/secondary-page-layout-unification/t1/17-t1-summary.md
+    ✓ research/_raw/secondary-page-layout-unification/t1/07-dist-snote-audit.txt
+    ✓ research/_raw/secondary-page-layout-unification/t1/10-frozen-string-audit.txt
+    ✓ research/_raw/secondary-page-layout-unification/t1/11-no-other-snote-rules.txt
+    ✓ research/_raw/secondary-page-layout-unification/t1/18-main-class-spotcheck.txt
+    ✓ research/_raw/secondary-page-layout-unification/t1/audit-dist-snote.js
+    ✓ research/_raw/secondary-page-layout-unification/t1/audit-frozen-snote.js
+    ✓ research/_raw/secondary-page-layout-unification/t1/compare-dist-baseline.js
+    ✓ research/_raw/secondary-page-layout-unification/diff/01-git-content-proof.txt
+    ✓ research/_raw/secondary-page-layout-unification/diff/04-before-after-compare.log
+    ✓ research/_raw/secondary-page-layout-unification/diff/before-after-compare.json
+    ✓ research/_raw/secondary-page-layout-unification/diff/03-nonhtml-sha256.log
+    ✓ research/_raw/secondary-page-layout-unification/baseline/dist-baseline-sha256.txt
+    ✓ research/_raw/secondary-page-layout-unification/geometry/before-after.md
+    ✓ research/_raw/secondary-page-layout-unification/geometry/before.json
+    ✓ research/_raw/secondary-page-layout-unification/geometry/truth-401.json
+    ✓ research/_raw/secondary-page-layout-unification/geometry/wide-probe.cjs
+    ✓ research/_raw/secondary-page-layout-unification/geometry/gate-vs-truth.cjs
+    ✓ research/_raw/secondary-page-layout-unification/geometry/all-notes-after.json
+    ✓ research/_raw/secondary-page-layout-unification/teeth/README.md
+    ✓ research/_raw/secondary-page-layout-unification/teeth/mutations.json
+    ✓ research/_raw/secondary-page-layout-unification/teeth/M0-baseline.json
+    ✓ research/_raw/secondary-page-layout-unification/teeth/M0-after-repair.json
+    ✓ research/_raw/secondary-page-layout-unification/teeth/adversarial-replay.cjs
+    ✓ research/_raw/secondary-page-layout-unification/mutations-real/M-disk.json
+    ✓ research/_raw/secondary-page-layout-unification/mutations-real/M-disk.log
+    ✓ research/_raw/secondary-page-layout-unification/gate/run-full-gate.cjs
+    ✓ research/_raw/secondary-page-layout-unification/gate/00-dry-run.txt
+    ✓ research/_raw/secondary-page-layout-unification/gate/01-static-run.txt
+    ✓ research/_raw/secondary-page-layout-unification/gate/steps/summary.json
+    ✓ research/_raw/secondary-page-layout-unification/gate/steps/
+    ✓ research/_raw/secondary-page-layout-unification/review.md
+    ✓ research/_raw/secondary-page-layout-unification/review/adversarial.cjs
+    ✓ research/_raw/secondary-page-layout-unification/review/runs/dist-green.json
+    ✓ research/_raw/secondary-page-layout-unification/review/runs/m0/M0-baseline.json
+    ✓ research/_raw/secondary-page-layout-unification/t3/README.md
+    ✓ research/_raw/secondary-page-layout-unification/verify/byte-compare.cjs
+    ✓ research/_raw/secondary-page-layout-unification/release/README.md
+    ✓ research/_raw/secondary-page-layout-unification/release/online-smoke.cjs
+    ✓ research/_raw/secondary-page-layout-unification/release/online-smoke-dryrun.json
+    ✓ research/_raw/secondary-page-layout-unification/release/online-smoke-dryrun-detail.json
+    ✓ research/_raw/secondary-page-layout-unification/release/online-smoke-negcontrol-baseline.json
+    ✓ research/_raw/secondary-page-layout-unification/release/checklist.md
+    ✓ research/_raw/secondary-page-layout-unification/release/commit-message.txt
+    ✓ research/_raw/secondary-page-layout-unification/release/serve-dist-http.cjs
+    ✓ research/_raw/secondary-page-layout-unification/release/rehearse-online-path.cjs
+    ✓ research/_raw/secondary-page-layout-unification/release/online-path-rehearsal.json
+    ✓ research/_raw/secondary-page-layout-unification/release/online-path-prefix-rehearsal.json
+    ✓ research/_raw/secondary-page-layout-unification/release/online-path-negcontrol-baseline.json
+    ✓ research/_raw/secondary-page-layout-unification/release/robustness-rehearsal.txt
+    ✓ research/_raw/secondary-page-layout-unification/release/rehearsal-summary.json
+    ✓ research/_raw/secondary-page-layout-unification/release/add-manifest.txt
+    ✓ research/_raw/secondary-page-layout-unification/release/evidence-index-snapshot.txt
+    ✓ research/_raw/secondary-page-layout-unification/release/check-evidence-index.cjs
+    ✓ research/_raw/secondary-page-layout-unification/release/check-release-consistency.cjs
+    ✓ research/_raw/secondary-page-layout-unification/release/T23-FINAL-GATE.md
+    ✓ research/_raw/secondary-page-layout-unification/release/proposed-gitignore-addendum.txt
+    ✓ research/_raw/secondary-page-layout-unification/release/version-pins.json
+    ✓ research/_raw/secondary-page-layout-unification/release/final-gate.json
+   git 预检：59 条路径都不会被 .gitignore 吃掉
+
+✅ 59/59 条路径全部存在，且都在 research/_raw/secondary-page-layout-unification/ 之下
+```

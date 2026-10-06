@@ -1,0 +1,882 @@
+{
+  "what": "M0 反证：在**改动前**的产物上跑同一条验收命令，必须红，且必须报出窄码（note-narrow ∪ note-ink-narrow）",
+  "command": "node scripts/tools/verify-site.js --dir=dist.baseline",
+  "dir": "dist.baseline",
+  "at": "2026-10-06T09:20:29.750Z",
+  "exitCode": 1,
+  "log": null,
+  "report": "research/_raw/secondary-page-layout-unification/geometry/consumer-selftest/case1-union-156.json",
+  "reportTotal": 842,
+  "reportFailed": 48,
+  "failingChecks": [],
+  "failingChecksNon22c": 0,
+  "failingChecks22c": 0,
+  "layoutSweep": {
+    "total": 186,
+    "wide": 55,
+    "detail": 131,
+    "other": 0,
+    "notesChecked": 105,
+    "notesJudged": 156,
+    "narrowNotes": 48,
+    "narrowNotePages": 48,
+    "narrowNotesAt1600": 48,
+    "overflowPages": 0,
+    "unexpectedDetailMain": 0,
+    "missingDetailMain": 0,
+    "unclassified": 0,
+    "desktopViewports": [
+      1440,
+      1600
+    ]
+  },
+  "narrowNotePages": [
+    {
+      "route": "category/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "category/agent/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "category/api/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "category/audio/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "category/chat/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "category/image/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "changes/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "developer/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "feeds/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "free-api/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "need/ai-coding/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "need/china-usable/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "need/dev-credits/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "need/edu-identity/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "need/free-api/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "need/free-model/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "need/free-tier/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "need/free-tokens/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "need/no-card/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "need/student-only/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "status/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "student/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/ai360/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/aliyun/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/anthropic/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/aws/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/baichuan/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/baidu-ai-cloud/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/coze/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/cursor/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/deepseek/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/github/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/google/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/iflytek/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/microsoft/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/minimax/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/moonshot/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/notion/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/openai/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/replit/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/sensetime/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/siliconflow/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/stepfun/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/tencent-cloud/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/volcengine/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/windsurf/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    },
+    {
+      "route": "vendor/zhipu/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 452.81,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": []
+    }
+  ],
+  "narrowNoteCount": 48,
+  "narrowCodeTally": {
+    "note-narrow": 48
+  },
+  "narrowNoteFamilyCounts": {
+    "category/*（目录页族）": 6,
+    "changes": 1,
+    "（集合页）": 3,
+    "feeds": 1,
+    "need/*": 10,
+    "status": 1,
+    "vendor/*": 26
+  },
+  "narrowNoteKeyCount": 156,
+  "narrowNoteCodeTally": {
+    "note-narrow": 48,
+    "note-ink-narrow": 108
+  },
+  "noteRowsTotal": 156,
+  "noteAxisCount": 48,
+  "noteClippedCount": 0,
+  "hiddenTextCount": 0,
+  "overflowPages": 0,
+  "unexpectedDetailMain": 0,
+  "missingDetailMain": 0,
+  "unclassified": 0,
+  "frozenRule": null,
+  "dataRegions": null,
+  "acceptCodeSet": "/^note-(ink-)?narrow$/",
+  "verdict": "pass",
+  "expectationNote": "预期：改动前产物上窄码命中 48 页 / 156 条（页数仍是 4 个 70ch 壳渲染出的页面集合；条数在并集口径下是 48 条盒宽窄 + 108 条字迹窄）"
+}

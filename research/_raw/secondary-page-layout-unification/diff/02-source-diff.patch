@@ -1,0 +1,1437 @@
+diff --git a/index.html b/index.html
+index 4935520..d10597e 100644
+--- a/index.html
++++ b/index.html
+@@ -723,6 +723,15 @@
+        宽度写在这里，页面上只加一个 class，别再往页面里塞第二套宽度规则。
+        Header(.topin) 与 Footer 不在这条规则的作用域内，仍是 .wrap 的 1420px。 */
+     .detail-main { width: min(1120px, 100%); margin-inline: auto; }
++    /* 页面级说明（Page-level Note）：与上一条 `.detail-main` 同一条纪律 —— **宽度只写在这里**。
++       为什么是 `max-width: none`：说明是**这一页的导语**，不是一篇独立文章。它属于数据型页面
++       （Wide Data Page，见 scripts/lib/page-kinds.js 的 LAYOUT_FAMILIES），
++       与表格 / 列表**同轴**、跟随站点数据容器（`.wrap`）；把它压成阅读列（12px 字体下约 420px，
++       而主数据区是 1380px）会让同一页的说明看起来像"另一页的内容"。
++       文档序上这份共享 <style> 先于各页面壳自己的局部 <style>，所以只要页面壳里不再复制第二份
++       `.snote` 规则，这里就是「一处定义、全站生效」。真需要收窄的阅读列页面，
++       请去 LAYOUT_FAMILIES 登记一个新族，而不是就地改宽度。 */
++    .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }
+     .dpane {
+       background: var(--card); border: 1px solid var(--line); border-radius: var(--r-dlg);
+       padding: var(--s4) var(--s4) var(--s2); width: 100%; max-width: none;
+diff --git a/scripts/lib/archive.js b/scripts/lib/archive.js
+index a1d8708..01c4ee2 100644
+--- a/scripts/lib/archive.js
++++ b/scripts/lib/archive.js
+@@ -34,6 +34,21 @@ const ARCHIVE_DESCRIPTION = '本站的原则是：资料失效不等于资料删
+   + '这里保留已经结束或下线的优惠、Coding 套餐与 API 计费记录 —— 它们的状态、首次发现、'
+   + '最后有效时间、结束发现时间、最后已知内容、官方来源与变化时间线。';
+ 
++/**
++ * `/archive/<kind>/<id>/` 的**内容列**：与 `/deal/<id>/`、`/models/<slug>/` 共用同一处
++ * `.detail-main`（1120px 居中；宽度只在 `index.html` 的共享 `<style>` 里写一次）。
++ *
++ * 档案详情是"单一实体的叶子页"，因此与索引页不是同一族 —— 见
++ * `scripts/lib/page-kinds.js` 的 `LAYOUT_FAMILIES`：`archive-detail → 'detail'`。
++ *
++ * ⚠️ **今天生产 0 个实例**（三份日志的 ended / restored 事件各 0 条），但这条路径一旦生成页面，
++ * 就必须是这一列，而不是整幅 1380px 的数据容器 —— 一个"今天永远跑不到"的渲染分支，
++ * 正是最容易在它第一次跑起来的那天露出未验证布局的地方。
++ * 常量在这里定义、由 `build-local.js` 的调用点传入、再由 `assertPageHonesty()` 从整页上反查，
++ * 三处指的是同一个字符串。
++ */
++const ARCHIVE_ENTRY_MAIN_CLASS = 'detail-main';
++
+ const UNKNOWN_TEXT = plansPage.UNKNOWN_TEXT;
+ const UNKNOWN_NUM = plansPage.UNKNOWN_NUM;
+ const escapeHtml = plansPage.escapeHtml;
+@@ -819,6 +834,36 @@ function assertPageHonesty(html, page = {}) {
+   }
+ 
+   if (page.kind === 'archive-entry') {
++    // ---- 布局约束（整页）：档案详情必须落在统一内容列里 ----
++    //
++    // 与优惠详情 / 模型详情**同一条纪律**：叶子详情页的内容列只有 `.detail-main` 一处来源
++    // （宽度写在 `index.html` 的共享 `<style>` 里）。检查放在这里、而不是页面渲染处，
++    // 是因为渲染处只能证明"我传了这个 class"；只有从**整页 HTML** 上再数一遍，
++    // 才能证明那个 class 真的落在了 `<main>` 上，而且整页只有一个 `<main>`。
++    //
++    // 判据分「整页 / 片段」两种对象，理由写在断言里而不是藏在代码里：
++    //   · `renderArchiveEntry()` 返回的是**正文片段**（离线自测直接喂它），片段里本来就没有 `<main>`
++    //     —— 那不是"缺布局"，而是"断言的对象不是一整页"；
++    //   · 构建期传进来的是**整页**（`renderModelsShell()` 的产物）：必须恰好 1 个 `<main>`
++    //     且其 class 含 `detail-main`，缺失就硬失败；
++    //   · 片段**不要求** `<main>`，但只要片段里出现 `<main>`，就必须同样满足上面那条
++    //     —— 不许"片段里偷偷长出一个没有内容列的 main"。
++    const raw = String(html || '');
++    const isFullPage = /<!DOCTYPE\s+html|<html[\s>]/i.test(raw);
++    const mainTags = [...raw.matchAll(/<main\b[^>]*>/gi)].map(match => match[0]);
++    const classOf = tag => {
++      const match = tag.match(/\bclass\s*=\s*"([^"]*)"|\bclass\s*=\s*'([^']*)'/i);
++      return match ? (match[1] || match[2] || '') : '';
++    };
++    const mainCarriesColumn = tag => classOf(tag).split(/\s+/).includes(ARCHIVE_ENTRY_MAIN_CLASS);
++    if (isFullPage && mainTags.length === 0) {
++      problems.push(`整页缺少 <main>：档案详情必须恰好 1 个 <main> 且其 class 含 ${ARCHIVE_ENTRY_MAIN_CLASS}（统一内容列）`);
++    } else if (mainTags.length > 1) {
++      problems.push(`整页出现 ${mainTags.length} 个 <main>：档案详情必须恰好 1 个 <main> 且其 class 含 ${ARCHIVE_ENTRY_MAIN_CLASS}（统一内容列）`);
++    } else if (mainTags.length === 1 && !mainCarriesColumn(mainTags[0])) {
++      problems.push(`<main> 的 class 不含 ${ARCHIVE_ENTRY_MAIN_CLASS}：档案详情页必须落在统一内容列里（实际：${mainTags[0]}）`);
++    }
++
+     const entry = page.entry;
+     const title = entry.title || entry.id;
+     if (!text.includes(title)) problems.push(`缺少标题「${title}」`);
+@@ -849,6 +894,7 @@ module.exports = {
+   ARCHIVE_INDEX_ROUTE,
+   ARCHIVE_HEADING,
+   ARCHIVE_DESCRIPTION,
++  ARCHIVE_ENTRY_MAIN_CLASS,
+   ARCHIVE_KIND_LABEL,
+   ARCHIVE_KINDS,
+   LIFECYCLE_RANK,
+diff --git a/scripts/lib/page-kinds.js b/scripts/lib/page-kinds.js
+index 238b267..0e832eb 100644
+--- a/scripts/lib/page-kinds.js
++++ b/scripts/lib/page-kinds.js
+@@ -47,6 +47,32 @@ const DEFAULT_FLOOR = floor(600, 60);
+ /** 缺省 ItemList 要求（未知 kind 按集合页处理，与 v1.7 的 `expectItemList !== false` 同义） */
+ const DEFAULT_ITEM_LIST = { expect: true, checkRows: true, checkMembers: true, marker: 'item' };
+ 
++/**
++ * 布局族（Layout Family）——「这一页的正文该长成什么形状」的**唯一出处**。
++ *
++ * ## 为什么要有它
++ *
++ * v3.0 之前，同一件事（页面级说明 `.snote` 该多宽）在 8 个页面壳里各写了一份副本，
++ * 而且分成两种取值：4 份 `max-width: 70ch`（12px 字体下 ≈420px 的窄柱，而主数据区是 1380px），
++ * 4 份 `max-width: none`。**同一条规则 8 份副本、两种取值**正是这个文件要消灭的形态。
++ * 布局族是那个「一处声明」：它说清楚每一类页面的正文该跟随谁；
++ * 具体宽度收进 `index.html` 的共享 `<style>`（一处定义、全站生效，与 `.detail-main` 同一条纪律）。
++ *
++ * ## 三族的区别是「内容列的来源」，不是页面的重要程度
++ *
++ *   · `wide`   —— 数据型页面：页面级说明、表格、列表**同轴**，跟随站点数据容器（`.wrap`）。
++ *                 说明是这一页的导语，不是一篇独立文章 ⇒ 不默认压成阅读列。
++ *   · `detail` —— 单一实体详情：统一的居中内容列 `.detail-main`（1120px）。
++ *   · `prose`  —— 真正的长文阅读列（居中且收窄）。**当前站点无实例**：保留这一族是为了让
++ *                 「将来要加一个长文页」必须显式登记，而不是悄悄落进 `wide` 或 `detail`。
++ *                 "无实例"这件事本身也登记在 `LAYOUT_FAMILIES_WITHOUT_INSTANCES` 里，可被机器反查。
++ */
++const LAYOUT_FAMILIES = {
++  wide: { label: 'Wide Data Page', summary: '数据型页面：页面级说明、表格、列表同轴，跟随站点数据容器' },
++  detail: { label: 'Leaf Detail Page', summary: '单一实体详情：统一的居中内容列（.detail-main）' },
++  prose: { label: 'Prose Page', summary: '真正的长文阅读列（居中且收窄）；当前站点无实例' }
++};
++
+ /**
+  * 每个 kind 的声明。**顺序即报告的书写顺序**（集合页在前，v3.0 新家族在后）。
+  *
+@@ -55,6 +81,7 @@ const DEFAULT_ITEM_LIST = { expect: true, checkRows: true, checkMembers: true, m
+ const KIND_TABLE = {
+   home: {
+     label: '首页',
++    layout: 'wide',
+     textFloor: floor(3000),
+     // 首页的 ListItem 指向**官方页面**（v0.9 起的设计），而可见卡片是折叠卡
+     // （一张卡可能覆盖多条优惠）—— 行数与成员对账在首页都不成立，由首页自己的断言守着。
+@@ -63,30 +90,35 @@ const KIND_TABLE = {
+   },
+   collection: {
+     label: '专题集合页',
++    layout: 'wide',
+     textFloor: DEFAULT_FLOOR,
+     itemList: DEFAULT_ITEM_LIST,
+     sitemap: { priority: '0.9', changefreq: 'weekly' }
+   },
+   need: {
+     label: '按需求页',
++    layout: 'wide',
+     textFloor: DEFAULT_FLOOR,
+     itemList: DEFAULT_ITEM_LIST,
+     sitemap: { priority: '0.9', changefreq: 'weekly' }
+   },
+   category: {
+     label: '分类页',
++    layout: 'wide',
+     textFloor: DEFAULT_FLOOR,
+     itemList: DEFAULT_ITEM_LIST,
+     sitemap: { priority: '0.9', changefreq: 'weekly' }
+   },
+   vendor: {
+     label: '厂商页',
++    layout: 'wide',
+     textFloor: DEFAULT_FLOOR,
+     itemList: DEFAULT_ITEM_LIST,
+     sitemap: { priority: '0.8', changefreq: 'weekly' }
+   },
+   hub: {
+     label: '目录枢纽页',
++    layout: 'wide',
+     // 枢纽页的正文比集合页短（只有导语与子页链接），因此 base 从 500 起（v1.7 起的口径）。
+     textFloor: floor(500, 60),
+     itemList: { expect: true, checkRows: true, checkMembers: true, marker: 'child' },
+@@ -94,6 +126,7 @@ const KIND_TABLE = {
+   },
+   deal: {
+     label: '优惠详情页',
++    layout: 'detail',
+     // 详情页只讲一条优惠：下限固定（不随条目数变），与 v1.7 相同。
+     textFloor: floor(500),
+     itemList: { expect: false, checkRows: true, checkMembers: true, marker: 'item' },
+@@ -101,12 +134,14 @@ const KIND_TABLE = {
+   },
+   status: {
+     label: '状态页',
++    layout: 'wide',
+     textFloor: floor(600),
+     itemList: { expect: false, checkRows: true, checkMembers: true, marker: 'item' },
+     sitemap: { priority: '0.3', changefreq: 'daily' }
+   },
+   changes: {
+     label: '变化页',
++    layout: 'wide',
+     textFloor: floor(600),
+     // 成员集合的**权威判据在构建期的 `lib/changes.js`（`itemListRecords()`）**：
+     // 一个记录只出现一次（取最强事件）、不可链接的条目不入列表。
+@@ -118,12 +153,14 @@ const KIND_TABLE = {
+   },
+   feeds: {
+     label: '订阅中心',
++    layout: 'wide',
+     textFloor: floor(600),
+     itemList: { expect: false, checkRows: true, checkMembers: true, marker: 'item' },
+     sitemap: { priority: '0.6', changefreq: 'weekly' }
+   },
+   plans: {
+     label: '套餐 / API 计费对比页',
++    layout: 'wide',
+     // 与集合页同一条口径：表体空掉必然低于下限。口径文案本身就有一百多字，所以从 600 起步。
+     textFloor: floor(600, 60),
+     // ItemList 指向**各自的官方定价页**（本站不为每个套餐/模型编详情页），
+@@ -134,6 +171,7 @@ const KIND_TABLE = {
+   // v2.4 的别名页：noindex，不进 sitemap（priority 保留声明，但 `noindex` 页面不写进去）。
+   alias: {
+     label: '别名页',
++    layout: 'wide',
+     textFloor: DEFAULT_FLOOR,
+     itemList: DEFAULT_ITEM_LIST,
+     sitemap: { priority: '0.0', changefreq: 'yearly', indexable: false }
+@@ -145,6 +183,7 @@ const KIND_TABLE = {
+   // 是"资料入口"而不是第三张表，因此正常的正文量比集合页还大一点。
+   'plans-hub': {
+     label: '套餐资料枢纽',
++    layout: 'wide',
+     textFloor: floor(700, 60),
+     // 与 hub 同一套：两个入口区块各带一个 `data-child`，ItemList 与它们逐个对账。
+     // 成员归属关掉：ItemList 指向**子页**，而 `seo.js` 的成员判据从 `childRoutes` 取 ——
+@@ -155,6 +194,7 @@ const KIND_TABLE = {
+   // Stage D5：/models/ 模型资料索引。一行 = 一个 registry entry。
+   'models-index': {
+     label: '模型资料索引',
++    layout: 'wide',
+     textFloor: floor(600, 60),
+     // ItemList 成员是本站的模型详情页 —— 但成员对账由 `assertPageHonesty` 自己做
+     // （seo.js 的成员判据按 `deal/<id>/` 判，模型页上必然对不上，因此这里关掉）。
+@@ -164,6 +204,7 @@ const KIND_TABLE = {
+   // Stage D6：/models/<slug>/ 模型详情页。详情叶子，与 deal 详情页同级。
+   model: {
+     label: '模型详情页',
++    layout: 'detail',
+     textFloor: floor(700),
+     itemList: { expect: false, checkRows: true, checkMembers: false, marker: 'item' },
+     sitemap: { priority: '0.7', changefreq: 'weekly' }
+@@ -171,6 +212,7 @@ const KIND_TABLE = {
+   // Stage F：/archive/ 历史档案索引。它回答"哪些资料结束了"，是入口级页面但内容随历史增长。
+   'archive-index': {
+     label: '历史档案索引',
++    layout: 'wide',
+     textFloor: floor(600, 60),
+     itemList: { expect: true, checkRows: true, checkMembers: false, marker: 'item' },
+     sitemap: { priority: '0.8', changefreq: 'weekly' }
+@@ -179,6 +221,7 @@ const KIND_TABLE = {
+   // 因此它比变化页更低（0.6）：它是"追溯用的页面"，不是搜索入口。
+   'archive-detail': {
+     label: '历史档案详情',
++    layout: 'detail',
+     textFloor: floor(600),
+     itemList: { expect: false, checkRows: true, checkMembers: false, marker: 'item' },
+     sitemap: { priority: '0.6', changefreq: 'monthly' }
+@@ -187,6 +230,7 @@ const KIND_TABLE = {
+   // 光段落文案就远超 1200 字，因此下限从 1200 起步而不是 600。
+   'data-docs': {
+     label: '数据文档',
++    layout: 'wide',
+     textFloor: floor(1200),
+     // Dataset Index 一张表 = 一份数据一行，因此它在场、行数要查；成员是静态 JSON 文件，不是站内条目。
+     itemList: { expect: true, checkRows: true, checkMembers: false, marker: 'item' },
+@@ -287,6 +331,77 @@ function allKinds() {
+   return Object.keys(KIND_TABLE);
+ }
+ 
++/**
++ * kind → 布局族。**未声明返回 null**，不回落成某个"默认族"。
++ *
++ * 与 `kindOfRoute()` 同一条口径：判不出来就是 `null`，调用方必须显式处置。
++ * 回落成 `wide` 会让"新页面家族忘了登记"变成静默的默认值 —— 而那正是本文件存在的理由。
++ */
++function layoutOf(kind) {
++  const spec = kindOf(kind);
++  const layout = spec ? spec.layout : null;
++  return typeof layout === 'string' && layout ? layout : null;
++}
++
++/**
++ * 明确登记「当前站点**没有实例**」的布局族（无实例是设计，不是遗漏）。
++ *
++ * 为什么要单独一个集合，而不是让孤儿族检查对 `prose` 网开一面：
++ * 「没有实例」是一个**要写下来、可被机器核对**的事实 —— 写成常量之后，
++ * ① 新加一个没人用的族仍然会红；② 这个集合本身也会被反查（见 `assertLayoutDeclarations()`
++ * 的第 ③ 步）：哪天 `prose` 真有了实例，这里的登记就过期了，同样要红。
++ * 而"悄悄跳过某个族"的豁免名单做不到这两件事。
++ */
++const LAYOUT_FAMILIES_WITHOUT_INSTANCES = new Set(['prose']);
++
++/**
++ * 布局族声明自洽性检查（门禁用）。**返回问题字符串数组，空数组 = 全过**。
++ *
++ * 三件事（三个方向都要，缺一个就会出现"看起来在守着什么"的假牙）：
++ *   ① 每个 kind 都必须有 `layout` —— 新页面家族不许"不声明"就存在；
++ *   ② 声明的值必须落在 `LAYOUT_FAMILIES` 里 —— 拼错一个字母不许静默通过（正向引用完整性）；
++ *   ③ 族与实例之间不许有第三种状态（反向完整性）：
++ *      · 没有实例、也没登记在 `LAYOUT_FAMILIES_WITHOUT_INSTANCES` 里 ⇒ 孤儿族；
++ *      · 登记成"无实例"却真的有实例 ⇒ 登记过期（`prose` 被启用时必须同步删掉那条登记）。
++ *
++ * 这里**只读声明、不碰产物**：布局宽度在 `index.html` 的共享 `<style>` 里，
++ * 由独立门禁（浏览器套件 / 产物 grep）去核对，本函数不做那件事。
++ */
++function assertLayoutDeclarations() {
++  const problems = [];
++  const used = new Set();
++  const known = Object.keys(LAYOUT_FAMILIES);
++  for (const kind of allKinds()) {
++    const spec = KIND_TABLE[kind];
++    if (!Object.prototype.hasOwnProperty.call(spec, 'layout')) {
++      problems.push(`kind「${kind}」没有声明 layout —— 新页面家族必须显式登记布局族（不许默认落进 wide）`);
++      continue;
++    }
++    const layout = spec.layout;
++    if (!Object.prototype.hasOwnProperty.call(LAYOUT_FAMILIES, layout)) {
++      problems.push(`kind「${kind}」的 layout「${layout}」不在 LAYOUT_FAMILIES 里（合法值：${known.join(' / ')}）`);
++      continue;
++    }
++    used.add(layout);
++  }
++  for (const family of known) {
++    const instanceLess = LAYOUT_FAMILIES_WITHOUT_INSTANCES.has(family);
++    if (used.has(family) && instanceLess) {
++      problems.push(`布局族「${family}」被登记为"当前站点无实例"，但已经有 kind 在使用它 —— 那条登记过期了，请同步删掉（无实例是事实，不是永久豁免）`);
++      continue;
++    }
++    if (!used.has(family) && !instanceLess) {
++      problems.push(`布局族「${family}」（${LAYOUT_FAMILIES[family].label}）没有任何 kind 使用 —— 孤儿族：要么登记实例，要么删掉声明（确实无实例的族请登记进 LAYOUT_FAMILIES_WITHOUT_INSTANCES）`);
++    }
++  }
++  for (const family of LAYOUT_FAMILIES_WITHOUT_INSTANCES) {
++    if (!Object.prototype.hasOwnProperty.call(LAYOUT_FAMILIES, family)) {
++      problems.push(`LAYOUT_FAMILIES_WITHOUT_INSTANCES 里的「${family}」不是已定义的布局族 —— 无实例登记必须指向一个真实存在的族`);
++    }
++  }
++  return problems;
++}
++
+ /**
+  * 路由集合 → 未声明 kind 的清单（门禁用：**新页面家族必须显式登记**）。
+  *
+@@ -312,6 +427,8 @@ function auditRouteKinds(routes, kindByRoute = null) {
+ 
+ module.exports = {
+   KIND_TABLE,
++  LAYOUT_FAMILIES,
++  LAYOUT_FAMILIES_WITHOUT_INSTANCES,
+   FIXED_ROUTE_KINDS,
+   ROUTE_PATTERNS,
+   DEFAULT_FLOOR,
+@@ -320,6 +437,8 @@ module.exports = {
+   kindOfRoute,
+   hasKind,
+   kindOf,
++  layoutOf,
++  assertLayoutDeclarations,
+   textFloor,
+   itemListRule,
+   sitemapMeta,
+diff --git a/scripts/tools/archive-selftest.js b/scripts/tools/archive-selftest.js
+index df8268c..33c26cc 100644
+--- a/scripts/tools/archive-selftest.js
++++ b/scripts/tools/archive-selftest.js
+@@ -534,6 +534,64 @@ section('⑦′ 详情页的相对引用：每条都必须解析到真实目标
+     `${brokenRefs.length} 条（如 ${brokenRefs[0] || ''}）`);
+ }
+ 
++/* ================================================================== */
++section('⑦″ 布局族：档案详情走统一内容列（今天无生产实例 ⇒ 替代性设计约束）');
++/* ================================================================== */
++//
++// ⚠️ **这一节是替代性设计约束**：三份日志的 ended / restored 事件各 0 条 ⇒
++// `/archive/<kind>/<id>/` 今天**0 个生产实例**，磁盘上没有任何一页可以拿去量宽度。
++// 但"今天跑不到"不等于"哪天跑起来也不会错"—— 一个从未被构建照到的渲染分支，
++// 恰恰是最容易在它第一次跑起来的那天露出未验证布局的地方（同一条教训见 §⑦′ 的
++// 写死前缀 `'../../'`：24/27 条死链就是这么长期没被发现的）。
++//
++// 所以判据换成三件**离线可核对**的替代物，一件都不靠"将来跑一次看看"：
++//   ① 常量值：`archiveLib.ARCHIVE_ENTRY_MAIN_CLASS === 'detail-main'`
++//      —— 而 `detail-main` 就是 `index.html` 共享 <style> 里那条 1120px 居中内容列；
++//   ② 构建期接线：`build-local.js` 的档案详情调用点**确实**把它当 `mainClass` 传下去
++//      —— 常量对了但没人用，等于没有；
++//   ③ 断言真的会响：整页缺 <main> / 有多个 <main> / <main> 不带内容列，各构造一次，
++//      `assertPageHonesty()` 必须变红；正确的整页必须零问题（断言不是恒红）。
++
++{
++  check('档案详情的内容列常量就是 detail-main（与 /deal/<id>/、/models/<slug>/ 同一列）',
++    archiveLib.ARCHIVE_ENTRY_MAIN_CLASS === 'detail-main',
++    `实际：${JSON.stringify(archiveLib.ARCHIVE_ENTRY_MAIN_CLASS)}`);
++
++  // ② 构建期接线（替代性设计约束的**主判据**：没有实例，就只能查接线）
++  const buildSource = fs.readFileSync(path.join(ROOT, 'scripts', 'tools', 'build-local.js'), 'utf8');
++  const routeAt = buildSource.indexOf('const route = archiveLib.archiveEntryRoute(entry);');
++  const callSite = routeAt === -1 ? '' : buildSource.slice(routeAt, routeAt + 2500);
++  const callSiteHasShell = /renderModelsShell\(\{/.test(callSite);
++  const wiredToConstant = /mainClass:\s*archiveLib\.ARCHIVE_ENTRY_MAIN_CLASS\b/.test(callSite);
++  check('【设计约束 · 今天无生产实例，这是替代性设计约束】档案详情的 renderModelsShell 调用点' +
++    '（route 来自 archiveLib.archiveEntryRoute(entry)）真的把 ARCHIVE_ENTRY_MAIN_CLASS 当 mainClass 传下去',
++    routeAt !== -1 && callSiteHasShell && wiredToConstant,
++    routeAt === -1
++      ? '找不到档案详情的渲染调用点（archiveEntryRoute(entry) 那一行）'
++      : `调用点在，renderModelsShell=${callSiteHasShell}，mainClass 接线=${wiredToConstant}`);
++
++  // ③ 断言会响：整页形态（构建期喂给 assertPageHonesty 的正是整页）
++  const entry = synthetic.entries.find(item => item.id === 'aaaaaaaaaaa1');
++  const entryBody = archiveLib.renderArchiveEntry(entry, { prefix: archiveLib.archiveEntryPrefix(entry) });
++  const wrap = main => `<!DOCTYPE html>\n<html lang="zh-CN">\n<body>\n<div class="wrap">\n${main}\n</div>\n</body>\n</html>`;
++  const pageWithMain = cls => wrap(`<main id="main"${cls ? ` class="${cls}"` : ''}>\n${entryBody}\n</main>`);
++  const layoutProblemsOf = html => archiveLib.assertPageHonesty(html, { kind: 'archive-entry', entry })
++    .filter(problem => problem.includes('main'));
++  const goodPage = layoutProblemsOf(pageWithMain(archiveLib.ARCHIVE_ENTRY_MAIN_CLASS));
++  check('整页带 detail-main 内容列 → 零布局问题（断言不是恒红）',
++    goodPage.length === 0, goodPage.slice(0, 2).join('；'));
++  check('【牙】整页的 <main> 不带内容列 → 变红（裸 `<main id="main">` 不算接线）',
++    layoutProblemsOf(pageWithMain('')).some(problem => problem.includes('detail-main')));
++  check('【牙】整页一个 <main> 都没有 → 变红（不是"片段所以放过"）',
++    layoutProblemsOf(wrap(entryBody)).some(problem => problem.includes('main')));
++  check('【牙】整页出现两个 <main> → 变红（"恰好 1 个"里的那个"恰好"）',
++    layoutProblemsOf(wrap(`<main id="main" class="${archiveLib.ARCHIVE_ENTRY_MAIN_CLASS}"></main>`
++      + `<main class="${archiveLib.ARCHIVE_ENTRY_MAIN_CLASS}">${entryBody}</main>`))
++      .some(problem => problem.includes('2 个')));
++  check('正文片段（renderArchiveEntry 的返回值，单测⑦喂的就是它）不被误判成"整页缺 <main>"',
++    layoutProblemsOf(`<section>${entryBody}</section>`).length === 0);
++}
++
+ /* ================================================================== */
+ section('⑧ 详情页门槛与 sitemap 资格（题面 §4 / §F4）');
+ /* ================================================================== */
+diff --git a/scripts/tools/build-local.js b/scripts/tools/build-local.js
+index 0e8e4cf..c3831cc 100644
+--- a/scripts/tools/build-local.js
++++ b/scripts/tools/build-local.js
+@@ -14,6 +14,15 @@
+  *   卡片 HTML 与浏览器用的是同一份模板：脚本按 RENDER-CORE 标记从 index.html 抽出
+  *   纯渲染核心，在无 DOM 的沙箱里求值。模板只有一处，不会分叉。
+  *
++ * 页面壳的样式纪律（布局治理）：**共享规则只有一处出处 —— index.html 的共享 `<style>`**。
++ *   · `.detail-main`（详情内容列 1120px）与 `.snote`（页面级说明）都写在那里；
++ *   · 各页面壳的局部 `<style>` **只写自己独有的规则**，不再复制共享规则的第二份宽度
++ *     （本文件原先有 8 份页面级 `.snote` 宽度副本，其中 4 份把说明压成了阅读列 —— 已全部删除）；
++ *   · 文档序是「共享 `<style>` → 页面局部 `<style>`」，所以删掉局部副本之后就是
++ *     「一处定义、全站生效」，与 `.detail-main` 同一条纪律。
++ *   一页属于哪个布局族（Wide Data Page / Leaf Detail Page / Prose Page）声明在
++ *   `scripts/lib/page-kinds.js` 的 LAYOUT_FAMILIES；要改说明的宽度，改共享那一处，别在页面壳里另立一份。
++ *
+  * 用法：node scripts/tools/build-local.js [--out=dist]
+  */
+ 
+@@ -1045,7 +1054,6 @@ ${style}
+   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+   .stop h1 { font-size: 19px; margin: 0; }
+   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
+-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+   .stable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+   .stable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
+   .stable th, .stable td { text-align: left; padding: 10px 12px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
+@@ -1344,7 +1352,6 @@ ${style}
+      列表式（不是宽表）：手机上自然换行、不产生横向滚动 —— 与目录页的表格相反，
+      这里每行都有一段可能很长的原文（原值 → 新值），表格会把手机变成横向滚动条。 */
+   .chgmeta { display: flex; align-items: baseline; gap: var(--s3); flex-wrap: wrap; color: var(--mut); font-size: var(--fs-sm); margin: 0 0 var(--s3); }
+-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+   .snote.chgwarn { color: var(--warn, #a35a00); }
+   .chgsec { margin: 0 0 var(--s4); border-top: 1px solid var(--line); padding-top: var(--s3); }
+   .chgsec h2 { font-size: 15px; margin: 0 0 var(--s2); }
+@@ -1610,7 +1617,6 @@ ${style}
+      （「…本页照原样列 / 出，不互相换算」），正文右侧留下一条巨大的空白。
+      口径说明是**必须读完才能理解这一页**的内容，宽度就该跟随正文容器；
+      想要收窄的是"可选的长文"，不是它。 */
+-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
+   .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
+   .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
+   .plist b { color: var(--ink2); }
+@@ -1736,7 +1742,6 @@ ${style}
+   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+   .stop h1 { font-size: 19px; margin: 0; }
+   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
+-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
+   .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
+   .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
+   .plist b { color: var(--ink2); }
+@@ -1880,7 +1885,6 @@ ${style}
+   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+   .stop h1 { font-size: 19px; margin: 0; }
+   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
+-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
+   .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
+   .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
+   .plist b { color: var(--ink2); }
+@@ -1998,7 +2002,6 @@ ${style}
+   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+   .stop h1 { font-size: 19px; margin: 0; }
+   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
+-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
+   .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
+   .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
+   .plist b { color: var(--ink2); }
+@@ -2308,7 +2311,6 @@ ${themeScript}
+ ${style}
+ <style>
+   /* 只用首页已有的设计变量。列表式（不是宽表）：订阅地址很长，窄屏上不能产生横向滚动。 */
+-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+   .fsec { margin: 0 0 var(--s4); border-top: 1px solid var(--line); padding-top: var(--s3); }
+   .fsec h2 { font-size: 15px; margin: 0 0 var(--s2); }
+   .flist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+@@ -2707,7 +2709,6 @@ ${style}
+   .cstop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+   .cstop h1 { font-size: 19px; margin: 0; }
+   .cstop .meta { color: var(--mut); font-size: var(--fs-sm); }
+-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+   .aliasnote { border-left: 3px solid var(--line); padding-left: var(--s2); }
+   .lsum { display: flex; flex-wrap: wrap; gap: var(--s2); list-style: none; margin: 0 0 var(--s3); padding: 0; }
+   .lsum li { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 10px; font-size: var(--fs-sm); }
+@@ -3737,7 +3738,12 @@ function assemble() {
+         body: archiveLib.renderArchiveEntry(entry, { prefix, siteUrl: SITE_URL }),
+         jsonLd: archiveLib.archiveEntryJsonLd(entry, { siteUrl: SITE_URL }),
+         prefix,
+-        extraCss: ARCHIVE_PAGE_CSS
++        extraCss: ARCHIVE_PAGE_CSS,
++        // 叶子详情页要的是**统一内容列**（与 /deal/<id>/、/models/<slug>/ 同一条 .detail-main 规则，
++        // 宽度只在 index.html 的共享 <style> 里）。索引页 / 数据文档页走缺省（不带 class），
++        // 它们属于 Wide Data Page 一族 —— 一族一个形状，见 lib/page-kinds.js 的 LAYOUT_FAMILIES。
++        // 今天生产 0 个实例，`assertPageHonesty()`（下面那次调用）从整页上反查这条约束。
++        mainClass: archiveLib.ARCHIVE_ENTRY_MAIN_CLASS
+       }, html);
+       fs.writeFileSync(path.join(OUT, route, 'index.html'), entryHtml, 'utf8');
+       const entryProblems = archiveLib.assertPageHonesty(entryHtml, { kind: 'archive-entry', entry });
+diff --git a/scripts/tools/seo-selftest.js b/scripts/tools/seo-selftest.js
+index 557c4ed..3933756 100644
+--- a/scripts/tools/seo-selftest.js
++++ b/scripts/tools/seo-selftest.js
+@@ -370,6 +370,65 @@ section('三、门槛函数的分支（shouldGenerateLandingPage）');
+   })());
+ }
+ 
++/* ------------------------------------------------------------------ */
++section('三′、页面种类的布局族声明（scripts/lib/page-kinds.js 是唯一出处）');
++
++{
++  // 布局族是「一页的正文该长成什么形状」的唯一声明处（宽度本身在 index.html 的共享 <style>）。
++  // 这一节守的是**声明自洽**：进门（每个 kind 都有 layout）+ 值合法（族真的存在）+
++  // 反向完整（没有孤儿族）。三件事缺一件，"声明表"就会重新变成"看起来统一、实际只有一半是真的"。
++  const pageKinds = require('../lib/page-kinds');
++
++  const layoutProblems = pageKinds.assertLayoutDeclarations();
++  check('布局族声明自洽：每个 kind 都有 layout 且落在已定义族内，也没有孤儿族',
++    layoutProblems.length === 0, layoutProblems.slice(0, 3).join('；'));
++
++  check('每个 KIND_TABLE 的 kind 都有 layout，且该 layout 是 LAYOUT_FAMILIES 里真实存在的族',
++    pageKinds.allKinds().every(kind => Object.prototype.hasOwnProperty.call(
++      pageKinds.LAYOUT_FAMILIES, pageKinds.layoutOf(kind))),
++    pageKinds.allKinds()
++      .filter(kind => !Object.prototype.hasOwnProperty.call(pageKinds.LAYOUT_FAMILIES, pageKinds.layoutOf(kind)))
++      .join(', '));
++
++  check('未声明的 kind 没有布局族（layoutOf 返回 null，不回落成某个默认族）',
++    pageKinds.layoutOf('这个-kind-不存在') === null);
++
++  // `prose` 是唯一"当前站点无实例"的族 —— 无实例是**登记过的事实**，不是漏网：
++  // 它写在 LAYOUT_FAMILIES_WITHOUT_INSTANCES 里，而 assertLayoutDeclarations() 会双向反查
++  // （没登记的无实例族 ⇒ 红；登记了却有了实例 ⇒ 那条登记过期，也红）。
++  check('prose 是唯一登记的"当前无实例"族，且它确实没有实例',
++    [...pageKinds.LAYOUT_FAMILIES_WITHOUT_INSTANCES].join(',') === 'prose'
++    && pageKinds.allKinds().every(kind => pageKinds.layoutOf(kind) !== 'prose'),
++    `无实例族=${[...pageKinds.LAYOUT_FAMILIES_WITHOUT_INSTANCES].join(',')}，` +
++    `用到的族=${[...new Set(pageKinds.allKinds().map(kind => pageKinds.layoutOf(kind)))].join(',')}`);
++
++  // 【牙】按同一份声明做两处定向篡改，确认上面那条"零问题"不是恒真。
++  let missingLayoutProblems = null;
++  const savedHomeLayout = pageKinds.KIND_TABLE.home.layout;
++  try {
++    delete pageKinds.KIND_TABLE.home.layout;
++    missingLayoutProblems = pageKinds.assertLayoutDeclarations();
++  } finally {
++    pageKinds.KIND_TABLE.home.layout = savedHomeLayout;
++  }
++  check('【牙】抹掉一个 kind 的 layout → 声明检查变红，且复位后重新为零问题',
++    missingLayoutProblems.some(problem => problem.includes('home'))
++    && pageKinds.assertLayoutDeclarations().length === 0,
++    (missingLayoutProblems || []).slice(0, 2).join('；'));
++
++  let orphanProblems = null;
++  try {
++    pageKinds.LAYOUT_FAMILIES['probe-family'] = { label: 'Probe', summary: '探针族（临时）' };
++    orphanProblems = pageKinds.assertLayoutDeclarations();
++  } finally {
++    delete pageKinds.LAYOUT_FAMILIES['probe-family'];
++  }
++  check('【牙】新加一个没有任何实例的族 → 报成孤儿族，且复位后重新为零问题',
++    orphanProblems.some(problem => problem.includes('probe-family'))
++    && pageKinds.assertLayoutDeclarations().length === 0,
++    (orphanProblems || []).slice(0, 2).join('；'));
++}
++
+ /* ------------------------------------------------------------------ */
+ section('四、注册表与产物的一致性（用真实数据）');
+ 
+diff --git a/scripts/tools/verify-site.js b/scripts/tools/verify-site.js
+index 0f4a733..3825e77 100644
+--- a/scripts/tools/verify-site.js
++++ b/scripts/tools/verify-site.js
+@@ -33,6 +33,9 @@ const audienceLib = require('../lib/audience');
+ // private-analytics-v1：外部请求白名单与页面判定都取自**唯一实现**（lib/analytics.js）——
+ // 这里不重写一份 origin 表，也不 grep token 字符串：判据只有一处，改了那边这一支跟着变。
+ const analytics = require('../lib/analytics');
++// secondary-page-layout-unification（§22c）：布局族的**唯一**真值出处。这里是 require，不是
++// 第二份 kind→layout 表 —— 谁改了 page-kinds.js 的声明，§22c 的全站扫描立刻跟着变。
++const pageKinds = require('../lib/page-kinds');
+ 
+ /**
+  * 某个落地页**应该**声明几条 `rel="alternate"`：站点根 Feed 对（2 条）
+@@ -6094,6 +6097,823 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+     }
+   }
+ 
++  /* ------------------------------------------------------------------ */
++  /* §22c Wide Data Page 的页面级说明同轴门禁（布局族 × 全站几何）          */
++  /* ------------------------------------------------------------------ */
++  //
++  // 缺陷原型：8 个页面壳各自维护一条 `.snote { … }`，其中 4 条把**页面级说明**压成
++  // `max-width: 70ch`（12px 字体下 ≈ 452px），而同一页的主数据区是 1380px —— 说明只占表格宽的
++  // 三分之一，左边对齐、右边半截。修法与 `.detail-main` 同一条纪律：宽度只有**一处**来源
++  // （index.html 的共享 <style>），取 `max-width: none` + `overflow-wrap: anywhere`。
++  //
++  // 这一节把「页面级说明与主数据区同轴」拆成可判红的几何量，再对同一套判据加 7 条变异牙：
++  //   M0 反证 ：改动前产物（`--dir=dist.baseline`）跑同一条命令必须**红** —— 48 个 70ch 页面
++  //             咬出 note-narrow（目录页族 45 + status + changes + feeds）；
++  //   M1–M4   ：把冻结串逐字换成 70ch 版本（/student/ /status/ /changes/ /feeds/ 四个不同的壳）
++  //             ⇒ 必须咬出 note-narrow；
++  //   M5      ：**不重复造第二套** —— 只断言既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码；
++  //   M6/M6c  ：拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串 ⇒ page-overflow@390；
++  //             正对照：同样注入、CSS 一字不动 ⇒ 必须不溢出；
++  //   M7      ：给宽页的 <main> 加上 detail-main（DOM 注入，注入前守卫该类原本不存在）
++  //             ⇒ 必须咬出 unexpected-detail-main。
++  //
++  // 量法：全部读数来自真浏览器（getBoundingClientRect + 计算样式），不看页面自报的数字。
++  //   · 页面级说明 = `<main>` 里**文档序第一个** `.snote`（标题块底下那一条）。没有 `.snote`
++  //     的页面（首页 + 80 个 deal 详情）如实标为「无页面级说明」，跳过该条、不算失败。
++  //   · 主数据区   = 该页第一个命中的声明选择器（见 WIDE_DATA_SELECTORS），命不中时回落 `<main>`
++  //                 并在报告里标出（实测 81 页回落 = 首页 + 80 个 deal 详情页）。
++  //   · 比例判据   = note.width ≥ 0.85 × min(主数据区宽, 页面列宽)。**比例，不是写死的像素**：
++  //                 改字号、改容器宽度都不需要动这里。取 min 的理由：窄档里表格处在横向滚动
++  //                 容器中、border-box 比视口还宽（360 档 .ctable 实测 424px / 视口 360），
++  //                 拿它当分母是范畴错误。
++  //   · 同轴判据   = |note.left-锚.left| ≤ 1 且 |note.right-锚.right| ≤ 1，锚取「主数据区」**或**
++  //                 「页面主容器 <main>」任一成立。/plans/ 的主数据区 .pchglist 自身内缩在
++  //                 .phubsec 里（56..1384），而页面级说明落在页面列上（30..1410）—— 这一页
++  //                 「同轴」的正确语义就是与页面主容器同轴，所以两个锚是**或**的关系。
++  //   · 裁切判据   = note.scrollWidth ≤ note.clientWidth + 1（说明自身不许横向溢出）。
++  //   · 布局族     = `scripts/lib/page-kinds.js` 的 kindOfRoute + layoutOf（唯一真值出处，
++  //                 这里**不写第二份** kind→layout 表）；数据驱动的静态路由（目录页族 /
++  //                 按需求页 / 两个枢纽页 / 首页）由调用方传入的 kindByRoute 补齐。
++  //   · 视口       = 1440 全站量几何 + 溢出、390 全站量 documentElement.scrollWidth、
++  //                 760/360 只量样本集（样本集现场从注册表 + 磁盘推导，不写死 id/slug）。
++  //
++  // 违规码全部由 wideProblems() **一处**产出（变异牙复测的就是它，别处不再写第二份判据）：
++  //   unclassified-layout / unexpected-detail-main / missing-detail-main / note-narrow /
++  //   note-axis / note-clipped / page-overflow@<vw> / data-region-missing
++
++  const WIDE_TOL = 1;                        // 同轴 / 裁切容差（px），与 §22b 同一把尺子
++  const WIDE_NOTE_RATIO = 0.85;              // 页面级说明宽 ≥ 0.85 × 主数据区宽（比例，不是像素）
++  const WIDE_DESKTOP = 1440;                 // 全站几何档
++  const WIDE_NARROW = 390;                   // 全站溢出档（只量 documentElement.scrollWidth）
++  const WIDE_SAMPLE_VIEWPORTS = [760, 360];  // 只量样本集的两档
++  // 冻结串：T1 放进 index.html 共享 <style> 的**唯一**一条 .snote 规则，逐字一致（不许改空格）。
++  // 它既是变异牙的锚点，也是「一处定义、全站生效」的机器可读证据：每页内联样式里恰好 1 次。
++  const WIDE_SNOTE_FROZEN = '.snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }';
++  // M1–M4：只把 max-width 换回 70ch（overflow-wrap 一字不动，隔离缺陷）。
++  const WIDE_SNOTE_NARROW = WIDE_SNOTE_FROZEN.replace('max-width: none', 'max-width: 70ch');
++  // M6：只拿走断行兜底（其它声明一字不动，隔离缺陷）。
++  const WIDE_SNOTE_NOWRAP = WIDE_SNOTE_FROZEN.replace('overflow-wrap: anywhere', 'overflow-wrap: normal');
++  // 主数据区：**第一个命中**的声明选择器；一个都没命中时回落 <main> 并在报告里标出。
++  const WIDE_DATA_SELECTORS = ['.ctable', '.stable', '.chgsec', '.chglist', '.flist', '.fsec', '.ptable', '.lsum', '.pchglist'];
++  // 不可断的 200 字符串：`.snote` 的 overflow-wrap:anywhere 是不是真的在兜底，只有它能量出来。
++  const WIDE_LONG_TOKEN = 'x'.repeat(200);
++  // M1–M4 的四个壳（页面级说明曾经各自被压成 70ch 的就是这四个家族）。它们是**固定路由**，
++  // 不是数据 id/slug；下面每条变异都会先守卫「这一页确实是 wide 族、且真有页面级说明」。
++  const WIDE_MUTATION_TARGETS = ['student/', 'status/', 'changes/', 'feeds/'];
++  /** §22c 的全部违规码（判据自检用：一个都不能少、也不能多）。 */
++  const WIDE_CODE_VOCABULARY = [
++    'unclassified-layout', 'unexpected-detail-main', 'missing-detail-main', 'note-narrow',
++    'note-axis', 'note-clipped', 'page-overflow@<vw>', 'data-region-missing'
++  ];
++
++  const wideRound = n => Math.round(n * 100) / 100;
++  const wideCodes = problems => problems.map(problem => problem.code);
++  /** 表头对齐用：CJK 记 2 列，免得版式上的「看起来齐」变成读数上的错觉。 */
++  const wideDisplayWidth = text => [...String(text)]
++    .reduce((sum, ch) => sum + (/[\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFF60\uFFE0-\uFFE6]/.test(ch) ? 2 : 1), 0);
++  const wideCell = (text, width) => String(text) + ' '.repeat(Math.max(0, width - wideDisplayWidth(text)));
++
++  /** 产物里的全部页面路由：遍历产物目录里所有 index.html → 带尾斜杠路由（首页是空串）。 */
++  function wideRoutesFromDisk() {
++    const routes = [];
++    const walk = dir => {
++      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
++        const full = path.join(dir, entry.name);
++        if (entry.isDirectory()) walk(full);
++        else if (entry.name.toLowerCase() === 'index.html') {
++          const relPath = path.relative(DIR, full).split(path.sep).join('/');
++          routes.push(relPath === 'index.html' ? '' : relPath.replace(/index\.html$/, ''));
++        }
++      }
++    };
++    walk(DIR);
++    return routes.sort();
++  }
++
++  /**
++   * 数据驱动的静态路由 → kind。`page-kinds.kindOfRoute` 对它们**按设计返回 null**
++   * （目录页家族的 kind 随数据走），所以由调用方在这里显式补齐 —— 这是「补齐」，
++   * 不是第二份 kind→layout 表：布局族仍然只从 `pageKinds.layoutOf(kind)` 取。
++   */
++  function wideKindByRoute() {
++    const map = new Map();
++    for (const page of audienceLib.COLLECTION_PAGES) map.set(`${page.slug}/`, 'collection');
++    for (const page of audienceLib.NEED_PAGES) map.set(`need/${page.slug}/`, 'need');
++    map.set(landingsLib.VENDOR_HUB.route, 'hub');
++    map.set(landingsLib.CATEGORY_HUB.route, 'hub');
++    map.set('', 'home');
++    return map;
++  }
++
++  /**
++   * 样本集（prompt §12）：**现场推导**，一个 id/slug 都不写死。
++   *   ① 注册表驱动的入口全部取：COLLECTION_PAGES → `<slug>/`、NEED_PAGES → `need/<slug>/`、
++   *      landing 的两个枢纽路由（每一类入口各代表一套判据，少一个就少一条覆盖面）；
++   *   ② 磁盘上**不匹配任何 ROUTE_PATTERNS 通配**的静态路由全部取（首页 / 状态 / 变化 / 订阅 /
++   *      套餐三页 / 模型索引 / 档案索引 / 数据文档）；
++   *   ③ 每个通配族（deal / model / vendor / category / archive-detail）各取磁盘上**第一条**
++   *      真实路由 —— 真实 id/slug 由产物决定，脚本里维护不了、也不许维护。
++   */
++  function wideSampleSet(routes, metaList) {
++    const kindOf = route => {
++      const hit = metaList.find(item => item.route === route);
++      return hit ? hit.kind : null;
++    };
++    const isWildcard = route => pageKinds.ROUTE_PATTERNS.some(pattern => pattern.re.test(route));
++    const sample = new Set();
++    for (const page of audienceLib.COLLECTION_PAGES) sample.add(`${page.slug}/`);
++    for (const page of audienceLib.NEED_PAGES) sample.add(`need/${page.slug}/`);
++    sample.add(landingsLib.VENDOR_HUB.route);
++    sample.add(landingsLib.CATEGORY_HUB.route);
++    for (const route of routes) if (!isWildcard(route)) sample.add(route);
++    for (const pattern of pageKinds.ROUTE_PATTERNS) {
++      if ([...sample].some(route => kindOf(route) === pattern.kind)) continue;
++      const hit = routes.find(route => isWildcard(route) && kindOf(route) === pattern.kind);
++      if (hit) sample.add(hit);
++    }
++    return [...sample].sort();
++  }
++
++  /** 当前页面的**唯一**几何量测（不导航、不假设路由）：变异牙复测走的也是这一份。 */
++  async function wideMeasure(target) {
++    return target.evaluate(`(() => {
++      const DATA_SELECTORS = ${JSON.stringify(WIDE_DATA_SELECTORS)};
++      const FROZEN = ${JSON.stringify(WIDE_SNOTE_FROZEN)};
++      const round = n => Math.round(n * 100) / 100;
++      const missing = { count: 0, left: 0, right: 0, width: 0, scrollW: 0, clientW: 0, overflowWrap: '', maxWidth: '' };
++      const box = el => {
++        if (!el) return Object.assign({}, missing);
++        const cs = getComputedStyle(el);
++        const r = el.getBoundingClientRect();
++        return {
++          count: 1,
++          left: round(r.left + window.scrollX), right: round(r.right + window.scrollX), width: round(r.width),
++          scrollW: el.scrollWidth, clientW: el.clientWidth,
++          overflowWrap: cs.overflowWrap, maxWidth: cs.maxWidth
++        };
++      };
++      const mains = document.querySelectorAll('main');
++      const main = mains.length ? mains[0] : null;
++      let regionSel = null;
++      let regionEl = null;
++      for (const sel of DATA_SELECTORS) {
++        const hit = document.querySelector(sel);
++        if (hit) { regionSel = sel; regionEl = hit; break; }
++      }
++      const noteEl = main ? main.querySelector('.snote') : null;
++      const styles = Array.prototype.slice.call(document.querySelectorAll('style'));
++      let frozenCount = 0;
++      for (const style of styles) frozenCount += style.textContent.split(FROZEN).length - 1;
++      return {
++        doc: {
++          innerWidth: window.innerWidth,
++          clientWidth: document.documentElement.clientWidth,
++          scrollWidth: document.documentElement.scrollWidth
++        },
++        mainCount: mains.length,
++        detailMainCount: document.querySelectorAll('main.detail-main').length,
++        main: box(main),
++        regionSel: regionSel,
++        regionFallback: !regionSel,
++        // 命不中声明选择器时**回落 <main>**（这一条是判据的一部分，不是兜底将就）。
++        region: box(regionEl || main),
++        noteCount: main ? main.querySelectorAll('.snote').length : 0,
++        note: box(noteEl),
++        noteText: noteEl ? noteEl.textContent.replace(/\\s+/g, ' ').trim().slice(0, 32) : '',
++        frozenCount: frozenCount
++      };
++    })()`);
++  }
++
++  /**
++   * ★ §22c 的**唯一**判据函数：一次量测 + 页面元信息 ⇒ 违规码。
++   *
++   * M0 反证、全站扫描、760/360 样本集、M1–M7 的变异复测**全部**走这一个函数 ——
++   * 「判据写错了」与「产品没问题」在日志里长得一样，所以判据本身也要能被咬到。
++   */
++  function wideProblems(geometry, meta) {
++    const problems = [];
++    const push = (code, msg) => problems.push({ code, msg });
++    const vw = geometry.doc.clientWidth;
++
++    // ① 布局族：解析不出来就是红（不许静默跳过一页）
++    if (!meta || !meta.kind || !meta.family) {
++      push('unclassified-layout', `路由「${meta ? meta.route : '（无元信息）'}」解析不出 kind/layout`
++        + `（kindOfRoute + kindByRoute 都没命中 ⇒ 布局族无从判定）`);
++    } else if (meta.family === 'detail') {
++      if (geometry.detailMainCount !== 1) {
++        push('missing-detail-main', `detail 族要求恰好 1 个 main.detail-main，实测 ${geometry.detailMainCount} 个`
++          + `（<main> 共 ${geometry.mainCount} 个）`);
++      }
++    } else if (meta.family === 'wide') {
++      if (geometry.detailMainCount !== 0) {
++        push('unexpected-detail-main', `wide 族要求 0 个 main.detail-main，实测 ${geometry.detailMainCount} 个`);
++      }
++    }
++
++    // ② 主数据区：命不中声明选择器时回落 <main>（在报告里标出，不算失败）；连 <main> 都没有才是红
++    const regionOk = geometry.region.count === 1 && geometry.region.width > 0;
++    if (geometry.main.count !== 1) {
++      push('data-region-missing', `没有唯一的 <main>（${geometry.mainCount} 个）—— 主数据区与回落锚点都不存在`);
++    } else if (!regionOk) {
++      push('data-region-missing', `主数据区不可测：${geometry.regionSel || '（无声明选择器命中，回落 <main>）'}`
++        + ` 的 border-box 宽 ${geometry.region.count === 1 ? wideRound(geometry.region.width) : 0}px`);
++    }
++
++    // ③ 页面级说明：<main> 里文档序第一个 .snote。没有它就是「无页面级说明」，跳过、不算失败。
++    if (geometry.note.count === 1 && regionOk && geometry.main.count === 1) {
++      const note = geometry.note;
++      const main = geometry.main;
++      const region = geometry.region;
++      // 主数据区可能比页面列还宽（窄档里表格在横向滚动容器里）⇒ 分母取两者的较小值。
++      const column = Math.min(region.width, main.width);
++      if (note.width < WIDE_NOTE_RATIO * column - 0.01) {
++        push('note-narrow', `说明宽 ${wideRound(note.width)}px < ${WIDE_NOTE_RATIO} × ${wideRound(column)}px`
++          + `（主数据区 ${geometry.regionSel || '<main>'} ${wideRound(region.width)}px · 页面列 ${wideRound(main.width)}px）`);
++      }
++      const anchors = [
++        { label: `主数据区 ${geometry.regionSel || '<main>'}`, box: region },
++        { label: '页面主容器 <main>', box: main }
++      ];
++      const aligned = anchors.filter(anchor => Math.abs(note.left - anchor.box.left) <= WIDE_TOL
++        && Math.abs(note.right - anchor.box.right) <= WIDE_TOL);
++      if (!aligned.length) {
++        push('note-axis', `说明 ${wideRound(note.left)}..${wideRound(note.right)} 与`
++          + anchors.map(anchor => `${anchor.label} ${wideRound(anchor.box.left)}..${wideRound(anchor.box.right)}`).join(' / ')
++          + ` 都不在同一轴上（左右各容许 ${WIDE_TOL}px）`);
++      }
++      if (note.scrollW > note.clientW + WIDE_TOL) {
++        push('note-clipped', `说明自身横向溢出 ${note.scrollW - note.clientW}px`
++          + `（scrollWidth ${note.scrollW} > clientWidth ${note.clientW}）`);
++      }
++    }
++
++    // ④ 页面级横向溢出（视口写在码里：同一页在不同档的结论可以不同）
++    if (geometry.doc.scrollWidth > vw + WIDE_TOL) {
++      push(`page-overflow@${vw}`, `documentElement.scrollWidth ${geometry.doc.scrollWidth} > 视口 ${vw}`);
++    }
++    return problems;
++  }
++
++  /**
++   * 变异：把页面**内联 <style> 的真实文本**里的一段逐字替换掉（只在浏览器内存里，不碰磁盘）。
++   *
++   * 反空洞守卫：锚点必须**恰好出现 1 次**。0 次 ⇒ 变异根本没落地；≥2 次 ⇒ 改中的可能是别处、
++   * 后续断言测的不是这条规则。两种情况都返回 ok:false 且**不做任何替换**。
++   * （与 §22b 的 leafMutate 同一套纪律；本节自带一份，免得两节的判据互相牵连。）
++   */
++  async function wideMutate(target, anchor, replacement) {
++    return target.evaluate(`(() => {
++      const anchor = ${JSON.stringify(anchor)};
++      const styles = Array.prototype.slice.call(document.querySelectorAll('style'));
++      const counts = styles.map(style => style.textContent.split(anchor).length - 1);
++      const total = counts.reduce((sum, n) => sum + n, 0);
++      if (total !== 1) {
++        return { ok: false, occurrences: total, reason: '锚点在内联样式里出现 ' + total + ' 次（必须恰好 1 次）' };
++      }
++      const index = counts.findIndex(n => n === 1);
++      styles[index].textContent = styles[index].textContent.replace(anchor, ${JSON.stringify(replacement)});
++      return { ok: true, occurrences: 1 };
++    })()`);
++  }
++
++  /** M6 用：把不可断的 200 字符串写进页面级说明（页面内注入，绝不写盘）。 */
++  async function wideInjectToken(target, token) {
++    return target.evaluate(`(() => {
++      const main = document.querySelector('main');
++      const note = main ? main.querySelector('.snote') : null;
++      if (!note) return 'none';
++      note.textContent = ${JSON.stringify(token)};
++      return 'note';
++    })()`);
++  }
++
++  /** M7 用：给宽页的 <main> 加上 detail-main —— **注入前守卫**该类原本不存在。 */
++  async function wideInjectDetailMain(target) {
++    return target.evaluate(`(() => {
++      const mains = document.querySelectorAll('main');
++      if (!mains.length) return { ok: false, reason: '页面没有 <main>' };
++      const main = mains[0];
++      if (main.classList.contains('detail-main')) {
++        return { ok: false, reason: '<main> 原本就带 detail-main（wide 族的注入前提不成立）' };
++      }
++      main.classList.add('detail-main');
++      return { ok: true, added: true, detailMain: document.querySelectorAll('main.detail-main').length };
++    })()`);
++  }
++
++  console.log('\n=== 22c) Wide Data Page 页面级说明的同轴门禁（布局族 × 全站几何）===');
++  if (urlArg) {
++    // 这一节的路由清单**从产物目录现算**（遍历产物目录里所有 index.html）：线上模式没有产物目录，
++    // 如实跳过 —— 不拿首页硬凑一份假清单，也不伪造几何读数。
++    console.log('  ℹ️  --url= 线上冒烟：§22c 的路由清单从产物目录现算（遍历其中所有 index.html）⇒ 线上模式如实跳过（不造数据）');
++  } else {
++    // §22c 自己开一条 page：整轮的 errors / externalRequests 是**全局累积**的（§26 的
++    // 「本地 0 外链」与 --compare 的 jsErrors 都读全局计数），430+ 次导航不许污染它们。
++    const widePage = await browser.newPage({ viewport: { width: WIDE_DESKTOP, height: 900 } });
++    const wideErrors = [];
++    const wideExternal = [];
++    let wideNavigations = 0;
++    widePage.on('pageerror', e => wideErrors.push(`${e.message}`));
++    widePage.on('console', m => { if (m.type() === 'error') wideErrors.push(`${m.text()}`); });
++    widePage.on('request', r => {
++      const url = r.url();
++      if (url.startsWith(base) || url.startsWith('data:')) return;
++      wideExternal.push(url);
++    });
++    /** 本节唯一的导航入口：顺手记账（导航次数 = 报告里「扫了多少次」的实证）。 */
++    const wideGoto = async (route, width) => {
++      await widePage.setViewportSize({ width, height: width >= 760 ? 900 : 800 });
++      wideNavigations += 1;
++      await widePage.goto(new URL(route, base).href, { waitUntil: 'load' });
++    };
++    try {
++      // ---- 路由清单 + 布局族解析（kindOfRoute 优先，数据驱动的静态路由由 kindByRoute 补齐）----
++      const wideKindMap = wideKindByRoute();
++      const wideRoutes = wideRoutesFromDisk();
++      const wideMeta = wideRoutes.map(route => {
++        const kind = pageKinds.kindOfRoute(route) || wideKindMap.get(route) || null;
++        return { route, kind, family: kind ? pageKinds.layoutOf(kind) : null };
++      });
++      const wideUnclassified = wideMeta.filter(meta => !meta.kind || !meta.family);
++      const wideFamilyOf = family => wideMeta.filter(meta => meta.family === family).map(meta => meta.route);
++      const wideRoutesOfFamily = { wide: wideFamilyOf('wide'), detail: wideFamilyOf('detail'), other: wideFamilyOf('other') };
++      const wideKindCount = new Set(wideMeta.map(meta => meta.kind).filter(Boolean)).size;
++
++      // ---- 1440：全站几何；390：全站 documentElement.scrollWidth ----
++      const wideGeometry = new Map();
++      const wideProblems1440 = new Map();
++      const wideNarrow = new Map();
++      for (const meta of wideMeta) {
++        await wideGoto(meta.route, WIDE_DESKTOP);
++        const geometry = await wideMeasure(widePage);
++        wideGeometry.set(meta.route, geometry);
++        wideProblems1440.set(meta.route, wideProblems(geometry, meta));
++      }
++      for (const meta of wideMeta) {
++        await wideGoto(meta.route, WIDE_NARROW);
++        const geometry = await wideMeasure(widePage);
++        // 390 档只判溢出：列宽/同轴那一档的定义是「列铺满可用宽」，窄档里表格在滚动容器里，
++        // 其余码在窄档没有意义（判据函数照跑，只取溢出类，码本身仍由 wideProblems 产出）。
++        wideNarrow.set(meta.route, {
++          scrollWidth: geometry.doc.scrollWidth,
++          clientWidth: geometry.doc.clientWidth,
++          codes: wideCodes(wideProblems(geometry, meta)).filter(code => code.startsWith('page-overflow@'))
++        });
++      }
++
++      // ---- 760 / 360：只量样本集（同一份判据）----
++      const wideDiskSet = new Set(wideRoutes);
++      const wideSampleRoutes = wideSampleSet(wideRoutes, wideMeta).filter(route => wideDiskSet.has(route));
++      const wideSampleGeometry = new Map();
++      for (const route of wideSampleRoutes) {
++        for (const width of WIDE_SAMPLE_VIEWPORTS) {
++          await wideGoto(route, width);
++          wideSampleGeometry.set(`${route}@${width}`, await wideMeasure(widePage));
++        }
++      }
++
++      // ---- 汇总（全部从上面那一次判据来，不另算一套）----
++      const wideAllProblems = wideMeta.map(meta => ({ meta, codes: wideCodes(wideProblems1440.get(meta.route)) }));
++      const wideHit = code => wideAllProblems.filter(item => item.codes.includes(code)).map(item => item.meta.route);
++      const wideNoteRoutes = wideRoutes.filter(route => wideGeometry.get(route).noteCount > 0);
++      const wideNoNoteRoutes = wideRoutes.filter(route => wideGeometry.get(route).noteCount === 0);
++      const wideNarrowNotes = wideHit('note-narrow');
++      const wideAxisNotes = wideHit('note-axis');
++      const wideClippedNotes = wideHit('note-clipped');
++      // 同轴锚的分布：判据是「与主数据区或页面主容器任一成立」，那就把两个锚各自的页数也报出来 ——
++      // 免得「或」看起来像放宽。/plans/ 的主数据区 .pchglist 自身内缩（56..1384），只有 <main> 这一锚成立。
++      const wideAnchorStats = { region: 0, main: 0, both: 0, neither: 0 };
++      for (const route of wideRoutes.filter(item => wideGeometry.get(item).noteCount > 0)) {
++        const geometry = wideGeometry.get(route);
++        const inRegion = Math.abs(geometry.note.left - geometry.region.left) <= WIDE_TOL
++          && Math.abs(geometry.note.right - geometry.region.right) <= WIDE_TOL;
++        const inMain = Math.abs(geometry.note.left - geometry.main.left) <= WIDE_TOL
++          && Math.abs(geometry.note.right - geometry.main.right) <= WIDE_TOL;
++        if (inRegion) wideAnchorStats.region += 1;
++        if (inMain) wideAnchorStats.main += 1;
++        if (inRegion && inMain) wideAnchorStats.both += 1;
++        if (!inRegion && !inMain) wideAnchorStats.neither += 1;
++      }
++      const wideRegionMissing = wideHit('data-region-missing');
++      const wideMissingDetailMain = wideHit('missing-detail-main');
++      const wideUnexpectedDetailMain = wideHit('unexpected-detail-main');
++      const wideOverflow1440 = wideRoutes.filter(route => wideProblems1440.get(route).some(problem => problem.code === `page-overflow@${WIDE_DESKTOP}`));
++      const wideOverflow390 = wideRoutes.filter(route => wideNarrow.get(route).codes.length > 0);
++      const wideOverflowPages = [...new Set([...wideOverflow1440, ...wideOverflow390])];
++      const wideFrozenPages = wideRoutes.filter(route => wideGeometry.get(route).frozenCount === 1);
++      const wideFrozenDrift = wideRoutes.filter(route => wideGeometry.get(route).frozenCount !== 1);
++      const wideRegionCounts = {};
++      for (const route of wideRoutes) {
++        const geometry = wideGeometry.get(route);
++        const key = geometry.regionFallback ? `<main>（回落）` : geometry.regionSel;
++        wideRegionCounts[key] = (wideRegionCounts[key] || 0) + 1;
++      }
++      /** 违规页的逐页读数：M0 反证与「哪一页坏了」的证据都从这里出。 */
++      const wideExplainRoute = route => {
++        const geometry = wideGeometry.get(route);
++        const problems = wideProblems1440.get(route);
++        return `${route || '/'} [${wideCodes(problems).join(', ') || '无码'}] 说明 ${wideRound(geometry.note.width)}px`
++          + `（主数据区 ${geometry.regionSel || '<main>'} ${wideRound(geometry.region.width)}px · 页面列 ${wideRound(geometry.main.width)}px）`;
++      };
++      const wideSamples = (routes, limit = 5) => routes.slice(0, limit).map(route => route || '/').join(' ')
++        + (routes.length > limit ? ` …（还有 ${routes.length - limit}）` : '');
++
++      // ---- ① 布局族：186/186 全部可解析（解析不出来 = unclassified-layout，判红）----
++      check(`§22c 全站每一页的布局族都能解析（page-kinds.kindOfRoute + layoutOf，数据驱动的静态路由由 kindByRoute 补齐）`,
++        wideMeta.length > 0 && wideUnclassified.length === 0,
++        wideUnclassified.length
++          ? `解析不出布局族的页面 ${wideUnclassified.length}/${wideMeta.length}：${wideSamples(wideUnclassified.map(meta => meta.route))}`
++          : `${wideMeta.length} 页全部可解析（${wideKindCount} 种 kind）· wide ${wideRoutesOfFamily.wide.length} / detail ${wideRoutesOfFamily.detail.length} / other ${wideRoutesOfFamily.other.length} · unclassified-layout 0 个`);
++
++      // ---- ② 注册表驱动的入口在产物里都存在（采样前提，不写死 slug）----
++      {
++        const registryRoutes = [
++          ...audienceLib.COLLECTION_PAGES.map(page => `${page.slug}/`),
++          ...audienceLib.NEED_PAGES.map(page => `need/${page.slug}/`),
++          landingsLib.VENDOR_HUB.route,
++          landingsLib.CATEGORY_HUB.route
++        ];
++        const missing = registryRoutes.filter(route => !wideDiskSet.has(route));
++        check(`§22c 注册表驱动的入口（${audienceLib.COLLECTION_PAGES.length} 目录页 + ${audienceLib.NEED_PAGES.length} 按需求页 + 2 枢纽页）在产物里都存在`,
++          missing.length === 0, missing.length ? `缺 ${missing.join(' ')}` : `逐条命中（${registryRoutes.length} 条，全部现场推导，不写死 slug）`);
++      }
++
++      // ---- ③ @1440：页面级说明与主数据区同轴（比例 + 同轴 + 不裁切）----
++      {
++        const bad = [...new Set([...wideNarrowNotes, ...wideAxisNotes, ...wideClippedNotes])];
++        check(`§22c @${WIDE_DESKTOP} 页面级说明与主数据区同轴（宽 ≥ ${WIDE_NOTE_RATIO}×主数据区、与主容器或数据区 ≤${WIDE_TOL}px、自身不裁切）`,
++          bad.length === 0,
++          `${wideNoteRoutes.length} 页有页面级说明 · ${wideNoNoteRoutes.length} 页标为「无页面级说明」（跳过该条、不算失败：${wideSamples(wideNoNoteRoutes, 3)}）`
++          + ` · 窄说明 ${wideNarrowNotes.length} · 不同轴 ${wideAxisNotes.length} · 裁切 ${wideClippedNotes.length}`
++          + ` · 同轴锚：主数据区 ${wideAnchorStats.region} 页 / 页面主容器 ${wideAnchorStats.main} 页 / 两者都 ${wideAnchorStats.both} 页 / 都不 ${wideAnchorStats.neither} 页`
++          + (bad.length ? ` · 命中样例：${bad.slice(0, 5).map(wideExplainRoute).join('；')}` : ''));
++      }
++
++      // ---- ④ @1440：全站无横向溢出 ----
++      check(`§22c @${WIDE_DESKTOP} 全站 ${wideRoutes.length} 页都没有横向溢出`,
++        wideOverflow1440.length === 0,
++        wideOverflow1440.length
++          ? `${wideOverflow1440.length} 页溢出：${wideSamples(wideOverflow1440)}`
++          : `documentElement.scrollWidth ≤ 视口+${WIDE_TOL} 全部成立`);
++
++      // ---- ⑤ @390：全站只量 documentElement.scrollWidth ----
++      check(`§22c @${WIDE_NARROW} 全站 ${wideRoutes.length} 页 documentElement.scrollWidth ≤ 视口+${WIDE_TOL}`,
++        wideOverflow390.length === 0,
++        wideOverflow390.length
++          ? `${wideOverflow390.length} 页溢出：${wideSamples(wideOverflow390.map(route => `${route || '/'}=${wideNarrow.get(route).scrollWidth}px`))}`
++          : `最宽的一页 ${wideRoutes.reduce((max, route) => Math.max(max, wideNarrow.get(route).scrollWidth), 0)}px（视口 ${WIDE_NARROW}）`);
++
++      // ---- ⑥ 布局族一致性：detail 恰好 1 个 main.detail-main；wide 0 个 ----
++      check(`§22c 布局族一致性：detail 族（${wideRoutesOfFamily.detail.length} 页）恰好 1 个 main.detail-main、wide 族（${wideRoutesOfFamily.wide.length} 页）0 个`,
++        wideMissingDetailMain.length === 0 && wideUnexpectedDetailMain.length === 0,
++        `missing-detail-main ${wideMissingDetailMain.length} · unexpected-detail-main ${wideUnexpectedDetailMain.length}`
++        + (wideMissingDetailMain.length ? ` · 缺列：${wideSamples(wideMissingDetailMain)}` : '')
++        + (wideUnexpectedDetailMain.length ? ` · 多了列：${wideSamples(wideUnexpectedDetailMain)}` : ''));
++
++      // ---- ⑦ 主数据区判定（回落 <main> 的页面逐类登记，不算失败）----
++      check('§22c 每一页都判得出主数据区（声明选择器或回落 <main>）',
++        wideRegionMissing.length === 0,
++        wideRegionMissing.length
++          ? `${wideRegionMissing.length} 页判不出：${wideSamples(wideRegionMissing)}`
++          : `声明选择器命中 ${wideRoutes.length - (wideRegionCounts['<main>（回落）'] || 0)} 页 · 回落 <main> ${wideRegionCounts['<main>（回落）'] || 0} 页（${Object.entries(wideRegionCounts).map(([sel, n]) => `${sel}=${n}`).join(' ')}）`);
++
++      // ---- ⑧ 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次 ----
++      check(`§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（${wideRoutes.length} 页）`,
++        wideFrozenDrift.length === 0,
++        wideFrozenDrift.length
++          ? `${wideFrozenDrift.length} 页不符（改动前产物在这里必然全红，这正是 M0 的反证面之一）：`
++            + wideFrozenDrift.slice(0, 4).map(route => `${route || '/'}=${wideGeometry.get(route).frozenCount} 次`).join(' ')
++          : `${wideFrozenPages.length}/${wideRoutes.length} 页恰好 1 次 · 锚点「${WIDE_SNOTE_FROZEN.slice(0, 24)}…」`);
++
++      // ---- ⑨ 760 / 360：样本集（同一份判据，不另写一套）----
++      const wideSampleProblems = [];
++      for (const route of wideSampleRoutes) {
++        const meta = wideMeta.find(item => item.route === route);
++        for (const width of WIDE_SAMPLE_VIEWPORTS) {
++          const geometry = wideSampleGeometry.get(`${route}@${width}`);
++          const problems = wideProblems(geometry, meta);
++          for (const problem of problems) wideSampleProblems.push({ route, width, ...problem });
++        }
++      }
++      for (const width of WIDE_SAMPLE_VIEWPORTS) {
++        const hits = wideSampleProblems.filter(problem => problem.width === width);
++        check(`§22c @${width} 样本集 ${wideSampleRoutes.length} 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出）`,
++          hits.length === 0,
++          hits.length
++            ? hits.slice(0, 5).map(problem => `${problem.route || '/'} ${problem.code}：${problem.msg}`).join('；')
++            : `0 违规码 · 样本集：${wideSampleRoutes.map(route => route || '/').join(' ')}`);
++      }
++
++      // ---- ⑩ M1–M7 变异牙 ----
++      // 每条牙都先过「锚点恰好 1 次」的反空洞守卫，再用**同一个** wideProblems 复测。
++      const wideHash = route => {
++        const file = path.join(DIR, route, 'index.html');
++        return fs.existsSync(file) ? crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex') : null;
++      };
++      const wideHashBefore = new Map(WIDE_MUTATION_TARGETS.map(route => [route, wideHash(route)]));
++      // 前置守卫：四个壳必须真的是 wide 族、且真的带页面级说明 —— 否则变异测的不是这条规则。
++      const wideTargetGuard = WIDE_MUTATION_TARGETS.map(route => {
++        const meta = wideMeta.find(item => item.route === route);
++        const geometry = wideGeometry.get(route);
++        return { route, ok: Boolean(meta && meta.family === 'wide' && geometry && geometry.noteCount > 0),
++          why: meta ? `${meta.kind}/${meta.family} · .snote ${geometry ? geometry.noteCount : 0} 个` : '（产物里没有这一页）' };
++      });
++      check(`§22c M1–M4 的四个壳（${WIDE_MUTATION_TARGETS.join(' ')}）都是 wide 族且带页面级说明`,
++        wideTargetGuard.every(item => item.ok),
++        wideTargetGuard.map(item => `${item.route || '/'} ${item.why}`).join(' · '));
++
++      const wideMutations = WIDE_MUTATION_TARGETS.map((route, index) => ({
++        id: `M${index + 1}`, route, width: WIDE_DESKTOP, expect: 'note-narrow',
++        what: `把冻结串的 max-width 换回 70ch（${route} 这一族的页面级说明曾被压窄）`,
++        anchor: WIDE_SNOTE_FROZEN, replacement: WIDE_SNOTE_NARROW
++      }));
++      wideMutations.push({
++        id: 'M6', route: 'student/', width: WIDE_NARROW, expect: `page-overflow@${WIDE_NARROW}`, inject: true,
++        what: `拿走 .snote 的 overflow-wrap:anywhere 并注入 ${WIDE_LONG_TOKEN.length} 字符不可断串`,
++        anchor: WIDE_SNOTE_FROZEN, replacement: WIDE_SNOTE_NOWRAP
++      });
++      wideMutations.push({
++        id: 'M7', route: 'status/', width: WIDE_DESKTOP, expect: 'unexpected-detail-main', dom: true,
++        what: '给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）'
++      });
++
++      metrics.layoutMutationCodes = {};
++      const wideMutationHits = new Map();
++      for (const mutation of wideMutations) {
++        const target = await browser.newPage({ viewport: { width: mutation.width, height: 900 } });
++        let guard = null;
++        let codes = [];
++        let injected = null;
++        let detail = '变异未执行';
++        try {
++          wideNavigations += 1;
++          await target.goto(new URL(mutation.route, base).href, { waitUntil: 'load' });
++          if (mutation.dom) {
++            guard = await wideInjectDetailMain(target);
++          } else {
++            guard = await wideMutate(target, mutation.anchor, mutation.replacement);
++          }
++          if (guard.ok) {
++            if (mutation.inject) injected = await wideInjectToken(target, WIDE_LONG_TOKEN);
++            const geometry = await wideMeasure(target);
++            const meta = wideMeta.find(item => item.route === mutation.route);
++            const problems = wideProblems(geometry, meta);
++            codes = wideCodes(problems);
++            metrics.layoutMutationCodes[mutation.id] = codes;
++            wideMutationHits.set(mutation.id, codes.includes(mutation.expect));
++            detail = `说明 ${wideRound(geometry.note.width)}px · 页面列 ${wideRound(geometry.main.width)}px`
++              + ` · detail-main ${geometry.detailMainCount} 个 · scrollWidth ${geometry.doc.scrollWidth}（视口 ${geometry.doc.clientWidth}）`
++              + (mutation.inject ? ` · 不可断串注入位置 ${injected}` : '')
++              + ` · 违规码 [${codes.join(', ') || '无'}]`;
++          }
++        } finally {
++          await target.close();
++        }
++        check(`§22c ${mutation.id} ${mutation.dom ? 'DOM 注入前提成立（该类原本不存在）' : '变异锚点唯一（逐字替换前必须恰好出现 1 次）'}`,
++          Boolean(guard && guard.ok),
++          guard
++            ? (guard.ok
++              ? `锚点「${mutation.anchor ? mutation.anchor.slice(0, 30) + '…' : '<main> 加 detail-main'}」${mutation.dom ? '注入前提成立' : '出现 1 次'} · ${mutation.what}`
++              : `${guard.reason} ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）`)
++            : '变异未执行（页面没打开）');
++        check(`§22c ${mutation.id} 变异后复测必须出现「${mutation.expect}」违规码（${mutation.what}）`,
++          Boolean(guard && guard.ok) && (!mutation.inject || injected === 'note') && codes.includes(mutation.expect),
++          guard && guard.ok
++            ? `期望 ${mutation.expect} · 实测 [${codes.join(', ') || '无'}] · ${detail}`
++            : '锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）');
++      }
++
++      // ---- M6 正对照：同样的 200 字符不可断串、CSS 一个字节都不动 ⇒ 必须不溢出 ----
++      {
++        const target = await browser.newPage({ viewport: { width: WIDE_NARROW, height: 800 } });
++        let geometry = null;
++        let injected = null;
++        try {
++          wideNavigations += 1;
++          await target.goto(new URL('student/', base).href, { waitUntil: 'load' });
++          injected = await wideInjectToken(target, WIDE_LONG_TOKEN);
++          geometry = await wideMeasure(target);
++        } finally {
++          await target.close();
++        }
++        const controlProblems = geometry
++          ? wideProblems(geometry, wideMeta.find(item => item.route === 'student/'))
++          : [{ code: '（页面没打开）', msg: '' }];
++        const controlOverflow = controlProblems.filter(problem => problem.code.startsWith('page-overflow@'));
++        metrics.layoutMutationCodes['M6-control'] = wideCodes(controlOverflow);
++        check(`§22c M6 正对照：同样注入 ${WIDE_LONG_TOKEN.length} 字符不可断串、CSS 一字不动 ⇒ @${WIDE_NARROW} 不得溢出`,
++          Boolean(geometry) && injected === 'note' && geometry.doc.scrollWidth <= WIDE_NARROW + WIDE_TOL && controlOverflow.length === 0,
++          geometry
++            ? `不可断串注入位置 ${injected} · scrollWidth ${geometry.doc.scrollWidth}（视口 ${geometry.doc.clientWidth}）`
++              + ` · 溢出类违规码 [${wideCodes(controlOverflow).join(', ') || '无'}]（全部码 [${wideCodes(controlProblems).join(', ') || '无'}]，390 档只看溢出）`
++            : '页面没打开');
++      }
++
++      // ---- 反空洞守卫自身的负例自检 ----
++      // 光是「每条变异都过守卫」还不够：如果守卫对任何输入都返回 ok，它就是个摆设。
++      {
++        const target = await browser.newPage({ viewport: { width: WIDE_DESKTOP, height: 900 } });
++        let absent = null;
++        let duplicated = null;
++        try {
++          wideNavigations += 1;
++          await target.goto(new URL('student/', base).href, { waitUntil: 'load' });
++          absent = await wideMutate(target, '§22c-这个锚点在产物里不存在', 'x');
++          // `color: var(--mut);` 在整份内联样式里出现几十次（≥2 ⇒ 非唯一）
++          duplicated = await wideMutate(target, 'color: var(--mut);', 'color: var(--mut);');
++        } finally {
++          await target.close();
++        }
++        check('§22c 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因',
++          Boolean(absent && absent.ok === false && absent.occurrences === 0 && absent.reason)
++          && Boolean(duplicated && duplicated.ok === false && duplicated.occurrences > 1 && duplicated.reason),
++          `不存在的锚点：${absent ? `ok=${absent.ok} · 出现 ${absent.occurrences} 次 · ${absent.reason || ''}` : '未执行'}`
++          + ` ／ 非唯一锚点：${duplicated ? `ok=${duplicated.ok} · 出现 ${duplicated.occurrences} 次 · ${duplicated.reason || ''}` : '未执行'}`);
++      }
++
++      // ---- 判据自检：8 个违规码必须全部由 wideProblems() 一处产出、且都可达 ----
++      {
++        const g0 = {
++          doc: { innerWidth: WIDE_DESKTOP, clientWidth: WIDE_DESKTOP, scrollWidth: WIDE_DESKTOP },
++          mainCount: 1, detailMainCount: 0,
++          main: { count: 1, left: 0, right: 1380, width: 1380, scrollW: 1380, clientW: 1380 },
++          regionSel: '.ctable', regionFallback: false,
++          region: { count: 1, left: 0, right: 1380, width: 1380, scrollW: 1380, clientW: 1380 },
++          noteCount: 1,
++          note: { count: 1, left: 0, right: 452.81, width: 452.81, scrollW: 453, clientW: 453 },
++          frozenCount: 1
++        };
++        const wideMetaWide = { route: 'synthetic/', kind: 'collection', family: 'wide' };
++        const reachable = new Set();
++        const collect = problems => wideCodes(problems).forEach(code => reachable.add(code.startsWith('page-overflow@') ? 'page-overflow@<vw>' : code));
++        collect(wideProblems(g0, wideMetaWide));                                                                    // note-narrow + note-axis
++        collect(wideProblems(Object.assign({}, g0, { detailMainCount: 1 }), wideMetaWide));                          // unexpected-detail-main
++        collect(wideProblems(Object.assign({}, g0, { detailMainCount: 0, noteCount: 0, note: Object.assign({}, g0.note, { count: 0 }) }),
++          { route: 'synthetic-deal/', kind: 'deal', family: 'detail' }));                                            // missing-detail-main
++        collect(wideProblems(Object.assign({}, g0, { note: Object.assign({}, g0.note, { left: 0, right: 1380, width: 1380, scrollW: 1400, clientW: 1379 }) }), wideMetaWide)); // note-clipped
++        collect(wideProblems(Object.assign({}, g0, { doc: Object.assign({}, g0.doc, { scrollWidth: 1500 }) }), wideMetaWide));  // page-overflow@1440
++        collect(wideProblems(Object.assign({}, g0, { mainCount: 0, main: Object.assign({}, g0.main, { count: 0 }) }), wideMetaWide)); // data-region-missing
++        collect(wideProblems(g0, { route: 'synthetic-unknown/', kind: null, family: null }));                        // unclassified-layout
++        const missingCodes = WIDE_CODE_VOCABULARY.filter(code => !reachable.has(code));
++        const extraCodes = [...reachable].filter(code => !WIDE_CODE_VOCABULARY.includes(code));
++        check('§22c 违规码自检：8 个码全部由 wideProblems() 一处产出、且都可达（不多不少）',
++          missingCodes.length === 0 && extraCodes.length === 0,
++          `可达 ${reachable.size}/${WIDE_CODE_VOCABULARY.length} · 缺 ${missingCodes.join(',') || '无'} · 多 ${extraCodes.join(',') || '无'}`);
++      }
++
++      // ---- M5：不重复造第二套 —— 既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码 ----
++      {
++        const wideLeafResults = results.filter(item => item.name.startsWith('§22b'));
++        const wideLeafFailed = wideLeafResults.filter(item => !item.ok);
++        const wideLeafCodes = metrics.leafMutationCodes || {};
++        const wideLeafExpect = { M1: 'center', M2: 'width', M3: 'src-width', M4: `page-overflow@${LEAF_NARROW}`, M5: 'leaf-consistency' };
++        const wideLeafMissed = Object.entries(wideLeafExpect)
++          .filter(([id, code]) => !(wideLeafCodes[id] || []).includes(code))
++          .map(([id, code]) => `${id} 期望 ${code} 实测 [${(wideLeafCodes[id] || []).join(',') || '（未跑）'}]`);
++        check('§22c M5（不重复造第二套）：既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码，且 §22b 的断言全绿',
++          wideLeafResults.length > 0 && wideLeafFailed.length === 0 && wideLeafMissed.length === 0
++          && (wideLeafCodes['M4-control'] || []).length === 0,
++          `§22b 断言 ${wideLeafResults.length} 项（失败 ${wideLeafFailed.length}）`
++          + ` · §22b 变异码 ${Object.keys(wideLeafExpect).map(id => `${id}=[${(wideLeafCodes[id] || []).join(',') || '未跑'}]`).join(' ')}`
++          + ` · M4 正对照=[${(wideLeafCodes['M4-control'] || []).join(',') || '无'}]`
++          + (wideLeafMissed.length ? ` · 未咬到：${wideLeafMissed.join('；')}` : ''));
++      }
++
++      // ---- 零磁盘污染：变异只发生在浏览器页面里 ----
++      const wideHashAfter = new Map(WIDE_MUTATION_TARGETS.map(route => [route, wideHash(route)]));
++      check('§22c 变异牙零磁盘污染：被改产物的 sha256 变异前后相等（byte-exact）',
++        WIDE_MUTATION_TARGETS.every(route => wideHashBefore.get(route)
++          && wideHashBefore.get(route) === wideHashAfter.get(route)),
++        WIDE_MUTATION_TARGETS.map(route => `${route || '/'} ${String(wideHashBefore.get(route)).slice(0, 10)}…`).join(' · ')
++        + `（前 ${WIDE_MUTATION_TARGETS.map(route => String(wideHashBefore.get(route)).slice(0, 6)).join('/')}`
++        + ` · 后 ${WIDE_MUTATION_TARGETS.map(route => String(wideHashAfter.get(route)).slice(0, 6)).join('/')}）`);
++
++      // ---- 本节自己的错误账本（整轮计数留给别的节，这里不污染）----
++      check(`§22c 全站扫描（${wideNavigations} 次导航）没有 JS 错误、没有外部请求`,
++        wideErrors.length === 0 && wideExternal.length === 0,
++        `JS 错误 ${wideErrors.length} 个${wideErrors.length ? `：${wideErrors.slice(0, 3).join('；')}` : ''}`
++        + ` · 外部请求 ${wideExternal.length} 个${wideExternal.length ? `：${wideExternal.slice(0, 3).join(' ')}` : ''}`);
++
++      // ---- 机器可读输出（--compare 的 6 项判据都不读这些键，互不影响）----
++      metrics.layoutSweep = {
++        total: wideRoutes.length,
++        wide: wideRoutesOfFamily.wide.length,
++        detail: wideRoutesOfFamily.detail.length,
++        other: wideRoutesOfFamily.other.length,
++        notesChecked: wideNoteRoutes.length,
++        narrowNotes: wideNarrowNotes.length,
++        overflowPages: wideOverflowPages.length,
++        unexpectedDetailMain: wideUnexpectedDetailMain.length,
++        missingDetailMain: wideMissingDetailMain.length,
++        unclassified: wideUnclassified.length
++      };
++      metrics.layoutFrozenRule = {
++        anchor: WIDE_SNOTE_FROZEN,
++        pagesExactlyOnce: wideFrozenPages.length,
++        pagesTotal: wideRoutes.length,
++        drift: wideFrozenDrift.slice(0, 10)
++      };
++      metrics.layoutDataRegions = wideRegionCounts;
++      metrics.layoutNoteAnchors = wideAnchorStats;
++      metrics.layoutSample = { viewports: WIDE_SAMPLE_VIEWPORTS, routes: wideSampleRoutes };
++      metrics.layoutScan = { navigations: wideNavigations, jsErrors: wideErrors.length, externalRequests: wideExternal.length };
++      metrics.layoutViolations = wideAllProblems
++        .filter(item => item.codes.length > 0)
++        .map(item => ({ route: item.meta.route, kind: item.meta.kind, family: item.meta.family, codes: item.codes,
++          note: wideRound(wideGeometry.get(item.meta.route).note.width),
++          region: wideRound(wideGeometry.get(item.meta.route).region.width),
++          column: wideRound(wideGeometry.get(item.meta.route).main.width),
++          regionSel: wideGeometry.get(item.meta.route).regionSel }));
++
++      // ---- mutations.json：期望 vs 实测逐条落盘（与 --json= 报告同目录）----
++      // 为什么单独一个文件：机器可读的「牙有没有咬到」不该埋在 827 项断言里，回归时一眼可 diff。
++      // 它反映**最近一次**运行：`--dir=dist.baseline` 那一轮的读数在 M0 的反证报告里，
++      // 随后被 `--dir=dist.synth-fixed`（或真实 dist）的绿轮覆盖 —— README 里写明了这个先后关系。
++      if (jsonArg) {
++        const wideReportFile = path.resolve(ROOT, jsonArg.slice('--json='.length));
++        const wideMutationsFile = path.join(path.dirname(wideReportFile), 'mutations.json');
++        fs.mkdirSync(path.dirname(wideMutationsFile), { recursive: true });
++        fs.writeFileSync(wideMutationsFile, `${JSON.stringify({
++          target: base,
++          dir: path.relative(ROOT, DIR),
++          generatedAt: new Date().toISOString(),
++          frozenAnchor: WIDE_SNOTE_FROZEN,
++          noteRatio: `note.width >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)`,
++          rows: wideMutations.map(mutation => {
++            const codes = metrics.layoutMutationCodes[mutation.id] || [];
++            return {
++              id: mutation.id, route: mutation.route, width: mutation.width, expect: mutation.expect,
++              what: mutation.what, observed: codes, hit: Boolean(wideMutationHits.get(mutation.id)),
++              anchor: mutation.anchor || null, domInjection: Boolean(mutation.dom), injectedTokenLength: mutation.inject ? WIDE_LONG_TOKEN.length : 0
++            };
++          }),
++          control: { id: 'M6-control', route: 'student/', width: WIDE_NARROW,
++            expect: `不得出现 page-overflow@${WIDE_NARROW}`, observed: metrics.layoutMutationCodes['M6-control'] || [] },
++          m5Reuse: { section: '§22b', assertions: results.filter(item => item.name.startsWith('§22b')).length,
++            failing: results.filter(item => item.name.startsWith('§22b') && !item.ok).length,
++            codes: { M1: metrics.leafMutationCodes.M1, M2: metrics.leafMutationCodes.M2, M3: metrics.leafMutationCodes.M3,
++              M4: metrics.leafMutationCodes.M4, M5: metrics.leafMutationCodes.M5, 'M4-control': metrics.leafMutationCodes['M4-control'] } },
++          layoutSweep: metrics.layoutSweep
++        }, null, 2)}\n`, 'utf8');
++        console.log(`     变异读数已写出：${path.relative(ROOT, wideMutationsFile)}（${wideMutations.length} 条牙 + M6 正对照 + M5 复用）`);
++      }
++
++      // ---- prompt §18 的表：布局族读数 + 变异牙读数 ----
++      {
++        const wideFamilyRow = (label, routes) => {
++          const geometryOf = route => wideGeometry.get(route);
++          const codesOf = route => wideCodes(wideProblems1440.get(route));
++          const notes = routes.filter(route => geometryOf(route).noteCount > 0).length;
++          const narrow = routes.filter(route => codesOf(route).includes('note-narrow')).length;
++          const axis = routes.filter(route => codesOf(route).includes('note-axis')).length;
++          const clipped = routes.filter(route => codesOf(route).includes('note-clipped')).length;
++          const overflow = routes.filter(route => codesOf(route).includes(`page-overflow@${WIDE_DESKTOP}`)
++            || wideNarrow.get(route).codes.length > 0).length;
++          const detailMain = routes.filter(route => codesOf(route).includes('missing-detail-main')
++            || codesOf(route).includes('unexpected-detail-main')).length;
++          const unclassified = routes.filter(route => codesOf(route).includes('unclassified-layout')).length;
++          return [label, routes.length, notes, narrow, axis, clipped, overflow, detailMain, unclassified];
++        };
++        const wideTableRows = [
++          wideFamilyRow('wide', wideRoutesOfFamily.wide),
++          wideFamilyRow('detail', wideRoutesOfFamily.detail),
++          wideFamilyRow('other', wideRoutesOfFamily.other),
++          wideFamilyRow('合计', wideRoutes)
++        ];
++        const wideHeaders = ['族', '页面', '有说明', '窄说明', '不同轴', '裁切', '溢出', 'detail-main', '未分类'];
++        const wideWidths = [8, 6, 8, 8, 8, 6, 6, 13, 8];
++        console.log(`     布局族读数表（prompt §18）：全站 ${wideRoutes.length} 页 = wide ${wideRoutesOfFamily.wide.length} + detail ${wideRoutesOfFamily.detail.length} + other ${wideRoutesOfFamily.other.length}`);
++        console.log(`     ${wideHeaders.map((head, i) => wideCell(head, wideWidths[i])).join('')}`);
++        for (const row of wideTableRows) console.log(`     ${row.map((value, i) => wideCell(value, wideWidths[i])).join('')}`);
++        console.log(`     视口：${WIDE_DESKTOP} 全站几何 + 溢出 · ${WIDE_NARROW} 全站 scrollWidth · ${WIDE_SAMPLE_VIEWPORTS.join('/')} 样本集 ${wideSampleRoutes.length} 页`);
++        console.log(`     主数据区：${Object.entries(wideRegionCounts).map(([sel, n]) => `${sel}=${n} 页`).join(' · ')}`);
++        console.log(`     冻结串：${wideFrozenPages.length}/${wideRoutes.length} 页内联样式里恰好 1 次（M0 的改动前产物在这里是 0/${wideRoutes.length}）`);
++        const wideMutationRows = [
++          ['M0（反证）', `--dir=dist.baseline`, 'note-narrow ×48', '另跑一次同一条命令：改动前产物必须红'],
++          ...wideMutations.map(mutation => {
++            const codes = metrics.layoutMutationCodes[mutation.id] || [];
++            return [mutation.id, `${mutation.route || '/'}@${mutation.width}`, mutation.expect,
++              `[${codes.join(', ') || '（未执行）'}]${codes.includes(mutation.expect) ? '' : ' ←未咬到'}`];
++          }),
++          ['M6 正对照', `student/@${WIDE_NARROW}`, '不得出现 page-overflow', `[${(metrics.layoutMutationCodes['M6-control'] || []).join(', ') || '无'}]`],
++          ['M5（复用）', '§22b 的 M1–M5', '既有牙全绿', `${results.filter(item => item.name.startsWith('§22b')).length} 项断言`]
++        ];
++        const wideMutHeaders = ['牙', '页面@视口', '期望', '实测'];
++        const wideMutWidths = [12, 24, 26, 40];
++        console.log('     变异牙读数表（期望 vs 实测）：');
++        console.log(`     ${wideMutHeaders.map((head, i) => wideCell(head, wideMutWidths[i])).join('')}`);
++        for (const row of wideMutationRows) console.log(`     ${row.map((value, i) => wideCell(value, wideMutWidths[i])).join('')}`);
++      }
++
++      console.log(`     读数：有页面级说明 ${wideNoteRoutes.length} 页（窄 ${wideNarrowNotes.length}）· 溢出 ${wideOverflowPages.length} 页`
++        + ` · detail-main 违规 ${wideMissingDetailMain.length + wideUnexpectedDetailMain.length} 页 · 未分类 ${wideUnclassified.length} 页`
++        + ` · 导航 ${wideNavigations} 次 · 本节 JS 错误 ${wideErrors.length} 个 · 外部请求 ${wideExternal.length} 个`);
++    } finally {
++      await widePage.close();
++    }
++  }
++
+   /* ------------------------------------------------------------------ */
+   /* 厂商资料页（v3.0 Stage E）                                           */
+   /* ------------------------------------------------------------------ */

@@ -1,0 +1,58 @@
+{
+  "at": "2026-10-06T13:12:57.538Z",
+  "old": {
+    "file": "truth-401.json",
+    "sha256": "46c28fa120a39ababf25826b86a08e57cf93e242baee8df264219e1d182e346e",
+    "bytes": 384076
+  },
+  "new": {
+    "file": "consumer-fix/truth-401.regen-t25.json",
+    "sha256": "3524854121505dcf39cf328b76550fd04d129c701c96660515eef0f17c5f251b",
+    "bytes": 384562
+  },
+  "diffCounts": {
+    "STRING-DIFF": 4,
+    "KEY-ONLY": 1
+  },
+  "numbersIdentical": true,
+  "checks": {
+    "没有任何数值差异（NUMBER-DIFF = 0）": true,
+    "没有类型/长度/成员差异（STRUCT-DIFF = 0）": true,
+    "totals 逐字段相同（除说明性字符串）": true,
+    "sets 三个集合的键集合逐条相同": true,
+    "sets 逐条的 beforeWidth/afterWidth/ratioAfter 相同": true,
+    "pages 条数相同": true,
+    "pages 里每条说明的 before/after 数值相同": true,
+    "invariants 的布尔值全等（只允许键名措辞变化）": true
+  },
+  "keyOnlyDiffs": [
+    {
+      "path": "$.invariants",
+      "kind": "KEY-ONLY",
+      "detail": "只旧有 [\"wide-probe 的 48 页 note-narrow 与这里的 caughtByOldCriteria 页集合逐条一致\",\"含窄说明的页面数 = 旧口径页集合大小（156 条窄说明全部落在那 48 页上）\",\"窄说明 before = 旧口径能逮到 + 只有新真值覆盖\"] · 只新有 [\"wide-probe 的 48 页 note-narrow 与这里的 index===0 位置切片页集合逐条一致\",\"含窄说明的页面数 = 位置切片页集合大小（156 条窄说明全部落在那 48 页上）\",\"窄说明 before = 位置切片(index===0) + 其余（并集，不是判据命中集）\"]"
+    }
+  ],
+  "stringDiffs": [
+    {
+      "path": "$.at",
+      "kind": "STRING-DIFF",
+      "detail": "\"2026-10-06T07:48:25.567Z\" → \"2026-10-06T13:12:57.438Z\""
+    },
+    {
+      "path": "$.usageForNewGate.新 §22c 在 dist.baseline 上应当命中的**条集合**",
+      "kind": "STRING-DIFF",
+      "detail": "\"sets.caughtByOldCriteria ∪ sets.onlyNewTruth（156 条）\" → \"sets.caughtByOldCriteria ∪ sets.onlyNewTruth（156 条；两个键是**位置切分**，别把 48 读成\\\"旧口径命中\\\"——实测盒宽窄 "
+    },
+    {
+      "path": "$.usageForNewGate.注意事项",
+      "kind": "STRING-DIFF",
+      "detail": "\"本清单是**改动后产物**的逐条真值；在 dist.baseline 上核对新判据时，用 before 字段，在 dist 上核对时，用 after 字段。核对请用集合差（geo → \"本清单是**改动后产物**的逐条真值；在 dist.baseline 上核对新判据时，用 before 字段，在 dist 上核对时，用 after 字段。核对请用集合差（geo"
+    },
+    {
+      "path": "$.what",
+      "kind": "STRING-DIFF",
+      "detail": "\"改动后产物（dist）里**每一条** `.snote` 的逐条真值（1440 档），并把改动前的窄说明分成「旧口径能逮到的」与「只有新真值才覆盖的」两批\" → \"改动后产物（dist）里**每一条** `.snote` 的逐条真值（1440 档）。改动前的 156 条窄说明按**位置**切成两批（`index===0` 每页文档序第一条 "
+    }
+  ],
+  "numberOrStructDiffs": []
+}

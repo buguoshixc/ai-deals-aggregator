@@ -1,0 +1,12 @@
+核对：research/_raw/secondary-page-layout-unification/recovered/pre-t7-M0-baseline.json × research/_raw/secondary-page-layout-unification/geometry/truth-401.json
+容器：条级 （无） · 页级 metrics.layoutViolations · 条级为必需项：true
+真值：窄说明 156 条 / 48 页 · 对照组 245 条
+实测：窄说明 （无条级） 条 / 48 页 · layoutSweep {"total":186,"wide":55,"detail":131,"other":0,"notesChecked":105,"narrowNotes":48,"overflowPages":0,"unexpectedDetailMain":0,"missingDetailMain":0,"unclassified":0}
+接受码集合：/^note-(ink-)?narrow$/ · 命中码分布（条级）{}（页级 {"note-narrow":48}）
+页集合：为空 = false
+漏判：0 条 / 0 页
+（基线轮的读法：真值的 156 条里没被命中的才是漏判）
+误报（对照组成员被报成窄）：0 条
+❌ 验收标准第 5 条未达成：报告里没有条级容器 ⇒ 156 条里的 108 条（第 2 条及以后的说明）根本无从核对。
+❌ 结论：fail（expect=baseline）· 报告里**没有**条级容器（只有 metrics.layoutViolations）⇒ 只能核对页集合。若新判据能逐条报，请把它写进 metrics 的某个数组（元素含 route/index/codes），这里会自动发现。 判窄用的是接受码集合 /^note-(ink-)?narrow$/（note-narrow ∪ note-ink-narrow；note-hidden-text 不算窄）。
+证据：research/_raw/secondary-page-layout-unification/geometry/consumer-selftest/22-regress-pre-t7-strict.json

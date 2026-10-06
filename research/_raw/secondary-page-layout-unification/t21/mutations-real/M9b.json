@@ -1,0 +1,307 @@
+{
+  "label": "t21-dist",
+  "id": "M9b",
+  "route": "changes/",
+  "viewport": 1440,
+  "what": "F2 原型：只压**非首个** .snote（:not(:first-of-type)）",
+  "mutationKind": "extend（冻结串保留，追加一条收窄规则）",
+  "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+  "injectedRule": ".snote:not(:first-of-type) { max-width: 70ch; }",
+  "selector": null,
+  "injectedTokenLength": 0,
+  "expect": "note-narrow",
+  "observed": [
+    "note-narrow",
+    "note-ink-narrow",
+    "note-axis",
+    "note-narrow",
+    "note-axis",
+    "note-narrow",
+    "note-ink-narrow",
+    "note-axis",
+    "note-narrow",
+    "note-ink-narrow",
+    "note-axis",
+    "note-narrow",
+    "note-ink-narrow",
+    "note-axis"
+  ],
+  "hit": true,
+  "narrowKeys": [
+    "changes/#1",
+    "changes/#3",
+    "changes/#4",
+    "changes/#8",
+    "changes/#12"
+  ],
+  "matchedKeys": [
+    "changes/#1",
+    "changes/#3",
+    "changes/#4",
+    "changes/#8",
+    "changes/#12"
+  ],
+  "narrowNoteRows": [
+    {
+      "route": "changes/",
+      "index": 1,
+      "position": "middle",
+      "codes": [],
+      "kind": "changes",
+      "family": "wide",
+      "regionSel": ".chgsec",
+      "column": 1380,
+      "width": 1380,
+      "contentBox": 1380,
+      "textWidth": 1380,
+      "textFallback": false,
+      "bearingCount": 1,
+      "rendered": true,
+      "unrendered": false,
+      "vertical": false,
+      "writingMode": "horizontal-tb",
+      "lineCount": 1,
+      "widestLine": 481.09,
+      "lines": [
+        {
+          "left": 30,
+          "right": 511.09,
+          "width": 481.09
+        }
+      ],
+      "glyphRects": 1,
+      "textLength": 45,
+      "inkWidth": 481.09,
+      "inkRects": 1,
+      "inkLongestLine": 481.09,
+      "ratioTextWidth": 1,
+      "ratioWidestLine": 0.35,
+      "boxLeft": 30,
+      "boxRight": 1410,
+      "parent": "section.chgdeals",
+      "text": "「即将结束」只认数据里写有绝对截止日期（expiresAt）的条"
+    },
+    {
+      "route": "changes/",
+      "index": 3,
+      "position": "middle",
+      "codes": [],
+      "kind": "changes",
+      "family": "wide",
+      "regionSel": ".chgsec",
+      "column": 1380,
+      "width": 1380,
+      "contentBox": 1380,
+      "textWidth": 1380,
+      "textFallback": false,
+      "bearingCount": 1,
+      "rendered": true,
+      "unrendered": false,
+      "vertical": false,
+      "writingMode": "horizontal-tb",
+      "lineCount": 1,
+      "widestLine": 451.52,
+      "lines": [
+        {
+          "left": 30,
+          "right": 481.52,
+          "width": 451.52
+        }
+      ],
+      "glyphRects": 1,
+      "textLength": 40,
+      "inkWidth": 451.52,
+      "inkRects": 1,
+      "inkLongestLine": 451.52,
+      "ratioTextWidth": 1,
+      "ratioWidestLine": 0.33,
+      "boxLeft": 30,
+      "boxRight": 1410,
+      "parent": "section.chgdeals",
+      "text": "已结束与重新出现只列最近 30 天；更早的记录仍留在该条目自己的"
+    },
+    {
+      "route": "changes/",
+      "index": 4,
+      "position": "middle",
+      "codes": [],
+      "kind": "changes",
+      "family": "wide",
+      "regionSel": ".chgsec",
+      "column": 1380,
+      "width": 1380,
+      "contentBox": 1380,
+      "textWidth": 1380,
+      "textFallback": false,
+      "bearingCount": 1,
+      "rendered": true,
+      "unrendered": false,
+      "vertical": false,
+      "writingMode": "horizontal-tb",
+      "lineCount": 1,
+      "widestLine": 816,
+      "lines": [
+        {
+          "left": 30,
+          "right": 846,
+          "width": 816
+        }
+      ],
+      "glyphRects": 1,
+      "textLength": 68,
+      "inkWidth": 816,
+      "inkRects": 1,
+      "inkLongestLine": 816,
+      "ratioTextWidth": 1,
+      "ratioWidestLine": 0.59,
+      "boxLeft": 30,
+      "boxRight": 1410,
+      "parent": "section.chgdeals",
+      "text": "以上是本站采集与合并过程留下的观测记录；「不再收录」表示本站未再"
+    },
+    {
+      "route": "changes/",
+      "index": 8,
+      "position": "middle",
+      "codes": [],
+      "kind": "changes",
+      "family": "wide",
+      "regionSel": ".chgsec",
+      "column": 1380,
+      "width": 1380,
+      "contentBox": 1380,
+      "textWidth": 1380,
+      "textFallback": false,
+      "bearingCount": 1,
+      "rendered": true,
+      "unrendered": false,
+      "vertical": false,
+      "writingMode": "horizontal-tb",
+      "lineCount": 1,
+      "widestLine": 936,
+      "lines": [
+        {
+          "left": 30,
+          "right": 966,
+          "width": 936
+        }
+      ],
+      "glyphRects": 1,
+      "textLength": 78,
+      "inkWidth": 936,
+      "inkRects": 1,
+      "inkLongestLine": 936,
+      "ratioTextWidth": 1,
+      "ratioWidestLine": 0.68,
+      "boxLeft": 30,
+      "boxRight": 1410,
+      "parent": "section.chgsec",
+      "text": "以上是本站重建套餐数据时留下的观测记录；「不再收录」表示人工来源"
+    },
+    {
+      "route": "changes/",
+      "index": 12,
+      "position": "last",
+      "codes": [],
+      "kind": "changes",
+      "family": "wide",
+      "regionSel": ".chgsec",
+      "column": 1380,
+      "width": 1380,
+      "contentBox": 1380,
+      "textWidth": 1380,
+      "textFallback": false,
+      "bearingCount": 1,
+      "rendered": true,
+      "unrendered": false,
+      "vertical": false,
+      "writingMode": "horizontal-tb",
+      "lineCount": 1,
+      "widestLine": 972.23,
+      "lines": [
+        {
+          "left": 30,
+          "right": 1002.23,
+          "width": 972.23
+        }
+      ],
+      "glyphRects": 1,
+      "textLength": 84,
+      "inkWidth": 972.23,
+      "inkRects": 1,
+      "inkLongestLine": 972.23,
+      "ratioTextWidth": 1,
+      "ratioWidestLine": 0.7,
+      "boxLeft": 30,
+      "boxRight": 1410,
+      "parent": "section.chgsec",
+      "text": "以上是本站重建 API 计费数据时留下的观测记录；「不再收录」表"
+    }
+  ],
+  "anchorUniqueness": {
+    "fromVerifySite": 1,
+    "fromDiskStatic": 1,
+    "fromDiskWholeFile": 1,
+    "guardPassed": true,
+    "guardDetail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（:not(:first-of-type)）",
+    "disk": {
+      "file": "dist/changes/index.html",
+      "occurrencesInStyles": 1,
+      "occurrencesInFile": 1
+    },
+    "domInjectionGuard": null,
+    "mainSnoteCountOnDisk": 13
+  },
+  "geometry": {
+    "noteCount": 13,
+    "noteWidthLegacy": null,
+    "firstNoteBoxWidth": 1380,
+    "firstNoteTextWidth": 1380,
+    "columnWidthLegacy": null,
+    "detailMainCount": 0,
+    "scrollWidth": 1440,
+    "viewport": 1440,
+    "injectedAt": null,
+    "narrowKeys": [
+      "changes/#1",
+      "changes/#3",
+      "changes/#4",
+      "changes/#8",
+      "changes/#12"
+    ]
+  },
+  "productSha256": {
+    "before": null,
+    "after": null,
+    "equal": true
+  },
+  "productFile": "dist/changes/index.html",
+  "checks": [
+    {
+      "name": "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "ok": true,
+      "detail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（:not(:first-of-type)）"
+    },
+    {
+      "name": "§22c M9b 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（:not(:first-of-type)））",
+      "ok": true,
+      "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 13 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis]"
+    },
+    {
+      "name": "§22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "ok": true,
+      "detail": "选择器 .snote:not(:first-of-type) 命中 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12] ⇒ 窄条 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12]（第 0 条被压：false）"
+    }
+  ],
+  "keyChecks": [
+    {
+      "name": "§22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "ok": true,
+      "detail": "选择器 .snote:not(:first-of-type) 命中 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12] ⇒ 窄条 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12]（第 0 条被压：false）"
+    }
+  ],
+  "source": {
+    "report": "research/_raw/secondary-page-layout-unification/t21/geometry/after-verify.json",
+    "mutations": "research/_raw/secondary-page-layout-unification/t21/geometry/mutations.json"
+  }
+}

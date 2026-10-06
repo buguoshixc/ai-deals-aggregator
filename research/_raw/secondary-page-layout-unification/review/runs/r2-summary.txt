@@ -1,0 +1,7 @@
+﻿make-plain EXIT=0
+suite-plain EXIT=0 (117s)
+make-false-green EXIT=0
+suite-false-green-c1 EXIT=1 (239s)
+suite-M0 EXIT=1 (361s)
+suite-green-compare EXIT=0 (497s)
+check-ci-consistency EXIT=0

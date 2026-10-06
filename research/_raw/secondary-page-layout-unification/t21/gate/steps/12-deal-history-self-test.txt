@@ -1,0 +1,87 @@
+# Deal-history self-test
+# $ node scripts/tools/history-selftest.js
+# runAt 2026-10-06T12:58:51.844Z · verify-site.js sha256 fd3c9a3090dca11bbe6c34342505506bb44f4720c39fe4b18f4d7c23481f46d5
+
+
+① 形状与词表
+  ✓ 跟踪字段与事件分类一一对应
+  ✓ 七个事件类型都在措辞表里有中文
+  ✓ 每个 ended reason 都有中文
+  ✓ 每个跟踪字段都有中文标签
+  ✓ 噪音字段不在跟踪表里（description / lastSeen / firstSeen / zh）
+  ✓ 噪音字段都有「为什么不跟踪」的说明
+
+② 噪音抑制：普通文案微调不产生事件
+  ✓ description / lastSeen / zh 变化 → 0 事件
+  ✓ store 与输入逐字节相同
+
+③ 各类事件
+  ✓ discountInfo 变化 → benefit_changed
+  ✓ 事件带 from / to
+  ✓ origin 默认 observed
+  ✓ verifyStore 通过
+  ✓ 新增截止日期 → expiry_changed 且 from 为 null
+  ✓ 领取要求变化 → eligibility_changed
+  ✓ 分类变化 → updated
+  ✓ 由规则推导的字段标成 derived
+
+④ created 与新记录的锚点
+  ✓ 新记录 → created（带 fields 快照）
+  ✓ created 之后 verifyStore 通过
+  ✓ 重复调用不重复追加 created
+  ✓ 重复调用字节不变（幂等）
+
+⑤ ended：数据集移除与来源不再列出
+  ✓ 记录离开数据集 → ended(pruned_expired)
+  ✓ 已移除记录仍有 ended 时 verifyStore 通过
+  ✓ 未见 1 次 → 不记 ended（避免一次抖动就报消失）
+  ✓ 连续 2 次未见 → ended(source_no_longer_lists)
+  ✓ 记了 firstMissedAt
+  ✓ 已 ended 后不再重复计数
+  ✓ ended 后 verifyStore 仍通过（记录还在数据集里）
+  ✓ 来源本轮不可信（失败/骤降/零产出）→ 永不记 ended
+  ✓ 人工策展条目不参与「未见」判定
+
+⑥ restored：消失后重现
+  ✓ 来源重新列出 → restored
+  ✓ restored 后 verifyStore 通过
+  ✓ 离开数据集后重现 → restored（不是 created）
+  ✓ 重现时字段一致 → 不补字段事件
+  ✓ 重现后 verifyStore 通过
+
+⑦ 门禁必须能红（每条都真的变红）
+  ✓ 链断裂 → 红
+  ✓ 现状与历史不一致 → 红
+  ✓ 记录从 deals.json 消失却没有 ended → 红
+  ✓ restored 之前没有 ended → 红
+  ✓ 未跟踪字段进日志 → 红
+  ✓ 未来日期 → 红
+  ✓ 当前记录没有锚点 → 红
+  ✓ from 与 to 相同的「假变化」→ 红
+  ✓ 事件总数超上限 → 红（不自动截断）
+  ✓ 文件体积超上限 → 红
+
+⑧ 渲染视图有界
+  ✓ 连续 30 次变化 → 30 条事件（链式）
+  ✓ historyFor 只取最近 N 条
+  ✓ historyFor 带起算日
+  ✓ 无事件的记录 → null（页面说「暂无变更记录」）
+  ✓ attachToDeals 不改入参
+
+⑨ 墓碑标签（v1.5 的向后兼容扩展）
+  ✓ ended 带上墓碑标签（离开数据集后还能认出是谁）
+  ✓ 墓碑标签不影响链校验与重放
+  ✓ 不传 labels 时 ended 依然合法（v1.4 行为的向后兼容）
+  ✓ 标题为空的快照不会被写进日志（空标本等于没有标本）
+  ✓ 墓碑形状：label 不是对象 → 必红
+  ✓ 墓碑形状：title 为空 → 必红
+  ✓ 墓碑形状：含未知键 → 必红
+  ✓ 墓碑形状：vendor 不是字符串 → 必红
+  ✓ 墓碑形状：字段事件带 label → 必红
+
+⑩ 真实数据不变量
+  ✓ scripts/data/deal-history.json 存在且可解析
+  ✓ 真实历史与真实数据一致
+  ✓ 真实文件在上限内
+
+=== v1.4 优惠历史演练：61 项通过，0 项失败 ===

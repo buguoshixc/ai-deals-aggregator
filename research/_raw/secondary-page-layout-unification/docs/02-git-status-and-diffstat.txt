@@ -1,0 +1,39 @@
+﻿# git 现场快照（t6 文档轮 · 阶段 1 + 阶段 2a）
+# 生成命令（只读）：git status --porcelain / git diff --stat / Get-Content -Line 计数
+# at: 2026-10-06T17:01:17.2367572+08:00
+
+== git rev-parse HEAD ==
+1f225d22625c15702995785394b60185ebd0520b
+
+== git status --porcelain ==
+ M index.html
+ M scripts/lib/archive.js
+ M scripts/lib/page-kinds.js
+ M scripts/tools/archive-selftest.js
+ M scripts/tools/build-local.js
+ M scripts/tools/seo-selftest.js
+ M scripts/tools/verify-site.js
+?? research/_raw/secondary-page-layout-unification/
+?? research/secondary-page-layout-unification-report.md
+?? research/secondary-page-layout-unification-self-audit.md
+
+== git diff --stat （全工作区，未跟踪文件不在其中） ==
+ index.html                        |    9 +
+ scripts/lib/archive.js            |   46 ++
+ scripts/lib/page-kinds.js         |  119 ++++
+ scripts/tools/archive-selftest.js |   58 ++
+ scripts/tools/build-local.js      |   24 +-
+ scripts/tools/seo-selftest.js     |   59 ++
+ scripts/tools/verify-site.js      | 1109 +++++++++++++++++++++++++++++++++++++
+ 7 files changed, 1415 insertions(+), 9 deletions(-)
+
+== git diff --stat -- PROJECT_STATUS.md NEXT-STEPS.md docs/DESIGN-RULES.md （本任务的三份长期文档；阶段 2b 才动） ==
+(空 —— 三份文件在阶段 2b 之前未被改动)
+
+== 本任务交付物行数 ==
+research\secondary-page-layout-unification-report.md  lines=1133  bytes=87013
+
+== 三份长期文档的当前行数（阶段 2b 前后对比用） ==
+PROJECT_STATUS.md  lines=3608
+NEXT-STEPS.md  lines=525
+docs\DESIGN-RULES.md  lines=341

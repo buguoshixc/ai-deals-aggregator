@@ -1,0 +1,74 @@
+fix(secondary-page-layout-unification): 二级数据页说明与主数据区同轴 + 布局族声明 + §22c 全站几何门禁
+
+根因：同一件事（页面级说明 .snote 该多宽）在 8 个页面壳里各写了一份副本，而且是**两种取值** ——
+4 份 `max-width: 70ch`（12px 字体下约 452px 的窄柱），4 份 `max-width: none`。于是 48 个数据型页面
+（student/ developer/ free-api/ need/* category/* vendor/* status/ changes/ feeds/）里，页面级说明只占
+主数据区（1380px）的三分之一：左边对齐、右边半截，同一页的说明看起来像"另一页的内容"。全站 401 条
+说明里有 156 条比主数据区窄，其中 108 条是文档序第 2 条及以后（只看第一条的判据永远看不见它们）。
+
+改法（宽度只写一处 + 布局族显式登记 + 全站几何牙）：
+
+- index.html 共享 <style>：新增**唯一一条** `.snote` 规则
+  `.snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }`。
+  文档序上共享 <style> 先于各页面壳的局部 <style>，所以只要页面壳不再复制第二份，这里就是
+  「一处定义、全站生效」—— 与既有的 `.detail-main` 同一条纪律。`overflow-wrap: anywhere` 是长 URL /
+  不可断长串的换行兜底（反过来，普通文本仍按 `word-break: normal` 正常断行，不逐字断行）。
+- scripts/lib/page-kinds.js：新增 `LAYOUT_FAMILIES`（wide / detail / prose 三族）、
+  `LAYOUT_FAMILIES_WITHOUT_INSTANCES`（prose 当前无实例，**显式登记**而不是静默豁免）、18 个 kind 的
+  `layout` 字段、`layoutOf()` 与 `assertLayoutDeclarations()`。布局族的真值只此一处，
+  门禁与构建都从这里读，不再各自 `startsWith('models/')`。
+- scripts/tools/build-local.js：删除 8 份页面级 `.snote` 宽度副本（改由共享那一处生效）；档案详情
+  `/archive/<kind>/<id>/` 的调用点传入统一内容列 class；文件头写清「页面壳只写自己独有的规则」的纪律。
+- scripts/lib/archive.js：新增 `ARCHIVE_ENTRY_MAIN_CLASS`，并在 `assertPageHonesty()` 里从**整页 HTML**
+  反查「恰好 1 个 <main> 且 class 含 detail-main」。档案详情今天生产 0 个实例 —— 一个"今天永远跑不到"
+  的渲染分支，正是最容易在它第一次跑起来那天露出未验证布局的地方，所以判据放在这里而不是渲染处。
+- scripts/tools/verify-site.js：新增 §22c「Wide Data Page 的页面级说明同轴门禁」。判据**只由
+  `wideProblems()` 一处产出**（10 个违规码：note-narrow / note-ink-narrow / note-hidden-text /
+  note-axis / note-clipped / page-overflow@<vw> / unclassified-layout / missing-detail-main /
+  unexpected-detail-main / data-region-missing），全站 1440 与 1600 逐条扫描、390 全站溢出、
+  760/360 样本集。**窄柱判据取并集、不是替换**（四轮对抗复审的结论）：
+  ① `note-narrow` = 内容盒宽（承载文本的块级元素里最窄的 content box）< 0.85 × min(主数据区, 页面列)；
+  ② `note-ink-narrow` = **逐行字迹宽**：有字形盒证据、行数 ≥ 2、最宽一行 < 同一条比例阈值；
+  ③ `note-hidden-text` = 文本非空但**零可见字形盒**。
+  ①② 覆盖的是两类不同的坏法（"盒子被压窄" vs "盒子满宽但字迹铺不开"），只取其一都会漏
+  —— 前三轮就是在这里栽的（border-box → 内容盒 → 有字区域，fixture 每换一次机制就绕过一次）。
+  逐行字迹只在该页**真的排得下 70ch** 时判（现场量 70ch = 452.81px；物理前置条件，不是视口白名单）。
+  另带 M0 反证（拿同一条命令对着改动前产物 `dist.baseline` 跑，必须真红：窄柱并集 156 条 / 48 页）
+  与 M1–M12 变异牙 —— M1–M4 把四个壳（student/ status/ changes/ feeds/）的冻结串换回 70ch；
+  M5 对账「既有 §22b 的 M1–M5 确实跑了」（不重复造第二套）；M6 是长串溢出的正对照（注入 200 字符
+  不可断串、CSS 一字不动 ⇒ 390 档不得溢出）；M7–M10 是三种新绕过形态 —— padding-right 挤压有字区域
+  （盒宽一字不动）、只压非首个 .snote 的两种选择器（`~` 与 `:not(:first-of-type)`）、藏在
+  `@media (min-width:1500px)` 里的窄化（1440 档看不见，只有 1600 档咬得到）；M11 用 grid 窄轨让字迹
+  铺不开（期望 `note-ink-narrow`）、M12 让正文改由伪元素承载（期望 `note-hidden-text`）。
+  变异前守卫锚点唯一、变异后必须出现期望违规码、变异前后产物 sha256 相等。既有断言一行未改。
+- scripts/tools/archive-selftest.js / scripts/tools/seo-selftest.js：为上面两条新约束补离线牙
+  （常量值 + 构建期接线 + 断言真的会响；布局族声明的正向/反向完整性，含"登记为无实例却有了实例"）。
+
+数据与业务为何不受影响（纯布局版本）：
+- 路由 / 文案 / 结构化数据 0 变化：`FIXED_ROUTE_KINDS`、`ROUTE_PATTERNS`、各 kind 的 textFloor /
+  itemList / sitemap 声明一字未动；index.html 的正文与脚本一字未动（+9 行全部在共享 <style> 内）。
+- 全产物对账（`research/_raw/secondary-page-layout-unification/diff/`）：改动前 303 个文件、改动后 303 个
+  （HTML 186 页 + 非 HTML 117 个）；**186/186 HTML 页剥掉全部 <style> 块后正文逐字节相同**（正文字节差 0）；
+  **117/117 非 HTML 文件逐字节相同**（deals.json / plans.json / api-plans.json / models.json /
+  model-registry-links.json / sitemap.xml / Feed 全部在内）；样式块行集合差去重后 +9 / −2，
+  与"新增一条共享规则 + 一条解释注释、删掉重复宽度副本"逐条对得上。
+- 几何（独立探针 `geometry/wide-probe.cjs`，不 require 任何被测代码）：1440 档有违规码的页面
+  **48 → 0**（note-narrow、note-axis 同时归零），401 条说明里"比主数据区窄"的 **156 → 0**，
+  390 档全站横向溢出 0；`plans/` `models/` 索引 `archive/` `docs/data/` 这些原本就是 `max-width: none`
+  的页面**前后读数完全一致**（不走"顺手一起改"）。
+- 数据层文件在提交区间内 0 改动：`git diff --name-only 1f225d2..HEAD -- deals.json plans.json
+  api-plans.json models.json model-registry-links.json scripts/data` 为空（见
+  `research/_raw/secondary-page-layout-unification/diff/01-git-content-proof.txt`）。
+
+本次改动的文件（源码 7 个，全部 in-scope）：
+- index.html                          共享 <style> 里唯一一条 .snote 规则 + 解释注释
+- scripts/lib/page-kinds.js           布局族声明（LAYOUT_FAMILIES / layoutOf / assertLayoutDeclarations）
+- scripts/lib/archive.js              ARCHIVE_ENTRY_MAIN_CLASS + 档案详情的整页内容列断言
+- scripts/tools/build-local.js        删除 8 份 .snote 副本；档案详情接入统一内容列
+- scripts/tools/verify-site.js        新增 §22c 全站几何牙（并集口径）+ M0 反证 + M1–M12 变异牙
+- scripts/tools/archive-selftest.js   档案详情内容列的离线牙（替代性设计约束）
+- scripts/tools/seo-selftest.js       布局族声明的自洽性与牙
+
+证据与发布物料：`research/_raw/secondary-page-layout-unification/**`（几何 before/after 对照、全产物
+字节对账、变异牙与 M0 反证、Full Gate 逐步日志、发布物料 `release/**`）。最终报告与
+PROJECT_STATUS / NEXT-STEPS / DESIGN-RULES 的同步见文档提交。

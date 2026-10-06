@@ -1,0 +1,65 @@
+# P9 Full Gate 第 47/48 步在修复后的 verify-site.js 上重跑（按步骤序号增量合并 summary）
+# $ node research/_raw/secondary-page-layout-unification/gate/run-full-gate.cjs --only=47,48
+# at 2026-10-06T08:36:11.337Z · verify-site.js sha256 4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb
+
+Gate action: .github/actions/gate/action.yml（49 步 · sha256 d1c4b0df6900edf8…）
+浏览器: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+verify-site.js sha256: 4f4cb2e3b3f8e47d…（第 47/48 步的读数只对**这一版**有效）
+日志目录: D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\research\_raw\secondary-page-layout-unification\gate\steps · 本次只跑：47,48
+
+01. ⊘ Install dependencies
+     跳过：npm ci 已按 lockfile 装好（本机 worktree 内 node_modules 已就位；本步骤是 CI 的依赖准备，不参与任何判定）
+02. · Validate data (strict)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+03. · Reproducibility gate (no value without a source)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+04. · History verify (log consistent with deals.json)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+05. · Migration verifier (audience provenance backfill)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+06. · Translation gate (drift blocks, pending ages out)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+07. · Translation self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+08. · Expiry self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+09. · Text / cleanText self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+10. · Source-health self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+11. · Provenance self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+12. · Deal-history self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+13. · Change-radar self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+14. · Feeds self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+15. · SEO self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+16. · Audience self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+17. · App-token self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+18. · AI layer self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+19. · Collector fixtures (offline replay)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+20. · Plans self-test (data + page)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+21. · Plan-history self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+22. · Deal-plan-links self-test  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+23. · API-plans self-test (data + page)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+24. · API-plans reproducibility (curated → api-plans.json, byte-compare)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+25. · API-plan-history verify (log consistent with api-plans.json)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+26. · Model-registry self-test (identity + explicit mapping)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+27. · Models reproducibility (registry → models.json, byte-compare)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+28. · Model-registry links check (explicit mapping only, no similarity)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+29. · Coverage report (gap list consistent with data)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+30. · Coverage-targets self-test (intent layer + seven derived states)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+31. · Model-role vocabulary self-test (registry ↔ freshness contract)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+32. · Freshness self-test (catalogStatus branches)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+33. · Freshness threshold sensitivity (±90 days, baseline invariants)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+34. · Assemble site (same path as deploy.yml)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+35. · Models-page self-test (index + detail pages)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+36. · Plans-hub self-test (/plans/)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+37. · Vendor-pages self-test (/vendor/)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+38. · Archive self-test (/archive/, synthetic ended/restored fixtures)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+39. · Data-docs self-test (/docs/data/ + /data/index.json)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+40. · Analytics self-test (bootstrap count / production guard / provider)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+41. · Feeds reproducibility (build twice, byte-compare)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+42. · Plans reproducibility (curated → plans.json, byte-compare)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+43. · Plan-history verify (log consistent with plans.json)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+44. · SEO verification (independent, from dist/)  （本次未跑；沿用上一次读数（2026-10-06T07:30:30.727Z · exit=0））
+45. ⊘ Prepare browser for the real-browser gate
+     跳过：CI 专用：探测 runner 上的浏览器可执行文件并写 GITHUB_OUTPUT/Step Summary；本机浏览器由 DSH_EDGE 指定的 Edge 提供
+46. ⊘ Browser availability decision (never silent)
+     跳过：CI 专用：把「浏览器不可用」按规则判红并写 Step Summary；该 shell 本身由 check-ci-consistency.js 的 (10) 真实执行守着（本机没有 GITHUB_OUTPUT 语义）
+47. ✓ Real-browser acceptance (verify-site.js)  (131.9s, exit=0)
+48. ✓ Regression verify (baseline compare)  (119.2s, exit=0)
+49. ⊘ Gate conclusion
+     跳过：CI 专用：只把结论写 GitHub Step Summary，不参与判定
+
+✅ Full Gate：总步骤 49 步 · 执行 45 步 · 通过 45 · 失败 0 · 跳过 4（其中"本次未跑"0 步）· exit=0
+summary.json: research/_raw/secondary-page-layout-unification/gate/steps/summary.json

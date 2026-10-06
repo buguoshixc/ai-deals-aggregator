@@ -1,0 +1,47 @@
+# negative-control-baseline · 负对照 · dist.baseline（改动前产物）· 同一 --base= 模式
+
+命令：node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53876/ai-deals-aggregator/ --only=student/ --out=online-path-negcontrol-baseline.json
+退出码：1（期望 1）· 判定：OK · 用时 1.1s
+基线地址：http://127.0.0.1:53876/ai-deals-aggregator/（**本机回环**，不是真实线上域名）
+
+## 服务端访问日志（前 6 行）
+
+```
+[2026-10-06T08:53:08.582Z] SERVING D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\dist.baseline at http://127.0.0.1:53876/ai-deals-aggregator/
+[2026-10-06T08:53:17.090Z] GET /ai-deals-aggregator/sitemap.xml 200 (sitemap.xml)
+[2026-10-06T08:53:17.459Z] GET /ai-deals-aggregator/student/ 200 (student/index.html)
+[2026-10-06T08:53:17.527Z] GET /ai-deals-aggregator/favicon.svg 200 (favicon.svg)
+```
+
+
+## stdout + stderr（原样）
+
+```
+线上模式：http://127.0.0.1:53876/ai-deals-aggregator/
+推导来源：sitemap:http · 站点根前缀 /ai-deals-aggregator/
+推导：deal 80 条 → 取 deal/2eae0e246de2/
+推导：models 51 条（已排除 /models/ 索引） → 取 models/claude-fable-5.1/
+浏览器：C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe · playwright-core 1.63.0
+
+▶ /student/（wide 族 · 宽数据页；曾被压成 70ch 的四个壳之一（§22c M1–M4 变异靶页））
+  ✓ [student/ @1440] HTTP 200 — status=200
+  ✗ [student/ @1440] 几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族） — #0 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · 主数据区 .ctable 1380px · 页面列 1380px）；#0 说明盒 30~482.81 与主数据区（30~1410） 和 <main>（30~1410）都不在同一轴（容差 69px）；#1 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · 主数据区 .ctable 1380px · 页面列 1380px · textFallback 回落）；#1 说明盒 30~482.81 与主数据区（30~1410） 和 <main>（30~1410）都不在同一轴（容差 69px）；#2 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · 主数据区 .ctable 1380px · 页面列 1380px）；#2 说明盒 30~482.81 与主数据区（30~1410） 和 <main>（30~1410）都不在同一轴（容差 69px）
+  ✗ [student/ @1440] 共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物） — frozenCount=0（旧产物 = 0；页面壳又复制第二份 = ≥2）
+  ✓ [student/ @1440] 页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言） — noteCount=3
+  ✗ [student/ @1440] 说明 #0 有字区域 / ratio / 左右边缘 — textWidth=453px · 盒 30~482.81（452.81px）· 列 1380px · ratio=0.328 · 字迹 451.09px/9 行 · 文本「这一页收的是来源明确说面向学生的优惠：audience 写了 s」
+  ✗ [student/ @1440] 说明 #1 有字区域 / ratio / 左右边缘 — textWidth=453px · 盒 30~482.81（452.81px）· 列 1380px · ratio=0.328 · 字迹 61.64px/1 行 · 文本「全部变化 →」
+  ✗ [student/ @1440] 说明 #2 有字区域 / ratio / 左右边缘 — textWidth=453px · 盒 30~482.81（452.81px）· 列 1380px · ratio=0.328 · 字迹 447.52px/5 行 · 文本「分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（」
+  ✓ [student/ @390] documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出） — scrollWidth=390 · clientWidth=390 · innerWidth=390
+
+ℹ️  线上模式出口采样（只记录、不判红）：0 个外部 origin（线上页面自带的分析探针本来就属于第三方请求）
+
+证据已写出：D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\research\_raw\secondary-page-layout-unification\release\online-path-negcontrol-baseline.json
+
+❌ Online Smoke 8 项断言，失败 5 项（1 页 · online · http://127.0.0.1:53876/ai-deals-aggregator/）
+   ✗ [student/ @1440] 几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族） — #0 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · 主数据区 .ctable 1380px · 页面列 1380px）；#0 说明盒 30~482.81 与主数据区（30~1410） 和 <main>（30~1410）都不在同一轴（容差 69px）；#1 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · 主数据区 .ctable 1380px · 页面列 1380px · textFallback 回落）；#1 说明盒 30~482.81 与主数据区（30~1410） 和 <main>（30~1410）都不在同一轴（容差 69px）；#2 有字区域宽 453px < 0.85 × 1380px（盒宽 452.81px · 主数据区 .ctable 1380px · 页面列 1380px）；#2 说明盒 30~482.81 与主数据区（30~1410） 和 <main>（30~1410）都不在同一轴（容差 69px）
+   ✗ [student/ @1440] 共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物） — frozenCount=0（旧产物 = 0；页面壳又复制第二份 = ≥2）
+   ✗ [student/ @1440] 说明 #0 有字区域 / ratio / 左右边缘 — textWidth=453px · 盒 30~482.81（452.81px）· 列 1380px · ratio=0.328 · 字迹 451.09px/9 行 · 文本「这一页收的是来源明确说面向学生的优惠：audience 写了 s」
+   ✗ [student/ @1440] 说明 #1 有字区域 / ratio / 左右边缘 — textWidth=453px · 盒 30~482.81（452.81px）· 列 1380px · ratio=0.328 · 字迹 61.64px/1 行 · 文本「全部变化 →」
+   ✗ [student/ @1440] 说明 #2 有字区域 / ratio / 左右边缘 — textWidth=453px · 盒 30~482.81（452.81px）· 列 1380px · ratio=0.328 · 字迹 447.52px/5 行 · 文本「分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（」
+```
+

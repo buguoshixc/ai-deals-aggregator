@@ -1,0 +1,130 @@
+# 发布时的 `git add` 精确清单（t12 预演 · **t23 终态终检**）
+
+> 读数时间：**2026-10-06 23:5x (CST)**（轮 6 冻结后的终态重测；attempt 1 的 22:03 读数见 §2 对照列）
+> 工作树 `D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification`
+> 本文件是**预演读数**，不是发布动作：全程只用 `git add --dry-run`（`-n`，不写索引）。
+>
+> ✅ **t23 终态结论：add 清单可以发布。** 清单 **953 文件 / 108,982,578 B ≈ 103.93 MB**，
+> 可再生的越界项 **0**（`teeth/_scratch` 只剩 4 个**指名放回**的文件 —— 报告 §G/§J 点名引用，
+> 见 §2.2）。attempt 1 报的两条越界已由 `teeth/_scratch/*` + 4 条 `!` 与 `review/*/scratch/` 闭合。
+
+## §1. 精确清单（**8 条路径**，只有这些）
+
+| # | 路径 | 是什么 |
+| --- | --- | --- |
+| 1 | `index.html` | 共享 `<style>` 里唯一一条 `.snote` 规则 + 解释注释 |
+| 2 | `scripts/lib/page-kinds.js` | 布局族声明（`LAYOUT_FAMILIES` / `layoutOf` / `assertLayoutDeclarations`） |
+| 3 | `scripts/lib/archive.js` | `ARCHIVE_ENTRY_MAIN_CLASS` + 档案详情的整页内容列断言 |
+| 4 | `scripts/tools/build-local.js` | 删除 8 份 `.snote` 宽度副本；档案详情接入统一内容列 |
+| 5 | `scripts/tools/verify-site.js` | 新增 §22c 全站几何牙（并集口径）+ M0 反证 + **M1–M12** 变异牙 |
+| 6 | `scripts/tools/archive-selftest.js` | 档案详情内容列的离线牙 |
+| 7 | `scripts/tools/seo-selftest.js` | 布局族声明的自洽性与牙 |
+| 8 | `research/_raw/secondary-page-layout-unification` | 本版本的全部证据与发布物料（**目录**，逐文件展开见 §2） |
+
+**不要用 `git add -A` / `git add .`** —— 那会把工作树里所有未跟踪文件卷进来。清单是**指名道姓**的，
+这正是"dist.baseline / dist.synth-fixed 绝不会被带进去"的**主保证**（见 §3）。
+
+## §2. `git add --dry-run` 的预演读数（不写索引）
+
+```bash
+git add --dry-run --all -- index.html scripts/lib/page-kinds.js scripts/lib/archive.js \
+     scripts/tools/build-local.js scripts/tools/verify-site.js scripts/tools/archive-selftest.js \
+     scripts/tools/seo-selftest.js research/_raw/secondary-page-layout-unification
+```
+
+| 读数 | **t23 终态（23:5x）** | attempt 1（22:03） | t12 历史值（17:00） |
+| --- | --- | --- | --- |
+| `add '…'` 行数 = 文件数 | **953** | 5,444（含 4,638 个可再生 scratch） | 485 |
+| 总体积 | **108,982,578 B ≈ 103.93 MB** | 414,923,673 B ≈ 395.7 MB | 34,301,901 B ≈ 32.713 MB |
+| 其中源码 7 个 | 7 个 · **1,362,935 B ≈ 1,330 KB** | 1,323,194 B | 同左 |
+| 其中证据目录 | 946 个 · ≈102.63 MB | 5,437 个 · ≈394 MB（含副本） | 478 个 · ≈31.45 MB |
+| 越界（scratch / png / dist.* / 停机快照） | **0** | 4,638 | 0 |
+| 退出码 | 0 | 0 | 0 |
+
+> 读数容差：清单里的文件（含本文件）在读数之后仍可能被再编辑一次，会带来 **<3 KB** 的字节漂移；
+> **文件数 953 不受影响**。提交前重跑 §5 的命令即可拿到终值。
+
+### §2.1 attempt 1 的越界是什么，以及怎么闭合的
+
+| 目录 | 性质 | 现状 |
+| --- | --- | --- |
+| `teeth/_scratch/**`（含 `scratch-grid/` `scratch-b760/` `scratch-overlay/` `r5-gate/` 等整站副本） | 可再生 | ✅ 已由 `teeth/_scratch/*` 排除 |
+| `review/t20/scratch/**`（≈76 MB）、`t21/scratch/**`（≈40 MB） | 可再生 | ✅ 已排除 |
+| `review/t26/scratch`、`review/t29/scratch`（各 ≈95 MB，闸门之后新增） | 可再生 | ✅ 由 captain 追加的 `review/*/scratch/` 排除 |
+| `adversary/_scratch/**`、`adversary/sandbox-pre-t7/**` | 可再生 | ✅ 已排除 |
+
+### §2.2 `teeth/_scratch` 的 4 个残留 = **指名放回，不是越界**
+
+`mutations.json` · `splice-22c.cjs` · `r4-contents-before.log` · `r4-contents-after.log`
+—— 它们被最终报告 §G/§J 点名引用（分别为 983/1284/1286、1263、1329 行），必须入库；
+装置 `check-release-consistency.cjs` 已把这 4 条写进**显式白名单**（captain 2026-10-06 明确）。
+
+规则原文见 `release/proposed-gitignore-addendum.txt`。**复核**：
+
+```bash
+git -c core.excludesFile=research/_raw/secondary-page-layout-unification/release/proposed-gitignore-addendum.txt \
+    ls-files --others --exclude-standard -- research/_raw/secondary-page-layout-unification | wc -l   # 与正式规则等价
+```
+
+原始输出（逐条 `add '<path>'`）另存为 `add-manifest-dryrun.txt`，可直接与发布时的输出 diff。
+
+> 本版是**只准备物料**的版本，所以体积几乎全是证据：单个 0.7–1.1 MB 的几何/变异 JSON
+> （例如 `verify/probe-before.json` 1.08 MB、`verify/probe-after.json` 0.85 MB）是主头，
+> 不是截图 —— 截图与整站副本已被 `research/_raw/secondary-page-layout-unification/.gitignore` 排除（见 §3 ②）。
+
+## §3. `dist.baseline/` `dist.synth-fixed/` **绝不会**被带进去（三层，逐层实测）
+
+**① 清单法（主保证）**：上面 8 条之外的路径根本不会进入 `git add` 的视野 —— 没有 `-A`、没有 `.`。
+
+**② 忽略规则（第二层，实测 `git check-ignore -v`）**：
+
+| 路径 | 命中的规则 |
+| --- | --- |
+| `dist` | `.gitignore:2:dist/` |
+| `dist.baseline` | `.git/info/exclude:11:dist.baseline/` |
+| `dist.synth-fixed` | `.git/info/exclude:14:dist.synth-fixed/` |
+
+> ⚠️ 后两条来自 **`.git/info/exclude`，这是本 worktree 本地的忽略文件（不入库）** ——
+> 换一个 clone 就不存在了。所以第二层只能算"顺手挡一道"，**主保证永远是 ① 的指名清单**。
+
+**③ 实测：连"想加"都加不进去**
+
+```bash
+git add --dry-run -- dist.baseline dist.synth-fixed      # 退出码 1，0 条 add 行
+# → The following paths are ignored by one of your .gitignore files:
+#   dist.baseline
+#   dist.synth-fixed
+#   hint: Use -f if you really want to add them.
+```
+
+**④ 旁证**：`git status --porcelain -uall` 里**顶层 `dist*` 条目 = 0**；
+`git ls-files -- dist dist.baseline dist.synth-fixed` → **0 个已跟踪文件**。
+（`status` 里有 11 条**文件名含 "dist"** 的条目，全部是证据目录里的文本/JSON ——
+例如 `build/00-prebuild-dist.txt`、`review/runs/adversarial-dist.log` —— 与产物副本无关。）
+
+## §4. `add` 之后、`commit` 之前的核对面（清单不许飘）
+
+```bash
+git diff --cached --name-only            # 必须与 §1 的 8 条逐条一致（证据目录展开成 475 行是正常的）
+git diff --stat 1f225d2                  # 源码改动必须恰好 7 个文件（+1415/−9 这个形状）
+git diff --cached --name-only -- deals.json plans.json api-plans.json models.json \
+     model-registry-links.json scripts/data     # 必须为空
+```
+
+判据解释：本版是**纯布局**版本 ⇒ 数据文件 0 改动；源码改动面在 `git diff --stat 1f225d2` 里是
+**7 个文件**（2026-10-06 实测：`7 files changed, 1415 insertions(+), 9 deletions(-)`）。
+多一个源码文件就要停下来问清楚，少一个就要查是不是漏 add 了。
+
+## §5. 复现命令（原样，供发布前重跑）
+
+```bash
+git add --dry-run --all -- \
+  index.html \
+  scripts/lib/page-kinds.js scripts/lib/archive.js \
+  scripts/tools/build-local.js scripts/tools/verify-site.js \
+  scripts/tools/archive-selftest.js scripts/tools/seo-selftest.js \
+  research/_raw/secondary-page-layout-unification
+```
+
+重跑后请核对：**文件数只应增加**（其它成员新落的证据），且新增的每一条都在 `research/_raw/…` 之下；
+体积随之增加属正常。若出现 `research/_raw/…` 之外的**新增**路径 ⇒ 停下来查。

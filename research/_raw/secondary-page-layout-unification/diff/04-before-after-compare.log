@@ -1,0 +1,22 @@
+改动前：dist.baseline
+改动后：dist
+文件数：303 → 303（HTML 186 页 · 非 HTML 117 个）
+② 非 HTML 文件逐字节相同：117/117
+③ HTML 页剥掉全部 <style> 块后正文逐字节相同：186/186（正文字节差合计 0）
+④ 样式块行集合差（去重后）：+9 / -2（涉及 186 个页面）
+  新增行（逐条）：
+    + .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }
+    + /* 页面级说明（Page-level Note）：与上一条 `.detail-main` 同一条纪律 —— **宽度只写在这里**。
+    + `.snote` 规则，这里就是「一处定义、全站生效」。真需要收窄的阅读列页面，
+    + 与表格 / 列表**同轴**、跟随站点数据容器（`.wrap`）；把它压成阅读列（12px 字体下约 420px，
+    + 为什么是 `max-width: none`：说明是**这一页的导语**，不是一篇独立文章。它属于数据型页面
+    + 文档序上这份共享 <style> 先于各页面壳自己的局部 <style>，所以只要页面壳里不再复制第二份
+    + 而主数据区是 1380px）会让同一页的说明看起来像"另一页的内容"。
+    + 请去 LAYOUT_FAMILIES 登记一个新族，而不是就地改宽度。 */
+    + （Wide Data Page，见 scripts/lib/page-kinds.js 的 LAYOUT_FAMILIES），
+  删除行（逐条）：
+    - .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+    - .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
+
+✅ 除预期的 9 条新增样式行与 2 条被删的重复宽度副本之外，全产物逐字节一致（正文零增减、数据零变化）
+证据已写出：research/_raw/secondary-page-layout-unification/diff/before-after-compare.json

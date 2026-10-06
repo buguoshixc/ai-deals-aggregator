@@ -1,0 +1,32 @@
+# SEO verification (independent, from dist/)
+# $ node scripts/tools/seo-verify.js
+# runAt 2026-10-06T07:30:30.727Z · verify-site.js sha256 4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756
+
+
+=== SEO 独立验收（dist/ · 186 个页面 · 117 个静态文件）===
+  ✓ 计划里的每个落地页都在磁盘上（门槛层没谎报）
+  ✓ 钉住的 19 条路由全部存在（收录过的 URL 不会静默消失）
+  ✓ 别名表登记的旧路由都有对应页面
+  ✓ 每个落地页的可见数据行 == 按 dist/deals.json 重新算出的条目集合
+  ✓ changes/ ItemList 成员按 id 唯一（一个记录不许占两个位置）
+  ✓ changes/ ItemList 的每个成员 URL 都指向真实存在的页面（结构化数据里没有死链）
+  ✓ changes/ ItemList 声明数 == 元素数 == 页面 data-item 行数
+  ✓ 规则层 27 个检查码全过
+  ✓ sitemap 成员 == 非 noindex 页面的集合（现场按 robots meta 判定）
+  ✓ noindex 页面 3 条，且都出现在别名表或策略里
+  ✓ 磁盘上的 50 个 Feed 文件都存在且非空
+
+=== 口径统计（v1.7 报告用的就是这一组数字）===
+  indexable URLs   : 183
+  deal pages       : 80
+  landing pages    : 106
+  vendor pages     : 25
+  category pages   : 5
+  sitemap entries  : 183
+  orphan pages     : 0
+  duplicate canon. : 0
+  invalid links    : 0
+  noindex pages    : 3
+  dist 文件数      : 303
+
+✅ SEO 验收 11 项，失败 0 项

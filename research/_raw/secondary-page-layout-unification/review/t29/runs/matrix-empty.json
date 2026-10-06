@@ -1,0 +1,31 @@
+[
+  {
+    "id": "new-empty",
+    "bin": "new",
+    "dir": "research/_raw/secondary-page-layout-unification/review/t29/scratch/empty-notes",
+    "exit": 1,
+    "seconds": 108.7,
+    "report": "research/_raw/secondary-page-layout-unification/review/t29/runs/new-empty/report.json",
+    "checks": 852,
+    "failedChecks": 1,
+    "failedNames": [
+      "/plans/ 互链到模型资料 / 历史档案 / 数据文档（枢纽页互链）"
+    ],
+    "reportSha16": "dde1565fdf178f9f"
+  },
+  {
+    "id": "old-empty",
+    "bin": "old",
+    "dir": "research/_raw/secondary-page-layout-unification/review/t29/scratch/empty-notes",
+    "exit": 1,
+    "seconds": 92.9,
+    "report": "research/_raw/secondary-page-layout-unification/review/t29/runs/old-empty/report.json",
+    "checks": 852,
+    "failedChecks": 2,
+    "failedNames": [
+      "/plans/ 互链到模型资料 / 历史档案 / 数据文档（枢纽页互链）",
+      "§22c 未渲染说明：上界断言 —— <noscript> 之外不许有未渲染说明，且 unrenderedNotes 与 note-unrendered 判据一致"
+    ],
+    "reportSha16": "5876d6124ff4f8b4"
+  }
+]

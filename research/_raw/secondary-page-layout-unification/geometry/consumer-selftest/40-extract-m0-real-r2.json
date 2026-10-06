@@ -1,0 +1,1374 @@
+{
+  "what": "M0 反证：在**改动前**的产物上跑同一条验收命令，必须红，且必须报出窄码（note-narrow ∪ note-ink-narrow）",
+  "command": "node scripts/tools/verify-site.js --dir=dist.baseline",
+  "dir": "dist.baseline",
+  "at": "2026-10-06T09:20:29.679Z",
+  "exitCode": 1,
+  "log": null,
+  "report": "research/_raw/secondary-page-layout-unification/teeth/M0-after-repair.json",
+  "reportTotal": 842,
+  "reportFailed": 27,
+  "failingChecks": [
+    {
+      "name": "§22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切）",
+      "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 156（落在 48 页） · 不同轴 156 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页是分类页的目录：只列出条目」）；category/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这里列出的入口都是静态页面：无 」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）"
+    },
+    {
+      "name": "§22c @1600 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切）",
+      "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 156（落在 48 页） · 不同轴 156 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页是分类页的目录：只列出条目」）；category/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这里列出的入口都是静态页面：无 」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）"
+    },
+    {
+      "name": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+      "detail": "186 页不符（改动前产物在这里必然全红，这正是 M0 的反证面之一）：/=0 次 archive/=0 次 category/=0 次 category/agent/=0 次"
+    },
+    {
+      "name": "§22c @760 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出）",
+      "detail": "category/#0 note-narrow：category/#0 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 447.3px/8 行）；category/#0 note-axis：category/#0 说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（容差 max(1px, 0.05 × 728px) = 36.4px）；category/#1 note-narrow：category/#1 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 445.53px/5 行）；category/#1 note-axis：category/#1 说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（容差 max(1px, 0.05 × 728px) = 36.4px）；category/agent/#0 note-narrow：category/agent/#0 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 452.45px/7 行）"
+    },
+    {
+      "name": "§22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级",
+      "detail": "页面没量到"
+    },
+    {
+      "name": "§22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M9a 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（相邻兄弟选择器））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M9a 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "detail": "选择器 .snote ~ .snote 命中 [无] ⇒ 窄条 [无]（第 0 条被压：false）"
+    },
+    {
+      "name": "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M9b 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（:not(:first-of-type)））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "detail": "选择器 .snote:not(:first-of-type) 命中 [无] ⇒ 窄条 [无]（第 0 条被压：false）"
+    },
+    {
+      "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+      "detail": "不可断串注入位置 note · scrollWidth 1118（视口 390） · 溢出类违规码 [page-overflow@390]（全部码 [note-clipped, page-overflow@390]，390 档只看溢出）"
+    },
+    {
+      "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条 note-narrow 都没有",
+      "detail": "M8 student/@1440 违规码 [note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis] · M9a docs/data/@1440 违规码 [无] · M9b changes/@1440 违规码 [note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis] · M10 student/@1600 违规码 [note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis]"
+    }
+  ],
+  "failingChecksNon22c": 0,
+  "failingChecks22c": 27,
+  "layoutSweep": {
+    "total": 186,
+    "wide": 55,
+    "detail": 131,
+    "other": 0,
+    "notesChecked": 105,
+    "notesJudged": 401,
+    "narrowNotes": 156,
+    "narrowNotePages": 48,
+    "narrowNotesAt1600": 156,
+    "overflowPages": 0,
+    "unexpectedDetailMain": 0,
+    "missingDetailMain": 0,
+    "unclassified": 0,
+    "desktopViewports": [
+      1440,
+      1600
+    ]
+  },
+  "narrowNotePages": [
+    {
+      "route": "category/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "hub",
+      "family": "wide",
+      "noteKeys": [
+        "category/#0",
+        "category/#0",
+        "category/#1",
+        "category/#1"
+      ]
+    },
+    {
+      "route": "category/agent/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "category",
+      "family": "wide",
+      "noteKeys": [
+        "category/agent/#0",
+        "category/agent/#0",
+        "category/agent/#1",
+        "category/agent/#1",
+        "category/agent/#2",
+        "category/agent/#2"
+      ]
+    },
+    {
+      "route": "category/api/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "category",
+      "family": "wide",
+      "noteKeys": [
+        "category/api/#0",
+        "category/api/#0",
+        "category/api/#1",
+        "category/api/#1",
+        "category/api/#2",
+        "category/api/#2"
+      ]
+    },
+    {
+      "route": "category/audio/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "category",
+      "family": "wide",
+      "noteKeys": [
+        "category/audio/#0",
+        "category/audio/#0",
+        "category/audio/#1",
+        "category/audio/#1",
+        "category/audio/#2",
+        "category/audio/#2"
+      ]
+    },
+    {
+      "route": "category/chat/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "category",
+      "family": "wide",
+      "noteKeys": [
+        "category/chat/#0",
+        "category/chat/#0",
+        "category/chat/#1",
+        "category/chat/#1",
+        "category/chat/#2",
+        "category/chat/#2"
+      ]
+    },
+    {
+      "route": "category/image/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "category",
+      "family": "wide",
+      "noteKeys": [
+        "category/image/#0",
+        "category/image/#0",
+        "category/image/#1",
+        "category/image/#1",
+        "category/image/#2",
+        "category/image/#2"
+      ]
+    },
+    {
+      "route": "changes/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".chgsec",
+      "kind": "changes",
+      "family": "wide",
+      "noteKeys": [
+        "changes/#0",
+        "changes/#0",
+        "changes/#1",
+        "changes/#1",
+        "changes/#2",
+        "changes/#2",
+        "changes/#3",
+        "changes/#3",
+        "changes/#4",
+        "changes/#4",
+        "changes/#5",
+        "changes/#5",
+        "changes/#6",
+        "changes/#6",
+        "changes/#7",
+        "changes/#7",
+        "changes/#8",
+        "changes/#8",
+        "changes/#9",
+        "changes/#9",
+        "changes/#10",
+        "changes/#10",
+        "changes/#11",
+        "changes/#11",
+        "changes/#12",
+        "changes/#12"
+      ]
+    },
+    {
+      "route": "developer/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": [
+        "developer/#0",
+        "developer/#0",
+        "developer/#1",
+        "developer/#1",
+        "developer/#2",
+        "developer/#2"
+      ]
+    },
+    {
+      "route": "feeds/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".flist",
+      "kind": "feeds",
+      "family": "wide",
+      "noteKeys": [
+        "feeds/#0",
+        "feeds/#0",
+        "feeds/#1",
+        "feeds/#1",
+        "feeds/#2",
+        "feeds/#2",
+        "feeds/#3",
+        "feeds/#3",
+        "feeds/#4",
+        "feeds/#4",
+        "feeds/#5",
+        "feeds/#5",
+        "feeds/#6",
+        "feeds/#6",
+        "feeds/#7",
+        "feeds/#7"
+      ]
+    },
+    {
+      "route": "free-api/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": [
+        "free-api/#0",
+        "free-api/#0",
+        "free-api/#1",
+        "free-api/#1",
+        "free-api/#2",
+        "free-api/#2"
+      ]
+    },
+    {
+      "route": "need/ai-coding/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide",
+      "noteKeys": [
+        "need/ai-coding/#0",
+        "need/ai-coding/#0",
+        "need/ai-coding/#1",
+        "need/ai-coding/#1",
+        "need/ai-coding/#2",
+        "need/ai-coding/#2"
+      ]
+    },
+    {
+      "route": "need/china-usable/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide",
+      "noteKeys": [
+        "need/china-usable/#0",
+        "need/china-usable/#0",
+        "need/china-usable/#1",
+        "need/china-usable/#1",
+        "need/china-usable/#2",
+        "need/china-usable/#2"
+      ]
+    },
+    {
+      "route": "need/dev-credits/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 442,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide",
+      "noteKeys": [
+        "need/dev-credits/#0",
+        "need/dev-credits/#0",
+        "need/dev-credits/#1",
+        "need/dev-credits/#1",
+        "need/dev-credits/#2",
+        "need/dev-credits/#2"
+      ]
+    },
+    {
+      "route": "need/edu-identity/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide",
+      "noteKeys": [
+        "need/edu-identity/#0",
+        "need/edu-identity/#0",
+        "need/edu-identity/#1",
+        "need/edu-identity/#1",
+        "need/edu-identity/#2",
+        "need/edu-identity/#2"
+      ]
+    },
+    {
+      "route": "need/free-api/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 442,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide",
+      "noteKeys": [
+        "need/free-api/#0",
+        "need/free-api/#0",
+        "need/free-api/#1",
+        "need/free-api/#1",
+        "need/free-api/#2",
+        "need/free-api/#2"
+      ]
+    },
+    {
+      "route": "need/free-model/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide",
+      "noteKeys": [
+        "need/free-model/#0",
+        "need/free-model/#0",
+        "need/free-model/#1",
+        "need/free-model/#1",
+        "need/free-model/#2",
+        "need/free-model/#2"
+      ]
+    },
+    {
+      "route": "need/free-tier/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide",
+      "noteKeys": [
+        "need/free-tier/#0",
+        "need/free-tier/#0",
+        "need/free-tier/#1",
+        "need/free-tier/#1",
+        "need/free-tier/#2",
+        "need/free-tier/#2"
+      ]
+    },
+    {
+      "route": "need/free-tokens/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide",
+      "noteKeys": [
+        "need/free-tokens/#0",
+        "need/free-tokens/#0",
+        "need/free-tokens/#1",
+        "need/free-tokens/#1",
+        "need/free-tokens/#2",
+        "need/free-tokens/#2"
+      ]
+    },
+    {
+      "route": "need/no-card/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide",
+      "noteKeys": [
+        "need/no-card/#0",
+        "need/no-card/#0",
+        "need/no-card/#1",
+        "need/no-card/#1",
+        "need/no-card/#2",
+        "need/no-card/#2"
+      ]
+    },
+    {
+      "route": "need/student-only/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 442,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide",
+      "noteKeys": [
+        "need/student-only/#0",
+        "need/student-only/#0",
+        "need/student-only/#1",
+        "need/student-only/#1",
+        "need/student-only/#2",
+        "need/student-only/#2"
+      ]
+    },
+    {
+      "route": "status/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".stable",
+      "kind": "status",
+      "family": "wide",
+      "noteKeys": [
+        "status/#0",
+        "status/#0",
+        "status/#1",
+        "status/#1"
+      ]
+    },
+    {
+      "route": "student/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide",
+      "noteKeys": [
+        "student/#0",
+        "student/#0",
+        "student/#1",
+        "student/#1",
+        "student/#2",
+        "student/#2"
+      ]
+    },
+    {
+      "route": "vendor/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "hub",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/#0",
+        "vendor/#0",
+        "vendor/#1",
+        "vendor/#1"
+      ]
+    },
+    {
+      "route": "vendor/ai360/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/ai360/#0",
+        "vendor/ai360/#0",
+        "vendor/ai360/#1",
+        "vendor/ai360/#1",
+        "vendor/ai360/#2",
+        "vendor/ai360/#2"
+      ]
+    },
+    {
+      "route": "vendor/aliyun/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/aliyun/#0",
+        "vendor/aliyun/#0",
+        "vendor/aliyun/#1",
+        "vendor/aliyun/#1",
+        "vendor/aliyun/#2",
+        "vendor/aliyun/#2"
+      ]
+    },
+    {
+      "route": "vendor/anthropic/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/anthropic/#0",
+        "vendor/anthropic/#0",
+        "vendor/anthropic/#1",
+        "vendor/anthropic/#1",
+        "vendor/anthropic/#2",
+        "vendor/anthropic/#2"
+      ]
+    },
+    {
+      "route": "vendor/aws/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/aws/#0",
+        "vendor/aws/#0",
+        "vendor/aws/#1",
+        "vendor/aws/#1",
+        "vendor/aws/#2",
+        "vendor/aws/#2"
+      ]
+    },
+    {
+      "route": "vendor/baichuan/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/baichuan/#0",
+        "vendor/baichuan/#0",
+        "vendor/baichuan/#1",
+        "vendor/baichuan/#1",
+        "vendor/baichuan/#2",
+        "vendor/baichuan/#2"
+      ]
+    },
+    {
+      "route": "vendor/baidu-ai-cloud/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/baidu-ai-cloud/#0",
+        "vendor/baidu-ai-cloud/#0",
+        "vendor/baidu-ai-cloud/#1",
+        "vendor/baidu-ai-cloud/#1",
+        "vendor/baidu-ai-cloud/#2",
+        "vendor/baidu-ai-cloud/#2"
+      ]
+    },
+    {
+      "route": "vendor/coze/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/coze/#0",
+        "vendor/coze/#0",
+        "vendor/coze/#1",
+        "vendor/coze/#1",
+        "vendor/coze/#2",
+        "vendor/coze/#2"
+      ]
+    },
+    {
+      "route": "vendor/cursor/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/cursor/#0",
+        "vendor/cursor/#0",
+        "vendor/cursor/#1",
+        "vendor/cursor/#1",
+        "vendor/cursor/#2",
+        "vendor/cursor/#2"
+      ]
+    },
+    {
+      "route": "vendor/deepseek/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/deepseek/#0",
+        "vendor/deepseek/#0",
+        "vendor/deepseek/#1",
+        "vendor/deepseek/#1",
+        "vendor/deepseek/#2",
+        "vendor/deepseek/#2"
+      ]
+    },
+    {
+      "route": "vendor/github/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/github/#0",
+        "vendor/github/#0",
+        "vendor/github/#1",
+        "vendor/github/#1",
+        "vendor/github/#2",
+        "vendor/github/#2"
+      ]
+    },
+    {
+      "route": "vendor/google/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/google/#0",
+        "vendor/google/#0",
+        "vendor/google/#1",
+        "vendor/google/#1",
+        "vendor/google/#2",
+        "vendor/google/#2"
+      ]
+    },
+    {
+      "route": "vendor/iflytek/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/iflytek/#0",
+        "vendor/iflytek/#0",
+        "vendor/iflytek/#1",
+        "vendor/iflytek/#1",
+        "vendor/iflytek/#2",
+        "vendor/iflytek/#2"
+      ]
+    },
+    {
+      "route": "vendor/microsoft/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/microsoft/#0",
+        "vendor/microsoft/#0",
+        "vendor/microsoft/#1",
+        "vendor/microsoft/#1",
+        "vendor/microsoft/#2",
+        "vendor/microsoft/#2"
+      ]
+    },
+    {
+      "route": "vendor/minimax/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/minimax/#0",
+        "vendor/minimax/#0",
+        "vendor/minimax/#1",
+        "vendor/minimax/#1",
+        "vendor/minimax/#2",
+        "vendor/minimax/#2"
+      ]
+    },
+    {
+      "route": "vendor/moonshot/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/moonshot/#0",
+        "vendor/moonshot/#0",
+        "vendor/moonshot/#1",
+        "vendor/moonshot/#1",
+        "vendor/moonshot/#2",
+        "vendor/moonshot/#2"
+      ]
+    },
+    {
+      "route": "vendor/notion/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/notion/#0",
+        "vendor/notion/#0",
+        "vendor/notion/#1",
+        "vendor/notion/#1",
+        "vendor/notion/#2",
+        "vendor/notion/#2"
+      ]
+    },
+    {
+      "route": "vendor/openai/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/openai/#0",
+        "vendor/openai/#0",
+        "vendor/openai/#1",
+        "vendor/openai/#1",
+        "vendor/openai/#2",
+        "vendor/openai/#2"
+      ]
+    },
+    {
+      "route": "vendor/replit/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/replit/#0",
+        "vendor/replit/#0",
+        "vendor/replit/#1",
+        "vendor/replit/#1",
+        "vendor/replit/#2",
+        "vendor/replit/#2"
+      ]
+    },
+    {
+      "route": "vendor/sensetime/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/sensetime/#0",
+        "vendor/sensetime/#0",
+        "vendor/sensetime/#1",
+        "vendor/sensetime/#1",
+        "vendor/sensetime/#2",
+        "vendor/sensetime/#2"
+      ]
+    },
+    {
+      "route": "vendor/siliconflow/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/siliconflow/#0",
+        "vendor/siliconflow/#0",
+        "vendor/siliconflow/#1",
+        "vendor/siliconflow/#1",
+        "vendor/siliconflow/#2",
+        "vendor/siliconflow/#2"
+      ]
+    },
+    {
+      "route": "vendor/stepfun/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/stepfun/#0",
+        "vendor/stepfun/#0",
+        "vendor/stepfun/#1",
+        "vendor/stepfun/#1",
+        "vendor/stepfun/#2",
+        "vendor/stepfun/#2"
+      ]
+    },
+    {
+      "route": "vendor/tencent-cloud/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/tencent-cloud/#0",
+        "vendor/tencent-cloud/#0",
+        "vendor/tencent-cloud/#1",
+        "vendor/tencent-cloud/#1",
+        "vendor/tencent-cloud/#2",
+        "vendor/tencent-cloud/#2"
+      ]
+    },
+    {
+      "route": "vendor/volcengine/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/volcengine/#0",
+        "vendor/volcengine/#0",
+        "vendor/volcengine/#1",
+        "vendor/volcengine/#1",
+        "vendor/volcengine/#2",
+        "vendor/volcengine/#2"
+      ]
+    },
+    {
+      "route": "vendor/windsurf/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/windsurf/#0",
+        "vendor/windsurf/#0",
+        "vendor/windsurf/#1",
+        "vendor/windsurf/#1",
+        "vendor/windsurf/#2",
+        "vendor/windsurf/#2"
+      ]
+    },
+    {
+      "route": "vendor/zhipu/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "narrowCodes": [
+        "note-narrow"
+      ],
+      "noteWidth": 453,
+      "regionWidth": 1380,
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide",
+      "noteKeys": [
+        "vendor/zhipu/#0",
+        "vendor/zhipu/#0",
+        "vendor/zhipu/#1",
+        "vendor/zhipu/#1",
+        "vendor/zhipu/#2",
+        "vendor/zhipu/#2"
+      ]
+    }
+  ],
+  "narrowNoteCount": 48,
+  "narrowCodeTally": {
+    "note-narrow": 48
+  },
+  "narrowNoteFamilyCounts": {
+    "category/*（目录页族）": 6,
+    "changes": 1,
+    "（集合页）": 3,
+    "feeds": 1,
+    "need/*": 10,
+    "status": 1,
+    "vendor/*": 26
+  },
+  "narrowNoteKeyCount": 156,
+  "narrowNoteCodeTally": {
+    "note-narrow": 156
+  },
+  "noteRowsTotal": 401,
+  "noteAxisCount": 48,
+  "noteClippedCount": 0,
+  "hiddenTextCount": 0,
+  "overflowPages": 0,
+  "unexpectedDetailMain": 0,
+  "missingDetailMain": 0,
+  "unclassified": 0,
+  "frozenRule": {
+    "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+    "pagesExactlyOnce": 0,
+    "pagesTotal": 186,
+    "drift": [
+      "",
+      "archive/",
+      "category/",
+      "category/agent/",
+      "category/api/",
+      "category/audio/",
+      "category/chat/",
+      "category/image/",
+      "changes/",
+      "deal/017bdbc04e70/"
+    ]
+  },
+  "dataRegions": {
+    "<main>（回落）": 82,
+    ".ctable": 45,
+    ".chgsec": 1,
+    ".ptable": 55,
+    ".flist": 1,
+    ".pchglist": 1,
+    ".stable": 1
+  },
+  "acceptCodeSet": "/^note-(ink-)?narrow$/",
+  "verdict": "pass",
+  "expectationNote": "预期：改动前产物上窄码命中 48 页 / 156 条（页数仍是 4 个 70ch 壳渲染出的页面集合；条数在并集口径下是 48 条盒宽窄 + 108 条字迹窄）"
+}

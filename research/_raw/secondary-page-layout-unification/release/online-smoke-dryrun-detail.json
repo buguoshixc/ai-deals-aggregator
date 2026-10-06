@@ -1,0 +1,612 @@
+{
+  "tool": "secondary-page-layout-unification/online-smoke",
+  "schemaVersion": 1,
+  "at": "2026-10-06T08:30:44.496Z",
+  "node": "v24.13.1",
+  "playwrightCore": "1.63.0",
+  "mode": "local-dir",
+  "base": "http://127.0.0.1:52920/",
+  "dir": "dist",
+  "derivation": {
+    "source": "sitemap:D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification\\dist\\sitemap.xml",
+    "fallback": false,
+    "rootPrefix": "/ai-deals-aggregator/",
+    "sitemapLocs": 183,
+    "dealRoutes": 80,
+    "modelRoutes": 51,
+    "dealRoute": "deal/2eae0e246de2/",
+    "modelRoute": "models/claude-fable-5.1/",
+    "note": "deal id / model slug 全部现场推导（线上 sitemap.xml / 本地 <dir>/sitemap.xml，退路 deals.json / models.json），脚本里不写死任何 id；/models/ 索引本身在正则层被排除（^models/<slug>/$）"
+  },
+  "thresholds": {
+    "noteRatio": 0.85,
+    "axisRatio": 0.05,
+    "tol": 1,
+    "detailColumnMax": 1120,
+    "detailCenterTol": 8,
+    "viewports": [
+      1440,
+      390
+    ]
+  },
+  "frozenSnoteRule": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+  "pages": [
+    {
+      "route": "deal/2eae0e246de2/",
+      "url": "http://127.0.0.1:52920/deal/2eae0e246de2/",
+      "family": "detail",
+      "requireNotes": false,
+      "why": "叶子详情：内容列 1120px 居中；这类页面本来没有页面级说明",
+      "status": 200,
+      "desktop": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainCount": 1,
+        "detailMainCount": 1,
+        "mainClass": "detail-main",
+        "main": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120,
+          "scrollW": 1120,
+          "clientW": 1120,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": null,
+        "regionFallback": true,
+        "region": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120,
+          "scrollW": 1120,
+          "clientW": 1120,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "frozenCount": 1,
+        "noteCount": 0,
+        "notes": []
+      },
+      "narrow": {
+        "doc": {
+          "innerWidth": 390,
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "mainCount": 1,
+        "detailMainCount": 1,
+        "mainClass": "detail-main",
+        "main": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": null,
+        "regionFallback": true,
+        "region": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "frozenCount": 1,
+        "noteCount": 0,
+        "notes": []
+      },
+      "externalRequests": []
+    },
+    {
+      "route": "models/claude-fable-5.1/",
+      "url": "http://127.0.0.1:52920/models/claude-fable-5.1/",
+      "family": "detail",
+      "requireNotes": true,
+      "why": "叶子详情里**有**页面级说明的那一类（说明同样要 ≥0.85×1120）",
+      "status": 200,
+      "desktop": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainCount": 1,
+        "detailMainCount": 1,
+        "mainClass": "detail-main",
+        "main": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120,
+          "scrollW": 1120,
+          "clientW": 1120,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".ptable",
+        "regionFallback": false,
+        "region": {
+          "left": 160,
+          "right": 1280,
+          "width": 1120,
+          "scrollW": 1120,
+          "clientW": 1120,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 1,
+        "noteCount": 5,
+        "notes": [
+          {
+            "index": 0,
+            "text": "全部来自本站 API / Token 计费对比 的同一份数据； ",
+            "box": {
+              "left": 160,
+              "right": 1280,
+              "width": 1120,
+              "scrollW": 1120,
+              "clientW": 1120,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1120,
+            "textWidth": 1120,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 160,
+              "right": 845.09,
+              "width": 685.09,
+              "lines": 5
+            }
+          },
+          {
+            "index": 1,
+            "text": "没有与该模型显式关联的 Coding 套餐 —— 本站不按套餐里",
+            "box": {
+              "left": 160,
+              "right": 1280,
+              "width": 1120,
+              "scrollW": 1120,
+              "clientW": 1120,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1120,
+            "textWidth": 1120,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 160,
+              "right": 830.92,
+              "width": 670.92,
+              "lines": 3
+            }
+          },
+          {
+            "index": 2,
+            "text": "没有与该模型显式关联的优惠 —— 本站不用标题关键词猜关系。",
+            "box": {
+              "left": 160,
+              "right": 1280,
+              "width": 1120,
+              "scrollW": 1120,
+              "clientW": 1120,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1120,
+            "textWidth": 1120,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 160,
+              "right": 502.58,
+              "width": 342.58,
+              "lines": 3
+            }
+          },
+          {
+            "index": 3,
+            "text": "这一节是派生视图：直接把 API 计费日志里与该模型有关的记录事",
+            "box": {
+              "left": 160,
+              "right": 1280,
+              "width": 1120,
+              "scrollW": 1120,
+              "clientW": 1120,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1120,
+            "textWidth": 1120,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 160,
+              "right": 700.23,
+              "width": 540.23,
+              "lines": 3
+            }
+          },
+          {
+            "index": 4,
+            "text": "API 计费日志里没有与该模型相关的事件。",
+            "box": {
+              "left": 160,
+              "right": 1280,
+              "width": 1120,
+              "scrollW": 1120,
+              "clientW": 1120,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 1120,
+            "textWidth": 1120,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 160,
+              "right": 384.95,
+              "width": 224.95,
+              "lines": 1
+            }
+          }
+        ]
+      },
+      "narrow": {
+        "doc": {
+          "innerWidth": 390,
+          "clientWidth": 390,
+          "scrollWidth": 390
+        },
+        "mainCount": 1,
+        "detailMainCount": 1,
+        "mainClass": "detail-main",
+        "main": {
+          "left": 16,
+          "right": 374,
+          "width": 358,
+          "scrollW": 358,
+          "clientW": 358,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "block"
+        },
+        "regionSel": ".ptable",
+        "regionFallback": false,
+        "region": {
+          "left": 16,
+          "right": 734.17,
+          "width": 718.17,
+          "scrollW": 718,
+          "clientW": 718,
+          "padLeft": 0,
+          "padRight": 0,
+          "maxWidth": "none",
+          "overflowWrap": "normal",
+          "wordBreak": "normal",
+          "display": "table"
+        },
+        "frozenCount": 1,
+        "noteCount": 5,
+        "notes": [
+          {
+            "index": 0,
+            "text": "全部来自本站 API / Token 计费对比 的同一份数据； ",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 365.25,
+              "width": 349.25,
+              "lines": 6
+            }
+          },
+          {
+            "index": 1,
+            "text": "没有与该模型显式关联的 Coding 套餐 —— 本站不按套餐里",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 367.45,
+              "width": 351.45,
+              "lines": 4
+            }
+          },
+          {
+            "index": 2,
+            "text": "没有与该模型显式关联的优惠 —— 本站不用标题关键词猜关系。",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 358.58,
+              "width": 342.58,
+              "lines": 3
+            }
+          },
+          {
+            "index": 3,
+            "text": "这一节是派生视图：直接把 API 计费日志里与该模型有关的记录事",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 364.23,
+              "width": 348.23,
+              "lines": 4
+            }
+          },
+          {
+            "index": 4,
+            "text": "API 计费日志里没有与该模型相关的事件。",
+            "box": {
+              "left": 16,
+              "right": 374,
+              "width": 358,
+              "scrollW": 358,
+              "clientW": 358,
+              "padLeft": 0,
+              "padRight": 0,
+              "maxWidth": "none",
+              "overflowWrap": "anywhere",
+              "wordBreak": "normal",
+              "display": "block"
+            },
+            "contentBox": 358,
+            "textWidth": 358,
+            "textFallback": false,
+            "bearingCount": 1,
+            "ink": {
+              "left": 16,
+              "right": 240.95,
+              "width": 224.95,
+              "lines": 1
+            }
+          }
+        ]
+      },
+      "externalRequests": []
+    }
+  ],
+  "checks": [
+    {
+      "page": "deal/2eae0e246de2/",
+      "viewport": 1440,
+      "name": "HTTP 200",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "page": "deal/2eae0e246de2/",
+      "viewport": 1440,
+      "name": "几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · detail 族）",
+      "ok": true,
+      "detail": "main 1120px · 主数据区 <main>（回落） 1120px · 说明 0 条"
+    },
+    {
+      "page": "deal/2eae0e246de2/",
+      "viewport": 1440,
+      "name": "共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物）",
+      "ok": true,
+      "detail": "frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）"
+    },
+    {
+      "page": "deal/2eae0e246de2/",
+      "viewport": 1440,
+      "name": "页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言）",
+      "ok": true,
+      "detail": "noteCount=0（本页不要求）"
+    },
+    {
+      "page": "deal/2eae0e246de2/",
+      "viewport": 390,
+      "name": "documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出）",
+      "ok": true,
+      "detail": "scrollWidth=390 · clientWidth=390 · innerWidth=390"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "HTTP 200",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · detail 族）",
+      "ok": true,
+      "detail": "main 1120px · 主数据区 .ptable 1120px · 说明 5 条（#0 1120px / ratio 1）"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物）",
+      "ok": true,
+      "detail": "frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言）",
+      "ok": true,
+      "detail": "noteCount=5"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "说明 #0 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 685.09px/5 行 · 文本「全部来自本站 API / Token 计费对比 的同一份数据； 」"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "说明 #1 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 670.92px/3 行 · 文本「没有与该模型显式关联的 Coding 套餐 —— 本站不按套餐里」"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "说明 #2 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 342.58px/3 行 · 文本「没有与该模型显式关联的优惠 —— 本站不用标题关键词猜关系。」"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "说明 #3 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 540.23px/3 行 · 文本「这一节是派生视图：直接把 API 计费日志里与该模型有关的记录事」"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 1440,
+      "name": "说明 #4 有字区域 / ratio / 左右边缘",
+      "ok": true,
+      "detail": "textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 224.95px/1 行 · 文本「API 计费日志里没有与该模型相关的事件。」"
+    },
+    {
+      "page": "models/claude-fable-5.1/",
+      "viewport": 390,
+      "name": "documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出）",
+      "ok": true,
+      "detail": "scrollWidth=390 · clientWidth=390 · innerWidth=390"
+    },
+    {
+      "page": "（全轮）",
+      "viewport": null,
+      "name": "本地模式：整轮零外部请求（dry-run 绝不出网）",
+      "ok": true,
+      "detail": "0 个外部 origin"
+    }
+  ],
+  "ok": true,
+  "failed": 0,
+  "browser": {
+    "executablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+  },
+  "externalRequests": {
+    "origins": [],
+    "enforced": true
+  }
+}

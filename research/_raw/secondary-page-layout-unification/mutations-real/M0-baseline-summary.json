@@ -1,0 +1,716 @@
+{
+  "what": "M0 反证：在**改动前**的产物上跑同一条验收命令，必须红，且必须报出 note-narrow",
+  "command": "node scripts/tools/verify-site.js --dir=dist.baseline",
+  "dir": "dist.baseline",
+  "at": "2026-10-06T08:36:11.192Z",
+  "exitCode": 1,
+  "log": "research/_raw/secondary-page-layout-unification/mutations-real/11-M0-baseline.log",
+  "report": "research/_raw/secondary-page-layout-unification/mutations-real/M0-baseline.json",
+  "reportTotal": 842,
+  "reportFailed": 27,
+  "failingChecks": [
+    {
+      "name": "§22c @1440 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切）",
+      "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 156（落在 48 页） · 不同轴 156 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页是分类页的目录：只列出条目」）；category/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这里列出的入口都是静态页面：无 」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）"
+    },
+    {
+      "name": "§22c @1600 逐条页面级说明与主数据区同轴（有字区域 ≥ 0.85×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切）",
+      "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过） · 窄条 156（落在 48 页） · 不同轴 156 · 裁切 0 · textFallback 回落 41 条 · 命中样例：category/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页是分类页的目录：只列出条目」）；category/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这里列出的入口都是静态页面：无 」）；category/agent/#0 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「这一页按分类收条目：数据里的 c」）；category/agent/#1 有字区域 453px（盒 452.81px · 列 1380px · 比例 0.33 · 主数据区 .ctable · codes [note-narrow,note-axis] · 「全部变化 →」）"
+    },
+    {
+      "name": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+      "detail": "186 页不符（改动前产物在这里必然全红，这正是 M0 的反证面之一）：/=0 次 archive/=0 次 category/=0 次 category/agent/=0 次"
+    },
+    {
+      "name": "§22c @760 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出）",
+      "detail": "category/#0 note-narrow：category/#0 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 447.3px/8 行）；category/#0 note-axis：category/#0 说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（容差 max(1px, 0.05 × 728px) = 36.4px）；category/#1 note-narrow：category/#1 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 445.53px/5 行）；category/#1 note-axis：category/#1 说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（容差 max(1px, 0.05 × 728px) = 36.4px）；category/agent/#0 note-narrow：category/agent/#0 有字区域宽 453px < 0.85 × 728px（盒宽 452.81px · content box 453px · 承载文本块 1 个 · 主数据区 .ctable 728px · 页面列 728px · 字迹 452.45px/7 行）"
+    },
+    {
+      "name": "§22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级",
+      "detail": "页面没量到"
+    },
+    {
+      "name": "§22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M9a 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（相邻兄弟选择器））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M9a 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "detail": "选择器 .snote ~ .snote 命中 [无] ⇒ 窄条 [无]（第 0 条被压：false）"
+    },
+    {
+      "name": "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M9b 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（:not(:first-of-type)））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+      "detail": "选择器 .snote:not(:first-of-type) 命中 [无] ⇒ 窄条 [无]（第 0 条被压：false）"
+    },
+    {
+      "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+      "detail": "不可断串注入位置 note · scrollWidth 1118（视口 390） · 溢出类违规码 [page-overflow@390]（全部码 [note-clipped, page-overflow@390]，390 档只看溢出）"
+    },
+    {
+      "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条 note-narrow 都没有",
+      "detail": "M8 student/@1440 违规码 [note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis] · M9a docs/data/@1440 违规码 [无] · M9b changes/@1440 违规码 [note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis] · M10 student/@1600 违规码 [note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis]"
+    }
+  ],
+  "failingChecksNon22c": 0,
+  "failingChecks22c": 27,
+  "layoutSweep": {
+    "total": 186,
+    "wide": 55,
+    "detail": 131,
+    "other": 0,
+    "notesChecked": 105,
+    "notesJudged": 401,
+    "narrowNotes": 156,
+    "narrowNotePages": 48,
+    "narrowNotesAt1600": 156,
+    "overflowPages": 0,
+    "unexpectedDetailMain": 0,
+    "missingDetailMain": 0,
+    "unclassified": 0,
+    "desktopViewports": [
+      1440,
+      1600
+    ]
+  },
+  "narrowNotePages": [
+    {
+      "route": "category/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "hub",
+      "family": "wide"
+    },
+    {
+      "route": "category/agent/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "category",
+      "family": "wide"
+    },
+    {
+      "route": "category/api/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "category",
+      "family": "wide"
+    },
+    {
+      "route": "category/audio/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "category",
+      "family": "wide"
+    },
+    {
+      "route": "category/chat/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "category",
+      "family": "wide"
+    },
+    {
+      "route": "category/image/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "category",
+      "family": "wide"
+    },
+    {
+      "route": "changes/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".chgsec",
+      "kind": "changes",
+      "family": "wide"
+    },
+    {
+      "route": "developer/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide"
+    },
+    {
+      "route": "feeds/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".flist",
+      "kind": "feeds",
+      "family": "wide"
+    },
+    {
+      "route": "free-api/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide"
+    },
+    {
+      "route": "need/ai-coding/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide"
+    },
+    {
+      "route": "need/china-usable/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide"
+    },
+    {
+      "route": "need/dev-credits/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide"
+    },
+    {
+      "route": "need/edu-identity/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide"
+    },
+    {
+      "route": "need/free-api/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide"
+    },
+    {
+      "route": "need/free-model/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide"
+    },
+    {
+      "route": "need/free-tier/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide"
+    },
+    {
+      "route": "need/free-tokens/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide"
+    },
+    {
+      "route": "need/no-card/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide"
+    },
+    {
+      "route": "need/student-only/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "need",
+      "family": "wide"
+    },
+    {
+      "route": "status/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".stable",
+      "kind": "status",
+      "family": "wide"
+    },
+    {
+      "route": "student/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "collection",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "hub",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/ai360/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/aliyun/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/anthropic/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/aws/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/baichuan/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/baidu-ai-cloud/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/coze/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/cursor/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/deepseek/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/github/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/google/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/iflytek/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/microsoft/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/minimax/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/moonshot/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/notion/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/openai/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/replit/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/sensetime/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/siliconflow/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/stepfun/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/tencent-cloud/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/volcengine/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/windsurf/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    },
+    {
+      "route": "vendor/zhipu/",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "columnWidth": 1380,
+      "regionSel": ".ctable",
+      "kind": "vendor",
+      "family": "wide"
+    }
+  ],
+  "narrowNoteCount": 48,
+  "narrowNoteFamilyCounts": {
+    "category/*（目录页族）": 6,
+    "changes": 1,
+    "（集合页）": 3,
+    "feeds": 1,
+    "need/*": 10,
+    "status": 1,
+    "vendor/*": 26
+  },
+  "noteAxisCount": 48,
+  "noteClippedCount": 0,
+  "overflowPages": 0,
+  "unexpectedDetailMain": 0,
+  "missingDetailMain": 0,
+  "unclassified": 0,
+  "frozenRule": {
+    "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+    "pagesExactlyOnce": 0,
+    "pagesTotal": 186,
+    "drift": [
+      "",
+      "archive/",
+      "category/",
+      "category/agent/",
+      "category/api/",
+      "category/audio/",
+      "category/chat/",
+      "category/image/",
+      "changes/",
+      "deal/017bdbc04e70/"
+    ]
+  },
+  "dataRegions": {
+    "<main>（回落）": 82,
+    ".ctable": 45,
+    ".chgsec": 1,
+    ".ptable": 55,
+    ".flist": 1,
+    ".pchglist": 1,
+    ".stable": 1
+  },
+  "verdict": "pass",
+  "expectationNote": "预期：改动前产物上 note-narrow ≈ 48 页（4 个 70ch 壳渲染出的页面集合）"
+}

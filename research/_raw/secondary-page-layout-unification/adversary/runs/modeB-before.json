@@ -1,0 +1,2082 @@
+{
+  "generatedAt": "2026-10-06T09:09:15.106Z",
+  "host": "t11 adversary · anchor-based harness",
+  "mode": "B",
+  "verifySite": {
+    "path": "research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js",
+    "sha256": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+    "judge": {
+      "anchors": {
+        "start": "const WIDE_TOL = 1;",
+        "problems": "function wideProblems(geometry, meta) {",
+        "mutate": "async function wideMutate(target, anchor, replacement) {"
+      },
+      "lines": "6144–6356",
+      "lineCount": 213,
+      "sha256": "91d295365b40e60cd8b218b9c21165b4a61cb7cd1ad9dac0dfc39e40c98b436d"
+    },
+    "mutate": {
+      "lines": "6365–6378",
+      "lineCount": 14,
+      "sha256": "b3d6ba24f3b65d417a96e1908804dbc44ad4ae008fbe505e4ae2be285015c3dc"
+    }
+  },
+  "dir": "dist",
+  "extraction": {
+    "ok": true,
+    "missingSymbols": []
+  },
+  "forms": [
+    {
+      "id": "ctl-no-inject",
+      "what": "不注入（现场基线，正对照：装置不是对什么都判红）",
+      "direction": "control",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": null,
+      "realism": {
+        "level": "n/a",
+        "how": "—",
+        "note": "对照"
+      },
+      "expect": "pass",
+      "targets": [
+        {
+          "file": "category/agent/index.html",
+          "injected": false,
+          "reason": "对照：不注入"
+        }
+      ],
+      "suite": {
+        "command": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-ctl-no-inject.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+        "exitCode": 0,
+        "seconds": 102,
+        "signal": null,
+        "verifySiteShaBefore": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+        "verifySiteShaAfter": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+        "pinnedStable": true,
+        "stdoutTail": [
+          "  ✓ /docs/data/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件） — 0 个",
+          "  ✓ /docs/data/ 无 JS 时读得到「数据集索引」",
+          "  ✓ /docs/data/ 无 JS 时读得到「使用示例」",
+          "  ✓ /docs/data/ 无 JS 时读得到「引用方式」",
+          "  ✓ /docs/data/ 无 JS 时读得到「Schema 稳定性」",
+          "  ✓ /docs/data/ 无 JS 时读得到「License 状态」",
+          "  ✓ /docs/data/ 没有 JS 错误、没有外部请求（含本节的全部导航） — JS 错误 0 个 · 外部请求 0 个",
+          "  ✓ /docs/data/ 行数 == dist/data/index.json 的数据集数（9 份） — 页面 9 行 / Manifest 9 份",
+          "  ✓ /docs/data/ 里每个 endpoint 都真的能取到（逐条 HTTP 200）",
+          "  ✓ /docs/data/ 页面标出每份数据的时间形状（真实时刻 / 日期规范化 / 纯日期）",
+          "  ✓ /docs/data/ 引用示例里带官方出处（不宣称本站是官方来源）",
+          "",
+          "=== 26) 私有分析（Production Guard / 覆盖 / 端点）===",
+          "  ✓ 抽样 7 个页面在真实 DOM 里各有一个 analytics bootstrap（含 noindex / 深层路由） — /=1 · plans/api/=1 · plans/coding/=1 · models/=1 · models/360zhinao-pro/=1 · vendor/ai360/=1 · changes/=1",
+          "  ✓ 抽样页面里没有残留的分析占位符（页面 HTML 里不会露出模板标记） — 0 个",
+          "  ✓ 抽样页面正文都有内容（分析注入没有把正文吃掉） — /:12274 · plans/api/:20344 · plans/coding/:16415 · models/:5956 · models/360zhinao-pro/:1366 · vendor/ai360/:1996 · changes/:3858",
+          "  ✓ 本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取） — 全部 0",
+          "  ✓ 本地：网络层同样 0 次分析请求（guard 在插入 <script> 之前就返回了） — 本轮累计 0 次",
+          "  ✓ 本地：抽样页面没有新增 JS 错误（Analytics 失败不得影响产品） — 全部 0",
+          "  ✓ 本地：没有出现白名单之外的外部请求 — 0 个",
+          "",
+          "机器可读报告已写出：..\\runs\\suite-ctl-no-inject.json（827 项，失败 0 项）",
+          "",
+          "✅ 验收 827 项，失败 0 项",
+          ""
+        ],
+        "stderrTail": [
+          ""
+        ],
+        "parsed": {
+          "assertions": 827,
+          "failedAssertions": 0,
+          "failingLines": [],
+          "failingCount": 0,
+          "section22cLines": [
+            "  ✓ §22c 全站每一页的布局族都能解析（page-kinds.kindOfRoute + layoutOf，数据驱动的静态路由由 kindByRoute 补齐） — 186 页全部可解析（16 种 kind）· wide 55 / detail 131 / other 0 · unclassified-layout 0 个",
+            "  ✓ §22c 注册表驱动的入口（3 目录页 + 10 按需求页 + 2 枢纽页）在产物里都存在 — 逐条命中（15 条，全部现场推导，不写死 slug）",
+            "  ✓ §22c @1440 页面级说明与主数据区同轴（宽 ≥ 0.85×主数据区、与主容器或数据区 ≤1px、自身不裁切） — 105 页有页面级说明 · 81 页标为「无页面级说明」（跳过该条、不算失败：/ deal/017bdbc04e70/ deal/0273d8b23412/ …（还有 78）） · 窄说明 0 · 不同轴 0 · 裁切 0 · 同轴锚：主数据区 104 页 / 页面主容器 105 页 / 两者都 104 页 / 都不 0 页",
+            "  ✓ §22c @1440 全站 186 页都没有横向溢出 — documentElement.scrollWidth ≤ 视口+1 全部成立",
+            "  ✓ §22c @390 全站 186 页 documentElement.scrollWidth ≤ 视口+1 — 最宽的一页 390px（视口 390）",
+            "  ✓ §22c 布局族一致性：detail 族（131 页）恰好 1 个 main.detail-main、wide 族（55 页）0 个 — missing-detail-main 0 · unexpected-detail-main 0",
+            "  ✓ §22c 每一页都判得出主数据区（声明选择器或回落 <main>） — 声明选择器命中 104 页 · 回落 <main> 82 页（<main>（回落）=82 .ctable=45 .chgsec=1 .ptable=55 .flist=1 .pchglist=1 .stable=1）",
+            "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+            "  ✓ §22c @760 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — 0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/",
+            "  ✓ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — 0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/",
+            "  ✓ §22c M1–M4 的四个壳（student/ status/ changes/ feeds/）都是 wide 族且带页面级说明 — student/ collection/wide · .snote 3 个 · status/ status/wide · .snote 2 个 · changes/ changes/wide · .snote 13 个 · feeds/ feeds/wide · .snote 8 个",
+            "  ✓ §22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串",
+            "  ✓ §22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串） — 期望 page-overflow@390 · 实测 [note-clipped, page-overflow@390] · 说明 358px · 页面列 358px · detail-main 0 个 · scrollWidth 1118（视口 390） · 不可断串注入位置 note · 违规码 [note-clipped, page-overflow@390]",
+            "  ✓ §22c M7 DOM 注入前提成立（该类原本不存在） — 锚点「<main> 加 detail-main」注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）",
+            "  ✓ §22c M7 变异后复测必须出现「unexpected-detail-main」违规码（给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）） — 期望 unexpected-detail-main · 实测 [unexpected-detail-main] · 说明 1120px · 页面列 1120px · detail-main 1 个 · scrollWidth 1440（视口 1440） · 违规码 [unexpected-detail-main]",
+            "  ✓ §22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出 — 不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）",
+            "  ✓ §22c 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因 — 不存在的锚点：ok=false · 出现 0 次 · 锚点在内联样式里出现 0 次（必须恰好 1 次） ／ 非唯一锚点：ok=false · 出现 61 次 · 锚点在内联样式里出现 61 次（必须恰好 1 次）",
+            "  ✓ §22c 违规码自检：8 个码全部由 wideProblems() 一处产出、且都可达（不多不少） — 可达 8/8 · 缺 无 · 多 无",
+            "  ✓ §22c M5（不重复造第二套）：既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码，且 §22b 的断言全绿 — §22b 断言 41 项（失败 0） · §22b 变异码 M1=[center] M2=[width] M3=[axis,src-width] M4=[self-overflow@390,page-overflow@390] M5=[leaf-consistency,leaf-consistency] · M4 正对照=[无]",
+            "  ✓ §22c 变异牙零磁盘污染：被改产物的 sha256 变异前后相等（byte-exact） — student/ 35588b1f26… · status/ 051dcfe27c… · changes/ e8b43013f7… · feeds/ ca2f78ce25…（前 35588b/051dcf/e8b430/ca2f78 · 后 35588b/051dcf/e8b430/ca2f78）",
+            "  ✓ §22c 全站扫描（438 次导航）没有 JS 错误、没有外部请求 — JS 错误 0 个 · 外部请求 0 个"
+          ],
+          "frozenLine": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+          "summaryLine": null,
+          "sweepLine": "     布局族读数表（prompt §18）：全站 186 页 = wide 55 + detail 131 + other 0",
+          "mutationRows": [
+            "     M0（反证）  --dir=dist.baseline     note-narrow ×48           另跑一次同一条命令：改动前产物必须红    ",
+            "     M1          student/@1440           note-narrow               [note-narrow, note-axis]                ",
+            "     M2          status/@1440            note-narrow               [note-narrow, note-axis]                ",
+            "     M3          changes/@1440           note-narrow               [note-narrow, note-axis]                ",
+            "     M4          feeds/@1440             note-narrow               [note-narrow, note-axis]                ",
+            "     M6          student/@390            page-overflow@390         [note-clipped, page-overflow@390]       ",
+            "     M7          status/@1440            unexpected-detail-main    [unexpected-detail-main]                ",
+            "     M6 正对照   student/@390            不得出现 page-overflow    [无]                                    ",
+            "     M5（复用）  §22b 的 M1–M5           既有牙全绿                41 项断言                               "
+          ]
+        }
+      },
+      "verdict": "false-green",
+      "metrics": {
+        "layoutViolations": 0,
+        "targetViolation": null,
+        "layoutSweep": {
+          "total": 186,
+          "wide": 55,
+          "detail": 131,
+          "other": 0,
+          "notesChecked": 105,
+          "narrowNotes": 0,
+          "overflowPages": 0,
+          "unexpectedDetailMain": 0,
+          "missingDetailMain": 0,
+          "unclassified": 0
+        },
+        "layoutNotesForTarget": null,
+        "layoutMutationCodes": {
+          "M1": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M2": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M3": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M4": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M6": [
+            "note-clipped",
+            "page-overflow@390"
+          ],
+          "M7": [
+            "unexpected-detail-main"
+          ],
+          "M6-control": []
+        }
+      },
+      "scratchJudge": {
+        "codes": [],
+        "verdict": "pass",
+        "judgeGeometry": {
+          "noteCount": 3,
+          "frozenCount": 1,
+          "regionSel": ".ctable",
+          "regionWidth": 1380,
+          "mainWidth": 1380,
+          "column": 1380,
+          "notes": [],
+          "noteLegacy": {
+            "width": 1380,
+            "left": 30,
+            "right": 1410
+          }
+        }
+      },
+      "scratchProbe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": 30,
+              "right": 1381.69,
+              "width": 1351.69
+            },
+            "inkLongestLine": 863.75,
+            "inkMedianLine": 84,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 1381.69,
+              "width": 1351.69
+            },
+            "inkClippedLongest": 863.75,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkLongestLine": 61.64,
+            "inkMedianLine": 61.64,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkClippedLongest": 61.64,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 3,
+            "inkUnion": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52
+            },
+            "inkLongestLine": 963.52,
+            "inkMedianLine": 48,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52
+            },
+            "inkClippedLongest": 963.52,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "scratchPaint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 21,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 1344,
+        "paintInkWidth": 1344,
+        "paintRuns": 36,
+        "paintLongestRun": 144,
+        "paintGaps": [
+          {
+            "leftCss": 107,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 112,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 168,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 218,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 233,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 286,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 297,
+            "widthCss": 11
+          },
+          {
+            "leftCss": 512,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 547,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 582,
+            "widthCss": 2
+          },
+          {
+            "leftCss": 620,
+            "widthCss": 4
+          },
+          {
+            "leftCss": 628,
+            "widthCss": 2
+          },
+          {
+            "leftCss": 649,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 681,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 693,
+            "widthCss": 9
+          },
+          {
+            "leftCss": 704,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 800,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 969,
+            "widthCss": 11
+          },
+          {
+            "leftCss": 1111,
+            "widthCss": 2
+          },
+          {
+            "leftCss": 1176,
+            "widthCss": 8
+          }
+        ],
+        "paintInkColumns": 1207
+      },
+      "scratchPaintMin": 62
+    },
+    {
+      "id": "ctl-maxwidth-70ch",
+      "what": "正对照：`.snote { max-width: 70ch }`（改动前那根窄柱）—— 门禁必须咬到",
+      "direction": "control",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { max-width: 70ch; }",
+      "realism": {
+        "level": "high",
+        "how": "把 .snote 的 max-width 从 none 改回 70ch（就是本版要修的原缺陷）",
+        "note": "正对照，必须红"
+      },
+      "expect": "bite",
+      "targets": [
+        {
+          "file": "category/agent/index.html",
+          "sha256After": "d182cde0e121d2beb36d1bef02390fc8ac65f55e50b724c4b905c1dff9fde18e",
+          "ok": true,
+          "frozenCountBefore": 1,
+          "frozenCountAfter": 1,
+          "revertible": true,
+          "bytesAdded": 28
+        }
+      ],
+      "suite": {
+        "command": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-ctl-maxwidth-70ch.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+        "exitCode": 1,
+        "seconds": 95,
+        "signal": null,
+        "verifySiteShaBefore": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+        "verifySiteShaAfter": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+        "pinnedStable": true,
+        "stdoutTail": [
+          "  ✓ /docs/data/ 无 JS 时读得到「使用示例」",
+          "  ✓ /docs/data/ 无 JS 时读得到「引用方式」",
+          "  ✓ /docs/data/ 无 JS 时读得到「Schema 稳定性」",
+          "  ✓ /docs/data/ 无 JS 时读得到「License 状态」",
+          "  ✓ /docs/data/ 没有 JS 错误、没有外部请求（含本节的全部导航） — JS 错误 0 个 · 外部请求 0 个",
+          "  ✓ /docs/data/ 行数 == dist/data/index.json 的数据集数（9 份） — 页面 9 行 / Manifest 9 份",
+          "  ✓ /docs/data/ 里每个 endpoint 都真的能取到（逐条 HTTP 200）",
+          "  ✓ /docs/data/ 页面标出每份数据的时间形状（真实时刻 / 日期规范化 / 纯日期）",
+          "  ✓ /docs/data/ 引用示例里带官方出处（不宣称本站是官方来源）",
+          "",
+          "=== 26) 私有分析（Production Guard / 覆盖 / 端点）===",
+          "  ✓ 抽样 7 个页面在真实 DOM 里各有一个 analytics bootstrap（含 noindex / 深层路由） — /=1 · plans/api/=1 · plans/coding/=1 · models/=1 · models/360zhinao-pro/=1 · vendor/ai360/=1 · changes/=1",
+          "  ✓ 抽样页面里没有残留的分析占位符（页面 HTML 里不会露出模板标记） — 0 个",
+          "  ✓ 抽样页面正文都有内容（分析注入没有把正文吃掉） — /:12274 · plans/api/:20344 · plans/coding/:16415 · models/:5956 · models/360zhinao-pro/:1366 · vendor/ai360/:1996 · changes/:3858",
+          "  ✓ 本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取） — 全部 0",
+          "  ✓ 本地：网络层同样 0 次分析请求（guard 在插入 <script> 之前就返回了） — 本轮累计 0 次",
+          "  ✓ 本地：抽样页面没有新增 JS 错误（Analytics 失败不得影响产品） — 全部 0",
+          "  ✓ 本地：没有出现白名单之外的外部请求 — 0 个",
+          "",
+          "机器可读报告已写出：..\\runs\\suite-ctl-maxwidth-70ch.json（827 项，失败 2 项）",
+          "",
+          "❌ 验收 827 项，失败 2 项",
+          "   ✗ §22c @1440 页面级说明与主数据区同轴（宽 ≥ 0.85×主数据区、与主容器或数据区 ≤1px、自身不裁切） — 105 页有页面级说明 · 81 页标为「无页面级说明」（跳过该条、不算失败：/ deal/017bdbc04e70/ deal/0273d8b23412/ …（还有 78）） · 窄说明 1 · 不同轴 1 · 裁切 0 · 同轴锚：主数据区 103 页 / 页面主容器 104 页 / 两者都 103 页 / 都不 1 页 · 命中样例：category/agent/ [note-narrow, note-axis] 说明 452.81px（主数据区 .ctable 1380px · 页面列 1380px）",
+          "   ✗ §22c @760 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-narrow：说明宽 452.81px < 0.85 × 728px（主数据区 .ctable 728px · 页面列 728px）；category/agent/ note-axis：说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（左右各容许 1px）",
+          ""
+        ],
+        "stderrTail": [
+          ""
+        ],
+        "parsed": {
+          "assertions": 827,
+          "failedAssertions": 2,
+          "failingLines": [
+            "✗ §22c @1440 页面级说明与主数据区同轴（宽 ≥ 0.85×主数据区、与主容器或数据区 ≤1px、自身不裁切） — 105 页有页面级说明 · 81 页标为「无页面级说明」（跳过该条、不算失败：/ deal/017bdbc04e70/ deal/0273d8b23412/ …（还有 78）） · 窄说明 1 · 不同轴 1 · 裁切 0 · 同轴锚：主数据区 103 页 / 页面主容器 104 页 / 两者都 103 页 / 都不 1 页 · 命中样例：category/agent/ [note-narrow, note-axis] 说明 452.81px（主数据区 .ctable 1380px · 页面列 1380px）",
+            "✗ §22c @760 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-narrow：说明宽 452.81px < 0.85 × 728px（主数据区 .ctable 728px · 页面列 728px）；category/agent/ note-axis：说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（左右各容许 1px）",
+            "✗ §22c @1440 页面级说明与主数据区同轴（宽 ≥ 0.85×主数据区、与主容器或数据区 ≤1px、自身不裁切） — 105 页有页面级说明 · 81 页标为「无页面级说明」（跳过该条、不算失败：/ deal/017bdbc04e70/ deal/0273d8b23412/ …（还有 78）） · 窄说明 1 · 不同轴 1 · 裁切 0 · 同轴锚：主数据区 103 页 / 页面主容器 104 页 / 两者都 103 页 / 都不 1 页 · 命中样例：category/agent/ [note-narrow, note-axis] 说明 452.81px（主数据区 .ctable 1380px · 页面列 1380px）",
+            "✗ §22c @760 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-narrow：说明宽 452.81px < 0.85 × 728px（主数据区 .ctable 728px · 页面列 728px）；category/agent/ note-axis：说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（左右各容许 1px）"
+          ],
+          "failingCount": 4,
+          "section22cLines": [
+            "  ✓ §22c 全站每一页的布局族都能解析（page-kinds.kindOfRoute + layoutOf，数据驱动的静态路由由 kindByRoute 补齐） — 186 页全部可解析（16 种 kind）· wide 55 / detail 131 / other 0 · unclassified-layout 0 个",
+            "  ✓ §22c 注册表驱动的入口（3 目录页 + 10 按需求页 + 2 枢纽页）在产物里都存在 — 逐条命中（15 条，全部现场推导，不写死 slug）",
+            "  ✗ §22c @1440 页面级说明与主数据区同轴（宽 ≥ 0.85×主数据区、与主容器或数据区 ≤1px、自身不裁切） — 105 页有页面级说明 · 81 页标为「无页面级说明」（跳过该条、不算失败：/ deal/017bdbc04e70/ deal/0273d8b23412/ …（还有 78）） · 窄说明 1 · 不同轴 1 · 裁切 0 · 同轴锚：主数据区 103 页 / 页面主容器 104 页 / 两者都 103 页 / 都不 1 页 · 命中样例：category/agent/ [note-narrow, note-axis] 说明 452.81px（主数据区 .ctable 1380px · 页面列 1380px）",
+            "  ✓ §22c @1440 全站 186 页都没有横向溢出 — documentElement.scrollWidth ≤ 视口+1 全部成立",
+            "  ✓ §22c @390 全站 186 页 documentElement.scrollWidth ≤ 视口+1 — 最宽的一页 390px（视口 390）",
+            "  ✓ §22c 布局族一致性：detail 族（131 页）恰好 1 个 main.detail-main、wide 族（55 页）0 个 — missing-detail-main 0 · unexpected-detail-main 0",
+            "  ✓ §22c 每一页都判得出主数据区（声明选择器或回落 <main>） — 声明选择器命中 104 页 · 回落 <main> 82 页（<main>（回落）=82 .ctable=45 .chgsec=1 .ptable=55 .flist=1 .pchglist=1 .stable=1）",
+            "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+            "  ✗ §22c @760 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-narrow：说明宽 452.81px < 0.85 × 728px（主数据区 .ctable 728px · 页面列 728px）；category/agent/ note-axis：说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（左右各容许 1px）",
+            "  ✓ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — 0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/",
+            "  ✓ §22c M1–M4 的四个壳（student/ status/ changes/ feeds/）都是 wide 族且带页面级说明 — student/ collection/wide · .snote 3 个 · status/ status/wide · .snote 2 个 · changes/ changes/wide · .snote 13 个 · feeds/ feeds/wide · .snote 8 个",
+            "  ✓ §22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串",
+            "  ✓ §22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串） — 期望 page-overflow@390 · 实测 [note-clipped, page-overflow@390] · 说明 358px · 页面列 358px · detail-main 0 个 · scrollWidth 1118（视口 390） · 不可断串注入位置 note · 违规码 [note-clipped, page-overflow@390]",
+            "  ✓ §22c M7 DOM 注入前提成立（该类原本不存在） — 锚点「<main> 加 detail-main」注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）",
+            "  ✓ §22c M7 变异后复测必须出现「unexpected-detail-main」违规码（给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）） — 期望 unexpected-detail-main · 实测 [unexpected-detail-main] · 说明 1120px · 页面列 1120px · detail-main 1 个 · scrollWidth 1440（视口 1440） · 违规码 [unexpected-detail-main]",
+            "  ✓ §22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出 — 不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）",
+            "  ✓ §22c 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因 — 不存在的锚点：ok=false · 出现 0 次 · 锚点在内联样式里出现 0 次（必须恰好 1 次） ／ 非唯一锚点：ok=false · 出现 61 次 · 锚点在内联样式里出现 61 次（必须恰好 1 次）",
+            "  ✓ §22c 违规码自检：8 个码全部由 wideProblems() 一处产出、且都可达（不多不少） — 可达 8/8 · 缺 无 · 多 无",
+            "  ✓ §22c M5（不重复造第二套）：既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码，且 §22b 的断言全绿 — §22b 断言 41 项（失败 0） · §22b 变异码 M1=[center] M2=[width] M3=[axis,src-width] M4=[self-overflow@390,page-overflow@390] M5=[leaf-consistency,leaf-consistency] · M4 正对照=[无]",
+            "  ✓ §22c 变异牙零磁盘污染：被改产物的 sha256 变异前后相等（byte-exact） — student/ 35588b1f26… · status/ 051dcfe27c… · changes/ e8b43013f7… · feeds/ ca2f78ce25…（前 35588b/051dcf/e8b430/ca2f78 · 后 35588b/051dcf/e8b430/ca2f78）",
+            "  ✓ §22c 全站扫描（438 次导航）没有 JS 错误、没有外部请求 — JS 错误 0 个 · 外部请求 0 个",
+            "   ✗ §22c @1440 页面级说明与主数据区同轴（宽 ≥ 0.85×主数据区、与主容器或数据区 ≤1px、自身不裁切） — 105 页有页面级说明 · 81 页标为「无页面级说明」（跳过该条、不算失败：/ deal/017bdbc04e70/ deal/0273d8b23412/ …（还有 78）） · 窄说明 1 · 不同轴 1 · 裁切 0 · 同轴锚：主数据区 103 页 / 页面主容器 104 页 / 两者都 103 页 / 都不 1 页 · 命中样例：category/agent/ [note-narrow, note-axis] 说明 452.81px（主数据区 .ctable 1380px · 页面列 1380px）",
+            "   ✗ §22c @760 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-narrow：说明宽 452.81px < 0.85 × 728px（主数据区 .ctable 728px · 页面列 728px）；category/agent/ note-axis：说明 16..468.81 与主数据区 .ctable 16..744 / 页面主容器 <main> 16..744 都不在同一轴上（左右各容许 1px）"
+          ],
+          "frozenLine": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+          "summaryLine": null,
+          "sweepLine": "     布局族读数表（prompt §18）：全站 186 页 = wide 55 + detail 131 + other 0",
+          "mutationRows": [
+            "     M0（反证）  --dir=dist.baseline     note-narrow ×48           另跑一次同一条命令：改动前产物必须红    ",
+            "     M1          student/@1440           note-narrow               [note-narrow, note-axis]                ",
+            "     M2          status/@1440            note-narrow               [note-narrow, note-axis]                ",
+            "     M3          changes/@1440           note-narrow               [note-narrow, note-axis]                ",
+            "     M4          feeds/@1440             note-narrow               [note-narrow, note-axis]                ",
+            "     M6          student/@390            page-overflow@390         [note-clipped, page-overflow@390]       ",
+            "     M7          status/@1440            unexpected-detail-main    [unexpected-detail-main]                ",
+            "     M6 正对照   student/@390            不得出现 page-overflow    [无]                                    ",
+            "     M5（复用）  §22b 的 M1–M5           既有牙全绿                41 项断言                               "
+          ]
+        }
+      },
+      "verdict": "bite",
+      "metrics": {
+        "layoutViolations": 1,
+        "targetViolation": {
+          "route": "category/agent/",
+          "kind": "category",
+          "family": "wide",
+          "codes": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "note": 452.81,
+          "region": 1380,
+          "column": 1380,
+          "regionSel": ".ctable"
+        },
+        "layoutSweep": {
+          "total": 186,
+          "wide": 55,
+          "detail": 131,
+          "other": 0,
+          "notesChecked": 105,
+          "narrowNotes": 1,
+          "overflowPages": 0,
+          "unexpectedDetailMain": 0,
+          "missingDetailMain": 0,
+          "unclassified": 0
+        },
+        "layoutNotesForTarget": null,
+        "layoutMutationCodes": {
+          "M1": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M2": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M3": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M4": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M6": [
+            "note-clipped",
+            "page-overflow@390"
+          ],
+          "M7": [
+            "unexpected-detail-main"
+          ],
+          "M6-control": []
+        }
+      }
+    },
+    {
+      "id": "writing-mode-vertical-fullwidth",
+      "what": "`.snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden }`：**盒宽锁死满宽**，正文竖排成一根 ~24px 竖条",
+      "direction": "writing-mode（盒宽锁满宽）",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; }",
+      "realism": {
+        "level": "medium",
+        "how": "同 writing-mode；`width: 100%` 是几乎必然跟着写的（否则盒子会被内容反推）",
+        "note": "★ 真正的 writing-mode 绕过形态：盒宽与内容盒宽都满宽，可见文字是一根竖条"
+      },
+      "expect": "pass",
+      "targets": [
+        {
+          "file": "category/agent/index.html",
+          "sha256After": "09e6b46c935c03e521a56445182fdade547108cd8e66da09f99c539855a43b6c",
+          "ok": true,
+          "frozenCountBefore": 1,
+          "frozenCountAfter": 1,
+          "revertible": true,
+          "bytesAdded": 85
+        }
+      ],
+      "suite": {
+        "command": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-writing-mode-vertical-fullwidth.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+        "exitCode": 1,
+        "seconds": 97,
+        "signal": null,
+        "verifySiteShaBefore": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+        "verifySiteShaAfter": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+        "pinnedStable": true,
+        "stdoutTail": [
+          "  ✓ /docs/data/ 无 JS 时读得到「数据集索引」",
+          "  ✓ /docs/data/ 无 JS 时读得到「使用示例」",
+          "  ✓ /docs/data/ 无 JS 时读得到「引用方式」",
+          "  ✓ /docs/data/ 无 JS 时读得到「Schema 稳定性」",
+          "  ✓ /docs/data/ 无 JS 时读得到「License 状态」",
+          "  ✓ /docs/data/ 没有 JS 错误、没有外部请求（含本节的全部导航） — JS 错误 0 个 · 外部请求 0 个",
+          "  ✓ /docs/data/ 行数 == dist/data/index.json 的数据集数（9 份） — 页面 9 行 / Manifest 9 份",
+          "  ✓ /docs/data/ 里每个 endpoint 都真的能取到（逐条 HTTP 200）",
+          "  ✓ /docs/data/ 页面标出每份数据的时间形状（真实时刻 / 日期规范化 / 纯日期）",
+          "  ✓ /docs/data/ 引用示例里带官方出处（不宣称本站是官方来源）",
+          "",
+          "=== 26) 私有分析（Production Guard / 覆盖 / 端点）===",
+          "  ✓ 抽样 7 个页面在真实 DOM 里各有一个 analytics bootstrap（含 noindex / 深层路由） — /=1 · plans/api/=1 · plans/coding/=1 · models/=1 · models/360zhinao-pro/=1 · vendor/ai360/=1 · changes/=1",
+          "  ✓ 抽样页面里没有残留的分析占位符（页面 HTML 里不会露出模板标记） — 0 个",
+          "  ✓ 抽样页面正文都有内容（分析注入没有把正文吃掉） — /:12274 · plans/api/:20344 · plans/coding/:16415 · models/:5956 · models/360zhinao-pro/:1366 · vendor/ai360/:1996 · changes/:3858",
+          "  ✓ 本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取） — 全部 0",
+          "  ✓ 本地：网络层同样 0 次分析请求（guard 在插入 <script> 之前就返回了） — 本轮累计 0 次",
+          "  ✓ 本地：抽样页面没有新增 JS 错误（Analytics 失败不得影响产品） — 全部 0",
+          "  ✓ 本地：没有出现白名单之外的外部请求 — 0 个",
+          "",
+          "机器可读报告已写出：..\\runs\\suite-writing-mode-vertical-fullwidth.json（827 项，失败 1 项）",
+          "",
+          "❌ 验收 827 项，失败 1 项",
+          "   ✗ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-clipped：说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）",
+          ""
+        ],
+        "stderrTail": [
+          ""
+        ],
+        "parsed": {
+          "assertions": 827,
+          "failedAssertions": 1,
+          "failingLines": [
+            "✗ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-clipped：说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）",
+            "✗ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-clipped：说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）"
+          ],
+          "failingCount": 2,
+          "section22cLines": [
+            "  ✓ §22c 全站每一页的布局族都能解析（page-kinds.kindOfRoute + layoutOf，数据驱动的静态路由由 kindByRoute 补齐） — 186 页全部可解析（16 种 kind）· wide 55 / detail 131 / other 0 · unclassified-layout 0 个",
+            "  ✓ §22c 注册表驱动的入口（3 目录页 + 10 按需求页 + 2 枢纽页）在产物里都存在 — 逐条命中（15 条，全部现场推导，不写死 slug）",
+            "  ✓ §22c @1440 页面级说明与主数据区同轴（宽 ≥ 0.85×主数据区、与主容器或数据区 ≤1px、自身不裁切） — 105 页有页面级说明 · 81 页标为「无页面级说明」（跳过该条、不算失败：/ deal/017bdbc04e70/ deal/0273d8b23412/ …（还有 78）） · 窄说明 0 · 不同轴 0 · 裁切 0 · 同轴锚：主数据区 104 页 / 页面主容器 105 页 / 两者都 104 页 / 都不 0 页",
+            "  ✓ §22c @1440 全站 186 页都没有横向溢出 — documentElement.scrollWidth ≤ 视口+1 全部成立",
+            "  ✓ §22c @390 全站 186 页 documentElement.scrollWidth ≤ 视口+1 — 最宽的一页 390px（视口 390）",
+            "  ✓ §22c 布局族一致性：detail 族（131 页）恰好 1 个 main.detail-main、wide 族（55 页）0 个 — missing-detail-main 0 · unexpected-detail-main 0",
+            "  ✓ §22c 每一页都判得出主数据区（声明选择器或回落 <main>） — 声明选择器命中 104 页 · 回落 <main> 82 页（<main>（回落）=82 .ctable=45 .chgsec=1 .ptable=55 .flist=1 .pchglist=1 .stable=1）",
+            "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+            "  ✓ §22c @760 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — 0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/",
+            "  ✗ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-clipped：说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）",
+            "  ✓ §22c M1–M4 的四个壳（student/ status/ changes/ feeds/）都是 wide 族且带页面级说明 — student/ collection/wide · .snote 3 个 · status/ status/wide · .snote 2 个 · changes/ changes/wide · .snote 13 个 · feeds/ feeds/wide · .snote 8 个",
+            "  ✓ §22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串",
+            "  ✓ §22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串） — 期望 page-overflow@390 · 实测 [note-clipped, page-overflow@390] · 说明 358px · 页面列 358px · detail-main 0 个 · scrollWidth 1118（视口 390） · 不可断串注入位置 note · 违规码 [note-clipped, page-overflow@390]",
+            "  ✓ §22c M7 DOM 注入前提成立（该类原本不存在） — 锚点「<main> 加 detail-main」注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）",
+            "  ✓ §22c M7 变异后复测必须出现「unexpected-detail-main」违规码（给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）） — 期望 unexpected-detail-main · 实测 [unexpected-detail-main] · 说明 1120px · 页面列 1120px · detail-main 1 个 · scrollWidth 1440（视口 1440） · 违规码 [unexpected-detail-main]",
+            "  ✓ §22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出 — 不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）",
+            "  ✓ §22c 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因 — 不存在的锚点：ok=false · 出现 0 次 · 锚点在内联样式里出现 0 次（必须恰好 1 次） ／ 非唯一锚点：ok=false · 出现 61 次 · 锚点在内联样式里出现 61 次（必须恰好 1 次）",
+            "  ✓ §22c 违规码自检：8 个码全部由 wideProblems() 一处产出、且都可达（不多不少） — 可达 8/8 · 缺 无 · 多 无",
+            "  ✓ §22c M5（不重复造第二套）：既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码，且 §22b 的断言全绿 — §22b 断言 41 项（失败 0） · §22b 变异码 M1=[center] M2=[width] M3=[axis,src-width] M4=[self-overflow@390,page-overflow@390] M5=[leaf-consistency,leaf-consistency] · M4 正对照=[无]",
+            "  ✓ §22c 变异牙零磁盘污染：被改产物的 sha256 变异前后相等（byte-exact） — student/ 35588b1f26… · status/ 051dcfe27c… · changes/ e8b43013f7… · feeds/ ca2f78ce25…（前 35588b/051dcf/e8b430/ca2f78 · 后 35588b/051dcf/e8b430/ca2f78）",
+            "  ✓ §22c 全站扫描（438 次导航）没有 JS 错误、没有外部请求 — JS 错误 0 个 · 外部请求 0 个",
+            "   ✗ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — category/agent/ note-clipped：说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）"
+          ],
+          "frozenLine": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+          "summaryLine": null,
+          "sweepLine": "     布局族读数表（prompt §18）：全站 186 页 = wide 55 + detail 131 + other 0",
+          "mutationRows": [
+            "     M0（反证）  --dir=dist.baseline     note-narrow ×48           另跑一次同一条命令：改动前产物必须红    ",
+            "     M1          student/@1440           note-narrow               [note-narrow, note-axis]                ",
+            "     M2          status/@1440            note-narrow               [note-narrow, note-axis]                ",
+            "     M3          changes/@1440           note-narrow               [note-narrow, note-axis]                ",
+            "     M4          feeds/@1440             note-narrow               [note-narrow, note-axis]                ",
+            "     M6          student/@390            page-overflow@390         [note-clipped, page-overflow@390]       ",
+            "     M7          status/@1440            unexpected-detail-main    [unexpected-detail-main]                ",
+            "     M6 正对照   student/@390            不得出现 page-overflow    [无]                                    ",
+            "     M5（复用）  §22b 的 M1–M5           既有牙全绿                41 项断言                               "
+          ]
+        }
+      },
+      "verdict": "bite",
+      "metrics": {
+        "layoutViolations": 0,
+        "targetViolation": null,
+        "layoutSweep": {
+          "total": 186,
+          "wide": 55,
+          "detail": 131,
+          "other": 0,
+          "notesChecked": 105,
+          "narrowNotes": 0,
+          "overflowPages": 0,
+          "unexpectedDetailMain": 0,
+          "missingDetailMain": 0,
+          "unclassified": 0
+        },
+        "layoutNotesForTarget": null,
+        "layoutMutationCodes": {
+          "M1": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M2": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M3": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M4": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M6": [
+            "note-clipped",
+            "page-overflow@390"
+          ],
+          "M7": [
+            "unexpected-detail-main"
+          ],
+          "M6-control": []
+        }
+      }
+    },
+    {
+      "id": "multicol-narrow-columns",
+      "what": "`.snote { column-count: 3; column-width: 340px; column-gap: 16px }`：**盒宽一字不动**，文字被排成 3 根 ~340px 窄列 —— 缺陷外观（窄柱）一字不差地回来了",
+      "direction": "CSS 多列（column-width/column-count）",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { column-count: 3; column-width: 340px; column-gap: 16px; }",
+      "realism": {
+        "level": "medium",
+        "how": "「把长说明排成两栏/三栏」是很正常的一次排版改动：`.snote { columns: 2 }` 一行就够",
+        "note": "★ 重点形态：任何「文字区并集宽」口径都看不见它（并集横跨整盒，单行却很窄）"
+      },
+      "expect": "pass",
+      "targets": [
+        {
+          "file": "category/agent/index.html",
+          "sha256After": "214b97d4b08eb94d651df89da892a4a212555230eb124d7aec72e5f8d5036ad9",
+          "ok": true,
+          "frozenCountBefore": 1,
+          "frozenCountAfter": 1,
+          "revertible": true,
+          "bytesAdded": 67
+        }
+      ],
+      "suite": {
+        "command": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-multicol-narrow-columns.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+        "exitCode": 0,
+        "seconds": 95,
+        "signal": null,
+        "verifySiteShaBefore": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+        "verifySiteShaAfter": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+        "pinnedStable": true,
+        "stdoutTail": [
+          "  ✓ /docs/data/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件） — 0 个",
+          "  ✓ /docs/data/ 无 JS 时读得到「数据集索引」",
+          "  ✓ /docs/data/ 无 JS 时读得到「使用示例」",
+          "  ✓ /docs/data/ 无 JS 时读得到「引用方式」",
+          "  ✓ /docs/data/ 无 JS 时读得到「Schema 稳定性」",
+          "  ✓ /docs/data/ 无 JS 时读得到「License 状态」",
+          "  ✓ /docs/data/ 没有 JS 错误、没有外部请求（含本节的全部导航） — JS 错误 0 个 · 外部请求 0 个",
+          "  ✓ /docs/data/ 行数 == dist/data/index.json 的数据集数（9 份） — 页面 9 行 / Manifest 9 份",
+          "  ✓ /docs/data/ 里每个 endpoint 都真的能取到（逐条 HTTP 200）",
+          "  ✓ /docs/data/ 页面标出每份数据的时间形状（真实时刻 / 日期规范化 / 纯日期）",
+          "  ✓ /docs/data/ 引用示例里带官方出处（不宣称本站是官方来源）",
+          "",
+          "=== 26) 私有分析（Production Guard / 覆盖 / 端点）===",
+          "  ✓ 抽样 7 个页面在真实 DOM 里各有一个 analytics bootstrap（含 noindex / 深层路由） — /=1 · plans/api/=1 · plans/coding/=1 · models/=1 · models/360zhinao-pro/=1 · vendor/ai360/=1 · changes/=1",
+          "  ✓ 抽样页面里没有残留的分析占位符（页面 HTML 里不会露出模板标记） — 0 个",
+          "  ✓ 抽样页面正文都有内容（分析注入没有把正文吃掉） — /:12274 · plans/api/:20344 · plans/coding/:16415 · models/:5956 · models/360zhinao-pro/:1366 · vendor/ai360/:1996 · changes/:3858",
+          "  ✓ 本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取） — 全部 0",
+          "  ✓ 本地：网络层同样 0 次分析请求（guard 在插入 <script> 之前就返回了） — 本轮累计 0 次",
+          "  ✓ 本地：抽样页面没有新增 JS 错误（Analytics 失败不得影响产品） — 全部 0",
+          "  ✓ 本地：没有出现白名单之外的外部请求 — 0 个",
+          "",
+          "机器可读报告已写出：..\\runs\\suite-multicol-narrow-columns.json（827 项，失败 0 项）",
+          "",
+          "✅ 验收 827 项，失败 0 项",
+          ""
+        ],
+        "stderrTail": [
+          ""
+        ],
+        "parsed": {
+          "assertions": 827,
+          "failedAssertions": 0,
+          "failingLines": [],
+          "failingCount": 0,
+          "section22cLines": [
+            "  ✓ §22c 全站每一页的布局族都能解析（page-kinds.kindOfRoute + layoutOf，数据驱动的静态路由由 kindByRoute 补齐） — 186 页全部可解析（16 种 kind）· wide 55 / detail 131 / other 0 · unclassified-layout 0 个",
+            "  ✓ §22c 注册表驱动的入口（3 目录页 + 10 按需求页 + 2 枢纽页）在产物里都存在 — 逐条命中（15 条，全部现场推导，不写死 slug）",
+            "  ✓ §22c @1440 页面级说明与主数据区同轴（宽 ≥ 0.85×主数据区、与主容器或数据区 ≤1px、自身不裁切） — 105 页有页面级说明 · 81 页标为「无页面级说明」（跳过该条、不算失败：/ deal/017bdbc04e70/ deal/0273d8b23412/ …（还有 78）） · 窄说明 0 · 不同轴 0 · 裁切 0 · 同轴锚：主数据区 104 页 / 页面主容器 105 页 / 两者都 104 页 / 都不 0 页",
+            "  ✓ §22c @1440 全站 186 页都没有横向溢出 — documentElement.scrollWidth ≤ 视口+1 全部成立",
+            "  ✓ §22c @390 全站 186 页 documentElement.scrollWidth ≤ 视口+1 — 最宽的一页 390px（视口 390）",
+            "  ✓ §22c 布局族一致性：detail 族（131 页）恰好 1 个 main.detail-main、wide 族（55 页）0 个 — missing-detail-main 0 · unexpected-detail-main 0",
+            "  ✓ §22c 每一页都判得出主数据区（声明选择器或回落 <main>） — 声明选择器命中 104 页 · 回落 <main> 82 页（<main>（回落）=82 .ctable=45 .chgsec=1 .ptable=55 .flist=1 .pchglist=1 .stable=1）",
+            "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+            "  ✓ §22c @760 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — 0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/",
+            "  ✓ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — 0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/",
+            "  ✓ §22c M1–M4 的四个壳（student/ status/ changes/ feeds/）都是 wide 族且带页面级说明 — student/ collection/wide · .snote 3 个 · status/ status/wide · .snote 2 个 · changes/ changes/wide · .snote 13 个 · feeds/ feeds/wide · .snote 8 个",
+            "  ✓ §22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串",
+            "  ✓ §22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串） — 期望 page-overflow@390 · 实测 [note-clipped, page-overflow@390] · 说明 358px · 页面列 358px · detail-main 0 个 · scrollWidth 1118（视口 390） · 不可断串注入位置 note · 违规码 [note-clipped, page-overflow@390]",
+            "  ✓ §22c M7 DOM 注入前提成立（该类原本不存在） — 锚点「<main> 加 detail-main」注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）",
+            "  ✓ §22c M7 变异后复测必须出现「unexpected-detail-main」违规码（给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）） — 期望 unexpected-detail-main · 实测 [unexpected-detail-main] · 说明 1120px · 页面列 1120px · detail-main 1 个 · scrollWidth 1440（视口 1440） · 违规码 [unexpected-detail-main]",
+            "  ✓ §22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出 — 不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）",
+            "  ✓ §22c 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因 — 不存在的锚点：ok=false · 出现 0 次 · 锚点在内联样式里出现 0 次（必须恰好 1 次） ／ 非唯一锚点：ok=false · 出现 61 次 · 锚点在内联样式里出现 61 次（必须恰好 1 次）",
+            "  ✓ §22c 违规码自检：8 个码全部由 wideProblems() 一处产出、且都可达（不多不少） — 可达 8/8 · 缺 无 · 多 无",
+            "  ✓ §22c M5（不重复造第二套）：既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码，且 §22b 的断言全绿 — §22b 断言 41 项（失败 0） · §22b 变异码 M1=[center] M2=[width] M3=[axis,src-width] M4=[self-overflow@390,page-overflow@390] M5=[leaf-consistency,leaf-consistency] · M4 正对照=[无]",
+            "  ✓ §22c 变异牙零磁盘污染：被改产物的 sha256 变异前后相等（byte-exact） — student/ 35588b1f26… · status/ 051dcfe27c… · changes/ e8b43013f7… · feeds/ ca2f78ce25…（前 35588b/051dcf/e8b430/ca2f78 · 后 35588b/051dcf/e8b430/ca2f78）",
+            "  ✓ §22c 全站扫描（438 次导航）没有 JS 错误、没有外部请求 — JS 错误 0 个 · 外部请求 0 个"
+          ],
+          "frozenLine": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+          "summaryLine": null,
+          "sweepLine": "     布局族读数表（prompt §18）：全站 186 页 = wide 55 + detail 131 + other 0",
+          "mutationRows": [
+            "     M0（反证）  --dir=dist.baseline     note-narrow ×48           另跑一次同一条命令：改动前产物必须红    ",
+            "     M1          student/@1440           note-narrow               [note-narrow, note-axis]                ",
+            "     M2          status/@1440            note-narrow               [note-narrow, note-axis]                ",
+            "     M3          changes/@1440           note-narrow               [note-narrow, note-axis]                ",
+            "     M4          feeds/@1440             note-narrow               [note-narrow, note-axis]                ",
+            "     M6          student/@390            page-overflow@390         [note-clipped, page-overflow@390]       ",
+            "     M7          status/@1440            unexpected-detail-main    [unexpected-detail-main]                ",
+            "     M6 正对照   student/@390            不得出现 page-overflow    [无]                                    ",
+            "     M5（复用）  §22b 的 M1–M5           既有牙全绿                41 项断言                               "
+          ]
+        }
+      },
+      "verdict": "false-green",
+      "metrics": {
+        "layoutViolations": 0,
+        "targetViolation": null,
+        "layoutSweep": {
+          "total": 186,
+          "wide": 55,
+          "detail": 131,
+          "other": 0,
+          "notesChecked": 105,
+          "narrowNotes": 0,
+          "overflowPages": 0,
+          "unexpectedDetailMain": 0,
+          "missingDetailMain": 0,
+          "unclassified": 0
+        },
+        "layoutNotesForTarget": null,
+        "layoutMutationCodes": {
+          "M1": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M2": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M3": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M4": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M6": [
+            "note-clipped",
+            "page-overflow@390"
+          ],
+          "M7": [
+            "unexpected-detail-main"
+          ],
+          "M6-control": []
+        }
+      },
+      "scratchJudge": {
+        "codes": [],
+        "verdict": "pass",
+        "judgeGeometry": {
+          "noteCount": 3,
+          "frozenCount": 1,
+          "regionSel": ".ctable",
+          "regionWidth": 1380,
+          "mainWidth": 1380,
+          "column": 1380,
+          "notes": [],
+          "noteLegacy": {
+            "width": 1380,
+            "left": 30,
+            "right": 1410
+          }
+        }
+      },
+      "scratchProbe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 40.78
+            },
+            "rectCount": 8,
+            "inkUnion": {
+              "left": 30,
+              "right": 942.63,
+              "width": 912.63
+            },
+            "inkLongestLine": 447.3,
+            "inkMedianLine": 48,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 942.63,
+              "width": 912.63
+            },
+            "inkClippedLongest": 447.3,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "3",
+              "columnWidth": "340px",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "40.7812px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkLongestLine": 61.64,
+            "inkMedianLine": 61.64,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkClippedLongest": 61.64,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "3",
+              "columnWidth": "340px",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 40.78
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": 30,
+              "right": 651.33,
+              "width": 621.33
+            },
+            "inkLongestLine": 447.52,
+            "inkMedianLine": 156,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 651.33,
+              "width": 621.33
+            },
+            "inkClippedLongest": 447.52,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "3",
+              "columnWidth": "340px",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "40.7812px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "scratchPaint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 42,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 913,
+        "paintInkWidth": 913,
+        "paintRuns": 12,
+        "paintLongestRun": 196,
+        "paintGaps": [
+          {
+            "leftCss": 107,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 112,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 441,
+            "widthCss": 24
+          },
+          {
+            "leftCss": 553,
+            "widthCss": 11
+          },
+          {
+            "leftCss": 760,
+            "widthCss": 8
+          }
+        ],
+        "paintInkColumns": 858
+      },
+      "scratchPaintMin": 62
+    },
+    {
+      "id": "overlay-opaque",
+      "what": "`.snote { position: relative } .snote::after { inset: 0 0 0 30%; background: #f6f7f9 }`：右侧 70% 被底色盖死 ⇒ 可见文字只剩左边 ~414px",
+      "direction": "不透明覆盖层遮住右侧文本",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote { position: relative; }\n.snote::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 30%; background: #f6f7f9; }",
+      "realism": {
+        "level": "low",
+        "how": "需要一个不明所以的伪元素盖层；真实场景更接近「装饰层/骨架屏盖住了正文」",
+        "note": "文字排版一字没动，只是被盖住 —— 宽度类判据天然看不见「被盖住」"
+      },
+      "expect": "pass",
+      "targets": [
+        {
+          "file": "category/agent/index.html",
+          "sha256After": "5184f4757dd7d8f05f203c25a65c916f4d0fdfa3ffb20caea7ed4256514cb8b6",
+          "ok": true,
+          "frozenCountBefore": 1,
+          "frozenCountAfter": 1,
+          "revertible": true,
+          "bytesAdded": 143
+        }
+      ],
+      "suite": {
+        "command": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-overlay-opaque.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+        "exitCode": 0,
+        "seconds": 96,
+        "signal": null,
+        "verifySiteShaBefore": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+        "verifySiteShaAfter": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+        "pinnedStable": true,
+        "stdoutTail": [
+          "  ✓ /docs/data/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件） — 0 个",
+          "  ✓ /docs/data/ 无 JS 时读得到「数据集索引」",
+          "  ✓ /docs/data/ 无 JS 时读得到「使用示例」",
+          "  ✓ /docs/data/ 无 JS 时读得到「引用方式」",
+          "  ✓ /docs/data/ 无 JS 时读得到「Schema 稳定性」",
+          "  ✓ /docs/data/ 无 JS 时读得到「License 状态」",
+          "  ✓ /docs/data/ 没有 JS 错误、没有外部请求（含本节的全部导航） — JS 错误 0 个 · 外部请求 0 个",
+          "  ✓ /docs/data/ 行数 == dist/data/index.json 的数据集数（9 份） — 页面 9 行 / Manifest 9 份",
+          "  ✓ /docs/data/ 里每个 endpoint 都真的能取到（逐条 HTTP 200）",
+          "  ✓ /docs/data/ 页面标出每份数据的时间形状（真实时刻 / 日期规范化 / 纯日期）",
+          "  ✓ /docs/data/ 引用示例里带官方出处（不宣称本站是官方来源）",
+          "",
+          "=== 26) 私有分析（Production Guard / 覆盖 / 端点）===",
+          "  ✓ 抽样 7 个页面在真实 DOM 里各有一个 analytics bootstrap（含 noindex / 深层路由） — /=1 · plans/api/=1 · plans/coding/=1 · models/=1 · models/360zhinao-pro/=1 · vendor/ai360/=1 · changes/=1",
+          "  ✓ 抽样页面里没有残留的分析占位符（页面 HTML 里不会露出模板标记） — 0 个",
+          "  ✓ 抽样页面正文都有内容（分析注入没有把正文吃掉） — /:12274 · plans/api/:20344 · plans/coding/:16415 · models/:5956 · models/360zhinao-pro/:1366 · vendor/ai360/:1996 · changes/:3858",
+          "  ✓ 本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取） — 全部 0",
+          "  ✓ 本地：网络层同样 0 次分析请求（guard 在插入 <script> 之前就返回了） — 本轮累计 0 次",
+          "  ✓ 本地：抽样页面没有新增 JS 错误（Analytics 失败不得影响产品） — 全部 0",
+          "  ✓ 本地：没有出现白名单之外的外部请求 — 0 个",
+          "",
+          "机器可读报告已写出：..\\runs\\suite-overlay-opaque.json（827 项，失败 0 项）",
+          "",
+          "✅ 验收 827 项，失败 0 项",
+          ""
+        ],
+        "stderrTail": [
+          ""
+        ],
+        "parsed": {
+          "assertions": 827,
+          "failedAssertions": 0,
+          "failingLines": [],
+          "failingCount": 0,
+          "section22cLines": [
+            "  ✓ §22c 全站每一页的布局族都能解析（page-kinds.kindOfRoute + layoutOf，数据驱动的静态路由由 kindByRoute 补齐） — 186 页全部可解析（16 种 kind）· wide 55 / detail 131 / other 0 · unclassified-layout 0 个",
+            "  ✓ §22c 注册表驱动的入口（3 目录页 + 10 按需求页 + 2 枢纽页）在产物里都存在 — 逐条命中（15 条，全部现场推导，不写死 slug）",
+            "  ✓ §22c @1440 页面级说明与主数据区同轴（宽 ≥ 0.85×主数据区、与主容器或数据区 ≤1px、自身不裁切） — 105 页有页面级说明 · 81 页标为「无页面级说明」（跳过该条、不算失败：/ deal/017bdbc04e70/ deal/0273d8b23412/ …（还有 78）） · 窄说明 0 · 不同轴 0 · 裁切 0 · 同轴锚：主数据区 104 页 / 页面主容器 105 页 / 两者都 104 页 / 都不 0 页",
+            "  ✓ §22c @1440 全站 186 页都没有横向溢出 — documentElement.scrollWidth ≤ 视口+1 全部成立",
+            "  ✓ §22c @390 全站 186 页 documentElement.scrollWidth ≤ 视口+1 — 最宽的一页 390px（视口 390）",
+            "  ✓ §22c 布局族一致性：detail 族（131 页）恰好 1 个 main.detail-main、wide 族（55 页）0 个 — missing-detail-main 0 · unexpected-detail-main 0",
+            "  ✓ §22c 每一页都判得出主数据区（声明选择器或回落 <main>） — 声明选择器命中 104 页 · 回落 <main> 82 页（<main>（回落）=82 .ctable=45 .chgsec=1 .ptable=55 .flist=1 .pchglist=1 .stable=1）",
+            "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+            "  ✓ §22c @760 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — 0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/",
+            "  ✓ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — 0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/",
+            "  ✓ §22c M1–M4 的四个壳（student/ status/ changes/ feeds/）都是 wide 族且带页面级说明 — student/ collection/wide · .snote 3 个 · status/ status/wide · .snote 2 个 · changes/ changes/wide · .snote 13 个 · feeds/ feeds/wide · .snote 8 个",
+            "  ✓ §22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串",
+            "  ✓ §22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串） — 期望 page-overflow@390 · 实测 [note-clipped, page-overflow@390] · 说明 358px · 页面列 358px · detail-main 0 个 · scrollWidth 1118（视口 390） · 不可断串注入位置 note · 违规码 [note-clipped, page-overflow@390]",
+            "  ✓ §22c M7 DOM 注入前提成立（该类原本不存在） — 锚点「<main> 加 detail-main」注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）",
+            "  ✓ §22c M7 变异后复测必须出现「unexpected-detail-main」违规码（给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）） — 期望 unexpected-detail-main · 实测 [unexpected-detail-main] · 说明 1120px · 页面列 1120px · detail-main 1 个 · scrollWidth 1440（视口 1440） · 违规码 [unexpected-detail-main]",
+            "  ✓ §22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出 — 不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）",
+            "  ✓ §22c 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因 — 不存在的锚点：ok=false · 出现 0 次 · 锚点在内联样式里出现 0 次（必须恰好 1 次） ／ 非唯一锚点：ok=false · 出现 61 次 · 锚点在内联样式里出现 61 次（必须恰好 1 次）",
+            "  ✓ §22c 违规码自检：8 个码全部由 wideProblems() 一处产出、且都可达（不多不少） — 可达 8/8 · 缺 无 · 多 无",
+            "  ✓ §22c M5（不重复造第二套）：既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码，且 §22b 的断言全绿 — §22b 断言 41 项（失败 0） · §22b 变异码 M1=[center] M2=[width] M3=[axis,src-width] M4=[self-overflow@390,page-overflow@390] M5=[leaf-consistency,leaf-consistency] · M4 正对照=[无]",
+            "  ✓ §22c 变异牙零磁盘污染：被改产物的 sha256 变异前后相等（byte-exact） — student/ 35588b1f26… · status/ 051dcfe27c… · changes/ e8b43013f7… · feeds/ ca2f78ce25…（前 35588b/051dcf/e8b430/ca2f78 · 后 35588b/051dcf/e8b430/ca2f78）",
+            "  ✓ §22c 全站扫描（438 次导航）没有 JS 错误、没有外部请求 — JS 错误 0 个 · 外部请求 0 个"
+          ],
+          "frozenLine": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+          "summaryLine": null,
+          "sweepLine": "     布局族读数表（prompt §18）：全站 186 页 = wide 55 + detail 131 + other 0",
+          "mutationRows": [
+            "     M0（反证）  --dir=dist.baseline     note-narrow ×48           另跑一次同一条命令：改动前产物必须红    ",
+            "     M1          student/@1440           note-narrow               [note-narrow, note-axis]                ",
+            "     M2          status/@1440            note-narrow               [note-narrow, note-axis]                ",
+            "     M3          changes/@1440           note-narrow               [note-narrow, note-axis]                ",
+            "     M4          feeds/@1440             note-narrow               [note-narrow, note-axis]                ",
+            "     M6          student/@390            page-overflow@390         [note-clipped, page-overflow@390]       ",
+            "     M7          status/@1440            unexpected-detail-main    [unexpected-detail-main]                ",
+            "     M6 正对照   student/@390            不得出现 page-overflow    [无]                                    ",
+            "     M5（复用）  §22b 的 M1–M5           既有牙全绿                41 项断言                               "
+          ]
+        }
+      },
+      "verdict": "false-green",
+      "metrics": {
+        "layoutViolations": 0,
+        "targetViolation": null,
+        "layoutSweep": {
+          "total": 186,
+          "wide": 55,
+          "detail": 131,
+          "other": 0,
+          "notesChecked": 105,
+          "narrowNotes": 0,
+          "overflowPages": 0,
+          "unexpectedDetailMain": 0,
+          "missingDetailMain": 0,
+          "unclassified": 0
+        },
+        "layoutNotesForTarget": null,
+        "layoutMutationCodes": {
+          "M1": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M2": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M3": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M4": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M6": [
+            "note-clipped",
+            "page-overflow@390"
+          ],
+          "M7": [
+            "unexpected-detail-main"
+          ],
+          "M6-control": []
+        }
+      },
+      "scratchJudge": {
+        "codes": [],
+        "verdict": "pass",
+        "judgeGeometry": {
+          "noteCount": 3,
+          "frozenCount": 1,
+          "regionSel": ".ctable",
+          "regionWidth": 1380,
+          "mainWidth": 1380,
+          "column": 1380,
+          "notes": [],
+          "noteLegacy": {
+            "width": 1380,
+            "left": 30,
+            "right": 1410
+          }
+        }
+      },
+      "scratchProbe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": 30,
+              "right": 1381.69,
+              "width": 1351.69
+            },
+            "inkLongestLine": 863.75,
+            "inkMedianLine": 84,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 1381.69,
+              "width": 1351.69
+            },
+            "inkClippedLongest": 863.75,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "relative",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "\"\"",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "absolute",
+              "background": "rgb(246, 247, 249)",
+              "width": "966px",
+              "height": "20.3906px",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkLongestLine": 61.64,
+            "inkMedianLine": 61.64,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkClippedLongest": 61.64,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "relative",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "\"\"",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "absolute",
+              "background": "rgb(246, 247, 249)",
+              "width": "966px",
+              "height": "20.3906px",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 3,
+            "inkUnion": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52
+            },
+            "inkLongestLine": 963.52,
+            "inkMedianLine": 48,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52
+            },
+            "inkClippedLongest": 963.52,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "relative",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "\"\"",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "absolute",
+              "background": "rgb(246, 247, 249)",
+              "width": "966px",
+              "height": "20.3906px",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "scratchPaint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 21,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 414,
+        "paintInkWidth": 414,
+        "paintRuns": 12,
+        "paintLongestRun": 106,
+        "paintGaps": [
+          {
+            "leftCss": 107,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 112,
+            "widthCss": 8
+          },
+          {
+            "leftCss": 168,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 218,
+            "widthCss": 3
+          },
+          {
+            "leftCss": 233,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 286,
+            "widthCss": 7
+          },
+          {
+            "leftCss": 297,
+            "widthCss": 11
+          }
+        ],
+        "paintInkColumns": 368
+      },
+      "scratchPaintMin": 62
+    },
+    {
+      "id": "float-narrow-column",
+      "what": "`.snote::before { content:\"\"; float: right; width: 70%; height: 6em }`：右侧 70% 被浮动占位吃掉，正文被迫排进左侧 30% ≈ 414px",
+      "direction": "浮动占位把正文挤成窄列（补充）",
+      "route": "category/agent/",
+      "width": 1440,
+      "injectedCss": ".snote::before { content: \"\"; float: right; width: 70%; height: 6em; }",
+      "realism": {
+        "level": "medium",
+        "how": "真实写法：说明里放一张图/图标并 `float: right`（`img { float: right }`）——正是这个形状",
+        "note": "★ 与「改动前 70ch 窄柱」外观最像的一条：左边一根窄柱、右边整块空白"
+      },
+      "expect": "pass",
+      "targets": [
+        {
+          "file": "category/agent/index.html",
+          "sha256After": "54900a1938f4657045e05ad994221d12e1ab1c9bf49d3804d6380235fb47c400",
+          "ok": true,
+          "frozenCountBefore": 1,
+          "frozenCountAfter": 1,
+          "revertible": true,
+          "bytesAdded": 71
+        }
+      ],
+      "suite": {
+        "command": "node research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7\\scripts\\tools\\verify-site.js --dir=../scratch/dist-probe-before --json=research\\_raw\\secondary-page-layout-unification\\adversary\\runs\\suite-float-narrow-column.json  (cwd=worktree 根；--dir 相对套件自己的 ROOT)",
+        "exitCode": 0,
+        "seconds": 98,
+        "signal": null,
+        "verifySiteShaBefore": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+        "verifySiteShaAfter": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+        "pinnedStable": true,
+        "stdoutTail": [
+          "  ✓ /docs/data/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件） — 0 个",
+          "  ✓ /docs/data/ 无 JS 时读得到「数据集索引」",
+          "  ✓ /docs/data/ 无 JS 时读得到「使用示例」",
+          "  ✓ /docs/data/ 无 JS 时读得到「引用方式」",
+          "  ✓ /docs/data/ 无 JS 时读得到「Schema 稳定性」",
+          "  ✓ /docs/data/ 无 JS 时读得到「License 状态」",
+          "  ✓ /docs/data/ 没有 JS 错误、没有外部请求（含本节的全部导航） — JS 错误 0 个 · 外部请求 0 个",
+          "  ✓ /docs/data/ 行数 == dist/data/index.json 的数据集数（9 份） — 页面 9 行 / Manifest 9 份",
+          "  ✓ /docs/data/ 里每个 endpoint 都真的能取到（逐条 HTTP 200）",
+          "  ✓ /docs/data/ 页面标出每份数据的时间形状（真实时刻 / 日期规范化 / 纯日期）",
+          "  ✓ /docs/data/ 引用示例里带官方出处（不宣称本站是官方来源）",
+          "",
+          "=== 26) 私有分析（Production Guard / 覆盖 / 端点）===",
+          "  ✓ 抽样 7 个页面在真实 DOM 里各有一个 analytics bootstrap（含 noindex / 深层路由） — /=1 · plans/api/=1 · plans/coding/=1 · models/=1 · models/360zhinao-pro/=1 · vendor/ai360/=1 · changes/=1",
+          "  ✓ 抽样页面里没有残留的分析占位符（页面 HTML 里不会露出模板标记） — 0 个",
+          "  ✓ 抽样页面正文都有内容（分析注入没有把正文吃掉） — /:12274 · plans/api/:20344 · plans/coding/:16415 · models/:5956 · models/360zhinao-pro/:1366 · vendor/ai360/:1996 · changes/:3858",
+          "  ✓ 本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取） — 全部 0",
+          "  ✓ 本地：网络层同样 0 次分析请求（guard 在插入 <script> 之前就返回了） — 本轮累计 0 次",
+          "  ✓ 本地：抽样页面没有新增 JS 错误（Analytics 失败不得影响产品） — 全部 0",
+          "  ✓ 本地：没有出现白名单之外的外部请求 — 0 个",
+          "",
+          "机器可读报告已写出：..\\runs\\suite-float-narrow-column.json（827 项，失败 0 项）",
+          "",
+          "✅ 验收 827 项，失败 0 项",
+          ""
+        ],
+        "stderrTail": [
+          ""
+        ],
+        "parsed": {
+          "assertions": 827,
+          "failedAssertions": 0,
+          "failingLines": [],
+          "failingCount": 0,
+          "section22cLines": [
+            "  ✓ §22c 全站每一页的布局族都能解析（page-kinds.kindOfRoute + layoutOf，数据驱动的静态路由由 kindByRoute 补齐） — 186 页全部可解析（16 种 kind）· wide 55 / detail 131 / other 0 · unclassified-layout 0 个",
+            "  ✓ §22c 注册表驱动的入口（3 目录页 + 10 按需求页 + 2 枢纽页）在产物里都存在 — 逐条命中（15 条，全部现场推导，不写死 slug）",
+            "  ✓ §22c @1440 页面级说明与主数据区同轴（宽 ≥ 0.85×主数据区、与主容器或数据区 ≤1px、自身不裁切） — 105 页有页面级说明 · 81 页标为「无页面级说明」（跳过该条、不算失败：/ deal/017bdbc04e70/ deal/0273d8b23412/ …（还有 78）） · 窄说明 0 · 不同轴 0 · 裁切 0 · 同轴锚：主数据区 104 页 / 页面主容器 105 页 / 两者都 104 页 / 都不 0 页",
+            "  ✓ §22c @1440 全站 186 页都没有横向溢出 — documentElement.scrollWidth ≤ 视口+1 全部成立",
+            "  ✓ §22c @390 全站 186 页 documentElement.scrollWidth ≤ 视口+1 — 最宽的一页 390px（视口 390）",
+            "  ✓ §22c 布局族一致性：detail 族（131 页）恰好 1 个 main.detail-main、wide 族（55 页）0 个 — missing-detail-main 0 · unexpected-detail-main 0",
+            "  ✓ §22c 每一页都判得出主数据区（声明选择器或回落 <main>） — 声明选择器命中 104 页 · 回落 <main> 82 页（<main>（回落）=82 .ctable=45 .chgsec=1 .ptable=55 .flist=1 .pchglist=1 .stable=1）",
+            "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+            "  ✓ §22c @760 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — 0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/",
+            "  ✓ §22c @360 样本集 29 页同一份判据（同轴 / 比例 / 不裁切 / 不溢出） — 0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/",
+            "  ✓ §22c M1–M4 的四个壳（student/ status/ changes/ feeds/）都是 wide 族且带页面级说明 — student/ collection/wide · .snote 3 个 · status/ status/wide · .snote 2 个 · changes/ changes/wide · .snote 13 个 · feeds/ feeds/wide · .snote 8 个",
+            "  ✓ §22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）",
+            "  ✓ §22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）） — 期望 note-narrow · 实测 [note-narrow, note-axis] · 说明 452.81px · 页面列 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 违规码 [note-narrow, note-axis]",
+            "  ✓ §22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次） — 锚点「.snote { color: var(--mut); fo…」出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串",
+            "  ✓ §22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串） — 期望 page-overflow@390 · 实测 [note-clipped, page-overflow@390] · 说明 358px · 页面列 358px · detail-main 0 个 · scrollWidth 1118（视口 390） · 不可断串注入位置 note · 违规码 [note-clipped, page-overflow@390]",
+            "  ✓ §22c M7 DOM 注入前提成立（该类原本不存在） — 锚点「<main> 加 detail-main」注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）",
+            "  ✓ §22c M7 变异后复测必须出现「unexpected-detail-main」违规码（给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）） — 期望 unexpected-detail-main · 实测 [unexpected-detail-main] · 说明 1120px · 页面列 1120px · detail-main 1 个 · scrollWidth 1440（视口 1440） · 违规码 [unexpected-detail-main]",
+            "  ✓ §22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出 — 不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）",
+            "  ✓ §22c 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因 — 不存在的锚点：ok=false · 出现 0 次 · 锚点在内联样式里出现 0 次（必须恰好 1 次） ／ 非唯一锚点：ok=false · 出现 61 次 · 锚点在内联样式里出现 61 次（必须恰好 1 次）",
+            "  ✓ §22c 违规码自检：8 个码全部由 wideProblems() 一处产出、且都可达（不多不少） — 可达 8/8 · 缺 无 · 多 无",
+            "  ✓ §22c M5（不重复造第二套）：既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码，且 §22b 的断言全绿 — §22b 断言 41 项（失败 0） · §22b 变异码 M1=[center] M2=[width] M3=[axis,src-width] M4=[self-overflow@390,page-overflow@390] M5=[leaf-consistency,leaf-consistency] · M4 正对照=[无]",
+            "  ✓ §22c 变异牙零磁盘污染：被改产物的 sha256 变异前后相等（byte-exact） — student/ 35588b1f26… · status/ 051dcfe27c… · changes/ e8b43013f7… · feeds/ ca2f78ce25…（前 35588b/051dcf/e8b430/ca2f78 · 后 35588b/051dcf/e8b430/ca2f78）",
+            "  ✓ §22c 全站扫描（438 次导航）没有 JS 错误、没有外部请求 — JS 错误 0 个 · 外部请求 0 个"
+          ],
+          "frozenLine": "  ✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」",
+          "summaryLine": null,
+          "sweepLine": "     布局族读数表（prompt §18）：全站 186 页 = wide 55 + detail 131 + other 0",
+          "mutationRows": [
+            "     M0（反证）  --dir=dist.baseline     note-narrow ×48           另跑一次同一条命令：改动前产物必须红    ",
+            "     M1          student/@1440           note-narrow               [note-narrow, note-axis]                ",
+            "     M2          status/@1440            note-narrow               [note-narrow, note-axis]                ",
+            "     M3          changes/@1440           note-narrow               [note-narrow, note-axis]                ",
+            "     M4          feeds/@1440             note-narrow               [note-narrow, note-axis]                ",
+            "     M6          student/@390            page-overflow@390         [note-clipped, page-overflow@390]       ",
+            "     M7          status/@1440            unexpected-detail-main    [unexpected-detail-main]                ",
+            "     M6 正对照   student/@390            不得出现 page-overflow    [无]                                    ",
+            "     M5（复用）  §22b 的 M1–M5           既有牙全绿                41 项断言                               "
+          ]
+        }
+      },
+      "verdict": "false-green",
+      "metrics": {
+        "layoutViolations": 0,
+        "targetViolation": null,
+        "layoutSweep": {
+          "total": 186,
+          "wide": 55,
+          "detail": 131,
+          "other": 0,
+          "notesChecked": 105,
+          "narrowNotes": 0,
+          "overflowPages": 0,
+          "unexpectedDetailMain": 0,
+          "missingDetailMain": 0,
+          "unclassified": 0
+        },
+        "layoutNotesForTarget": null,
+        "layoutMutationCodes": {
+          "M1": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M2": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M3": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M4": [
+            "note-narrow",
+            "note-axis"
+          ],
+          "M6": [
+            "note-clipped",
+            "page-overflow@390"
+          ],
+          "M7": [
+            "unexpected-detail-main"
+          ],
+          "M6-control": []
+        }
+      },
+      "scratchJudge": {
+        "codes": [],
+        "verdict": "pass",
+        "judgeGeometry": {
+          "noteCount": 3,
+          "frozenCount": 1,
+          "regionSel": ".ctable",
+          "regionWidth": 1380,
+          "mainWidth": 1380,
+          "column": 1380,
+          "notes": [],
+          "noteLegacy": {
+            "width": 1380,
+            "left": 30,
+            "right": 1410
+          }
+        }
+      },
+      "scratchProbe": {
+        "doc": {
+          "innerWidth": 1440,
+          "clientWidth": 1440,
+          "scrollWidth": 1440
+        },
+        "mainWidth": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "notes": [
+          {
+            "index": 0,
+            "text": "这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 81.56
+            },
+            "rectCount": 7,
+            "inkUnion": {
+              "left": 30,
+              "right": 441.3,
+              "width": 411.3
+            },
+            "inkLongestLine": 411.3,
+            "inkMedianLine": 132,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 441.3,
+              "width": 411.3
+            },
+            "inkClippedLongest": 411.3,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "81.5625px"
+            },
+            "before": {
+              "content": "\"\"",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "966px",
+              "height": "72px",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 1,
+            "text": "全部变化 →",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 20.39
+            },
+            "rectCount": 1,
+            "inkUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkLongestLine": 61.64,
+            "inkMedianLine": 61.64,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64
+            },
+            "inkClippedLongest": 61.64,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "20.3906px"
+            },
+            "before": {
+              "content": "\"\"",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "966px",
+              "height": "72px",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          },
+          {
+            "index": 2,
+            "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API ",
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "height": 61.17
+            },
+            "rectCount": 5,
+            "inkUnion": {
+              "left": 30,
+              "right": 441.52,
+              "width": 411.52
+            },
+            "inkLongestLine": 411.52,
+            "inkMedianLine": 228,
+            "inkClippedUnion": {
+              "left": 30,
+              "right": 441.52,
+              "width": 411.52
+            },
+            "inkClippedLongest": 411.52,
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "fontSize": "12px",
+              "letterSpacing": "normal",
+              "writingMode": "horizontal-tb",
+              "transform": "none",
+              "columnCount": "auto",
+              "columnWidth": "auto",
+              "textIndent": "0px",
+              "overflow": "visible",
+              "whiteSpace": "normal",
+              "display": "block",
+              "clipPath": "none",
+              "position": "static",
+              "height": "61.1719px"
+            },
+            "before": {
+              "content": "\"\"",
+              "display": "block",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "966px",
+              "height": "72px",
+              "fontSize": "12px"
+            },
+            "after": {
+              "content": "none",
+              "display": "inline",
+              "maxWidth": "none",
+              "position": "static",
+              "background": "rgba(0, 0, 0, 0)",
+              "width": "auto",
+              "height": "auto",
+              "fontSize": "12px"
+            }
+          }
+        ]
+      },
+      "scratchPaint": {
+        "noteIndex": 0,
+        "imageWidth": 1380,
+        "imageHeight": 83,
+        "scale": 1,
+        "paintInkLeft": 0,
+        "paintInkRight": 411,
+        "paintInkWidth": 411,
+        "paintRuns": 3,
+        "paintLongestRun": 168,
+        "paintGaps": [],
+        "paintInkColumns": 409
+      },
+      "scratchPaintMin": 62
+    }
+  ],
+  "scratch": {
+    "dir": "research\\_raw\\secondary-page-layout-unification\\adversary\\scratch\\dist-probe-before",
+    "source": "dist",
+    "suiteRoot": "research\\_raw\\secondary-page-layout-unification\\adversary\\sandbox-pre-t7",
+    "dirArgPassed": "../scratch/dist-probe-before"
+  },
+  "summary": {
+    "forms": 6,
+    "bite": 2,
+    "pass": 4,
+    "error": 0,
+    "falseGreenConfirmed": [
+      "ctl-no-inject",
+      "multicol-narrow-columns",
+      "overlay-opaque",
+      "float-narrow-column"
+    ],
+    "unexpected": [
+      {
+        "id": "writing-mode-vertical-fullwidth",
+        "verdict": "bite",
+        "expect": "pass"
+      }
+    ],
+    "judgeSha256": "91d295365b40e60cd8b218b9c21165b4a61cb7cd1ad9dac0dfc39e40c98b436d",
+    "verifySiteSha256": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756"
+  }
+}

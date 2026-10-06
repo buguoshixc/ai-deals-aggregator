@@ -1,0 +1,93 @@
+{
+  "actionYml": {
+    "path": ".github/actions/gate/action.yml",
+    "parsedSteps": 49,
+    "withIf": 3,
+    "names": [
+      "Install dependencies",
+      "Validate data (strict)",
+      "Reproducibility gate (no value without a source)",
+      "History verify (log consistent with deals.json)",
+      "Migration verifier (audience provenance backfill)",
+      "Translation gate (drift blocks, pending ages out)",
+      "Translation self-test",
+      "Expiry self-test",
+      "Text / cleanText self-test",
+      "Source-health self-test",
+      "Provenance self-test",
+      "Deal-history self-test",
+      "Change-radar self-test",
+      "Feeds self-test",
+      "SEO self-test",
+      "Audience self-test",
+      "App-token self-test",
+      "AI layer self-test",
+      "Collector fixtures (offline replay)",
+      "Plans self-test (data + page)",
+      "Plan-history self-test",
+      "Deal-plan-links self-test",
+      "API-plans self-test (data + page)",
+      "API-plans reproducibility (curated → api-plans.json, byte-compare)",
+      "API-plan-history verify (log consistent with api-plans.json)",
+      "Model-registry self-test (identity + explicit mapping)",
+      "Models reproducibility (registry → models.json, byte-compare)",
+      "Model-registry links check (explicit mapping only, no similarity)",
+      "Coverage report (gap list consistent with data)",
+      "Coverage-targets self-test (intent layer + seven derived states)",
+      "Model-role vocabulary self-test (registry ↔ freshness contract)",
+      "Freshness self-test (catalogStatus branches)",
+      "Freshness threshold sensitivity (±90 days, baseline invariants)",
+      "Assemble site (same path as deploy.yml)",
+      "Models-page self-test (index + detail pages)",
+      "Plans-hub self-test (/plans/)",
+      "Vendor-pages self-test (/vendor/)",
+      "Archive self-test (/archive/, synthetic ended/restored fixtures)",
+      "Data-docs self-test (/docs/data/ + /data/index.json)",
+      "Analytics self-test (bootstrap count / production guard / provider)",
+      "Feeds reproducibility (build twice, byte-compare)",
+      "Plans reproducibility (curated → plans.json, byte-compare)",
+      "Plan-history verify (log consistent with plans.json)",
+      "SEO verification (independent, from dist/)",
+      "Prepare browser for the real-browser gate",
+      "Browser availability decision (never silent)",
+      "Real-browser acceptance (verify-site.js)",
+      "Regression verify (baseline compare)",
+      "Gate conclusion"
+    ]
+  },
+  "summary": {
+    "stepsInAction": 49,
+    "executed": 45,
+    "passed": 45,
+    "failed": 0,
+    "skipped": 4,
+    "skippedNotRunYet": 0,
+    "exitCode": 0,
+    "verifySiteSha256": "2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e",
+    "resultCount": 49
+  },
+  "crossCheck": {
+    "stepsMatchParsed": true,
+    "sumMatchesExecuted": true,
+    "passFailConsistent": true,
+    "exitZero": true,
+    "shaMatchesCurrent": true
+  },
+  "steps47and48": [
+    {
+      "index": 47,
+      "name": "Real-browser acceptance (verify-site.js)",
+      "status": "passed",
+      "exitCode": 0,
+      "detail": ""
+    },
+    {
+      "index": 48,
+      "name": "Regression verify (baseline compare)",
+      "status": "passed",
+      "exitCode": 0,
+      "detail": ""
+    }
+  ],
+  "nameMismatch": []
+}

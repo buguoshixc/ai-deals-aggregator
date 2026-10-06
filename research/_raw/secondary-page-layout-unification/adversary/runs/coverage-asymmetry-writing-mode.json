@@ -1,0 +1,69 @@
+{
+  "id": "T11-coverage-asymmetry-writing-mode",
+  "title": "writing-mode 的覆盖不对称：桌面两档（全站）看不见，只有 @360 样本集靠溢出的副作用咬到",
+  "author": "adversary (t11)",
+  "generatedAt": "2026-10-06T17:05+08:00",
+  "form": {
+    "id": "writing-mode-vertical-fullwidth",
+    "note": "不是 writing-mode-vertical（那一条在 1440/1600 就被 note-narrow/note-axis 咬到，因为盒宽被内容反推成 346.64px）；本条用 width:100% 把盒宽锁在满宽，所以桌面两档完全看不见。",
+    "injection": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; }",
+    "injectionSite": "scratch 副本共享 <style>：adversary/scratch/dist-probe-after/category/agent/index.html（插在冻结串规则之后）",
+    "injectionEvidence": {
+      "frozenCountBefore": 1,
+      "frozenCountAfter": 1,
+      "revertibleByteExact": true,
+      "bytesAdded": 85,
+      "sha256After": "09e6b46c935c03e521a56445182fdade547108cd8e66da09f99c539855a43b6c"
+    },
+    "visibleTextMeasuredAt1440": {
+      "method": "PNG 像素字迹（adversary/harness.cjs inkFromPng）+ Range 字迹",
+      "paintInkWidthPx": 338,
+      "paintInkSpanPx": "1038..1376（竖排文字落在盒子右缘的竖条）",
+      "inkUnionWidthPx": 342.25,
+      "inkLongestLinePx": 16,
+      "judgeTextWidthPx": 1380,
+      "columnPx": 1380
+    }
+  },
+  "suiteRun": {
+    "command": "node research/_raw/secondary-page-layout-unification/adversary/harness.cjs --mode=B --verify-site=scripts/tools/verify-site.js --dir=dist --scratch-name=dist-probe-after --forms=writing-mode-vertical-fullwidth",
+    "verifySiteSha256": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb",
+    "verifySiteShaStableDuringRun": true,
+    "exitCode": 1,
+    "assertions": 842,
+    "failedAssertions": 1,
+    "seconds": 119,
+    "judgeVersion": "修复轮 2（t7）之后的 §22c"
+  },
+  "perViewport": [
+    { "viewport": 1440, "scope": "全站 186 页 / 逐条判 401 条", "assertion": "✓", "codes": [], "detail": "窄条 0（落在 0 页）· 不同轴 0 · 裁切 0 · textFallback 回落 41 条" },
+    { "viewport": 1600, "scope": "全站 186 页 / 逐条判 401 条", "assertion": "✓", "codes": [], "detail": "窄条 0 · 不同轴 0 · 裁切 0" },
+    { "viewport": 390, "scope": "全站 186 页 documentElement.scrollWidth", "assertion": "✓", "codes": [], "detail": "最宽的一页 390px（视口 390）" },
+    { "viewport": 760, "scope": "样本集 29 页", "assertion": "✓", "codes": [], "detail": "0 违规码" },
+    {
+      "viewport": 360,
+      "scope": "样本集 29 页",
+      "assertion": "✗",
+      "route": "category/agent/",
+      "noteIndex": 0,
+      "codes": ["note-clipped"],
+      "message": "§22c @360 样本集 29 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出） — category/agent/#0 note-clipped：category/agent/#0 说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328）",
+      "scrollWidth": 347,
+      "clientWidth": 328,
+      "overflowPx": 19
+    }
+  ],
+  "answers": {
+    "1_whichPage": "category/agent/（1 页；扫描只注入了这一页，note 序号 #0）",
+    "2_scrollVsClient": "360 档：scrollWidth 347 / clientWidth 328（溢出 19px）",
+    "3_codes": "只有 note-clipped（没有 note-narrow / note-axis / page-overflow）",
+    "4_evidence": [
+      "research/_raw/secondary-page-layout-unification/adversary/runs/modeB-after-1.json（forms[].id === 'writing-mode-vertical-fullwidth'：suite.parsed.failingLines、section22cLines、targets）",
+      "research/_raw/secondary-page-layout-unification/adversary/runs/suite-writing-mode-vertical-fullwidth.json（套件自己的机器可读报告：metrics.layoutViolations 在 1440 为 0 条；metrics.layoutSweep.narrowNotes=0 / narrowNotesAt1600=0 / overflowPages=0）",
+      "research/_raw/secondary-page-layout-unification/adversary/runs/shots/modeB/writing-mode-vertical-fullwidth.png（1440 档截图）",
+      "research/_raw/secondary-page-layout-unification/adversary/runs/modeA-after.json（forms[].id === 'writing-mode-vertical-fullwidth'：判据 textWidth 1380/1380/1380、像素字迹 338px）"
+    ]
+  },
+  "whyNotFalseGreen": "整轮 EXIT=1（842 项断言失败 1 项），所以它**不是**假绿：闸门最终会拦住它 —— 但拦住它的是 360 档的**溢出副作用**，而不是「竖排让可见文字只剩一根 16px 宽的竖条」这件事实；桌面两档（覆盖全站 186 页）对它完全无感。",
+  "coverageAsymmetry": "能看见它的路径只有「760/360 样本集（29 页，每族 1 条真实路由）」；若该形态落在一个**不在样本集里**的 wide 页上（例如另一个 category 页或某个 collection 页），整轮套件就是 EXIT=0 的假绿。"
+}

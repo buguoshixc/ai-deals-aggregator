@@ -14,6 +14,15 @@
  *   卡片 HTML 与浏览器用的是同一份模板：脚本按 RENDER-CORE 标记从 index.html 抽出
  *   纯渲染核心，在无 DOM 的沙箱里求值。模板只有一处，不会分叉。
  *
+ * 页面壳的样式纪律（布局治理）：**共享规则只有一处出处 —— index.html 的共享 `<style>`**。
+ *   · `.detail-main`（详情内容列 1120px）与 `.snote`（页面级说明）都写在那里；
+ *   · 各页面壳的局部 `<style>` **只写自己独有的规则**，不再复制共享规则的第二份宽度
+ *     （本文件原先有 8 份页面级 `.snote` 宽度副本，其中 4 份把说明压成了阅读列 —— 已全部删除）；
+ *   · 文档序是「共享 `<style>` → 页面局部 `<style>`」，所以删掉局部副本之后就是
+ *     「一处定义、全站生效」，与 `.detail-main` 同一条纪律。
+ *   一页属于哪个布局族（Wide Data Page / Leaf Detail Page / Prose Page）声明在
+ *   `scripts/lib/page-kinds.js` 的 LAYOUT_FAMILIES；要改说明的宽度，改共享那一处，别在页面壳里另立一份。
+ *
  * 用法：node scripts/tools/build-local.js [--out=dist]
  */
 
@@ -1045,7 +1054,6 @@ ${style}
   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .stop h1 { font-size: 19px; margin: 0; }
   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
   .stable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
   .stable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
   .stable th, .stable td { text-align: left; padding: 10px 12px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
@@ -1344,7 +1352,6 @@ ${style}
      列表式（不是宽表）：手机上自然换行、不产生横向滚动 —— 与目录页的表格相反，
      这里每行都有一段可能很长的原文（原值 → 新值），表格会把手机变成横向滚动条。 */
   .chgmeta { display: flex; align-items: baseline; gap: var(--s3); flex-wrap: wrap; color: var(--mut); font-size: var(--fs-sm); margin: 0 0 var(--s3); }
-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
   .snote.chgwarn { color: var(--warn, #a35a00); }
   .chgsec { margin: 0 0 var(--s4); border-top: 1px solid var(--line); padding-top: var(--s3); }
   .chgsec h2 { font-size: 15px; margin: 0 0 var(--s2); }
@@ -1610,7 +1617,6 @@ ${style}
      （「…本页照原样列 / 出，不互相换算」），正文右侧留下一条巨大的空白。
      口径说明是**必须读完才能理解这一页**的内容，宽度就该跟随正文容器；
      想要收窄的是"可选的长文"，不是它。 */
-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
   .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
   .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
   .plist b { color: var(--ink2); }
@@ -1736,7 +1742,6 @@ ${style}
   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .stop h1 { font-size: 19px; margin: 0; }
   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
   .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
   .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
   .plist b { color: var(--ink2); }
@@ -1880,7 +1885,6 @@ ${style}
   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .stop h1 { font-size: 19px; margin: 0; }
   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
   .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
   .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
   .plist b { color: var(--ink2); }
@@ -1998,7 +2002,6 @@ ${style}
   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .stop h1 { font-size: 19px; margin: 0; }
   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; }
   .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
   .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
   .plist b { color: var(--ink2); }
@@ -2308,7 +2311,6 @@ ${themeScript}
 ${style}
 <style>
   /* 只用首页已有的设计变量。列表式（不是宽表）：订阅地址很长，窄屏上不能产生横向滚动。 */
-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
   .fsec { margin: 0 0 var(--s4); border-top: 1px solid var(--line); padding-top: var(--s3); }
   .fsec h2 { font-size: 15px; margin: 0 0 var(--s2); }
   .flist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
@@ -2707,7 +2709,6 @@ ${style}
   .cstop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .cstop h1 { font-size: 19px; margin: 0; }
   .cstop .meta { color: var(--mut); font-size: var(--fs-sm); }
-  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
   .aliasnote { border-left: 3px solid var(--line); padding-left: var(--s2); }
   .lsum { display: flex; flex-wrap: wrap; gap: var(--s2); list-style: none; margin: 0 0 var(--s3); padding: 0; }
   .lsum li { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 10px; font-size: var(--fs-sm); }
@@ -3737,7 +3738,12 @@ function assemble() {
         body: archiveLib.renderArchiveEntry(entry, { prefix, siteUrl: SITE_URL }),
         jsonLd: archiveLib.archiveEntryJsonLd(entry, { siteUrl: SITE_URL }),
         prefix,
-        extraCss: ARCHIVE_PAGE_CSS
+        extraCss: ARCHIVE_PAGE_CSS,
+        // 叶子详情页要的是**统一内容列**（与 /deal/<id>/、/models/<slug>/ 同一条 .detail-main 规则，
+        // 宽度只在 index.html 的共享 <style> 里）。索引页 / 数据文档页走缺省（不带 class），
+        // 它们属于 Wide Data Page 一族 —— 一族一个形状，见 lib/page-kinds.js 的 LAYOUT_FAMILIES。
+        // 今天生产 0 个实例，`assertPageHonesty()`（下面那次调用）从整页上反查这条约束。
+        mainClass: archiveLib.ARCHIVE_ENTRY_MAIN_CLASS
       }, html);
       fs.writeFileSync(path.join(OUT, route, 'index.html'), entryHtml, 'utf8');
       const entryProblems = archiveLib.assertPageHonesty(entryHtml, { kind: 'archive-entry', entry });

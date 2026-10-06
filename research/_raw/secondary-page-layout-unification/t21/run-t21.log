@@ -1,0 +1,9 @@
+# T21 修复轮 4 后的证据复跑
+# 开始 2026-10-06T13:05:44.055Z
+# 标的 scripts/tools/verify-site.js
+# t19 交回值 fd3c9a3090dca11bbe6c34342505506bb44f4720c39fe4b18f4d7c23481f46d5
+
+===== T0 前置状态 =====
+verify-site.js sha256 = fd3c9a3090dca11bbe6c34342505506bb44f4720c39fe4b18f4d7c23481f46d5（等于 t19 交回值：true）
+冻结源码 index.html = 8442f14dd397276e67ea71a64aef9f86b59d1f603aa04f15ecfc402056d663b9（与 t1 冻结值相同：true）
+冻结源码 scripts/tools/build-local.js = 264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348（与 t1 冻结值相同：true）

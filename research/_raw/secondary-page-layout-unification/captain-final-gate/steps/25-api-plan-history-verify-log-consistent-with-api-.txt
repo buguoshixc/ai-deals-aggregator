@@ -1,0 +1,14 @@
+# API-plan-history verify (log consistent with api-plans.json)
+# $ node scripts/tools/check-api-plan-history.js
+# runAt 2026-10-06T15:42:15.082Z · verify-site.js sha256 2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e
+
+=== API 计费变化日志（api-plan-history.json）===
+起算日        : 2026-10-01
+基线记录      : 7
+事件          : 17 条 · 涉及 17 条记录 · 观测态 0 条
+分类          : created=17 · price_increased=0 · price_decreased=0 · model_added=0 · model_removed=0 · model_changed=0 · unit_changed=0 · currency_changed=0 · free_tier_changed=0 · credits_changed=0 · limits_changed=0 · restriction_changed=0 · availability_changed=0 · updated=0 · ended=0 · restored=0
+文件体积      : 78.3 KB / 上限 2048 KB
+事件上限      : 全库 40000 · 单条 400
+派生 eventId  : 17/17 条事件带 id · 重算比对 0 处不一致
+
+✅ API 计费变化可重建：基线 + 事件重放逐字段等于当前 api-plans.json，且生命周期成对。

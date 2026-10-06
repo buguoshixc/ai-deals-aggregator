@@ -1,0 +1,309 @@
+# Plans self-test (data + page)
+# $ node scripts/tools/plans-selftest.js
+# runAt 2026-10-06T15:42:15.082Z · verify-site.js sha256 2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e
+
+
+① 构造与身份（id 必须稳定）
+  ✓ tokens 套餐能构造出合规记录
+  ✓ id 是 12 位小写 hex
+  ✓ derivedMetrics 永远存在且算出单价
+  ✓ 【牙】T5 同一套餐改价（60 → 49）id 不变
+  ✓ 【牙】T5 同一套餐改额度（60 亿 → 30 亿）id 不变
+  ✓ 【牙】T5 换官方页 id 不变
+  ✓ 同平台不同套餐必须是不同 id（改 planName）
+  ✓ 计费周期进 id basis（月付与年付是两个可售 SKU）
+  ✓ 年付的派生指标以年为基础（不做 12 个月的隐含换算）
+  ✓ 额度周期与计费周期不一致时不产出单价
+  ✓ 【牙】T4 同 provider + 同 planName + 同 period 两条被拒
+  ✓ 【牙】T4 不静默合并，但这份 payload 被写盘门禁拒绝
+  ✓ 【牙】T12 手改 id 被判红
+
+② 派生指标：什么时候算、什么时候必须为 null
+  ✓ 带活动价的 tokens 套餐
+  ✓ 当前使用价格取活动价，并记录用的是哪一个
+  ✓ requests 套餐
+  ✓ requests 套餐的 nominalUnitPrice 是 null
+  ✓ credits 套餐（折算随模型倍率变化）
+  ✓ credits 套餐（conversionDependsOnModel=true）的 nominalUnitPrice 是 null
+  ✓ rate_limited 套餐
+  ✓ rate_limited 套餐的 nominalUnitPrice 是 null
+  ✓ 【牙】T1 requests 套餐被强行生成 Token 单价 → 判红
+  ✓ 【牙】T1 手算错的 Token 单价 → 判红
+  ✓ 不可比较时该值为 null（额度周期未标注）
+  ✓ 不可比较时该值为 null（额度周期与计费周期不一致）
+  ✓ 不可比较时该值为 null（计费周期不可比较(usage_based)）
+  ✓ 不可比较时该值为 null（当前使用价格不明确）
+  ✓ 【牙】T8 tokens 套餐写 conversionDependsOnModel → 判红
+  ✓ credits 套餐没有明确 conversionDependsOnModel → 判红
+
+③ 价格模型：原价未知写 null，不写 0
+  ✓ 【牙】T3 regularPrice=0 + promoPrice=49 → 判红（原价未知不能用 0 占位）
+  ✓ 【牙】T6 promoPrice > regularPrice → 判红
+  ✓ 只有活动价、原价确实不知道 → regularPrice=null 合法
+  ✓ 只有活动价时依然没有 Token 单价（原价未知，按活动价算也不越界）
+  ✓ 确实免费的套餐写 regularPrice=0 是合法的
+  ✓ 两个价格都是 null 却写了币种 → 判红
+  ✓ 两个价格都是 null 且币种也是 null → 合法（价格未知）
+  ✓ 非法币种 RMB → 判红
+  ✓ 负价 → 判红
+  ✓ 非法计费周期 → 判红
+
+④ 额度模型：不把限速/积分伪装成 Token
+  ✓ 【牙】T2 rate_limited 写了 amount → 判红
+  ✓ unlimited_fair_use 写了 amount → 判红
+  ✓ requests 没写 amount → 判红
+  ✓ tokens 的 amount=0 → 判红
+  ✓ rate_limited 没写 description → 判红
+  ✓ other 没写 description → 判红
+  ✓ quota.type 拼错（token）→ 判红
+  ✓ 【牙】T9 supportedModels 是空数组 → 判红
+  ✓ 【牙】T9 restrictions 是空数组 → 判红
+  ✓ supportedModels 里同名重复 → 判红
+  ✓ supportedModels 的 role 非法 → 判红
+  ✓ 模型族与动态池用 role 表达（family / pool）
+
+⑤ 限制条件：三态不混（unknown 不是 false）
+  ✓ 【牙】T10 三态写 0 → 判红
+  ✓ 【牙】T10 三态写字符串 "true" → 判红
+  ✓ 【牙】T10 value="unknown" 却没写 note → 判红
+  ✓ value="unknown" 且写了 note → 合法（查过但来源没说明）
+  ✓ value=false 且 note 给出官方否定表述 → 合法（来源明说"不是"）
+  ✓ false 走完构造仍**保持 false**（不落 null、不落 "unknown"）
+  ✓ 【牙】§10.4 value=false 却不写 note → 判红（"不是"必须给官方原文，不许凭感觉）
+  ✓ 【牙】§10.4 value=false 的 note 只写「未说明」→ 判红（这就是把 unknown 降级成 false 的形态）
+  ✓ 【牙】§10.4 value="unknown" 的 note 只写官方否定表述 → 判红（该写 false 就别写 unknown）
+  ✓ 【牙】§10.4 restrictions 缺 value 字段 → 判红（缺字段不得被当成 false）
+  ✓ 【牙】§10.4 value=null → 判红（null 不在计划侧三态里，它是"没写"不是"否"）
+  ✓ value=true 不要求见证词（本契约只盯 unknown / false 两个方向，不改变其它语义）
+  ✓ 同一 kind 写两条 → 判红
+  ✓ concurrency 写字符串 → 判红
+  ✓ restrictions 的 kind 非法 → 判红
+  ✓ rolling_window 用文本表达窗口 → 合法
+
+⑤b §10.4 三态契约：重建 / 渲染 / 派生三条路径都不得把 unknown 或缺失变成 false
+  ✓ 三态契约常量 = true / false / "unknown"（唯一清单）
+  ✓ unknown 记录能构造
+  ✓ 重建路径：unknown 经 JSON 往返后仍是 "unknown"（不落 false、不落 null）
+  ✓ 重建路径：把记录再喂回归一器，unknown 一字不变（幂等）
+  ✓ 重建路径：unknown 记录通过 validatePlan（三态是合法状态，不是"待修"）
+  ✓ 重建路径：缺 value 的记录被拒（缺字段不得被补成 false）
+  ✓ 重建路径：来源层把 unknown 降级成 false（note 未变）→ 拒收（P2-12 的原始形态）
+  ✓ 没有限制条件的套餐能构造
+  ✓ 渲染路径：unknown 渲染成「未确认」而不是「否」
+  ✓ 渲染路径：false 渲染成「否」（明确的"不是"与"没查到"在页面上必须长得不一样）
+  ✓ 渲染路径：没有限制条件 / 缺失时不产生任何一行（不得凭空印出一个「否」）
+  ✓ 派生指标路径：四种「未知」一律 null（严格 null，不是 0 / false / undefined）
+  ✓ unlimited_fair_use 套餐（没有固定额度数值）
+  ✓ 派生指标路径：没有固定额度的记录 ⇒ nominalUnitPrice 严格为 null（不编一个数）
+  ✓ 派生指标路径：不可比较的既有三种情形仍然 null（回归）
+
+⑥ 来源与证据：只认官方页
+  ✓ 【牙】T11 evidence 全部来自聚合站 → 归一后没有引文 → 判红
+  ✓ evidence quote 超过 200 字 → 拒收 → 判红
+  ✓ evidence capturedAt 是未来日期 → 拒收 → 判红
+  ✓ evidence 完全缺失 → 判红
+  ✓ evidence.field 不在 plans 白名单（deals 的 discountInfo）→ 拒收 → 判红
+  ✓ officialUrl 指向聚合站 → 判红
+  ✓ officialUrl 带追踪参数 → 判红（不静默清洗）
+  ✓ source 未登记（ThirdParty）→ 判红
+  ✓ source=Official-Pricing 合法
+  ✓ manualApplication 之类的 deals 字段出现在 plans 里 → 判红（未知字段）
+
+⑦ Provider 归一：未登记一律红，两边 slug 不许分家
+  ✓ 同一平台的多种写法落到同一个 key
+  ✓ 未登记的平台返回 null（不许原样放行）
+  ✓ 未登记时给出建议 key
+  ✓ 未登记的 provider → 判红并给出建议 key
+  ✓ 真实的 providers.json 自身合法
+  ✓ 真实 provider 表与 vendor-slugs.json 的 slug 一致
+  ✓ key 非法 → 报红
+  ✓ slug 非法 → 报红
+  ✓ slug 重复 → 报红
+  ✓ alias 不是归一形态 → 报红
+  ✓ alias 冲突 → 报红
+  ✓ 与 vendor-slugs.json 的 slug 分家 → 报红
+  ✓ 两边的 slug 形状判据逐字相同
+
+⑦b v3.0 A1 身份层：A 空间冻结表 + vendorKey 恒等式 + /vendor/ 路由不变
+  ✓ RENDER-CORE 导出了 A 空间的键/名取值器（只读常量、不碰 DOM）
+  ✓ A 空间里没有重复厂商键（同一个键挂两个显示名 ⇒ 身份自己就分裂了）
+  ✓ VENDOR_RULES 的 [厂商键, 显示名] 序列与冻结表逐条相同（漂移即红，见本文件 FROZEN_VENDOR_KEYS）
+  ✓ vendor-slugs.json 与冻结表逐条相同（slug 是已发布的 URL，改名会破链接）
+  ✓ 硬断言 ①：providers.json[].name 与 vendor-slugs.json 同名条目的 slug 逐字相同
+  ✓ 硬断言 ①：vendor-slugs.json 为空 → 报红（缺文件/坏文件不是通过）
+  ✓ 硬断言 ②：每个非 null vendorKey 从 VENDOR_RULES 取回的显示名逐字等于 providers.json[].name
+  ✓ 硬断言 ②：A 空间取不到键/名表 → 报红（取不到不是通过）
+  ✓ A1 补齐的 6 家（baidu / volcengine / coze / iflytek / microsoft / notion）在表里且 vendorKey 闭环
+  ✓ provider-only 的三家（trae / qoder / codebuddy）显式写 vendorKey=null
+  ✓ 每条 provider 都显式写了 vendorKey 字段（缺席 = 静默退化，必须写出来）
+  ✓ 【牙】vendorKey 写成 logo 资产键 moonshotai → 硬断言 ② 报红
+  ✓ 【牙】vendorKey 指向 A 空间里不存在的键 → 硬断言 ② 报红
+  ✓ 【牙】VENDOR_RULES 显示名与 providers.json 的 name 分家 → 硬断言 ② 报红
+  ✓ 【牙】两条 provider 抢同一个 A 空间键 → validateProviderTable 报红
+  ✓ 【牙】provider 缺 vendorKey 字段 → 报红
+  ✓ 【牙】显示名归一后不在 aliases 里（认不回自己）→ 报红
+  ✓ 【牙】A 空间键/名表漂移（显示名被改）→ 冻结比对报红
+  ✓ 【牙】冻结比对能抓出少一条 / 多一条
+  ✓ 【牙】slug 冻结比对能抓出改值 / 多一行
+  ✓ A1 后 deals 侧厂商串的解析率（去重后）> 6 个（改前实测 6/87）
+  ✓ 6 家的全部原始写法都能解析（含全角括号形态）
+  ✓ 不靠子串/正则：明显的另一个平台不许被并进来（Kreado AI ≠ KREA，Vercel 仍未登记）
+  ✓ 硬断言 ③：每条真实 deal vendor 串，A 空间归到的键 == B 空间解析出的 provider 的 vendorKey
+  ✓ 硬断言 ③：没有输入时不许假绿（vendor 串为空 / A 空间取值器缺失都报红）
+  ✓ 队长裁决：chatgpt → openai、notebooklm → google（两条都按官方域名批准）
+  ✓ 队长裁决：chatgpt plus / gpt image 仍解析不出来（被否决的两条没有被顺带并进来）
+  ✓ 【牙】把 A 空间归到 openai 的串挪进 google 的别名 → 硬断言 ③ 报红
+  ✓ 【牙】provider 的 vendorKey 写成 null（A 空间却把它归到某厂商）→ 硬断言 ③ 报红
+
+⑧ 日期、顶层形状与数据集级判据
+  ✓ verified 非 true → 判红
+  ✓ firstSeen 晚于 lastSeen → 判红
+  ✓ verifiedAt 晚于 lastSeen → 判红
+  ✓ lastSeen 是未来日期 → 判红
+  ✓ firstSeen 没有 4 位年份 → 判红
+  ✓ planName 不是规范形态（前后空格）→ 判红
+  ✓ planName 超长 → 判红（不静默截断）
+  ✓ billing.note 超长 → 判红（不静默截断）
+  ✓ 人工来源层里写 id → 判红（派生字段不是输入）
+  ✓ 人工来源层里写 derivedMetrics → 判红
+  ✓ 【牙】T13 updatedAt 不等于 lastSeen 的最大值 → 判红
+  ✓ count 与 plans 长度不一致 → 判红
+  ✓ schemaVersion 不是 1 → 判红
+  ✓ 重复 id / 重复身份 → 判红
+  ✓ 记录顺序不是规范序 → 判红
+  ✓ 【牙】T14 打乱人工输入顺序 → 产出逐字节相同
+
+⑨ 与 deals 的引文层不互相污染（参数化回归）
+  ✓ 【牙】T15 不传 fields 时 deals 引文仍被接受
+  ✓ 【牙】T15 显式传入 deals 白名单与默认行为逐字节相同
+  ✓ 【牙】T15 deals 的 discountInfo 在 plans 白名单里被拒
+  ✓ 【牙】T15 plans 字段在 plans 白名单里被接受
+  ✓ 【牙】T15 plans 字段在 deals 白名单里被拒（两个数据集不共享字段空间）
+  ✓ 【牙】T15 入口对账用的是同一个白名单
+
+⑩ 真实数据不变量
+  ✓ 真实的 plans.json 通过数据集级校验（44 条）
+  ✓ 条目数 >= 5（下限不放松；题面 §十三：先建立小而可靠的数据集）
+  ✓ 条目数 <= 60（全局上限：防数据集无止境膨胀）
+  ✓ 单家 provider 的套餐数 <= 6（新增的牙：防一家把多个 SKU 灌成几十条）
+  ✓ 每一条都有官方引文
+  ✓ 每条记录的 provider 都能在 providers.json 里反查到
+  ✓ 每条记录的 evidence 出处都不是聚合站
+  ✓ **不可比较的额度类型一律没有 Token 单价**（本阶段的核心不变量）
+  ✓ 非 null 的 Token 单价只可能出现在 tokens 类型上
+  ✓ 计划名都已登记 provider 的规范 key（不是原始别名）
+  ✓ 人工来源层本身没有问题
+  ✓ plans.json 与 curated_plans.json 的产出逐字节一致
+  · 统计：44 条 / 20 个平台 · 额度类型 {"rate_limited":16,"requests":3,"other":9,"credits":16}
+  · 名义 Token 单价：可计算 0 条 · 不可计算 44 条（按额度类型 {"credits":16,"other":9,"rate_limited":16,"requests":3}）
+  · 原价留空(null) 1 条 · 有活动价 5 条 · 官方引文 85 条
+
+⑪ 边界：谁可以引用 plans，谁不可以
+  ✓ deals 链路（采集 / 合并 / 历史 / 优惠雷达 / 落地页 / SEO）完全不引用 plans
+  ✓ 订阅层不自己读套餐数据文件（判据是**访问形态**：真的去读才红，提到文件名不算）
+  ✓ 【对照】插入一处真实读取（path.join + readFileSync）→ 必须报红
+  ✓ 【对照】插入一处真实读取（模板串 + JSON.parse）→ 必须报红
+  ✓ 【对照】require('./plan-schema') → 必须报红
+  ✓ 【对照】把文件名拼成两段（'plans' + '.json'）→ 必须报红
+  ✓ 【对照·已知边界】先把路径存进变量再 readFileSync → 静态判据抓不到（只能靠 review）
+  ✓ 【对照】只提到文件名（散文 / 说明文字）→ 不得报红（门禁不许限制别人怎么写文档）
+  ✓ 【对照】注释里的读取代码 → 不得报红（字符串型断言必须先剥注释）
+  ✓ 【对照】读 api-plans.json（合法：订阅层有 API 变化源）→ 不得报红
+  ✓ 订阅层对 plans 的引用只有「套餐变化」这一条通道（kind = plan-changes）
+  ✓ 前端 index.html 只用路由占位符引用套餐页（不直接读 plans.json）
+  ✓ 构建期确实接进了套餐页（占位符 → 路由 → 发布清单）
+
+⑫ 套餐页：页面上的数字必须是数据里的数字
+  ✓ 页面级诚实性断言全部通过（行数 / 口径文案 / 结论性词汇 / 数值列逐格比对）
+  ✓ 数据层也不含结论性词汇（套餐名 / 备注 / 额度口径）
+  ✓ 行数 == 套餐数
+  ✓ 页面上有且只有一个 <h1>
+  ✓ 口径文案在位
+  ✓ 回站根用的是 ../../（两层路由的深度）
+  ✓ 原价未知的行显示「未标注」
+  ✓ 确实免费的行显示带 0 的价格（不是「未标注」）
+  ✓ 没有活动价的行显示「—」
+  ✓ 算不出 Token 单价的行显示「—」
+  ✓ JSON-LD 是 CollectionPage + BreadcrumbList + ItemList
+  ✓ ItemList 声明数 == 元素数 == 套餐数
+  ✓ ItemList 每一条指向该套餐的官方页（不伪造站内详情页）
+  ✓ 【牙】非 tokens 的额度即使数据里带了单价也不显示数字（渲染层 fail-closed）
+  ✓ 【牙】把「未标注」改成 ¥0 → 页面断言必须变红
+  ✓ 【牙】删掉口径文案 → 页面断言必须变红
+  ✓ 【牙】数据里出现「性价比」→ 数据层断言必须变红
+
+⑬ 交互载荷：构建期算出来的每一个键都要有出处
+  ✓ 载荷能被解析出来，且带 schema / core 版本
+  ✓ 载荷行数 == 表格行数 == plans.json 条数
+  ✓ 载荷 columns == 列模型长度 == 表头列数
+  ✓ 载荷逐字段等于 plans.json，且交互层断言本身无问题
+  ✓ 所有筛选档位都至少命中 1 行（没有点了空空如也的入口）
+  ✓ 排序档位与「有没有可比项」一致（不可比较时不给这个排序）
+  ✓ 本期真实数据里名义 Token 单价 0 条可计算，页面上写明了原因
+  ✓ 价格档只命中同币种、同周期、原价落在 [min,max) 里的行
+  ✓ 价格档不会把原价未标注 / 非月付的行捞进来
+  ✓ 搜索覆盖平台中文显示名与别名（智谱 / 灵码 / copilot）
+  ✓ copilot 命中的每一行都真的属于 github（防宽匹配退化成"什么词都能命中"）
+  ✓ 搜索覆盖模型名，且大小写与全角都能搜到
+  ✓ 搜索是子串匹配、不做模糊（搜一个不存在的词得到 0 条）
+  ✓ 每条套餐恰好一个详情模板
+  ✓ 预渲染标记里零交互控件（无 JS 时不给可点暗示）
+  ✓ <noscript> 明确说出"没有 JS 时看到的就是全部"
+
+⑭ 筛选 / 排序语义（require 浏览器里的同一份 core）
+  ✓ 平台维度只命中该平台
+  ✓ 「模型未标注」档只命中 supportedModels 为空的行
+  ✓ 模型档只命中清单里真的列了该模型的行
+  ✓ 活动价档是二分的：有 / 无互补且合起来是全集
+  ✓ 地区档只命中该地区
+  ✓ 多个维度是 AND（Trae + 有活动价 只剩 1 条）
+  ✓ 筛选不会改变行的内容（只按载荷键判定）
+  ✓ 计数与"点下去会看到多少条"一致（空状态下等于全集）
+  ✓ 已选中那一档的计数恰好等于当前结果数
+  ✓ 排序 regular/asc：不可比较项全部排在可比较项之后
+  ✓ 排序 regular/desc：不可比较项全部排在可比较项之后
+  ✓ 排序 promo/asc：不可比较项全部排在可比较项之后
+  ✓ 排序 promo/desc：不可比较项全部排在可比较项之后
+  ✓ 排序 unit/asc：不可比较项全部排在可比较项之后
+  ✓ 排序 unit/desc：不可比较项全部排在可比较项之后
+  ✓ 排序返回新数组，且不改动传入的数组与行对象
+  ✓ 正常月费排序按币种分组（不跨币种比大小）
+  ✓ 最近更新排序默认最新在前，且全序稳定
+  ✓ 默认排序恒等于规范序（不受任何状态影响）
+  ✓ 【牙】"把不可比较当 0"的实现会给出不同顺序（诚实实现可被区分）
+  ✓ 诚实实现里"原价未知"的行排在任何有价行之后
+  ✓ 有可比单价的行会参与「名义 Token 单价」排序并排在最前
+  ✓ 可比较的行出现后，排序档位里才出现 unit
+  ✓ 状态默认值 = 全部空 + default/asc，且 isDefault 只认它
+  ✓ activeCount 把搜索也算作一项
+
+⑮ 本阶段的牙：这些断言必须真的会红
+  ✓ 【牙】给 credits 套餐硬塞名义 Token 单价 → 变红
+  ✓ 【牙】把正常价格与活动价互换 → 变红
+  ✓ 【牙】载荷少一行（页面上报的条数与 plans.json 不一致）→ 变红
+  ✓ 【牙】某行的平台键不在筛选选项清单里 → 变红
+  ✓ 【牙】预渲染标记里塞进筛选控件 → 变红
+  ✓ 【牙】把不可比较项当 0 排 → 与诚实排序结果不同（这条判据分得清两者）
+  ✓ 【牙】跨币种混排的结果与诚实排序不同（币种分组不是装饰）
+
+⑯ 变化展示：页面上的每一条变化都必须来自日志（v2.3）
+  ✓ 夹具：改价 + 新增模型各产生一条事件
+  ✓ 夹具：日志与数据自洽
+  ✓ 雷达：两条变化都进了「最近 7 天变化」
+  ✓ 页面级诚实性断言全部通过（含最近变化块与时间线）
+  ✓ 最近变化块里恰好两条
+  ✓ 改价那条写成「正常价格 旧 → 新」
+  ✓ 模型那条写成「新增模型 DeepSeek V4.1」
+  ✓ 块里有指向 /changes/#plans 的入口
+  ✓ 每个数据行都有 #plan-<id> 锚点
+  ✓ 锚点与 data-item 在同一行上（都指向同一条套餐）
+  ✓ 详情模板里有变更记录标题与总条数
+  ✓ 详情模板里的时间线写明了「正常价格 … → …」
+  ✓ 日志不可用时页面说的是「没有拿到日志」
+  ✓ 日志可用但没有变化时说「当前没有观测到套餐变化」
+  ✓ 【牙】最近变化块少一条 → 页面断言必须变红
+  ✓ 【牙】事件值里出现「性价比」→ 变化数据层断言必须变红
+  ✓ 【牙】时间线总条数与日志不符 → 页面断言必须变红
+  ✓ 【牙】日志不可用却说「没有变化」→ 页面断言必须变红
+
+✅ === v2.1 Coding Plan 数据模型演练：264 项通过，0 项失败 ===

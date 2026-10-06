@@ -1,0 +1,5 @@
+{
+  "models/360zhinao-pro/": "(() => { const m = document.querySelector('main.detail-main'); if (m) m.classList.remove('detail-main'); return document.querySelectorAll('main.detail-main').length; })()",
+  "category/": "(() => { const m = document.querySelector('main'); m.classList.add('detail-main'); return document.querySelectorAll('main.detail-main').length; })()",
+  "developer/": "(() => { const m = document.querySelector('main'); if (m) m.remove(); return document.querySelectorAll('main').length; })()"
+}

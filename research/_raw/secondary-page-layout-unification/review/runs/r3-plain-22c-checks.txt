@@ -1,0 +1,183 @@
+runs\r3-plain.json：§22b/§22c check 共 91 条，失败 0 条
+✓ §22b 取样：deal 详情（deals.json 里 url 最长的一条）与 model 详情（models.json[0]）都取到了
+     deal/8e7b0fd03e73/（官方页 URL 129 字符 · 数据 137 条）· models/360zhinao-pro/（数据 51 个模型）
+✓ §22b deal@1600 内容列居中（|left-(vw-right)|≤8）且列宽 ∈[1080, 1120]
+     列 240..1360 W=1120 · 视口 1600 · 居中偏差 0px · 无违规码
+✓ §22b deal@1600 同轴：.crumb / .dpane / .dpane-more / .dpane-src 左右极差 ≤1px
+     .crumb=240..1360 · .dpane=240..1360 · .dpane-more=240..1360 · .dpane-src=240..1360 · 无违规码
+✓ §22b deal@1600 来源块宽 == 列宽（≤1px）且自身不溢出
+     来源块 W=1120 / 列 W=1120 · 内部溢出 0px · 无违规码
+✓ §22b deal@1600 Header(.topin) 与 Footer(.wrap) 未缩窄：仍是 min(1420px, 视口)
+     .topin 1420 / .wrap 1420 / footer 1380（期望 1420 与 1380） · 无违规码
+✓ §22b deal@1440 内容列居中（|left-(vw-right)|≤8）且列宽 ∈[1080, 1120]
+     列 160..1280 W=1120 · 视口 1440 · 居中偏差 0px · 无违规码
+✓ §22b deal@1440 同轴：.crumb / .dpane / .dpane-more / .dpane-src 左右极差 ≤1px
+     .crumb=160..1280 · .dpane=160..1280 · .dpane-more=160..1280 · .dpane-src=160..1280 · 无违规码
+✓ §22b deal@1440 来源块宽 == 列宽（≤1px）且自身不溢出
+     来源块 W=1120 / 列 W=1120 · 内部溢出 0px · 无违规码
+✓ §22b deal@1440 Header(.topin) 与 Footer(.wrap) 未缩窄：仍是 min(1420px, 视口)
+     .topin 1420 / .wrap 1420 / footer 1380（期望 1420 与 1380） · 无违规码
+✓ §22b deal@1280 内容列居中（|left-(vw-right)|≤8）且列宽 ∈[1080, 1120]
+     列 80..1200 W=1120 · 视口 1280 · 居中偏差 0px · 无违规码
+✓ §22b deal@1280 同轴：.crumb / .dpane / .dpane-more / .dpane-src 左右极差 ≤1px
+     .crumb=80..1200 · .dpane=80..1200 · .dpane-more=80..1200 · .dpane-src=80..1200 · 无违规码
+✓ §22b deal@1280 来源块宽 == 列宽（≤1px）且自身不溢出
+     来源块 W=1120 / 列 W=1120 · 内部溢出 0px · 无违规码
+✓ §22b deal@1280 Header(.topin) 与 Footer(.wrap) 未缩窄：仍是 min(1420px, 视口)
+     .topin 1280 / .wrap 1280 / footer 1240（期望 1280 与 1240） · 无违规码
+✓ §22b model@1600 内容列居中（|left-(vw-right)|≤8）且列宽 ∈[1080, 1120]
+     列 240..1360 W=1120 · 视口 1600 · 居中偏差 0px · 无违规码
+✓ §22b model@1600 同轴：.crumb / .stop / .minfo / .ptable-wrap 左右极差 ≤1px
+     .crumb=240..1360 · .stop=240..1360 · .minfo=240..1360 · .ptable-wrap=240..1360 · 无违规码
+✓ §22b model@1600 Header(.topin) 与 Footer(.wrap) 未缩窄：仍是 min(1420px, 视口)
+     .topin 1420 / .wrap 1420 / footer 1380（期望 1420 与 1380） · 无违规码
+✓ §22b model@1440 内容列居中（|left-(vw-right)|≤8）且列宽 ∈[1080, 1120]
+     列 160..1280 W=1120 · 视口 1440 · 居中偏差 0px · 无违规码
+✓ §22b model@1440 同轴：.crumb / .stop / .minfo / .ptable-wrap 左右极差 ≤1px
+     .crumb=160..1280 · .stop=160..1280 · .minfo=160..1280 · .ptable-wrap=160..1280 · 无违规码
+✓ §22b model@1440 Header(.topin) 与 Footer(.wrap) 未缩窄：仍是 min(1420px, 视口)
+     .topin 1420 / .wrap 1420 / footer 1380（期望 1420 与 1380） · 无违规码
+✓ §22b model@1280 内容列居中（|left-(vw-right)|≤8）且列宽 ∈[1080, 1120]
+     列 80..1200 W=1120 · 视口 1280 · 居中偏差 0px · 无违规码
+✓ §22b model@1280 同轴：.crumb / .stop / .minfo / .ptable-wrap 左右极差 ≤1px
+     .crumb=80..1200 · .stop=80..1200 · .minfo=80..1200 · .ptable-wrap=80..1200 · 无违规码
+✓ §22b model@1280 Header(.topin) 与 Footer(.wrap) 未缩窄：仍是 min(1420px, 视口)
+     .topin 1280 / .wrap 1280 / footer 1240（期望 1280 与 1240） · 无违规码
+✓ §22b deal 与 model 的叶子页落在同一条内容列上（1600/1440/1280 档列左与列宽一致 ≤1px）
+     三档一致：列宽 1120px · 列左 160px
+✓ §22b 首页的 <main> 不带 detail-main（统一内容列不得波及首页）
+     首页 <main> 1 个 · class [（空）] · main.detail-main 0 个
+✓ §22b @768 内容列宽 == .wrap 可用宽（窄屏铺满、不另立断点）且页面无横向溢出
+     deal 列 728 / 可用 728 · model 列 728 / 可用 728 · scrollWidth deal 768 / model 768（视口 768） · 无违规码
+✓ §22b @390 documentElement.scrollWidth ≤ 391（deal 与 model 都不横向滚动）
+     scrollWidth deal 390 / model 390（视口 390） · 无溢出
+✓ §22b @390 .dpane-src 的计算样式不是 break-all（长 URL 靠 overflow-wrap: anywhere 断行）
+     word-break: normal · overflow-wrap: anywhere（全站另有 .cmpshare 的 break-all，属改动前既有，不在本节判）
+✓ §22b 长 URL 页（deal/8e7b0fd03e73/，官方页 URL 129 字符）在 390 与 1440 下自身与页面级都不溢出
+     @390 scrollWidth 390（视口 390） · .dpane-src 358px 内溢 0px · @1440 scrollWidth 1440（视口 1440） · .dpane-src 1120px 内溢 0px · 无溢出
+✓ §22b M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点「.detail-main { width: min(1120px, 100%); margin-inline: auto; }」出现 1 次 · 删掉 .detail-main 的 margin-inline:auto
+✓ §22b M1 变异后复测必须出现「center」违规码（删掉 .detail-main 的 margin-inline:auto）
+     期望 center · 实测 [center] · 列 30..1150 W=1120 · scrollWidth 1440（视口 1440） · 违规码 [center]
+✓ §22b M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点「.detail-main { width: min(1120px, 100%); margin-inline: auto; }」出现 1 次 · 把内容列宽度改回 820px（缺陷原型）
+✓ §22b M2 变异后复测必须出现「width」违规码（把内容列宽度改回 820px（缺陷原型））
+     期望 width · 实测 [width] · 列 310..1130 W=820 · scrollWidth 1440（视口 1440） · 违规码 [width]
+✓ §22b M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点「margin-top: var(--s3); width: 100%; max-width: none;」出现 1 次 · 把 .dpane-src 的 width:100% 改成 820px
+✓ §22b M3 变异后复测必须出现「src-width」违规码（把 .dpane-src 的 width:100% 改成 820px）
+     期望 src-width · 实测 [axis, src-width] · 列 160..1280 W=1120 · scrollWidth 1440（视口 1440） · 违规码 [axis, src-width]
+✓ §22b M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点「word-break: normal; overflow-wrap: anywhere;」出现 1 次 · 拿走 .dpane-src 的 overflow-wrap:anywhere，并注入 200 字符不可断的超长 URL
+✓ §22b M4 变异后复测必须出现「page-overflow@390」违规码（拿走 .dpane-src 的 overflow-wrap:anywhere，并注入 200 字符不可断的超长 URL）
+     期望 page-overflow@390 · 实测 [self-overflow@390, page-overflow@390] · 列 16..374 W=358 · scrollWidth 1213（视口 390） · 超长 URL 注入位置 link · 违规码 [self-overflow@390, page-overflow@390]
+✓ §22b M5 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点「.detail-main { width: min(1120px, 100%); margin-inline: auto; }」出现 1 次 · 只把 model 详情页的内容列改成 1100px（两页不再同列）
+✓ §22b M5 变异后复测必须出现「leaf-consistency」违规码（只把 model 详情页的内容列改成 1100px（两页不再同列））
+     期望 leaf-consistency · 实测 [leaf-consistency, leaf-consistency] · 列 170..1270 W=1100 · scrollWidth 1440（视口 1440） · 违规码 [leaf-consistency, leaf-consistency]
+✓ §22b M4 正对照：同样注入 200 字符超长 URL、不动 CSS ⇒ @390 不得溢出
+     超长 URL 注入位置 link · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [width]，390 档只看溢出）
+✓ §22b 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因
+     不存在的锚点：ok=false · 出现 0 次 · 锚点在内联样式里出现 0 次（必须恰好 1 次） ／ 非唯一锚点：ok=false · 出现 4 次 · 锚点在内联样式里出现 4 次（必须恰好 1 次）
+✓ §22b 变异牙零磁盘污染：dist 里两个产物文件的 sha256 变异前后相等（byte-exact）
+     deal/8e7b0fd03e73/index.html 649ec99f3eda… · models/360zhinao-pro/index.html f008b58f8e46…（前 649ec99f/649ec99f · f008b58f/f008b58f）
+✓ §22c 全站每一页的布局族都能解析（page-kinds.kindOfRoute + layoutOf，数据驱动的静态路由由 kindByRoute 补齐）
+     186 页全部可解析（16 种 kind）· wide 55 / detail 131 / other 0 · unclassified-layout 0 个
+✓ §22c 注册表驱动的入口（3 目录页 + 10 按需求页 + 2 枢纽页）在产物里都存在
+     逐条命中（15 条，全部现场推导，不写死 slug）
+✓ §22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切
+     全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 1 条） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）49 条 · 竖排 0 条 · textFallback 回落 41 条
+✓ §22c @1440 全站 186 页都没有横向溢出
+     documentElement.scrollWidth ≤ 视口+1 全部成立
+✓ §22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切
+     全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 1 条） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）49 条 · 竖排 0 条 · textFallback 回落 41 条
+✓ §22c @1600 全站 186 页都没有横向溢出
+     documentElement.scrollWidth ≤ 视口+1 全部成立
+✓ §22c @390 全站 186 页 documentElement.scrollWidth ≤ 视口+1
+     最宽的一页 390px（视口 390）
+✓ §22c 布局族一致性：detail 族（131 页）恰好 1 个 main.detail-main、wide 族（55 页）0 个
+     missing-detail-main 0 · unexpected-detail-main 0
+✓ §22c 每一页都判得出主数据区（声明选择器或回落 <main>）
+     声明选择器命中 104 页 · 回落 <main> 82 页（<main>（回落）=82 .ctable=45 .chgsec=1 .ptable=55 .flist=1 .pchglist=1 .stable=1）
+✓ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）
+     186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」
+✓ §22c @760 样本集 29 页（旧口径 textWidth + 同轴 / 不裁切 / 不溢出；逐行字迹只在桌面档判）
+     0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ ne
+✓ §22c @360 样本集 29 页（旧口径 textWidth + 同轴 / 不裁切 / 不溢出；逐行字迹只在桌面档判）
+     0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ ne
+✓ §22c M1–M4 的四个壳（student/ status/ changes/ feeds/）都是 wide 族且带页面级说明
+     student/ collection/wide · .snote 3 条 · status/ status/wide · .snote 2 条 · changes/ changes/wide · .snote 13 条 · feeds/ feeds/wide · .snote 8 条
+✓ §22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）
+✓ §22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））
+     期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 3 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [stu
+✓ §22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）
+✓ §22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））
+     期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 2 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [status/#0, status/#1] · 违规码
+✓ §22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）
+✓ §22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄））
+     期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow
+✓ §22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）
+✓ §22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄））
+     期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-
+✓ §22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串
+✓ §22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）
+     期望 page-overflow@390 · 实测 [note-clipped, page-overflow@390] · 说明 3 条 · 首条 盒 358px / 有字区域 358px · detail-main 0 个 · scrollWidth 1118（视口 390） · 不可断串注入位置 note · 窄条 [无] · 违规码 [note-clipped, page-overflow@390]
+✓ §22c M7 DOM 注入前提成立（该类原本不存在）
+     注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）
+✓ §22c M7 变异后复测必须出现「unexpected-detail-main」违规码（给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在））
+     期望 unexpected-detail-main · 实测 [unexpected-detail-main] · 说明 2 条 · 首条 盒 1120px / 有字区域 1120px · detail-main 1 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [unexpected-detail-main]
+✓ §22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点出现 1 次 · F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）
+✓ §22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放
+     期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-narrow, note-narrow, note-ink-narrow] · 说明 3 条 · 首条 盒 1380px / 有字区域 452.81px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [student/#0, student/#1, student/#2]
+✓ §22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级
+     注入前 盒 1380px / 有字区域 1380px ⇒ 注入后 盒 1380px / 有字区域 452.81px（列宽 1380px · 阈值 1173px）—— 盒宽差 0px
+✓ §22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点出现 1 次 · F2 原型：只压**非首个** .snote（相邻兄弟选择器）
+✓ §22c M9a 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（相邻兄弟选择器））
+     期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note
+✓ §22c M9a 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压
+     选择器 .snote ~ .snote 命中 [docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5, docs/data/#6, docs/data/#7, docs/data/#8] ⇒ 窄条 [docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5, docs/dat
+✓ §22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点出现 1 次 · F2 原型：只压**非首个** .snote（:not(:first-of-type)）
+✓ §22c M9b 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（:not(:first-of-type)））
+     期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 13 条 ·
+✓ §22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压
+     选择器 .snote:not(:first-of-type) 命中 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12] ⇒ 窄条 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12]（第 0 条被压：false）
+✓ §22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）
+✓ §22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））
+     期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 3 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1600（视口 1600） · 窄条 [stu
+✓ §22c M11 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点出现 1 次 · t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）
+✓ §22c M11 变异后复测必须出现「note-ink-narrow」违规码（t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进
+     期望 note-ink-narrow · 实测 [note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow] · 说明 13 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] 
+✓ §22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码
+     note-narrow 0 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow 6 条 [changes/#0, changes/#1, changes/#2, changes/#4, changes/#8, changes/#12] · 这些条的行证据：#0 2 行 / 最宽 445.05px / 内容盒 1380px · #1 2 行 / 最宽 445.09px / 内容盒 1380px · #2 2
+✓ §22c M12 变异锚点唯一（逐字替换前必须恰好出现 1 次）
+     锚点出现 1 次 · t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿
+✓ §22c M12 变异后复测必须出现「note-hidden-text」违规码（t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常
+     期望 note-hidden-text · 实测 [note-hidden-text, note-hidden-text, note-hidden-text] · 说明 3 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-hidden-text, note-hidden-text, note-
+✓ §22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text
+     首条：文本 209 字 · 字形盒 0 个 · 盒宽 1380px（rendered=true） · 行 0 行 · note-hidden-text 命中 [student/#0, student/#1, student/#2] · note-ink-narrow 无
+✓ §22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出
+     不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）
+✓ §22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条 note-narrow 都没有
+     M8 student/@1440 违规码 [无] · M9a docs/data/@1440 违规码 [无] · M9b changes/@1440 违规码 [无] · M10 student/@1600 违规码 [无]
+✓ §22c 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因
+     不存在的锚点：ok=false · 出现 0 次 · 锚点在内联样式里出现 0 次（必须恰好 1 次） ／ 非唯一锚点：ok=false · 出现 61 次 · 锚点在内联样式里出现 61 次（必须恰好 1 次）
+✓ §22c 违规码自检：10 个码全部由 wideProblems() 一处产出、且都可达（不多不少）
+     可达 10/10 · 缺 无 · 多 无（含本轮新增的 note-ink-narrow / note-hidden-text；条级码带 index，与页级码同一个函数）
+✓ §22c M5（不重复造第二套）：既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码，且 §22b 的断言全绿
+     §22b 断言 41 项（失败 0） · §22b 变异码 M1=[center] M2=[width] M3=[axis,src-width] M4=[self-overflow@390,page-overflow@390] M5=[leaf-consistency,leaf-consistency] · M4 正对照=[无]
+✓ §22c 变异牙零磁盘污染：被改产物的 sha256 变异前后相等（byte-exact）
+     student/ 35588b1f26… · status/ 051dcfe27c… · changes/ e8b43013f7… · feeds/ ca2f78ce25…（前 35588b/051dcf/e8b430/ca2f78 · 后 35588b/051dcf/e8b430/ca2f78）
+✓ §22c 条级容器：metrics.layoutNotes 覆盖全部说明条（route#index 可逐条核对）
+     条级容器 401 条（@1440） / 401 条（@1600） · 现场实算 401 条 · 每行都带 route/index/codes：true
+✓ §22c 全站扫描（630 次导航）没有 JS 错误、没有外部请求
+     JS 错误 0 个 · 外部请求 0 个

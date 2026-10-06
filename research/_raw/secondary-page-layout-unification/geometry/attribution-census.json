@@ -1,0 +1,958 @@
+{
+  "what": "改动前 156 条窄说明的**实测码归属**：① 盒宽窄 = 156（含 48 条单行）· ② 字迹窄 = 108 ⊆ ①（多行）；truth 的 48 是 index===0 位置切片、48/48 全多行 —— 与\"旧口径（盒宽）命中集\"不是同一批",
+  "at": "2026-10-06T13:09:57.700Z",
+  "generatedBy": "research/_raw/secondary-page-layout-unification/geometry/attribution-census.cjs",
+  "truth": {
+    "path": "research/_raw/secondary-page-layout-unification/geometry/truth-401.json",
+    "sha256": "46c28fa120a39ababf25826b86a08e57cf93e242baee8df264219e1d182e346e",
+    "union": 156,
+    "positionalFirst48": 48,
+    "remainder108": 108,
+    "alreadyFine245": 245
+  },
+  "acceptCodeSet": "/^note-(ink-)?narrow$/",
+  "reports": [
+    {
+      "report": "research/_raw/secondary-page-layout-unification/review/t20/runs/new-baseline/report.json",
+      "sha256": "8993686ab5bd1195c61440ce051efa549fda5dfe0fd50cc2c27eb38bb689d1de",
+      "bytes": 1150001,
+      "total": 848,
+      "failed": 33,
+      "isBaselineRun": true,
+      "noteRows": 401,
+      "counts": {
+        "boxNarrowOnUnion": 156,
+        "inkNarrowOnUnion": 108,
+        "boxOnlyOnUnion": 48,
+        "inkOnlyOnUnion": 0,
+        "bothOnUnion": 108,
+        "narrowOnAlreadyFine": 0,
+        "positionalFirstWithInk": 48,
+        "positionalFirstSingleLine": 0,
+        "boxOnlySingleLine": 48,
+        "remainderSingleLine": 48
+      },
+      "narrowCodes": {
+        "onUnion156": {
+          "note-axis": 156,
+          "note-ink-narrow": 108,
+          "note-narrow": 156
+        },
+        "onPositionalFirst48": {
+          "note-axis": 48,
+          "note-ink-narrow": 48,
+          "note-narrow": 48
+        },
+        "onRemainder108": {
+          "note-axis": 108,
+          "note-ink-narrow": 60,
+          "note-narrow": 108
+        },
+        "onAlreadyFine245": {}
+      },
+      "at1600": {
+        "boxNarrowOnUnion": 156,
+        "inkNarrowOnUnion": 108,
+        "narrowOnAlreadyFine": 0
+      }
+    },
+    {
+      "report": "research/_raw/secondary-page-layout-unification/teeth/_scratch/r4-m0.json",
+      "sha256": "40f6af6517ada864b333e2682ab5f2a7d2dd5951e115f703630b701224644e11",
+      "bytes": 1150004,
+      "total": 848,
+      "failed": 33,
+      "isBaselineRun": true,
+      "noteRows": 401,
+      "counts": {
+        "boxNarrowOnUnion": 156,
+        "inkNarrowOnUnion": 108,
+        "boxOnlyOnUnion": 48,
+        "inkOnlyOnUnion": 0,
+        "bothOnUnion": 108,
+        "narrowOnAlreadyFine": 0,
+        "positionalFirstWithInk": 48,
+        "positionalFirstSingleLine": 0,
+        "boxOnlySingleLine": 48,
+        "remainderSingleLine": 48
+      },
+      "narrowCodes": {
+        "onUnion156": {
+          "note-axis": 156,
+          "note-ink-narrow": 108,
+          "note-narrow": 156
+        },
+        "onPositionalFirst48": {
+          "note-axis": 48,
+          "note-ink-narrow": 48,
+          "note-narrow": 48
+        },
+        "onRemainder108": {
+          "note-axis": 108,
+          "note-ink-narrow": 60,
+          "note-narrow": 108
+        },
+        "onAlreadyFine245": {}
+      },
+      "at1600": {
+        "boxNarrowOnUnion": 156,
+        "inkNarrowOnUnion": 108,
+        "narrowOnAlreadyFine": 0
+      }
+    },
+    {
+      "report": "research/_raw/secondary-page-layout-unification/t21/preserve/run3-M0-baseline.json",
+      "sha256": "3e82a9f8c83fb8e197a9515c9150a4a78cf57ab1d40ff3607991f7110f24c191",
+      "bytes": 1150003,
+      "total": 848,
+      "failed": 33,
+      "isBaselineRun": true,
+      "noteRows": 401,
+      "counts": {
+        "boxNarrowOnUnion": 156,
+        "inkNarrowOnUnion": 108,
+        "boxOnlyOnUnion": 48,
+        "inkOnlyOnUnion": 0,
+        "bothOnUnion": 108,
+        "narrowOnAlreadyFine": 0,
+        "positionalFirstWithInk": 48,
+        "positionalFirstSingleLine": 0,
+        "boxOnlySingleLine": 48,
+        "remainderSingleLine": 48
+      },
+      "narrowCodes": {
+        "onUnion156": {
+          "note-axis": 156,
+          "note-ink-narrow": 108,
+          "note-narrow": 156
+        },
+        "onPositionalFirst48": {
+          "note-axis": 48,
+          "note-ink-narrow": 48,
+          "note-narrow": 48
+        },
+        "onRemainder108": {
+          "note-axis": 108,
+          "note-ink-narrow": 60,
+          "note-narrow": 108
+        },
+        "onAlreadyFine245": {}
+      },
+      "at1600": {
+        "boxNarrowOnUnion": 156,
+        "inkNarrowOnUnion": 108,
+        "narrowOnAlreadyFine": 0
+      }
+    },
+    {
+      "report": "research/_raw/secondary-page-layout-unification/review/t20/runs/new-dist/report.json",
+      "sha256": "6c96b606c16b4b6826ed0de8d0c88a89a5846261ee1a39acb65ffa60f95abc0c",
+      "bytes": 1038313,
+      "total": 848,
+      "failed": 0,
+      "isBaselineRun": false,
+      "noteRows": 401,
+      "counts": {
+        "boxNarrowOnUnion": 0,
+        "inkNarrowOnUnion": 0,
+        "boxOnlyOnUnion": 0,
+        "inkOnlyOnUnion": 0,
+        "bothOnUnion": 0,
+        "narrowOnAlreadyFine": 0,
+        "positionalFirstWithInk": 0,
+        "positionalFirstSingleLine": 4,
+        "boxOnlySingleLine": 0,
+        "remainderSingleLine": 105
+      },
+      "narrowCodes": {
+        "onUnion156": {},
+        "onPositionalFirst48": {},
+        "onRemainder108": {},
+        "onAlreadyFine245": {}
+      },
+      "at1600": {
+        "boxNarrowOnUnion": 0,
+        "inkNarrowOnUnion": 0,
+        "narrowOnAlreadyFine": 0
+      }
+    },
+    {
+      "report": "research/_raw/secondary-page-layout-unification/teeth/_scratch/r4-green.json",
+      "sha256": "a827f6034fe8643823bab8ce9d7e373d52ca614802860b1b74b06a87c518db57",
+      "bytes": 1038308,
+      "total": 848,
+      "failed": 0,
+      "isBaselineRun": false,
+      "noteRows": 401,
+      "counts": {
+        "boxNarrowOnUnion": 0,
+        "inkNarrowOnUnion": 0,
+        "boxOnlyOnUnion": 0,
+        "inkOnlyOnUnion": 0,
+        "bothOnUnion": 0,
+        "narrowOnAlreadyFine": 0,
+        "positionalFirstWithInk": 0,
+        "positionalFirstSingleLine": 4,
+        "boxOnlySingleLine": 0,
+        "remainderSingleLine": 105
+      },
+      "narrowCodes": {
+        "onUnion156": {},
+        "onPositionalFirst48": {},
+        "onRemainder108": {},
+        "onAlreadyFine245": {}
+      },
+      "at1600": {
+        "boxNarrowOnUnion": 0,
+        "inkNarrowOnUnion": 0,
+        "narrowOnAlreadyFine": 0
+      }
+    }
+  ],
+  "checks": {
+    "156 条在基线报告里有逐条读数（无缺行）": true,
+    "① 盒宽窄 note-narrow 覆盖全部 156 条": true,
+    "② 字迹窄 note-ink-narrow = 108（多行的那批）": true,
+    "② ⊆ ①（没有\"只带字迹码\"的条）": true,
+    "位置切片 48 条全部是多行（48/48 带 note-ink-narrow）": true,
+    "那 48 条单行说明全部落在\"其余\"批里（不在位置切片里）": true,
+    "对照组 245 条零窄码（误报 0）": true,
+    "跨报告逐条一致（≥2 份基线报告时）": true
+  },
+  "conclusion": "在真实 dist.baseline 报告上逐条回查：156 条窄说明**全部**带 note-narrow（盒宽 452.81），其中 108 条多行的同时带 note-ink-narrow ⇒ ②⊆①；truth 的 caughtByOldCriteria(48) 是 index===0 位置切片，48/48 全多行（因此这 48 条在真实报告里同时带两个码），而\"那 48 条单行说明\"全在 onlyNewTruth 批里。消费者 gate-vs-truth.cjs 只消费并集（L74），故该切分不影响读数。",
+  "noticeToSyntheticFixture": "按本文件的 unionNarrowCodesByKey 取样（真实码分布），不要再用「48 盒宽 + 108 字迹」的假划分。",
+  "narrowCodesByKey": {
+    "category/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "category/#1": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "category/agent/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "category/agent/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "category/agent/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "category/api/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "category/api/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "category/api/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "category/audio/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "category/audio/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "category/audio/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "category/chat/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "category/chat/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "category/chat/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "category/image/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "category/image/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "category/image/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "changes/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "changes/#1": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "changes/#10": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "changes/#11": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "changes/#12": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "changes/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "changes/#3": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "changes/#4": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "changes/#5": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "changes/#6": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "changes/#7": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "changes/#8": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "changes/#9": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "developer/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "developer/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "developer/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "feeds/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "feeds/#1": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "feeds/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "feeds/#3": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "feeds/#4": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "feeds/#5": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "feeds/#6": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "feeds/#7": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "free-api/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "free-api/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "free-api/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/ai-coding/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/ai-coding/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "need/ai-coding/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/china-usable/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/china-usable/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "need/china-usable/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/dev-credits/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/dev-credits/#1": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/dev-credits/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/edu-identity/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/edu-identity/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "need/edu-identity/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/free-api/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/free-api/#1": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/free-api/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/free-model/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/free-model/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "need/free-model/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/free-tier/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/free-tier/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "need/free-tier/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/free-tokens/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/free-tokens/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "need/free-tokens/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/no-card/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/no-card/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "need/no-card/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/student-only/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/student-only/#1": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "need/student-only/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "status/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "status/#1": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "student/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "student/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "student/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/#1": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/ai360/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/ai360/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/ai360/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/aliyun/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/aliyun/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/aliyun/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/anthropic/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/anthropic/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/anthropic/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/aws/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/aws/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/aws/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/baichuan/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/baichuan/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/baichuan/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/baidu-ai-cloud/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/baidu-ai-cloud/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/baidu-ai-cloud/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/coze/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/coze/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/coze/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/cursor/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/cursor/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/cursor/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/deepseek/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/deepseek/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/deepseek/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/github/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/github/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/github/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/google/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/google/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/google/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/iflytek/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/iflytek/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/iflytek/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/microsoft/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/microsoft/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/microsoft/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/minimax/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/minimax/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/minimax/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/moonshot/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/moonshot/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/moonshot/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/notion/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/notion/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/notion/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/openai/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/openai/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/openai/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/replit/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/replit/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/replit/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/sensetime/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/sensetime/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/sensetime/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/siliconflow/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/siliconflow/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/siliconflow/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/stepfun/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/stepfun/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/stepfun/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/tencent-cloud/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/tencent-cloud/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/tencent-cloud/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/volcengine/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/volcengine/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/volcengine/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/windsurf/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/windsurf/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/windsurf/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/zhipu/#0": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ],
+    "vendor/zhipu/#1": [
+      "note-narrow",
+      "note-axis"
+    ],
+    "vendor/zhipu/#2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis"
+    ]
+  }
+}

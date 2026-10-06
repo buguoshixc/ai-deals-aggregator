@@ -1,0 +1,160 @@
+{
+  "generatedAt": "2026-10-06T07:41:13.507Z",
+  "dir": "dist",
+  "extracted": {
+    "judge": {
+      "file": "scripts\\tools\\verify-site.js",
+      "lines": "6144-6356",
+      "sha256": "91d295365b40e60cd8b218b9c21165b4a61cb7cd1ad9dac0dfc39e40c98b436d"
+    },
+    "mutate": {
+      "file": "scripts\\tools\\verify-site.js",
+      "lines": "6365-6378",
+      "sha256": "b3d6ba24f3b65d417a96e1908804dbc44ad4ae008fbe505e4ae2be285015c3dc"
+    }
+  },
+  "results": [
+    {
+      "id": "C0-control",
+      "route": "student/",
+      "width": 1440,
+      "what": "不注入（现场基线）",
+      "injected": null,
+      "codes": [],
+      "geometry": {
+        "noteWidth": 1380,
+        "noteLeft": 30,
+        "noteRight": 1410,
+        "regionSel": ".ctable",
+        "regionWidth": 1380,
+        "regionLeft": 30,
+        "regionRight": 1410,
+        "mainWidth": 1380,
+        "mainLeft": 30,
+        "mainRight": 1410,
+        "column": 1380,
+        "noteCount": 3,
+        "frozenCount": 1,
+        "scrollWidth": 1440,
+        "clientWidth": 1440
+      },
+      "visual": {
+        "noteCount": 3,
+        "notes": [
+          {
+            "i": 0,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "top": 143.5
+            },
+            "text": {
+              "left": 30,
+              "right": 1394.86,
+              "width": 1364.86,
+              "lines": 8
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          },
+          {
+            "i": 1,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "top": 1569.03
+            },
+            "text": {
+              "left": 30,
+              "right": 91.64,
+              "width": 61.64,
+              "lines": 2
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "section.chgsec"
+          },
+          {
+            "i": 2,
+            "box": {
+              "left": 30,
+              "right": 1410,
+              "width": 1380,
+              "top": 1601.42
+            },
+            "text": {
+              "left": 30,
+              "right": 1077.52,
+              "width": 1047.52,
+              "lines": 4
+            },
+            "style": {
+              "maxWidth": "none",
+              "paddingLeft": "0px",
+              "paddingRight": "0px",
+              "boxSizing": "border-box"
+            },
+            "parent": "main"
+          }
+        ]
+      },
+      "messages": []
+    },
+    {
+      "id": "guard",
+      "rows": [
+        {
+          "id": "G0-absent",
+          "anchor": "（不存在的锚点）",
+          "result": {
+            "ok": false,
+            "occurrences": 0,
+            "reason": "锚点在内联样式里出现 0 次（必须恰好 1 次）"
+          }
+        },
+        {
+          "id": "G1-many",
+          "anchor": "color: var(--mut);",
+          "result": {
+            "ok": false,
+            "occurrences": 61,
+            "reason": "锚点在内联样式里出现 61 次（必须恰好 1 次）"
+          }
+        },
+        {
+          "id": "G3-exactly-2",
+          "anchor": "WIDE_SNOTE_FROZEN（页面里出现 2 次）",
+          "result": {
+            "ok": false,
+            "occurrences": 2,
+            "reason": "锚点在内联样式里出现 2 次（必须恰好 1 次）"
+          },
+          "occurrences": 2
+        },
+        {
+          "id": "G2-unique",
+          "anchor": "WIDE_SNOTE_FROZEN（真实锚点，唯一）",
+          "result": {
+            "ok": true,
+            "occurrences": 1
+          },
+          "effect": {
+            "maxWidth": "452.812px",
+            "width": 452.81
+          }
+        }
+      ]
+    }
+  ]
+}

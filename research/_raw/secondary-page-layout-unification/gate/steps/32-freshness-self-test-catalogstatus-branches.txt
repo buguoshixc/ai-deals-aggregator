@@ -1,0 +1,17 @@
+# Freshness self-test (catalogStatus branches)
+# $ node scripts/tools/model-freshness-selftest.js
+# runAt 2026-10-06T07:30:30.727Z · verify-site.js sha256 4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756
+
+=== 0) 枚举与策略表自洽 ===
+
+=== 1) 五个分支：current / aging / legacy / historical / unknown ===
+
+=== 2) 跨 modelRole / family / developer 绝不互相淘汰 ===
+
+=== 3) freshnessGroup 覆盖：只影响写了它的那一条 ===
+
+=== 4) 硬不变量：unknown ≠ legacy、整组不许静默消失、组计数与条目一致 ===
+
+=== 5) 纯函数纪律：不读墙上时钟、不改入参、输出可重建 ===
+
+✅ 新鲜度判据自测：100 项通过，0 项失败

@@ -1,0 +1,641 @@
+{
+  "label": "real-dist",
+  "at": "2026-10-06T08:33:59.307Z",
+  "source": {
+    "report": "research/_raw/secondary-page-layout-unification/geometry/after-verify.json",
+    "reportTotal": 842,
+    "reportFailed": 0,
+    "mutations": "research/_raw/secondary-page-layout-unification/geometry/mutations.json",
+    "target": "http://127.0.0.1:64112/",
+    "dir": "dist",
+    "generatedAt": "2026-10-06T08:33:52.370Z",
+    "productDir": "dist",
+    "criteria": {
+      "noteNarrow": "textWidth >= 0.85 * min(主数据区宽, 页面列宽)（textWidth = 承载文本的块级元素里最窄的 content box；Range 字迹只进报告）",
+      "noteAxis": "border-box 与主数据区或 <main> 任一同一轴，容差 max(1px, 0.05 * min(主数据区宽, 页面列宽))",
+      "scope": "<main> 内全部 .snote，逐条 route#index；零条说明的页面才跳过"
+    }
+  },
+  "layoutSweep": {
+    "total": 186,
+    "wide": 55,
+    "detail": 131,
+    "other": 0,
+    "notesChecked": 105,
+    "notesJudged": 401,
+    "narrowNotes": 0,
+    "narrowNotePages": 0,
+    "narrowNotesAt1600": 0,
+    "overflowPages": 0,
+    "unexpectedDetailMain": 0,
+    "missingDetailMain": 0,
+    "unclassified": 0,
+    "desktopViewports": [
+      1440,
+      1600
+    ]
+  },
+  "noteLevelContainer": {
+    "key": "metrics.layoutNotes",
+    "rows": 401,
+    "rowsAt1600": 401,
+    "everyRowHasRouteIndexCodes": true,
+    "note": "修复轮 r2 新增：条级容器逐条读数（route#index），§22c 的判据不再只看每页第一条"
+  },
+  "rows": [
+    {
+      "id": "M1",
+      "route": "student/",
+      "viewport": 1440,
+      "expect": "note-narrow",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "kind": "replace（逐字替换）",
+      "narrowKeys": [
+        "student/#0",
+        "student/#1",
+        "student/#2"
+      ],
+      "matchedKeys": null,
+      "anchorFromVerifySite": 1,
+      "anchorFromDisk": 1,
+      "geometry": {
+        "noteCount": 3,
+        "noteWidthLegacy": null,
+        "firstNoteBoxWidth": 452.81,
+        "firstNoteTextWidth": 453,
+        "columnWidthLegacy": null,
+        "detailMainCount": 0,
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "injectedAt": null,
+        "narrowKeys": [
+          "student/#0",
+          "student/#1",
+          "student/#2"
+        ]
+      },
+      "sha256Equal": true
+    },
+    {
+      "id": "M2",
+      "route": "status/",
+      "viewport": 1440,
+      "expect": "note-narrow",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "kind": "replace（逐字替换）",
+      "narrowKeys": [
+        "status/#0",
+        "status/#1"
+      ],
+      "matchedKeys": null,
+      "anchorFromVerifySite": 1,
+      "anchorFromDisk": 1,
+      "geometry": {
+        "noteCount": 2,
+        "noteWidthLegacy": null,
+        "firstNoteBoxWidth": 452.81,
+        "firstNoteTextWidth": 453,
+        "columnWidthLegacy": null,
+        "detailMainCount": 0,
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "injectedAt": null,
+        "narrowKeys": [
+          "status/#0",
+          "status/#1"
+        ]
+      },
+      "sha256Equal": true
+    },
+    {
+      "id": "M3",
+      "route": "changes/",
+      "viewport": 1440,
+      "expect": "note-narrow",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "kind": "replace（逐字替换）",
+      "narrowKeys": [
+        "changes/#0",
+        "changes/#1",
+        "changes/#2",
+        "changes/#3",
+        "changes/#4",
+        "changes/#5",
+        "changes/#6",
+        "changes/#7",
+        "changes/#8",
+        "changes/#9",
+        "changes/#10",
+        "changes/#11",
+        "changes/#12"
+      ],
+      "matchedKeys": null,
+      "anchorFromVerifySite": 1,
+      "anchorFromDisk": 1,
+      "geometry": {
+        "noteCount": 13,
+        "noteWidthLegacy": null,
+        "firstNoteBoxWidth": 452.81,
+        "firstNoteTextWidth": 453,
+        "columnWidthLegacy": null,
+        "detailMainCount": 0,
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "injectedAt": null,
+        "narrowKeys": [
+          "changes/#0",
+          "changes/#1",
+          "changes/#2",
+          "changes/#3",
+          "changes/#4",
+          "changes/#5",
+          "changes/#6",
+          "changes/#7",
+          "changes/#8",
+          "changes/#9",
+          "changes/#10",
+          "changes/#11",
+          "changes/#12"
+        ]
+      },
+      "sha256Equal": true
+    },
+    {
+      "id": "M4",
+      "route": "feeds/",
+      "viewport": 1440,
+      "expect": "note-narrow",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "kind": "replace（逐字替换）",
+      "narrowKeys": [
+        "feeds/#0",
+        "feeds/#1",
+        "feeds/#2",
+        "feeds/#3",
+        "feeds/#4",
+        "feeds/#5",
+        "feeds/#6",
+        "feeds/#7"
+      ],
+      "matchedKeys": null,
+      "anchorFromVerifySite": 1,
+      "anchorFromDisk": 1,
+      "geometry": {
+        "noteCount": 8,
+        "noteWidthLegacy": null,
+        "firstNoteBoxWidth": 452.81,
+        "firstNoteTextWidth": 453,
+        "columnWidthLegacy": null,
+        "detailMainCount": 0,
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "injectedAt": null,
+        "narrowKeys": [
+          "feeds/#0",
+          "feeds/#1",
+          "feeds/#2",
+          "feeds/#3",
+          "feeds/#4",
+          "feeds/#5",
+          "feeds/#6",
+          "feeds/#7"
+        ]
+      },
+      "sha256Equal": true
+    },
+    {
+      "id": "M6",
+      "route": "student/",
+      "viewport": 390,
+      "expect": "page-overflow@390",
+      "observed": [
+        "note-clipped",
+        "page-overflow@390"
+      ],
+      "hit": true,
+      "kind": "replace（逐字替换）",
+      "narrowKeys": [
+        "无"
+      ],
+      "matchedKeys": null,
+      "anchorFromVerifySite": 1,
+      "anchorFromDisk": 1,
+      "geometry": {
+        "noteCount": 3,
+        "noteWidthLegacy": null,
+        "firstNoteBoxWidth": 358,
+        "firstNoteTextWidth": 358,
+        "columnWidthLegacy": null,
+        "detailMainCount": 0,
+        "scrollWidth": 1118,
+        "viewport": 390,
+        "injectedAt": "note",
+        "narrowKeys": [
+          "无"
+        ]
+      },
+      "sha256Equal": true
+    },
+    {
+      "id": "M7",
+      "route": "status/",
+      "viewport": 1440,
+      "expect": "unexpected-detail-main",
+      "observed": [
+        "unexpected-detail-main"
+      ],
+      "hit": true,
+      "kind": "dom-injection",
+      "narrowKeys": [
+        "无"
+      ],
+      "matchedKeys": null,
+      "anchorFromVerifySite": null,
+      "anchorFromDisk": null,
+      "geometry": {
+        "noteCount": 2,
+        "noteWidthLegacy": null,
+        "firstNoteBoxWidth": 1120,
+        "firstNoteTextWidth": 1120,
+        "columnWidthLegacy": null,
+        "detailMainCount": 1,
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "injectedAt": null,
+        "narrowKeys": [
+          "无"
+        ]
+      },
+      "sha256Equal": true
+    },
+    {
+      "id": "M8",
+      "route": "student/",
+      "viewport": 1440,
+      "expect": "note-narrow",
+      "observed": [
+        "note-narrow",
+        "note-narrow",
+        "note-narrow"
+      ],
+      "hit": true,
+      "kind": "extend（冻结串保留，追加一条收窄规则）",
+      "narrowKeys": [
+        "student/#0",
+        "student/#1",
+        "student/#2"
+      ],
+      "matchedKeys": null,
+      "anchorFromVerifySite": 1,
+      "anchorFromDisk": 1,
+      "geometry": {
+        "noteCount": 3,
+        "noteWidthLegacy": null,
+        "firstNoteBoxWidth": 1380,
+        "firstNoteTextWidth": 452.81,
+        "columnWidthLegacy": null,
+        "detailMainCount": 0,
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "injectedAt": null,
+        "narrowKeys": [
+          "student/#0",
+          "student/#1",
+          "student/#2"
+        ]
+      },
+      "sha256Equal": true
+    },
+    {
+      "id": "M9a",
+      "route": "docs/data/",
+      "viewport": 1440,
+      "expect": "note-narrow",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "kind": "extend（冻结串保留，追加一条收窄规则）",
+      "narrowKeys": [
+        "docs/data/#1",
+        "docs/data/#2",
+        "docs/data/#3",
+        "docs/data/#4",
+        "docs/data/#5",
+        "docs/data/#6",
+        "docs/data/#7",
+        "docs/data/#8"
+      ],
+      "matchedKeys": [
+        "docs/data/#1",
+        "docs/data/#2",
+        "docs/data/#3",
+        "docs/data/#4",
+        "docs/data/#5",
+        "docs/data/#6",
+        "docs/data/#7",
+        "docs/data/#8"
+      ],
+      "anchorFromVerifySite": 1,
+      "anchorFromDisk": 1,
+      "geometry": {
+        "noteCount": 9,
+        "noteWidthLegacy": null,
+        "firstNoteBoxWidth": 1380,
+        "firstNoteTextWidth": 1380,
+        "columnWidthLegacy": null,
+        "detailMainCount": 0,
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "injectedAt": null,
+        "narrowKeys": [
+          "docs/data/#1",
+          "docs/data/#2",
+          "docs/data/#3",
+          "docs/data/#4",
+          "docs/data/#5",
+          "docs/data/#6",
+          "docs/data/#7",
+          "docs/data/#8"
+        ]
+      },
+      "sha256Equal": true
+    },
+    {
+      "id": "M9b",
+      "route": "changes/",
+      "viewport": 1440,
+      "expect": "note-narrow",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "kind": "extend（冻结串保留，追加一条收窄规则）",
+      "narrowKeys": [
+        "changes/#1",
+        "changes/#3",
+        "changes/#4",
+        "changes/#8",
+        "changes/#12"
+      ],
+      "matchedKeys": [
+        "changes/#1",
+        "changes/#3",
+        "changes/#4",
+        "changes/#8",
+        "changes/#12"
+      ],
+      "anchorFromVerifySite": 1,
+      "anchorFromDisk": 1,
+      "geometry": {
+        "noteCount": 13,
+        "noteWidthLegacy": null,
+        "firstNoteBoxWidth": 1380,
+        "firstNoteTextWidth": 1380,
+        "columnWidthLegacy": null,
+        "detailMainCount": 0,
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "injectedAt": null,
+        "narrowKeys": [
+          "changes/#1",
+          "changes/#3",
+          "changes/#4",
+          "changes/#8",
+          "changes/#12"
+        ]
+      },
+      "sha256Equal": true
+    },
+    {
+      "id": "M10",
+      "route": "student/",
+      "viewport": 1600,
+      "expect": "note-narrow",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "kind": "extend（冻结串保留，追加一条收窄规则）",
+      "narrowKeys": [
+        "student/#0",
+        "student/#1",
+        "student/#2"
+      ],
+      "matchedKeys": null,
+      "anchorFromVerifySite": 1,
+      "anchorFromDisk": 1,
+      "geometry": {
+        "noteCount": 3,
+        "noteWidthLegacy": null,
+        "firstNoteBoxWidth": 452.81,
+        "firstNoteTextWidth": 453,
+        "columnWidthLegacy": null,
+        "detailMainCount": 0,
+        "scrollWidth": 1600,
+        "viewport": 1600,
+        "injectedAt": null,
+        "narrowKeys": [
+          "student/#0",
+          "student/#1",
+          "student/#2"
+        ]
+      },
+      "sha256Equal": true
+    },
+    {
+      "id": "M6-control",
+      "route": "student/",
+      "viewport": 390,
+      "expect": "不得出现 page-overflow@390",
+      "observed": [],
+      "hit": true,
+      "kind": "control（只注入内容，不改 CSS）",
+      "geometry": {
+        "noteCount": null,
+        "noteWidthLegacy": null,
+        "firstNoteBoxWidth": null,
+        "firstNoteTextWidth": null,
+        "columnWidthLegacy": null,
+        "detailMainCount": null,
+        "scrollWidth": 390,
+        "viewport": 390,
+        "injectedAt": "note",
+        "narrowKeys": null
+      },
+      "sha256Equal": null
+    }
+  ],
+  "zeroDiskPollution": {
+    "files": 303,
+    "changed": [],
+    "identical": true
+  },
+  "noInjectionControl": {
+    "label": "real-dist",
+    "what": "不注入的正对照：M8/M9a/M9b/M10 的靶页在对应档位**本来**一条 note-narrow 都没有（否则\"注入后变窄\"说明不了问题）",
+    "rows": [
+      {
+        "id": "M8",
+        "route": "student/",
+        "width": 1440,
+        "noteNarrow": 0,
+        "codes": []
+      },
+      {
+        "id": "M9a",
+        "route": "docs/data/",
+        "width": 1440,
+        "noteNarrow": 0,
+        "codes": []
+      },
+      {
+        "id": "M9b",
+        "route": "changes/",
+        "width": 1440,
+        "noteNarrow": 0,
+        "codes": []
+      },
+      {
+        "id": "M10",
+        "route": "student/",
+        "width": 1600,
+        "noteNarrow": 0,
+        "codes": []
+      }
+    ],
+    "allClean": true
+  },
+  "m5Reuse": {
+    "label": "real-dist",
+    "id": "M5-reuse",
+    "section": "§22b",
+    "what": "不重复造第二套：§22b 既有的 M1–M5 确实跑了、逐条咬到期望码",
+    "assertions": 41,
+    "failing": 0,
+    "codes": {
+      "M1": [
+        "center"
+      ],
+      "M2": [
+        "width"
+      ],
+      "M3": [
+        "axis",
+        "src-width"
+      ],
+      "M4": [
+        "self-overflow@390",
+        "page-overflow@390"
+      ],
+      "M5": [
+        "leaf-consistency",
+        "leaf-consistency"
+      ],
+      "M4-control": []
+    },
+    "expect": {
+      "M1": "center",
+      "M2": "width",
+      "M3": "src-width",
+      "M4": "page-overflow@390",
+      "M5": "leaf-consistency",
+      "M4-control": "[]（空）"
+    },
+    "hit": true,
+    "check": {
+      "name": "§22c M5（不重复造第二套）：既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码，且 §22b 的断言全绿",
+      "ok": true,
+      "detail": "§22b 断言 41 项（失败 0） · §22b 变异码 M1=[center] M2=[width] M3=[axis,src-width] M4=[self-overflow@390,page-overflow@390] M5=[leaf-consistency,leaf-consistency] · M4 正对照=[无]"
+    }
+  }
+}

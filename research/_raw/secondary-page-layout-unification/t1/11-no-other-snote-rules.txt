@@ -1,0 +1,6 @@
+﻿--- any '.snote {...}' CSS rule left in scripts/ or index.html (expect none) ---
+--- index.html ---
+index.html:734: .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }
+--- dist/changes/index.html: style rules mentioning .snote ---
+  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }
+  .snote.chgwarn { color: var(--warn, #a35a00); }

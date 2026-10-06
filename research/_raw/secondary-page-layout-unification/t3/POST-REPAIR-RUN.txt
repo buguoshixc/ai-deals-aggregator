@@ -1,0 +1,13 @@
+修复后重跑：verify-site.js sha256 = 4f4cb2e3b3f8e47d…
+P0 ✓ exit=0 (0.1s) 产物 sha256 清单（**跑任何 verify-site 之前**）—— 用来证明内存变异零磁盘污染
+P1 ✓ exit=0 (120.7s) 改动后产物的权威读数：verify-site.js --dir=dist（整轮必须 0 失败）
+P2 ✓ exit=0 (0.1s) 产物 sha256 清单（跑完 verify-site 之后）并与 P0 比对 ⇒ 内存变异没有写盘
+P4 ✓ exit=0 (0.1s) 把 §22c 的变异读数拆成每条牙一个 JSON（M1–M4 / M6 / M7 / M6 正对照 / M5 复用）
+P5 ✓ exit=1 (131.8s) M0 反证：verify-site.js --dir=dist.baseline 必须红（exit≠0）且报出 note-narrow
+P6 ✓ exit=0 (0.1s) M0 逐页清单落盘（命中 48 页 / 156 条？页集合与真值逐条比对）
+P7 ✓ exit=0 (0.1s) 集合级核对（绿轮）：新 §22c 在 dist 上必须 0 条 / 0 页、245 条对照组零误报
+P8 ✓ exit=0 (0.1s) 集合级核对（基线轮）：新 §22c 在 dist.baseline 上必须 156 条 / 48 页逐条相同、零误报、且有**条级容器**
+P9 ✓ exit=0 (251.2s) Full Gate 第 47/48 步在修复后的 verify-site.js 上重跑（按步骤序号增量合并 summary）
+
+✅ 修复后重跑：9/9 步按期望 · verify-site.js sha256 4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb
+summary: research/_raw/secondary-page-layout-unification/t3/post-repair-summary.json

@@ -1,0 +1,158 @@
+{
+  "tool": "secondary-page-layout-unification/rehearse-online-path",
+  "at": "2026-10-06T08:53:20.445Z",
+  "node": "v24.13.1",
+  "notes": [
+    "全部用例只访问 127.0.0.1（回环）+ 随机端口；没有任何真实线上域名出现在证据里",
+    "退出码语义：0 = 判据全过；1 = 有断言失败（负对照的期望值）；2 = 取数/环境失败",
+    "本条是**某一时刻**的快照：online-smoke.cjs 若再被修改，必须重跑本演练"
+  ],
+  "egress": {
+    "nonLoopbackBases": [],
+    "realDomainHitsInRehearsalArtifacts": [],
+    "note": "真实线上域名的字符串只允许出现在 online-smoke.cjs 的功能常量（线上模式的缺省基线地址）里；演练期间没有任何请求打到它 —— 服务端访问日志逐条都是 127.0.0.1 上的路径"
+  },
+  "servers": [
+    {
+      "dir": "dist",
+      "prefix": "/",
+      "hang": false,
+      "base": "http://127.0.0.1:53874/"
+    },
+    {
+      "dir": "dist",
+      "prefix": "/ai-deals-aggregator/",
+      "hang": false,
+      "base": "http://127.0.0.1:53875/ai-deals-aggregator/"
+    },
+    {
+      "dir": "dist.baseline",
+      "prefix": "/ai-deals-aggregator/",
+      "hang": false,
+      "base": "http://127.0.0.1:53876/ai-deals-aggregator/"
+    },
+    {
+      "dir": "dist",
+      "prefix": "/ai-deals-aggregator/",
+      "hang": false,
+      "base": "http://127.0.0.1:53877/ai-deals-aggregator/"
+    },
+    {
+      "dir": "dist",
+      "prefix": "/ai-deals-aggregator/",
+      "hang": false,
+      "base": "http://127.0.0.1:53878/ai-deals-aggregator/"
+    },
+    {
+      "dir": "research/_raw/secondary-page-layout-unification/release",
+      "prefix": "/",
+      "hang": false,
+      "base": "http://127.0.0.1:53879/"
+    },
+    {
+      "dir": "dist",
+      "prefix": "/",
+      "hang": true,
+      "base": "http://127.0.0.1:53880/"
+    }
+  ],
+  "cases": [
+    {
+      "id": "online-path-root-prefix",
+      "title": "线上路径 · dist 挂在 / · 8 页全跑",
+      "command": "node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53874/ --out=online-path-rehearsal.json",
+      "base": "http://127.0.0.1:53874/",
+      "exitCode": 0,
+      "expectExit": 0,
+      "ok": true,
+      "includesMiss": [],
+      "absentHit": [],
+      "durationMs": 4067
+    },
+    {
+      "id": "online-path-project-prefix",
+      "title": "线上路径 · dist 挂在 /ai-deals-aggregator/（与 GitHub Pages 项目站同形状）· 8 页全跑",
+      "command": "node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53875/ai-deals-aggregator/ --out=online-path-prefix-rehearsal.json",
+      "base": "http://127.0.0.1:53875/ai-deals-aggregator/",
+      "exitCode": 0,
+      "expectExit": 0,
+      "ok": true,
+      "includesMiss": [],
+      "absentHit": [],
+      "durationMs": 4167
+    },
+    {
+      "id": "negative-control-baseline",
+      "title": "负对照 · dist.baseline（改动前产物）· 同一 --base= 模式",
+      "command": "node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53876/ai-deals-aggregator/ --only=student/ --out=online-path-negcontrol-baseline.json",
+      "base": "http://127.0.0.1:53876/ai-deals-aggregator/",
+      "exitCode": 1,
+      "expectExit": 1,
+      "ok": true,
+      "includesMiss": [],
+      "absentHit": [],
+      "durationMs": 1134
+    },
+    {
+      "id": "robust-no-deal-entries",
+      "title": "健壮性① · 假 sitemap 只有 models、没有 deal ⇒ 必须 exit 2 且说清原因",
+      "command": "node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53877/ai-deals-aggregator/ --only=student/",
+      "base": "http://127.0.0.1:53877/ai-deals-aggregator/",
+      "exitCode": 2,
+      "expectExit": 2,
+      "ok": true,
+      "includesMiss": [],
+      "absentHit": [],
+      "durationMs": 283
+    },
+    {
+      "id": "robust-no-model-entries",
+      "title": "健壮性① · 假 sitemap 只有 deal、没有 models ⇒ 必须 exit 2 且说清原因",
+      "command": "node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53878/ai-deals-aggregator/ --only=student/",
+      "base": "http://127.0.0.1:53878/ai-deals-aggregator/",
+      "exitCode": 2,
+      "expectExit": 2,
+      "ok": true,
+      "includesMiss": [],
+      "absentHit": [],
+      "durationMs": 251
+    },
+    {
+      "id": "robust-sitemap-404",
+      "title": "健壮性② · 目标目录里没有 sitemap.xml ⇒ HTTP 404 ⇒ 必须 exit 2",
+      "command": "node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53879/",
+      "base": "http://127.0.0.1:53879/",
+      "exitCode": 2,
+      "expectExit": 2,
+      "ok": true,
+      "includesMiss": [],
+      "absentHit": [],
+      "durationMs": 258
+    },
+    {
+      "id": "robust-sitemap-timeout",
+      "title": "健壮性② · 连得上但永不响应 ⇒ 必须 exit 2 且报\"超过 Nms 未响应\"",
+      "command": "node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53880/ --sitemap-timeout=1200",
+      "base": "http://127.0.0.1:53880/",
+      "exitCode": 2,
+      "expectExit": 2,
+      "ok": true,
+      "includesMiss": [],
+      "absentHit": [],
+      "durationMs": 1431
+    },
+    {
+      "id": "robust-prefix-mismatch",
+      "title": "健壮性③ · 服务挂在 /ai-deals-aggregator/，base 却给根路径 ⇒ sitemap 404 ⇒ 必须 exit 2（不许静默变绿）",
+      "command": "node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53875/",
+      "base": "http://127.0.0.1:53875/",
+      "exitCode": 2,
+      "expectExit": 2,
+      "ok": true,
+      "includesMiss": [],
+      "absentHit": [],
+      "durationMs": 257
+    }
+  ],
+  "ok": true
+}

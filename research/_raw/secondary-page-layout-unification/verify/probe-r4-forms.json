@@ -1,0 +1,5820 @@
+{
+  "probe": "T22 independent round-4 probe (no require of verify-site.js / page-kinds.js)",
+  "generatedAt": "2026-10-06T12:42:34.317Z",
+  "dir": "dist",
+  "viewports": [
+    1440,
+    1600,
+    760,
+    360
+  ],
+  "overflowViewport": 390,
+  "ratio": 0.85,
+  "inject": {
+    "changes/": "@media (max-width:760px) { .snote { display: grid; grid-template-columns: minmax(0, 70ch) 1fr; } }",
+    "feeds/": ".snote { padding-right: calc(100% - 70ch); }",
+    "student/": ".snote { display: grid; grid-template-columns: minmax(0, 70ch) 1fr; }",
+    "status/": ".snote { max-width: 70ch; }",
+    "docs/data/": ".snote { font-size: 0; }",
+    "plans/": ".snote { display: grid; grid-template-columns: 200px 1fr; }",
+    "need/free-tier/": ".snote { white-space: nowrap; }",
+    "vendor/ai360/": ".snote { transform: scaleX(0.35); transform-origin: left center; }"
+  },
+  "routes": 8,
+  "seconds": 1.9,
+  "ch70Values": [
+    0,
+    452.81
+  ],
+  "columns": {
+    "360": {
+      "min": 328,
+      "max": 328,
+      "overCh70": 0,
+      "underCh70": 8
+    },
+    "760": {
+      "min": 728,
+      "max": 728,
+      "overCh70": 8,
+      "underCh70": 0
+    },
+    "1440": {
+      "min": 1380,
+      "max": 1380,
+      "overCh70": 8,
+      "underCh70": 0
+    },
+    "1600": {
+      "min": 1380,
+      "max": 1380,
+      "overCh70": 8,
+      "underCh70": 0
+    }
+  },
+  "totals": {
+    "pages": 8,
+    "pagesWithNotes": 8,
+    "notes": 53,
+    "unrendered": 9,
+    "overflowPages390": 1
+  },
+  "rounds": {
+    "360": {
+      "R1": {
+        "notes": 3,
+        "pages": 1,
+        "keys": [
+          "vendor/ai360/#0",
+          "vendor/ai360/#1",
+          "vendor/ai360/#2"
+        ]
+      },
+      "R2": {
+        "notes": 10,
+        "pages": 2,
+        "keys": [
+          "plans/#1",
+          "plans/#10",
+          "plans/#11",
+          "plans/#3",
+          "plans/#5",
+          "plans/#6",
+          "plans/#7",
+          "plans/#8",
+          "student/#0",
+          "student/#2"
+        ]
+      },
+      "R3": {
+        "notes": 10,
+        "pages": 2,
+        "keys": [
+          "plans/#1",
+          "plans/#10",
+          "plans/#11",
+          "plans/#3",
+          "plans/#5",
+          "plans/#6",
+          "plans/#7",
+          "plans/#8",
+          "student/#0",
+          "student/#2"
+        ]
+      },
+      "R4": {
+        "notes": 10,
+        "pages": 2,
+        "keys": [
+          "plans/#1",
+          "plans/#10",
+          "plans/#11",
+          "plans/#3",
+          "plans/#5",
+          "plans/#6",
+          "plans/#7",
+          "plans/#8",
+          "student/#0",
+          "student/#2"
+        ]
+      }
+    },
+    "760": {
+      "R1": {
+        "notes": 5,
+        "pages": 2,
+        "keys": [
+          "status/#0",
+          "status/#1",
+          "vendor/ai360/#0",
+          "vendor/ai360/#1",
+          "vendor/ai360/#2"
+        ]
+      },
+      "R2": {
+        "notes": 21,
+        "pages": 4,
+        "keys": [
+          "feeds/#0",
+          "feeds/#1",
+          "feeds/#2",
+          "feeds/#3",
+          "feeds/#4",
+          "feeds/#5",
+          "feeds/#6",
+          "feeds/#7",
+          "plans/#1",
+          "plans/#10",
+          "plans/#11",
+          "plans/#3",
+          "plans/#5",
+          "plans/#6",
+          "plans/#7",
+          "plans/#8",
+          "status/#0",
+          "status/#1",
+          "student/#0",
+          "student/#1",
+          "student/#2"
+        ]
+      },
+      "R3": {
+        "notes": 21,
+        "pages": 4,
+        "keys": [
+          "feeds/#0",
+          "feeds/#1",
+          "feeds/#2",
+          "feeds/#3",
+          "feeds/#4",
+          "feeds/#5",
+          "feeds/#6",
+          "feeds/#7",
+          "plans/#1",
+          "plans/#10",
+          "plans/#11",
+          "plans/#3",
+          "plans/#5",
+          "plans/#6",
+          "plans/#7",
+          "plans/#8",
+          "status/#0",
+          "status/#1",
+          "student/#0",
+          "student/#1",
+          "student/#2"
+        ]
+      },
+      "R4": {
+        "notes": 31,
+        "pages": 6,
+        "keys": [
+          "changes/#0",
+          "changes/#1",
+          "changes/#12",
+          "changes/#2",
+          "changes/#4",
+          "changes/#8",
+          "feeds/#0",
+          "feeds/#1",
+          "feeds/#2",
+          "feeds/#3",
+          "feeds/#4",
+          "feeds/#5",
+          "feeds/#6",
+          "feeds/#7",
+          "plans/#0",
+          "plans/#1",
+          "plans/#10",
+          "plans/#11",
+          "plans/#2",
+          "plans/#3",
+          "plans/#5",
+          "plans/#6",
+          "plans/#7",
+          "plans/#8",
+          "status/#0",
+          "status/#1",
+          "student/#0",
+          "student/#1",
+          "student/#2",
+          "vendor/ai360/#0",
+          "vendor/ai360/#2"
+        ]
+      }
+    },
+    "1440": {
+      "R1": {
+        "notes": 5,
+        "pages": 2,
+        "keys": [
+          "status/#0",
+          "status/#1",
+          "vendor/ai360/#0",
+          "vendor/ai360/#1",
+          "vendor/ai360/#2"
+        ]
+      },
+      "R2": {
+        "notes": 19,
+        "pages": 4,
+        "keys": [
+          "feeds/#0",
+          "feeds/#1",
+          "feeds/#2",
+          "feeds/#3",
+          "feeds/#4",
+          "feeds/#5",
+          "feeds/#6",
+          "feeds/#7",
+          "plans/#1",
+          "plans/#3",
+          "plans/#5",
+          "plans/#6",
+          "plans/#7",
+          "plans/#8",
+          "status/#0",
+          "status/#1",
+          "student/#0",
+          "student/#1",
+          "student/#2"
+        ]
+      },
+      "R3": {
+        "notes": 24,
+        "pages": 5,
+        "keys": [
+          "feeds/#0",
+          "feeds/#1",
+          "feeds/#2",
+          "feeds/#3",
+          "feeds/#4",
+          "feeds/#5",
+          "feeds/#6",
+          "feeds/#7",
+          "plans/#0",
+          "plans/#1",
+          "plans/#10",
+          "plans/#11",
+          "plans/#2",
+          "plans/#3",
+          "plans/#5",
+          "plans/#6",
+          "plans/#7",
+          "plans/#8",
+          "status/#0",
+          "status/#1",
+          "student/#0",
+          "student/#1",
+          "student/#2",
+          "vendor/ai360/#0"
+        ]
+      },
+      "R4": {
+        "notes": 24,
+        "pages": 5,
+        "keys": [
+          "feeds/#0",
+          "feeds/#1",
+          "feeds/#2",
+          "feeds/#3",
+          "feeds/#4",
+          "feeds/#5",
+          "feeds/#6",
+          "feeds/#7",
+          "plans/#0",
+          "plans/#1",
+          "plans/#10",
+          "plans/#11",
+          "plans/#2",
+          "plans/#3",
+          "plans/#5",
+          "plans/#6",
+          "plans/#7",
+          "plans/#8",
+          "status/#0",
+          "status/#1",
+          "student/#0",
+          "student/#1",
+          "student/#2",
+          "vendor/ai360/#0"
+        ]
+      }
+    },
+    "1600": {
+      "R1": {
+        "notes": 5,
+        "pages": 2,
+        "keys": [
+          "status/#0",
+          "status/#1",
+          "vendor/ai360/#0",
+          "vendor/ai360/#1",
+          "vendor/ai360/#2"
+        ]
+      },
+      "R2": {
+        "notes": 19,
+        "pages": 4,
+        "keys": [
+          "feeds/#0",
+          "feeds/#1",
+          "feeds/#2",
+          "feeds/#3",
+          "feeds/#4",
+          "feeds/#5",
+          "feeds/#6",
+          "feeds/#7",
+          "plans/#1",
+          "plans/#3",
+          "plans/#5",
+          "plans/#6",
+          "plans/#7",
+          "plans/#8",
+          "status/#0",
+          "status/#1",
+          "student/#0",
+          "student/#1",
+          "student/#2"
+        ]
+      },
+      "R3": {
+        "notes": 24,
+        "pages": 5,
+        "keys": [
+          "feeds/#0",
+          "feeds/#1",
+          "feeds/#2",
+          "feeds/#3",
+          "feeds/#4",
+          "feeds/#5",
+          "feeds/#6",
+          "feeds/#7",
+          "plans/#0",
+          "plans/#1",
+          "plans/#10",
+          "plans/#11",
+          "plans/#2",
+          "plans/#3",
+          "plans/#5",
+          "plans/#6",
+          "plans/#7",
+          "plans/#8",
+          "status/#0",
+          "status/#1",
+          "student/#0",
+          "student/#1",
+          "student/#2",
+          "vendor/ai360/#0"
+        ]
+      },
+      "R4": {
+        "notes": 24,
+        "pages": 5,
+        "keys": [
+          "feeds/#0",
+          "feeds/#1",
+          "feeds/#2",
+          "feeds/#3",
+          "feeds/#4",
+          "feeds/#5",
+          "feeds/#6",
+          "feeds/#7",
+          "plans/#0",
+          "plans/#1",
+          "plans/#10",
+          "plans/#11",
+          "plans/#2",
+          "plans/#3",
+          "plans/#5",
+          "plans/#6",
+          "plans/#7",
+          "plans/#8",
+          "status/#0",
+          "status/#1",
+          "student/#0",
+          "student/#1",
+          "student/#2",
+          "vendor/ai360/#0"
+        ]
+      }
+    }
+  },
+  "codeIndex": {
+    "note-narrow": {
+      "routes": [
+        "feeds/",
+        "plans/",
+        "status/",
+        "student/"
+      ],
+      "viewports": [
+        1440,
+        1600,
+        760,
+        360
+      ]
+    },
+    "note-ink-narrow": {
+      "routes": [
+        "feeds/",
+        "plans/",
+        "status/",
+        "student/",
+        "vendor/ai360/",
+        "changes/"
+      ],
+      "viewports": [
+        1440,
+        1600,
+        760
+      ]
+    },
+    "note-clipped": {
+      "routes": [
+        "need/free-tier/"
+      ],
+      "viewports": [
+        1440,
+        1600,
+        760,
+        360
+      ]
+    },
+    "page-overflow@1440": {
+      "routes": [
+        "need/free-tier/"
+      ],
+      "viewports": [
+        1440
+      ]
+    },
+    "note-axis": {
+      "routes": [
+        "status/",
+        "vendor/ai360/"
+      ],
+      "viewports": [
+        1440,
+        1600,
+        760,
+        360
+      ]
+    },
+    "page-overflow@1600": {
+      "routes": [
+        "need/free-tier/"
+      ],
+      "viewports": [
+        1600
+      ]
+    },
+    "page-overflow@760": {
+      "routes": [
+        "need/free-tier/"
+      ],
+      "viewports": [
+        760
+      ]
+    },
+    "page-overflow@360": {
+      "routes": [
+        "need/free-tier/"
+      ],
+      "viewports": [
+        360
+      ]
+    },
+    "page-overflow@390": {
+      "routes": [
+        "need/free-tier/"
+      ],
+      "viewports": [
+        390
+      ]
+    }
+  },
+  "reconcile": null,
+  "truthCheck": null,
+  "pages": [
+    {
+      "route": "changes/",
+      "family": "wide",
+      "overflow390": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "overflowViolation": false,
+      "viewport": {
+        "360": {
+          "column": 328,
+          "threshold": 278.8,
+          "regionSel": "section.chgdeals",
+          "noteCount": 13,
+          "codes": [],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "changes/#0",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 3,
+              "widestLine": 326.09,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 62,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "changes/#1",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 2,
+              "widestLine": 325.09,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 45,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "changes/#2",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 2,
+              "widestLine": 324,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 48,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "changes/#3",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 2,
+              "widestLine": 319.52,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 40,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "changes/#4",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 3,
+              "widestLine": 324,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 68,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "changes/#5",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 2,
+              "widestLine": 312,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 40,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "changes/#6",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 228,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 19,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "changes/#7",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 156,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 13,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "changes/#8",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 3,
+              "widestLine": 324,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 78,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "changes/#9",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 2,
+              "widestLine": 321.17,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 49,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "changes/#10",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 276.23,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 26,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "changes/#11",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 204.23,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 20,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "changes/#12",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 4,
+              "widestLine": 324,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 84,
+              "inkScope": false,
+              "rounds": []
+            }
+          ]
+        },
+        "760": {
+          "column": 728,
+          "threshold": 618.8,
+          "regionSel": "section.chgdeals",
+          "noteCount": 13,
+          "codes": [
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": [
+              "changes/#0",
+              "changes/#1",
+              "changes/#2",
+              "changes/#4",
+              "changes/#8",
+              "changes/#12"
+            ]
+          },
+          "notes": [
+            {
+              "key": "changes/#0",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 2,
+              "widestLine": 445.05,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 62,
+              "inkScope": true,
+              "rounds": [
+                "R4"
+              ]
+            },
+            {
+              "key": "changes/#1",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 2,
+              "widestLine": 445.09,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 45,
+              "inkScope": true,
+              "rounds": [
+                "R4"
+              ]
+            },
+            {
+              "key": "changes/#2",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 2,
+              "widestLine": 432,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 48,
+              "inkScope": true,
+              "rounds": [
+                "R4"
+              ]
+            },
+            {
+              "key": "changes/#3",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 451.52,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 40,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#4",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 2,
+              "widestLine": 444,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 68,
+              "inkScope": true,
+              "rounds": [
+                "R4"
+              ]
+            },
+            {
+              "key": "changes/#5",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 403.92,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 40,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#6",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 228,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 19,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#7",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 156,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 13,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#8",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 3,
+              "widestLine": 444,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 78,
+              "inkScope": true,
+              "rounds": [
+                "R4"
+              ]
+            },
+            {
+              "key": "changes/#9",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 449.09,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 49,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#10",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 276.23,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 26,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#11",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 204.23,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 20,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#12",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 3,
+              "widestLine": 444.23,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 84,
+              "inkScope": true,
+              "rounds": [
+                "R4"
+              ]
+            }
+          ]
+        },
+        "1440": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "section.chgdeals",
+          "noteCount": 13,
+          "codes": [],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "changes/#0",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 698.09,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 62,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#1",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 481.09,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 45,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#2",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 576,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 48,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#3",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 451.52,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 40,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#4",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 816,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 68,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#5",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 403.92,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 40,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#6",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 228,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 19,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#7",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 156,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 13,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#8",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 936,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 78,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#9",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 449.09,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 49,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#10",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 276.23,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 26,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#11",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 204.23,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 20,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#12",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 972.23,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 84,
+              "inkScope": true,
+              "rounds": []
+            }
+          ]
+        },
+        "1600": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "section.chgdeals",
+          "noteCount": 13,
+          "codes": [],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "changes/#0",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 698.09,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 62,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#1",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 481.09,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 45,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#2",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 576,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 48,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#3",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 451.52,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 40,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#4",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 816,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 68,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#5",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 403.92,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 40,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#6",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 228,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 19,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#7",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 156,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 13,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#8",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 936,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 78,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#9",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 449.09,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 49,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#10",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 276.23,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 26,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#11",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 204.23,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 20,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "changes/#12",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 972.23,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 84,
+              "inkScope": true,
+              "rounds": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "route": "docs/data/",
+      "family": "wide",
+      "overflow390": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "overflowViolation": false,
+      "viewport": {
+        "360": {
+          "column": 328,
+          "threshold": 278.8,
+          "regionSel": "ul.plist",
+          "noteCount": 9,
+          "codes": [],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "docs/data/#0",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 108,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#1",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 196,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#2",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 110,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#3",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 47,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#4",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 23,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#5",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 27,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#6",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 34,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#7",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 3,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#8",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 50,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            }
+          ]
+        },
+        "760": {
+          "column": 728,
+          "threshold": 618.8,
+          "regionSel": "ul.plist",
+          "noteCount": 9,
+          "codes": [],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "docs/data/#0",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 108,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#1",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 196,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#2",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 110,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#3",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 47,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#4",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 23,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#5",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 27,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#6",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 34,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#7",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 3,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#8",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 50,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            }
+          ]
+        },
+        "1440": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "ul.plist",
+          "noteCount": 9,
+          "codes": [],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "docs/data/#0",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 108,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#1",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 196,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#2",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 110,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#3",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 47,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#4",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 23,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#5",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 27,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#6",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 34,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#7",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 3,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#8",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 50,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            }
+          ]
+        },
+        "1600": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "ul.plist",
+          "noteCount": 9,
+          "codes": [],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "docs/data/#0",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 108,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#1",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 196,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#2",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 110,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#3",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 47,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#4",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 23,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#5",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 27,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#6",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 34,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#7",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 3,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            },
+            {
+              "key": "docs/data/#8",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 0,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 0,
+              "widestLine": 0,
+              "glyphRects": 0,
+              "rendered": false,
+              "vertical": false,
+              "textLength": 50,
+              "inkScope": true,
+              "rounds": [],
+              "unrendered": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "route": "feeds/",
+      "family": "wide",
+      "overflow390": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "overflowViolation": false,
+      "viewport": {
+        "360": {
+          "column": 328,
+          "threshold": 278.8,
+          "regionSel": "section.fsec",
+          "noteCount": 8,
+          "codes": [],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "feeds/#0",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 4,
+              "widestLine": 327.3,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 98,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "feeds/#1",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 5,
+              "widestLine": 325.55,
+              "glyphRects": 9,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 129,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "feeds/#2",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 2,
+              "widestLine": 264,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 59,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "feeds/#3",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 2,
+              "widestLine": 324,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 50,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "feeds/#4",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 3,
+              "widestLine": 324,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 71,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "feeds/#5",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 4,
+              "widestLine": 324.06,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 95,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "feeds/#6",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 4,
+              "widestLine": 327.3,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 89,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "feeds/#7",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 252,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 21,
+              "inkScope": false,
+              "rounds": []
+            }
+          ]
+        },
+        "760": {
+          "column": 728,
+          "threshold": 618.8,
+          "regionSel": "section.fsec",
+          "noteCount": 8,
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [
+              "feeds/#0",
+              "feeds/#1",
+              "feeds/#2",
+              "feeds/#3",
+              "feeds/#4",
+              "feeds/#5",
+              "feeds/#6",
+              "feeds/#7"
+            ],
+            "R3": [
+              "feeds/#0",
+              "feeds/#1",
+              "feeds/#2",
+              "feeds/#3",
+              "feeds/#4",
+              "feeds/#5",
+              "feeds/#6",
+              "feeds/#7"
+            ],
+            "R4": [
+              "feeds/#0",
+              "feeds/#1",
+              "feeds/#2",
+              "feeds/#3",
+              "feeds/#4",
+              "feeds/#5",
+              "feeds/#6",
+              "feeds/#7"
+            ]
+          },
+          "notes": [
+            {
+              "key": "feeds/#0",
+              "boxWidth": 728,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.621992,
+              "lineCount": 3,
+              "widestLine": 443.2,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 98,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#1",
+              "boxWidth": 728,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.621992,
+              "lineCount": 3,
+              "widestLine": 448.92,
+              "glyphRects": 7,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 129,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#2",
+              "boxWidth": 728,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.621992,
+              "lineCount": 2,
+              "widestLine": 451.67,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 59,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#3",
+              "boxWidth": 728,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.621992,
+              "lineCount": 2,
+              "widestLine": 444,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 50,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#4",
+              "boxWidth": 728,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.621992,
+              "lineCount": 2,
+              "widestLine": 451.45,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 71,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#5",
+              "boxWidth": 728,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.621992,
+              "lineCount": 3,
+              "widestLine": 445.11,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 95,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#6",
+              "boxWidth": 728,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.621992,
+              "lineCount": 3,
+              "widestLine": 444,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 89,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#7",
+              "boxWidth": 728,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.621992,
+              "lineCount": 1,
+              "widestLine": 252,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 21,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            }
+          ]
+        },
+        "1440": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "section.fsec",
+          "noteCount": 8,
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [
+              "feeds/#0",
+              "feeds/#1",
+              "feeds/#2",
+              "feeds/#3",
+              "feeds/#4",
+              "feeds/#5",
+              "feeds/#6",
+              "feeds/#7"
+            ],
+            "R3": [
+              "feeds/#0",
+              "feeds/#1",
+              "feeds/#2",
+              "feeds/#3",
+              "feeds/#4",
+              "feeds/#5",
+              "feeds/#6",
+              "feeds/#7"
+            ],
+            "R4": [
+              "feeds/#0",
+              "feeds/#1",
+              "feeds/#2",
+              "feeds/#3",
+              "feeds/#4",
+              "feeds/#5",
+              "feeds/#6",
+              "feeds/#7"
+            ]
+          },
+          "notes": [
+            {
+              "key": "feeds/#0",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 3,
+              "widestLine": 443.2,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 98,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#1",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 3,
+              "widestLine": 448.92,
+              "glyphRects": 7,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 129,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#2",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 2,
+              "widestLine": 451.67,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 59,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#3",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 2,
+              "widestLine": 444,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 50,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#4",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 2,
+              "widestLine": 451.45,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 71,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#5",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 3,
+              "widestLine": 445.11,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 95,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#6",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 3,
+              "widestLine": 444,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 89,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#7",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 1,
+              "widestLine": 252,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 21,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            }
+          ]
+        },
+        "1600": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "section.fsec",
+          "noteCount": 8,
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [
+              "feeds/#0",
+              "feeds/#1",
+              "feeds/#2",
+              "feeds/#3",
+              "feeds/#4",
+              "feeds/#5",
+              "feeds/#6",
+              "feeds/#7"
+            ],
+            "R3": [
+              "feeds/#0",
+              "feeds/#1",
+              "feeds/#2",
+              "feeds/#3",
+              "feeds/#4",
+              "feeds/#5",
+              "feeds/#6",
+              "feeds/#7"
+            ],
+            "R4": [
+              "feeds/#0",
+              "feeds/#1",
+              "feeds/#2",
+              "feeds/#3",
+              "feeds/#4",
+              "feeds/#5",
+              "feeds/#6",
+              "feeds/#7"
+            ]
+          },
+          "notes": [
+            {
+              "key": "feeds/#0",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 3,
+              "widestLine": 443.2,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 98,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#1",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 3,
+              "widestLine": 448.92,
+              "glyphRects": 7,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 129,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#2",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 2,
+              "widestLine": 451.67,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 59,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#3",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 2,
+              "widestLine": 444,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 50,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#4",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 2,
+              "widestLine": 451.45,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 71,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#5",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 3,
+              "widestLine": 445.11,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 95,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#6",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 3,
+              "widestLine": 444,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 89,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "feeds/#7",
+              "boxWidth": 1380,
+              "textArea": 452.81,
+              "textAreaStrict": 452.81,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328123,
+              "lineCount": 1,
+              "widestLine": 252,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 21,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "route": "need/free-tier/",
+      "family": "wide",
+      "overflow390": {
+        "clientWidth": 390,
+        "scrollWidth": 2486
+      },
+      "overflowViolation": true,
+      "viewport": {
+        "360": {
+          "column": 328,
+          "threshold": 278.8,
+          "regionSel": "ul.lsum",
+          "noteCount": 3,
+          "codes": [
+            "note-clipped",
+            "note-clipped",
+            "page-overflow@360"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "need/free-tier/#0",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 2470.36,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 217,
+              "inkScope": false,
+              "rounds": [],
+              "clipped": true
+            },
+            {
+              "key": "need/free-tier/#1",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 61.64,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 6,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "need/free-tier/#2",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 1047.52,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 91,
+              "inkScope": false,
+              "rounds": [],
+              "clipped": true
+            }
+          ]
+        },
+        "760": {
+          "column": 728,
+          "threshold": 618.8,
+          "regionSel": "ul.lsum",
+          "noteCount": 3,
+          "codes": [
+            "note-clipped",
+            "note-clipped",
+            "page-overflow@760"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "need/free-tier/#0",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 2470.36,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 217,
+              "inkScope": true,
+              "rounds": [],
+              "clipped": true
+            },
+            {
+              "key": "need/free-tier/#1",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 61.64,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 6,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "need/free-tier/#2",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 1047.52,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 91,
+              "inkScope": true,
+              "rounds": [],
+              "clipped": true
+            }
+          ]
+        },
+        "1440": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "ul.lsum",
+          "noteCount": 3,
+          "codes": [
+            "note-clipped",
+            "page-overflow@1440"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "need/free-tier/#0",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 2470.36,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 217,
+              "inkScope": true,
+              "rounds": [],
+              "clipped": true
+            },
+            {
+              "key": "need/free-tier/#1",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 61.64,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 6,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "need/free-tier/#2",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 1047.52,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 91,
+              "inkScope": true,
+              "rounds": []
+            }
+          ]
+        },
+        "1600": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "ul.lsum",
+          "noteCount": 3,
+          "codes": [
+            "note-clipped",
+            "page-overflow@1600"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "need/free-tier/#0",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 2470.36,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 217,
+              "inkScope": true,
+              "rounds": [],
+              "clipped": true
+            },
+            {
+              "key": "need/free-tier/#1",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 61.64,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 6,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "need/free-tier/#2",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 1047.52,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 91,
+              "inkScope": true,
+              "rounds": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "route": "plans/",
+      "family": "wide",
+      "overflow390": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "overflowViolation": false,
+      "viewport": {
+        "360": {
+          "column": 328,
+          "threshold": 278.8,
+          "regionSel": "ul.plist",
+          "noteCount": 12,
+          "codes": [
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [
+              "plans/#1",
+              "plans/#3",
+              "plans/#5",
+              "plans/#6",
+              "plans/#7",
+              "plans/#8",
+              "plans/#10",
+              "plans/#11"
+            ],
+            "R3": [
+              "plans/#1",
+              "plans/#3",
+              "plans/#5",
+              "plans/#6",
+              "plans/#7",
+              "plans/#8",
+              "plans/#10",
+              "plans/#11"
+            ],
+            "R4": [
+              "plans/#1",
+              "plans/#3",
+              "plans/#5",
+              "plans/#6",
+              "plans/#7",
+              "plans/#8",
+              "plans/#10",
+              "plans/#11"
+            ]
+          },
+          "notes": [
+            {
+              "key": "plans/#0",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 8,
+              "widestLine": 192.23,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 121,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "plans/#1",
+              "boxWidth": 302,
+              "textArea": 102,
+              "textAreaStrict": 102,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 0.920732,
+              "ratioText": 0.310976,
+              "lineCount": 5,
+              "widestLine": 288.3,
+              "glyphRects": 6,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 66,
+              "inkScope": false,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#2",
+              "boxWidth": 302,
+              "textArea": 302,
+              "textAreaStrict": 302,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 0.920732,
+              "ratioText": 0.920732,
+              "lineCount": 2,
+              "widestLine": 192.67,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 46,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "plans/#3",
+              "boxWidth": 302,
+              "textArea": 102,
+              "textAreaStrict": 102,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 0.920732,
+              "ratioText": 0.310976,
+              "lineCount": 7,
+              "widestLine": 288.25,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 92,
+              "inkScope": false,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#4",
+              "boxWidth": 302,
+              "textArea": 302,
+              "textAreaStrict": 302,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 0.920732,
+              "ratioText": 0.920732,
+              "lineCount": 1,
+              "widestLine": 160.45,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 18,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "plans/#5",
+              "boxWidth": 302,
+              "textArea": 102,
+              "textAreaStrict": 102,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 0.920732,
+              "ratioText": 0.310976,
+              "lineCount": 6,
+              "widestLine": 296,
+              "glyphRects": 7,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 79,
+              "inkScope": false,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#6",
+              "boxWidth": 302,
+              "textArea": 102,
+              "textAreaStrict": 102,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 0.920732,
+              "ratioText": 0.310976,
+              "lineCount": 4,
+              "widestLine": 296,
+              "glyphRects": 6,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 63,
+              "inkScope": false,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#7",
+              "boxWidth": 302,
+              "textArea": 200,
+              "textAreaStrict": 200,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 0.920732,
+              "ratioText": 0.609756,
+              "lineCount": 2,
+              "widestLine": 202.61,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 32,
+              "inkScope": false,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#8",
+              "boxWidth": 302,
+              "textArea": 102,
+              "textAreaStrict": 102,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 0.920732,
+              "ratioText": 0.310976,
+              "lineCount": 5,
+              "widestLine": 248,
+              "glyphRects": 6,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 67,
+              "inkScope": false,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#9",
+              "boxWidth": 302,
+              "textArea": 302,
+              "textAreaStrict": 302,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 0.920732,
+              "ratioText": 0.920732,
+              "lineCount": 1,
+              "widestLine": 121.05,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 12,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "plans/#10",
+              "boxWidth": 328,
+              "textArea": 128,
+              "textAreaStrict": 128,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.390244,
+              "lineCount": 4,
+              "widestLine": 273.25,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 53,
+              "inkScope": false,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#11",
+              "boxWidth": 328,
+              "textArea": 128,
+              "textAreaStrict": 128,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.390244,
+              "lineCount": 4,
+              "widestLine": 272,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 35,
+              "inkScope": false,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            }
+          ]
+        },
+        "760": {
+          "column": 728,
+          "threshold": 618.8,
+          "regionSel": "ul.plist",
+          "noteCount": 12,
+          "codes": [
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [
+              "plans/#1",
+              "plans/#3",
+              "plans/#5",
+              "plans/#6",
+              "plans/#7",
+              "plans/#8",
+              "plans/#10",
+              "plans/#11"
+            ],
+            "R3": [
+              "plans/#1",
+              "plans/#3",
+              "plans/#5",
+              "plans/#6",
+              "plans/#7",
+              "plans/#8",
+              "plans/#10",
+              "plans/#11"
+            ],
+            "R4": [
+              "plans/#0",
+              "plans/#1",
+              "plans/#2",
+              "plans/#3",
+              "plans/#5",
+              "plans/#6",
+              "plans/#7",
+              "plans/#8",
+              "plans/#10",
+              "plans/#11"
+            ]
+          },
+          "notes": [
+            {
+              "key": "plans/#0",
+              "boxWidth": 728,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 8,
+              "widestLine": 192.23,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 121,
+              "inkScope": true,
+              "rounds": [
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#1",
+              "boxWidth": 702,
+              "textArea": 502,
+              "textAreaStrict": 502,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.964286,
+              "ratioText": 0.68956,
+              "lineCount": 4,
+              "widestLine": 315.61,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 66,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#2",
+              "boxWidth": 702,
+              "textArea": 702,
+              "textAreaStrict": 702,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.964286,
+              "ratioText": 0.964286,
+              "lineCount": 2,
+              "widestLine": 192.67,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 46,
+              "inkScope": true,
+              "rounds": [
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#3",
+              "boxWidth": 702,
+              "textArea": 502,
+              "textAreaStrict": 502,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.964286,
+              "ratioText": 0.68956,
+              "lineCount": 5,
+              "widestLine": 397.14,
+              "glyphRects": 6,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 92,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#4",
+              "boxWidth": 702,
+              "textArea": 702,
+              "textAreaStrict": 702,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.964286,
+              "ratioText": 0.964286,
+              "lineCount": 1,
+              "widestLine": 160.45,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 18,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "plans/#5",
+              "boxWidth": 702,
+              "textArea": 502,
+              "textAreaStrict": 502,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.964286,
+              "ratioText": 0.68956,
+              "lineCount": 5,
+              "widestLine": 332,
+              "glyphRects": 6,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 79,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#6",
+              "boxWidth": 702,
+              "textArea": 502,
+              "textAreaStrict": 502,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.964286,
+              "ratioText": 0.68956,
+              "lineCount": 4,
+              "widestLine": 308,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 63,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#7",
+              "boxWidth": 702,
+              "textArea": 200,
+              "textAreaStrict": 200,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.964286,
+              "ratioText": 0.274725,
+              "lineCount": 2,
+              "widestLine": 202.61,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 32,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#8",
+              "boxWidth": 702,
+              "textArea": 502,
+              "textAreaStrict": 502,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.964286,
+              "ratioText": 0.68956,
+              "lineCount": 5,
+              "widestLine": 248,
+              "glyphRects": 6,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 67,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#9",
+              "boxWidth": 702,
+              "textArea": 702,
+              "textAreaStrict": 702,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.964286,
+              "ratioText": 0.964286,
+              "lineCount": 1,
+              "widestLine": 121.05,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 12,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "plans/#10",
+              "boxWidth": 728,
+              "textArea": 528,
+              "textAreaStrict": 528,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.725275,
+              "lineCount": 4,
+              "widestLine": 273.25,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 53,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#11",
+              "boxWidth": 728,
+              "textArea": 528,
+              "textAreaStrict": 528,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.725275,
+              "lineCount": 4,
+              "widestLine": 272,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 35,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            }
+          ]
+        },
+        "1440": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "ul.plist",
+          "noteCount": 12,
+          "codes": [
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [
+              "plans/#1",
+              "plans/#3",
+              "plans/#5",
+              "plans/#6",
+              "plans/#7",
+              "plans/#8"
+            ],
+            "R3": [
+              "plans/#0",
+              "plans/#1",
+              "plans/#2",
+              "plans/#3",
+              "plans/#5",
+              "plans/#6",
+              "plans/#7",
+              "plans/#8",
+              "plans/#10",
+              "plans/#11"
+            ],
+            "R4": [
+              "plans/#0",
+              "plans/#1",
+              "plans/#2",
+              "plans/#3",
+              "plans/#5",
+              "plans/#6",
+              "plans/#7",
+              "plans/#8",
+              "plans/#10",
+              "plans/#11"
+            ]
+          },
+          "notes": [
+            {
+              "key": "plans/#0",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 8,
+              "widestLine": 192.23,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 121,
+              "inkScope": true,
+              "rounds": [
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#1",
+              "boxWidth": 1354,
+              "textArea": 1154,
+              "textAreaStrict": 1154,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.836232,
+              "lineCount": 4,
+              "widestLine": 315.61,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 66,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#2",
+              "boxWidth": 1354,
+              "textArea": 1354,
+              "textAreaStrict": 1354,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.981159,
+              "lineCount": 2,
+              "widestLine": 192.67,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 46,
+              "inkScope": true,
+              "rounds": [
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#3",
+              "boxWidth": 1354,
+              "textArea": 1154,
+              "textAreaStrict": 1154,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.836232,
+              "lineCount": 5,
+              "widestLine": 397.14,
+              "glyphRects": 6,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 92,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#4",
+              "boxWidth": 1354,
+              "textArea": 1354,
+              "textAreaStrict": 1354,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.981159,
+              "lineCount": 1,
+              "widestLine": 160.45,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 18,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "plans/#5",
+              "boxWidth": 1354,
+              "textArea": 1154,
+              "textAreaStrict": 1154,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.836232,
+              "lineCount": 5,
+              "widestLine": 332,
+              "glyphRects": 6,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 79,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#6",
+              "boxWidth": 1354,
+              "textArea": 1154,
+              "textAreaStrict": 1154,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.836232,
+              "lineCount": 4,
+              "widestLine": 308,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 63,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#7",
+              "boxWidth": 1354,
+              "textArea": 200,
+              "textAreaStrict": 200,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.144928,
+              "lineCount": 2,
+              "widestLine": 202.61,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 32,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#8",
+              "boxWidth": 1354,
+              "textArea": 1154,
+              "textAreaStrict": 1154,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.836232,
+              "lineCount": 5,
+              "widestLine": 248,
+              "glyphRects": 6,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 67,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#9",
+              "boxWidth": 1354,
+              "textArea": 1354,
+              "textAreaStrict": 1354,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.981159,
+              "lineCount": 1,
+              "widestLine": 121.05,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 12,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "plans/#10",
+              "boxWidth": 1380,
+              "textArea": 1180,
+              "textAreaStrict": 1180,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.855072,
+              "lineCount": 4,
+              "widestLine": 273.25,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 53,
+              "inkScope": true,
+              "rounds": [
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#11",
+              "boxWidth": 1380,
+              "textArea": 1180,
+              "textAreaStrict": 1180,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.855072,
+              "lineCount": 4,
+              "widestLine": 272,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 35,
+              "inkScope": true,
+              "rounds": [
+                "R3",
+                "R4"
+              ]
+            }
+          ]
+        },
+        "1600": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "ul.plist",
+          "noteCount": 12,
+          "codes": [
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [
+              "plans/#1",
+              "plans/#3",
+              "plans/#5",
+              "plans/#6",
+              "plans/#7",
+              "plans/#8"
+            ],
+            "R3": [
+              "plans/#0",
+              "plans/#1",
+              "plans/#2",
+              "plans/#3",
+              "plans/#5",
+              "plans/#6",
+              "plans/#7",
+              "plans/#8",
+              "plans/#10",
+              "plans/#11"
+            ],
+            "R4": [
+              "plans/#0",
+              "plans/#1",
+              "plans/#2",
+              "plans/#3",
+              "plans/#5",
+              "plans/#6",
+              "plans/#7",
+              "plans/#8",
+              "plans/#10",
+              "plans/#11"
+            ]
+          },
+          "notes": [
+            {
+              "key": "plans/#0",
+              "boxWidth": 1380,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 8,
+              "widestLine": 192.23,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 121,
+              "inkScope": true,
+              "rounds": [
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#1",
+              "boxWidth": 1354,
+              "textArea": 1154,
+              "textAreaStrict": 1154,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.836232,
+              "lineCount": 4,
+              "widestLine": 315.61,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 66,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#2",
+              "boxWidth": 1354,
+              "textArea": 1354,
+              "textAreaStrict": 1354,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.981159,
+              "lineCount": 2,
+              "widestLine": 192.67,
+              "glyphRects": 2,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 46,
+              "inkScope": true,
+              "rounds": [
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#3",
+              "boxWidth": 1354,
+              "textArea": 1154,
+              "textAreaStrict": 1154,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.836232,
+              "lineCount": 5,
+              "widestLine": 397.14,
+              "glyphRects": 6,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 92,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#4",
+              "boxWidth": 1354,
+              "textArea": 1354,
+              "textAreaStrict": 1354,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.981159,
+              "lineCount": 1,
+              "widestLine": 160.45,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 18,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "plans/#5",
+              "boxWidth": 1354,
+              "textArea": 1154,
+              "textAreaStrict": 1154,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.836232,
+              "lineCount": 5,
+              "widestLine": 332,
+              "glyphRects": 6,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 79,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#6",
+              "boxWidth": 1354,
+              "textArea": 1154,
+              "textAreaStrict": 1154,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.836232,
+              "lineCount": 4,
+              "widestLine": 308,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 63,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#7",
+              "boxWidth": 1354,
+              "textArea": 200,
+              "textAreaStrict": 200,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.144928,
+              "lineCount": 2,
+              "widestLine": 202.61,
+              "glyphRects": 3,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 32,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#8",
+              "boxWidth": 1354,
+              "textArea": 1154,
+              "textAreaStrict": 1154,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.836232,
+              "lineCount": 5,
+              "widestLine": 248,
+              "glyphRects": 6,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 67,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#9",
+              "boxWidth": 1354,
+              "textArea": 1354,
+              "textAreaStrict": 1354,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.981159,
+              "ratioText": 0.981159,
+              "lineCount": 1,
+              "widestLine": 121.05,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 12,
+              "inkScope": true,
+              "rounds": []
+            },
+            {
+              "key": "plans/#10",
+              "boxWidth": 1380,
+              "textArea": 1180,
+              "textAreaStrict": 1180,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.855072,
+              "lineCount": 4,
+              "widestLine": 273.25,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 53,
+              "inkScope": true,
+              "rounds": [
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "plans/#11",
+              "boxWidth": 1380,
+              "textArea": 1180,
+              "textAreaStrict": 1180,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.855072,
+              "lineCount": 4,
+              "widestLine": 272,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 35,
+              "inkScope": true,
+              "rounds": [
+                "R3",
+                "R4"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "route": "status/",
+      "family": "wide",
+      "overflow390": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "overflowViolation": false,
+      "viewport": {
+        "360": {
+          "column": 328,
+          "threshold": 278.8,
+          "regionSel": "div.stable-wrap",
+          "noteCount": 2,
+          "codes": [],
+          "rounds": {
+            "R1": [],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "status/#0",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 8,
+              "widestLine": 327.3,
+              "glyphRects": 16,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 221,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "status/#1",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 3,
+              "widestLine": 316.36,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 65,
+              "inkScope": false,
+              "rounds": []
+            }
+          ]
+        },
+        "760": {
+          "column": 728,
+          "threshold": 618.8,
+          "regionSel": "div.stable-wrap",
+          "noteCount": 2,
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis"
+          ],
+          "rounds": {
+            "R1": [
+              "status/#0",
+              "status/#1"
+            ],
+            "R2": [
+              "status/#0",
+              "status/#1"
+            ],
+            "R3": [
+              "status/#0",
+              "status/#1"
+            ],
+            "R4": [
+              "status/#0",
+              "status/#1"
+            ]
+          },
+          "notes": [
+            {
+              "key": "status/#0",
+              "boxWidth": 452.81,
+              "textArea": 453,
+              "textAreaStrict": 453,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.621992,
+              "ratioText": 0.622253,
+              "lineCount": 6,
+              "widestLine": 449.06,
+              "glyphRects": 14,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 221,
+              "inkScope": true,
+              "rounds": [
+                "R1",
+                "R2",
+                "R3",
+                "R4"
+              ],
+              "axisOff": true
+            },
+            {
+              "key": "status/#1",
+              "boxWidth": 452.81,
+              "textArea": 453,
+              "textAreaStrict": 453,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.621992,
+              "ratioText": 0.622253,
+              "lineCount": 2,
+              "widestLine": 448.36,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 65,
+              "inkScope": true,
+              "rounds": [
+                "R1",
+                "R2",
+                "R3",
+                "R4"
+              ],
+              "axisOff": true
+            }
+          ]
+        },
+        "1440": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "div.stable-wrap",
+          "noteCount": 2,
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis"
+          ],
+          "rounds": {
+            "R1": [
+              "status/#0",
+              "status/#1"
+            ],
+            "R2": [
+              "status/#0",
+              "status/#1"
+            ],
+            "R3": [
+              "status/#0",
+              "status/#1"
+            ],
+            "R4": [
+              "status/#0",
+              "status/#1"
+            ]
+          },
+          "notes": [
+            {
+              "key": "status/#0",
+              "boxWidth": 452.81,
+              "textArea": 453,
+              "textAreaStrict": 453,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.328123,
+              "ratioText": 0.328261,
+              "lineCount": 6,
+              "widestLine": 449.06,
+              "glyphRects": 14,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 221,
+              "inkScope": true,
+              "rounds": [
+                "R1",
+                "R2",
+                "R3",
+                "R4"
+              ],
+              "axisOff": true
+            },
+            {
+              "key": "status/#1",
+              "boxWidth": 452.81,
+              "textArea": 453,
+              "textAreaStrict": 453,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.328123,
+              "ratioText": 0.328261,
+              "lineCount": 2,
+              "widestLine": 448.36,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 65,
+              "inkScope": true,
+              "rounds": [
+                "R1",
+                "R2",
+                "R3",
+                "R4"
+              ],
+              "axisOff": true
+            }
+          ]
+        },
+        "1600": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "div.stable-wrap",
+          "noteCount": 2,
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis"
+          ],
+          "rounds": {
+            "R1": [
+              "status/#0",
+              "status/#1"
+            ],
+            "R2": [
+              "status/#0",
+              "status/#1"
+            ],
+            "R3": [
+              "status/#0",
+              "status/#1"
+            ],
+            "R4": [
+              "status/#0",
+              "status/#1"
+            ]
+          },
+          "notes": [
+            {
+              "key": "status/#0",
+              "boxWidth": 452.81,
+              "textArea": 453,
+              "textAreaStrict": 453,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.328123,
+              "ratioText": 0.328261,
+              "lineCount": 6,
+              "widestLine": 449.06,
+              "glyphRects": 14,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 221,
+              "inkScope": true,
+              "rounds": [
+                "R1",
+                "R2",
+                "R3",
+                "R4"
+              ],
+              "axisOff": true
+            },
+            {
+              "key": "status/#1",
+              "boxWidth": 452.81,
+              "textArea": 453,
+              "textAreaStrict": 453,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.328123,
+              "ratioText": 0.328261,
+              "lineCount": 2,
+              "widestLine": 448.36,
+              "glyphRects": 4,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 65,
+              "inkScope": true,
+              "rounds": [
+                "R1",
+                "R2",
+                "R3",
+                "R4"
+              ],
+              "axisOff": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "route": "student/",
+      "family": "wide",
+      "overflow390": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "overflowViolation": false,
+      "viewport": {
+        "360": {
+          "column": 328,
+          "threshold": 278.8,
+          "regionSel": "ul.lsum",
+          "noteCount": 3,
+          "codes": [
+            "note-narrow",
+            "note-narrow"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [
+              "student/#0",
+              "student/#2"
+            ],
+            "R3": [
+              "student/#0",
+              "student/#2"
+            ],
+            "R4": [
+              "student/#0",
+              "student/#2"
+            ]
+          },
+          "notes": [
+            {
+              "key": "student/#0",
+              "boxWidth": 328,
+              "textArea": 12,
+              "textAreaStrict": 12,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.036585,
+              "lineCount": 25,
+              "widestLine": 328,
+              "glyphRects": 29,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 209,
+              "inkScope": false,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "student/#1",
+              "boxWidth": 328,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 61.64,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 6,
+              "inkScope": false,
+              "rounds": []
+            },
+            {
+              "key": "student/#2",
+              "boxWidth": 328,
+              "textArea": 12,
+              "textAreaStrict": 12,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.036585,
+              "lineCount": 7,
+              "widestLine": 328,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 91,
+              "inkScope": false,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            }
+          ]
+        },
+        "760": {
+          "column": 728,
+          "threshold": 618.8,
+          "regionSel": "ul.lsum",
+          "noteCount": 3,
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-ink-narrow"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [
+              "student/#0",
+              "student/#1",
+              "student/#2"
+            ],
+            "R3": [
+              "student/#0",
+              "student/#1",
+              "student/#2"
+            ],
+            "R4": [
+              "student/#0",
+              "student/#1",
+              "student/#2"
+            ]
+          },
+          "notes": [
+            {
+              "key": "student/#0",
+              "boxWidth": 728,
+              "textArea": 275,
+              "textAreaStrict": 275,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.377747,
+              "lineCount": 6,
+              "widestLine": 596.81,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 209,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "student/#1",
+              "boxWidth": 728,
+              "textArea": 453,
+              "textAreaStrict": 453,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.622253,
+              "lineCount": 1,
+              "widestLine": 61.64,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 6,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "student/#2",
+              "boxWidth": 728,
+              "textArea": 275,
+              "textAreaStrict": 275,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.377747,
+              "lineCount": 4,
+              "widestLine": 488.81,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 91,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            }
+          ]
+        },
+        "1440": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "ul.lsum",
+          "noteCount": 3,
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-ink-narrow"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [
+              "student/#0",
+              "student/#1",
+              "student/#2"
+            ],
+            "R3": [
+              "student/#0",
+              "student/#1",
+              "student/#2"
+            ],
+            "R4": [
+              "student/#0",
+              "student/#1",
+              "student/#2"
+            ]
+          },
+          "notes": [
+            {
+              "key": "student/#0",
+              "boxWidth": 1380,
+              "textArea": 927,
+              "textAreaStrict": 927,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.671739,
+              "lineCount": 6,
+              "widestLine": 596.81,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 209,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "student/#1",
+              "boxWidth": 1380,
+              "textArea": 453,
+              "textAreaStrict": 453,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328261,
+              "lineCount": 1,
+              "widestLine": 61.64,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 6,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "student/#2",
+              "boxWidth": 1380,
+              "textArea": 927,
+              "textAreaStrict": 927,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.671739,
+              "lineCount": 4,
+              "widestLine": 488.81,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 91,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            }
+          ]
+        },
+        "1600": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "ul.lsum",
+          "noteCount": 3,
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-ink-narrow"
+          ],
+          "rounds": {
+            "R1": [],
+            "R2": [
+              "student/#0",
+              "student/#1",
+              "student/#2"
+            ],
+            "R3": [
+              "student/#0",
+              "student/#1",
+              "student/#2"
+            ],
+            "R4": [
+              "student/#0",
+              "student/#1",
+              "student/#2"
+            ]
+          },
+          "notes": [
+            {
+              "key": "student/#0",
+              "boxWidth": 1380,
+              "textArea": 927,
+              "textAreaStrict": 927,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.671739,
+              "lineCount": 6,
+              "widestLine": 596.81,
+              "glyphRects": 8,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 209,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "student/#1",
+              "boxWidth": 1380,
+              "textArea": 453,
+              "textAreaStrict": 453,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.328261,
+              "lineCount": 1,
+              "widestLine": 61.64,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 6,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            },
+            {
+              "key": "student/#2",
+              "boxWidth": 1380,
+              "textArea": 927,
+              "textAreaStrict": 927,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 1,
+              "ratioText": 0.671739,
+              "lineCount": 4,
+              "widestLine": 488.81,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 91,
+              "inkScope": true,
+              "rounds": [
+                "R2",
+                "R3",
+                "R4"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "route": "vendor/ai360/",
+      "family": "wide",
+      "overflow390": {
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      "overflowViolation": false,
+      "viewport": {
+        "360": {
+          "column": 328,
+          "threshold": 278.8,
+          "regionSel": "ul.lsum",
+          "noteCount": 3,
+          "codes": [
+            "note-axis",
+            "note-axis",
+            "note-axis"
+          ],
+          "rounds": {
+            "R1": [
+              "vendor/ai360/#0",
+              "vendor/ai360/#1",
+              "vendor/ai360/#2"
+            ],
+            "R2": [],
+            "R3": [],
+            "R4": []
+          },
+          "notes": [
+            {
+              "key": "vendor/ai360/#0",
+              "boxWidth": 114.8,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 0.35,
+              "ratioText": 1,
+              "lineCount": 10,
+              "widestLine": 114.55,
+              "glyphRects": 16,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 276,
+              "inkScope": false,
+              "rounds": [
+                "R1"
+              ],
+              "axisOff": true
+            },
+            {
+              "key": "vendor/ai360/#1",
+              "boxWidth": 114.8,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 0.35,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 21.57,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 6,
+              "inkScope": false,
+              "rounds": [
+                "R1"
+              ],
+              "axisOff": true
+            },
+            {
+              "key": "vendor/ai360/#2",
+              "boxWidth": 114.8,
+              "textArea": 328,
+              "textAreaStrict": 328,
+              "column": 328,
+              "ch70": 452.81,
+              "ratioBox": 0.35,
+              "ratioText": 1,
+              "lineCount": 5,
+              "widestLine": 113.4,
+              "glyphRects": 9,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 111,
+              "inkScope": false,
+              "rounds": [
+                "R1"
+              ],
+              "axisOff": true
+            }
+          ]
+        },
+        "760": {
+          "column": 728,
+          "threshold": 618.8,
+          "regionSel": "ul.lsum",
+          "noteCount": 3,
+          "codes": [
+            "note-ink-narrow",
+            "note-axis",
+            "note-axis",
+            "note-ink-narrow",
+            "note-axis"
+          ],
+          "rounds": {
+            "R1": [
+              "vendor/ai360/#0",
+              "vendor/ai360/#1",
+              "vendor/ai360/#2"
+            ],
+            "R2": [],
+            "R3": [],
+            "R4": [
+              "vendor/ai360/#0",
+              "vendor/ai360/#2"
+            ]
+          },
+          "notes": [
+            {
+              "key": "vendor/ai360/#0",
+              "boxWidth": 254.8,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.35,
+              "ratioText": 1,
+              "lineCount": 5,
+              "widestLine": 254.43,
+              "glyphRects": 11,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 276,
+              "inkScope": true,
+              "rounds": [
+                "R1",
+                "R4"
+              ],
+              "axisOff": true
+            },
+            {
+              "key": "vendor/ai360/#1",
+              "boxWidth": 254.8,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.35,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 21.57,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 6,
+              "inkScope": true,
+              "rounds": [
+                "R1"
+              ],
+              "axisOff": true
+            },
+            {
+              "key": "vendor/ai360/#2",
+              "boxWidth": 254.8,
+              "textArea": 728,
+              "textAreaStrict": 728,
+              "column": 728,
+              "ch70": 452.81,
+              "ratioBox": 0.35,
+              "ratioText": 1,
+              "lineCount": 2,
+              "widestLine": 254.3,
+              "glyphRects": 6,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 111,
+              "inkScope": true,
+              "rounds": [
+                "R1",
+                "R4"
+              ],
+              "axisOff": true
+            }
+          ]
+        },
+        "1440": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "ul.lsum",
+          "noteCount": 3,
+          "codes": [
+            "note-ink-narrow",
+            "note-axis",
+            "note-axis",
+            "note-axis"
+          ],
+          "rounds": {
+            "R1": [
+              "vendor/ai360/#0",
+              "vendor/ai360/#1",
+              "vendor/ai360/#2"
+            ],
+            "R2": [],
+            "R3": [
+              "vendor/ai360/#0"
+            ],
+            "R4": [
+              "vendor/ai360/#0"
+            ]
+          },
+          "notes": [
+            {
+              "key": "vendor/ai360/#0",
+              "boxWidth": 483,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.35,
+              "ratioText": 1,
+              "lineCount": 3,
+              "widestLine": 481.59,
+              "glyphRects": 9,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 276,
+              "inkScope": true,
+              "rounds": [
+                "R1",
+                "R3",
+                "R4"
+              ],
+              "axisOff": true
+            },
+            {
+              "key": "vendor/ai360/#1",
+              "boxWidth": 483,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.35,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 21.57,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 6,
+              "inkScope": true,
+              "rounds": [
+                "R1"
+              ],
+              "axisOff": true
+            },
+            {
+              "key": "vendor/ai360/#2",
+              "boxWidth": 483,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.35,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 457.06,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 111,
+              "inkScope": true,
+              "rounds": [
+                "R1"
+              ],
+              "axisOff": true
+            }
+          ]
+        },
+        "1600": {
+          "column": 1380,
+          "threshold": 1173,
+          "regionSel": "ul.lsum",
+          "noteCount": 3,
+          "codes": [
+            "note-ink-narrow",
+            "note-axis",
+            "note-axis",
+            "note-axis"
+          ],
+          "rounds": {
+            "R1": [
+              "vendor/ai360/#0",
+              "vendor/ai360/#1",
+              "vendor/ai360/#2"
+            ],
+            "R2": [],
+            "R3": [
+              "vendor/ai360/#0"
+            ],
+            "R4": [
+              "vendor/ai360/#0"
+            ]
+          },
+          "notes": [
+            {
+              "key": "vendor/ai360/#0",
+              "boxWidth": 483,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.35,
+              "ratioText": 1,
+              "lineCount": 3,
+              "widestLine": 481.59,
+              "glyphRects": 9,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 276,
+              "inkScope": true,
+              "rounds": [
+                "R1",
+                "R3",
+                "R4"
+              ],
+              "axisOff": true
+            },
+            {
+              "key": "vendor/ai360/#1",
+              "boxWidth": 483,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.35,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 21.57,
+              "glyphRects": 1,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 6,
+              "inkScope": true,
+              "rounds": [
+                "R1"
+              ],
+              "axisOff": true
+            },
+            {
+              "key": "vendor/ai360/#2",
+              "boxWidth": 483,
+              "textArea": 1380,
+              "textAreaStrict": 1380,
+              "column": 1380,
+              "ch70": 452.81,
+              "ratioBox": 0.35,
+              "ratioText": 1,
+              "lineCount": 1,
+              "widestLine": 457.06,
+              "glyphRects": 5,
+              "rendered": true,
+              "vertical": false,
+              "textLength": 111,
+              "inkScope": true,
+              "rounds": [
+                "R1"
+              ],
+              "axisOff": true
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

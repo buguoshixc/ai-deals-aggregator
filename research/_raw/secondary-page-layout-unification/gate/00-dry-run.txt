@@ -1,0 +1,56 @@
+Gate action: .github/actions/gate/action.yml（49 步 · sha256 d1c4b0df6900edf8…）
+浏览器: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+verify-site.js sha256: 4cae2fb2ab259999…（第 47/48 步的读数只对**这一版**有效）
+日志目录: D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\research\_raw\secondary-page-layout-unification\gate\steps
+
+01. ⊘ Install dependencies  ← 跳过：npm ci 已按 lockfile 装好（本机 worktree 内 node_modules 已就位；本步骤是 CI 的依赖准备，不参与任何判定）
+02. ▶ Validate data (strict)  ← $ node scripts/validate.js --strict
+03. ▶ Reproducibility gate (no value without a source)  ← $ node scripts/tools/check-reproducible.js
+04. ▶ History verify (log consistent with deals.json)  ← $ node scripts/tools/history-verify.js
+05. ▶ Migration verifier (audience provenance backfill)  ← $ node scripts/tools/migrate-audience-verify.js
+06. ▶ Translation gate (drift blocks, pending ages out)  ← $ node scripts/tools/zh-todo.js --check
+07. ▶ Translation self-test  ← $ node scripts/tools/zh-selftest.js
+08. ▶ Expiry self-test  ← $ node scripts/tools/expiry-selftest.js
+09. ▶ Text / cleanText self-test  ← $ node scripts/tools/text-selftest.js
+10. ▶ Source-health self-test  ← $ node scripts/tools/health-selftest.js
+11. ▶ Provenance self-test  ← $ node scripts/tools/provenance-selftest.js
+12. ▶ Deal-history self-test  ← $ node scripts/tools/history-selftest.js
+13. ▶ Change-radar self-test  ← $ node scripts/tools/changes-selftest.js
+14. ▶ Feeds self-test  ← $ node scripts/tools/feeds-selftest.js
+15. ▶ SEO self-test  ← $ node scripts/tools/seo-selftest.js
+16. ▶ Audience self-test  ← $ node scripts/tools/audience-selftest.js
+17. ▶ App-token self-test  ← $ node scripts/tools/app-token-selftest.js
+18. ▶ AI layer self-test  ← $ node scripts/tools/ai-selftest.js
+19. ▶ Collector fixtures (offline replay)  ← $ node scripts/tools/fixture-test.js
+20. ▶ Plans self-test (data + page)  ← $ node scripts/tools/plans-selftest.js
+21. ▶ Plan-history self-test  ← $ node scripts/tools/plan-history-selftest.js
+22. ▶ Deal-plan-links self-test  ← $ node scripts/tools/deal-plan-links-selftest.js
+23. ▶ API-plans self-test (data + page)  ← $ node scripts/tools/api-plans-selftest.js
+24. ▶ API-plans reproducibility (curated → api-plans.json, byte-compare)  ← $ node scripts/tools/check-api-plans-reproducible.js
+25. ▶ API-plan-history verify (log consistent with api-plans.json)  ← $ node scripts/tools/check-api-plan-history.js
+26. ▶ Model-registry self-test (identity + explicit mapping)  ← $ node scripts/tools/models-selftest.js
+27. ▶ Models reproducibility (registry → models.json, byte-compare)  ← $ node scripts/tools/check-models-reproducible.js
+28. ▶ Model-registry links check (explicit mapping only, no similarity)  ← $ node scripts/tools/check-model-registry-links.js
+29. ▶ Coverage report (gap list consistent with data)  ← $ node scripts/tools/coverage-report.js
+30. ▶ Coverage-targets self-test (intent layer + seven derived states)  ← $ node scripts/tools/coverage-targets-selftest.js
+31. ▶ Model-role vocabulary self-test (registry ↔ freshness contract)  ← $ node scripts/tools/model-role-vocabulary-selftest.js
+32. ▶ Freshness self-test (catalogStatus branches)  ← $ node scripts/tools/model-freshness-selftest.js
+33. ▶ Freshness threshold sensitivity (±90 days, baseline invariants)  ← $ node scripts/tools/model-freshness-sensitivity.js
+34. ▶ Assemble site (same path as deploy.yml)  ← $ node scripts/tools/build-local.js
+35. ▶ Models-page self-test (index + detail pages)  ← $ node scripts/tools/models-page-selftest.js --dir=dist
+36. ▶ Plans-hub self-test (/plans/)  ← $ node scripts/tools/planshub-selftest.js --dir=dist
+37. ▶ Vendor-pages self-test (/vendor/)  ← $ node scripts/tools/vendor-page-selftest.js --dir=dist
+38. ▶ Archive self-test (/archive/, synthetic ended/restored fixtures)  ← $ node scripts/tools/archive-selftest.js --dir=dist
+39. ▶ Data-docs self-test (/docs/data/ + /data/index.json)  ← $ node scripts/tools/data-docs-selftest.js --dir=dist
+40. ▶ Analytics self-test (bootstrap count / production guard / provider)  ← $ node scripts/tools/analytics-selftest.js --dir=dist
+41. ▶ Feeds reproducibility (build twice, byte-compare)  ← $ node scripts/tools/check-feeds-reproducible.js --dir=dist
+42. ▶ Plans reproducibility (curated → plans.json, byte-compare)  ← $ node scripts/tools/check-plans-reproducible.js
+43. ▶ Plan-history verify (log consistent with plans.json)  ← $ node scripts/tools/check-plan-history.js
+44. ▶ SEO verification (independent, from dist/)  ← $ node scripts/tools/seo-verify.js
+45. ⊘ Prepare browser for the real-browser gate  ← 跳过：CI 专用：探测 runner 上的浏览器可执行文件并写 GITHUB_OUTPUT/Step Summary；本机浏览器由 DSH_EDGE 指定的 Edge 提供
+46. ⊘ Browser availability decision (never silent)  ← 跳过：CI 专用：把「浏览器不可用」按规则判红并写 Step Summary；该 shell 本身由 check-ci-consistency.js 的 (10) 真实执行守着（本机没有 GITHUB_OUTPUT 语义）
+47. · Real-browser acceptance (verify-site.js)  ← 本次不跑（--only 未选中；--skip-browser 推迟）
+48. · Regression verify (baseline compare)  ← 本次不跑（--only 未选中；--skip-browser 推迟）
+49. ⊘ Gate conclusion  ← 跳过：CI 专用：只把结论写 GitHub Step Summary，不参与判定
+
+本次将执行 43 步 / 共 49 步（其余为 CI 专用、已完成的准备工作或被 --only / --skip-browser 排除）

@@ -1,0 +1,36 @@
+== 1. 标的 scripts/tools/verify-site.js ==
+跑后复量        : fd3c9a3090dca11bbe6c34342505506bb44f4720c39fe4b18f4d7c23481f46d5
+summary.shaAfter: fd3c9a3090dca11bbe6c34342505506bb44f4720c39fe4b18f4d7c23481f46d5  相等=true
+t19 交回值      : fd3c9a3090dca11bbe6c34342505506bb44f4720c39fe4b18f4d7c23481f46d5  相等=true
+targetUnchanged(summary)=true · targetIsT19=true
+字节数          : 510535 B
+mtime           : 2026-10-06T11:33:34.170Z
+
+== 2. 冻结源码（必须逐字未改） ==
+✓ index.html = 8442f14dd397276e67ea71a64aef9f86b59d1f603aa04f15ecfc402056d663b9
+✓ scripts/tools/build-local.js = 264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348
+✓ scripts/lib/page-kinds.js = 8fae98d1d8897a9d024b0cb2d8a5c016efc4c1807c41e63cbc02ab45e7c6b2ed
+✓ scripts/lib/archive.js = 565710a7e6e197d9f369acf3b70c3feefd77413e188856523f16ebdc1429916e
+
+== 3. dist ==
+T0 清单 vs 跑后清单逐字节相同: true（303 行）
+dist 里 mtime 晚于 2026-10-06T13:03:26.430Z 的文件数: 0
+文件数: 303 个（T0 清单行数应相同）
+
+== 4. dist.baseline ==
+文件数 303 · 最新 mtime 2026-10-06T06:27:50.163Z（本轮开始 2026-10-06T13:03:26.430Z 之后被写过的文件数: 0）
+
+== 5. git 工作区（只读） ==
+git status --porcelain -- dist dist.baseline scripts/tools/verify-site.js:
+M scripts/tools/verify-site.js
+git status --porcelain -- research/_raw/secondary-page-layout-unification/t21（应只见本轮的证据文件）:
+?? research/_raw/secondary-page-layout-unification/t21/
+HEAD: 1f225d22625c15702995785394b60185ebd0520b · origin/master: 1f225d22625c15702995785394b60185ebd0520b
+git diff --stat -- scripts/tools/verify-site.js:
+scripts/tools/verify-site.js | 1446 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 1446 insertions(+)
+
+== 6. §22c 页族分类（dist，取自本轮报告 metrics.layoutSweep） ==
+{"total":186,"wide":55,"detail":131,"other":0,"notesChecked":105,"notesJudged":401,"narrow":0,"inkNarrow":0,"union":0,"hiddenText":0,"unrendered":1,"vertical":0,"overflowPages":0,"unclassified":0}
+桌面档作用域: [{"width":1440,"minColumn":1120,"maxColumn":1380,"ch70":[452.81],"inkScope":true},{"width":1600,"minColumn":1120,"maxColumn":1380,"ch70":[452.81],"inkScope":true}]
+样本档作用域: [{"width":760,"minColumn":676,"maxColumn":728,"ch70":[452.81],"inkScope":true},{"width":360,"minColumn":276,"maxColumn":328,"ch70":[452.81],"inkScope":false}]

@@ -1,0 +1,21 @@
+﻿full diff bytes: 55362
+00-baseline-head.txt  45 bytes
+01-before-snote-grep.txt  1213 bytes
+02-seo-selftest.txt  4682 bytes
+03-build-local.txt  24836 bytes
+04-archive-selftest.txt  6702 bytes
+05-validate-strict.txt  4142 bytes
+06-verify-node-e.txt  150 bytes
+07-dist-snote-audit.txt  796 bytes
+08-scope-audit.txt  2547 bytes
+09-baseline-integrity.txt  534 bytes
+10-frozen-string-audit.txt  704 bytes
+11-no-other-snote-rules.txt  516 bytes
+12-final-verify-run.txt  941 bytes
+13-dist-vs-baseline.txt  766 bytes
+14-full-diff.patch  55362 bytes
+15-evidence-manifest.txt  27 bytes
+audit-dist-snote.js  3022 bytes
+audit-frozen-snote.js  1598 bytes
+compare-dist-baseline.js  4942 bytes
+run-final-verify.ps1  2019 bytes

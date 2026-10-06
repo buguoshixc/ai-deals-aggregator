@@ -1,0 +1,43 @@
+﻿T21 计划（14 步）：
+  T0  dist 全树 sha256 清单（跑任何套件之前）
+      $ node research/_raw/secondary-page-layout-unification/build/dist-manifest.cjs --dir=dist --out=research/_raw/secondary-page-layout-unification/t21/dist-before.sha256.txt
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T0-manifest-before.log
+  T1  verify-site --dir=dist（改动后产物：应为 0 失败 / 0 违规码 / 401 条逐条有读数）
+      $ node scripts/tools/verify-site.js --dir=dist --json=research/_raw/secondary-page-layout-unification/t21/geometry/after-verify.json
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T1-dist.log
+  T2  dist 清单复算并与 T0 比对（内存变异零磁盘污染）
+      $ node research/_raw/secondary-page-layout-unification/build/dist-manifest.cjs --dir=dist --out=research/_raw/secondary-page-layout-unification/t21/dist-after.sha256.txt
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T2-manifest-after.log
+  T3  extract-mutations → M1–M12 逐条 JSON（M11 咬 note-ink-narrow、M12 咬 note-hidden-text）
+      $ node research/_raw/secondary-page-layout-unification/mutations-real/extract-mutations.cjs --report=research/_raw/secondary-page-layout-unification/t21/geometry/after-verify.json --mutations=research/_raw/secondary-page-layout-unification/t21/geometry/mutations.json --dir=dist --manifest-before=research/_raw/secondary-page-layout-unification/t21/dist-before.sha256.txt --manifest-after=research/_raw/secondary-page-layout-unification/t21/dist-after.sha256.txt --out-dir=research/_raw/secondary-page-layout-unification/t21/mutations-real --label=t21-dist
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T3-extract-mutations.log
+  T4  verify-site --dir=dist.baseline（改动前产物：必须红）
+      $ node scripts/tools/verify-site.js --dir=dist.baseline --json=research/_raw/secondary-page-layout-unification/t21/mutations-real/M0-baseline.json
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T4-baseline.log
+  T5  extract-m0 → 逐页清单 + 并集码分布
+      $ node research/_raw/secondary-page-layout-unification/mutations-real/extract-m0.cjs --report=research/_raw/secondary-page-layout-unification/t21/mutations-real/M0-baseline.json --exit=undefined --log=research/_raw/secondary-page-layout-unification/t21/logs/T4-baseline.log --dir=dist.baseline --out=research/_raw/secondary-page-layout-unification/t21/mutations-real/M0-baseline-summary.json
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T5-extract-m0.log
+  T6  gate-vs-truth --expect=green（dist：0 条 / 0 页、245 条对照组零误报）
+      $ node research/_raw/secondary-page-layout-unification/geometry/gate-vs-truth.cjs --report=research/_raw/secondary-page-layout-unification/t21/geometry/after-verify.json --expect=green --truth=research/_raw/secondary-page-layout-unification/geometry/truth-401.json --label=t21-green --out=research/_raw/secondary-page-layout-unification/t21/geometry/gate-vs-truth-green.json
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T6-gate-vs-truth-green.log
+  T7  gate-vs-truth --expect=baseline（dist.baseline：156 条 / 48 页逐条相同、零误报）
+      $ node research/_raw/secondary-page-layout-unification/geometry/gate-vs-truth.cjs --report=research/_raw/secondary-page-layout-unification/t21/mutations-real/M0-baseline.json --expect=baseline --truth=research/_raw/secondary-page-layout-unification/geometry/truth-401.json --label=t21-baseline --out=research/_raw/secondary-page-layout-unification/t21/geometry/gate-vs-truth-baseline.json
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T7-gate-vs-truth-baseline.log
+  T8  R3-1 复现：scratch 副本注入 @media (max-width:760px){.snote{display:grid;grid-template-columns:minmax(0,70ch) 1fr}} ⇒ 必须红且命中 note-ink-narrow
+      $ node scripts/tools/verify-site.js --dir=research/_raw/secondary-page-layout-unification/t21/scratch/grid760-changes --json=research/_raw/secondary-page-layout-unification/t21/scratch/grid760-report.json
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T8-scratch-grid760.log
+  T9  对照：同一份副本**不注入** ⇒ 必须绿（证明红来自注入）
+      $ node scripts/tools/verify-site.js --dir=research/_raw/secondary-page-layout-unification/t21/scratch/clean --json=research/_raw/secondary-page-layout-unification/t21/scratch/clean-report.json
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T9-scratch-clean.log
+  T10  字节对账：117 非 HTML sha256 + 186 HTML 去 <style> 逐字节 + 冻结源码 sha
+      $ node diff/nonhtml-sha256.cjs + node diff/before-after-compare.cjs
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T10-byte.log
+  T11  check-ci-consistency --expect-checks=38
+      $ node scripts/tools/check-ci-consistency.js --expect-checks=38
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T11-ci-consistency.log
+  T12  Full Gate 静态步（现场解析 .github/actions/gate/action.yml；--skip-browser 推迟 47/48）
+      $ node research/_raw/secondary-page-layout-unification/gate/run-full-gate.cjs --out=research/_raw/secondary-page-layout-unification/t21/gate/steps --skip-browser
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T12-full-gate-static.log
+  T13  Full Gate --only=47,48（真浏览器两步；合并 summary 并记断言数/失败数）
+      $ node research/_raw/secondary-page-layout-unification/gate/run-full-gate.cjs --out=research/_raw/secondary-page-layout-unification/t21/gate/steps --only=47,48
+      log → research/_raw/secondary-page-layout-unification/t21/logs/T13-full-gate-browser.log

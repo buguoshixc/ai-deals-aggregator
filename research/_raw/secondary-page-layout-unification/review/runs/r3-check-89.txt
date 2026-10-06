@@ -1,0 +1,11 @@
+单行说明总数 351
+① 单行 + 字迹窄（丢掉 lineCount>=2 后 ② 会误报的条数）= 319
+② 单行 + 内容盒窄（① 口径，dist 上不该有）= 0
+③ 单行 + 字迹窄 + 比值 < 0.5 = 183
+④ 单行 + 字迹窄，仅 family=wide = 113
+④ 单行 + 字迹窄，仅 family=detail = 206
+④ 单行 + 字迹窄，仅 family=other = 0
+⑤ 单行 + 字迹窄 + position=first = 56
+⑥ 按 kind 分解：archive-index:5 hub:2 category:10 changes:13 collection:6 data-docs:6 feeds:7 models-index:2 model:206 need:17 plans-hub:11 plans:8 status:1 vendor:25
+
+单行 + 字迹窄 的样例（前 12）：archive/#0(1104.39px/1380) archive/#1(256.36px/1380) archive/#2(256.36px/1380) archive/#3(256.36px/1380) archive/#4(448.28px/1380) category/#1(904.83px/1380) category/agent/#1(61.64px/1380) category/agent/#2(1047.52px/1380) category/api/#1(61.64px/1380) category/api/#2(1047.52px/1380) category/audio/#1(61.64px/1380) category/audio/#2(1047.52px/1380)

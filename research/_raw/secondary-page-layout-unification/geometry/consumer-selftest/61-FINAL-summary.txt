@@ -1,0 +1,5 @@
+S1 合成并集156  verdict=pass  expect=baseline  接受码集合=/^note-(ink-)?narrow$/  条级命中=156  页=48  码分布={"note-narrow":48,"note-ink-narrow":108}  漏判=0  误报=0  条级容器=metrics.layoutNotes  其它码(条级)={"note-axis":156}
+S2 合成只48条  verdict=fail  expect=baseline  接受码集合=/^note-(ink-)?narrow$/  条级命中=48  页=48  码分布={"note-narrow":48}  漏判=108  误报=0  条级容器=metrics.layoutNotes  其它码(条级)={"note-axis":48}
+S3 合成含误报  verdict=fail  expect=baseline  接受码集合=/^note-(ink-)?narrow$/  条级命中=157  页=49  码分布={"note-narrow":49,"note-ink-narrow":108}  漏判=0  误报=1  条级容器=metrics.layoutNotes  其它码(条级)={"note-axis":157}
+R1 真实 M0-after-repair  verdict=pass  expect=baseline  接受码集合=/^note-(ink-)?narrow$/  条级命中=156  页=48  码分布={"note-narrow":156}  漏判=0  误报=0  条级容器=metrics.layoutNotes  其它码(条级)={"note-axis":156}
+R2 真实 after-verify  verdict=pass  expect=green  接受码集合=/^note-(ink-)?narrow$/  条级命中=0  页=0  码分布={}  漏判=156  误报=0  条级容器=metrics.layoutNotes  其它码(条级)={}

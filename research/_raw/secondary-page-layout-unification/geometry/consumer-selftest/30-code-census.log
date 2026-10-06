@@ -1,0 +1,39 @@
+扫描 229 个代码文件（evidence / tools / lib），命中 37 个文件 / 735 行
+  100 行  scripts/tools/verify-site.js  [data-region-missing, leaf-consistency, missing-detail-main, note-axis, note-clipped, note-hidden-text, note-ink-narrow, note-narrow, page-overflow, self-overflow, src-width, unclassified-layout, unexpected-detail-main]  ← 疑似产出侧 4 行
+   77 行  research/_raw/secondary-page-layout-unification/adversary/fixtures/verify-site.no-WIDE_TOL.js  [data-region-missing, leaf-consistency, missing-detail-main, note-axis, note-clipped, note-narrow, page-overflow, self-overflow, src-width, unclassified-layout, unexpected-detail-main]  ← 疑似产出侧 4 行
+   77 行  research/_raw/secondary-page-layout-unification/adversary/fixtures/verify-site.no-wideProblems.js  [data-region-missing, leaf-consistency, missing-detail-main, note-axis, note-clipped, note-narrow, page-overflow, self-overflow, src-width, unclassified-layout, unexpected-detail-main]  ← 疑似产出侧 4 行
+   70 行  research/_raw/secondary-page-layout-unification/adversary/sandbox-pre-t7/scripts/tools/verify-site.js  [data-region-missing, leaf-consistency, missing-detail-main, note-axis, note-clipped, note-narrow, page-overflow, self-overflow, src-width, unclassified-layout, unexpected-detail-main]  ← 疑似产出侧 4 行
+   70 行  research/_raw/secondary-page-layout-unification/recovered/pre-t7/scripts/tools/verify-site.js  [data-region-missing, leaf-consistency, missing-detail-main, note-axis, note-clipped, note-narrow, page-overflow, self-overflow, src-width, unclassified-layout, unexpected-detail-main]  ← 疑似产出侧 4 行
+   70 行  research/_raw/secondary-page-layout-unification/recovered/verify-site.pre-t7.js  [data-region-missing, leaf-consistency, missing-detail-main, note-axis, note-clipped, note-narrow, page-overflow, self-overflow, src-width, unclassified-layout, unexpected-detail-main]  ← 疑似产出侧 4 行
+   59 行  research/_raw/secondary-page-layout-unification/teeth/_scratch/r3-part2.js  [data-region-missing, leaf-consistency, missing-detail-main, note-axis, note-clipped, note-hidden-text, note-ink-narrow, note-narrow, page-overflow, src-width, unclassified-layout, unexpected-detail-main]
+   39 行  research/_raw/secondary-page-layout-unification/teeth/_scratch/new-22c-part2.js  [data-region-missing, leaf-consistency, missing-detail-main, note-axis, note-clipped, note-narrow, page-overflow, src-width, unclassified-layout, unexpected-detail-main]
+   23 行  research/_raw/secondary-page-layout-unification/geometry/make-synthetic-reports.cjs  [data-region-missing, missing-detail-main, note-axis, note-clipped, note-hidden-text, note-ink-narrow, note-narrow, page-overflow, unclassified-layout, unexpected-detail-main]
+   22 行  research/_raw/secondary-page-layout-unification/teeth/_scratch/r3-part1.js  [data-region-missing, missing-detail-main, note-axis, note-clipped, note-hidden-text, note-ink-narrow, note-narrow, page-overflow, unclassified-layout, unexpected-detail-main]
+   19 行  research/_raw/secondary-page-layout-unification/teeth/_scratch/new-22c-part1.js  [data-region-missing, missing-detail-main, note-axis, note-clipped, note-narrow, page-overflow, unclassified-layout, unexpected-detail-main]
+   15 行  research/_raw/secondary-page-layout-unification/mutations-real/extract-m0.cjs  [missing-detail-main, note-axis, note-clipped, note-hidden-text, note-ink-narrow, note-narrow, page-overflow, unclassified-layout, unexpected-detail-main]  ← 疑似产出侧 1 行
+   11 行  research/_raw/secondary-page-layout-unification/geometry/gate-vs-truth.cjs  [note-axis, note-clipped, note-hidden-text, note-ink-narrow, note-narrow]  ← 疑似产出侧 2 行
+   11 行  research/_raw/secondary-page-layout-unification/geometry/wide-probe.cjs  [data-region-missing, note-axis, note-clipped, note-narrow, page-overflow]  ← 疑似产出侧 6 行
+    7 行  research/_raw/secondary-page-layout-unification/adversary/harness.cjs  [data-region-missing, missing-detail-main, note-axis, note-clipped, note-narrow, page-overflow, unclassified-layout, unexpected-detail-main]  ← 疑似产出侧 2 行
+    7 行  research/_raw/secondary-page-layout-unification/geometry/make-table.cjs  [note-axis, note-clipped, note-narrow, page-overflow]
+    6 行  research/_raw/secondary-page-layout-unification/review/audit-r2-report.cjs  [note-axis, note-narrow]
+    6 行  research/_raw/secondary-page-layout-unification/verify/layout-probe.cjs  [data-region-missing, note-clipped, note-narrow]  ← 疑似产出侧 4 行
+    5 行  research/_raw/secondary-page-layout-unification/geometry/make-truth-401.cjs  [note-narrow]
+    4 行  research/_raw/secondary-page-layout-unification/geometry/code-census.cjs  [data-region-missing, leaf-consistency, missing-detail-main, note-axis, note-clipped, note-hidden-text, note-ink-narrow, note-narrow, page-overflow, self-overflow, src-width, unclassified-layout, unexpected-detail-main]
+    4 行  research/_raw/secondary-page-layout-unification/mutations-real/extract-mutations.cjs  [leaf-consistency, note-narrow, page-overflow, src-width]
+    4 行  research/_raw/secondary-page-layout-unification/teeth/_scratch/sweep-samples.cjs  [note-axis, note-clipped, note-narrow, page-overflow]
+    3 行  research/_raw/secondary-page-layout-unification/review/adversarial3.cjs  [note-hidden-text]
+    3 行  research/_raw/secondary-page-layout-unification/review/audit-r3-notes.cjs  [note-narrow]
+    3 行  research/_raw/secondary-page-layout-unification/t3/run-post-repair.cjs  [note-hidden-text, note-ink-narrow, note-narrow]
+    3 行  research/_raw/secondary-page-layout-unification/verify/probe-vs-22c.cjs  [note-axis, note-narrow]
+    2 行  research/_raw/secondary-page-layout-unification/review/adversarial2.cjs  [data-region-missing, note-axis]
+    2 行  research/_raw/secondary-page-layout-unification/review/analyze-report.cjs  [note-narrow]
+    2 行  research/_raw/secondary-page-layout-unification/review/audit-r2-sets.cjs  [note-narrow]
+    2 行  research/_raw/secondary-page-layout-unification/teeth/_scratch/probe-lines.cjs  [note-hidden-text]
+    2 行  research/_raw/secondary-page-layout-unification/teeth/adversarial-replay.cjs  [data-region-missing]
+    2 行  research/_raw/secondary-page-layout-unification/verify/anti-false-green.cjs  [note-axis, note-clipped]
+    1 行  research/_raw/secondary-page-layout-unification/adversary/build-reports.cjs  [note-narrow]
+    1 行  research/_raw/secondary-page-layout-unification/adversary/line-ink-calibration.cjs  [note-narrow]
+    1 行  research/_raw/secondary-page-layout-unification/review/adversarial.cjs  [data-region-missing]
+    1 行  research/_raw/secondary-page-layout-unification/review/make-scratch.cjs  [unclassified-layout]
+    1 行  research/_raw/secondary-page-layout-unification/verify/retained-narrow-probe.cjs  [note-narrow]
+证据：research/_raw/secondary-page-layout-unification/geometry/consumer-selftest/code-census.json

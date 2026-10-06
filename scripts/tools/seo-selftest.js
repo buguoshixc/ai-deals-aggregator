@@ -371,6 +371,65 @@ section('三、门槛函数的分支（shouldGenerateLandingPage）');
 }
 
 /* ------------------------------------------------------------------ */
+section('三′、页面种类的布局族声明（scripts/lib/page-kinds.js 是唯一出处）');
+
+{
+  // 布局族是「一页的正文该长成什么形状」的唯一声明处（宽度本身在 index.html 的共享 <style>）。
+  // 这一节守的是**声明自洽**：进门（每个 kind 都有 layout）+ 值合法（族真的存在）+
+  // 反向完整（没有孤儿族）。三件事缺一件，"声明表"就会重新变成"看起来统一、实际只有一半是真的"。
+  const pageKinds = require('../lib/page-kinds');
+
+  const layoutProblems = pageKinds.assertLayoutDeclarations();
+  check('布局族声明自洽：每个 kind 都有 layout 且落在已定义族内，也没有孤儿族',
+    layoutProblems.length === 0, layoutProblems.slice(0, 3).join('；'));
+
+  check('每个 KIND_TABLE 的 kind 都有 layout，且该 layout 是 LAYOUT_FAMILIES 里真实存在的族',
+    pageKinds.allKinds().every(kind => Object.prototype.hasOwnProperty.call(
+      pageKinds.LAYOUT_FAMILIES, pageKinds.layoutOf(kind))),
+    pageKinds.allKinds()
+      .filter(kind => !Object.prototype.hasOwnProperty.call(pageKinds.LAYOUT_FAMILIES, pageKinds.layoutOf(kind)))
+      .join(', '));
+
+  check('未声明的 kind 没有布局族（layoutOf 返回 null，不回落成某个默认族）',
+    pageKinds.layoutOf('这个-kind-不存在') === null);
+
+  // `prose` 是唯一"当前站点无实例"的族 —— 无实例是**登记过的事实**，不是漏网：
+  // 它写在 LAYOUT_FAMILIES_WITHOUT_INSTANCES 里，而 assertLayoutDeclarations() 会双向反查
+  // （没登记的无实例族 ⇒ 红；登记了却有了实例 ⇒ 那条登记过期，也红）。
+  check('prose 是唯一登记的"当前无实例"族，且它确实没有实例',
+    [...pageKinds.LAYOUT_FAMILIES_WITHOUT_INSTANCES].join(',') === 'prose'
+    && pageKinds.allKinds().every(kind => pageKinds.layoutOf(kind) !== 'prose'),
+    `无实例族=${[...pageKinds.LAYOUT_FAMILIES_WITHOUT_INSTANCES].join(',')}，` +
+    `用到的族=${[...new Set(pageKinds.allKinds().map(kind => pageKinds.layoutOf(kind)))].join(',')}`);
+
+  // 【牙】按同一份声明做两处定向篡改，确认上面那条"零问题"不是恒真。
+  let missingLayoutProblems = null;
+  const savedHomeLayout = pageKinds.KIND_TABLE.home.layout;
+  try {
+    delete pageKinds.KIND_TABLE.home.layout;
+    missingLayoutProblems = pageKinds.assertLayoutDeclarations();
+  } finally {
+    pageKinds.KIND_TABLE.home.layout = savedHomeLayout;
+  }
+  check('【牙】抹掉一个 kind 的 layout → 声明检查变红，且复位后重新为零问题',
+    missingLayoutProblems.some(problem => problem.includes('home'))
+    && pageKinds.assertLayoutDeclarations().length === 0,
+    (missingLayoutProblems || []).slice(0, 2).join('；'));
+
+  let orphanProblems = null;
+  try {
+    pageKinds.LAYOUT_FAMILIES['probe-family'] = { label: 'Probe', summary: '探针族（临时）' };
+    orphanProblems = pageKinds.assertLayoutDeclarations();
+  } finally {
+    delete pageKinds.LAYOUT_FAMILIES['probe-family'];
+  }
+  check('【牙】新加一个没有任何实例的族 → 报成孤儿族，且复位后重新为零问题',
+    orphanProblems.some(problem => problem.includes('probe-family'))
+    && pageKinds.assertLayoutDeclarations().length === 0,
+    (orphanProblems || []).slice(0, 2).join('；'));
+}
+
+/* ------------------------------------------------------------------ */
 section('四、注册表与产物的一致性（用真实数据）');
 
 {

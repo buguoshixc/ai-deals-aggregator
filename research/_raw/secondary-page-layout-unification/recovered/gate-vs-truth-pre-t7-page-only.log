@@ -1,0 +1,10 @@
+核对：research/_raw/secondary-page-layout-unification/recovered/pre-t7-M0-baseline.json × research/_raw/secondary-page-layout-unification/geometry/truth-401.json
+容器：条级 （无） · 页级 metrics.layoutViolations · 条级为必需项：false
+真值：窄说明 156 条 / 48 页 · 对照组 245 条
+实测：窄说明 （无条级） 条 / 48 页 · layoutSweep {"total":186,"wide":55,"detail":131,"other":0,"notesChecked":105,"narrowNotes":48,"overflowPages":0,"unexpectedDetailMain":0,"missingDetailMain":0,"unclassified":0}
+页集合：为空 = false
+漏判：0 条 / 0 页
+（基线轮的读法：真值的 156 条里没被命中的才是漏判）
+误报（对照组成员被报成窄）：0 条
+✅ 结论：pass（expect=baseline）· 报告里**没有**条级容器（只有 metrics.layoutViolations）⇒ 只能核对页集合。若新判据能逐条报，请把它写进 metrics 的某个数组（元素含 route/index/codes），这里会自动发现。
+证据：research/_raw/secondary-page-layout-unification/recovered/gate-vs-truth-pre-t7-page-only.json

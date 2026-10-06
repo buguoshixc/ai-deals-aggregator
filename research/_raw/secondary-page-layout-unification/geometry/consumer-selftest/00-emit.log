@@ -1,0 +1,6 @@
+合成输入（真值：48 条盒宽窄 + 108 条字迹窄 + 245 条对照组）：
+写出 research/_raw/secondary-page-layout-unification/geometry/consumer-selftest/case1-union-156.json · 条级 156 行 · 页级 48 页 · 码分布 {"note-narrow":48,"note-ink-narrow":108}
+写出 research/_raw/secondary-page-layout-unification/geometry/consumer-selftest/case2-narrow-only-48.json · 条级 48 行 · 页级 48 页 · 码分布 {"note-narrow":48}
+写出 research/_raw/secondary-page-layout-unification/geometry/consumer-selftest/case3-false-positive.json · 条级 157 行 · 页级 49 页 · 码分布 {"note-narrow":49,"note-ink-narrow":108}
+误报选点：archive/#0（对照组 alreadyFine 的第 1 条）
+接受码集合：/^note-(ink-)?narrow$/

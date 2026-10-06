@@ -1,0 +1,15 @@
+探针：dist.baseline（label=smoke）· 页面 186 个 · 导航 6 次 · JS 错误 0
+样本推导：deal：deal/017bdbc04e70/（id 在 deals.json 里） · model：models/360zhinao-pro/（slug 在 models.json 里） · category：category/agent/（在 sitemap.xml 里） · vendor：vendor/ai360/（在 sitemap.xml 里） · archive-detail：产物里没有可用路由（跳过，如实记录）
+样本集 1 个：status/
+
+页面                      @vw   main宽   数据区   顶部说明  底部说明  说明left..right       ratio   scrollW  码                                      
+status/                   1440  1380     1380     452.81px  452.81px  30..482.81            0.328   1440     note-narrow,note-axis                   
+status/                   1280  1240     1240     452.81px  452.81px  20..472.81            0.365   1280     note-narrow,note-axis                   
+status/                   1024  984      984      452.81px  452.81px  20..472.81            0.460   1024     note-narrow,note-axis                   
+status/                   760   728      728      452.81px  452.81px  16..468.81            0.622   760      note-narrow,note-axis                   
+status/                   390   358      495.39   358px     358px     16..374               1.000   390      无                                      
+status/                   360   328      495.39   328px     328px     16..344               1.000   360      无                                      
+
+全站扫描：0 页 · 违规页 0 · 违规码计数 {}
+样本违规：4 条
+❌ 探针结论：4 处违规码

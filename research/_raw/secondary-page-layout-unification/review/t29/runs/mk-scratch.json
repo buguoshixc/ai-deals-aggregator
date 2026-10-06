@@ -1,0 +1,28 @@
+{
+  "distFiles": 303,
+  "info": {
+    "key": {
+      "frozenCount": 1,
+      "notes": 12,
+      "emptyNoscript": 12,
+      "nonEmptyNoscript": 12,
+      "fontZero": true
+    },
+    "key-mixed": {
+      "frozenCount": 1,
+      "notes": 12,
+      "emptyNoscript": 0,
+      "nonEmptyNoscript": 12,
+      "fontZero": true
+    },
+    "bare-fs0-plans": {
+      "frozenCount": 1,
+      "notes": 12,
+      "emptyNoscript": 0,
+      "nonEmptyNoscript": 0,
+      "fontZero": true
+    }
+  },
+  "cleanByteIdentical": true,
+  "distUntouched": true
+}

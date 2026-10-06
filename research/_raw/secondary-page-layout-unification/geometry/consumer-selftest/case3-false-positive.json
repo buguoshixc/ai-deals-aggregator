@@ -1,0 +1,6276 @@
+{
+  "target": "http://127.0.0.1:0/（合成夹具，无浏览器）",
+  "generatedAt": "2026-10-06T13:11:33.623Z",
+  "synthetic": true,
+  "syntheticNote": "t18 合成输入（t25 起按**实测码分布**取样）：case3-false-positive。真值来源 research/_raw/secondary-page-layout-unification/geometry/truth-401.json；码分布来源 research/_raw/secondary-page-layout-unification/geometry/attribution-census.json（实测：156 条都带 note-narrow，其中 108 条多行的同时带 note-ink-narrow；⚠️ 不是「48 盒宽 + 108 字迹」的划分）",
+  "total": 842,
+  "failed": 49,
+  "metrics": {
+    "layoutNotes": [
+      {
+        "route": "category/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/agent/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/api/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/audio/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/chat/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/image/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "developer/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "free-api/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/ai-coding/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/china-usable/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/dev-credits/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/edu-identity/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-api/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-model/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-tier/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-tokens/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/no-card/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/student-only/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "status/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "student/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/ai360/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/aliyun/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/anthropic/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/aws/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/baichuan/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/baidu-ai-cloud/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/coze/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/cursor/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/deepseek/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/github/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/google/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/iflytek/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/microsoft/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/minimax/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/moonshot/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/notion/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/openai/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/replit/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/sensetime/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/siliconflow/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/stepfun/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/tencent-cloud/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/volcengine/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/windsurf/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/zhipu/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/agent/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/agent/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/api/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/api/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/audio/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/audio/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/chat/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/chat/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/image/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/image/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 3,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 4,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 5,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 6,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 7,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 8,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 9,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 10,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 11,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 12,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "developer/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "developer/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 3,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 4,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 5,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 6,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 7,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "free-api/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "free-api/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/ai-coding/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/ai-coding/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/china-usable/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/china-usable/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/dev-credits/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/dev-credits/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/edu-identity/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/edu-identity/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-api/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-api/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-model/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-model/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-tier/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-tier/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-tokens/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-tokens/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/no-card/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/no-card/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/student-only/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/student-only/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "status/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "student/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "student/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/ai360/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/ai360/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/aliyun/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/aliyun/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/anthropic/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/anthropic/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/aws/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/aws/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/baichuan/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/baichuan/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/baidu-ai-cloud/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/baidu-ai-cloud/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/coze/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/coze/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/cursor/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/cursor/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/deepseek/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/deepseek/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/github/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/github/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/google/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/google/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/iflytek/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/iflytek/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/microsoft/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/microsoft/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/minimax/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/minimax/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/moonshot/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/moonshot/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/notion/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/notion/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/openai/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/openai/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/replit/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/replit/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/sensetime/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/sensetime/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/siliconflow/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/siliconflow/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/stepfun/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/stepfun/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/tencent-cloud/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/tencent-cloud/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/volcengine/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/volcengine/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/windsurf/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/windsurf/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/zhipu/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/zhipu/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "archive/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 1380,
+        "textWidth": 1380,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      }
+    ],
+    "layoutNotesAt1600": [
+      {
+        "route": "category/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/agent/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/api/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/audio/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/chat/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/image/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "developer/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "free-api/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/ai-coding/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/china-usable/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/dev-credits/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/edu-identity/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-api/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-model/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-tier/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-tokens/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/no-card/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/student-only/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "status/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "student/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/ai360/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/aliyun/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/anthropic/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/aws/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/baichuan/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/baidu-ai-cloud/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/coze/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/cursor/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/deepseek/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/github/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/google/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/iflytek/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/microsoft/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/minimax/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/moonshot/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/notion/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/openai/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/replit/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/sensetime/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/siliconflow/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/stepfun/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/tencent-cloud/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/volcengine/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/windsurf/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/zhipu/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/agent/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/agent/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/api/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/api/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/audio/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/audio/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/chat/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/chat/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/image/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "category/image/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 3,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 4,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 5,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 6,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 7,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 8,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 9,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 10,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 11,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "changes/",
+        "index": 12,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "developer/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "developer/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 3,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 4,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 5,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 6,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "feeds/",
+        "index": 7,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "free-api/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "free-api/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/ai-coding/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/ai-coding/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/china-usable/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/china-usable/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/dev-credits/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/dev-credits/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/edu-identity/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/edu-identity/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-api/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-api/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-model/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-model/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-tier/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-tier/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-tokens/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/free-tokens/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/no-card/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/no-card/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/student-only/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "need/student-only/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "status/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "student/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "student/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/ai360/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/ai360/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/aliyun/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/aliyun/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/anthropic/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/anthropic/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/aws/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/aws/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/baichuan/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/baichuan/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/baidu-ai-cloud/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/baidu-ai-cloud/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/coze/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/coze/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/cursor/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/cursor/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/deepseek/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/deepseek/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/github/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/github/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/google/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/google/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/iflytek/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/iflytek/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/microsoft/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/microsoft/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/minimax/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/minimax/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/moonshot/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/moonshot/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/notion/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/notion/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/openai/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/openai/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/replit/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/replit/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/sensetime/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/sensetime/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/siliconflow/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/siliconflow/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/stepfun/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/stepfun/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/tencent-cloud/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/tencent-cloud/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/volcengine/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/volcengine/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/windsurf/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/windsurf/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/zhipu/",
+        "index": 1,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "vendor/zhipu/",
+        "index": 2,
+        "position": "last",
+        "codes": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 452.81,
+        "textWidth": 452.81,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      },
+      {
+        "route": "archive/",
+        "index": 0,
+        "position": "first",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "kind": "collection",
+        "family": "wide",
+        "regionSel": ".ctable",
+        "column": 1380,
+        "width": 1380,
+        "textWidth": 1380,
+        "ratio": 0.328,
+        "text": "（合成夹具）"
+      }
+    ],
+    "layoutSweep": {
+      "total": 186,
+      "wide": 55,
+      "detail": 131,
+      "other": 0,
+      "notesChecked": 105,
+      "notesJudged": 157,
+      "narrowNotes": 157,
+      "narrowNotePages": 49,
+      "narrowNotesAt1600": 157,
+      "overflowPages": 0,
+      "unexpectedDetailMain": 0,
+      "missingDetailMain": 0,
+      "unclassified": 0,
+      "desktopViewports": [
+        1440,
+        1600
+      ]
+    },
+    "layoutViolations": [
+      {
+        "route": "archive/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "category/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "category/agent/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "category/api/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "category/audio/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "category/chat/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "category/image/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "changes/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "developer/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "feeds/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "free-api/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "need/ai-coding/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "need/china-usable/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "need/dev-credits/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "need/edu-identity/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "need/free-api/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "need/free-model/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "need/free-tier/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "need/free-tokens/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "need/no-card/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "need/student-only/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "status/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "student/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/ai360/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/aliyun/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/anthropic/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/aws/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/baichuan/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/baidu-ai-cloud/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/coze/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/cursor/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/deepseek/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/github/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/google/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/iflytek/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/microsoft/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/minimax/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/moonshot/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/notion/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/openai/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/replit/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/sensetime/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/siliconflow/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/stepfun/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/tencent-cloud/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/volcengine/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/windsurf/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      },
+      {
+        "route": "vendor/zhipu/",
+        "kind": "collection",
+        "family": "wide",
+        "codes": [
+          "note-narrow",
+          "note-axis"
+        ],
+        "noteKeys": [],
+        "noteCount": 1,
+        "regionSel": ".ctable",
+        "column": 1380,
+        "textWidth": 452.81
+      }
+    ]
+  },
+  "checks": []
+}

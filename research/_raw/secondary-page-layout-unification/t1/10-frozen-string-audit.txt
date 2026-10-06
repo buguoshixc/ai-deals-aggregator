@@ -1,0 +1,11 @@
+﻿frozen string occurrences in <style> blocks: 1
+".snote {" rules in <style> blocks: 1
+lines carrying the frozen string: ["    .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }"]
+frozen string in whole document: 1
+body/script untouched? additions are comment+rule only (checked separately by git diff)
+OK: 冻结串逐字一致，且共享 <style> 里只有这一条 .snote 规则（4 空格缩进）
+EXIT=0
+--- .snote.chgwarn retained? ---
+1355: .snote.chgwarn { color: var(--warn, #a35a00); }
+--- .snote rule count in build-local.js (node, authoritative) ---
+residual .snote rules in build-local.js: 0

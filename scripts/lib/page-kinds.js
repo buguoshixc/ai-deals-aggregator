@@ -48,6 +48,32 @@ const DEFAULT_FLOOR = floor(600, 60);
 const DEFAULT_ITEM_LIST = { expect: true, checkRows: true, checkMembers: true, marker: 'item' };
 
 /**
+ * 布局族（Layout Family）——「这一页的正文该长成什么形状」的**唯一出处**。
+ *
+ * ## 为什么要有它
+ *
+ * v3.0 之前，同一件事（页面级说明 `.snote` 该多宽）在 8 个页面壳里各写了一份副本，
+ * 而且分成两种取值：4 份 `max-width: 70ch`（12px 字体下 ≈420px 的窄柱，而主数据区是 1380px），
+ * 4 份 `max-width: none`。**同一条规则 8 份副本、两种取值**正是这个文件要消灭的形态。
+ * 布局族是那个「一处声明」：它说清楚每一类页面的正文该跟随谁；
+ * 具体宽度收进 `index.html` 的共享 `<style>`（一处定义、全站生效，与 `.detail-main` 同一条纪律）。
+ *
+ * ## 三族的区别是「内容列的来源」，不是页面的重要程度
+ *
+ *   · `wide`   —— 数据型页面：页面级说明、表格、列表**同轴**，跟随站点数据容器（`.wrap`）。
+ *                 说明是这一页的导语，不是一篇独立文章 ⇒ 不默认压成阅读列。
+ *   · `detail` —— 单一实体详情：统一的居中内容列 `.detail-main`（1120px）。
+ *   · `prose`  —— 真正的长文阅读列（居中且收窄）。**当前站点无实例**：保留这一族是为了让
+ *                 「将来要加一个长文页」必须显式登记，而不是悄悄落进 `wide` 或 `detail`。
+ *                 "无实例"这件事本身也登记在 `LAYOUT_FAMILIES_WITHOUT_INSTANCES` 里，可被机器反查。
+ */
+const LAYOUT_FAMILIES = {
+  wide: { label: 'Wide Data Page', summary: '数据型页面：页面级说明、表格、列表同轴，跟随站点数据容器' },
+  detail: { label: 'Leaf Detail Page', summary: '单一实体详情：统一的居中内容列（.detail-main）' },
+  prose: { label: 'Prose Page', summary: '真正的长文阅读列（居中且收窄）；当前站点无实例' }
+};
+
+/**
  * 每个 kind 的声明。**顺序即报告的书写顺序**（集合页在前，v3.0 新家族在后）。
  *
  * `label` 只用于报告与报错信息，不参与页面渲染。
@@ -55,6 +81,7 @@ const DEFAULT_ITEM_LIST = { expect: true, checkRows: true, checkMembers: true, m
 const KIND_TABLE = {
   home: {
     label: '首页',
+    layout: 'wide',
     textFloor: floor(3000),
     // 首页的 ListItem 指向**官方页面**（v0.9 起的设计），而可见卡片是折叠卡
     // （一张卡可能覆盖多条优惠）—— 行数与成员对账在首页都不成立，由首页自己的断言守着。
@@ -63,30 +90,35 @@ const KIND_TABLE = {
   },
   collection: {
     label: '专题集合页',
+    layout: 'wide',
     textFloor: DEFAULT_FLOOR,
     itemList: DEFAULT_ITEM_LIST,
     sitemap: { priority: '0.9', changefreq: 'weekly' }
   },
   need: {
     label: '按需求页',
+    layout: 'wide',
     textFloor: DEFAULT_FLOOR,
     itemList: DEFAULT_ITEM_LIST,
     sitemap: { priority: '0.9', changefreq: 'weekly' }
   },
   category: {
     label: '分类页',
+    layout: 'wide',
     textFloor: DEFAULT_FLOOR,
     itemList: DEFAULT_ITEM_LIST,
     sitemap: { priority: '0.9', changefreq: 'weekly' }
   },
   vendor: {
     label: '厂商页',
+    layout: 'wide',
     textFloor: DEFAULT_FLOOR,
     itemList: DEFAULT_ITEM_LIST,
     sitemap: { priority: '0.8', changefreq: 'weekly' }
   },
   hub: {
     label: '目录枢纽页',
+    layout: 'wide',
     // 枢纽页的正文比集合页短（只有导语与子页链接），因此 base 从 500 起（v1.7 起的口径）。
     textFloor: floor(500, 60),
     itemList: { expect: true, checkRows: true, checkMembers: true, marker: 'child' },
@@ -94,6 +126,7 @@ const KIND_TABLE = {
   },
   deal: {
     label: '优惠详情页',
+    layout: 'detail',
     // 详情页只讲一条优惠：下限固定（不随条目数变），与 v1.7 相同。
     textFloor: floor(500),
     itemList: { expect: false, checkRows: true, checkMembers: true, marker: 'item' },
@@ -101,12 +134,14 @@ const KIND_TABLE = {
   },
   status: {
     label: '状态页',
+    layout: 'wide',
     textFloor: floor(600),
     itemList: { expect: false, checkRows: true, checkMembers: true, marker: 'item' },
     sitemap: { priority: '0.3', changefreq: 'daily' }
   },
   changes: {
     label: '变化页',
+    layout: 'wide',
     textFloor: floor(600),
     // 成员集合的**权威判据在构建期的 `lib/changes.js`（`itemListRecords()`）**：
     // 一个记录只出现一次（取最强事件）、不可链接的条目不入列表。
@@ -118,12 +153,14 @@ const KIND_TABLE = {
   },
   feeds: {
     label: '订阅中心',
+    layout: 'wide',
     textFloor: floor(600),
     itemList: { expect: false, checkRows: true, checkMembers: true, marker: 'item' },
     sitemap: { priority: '0.6', changefreq: 'weekly' }
   },
   plans: {
     label: '套餐 / API 计费对比页',
+    layout: 'wide',
     // 与集合页同一条口径：表体空掉必然低于下限。口径文案本身就有一百多字，所以从 600 起步。
     textFloor: floor(600, 60),
     // ItemList 指向**各自的官方定价页**（本站不为每个套餐/模型编详情页），
@@ -134,6 +171,7 @@ const KIND_TABLE = {
   // v2.4 的别名页：noindex，不进 sitemap（priority 保留声明，但 `noindex` 页面不写进去）。
   alias: {
     label: '别名页',
+    layout: 'wide',
     textFloor: DEFAULT_FLOOR,
     itemList: DEFAULT_ITEM_LIST,
     sitemap: { priority: '0.0', changefreq: 'yearly', indexable: false }
@@ -145,6 +183,7 @@ const KIND_TABLE = {
   // 是"资料入口"而不是第三张表，因此正常的正文量比集合页还大一点。
   'plans-hub': {
     label: '套餐资料枢纽',
+    layout: 'wide',
     textFloor: floor(700, 60),
     // 与 hub 同一套：两个入口区块各带一个 `data-child`，ItemList 与它们逐个对账。
     // 成员归属关掉：ItemList 指向**子页**，而 `seo.js` 的成员判据从 `childRoutes` 取 ——
@@ -155,6 +194,7 @@ const KIND_TABLE = {
   // Stage D5：/models/ 模型资料索引。一行 = 一个 registry entry。
   'models-index': {
     label: '模型资料索引',
+    layout: 'wide',
     textFloor: floor(600, 60),
     // ItemList 成员是本站的模型详情页 —— 但成员对账由 `assertPageHonesty` 自己做
     // （seo.js 的成员判据按 `deal/<id>/` 判，模型页上必然对不上，因此这里关掉）。
@@ -164,6 +204,7 @@ const KIND_TABLE = {
   // Stage D6：/models/<slug>/ 模型详情页。详情叶子，与 deal 详情页同级。
   model: {
     label: '模型详情页',
+    layout: 'detail',
     textFloor: floor(700),
     itemList: { expect: false, checkRows: true, checkMembers: false, marker: 'item' },
     sitemap: { priority: '0.7', changefreq: 'weekly' }
@@ -171,6 +212,7 @@ const KIND_TABLE = {
   // Stage F：/archive/ 历史档案索引。它回答"哪些资料结束了"，是入口级页面但内容随历史增长。
   'archive-index': {
     label: '历史档案索引',
+    layout: 'wide',
     textFloor: floor(600, 60),
     itemList: { expect: true, checkRows: true, checkMembers: false, marker: 'item' },
     sitemap: { priority: '0.8', changefreq: 'weekly' }
@@ -179,6 +221,7 @@ const KIND_TABLE = {
   // 因此它比变化页更低（0.6）：它是"追溯用的页面"，不是搜索入口。
   'archive-detail': {
     label: '历史档案详情',
+    layout: 'detail',
     textFloor: floor(600),
     itemList: { expect: false, checkRows: true, checkMembers: false, marker: 'item' },
     sitemap: { priority: '0.6', changefreq: 'monthly' }
@@ -187,6 +230,7 @@ const KIND_TABLE = {
   // 光段落文案就远超 1200 字，因此下限从 1200 起步而不是 600。
   'data-docs': {
     label: '数据文档',
+    layout: 'wide',
     textFloor: floor(1200),
     // Dataset Index 一张表 = 一份数据一行，因此它在场、行数要查；成员是静态 JSON 文件，不是站内条目。
     itemList: { expect: true, checkRows: true, checkMembers: false, marker: 'item' },
@@ -288,6 +332,77 @@ function allKinds() {
 }
 
 /**
+ * kind → 布局族。**未声明返回 null**，不回落成某个"默认族"。
+ *
+ * 与 `kindOfRoute()` 同一条口径：判不出来就是 `null`，调用方必须显式处置。
+ * 回落成 `wide` 会让"新页面家族忘了登记"变成静默的默认值 —— 而那正是本文件存在的理由。
+ */
+function layoutOf(kind) {
+  const spec = kindOf(kind);
+  const layout = spec ? spec.layout : null;
+  return typeof layout === 'string' && layout ? layout : null;
+}
+
+/**
+ * 明确登记「当前站点**没有实例**」的布局族（无实例是设计，不是遗漏）。
+ *
+ * 为什么要单独一个集合，而不是让孤儿族检查对 `prose` 网开一面：
+ * 「没有实例」是一个**要写下来、可被机器核对**的事实 —— 写成常量之后，
+ * ① 新加一个没人用的族仍然会红；② 这个集合本身也会被反查（见 `assertLayoutDeclarations()`
+ * 的第 ③ 步）：哪天 `prose` 真有了实例，这里的登记就过期了，同样要红。
+ * 而"悄悄跳过某个族"的豁免名单做不到这两件事。
+ */
+const LAYOUT_FAMILIES_WITHOUT_INSTANCES = new Set(['prose']);
+
+/**
+ * 布局族声明自洽性检查（门禁用）。**返回问题字符串数组，空数组 = 全过**。
+ *
+ * 三件事（三个方向都要，缺一个就会出现"看起来在守着什么"的假牙）：
+ *   ① 每个 kind 都必须有 `layout` —— 新页面家族不许"不声明"就存在；
+ *   ② 声明的值必须落在 `LAYOUT_FAMILIES` 里 —— 拼错一个字母不许静默通过（正向引用完整性）；
+ *   ③ 族与实例之间不许有第三种状态（反向完整性）：
+ *      · 没有实例、也没登记在 `LAYOUT_FAMILIES_WITHOUT_INSTANCES` 里 ⇒ 孤儿族；
+ *      · 登记成"无实例"却真的有实例 ⇒ 登记过期（`prose` 被启用时必须同步删掉那条登记）。
+ *
+ * 这里**只读声明、不碰产物**：布局宽度在 `index.html` 的共享 `<style>` 里，
+ * 由独立门禁（浏览器套件 / 产物 grep）去核对，本函数不做那件事。
+ */
+function assertLayoutDeclarations() {
+  const problems = [];
+  const used = new Set();
+  const known = Object.keys(LAYOUT_FAMILIES);
+  for (const kind of allKinds()) {
+    const spec = KIND_TABLE[kind];
+    if (!Object.prototype.hasOwnProperty.call(spec, 'layout')) {
+      problems.push(`kind「${kind}」没有声明 layout —— 新页面家族必须显式登记布局族（不许默认落进 wide）`);
+      continue;
+    }
+    const layout = spec.layout;
+    if (!Object.prototype.hasOwnProperty.call(LAYOUT_FAMILIES, layout)) {
+      problems.push(`kind「${kind}」的 layout「${layout}」不在 LAYOUT_FAMILIES 里（合法值：${known.join(' / ')}）`);
+      continue;
+    }
+    used.add(layout);
+  }
+  for (const family of known) {
+    const instanceLess = LAYOUT_FAMILIES_WITHOUT_INSTANCES.has(family);
+    if (used.has(family) && instanceLess) {
+      problems.push(`布局族「${family}」被登记为"当前站点无实例"，但已经有 kind 在使用它 —— 那条登记过期了，请同步删掉（无实例是事实，不是永久豁免）`);
+      continue;
+    }
+    if (!used.has(family) && !instanceLess) {
+      problems.push(`布局族「${family}」（${LAYOUT_FAMILIES[family].label}）没有任何 kind 使用 —— 孤儿族：要么登记实例，要么删掉声明（确实无实例的族请登记进 LAYOUT_FAMILIES_WITHOUT_INSTANCES）`);
+    }
+  }
+  for (const family of LAYOUT_FAMILIES_WITHOUT_INSTANCES) {
+    if (!Object.prototype.hasOwnProperty.call(LAYOUT_FAMILIES, family)) {
+      problems.push(`LAYOUT_FAMILIES_WITHOUT_INSTANCES 里的「${family}」不是已定义的布局族 —— 无实例登记必须指向一个真实存在的族`);
+    }
+  }
+  return problems;
+}
+
+/**
  * 路由集合 → 未声明 kind 的清单（门禁用：**新页面家族必须显式登记**）。
  *
  * 目录页家族（collection / hub 的动态实例）的 kind 随数据走，因此调用方必须通过
@@ -312,6 +427,8 @@ function auditRouteKinds(routes, kindByRoute = null) {
 
 module.exports = {
   KIND_TABLE,
+  LAYOUT_FAMILIES,
+  LAYOUT_FAMILIES_WITHOUT_INSTANCES,
   FIXED_ROUTE_KINDS,
   ROUTE_PATTERNS,
   DEFAULT_FLOOR,
@@ -320,6 +437,8 @@ module.exports = {
   kindOfRoute,
   hasKind,
   kindOf,
+  layoutOf,
+  assertLayoutDeclarations,
   textFloor,
   itemListRule,
   sitemapMeta,

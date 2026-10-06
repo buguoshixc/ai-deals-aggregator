@@ -1,0 +1,104 @@
+{
+  "section22b": {
+    "targetBytes": 37318,
+    "backupBytes": 37318,
+    "sha16Target": "077dc51ef68af7fd",
+    "sha16Backup": "077dc51ef68af7fd",
+    "byteIdentical": true
+  },
+  "checks": {
+    "targetLiterals": 483,
+    "backupLiterals": 481,
+    "removed": [],
+    "added": [
+      "'§22c 未渲染说明：上界断言 —— <noscript> 之外不许有未渲染说明，且 unrenderedNotes 与 note-unrendered 判据一致'",
+      "`§22c ${mutation.id} 承重证明：盒高被压成 0 的条**全部**由 note-unrendered 咬中，且窄柱/字迹/藏字三条判据在它们身上确实看不见`"
+    ]
+  },
+  "tokens": {
+    "ratio": {
+      "target": [
+        "  const WIDE_NOTE_RATIO = 0.85;              // 有字区域宽 ≥ 0.85 × min(主数据区宽, 页面列宽)"
+      ],
+      "backup": [
+        "  const WIDE_NOTE_RATIO = 0.85;              // 有字区域宽 ≥ 0.85 × min(主数据区宽, 页面列宽)"
+      ]
+    },
+    "lineGate": {
+      "target": [
+        "          && note.lineCount >= 2 && note.widestLine < threshold - 0.01) {",
+        "          const lineEvidenceOk = rowsOfInk.length > 0 && rowsOfInk.every(note => note.lineCount >= 2 && note.widestLine > 0);"
+      ],
+      "backup": [
+        "          && note.lineCount >= 2 && note.widestLine < threshold - 0.01) {",
+        "          const lineEvidenceOk = rowsOfInk.length > 0 && rowsOfInk.every(note => note.lineCount >= 2 && note.widestLine > 0);"
+      ]
+    },
+    "inkRule": {
+      "target": 1,
+      "backup": 1
+    },
+    "ch70": {
+      "target": 36,
+      "backup": 36
+    },
+    "noteUnrendered": {
+      "target": 20,
+      "backup": 0
+    },
+    "noscriptSubtree": {
+      "target": 14,
+      "backup": 0
+    }
+  },
+  "pixelApi": {
+    "wholeFileHits": [
+      "取样",
+      null
+    ],
+    "newBlockHits": [],
+    "newBlockDomApi": [
+      "childNodes",
+      "clientWidth",
+      "getClientRects",
+      "nodeType",
+      "textContent"
+    ]
+  },
+  "criterion": {
+    "noteUnrenderedLine": [
+      "'note-axis', 'note-clipped', 'note-hidden-text', 'note-unrendered', 'page-overflow@<vw>', 'data-region-missing'",
+      "push('note-unrendered', `${where} 说明未渲染（盒 ${wideRound(note.box.width)}×${wideRound(note.box.height)}px）`",
+      "unrenderedText: hit('note-unrendered'),",
+      "const wideUnrenderedCodeRows = wideNoteRows1440.filter(row => row.codes.includes('note-unrendered'));",
+      "{ id: 'M13', route: 'docs/data/', width: WIDE_DESKTOP, expect: 'note-unrendered', target: 'extend', expectUnrendered: true,",
+      "const unrenderedKeys = problems.filter(problem => problem.code === 'note-unrendered')"
+    ],
+    "guard": [
+      "if (!note.rendered && note.textLength > 0 && note.glyphRects === 0 && !note.noscriptSubtree) {"
+    ],
+    "noscriptFlag": [
+      "noscriptSubtree: Boolean(el.querySelector('noscript')),",
+      "//      · 它含 <noscript> 子树（noscriptSubtree=true）。",
+      "if (!note.rendered && note.textLength > 0 && note.glyphRects === 0 && !note.noscriptSubtree) {",
+      "+ `却有 ${note.textLength} 字可见正文、零可见字形盒（原始文本 ${note.rawTextLength} 字 · 含 <noscript> ${note.noscriptSubtree}）`",
+      "// 这条上界断言会把合法的 <noscript> 条也算进来（row.noscriptSubtree === undefined ⇒ 误判）。",
+      "noscriptSubtree: note.noscriptSubtree,",
+      "unrenderedNoscript: rows.filter(row => row.unrendered && row.noscriptSubtree).length,",
+      "unrenderedUnexplained: rows.filter(row => row.unrendered && !row.noscriptSubtree).length,",
+      "const wideNoscriptRows = wideUnrenderedRows.filter(row => row.noscriptSubtree);",
+      "const wideUnexplainedRows = wideUnrenderedRows.filter(row => !row.noscriptSubtree);",
+      "&& unrenderedRows.every(note => note.textLength > 0 && note.glyphRects === 0 && !note.noscriptSubtree),",
+      "rawTextLength: 40, noscriptSubtree: false,",
+      "rendered: false, textLength: 40, rawTextLength: 40, noscriptSubtree: false,"
+    ],
+    "noscriptFlagLiteral": "noscriptSubtree: Boolean(el.querySelector('noscript')),",
+    "noscriptUsesInCriterion": [
+      "if (!note.rendered && note.textLength > 0 && note.glyphRects === 0 && !note.noscriptSubtree) {",
+      "&& unrenderedRows.every(note => note.textLength > 0 && note.glyphRects === 0 && !note.noscriptSubtree),"
+    ],
+    "noscriptWhitelistScan": [
+      "* 【noscript】子树**排除**：脚本开启时它的内容按规范不渲染（plans/coding/ 的"
+    ]
+  }
+}

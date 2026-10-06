@@ -1,0 +1,68 @@
+{
+  "skipped": [
+    {
+      "index": 1,
+      "name": "Install dependencies",
+      "status": "skipped",
+      "reason": "npm ci 已按 lockfile 装好（本机 worktree 内 node_modules 已就位；本步骤是 CI 的依赖准备，不参与任何判定）"
+    },
+    {
+      "index": 45,
+      "name": "Prepare browser for the real-browser gate",
+      "status": "skipped",
+      "reason": "CI 专用：探测 runner 上的浏览器可执行文件并写 GITHUB_OUTPUT/Step Summary；本机浏览器由 DSH_EDGE 指定的 Edge 提供"
+    },
+    {
+      "index": 46,
+      "name": "Browser availability decision (never silent)",
+      "status": "skipped",
+      "reason": "CI 专用：把「浏览器不可用」按规则判红并写 Step Summary；该 shell 本身由 check-ci-consistency.js 的 (10) 真实执行守着（本机没有 GITHUB_OUTPUT 语义）"
+    },
+    {
+      "index": 49,
+      "name": "Gate conclusion",
+      "status": "skipped",
+      "reason": "CI 专用：只把结论写 GitHub Step Summary，不参与判定"
+    }
+  ],
+  "step47": {
+    "index": 47,
+    "name": "Real-browser acceptance (verify-site.js)",
+    "run": "node scripts/tools/verify-site.js",
+    "status": "passed",
+    "exitCode": 0,
+    "ms": 95968,
+    "phase": "browser",
+    "verifySiteSha256": "2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e",
+    "runAt": "2026-10-06T15:07:20.760Z",
+    "log": "research/_raw/secondary-page-layout-unification/teeth/_scratch/r6-gate/47-real-browser-acceptance-verify-site-js.txt"
+  },
+  "step48": {
+    "index": 48,
+    "name": "Regression verify (baseline compare)",
+    "run": "node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json",
+    "status": "passed",
+    "exitCode": 0,
+    "ms": 95520,
+    "phase": "browser",
+    "verifySiteSha256": "2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e",
+    "runAt": "2026-10-06T15:07:20.760Z",
+    "log": "research/_raw/secondary-page-layout-unification/teeth/_scratch/r6-gate/48-regression-verify-baseline-compare.txt"
+  },
+  "browserSteps": [
+    "Real-browser acceptance (verify-site.js)",
+    "Regression verify (baseline compare)"
+  ],
+  "identity": {
+    "at": "2026-10-06T15:07:20.760Z",
+    "node": "v24.13.1",
+    "platform": "win32",
+    "gateAction": ".github/actions/gate/action.yml",
+    "gateActionSha256": "d1c4b0df6900edf84e4981d29f997bbfe9914efb5252593a5dc25d270d5f39bc",
+    "verifySite": "scripts/tools/verify-site.js",
+    "verifySiteSha256": "2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e",
+    "dshEdge": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "stepsInAction": 49,
+    "only": "47,48"
+  }
+}

@@ -1,0 +1,21 @@
+===== grid760-changes =====
+total=848 failed=1 exit=undefined
+✗ §22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）
+  detail: 6 条违规码 [changes/#0 note-ink-narrow, changes/#1 note-ink-narrow, changes/#2 note-ink-narrow, changes/#4 note-ink-narrow, changes/#8 note-ink-narrow, changes/#12 note-ink-narrow]：changes/#0 note-ink-narrow：changes/#0 逐行字迹：最宽一行 445.05px < 0.85 × 列宽 —— 盒宽 728px · 内容盒 728px · 行 2 行（最宽一行 445.05px） · 字形盒 2 个 · 列宽 728px · 阈值 618.8px（主数据区 .chgsec 728px / 页面列 728px）；changes/#1 note-ink-narrow：changes/#1 逐行字迹：最宽一行 445.09px < 0.85 × 列宽 —— 盒宽 728px · 内容盒 728px · 行 2 行（最宽一行 445.09px） · 字形盒 2 个 · 列宽 728px · 阈值 618.8px（主数据区 .chgsec 728px / 页面列 728px）；changes/#2 note-ink-narrow：changes/#2 逐行字迹：最宽一行 432px < 0.85 × 列宽 —— 盒宽 728px · 内容盒 728px · 行 2 行（最宽一行 432px） · 字形盒 2 个 · 列宽 728px · 阈值 618.8px（主数据区 .chgsec 728px / 页面列 728px）；changes/#4 note-ink-narrow：changes/#4 逐行字迹：最宽一行 444px < 0.85 × 列宽 —— 盒宽 728px · 内容盒 728px · 行 2 行（最宽一行 444px） · 字形盒 2 个 · 列宽 728px · 阈值 618.8px（主数据区 .chgsec 728px / 页面列 728px）；changes/#8 note-ink-narrow：changes/#8 逐行字迹：最宽一行 444px < 0.85 × 列宽 —— 盒宽 728px · 内容盒 728px · 行 3 行（最宽一行 444px） · 字形盒 3 个 · 列宽 728px · 阈值 618.8px（主数据区 .chgsec 728px / 页面列 728px） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②
+layoutSweep: {"total":186,"wide":55,"detail":131,"other":0,"notesChecked":105,"notesJudged":401,"narrowNotes":0,"narrowNotePages":0,"narrowNotesAt1600":0,"inkScopeDesktopViewports":[{"width":1440,"minColumn":1120,"maxColumn":1380,"ch70":[452.81],"inkScope":true},{"width":1600,"minColumn":1120,"maxColumn":1380,"ch70":[452.81],"inkScope":true}],"inkScopeSampleViewports":[{"width":760,"minColumn":676,"maxColumn":728,"ch70":[452.81],"inkScope":true},{"width":360,"minColumn":276,"maxColumn":328,"ch70":[452.81],"inkScope":false}],"inkNarrowNotes":0,"inkNarrowNotePages":0,"narrowUnionNotes":0,"narrowUnionNotePages":0,"inkNarrowNotesAt1600":0,"hiddenTextNotes":0,"unrenderedNotes":1,"verticalNotes":0,"overflowPages":0,"unexpectedDetailMain":0,"missingDetailMain":0,"unclassified":0,"desktopViewports":[1440,1600]}
+layoutSampleScope: [{"width":760,"minColumn":676,"maxColumn":728,"ch70":[452.81],"inkScope":true},{"width":360,"minColumn":276,"maxColumn":328,"ch70":[452.81],"inkScope":false}]
+changes/ 条数（@1440 容器）：13
+  #0 route=changes/ codes=[] lineCount=1 widestLine=698.09 inkWidth=698.09 column=1380 boxWidth=undefined rendered=true glyphRects=1
+  #1 route=changes/ codes=[] lineCount=1 widestLine=481.09 inkWidth=481.09 column=1380 boxWidth=undefined rendered=true glyphRects=1
+  #2 route=changes/ codes=[] lineCount=1 widestLine=576 inkWidth=576 column=1380 boxWidth=undefined rendered=true glyphRects=1
+  #3 route=changes/ codes=[] lineCount=1 widestLine=451.52 inkWidth=451.52 column=1380 boxWidth=undefined rendered=true glyphRects=1
+  #4 route=changes/ codes=[] lineCount=1 widestLine=816 inkWidth=816 column=1380 boxWidth=undefined rendered=true glyphRects=1
+  #5 route=changes/ codes=[] lineCount=1 widestLine=403.92 inkWidth=403.92 column=1380 boxWidth=undefined rendered=true glyphRects=1
+  #6 route=changes/ codes=[] lineCount=1 widestLine=228 inkWidth=228 column=1380 boxWidth=undefined rendered=true glyphRects=1
+  #7 route=changes/ codes=[] lineCount=1 widestLine=156 inkWidth=156 column=1380 boxWidth=undefined rendered=true glyphRects=1
+  #8 route=changes/ codes=[] lineCount=1 widestLine=936 inkWidth=936 column=1380 boxWidth=undefined rendered=true glyphRects=1
+  #9 route=changes/ codes=[] lineCount=1 widestLine=449.09 inkWidth=449.09 column=1380 boxWidth=undefined rendered=true glyphRects=1
+  #10 route=changes/ codes=[] lineCount=1 widestLine=276.23 inkWidth=276.23 column=1380 boxWidth=undefined rendered=true glyphRects=1
+  #11 route=changes/ codes=[] lineCount=1 widestLine=204.23 inkWidth=204.23 column=1380 boxWidth=undefined rendered=true glyphRects=1
+  #12 route=changes/ codes=[] lineCount=1 widestLine=972.23 inkWidth=972.23 column=1380 boxWidth=undefined rendered=true glyphRects=1
+changes/ 条数（@1600 容器）：13 有码 0

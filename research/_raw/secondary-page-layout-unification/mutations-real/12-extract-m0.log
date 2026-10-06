@@ -1,0 +1,9 @@
+# P6 M0 逐页清单落盘（命中 48 页 / 156 条？页集合与真值逐条比对）
+# $ node research/_raw/secondary-page-layout-unification/mutations-real/extract-m0.cjs --report=research/_raw/secondary-page-layout-unification/mutations-real/M0-baseline.json --exit=1 --log=research/_raw/secondary-page-layout-unification/mutations-real/11-M0-baseline.log --dir=dist.baseline --out=research/_raw/secondary-page-layout-unification/mutations-real/M0-baseline-summary.json
+# at 2026-10-06T08:36:11.147Z · verify-site.js sha256 4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb
+
+M0 反证（--dir=dist.baseline）exit=1 · 断言 842 项失败 27 项（非 §22c 的失败 0 项）
+note-narrow **48 页** · note-axis 48 页 · 溢出 0 页 · unclassified 0
+按族归类：category/*（目录页族） 6 页 · changes 1 页 · （集合页） 3 页 · feeds 1 页 · need/* 10 页 · status 1 页 · vendor/* 26 页
+前 8 个命中页：category/(undefinedpx/undefinedpx) category/agent/(undefinedpx/undefinedpx) category/api/(undefinedpx/undefinedpx) category/audio/(undefinedpx/undefinedpx) category/chat/(undefinedpx/undefinedpx) category/image/(undefinedpx/undefinedpx) changes/(undefinedpx/undefinedpx) developer/(undefinedpx/undefinedpx)
+结论：pass · research/_raw/secondary-page-layout-unification/mutations-real/M0-baseline-summary.json

@@ -1,0 +1,8 @@
+真值清单：research/_raw/secondary-page-layout-unification/geometry/truth-401.json
+总条数 401 · 页数（有说明）105 · 最多 13 条/页
+改动前窄说明 156 条 → 改动后 0 条
+  · 旧口径能逮到（第一条）      **48 条**
+  · 只有新真值才覆盖（第 2 条+）**108 条**
+  · 本来正常（对照组）          245 条（其中 archive/ 5 条）
+不变量：✓ 窄说明 before = 旧口径能逮到 + 只有新真值覆盖 · ✓ 窄说明 after = 0（修复完整） · ✓ 三类之和 = 总条数 · ✓ wide-probe 的 48 页 note-narrow 与这里的 caughtByOldCriteria 页集合逐条一致 · ✓ archive/ 的 5 条（本来正常）留在 alreadyFine 里 · ✓ 含窄说明的页面数 = 旧口径页集合大小（156 条窄说明全部落在那 48 页上）
+sha256 46c28fa120a39ababf25826b86a08e57cf93e242baee8df264219e1d182e346e

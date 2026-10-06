@@ -1,0 +1,6 @@
+当前 scripts/tools/verify-site.js：417988 字节 / 基线 338291 字节
+插入区间 2 段：
+  · 当前文件第 36–38 行（184 字节 / 3 行）首行：// secondary-page-layout-unification（§22c）：布局族的**唯一**真值出处。这里是 require，不是
+  · 当前文件第 6101–7434 行（79513 字节 / 1334 行）首行：§22c Wide Data Page 的页面级说明同轴门禁（布局族 × 全站几何 × 逐条）    */
+删除全部插入区间后：338291 字节 · 与基线逐字节相同 = true
+git diff --numstat HEAD：1337	0	scripts/tools/verify-site.js  ← 第二列是删除行数，必须是 0

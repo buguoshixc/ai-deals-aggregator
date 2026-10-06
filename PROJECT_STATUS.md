@@ -1,6 +1,33 @@
-# AI 优惠聚合器 — 项目状态
+﻿# AI 优惠聚合器 — 项目状态
 
-**最后更新**：2026-10-05（最新一节 **leaf-detail-layout-v1：叶子详情页统一内容列**，分支 `leaf-detail-layout-v1`，已合并 + 已部署 + 线上冒烟通过）
+**最后更新**：2026-10-06（最新一节 **secondary-page-layout-unification：二级页布局统一**，分支 `secondary-page-layout-unification`，**未提交 / 未发布**；门禁读数 = **轮 6 冻结**（判据 sha `2cbc160dc64f8ade…`））
+
+---
+
+## 0.3 secondary-page-layout-unification 状态（2026-10-06）
+
+> **一句话现状**：全站「页面级说明」（`.snote`）原本由 **4 个页面壳压成 452.81px 的窄柱子、另 4 个壳不压**（同一条规则 8 份副本、两种取值），
+> 现在收成**唯一一处定义**（`index.html` 共享 `<style>`，`max-width: none`）；同时建立**机器可读的布局族声明**
+> （`wide` **55** / `detail` **131** / `prose` **0**），并把 `/archive/<kind>/<id>/` 的详情页接入统一内容列。
+> **纯布局版本：数据 / 文案 / 路由 / 结构化数据 0 变化。**
+
+| 维度 | 实测 |
+|---|---|
+| 基线 | `origin/master` = `1f225d2`，worktree `.worktrees/secondary-page-layout-unification`，分支 `secondary-page-layout-unification`（提交区间内 **0** 提交，改动全在工作区） |
+| 根因（产品侧） | 同一条 `.snote` 规则在 8 个页面壳里各写一份、**两种取值**（4×`max-width: 70ch` + 4×`none`）；`70ch` @12px = **452.81px**，而 1440 档正文容器 **1380px** ⇒ 比例 **0.328** |
+| 发现面 | **48 页 / 156 条**说明被压窄（`vendor/*` 26 · `need/*` 10 · `category/*` 6 · `student/`+`developer/`+`free-api/` 3 · `status/`+`changes/`+`feeds/` 各 1）；另有 **81 页**零说明、**57 页**「有说明但从来没被压窄」 |
+| 改动面 | 工作区 **7 个源文件 · +1415 / −9**（产品侧 6 个文件 `+306 / −9`；`verify-site.js` 的 **+1109 / −0** 属门禁侧）：`page-kinds.js`（布局族）· `index.html`（唯一一条 `.snote`）· `build-local.js`（删 8 条副本 + 档案详情接线）· `archive.js` · `archive-selftest.js` · `seo-selftest.js` |
+| 布局族 | `LAYOUT_FAMILIES` 三族 + 18 个 kind 各带 `layout` 字段（`home` 也声明为 `wide`）；产物侧逐页可解析 **wide 55 / detail 131 / other 0**；`assertLayoutDeclarations()` 返回空数组 |
+| 修复后（产物侧，最终证据） | 说明宽 **452.81px → 1380px**（ratio **0.328 → 1.000**）；窄说明 **156 条 → 0 条**、不同轴 **48 页 → 0 页**；页面高度 **47 页变矮 / 12 页不变 / 0 页变高**（min **−224** / median **−122**）；1440/1600/390 三档横向溢出 **0 → 0** |
+| 详情族 | `main.detail-main` **1120px**、居中偏差 **≤1px**（10 个现扫路由）；`/archive/<kind>/<id>/` 今天 **0 个生产实例** ⇒ 用「常量 + 构建期接线 + 断言会响」的**替代性设计约束**闭合 |
+| 数据层 | **零变化**：303→303 文件 · **117/117** 非 HTML 逐字节相同 · **186/186** HTML 剥掉 `<style>` 后正文逐字节相同 · 样式块行集合差 **+9 / −2**（逐行只有 `.snote` 规则与解释注释） |
+| §19/§20 审计 | 六个类名重复度逐条 + **37 条** `max-width` 普查（`ch` 单位 5 条，其中 3 条是测试夹具）+ **6 条**保留窄宽登记；同缺陷残留 **0 处**、未分类 **0**；**本次不动** `.ph2` / `.plist` / `.stop` / `.cstop` / `.ptable*` |
+| 门禁 | **轮 6 冻结读数**（判据 `verify-site.js` sha256 `2cbc160dc64f8ade…`，522527 B / 8058 行）：`--dir=dist` **852 项 / 失败 0** · `--dir=dist.baseline` **852 / 36**（非 §22c 失败 **0**）· 窄柱并集 **156 条 / 48 页**（`note-narrow 156` + `note-ink-narrow 108`，② ⊆ ①）· CI 口径 **38 项 / 失败 0** · Full Gate **49 步 → 执行 45 / 通过 45 / 失败 0 / 跳过 4 · exit 0**（第 47 步 **852** 项 / 第 48 步 **858** 项，**两把不同的计数器**）。六轮门禁修复（t2 → t7 → t14 → t19 → t24 → t28）都只动 `scripts/tools/verify-site.js`；**轮 6 收掉了轮 5 自引入的标记级豁免键（空 `<noscript>` 不再让三牙静默）+ 上界计数改不相交 ⇒ 计数与轮 5 逐项相同，判据 sha 与豁免条件不同**。口径 = 两条判据**取并集**（内容盒 ∪ 逐行字迹宽）+ 未渲染判据；门禁侧根因（判据量的是**代理量**）见报告 §C.5 / §J |
+| CI / Deploy / Online Smoke | **未发生**（PR 尚未创建）⇒ 本节不写任何 CI、Deploy 或线上几何读数；发布后按 `research/_raw/secondary-page-layout-unification/release/checklist.md` 的 S7/S9/S10/S11 回填（发布前终检 = **t23**） |
+
+边界：不改数据 / 文案 / 颜色 / 字体 / 卡片设计 · 不改任何路由与结构化数据 · **不碰** `.ph2` / `.plist` / `.stop` / `.cstop` / `.ptable*`
+（本次故意不动的五组重复布局规则）· **保留**两处有设计理由与实测比例的局部窄宽（`.lsum li small` 34ch = 容器的 **0.895**；`.pdetailbody` 72ch = 单元格的 **0.3377**，登记 P1/DEFERRED）。
+完整报告：[research/secondary-page-layout-unification-report.md](research/secondary-page-layout-unification-report.md)，设计规范补充见 [docs/DESIGN-RULES.md](docs/DESIGN-RULES.md) §6 的 S4 与文末「二级页布局统一」小节。
 
 ---
 
@@ -2465,7 +2492,7 @@ v1.7 SEO，所以我这一侧的数字必须重测而不是直接沿用：
 
 - **没有真实模型精度数字**：没有 key，臂 1/2 是录制响应。有 key 后 `AI_EVAL_LIVE=1` 可补跑，报告里留了位置。
 - **不动前端**：`provenance`/`credibility` 枚举与 deal 记录契约**一个字没改**，
-  AI 痕迹只记在 `scripts/data/ai-applied-log.json`（可追溯、不上前端）。是否在页面标注"AI 协助"留给下一轮。
+  AI 痕迹只记在一份**构建期 AI 参与痕迹日志**里（可追溯、不上前端；**该日志文件今天不在盘上**，本节保留当时的契约描述）。是否在页面标注"AI 协助"留给下一轮。
 - **采集侧的内容字段没有落地通道**：`ai:apply` 只支持六字段（进 overrides）与策展来源的任意字段；
   对采集来源的 `discountInfo` / `validity` 这类字段**明确拒绝**并说明原因 —— 不发明机制。
 - **一键重建 fixture 依赖当时的官方页面**：`npm run fixture:build -- --all` 会随页面变化产生 diff，需人工复核后提交。

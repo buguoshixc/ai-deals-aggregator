@@ -1,0 +1,55 @@
+总条数 401 · 页数 105 · unrendered 1 · vertical 0
+
+[A] 最短单行说明（lineCount=1 且 widestLine 最小）5 条：
+  docs/data/#7 [data-docs/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 36（比值 0.03）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 示例：
+  category/agent/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+  category/api/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+  category/audio/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+  category/chat/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+
+[B] 最长多行说明（lineCount 最大）5 条：
+  vendor/ai360/#0 [vendor/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 3 最宽 1375.98（比值 1）· 字形盒 9 · 竖排 false · unrendered false · codes [-] · 这一页收的是登记在册的同一家厂商的条目：厂商名按站内厂商归一
+  vendor/aliyun/#0 [vendor/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 3 最宽 1375.98（比值 1）· 字形盒 9 · 竖排 false · unrendered false · codes [-] · 这一页收的是登记在册的同一家厂商的条目：厂商名按站内厂商归一
+  vendor/anthropic/#0 [vendor/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 3 最宽 1375.98（比值 1）· 字形盒 9 · 竖排 false · unrendered false · codes [-] · 这一页收的是登记在册的同一家厂商的条目：厂商名按站内厂商归一
+  vendor/aws/#0 [vendor/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 3 最宽 1375.98（比值 1）· 字形盒 9 · 竖排 false · unrendered false · codes [-] · 这一页收的是登记在册的同一家厂商的条目：厂商名按站内厂商归一
+  vendor/baichuan/#0 [vendor/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 3 最宽 1375.98（比值 1）· 字形盒 9 · 竖排 false · unrendered false · codes [-] · 这一页收的是登记在册的同一家厂商的条目：厂商名按站内厂商归一
+
+[C] 别名页（kind=alias）前 3 条：
+    别名页条数 0
+
+[D] archive/ 的全部条目（本来正常，必须在 alreadyFine 里）：
+  archive/#0 [archive-index/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 1104.39（比值 0.8）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 本站的原则是：资料失效不等于资料删除。这里保留已经结束或下线
+  archive/#1 [archive-index/wide] 内容盒 1354/1380（比值 0.98）· 盒 1354 · 行 1 最宽 256.36（比值 0.19）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 结束 0 条 · 恢复 0 条 · 变更记录自 2026-0
+  archive/#2 [archive-index/wide] 内容盒 1354/1380（比值 0.98）· 盒 1354 · 行 1 最宽 256.36（比值 0.19）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 结束 0 条 · 恢复 0 条 · 变更记录自 2026-1
+  archive/#3 [archive-index/wide] 内容盒 1354/1380（比值 0.98）· 盒 1354 · 行 1 最宽 256.36（比值 0.19）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 结束 0 条 · 恢复 0 条 · 变更记录自 2026-1
+  archive/#4 [archive-index/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 448.28（比值 0.32）· 字形盒 10 · 竖排 false · unrendered false · codes [-] · 相关页面： 最近变化 · 套餐与 API 计费资料库 · 模
+
+[E] 未渲染的那条（<noscript>）：
+  plans/coding/#1 [plans/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 0 最宽 0（比值 0）· 字形盒 0 · 竖排 false · unrendered true · codes [-] · 
+
+[F] 单行但内容盒/字迹最窄的 8 条（lineCount=1，最容易误报的一档，必须无码）：
+  docs/data/#7 [data-docs/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 36（比值 0.03）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 示例：
+  category/agent/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+  category/api/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+  category/audio/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+  category/chat/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+  category/image/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+  developer/#1 [collection/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+  free-api/#1 [collection/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+
+[G] 多行但字迹最靠近阈值的 8 条（0.85 边界附近）：
+  category/audio/#0 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 2 最宽 1378.38（比值 1）· 字形盒 6 · 竖排 false · unrendered false · codes [-] · 这一页按分类收条目：数据里的 category 是「音频语音
+  category/chat/#0 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 2 最宽 1374.17（比值 1）· 字形盒 4 · 竖排 false · unrendered false · codes [-] · 这一页按分类收条目：数据里的 category 是「对话模型
+  free-api/#0 [collection/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 2 最宽 1378.95（比值 1）· 字形盒 4 · 竖排 false · unrendered false · codes [-] · 这一页按福利类型收：benefitType 含 free_a
+  need/dev-credits/#1 [need/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 2 最宽 1377.27（比值 1）· 字形盒 8 · 竖排 false · unrendered false · codes [-] · 这一页收的是给开发者的赠金与资源包：适用人群写了「开发者」，
+  need/free-tier/#0 [need/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 2 最宽 1375.06（比值 1）· 字形盒 6 · 竖排 false · unrendered false · codes [-] · 这一页收的是定价模式本身是免费档的条目（数据里的 free 
+  need/free-tokens/#0 [need/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 2 最宽 1373.52（比值 1）· 字形盒 6 · 竖排 false · unrendered false · codes [-] · 这一页按福利类型收：福利类型里写了「免费额度」的条目 —— 
+  need/student-only/#1 [need/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 2 最宽 1375.89（比值 1）· 字形盒 8 · 竖排 false · unrendered false · codes [-] · 这一页收的是来源明确说面向学生的优惠：适用人群写了「学生」、
+  status/#0 [status/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 2 最宽 1376.39（比值 1）· 字形盒 10 · 竖排 false · unrendered false · codes [-] · 这里列出每个采集来源最近一次的结果与跨运行的连续性。为什么要
+
+[H] textFallback 回落条数 41（抽样 5）：
+  category/agent/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+  category/api/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+  category/audio/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+  category/chat/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →
+  category/image/#1 [category/wide] 内容盒 1380/1380（比值 1）· 盒 1380 · 行 1 最宽 61.64（比值 0.04）· 字形盒 1 · 竖排 false · unrendered false · codes [-] · 全部变化 →

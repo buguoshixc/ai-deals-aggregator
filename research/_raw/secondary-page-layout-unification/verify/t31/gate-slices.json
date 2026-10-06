@@ -1,0 +1,878 @@
+{
+  "task": "T31",
+  "at": "2026-10-06T16:01:22.493Z",
+  "route": "category/agent/",
+  "reports": [
+    {
+      "label": "form（注入写作模式形态的 scratch 副本）",
+      "file": "research/_raw/secondary-page-layout-unification/verify/t31/gate-form.json",
+      "suiteExit": "��F\u0000O\u0000R\u0000M\u0000_\u0000E\u0000X\u0000I\u0000T\u0000=\u00001\u0000\r\u0000\n\u0000",
+      "total": 852,
+      "failed": 1,
+      "checkCount": 852,
+      "failingChecks": [
+        {
+          "name": "§22c @360 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+          "detail": "1 条违规码 [category/agent/#0 note-clipped]：category/agent/#0 note-clipped：category/agent/#0 说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+        }
+      ],
+      "s22cChecks": [
+        {
+          "ok": true,
+          "name": "§22c 全站每一页的布局族都能解析（page-kinds.kindOfRoute + layoutOf，数据驱动的静态路由由 kindByRoute 补齐）",
+          "detail": "186 页全部可解析（16 种 kind）· wide 55 / detail 131 / other 0 · unclassified-layout 0 个"
+        },
+        {
+          "ok": true,
+          "name": "§22c 注册表驱动的入口（3 目录页 + 10 按需求页 + 2 枢纽页）在产物里都存在",
+          "detail": "逐条命中（15 条，全部现场推导，不写死 slug）"
+        },
+        {
+          "ok": true,
+          "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+          "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）49 条 · 竖排 3 条 · textFallback 回落 41 条"
+        },
+        {
+          "ok": true,
+          "name": "§22c @1440 全站 186 页都没有横向溢出",
+          "detail": "documentElement.scrollWidth ≤ 视口+1 全部成立"
+        },
+        {
+          "ok": true,
+          "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+          "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）49 条 · 竖排 3 条 · textFallback 回落 41 条"
+        },
+        {
+          "ok": true,
+          "name": "§22c @1600 全站 186 页都没有横向溢出",
+          "detail": "documentElement.scrollWidth ≤ 视口+1 全部成立"
+        },
+        {
+          "ok": true,
+          "name": "§22c 未渲染说明：上界断言 —— 未渲染条要么「可见文本为 0」，要么必须被 note-unrendered 咬中（两类不相交、并集完整、标记不豁免）",
+          "detail": "@1440 未渲染 1 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 0 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 1 条（文本 0 1 · note-unrendered 0 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+        },
+        {
+          "ok": true,
+          "name": "§22c @390 全站 186 页 documentElement.scrollWidth ≤ 视口+1",
+          "detail": "最宽的一页 390px（视口 390）"
+        },
+        {
+          "ok": true,
+          "name": "§22c 布局族一致性：detail 族（131 页）恰好 1 个 main.detail-main、wide 族（55 页）0 个",
+          "detail": "missing-detail-main 0 · unexpected-detail-main 0"
+        },
+        {
+          "ok": true,
+          "name": "§22c 每一页都判得出主数据区（声明选择器或回落 <main>）",
+          "detail": "声明选择器命中 104 页 · 回落 <main> 82 页（<main>（回落）=82 .ctable=45 .chgsec=1 .ptable=55 .flist=1 .pchglist=1 .stable=1）"
+        },
+        {
+          "ok": true,
+          "name": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+          "detail": "186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」"
+        },
+        {
+          "ok": true,
+          "name": "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+          "detail": "0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+        },
+        {
+          "ok": false,
+          "name": "§22c @360 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+          "detail": "1 条违规码 [category/agent/#0 note-clipped]：category/agent/#0 note-clipped：category/agent/#0 说明自身横向溢出 19px（scrollWidth 347 > clientWidth 328） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+        },
+        {
+          "ok": true,
+          "name": "§22c M1–M4 的四个壳（student/ status/ changes/ feeds/）都是 wide 族且带页面级说明",
+          "detail": "student/ collection/wide · .snote 3 条 · status/ status/wide · .snote 2 条 · changes/ changes/wide · .snote 13 条 · feeds/ feeds/wide · .snote 8 条"
+        },
+        {
+          "ok": true,
+          "name": "§22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 3 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [student/#0, student/#1, student/#2] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 2 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [status/#0, status/#1] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 13 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [changes/#0, changes/#1, changes/#2, changes/#3, changes/#4, changes/#5, changes/#6, changes/#7, changes/#8, changes/#9, changes/#10, changes/#11, changes/#12] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ax"
+        },
+        {
+          "ok": true,
+          "name": "§22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis] · 说明 8 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [feeds/#0, feeds/#1, feeds/#2, feeds/#3, feeds/#4, feeds/#5, feeds/#6, feeds/#7] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串"
+        },
+        {
+          "ok": true,
+          "name": "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+          "detail": "期望 page-overflow@390 · 实测 [note-clipped, page-overflow@390] · 说明 3 条 · 首条 盒 358px / 有字区域 358px · detail-main 0 个 · scrollWidth 1118（视口 390） · 不可断串注入位置 note · 窄条 [无] · 违规码 [note-clipped, page-overflow@390]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M7 DOM 注入前提成立（该类原本不存在）",
+          "detail": "注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M7 变异后复测必须出现「unexpected-detail-main」违规码（给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在））",
+          "detail": "期望 unexpected-detail-main · 实测 [unexpected-detail-main] · 说明 2 条 · 首条 盒 1120px / 有字区域 1120px · detail-main 1 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [unexpected-detail-main]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-narrow, note-narrow, note-ink-narrow] · 说明 3 条 · 首条 盒 1380px / 有字区域 452.81px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [student/#0, student/#1, student/#2] · 违规码 [note-narrow, note-ink-narrow, note-narrow, note-narrow, note-ink-narrow]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级",
+          "detail": "注入前 盒 1380px / 有字区域 1380px ⇒ 注入后 盒 1380px / 有字区域 452.81px（列宽 1380px · 阈值 1173px）—— 盒宽差 0px"
+        },
+        {
+          "ok": true,
+          "name": "§22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（相邻兄弟选择器）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M9a 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（相邻兄弟选择器））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis] · 说明 9 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5, docs/data/#6, docs/data/#7, docs/data/#8] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M9a 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+          "detail": "选择器 .snote ~ .snote 命中 [docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5, docs/data/#6, docs/data/#7, docs/data/#8] ⇒ 窄条 [docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5, docs/data/#6, docs/data/#7, docs/data/#8]（第 0 条被压：false）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（:not(:first-of-type)）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M9b 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（:not(:first-of-type)））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 13 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+          "detail": "选择器 .snote:not(:first-of-type) 命中 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12] ⇒ 窄条 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12]（第 0 条被压：false）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 3 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1600（视口 1600） · 窄条 [student/#0, student/#1, student/#2] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M11 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M11 变异后复测必须出现「note-ink-narrow」违规码（t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进",
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow] · 说明 13 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码",
+          "detail": "note-narrow 0 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow 6 条 [changes/#0, changes/#1, changes/#2, changes/#4, changes/#8, changes/#12] · 这些条的行证据：#0 2 行 / 最宽 445.05px / 内容盒 1380px · #1 2 行 / 最宽 445.09px / 内容盒 1380px · #2 2 行 / 最宽 432px / 内容盒 1380px · #4 2 行 / 最宽 444px / 内容盒 1380px · #8 3 行 / 最宽 444px / 内容盒 1380px · #12 3 行 / 最宽 444.23px / 内容盒 1380px"
+        },
+        {
+          "ok": true,
+          "name": "§22c M12 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿"
+        },
+        {
+          "ok": true,
+          "name": "§22c M12 变异后复测必须出现「note-hidden-text」违规码（t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常",
+          "detail": "期望 note-hidden-text · 实测 [note-hidden-text, note-hidden-text, note-hidden-text] · 说明 3 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-hidden-text, note-hidden-text, note-hidden-text]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text",
+          "detail": "首条：文本 209 字 · 字形盒 0 个 · 盒宽 1380px（rendered=true） · 行 0 行 · note-hidden-text 命中 [student/#0, student/#1, student/#2] · note-ink-narrow 无"
+        },
+        {
+          "ok": true,
+          "name": "§22c M13 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住"
+        },
+        {
+          "ok": true,
+          "name": "§22c M13 变异后复测必须出现「note-unrendered」违规码（T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱",
+          "detail": "期望 note-unrendered · 实测 [note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered] · 说明 9 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M13 承重证明：盒高被压成 0 的条**全部**由 note-unrendered 咬中，且窄柱/字迹/藏字三条判据在它们身上确实看不见",
+          "detail": "未渲染条 9 条 [#0, #1, #2, #3, #4, #5, #6, #7, #8] · 它们的 textLength [108, 196, 110, 47, 23, 27, 34, 3, 50] · glyphRects [0, 0, 0, 0, 0, 0, 0, 0, 0] · note-unrendered 命中 [docs/data/#0, docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5, docs/data/#6, docs/data/#7, docs/data/#8] · 窄柱/字迹/藏字码 [无（这正是修复前的假绿形状）]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+          "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条 note-narrow 都没有",
+          "detail": "M8 student/@1440 违规码 [无] · M9a docs/data/@1440 违规码 [无] · M9b changes/@1440 违规码 [无] · M10 student/@1600 违规码 [无]"
+        },
+        {
+          "ok": true,
+          "name": "§22c 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因",
+          "detail": "不存在的锚点：ok=false · 出现 0 次 · 锚点在内联样式里出现 0 次（必须恰好 1 次） ／ 非唯一锚点：ok=false · 出现 61 次 · 锚点在内联样式里出现 61 次（必须恰好 1 次）"
+        },
+        {
+          "ok": true,
+          "name": "§22c 违规码自检：11 个码全部由 wideProblems() 一处产出、且都可达（不多不少）",
+          "detail": "可达 11/11 · 缺 无 · 多 无（含本轮新增的 note-ink-narrow / note-hidden-text；条级码带 index，与页级码同一个函数）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M5（不重复造第二套）：既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码，且 §22b 的断言全绿",
+          "detail": "§22b 断言 41 项（失败 0） · §22b 变异码 M1=[center] M2=[width] M3=[axis,src-width] M4=[self-overflow@390,page-overflow@390] M5=[leaf-consistency,leaf-consistency] · M4 正对照=[无]"
+        },
+        {
+          "ok": true,
+          "name": "§22c 变异牙零磁盘污染：被改产物的 sha256 变异前后相等（byte-exact）",
+          "detail": "student/ 35588b1f26… · status/ 051dcfe27c… · changes/ e8b43013f7… · feeds/ ca2f78ce25…（前 35588b/051dcf/e8b430/ca2f78 · 后 35588b/051dcf/e8b430/ca2f78）"
+        },
+        {
+          "ok": true,
+          "name": "§22c 条级容器：metrics.layoutNotes 覆盖全部说明条（route#index 可逐条核对）",
+          "detail": "条级容器 401 条（@1440） / 401 条（@1600） · 现场实算 401 条 · 每行都带 route/index/codes：true"
+        },
+        {
+          "ok": true,
+          "name": "§22c 全站扫描（631 次导航）没有 JS 错误、没有外部请求",
+          "detail": "JS 错误 0 个 · 外部请求 0 个"
+        }
+      ],
+      "sweep": {
+        "total": 186,
+        "wide": 55,
+        "detail": 131,
+        "other": 0,
+        "notesJudged": 401,
+        "narrowNotes": 0,
+        "inkNarrowNotes": 0,
+        "narrowUnionNotes": 0,
+        "hiddenTextNotes": 0,
+        "unrenderedNotes": 1,
+        "verticalNotes": 3,
+        "overflowPages": 0,
+        "unclassified": 0,
+        "inkScopeDesktopViewports": [
+          {
+            "width": 1440,
+            "minColumn": 1120,
+            "maxColumn": 1380,
+            "ch70": [
+              452.81
+            ],
+            "inkScope": true
+          },
+          {
+            "width": 1600,
+            "minColumn": 1120,
+            "maxColumn": 1380,
+            "ch70": [
+              452.81
+            ],
+            "inkScope": true
+          }
+        ],
+        "inkScopeSampleViewports": [
+          {
+            "width": 760,
+            "minColumn": 676,
+            "maxColumn": 728,
+            "ch70": [
+              452.81
+            ],
+            "inkScope": true
+          },
+          {
+            "width": 360,
+            "minColumn": 276,
+            "maxColumn": 328,
+            "ch70": [
+              452.81
+            ],
+            "inkScope": false
+          }
+        ]
+      },
+      "sampleScope": [
+        {
+          "width": 760,
+          "minColumn": 676,
+          "maxColumn": 728,
+          "ch70": [
+            452.81
+          ],
+          "inkScope": true
+        },
+        {
+          "width": 360,
+          "minColumn": 276,
+          "maxColumn": 328,
+          "ch70": [
+            452.81
+          ],
+          "inkScope": false
+        }
+      ],
+      "routeAt1440": [
+        {
+          "index": 0,
+          "codes": [],
+          "lineCount": 1,
+          "widestLine": 342.25,
+          "column": 1380,
+          "textWidth": 1380,
+          "vertical": true,
+          "rendered": true,
+          "glyphRects": 21,
+          "textLength": 123
+        },
+        {
+          "index": 1,
+          "codes": [],
+          "lineCount": 1,
+          "widestLine": 16,
+          "column": 1380,
+          "textWidth": 1380,
+          "vertical": true,
+          "rendered": true,
+          "glyphRects": 1,
+          "textLength": 6
+        },
+        {
+          "index": 2,
+          "codes": [],
+          "lineCount": 1,
+          "widestLine": 260.69,
+          "column": 1380,
+          "textWidth": 1380,
+          "vertical": true,
+          "rendered": true,
+          "glyphRects": 15,
+          "textLength": 91
+        }
+      ],
+      "routeAt1600": [
+        {
+          "index": 0,
+          "codes": [],
+          "lineCount": 1,
+          "widestLine": 342.25,
+          "column": 1380,
+          "textWidth": 1380,
+          "vertical": true,
+          "rendered": true,
+          "glyphRects": 21,
+          "textLength": 123
+        },
+        {
+          "index": 1,
+          "codes": [],
+          "lineCount": 1,
+          "widestLine": 16,
+          "column": 1380,
+          "textWidth": 1380,
+          "vertical": true,
+          "rendered": true,
+          "glyphRects": 1,
+          "textLength": 6
+        },
+        {
+          "index": 2,
+          "codes": [],
+          "lineCount": 1,
+          "widestLine": 260.69,
+          "column": 1380,
+          "textWidth": 1380,
+          "vertical": true,
+          "rendered": true,
+          "glyphRects": 15,
+          "textLength": 91
+        }
+      ],
+      "violationsForRoute": []
+    },
+    {
+      "label": "dist（线上产物原样）",
+      "file": "research/_raw/secondary-page-layout-unification/verify/t31/gate-dist.json",
+      "suiteExit": "��D\u0000I\u0000S\u0000T\u0000_\u0000E\u0000X\u0000I\u0000T\u0000=\u00000\u0000\r\u0000\n\u0000",
+      "total": 852,
+      "failed": 0,
+      "checkCount": 852,
+      "failingChecks": [],
+      "s22cChecks": [
+        {
+          "ok": true,
+          "name": "§22c 全站每一页的布局族都能解析（page-kinds.kindOfRoute + layoutOf，数据驱动的静态路由由 kindByRoute 补齐）",
+          "detail": "186 页全部可解析（16 种 kind）· wide 55 / detail 131 / other 0 · unclassified-layout 0 个"
+        },
+        {
+          "ok": true,
+          "name": "§22c 注册表驱动的入口（3 目录页 + 10 按需求页 + 2 枢纽页）在产物里都存在",
+          "detail": "逐条命中（15 条，全部现场推导，不写死 slug）"
+        },
+        {
+          "ok": true,
+          "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+          "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）49 条 · 竖排 0 条 · textFallback 回落 41 条"
+        },
+        {
+          "ok": true,
+          "name": "§22c @1440 全站 186 页都没有横向溢出",
+          "detail": "documentElement.scrollWidth ≤ 视口+1 全部成立"
+        },
+        {
+          "ok": true,
+          "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+          "detail": "全站 186 页 / 逐条判 401 条（有说明的页 105 · 零说明的页 81 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）49 条 · 竖排 0 条 · textFallback 回落 41 条"
+        },
+        {
+          "ok": true,
+          "name": "§22c @1600 全站 186 页都没有横向溢出",
+          "detail": "documentElement.scrollWidth ≤ 视口+1 全部成立"
+        },
+        {
+          "ok": true,
+          "name": "§22c 未渲染说明：上界断言 —— 未渲染条要么「可见文本为 0」，要么必须被 note-unrendered 咬中（两类不相交、并集完整、标记不豁免）",
+          "detail": "@1440 未渲染 1 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 0 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 1 条（文本 0 1 · note-unrendered 0 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+        },
+        {
+          "ok": true,
+          "name": "§22c @390 全站 186 页 documentElement.scrollWidth ≤ 视口+1",
+          "detail": "最宽的一页 390px（视口 390）"
+        },
+        {
+          "ok": true,
+          "name": "§22c 布局族一致性：detail 族（131 页）恰好 1 个 main.detail-main、wide 族（55 页）0 个",
+          "detail": "missing-detail-main 0 · unexpected-detail-main 0"
+        },
+        {
+          "ok": true,
+          "name": "§22c 每一页都判得出主数据区（声明选择器或回落 <main>）",
+          "detail": "声明选择器命中 104 页 · 回落 <main> 82 页（<main>（回落）=82 .ctable=45 .chgsec=1 .ptable=55 .flist=1 .pchglist=1 .stable=1）"
+        },
+        {
+          "ok": true,
+          "name": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+          "detail": "186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」"
+        },
+        {
+          "ok": true,
+          "name": "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+          "detail": "0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+        },
+        {
+          "ok": true,
+          "name": "§22c @360 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+          "detail": "0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+        },
+        {
+          "ok": true,
+          "name": "§22c M1–M4 的四个壳（student/ status/ changes/ feeds/）都是 wide 族且带页面级说明",
+          "detail": "student/ collection/wide · .snote 3 条 · status/ status/wide · .snote 2 条 · changes/ changes/wide · .snote 13 条 · feeds/ feeds/wide · .snote 8 条"
+        },
+        {
+          "ok": true,
+          "name": "§22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 3 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [student/#0, student/#1, student/#2] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 2 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [status/#0, status/#1] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M3 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 13 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [changes/#0, changes/#1, changes/#2, changes/#3, changes/#4, changes/#5, changes/#6, changes/#7, changes/#8, changes/#9, changes/#10, changes/#11, changes/#12] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ax"
+        },
+        {
+          "ok": true,
+          "name": "§22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M4 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis] · 说明 8 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [feeds/#0, feeds/#1, feeds/#2, feeds/#3, feeds/#4, feeds/#5, feeds/#6, feeds/#7] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串"
+        },
+        {
+          "ok": true,
+          "name": "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+          "detail": "期望 page-overflow@390 · 实测 [note-clipped, page-overflow@390] · 说明 3 条 · 首条 盒 358px / 有字区域 358px · detail-main 0 个 · scrollWidth 1118（视口 390） · 不可断串注入位置 note · 窄条 [无] · 违规码 [note-clipped, page-overflow@390]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M7 DOM 注入前提成立（该类原本不存在）",
+          "detail": "注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M7 变异后复测必须出现「unexpected-detail-main」违规码（给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在））",
+          "detail": "期望 unexpected-detail-main · 实测 [unexpected-detail-main] · 说明 2 条 · 首条 盒 1120px / 有字区域 1120px · detail-main 1 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [unexpected-detail-main]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-narrow, note-narrow, note-ink-narrow] · 说明 3 条 · 首条 盒 1380px / 有字区域 452.81px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [student/#0, student/#1, student/#2] · 违规码 [note-narrow, note-ink-narrow, note-narrow, note-narrow, note-ink-narrow]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级",
+          "detail": "注入前 盒 1380px / 有字区域 1380px ⇒ 注入后 盒 1380px / 有字区域 452.81px（列宽 1380px · 阈值 1173px）—— 盒宽差 0px"
+        },
+        {
+          "ok": true,
+          "name": "§22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（相邻兄弟选择器）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M9a 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（相邻兄弟选择器））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis] · 说明 9 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5, docs/data/#6, docs/data/#7, docs/data/#8] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M9a 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+          "detail": "选择器 .snote ~ .snote 命中 [docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5, docs/data/#6, docs/data/#7, docs/data/#8] ⇒ 窄条 [docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5, docs/data/#6, docs/data/#7, docs/data/#8]（第 0 条被压：false）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（:not(:first-of-type)）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M9b 变异后复测必须出现「note-narrow」违规码（F2 原型：只压**非首个** .snote（:not(:first-of-type)））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 13 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M9b 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压",
+          "detail": "选择器 .snote:not(:first-of-type) 命中 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12] ⇒ 窄条 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12]（第 0 条被压：false）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 3 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1600（视口 1600） · 窄条 [student/#0, student/#1, student/#2] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-axis, note-narrow, note-ink-narrow, note-axis]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M11 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M11 变异后复测必须出现「note-ink-narrow」违规码（t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进",
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow] · 说明 13 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码",
+          "detail": "note-narrow 0 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow 6 条 [changes/#0, changes/#1, changes/#2, changes/#4, changes/#8, changes/#12] · 这些条的行证据：#0 2 行 / 最宽 445.05px / 内容盒 1380px · #1 2 行 / 最宽 445.09px / 内容盒 1380px · #2 2 行 / 最宽 432px / 内容盒 1380px · #4 2 行 / 最宽 444px / 内容盒 1380px · #8 3 行 / 最宽 444px / 内容盒 1380px · #12 3 行 / 最宽 444.23px / 内容盒 1380px"
+        },
+        {
+          "ok": true,
+          "name": "§22c M12 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿"
+        },
+        {
+          "ok": true,
+          "name": "§22c M12 变异后复测必须出现「note-hidden-text」违规码（t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常",
+          "detail": "期望 note-hidden-text · 实测 [note-hidden-text, note-hidden-text, note-hidden-text] · 说明 3 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-hidden-text, note-hidden-text, note-hidden-text]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text",
+          "detail": "首条：文本 209 字 · 字形盒 0 个 · 盒宽 1380px（rendered=true） · 行 0 行 · note-hidden-text 命中 [student/#0, student/#1, student/#2] · note-ink-narrow 无"
+        },
+        {
+          "ok": true,
+          "name": "§22c M13 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "detail": "锚点出现 1 次 · T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住"
+        },
+        {
+          "ok": true,
+          "name": "§22c M13 变异后复测必须出现「note-unrendered」违规码（T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱",
+          "detail": "期望 note-unrendered · 实测 [note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered] · 说明 9 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered, note-unrendered]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M13 承重证明：盒高被压成 0 的条**全部**由 note-unrendered 咬中，且窄柱/字迹/藏字三条判据在它们身上确实看不见",
+          "detail": "未渲染条 9 条 [#0, #1, #2, #3, #4, #5, #6, #7, #8] · 它们的 textLength [108, 196, 110, 47, 23, 27, 34, 3, 50] · glyphRects [0, 0, 0, 0, 0, 0, 0, 0, 0] · note-unrendered 命中 [docs/data/#0, docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5, docs/data/#6, docs/data/#7, docs/data/#8] · 窄柱/字迹/藏字码 [无（这正是修复前的假绿形状）]"
+        },
+        {
+          "ok": true,
+          "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+          "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条 note-narrow 都没有",
+          "detail": "M8 student/@1440 违规码 [无] · M9a docs/data/@1440 违规码 [无] · M9b changes/@1440 违规码 [无] · M10 student/@1600 违规码 [无]"
+        },
+        {
+          "ok": true,
+          "name": "§22c 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因",
+          "detail": "不存在的锚点：ok=false · 出现 0 次 · 锚点在内联样式里出现 0 次（必须恰好 1 次） ／ 非唯一锚点：ok=false · 出现 61 次 · 锚点在内联样式里出现 61 次（必须恰好 1 次）"
+        },
+        {
+          "ok": true,
+          "name": "§22c 违规码自检：11 个码全部由 wideProblems() 一处产出、且都可达（不多不少）",
+          "detail": "可达 11/11 · 缺 无 · 多 无（含本轮新增的 note-ink-narrow / note-hidden-text；条级码带 index，与页级码同一个函数）"
+        },
+        {
+          "ok": true,
+          "name": "§22c M5（不重复造第二套）：既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码，且 §22b 的断言全绿",
+          "detail": "§22b 断言 41 项（失败 0） · §22b 变异码 M1=[center] M2=[width] M3=[axis,src-width] M4=[self-overflow@390,page-overflow@390] M5=[leaf-consistency,leaf-consistency] · M4 正对照=[无]"
+        },
+        {
+          "ok": true,
+          "name": "§22c 变异牙零磁盘污染：被改产物的 sha256 变异前后相等（byte-exact）",
+          "detail": "student/ 35588b1f26… · status/ 051dcfe27c… · changes/ e8b43013f7… · feeds/ ca2f78ce25…（前 35588b/051dcf/e8b430/ca2f78 · 后 35588b/051dcf/e8b430/ca2f78）"
+        },
+        {
+          "ok": true,
+          "name": "§22c 条级容器：metrics.layoutNotes 覆盖全部说明条（route#index 可逐条核对）",
+          "detail": "条级容器 401 条（@1440） / 401 条（@1600） · 现场实算 401 条 · 每行都带 route/index/codes：true"
+        },
+        {
+          "ok": true,
+          "name": "§22c 全站扫描（631 次导航）没有 JS 错误、没有外部请求",
+          "detail": "JS 错误 0 个 · 外部请求 0 个"
+        }
+      ],
+      "sweep": {
+        "total": 186,
+        "wide": 55,
+        "detail": 131,
+        "other": 0,
+        "notesJudged": 401,
+        "narrowNotes": 0,
+        "inkNarrowNotes": 0,
+        "narrowUnionNotes": 0,
+        "hiddenTextNotes": 0,
+        "unrenderedNotes": 1,
+        "verticalNotes": 0,
+        "overflowPages": 0,
+        "unclassified": 0,
+        "inkScopeDesktopViewports": [
+          {
+            "width": 1440,
+            "minColumn": 1120,
+            "maxColumn": 1380,
+            "ch70": [
+              452.81
+            ],
+            "inkScope": true
+          },
+          {
+            "width": 1600,
+            "minColumn": 1120,
+            "maxColumn": 1380,
+            "ch70": [
+              452.81
+            ],
+            "inkScope": true
+          }
+        ],
+        "inkScopeSampleViewports": [
+          {
+            "width": 760,
+            "minColumn": 676,
+            "maxColumn": 728,
+            "ch70": [
+              452.81
+            ],
+            "inkScope": true
+          },
+          {
+            "width": 360,
+            "minColumn": 276,
+            "maxColumn": 328,
+            "ch70": [
+              452.81
+            ],
+            "inkScope": false
+          }
+        ]
+      },
+      "sampleScope": [
+        {
+          "width": 760,
+          "minColumn": 676,
+          "maxColumn": 728,
+          "ch70": [
+            452.81
+          ],
+          "inkScope": true
+        },
+        {
+          "width": 360,
+          "minColumn": 276,
+          "maxColumn": 328,
+          "ch70": [
+            452.81
+          ],
+          "inkScope": false
+        }
+      ],
+      "routeAt1440": [
+        {
+          "index": 0,
+          "codes": [],
+          "lineCount": 1,
+          "widestLine": 1351.69,
+          "column": 1380,
+          "textWidth": 1380,
+          "vertical": false,
+          "rendered": true,
+          "glyphRects": 5,
+          "textLength": 123
+        },
+        {
+          "index": 1,
+          "codes": [],
+          "lineCount": 1,
+          "widestLine": 61.64,
+          "column": 1380,
+          "textWidth": 1380,
+          "vertical": false,
+          "rendered": true,
+          "glyphRects": 1,
+          "textLength": 6
+        },
+        {
+          "index": 2,
+          "codes": [],
+          "lineCount": 1,
+          "widestLine": 1047.52,
+          "column": 1380,
+          "textWidth": 1380,
+          "vertical": false,
+          "rendered": true,
+          "glyphRects": 3,
+          "textLength": 91
+        }
+      ],
+      "routeAt1600": [
+        {
+          "index": 0,
+          "codes": [],
+          "lineCount": 1,
+          "widestLine": 1351.69,
+          "column": 1380,
+          "textWidth": 1380,
+          "vertical": false,
+          "rendered": true,
+          "glyphRects": 5,
+          "textLength": 123
+        },
+        {
+          "index": 1,
+          "codes": [],
+          "lineCount": 1,
+          "widestLine": 61.64,
+          "column": 1380,
+          "textWidth": 1380,
+          "vertical": false,
+          "rendered": true,
+          "glyphRects": 1,
+          "textLength": 6
+        },
+        {
+          "index": 2,
+          "codes": [],
+          "lineCount": 1,
+          "widestLine": 1047.52,
+          "column": 1380,
+          "textWidth": 1380,
+          "vertical": false,
+          "rendered": true,
+          "glyphRects": 3,
+          "textLength": 91
+        }
+      ],
+      "violationsForRoute": []
+    }
+  ]
+}
