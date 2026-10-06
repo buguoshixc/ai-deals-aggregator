@@ -1,0 +1,61 @@
+{
+  "task": "M-disk 落盘级变异循环",
+  "at": "2026-10-06T07:28:50.149Z",
+  "cycle": [
+    "① 前置状态：build-local.js sha256 + git status --porcelain + T1 diff + 字节备份",
+    "② 变异：feeds 壳里插回 `.snote { … max-width: 70ch; }`（唯一锚点，可逆）",
+    "③ 真实构建 node scripts/tools/build-local.js",
+    "④ 独立探针 geometry/wide-probe.cjs 判红",
+    "⑤ git checkout -- scripts/tools/build-local.js",
+    "⑥ 还原 T1 工作副本（git apply / 字节备份）并做可逆性自检",
+    "⑦ 真实构建",
+    "⑧ 独立探针判绿",
+    "⑨ 恢复证明：sha256 + git status + 产物可复现"
+  ],
+  "files": {
+    "target": "scripts/tools/build-local.js",
+    "sha256Before": "264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348",
+    "sha256Mutated": "2a103855908ce6df6a4809d92418f9dc55bdca4a1f7d9436c8093fde6c6aabe7",
+    "sha256AfterGitCheckout": "75170c7f0cb5af1a9b4ad5ac66176501172d563fea40cbc176d14b2cc000347b",
+    "sha256AfterRestore": "264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348",
+    "sha256Final": "264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348",
+    "restoreMethod": "git apply（T1 的 diff）",
+    "t1Patch": "research/_raw/secondary-page-layout-unification/mutations-real/M-disk.build-local.t1.patch",
+    "preStatusFile": "research/_raw/secondary-page-layout-unification/mutations-real/M-disk.pre-status.txt"
+  },
+  "red": {
+    "buildExit": 0,
+    "probeExit": 1,
+    "violatedPages": 1,
+    "codes": {
+      "note-narrow": 1,
+      "note-axis": 1
+    },
+    "sampleViolations": 4,
+    "pages": [
+      "feeds/"
+    ],
+    "feeds70chRule": 1,
+    "feedsFrozenRule": 1,
+    "log": "research/_raw/secondary-page-layout-unification/mutations-real/M-disk.step3-probe-red.log",
+    "json": "research/_raw/secondary-page-layout-unification/mutations-real/M-disk.probe-red.json"
+  },
+  "green": {
+    "buildExit": 0,
+    "probeExit": 0,
+    "violatedPages": 0,
+    "codes": {},
+    "sampleViolations": 0,
+    "feeds70chRule": 0,
+    "log": "research/_raw/secondary-page-layout-unification/mutations-real/M-disk.step10-probe-green.log",
+    "json": "research/_raw/secondary-page-layout-unification/mutations-real/M-disk.probe-green.json"
+  },
+  "recovery": {
+    "sha256Equal": true,
+    "gitStatusPorcelainEqual": true,
+    "distManifestEqual": true,
+    "distManifestBefore": "research/_raw/secondary-page-layout-unification/build/dist-after-build1.sha256.txt",
+    "distManifestAfter": "research/_raw/secondary-page-layout-unification/mutations-real/M-disk.dist-after-recovery.sha256.txt"
+  },
+  "verdict": "pass"
+}

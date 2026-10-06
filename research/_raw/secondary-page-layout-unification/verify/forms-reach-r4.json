@@ -1,0 +1,10 @@
+{
+  "changes/": ".snote { max-width: 70ch; }",
+  "feeds/": ".snote { display: grid; grid-template-columns: minmax(0, 70ch) 1fr; }",
+  "status/": ".snote { padding-right: calc(100% - 70ch); }",
+  "student/": ".snote { font-size: 0; } .snote::before { content: \"§22c-M12 伪元素承载正文（真实文本已不可见）\"; display: block; max-width: 70ch; font-size: var(--fs-sm); line-height: 1.7; }",
+  "docs/data/": ".snote { font-size: 0; min-height: 24px; }",
+  "plans/": ".snote { font-size: 0; }",
+  "vendor/ai360/": ".snote { transform: scaleX(0.35); transform-origin: left center; }",
+  "need/free-tier/": ".snote { white-space: nowrap; }"
+}

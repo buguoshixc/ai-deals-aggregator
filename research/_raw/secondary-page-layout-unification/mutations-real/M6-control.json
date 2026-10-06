@@ -1,0 +1,38 @@
+{
+  "label": "real-dist",
+  "id": "M6-control",
+  "route": "student/",
+  "viewport": 390,
+  "what": "正对照：同样注入 200 字符不可断串、CSS 一个字节都不动",
+  "mutationKind": "control（只注入内容，不改 CSS）",
+  "expect": "不得出现 page-overflow@390",
+  "observed": [],
+  "hit": true,
+  "anchorUniqueness": {
+    "note": "正对照不改锚点，因此没有锚点唯一性断言；它的意义是与 M6 成对"
+  },
+  "geometry": {
+    "noteCount": null,
+    "noteWidthLegacy": null,
+    "firstNoteBoxWidth": null,
+    "firstNoteTextWidth": null,
+    "columnWidthLegacy": null,
+    "detailMainCount": null,
+    "scrollWidth": 390,
+    "viewport": 390,
+    "injectedAt": "note",
+    "narrowKeys": null
+  },
+  "productSha256": null,
+  "checks": [
+    {
+      "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+      "ok": true,
+      "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+    }
+  ],
+  "source": {
+    "report": "research/_raw/secondary-page-layout-unification/geometry/after-verify.json",
+    "mutations": "research/_raw/secondary-page-layout-unification/geometry/mutations.json"
+  }
+}

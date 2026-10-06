@@ -1,0 +1,162 @@
+{
+  "tool": "secondary-page-layout-unification/release/check-release-consistency",
+  "at": "2026-10-06T17:09:11.976Z",
+  "node": "v24.13.1",
+  "head": "1f225d22625c15702995785394b60185ebd0520b",
+  "originMaster": "1f225d22625c15702995785394b60185ebd0520b",
+  "note": "轮 5（t24/t25/t26）冻结后必须重跑本脚本，本文件即\"提交内容与证据的版本绑定表\"",
+  "pins": {
+    "index.html": {
+      "exists": true,
+      "sha256": "8442f14dd397276e67ea71a64aef9f86b59d1f603aa04f15ecfc402056d663b9",
+      "sha16": "8442F14DD397276E",
+      "bytes": 293624,
+      "lines": 4969,
+      "mtime": "2026-10-06T06:37:12.740Z"
+    },
+    "scripts/lib/page-kinds.js": {
+      "exists": true,
+      "sha256": "8fae98d1d8897a9d024b0cb2d8a5c016efc4c1807c41e63cbc02ab45e7c6b2ed",
+      "sha16": "8FAE98D1D8897A9D",
+      "bytes": 20616,
+      "lines": 447,
+      "mtime": "2026-10-06T06:36:42.347Z"
+    },
+    "scripts/lib/archive.js": {
+      "exists": true,
+      "sha256": "565710a7e6e197d9f369acf3b70c3feefd77413e188856523f16ebdc1429916e",
+      "sha16": "565710A7E6E197D9",
+      "bytes": 45914,
+      "lines": 929,
+      "mtime": "2026-10-06T06:39:04.865Z"
+    },
+    "scripts/tools/build-local.js": {
+      "exists": true,
+      "sha256": "264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348",
+      "sha16": "264912C27174F837",
+      "bytes": 407799,
+      "lines": 6677,
+      "mtime": "2026-10-06T07:28:19.486Z"
+    },
+    "scripts/tools/verify-site.js": {
+      "exists": true,
+      "sha256": "2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e",
+      "sha16": "2CBC160DC64F8ADE",
+      "bytes": 522527,
+      "lines": 8057,
+      "mtime": "2026-10-06T14:52:23.550Z"
+    },
+    "scripts/tools/archive-selftest.js": {
+      "exists": true,
+      "sha256": "1ea28f5876927d1696c4e35ab885a4820e917516ac6ee346b08b8d49032ac077",
+      "sha16": "1EA28F5876927D16",
+      "bytes": 41715,
+      "lines": 717,
+      "mtime": "2026-10-06T06:40:25.094Z"
+    },
+    "scripts/tools/seo-selftest.js": {
+      "exists": true,
+      "sha256": "002cccc21c1e7b72d13cfff7d57045961a78b43821b91ad2edbda38c68b66751",
+      "sha16": "002CCCC21C1E7B72",
+      "bytes": 30740,
+      "lines": 561,
+      "mtime": "2026-10-06T06:41:05.977Z"
+    },
+    "research/_raw/secondary-page-layout-unification/release/online-smoke.cjs": {
+      "exists": true,
+      "sha256": "ab1e51278d0fe408454ceaf73e7f379753052c0c62193ec940c1db71c245a6c5",
+      "sha16": "AB1E51278D0FE408",
+      "bytes": 34430,
+      "lines": 599,
+      "mtime": "2026-10-06T08:42:46.578Z"
+    },
+    "research/_raw/secondary-page-layout-unification/release/serve-dist-http.cjs": {
+      "exists": true,
+      "sha256": "21caa30e8243049e81cb69da0e46542f5fd0d3acdfe37d49ac1b03346b104177",
+      "sha16": "21CAA30E8243049E",
+      "bytes": 7548,
+      "lines": 154,
+      "mtime": "2026-10-06T08:41:49.837Z"
+    },
+    "research/_raw/secondary-page-layout-unification/release/rehearse-online-path.cjs": {
+      "exists": true,
+      "sha256": "6aa09a7ca420f60b236d537abaa94d79933c3f07ab1a9ca0ed1040927bf8ce42",
+      "sha16": "6AA09A7CA420F60B",
+      "bytes": 20177,
+      "lines": 327,
+      "mtime": "2026-10-06T08:52:58.951Z"
+    },
+    "research/_raw/secondary-page-layout-unification/release/check-evidence-index.cjs": {
+      "exists": true,
+      "sha256": "39faaba0bc717f8bd6d9761b9750695060796fec882b344254d29e318e2f5aeb",
+      "sha16": "39FAABA0BC717F8B",
+      "bytes": 5700,
+      "lines": 103,
+      "mtime": "2026-10-06T08:28:30.882Z"
+    },
+    "dist/index.html": {
+      "exists": true,
+      "sha256": "de028a0d9fdd59c630923e97297e67ce1c6481a3a3d216155989e3247e8d974b",
+      "sha16": "DE028A0D9FDD59C6",
+      "bytes": 404927,
+      "lines": 5467,
+      "mtime": "2026-10-06T15:42:38.382Z"
+    },
+    "dist/sitemap.xml": {
+      "exists": true,
+      "sha256": "1b633ae9c231a31e0a3ab91d5fc83702dc4c656a85ead3f941df9517c074a5bd",
+      "sha16": "1B633AE9C231A31E",
+      "bytes": 36504,
+      "lines": 1102,
+      "mtime": "2026-10-06T15:42:38.915Z"
+    },
+    "dist.baseline/index.html": {
+      "exists": true,
+      "sha256": "927cbbc2e0c98e0c2392741273db050420d721b48a5addf36703cf901cb7a8e6",
+      "sha16": "927CBBC2E0C98E0C",
+      "bytes": 403904,
+      "lines": 5458,
+      "mtime": "2026-10-06T06:27:49.337Z"
+    },
+    "research/secondary-page-layout-unification-report.md": {
+      "exists": true,
+      "sha256": "a3b09975213e9cf9053b6f34fd5b81d04c7d8b5e4e34cf74d306be466224ae27",
+      "sha16": "A3B09975213E9CF9",
+      "bytes": 145798,
+      "lines": 1640,
+      "mtime": "2026-10-06T16:10:27.695Z"
+    },
+    "research/secondary-page-layout-unification-self-audit.md": {
+      "exists": true,
+      "sha256": "6121ea1862536030dc5f7e05673ccabc48f0519915654334f92c0c89d0d6e6a0",
+      "sha16": "6121EA1862536030",
+      "bytes": 24909,
+      "lines": 247,
+      "mtime": "2026-10-06T08:38:11.798Z"
+    },
+    "PROJECT_STATUS.md": {
+      "exists": true,
+      "sha256": "708b79c21fe3f09fe34546bcfd53bd6777977fff28edb0be9088b00d55cff72b",
+      "sha16": "708B79C21FE3F09F",
+      "bytes": 314100,
+      "lines": 3635,
+      "mtime": "2026-10-06T15:48:01.376Z"
+    },
+    "NEXT-STEPS.md": {
+      "exists": true,
+      "sha256": "e576c5931ae769883110476b298c13611547c35d0e1a02a25473b4cebc368923",
+      "sha16": "E576C5931AE76988",
+      "bytes": 54987,
+      "lines": 571,
+      "mtime": "2026-10-06T16:09:56.554Z"
+    },
+    "docs/DESIGN-RULES.md": {
+      "exists": true,
+      "sha256": "36290ce5c5b5e63aeeb62a7d7c923a94578c30ec76fe425534519e5fe654584e",
+      "sha16": "36290CE5C5B5E63A",
+      "bytes": 55984,
+      "lines": 362,
+      "mtime": "2026-10-06T16:09:56.556Z"
+    }
+  }
+}

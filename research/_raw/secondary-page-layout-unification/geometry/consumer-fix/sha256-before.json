@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-06T13:07:29.106Z",
+  "stage": "before (t25 改前，含 .bak 存档时刻)",
+  "files": [
+    {
+      "file": "make-truth-401.cjs",
+      "bytes": 10385,
+      "sha256": "f94f6441977164cbcda90ef1d7ae172bce95ec1dc754fe4c9e91bddaa76ea33c"
+    },
+    {
+      "file": "make-synthetic-reports.cjs",
+      "bytes": 9441,
+      "sha256": "d38b4ba4565170dac75bc886f786cb8bbd0b6d47ac75d43dfc1571832cae86b3"
+    },
+    {
+      "file": "truth-401.json",
+      "bytes": 384076,
+      "sha256": "46c28fa120a39ababf25826b86a08e57cf93e242baee8df264219e1d182e346e"
+    },
+    {
+      "file": "consumer-selftest/case1-union-156.json",
+      "bytes": 142008,
+      "sha256": "a4f12eebb0d1d34d9fa743d5bf4169cfceaa54e84328213d2cf5d090046680b2"
+    },
+    {
+      "file": "consumer-selftest/case2-narrow-only-48.json",
+      "bytes": 54856,
+      "sha256": "a2be21cbf77a51e613621908010e68b26c59c623fe0442c77ad652e959b32768"
+    },
+    {
+      "file": "consumer-selftest/case3-false-positive.json",
+      "bytes": 143118,
+      "sha256": "d38940c9de240c75d629b6b0dd90bdaaed9d370e350c7f8503754e4212ecf9ff"
+    },
+    {
+      "file": "gate-vs-truth.cjs",
+      "bytes": 17608,
+      "sha256": "af9f53be6acc51f3d989f79b87a7deed5a2307deaf7e991d40910cdf3a71ad8c"
+    }
+  ]
+}

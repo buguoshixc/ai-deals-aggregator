@@ -1,0 +1,56 @@
+# t23 提议：证据目录 `.gitignore` 的追加块（**由 captain 落盘**；t23 只能写 release/**）
+#
+# 为什么需要它（发布前闸门实测，2026-10-06 21:5x）：
+#   `git add --dry-run --all -- <7 源文件> research/_raw/secondary-page-layout-unification`
+#   当前会带上 **5,392 个文件 / 374 MB**，其中 **4,621 个 / ~302 MB** 是后面这些**可再生**的沙箱副本
+#   —— 它们不属于交付证据，且体积是真实证据的 4 倍。
+#
+# 与既有 ① 同一条纪律（"可再生的字节不入索引"）。
+# ⚠️ 关键语法：**不能**写 `teeth/_scratch/`（排除整个目录后，里面的文件无法用 `!` 放回来 ——
+#    这条 git 规则本身已经写在 .gitignore 的 ① 注释里）。要写成 `teeth/_scratch/*`，
+#    再对**被报告正文点名引用**的少数文件按名字放回。
+
+teeth/_scratch/*
+!teeth/_scratch/mutations.json
+!teeth/_scratch/splice-22c.cjs
+!teeth/_scratch/r4-contents-before.log
+!teeth/_scratch/r4-contents-after.log
+
+review/t20/scratch/
+t21/scratch/
+adversary/_scratch/
+adversary/sandbox-pre-t7/
+
+# 说明（三条，免得下一位看到 `*` 与 `!` 的组合发懵）：
+#   · `teeth/_scratch/mutations.json` 被最终报告 §G（983 / 1284 / 1286 行）当作"轮 4 的原始
+#     mutations.json 落点"点名引用 ⇒ 必须入库，否则报告里的引用变死链；
+#   · `teeth/_scratch/splice-22c.cjs` 在 §J ④（1263 行）被点名（t7 原地整块替换 §22c 的工具）；
+#   · `r4-contents-before.log` / `r4-contents-after.log` 在 §G（1329 行）被点名。
+
+# ── 复核命令（不需要先落盘：用 core.excludesFile 把这份文件当成"临时全局忽略"来实测）──
+#   git -c core.excludesFile=<本文件绝对路径> ls-files --others --exclude-standard -- \
+#       research/_raw/secondary-page-layout-unification | wc -l
+# 期望：从 5,392 降到 ~771（真实证据），且上面 4 个 `!` 文件仍在列表里。
+
+# ══════════════════════════════════════════════════════════════════════════════════════════════
+# 【t23 终态追加 · 2026-10-06 23:5x】上面 5 条已由 captain 落盘；运行期又长出一个新的 scratch：
+#
+#   verify/scratch/t31-form/**  —— 279 文件 / 18.96 MB，由**正在运行的 t31** 渲染出来的整站副本
+#                                  （`.nojekyll` / `api-plans.json` / `deal/<id>/index.html` …）。
+#   它是 a) 可再生的、b) 与 review/scratch、t20/scratch 同性质的**沙箱** ⇒ 按同一条纪律排除。
+#
+# 修法（**一行**，写在版本目录的 .gitignore 里即可；它覆盖上面几条里重复的部分）：
+#
+#   **/scratch/
+#
+# 为什么敢用这么宽的写法 —— **安全性实测**（2026-10-06 23:5x）：
+#   扫了报告 / self-audit / PROJECT_STATUS / NEXT-STEPS / DESIGN-RULES / pr-body 六份文档，
+#   **没有任何被引用的路径**落在 `/scratch/`（非 `_scratch`）之下；唯一的 `scratch` 命中是
+#   pr-body 里对 `review/scratch/` 的一句说明文字。`teeth/_scratch/**` 是 `_scratch`，不受影响。
+#
+# **效果实测**（同一份 `.gitignore` 之上用 core.excludesFile 叠加这一行）：
+#   1,235 文件 → **956 文件**（排掉 279），且 4 个指名放回的 `!` 文件仍在清单里。
+#
+# 复核命令（把 `<repo>/research/_raw/secondary-page-layout-unification/verify/scratch/` 追加到本文件末尾再跑）：
+#   git -c core.excludesFile=<本文件> ls-files --others --exclude-standard -- \
+#       research/_raw/secondary-page-layout-unification | wc -l          # 期望 ~956

@@ -1,0 +1,104 @@
+{
+  "section22b": {
+    "targetBytes": 37318,
+    "backupBytes": 37318,
+    "sha256Target": "077dc51ef68af7fd",
+    "sha256Backup": "077dc51ef68af7fd",
+    "byteIdentical": true,
+    "targetLines": 583
+  },
+  "checks": {
+    "targetLiterals": 481,
+    "backupLiterals": 481,
+    "removedCount": 1,
+    "addedCount": 1,
+    "removed": [
+      "`§22c @${width} 样本集 ${wideSampleRoutes.length} 页（旧口径 textWidth + 同轴 / 不裁切 / 不溢出；逐行字迹只在桌面档判）`"
+    ],
+    "added": [
+      "`§22c @${width} 样本集 ${wideSampleRoutes.length} 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）`"
+    ]
+  },
+  "tokens": {
+    "0.85 / WIDE_NOTE_RATIO 定义行": {
+      "target": 1,
+      "backup": 1,
+      "targetLiteral": 8,
+      "backupLiteral": 8
+    },
+    "lineCount >= 2 判据行": {
+      "target": 2,
+      "backup": 2
+    },
+    "inkRule 出现": {
+      "target": 1,
+      "backup": 9
+    },
+    "inkRule 调用点（meta.inkRule）": {
+      "target": 1,
+      "backup": 3
+    },
+    "ch70 出现": {
+      "target": 36,
+      "backup": 0
+    },
+    "rendered 前置（boxed = note.rendered）": {
+      "target": 1,
+      "backup": 0
+    }
+  },
+  "criteriaLines": {
+    "narrowOld": {
+      "target": [
+        "6591: if (boxed && note.textWidth < threshold - 0.01) {"
+      ],
+      "backup": [
+        "6540: if (note.textWidth < threshold - 0.01) {"
+      ]
+    },
+    "inkNew": {
+      "target": [
+        "6216: 'unclassified-layout', 'unexpected-detail-main', 'missing-detail-main', 'note-narrow', 'note-ink-narrow',",
+        "6609: push('note-ink-narrow', `${where} 逐行字迹：最宽一行 ${wideRound(note.widestLine)}px < ${WIDE_NOTE_RATIO} × 列宽`",
+        "6851: const inkNarrow = hit('note-ink-narrow');",
+        "6852: const union = rows.filter(row => row.codes.includes('note-narrow') || row.codes.includes('note-ink-narrow'));",
+        "7069: { id: 'M11', route: 'changes/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend', expectInkEvidence: true,",
+        "7112: const inkNarrowKeys = problems.filter(problem => problem.code === 'note-ink-narrow')",
+        "7180: && hiddenKeys.length > 0 && !codes.includes('note-ink-narrow'),",
+        "7183: + ` · 行 ${first.lineCount} 行 · note-hidden-text 命中 [${hiddenKeys.join(', ') || '无'}] · note-ink-narrow ${codes.includes('note-ink-narrow') ? '有（不该有）' : '无'}`",
+        "7481: const inkRows = rows.filter(row => row.codes.includes('note-ink-narrow'));"
+      ],
+      "backup": [
+        "6207: 'unclassified-layout', 'unexpected-detail-main', 'missing-detail-main', 'note-narrow', 'note-ink-narrow',",
+        "6553: push('note-ink-narrow', `${where} 逐行字迹：最宽一行 ${wideRound(note.widestLine)}px < ${WIDE_NOTE_RATIO} × 列宽`",
+        "6793: const inkNarrow = hit('note-ink-narrow');",
+        "6794: const union = rows.filter(row => row.codes.includes('note-narrow') || row.codes.includes('note-ink-narrow'));",
+        "6985: { id: 'M11', route: 'changes/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend', expectInkEvidence: true,",
+        "7028: const inkNarrowKeys = problems.filter(problem => problem.code === 'note-ink-narrow')",
+        "7096: && hiddenKeys.length > 0 && !codes.includes('note-ink-narrow'),",
+        "7099: + ` · 行 ${first.lineCount} 行 · note-hidden-text 命中 [${hiddenKeys.join(', ') || '无'}] · note-ink-narrow ${codes.includes('note-ink-narrow') ? '有（不该有）' : '无'}`",
+        "7373: const inkRows = rows.filter(row => row.codes.includes('note-ink-narrow'));"
+      ]
+    },
+    "hiddenText": {
+      "target": [
+        "6217: 'note-axis', 'note-clipped', 'note-hidden-text', 'page-overflow@<vw>', 'data-region-missing'",
+        "6615: push('note-hidden-text', `${where} 文本 ${note.textLength} 字但**零可见字形盒**（getClientRects 为空）`",
+        "6864: hiddenText: hit('note-hidden-text'),",
+        "7073: { id: 'M12', route: 'student/', width: WIDE_DESKTOP, expect: 'note-hidden-text', target: 'extend', expectNoGlyph: true,",
+        "7114: const hiddenTextKeys = problems.filter(problem => problem.code === 'note-hidden-text')",
+        "7178: check('§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text',",
+        "7482: const hiddenRows = rows.filter(row => row.codes.includes('note-hidden-text'));"
+      ],
+      "backup": [
+        "6208: 'note-axis', 'note-clipped', 'note-hidden-text', 'page-overflow@<vw>', 'data-region-missing'",
+        "6559: push('note-hidden-text', `${where} 文本 ${note.textLength} 字但**零可见字形盒**（getClientRects 为空）`",
+        "6806: hiddenText: hit('note-hidden-text'),",
+        "6989: { id: 'M12', route: 'student/', width: WIDE_DESKTOP, expect: 'note-hidden-text', target: 'extend', expectNoGlyph: true,",
+        "7030: const hiddenTextKeys = problems.filter(problem => problem.code === 'note-hidden-text')",
+        "7094: check('§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text',",
+        "7374: const hiddenRows = rows.filter(row => row.codes.includes('note-hidden-text'));"
+      ]
+    }
+  }
+}

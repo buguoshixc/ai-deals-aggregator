@@ -1,0 +1,135 @@
+# t12 · 线上代码路径的健壮性演练（三种线上会遇到的情形，全部实测）
+
+时间：2026-10-06T08:53:20.436Z · 全部只访问 127.0.0.1（回环）· 假 sitemap 用保留域 deals.example.invalid（永不解析）
+
+## 结论表
+
+| # | 情形 | 退出码（期望） | 判定 | 关键输出语句 |
+| --- | --- | --- | --- | --- |
+| robust-no-deal-entries | 健壮性① · 假 sitemap 只有 models、没有 deal ⇒ 必须 exit 2 且说清原因 | 2（2） | ✅ 符合 | `deal 路由 0 条`、`推不出取样页` |
+| robust-no-model-entries | 健壮性① · 假 sitemap 只有 deal、没有 models ⇒ 必须 exit 2 且说清原因 | 2（2） | ✅ 符合 | `models 路由 0 条`、`推不出取样页` |
+| robust-sitemap-404 | 健壮性② · 目标目录里没有 sitemap.xml ⇒ HTTP 404 ⇒ 必须 exit 2 | 2（2） | ✅ 符合 | `HTTP 404` |
+| robust-sitemap-timeout | 健壮性② · 连得上但永不响应 ⇒ 必须 exit 2 且报"超过 Nms 未响应" | 2（2） | ✅ 符合 | `超过 1200ms 未响应` |
+| robust-prefix-mismatch | 健壮性③ · 服务挂在 /ai-deals-aggregator/，base 却给根路径 ⇒ sitemap 404 ⇒ 必须 exit 2（不许静默变绿） | 2（2） | ✅ 符合 | `HTTP 404` |
+
+## 代码级论证（与实测互补，说明"为什么是这样"）
+
+- **① 条目缺失**：`deriveRoutes()` 在线上模式（`--base=`，没有 `dir`）下**没有 JSON 退路** ——
+  推不出就 `throw`，由顶层 `.catch` 打成 `FAILED: …` 并给 **退出码 2**（不是 0、不是"0 页通过"）。
+  本地模式（`--dir=`）则退到 `deals.json` / `models.json`，但**必须留痕**：`derivation.fallback=true` + 一行 ⚠️。
+- **② 非 200 / 超时**：`fetch` 默认**没有超时** —— 不显式给 `AbortSignal` 的话，"连得上但不响应"会让脚本
+  **静默挂死**（不是失败、不是跳过，是永远不结束）。因此 `--sitemap-timeout=`（缺省 15000ms）是硬要求，
+  超时被翻译成人话（`超过 Nms 未响应`）后交给同一条 `exit 2` 出口。
+- **③ URL 前缀**：`<loc>` 是**绝对 URL**，项目站的每条都带 `/ai-deals-aggregator/` 前缀；脚本按
+  「BASE 的 pathname」与「sitemap 里最短的、以 `/` 结尾的 pathname」两处取站点根前缀并剥掉，
+  前缀写错 ⇒ sitemap 本身就取不到（404）⇒ 明确失败。上面用例 ② 与 ⑧ 分别是这件事的**正反两面**。
+
+## 逐条原始日志
+
+# robust-no-deal-entries · 健壮性① · 假 sitemap 只有 models、没有 deal ⇒ 必须 exit 2 且说清原因
+
+命令：node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53877/ai-deals-aggregator/ --only=student/
+退出码：2（期望 2）· 判定：OK · 用时 0.3s
+基线地址：http://127.0.0.1:53877/ai-deals-aggregator/（**本机回环**，不是真实线上域名）
+
+## 服务端访问日志（前 3 行）
+
+```
+[2026-10-06T08:53:18.222Z] GET /ai-deals-aggregator/sitemap.xml 200 (override: sitemap.xml, 674B)
+```
+
+
+## stdout + stderr（原样）
+
+```
+线上模式：http://127.0.0.1:53877/ai-deals-aggregator/
+FAILED: 线上 sitemap 里 deal 路由 0 条 / models 路由 2 条 —— 推不出取样页（线上模式没有 JSON 退路：页面路由必须来自 sitemap）
+```
+
+
+# robust-no-model-entries · 健壮性① · 假 sitemap 只有 deal、没有 models ⇒ 必须 exit 2 且说清原因
+
+命令：node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53878/ai-deals-aggregator/ --only=student/
+退出码：2（期望 2）· 判定：OK · 用时 0.3s
+基线地址：http://127.0.0.1:53878/ai-deals-aggregator/（**本机回环**，不是真实线上域名）
+
+## 服务端访问日志（前 3 行）
+
+```
+[2026-10-06T08:53:18.472Z] GET /ai-deals-aggregator/sitemap.xml 200 (override: sitemap.xml, 536B)
+```
+
+
+## stdout + stderr（原样）
+
+```
+线上模式：http://127.0.0.1:53878/ai-deals-aggregator/
+FAILED: 线上 sitemap 里 deal 路由 2 条 / models 路由 0 条 —— 推不出取样页（线上模式没有 JSON 退路：页面路由必须来自 sitemap）
+```
+
+
+# robust-sitemap-404 · 健壮性② · 目标目录里没有 sitemap.xml ⇒ HTTP 404 ⇒ 必须 exit 2
+
+命令：node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53879/
+退出码：2（期望 2）· 判定：OK · 用时 0.3s
+基线地址：http://127.0.0.1:53879/（**本机回环**，不是真实线上域名）
+
+## 服务端访问日志（前 3 行）
+
+```
+[2026-10-06T08:53:18.732Z] GET /sitemap.xml 404
+```
+
+
+## stdout + stderr（原样）
+
+```
+线上模式：http://127.0.0.1:53879/
+FAILED: 取线上 sitemap 失败：http://127.0.0.1:53879/sitemap.xml → HTTP 404（线上模式没有 JSON 退路；退出码 2，不制造假绿）
+```
+
+
+# robust-sitemap-timeout · 健壮性② · 连得上但永不响应 ⇒ 必须 exit 2 且报"超过 Nms 未响应"
+
+命令：node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53880/ --sitemap-timeout=1200
+退出码：2（期望 2）· 判定：OK · 用时 1.4s
+基线地址：http://127.0.0.1:53880/（**本机回环**，不是真实线上域名）
+
+## 服务端访问日志（前 3 行）
+
+```
+[2026-10-06T08:53:08.584Z] SERVING D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\dist at http://127.0.0.1:53880/（--hang：永不响应）
+[2026-10-06T08:53:18.966Z] GET /sitemap.xml [--hang：接受连接但不写任何字节]
+```
+
+
+## stdout + stderr（原样）
+
+```
+线上模式：http://127.0.0.1:53880/
+FAILED: 取线上 sitemap 失败：http://127.0.0.1:53880/sitemap.xml → 超过 1200ms 未响应（线上模式没有 JSON 退路；退出码 2，不制造假绿）
+```
+
+
+# robust-prefix-mismatch · 健壮性③ · 服务挂在 /ai-deals-aggregator/，base 却给根路径 ⇒ sitemap 404 ⇒ 必须 exit 2（不许静默变绿）
+
+命令：node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53875/
+退出码：2（期望 2）· 判定：OK · 用时 0.3s
+基线地址：http://127.0.0.1:53875/（**本机回环**，不是真实线上域名）
+
+## 服务端访问日志（前 3 行）
+
+```
+[2026-10-06T08:53:12.893Z] GET /ai-deals-aggregator/sitemap.xml 200 (sitemap.xml)
+[2026-10-06T08:53:20.421Z] GET /sitemap.xml 404（不在挂载前缀 /ai-deals-aggregator/ 下）
+```
+
+
+## stdout + stderr（原样）
+
+```
+线上模式：http://127.0.0.1:53875/
+FAILED: 取线上 sitemap 失败：http://127.0.0.1:53875/sitemap.xml → HTTP 404（线上模式没有 JSON 退路；退出码 2，不制造假绿）
+```
+
+

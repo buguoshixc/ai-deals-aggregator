@@ -1,0 +1,45 @@
+﻿CI 口径一致性检查 · root=D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification
+磁盘上的 workflow 文件：ai-maintenance.yml / collect.yml / deploy.yml / probe-sources.yml / verify.yml
+必需清单（写死）：ai-maintenance.yml / collect.yml / deploy.yml / probe-sources.yml / verify.yml
+
+  ✓ (0) 必需 workflow 存在：ai-maintenance.yml — 存在
+  ✓ (0) 必需 workflow 存在：collect.yml — 存在
+  ✓ (0) 必需 workflow 存在：deploy.yml — 存在
+  ✓ (0) 必需 workflow 存在：probe-sources.yml — 存在
+  ✓ (0) 必需 workflow 存在：verify.yml — 存在
+  ✓ (0b) 磁盘上的 workflow 集合 == 必需清单（互为子集；未登记的新文件也硬红） — 磁盘 5 个 = 必需清单 5 个：ai-maintenance.yml / collect.yml / deploy.yml / probe-sources.yml / verify.yml
+  ✓ (1) 必需 workflow 的 uses 没有 v1..v4 旧代引用（按主版本比较，含 @v4.1.1 这类点分写法） — 扫了磁盘上 5 个 workflow 的全部 uses
+  ✓ (1b) 必需 workflow 的 uses 没有浮动引用（@main / @master / 裸分支名；按 SHA 钉死是允许且推荐的） — 未发现浮动引用（SHA 钉死的写法同样视为通过）
+  ✓ (2) ai-maintenance.yml 的 uses 集合等于冻结集合 — actions/checkout@v5、actions/setup-node@v5、actions/upload-artifact@v5
+  ✓ (2) collect.yml 的 uses 集合等于冻结集合 — actions/checkout@v5、actions/setup-node@v5、./.github/actions/gate
+  ✓ (2) deploy.yml 的 uses 集合等于冻结集合 — actions/checkout@v5、actions/setup-node@v5、./.github/actions/gate、actions/checkout@v5、actions/setup-node@v5、actions/configure-pages@v6、actions/upload-pages-artifact@v5、actions/deploy-pages@v5
+  ✓ (2) probe-sources.yml 的 uses 集合等于冻结集合 — actions/checkout@v5、actions/setup-node@v5
+  ✓ (2) verify.yml 的 uses 集合等于冻结集合 — actions/checkout@v5、actions/setup-node@v5、./.github/actions/gate
+  ✓ (3) deploy.yml 全部 job 的 runs-on 都是 ubuntu-24.04 — prepublish=ubuntu-24.04、build=ubuntu-24.04、deploy=ubuntu-24.04
+  ✓ (3b) 全部 workflow 的 runs-on 都不是浮动标签（按取值判，不按字符串判） — 未发现 *-latest 取值（注释里提到它不算漂移）
+  ✓ (3c) 全部磁盘上的 workflow 的 runs-on 取值集合唯一（按 jobs.<job>.runs-on 的 path 判） — ubuntu-24.04 — ai-maintenance.yml=ubuntu-24.04、collect.yml=ubuntu-24.04、deploy.yml=ubuntu-24.04/ubuntu-24.04/ubuntu-24.04、probe-sources.yml=ubuntu-24.04、verify.yml=ubuntu-24.04
+  ✓ (4) 全部磁盘上的 workflow 的 node-version 取值集合唯一（只认 setup-node 步骤 with: 下的值） — 24 — ai-maintenance.yml=24、collect.yml=24、deploy.yml=24/24、probe-sources.yml=24、verify.yml=24
+  ✓ (4b) 每个带 setup-node 的 job 都显式给出 with.node-version — 覆盖 ai-maintenance.yml:1 个 job、collect.yml:1 个 job、deploy.yml:2 个 job、probe-sources.yml:1 个 job、verify.yml:1 个 job
+  ✓ (4c) 没有把 node-version 写在 env: 等无效位置（那种写法会骗过检查器） — 未发现无效位置的 node-version
+  ✓ (5) deploy.yml 的 job 名与顺序严格等于 prepublish / build / deploy — prepublish、build、deploy
+  ✓ (6) engines 下限不低于锁文件里最严的依赖下限（从锁文件推导） — 声明 >=20.18.1 ≥ 锁文件最严 20.18.1（来自 (root)、cheerio、undici）
+  ✓ (7a) deploy.yml 的 on: 仍含 workflow_run 桥接 — workflows=["Collect AI Deals"] types=["completed"]
+  ✓ (7b) build job 的 if 表达式逐字未变 — github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+  ✓ (8) verify.yml 的 gate job 存在且没有 job 级 if（永不 skipped） — 无 job 级 if
+  ✓ (9) verify.yml 的 on: 没有被 paths / paths-ignore 过滤（必需检查被过滤 = PR 永久 pending） — on: 下没有任何 paths / paths-ignore
+  ✓ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — .github/actions/gate/action.yml 共 49 步：名字序列 / run 体指纹 / 步骤级 if / 无 continue-on-error 全过；降级判定真实执行 6 组（只有逐字 'true' 才降级且留痕）
+  ✓ (10b) gate 复合 action 的每个 run 步骤都显式给出 shell（复合 action 的硬要求） — run 步骤 49 个 / shell 声明 49 个
+  ✓ (10c) gate 复合 action 不含任何第三方 uses（门禁里不引入未冻结的外部动作） — 只有 run: 步骤
+  ✓ (11) collect.yml / deploy.yml / verify.yml 各恰好调用一次门禁 action — collect.yml:1、deploy.yml:1、verify.yml:1；降级输入按真实表达式求值 —— schedule=false · workflow_dispatch（默认（未勾选））=false · workflow_dispatch（显式勾选降级）=true · push=false · workflow_run=false · workflow_dispatch（默认（未勾选））=false · workflow_dispatch（显式勾选降级）=false · pull_request=false · push=false · workflow_dispatch（默认（未勾选））=false · workflow_dispatch（显式勾选降级）=true
+  ✓ (12) deploy.yml 的发布链必须先过门禁：prepublish 无 job 级 if、build 依赖它、deploy 依赖 build — prepublish(无 if) → build(needs=["prepublish"]) → deploy(needs=["build"])
+  ✓ (13) collect.yml 的门禁步骤排在提交步骤之前 — 门禁在字节 3745 → git push 在字节 7883（同一 collect job 里，步骤顺序即语义）
+  ✓ (14) workflow 与复合 action 里没有「未加引号的标量含『冒号+空格』」（真实 YAML 会拒绝，本文件的缩进读取器读得过去） — 扫了 5 个 workflow + .github/actions/gate/action.yml 的全部未加引号标量
+  ✓ (15) collect.yml 的推送用专用 GitHub App 身份（github-actions 不能被加进 ruleset 绕过名单） — App token 换取排在推送之前 · checkout 不持久化凭据 · 提交带 [skip ci] 防双链发布
+  ✓ (16) ai-maintenance.yml 只手动触发、只读仓库、只出 artifact（无提交/推送/发布动作） — workflow_dispatch 唯一入口 · contents: read · 文件里无 commit/push/deploy 动作 · 已接 AI 自检
+  ✓ (17) package.json 里的每个 selftest:* 都被门禁真的跑到（新脚本必须登记） — package.json 里的 selftest:* 全部出现在 .github/actions/gate/action.yml 里；7 个产物依赖步骤都显式 --dir=dist 且排在「Assemble site (same path as deploy.yml)」之后
+  ✓ (19) 每个 scripts/tools/*selftest*.js 都有被门禁真的跑到的 script 指向（反向登记制） — 扫了 26 个 *selftest*.js：26 个被门禁跑到的 script 指向，逐文件匹配的豁免 0 条（每条都已自证：文件存在、非通配、有理由、仍命中 glob）
+  ✓ (18) 私有分析的产物门禁步骤存在、指向 dist、且声明了覆盖 / guard / provider 三件事 — 「Analytics self-test (bootstrap count / production guard / provider)」在位 · 跑 analytics-selftest.js 且显式 --dir=dist · 排在「Assemble site (same path as deploy.yml)」之后
+  ✓ (W) 断言名单与冻结清单等值（删一条或改名都会红；本看门狗保护不了自己被删） — 实跑 37 条 = 冻结清单 37 条 + 本看门狗
+✓ (E) 实跑项数 == --expect-checks=38（期望值来自 verify.yml 的 gate 调用行；数字钉在调用方，与看门狗互相独立）
+
+✅ CI 口径检查 38 项，失败 0 项

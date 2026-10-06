@@ -1,0 +1,46 @@
+== 1. 判据标的 ==
+verify-site.js sha256 = 2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e
+期望（轮 6 冻结版）    = 2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e
+相等 = true · 522527 B · mtime 2026-10-06T14:52:23.550Z
+
+== 2. dist 只读（注入只落在 scratch 副本） ==
+dist/category/agent/index.html sha256 = ad9c5d4058dc2ab20d035cce1f1a76b5b784244154038498137c7b96d6b34169
+跑前原样（mk-form-scratch 记录的 sha256Before）= ad9c5d4058dc2ab20d035cce1f1a76b5b784244154038498137c7b96d6b34169 · 相等 = true
+scratch 副本 research/_raw/secondary-page-layout-unification/verify/scratch/t31-form/category/agent/index.html = 09e6b46c935c03e521a56445182fdade547108cd8e66da09f99c539855a43b6c（应与 dist 不同）· 不同 = true
+dist 全树最新 mtime = 2026-10-06T15:42:38.933Z（本轮 4 个动作全部只读 dist）
+dist.baseline 全树最新 mtime = 2026-10-06T06:27:50.163Z
+mk-form-scratch 读数：dist 文件 303 · scratch 文件 303 · 与 dist 不同 1 个 [category/agent/index.html] · 冻结串 1 → 1 · 目标页 +85 B
+
+== 3. git 视角（只读） ==
+HEAD = 1f225d22625c15702995785394b60185ebd0520b · origin/master = 1f225d22625c15702995785394b60185ebd0520b
+git status --porcelain -- scripts dist dist.baseline docs index.html:
+M docs/DESIGN-RULES.md
+ M index.html
+ M scripts/lib/archive.js
+ M scripts/lib/page-kinds.js
+ M scripts/tools/archive-selftest.js
+ M scripts/tools/build-local.js
+ M scripts/tools/seo-selftest.js
+ M scripts/tools/verify-site.js
+
+== 4. 本轮产出的证据文件（T31） ==
+  research/_raw/secondary-page-layout-unification/verify/t31/_form-hits.txt  2287 B
+  research/_raw/secondary-page-layout-unification/verify/t31/gate-dist.exit.txt  28 B
+  research/_raw/secondary-page-layout-unification/verify/t31/gate-dist.json  1091909 B
+  research/_raw/secondary-page-layout-unification/verify/t31/gate-dist.log  169098 B
+  research/_raw/secondary-page-layout-unification/verify/t31/gate-form.exit.txt  28 B
+  research/_raw/secondary-page-layout-unification/verify/t31/gate-form.json  1091623 B
+  research/_raw/secondary-page-layout-unification/verify/t31/gate-form.log  169188 B
+  research/_raw/secondary-page-layout-unification/verify/t31/gate-slices.json  58111 B
+  research/_raw/secondary-page-layout-unification/verify/t31/gate-slices.txt  41988 B
+  research/_raw/secondary-page-layout-unification/verify/t31/mk-form-scratch.cjs  4623 B
+  research/_raw/secondary-page-layout-unification/verify/t31/mk-form-scratch.log  508 B
+  research/_raw/secondary-page-layout-unification/verify/t31/mutations.json  19375 B
+  research/_raw/secondary-page-layout-unification/verify/t31/post-checks.cjs  3975 B
+  research/_raw/secondary-page-layout-unification/verify/t31/probe-dist.json  11317 B
+  research/_raw/secondary-page-layout-unification/verify/t31/probe-dist.log  1312 B
+  research/_raw/secondary-page-layout-unification/verify/t31/probe-form.json  11433 B
+  research/_raw/secondary-page-layout-unification/verify/t31/probe-form.log  1354 B
+  research/_raw/secondary-page-layout-unification/verify/t31/scratch-form.json  904 B
+  research/_raw/secondary-page-layout-unification/verify/t31/slice-gate.cjs  4437 B
+  research/_raw/secondary-page-layout-unification/verify/t31/writing-mode-probe.cjs  14677 B

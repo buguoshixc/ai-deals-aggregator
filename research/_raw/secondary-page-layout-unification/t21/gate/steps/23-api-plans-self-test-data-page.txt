@@ -1,0 +1,205 @@
+# API-plans self-test (data + page)
+# $ node scripts/tools/api-plans-selftest.js
+# runAt 2026-10-06T12:58:51.844Z · verify-site.js sha256 fd3c9a3090dca11bbe6c34342505506bb44f4720c39fe4b18f4d7c23481f46d5
+
+
+① 数据契约：身份 / 单位 / 模型条目
+  ✓ 合法夹具通过
+  ✓ id 是 12 位小写 hex 且由 makeApiPlanId 推导
+  ✓ derivedMetrics 恒为 {}（本阶段不产出任何派生单价）
+  ✓ 改价不换 id（同 provider + planName + channel 就是同一条记录）
+  ✓ 换官方页不换 id
+  ✓ 换 channel 换 id（标准 / 批处理是两个可售 SKU）
+  ✓ token 维度键序固定且齐全
+  ✓ cacheWrite 与 cacheWriteLong 是两个独立维度（Anthropic 同时公布 5 分钟与 1 小时写价）
+  ✓ (modelKey, variant) 规范序：GLM-5.3 standard 在 GLM-5.3 long_context 之前
+  ✓ pricing.unit 非法 → 红
+  ✓ 有 token 价却没有单位 → 红
+  ✓ 没有 token 价却声明了单位 → 红
+  ✓ 非 token 计费项缺单位 → 红
+  ✓ 模型条目什么都没有 → 红
+  ✓ (modelKey, variant) 重复 → 红
+  ✓ modelKey 非规范形态 → 红
+  ✓ 未知字段 → 红
+  ✓ provider 未登记 → 红
+  ✓ limits.appliesTo 指向不存在的模型 → 红
+  ✓ freeTier.models 不在记录里 → 红
+  ✓ freeTier 三态：官方明说没有免费额度必须带 description → 红
+
+② 单位：显式保存，且全仓没有换算路径（Tooth #3）
+  ✓ 同一份价格数据 + 两种 unit 都能通过校验（单位是显式声明，不是隐含约定）
+  ✓ 【牙】引文点名「每百万」而 pricing.unit=per_1K_tokens → 红（单位枚举翻转必须有判据）
+  ✓ 【牙·反向】引文点名「每千」而 pricing.unit=per_1M_tokens → 也红（两个方向都有牙）
+  ✓ 【牙】单位没有任何见证（引文不点名、无 pricing.unit 引文、unitNote 空）→ 红（不许静默放行）
+  ✓ 页面「计费单位」列把两种口径区分开
+  ✓ 价格数字本身**原样输出**（不做任何单位换算）
+  ✓ 单位列 = 币种 + API_UNIT_LABEL 的**纯查表**（per_1M_tokens）
+  ✓ 价格单元格原样包含数据里的数字（per_1M_tokens 不做任何换算）
+  ✓ 单位列 = 币种 + API_UNIT_LABEL 的**纯查表**（per_1K_tokens）
+  ✓ 价格单元格原样包含数据里的数字（per_1K_tokens 不做任何换算）
+  ✓ 单位列 = 币种 + API_UNIT_LABEL 的**纯查表**（per_1M_characters）
+  ✓ 价格单元格原样包含数据里的数字（per_1M_characters 不做任何换算）
+  ✓ 【牙·代码面】scripts/ 下 164 个 .js 文件里没有任何单位换算路径（旧版只扫 1 个文件）
+  ✓ 【牙】扫描器对「非显眼文件里的换算路径」四种写法全部命中（否则这条红线是假的）
+  ✓ 【牙·反向】扫描器不误伤真实代码（注释放行、纯查表放行）
+
+⑤′ 证据绑定：维度 / 顺序 / 单位（§10.1–10.3）
+  ✓ 字段域：旧形态 models.<modelKey> 仍在（存量 35 条引文不许失配）
+  ✓ 字段域：新增逐变体 / 逐维度 / 记录级维度 / 非 token 单位四种键
+  ✓ 维度级绑定可用（…rates.input）且与规格一致
+  ✓ 精确到变体 + 维度的绑定可用
+  ✓ 【牙】绑定了 output 维度但引文里读不到输出价 → 红（空转的绑定等于没证）
+  ✓ 【牙】绑定一个**没有值**的维度（记录级 rates.reasoning）→ 红
+  ✓ 【牙·P1-7】来源层把 input/output 对调（引文仍是官方原序）→ 红
+  ✓ 对照：只改数值（不换序）不会因为"顺序"被判红（引文里没有 28.5 → 不作顺序断言）
+  ✓ 对照：输入价 == 输出价时不作顺序断言（同一个数字没有先后）
+  ✓ 对照：引文按官方列序写（输入在前）→ 绿（断言不是恒红）
+  ✓ 引文数字定位：28 里的 8 不算 8（前导边界）
+  ✓ 引文数字定位：粘连写法 2.1016.80 能认出 2.10 与 16.80
+  ✓ 单位点名：只认写出来的单位词，不看数字大小
+  ✓ 夹具：带 mediaRates 的记录可构造
+  ✓ 夹具：确实渲染出带 mediaRates 的那一行
+  ✓ 第 7 列：数字 + 单位 + 标签三件都在（单位来自数据的 unit 字段）
+  ✓ 对照组：带 mediaRates 的页面 0 问题
+  ✓ 【牙·P1-9】把第 7 列的单位错位（每张 → 每秒）→ assertPageHonesty 变红
+  ✓ 第 8 列：tokens 型免费额度印出 tokens 单位词
+  ✓ 【牙·P1-10】把 tokens 额度印成 credits → assertPageHonesty 变红
+
+③ credits 是钱，不是 token（Tooth #1）
+  ✓ credits 的字段白名单里没有任何 token 数量字段
+  ✓ credits 里塞 token 数量 → 红（键名含 token）
+  ✓ credits 里塞换算后的 token 数（别名写法）→ 红
+  ✓ unit=credits 缺 usageNote → 红
+  ✓ unit=usd 但币种是 CNY（隐含汇率）→ 红
+  ✓ 页面上 credits 只以「付 X 得 Y credits/cny」出现，不被折算成 token
+  ✓ credits 明细节把扣减口径与描述都写出来
+  ✓ 【牙】手写派生值（把 $10 credits 估成 500 万 token）→ 校验红
+
+④ 输入价 / 输出价分列（Tooth #2）
+  ✓ 页面诚实性断言在正确渲染上零问题（断言不是恒红）
+  ✓ 输入价单元格 == 数据的 rates.input
+  ✓ 输出价单元格 == 数据的 rates.output
+  ✓ 缓存命中输入单元格 == 数据的 rates.cachedInput
+  ✓ 【牙】把输入价与输出价在渲染结果里对调 → 逐格对账当场报错
+  ✓ 官方明说免费（0）渲染成「免费」，不是 0、也不是 —
+  ✓ 官方没公布（null）渲染成「—」
+  ✓ 两者互不顶替
+
+⑤ 免费额度：长期能力 vs 新用户 / 限时赠送（P1-11）
+  ✓ 免费模型列用**显示名**而不是 modelKey（读者认的是官方名）
+  ✓ 免费额度与 credits 有独立的明细节
+  ✓ 「官方明说没有免费额度」与「我们没查到（null）」是两种写法
+  ✓ 未标注的免费额度写「—」
+  ✓ freeTier 缺 stability → 红（缺省会被读成长期能力，这正是那条 P1 的形态）
+  ✓ freeTier.stability 非法值 → 红（只接受三档）
+  ✓ stability=standing 与 period=one_time 自相矛盾 → 红
+  ✓ 赠送额度写成周期性刷新（period=monthly）→ 红
+  ✓ 赠送额度缺 description → 红（分类必须由官方条件支撑）
+  ✓ 赠送额度的 description 没写条件 → 红
+  ✓ type=none 却标了性质 → 红（「没有」没有性质可标）
+  ✓ 正例：新用户赠送（一次性 + 写明官方条件）通过校验
+  ✓ 正例：限时赠送通过校验
+  ✓ 正例：freeTier.type=credits（带 conversionDependsOnModel）通过校验
+  ✓ 【牙】type=credits 缺 conversionDependsOnModel → 红（换算条件必须显式）
+  ✓ 三态契约常量 = true / false / null（唯一清单）
+  ✓ 缺 conversionDependsOnModel 的记录落成 null（未说明），绝不是 false
+  ✓ 显式 false 保持 false（不落 null、不落 undefined）
+  ✓ 三态经 JSON 往返不变：false 仍是 false、null 仍是 null（重建路径不得改语义）
+  ✓ 【牙】conversionDependsOnModel 写字符串 "false" → 红（三态只认字面量）
+  ✓ 【牙】conversionDependsOnModel 写 0 → 红（0 不是 false）
+  ✓ 【牙】§10.4 回归：freeTier.stability 缺省 → 红（中性形状；若被改成默认 standing，这条会失守）
+  ✓ 【牙】§10.4 回归：freeTier.stability=null → 红（null 不是三档之一）
+  ✓ 对照：同一中性形状补上 stability=standing → 通过（证明上一条红的是"缺 stability"本身）
+  ✓ 长期能力的单元格印出「长期提供的免费模型…」
+  ✓ 新用户赠送的单元格印出「新用户赠送」，并**明说**「非长期能力」
+  ✓ 新用户赠送的单元格里不得出现长期能力字样（「长期提供」/「长期免费」）
+  ✓ 限时赠送的单元格印出「限时赠送」并明说非长期能力
+  ✓ credits 型免费额度也带性质，渲染成「长期提供的免费额度 5 credits」
+  ✓ 对照组：未变异的页面 0 问题
+  ✓ 【牙】把一次性赠送渲染成「长期免费额度」→ assertPageHonesty 变红
+  ✓ 【牙·反向】赠送单元格少了性质词 → 也变红（两个方向都有牙）
+  ✓ 【牙】赠送单元格同时写着「长期提供」与「新用户赠送」→ 仍红（矛盾即红）
+  ✓ 【牙】长期能力的「长期」被删掉 → 变红（不得靠删词抹平）
+  ✓ 页面口径写明三档性质（长期提供 / 新用户赠送 / 限时赠送）
+  ✓ 页面口径不再宣称「只记官方长期提供的免费能力」（旧口径与数据自相矛盾）
+  ✓ schema 的口径文案与页面口径同调（同一处措辞不许分家）
+  ✓ 生产每条 freeTier 都写了 stability
+  ✓ 生产页面：免费额度那一列的性质与数据逐条一致（长期 / 新用户赠送 各就各位）
+  ✓ 生产页面：没有任何一条赠送 / 限时额度被印成长期能力（计数必须为 0）
+  ✓ 生产页面：每条 freeTier 的性质都印在单元格里（一条不漏）
+  生产 freeTier 性质分布：长期提供 2 条 · 新用户赠送 2 条 · 限时赠送 0 条（非长期 2 条：aliyun/one_time · tencent/one_time）
+
+⑥ 变化日志：价格 / 单位 / 免费额度 / 改名（Tooth #4）
+  ✓ 输入价上升 → price_increased（方向明确，不是笼统的"价格变化"）
+  ✓ 输入价下降 → price_decreased
+  ✓ 输入涨 / 输出降 → model_changed（绝不挑一个方向冒充单向变化）
+  ✓ 【牙】只改模型显示名（modelKey 不变）→ **零事件**（alias 不产生假变化）
+  ✓ 【牙】未登记的改名（换 modelKey）→ model_removed + model_added 同时出现
+  ✓ 【牙】同一运行里的"新增 + 移除且单价有相同项"→ 写出 possible_rename 异常（**检测不等于自动合并**）
+  ✓ 模型备注只改标点 → 零事件
+  ✓ 单位变化 → unit_changed（单独一条，不混进价格变化）
+  ✓ credits 变化 → credits_changed
+  ✓ 免费额度变化 → free_tier_changed
+  ✓ 基线 + 事件重放逐字段等于当前数据（逆操作改不回来必红）
+  ✓ 【牙】手改事件的值 → verifyStore 当场报错
+  ✓ 【牙】日期早于上一条事件 → 拒绝推进（不猜日期）
+  ✓ 一次未见 → 不记 ended（观测期未满）
+  ✓ 连续两次未见 → 记 ended（reason=source_no_longer_lists）
+  ✓ 【牙】批量消失（超过 max(3, 半数)）→ 熔断：不记 ended，只在 anomalies 留档
+  ✓ 变化日志的写入内核只有一份实现（api-plan-history 只薄封装 plan-history.recordWithProfile）
+
+⑥′ 派生事件身份 eventId（v3.0 补的缺口：写入点打点 + 重算比对）
+  ✓ 写入点给每条事件打上 eventId（12 位十六进制，派生字段）
+  ✓ apiPlanEventIdOf 是纯函数：同一条事件两次计算 ⇒ 同一个身份
+  ✓ 落库的 eventId 逐条等于重算值（写入点与校验点用同一个推导，不可能分家）
+  ✓ 事件内容不同 ⇒ 身份不同（改一个单价数字就换一个身份）
+  ✓ 事件日期不同 ⇒ 身份不同
+  ✓ 干净日志的 verifyStore 不报 eventId 问题（负例不误报）
+  ✓ 【牙】手写 / 篡改 eventId ⇒ verifyStore 报「派生字段不得手写」
+  ✓ 历史事件没带 eventId 时不判红（只有写了一个错的才红）
+  ✓ API 侧的事件身份推导只有一处，且与写入内核同源（不另写哈希基）
+  ✓ 派生字段的「重算并比对」只有一份实现（两条 profile 共用 plan-history.eventIdProblems）
+
+⑥″ API 变化视图（/changes/ 的 API 分栏，订阅源的输入）
+  ✓ 夹具确实产出了三类事件（价格 / 单位 / 元信息）—— 断言才有样本
+  ✓ API 分栏：可用时 availability=ok，窗口与套餐同口径
+  ✓ API 分栏：实质变化进「最近 7 天变化」，记录级元信息进 other.metadata（计数与事件字段自洽，期望由日志 type 现算）
+  ✓ API 分栏：other.metadata 每条条目的 field 与日志里元信息事件的 field 逐一对应（不只是条数相等）
+  ✓ API 分栏：每条条目都带**日志里的**派生事件身份（订阅的 guid 直接用它）
+  ✓ API 分栏：记录标题取当前数据，平台用显示名（不是内部键 zhipu）
+  ✓ API 分栏：同一份输入两次构建逐字节相同（纯函数）
+  ✓ API 分栏：「最近变化」块按 API 自己的优先级取（单价涨跌排在计费单位之前）
+  ✓ API 分栏：日志不可用时分栏全空、totals 归零（不拿「空」冒充「没有变化」的数据）
+  ✓ 套餐与 API 两个来源共用一份分栏实现（差异只登记在 RADAR_SOURCES）
+  ✓ 生命周期事件 created：文案非空、且不是「新增：—」这类空占位（实得「本条记录首次进入数据集（此前没有它的观测记录）」）
+  ✓ 生命周期事件 restored：文案非空、且不是「新增：—」这类空占位（实得「本条记录重新出现（此前记为不再收录）」）
+  ✓ 生命周期事件 ended：文案非空、且不是「新增：—」这类空占位（实得「人工来源层不再列出（连续两次重建未见）」）
+  ✓ 生命周期事件 created：文案非空、且不是「新增：—」这类空占位（实得「本条记录首次进入数据集（此前没有它的观测记录）」）
+  ✓ 生命周期事件 restored：文案非空、且不是「新增：—」这类空占位（实得「本条记录重新出现（此前记为不再收录）」）
+  ✓ 首次收录按真实语义说（不是「新增：某个值」）
+  ✓ 重新出现按真实语义说（不是「新增：某个值」）
+  ✓ 「不再收录」说原因（它本来就没有 from/to）
+  ✓ 渲染层：带生命周期事件的「最近变化」块里 0 处空占位
+  ✓ 渲染层：/changes/ 的单条渲染器对生命周期事件也给出一句非空文案
+  ✓ 【牙】把空占位塞回页面 → assertPageHonesty 当场红
+  ✓ 【牙】日志诚实性断言：正常生命周期事件 0 问题；而「ended 没有原因」这种会渲染成空的形态必红
+
+⑦ 优惠 ↔ API 计费记录（Deal Linking）
+  ✓ 关系可以指向 API 计费记录（id 空间合并，关系表格式未变）
+  ✓ API 计费记录也出现在关系视图里，且带 planKind
+  ✓ 注入 dist 的行带 planKind（渲染层据此切换标签与链接目标）
+  ✓ API 计费记录算不出「节省金额」（它没有 billing，与订阅价不可相减）
+  ✓ 注入的字段键序固定（含新增的 planKind）
+  ✓ 【牙】关系声明的 provider 与 API 记录的 provider 不一致 → 红
+  ✓ 【牙】planId 指向不存在的记录 → 红
+
+⑧ 诚实性：结论性词汇与页面承诺
+  ✓ 数据层的结论性词汇必须判红（记录名里出现「最值得买」）
+  ✓ 【牙】页面注入结论性词汇 → 诚实性断言变红
+  ✓ 页面没有交互控件（v1 是预渲染静态表）
+  ✓ 页面承诺了「单位不跨口径换算」与「credits 不是 token」
+  ✓ 每条记录都有锚点（订阅与深链的落点）
+  ✓ 页面给出了官方出处链接
+  ✓ 历史诚实性断言在空日志上零问题（断言不是恒红）
+
+=== v2.5 API / Token 计费演练：176 项通过，0 项失败 ===

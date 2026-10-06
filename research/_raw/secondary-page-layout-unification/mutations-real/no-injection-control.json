@@ -1,0 +1,35 @@
+{
+  "label": "real-dist",
+  "what": "不注入的正对照：M8/M9a/M9b/M10 的靶页在对应档位**本来**一条 note-narrow 都没有（否则\"注入后变窄\"说明不了问题）",
+  "rows": [
+    {
+      "id": "M8",
+      "route": "student/",
+      "width": 1440,
+      "noteNarrow": 0,
+      "codes": []
+    },
+    {
+      "id": "M9a",
+      "route": "docs/data/",
+      "width": 1440,
+      "noteNarrow": 0,
+      "codes": []
+    },
+    {
+      "id": "M9b",
+      "route": "changes/",
+      "width": 1440,
+      "noteNarrow": 0,
+      "codes": []
+    },
+    {
+      "id": "M10",
+      "route": "student/",
+      "width": 1600,
+      "noteNarrow": 0,
+      "codes": []
+    }
+  ],
+  "allClean": true
+}

@@ -1,0 +1,79 @@
+# Vendor-pages self-test (/vendor/)
+# $ node scripts/tools/vendor-page-selftest.js --dir=dist
+# runAt 2026-10-06T07:30:30.727Z · verify-site.js sha256 4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756
+
+
+① 真实数据：join 出来的资料区块与断言
+  ✓ 真实数据上厂商页从 9 个增到 25 个（非优惠资料 + A 空间身份，R5）
+  ✓ 候选集合 == 「有 A 空间厂商名 且 达标」的 provider 集合（不再多、不再少）
+  ✓ 三种资料类型都被真实数据覆盖（Coding 套餐 / API 记录 / 模型归属）
+  ✓ 至少一家厂商是「没有优惠、靠非优惠资料达标」的
+  ✓ provider key 与厂商显示名对得上（身份来自 providers.json，不是猜的）
+  ✓ 全部 25 个厂商页的资料区块零问题（断言不是恒红）
+  ✓ 资料区块的计数标记与数据一致（API 记录 / 模型计价条目 / 计费通道 / 模型数）
+  ✓ 资料区块里没有 data-item / data-child（否则 ItemList 行数对账会失真）
+  ✓ 厂商页 per-model 计价条目数 = 本厂商记录里独立展开后的条目数（通配映射不按 1 条算）
+  ✓ 真实数据里至少有一个模型在厂商页上记的条目数是展开出来的（如 qwen3-max: 2）
+  ✓ 没有 Coding 套餐的厂商写的是明确空态（不是空白、也不是 0 条记录）
+  ✓ 模型区块只链到真实存在的 registry 模型
+
+② 门槛：三条 OR 支（条数 / 事件 / 非优惠资料）
+  ✓ 门槛「条数达标」→ 生成（reason=eligible）
+  ✓ 门槛「事件达标」→ 生成（reason=eligible）
+  ✓ 门槛「非优惠资料达标」→ 生成（reason=eligible-nondeal）
+  ✓ 门槛「三条都不达标」→ 不生成（reason=below-threshold）
+  ✓ 靠非优惠资料达标时 reason 明确写出来（日志里读得懂为什么这一页存在）
+  ✓ 不传 nonDealMaterial 时门槛与 v2.x 逐字相同（纯追加）
+
+③ 牙 #6：同一 provider 两个 canonical slug
+  ✓ 真实数据上 slug 唯一且与两份登记表一致（断言不是恒红）
+  ✓ 【R5】9 个没有 A 空间厂商名的身份：逐条有 skip 记录，且计划 / 磁盘 / 登记表里都没有它的路由（JetBrains / Groq / Together AI / Fireworks AI / Cerebras / Trae / Qoder CN / 腾讯 CodeBuddy / Qoder International）
+  ✓ 【R5】dist/vendor/ 磁盘目录集合 == 计划里的 25 个 slug（多一个目录就是给谁建了路由）
+  ✓ 【R5 牙】没有 A 空间厂商名的身份却被建了路由 → 红（计划层有页 + 登记表有登记，两处各自报）
+  ✓ 【R5 牙】磁盘上多出一个计划外的路由目录 → 红（产物层独立于计划层判定）
+  ✓ 【R5 牙】计划里有页、磁盘上却缺目录 → 红（少一个也不许静默）
+  ✓ 【R5 牙】有 A 空间身份且达标的 provider 却没有页 → 红（原方向不许被删弱）
+  ✓ 【R5】候选厂商名全部在 A 空间有身份（vendorKey 非 null）
+  ✓ 【R5 续】25 个厂商页的 slug 全部来自 vendor-slugs.json（权威表，不靠 provider 兜底）
+  ✓ 【R5 续牙】某家未登记 slug（只靠 provider 兜底）→ 红
+  ✓ 【R5 续牙】登记值与页面 slug 不一致 → 红
+  ✓ 【R5 牙】给没有 A 空间厂商名的 provider 生成路由 → 红
+  ✓ 【R5】用 index.html 的真实 A 空间厂商名表（45 个）核验：页面厂商名全部命中
+  ✓ 【牙 #6】两个厂商页共用同一个 slug → 红
+  ✓ 【牙 #6】两份登记表 slug 不一致 → 红
+  ✓ 【牙 #6】页面用的 slug 与 canonical 不一致 → 红
+
+④ 牙 #7：/vendor/ 与 /provider/ 两套重复页面
+  ✓ 只有 /vendor/<slug>/ → 零问题（断言不是恒红）
+  ✓ 【牙 #7】出现可索引的 /provider/<slug>/ → 红
+  ✓ 【牙 #7】即便 noindex，/provider/ 路由本身也不允许（方案 A 只保留 /vendor/）
+
+⑤ 牙 #8：API 数量与 api-plans 数据不一致
+  ✓ 真实数据上 API 计数断言零问题（断言不是恒红）
+  ✓ 【牙 #8】页面上的 API 记录数被写多 1 → 红
+  ✓ 【牙 #8】视图与数据不一致（模型计价条目数）→ 红
+  ✓ 【牙 #8】少渲染一条计费记录 → 红
+
+⑥ seo.js 的 gate-threshold 与 landing 门槛同步
+  ✓ 条数达标 → 不报 gate-threshold
+  ✓ 【牙】靠非优惠资料达标 → 不报 gate-threshold（否则 v3.0 新增的厂商页会被门禁判死）
+  ✓ 事件数达标 → 不报 gate-threshold
+  ✓ 三条都不达标 → 仍然报 gate-threshold（没有放宽任何东西）
+  ✓ 描述符不给新字段时行为与 v2.x 相同（count=1 仍红）
+
+⑦ 纯追加：非厂商页与既有厂商页的边界
+  ✓ 不传 Stage E 的四份 join 输入时，计划与 v2.x 逐字节相同（老调用方零影响）
+  ✓ 传入后：厂商页与厂商枢纽之外的页面一个字节都没变
+  ✓ 厂商枢纽的子页集合**按设计**跟随（枢纽本来就要列全部厂商页）
+  ✓ 既有 9 个厂商页全部保留（没有因为新门槛而消失）
+  ✓ 非厂商页调用资料区块渲染器返回空串（纯追加：一个字节都不加）
+  ✓ 有条数的厂商页 title/heading 未被改写（只有 0 优惠的资料页换标题）
+  ✓ vendor-page.js 是纯函数（不读盘、不看时钟）
+  ✓ 接线用的 bundle 对非厂商页返回空 html + 空 css（纯追加：一个字节都不加）
+  ✓ 没有新增「厂商数据」真值文件（join，不是 duplicate）
+
+⑧ 真实产物（接线后才有；未接线时如实跳过）
+  ✓ dist 里没有 /provider/ 目录（方案 A 只保留 /vendor/<slug>/）
+  ✓ dist 现场：25 个厂商页的资料区块与数据逐项对账
+
+=== v3.0 厂商统一资料页演练：57 项通过，0 项失败 ===

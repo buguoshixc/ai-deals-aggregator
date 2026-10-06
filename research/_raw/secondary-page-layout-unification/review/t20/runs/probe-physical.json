@@ -1,0 +1,1243 @@
+[
+  {
+    "dir": "scratch/clean",
+    "route": "changes/",
+    "width": 760,
+    "mainWidth": 728,
+    "docScrollWidth": 760,
+    "docClientWidth": 760,
+    "noteCount": 13,
+    "ch70": [
+      452.81
+    ],
+    "boxWidths": [
+      728
+    ],
+    "widestLineMin": 156,
+    "widestLineMax": 720.23,
+    "multiLineNotes": 3,
+    "inkNarrowByPhysics": 0,
+    "notes": [
+      {
+        "i": 0,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 698.09,
+        "parent": "section.chgdeals",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 1,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 481.09,
+        "parent": "section.chgdeals",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 2,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 576,
+        "parent": "details.chgother",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 3,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 451.52,
+        "parent": "section.chgdeals",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 4,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 720,
+        "parent": "section.chgdeals",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 5,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 403.92,
+        "parent": "section.chgsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 6,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 228,
+        "parent": "div.chgsub",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 7,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 156,
+        "parent": "div.chgsub",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 8,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 708,
+        "parent": "section.chgsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 9,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 449.09,
+        "parent": "section.chgsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 10,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 276.23,
+        "parent": "div.chgsub",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 11,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 204.23,
+        "parent": "div.chgsub",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 12,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 720.23,
+        "parent": "section.chgsec",
+        "parentW": 728,
+        "font": "12px"
+      }
+    ]
+  },
+  {
+    "dir": "scratch/clean",
+    "route": "feeds/",
+    "width": 760,
+    "mainWidth": 728,
+    "docScrollWidth": 760,
+    "docClientWidth": 760,
+    "noteCount": 8,
+    "ch70": [
+      452.81
+    ],
+    "boxWidths": [
+      728
+    ],
+    "widestLineMin": 252,
+    "widestLineMax": 727.45,
+    "multiLineNotes": 5,
+    "inkNarrowByPhysics": 0,
+    "notes": [
+      {
+        "i": 0,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 710.48,
+        "parent": "main",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 1,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 722.78,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 2,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 511.67,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 3,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 600,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 4,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 727.45,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 5,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 721.11,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 6,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 723.3,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 7,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 252,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      }
+    ]
+  },
+  {
+    "dir": "scratch/clean",
+    "route": "changes/",
+    "width": 360,
+    "mainWidth": 328,
+    "docScrollWidth": 360,
+    "docClientWidth": 360,
+    "noteCount": 13,
+    "ch70": [
+      452.81
+    ],
+    "boxWidths": [
+      328
+    ],
+    "widestLineMin": 156,
+    "widestLineMax": 326.09,
+    "multiLineNotes": 9,
+    "inkNarrowByPhysics": 0,
+    "notes": [
+      {
+        "i": 0,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 326.09,
+        "parent": "section.chgdeals",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 1,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 325.09,
+        "parent": "section.chgdeals",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 2,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 324,
+        "parent": "details.chgother",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 3,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 319.52,
+        "parent": "section.chgdeals",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 4,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 324,
+        "parent": "section.chgdeals",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 5,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 312,
+        "parent": "section.chgsec",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 6,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 228,
+        "parent": "div.chgsub",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 7,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 156,
+        "parent": "div.chgsub",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 8,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 324,
+        "parent": "section.chgsec",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 9,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 321.17,
+        "parent": "section.chgsec",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 10,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 276.23,
+        "parent": "div.chgsub",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 11,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 204.23,
+        "parent": "div.chgsub",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 12,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 4,
+        "widest": 324,
+        "parent": "section.chgsec",
+        "parentW": 328,
+        "font": "12px"
+      }
+    ]
+  },
+  {
+    "dir": "scratch/grid760",
+    "route": "changes/",
+    "width": 760,
+    "mainWidth": 728,
+    "docScrollWidth": 760,
+    "docClientWidth": 760,
+    "noteCount": 13,
+    "ch70": [
+      452.81
+    ],
+    "boxWidths": [
+      728
+    ],
+    "widestLineMin": 156,
+    "widestLineMax": 451.52,
+    "multiLineNotes": 6,
+    "inkNarrowByPhysics": 6,
+    "notes": [
+      {
+        "i": 0,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 445.05,
+        "parent": "section.chgdeals",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 1,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 445.09,
+        "parent": "section.chgdeals",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 2,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 432,
+        "parent": "details.chgother",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 3,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 451.52,
+        "parent": "section.chgdeals",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 4,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 444,
+        "parent": "section.chgdeals",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 5,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 403.92,
+        "parent": "section.chgsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 6,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 228,
+        "parent": "div.chgsub",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 7,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 156,
+        "parent": "div.chgsub",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 8,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 444,
+        "parent": "section.chgsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 9,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 449.09,
+        "parent": "section.chgsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 10,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 276.23,
+        "parent": "div.chgsub",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 11,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 204.23,
+        "parent": "div.chgsub",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 12,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 444.23,
+        "parent": "section.chgsec",
+        "parentW": 728,
+        "font": "12px"
+      }
+    ]
+  },
+  {
+    "dir": "scratch/grid760",
+    "route": "feeds/",
+    "width": 760,
+    "mainWidth": 728,
+    "docScrollWidth": 760,
+    "docClientWidth": 760,
+    "noteCount": 8,
+    "ch70": [
+      452.81
+    ],
+    "boxWidths": [
+      728
+    ],
+    "widestLineMin": 252,
+    "widestLineMax": 533.77,
+    "multiLineNotes": 7,
+    "inkNarrowByPhysics": 7,
+    "notes": [
+      {
+        "i": 0,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 443.2,
+        "parent": "main",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 1,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 5,
+        "widest": 533.77,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 2,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 488.81,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 3,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 444,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 4,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 488.81,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 5,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 445.11,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 6,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 444,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 7,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 252,
+        "parent": "section.fsec",
+        "parentW": 728,
+        "font": "12px"
+      }
+    ]
+  },
+  {
+    "dir": "scratch/grid760",
+    "route": "plans/",
+    "width": 760,
+    "mainWidth": 728,
+    "docScrollWidth": 760,
+    "docClientWidth": 760,
+    "noteCount": 12,
+    "ch70": [
+      452.81
+    ],
+    "boxWidths": [
+      728,
+      702
+    ],
+    "widestLineMin": 121.05,
+    "widestLineMax": 649.95,
+    "multiLineNotes": 9,
+    "inkNarrowByPhysics": 8,
+    "notes": [
+      {
+        "i": 0,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 4,
+        "widest": 444,
+        "parent": "main",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 1,
+        "box": 702,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 568.42,
+        "parent": "section.phubsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 2,
+        "box": 702,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 351.22,
+        "parent": "section.phubsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 3,
+        "box": 702,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 649.95,
+        "parent": "section.phubsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 4,
+        "box": 702,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 160.45,
+        "parent": "section.phubsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 5,
+        "box": 702,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 584.81,
+        "parent": "section.phubsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 6,
+        "box": 702,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 560.81,
+        "parent": "section.phubsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 7,
+        "box": 702,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 455.42,
+        "parent": "section.phubsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 8,
+        "box": 702,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 500.81,
+        "parent": "section.phubsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 9,
+        "box": 702,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 121.05,
+        "parent": "section.phubsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 10,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 4,
+        "widest": 526.06,
+        "parent": "main",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 11,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 4,
+        "widest": 524.81,
+        "parent": "main",
+        "parentW": 728,
+        "font": "12px"
+      }
+    ]
+  },
+  {
+    "dir": "scratch/grid760",
+    "route": "category/",
+    "width": 760,
+    "mainWidth": 728,
+    "docScrollWidth": 760,
+    "docClientWidth": 760,
+    "noteCount": 2,
+    "ch70": [
+      452.81
+    ],
+    "boxWidths": [
+      728
+    ],
+    "widestLineMin": 500.81,
+    "widestLineMax": 572.81,
+    "multiLineNotes": 2,
+    "inkNarrowByPhysics": 2,
+    "notes": [
+      {
+        "i": 0,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 5,
+        "widest": 572.81,
+        "parent": "main",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 1,
+        "box": 728,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 500.81,
+        "parent": "main",
+        "parentW": 728,
+        "font": "12px"
+      }
+    ]
+  },
+  {
+    "dir": "scratch/grid760",
+    "route": "changes/",
+    "width": 360,
+    "mainWidth": 328,
+    "docScrollWidth": 360,
+    "docClientWidth": 360,
+    "noteCount": 13,
+    "ch70": [
+      452.81
+    ],
+    "boxWidths": [
+      328
+    ],
+    "widestLineMin": 156,
+    "widestLineMax": 326.09,
+    "multiLineNotes": 9,
+    "inkNarrowByPhysics": 0,
+    "notes": [
+      {
+        "i": 0,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 326.09,
+        "parent": "section.chgdeals",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 1,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 325.09,
+        "parent": "section.chgdeals",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 2,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 324,
+        "parent": "details.chgother",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 3,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 319.52,
+        "parent": "section.chgdeals",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 4,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 324,
+        "parent": "section.chgdeals",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 5,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 312,
+        "parent": "section.chgsec",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 6,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 228,
+        "parent": "div.chgsub",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 7,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 156,
+        "parent": "div.chgsub",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 8,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 3,
+        "widest": 324,
+        "parent": "section.chgsec",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 9,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 321.17,
+        "parent": "section.chgsec",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 10,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 276.23,
+        "parent": "div.chgsub",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 11,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 204.23,
+        "parent": "div.chgsub",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 12,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 4,
+        "widest": 324,
+        "parent": "section.chgsec",
+        "parentW": 328,
+        "font": "12px"
+      }
+    ]
+  },
+  {
+    "dir": "scratch/grid760",
+    "route": "feeds/",
+    "width": 360,
+    "mainWidth": 328,
+    "docScrollWidth": 360,
+    "docClientWidth": 360,
+    "noteCount": 8,
+    "ch70": [
+      452.81
+    ],
+    "boxWidths": [
+      328
+    ],
+    "widestLineMin": 252,
+    "widestLineMax": 328,
+    "multiLineNotes": 7,
+    "inkNarrowByPhysics": 0,
+    "notes": [
+      {
+        "i": 0,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 4,
+        "widest": 327.3,
+        "parent": "main",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 1,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 13,
+        "widest": 328,
+        "parent": "section.fsec",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 2,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 4,
+        "widest": 328,
+        "parent": "section.fsec",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 3,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 324,
+        "parent": "section.fsec",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 4,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 5,
+        "widest": 328,
+        "parent": "section.fsec",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 5,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 4,
+        "widest": 324.06,
+        "parent": "section.fsec",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 6,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 4,
+        "widest": 327.3,
+        "parent": "section.fsec",
+        "parentW": 328,
+        "font": "12px"
+      },
+      {
+        "i": 7,
+        "box": 328,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 252,
+        "parent": "section.fsec",
+        "parentW": 328,
+        "font": "12px"
+      }
+    ]
+  },
+  {
+    "dir": "scratch/contents",
+    "route": "changes/",
+    "width": 760,
+    "mainWidth": 728,
+    "docScrollWidth": 760,
+    "docClientWidth": 760,
+    "noteCount": 13,
+    "ch70": [
+      452.81
+    ],
+    "boxWidths": [
+      0
+    ],
+    "widestLineMin": 156,
+    "widestLineMax": 720.23,
+    "multiLineNotes": 4,
+    "inkNarrowByPhysics": 2,
+    "notes": [
+      {
+        "i": 0,
+        "box": 0,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 698.09,
+        "parent": "section.chgdeals",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 1,
+        "box": 0,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 457.09,
+        "parent": "section.chgdeals",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 2,
+        "box": 0,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 576,
+        "parent": "details.chgother",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 3,
+        "box": 0,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 451.52,
+        "parent": "section.chgdeals",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 4,
+        "box": 0,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 540,
+        "parent": "section.chgdeals",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 5,
+        "box": 0,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 403.92,
+        "parent": "section.chgsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 6,
+        "box": 0,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 228,
+        "parent": "div.chgsub",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 7,
+        "box": 0,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 156,
+        "parent": "div.chgsub",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 8,
+        "box": 0,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 708,
+        "parent": "section.chgsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 9,
+        "box": 0,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 449.09,
+        "parent": "section.chgsec",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 10,
+        "box": 0,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 276.23,
+        "parent": "div.chgsub",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 11,
+        "box": 0,
+        "ch70": 452.81,
+        "lines": 1,
+        "widest": 204.23,
+        "parent": "div.chgsub",
+        "parentW": 728,
+        "font": "12px"
+      },
+      {
+        "i": 12,
+        "box": 0,
+        "ch70": 452.81,
+        "lines": 2,
+        "widest": 720.23,
+        "parent": "section.chgsec",
+        "parentW": 728,
+        "font": "12px"
+      }
+    ]
+  }
+]

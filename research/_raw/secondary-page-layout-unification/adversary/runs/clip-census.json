@@ -1,0 +1,599 @@
+{
+  "generatedAt": "2026-10-06T08:50:08.187Z",
+  "question": "真实构建路径下是否存在「有人会真的写出来」的改动，能让页面级说明被裁剪/遮罩成窄柱？",
+  "sourceFilesScanned": 252,
+  "distHtmlScanned": 186,
+  "patterns": {
+    "clip-path": {},
+    "mask-image": {},
+    "mask(简写)": {},
+    "-webkit-mask": {},
+    "mix-blend-mode": {},
+    "filter": {},
+    "opacity": {},
+    "overflow:hidden": {},
+    "position:absolute": {},
+    "position:sticky": {},
+    "-webkit-line-clamp": {},
+    "columns/column-count": {},
+    "float": {},
+    "transform": {},
+    "writing-mode": {}
+  },
+  "sourceCensus": {
+    "clip-path": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "mask-image": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "mask(简写)": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "-webkit-mask": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "mix-blend-mode": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "filter": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "opacity": {
+      "files": 12,
+      "occurrences": 20,
+      "top": [
+        {
+          "file": "index.html",
+          "n": 4
+        },
+        {
+          "file": "mockups/001-清爽卡片.html",
+          "n": 3
+        },
+        {
+          "file": "mockups/v2-dense/006-极密表格.html",
+          "n": 3
+        },
+        {
+          "file": "mockups/002-高密度清单.html",
+          "n": 2
+        },
+        {
+          "file": "scripts/tools/build-local.js",
+          "n": 1
+        },
+        {
+          "file": "mockups/004-开发者控制台.html",
+          "n": 1
+        },
+        {
+          "file": "mockups/v2-dense/005-高密度网格.html",
+          "n": 1
+        },
+        {
+          "file": "mockups/v2-dense/007-紧凑网格与详情面板.html",
+          "n": 1
+        }
+      ]
+    },
+    "overflow:hidden": {
+      "files": 26,
+      "occurrences": 107,
+      "top": [
+        {
+          "file": "index.html",
+          "n": 28
+        },
+        {
+          "file": "mockups/v3/shared/base.css",
+          "n": 13
+        },
+        {
+          "file": "mockups/v2-dense/009-真Logo版.html",
+          "n": 8
+        },
+        {
+          "file": "mockups/_tools/build-009.js",
+          "n": 8
+        },
+        {
+          "file": "scripts/tools/build-local.js",
+          "n": 7
+        },
+        {
+          "file": "mockups/v2-dense/008-007加Logo与惠民排序.html",
+          "n": 7
+        },
+        {
+          "file": "scripts/tools/verify-site.js",
+          "n": 4
+        },
+        {
+          "file": "mockups/v2-dense/005-高密度网格.html",
+          "n": 4
+        }
+      ]
+    },
+    "position:absolute": {
+      "files": 18,
+      "occurrences": 37,
+      "top": [
+        {
+          "file": "mockups/v2-dense/008-007加Logo与惠民排序.html",
+          "n": 5
+        },
+        {
+          "file": "mockups/v2-dense/009-真Logo版.html",
+          "n": 5
+        },
+        {
+          "file": "mockups/_tools/build-009.js",
+          "n": 5
+        },
+        {
+          "file": "index.html",
+          "n": 5
+        },
+        {
+          "file": "mockups/v2-dense/007-紧凑网格与详情面板.html",
+          "n": 3
+        },
+        {
+          "file": "mockups/v3/shared/base.css",
+          "n": 2
+        },
+        {
+          "file": "mockups/001-清爽卡片.html",
+          "n": 1
+        },
+        {
+          "file": "mockups/index.html",
+          "n": 1
+        }
+      ]
+    },
+    "position:sticky": {
+      "files": 11,
+      "occurrences": 29,
+      "top": [
+        {
+          "file": "scripts/tools/build-local.js",
+          "n": 5
+        },
+        {
+          "file": "index.html",
+          "n": 4
+        },
+        {
+          "file": "mockups/v2-dense/006-极密表格.html",
+          "n": 3
+        },
+        {
+          "file": "mockups/v2-dense/008-007加Logo与惠民排序.html",
+          "n": 3
+        },
+        {
+          "file": "mockups/v2-dense/009-真Logo版.html",
+          "n": 3
+        },
+        {
+          "file": "mockups/_tools/build-009.js",
+          "n": 3
+        },
+        {
+          "file": "mockups/v2-dense/005-高密度网格.html",
+          "n": 2
+        },
+        {
+          "file": "mockups/v2-dense/007-紧凑网格与详情面板.html",
+          "n": 2
+        }
+      ]
+    },
+    "-webkit-line-clamp": {
+      "files": 8,
+      "occurrences": 21,
+      "top": [
+        {
+          "file": "index.html",
+          "n": 4
+        },
+        {
+          "file": "mockups/v2-dense/008-007加Logo与惠民排序.html",
+          "n": 3
+        },
+        {
+          "file": "mockups/v2-dense/009-真Logo版.html",
+          "n": 3
+        },
+        {
+          "file": "mockups/_tools/build-009.js",
+          "n": 3
+        },
+        {
+          "file": "mockups/v2-dense/005-高密度网格.html",
+          "n": 2
+        },
+        {
+          "file": "mockups/v2-dense/006-极密表格.html",
+          "n": 2
+        },
+        {
+          "file": "mockups/v2-dense/007-紧凑网格与详情面板.html",
+          "n": 2
+        },
+        {
+          "file": "mockups/v3/shared/base.css",
+          "n": 2
+        }
+      ]
+    },
+    "columns/column-count": {
+      "files": 2,
+      "occurrences": 5,
+      "top": [
+        {
+          "file": "scripts/tools/verify-site.js",
+          "n": 4
+        },
+        {
+          "file": "scripts/lib/plans-page.js",
+          "n": 1
+        }
+      ]
+    },
+    "float": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "transform": {
+      "files": 7,
+      "occurrences": 9,
+      "top": [
+        {
+          "file": "mockups/v2-dense/008-007加Logo与惠民排序.html",
+          "n": 2
+        },
+        {
+          "file": "index.html",
+          "n": 2
+        },
+        {
+          "file": "mockups/001-清爽卡片.html",
+          "n": 1
+        },
+        {
+          "file": "mockups/v2-dense/005-高密度网格.html",
+          "n": 1
+        },
+        {
+          "file": "mockups/v2-dense/007-紧凑网格与详情面板.html",
+          "n": 1
+        },
+        {
+          "file": "mockups/v2-dense/009-真Logo版.html",
+          "n": 1
+        },
+        {
+          "file": "mockups/_tools/build-009.js",
+          "n": 1
+        }
+      ]
+    },
+    "writing-mode": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    }
+  },
+  "distCensus": {
+    "clip-path": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "mask-image": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "mask(简写)": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "-webkit-mask": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "mix-blend-mode": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "filter": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "opacity": {
+      "files": 186,
+      "occurrences": 789,
+      "top": [
+        {
+          "file": "dist/category/agent/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/category/api/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/category/audio/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/category/chat/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/category/image/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/category/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/developer/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/free-api/index.html",
+          "n": 5
+        }
+      ]
+    },
+    "overflow:hidden": {
+      "files": 186,
+      "occurrences": 4942,
+      "top": [
+        {
+          "file": "dist/index.html",
+          "n": 28
+        },
+        {
+          "file": "dist/plans/api/index.html",
+          "n": 28
+        },
+        {
+          "file": "dist/plans/coding/index.html",
+          "n": 28
+        },
+        {
+          "file": "dist/archive/index.html",
+          "n": 27
+        },
+        {
+          "file": "dist/category/agent/index.html",
+          "n": 27
+        },
+        {
+          "file": "dist/category/api/index.html",
+          "n": 27
+        },
+        {
+          "file": "dist/category/audio/index.html",
+          "n": 27
+        },
+        {
+          "file": "dist/category/chat/index.html",
+          "n": 27
+        }
+      ]
+    },
+    "position:absolute": {
+      "files": 186,
+      "occurrences": 930,
+      "top": [
+        {
+          "file": "dist/archive/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/category/agent/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/category/api/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/category/audio/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/category/chat/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/category/image/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/category/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/changes/index.html",
+          "n": 5
+        }
+      ]
+    },
+    "position:sticky": {
+      "files": 186,
+      "occurrences": 802,
+      "top": [
+        {
+          "file": "dist/plans/api/index.html",
+          "n": 6
+        },
+        {
+          "file": "dist/plans/coding/index.html",
+          "n": 6
+        },
+        {
+          "file": "dist/archive/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/docs/data/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/models/360zhinao-pro/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/models/360zhinao-turbo-llm-geo/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/models/baichuan-m3/index.html",
+          "n": 5
+        },
+        {
+          "file": "dist/models/baichuan-m3-plus/index.html",
+          "n": 5
+        }
+      ]
+    },
+    "-webkit-line-clamp": {
+      "files": 186,
+      "occurrences": 559,
+      "top": [
+        {
+          "file": "dist/index.html",
+          "n": 4
+        },
+        {
+          "file": "dist/archive/index.html",
+          "n": 3
+        },
+        {
+          "file": "dist/category/agent/index.html",
+          "n": 3
+        },
+        {
+          "file": "dist/category/api/index.html",
+          "n": 3
+        },
+        {
+          "file": "dist/category/audio/index.html",
+          "n": 3
+        },
+        {
+          "file": "dist/category/chat/index.html",
+          "n": 3
+        },
+        {
+          "file": "dist/category/image/index.html",
+          "n": 3
+        },
+        {
+          "file": "dist/category/index.html",
+          "n": 3
+        }
+      ]
+    },
+    "columns/column-count": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "float": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    },
+    "transform": {
+      "files": 186,
+      "occurrences": 372,
+      "top": [
+        {
+          "file": "dist/archive/index.html",
+          "n": 2
+        },
+        {
+          "file": "dist/category/agent/index.html",
+          "n": 2
+        },
+        {
+          "file": "dist/category/api/index.html",
+          "n": 2
+        },
+        {
+          "file": "dist/category/audio/index.html",
+          "n": 2
+        },
+        {
+          "file": "dist/category/chat/index.html",
+          "n": 2
+        },
+        {
+          "file": "dist/category/image/index.html",
+          "n": 2
+        },
+        {
+          "file": "dist/category/index.html",
+          "n": 2
+        },
+        {
+          "file": "dist/changes/index.html",
+          "n": 2
+        }
+      ]
+    },
+    "writing-mode": {
+      "files": 0,
+      "occurrences": 0,
+      "top": []
+    }
+  },
+  "sharedStyleFacts": {
+    "file": "dist/category/agent/index.html（共享 <style>；全站同源）",
+    "snoteRules": [
+      ".snote` 规则，这里就是「一处定义、全站生效」。真需要收窄的阅读列页面， 请去 LAYOUT_FAMILIES 登记一个新族，而不是就地改宽度。 */ .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }"
+    ],
+    "overflowHiddenRulesSample": [
+      ".seg { display: none; border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; flex: none; }",
+      ".sortbox { display: flex; border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; background: var(-",
+      "/* 说明行**单行截断**：卡片高度与文案长度无关（长文案既不会把卡片顶高、也不会让行高抖）。 flex-basis 100% 让它在「标题 + 条数」那一行之后独占一行。 */ .need-card .need-copy small {",
+      ".g { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: var(--s3) 14px; height: v",
+      ".g h3 { font-size: 14px; font-weight: 600; line-height: 1.4; letter-spacing: -.1px; display: -webkit-box; -webkit-line-c",
+      ".g .vendor { font-size: 11px; color: var(--mut); margin-top: var(--s1); display: -webkit-box; -webkit-line-clamp: 1; -we",
+      ".lg { width: 24px; height: 24px; border-radius: var(--r-sm); display: grid; place-items: center; border: 1.5px solid #ff",
+      ".of .tx { font-size: 13px; line-height: 1.5; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box",
+      ".feats { display: flex; gap: var(--s1); margin-top: var(--s2); flex-wrap: wrap; overflow: hidden; max-height: 22px; }",
+      ".meta { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line2); display: flex; align-items: center; gap",
+      ".tierhead .hint { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }",
+      ".r .rt a { display: block; color: inherit; text-decoration: none; font-weight: 600; overflow: hidden; text-overflow: ell"
+    ],
+    "overflowHiddenRuleCount": 19
+  }
+}

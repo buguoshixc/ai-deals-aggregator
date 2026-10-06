@@ -1,0 +1,168 @@
+{
+  "meta": {
+    "task": "T9 §19 布局规则重复审计 + §20 保留窄宽与 max-width 普查（只读）",
+    "generatedBy": "research/_raw/secondary-page-layout-unification/audit/scan-layout-rules.cjs",
+    "scope": [
+      "index.html",
+      "scripts/**"
+    ],
+    "method": "JS 词法级抽取字符串/模板区域（跳过注释）→ 花括号感知 CSS 解析 → 归属到页面壳 → 显式判断表分类",
+    "classNames": [
+      ".snote",
+      ".ph2",
+      ".plist",
+      ".stop",
+      ".cstop",
+      ".detail-main"
+    ],
+    "productSourcesScanned": 215,
+    "unclassifiedCount": 0,
+    "skippedNonCssCandidates": 2167,
+    "skippedSamples": [
+      ":root",
+      ":root[data-theme=\"dark\"]",
+      ":root:not([data-theme=\"light\"]):not([data-theme=\"dark\"])",
+      "/* hidden 必须真的不显示：上面 .jump 是**作者级** display 声明，会盖掉 UA 样式表里的 [hidden]",
+      "（层叠先比来源再比特异性，作者级无条件胜出），于是 js 里 `jump.hidden = true` 只改了属性、导航照旧可见可点 —— 这正是「假隐藏」。 ",
+      "min-width: 0`，内容超宽时由 正文区（.rscroll）内部横滑，绝不把整行顶成两行；唯一的入口「全部变化」放在 横滑容器**外面**、`flex:",
+      "border: 0; padding: 0; border-radius: var(--r-dlg); background: var(--card); col",
+      "provenance.credibility：$",
+      "provenance.fields.$",
+      "：basis=$",
+      "$",
+      "entry.note ? `「$"
+    ],
+    "declarationFragments": [
+      {
+        "file": "scripts/tools/verify-site.js",
+        "line": 5951,
+        "text": "'margin-top: var(--s3); width: 100%; max-width: none;'",
+        "note": "不含花括号的 CSS 声明片段（JS 字符串）：测试工具的变异载荷，不是规则定义，不计入普查"
+      },
+      {
+        "file": "scripts/tools/verify-site.js",
+        "line": 5952,
+        "text": "'margin-top: var(--s3); width: 820px; max-width: none;'",
+        "note": "不含花括号的 CSS 声明片段（JS 字符串）：测试工具的变异载荷，不是规则定义，不计入普查"
+      },
+      {
+        "file": "scripts/tools/verify-site.js",
+        "line": 6163,
+        "text": "'max-width: none'",
+        "note": "不含花括号的 CSS 声明片段（JS 字符串）：测试工具的变异载荷，不是规则定义，不计入普查"
+      },
+      {
+        "file": "scripts/tools/verify-site.js",
+        "line": 6163,
+        "text": "'max-width: 70ch'",
+        "note": "不含花括号的 CSS 声明片段（JS 字符串）：测试工具的变异载荷，不是规则定义，不计入普查"
+      }
+    ]
+  },
+  "purpose": "prompt §20「已经正确的局部限制不要误伤」：本次明确保留、且有理由保留的局部窄宽。",
+  "retentionCriteria": [
+    "① 它限制的是**局部组件自己的盒子**，不是页面的内容列（改它不会让说明与主数据区错轴）。",
+    "② 宽度是**内容性质决定的**（读取一列小字、一个输入框、一个单元格），不是「看起来更文雅」。",
+    "③ 收窄它会让那个组件**失真或溢出**（例如粘性列不设宽会在手机上把表格撑开）。",
+    "④ 它不是页面级说明：页面里还有别的同级说明，它们的宽度由共享规则给出，不跟着这个组件变。"
+  ],
+  "retained": [
+    {
+      "file": "scripts/tools/build-local.js",
+      "selector": ".lsum li small",
+      "declaration": "max-width: 34ch;",
+      "css": ".lsum li small { display: block; color: var(--mut); font-size: 11px; margin-top: 2px; max-width: 34ch; }",
+      "protects": "目录页家族（<slug>/、/need/<slug>/ 等）顶部「本页摘要条」里每一项的第二行小字：它是**一个计数卡片的副标题**，不是页面说明。",
+      "whyRetained": "① 它是 `<li>` 里的 `<small>`，盒子本来就只有一个卡片宽（几百 px），34ch 在这里等于「最多两行小字」——限制的是卡片内部的换行节奏；② 页面级说明 `.snote` 与它同级存在，宽度由共享规则（max-width: none）给出，不受这条影响；③ 去掉它会把这行小字拉成整张卡片的宽度，摘要条的每一格高度参差，反而是退步。",
+      "category": "局部组件",
+      "foundLines": [
+        2717
+      ],
+      "present": true,
+      "censusRole": "max-width 声明（计入普查）"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "selector": ".pdetailbody",
+      "declaration": "max-width: 72ch;",
+      "css": ".pdetailbody { max-width: 72ch; }",
+      "protects": "套餐对比页里**展开行**的详情正文（`<div class=\"pdetailbody\">`，见 lib/plans-page.js）：一行表格展开后的一小段字段清单。",
+      "whyRetained": "① 它是**表内展开区**，不是一个页面的正文列 —— 页面说明与它不同轴的那件事在这里没有发生；② 它服务的是一小段「字段: 值」清单，72ch 是行长的可读上限（同一行的其它单元格仍在表格里）；③ 这条宽度与主数据区没有竞争关系：展开区的父级就是表格单元格。（实测比例由 T4 独立复核，本清单只做静态归属与理由。）",
+      "category": "阅读列",
+      "measuredBy": "T4（独立复核）",
+      "foundLines": [
+        1516
+      ],
+      "present": true,
+      "censusRole": "max-width 声明（计入普查）"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "selector": ".ptable thead th:nth-child(2), .ptable tbody td:nth-child(2)",
+      "declaration": "max-width: 10em;",
+      "css": "box-shadow: 1px 0 0 var(--line); max-width: 10em; white-space: normal; overflow-wrap: anywhere;",
+      "protects": "窄屏（≤760px）下套餐/计费宽表的**第二列粘性单元格**：`position: sticky` 的单元格必须有一个有限的宽，否则长文本会把整张表撑开、横向滚动失效。",
+      "whyRetained": "① 它只在 `@media (max-width: 760px)` 里生效，是**响应式修复**而不是全局限宽；② 去掉它会让粘性列按最长内容撑宽，直接把手机端变成横向滚动条（这正是本仓库反复踩过的坑）；③ 它限制的是一个单元格，不是页面内容列。",
+      "category": "局部组件",
+      "foundLines": [
+        1575
+      ],
+      "present": true,
+      "censusRole": "max-width 声明（计入普查）"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "selector": ".ptable thead th:first-child, .ptable tbody th:first-child",
+      "declaration": "(相邻规则) width: 6.5em;",
+      "css": "position: sticky; left: 0; width: 6.5em; white-space: normal; background: var(--card); z-index: 2;",
+      "protects": "同一张宽表的第一列（平台名）在窄屏下的列宽 —— 与上一条是一对：第一列 6.5em，第二列从 6.5em 起粘、限 10em。",
+      "whyRetained": "① 同上：只在 ≤760px 生效；② 两列粘性必须给出确定宽度才能成立；③ 不是页面内容列。",
+      "category": "局部组件",
+      "contextOnly": true,
+      "note": "本条是 `width` 而非 `max-width`，收录是为了说明「这两条是一对」，不参与 max-width 计数。",
+      "foundLines": [
+        1572,
+        1791,
+        2036
+      ],
+      "present": true,
+      "censusRole": "context-only（width 声明，不计入 max-width 普查）"
+    },
+    {
+      "file": "index.html",
+      "selector": ".search",
+      "declaration": "max-width: 440px;",
+      "css": ".search { flex: 1; max-width: 440px; display: flex; align-items: center; gap: var(--s2); … }",
+      "protects": "顶栏搜索框的最大宽度：`flex: 1` 会让它在宽屏上吃掉整条顶栏，440px 是它作为**控件**的合理上限。",
+      "whyRetained": "① 控件尺寸，与页面内容列无关；② 窄屏（≤940px）里另有 `.search { max-width: none; min-width: 100% }` 覆盖它 —— 说明这条本来就是「宽屏下的上限」；③ 页面说明不经过它。",
+      "category": "局部组件",
+      "foundLines": [
+        284
+      ],
+      "present": true,
+      "censusRole": "max-width 声明（计入普查）"
+    },
+    {
+      "file": "index.html",
+      "selector": ".cmpchip",
+      "declaration": "max-width: 210px;",
+      "css": "overflow: hidden; text-overflow: ellipsis; max-width: 210px;",
+      "protects": "对比条里每个已选条目的标签：配合 `overflow: hidden; text-overflow: ellipsis`，长标题只裁切不撑宽（横向溢出为 0 的关键之一）。",
+      "whyRetained": "① 它是省略号生效的前提（没有宽度就没有「省略」）；② 限的是一个 chip；③ 去掉它会撑破对比条并造成页面级横向滚动。",
+      "category": "局部组件",
+      "foundLines": [
+        968
+      ],
+      "present": true,
+      "censusRole": "max-width 声明（计入普查）"
+    }
+  ],
+  "notRetained": [
+    {
+      "selector": ".snote",
+      "was": "max-width: 70ch;（8 个页面壳里的 4 份）",
+      "now": "max-width: none;（index.html 共享 <style> 的唯一一条）",
+      "reason": "这正是本次要修的缺陷形态：页面级说明被 ch 压成左侧窄柱（12px 字体下 ≈420px），与 1380px 的主数据区错轴。"
+    }
+  ]
+}

@@ -1,0 +1,1128 @@
+{
+ "dir": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification\\research\\_raw\\secondary-page-layout-unification\\review\\scratch\\r3-balance",
+ "routes": 2,
+ "widths": [
+  1440,
+  760
+ ],
+ "generatedAt": "2026-10-06T10:33:33.682Z",
+ "byWidth": {
+  "760": {
+   "category/api/": {
+    "column": 728,
+    "threshold": 618.8,
+    "notes": [
+     {
+      "index": 0,
+      "codes": [
+       "note-narrow",
+       "note-ink-narrow"
+      ],
+      "variants": [
+       "ink-rect-variant",
+       "ink-3lines-variant"
+      ],
+      "textWidth": 275,
+      "boxWidth": 728,
+      "contentBox": 728,
+      "lineCount": 6,
+      "widestLine": 608.81,
+      "widestRect": 450,
+      "glyphRects": 10,
+      "ratioInk": 0.8363,
+      "ratioBox": 0.3777,
+      "rendered": true,
+      "vertical": false,
+      "textLength": 181,
+      "text": "这一页按分类收条目：数据里的 category 是「API服务」，这是采集或策展",
+      "className": "snote",
+      "parent": "main",
+      "display": "grid"
+     },
+     {
+      "index": 1,
+      "codes": [
+       "note-narrow"
+      ],
+      "variants": [],
+      "textWidth": 453,
+      "boxWidth": 728,
+      "contentBox": 728,
+      "lineCount": 1,
+      "widestLine": 61.64,
+      "widestRect": 61.64,
+      "glyphRects": 1,
+      "ratioInk": 0.0847,
+      "ratioBox": 0.6223,
+      "rendered": true,
+      "vertical": false,
+      "textLength": 6,
+      "text": "全部变化 →",
+      "className": "snote",
+      "parent": "section.chgsec",
+      "display": "grid"
+     },
+     {
+      "index": 2,
+      "codes": [
+       "note-narrow",
+       "note-ink-narrow"
+      ],
+      "variants": [
+       "ink-rect-variant",
+       "ink-3lines-variant"
+      ],
+      "textWidth": 275,
+      "boxWidth": 728,
+      "contentBox": 728,
+      "lineCount": 4,
+      "widestLine": 488.81,
+      "widestRect": 444.23,
+      "glyphRects": 5,
+      "ratioInk": 0.6714,
+      "ratioBox": 0.3777,
+      "rendered": true,
+      "vertical": false,
+      "textLength": 91,
+      "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也",
+      "className": "snote",
+      "parent": "main",
+      "display": "grid"
+     }
+    ],
+    "reading": {
+     "doc": {
+      "innerWidth": 760,
+      "clientWidth": 760,
+      "scrollWidth": 760
+     },
+     "viewportHeight": 900,
+     "probe70ch": 452.81,
+     "main": {
+      "count": 1,
+      "left": 16,
+      "right": 744,
+      "width": 728,
+      "height": 4270.3,
+      "scrollW": 728,
+      "clientW": 728,
+      "padLeft": 0,
+      "padRight": 0
+     },
+     "region": {
+      "count": 1,
+      "left": 16,
+      "right": 744,
+      "width": 728,
+      "height": 3726,
+      "scrollW": 728,
+      "clientW": 728,
+      "padLeft": 0,
+      "padRight": 0
+     },
+     "regionSel": ".ctable",
+     "noteCount": 3,
+     "notes": [
+      {
+       "index": 0,
+       "depth": 1,
+       "parent": "main",
+       "className": "snote",
+       "text": "这一页按分类收条目：数据里的 category 是「API服务」，这是采集或策展",
+       "textLength": 181,
+       "box": {
+        "count": 1,
+        "left": 16,
+        "right": 744,
+        "width": 728,
+        "height": 122.34,
+        "scrollW": 728,
+        "clientW": 728,
+        "padLeft": 0,
+        "padRight": 0
+       },
+       "rendered": true,
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "display": "grid",
+       "fontSize": "12px",
+       "content": "normal",
+       "glyphRects": 10,
+       "lineCount": 6,
+       "widestLine": 608.81,
+       "widestRect": 450,
+       "lines": [
+        {
+         "left": 16,
+         "right": 492.81,
+         "spanW": 476.81,
+         "rectW": 48,
+         "top": 141,
+         "sourceRects": 2
+        },
+        {
+         "left": 16,
+         "right": 588.81,
+         "spanW": 572.81,
+         "rectW": 418.3,
+         "top": 161.39,
+         "sourceRects": 2
+        },
+        {
+         "left": 16,
+         "right": 504.81,
+         "spanW": 488.81,
+         "rectW": 63.3,
+         "top": 181.78,
+         "sourceRects": 2
+        },
+        {
+         "left": 16,
+         "right": 624.81,
+         "spanW": 608.81,
+         "rectW": 450,
+         "top": 202.17,
+         "sourceRects": 2
+        },
+        {
+         "left": 16,
+         "right": 407.97,
+         "spanW": 391.97,
+         "rectW": 391.97,
+         "top": 222.56,
+         "sourceRects": 1
+        },
+        {
+         "left": 16,
+         "right": 196,
+         "spanW": 180,
+         "rectW": 180,
+         "top": 242.95,
+         "sourceRects": 1
+        }
+       ],
+       "contentBox": 728,
+       "textWidth": 275,
+       "textFallback": false,
+       "bearingCount": 5,
+       "beforeContent": null,
+       "afterContent": null
+      },
+      {
+       "index": 1,
+       "depth": 2,
+       "parent": "section.chgsec",
+       "className": "snote",
+       "text": "全部变化 →",
+       "textLength": 6,
+       "box": {
+        "count": 1,
+        "left": 16,
+        "right": 744,
+        "width": 728,
+        "height": 20.39,
+        "scrollW": 728,
+        "clientW": 728,
+        "padLeft": 0,
+        "padRight": 0
+       },
+       "rendered": true,
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "display": "grid",
+       "fontSize": "12px",
+       "content": "normal",
+       "glyphRects": 1,
+       "lineCount": 1,
+       "widestLine": 61.64,
+       "widestRect": 61.64,
+       "lines": [
+        {
+         "left": 16,
+         "right": 77.64,
+         "spanW": 61.64,
+         "rectW": 61.64,
+         "top": 4228.84,
+         "sourceRects": 1
+        }
+       ],
+       "contentBox": 728,
+       "textWidth": 453,
+       "textFallback": false,
+       "bearingCount": 1,
+       "beforeContent": null,
+       "afterContent": null
+      },
+      {
+       "index": 2,
+       "depth": 1,
+       "parent": "main",
+       "className": "snote",
+       "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也",
+       "textLength": 91,
+       "box": {
+        "count": 1,
+        "left": 16,
+        "right": 744,
+        "width": 728,
+        "height": 81.56,
+        "scrollW": 728,
+        "clientW": 728,
+        "padLeft": 0,
+        "padRight": 0
+       },
+       "rendered": true,
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "display": "grid",
+       "fontSize": "12px",
+       "content": "normal",
+       "glyphRects": 5,
+       "lineCount": 4,
+       "widestLine": 488.81,
+       "widestRect": 444.23,
+       "lines": [
+        {
+         "left": 16,
+         "right": 504.81,
+         "spanW": 488.81,
+         "rectW": 48,
+         "top": 4261.23,
+         "sourceRects": 2
+        },
+        {
+         "left": 16,
+         "right": 448,
+         "spanW": 432,
+         "rectW": 432,
+         "top": 4281.63,
+         "sourceRects": 1
+        },
+        {
+         "left": 16,
+         "right": 460.23,
+         "spanW": 444.23,
+         "rectW": 444.23,
+         "top": 4302.02,
+         "sourceRects": 1
+        },
+        {
+         "left": 16,
+         "right": 100,
+         "spanW": 84,
+         "rectW": 84,
+         "top": 4322.41,
+         "sourceRects": 1
+        }
+       ],
+       "contentBox": 728,
+       "textWidth": 275,
+       "textFallback": false,
+       "bearingCount": 2,
+       "beforeContent": null,
+       "afterContent": null
+      }
+     ]
+    }
+   },
+   "vendor/aliyun/": {
+    "column": 728,
+    "threshold": 618.8,
+    "notes": [
+     {
+      "index": 0,
+      "codes": [
+       "note-ink-narrow"
+      ],
+      "variants": [
+       "ink-rect-variant",
+       "ink-3lines-variant"
+      ],
+      "textWidth": 728,
+      "boxWidth": 728,
+      "contentBox": 728,
+      "lineCount": 5,
+      "widestLine": 600,
+      "widestRect": 591.3,
+      "glyphRects": 11,
+      "ratioInk": 0.8242,
+      "ratioBox": 1,
+      "rendered": true,
+      "vertical": false,
+      "textLength": 276,
+      "text": "这一页收的是登记在册的同一家厂商的条目：厂商名按站内厂商归一规则合并（同一个公司",
+      "className": "snote",
+      "parent": "main",
+      "display": "block"
+     },
+     {
+      "index": 1,
+      "codes": [],
+      "variants": [],
+      "textWidth": 728,
+      "boxWidth": 728,
+      "contentBox": 728,
+      "lineCount": 1,
+      "widestLine": 61.64,
+      "widestRect": 61.64,
+      "glyphRects": 1,
+      "ratioInk": 0.0847,
+      "ratioBox": 1,
+      "rendered": true,
+      "vertical": false,
+      "textLength": 6,
+      "text": "全部变化 →",
+      "className": "snote",
+      "parent": "section.chgsec",
+      "display": "block"
+     },
+     {
+      "index": 2,
+      "codes": [],
+      "variants": [
+       "ink-rect-variant"
+      ],
+      "textWidth": 728,
+      "boxWidth": 728,
+      "contentBox": 728,
+      "lineCount": 2,
+      "widestLine": 663.3,
+      "widestRect": 543.3,
+      "glyphRects": 6,
+      "ratioInk": 0.9111,
+      "ratioBox": 1,
+      "rendered": true,
+      "vertical": false,
+      "textLength": 111,
+      "text": "厂商名按站内归一规则合并（同一个公司的不同写法落到同一页）。同一条优惠也会出现在",
+      "className": "snote",
+      "parent": "main",
+      "display": "block"
+     }
+    ],
+    "reading": {
+     "doc": {
+      "innerWidth": 760,
+      "clientWidth": 760,
+      "scrollWidth": 760
+     },
+     "viewportHeight": 900,
+     "probe70ch": 452.81,
+     "main": {
+      "count": 1,
+      "left": 16,
+      "right": 744,
+      "width": 728,
+      "height": 1639.75,
+      "scrollW": 728,
+      "clientW": 728,
+      "padLeft": 0,
+      "padRight": 0
+     },
+     "region": {
+      "count": 1,
+      "left": 16,
+      "right": 744,
+      "width": 728,
+      "height": 205,
+      "scrollW": 728,
+      "clientW": 728,
+      "padLeft": 0,
+      "padRight": 0
+     },
+     "regionSel": ".ctable",
+     "noteCount": 3,
+     "notes": [
+      {
+       "index": 0,
+       "depth": 1,
+       "parent": "main",
+       "className": "snote",
+       "text": "这一页收的是登记在册的同一家厂商的条目：厂商名按站内厂商归一规则合并（同一个公司",
+       "textLength": 276,
+       "box": {
+        "count": 1,
+        "left": 16,
+        "right": 744,
+        "width": 728,
+        "height": 101.95,
+        "scrollW": 728,
+        "clientW": 728,
+        "padLeft": 0,
+        "padRight": 0
+       },
+       "rendered": true,
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "display": "block",
+       "fontSize": "12px",
+       "content": "normal",
+       "glyphRects": 11,
+       "lineCount": 5,
+       "widestLine": 600,
+       "widestRect": 591.3,
+       "lines": [
+        {
+         "left": 16,
+         "right": 616,
+         "spanW": 600,
+         "rectW": 408,
+         "top": 141,
+         "sourceRects": 3
+        },
+        {
+         "left": 16,
+         "right": 608.69,
+         "spanW": 592.69,
+         "rectW": 312.34,
+         "top": 161.39,
+         "sourceRects": 3
+        },
+        {
+         "left": 16,
+         "right": 607.3,
+         "spanW": 591.3,
+         "rectW": 591.3,
+         "top": 181.78,
+         "sourceRects": 1
+        },
+        {
+         "left": 16,
+         "right": 599.91,
+         "spanW": 583.91,
+         "rectW": 460.61,
+         "top": 202.17,
+         "sourceRects": 3
+        },
+        {
+         "left": 16,
+         "right": 603.89,
+         "spanW": 587.89,
+         "rectW": 587.89,
+         "top": 222.56,
+         "sourceRects": 1
+        }
+       ],
+       "contentBox": 728,
+       "textWidth": 728,
+       "textFallback": false,
+       "bearingCount": 1,
+       "beforeContent": null,
+       "afterContent": null
+      },
+      {
+       "index": 1,
+       "depth": 2,
+       "parent": "section.chgsec",
+       "className": "snote",
+       "text": "全部变化 →",
+       "textLength": 6,
+       "box": {
+        "count": 1,
+        "left": 16,
+        "right": 744,
+        "width": 728,
+        "height": 20.39,
+        "scrollW": 728,
+        "clientW": 728,
+        "padLeft": 0,
+        "padRight": 0
+       },
+       "rendered": true,
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "display": "block",
+       "fontSize": "12px",
+       "content": "normal",
+       "glyphRects": 1,
+       "lineCount": 1,
+       "widestLine": 61.64,
+       "widestRect": 61.64,
+       "lines": [
+        {
+         "left": 16,
+         "right": 77.64,
+         "spanW": 61.64,
+         "rectW": 61.64,
+         "top": 612.45,
+         "sourceRects": 1
+        }
+       ],
+       "contentBox": 728,
+       "textWidth": 728,
+       "textFallback": true,
+       "bearingCount": 0,
+       "beforeContent": null,
+       "afterContent": null
+      },
+      {
+       "index": 2,
+       "depth": 1,
+       "parent": "main",
+       "className": "snote",
+       "text": "厂商名按站内归一规则合并（同一个公司的不同写法落到同一页）。同一条优惠也会出现在",
+       "textLength": 111,
+       "box": {
+        "count": 1,
+        "left": 16,
+        "right": 744,
+        "width": 728,
+        "height": 40.78,
+        "scrollW": 728,
+        "clientW": 728,
+        "padLeft": 0,
+        "padRight": 0
+       },
+       "rendered": true,
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "display": "block",
+       "fontSize": "12px",
+       "content": "normal",
+       "glyphRects": 6,
+       "lineCount": 2,
+       "widestLine": 663.3,
+       "widestRect": 543.3,
+       "lines": [
+        {
+         "left": 16,
+         "right": 679.3,
+         "spanW": 663.3,
+         "rectW": 543.3,
+         "top": 1671.47,
+         "sourceRects": 3
+        },
+        {
+         "left": 16,
+         "right": 655.3,
+         "spanW": 639.3,
+         "rectW": 543.3,
+         "top": 1691.86,
+         "sourceRects": 3
+        }
+       ],
+       "contentBox": 728,
+       "textWidth": 728,
+       "textFallback": false,
+       "bearingCount": 1,
+       "beforeContent": null,
+       "afterContent": null
+      }
+     ]
+    }
+   }
+  },
+  "1440": {
+   "category/api/": {
+    "column": 1380,
+    "threshold": 1173,
+    "notes": [
+     {
+      "index": 0,
+      "codes": [],
+      "variants": [
+       "ink-rect-variant"
+      ],
+      "textWidth": 1380,
+      "boxWidth": 1380,
+      "contentBox": 1380,
+      "lineCount": 2,
+      "widestLine": 1371.56,
+      "widestRect": 661.97,
+      "glyphRects": 10,
+      "ratioInk": 0.9939,
+      "ratioBox": 1,
+      "rendered": true,
+      "vertical": false,
+      "textLength": 181,
+      "text": "这一页按分类收条目：数据里的 category 是「API服务」，这是采集或策展",
+      "className": "snote",
+      "parent": "main",
+      "display": "block"
+     },
+     {
+      "index": 1,
+      "codes": [],
+      "variants": [],
+      "textWidth": 1380,
+      "boxWidth": 1380,
+      "contentBox": 1380,
+      "lineCount": 1,
+      "widestLine": 61.64,
+      "widestRect": 61.64,
+      "glyphRects": 1,
+      "ratioInk": 0.0447,
+      "ratioBox": 1,
+      "rendered": true,
+      "vertical": false,
+      "textLength": 6,
+      "text": "全部变化 →",
+      "className": "snote",
+      "parent": "section.chgsec",
+      "display": "block"
+     },
+     {
+      "index": 2,
+      "codes": [],
+      "variants": [],
+      "textWidth": 1380,
+      "boxWidth": 1380,
+      "contentBox": 1380,
+      "lineCount": 1,
+      "widestLine": 1047.52,
+      "widestRect": 963.52,
+      "glyphRects": 3,
+      "ratioInk": 0.7591,
+      "ratioBox": 1,
+      "rendered": true,
+      "vertical": false,
+      "textLength": 91,
+      "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也",
+      "className": "snote",
+      "parent": "main",
+      "display": "block"
+     }
+    ],
+    "reading": {
+     "doc": {
+      "innerWidth": 1440,
+      "clientWidth": 1440,
+      "scrollWidth": 1440
+     },
+     "viewportHeight": 900,
+     "probe70ch": 452.81,
+     "main": {
+      "count": 1,
+      "left": 30,
+      "right": 1410,
+      "width": 1380,
+      "height": 3282.31,
+      "scrollW": 1380,
+      "clientW": 1380,
+      "padLeft": 0,
+      "padRight": 0
+     },
+     "region": {
+      "count": 1,
+      "left": 30,
+      "right": 1410,
+      "width": 1380,
+      "height": 2939.25,
+      "scrollW": 1380,
+      "clientW": 1380,
+      "padLeft": 0,
+      "padRight": 0
+     },
+     "regionSel": ".ctable",
+     "noteCount": 3,
+     "notes": [
+      {
+       "index": 0,
+       "depth": 1,
+       "parent": "main",
+       "className": "snote",
+       "text": "这一页按分类收条目：数据里的 category 是「API服务」，这是采集或策展",
+       "textLength": 181,
+       "box": {
+        "count": 1,
+        "left": 30,
+        "right": 1410,
+        "width": 1380,
+        "height": 40.78,
+        "scrollW": 1380,
+        "clientW": 1380,
+        "padLeft": 0,
+        "padRight": 0
+       },
+       "rendered": true,
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "display": "block",
+       "fontSize": "12px",
+       "content": "normal",
+       "glyphRects": 10,
+       "lineCount": 2,
+       "widestLine": 1371.56,
+       "widestRect": 661.97,
+       "lines": [
+        {
+         "left": 30,
+         "right": 1401.56,
+         "spanW": 1371.56,
+         "rectW": 661.97,
+         "top": 145.5,
+         "sourceRects": 7
+        },
+        {
+         "left": 30,
+         "right": 546,
+         "spanW": 516,
+         "rectW": 180,
+         "top": 165.89,
+         "sourceRects": 3
+        }
+       ],
+       "contentBox": 1380,
+       "textWidth": 1380,
+       "textFallback": false,
+       "bearingCount": 1,
+       "beforeContent": null,
+       "afterContent": null
+      },
+      {
+       "index": 1,
+       "depth": 2,
+       "parent": "section.chgsec",
+       "className": "snote",
+       "text": "全部变化 →",
+       "textLength": 6,
+       "box": {
+        "count": 1,
+        "left": 30,
+        "right": 1410,
+        "width": 1380,
+        "height": 20.39,
+        "scrollW": 1380,
+        "clientW": 1380,
+        "padLeft": 0,
+        "padRight": 0
+       },
+       "rendered": true,
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "display": "block",
+       "fontSize": "12px",
+       "content": "normal",
+       "glyphRects": 1,
+       "lineCount": 1,
+       "widestLine": 61.64,
+       "widestRect": 61.64,
+       "lines": [
+        {
+         "left": 30,
+         "right": 91.64,
+         "spanW": 61.64,
+         "rectW": 61.64,
+         "top": 3306.53,
+         "sourceRects": 1
+        }
+       ],
+       "contentBox": 1380,
+       "textWidth": 1380,
+       "textFallback": true,
+       "bearingCount": 0,
+       "beforeContent": null,
+       "afterContent": null
+      },
+      {
+       "index": 2,
+       "depth": 1,
+       "parent": "main",
+       "className": "snote",
+       "text": "分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也",
+       "textLength": 91,
+       "box": {
+        "count": 1,
+        "left": 30,
+        "right": 1410,
+        "width": 1380,
+        "height": 20.39,
+        "scrollW": 1380,
+        "clientW": 1380,
+        "padLeft": 0,
+        "padRight": 0
+       },
+       "rendered": true,
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "display": "block",
+       "fontSize": "12px",
+       "content": "normal",
+       "glyphRects": 3,
+       "lineCount": 1,
+       "widestLine": 1047.52,
+       "widestRect": 963.52,
+       "lines": [
+        {
+         "left": 30,
+         "right": 1077.52,
+         "spanW": 1047.52,
+         "rectW": 963.52,
+         "top": 3338.92,
+         "sourceRects": 3
+        }
+       ],
+       "contentBox": 1380,
+       "textWidth": 1380,
+       "textFallback": false,
+       "bearingCount": 1,
+       "beforeContent": null,
+       "afterContent": null
+      }
+     ]
+    }
+   },
+   "vendor/aliyun/": {
+    "column": 1380,
+    "threshold": 1173,
+    "notes": [
+     {
+      "index": 0,
+      "codes": [
+       "note-ink-narrow"
+      ],
+      "variants": [
+       "ink-rect-variant",
+       "ink-3lines-variant"
+      ],
+      "textWidth": 1380,
+      "boxWidth": 1380,
+      "contentBox": 1380,
+      "lineCount": 3,
+      "widestLine": 1012.69,
+      "widestRect": 976.5,
+      "glyphRects": 9,
+      "ratioInk": 0.7338,
+      "ratioBox": 1,
+      "rendered": true,
+      "vertical": false,
+      "textLength": 276,
+      "text": "这一页收的是登记在册的同一家厂商的条目：厂商名按站内厂商归一规则合并（同一个公司",
+      "className": "snote",
+      "parent": "main",
+      "display": "block"
+     },
+     {
+      "index": 1,
+      "codes": [],
+      "variants": [],
+      "textWidth": 1380,
+      "boxWidth": 1380,
+      "contentBox": 1380,
+      "lineCount": 1,
+      "widestLine": 61.64,
+      "widestRect": 61.64,
+      "glyphRects": 1,
+      "ratioInk": 0.0447,
+      "ratioBox": 1,
+      "rendered": true,
+      "vertical": false,
+      "textLength": 6,
+      "text": "全部变化 →",
+      "className": "snote",
+      "parent": "section.chgsec",
+      "display": "block"
+     },
+     {
+      "index": 2,
+      "codes": [],
+      "variants": [],
+      "textWidth": 1380,
+      "boxWidth": 1380,
+      "contentBox": 1380,
+      "lineCount": 1,
+      "widestLine": 1305.88,
+      "widestRect": 618.58,
+      "glyphRects": 5,
+      "ratioInk": 0.9463,
+      "ratioBox": 1,
+      "rendered": true,
+      "vertical": false,
+      "textLength": 111,
+      "text": "厂商名按站内归一规则合并（同一个公司的不同写法落到同一页）。同一条优惠也会出现在",
+      "className": "snote",
+      "parent": "main",
+      "display": "block"
+     }
+    ],
+    "reading": {
+     "doc": {
+      "innerWidth": 1440,
+      "clientWidth": 1440,
+      "scrollWidth": 1440
+     },
+     "viewportHeight": 900,
+     "probe70ch": 452.81,
+     "main": {
+      "count": 1,
+      "left": 30,
+      "right": 1410,
+      "width": 1380,
+      "height": 1490.58,
+      "scrollW": 1380,
+      "clientW": 1380,
+      "padLeft": 0,
+      "padRight": 0
+     },
+     "region": {
+      "count": 1,
+      "left": 30,
+      "right": 1410,
+      "width": 1380,
+      "height": 159,
+      "scrollW": 1380,
+      "clientW": 1380,
+      "padLeft": 0,
+      "padRight": 0
+     },
+     "regionSel": ".ctable",
+     "noteCount": 3,
+     "notes": [
+      {
+       "index": 0,
+       "depth": 1,
+       "parent": "main",
+       "className": "snote",
+       "text": "这一页收的是登记在册的同一家厂商的条目：厂商名按站内厂商归一规则合并（同一个公司",
+       "textLength": 276,
+       "box": {
+        "count": 1,
+        "left": 30,
+        "right": 1410,
+        "width": 1380,
+        "height": 61.17,
+        "scrollW": 1380,
+        "clientW": 1380,
+        "padLeft": 0,
+        "padRight": 0
+       },
+       "rendered": true,
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "display": "block",
+       "fontSize": "12px",
+       "content": "normal",
+       "glyphRects": 9,
+       "lineCount": 3,
+       "widestLine": 1012.69,
+       "widestRect": 976.5,
+       "lines": [
+        {
+         "left": 30,
+         "right": 1042.69,
+         "spanW": 1012.69,
+         "rectW": 616.34,
+         "top": 145.5,
+         "sourceRects": 5
+        },
+        {
+         "left": 30,
+         "right": 996.58,
+         "spanW": 966.58,
+         "rectW": 870.58,
+         "top": 165.89,
+         "sourceRects": 3
+        },
+        {
+         "left": 30,
+         "right": 1006.5,
+         "spanW": 976.5,
+         "rectW": 976.5,
+         "top": 186.28,
+         "sourceRects": 1
+        }
+       ],
+       "contentBox": 1380,
+       "textWidth": 1380,
+       "textFallback": false,
+       "bearingCount": 1,
+       "beforeContent": null,
+       "afterContent": null
+      },
+      {
+       "index": 1,
+       "depth": 2,
+       "parent": "section.chgsec",
+       "className": "snote",
+       "text": "全部变化 →",
+       "textLength": 6,
+       "box": {
+        "count": 1,
+        "left": 30,
+        "right": 1410,
+        "width": 1380,
+        "height": 20.39,
+        "scrollW": 1380,
+        "clientW": 1380,
+        "padLeft": 0,
+        "padRight": 0
+       },
+       "rendered": true,
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "display": "block",
+       "fontSize": "12px",
+       "content": "normal",
+       "glyphRects": 1,
+       "lineCount": 1,
+       "widestLine": 61.64,
+       "widestRect": 61.64,
+       "lines": [
+        {
+         "left": 30,
+         "right": 91.64,
+         "spanW": 61.64,
+         "rectW": 61.64,
+         "top": 530.17,
+         "sourceRects": 1
+        }
+       ],
+       "contentBox": 1380,
+       "textWidth": 1380,
+       "textFallback": true,
+       "bearingCount": 0,
+       "beforeContent": null,
+       "afterContent": null
+      },
+      {
+       "index": 2,
+       "depth": 1,
+       "parent": "main",
+       "className": "snote",
+       "text": "厂商名按站内归一规则合并（同一个公司的不同写法落到同一页）。同一条优惠也会出现在",
+       "textLength": 111,
+       "box": {
+        "count": 1,
+        "left": 30,
+        "right": 1410,
+        "width": 1380,
+        "height": 20.39,
+        "scrollW": 1380,
+        "clientW": 1380,
+        "padLeft": 0,
+        "padRight": 0
+       },
+       "rendered": true,
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "display": "block",
+       "fontSize": "12px",
+       "content": "normal",
+       "glyphRects": 5,
+       "lineCount": 1,
+       "widestLine": 1305.88,
+       "widestRect": 618.58,
+       "lines": [
+        {
+         "left": 30,
+         "right": 1335.88,
+         "spanW": 1305.88,
+         "rectW": 618.58,
+         "top": 1547.19,
+         "sourceRects": 5
+        }
+       ],
+       "contentBox": 1380,
+       "textWidth": 1380,
+       "textFallback": false,
+       "bearingCount": 1,
+       "beforeContent": null,
+       "afterContent": null
+      }
+     ]
+    }
+   }
+  }
+ },
+ "jsErrors": []
+}

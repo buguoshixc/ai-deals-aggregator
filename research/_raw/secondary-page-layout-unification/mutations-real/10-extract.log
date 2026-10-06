@@ -1,0 +1,21 @@
+# P4 把 §22c 的变异读数拆成每条牙一个 JSON（M1–M4 / M6 / M7 / M6 正对照 / M5 复用）
+# $ node research/_raw/secondary-page-layout-unification/mutations-real/extract-mutations.cjs --report=research/_raw/secondary-page-layout-unification/geometry/after-verify.json --mutations=research/_raw/secondary-page-layout-unification/geometry/mutations.json --dir=dist --manifest-before=research/_raw/secondary-page-layout-unification/t3/post-repair-dist-before.sha256.txt --manifest-after=research/_raw/secondary-page-layout-unification/t3/post-repair-dist-after.sha256.txt --out-dir=research/_raw/secondary-page-layout-unification/mutations-real --label=real-dist
+# at 2026-10-06T08:33:59.225Z · verify-site.js sha256 4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb
+
+变异读数拆分（label=real-dist）：M1 M2 M3 M4 M6 M7 M8 M9a M9b M10 M6-control
+  M1 student/@1440 期望 note-narrow · 实测 [note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis] · 锚点 1/1 · 窄条 [student/#0, student/#1, student/#2] · 有字区域 453px
+  M2 status/@1440 期望 note-narrow · 实测 [note-narrow, note-axis, note-narrow, note-axis] · 锚点 1/1 · 窄条 [status/#0, status/#1] · 有字区域 453px
+  M3 changes/@1440 期望 note-narrow · 实测 [note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis] · 锚点 1/1 · 窄条 [changes/#0, changes/#1, changes/#2, changes/#3, changes/#4, changes/#5, changes/#6, changes/#7, changes/#8, changes/#9, changes/#10, changes/#11, changes/#12] · 有字区域 453px
+  M4 feeds/@1440 期望 note-narrow · 实测 [note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis] · 锚点 1/1 · 窄条 [feeds/#0, feeds/#1, feeds/#2, feeds/#3, feeds/#4, feeds/#5, feeds/#6, feeds/#7] · 有字区域 453px
+  M6 student/@390 期望 page-overflow@390 · 实测 [note-clipped, page-overflow@390] · 锚点 1/1 · 窄条 [无] · 有字区域 358px
+  M7 status/@1440 期望 unexpected-detail-main · 实测 [unexpected-detail-main] · 锚点 —/— · 窄条 [无] · 有字区域 1120px
+  M8 student/@1440 期望 note-narrow · 实测 [note-narrow, note-narrow, note-narrow] · 锚点 1/1 · 窄条 [student/#0, student/#1, student/#2] · 有字区域 452.81px · 要害断言 1/1
+  M9a docs/data/@1440 期望 note-narrow · 实测 [note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis] · 锚点 1/1 · 窄条 [docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5, docs/data/#6, docs/data/#7, docs/data/#8] · 有字区域 1380px · 要害断言 1/1
+  M9b changes/@1440 期望 note-narrow · 实测 [note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis] · 锚点 1/1 · 窄条 [changes/#1, changes/#3, changes/#4, changes/#8, changes/#12] · 有字区域 1380px · 要害断言 1/1
+  M10 student/@1600 期望 note-narrow · 实测 [note-narrow, note-axis, note-narrow, note-axis, note-narrow, note-axis] · 锚点 1/1 · 窄条 [student/#0, student/#1, student/#2] · 有字区域 453px
+  M6-control student/@390 期望 不得出现 page-overflow@390 · 实测 [无] · 锚点 —/— · 窄条 [—]
+条级容器：metrics.layoutNotes 401 行（@1600 401）· 每行带 route/index/codes：true
+不注入正对照：✅ 四个靶页本来都是干净的
+§22c 全站计数：{"total":186,"wide":55,"detail":131,"other":0,"notesChecked":105,"notesJudged":401,"narrowNotes":0,"narrowNotePages":0,"narrowNotesAt1600":0,"overflowPages":0,"unexpectedDetailMain":0,"missingDetailMain":0,"unclassified":0,"desktopViewports":[1440,1600]}
+零磁盘污染：✅ 前后清单逐字节相同（303 文件）
+写出目录：research/_raw/secondary-page-layout-unification/mutations-real

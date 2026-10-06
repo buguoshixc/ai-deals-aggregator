@@ -33,6 +33,9 @@ const audienceLib = require('../lib/audience');
 // private-analytics-v1：外部请求白名单与页面判定都取自**唯一实现**（lib/analytics.js）——
 // 这里不重写一份 origin 表，也不 grep token 字符串：判据只有一处，改了那边这一支跟着变。
 const analytics = require('../lib/analytics');
+// secondary-page-layout-unification（§22c）：布局族的**唯一**真值出处。这里是 require，不是
+// 第二份 kind→layout 表 —— 谁改了 page-kinds.js 的声明，§22c 的全站扫描立刻跟着变。
+const pageKinds = require('../lib/page-kinds');
 
 /**
  * 某个落地页**应该**声明几条 `rel="alternate"`：站点根 Feed 对（2 条）
@@ -6091,6 +6094,1580 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         + ` · @768 deal ${leafColumnWidths.deal[LEAF_MOBILE]} / model ${leafColumnWidths.model[LEAF_MOBILE]}`
         + ` · @390 deal ${leafColumnWidths.deal[LEAF_NARROW]} / model ${leafColumnWidths.model[LEAF_NARROW]}`
         + ` · 移动端页面级溢出 ${metrics.leafMobileOverflow}px`);
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* §22c Wide Data Page 的页面级说明同轴门禁（布局族 × 全站几何 × 逐条）    */
+  /* ------------------------------------------------------------------ */
+  //
+  // ===== 修复轮 3（t14）后的口径：**量排版结果，不量机制** =====
+  //
+  // 三轮对抗的教训是同一条根因，只是把「代理量」从盒子挪到了内容盒：
+  //   · round 1（border-box）：`padding-right: calc(100% - 70ch)` 让说明变回 451px 窄柱 —— 整轮放行；
+  //   · round 2（内容盒 textWidth）：`display: grid; grid-template-columns: minmax(0,70ch) 1fr`
+  //     只改一条 CSS、不动标记，就让 changes/ 的 13 条说明字迹只剩 156–451.52px —— 整轮 842 项 EXIT=0；
+  //     同类的还有 multicol（column-count/column-width）、`::before { float: right; width: 70% }`、
+  //     flex 装饰项、匿名盒承载文本……它们的**盒子与内容盒都可能是满宽的**。
+  // 所以本轮的窄柱判据改成**逐行字迹宽**：不管窄化用哪种机制实现，**排版出来的行就是窄的**。
+  //
+  //   glyphRects = 全部非空白文本节点的 document.createRange().getClientRects() 里
+  //                可见的字形盒（width > 0 && height > 0）
+  //   lines      = 这些 rect 按**垂直重叠**（重叠 > 两者较矮高度的 50%）归并成的行
+  //   lineCount  = 行数 · widestLine = 最宽一行的字迹宽 · lines[] = 逐行 {width,left,right}
+  //
+  // 判据是**并集**（不是替换）：旧口径一字不改，新口径叠上去。
+  //   ① `note-narrow`      ：textWidth（内容盒代理量）< 0.85 × min(主数据区宽, 页面列宽) —— t7 起就有，**未改**；
+  //   ② `note-ink-narrow`  ：lineCount >= 2 且 widestLine < 0.85 × min(主数据区宽, 页面列宽) —— 本轮新增。
+  //
+  // ⚠️ 为什么必须是并集（两份独立标定互证，读数见 teeth/_scratch/lines-*.json）：
+  //   · ① 覆盖 **156 条**（`--dir=dist.baseline` 实测：156 条的盒宽全是 452.81 ⇒ ① 看得见全部；
+  //     其中 **48 条是单行**窄盒）。② 另覆盖其中 **108 条多行**说明（交集 108 ⇒ ② ⊆ ①）。
+  //     只留 ② 会漏掉那 48 条单行窄盒（例 category/agent/#1「全部变化 →」：单行 61.64px / 盒宽 452.81px）——
+  //     单行说明**没有行证据**：「1 行、字迹 61.64px」在 452px 的窄柱里和在 1380px 的满宽列里渲染结果
+  //     一模一样，① 才是看得见「盒子被压窄」的那把尺子。
+  //     ⚠️ 别把两处「48」混用（t19 / R3-2 订正）：truth-401 的 `caughtByOldCriteria(48)` 是
+  //     `make-truth-401.cjs:56` 的 `index === 0 ? …` **按序切分**的位置切片，独立复核实测这 48 条
+  //     **全是多行**（都落在 ② 的 108 里）；上面那 48 条单行窄盒反而全部落在 `onlyNewTruth`。
+  //     两个 48 是巧合，别写成「48 由 note-narrow 单独解释」。
+  //     t19 实测归属：`--dir=dist.baseline` ① = 156（盒宽全 452.81）· ② = 108 · 交集 108 · ① 里单行 48。
+  //   · 只留 ① 会漏 grid / multicol / float / flex 那一整类：它们的**盒子与内容盒都可能是满宽的**
+  //     （t8 的 F-R2-1：`display:grid; grid-template-columns: minmax(0,70ch) 1fr` 只改一条 CSS，
+  //     整轮 842 项 EXIT=0）。② 是唯一看得见「字迹铺不开」的那把尺子。
+  //   · 并集实测：dist.baseline = 156 条 / 48 页（漏判 0、误报 0）· dist = 0 条 · dist.synth-fixed = 0 条。
+  //
+  // ② 的三条不许动的细节（都经过独立标定）：
+  //   · 前置条件 `lineCount >= 2` **不许松**：去掉它，dist 上 **319 条**单行说明会被误报
+  //     （t19 / R3-2 复算：`rendered && !vertical && lineCount === 1 && widestLine < 0.85 × 列宽`
+  //     在 @1440 与 @1600 都是 319 条；例「全部变化 →」字迹 61.64px < 0.85×1380 —— 短文本不是缺陷）；
+  //   · 也**不许**加码到 `>= 3`：multicol 形态只有 2 行，提到 3 命中数直接掉到 0；
+  //   · 阈值 0.85：t11 已验证 0.85× 与 0.5× 在 A/B/C 三个集合上给出**完全相同**的命中集合
+  //     ⇒ 这个口径不卡在阈值边缘。
+  //
+  // ② 的**语义**（t11 发现并验证，写在这里免得下一轮当 bug 提）：
+  //   它量的是「字迹在横向铺到哪里」，不是「单列有多宽」。multicol 形态命中读数是 **912.63px（66%）**，
+  //   不是单列宽 447px —— 因为多列里不同列的文字片段共享同一垂直带，按垂直覆盖归并时被并成「一行」。
+  //   这正是想要的语义：3 列只用了 2 列、右侧 1/3 空白（缺陷原型）⇒ 912.63 < 1173 ⇒ 咬中；
+  //   若字迹铺满整盒（很多细列排满全宽、没有大片空白）⇒ 放行 —— 那种形态**没有**「右边半截空白」的观感。
+  //   归并容差目前实现为「垂直覆盖 > 两者较矮高度的 50%」；极小 `column-gap` 或竖排时需要按连续字迹段
+  //   细分（竖排已显式不判 ②，见下）。
+  //   适用性（t19 / R3-1 起）：**物理前置条件** —— min(主数据区宽, 页面列宽) > 现场换算的 70ch
+  //   （1440/1600/760 判、360 不判）。不再有「只在桌面档（1440/1600）」的视口白名单：
+  //   760 列 676–728px > 452.81px，70ch 窄柱在 760 物理上完全可以发生（R3-1 的 blocker）。
+  //
+  // note-hidden-text（新码，对应 t8 的 F-R2-2）：**文本非空但一个可见字形盒都没有** ⇒ 判红。
+  //   `.snote { font-size: 0 } .snote::before { content: "正文…" }` 这种「把正文交给伪元素画」的
+  //   写法让真实文本一个像素都不显示，而盒宽/行数一切正常 —— 只有字形盒能看穿它。
+  //   标定（dist 401 条实测）：只有 plans/coding/#1 命中这个形状，而它是
+  //   `<p class="snote pnoscript"><noscript>…</noscript></p>`：脚本开启时 <noscript> 内容
+  //   **本来就不渲染**（整块高度 0）。所以规则写成「**已渲染**（border-box 有宽有高）且文本非空
+  //   且零可见字形盒」—— 未渲染的说明单独登记为 unrendered，既不算窄柱也不算藏字。
+  //
+  // 竖排（writing-mode: vertical-* / sideways-*）：竖排的「行」是**竖列**，横排意义的行宽在这里
+  //   没有对应量 ⇒ ② **显式不判**（metrics 里标 vertical=true），由 ① 的内容盒量兜住。
+  //   实测两个形态都判对：`writing-mode: vertical-rl; height: 5.6rem`（盒宽被内容反推成 ~347px）
+  //   ⇒ note-narrow；`… width: 100%; height: 5.6rem`（盒宽锁满宽、正文竖成一根细条）⇒ 不判。
+  //
+  // ===== 本版**不**承诺的边界（写在这里，免得下一轮再当 blocker 提）=====
+  // · 绘制类遮盖**不在本版承诺内**：`clip-path`、`mask*`、不透明覆盖层（`::after` 盖住右侧 70%）。
+  //   它们不改变排版结果（行还是满宽的），要发现只能靠像素级断言，而像素断言会因跨平台字体渲染
+  //   在 CI 上 flaky 红 —— 那比漏判更糟；可行性也做过普查：t4 与 t11 各自全仓扫过
+  //   252 个源文件 + 186 个产物，`clip-path` **0 处**、`mask*` **0 处**，本仓库没有任何构建路径
+  //   会产出它们，`clip-path: path()` / 位图 `mask-image` 也穷尽不了。
+  // · `transform: scaleX()` 这类**绘制期缩放**会一并影响 getClientRects ⇒ 逐行判据量得到（已实测咬中）；
+  //   同族的「把字挪出可视区」（`text-indent:-9999px` + `overflow:hidden`）由既有的 note-clipped 咬。
+  //
+  // 其余判据与 t7 相同、未动：
+  //   · note-axis    ：border-box 与「主数据区」或「页面主容器 <main>」任一同一轴，
+  //                    容差 = max(1px, 5% × min(主数据区宽, 页面列宽))（prompt §11 允许 padding /
+  //                    border / scroll wrapper 的少量差异；.aliasnote 的 3px 竖线 + 8px 缩进属此列）。
+  //   · note-clipped ：说明自身横向溢出（scrollWidth > clientWidth + 1）。
+  //   · 逐条：<main> 内**每一条** .snote 都判，码带 route#index；零条说明的页面才跳过。
+  //   · 视口：1440 与 1600 全站逐条、390 全站 scrollWidth、760/360 样本集。
+  //
+  // 违规码全部由 wideProblems() 一处产出：
+  //   unclassified-layout / unexpected-detail-main / missing-detail-main / note-narrow /
+  //   note-ink-narrow / note-axis / note-clipped / note-hidden-text / note-unrendered /
+  //   page-overflow@<vw> / data-region-missing
+  //   （note-unrendered 是 t24 新增：盒高被压成 0 ⇒ ①②③ 同时静默的那一类，闭合 T22-F1）
+
+  const WIDE_TOL = 1;                        // 亚像素取整容差（px）
+  const WIDE_AXIS_RATIO = 0.05;              // 轴的比例容差：max(1px, 5% × min(主数据区宽, 页面列宽))
+  const WIDE_NOTE_RATIO = 0.85;              // 有字区域宽 ≥ 0.85 × min(主数据区宽, 页面列宽)
+  const WIDE_DESKTOP = 1440;                 // 桌面档一（全站逐条）
+  const WIDE_WIDE = 1600;                    // 桌面档二（全站逐条；只在 ≥1500px 生效的缺陷靠它）
+  const WIDE_NARROW = 390;                   // 全站溢出档（只量 documentElement.scrollWidth）
+  const WIDE_SAMPLE_VIEWPORTS = [760, 360];  // 只量样本集的两档
+  const WIDE_DESKTOP_VIEWPORTS = [WIDE_DESKTOP, WIDE_WIDE];
+  // 冻结串：T1 放进 index.html 共享 <style> 的**唯一**一条 .snote 规则，逐字一致（不许改空格）。
+  // 它既是变异牙的锚点，也是「一处定义、全站生效」的机器可读证据：每页内联样式里恰好 1 次。
+  const WIDE_SNOTE_FROZEN = '.snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }';
+  // M1–M4：只把 max-width 换回 70ch（overflow-wrap 一字不动，隔离缺陷）。
+  const WIDE_SNOTE_NARROW = WIDE_SNOTE_FROZEN.replace('max-width: none', 'max-width: 70ch');
+  // M6：只拿走断行兜底（其它声明一字不动，隔离缺陷）。
+  const WIDE_SNOTE_NOWRAP = WIDE_SNOTE_FROZEN.replace('overflow-wrap: anywhere', 'overflow-wrap: normal');
+  // 主数据区：**第一个命中**的声明选择器；一个都没命中时回落 <main> 并在报告里标出。
+  const WIDE_DATA_SELECTORS = ['.ctable', '.stable', '.chgsec', '.chglist', '.flist', '.fsec', '.ptable', '.lsum', '.pchglist'];
+  // 不可断的 200 字符串：`.snote` 的 overflow-wrap:anywhere 是不是真的在兜底，只有它能量出来。
+  const WIDE_LONG_TOKEN = 'x'.repeat(200);
+  // M1–M4 的四个壳（页面级说明曾经各自被压成 70ch 的就是这四个家族）。它们是**固定路由**，
+  // 不是数据 id/slug；每条变异都会先守卫「这一页确实是 wide 族、且真有页面级说明」。
+  const WIDE_MUTATION_TARGETS = ['student/', 'status/', 'changes/', 'feeds/'];
+  /** §22c 的全部违规码（判据自检用：一个都不能少、也不能多）。 */
+  const WIDE_CODE_VOCABULARY = [
+    'unclassified-layout', 'unexpected-detail-main', 'missing-detail-main', 'note-narrow', 'note-ink-narrow',
+    'note-axis', 'note-clipped', 'note-hidden-text', 'note-unrendered', 'page-overflow@<vw>', 'data-region-missing'
+  ];
+
+  const wideRound = n => Math.round(n * 100) / 100;
+  const wideCodes = problems => problems.map(problem => problem.code);
+  /** 条级定位：route#index（index = <main> 内文档序，与 geometry/truth-401.json 同一口径）。 */
+  const wideNoteKey = (route, index) => `${route}#${index}`;
+  /** 表头对齐用：CJK 记 2 列，免得版式上的「看起来齐」变成读数上的错觉。 */
+  const wideDisplayWidth = text => [...String(text)]
+    .reduce((sum, ch) => sum + (/[\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFF60\uFFE0-\uFFE6]/.test(ch) ? 2 : 1), 0);
+  const wideCell = (text, width) => String(text) + ' '.repeat(Math.max(0, width - wideDisplayWidth(text)));
+
+  /** 产物里的全部页面路由：遍历产物目录里所有 index.html → 带尾斜杠路由（首页是空串）。 */
+  function wideRoutesFromDisk() {
+    const routes = [];
+    const walk = dir => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) walk(full);
+        else if (entry.name.toLowerCase() === 'index.html') {
+          const relPath = path.relative(DIR, full).split(path.sep).join('/');
+          routes.push(relPath === 'index.html' ? '' : relPath.replace(/index\.html$/, ''));
+        }
+      }
+    };
+    walk(DIR);
+    return routes.sort();
+  }
+
+  /**
+   * 数据驱动的静态路由 → kind。`page-kinds.kindOfRoute` 对它们**按设计返回 null**
+   * （目录页家族的 kind 随数据走），所以由调用方在这里显式补齐 —— 这是「补齐」，
+   * 不是第二份 kind→layout 表：布局族仍然只从 `pageKinds.layoutOf(kind)` 取。
+   */
+  function wideKindByRoute() {
+    const map = new Map();
+    for (const page of audienceLib.COLLECTION_PAGES) map.set(`${page.slug}/`, 'collection');
+    for (const page of audienceLib.NEED_PAGES) map.set(`need/${page.slug}/`, 'need');
+    map.set(landingsLib.VENDOR_HUB.route, 'hub');
+    map.set(landingsLib.CATEGORY_HUB.route, 'hub');
+    map.set('', 'home');
+    return map;
+  }
+
+  /**
+   * 样本集（prompt §12）：**现场推导**，一个 id/slug 都不写死。
+   *   ① 注册表驱动的入口全部取：COLLECTION_PAGES → `<slug>/`、NEED_PAGES → `need/<slug>/`、
+   *      landing 的两个枢纽路由（每一类入口各代表一套判据，少一个就少一条覆盖面）；
+   *   ② 磁盘上**不匹配任何 ROUTE_PATTERNS 通配**的静态路由全部取（首页 / 状态 / 变化 / 订阅 /
+   *      套餐三页 / 模型索引 / 档案索引 / 数据文档）；
+   *   ③ 每个通配族（deal / model / vendor / category / archive-detail）各取磁盘上**第一条**
+   *      真实路由 —— 真实 id/slug 由产物决定，脚本里维护不了、也不许维护。
+   */
+  function wideSampleSet(routes, metaList) {
+    const kindOf = route => {
+      const hit = metaList.find(item => item.route === route);
+      return hit ? hit.kind : null;
+    };
+    const isWildcard = route => pageKinds.ROUTE_PATTERNS.some(pattern => pattern.re.test(route));
+    const sample = new Set();
+    for (const page of audienceLib.COLLECTION_PAGES) sample.add(`${page.slug}/`);
+    for (const page of audienceLib.NEED_PAGES) sample.add(`need/${page.slug}/`);
+    sample.add(landingsLib.VENDOR_HUB.route);
+    sample.add(landingsLib.CATEGORY_HUB.route);
+    for (const route of routes) if (!isWildcard(route)) sample.add(route);
+    for (const pattern of pageKinds.ROUTE_PATTERNS) {
+      if ([...sample].some(route => kindOf(route) === pattern.kind)) continue;
+      const hit = routes.find(route => isWildcard(route) && kindOf(route) === pattern.kind);
+      if (hit) sample.add(hit);
+    }
+    return [...sample].sort();
+  }
+
+  /**
+   * 当前页面的**唯一**几何量测（不导航、不假设路由）：变异牙复测走的也是这一份。
+   *
+   * 每条 .snote 都量四样东西：border-box（轴判据 + 向后兼容）、content box、**有字区域宽**、
+   * 以及 Range 并集字迹（进报告、供外部复核；不是判据，理由见本节开头）。
+   */
+  async function wideMeasure(target) {
+    const geometry = await target.evaluate(`(() => {
+      const DATA_SELECTORS = ${JSON.stringify(WIDE_DATA_SELECTORS)};
+      const FROZEN = ${JSON.stringify(WIDE_SNOTE_FROZEN)};
+      const round = n => Math.round(n * 100) / 100;
+      const zeroBox = { count: 0, left: 0, right: 0, width: 0, height: 0, top: 0, scrollW: 0, clientW: 0, padLeft: 0, padRight: 0, maxWidth: '', overflowWrap: '' };
+      const box = el => {
+        if (!el) return Object.assign({}, zeroBox);
+        const cs = getComputedStyle(el);
+        const r = el.getBoundingClientRect();
+        return {
+          count: 1,
+          left: round(r.left + window.scrollX), right: round(r.right + window.scrollX), width: round(r.width),
+          // height/top：「已渲染」的判定要用（<noscript> 说明整块高度 0）
+          height: round(r.height), top: round(r.top + window.scrollY),
+          scrollW: el.scrollWidth, clientW: el.clientWidth,
+          padLeft: parseFloat(cs.paddingLeft) || 0, padRight: parseFloat(cs.paddingRight) || 0,
+          maxWidth: cs.maxWidth, overflowWrap: cs.overflowWrap
+        };
+      };
+      const contentBoxOf = el => {
+        const cs = getComputedStyle(el);
+        return el.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);
+      };
+      /**
+       * 现场换算 70ch（t19 / R3-1）：把这条说明**自己的字体**逐字复制到屏外探针上，
+       * 量 width:70ch 的实际像素宽 —— ② 的物理前置条件（列宽 > 70ch）用的就是这把尺子，
+       * 不是「哪些视口算桌面档」的白名单。1440/1600/760 实测 452.81px。
+       */
+      const ch70Of = el => {
+        const cs = getComputedStyle(el);
+        const probe = document.createElement('div');
+        probe.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;pointer-events:none;'
+          + 'display:inline-block;width:70ch;padding:0;border:0;margin:0;white-space:nowrap;'
+          + 'font-family:' + cs.fontFamily + ';font-size:' + cs.fontSize + ';font-style:' + cs.fontStyle
+          + ';font-weight:' + cs.fontWeight + ';font-stretch:' + cs.fontStretch + ';font-variant:' + cs.fontVariant
+          + ';letter-spacing:' + cs.letterSpacing + ';word-spacing:' + cs.wordSpacing + ';';
+        document.body.appendChild(probe);
+        const width = probe.getBoundingClientRect().width;
+        probe.remove();
+        return round(width);
+      };
+      /** 直接含非空白文本节点 ⇒ 这个元素「承载文本」 */
+      const bearsText = el => {
+        for (const node of el.childNodes) if (node.nodeType === 3 && node.textContent.trim()) return true;
+        return false;
+      };
+      /** 是否参与行布局：inline 元素的 clientWidth 恒为 0，不能算候选 */
+      const laysOutLines = el => {
+        const display = getComputedStyle(el).display;
+        return display !== 'inline' && display !== 'none' && display !== 'contents';
+      };
+      /**
+       * 全部**非空白文本节点**的可见字形盒（Range 包住文本节点 → getClientRects）。
+       * 【noscript】子树**排除**：脚本开启时它的内容按规范不渲染（plans/coding/ 的
+       * 「.snote.pnoscript」就是这种：textContent 非空、一个字形盒都没有，但那是正常的「无 JS 提示」）。
+       */
+      const glyphRectsOf = el => {
+        const rects = [];
+        const walk = node => {
+          for (const child of node.childNodes) {
+            if (child.nodeType === 3) {
+              if (!child.textContent.trim()) continue;
+              const range = document.createRange();
+              range.selectNodeContents(child);
+              for (const rect of range.getClientRects()) {
+                if (rect.width > 0 && rect.height > 0) {
+                  rects.push({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height });
+                }
+              }
+            } else if (child.nodeType === 1 && child.tagName !== 'NOSCRIPT') {
+              walk(child);
+            }
+          }
+        };
+        walk(el);
+        return rects;
+      };
+      /** 与文本节点的「非空」口径一致：同样是排除了 <noscript> 之后的文本 */
+      const visibleTextOf = el => {
+        let out = '';
+        const walk = node => {
+          for (const child of node.childNodes) {
+            if (child.nodeType === 3) out += child.textContent;
+            else if (child.nodeType === 1 && child.tagName !== 'NOSCRIPT') walk(child);
+          }
+        };
+        walk(el);
+        return out.replace(/\\s+/g, ' ').trim();
+      };
+      /**
+       * 同一口径但**不排除** <noscript>（t24 / 闭合 T22-F1）：用来区分两种「未渲染」——
+       *   · 文字全在 <noscript> 里（可见文本 0、原始文本非空）⇒ 脚本开启时本来就不该画，合法；
+       *   · 可见文本非空却没有字形盒 ⇒ 有人把正文藏了（裸 font-size:0 会把盒高压成 0）。
+       */
+      const rawTextOf = el => {
+        let out = '';
+        const walk = node => {
+          for (const child of node.childNodes) {
+            if (child.nodeType === 3) out += child.textContent;
+            else if (child.nodeType === 1) walk(child);
+          }
+        };
+        walk(el);
+        return out.replace(/\\s+/g, ' ').trim();
+      };
+      /**
+       * 逐行归并：rect 按 top 排序，落进「垂直重叠 > 两者较矮高度 50%」的已有行，否则新开一行。
+       * 行 = 一条排版行（横排时），逐行字迹宽就是这个元素**实际排版出来的**结果。
+       */
+      const mergeLines = rects => {
+        const sorted = rects.slice().sort((a, b) => a.top - b.top || a.left - b.left);
+        const lines = [];
+        for (const rect of sorted) {
+          let hit = null;
+          for (const line of lines) {
+            const overlap = Math.min(line.bottom, rect.bottom) - Math.max(line.top, rect.top);
+            if (overlap > 0.5 * Math.min(line.height, rect.height)) { hit = line; break; }
+          }
+          if (hit) {
+            hit.left = Math.min(hit.left, rect.left); hit.right = Math.max(hit.right, rect.right);
+            hit.top = Math.min(hit.top, rect.top); hit.bottom = Math.max(hit.bottom, rect.bottom);
+            hit.height = Math.max(hit.height, rect.height);
+          } else {
+            lines.push({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, height: rect.height });
+          }
+        }
+        lines.sort((a, b) => a.top - b.top || a.left - b.left);
+        return lines.map(line => ({ left: round(line.left), right: round(line.right), width: round(line.right - line.left) }));
+      };
+      /** Range 并集：包住元素下全部文本节点，取 getClientRects() 的并集（诊断量，不再作判据） */
+      const inkOf = el => {
+        const rects = glyphRectsOf(el);
+        if (!rects.length) return null;
+        const left = Math.min.apply(null, rects.map(r => r.left));
+        const right = Math.max.apply(null, rects.map(r => r.right));
+        return { left: round(left), right: round(right), width: round(right - left), rects: rects.length,
+          longestLine: round(Math.max.apply(null, rects.map(r => r.width))) };
+      };
+      const mains = document.querySelectorAll('main');
+      const main = mains.length ? mains[0] : null;
+      let regionSel = null;
+      let regionEl = null;
+      for (const sel of DATA_SELECTORS) {
+        const hit = document.querySelector(sel);
+        if (hit) { regionSel = sel; regionEl = hit; break; }
+      }
+      const styles = Array.prototype.slice.call(document.querySelectorAll('style'));
+      let frozenCount = 0;
+      for (const style of styles) frozenCount += style.textContent.split(FROZEN).length - 1;
+      const notes = main ? Array.prototype.slice.call(main.querySelectorAll('.snote')) : [];
+      return {
+        doc: {
+          innerWidth: window.innerWidth,
+          clientWidth: document.documentElement.clientWidth,
+          scrollWidth: document.documentElement.scrollWidth
+        },
+        mainCount: mains.length,
+        detailMainCount: document.querySelectorAll('main.detail-main').length,
+        main: box(main),
+        regionSel: regionSel,
+        regionFallback: !regionSel,
+        // 命不中声明选择器时**回落 <main>**（这一条是判据的一部分，不是兜底将就）。
+        region: box(regionEl || main),
+        noteCount: notes.length,
+        notes: notes.map((el, index) => {
+          const noteBox = box(el);
+          const cs = getComputedStyle(el);
+          // 物理前置条件用的尺子：这条说明自己的 70ch 现场换算值（t19 / R3-1）
+          const ch70 = ch70Of(el);
+          const bearing = [];
+          if (bearsText(el)) bearing.push(el);
+          for (const descendant of el.querySelectorAll('*')) {
+            if (laysOutLines(descendant) && bearsText(descendant)) bearing.push(descendant);
+          }
+          const widths = bearing.map(contentBoxOf).filter(w => w > 0);
+          const contentBox = contentBoxOf(el);
+          // ① 的**判据量**（内容盒代理量，t19 / R3-3 订正：早年注释写成「诊断量…不再作判据」已过时）：
+          // 承载文本的块级元素里最窄的那个 content box；取不到承载块时回落 border-box，
+          // 消息里标「textFallback 回落」。无盒形态（display:contents / 未渲染）由 wideProblems 的
+          // 「rendered」前置挡掉，不会把这个 0 当成窄柱。
+          const textWidth = widths.length
+            ? Math.min.apply(null, widths)
+            : (contentBox > 0 ? contentBox : noteBox.width);
+          // 判据量：逐行字迹
+          const glyphRects = glyphRectsOf(el);
+          const lines = mergeLines(glyphRects);
+          const visibleText = visibleTextOf(el);
+          // t24 / T22-F1：原始文本（不排除 <noscript>）用来判定「文字是不是全在 <noscript> 里」
+          const rawText = rawTextOf(el);
+          const writingMode = cs.writingMode || 'horizontal-tb';
+          return {
+            index: index,
+            depth: (() => { let d = 0, p = el; while (p && p !== main) { p = p.parentElement; d++; } return d; })(),
+            parent: el.parentElement
+              ? el.parentElement.tagName.toLowerCase() + (el.parentElement.className ? '.' + String(el.parentElement.className).split(/\\s+/)[0] : '')
+              : null,
+            text: visibleText.slice(0, 32),
+            textLength: visibleText.length,
+            // t24 / T22-F1：未渲染的两种来源要分开 —— 原始文本（含 <noscript>）长度、是否含 <noscript> 子树。
+            rawTextLength: rawText.length,
+            noscriptSubtree: Boolean(el.querySelector('noscript')),
+            box: noteBox,
+            // 已渲染 = border-box 有宽有高。【noscript】说明整块高度为 0 ⇒ 未渲染，不判窄柱/藏字。
+            rendered: noteBox.width > 0 && noteBox.height > 0,
+            writingMode: writingMode,
+            vertical: /vertical|sideways/.test(writingMode),
+            glyphRects: glyphRects.length,
+            lineCount: lines.length,
+            widestLine: lines.length ? lines.reduce((max, line) => Math.max(max, line.width), 0) : 0,
+            lines: lines,
+            contentBox: round(contentBox),
+            // 现场换算的 70ch（物理前置条件的尺子；见 ch70Of 与 wideProblems 的 ②）
+            ch70: ch70,
+            textWidth: round(textWidth),
+            textFallback: widths.length === 0,
+            bearingCount: bearing.length,
+            ink: inkOf(el)
+          };
+        }),
+        frozenCount: frozenCount
+      };
+    })()`);
+    // 向后兼容：老口径的「文档序第一条」读数（抽取式对抗工具读 geometry.note.*）
+    geometry.note = geometry.notes.length ? geometry.notes[0].box
+      : { count: 0, left: 0, right: 0, width: 0, scrollW: 0, clientW: 0 };
+    return geometry;
+  }
+
+  /**
+   * ★ §22c 的**唯一**判据函数：一次量测 + 页面元信息 ⇒ 违规码。
+   *
+   * M0 反证、1440/1600 全站逐条扫描、760/360 样本集、M1–M10 的变异复测**全部**走这一个函数 ——
+   * 「判据写错了」与「产品没问题」在日志里长得一样，所以判据本身也要能被咬到。
+   * 条级违规码带 `index`（= <main> 内文档序），route#index 就是外部核对的键。
+   */
+  function wideProblems(geometry, meta) {
+    const problems = [];
+    // cause：这条码是哪条判据咬出来的（`line` / `single-line` / `vertical` / `hidden-text` …）。
+    // 变异牙与 metrics 都读它，免得靠中文消息去认判据。
+    const push = (code, msg, index, cause) => {
+      const problem = { code, msg };
+      if (index !== undefined) problem.index = index;
+      if (cause !== undefined) problem.cause = cause;
+      problems.push(problem);
+    };
+    const vw = geometry.doc.clientWidth;
+
+    // ① 布局族：解析不出来就是红（不许静默跳过一页）
+    if (!meta || !meta.kind || !meta.family) {
+      push('unclassified-layout', `路由「${meta ? meta.route : '（无元信息）'}」解析不出 kind/layout`
+        + `（kindOfRoute + kindByRoute 都没命中 ⇒ 布局族无从判定）`);
+    } else if (meta.family === 'detail') {
+      if (geometry.detailMainCount !== 1) {
+        push('missing-detail-main', `detail 族要求恰好 1 个 main.detail-main，实测 ${geometry.detailMainCount} 个`
+          + `（<main> 共 ${geometry.mainCount} 个）`);
+      }
+    } else if (meta.family === 'wide') {
+      if (geometry.detailMainCount !== 0) {
+        push('unexpected-detail-main', `wide 族要求 0 个 main.detail-main，实测 ${geometry.detailMainCount} 个`);
+      }
+    }
+
+    // ② 主数据区：命不中声明选择器时回落 <main>（在报告里标出，不算失败）；连 <main> 都没有才是红
+    const regionOk = geometry.region.count === 1 && geometry.region.width > 0;
+    const mainOk = geometry.main.count === 1 && geometry.main.width > 0;
+    if (geometry.main.count !== 1) {
+      push('data-region-missing', `没有唯一的 <main>（${geometry.mainCount} 个）—— 主数据区与回落锚点都不存在`);
+    } else if (!regionOk) {
+      push('data-region-missing', `主数据区不可测：${geometry.regionSel || '（无声明选择器命中，回落 <main>）'}`
+        + ` 的 border-box 宽 ${geometry.region.count === 1 ? wideRound(geometry.region.width) : 0}px`);
+    }
+
+    // ③ 逐条页面级说明：<main> 内**全部** .snote（不再只看文档序第一条）。
+    //    零条的页面如实标「无页面级说明」，跳过该条、不算失败；整块没渲染的（<noscript> 那种）
+    //    也单独登记为 unrendered —— 它既不是窄柱也不是藏字。
+    if (mainOk && regionOk && geometry.noteCount > 0) {
+      const main = geometry.main;
+      const region = geometry.region;
+      // 主数据区可能比页面列还宽（窄档里表格在横向滚动容器里）⇒ 分母取两者的较小值。
+      const column = Math.min(region.width, main.width);
+      const threshold = WIDE_NOTE_RATIO * column;
+      // ② 的适用性 = **物理前置条件**（t19 / R3-1），不是视口数字白名单。
+      //
+      //   尺子：`note.ch70` = 现场换算的 70ch —— 把这条说明自己的字体逐字复制到屏外探针上，
+      //   量 `width: 70ch` 的实际像素宽（wideMeasure 里现量，1440/1600/760 实测都是 452.81px）。
+      //   判据：**min(主数据区宽, 页面列宽) > 70ch** ⇒ 「盒满宽、字被排进 70ch 窄轨」物理上可能发生。
+      //   实测（R3-1 的独立探针，见 review/R3-review.md §5）：1440 列 1120–1380 · 1600 列 1240–1500 ·
+      //   760 列 676–728，全部 > 452.81 ⇒ **判**；360 列 276–328 < 452.81 ⇒ **不判**
+      //   （天然保住 360 档 feeds/#2「按「我是谁」…」的已知边界：328px 列里排成 2 行、最宽 264px，
+      //   那是 CJK 断行 + 行内 /student/ 这类不可断片段的正常余量，不是缺陷）。
+      //   ch70 缺失（外部合成几何没带这个量）时按 0 处理 ⇒ 前置条件成立、照判 ——
+      //   宁可多判也不能让「量不到尺子」变成静默跳过。逐条的 `note.ch70` 在下面循环里取用。
+      // 轴：border-box，比例容差（prompt §11：允许 padding / border / scroll wrapper 的少量差异）
+      const axisTol = Math.max(WIDE_TOL, WIDE_AXIS_RATIO * column);
+      const anchors = [
+        { label: `主数据区 ${geometry.regionSel || '<main>'}`, box: region },
+        { label: '页面主容器 <main>', box: main }
+      ];
+      for (const note of geometry.notes) {
+        const where = wideNoteKey(meta.route, note.index);
+        const facts = `盒宽 ${wideRound(note.box.width)}px · 内容盒 ${wideRound(note.contentBox)}px · 行 ${note.lineCount} 行`
+          + `（最宽一行 ${wideRound(note.widestLine)}px${note.vertical ? ' · 竖排' : ''}）`
+          + ` · 字形盒 ${note.glyphRects} 个 · 列宽 ${wideRound(column)}px · 阈值 ${wideRound(threshold)}px`
+          + `（主数据区 ${geometry.regionSel || '<main>'} ${wideRound(region.width)}px / 页面列 ${wideRound(main.width)}px）`;
+        if (!note.rendered) note.unrendered = true;
+        // ① 旧口径（t7 的 textWidth，**判据式一字未改**）：内容盒代理量被压窄。
+        //    覆盖面：`--dir=dist.baseline` 实测 156 条（盒宽全 452.81），其中 48 条是**单行**窄盒 ——
+        //    行口径看不见它们（单行没有行证据），① 才是那把尺子（t19 / R3-2 订正：别写成
+        //    「truth 的 caughtByOldCriteria 48 = 这些单行」——那 48 是 make-truth-401.cjs:56 的
+        //    `index === 0` 按序切分，实测全是多行，都在 ② 里）。
+        //    t19 / R3-3：加 `rendered` 前置 —— `display: contents` 时说明**不生成盒子**，
+        //    border-box 与内容盒都是 0，`contentBox === 0 ⇒ 回落 border-box` 会把「0px < 阈值」
+        //    报成窄柱（实测误报），同轴的 0..0 盒子也量不出轴。无盒形态不判窄柱/轴/裁切；
+        //    文本是否铺得开由 ② 用**字形盒证据**判（见下），不靠这个盒子。
+        const boxed = note.rendered;
+        if (boxed && note.textWidth < threshold - 0.01) {
+          push('note-narrow', `${where} 有字区域宽（内容盒代理量）${wideRound(note.textWidth)}px < ${WIDE_NOTE_RATIO} × 列宽`
+            + `（承载文本块 ${note.bearingCount} 个${note.textFallback ? ' · textFallback 回落' : ''}）—— ${facts}`, note.index, 'text-width');
+        }
+        // ② 新口径（t14；作用域 t19 起改为物理前置条件）：**逐行字迹**。盒子/内容盒可能都是满宽的
+        //    （grid / multicol / float / flex / 匿名盒…），但排版出来的行铺不开 ⇒ 这里咬。
+        //    前置条件 lineCount ≥ 2 不许松（去掉它 dist 上会误报 319 条单行说明）；也不许提到 ≥3
+        //    （multicol 只有 2 行）。竖排：竖排的「行」是竖列 ⇒ 显式不判（由 ① 的内容盒量兜住）。
+        //    ⚠️ 作用域 = 物理前置条件（R3-1）：`column > note.ch70`（现场换算的 70ch，见上方注释），
+        //    不再有「只判 1440/1600」的视口白名单 —— 760 档列 676–728 > 452.81 ⇒ 判
+        //    （这正是 R3-1 的复现形状：把 grid 规则包进 @media (max-width:760px) 以前整轮 EXIT=0），
+        //    360 档列 276–328 < 452.81 ⇒ 不判。
+        //    t19 / R3-3：判 ② 的证据是**字形盒**，不看说明自己有没有盒子（display:contents 也判）——
+        //    否则「无盒 ⇒ 整类免判」会变成新的放行面。
+        const ch70 = Number(note.ch70) > 0 ? Number(note.ch70) : 0;
+        const inkScope = column > ch70 + WIDE_TOL;
+        if ((note.rendered || note.glyphRects > 0) && !note.vertical && inkScope
+          && note.lineCount >= 2 && note.widestLine < threshold - 0.01) {
+          push('note-ink-narrow', `${where} 逐行字迹：最宽一行 ${wideRound(note.widestLine)}px < ${WIDE_NOTE_RATIO} × 列宽`
+            + ` —— ${facts}`, note.index, 'line');
+        }
+        // ③ 藏字：文本非空、**已渲染**，却一个可见字形盒都没有（正文被交给 ::before / font-size:0 去画的形状）。
+        //    未渲染的说明（<noscript> 提示：整块高度 0）不判 —— 它既不是窄柱也不是藏字。
+        if (note.rendered && note.textLength > 0 && note.glyphRects === 0) {
+          push('note-hidden-text', `${where} 文本 ${note.textLength} 字但**零可见字形盒**（getClientRects 为空）`
+            + ` —— 正文可能被 font-size:0 / ::before{content} / display:none 之类的写法接管：${facts}`, note.index, 'no-glyph');
+        }
+        // ④ 未渲染说明（t24 立 / t28 收紧）：**盒高被压成 0** 的形态（裸 `.snote { font-size: 0 }`、
+        //    `display: none` 之类）会让 ①②③ 同时静默 —— 因为它们都要求「已渲染」或「有字形盒」。
+        //    判定只用三种**非像素**量：render 状态（盒有宽有高）· 可见文本长度（探针不采集 <noscript>）·
+        //    字形盒个数（Range.getClientRects 里宽高都 > 0 的）。
+        //      !rendered && textLength > 0 && glyphRects === 0  ⇒ 有正文、却一个字形都不画、盒子也没有
+        //    ⚠️ 唯一的豁免是**可见文本长度为 0**（没有可画的东西）。这里**没有**标记级豁免键：
+        //    t24 的第一版带过 `&& !note.noscriptSubtree`，T26 复审实测「给每条说明插一个**空**
+        //    `<noscript></noscript>`」就能买到豁免（整轮 EXIT=0 / 852 项 0 失败）—— t28 把它删掉了。
+        //    dist 里那条真·合法未渲染（plans/coding/#1）靠**可见文本 0** 排除：它的文字全在
+        //    `<noscript>` 子树里（实测 textLength 0 / rawTextLength 44），与标记本身无关。
+        //    `display: contents`（说明不生成盒子但正文由父级正常排版）不在此列：它的字形盒 > 0。
+        if (!note.rendered && note.textLength > 0 && note.glyphRects === 0) {
+          push('note-unrendered', `${where} 说明未渲染（盒 ${wideRound(note.box.width)}×${wideRound(note.box.height)}px）`
+            + `却有 ${note.textLength} 字可见正文、零可见字形盒（原始文本 ${note.rawTextLength} 字 · 含 <noscript> ${note.noscriptSubtree}）`
+            + ` —— 盒高被压成 0 会让窄柱 / 逐行字迹 / 藏字三条判据全部静默（如裸 font-size:0、display:none）：${facts}`,
+          note.index, 'unrendered');
+        }
+        const aligned = anchors.filter(anchor => Math.abs(note.box.left - anchor.box.left) <= axisTol
+          && Math.abs(note.box.right - anchor.box.right) <= axisTol);
+        // 同轴 / 裁切都是**盒量**：无盒形态（display:contents / 未渲染）不判 —— 0..0 的盒子
+        // 只会产出「与两锚都不同轴」的假红（t19 / R3-3）。
+        if (boxed && !aligned.length) {
+          push('note-axis', `${where} 说明 ${wideRound(note.box.left)}..${wideRound(note.box.right)} 与`
+            + anchors.map(anchor => `${anchor.label} ${wideRound(anchor.box.left)}..${wideRound(anchor.box.right)}`).join(' / ')
+            + ` 都不在同一轴上（容差 max(${WIDE_TOL}px, ${WIDE_AXIS_RATIO} × ${wideRound(column)}px) = ${wideRound(axisTol)}px）`, note.index);
+        }
+        if (boxed && note.box.scrollW > note.box.clientW + WIDE_TOL) {
+          push('note-clipped', `${where} 说明自身横向溢出 ${note.box.scrollW - note.box.clientW}px`
+            + `（scrollWidth ${note.box.scrollW} > clientWidth ${note.box.clientW}）`, note.index);
+        }
+      }
+    }
+
+    // ④ 页面级横向溢出（视口写在码里：同一页在不同档的结论可以不同）
+    if (geometry.doc.scrollWidth > vw + WIDE_TOL) {
+      push(`page-overflow@${vw}`, `documentElement.scrollWidth ${geometry.doc.scrollWidth} > 视口 ${vw}`);
+    }
+    return problems;
+  }
+
+  /**
+   * 变异：把页面**内联 <style> 的真实文本**里的一段逐字替换掉（只在浏览器内存里，不碰磁盘）。
+   *
+   * 反空洞守卫：锚点必须**恰好出现 1 次**。0 次 ⇒ 变异根本没落地；≥2 次 ⇒ 改中的可能是别处、
+   * 后续断言测的不是这条规则。两种情况都返回 ok:false 且**不做任何替换**。
+   */
+  async function wideMutate(target, anchor, replacement) {
+    return target.evaluate(`(() => {
+      const anchor = ${JSON.stringify(anchor)};
+      const styles = Array.prototype.slice.call(document.querySelectorAll('style'));
+      const counts = styles.map(style => style.textContent.split(anchor).length - 1);
+      const total = counts.reduce((sum, n) => sum + n, 0);
+      if (total !== 1) {
+        return { ok: false, occurrences: total, reason: '锚点在内联样式里出现 ' + total + ' 次（必须恰好 1 次）' };
+      }
+      const index = counts.findIndex(n => n === 1);
+      styles[index].textContent = styles[index].textContent.replace(anchor, ${JSON.stringify(replacement)});
+      return { ok: true, occurrences: 1 };
+    })()`);
+  }
+
+  /** M6 用：把不可断的 200 字符串写进文档序第一条说明（页面内注入，绝不写盘）。 */
+  async function wideInjectToken(target, token) {
+    return target.evaluate(`(() => {
+      const main = document.querySelector('main');
+      const note = main ? main.querySelector('.snote') : null;
+      if (!note) return 'none';
+      note.textContent = ${JSON.stringify(token)};
+      return 'note';
+    })()`);
+  }
+
+  /** M7 用：给宽页的 <main> 加上 detail-main —— **注入前守卫**该类原本不存在。 */
+  async function wideInjectDetailMain(target) {
+    return target.evaluate(`(() => {
+      const mains = document.querySelectorAll('main');
+      if (!mains.length) return { ok: false, reason: '页面没有 <main>' };
+      const main = mains[0];
+      if (main.classList.contains('detail-main')) {
+        return { ok: false, reason: '<main> 原本就带 detail-main（wide 族的注入前提不成立）' };
+      }
+      main.classList.add('detail-main');
+      return { ok: true, added: true, detailMain: document.querySelectorAll('main.detail-main').length };
+    })()`);
+  }
+
+  /** M9 用：把注入的选择器命中的 .snote 映射成 route#index（用来核对「只压非首个」） */
+  async function wideMatchedNoteKeys(target, selector, route) {
+    return target.evaluate(`(() => {
+      const main = document.querySelector('main');
+      const all = main ? Array.prototype.slice.call(main.querySelectorAll('.snote')) : [];
+      return Array.prototype.slice.call(document.querySelectorAll(${JSON.stringify(selector)}))
+        .map(el => all.indexOf(el)).filter(i => i >= 0).map(i => ${JSON.stringify(route)} + '#' + i);
+    })()`);
+  }
+
+  console.log('\n=== 22c) Wide Data Page 页面级说明的同轴门禁（布局族 × 全站几何 × 逐条）===');
+  if (urlArg) {
+    // F3：跳过必须是**机器可读**的 —— 「如实跳过」与「跑了但 0 违规」在报告里要能区分开。
+    const wideSkipReason = '--url= 模式没有产物目录，§22c 的路由清单/几何扫描/变异牙都无从现算（不改成拿线上首页硬凑一份假清单）';
+    for (const key of ['layoutSweep', 'layoutNotes', 'layoutNotesAt1600', 'layoutViolations', 'layoutFrozenRule',
+      'layoutDataRegions', 'layoutNoteAnchors', 'layoutSample', 'layoutScan', 'layoutMutationCodes']) {
+      metrics[key] = { skipped: true, reason: wideSkipReason };
+    }
+    console.log(`  ℹ️  §22c 如实跳过（机器可读留痕：metrics.layout* 全部带 skipped/reason）：${wideSkipReason}`);
+  } else {
+    // §22c 自己开一条 page：整轮的 errors / externalRequests 是**全局累积**的（§26 的
+    // 「本地 0 外链」与 --compare 的 jsErrors 都读全局计数），600+ 次导航不许污染它们。
+    const widePage = await browser.newPage({ viewport: { width: WIDE_DESKTOP, height: 900 } });
+    const wideErrors = [];
+    const wideExternal = [];
+    let wideNavigations = 0;
+    const widePhaseSeconds = {};
+    widePage.on('pageerror', e => wideErrors.push(`${e.message}`));
+    widePage.on('console', m => { if (m.type() === 'error') wideErrors.push(`${m.text()}`); });
+    widePage.on('request', r => {
+      const url = r.url();
+      if (url.startsWith(base) || url.startsWith('data:')) return;
+      wideExternal.push(url);
+    });
+    /** 本节唯一的导航入口：顺手记账（导航次数 = 报告里「扫了多少次」的实证）。 */
+    const wideGoto = async (route, width) => {
+      await widePage.setViewportSize({ width, height: width >= 760 ? 900 : 800 });
+      wideNavigations += 1;
+      await widePage.goto(new URL(route, base).href, { waitUntil: 'load' });
+    };
+    const wideSectionStart = Date.now();
+    try {
+      // ---- 路由清单 + 布局族解析（kindOfRoute 优先，数据驱动的静态路由由 kindByRoute 补齐）----
+      const wideKindMap = wideKindByRoute();
+      const wideRoutes = wideRoutesFromDisk();
+      const wideMeta = wideRoutes.map(route => {
+        const kind = pageKinds.kindOfRoute(route) || wideKindMap.get(route) || null;
+        return { route, kind, family: kind ? pageKinds.layoutOf(kind) : null };
+      });
+      const wideUnclassified = wideMeta.filter(meta => !meta.kind || !meta.family);
+      const wideFamilyOf = family => wideMeta.filter(meta => meta.family === family).map(meta => meta.route);
+      const wideRoutesOfFamily = { wide: wideFamilyOf('wide'), detail: wideFamilyOf('detail'), other: wideFamilyOf('other') };
+      const wideKindCount = new Set(wideMeta.map(meta => meta.kind).filter(Boolean)).size;
+      const wideDiskSet = new Set(wideRoutes);
+
+      // ---- 1440 与 1600：**全站逐条**几何（不再只判文档序第一条，也不只 1440 一档）----
+      const wideGeometry = new Map();      // `${width}|${route}` → geometry
+      const wideProblemsAt = new Map();    // `${width}|${route}` → problems
+      for (const width of WIDE_DESKTOP_VIEWPORTS) {
+        const phaseStart = Date.now();
+        for (const meta of wideMeta) {
+          await wideGoto(meta.route, width);
+          const geometry = await wideMeasure(widePage);
+          wideGeometry.set(`${width}|${meta.route}`, geometry);
+          wideProblemsAt.set(`${width}|${meta.route}`, wideProblems(geometry, meta));
+        }
+        widePhaseSeconds[`desktop${width}`] = Math.round((Date.now() - phaseStart) / 100) / 10;
+      }
+
+      // ---- 390：全站只量 documentElement.scrollWidth ----
+      const wideNarrow390 = new Map();
+      {
+        const phaseStart = Date.now();
+        for (const meta of wideMeta) {
+          await wideGoto(meta.route, WIDE_NARROW);
+          const geometry = await wideMeasure(widePage);
+          // 390 档只判溢出：列宽/同轴那一档的定义是「列铺满可用宽」，窄档里表格在滚动容器里，
+          // 其余码在窄档没有意义（判据函数照跑，只取溢出类，码本身仍由 wideProblems 产出；
+          // 逐行字迹口径在 390 档由**物理前置条件**自动不判：列 358px < 70ch 452.81px）。
+          wideNarrow390.set(meta.route, {
+            scrollWidth: geometry.doc.scrollWidth,
+            clientWidth: geometry.doc.clientWidth,
+            codes: wideCodes(wideProblems(geometry, meta)).filter(code => code.startsWith('page-overflow@'))
+          });
+        }
+        widePhaseSeconds.narrow390 = Math.round((Date.now() - phaseStart) / 100) / 10;
+      }
+
+      // ---- 760 / 360：只量样本集（同一份判据）----
+      const wideSampleRoutes = wideSampleSet(wideRoutes, wideMeta).filter(route => wideDiskSet.has(route));
+      const wideSampleGeometry = new Map();
+      {
+        const phaseStart = Date.now();
+        for (const route of wideSampleRoutes) {
+          for (const width of WIDE_SAMPLE_VIEWPORTS) {
+            await wideGoto(route, width);
+            wideSampleGeometry.set(`${route}@${width}`, await wideMeasure(widePage));
+          }
+        }
+        widePhaseSeconds.samples = Math.round((Date.now() - phaseStart) / 100) / 10;
+      }
+
+      // ---- 条级读数（route#index）：1440 与 1600 各一份，**全量**（不只是违规条）----
+      const wideNoteRowsAt = width => {
+        const rows = [];
+        for (const meta of wideMeta) {
+          const geometry = wideGeometry.get(`${width}|${meta.route}`);
+          const problems = wideProblemsAt.get(`${width}|${meta.route}`);
+          const column = Math.min(geometry.region.width, geometry.main.width);
+          const byIndex = new Map();
+          for (const problem of problems) {
+            if (problem.index === undefined) continue;
+            if (!byIndex.has(problem.index)) byIndex.set(problem.index, []);
+            byIndex.get(problem.index).push(problem.code);
+          }
+          geometry.notes.forEach((note, index) => {
+            rows.push({
+              route: meta.route,
+              index: index,
+              position: index === 0 ? 'first' : (index === geometry.notes.length - 1 ? 'last' : 'middle'),
+              codes: byIndex.get(index) || [],
+              kind: meta.kind,
+              family: meta.family,
+              regionSel: geometry.regionSel,
+              column: wideRound(column),
+              width: wideRound(note.box.width),
+              contentBox: note.contentBox,
+              // ① 旧判据量（textWidth，未改）+ ② 新判据量（逐行字迹）+ ③ 藏字标定面，逐条都进容器
+              textWidth: note.textWidth,
+              textFallback: note.textFallback,
+              bearingCount: note.bearingCount,
+              rendered: note.rendered,
+              unrendered: Boolean(note.unrendered),
+              vertical: note.vertical,
+              writingMode: note.writingMode,
+              lineCount: note.lineCount,
+              widestLine: note.widestLine,
+              lines: note.lines,
+              glyphRects: note.glyphRects,
+              textLength: note.textLength,
+              // t24 / T22-F1：条级容器里也要带上这两个量，否则「<noscript> 之外的未渲染说明必须为 0」
+              // 这条上界断言会把合法的 <noscript> 条也算进来（row.noscriptSubtree === undefined ⇒ 误判）。
+              rawTextLength: note.rawTextLength,
+              noscriptSubtree: note.noscriptSubtree,
+              inkWidth: note.ink ? note.ink.width : null,
+              inkRects: note.ink ? note.ink.rects : 0,
+              inkLongestLine: note.ink ? note.ink.longestLine : null,
+              ratioTextWidth: column > 0 ? wideRound(note.textWidth / column) : null,
+              ratioWidestLine: column > 0 ? wideRound(note.widestLine / column) : null,
+              boxLeft: note.box.left,
+              boxRight: note.box.right,
+              parent: note.parent,
+              text: note.text
+            });
+          });
+        }
+        return rows;
+      };
+      const wideNoteRows1440 = wideNoteRowsAt(WIDE_DESKTOP);
+      const wideNoteRows1600 = wideNoteRowsAt(WIDE_WIDE);
+      const wideNoteRowsByViewport = { [WIDE_DESKTOP]: wideNoteRows1440, [WIDE_WIDE]: wideNoteRows1600 };
+
+      // ---- 汇总（全部从上面那一次判据来，不另算一套）----
+      const wideSummary = {};
+      for (const width of WIDE_DESKTOP_VIEWPORTS) {
+        const rows = wideNoteRowsByViewport[width];
+        const hit = code => rows.filter(row => row.codes.includes(code));
+        const narrow = hit('note-narrow');
+        const inkNarrow = hit('note-ink-narrow');
+        const union = rows.filter(row => row.codes.includes('note-narrow') || row.codes.includes('note-ink-narrow'));
+        wideSummary[width] = {
+          rows: rows.length,
+          narrow: narrow,
+          narrowKeys: narrow.map(row => wideNoteKey(row.route, row.index)),
+          narrowRoutes: [...new Set(narrow.map(row => row.route))],
+          inkNarrow: inkNarrow,
+          inkNarrowKeys: inkNarrow.map(row => wideNoteKey(row.route, row.index)),
+          inkNarrowRoutes: [...new Set(inkNarrow.map(row => row.route))],
+          union: union,
+          unionKeys: union.map(row => wideNoteKey(row.route, row.index)),
+          unionRoutes: [...new Set(union.map(row => row.route))],
+          hiddenText: hit('note-hidden-text'),
+          // t24 / T22-F1 起：未渲染说明要能被解释。t28 收紧计数口径 ——
+          //   · unrenderedNoText：**可见文本长度为 0**（没有可画的东西；dist 的 <noscript> 条属此类）⇒ 豁免；
+          //   · unrenderedText  ：被 note-unrendered 咬中（有可见正文却没画）⇒ 违规；
+          //   · unrenderedNoscript：含 <noscript> 子树的条数 —— **只是诊断量，不参与豁免**
+          //     （t24 的标记级豁免键被 T26 实测反用后已收掉）；
+          //   · unrenderedUnexplained：既没有「文本 0」的豁免、又没被判据咬中 ⇒ 必须为 0。
+          unrenderedText: hit('note-unrendered'),
+          unrenderedNoText: rows.filter(row => row.unrendered && row.textLength === 0).length,
+          unrenderedNoscript: rows.filter(row => row.unrendered && row.noscriptSubtree).length,
+          unrenderedUnexplained: rows.filter(row => row.unrendered && row.textLength > 0 && !row.codes.includes('note-unrendered')).length,
+          axis: hit('note-axis'),
+          clipped: hit('note-clipped'),
+          textFallback: rows.filter(row => row.textFallback).length,
+          unrendered: rows.filter(row => row.unrendered).length,
+          vertical: rows.filter(row => row.vertical).length,
+          lineEvidence: rows.filter(row => row.lineCount >= 2).length,
+          overflow: wideMeta.map(meta => meta.route)
+            .filter(route => wideProblemsAt.get(`${width}|${route}`).some(problem => problem.code === `page-overflow@${width}`))
+        };
+      }
+      const widePageCodesAt = width => wideMeta.map(meta => ({ meta, problems: wideProblemsAt.get(`${width}|${meta.route}`) }));
+      const widePageHit = (width, code) => widePageCodesAt(width).filter(item => item.problems.some(problem => problem.code === code));
+      const wideNotePages = wideMeta.filter(meta => wideGeometry.get(`${WIDE_DESKTOP}|${meta.route}`).noteCount > 0).map(meta => meta.route);
+      const wideNoNotePages = wideMeta.filter(meta => wideGeometry.get(`${WIDE_DESKTOP}|${meta.route}`).noteCount === 0).map(meta => meta.route);
+      const wideRegionMissing = widePageHit(WIDE_DESKTOP, 'data-region-missing').map(item => item.meta.route);
+      const wideMissingDetailMain = widePageHit(WIDE_DESKTOP, 'missing-detail-main').map(item => item.meta.route);
+      const wideUnexpectedDetailMain = widePageHit(WIDE_DESKTOP, 'unexpected-detail-main').map(item => item.meta.route);
+      const wideOverflow390 = wideRoutes.filter(route => wideNarrow390.get(route).codes.length > 0);
+      const wideOverflowPages = [...new Set([...wideSummary[WIDE_DESKTOP].overflow, ...wideSummary[WIDE_WIDE].overflow, ...wideOverflow390])];
+      const wideFrozenDrift = wideRoutes.filter(route => wideGeometry.get(`${WIDE_DESKTOP}|${route}`).frozenCount !== 1);
+      const wideFrozenPages = wideRoutes.filter(route => wideGeometry.get(`${WIDE_DESKTOP}|${route}`).frozenCount === 1);
+      const wideRegionCounts = {};
+      for (const route of wideRoutes) {
+        const geometry = wideGeometry.get(`${WIDE_DESKTOP}|${route}`);
+        const key = geometry.regionFallback ? '<main>（回落）' : geometry.regionSel;
+        wideRegionCounts[key] = (wideRegionCounts[key] || 0) + 1;
+      }
+      // 同轴锚分布（判据是「与主数据区或页面主容器任一成立」，那就把两个锚各自的条数也报出来）
+      const wideAnchorStats = { region: 0, main: 0, both: 0, neither: 0 };
+      for (const route of wideNotePages) {
+        const geometry = wideGeometry.get(`${WIDE_DESKTOP}|${route}`);
+        const column = Math.min(geometry.region.width, geometry.main.width);
+        const axisTol = Math.max(WIDE_TOL, WIDE_AXIS_RATIO * column);
+        for (const note of geometry.notes) {
+          const inRegion = Math.abs(note.box.left - geometry.region.left) <= axisTol && Math.abs(note.box.right - geometry.region.right) <= axisTol;
+          const inMain = Math.abs(note.box.left - geometry.main.left) <= axisTol && Math.abs(note.box.right - geometry.main.right) <= axisTol;
+          if (inRegion) wideAnchorStats.region += 1;
+          if (inMain) wideAnchorStats.main += 1;
+          if (inRegion && inMain) wideAnchorStats.both += 1;
+          if (!inRegion && !inMain) wideAnchorStats.neither += 1;
+        }
+      }
+      const wideExplainRow = row => `${wideNoteKey(row.route, row.index)} 内容盒 ${row.textWidth}px / 盒 ${row.width}px / 列 ${row.column}px`
+        + ` · 行 ${row.lineCount}（最宽 ${row.widestLine}px${row.vertical ? ' · 竖排' : ''}）· 字形盒 ${row.glyphRects}`
+        + ` · 主数据区 ${row.regionSel || '<main>'} · codes [${row.codes.join(',')}]${row.text ? ` · 「${row.text.slice(0, 16)}」` : ''}`;
+      const wideSamples = (list, limit = 5) => list.slice(0, limit).join(' ')
+        + (list.length > limit ? ` …（还有 ${list.length - limit}）` : '');
+
+      // ---- ① 布局族：186/186 全部可解析（解析不出来 = unclassified-layout，判红）----
+      check('§22c 全站每一页的布局族都能解析（page-kinds.kindOfRoute + layoutOf，数据驱动的静态路由由 kindByRoute 补齐）',
+        wideMeta.length > 0 && wideUnclassified.length === 0,
+        wideUnclassified.length
+          ? `解析不出布局族的页面 ${wideUnclassified.length}/${wideMeta.length}：${wideSamples(wideUnclassified.map(meta => meta.route))}`
+          : `${wideMeta.length} 页全部可解析（${wideKindCount} 种 kind）· wide ${wideRoutesOfFamily.wide.length} / detail ${wideRoutesOfFamily.detail.length} / other ${wideRoutesOfFamily.other.length} · unclassified-layout 0 个`);
+
+      // ---- ② 注册表驱动的入口在产物里都存在（采样前提，不写死 slug）----
+      {
+        const registryRoutes = [
+          ...audienceLib.COLLECTION_PAGES.map(page => `${page.slug}/`),
+          ...audienceLib.NEED_PAGES.map(page => `need/${page.slug}/`),
+          landingsLib.VENDOR_HUB.route,
+          landingsLib.CATEGORY_HUB.route
+        ];
+        const missing = registryRoutes.filter(route => !wideDiskSet.has(route));
+        check(`§22c 注册表驱动的入口（${audienceLib.COLLECTION_PAGES.length} 目录页 + ${audienceLib.NEED_PAGES.length} 按需求页 + 2 枢纽页）在产物里都存在`,
+          missing.length === 0, missing.length ? `缺 ${missing.join(' ')}` : `逐条命中（${registryRoutes.length} 条，全部现场推导，不写死 slug）`);
+      }
+
+      // ---- ③ / ④ 两个桌面档：**逐条**判全部说明（旧口径 textWidth + 新口径逐行字迹 + 藏字）----
+      for (const width of WIDE_DESKTOP_VIEWPORTS) {
+        const summary = wideSummary[width];
+        const bad = [...summary.union, ...summary.hiddenText, ...summary.unrenderedText, ...summary.axis, ...summary.clipped];
+        check(`§22c @${width} 逐条页面级说明：旧口径（内容盒 ≥ ${WIDE_NOTE_RATIO}×列宽）+ 新口径（逐行字迹 ≥ ${WIDE_NOTE_RATIO}×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切`,
+          bad.length === 0,
+          `全站 ${wideMeta.length} 页 / 逐条判 ${summary.rows} 条（有说明的页 ${wideNotePages.length} · 零说明的页 ${wideNoNotePages.length} 标注跳过 · 未渲染 ${summary.unrendered} 条：<noscript> ${summary.unrenderedNoscript} + note-unrendered ${summary.unrenderedText.length}）`
+          + ` · note-narrow ${summary.narrow.length}（落在 ${summary.narrowRoutes.length} 页） · note-ink-narrow ${summary.inkNarrow.length}（${summary.inkNarrowRoutes.length} 页）`
+          + ` · 并集 ${summary.union.length} 条 / ${summary.unionRoutes.length} 页 · 藏字 ${summary.hiddenText.length} · 不同轴 ${summary.axis.length} · 裁切 ${summary.clipped.length}`
+          + ` · 多行说明（有行证据）${summary.lineEvidence} 条 · 竖排 ${summary.vertical} 条 · textFallback 回落 ${summary.textFallback} 条`
+          + (bad.length ? ` · 命中样例：${bad.slice(0, 4).map(wideExplainRow).join('；')}` : ''));
+        check(`§22c @${width} 全站 ${wideRoutes.length} 页都没有横向溢出`,
+          summary.overflow.length === 0,
+          summary.overflow.length ? `${summary.overflow.length} 页溢出：${wideSamples(summary.overflow)}`
+            : `documentElement.scrollWidth ≤ 视口+${WIDE_TOL} 全部成立`);
+      }
+
+      // ---- ④b 未渲染说明：上界断言（t24 立 / t28 收紧计数）----
+      //   `unrenderedNotes` 从 t14 起就有，但直到 t24 才被断言引用。计数口径（t28 / 收掉 T26 的残余面）：
+      //     · **豁免只看「可见文本长度为 0」**（没有可画的东西；dist 的 `<noscript>` 条靠这条过）——
+      //       不再看任何标记，`<noscript>` 降级为诊断量；
+      //     · 其余未渲染条必须被 `note-unrendered` 咬中；
+      //     · 两类**互不相交**（前者 textLength === 0，后者要求 textLength > 0），并集 = 全部未渲染条。
+      //   T26 实测过的反用形状：给每条说明插一个**空** `<noscript></noscript>`，t24 的标记级豁免键
+      //   会把 13 条未渲染全归进 noscript 桶、断言 ok=true、整轮 EXIT=0 —— 现在空标签买不到豁免。
+      {
+        const wideUnrenderedRows = wideNoteRows1440.filter(row => row.unrendered);
+        const wideNoTextRows = wideUnrenderedRows.filter(row => row.textLength === 0);
+        const wideUnrenderedCodeRows = wideUnrenderedRows.filter(row => row.codes.includes('note-unrendered'));
+        const wideBothRows = wideUnrenderedRows.filter(row => row.textLength === 0 && row.codes.includes('note-unrendered'));
+        const wideUnexplainedRows = wideUnrenderedRows.filter(row => row.textLength > 0 && !row.codes.includes('note-unrendered'));
+        const wideAt1600 = wideSummary[WIDE_WIDE];
+        check('§22c 未渲染说明：上界断言 —— 未渲染条要么「可见文本为 0」，要么必须被 note-unrendered 咬中（两类不相交、并集完整、标记不豁免）',
+          wideUnexplainedRows.length === 0
+          && wideBothRows.length === 0
+          && wideNoTextRows.length + wideUnrenderedCodeRows.length === wideUnrenderedRows.length
+          && wideSummary[WIDE_DESKTOP].unrendered === wideUnrenderedRows.length
+          && wideAt1600.unrenderedNoText + wideAt1600.unrenderedText.length === wideAt1600.unrendered
+          && wideAt1600.unrenderedUnexplained === 0,
+          `@${WIDE_DESKTOP} 未渲染 ${wideUnrenderedRows.length} 条 = 可见文本 0 的 ${wideNoTextRows.length} 条`
+          + `${wideNoTextRows.length ? ` [${wideNoTextRows.map(row => wideNoteKey(row.route, row.index)).join(', ')}]` : ''}`
+          + ` + note-unrendered ${wideUnrenderedCodeRows.length} 条 · 交集 ${wideBothRows.length} · 既没归类又没判中 ${wideUnexplainedRows.length}`
+          + ` · @${WIDE_WIDE} 未渲染 ${wideAt1600.unrendered} 条（文本 0 ${wideAt1600.unrenderedNoText} · note-unrendered ${wideAt1600.unrenderedText.length}`
+          + ` · 未归类 ${wideAt1600.unrenderedUnexplained}）`
+          + ` · 诊断：含 <noscript> 的未渲染条 ${wideSummary[WIDE_DESKTOP].unrenderedNoscript}（不参与豁免）`
+          + (wideUnexplainedRows.length ? ` · 违规条：${wideUnexplainedRows.map(row => wideNoteKey(row.route, row.index)).join(' ')}` : ''));
+      }
+
+      // ---- ⑤ @390：全站只量 documentElement.scrollWidth ----
+      check(`§22c @${WIDE_NARROW} 全站 ${wideRoutes.length} 页 documentElement.scrollWidth ≤ 视口+${WIDE_TOL}`,
+        wideOverflow390.length === 0,
+        wideOverflow390.length
+          ? `${wideOverflow390.length} 页溢出：${wideSamples(wideOverflow390.map(route => `${route || '/'}=${wideNarrow390.get(route).scrollWidth}px`))}`
+          : `最宽的一页 ${wideRoutes.reduce((max, route) => Math.max(max, wideNarrow390.get(route).scrollWidth), 0)}px（视口 ${WIDE_NARROW}）`);
+
+      // ---- ⑥ 布局族一致性：detail 恰好 1 个 main.detail-main；wide 0 个 ----
+      check(`§22c 布局族一致性：detail 族（${wideRoutesOfFamily.detail.length} 页）恰好 1 个 main.detail-main、wide 族（${wideRoutesOfFamily.wide.length} 页）0 个`,
+        wideMissingDetailMain.length === 0 && wideUnexpectedDetailMain.length === 0,
+        `missing-detail-main ${wideMissingDetailMain.length} · unexpected-detail-main ${wideUnexpectedDetailMain.length}`
+        + (wideMissingDetailMain.length ? ` · 缺列：${wideSamples(wideMissingDetailMain)}` : '')
+        + (wideUnexpectedDetailMain.length ? ` · 多了列：${wideSamples(wideUnexpectedDetailMain)}` : ''));
+
+      // ---- ⑦ 主数据区判定（回落 <main> 的页面逐类登记，不算失败）----
+      check('§22c 每一页都判得出主数据区（声明选择器或回落 <main>）',
+        wideRegionMissing.length === 0,
+        wideRegionMissing.length
+          ? `${wideRegionMissing.length} 页判不出：${wideSamples(wideRegionMissing)}`
+          : `声明选择器命中 ${wideRoutes.length - (wideRegionCounts['<main>（回落）'] || 0)} 页 · 回落 <main> ${wideRegionCounts['<main>（回落）'] || 0} 页（${Object.entries(wideRegionCounts).map(([sel, n]) => `${sel}=${n}`).join(' ')}）`);
+
+      // ---- ⑧ 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次 ----
+      check(`§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（${wideRoutes.length} 页）`,
+        wideFrozenDrift.length === 0,
+        wideFrozenDrift.length
+          ? `${wideFrozenDrift.length} 页不符（改动前产物在这里必然全红，这正是 M0 的反证面之一）：`
+            + wideFrozenDrift.slice(0, 4).map(route => `${route || '/'}=${wideGeometry.get(`${WIDE_DESKTOP}|${route}`).frozenCount} 次`).join(' ')
+          : `${wideFrozenPages.length}/${wideRoutes.length} 页恰好 1 次 · 锚点「${WIDE_SNOTE_FROZEN.slice(0, 24)}…」`);
+
+      // ---- ⑨ 760 / 360：样本集（**同一份判据**；逐行字迹按物理前置条件判 —— 760 判、360 不判）----
+      const wideSampleProblems = [];
+      for (const route of wideSampleRoutes) {
+        const meta = wideMeta.find(item => item.route === route);
+        for (const width of WIDE_SAMPLE_VIEWPORTS) {
+          const geometry = wideSampleGeometry.get(`${route}@${width}`);
+          // t19 / R3-1：这里以前用 `meta.inkRule = false`（按视口白名单）把 760 档整类关掉 ——
+          // 现在不传任何开关，由 wideProblems 的物理前置条件现场决定：760 列 676–728 > 70ch 452.81
+          // ⇒ ② 照判（R3-1 的 ≤760 缺口就是在这里关掉的）；360 列 276–328 < 452.81 ⇒ 自动不判。
+          for (const problem of wideProblems(geometry, meta)) {
+            wideSampleProblems.push({ route, width, ...problem });
+          }
+        }
+      }
+      // 物理作用域的**现场证据**（写进断言 detail，免得下一轮又只能看注释）：
+      // 每个样本档的列宽范围 + 现场换算的 70ch ⇒ 一眼看出哪一档判 ②、哪一档不判。
+      const wideSampleScope = WIDE_SAMPLE_VIEWPORTS.map(width => {
+        const columns = [];
+        const ch70s = new Set();
+        for (const route of wideSampleRoutes) {
+          const geometry = wideSampleGeometry.get(`${route}@${width}`);
+          columns.push(Math.min(geometry.region.width, geometry.main.width));
+          for (const note of geometry.notes) if (Number(note.ch70) > 0) ch70s.add(note.ch70);
+        }
+        const positive = columns.filter(v => v > 0);
+        const ch70 = [...ch70s];
+        return {
+          width,
+          minColumn: positive.length ? wideRound(Math.min.apply(null, positive)) : 0,
+          maxColumn: positive.length ? wideRound(Math.max.apply(null, positive)) : 0,
+          ch70: ch70,
+          inkScope: positive.length > 0 && ch70.length > 0 && Math.max.apply(null, positive) > ch70[0]
+        };
+      });
+      const wideSampleScopeText = wideSampleScope.map(scope => `@${scope.width} 列 ${scope.minColumn}–${scope.maxColumn}px`
+        + ` / 70ch 现场 ${scope.ch70.length ? scope.ch70.join('/') : '（无量）'} ⇒ ${scope.inkScope ? '判' : '不判'} ②`).join(' · ');
+      for (const width of WIDE_SAMPLE_VIEWPORTS) {
+        const hits = wideSampleProblems.filter(problem => problem.width === width);
+        check(`§22c @${width} 样本集 ${wideSampleRoutes.length} 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）`,
+          hits.length === 0,
+          (hits.length
+            ? `${hits.length} 条违规码 [${hits.map(problem => `${wideNoteKey(problem.route, problem.index === undefined ? '?' : problem.index)} ${problem.code}`).join(', ')}]：`
+              + hits.slice(0, 5).map(problem => `${wideNoteKey(problem.route, problem.index === undefined ? '?' : problem.index)} ${problem.code}：${problem.msg}`).join('；')
+            : `0 违规码 · 样本集：${wideSampleRoutes.map(route => route || '/').join(' ')}`)
+          + ` · 物理作用域：${wideSampleScopeText}`);
+      }
+      metrics.layoutSampleScope = wideSampleScope;
+
+      // ---- ⑩ M1–M10 变异牙 ----
+      // 每条牙都先过「锚点恰好 1 次」的反空洞守卫，再用**同一个** wideProblems 复测。
+      const wideHash = route => {
+        const file = path.join(DIR, route, 'index.html');
+        return fs.existsSync(file) ? crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex') : null;
+      };
+      const wideHashBefore = new Map(WIDE_MUTATION_TARGETS.map(route => [route, wideHash(route)]));
+      // 前置守卫：四个壳必须真的是 wide 族、且真的带页面级说明 —— 否则变异测的不是这条规则。
+      const wideTargetGuard = WIDE_MUTATION_TARGETS.map(route => {
+        const meta = wideMeta.find(item => item.route === route);
+        const geometry = wideGeometry.get(`${WIDE_DESKTOP}|${route}`);
+        return { route, ok: Boolean(meta && meta.family === 'wide' && geometry && geometry.noteCount > 0),
+          why: meta ? `${meta.kind}/${meta.family} · .snote ${geometry ? geometry.noteCount : 0} 条` : '（产物里没有这一页）' };
+      });
+      check(`§22c M1–M4 的四个壳（${WIDE_MUTATION_TARGETS.join(' ')}）都是 wide 族且带页面级说明`,
+        wideTargetGuard.every(item => item.ok),
+        wideTargetGuard.map(item => `${item.route || '/'} ${item.why}`).join(' · '));
+
+      const wideMutations = WIDE_MUTATION_TARGETS.map((route, index) => ({
+        id: `M${index + 1}`, route, width: WIDE_DESKTOP, expect: 'note-narrow', target: 'replace',
+        what: `把冻结串的 max-width 换回 70ch（${route} 这一族的页面级说明曾被压窄）`,
+        anchor: WIDE_SNOTE_FROZEN, replacement: WIDE_SNOTE_NARROW
+      }));
+      wideMutations.push(
+        { id: 'M6', route: 'student/', width: WIDE_NARROW, expect: `page-overflow@${WIDE_NARROW}`, target: 'replace', inject: true,
+          what: `拿走 .snote 的 overflow-wrap:anywhere 并注入 ${WIDE_LONG_TOKEN.length} 字符不可断串`,
+          anchor: WIDE_SNOTE_FROZEN, replacement: WIDE_SNOTE_NOWRAP },
+        { id: 'M7', route: 'status/', width: WIDE_DESKTOP, expect: 'unexpected-detail-main', target: 'dom',
+          what: '给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）' },
+        { id: 'M8', route: 'student/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend', expectFirstNote: true,
+          rule: '.snote { padding-right: calc(100% - 70ch); }',
+          what: 'F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）' },
+        { id: 'M9a', route: 'docs/data/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend',
+          rule: '.snote ~ .snote { max-width: 70ch; }', selector: '.snote ~ .snote',
+          what: 'F2 原型：只压**非首个** .snote（相邻兄弟选择器）' },
+        { id: 'M9b', route: 'changes/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend',
+          rule: '.snote:not(:first-of-type) { max-width: 70ch; }', selector: '.snote:not(:first-of-type)',
+          what: 'F2 原型：只压**非首个** .snote（:not(:first-of-type)）' },
+        { id: 'M10', route: 'student/', width: WIDE_WIDE, expect: 'note-narrow', target: 'extend',
+          rule: '@media (min-width: 1500px) { .snote { max-width: 70ch; } }',
+          what: 'F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）' },
+        // ---- t14（修复轮 3）新增：两条「盒子满宽、只有排版结果变窄」的牙 ----
+        { id: 'M11', route: 'changes/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend', expectInkEvidence: true,
+          rule: '.snote { display: grid; grid-template-columns: minmax(0, 70ch) 1fr; }',
+          what: 't8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，'
+            + '盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）' },
+        { id: 'M12', route: 'student/', width: WIDE_DESKTOP, expect: 'note-hidden-text', target: 'extend', expectNoGlyph: true,
+          rule: '.snote { font-size: 0; } .snote::before { content: "§22c-M12 伪元素承载正文（真实文本已不可见）";'
+            + ' display: block; max-width: 70ch; font-size: var(--fs-sm); line-height: 1.7; }',
+          what: 't8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画'
+            + ' —— 盒宽/行数一切正常，只有字形盒能看穿' },
+        // ---- t24（修复轮 5）新增：把盒高压成 0 的那一类（T22-F1）----
+        { id: 'M13', route: 'docs/data/', width: WIDE_DESKTOP, expect: 'note-unrendered', target: 'extend', expectUnrendered: true,
+          rule: '.snote { font-size: 0; }',
+          what: 'T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，'
+            + '修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住' }
+      );
+
+      metrics.layoutMutationCodes = {};
+      const wideMutationHits = new Map();
+      const wideMutationExtra = new Map();
+      for (const mutation of wideMutations) {
+        const target = await browser.newPage({ viewport: { width: mutation.width, height: 900 } });
+        let guard = null;
+        let codes = [];
+        let injected = null;
+        let detail = '变异未执行';
+        let geometry = null;
+        let narrowKeys = [];
+        let matchedKeys = null;
+        try {
+          wideNavigations += 1;
+          await target.goto(new URL(mutation.route, base).href, { waitUntil: 'load' });
+          if (mutation.target === 'dom') {
+            guard = await wideInjectDetailMain(target);
+          } else if (mutation.target === 'extend') {
+            // 冻结串**保留**（仍恰好 1 次），只在它后面追加一条收窄规则 —— 形状与产物里真实存在的
+            // 「页内第二条 .snote 规则」一致（review 的 A5/C1c 就是这么写进共享 <style> 的）。
+            guard = await wideMutate(target, WIDE_SNOTE_FROZEN, `${WIDE_SNOTE_FROZEN}\n    ${mutation.rule}`);
+          } else {
+            guard = await wideMutate(target, mutation.anchor, mutation.replacement);
+          }
+          if (guard.ok) {
+            if (mutation.inject) injected = await wideInjectToken(target, WIDE_LONG_TOKEN);
+            geometry = await wideMeasure(target);
+            const meta = wideMeta.find(item => item.route === mutation.route);
+            const problems = wideProblems(geometry, meta);
+            codes = wideCodes(problems);
+            narrowKeys = problems.filter(problem => problem.code === 'note-narrow')
+              .map(problem => wideNoteKey(mutation.route, problem.index));
+            const inkNarrowKeys = problems.filter(problem => problem.code === 'note-ink-narrow')
+              .map(problem => wideNoteKey(mutation.route, problem.index));
+            const hiddenTextKeys = problems.filter(problem => problem.code === 'note-hidden-text')
+              .map(problem => wideNoteKey(mutation.route, problem.index));
+            const unrenderedKeys = problems.filter(problem => problem.code === 'note-unrendered')
+              .map(problem => wideNoteKey(mutation.route, problem.index));
+            if (mutation.selector) matchedKeys = await wideMatchedNoteKeys(target, mutation.selector, mutation.route);
+            metrics.layoutMutationCodes[mutation.id] = codes;
+            wideMutationHits.set(mutation.id, codes.includes(mutation.expect));
+            wideMutationExtra.set(mutation.id, { narrowKeys, inkNarrowKeys, hiddenTextKeys, unrenderedKeys, matchedKeys });
+            const first = geometry.notes.length ? geometry.notes[0] : null;
+            detail = `说明 ${geometry.noteCount} 条 · 首条 盒 ${first ? wideRound(first.box.width) : 0}px / 有字区域 ${first ? first.textWidth : 0}px`
+              + ` · detail-main ${geometry.detailMainCount} 个 · scrollWidth ${geometry.doc.scrollWidth}（视口 ${geometry.doc.clientWidth}）`
+              + (mutation.inject ? ` · 不可断串注入位置 ${injected}` : '')
+              + ` · 窄条 [${narrowKeys.join(', ') || '无'}] · 违规码 [${codes.join(', ') || '无'}]`;
+          }
+        } finally {
+          await target.close();
+        }
+        check(`§22c ${mutation.id} ${mutation.target === 'dom' ? 'DOM 注入前提成立（该类原本不存在）' : '变异锚点唯一（逐字替换前必须恰好出现 1 次）'}`,
+          Boolean(guard && guard.ok),
+          guard
+            ? (guard.ok
+              ? `${mutation.target === 'dom' ? '注入前提成立' : '锚点出现 1 次'} · ${mutation.what}`
+              : `${guard.reason} ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）`)
+            : '变异未执行（页面没打开）');
+        check(`§22c ${mutation.id} 变异后复测必须出现「${mutation.expect}」违规码（${mutation.what}）`,
+          Boolean(guard && guard.ok) && (!mutation.inject || injected === 'note') && codes.includes(mutation.expect),
+          guard && guard.ok
+            ? `期望 ${mutation.expect} · 实测 [${codes.join(', ') || '无'}] · ${detail}`
+            : '锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）');
+        // M8：F1 的要害是「盒宽没变、有字区域变了」——必须把这两件事同时钉住。
+        if (mutation.expectFirstNote) {
+          const before = wideGeometry.get(`${mutation.width}|${mutation.route}`).notes[0];
+          const first = geometry && geometry.notes.length ? geometry.notes[0] : null;
+          const column = geometry ? Math.min(geometry.region.width, geometry.main.width) : 0;
+          check('§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级',
+            Boolean(first && before) && Math.abs(first.box.width - before.box.width) <= WIDE_TOL
+            && first.textWidth < WIDE_NOTE_RATIO * column - 0.01 && before.textWidth >= WIDE_NOTE_RATIO * column - 0.01,
+            first && before
+              ? `注入前 盒 ${wideRound(before.box.width)}px / 有字区域 ${before.textWidth}px ⇒ 注入后 盒 ${wideRound(first.box.width)}px / 有字区域 ${first.textWidth}px`
+                + `（列宽 ${wideRound(column)}px · 阈值 ${wideRound(WIDE_NOTE_RATIO * column)}px）—— 盒宽差 ${wideRound(Math.abs(first.box.width - before.box.width))}px`
+              : '页面没量到');
+        }
+        // M9：只压非首个 —— 窄条必须**全部**落在选择器命中的条上，且第 0 条不在其中。
+        if (mutation.selector) {
+          const firstNarrowed = narrowKeys.some(key => key.endsWith('#0'));
+          const subset = narrowKeys.every(key => (matchedKeys || []).includes(key));
+          check(`§22c ${mutation.id} 只压非首个：窄条全部落在选择器命中的条上，且第 0 条不被压`,
+            narrowKeys.length > 0 && (matchedKeys || []).length > 0 && subset && !firstNarrowed,
+            `选择器 ${mutation.selector} 命中 [${(matchedKeys || []).join(', ') || '无'}] ⇒ 窄条 [${narrowKeys.join(', ') || '无'}]（第 0 条被压：${firstNarrowed}）`);
+        }
+        // M11：新判据的**承重证明** —— 旧判据（textWidth / 盒子）在这一形态里看不见东西，
+        //      咬中的必须是 note-ink-narrow，且被咬的那些条确实有多行字迹证据。
+        if (mutation.expectInkEvidence) {
+          const inkKeys = (wideMutationExtra.get(mutation.id) || {}).inkNarrowKeys || [];
+          const rowsOfInk = geometry ? geometry.notes.filter(note => inkKeys.includes(wideNoteKey(mutation.route, note.index))) : [];
+          const lineEvidenceOk = rowsOfInk.length > 0 && rowsOfInk.every(note => note.lineCount >= 2 && note.widestLine > 0);
+          const boxStayedWide = rowsOfInk.length > 0 && rowsOfInk.every(note => note.textWidth >= WIDE_NOTE_RATIO * Math.min(geometry.region.width, geometry.main.width) - 0.01);
+          check(`§22c ${mutation.id} 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码`,
+            inkKeys.length > 0 && narrowKeys.length === 0 && lineEvidenceOk && boxStayedWide,
+            `note-narrow ${narrowKeys.length} 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow ${inkKeys.length} 条 [${inkKeys.join(', ')}]`
+            + ` · 这些条的行证据：${rowsOfInk.map(note => `#${note.index} ${note.lineCount} 行 / 最宽 ${wideRound(note.widestLine)}px / 内容盒 ${wideRound(note.textWidth)}px`).join(' · ') || '（无）'}`);
+        }
+        // M12：藏字形态 —— 文本非空、已渲染、零字形盒；且这不是靠窄判据咬的。
+        if (mutation.expectNoGlyph) {
+          const first = geometry && geometry.notes.length ? geometry.notes[0] : null;
+          const hiddenKeys = (wideMutationExtra.get(mutation.id) || {}).hiddenTextKeys || [];
+          check('§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text',
+            Boolean(first) && first.glyphRects === 0 && first.textLength > 0 && first.rendered
+            && hiddenKeys.length > 0 && !codes.includes('note-ink-narrow'),
+            first
+              ? `首条：文本 ${first.textLength} 字 · 字形盒 ${first.glyphRects} 个 · 盒宽 ${wideRound(first.box.width)}px（rendered=${first.rendered}）`
+                + ` · 行 ${first.lineCount} 行 · note-hidden-text 命中 [${hiddenKeys.join(', ') || '无'}] · note-ink-narrow ${codes.includes('note-ink-narrow') ? '有（不该有）' : '无'}`
+              : '页面没量到');
+        }
+        // M13：未渲染形态的承重证明（t24 / T22-F1）—— 盒高被压成 0 的条**全部**由 note-unrendered 咬中，
+        //      且窄柱 / 逐行字迹 / 藏字三条判据在它们身上确实一条都不出（这正是修复前的假绿形状）。
+        if (mutation.expectUnrendered) {
+          const unrenderedRows = geometry ? geometry.notes.filter(note => !note.rendered) : [];
+          const oldCodes = codes.filter(code => /^note-(narrow|ink-narrow|hidden-text)$/.test(code));
+          const unrenderedKeys = (wideMutationExtra.get(mutation.id) || {}).unrenderedKeys || [];
+          check(`§22c ${mutation.id} 承重证明：盒高被压成 0 的条**全部**由 note-unrendered 咬中，且窄柱/字迹/藏字三条判据在它们身上确实看不见`,
+            unrenderedRows.length > 0 && oldCodes.length === 0
+            && unrenderedKeys.length === unrenderedRows.length
+            && unrenderedRows.every(note => note.textLength > 0 && note.glyphRects === 0),
+            `未渲染条 ${unrenderedRows.length} 条 [${unrenderedRows.map(note => '#' + note.index).join(', ')}]`
+            + ` · 它们的 textLength [${unrenderedRows.map(note => note.textLength).join(', ')}]`
+            + ` · glyphRects [${unrenderedRows.map(note => note.glyphRects).join(', ')}]`
+            + ` · note-unrendered 命中 [${unrenderedKeys.join(', ') || '无'}]`
+            + ` · 窄柱/字迹/藏字码 [${oldCodes.join(', ') || '无（这正是修复前的假绿形状）'}]`);
+        }
+      }
+
+      // ---- M6 正对照：同样的 200 字符不可断串、CSS 一个字节都不动 ⇒ 必须不溢出 ----
+      {
+        const target = await browser.newPage({ viewport: { width: WIDE_NARROW, height: 800 } });
+        let geometry = null;
+        let injected = null;
+        try {
+          wideNavigations += 1;
+          await target.goto(new URL('student/', base).href, { waitUntil: 'load' });
+          injected = await wideInjectToken(target, WIDE_LONG_TOKEN);
+          geometry = await wideMeasure(target);
+        } finally {
+          await target.close();
+        }
+        const controlProblems = geometry
+          ? wideProblems(geometry, wideMeta.find(item => item.route === 'student/'))
+          : [{ code: '（页面没打开）', msg: '' }];
+        const controlOverflow = controlProblems.filter(problem => problem.code.startsWith('page-overflow@'));
+        metrics.layoutMutationCodes['M6-control'] = wideCodes(controlOverflow);
+        check(`§22c M6 正对照：同样注入 ${WIDE_LONG_TOKEN.length} 字符不可断串、CSS 一字不动 ⇒ @${WIDE_NARROW} 不得溢出`,
+          Boolean(geometry) && injected === 'note' && geometry.doc.scrollWidth <= WIDE_NARROW + WIDE_TOL && controlOverflow.length === 0,
+          geometry
+            ? `不可断串注入位置 ${injected} · scrollWidth ${geometry.doc.scrollWidth}（视口 ${geometry.doc.clientWidth}）`
+              + ` · 溢出类违规码 [${wideCodes(controlOverflow).join(', ') || '无'}]（全部码 [${wideCodes(controlProblems).join(', ') || '无'}]，390 档只看溢出）`
+            : '页面没打开');
+      }
+
+      // ---- M8/M9a/M9b/M10 的正对照：**不注入**时，四个靶页在对应档位没有任何 note-narrow ----
+      const wideNoInjectionControls = [
+        { id: 'M8', route: 'student/', width: WIDE_DESKTOP },
+        { id: 'M9a', route: 'docs/data/', width: WIDE_DESKTOP },
+        { id: 'M9b', route: 'changes/', width: WIDE_DESKTOP },
+        { id: 'M10', route: 'student/', width: WIDE_WIDE }
+      ].map(control => {
+        const problems = wideProblemsAt.get(`${control.width}|${control.route}`);
+        return { ...control, codes: wideCodes(problems), narrow: problems.filter(problem => problem.code === 'note-narrow').length };
+      });
+      check('§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条 note-narrow 都没有',
+        wideNoInjectionControls.every(row => row.narrow === 0 && row.codes.length === 0),
+        wideNoInjectionControls.map(row => `${row.id} ${row.route || '/'}@${row.width} 违规码 [${row.codes.join(', ') || '无'}]`).join(' · '));
+
+      // ---- 反空洞守卫自身的负例自检 ----
+      {
+        const target = await browser.newPage({ viewport: { width: WIDE_DESKTOP, height: 900 } });
+        let absent = null;
+        let duplicated = null;
+        try {
+          wideNavigations += 1;
+          await target.goto(new URL('student/', base).href, { waitUntil: 'load' });
+          absent = await wideMutate(target, '§22c-这个锚点在产物里不存在', 'x');
+          // `color: var(--mut);` 在整份内联样式里出现几十次（≥2 ⇒ 非唯一）
+          duplicated = await wideMutate(target, 'color: var(--mut);', 'color: var(--mut);');
+        } finally {
+          await target.close();
+        }
+        check('§22c 反空洞守卫自检：锚点不存在（0 次）与锚点非唯一（>1 次）都必须 ok:false 并给出原因',
+          Boolean(absent && absent.ok === false && absent.occurrences === 0 && absent.reason)
+          && Boolean(duplicated && duplicated.ok === false && duplicated.occurrences > 1 && duplicated.reason),
+          `不存在的锚点：${absent ? `ok=${absent.ok} · 出现 ${absent.occurrences} 次 · ${absent.reason || ''}` : '未执行'}`
+          + ` ／ 非唯一锚点：${duplicated ? `ok=${duplicated.ok} · 出现 ${duplicated.occurrences} 次 · ${duplicated.reason || ''}` : '未执行'}`);
+      }
+
+      // ---- 判据自检：全部违规码必须由 wideProblems() 一处产出、且都可达 ----
+      {
+        const note0 = {
+          index: 0, depth: 1, parent: 'main', text: 'synthetic', textLength: 40,
+          rawTextLength: 40, noscriptSubtree: false,
+          box: { count: 1, left: 0, right: 1380, width: 1380, scrollW: 1380, clientW: 1380, padLeft: 0, padRight: 0 },
+          contentBox: 1380, textWidth: 1380, textFallback: false, bearingCount: 1,
+          rendered: true, vertical: false, writingMode: 'horizontal-tb',
+          glyphRects: 3, lineCount: 3, widestLine: 1300, lines: [{ width: 1300, left: 0, right: 1300 }],
+          ink: { width: 1300, rects: 3 }
+        };
+        const note1 = Object.assign({}, note0, { index: 1 });
+        const g0 = {
+          doc: { innerWidth: WIDE_DESKTOP, clientWidth: WIDE_DESKTOP, scrollWidth: WIDE_DESKTOP },
+          mainCount: 1, detailMainCount: 0,
+          main: { count: 1, left: 0, right: 1380, width: 1380, scrollW: 1380, clientW: 1380 },
+          regionSel: '.ctable', regionFallback: false,
+          region: { count: 1, left: 0, right: 1380, width: 1380, scrollW: 1380, clientW: 1380 },
+          noteCount: 2, notes: [note0, note1], frozenCount: 1
+        };
+        const metaWide = { route: 'synthetic/', kind: 'collection', family: 'wide' };
+        const reachable = new Set();
+        const collect = problems => wideCodes(problems).forEach(code => reachable.add(code.startsWith('page-overflow@') ? 'page-overflow@<vw>' : code));
+        // ① 旧口径：内容盒被压窄 + border-box 脱离两锚 ⇒ note-narrow + note-axis
+        collect(wideProblems(Object.assign({}, g0, {
+          notes: [Object.assign({}, note0, { textWidth: 452, box: Object.assign({}, note0.box, { right: 482.81, width: 452.81 }) }), note1]
+        }), metaWide));
+        // ② 新口径：内容盒满宽、只有逐行字迹铺不开 ⇒ note-ink-narrow（盒子代理量在这里一条都不咬）
+        collect(wideProblems(Object.assign({}, g0, {
+          notes: [Object.assign({}, note0, { textWidth: 1380, lineCount: 4, widestLine: 452, glyphRects: 4 }), note1]
+        }), metaWide));
+        // ③ 藏字：文本非空、已渲染、零字形盒 ⇒ note-hidden-text
+        collect(wideProblems(Object.assign({}, g0, {
+          notes: [Object.assign({}, note0, { glyphRects: 0, lineCount: 0, widestLine: 0, lines: [], ink: null }), note1]
+        }), metaWide));
+        // ④ 未渲染说明（t24 / T22-F1）：盒高被压成 0、可见正文非空、非 <noscript> ⇒ note-unrendered
+        collect(wideProblems(Object.assign({}, g0, {
+          notes: [Object.assign({}, note0, {
+            rendered: false, textLength: 40, rawTextLength: 40, noscriptSubtree: false,
+            glyphRects: 0, lineCount: 0, widestLine: 0, lines: [], ink: null,
+            box: Object.assign({}, note0.box, { width: 0, height: 0 })
+          }), note1]
+        }), metaWide));
+        collect(wideProblems(Object.assign({}, g0, { detailMainCount: 1 }), metaWide));                                   // unexpected-detail-main
+        collect(wideProblems(Object.assign({}, g0, { detailMainCount: 0, noteCount: 0, notes: [] }),
+          { route: 'synthetic-deal/', kind: 'deal', family: 'detail' }));                                                 // missing-detail-main
+        collect(wideProblems(Object.assign({}, g0, {
+          notes: [Object.assign({}, note0, { box: Object.assign({}, note0.box, { scrollW: 1400, clientW: 1379 }) }), note1]
+        }), metaWide));                                                                                                   // note-clipped
+        collect(wideProblems(Object.assign({}, g0, { doc: Object.assign({}, g0.doc, { scrollWidth: 1500 }) }), metaWide)); // page-overflow@<vw>
+        collect(wideProblems(Object.assign({}, g0, { mainCount: 0, main: Object.assign({}, g0.main, { count: 0 }), noteCount: 0, notes: [] }), metaWide)); // data-region-missing
+        collect(wideProblems(g0, { route: 'synthetic-unknown/', kind: null, family: null }));                             // unclassified-layout
+        const missingCodes = WIDE_CODE_VOCABULARY.filter(code => !reachable.has(code));
+        const extraCodes = [...reachable].filter(code => !WIDE_CODE_VOCABULARY.includes(code));
+        check(`§22c 违规码自检：${WIDE_CODE_VOCABULARY.length} 个码全部由 wideProblems() 一处产出、且都可达（不多不少）`,
+          missingCodes.length === 0 && extraCodes.length === 0,
+          `可达 ${reachable.size}/${WIDE_CODE_VOCABULARY.length} · 缺 ${missingCodes.join(',') || '无'} · 多 ${extraCodes.join(',') || '无'}`
+          + `（含本轮新增的 note-ink-narrow / note-hidden-text；条级码带 index，与页级码同一个函数）`);
+      }
+
+      // ---- M5：不重复造第二套 —— 既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码 ----
+      {
+        const wideLeafResults = results.filter(item => item.name.startsWith('§22b'));
+        const wideLeafFailed = wideLeafResults.filter(item => !item.ok);
+        const wideLeafCodes = metrics.leafMutationCodes || {};
+        const wideLeafExpect = { M1: 'center', M2: 'width', M3: 'src-width', M4: `page-overflow@${LEAF_NARROW}`, M5: 'leaf-consistency' };
+        const wideLeafMissed = Object.entries(wideLeafExpect)
+          .filter(([id, code]) => !(wideLeafCodes[id] || []).includes(code))
+          .map(([id, code]) => `${id} 期望 ${code} 实测 [${(wideLeafCodes[id] || []).join(',') || '（未跑）'}]`);
+        check('§22c M5（不重复造第二套）：既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码，且 §22b 的断言全绿',
+          wideLeafResults.length > 0 && wideLeafFailed.length === 0 && wideLeafMissed.length === 0
+          && (wideLeafCodes['M4-control'] || []).length === 0,
+          `§22b 断言 ${wideLeafResults.length} 项（失败 ${wideLeafFailed.length}）`
+          + ` · §22b 变异码 ${Object.keys(wideLeafExpect).map(id => `${id}=[${(wideLeafCodes[id] || []).join(',') || '未跑'}]`).join(' ')}`
+          + ` · M4 正对照=[${(wideLeafCodes['M4-control'] || []).join(',') || '无'}]`
+          + (wideLeafMissed.length ? ` · 未咬到：${wideLeafMissed.join('；')}` : ''));
+      }
+
+      // ---- 零磁盘污染：变异只发生在浏览器页面里 ----
+      const wideHashAfter = new Map(WIDE_MUTATION_TARGETS.map(route => [route, wideHash(route)]));
+      check('§22c 变异牙零磁盘污染：被改产物的 sha256 变异前后相等（byte-exact）',
+        WIDE_MUTATION_TARGETS.every(route => wideHashBefore.get(route)
+          && wideHashBefore.get(route) === wideHashAfter.get(route)),
+        WIDE_MUTATION_TARGETS.map(route => `${route || '/'} ${String(wideHashBefore.get(route)).slice(0, 10)}…`).join(' · ')
+        + `（前 ${WIDE_MUTATION_TARGETS.map(route => String(wideHashBefore.get(route)).slice(0, 6)).join('/')}`
+        + ` · 后 ${WIDE_MUTATION_TARGETS.map(route => String(wideHashAfter.get(route)).slice(0, 6)).join('/')}）`);
+
+      // ---- 条级容器自检：metrics.layoutNotes 必须覆盖每一页的每一条（外部逐条核对的前提）----
+      {
+        const wideExpectConditions = wideMeta.reduce((sum, meta) => sum + wideGeometry.get(`${WIDE_DESKTOP}|${meta.route}`).noteCount, 0);
+        const wideKeysOk = wideNoteRows1440.every(row => Number.isInteger(row.index) && typeof row.route === 'string' && Array.isArray(row.codes));
+        check('§22c 条级容器：metrics.layoutNotes 覆盖全部说明条（route#index 可逐条核对）',
+          wideKeysOk && wideNoteRows1440.length === wideExpectConditions && wideNoteRows1600.length === wideExpectConditions,
+          `条级容器 ${wideNoteRows1440.length} 条（@${WIDE_DESKTOP}） / ${wideNoteRows1600.length} 条（@${WIDE_WIDE}）`
+          + ` · 现场实算 ${wideExpectConditions} 条 · 每行都带 route/index/codes：${wideKeysOk}`);
+      }
+
+      // ---- 本节自己的错误账本（整轮计数留给别的节，这里不污染）----
+      check(`§22c 全站扫描（${wideNavigations} 次导航）没有 JS 错误、没有外部请求`,
+        wideErrors.length === 0 && wideExternal.length === 0,
+        `JS 错误 ${wideErrors.length} 个${wideErrors.length ? `：${wideErrors.slice(0, 3).join('；')}` : ''}`
+        + ` · 外部请求 ${wideExternal.length} 个${wideExternal.length ? `：${wideExternal.slice(0, 3).join(' ')}` : ''}`);
+
+      // ---- 机器可读输出（--compare 的 6 项判据都不读这些键，互不影响）----
+      metrics.layoutNotes = wideNoteRows1440;
+      metrics.layoutNotesAt1600 = wideNoteRows1600;
+      metrics.layoutSweep = {
+        total: wideRoutes.length,
+        wide: wideRoutesOfFamily.wide.length,
+        detail: wideRoutesOfFamily.detail.length,
+        other: wideRoutesOfFamily.other.length,
+        // notesChecked 保持 t2 起的口径（**有说明的页面数**，静态复算对得上）；
+        // 条级另给 notesJudged（t7 起：401 条全判，不再只判 105 页里的第一条）。
+        notesChecked: wideNotePages.length,
+        notesJudged: wideNoteRows1440.length,
+        narrowNotes: wideSummary[WIDE_DESKTOP].narrow.length,
+        narrowNotePages: wideSummary[WIDE_DESKTOP].narrowRoutes.length,
+        narrowNotesAt1600: wideSummary[WIDE_WIDE].narrow.length,
+        // t19 新增：② 的**物理作用域证据** —— 每个视口的现场列宽范围 vs 现场换算的 70ch
+        // （1440/1600/760 列宽大于 70ch ⇒ 判；360 小于 ⇒ 不判；判据里没有任何视口白名单）
+        inkScopeDesktopViewports: WIDE_DESKTOP_VIEWPORTS.map(width => {
+          const columns = [];
+          const ch70s = new Set();
+          for (const meta of wideMeta) {
+            const geometry = wideGeometry.get(`${width}|${meta.route}`);
+            columns.push(Math.min(geometry.region.width, geometry.main.width));
+            for (const note of geometry.notes) if (Number(note.ch70) > 0) ch70s.add(note.ch70);
+          }
+          const positive = columns.filter(value => value > 0);
+          const ch70 = [...ch70s];
+          return {
+            width: width,
+            minColumn: positive.length ? wideRound(Math.min.apply(null, positive)) : 0,
+            maxColumn: positive.length ? wideRound(Math.max.apply(null, positive)) : 0,
+            ch70: ch70,
+            inkScope: positive.length > 0 && ch70.length > 0 && Math.max.apply(null, positive) > ch70[0]
+          };
+        }),
+        inkScopeSampleViewports: wideSampleScope,
+        // t24 / T22-F1 立 · t28 收紧计数：未渲染说明的四个计数 ——
+        //   unrenderedNotes（既有 metric，有断言引用）· unrenderedNoTextNotes（可见文本 0 ⇒ 豁免那类）·
+        //   unrenderedTextNotes（note-unrendered 命中）· unrenderedNoscriptNotes（**诊断量，不参与豁免**）。
+        //   前两者**不相交**且并集 = unrenderedNotes（上界断言逐条钉住）。
+        unrenderedNoTextNotes: wideSummary[WIDE_DESKTOP].unrenderedNoText,
+        unrenderedNoscriptNotes: wideSummary[WIDE_DESKTOP].unrenderedNoscript,
+        unrenderedTextNotes: wideSummary[WIDE_DESKTOP].unrenderedText.length,
+        unrenderedUnexplainedNotes: wideSummary[WIDE_DESKTOP].unrenderedUnexplained,
+        unrenderedNoTextNotesAt1600: wideSummary[WIDE_WIDE].unrenderedNoText,
+        unrenderedNoscriptNotesAt1600: wideSummary[WIDE_WIDE].unrenderedNoscript,
+        unrenderedTextNotesAt1600: wideSummary[WIDE_WIDE].unrenderedText.length,
+        // t14 新增：逐行字迹码与藏字码各自计数，另给「旧 ∪ 新」的并集（覆盖面的唯一口径）
+        inkNarrowNotes: wideSummary[WIDE_DESKTOP].inkNarrow.length,
+        inkNarrowNotePages: wideSummary[WIDE_DESKTOP].inkNarrowRoutes.length,
+        narrowUnionNotes: wideSummary[WIDE_DESKTOP].union.length,
+        narrowUnionNotePages: wideSummary[WIDE_DESKTOP].unionRoutes.length,
+        inkNarrowNotesAt1600: wideSummary[WIDE_WIDE].inkNarrow.length,
+        hiddenTextNotes: wideSummary[WIDE_DESKTOP].hiddenText.length,
+        unrenderedNotes: wideSummary[WIDE_DESKTOP].unrendered,
+        verticalNotes: wideSummary[WIDE_DESKTOP].vertical,
+        overflowPages: wideOverflowPages.length,
+        unexpectedDetailMain: wideUnexpectedDetailMain.length,
+        missingDetailMain: wideMissingDetailMain.length,
+        unclassified: wideUnclassified.length,
+        desktopViewports: WIDE_DESKTOP_VIEWPORTS
+      };
+      metrics.layoutFrozenRule = {
+        anchor: WIDE_SNOTE_FROZEN,
+        pagesExactlyOnce: wideFrozenPages.length,
+        pagesTotal: wideRoutes.length,
+        drift: wideFrozenDrift.slice(0, 10)
+      };
+      metrics.layoutDataRegions = wideRegionCounts;
+      metrics.layoutNoteAnchors = wideAnchorStats;
+      metrics.layoutSample = { viewports: WIDE_SAMPLE_VIEWPORTS, routes: wideSampleRoutes };
+      metrics.layoutScan = {
+        navigations: wideNavigations,
+        desktopViewports: WIDE_DESKTOP_VIEWPORTS,
+        sampleViewports: WIDE_SAMPLE_VIEWPORTS,
+        seconds: Object.assign({}, widePhaseSeconds, { section: Math.round((Date.now() - wideSectionStart) / 100) / 10 }),
+        jsErrors: wideErrors.length,
+        externalRequests: wideExternal.length
+      };
+      metrics.layoutViolations = widePageCodesAt(WIDE_DESKTOP)
+        .filter(item => item.problems.length > 0)
+        .map(item => {
+          const geometry = wideGeometry.get(`${WIDE_DESKTOP}|${item.meta.route}`);
+          return {
+            route: item.meta.route, kind: item.meta.kind, family: item.meta.family,
+            codes: [...new Set(item.problems.map(problem => problem.code))],
+            noteKeys: item.problems.filter(problem => problem.index !== undefined).map(problem => wideNoteKey(item.meta.route, problem.index)),
+            noteCount: geometry.noteCount,
+            regionSel: geometry.regionSel,
+            column: wideRound(Math.min(geometry.region.width, geometry.main.width)),
+            textWidth: geometry.notes.length ? geometry.notes[0].textWidth : null
+          };
+        });
+
+      // ---- mutations.json：期望 vs 实测逐条落盘（与 --json= 报告同目录）----
+      if (jsonArg) {
+        const wideReportFile = path.resolve(ROOT, jsonArg.slice('--json='.length));
+        const wideMutationsFile = path.join(path.dirname(wideReportFile), 'mutations.json');
+        fs.mkdirSync(path.dirname(wideMutationsFile), { recursive: true });
+        fs.writeFileSync(wideMutationsFile, `${JSON.stringify({
+          target: base,
+          dir: path.relative(ROOT, DIR),
+          generatedAt: new Date().toISOString(),
+          frozenAnchor: WIDE_SNOTE_FROZEN,
+          criteria: {
+            noteNarrow: `textWidth >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（旧口径，t7 的 textWidth = 承载文本的块级元素里最窄的 content box；一字未改）`,
+            noteInkNarrow: `lineCount >= 2 且 widestLine >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（新口径，t14：逐行字迹按垂直重叠归并；竖排不判。t19/R3-1 起适用性 = **物理前置条件**：min(主数据区宽, 页面列宽) > 现场换算的 70ch ⇒ 1440/1600/760 判、360 不判）`,
+            noteHiddenText: '文本非空且已渲染（border-box 有宽有高）但零可见字形盒（Range.getClientRects 为空）',
+            noteUnrendered: '未渲染（border-box 宽或高为 0）但**可见文本非空**、零可见字形盒'
+              + '（t24 立 / t28 收紧：豁免只看「可见文本长度为 0」，不含任何标记级豁免键 —— '
+              + '给说明插一个空 <noscript></noscript> 买不到豁免；判定只用盒量/render 状态/字形盒）',
+            coverage: '并集 = ① 156 条（盒宽全 452.81；其中 48 条单行、只有 ① 看得见）∪ ② 108 条多行（② ⊆ ①）= 156 条。'
+              + '⚠️ truth-401 的 caughtByOldCriteria(48) 是 make-truth-401.cjs:56 的 `index === 0` 按序切分（实测全为多行），'
+              + '与「48 条单行」不是同一批 —— 两处 48 别混用（t19/R3-2 订正）',
+            inkScope: `② 的适用性 = 现场物理量：min(主数据区宽, 页面列宽) > 70ch（现场换算；1440/1600/760 判、360 不判，t19/R3-1）`,
+            noteAxis: `border-box 与主数据区或 <main> 任一同一轴，容差 max(${WIDE_TOL}px, ${WIDE_AXIS_RATIO} * min(主数据区宽, 页面列宽))`,
+            scope: '<main> 内全部 .snote，逐条 route#index；零条说明的页面才跳过；未渲染（<noscript>）单独登记'
+          },
+          rows: wideMutations.map(mutation => {
+            const extra = wideMutationExtra.get(mutation.id) || {};
+            return {
+              id: mutation.id, route: mutation.route, width: mutation.width, expect: mutation.expect,
+              what: mutation.what, observed: metrics.layoutMutationCodes[mutation.id] || [],
+              hit: Boolean(wideMutationHits.get(mutation.id)),
+              narrowKeys: extra.narrowKeys || [], inkNarrowKeys: extra.inkNarrowKeys || [],
+              hiddenTextKeys: extra.hiddenTextKeys || [], matchedKeys: extra.matchedKeys || null,
+              anchor: mutation.target === 'extend' ? WIDE_SNOTE_FROZEN : (mutation.anchor || null),
+              injectedRule: mutation.rule || null, domInjection: mutation.target === 'dom',
+              injectedTokenLength: mutation.inject ? WIDE_LONG_TOKEN.length : 0
+            };
+          }),
+          control: {
+            m6: { id: 'M6-control', route: 'student/', width: WIDE_NARROW, expect: `不得出现 page-overflow@${WIDE_NARROW}`,
+              observed: metrics.layoutMutationCodes['M6-control'] || [] },
+            noInjection: wideNoInjectionControls.map(row => ({ id: row.id, route: row.route, width: row.width, noteNarrow: row.narrow, codes: row.codes }))
+          },
+          m5Reuse: { section: '§22b', assertions: results.filter(item => item.name.startsWith('§22b')).length,
+            failing: results.filter(item => item.name.startsWith('§22b') && !item.ok).length,
+            codes: { M1: metrics.leafMutationCodes.M1, M2: metrics.leafMutationCodes.M2, M3: metrics.leafMutationCodes.M3,
+              M4: metrics.leafMutationCodes.M4, M5: metrics.leafMutationCodes.M5, 'M4-control': metrics.leafMutationCodes['M4-control'] } },
+          layoutSweep: metrics.layoutSweep,
+          scan: metrics.layoutScan
+        }, null, 2)}\n`, 'utf8');
+        console.log(`     变异读数已写出：${path.relative(ROOT, wideMutationsFile)}（${wideMutations.length} 条牙 + M6 正对照 + 不注入正对照 + M5 复用）`);
+      }
+
+      // ---- prompt §18 的表：布局族读数 + 逐条读数 + 变异牙读数 ----
+      {
+        const wideFamilyRow = (label, routes) => {
+          const rows = wideNoteRows1440.filter(row => routes.includes(row.route));
+          const pagesWithNotes = routes.filter(route => wideGeometry.get(`${WIDE_DESKTOP}|${route}`).noteCount > 0).length;
+          const narrowRows = rows.filter(row => row.codes.includes('note-narrow'));
+          const inkRows = rows.filter(row => row.codes.includes('note-ink-narrow'));
+          const hiddenRows = rows.filter(row => row.codes.includes('note-hidden-text'));
+          const axis = rows.filter(row => row.codes.includes('note-axis')).length;
+          const clipped = rows.filter(row => row.codes.includes('note-clipped')).length;
+          const overflow = routes.filter(route => wideNarrow390.get(route).codes.length > 0
+            || wideSummary[WIDE_DESKTOP].overflow.includes(route) || wideSummary[WIDE_WIDE].overflow.includes(route)).length;
+          const detailMain = routes.filter(route => wideMissingDetailMain.includes(route) || wideUnexpectedDetailMain.includes(route)).length;
+          const unclassified = routes.filter(route => wideUnclassified.some(meta => meta.route === route)).length;
+          return [label, routes.length, pagesWithNotes, rows.length, narrowRows.length, inkRows.length, hiddenRows.length,
+            new Set([...narrowRows, ...inkRows].map(row => row.route)).size, axis, clipped, overflow, detailMain, unclassified];
+        };
+        const wideTableRows = [
+          wideFamilyRow('wide', wideRoutesOfFamily.wide),
+          wideFamilyRow('detail', wideRoutesOfFamily.detail),
+          wideFamilyRow('other', wideRoutesOfFamily.other),
+          wideFamilyRow('合计', wideRoutes)
+        ];
+        const wideHeaders = ['族', '页面', '有说明页', '说明条', '窄条', '字迹窄', '藏字', '窄条页', '不同轴', '裁切', '溢出', 'detail-main', '未分类'];
+        const wideWidths = [8, 6, 10, 8, 6, 8, 6, 8, 8, 6, 6, 13, 8];
+        console.log(`     布局族读数表（prompt §18）：全站 ${wideRoutes.length} 页 = wide ${wideRoutesOfFamily.wide.length} + detail ${wideRoutesOfFamily.detail.length} + other ${wideRoutesOfFamily.other.length}`
+          + ` · 逐条判 ${wideNoteRows1440.length} 条（修复前只判 ${wideNotePages.length} 条 = 文档序第一条）`);
+        console.log(`     ${wideHeaders.map((head, i) => wideCell(head, wideWidths[i])).join('')}`);
+        for (const row of wideTableRows) console.log(`     ${row.map((value, i) => wideCell(value, wideWidths[i])).join('')}`);
+        console.log(`     视口：${WIDE_DESKTOP_VIEWPORTS.join('/')} 全站逐条几何 + 溢出 · ${WIDE_NARROW} 全站 scrollWidth · ${WIDE_SAMPLE_VIEWPORTS.join('/')} 样本集 ${wideSampleRoutes.length} 页`);
+        console.log(`     逐条读数：@${WIDE_DESKTOP} 窄 ${wideSummary[WIDE_DESKTOP].narrow.length} 条 / ${wideSummary[WIDE_DESKTOP].narrowRoutes.length} 页`
+          + ` · @${WIDE_WIDE} 窄 ${wideSummary[WIDE_WIDE].narrow.length} 条 / ${wideSummary[WIDE_WIDE].narrowRoutes.length} 页`
+          + ` · textFallback 回落 ${wideSummary[WIDE_DESKTOP].textFallback} 条`
+          + ` · 同轴锚（条）主数据区 ${wideAnchorStats.region} / 主容器 ${wideAnchorStats.main} / 两者都 ${wideAnchorStats.both} / 都不 ${wideAnchorStats.neither}`);
+        console.log(`     主数据区：${Object.entries(wideRegionCounts).map(([sel, n]) => `${sel}=${n} 页`).join(' · ')}`);
+        console.log(`     冻结串：${wideFrozenPages.length}/${wideRoutes.length} 页内联样式里恰好 1 次（M0 的改动前产物在这里是 0/${wideRoutes.length}）`);
+        const wideMutationRows = [
+          ['M0（反证）', '--dir=dist.baseline', 'note-narrow ×156', '另跑一次同一条命令：改动前产物必须红'],
+          ...wideMutations.map(mutation => {
+            const codes = metrics.layoutMutationCodes[mutation.id] || [];
+            const extra = wideMutationExtra.get(mutation.id) || {};
+            return [mutation.id, `${mutation.route || '/'}@${mutation.width}`, mutation.expect,
+              `[${codes.join(', ') || '（未执行）'}]${codes.includes(mutation.expect) ? '' : ' ←未咬到'}${extra.narrowKeys && extra.narrowKeys.length ? ` 窄条 ${extra.narrowKeys.join(' ')}` : ''}`];
+          }),
+          ['M6 正对照', `student/@${WIDE_NARROW}`, '不得出现 page-overflow', `[${(metrics.layoutMutationCodes['M6-control'] || []).join(', ') || '无'}]`],
+          ['M8/M9/M10 正对照', '四个靶页不注入', '不得出现 note-narrow', wideNoInjectionControls.map(row => `${row.id}[${row.codes.join(',') || '无'}]`).join(' ')],
+          ['M5（复用）', '§22b 的 M1–M5', '既有牙全绿', `${results.filter(item => item.name.startsWith('§22b')).length} 项断言`]
+        ];
+        const wideMutHeaders = ['牙', '页面@视口', '期望', '实测'];
+        const wideMutWidths = [18, 22, 26, 54];
+        console.log('     变异牙读数表（期望 vs 实测）：');
+        console.log(`     ${wideMutHeaders.map((head, i) => wideCell(head, wideMutWidths[i])).join('')}`);
+        for (const row of wideMutationRows) console.log(`     ${row.map((value, i) => wideCell(value, wideMutWidths[i])).join('')}`);
+      }
+
+      console.log(`     读数：逐条判 ${wideNoteRows1440.length} 条说明 · note-narrow ${wideSummary[WIDE_DESKTOP].narrow.length} 条 / ${wideSummary[WIDE_DESKTOP].narrowRoutes.length} 页`
+        + ` · note-ink-narrow ${wideSummary[WIDE_DESKTOP].inkNarrow.length} 条 / ${wideSummary[WIDE_DESKTOP].inkNarrowRoutes.length} 页`
+        + ` · 并集 ${wideSummary[WIDE_DESKTOP].union.length} 条 / ${wideSummary[WIDE_DESKTOP].unionRoutes.length} 页 · 藏字 ${wideSummary[WIDE_DESKTOP].hiddenText.length} 条`
+        + ` · @${WIDE_WIDE} 窄 ${wideSummary[WIDE_WIDE].narrow.length} / 字迹窄 ${wideSummary[WIDE_WIDE].inkNarrow.length} 条 · 溢出 ${wideOverflowPages.length} 页`
+        + ` · ② 作用域（物理）：${wideSampleScopeText}`
+        + ` · detail-main 违规 ${wideMissingDetailMain.length + wideUnexpectedDetailMain.length} 页 · 未分类 ${wideUnclassified.length} 页`
+        + ` · 导航 ${wideNavigations} 次（1440 ${widePhaseSeconds[`desktop${WIDE_DESKTOP}`]}s / 1600 ${widePhaseSeconds[`desktop${WIDE_WIDE}`]}s / 390 ${widePhaseSeconds.narrow390}s / 样本 ${widePhaseSeconds.samples}s）`
+        + ` · 本节 JS 错误 ${wideErrors.length} 个 · 外部请求 ${wideExternal.length} 个`);
+    } finally {
+      await widePage.close();
     }
   }
 

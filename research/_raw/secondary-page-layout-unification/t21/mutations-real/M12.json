@@ -1,0 +1,86 @@
+{
+  "label": "t21-dist",
+  "id": "M12",
+  "route": "student/",
+  "viewport": 1440,
+  "what": "t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿",
+  "mutationKind": "extend（冻结串保留，追加一条收窄规则）",
+  "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+  "injectedRule": ".snote { font-size: 0; } .snote::before { content: \"§22c-M12 伪元素承载正文（真实文本已不可见）\"; display: block; max-width: 70ch; font-size: var(--fs-sm); line-height: 1.7; }",
+  "selector": null,
+  "injectedTokenLength": 0,
+  "expect": "note-hidden-text",
+  "observed": [
+    "note-hidden-text",
+    "note-hidden-text",
+    "note-hidden-text"
+  ],
+  "hit": true,
+  "narrowKeys": [
+    "无"
+  ],
+  "matchedKeys": null,
+  "narrowNoteRows": [],
+  "anchorUniqueness": {
+    "fromVerifySite": 1,
+    "fromDiskStatic": 1,
+    "fromDiskWholeFile": 1,
+    "guardPassed": true,
+    "guardDetail": "锚点出现 1 次 · t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿",
+    "disk": {
+      "file": "dist/student/index.html",
+      "occurrencesInStyles": 1,
+      "occurrencesInFile": 1
+    },
+    "domInjectionGuard": null,
+    "mainSnoteCountOnDisk": 3
+  },
+  "geometry": {
+    "noteCount": 3,
+    "noteWidthLegacy": null,
+    "firstNoteBoxWidth": 1380,
+    "firstNoteTextWidth": 1380,
+    "columnWidthLegacy": null,
+    "detailMainCount": 0,
+    "scrollWidth": 1440,
+    "viewport": 1440,
+    "injectedAt": null,
+    "narrowKeys": [
+      "无"
+    ]
+  },
+  "productSha256": {
+    "before": null,
+    "after": null,
+    "equal": true
+  },
+  "productFile": "dist/student/index.html",
+  "checks": [
+    {
+      "name": "§22c M12 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "ok": true,
+      "detail": "锚点出现 1 次 · t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿"
+    },
+    {
+      "name": "§22c M12 变异后复测必须出现「note-hidden-text」违规码（t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿）",
+      "ok": true,
+      "detail": "期望 note-hidden-text · 实测 [note-hidden-text, note-hidden-text, note-hidden-text] · 说明 3 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-hidden-text, note-hidden-text, note-hidden-text]"
+    },
+    {
+      "name": "§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text",
+      "ok": true,
+      "detail": "首条：文本 209 字 · 字形盒 0 个 · 盒宽 1380px（rendered=true） · 行 0 行 · note-hidden-text 命中 [student/#0, student/#1, student/#2] · note-ink-narrow 无"
+    }
+  ],
+  "keyChecks": [
+    {
+      "name": "§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text",
+      "ok": true,
+      "detail": "首条：文本 209 字 · 字形盒 0 个 · 盒宽 1380px（rendered=true） · 行 0 行 · note-hidden-text 命中 [student/#0, student/#1, student/#2] · note-ink-narrow 无"
+    }
+  ],
+  "source": {
+    "report": "research/_raw/secondary-page-layout-unification/t21/geometry/after-verify.json",
+    "mutations": "research/_raw/secondary-page-layout-unification/t21/geometry/mutations.json"
+  }
+}

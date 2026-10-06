@@ -1,0 +1,291 @@
+{
+  "task": "T21 修复轮 4 后的证据复跑",
+  "at": "2026-10-06T13:03:26.430Z",
+  "target": "scripts/tools/verify-site.js",
+  "shaBefore": "fd3c9a3090dca11bbe6c34342505506bb44f4720c39fe4b18f4d7c23481f46d5",
+  "shaAfter": "fd3c9a3090dca11bbe6c34342505506bb44f4720c39fe4b18f4d7c23481f46d5",
+  "t19Handover": "fd3c9a3090dca11bbe6c34342505506bb44f4720c39fe4b18f4d7c23481f46d5",
+  "targetUnchanged": true,
+  "targetIsT19": true,
+  "distFinalIdentical": true,
+  "gridRule": "@media (max-width:760px){.snote{display:grid;grid-template-columns:minmax(0,70ch) 1fr}}",
+  "total": 14,
+  "passed": 14,
+  "failed": 0,
+  "acceptance": {
+    "标的 sha 跑前跑后相等且等于 t19 交回值": true,
+    "dist 绿轮": true,
+    "baseline 红轮 + 并集集合级": true,
+    "M1–M12 变异牙": true,
+    "R3-1 复现": true,
+    "字节对账": true,
+    "Full Gate（含 47/48）": true
+  },
+  "results": [
+    {
+      "id": "T0",
+      "what": "dist 全树 sha256 清单（跑任何套件之前）",
+      "command": "node research/_raw/secondary-page-layout-unification/build/dist-manifest.cjs --dir=dist --out=research/_raw/secondary-page-layout-unification/t21/dist-before.sha256.txt",
+      "exitCode": 0,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T0-manifest-before.log",
+      "ms": 99,
+      "extra": null,
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    },
+    {
+      "id": "T1",
+      "what": "verify-site --dir=dist（改动后产物：应为 0 失败 / 0 违规码 / 401 条逐条有读数）",
+      "command": "node scripts/tools/verify-site.js --dir=dist --json=research/_raw/secondary-page-layout-unification/t21/geometry/after-verify.json",
+      "exitCode": 0,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T1-dist.log",
+      "ms": 115057,
+      "extra": {
+        "reportTotal": 848,
+        "reportFailed": 0,
+        "layoutViolations": 0,
+        "layoutNotes": 401,
+        "layoutNotesAt1600": 401,
+        "everyNoteHasReadings": true,
+        "notesWithAnyCode": 0,
+        "sample760Ok": true,
+        "sample760Detail": "0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760",
+        "sample760Name": "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+        "hollowGuardOk": true,
+        "hollowGuardDetail": "不存在的锚点：ok=false · 出现 0 次 · 锚点在内联样式里出现 0 次（必须恰好 1 次） ／ 非唯一锚点：ok=false · 出现 4 次 · 锚点在内联样式里出现 4 次（必须恰好 1 次）",
+        "zeroFailures": true
+      },
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    },
+    {
+      "id": "T2",
+      "what": "dist 清单复算并与 T0 比对（内存变异零磁盘污染）",
+      "command": "node research/_raw/secondary-page-layout-unification/build/dist-manifest.cjs --dir=dist --out=research/_raw/secondary-page-layout-unification/t21/dist-after.sha256.txt",
+      "exitCode": 0,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T2-manifest-after.log",
+      "ms": 97,
+      "extra": {
+        "distIdentical": true
+      },
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    },
+    {
+      "id": "T3",
+      "what": "extract-mutations → M1–M12 逐条 JSON（M11 咬 note-ink-narrow、M12 咬 note-hidden-text）",
+      "command": "node research/_raw/secondary-page-layout-unification/mutations-real/extract-mutations.cjs --report=research/_raw/secondary-page-layout-unification/t21/geometry/after-verify.json --mutations=research/_raw/secondary-page-layout-unification/t21/geometry/mutations.json --dir=dist --manifest-before=research/_raw/secondary-page-layout-unification/t21/dist-before.sha256.txt --manifest-after=research/_raw/secondary-page-layout-unification/t21/dist-after.sha256.txt --out-dir=research/_raw/secondary-page-layout-unification/t21/mutations-real --label=t21-dist",
+      "exitCode": 0,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T3-extract-mutations.log",
+      "ms": 87,
+      "extra": {
+        "ids": "M1,M2,M3,M4,M6,M7,M8,M9a,M9b,M10,M11,M12,M6-control",
+        "m11Observed": "note-ink-narrow,note-ink-narrow,note-ink-narrow,note-ink-narrow,note-ink-narrow,note-ink-narrow",
+        "m11Hit": true,
+        "m12Observed": "note-hidden-text,note-hidden-text,note-hidden-text",
+        "m12Hit": true,
+        "zeroDiskPollution": true,
+        "allHits": true
+      },
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    },
+    {
+      "id": "T4",
+      "what": "verify-site --dir=dist.baseline（改动前产物：必须红）",
+      "command": "node scripts/tools/verify-site.js --dir=dist.baseline --json=research/_raw/secondary-page-layout-unification/t21/mutations-real/M0-baseline.json",
+      "exitCode": 1,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T4-baseline.log",
+      "ms": 113892,
+      "extra": {
+        "reportTotal": 848,
+        "reportFailed": 33,
+        "failingNon22c": 0,
+        "sample760Ok": false,
+        "sample760Detail": "196 条违规码 [category/#0 note-narrow, category/#0 note-ink-narrow, category/#0 note-axis, category/#1 note-narrow, category/#1 note-ink-narrow, category/#1 note-axis, category/agent/#0 note-narrow, category/agent/#0 note-ink-narrow, category/agent/#0 note-axis, category/agent/#1 note-narrow, category/agent/#1 note-axis, category/agent/#2 not",
+        "sample360Ok": true,
+        "sample360Detail": "0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ ne",
+        "narrowSweep": "{\"narrowNotes\":156,\"narrowNotePages\":48,\"narrowNotesAt1600\":156}"
+      },
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    },
+    {
+      "id": "T5",
+      "what": "extract-m0 → 逐页清单 + 并集码分布",
+      "command": "node research/_raw/secondary-page-layout-unification/mutations-real/extract-m0.cjs --report=research/_raw/secondary-page-layout-unification/t21/mutations-real/M0-baseline.json --exit=1 --log=research/_raw/secondary-page-layout-unification/t21/logs/T4-baseline.log --dir=dist.baseline --out=research/_raw/secondary-page-layout-unification/t21/mutations-real/M0-baseline-summary.json",
+      "exitCode": 0,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T5-extract-m0.log",
+      "ms": 49,
+      "extra": {
+        "narrowPages": 48,
+        "narrowNotes": 156,
+        "pageCodeTally": "{\"note-narrow\":48,\"note-ink-narrow\":48}",
+        "noteCodeTally": "{\"note-narrow\":156,\"note-ink-narrow\":108}",
+        "verdict": "pass"
+      },
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    },
+    {
+      "id": "T6",
+      "what": "gate-vs-truth --expect=green（dist：0 条 / 0 页、245 条对照组零误报）",
+      "command": "node research/_raw/secondary-page-layout-unification/geometry/gate-vs-truth.cjs --report=research/_raw/secondary-page-layout-unification/t21/geometry/after-verify.json --expect=green --truth=research/_raw/secondary-page-layout-unification/geometry/truth-401.json --label=t21-green --out=research/_raw/secondary-page-layout-unification/t21/geometry/gate-vs-truth-green.json",
+      "exitCode": 0,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T6-gate-vs-truth-green.log",
+      "ms": 56,
+      "extra": {
+        "verdict": "pass",
+        "narrowNotes": 0,
+        "falsePositive": 0,
+        "codeTally": "{}"
+      },
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    },
+    {
+      "id": "T7",
+      "what": "gate-vs-truth --expect=baseline（dist.baseline：156 条 / 48 页逐条相同、零误报）",
+      "command": "node research/_raw/secondary-page-layout-unification/geometry/gate-vs-truth.cjs --report=research/_raw/secondary-page-layout-unification/t21/mutations-real/M0-baseline.json --expect=baseline --truth=research/_raw/secondary-page-layout-unification/geometry/truth-401.json --label=t21-baseline --out=research/_raw/secondary-page-layout-unification/t21/geometry/gate-vs-truth-baseline.json",
+      "exitCode": 0,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T7-gate-vs-truth-baseline.log",
+      "ms": 57,
+      "extra": {
+        "verdict": "pass",
+        "narrowNotes": 156,
+        "narrowPages": 48,
+        "missed": 0,
+        "falsePositive": 0,
+        "codeTally": "{\"note-narrow\":156,\"note-ink-narrow\":108}",
+        "noteContainer": "metrics.layoutNotes"
+      },
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    },
+    {
+      "id": "T8",
+      "what": "R3-1 复现：scratch 副本注入 @media (max-width:760px){.snote{display:grid;grid-template-columns:minmax(0,70ch) 1fr}} ⇒ 必须红且命中 note-ink-narrow",
+      "command": "node scripts/tools/verify-site.js --dir=research/_raw/secondary-page-layout-unification/t21/scratch/grid760-changes --json=research/_raw/secondary-page-layout-unification/t21/scratch/grid760-report.json",
+      "exitCode": 1,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T8-scratch-grid760.log",
+      "ms": 122158,
+      "extra": {
+        "reportTotal": 848,
+        "reportFailed": 1,
+        "failingNames": "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+        "sample760Ok": false,
+        "inkNarrowCodesInDetail": 11,
+        "inkNarrowKeys": "changes/#0 changes/#1 changes/#2 changes/#4 changes/#8 changes/#12",
+        "widestInDetail": "445.05,445.09,432,444",
+        "detailHead": "6 条违规码 [changes/#0 note-ink-narrow, changes/#1 note-ink-narrow, changes/#2 note-ink-narrow, changes/#4 note-ink-narrow, changes/#8 note-ink-narrow, changes/#12 note-ink-narrow]：changes/#0 note-ink-narrow：changes/#0 逐行字迹：最宽一行 445.05px < 0.85 × 列宽 —— 盒宽 728px · 内容盒 728px · 行 2 行（最宽一行 445.05px） · 字形盒 2 个 · 列宽 728px · 阈值 618.8px（主数据区 .chgsec 728px / 页面列 728px）；changes/#1 note-ink-narrow：changes/#1 逐行字迹：最宽一行 445.09px < 0.85 × 列宽 —— 盒宽 728px · 内容盒 728px · 行 2 行（",
+        "hitInk": true,
+        "notesWithCodesAt1440": 0
+      },
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    },
+    {
+      "id": "T9",
+      "what": "对照：同一份副本**不注入** ⇒ 必须绿（证明红来自注入）",
+      "command": "node scripts/tools/verify-site.js --dir=research/_raw/secondary-page-layout-unification/t21/scratch/clean --json=research/_raw/secondary-page-layout-unification/t21/scratch/clean-report.json",
+      "exitCode": 0,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T9-scratch-clean.log",
+      "ms": 123501,
+      "extra": {
+        "reportTotal": 848,
+        "reportFailed": 0
+      },
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    },
+    {
+      "id": "T10",
+      "what": "字节对账：117 非 HTML sha256 + 186 HTML 去 <style> 逐字节 + 冻结源码 sha",
+      "command": "node diff/nonhtml-sha256.cjs + node diff/before-after-compare.cjs",
+      "exitCode": 0,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T10-byte.log",
+      "ms": 387,
+      "extra": {
+        "nonHtmlCompared": 117,
+        "nonHtmlDifferent": 0,
+        "htmlPages": 186,
+        "htmlBodyIdentical": 186,
+        "styleDeltaAdded": 9,
+        "styleDeltaRemoved": 2,
+        "frozenSourceUnchanged": true
+      },
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    },
+    {
+      "id": "T11",
+      "what": "check-ci-consistency --expect-checks=38",
+      "command": "node scripts/tools/check-ci-consistency.js --expect-checks=38",
+      "exitCode": 0,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T11-ci-consistency.log",
+      "ms": 1060,
+      "extra": {
+        "lastLines": " | ✅ CI 口径检查 38 项，失败 0 项"
+      },
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    },
+    {
+      "id": "T12",
+      "what": "Full Gate 静态步（现场解析 .github/actions/gate/action.yml；--skip-browser 推迟 47/48）",
+      "command": "node research/_raw/secondary-page-layout-unification/gate/run-full-gate.cjs --out=research/_raw/secondary-page-layout-unification/t21/gate/steps --skip-browser",
+      "exitCode": 0,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T12-full-gate-static.log",
+      "ms": 41364,
+      "extra": {
+        "stepsInAction": 49,
+        "executed": 43,
+        "passed": 43,
+        "failed": 0,
+        "skipped": 6,
+        "exitCode": 0
+      },
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    },
+    {
+      "id": "T13",
+      "what": "Full Gate --only=47,48（真浏览器两步；合并 summary 并记断言数/失败数）",
+      "command": "node research/_raw/secondary-page-layout-unification/gate/run-full-gate.cjs --out=research/_raw/secondary-page-layout-unification/t21/gate/steps --only=47,48",
+      "exitCode": 0,
+      "log": "research/_raw/secondary-page-layout-unification/t21/logs/T13-full-gate-browser.log",
+      "ms": 233166,
+      "extra": {
+        "stepsInAction": 49,
+        "executed": 45,
+        "passed": 45,
+        "failed": 0,
+        "skipped": 4,
+        "exitCode": 0,
+        "step47": "passed/exit=0",
+        "step48": "passed/exit=0",
+        "step47Assertions": "✅ 验收 848 项，失败 0 项",
+        "step48Assertions": "✅ 验收 854 项，失败 0 项",
+        "verifySiteShaAt47": "fd3c9a3090dca11b",
+        "verifySiteShaAt48": "fd3c9a3090dca11b",
+        "defaultSource": "Install dependencies | Prepare browser for the real-browser gate | Browser availability decision (never silent) | Gate conclusion"
+      },
+      "extraError": null,
+      "verdictNote": null,
+      "status": "passed"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+# Model-registry links check (explicit mapping only, no similarity)
+# $ node scripts/tools/check-model-registry-links.js
+# runAt 2026-10-06T12:58:51.844Z · verify-site.js sha256 fd3c9a3090dca11bbe6c34342505506bb44f4720c39fe4b18f4d7c23481f46d5
+
+✅ Model Registry 关系层通过：每条映射都指向真实存在的记录与模型，一条 source pricing identity 至多归属一个 registry 模型，引文逐字来自记录本身；API 与 Coding 两侧每一个模型身份都已判过
+   映射：API 79 条 · Coding 13 条 · 被引用的模型 51/51
+   计价条目（展开后）：108 条 = 已被映射认领 92 条 + 未认领 0 条
+   套餐模型串：55 条 = 已映射 13 条 + 已声明"不对应单一模型身份" 42 条 + 未判 0 条
+     · anthropic / Claude 系列模型（含 Claude Code）（套餐 536e6b211045）→ series
+     · baidu / 百度 Comate 官方模型（Auto 调度）（套餐 c968fb5a3c55）→ pool
+     · baidu / 百度 Comate 官方模型（Auto 调度）（套餐 b176967fc6bb）→ pool
+     · minimax / 图像 / 语音资源（套餐 a6a6a374dfba）→ non-text-resource
+     · qoder-intl / premium 模型池 + 基础模型兜底（套餐 e1cbd20766b9）→ pool
+     · qoder-intl / premium 模型池 + 基础模型兜底（套餐 8092ab8f694e）→ pool
+     · stepfun / step-3.5-flash-2603（套餐 2281d41b3a26）→ off-registry-model
+     · stepfun / step-3.7-flash（套餐 2281d41b3a26）→ off-registry-model
+     · stepfun / step-5-preview（套餐 2281d41b3a26）→ off-registry-model
+     · stepfun / step-router-v1（套餐 2281d41b3a26）→ series
+     · stepfun / stepaudio-2.5-asr（套餐 2281d41b3a26）→ non-text-resource
+     · stepfun / stepaudio-2.5-chat（套餐 2281d41b3a26）→ non-text-resource
+     · stepfun / stepaudio-2.5-realtime（套餐 2281d41b3a26）→ non-text-resource
+     · stepfun / stepaudio-2.5-tts（套餐 2281d41b3a26）→ non-text-resource
+     · stepfun / step-3.5-flash-2603（套餐 ef931b98b927）→ off-registry-model
+     · stepfun / step-3.7-flash（套餐 ef931b98b927）→ off-registry-model
+     · stepfun / step-5-preview（套餐 ef931b98b927）→ off-registry-model
+     · stepfun / step-router-v1（套餐 ef931b98b927）→ series
+     · stepfun / stepaudio-2.5-asr（套餐 ef931b98b927）→ non-text-resource
+     · stepfun / stepaudio-2.5-chat（套餐 ef931b98b927）→ non-text-resource
+     … 另有 22 条
+   候选（归一后精确相等，**只供人工 review，绝不写生产映射**）：API 0 条 · 套餐 0 条

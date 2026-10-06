@@ -1,0 +1,212 @@
+{
+  "generatedAt": "2026-10-06T08:23:12.705Z",
+  "probeDir": "dist.baseline",
+  "gateTarget": "http://127.0.0.1:59729/",
+  "gateSummary": {
+    "total": 842,
+    "failed": 27,
+    "sweep": {
+      "total": 186,
+      "wide": 55,
+      "detail": 131,
+      "other": 0,
+      "notesChecked": 105,
+      "notesJudged": 401,
+      "narrowNotes": 156,
+      "narrowNotePages": 48,
+      "narrowNotesAt1600": 156,
+      "overflowPages": 0,
+      "unexpectedDetailMain": 0,
+      "missingDetailMain": 0,
+      "unclassified": 0,
+      "desktopViewports": [
+        1440,
+        1600
+      ]
+    }
+  },
+  "checks": [
+    {
+      "id": "narrow-page-set-equal",
+      "what": "§22c 在 dist.baseline 上报出的窄柱**页集合** === 我的独立探针算出的页集合（逐页，不比数量）",
+      "ok": true,
+      "detail": {
+        "mine": 48,
+        "gate": 48,
+        "onlyMine": [],
+        "onlyGate": []
+      }
+    },
+    {
+      "id": "narrow-note-set-equal",
+      "what": "窄柱**条集合**（route#index）逐条相同",
+      "ok": true,
+      "detail": {
+        "mine": 156,
+        "gate": 156,
+        "onlyMine": [],
+        "onlyGate": []
+      }
+    },
+    {
+      "id": "all-violation-pages-equal",
+      "what": "§22c 报出的**全部**违规页（含 note-axis 等）集合 === 我的窄柱页集合（baseline 上应当只有 note-narrow/note-axis 两类）",
+      "ok": true,
+      "detail": {
+        "gateViolationPages": 48,
+        "gateNarrowPages": 48,
+        "extra": []
+      }
+    },
+    {
+      "id": "note-census-equal",
+      "what": "页面数 / 有说明的页面 / 说明条数 / 溢出页数 对账",
+      "ok": true,
+      "detail": {
+        "mine": {
+          "pages": 186,
+          "pagesWithNotes": 105,
+          "notes": 401,
+          "overflow": 0
+        },
+        "gate": {
+          "pages": 186,
+          "pagesWithNotes": 105,
+          "notes": 401,
+          "overflow": 0
+        }
+      }
+    },
+    {
+      "id": "note-keys-bidirectional",
+      "what": "401 条说明的键两边一一对应（无单边缺失）",
+      "ok": true,
+      "detail": {
+        "missingInMine": [],
+        "missingInGate": []
+      }
+    },
+    {
+      "id": "textWidth-per-note-equal",
+      "what": "逐条「有字区域宽」同值（|Δ| ≤ 1px）",
+      "ok": true,
+      "detail": {
+        "compared": 401,
+        "mismatches": 0,
+        "sample": []
+      }
+    },
+    {
+      "id": "narrow-pages-cross-check-with-truth",
+      "what": "§22c 页集合 === 真值文件里的 48 页（三方一致：探针 = §22c = T3 真值）",
+      "ok": true,
+      "detail": {
+        "gateRoutes": 48,
+        "pagesDerivedFromNoteKeys": 48
+      }
+    }
+  ],
+  "allOk": true,
+  "narrowRoutes": {
+    "mine": [
+      "category/",
+      "category/agent/",
+      "category/api/",
+      "category/audio/",
+      "category/chat/",
+      "category/image/",
+      "changes/",
+      "developer/",
+      "feeds/",
+      "free-api/",
+      "need/ai-coding/",
+      "need/china-usable/",
+      "need/dev-credits/",
+      "need/edu-identity/",
+      "need/free-api/",
+      "need/free-model/",
+      "need/free-tier/",
+      "need/free-tokens/",
+      "need/no-card/",
+      "need/student-only/",
+      "status/",
+      "student/",
+      "vendor/",
+      "vendor/ai360/",
+      "vendor/aliyun/",
+      "vendor/anthropic/",
+      "vendor/aws/",
+      "vendor/baichuan/",
+      "vendor/baidu-ai-cloud/",
+      "vendor/coze/",
+      "vendor/cursor/",
+      "vendor/deepseek/",
+      "vendor/github/",
+      "vendor/google/",
+      "vendor/iflytek/",
+      "vendor/microsoft/",
+      "vendor/minimax/",
+      "vendor/moonshot/",
+      "vendor/notion/",
+      "vendor/openai/",
+      "vendor/replit/",
+      "vendor/sensetime/",
+      "vendor/siliconflow/",
+      "vendor/stepfun/",
+      "vendor/tencent-cloud/",
+      "vendor/volcengine/",
+      "vendor/windsurf/",
+      "vendor/zhipu/"
+    ],
+    "gate": [
+      "category/",
+      "category/agent/",
+      "category/api/",
+      "category/audio/",
+      "category/chat/",
+      "category/image/",
+      "changes/",
+      "developer/",
+      "feeds/",
+      "free-api/",
+      "need/ai-coding/",
+      "need/china-usable/",
+      "need/dev-credits/",
+      "need/edu-identity/",
+      "need/free-api/",
+      "need/free-model/",
+      "need/free-tier/",
+      "need/free-tokens/",
+      "need/no-card/",
+      "need/student-only/",
+      "status/",
+      "student/",
+      "vendor/",
+      "vendor/ai360/",
+      "vendor/aliyun/",
+      "vendor/anthropic/",
+      "vendor/aws/",
+      "vendor/baichuan/",
+      "vendor/baidu-ai-cloud/",
+      "vendor/coze/",
+      "vendor/cursor/",
+      "vendor/deepseek/",
+      "vendor/github/",
+      "vendor/google/",
+      "vendor/iflytek/",
+      "vendor/microsoft/",
+      "vendor/minimax/",
+      "vendor/moonshot/",
+      "vendor/notion/",
+      "vendor/openai/",
+      "vendor/replit/",
+      "vendor/sensetime/",
+      "vendor/siliconflow/",
+      "vendor/stepfun/",
+      "vendor/tencent-cloud/",
+      "vendor/volcengine/",
+      "vendor/windsurf/",
+      "vendor/zhipu/"
+    ]
+  }
+}

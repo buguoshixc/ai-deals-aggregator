@@ -1,0 +1,4 @@
+﻿verify5 (assertLayoutDeclarations): EXIT=0
+kinds 18 layouts ok
+verify6 (build-local .snote cleared): EXIT=0
+build-local .snote 规则已清零

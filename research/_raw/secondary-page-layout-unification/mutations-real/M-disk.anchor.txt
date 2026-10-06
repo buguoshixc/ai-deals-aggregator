@@ -1,0 +1,2 @@
+  /* 只用首页已有的设计变量。列表式（不是宽表）：订阅地址很长，窄屏上不能产生横向滚动。 */
+  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }

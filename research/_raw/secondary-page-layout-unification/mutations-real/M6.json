@@ -1,0 +1,74 @@
+{
+  "label": "real-dist",
+  "id": "M6",
+  "route": "student/",
+  "viewport": 390,
+  "what": "拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串",
+  "mutationKind": "replace（逐字替换）",
+  "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+  "injectedRule": null,
+  "selector": null,
+  "injectedTokenLength": 200,
+  "expect": "page-overflow@390",
+  "observed": [
+    "note-clipped",
+    "page-overflow@390"
+  ],
+  "hit": true,
+  "narrowKeys": [
+    "无"
+  ],
+  "matchedKeys": null,
+  "narrowNoteRows": [],
+  "anchorUniqueness": {
+    "fromVerifySite": 1,
+    "fromDiskStatic": 1,
+    "fromDiskWholeFile": 1,
+    "guardPassed": true,
+    "guardDetail": "锚点出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串",
+    "disk": {
+      "file": "dist/student/index.html",
+      "occurrencesInStyles": 1,
+      "occurrencesInFile": 1
+    },
+    "domInjectionGuard": null,
+    "mainSnoteCountOnDisk": 3
+  },
+  "geometry": {
+    "noteCount": 3,
+    "noteWidthLegacy": null,
+    "firstNoteBoxWidth": 358,
+    "firstNoteTextWidth": 358,
+    "columnWidthLegacy": null,
+    "detailMainCount": 0,
+    "scrollWidth": 1118,
+    "viewport": 390,
+    "injectedAt": "note",
+    "narrowKeys": [
+      "无"
+    ]
+  },
+  "productSha256": {
+    "before": null,
+    "after": null,
+    "equal": true
+  },
+  "productFile": "dist/student/index.html",
+  "checks": [
+    {
+      "name": "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "ok": true,
+      "detail": "锚点出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串"
+    },
+    {
+      "name": "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+      "ok": true,
+      "detail": "期望 page-overflow@390 · 实测 [note-clipped, page-overflow@390] · 说明 3 条 · 首条 盒 358px / 有字区域 358px · detail-main 0 个 · scrollWidth 1118（视口 390） · 不可断串注入位置 note · 窄条 [无] · 违规码 [note-clipped, page-overflow@390]"
+    }
+  ],
+  "keyChecks": [],
+  "source": {
+    "report": "research/_raw/secondary-page-layout-unification/geometry/after-verify.json",
+    "mutations": "research/_raw/secondary-page-layout-unification/geometry/mutations.json"
+  }
+}

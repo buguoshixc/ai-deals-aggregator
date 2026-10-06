@@ -1,0 +1,7 @@
+# API-plans reproducibility (curated → api-plans.json, byte-compare)
+# $ node scripts/tools/check-api-plans-reproducible.js
+# runAt 2026-10-06T15:42:15.082Z · verify-site.js sha256 2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e
+
+✅ api-plans.json 可重建性通过：与 curated_api_plans.json 的产出逐字节一致
+   24 条 · 21 个平台 · 108 个模型计价条目 · 国内 16 / 国外 8 · updatedAt=2026-10-05T00:00:00+08:00
+   单位分布：per_1M_tokens 21 · per_1K_tokens 3

@@ -535,6 +535,64 @@ section('⑦′ 详情页的相对引用：每条都必须解析到真实目标�
 }
 
 /* ================================================================== */
+section('⑦″ 布局族：档案详情走统一内容列（今天无生产实例 ⇒ 替代性设计约束）');
+/* ================================================================== */
+//
+// ⚠️ **这一节是替代性设计约束**：三份日志的 ended / restored 事件各 0 条 ⇒
+// `/archive/<kind>/<id>/` 今天**0 个生产实例**，磁盘上没有任何一页可以拿去量宽度。
+// 但"今天跑不到"不等于"哪天跑起来也不会错"—— 一个从未被构建照到的渲染分支，
+// 恰恰是最容易在它第一次跑起来的那天露出未验证布局的地方（同一条教训见 §⑦′ 的
+// 写死前缀 `'../../'`：24/27 条死链就是这么长期没被发现的）。
+//
+// 所以判据换成三件**离线可核对**的替代物，一件都不靠"将来跑一次看看"：
+//   ① 常量值：`archiveLib.ARCHIVE_ENTRY_MAIN_CLASS === 'detail-main'`
+//      —— 而 `detail-main` 就是 `index.html` 共享 <style> 里那条 1120px 居中内容列；
+//   ② 构建期接线：`build-local.js` 的档案详情调用点**确实**把它当 `mainClass` 传下去
+//      —— 常量对了但没人用，等于没有；
+//   ③ 断言真的会响：整页缺 <main> / 有多个 <main> / <main> 不带内容列，各构造一次，
+//      `assertPageHonesty()` 必须变红；正确的整页必须零问题（断言不是恒红）。
+
+{
+  check('档案详情的内容列常量就是 detail-main（与 /deal/<id>/、/models/<slug>/ 同一列）',
+    archiveLib.ARCHIVE_ENTRY_MAIN_CLASS === 'detail-main',
+    `实际：${JSON.stringify(archiveLib.ARCHIVE_ENTRY_MAIN_CLASS)}`);
+
+  // ② 构建期接线（替代性设计约束的**主判据**：没有实例，就只能查接线）
+  const buildSource = fs.readFileSync(path.join(ROOT, 'scripts', 'tools', 'build-local.js'), 'utf8');
+  const routeAt = buildSource.indexOf('const route = archiveLib.archiveEntryRoute(entry);');
+  const callSite = routeAt === -1 ? '' : buildSource.slice(routeAt, routeAt + 2500);
+  const callSiteHasShell = /renderModelsShell\(\{/.test(callSite);
+  const wiredToConstant = /mainClass:\s*archiveLib\.ARCHIVE_ENTRY_MAIN_CLASS\b/.test(callSite);
+  check('【设计约束 · 今天无生产实例，这是替代性设计约束】档案详情的 renderModelsShell 调用点' +
+    '（route 来自 archiveLib.archiveEntryRoute(entry)）真的把 ARCHIVE_ENTRY_MAIN_CLASS 当 mainClass 传下去',
+    routeAt !== -1 && callSiteHasShell && wiredToConstant,
+    routeAt === -1
+      ? '找不到档案详情的渲染调用点（archiveEntryRoute(entry) 那一行）'
+      : `调用点在，renderModelsShell=${callSiteHasShell}，mainClass 接线=${wiredToConstant}`);
+
+  // ③ 断言会响：整页形态（构建期喂给 assertPageHonesty 的正是整页）
+  const entry = synthetic.entries.find(item => item.id === 'aaaaaaaaaaa1');
+  const entryBody = archiveLib.renderArchiveEntry(entry, { prefix: archiveLib.archiveEntryPrefix(entry) });
+  const wrap = main => `<!DOCTYPE html>\n<html lang="zh-CN">\n<body>\n<div class="wrap">\n${main}\n</div>\n</body>\n</html>`;
+  const pageWithMain = cls => wrap(`<main id="main"${cls ? ` class="${cls}"` : ''}>\n${entryBody}\n</main>`);
+  const layoutProblemsOf = html => archiveLib.assertPageHonesty(html, { kind: 'archive-entry', entry })
+    .filter(problem => problem.includes('main'));
+  const goodPage = layoutProblemsOf(pageWithMain(archiveLib.ARCHIVE_ENTRY_MAIN_CLASS));
+  check('整页带 detail-main 内容列 → 零布局问题（断言不是恒红）',
+    goodPage.length === 0, goodPage.slice(0, 2).join('；'));
+  check('【牙】整页的 <main> 不带内容列 → 变红（裸 `<main id="main">` 不算接线）',
+    layoutProblemsOf(pageWithMain('')).some(problem => problem.includes('detail-main')));
+  check('【牙】整页一个 <main> 都没有 → 变红（不是"片段所以放过"）',
+    layoutProblemsOf(wrap(entryBody)).some(problem => problem.includes('main')));
+  check('【牙】整页出现两个 <main> → 变红（"恰好 1 个"里的那个"恰好"）',
+    layoutProblemsOf(wrap(`<main id="main" class="${archiveLib.ARCHIVE_ENTRY_MAIN_CLASS}"></main>`
+      + `<main class="${archiveLib.ARCHIVE_ENTRY_MAIN_CLASS}">${entryBody}</main>`))
+      .some(problem => problem.includes('2 个')));
+  check('正文片段（renderArchiveEntry 的返回值，单测⑦喂的就是它）不被误判成"整页缺 <main>"',
+    layoutProblemsOf(`<section>${entryBody}</section>`).length === 0);
+}
+
+/* ================================================================== */
 section('⑧ 详情页门槛与 sitemap 资格（题面 §4 / §F4）');
 /* ================================================================== */
 

@@ -1,0 +1,252 @@
+﻿diff --git "a/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification/research/_raw/secondary-page-layout-unification/teeth/_backup/verify-site.pre-t24.bak" "b/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification/scripts/tools/verify-site.js"
+index c789989..d04cf13 100644
+--- "a/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification/research/_raw/secondary-page-layout-unification/teeth/_backup/verify-site.pre-t24.bak"	
++++ "b/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification/scripts/tools/verify-site.js"	
+@@ -6187,7 +6187,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+   //
+   // 违规码全部由 wideProblems() 一处产出：
+   //   unclassified-layout / unexpected-detail-main / missing-detail-main / note-narrow /
+-  //   note-ink-narrow / note-axis / note-clipped / note-hidden-text / page-overflow@<vw> / data-region-missing
++  //   note-ink-narrow / note-axis / note-clipped / note-hidden-text / note-unrendered /
++  //   page-overflow@<vw> / data-region-missing
++  //   （note-unrendered 是 t24 新增：盒高被压成 0 ⇒ ①②③ 同时静默的那一类，闭合 T22-F1）
+ 
+   const WIDE_TOL = 1;                        // 亚像素取整容差（px）
+   const WIDE_AXIS_RATIO = 0.05;              // 轴的比例容差：max(1px, 5% × min(主数据区宽, 页面列宽))
+@@ -6214,7 +6216,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+   /** §22c 的全部违规码（判据自检用：一个都不能少、也不能多）。 */
+   const WIDE_CODE_VOCABULARY = [
+     'unclassified-layout', 'unexpected-detail-main', 'missing-detail-main', 'note-narrow', 'note-ink-narrow',
+-    'note-axis', 'note-clipped', 'note-hidden-text', 'page-overflow@<vw>', 'data-region-missing'
++    'note-axis', 'note-clipped', 'note-hidden-text', 'note-unrendered', 'page-overflow@<vw>', 'data-region-missing'
+   ];
+ 
+   const wideRound = n => Math.round(n * 100) / 100;
+@@ -6383,6 +6385,22 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         walk(el);
+         return out.replace(/\\s+/g, ' ').trim();
+       };
++      /**
++       * 同一口径但**不排除** <noscript>（t24 / 闭合 T22-F1）：用来区分两种「未渲染」——
++       *   · 文字全在 <noscript> 里（可见文本 0、原始文本非空）⇒ 脚本开启时本来就不该画，合法；
++       *   · 可见文本非空却没有字形盒 ⇒ 有人把正文藏了（裸 font-size:0 会把盒高压成 0）。
++       */
++      const rawTextOf = el => {
++        let out = '';
++        const walk = node => {
++          for (const child of node.childNodes) {
++            if (child.nodeType === 3) out += child.textContent;
++            else if (child.nodeType === 1) walk(child);
++          }
++        };
++        walk(el);
++        return out.replace(/\\s+/g, ' ').trim();
++      };
+       /**
+        * 逐行归并：rect 按 top 排序，落进「垂直重叠 > 两者较矮高度 50%」的已有行，否则新开一行。
+        * 行 = 一条排版行（横排时），逐行字迹宽就是这个元素**实际排版出来的**结果。
+@@ -6465,6 +6483,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           const glyphRects = glyphRectsOf(el);
+           const lines = mergeLines(glyphRects);
+           const visibleText = visibleTextOf(el);
++          // t24 / T22-F1：原始文本（不排除 <noscript>）用来判定「文字是不是全在 <noscript> 里」
++          const rawText = rawTextOf(el);
+           const writingMode = cs.writingMode || 'horizontal-tb';
+           return {
+             index: index,
+@@ -6474,6 +6494,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+               : null,
+             text: visibleText.slice(0, 32),
+             textLength: visibleText.length,
++            // t24 / T22-F1：未渲染的两种来源要分开 —— 原始文本（含 <noscript>）长度、是否含 <noscript> 子树。
++            rawTextLength: rawText.length,
++            noscriptSubtree: Boolean(el.querySelector('noscript')),
+             box: noteBox,
+             // 已渲染 = border-box 有宽有高。【noscript】说明整块高度为 0 ⇒ 未渲染，不判窄柱/藏字。
+             rendered: noteBox.width > 0 && noteBox.height > 0,
+@@ -6615,6 +6638,21 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           push('note-hidden-text', `${where} 文本 ${note.textLength} 字但**零可见字形盒**（getClientRects 为空）`
+             + ` —— 正文可能被 font-size:0 / ::before{content} / display:none 之类的写法接管：${facts}`, note.index, 'no-glyph');
+         }
++        // ④ 未渲染说明（t24 / 闭合 T22-F1）：**盒高被压成 0** 的形态（裸 `.snote { font-size: 0 }`、
++        //    `display: none` 之类）会让 ①②③ 同时静默 —— 因为它们都要求「已渲染」或「有字形盒」。
++        //    判定只用三种**非像素**量：render 状态（盒有宽有高）· 可见文本长度（探针不采集 <noscript>）·
++        //    字形盒个数（Range.getClientRects 里宽高都 > 0 的）。
++        //      !rendered && textLength > 0 && glyphRects === 0  ⇒ 有正文、却一个字形都不画、盒子也没有
++        //    <noscript> 那条是**真·未渲染**（脚本开启时本就不该画），用两条独立信号排除：
++        //      · 它的可见文本长度是 0（plans/coding/#1 实测 textLength 0 / rawTextLength 41）；
++        //      · 它含 <noscript> 子树（noscriptSubtree=true）。
++        //    `display: contents`（说明不生成盒子但正文由父级正常排版）不在此列：它的字形盒 > 0。
++        if (!note.rendered && note.textLength > 0 && note.glyphRects === 0 && !note.noscriptSubtree) {
++          push('note-unrendered', `${where} 说明未渲染（盒 ${wideRound(note.box.width)}×${wideRound(note.box.height)}px）`
++            + `却有 ${note.textLength} 字可见正文、零可见字形盒（原始文本 ${note.rawTextLength} 字 · 含 <noscript> ${note.noscriptSubtree}）`
++            + ` —— 盒高被压成 0 会让窄柱 / 逐行字迹 / 藏字三条判据全部静默（如裸 font-size:0、display:none）：${facts}`,
++          note.index, 'unrendered');
++        }
+         const aligned = anchors.filter(anchor => Math.abs(note.box.left - anchor.box.left) <= axisTol
+           && Math.abs(note.box.right - anchor.box.right) <= axisTol);
+         // 同轴 / 裁切都是**盒量**：无盒形态（display:contents / 未渲染）不判 —— 0..0 的盒子
+@@ -6824,6 +6862,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+               lines: note.lines,
+               glyphRects: note.glyphRects,
+               textLength: note.textLength,
++              // t24 / T22-F1：条级容器里也要带上这两个量，否则「<noscript> 之外的未渲染说明必须为 0」
++              // 这条上界断言会把合法的 <noscript> 条也算进来（row.noscriptSubtree === undefined ⇒ 误判）。
++              rawTextLength: note.rawTextLength,
++              noscriptSubtree: note.noscriptSubtree,
+               inkWidth: note.ink ? note.ink.width : null,
+               inkRects: note.ink ? note.ink.rects : 0,
+               inkLongestLine: note.ink ? note.ink.longestLine : null,
+@@ -6862,6 +6904,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           unionKeys: union.map(row => wideNoteKey(row.route, row.index)),
+           unionRoutes: [...new Set(union.map(row => row.route))],
+           hiddenText: hit('note-hidden-text'),
++          // t24 / T22-F1：未渲染说明分两类 —— <noscript> 那类（合法，脚本开启时本就不渲染）
++          // 与「有正文却零字形盒」那类（note-unrendered，必须为 0）。
++          unrenderedText: hit('note-unrendered'),
++          unrenderedNoscript: rows.filter(row => row.unrendered && row.noscriptSubtree).length,
++          unrenderedUnexplained: rows.filter(row => row.unrendered && !row.noscriptSubtree).length,
+           axis: hit('note-axis'),
+           clipped: hit('note-clipped'),
+           textFallback: rows.filter(row => row.textFallback).length,
+@@ -6933,10 +6980,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+       // ---- ③ / ④ 两个桌面档：**逐条**判全部说明（旧口径 textWidth + 新口径逐行字迹 + 藏字）----
+       for (const width of WIDE_DESKTOP_VIEWPORTS) {
+         const summary = wideSummary[width];
+-        const bad = [...summary.union, ...summary.hiddenText, ...summary.axis, ...summary.clipped];
++        const bad = [...summary.union, ...summary.hiddenText, ...summary.unrenderedText, ...summary.axis, ...summary.clipped];
+         check(`§22c @${width} 逐条页面级说明：旧口径（内容盒 ≥ ${WIDE_NOTE_RATIO}×列宽）+ 新口径（逐行字迹 ≥ ${WIDE_NOTE_RATIO}×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切`,
+           bad.length === 0,
+-          `全站 ${wideMeta.length} 页 / 逐条判 ${summary.rows} 条（有说明的页 ${wideNotePages.length} · 零说明的页 ${wideNoNotePages.length} 标注跳过 · 未渲染 ${summary.unrendered} 条）`
++          `全站 ${wideMeta.length} 页 / 逐条判 ${summary.rows} 条（有说明的页 ${wideNotePages.length} · 零说明的页 ${wideNoNotePages.length} 标注跳过 · 未渲染 ${summary.unrendered} 条：<noscript> ${summary.unrenderedNoscript} + note-unrendered ${summary.unrenderedText.length}）`
+           + ` · note-narrow ${summary.narrow.length}（落在 ${summary.narrowRoutes.length} 页） · note-ink-narrow ${summary.inkNarrow.length}（${summary.inkNarrowRoutes.length} 页）`
+           + ` · 并集 ${summary.union.length} 条 / ${summary.unionRoutes.length} 页 · 藏字 ${summary.hiddenText.length} · 不同轴 ${summary.axis.length} · 裁切 ${summary.clipped.length}`
+           + ` · 多行说明（有行证据）${summary.lineEvidence} 条 · 竖排 ${summary.vertical} 条 · textFallback 回落 ${summary.textFallback} 条`
+@@ -6947,6 +6994,30 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+             : `documentElement.scrollWidth ≤ 视口+${WIDE_TOL} 全部成立`);
+       }
+ 
++      // ---- ④b 未渲染说明：上界断言（t24 / 闭合 T22-F1）----
++      //   `unrenderedNotes` 从 t14 起就有，但**没有任何断言引用它** ⇒ 「裸 font-size:0 把盒高压成 0、
++      //   让 ①②③ 同时静默」这一整类只统计、不判红。这里把它接到断言上：
++      //     · 上界：<noscript> 之外的未渲染说明必须恰好 0 条（多一条就红）；
++      //     · 一致性：metric 与 `note-unrendered` 判据必须对得上（删了判据这条也会红）。
++      {
++        const wideUnrenderedRows = wideNoteRows1440.filter(row => row.unrendered);
++        const wideNoscriptRows = wideUnrenderedRows.filter(row => row.noscriptSubtree);
++        const wideUnrenderedCodeRows = wideNoteRows1440.filter(row => row.codes.includes('note-unrendered'));
++        const wideUnexplainedRows = wideUnrenderedRows.filter(row => !row.noscriptSubtree);
++        const wideAt1600 = wideSummary[WIDE_WIDE];
++        check('§22c 未渲染说明：上界断言 —— <noscript> 之外不许有未渲染说明，且 unrenderedNotes 与 note-unrendered 判据一致',
++          wideUnexplainedRows.length === 0
++          && wideSummary[WIDE_DESKTOP].unrendered === wideUnrenderedRows.length
++          && wideSummary[WIDE_DESKTOP].unrendered === wideSummary[WIDE_DESKTOP].unrenderedNoscript + wideUnrenderedCodeRows.length
++          && wideAt1600.unrendered === wideAt1600.unrenderedNoscript + wideAt1600.unrenderedUnexplained
++          && wideAt1600.unrenderedUnexplained === wideAt1600.unrenderedText.length,
++          `@${WIDE_DESKTOP} 未渲染 ${wideSummary[WIDE_DESKTOP].unrendered} 条 = <noscript> ${wideNoscriptRows.length} 条`
++          + `${wideNoscriptRows.length ? ` [${wideNoscriptRows.map(row => wideNoteKey(row.route, row.index)).join(', ')}]` : ''}`
++          + ` + note-unrendered ${wideUnrenderedCodeRows.length} 条 · 其它未渲染 ${wideUnexplainedRows.length} 条`
++          + ` · @${WIDE_WIDE} 未渲染 ${wideAt1600.unrendered} 条（<noscript> ${wideAt1600.unrenderedNoscript} · note-unrendered ${wideAt1600.unrenderedText.length}）`
++          + (wideUnexplainedRows.length ? ` · 违规条：${wideUnexplainedRows.map(row => wideNoteKey(row.route, row.index)).join(' ')}` : ''));
++      }
++
+       // ---- ⑤ @390：全站只量 documentElement.scrollWidth ----
+       check(`§22c @${WIDE_NARROW} 全站 ${wideRoutes.length} 页 documentElement.scrollWidth ≤ 视口+${WIDE_TOL}`,
+         wideOverflow390.length === 0,
+@@ -7074,7 +7145,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           rule: '.snote { font-size: 0; } .snote::before { content: "§22c-M12 伪元素承载正文（真实文本已不可见）";'
+             + ' display: block; max-width: 70ch; font-size: var(--fs-sm); line-height: 1.7; }',
+           what: 't8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画'
+-            + ' —— 盒宽/行数一切正常，只有字形盒能看穿' }
++            + ' —— 盒宽/行数一切正常，只有字形盒能看穿' },
++        // ---- t24（修复轮 5）新增：把盒高压成 0 的那一类（T22-F1）----
++        { id: 'M13', route: 'docs/data/', width: WIDE_DESKTOP, expect: 'note-unrendered', target: 'extend', expectUnrendered: true,
++          rule: '.snote { font-size: 0; }',
++          what: 'T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，'
++            + '修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住' }
+       );
+ 
+       metrics.layoutMutationCodes = {};
+@@ -7113,10 +7189,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+               .map(problem => wideNoteKey(mutation.route, problem.index));
+             const hiddenTextKeys = problems.filter(problem => problem.code === 'note-hidden-text')
+               .map(problem => wideNoteKey(mutation.route, problem.index));
++            const unrenderedKeys = problems.filter(problem => problem.code === 'note-unrendered')
++              .map(problem => wideNoteKey(mutation.route, problem.index));
+             if (mutation.selector) matchedKeys = await wideMatchedNoteKeys(target, mutation.selector, mutation.route);
+             metrics.layoutMutationCodes[mutation.id] = codes;
+             wideMutationHits.set(mutation.id, codes.includes(mutation.expect));
+-            wideMutationExtra.set(mutation.id, { narrowKeys, inkNarrowKeys, hiddenTextKeys, matchedKeys });
++            wideMutationExtra.set(mutation.id, { narrowKeys, inkNarrowKeys, hiddenTextKeys, unrenderedKeys, matchedKeys });
+             const first = geometry.notes.length ? geometry.notes[0] : null;
+             detail = `说明 ${geometry.noteCount} 条 · 首条 盒 ${first ? wideRound(first.box.width) : 0}px / 有字区域 ${first ? first.textWidth : 0}px`
+               + ` · detail-main ${geometry.detailMainCount} 个 · scrollWidth ${geometry.doc.scrollWidth}（视口 ${geometry.doc.clientWidth}）`
+@@ -7183,6 +7261,22 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+                 + ` · 行 ${first.lineCount} 行 · note-hidden-text 命中 [${hiddenKeys.join(', ') || '无'}] · note-ink-narrow ${codes.includes('note-ink-narrow') ? '有（不该有）' : '无'}`
+               : '页面没量到');
+         }
++        // M13：未渲染形态的承重证明（t24 / T22-F1）—— 盒高被压成 0 的条**全部**由 note-unrendered 咬中，
++        //      且窄柱 / 逐行字迹 / 藏字三条判据在它们身上确实一条都不出（这正是修复前的假绿形状）。
++        if (mutation.expectUnrendered) {
++          const unrenderedRows = geometry ? geometry.notes.filter(note => !note.rendered) : [];
++          const oldCodes = codes.filter(code => /^note-(narrow|ink-narrow|hidden-text)$/.test(code));
++          const unrenderedKeys = (wideMutationExtra.get(mutation.id) || {}).unrenderedKeys || [];
++          check(`§22c ${mutation.id} 承重证明：盒高被压成 0 的条**全部**由 note-unrendered 咬中，且窄柱/字迹/藏字三条判据在它们身上确实看不见`,
++            unrenderedRows.length > 0 && oldCodes.length === 0
++            && unrenderedKeys.length === unrenderedRows.length
++            && unrenderedRows.every(note => note.textLength > 0 && note.glyphRects === 0 && !note.noscriptSubtree),
++            `未渲染条 ${unrenderedRows.length} 条 [${unrenderedRows.map(note => '#' + note.index).join(', ')}]`
++            + ` · 它们的 textLength [${unrenderedRows.map(note => note.textLength).join(', ')}]`
++            + ` · glyphRects [${unrenderedRows.map(note => note.glyphRects).join(', ')}]`
++            + ` · note-unrendered 命中 [${unrenderedKeys.join(', ') || '无'}]`
++            + ` · 窄柱/字迹/藏字码 [${oldCodes.join(', ') || '无（这正是修复前的假绿形状）'}]`);
++        }
+       }
+ 
+       // ---- M6 正对照：同样的 200 字符不可断串、CSS 一个字节都不动 ⇒ 必须不溢出 ----
+@@ -7250,6 +7344,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+       {
+         const note0 = {
+           index: 0, depth: 1, parent: 'main', text: 'synthetic', textLength: 40,
++          rawTextLength: 40, noscriptSubtree: false,
+           box: { count: 1, left: 0, right: 1380, width: 1380, scrollW: 1380, clientW: 1380, padLeft: 0, padRight: 0 },
+           contentBox: 1380, textWidth: 1380, textFallback: false, bearingCount: 1,
+           rendered: true, vertical: false, writingMode: 'horizontal-tb',
+@@ -7280,6 +7375,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         collect(wideProblems(Object.assign({}, g0, {
+           notes: [Object.assign({}, note0, { glyphRects: 0, lineCount: 0, widestLine: 0, lines: [], ink: null }), note1]
+         }), metaWide));
++        // ④ 未渲染说明（t24 / T22-F1）：盒高被压成 0、可见正文非空、非 <noscript> ⇒ note-unrendered
++        collect(wideProblems(Object.assign({}, g0, {
++          notes: [Object.assign({}, note0, {
++            rendered: false, textLength: 40, rawTextLength: 40, noscriptSubtree: false,
++            glyphRects: 0, lineCount: 0, widestLine: 0, lines: [], ink: null,
++            box: Object.assign({}, note0.box, { width: 0, height: 0 })
++          }), note1]
++        }), metaWide));
+         collect(wideProblems(Object.assign({}, g0, { detailMainCount: 1 }), metaWide));                                   // unexpected-detail-main
+         collect(wideProblems(Object.assign({}, g0, { detailMainCount: 0, noteCount: 0, notes: [] }),
+           { route: 'synthetic-deal/', kind: 'deal', family: 'detail' }));                                                 // missing-detail-main
+@@ -7376,6 +7479,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           };
+         }),
+         inkScopeSampleViewports: wideSampleScope,
++        // t24 / T22-F1：未渲染说明的三个计数 —— unrenderedNotes（既有 metric，现在**有断言引用**）·
++        // unrenderedNoscriptNotes（<noscript> 那类，合法）· unrenderedTextNotes（note-unrendered 命中，必须 0）
++        unrenderedNoscriptNotes: wideSummary[WIDE_DESKTOP].unrenderedNoscript,
++        unrenderedTextNotes: wideSummary[WIDE_DESKTOP].unrenderedText.length,
++        unrenderedUnexplainedNotes: wideSummary[WIDE_DESKTOP].unrenderedUnexplained,
++        unrenderedNoscriptNotesAt1600: wideSummary[WIDE_WIDE].unrenderedNoscript,
++        unrenderedTextNotesAt1600: wideSummary[WIDE_WIDE].unrenderedText.length,
+         // t14 新增：逐行字迹码与藏字码各自计数，另给「旧 ∪ 新」的并集（覆盖面的唯一口径）
+         inkNarrowNotes: wideSummary[WIDE_DESKTOP].inkNarrow.length,
+         inkNarrowNotePages: wideSummary[WIDE_DESKTOP].inkNarrowRoutes.length,
+@@ -7437,6 +7547,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+             noteNarrow: `textWidth >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（旧口径，t7 的 textWidth = 承载文本的块级元素里最窄的 content box；一字未改）`,
+             noteInkNarrow: `lineCount >= 2 且 widestLine >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（新口径，t14：逐行字迹按垂直重叠归并；竖排不判。t19/R3-1 起适用性 = **物理前置条件**：min(主数据区宽, 页面列宽) > 现场换算的 70ch ⇒ 1440/1600/760 判、360 不判）`,
+             noteHiddenText: '文本非空且已渲染（border-box 有宽有高）但零可见字形盒（Range.getClientRects 为空）',
++            noteUnrendered: '未渲染（border-box 宽或高为 0）但可见文本非空、零可见字形盒、且不在 <noscript> 子树里'
++              + '（t24/闭合 T22-F1：盒高被压成 0 会让窄柱/逐行字迹/藏字三条判据同时静默；判定只用盒量/render 状态/字形盒）',
+             coverage: '并集 = ① 156 条（盒宽全 452.81；其中 48 条单行、只有 ① 看得见）∪ ② 108 条多行（② ⊆ ①）= 156 条。'
+               + '⚠️ truth-401 的 caughtByOldCriteria(48) 是 make-truth-401.cjs:56 的 `index === 0` 按序切分（实测全为多行），'
+               + '与「48 条单行」不是同一批 —— 两处 48 别混用（t19/R3-2 订正）',

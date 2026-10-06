@@ -1,0 +1,46 @@
+source: research/_raw/secondary-page-layout-unification/t21/geometry/after-verify.json  (reportTotal=848 reportFailed=0)
+label=t21-dist · dir=dist · 标的 sha 记录处 verifySiteSha256=
+
+| id | route | vw | 期望 | 实测（去重） | 命中 | 逐条键 | anchor(门禁/磁盘) | 注入串保留 sha |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| M1 | student/ | 1440 | note-narrow | note-narrow, note-ink-narrow, note-axis | true | student/#0 student/#1 student/#2 | 1/1 | true |
+| M2 | status/ | 1440 | note-narrow | note-narrow, note-ink-narrow, note-axis | true | status/#0 status/#1 | 1/1 | true |
+| M3 | changes/ | 1440 | note-narrow | note-narrow, note-ink-narrow, note-axis | true | changes/#0 changes/#1 changes/#2 changes/#3 changes/#4 changes/#5 changes/#6 changes/#7 changes/#8 changes/#9 changes/#10 changes/#11 changes/#12 | 1/1 | true |
+| M4 | feeds/ | 1440 | note-narrow | note-narrow, note-ink-narrow, note-axis | true | feeds/#0 feeds/#1 feeds/#2 feeds/#3 feeds/#4 feeds/#5 feeds/#6 feeds/#7 | 1/1 | true |
+| M6 | student/ | 390 | page-overflow@390 | note-clipped, page-overflow@390 | true | 无 | 1/1 | true |
+| M7 | status/ | 1440 | unexpected-detail-main | unexpected-detail-main | true | 无 | null/null | true |
+| M8 | student/ | 1440 | note-narrow | note-narrow, note-ink-narrow | true | student/#0 student/#1 student/#2 | 1/1 | true |
+| M9a | docs/data/ | 1440 | note-narrow | note-narrow, note-ink-narrow, note-axis | true | docs/data/#1 docs/data/#2 docs/data/#3 docs/data/#4 docs/data/#5 docs/data/#6 docs/data/#7 docs/data/#8 | 1/1 | true |
+| M9b | changes/ | 1440 | note-narrow | note-narrow, note-ink-narrow, note-axis | true | changes/#1 changes/#3 changes/#4 changes/#8 changes/#12 | 1/1 | true |
+| M10 | student/ | 1600 | note-narrow | note-narrow, note-ink-narrow, note-axis | true | student/#0 student/#1 student/#2 | 1/1 | true |
+| M11 | changes/ | 1440 | note-ink-narrow | note-ink-narrow | true | 无 | 1/1 | true |
+| M12 | student/ | 1440 | note-hidden-text | note-hidden-text | true | 无 | 1/1 | true |
+| M6-control | student/ | 390 | 不得出现 page-overflow@390 | （空） | true | （无） | undefined/undefined | null |
+
+对照组（不注入，M8/M9a/M9b/M10 的靶页在对应档位本来一条窄码都没有）：allClean=true
+  M8 student/ @1440 noteNarrow=0 codes=[]
+  M9a docs/data/ @1440 noteNarrow=0 codes=[]
+  M9b changes/ @1440 noteNarrow=0 codes=[]
+  M10 student/ @1600 noteNarrow=0 codes=[]
+
+M5 复用（§22b）：断言 41 项 / 失败 0 · hit=true · 码 {"M1":["center"],"M2":["width"],"M3":["axis","src-width"],"M4":["self-overflow@390","page-overflow@390"],"M5":["leaf-consistency","leaf-consistency"],"M4-control":[]}
+  §22b 期望 {"M1":"center","M2":"width","M3":"src-width","M4":"page-overflow@390","M5":"leaf-consistency","M4-control":"[]（空）"}
+
+零磁盘污染：303 文件逐一比对，changed=[] identical=true
+
+逐条 JSON（原始读数）：
+  M1: research/_raw/secondary-page-layout-unification/t21/mutations-real/M1.json
+  M2: research/_raw/secondary-page-layout-unification/t21/mutations-real/M2.json
+  M3: research/_raw/secondary-page-layout-unification/t21/mutations-real/M3.json
+  M4: research/_raw/secondary-page-layout-unification/t21/mutations-real/M4.json
+  M6: research/_raw/secondary-page-layout-unification/t21/mutations-real/M6.json
+  M7: research/_raw/secondary-page-layout-unification/t21/mutations-real/M7.json
+  M8: research/_raw/secondary-page-layout-unification/t21/mutations-real/M8.json
+  M9a: research/_raw/secondary-page-layout-unification/t21/mutations-real/M9a.json
+  M9b: research/_raw/secondary-page-layout-unification/t21/mutations-real/M9b.json
+  M10: research/_raw/secondary-page-layout-unification/t21/mutations-real/M10.json
+  M11: research/_raw/secondary-page-layout-unification/t21/mutations-real/M11.json
+  M12: research/_raw/secondary-page-layout-unification/t21/mutations-real/M12.json
+  M6-control: research/_raw/secondary-page-layout-unification/t21/mutations-real/M6-control.json
+  M5-reuse: research/_raw/secondary-page-layout-unification/t21/mutations-real/M5-reuse.json
+  no-injection-control: research/_raw/secondary-page-layout-unification/t21/mutations-real/no-injection-control.json

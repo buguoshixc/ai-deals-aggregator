@@ -1,0 +1,84 @@
+# M-disk 落盘级变异循环（secondary-page-layout-unification · t3）
+# 开始 2026-10-06T07:27:47.786Z
+# 工作目录 D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification
+# 驱动脚本 research/_raw/secondary-page-layout-unification/mutations-real/run-mdisk.cjs
+
+===== ① 前置状态（改动前） =====
+scripts/tools/build-local.js sha256 = 264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348（407799 字节）
+临时字节备份：C:\Users\星澈\AppData\Local\Temp\mdisk-build-local.pre-mutation.js · sha256 264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348（与前置相等：true）
+T1 的 diff（HEAD → 工作副本）：research/_raw/secondary-page-layout-unification/mutations-real/M-disk.build-local.t1.patch（7593 字节）
+git status --porcelain：
+   M index.html
+   M scripts/lib/archive.js
+   M scripts/lib/page-kinds.js
+   M scripts/tools/archive-selftest.js
+   M scripts/tools/build-local.js
+   M scripts/tools/seo-selftest.js
+   M scripts/tools/verify-site.js
+  ?? research/_raw/secondary-page-layout-unification/
+第 1 步真实构建的产物清单：research/_raw/secondary-page-layout-unification/build/dist-after-build1.sha256.txt
+
+===== ② 把 70ch 塞回 feeds 壳（唯一锚点插入，可逆） =====
+mdisk-edit --apply exit=0
+  apply ok · file=scripts/tools/build-local.js · anchor 出现 1 次
+    sha256 264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348 → 2a103855908ce6df6a4809d92418f9dc55bdca4a1f7d9436c8093fde6c6aabe7（字节 407799 → 407914）
+    插入内容：  .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: 70ch; }
+变异后 scripts/tools/build-local.js sha256 = 2a103855908ce6df6a4809d92418f9dc55bdca4a1f7d9436c8093fde6c6aabe7（407914 字节）
+文件里含 'max-width: 70ch' 的行数 = 1（改动前为 0）
+
+===== ③ 真实构建（带变异） =====
+node scripts/tools/build-local.js exit=0
+  ✅ 产物自检通过
+  
+  ✅ 构建完成 → dist/（自检全过，已从暂存目录就位）
+
+===== ④ 独立探针判红（geometry/wide-probe.cjs，不依赖 verify-site.js） =====
+wide-probe.cjs --dir=dist exit=1（期望 1 = 检出违规）
+全站扫描 186 页 · 违规页 1 · 违规码计数 {"note-narrow":1,"note-axis":1}
+样本违规 4 条
+  违规页 feeds/ [note-narrow, note-axis] 说明 452.81px / 主数据区 1380px（.flist）
+  样本 feeds/@760 [note-narrow, note-axis]
+  样本 feeds/@1024 [note-narrow, note-axis]
+  样本 feeds/@1280 [note-narrow, note-axis]
+  样本 feeds/@1440 [note-narrow, note-axis]
+dist/feeds/index.html：70ch 规则 1 处 · 冻结串 1 处
+
+===== ⑤ git checkout -- scripts/tools/build-local.js（字面执行） =====
+git checkout exit=0
+checkout 后 scripts/tools/build-local.js sha256 = 75170c7f0cb5af1a9b4ad5ac66176501172d563fea40cbc176d14b2cc000347b
+说明：本 worktree 的 HEAD = 1f225d2（基线），T1 的源码改动**尚未提交** ⇒ `git checkout --` 得到的是
+      **改动前**的版本（不是 T1 的工作副本）。因此下一步必须把 T1 的工作副本还原回来，
+      否则第 ⑧ 步会红（产物退回 70ch 状态）—— 这一点如实记录，不做"看起来恢复了"的假象。
+
+===== ⑥ 还原 T1 的工作副本（先 git apply，sha256 不符则回落字节备份） =====
+git apply research/_raw/secondary-page-layout-unification/mutations-real/M-disk.build-local.t1.patch exit=0 · 还原后 sha256 = 264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348
+还原方式：git apply（T1 的 diff） · sha256 与前置相等：true
+
+--- 可逆性自检（证明这次变异是一个可精确撤销的操作）---
+mdisk-edit --revert exit=2 · sha256 = 264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348（应等于前置 264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348：true）
+再次 --apply exit=0 · sha256 = 2a103855908ce6df6a4809d92418f9dc55bdca4a1f7d9436c8093fde6c6aabe7（应等于变异后的 2a103855908ce6df6a4809d92418f9dc55bdca4a1f7d9436c8093fde6c6aabe7：true）
+最终 --revert exit=0 · sha256 = 264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348（应等于前置 264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348：true）
+
+===== ⑦ 真实构建（恢复后） =====
+node scripts/tools/build-local.js exit=0
+  ✅ 产物自检通过
+  
+  ✅ 构建完成 → dist/（自检全过，已从暂存目录就位）
+
+===== ⑧ 独立探针判绿 =====
+wide-probe.cjs --dir=dist exit=0（期望 0 = 0 违规码）
+全站扫描 186 页 · 违规页 0 · 违规码计数 {}
+样本违规 0 条
+dist/feeds/index.html：70ch 规则 0 处（期望 0） · 冻结串 1 处
+
+===== ⑨ 恢复证明 =====
+scripts/tools/build-local.js sha256：前置 264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348
+                              恢复后 264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348
+                    sha256 前后相等：true
+git status --porcelain 与前置逐字节相等：true
+产物清单（第 1 步构建 vs 恢复后重建）逐字节相等：true
+  第 1 步：research/_raw/secondary-page-layout-unification/build/dist-after-build1.sha256.txt
+  恢复后：research/_raw/secondary-page-layout-unification/mutations-real/M-disk.dist-after-recovery.sha256.txt
+
+结论：✅ 红 → 恢复 → 绿，且恢复是字节级的（sha256 / git status / 产物清单三证）
+summary: research/_raw/secondary-page-layout-unification/mutations-real/M-disk.json

@@ -723,6 +723,15 @@
        宽度写在这里，页面上只加一个 class，别再往页面里塞第二套宽度规则。
        Header(.topin) 与 Footer 不在这条规则的作用域内，仍是 .wrap 的 1420px。 */
     .detail-main { width: min(1120px, 100%); margin-inline: auto; }
+    /* 页面级说明（Page-level Note）：与上一条 `.detail-main` 同一条纪律 —— **宽度只写在这里**。
+       为什么是 `max-width: none`：说明是**这一页的导语**，不是一篇独立文章。它属于数据型页面
+       （Wide Data Page，见 scripts/lib/page-kinds.js 的 LAYOUT_FAMILIES），
+       与表格 / 列表**同轴**、跟随站点数据容器（`.wrap`）；把它压成阅读列（12px 字体下约 420px，
+       而主数据区是 1380px）会让同一页的说明看起来像"另一页的内容"。
+       文档序上这份共享 <style> 先于各页面壳自己的局部 <style>，所以只要页面壳里不再复制第二份
+       `.snote` 规则，这里就是「一处定义、全站生效」。真需要收窄的阅读列页面，
+       请去 LAYOUT_FAMILIES 登记一个新族，而不是就地改宽度。 */
+    .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }
     .dpane {
       background: var(--card); border: 1px solid var(--line); border-radius: var(--r-dlg);
       padding: var(--s4) var(--s4) var(--s2); width: 100%; max-width: none;

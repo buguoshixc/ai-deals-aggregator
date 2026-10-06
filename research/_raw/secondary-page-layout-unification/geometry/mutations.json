@@ -1,0 +1,435 @@
+{
+  "target": "http://127.0.0.1:64112/",
+  "dir": "dist",
+  "generatedAt": "2026-10-06T08:33:52.370Z",
+  "frozenAnchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+  "criteria": {
+    "noteNarrow": "textWidth >= 0.85 * min(主数据区宽, 页面列宽)（textWidth = 承载文本的块级元素里最窄的 content box；Range 字迹只进报告）",
+    "noteAxis": "border-box 与主数据区或 <main> 任一同一轴，容差 max(1px, 0.05 * min(主数据区宽, 页面列宽))",
+    "scope": "<main> 内全部 .snote，逐条 route#index；零条说明的页面才跳过"
+  },
+  "rows": [
+    {
+      "id": "M1",
+      "route": "student/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "what": "把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄）",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "narrowKeys": [
+        "student/#0",
+        "student/#1",
+        "student/#2"
+      ],
+      "matchedKeys": null,
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "injectedRule": null,
+      "domInjection": false,
+      "injectedTokenLength": 0
+    },
+    {
+      "id": "M2",
+      "route": "status/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "what": "把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "narrowKeys": [
+        "status/#0",
+        "status/#1"
+      ],
+      "matchedKeys": null,
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "injectedRule": null,
+      "domInjection": false,
+      "injectedTokenLength": 0
+    },
+    {
+      "id": "M3",
+      "route": "changes/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "what": "把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "narrowKeys": [
+        "changes/#0",
+        "changes/#1",
+        "changes/#2",
+        "changes/#3",
+        "changes/#4",
+        "changes/#5",
+        "changes/#6",
+        "changes/#7",
+        "changes/#8",
+        "changes/#9",
+        "changes/#10",
+        "changes/#11",
+        "changes/#12"
+      ],
+      "matchedKeys": null,
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "injectedRule": null,
+      "domInjection": false,
+      "injectedTokenLength": 0
+    },
+    {
+      "id": "M4",
+      "route": "feeds/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "what": "把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "narrowKeys": [
+        "feeds/#0",
+        "feeds/#1",
+        "feeds/#2",
+        "feeds/#3",
+        "feeds/#4",
+        "feeds/#5",
+        "feeds/#6",
+        "feeds/#7"
+      ],
+      "matchedKeys": null,
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "injectedRule": null,
+      "domInjection": false,
+      "injectedTokenLength": 0
+    },
+    {
+      "id": "M6",
+      "route": "student/",
+      "width": 390,
+      "expect": "page-overflow@390",
+      "what": "拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串",
+      "observed": [
+        "note-clipped",
+        "page-overflow@390"
+      ],
+      "hit": true,
+      "narrowKeys": [],
+      "matchedKeys": null,
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "injectedRule": null,
+      "domInjection": false,
+      "injectedTokenLength": 200
+    },
+    {
+      "id": "M7",
+      "route": "status/",
+      "width": 1440,
+      "expect": "unexpected-detail-main",
+      "what": "给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）",
+      "observed": [
+        "unexpected-detail-main"
+      ],
+      "hit": true,
+      "narrowKeys": [],
+      "matchedKeys": null,
+      "anchor": null,
+      "injectedRule": null,
+      "domInjection": true,
+      "injectedTokenLength": 0
+    },
+    {
+      "id": "M8",
+      "route": "student/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "what": "F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）",
+      "observed": [
+        "note-narrow",
+        "note-narrow",
+        "note-narrow"
+      ],
+      "hit": true,
+      "narrowKeys": [
+        "student/#0",
+        "student/#1",
+        "student/#2"
+      ],
+      "matchedKeys": null,
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "injectedRule": ".snote { padding-right: calc(100% - 70ch); }",
+      "domInjection": false,
+      "injectedTokenLength": 0
+    },
+    {
+      "id": "M9a",
+      "route": "docs/data/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "what": "F2 原型：只压**非首个** .snote（相邻兄弟选择器）",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "narrowKeys": [
+        "docs/data/#1",
+        "docs/data/#2",
+        "docs/data/#3",
+        "docs/data/#4",
+        "docs/data/#5",
+        "docs/data/#6",
+        "docs/data/#7",
+        "docs/data/#8"
+      ],
+      "matchedKeys": [
+        "docs/data/#1",
+        "docs/data/#2",
+        "docs/data/#3",
+        "docs/data/#4",
+        "docs/data/#5",
+        "docs/data/#6",
+        "docs/data/#7",
+        "docs/data/#8"
+      ],
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "injectedRule": ".snote ~ .snote { max-width: 70ch; }",
+      "domInjection": false,
+      "injectedTokenLength": 0
+    },
+    {
+      "id": "M9b",
+      "route": "changes/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "what": "F2 原型：只压**非首个** .snote（:not(:first-of-type)）",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "narrowKeys": [
+        "changes/#1",
+        "changes/#3",
+        "changes/#4",
+        "changes/#8",
+        "changes/#12"
+      ],
+      "matchedKeys": [
+        "changes/#1",
+        "changes/#3",
+        "changes/#4",
+        "changes/#8",
+        "changes/#12"
+      ],
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "injectedRule": ".snote:not(:first-of-type) { max-width: 70ch; }",
+      "domInjection": false,
+      "injectedTokenLength": 0
+    },
+    {
+      "id": "M10",
+      "route": "student/",
+      "width": 1600,
+      "expect": "note-narrow",
+      "what": "F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）",
+      "observed": [
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "hit": true,
+      "narrowKeys": [
+        "student/#0",
+        "student/#1",
+        "student/#2"
+      ],
+      "matchedKeys": null,
+      "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "injectedRule": "@media (min-width: 1500px) { .snote { max-width: 70ch; } }",
+      "domInjection": false,
+      "injectedTokenLength": 0
+    }
+  ],
+  "control": {
+    "m6": {
+      "id": "M6-control",
+      "route": "student/",
+      "width": 390,
+      "expect": "不得出现 page-overflow@390",
+      "observed": []
+    },
+    "noInjection": [
+      {
+        "id": "M8",
+        "route": "student/",
+        "width": 1440,
+        "noteNarrow": 0,
+        "codes": []
+      },
+      {
+        "id": "M9a",
+        "route": "docs/data/",
+        "width": 1440,
+        "noteNarrow": 0,
+        "codes": []
+      },
+      {
+        "id": "M9b",
+        "route": "changes/",
+        "width": 1440,
+        "noteNarrow": 0,
+        "codes": []
+      },
+      {
+        "id": "M10",
+        "route": "student/",
+        "width": 1600,
+        "noteNarrow": 0,
+        "codes": []
+      }
+    ]
+  },
+  "m5Reuse": {
+    "section": "§22b",
+    "assertions": 41,
+    "failing": 0,
+    "codes": {
+      "M1": [
+        "center"
+      ],
+      "M2": [
+        "width"
+      ],
+      "M3": [
+        "axis",
+        "src-width"
+      ],
+      "M4": [
+        "self-overflow@390",
+        "page-overflow@390"
+      ],
+      "M5": [
+        "leaf-consistency",
+        "leaf-consistency"
+      ],
+      "M4-control": []
+    }
+  },
+  "layoutSweep": {
+    "total": 186,
+    "wide": 55,
+    "detail": 131,
+    "other": 0,
+    "notesChecked": 105,
+    "notesJudged": 401,
+    "narrowNotes": 0,
+    "narrowNotePages": 0,
+    "narrowNotesAt1600": 0,
+    "overflowPages": 0,
+    "unexpectedDetailMain": 0,
+    "missingDetailMain": 0,
+    "unclassified": 0,
+    "desktopViewports": [
+      1440,
+      1600
+    ]
+  },
+  "scan": {
+    "navigations": 628,
+    "desktopViewports": [
+      1440,
+      1600
+    ],
+    "sampleViewports": [
+      760,
+      360
+    ],
+    "seconds": {
+      "desktop1440": 9.8,
+      "desktop1600": 9.9,
+      "narrow390": 10.9,
+      "samples": 5.3,
+      "section": 39.6
+    },
+    "jsErrors": 0,
+    "externalRequests": 0
+  }
+}

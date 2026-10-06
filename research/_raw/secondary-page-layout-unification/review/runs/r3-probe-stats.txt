@@ -1,0 +1,12 @@
+@1440: 说明 401 · 单行 351（其中若去掉 lineCount>=2 前置条件会被误报的「单行短说明」= 319 条） · 多行 49 · 多行中字迹窄（应被咬）0
+   最接近阈值的多行说明（比值 ≥ 0.85 的前 5）：need/dev-credits/#0=0.9509 need/free-api/#0=0.9829 need/student-only/#0=0.9848 category/image/#0=0.9859 need/edu-identity/#0=0.9887
+   单行短说明样例（比值最小 5）：docs/data/#7=0.0261(36px) category/agent/#1=0.0447(61.64px) category/api/#1=0.0447(61.64px) category/audio/#1=0.0447(61.64px) category/chat/#1=0.0447(61.64px)
+   藏字（rendered+文本非空+零字形盒）0 · 未渲染（盒退化）1：plans/coding/#1
+@760: 说明 401 · 单行 282（其中若去掉 lineCount>=2 前置条件会被误报的「单行短说明」= 182 条） · 多行 118 · 多行中字迹窄（应被咬）0
+   最接近阈值的多行说明（比值 ≥ 0.85 的前 5）：plans/coding/#3=0.9581 changes/#8=0.9725 feeds/#0=0.9759 need/free-api/#0=0.981 need/dev-credits/#0=0.9816
+   单行短说明样例（比值最小 5）：docs/data/#7=0.0495(36px) category/agent/#1=0.0847(61.64px) category/api/#1=0.0847(61.64px) category/audio/#1=0.0847(61.64px) category/chat/#1=0.0847(61.64px)
+   藏字（rendered+文本非空+零字形盒）0 · 未渲染（盒退化）1：plans/coding/#1
+@360: 说明 401 · 单行 73（其中若去掉 lineCount>=2 前置条件会被误报的「单行短说明」= 71 条） · 多行 327 · 多行中字迹窄（应被咬）1
+   最接近阈值的多行说明（比值 ≥ 0.85 的前 5）：plans/coding/#3=0.9146 changes/#5=0.9512 need/dev-credits/#0=0.9512 need/student-only/#0=0.9512 plans/api/#4=0.9564
+   单行短说明样例（比值最小 5）：docs/data/#7=0.1098(36px) category/agent/#1=0.1879(61.64px) category/api/#1=0.1879(61.64px) category/audio/#1=0.1879(61.64px) category/chat/#1=0.1879(61.64px)
+   藏字（rendered+文本非空+零字形盒）0 · 未渲染（盒退化）1：plans/coding/#1

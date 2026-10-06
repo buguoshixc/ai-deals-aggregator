@@ -1,0 +1,74 @@
+{
+  "label": "t21-dist",
+  "id": "M7",
+  "route": "status/",
+  "viewport": 1440,
+  "what": "给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）",
+  "mutationKind": "dom-injection",
+  "anchor": "<main> 加 detail-main（DOM 注入）",
+  "injectedRule": null,
+  "selector": null,
+  "injectedTokenLength": 0,
+  "expect": "unexpected-detail-main",
+  "observed": [
+    "unexpected-detail-main"
+  ],
+  "hit": true,
+  "narrowKeys": [
+    "无"
+  ],
+  "matchedKeys": null,
+  "narrowNoteRows": [],
+  "anchorUniqueness": {
+    "fromVerifySite": null,
+    "fromDiskStatic": null,
+    "fromDiskWholeFile": null,
+    "guardPassed": true,
+    "guardDetail": "注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）",
+    "disk": null,
+    "domInjectionGuard": {
+      "mainTagFound": true,
+      "mainTag": "<main id=\"main\">",
+      "classes": "",
+      "hasDetailMainClass": false
+    },
+    "mainSnoteCountOnDisk": 2
+  },
+  "geometry": {
+    "noteCount": 2,
+    "noteWidthLegacy": null,
+    "firstNoteBoxWidth": 1120,
+    "firstNoteTextWidth": 1120,
+    "columnWidthLegacy": null,
+    "detailMainCount": 1,
+    "scrollWidth": 1440,
+    "viewport": 1440,
+    "injectedAt": null,
+    "narrowKeys": [
+      "无"
+    ]
+  },
+  "productSha256": {
+    "before": null,
+    "after": null,
+    "equal": true
+  },
+  "productFile": "dist/status/index.html",
+  "checks": [
+    {
+      "name": "§22c M7 DOM 注入前提成立（该类原本不存在）",
+      "ok": true,
+      "detail": "注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）"
+    },
+    {
+      "name": "§22c M7 变异后复测必须出现「unexpected-detail-main」违规码（给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在））",
+      "ok": true,
+      "detail": "期望 unexpected-detail-main · 实测 [unexpected-detail-main] · 说明 2 条 · 首条 盒 1120px / 有字区域 1120px · detail-main 1 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [unexpected-detail-main]"
+    }
+  ],
+  "keyChecks": [],
+  "source": {
+    "report": "research/_raw/secondary-page-layout-unification/t21/geometry/after-verify.json",
+    "mutations": "research/_raw/secondary-page-layout-unification/t21/geometry/mutations.json"
+  }
+}

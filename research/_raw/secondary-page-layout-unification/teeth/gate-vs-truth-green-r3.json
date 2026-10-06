@@ -1,0 +1,876 @@
+{
+  "label": "green",
+  "expect": "green",
+  "at": "2026-10-06T09:27:01.296Z",
+  "report": {
+    "path": "research/_raw/secondary-page-layout-unification/teeth/M-green-after-r3.json",
+    "sha256": "82ae12b60e76889c9a7baee7c3e58e934735b818e7058f54a209257055347e8c",
+    "total": 848,
+    "failed": 0
+  },
+  "truth": {
+    "path": "research/_raw/secondary-page-layout-unification/geometry/truth-401.json",
+    "sha256": "46c28fa120a39ababf25826b86a08e57cf93e242baee8df264219e1d182e346e",
+    "narrowNotes": 156,
+    "narrowRoutes": 48,
+    "alreadyFine": 245,
+    "pagesWithNotes": 105,
+    "pagesCarryingNarrowNotes": 48,
+    "note": "narrowRoutes 是「含窄说明的页面数」（48），不是「有说明的页面数」（105）"
+  },
+  "containers": {
+    "noteLevel": "metrics.layoutNotes",
+    "pageLevel": "metrics.layoutViolations"
+  },
+  "requireNoteLevel": false,
+  "acceptCodeSet": "/^note-(ink-)?narrow$/",
+  "observed": {
+    "narrowRoutes": [],
+    "narrowRouteCount": 0,
+    "narrowNoteKeys": [],
+    "narrowNoteCount": 0,
+    "narrowCodeTally": {
+      "noteLevel": {},
+      "pageLevel": {}
+    },
+    "otherCodeTally": {
+      "noteLevel": {},
+      "pageLevel": {}
+    },
+    "layoutSweep": {
+      "total": 186,
+      "wide": 55,
+      "detail": 131,
+      "other": 0,
+      "notesChecked": 105,
+      "notesJudged": 401,
+      "narrowNotes": 0,
+      "narrowNotePages": 0,
+      "narrowNotesAt1600": 0,
+      "inkNarrowNotes": 0,
+      "inkNarrowNotePages": 0,
+      "narrowUnionNotes": 0,
+      "narrowUnionNotePages": 0,
+      "inkNarrowNotesAt1600": 0,
+      "hiddenTextNotes": 0,
+      "unrenderedNotes": 1,
+      "verticalNotes": 0,
+      "overflowPages": 0,
+      "unexpectedDetailMain": 0,
+      "missingDetailMain": 0,
+      "unclassified": 0,
+      "desktopViewports": [
+        1440,
+        1600
+      ]
+    }
+  },
+  "diff": {
+    "missedNoteKeys": [
+      {
+        "key": "category/#0",
+        "route": "category/",
+        "index": 0
+      },
+      {
+        "key": "category/agent/#0",
+        "route": "category/agent/",
+        "index": 0
+      },
+      {
+        "key": "category/api/#0",
+        "route": "category/api/",
+        "index": 0
+      },
+      {
+        "key": "category/audio/#0",
+        "route": "category/audio/",
+        "index": 0
+      },
+      {
+        "key": "category/chat/#0",
+        "route": "category/chat/",
+        "index": 0
+      },
+      {
+        "key": "category/image/#0",
+        "route": "category/image/",
+        "index": 0
+      },
+      {
+        "key": "changes/#0",
+        "route": "changes/",
+        "index": 0
+      },
+      {
+        "key": "developer/#0",
+        "route": "developer/",
+        "index": 0
+      },
+      {
+        "key": "feeds/#0",
+        "route": "feeds/",
+        "index": 0
+      },
+      {
+        "key": "free-api/#0",
+        "route": "free-api/",
+        "index": 0
+      },
+      {
+        "key": "need/ai-coding/#0",
+        "route": "need/ai-coding/",
+        "index": 0
+      },
+      {
+        "key": "need/china-usable/#0",
+        "route": "need/china-usable/",
+        "index": 0
+      },
+      {
+        "key": "need/dev-credits/#0",
+        "route": "need/dev-credits/",
+        "index": 0
+      },
+      {
+        "key": "need/edu-identity/#0",
+        "route": "need/edu-identity/",
+        "index": 0
+      },
+      {
+        "key": "need/free-api/#0",
+        "route": "need/free-api/",
+        "index": 0
+      },
+      {
+        "key": "need/free-model/#0",
+        "route": "need/free-model/",
+        "index": 0
+      },
+      {
+        "key": "need/free-tier/#0",
+        "route": "need/free-tier/",
+        "index": 0
+      },
+      {
+        "key": "need/free-tokens/#0",
+        "route": "need/free-tokens/",
+        "index": 0
+      },
+      {
+        "key": "need/no-card/#0",
+        "route": "need/no-card/",
+        "index": 0
+      },
+      {
+        "key": "need/student-only/#0",
+        "route": "need/student-only/",
+        "index": 0
+      },
+      {
+        "key": "status/#0",
+        "route": "status/",
+        "index": 0
+      },
+      {
+        "key": "student/#0",
+        "route": "student/",
+        "index": 0
+      },
+      {
+        "key": "vendor/#0",
+        "route": "vendor/",
+        "index": 0
+      },
+      {
+        "key": "vendor/ai360/#0",
+        "route": "vendor/ai360/",
+        "index": 0
+      },
+      {
+        "key": "vendor/aliyun/#0",
+        "route": "vendor/aliyun/",
+        "index": 0
+      },
+      {
+        "key": "vendor/anthropic/#0",
+        "route": "vendor/anthropic/",
+        "index": 0
+      },
+      {
+        "key": "vendor/aws/#0",
+        "route": "vendor/aws/",
+        "index": 0
+      },
+      {
+        "key": "vendor/baichuan/#0",
+        "route": "vendor/baichuan/",
+        "index": 0
+      },
+      {
+        "key": "vendor/baidu-ai-cloud/#0",
+        "route": "vendor/baidu-ai-cloud/",
+        "index": 0
+      },
+      {
+        "key": "vendor/coze/#0",
+        "route": "vendor/coze/",
+        "index": 0
+      },
+      {
+        "key": "vendor/cursor/#0",
+        "route": "vendor/cursor/",
+        "index": 0
+      },
+      {
+        "key": "vendor/deepseek/#0",
+        "route": "vendor/deepseek/",
+        "index": 0
+      },
+      {
+        "key": "vendor/github/#0",
+        "route": "vendor/github/",
+        "index": 0
+      },
+      {
+        "key": "vendor/google/#0",
+        "route": "vendor/google/",
+        "index": 0
+      },
+      {
+        "key": "vendor/iflytek/#0",
+        "route": "vendor/iflytek/",
+        "index": 0
+      },
+      {
+        "key": "vendor/microsoft/#0",
+        "route": "vendor/microsoft/",
+        "index": 0
+      },
+      {
+        "key": "vendor/minimax/#0",
+        "route": "vendor/minimax/",
+        "index": 0
+      },
+      {
+        "key": "vendor/moonshot/#0",
+        "route": "vendor/moonshot/",
+        "index": 0
+      },
+      {
+        "key": "vendor/notion/#0",
+        "route": "vendor/notion/",
+        "index": 0
+      },
+      {
+        "key": "vendor/openai/#0",
+        "route": "vendor/openai/",
+        "index": 0
+      },
+      {
+        "key": "vendor/replit/#0",
+        "route": "vendor/replit/",
+        "index": 0
+      },
+      {
+        "key": "vendor/sensetime/#0",
+        "route": "vendor/sensetime/",
+        "index": 0
+      },
+      {
+        "key": "vendor/siliconflow/#0",
+        "route": "vendor/siliconflow/",
+        "index": 0
+      },
+      {
+        "key": "vendor/stepfun/#0",
+        "route": "vendor/stepfun/",
+        "index": 0
+      },
+      {
+        "key": "vendor/tencent-cloud/#0",
+        "route": "vendor/tencent-cloud/",
+        "index": 0
+      },
+      {
+        "key": "vendor/volcengine/#0",
+        "route": "vendor/volcengine/",
+        "index": 0
+      },
+      {
+        "key": "vendor/windsurf/#0",
+        "route": "vendor/windsurf/",
+        "index": 0
+      },
+      {
+        "key": "vendor/zhipu/#0",
+        "route": "vendor/zhipu/",
+        "index": 0
+      },
+      {
+        "key": "category/#1",
+        "route": "category/",
+        "index": 1
+      },
+      {
+        "key": "category/agent/#1",
+        "route": "category/agent/",
+        "index": 1
+      },
+      {
+        "key": "category/agent/#2",
+        "route": "category/agent/",
+        "index": 2
+      },
+      {
+        "key": "category/api/#1",
+        "route": "category/api/",
+        "index": 1
+      },
+      {
+        "key": "category/api/#2",
+        "route": "category/api/",
+        "index": 2
+      },
+      {
+        "key": "category/audio/#1",
+        "route": "category/audio/",
+        "index": 1
+      },
+      {
+        "key": "category/audio/#2",
+        "route": "category/audio/",
+        "index": 2
+      },
+      {
+        "key": "category/chat/#1",
+        "route": "category/chat/",
+        "index": 1
+      },
+      {
+        "key": "category/chat/#2",
+        "route": "category/chat/",
+        "index": 2
+      },
+      {
+        "key": "category/image/#1",
+        "route": "category/image/",
+        "index": 1
+      },
+      {
+        "key": "category/image/#2",
+        "route": "category/image/",
+        "index": 2
+      },
+      {
+        "key": "changes/#1",
+        "route": "changes/",
+        "index": 1
+      },
+      {
+        "key": "changes/#2",
+        "route": "changes/",
+        "index": 2
+      },
+      {
+        "key": "changes/#3",
+        "route": "changes/",
+        "index": 3
+      },
+      {
+        "key": "changes/#4",
+        "route": "changes/",
+        "index": 4
+      },
+      {
+        "key": "changes/#5",
+        "route": "changes/",
+        "index": 5
+      },
+      {
+        "key": "changes/#6",
+        "route": "changes/",
+        "index": 6
+      },
+      {
+        "key": "changes/#7",
+        "route": "changes/",
+        "index": 7
+      },
+      {
+        "key": "changes/#8",
+        "route": "changes/",
+        "index": 8
+      },
+      {
+        "key": "changes/#9",
+        "route": "changes/",
+        "index": 9
+      },
+      {
+        "key": "changes/#10",
+        "route": "changes/",
+        "index": 10
+      },
+      {
+        "key": "changes/#11",
+        "route": "changes/",
+        "index": 11
+      },
+      {
+        "key": "changes/#12",
+        "route": "changes/",
+        "index": 12
+      },
+      {
+        "key": "developer/#1",
+        "route": "developer/",
+        "index": 1
+      },
+      {
+        "key": "developer/#2",
+        "route": "developer/",
+        "index": 2
+      },
+      {
+        "key": "feeds/#1",
+        "route": "feeds/",
+        "index": 1
+      },
+      {
+        "key": "feeds/#2",
+        "route": "feeds/",
+        "index": 2
+      },
+      {
+        "key": "feeds/#3",
+        "route": "feeds/",
+        "index": 3
+      },
+      {
+        "key": "feeds/#4",
+        "route": "feeds/",
+        "index": 4
+      },
+      {
+        "key": "feeds/#5",
+        "route": "feeds/",
+        "index": 5
+      },
+      {
+        "key": "feeds/#6",
+        "route": "feeds/",
+        "index": 6
+      },
+      {
+        "key": "feeds/#7",
+        "route": "feeds/",
+        "index": 7
+      },
+      {
+        "key": "free-api/#1",
+        "route": "free-api/",
+        "index": 1
+      },
+      {
+        "key": "free-api/#2",
+        "route": "free-api/",
+        "index": 2
+      },
+      {
+        "key": "need/ai-coding/#1",
+        "route": "need/ai-coding/",
+        "index": 1
+      },
+      {
+        "key": "need/ai-coding/#2",
+        "route": "need/ai-coding/",
+        "index": 2
+      },
+      {
+        "key": "need/china-usable/#1",
+        "route": "need/china-usable/",
+        "index": 1
+      },
+      {
+        "key": "need/china-usable/#2",
+        "route": "need/china-usable/",
+        "index": 2
+      },
+      {
+        "key": "need/dev-credits/#1",
+        "route": "need/dev-credits/",
+        "index": 1
+      },
+      {
+        "key": "need/dev-credits/#2",
+        "route": "need/dev-credits/",
+        "index": 2
+      },
+      {
+        "key": "need/edu-identity/#1",
+        "route": "need/edu-identity/",
+        "index": 1
+      },
+      {
+        "key": "need/edu-identity/#2",
+        "route": "need/edu-identity/",
+        "index": 2
+      },
+      {
+        "key": "need/free-api/#1",
+        "route": "need/free-api/",
+        "index": 1
+      },
+      {
+        "key": "need/free-api/#2",
+        "route": "need/free-api/",
+        "index": 2
+      },
+      {
+        "key": "need/free-model/#1",
+        "route": "need/free-model/",
+        "index": 1
+      },
+      {
+        "key": "need/free-model/#2",
+        "route": "need/free-model/",
+        "index": 2
+      },
+      {
+        "key": "need/free-tier/#1",
+        "route": "need/free-tier/",
+        "index": 1
+      },
+      {
+        "key": "need/free-tier/#2",
+        "route": "need/free-tier/",
+        "index": 2
+      },
+      {
+        "key": "need/free-tokens/#1",
+        "route": "need/free-tokens/",
+        "index": 1
+      },
+      {
+        "key": "need/free-tokens/#2",
+        "route": "need/free-tokens/",
+        "index": 2
+      },
+      {
+        "key": "need/no-card/#1",
+        "route": "need/no-card/",
+        "index": 1
+      },
+      {
+        "key": "need/no-card/#2",
+        "route": "need/no-card/",
+        "index": 2
+      },
+      {
+        "key": "need/student-only/#1",
+        "route": "need/student-only/",
+        "index": 1
+      },
+      {
+        "key": "need/student-only/#2",
+        "route": "need/student-only/",
+        "index": 2
+      },
+      {
+        "key": "status/#1",
+        "route": "status/",
+        "index": 1
+      },
+      {
+        "key": "student/#1",
+        "route": "student/",
+        "index": 1
+      },
+      {
+        "key": "student/#2",
+        "route": "student/",
+        "index": 2
+      },
+      {
+        "key": "vendor/#1",
+        "route": "vendor/",
+        "index": 1
+      },
+      {
+        "key": "vendor/ai360/#1",
+        "route": "vendor/ai360/",
+        "index": 1
+      },
+      {
+        "key": "vendor/ai360/#2",
+        "route": "vendor/ai360/",
+        "index": 2
+      },
+      {
+        "key": "vendor/aliyun/#1",
+        "route": "vendor/aliyun/",
+        "index": 1
+      },
+      {
+        "key": "vendor/aliyun/#2",
+        "route": "vendor/aliyun/",
+        "index": 2
+      },
+      {
+        "key": "vendor/anthropic/#1",
+        "route": "vendor/anthropic/",
+        "index": 1
+      },
+      {
+        "key": "vendor/anthropic/#2",
+        "route": "vendor/anthropic/",
+        "index": 2
+      },
+      {
+        "key": "vendor/aws/#1",
+        "route": "vendor/aws/",
+        "index": 1
+      },
+      {
+        "key": "vendor/aws/#2",
+        "route": "vendor/aws/",
+        "index": 2
+      },
+      {
+        "key": "vendor/baichuan/#1",
+        "route": "vendor/baichuan/",
+        "index": 1
+      },
+      {
+        "key": "vendor/baichuan/#2",
+        "route": "vendor/baichuan/",
+        "index": 2
+      },
+      {
+        "key": "vendor/baidu-ai-cloud/#1",
+        "route": "vendor/baidu-ai-cloud/",
+        "index": 1
+      },
+      {
+        "key": "vendor/baidu-ai-cloud/#2",
+        "route": "vendor/baidu-ai-cloud/",
+        "index": 2
+      },
+      {
+        "key": "vendor/coze/#1",
+        "route": "vendor/coze/",
+        "index": 1
+      },
+      {
+        "key": "vendor/coze/#2",
+        "route": "vendor/coze/",
+        "index": 2
+      },
+      {
+        "key": "vendor/cursor/#1",
+        "route": "vendor/cursor/",
+        "index": 1
+      },
+      {
+        "key": "vendor/cursor/#2",
+        "route": "vendor/cursor/",
+        "index": 2
+      },
+      {
+        "key": "vendor/deepseek/#1",
+        "route": "vendor/deepseek/",
+        "index": 1
+      },
+      {
+        "key": "vendor/deepseek/#2",
+        "route": "vendor/deepseek/",
+        "index": 2
+      },
+      {
+        "key": "vendor/github/#1",
+        "route": "vendor/github/",
+        "index": 1
+      },
+      {
+        "key": "vendor/github/#2",
+        "route": "vendor/github/",
+        "index": 2
+      },
+      {
+        "key": "vendor/google/#1",
+        "route": "vendor/google/",
+        "index": 1
+      },
+      {
+        "key": "vendor/google/#2",
+        "route": "vendor/google/",
+        "index": 2
+      },
+      {
+        "key": "vendor/iflytek/#1",
+        "route": "vendor/iflytek/",
+        "index": 1
+      },
+      {
+        "key": "vendor/iflytek/#2",
+        "route": "vendor/iflytek/",
+        "index": 2
+      },
+      {
+        "key": "vendor/microsoft/#1",
+        "route": "vendor/microsoft/",
+        "index": 1
+      },
+      {
+        "key": "vendor/microsoft/#2",
+        "route": "vendor/microsoft/",
+        "index": 2
+      },
+      {
+        "key": "vendor/minimax/#1",
+        "route": "vendor/minimax/",
+        "index": 1
+      },
+      {
+        "key": "vendor/minimax/#2",
+        "route": "vendor/minimax/",
+        "index": 2
+      },
+      {
+        "key": "vendor/moonshot/#1",
+        "route": "vendor/moonshot/",
+        "index": 1
+      },
+      {
+        "key": "vendor/moonshot/#2",
+        "route": "vendor/moonshot/",
+        "index": 2
+      },
+      {
+        "key": "vendor/notion/#1",
+        "route": "vendor/notion/",
+        "index": 1
+      },
+      {
+        "key": "vendor/notion/#2",
+        "route": "vendor/notion/",
+        "index": 2
+      },
+      {
+        "key": "vendor/openai/#1",
+        "route": "vendor/openai/",
+        "index": 1
+      },
+      {
+        "key": "vendor/openai/#2",
+        "route": "vendor/openai/",
+        "index": 2
+      },
+      {
+        "key": "vendor/replit/#1",
+        "route": "vendor/replit/",
+        "index": 1
+      },
+      {
+        "key": "vendor/replit/#2",
+        "route": "vendor/replit/",
+        "index": 2
+      },
+      {
+        "key": "vendor/sensetime/#1",
+        "route": "vendor/sensetime/",
+        "index": 1
+      },
+      {
+        "key": "vendor/sensetime/#2",
+        "route": "vendor/sensetime/",
+        "index": 2
+      },
+      {
+        "key": "vendor/siliconflow/#1",
+        "route": "vendor/siliconflow/",
+        "index": 1
+      },
+      {
+        "key": "vendor/siliconflow/#2",
+        "route": "vendor/siliconflow/",
+        "index": 2
+      },
+      {
+        "key": "vendor/stepfun/#1",
+        "route": "vendor/stepfun/",
+        "index": 1
+      },
+      {
+        "key": "vendor/stepfun/#2",
+        "route": "vendor/stepfun/",
+        "index": 2
+      },
+      {
+        "key": "vendor/tencent-cloud/#1",
+        "route": "vendor/tencent-cloud/",
+        "index": 1
+      },
+      {
+        "key": "vendor/tencent-cloud/#2",
+        "route": "vendor/tencent-cloud/",
+        "index": 2
+      },
+      {
+        "key": "vendor/volcengine/#1",
+        "route": "vendor/volcengine/",
+        "index": 1
+      },
+      {
+        "key": "vendor/volcengine/#2",
+        "route": "vendor/volcengine/",
+        "index": 2
+      },
+      {
+        "key": "vendor/windsurf/#1",
+        "route": "vendor/windsurf/",
+        "index": 1
+      },
+      {
+        "key": "vendor/windsurf/#2",
+        "route": "vendor/windsurf/",
+        "index": 2
+      },
+      {
+        "key": "vendor/zhipu/#1",
+        "route": "vendor/zhipu/",
+        "index": 1
+      },
+      {
+        "key": "vendor/zhipu/#2",
+        "route": "vendor/zhipu/",
+        "index": 2
+      }
+    ],
+    "missedNoteCount": 156,
+    "missedRoutes": [],
+    "missedRouteCount": 0,
+    "falsePositiveNoteKeys": [],
+    "falsePositiveRoutes": [],
+    "falsePositiveCount": 0
+  },
+  "verdicts": {
+    "baseline": {
+      "命中页集合 ⊇ 真值页集合（48 页，无减少）": false,
+      "命中页集合 ⊆ 真值页集合（无新增 / 零误报页）": true,
+      "页集合逐条相同（48 页）": false,
+      "报告里有条级容器（验收标准第 5 条）": true,
+      "命中条集合 ⊇ 真值条集合（156 条，逐条查）": false,
+      "对照组（alreadyFine 245 条）零误报": true,
+      "页数与条数读数": "0 页 / 0 条"
+    },
+    "green": {
+      "命中页集合为空": true,
+      "命中条集合为空": true,
+      "对照组（alreadyFine 245 条）零误报": true
+    }
+  },
+  "verdict": "pass",
+  "note": "报告里有条级容器 metrics.layoutNotes ⇒ 逐条核对（最强口径） 判窄用的是接受码集合 /^note-(ink-)?narrow$/（note-narrow ∪ note-ink-narrow；note-hidden-text 不算窄）。"
+}

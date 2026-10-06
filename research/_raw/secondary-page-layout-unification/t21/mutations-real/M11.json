@@ -1,0 +1,89 @@
+{
+  "label": "t21-dist",
+  "id": "M11",
+  "route": "changes/",
+  "viewport": 1440,
+  "what": "t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）",
+  "mutationKind": "extend（冻结串保留，追加一条收窄规则）",
+  "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+  "injectedRule": ".snote { display: grid; grid-template-columns: minmax(0, 70ch) 1fr; }",
+  "selector": null,
+  "injectedTokenLength": 0,
+  "expect": "note-ink-narrow",
+  "observed": [
+    "note-ink-narrow",
+    "note-ink-narrow",
+    "note-ink-narrow",
+    "note-ink-narrow",
+    "note-ink-narrow",
+    "note-ink-narrow"
+  ],
+  "hit": true,
+  "narrowKeys": [
+    "无"
+  ],
+  "matchedKeys": null,
+  "narrowNoteRows": [],
+  "anchorUniqueness": {
+    "fromVerifySite": 1,
+    "fromDiskStatic": 1,
+    "fromDiskWholeFile": 1,
+    "guardPassed": true,
+    "guardDetail": "锚点出现 1 次 · t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）",
+    "disk": {
+      "file": "dist/changes/index.html",
+      "occurrencesInStyles": 1,
+      "occurrencesInFile": 1
+    },
+    "domInjectionGuard": null,
+    "mainSnoteCountOnDisk": 13
+  },
+  "geometry": {
+    "noteCount": 13,
+    "noteWidthLegacy": null,
+    "firstNoteBoxWidth": 1380,
+    "firstNoteTextWidth": 1380,
+    "columnWidthLegacy": null,
+    "detailMainCount": 0,
+    "scrollWidth": 1440,
+    "viewport": 1440,
+    "injectedAt": null,
+    "narrowKeys": [
+      "无"
+    ]
+  },
+  "productSha256": {
+    "before": null,
+    "after": null,
+    "equal": true
+  },
+  "productFile": "dist/changes/index.html",
+  "checks": [
+    {
+      "name": "§22c M11 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "ok": true,
+      "detail": "锚点出现 1 次 · t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）"
+    },
+    {
+      "name": "§22c M11 变异后复测必须出现「note-ink-narrow」违规码（t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条））",
+      "ok": true,
+      "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow] · 说明 13 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow]"
+    },
+    {
+      "name": "§22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码",
+      "ok": true,
+      "detail": "note-narrow 0 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow 6 条 [changes/#0, changes/#1, changes/#2, changes/#4, changes/#8, changes/#12] · 这些条的行证据：#0 2 行 / 最宽 445.05px / 内容盒 1380px · #1 2 行 / 最宽 445.09px / 内容盒 1380px · #2 2 行 / 最宽 432px / 内容盒 1380px · #4 2 行 / 最宽 444px / 内容盒 1380px · #8 3 行 / 最宽 444px / 内容盒 1380px · #12 3 行 / 最宽 444.23px / 内容盒 1380px"
+    }
+  ],
+  "keyChecks": [
+    {
+      "name": "§22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码",
+      "ok": true,
+      "detail": "note-narrow 0 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow 6 条 [changes/#0, changes/#1, changes/#2, changes/#4, changes/#8, changes/#12] · 这些条的行证据：#0 2 行 / 最宽 445.05px / 内容盒 1380px · #1 2 行 / 最宽 445.09px / 内容盒 1380px · #2 2 行 / 最宽 432px / 内容盒 1380px · #4 2 行 / 最宽 444px / 内容盒 1380px · #8 3 行 / 最宽 444px / 内容盒 1380px · #12 3 行 / 最宽 444.23px / 内容盒 1380px"
+    }
+  ],
+  "source": {
+    "report": "research/_raw/secondary-page-layout-unification/t21/geometry/after-verify.json",
+    "mutations": "research/_raw/secondary-page-layout-unification/t21/geometry/mutations.json"
+  }
+}

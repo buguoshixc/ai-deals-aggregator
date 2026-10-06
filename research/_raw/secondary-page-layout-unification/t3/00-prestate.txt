@@ -1,0 +1,18 @@
+﻿# pre-state @ 2026-10-06T15:17:03.8623006+08:00
+## git rev-parse HEAD
+1f225d22625c15702995785394b60185ebd0520b
+## git status --porcelain
+ M index.html
+ M scripts/lib/archive.js
+ M scripts/lib/page-kinds.js
+ M scripts/tools/archive-selftest.js
+ M scripts/tools/build-local.js
+ M scripts/tools/seo-selftest.js
+ M scripts/tools/verify-site.js
+?? research/_raw/secondary-page-layout-unification/
+## sha256 of tracked source (all modified + key data files)
+264912c27174f837453bcafc1ade0422d46dc606e3036ba94e4b8525b149b348  scripts/tools/build-local.js
+4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756  scripts/tools/verify-site.js
+8fae98d1d8897a9d024b0cb2d8a5c016efc4c1807c41e63cbc02ab45e7c6b2ed  scripts/lib/page-kinds.js
+565710a7e6e197d9f369acf3b70c3feefd77413e188856523f16ebdc1429916e  scripts/lib/archive.js
+8442f14dd397276e67ea71a64aef9f86b59d1f603aa04f15ecfc402056d663b9  index.html

@@ -1,0 +1,535 @@
+{
+  "generatedAt": "2026-10-06T09:19:17.947Z",
+  "task": "t11 · 第二对抗者：锚点式 harness + 8 个新绕过形态 + 修复前后绕过基线",
+  "author": "adversary",
+  "requestedVerifySite": {
+    "sha256": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+    "path": "research/_raw/secondary-page-layout-unification/recovered/pre-t7/scripts/tools/verify-site.js（captain 复原）· adversary/sandbox-pre-t7/scripts/tools/verify-site.js（本 harness 用的沙箱副本，逐字节相同）",
+    "provenance": "t7 曾把 §22c 整块原地替换（teeth/_scratch/splice-22c.cjs，不留备份），磁盘/git/悬空 blob/其它 worktree/%TEMP% 都没有原件；captain 从 T3 改动前抓的 diff/02-source-diff.patch 复原，判定标准 sha256 相等。**本 harness 独立复核**：文件 sha256 = 4cae2fb2…；锚点式抽取得到判据区 213 行 / sha256 91d295365b40e60c…、wideMutate 14 行 / b3d6ba24f3b65d41…，与 t5 报告记的读数逐项相同 ⇒ 抽取等价、对照有效。",
+    "sandbox": {
+      "dir": "adversary/sandbox-pre-t7",
+      "note": "自建沙箱：scripts/tools/verify-site.js 为复原件逐字节副本 + scripts/lib、node_modules、dist 三个 junction ⇒ 与生产路径的唯一差别就是 §22c 版本。"
+    }
+  },
+  "harness": {
+    "path": "research/_raw/secondary-page-layout-unification/adversary/harness.cjs",
+    "extraction": {
+      "anchors": {
+        "start": "const WIDE_TOL = 1;",
+        "problems": "function wideProblems(geometry, meta) {",
+        "mutate": "async function wideMutate(target, anchor, replacement) {"
+      },
+      "lines": "6144–6356",
+      "lineCount": 213,
+      "sha256": "91d295365b40e60cd8b218b9c21165b4a61cb7cd1ad9dac0dfc39e40c98b436d"
+    },
+    "mutate": {
+      "lines": "6365–6378",
+      "lineCount": 14,
+      "sha256": "b3d6ba24f3b65d417a96e1908804dbc44ad4ae008fbe505e4ae2be285015c3dc"
+    },
+    "mode": "A（浏览器内存注入）与 B（scratch 副本整轮套件）"
+  },
+  "judgeBefore": {
+    "path": "research\\_raw\\secondary-page-layout-unification\\recovered\\pre-t7\\scripts\\tools\\verify-site.js",
+    "sha256": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+    "judge": {
+      "anchors": {
+        "start": "const WIDE_TOL = 1;",
+        "problems": "function wideProblems(geometry, meta) {",
+        "mutate": "async function wideMutate(target, anchor, replacement) {"
+      },
+      "lines": "6144–6356",
+      "lineCount": 213,
+      "sha256": "91d295365b40e60cd8b218b9c21165b4a61cb7cd1ad9dac0dfc39e40c98b436d"
+    },
+    "mutate": {
+      "lines": "6365–6378",
+      "lineCount": 14,
+      "sha256": "b3d6ba24f3b65d417a96e1908804dbc44ad4ae008fbe505e4ae2be285015c3dc"
+    }
+  },
+  "judgeAfter": {
+    "path": "scripts\\tools\\verify-site.js",
+    "sha256": "4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb",
+    "judge": {
+      "anchors": {
+        "start": "const WIDE_TOL = 1;",
+        "problems": "function wideProblems(geometry, meta) {",
+        "mutate": "async function wideMutate(target, anchor, replacement) {"
+      },
+      "lines": "6151–6449",
+      "lineCount": 299,
+      "sha256": "47cfc56165be000d58e69bc77431d1678926a4034e7cb6d6bc7edf14f8f4b53e"
+    },
+    "mutate": {
+      "lines": "6457–6470",
+      "lineCount": 14,
+      "sha256": "b3d6ba24f3b65d417a96e1908804dbc44ad4ae008fbe505e4ae2be285015c3dc"
+    }
+  },
+  "beforeSummary": {
+    "requestedSha256": "4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756",
+    "judgeExtraction": {
+      "anchors": {
+        "start": "const WIDE_TOL = 1;",
+        "problems": "function wideProblems(geometry, meta) {",
+        "mutate": "async function wideMutate(target, anchor, replacement) {"
+      },
+      "lines": "6144–6356",
+      "lineCount": 213,
+      "sha256": "91d295365b40e60cd8b218b9c21165b4a61cb7cd1ad9dac0dfc39e40c98b436d"
+    },
+    "files": [
+      "adversary/runs/modeA-before-extra.json",
+      "adversary/runs/modeA-before.json"
+    ],
+    "modeBFalseGreenForms": [
+      "ctl-no-inject",
+      "multicol-narrow-columns",
+      "overlay-opaque",
+      "float-narrow-column"
+    ],
+    "note": "修复前的绕过后基线；模式 B 的整轮读数见 modeB-before（沙箱 adversary/sandbox-pre-t7，只换判据版本，自带 dist junction）。"
+  },
+  "forms": [
+    {
+      "id": "ctl-maxwidth-70ch",
+      "direction": "control",
+      "injectedCss": ".snote { max-width: 70ch; }",
+      "realism": {
+        "level": "high",
+        "how": "把 .snote 的 max-width 从 none 改回 70ch（就是本版要修的原缺陷）",
+        "note": "正对照，必须红"
+      },
+      "verdict": "bite",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "judgeBoxWidth": [
+        452.81
+      ],
+      "paintInkWidth": 452.8,
+      "inkLongestLine": 447.3,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 452.8,
+        "inkLongestLine": 447.3,
+        "visibleNarrow": true,
+        "textHidden": false,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "writing-mode-vertical-fullwidth",
+      "direction": "writing-mode（盒宽锁满宽）",
+      "injectedCss": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; }",
+      "realism": {
+        "level": "medium",
+        "how": "同 writing-mode；`width: 100%` 是几乎必然跟着写的（否则盒子会被内容反推）",
+        "note": "★ 真正的 writing-mode 绕过形态：盒宽与内容盒宽都满宽，可见文字是一根竖条"
+      },
+      "verdict": "pass",
+      "codes": [],
+      "judgeBoxWidth": [
+        1380
+      ],
+      "paintInkWidth": 338,
+      "inkLongestLine": 16,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 338,
+        "inkLongestLine": 16,
+        "visibleNarrow": true,
+        "textHidden": false,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "flex-decorator-item",
+      "direction": "flex 容器 + 装饰项吃掉 70%（补充）",
+      "injectedCss": ".snote { display: flex; }\n.snote::after { content: \"\"; flex: 0 0 70%; }",
+      "realism": {
+        "level": "medium",
+        "how": "真实写法：说明条改成 flex 布局并在末尾放一个装饰块/占位（`.snote { display:flex }` + `.snote::after { content:\"\"; flex:1 }`）",
+        "note": "★ 匿名 flex 项在 DOM 里没有对应元素 ⇒ 任何「遍历元素量 content box」的口径都看不见它"
+      },
+      "verdict": "pass",
+      "codes": [],
+      "judgeBoxWidth": [
+        1380
+      ],
+      "paintInkWidth": 413,
+      "inkLongestLine": 260.45,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 413,
+        "inkLongestLine": 260.45,
+        "visibleNarrow": true,
+        "textHidden": false,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "ctl-no-inject",
+      "direction": "control",
+      "injectedCss": null,
+      "realism": {
+        "level": "n/a",
+        "how": "—",
+        "note": "对照"
+      },
+      "verdict": "pass",
+      "codes": [],
+      "judgeBoxWidth": [
+        1380
+      ],
+      "paintInkWidth": 1344,
+      "inkLongestLine": 863.75,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 1344,
+        "inkLongestLine": 863.75,
+        "visibleNarrow": true,
+        "textHidden": false,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "transform-scaleX",
+      "direction": "transform: scaleX()",
+      "injectedCss": ".snote { transform: scaleX(0.33); transform-origin: left center; }",
+      "realism": {
+        "level": "low",
+        "how": "给说明加一个缩放动画/装饰（`transform: scaleX()`），正常改动一般不这么写",
+        "note": "预计被 note-axis 咬到（getBoundingClientRect 含 transform）—— 这条是「判据真的在动」的对照组"
+      },
+      "verdict": "bite",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "judgeBoxWidth": [
+        455.4
+      ],
+      "paintInkWidth": 443.4,
+      "inkLongestLine": 285.04,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 443.4,
+        "inkLongestLine": 285.04,
+        "visibleNarrow": true,
+        "textHidden": false,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "pseudo-content-narrow",
+      "direction": "伪元素承载正文（::before/::after 的 content）",
+      "injectedCss": ".snote { font-size: 0; }\n.snote::before { content: \"这一页按分类收条目：数据里的 category 是「智能体」。 这一类的优惠常以积分或每日次数发放（例如「每日登录赠 1500 积分」），有效期往往很短，页面保留官方原文的期限说法。 积分与代金券的可用范围由平台决定，本站只转录官方页面写了什么。\"; display: block; max-width: 70ch; font-size: var(--fs-sm); line-height: 1.7; color: var(--mut); white-space: normal; }",
+      "realism": {
+        "level": "low",
+        "how": "要把整段说明正文搬进 CSS 的 `content` —— 正常产品改动不会这么干（除非常年 SEO/文案兜底 hack）",
+        "note": "伪元素内容对 Range/`clientWidth` 都不可见；本条用来量化「文字面判据对伪元素的盲区」"
+      },
+      "verdict": "pass",
+      "codes": [],
+      "judgeBoxWidth": [
+        1380
+      ],
+      "paintInkWidth": 453,
+      "inkLongestLine": null,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 453,
+        "inkLongestLine": null,
+        "visibleNarrow": true,
+        "textHidden": false,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "text-indent-clip",
+      "direction": "text-indent 负值 + overflow: hidden",
+      "injectedCss": ".snote { text-indent: -9999px; white-space: nowrap; overflow: hidden; }",
+      "realism": {
+        "level": "medium",
+        "how": "视觉隐藏（image-replacement / `.sr-only` 那类）是复制粘贴常见写法；把 `.snote` 误伤进去只需一次手滑",
+        "note": "实测：两版判据都咬到，但咬的是 **note-clipped（自身横向溢出）** 而不是「字看不见」——闸门拦得住，理由对不上缺陷（像素字迹 0px）"
+      },
+      "verdict": "bite",
+      "codes": [
+        "note-clipped"
+      ],
+      "judgeBoxWidth": [
+        1380
+      ],
+      "paintInkWidth": 0,
+      "inkLongestLine": 863.75,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 0,
+        "inkLongestLine": 863.75,
+        "visibleNarrow": true,
+        "textHidden": true,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "text-indent-shift",
+      "direction": "text-indent 负值 + overflow: hidden（多行变体）",
+      "injectedCss": ".snote { text-indent: -9999px; overflow: hidden; }",
+      "realism": {
+        "level": "low",
+        "how": "同上写法的变体（不配 nowrap），只影响首行",
+        "note": "实测：被 note-clipped 顺带咬到；像素字迹 0px ⇒ 整条说明在视觉上不存在"
+      },
+      "verdict": "bite",
+      "codes": [
+        "note-clipped"
+      ],
+      "judgeBoxWidth": [
+        1380
+      ],
+      "paintInkWidth": 0,
+      "inkLongestLine": 863.75,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 0,
+        "inkLongestLine": 863.75,
+        "visibleNarrow": true,
+        "textHidden": true,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "writing-mode-vertical",
+      "direction": "writing-mode",
+      "injectedCss": ".snote { writing-mode: vertical-rl; height: 5.6rem; overflow: hidden; }",
+      "realism": {
+        "level": "medium",
+        "how": "CJK 站点做竖排/侧栏标题时 `writing-mode` 很常见；一条规则落到 `.snote` 上即可",
+        "note": "实测：盒宽自己缩到 346.64px ⇒ 被 note-narrow **顺带**咬到（不是因为看见竖排）"
+      },
+      "verdict": "bite",
+      "codes": [
+        "note-narrow",
+        "note-axis"
+      ],
+      "judgeBoxWidth": [
+        346.64
+      ],
+      "paintInkWidth": 337.6,
+      "inkLongestLine": 16,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 337.6,
+        "inkLongestLine": 16,
+        "visibleNarrow": true,
+        "textHidden": false,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "font-size-tiny",
+      "direction": "font-size 极小但盒宽满宽",
+      "injectedCss": ".snote { font-size: 1px; }",
+      "realism": {
+        "level": "low",
+        "how": "把 `--fs-sm`/字号变量改错（比如 token 写错一位）就可能出现极小字号",
+        "note": "**不是窄柱缺陷**：本条用来说明门禁的边界（它不该管字号）；放行不算假绿，算越界观察"
+      },
+      "verdict": "pass",
+      "codes": [],
+      "judgeBoxWidth": [
+        1380
+      ],
+      "paintInkWidth": 112,
+      "inkLongestLine": 71.98,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 112,
+        "inkLongestLine": 71.98,
+        "visibleNarrow": true,
+        "textHidden": false,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "letter-spacing-huge",
+      "direction": "letter-spacing 极大",
+      "injectedCss": ".snote { letter-spacing: 40px; }",
+      "realism": {
+        "level": "low",
+        "how": "`letter-spacing` 通常写在标题/徽标上；落到 `.snote` 需要一次误伤（如选择器漏了层级）",
+        "note": "同为**越界观察**：不是窄柱"
+      },
+      "verdict": "pass",
+      "codes": [],
+      "judgeBoxWidth": [
+        1380
+      ],
+      "paintInkWidth": 1325,
+      "inkLongestLine": 1364.45,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 1325,
+        "inkLongestLine": 1364.45,
+        "visibleNarrow": false,
+        "textHidden": false,
+        "promiseDefect": false
+      }
+    },
+    {
+      "id": "multicol-narrow-columns",
+      "direction": "CSS 多列（column-width/column-count）",
+      "injectedCss": ".snote { column-count: 3; column-width: 340px; column-gap: 16px; }",
+      "realism": {
+        "level": "medium",
+        "how": "「把长说明排成两栏/三栏」是很正常的一次排版改动：`.snote { columns: 2 }` 一行就够",
+        "note": "★ 重点形态：任何「文字区并集宽」口径都看不见它（并集横跨整盒，单行却很窄）"
+      },
+      "verdict": "pass",
+      "codes": [],
+      "judgeBoxWidth": [
+        1380
+      ],
+      "paintInkWidth": 913,
+      "inkLongestLine": 447.3,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 913,
+        "inkLongestLine": 447.3,
+        "visibleNarrow": true,
+        "textHidden": false,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "overlay-opaque",
+      "direction": "不透明覆盖层遮住右侧文本",
+      "injectedCss": ".snote { position: relative; }\n.snote::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 30%; background: #f6f7f9; }",
+      "realism": {
+        "level": "low",
+        "how": "需要一个不明所以的伪元素盖层；真实场景更接近「装饰层/骨架屏盖住了正文」",
+        "note": "文字排版一字没动，只是被盖住 —— 宽度类判据天然看不见「被盖住」"
+      },
+      "verdict": "pass",
+      "codes": [],
+      "judgeBoxWidth": [
+        1380
+      ],
+      "paintInkWidth": 414,
+      "inkLongestLine": 863.75,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 414,
+        "inkLongestLine": 863.75,
+        "visibleNarrow": true,
+        "textHidden": false,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "float-narrow-column",
+      "direction": "浮动占位把正文挤成窄列（补充）",
+      "injectedCss": ".snote::before { content: \"\"; float: right; width: 70%; height: 6em; }",
+      "realism": {
+        "level": "medium",
+        "how": "真实写法：说明里放一张图/图标并 `float: right`（`img { float: right }`）——正是这个形状",
+        "note": "★ 与「改动前 70ch 窄柱」外观最像的一条：左边一根窄柱、右边整块空白"
+      },
+      "verdict": "pass",
+      "codes": [],
+      "judgeBoxWidth": [
+        1380
+      ],
+      "paintInkWidth": 411,
+      "inkLongestLine": 411.3,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 411,
+        "inkLongestLine": 411.3,
+        "visibleNarrow": true,
+        "textHidden": false,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "grid-narrow-track",
+      "direction": "grid 单轨变窄（补充）",
+      "injectedCss": ".snote { display: grid; grid-template-columns: 340px 1fr; }",
+      "realism": {
+        "level": "low",
+        "how": "把说明块改成 grid 布局（分栏/图标+文字）时的常见写法",
+        "note": "补充：与 multicol 同一类盲区（宽盒里排窄行）"
+      },
+      "verdict": "pass",
+      "codes": [],
+      "judgeBoxWidth": [
+        1380
+      ],
+      "paintInkWidth": 424,
+      "inkLongestLine": 339.3,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 424,
+        "inkLongestLine": 339.3,
+        "visibleNarrow": true,
+        "textHidden": false,
+        "promiseDefect": true
+      }
+    },
+    {
+      "id": "clip-path-inset",
+      "direction": "clip-path 裁掉右侧（补充）",
+      "injectedCss": ".snote { clip-path: inset(0 70% 0 0); }",
+      "realism": {
+        "level": "low",
+        "how": "`clip-path` 多用于装饰性裁切；落到 `.snote` 是误伤",
+        "note": "补充：与遮罩同类（绘制期隐藏）"
+      },
+      "verdict": "pass",
+      "codes": [],
+      "judgeBoxWidth": [
+        1380
+      ],
+      "paintInkWidth": 414,
+      "inkLongestLine": 863.75,
+      "classification": {
+        "column": 1380,
+        "paintInkWidth": 414,
+        "inkLongestLine": 863.75,
+        "visibleNarrow": true,
+        "textHidden": false,
+        "promiseDefect": true
+      }
+    }
+  ],
+  "formsNotInBefore": [],
+  "summary": {
+    "forms": 16,
+    "passedBefore": 11,
+    "bitBefore": 5,
+    "promiseDefectAndPassed": [
+      "writing-mode-vertical-fullwidth",
+      "flex-decorator-item",
+      "ctl-no-inject",
+      "pseudo-content-narrow",
+      "font-size-tiny",
+      "multicol-narrow-columns",
+      "overlay-opaque",
+      "float-narrow-column",
+      "grid-narrow-track",
+      "clip-path-inset"
+    ],
+    "modeBConfirmedFalseGreenBefore": [
+      "ctl-no-inject",
+      "multicol-narrow-columns",
+      "overlay-opaque",
+      "float-narrow-column"
+    ]
+  },
+  "note": "修复前判据的已知边界（t5 的 F1/F2）在本表里被这 8 条新形态从**另外的方向**复现：盒宽满宽、有字区域窄 —— 多列/浮动/竖排/伪元素/遮罩/裁切都在其中。"
+}

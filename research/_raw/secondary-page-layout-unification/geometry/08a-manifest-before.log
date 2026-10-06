@@ -1,0 +1,6 @@
+# P0 产物 sha256 清单（**跑任何 verify-site 之前**）—— 用来证明内存变异零磁盘污染
+# $ node research/_raw/secondary-page-layout-unification/build/dist-manifest.cjs --dir=dist --out=research/_raw/secondary-page-layout-unification/t3/post-repair-dist-before.sha256.txt
+# at 2026-10-06T08:31:58.289Z · verify-site.js sha256 4f4cb2e3b3f8e47d921137a5801d8692811a77d868a13c0a3516db8405d72ffb
+
+dir=dist files=303 html=186 nonHtml=117 bytes=20012665
+manifest=research/_raw/secondary-page-layout-unification/t3/post-repair-dist-before.sha256.txt

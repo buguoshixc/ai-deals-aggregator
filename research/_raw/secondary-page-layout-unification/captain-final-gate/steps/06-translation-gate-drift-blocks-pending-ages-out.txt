@@ -1,0 +1,13 @@
+# Translation gate (drift blocks, pending ages out)
+# $ node scripts/tools/zh-todo.js --check
+# runAt 2026-10-06T15:42:15.082Z · verify-site.js sha256 2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e
+
+译文门禁 · scripts\data\translations_zh.json（待译宽限 7 天）
+  已贴 45 条 / 63 个字段（数据共 137 条）
+  ✓ 漂移 0 处（对不上 id 0 · 原文已变停用 0 · 不合法 0 · 覆盖层管不到 0）
+  ✓ 待译 3 条 / 3 个字段 · 最老 2 天 · 超期 0 条
+    待译   [4a4f4777ffbc] Flowrite：description（2 天，自 2026-10-04 起 · 依据 pending）
+    待译   [8f479fcbe8f9] Rocket.new：description（0 天，自 2026-10-06 起 · 依据 pending）
+    待译   [69a0d047e3f9] Pickle AI：description（0 天，自 2026-10-06 起 · 依据 pending）
+
+✅ 译文与数据一致

@@ -1,0 +1,506 @@
+{
+  "task": "T31",
+  "label": "dist",
+  "route": "category/agent/",
+  "noteIndex": 0,
+  "dir": "dist",
+  "form": null,
+  "injection": null,
+  "viewports": [
+    1440,
+    1600,
+    760,
+    390,
+    360
+  ],
+  "probe": "verify/t31/writing-mode-probe.cjs（自写；不 require verify-site.js）",
+  "codesRuleVersion": "轮 6 公开口径（报告 §22c 头注释 L6166–6200）；本文件独立实现，未与门禁共享代码",
+  "at": "2026-10-06T15:56:57.444Z",
+  "results": [
+    {
+      "viewport": 1440,
+      "note": {
+        "index": 0,
+        "notesOnPage": 3,
+        "textLength": 139,
+        "textPreview": "这一页按分类收条目：数据里的 category 是「智能体」。\n        这一类的优惠常以"
+      },
+      "writingMode": "horizontal-tb",
+      "vertical": false,
+      "display": "block",
+      "overflow": "visible/visible",
+      "height": 20.39,
+      "box": {
+        "left": 30,
+        "right": 1410,
+        "width": 1380
+      },
+      "clientWidth": 1380,
+      "scrollWidth": 1380,
+      "contentBox": 1380,
+      "padding": {
+        "l": 0,
+        "r": 0,
+        "bL": 0,
+        "bR": 0
+      },
+      "textWidthProxy": {
+        "who": "note",
+        "width": 1380
+      },
+      "textCarriers": [
+        {
+          "who": "note",
+          "width": 1380,
+          "box": {
+            "left": 30,
+            "right": 1410,
+            "top": 143.5,
+            "bottom": 163.890625,
+            "width": 1380,
+            "height": 20.390625
+          }
+        },
+        {
+          "who": "p.snote",
+          "width": 1380,
+          "box": {
+            "left": 30,
+            "right": 1410,
+            "top": 143.5,
+            "bottom": 163.890625,
+            "width": 1380,
+            "height": 20.390625
+          }
+        }
+      ],
+      "ink": {
+        "glyphRects": 7,
+        "unionWidth": 1351.69,
+        "unionHeight": 16,
+        "maxRectWidth": 863.75,
+        "minRectWidth": 24
+      },
+      "linesH": {
+        "count": 1,
+        "widestInk": 1351.69
+      },
+      "columnsV": {
+        "count": 1,
+        "widestInk": 16
+      },
+      "columnBasis": {
+        "pageColumn": 1380,
+        "mainContent": 1380,
+        "dataArea": 1380,
+        "dataSelectorsHit": [
+          ".ctable",
+          ".chgsec",
+          ".lsum"
+        ],
+        "column": 1380,
+        "ch70": 452.81,
+        "threshold": 1173,
+        "axisTol": 69
+      },
+      "pageOverflow": {
+        "docScrollWidth": 1440,
+        "docClientWidth": 1440,
+        "innerWidth": 1440,
+        "delta": 0
+      },
+      "selfClip": {
+        "delta": 0
+      },
+      "codes": []
+    },
+    {
+      "viewport": 1600,
+      "note": {
+        "index": 0,
+        "notesOnPage": 3,
+        "textLength": 139,
+        "textPreview": "这一页按分类收条目：数据里的 category 是「智能体」。\n        这一类的优惠常以"
+      },
+      "writingMode": "horizontal-tb",
+      "vertical": false,
+      "display": "block",
+      "overflow": "visible/visible",
+      "height": 20.39,
+      "box": {
+        "left": 110,
+        "right": 1490,
+        "width": 1380
+      },
+      "clientWidth": 1380,
+      "scrollWidth": 1380,
+      "contentBox": 1380,
+      "padding": {
+        "l": 0,
+        "r": 0,
+        "bL": 0,
+        "bR": 0
+      },
+      "textWidthProxy": {
+        "who": "note",
+        "width": 1380
+      },
+      "textCarriers": [
+        {
+          "who": "note",
+          "width": 1380,
+          "box": {
+            "left": 110,
+            "right": 1490,
+            "top": 143.5,
+            "bottom": 163.890625,
+            "width": 1380,
+            "height": 20.390625
+          }
+        },
+        {
+          "who": "p.snote",
+          "width": 1380,
+          "box": {
+            "left": 110,
+            "right": 1490,
+            "top": 143.5,
+            "bottom": 163.890625,
+            "width": 1380,
+            "height": 20.390625
+          }
+        }
+      ],
+      "ink": {
+        "glyphRects": 7,
+        "unionWidth": 1351.69,
+        "unionHeight": 16,
+        "maxRectWidth": 863.75,
+        "minRectWidth": 24
+      },
+      "linesH": {
+        "count": 1,
+        "widestInk": 1351.69
+      },
+      "columnsV": {
+        "count": 1,
+        "widestInk": 16
+      },
+      "columnBasis": {
+        "pageColumn": 1380,
+        "mainContent": 1380,
+        "dataArea": 1380,
+        "dataSelectorsHit": [
+          ".ctable",
+          ".chgsec",
+          ".lsum"
+        ],
+        "column": 1380,
+        "ch70": 452.81,
+        "threshold": 1173,
+        "axisTol": 69
+      },
+      "pageOverflow": {
+        "docScrollWidth": 1600,
+        "docClientWidth": 1600,
+        "innerWidth": 1600,
+        "delta": 0
+      },
+      "selfClip": {
+        "delta": 0
+      },
+      "codes": []
+    },
+    {
+      "viewport": 760,
+      "note": {
+        "index": 0,
+        "notesOnPage": 3,
+        "textLength": 139,
+        "textPreview": "这一页按分类收条目：数据里的 category 是「智能体」。\n        这一类的优惠常以"
+      },
+      "writingMode": "horizontal-tb",
+      "vertical": false,
+      "display": "block",
+      "overflow": "visible/visible",
+      "height": 40.78,
+      "box": {
+        "left": 16,
+        "right": 744,
+        "width": 728
+      },
+      "clientWidth": 728,
+      "scrollWidth": 728,
+      "contentBox": 728,
+      "padding": {
+        "l": 0,
+        "r": 0,
+        "bL": 0,
+        "bR": 0
+      },
+      "textWidthProxy": {
+        "who": "note",
+        "width": 728
+      },
+      "textCarriers": [
+        {
+          "who": "note",
+          "width": 728,
+          "box": {
+            "left": 16,
+            "right": 744,
+            "top": 139,
+            "bottom": 179.78125,
+            "width": 728,
+            "height": 40.78125
+          }
+        },
+        {
+          "who": "p.snote",
+          "width": 728,
+          "box": {
+            "left": 16,
+            "right": 744,
+            "top": 139,
+            "bottom": 179.78125,
+            "width": 728,
+            "height": 40.78125
+          }
+        }
+      ],
+      "ink": {
+        "glyphRects": 8,
+        "unionWidth": 724.39,
+        "unionHeight": 36.39,
+        "maxRectWidth": 627.3,
+        "minRectWidth": 24
+      },
+      "linesH": {
+        "count": 2,
+        "widestInk": 724.39
+      },
+      "columnsV": {
+        "count": 1,
+        "widestInk": 36.39
+      },
+      "columnBasis": {
+        "pageColumn": 728,
+        "mainContent": 728,
+        "dataArea": 728,
+        "dataSelectorsHit": [
+          ".ctable",
+          ".chgsec",
+          ".lsum"
+        ],
+        "column": 728,
+        "ch70": 452.81,
+        "threshold": 618.8,
+        "axisTol": 36.4
+      },
+      "pageOverflow": {
+        "docScrollWidth": 760,
+        "docClientWidth": 760,
+        "innerWidth": 760,
+        "delta": 0
+      },
+      "selfClip": {
+        "delta": 0
+      },
+      "codes": []
+    },
+    {
+      "viewport": 390,
+      "note": {
+        "index": 0,
+        "notesOnPage": 3,
+        "textLength": 139,
+        "textPreview": "这一页按分类收条目：数据里的 category 是「智能体」。\n        这一类的优惠常以"
+      },
+      "writingMode": "horizontal-tb",
+      "vertical": false,
+      "display": "block",
+      "overflow": "visible/visible",
+      "height": 81.56,
+      "box": {
+        "left": 16,
+        "right": 374,
+        "width": 358
+      },
+      "clientWidth": 358,
+      "scrollWidth": 358,
+      "contentBox": 358,
+      "padding": {
+        "l": 0,
+        "r": 0,
+        "bL": 0,
+        "bR": 0
+      },
+      "textWidthProxy": {
+        "who": "note",
+        "width": 358
+      },
+      "textCarriers": [
+        {
+          "who": "note",
+          "width": 358,
+          "box": {
+            "left": 16,
+            "right": 374,
+            "top": 175.5,
+            "bottom": 257.0625,
+            "width": 358,
+            "height": 81.5625
+          }
+        },
+        {
+          "who": "p.snote",
+          "width": 358,
+          "box": {
+            "left": 16,
+            "right": 374,
+            "top": 175.5,
+            "bottom": 257.0625,
+            "width": 358,
+            "height": 81.5625
+          }
+        }
+      ],
+      "ink": {
+        "glyphRects": 10,
+        "unionWidth": 356.45,
+        "unionHeight": 77.17,
+        "maxRectWidth": 351.3,
+        "minRectWidth": 24
+      },
+      "linesH": {
+        "count": 4,
+        "widestInk": 356.45
+      },
+      "columnsV": {
+        "count": 1,
+        "widestInk": 77.17
+      },
+      "columnBasis": {
+        "pageColumn": 358,
+        "mainContent": 358,
+        "dataArea": 425,
+        "dataSelectorsHit": [
+          ".ctable",
+          ".chgsec",
+          ".lsum"
+        ],
+        "column": 358,
+        "ch70": 452.81,
+        "threshold": 304.3,
+        "axisTol": 17.9
+      },
+      "pageOverflow": {
+        "docScrollWidth": 390,
+        "docClientWidth": 390,
+        "innerWidth": 390,
+        "delta": 0
+      },
+      "selfClip": {
+        "delta": 0
+      },
+      "codes": []
+    },
+    {
+      "viewport": 360,
+      "note": {
+        "index": 0,
+        "notesOnPage": 3,
+        "textLength": 139,
+        "textPreview": "这一页按分类收条目：数据里的 category 是「智能体」。\n        这一类的优惠常以"
+      },
+      "writingMode": "horizontal-tb",
+      "vertical": false,
+      "display": "block",
+      "overflow": "visible/visible",
+      "height": 101.95,
+      "box": {
+        "left": 16,
+        "right": 344,
+        "width": 328
+      },
+      "clientWidth": 328,
+      "scrollWidth": 328,
+      "contentBox": 328,
+      "padding": {
+        "l": 0,
+        "r": 0,
+        "bL": 0,
+        "bR": 0
+      },
+      "textWidthProxy": {
+        "who": "note",
+        "width": 328
+      },
+      "textCarriers": [
+        {
+          "who": "note",
+          "width": 328,
+          "box": {
+            "left": 16,
+            "right": 344,
+            "top": 175.5,
+            "bottom": 277.453125,
+            "width": 328,
+            "height": 101.953125
+          }
+        },
+        {
+          "who": "p.snote",
+          "width": 328,
+          "box": {
+            "left": 16,
+            "right": 344,
+            "top": 175.5,
+            "bottom": 277.453125,
+            "width": 328,
+            "height": 101.953125
+          }
+        }
+      ],
+      "ink": {
+        "glyphRects": 11,
+        "unionWidth": 327.3,
+        "unionHeight": 97.56,
+        "maxRectWidth": 327.3,
+        "minRectWidth": 24
+      },
+      "linesH": {
+        "count": 5,
+        "widestInk": 327.3
+      },
+      "columnsV": {
+        "count": 1,
+        "widestInk": 97.56
+      },
+      "columnBasis": {
+        "pageColumn": 328,
+        "mainContent": 328,
+        "dataArea": 425,
+        "dataSelectorsHit": [
+          ".ctable",
+          ".chgsec",
+          ".lsum"
+        ],
+        "column": 328,
+        "ch70": 452.81,
+        "threshold": 278.8,
+        "axisTol": 16.4
+      },
+      "pageOverflow": {
+        "docScrollWidth": 360,
+        "docClientWidth": 360,
+        "innerWidth": 360,
+        "delta": 0
+      },
+      "selfClip": {
+        "delta": 0
+      },
+      "codes": []
+    }
+  ]
+}

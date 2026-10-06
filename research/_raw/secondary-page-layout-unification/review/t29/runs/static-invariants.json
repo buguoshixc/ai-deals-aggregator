@@ -1,0 +1,102 @@
+{
+  "section22b": {
+    "targetBytes": 37318,
+    "backupBytes": 37318,
+    "sha16Target": "077dc51ef68af7fd",
+    "sha16Backup": "077dc51ef68af7fd",
+    "byteIdentical": true
+  },
+  "checks": {
+    "targetLiterals": 483,
+    "backupLiterals": 483,
+    "removed": [
+      "'§22c 未渲染说明：上界断言 —— <noscript> 之外不许有未渲染说明，且 unrenderedNotes 与 note-unrendered 判据一致'"
+    ],
+    "added": [
+      "'§22c 未渲染说明：上界断言 —— 未渲染条要么「可见文本为 0」，要么必须被 note-unrendered 咬中（两类不相交、并集完整、标记不豁免）'"
+    ]
+  },
+  "tokens": {
+    "ratio": {
+      "target": [
+        "  const WIDE_NOTE_RATIO = 0.85;              // 有字区域宽 ≥ 0.85 × min(主数据区宽, 页面列宽)"
+      ],
+      "backup": [
+        "  const WIDE_NOTE_RATIO = 0.85;              // 有字区域宽 ≥ 0.85 × min(主数据区宽, 页面列宽)"
+      ]
+    },
+    "lineGate": {
+      "target": [
+        "          && note.lineCount >= 2 && note.widestLine < threshold - 0.01) {",
+        "          const lineEvidenceOk = rowsOfInk.length > 0 && rowsOfInk.every(note => note.lineCount >= 2 && note.widestLine > 0);"
+      ],
+      "backup": [
+        "          && note.lineCount >= 2 && note.widestLine < threshold - 0.01) {",
+        "          const lineEvidenceOk = rowsOfInk.length > 0 && rowsOfInk.every(note => note.lineCount >= 2 && note.widestLine > 0);"
+      ]
+    },
+    "inkRule": {
+      "target": 1,
+      "backup": 1
+    },
+    "ch70": {
+      "target": 36,
+      "backup": 36
+    },
+    "noteUnrendered": {
+      "target": 23,
+      "backup": 20
+    },
+    "noscriptSubtree": {
+      "target": 9,
+      "backup": 14
+    }
+  },
+  "pixelApi": {
+    "wholeFileHits": [
+      "取样",
+      null
+    ],
+    "newBlockHits": [],
+    "newBlockDomApi": [
+      "childNodes",
+      "clientWidth",
+      "getClientRects",
+      "nodeType",
+      "textContent"
+    ]
+  },
+  "criterion": {
+    "noteUnrenderedLine": [
+      "'note-axis', 'note-clipped', 'note-hidden-text', 'note-unrendered', 'page-overflow@<vw>', 'data-region-missing'",
+      "push('note-unrendered', `${where} 说明未渲染（盒 ${wideRound(note.box.width)}×${wideRound(note.box.height)}px）`",
+      "unrenderedText: hit('note-unrendered'),",
+      "unrenderedUnexplained: rows.filter(row => row.unrendered && row.textLength > 0 && !row.codes.includes('note-unrendered')).length,",
+      "const wideUnrenderedCodeRows = wideUnrenderedRows.filter(row => row.codes.includes('note-unrendered'));",
+      "const wideBothRows = wideUnrenderedRows.filter(row => row.textLength === 0 && row.codes.includes('note-unrendered'));",
+      "const wideUnexplainedRows = wideUnrenderedRows.filter(row => row.textLength > 0 && !row.codes.includes('note-unrendered'));",
+      "{ id: 'M13', route: 'docs/data/', width: WIDE_DESKTOP, expect: 'note-unrendered', target: 'extend', expectUnrendered: true,",
+      "const unrenderedKeys = problems.filter(problem => problem.code === 'note-unrendered')"
+    ],
+    "guard": [
+      "if (!note.rendered && note.textLength > 0 && note.glyphRects === 0) {"
+    ],
+    "noscriptFlag": [
+      "noscriptSubtree: Boolean(el.querySelector('noscript')),",
+      "//    t24 的第一版带过 `&& !note.noscriptSubtree`，T26 复审实测「给每条说明插一个**空**",
+      "+ `却有 ${note.textLength} 字可见正文、零可见字形盒（原始文本 ${note.rawTextLength} 字 · 含 <noscript> ${note.noscriptSubtree}）`",
+      "// 这条上界断言会把合法的 <noscript> 条也算进来（row.noscriptSubtree === undefined ⇒ 误判）。",
+      "noscriptSubtree: note.noscriptSubtree,",
+      "unrenderedNoscript: rows.filter(row => row.unrendered && row.noscriptSubtree).length,",
+      "rawTextLength: 40, noscriptSubtree: false,",
+      "rendered: false, textLength: 40, rawTextLength: 40, noscriptSubtree: false,"
+    ],
+    "noscriptFlagLiteral": "noscriptSubtree: Boolean(el.querySelector('noscript')),",
+    "noscriptUsesInCriterion": [
+      "//    t24 的第一版带过 `&& !note.noscriptSubtree`，T26 复审实测「给每条说明插一个**空**"
+    ],
+    "noscriptWhitelistScan": [
+      "* 【noscript】子树**排除**：脚本开启时它的内容按规范不渲染（plans/coding/ 的"
+    ]
+  }
+}

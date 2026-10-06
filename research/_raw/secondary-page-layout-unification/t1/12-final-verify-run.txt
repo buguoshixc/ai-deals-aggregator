@@ -1,0 +1,33 @@
+﻿T1 final verification run (contract order, direct invocation) @ 2026-10-06T14:45:28.4347493+08:00
+workdir = D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification
+
+### 1 seo-selftest :: node scripts/tools/seo-selftest.js
+EXIT=0
+
+### 2 build-local :: node scripts/tools/build-local.js
+EXIT=0
+
+### 3 archive-selftest :: node scripts/tools/archive-selftest.js --dir=dist
+EXIT=0
+
+### 4 validate-strict :: node scripts/validate.js --strict
+EXIT=0
+
+### 5 layout-declarations
+EXIT=0
+kinds 18 layouts ok
+
+### 6 snote-cleared
+EXIT=0
+build-local .snote 规则已清零
+
+--- key readings ---
+=== v1.7 SEO 门禁演练：69 项通过，0 项失败 ===
+
+✅ 构建完成 → dist/（自检全过，已从暂存目录就位）
+=== v3.0 历史档案演练：76 项通过，0 项失败 ===
+✅ 校验通过（strict 模式）
+kinds 18 layouts ok
+build-local .snote 规则已清零
+
+verify5 EXIT=0 / verify6 EXIT=0

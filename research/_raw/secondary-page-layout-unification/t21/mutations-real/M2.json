@@ -1,0 +1,164 @@
+{
+  "label": "t21-dist",
+  "id": "M2",
+  "route": "status/",
+  "viewport": 1440,
+  "what": "把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）",
+  "mutationKind": "replace（逐字替换）",
+  "anchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+  "injectedRule": null,
+  "selector": null,
+  "injectedTokenLength": 0,
+  "expect": "note-narrow",
+  "observed": [
+    "note-narrow",
+    "note-ink-narrow",
+    "note-axis",
+    "note-narrow",
+    "note-ink-narrow",
+    "note-axis"
+  ],
+  "hit": true,
+  "narrowKeys": [
+    "status/#0",
+    "status/#1"
+  ],
+  "matchedKeys": null,
+  "narrowNoteRows": [
+    {
+      "route": "status/",
+      "index": 0,
+      "position": "first",
+      "codes": [],
+      "kind": "status",
+      "family": "wide",
+      "regionSel": ".stable",
+      "column": 1380,
+      "width": 1380,
+      "contentBox": 1380,
+      "textWidth": 1380,
+      "textFallback": false,
+      "bearingCount": 1,
+      "rendered": true,
+      "unrendered": false,
+      "vertical": false,
+      "writingMode": "horizontal-tb",
+      "lineCount": 2,
+      "widestLine": 1376.39,
+      "lines": [
+        {
+          "left": 30,
+          "right": 1406.39,
+          "width": 1376.39
+        },
+        {
+          "left": 30,
+          "right": 1115.2,
+          "width": 1085.2
+        }
+      ],
+      "glyphRects": 10,
+      "textLength": 221,
+      "inkWidth": 1376.39,
+      "inkRects": 10,
+      "inkLongestLine": 1208.39,
+      "ratioTextWidth": 1,
+      "ratioWidestLine": 1,
+      "boxLeft": 30,
+      "boxRight": 1410,
+      "parent": "main",
+      "text": "这里列出每个采集来源最近一次的结果与跨运行的连续性。为什么要公开"
+    },
+    {
+      "route": "status/",
+      "index": 1,
+      "position": "last",
+      "codes": [],
+      "kind": "status",
+      "family": "wide",
+      "regionSel": ".stable",
+      "column": 1380,
+      "width": 1380,
+      "contentBox": 1380,
+      "textWidth": 1380,
+      "textFallback": false,
+      "bearingCount": 1,
+      "rendered": true,
+      "unrendered": false,
+      "vertical": false,
+      "writingMode": "horizontal-tb",
+      "lineCount": 1,
+      "widestLine": 652.36,
+      "lines": [
+        {
+          "left": 30,
+          "right": 682.36,
+          "width": 652.36
+        }
+      ],
+      "glyphRects": 3,
+      "textLength": 65,
+      "inkWidth": 652.36,
+      "inkRects": 3,
+      "inkLongestLine": 423.3,
+      "ratioTextWidth": 1,
+      "ratioWidestLine": 0.47,
+      "boxLeft": 30,
+      "boxRight": 1410,
+      "parent": "main",
+      "text": "机器可读的同一份数据：source-health.json。 本"
+    }
+  ],
+  "anchorUniqueness": {
+    "fromVerifySite": 1,
+    "fromDiskStatic": 1,
+    "fromDiskWholeFile": 1,
+    "guardPassed": true,
+    "guardDetail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）",
+    "disk": {
+      "file": "dist/status/index.html",
+      "occurrencesInStyles": 1,
+      "occurrencesInFile": 1
+    },
+    "domInjectionGuard": null,
+    "mainSnoteCountOnDisk": 2
+  },
+  "geometry": {
+    "noteCount": 2,
+    "noteWidthLegacy": null,
+    "firstNoteBoxWidth": 452.81,
+    "firstNoteTextWidth": 453,
+    "columnWidthLegacy": null,
+    "detailMainCount": 0,
+    "scrollWidth": 1440,
+    "viewport": 1440,
+    "injectedAt": null,
+    "narrowKeys": [
+      "status/#0",
+      "status/#1"
+    ]
+  },
+  "productSha256": {
+    "before": null,
+    "after": null,
+    "equal": true
+  },
+  "productFile": "dist/status/index.html",
+  "checks": [
+    {
+      "name": "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "ok": true,
+      "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）"
+    },
+    {
+      "name": "§22c M2 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄））",
+      "ok": true,
+      "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis] · 说明 2 条 · 首条 盒 452.81px / 有字区域 453px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [status/#0, status/#1] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-narrow, note-ink-narrow, note-axis]"
+    }
+  ],
+  "keyChecks": [],
+  "source": {
+    "report": "research/_raw/secondary-page-layout-unification/t21/geometry/after-verify.json",
+    "mutations": "research/_raw/secondary-page-layout-unification/t21/geometry/mutations.json"
+  }
+}

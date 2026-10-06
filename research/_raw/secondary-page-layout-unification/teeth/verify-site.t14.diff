@@ -1,0 +1,701 @@
+diff --git "a/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification\\research\\_raw\\secondary-page-layout-unification\\teeth\\_backup\\verify-site.pre-t14.bak" "b/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification\\scripts\\tools\\verify-site.js"
+index 71a934a..17f4d1d 100644
+--- "a/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification\\research\\_raw\\secondary-page-layout-unification\\teeth\\_backup\\verify-site.pre-t14.bak"	
++++ "b/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification\\scripts\\tools\\verify-site.js"	
+@@ -6101,52 +6101,84 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+   /* §22c Wide Data Page 的页面级说明同轴门禁（布局族 × 全站几何 × 逐条）    */
+   /* ------------------------------------------------------------------ */
+   //
+-  // ===== 修复轮（t7 · F1–F4）后的口径：与修复前的差别逐条写在这里 =====
++  // ===== 修复轮 3（t14）后的口径：**量排版结果，不量机制** =====
+   //
+-  // 缺陷原型有两条，第二条是修复前**看不见**的那条：
+-  //   ① `.snote { … max-width: 70ch }`：说明的**盒宽**被压成 452px（12px 字体下 70ch），
+-  //      同一页主数据区 1380px —— 说明只占表格宽的三分之一，左边对齐、右边半截。
+-  //   ② `.snote { padding-right: calc(100% - 70ch) }`：**盒宽一字不动**（仍是 1380px），
+-  //      有字区域却恒等于 451px。修复前判据只看 border-box ⇒ 整轮 827 项断言 EXIT=0 放行。
++  // 三轮对抗的教训是同一条根因，只是把「代理量」从盒子挪到了内容盒：
++  //   · round 1（border-box）：`padding-right: calc(100% - 70ch)` 让说明变回 451px 窄柱 —— 整轮放行；
++  //   · round 2（内容盒 textWidth）：`display: grid; grid-template-columns: minmax(0,70ch) 1fr`
++  //     只改一条 CSS、不动标记，就让 changes/ 的 13 条说明字迹只剩 156–451.52px —— 整轮 842 项 EXIT=0；
++  //     同类的还有 multicol（column-count/column-width）、`::before { float: right; width: 70% }`、
++  //     flex 装饰项、匿名盒承载文本……它们的**盒子与内容盒都可能是满宽的**。
++  // 所以本轮的窄柱判据改成**逐行字迹宽**：不管窄化用哪种机制实现，**排版出来的行就是窄的**。
+   //
+-  // 所以这一节的宽判据量的是**有字区域宽（textWidth）**，不是盒宽：
+-  //   textWidth = 「直接承载文本、且参与行布局（display ∉ inline / none / contents）的元素」里
+-  //               最窄的那个的 content box（clientWidth - paddingLeft - paddingRight）；
+-  //               说明自己也算一个候选。
+-  //   · padding 挤压（C1 / C1b / C1c）    ⇒ 说明自己的 content box 变窄；
+-  //   · 内层 max-width 容器 / 子元素块级化（C2 / C3 / A5）⇒ 那个内层承载文本的块级元素变窄。
+-  //   一条承载文本的块级元素都找不到时（例如说明里只有 <a> 这种 inline 子元素），回落说明
+-  //   自己的 content box（再退一步 border-box），并在报告/metrics 里标 textFallback=true。
+-  // ⚠️ 为什么 Range 并集宽（字迹）只进报告、不当判据 —— 这是量出来的，不是省的：
+-  //   Range 包住文本节点量到的是**字迹**，不是**能排字的区域**。短文本天然填不满列宽：dist 上
+-  //   401 条里 89 条是单行且字迹 < 0.85×列宽（例：「全部变化 →」字迹 61.64px / 列宽 1380px），
+-  //   把字迹当判据会一次误报 230 条 / 79 页（探针读数 teeth/_scratch/measure-v2-*.json）。
+-  //   而 [min(content box of 承载文本的块级元素)] 在 dist.baseline 上命中 **156 条 / 48 页、
+-  //   漏判 0、误报 0**（与 geometry/truth-401.json 逐条 route#index 相同），在 dist 上 0 条。
+-  //   两套读数都在 metrics.layoutNotes 里逐条给出（textWidth + inkWidth + inkLines），可外部复核。
++  //   glyphRects = 全部非空白文本节点的 document.createRange().getClientRects() 里
++  //                可见的字形盒（width > 0 && height > 0）
++  //   lines      = 这些 rect 按**垂直重叠**（重叠 > 两者较矮高度的 50%）归并成的行
++  //   lineCount  = 行数 · widestLine = 最宽一行的字迹宽 · lines[] = 逐行 {width,left,right}
+   //
+-  // 判据（一次量测 + 页面元信息 ⇒ 违规码；**全部**由 wideProblems() 一处产出）：
+-  //   · note-narrow  ：textWidth < 0.85 × min(主数据区宽, 页面列宽) —— 比例，不是写死的像素；
+-  //   · note-axis    ：border-box 与「主数据区」或「页面主容器 <main>」都不在同一轴，
+-  //                    容差 = max(1px, 5% × min(主数据区宽, 页面列宽))。prompt §11 明确允许
+-  //                    padding / border / scroll wrapper 造成的少量差异（.aliasnote 的 3px 竖线 +
+-  //                    8px 缩进、.asec/.phubsec 内缩 13px 都属这一列）；450px 级内缩交给宽判据咬。
+-  //                    ⚠️ 轴判据**不**改成文字区：那会把 .aliasnote 那 3 页的有意缩进误报成不同轴。
+-  //   · note-clipped ：说明自身横向溢出（scrollWidth > clientWidth + 1）
+-  //   · 布局族       ：unclassified-layout / missing-detail-main / unexpected-detail-main
+-  //   · 数据区       ：data-region-missing（连 <main> 都没有时才是红；命不中声明选择器按契约回落）
+-  //   · 页面级溢出   ：page-overflow@<vw>
+-  // 逐条：<main> 内**每一条** .snote 都判，用 route#index 定位（index = 文档序，0 起）。
+-  //   「无页面级说明 ⇒ 跳过、不算失败」只对**零条**的页面成立（81 页 = 首页 + 80 个 deal 详情）。
++  // 判据是**并集**（不是替换）：旧口径一字不改，新口径叠上去。
++  //   ① `note-narrow`      ：textWidth（内容盒代理量）< 0.85 × min(主数据区宽, 页面列宽) —— t7 起就有，**未改**；
++  //   ② `note-ink-narrow`  ：lineCount >= 2 且 widestLine < 0.85 × min(主数据区宽, 页面列宽) —— 本轮新增。
+   //
+-  // 视口：1440 与 1600 **全站逐条**几何 + 溢出、390 全站 documentElement.scrollWidth、
+-  //   760/360 样本集（29 条，现场从注册表 + 磁盘推导，不写死 id/slug）。
+-  //   ⚠️ 1600 档是修复轮新加的：缺陷可以藏在 @media (min-width: 1500px) 里，1440 档永远看不见。
+-  //   --url= 线上冒烟没有产物目录 ⇒ 本节如实跳过，并在 metrics 里留下**显式跳过记录**（不静默）。
++  // ⚠️ 为什么必须是并集（两份独立标定互证，读数见 teeth/_scratch/lines-*.json）：
++  //   · 只留 ② 会**漏 48 条**：真值 156 条里有 48 条是**单行**说明 + 盒子被压窄
++  //     （例 category/agent/#1「全部变化 →」：单行 61.64px / 盒宽 452.81px）。单行说明**没有行证据** ——
++  //     「1 行、字迹 61.64px」在 452px 的窄柱里和在 1380px 的满宽列里渲染结果一模一样，
++  //     ① 才是看得见「盒子被压窄」的那把尺子。t11 的独立探针（adversary/calibration-all.json）
++  //     与我这份探针（t14 的 lines-dist.baseline-1440.json）在 B 集合上得到**同一个 108/48 缺口**。
++  //   · 只留 ① 会漏 grid / multicol / float / flex 那一整类：它们的**盒子与内容盒都可能是满宽的**
++  //     （t8 的 F-R2-1：`display:grid; grid-template-columns: minmax(0,70ch) 1fr` 只改一条 CSS，
++  //     整轮 842 项 EXIT=0）。② 是唯一看得见「字迹铺不开」的那把尺子。
++  //   · 并集实测：dist.baseline = 156 条 / 48 页（漏判 0、误报 0）· dist = 0 条 · dist.synth-fixed = 0 条。
+   //
+-  // 违规码全部由 wideProblems() 一处产出（变异牙复测的就是它，别处不再写第二份判据）：
++  // ② 的三条不许动的细节（都经过独立标定）：
++  //   · 前置条件 `lineCount >= 2` **不许松**：去掉它，dist 上 89 条单行短说明会被误报
++  //     （「全部变化 →」字迹 61.64px < 0.85×1380 —— 那是短文本，不是缺陷）；
++  //   · 也**不许**加码到 `>= 3`：multicol 形态只有 2 行，提到 3 命中数直接掉到 0；
++  //   · 阈值 0.85：t11 已验证 0.85× 与 0.5× 在 A/B/C 三个集合上给出**完全相同**的命中集合
++  //     ⇒ 这个口径不卡在阈值边缘。
++  //
++  // ② 的**语义**（t11 发现并验证，写在这里免得下一轮当 bug 提）：
++  //   它量的是「字迹在横向铺到哪里」，不是「单列有多宽」。multicol 形态命中读数是 **912.63px（66%）**，
++  //   不是单列宽 447px —— 因为多列里不同列的文字片段共享同一垂直带，按垂直覆盖归并时被并成「一行」。
++  //   这正是想要的语义：3 列只用了 2 列、右侧 1/3 空白（缺陷原型）⇒ 912.63 < 1173 ⇒ 咬中；
++  //   若字迹铺满整盒（很多细列排满全宽、没有大片空白）⇒ 放行 —— 那种形态**没有**「右边半截空白」的观感。
++  //   归并容差目前实现为「垂直覆盖 > 两者较矮高度的 50%」；极小 `column-gap` 或竖排时需要按连续字迹段
++  //   细分（竖排已显式不判 ②，见下）；本口径只在 1440/1600 标定过。
++  //
++  // note-hidden-text（新码，对应 t8 的 F-R2-2）：**文本非空但一个可见字形盒都没有** ⇒ 判红。
++  //   `.snote { font-size: 0 } .snote::before { content: "正文…" }` 这种「把正文交给伪元素画」的
++  //   写法让真实文本一个像素都不显示，而盒宽/行数一切正常 —— 只有字形盒能看穿它。
++  //   标定（dist 401 条实测）：只有 plans/coding/#1 命中这个形状，而它是
++  //   `<p class="snote pnoscript"><noscript>…</noscript></p>`：脚本开启时 <noscript> 内容
++  //   **本来就不渲染**（整块高度 0）。所以规则写成「**已渲染**（border-box 有宽有高）且文本非空
++  //   且零可见字形盒」—— 未渲染的说明单独登记为 unrendered，既不算窄柱也不算藏字。
++  //
++  // 竖排（writing-mode: vertical-* / sideways-*）：竖排的「行」是**竖列**，横排意义的行宽在这里
++  //   没有对应量 ⇒ ② **显式不判**（metrics 里标 vertical=true），由 ① 的内容盒量兜住。
++  //   实测两个形态都判对：`writing-mode: vertical-rl; height: 5.6rem`（盒宽被内容反推成 ~347px）
++  //   ⇒ note-narrow；`… width: 100%; height: 5.6rem`（盒宽锁满宽、正文竖成一根细条）⇒ 不判。
++  //
++  // ===== 本版**不**承诺的边界（写在这里，免得下一轮再当 blocker 提）=====
++  // · 绘制类遮盖**不在本版承诺内**：`clip-path`、`mask*`、不透明覆盖层（`::after` 盖住右侧 70%）。
++  //   它们不改变排版结果（行还是满宽的），要发现只能靠像素级断言，而像素断言会因跨平台字体渲染
++  //   在 CI 上 flaky 红 —— 那比漏判更糟；可行性也做过普查：t4 与 t11 各自全仓扫过
++  //   252 个源文件 + 186 个产物，`clip-path` **0 处**、`mask*` **0 处**，本仓库没有任何构建路径
++  //   会产出它们，`clip-path: path()` / 位图 `mask-image` 也穷尽不了。
++  // · `transform: scaleX()` 这类**绘制期缩放**会一并影响 getClientRects ⇒ 逐行判据量得到（已实测咬中）；
++  //   同族的「把字挪出可视区」（`text-indent:-9999px` + `overflow:hidden`）由既有的 note-clipped 咬。
++  //
++  // 其余判据与 t7 相同、未动：
++  //   · note-axis    ：border-box 与「主数据区」或「页面主容器 <main>」任一同一轴，
++  //                    容差 = max(1px, 5% × min(主数据区宽, 页面列宽))（prompt §11 允许 padding /
++  //                    border / scroll wrapper 的少量差异；.aliasnote 的 3px 竖线 + 8px 缩进属此列）。
++  //   · note-clipped ：说明自身横向溢出（scrollWidth > clientWidth + 1）。
++  //   · 逐条：<main> 内**每一条** .snote 都判，码带 route#index；零条说明的页面才跳过。
++  //   · 视口：1440 与 1600 全站逐条、390 全站 scrollWidth、760/360 样本集。
++  //
++  // 违规码全部由 wideProblems() 一处产出：
+   //   unclassified-layout / unexpected-detail-main / missing-detail-main / note-narrow /
+-  //   note-axis / note-clipped / page-overflow@<vw> / data-region-missing
++  //   note-ink-narrow / note-axis / note-clipped / note-hidden-text / page-overflow@<vw> / data-region-missing
+ 
+   const WIDE_TOL = 1;                        // 亚像素取整容差（px）
+   const WIDE_AXIS_RATIO = 0.05;              // 轴的比例容差：max(1px, 5% × min(主数据区宽, 页面列宽))
+@@ -6172,8 +6204,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+   const WIDE_MUTATION_TARGETS = ['student/', 'status/', 'changes/', 'feeds/'];
+   /** §22c 的全部违规码（判据自检用：一个都不能少、也不能多）。 */
+   const WIDE_CODE_VOCABULARY = [
+-    'unclassified-layout', 'unexpected-detail-main', 'missing-detail-main', 'note-narrow',
+-    'note-axis', 'note-clipped', 'page-overflow@<vw>', 'data-region-missing'
++    'unclassified-layout', 'unexpected-detail-main', 'missing-detail-main', 'note-narrow', 'note-ink-narrow',
++    'note-axis', 'note-clipped', 'note-hidden-text', 'page-overflow@<vw>', 'data-region-missing'
+   ];
+ 
+   const wideRound = n => Math.round(n * 100) / 100;
+@@ -6257,7 +6289,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+       const DATA_SELECTORS = ${JSON.stringify(WIDE_DATA_SELECTORS)};
+       const FROZEN = ${JSON.stringify(WIDE_SNOTE_FROZEN)};
+       const round = n => Math.round(n * 100) / 100;
+-      const zeroBox = { count: 0, left: 0, right: 0, width: 0, scrollW: 0, clientW: 0, padLeft: 0, padRight: 0, maxWidth: '', overflowWrap: '' };
++      const zeroBox = { count: 0, left: 0, right: 0, width: 0, height: 0, top: 0, scrollW: 0, clientW: 0, padLeft: 0, padRight: 0, maxWidth: '', overflowWrap: '' };
+       const box = el => {
+         if (!el) return Object.assign({}, zeroBox);
+         const cs = getComputedStyle(el);
+@@ -6265,6 +6297,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         return {
+           count: 1,
+           left: round(r.left + window.scrollX), right: round(r.right + window.scrollX), width: round(r.width),
++          // height/top：「已渲染」的判定要用（<noscript> 说明整块高度 0）
++          height: round(r.height), top: round(r.top + window.scrollY),
+           scrollW: el.scrollWidth, clientW: el.clientWidth,
+           padLeft: parseFloat(cs.paddingLeft) || 0, padRight: parseFloat(cs.paddingRight) || 0,
+           maxWidth: cs.maxWidth, overflowWrap: cs.overflowWrap
+@@ -6284,26 +6318,75 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         const display = getComputedStyle(el).display;
+         return display !== 'inline' && display !== 'none' && display !== 'contents';
+       };
+-      /** Range 并集：包住元素下全部文本节点，取 getClientRects() 的并集（字迹，不是可用区域） */
+-      const inkOf = el => {
+-        const texts = [];
++      /**
++       * 全部**非空白文本节点**的可见字形盒（Range 包住文本节点 → getClientRects）。
++       * 【noscript】子树**排除**：脚本开启时它的内容按规范不渲染（plans/coding/ 的
++       * 「.snote.pnoscript」就是这种：textContent 非空、一个字形盒都没有，但那是正常的「无 JS 提示」）。
++       */
++      const glyphRectsOf = el => {
++        const rects = [];
+         const walk = node => {
+           for (const child of node.childNodes) {
+-            if (child.nodeType === 3) { if (child.textContent.trim()) texts.push(child); }
+-            else if (child.nodeType === 1) walk(child);
++            if (child.nodeType === 3) {
++              if (!child.textContent.trim()) continue;
++              const range = document.createRange();
++              range.selectNodeContents(child);
++              for (const rect of range.getClientRects()) {
++                if (rect.width > 0 && rect.height > 0) {
++                  rects.push({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height });
++                }
++              }
++            } else if (child.nodeType === 1 && child.tagName !== 'NOSCRIPT') {
++              walk(child);
++            }
+           }
+         };
+         walk(el);
+-        const rects = [];
+-        for (const text of texts) {
+-          const range = document.createRange();
+-          range.selectNodeContents(text);
+-          for (const rect of range.getClientRects()) if (rect.width > 0 && rect.height > 0) rects.push(rect);
++        return rects;
++      };
++      /** 与文本节点的「非空」口径一致：同样是排除了 <noscript> 之后的文本 */
++      const visibleTextOf = el => {
++        let out = '';
++        const walk = node => {
++          for (const child of node.childNodes) {
++            if (child.nodeType === 3) out += child.textContent;
++            else if (child.nodeType === 1 && child.tagName !== 'NOSCRIPT') walk(child);
++          }
++        };
++        walk(el);
++        return out.replace(/\\s+/g, ' ').trim();
++      };
++      /**
++       * 逐行归并：rect 按 top 排序，落进「垂直重叠 > 两者较矮高度 50%」的已有行，否则新开一行。
++       * 行 = 一条排版行（横排时），逐行字迹宽就是这个元素**实际排版出来的**结果。
++       */
++      const mergeLines = rects => {
++        const sorted = rects.slice().sort((a, b) => a.top - b.top || a.left - b.left);
++        const lines = [];
++        for (const rect of sorted) {
++          let hit = null;
++          for (const line of lines) {
++            const overlap = Math.min(line.bottom, rect.bottom) - Math.max(line.top, rect.top);
++            if (overlap > 0.5 * Math.min(line.height, rect.height)) { hit = line; break; }
++          }
++          if (hit) {
++            hit.left = Math.min(hit.left, rect.left); hit.right = Math.max(hit.right, rect.right);
++            hit.top = Math.min(hit.top, rect.top); hit.bottom = Math.max(hit.bottom, rect.bottom);
++            hit.height = Math.max(hit.height, rect.height);
++          } else {
++            lines.push({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, height: rect.height });
++          }
+         }
++        lines.sort((a, b) => a.top - b.top || a.left - b.left);
++        return lines.map(line => ({ left: round(line.left), right: round(line.right), width: round(line.right - line.left) }));
++      };
++      /** Range 并集：包住元素下全部文本节点，取 getClientRects() 的并集（诊断量，不再作判据） */
++      const inkOf = el => {
++        const rects = glyphRectsOf(el);
+         if (!rects.length) return null;
+         const left = Math.min.apply(null, rects.map(r => r.left));
+         const right = Math.max.apply(null, rects.map(r => r.right));
+-        return { left: round(left), right: round(right), width: round(right - left), lines: rects.length,
++        return { left: round(left), right: round(right), width: round(right - left), rects: rects.length,
+           longestLine: round(Math.max.apply(null, rects.map(r => r.width))) };
+       };
+       const mains = document.querySelectorAll('main');
+@@ -6334,6 +6417,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         noteCount: notes.length,
+         notes: notes.map((el, index) => {
+           const noteBox = box(el);
++          const cs = getComputedStyle(el);
+           const bearing = [];
+           if (bearsText(el)) bearing.push(el);
+           for (const descendant of el.querySelectorAll('*')) {
+@@ -6341,18 +6425,32 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           }
+           const widths = bearing.map(contentBoxOf).filter(w => w > 0);
+           const contentBox = contentBoxOf(el);
+-          // 有字区域宽：承载文本的块级元素里最窄的那个 content box；找不到就回落（并标记）
++          // 诊断量（不再作判据，单行回落除外）：承载文本的块级元素里最窄的那个 content box
+           const textWidth = widths.length
+             ? Math.min.apply(null, widths)
+             : (contentBox > 0 ? contentBox : noteBox.width);
++          // 判据量：逐行字迹
++          const glyphRects = glyphRectsOf(el);
++          const lines = mergeLines(glyphRects);
++          const visibleText = visibleTextOf(el);
++          const writingMode = cs.writingMode || 'horizontal-tb';
+           return {
+             index: index,
+             depth: (() => { let d = 0, p = el; while (p && p !== main) { p = p.parentElement; d++; } return d; })(),
+             parent: el.parentElement
+               ? el.parentElement.tagName.toLowerCase() + (el.parentElement.className ? '.' + String(el.parentElement.className).split(/\\s+/)[0] : '')
+               : null,
+-            text: (el.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 32),
++            text: visibleText.slice(0, 32),
++            textLength: visibleText.length,
+             box: noteBox,
++            // 已渲染 = border-box 有宽有高。【noscript】说明整块高度为 0 ⇒ 未渲染，不判窄柱/藏字。
++            rendered: noteBox.width > 0 && noteBox.height > 0,
++            writingMode: writingMode,
++            vertical: /vertical|sideways/.test(writingMode),
++            glyphRects: glyphRects.length,
++            lineCount: lines.length,
++            widestLine: lines.length ? lines.reduce((max, line) => Math.max(max, line.width), 0) : 0,
++            lines: lines,
+             contentBox: round(contentBox),
+             textWidth: round(textWidth),
+             textFallback: widths.length === 0,
+@@ -6378,7 +6476,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+    */
+   function wideProblems(geometry, meta) {
+     const problems = [];
+-    const push = (code, msg, index) => problems.push(index === undefined ? { code, msg } : { code, msg, index });
++    // cause：这条码是哪条判据咬出来的（`line` / `single-line` / `vertical` / `hidden-text` …）。
++    // 变异牙与 metrics 都读它，免得靠中文消息去认判据。
++    const push = (code, msg, index, cause) => {
++      const problem = { code, msg };
++      if (index !== undefined) problem.index = index;
++      if (cause !== undefined) problem.cause = cause;
++      problems.push(problem);
++    };
+     const vw = geometry.doc.clientWidth;
+ 
+     // ① 布局族：解析不出来就是红（不许静默跳过一页）
+@@ -6407,12 +6512,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+     }
+ 
+     // ③ 逐条页面级说明：<main> 内**全部** .snote（不再只看文档序第一条）。
+-    //    零条的页面如实标「无页面级说明」，跳过该条、不算失败。
++    //    零条的页面如实标「无页面级说明」，跳过该条、不算失败；整块没渲染的（<noscript> 那种）
++    //    也单独登记为 unrendered —— 它既不是窄柱也不是藏字。
+     if (mainOk && regionOk && geometry.noteCount > 0) {
+       const main = geometry.main;
+       const region = geometry.region;
+       // 主数据区可能比页面列还宽（窄档里表格在横向滚动容器里）⇒ 分母取两者的较小值。
+       const column = Math.min(region.width, main.width);
++      const threshold = WIDE_NOTE_RATIO * column;
++      // 逐行字迹口径只在桌面档（1440/1600）生效 —— 那是它的标定区间；调用方用 meta.inkRule=false 关。
++      const inkRuleOn = !meta || meta.inkRule !== false;
+       // 轴：border-box，比例容差（prompt §11：允许 padding / border / scroll wrapper 的少量差异）
+       const axisTol = Math.max(WIDE_TOL, WIDE_AXIS_RATIO * column);
+       const anchors = [
+@@ -6421,11 +6530,34 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+       ];
+       for (const note of geometry.notes) {
+         const where = wideNoteKey(meta.route, note.index);
+-        if (note.textWidth < WIDE_NOTE_RATIO * column - 0.01) {
+-          push('note-narrow', `${where} 有字区域宽 ${wideRound(note.textWidth)}px < ${WIDE_NOTE_RATIO} × ${wideRound(column)}px`
+-            + `（盒宽 ${wideRound(note.box.width)}px · content box ${wideRound(note.contentBox)}px · 承载文本块 ${note.bearingCount} 个`
+-            + `${note.textFallback ? ' · textFallback 回落' : ''} · 主数据区 ${geometry.regionSel || '<main>'} ${wideRound(region.width)}px`
+-            + ` · 页面列 ${wideRound(main.width)}px · 字迹 ${note.ink ? wideRound(note.ink.width) : '无'}px/${note.ink ? note.ink.lines : 0} 行）`, note.index);
++        const facts = `盒宽 ${wideRound(note.box.width)}px · 内容盒 ${wideRound(note.contentBox)}px · 行 ${note.lineCount} 行`
++          + `（最宽一行 ${wideRound(note.widestLine)}px${note.vertical ? ' · 竖排' : ''}）`
++          + ` · 字形盒 ${note.glyphRects} 个 · 列宽 ${wideRound(column)}px · 阈值 ${wideRound(threshold)}px`
++          + `（主数据区 ${geometry.regionSel || '<main>'} ${wideRound(region.width)}px / 页面列 ${wideRound(main.width)}px）`;
++        if (!note.rendered) note.unrendered = true;
++        // ① 旧口径（t7 的 textWidth，**一字未改**）：盒子/内容盒被压窄。
++        //    它覆盖「单行说明 + 盒子被压窄」那一类（真值 156 条里有 48 条），行口径看不见它们。
++        if (note.textWidth < threshold - 0.01) {
++          push('note-narrow', `${where} 有字区域宽（内容盒代理量）${wideRound(note.textWidth)}px < ${WIDE_NOTE_RATIO} × 列宽`
++            + `（承载文本块 ${note.bearingCount} 个${note.textFallback ? ' · textFallback 回落' : ''}）—— ${facts}`, note.index, 'text-width');
++        }
++        // ② 新口径（t14）：**逐行字迹**。盒子/内容盒可能都是满宽的（grid / multicol / float / flex /
++        //    匿名盒…），但排版出来的行铺不开 ⇒ 这里咬。前置条件 lineCount ≥ 2 不许松（单行短说明
++        //    天生就有窄字迹，去掉它 dist 上会误报 89 条）；也不许提到 ≥3（multicol 只有 2 行）。
++        //    竖排：竖排的「行」是竖列，横排意义的行宽没有对应量 ⇒ 显式不判（由 ① 的内容盒量兜住）。
++        //    ⚠️ 只在**桌面档**（1440/1600，本口径的标定区间）生效：调用方用 meta.inkRule=false 关掉它
++        //    （760/360 样本集就是这么调的）。实测理由：360 档 feeds/#2「按「我是谁」…」在 328px 列里
++        //    只排成 2 行、最宽一行 264px（CJK 断行 + 行内 /student/ 这类不可断片段会留 20% 余量），
++        //    在窄档属于正常排版，不是缺陷 —— 窄档留给 ① / 同轴 / 裁切 / 溢出 判。
++        if (note.rendered && !note.vertical && inkRuleOn && note.lineCount >= 2 && note.widestLine < threshold - 0.01) {
++          push('note-ink-narrow', `${where} 逐行字迹：最宽一行 ${wideRound(note.widestLine)}px < ${WIDE_NOTE_RATIO} × 列宽`
++            + ` —— ${facts}`, note.index, 'line');
++        }
++        // ③ 藏字：文本非空、**已渲染**，却一个可见字形盒都没有（正文被交给 ::before / font-size:0 去画的形状）。
++        //    未渲染的说明（<noscript> 提示：整块高度 0）不判 —— 它既不是窄柱也不是藏字。
++        if (note.rendered && note.textLength > 0 && note.glyphRects === 0) {
++          push('note-hidden-text', `${where} 文本 ${note.textLength} 字但**零可见字形盒**（getClientRects 为空）`
++            + ` —— 正文可能被 font-size:0 / ::before{content} / display:none 之类的写法接管：${facts}`, note.index, 'no-glyph');
+         }
+         const aligned = anchors.filter(anchor => Math.abs(note.box.left - anchor.box.left) <= axisTol
+           && Math.abs(note.box.right - anchor.box.right) <= axisTol);
+@@ -6571,11 +6703,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           await wideGoto(meta.route, WIDE_NARROW);
+           const geometry = await wideMeasure(widePage);
+           // 390 档只判溢出：列宽/同轴那一档的定义是「列铺满可用宽」，窄档里表格在滚动容器里，
+-          // 其余码在窄档没有意义（判据函数照跑，只取溢出类，码本身仍由 wideProblems 产出）。
++          // 其余码在窄档没有意义（判据函数照跑，只取溢出类，码本身仍由 wideProblems 产出；
++          // 逐行字迹口径在窄档未标定 ⇒ inkRule:false）。
+           wideNarrow390.set(meta.route, {
+             scrollWidth: geometry.doc.scrollWidth,
+             clientWidth: geometry.doc.clientWidth,
+-            codes: wideCodes(wideProblems(geometry, meta)).filter(code => code.startsWith('page-overflow@'))
++            codes: wideCodes(wideProblems(geometry, Object.assign({}, meta, { inkRule: false }))).filter(code => code.startsWith('page-overflow@'))
+           });
+         }
+         widePhaseSeconds.narrow390 = Math.round((Date.now() - phaseStart) / 100) / 10;
+@@ -6620,13 +6753,24 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+               column: wideRound(column),
+               width: wideRound(note.box.width),
+               contentBox: note.contentBox,
++              // ① 旧判据量（textWidth，未改）+ ② 新判据量（逐行字迹）+ ③ 藏字标定面，逐条都进容器
+               textWidth: note.textWidth,
+               textFallback: note.textFallback,
+               bearingCount: note.bearingCount,
++              rendered: note.rendered,
++              unrendered: Boolean(note.unrendered),
++              vertical: note.vertical,
++              writingMode: note.writingMode,
++              lineCount: note.lineCount,
++              widestLine: note.widestLine,
++              lines: note.lines,
++              glyphRects: note.glyphRects,
++              textLength: note.textLength,
+               inkWidth: note.ink ? note.ink.width : null,
+-              inkLines: note.ink ? note.ink.lines : 0,
++              inkRects: note.ink ? note.ink.rects : 0,
+               inkLongestLine: note.ink ? note.ink.longestLine : null,
+-              ratio: column > 0 ? wideRound(note.textWidth / column) : null,
++              ratioTextWidth: column > 0 ? wideRound(note.textWidth / column) : null,
++              ratioWidestLine: column > 0 ? wideRound(note.widestLine / column) : null,
+               boxLeft: note.box.left,
+               boxRight: note.box.right,
+               parent: note.parent,
+@@ -6646,14 +6790,26 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         const rows = wideNoteRowsByViewport[width];
+         const hit = code => rows.filter(row => row.codes.includes(code));
+         const narrow = hit('note-narrow');
++        const inkNarrow = hit('note-ink-narrow');
++        const union = rows.filter(row => row.codes.includes('note-narrow') || row.codes.includes('note-ink-narrow'));
+         wideSummary[width] = {
+           rows: rows.length,
+           narrow: narrow,
+           narrowKeys: narrow.map(row => wideNoteKey(row.route, row.index)),
+           narrowRoutes: [...new Set(narrow.map(row => row.route))],
++          inkNarrow: inkNarrow,
++          inkNarrowKeys: inkNarrow.map(row => wideNoteKey(row.route, row.index)),
++          inkNarrowRoutes: [...new Set(inkNarrow.map(row => row.route))],
++          union: union,
++          unionKeys: union.map(row => wideNoteKey(row.route, row.index)),
++          unionRoutes: [...new Set(union.map(row => row.route))],
++          hiddenText: hit('note-hidden-text'),
+           axis: hit('note-axis'),
+           clipped: hit('note-clipped'),
+           textFallback: rows.filter(row => row.textFallback).length,
++          unrendered: rows.filter(row => row.unrendered).length,
++          vertical: rows.filter(row => row.vertical).length,
++          lineEvidence: rows.filter(row => row.lineCount >= 2).length,
+           overflow: wideMeta.map(meta => meta.route)
+             .filter(route => wideProblemsAt.get(`${width}|${route}`).some(problem => problem.code === `page-overflow@${width}`))
+         };
+@@ -6690,8 +6846,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           if (!inRegion && !inMain) wideAnchorStats.neither += 1;
+         }
+       }
+-      const wideExplainRow = row => `${wideNoteKey(row.route, row.index)} 有字区域 ${row.textWidth}px（盒 ${row.width}px · 列 ${row.column}px · 比例 ${row.ratio}`
+-        + ` · 主数据区 ${row.regionSel || '<main>'} · codes [${row.codes.join(',')}]${row.text ? ` · 「${row.text.slice(0, 16)}」` : ''}）`;
++      const wideExplainRow = row => `${wideNoteKey(row.route, row.index)} 内容盒 ${row.textWidth}px / 盒 ${row.width}px / 列 ${row.column}px`
++        + ` · 行 ${row.lineCount}（最宽 ${row.widestLine}px${row.vertical ? ' · 竖排' : ''}）· 字形盒 ${row.glyphRects}`
++        + ` · 主数据区 ${row.regionSel || '<main>'} · codes [${row.codes.join(',')}]${row.text ? ` · 「${row.text.slice(0, 16)}」` : ''}`;
+       const wideSamples = (list, limit = 5) => list.slice(0, limit).join(' ')
+         + (list.length > limit ? ` …（还有 ${list.length - limit}）` : '');
+ 
+@@ -6715,15 +6872,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           missing.length === 0, missing.length ? `缺 ${missing.join(' ')}` : `逐条命中（${registryRoutes.length} 条，全部现场推导，不写死 slug）`);
+       }
+ 
+-      // ---- ③ / ④ 两个桌面档：**逐条**判全部说明 ----
++      // ---- ③ / ④ 两个桌面档：**逐条**判全部说明（旧口径 textWidth + 新口径逐行字迹 + 藏字）----
+       for (const width of WIDE_DESKTOP_VIEWPORTS) {
+         const summary = wideSummary[width];
+-        const bad = [...summary.narrow, ...summary.axis, ...summary.clipped];
+-        check(`§22c @${width} 逐条页面级说明与主数据区同轴（有字区域 ≥ ${WIDE_NOTE_RATIO}×列宽 · border-box 与主容器或数据区同轴 · 自身不裁切）`,
++        const bad = [...summary.union, ...summary.hiddenText, ...summary.axis, ...summary.clipped];
++        check(`§22c @${width} 逐条页面级说明：旧口径（内容盒 ≥ ${WIDE_NOTE_RATIO}×列宽）+ 新口径（逐行字迹 ≥ ${WIDE_NOTE_RATIO}×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切`,
+           bad.length === 0,
+-          `全站 ${wideMeta.length} 页 / 逐条判 ${summary.rows} 条（有说明的页 ${wideNotePages.length} · 零说明的页 ${wideNoNotePages.length} 标注跳过）`
+-          + ` · 窄条 ${summary.narrow.length}（落在 ${summary.narrowRoutes.length} 页） · 不同轴 ${summary.axis.length} · 裁切 ${summary.clipped.length}`
+-          + ` · textFallback 回落 ${summary.textFallback} 条`
++          `全站 ${wideMeta.length} 页 / 逐条判 ${summary.rows} 条（有说明的页 ${wideNotePages.length} · 零说明的页 ${wideNoNotePages.length} 标注跳过 · 未渲染 ${summary.unrendered} 条）`
++          + ` · note-narrow ${summary.narrow.length}（落在 ${summary.narrowRoutes.length} 页） · note-ink-narrow ${summary.inkNarrow.length}（${summary.inkNarrowRoutes.length} 页）`
++          + ` · 并集 ${summary.union.length} 条 / ${summary.unionRoutes.length} 页 · 藏字 ${summary.hiddenText.length} · 不同轴 ${summary.axis.length} · 裁切 ${summary.clipped.length}`
++          + ` · 多行说明（有行证据）${summary.lineEvidence} 条 · 竖排 ${summary.vertical} 条 · textFallback 回落 ${summary.textFallback} 条`
+           + (bad.length ? ` · 命中样例：${bad.slice(0, 4).map(wideExplainRow).join('；')}` : ''));
+         check(`§22c @${width} 全站 ${wideRoutes.length} 页都没有横向溢出`,
+           summary.overflow.length === 0,
+@@ -6760,18 +6918,22 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+             + wideFrozenDrift.slice(0, 4).map(route => `${route || '/'}=${wideGeometry.get(`${WIDE_DESKTOP}|${route}`).frozenCount} 次`).join(' ')
+           : `${wideFrozenPages.length}/${wideRoutes.length} 页恰好 1 次 · 锚点「${WIDE_SNOTE_FROZEN.slice(0, 24)}…」`);
+ 
+-      // ---- ⑨ 760 / 360：样本集（同一份判据，不另写一套）----
++      // ---- ⑨ 760 / 360：样本集（旧口径 + 同轴 / 裁切 / 溢出；逐行字迹口径只在 1440/1600 标定过）----
+       const wideSampleProblems = [];
+       for (const route of wideSampleRoutes) {
+         const meta = wideMeta.find(item => item.route === route);
+         for (const width of WIDE_SAMPLE_VIEWPORTS) {
+           const geometry = wideSampleGeometry.get(`${route}@${width}`);
+-          for (const problem of wideProblems(geometry, meta)) wideSampleProblems.push({ route, width, ...problem });
++          // inkRule:false —— 逐行字迹在窄档没有标定：360 档 feeds/#2 在 328px 列里只排成 2 行、
++          // 最宽一行 264px（<0.85×328），那是 CJK 断行的正常余量，不是缺陷（实测见 r3-green.log）。
++          for (const problem of wideProblems(geometry, Object.assign({}, meta, { inkRule: false }))) {
++            wideSampleProblems.push({ route, width, ...problem });
++          }
+         }
+       }
+       for (const width of WIDE_SAMPLE_VIEWPORTS) {
+         const hits = wideSampleProblems.filter(problem => problem.width === width);
+-        check(`§22c @${width} 样本集 ${wideSampleRoutes.length} 页同一份判据（逐条同轴 / 比例 / 不裁切 / 不溢出）`,
++        check(`§22c @${width} 样本集 ${wideSampleRoutes.length} 页（旧口径 textWidth + 同轴 / 不裁切 / 不溢出；逐行字迹只在桌面档判）`,
+           hits.length === 0,
+           hits.length
+             ? hits.slice(0, 5).map(problem => `${wideNoteKey(problem.route, problem.index === undefined ? '?' : problem.index)} ${problem.code}：${problem.msg}`).join('；')
+@@ -6818,7 +6980,17 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           what: 'F2 原型：只压**非首个** .snote（:not(:first-of-type)）' },
+         { id: 'M10', route: 'student/', width: WIDE_WIDE, expect: 'note-narrow', target: 'extend',
+           rule: '@media (min-width: 1500px) { .snote { max-width: 70ch; } }',
+-          what: 'F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）' }
++          what: 'F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）' },
++        // ---- t14（修复轮 3）新增：两条「盒子满宽、只有排版结果变窄」的牙 ----
++        { id: 'M11', route: 'changes/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend', expectInkEvidence: true,
++          rule: '.snote { display: grid; grid-template-columns: minmax(0, 70ch) 1fr; }',
++          what: 't8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，'
++            + '盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）' },
++        { id: 'M12', route: 'student/', width: WIDE_DESKTOP, expect: 'note-hidden-text', target: 'extend', expectNoGlyph: true,
++          rule: '.snote { font-size: 0; } .snote::before { content: "§22c-M12 伪元素承载正文（真实文本已不可见）";'
++            + ' display: block; max-width: 70ch; font-size: var(--fs-sm); line-height: 1.7; }',
++          what: 't8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画'
++            + ' —— 盒宽/行数一切正常，只有字形盒能看穿' }
+       );
+ 
+       metrics.layoutMutationCodes = {};
+@@ -6853,10 +7025,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+             codes = wideCodes(problems);
+             narrowKeys = problems.filter(problem => problem.code === 'note-narrow')
+               .map(problem => wideNoteKey(mutation.route, problem.index));
++            const inkNarrowKeys = problems.filter(problem => problem.code === 'note-ink-narrow')
++              .map(problem => wideNoteKey(mutation.route, problem.index));
++            const hiddenTextKeys = problems.filter(problem => problem.code === 'note-hidden-text')
++              .map(problem => wideNoteKey(mutation.route, problem.index));
+             if (mutation.selector) matchedKeys = await wideMatchedNoteKeys(target, mutation.selector, mutation.route);
+             metrics.layoutMutationCodes[mutation.id] = codes;
+             wideMutationHits.set(mutation.id, codes.includes(mutation.expect));
+-            wideMutationExtra.set(mutation.id, { narrowKeys, matchedKeys });
++            wideMutationExtra.set(mutation.id, { narrowKeys, inkNarrowKeys, hiddenTextKeys, matchedKeys });
+             const first = geometry.notes.length ? geometry.notes[0] : null;
+             detail = `说明 ${geometry.noteCount} 条 · 首条 盒 ${first ? wideRound(first.box.width) : 0}px / 有字区域 ${first ? first.textWidth : 0}px`
+               + ` · detail-main ${geometry.detailMainCount} 个 · scrollWidth ${geometry.doc.scrollWidth}（视口 ${geometry.doc.clientWidth}）`
+@@ -6899,6 +7075,30 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+             narrowKeys.length > 0 && (matchedKeys || []).length > 0 && subset && !firstNarrowed,
+             `选择器 ${mutation.selector} 命中 [${(matchedKeys || []).join(', ') || '无'}] ⇒ 窄条 [${narrowKeys.join(', ') || '无'}]（第 0 条被压：${firstNarrowed}）`);
+         }
++        // M11：新判据的**承重证明** —— 旧判据（textWidth / 盒子）在这一形态里看不见东西，
++        //      咬中的必须是 note-ink-narrow，且被咬的那些条确实有多行字迹证据。
++        if (mutation.expectInkEvidence) {
++          const inkKeys = (wideMutationExtra.get(mutation.id) || {}).inkNarrowKeys || [];
++          const rowsOfInk = geometry ? geometry.notes.filter(note => inkKeys.includes(wideNoteKey(mutation.route, note.index))) : [];
++          const lineEvidenceOk = rowsOfInk.length > 0 && rowsOfInk.every(note => note.lineCount >= 2 && note.widestLine > 0);
++          const boxStayedWide = rowsOfInk.length > 0 && rowsOfInk.every(note => note.textWidth >= WIDE_NOTE_RATIO * Math.min(geometry.region.width, geometry.main.width) - 0.01);
++          check(`§22c ${mutation.id} 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码`,
++            inkKeys.length > 0 && narrowKeys.length === 0 && lineEvidenceOk && boxStayedWide,
++            `note-narrow ${narrowKeys.length} 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow ${inkKeys.length} 条 [${inkKeys.join(', ')}]`
++            + ` · 这些条的行证据：${rowsOfInk.map(note => `#${note.index} ${note.lineCount} 行 / 最宽 ${wideRound(note.widestLine)}px / 内容盒 ${wideRound(note.textWidth)}px`).join(' · ') || '（无）'}`);
++        }
++        // M12：藏字形态 —— 文本非空、已渲染、零字形盒；且这不是靠窄判据咬的。
++        if (mutation.expectNoGlyph) {
++          const first = geometry && geometry.notes.length ? geometry.notes[0] : null;
++          const hiddenKeys = (wideMutationExtra.get(mutation.id) || {}).hiddenTextKeys || [];
++          check('§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text',
++            Boolean(first) && first.glyphRects === 0 && first.textLength > 0 && first.rendered
++            && hiddenKeys.length > 0 && !codes.includes('note-ink-narrow'),
++            first
++              ? `首条：文本 ${first.textLength} 字 · 字形盒 ${first.glyphRects} 个 · 盒宽 ${wideRound(first.box.width)}px（rendered=${first.rendered}）`
++                + ` · 行 ${first.lineCount} 行 · note-hidden-text 命中 [${hiddenKeys.join(', ') || '无'}] · note-ink-narrow ${codes.includes('note-ink-narrow') ? '有（不该有）' : '无'}`
++              : '页面没量到');
++        }
+       }
+ 
+       // ---- M6 正对照：同样的 200 字符不可断串、CSS 一个字节都不动 ⇒ 必须不溢出 ----
+@@ -6962,12 +7162,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           + ` ／ 非唯一锚点：${duplicated ? `ok=${duplicated.ok} · 出现 ${duplicated.occurrences} 次 · ${duplicated.reason || ''}` : '未执行'}`);
+       }
+ 
+-      // ---- 判据自检：8 个违规码必须全部由 wideProblems() 一处产出、且都可达 ----
++      // ---- 判据自检：全部违规码必须由 wideProblems() 一处产出、且都可达 ----
+       {
+         const note0 = {
+-          index: 0, depth: 1, parent: 'main', text: 'synthetic',
++          index: 0, depth: 1, parent: 'main', text: 'synthetic', textLength: 40,
+           box: { count: 1, left: 0, right: 1380, width: 1380, scrollW: 1380, clientW: 1380, padLeft: 0, padRight: 0 },
+-          contentBox: 1380, textWidth: 1380, textFallback: false, bearingCount: 1, ink: { width: 1300, lines: 3 }
++          contentBox: 1380, textWidth: 1380, textFallback: false, bearingCount: 1,
++          rendered: true, vertical: false, writingMode: 'horizontal-tb',
++          glyphRects: 3, lineCount: 3, widestLine: 1300, lines: [{ width: 1300, left: 0, right: 1300 }],
++          ink: { width: 1300, rects: 3 }
+         };
+         const note1 = Object.assign({}, note0, { index: 1 });
+         const g0 = {
+@@ -6981,10 +7184,18 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         const metaWide = { route: 'synthetic/', kind: 'collection', family: 'wide' };
+         const reachable = new Set();
+         const collect = problems => wideCodes(problems).forEach(code => reachable.add(code.startsWith('page-overflow@') ? 'page-overflow@<vw>' : code));
+-        // 条级：第 1 条有字区域被压窄 + border-box 脱离两锚 ⇒ note-narrow + note-axis
++        // ① 旧口径：内容盒被压窄 + border-box 脱离两锚 ⇒ note-narrow + note-axis
+         collect(wideProblems(Object.assign({}, g0, {
+           notes: [Object.assign({}, note0, { textWidth: 452, box: Object.assign({}, note0.box, { right: 482.81, width: 452.81 }) }), note1]
+         }), metaWide));
++        // ② 新口径：内容盒满宽、只有逐行字迹铺不开 ⇒ note-ink-narrow（盒子代理量在这里一条都不咬）
++        collect(wideProblems(Object.assign({}, g0, {
++          notes: [Object.assign({}, note0, { textWidth: 1380, lineCount: 4, widestLine: 452, glyphRects: 4 }), note1]
++        }), metaWide));
++        // ③ 藏字：文本非空、已渲染、零字形盒 ⇒ note-hidden-text
++        collect(wideProblems(Object.assign({}, g0, {
++          notes: [Object.assign({}, note0, { glyphRects: 0, lineCount: 0, widestLine: 0, lines: [], ink: null }), note1]
++        }), metaWide));
+         collect(wideProblems(Object.assign({}, g0, { detailMainCount: 1 }), metaWide));                                   // unexpected-detail-main
+         collect(wideProblems(Object.assign({}, g0, { detailMainCount: 0, noteCount: 0, notes: [] }),
+           { route: 'synthetic-deal/', kind: 'deal', family: 'detail' }));                                                 // missing-detail-main
+@@ -6996,10 +7207,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         collect(wideProblems(g0, { route: 'synthetic-unknown/', kind: null, family: null }));                             // unclassified-layout
+         const missingCodes = WIDE_CODE_VOCABULARY.filter(code => !reachable.has(code));
+         const extraCodes = [...reachable].filter(code => !WIDE_CODE_VOCABULARY.includes(code));
+-        check('§22c 违规码自检：8 个码全部由 wideProblems() 一处产出、且都可达（不多不少）',
++        check(`§22c 违规码自检：${WIDE_CODE_VOCABULARY.length} 个码全部由 wideProblems() 一处产出、且都可达（不多不少）`,
+           missingCodes.length === 0 && extraCodes.length === 0,
+           `可达 ${reachable.size}/${WIDE_CODE_VOCABULARY.length} · 缺 ${missingCodes.join(',') || '无'} · 多 ${extraCodes.join(',') || '无'}`
+-          + `（条级码带 index，与页级码同一个函数）`);
++          + `（含本轮新增的 note-ink-narrow / note-hidden-text；条级码带 index，与页级码同一个函数）`);
+       }
+ 
+       // ---- M5：不重复造第二套 —— 既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码 ----
+@@ -7054,12 +7265,21 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         detail: wideRoutesOfFamily.detail.length,
+         other: wideRoutesOfFamily.other.length,
+         // notesChecked 保持 t2 起的口径（**有说明的页面数**，静态复算对得上）；
+-        // 条级另给 notesJudged（修复轮新增：401 条全判，不再只判 105 页里的第一条）。
++        // 条级另给 notesJudged（t7 起：401 条全判，不再只判 105 页里的第一条）。
+         notesChecked: wideNotePages.length,
+         notesJudged: wideNoteRows1440.length,
+         narrowNotes: wideSummary[WIDE_DESKTOP].narrow.length,
+         narrowNotePages: wideSummary[WIDE_DESKTOP].narrowRoutes.length,
+         narrowNotesAt1600: wideSummary[WIDE_WIDE].narrow.length,
++        // t14 新增：逐行字迹码与藏字码各自计数，另给「旧 ∪ 新」的并集（覆盖面的唯一口径）
++        inkNarrowNotes: wideSummary[WIDE_DESKTOP].inkNarrow.length,
++        inkNarrowNotePages: wideSummary[WIDE_DESKTOP].inkNarrowRoutes.length,
++        narrowUnionNotes: wideSummary[WIDE_DESKTOP].union.length,
++        narrowUnionNotePages: wideSummary[WIDE_DESKTOP].unionRoutes.length,
++        inkNarrowNotesAt1600: wideSummary[WIDE_WIDE].inkNarrow.length,
++        hiddenTextNotes: wideSummary[WIDE_DESKTOP].hiddenText.length,
++        unrenderedNotes: wideSummary[WIDE_DESKTOP].unrendered,
++        verticalNotes: wideSummary[WIDE_DESKTOP].vertical,
+         overflowPages: wideOverflowPages.length,
+         unexpectedDetailMain: wideUnexpectedDetailMain.length,
+         missingDetailMain: wideMissingDetailMain.length,
+@@ -7109,9 +7329,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           generatedAt: new Date().toISOString(),
+           frozenAnchor: WIDE_SNOTE_FROZEN,
+           criteria: {
+-            noteNarrow: `textWidth >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（textWidth = 承载文本的块级元素里最窄的 content box；Range 字迹只进报告）`,
++            noteNarrow: `textWidth >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（旧口径，t7 的 textWidth = 承载文本的块级元素里最窄的 content box；一字未改）`,
++            noteInkNarrow: `lineCount >= 2 且 widestLine >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（新口径，t14：逐行字迹按垂直重叠归并；竖排不判）`,
++            noteHiddenText: '文本非空且已渲染（border-box 有宽有高）但零可见字形盒（Range.getClientRects 为空）',
++            coverage: '旧码 ∪ 新码；真值 156 条由「旧 48 单行 + 新 108 多行」并集覆盖（两份独立标定互证）',
+             noteAxis: `border-box 与主数据区或 <main> 任一同一轴，容差 max(${WIDE_TOL}px, ${WIDE_AXIS_RATIO} * min(主数据区宽, 页面列宽))`,
+-            scope: '<main> 内全部 .snote，逐条 route#index；零条说明的页面才跳过'
++            scope: '<main> 内全部 .snote，逐条 route#index；零条说明的页面才跳过；未渲染（<noscript>）单独登记'
+           },
+           rows: wideMutations.map(mutation => {
+             const extra = wideMutationExtra.get(mutation.id) || {};
+@@ -7119,7 +7342,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+               id: mutation.id, route: mutation.route, width: mutation.width, expect: mutation.expect,
+               what: mutation.what, observed: metrics.layoutMutationCodes[mutation.id] || [],
+               hit: Boolean(wideMutationHits.get(mutation.id)),
+-              narrowKeys: extra.narrowKeys || [], matchedKeys: extra.matchedKeys || null,
++              narrowKeys: extra.narrowKeys || [], inkNarrowKeys: extra.inkNarrowKeys || [],
++              hiddenTextKeys: extra.hiddenTextKeys || [], matchedKeys: extra.matchedKeys || null,
+               anchor: mutation.target === 'extend' ? WIDE_SNOTE_FROZEN : (mutation.anchor || null),
+               injectedRule: mutation.rule || null, domInjection: mutation.target === 'dom',
+               injectedTokenLength: mutation.inject ? WIDE_LONG_TOKEN.length : 0
+@@ -7146,14 +7370,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           const rows = wideNoteRows1440.filter(row => routes.includes(row.route));
+           const pagesWithNotes = routes.filter(route => wideGeometry.get(`${WIDE_DESKTOP}|${route}`).noteCount > 0).length;
+           const narrowRows = rows.filter(row => row.codes.includes('note-narrow'));
++          const inkRows = rows.filter(row => row.codes.includes('note-ink-narrow'));
++          const hiddenRows = rows.filter(row => row.codes.includes('note-hidden-text'));
+           const axis = rows.filter(row => row.codes.includes('note-axis')).length;
+           const clipped = rows.filter(row => row.codes.includes('note-clipped')).length;
+           const overflow = routes.filter(route => wideNarrow390.get(route).codes.length > 0
+             || wideSummary[WIDE_DESKTOP].overflow.includes(route) || wideSummary[WIDE_WIDE].overflow.includes(route)).length;
+           const detailMain = routes.filter(route => wideMissingDetailMain.includes(route) || wideUnexpectedDetailMain.includes(route)).length;
+           const unclassified = routes.filter(route => wideUnclassified.some(meta => meta.route === route)).length;
+-          return [label, routes.length, pagesWithNotes, rows.length, narrowRows.length,
+-            new Set(narrowRows.map(row => row.route)).size, axis, clipped, overflow, detailMain, unclassified];
++          return [label, routes.length, pagesWithNotes, rows.length, narrowRows.length, inkRows.length, hiddenRows.length,
++            new Set([...narrowRows, ...inkRows].map(row => row.route)).size, axis, clipped, overflow, detailMain, unclassified];
+         };
+         const wideTableRows = [
+           wideFamilyRow('wide', wideRoutesOfFamily.wide),
+@@ -7161,8 +7387,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           wideFamilyRow('other', wideRoutesOfFamily.other),
+           wideFamilyRow('合计', wideRoutes)
+         ];
+-        const wideHeaders = ['族', '页面', '有说明页', '说明条', '窄条', '窄条页', '不同轴', '裁切', '溢出', 'detail-main', '未分类'];
+-        const wideWidths = [8, 6, 10, 8, 6, 8, 8, 6, 6, 13, 8];
++        const wideHeaders = ['族', '页面', '有说明页', '说明条', '窄条', '字迹窄', '藏字', '窄条页', '不同轴', '裁切', '溢出', 'detail-main', '未分类'];
++        const wideWidths = [8, 6, 10, 8, 6, 8, 6, 8, 8, 6, 6, 13, 8];
+         console.log(`     布局族读数表（prompt §18）：全站 ${wideRoutes.length} 页 = wide ${wideRoutesOfFamily.wide.length} + detail ${wideRoutesOfFamily.detail.length} + other ${wideRoutesOfFamily.other.length}`
+           + ` · 逐条判 ${wideNoteRows1440.length} 条（修复前只判 ${wideNotePages.length} 条 = 文档序第一条）`);
+         console.log(`     ${wideHeaders.map((head, i) => wideCell(head, wideWidths[i])).join('')}`);
+@@ -7193,8 +7419,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         for (const row of wideMutationRows) console.log(`     ${row.map((value, i) => wideCell(value, wideMutWidths[i])).join('')}`);
+       }
+ 
+-      console.log(`     读数：逐条判 ${wideNoteRows1440.length} 条说明（窄 ${wideSummary[WIDE_DESKTOP].narrow.length} 条 / ${wideSummary[WIDE_DESKTOP].narrowRoutes.length} 页）`
+-        + ` · @${WIDE_WIDE} 窄 ${wideSummary[WIDE_WIDE].narrow.length} 条 · 溢出 ${wideOverflowPages.length} 页`
++      console.log(`     读数：逐条判 ${wideNoteRows1440.length} 条说明 · note-narrow ${wideSummary[WIDE_DESKTOP].narrow.length} 条 / ${wideSummary[WIDE_DESKTOP].narrowRoutes.length} 页`
++        + ` · note-ink-narrow ${wideSummary[WIDE_DESKTOP].inkNarrow.length} 条 / ${wideSummary[WIDE_DESKTOP].inkNarrowRoutes.length} 页`
++        + ` · 并集 ${wideSummary[WIDE_DESKTOP].union.length} 条 / ${wideSummary[WIDE_DESKTOP].unionRoutes.length} 页 · 藏字 ${wideSummary[WIDE_DESKTOP].hiddenText.length} 条`
++        + ` · @${WIDE_WIDE} 窄 ${wideSummary[WIDE_WIDE].narrow.length} / 字迹窄 ${wideSummary[WIDE_WIDE].inkNarrow.length} 条 · 溢出 ${wideOverflowPages.length} 页`
+         + ` · detail-main 违规 ${wideMissingDetailMain.length + wideUnexpectedDetailMain.length} 页 · 未分类 ${wideUnclassified.length} 页`
+         + ` · 导航 ${wideNavigations} 次（1440 ${widePhaseSeconds[`desktop${WIDE_DESKTOP}`]}s / 1600 ${widePhaseSeconds[`desktop${WIDE_WIDE}`]}s / 390 ${widePhaseSeconds.narrow390}s / 样本 ${widePhaseSeconds.samples}s）`
+         + ` · 本节 JS 错误 ${wideErrors.length} 个 · 外部请求 ${wideExternal.length} 个`);

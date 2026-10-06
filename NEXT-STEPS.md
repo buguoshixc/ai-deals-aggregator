@@ -1,4 +1,4 @@
-# 下一步：现在的状态，以及还需要你点头的事
+﻿# 下一步：现在的状态，以及还需要你点头的事
 
 > **2026-10-04 质量收口（quality-closure-post-audit）· 当前状态**
 >
@@ -11,6 +11,52 @@
 > models **44** · registry 映射 **64**（API 55 + Coding 9）· gaps 声明 **10** ·
 > Feed **24 份（×2 = 48 文件）** · HTML 页 **173** / sitemap **170** / dist **290** 文件 ·
 > 门禁断言 **36** · 三份变化日志事件 deal 0 / plan 14 / api 6。
+
+## 0. 本轮：`secondary-page-layout-unification` —— 二级页布局统一（2026-10-06 · **未提交 / 未发布**）
+
+> **一句话**：全站「页面级说明」（`.snote`）原本**同一条规则 8 份副本、两种取值**（4 个页面壳压成 `70ch` ≈ **452.81px**，另 4 个壳不压），
+> 现在收成**唯一一处定义**（`index.html` 共享 `<style>`）；同时建立**机器可读的布局族声明**
+> （`wide` **55** / `detail` **131** / `prose` **0**），并把 `/archive/<kind>/<id>/` 详情页接入统一内容列。
+> **纯布局版本：数据 / 文案 / 路由 / 结构化数据 0 变化。**
+> 完整报告：[research/secondary-page-layout-unification-report.md](research/secondary-page-layout-unification-report.md)。
+
+### 已完成（可复核）
+
+1. **产品侧 6 个文件 `+306 / −9`**：`page-kinds.js`（`LAYOUT_FAMILIES` + 18 个 kind 的 `layout`）· `index.html`（唯一一条 `.snote`，逐字冻结串）·
+   `build-local.js`（删 8 条页面级副本 + 档案详情 `mainClass` 接线）· `archive.js`（`ARCHIVE_ENTRY_MAIN_CLASS` + 整页布局约束）·
+   `archive-selftest.js` / `seo-selftest.js`（各加一组会响的断言）。
+2. **产物侧修复量到底**：窄说明 **156 条 / 48 页 → 0 / 0**；说明宽 **452.81px → 1380px**（ratio **0.328 → 1.000**）；
+   页面高度 **47 页变矮 / 12 页不变 / 0 页变高**（min **−224** / median **−122**）；1440/1600/390 三档横向溢出 **0 → 0**。
+3. **数据 0 变化的机器证明**：**117/117** 非 HTML 逐字节相同 · **186/186** HTML 剥掉 `<style>` 后正文逐字节相同 · 样式块行集合差 **+9 / −2**。
+4. **§19/§20 只读审计**：六类名重复度 + **37 条** `max-width` 普查 + **6 条**保留窄宽登记；同缺陷残留 **0 处**、未分类 **0**。
+5. **规范补了一条长期规则**（[docs/DESIGN-RULES.md](docs/DESIGN-RULES.md) §6 的 **S4**）：数据型页面中的页面级说明不默认使用 65ch/70ch/80ch 阅读列；
+   窄阅读列只用于真正的长文页面，并且必须居中。
+
+### 剩余事项（**都不是「已解决」**）
+
+1. **门禁读数 = 轮 6 冻结**：六轮门禁修复（t2 → t7 → t14 → t19 → t24 → t28）都只动 `scripts/tools/verify-site.js`；
+   轮 6 冻结值（判据 sha `2cbc160dc64f8ade…`）= `--dir=dist` **852 项 / 0 失败** · `--dir=dist.baseline` **852 / 36** · 窄柱并集 **156 条 / 48 页** · CI **38/0** ·
+   Full Gate **49 步 → 执行 45 / 通过 45 / 失败 0 / 跳过 4 · exit 0**（第 47 步 852 / 第 48 步 858）。
+   注意**轮 5 与轮 6 的四个计数逐项相同**，区别只在判据 sha（`610b25a8…` → `2cbc160d…`）与豁免条件 —— 引用时带轮次 + sha。
+2. **发布链未走**：PR 尚未创建 ⇒ 没有 CI 的 `gate` 结论、没有 Deploy、没有线上几何冒烟。
+   发布顺序与判据见 `research/_raw/secondary-page-layout-unification/release/checklist.md`（S1→S11）。
+3. **DEFERRED（不在本版承诺内，逐条有证据）**：绘制类遮盖 / 不可见性（`clip-path` / `mask-*` / 不透明覆盖层 / `color: transparent`）——
+   本仓库没有构建路径产出它们（**252 个源文件 + 186 个产物全 0 处**）、完整修复不可行、像素断言会让 CI 因跨平台字体渲染变 flaky 红（那比漏判更糟）；
+   以及 `writing-mode` 的**覆盖不对称** —— **已重测（t31）· 记 P1 / DEFERRED**（用户裁定：如实披露、直接发布，不开修复轮 7）：
+   在**轮 6 口径**（判据 sha `2cbc160dc64f8ade…`，现场 70ch = 452.81px）下，`writing-mode-vertical-fullwidth` 形态在 **5 档**
+   （1440 盒 1380 / 1600 盒 1380 / 760 盒 728 / 390 盒 358 / 360 盒 328）上，`note-narrow` 与 `note-ink-narrow` **全是 0**；
+   **唯一咬到它的是 `note-clipped`，且只在 @360**（自身横向溢出 **19px**，`scrollWidth 347 > clientWidth 328`）。
+   它不判 P0 的理由：可见正文在（单字形盒宽 16px，24 个字形盒）、盒与内容盒都未被压窄 ⇒「70ch 窄柱」承诺未被绕过；
+   竖排不判是判据**显式声明的边界**（`verify-site.js` §22c L6166–6169），不是静默洞；线上产物五档全绿。
+   **假绿路径**：1440/1600 是逐条判全站 186 页的唯一两档、对它完全无感，全靠 29 页样本集在 @360 的自裁切接住 ——
+   同页 **@390 盒 358 ≥ 347 就已 0 码**；若落在样本集之外、或竖条更短，就是全档 852/0 假绿。
+   **requiredFix（下一轮）**：逐行归并按 `writing-mode` 参数化（竖排按列归并），或对 vertical 条改判「单字形盒宽 < 0.85 × 列宽」。
+   证据：`research/_raw/secondary-page-layout-unification/verify/T31-WRITING-MODE.md`。
+4. **P1（不阻塞）**：`.pdetailbody { max-width: 72ch }`（占单元格 **0.3377**，与缺陷同量级但**不是**页面级说明）→ 保留，未来两种处置：居中或放宽；
+   判据只认 `.snote` 这个类名（换名 / 换容器即隐形）；两处保留窄宽还没有「机器可读的保留清单」。
+5. **故意不做**：`.ph2` / `.plist` / `.stop` / `.cstop` / `.ptable*` 仍是多个页面壳各自复制一份 —— 理由是不扩大回归面（详见报告 §19.5）。
+
+---
 
 ## A. 本轮之后仍然存在的风险与长期方向（**不是「已失效」，也不是「已完成」**）
 

@@ -1,0 +1,62 @@
+# 本目录的体积纪律 —— 与顶层 .gitignore 和 `leaf-detail-layout-v1/.gitignore` 同一条规矩：
+# **留结论与判据，不留可再生的字节副本。**
+#
+# 建档时的实测：目录总计 1585 文件 / 97 MB；按下面前四条排除后为 382 文件 / 21.3 MB。
+# 每一条排除都写明"为什么可再生"，不接受"太大了"这种理由。
+
+# ① 对抗用的产物副本（dist 的整份拷贝）：910 文件 / 57.4 MB。
+#    可由 reviewer 的 `make-scratch.cjs` / adversary 的 harness 一条命令重建，且逐份都记录了自己的生成脚本。
+#    ⚠️ 排除的是**目录**，所以其中的 .log 不会被下面的 `!**/*.log` 重新放回来（git 的规则：
+#    父目录被排除时，其下的文件无法被重新包含）—— 这是刻意的：那些是副本里的运行日志，不是证据本体。
+review/scratch/
+adversary/scratch/
+
+# ② §22c 修复前判据的 junction 沙箱：`scripts/lib` 与 `node_modules` 是目录联接，
+#    **git 会跟着穿进目标目录**，把那 700+ KB 源码在证据目录里复制一份（而且是会被改动的活副本）。
+#    复原件本体 `recovered/verify-site.pre-t7.js` 与可复算的复原脚本 `recover-pre-t7.cjs` **入库**；
+#    沙箱本身按 `recovered/README.md` 里的两条命令重建即可。
+recovered/pre-t7/
+
+# ③ 截图：与顶层 `research/_raw/**/*.png`、`research/_raw/**/shots/` 同义，这里再兜一层（本目录自足）。
+#    截图可重拍，且本目录的判据全部以 JSON 读数落盘，不依赖看图。
+**/*.png
+**/shots/
+
+# ④ **按名字放回全部 `*.log`**。顶层那条 `*.log` 防的是散落在仓库各处的临时运行日志；
+#    而本目录里的 67 份 .log（合计 2.98 MB）**全部是原始运行证据**：Full Gate 逐步日志、
+#    变异复测日志、几何扫描日志、M-disk 恢复三证…… 少了它们，报告里的读数就只剩手抄的数字。
+#    与 leaf-detail-layout-v1 的先例一致（那边只放回 1 个指名文件，这边是"本目录内全部"，理由相同）。
+#    注意：`review/scratch/**` 与 `adversary/scratch/**` 里的 .log 仍然不入库（见 ① 的说明）。
+!**/*.log
+
+# captain ͣ�����գ����ذ�ȫ�������������嵥��
+_halt-snapshot-*/
+
+# ���� t23 բ��׷�ӣ�scratch ������ɳ�䣺�������ɣ������ռ 320 MB������
+# t23 提议：证据目�?`.gitignore` 的追加块�?*�?captain 落盘**；t23 只能�?release/**�?#
+# 为什么需要它（发布前闸门实测�?026-10-06 21:5x）：
+#   `git add --dry-run --all -- <7 源文�? research/_raw/secondary-page-layout-unification`
+#   当前会带�?**5,392 个文�?/ 374 MB**，其�?**4,621 �?/ ~302 MB** 是后面这�?*可再�?*的沙箱副�?#   —�?它们不属于交付证据，且体积是真实证据�?4 倍�?#
+# 与既�?�?同一条纪律（"可再生的字节不入索引"）�?# ⚠️ 关键语法�?*不能**�?`teeth/_scratch/`（排除整个目录后，里面的文件无法�?`!` 放回�?—�?#    这条 git 规则本身已经写在 .gitignore �?�?注释里）。要写成 `teeth/_scratch/*`�?#    再对**被报告正文点名引�?*的少数文件按名字放回�?
+teeth/_scratch/*
+!teeth/_scratch/mutations.json
+!teeth/_scratch/splice-22c.cjs
+!teeth/_scratch/r4-contents-before.log
+!teeth/_scratch/r4-contents-after.log
+
+review/t20/scratch/
+t21/scratch/
+adversary/_scratch/
+adversary/sandbox-pre-t7/
+
+# 说明（三条，免得下一位看�?`*` �?`!` 的组合发懵）�?#   · `teeth/_scratch/mutations.json` 被最终报�?§G�?83 / 1284 / 1286 行）当作"�?4 的原�?#     mutations.json 落点"点名引用 �?必须入库，否则报告里的引用变死链�?#   · `teeth/_scratch/splice-22c.cjs` �?§J ④（1263 行）被点名（t7 原地整块替换 §22c 的工具）�?#   · `r4-contents-before.log` / `r4-contents-after.log` �?§G�?329 行）被点名�?
+# ── 复核命令（不需要先落盘：用 core.excludesFile 把这份文件当�?临时全局忽略"来实测）──
+#   git -c core.excludesFile=<本文件绝对路�? ls-files --others --exclude-standard -- \
+#       research/_raw/secondary-page-layout-unification | wc -l
+# 期望：从 5,392 降到 ~771（真实证据），且上面 4 �?`!` 文件仍在列表里�?
+
+# t30/t23 ׷�ӣ������� scratch ��������������review/t26 �� review/t29 ��Լ 95 MB��
+review/*/scratch/
+
+# t23 ��̬բ��׷�ӣ��κ�λ�õ� scratch ��Ⱦ����������������release-engineer ��ɨ�����ĵ������κα�����·������ /scratch/ �¡�
+**/scratch/

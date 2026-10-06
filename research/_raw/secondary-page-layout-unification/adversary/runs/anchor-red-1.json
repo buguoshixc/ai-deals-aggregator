@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-10-06T08:35:24.301Z",
+  "mode": "A",
+  "host": "t11-adversary harness",
+  "verifySite": {
+    "path": "research\\_raw\\secondary-page-layout-unification\\adversary\\fixtures\\verify-site.no-WIDE_TOL.js",
+    "sha256": "a2e222e4d8deb5eb4d9626f316c311bc06869ffa9c54815eb10a3dc1026eca71"
+  },
+  "extraction": {
+    "ok": false,
+    "problems": [
+      "锚点缺失：`const WIDE_TOL` 在源文件里找不到（判据区起点定不下来）"
+    ]
+  },
+  "verdict": "RED",
+  "reason": "判据锚点抽取失败 ⇒ 形态一律不跑（不许静默跳过）"
+}

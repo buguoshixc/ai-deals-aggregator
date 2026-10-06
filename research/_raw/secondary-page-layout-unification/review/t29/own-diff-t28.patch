@@ -1,0 +1,138 @@
+﻿diff --git "a/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification/research/_raw/secondary-page-layout-unification/teeth/_backup/verify-site.pre-t28.bak" "b/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification/scripts/tools/verify-site.js"
+index d04cf13..147dc91 100644
+--- "a/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification/research/_raw/secondary-page-layout-unification/teeth/_backup/verify-site.pre-t28.bak"	
++++ "b/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification/scripts/tools/verify-site.js"	
+@@ -6638,16 +6638,18 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           push('note-hidden-text', `${where} 文本 ${note.textLength} 字但**零可见字形盒**（getClientRects 为空）`
+             + ` —— 正文可能被 font-size:0 / ::before{content} / display:none 之类的写法接管：${facts}`, note.index, 'no-glyph');
+         }
+-        // ④ 未渲染说明（t24 / 闭合 T22-F1）：**盒高被压成 0** 的形态（裸 `.snote { font-size: 0 }`、
++        // ④ 未渲染说明（t24 立 / t28 收紧）：**盒高被压成 0** 的形态（裸 `.snote { font-size: 0 }`、
+         //    `display: none` 之类）会让 ①②③ 同时静默 —— 因为它们都要求「已渲染」或「有字形盒」。
+         //    判定只用三种**非像素**量：render 状态（盒有宽有高）· 可见文本长度（探针不采集 <noscript>）·
+         //    字形盒个数（Range.getClientRects 里宽高都 > 0 的）。
+         //      !rendered && textLength > 0 && glyphRects === 0  ⇒ 有正文、却一个字形都不画、盒子也没有
+-        //    <noscript> 那条是**真·未渲染**（脚本开启时本就不该画），用两条独立信号排除：
+-        //      · 它的可见文本长度是 0（plans/coding/#1 实测 textLength 0 / rawTextLength 41）；
+-        //      · 它含 <noscript> 子树（noscriptSubtree=true）。
++        //    ⚠️ 唯一的豁免是**可见文本长度为 0**（没有可画的东西）。这里**没有**标记级豁免键：
++        //    t24 的第一版带过 `&& !note.noscriptSubtree`，T26 复审实测「给每条说明插一个**空**
++        //    `<noscript></noscript>`」就能买到豁免（整轮 EXIT=0 / 852 项 0 失败）—— t28 把它删掉了。
++        //    dist 里那条真·合法未渲染（plans/coding/#1）靠**可见文本 0** 排除：它的文字全在
++        //    `<noscript>` 子树里（实测 textLength 0 / rawTextLength 44），与标记本身无关。
+         //    `display: contents`（说明不生成盒子但正文由父级正常排版）不在此列：它的字形盒 > 0。
+-        if (!note.rendered && note.textLength > 0 && note.glyphRects === 0 && !note.noscriptSubtree) {
++        if (!note.rendered && note.textLength > 0 && note.glyphRects === 0) {
+           push('note-unrendered', `${where} 说明未渲染（盒 ${wideRound(note.box.width)}×${wideRound(note.box.height)}px）`
+             + `却有 ${note.textLength} 字可见正文、零可见字形盒（原始文本 ${note.rawTextLength} 字 · 含 <noscript> ${note.noscriptSubtree}）`
+             + ` —— 盒高被压成 0 会让窄柱 / 逐行字迹 / 藏字三条判据全部静默（如裸 font-size:0、display:none）：${facts}`,
+@@ -6904,11 +6906,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           unionKeys: union.map(row => wideNoteKey(row.route, row.index)),
+           unionRoutes: [...new Set(union.map(row => row.route))],
+           hiddenText: hit('note-hidden-text'),
+-          // t24 / T22-F1：未渲染说明分两类 —— <noscript> 那类（合法，脚本开启时本就不渲染）
+-          // 与「有正文却零字形盒」那类（note-unrendered，必须为 0）。
++          // t24 / T22-F1 起：未渲染说明要能被解释。t28 收紧计数口径 ——
++          //   · unrenderedNoText：**可见文本长度为 0**（没有可画的东西；dist 的 <noscript> 条属此类）⇒ 豁免；
++          //   · unrenderedText  ：被 note-unrendered 咬中（有可见正文却没画）⇒ 违规；
++          //   · unrenderedNoscript：含 <noscript> 子树的条数 —— **只是诊断量，不参与豁免**
++          //     （t24 的标记级豁免键被 T26 实测反用后已收掉）；
++          //   · unrenderedUnexplained：既没有「文本 0」的豁免、又没被判据咬中 ⇒ 必须为 0。
+           unrenderedText: hit('note-unrendered'),
++          unrenderedNoText: rows.filter(row => row.unrendered && row.textLength === 0).length,
+           unrenderedNoscript: rows.filter(row => row.unrendered && row.noscriptSubtree).length,
+-          unrenderedUnexplained: rows.filter(row => row.unrendered && !row.noscriptSubtree).length,
++          unrenderedUnexplained: rows.filter(row => row.unrendered && row.textLength > 0 && !row.codes.includes('note-unrendered')).length,
+           axis: hit('note-axis'),
+           clipped: hit('note-clipped'),
+           textFallback: rows.filter(row => row.textFallback).length,
+@@ -6994,27 +7001,34 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+             : `documentElement.scrollWidth ≤ 视口+${WIDE_TOL} 全部成立`);
+       }
+ 
+-      // ---- ④b 未渲染说明：上界断言（t24 / 闭合 T22-F1）----
+-      //   `unrenderedNotes` 从 t14 起就有，但**没有任何断言引用它** ⇒ 「裸 font-size:0 把盒高压成 0、
+-      //   让 ①②③ 同时静默」这一整类只统计、不判红。这里把它接到断言上：
+-      //     · 上界：<noscript> 之外的未渲染说明必须恰好 0 条（多一条就红）；
+-      //     · 一致性：metric 与 `note-unrendered` 判据必须对得上（删了判据这条也会红）。
++      // ---- ④b 未渲染说明：上界断言（t24 立 / t28 收紧计数）----
++      //   `unrenderedNotes` 从 t14 起就有，但直到 t24 才被断言引用。计数口径（t28 / 收掉 T26 的残余面）：
++      //     · **豁免只看「可见文本长度为 0」**（没有可画的东西；dist 的 `<noscript>` 条靠这条过）——
++      //       不再看任何标记，`<noscript>` 降级为诊断量；
++      //     · 其余未渲染条必须被 `note-unrendered` 咬中；
++      //     · 两类**互不相交**（前者 textLength === 0，后者要求 textLength > 0），并集 = 全部未渲染条。
++      //   T26 实测过的反用形状：给每条说明插一个**空** `<noscript></noscript>`，t24 的标记级豁免键
++      //   会把 13 条未渲染全归进 noscript 桶、断言 ok=true、整轮 EXIT=0 —— 现在空标签买不到豁免。
+       {
+         const wideUnrenderedRows = wideNoteRows1440.filter(row => row.unrendered);
+-        const wideNoscriptRows = wideUnrenderedRows.filter(row => row.noscriptSubtree);
+-        const wideUnrenderedCodeRows = wideNoteRows1440.filter(row => row.codes.includes('note-unrendered'));
+-        const wideUnexplainedRows = wideUnrenderedRows.filter(row => !row.noscriptSubtree);
++        const wideNoTextRows = wideUnrenderedRows.filter(row => row.textLength === 0);
++        const wideUnrenderedCodeRows = wideUnrenderedRows.filter(row => row.codes.includes('note-unrendered'));
++        const wideBothRows = wideUnrenderedRows.filter(row => row.textLength === 0 && row.codes.includes('note-unrendered'));
++        const wideUnexplainedRows = wideUnrenderedRows.filter(row => row.textLength > 0 && !row.codes.includes('note-unrendered'));
+         const wideAt1600 = wideSummary[WIDE_WIDE];
+-        check('§22c 未渲染说明：上界断言 —— <noscript> 之外不许有未渲染说明，且 unrenderedNotes 与 note-unrendered 判据一致',
++        check('§22c 未渲染说明：上界断言 —— 未渲染条要么「可见文本为 0」，要么必须被 note-unrendered 咬中（两类不相交、并集完整、标记不豁免）',
+           wideUnexplainedRows.length === 0
++          && wideBothRows.length === 0
++          && wideNoTextRows.length + wideUnrenderedCodeRows.length === wideUnrenderedRows.length
+           && wideSummary[WIDE_DESKTOP].unrendered === wideUnrenderedRows.length
+-          && wideSummary[WIDE_DESKTOP].unrendered === wideSummary[WIDE_DESKTOP].unrenderedNoscript + wideUnrenderedCodeRows.length
+-          && wideAt1600.unrendered === wideAt1600.unrenderedNoscript + wideAt1600.unrenderedUnexplained
+-          && wideAt1600.unrenderedUnexplained === wideAt1600.unrenderedText.length,
+-          `@${WIDE_DESKTOP} 未渲染 ${wideSummary[WIDE_DESKTOP].unrendered} 条 = <noscript> ${wideNoscriptRows.length} 条`
+-          + `${wideNoscriptRows.length ? ` [${wideNoscriptRows.map(row => wideNoteKey(row.route, row.index)).join(', ')}]` : ''}`
+-          + ` + note-unrendered ${wideUnrenderedCodeRows.length} 条 · 其它未渲染 ${wideUnexplainedRows.length} 条`
+-          + ` · @${WIDE_WIDE} 未渲染 ${wideAt1600.unrendered} 条（<noscript> ${wideAt1600.unrenderedNoscript} · note-unrendered ${wideAt1600.unrenderedText.length}）`
++          && wideAt1600.unrenderedNoText + wideAt1600.unrenderedText.length === wideAt1600.unrendered
++          && wideAt1600.unrenderedUnexplained === 0,
++          `@${WIDE_DESKTOP} 未渲染 ${wideUnrenderedRows.length} 条 = 可见文本 0 的 ${wideNoTextRows.length} 条`
++          + `${wideNoTextRows.length ? ` [${wideNoTextRows.map(row => wideNoteKey(row.route, row.index)).join(', ')}]` : ''}`
++          + ` + note-unrendered ${wideUnrenderedCodeRows.length} 条 · 交集 ${wideBothRows.length} · 既没归类又没判中 ${wideUnexplainedRows.length}`
++          + ` · @${WIDE_WIDE} 未渲染 ${wideAt1600.unrendered} 条（文本 0 ${wideAt1600.unrenderedNoText} · note-unrendered ${wideAt1600.unrenderedText.length}`
++          + ` · 未归类 ${wideAt1600.unrenderedUnexplained}）`
++          + ` · 诊断：含 <noscript> 的未渲染条 ${wideSummary[WIDE_DESKTOP].unrenderedNoscript}（不参与豁免）`
+           + (wideUnexplainedRows.length ? ` · 违规条：${wideUnexplainedRows.map(row => wideNoteKey(row.route, row.index)).join(' ')}` : ''));
+       }
+ 
+@@ -7270,7 +7284,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           check(`§22c ${mutation.id} 承重证明：盒高被压成 0 的条**全部**由 note-unrendered 咬中，且窄柱/字迹/藏字三条判据在它们身上确实看不见`,
+             unrenderedRows.length > 0 && oldCodes.length === 0
+             && unrenderedKeys.length === unrenderedRows.length
+-            && unrenderedRows.every(note => note.textLength > 0 && note.glyphRects === 0 && !note.noscriptSubtree),
++            && unrenderedRows.every(note => note.textLength > 0 && note.glyphRects === 0),
+             `未渲染条 ${unrenderedRows.length} 条 [${unrenderedRows.map(note => '#' + note.index).join(', ')}]`
+             + ` · 它们的 textLength [${unrenderedRows.map(note => note.textLength).join(', ')}]`
+             + ` · glyphRects [${unrenderedRows.map(note => note.glyphRects).join(', ')}]`
+@@ -7479,11 +7493,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           };
+         }),
+         inkScopeSampleViewports: wideSampleScope,
+-        // t24 / T22-F1：未渲染说明的三个计数 —— unrenderedNotes（既有 metric，现在**有断言引用**）·
+-        // unrenderedNoscriptNotes（<noscript> 那类，合法）· unrenderedTextNotes（note-unrendered 命中，必须 0）
++        // t24 / T22-F1 立 · t28 收紧计数：未渲染说明的四个计数 ——
++        //   unrenderedNotes（既有 metric，有断言引用）· unrenderedNoTextNotes（可见文本 0 ⇒ 豁免那类）·
++        //   unrenderedTextNotes（note-unrendered 命中）· unrenderedNoscriptNotes（**诊断量，不参与豁免**）。
++        //   前两者**不相交**且并集 = unrenderedNotes（上界断言逐条钉住）。
++        unrenderedNoTextNotes: wideSummary[WIDE_DESKTOP].unrenderedNoText,
+         unrenderedNoscriptNotes: wideSummary[WIDE_DESKTOP].unrenderedNoscript,
+         unrenderedTextNotes: wideSummary[WIDE_DESKTOP].unrenderedText.length,
+         unrenderedUnexplainedNotes: wideSummary[WIDE_DESKTOP].unrenderedUnexplained,
++        unrenderedNoTextNotesAt1600: wideSummary[WIDE_WIDE].unrenderedNoText,
+         unrenderedNoscriptNotesAt1600: wideSummary[WIDE_WIDE].unrenderedNoscript,
+         unrenderedTextNotesAt1600: wideSummary[WIDE_WIDE].unrenderedText.length,
+         // t14 新增：逐行字迹码与藏字码各自计数，另给「旧 ∪ 新」的并集（覆盖面的唯一口径）
+@@ -7547,8 +7565,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+             noteNarrow: `textWidth >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（旧口径，t7 的 textWidth = 承载文本的块级元素里最窄的 content box；一字未改）`,
+             noteInkNarrow: `lineCount >= 2 且 widestLine >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（新口径，t14：逐行字迹按垂直重叠归并；竖排不判。t19/R3-1 起适用性 = **物理前置条件**：min(主数据区宽, 页面列宽) > 现场换算的 70ch ⇒ 1440/1600/760 判、360 不判）`,
+             noteHiddenText: '文本非空且已渲染（border-box 有宽有高）但零可见字形盒（Range.getClientRects 为空）',
+-            noteUnrendered: '未渲染（border-box 宽或高为 0）但可见文本非空、零可见字形盒、且不在 <noscript> 子树里'
+-              + '（t24/闭合 T22-F1：盒高被压成 0 会让窄柱/逐行字迹/藏字三条判据同时静默；判定只用盒量/render 状态/字形盒）',
++            noteUnrendered: '未渲染（border-box 宽或高为 0）但**可见文本非空**、零可见字形盒'
++              + '（t24 立 / t28 收紧：豁免只看「可见文本长度为 0」，不含任何标记级豁免键 —— '
++              + '给说明插一个空 <noscript></noscript> 买不到豁免；判定只用盒量/render 状态/字形盒）',
+             coverage: '并集 = ① 156 条（盒宽全 452.81；其中 48 条单行、只有 ① 看得见）∪ ② 108 条多行（② ⊆ ①）= 156 条。'
+               + '⚠️ truth-401 的 caughtByOldCriteria(48) 是 make-truth-401.cjs:56 的 `index === 0` 按序切分（实测全为多行），'
+               + '与「48 条单行」不是同一批 —— 两处 48 别混用（t19/R3-2 订正）',

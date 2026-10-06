@@ -1,0 +1,135 @@
+# online-path-project-prefix · 线上路径 · dist 挂在 /ai-deals-aggregator/（与 GitHub Pages 项目站同形状）· 8 页全跑
+
+命令：node research/_raw/secondary-page-layout-unification/release/online-smoke.cjs --base=http://127.0.0.1:53875/ai-deals-aggregator/ --out=online-path-prefix-rehearsal.json
+退出码：0（期望 0）· 判定：OK · 用时 4.2s
+基线地址：http://127.0.0.1:53875/ai-deals-aggregator/（**本机回环**，不是真实线上域名）
+
+## 服务端访问日志（前 12 行：注意每条都在 /ai-deals-aggregator/ 之下）
+
+```
+[2026-10-06T08:53:08.582Z] SERVING D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\dist at http://127.0.0.1:53875/ai-deals-aggregator/
+[2026-10-06T08:53:12.893Z] GET /ai-deals-aggregator/sitemap.xml 200 (sitemap.xml)
+[2026-10-06T08:53:13.240Z] GET /ai-deals-aggregator/student/ 200 (student/index.html)
+[2026-10-06T08:53:13.302Z] GET /ai-deals-aggregator/favicon.svg 200 (favicon.svg)
+[2026-10-06T08:53:13.708Z] GET /ai-deals-aggregator/need/edu-identity/ 200 (need/edu-identity/index.html)
+[2026-10-06T08:53:13.787Z] GET /ai-deals-aggregator/favicon.svg 200 (favicon.svg)
+[2026-10-06T08:53:14.132Z] GET /ai-deals-aggregator/status/ 200 (status/index.html)
+[2026-10-06T08:53:14.218Z] GET /ai-deals-aggregator/favicon.svg 200 (favicon.svg)
+[2026-10-06T08:53:14.516Z] GET /ai-deals-aggregator/changes/ 200 (changes/index.html)
+[2026-10-06T08:53:14.610Z] GET /ai-deals-aggregator/favicon.svg 200 (favicon.svg)
+[2026-10-06T08:53:15.022Z] GET /ai-deals-aggregator/feeds/ 200 (feeds/index.html)
+[2026-10-06T08:53:15.110Z] GET /ai-deals-aggregator/favicon.svg 200 (favicon.svg)
+```
+
+
+## stdout + stderr（原样）
+
+```
+线上模式：http://127.0.0.1:53875/ai-deals-aggregator/
+推导来源：sitemap:http · 站点根前缀 /ai-deals-aggregator/
+推导：deal 80 条 → 取 deal/2eae0e246de2/
+推导：models 51 条（已排除 /models/ 索引） → 取 models/claude-fable-5.1/
+浏览器：C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe · playwright-core 1.63.0
+
+▶ /student/（wide 族 · 宽数据页；曾被压成 70ch 的四个壳之一（§22c M1–M4 变异靶页））
+  ✓ [student/ @1440] HTTP 200 — status=200
+  ✓ [student/ @1440] 几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族） — main 1380px · 主数据区 .ctable 1380px · 说明 3 条（#0 1380px / ratio 1）
+  ✓ [student/ @1440] 共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物） — frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）
+  ✓ [student/ @1440] 页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言） — noteCount=3
+  ✓ [student/ @1440] 说明 #0 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1364.86px/6 行 · 文本「这一页收的是来源明确说面向学生的优惠：audience 写了 s」
+  ✓ [student/ @1440] 说明 #1 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 61.64px/1 行 · 文本「全部变化 →」
+  ✓ [student/ @1440] 说明 #2 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1047.52px/3 行 · 文本「分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（」
+  ✓ [student/ @390] documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出） — scrollWidth=390 · clientWidth=390 · innerWidth=390
+
+▶ /need/edu-identity/（wide 族 · 按需求页（注册表驱动，slug 随数据走））
+  ✓ [need/edu-identity/ @1440] HTTP 200 — status=200
+  ✓ [need/edu-identity/ @1440] 几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族） — main 1380px · 主数据区 .ctable 1380px · 说明 3 条（#0 1380px / ratio 1）
+  ✓ [need/edu-identity/ @1440] 共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物） — frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）
+  ✓ [need/edu-identity/ @1440] 页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言） — noteCount=3
+  ✓ [need/edu-identity/ @1440] 说明 #0 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1364.38px/6 行 · 文本「这一页收的是教育身份相关的优惠：适用人群写了「学生 / 教师 /」
+  ✓ [need/edu-identity/ @1440] 说明 #1 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 61.64px/1 行 · 文本「全部变化 →」
+  ✓ [need/edu-identity/ @1440] 说明 #2 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1047.52px/3 行 · 文本「分类之间不互斥：一条优惠可以同时出现在多个分类页与多个需求页里（」
+  ✓ [need/edu-identity/ @390] documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出） — scrollWidth=390 · clientWidth=390 · innerWidth=390
+
+▶ /status/（wide 族 · 状态页；§22c 变异靶页，主数据区是 .stable）
+  ✓ [status/ @1440] HTTP 200 — status=200
+  ✓ [status/ @1440] 几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族） — main 1380px · 主数据区 .stable 1380px · 说明 2 条（#0 1380px / ratio 1）
+  ✓ [status/ @1440] 共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物） — frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）
+  ✓ [status/ @1440] 页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言） — noteCount=2
+  ✓ [status/ @1440] 说明 #0 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1376.39px/10 行 · 文本「这里列出每个采集来源最近一次的结果与跨运行的连续性。为什么要公开」
+  ✓ [status/ @1440] 说明 #1 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 652.36px/3 行 · 文本「机器可读的同一份数据：source-health.json。 本」
+  ✓ [status/ @390] documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出） — scrollWidth=390 · clientWidth=390 · innerWidth=390
+
+▶ /changes/（wide 族 · 变化页：全站说明条数最多的一页（13 条），旧判据只看见第一条）
+  ✓ [changes/ @1440] HTTP 200 — status=200
+  ✓ [changes/ @1440] 几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族） — main 1380px · 主数据区 .chgsec 1380px · 说明 13 条（#0 1380px / ratio 1）
+  ✓ [changes/ @1440] 共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物） — frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）
+  ✓ [changes/ @1440] 页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言） — noteCount=13
+  ✓ [changes/ @1440] 说明 #0 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 698.09px/1 行 · 文本「本页五个分栏互不重叠：今日新增只列今天首次收录的条目；最近 7 」
+  ✓ [changes/ @1440] 说明 #1 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 481.09px/1 行 · 文本「「即将结束」只认数据里写有绝对截止日期（expiresAt）的条」
+  ✓ [changes/ @1440] 说明 #2 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 576px/1 行 · 文本「这些变化只影响记录的元信息或写法（分类、出处、空白与措辞），不改」
+  ✓ [changes/ @1440] 说明 #3 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 451.52px/1 行 · 文本「已结束与重新出现只列最近 30 天；更早的记录仍留在该条目自己的」
+  ✓ [changes/ @1440] 说明 #4 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 816px/1 行 · 文本「以上是本站采集与合并过程留下的观测记录；「不再收录」表示本站未再」
+  ✓ [changes/ @1440] 说明 #5 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 403.92px/1 行 · 文本「套餐变化来自本站重建套餐数据时的观测记录；变更记录自 2026-」
+  ✓ [changes/ @1440] 说明 #6 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 228px/1 行 · 文本「自起算日起，没有观测到不再收录的套餐。」
+  ✓ [changes/ @1440] 说明 #7 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 156px/1 行 · 文本「没有观测到重新出现的套餐。」
+  ✓ [changes/ @1440] 说明 #8 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 936px/1 行 · 文本「以上是本站重建套餐数据时留下的观测记录；「不再收录」表示人工来源」
+  ✓ [changes/ @1440] 说明 #9 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 449.09px/1 行 · 文本「API 价格变化来自本站重建 API 计费数据时的观测记录；变更」
+  ✓ [changes/ @1440] 说明 #10 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 276.23px/1 行 · 文本「自起算日起，没有观测到不再收录的 API 计费记录。」
+  ✓ [changes/ @1440] 说明 #11 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 204.23px/1 行 · 文本「没有观测到重新出现的 API 计费记录。」
+  ✓ [changes/ @1440] 说明 #12 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 972.23px/1 行 · 文本「以上是本站重建 API 计费数据时留下的观测记录；「不再收录」表」
+  ✓ [changes/ @390] documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出） — scrollWidth=390 · clientWidth=390 · innerWidth=390
+
+▶ /feeds/（wide 族 · 订阅中心；§22c 变异靶页，主数据区是 .flist）
+  ✓ [feeds/ @1440] HTTP 200 — status=200
+  ✓ [feeds/ @1440] 几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族） — main 1380px · 主数据区 .flist 1380px · 说明 8 条（#0 1380px / ratio 1）
+  ✓ [feeds/ @1440] 共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物） — frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）
+  ✓ [feeds/ @1440] 页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言） — noteCount=8
+  ✓ [feeds/ @1440] 说明 #0 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1041.06px/1 行 · 文本「把下面的地址粘进任意 RSS / JSON Feed 阅读器即可」
+  ✓ [feeds/ @1440] 说明 #1 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1263.19px/5 行 · 文本「套餐变化来自人工逐条核对官方页后重建的套餐数据（plans.js」
+  ✓ [feeds/ @1440] 说明 #2 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 511.67px/3 行 · 文本「按「我是谁」和「能不能在大陆用上」切；判据与 /student/」
+  ✓ [feeds/ @1440] 说明 #3 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 600px/1 行 · 文本「按福利类型与用途切；与目录页、按需求页共用同一套判据，所以订阅里」
+  ✓ [feeds/ @1440] 说明 #4 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 751.45px/3 行 · 文本「按站点的分类落地页切（/category/api/ 等五页）；判」
+  ✓ [feeds/ @1440] 说明 #5 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1025.53px/1 行 · 文本「厂商订阅只给「当前收录的优惠 ≥ 2 条」或「历史变更事件 ≥ 」
+  ✓ [feeds/ @1440] 说明 #6 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1041.88px/1 行 · 文本「优惠订阅回答「当前有哪些符合这个条件的优惠」；最近变化与最近新增」
+  ✓ [feeds/ @1440] 说明 #7 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 252px/1 行 · 文本「信息来自厂商官方页面，最终以官方页面为准。」
+  ✓ [feeds/ @390] documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出） — scrollWidth=390 · clientWidth=390 · innerWidth=390
+
+▶ /plans/coding/（wide 族 · 套餐对比页：主数据区（.ptable）比页面列还宽的那一类）
+  ✓ [plans/coding/ @1440] HTTP 200 — status=200
+  ✓ [plans/coding/ @1440] 几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · wide 族） — main 1380px · 主数据区 .ptable 1380px · 说明 5 条（#0 1380px / ratio 1）
+  ✓ [plans/coding/ @1440] 共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物） — frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）
+  ✓ [plans/coding/ @1440] 页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言） — noteCount=5
+  ✓ [plans/coding/ @1440] 说明 #0 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 935.09px/1 行 · 文本「把各平台长期在售的 AI Coding 套餐放在一张表里比：正常」
+  ✓ [plans/coding/ @1440] 说明 #1 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 —px/0 行 · 文本「筛选、搜索与排序需要 JavaScript；未启用时，下面这张表」
+  ✓ [plans/coding/ @1440] 说明 #2 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 408.22px/1 行 · 文本「本期没有一条套餐的额度是固定 Token，名义 Token 单价」
+  ✓ [plans/coding/ @1440] 说明 #3 有字区域 / ratio / 左右边缘 — textWidth=1354px · 盒 43~1397（1354px）· 列 1380px · ratio=0.981 · 字迹 805.48px/3 行 · 文本「关联是显式确认的：只有人工在 deal-plan-links.j」
+  ✓ [plans/coding/ @1440] 说明 #4 有字区域 / ratio / 左右边缘 — textWidth=1380px · 盒 30~1410（1380px）· 列 1380px · ratio=1 · 字迹 1372.22px/4 行 · 文本「名义 Token 单价的口径：名义 Token 单价只根据套餐标」
+  ✓ [plans/coding/ @390] documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出） — scrollWidth=390 · clientWidth=390 · innerWidth=390
+
+▶ /deal/2eae0e246de2/（detail 族 · 叶子详情：内容列 1120px 居中；这类页面本来没有页面级说明）
+  ✓ [deal/2eae0e246de2/ @1440] HTTP 200 — status=200
+  ✓ [deal/2eae0e246de2/ @1440] 几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · detail 族） — main 1120px · 主数据区 <main>（回落） 1120px · 说明 0 条
+  ✓ [deal/2eae0e246de2/ @1440] 共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物） — frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）
+  ✓ [deal/2eae0e246de2/ @1440] 页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言） — noteCount=0（本页不要求）
+  ✓ [deal/2eae0e246de2/ @390] documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出） — scrollWidth=390 · clientWidth=390 · innerWidth=390
+
+▶ /models/claude-fable-5.1/（detail 族 · 叶子详情里**有**页面级说明的那一类（说明同样要 ≥0.85×1120））
+  ✓ [models/claude-fable-5.1/ @1440] HTTP 200 — status=200
+  ✓ [models/claude-fable-5.1/ @1440] 几何判据（说明 ≥0.85×列宽 · 同轴 · 不裁切 · 无溢出 · detail 族） — main 1120px · 主数据区 .ptable 1120px · 说明 5 条（#0 1120px / ratio 1）
+  ✓ [models/claude-fable-5.1/ @1440] 共享 <style> 里恰好 1 条冻结的 .snote 规则（一处定义、全站生效；同时证明线上是新产物） — frozenCount=1（旧产物 = 0；页面壳又复制第二份 = ≥2）
+  ✓ [models/claude-fable-5.1/ @1440] 页面级说明存在（§26 点名的页面必须有说明；0 条会让上面那条判据变成空断言） — noteCount=5
+  ✓ [models/claude-fable-5.1/ @1440] 说明 #0 有字区域 / ratio / 左右边缘 — textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 685.09px/5 行 · 文本「全部来自本站 API / Token 计费对比 的同一份数据； 」
+  ✓ [models/claude-fable-5.1/ @1440] 说明 #1 有字区域 / ratio / 左右边缘 — textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 670.92px/3 行 · 文本「没有与该模型显式关联的 Coding 套餐 —— 本站不按套餐里」
+  ✓ [models/claude-fable-5.1/ @1440] 说明 #2 有字区域 / ratio / 左右边缘 — textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 342.58px/3 行 · 文本「没有与该模型显式关联的优惠 —— 本站不用标题关键词猜关系。」
+  ✓ [models/claude-fable-5.1/ @1440] 说明 #3 有字区域 / ratio / 左右边缘 — textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 540.23px/3 行 · 文本「这一节是派生视图：直接把 API 计费日志里与该模型有关的记录事」
+  ✓ [models/claude-fable-5.1/ @1440] 说明 #4 有字区域 / ratio / 左右边缘 — textWidth=1120px · 盒 160~1280（1120px）· 列 1120px · ratio=1 · 字迹 224.95px/1 行 · 文本「API 计费日志里没有与该模型相关的事件。」
+  ✓ [models/claude-fable-5.1/ @390] documentElement.scrollWidth ≤ clientWidth + 1（窄屏不横向溢出） — scrollWidth=390 · clientWidth=390 · innerWidth=390
+
+ℹ️  线上模式出口采样（只记录、不判红）：0 个外部 origin（线上页面自带的分析探针本来就属于第三方请求）
+
+证据已写出：D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\research\_raw\secondary-page-layout-unification\release\online-path-prefix-rehearsal.json
+
+✅ Online Smoke 79 项断言，失败 0 项（8 页 · online · http://127.0.0.1:53875/ai-deals-aggregator/）
+```
+

@@ -1,0 +1,33 @@
+# 本目录的体积纪律 —— 与顶层 .gitignore 和 `leaf-detail-layout-v1/.gitignore` 同一条规矩：
+# **留结论与判据，不留可再生的字节副本。**
+#
+# 建档时的实测：目录总计 1585 文件 / 97 MB；按下面前四条排除后为 382 文件 / 21.3 MB。
+# 每一条排除都写明"为什么可再生"，不接受"太大了"这种理由。
+
+# ① 对抗用的产物副本（dist 的整份拷贝）：910 文件 / 57.4 MB。
+#    可由 reviewer 的 `make-scratch.cjs` / adversary 的 harness 一条命令重建，且逐份都记录了自己的生成脚本。
+#    ⚠️ 排除的是**目录**，所以其中的 .log 不会被下面的 `!**/*.log` 重新放回来（git 的规则：
+#    父目录被排除时，其下的文件无法被重新包含）—— 这是刻意的：那些是副本里的运行日志，不是证据本体。
+review/scratch/
+adversary/scratch/
+
+# ② §22c 修复前判据的 junction 沙箱：`scripts/lib` 与 `node_modules` 是目录联接，
+#    **git 会跟着穿进目标目录**，把那 700+ KB 源码在证据目录里复制一份（而且是会被改动的活副本）。
+#    复原件本体 `recovered/verify-site.pre-t7.js` 与可复算的复原脚本 `recover-pre-t7.cjs` **入库**；
+#    沙箱本身按 `recovered/README.md` 里的两条命令重建即可。
+recovered/pre-t7/
+
+# ③ 截图：与顶层 `research/_raw/**/*.png`、`research/_raw/**/shots/` 同义，这里再兜一层（本目录自足）。
+#    截图可重拍，且本目录的判据全部以 JSON 读数落盘，不依赖看图。
+**/*.png
+**/shots/
+
+# ④ **按名字放回全部 `*.log`**。顶层那条 `*.log` 防的是散落在仓库各处的临时运行日志；
+#    而本目录里的 67 份 .log（合计 2.98 MB）**全部是原始运行证据**：Full Gate 逐步日志、
+#    变异复测日志、几何扫描日志、M-disk 恢复三证…… 少了它们，报告里的读数就只剩手抄的数字。
+#    与 leaf-detail-layout-v1 的先例一致（那边只放回 1 个指名文件，这边是"本目录内全部"，理由相同）。
+#    注意：`review/scratch/**` 与 `adversary/scratch/**` 里的 .log 仍然不入库（见 ① 的说明）。
+!**/*.log
+
+# captain ͣ�����գ����ذ�ȫ�������������嵥��
+_halt-snapshot-*/

@@ -1,0 +1,127 @@
+{
+  "label": "regress-pre-t7-page-only",
+  "expect": "baseline",
+  "at": "2026-10-06T09:15:14.604Z",
+  "report": {
+    "path": "research/_raw/secondary-page-layout-unification/recovered/pre-t7-M0-baseline.json",
+    "sha256": "57b53302ee3d286f98735651747fd17ce449ff0ed24c154da639ac8103ce70ec",
+    "total": 827,
+    "failed": 19
+  },
+  "truth": {
+    "path": "research/_raw/secondary-page-layout-unification/geometry/truth-401.json",
+    "sha256": "46c28fa120a39ababf25826b86a08e57cf93e242baee8df264219e1d182e346e",
+    "narrowNotes": 156,
+    "narrowRoutes": 48,
+    "alreadyFine": 245,
+    "pagesWithNotes": 105,
+    "pagesCarryingNarrowNotes": 48,
+    "note": "narrowRoutes 是「含窄说明的页面数」（48），不是「有说明的页面数」（105）"
+  },
+  "containers": {
+    "noteLevel": null,
+    "pageLevel": "metrics.layoutViolations"
+  },
+  "requireNoteLevel": false,
+  "acceptCodeSet": "/^note-(ink-)?narrow$/",
+  "observed": {
+    "narrowRoutes": [
+      "category/",
+      "category/agent/",
+      "category/api/",
+      "category/audio/",
+      "category/chat/",
+      "category/image/",
+      "changes/",
+      "developer/",
+      "feeds/",
+      "free-api/",
+      "need/ai-coding/",
+      "need/china-usable/",
+      "need/dev-credits/",
+      "need/edu-identity/",
+      "need/free-api/",
+      "need/free-model/",
+      "need/free-tier/",
+      "need/free-tokens/",
+      "need/no-card/",
+      "need/student-only/",
+      "status/",
+      "student/",
+      "vendor/",
+      "vendor/ai360/",
+      "vendor/aliyun/",
+      "vendor/anthropic/",
+      "vendor/aws/",
+      "vendor/baichuan/",
+      "vendor/baidu-ai-cloud/",
+      "vendor/coze/",
+      "vendor/cursor/",
+      "vendor/deepseek/",
+      "vendor/github/",
+      "vendor/google/",
+      "vendor/iflytek/",
+      "vendor/microsoft/",
+      "vendor/minimax/",
+      "vendor/moonshot/",
+      "vendor/notion/",
+      "vendor/openai/",
+      "vendor/replit/",
+      "vendor/sensetime/",
+      "vendor/siliconflow/",
+      "vendor/stepfun/",
+      "vendor/tencent-cloud/",
+      "vendor/volcengine/",
+      "vendor/windsurf/",
+      "vendor/zhipu/"
+    ],
+    "narrowRouteCount": 48,
+    "narrowNoteKeys": null,
+    "narrowNoteCount": null,
+    "narrowCodeTally": {
+      "noteLevel": {},
+      "pageLevel": {
+        "note-narrow": 48
+      }
+    },
+    "layoutSweep": {
+      "total": 186,
+      "wide": 55,
+      "detail": 131,
+      "other": 0,
+      "notesChecked": 105,
+      "narrowNotes": 48,
+      "overflowPages": 0,
+      "unexpectedDetailMain": 0,
+      "missingDetailMain": 0,
+      "unclassified": 0
+    }
+  },
+  "diff": {
+    "missedNoteKeys": [],
+    "missedNoteCount": 0,
+    "missedRoutes": [],
+    "missedRouteCount": 0,
+    "falsePositiveNoteKeys": [],
+    "falsePositiveRoutes": [],
+    "falsePositiveCount": 0
+  },
+  "verdicts": {
+    "baseline": {
+      "命中页集合 ⊇ 真值页集合（48 页，无减少）": true,
+      "命中页集合 ⊆ 真值页集合（无新增 / 零误报页）": true,
+      "页集合逐条相同（48 页）": true,
+      "报告里有条级容器（验收标准第 5 条）": false,
+      "命中条集合 ⊇ 真值条集合（156 条，逐条查）": "无法判定（报告里没有条级容器）",
+      "对照组（alreadyFine 245 条）零误报": true,
+      "页数与条数读数": "48 页 / （无条级读数） 条"
+    },
+    "green": {
+      "命中页集合为空": false,
+      "命中条集合为空": "无法判定（报告里没有条级容器）",
+      "对照组（alreadyFine 245 条）零误报": true
+    }
+  },
+  "verdict": "pass",
+  "note": "报告里**没有**条级容器（只有 metrics.layoutViolations）⇒ 只能核对页集合。若新判据能逐条报，请把它写进 metrics 的某个数组（元素含 route/index/codes），这里会自动发现。 判窄用的是接受码集合 /^note-(ink-)?narrow$/（note-narrow ∪ note-ink-narrow；note-hidden-text 不算窄）。"
+}

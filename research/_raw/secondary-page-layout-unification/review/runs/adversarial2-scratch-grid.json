@@ -1,0 +1,272 @@
+{
+  "generatedAt": "2026-10-06T08:47:49.563Z",
+  "dir": "research\\_raw\\secondary-page-layout-unification\\review\\scratch\\false-green-grid",
+  "extracted": {
+    "judge": {
+      "file": "scripts\\tools\\verify-site.js",
+      "lines": "6151-6449",
+      "sha256": "47cfc56165be000d58e69bc77431d1678926a4034e7cb6d6bc7edf14f8f4b53e"
+    },
+    "mutate": {
+      "file": "scripts\\tools\\verify-site.js",
+      "lines": "6457-6470",
+      "sha256": "b3d6ba24f3b65d417a96e1908804dbc44ad4ae008fbe505e4ae2be285015c3dc"
+    }
+  },
+  "results": [
+    {
+      "id": "R2-G0",
+      "route": "changes/",
+      "width": 1440,
+      "what": "changes/ 不注入的现场读数（用于量 scratch 产物里被烘焙的规则）",
+      "injected": null,
+      "codes": [],
+      "coded": [],
+      "messages": [],
+      "column": 1380,
+      "threshold": 1172.99,
+      "axisTol": 69,
+      "regionSel": ".chgsec",
+      "scrollWidth": 1440,
+      "notes": [
+        {
+          "key": "changes/#0",
+          "box": 1380,
+          "inner": 1380,
+          "textWidth": 1380,
+          "fallback": false,
+          "bearing": 1,
+          "ink": 445.05,
+          "inkLongest": 445.05,
+          "parent": "section.chgdeals",
+          "maxWidth": "none",
+          "padRight": 0,
+          "padLeft": 0,
+          "text": "本页五个分栏互不重叠：今日新增只列今天首次收录的条目；最近 7 "
+        },
+        {
+          "key": "changes/#1",
+          "box": 1380,
+          "inner": 1380,
+          "textWidth": 1380,
+          "fallback": false,
+          "bearing": 1,
+          "ink": 445.09,
+          "inkLongest": 445.09,
+          "parent": "section.chgdeals",
+          "maxWidth": "none",
+          "padRight": 0,
+          "padLeft": 0,
+          "text": "「即将结束」只认数据里写有绝对截止日期（expiresAt）的条"
+        },
+        {
+          "key": "changes/#2",
+          "box": 1380,
+          "inner": 1380,
+          "textWidth": 1380,
+          "fallback": false,
+          "bearing": 1,
+          "ink": 432,
+          "inkLongest": 432,
+          "parent": "details.chgother",
+          "maxWidth": "none",
+          "padRight": 0,
+          "padLeft": 0,
+          "text": "这些变化只影响记录的元信息或写法（分类、出处、空白与措辞），不改"
+        },
+        {
+          "key": "changes/#3",
+          "box": 1380,
+          "inner": 1380,
+          "textWidth": 1380,
+          "fallback": false,
+          "bearing": 1,
+          "ink": 451.52,
+          "inkLongest": 451.52,
+          "parent": "section.chgdeals",
+          "maxWidth": "none",
+          "padRight": 0,
+          "padLeft": 0,
+          "text": "已结束与重新出现只列最近 30 天；更早的记录仍留在该条目自己的"
+        },
+        {
+          "key": "changes/#4",
+          "box": 1380,
+          "inner": 1380,
+          "textWidth": 1380,
+          "fallback": false,
+          "bearing": 1,
+          "ink": 444,
+          "inkLongest": 444,
+          "parent": "section.chgdeals",
+          "maxWidth": "none",
+          "padRight": 0,
+          "padLeft": 0,
+          "text": "以上是本站采集与合并过程留下的观测记录；「不再收录」表示本站未再"
+        },
+        {
+          "key": "changes/#5",
+          "box": 1380,
+          "inner": 1380,
+          "textWidth": 1380,
+          "fallback": false,
+          "bearing": 1,
+          "ink": 403.92,
+          "inkLongest": 403.92,
+          "parent": "section.chgsec",
+          "maxWidth": "none",
+          "padRight": 0,
+          "padLeft": 0,
+          "text": "套餐变化来自本站重建套餐数据时的观测记录；变更记录自 2026-"
+        },
+        {
+          "key": "changes/#6",
+          "box": 1380,
+          "inner": 1380,
+          "textWidth": 1380,
+          "fallback": false,
+          "bearing": 1,
+          "ink": 228,
+          "inkLongest": 228,
+          "parent": "div.chgsub",
+          "maxWidth": "none",
+          "padRight": 0,
+          "padLeft": 0,
+          "text": "自起算日起，没有观测到不再收录的套餐。"
+        },
+        {
+          "key": "changes/#7",
+          "box": 1380,
+          "inner": 1380,
+          "textWidth": 1380,
+          "fallback": false,
+          "bearing": 1,
+          "ink": 156,
+          "inkLongest": 156,
+          "parent": "div.chgsub",
+          "maxWidth": "none",
+          "padRight": 0,
+          "padLeft": 0,
+          "text": "没有观测到重新出现的套餐。"
+        },
+        {
+          "key": "changes/#8",
+          "box": 1380,
+          "inner": 1380,
+          "textWidth": 1380,
+          "fallback": false,
+          "bearing": 1,
+          "ink": 444,
+          "inkLongest": 444,
+          "parent": "section.chgsec",
+          "maxWidth": "none",
+          "padRight": 0,
+          "padLeft": 0,
+          "text": "以上是本站重建套餐数据时留下的观测记录；「不再收录」表示人工来源"
+        },
+        {
+          "key": "changes/#9",
+          "box": 1380,
+          "inner": 1380,
+          "textWidth": 1380,
+          "fallback": false,
+          "bearing": 1,
+          "ink": 449.09,
+          "inkLongest": 449.09,
+          "parent": "section.chgsec",
+          "maxWidth": "none",
+          "padRight": 0,
+          "padLeft": 0,
+          "text": "API 价格变化来自本站重建 API 计费数据时的观测记录；变更"
+        },
+        {
+          "key": "changes/#10",
+          "box": 1380,
+          "inner": 1380,
+          "textWidth": 1380,
+          "fallback": false,
+          "bearing": 1,
+          "ink": 276.23,
+          "inkLongest": 276.23,
+          "parent": "div.chgsub",
+          "maxWidth": "none",
+          "padRight": 0,
+          "padLeft": 0,
+          "text": "自起算日起，没有观测到不再收录的 API 计费记录。"
+        },
+        {
+          "key": "changes/#11",
+          "box": 1380,
+          "inner": 1380,
+          "textWidth": 1380,
+          "fallback": false,
+          "bearing": 1,
+          "ink": 204.23,
+          "inkLongest": 204.23,
+          "parent": "div.chgsub",
+          "maxWidth": "none",
+          "padRight": 0,
+          "padLeft": 0,
+          "text": "没有观测到重新出现的 API 计费记录。"
+        },
+        {
+          "key": "changes/#12",
+          "box": 1380,
+          "inner": 1380,
+          "textWidth": 1380,
+          "fallback": false,
+          "bearing": 1,
+          "ink": 444.23,
+          "inkLongest": 444.23,
+          "parent": "section.chgsec",
+          "maxWidth": "none",
+          "padRight": 0,
+          "padLeft": 0,
+          "text": "以上是本站重建 API 计费数据时留下的观测记录；「不再收录」表"
+        }
+      ]
+    },
+    {
+      "id": "guard",
+      "rows": [
+        {
+          "id": "G0-absent",
+          "result": {
+            "ok": false,
+            "occurrences": 0,
+            "reason": "锚点在内联样式里出现 0 次（必须恰好 1 次）"
+          }
+        },
+        {
+          "id": "G1-many",
+          "result": {
+            "ok": false,
+            "occurrences": 61,
+            "reason": "锚点在内联样式里出现 61 次（必须恰好 1 次）"
+          }
+        },
+        {
+          "id": "G3-twice",
+          "result": {
+            "ok": false,
+            "occurrences": 2,
+            "reason": "锚点在内联样式里出现 2 次（必须恰好 1 次）"
+          }
+        },
+        {
+          "id": "G2-unique",
+          "result": {
+            "ok": true,
+            "occurrences": 1
+          },
+          "codes": [
+            "note-narrow#0",
+            "note-narrow#1",
+            "note-narrow#2"
+          ],
+          "textWidth": 452.81
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "newFailed": 36,
+  "oldFailed": 33,
+  "added": [
+    {
+      "name": "§22c M13 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+      "name": "§22c M13 变异后复测必须出现「note-unrendered」违规码（T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住）",
+      "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+      "name": "§22c M13 承重证明：盒高被压成 0 的条**全部**由 note-unrendered 咬中，且窄柱/字迹/藏字三条判据在它们身上确实看不见",
+      "detail": "未渲染条 0 条 [] · 它们的 textLength [] · glyphRects [] · note-unrendered 命中 [无] · 窄柱/字迹/藏字码 [无（这正是修复前的假绿形状）]"
+    }
+  ],
+  "removed": [],
+  "frozenInBaselineDocsData": 0,
+  "frozenInDistDocsData": 1
+}

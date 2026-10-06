@@ -1,0 +1,38 @@
+﻿# 三份长期文档的改动量对账（t32 · 发布前最后一处文档收口 · 最终）
+# 生成命令（只读）：git diff --numstat / Select-String / Get-Content / git status --porcelain
+# at: 2026-10-07T00:10:27.7395668+08:00
+
+== git diff --numstat -- PROJECT_STATUS.md NEXT-STEPS.md docs/DESIGN-RULES.md ==
+47	1	NEXT-STEPS.md
+30	3	PROJECT_STATUS.md
+25	4	docs/DESIGN-RULES.md
+
+== 行数与上限（各文件新增 <= 120 行） ==
+  PROJECT_STATUS.md  added=30  deleted=3  linesNow=3635
+  NEXT-STEPS.md  added=47  deleted=1  linesNow=571
+  docs\DESIGN-RULES.md  added=25  deleted=4  linesNow=362
+
+== 占位符清点（期望 0） ==
+  research\secondary-page-layout-unification-report.md  占位符残留=0
+  PROJECT_STATUS.md  占位符残留=0
+  NEXT-STEPS.md  占位符残留=0
+  docs\DESIGN-RULES.md  占位符残留=0
+
+== 报告规模 ==
+  report lines=1640
+  §J ③ = 已重测 · P1/DEFERRED（t31；五档逐值 + 假绿路径 + requiredFix + 用户裁定三条理由 + 轮 3 补记）
+
+== git status --porcelain ==
+ M NEXT-STEPS.md
+ M PROJECT_STATUS.md
+ M docs/DESIGN-RULES.md
+ M index.html
+ M scripts/lib/archive.js
+ M scripts/lib/page-kinds.js
+ M scripts/tools/archive-selftest.js
+ M scripts/tools/build-local.js
+ M scripts/tools/seo-selftest.js
+ M scripts/tools/verify-site.js
+?? research/_raw/secondary-page-layout-unification/
+?? research/secondary-page-layout-unification-report.md
+?? research/secondary-page-layout-unification-self-audit.md

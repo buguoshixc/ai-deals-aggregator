@@ -34,6 +34,21 @@ const ARCHIVE_DESCRIPTION = '本站的原则是：资料失效不等于资料删
   + '这里保留已经结束或下线的优惠、Coding 套餐与 API 计费记录 —— 它们的状态、首次发现、'
   + '最后有效时间、结束发现时间、最后已知内容、官方来源与变化时间线。';
 
+/**
+ * `/archive/<kind>/<id>/` 的**内容列**：与 `/deal/<id>/`、`/models/<slug>/` 共用同一处
+ * `.detail-main`（1120px 居中；宽度只在 `index.html` 的共享 `<style>` 里写一次）。
+ *
+ * 档案详情是"单一实体的叶子页"，因此与索引页不是同一族 —— 见
+ * `scripts/lib/page-kinds.js` 的 `LAYOUT_FAMILIES`：`archive-detail → 'detail'`。
+ *
+ * ⚠️ **今天生产 0 个实例**（三份日志的 ended / restored 事件各 0 条），但这条路径一旦生成页面，
+ * 就必须是这一列，而不是整幅 1380px 的数据容器 —— 一个"今天永远跑不到"的渲染分支，
+ * 正是最容易在它第一次跑起来的那天露出未验证布局的地方。
+ * 常量在这里定义、由 `build-local.js` 的调用点传入、再由 `assertPageHonesty()` 从整页上反查，
+ * 三处指的是同一个字符串。
+ */
+const ARCHIVE_ENTRY_MAIN_CLASS = 'detail-main';
+
 const UNKNOWN_TEXT = plansPage.UNKNOWN_TEXT;
 const UNKNOWN_NUM = plansPage.UNKNOWN_NUM;
 const escapeHtml = plansPage.escapeHtml;
@@ -819,6 +834,36 @@ function assertPageHonesty(html, page = {}) {
   }
 
   if (page.kind === 'archive-entry') {
+    // ---- 布局约束（整页）：档案详情必须落在统一内容列里 ----
+    //
+    // 与优惠详情 / 模型详情**同一条纪律**：叶子详情页的内容列只有 `.detail-main` 一处来源
+    // （宽度写在 `index.html` 的共享 `<style>` 里）。检查放在这里、而不是页面渲染处，
+    // 是因为渲染处只能证明"我传了这个 class"；只有从**整页 HTML** 上再数一遍，
+    // 才能证明那个 class 真的落在了 `<main>` 上，而且整页只有一个 `<main>`。
+    //
+    // 判据分「整页 / 片段」两种对象，理由写在断言里而不是藏在代码里：
+    //   · `renderArchiveEntry()` 返回的是**正文片段**（离线自测直接喂它），片段里本来就没有 `<main>`
+    //     —— 那不是"缺布局"，而是"断言的对象不是一整页"；
+    //   · 构建期传进来的是**整页**（`renderModelsShell()` 的产物）：必须恰好 1 个 `<main>`
+    //     且其 class 含 `detail-main`，缺失就硬失败；
+    //   · 片段**不要求** `<main>`，但只要片段里出现 `<main>`，就必须同样满足上面那条
+    //     —— 不许"片段里偷偷长出一个没有内容列的 main"。
+    const raw = String(html || '');
+    const isFullPage = /<!DOCTYPE\s+html|<html[\s>]/i.test(raw);
+    const mainTags = [...raw.matchAll(/<main\b[^>]*>/gi)].map(match => match[0]);
+    const classOf = tag => {
+      const match = tag.match(/\bclass\s*=\s*"([^"]*)"|\bclass\s*=\s*'([^']*)'/i);
+      return match ? (match[1] || match[2] || '') : '';
+    };
+    const mainCarriesColumn = tag => classOf(tag).split(/\s+/).includes(ARCHIVE_ENTRY_MAIN_CLASS);
+    if (isFullPage && mainTags.length === 0) {
+      problems.push(`整页缺少 <main>：档案详情必须恰好 1 个 <main> 且其 class 含 ${ARCHIVE_ENTRY_MAIN_CLASS}（统一内容列）`);
+    } else if (mainTags.length > 1) {
+      problems.push(`整页出现 ${mainTags.length} 个 <main>：档案详情必须恰好 1 个 <main> 且其 class 含 ${ARCHIVE_ENTRY_MAIN_CLASS}（统一内容列）`);
+    } else if (mainTags.length === 1 && !mainCarriesColumn(mainTags[0])) {
+      problems.push(`<main> 的 class 不含 ${ARCHIVE_ENTRY_MAIN_CLASS}：档案详情页必须落在统一内容列里（实际：${mainTags[0]}）`);
+    }
+
     const entry = page.entry;
     const title = entry.title || entry.id;
     if (!text.includes(title)) problems.push(`缺少标题「${title}」`);
@@ -849,6 +894,7 @@ module.exports = {
   ARCHIVE_INDEX_ROUTE,
   ARCHIVE_HEADING,
   ARCHIVE_DESCRIPTION,
+  ARCHIVE_ENTRY_MAIN_CLASS,
   ARCHIVE_KIND_LABEL,
   ARCHIVE_KINDS,
   LIFECYCLE_RANK,

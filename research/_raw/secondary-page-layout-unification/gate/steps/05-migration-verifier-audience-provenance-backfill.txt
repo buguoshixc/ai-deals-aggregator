@@ -1,0 +1,36 @@
+# Migration verifier (audience provenance backfill)
+# $ node scripts/tools/migrate-audience-verify.js
+# runAt 2026-10-06T07:30:30.727Z · verify-site.js sha256 4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756
+
+=== migrate --audience 验收比对 ===
+模式：入库合成夹具（scripts/data/fixtures/，逐分支覆盖；CI 用的就是这条）
+before: D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\scripts\data\fixtures\migrate-audience-before.json（9 条）
+after : D:\OneDrive\Desktop\Code\AI Page\.worktrees\secondary-page-layout-unification\scripts\data\fixtures\migrate-audience-after.json（9 条）
+
+--- 1) 除 provenance 外任何既有字段逐字节不变 ---
+  ✓ before 快照本身就是合规数据（迁移不该在坏输入上工作） — 0 项
+  ✓ after 逐条通过 validateDeal（含 provenance 的全部硬约束） — 0 项
+  ✓ 既有字段取值无一变化 — 0 处
+  ✓ 既有字段键顺序无一变化（diff 才会保持「每条约 6 行新增」） — 0 处
+  ✓ 除 provenance 外无新增键 — 0 个
+  ✓ 无删除键 / 无消失记录 — 0 个
+
+--- 2) 迁移不猜值：六字段的值必须逐字节不变 ---
+  ✓ audience / benefitType / eligibilityDetail / claimRequirements / availability 一字未改 — 0 处
+  ✓ 没有给任何条目填 "unknown" 占位（缺席就是 unknown，写出来只会让覆盖率虚高） — 0 条
+
+--- 3) provenance 只在有据可查的条目上 ---
+  ✓ 每条新 provenance 的 credibility 都等于规则推出的那一档（editorial > curated > 不补） — 0 处
+  ✓ 新 provenance 的 fields 只列真的有值的新字段（不为空、不指向空字段） — 0 处
+  ✓ editorial 一律带 verifiedAt（人工回访日期是声明的组成部分） — 0 处
+  ✓ 该补的都补了：before 按规则算出的应有条数 === after 实际补上的条数（同义反复，非规则守卫） — 应补 4 条，实补 4 条
+  （provenance 条数：1 → 5，新补 4 条）
+
+--- 4) 确定性与幂等 ---
+  ✓ 以 before 重跑一次纯函数，输出与 after 逐字节相同（不依赖运行状态，重跑安全）
+  ✓ 对 after 再跑一次是幂等的（已有 provenance 不再叠加，updatedAt 之外零变化）
+
+统计：before 9 条 → after 9 条 · 新补 provenance 4 条 · 既有字段改动 0 处 · 键顺序变化 0 处
+  ✓ updatedAt 逐字节不变（迁移没有采到新数据，不该伪报新鲜度） — 2026-09-22T00:00:00+08:00 → 2026-09-22T00:00:00+08:00
+
+✅ migrate --audience 验收：15/15 项通过

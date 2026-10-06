@@ -1,0 +1,88 @@
+"id": "t21",
+      "subject": "T21 淇杞?4 鍚庣殑璇佹嵁澶嶈窇锛歅0鈥揚9 + 闆嗗悎绾ч獙鏀?+ M1鈥揗12 + R3-1 澶嶇幇 + 瀛楄妭瀵硅处 + Full Gate 47/48",
+      "description": "鏇夸唬宸插彇娑堢殑 t16銆傚墠缃?= t19锛堜慨澶嶈疆 4锛? t20锛堝瀹?round 4锛夊弻閫氳繃銆傛爣鐨?sha256 浠?t19 鐨?output 涓哄噯锛堟敼閫犲墠鏄?108818856cdf40a4鈥︼級銆俤ist/ 涓庢祻瑙堝櫒濂椾欢鏄崟鍐欒€呰祫婧愶紝寮€宸ュ墠纭鏃犲叾浠栨垚鍛樺湪璺戯紱璺戝畬鎶?dist 鏍戝搱甯岃涓€娆°€備笂涓嬫枃绾緥锛氫笉 cat 澶ф棩蹇楋紝鐢?Select-String/-Tail 闄愰噺鍙栨牱锛岀粨璁哄啓鐩樸€?,
+      "status": "in_progress",
+      "assignee": "evidence-runner",
+      "dependencies": [
+        "t20"
+      ],
+      "attempt": 2,
+      "createdAt": 1791285625899,
+      "updatedAt": 1791290035927,
+      "kind": "verification",
+      "objective": "鍦ㄤ慨澶嶈疆 4 涓庡瀹?round 4 鍙屽弻閫氳繃鍚庡璺戝叏閮ㄨ瘉鎹紝纭鏂板彛寰勶紙鐗╃悊鍓嶇疆鏉′欢锛夊湪鍐荤粨鍒跺搧涓婃垚绔嬶細P0鈥揚9銆侀泦鍚堢骇楠屾敹銆丮1鈥揗12 鍙樺紓鐗欍€丷3-1 澶嶇幇瀹為獙銆佸瓧鑺傚璐︺€丗ull Gate 绗?47/48 姝ワ紱骞舵妸 760 妗ｆ柊瑕嗙洊绾冲叆璇绘暟銆?,
+      "outOfScope": [
+        "scripts/tools/verify-site.js",
+        "index.html",
+        "scripts/lib/",
+        "scripts/tools/build-local.js",
+        ".github/",
+        "dist/",
+        "dist.baseline/"
+      ],
+      "acceptance": [
+        "scripts/tools/verify-site.js 璺戝墠/璺戝悗 sha256 鐩哥瓑锛屼笖绛変簬 t19 浜ゅ洖鍊?,
+        "--dir=dist锛歟xit 0銆? 澶辫触銆? 杩濊鐮併€?01 鏉¤鏄庨€愭潯鏈夎鏁帮紱涓?@760 鏍锋湰闆嗙‘瀹炲湪鍒ら€愯瀛楄抗锛堜笉鏄瘂skipped}",
+        "--dir=dist.baseline锛歟xit 1锛屼笖 note-narrow 鈭?note-ink-narrow = 156 鏉?48 椤碉紝涓?truth-401 闆嗗悎閫愭潯鐩稿悓銆佹紡鍒?0銆佽鎶?0锛浡?2c 涔嬪 0 澶辫触",
+        "M1鈥揗12 鍙樺紓鐗欏璺戯細閫愭潯缁欐湡鏈涚爜/瀹炴祴鐮佷笌 EXIT锛汳11 蹇呴』鍜?note-ink-narrow锛孧12 鍜?note-hidden-text锛屽弽绌烘礊瀹堝崼 0 娆?鈮? 娆′粛 ok:false",
+        "R3-1 澶嶇幇瀹為獙鍦ㄥ喕缁撳埗鍝佷笂澶嶈窇锛欯media (max-width:760px) 鐗?grid 娉ㄥ叆 scratch 鍓湰 鈬?EXIT鈮? 涓斿懡涓?note-ink-narrow",
+        "瀛楄妭瀵硅处澶嶈窇锛?17/117 闈?HTML 鏂囦欢涓?dist.baseline sha256 鐩稿悓銆?86/186 HTML 鍘?<style> 鍚庨€愬瓧鑺傜浉鍚屻€乮ndex.html 涓?scripts/tools/build-local.js sha256 涓?t1 鍐荤粨鍊肩浉鍚?,
+        "Full Gate 鏈湴璺戝櫒锛氱幇鍦鸿В鏋?.github/actions/gate/action.yml 鍙栨鏁帮紙涓嶅緱纭紪鐮侊級锛岀粰 executed/passed/failed/skipped 涓庢暣浣?exit锛涚 47/48 姝ュ崟鐙璺戝苟鍚勭粰鏂█鏁颁笌澶辫触鏁?,
+        "鍏ㄩ儴璇绘暟钀界洏 research/_raw/secondary-page-layout-unification/**锛岀储寮曟枃浠剁粰鍑烘瘡鏉¤鏁扮殑纭垏璺緞"
+      ],
+      "verify": [
+        "node scripts/tools/verify-site.js --dir=dist",
+        "node scripts/tools/verify-site.js --dir=dist.baseline",
+        "node scripts/tools/check-ci-consistency.js --expect-checks=38",
+        "Full Gate 鏈湴璺戝櫒锛堢幇鍦鸿В鏋?.github/actions/gate/action.yml 鍙栨鏁帮級"
+      ],
+      "deliverables": [
+        "research/_raw/secondary-page-layout-unification/verify/T21-EVIDENCE.md锛堢储寮?+ 閫愰」璇绘暟锛?,
+        "M-green-after-r4.json / M0-after-r4.json / gate 鏃ュ織 / Full Gate 47-48 姝ユ棩蹇?
+      ],
+      "reassigning": false,
+      "attemptId": "2d032832-e4b1-4bf6-a8c5-f3693a42d041"
+    },
+    {
+      "id": "t22",
+      "subject": "T22 闂ㄧ渚?self-audit 琛ュ啓 + 鍥涜疆鍒ゆ嵁瀵圭収鐙珛澶嶇畻 + 鎶ュ憡鏁板瓧鎶芥煡 鈮?0 澶?,
+      "description": "鏇夸唬宸插彇娑堢殑 t13銆傚墠缃?= t20锛堝瀹?round 4锛夐€氳繃銆備綘娌″仛杩囪繖涓€椤癸紝浠庨浂寮€濮嬪嵆鍙紝涓嶈澶嶇敤 t4 鐨勭粨璁猴紱t4 鐨勭嫭绔嬫帰閽?layout-probe.cjs 鍙互浣滀负璧风偣浣嗗繀椤绘寜鏂板彛寰勯噸绠椼€傚彧璇荤敓浜ф簮鐮侊紝闆跺啓鍏?dist/dist.baseline/scripts銆備笂涓嬫枃绾緥锛氫笉 cat 澶ф棩蹇楋紝闄愰噺鍙栨牱锛岀粨璁哄啓鐩樸€?,
+      "status": "completed",
+      "assignee": "independent-verifier",
+      "dependencies": [
+        "t20"
+      ],
+      "attempt": 2,
+      "createdAt": 1791285625952,
+      "updatedAt": 1791290938163,
+      "kind": "verification",
+      "objective": "鐢ㄥ畬鍏ㄧ嫭绔嬬殑鎺㈤拡涓庤嚜绠楀绠楀洓杞彛寰勭殑瑕嗙洊闈㈠鐓э紝鎶芥煡鎶ュ憡鏁板瓧锛屽苟瀵广€屾畫浣欑洸鍖烘槸鍚︾湡鐨勯棴鍚堛€嶇粰鐙珛鍒ゅ畾锛涗笉寰楀鐢ㄨ娴嬪垽鎹湰韬瘉鏄庤娴嬪垽鎹纭€?,
+      "outOfScope": [
+        "scripts/tools/verify-site.js",
+        "index.html",
+        "scripts/lib/",
+        "scripts/tools/build-local.js",
+        ".github/",
+        "dist/",
+        "dist.baseline/",
+        "research/secondary-page-layout-unification-report.md"
+      ],
+      "acceptance": [
+        "鐙珛鎺㈤拡锛堜笉 require scripts/tools/verify-site.js锛屼篃涓?require scripts/lib/page-kinds.js锛夊湪 dist 涓?dist.baseline 涓婂绠楃獎鏌遍泦鍚堬紝涓庡垽鎹粨鏋滈€愭潯瀵硅处锛歜aseline 鏈熸湜 156 鏉?48 椤点€乨ist 鏈熸湜 0 鏉★紱宸紓閫愭潯鍒楀嚭",
+        "杩濊鐮佸彲杈炬€?self-audit锛氭瘡涓爜閮芥湁鍙鐜扮殑娉ㄥ叆褰㈡€侊紝涓斾笉瀛樺湪鏃犱骇鍑虹爜锛涚粰鐮佽〃涓庢渶灏忓鐜板懡浠?,
+        "鍥涜疆瀵圭収鐙珛澶嶇畻锛歳ound1 border-box / round2 textWidth / round3 骞堕泦 / round4 鐗╃悊鍓嶇疆鏉′欢锛屽悇杞湪鍚勬。锛?440/1600/760/360锛夎兘鍜腑浠€涔堛€佹紡浠€涔堬紝鐢ㄧ嫭绔嬫帰閽堢粰鏁颁笉缁欑粨璁?,
+        "鎶ュ憡鏁板瓧鎶芥煡 鈮?0 澶勶紝閫愬缁欍€屾姤鍛婂€?/ 鎴戞柟瀹炴祴鍊?/ 涓€鑷存垨宸紓銆嶏紝宸紓蹇呴』缁欏嚭澶勶紙鏂囦欢+琛岋級",
+        "娈嬩綑鐩插尯鍒ゅ畾锛氣墹760 濯掍綋鏌ヨ闄愬畾绐勫寲鏄惁鐪熻闂悎锛?60 妗ｄ笉鍒ら€愯瀛楄抗鐨勭悊鐢辨槸鍚︽垚绔嬶紙鍒楀 328px < 70ch=452.81px锛夛紱骞剁粰鍒ゅ畾璇佹嵁",
+        "涓嶅緱澶嶇敤琚祴鍒ゆ嵁璇佹槑琚祴鍒ゆ嵁锛涘叏閮ㄨ鏁拌惤鐩樺苟缁欑储寮?
+      ],
+      "verify": [
+        "node research/_raw/secondary-page-layout-unification/verify/layout-probe.cjs锛堟寜 round4 鍙ｅ緞閲嶇畻骞惰緭鍑哄璐﹁〃锛?,
+        "node scripts/tools/check-ci-consistency.js --expect-checks=38"
+      ],
+      "deliverables": [
+        "research/_raw/secondary-page-layout-unification/verify/T22-SELF-AUDIT.md",
+        "鐙珛澶嶇畻璇绘暟涓庡璐﹁〃锛圝SON + 浜鸿鎽樿锛?
+      ],
+      "reassigning": false,
+      "attemptId": "09605b3b-7c75-4747-a778-bab09c86e6e7",
+      "output": "T22 闂ㄧ渚?self-audit 瀹屾垚锛堢嫭绔嬫帰閽?/ 鍥涜疆瀵圭収 / 鏁板瓧鎶芥煡 / 娈嬩綑鐩插尯锛夈€?*6 鏉￠獙鏀跺叏杩?*锛涘彂鐜?1 鏉?medium锛圱22-F1锛屽亣缁块潰锛? 3 鏉?low锛屽潎涓洪棬绂佷晶寤鸿锛屼笉闃诲鏈澶嶆牳缁撹銆?*闆跺啓鍏?dist/dist.baseline/scripts**锛坴erify-site.js 澶嶆牳鍓嶅悗閮芥槸 FD3C9A3090DCA11B锛夈€俓n\n銆愨憼閫愭潯瀵硅处 路 闆跺樊寮傘€戠嫭绔嬫帰閽?verify/layout-probe.cjs v2锛堝彧 require playwright-core+fs/http/path锛?*涓?require verify-site.js銆佷篃涓?require page-kinds.js**锛涗富鏁版嵁鍖?椤甸潰鍒?70ch 鐜板満灏哄瓙/閫愯瀛楄抗褰掑苟/鍒ゆ嵁鍏ㄨ嚜鍐欙級瀹炶窇锛歞ist.baseline 186 璺敱 路 401 鏉¤鏄?路 **156 鏉?48 椤?*锛園1440/@1600/@760 鍥涜疆鍚岋級锛屼笌鍒ゆ嵁鎶ュ憡 teeth/_scratch/r4-m0.json锛?48 椤?澶辫触 33锛夊苟闆?*閫愭潯鐩稿悓**锛坥nlyMine=[] onlyJudge=[] same=true锛夈€佷笌 geometry/truth-401.json 鍙屽悜闆跺樊闆嗐€乤lreadyFine 璇姤 0锛沝ist **0 鏉?0 椤?*锛屼笌 r4-green.json锛?48/0锛塻ame=true銆俓n\n銆愨憽杩濊鐮佸彲杈炬€с€?0 鐮侀噷 **9 鐮佺敱鎴戠殑鎺㈤拡瀹炴祴浜у嚭**锛坣ote-narrow / note-ink-narrow / note-hidden-text / note-axis / note-clipped / page-overflow@<vw> / data-region-missing / missing-detail-main / unexpected-detail-main锛夛紝閫愮爜缁欎簡娉ㄥ叆褰㈡€?+ 浣嶇疆 + 鏈€灏忓鐜板懡浠わ紱绗?10 涓?unclassified-layout 鏄敞鍐岃〃缁撴瀯鐮侊紙鎴戠殑鎺㈤拡鎸夋瀯閫犱笉浜у嚭锛夛紝缁欎簡婧愮爜鍒嗘敮浣嶇疆涓?scratch 澶嶇幇鍛戒护銆傚彟鎵?review/runs + teeth/_scratch 60+ 浠?JSON锛氬叾浣?9 鐮佸湪鐪熷疄鎶ュ憡閲岄兘鍑虹幇杩囥€俓n\n銆愨憿鍥涜疆瀵圭収锛堟暟涓嶇粨璁猴級銆戜袱浜х墿涓婂洓杞暟瀛楃浉鍚岋紙宸埆鍙湪娉ㄥ叆褰㈡€佹樉褰級锛欶1 padding-right 褰㈡€?**R1 婕?*锛?/8/8/8锛夛紱student grid 杞ㄥ舰鎬?**R1銆丷2 婕?*锛?/0/3/3锛夛紱@media(max-width:760px) 褰㈡€?@760 **R3 婕忋€丷4 涓?*锛?/0/0鈫?/0/0/6锛夛紱transform:scaleX **R2 婕?*锛?/0/1/1锛夛紱瑁?font-size:0 鍥涙潯鍏ㄦ紡銆俓n\n銆愨懀鏁板瓧鎶芥煡 17 澶?鈫?15 涓€鑷?/ 2 宸紓銆戜竴鑷村惈 452.81 / @1440 1120鈥?380 / 848路33路848路0 / 156路48 / 48 鍗曡 vs 108 澶氳 / 319(@1440 涓?@1600) / 401路105 / 26.2% / grid760 6 鏉′笖閿泦鍚堜笌 T20:33 閫愭潯鐩稿悓 / 10 鐮?/ 630 瀵艰埅銆傚樊寮?N04锛園760 鎶ュ憡 676鈥?28 vs 鎴?728鈥?28锛夈€丯05锛園360 鎶ュ憡 276鈥?28 vs 鎴?328鈥?28锛夛紝鍑哄 T19-ROUND4.md:56,57 / T20-ROUND4.md:55,66锛屽師鍥犳槸鍒楀鍩哄噯锛堝唴瀹圭洅 vs border-box锛夛紝**涓嶆敼鍙樺垽/涓嶅垽**锛涘彟璁?N17锛歳ound-3 鐨?dist 鎶ュ憡鏄?854 椤癸紙寮曠敤 848 蹇呴』甯﹁疆娆★級銆俓n\n銆愨懁鐩插尯鍒ゅ畾銆戔墹760 濯掍綋鏌ヨ绐勫寲**宸查棴鍚?*锛氳嚜娉ㄥ叆鍚?@760 R3=0 鈫?**R4=6 鏉?*锛岄敭 [changes/#0 #1 #2 #4 #8 #12]锛屾垜瀹炴祴鏈€瀹戒竴琛?445.05/445.09/432/444/444/444.23锛堥槇鍊?618.8锛夈€?60 涓嶅垽閫愯瀛楄抗鐨?*鐞嗙敱鎴愮珛**锛氱幇鍦?70ch=452.81 > 鍒楀 328锛?0ch 绾ф敹绐勭墿鐞嗕笂涓嶅彲鑳斤級锛屽疄璇?baseline 鍚屼竴鎵?156 鏉″湪 @360 鍥涙潯杞鍏?0銆傚彟閲忓寲鍩熷娈嬩綑 2 鏉★紙T22-F2锛夈€俓n\n銆愭柊鍙戠幇銆慣22-F1锛坢edium锛夛細瑁?`.snote{font-size:0}` 鈬?鐩掗珮 0 鈬?rendered=false 鈬?鈶?鈶?鈶?鍏ㄤ笉鍒ゃ€佽椤甸浂鐮侊紙瀹炴祴 docs/data/ 9/9銆乸lans/ 12/12 鏉★級锛

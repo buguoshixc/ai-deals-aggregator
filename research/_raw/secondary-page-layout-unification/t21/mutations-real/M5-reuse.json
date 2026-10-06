@@ -1,0 +1,43 @@
+{
+  "label": "t21-dist",
+  "id": "M5-reuse",
+  "section": "§22b",
+  "what": "不重复造第二套：§22b 既有的 M1–M5 确实跑了、逐条咬到期望码",
+  "assertions": 41,
+  "failing": 0,
+  "codes": {
+    "M1": [
+      "center"
+    ],
+    "M2": [
+      "width"
+    ],
+    "M3": [
+      "axis",
+      "src-width"
+    ],
+    "M4": [
+      "self-overflow@390",
+      "page-overflow@390"
+    ],
+    "M5": [
+      "leaf-consistency",
+      "leaf-consistency"
+    ],
+    "M4-control": []
+  },
+  "expect": {
+    "M1": "center",
+    "M2": "width",
+    "M3": "src-width",
+    "M4": "page-overflow@390",
+    "M5": "leaf-consistency",
+    "M4-control": "[]（空）"
+  },
+  "hit": true,
+  "check": {
+    "name": "§22c M5（不重复造第二套）：既有 §22b 的 M1–M5 确实跑了、逐条咬到期望码，且 §22b 的断言全绿",
+    "ok": true,
+    "detail": "§22b 断言 41 项（失败 0） · §22b 变异码 M1=[center] M2=[width] M3=[axis,src-width] M4=[self-overflow@390,page-overflow@390] M5=[leaf-consistency,leaf-consistency] · M4 正对照=[无]"
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "generatedAt": "2026-10-06T08:27:57.459Z",
+  "scope": "T4 抽查 T3 证据文件里的具体数字（几何读数 / 页数 / ratio / 违规码 / gate 步数）",
+  "items": [
+    {
+      "id": "N01",
+      "claim": "dist / dist.baseline：303 个文件 · 186 个 HTML · 117 个非 HTML",
+      "source": "research/_raw/secondary-page-layout-unification/build/02-dist-counts.txt · research/_raw/secondary-page-layout-unification/baseline/README.txt",
+      "recomputed": "dist 303/186/117 · baseline 303/186/117",
+      "ok": true
+    },
+    {
+      "id": "N02",
+      "claim": "非 HTML 文件逐个 sha256 相等：117/117",
+      "source": "research/_raw/secondary-page-layout-unification/diff/03-nonhtml-sha256.log",
+      "recomputed": "117/117",
+      "ok": true
+    },
+    {
+      "id": "N03",
+      "claim": "HTML 页剥掉 <style> 后正文逐字节相同：186/186（正文字节差 0）",
+      "source": "research/_raw/secondary-page-layout-unification/diff/04-before-after-compare.log",
+      "recomputed": "186/186",
+      "ok": true
+    },
+    {
+      "id": "N04",
+      "claim": "样式块去重行集合差：+9 / −2",
+      "source": "research/_raw/secondary-page-layout-unification/diff/04-before-after-compare.log",
+      "recomputed": "+9 / −2",
+      "ok": true
+    },
+    {
+      "id": "N05",
+      "claim": "dist 总字节 20012665",
+      "source": "research/_raw/secondary-page-layout-unification/build/02-dist-counts.txt · research/_raw/secondary-page-layout-unification/gate/02-dist-manifest.log",
+      "recomputed": "20012665",
+      "ok": true
+    },
+    {
+      "id": "N06",
+      "claim": "T1 的对比：added 0 · removed 0 · unchanged 117 · changed 186",
+      "source": "research/_raw/secondary-page-layout-unification/t1/13-dist-vs-baseline.txt",
+      "recomputed": "added 0 · removed 0 · unchanged 117 · changed(HTML 非逐字节相同) 186",
+      "ok": true
+    },
+    {
+      "id": "N07",
+      "claim": "archive/index.html 字节 88769（改动前）→ 89677（改动后）",
+      "source": "research/_raw/secondary-page-layout-unification/t1/13-dist-vs-baseline.txt",
+      "recomputed": "88769 → 89677",
+      "ok": true
+    },
+    {
+      "id": "N08",
+      "claim": "真值文件 sha256 = 46c28fa1…",
+      "source": "research/_raw/secondary-page-layout-unification/geometry/truth-401.json（T3 在 t4 契约里给的指纹）",
+      "recomputed": "46c28fa120a39ababf25826b86a08e57cf93e242baee8df264219e1d182e346e",
+      "ok": true
+    },
+    {
+      "id": "N09",
+      "claim": "真值总数：说明 401 条 · 有说明的页面 105 · 改动前窄 156 条 · 改动后窄 0 条",
+      "source": "research/_raw/secondary-page-layout-unification/geometry/truth-401.json totals",
+      "recomputed": "notes 401 · pages 105 · narrowBefore 156 · narrowAfter 0",
+      "ok": true
+    },
+    {
+      "id": "N10",
+      "claim": "真值分类：caughtByOldCriteria 48 · onlyNewTruth 108 · alreadyFine 245 · 窄说明所在页面 48",
+      "source": "research/_raw/secondary-page-layout-unification/geometry/truth-401.json totals",
+      "recomputed": "caught 48 · onlyNew 108 · fine 245 · narrowPages 48",
+      "ok": true
+    },
+    {
+      "id": "N11",
+      "claim": "缺陷读数：改动前有字区域 452.81px（比例 0.33）→ 改动后 1380px（比例 1）",
+      "source": "research/_raw/secondary-page-layout-unification/geometry/truth-401.json sets.caughtByOldCriteria 首条 · T2/T6 报告",
+      "recomputed": "before box 452.81 · textArea 453 · ratio 0.328261 → after box 1380 · textArea 1380 · ratio 1",
+      "ok": true
+    },
+    {
+      "id": "N12",
+      "claim": "Full Gate：总步数 49 · 执行 45 · 通过 45 · 失败 0 · 跳过 4",
+      "source": "research/_raw/secondary-page-layout-unification/gate/steps/summary.json · research/_raw/secondary-page-layout-unification/gate/01-static-run.txt",
+      "recomputed": "action.yml 里 step 数 49 · summary.stepsInAction 49 · 执行 45 · 通过 45 · 失败 0 · 跳过 4 · 跳过序号 [1,45,46,49]",
+      "ok": true
+    },
+    {
+      "id": "N13",
+      "claim": "§22c 在 dist.baseline 上的读数：判定 186 页 / 401 条 · 窄 156 条 · 窄页 48 · 溢出 0 · unclassified 0",
+      "source": "我自己的整轮实跑 research/_raw/secondary-page-layout-unification/verify/22c-baseline-run.log（T3 侧同类读数见 gate/steps/48-regression-verify…）",
+      "recomputed": "total 186 · notesJudged 401 · narrow 156 · narrowPages 48 · overflow 0 · unclassified 0 · assertions 842 失败 27",
+      "ok": true
+    },
+    {
+      "id": "N14",
+      "claim": "产物里 .snote 规则「一处定义」：dist 每页内联样式里恰好 1 次（186 页）",
+      "source": "research/_raw/secondary-page-layout-unification/t1/11-no-other-snote-rules.txt · research/_raw/secondary-page-layout-unification/t1/10-frozen-string-audit.txt",
+      "recomputed": "dist 里 186/186 页恰好 1 次",
+      "ok": true
+    }
+  ],
+  "totals": {
+    "checked": 14,
+    "consistent": 14,
+    "inconsistent": 0
+  }
+}

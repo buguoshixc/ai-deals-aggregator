@@ -1,0 +1,6 @@
+# Plans reproducibility (curated → plans.json, byte-compare)
+# $ node scripts/tools/check-plans-reproducible.js
+# runAt 2026-10-06T15:42:15.082Z · verify-site.js sha256 2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e
+
+✅ plans.json 可重建性通过：与 curated_plans.json 的产出逐字节一致
+   44 条 · updatedAt=2026-10-05T00:00:00+08:00

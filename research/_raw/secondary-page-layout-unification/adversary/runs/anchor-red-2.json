@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-10-06T08:35:24.741Z",
+  "mode": "A",
+  "host": "t11-adversary harness",
+  "verifySite": {
+    "path": "research\\_raw\\secondary-page-layout-unification\\adversary\\fixtures\\verify-site.no-wideProblems.js",
+    "sha256": "10d7431cf2e28f987b9f8d251886166426a957605bfbd0dd4fd9a00064e9ac6e"
+  },
+  "extraction": {
+    "ok": false,
+    "problems": [
+      "锚点缺失：`function wideProblems(` 在源文件里找不到（判据区终点定不下来）"
+    ]
+  },
+  "verdict": "RED",
+  "reason": "判据锚点抽取失败 ⇒ 形态一律不跑（不许静默跳过）"
+}

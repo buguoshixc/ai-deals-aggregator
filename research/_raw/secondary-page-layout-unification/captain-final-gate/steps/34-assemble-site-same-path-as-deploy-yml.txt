@@ -1,0 +1,193 @@
+# Assemble site (same path as deploy.yml)
+# $ node scripts/tools/build-local.js
+# runAt 2026-10-06T15:42:15.082Z · verify-site.js sha256 2cbc160dc64f8ade513824065b42d8e38ad7c72dd417cb418bde8d5526b44a5e
+
+=== 1) 发布前数据校验 ===
+=== 数据校验 ===
+总条数        : 137
+真实优惠      : 80
+国内 / 国外   : 60 / 77
+含截止时间    : 0
+含有效期说明  : 61（合计时间信息 61）
+活动期限      : 有截止日期 0 · 未标注截止日期 127 · 长期活动 10
+人工核验      : 32
+卡片特性标签  : 32 条
+价格阶梯      : 3 条
+策展数据      : 32 条
+套餐（plans） : 44 条 · 20 个平台 · 国内 20 / 国外 24
+  价格        : 有活动价 5 条 · 原价留空(null) 1 条
+  额度类型    : rate_limited 16 · requests 3 · other 9 · credits 16
+  已知模型/限制: 带 supportedModels 14 条 · 带 restrictions 8 条
+  名义 Token 单价: 可计算 0 条 · 不可计算 44 条（按额度类型：credits 16 · other 9 · rate_limited 16 · requests 3）
+  官方引文    : 85 条 · updatedAt 2026-10-05T00:00:00+08:00
+  限制条件三态: 9 条（true 4 · false 0 · unknown 0） · 来源层↔派生产物逐条同值 44/44 · 含 "unknown" 的套餐 0 条
+API 计费（api-plans）: 24 条 · 21 个平台 · 108 个模型计价条目 · 国内 16 / 国外 8
+  计费单位    : per_1M_tokens 21 · per_1K_tokens 3
+  计费通道    : standard 21 · off_peak 2 · batch 1
+  免费额度/credits: 带免费额度 4 条（其中官方明说"没有" 0 条） · 带 credits 0 条 · 带速率限制 2 条 · 非 token 计费项 8 条
+  派生指标    : 全部为 {}（本阶段不产出任何派生单价：混合单价需要工作负载假设）
+  官方引文    : 59 条 · updatedAt 2026-10-05T00:00:00+08:00
+优惠 ↔ 套餐  : 5 条当前关系 · 历史（retired）0 条 · 覆盖 3/68 条套餐（当前 5 行 / 历史 0 行） · 人工判断 0 条 · 基准日 2026-10-06
+模型（models）  : 51 条 · 被显式映射引用 51 条 · API 映射 79 条 / Coding 映射 13 条
+  未映射        : API modelKey 0 条（事实陈述）
+  套餐模型串    : 55 条 = 已映射 13 + 已声明不对应单一模型身份 42 + 未判 0（逐条见 npm run check:model-registry-links；未判必须是 0）
+受众字段落空  : 0 处（策展文件里写了却没进记录的新字段）
+官方引文落空  : 0 处（策展文件里写了却没进记录的官方原文片段）
+官方引文预算  : 3 条 / 3 条记录 · 174 字 （单条上限 200 字 · 每条上限 3 条 · 全库上限 12000 字）
+受众字段      : 分母 = type=deal 的条目
+  适用人群    : 学生 12/80（15.0%） · 开发者 67/80（83.8%） · 任一 80/80（100.0%）
+  福利类型    : 79/80（98.8%）
+  需要信用卡  : 已知 1/80（1.3%）
+  需要学生认证: 已知 3/80（3.8%） · 需要教育邮箱 已知 4/80（5.0%）
+  中国可用性  : 已知 31/80（38.8%）
+  出处声明    : 80/80（100.0%） · 有已知值但无出处 0 条 / 有已知值 88 条
+
+⚠️  警告 2 条：
+  - 疑似同一优惠未合并：Getsolved ↔ Getsolved AI Detector（可在 scripts/data/aliases.json 登记别名）
+  - 疑似同一优惠未合并：KREA ↔ Kreado AI（可在 scripts/data/aliases.json 登记别名）
+
+✅ 校验通过
+
+=== 2) 组装产物 dist/ ===
+  写入暂存目录 dist.building/
+  自检全过之后才替换到 dist/；失败则清掉暂存目录，dist/ 保持原样
+  logo 资产: 49 个 → logos/ 49 个文件 + logos.css（169.7 KB）
+  logo 覆盖: 模板引用 45 个 / 已登记 49 个（暂未使用: dify, githubcopilot, ollama, openrouter）
+  变更记录: 3 条事件 · 涉及 3 条记录 · 起算日 2026-09-30（deal-history.json + 每条最近 20 条注入 dist/deals.json）
+  变化雷达: 可用 · 基准日 2026-10-06 · 今日新增 2 · 最近 7 天变化 1 · 即将结束 0 · 已结束 0 · 重新出现 0 · 其他（不上首页）0 · 首页条带 2 项
+  API 计费: 24 条记录 · 21 个平台 · 108 个模型计价条目 · 国内 16 / 国外 8 · 免费额度 4 条 · credits 0 条 · 变化日志 17 条事件
+  模型注册表: 51 个模型 · 15 个开发者 · 15 个模型族 · 状态 active 51 · 关系 92 条（API 79 / Coding 13） · 未映射 API modelKey 0 条 · 套餐模型串 55 条（已映射 13 / 已声明不对应单一模型身份 42 / 未判 0） · 未被引用的模型 0 个
+  落地页计划: 42 条可索引 + 3 条别名
+    跳过 vendor/魔搭 ModelScope：count=1 events=0 · below-threshold
+    跳过 vendor/Canva：count=1 events=0 · below-threshold
+    跳过 vendor/ElevenLabs：count=1 events=0 · below-threshold
+    跳过 vendor/Figma：count=1 events=0 · below-threshold
+    跳过 vendor/Perplexity：count=1 events=0 · below-threshold
+    跳过 vendor/Runway：count=1 events=0 · below-threshold
+    跳过 vendor/Zapier：count=1 events=0 · below-threshold
+    跳过 category/编程开发 (category/coding/)：count=4 · excluded-by-policy · 与既有页面 /need/ai-coding/ 的条目集合逐条相同（同一份 category === 编程开发 判据）。同一主题不重复建 URL —— 由既有页面承担这一搜索意图。
+    跳过 category/办公效率 (category/productivity/)：count=3 · below-threshold
+    跳过 category/视频 (category/video/)：count=2 · below-threshold
+    跳过 category/教育学习 (category/education/)：count=2 · below-threshold
+    跳过 category/设计创意 (category/design/)：count=1 · below-threshold
+    跳过 category/搜索研究 (category/research/)：count=1 · below-threshold
+    跳过 category/其他：count=1 · excluded-by-policy · 内部兜底枚举，不是用户会搜索的主题；条目本身也多是无法归类的长尾。
+    跳过 vendor/JetBrains：count=0 events=0 · no-vendor-identity · provider「jetbrains」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 2 条 / API 记录 0 条 / 模型 0 个）
+    跳过 vendor/Groq：count=0 events=0 · no-vendor-identity · provider「groq」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 0 条 / API 记录 1 条 / 模型 1 个）
+    跳过 vendor/Together AI：count=0 events=0 · no-vendor-identity · provider「together」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 0 条 / API 记录 1 条 / 模型 6 个）
+    跳过 vendor/Fireworks AI：count=0 events=0 · no-vendor-identity · provider「fireworks」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 0 条 / API 记录 1 条 / 模型 6 个）
+    跳过 vendor/Cerebras：count=0 events=0 · no-vendor-identity · provider「cerebras」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 0 条 / API 记录 1 条 / 模型 1 个）
+    跳过 vendor/Trae：count=0 events=0 · no-vendor-identity · provider「trae」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 2 条 / API 记录 0 条 / 模型 0 个）
+    跳过 vendor/Qoder CN：count=0 events=0 · no-vendor-identity · provider「qoder」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 1 条 / API 记录 0 条 / 模型 0 个）
+    跳过 vendor/腾讯 CodeBuddy：count=0 events=0 · no-vendor-identity · provider「codebuddy」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 4 条 / API 记录 0 条 / 模型 0 个）
+    跳过 vendor/Qoder International：count=0 events=0 · no-vendor-identity · provider「qoder-intl」在 A 空间没有厂商名（vendorKey=null）：/vendor/<slug>/ 的身份键是 A 空间厂商名，为它建路由必须新编身份或改身份键。它的资料走 /plans/coding/ 与 /plans/ 枢纽。（Coding 套餐 2 条 / API 记录 0 条 / 模型 0 个）
+  优惠 ↔ 套餐: 5 条当前关系 · 历史 0 条 · 覆盖 3/68 条套餐 · 基准日 2026-10-06
+  中文译文: 45/137 条带中文译文（63 个字段） · 3 条待翻译
+    ℹ️  仍有 3 条英文文案待翻译（node scripts/tools/zh-todo.js）
+
+=== 3) 预渲染静态骨架 ===
+  卡片预渲染: 50 条（档1:6 档2:20 档3:19 档4:5）
+  筛选条 / 汇总 / 分类选项 / 按需求入口 / 变化雷达 / 订阅发现: 已填充
+  站点地址替换: 6 处
+  FAQ 解析: 5 条
+  JSON-LD: 5 段
+  OG 分享图: 7.6 KB
+    OG 自检: 标记 33603px · 副标题 3384px · 底部说明 1664px
+  Feed 图标: icon.png 144×144（0.8 KB · 白块 8210px）
+  详情页: 80 个 → deal/<id>/index.html
+  分类页: /student/ 12 条 · /developer/ 67 条 · /free-api/ 45 条
+  按需求页: /need/student-only/ 12 条 [别名] · /need/edu-identity/ 7 条 · /need/no-card/ 1 条 · /need/china-usable/ 30 条 · /need/free-tier/ 60 条 · /need/free-api/ 45 条 [别名] · /need/free-tokens/ 44 条 · /need/ai-coding/ 4 条 · /need/free-model/ 12 条 · /need/dev-credits/ 67 条 [别名]
+  分类落地页: /category/api/ 36 条 · /category/chat/ 15 条 · /category/audio/ 6 条 · /category/image/ 5 条 · /category/agent/ 4 条
+  厂商落地页: /vendor/baidu-ai-cloud/ 17 条 · /vendor/volcengine/ 13 条 · /vendor/zhipu/ 12 条 · /vendor/coze/ 4 条 · /vendor/github/ 3 条 · /vendor/minimax/ 3 条 · /vendor/iflytek/ 2 条 · /vendor/microsoft/ 2 条 · /vendor/notion/ 2 条 · /vendor/ai360/ 1 条 · /vendor/aliyun/ 1 条 · /vendor/baichuan/ 1 条 · /vendor/siliconflow/ 1 条 · /vendor/stepfun/ 1 条 · /vendor/sensetime/ 1 条 · /vendor/tencent-cloud/ 1 条 · /vendor/moonshot/ 1 条 · /vendor/anthropic/ 1 条 · /vendor/aws/ 1 条 · /vendor/cursor/ 1 条 · /vendor/google/ 1 条 · /vendor/openai/ 1 条 · /vendor/replit/ 1 条 · /vendor/windsurf/ 1 条 · /vendor/deepseek/ 0 条
+  枢纽页: /category/ 5 个入口 · /vendor/ 25 个入口 · 别名页: 3 条（noindex，不进 sitemap）
+  变化雷达页: /changes/（基准日 2026-10-06 · 高价值 3 条 · 其他 0 条 · 套餐变化 35 条 · API 价格变化 17 条）
+  套餐对比页: /plans/coding/（44 条 · 20 个平台 · 名义 Token 单价可计算 0 条 · 页面 228.9 KB）
+  套餐变化: 可用 · 基准日 2026-10-05 · 今日新增 7 · 最近 28 · 不再收录 0 · 重新出现 0 · 元信息（不上块 / 不进订阅）0 · 最近变化块 5 项
+  API 计费页: /plans/api/（24 条记录 · 108 行 · 页面 196.5 KB）
+  套餐资料入口: /plans/（Coding 44 条 · API 24 条记录 / 108 个模型计价条目 · 当前关联优惠 5 条 · 页面 77.5 KB）
+  模型资料索引: /models/（51 个模型 · 51 个详情页 · 15 个开发者 · 页面 130.6 KB）
+  模型详情页: 51 个（每个都在门槛内：有 registry entry 且至少被一个当前或历史实体引用）
+  历史档案: 优惠 0 条 · Coding 套餐 0 条 · API 计费记录 0 条 · 详情页门槛通过 0 个 · 基准日 2026-10-06
+  历史档案页: /archive/（0 条记录 · 0 个详情页 · 页面 70.7 KB）
+  数据出口: /docs/data/（9 份数据集 · Manifest /data/index.json · 时间形状 真实时刻 1 / 日期规范化 5 / 纯日期 3 · License 未定（需项目所有者决定））
+  订阅产物: 25 个 Feed × 2 种格式 = 50 个文件 · 共 463 条条目（优惠 21 个 / 变化 2 个）
+  订阅中心: /feeds/（25 个 Feed，RSS + JSON Feed 各一份）
+  数据源状态: source-health.json + status/index.html（9 个来源：正常 8 · 异常 0 · 失败 1）
+
+=== 4) 产物自检 ===
+  ✓ index.html
+  ✓ favicon.svg
+  ✓ robots.txt
+  ✓ .nojekyll
+  ✓ deals.json
+  ✓ plans.json
+  ✓ api-plans.json
+  ✓ logos.css
+  ✓ sitemap.xml
+  ✓ og-image.png
+  ✓ feed.xml
+  ✓ feed.json
+  ✓ icon.png
+  ✓ source-health.json
+  ✓ models.json
+  ✓ model-registry-links.json
+  ✓ deal-plan-links.json
+  ✓ deal-history.json
+  ✓ plan-history.json
+  ✓ api-plan-history.json
+  ✓ data/index.json
+  ✓ 密钥扫描：产物里没有 API key / token / 私钥形状的串
+  ✓ logo: 49 条规则 → logos/ 49 个文件
+  deals.json: schemaVersion=2, count=137, updatedAt=2026-10-06T13:02:32+08:00
+  ✓ plans.json: 与源文件逐字节相同（81.5 KB）
+  ✓ plan-history.json: 与源日志逐字节相同（36.3 KB）
+  ✓ 套餐对比页: 44 行 · 载荷 44 行 / 20 平台选项 / 排序 default+regular+promo+updated · 详情模板 44 个（内容与引文逐条对账）· 口径文案在位 · 无结论性词汇（查了 14 个词）
+  ✓ api-plans.json: 与源文件逐字节相同（96.6 KB）
+  ✓ api-plan-history.json: 与源日志逐字节相同（75.0 KB）
+  ✓ API 计费页: 24 条记录 / 108 行 · 价格六格逐格与数据对账 · 计费单位列逐行在位 · 免费额度与 credits 明细节 · 官方原文节 · 无 JS 控件 · 无结论性词汇（查了 14 个词）
+  ✓ 套餐资料入口页: 计数与 dist 数据逐项对账 · 两个子页入口在位 · 无大表（0 个 <table>）· 无内联脚本 · ItemList 2 项 == data-child 2 行 · 无结论性词汇（查了 14 个词）
+  ✓ 模型页: 索引 51 行（含 9 个带别名） · 详情 51 个（计价表逐行与映射对账 · 摊 Provider 不许凭空出现） · 筛选脚本与 lib 逐字节同源 · 未过门槛 0 个未生成 · 无结论性词汇（查了 14 个词）
+  ✓ 历史档案: 索引三组齐（优惠 0 / Coding 套餐 0 / API 计费记录 0） · 详情页 0 个（门槛内）· 完整性重推零问题 · sitemap 成员逐个对账 · 无结论性词汇（查了 14 个词）
+  ✓ 数据出口: Manifest 9 份数据集（六类齐）· 页面给出 Manifest 地址 · endpoint 逐个存在 · schemaVersion / count / updatedAt 逐字段对账 · 方向 2 扫描：产物 JSON 36 个：公开数据集 9 · Feed 25（lib/feeds.js） · Manifest 1 · 声明豁免 1（source-health.json） · 未认领 0 · 时间形状 真实时刻 1 / 日期规范化 5 / 纯日期 3
+  ✓ 优惠 ↔ 套餐: 5 条关系覆盖 3 条套餐（当前 5 行 / 历史 0 行）· dist 注入 5 条 · 优惠页与套餐页逐条对账（含锚点与深度前缀）· 基准日 2026-10-06
+  ✓ 源/产物一致: 137 条逐字段相同（构建期只动 zh / collections / needs / sourceFacts / history / relatedPlans）
+  ✓ 信息来源: 137 条记录逐个与心跳对账一致（有引文 3 条 · 人工策展 32 条显示「不适用」 · 来源未知 0 条 · 心跳不可用 0 条）
+  ✓ 变更记录: 日志 3 条事件注入 3 条记录（共 3 条渲染事件）· 起算日 2026-09-30 · 措辞与后端逐项同源
+  ✓ 变化雷达: 条带 2 项 / 分栏合计 3 条 · 其他 0 条 · /changes/ 五栏 + 折叠块齐 · 覆盖不变量成立 · 措辞与 lib/changes.js 逐项同源
+  ✓ 数据源状态: 9 个来源与 source-health.json 逐个对账一致（正常 8 · 异常 0 · 失败 1） · 五条约定齐（sitemap/canonical/双 feed/JSON-LD 2 段/预渲染 1356 字）
+  ✓ 中文译文: 45 条 / 63 个字段（英文原文原样保留）
+  ✓ 卡片「中文」提示: 预渲染 6 处
+  ✓ 页脚路由链接: 14 条路由 × 189 个输出，深度前缀与去占位逐项对账
+  ✓ 作者正文无 Markdown 记号: .snote / <caption> 里的强调一律用 <b>，字段名直接写
+  ✓ 预渲染卡片: 50 条
+  ✓ 力度分带: 4 档（档1:6 档2:20 档3:19 档4:5）
+  ✓ 卡片 logo: 官方图形 32 个 / 名称缩写兜底 3 个
+  ✓ 图形与缩写不混用: 50 张卡片均为二选一
+  ✓ 筛选条: 13 个 facet 按钮
+  ✓ 同页锚点: 4 个都有落点
+  ✓ 收藏/对比: 预渲染 HTML 零控件（整块由 JS 建，无 JS 时不给可点暗示）
+  ✓ 对比上限: CMP_MAX = 4（与页脚提示文案同源）
+  ✓ 纠错入口: 详情模板已内置（真实行为由 npm run verify 验）
+  ✓ 官方页入口: 50 个
+  ✓ 首页内链: 50 个标题链接全部指向站内详情页（CTA 仍指官方）
+  ✓ 详情页数量: 80 个（= type=deal 条数）
+  ✓ sitemap: 183 条（首页 + 3 个分类页 + 10 条按需求/别名页中可索引的部分 + 5 个分类落地页 + 25 个厂商落地页 + 2 个枢纽页 + 状态页 + 变化雷达页 + 订阅中心 + 资料入口页 + 套餐对比页 + API 计费页 + 模型索引 + 51 个模型详情页 + 档案索引 + 0 个档案详情页 + 数据文档页 + 80 个详情页；3 条别名页已排除）
+  ✓ 分类页: /student/ 12 条 · /developer/ 67 条 · /free-api/ 45 条（逐条 id 对账 · canonical · 双 feed · 三段 JSON-LD · 预渲染正文）
+  ✓ 按需求页: /need/student-only/ 12 条 · /need/edu-identity/ 7 条 · /need/no-card/ 1 条 · /need/china-usable/ 30 条 · /need/free-tier/ 60 条 · /need/free-api/ 45 条 · /need/free-tokens/ 44 条 · /need/ai-coding/ 4 条 · /need/free-model/ 12 条 · /need/dev-credits/ 67 条（同上 + 命中依据列 · 内链前缀 ../../ · 首页入口数字对齐）
+  ✓ 详情页抽样: 3 个均自指 canonical、含本条文案、纯静态
+  ✓ 折叠无损: 50 张卡片覆盖 80 条优惠（3 张折叠卡 / 33 个模型）
+  ✓ JSON-LD: Organization / WebSite / BreadcrumbList / FAQPage / ItemList
+  ✓ 厂商资料页: 25 页 · slug 唯一且已登记 · 无 /provider/ 并行路由 · API 计数与 dist/api-plans.json 逐个对账 · 资料区块六节齐
+  ✓ 变化订阅 plan-changes: 35 条条目，深链锚点全部落在 plans/coding/ 上
+  ✓ 变化订阅 api-plan-changes: 17 条条目，深链锚点全部落在 plans/api/ 上
+  ✓ 订阅: 25 个 Feed × 2 种格式 = 50 个文件 · 463 条条目（三方对账 · id 唯一 · 链接可解析 · 判据一致 · 时间来自数据）
+  ✓ 订阅发现: 268 条 rel="alternate" 横跨 108 个页面，全部指向真实 Feed 且标题逐字一致
+  ✓ 订阅中心: /feeds/ 五条约定齐（自指 canonical · 双 feed · 两段 JSON-LD · 预渲染 4252 字 · 51 个订阅地址全部存在）· 双向对账：注册表 25 个 public Feed ↔ 页面列出 50 条地址
+  ✓ FAQ 文案与结构化数据一致: 5 条（可见侧独立回读 + 无标签残留）
+  ✓ SEO 安全门禁: 27 个检查码 × 186 个页面全过（可索引 183 · 别名 3 · 详情页 80 · 落地页 106 · 厂商页 25 · 分类页 5 · sitemap 183 · 孤儿 0 · 重复 canonical 0 · 无效内链 0）
+  ✓ og-image.png: 1200x630
+  产物总大小: 1410.0 KB
+
+✅ 产物自检通过
+
+✅ 构建完成 → dist/（自检全过，已从暂存目录就位）

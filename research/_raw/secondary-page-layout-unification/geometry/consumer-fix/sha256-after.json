@@ -1,0 +1,84 @@
+{
+  "at": "2026-10-06T13:13:17.636Z",
+  "note": "t25 改后 sha256（含 fixtures 与新增证据文件）",
+  "files": [
+    {
+      "label": "make-truth-401.cjs（改前）",
+      "file": "make-truth-401.cjs.pre-t25.bak",
+      "bytes": 10385,
+      "sha256": "f94f6441977164cbcda90ef1d7ae172bce95ec1dc754fe4c9e91bddaa76ea33c"
+    },
+    {
+      "label": "make-truth-401.cjs（改后）",
+      "file": "make-truth-401.cjs",
+      "bytes": 14213,
+      "sha256": "a9e06e6b152625566b38163624aec701a82533dd18fd79b71bcaf814c57601bc"
+    },
+    {
+      "label": "make-synthetic-reports.cjs（改前）",
+      "file": "make-synthetic-reports.cjs.pre-t25.bak",
+      "bytes": 9441,
+      "sha256": "d38b4ba4565170dac75bc886f786cb8bbd0b6d47ac75d43dfc1571832cae86b3"
+    },
+    {
+      "label": "make-synthetic-reports.cjs（改后）",
+      "file": "make-synthetic-reports.cjs",
+      "bytes": 13266,
+      "sha256": "4f4d126dcd63b23548dafda34580b2a0cfa3aaa7ab382fdaeccaad1518559fa7"
+    },
+    {
+      "label": "truth-401.json（未改，仅核对）",
+      "file": "truth-401.json",
+      "bytes": 384076,
+      "sha256": "46c28fa120a39ababf25826b86a08e57cf93e242baee8df264219e1d182e346e"
+    },
+    {
+      "label": "attribution-census.cjs（新增）",
+      "file": "attribution-census.cjs",
+      "bytes": 11964,
+      "sha256": "134776858e75af8fdac3fc3afac81c34e2dcac5e0345dc78696f2211eb9b06ab"
+    },
+    {
+      "label": "attribution-census.json（新增）",
+      "file": "attribution-census.json",
+      "bytes": 21498,
+      "sha256": "fc4b6ea18b1bdf038146a2416660402601021a22e73b374619690758f2da7131"
+    },
+    {
+      "label": "consumer-selftest/case1-union-156.json",
+      "file": "consumer-selftest/case1-union-156.json",
+      "bytes": 148698,
+      "sha256": "fb043d68b6034d77e864aa2a6bef548e5acc05fe2299d2a31c0bbe5ceaa96f23"
+    },
+    {
+      "label": "consumer-selftest/case2-narrow-only-48.json",
+      "file": "consumer-selftest/case2-narrow-only-48.json",
+      "bytes": 55280,
+      "sha256": "93f75353d6766a31091c15e5884c518711b010599bdae6cda1b234090094d723"
+    },
+    {
+      "label": "consumer-selftest/case3-false-positive.json",
+      "file": "consumer-selftest/case3-false-positive.json",
+      "bytes": 149804,
+      "sha256": "25a34fccad0bbd7a2da77076f4e0db091f55a7062249978a2639c5eae380d38a"
+    },
+    {
+      "label": "consumer-fix/case1-union-156.pre-t25.bak.json",
+      "file": "consumer-fix/case1-union-156.pre-t25.bak.json",
+      "bytes": 142008,
+      "sha256": "a4f12eebb0d1d34d9fa743d5bf4169cfceaa54e84328213d2cf5d090046680b2"
+    },
+    {
+      "label": "consumer-fix/case2-narrow-only-48.pre-t25.bak.json",
+      "file": "consumer-fix/case2-narrow-only-48.pre-t25.bak.json",
+      "bytes": 54856,
+      "sha256": "a2be21cbf77a51e613621908010e68b26c59c623fe0442c77ad652e959b32768"
+    },
+    {
+      "label": "consumer-fix/case3-false-positive.pre-t25.bak.json",
+      "file": "consumer-fix/case3-false-positive.pre-t25.bak.json",
+      "bytes": 143118,
+      "sha256": "d38940c9de240c75d629b6b0dd90bdaaed9d370e350c7f8503754e4212ecf9ff"
+    }
+  ]
+}

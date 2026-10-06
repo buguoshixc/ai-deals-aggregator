@@ -1,0 +1,13 @@
+# Text / cleanText self-test
+# $ node scripts/tools/text-selftest.js
+# runAt 2026-10-06T07:30:30.727Z · verify-site.js sha256 4cae2fb2ab2599997668feca8c26c3161fe882a518e61d01552b7adc95f95756
+
+=== 1) 上游的截断残尾必须被保留成记号 ===
+
+=== 2) 我们按上限切：补记号、不越界、不切在半个词中间 ===
+
+=== 3) 既有清洗行为不许退化 ===
+
+=== 4) 数据不变量：存进 deals.json 的文本必须已经是规范形态 ===
+
+✅ 文本清洗自测：46 项通过，0 项失败

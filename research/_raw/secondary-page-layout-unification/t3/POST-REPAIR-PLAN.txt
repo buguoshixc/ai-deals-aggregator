@@ -1,0 +1,31 @@
+修复后要跑的 9 步（串行；每一步的原始 stdout/stderr 直接落盘）：
+
+P0. 产物 sha256 清单（**跑任何 verify-site 之前**）—— 用来证明内存变异零磁盘污染
+    $ node research/_raw/secondary-page-layout-unification/build/dist-manifest.cjs --dir=dist --out=research/_raw/secondary-page-layout-unification/t3/post-repair-dist-before.sha256.txt
+    log → research/_raw/secondary-page-layout-unification/geometry/08a-manifest-before.log
+P1. 改动后产物的权威读数：verify-site.js --dir=dist（整轮必须 0 失败）
+    $ node scripts/tools/verify-site.js --dir=dist --json=research/_raw/secondary-page-layout-unification/geometry/after-verify.json
+    log → research/_raw/secondary-page-layout-unification/geometry/07-after-verify-green.log
+P2. 产物 sha256 清单（跑完 verify-site 之后）并与 P0 比对 ⇒ 内存变异没有写盘
+    $ node research/_raw/secondary-page-layout-unification/build/dist-manifest.cjs --dir=dist --out=research/_raw/secondary-page-layout-unification/t3/post-repair-dist-after.sha256.txt
+    log → research/_raw/secondary-page-layout-unification/geometry/08b-manifest-after.log
+P4. 把 §22c 的变异读数拆成每条牙一个 JSON（M1–M4 / M6 / M7 / M6 正对照 / M5 复用）
+    $ node research/_raw/secondary-page-layout-unification/mutations-real/extract-mutations.cjs --report=research/_raw/secondary-page-layout-unification/geometry/after-verify.json --mutations=research/_raw/secondary-page-layout-unification/geometry/mutations.json --dir=dist --manifest-before=research/_raw/secondary-page-layout-unification/t3/post-repair-dist-before.sha256.txt --manifest-after=research/_raw/secondary-page-layout-unification/t3/post-repair-dist-after.sha256.txt --out-dir=research/_raw/secondary-page-layout-unification/mutations-real --label=real-dist
+    log → research/_raw/secondary-page-layout-unification/mutations-real/10-extract.log
+P5. M0 反证：verify-site.js --dir=dist.baseline 必须红（exit≠0）且报出窄码（note-narrow ∪ note-ink-narrow）
+    $ node scripts/tools/verify-site.js --dir=dist.baseline --json=research/_raw/secondary-page-layout-unification/mutations-real/M0-baseline.json
+    log → research/_raw/secondary-page-layout-unification/mutations-real/11-M0-baseline.log
+P6. M0 逐页清单落盘（命中 48 页 / 156 条？页集合与真值逐条比对）
+    $ node …（参数在运行时确定：--exit=<P5 的真实退出码>）
+    log → research/_raw/secondary-page-layout-unification/mutations-real/12-extract-m0.log
+P7. 集合级核对（绿轮）：新 §22c 在 dist 上必须 0 条 / 0 页、245 条对照组零误报
+    $ node research/_raw/secondary-page-layout-unification/geometry/gate-vs-truth.cjs --report=research/_raw/secondary-page-layout-unification/geometry/after-verify.json --expect=green --truth=research/_raw/secondary-page-layout-unification/geometry/truth-401.json --label=post-repair-green --out=research/_raw/secondary-page-layout-unification/geometry/gate-vs-truth-green.json
+    log → research/_raw/secondary-page-layout-unification/geometry/10-gate-vs-truth-green.log
+P8. 集合级核对（基线轮）：新 §22c 在 dist.baseline 上必须 156 条 / 48 页逐条相同、零误报、且有**条级容器**
+    $ node research/_raw/secondary-page-layout-unification/geometry/gate-vs-truth.cjs --report=research/_raw/secondary-page-layout-unification/mutations-real/M0-baseline.json --expect=baseline --truth=research/_raw/secondary-page-layout-unification/geometry/truth-401.json --label=post-repair-baseline --out=research/_raw/secondary-page-layout-unification/geometry/gate-vs-truth-baseline.json
+    log → research/_raw/secondary-page-layout-unification/geometry/11-gate-vs-truth-baseline.log
+P9. Full Gate 第 47/48 步在修复后的 verify-site.js 上重跑（按步骤序号增量合并 summary）
+    $ node research/_raw/secondary-page-layout-unification/gate/run-full-gate.cjs --only=47,48
+    log → research/_raw/secondary-page-layout-unification/gate/03-browser-rerun.txt
+
+期望：P0/P1/P2/P4/P6/P7/P8/P9 exit=0；P5 exit≠0（改动前产物必须红）。

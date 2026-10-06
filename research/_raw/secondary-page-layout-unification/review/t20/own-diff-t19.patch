@@ -1,0 +1,315 @@
+﻿diff --git "a/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification/research/_raw/secondary-page-layout-unification/teeth/_backup/verify-site.pre-t19.bak" "b/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification/scripts/tools/verify-site.js"
+index 17f4d1d..c789989 100644
+--- "a/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification/research/_raw/secondary-page-layout-unification/teeth/_backup/verify-site.pre-t19.bak"	
++++ "b/D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-layout-unification/scripts/tools/verify-site.js"	
+@@ -6121,19 +6121,25 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+   //   ② `note-ink-narrow`  ：lineCount >= 2 且 widestLine < 0.85 × min(主数据区宽, 页面列宽) —— 本轮新增。
+   //
+   // ⚠️ 为什么必须是并集（两份独立标定互证，读数见 teeth/_scratch/lines-*.json）：
+-  //   · 只留 ② 会**漏 48 条**：真值 156 条里有 48 条是**单行**说明 + 盒子被压窄
+-  //     （例 category/agent/#1「全部变化 →」：单行 61.64px / 盒宽 452.81px）。单行说明**没有行证据** ——
+-  //     「1 行、字迹 61.64px」在 452px 的窄柱里和在 1380px 的满宽列里渲染结果一模一样，
+-  //     ① 才是看得见「盒子被压窄」的那把尺子。t11 的独立探针（adversary/calibration-all.json）
+-  //     与我这份探针（t14 的 lines-dist.baseline-1440.json）在 B 集合上得到**同一个 108/48 缺口**。
++  //   · ① 覆盖 **156 条**（`--dir=dist.baseline` 实测：156 条的盒宽全是 452.81 ⇒ ① 看得见全部；
++  //     其中 **48 条是单行**窄盒）。② 另覆盖其中 **108 条多行**说明（交集 108 ⇒ ② ⊆ ①）。
++  //     只留 ② 会漏掉那 48 条单行窄盒（例 category/agent/#1「全部变化 →」：单行 61.64px / 盒宽 452.81px）——
++  //     单行说明**没有行证据**：「1 行、字迹 61.64px」在 452px 的窄柱里和在 1380px 的满宽列里渲染结果
++  //     一模一样，① 才是看得见「盒子被压窄」的那把尺子。
++  //     ⚠️ 别把两处「48」混用（t19 / R3-2 订正）：truth-401 的 `caughtByOldCriteria(48)` 是
++  //     `make-truth-401.cjs:56` 的 `index === 0 ? …` **按序切分**的位置切片，独立复核实测这 48 条
++  //     **全是多行**（都落在 ② 的 108 里）；上面那 48 条单行窄盒反而全部落在 `onlyNewTruth`。
++  //     两个 48 是巧合，别写成「48 由 note-narrow 单独解释」。
++  //     t19 实测归属：`--dir=dist.baseline` ① = 156（盒宽全 452.81）· ② = 108 · 交集 108 · ① 里单行 48。
+   //   · 只留 ① 会漏 grid / multicol / float / flex 那一整类：它们的**盒子与内容盒都可能是满宽的**
+   //     （t8 的 F-R2-1：`display:grid; grid-template-columns: minmax(0,70ch) 1fr` 只改一条 CSS，
+   //     整轮 842 项 EXIT=0）。② 是唯一看得见「字迹铺不开」的那把尺子。
+   //   · 并集实测：dist.baseline = 156 条 / 48 页（漏判 0、误报 0）· dist = 0 条 · dist.synth-fixed = 0 条。
+   //
+   // ② 的三条不许动的细节（都经过独立标定）：
+-  //   · 前置条件 `lineCount >= 2` **不许松**：去掉它，dist 上 89 条单行短说明会被误报
+-  //     （「全部变化 →」字迹 61.64px < 0.85×1380 —— 那是短文本，不是缺陷）；
++  //   · 前置条件 `lineCount >= 2` **不许松**：去掉它，dist 上 **319 条**单行说明会被误报
++  //     （t19 / R3-2 复算：`rendered && !vertical && lineCount === 1 && widestLine < 0.85 × 列宽`
++  //     在 @1440 与 @1600 都是 319 条；例「全部变化 →」字迹 61.64px < 0.85×1380 —— 短文本不是缺陷）；
+   //   · 也**不许**加码到 `>= 3`：multicol 形态只有 2 行，提到 3 命中数直接掉到 0；
+   //   · 阈值 0.85：t11 已验证 0.85× 与 0.5× 在 A/B/C 三个集合上给出**完全相同**的命中集合
+   //     ⇒ 这个口径不卡在阈值边缘。
+@@ -6144,7 +6150,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+   //   这正是想要的语义：3 列只用了 2 列、右侧 1/3 空白（缺陷原型）⇒ 912.63 < 1173 ⇒ 咬中；
+   //   若字迹铺满整盒（很多细列排满全宽、没有大片空白）⇒ 放行 —— 那种形态**没有**「右边半截空白」的观感。
+   //   归并容差目前实现为「垂直覆盖 > 两者较矮高度的 50%」；极小 `column-gap` 或竖排时需要按连续字迹段
+-  //   细分（竖排已显式不判 ②，见下）；本口径只在 1440/1600 标定过。
++  //   细分（竖排已显式不判 ②，见下）。
++  //   适用性（t19 / R3-1 起）：**物理前置条件** —— min(主数据区宽, 页面列宽) > 现场换算的 70ch
++  //   （1440/1600/760 判、360 不判）。不再有「只在桌面档（1440/1600）」的视口白名单：
++  //   760 列 676–728px > 452.81px，70ch 窄柱在 760 物理上完全可以发生（R3-1 的 blocker）。
+   //
+   // note-hidden-text（新码，对应 t8 的 F-R2-2）：**文本非空但一个可见字形盒都没有** ⇒ 判红。
+   //   `.snote { font-size: 0 } .snote::before { content: "正文…" }` 这种「把正文交给伪元素画」的
+@@ -6308,6 +6317,24 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         const cs = getComputedStyle(el);
+         return el.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);
+       };
++      /**
++       * 现场换算 70ch（t19 / R3-1）：把这条说明**自己的字体**逐字复制到屏外探针上，
++       * 量 width:70ch 的实际像素宽 —— ② 的物理前置条件（列宽 > 70ch）用的就是这把尺子，
++       * 不是「哪些视口算桌面档」的白名单。1440/1600/760 实测 452.81px。
++       */
++      const ch70Of = el => {
++        const cs = getComputedStyle(el);
++        const probe = document.createElement('div');
++        probe.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;pointer-events:none;'
++          + 'display:inline-block;width:70ch;padding:0;border:0;margin:0;white-space:nowrap;'
++          + 'font-family:' + cs.fontFamily + ';font-size:' + cs.fontSize + ';font-style:' + cs.fontStyle
++          + ';font-weight:' + cs.fontWeight + ';font-stretch:' + cs.fontStretch + ';font-variant:' + cs.fontVariant
++          + ';letter-spacing:' + cs.letterSpacing + ';word-spacing:' + cs.wordSpacing + ';';
++        document.body.appendChild(probe);
++        const width = probe.getBoundingClientRect().width;
++        probe.remove();
++        return round(width);
++      };
+       /** 直接含非空白文本节点 ⇒ 这个元素「承载文本」 */
+       const bearsText = el => {
+         for (const node of el.childNodes) if (node.nodeType === 3 && node.textContent.trim()) return true;
+@@ -6418,6 +6445,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         notes: notes.map((el, index) => {
+           const noteBox = box(el);
+           const cs = getComputedStyle(el);
++          // 物理前置条件用的尺子：这条说明自己的 70ch 现场换算值（t19 / R3-1）
++          const ch70 = ch70Of(el);
+           const bearing = [];
+           if (bearsText(el)) bearing.push(el);
+           for (const descendant of el.querySelectorAll('*')) {
+@@ -6425,7 +6454,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           }
+           const widths = bearing.map(contentBoxOf).filter(w => w > 0);
+           const contentBox = contentBoxOf(el);
+-          // 诊断量（不再作判据，单行回落除外）：承载文本的块级元素里最窄的那个 content box
++          // ① 的**判据量**（内容盒代理量，t19 / R3-3 订正：早年注释写成「诊断量…不再作判据」已过时）：
++          // 承载文本的块级元素里最窄的那个 content box；取不到承载块时回落 border-box，
++          // 消息里标「textFallback 回落」。无盒形态（display:contents / 未渲染）由 wideProblems 的
++          // 「rendered」前置挡掉，不会把这个 0 当成窄柱。
+           const textWidth = widths.length
+             ? Math.min.apply(null, widths)
+             : (contentBox > 0 ? contentBox : noteBox.width);
+@@ -6452,6 +6484,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+             widestLine: lines.length ? lines.reduce((max, line) => Math.max(max, line.width), 0) : 0,
+             lines: lines,
+             contentBox: round(contentBox),
++            // 现场换算的 70ch（物理前置条件的尺子；见 ch70Of 与 wideProblems 的 ②）
++            ch70: ch70,
+             textWidth: round(textWidth),
+             textFallback: widths.length === 0,
+             bearingCount: bearing.length,
+@@ -6520,8 +6554,17 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+       // 主数据区可能比页面列还宽（窄档里表格在横向滚动容器里）⇒ 分母取两者的较小值。
+       const column = Math.min(region.width, main.width);
+       const threshold = WIDE_NOTE_RATIO * column;
+-      // 逐行字迹口径只在桌面档（1440/1600）生效 —— 那是它的标定区间；调用方用 meta.inkRule=false 关。
+-      const inkRuleOn = !meta || meta.inkRule !== false;
++      // ② 的适用性 = **物理前置条件**（t19 / R3-1），不是视口数字白名单。
++      //
++      //   尺子：`note.ch70` = 现场换算的 70ch —— 把这条说明自己的字体逐字复制到屏外探针上，
++      //   量 `width: 70ch` 的实际像素宽（wideMeasure 里现量，1440/1600/760 实测都是 452.81px）。
++      //   判据：**min(主数据区宽, 页面列宽) > 70ch** ⇒ 「盒满宽、字被排进 70ch 窄轨」物理上可能发生。
++      //   实测（R3-1 的独立探针，见 review/R3-review.md §5）：1440 列 1120–1380 · 1600 列 1240–1500 ·
++      //   760 列 676–728，全部 > 452.81 ⇒ **判**；360 列 276–328 < 452.81 ⇒ **不判**
++      //   （天然保住 360 档 feeds/#2「按「我是谁」…」的已知边界：328px 列里排成 2 行、最宽 264px，
++      //   那是 CJK 断行 + 行内 /student/ 这类不可断片段的正常余量，不是缺陷）。
++      //   ch70 缺失（外部合成几何没带这个量）时按 0 处理 ⇒ 前置条件成立、照判 ——
++      //   宁可多判也不能让「量不到尺子」变成静默跳过。逐条的 `note.ch70` 在下面循环里取用。
+       // 轴：border-box，比例容差（prompt §11：允许 padding / border / scroll wrapper 的少量差异）
+       const axisTol = Math.max(WIDE_TOL, WIDE_AXIS_RATIO * column);
+       const anchors = [
+@@ -6535,21 +6578,34 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           + ` · 字形盒 ${note.glyphRects} 个 · 列宽 ${wideRound(column)}px · 阈值 ${wideRound(threshold)}px`
+           + `（主数据区 ${geometry.regionSel || '<main>'} ${wideRound(region.width)}px / 页面列 ${wideRound(main.width)}px）`;
+         if (!note.rendered) note.unrendered = true;
+-        // ① 旧口径（t7 的 textWidth，**一字未改**）：盒子/内容盒被压窄。
+-        //    它覆盖「单行说明 + 盒子被压窄」那一类（真值 156 条里有 48 条），行口径看不见它们。
+-        if (note.textWidth < threshold - 0.01) {
++        // ① 旧口径（t7 的 textWidth，**判据式一字未改**）：内容盒代理量被压窄。
++        //    覆盖面：`--dir=dist.baseline` 实测 156 条（盒宽全 452.81），其中 48 条是**单行**窄盒 ——
++        //    行口径看不见它们（单行没有行证据），① 才是那把尺子（t19 / R3-2 订正：别写成
++        //    「truth 的 caughtByOldCriteria 48 = 这些单行」——那 48 是 make-truth-401.cjs:56 的
++        //    `index === 0` 按序切分，实测全是多行，都在 ② 里）。
++        //    t19 / R3-3：加 `rendered` 前置 —— `display: contents` 时说明**不生成盒子**，
++        //    border-box 与内容盒都是 0，`contentBox === 0 ⇒ 回落 border-box` 会把「0px < 阈值」
++        //    报成窄柱（实测误报），同轴的 0..0 盒子也量不出轴。无盒形态不判窄柱/轴/裁切；
++        //    文本是否铺得开由 ② 用**字形盒证据**判（见下），不靠这个盒子。
++        const boxed = note.rendered;
++        if (boxed && note.textWidth < threshold - 0.01) {
+           push('note-narrow', `${where} 有字区域宽（内容盒代理量）${wideRound(note.textWidth)}px < ${WIDE_NOTE_RATIO} × 列宽`
+             + `（承载文本块 ${note.bearingCount} 个${note.textFallback ? ' · textFallback 回落' : ''}）—— ${facts}`, note.index, 'text-width');
+         }
+-        // ② 新口径（t14）：**逐行字迹**。盒子/内容盒可能都是满宽的（grid / multicol / float / flex /
+-        //    匿名盒…），但排版出来的行铺不开 ⇒ 这里咬。前置条件 lineCount ≥ 2 不许松（单行短说明
+-        //    天生就有窄字迹，去掉它 dist 上会误报 89 条）；也不许提到 ≥3（multicol 只有 2 行）。
+-        //    竖排：竖排的「行」是竖列，横排意义的行宽没有对应量 ⇒ 显式不判（由 ① 的内容盒量兜住）。
+-        //    ⚠️ 只在**桌面档**（1440/1600，本口径的标定区间）生效：调用方用 meta.inkRule=false 关掉它
+-        //    （760/360 样本集就是这么调的）。实测理由：360 档 feeds/#2「按「我是谁」…」在 328px 列里
+-        //    只排成 2 行、最宽一行 264px（CJK 断行 + 行内 /student/ 这类不可断片段会留 20% 余量），
+-        //    在窄档属于正常排版，不是缺陷 —— 窄档留给 ① / 同轴 / 裁切 / 溢出 判。
+-        if (note.rendered && !note.vertical && inkRuleOn && note.lineCount >= 2 && note.widestLine < threshold - 0.01) {
++        // ② 新口径（t14；作用域 t19 起改为物理前置条件）：**逐行字迹**。盒子/内容盒可能都是满宽的
++        //    （grid / multicol / float / flex / 匿名盒…），但排版出来的行铺不开 ⇒ 这里咬。
++        //    前置条件 lineCount ≥ 2 不许松（去掉它 dist 上会误报 319 条单行说明）；也不许提到 ≥3
++        //    （multicol 只有 2 行）。竖排：竖排的「行」是竖列 ⇒ 显式不判（由 ① 的内容盒量兜住）。
++        //    ⚠️ 作用域 = 物理前置条件（R3-1）：`column > note.ch70`（现场换算的 70ch，见上方注释），
++        //    不再有「只判 1440/1600」的视口白名单 —— 760 档列 676–728 > 452.81 ⇒ 判
++        //    （这正是 R3-1 的复现形状：把 grid 规则包进 @media (max-width:760px) 以前整轮 EXIT=0），
++        //    360 档列 276–328 < 452.81 ⇒ 不判。
++        //    t19 / R3-3：判 ② 的证据是**字形盒**，不看说明自己有没有盒子（display:contents 也判）——
++        //    否则「无盒 ⇒ 整类免判」会变成新的放行面。
++        const ch70 = Number(note.ch70) > 0 ? Number(note.ch70) : 0;
++        const inkScope = column > ch70 + WIDE_TOL;
++        if ((note.rendered || note.glyphRects > 0) && !note.vertical && inkScope
++          && note.lineCount >= 2 && note.widestLine < threshold - 0.01) {
+           push('note-ink-narrow', `${where} 逐行字迹：最宽一行 ${wideRound(note.widestLine)}px < ${WIDE_NOTE_RATIO} × 列宽`
+             + ` —— ${facts}`, note.index, 'line');
+         }
+@@ -6561,12 +6617,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         }
+         const aligned = anchors.filter(anchor => Math.abs(note.box.left - anchor.box.left) <= axisTol
+           && Math.abs(note.box.right - anchor.box.right) <= axisTol);
+-        if (!aligned.length) {
++        // 同轴 / 裁切都是**盒量**：无盒形态（display:contents / 未渲染）不判 —— 0..0 的盒子
++        // 只会产出「与两锚都不同轴」的假红（t19 / R3-3）。
++        if (boxed && !aligned.length) {
+           push('note-axis', `${where} 说明 ${wideRound(note.box.left)}..${wideRound(note.box.right)} 与`
+             + anchors.map(anchor => `${anchor.label} ${wideRound(anchor.box.left)}..${wideRound(anchor.box.right)}`).join(' / ')
+             + ` 都不在同一轴上（容差 max(${WIDE_TOL}px, ${WIDE_AXIS_RATIO} × ${wideRound(column)}px) = ${wideRound(axisTol)}px）`, note.index);
+         }
+-        if (note.box.scrollW > note.box.clientW + WIDE_TOL) {
++        if (boxed && note.box.scrollW > note.box.clientW + WIDE_TOL) {
+           push('note-clipped', `${where} 说明自身横向溢出 ${note.box.scrollW - note.box.clientW}px`
+             + `（scrollWidth ${note.box.scrollW} > clientWidth ${note.box.clientW}）`, note.index);
+         }
+@@ -6704,11 +6762,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           const geometry = await wideMeasure(widePage);
+           // 390 档只判溢出：列宽/同轴那一档的定义是「列铺满可用宽」，窄档里表格在滚动容器里，
+           // 其余码在窄档没有意义（判据函数照跑，只取溢出类，码本身仍由 wideProblems 产出；
+-          // 逐行字迹口径在窄档未标定 ⇒ inkRule:false）。
++          // 逐行字迹口径在 390 档由**物理前置条件**自动不判：列 358px < 70ch 452.81px）。
+           wideNarrow390.set(meta.route, {
+             scrollWidth: geometry.doc.scrollWidth,
+             clientWidth: geometry.doc.clientWidth,
+-            codes: wideCodes(wideProblems(geometry, Object.assign({}, meta, { inkRule: false }))).filter(code => code.startsWith('page-overflow@'))
++            codes: wideCodes(wideProblems(geometry, meta)).filter(code => code.startsWith('page-overflow@'))
+           });
+         }
+         widePhaseSeconds.narrow390 = Math.round((Date.now() - phaseStart) / 100) / 10;
+@@ -6918,27 +6976,53 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+             + wideFrozenDrift.slice(0, 4).map(route => `${route || '/'}=${wideGeometry.get(`${WIDE_DESKTOP}|${route}`).frozenCount} 次`).join(' ')
+           : `${wideFrozenPages.length}/${wideRoutes.length} 页恰好 1 次 · 锚点「${WIDE_SNOTE_FROZEN.slice(0, 24)}…」`);
+ 
+-      // ---- ⑨ 760 / 360：样本集（旧口径 + 同轴 / 裁切 / 溢出；逐行字迹口径只在 1440/1600 标定过）----
++      // ---- ⑨ 760 / 360：样本集（**同一份判据**；逐行字迹按物理前置条件判 —— 760 判、360 不判）----
+       const wideSampleProblems = [];
+       for (const route of wideSampleRoutes) {
+         const meta = wideMeta.find(item => item.route === route);
+         for (const width of WIDE_SAMPLE_VIEWPORTS) {
+           const geometry = wideSampleGeometry.get(`${route}@${width}`);
+-          // inkRule:false —— 逐行字迹在窄档没有标定：360 档 feeds/#2 在 328px 列里只排成 2 行、
+-          // 最宽一行 264px（<0.85×328），那是 CJK 断行的正常余量，不是缺陷（实测见 r3-green.log）。
+-          for (const problem of wideProblems(geometry, Object.assign({}, meta, { inkRule: false }))) {
++          // t19 / R3-1：这里以前用 `meta.inkRule = false`（按视口白名单）把 760 档整类关掉 ——
++          // 现在不传任何开关，由 wideProblems 的物理前置条件现场决定：760 列 676–728 > 70ch 452.81
++          // ⇒ ② 照判（R3-1 的 ≤760 缺口就是在这里关掉的）；360 列 276–328 < 452.81 ⇒ 自动不判。
++          for (const problem of wideProblems(geometry, meta)) {
+             wideSampleProblems.push({ route, width, ...problem });
+           }
+         }
+       }
++      // 物理作用域的**现场证据**（写进断言 detail，免得下一轮又只能看注释）：
++      // 每个样本档的列宽范围 + 现场换算的 70ch ⇒ 一眼看出哪一档判 ②、哪一档不判。
++      const wideSampleScope = WIDE_SAMPLE_VIEWPORTS.map(width => {
++        const columns = [];
++        const ch70s = new Set();
++        for (const route of wideSampleRoutes) {
++          const geometry = wideSampleGeometry.get(`${route}@${width}`);
++          columns.push(Math.min(geometry.region.width, geometry.main.width));
++          for (const note of geometry.notes) if (Number(note.ch70) > 0) ch70s.add(note.ch70);
++        }
++        const positive = columns.filter(v => v > 0);
++        const ch70 = [...ch70s];
++        return {
++          width,
++          minColumn: positive.length ? wideRound(Math.min.apply(null, positive)) : 0,
++          maxColumn: positive.length ? wideRound(Math.max.apply(null, positive)) : 0,
++          ch70: ch70,
++          inkScope: positive.length > 0 && ch70.length > 0 && Math.max.apply(null, positive) > ch70[0]
++        };
++      });
++      const wideSampleScopeText = wideSampleScope.map(scope => `@${scope.width} 列 ${scope.minColumn}–${scope.maxColumn}px`
++        + ` / 70ch 现场 ${scope.ch70.length ? scope.ch70.join('/') : '（无量）'} ⇒ ${scope.inkScope ? '判' : '不判'} ②`).join(' · ');
+       for (const width of WIDE_SAMPLE_VIEWPORTS) {
+         const hits = wideSampleProblems.filter(problem => problem.width === width);
+-        check(`§22c @${width} 样本集 ${wideSampleRoutes.length} 页（旧口径 textWidth + 同轴 / 不裁切 / 不溢出；逐行字迹只在桌面档判）`,
++        check(`§22c @${width} 样本集 ${wideSampleRoutes.length} 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）`,
+           hits.length === 0,
+-          hits.length
+-            ? hits.slice(0, 5).map(problem => `${wideNoteKey(problem.route, problem.index === undefined ? '?' : problem.index)} ${problem.code}：${problem.msg}`).join('；')
+-            : `0 违规码 · 样本集：${wideSampleRoutes.map(route => route || '/').join(' ')}`);
++          (hits.length
++            ? `${hits.length} 条违规码 [${hits.map(problem => `${wideNoteKey(problem.route, problem.index === undefined ? '?' : problem.index)} ${problem.code}`).join(', ')}]：`
++              + hits.slice(0, 5).map(problem => `${wideNoteKey(problem.route, problem.index === undefined ? '?' : problem.index)} ${problem.code}：${problem.msg}`).join('；')
++            : `0 违规码 · 样本集：${wideSampleRoutes.map(route => route || '/').join(' ')}`)
++          + ` · 物理作用域：${wideSampleScopeText}`);
+       }
++      metrics.layoutSampleScope = wideSampleScope;
+ 
+       // ---- ⑩ M1–M10 变异牙 ----
+       // 每条牙都先过「锚点恰好 1 次」的反空洞守卫，再用**同一个** wideProblems 复测。
+@@ -7271,6 +7355,27 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         narrowNotes: wideSummary[WIDE_DESKTOP].narrow.length,
+         narrowNotePages: wideSummary[WIDE_DESKTOP].narrowRoutes.length,
+         narrowNotesAt1600: wideSummary[WIDE_WIDE].narrow.length,
++        // t19 新增：② 的**物理作用域证据** —— 每个视口的现场列宽范围 vs 现场换算的 70ch
++        // （1440/1600/760 列宽大于 70ch ⇒ 判；360 小于 ⇒ 不判；判据里没有任何视口白名单）
++        inkScopeDesktopViewports: WIDE_DESKTOP_VIEWPORTS.map(width => {
++          const columns = [];
++          const ch70s = new Set();
++          for (const meta of wideMeta) {
++            const geometry = wideGeometry.get(`${width}|${meta.route}`);
++            columns.push(Math.min(geometry.region.width, geometry.main.width));
++            for (const note of geometry.notes) if (Number(note.ch70) > 0) ch70s.add(note.ch70);
++          }
++          const positive = columns.filter(value => value > 0);
++          const ch70 = [...ch70s];
++          return {
++            width: width,
++            minColumn: positive.length ? wideRound(Math.min.apply(null, positive)) : 0,
++            maxColumn: positive.length ? wideRound(Math.max.apply(null, positive)) : 0,
++            ch70: ch70,
++            inkScope: positive.length > 0 && ch70.length > 0 && Math.max.apply(null, positive) > ch70[0]
++          };
++        }),
++        inkScopeSampleViewports: wideSampleScope,
+         // t14 新增：逐行字迹码与藏字码各自计数，另给「旧 ∪ 新」的并集（覆盖面的唯一口径）
+         inkNarrowNotes: wideSummary[WIDE_DESKTOP].inkNarrow.length,
+         inkNarrowNotePages: wideSummary[WIDE_DESKTOP].inkNarrowRoutes.length,
+@@ -7330,9 +7435,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+           frozenAnchor: WIDE_SNOTE_FROZEN,
+           criteria: {
+             noteNarrow: `textWidth >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（旧口径，t7 的 textWidth = 承载文本的块级元素里最窄的 content box；一字未改）`,
+-            noteInkNarrow: `lineCount >= 2 且 widestLine >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（新口径，t14：逐行字迹按垂直重叠归并；竖排不判）`,
++            noteInkNarrow: `lineCount >= 2 且 widestLine >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（新口径，t14：逐行字迹按垂直重叠归并；竖排不判。t19/R3-1 起适用性 = **物理前置条件**：min(主数据区宽, 页面列宽) > 现场换算的 70ch ⇒ 1440/1600/760 判、360 不判）`,
+             noteHiddenText: '文本非空且已渲染（border-box 有宽有高）但零可见字形盒（Range.getClientRects 为空）',
+-            coverage: '旧码 ∪ 新码；真值 156 条由「旧 48 单行 + 新 108 多行」并集覆盖（两份独立标定互证）',
++            coverage: '并集 = ① 156 条（盒宽全 452.81；其中 48 条单行、只有 ① 看得见）∪ ② 108 条多行（② ⊆ ①）= 156 条。'
++              + '⚠️ truth-401 的 caughtByOldCriteria(48) 是 make-truth-401.cjs:56 的 `index === 0` 按序切分（实测全为多行），'
++              + '与「48 条单行」不是同一批 —— 两处 48 别混用（t19/R3-2 订正）',
++            inkScope: `② 的适用性 = 现场物理量：min(主数据区宽, 页面列宽) > 70ch（现场换算；1440/1600/760 判、360 不判，t19/R3-1）`,
+             noteAxis: `border-box 与主数据区或 <main> 任一同一轴，容差 max(${WIDE_TOL}px, ${WIDE_AXIS_RATIO} * min(主数据区宽, 页面列宽))`,
+             scope: '<main> 内全部 .snote，逐条 route#index；零条说明的页面才跳过；未渲染（<noscript>）单独登记'
+           },
+@@ -7423,6 +7531,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
+         + ` · note-ink-narrow ${wideSummary[WIDE_DESKTOP].inkNarrow.length} 条 / ${wideSummary[WIDE_DESKTOP].inkNarrowRoutes.length} 页`
+         + ` · 并集 ${wideSummary[WIDE_DESKTOP].union.length} 条 / ${wideSummary[WIDE_DESKTOP].unionRoutes.length} 页 · 藏字 ${wideSummary[WIDE_DESKTOP].hiddenText.length} 条`
+         + ` · @${WIDE_WIDE} 窄 ${wideSummary[WIDE_WIDE].narrow.length} / 字迹窄 ${wideSummary[WIDE_WIDE].inkNarrow.length} 条 · 溢出 ${wideOverflowPages.length} 页`
++        + ` · ② 作用域（物理）：${wideSampleScopeText}`
+         + ` · detail-main 违规 ${wideMissingDetailMain.length + wideUnexpectedDetailMain.length} 页 · 未分类 ${wideUnclassified.length} 页`
+         + ` · 导航 ${wideNavigations} 次（1440 ${widePhaseSeconds[`desktop${WIDE_DESKTOP}`]}s / 1600 ${widePhaseSeconds[`desktop${WIDE_WIDE}`]}s / 390 ${widePhaseSeconds.narrow390}s / 样本 ${widePhaseSeconds.samples}s）`
+         + ` · 本节 JS 错误 ${wideErrors.length} 个 · 外部请求 ${wideExternal.length} 个`);

@@ -1,0 +1,1104 @@
+{
+  "meta": {
+    "task": "T9 §19 布局规则重复审计 + §20 保留窄宽与 max-width 普查（只读）",
+    "generatedBy": "research/_raw/secondary-page-layout-unification/audit/scan-layout-rules.cjs",
+    "scope": [
+      "index.html",
+      "scripts/**"
+    ],
+    "method": "JS 词法级抽取字符串/模板区域（跳过注释）→ 花括号感知 CSS 解析 → 归属到页面壳 → 显式判断表分类",
+    "classNames": [
+      ".snote",
+      ".ph2",
+      ".plist",
+      ".stop",
+      ".cstop",
+      ".detail-main"
+    ],
+    "productSourcesScanned": 215,
+    "unclassifiedCount": 0,
+    "skippedNonCssCandidates": 2167,
+    "skippedSamples": [
+      ":root",
+      ":root[data-theme=\"dark\"]",
+      ":root:not([data-theme=\"light\"]):not([data-theme=\"dark\"])",
+      "/* hidden 必须真的不显示：上面 .jump 是**作者级** display 声明，会盖掉 UA 样式表里的 [hidden]",
+      "（层叠先比来源再比特异性，作者级无条件胜出），于是 js 里 `jump.hidden = true` 只改了属性、导航照旧可见可点 —— 这正是「假隐藏」。 ",
+      "min-width: 0`，内容超宽时由 正文区（.rscroll）内部横滑，绝不把整行顶成两行；唯一的入口「全部变化」放在 横滑容器**外面**、`flex:",
+      "border: 0; padding: 0; border-radius: var(--r-dlg); background: var(--card); col",
+      "provenance.credibility：$",
+      "provenance.fields.$",
+      "：basis=$",
+      "$",
+      "entry.note ? `「$"
+    ],
+    "declarationFragments": [
+      {
+        "file": "scripts/tools/verify-site.js",
+        "line": 5951,
+        "text": "'margin-top: var(--s3); width: 100%; max-width: none;'",
+        "note": "不含花括号的 CSS 声明片段（JS 字符串）：测试工具的变异载荷，不是规则定义，不计入普查"
+      },
+      {
+        "file": "scripts/tools/verify-site.js",
+        "line": 5952,
+        "text": "'margin-top: var(--s3); width: 820px; max-width: none;'",
+        "note": "不含花括号的 CSS 声明片段（JS 字符串）：测试工具的变异载荷，不是规则定义，不计入普查"
+      },
+      {
+        "file": "scripts/tools/verify-site.js",
+        "line": 6163,
+        "text": "'max-width: none'",
+        "note": "不含花括号的 CSS 声明片段（JS 字符串）：测试工具的变异载荷，不是规则定义，不计入普查"
+      },
+      {
+        "file": "scripts/tools/verify-site.js",
+        "line": 6163,
+        "text": "'max-width: 70ch'",
+        "note": "不含花括号的 CSS 声明片段（JS 字符串）：测试工具的变异载荷，不是规则定义，不计入普查"
+      }
+    ]
+  },
+  "purpose": "「本任务反对的是主说明被压成左侧窄柱，不是整个项目不允许 max-width」的机器可读证据：全仓 max-width 声明逐条列出并分类，ch 单位单独点名。",
+  "totals": {
+    "all": 37,
+    "byCategory": {
+      "页面容器": 5,
+      "局部组件": 8,
+      "响应式断点": 13,
+      "阅读列": 7,
+      "其它": 4
+    },
+    "byUnit": {
+      "px": 20,
+      "keyword": 10,
+      "ch": 5,
+      "em": 2
+    },
+    "byOrigin": {
+      "rule": 19,
+      "media-condition": 13,
+      "media-inner-rule": 5
+    },
+    "byFile": {
+      "index.html": 18,
+      "scripts/tools/build-local.js": 15,
+      "scripts/tools/verify-site.js": 4
+    },
+    "byShell": {
+      "unknown": 18,
+      "shell-status": 1,
+      "shell-changes": 1,
+      "shell-plans-coding": 5,
+      "shell-plans-api": 3,
+      "shell-plans-hub": 1,
+      "shell-models": 2,
+      "shell-directory": 2,
+      "test-tool": 4
+    },
+    "chUnit": [
+      "scripts/tools/build-local.js:1516 .pdetailbody → max-width: 72ch; [阅读列]",
+      "scripts/tools/build-local.js:2717 .lsum li small → max-width: 34ch; [局部组件]",
+      "scripts/tools/verify-site.js:6814 .snote ~ .snote → max-width: 70ch; [其它]",
+      "scripts/tools/verify-site.js:6817 .snote:not(:first-of-type) → max-width: 70ch; [其它]",
+      "scripts/tools/verify-site.js:6820 .snote → max-width: 70ch; [其它]"
+    ],
+    "pxUnit": [
+      "index.html:225 .topin → max-width: 1420px; [页面容器]",
+      "index.html:284 .search → max-width: 440px; [局部组件]",
+      "index.html:310 .facetsin → max-width: 1420px; [页面容器]",
+      "index.html:329 .wrap → max-width: 1420px; [页面容器]",
+      "index.html:395 .needs → max-width: 1420px; [页面容器]",
+      "index.html:706 @media (max-width: 900px) → @media (max-width: 900px) [响应式断点]",
+      "index.html:875 @media (max-width: 560px) → @media (max-width: 560px) [响应式断点]",
+      "index.html:963 .cmpin → max-width: 1420px; [页面容器]",
+      "index.html:968 .cmpchip → max-width: 210px; [局部组件]",
+      "index.html:1051 @media (min-width: 761px) and (max-width: 940px) → @media (min-width: 761px) and (max-width: 940px) [响应式断点]",
+      "index.html:1056 @media (max-width: 1180px) → @media (max-width: 1180px) [响应式断点]",
+      "index.html:1061 @media (max-width: 760px) → @media (max-width: 760px) [响应式断点]",
+      "index.html:1124 @media (max-width: 560px) → @media (max-width: 560px) [响应式断点]",
+      "scripts/tools/build-local.js:1069 @media (max-width: 760px) → @media (max-width: 760px) [响应式断点]",
+      "scripts/tools/build-local.js:1393 @media (max-width: 760px) → @media (max-width: 760px) [响应式断点]",
+      "scripts/tools/build-local.js:1563 @media (max-width: 760px) → @media (max-width: 760px) [响应式断点]",
+      "scripts/tools/build-local.js:1636 @media (max-width: 760px) → @media (max-width: 760px) [响应式断点]",
+      "scripts/tools/build-local.js:1788 @media (max-width: 760px) → @media (max-width: 760px) [响应式断点]",
+      "scripts/tools/build-local.js:2033 @media (max-width: 760px) → @media (max-width: 760px) [响应式断点]",
+      "scripts/tools/build-local.js:2727 @media (max-width: 760px) → @media (max-width: 760px) [响应式断点]"
+    ],
+    "percentUnit": [],
+    "keywordNone": [
+      "index.html:734 .snote → max-width: none; [阅读列]",
+      "index.html:735 .dpane → max-width: none; [局部组件]",
+      "index.html:741 .dpane-src → max-width: none; [阅读列]",
+      "index.html:1053 .search → max-width: none; [局部组件]",
+      "index.html:1069 .search → max-width: none; [局部组件]",
+      "scripts/tools/build-local.js:1621 .plist → max-width: none; [阅读列]",
+      "scripts/tools/build-local.js:1746 .plist → max-width: none; [阅读列]",
+      "scripts/tools/build-local.js:1889 .plist → max-width: none; [阅读列]",
+      "scripts/tools/build-local.js:2006 .plist → max-width: none; [阅读列]",
+      "scripts/tools/verify-site.js:6161 .snote → max-width: none; [其它]"
+    ],
+    "otherUnits": [
+      "scripts/tools/build-local.js:1575 .ptable thead th:nth-child(2), .ptable tbody td:nth-child(2) → max-width: 10em; [局部组件]",
+      "scripts/tools/build-local.js:1794 .ptable thead th:nth-child(2), .ptable tbody th:nth-child(2) → max-width: 10em; [局部组件]"
+    ]
+  },
+  "categoryDefinitions": [
+    {
+      "id": "页面容器",
+      "meaning": "决定整页内容带宽度的那一层（.wrap / .topin / .facetsin / .needs / .cmpin / .detail-main）。它是「主数据区」的宽度来源。"
+    },
+    {
+      "id": "局部组件",
+      "meaning": "只作用于一个控件或一个单元格（搜索框、对比标签、粘性列），宽度是控件自身的尺寸，不是页面内容列。"
+    },
+    {
+      "id": "阅读列",
+      "meaning": "长文/说明类文本块自己的可读宽度（.snote / .plist / .pdetailbody / .dpane-src 等）。"
+    },
+    {
+      "id": "响应式断点",
+      "meaning": "@media 条件里的 max-width（视口宽度阈值），与「限宽」是两件事。"
+    },
+    {
+      "id": "其它",
+      "meaning": "不属于以上四类（含测试工具里的载荷字符串）。"
+    }
+  ],
+  "crossCheck": {
+    "method": "裸文本正则数 `max-width:` 的出现次数（不经 CSS 解析器）↔ 解析器的五个账目桶（注释 / 规则声明 / @media 条件 / 声明片段）逐文件对账",
+    "rows": [
+      {
+        "file": "index.html",
+        "rawOccurrences": 19,
+        "commentOccurrences": 1,
+        "ruleDeclarations": 12,
+        "mediaConditions": 6,
+        "fragments": 0,
+        "unexplained": 0,
+        "reconciled": true
+      },
+      {
+        "file": "scripts/lib/page-kinds.js",
+        "rawOccurrences": 2,
+        "commentOccurrences": 2,
+        "ruleDeclarations": 0,
+        "mediaConditions": 0,
+        "fragments": 0,
+        "unexplained": 0,
+        "reconciled": true
+      },
+      {
+        "file": "scripts/tools/build-local.js",
+        "rawOccurrences": 15,
+        "commentOccurrences": 0,
+        "ruleDeclarations": 8,
+        "mediaConditions": 7,
+        "fragments": 0,
+        "unexplained": 0,
+        "reconciled": true
+      },
+      {
+        "file": "scripts/tools/verify-site.js",
+        "rawOccurrences": 12,
+        "commentOccurrences": 4,
+        "ruleDeclarations": 4,
+        "mediaConditions": 0,
+        "fragments": 4,
+        "unexplained": 0,
+        "reconciled": true
+      }
+    ],
+    "allReconciled": true
+  },
+  "entries": [
+    {
+      "file": "index.html",
+      "line": 225,
+      "selector": ".topin",
+      "ruleText": ".topin { max-width: 1420px; margin: 0 auto; padding: 0 20px; height: var(--topH); display: flex; align-items: center; gap: 18px; }",
+      "declaration": "max-width: 1420px;",
+      "property": "max-width",
+      "value": "1420",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "页面容器",
+      "categorySource": "table",
+      "categoryWhy": "顶栏的内容带宽度。它是站点「数据容器」这一层的宽度来源之一（与 .wrap 同值）。"
+    },
+    {
+      "file": "index.html",
+      "line": 284,
+      "selector": ".search",
+      "ruleText": ".search { flex: 1; max-width: 440px; display: flex; align-items: center; gap: var(--s2); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 0 12px; background: var(--bg); }",
+      "declaration": "max-width: 440px;",
+      "property": "max-width",
+      "value": "440",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "局部组件",
+      "categorySource": "table",
+      "categoryWhy": "顶栏搜索框这个**控件**的最大宽度（flex:1 会让它在宽屏吃掉整条顶栏）。≤940px 时另有覆盖（见下一条）。"
+    },
+    {
+      "file": "index.html",
+      "line": 310,
+      "selector": ".facetsin",
+      "ruleText": ".facetsin { max-width: 1420px; margin: 0 auto; padding: 8px 20px; display: flex; gap: var(--s2); align-items: center; overflow-x: auto; scrollbar-width: none; }",
+      "declaration": "max-width: 1420px;",
+      "property": "max-width",
+      "value": "1420",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "页面容器",
+      "categorySource": "table",
+      "categoryWhy": "筛选条的内容带宽度：筛选条是 sticky 的一层，必须与 .wrap/.topin 同宽，否则滚动到粘住时会对不齐。"
+    },
+    {
+      "file": "index.html",
+      "line": 329,
+      "selector": ".wrap",
+      "ruleText": ".wrap { max-width: 1420px; margin: 0 auto; padding: 0 20px 60px; }",
+      "declaration": "max-width: 1420px;",
+      "property": "max-width",
+      "value": "1420",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "页面容器",
+      "categorySource": "table",
+      "categoryWhy": "**主数据区的宽度来源**（1420px，含左右 20px padding）。本次缺陷说的「说明被压成 420px、而正文容器 1380px」里的 1380px 就是它减去 padding。"
+    },
+    {
+      "file": "index.html",
+      "line": 395,
+      "selector": ".needs",
+      "ruleText": ".needs { max-width: 1420px; margin: 0 auto; padding: 5px 20px 0; }",
+      "declaration": "max-width: 1420px;",
+      "property": "max-width",
+      "value": "1420",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "页面容器",
+      "categorySource": "table",
+      "categoryWhy": "首页专题导航区的内容带宽度，同上。"
+    },
+    {
+      "file": "index.html",
+      "line": 706,
+      "selector": "@media (max-width: 900px)",
+      "ruleText": "@media (max-width: 900px)",
+      "declaration": "@media (max-width: 900px)",
+      "property": "max-width",
+      "value": "900",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 900px)"
+      ],
+      "origin": "media-condition",
+      "mediaBlockKey": "index.html#32022",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "响应式断点",
+      "categorySource": "rule"
+    },
+    {
+      "file": "index.html",
+      "line": 734,
+      "selector": ".snote",
+      "ruleText": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "declaration": "max-width: none;",
+      "property": "max-width",
+      "value": "none",
+      "unit": "keyword",
+      "numeric": false,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "阅读列",
+      "categorySource": "table",
+      "categoryWhy": "**本次收口的唯一出处**：页面级说明是阅读列**类**的文本块，但它的取值是 `none` —— 明确取消限宽，让说明与主数据区同轴（数据型页面的导语不是一篇独立文章）。78 个页面壳副本已被删除，只剩这一条。"
+    },
+    {
+      "file": "index.html",
+      "line": 735,
+      "selector": ".dpane",
+      "ruleText": ".dpane { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-dlg); padding: var(--s4) var(--s4) var(--s2); width: 100%; max-width: none; }",
+      "declaration": "max-width: none;",
+      "property": "max-width",
+      "value": "none",
+      "unit": "keyword",
+      "numeric": false,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "局部组件",
+      "categorySource": "table",
+      "categoryWhy": "详情页的卡片面板显式声明「跟随内容列铺满」（width:100% + max-width:none），是「不另立一套宽度」的写法。"
+    },
+    {
+      "file": "index.html",
+      "line": 741,
+      "selector": ".dpane-src",
+      "ruleText": ".dpane-src { font-size: var(--fs-md); color: var(--mut); line-height: 1.8; margin-top: var(--s3); width: 100%; max-width: none; word-break: normal; overflow-wrap: anywhere; }",
+      "declaration": "max-width: none;",
+      "property": "max-width",
+      "value": "none",
+      "unit": "keyword",
+      "numeric": false,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "阅读列",
+      "categorySource": "table",
+      "categoryWhy": "详情卡里的来源说明文本，显式跟随卡片宽度铺满（注释写明「与上方卡片同宽，不再另立一套 820px 宽度」）。"
+    },
+    {
+      "file": "index.html",
+      "line": 875,
+      "selector": "@media (max-width: 560px)",
+      "ruleText": "@media (max-width: 560px)",
+      "declaration": "@media (max-width: 560px)",
+      "property": "max-width",
+      "value": "560",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 560px)"
+      ],
+      "origin": "media-condition",
+      "mediaBlockKey": "index.html#43258",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "响应式断点",
+      "categorySource": "rule"
+    },
+    {
+      "file": "index.html",
+      "line": 963,
+      "selector": ".cmpin",
+      "ruleText": ".cmpin { max-width: 1420px; margin: 0 auto; display: flex; align-items: center; gap: var(--s3); min-width: 0; }",
+      "declaration": "max-width: 1420px;",
+      "property": "max-width",
+      "value": "1420",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "页面容器",
+      "categorySource": "table",
+      "categoryWhy": "对比条（sticky）的内容带宽度，同上。"
+    },
+    {
+      "file": "index.html",
+      "line": 968,
+      "selector": ".cmpchip",
+      "ruleText": ".cmpchip { font-size: var(--fs-xs); background: var(--line2); color: var(--ink2); border-radius: var(--r-sm); padding: 2px 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px; }",
+      "declaration": "max-width: 210px;",
+      "property": "max-width",
+      "value": "210",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "局部组件",
+      "categorySource": "table",
+      "categoryWhy": "对比条里已选标签（chip）：配 overflow:hidden + text-overflow:ellipsis，宽度是省略号生效的前提。"
+    },
+    {
+      "file": "index.html",
+      "line": 1051,
+      "selector": "@media (min-width: 761px) and (max-width: 940px)",
+      "ruleText": "@media (min-width: 761px) and (max-width: 940px)",
+      "declaration": "@media (min-width: 761px) and (max-width: 940px)",
+      "property": "max-width",
+      "value": "940",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (min-width: 761px) and (max-width: 940px)"
+      ],
+      "origin": "media-condition",
+      "mediaBlockKey": "index.html#53956",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "响应式断点",
+      "categorySource": "rule"
+    },
+    {
+      "file": "index.html",
+      "line": 1053,
+      "selector": ".search",
+      "ruleText": ".search { max-width: none; order: 3; min-width: 100%; }",
+      "declaration": "max-width: none;",
+      "property": "max-width",
+      "value": "none",
+      "unit": "keyword",
+      "numeric": false,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (min-width: 761px) and (max-width: 940px)"
+      ],
+      "origin": "media-inner-rule",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "局部组件",
+      "categorySource": "table",
+      "categoryWhy": "同上一条的窄屏覆盖（@media ≤940px 与 ≤760px）：窄屏不再限宽、改为 min-width:100%。说明这条宽度本来就是「宽屏上限」而不是「内容列」。"
+    },
+    {
+      "file": "index.html",
+      "line": 1056,
+      "selector": "@media (max-width: 1180px)",
+      "ruleText": "@media (max-width: 1180px)",
+      "declaration": "@media (max-width: 1180px)",
+      "property": "max-width",
+      "value": "1180",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 1180px)"
+      ],
+      "origin": "media-condition",
+      "mediaBlockKey": "index.html#54187",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "响应式断点",
+      "categorySource": "rule"
+    },
+    {
+      "file": "index.html",
+      "line": 1061,
+      "selector": "@media (max-width: 760px)",
+      "ruleText": "@media (max-width: 760px)",
+      "declaration": "@media (max-width: 760px)",
+      "property": "max-width",
+      "value": "760",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 760px)"
+      ],
+      "origin": "media-condition",
+      "mediaBlockKey": "index.html#54411",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "响应式断点",
+      "categorySource": "rule"
+    },
+    {
+      "file": "index.html",
+      "line": 1069,
+      "selector": ".search",
+      "ruleText": ".search { max-width: none; order: 3; min-width: 100%; }",
+      "declaration": "max-width: none;",
+      "property": "max-width",
+      "value": "none",
+      "unit": "keyword",
+      "numeric": false,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 760px)"
+      ],
+      "origin": "media-inner-rule",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "局部组件",
+      "categorySource": "table",
+      "categoryWhy": "同上一条的窄屏覆盖（@media ≤940px 与 ≤760px）：窄屏不再限宽、改为 min-width:100%。说明这条宽度本来就是「宽屏上限」而不是「内容列」。"
+    },
+    {
+      "file": "index.html",
+      "line": 1124,
+      "selector": "@media (max-width: 560px)",
+      "ruleText": "@media (max-width: 560px)",
+      "declaration": "@media (max-width: 560px)",
+      "property": "max-width",
+      "value": "560",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 560px)"
+      ],
+      "origin": "media-condition",
+      "mediaBlockKey": "index.html#57606",
+      "shell": {
+        "id": "unknown",
+        "label": "（未归属）",
+        "family": "unknown"
+      },
+      "sourceKind": "product-css",
+      "category": "响应式断点",
+      "categorySource": "rule"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 1069,
+      "selector": "@media (max-width: 760px)",
+      "ruleText": "@media (max-width: 760px)",
+      "declaration": "@media (max-width: 760px)",
+      "property": "max-width",
+      "value": "760",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 760px)"
+      ],
+      "origin": "media-condition",
+      "mediaBlockKey": "scripts/tools/build-local.js#1411",
+      "shell": {
+        "id": "shell-status",
+        "label": "/status/ 状态页（wide）",
+        "family": "wide"
+      },
+      "sourceKind": "product-css",
+      "category": "响应式断点",
+      "categorySource": "rule"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 1393,
+      "selector": "@media (max-width: 760px)",
+      "ruleText": "@media (max-width: 760px)",
+      "declaration": "@media (max-width: 760px)",
+      "property": "max-width",
+      "value": "760",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 760px)"
+      ],
+      "origin": "media-condition",
+      "mediaBlockKey": "scripts/tools/build-local.js#3176",
+      "shell": {
+        "id": "shell-changes",
+        "label": "/changes/ 变化页（wide）",
+        "family": "wide"
+      },
+      "sourceKind": "product-css",
+      "category": "响应式断点",
+      "categorySource": "rule"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 1516,
+      "selector": ".pdetailbody",
+      "ruleText": ".pdetailbody { max-width: 72ch; }",
+      "declaration": "max-width: 72ch;",
+      "property": "max-width",
+      "value": "72",
+      "unit": "ch",
+      "numeric": true,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "shell-plans-coding",
+        "label": "/plans/coding/ 套餐对比页（wide）",
+        "family": "wide"
+      },
+      "sourceKind": "product-css",
+      "category": "阅读列",
+      "categorySource": "table",
+      "categoryWhy": "套餐对比页**表内展开区**的字段清单；局部组件级的可读行长（见 retained-narrow-widths.json）。"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 1563,
+      "selector": "@media (max-width: 760px)",
+      "ruleText": "@media (max-width: 760px)",
+      "declaration": "@media (max-width: 760px)",
+      "property": "max-width",
+      "value": "760",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 760px)"
+      ],
+      "origin": "media-condition",
+      "mediaBlockKey": "scripts/tools/build-local.js#4194",
+      "shell": {
+        "id": "shell-plans-coding",
+        "label": "/plans/coding/ 套餐对比页（wide）",
+        "family": "wide"
+      },
+      "sourceKind": "product-css",
+      "category": "响应式断点",
+      "categorySource": "rule"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 1575,
+      "selector": ".ptable thead th:nth-child(2), .ptable tbody td:nth-child(2)",
+      "ruleText": ".ptable thead th:nth-child(2), .ptable tbody td:nth-child(2) { position: sticky; left: 6.5em; background: var(--card); z-index: 2; box-shadow: 1px 0 0 var(--line); max-width: 10em; white-space: normal; overflow-wrap: anywhere; }",
+      "declaration": "max-width: 10em;",
+      "property": "max-width",
+      "value": "10",
+      "unit": "em",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 760px)"
+      ],
+      "origin": "media-inner-rule",
+      "shell": {
+        "id": "shell-plans-coding",
+        "label": "/plans/coding/ 套餐对比页（wide）",
+        "family": "wide"
+      },
+      "sourceKind": "product-css",
+      "category": "局部组件",
+      "categorySource": "table",
+      "categoryWhy": "窄屏下宽表第二列的粘性单元格：sticky 单元格必须有限宽，否则长文本把整张表撑开（见 retained-narrow-widths.json）。"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 1621,
+      "selector": ".plist",
+      "ruleText": ".plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }",
+      "declaration": "max-width: none;",
+      "property": "max-width",
+      "value": "none",
+      "unit": "keyword",
+      "numeric": false,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "shell-plans-coding",
+        "label": "/plans/coding/ 套餐对比页（wide）",
+        "family": "wide"
+      },
+      "sourceKind": "product-css",
+      "category": "阅读列",
+      "categorySource": "table",
+      "categoryWhy": "四个页面壳里各一份、**逐字相同**的清单文本规则，取值是 none（跟随数据容器）。它是「多处复制但取值一致」的情形 —— 不产生漂移，本次故意不动（见 inventory 的 notTouched）。"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 1636,
+      "selector": "@media (max-width: 760px)",
+      "ruleText": "@media (max-width: 760px)",
+      "declaration": "@media (max-width: 760px)",
+      "property": "max-width",
+      "value": "760",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 760px)"
+      ],
+      "origin": "media-condition",
+      "mediaBlockKey": "scripts/tools/build-local.js#1958",
+      "shell": {
+        "id": "shell-plans-coding",
+        "label": "/plans/coding/ 套餐对比页（wide）",
+        "family": "wide"
+      },
+      "sourceKind": "product-css",
+      "category": "响应式断点",
+      "categorySource": "rule"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 1746,
+      "selector": ".plist",
+      "ruleText": ".plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }",
+      "declaration": "max-width: none;",
+      "property": "max-width",
+      "value": "none",
+      "unit": "keyword",
+      "numeric": false,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "shell-plans-api",
+        "label": "/plans/api/ API 计费页（wide）",
+        "family": "wide"
+      },
+      "sourceKind": "product-css",
+      "category": "阅读列",
+      "categorySource": "table",
+      "categoryWhy": "四个页面壳里各一份、**逐字相同**的清单文本规则，取值是 none（跟随数据容器）。它是「多处复制但取值一致」的情形 —— 不产生漂移，本次故意不动（见 inventory 的 notTouched）。"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 1788,
+      "selector": "@media (max-width: 760px)",
+      "ruleText": "@media (max-width: 760px)",
+      "declaration": "@media (max-width: 760px)",
+      "property": "max-width",
+      "value": "760",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 760px)"
+      ],
+      "origin": "media-condition",
+      "mediaBlockKey": "scripts/tools/build-local.js#3108",
+      "shell": {
+        "id": "shell-plans-api",
+        "label": "/plans/api/ API 计费页（wide）",
+        "family": "wide"
+      },
+      "sourceKind": "product-css",
+      "category": "响应式断点",
+      "categorySource": "rule"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 1794,
+      "selector": ".ptable thead th:nth-child(2), .ptable tbody th:nth-child(2)",
+      "ruleText": ".ptable thead th:nth-child(2), .ptable tbody th:nth-child(2) { position: sticky; left: 6.5em; background: var(--card); z-index: 2; box-shadow: 1px 0 0 var(--line); max-width: 10em; white-space: normal; overflow-wrap: anywhere; }",
+      "declaration": "max-width: 10em;",
+      "property": "max-width",
+      "value": "10",
+      "unit": "em",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 760px)"
+      ],
+      "origin": "media-inner-rule",
+      "shell": {
+        "id": "shell-plans-api",
+        "label": "/plans/api/ API 计费页（wide）",
+        "family": "wide"
+      },
+      "sourceKind": "product-css",
+      "category": "局部组件",
+      "categorySource": "table",
+      "categoryWhy": "同上（另一个页面壳里的同类写法：td / th 之差）。"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 1889,
+      "selector": ".plist",
+      "ruleText": ".plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }",
+      "declaration": "max-width: none;",
+      "property": "max-width",
+      "value": "none",
+      "unit": "keyword",
+      "numeric": false,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "shell-plans-hub",
+        "label": "/plans/ 资料入口页（wide）",
+        "family": "wide"
+      },
+      "sourceKind": "product-css",
+      "category": "阅读列",
+      "categorySource": "table",
+      "categoryWhy": "四个页面壳里各一份、**逐字相同**的清单文本规则，取值是 none（跟随数据容器）。它是「多处复制但取值一致」的情形 —— 不产生漂移，本次故意不动（见 inventory 的 notTouched）。"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 2006,
+      "selector": ".plist",
+      "ruleText": ".plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }",
+      "declaration": "max-width: none;",
+      "property": "max-width",
+      "value": "none",
+      "unit": "keyword",
+      "numeric": false,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "shell-models",
+        "label": "通用静态页壳：/models/、/models/<slug>/、/archive/、/docs/data/、档案详情",
+        "family": "wide+detail"
+      },
+      "sourceKind": "product-css",
+      "category": "阅读列",
+      "categorySource": "table",
+      "categoryWhy": "四个页面壳里各一份、**逐字相同**的清单文本规则，取值是 none（跟随数据容器）。它是「多处复制但取值一致」的情形 —— 不产生漂移，本次故意不动（见 inventory 的 notTouched）。"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 2033,
+      "selector": "@media (max-width: 760px)",
+      "ruleText": "@media (max-width: 760px)",
+      "declaration": "@media (max-width: 760px)",
+      "property": "max-width",
+      "value": "760",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 760px)"
+      ],
+      "origin": "media-condition",
+      "mediaBlockKey": "scripts/tools/build-local.js#2554",
+      "shell": {
+        "id": "shell-models",
+        "label": "通用静态页壳：/models/、/models/<slug>/、/archive/、/docs/data/、档案详情",
+        "family": "wide+detail"
+      },
+      "sourceKind": "product-css",
+      "category": "响应式断点",
+      "categorySource": "rule"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 2717,
+      "selector": ".lsum li small",
+      "ruleText": ".lsum li small { display: block; color: var(--mut); font-size: 11px; margin-top: 2px; max-width: 34ch; }",
+      "declaration": "max-width: 34ch;",
+      "property": "max-width",
+      "value": "34",
+      "unit": "ch",
+      "numeric": true,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "shell-directory",
+        "label": "目录页家族：/<slug>/、/need/<slug>/、/vendor/<slug>/、category、alias（wide）",
+        "family": "wide"
+      },
+      "sourceKind": "product-css",
+      "category": "局部组件",
+      "categorySource": "table",
+      "categoryWhy": "目录页摘要条里每个计数卡片的小字副标题；限制的是卡片内部的换行节奏（见 retained-narrow-widths.json）。"
+    },
+    {
+      "file": "scripts/tools/build-local.js",
+      "line": 2727,
+      "selector": "@media (max-width: 760px)",
+      "ruleText": "@media (max-width: 760px)",
+      "declaration": "@media (max-width: 760px)",
+      "property": "max-width",
+      "value": "760",
+      "unit": "px",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (max-width: 760px)"
+      ],
+      "origin": "media-condition",
+      "mediaBlockKey": "scripts/tools/build-local.js#1569",
+      "shell": {
+        "id": "shell-directory",
+        "label": "目录页家族：/<slug>/、/need/<slug>/、/vendor/<slug>/、category、alias（wide）",
+        "family": "wide"
+      },
+      "sourceKind": "product-css",
+      "category": "响应式断点",
+      "categorySource": "rule"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 6161,
+      "selector": ".snote",
+      "ruleText": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "declaration": "max-width: none;",
+      "property": "max-width",
+      "value": "none",
+      "unit": "keyword",
+      "numeric": false,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "sourceKind": "fixture-string",
+      "category": "其它",
+      "categorySource": "table",
+      "categoryWhy": "测试工具里逐字复制的**冻结串**（WIDE_SNOTE_FROZEN，用作变异锚点）。它必须逐字引用产品规则，否则锚不住。"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 6814,
+      "selector": ".snote ~ .snote",
+      "ruleText": ".snote ~ .snote { max-width: 70ch; }",
+      "declaration": "max-width: 70ch;",
+      "property": "max-width",
+      "value": "70",
+      "unit": "ch",
+      "numeric": true,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "sourceKind": "fixture-string",
+      "category": "其它",
+      "categorySource": "table",
+      "categoryWhy": "变异载荷（旁路写法之一）：用相邻兄弟选择器加一条限宽规则，绕过「只改冻结串」的检查。"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 6817,
+      "selector": ".snote:not(:first-of-type)",
+      "ruleText": ".snote:not(:first-of-type) { max-width: 70ch; }",
+      "declaration": "max-width: 70ch;",
+      "property": "max-width",
+      "value": "70",
+      "unit": "ch",
+      "numeric": true,
+      "insideMediaQuery": false,
+      "mediaQueries": [],
+      "origin": "rule",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "sourceKind": "fixture-string",
+      "category": "其它",
+      "categorySource": "table",
+      "categoryWhy": "变异载荷（旁路写法之二）：用 :not(:first-of-type) 只压窄「非第一条」说明，制造同一页说明宽度不一致。"
+    },
+    {
+      "file": "scripts/tools/verify-site.js",
+      "line": 6820,
+      "selector": ".snote",
+      "ruleText": ".snote { max-width: 70ch; }",
+      "declaration": "max-width: 70ch;",
+      "property": "max-width",
+      "value": "70",
+      "unit": "ch",
+      "numeric": true,
+      "insideMediaQuery": true,
+      "mediaQueries": [
+        "@media (min-width: 1500px)"
+      ],
+      "origin": "media-inner-rule",
+      "shell": {
+        "id": "test-tool",
+        "label": "测试工具 verify-site.js（非产物样式：变异锚点 / 断言载荷）",
+        "family": "test"
+      },
+      "sourceKind": "fixture-string",
+      "category": "其它",
+      "categorySource": "table",
+      "categoryWhy": "变异载荷：把冻结串的 max-width 换回 70ch，用来验证「说明被压窄」这条缺陷会被门禁抓到。它是牙，不是残留。"
+    }
+  ],
+  "unclassified": []
+}
