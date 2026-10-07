@@ -14,8 +14,8 @@
 | 真浏览器验收 | **861 项 / 失败 0**（改动前 855 项 → 新增 6 项）；带回归比对 **867 项 / 失败 0** |
 | 变异回归证明 | 删掉 `.page-notes-action` 的装饰 span ⇒ **恰好 5 条判红**（全部落在 §15b3），其余 856 条照旧全绿 |
 | Full Gate | **51 步 → 执行 47 / 通过 47 / 失败 0 / 跳过 4 · exit 0**（本地读同一份 `action.yml`） |
-| CI | 见 §9（PR 读数回填） |
-| 线上冒烟 | 见 §9 |
+| CI | `Verify site (gate)` run **37639382861** · **success** · 5 分 01 秒（PR [#51](https://github.com/buguoshixc/ai-deals-aggregator/pull/51)） |
+| 线上冒烟 | 两条抽检路由**与本地构建逐字节相同** + `npm run smoke` **14 / 0**（见 §9） |
 
 ---
 
@@ -253,9 +253,18 @@ node scripts/tools/verify-site.js --compare=…/ours-baseline/verify.json
 
 `npm run check:ci` → **38 项 / 失败 0**（本轮未动 workflow / 复合 action / CI 脚本）。
 
-### PR / CI / Deploy / 线上冒烟
+### PR / CI / Deploy / 线上冒烟（实测读数）
 
-见台账回填（`research/page-notes-disclosure-v1-release-readings.md`）。
+| 环节 | 读数 |
+|---|---|
+| 分支 / 提交 | `page-notes-disclosure-v1` · `8b0c4ea`（本地门禁在这一版上跑完） |
+| PR | [#51](https://github.com/buguoshixc/ai-deals-aggregator/pull/51)（body 见 `research/_raw/page-notes-disclosure-v1/pr-body.md`） |
+| CI | `Verify site (gate)` run **37639382861** · `8b0c4ea` · **success** · 14:45:26Z → 14:50:27Z（**5 分 01 秒**，含 `npm ci` 与真浏览器验收） |
+| merge | merge commit **`4b54cae`**（`Merge pull request #51`） |
+| Deploy | `Deploy to GitHub Pages` run **37640227430** · `4b54cae` · **success** · 14:51:27Z → 14:57:57Z（**6 分 30 秒**；三 job 全绿：`prepublish`（门禁）→ `build` → `deploy`） |
+| 线上冒烟（本轮抽检两条） | `/need/ai-coding/` 与 `/student/`：HTTP 200 · **线上 HTML 与本地构建逐字节相同**（sha256 `f274cd44…` / `8e7d9f4b…`）· 新结构（`page-notes-summary` / `chevron` / `action`）、CSS 生成文案（`content: '展开'` / `'收起'`）、`min-height: 44px`、正文原句、canonical 自指**逐条命中** |
+| 线上冒烟（仓库 L5） | `npm run smoke` → **14 项 / 失败 0**（11 条关键路由 + sitemap + 两个抽样详情页） |
+
 
 ---
 
